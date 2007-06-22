@@ -34,6 +34,8 @@ static bool rigMEM_PTT = PTT_OFF;
 static bool rig_qsy = false;
 static bool TogglePTT = false;
 static bool rigMEMisPTT = false;
+static long long qsy_f;
+static long long qsy_fmid;
 
 struct ST_SHMEM {
 	int  flag;
@@ -130,11 +132,13 @@ void setrigMEM_PTT (bool on)
   TogglePTT = true;
 }
 
-void rigMEM_set_qsy(void)
+void rigMEM_set_qsy(long long f, long long fmid)
 {
 	if (!rigMEM_enabled)
 		return;
 
+	qsy_f = f;
+	qsy_fmid = fmid;
 	rig_qsy = true;
 }
 
@@ -153,31 +157,16 @@ static void *rigMEM_loop(void *args)
 //		MilliSleep(20);
 
 		if (rig_qsy) {
-			long int fmid;
-			long int f0 = wf->carrier();
-
-// this is the sweet spot frequency that is the center of the PBF in the rig
-			if (active_modem->get_mode() == MODE_CW)
-				fmid = (long int)progdefaults.CWsweetspot;
-			else if (active_modem->get_mode() == MODE_RTTY)
-				fmid = (long int)progdefaults.RTTYsweetspot;
-			else
-				fmid = (long int)progdefaults.PSKsweetspot;
-			
-			if (wf->USB())
-				freqflag->freq += (f0 - fmid);
-			else
-				freqflag->freq -= (f0 - fmid);
-			
+			freqflag->freq = qsy_f;
 			freqflag->flag = -2; // set frequency
 			MilliSleep(20);
 			if (active_modem->freqlocked() == true) {
 				active_modem->set_freqlock(false);
-				active_modem->set_freq((int)fmid);
+				active_modem->set_freq((int)qsy_fmid);
 				active_modem->set_freqlock(true);
 			} else
-				active_modem->set_freq((int)fmid);
-			wf->carrier((int)fmid);
+				active_modem->set_freq((int)qsy_fmid);
+			wf->carrier((int)qsy_fmid);
 			wf->rfcarrier(freqflag->freq);
 			wf->movetocenter();
 			rig_qsy = false;

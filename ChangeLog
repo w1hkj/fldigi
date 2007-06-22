@@ -12,6 +12,13 @@ Change Log:
       9) Corrected memory leak bugs found in version 1.34
       10) Added "Test" capability to save Rx or Tx waveforms in ".wav"
           format and to play them back for testing modem decoders.
+      11) Replaced text editing widgets with new widgets capable of cut,
+          copy and paste.
+      12) Added new functions on text widget popup menus
+      13) Added a QSY undo (right button press)
+      14) Added a who is this capability to waterfall -- press right
+          button and hold on a signal and decoding occurs on that signal.
+          Release and decoding returns to normal tracking point.
 1.34  1) Cleaned up unused code segments
       2) Modified CW decoder to allow setting upper and lower limits on
          Tx WPM

@@ -43,6 +43,15 @@
 
 using namespace std;
 
+#if (FL_MAJOR_VERSION == 1 && FL_MINOR_VERSION == 1 &&	\
+     FL_PATCH_VERSION == 7 || FL_PATCH_VERSION == 8) && \
+	!defined(NO_HSCROLLBAR_KLUDGE)
+#	define HSCROLLBAR_KLUDGE
+#else
+#	warning "Not suppressing horizontal scrollbars with this version of fltk"
+#	undef HSCROLLBAR_KLUDGE
+#endif
+
 class TextView : public Fl_Text_Display
 {
 public:
@@ -62,21 +71,25 @@ public:
 	void	setFont(int n, Fl_Font f);
 	void	setFontSize(int n, int s);
 	void	setFontColor(int n, Fl_Color c);
+#ifdef HSCROLLBAR_KLUDGE
+	void	resize(int X, int Y, int W, int H);
+#endif
 
 public:
 	enum TV_ATTR {RCV, XMT};
 	enum { NSTYLES = 16 };
 
 protected:
-	enum { RX_MENU_CALL, RX_MENU_NAME, RX_MENU_QTH, RX_MENU_LOC,
-	       RX_MENU_RST_IN, RX_MENU_DIV, RX_MENU_CLEAR, RX_MENU_COPY,
-	       RX_MENU_SAVE, RX_MENU_WRAP };
+	enum { RX_MENU_QRZ_THIS, RX_MENU_CALL, RX_MENU_NAME, RX_MENU_QTH,
+	       RX_MENU_LOC, RX_MENU_RST_IN, RX_MENU_DIV, RX_MENU_CLEAR,
+	       RX_MENU_COPY, RX_MENU_SAVE, RX_MENU_WRAP };
 	void	draw(void);
 	void	menu_cb(int val);
+	static void changed_cb(int pos, int nins, int ndel, int nsty,
+			       const char *dtext, void *arg);
 	char	*get_word(int x, int y);
 	void	saveFile(void);
 	void	clipboard_copy(void);
-	void	wrap_mode(bool v = true);
 
 private:
 	TextView();
@@ -84,9 +97,11 @@ private:
 protected:
 	Fl_Text_Buffer *tbuf, *sbuf;
 	static Fl_Text_Display::Style_Table_Entry styles[NSTYLES];
+	static Fl_Menu_Item viewmenu[];
 	int		popx, popy;
 	bool		wrap;
 };
+
 
 class TextEdit : public Fl_Text_Editor
 {
@@ -106,6 +121,9 @@ public:
 	void	setFontSize(int s) { setFontSize(-1, s); }
 	void	setFontColor(Fl_Color c) { setFontColor(-1, c); }
 	void	cursorON(void);
+#ifdef HSCROLLBAR_KLUDGE
+	void	resize(int X, int Y, int W, int H);
+#endif
 
 public:
 	enum { NSTYLES = 16 };
@@ -116,10 +134,9 @@ protected:
 	       TX_MENU_WRAP };
 	int	handle_key(int key);
 	void	readFile(void);
-	static void style_cb(int pos, int nins, int ndel, int nsty,
-			     const char *dtext, void *arg);
+	static void changed_cb(int pos, int nins, int ndel, int nsty,
+			       const char *dtext, void *arg);
 	void	menu_cb(int val);
-	void	wrap_mode(bool v = true);
 
 	void	change_keybindings(void);
 	static int kf_default(int c, Fl_Text_Editor* e);
@@ -134,6 +151,7 @@ private:
 protected:
 	Fl_Text_Buffer *tbuf, *sbuf;
 	static Fl_Text_Display::Style_Table_Entry styles[NSTYLES];
+	static Fl_Menu_Item editmenu[];
 	bool		PauseBreak;
 	int		txpos;
 	static int	*ptxpos;

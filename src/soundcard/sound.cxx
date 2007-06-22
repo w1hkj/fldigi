@@ -630,7 +630,7 @@ int cSoundPA::Read(double *buf, int count)
 
         float *rbuf = fbuf;
 
-        if (req_sample_rate != dev_sample_rate || rxppm != progdefaults.RX_corr) {
+        if (req_sample_rate != dev_sample_rate || rxppm != 0) {
                 resample(rbuf, ncount, count);
                 rbuf = rx_src_data->data_out;
                 count = rx_src_data->output_frames_gen;
@@ -650,7 +650,7 @@ int cSoundPA::write_samples(double *buf, int count)
                 fbuf[2*i] = fbuf[2*i + 1] = buf[i];
 
         float *wbuf = fbuf;
-        if (req_sample_rate != dev_sample_rate || txppm != progdefaults.TX_corr) {
+        if (req_sample_rate != dev_sample_rate || txppm != 0) {
                 resample(wbuf, count);
                 wbuf = tx_src_data->data_out;
                 count = tx_src_data->output_frames_gen;
@@ -679,7 +679,7 @@ int cSoundPA::write_stereo(double *bufleft, double *bufright, int count)
         }
 
         float *wbuf = fbuf;
-        if (req_sample_rate != dev_sample_rate || txppm != progdefaults.TX_corr) {
+        if (req_sample_rate != dev_sample_rate || txppm != 0) {
                 resample(wbuf, count);
                 wbuf = tx_src_data->data_out;
                 count = tx_src_data->output_frames_gen;

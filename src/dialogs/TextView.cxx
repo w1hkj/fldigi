@@ -23,9 +23,7 @@
 // ----------------------------------------------------------------------------
 
 #include <iostream>
-#include <fstream>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstring>
 
 #include "TextView.h"
 #include "main.h"
@@ -41,33 +39,36 @@
 using namespace std;
 
 
-Fl_Menu_Item viewmenu[] = {
-	{"@-9-> Call",		0, 0 },
-	{"@-9-> Name",		0, 0 },
-	{"@-9-> QTH",		0, 0 },
-	{"@-9-> Locator",	0, 0 },
-	{"@-9-> RSTin",		0, 0, 0, FL_MENU_DIVIDER },
-	{"Insert divider",	0, 0 },
-	{"Clear",		0, 0 },
-	{"Copy",		0, 0, 0, FL_MENU_DIVIDER },
-	{"Save to file...",	0, 0, 0, FL_MENU_DIVIDER },
-	{"Word wrap",		0, 0, 0, FL_MENU_TOGGLE|FL_MENU_VALUE } ,
+Fl_Menu_Item TextView::viewmenu[] = {
+	{"@-9$returnarrow &QRZ this call",	0, 0 },
+	{"@-9-> &Call",				0, 0 },
+	{"@-9-> &Name",				0, 0 },
+	{"@-9-> QT&H",				0, 0 },
+	{"@-9-> &Locator",			0, 0 },
+	{"@-9-> &RSTin",			0, 0, 0, FL_MENU_DIVIDER },
+	{"Insert divider",			0, 0 },
+	{"C&lear",				0, 0 },
+	{"&Copy",				0, 0, 0, FL_MENU_DIVIDER },
+	{"Save to &file...",			0, 0, 0, FL_MENU_DIVIDER },
+	{"Word &wrap",				0, 0, 0, FL_MENU_TOGGLE	 },
 	{ 0 }
 };
 
 Fl_Text_Display::Style_Table_Entry TextView::styles[NSTYLES];
 
 TextView::TextView(int x, int y, int w, int h, const char *l)
-	: Fl_Text_Display(x, y, w, h, l)
+	: Fl_Text_Display(x, y, w, h, l), wrap(true)
 {
 	tbuf = new Fl_Text_Buffer;
 	sbuf = new Fl_Text_Buffer;
 
 	buffer(tbuf);
 	highlight_data(sbuf, styles, NSTYLES, 'A', 0, 0);
+	tbuf->add_modify_callback(changed_cb, this);
 	cursor_style(Fl_Text_Display::BLOCK_CURSOR);
 
-	wrap_mode();
+	wrap_mode(wrap, 0);
+	scrollbar_width((int)floor(scrollbar_width() * 3.0/4.0));
 
 	// set some defaults
 	setFont(FL_COURIER);
@@ -97,32 +98,46 @@ int TextView::handle(int event)
 		show_cursor(1);
 		if (tbuf->selected())
 			redraw();
+		return 1;
 	case FL_ENTER:
 		show_cursor(1);
 		return 1;
 		break;
 	case FL_PUSH:
-		if (Fl::event_button() == FL_RIGHT_MOUSE) {
-			if (!(Fl::event_inside(this) && Fl::focus() == this))
-				break;
+		if ( !(Fl::event_inside(this) && Fl::event_button() == FL_RIGHT_MOUSE) )
+			break;
 
-			const Fl_Menu_Item * m;
-			int xpos = Fl::event_x();
-			int ypos = Fl::event_y();
+		const Fl_Menu_Item * m;
+		int xpos = Fl::event_x();
+		int ypos = Fl::event_y();
 
-			popx = xpos - x();
-			popy = ypos - y();
-			m = viewmenu->popup(xpos, ypos, 0, 0, 0);
-			if (m) {
-				int msize = sizeof(viewmenu) / sizeof(viewmenu[0]);
-				for (int i = 0; i < msize; i++)
-					if (m == &viewmenu[i]) {
-						menu_cb(i);
-						break;
-					}
+		if (tbuf->length())
+			viewmenu[RX_MENU_CLEAR].flags &= ~FL_MENU_INACTIVE;
+		else
+			viewmenu[RX_MENU_CLEAR].flags |= FL_MENU_INACTIVE;
+
+		if (tbuf->selected())
+			viewmenu[RX_MENU_COPY].flags &= ~FL_MENU_INACTIVE;
+		else
+			viewmenu[RX_MENU_COPY].flags |= FL_MENU_INACTIVE;
+		if (wrap)
+			viewmenu[RX_MENU_WRAP].flags |= FL_MENU_VALUE;
+		else
+			viewmenu[RX_MENU_WRAP].flags &= ~FL_MENU_VALUE;
+
+		popx = xpos - x();
+		popy = ypos - y();
+		m = viewmenu->popup(xpos, ypos, 0, 0, 0);
+		if (m) {
+			int msize = sizeof(viewmenu) / sizeof(viewmenu[0]);
+			for (int i = 0; i < msize; i++) {
+				if (m == &viewmenu[i]) {
+					menu_cb(i);
+					break;
+				}
 			}
-			return 1;
 		}
+		return 1;
 		break;
 	}
 
@@ -150,10 +165,6 @@ void TextView::add(char c, int attr)
 		sbuf->append(s);
 		break;
 	}
-
-	// if we are displaying the last line we should scroll down to keep it visible
-	if (mTopLineNum + mNVisibleLines > mNBufferLines)
-		scroll(mNBufferLines - 1, 0);
 
 	redraw();
 	Fl::unlock();
@@ -212,6 +223,11 @@ void TextView::menu_cb(int val)
 	handle(FL_UNFOCUS);
 	switch (val) {
 		char *s;
+	case RX_MENU_QRZ_THIS:
+		menu_cb(RX_MENU_CALL);
+		extern void QRZquery();
+		QRZquery();
+		break;
 	case RX_MENU_CALL:
 		s = get_word(popx, popy);
 		inpCall->value(s);
@@ -254,12 +270,27 @@ void TextView::menu_cb(int val)
 
 	case RX_MENU_WRAP:
 		viewmenu[RX_MENU_WRAP].flags ^= FL_MENU_VALUE;
-		wrap_mode(!wrap);
+		wrap_mode((wrap = !wrap), 0);
+		show_insert_position();
 		break;
 	}
-
-//	restoreFocus();
 }
+
+void TextView::changed_cb(int pos, int nins, int ndel, int nsty, const char *dtext, void *arg)
+{
+	TextView *v = (TextView *)arg;
+
+	// if we are displaying the last line we should scroll down to keep it visible
+	if (v->mTopLineNum + v->mNVisibleLines > v->mNBufferLines)
+		v->scroll(v->mNBufferLines - 1, 0);
+	if (!v->wrap) {
+		// keep the cursor at the end of the buffer; this does not affect mouse
+		// selections or scrolling
+		v->insert_position(v->tbuf->length());
+		v->show_insert_position();
+	}
+}
+
 
 // caller must free() returned string
 char *TextView::get_word(int x, int y)
@@ -289,27 +320,30 @@ void TextView::clipboard_copy(void)
 	}
 }
 
-void TextView::wrap_mode(bool v)
+#ifdef HSCROLLBAR_KLUDGE
+void TextView::resize(int X, int Y, int W, int H)
 {
-	int row, col;
-
-	xy_to_rowcol(this->x(), this->y(), &row, &col, Fl_Text_Display::CHARACTER_POS);
-	Fl_Text_Display::wrap_mode(wrap = v, col);
+	Fl_Text_Display::resize(X, Y, W, H);
+	if (!wrap || !mVScrollBar->visible())
+		return;
+#	include "TextView_resize.cxx"
 }
+#endif // HSCROLLBAR_KLUDGE
 
 
 //==============================================================================
 
-Fl_Menu_Item editmenu[] = {
-	{"Transmit",		0, 0 },
-	{"Receive",		0, 0 },
-	{"MFSK16 image...",	0, 0, 0, FL_MENU_DIVIDER},
-	{"Clear",		0, 0, },
-	{"Cut",			0, 0, },
-	{"Copy",		0, 0, },
-	{"Paste",		0, 0, 0, FL_MENU_DIVIDER },
-	{"Insert file...",	0, 0, 0, FL_MENU_DIVIDER },
-	{"Word wrap",		0, 0, 0, FL_MENU_TOGGLE|FL_MENU_VALUE } ,
+
+Fl_Menu_Item TextEdit::editmenu[] = {
+	{"&Transmit",		0, 0  },
+	{"&Receive",		0, 0  },
+	{"Send &image...",	0, 0, 0, FL_MENU_DIVIDER },
+	{"C&lear",		0, 0, },
+	{"Cu&t",		0, 0, },
+	{"&Copy",		0, 0, },
+	{"&Paste",		0, 0, 0, FL_MENU_DIVIDER },
+	{"Append &file...",	0, 0, 0, FL_MENU_DIVIDER },
+	{"Word &wrap",		0, 0, 0, FL_MENU_TOGGLE	 } ,
 	{ 0 }
 };
 
@@ -317,7 +351,8 @@ Fl_Text_Display::Style_Table_Entry TextEdit::styles[NSTYLES];
 int *TextEdit::ptxpos = 0; // needed by our static kf functions
 
 TextEdit::TextEdit(int x, int y, int w, int h, const char *l)
-	: Fl_Text_Editor(x, y, w, h, l), PauseBreak(false), txpos(0), bkspaces(0)
+	: Fl_Text_Editor(x, y, w, h, l), PauseBreak(false), txpos(0),
+	  bkspaces(0), wrap(true)
 {
 	ptxpos = &txpos;
 
@@ -327,9 +362,10 @@ TextEdit::TextEdit(int x, int y, int w, int h, const char *l)
 	cursor_style(Fl_Text_Display::NORMAL_CURSOR);
 	buffer(tbuf);
 	highlight_data(sbuf, styles, NSTYLES, 'A', 0, 0);
-	tbuf->add_modify_callback(style_cb, this);
+	tbuf->add_modify_callback(changed_cb, this);
 
-	wrap_mode();
+	wrap_mode(wrap, 0);
+	scrollbar_width((int)floor(scrollbar_width() * 3.0/4.0));
 
 	// set some defaults
 	setFont(-1, FL_COURIER);
@@ -351,38 +387,57 @@ int TextEdit::handle(int event)
 {
 	if (event == FL_KEYBOARD) {
 		autolock txlock;
-		if (handle_key(Fl::event_key()))
-			return 1;
-		else
-			return Fl_Text_Editor::handle(event);
+		return handle_key(Fl::event_key()) ? 1 : Fl_Text_Editor::handle(event);
 	}
-	if (Fl::event_inside( this )) {
-		const Fl_Menu_Item * m;
-		int xpos = Fl::event_x();
-		int ypos = Fl::event_y();
+	if ( !(Fl::event_inside(this) && event == FL_PUSH &&
+	       Fl::event_button() == FL_RIGHT_MOUSE) )
+		return Fl_Text_Editor::handle(event);
 
-		if (event == FL_PUSH && Fl::event_button() == FL_RIGHT_MOUSE) {
-			popx = xpos - x();
-			popy = ypos - y();
-			m = editmenu->popup(xpos, ypos, 0, 0, 0);
-			if (m) {
-				int msize = sizeof(editmenu) / sizeof(editmenu[0]);
-				for (int i = 0; i < msize; i++)
-					if (m == &editmenu[i]) {
-						menu_cb(i);
-						break;
-					}
+	// handle a right click
+	const Fl_Menu_Item * m;
+	int xpos = Fl::event_x();
+	int ypos = Fl::event_y();
+
+	if (active_modem != mfsk16_modem)
+		editmenu[TX_MENU_MFSK16_IMG].flags |= FL_MENU_INACTIVE;
+	else
+		editmenu[TX_MENU_MFSK16_IMG].flags &= ~FL_MENU_INACTIVE;
+	if (tbuf->length())
+		editmenu[TX_MENU_CLEAR].flags &= ~FL_MENU_INACTIVE;
+	else
+		editmenu[TX_MENU_CLEAR].flags |= FL_MENU_INACTIVE;
+	if (tbuf->selected()) {
+		editmenu[TX_MENU_CUT].flags &= ~FL_MENU_INACTIVE;
+		editmenu[TX_MENU_COPY].flags &= ~FL_MENU_INACTIVE;
+	}
+	else {
+		editmenu[TX_MENU_CUT].flags |= FL_MENU_INACTIVE;
+		editmenu[TX_MENU_COPY].flags |= FL_MENU_INACTIVE;
+	}
+	if (wrap)
+		editmenu[TX_MENU_WRAP].flags |= FL_MENU_VALUE;
+	else
+		editmenu[TX_MENU_WRAP].flags &= ~FL_MENU_VALUE;
+
+	popx = xpos - x();
+	popy = ypos - y();
+	m = editmenu->popup(xpos, ypos, 0, 0, 0);
+	if (m) {
+		int msize = sizeof(editmenu) / sizeof(editmenu[0]);
+		for (int i = 0; i < msize; i++)
+			if (m == &editmenu[i]) {
+				menu_cb(i);
+				break;
 			}
-		}
 	}
-
-	return Fl_Text_Editor::handle(event);
+	return 1;
 }
 
 void TextEdit::add(const char *s, int attr)
 {
 	tbuf->append(s);
 	insert_position(tbuf->length());
+	show_insert_position();
 }
 void TextEdit::clear(void)
 {
@@ -413,7 +468,9 @@ int TextEdit::nextChar(void)
 	else {
 		if ((c = tbuf->character(txpos)))
 			++txpos;
-		tbuf->call_modify_callbacks();
+		// we do not call tbuf->call_modify_callbacks() here
+		// because we are only updating the style buffer
+		changed_cb(0, 0, 0, 0, 0, this);
 		redraw();
 	}
 
@@ -585,10 +642,11 @@ void TextEdit::readFile(void)
 	if (fn) {
 		tbuf->appendfile(fn);
 		insert_position(tbuf->length());
+		show_insert_position();
 	}
 }
 
-void TextEdit::style_cb(int pos, int nins, int ndel, int nsty, const char *dtext, void *arg)
+void TextEdit::changed_cb(int pos, int nins, int ndel, int nsty, const char *dtext, void *arg)
 {
 	TextEdit *e = (TextEdit *)arg;
 
@@ -654,33 +712,24 @@ void TextEdit::menu_cb(int val)
 
 	case TX_MENU_WRAP:
 		editmenu[TX_MENU_WRAP].flags ^= FL_MENU_VALUE;
-		wrap_mode(!wrap);
+		wrap_mode((wrap = !wrap), 0);
+		show_insert_position();
 		break;
 	}
-	restoreFocus();
-}
-
-void TextEdit::wrap_mode(bool v)
-{
-	int row, col;
-
-	xy_to_rowcol(this->x(), this->y(), &row, &col, Fl_Text_Display::CHARACTER_POS);
-	Fl_Text_Display::wrap_mode(wrap = v, col);
 }
 
 
 void TextEdit::change_keybindings(void)
 {
 	struct {
-		Fl_Text_Editor::Key_Func function;
-		Fl_Text_Editor::Key_Func override;
+		Fl_Text_Editor::Key_Func function, override;
 	} fbind[] = { { Fl_Text_Editor::kf_default, TextEdit::kf_default },
 		      { Fl_Text_Editor::kf_enter,   TextEdit::kf_enter	 },
 		      { Fl_Text_Editor::kf_delete,  TextEdit::kf_delete	 },
 		      { Fl_Text_Editor::kf_cut,	    TextEdit::kf_cut	 },
 		      { Fl_Text_Editor::kf_paste,   TextEdit::kf_paste	 } };
-
 	int n = sizeof(fbind) / sizeof(fbind[0]);
+
 	for (Fl_Text_Editor::Key_Binding *k = key_bindings; k; k = k->next) {
 		for (int i = 0; i < n; i++)
 			if (fbind[i].function == k->function)
@@ -740,3 +789,14 @@ int TextEdit::kf_paste(int c, Fl_Text_Editor* e)
 	autolock txlock;
 	return e->insert_position() < *ptxpos ? 1 : Fl_Text_Editor::kf_paste(c, e);
 }
+
+
+#ifdef HSCROLLBAR_KLUDGE
+void TextEdit::resize(int X, int Y, int W, int H)
+{
+	Fl_Text_Editor::resize(X, Y, W, H);
+	if (!wrap || !mVScrollBar->visible())
+		return;
+#	include "TextView_resize.cxx"
+}
+#endif // HSCROLLBAR_KLUDGE

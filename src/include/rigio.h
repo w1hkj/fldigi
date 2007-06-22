@@ -32,7 +32,7 @@ extern void rigCAT_close();
 extern bool rigCAT_init();
 
 extern void rigCAT_set_ptt(int);
-extern void rigCAT_set_qsy();
+extern void rigCAT_set_qsy(long long f, long long fmid);
 
 #endif
 

@@ -792,10 +792,44 @@ void carrier_cb(Fl_Widget *w, void *v) {
 }
 
 void qsy_cb(Fl_Widget *w, void *v) {
-	rigCAT_set_qsy();
-	rigMEM_set_qsy();
+	static const int qrgs_size = 16 + 1;
+	static struct qrg {
+		long long f;
+		long long fmid;
+	} qrgs[qrgs_size], *top = qrgs, *p;
+
+	if (Fl::event_button() != FL_RIGHT_MOUSE) { // store
+		if (top < qrgs + qrgs_size - 1)
+			top++;
+		else
+			memmove(qrgs + 1, qrgs + 2, qrgs_size - 2);
+		top->f = wf->rfcarrier();
+		top->fmid = active_modem->get_freq();
+
+		p = qrgs;
+		// this is the sweet spot frequency that is the center of the PBF in the rig
+		if (active_modem->get_mode() == MODE_CW)
+			p->fmid = (long long)progdefaults.CWsweetspot;
+		else if (active_modem->get_mode() == MODE_RTTY)
+			p->fmid = (long long)progdefaults.RTTYsweetspot;
+		else
+			p->fmid = (long long)progdefaults.PSKsweetspot;
+		p->f = wf->rfcarrier();
+		if (wf->USB())
+			p->f += (wf->carrier() - p->fmid);
+		else
+			p->f -= (wf->carrier() - p->fmid);
+	}
+	else { // qsy to top of stack
+		if (top == qrgs)
+			return;
+		p = top--;
+	}
+
+	rigCAT_set_qsy(p->f, p->fmid);
+	rigMEM_set_qsy(p->f, p->fmid);
 #ifndef NOHAMLIB
-	hamlib_set_qsy();
+	hamlib_set_qsy(p->f, p->fmid);
 #endif	
 	restoreFocus();
 }
@@ -1058,7 +1092,7 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	xpos = xpos + cwRef + wSpace;
 	qsy = new Fl_Button(xpos, buttonrow, bwQsy, BTN_HEIGHT, "QSY");
 	qsy->callback(qsy_cb, 0);
-	qsy->tooltip("Cntr in Xcvr PB");
+	qsy->tooltip("Cntr in Xcvr PB\nRight click to undo");
 	qsy->deactivate();
 
 	xpos = xpos + bwQsy + wSpace;
@@ -1094,19 +1128,46 @@ int waterfall::handle(int event) {
 		if (trx_state != STATE_RX)
 			return 1;
 		int xpos = Fl::event_x() - wfdisp->x();
-		wfdisp->wantcursor = true;
-		if (event == FL_MOVE) {
+
+		static int nucarrier, oldcarrier;
+		switch (event) {
+		case FL_MOVE:
+			wfdisp->wantcursor = true;
 			wfdisp->cursorpos = xpos;
 			wfdisp->makeMarker();
 			wfdisp->redrawCursor();
-		} else if (event == FL_RELEASE) {
-			int nucarrier;
-			nucarrier = wfdisp->cursorFreq(xpos);
-			active_modem->set_freq(nucarrier);
-			carrier(nucarrier);
-			active_modem->set_sigsearch(5);
-			wfdisp->redrawCursor();
-			restoreFocus();
+			break;
+		case FL_DRAG: case FL_PUSH:
+			switch (Fl::event_button()) {
+			case FL_RIGHT_MOUSE:
+				wfdisp->wantcursor = false;
+				if (event == FL_PUSH)
+					oldcarrier = carrier();
+				// fall through
+			case FL_LEFT_MOUSE:
+				nucarrier = wfdisp->cursorFreq(xpos);
+				active_modem->set_freq(nucarrier);
+				carrier(nucarrier);
+				active_modem->set_sigsearch(5);
+				wfdisp->redrawCursor();
+				restoreFocus();
+				break;
+			}
+			break;
+		case FL_RELEASE:
+			switch (Fl::event_button()) {
+			case FL_RIGHT_MOUSE:
+				active_modem->set_freq(oldcarrier);
+				carrier(oldcarrier);
+				active_modem->set_sigsearch(5);
+				wfdisp->redrawCursor();
+				restoreFocus();
+				break;
+			case FL_LEFT_MOUSE:
+				oldcarrier = nucarrier;
+				break;
+			}
+			break;
 		}
 		return 1;
 	} else if (wfdisp->wantcursor == true) {
