@@ -11,7 +11,6 @@
 #include "waterfall.h"
 #include "ScopeDialog.h"
 #include "fl_digi.h"
-#include "CWdialog.h"
 #include "globals.h"
 #include "fl_digi.h"
 
@@ -127,8 +126,9 @@ public:
 	double		get_cwXmtWPM();
 	void		set_cwXmtWPM(double);
 	double		get_cwRcvWPM();
-//	void		set_cwBandwidth(double);
-//	double		get_cwBandwidth();
+	virtual	void		incWPM() {};
+	virtual void		decWPM() {};
+	virtual void		toggleWPM() {};
 };
 
 extern modem *cw_modem;

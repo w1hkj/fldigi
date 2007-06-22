@@ -381,6 +381,7 @@ progdefaults.changed = true;}
             label {Rig:}
             callback {progdefaults.changed = true;}
             xywh {230 101 160 22} box DOWN_BOX color 7 align 4
+            code0 {o->readonly();}
             class Fl_ComboBox
           }
           Fl_Input inpRIGdev {
@@ -466,8 +467,8 @@ progdefaults.changed = true;}
           xywh {0 27 400 190} align 21
         } {
           Fl_Group {} {
-            label {Mixer Controls} open
-            xywh {5 35 395 145} box ENGRAVED_FRAME align 17
+            label Mixer open
+            xywh {5 35 395 115} box ENGRAVED_FRAME align 21
           } {
             Fl_Round_Button {btnDsp[0]} {
               label dsp
@@ -478,7 +479,7 @@ progdefaults.changed = true;}
     o->value(1);
 }
 progdefaults.changed = true;}
-              xywh {20 64 55 20} down_box DIAMOND_DOWN_BOX value 1 selection_color 2
+              xywh {20 60 55 20} down_box DIAMOND_DOWN_BOX value 1 selection_color 2
             }
             Fl_Round_Button {btnDsp[1]} {
               label dsp1
@@ -489,7 +490,7 @@ progdefaults.changed = true;}
     o->value(1);
 }
 progdefaults.changed = true;}
-              xywh {20 94 55 20} down_box DIAMOND_DOWN_BOX selection_color 2
+              xywh {20 90 55 20} down_box DIAMOND_DOWN_BOX selection_color 2
             }
             Fl_Light_Button btnLineIn {
               label {Line In}
@@ -503,7 +504,7 @@ progdefaults.changed = true;}
     progdefaults.LineIn = false;
 }
 progdefaults.changed = true;}
-              xywh {145 63 74 22} selection_color 3
+              xywh {125 59 74 22} selection_color 3
               code0 {extern void setMixerInput(int);}
             }
             Fl_Light_Button btnMicIn {
@@ -518,35 +519,35 @@ progdefaults.changed = true;}
     progdefaults.MicIn = false;
 }
 progdefaults.changed = true;}
-              xywh {145 93 74 22}
+              xywh {125 89 74 22}
             }
             Fl_Value_Slider valPCMvolume {
               label PCM
               callback {setPCMvolume(o->value());
 progdefaults.changed = true;}
-              xywh {14 139 340 21} type {Horz Knob} color 26 selection_color 1 align 8 maximum 100 step 1 value 80 textsize 14
+              xywh {14 120 340 21} type {Horz Knob} color 26 selection_color 1 align 8 maximum 100 step 1 value 80 textsize 14
               code0 {extern void setPCMvolume(double);}
             }
           }
         }
         Fl_Group {} {
-          label {SC Corrections} open
-          xywh {5 180 395 34} box ENGRAVED_FRAME align 20
+          label {Sound Card} open
+          xywh {5 150 395 65} box ENGRAVED_FRAME align 21
         } {
           Fl_Spinner cntRxRateCorr {
             label {RX ppm:}
             callback {progdefaults.RX_corr = (int)o->value();
 progdefaults.changed = true;}
-            xywh {195 185 61 24}
+            xywh {294 156 75 24}
             code0 {o->step(1);}
-            code1 {o->minimum(-5000);}
-            code2 {o->maximum(5000);}
+            code1 {o->minimum(-50000);}
+            code2 {o->maximum(50000);}
           }
           Fl_Spinner cntTxRateCorr {
             label {TX ppm:}
             callback {progdefaults.TX_corr = (int)o->value();
 progdefaults.changed = true;}
-            xywh {330 185 61 24}
+            xywh {294 185 75 24}
             code0 {o->step(1);}
             code1 {o->minimum(-5000);}
             code2 {o->maximum(5000);}
@@ -609,50 +610,93 @@ progdefaults.changed = true;}
             xywh {0 50 400 170} color 51 selection_color 51
           } {
             Fl_Group {} {open
-              xywh {5 60 390 135} box ENGRAVED_FRAME
+              xywh {1 60 398 155} box ENGRAVED_FRAME
             } {
-              Fl_Light_Button btnCWrcvTrack {
-                label {Rx Track}
-                callback {progdefaults.CWtrack = o->value();
-progdefaults.changed = true;}
-                xywh {15 160 85 20} value 1 selection_color 2
-                code0 {o->value(progdefaults.CWtrack);}
-              }
-              Fl_Progress prgsCWrcvWPM {
-                xywh {100 68 280 20} color 8 selection_color 110 align 0
-              }
-              Fl_Value_Slider sldrCWxmtWPM {
-                label TxWPM
-                callback {progdefaults.CWspeed = (int)o->value();
-progdefaults.changed = true;} selected
-                xywh {65 98 315 20} type {Horz Knob} color 215 align 4 minimum 5 maximum 100 step 1 value 20 textsize 14
-                code0 {o->value(progdefaults.CWspeed);}
-              }
-              Fl_Value_Output valCWrcvWPM {
-                label RxWPM
-                callback {progdefaults.changed = true;}
-                xywh {65 68 35 20} color 7
-              }
               Fl_Value_Slider sldrCWbandwidth {
                 label BW
                 callback {progdefaults.CWbandwidth = (int)o->value();
 progdefaults.changed = true;}
-                xywh {65 128 315 20} type {Horz Knob} color 23 align 4 minimum 10 maximum 500 step 10 value 150 textsize 14
+                xywh {65 65 325 20} type {Horz Knob} color 7 align 4 minimum 10 maximum 500 step 10 value 150 textsize 14
                 code0 {o->value(progdefaults.CWbandwidth);}
               }
-              Fl_Counter cntCWweight {
-                label {Wt (%)}
-                callback {progdefaults.CWweight=(int)o->value();
-progdefaults.changed = true;}
-                xywh {300 159 80 20} type Simple align 4 minimum 25 maximum 75 step 1 value 50
-                code0 {o->value(progdefaults.CWweight);}
-              }
               Fl_Counter cntCWrange {
-                label {Rx Rng}
+                label {Rx Trkg Rng}
                 callback {progdefaults.CWrange = (int)o->value();
 progdefaults.changed = true;}
-                xywh {165 159 80 21} type Simple align 4 minimum 5 maximum 20 step 1 value 5
+                xywh {140 89 65 20} type Simple align 4 minimum 5 maximum 25 step 1 value 10
                 code0 {o->value(progdefaults.CWrange);}
+              }
+              Fl_Check_Button btnCWrcvTrack {
+                label {Enable Rx Trkg}
+                callback {progdefaults.CWtrack = o->value();
+progdefaults.changed = true;}
+                xywh {215 89 20 20} down_box DOWN_BOX value 1 align 8
+                code0 {o->value(progdefaults.CWtrack);}
+              }
+              Fl_Value_Output valCWrcvWPM {
+                label RxWPM
+                callback {progdefaults.changed = true;}
+                xywh {65 113 35 20} color 7
+              }
+              Fl_Progress prgsCWrcvWPM {
+                xywh {100 113 290 20} color 8 selection_color 110 align 0
+              }
+              Fl_Value_Slider sldrCWxmtWPM {
+                label TxWPM
+                callback {progdefaults.CWspeed = (int)o->value();
+progdefaults.changed = true;}
+                xywh {65 135 325 20} type {Horz Knob} color 215 align 4 minimum 5 maximum 100 step 1 value 20 textsize 14
+                code0 {o->value(progdefaults.CWspeed);}
+              }
+              Fl_Counter cntCWlowerlimit {
+                label Lower
+                callback {progdefaults.CWlowerlimit = (int)o->value();
+progdefaults.changed = true;
+sldrCWxmtWPM->minimum(o->value());
+sldrCWxmtWPM->value(progdefaults.CWspeed);
+sldrCWxmtWPM->redraw();
+cntCWupperlimit->minimum(o->value()+20);}
+                xywh {203 160 65 20} type Simple align 4 minimum 5 maximum 20 step 5 value 10
+                code0 {o->value(progdefaults.CWlowerlimit);}
+              }
+              Fl_Counter cntCWupperlimit {
+                label Upper
+                callback {progdefaults.CWupperlimit = (int)o->value();
+progdefaults.changed = true;
+sldrCWxmtWPM->maximum(o->value());
+sldrCWxmtWPM->value(progdefaults.CWspeed);
+sldrCWxmtWPM->redraw();
+cntCWlowerlimit->maximum(o->value()-20);}
+                xywh {325 160 65 20} type Simple align 4 minimum 25 maximum 200 step 5 value 100
+                code0 {o->value(progdefaults.CWupperlimit);}
+              }
+              Fl_Counter cntCWweight {
+                label {Wt. %}
+                callback {progdefaults.CWweight=(int)o->value();
+progdefaults.changed = true;}
+                xywh {64 185 65 20} type Simple align 4 minimum 20 maximum 80 step 1 value 50
+                code0 {o->value(progdefaults.CWweight);}
+              }
+              Fl_Counter cntCWdash2dot {
+                label {Dash/Dot}
+                callback {progdefaults.CWdash2dot=o->value();
+progdefaults.changed = true;}
+                xywh {205 185 64 21} type Simple align 4 minimum 2.5 maximum 4 step 0.1 value 3
+                code0 {o->value(progdefaults.CWdash2dot);}
+              }
+              Fl_Counter cntCWrisetime {
+                label Edge
+                callback {progdefaults.CWrisetime=o->value();
+progdefaults.changed = true;}
+                xywh {325 185 65 21} type Simple align 4 minimum 0 maximum 15 step 0.1 value 4
+                code0 {o->value(progdefaults.CWrisetime);}
+              }
+              Fl_Counter cntCWdefWPM {
+                label Default
+                callback {progdefaults.defCWspeed = (int)o->value();
+progdefaults.changed = true;} selected
+                xywh {65 160 64 21} type Simple align 4 minimum 5 maximum 200 step 1 value 18
+                code0 {o->value(progdefaults.defCWspeed);}
               }
             }
           }

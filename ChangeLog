@@ -1,5 +1,33 @@
 Change Log:
 
+1.34  1) Cleaned up unused code segments
+      2) Modified CW decoder to allow setting upper and lower limits on
+         Tx WPM
+      3) Modified sound card PPM corrections to allow a +/-50000 range.
+         Prompted by some users reporting ppm requirements exceeding
+         25,000 ppm at 8000 Hz sample rate.  Same card gives < 200 ppm
+         at 11025.
+      4) Modified the combo widget to allow both editable and non-editable
+         forms.
+         The combo widget for the rig selection cannot be edited, but just
+         selected from the pick list.
+         The combo widget for the frequency entry (no rig control) in the 
+         qso area can now be modified by direct keyboard entry and also 
+         from the pick list.  You still need to update the pick list via
+         the $HOME/.fldigi/frequencies.def file.
+      5) Modified pskmail to test for failure in reading gmfsk_autofile
+      6) Wholesale replacement of font browser dialog to correct potential
+         segfaults with some TT fonts.
+      7) Modified pskmail-to-fldigi i/o schema to allow all control and
+         data files to be placed in either the 
+         	$HOME/pskmail.files or the 
+         	./ directory.
+         The control files are:
+         	PSKmailserver
+         	PSKmailclient
+         The data files are:
+         	pskmail_out (formerly gmfsk_autofile)
+         	mail-io.log (formerly gMFSK.log)
 1.33  1) Modified Sound Card mixer dialog and interface code
       2) Modified CW decoder and morse speed tracking algorithm with a
          new CW configuration tab layout and new CW controls.

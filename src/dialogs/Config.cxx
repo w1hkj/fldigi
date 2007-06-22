@@ -510,11 +510,31 @@ Fl_Tabs *tabsModems=(Fl_Tabs *)0;
 
 Fl_Group *tabCW=(Fl_Group *)0;
 
-Fl_Light_Button *btnCWrcvTrack=(Fl_Light_Button *)0;
+Fl_Value_Slider *sldrCWbandwidth=(Fl_Value_Slider *)0;
 
-static void cb_btnCWrcvTrack(Fl_Light_Button* o, void*) {
+static void cb_sldrCWbandwidth(Fl_Value_Slider* o, void*) {
+  progdefaults.CWbandwidth = (int)o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter *cntCWrange=(Fl_Counter *)0;
+
+static void cb_cntCWrange(Fl_Counter* o, void*) {
+  progdefaults.CWrange = (int)o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnCWrcvTrack=(Fl_Check_Button *)0;
+
+static void cb_btnCWrcvTrack(Fl_Check_Button* o, void*) {
   progdefaults.CWtrack = o->value();
 progdefaults.changed = true;
+}
+
+Fl_Value_Output *valCWrcvWPM=(Fl_Value_Output *)0;
+
+static void cb_valCWrcvWPM(Fl_Value_Output*, void*) {
+  progdefaults.changed = true;
 }
 
 Fl_Progress *prgsCWrcvWPM=(Fl_Progress *)0;
@@ -526,17 +546,26 @@ static void cb_sldrCWxmtWPM(Fl_Value_Slider* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Value_Output *valCWrcvWPM=(Fl_Value_Output *)0;
+Fl_Counter *cntCWlowerlimit=(Fl_Counter *)0;
 
-static void cb_valCWrcvWPM(Fl_Value_Output*, void*) {
-  progdefaults.changed = true;
+static void cb_cntCWlowerlimit(Fl_Counter* o, void*) {
+  progdefaults.CWlowerlimit = (int)o->value();
+progdefaults.changed = true;
+sldrCWxmtWPM->minimum(o->value());
+sldrCWxmtWPM->value(progdefaults.CWspeed);
+sldrCWxmtWPM->redraw();
+cntCWupperlimit->minimum(o->value()+20);
 }
 
-Fl_Value_Slider *sldrCWbandwidth=(Fl_Value_Slider *)0;
+Fl_Counter *cntCWupperlimit=(Fl_Counter *)0;
 
-static void cb_sldrCWbandwidth(Fl_Value_Slider* o, void*) {
-  progdefaults.CWbandwidth = (int)o->value();
+static void cb_cntCWupperlimit(Fl_Counter* o, void*) {
+  progdefaults.CWupperlimit = (int)o->value();
 progdefaults.changed = true;
+sldrCWxmtWPM->maximum(o->value());
+sldrCWxmtWPM->value(progdefaults.CWspeed);
+sldrCWxmtWPM->redraw();
+cntCWlowerlimit->maximum(o->value()-20);
 }
 
 Fl_Counter *cntCWweight=(Fl_Counter *)0;
@@ -546,10 +575,24 @@ static void cb_cntCWweight(Fl_Counter* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Counter *cntCWrange=(Fl_Counter *)0;
+Fl_Counter *cntCWdash2dot=(Fl_Counter *)0;
 
-static void cb_cntCWrange(Fl_Counter* o, void*) {
-  progdefaults.CWrange = (int)o->value();
+static void cb_cntCWdash2dot(Fl_Counter* o, void*) {
+  progdefaults.CWdash2dot=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter *cntCWrisetime=(Fl_Counter *)0;
+
+static void cb_cntCWrisetime(Fl_Counter* o, void*) {
+  progdefaults.CWrisetime=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter *cntCWdefWPM=(Fl_Counter *)0;
+
+static void cb_cntCWdefWPM(Fl_Counter* o, void*) {
+  progdefaults.defCWspeed = (int)o->value();
 progdefaults.changed = true;
 }
 
@@ -1019,6 +1062,7 @@ static char *szBaudRates = "300|600|1200|2400|4800|9600|19200|38400|57600|115200
             o->callback((Fl_Callback*)cb_cboHamlibRig);
             o->align(FL_ALIGN_LEFT);
             o->when(FL_WHEN_RELEASE);
+            o->readonly();
           }
           { Fl_Input* o = inpRIGdev = new Fl_Input(269, 126, 120, 22, "Device:");
             o->callback((Fl_Callback*)cb_inpRIGdev);
@@ -1068,28 +1112,28 @@ static char *szBaudRates = "300|600|1200|2400|4800|9600|19200|38400|57600|115200
         o->hide();
         { Fl_Group* o = new Fl_Group(0, 27, 400, 190);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-          { Fl_Group* o = new Fl_Group(5, 35, 395, 145, "Mixer Controls");
+          { Fl_Group* o = new Fl_Group(5, 35, 395, 115, "Mixer");
             o->box(FL_ENGRAVED_FRAME);
-            o->align(FL_ALIGN_TOP|FL_ALIGN_INSIDE);
-            { Fl_Round_Button* o = btnDsp[0] = new Fl_Round_Button(20, 64, 55, 20, "dsp");
+            o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+            { Fl_Round_Button* o = btnDsp[0] = new Fl_Round_Button(20, 60, 55, 20, "dsp");
               o->down_box(FL_DIAMOND_DOWN_BOX);
               o->value(1);
               o->selection_color((Fl_Color)2);
               o->callback((Fl_Callback*)cb_btnDsp);
             }
-            { Fl_Round_Button* o = btnDsp[1] = new Fl_Round_Button(20, 94, 55, 20, "dsp1");
+            { Fl_Round_Button* o = btnDsp[1] = new Fl_Round_Button(20, 90, 55, 20, "dsp1");
               o->down_box(FL_DIAMOND_DOWN_BOX);
               o->selection_color((Fl_Color)2);
               o->callback((Fl_Callback*)cb_btnDsp1);
             }
-            { Fl_Light_Button* o = btnLineIn = new Fl_Light_Button(145, 63, 74, 22, "Line In");
+            { Fl_Light_Button* o = btnLineIn = new Fl_Light_Button(125, 59, 74, 22, "Line In");
               o->selection_color((Fl_Color)3);
               o->callback((Fl_Callback*)cb_btnLineIn);
             }
-            { Fl_Light_Button* o = btnMicIn = new Fl_Light_Button(145, 93, 74, 22, "Mic In");
+            { Fl_Light_Button* o = btnMicIn = new Fl_Light_Button(125, 89, 74, 22, "Mic In");
               o->callback((Fl_Callback*)cb_btnMicIn);
             }
-            { Fl_Value_Slider* o = valPCMvolume = new Fl_Value_Slider(14, 139, 340, 21, "PCM");
+            { Fl_Value_Slider* o = valPCMvolume = new Fl_Value_Slider(14, 120, 340, 21, "PCM");
               o->type(5);
               o->color((Fl_Color)26);
               o->selection_color((Fl_Color)1);
@@ -1104,16 +1148,16 @@ static char *szBaudRates = "300|600|1200|2400|4800|9600|19200|38400|57600|115200
           }
           o->end();
         }
-        { Fl_Group* o = new Fl_Group(5, 180, 395, 34, "SC Corrections");
+        { Fl_Group* o = new Fl_Group(5, 150, 395, 65, "Sound Card");
           o->box(FL_ENGRAVED_FRAME);
-          o->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
-          { Fl_Spinner* o = cntRxRateCorr = new Fl_Spinner(195, 185, 61, 24, "RX ppm:");
+          o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+          { Fl_Spinner* o = cntRxRateCorr = new Fl_Spinner(294, 156, 75, 24, "RX ppm:");
             o->callback((Fl_Callback*)cb_cntRxRateCorr);
             o->step(1);
-            o->minimum(-5000);
-            o->maximum(5000);
+            o->minimum(-50000);
+            o->maximum(50000);
           }
-          { Fl_Spinner* o = cntTxRateCorr = new Fl_Spinner(330, 185, 61, 24, "TX ppm:");
+          { Fl_Spinner* o = cntTxRateCorr = new Fl_Spinner(294, 185, 75, 24, "TX ppm:");
             o->callback((Fl_Callback*)cb_cntTxRateCorr);
             o->step(1);
             o->minimum(-5000);
@@ -1178,20 +1222,47 @@ static char *szBaudRates = "300|600|1200|2400|4800|9600|19200|38400|57600|115200
           { Fl_Group* o = tabCW = new Fl_Group(0, 50, 400, 170, "CW");
             o->color((Fl_Color)51);
             o->selection_color((Fl_Color)51);
-            { Fl_Group* o = new Fl_Group(5, 60, 390, 135);
+            { Fl_Group* o = new Fl_Group(1, 60, 398, 155);
               o->box(FL_ENGRAVED_FRAME);
-              { Fl_Light_Button* o = btnCWrcvTrack = new Fl_Light_Button(15, 160, 85, 20, "Rx Track");
+              { Fl_Value_Slider* o = sldrCWbandwidth = new Fl_Value_Slider(65, 65, 325, 20, "BW");
+                o->type(5);
+                o->color(FL_BACKGROUND2_COLOR);
+                o->minimum(10);
+                o->maximum(500);
+                o->step(10);
+                o->value(150);
+                o->textsize(14);
+                o->callback((Fl_Callback*)cb_sldrCWbandwidth);
+                o->align(FL_ALIGN_LEFT);
+                o->value(progdefaults.CWbandwidth);
+              }
+              { Fl_Counter* o = cntCWrange = new Fl_Counter(140, 89, 65, 20, "Rx Trkg Rng");
+                o->type(1);
+                o->minimum(5);
+                o->maximum(25);
+                o->step(1);
+                o->value(10);
+                o->callback((Fl_Callback*)cb_cntCWrange);
+                o->align(FL_ALIGN_LEFT);
+                o->value(progdefaults.CWrange);
+              }
+              { Fl_Check_Button* o = btnCWrcvTrack = new Fl_Check_Button(215, 89, 20, 20, "Enable Rx Trkg");
+                o->down_box(FL_DOWN_BOX);
                 o->value(1);
-                o->selection_color((Fl_Color)2);
                 o->callback((Fl_Callback*)cb_btnCWrcvTrack);
+                o->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.CWtrack);
               }
-              { Fl_Progress* o = prgsCWrcvWPM = new Fl_Progress(100, 68, 280, 20);
+              { Fl_Value_Output* o = valCWrcvWPM = new Fl_Value_Output(65, 113, 35, 20, "RxWPM");
+                o->color(FL_BACKGROUND2_COLOR);
+                o->callback((Fl_Callback*)cb_valCWrcvWPM);
+              }
+              { Fl_Progress* o = prgsCWrcvWPM = new Fl_Progress(100, 113, 290, 20);
                 o->color(FL_INACTIVE_COLOR);
                 o->selection_color((Fl_Color)110);
                 o->align(FL_ALIGN_CENTER);
               }
-              { Fl_Value_Slider* o = sldrCWxmtWPM = new Fl_Value_Slider(65, 98, 315, 20, "TxWPM");
+              { Fl_Value_Slider* o = sldrCWxmtWPM = new Fl_Value_Slider(65, 135, 325, 20, "TxWPM");
                 o->type(5);
                 o->color((Fl_Color)215);
                 o->minimum(5);
@@ -1203,41 +1274,65 @@ static char *szBaudRates = "300|600|1200|2400|4800|9600|19200|38400|57600|115200
                 o->align(FL_ALIGN_LEFT);
                 o->value(progdefaults.CWspeed);
               }
-              { Fl_Value_Output* o = valCWrcvWPM = new Fl_Value_Output(65, 68, 35, 20, "RxWPM");
-                o->color(FL_BACKGROUND2_COLOR);
-                o->callback((Fl_Callback*)cb_valCWrcvWPM);
-              }
-              { Fl_Value_Slider* o = sldrCWbandwidth = new Fl_Value_Slider(65, 128, 315, 20, "BW");
-                o->type(5);
-                o->color((Fl_Color)23);
-                o->minimum(10);
-                o->maximum(500);
-                o->step(10);
-                o->value(150);
-                o->textsize(14);
-                o->callback((Fl_Callback*)cb_sldrCWbandwidth);
+              { Fl_Counter* o = cntCWlowerlimit = new Fl_Counter(203, 160, 65, 20, "Lower");
+                o->type(1);
+                o->minimum(5);
+                o->maximum(20);
+                o->step(5);
+                o->value(10);
+                o->callback((Fl_Callback*)cb_cntCWlowerlimit);
                 o->align(FL_ALIGN_LEFT);
-                o->value(progdefaults.CWbandwidth);
+                o->value(progdefaults.CWlowerlimit);
               }
-              { Fl_Counter* o = cntCWweight = new Fl_Counter(300, 159, 80, 20, "Wt (%)");
+              { Fl_Counter* o = cntCWupperlimit = new Fl_Counter(325, 160, 65, 20, "Upper");
                 o->type(1);
                 o->minimum(25);
-                o->maximum(75);
+                o->maximum(200);
+                o->step(5);
+                o->value(100);
+                o->callback((Fl_Callback*)cb_cntCWupperlimit);
+                o->align(FL_ALIGN_LEFT);
+                o->value(progdefaults.CWupperlimit);
+              }
+              { Fl_Counter* o = cntCWweight = new Fl_Counter(64, 185, 65, 20, "Wt. %");
+                o->type(1);
+                o->minimum(20);
+                o->maximum(80);
                 o->step(1);
                 o->value(50);
                 o->callback((Fl_Callback*)cb_cntCWweight);
                 o->align(FL_ALIGN_LEFT);
                 o->value(progdefaults.CWweight);
               }
-              { Fl_Counter* o = cntCWrange = new Fl_Counter(165, 159, 80, 21, "Rx Rng");
+              { Fl_Counter* o = cntCWdash2dot = new Fl_Counter(205, 185, 64, 21, "Dash/Dot");
+                o->type(1);
+                o->minimum(2.5);
+                o->maximum(4);
+                o->step(0.1);
+                o->value(3);
+                o->callback((Fl_Callback*)cb_cntCWdash2dot);
+                o->align(FL_ALIGN_LEFT);
+                o->value(progdefaults.CWdash2dot);
+              }
+              { Fl_Counter* o = cntCWrisetime = new Fl_Counter(325, 185, 65, 21, "Edge");
+                o->type(1);
+                o->minimum(0);
+                o->maximum(15);
+                o->step(0.1);
+                o->value(4);
+                o->callback((Fl_Callback*)cb_cntCWrisetime);
+                o->align(FL_ALIGN_LEFT);
+                o->value(progdefaults.CWrisetime);
+              }
+              { Fl_Counter* o = cntCWdefWPM = new Fl_Counter(65, 160, 64, 21, "Default");
                 o->type(1);
                 o->minimum(5);
-                o->maximum(20);
+                o->maximum(200);
                 o->step(1);
-                o->value(5);
-                o->callback((Fl_Callback*)cb_cntCWrange);
+                o->value(18);
+                o->callback((Fl_Callback*)cb_cntCWdefWPM);
                 o->align(FL_ALIGN_LEFT);
-                o->value(progdefaults.CWrange);
+                o->value(progdefaults.defCWspeed);
               }
               o->end();
             }

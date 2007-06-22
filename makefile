@@ -61,7 +61,7 @@ SRC_OBJS = \
   $(OBJ_DIR)/configuration.o	\
   $(OBJ_DIR)/filters.o	\
   $(OBJ_DIR)/TextView.o	\
-  $(OBJ_DIR)/fl_font_browser.o	\
+  $(OBJ_DIR)/font_browser.o	\
   $(OBJ_DIR)/macros.o	\
   $(OBJ_DIR)/macroedit.o \
   $(OBJ_DIR)/main.o	\
@@ -242,7 +242,7 @@ $(OBJ_DIR)/filters.o: src/filters/filters.cxx
 $(OBJ_DIR)/TextView.o: src/dialogs/TextView.cxx
 	$(compile_source)
 
-$(OBJ_DIR)/fl_font_browser.o: src/dialogs/fl_font_browser.cxx
+$(OBJ_DIR)/font_browser.o: src/dialogs/font_browser.cxx
 	$(compile_source)
 
 $(OBJ_DIR)/macros.o: src/misc/macros.cxx

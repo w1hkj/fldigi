@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <ctime>
 
 #include "main.h"
 #include "configuration.h"
@@ -84,21 +85,55 @@ void parse_mailtext()
 	}
 }
 
+/*
+size_t mailstrftime( char *s, size_t max, const char *fmt, const struct tm *tm) {
+	return strftime(s, max, fmt, tm);
+}
+
+void mailZDT(string &s)
+{
+	char szDt[80];
+	time_t tmptr;
+	tm sTime;
+	time (&tmptr);
+	gmtime_r(&tmptr, &sTime);
+	mailstrftime(szDt, 79, "%x %H:%M %Z", &sTime);
+	s = szDt;
+}
+*/
+
+#define TIMEOUT 180 // 3 minutes
+
 void check_formail() {
-	ifstream autofile("gmfsk_autofile");
+    time_t start_time, prog_time;
+    string sAutoFile = PskMailDir;
+    if (gmfskmail == false)
+	    sAutoFile += "pskmail_out";
+	else
+		sAutoFile += "gmfsk_autofile";
+	ifstream autofile(sAutoFile.c_str());
 	if(autofile) {
 		mailtext = "";
+        time(&start_time);
 		while (!autofile.eof()) {
 			memset(mailline,0,1000);
 			autofile.getline(mailline, 998); // leave space for "\n" and null byte
 			mailtext.append(mailline);
 			mailtext.append("\n");
+            Fl::awake();
+            time(&prog_time);
+            if (prog_time - start_time > TIMEOUT) {
+                std::cout << "pskmail_out failure" << std::endl;
+                std::cout.flush();
+                autofile.close();
+                std::remove (sAutoFile.c_str());
+                return;
+            }
 		}
 		autofile.close();
-		std::remove ("gmfsk_autofile");
+		std::remove (sAutoFile.c_str());
 		
 		parse_mailtext();
-
 		if (mailtext.length() > 0) {
 			if (mailserver)
 				active_modem->set_freq(progdefaults.PSKsweetspot);

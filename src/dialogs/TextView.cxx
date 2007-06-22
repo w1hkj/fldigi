@@ -33,6 +33,8 @@
 #include "macros.h"
 #include "main.h"
 
+#include "cw.h"
+
 #include <FL/Enumerations.H>
 #include "File_Selector.h"
 
@@ -650,9 +652,31 @@ int TextEdit::handle_key() {
 			PauseBreak = true;
 		return 1;
 	}
+	
+	if (key == (FL_KP + '+')) {
+		if (active_modem == cw_modem) active_modem->incWPM();
+		return 1;
+	}
+	if (key == (FL_KP + '-')) {
+		if (active_modem == cw_modem) active_modem->decWPM();
+		return 1;
+	}
+	if (key == (FL_KP + '*')) {
+		if (active_modem == cw_modem) active_modem->toggleWPM();
+		return 1;
+	}
 
 	if (key >= FL_F && key <= FL_F_Last)
 		return handle_fnckey(key);
+		
+	if (key == FL_Tab && active_modem == cw_modem) {
+		while (chrptr < buff.length()) {
+			attr[chrptr] = 2;
+			chrptr++;
+		}
+		redraw();
+		return 1;
+	}
 
 // substitute the FN # you want to map for each
 // ie: F1 ==> 1 + Fl_F

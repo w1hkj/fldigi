@@ -76,7 +76,8 @@ void Fl_PopBrowser::pophide ()
 void Fl_PopBrowser::popbrwsr_cb_i (Fl_Widget *v, long d)
 {
   Fl_PopBrowser *me = (Fl_PopBrowser *)(v->parent());
-  Fl_Output *tgt = me->Rvals.Inp;
+//  Fl_Output *tgt = me->Rvals.Inp;
+  Fl_Input *tgt = me->Rvals.Inp;
 // update the return values
   if (tgt) {
     int row = (me->popbrwsr)->value();
@@ -167,7 +168,8 @@ Fl_ComboBox::Fl_ComboBox (int X,int Y,int W,int H, char *L)
   Btn = new Fl_Button (X + W - 18, Y + 1, 18, H - 2);
   (new Fl_Pixmap (brws_12))->label (Btn);
   Btn->callback ((Fl_Callback *)btnComboBox_cb, 0);
-  Output = new Fl_Output (X, Y, W-18, H);
+//  Output = new Fl_Output (X, Y, W-18, H);
+  Output = new Fl_Input (X, Y, W-18, H);
   Brwsr = 0;
   datalist = new datambr *[FL_COMBO_LIST_INCR];
   maxsize = FL_COMBO_LIST_INCR;
@@ -183,6 +185,11 @@ Fl_ComboBox::Fl_ComboBox (int X,int Y,int W,int H, char *L)
 void Fl_ComboBox::type (int t)
 {
   listtype = t;
+}
+
+void Fl_ComboBox::readonly()
+{
+    Output->type(FL_NORMAL_OUTPUT);
 }
 
 // ComboBox value is contained in the Output widget

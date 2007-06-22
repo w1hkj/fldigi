@@ -84,7 +84,7 @@ static CW_TABLE cw_table[] = {
 	{"'",		".----.",	CW_ENTRY_NORMAL},
 	{"$",		"...-..-",	CW_ENTRY_NORMAL},
 //	{"(",		"-.--.",	CW_ENTRY_NORMAL},
-	{")",		"-.--.-",	CW_ENTRY_NORMAL},
+//	{")",		"-.--.-",	CW_ENTRY_NORMAL},
 //	{"+",		".-.-.",	CW_ENTRY_NORMAL},
 	{",",		"--..--",	CW_ENTRY_NORMAL},
 	{"-",		"-....-",	CW_ENTRY_NORMAL},
@@ -206,7 +206,7 @@ bool morse::init()
 		if (cw->type == CW_ENTRY_EXTENDED)
 			continue;
 		len = strlen(cw->rpr);
-		code = 4;
+		code = 0x04;
 		while (len-- > 0) {
 			if (cw->rpr[len] == CW_DASH_REPRESENTATION) {
 				code = (code << 1) | 1;

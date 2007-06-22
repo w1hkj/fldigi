@@ -242,7 +242,7 @@ int cSound::Read(double *buffer, int buffersize)
 	numread = Read(cbuff, buffersize * 2);
 	for (int i = 0; i < buffersize; i++)
 		src_buffer[i] = 
-		buffer[i] = ibuff[i] / maxsc;
+		buffer[i] = ibuff[i] / MAXSC;
 
 	if (rxppm != progdefaults.RX_corr) {
 		rxppm = progdefaults.RX_corr;

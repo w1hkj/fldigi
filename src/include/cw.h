@@ -4,8 +4,8 @@
 // Copyright (C) 2006
 //		Dave Freese, W1HKJ
 //
-// This file is part of fldigi.  Adapted from code contained in gmfsk source code 
-// distribution.
+// This file is part of fldigi.  Adapted in part from code contained in 
+// gmfsk source code distribution.
 //  gmfsk Copyright (C) 2001, 2002, 2003
 //  Tomi Manninen (oh2bns@sral.fi)
 //  Copyright (C) 2004
@@ -36,16 +36,16 @@
 
 #define	CWSampleRate	8000
 #define	CWMaxSymLen		4096
+#define KNUM 			128
 
 // decimation ratio for the receiver 
-//1024	// length of FIR filter
 #define	DEC_RATIO	8		
 #define CW_FIRLEN   128      
 //#define CW_FIRLEN	  256
 //#define CW_FIRLEN   512
 // Limits on values of CW send and timing parameters 
-#define	CW_MIN_SPEED		5	// Lowest WPM allowed 
-#define	CW_MAX_SPEED		100	// Highest WPM allowed 
+//#define	CW_MIN_SPEED		5	// Lowest WPM allowed 
+//#define	CW_MAX_SPEED		100	// Highest WPM allowed 
 
 // CW function return status codes. 
 #define	CW_SUCCESS		0
@@ -62,9 +62,6 @@
 
 #define	INITIAL_SEND_SPEED	18	// Initial send speed in WPM 
 #define	INITIAL_RECEIVE_SPEED	18	// Initial receive speed in WPM 
-//#define INITIAL_GAP		0	// Initial fransworth gap setting 
-//#define INITIAL_TOLERANCE	60	// Initial tolerance setting 
-//#define INITIAL_ADAPTIVE	TRUE	// Initial adaptive receive setting 
 
 // Initial adaptive speed threshold 
 #define	INITIAL_THRESHOLD	((DOT_MAGIC / INITIAL_RECEIVE_SPEED) * 2)
@@ -105,7 +102,6 @@ protected:
 	double scopedata[CWMaxSymLen];
 	int pipeptr;
 	int pipesize;
-
 	
 // user configurable data - local copy passed in from gui
 	int cw_speed;
@@ -113,6 +109,7 @@ protected:
 	int cw_squelch;
 	int cw_send_speed;				// Initially 18 WPM 
 	int cw_receive_speed;			// Initially 18 WPM 
+	bool usedefaultWPM;				// use default WPM
 	
 	int cw_upper_limit;
 	int cw_lower_limit;
@@ -121,10 +118,13 @@ protected:
 	int cw_in_sync;					// Synchronization flag 
 
 // Sending parameters: 
-	long int cw_send_dot_length;			// Length of a send Dot, in Usec 
-	long int cw_send_dash_length;		// Length of a send Dash, in Usec
+	long int cw_send_dot_length;	// Length of a send Dot, in Usec 
+	long int cw_send_dash_length;	// Length of a send Dash, in Usec
 	int lastsym;					// last symbol sent
-
+	double risetime;			    // leading/trailing edge rise time (msec)
+	int knum;						// number of samples on edges
+//	double *keyshape;				// array defining leading edge
+	
 // Receiving parameters: 
 	long int cw_receive_dot_length;		// Length of a receive Dot, in Usec 
 	long int cw_receive_dash_length;		// Length of a receive Dash, in Usec 
@@ -139,30 +139,22 @@ protected:
 	long int cw_adaptive_receive_threshold;	// 2-dot threshold for adaptive speed 
 
 // Receive adaptive speed tracking.
-#define	AVERAGE_ARRAY_LENGTH	10	// Keep 10 dot/dash lengths 
-//	long int cw_dot_tracking_array[AVERAGE_ARRAY_LENGTH];
-//	long int cw_dash_tracking_array[AVERAGE_ARRAY_LENGTH];
-// Dot and dash length arrays 
-//	long int cw_dt_dot_index;
-//	long int cw_dt_dash_index;			// Circular indexes into the arrays 
 	double dot_tracking;
 	double dash_tracking;
 	
 	inline double nco(double freq);
 	void	update_syncscope();
+	void	update_Status();
 	void	sync_parameters();
 	int		handle_event(int cw_event, char **c);
 	int		usec_diff(unsigned int earlier, unsigned int later);
 	void	send_symbol(int symbol);
 	void	send_ch(int c);
-//	unsigned long tx_lookup(int c);
 	bool 	tables_init();
 	unsigned int tokenize_representation(char *representation);
 	void	update_tracking(int dot, int dash);
 	
-//	void	cw_keyline(int);
-//	void	cw_keyup();
-//	void	cw_keydown();
+	void	makeshape();
 	
 public:
 	cw();
@@ -173,6 +165,9 @@ public:
 	void	restart() {};
 	int		rx_process(double *buf, int len);
 	int		tx_process();
+	void	incWPM();
+	void	decWPM();
+	void	toggleWPM();
 
 };
 

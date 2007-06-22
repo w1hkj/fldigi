@@ -27,7 +27,9 @@ extern Fl_Thread	trx_thread;
 extern state_t		trx_state;
 extern modem		*active_modem;
 extern string		HomeDir;
+extern string		PskMailDir;
 extern string		xmlfname;
+extern bool			gmfskmail;
 
 extern std::string	 scDevice;
 extern PTT			*push2talk;

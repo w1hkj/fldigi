@@ -2017,7 +2017,8 @@ template <class Type=float>
        Bandwidth=1000;
        Reverse=0;
 	   SampleRate=8000;
-	   OutputSampleRate=8000; }
+	   OutputSampleRate=8000; 
+	   }
 
    // preset internal arrays according to primary paramaters
    int Preset(void)
@@ -2321,7 +2322,8 @@ template <class Type=float>
        SyncIntegLen=4;
 	   SyncThreshold=3.1;
 	   SampleRate=8000;
-	   InputSampleRate=8000.0; }
+	   InputSampleRate=8000.0; 
+	   }
 
    // resize internal arrays according the parameters
    int Preset(void)

@@ -41,6 +41,9 @@ private:
 	int		devmask;
 	int		outmask;
 	int		recsrc;
+	int		recmask0;
+	int		devmask0;
+	int		recsrc0;
 	int		num_out;
 	int		outs[SOUND_MIXER_NRDEVICES];
 	int		num_rec;
@@ -48,9 +51,13 @@ private:
 
 // values on init for restoration	
 	int		inpsrc0;
-	double	inplevel0;
+	double	linelevel0;
+//	double	lineplaythrough0;
+	double	miclevel0;
+//	double	micplaythrough0;
 	double	pcmlevel0;
 	double	vollevel0;
+//	double	playthrough0;
 
 	int		NumMixers;
 	int		NumDevice;
@@ -60,6 +67,9 @@ private:
 	int		initMask();
 	void	findNumMixers();
 	double	ChannelVolume(int);
+
+	void	initValues();
+	void	restoreValues();
 
 public:
 	cMixer();
@@ -88,8 +98,9 @@ public:
 	void			InputVolume( double volume );
 	int				GetCurrentInputSource();
 	void			SetCurrentInputSource( int i );
-	double			GetPlaythrough();
-	void			SetPlaythrough( double volume );
+//	double			GetPlaythrough();
+//	void			SetPlaythrough( double volume );
+//	void			SetMuteInput(bool);
 	
 };
 

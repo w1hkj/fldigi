@@ -44,9 +44,15 @@ struct configuration {
 	bool		useCWkeylineDTR;	// use DTR for CW
 	int			CWweight;
 	int			CWspeed;
+	int			defCWspeed;
 	int			CWbandwidth;
 	int			CWtrack;
 	int			CWrange;
+	int			CWlowerlimit;
+	int			CWupperlimit;
+	double		CWrisetime;
+	double		CWdash2dot;
+
 // FELD-HELL
 	bool		FELD_IDLE;
 // OLIVIA
@@ -115,8 +121,7 @@ struct configuration {
 	bool	LineIn;
 	bool	EnableMixer;
 	double	PCMvolume;
-	bool	MicMute;
-	bool	LineMute;
+	bool	MuteInput;
 	
 // waterfall palette
 	RGBint	cfgpal[9];

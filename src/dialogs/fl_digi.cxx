@@ -29,7 +29,6 @@
 
 #include <FL/fl_ask.H>
 #include <FL/Fl_Pixmap.H>
-#include "fl_font_browser.h"
 #include <FL/Fl_Image.H>
 
 #include "version.h"
@@ -67,6 +66,7 @@
 #include "qrzcall.h"
 
 #include "combo.h"
+#include "font_browser.h"
 
 #include "status.h"
 
@@ -683,30 +683,34 @@ void cb_mnuConfigModems(Fl_Menu_*, void*) {
 	dlgConfig->show();
 }
 
-void cb_FontBrowser(Fl_Font_Browser*, void* v)
+void cb_FontBrowser(Font_Browser*, void* v)
 {
-	Fl_Font_Browser *ft= (Fl_Font_Browser*)v;
+	Font_Browser *ft= (Font_Browser*)v;
 
-	Fl_Font fnt = (Fl_Font)ft->box_Example->GetFontName();
-	int size = ft->box_Example->GetFontSize();
-	int style = ft->box_Example->GetFontStyle();
+	Fl_Font fnt = ft->fontNumber();
+	int size = ft->fontSize();
 
-	ReceiveText->setFont((Fl_Font)(fnt + style));
+	ReceiveText->setFont(fnt);
 	ReceiveText->setFontSize(size);
 	
-	TransmitText->setFont((Fl_Font)(fnt + style));
+	TransmitText->setFont(fnt);
 	TransmitText->setFontSize(size);
 	
-	progdefaults.Font = (int)(fnt + style);
-	progdefaults.FontSize = (int)size;
+	progdefaults.Font = (int)(fnt);
+	progdefaults.FontSize = size;
 //	progdefaults.FontColor = (int)clr;
 	
 	ft->hide();
 }
 
 void cb_mnuConfigFonts(Fl_Menu_*, void *) {
-	static Fl_Font_Browser *b = (Fl_Font_Browser *)0;
-	if (!b) b = new Fl_Font_Browser;
+	static Font_Browser *b = (Font_Browser *)0;
+	if (!b) {
+		b = new Font_Browser;
+		b->fontNumber((Fl_Font)progdefaults.Font);
+		b->fontSize(progdefaults.FontSize);
+//		b->fontColor(progdefaults.FontColor);
+	}
 	b->callback((Fl_Callback*)cb_FontBrowser, (void*)(b));
 	b->show();
 }
@@ -1248,9 +1252,12 @@ void display_metric(double metric)
 
 void put_cwRcvWPM(double wpm)
 {
-	if (!prgsCWrcvWPM) return;
+//	if (!prgsCWrcvWPM) return;
+	int U = progdefaults.CWupperlimit;
+	int L = progdefaults.CWlowerlimit;
+	double dWPM = 100.0*(wpm - L)/(U - L);
 	Fl::lock();
-	prgsCWrcvWPM->value(100.0*(wpm-CW_MIN_SPEED)/(CW_MAX_SPEED - CW_MIN_SPEED));
+	prgsCWrcvWPM->value(dWPM);
 	valCWrcvWPM->value((int)wpm);
 	Fl::unlock();
 	Fl::awake();
@@ -1358,6 +1365,13 @@ void put_WARNstatus(bool on)
 	else
 		WARNstatus->color(FL_BACKGROUND_COLOR);
 	WARNstatus->redraw();
+	Fl::unlock();
+}
+
+void set_CWwpm()
+{
+	Fl::lock();
+	sldrCWxmtWPM->value(progdefaults.CWspeed);
 	Fl::unlock();
 }
 
@@ -1526,6 +1540,7 @@ void setMixerInput(int dev)
 	if (n != -1)
 		mixer.SetCurrentInputSource(n);
 }
+
 
 void resetSoundCard(int n) {
 	string scd = "/dev/dsp";

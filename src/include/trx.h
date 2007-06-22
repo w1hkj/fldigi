@@ -32,7 +32,6 @@
 #include "sound.h"
 #include "waterfall.h"
 #include "ScopeDialog.h"
-#include "CWdialog.h"
 #include "globals.h"
 #include "fl_digi.h"
 

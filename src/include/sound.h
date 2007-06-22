@@ -20,7 +20,9 @@
 
 #include "samplerate/samplerate.h"
 
+#define MAXSC 32767.0;
 #define maxsc 32000.0
+//#define maxsc 16384.0
 #define SCBLOCKSIZE 512
 
 #define	SND_BUF_LEN		65536

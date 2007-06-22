@@ -47,9 +47,14 @@ configuration progdefaults = {
 	false,			// bool		useCWkeylineDTR;
 	50,				// int		CWweight;
 	18,				// int		CWspeed;
+	24,				// int		defCWspeed;
 	150,			// int		CWbandwidth;
 	true,			// int		CWtrack;
 	10,				// int		CWrange;
+	5,				// int		CWlowerlimit;
+	50,				// int		CWupperlimit;
+	4.0,			// double	CWrisetime;
+	3.0,			// double	CWdash2dot;
 
 // FELD-HELL
 	false,			// bool		FELD_IDLE;
@@ -117,8 +122,7 @@ configuration progdefaults = {
 	false,			// bool		MicIn;
 	true,			// bool		LineIn;
 	false,			// bool		EnableMixer;
-	true,			// bool 	MicMute;
-	true,			// bool 	LineMute;
+	true,			// bool 	MuteInput;
 	50.0,			// double	PCMvolume
 	{{  0,  0,  0},{  0,  0,  62},{  0,  0,126}, // default palette
 	 {  0,  0,214},{145,142,  96},{181,184, 48},
@@ -214,9 +218,14 @@ void configuration::writeDefaultsXML()
 
 	writeXMLint(f, "CWWEIGHT", CWweight);	
 	writeXMLint(f, "CWSPEED", CWspeed);
+	writeXMLint(f, "CWDEFSPEED", defCWspeed);
 	writeXMLint(f, "CWBANDWIDTH", CWbandwidth);
 	writeXMLint(f, "CWRANGE", CWrange);
+	writeXMLint(f, "CWLOWERLIMIT", CWlowerlimit);
+	writeXMLint(f, "CWUPPERLIMIT", CWupperlimit);
 	writeXMLbool(f, "CWTRACK", CWtrack);
+	writeXMLdbl(f, "CWRISETIME", CWrisetime);
+	writeXMLdbl(f, "CWDASH2DOT", CWdash2dot);
 	writeXMLint(f, "OLIVIATONES", oliviatones);
 	writeXMLint(f, "OLIVIABW", oliviabw);
 	writeXMLdbl(f, "DOMINOEXBW", DOMINOEX_BW);
@@ -264,13 +273,12 @@ void configuration::writeDefaultsXML()
 	writeXMLbool(f, "MICIN", MicIn);
 	writeXMLbool(f, "LINEIN", LineIn);
 	writeXMLbool(f, "ENABLEMIXER", EnableMixer);
+	writeXMLbool(f, "MUTEINPUT", MuteInput);
 	f << "<PALETTE>\n";
 	for (int i = 0; i < 9; i++)
 		writeXMLtriad(f, cfgpal[i].R, cfgpal[i].G, cfgpal[i].B);
 	f << "</PALETTE>\n";
 
-//	writeXMLbool(f, "MICMUTE", MicMute);
-//	writeXMLbool(f, "LINEMUTE", LineMute);		
 //	writeXMLbool(f, "USEFSKKEYLINE", useFSKkeyline);		
 //	writeXMLbool(f, "USEFSKKEYLINEDTR", useFSKkeylineDTR);
 //	writeXMLbool(f, "FSKISLSB", FSKisLSB);
@@ -376,6 +384,12 @@ void configuration::writeDefaults(ofstream &f)
 	f << CWbandwidth << endl;
 	f << CWtrack << endl;
 	f << CWrange << endl;
+	f << MuteInput << endl;
+	f << CWlowerlimit << endl;
+	f << CWupperlimit << endl;
+	f << CWrisetime << endl;
+	f << CWdash2dot << endl;
+	f << defCWspeed << endl;
 }
 
 void configuration::readDefaults(ifstream &f)
@@ -477,6 +491,12 @@ void configuration::readDefaults(ifstream &f)
 	f >> CWbandwidth;
 	f >> CWtrack;
 	f >> CWrange;
+	f >> MuteInput;
+	f >> CWlowerlimit;
+	f >> CWupperlimit;
+	f >> CWrisetime;
+	f >> CWdash2dot;
+	f >> defCWspeed;
 }
 
 void configuration::loadDefaults() {
@@ -659,9 +679,18 @@ int configuration::openDefaults() {
 
 			cntCWweight->value(CWweight);
 			sldrCWxmtWPM->value(CWspeed);
+			cntCWdefWPM->value(defCWspeed);
 			sldrCWbandwidth->value(CWbandwidth);
 			btnCWrcvTrack->value(CWtrack);
 			cntCWrange->value(CWrange);
+			cntCWlowerlimit->value(CWlowerlimit);
+			cntCWupperlimit->value(CWupperlimit);
+			cntCWlowerlimit->maximum(CWupperlimit - 20);
+			cntCWupperlimit->minimum(CWlowerlimit + 20);
+			cntCWrisetime->value(CWrisetime);
+			cntCWdash2dot->value(CWdash2dot);
+			sldrCWxmtWPM->minimum(CWlowerlimit);
+			sldrCWxmtWPM->maximum(CWupperlimit);
 			
 			selHellFont->value(feldfontnbr);
 			btnFeldHellIdle->value(FELD_IDLE);

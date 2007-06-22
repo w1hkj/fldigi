@@ -38,7 +38,7 @@ using namespace std;
 
 double olivia::nco(double freq)
 {
-    preamblephase += 2.0 * M_PI * freq / 8000;
+    preamblephase += 2.0 * M_PI * freq / samplerate;
 
 	if (preamblephase > M_PI)
 		preamblephase -= 2.0 * M_PI;
@@ -88,7 +88,7 @@ void olivia::tx_init(cSound *sc)
 void olivia::send_preamble()
 {
 	double freqa, freqb;
-    int i;
+    int i, sr4 = samplerate / 4;
 
 	if (reverse) { 
 		freqa = txbasefreq + (bandwidth / 2.0); 
@@ -98,25 +98,21 @@ void olivia::send_preamble()
 		freqb = txbasefreq + (bandwidth / 2.0); 
 	}
 
-	for (i = 0; i < 2000; i++)
+	for (i = 0; i < sr4; i++)
 		outbuf[i] = nco(freqa);
-
-	for (i = 2000; i < 4000; i++)
+	for (i = sr4; i < 2*sr4; i++)
 		outbuf[i] = nco(freqb);
-
-	for (i = 4000; i < 6000; i++)
+	for (i = 2*sr4; i < 3*sr4; i++)
 		outbuf[i] = nco(freqa);
-
-	for (i = 6000; i < 8000; i++)
+	for (i = 3*sr4; i < samplerate; i++)
 		outbuf[i] = nco(freqb);
-
-	ModulateXmtr(outbuf, 8000);
+	ModulateXmtr(outbuf, samplerate);
 }
 
 void olivia::send_postamble()
 {
 	double freqa, freqb;
-	int i;
+	int i, sr4 = samplerate / 4;
 
 	if (reverse) { 
 		freqa = txbasefreq + (bandwidth / 2.0); 
@@ -126,19 +122,15 @@ void olivia::send_postamble()
 		freqb = txbasefreq + (bandwidth / 2.0); 
 	}
 
-	for (i = 0; i < 1000; i++)
+	for (i = 0; i < sr4; i++)
 		outbuf[i] = nco(freqa);
-
-	for (i = 1000; i < 2000; i++)
+	for (i = sr4; i < 2*sr4; i++)
 		outbuf[i] = nco(freqb);
-
-	for (i = 2000; i < 3000; i++)
+	for (i = 2*sr4; i < 3*sr4; i++)
 		outbuf[i] = nco(freqa);
-
-	for (i = 3000; i < 4000; i++)
+	for (i = 3*sr4; i < samplerate; i++)
 		outbuf[i] = nco(freqb);
-
-	ModulateXmtr(outbuf, 4000);
+	ModulateXmtr(outbuf, samplerate);
 }
 
 void olivia::rx_init()
@@ -280,12 +272,13 @@ void olivia::restart()
 {
 	tones	= progdefaults.oliviatones;
 	bw 		= progdefaults.oliviabw;
-	samplerate = 8000;
+//	samplerate = 8000;
+//	samplerate = 11025;
 	
 	Tx->Tones = 2 * (1 << tones);
 	Tx->Bandwidth = 125 * (1 << bw);
-	Tx->SampleRate = samplerate;
-	Tx->OutputSampleRate = samplerate; //samplerate;
+	Tx->SampleRate = 8000.0;//samplerate;
+	Tx->OutputSampleRate = samplerate;
     txbasefreq = tx_frequency;
 
 	if (reverse) { 
@@ -300,7 +293,6 @@ void olivia::restart()
 		fl_message("olivia: transmitter preset failed!");
 		return;
 	}
-//
 		
 	txbufferlen = Tx->MaxOutputLen;
 	if (txbuffer) delete [] txbuffer;
@@ -311,7 +303,6 @@ void olivia::restart()
 
 	rxbufferlen = 0; //SCBLOCKSIZE;
 	rxbuffer = 0; //new short int[rxbufferlen];
-//
 	
 	Rx->Tones = Tx->Tones;
 	Rx->Bandwidth = Tx->Bandwidth;
@@ -319,8 +310,8 @@ void olivia::restart()
 	Rx->SyncIntegLen = sinteg;
 	Rx->SyncThreshold = squelchon ? squelch : 0.0;
 
-	Rx->SampleRate = samplerate;
-	Rx->InputSampleRate = samplerate; //samplerate;
+	Rx->SampleRate = 8000.0;//samplerate;
+	Rx->InputSampleRate = samplerate;
 
 	if (reverse) { 
 		Rx->FirstCarrierMultiplier = (frequency + (Rx->Bandwidth / 2)) / 500; 
@@ -336,6 +327,8 @@ void olivia::restart()
 	}
 	fragmentsize = 1024;
 	set_bandwidth(Tx->Bandwidth);
+	
+//	Rx->PrintParameters();
 
 	put_MODEstatus(mode);
 }
@@ -349,15 +342,16 @@ void olivia::init()
 
 olivia::olivia()
 {
+	txbuffer = 0;
+	txfbuffer = 0;
+	rxbuffer = 0;
+//	samplerate = 11025;
+	samplerate = 8000;
+
 	Fl::lock();
 		Tx = new MFSK_Transmitter< float >;
 		Rx = new MFSK_Receiver< float >;
 	Fl::unlock();
-
-	txbuffer = 0;
-	txfbuffer = 0;
-	rxbuffer = 0;
-	samplerate = 8000;
 
 	mode = MODE_OLIVIA;
 	wfid = new id(this);

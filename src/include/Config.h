@@ -77,16 +77,21 @@ extern Fl_Check_Button *btnsendid;
 extern Fl_Group *tabModems;
 extern Fl_Tabs *tabsModems;
 extern Fl_Group *tabCW;
-extern Fl_Light_Button *btnCWrcvTrack;
+extern Fl_Value_Slider *sldrCWbandwidth;
+#include <FL/Fl_Counter.H>
+extern Fl_Counter *cntCWrange;
+extern Fl_Check_Button *btnCWrcvTrack;
+#include <FL/Fl_Value_Output.H>
+extern Fl_Value_Output *valCWrcvWPM;
 #include <FL/Fl_Progress.H>
 extern Fl_Progress *prgsCWrcvWPM;
 extern Fl_Value_Slider *sldrCWxmtWPM;
-#include <FL/Fl_Value_Output.H>
-extern Fl_Value_Output *valCWrcvWPM;
-extern Fl_Value_Slider *sldrCWbandwidth;
-#include <FL/Fl_Counter.H>
+extern Fl_Counter *cntCWlowerlimit;
+extern Fl_Counter *cntCWupperlimit;
 extern Fl_Counter *cntCWweight;
-extern Fl_Counter *cntCWrange;
+extern Fl_Counter *cntCWdash2dot;
+extern Fl_Counter *cntCWrisetime;
+extern Fl_Counter *cntCWdefWPM;
 extern Fl_Group *tabDomEX;
 extern Fl_Input *txtSecondary;
 extern Fl_Button *btnRestartDomEX;

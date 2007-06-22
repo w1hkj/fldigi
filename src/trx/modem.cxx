@@ -193,7 +193,8 @@ void modem::ModulateXmtr(double *buffer, int len)
 	scard->write_samples(buffer, len);
 	if (progdefaults.viewXmtSignal)
 		for (int i = 0; i < len; i++) {
-			scdata[scptr++] = buffer[i] * 0.1;
+			scdata[scptr] = buffer[i] * 0.1;
+			scptr++;
 			if (scptr == 512) {
 				wf->sig_data(scdata, 512);
 				scptr = 0;

@@ -48,8 +48,13 @@ using namespace std;
 
 string scDevice = "/dev/dsp1";
 char szHomedir[120] = "";
+char szPskMailDir[120] = "";
+string PskMailDir;
+string PskMailFile;
 string HomeDir;
 string xmlfname;
+
+bool gmfskmail = false;
 
 PTT		*push2talk = (PTT *)0;
 #ifndef NOHAMLIB
@@ -67,7 +72,7 @@ extern	void start_pskmail();
 int main(int argc, char ** argv) {
 
 	fl_filename_expand(szHomedir, 119, "$HOME/.fldigi/");
-	if (!fl_filename_isdir(szHomedir))
+	if (fl_filename_isdir(szHomedir) == 0)
 		HomeDir = "./";
 	else
 		HomeDir = szHomedir;
@@ -79,15 +84,45 @@ int main(int argc, char ** argv) {
 	logfile = new cLogfile(lfname);
 	logfile->log_to_file_start();
 
-	if ((server = fopen ("PSKmailserver", "r")) != NULL) {
-		mailserver = true;
-		fclose (server);
-	}
-	if ((client = fopen ("PSKmailclient", "r")) != NULL) {
-		mailclient = true;
-		fclose (client);
-	}
+	fl_filename_expand(szPskMailDir, 119, "$HOME/pskmail.files/");
+	PskMailDir = szPskMailDir;
 
+	PskMailFile = PskMailDir;
+	PskMailFile += "PSKmailserver";
+	ifstream testFile;
+	testFile.open(PskMailFile.c_str());
+	if (testFile.is_open()) {
+		mailserver = true;
+		testFile.close();
+	} else {
+		PskMailFile = PskMailDir;
+		PskMailFile += "PSKmailclient";
+		testFile.open(PskMailFile.c_str());
+		if (testFile.is_open()) {
+			mailclient = true;
+			testFile.close();
+		} else {
+			PskMailDir = "./";
+			PskMailFile = PskMailDir;
+			PskMailFile += "PSKmailserver";
+			testFile.open(PskMailFile.c_str());
+			if (testFile.is_open()) {
+				mailserver = true;
+				testFile.close();
+				gmfskmail = true;
+			} else {
+				PskMailFile = PskMailDir;
+				PskMailFile += "PSKmailclient";
+				testFile.open(PskMailFile.c_str());
+				if (testFile.is_open()) {
+					mailclient = true;
+					testFile.close();
+					gmfskmail = true;
+				}
+			}
+		}
+	}
+	
 	Fl::lock();  // start the gui thread!!	
 	Fl::visual(FL_RGB); // insure 24 bit color operation
 	fl_register_images();
@@ -125,8 +160,15 @@ int main(int argc, char ** argv) {
 	Fl::set_fonts(0);
 
 	if (mailserver || mailclient) {
-		std::cout << "Starting mailserver" << std::endl; fflush(stdout);
-		Maillogfile = new cLogfile("gMFSK.log");
+		std::cout << "Starting pskmail transport layer" << std::endl; fflush(stdout);
+		string PskMailLogName = PskMailDir;
+
+		if (gmfskmail == false)
+			PskMailLogName += "mail-io.log";
+		else
+			PskMailLogName += "gMFSK.log";
+			
+		Maillogfile = new cLogfile(PskMailLogName.c_str());
 		Maillogfile->log_to_file_start();
 		Fl::add_timeout(10.0, pskmail_loop);
 	}

@@ -51,7 +51,8 @@ struct datambr {
 };
 
 struct retvals {
-  Fl_Output * Inp;
+//  Fl_Output * Inp;
+  Fl_Input *Inp;
   void     * retval;
   int      * idx;};
 
@@ -86,7 +87,8 @@ class Fl_ComboBox : public Fl_Group  {
   
   protected:
     Fl_Button     *Btn;
-    Fl_Output     *Output;
+//    Fl_Output     *Output;
+    Fl_Input      *Output;
     Fl_PopBrowser *Brwsr;
     datambr       **datalist;
     int           listsize;
@@ -117,6 +119,7 @@ class Fl_ComboBox : public Fl_Group  {
     void *data ();
     void textfont (int);
     void textsize (uchar);
+    void readonly();
 
 };
 

@@ -823,7 +823,7 @@ void parseXML()
 
 bool readRigXML()
 {
-	char szLine[256];
+	char szLine[256] = "";
 	int lines = 0;
 
 	commands.clear();

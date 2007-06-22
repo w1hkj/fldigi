@@ -1,4 +1,5 @@
 #include "mixer.h"
+#include "configuration.h"
 
 cMixer::cMixer() {
 	strcpy (szDevice, "/dev/mixerX");
@@ -9,6 +10,7 @@ cMixer::cMixer() {
 
 cMixer::~cMixer()
 {
+	closeMixer();
 }
 
 //=======================================
@@ -25,30 +27,66 @@ void cMixer::openMixer(const char *dev)
 			throw MixerException(errno);
 		if ((err = initMask()) != 0)
 			throw MixerException(err);
-		SetPlaythrough(0.0);
 	} 
 	catch (...) {
 		throw;
 	}
-	inpsrc0 = GetCurrentInputSource();
-	inplevel0 = InputVolume();
-	pcmlevel0 = PCMVolume();
-	vollevel0 = OutVolume();
-//	std::cout << "Input = " << inpsrc0 << ", " << GetInputSourceName(inpsrc0) << std::endl;
-//	std::cout << "Input Level = " << inplevel0 << std::endl;
-//	std::cout << "Pcm Level = " << pcmlevel0 << std::endl;
-//	std::cout << "Output Level = " << vollevel0 << std::endl;
+	initValues();
 }
 
 void cMixer::closeMixer()
 {
 	if (mixer_fd == -1) return;
-	PCMVolume(pcmlevel0);
-	OutVolume(vollevel0);
-	InputVolume(inplevel0);
-	SetCurrentInputSource(inpsrc0);
+	restoreValues();
 	close(mixer_fd);
 	mixer_fd = -1;
+}
+
+void cMixer::initValues()
+{
+	int devnbr;
+
+	inpsrc0 = GetCurrentInputSource();
+
+	devnbr = InputSourceNbr("Line");
+	SetCurrentInputSource(devnbr);
+	linelevel0 = InputVolume();
+
+	devnbr = InputSourceNbr("Mic");
+	SetCurrentInputSource(devnbr);	
+	miclevel0 = InputVolume();
+	
+	pcmlevel0 = PCMVolume();
+	vollevel0 = OutVolume();
+/*
+	std::cout << "Sound card initial state:" << std::endl;
+	std::cout << "  Dev mask " << hex << devmask << std::endl;
+	std::cout << "  Rec mask " << hex << recmask << std::endl;
+	std::cout << "  Rec src  " << hex << recsrc << std::endl;
+	std::cout << "  Current input source # " << GetInputSourceName(inpsrc0) << std::endl;
+	std::cout << "  Line Level = " << linelevel0 << std::endl;
+	std::cout << "  Mic  Level = " << miclevel0  << std::endl;
+	std::cout << "  Pcm  Level = " << pcmlevel0  << std::endl;
+	std::cout << "  Vol  Level = " << vollevel0  << std::endl;
+*/
+}
+
+void cMixer::restoreValues()
+{
+	int devnbr;
+	devnbr = InputSourceNbr("Line");
+	SetCurrentInputSource(devnbr);
+	InputVolume(linelevel0);
+	
+	devnbr = InputSourceNbr("Mic");
+	SetCurrentInputSource(devnbr);
+	InputVolume(miclevel0);
+	
+	PCMVolume(pcmlevel0);
+	OutVolume(vollevel0);
+
+//	SetCurrentInputSource(inpsrc0);
+	ioctl(mixer_fd, MIXER_WRITE(SOUND_MIXER_READ_RECSRC), &recsrc0);
 }
 
 void cMixer::findNumMixers()
@@ -102,13 +140,16 @@ int cMixer::initMask()
 	
 	if((ioctl(mixer_fd, MIXER_READ(SOUND_MIXER_READ_DEVMASK), &devmask)) == -1) 
 		return errno;
-//	std::cout << "dev mask " << devmask << std::endl;
+
 	if((ioctl(mixer_fd, MIXER_READ(SOUND_MIXER_READ_RECMASK), &recmask)) == -1) 
 		return errno;
-//	std::cout << "rec mask " << recmask << std::endl;
+
 	if ((ioctl(mixer_fd, MIXER_READ(SOUND_MIXER_READ_RECSRC), &recsrc)) == -1)
 		return errno;
-//	std::cout << "recsrc mask " << recsrc << std::endl;
+		
+	devmask0 = devmask;
+	recmask0 = recmask;
+	recsrc0 = recsrc;
 		
 	outmask = devmask ^ recmask;
 
@@ -117,12 +158,9 @@ int cMixer::initMask()
 	for( int i = 0; i < SOUND_MIXER_NRDEVICES; i++) {
 		if (recmask & (1 << i)) {
 			recs[num_rec++] = i;
-//			std::cout << "Input channel " << GetInputSourceName(i) << " is active\n";
 		}
 		else if (devmask & (1<<i)) {
-//		if (devmask & (1<<i)) {
 			outs[num_out++] = i;
-//			std::cout << "Output channel " << OutputVolumeName(i) << " is available\n";
 		}
 	}
 	return 0;
@@ -235,18 +273,10 @@ int cMixer::InputSourceNbr(char *source)
 
 int cMixer::GetCurrentInputSource()
 {
-//	int recmask;
-   
 	if (mixer_fd == -1) return -1;
-
-//	if (ioctl(mixer_fd, MIXER_READ(SOUND_MIXER_READ_RECSRC), &recmask) == -1) {
-//		std::cout << "Error reading Record Source\n";
-//		return -1; /* none / error */
-//	}
 	for(int i = 0; i < num_rec; i++)
-		if (recmask & (1 << (recs[i])))
+		if (recsrc & (1 << (recs[i])))
 			return i;
-//	std::cout << "Cannot find input source\n";
 	return -1; /* none */
 }
 
@@ -264,26 +294,21 @@ void cMixer::SetCurrentInputSource( int i )
 double cMixer::InputVolume()
 {
 	if (mixer_fd == -1) return 0.0;
-	int i = GetCurrentInputSource();
-	if (i < 0)
-		return 0.0;
+//	int i = GetCurrentInputSource();
+//	if (i < 0)
+//		return 0.0;
 	return ChannelVolume(SOUND_MIXER_IGAIN);
 }
 
 void cMixer::InputVolume( double volume )
 {
 	int vol;
-//	int i = GetCurrentInputSource();
-   
-//	if (i < 0)
-//		return;
-
 	vol = (int)((volume * 100.0) + 0.5);
 	vol = (vol | (vol<<8));
 	ioctl(mixer_fd, MIXER_WRITE(SOUND_MIXER_IGAIN), &vol);
 }
 
-
+/*
 double cMixer::GetPlaythrough()
 {
 	int i = GetCurrentInputSource();
@@ -306,3 +331,13 @@ void cMixer::SetPlaythrough( double volume )
 	ioctl(mixer_fd, MIXER_WRITE(recs[i]), &vol);
 }
 
+void cMixer::SetMuteInput(bool b)
+{
+	return;
+	if (b == 1)
+		SetPlaythrough(0.0);
+	else
+		SetPlaythrough(playthrough0);
+}
+
+*/

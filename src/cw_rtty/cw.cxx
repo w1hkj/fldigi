@@ -34,7 +34,6 @@
 #include <sys/time.h>
 
 #include "cw.h"
-#include "CWdialog.h"
 #include "misc.h"
 //#include "modeIO.h"
 #include "configuration.h"
@@ -54,12 +53,15 @@ void cw::rx_init()
 	agc_peak = 0;	
 	digiscope->mode(Digiscope::SCOPE);
 	put_MODEstatus(mode);
+	usedefaultWPM = false;
 }
 
 void cw::init()
 {
 	modem::init();
-	set_cwXmtWPM(sldrCWxmtWPM->value());
+	trackingfilter->reset();
+	cw_adaptive_receive_threshold = (long int)trackingfilter->run(2 * cw_send_dot_length);
+	put_cwRcvWPM(cw_send_speed);
 	rx_init();
 }
 
@@ -71,6 +73,7 @@ cw::~cw() {
 	if (cwfilter) delete cwfilter;
 	if (bitfilter) delete bitfilter;
 	if (trackingfilter) delete trackingfilter;
+//	if (keyshape) delete [] keyshape;
 }
 
 
@@ -80,19 +83,24 @@ cw::cw() : morse(), modem()
 
 	mode = MODE_CW;
 	freqlock = false;
-	cw_speed = progdefaults.CWspeed;
 	frequency = 800;
 	tx_frequency = 800;
-	bandwidth = progdefaults.CWbandwidth;
+	risetime = progdefaults.CWrisetime;
+//	keyshape = new double[KNUM];
 	
 	samplerate = CWSampleRate;
 	fragmentsize = CWMaxSymLen;
 
+	cw_speed  = progdefaults.CWspeed;
+	bandwidth = progdefaults.CWbandwidth;
+	
 	cw_send_speed = cw_speed;
 	cw_receive_speed = cw_speed;
-//	cw_noise_spike_threshold = INITIAL_NOISE_THRESHOLD;
 	cw_adaptive_receive_threshold = 2 * DOT_MAGIC / cw_speed;
 	cw_noise_spike_threshold = cw_adaptive_receive_threshold / 4;
+	cw_send_dot_length = DOT_MAGIC / cw_send_speed;
+	cw_send_dash_length = 3 * cw_send_dot_length;
+	symbollen = (int)(1.0 * samplerate * cw_send_dot_length / USECS_PER_SEC);
 	
 	memset(rx_rep_buf, 0, sizeof(rx_rep_buf));
 
@@ -110,8 +118,10 @@ cw::cw() : morse(), modem()
 	bitfilter = new Cmovavg(8);
 	trackingfilter = new Cmovavg(TRACKING_FILTER_SIZE);
 
+	makeshape();
 	sync_parameters();
 	wf->Bandwidth ((int)bandwidth);
+	init();
 
 }
 
@@ -121,32 +131,40 @@ cw::cw() : morse(), modem()
  
 void cw::sync_parameters()
 {
-	int lowerwpm, upperwpm;
+	int lowerwpm, upperwpm, nusymbollen;
+
+	if (usedefaultWPM == false)
+		cw_send_dot_length = DOT_MAGIC / progdefaults.CWspeed;
+	else
+		cw_send_dot_length = DOT_MAGIC / progdefaults.defCWspeed;
+		
+	cw_send_dash_length = 3 * cw_send_dot_length;
+	nusymbollen = (int)(1.0 * samplerate * cw_send_dot_length / USECS_PER_SEC);
+	if (symbollen != nusymbollen || risetime != progdefaults.CWrisetime) {
+		risetime = progdefaults.CWrisetime;
+		symbollen = nusymbollen;
+		if (symbollen < 12) bitfilter->setLength(4);
+		else				bitfilter->setLength(8);
+		makeshape();
+	}
+	
 // check if user changed the tracking or the cw default speed
-	if (cw_send_speed != progdefaults.CWspeed ||
-		cwTrack != progdefaults.CWtrack) {
-
-		cw_send_speed = progdefaults.CWspeed;
-		cw_send_dot_length = DOT_MAGIC / cw_send_speed;
-		cw_send_dash_length = 3 * cw_send_dot_length;
-		symbollen = (int)(1.0 * samplerate * cw_send_dot_length / USECS_PER_SEC);
-
+	if ((cwTrack != progdefaults.CWtrack) ||
+		(cw_send_speed != progdefaults.CWspeed)) {
 		trackingfilter->reset();
 		cw_adaptive_receive_threshold = (long int)trackingfilter->run(2 * cw_send_dot_length);
-		
 		put_cwRcvWPM(cw_send_speed);
-	} else {
-		cw_send_speed = progdefaults.CWspeed;
-		cw_send_dot_length = DOT_MAGIC / cw_send_speed;
-		cw_send_dash_length = 3 * cw_send_dot_length;
-		symbollen = (int)(1.0 * samplerate * cw_send_dot_length / USECS_PER_SEC);
 	}
 	cwTrack = progdefaults.CWtrack;
-
+	cw_send_speed = progdefaults.CWspeed;
+	
 // Receive parameters:
 	lowerwpm = cw_send_speed - progdefaults.CWrange;
 	upperwpm = cw_send_speed + progdefaults.CWrange;
-	if (lowerwpm < CW_MIN_SPEED) lowerwpm = CW_MIN_SPEED;
+	if (lowerwpm < progdefaults.CWlowerlimit)
+		lowerwpm = progdefaults.CWlowerlimit;
+	if (upperwpm > progdefaults.CWupperlimit) 
+		upperwpm = progdefaults.CWupperlimit;
 	cw_lower_limit = 2 * DOT_MAGIC / upperwpm;
 	cw_upper_limit = 2 * DOT_MAGIC / lowerwpm;
 
@@ -157,23 +175,12 @@ void cw::sync_parameters()
 		cw_adaptive_receive_threshold = 2 * cw_send_dot_length;
 	}
 		
-// receive routines track speeds, but we put hard limits
-// on the speeds here if necessary.
-// may not need with new algorithm which limits tracking range
-//	if (cw_receive_speed < CW_MIN_SPEED)
-//		cw_receive_speed = CW_MIN_SPEED;
-//	if (cw_receive_speed > CW_MAX_SPEED)
-//		cw_receive_speed = CW_MAX_SPEED;
-		
 	cw_receive_dot_length = DOT_MAGIC / cw_receive_speed;
 
-//	cw_adaptive_receive_threshold = 2 * cw_receive_dot_length;
 	cw_receive_dash_length = 3 * cw_receive_dot_length;
 
 	cw_noise_spike_threshold = cw_receive_dot_length / 4;
 
-// Set the parameters in sync flag.
-//	cw_in_sync = true;
 }
 
 
@@ -206,6 +213,25 @@ void cw::update_tracking(int idot, int idash)
 //Routine called to update the display on the sync scope display.
 //For CW this is an o scope pattern that shows the cw data stream.
 //=======================================================================
+
+void cw::update_Status()
+{
+	static char RXmsg[20];
+	static char TXmsg[20];
+	sprintf(RXmsg,"Rx %d", cw_receive_speed);
+	if (usedefaultWPM)
+		sprintf(TXmsg,"Tx %d **", progdefaults.defCWspeed);
+	else
+		sprintf(TXmsg,"Tx %d", progdefaults.CWspeed);
+	put_Status1(RXmsg);
+	put_Status2(TXmsg);	
+}
+
+//=======================================================================
+//update_syncscope()
+//Routine called to update the display on the sync scope display.
+//For CW this is an o scope pattern that shows the cw data stream.
+//=======================================================================
 //
 void cw::update_syncscope()
 {
@@ -216,10 +242,8 @@ void cw::update_syncscope()
 		scopedata[i] = 0.1 + 0.8 * pipe[j] / agc_peak;
 	}
 	set_scope(scopedata, pipesize, false);
-
-//	cwRcvWPM = cw_receive_speed;
-//	put_cwRcvWPM(cwRcvWPM);
 	put_cwRcvWPM(cw_receive_speed);
+	update_Status();
 }
 
 
@@ -435,6 +459,7 @@ int cw::handle_event(int cw_event, char **c)
 			return CW_ERROR;
 // MEDIUM time since keyup... check for character space
 // one shot through this code via receive state logic
+// FARNSWOTH MOD HERE -->
 		if (element_usec >= (2 * cw_receive_dot_length) &&
 		    element_usec <= (4 * cw_receive_dot_length) &&
 		    cw_receive_state == RS_AFTER_TONE) {
@@ -449,6 +474,7 @@ int cw::handle_event(int cw_event, char **c)
 			return CW_SUCCESS;
 		}
 // LONG time since keyup... check for a word space
+// FARNSWOTH MOD HERE -->
 		if ((element_usec > (4 * cw_receive_dot_length)) && !space_sent) {
 			*c = " "; 
 			space_sent = true;
@@ -466,55 +492,21 @@ int cw::handle_event(int cw_event, char **c)
 // cw transmit routines
 // Define the amplitude envelop for key down events (32 samples long)      
 // this is 1/2 cycle of a raised cosine                                    
-// the tables with 32 entries give about 4ms rise and fall times           
-// when using 8000 samples/sec. This shaping of the cw pulses is           
-// very necssary to avoid having a very wide and clicky cw signal          
-// when using the sound card to gen cw. When using the rig key input       
-// the shaping is done in the rig hardware, but we want to be able to      
-// pick one cw signal out of a cluster and be able to respond on his freq. 
 //===========================================================================
 
-#define KNUM 32
-// keydown wave shape
-double kdshape[KNUM] = {
-	0.00240750255310301, 0.00960708477768751,
-	0.02152941088003600, 0.03805966253618680,
-	0.05903864465505320, 0.08426431851158830, 
-	0.11349374748686800, 0.14644543667658500,
-	0.18280204383628200, 0.22221343555548300, 
-	0.26430005922814900, 0.30865659834558700,
-	0.35485587590940700, 0.40245296837259500, 
-	0.45098949048925500, 0.49999800980765500,
-	0.54900654829266300, 0.59754312772456200, 
-	0.64514031509964400, 0.69133972425796200,
-	0.73569643038517400, 0.77778325487450100, 
-	0.81719487928327800, 0.85355174876454100,
-	0.88650372738152000, 0.91573347010241700, 
-	0.94095947900139100, 0.96193881423287900,
-	0.97846943367117300, 0.99039213868324900, 
-	0.99759210729604500, 0.99999999999295900
-};
+double keyshape[KNUM];
 
-// keyup wave shape
-double kushape[KNUM] = {
-	0.99999999999295900, 0.99759210729604500, 
-	0.99039213868324900, 0.97846943367117300,
-	0.96193881423287900, 0.94095947900139100, 
-	0.91573347010241700, 0.88650372738152000,
-	0.85355174876454100, 0.81719487928327800, 
-	0.77778325487450100, 0.73569643038517400,
-	0.69133972425796200, 0.64514031509964400, 
-	0.59754312772456200, 0.54900654829266300,
-	0.49999800980765500, 0.45098949048925500, 
-	0.40245296837259500, 0.35485587590940700,
-	0.30865659834558700, 0.26430005922814900, 
-	0.22221343555548300, 0.18280204383628200,
-	0.14644543667658500, 0.11349374748686800, 
-	0.08426431851158830, 0.05903864465505320,
-	0.03805966253618680, 0.02152941088003600, 
-	0.00960708477768751, 0.00240750255310301
-};
-
+void cw::makeshape()
+{
+	for (int i = 0; i < KNUM; i++) keyshape[i] = 1.0;
+	knum = (int)(8 * risetime);
+	if (knum > symbollen)
+		knum = symbollen;
+	if (knum > KNUM) 
+		knum = KNUM;
+	for (int i = 0; i < knum; i++)
+		keyshape[i] = 0.5 * (1.0 - cos (M_PI * i / knum));
+}
 
 inline double cw::nco(double freq)
 {
@@ -523,7 +515,7 @@ inline double cw::nco(double freq)
 	if (phaseacc > M_PI)
 		phaseacc -= 2.0 * M_PI;
 
-	return cos(phaseacc);
+	return sin(phaseacc);
 }
 
 //=====================================================================
@@ -534,78 +526,63 @@ inline double cw::nco(double freq)
 //=======================================================================
 
 
-void cw::send_symbol(int symbol)
+void cw::send_symbol(int currsym)
 {
 	double freq;
 	int sample = 0, i;
-	int currsym = symbol & 1;
-	int nextsym = (symbol >> 1) & 1;
-//	int symlen100 = (int) (samplerate * 0.012);
 	int delta = 0;
 	int keydown;
 	int keyup;
 	int duration = 0;
+	int symlen = 0;
+	double dsymlen = 0.0;
 
 	freq = tx_frequency;
 
+    if ((currsym == 1) && (lastsym == 0)) phaseacc = 0.0;
+
 	if ((currsym == 1 && lastsym == 0) || (currsym == 0 && lastsym == 1))
 		delta = (int) (symbollen * (progdefaults.CWweight - 50) / 100.0);
-	keydown = symbollen - 2 * KNUM + delta;
-	keyup = symbollen - delta;
 
 	if (currsym == 1) {
-		if (cw_send_speed <= 100) {
-			for (i = 0; i < KNUM; i++, sample++) {
-				if (lastsym == 0)
-					outbuf[sample] = nco(freq) * kdshape[i];
-				else
-					outbuf[sample] = nco(freq);
-			}
-			for (i = 0; i < keydown; i++, sample++) {
-				outbuf[sample] = nco(freq);
-			}
-			for (i = 0; i < KNUM; i++, sample++ ) {
-				if (nextsym == 0)
-					outbuf[sample] = nco(freq) * kushape[i];
-				else
-					outbuf[sample] = nco(freq);
-			}
-		} else {
-			for (i = 0; i < KNUM; i += 2, sample++) {
-				if (lastsym == 0)
-					outbuf[sample] = nco(freq) * kdshape[i];
-				else
-					outbuf[sample] = nco(freq);
-			}
-			duration += KNUM / 2;
-			for (i = 0; i < keydown + KNUM; i++, sample++) {
-				outbuf[sample] = nco(freq);
-			}
-			for (i = 0; i < KNUM; i += 2, sample++ ) {
-				if (nextsym == 0)
-					outbuf[sample] = nco(freq) * kushape[i];
-				else
-					outbuf[sample] = nco(freq);
-			}
-		}
-		duration = keydown + 2 * KNUM;
-	} else {
-		if (lastsym == 1) {
-			for (i = 0; i < keyup; i++)
-				outbuf[i] = 0.0;
-			duration = keyup;
-		} else {
-			for (i = 0; i < symbollen; i++)
-				outbuf[i] = 0.0;
-			duration = symbollen;
-		}
-	}
+		dsymlen = symbollen * 4.0 / (progdefaults.CWdash2dot + 1.0);
+		if (lastsym == 1 && currsym == 1)
+			dsymlen *= ((progdefaults.CWdash2dot - 1.0) / 2.0);
+		symlen = (int) dsymlen;
+		if (symlen < knum) symlen = knum;
+	} else
+		symlen = symbollen;
+//	cout << (symbol & 1) << "-" << symlen << ", ";
 
-//	if (progdefaults.useCWkeylineRTS || progdefaults.useCWkeylineDTR) {
-//		if (currsym != lastsym)
-//			cw_keyline(currsym);
-//		std::cout << currsym; fflush(stdout);
-//		}
+	if (delta < -(symlen - knum)) delta = -(symlen - knum);
+	if (delta > (symlen - knum)) delta = symlen - knum;
+
+	keydown = symlen - knum + delta;
+	keyup = symlen - knum - delta;
+
+	if (currsym == 1) {
+		for (i = 0; i < knum; i++, sample++) {
+			if (lastsym == 0)
+				outbuf[sample] = nco(freq) * keyshape[i];
+			else
+				outbuf[sample] = nco(freq);
+		}
+		for (i = 0; i < keydown; i++, sample++) {
+			outbuf[sample] = nco(freq);
+		}
+		duration = knum + keydown;
+	} else {
+		for (i = knum - 1; i >= 0; i--, sample++) {
+			if (lastsym == 1)
+				outbuf[sample] = nco(freq) * keyshape[i];
+			else
+				outbuf[sample] = 0.0;
+		}
+		for (i = 0; i < keyup; i++, sample++) {
+			outbuf[sample] = 0.0;
+		}
+		duration = knum + keyup;
+	}
 
 	ModulateXmtr(outbuf, duration);
 	
@@ -623,14 +600,17 @@ void cw::send_ch(int ch)
 
 	sync_parameters();
 // handle word space separately (7 dots spacing) 
-// last char already had 2 dots of inter-character spacing sent with it 
+// last char already had 2 elements of inter-character spacing 
+
 	if ((ch == ' ') || (ch == '\n')) {
+//		cout << "  ";
 		send_symbol(0);
 		send_symbol(0);
 		send_symbol(0);
 		send_symbol(0);
 		send_symbol(0);
 		put_echo_char(ch);
+//		cout << endl; cout.flush();
 		return;
 	}
 
@@ -638,19 +618,24 @@ void cw::send_ch(int ch)
 	if ((ch < 256) && (ch >= 0))
 		code = tx_lookup(ch); //cw_tx_lookup(ch);
 	else
-		code = 0x4; // two dot spaces
+		code = 0x04; 	// two extra dot spaces
 // loop sending out binary bits of cw character 
+
+//	cout << (char) ch << " " << progdefaults.CWdash2dot << " === ";
+
 	while (code > 1) {
-		send_symbol(code);// & 1);
+		send_symbol(code & 1);
 		code = code >> 1;
+        Fl::awake();
 	}
+//	cout << endl; cout.flush();
 	if (ch != 0)
 		put_echo_char(ch);
 }
 
 //=====================================================================
 // cw_txprocess()
-// Read charcters from screen and send them out the sound card.
+// Read characters from screen and send them out the sound card.
 // This is called repeatedly from a thread during tx.
 //=======================================================================
 
@@ -663,37 +648,33 @@ int cw::tx_process()
 		stopflag = false;
 			return -1;
 	}
-	if (c != 0)
-		send_ch(c);
-	else
-		send_symbol(0);
-
+	send_ch(c);
 	return 0;
 }
 
-/*
-void cw::cw_keyup()
+void	cw::incWPM()
 {
-	if (progdefaults.useCWkeylineRTS)
-		KeyLine->clearRTS();
-	else if (progdefaults.useCWkeylineDTR)
-		KeyLine->clearDTR();
+	if (usedefaultWPM) return;
+	if (progdefaults.CWspeed < progdefaults.CWupperlimit) {
+		progdefaults.CWspeed++;
+		set_CWwpm();
+		update_Status();
+	}
 }
 
-void cw::cw_keydown()
+void	cw::decWPM()
 {
-	if (progdefaults.useCWkeylineRTS)
-		KeyLine->setRTS();
-	else if (progdefaults.useCWkeylineDTR)
-		KeyLine->setDTR();
+	if (usedefaultWPM) return;
+	if (progdefaults.CWspeed > progdefaults.CWlowerlimit) {
+		progdefaults.CWspeed--;
+		set_CWwpm();
+		update_Status();
+	}
 }
 
-void cw::cw_keyline(int symbol)
+void	cw::toggleWPM()
 {
-	if (symbol)
-		cw_keydown();
-	else
-		cw_keyup();
+	usedefaultWPM = !usedefaultWPM;
+	update_Status();
 }
-*/
 
