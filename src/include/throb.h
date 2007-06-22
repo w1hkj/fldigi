@@ -1,0 +1,140 @@
+// ----------------------------------------------------------------------------
+// throb.h  --  BASIS FOR ALL MODEMS
+//
+// Copyright (C) 2006
+//		Dave Freese, W1HKJ
+//
+// This file is part of fldigi.
+//
+// fldigi is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// fldigi is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with fldigi; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+// ----------------------------------------------------------------------------
+
+#ifndef _THROB_H
+#define _THROB_H
+
+#include "trx.h"
+#include "modem.h"
+#include "fft.h"
+#include "fftfilt.h"
+#include "filters.h"
+#include "complex.h"
+#include "id.h"
+
+#define	THROB_SAMPLE_RATE	8000
+#define	SYMLEN			512
+
+#define BUFFLEN			4096
+#define SCOPE_DATA_LEN	1024
+
+#define	DOWN_SAMPLE	32
+
+#define	SYMLEN_1	8192
+#define	SYMLEN_2	4096
+#define	SYMLEN_4	2048
+
+#define	MAX_RX_SYMLEN	(SYMLEN_1 / DOWN_SAMPLE)
+
+#define	FilterFFTLen	8192
+
+class throb : public modem {
+	
+static double ThrobToneFreqsNar[];
+static double ThrobToneFreqsWid[];
+static double ThrobXToneFreqsNar[];
+static double ThrobXToneFreqsWid[];
+static unsigned char ThrobCharSet[];
+static unsigned char ThrobXCharSet[];
+static int  ThrobTonePairs[][2];
+static int  ThrobXTonePairs[][2];
+
+protected:
+// waterfall ID
+	id				*wfid;
+	
+	int			num_tones;
+	int			num_chars;
+	int			idlesym;
+	int			spacesym;
+	char			lastchar;
+
+	double			phaseacc;
+	double			phaseincr;
+
+	fftfilt			*fftfilter;
+	C_FIR_filter	*syncfilt;
+	C_FIR_filter	*hilbert;
+	Cmovavg			*snfilter;
+
+	int				symlen;
+	double 			freqs[55];
+
+// receive
+	double			*scope_data;
+	complex 		*rxtone[55];
+	complex 		symbol[MAX_RX_SYMLEN];
+
+	double			syncbuf[MAX_RX_SYMLEN];
+	double			dispbuf[MAX_RX_SYMLEN];
+
+	double			rxcntr;
+	double			signal;
+	double			noise;
+	
+	double			s2n;
+
+	int rxsymlen;
+	int symptr;
+	int deccntr;
+	int shift;
+	int waitsync;
+	
+	complex			mixer(complex in);
+	void			sync(complex in);
+	void			rx(complex in);
+	void			decodechar(int tone1, int tone2);
+	int				findtones(complex *word, int &tone1, int &tone2);
+	complex			*mk_rxtone(double freq, double *pulse, int len);
+	void			show_char(int);
+	void			flip_syms();
+	void			reset_syms();
+
+
+// transmit
+	int txstate;
+
+	int				preamble;
+	double			*txpulse;
+
+	double			*outbuf;
+	unsigned int	buffptr;
+	
+	double			*mk_semi_pulse(int len);
+	double			*mk_full_pulse(int len);
+	void			send(int);
+
+public:
+	throb(trx_mode);
+	~throb();
+	void	init();
+	void	rx_init();
+	void	tx_init(cSound *sc);
+	void 	restart() {};
+	int		rx_process(double *buf, int len);
+	int		tx_process();
+	void	update_syncscope();
+
+};
+
+#endif

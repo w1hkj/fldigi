@@ -1,0 +1,32 @@
+The following development libraries need to be present and installed on 
+your system before you compile Fldigi.
+
+1. Fast Light Tool Kit -  FLTK  version 1.1.7 or greater.
+
+   * configure the compilation of Fltk as:  
+   
+      o ./configure --enable-threads --enable-xft --enable-shared
+
+      o if you do not use the --enable-xft switch you will get segfaults 
+        when selecting True Type fonts for display!!
+
+      o if you do not use the --enable-threads the application will not 
+        compile and link
+
+      o if you do not have the jpeg, png and zlib libraries on your system 
+        you can compile them for local use by fltk.  Add the following to 
+        the ./configure line
+           --enable-localjpeg 
+           --enable-localpng 
+           --enable-localzlib
+                
+   * then simply execute make and make install (make install as super user)
+          
+2. Hamlib - The hamlib library is required if you plan to interface to
+your transceiver using those common libs.  You can also use the fldigi
+internal RigCAT controller and avoid the use of hamlib.  If you compile
+for hamlib the RigCAT functionality is still compiled into fldigi.
+Hamlib Library Source the latest release is 1.2.6, download this release.
+Follow the instruction in the source code top directory.  The library must 
+be installed as super user.  You should compile as your normal login user.  
+The precompiled hamlib RPM and DEB distributions usually work OK.

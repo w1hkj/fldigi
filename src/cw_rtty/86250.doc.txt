@@ -1,0 +1,478 @@
+---------------------------------------------------------
+
+                         PROGRAMMING THE 8250 UART
+            or, "how to do some fun things with the serial port"
+
+                            by Jered Wierzbicki
+
+ Warning: You'll stay a lot more sane than I am for a lot longer if you
+ have two PCs and a null modem cable so that you can put some of this
+ material into application. If you don't, then this is going to be a very,
+ very bland piece of reading for you, because it's strictly a technical
+ specification on the 8250 UART.
+
+The UART (Universal Asynchronous Receiver/Transmitter) chip is responsible
+for just what its name implies; transfering data, to and from the serial
+port. The 8250 is quite old, and has been almost entirely replaced (the
+8250 UART was shipped WITH the original IBM PC--and I mean the original.)
+Its first replacement was the 16540 UART, which had the same general
+architecture, but was somewhat faster and supported higher baud rates for
+data transfer. The 16540 was replaced by the 16550, a UART which featured a
+16-bit wide receive buffer for characters and a built-in FIFO buffer. A
+close cousin to the 16550 is the 16560, a chip which sports a 32-bit wide
+receive buffer.
+
+Nevertheless, modern serial controllers are backward compatible, so what
+you learn about the 8250 can still be applied on today's machines. With
+that bit of background covered, we can begin studying the 8250.
+
+Where to start? For software engineers, a register listing is the most
+direct and intimate way to get to know a piece of hardware. I've provided
+you with one for the 8250 below.
+
+ If you haven't worked with hardware much, you're probably not used to
+ register listings. Register listings give the addresses of registers that
+ are used to program a chip and list the manner in which the register
+ affects the behavior of the chip. You can use this information to program
+ the chip to perform tasks.
+
+[note: I didn't piece this together entirely from memory. A lot of the
+details came from http://www.byterunner.com/16550.html.]
+
+                           8250 REGISTER LISTING
+ To write to an 8250 register, you write to the base address of the chip
+ plus an offset. The base address is 2e8h for COM1 and 3e8h for COM2.
+ Register 0:     RHR (Receive Holding Register; Receive Buffer
+                 Register in some literature).  Doubles as the THR
+                 (Transmitter Holding Register).  Is also the LSB
+                 of the DLR (Divisor Latch Register) occasionally;
+                 don't worry about that yet, but remember it.
+
+ Purpose:        This register is where you both read and write data
+                 for the serial port.
+
+ Bits:           Bits 0-4 contain data bits 0-4.
+                 Bits 5-7 may or may not be defined, depending upon
+                 whether the UART has been instructed to use 5, 6, 7,
+                 or 8 bit words.
+ Register 1:     IER (Interrupt Enable Register).  Also the MSB of
+                 the DLR (Divisor Latch Register) occasionally; don't
+                 worry about that yet, but remember it.
+
+ Purpose:        Tells the UART to generate an interrupt when different
+                 things occur.
+
+ Bits:           Bit 0: RHRI (Receive Holding Register Interrupt; RxRDY
+                 in some literature).  The UART will generate an
+                 interrupt when a character is received in the RHR if
+                 this bit is set.
+                 Bit 1: THRI (Transmit Holding Register Interrupt; TxRDY).
+                 If set, the UART generates an interrupt when a
+                 character is moved from the THR to the Internal Shift
+                 Register.
+                 Bit 2: RLSI (Receive Line Status Interrupt; ERROR).
+                 If set, the UART interrupts when a parity or overrun
+                 error occurs, or when a break condition is encountered.
+                 Bit 3: MSI (Modem Status Interrupt; DELTA).  If set,
+                 the UART interrupts whenever an RS-232 line changes
+                 state.
+                 Bits 4-7: Unused
+
+ Register 2:     ISR (Interrupt Status Register; also refered to as
+                 the Interrupt Identification Register).
+
+ Purpose:        Tells what event caused a UART interrupt.
+
+ Bits:           Bit 0: Flags if an interrupt has occurred
+                 Bits 1-2: Indicates what caused interrupt:
+                           00 -> RS-232 line change
+                           01 -> THR emptied
+                           10 -> RHR contains character
+                           11 -> Error condition
+                 Bits 3-7: Unused
+
+ Register 3:     LCR (Line Control Register).
+
+ Purpose:        Configures the UART.  Also  flags the use of
+                 registers 0 and 1 for the DLR (Divisor Latch
+                 Register).  More about that shortly.
+
+ Bits:           Bits 0-1: Sets the number of data bits in a
+                 serial word:
+                           00 -> 5-bit data
+                           01 -> 6-bit data
+                           10 -> 7-bit data
+                           11 -> 8-bit data
+                 Bit 2: Stop bits; 0 flags 1 stop bit per word,
+                 1 flags 2 stop bits per word.
+                 Bits 3-5: Sets the parity
+                          000 -> No parity
+                          001 -> Odd
+                          011 -> Even
+                          101 -> Mark
+                          111 -> Space
+                 Bit 6: Break control; sends the receiver a break
+                 condition.
+                 Bit 7: DLR access enable; if set, registers 0
+                 and 1 become one big word register (the DLR)
+                 that stores the baud rate divisor for calculating
+                 the baud rate of the UART.
+
+ Register 4:     MCR (Modem Control Register).
+
+ Purpose:        Controls the lines on the RS-232 interface.
+
+ Bits:           Bit 0: Is reflected on RS-232 DTR (Data
+                 Terminal Ready) line.
+                 Bit 1: Reflected on RS-232 RTS (Request to
+                 Send) line.
+                 Bit 2: GPO1 (General Purpose Output 1).
+                 Bit 3: GPO2 (General Purpose Output 2).
+                 Enables interrupts to be sent from the UART
+                 to the PIC.
+                 Bit 4: Echo (loop back) test.  All characters
+                 sent will be echoed if set.
+                 Bits 5-7: Unused.
+
+ Register 5:     LSR (Line Status Register).
+
+ Purpose:        Stores general status information about the UART.
+
+ Bits:           Bit 0: Set if RHR contains a character (called
+                 RxRDY or RDR, depending on literature).
+                 Bit 1: Overrun error (character overwrote the last
+                 in the RHR)
+                 Bit 2: Parity error
+                 Bit 3: Framing error (stop bit was set to 0 instead
+                 of 1).
+                 Bit 4: Break condition
+                 Bit 5: THE (or TBE).  Transmit Buffer Empty.  If
+                 set, the UART sent data from the THR to the OSR
+                 (Output Shift Register) and data can be safely
+                 written without overwriting anything.
+                 Bit 6: Transmitter empty; both the THR and shift
+                 register are empty if this is set.
+                 Bit 7: Unused on the 8250.
+
+ Register 6:     MSR (Modem Status Register).
+
+ Purpose:        Displays the status of the modem control lines.
+                 After bits 0-3 are read they are reset.
+
+ Bits:           Bit 0: CTS (Clear To Send) line has changed
+                 (since last read of MSR).
+                 Bit 1: DSR (Data Set Ready) has changed.
+                 Bit 2: RI (Ring Indicator) has been set since
+                 the last time the MSR was read.
+                 Bit 3: CD (Carrier Detect) has changed.
+                 Bit 4: Value of CTS
+                 Bit 5: Value of DSR
+                 Bit 6: Value of RI
+                 Bit 7: Value of CD
+
+ Register 7:     SPR (Scratch Pad Register)
+
+ Purpose:        Just what the name implies; a scratch pad, for
+                 nothing.
+
+ Bits:           Bit 0-7: As you will
+
+The registers listed above are pretty much all that there is to programming
+the 8250; you access them by doing an out to the base address of the UART
+for a given COM port (it's got a set of registers for every COM port) plus
+the offset of the register that you want to work with. The base addresses
+of the COM ports are as follows:
+
+#define PORT_COM1       0x3f8
+#define PORT_COM2       0x2f8
+#define PORT_COM3       0x3e8
+#define PORT_COM4       0x2e8
+
+In C, that means
+
+void Write_UART (int COM_port, int reg, int data) {
+     outp((COM_port + reg), data);
+}
+
+int Read_UART (int COM_port, int reg) {
+    return(_inp(COM_port + reg));
+}
+
+Easy enough. These functions will allow you to program the UART registers,
+and they're all you need to construct a full serial communications library.
+Most things that you can program the UART to do are self-explanatory. As a
+for-instance, let's try to figure out how to send and receive characters
+from the serial port. To do this, first we have to figure out how to set it
+up.
+
+Setting up the UART:
+
+Refering to the table above, you'll see that the LCR (register 3) allows us
+to establish essential aspects of a serial communications session via the
+UART. We need to set up the format of the characters to be sent or
+received, namely how many bits each character is to have (5-8), the parity
+of the connection (something like a method of error checking), the number
+of stop-bits (don't worry about them), and the baud rate at which the
+connection is to take place (the number of bits per second to transfer).
+
+Let's go with 8-bit serial words, because that comes to exactly a byte, the
+size of the type unsigned char in ANSI C. This makes things a lot easier.
+It takes care of the parity issue--there's no room for it with 8-bit serial
+words, so forget it (parity=NONE). As for stop bits, we'll just set the
+UART to send one of them. That leaves us the issue of setting the baud
+rate. Be sure you're sitting down for this next one.
+
+To set the baud rate:
+
+You set bit 7 of register 3, which makes registers 0 and 1 one big
+word-sized register that is used to hold the baud-rate divisor. This
+divisor is calculated as 0x1C200 / baud_rate and stored in a word-sized
+(two-byte) variable, like int in a 16-bit compiler or short in a 32-bit
+compiler. Then to set the baud rate for the UART, you do a word out (I
+think the ANSI C standard library has a word-out function--like, say,
+outpw()--for your convenience) to register 0 on the UART, which fills
+registers 0 and 1 with the divisor.
+
+ Don't ask me why it's designed like that, I'm not a hardware engineer.
+ Let's just say that some Roman god decreed it two thousand years ago and
+ your PC will get hit by lightning if you contradict it--some things are
+ just plain wierd.
+
+So let's throw together a function that sets up the serial port. Skip the
+box if you know about bit flags.
+
+ Bit flags for the beginner: It's often desirable to cram a lot of
+ information about something into a small space. One way to achieve this
+ is by using bit flags, by which each bit of a byte represents the state
+ of something. Bit-flags work by using the logical operators & and |, AND
+ and OR. OR on a bit level compares two bits and produces one output bit:
+ If either one of the input bits is set (=1), then the resulting bit is 1,
+ else it isn't. AND on a bit level also compares two bits and produces one
+ output bit: If both input bits are set to 1, then the resulting bit is 1,
+ else it isn't. When used on a byte level, AND and OR work the same way as
+ they do on the bit-level, only on every bit of a byte.
+
+ Bit "flags" are defined as numbers that have only one bit set in them,
+ such as 128, 64, 32, etc. Individual flags can then be combined to form a
+ flag that records the information stored in both of them, such as (128 |
+ 4) = (01000000 | 00000100) = 01000100. Then you check the state of each
+ bit in the byte using & to "mask" all bits in the byte except the one
+ that you're interested in. If the bit that you're interested in is set,
+ the result of & will be non-zero.
+
+typedef short word
+//typedef int word
+
+//SOME CONSTANTS FOR PROGRAMMING THE UART
+
+#define REG_RHR         0
+#define REG_THR         0
+#define REG_IER         1
+#define REG_IIR         2
+#define REG_LCR         3
+#define REG_MCR         4
+#define REG_LSR         5
+#define REG_MSR         6
+#define REG_SCRATCH     7
+
+//LCR-related constants
+#define PARITY_NONE     0
+#define PARITY_ODD      8
+#define PARITY_EVEN     24
+#define PARITY_MARK     20
+#define PARITY_SPACE    28
+
+#define STOP_ONE        0
+#define STOP_TWO        4
+
+#define BITS_5          0
+#define BITS_6          1
+#define BITS_7          2
+#define BITS_8          3
+
+#define DLR_ON          128
+
+int port_in_use=0;
+
+int Setup_Serial (int COM_port, int baud, unsigned char misc) {
+    word divisor;
+
+    if(port_in_use)
+      return(port_in_use);
+
+    port_in_use = COM_port;
+
+    Write_UART(COM_port, REG_LCR, (int)DLR_ON);
+    divisor = 0x1c200 / baud;
+    outpw(COM_port, divisor);
+
+    Write_UART(COM_port, REG_LCR, (int)misc);
+    return 1;
+}
+
+Here's a demonstration:
+
+Setup_Serial(PORT_COM1, 2400, BITS_8 | PARITY_NONE | STOP_ONE);
+
+Now we'd like it if we could actually use the serial port. Let's send and
+receive characters.
+
+Sending characters:
+
+To send a character out the serial port, you write it to the THR (register
+0). What if there's another character in the THR waiting to be sent? On the
+8250, it'll be overwritten. However, you can wait for it to be sent. Test
+bit 3 of the LSR to determine if the last character in the THR was shifted
+out of the buffer before writing a character. Like this:
+
+void Serial_Write (unsigned char ch) {
+     while (!((unsigned char)Read_UART(port_in_use, REG_LSR) & 0x20)) {}
+
+     //clear interrupts
+     _asm cli
+
+     Write_UART(port_in_use, REG_THR, (int)ch);
+
+     //set interrupts
+     _asm sti
+}
+
+Note that software interrupts are turned off using _asm cli. This makes
+sure that interrupts using the COM port set up by other programs don't
+interfere with the operation of our application. Always be sure to turn
+interrupts back on.
+
+Receiving characters:
+
+To determine if a character is in the THR, you read bit 0 of the LSR. When
+this bit is set, a character is in the THR, and you can retrieve it by
+reading register 0 of the UART.
+
+unsigned char Simple_Serial_Read (void) {
+              while (!((unsigned char)Read_UART(port_in_use, REG_LSR) << 7)) {}
+              return(Read_UART(port_in_use, REG_RHR));
+}
+
+Programming the UART to generate interrupts:
+
+It is often desirable to have the UART tell you when an event occurs,
+rather than having to poll its registers to find out. You can do this by
+programming it to generate interrupts on certain events.
+
+Before setting up any interrupts, you must set bit 3 of the MCR (UART
+register 4) to 1. This toggles the GPO2, which puts the UART out of
+tri-state, and allows it to service interrupts. [don't ask; I didn't design
+the thing] Then, set the bits of the IER (register 1) that represent the
+interrupts you want the UART to generate.
+
+Next, you set up the PIC (Programmable Interrupt Controller) to allow
+interrupts from the COM ports. Many of you aren't familiar with this chip
+[the PIC], but there's not enough space to give a tutorial on it, so you'll
+just have to believe me. COM1 and COM3 are on IRQ4 and COM2 and COM4 are on
+IRQ3, so you enable the interrupt by zeroing the 3rd (IRQ3) or 4th (IRQ4)
+bit of the PIC's Interrupt Mask Register (be sure to keep the other bits
+intact!).
+
+The serial interrupt vector is 0Bh (for COM1/COM3) or 0Ch (for COM2/COM4).
+Write an ISR that latches onto the appropriate one. Your ISR should check
+the LSR (register 5) to determine what caused the interrupt, then handle
+it. Was that fun or what? Some sample code follows, hopefully you can
+follow it (DJGPP). [warning: not tested, compiled, or warranted in any way;
+uses functions developed earlier in this article.]
+
+#include 
+#include 
+#include 
+
+#define ON_RHRI 1
+#define ON_THRI 2
+#define ON_RLSI 4
+#define ON_MSI  8
+
+_go32_segment_info old_ISR, new_ISR;
+
+void my_ISR(void) {
+     //does nothing, and does it well
+     asm("cli;pusha");
+     asm("popa;sti");
+}
+void end_my_ISR(void) {}
+
+int serial_interrupt(int COM_port, unsigned char conditions) {
+     unsigned char data;
+
+     Write_UART(COM_port, REG_MCR, 0x08);
+     Write_UART(COM_port, REG_IER, (int)conditions);
+
+     _go3d_dpmi_lock_code(my_ISR,(unsigned long)(end_my_ISR-my_ISR));
+
+     //WARNING:  You should also lock any data accessed from within
+     //an interrupt handler using _go32_dpmi_lock_data();
+
+     new_ISR.pm_offset = (int)my_ISR;
+     new_ISR.pm_selector = _go32_my_cs();
+
+     switch(COM_port) {
+           case PORT_COM1:
+                _go32_dpmi_get_protected_mode_interrupt_vector(0x0B, &old_ISR);
+                _go32_dpmi_allocate_iret_wrapper(&new_ISR);
+                _go32_dpmi_set_protected_mode_interrupt_vector(0x0B, &new_ISR);
+
+                data= inportb(0x21); //get PIC IMR
+                data&=0xF7;       //zero bit 4
+                outportb(0x21,data); //write PIC IMR
+                break;
+           case PORT_COM2:
+                _go32_dpmi_get_protected_mode_interrupt_vector(0x0C, &old_ISR);
+                _go32_dpmi_allocate_iret_wrapper(&new_ISR);
+                _go32_dpmi_set_protected_mode_interrupt_vector(0x0C, &new_ISR);
+
+                data= inportb(0x21); //get PIC IMR
+                data&=0xFB;       //zero bit 3
+                outportb(0x21,data); //write PIC IMR
+                break;
+           default:
+                return 0;
+     }
+
+     return 1;
+}
+
+void set_irpt_conditions (int COM_port, unsigned char conditions) {
+     Write_UART(COM_port, REG_IER, (int)conditions);
+}
+
+int stop_serial_irpt (int COM_port) {
+    unsigned char data;
+
+    //toggle GPO2
+    data = Read_UART(COM_port, REG_MCR);
+    data&=0x08;
+    Write_UART(COM_port, REG_MCR, (int)data);
+
+    //disable interrupts
+    Write_UART(COM_port, REG_IER, 0x00);
+
+    if (COM_port==PORT_COM1) {
+       _go32_dpmi_set_protected_mode_interrupt_vector(0x0B, &old_ISR);
+       _go32_dpmi_free_iret_wrapper(&new_ISR);
+       return 1;
+    }
+    if (COM_port==PORT_COM2) {
+       _go32_dpmi_set_protected_mode_interrupt_vector(0x0C, &old_ISR);
+       _go32_dpmi_free_iret_wrapper(&new_ISR);
+       return 1;
+    }
+
+    return 0;
+}
+
+That pretty much covers it for UART/serial port basics. Other tasks that
+you might want to perform with the UART are fairly explanatory from the
+register information just given. For the purposes of game programming, you
+shouldn't have to worry about doing much more than reading, sending, and
+checking status. As for the interrupt routine issues, I will leave it up to
+you to write an interrupt that processes serial events, because you and you
+alone know how you're going to process them in your particular application.
+Hopefully this article has made some sense out of the jumbled internals of
+the beast called the 8250.

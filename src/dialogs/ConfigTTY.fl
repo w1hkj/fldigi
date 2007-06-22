@@ -1,0 +1,756 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0107 
+header_name {.h} 
+code_name {.cxx}
+decl {\#include "main.h"} {} 
+
+decl {\#include "globals.h"} {public
+} 
+
+decl {\#include "modem.h"} {public
+} 
+
+decl {\#include "configuration.h"} {public
+} 
+
+decl {Fl_Double_Window *dlgConfig;} {public
+} 
+
+Function {ConfigureDialog()} {open
+} {
+  code {static char *szShifts  = "23|85|160|170|182|200|240|350|425|850";
+static char *szBauds   = "45|45.45|50|56|75|100|110|150|200|300";
+static char *szSelBits = "5 (baudot)|7 (ascii)|8 (ascii)";
+static char *szParity  = "none|even|odd|zero|one";
+static char *szStopBits = "1|1.5|2";
+static char *szOliviaTones = "2|4|8|16|32|64|128|256";
+static char *szOliviaBandwidth = "125|250|500|1000|2000";
+static char *szPreFilters = "None (rect)|Blackman|Hamming|Hanning|Triangular";
+static char *szBaudRates = "300|600|1200|2400|4800|9600|19200|38400|57600|115200|230400|460800";} {}
+  code {} {}
+  Fl_Window {} {
+    label {fldigi - config} open
+    xywh {493 48 400 255} type Double align 80 visible
+  } {
+    Fl_Tabs tabsConfigure {open
+      xywh {0 6 397 217} selection_color 9
+    } {
+      Fl_Group tabOperator {
+        label Oper
+        xywh {5 30 390 190} hide
+      } {
+        Fl_Input inpMyCallsign {
+          label {Callsign:}
+          xywh {78 36 85 24}
+        }
+        Fl_Input inpMyName {
+          label {Name:}
+          xywh {78 62 120 24}
+        }
+        Fl_Input inpMyQth {
+          label {Qth:}
+          xywh {78 89 312 24}
+        }
+        Fl_Input inpMyLocator {
+          label {Locator:}
+          xywh {78 116 85 24}
+        }
+        Fl_Group {} {
+          label {Contest Setup} open
+          xywh {5 145 390 75} box ENGRAVED_FRAME align 21
+        } {
+          Fl_Check_Button btnUseLeadingZeros {
+            label {Use Leading Zeros}
+            callback {progdefaults.UseLeadingZeros = o->value();}
+            xywh {35 175 165 15} down_box DOWN_BOX value 1
+          }
+          Fl_Value_Input nbrContestStart {
+            label {Starting \#:}
+            callback {progdefaults.ContestStart = (int)o->value();}
+            xywh {315 155 45 25} minimum 1 maximum 10000 step 1 value 1
+          }
+          Fl_Value_Input nbrContestDigits {
+            label {\# of digits:}
+            callback {progdefaults.ContestDigits = (int)o->value();}
+            xywh {315 185 45 25} minimum 1 maximum 5 step 1 value 3
+          }
+        }
+      }
+      Fl_Group tabWaterfall {
+        label {W-fall}
+        xywh {5 30 390 190} hide
+      } {
+        Fl_Choice inpPreFilter {
+          label {FFT Prefilter}
+          callback {progdefaults.initWFPrefilter(o->value());} open
+          xywh {55 75 141 25} down_box BORDER_BOX align 5
+          code0 {o->add(szPreFilters);}
+          code1 {o->value(0);}
+        } {}
+        Fl_Button btnSpectrum {
+          label Spectrum
+          callback {fl_color_chooser("Spectrum",
+progdefaults.red,
+progdefaults.green,
+progdefaults.blue);
+wf->setcolors();}
+          xywh {250 75 90 25}
+          code0 {\#include <FL/Fl_Color_Chooser.H>}
+        }
+        Fl_Check_Button btnMultiColorWF {
+          label {Multi-color}
+          callback {progdefaults.MultiColorWF = o->value();
+wf->setcolors();}
+          tooltip {Use multi-color waterfall} xywh {250 115 120 20} down_box DOWN_BOX
+          code1 {o->value(progdefaults.MultiColorWF);}
+        }
+        Fl_Check_Button btnUseCursorLines {
+          label {Use Cursor BW Lines}
+          callback {progdefaults.UseCursorLines = o->value();}
+          xywh {55 115 165 20} down_box DOWN_BOX
+          code0 {o->value(progdefaults.UseCursorLines);}
+        }
+        Fl_Check_Button btnUseBWTracks {
+          label {Use BW Tracks}
+          callback {progdefaults.UseBWTracks = o->value();}
+          xywh {55 139 140 20} down_box DOWN_BOX
+          code0 {o->value(progdefaults.UseBWTracks);}
+        }
+        Fl_Check_Button btnUseCursorCenterLine {
+          label {Use Cursor Center Line}
+          callback {progdefaults.UseCursorCenterLine = o->value();}
+          xywh {55 164 140 20} down_box DOWN_BOX
+          code0 {o->value(progdefaults.UseCursorCenterLine);}
+        }
+        Fl_Check_Button btnViewXmtSignal {
+          label {View Xmt Signal}
+          callback {progdefaults.viewXmtSignal=o->value();}
+          xywh {55 189 133 15} down_box DOWN_BOX
+          code0 {o->value(progdefaults.viewXmtSignal);}
+        }
+      }
+      Fl_Group tabInterface {
+        label RigCtl
+        xywh {5 28 390 190} hide
+      } {
+        Fl_Group {} {
+          label Ptt open
+          xywh {10 36 185 179} box ENGRAVED_FRAME align 21
+        } {
+          Fl_Round_Button {btnPTT[0]} {
+            label none
+            callback {btnPTT[1]->value(0);
+btnPTT[2]->value(0);
+btnPTT[3]->value(0);
+btnPTT[4]->value(0);
+o->value(1);}
+            xywh {25 57 64 15} down_box DIAMOND_DOWN_BOX value 1 selection_color 1
+          }
+          Fl_Round_Button {btnPTT[1]} {
+            label Hamlib
+            callback {btnPTT[0]->value(0);
+btnPTT[2]->value(0);
+btnPTT[3]->value(0);
+btnPTT[4]->value(0);
+o->value(1);}
+            xywh {107 58 67 15} down_box DIAMOND_DOWN_BOX selection_color 1 deactivate
+          }
+          Fl_Round_Button {btnPTT[2]} {
+            label Memmap
+            callback {btnPTT[1]->value(0);
+btnPTT[0]->value(0);
+btnPTT[3]->value(0);
+btnPTT[4]->value(0);
+o->value(1);}
+            xywh {25 78 85 15} down_box DIAMOND_DOWN_BOX selection_color 1 deactivate
+          }
+          Fl_Round_Button {btnPTT[3]} {
+            label RigCAT
+            callback {btnPTT[0]->value(0);
+btnPTT[1]->value(0);
+btnPTT[2]->value(0);
+btnPTT[4]->value(0);
+o->value(1);}
+            xywh {107 79 85 15} down_box DIAMOND_DOWN_BOX selection_color 1 deactivate
+          }
+          Fl_Group {} {open
+            xywh {12 100 180 88} box ENGRAVED_FRAME align 21
+          } {
+            Fl_Round_Button {btnPTT[4]} {
+              label TTY
+              callback {btnPTT[1]->value(0);
+btnPTT[2]->value(0);
+btnPTT[3]->value(0);
+btnPTT[0]->value(0);
+o->value(1);}
+              xywh {17 108 52 14} down_box DIAMOND_DOWN_BOX selection_color 1
+            }
+            Fl_Input inpTTYdev {
+              xywh {66 105 120 22}
+            }
+            Fl_Round_Button {btnRTSDTR[0]} {
+              label RTS
+              callback {btnRTSDTR[1]->value(0);
+btnRTSDTR[2]->value(0);
+btnRTSDTR[3]->value(0);
+o->value(1);}
+              xywh {36 144 64 15} down_box DOWN_BOX value 1
+            }
+            Fl_Round_Button {btnRTSDTR[1]} {
+              label DTR
+              callback {btnRTSDTR[0]->value(0);
+btnRTSDTR[2]->value(0);
+btnRTSDTR[3]->value(0);
+o->value(1);}
+              xywh {36 169 64 15} down_box DOWN_BOX
+            }
+            Fl_Round_Button {btnRTSDTR[2]} {
+              label BOTH
+              callback {btnRTSDTR[0]->value(0);
+btnRTSDTR[1]->value(0);
+btnRTSDTR[3]->value(0);
+o->value(1);}
+              xywh {98 144 64 15} down_box DOWN_BOX
+            }
+            Fl_Round_Button {btnRTSDTR[3]} {
+              label {DTR=+V}
+              callback {btnRTSDTR[0]->value(0);
+btnRTSDTR[1]->value(0);
+btnRTSDTR[2]->value(0);
+o->value(1);}
+              xywh {98 169 64 15} down_box DOWN_BOX
+            }
+          }
+          Fl_Check_Button chkPTT_reverse {
+            label {PTT reverse}
+            xywh {37 193 110 15} down_box DOWN_BOX
+          }
+        }
+        Fl_Group {} {
+          label {Rig Control} open
+          xywh {195 36 200 151} box ENGRAVED_FRAME align 21
+        } {
+          Fl_Check_Button chkUSEHAMLIB {
+            label Hamlib
+            callback {if (o->value() == 1) {
+  chkUSEMEMMAP->value(0);
+  chkUSERIGCAT->value(0);
+  btnPTT[3]->value(0);
+  btnPTT[3]->deactivate();
+  btnPTT[2]->value(0);
+  btnPTT[2]->deactivate();
+  btnPTT[1]->activate();
+  } else {
+  btnPTT[1]->value(0);
+  btnPTT[1]->deactivate();
+  }
+btnPTT[0]->value(1);}
+            xywh {205 80 19 15} down_box DOWN_BOX align 8
+          }
+          Fl_Check_Button chkUSEMEMMAP {
+            label Memmap
+            callback {if(o->value() == 1){
+  chkUSEHAMLIB->value(0);
+  chkUSERIGCAT->value(0);
+  btnPTT[3]->value(0);
+  btnPTT[3]->deactivate();
+  btnPTT[1]->value(0);
+  btnPTT[1]->deactivate();
+  btnPTT[2]->activate();
+  } else {
+  btnPTT[2]->value(0);
+  btnPTT[2]->deactivate();
+  }
+btnPTT[0]->value(1);}
+            xywh {205 61 19 15} down_box DOWN_BOX align 8
+          }
+          Fl_Box cboHamlibRig {
+            label {Rig:}
+            xywh {230 106 160 22} box DOWN_BOX color 7 align 4
+            code0 {\#include "combo.h"}
+            class Fl_ComboBox
+          }
+          Fl_Input inpRIGdev {
+            label {Device:}
+            xywh {269 131 120 22}
+          }
+          Fl_Choice mnuBaudRate {
+            label {Baud Rate:} open
+            xywh {288 158 100 22} down_box BORDER_BOX
+            code0 {o->add(szBaudRates);}
+          } {}
+          Fl_Check_Button chkUSERIGCAT {
+            label RigCAT
+            callback {if (o->value() == 1) {
+  chkUSEHAMLIB->value(0);
+  chkUSEMEMMAP->value(0);
+  btnPTT[1]->value(0);
+  btnPTT[1]->deactivate();
+  btnPTT[2]->value(0);
+  btnPTT[2]->deactivate();
+  btnPTT[3]->activate();
+  } else {
+  btnPTT[3]->value(0);
+  btnPTT[3]->deactivate();
+  }
+btnPTT[0]->value(1);}
+            xywh {305 61 19 15} down_box DOWN_BOX align 8
+          }
+        }
+        Fl_Button btnInit_Interface {
+          label Initialize
+          callback {progdefaults.initInterface();}
+          xywh {308 190 80 24}
+        }
+      }
+      Fl_Group {} {
+        label QRZ open
+        xywh {5 29 390 190} hide
+      } {
+        Fl_Check_Button btnQRZnotavailable {
+          label {QRZ not available}
+          callback {if (o->value() == 1) {
+btnQRZcdrom->value(0);
+btnQRZsocket->value(0);
+progdefaults.QRZ = 0;
+}}
+          xywh {31 50 200 20} down_box DOWN_BOX value 1
+          code0 {if (progdefaults.QRZ == 0) o->value(1); else o->value(0);}
+        }
+        Fl_Check_Button btnQRZsocket {
+          label {QRZ internet connection}
+          callback {if (o->value() == 1) {
+btnQRZcdrom->value(0);
+btnQRZnotavailable->value(0);
+progdefaults.QRZ = 1;
+}}
+          xywh {32 103 200 20} down_box DOWN_BOX
+          code0 {if (progdefaults.QRZ == 1) o->value(1); else o->value(0);}
+        }
+        Fl_Check_Button btnQRZcdrom {
+          label {QRZ cdrom}
+          callback {if (o->value() == 1) {
+btnQRZsocket->value(0);
+btnQRZnotavailable->value(0);
+progdefaults.QRZ = 2;
+}}
+          xywh {31 76 200 20} down_box DOWN_BOX
+          code0 {if (progdefaults.QRZ == 2) o->value(1); else o->value(0);}
+        }
+      }
+      Fl_Group tabSoundCard {
+        label SndCrd
+        xywh {5 28 392 190} hide
+      } {
+        Fl_Group {} {
+          label {Sound Card Settings} open
+          xywh {5 35 385 95} box ENGRAVED_FRAME align 21
+        } {
+          Fl_Input inpSCdevice {
+            label {SC dev:}
+            xywh {262 61 121 24}
+            code0 {o->value("/dev/dsp");}
+          }
+          Fl_Spinner cntRxRateCorr {
+            label {RX rate corr:}
+            xywh {103 61 65 24}
+            code0 {o->step(1);}
+            code1 {o->minimum(-5000);}
+            code2 {o->maximum(5000);}
+          }
+          Fl_Spinner cntTxRateCorr {
+            label {TX rate corr:}
+            xywh {103 91 65 24}
+            code0 {o->step(1);}
+            code1 {o->minimum(-5000);}
+            code2 {o->maximum(5000);}
+          }
+          Fl_Box {} {
+            label ppm
+            xywh {171 59 30 22}
+          }
+          Fl_Box {} {
+            label ppm
+            xywh {171 93 30 22}
+          }
+          Fl_Button btnSoundCardReset {
+            label Reset
+            callback {resetSoundCard();}
+            xywh {310 95 59 25}
+          }
+        }
+        Fl_Group {} {
+          label {Multi-tone Identifier} open
+          xywh {5 135 385 80} box ENGRAVED_FRAME align 21
+        } {
+          Fl_Check_Button btnsendid {
+            label {Transmit Mode Identifier}
+            callback {progdefaults.sendid=o->value();}
+            xywh {30 168 70 15} down_box DOWN_BOX
+          }
+        }
+      }
+      Fl_Group tabModems {
+        label Modems open
+        xywh {0 28 395 195}
+      } {
+        Fl_Tabs tabsModems {open
+          xywh {0 28 395 192} color 50 selection_color 10 align 9
+        } {
+          Fl_Group tabCW {
+            label CW
+            xywh {5 50 385 170} hide
+          } {
+            Fl_Light_Button btnCWrcvTrack {
+              label Track
+              callback {active_modem->set_cwTrack(btnCWrcvTrack->value());}
+              xywh {306 91 60 20} value 1
+            }
+            Fl_Progress prgsCWrcvWPM {
+              label WPM
+              xywh {86 91 217 20} color 8 selection_color 110 align 1
+            }
+            Fl_Value_Slider sldrCWxmtWPM {
+              label Xmt
+              callback {active_modem->set_cwXmtWPM(sldrCWxmtWPM->value());}
+              xywh {50 113 254 20} type {Horz Knob} color 17 align 4 minimum 1 maximum 200 step 1 value 20 textsize 14
+            }
+            Fl_Value_Output valCWrcvWPM {
+              label Rcv
+              xywh {50 91 36 20} color 7
+            }
+            Fl_Value_Slider sldrCWbandwidth {
+              label BW
+              callback {if (active_modem->get_mode() == MODE_CW)
+      active_modem->set_bandwidth(sldrCWbandwidth->value());}
+              xywh {50 135 254 20} type {Horz Knob} color 23 align 4 minimum 10 maximum 500 step 10 value 150 textsize 14
+            }
+            Fl_Counter cntCWweight {
+              label {Weight (%)}
+              callback {progdefaults.CWweight=(int)o->value();}
+              xywh {50 160 56 20} type Simple align 8 minimum 25 maximum 75 step 1 value 50
+              code0 {o->value(progdefaults.CWweight);}
+            }
+          }
+          Fl_Group tabDomEX {
+            label DomEX
+            xywh {10 50 380 160} hide
+          } {
+            Fl_Input txtSecondary {
+              label {Secondary Text}
+              xywh {20 75 360 44} type Multiline align 5
+            }
+            Fl_Button btnRestartDomEX {
+              label Restart
+              callback {progdefaults.storeDefaults();
+resetDOMEX();}
+              xywh {300 172 79 28}
+            }
+            Fl_Counter valDominoEX_BW {
+              label {BW factor:}
+              callback {progdefaults.DOMINOEX_BW=o->value();}
+              xywh {25 134 63 21} type Simple minimum 1 maximum 2 step 0.1 value 1
+              code0 {o->value(progdefaults.DOMINOEX_BW);}
+            }
+          }
+          Fl_Group tabFeld {
+            label Feld
+            xywh {5 50 385 160} hide
+          } {
+            Fl_Choice selHellFont {
+              label {Feld Hell Font:}
+              callback {progdefaults.feldfontnbr=o->value();} open
+              xywh {175 62 122 20} down_box BORDER_BOX labelfont 4 textfont 4
+              code0 {\#include "fontdef.h"}
+              code1 {o->add(szFeldFonts);}
+              code2 {o->value(progdefaults.feldfontnbr);}
+            } {}
+            Fl_Value_Slider sldrHellBW {
+              label {Filter BW}
+              callback {if (active_modem->get_mode() == MODE_FELDHELL)
+      active_modem->set_bandwidth(sldrHellBW->value());}
+              xywh {30 190 345 20} type Horizontal color 215 align 5 minimum 50 maximum 600 step 5 value 245 textsize 14
+            }
+            Fl_Check_Button btnHellXmtWidth {
+              label {2x Xmt Width}
+              xywh {40 93 113 15} down_box DOWN_BOX
+            }
+            Fl_Check_Button btnHellRcvWidth {
+              label {1/2 x Rcv Width}
+              xywh {40 113 130 15} down_box DOWN_BOX
+            }
+            Fl_Check_Button btnBlackboard {
+              label blackboard
+              xywh {40 134 100 15} down_box DOWN_BOX
+            }
+            Fl_Group {} {
+              label {Pulse Shape} open
+              xywh {175 90 195 85} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Check_Button btnHellFastAttack {
+                label {Fast Attack (2 msec)}
+                callback {if (o->value() == 1)
+btnHellSlowAttack->value(0);
+else
+btnHellSlowAttack->value(1);}
+                xywh {185 110 169 15} down_box DOWN_BOX
+                code0 {o->value(0);}
+              }
+              Fl_Check_Button btnHellSlowAttack {
+                label {Slow Attack (4 msec)}
+                callback {if (o->value() == 1)
+btnHellFastAttack->value(0);
+else
+btnHellFastAttack->value(1);}
+                xywh {185 131 70 15} down_box DOWN_BOX value 1
+                code0 {o->value(1);}
+              }
+            }
+            Fl_Check_Button btnFeldHellIdle {
+              label {Xmt (.) Idle Char}
+              callback {progdefaults.FELD_IDLE=o->value();}
+              xywh {40 155 70 15} down_box DOWN_BOX value 1
+              code0 {o->value(progdefaults.FELD_IDLE);}
+            }
+          }
+          Fl_Group tabMfsk {
+            label MFSK open
+            xywh {10 50 380 160} hide
+          } {
+            Fl_Check_Button btnTxNBpicture {
+              label {Narrow Band Picture Mode (fldigi experimental)}
+              callback {progdefaults.TxNBpicture = o->value();}
+              xywh {35 75 345 20} down_box DOWN_BOX
+              code0 {o->value(progdefaults.TxNBpicture);}
+            }
+          }
+          Fl_Group tabOlivia {
+            label Olivia open
+            xywh {10 50 381 160} hide
+          } {
+            Fl_Choice mnuOlivia_Tones {
+              label {Tones:} open
+              xywh {90 72 85 20} down_box BORDER_BOX
+              code0 {o->add(szOliviaTones);}
+              code1 {o->value(2);}
+            } {}
+            Fl_Choice mnuOlivia_Bandwidth {
+              label {Bandwidth:} open
+              xywh {270 72 85 20} down_box BORDER_BOX
+              code0 {o->add(szOliviaBandwidth);}
+              code1 {o->value(2);}
+            } {}
+            Fl_Button btnRestartOlivia {
+              label Restart
+              callback {progdefaults.storeDefaults();
+resetOLIVIA();}
+              xywh {300 172 79 28}
+            }
+          }
+          Fl_Group tabRTTY {
+            label RTTY open
+            xywh {10 50 381 160} hide
+          } {
+            Fl_Choice selShift {
+              label {Shift:} open
+              xywh {58 65 77 24} down_box BORDER_BOX
+              code0 {o->add(szShifts);}
+            } {}
+            Fl_Choice selBaud {
+              label {Baud:} open
+              xywh {58 95 77 24} down_box BORDER_BOX
+              code0 {o->add(szBauds);}
+            } {}
+            Fl_Choice selBits {
+              label {Bits:} open
+              xywh {179 65 77 24} down_box BORDER_BOX
+              code0 {o->add(szSelBits);}
+            } {}
+            Fl_Choice selParity {
+              label {Parity:} open
+              xywh {179 95 77 24} down_box BORDER_BOX
+              code0 {o->add(szParity);}
+            } {}
+            Fl_Choice selStopBits {
+              label {Stop Bits:} open
+              xywh {179 122 77 24} down_box BORDER_BOX
+              code0 {o->add(szStopBits);}
+            } {}
+            Fl_Check_Button chkMsbFirst {
+              label {Send msb first}
+              xywh {140 151 120 24} down_box DOWN_BOX
+            }
+            Fl_Button btnRestartRtty {
+              label Restart
+              callback {progdefaults.storeDefaults();
+resetRTTY();}
+              xywh {300 180 79 28}
+            }
+            Fl_Check_Button btnCRCRLF {
+              label {CR-CR-LF}
+              xywh {16 155 115 15} down_box DOWN_BOX when 6
+            }
+            Fl_Check_Button btnAUTOCRLF {
+              label AutoCRLF
+              xywh {16 184 125 15} down_box DOWN_BOX
+            }
+            Fl_Counter cntrAUTOCRLF {
+              label {after:}
+              xywh {142 181 65 20} type Simple align 4 minimum 68 maximum 80 step 1 value 72
+            }
+            Fl_Check_Button btnRTTY_USB {
+              label {RTTY is USB}
+              callback {progdefaults.RTTY_USB = o->value();}
+              xywh {272 153 109 20} down_box DOWN_BOX
+              code0 {o->value(progdefaults.RTTY_USB);}
+            }
+          }
+          Fl_Group {} {
+            label Misc open
+            xywh {10 50 381 166}
+          } {
+            Fl_Group {} {
+              label {Sweet Spot} open
+              xywh {15 56 370 49} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Value_Input valCWsweetspot {
+                label CW
+                callback {progdefaults.CWsweetspot=o->value();}
+                xywh {50 76 65 20} minimum 200 maximum 4000 step 1 value 1000
+                code0 {o->value(progdefaults.CWsweetspot);}
+              }
+              Fl_Value_Input valRTTYsweetspot {
+                label RTTY
+                callback {progdefaults.RTTYsweetspot=o->value();}
+                xywh {182 76 65 20} minimum 200 maximum 4000 step 1 value 1000
+                code0 {o->value(progdefaults.RTTYsweetspot);}
+              }
+              Fl_Value_Input valPSKsweetspot {
+                label {PSK etal}
+                callback {progdefaults.PSKsweetspot=o->value();}
+                xywh {315 76 65 20} minimum 200 maximum 4000 step 1 value 1000
+                code0 {o->value(progdefaults.PSKsweetspot);}
+              }
+            }
+            Fl_Group {} {
+              label {FSK/CW keylines} open
+              xywh {15 104 370 112} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Check_Button btnUseCWkeylineDTR {
+                label {CW-DTR}
+                callback {progdefaults.useCWkeylineDTR=o->value();
+if (o->value() == 1) {
+btnUseCWkeyline->value(0);
+progdefaults.useCWkeyline = 0;
+btnUseFSKkeylineDTR->value(0);
+progdefaults.useFSKkeylineDTR = 0;
+}}
+                xywh {110 183 80 22} down_box DOWN_BOX
+                code0 {o->value(progdefaults.useCWkeyline);}
+              }
+              Fl_Check_Button btnUseFSKkeyline {
+                label {FSK-RTS}
+                callback {progdefaults.useFSKkeyline=o->value();
+if (o->value() == 1) {
+btnUseFSKkeylineDTR->value(0);
+progdefaults.useFSKkeylineDTR = 0;
+btnUseCWkeyline->value(0);
+progdefaults.useCWkeyline = 0;
+btnUSE_UART->value(0);
+progdefaults.useUART = 0;
+}}
+                xywh {29 156 80 22} down_box DOWN_BOX
+                code0 {o->value(progdefaults.useFSKkeyline);}
+              }
+              Fl_Check_Button btnFSKisLSB {
+                label {FSK - LSB}
+                callback {progdefaults.FSKisLSB=o->value();}
+                xywh {285 156 80 22} down_box DOWN_BOX value 1
+                code0 {o->value(progdefaults.FSKisLSB);}
+              }
+              Fl_Input txtCWFSKport {
+                label {Port:}
+                callback {progdefaults.CWFSKport = o->value();}
+                xywh {60 129 121 22} when 1
+                code0 {o->value(progdefaults.CWFSKport.c_str());}
+              }
+              Fl_Button btnInitCWFSKport {
+                label {Init Port}
+                callback {if (KeyLine) {
+KeyLine->closeIO();
+KeyLine->openIO();
+}}
+                xywh {289 127 77 25}
+                code0 {\#include "modeIO.h"}
+              }
+              Fl_Check_Button btnUSE_UART {
+                label {FSK- TxD}
+                callback {progdefaults.useUART=o->value();
+if (o->value() == 1) {
+btnUseFSKkeyline->value(0);
+progdefaults.useFSKkeyline = 0;
+btnUseCWkeylineDTR->value(0);
+progdefaults.useCWkeylineDTR = 0;
+}} selected
+                xywh {195 156 80 22} down_box DOWN_BOX
+                code0 {o->value(progdefaults.useUART);}
+              }
+              Fl_Check_Button btnUseCWkeyline {
+                label {CW-RTS}
+                callback {progdefaults.useCWkeyline=o->value();
+if (o->value() == 1) {
+btnUseCWkeylineDTR->value(0);
+progdefaults.useCWkeylineDTR = 0;
+btnUseFSKkeyline->value(0);
+progdefaults.useFSKkeyline = 0;
+}}
+                xywh {29 183 80 22} down_box DOWN_BOX
+                code0 {o->value(progdefaults.useCWkeyline);}
+              }
+              Fl_Check_Button btnUseFSKkeylineDTR {
+                label {FSK-DTR}
+                callback {progdefaults.useFSKkeylineDTR=o->value();
+if (o->value() == 1) {
+btnUseFSKkeyline->value(0);
+progdefaults.useFSKkeyline = 0;
+btnUseCWkeylineDTR->value(0);
+progdefaults.useCWkeylineDTR = 0;
+btnUSE_UART->value(0);
+progdefaults.useUART = 0;
+}}
+                xywh {110 156 80 22} down_box DOWN_BOX
+                code0 {o->value(progdefaults.useFSKkeylineDTR);}
+              }
+            }
+          }
+        }
+      }
+    }
+    Fl_Return_Button btnCloseConfig {
+      label Close
+      callback {closeDialog();}
+      xywh {285 226 100 24}
+    }
+    Fl_Button btnSaveConfig {
+      label {Save Config}
+      callback {progdefaults.saveDefaults();}
+      xywh {15 226 100 24}
+    }
+  }
+} 
+
+Function {openConfig()} {open return_type void
+} {
+  code {if (!dlgConfig) dlgConfig = ConfigureDialog();
+progdefaults.loadDefaults();} {}
+} 
+
+Function {closeDialog()} {open return_type void
+} {
+  code {if (dlgConfig) dlgConfig->hide();} {}
+} 
+
+Function {createConfig()} {open return_type void
+} {
+  code {if (!dlgConfig) dlgConfig = ConfigureDialog();} {}
+} 

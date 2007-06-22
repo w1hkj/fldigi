@@ -1,0 +1,10 @@
+syntax: regexp
+\.o$
+\.(orig|rej)$
+~$
+.*\#
+\.deps
+Install
+Objects
+\.(wav|flac)$
+core(\.[0-9]+)?

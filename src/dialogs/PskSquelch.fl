@@ -1,0 +1,50 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0107 
+header_name {.h} 
+code_name {.cxx}
+decl {\#include "trx.h"} {} 
+
+decl {extern trx *modem_inuse;} {} 
+
+decl {Fl_Double_Window *sqlDialog = 0;} {} 
+
+Function {PskSquelch_dialog()} {open
+} {
+  Fl_Window {} {
+    label {Squelch Controls} open
+    xywh {364 629 295 80} type Double visible
+  } {
+    Fl_Light_Button btnSquelchOnOff {
+      label {SQLOn/Off}
+      callback {modem_inuse->set_sqlchOnOff(o->value());}
+      xywh {5 55 99 20} value 1
+    }
+    Fl_Light_Button btnAfcOnOff {
+      label {AFC On/Off}
+      callback {modem_inuse->set_afcOnOff(o->value());}
+      xywh {110 55 99 20} value 1
+    }
+    Fl_Button PskDialogDismiss {
+      label Dismiss
+      callback {sqlDialog->hide();}
+      xywh {215 55 74 20}
+    }
+    Fl_Slider sldrSquelch {
+      callback {modem_inuse->set_squelch(o->value());}
+      xywh {4 36 286 15} type {Horz Knob} maximum 100 step 1 value 20
+    }
+    Fl_Progress prgsSquelch {
+      label {Squelch Level} selected
+      xywh {4 20 286 15} color 8 align 1
+    }
+  }
+} 
+
+Function {openSquelchDialog()} {open return_type void
+} {
+  code {if (!sqlDialog) sqlDialog = PskSquelch_dialog();
+sldrSquelch->value(modem_inuse->get_squelch());
+btnAfcOnOff->value(modem_inuse->get_afcOnOff());
+btnSquelchOnOff->value(modem_inuse->get_sqlchOnOff());
+sqlDialog->show();} {}
+} 

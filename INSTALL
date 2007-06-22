@@ -1,0 +1,46 @@
+A single makefile is used to create various compile strategies for fldigi
+
+	make
+		builds fldigi with hamlib support
+		
+	make clean
+		removes all vestiges of prior builds
+		
+	make CFG=hamlib-debug
+		builds fldigi with hamlib support and gdb debug information
+		
+	make CFG=hamlib-local
+		builds fldigi with hamlib support and fltk_jpeg, fltk_png and
+		fltk_z compiled into the fltk library
+		
+	make CFG=nhl
+		builds fldigi without hamlib support
+		
+	make CFG=nhl-debug
+		builds fldigi without hamlib supoort but with gdb debug
+		information
+		
+	make CFG=nhl-local
+		builds fldigi without hamlib support but with fltk_jpeg, fltk_png 
+		and	fltk_z compiled into the fltk library
+		
+All make's place the object files in ./Objects and the target executable
+in ./Install
+
+The ./Install directory also contains icons suitable for both desktop and 
+menu use.
+
+Copy the executable file fldigi to a directory that your shell can routinely 
+access for executable files.  I have a ~/bin directory that holds all of my 
+local executables.
+
+If you plan on using fldigi with pskmail then you should create a separate 
+directory with a single file in it to start:
+  o PSKmailclient, or PSKmailserver, depending on your desired pskmail 
+    service.
+  o then you should execute Fldigi from this directory, preferably from 
+    a terminal window
+    
+After first use you will find a $HOME/.fldigi directory created with 
+all of the files needed for fldigi to run and be configured.
+

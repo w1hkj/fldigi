@@ -1,0 +1,60 @@
+Change Log:
+
+1.33  1) Modified Sound Card mixer dialog and interface code
+      2) Modified CW decoder and morse speed tracking algorithm with a
+         new CW configuration tab layout and new CW controls.
+      3) Source code includes all required #ifdef & #define statements
+         for compiling on FreeBSD
+
+1.32  1) Correct compile problem for 64 bit compiler
+      2) Minor bug fix for Olivia initialization
+
+1.31  1) Correct problem with cpu% in CW modem during transmit idle 
+         (no keyboard activity)
+
+1.30  1) New macro definitions with built-in editor
+      2) loadable waterfall palettes
+      3) all qso's saved to the log are appended to an ADIF file in the 
+         $HOME/.fldigi folder
+      4) significantly improved Psk decoder
+      5) significantly improved DominoEX decoder    capable of decoding signals 
+         anywhere within a 400 Hz bandwidth without AFC
+
+1.24  1) Bug fix for serial i/o to disable XON/XOFF protocol effected 
+         rigs with binary i/o for rig control
+
+1.23  1) Bug fix for saving state of PTT selection between sessions
+
+1.22  1) Fixes serial i/o problem with certain rigs in the Icom series
+
+1.21  1) Corrects bug in RigCtl dialog for PTT selection on serial line
+
+1.20  1) Improved rig control and rig control dialog. Now possible to 
+         control rig without using hamlib - this is a new paradigm and you 
+         should read the on-line help that explains how to use the rigCAT 
+         control interface.  rigCAT extended markup language definition files
+         can be downloaded from the xml archives
+      2) improved WWV calibration procedure
+    
+1.11  1) Added items to saved configuration
+            a. view transmit signal preference
+            b. send ID preference
+      2) Corrected failure to properly change sound card selection after 
+         initial program settings
+      3) Internal changes to improve rx/tx thread processing
+
+1.10  1) Added QRZ lookup for logging
+      2) Updated CW / FSK keyling output, added UART generated FSK signals
+      3) Added auto-logger macro reference to macro definitions
+      4) Online and download help updated for current version
+
+1.04  1) Fixes a hamlib shutdown problem for some rigs transceiver should 
+         be ON and connected before starting fldigi and during fldigi shutdown
+
+1.03  1) Improvements to pskmail server operation
+
+1.02  1) Added user defined band definition file (info at: Freq Def File)
+
+1.01  1) Fixes a memory leak problem
+
+1.00  Initial release
