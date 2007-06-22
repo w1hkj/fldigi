@@ -107,7 +107,10 @@ struct configuration {
 	string  PTTdev;
 	string	secText;
 // Sound card
+	int	btnAudioIOis;
 	string	SCdevice;
+	string	OSSdevice;
+	string	PAdevice;
 	int		RX_corr;
 	int		TX_corr;
 	int		TxOffset;
@@ -121,6 +124,7 @@ struct configuration {
 	int		timeout;
 	
 // Mixer configuration
+	string	MXdevice;
 	double	RcvMixer;
 	double	XmtMixer;
 	bool	MicIn;

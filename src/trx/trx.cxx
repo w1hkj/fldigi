@@ -231,7 +231,14 @@ void trx_reset_loop()
 		delete scard;
 		scard = 0;
 	}
-	scard = new cSound(trx_scdev.c_str());
+#ifdef PORTAUDIO
+	if (progdefaults.btnAudioIOis == 1)
+		scard = new cSoundPA(trx_scdev.c_str());
+	else
+		scard = new cSoundOSS(trx_scdev.c_str());
+#else
+	scard = new cSoundOSS(trx_scdev.c_str());
+#endif
 	trx_state = STATE_RX;	
 }
 
@@ -282,7 +289,14 @@ void trx_start(const char *scdev)
 	}
 	
 	if (scard) delete scard;
-	scard = new cSound(scdev);
+#ifdef PORTAUDIO
+	if (progdefaults.btnAudioIOis == 1)
+		scard = new cSoundPA(scdev);
+	else
+		scard = new cSoundOSS(scdev);
+#else
+	scard = new cSoundOSS(scdev);
+#endif
 
 	trx_state = STATE_RX;
 	_trx_tune = 0;

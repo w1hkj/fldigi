@@ -58,7 +58,8 @@ extern Fl_Check_Button *btnQRZnotavailable;
 extern Fl_Check_Button *btnQRZsocket;
 extern Fl_Check_Button *btnQRZcdrom;
 extern Fl_Group *tabSoundCard;
-extern Fl_Round_Button *btnDsp[2];
+extern Fl_Tabs *tabsSoundCard;
+extern Fl_Group *tabMixer;
 #include <FL/Fl_Light_Button.H>
 extern void setMixerInput(int);
 extern Fl_Light_Button *btnLineIn;
@@ -66,10 +67,19 @@ extern Fl_Light_Button *btnMicIn;
 #include <FL/Fl_Value_Slider.H>
 extern void setPCMvolume(double);
 extern Fl_Value_Slider *valPCMvolume;
+#include <FL/Fl_Input_Choice.H>
+extern Fl_Input_Choice *menuMix;
+extern void resetMixerControls();
+extern Fl_Check_Button *btnMixer;
+extern Fl_Group *tabAudio;
 #include <FL/Fl_Spinner.H>
 extern Fl_Spinner *cntRxRateCorr;
 extern Fl_Spinner *cntTxRateCorr;
 extern Fl_Spinner *cntTxOffset;
+extern Fl_Group *AudioIO;
+extern Fl_Round_Button *btnAudioIO[2];
+extern Fl_Input_Choice *menuOSSDev;
+extern Fl_Input_Choice *menuPADev;
 extern Fl_Value_Input *valCWsweetspot;
 extern Fl_Value_Input *valRTTYsweetspot;
 extern Fl_Value_Input *valPSKsweetspot;

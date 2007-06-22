@@ -40,7 +40,6 @@
 #include <FL/Fl_Tile.H>
 
 #include "combo.h"
-
 #include "TextView.h"
 #include "raster.h"
 #include "waterfall.h"
@@ -116,7 +115,7 @@ extern void put_echo_char(unsigned int data);
 extern void resetRTTY();
 extern void resetOLIVIA();
 extern void resetDOMEX();
-extern void resetSoundCard(int);
+extern void resetSoundCard();
 extern void restoreFocus();
 extern void setReverse(int);
 extern void clearQSO();

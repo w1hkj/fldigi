@@ -21,6 +21,9 @@
 // Please report all bugs and problems to "w1hkj@w1hkj.com".
 //
 #include <FL/Fl_Shared_Image.H>
+#ifdef PORTAUDIO
+	#include <portaudiocpp/PortAudioCpp.hxx>
+#endif
 #include "main.h"
 #include "waterfall.h"
 #include "fft.h"
@@ -56,6 +59,8 @@ string xmlfname;
 
 bool testmenu = false;
 
+bool gmfskmail = false;
+
 PTT		*push2talk = (PTT *)0;
 #ifndef NOHAMLIB
 Rig		*xcvr = (Rig *)0;
@@ -63,7 +68,6 @@ Rig		*xcvr = (Rig *)0;
 
 cLogfile	*logfile = 0;;
 
-bool gmfskmail = false;
 cLogfile	*Maillogfile = (cLogfile *)0;
 FILE	*server;
 FILE	*client;
@@ -71,6 +75,10 @@ bool	mailserver = false, mailclient = false;
 extern	void start_pskmail();
 
 int main(int argc, char ** argv) {
+
+	if (argc == 2)
+		if (strcasecmp(argv[1], "TEST") == 0)
+			testmenu = true;
 
 	fl_filename_expand(szHomedir, 119, "$HOME/.fldigi/");
 	if (fl_filename_isdir(szHomedir) == 0)
@@ -128,11 +136,7 @@ int main(int argc, char ** argv) {
 	Fl::visual(FL_RGB); // insure 24 bit color operation
 	fl_register_images();
 	Fl::set_fonts(0);
-
-	if (argc == 2)
-		if (strcasecmp(argv[1], "TEST") == 0)
-			testmenu = true;
-
+	
 	rigcontrol = createRigDialog();
 	create_fl_digi_main();
 
@@ -152,7 +156,53 @@ int main(int argc, char ** argv) {
 							progdefaults.btnRTSDTRis,
 							progdefaults.btnPTTREVis );
 	
-	scDevice = progdefaults.SCdevice;	
+#ifndef PORTAUDIO
+    scDevice = progdefaults.SCdevice;
+#else
+    if (progdefaults.btnAudioIOis == 0)
+    	scDevice = progdefaults.OSSdevice;
+    else if (progdefaults.btnAudioIOis == 1)
+        scDevice = progdefaults.PAdevice;
+#endif
+
+    glob_t gbuf;
+    glob("/dev/dsp*", 0, NULL, &gbuf);
+    for (size_t i = 0; i < gbuf.gl_pathc; i++)
+        menuOSSDev->add(gbuf.gl_pathv[i]);
+#ifdef PORTAUDIO
+    portaudio::AutoSystem autoSys;
+    portaudio::System &sys = portaudio::System::instance();
+    for (portaudio::System::DeviceIterator idev = sys.devicesBegin();
+         idev != sys.devicesEnd(); ++idev) {
+        ostringstream o;
+        string s;
+        string::size_type i = 0;
+        o << idev->index();
+        s += o.str() + '-' + idev->name();
+        while ((i = s.find('/', i)) != string::npos) {
+            s.insert(i, 1, '\\');
+            i += 2;
+        }
+        menuPADev->add(s.c_str());
+    }
+    btnAudioIO[1]->activate();
+#endif
+
+    glob("/dev/mixer*", 0, NULL, &gbuf);
+    for (size_t i = 0; i < gbuf.gl_pathc; i++)
+        menuMix->add(gbuf.gl_pathv[i]);
+    globfree(&gbuf);
+
+	if (progdefaults.MXdevice == "") {
+		int n = 0;
+		progdefaults.MXdevice = "/dev/mixer";
+		if (sscanf(progdefaults.SCdevice.c_str(), "/dev/dsp%d", &n) == 1)
+			progdefaults.MXdevice += n;
+		menuMix->value(progdefaults.MXdevice.c_str());
+	}
+
+    resetMixerControls();
+
 	trx_start(scDevice.c_str());
 
 	progdefaults.initInterface();

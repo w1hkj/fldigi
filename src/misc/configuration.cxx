@@ -110,7 +110,10 @@ configuration progdefaults = {
 	"/dev/ttyS0",	// PTTdev
 	"fldigi ",		// secondary text
 // Sound card
+	0,			// int		btnAudioIOis
 	"/dev/dsp",		// string	SCdevice;
+	"/dev/dsp",		// string	OSSdevice;
+	"0-/dev/dsp",		// string	PAdevice;
 	0,				// int		RX_corr;
 	0,				// int		TX_corr;
 	0,				// int		TxOffset;
@@ -123,6 +126,7 @@ configuration progdefaults = {
 	0,				// int		macronumber;
 	0,				// int		timeout;
 	
+	"",			// string	MXdevice
 	0.8,			// double	RcvMixer;
 	0.6,			// double	XmtMixer;
 	false,			// bool		MicIn;
@@ -270,7 +274,10 @@ void configuration::writeDefaultsXML()
 
 	writeXMLstr(f, "PTTDEV", PTTdev);
 	writeXMLstr(f, "SECONDARYTEXT", secText);		
+        writeXMLint(f, "AUDIOIO", btnAudioIOis);
 	writeXMLstr(f, "SCDEVICE", SCdevice);
+	writeXMLstr(f, "OSSDEVICE", OSSdevice);
+	writeXMLstr(f, "PADEVICE", PAdevice);
 	writeXMLint(f, "RXCORR", RX_corr);		
 	writeXMLint(f, "TXCORR", TX_corr);
 	writeXMLint(f, "TXOFFSET", TxOffset);
@@ -280,6 +287,7 @@ void configuration::writeDefaultsXML()
 	writeXMLbool(f, "USETIMER", useTimer);
 	writeXMLint(f, "MACRONUMBER", macronumber);
 	writeXMLint(f, "TIMEOUT", timeout);	
+	writeXMLstr(f, "MXDEVICE", MXdevice);
 	writeXMLdbl(f, "RCVMIXER", RcvMixer);
 	writeXMLdbl(f, "XMTMIXER", XmtMixer);
 	writeXMLdbl(f, "PCMVOLUME", PCMvolume);
@@ -409,6 +417,10 @@ void configuration::writeDefaults(ofstream &f)
 	f << PseudoFSK << endl;
 	f << PSKmailSweetSpot << endl;
 	f << TxOffset << endl;
+	f << MXdevice << endl;
+	f << btnAudioIOis << endl;
+	f << OSSdevice << endl;
+	f << PAdevice << endl;
 }
 
 void configuration::readDefaults(ifstream &f)
@@ -522,6 +534,10 @@ void configuration::readDefaults(ifstream &f)
 	f >> PseudoFSK;
 	f >> PSKmailSweetSpot;
 	f >> TxOffset;
+	f >> MXdevice;
+	f >> btnAudioIOis;
+	f >> OSSdevice;
+	f >> PAdevice;
 }
 
 void configuration::loadDefaults() {
@@ -766,28 +782,30 @@ int configuration::openDefaults() {
 			valRcvMixer->value(RcvMixer);
 			valXmtMixer->value(XmtMixer);
 			valPCMvolume->value(PCMvolume);
-//			btnEnableMixer->value(EnableMixer);
-			btnLineIn->value(0);
-			btnMicIn->value(0);
-			if (MicIn == true)
-				btnMicIn->value(1);
-			if (LineIn == true)
-				btnLineIn->value(1);
-				
-			btnDsp[0]->value(0);
-			btnDsp[1]->value(0);
-			if (SCdevice == "/dev/dsp") {
-				btnDsp[0]->value(1);
-			} else if (SCdevice == "/dev/dsp1") {
-				btnDsp[1]->value(1);
-			}
+                        btnMicIn->value(MicIn);
+                        btnLineIn->value(LineIn);
+
+                        btnAudioIO[0]->value(0);
+                        btnAudioIO[0]->value(0);
+                        btnAudioIO[btnAudioIOis]->value(1);
+
+                        menuOSSDev->value(OSSdevice.c_str());
+                        menuPADev->value(PAdevice.c_str());
+                        if (btnAudioIOis == 1)
+                            menuPADev->activate();
+
+
+                        btnMixer->value(EnableMixer);
+                        resetMixerControls();
+                        menuMix->value(MXdevice.c_str());
+
 			cntRxRateCorr->value(RX_corr);
 			cntTxRateCorr->value(TX_corr);
 			cntTxOffset->value(TxOffset);
 			
 		Fl::unlock();
 
-		enableMixer(true);//EnableMixer);
+		enableMixer(EnableMixer);
 		
 		ReceiveText->setFont((Fl_Font)Font);
 		ReceiveText->setFontSize(FontSize);

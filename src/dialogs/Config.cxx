@@ -396,27 +396,9 @@ progdefaults.changed = true;
 
 Fl_Group *tabSoundCard=(Fl_Group *)0;
 
-static void cb_btnDsp(Fl_Round_Button* o, void*) {
-  if (o->value() == 1) {
-    btnDsp[1]->value(0);
-    resetSoundCard(0);
-} else {
-    o->value(1);
-}
-progdefaults.changed = true;
-}
+Fl_Tabs *tabsSoundCard=(Fl_Tabs *)0;
 
-Fl_Round_Button *btnDsp[2]={(Fl_Round_Button *)0};
-
-static void cb_btnDsp1(Fl_Round_Button* o, void*) {
-  if (o->value() == 1) {
-    btnDsp[0]->value(0);
-    resetSoundCard(1);
-} else {
-    o->value(1);
-}
-progdefaults.changed = true;
-}
+Fl_Group *tabMixer=(Fl_Group *)0;
 
 Fl_Light_Button *btnLineIn=(Fl_Light_Button *)0;
 
@@ -455,6 +437,24 @@ static void cb_valPCMvolume(Fl_Value_Slider* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Input_Choice *menuMix=(Fl_Input_Choice *)0;
+
+static void cb_menuMix(Fl_Input_Choice* o, void*) {
+  progdefaults.MXdevice = o->value();
+enableMixer(false);
+enableMixer(true);
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnMixer=(Fl_Check_Button *)0;
+
+static void cb_btnMixer(Fl_Check_Button* o, void*) {
+  enableMixer(o->value());
+progdefaults.changed = true;
+}
+
+Fl_Group *tabAudio=(Fl_Group *)0;
+
 Fl_Spinner *cntRxRateCorr=(Fl_Spinner *)0;
 
 static void cb_cntRxRateCorr(Fl_Spinner* o, void*) {
@@ -473,6 +473,48 @@ Fl_Spinner *cntTxOffset=(Fl_Spinner *)0;
 
 static void cb_cntTxOffset(Fl_Spinner* o, void*) {
   progdefaults.TxOffset = (int)o->value();
+progdefaults.changed = true;
+}
+
+Fl_Group *AudioIO=(Fl_Group *)0;
+
+static void cb_btnAudioIO(Fl_Round_Button* o, void*) {
+  btnAudioIO[1]->value(0);
+o->value(1);
+menuOSSDev->activate();
+menuPADev->deactivate();
+scDevice = menuOSSDev->value();
+progdefaults.btnAudioIOis = 0;
+progdefaults.changed = true;
+resetSoundCard();
+}
+
+Fl_Round_Button *btnAudioIO[2]={(Fl_Round_Button *)0};
+
+static void cb_btnAudioIO1(Fl_Round_Button* o, void*) {
+  btnAudioIO[0]->value(0);
+o->value(1);
+menuPADev->activate();
+menuOSSDev->deactivate();
+scDevice = menuPADev->value();
+progdefaults.btnAudioIOis = 1;
+progdefaults.changed = true;
+resetSoundCard();
+}
+
+Fl_Input_Choice *menuOSSDev=(Fl_Input_Choice *)0;
+
+static void cb_menuOSSDev(Fl_Input_Choice* o, void*) {
+  scDevice = progdefaults.OSSdevice = o->value();
+resetSoundCard();
+progdefaults.changed = true;
+}
+
+Fl_Input_Choice *menuPADev=(Fl_Input_Choice *)0;
+
+static void cb_menuPADev(Fl_Input_Choice* o, void*) {
+  scDevice = progdefaults.PAdevice = o->value();
+resetSoundCard();
 progdefaults.changed = true;
 }
 
@@ -862,7 +904,7 @@ static char *szBaudRates = "300|600|1200|2400|4800|9600|19200|38400|57600|115200
     o->color(FL_DARK2);
     o->selection_color((Fl_Color)51);
     o->align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE);
-    { Fl_Tabs* o = tabsConfigure = new Fl_Tabs(0, 0, 401, 220);
+    { Fl_Tabs* o = tabsConfigure = new Fl_Tabs(0, 0, 405, 220);
       o->color(FL_DARK1);
       o->selection_color((Fl_Color)9);
       { Fl_Group* o = tabOperator = new Fl_Group(0, 25, 400, 195, "Oper");
@@ -1145,33 +1187,23 @@ static char *szBaudRates = "300|600|1200|2400|4800|9600|19200|38400|57600|115200
         }
         o->end();
       }
-      { Fl_Group* o = tabSoundCard = new Fl_Group(0, 25, 400, 195, "SndCrd");
+      { Fl_Group* o = tabSoundCard = new Fl_Group(0, 25, 405, 195, "SndCrd");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
-        { Fl_Group* o = new Fl_Group(0, 27, 400, 190);
-          o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-          { Fl_Group* o = new Fl_Group(5, 35, 395, 115, "Mixer");
-            o->box(FL_ENGRAVED_FRAME);
-            o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-            { Fl_Round_Button* o = btnDsp[0] = new Fl_Round_Button(20, 60, 55, 20, "dsp");
-              o->down_box(FL_DIAMOND_DOWN_BOX);
-              o->value(1);
-              o->selection_color((Fl_Color)2);
-              o->callback((Fl_Callback*)cb_btnDsp);
-            }
-            { Fl_Round_Button* o = btnDsp[1] = new Fl_Round_Button(20, 90, 55, 20, "dsp1");
-              o->down_box(FL_DIAMOND_DOWN_BOX);
-              o->selection_color((Fl_Color)2);
-              o->callback((Fl_Callback*)cb_btnDsp1);
-            }
-            { Fl_Light_Button* o = btnLineIn = new Fl_Light_Button(125, 59, 74, 22, "Line In");
+        { Fl_Tabs* o = tabsSoundCard = new Fl_Tabs(0, 25, 405, 195);
+          o->selection_color((Fl_Color)10);
+          { Fl_Group* o = tabMixer = new Fl_Group(0, 50, 400, 170, "Mixer");
+            o->color((Fl_Color)51);
+            o->selection_color((Fl_Color)51);
+            o->hide();
+            { Fl_Light_Button* o = btnLineIn = new Fl_Light_Button(295, 64, 74, 22, "Line In");
               o->selection_color((Fl_Color)3);
               o->callback((Fl_Callback*)cb_btnLineIn);
             }
-            { Fl_Light_Button* o = btnMicIn = new Fl_Light_Button(125, 89, 74, 22, "Mic In");
+            { Fl_Light_Button* o = btnMicIn = new Fl_Light_Button(295, 94, 74, 22, "Mic In");
               o->callback((Fl_Callback*)cb_btnMicIn);
             }
-            { Fl_Value_Slider* o = valPCMvolume = new Fl_Value_Slider(14, 120, 340, 21, "PCM");
+            { Fl_Value_Slider* o = valPCMvolume = new Fl_Value_Slider(19, 125, 340, 21, "PCM");
               o->type(5);
               o->color((Fl_Color)26);
               o->selection_color((Fl_Color)1);
@@ -1182,33 +1214,67 @@ static char *szBaudRates = "300|600|1200|2400|4800|9600|19200|38400|57600|115200
               o->callback((Fl_Callback*)cb_valPCMvolume);
               o->align(FL_ALIGN_RIGHT);
             }
+            { Fl_Input_Choice* o = menuMix = new Fl_Input_Choice(105, 90, 110, 25, "Device");
+              o->callback((Fl_Callback*)cb_menuMix);
+              o->value(progdefaults.MXdevice.c_str());
+            }
+            { Fl_Check_Button* o = btnMixer = new Fl_Check_Button(55, 61, 25, 25, "Manage mixer");
+              o->down_box(FL_DOWN_BOX);
+              o->callback((Fl_Callback*)cb_btnMixer);
+              o->value(progdefaults.EnableMixer);
+            }
+            o->end();
+          }
+          { Fl_Group* o = tabAudio = new Fl_Group(0, 50, 400, 170, "Audio");
+            o->color((Fl_Color)51);
+            o->selection_color((Fl_Color)51);
+            { Fl_Spinner* o = cntRxRateCorr = new Fl_Spinner(299, 161, 75, 24, "RX ppm:");
+              o->callback((Fl_Callback*)cb_cntRxRateCorr);
+              o->step(1);
+              o->minimum(-50000);
+              o->maximum(50000);
+            }
+            { Fl_Spinner* o = cntTxRateCorr = new Fl_Spinner(299, 190, 75, 24, "TX ppm:");
+              o->callback((Fl_Callback*)cb_cntTxRateCorr);
+              o->step(1);
+              o->minimum(-50000);
+              o->maximum(50000);
+            }
+            { Fl_Spinner* o = cntTxOffset = new Fl_Spinner(177, 190, 45, 24, "Tx offset:");
+              o->callback((Fl_Callback*)cb_cntTxOffset);
+              o->value(progdefaults.TxOffset);
+              o->step(1);
+              o->minimum(-50);
+              o->maximum(50);
+            }
+            { Fl_Group* o = AudioIO = new Fl_Group(0, 55, 140, 70, "I/O");
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { Fl_Round_Button* o = btnAudioIO[0] = new Fl_Round_Button(25, 70, 25, 25, "OSS");
+                o->down_box(FL_DIAMOND_DOWN_BOX);
+                o->selection_color((Fl_Color)1);
+                o->callback((Fl_Callback*)cb_btnAudioIO);
+              }
+              { Fl_Round_Button* o = btnAudioIO[1] = new Fl_Round_Button(25, 95, 25, 25, "PortAudio");
+                o->down_box(FL_DIAMOND_DOWN_BOX);
+                o->selection_color((Fl_Color)1);
+                o->callback((Fl_Callback*)cb_btnAudioIO1);
+              }
+              o->end();
+            }
+            { Fl_Input_Choice* o = menuOSSDev = new Fl_Input_Choice(155, 60, 110, 25, "OSS device");
+              o->callback((Fl_Callback*)cb_menuOSSDev);
+              o->align(FL_ALIGN_RIGHT);
+              o->value(progdefaults.OSSdevice.c_str());
+            }
+            { Fl_Input_Choice* o = menuPADev = new Fl_Input_Choice(155, 90, 110, 25, "PortAudio device");
+              o->callback((Fl_Callback*)cb_menuPADev);
+              o->align(FL_ALIGN_RIGHT);
+              o->value(progdefaults.PAdevice.c_str());
+            }
             o->end();
           }
           o->end();
-        }
-        { Fl_Group* o = new Fl_Group(5, 150, 395, 65, "Sound Card");
-          o->box(FL_ENGRAVED_FRAME);
-          o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-          { Fl_Spinner* o = cntRxRateCorr = new Fl_Spinner(294, 156, 75, 24, "RX ppm:");
-            o->callback((Fl_Callback*)cb_cntRxRateCorr);
-            o->step(1);
-            o->minimum(-50000);
-            o->maximum(50000);
-          }
-          { Fl_Spinner* o = cntTxRateCorr = new Fl_Spinner(294, 185, 75, 24, "TX ppm:");
-            o->callback((Fl_Callback*)cb_cntTxRateCorr);
-            o->step(1);
-            o->minimum(-50000);
-            o->maximum(50000);
-          }
-          o->end();
-        }
-        { Fl_Spinner* o = cntTxOffset = new Fl_Spinner(172, 185, 45, 24, "Tx offset:");
-          o->callback((Fl_Callback*)cb_cntTxOffset);
-          o->value(progdefaults.TxOffset);
-          o->step(1);
-          o->minimum(-50);
-          o->maximum(50);
         }
         o->end();
       }

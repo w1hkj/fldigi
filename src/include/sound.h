@@ -15,9 +15,13 @@
 #include <sys/soundcard.h>
 #include <math.h>
 
-#include <iostream>
-#include <fstream>
 #include <string>
+#include <fstream.h>
+#include <iostream.h>
+
+#ifdef PORTAUDIO
+	#include <portaudiocpp/PortAudioCpp.hxx>
+#endif
 
 #include "samplerate/samplerate.h"
 
@@ -29,7 +33,7 @@
 #define	SND_BUF_LEN		65536
 //#define	SRC_BUF_LEN		(8*SND_BUF_LEN)
 
-using namespace std;
+#define powerof2(n) ((((n) - 1) & (n)) == 0)
 
 class SndException {
 public:
@@ -48,6 +52,44 @@ public:
 
 class cSound {
 	
+protected:
+	int		txppm;
+	int		rxppm;
+
+// for interface to the samplerate resampling library
+	SRC_STATE	*tx_src_state;
+	SRC_DATA	*tx_src_data;
+	SRC_STATE	*rx_src_state;
+	SRC_DATA	*rx_src_data;
+	float		*snd_buffer;
+	float		*src_buffer;
+	
+	bool	capture;
+	bool	playback;
+	bool	generate;
+	
+	ofstream ofGenerate;
+	ofstream ofCapture;
+	fstream  ifPlayback;
+	
+	void writeGenerate(double *buff, int count);
+	void writeCapture(double *buff, int count);
+	int  readPlayback(double *buff, int count);
+
+public:
+	cSound();
+	virtual ~cSound();
+	virtual int	Open(int mode, int freq = 8000) = 0;
+	virtual void    Close() = 0;
+	virtual int	write_samples(double *, int) = 0;
+	virtual int	write_stereo(double *, double *, int) = 0;
+	virtual int	Read(double *, int) = 0;
+	void	Capture(bool on);
+	void	Playback(bool on);
+	void	Generate(bool on);	
+};
+
+class cSoundOSS : public cSound {
 private:
 	std::string	device;
 	int		device_fd;
@@ -57,14 +99,9 @@ private:
 	int		channels;
 	int		play_format;
 	int		sample_frequency;
-	int		txppm;
-	int		rxppm;
 	int		mode;
 	bool	formatok;
-	
-	bool	capture;
-	bool	playback;
-	bool	generate;
+	unsigned char	*cbuff;
 
 	void	getVersion();
 	void	getCapabilities();
@@ -76,33 +113,19 @@ private:
 	int		BufferSize(int);
 	bool	wait_till_finished();
 	bool	reset_device();
-// for interface to the samplerate resampling library
-	SRC_STATE *tx_src_state;
-	SRC_DATA *tx_src_data;
-	SRC_STATE *rx_src_state;
-	SRC_DATA *rx_src_data;
-	float	*snd_buffer;
-	float	*src_buffer;
-	unsigned char *cbuff;
-	
-	ofstream ofGenerate;
-	ofstream ofCapture;
-	fstream  ifPlayback;
-	
-	void writeGenerate(double *buff, int count);
-	void writeCapture(double *buff, int count);
-	int  readPlayback(double *buff, int count);
-	
+
 public:
-	cSound(const char *dev = "/dev/dsp");
-	~cSound();
-	int		Open(int mode, int freq = 8000, int nchan = 2);
+	cSoundOSS(const char *dev = "/dev/dsp");
+	~cSoundOSS();
+	int		Open(int mode, int freq = 8000);
 	void	Close();
-	int		Write(unsigned char *, int);
 	int		write_samples(double *, int);
 	int		write_stereo(double *, double *, int);
-	int		Read(unsigned char *, int);
 	int		Read(double *, int);
+
+private:
+	int		Read(unsigned char *, int);
+	int		Write(unsigned char *, int);
 	int		Fd() { return device_fd; }
 	int		Frequency() { return sample_frequency;};
 	int		Version() {return version;};
@@ -111,10 +134,48 @@ public:
 	int		Channels() { return channels;};
 	int		Format() { return play_format;};
 	bool	FormatOK() { return formatok;};
-	
-	void	Capture(bool on);
-	void	Playback(bool on);
-	void	Generate(bool on);	
 };
+
+#ifdef PORTAUDIO
+
+class cSoundPA : public cSound
+{
+public:
+        cSoundPA(const char *dev);
+        ~cSoundPA();
+	int 		Open(int mode, int freq = 8000);
+	void 		Close();
+	int 		write_samples(double *buf, int count);
+	int		write_stereo(double *bufleft, double *bufright, int count);
+	int 		Read(double *buf, int count);
+
+private:
+        void		resample(float *buf, int count, int max = 0);
+        void 		init_stream(void);
+        void		adjust_stream(void);
+        double		get_best_srate(void);
+        static unsigned ceil2(unsigned n);
+        static unsigned floor2(unsigned n);
+
+private:
+        std::string	device;
+
+        portaudio::System 			     &sys;
+        portaudio::BlockingStream 		     stream;
+
+        portaudio::DirectionSpecificStreamParameters in_params;
+        portaudio::DirectionSpecificStreamParameters out_params;
+        portaudio::StreamParameters 		     stream_params;
+
+        unsigned	frames_per_buffer;
+        unsigned	max_frames_per_buffer;
+        double	 	req_sample_rate;
+        double		dev_sample_rate;
+        float 		*fbuf;
+        int 		open_mode;
+        static double	std_sample_rates[];
+};
+
+#endif // PORTAUDIO
 
 #endif

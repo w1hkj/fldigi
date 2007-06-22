@@ -30,10 +30,12 @@
 #include <FL/fl_ask.H>
 #include <FL/Fl_Pixmap.H>
 #include <FL/Fl_Image.H>
+#include <FL/Fl_Tile.H>
 
 #include "version.h"
 
 #include "waterfall.h"
+#include "raster.h"
 #include "main.h"
 #include "threads.h"
 #include "trx.h"
@@ -78,6 +80,7 @@ cMixer mixer;
 
 Fl_Button			*btnTune = (Fl_Button *)0;
 Fl_Tile				*TiledGroup = (Fl_Tile *)0;
+//Fl_Group				*TiledGroup = (Fl_Group *)0;
 TextView			*ReceiveText=(TextView *)0;
 TextEdit			*TransmitText=(TextEdit *)0;
 Fl_Text_Buffer		*rcvBuffer = (Fl_Text_Buffer *)0;
@@ -114,6 +117,7 @@ Fl_Slider			*valXmtMixer;
 bool				altMacros = false;
 bool				bSaveFreqList = false;
 string				strMacroName[10];
+
 
 waterfall			*wf = (waterfall *)0;
 Digiscope			*digiscope = (Digiscope *)0;
@@ -1044,7 +1048,6 @@ void activate_test_menu_item(bool b)
 	mnu->redraw();
 }
 
-
 void create_fl_digi_main() {
 	int Y = 0;
 	fl_digi_main = new Fl_Double_Window(WNOM, HNOM, "fldigi");
@@ -1112,7 +1115,7 @@ void create_fl_digi_main() {
 		
 		int sw = 15;
 		Fl_Group *MixerFrame = new Fl_Group(0,Y,sw, Hrcvtxt + Hxmttxt);
-//			valRcvMixer = new Fl_Slider(0, Y, sw, (Htext)/2 - 15, "R");
+//			valRcvMixer = new Fl_Slider(0, Y, sw, (Hrcvtxt + Hxmttxt)/2 - 15, "R");
 			valRcvMixer = new Fl_Slider(0, Y, sw, (Htext)/2, "");
 			valRcvMixer->type(FL_VERT_NICE_SLIDER);
 			valRcvMixer->color(fl_rgb_color(0,110,30));
@@ -1120,7 +1123,7 @@ void create_fl_digi_main() {
 			valRcvMixer->selection_color(fl_rgb_color(255,255,0));
 			valRcvMixer->range(1.0,0.0);
 			valRcvMixer->callback( (Fl_Callback *)cb_RcvMixer);
-//			valXmtMixer = new Fl_Slider(0, Y + (Htext)/2, sw, (Htext)/2 - 15, "T");
+//			valXmtMixer = new Fl_Slider(0, Y + (Hrcvtxt + Hxmttxt)/2, sw, (Hrcvtxt + Hxmttxt)/2 - 15, "T");
 			valXmtMixer = new Fl_Slider(0, Y + (Htext)/2, sw, (Htext)/2, "");
 			valXmtMixer->type(FL_VERT_NICE_SLIDER);
 			valXmtMixer->color(fl_rgb_color(110,0,30));
@@ -1132,8 +1135,9 @@ void create_fl_digi_main() {
 			valXmtMixer->deactivate();
 		MixerFrame->end();
 
-		Fl_Tile *TiledGroup = new Fl_Tile(sw, Y, WNOM-sw, Htext);
-			Fl_Box *minbox = new Fl_Box(sw,Y + 66, WNOM-sw, Htext - 66 - 32);
+		Fl_Tile *TiledGroup = new Fl_Tile(sw, Y, WNOM-sw, Hrcvtxt + Hxmttxt);
+//		Fl_Group *TiledGroup = new Fl_Group(sw, Y, WNOM-sw, Hrcvtxt + Hxmttxt);
+			Fl_Box *minbox = new Fl_Box(sw,Y + 66, WNOM-sw, Hxmttxt + Hrcvtxt - 66 - 32);
 			minbox->hide();
 
 			ReceiveText = new TextView(sw, Y, WNOM-sw, Hrcvtxt, "");
@@ -1178,23 +1182,19 @@ void create_fl_digi_main() {
 			wfpack->type(1);
 			wf = new waterfall(0, Y, Wwfall, Hwfall);
 			wf->end();
-			int Wscope = Hwfall - BTN_HEIGHT - 2 * BEZEL;
-			Fl_Pack *ypack = new Fl_Pack( WNOM - Wscope, Y, 
-										  Wscope, Hwfall);
+			Fl_Pack *ypack = new Fl_Pack(WNOM-(Hwfall-22), Y, Hwfall-22, Hwfall);
 				ypack->type(0);
 
-				digiscope = new Digiscope ( WNOM - Wscope, Y, 
-											Wscope, 
-											Wscope);	
+				digiscope = new Digiscope (WNOM-(Hwfall-22), Y, Hwfall-22, Hwfall-22);
+	
 				pgrsSquelch = new Fl_Progress(
-					WNOM - Wscope, Y + Wscope,
-					Wscope, (BTN_HEIGHT + 2*BEZEL) / 2, "");
+					WNOM-(Hwfall-22), Y + Hwfall - 22,
+					Hwfall - 22, 10, "");
 				pgrsSquelch->color(FL_BACKGROUND2_COLOR, FL_DARK_GREEN);
-
 				sldrSquelch = new Fl_Slider(
 					FL_HOR_NICE_SLIDER, 
-					WNOM - Wscope, Y + Wscope + BEZEL + (BTN_HEIGHT + 2*BEZEL) / 2,
-					Wscope, (BTN_HEIGHT + 2*BEZEL) / 2, "");
+					WNOM-(Hwfall-22), Y + Hwfall - 12, 
+					Hwfall - 22, 12, "");
 							
 				sldrSquelch->minimum(0);
 				sldrSquelch->maximum(100);
@@ -1208,7 +1208,7 @@ void create_fl_digi_main() {
 			Fl_Group::current()->resizable(wf);
 		wfpack->end();
 		Y += (Hwfall + 2);
-		
+
 		Fl_Pack *hpack = new Fl_Pack(0, Y, WNOM, Hstatus);
 			hpack->type(1);
 			MODEstatus = new Fl_Button(0,Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Wmode, Hstatus, "");
@@ -1278,6 +1278,7 @@ void display_metric(double metric)
 
 void put_cwRcvWPM(double wpm)
 {
+//	if (!prgsCWrcvWPM) return;
 	int U = progdefaults.CWupperlimit;
 	int L = progdefaults.CWlowerlimit;
 	double dWPM = 100.0*(wpm - L)/(U - L);
@@ -1518,14 +1519,11 @@ void resetDOMEX() {
 
 void enableMixer(bool on)
 {
-	string mix = "/dev/mixer";
 	Fl::lock();
-	if (btnDsp[1]->value() == true) mix += '1';
 	if (on) {
 		progdefaults.EnableMixer = true;
-		mixer.openMixer(mix.c_str());
-		valRcvMixer->activate();
-		valXmtMixer->activate();
+		mixer.openMixer(progdefaults.MXdevice.c_str());
+
 		mixer.PCMVolume(progdefaults.PCMvolume/100.0);
 		mixer.setXmtLevel(valXmtMixer->value());
 		mixer.setRcvGain(valRcvMixer->value());
@@ -1538,10 +1536,29 @@ void enableMixer(bool on)
 	}else{
 		progdefaults.EnableMixer = false;
 		mixer.closeMixer();
-		valRcvMixer->deactivate();
-		valXmtMixer->deactivate();
 	}
+        resetMixerControls();
 	Fl::unlock();
+}
+
+void resetMixerControls()
+{
+    if (progdefaults.EnableMixer) {
+	    valRcvMixer->activate();
+	    valXmtMixer->activate();
+	    menuMix->activate();
+	    btnLineIn->activate();
+	    btnMicIn->activate();
+	    valPCMvolume->activate();
+    }
+    else {
+	    valRcvMixer->deactivate();
+	    valXmtMixer->deactivate();
+	    menuMix->deactivate();
+	    btnLineIn->deactivate();
+	    btnMicIn->deactivate();
+	    valPCMvolume->deactivate();
+    }
 }
 
 void setPCMvolume(double vol)
@@ -1566,17 +1583,13 @@ void setMixerInput(int dev)
 		mixer.SetCurrentInputSource(n);
 }
 
-
-void resetSoundCard(int n) {
-	string scd = "/dev/dsp";
-	if (n == 1) scd += '1';
-	if (scd != scDevice) {
-		enableMixer(false);
-		scDevice = scd;
-		trx_reset(scDevice.c_str());
-		progdefaults.SCdevice = scDevice;
-		enableMixer(true);
-	}
+void resetSoundCard()
+{
+	enableMixer(false);
+	trx_reset(scDevice.c_str());
+	progdefaults.SCdevice = scDevice;
+        if (progdefaults.EnableMixer)
+            enableMixer(true);
 }
 
 void setReverse(int rev) {

@@ -123,8 +123,7 @@ void status::initLastState()
 	else 
 		active_modem->set_freq(progdefaults.PSKsweetspot);
 
-//std::cout << ReceiveText->h() << std::endl;
-//std::cout << RxTextHeight << std::endl;
+	fl_digi_main->resize(mainX, mainY, mainW, mainH);
 
 	int X, Y, W, H, Yx, Hx;
 	X = ReceiveText->x();
@@ -138,8 +137,6 @@ void status::initLastState()
 	FHdisp->resize(X,Y,W,RxTextHeight);
 	TransmitText->resize(X, Y + RxTextHeight, W, H + Hx - RxTextHeight);
 	
-//	TiledGroup->position( 0, ReceiveText->h(), 0, RxTextHeight);	
-	fl_digi_main->resize(mainX, mainY, mainW, mainH);
 	if (rigShown == true) {
 		if (!rigcontrol)
 			createRigDialog();

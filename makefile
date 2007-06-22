@@ -23,7 +23,8 @@ ifneq (,$(findstring nhl-local, $(CFG)))
 endif
 
 #PROJECT = fldigi
-CC = "/usr/bin/g++"
+CC = g++
+#"/usr/bin/g++"
 
 OBJ_DIR = ./Objects
 OUTPUT_DIR = ./Install
@@ -118,44 +119,44 @@ endef
 .PHONY: print_header directories
 
 ifeq ($(CTARG),hamlib)
-CFLAGS = $(CCFLAGS)
-LDFLAGS = $(DYN_LDFLAGS)
+CFLAGS = $(CCFLAGS) -DPORTAUDIO
+LDFLAGS = $(DYN_LDFLAGS) -lportaudiocpp
 $(TARGET): print_header directories $(SRC_OBJS) $(HAMLIB_OBJS)
 	$(CC) -s -o $(OUTPUT_DIR)/$(TARGET) $(SRC_OBJS) $(HAMLIB_OBJS) $(LDFLAGS) $(HAMLIBS)
 endif
 
 ifeq ($(CTARG),hamlib-local)
-CFLAGS = $(CCFLAGS)
-LDFLAGS = $(STATIC_LDFLAGS)
+CFLAGS = $(CCFLAGS) -DPORTAUDIO
+LDFLAGS = $(STATIC_LDFLAGS) -lportaudiocpp
 $(TARGET): print_header directories $(SRC_OBJS) $(HAMLIB_OBJS)
 	$(CC) -s -o $(OUTPUT_DIR)/$(TARGET) $(SRC_OBJS) $(HAMLIB_OBJS) $(LDFLAGS) $(HAMLIBS) $(IMGLIBS)
 endif
 
 ifeq ($(CTARG),hamlib-debug)
-CFLAGS = $(CCFLAGS) -g
-LDFLAGS = $(DYN_LDFLAGS)
+CFLAGS = $(CCFLAGS) -g -DPORTAUDIO
+LDFLAGS = $(DYN_LDFLAGS) -lportaudiocpp
 OBJS = $(SRC_OBJS) $(HAMLIB_OBJS)
 $(TARGET): print_header directories $(SRC_OBJS) $(HAMLIB_OBJS)
 	$(CC) -o $(OUTPUT_DIR)/$(TARGET) $(OBJS) $(LDFLAGS) $(HAMLIBS)
 endif
 
 ifeq ($(CTARG),nhl)
-CFLAGS = $(CCFLAGS) -DNOHAMLIB
-LDFLAGS = $(DYN_LDFLAGS)
+CFLAGS = $(CCFLAGS) -DNOHAMLIB -DPORTAUDIO
+LDFLAGS = $(DYN_LDFLAGS) -lportaudiocpp
 $(TARGET): print_header directories $(SRC_OBJS)
 	$(CC) -s -o $(OUTPUT_DIR)/$(TARGET) $(SRC_OBJS) $(LDFLAGS)
 endif
 
 ifeq ($(CTARG),nhl-local)
-CFLAGS = $(CCFLAGS) -DNOHAMLIB
-LDFLAGS = $(STATIC_LDFLAGS)
+CFLAGS = $(CCFLAGS) -DNOHAMLIB -DPORTAUDIO
+LDFLAGS = $(STATIC_LDFLAGS) /usr/local/lib/libportaudiocpp.a /usr/local/lib/libportaudio.a
 $(TARGET): print_header directories $(SRC_OBJS)
 	$(CC) -s -o $(OUTPUT_DIR)/$(TARGET) $(SRC_OBJS) $(LDFLAGS) $(IMGLIBS) 
 endif
 
 ifeq ($(CTARG),nhl-debug)
-CFLAGS = $(CCFLAGS) -DNOHAMLIB -g
-LDFLAGS = $(DYN_LDFLAGS)
+CFLAGS = $(CCFLAGS) -DNOHAMLIB -DPORTAUDIO -g
+LDFLAGS = $(DYN_LDFLAGS) -lportaudiocpp
 $(TARGET): print_header directories $(SRC_OBJS)
 	$(CC) -o $(OUTPUT_DIR)/$(TARGET) $(SRC_OBJS) $(LDFLAGS)
 endif
