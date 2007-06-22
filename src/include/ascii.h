@@ -27,7 +27,7 @@
 #ifndef ASCII_H
 #define ASCII_H
 
-extern char *ascii[];
-extern char *ascii2[];
+extern const char *ascii[];
+extern const char *ascii2[];
 
 #endif

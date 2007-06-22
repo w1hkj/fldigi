@@ -253,7 +253,7 @@ const char *cMixer::GetInputSourceName( int i)
 	return labels[recs[i]];
 }
 
-int cMixer::InputSourceNbr(char *source)
+int cMixer::InputSourceNbr(const char *source)
 {
 	const char *labels[] = SOUND_DEVICE_LABELS;
 	char lbl[80];

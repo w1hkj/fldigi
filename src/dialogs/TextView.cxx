@@ -14,12 +14,12 @@
 //
 // fldigi is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
 // along with fldigi; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
 // ----------------------------------------------------------------------------
 
 #include <iostream>
@@ -40,522 +40,82 @@
 
 using namespace std;
 
-//=====================================================================
-// class textview
-// a virtual base class for building either a text viewer or editor
-// you cannot instantiate this class by itself
-// only as a base for child classes
-//
-// text is stored in <string> arrays
-// the attribute of each character is mirrored in another <string> array
-//=====================================================================
-
-textview :: textview( int x, int y, int w, int h, const char *label )
-  : Fl_Widget( x, y, w, h, label )
-{
-	scrollbar = new Fl_Scrollbar( x+w-20, y+2, 20, h-4 );
-	scrollbar->linesize( 1 );
-	scrollbar->callback( _scrollbarCB, this );
-
-	box( FL_DOWN_BOX );
-	color( FL_WHITE );
-
-	TextFont = FL_SCREEN;
-	TextSize = FL_NORMAL_SIZE;
-	
-	for (int i = 0; i < 16; i++) {
-		TextColor[i] = FL_BLACK;
-	}
-	TextColor[2] = FL_BLUE;
-	TextColor[3] = FL_GREEN;
-	TextColor[4] = FL_RED;
-	
-	wrappos = 0;
-	cursorON = false;
-	startidx = 0;
-	
-	clear();
-}
-
-textview :: ~textview()
-{
-	delete scrollbar;
-}
-
-void textview::Show() {
-	scrollbar->show();
-	show();
-}
-
-void textview::Hide() {
-	scrollbar->hide();
-	hide();
-}
-
-int textview::handle(int event)
-{
-	return 0;
-}
-
-void textview::setFont(Fl_Font fnt)
-{
-	Fl::lock();
-	TextFont = fnt;
-	redraw();
-	Fl::unlock();
-	Fl::awake();
-}
-
-void textview::setFontSize(int siz)
-{
-	Fl::lock();
-	TextSize = siz;
-	redraw();
-	Fl::unlock();
-	Fl::awake();
-}
-
-void textview::setFontColor(Fl_Color clr)
-{
-}
-
-int textview::lineCount()
-{
-	int cnt = 1;
-	unsigned long int len = buff.length(); // long int needed for 64 bit cpu's
-	unsigned long int indx = 0;
-	if (len == 0) return 0;
-	while ((indx = buff.find('\n', indx)) != string::npos) {
-		cnt++;
-		indx++;
-		if (indx == len) break;
-	}
-	return cnt;
-}
-
-void textview::draw_cursor()
-{
-  int X = cursorX, Y = cursorY;
-  
-  typedef struct {
-    int x1, y1, x2, y2;
-  }
-  Segment;
-
-  Segment segs[ 5 ];
-  int left, right, cursorWidth, midY;
-  int nSegs = 0;
-  int bot = Y  - charheight + 1;
-
-  /* For cursors other than the block, make them around 2/3 of a character
-     width, rounded to an even number of pixels so that X will draw an
-     odd number centered on the stem at x. */
-  cursorWidth = 4;
-  X += cursorWidth/2;
-  left = X - cursorWidth/2;
-  right = left + cursorWidth;
-
-  if (cursorON == false) {
-	fl_color(FL_WHITE);
-	fl_rectf ( X, Y - charheight, cursorWidth, charheight );
-	return;
-  }
-
-  /* Create segments and draw cursor */
-  if ( cursorStyle == CARET_CURSOR ) {
-    midY = bot - charheight / 5;
-    segs[ 0 ].x1 = left; segs[ 0 ].y1 = bot; segs[ 0 ].x2 = X; segs[ 0 ].y2 = midY;
-    segs[ 1 ].x1 = X; segs[ 1 ].y1 = midY; segs[ 1 ].x2 = right; segs[ 1 ].y2 = bot;
-    segs[ 2 ].x1 = left; segs[ 2 ].y1 = bot; segs[ 2 ].x2 = X; segs[ 2 ].y2 = midY - 1;
-    segs[ 3 ].x1 = X; segs[ 3 ].y1 = midY - 1; segs[ 3 ].x2 = right; segs[ 3 ].y2 = bot;
-    nSegs = 4;
-  } else if ( cursorStyle == NORMAL_CURSOR ) {
-    segs[ 0 ].x1 = left; segs[ 0 ].y1 = Y; segs[ 0 ].x2 = right; segs[ 0 ].y2 = Y;
-    segs[ 1 ].x1 = X; segs[ 1 ].y1 = Y; segs[ 1 ].x2 = X; segs[ 1 ].y2 = bot;
-    segs[ 2 ].x1 = left; segs[ 2 ].y1 = bot; segs[ 2 ].x2 = right; segs[ 2 ].y2 = bot;
-    nSegs = 3;
-  } else if ( cursorStyle == HEAVY_CURSOR ) {
-    segs[ 0 ].x1 = X - 1; segs[ 0 ].y1 = Y; segs[ 0 ].x2 = X - 1; segs[ 0 ].y2 = bot;
-    segs[ 1 ].x1 = X; segs[ 1 ].y1 = Y; segs[ 1 ].x2 = X; segs[ 1 ].y2 = bot;
-    segs[ 2 ].x1 = X + 1; segs[ 2 ].y1 = Y; segs[ 2 ].x2 = X + 1; segs[ 2 ].y2 = bot;
-    segs[ 3 ].x1 = left; segs[ 3 ].y1 = Y; segs[ 3 ].x2 = right; segs[ 3 ].y2 = Y;
-    segs[ 4 ].x1 = left; segs[ 4 ].y1 = bot; segs[ 4 ].x2 = right; segs[ 4 ].y2 = bot;
-    nSegs = 5;
-  } else if ( cursorStyle == DIM_CURSOR ) {
-    midY = Y + charheight / 2;
-    segs[ 0 ].x1 = X; segs[ 0 ].y1 = Y; segs[ 0 ].x2 = X; segs[ 0 ].y2 = Y;
-    segs[ 1 ].x1 = X; segs[ 1 ].y1 = midY; segs[ 1 ].x2 = X; segs[ 1 ].y2 = midY;
-    segs[ 2 ].x1 = X; segs[ 2 ].y1 = bot; segs[ 2 ].x2 = X; segs[ 2 ].y2 = bot;
-    nSegs = 3;
-  } else if ( cursorStyle == BLOCK_CURSOR ) {
-    right = X + maxcharwidth;
-    segs[ 0 ].x1 = X; segs[ 0 ].y1 = Y; segs[ 0 ].x2 = right; segs[ 0 ].y2 = Y;
-    segs[ 1 ].x1 = right; segs[ 1 ].y1 = Y; segs[ 1 ].x2 = right; segs[ 1 ].y2 = bot;
-    segs[ 2 ].x1 = right; segs[ 2 ].y1 = bot; segs[ 2 ].x2 = X; segs[ 2 ].y2 = bot;
-    segs[ 3 ].x1 = X; segs[ 3 ].y1 = bot; segs[ 3 ].x2 = X; segs[ 3 ].y2 = Y;
-    nSegs = 4;
-  }
-  fl_color( FL_BLACK );
-
-  for ( int k = 0; k < nSegs; k++ ) {
-    fl_line( segs[ k ].x1, segs[ k ].y1, segs[ k ].x2, segs[ k ].y2 );
-  }
-}
-
-string textview::findtext()
-{
-	unsigned long idx, wordstart, wordend;
-	idx = startidx;
-	int xc = 0, yc = 0;
-	char c;
-	unsigned long len = buff.length();
-	static string selword;
-
-
-	fl_font(TextFont, TextSize);
-	selword = "";
-	if (!len) return selword;
-	while(idx < len) {
-		if (yc > h()-4) 
-			break;
-		while (idx < len ) {
-			c = buff[idx];
-			if (c == '\n') {
-				xc = 0;
-				yc += fl_height();
-				break;
-			}
-			xc += (int)(fl_width(c) + 0.5);
-			idx++;
-			if (	(yc < popy && yc > popy - charheight) &&
-					(xc >= popx) ) {
-				wordstart = buff.find_last_of(" \n", idx);
-				if (wordstart == string::npos) wordstart = 0;
-				wordend = buff.find_first_of(" ,\n", idx);
-				if (wordend == string::npos) wordend = len;
-				if (wordstart && wordend)
-					selword = buff.substr(wordstart+1, wordend - wordstart - 1);
-				else if (!wordstart && wordend)
-					selword = buff.substr(0, wordend);
-				return selword;
-			}
-		}
-		idx++;
-	}
-	return selword;
-}
-
-void textview::draw()
-{
-// draw the background box
-	draw_box();
-
-// resize the scrollbar to be a constant width
-	scrollbar->resize( x()+w()-20, y()+2, 20, h()-4 );
-	scrollbar->redraw();
-
-	int line = 0;
-	unsigned int idx = 0;
-	unsigned int xpos = 0;
-	unsigned int ypos = 0;
-	unsigned int len = 0;
-	char c = 0;
-	char cstr[] = " ";
-	unsigned int	H = h() - 4, 
-					W = w() - 4 - 20, 
-					X = x() + 2, 
-					Y = y() + 2;
-  
-	fl_font(TextFont, TextSize);
-	charheight = fl_height();
-	maxcharwidth = (int)fl_width('X');
-
-	if (buff.length() == 0) {
-		fl_push_clip( X, Y, W, H);
-		cursorX = X; cursorY = Y + charheight;
-		draw_cursor();
-		fl_pop_clip();
-    	return;
-	}
-
-	nlines = lineCount();
-	line = nlines - H / charheight - scrollbar->value();
-	
-	startidx = 0;
-	if (line > 0) {
-		while (line) {
-			startidx = buff.find('\n', startidx) + 1;
-			line--;
-		}
-	}
-
-	len = buff.length();
-	  
-	fl_push_clip( X, Y, W, H );
-	
-	fl_font(TextFont, TextSize);
-	xpos = 0;
-	ypos = fl_height();
-	idx = startidx;
-	while(idx < len) {
-		if (ypos > H) 
-			break;
-		while (idx < len ) { //&& (c = buff[idx]) != '\n') {
-			c = buff[idx];
-			if (c == '\n') {
-				xpos = 0;
-				ypos += fl_height();
-				break;
-			}
-			cstr[0] = c;
-			fl_color (TextColor[(int)attr[idx]]);
-			fl_draw ( cstr, 1, X + xpos, Y + ypos );
-			xpos += (int)(fl_width(c) + 0.5);
-			idx++;
-		}
-		idx++;
-	}
-	cursorX = X + xpos; cursorY = Y + ypos;
-	draw_cursor();
-	fl_pop_clip();
-}
-
-void textview::scrollbarCB()
-{
-	redraw();
-}
-
-void textview::_backspace()
-{
-	int c;
-	unsigned long int lastcrlf = buff.rfind('\n'); // long int for 64 bit cpu's
-
-	if (lastcrlf == string::npos) lastcrlf = 0;
-	
-	if (attr[attr.length() - 1] == -1) { // soft linefeed skip over
-		buff.erase(buff.length()-1);
-		attr.erase(attr.length()-1);
-		wrappos = 0;
-		lastcrlf = buff.rfind('\n');
-		if (lastcrlf == string::npos) lastcrlf = 0;
-		fl_font(TextFont, TextSize);
-		for (unsigned long int i = lastcrlf; i < buff.length(); i++) {
-			wrappos += (int)(fl_width(buff[i]));
-		}
-	}
-
-	c = buff[buff.length()-1];
-	if (c == '\n') {
-		buff.erase(buff.length()-1);
-		attr.erase(attr.length()-1);
-		wrappos = 0;
-		lastcrlf = buff.rfind('\n');
-		if (lastcrlf == string::npos) lastcrlf = 0;
-		fl_font(TextFont, TextSize);
-		for (unsigned long int i = lastcrlf; i < buff.length(); i++) {
-			wrappos += (int)(fl_width(buff[i]));
-		}
-	} else {
-		buff.erase(buff.length()-1);
-		attr.erase(attr.length()-1);
-		fl_font(TextFont, TextSize);
-		wrappos -= (int)(fl_width(c) + 0.5);
-	}
-}
-
-void textview::_add( char c, int attribute)
-{
-	if (c == 0x08) {
-		if (buff.length() > 0)
-			_backspace();
-		return;
-	} else {
-		if (c >= ' ' && c <= '~') {
-			buff += c;
-			attr += attribute;
-			fl_font(TextFont, TextSize);
-			charwidth = (int)(fl_width(c) + 0.5);
-			if (charwidth > maxcharwidth)
-				maxcharwidth = charwidth;
-			wrappos += charwidth;
-		} else if (c == '\n') {
-			buff += c;
-			attr += attribute;
-			wrappos = 0;
-		} 
-	}
-
-	int endpos = w() - 24 - maxcharwidth;
-	if (wrappos >= endpos) {
-		unsigned long int lastspace = buff.find_last_of(' ');
-		if (!wordwrap 
-			|| lastspace == string::npos 
-			|| (buff.length() - lastspace) >= 10
-			|| (buff.length() - lastspace) == 1) {
-			buff += '\n';
-			attr += -1; // soft linefeed attribute
-			wrappos = 0;
-		} else {
-			buff.insert(lastspace+1, 1, '\n');
-			attr.insert(lastspace+1, 1, -1);
-			wrappos = 0;
-			fl_font(TextFont, TextSize);
-			for (unsigned long int i = lastspace+2; i < buff.length(); i++)
-				wrappos += (int)(fl_width(buff[i]) + 0.5);
-		}
-	}
-
-	setScrollbar();
-}
-
-void textview::add( char *text, int attribute )
-{
-	unsigned int len = strlen(text);
-	Fl::lock();
-	for (unsigned int i = 0; i < len; i++)
-		_add(text[i], attribute);
-	redraw();
-	Fl::unlock();
-	Fl::awake();
-}
-
-void textview::add( char c, int attribute )
-{
-	Fl::lock();
-	_add(c, attribute);
-	redraw();
-	Fl::unlock();
-	Fl::awake();
-}
-
-void textview::clear()
-{
-	Fl::lock();
-	buff.erase();
-	attr.erase();
-	wrappos = 0;
-	setScrollbar();
-	redraw();
-	Fl::unlock();
-	Fl::awake();
-}
-
-
-void textview :: setScrollbar()
-{
-	int lines = lineCount();
-	double size;
-
-	fl_font(TextFont, TextSize);
-	charheight = fl_height();
-	scrollbar->range (lines, 0);
-	if (lines * charheight <= h()-4)
-		size = 1.0;
-	else
-		size = (double)(h()-4) / (double)(lines * charheight);
-	if (size < 0.08) size = 0.08;
-	scrollbar->slider_size( size );
-}
-
-
-void textview :: resize( int x, int y, int w, int h )
-{
-  Fl_Widget::resize( x, y, w, h );
-  setScrollbar();
-}
-
-
-//=====================================================================
-// Class TextView
-// Viewer for received text
-// derived from Class textview
-//
-// redefines the handle() and menu_cb() functions specified in the
-// base class.  All other functions are in the base class
-//=====================================================================
-
-void TextView::saveFile()
-{
-	char * fn = File_Select(
-					"Select ASCII text file", 
-					"*.txt",
-					"", 0);
-	if (fn) {
-		ofstream out(fn);
-		out << buff;
-		out.close();
-	}
-}
 
 Fl_Menu_Item viewmenu[] = {
-	{"divider", 0, 0, 0, FL_MENU_DIVIDER },
-	{"clear",	0, 0, 0, FL_MENU_DIVIDER },
-	{"Call",	0, 0 },
-	{"Name",	0, 0 },
-	{"Qth",		0, 0 },
-	{"Loc",		0, 0 },
-	{"RstIn",	0, 0, 0, FL_MENU_DIVIDER },
-	{"Save to", 0, 0 },
-	{0}
+	{"@-9-> Call",		0, 0 },
+	{"@-9-> Name",		0, 0 },
+	{"@-9-> QTH",		0, 0 },
+	{"@-9-> Locator",	0, 0 },
+	{"@-9-> RSTin",		0, 0, 0, FL_MENU_DIVIDER },
+	{"Insert divider",	0, 0 },
+	{"Clear",		0, 0 },
+	{"Copy",		0, 0, 0, FL_MENU_DIVIDER },
+	{"Save to file...",	0, 0, 0, FL_MENU_DIVIDER },
+	{"Word wrap",		0, 0, 0, FL_MENU_TOGGLE|FL_MENU_VALUE } ,
+	{ 0 }
 };
-int viewmenuNbr = 8;
 
-TextView::TextView( int x, int y, int w, int h, const char *label )
-	: textview ( x, y, w, h, label )
+Fl_Text_Display::Style_Table_Entry TextView::styles[NSTYLES];
+
+TextView::TextView(int x, int y, int w, int h, const char *l)
+	: Fl_Text_Display(x, y, w, h, l)
 {
-	cursorStyle = BLOCK_CURSOR;
-	cursorON = true;
-	wordwrap = true;
+	tbuf = new Fl_Text_Buffer;
+	sbuf = new Fl_Text_Buffer;
+
+	buffer(tbuf);
+	highlight_data(sbuf, styles, NSTYLES, 'A', 0, 0);
+	cursor_style(Fl_Text_Display::BLOCK_CURSOR);
+
+	wrap_mode();
+
+	// set some defaults
+	setFont(FL_COURIER);
+	setFontSize(12);
+	setFontColor(FL_BLACK);
+	setFontColor(2, FL_BLUE);
+	setFontColor(3, FL_GREEN);
+	setFontColor(4, FL_RED);
 }
-
-void TextView::menu_cb(int val)
+TextView::~TextView()
 {
-	switch (val) {
-		case 0:
-			add("\n     <<================>>\n", RCV);
-			break;
-		case 1:
-			clear();
-			break;
-		case 2:
-			inpCall->value(findtext().c_str());
-			break;
-		case 3:
-			inpName->value(findtext().c_str());
-			break;
-		case 4:
-			inpQth->value(findtext().c_str());
-			break;
-		case 5:
-			inpLoc->value(findtext().c_str());
-			break;
-		case 6:
-			inpRstIn->value(findtext().c_str());
-			break;
-		case 7:
-			saveFile();
-			break;
-	}
-	restoreFocus();
+	delete tbuf;
+	delete sbuf;
 }
 
 int TextView::handle(int event)
 {
-// handle events inside the textview and invoked by Right Mouse button or scrollbar
-	if (Fl::event_inside( this )) {
-		const Fl_Menu_Item * m;
-		int xpos = Fl::event_x();
-		int ypos = Fl::event_y();
-		if (xpos > x() + w() - 20) {
-			scrollbar->handle(event);
-			return 1;
-		}
-		if (event == FL_PUSH && Fl::event_button() == 3) {
+	switch (event) {
+	case FL_FOCUS:
+		show_cursor(1);
+		if (tbuf->selected())
+			redraw();
+		Fl::focus(this);
+		return 1;
+		break;
+	case FL_UNFOCUS:
+		show_cursor(1);
+		if (tbuf->selected())
+			redraw();
+	case FL_ENTER:
+		show_cursor(1);
+		return 1;
+		break;
+	case FL_PUSH:
+		if (Fl::event_button() == FL_RIGHT_MOUSE) {
+			if (!(Fl::event_inside(this) && Fl::focus() == this))
+				break;
+
+			const Fl_Menu_Item * m;
+			int xpos = Fl::event_x();
+			int ypos = Fl::event_y();
+
 			popx = xpos - x();
 			popy = ypos - y();
 			m = viewmenu->popup(xpos, ypos, 0, 0, 0);
 			if (m) {
-				for (int i = 0; i < viewmenuNbr; i++)
+				int msize = sizeof(viewmenu) / sizeof(viewmenu[0]);
+				for (int i = 0; i < msize; i++)
 					if (m == &viewmenu[i]) {
 						menu_cb(i);
 						break;
@@ -563,257 +123,620 @@ int TextView::handle(int event)
 			}
 			return 1;
 		}
+		break;
 	}
-	return 0;
+
+	return Fl_Text_Display::handle(event);
 }
 
-//=====================================================================
-// Class TextEdit
-// derived from base class textview
-// redfines the handle() and menu_cb() functions specified in the
-// base class.  All other functions are in the base class
-//=====================================================================
+void TextView::add(char c, int attr)
+{
+	if (c == '\r')
+		return;
+	Fl::lock();
+	switch (c) {
+	case '\b':
+	{
+		int tl = tbuf->length(), sl = sbuf->length();
+		tbuf->remove(tl - 1, tl);
+		sbuf->remove(sl - 1, sl);
+	}
+	break;
+	default:
+		attr = (attr >= 0 && attr < NSTYLES) ? attr : 0;
+		char s[] = { c, '\0' };
+		tbuf->append(s);
+		s[0] = 'A' + attr;
+		sbuf->append(s);
+		break;
+	}
+
+	// if we are displaying the last line we should scroll down to keep it visible
+	if (mTopLineNum + mNVisibleLines > mNBufferLines)
+		scroll(mNBufferLines - 1, 0);
+
+	redraw();
+	Fl::unlock();
+	Fl::awake();
+}
+void TextView::add(const char *s, int attr)
+{
+	while (*s)
+		add(*s++, attr);
+}
+
+void TextView::clear(void)
+{
+	tbuf->text("");
+	sbuf->text("");
+}
+
+
+void TextView::setFont(int n, Fl_Font f)
+{
+	if (n >= 0 && n < NSTYLES)
+		styles[n].font = f;
+	else if (n == -1)
+		for (int i = 0; i < NSTYLES; i++)
+			styles[i].font = f;
+	redraw();
+}
+void TextView::setFontSize(int n, int s)
+{
+	if (n >= 0 && n < NSTYLES)
+		styles[n].size = s;
+	else if (n == -1)
+		for (int i = 0; i < NSTYLES; i++)
+			styles[i].size = s;
+	redraw();
+}
+void TextView::setFontColor(int n, Fl_Color c)
+{
+	if (n >= 0 && n < NSTYLES)
+		styles[n].color = c;
+	else if (n == -1)
+		for (int i = 0; i < NSTYLES; i++)
+			styles[i].color = c;
+	redraw();
+}
+
+
+void TextView::draw(void)
+{
+	Fl_Text_Display::draw();
+	redraw();
+}
+
+void TextView::menu_cb(int val)
+{
+	handle(FL_UNFOCUS);
+	switch (val) {
+		char *s;
+	case RX_MENU_CALL:
+		s = get_word(popx, popy);
+		inpCall->value(s);
+		free(s);
+		break;
+	case RX_MENU_NAME:
+		s = get_word(popx, popy);
+		inpName->value(s);
+		free(s);
+		break;
+	case RX_MENU_QTH:
+		s = get_word(popx, popy);
+		inpQth->value(s);
+		free(s);
+		break;
+	case RX_MENU_LOC:
+		s = get_word(popx, popy);
+		inpLoc->value(s);
+		free(s);
+		break;
+	case RX_MENU_RST_IN:
+		s = get_word(popx, popy);
+		inpRstIn->value(s);
+		free(s);
+		break;
+
+	case RX_MENU_DIV:
+		add("\n	    <<================>>\n", RCV);
+		break;
+	case RX_MENU_CLEAR:
+		clear();
+		break;
+	case RX_MENU_COPY:
+		clipboard_copy();
+		break;
+
+	case RX_MENU_SAVE:
+		saveFile();
+		break;
+
+	case RX_MENU_WRAP:
+		viewmenu[RX_MENU_WRAP].flags ^= FL_MENU_VALUE;
+		wrap_mode(!wrap);
+		break;
+	}
+
+//	restoreFocus();
+}
+
+// caller must free() returned string
+char *TextView::get_word(int x, int y)
+{
+	int p = xy_to_position(x + this->x(), y + this->y(), Fl_Text_Display::CURSOR_POS);
+	tbuf->select(word_start(p), word_end(p));
+	char *s = tbuf->selection_text();
+	tbuf->unselect();
+
+	return s;
+}
+
+void TextView::saveFile(void)
+{
+	char *fn = File_Select("Select ASCII text file", "*.txt", "", 0);
+	if (fn)
+		tbuf->outputfile(fn, 0, tbuf->length());
+}
+
+void TextView::clipboard_copy(void)
+{
+	if (tbuf->selected()) { // copy selection to primary clipboard
+		char *s = tbuf->selection_text();
+
+		Fl::copy(s, strlen(s), 1);
+		free(s);
+	}
+}
+
+void TextView::wrap_mode(bool v)
+{
+	int row, col;
+
+	xy_to_rowcol(this->x(), this->y(), &row, &col, Fl_Text_Display::CHARACTER_POS);
+	Fl_Text_Display::wrap_mode(wrap = v, col);
+}
+
+
+//==============================================================================
 
 Fl_Menu_Item editmenu[] = {
-	{"clear",	0, 0, 0, FL_MENU_DIVIDER },
-	{"File",	0, 0, 0, FL_MENU_DIVIDER },
-	{"^t",	0, 0 },
-	{"^r",	0, 0, 0, FL_MENU_DIVIDER },
-	{"Picture", 0, 0 },
-	{0}
+	{"Transmit",		0, 0 },
+	{"Receive",		0, 0 },
+	{"MFSK16 image...",	0, 0, 0, FL_MENU_DIVIDER},
+	{"Clear",		0, 0, },
+	{"Cut",			0, 0, },
+	{"Copy",		0, 0, },
+	{"Paste",		0, 0, 0, FL_MENU_DIVIDER },
+	{"Insert file...",	0, 0, 0, FL_MENU_DIVIDER },
+	{"Word wrap",		0, 0, 0, FL_MENU_TOGGLE|FL_MENU_VALUE } ,
+	{ 0 }
 };
-int editmenuNbr = 5;
 
-TextEdit::TextEdit( int x, int y, int w, int h, const char *label )
-	: textview ( x, y, w, h, label )
+Fl_Text_Display::Style_Table_Entry TextEdit::styles[NSTYLES];
+int *TextEdit::ptxpos = 0; // needed by our static kf functions
+
+TextEdit::TextEdit(int x, int y, int w, int h, const char *l)
+	: Fl_Text_Editor(x, y, w, h, l), PauseBreak(false), txpos(0), bkspaces(0)
 {
-	chrptr = 0;
-	bkspaces = 0;
-	textview::cursorStyle = HEAVY_CURSOR;
-	PauseBreak = false;
-	wordwrap = false;
+	ptxpos = &txpos;
+
+	tbuf = new Fl_Text_Buffer;
+	sbuf = new Fl_Text_Buffer;
+
+	cursor_style(Fl_Text_Display::NORMAL_CURSOR);
+	buffer(tbuf);
+	highlight_data(sbuf, styles, NSTYLES, 'A', 0, 0);
+	tbuf->add_modify_callback(style_cb, this);
+
+	wrap_mode();
+
+	// set some defaults
+	setFont(-1, FL_COURIER);
+	setFontSize(-1, 12);
+	setFontColor(-1, FL_BLACK);
+	setFontColor(2, FL_BLUE);
+	setFontColor(3, FL_GREEN);
+	setFontColor(4, FL_RED);
+
+	change_keybindings();
 }
-
-
-void TextEdit::readFile()
+TextEdit::~TextEdit()
 {
-	char * fn = File_Select(
-					"Select ASCII text file", 
-					"*.txt",
-					"", 0);
-	if (fn)  {
-		string inbuff;
-		ifstream in(fn);
-		if (in) {
-			char ch;
-			while (!in.eof()) {
-				ch = in.get();
-				inbuff += ch;
-			}
-			in.close();
-			add (inbuff.c_str());
-		}
-	}
-}
-
-void TextEdit::menu_cb(int val)
-{
-	if (val == 0) {
-		clear();
-		chrptr = 0;
-		bkspaces = 0;
-	}
-	if (val == 1)
-		readFile();
-	if (val == 2 && buff.empty()) {
-		fl_lock(&trx_mutex);
-		trx_state = STATE_TX;
-		fl_unlock(&trx_mutex);
-		wf->set_XmtRcvBtn(true);
-	}
-	if (val == 3)
-		add("^r");
-	if (val == 4)
-		if (active_modem->get_mode() == MODE_MFSK16)
-			active_modem->makeTxViewer(0,0);
-}
-
-void TextEdit::clear() {
-	textview::clear();
-	chrptr = 0;
-	PauseBreak = false;
-}
-
-int TextEdit::handle_fnckey(int key) {
-	int b = key - FL_F - 1;
-	if (b > 9)
-		return 0;
-	
-	b += (altMacros ? 10 : 0);
-	if (!(macros.text[b]).empty())
-		macros.execute(b);
-
-	return 1;
-}
-
-int TextEdit::handle_key() {
-	int key = Fl::event_key();
-	
-	if (key == FL_Escape) {
-		clear();
-		active_modem->set_stopflag(true);
-		return 1;
-	}
-	
-	if (key == FL_Pause) {
-		if (trx_state != STATE_TX) {
-			fl_lock(&trx_mutex);
-			trx_state = STATE_TX;
-			fl_unlock(&trx_mutex);
-			wf->set_XmtRcvBtn(true);
-		} else
-			PauseBreak = true;
-		return 1;
-	}
-	
-	if (key == (FL_KP + '+')) {
-		if (active_modem == cw_modem) active_modem->incWPM();
-		return 1;
-	}
-	if (key == (FL_KP + '-')) {
-		if (active_modem == cw_modem) active_modem->decWPM();
-		return 1;
-	}
-	if (key == (FL_KP + '*')) {
-		if (active_modem == cw_modem) active_modem->toggleWPM();
-		return 1;
-	}
-
-	if (key >= FL_F && key <= FL_F_Last)
-		return handle_fnckey(key);
-		
-	if (key == FL_Tab && active_modem == cw_modem) {
-		while (chrptr < buff.length()) {
-			attr[chrptr] = 2;
-			chrptr++;
-		}
-		redraw();
-		return 1;
-	}
-
-	if (key == FL_Left) {
-		active_modem->searchDown();
-		return 1;
-	}
-	if (key == FL_Right) {
-		active_modem->searchUp();
-		return 1;
-	}
-		
-	if (key == FL_Enter) {
-		add('\n');
-		return 1;
-	}
-	
-	if (key == FL_BackSpace) {
-		add (0x08);
-		if (chrptr > buff.length()) {
-			chrptr = buff.length();
-			bkspaces++;
-		}
-		return 1;
-	}
-	
-	const char *ch = Fl::event_text();
-	add(ch);
-	return 1;
+	delete tbuf;
+	delete sbuf;
 }
 
 int TextEdit::handle(int event)
 {
-// handle events inside the textedit widget
-	if (event == FL_UNFOCUS && Fl::focus() != this) {
-		textview::cursorON = false;
-		redraw();
-		return 1;
-	}
-	if (event == FL_FOCUS && Fl::focus() == this) {
-		textview::cursorON = true;
-		redraw();
-		return 1;
-	}
 	if (event == FL_KEYBOARD) {
-		return handle_key();
+		autolock txlock;
+		if (handle_key(Fl::event_key()))
+			return 1;
+		else
+			return Fl_Text_Editor::handle(event);
 	}
 	if (Fl::event_inside( this )) {
 		const Fl_Menu_Item * m;
 		int xpos = Fl::event_x();
 		int ypos = Fl::event_y();
-		if (xpos > x() + w() - 20) {
-			scrollbar->handle(event);
-			return 1;
-		}
-		if (event == FL_PUSH && Fl::event_button() == 3) {
+
+		if (event == FL_PUSH && Fl::event_button() == FL_RIGHT_MOUSE) {
 			popx = xpos - x();
 			popy = ypos - y();
 			m = editmenu->popup(xpos, ypos, 0, 0, 0);
 			if (m) {
-				for (int i = 0; i < editmenuNbr; i++)
+				int msize = sizeof(editmenu) / sizeof(editmenu[0]);
+				for (int i = 0; i < msize; i++)
 					if (m == &editmenu[i]) {
 						menu_cb(i);
 						break;
 					}
 			}
+		}
+	}
+
+	return Fl_Text_Editor::handle(event);
+}
+
+void TextEdit::add(const char *s, int attr)
+{
+	tbuf->append(s);
+	insert_position(tbuf->length());
+}
+void TextEdit::clear(void)
+{
+	autolock lock;
+
+	tbuf->text("");
+	sbuf->text("");
+	txpos = 0;
+	bkspaces = 0;
+	PauseBreak = false;
+}
+
+int TextEdit::nextChar(void)
+{
+	autolock txlock;
+	char c;
+
+	if (bkspaces) {
+		--bkspaces;
+		c = '\b';
+	}
+	else if (PauseBreak) {
+		PauseBreak = false;
+		c = 0x03;
+	}
+	else if (insert_position() <= txpos)
+		c = '\0';
+	else {
+		if ((c = tbuf->character(txpos)))
+			++txpos;
+		tbuf->call_modify_callbacks();
+		redraw();
+	}
+
+	return c;
+}
+
+
+void TextEdit::setFont(int n, Fl_Font f)
+{
+	if (n >= 0 && n < NSTYLES)
+		styles[n].font = f;
+	else if (n == -1)
+		for (int i = 0; i < NSTYLES; i++)
+			styles[i].font = f;
+
+	redraw();
+}
+void TextEdit::setFontSize(int n, int s)
+{
+	if (n >= 0 && n < NSTYLES)
+		styles[n].size = s;
+	else if (n == -1)
+		for (int i = 0; i < NSTYLES; i++)
+			styles[i].size = s;
+	redraw();
+}
+void TextEdit::setFontColor(int n, Fl_Color c)
+{
+	if (n >= 0 && n < NSTYLES)
+		styles[n].color = c;
+	else if (n == -1)
+		for (int i = 0; i < NSTYLES; i++)
+			styles[i].color = c;
+	redraw();
+}
+void TextEdit::cursorON(void)
+{
+	show_cursor();
+}
+
+
+int TextEdit::handle_key(int key)
+{
+	switch (key) {
+	case FL_Escape:
+		clear();
+		active_modem->set_stopflag(true);
+		return 1;
+		break;
+	case 't': // transmit for C-t
+		if (Fl::event_state() & FL_CTRL) {
+			menu_cb(TX_MENU_TX);
+			return 1;
+		}
+		break;
+	case 'r':// receive for C-r
+		if (Fl::event_state() & FL_CTRL) {
+			menu_cb(TX_MENU_RX);
+			return 1;
+		}
+		else if (!(Fl::event_state() & (FL_META | FL_ALT)))
+			break;
+		// fall through to (un)pause for M-r or A-r
+	case FL_Pause:
+		if (trx_state != STATE_TX) {
+			fl_lock(&trx_mutex);
+			trx_state = STATE_TX;
+			fl_unlock(&trx_mutex);
+			wf->set_XmtRcvBtn(true);
+		}
+		else
+			PauseBreak = true;
+		return 1;
+		break;
+	case (FL_KP + '+'):
+		if (active_modem == cw_modem)
+			active_modem->incWPM();
+		return 1;
+		break;
+	case (FL_KP + '-'):
+		if (active_modem == cw_modem)
+			active_modem->decWPM();
+		return 1;
+		break;
+	case (FL_KP + '*'):
+		if (active_modem == cw_modem)
+			active_modem->toggleWPM();
+		return 1;
+		break;
+	case FL_Tab:
+		// In non-CW modes: Tab and Ctrl-tab both pause until user moves the
+		// cursor to let some more text through. Another (ctrl-)tab goes back to
+		// the end of the buffer and resumes sending.
+
+		// In CW mode: Tab pauses, skips rest of buffer, paints it blue, then
+		// resumes sending when new text is entered.
+		// Ctrl-tab does the same thing as for all other modes.
+		insert_position(txpos != insert_position() ? txpos : tbuf->length());
+
+		if (!(Fl::event_state() & FL_CTRL) && active_modem == cw_modem) {
+			int n = tbuf->length() - txpos;
+			char s[n + 1];
+
+			memset(s, 'C', n);
+			s[n] = 0;
+			sbuf->replace(txpos, sbuf->length(), s);
+			txpos = tbuf->length();
+			insert_position(txpos);
+		}
+		// show_insert_position();
+		return 1;
+		break;
+	case FL_Left:
+		if (Fl::event_state() & (FL_META | FL_ALT)) {
+			active_modem->searchDown();
+			return 1;
+		}
+		break;
+	case FL_Right:
+		if (Fl::event_state() & (FL_META | FL_ALT)) {
+			active_modem->searchUp();
+			return 1;
+		}
+		break;
+	case FL_BackSpace:
+	{
+		int ipos = insert_position();
+		if (txpos > 0 && txpos >= ipos) {
+			if (tbuf->length() >= txpos && txpos > ipos)
+				return 1;
+			bkspaces++;
+			txpos--;
+		}
+		return 0;
+	}
+	// case '`': // debug
+	//	cerr << "bkspaces=" << bkspaces << " tbuf_length=" << tbuf->length()
+	//	     << " tx_pos=" << txpos << " cursor_pos=" << insert_position() << endl;
+	//	return 1;
+	//	break;
+	default:
+		if (key >= FL_F && key <= FL_F_Last) {
+			int b = key - FL_F - 1;
+			if (b > 9)
+				return 0;
+
+			b += (altMacros ? 10 : 0);
+			if (!(macros.text[b]).empty())
+				macros.execute(b);
+
 			return 1;
 		}
 
-		switch (event) {
-			case FL_PUSH:
-				textview::cursorON = true;
-				redraw();
-				Fl::focus(this);
-				return 1;
-			case FL_FOCUS:
-				textview::cursorON = true;
-				redraw();
-				return 1;
-			case FL_UNFOCUS:
-				textview::cursorON = false;
-				redraw();
+		// do not insert printable characters in the transmitted text
+		if (insert_position() < txpos) {
+			int d;
+			if (Fl::compose(d))
 				return 1;
 		}
+		break;
 	}
+
 	return 0;
 }
 
-int TextEdit::nextChar()
+void TextEdit::readFile(void)
 {
-	if (bkspaces) {
-		--bkspaces;
-		return 0x08;
+	char *fn = File_Select("Select ASCII text file", "*.txt", "", 0);
+	if (fn) {
+		tbuf->appendfile(fn);
+		insert_position(tbuf->length());
 	}
-	if (PauseBreak) {
-		PauseBreak = false;
-		return 0x03;
-	}
-	if (buff.empty()) return 0;
-	if (chrptr == buff.length()) return 0;
-	if (attr[chrptr] == -1) {
-		chrptr++;
-		if (chrptr == buff.length()) return 0;
-	}
-	Fl::lock();
-	attr[chrptr] = 4;
-	redraw();
-	Fl::unlock();
-//	redraw();
-	Fl::awake();
-	return (buff[chrptr++]);
 }
 
-void TextEdit::cursorON() 
-{ 
-	textview::cursorON = true; 
-	redraw();
+void TextEdit::style_cb(int pos, int nins, int ndel, int nsty, const char *dtext, void *arg)
+{
+	TextEdit *e = (TextEdit *)arg;
+
+	if (nins == 0 && ndel == 0) {
+		if (pos == 0 && nsty == 0) { // update transmitted text style
+			char s[2] = { 'E', '\0' };
+			e->sbuf->replace(e->txpos - 1, e->txpos, s);
+		}
+
+		e->sbuf->unselect();
+		return;
+	}
+
+	if (nins > 0) {
+		char *s = new char[nins + 1];
+
+		memset(s, 'A', nins);
+		s[nins] = 0;
+		e->sbuf->replace(pos, pos + ndel, s);
+		delete [] s;
+	}
+	else
+		e->sbuf->remove(pos, pos + ndel);
+
+	e->sbuf->select(pos, pos + nins - ndel);
 }
 
+void TextEdit::menu_cb(int val)
+{
+	handle(FL_UNFOCUS);
+	switch (val) {
+	case TX_MENU_TX:
+		fl_lock(&trx_mutex);
+		trx_state = STATE_TX;
+		fl_unlock(&trx_mutex);
+		wf->set_XmtRcvBtn(true);
+		break;
+	case TX_MENU_RX:
+		tbuf->append("^r");
+		insert_position(tbuf->length());
+		break;
+	case TX_MENU_MFSK16_IMG:
+		if (active_modem->get_mode() == MODE_MFSK16)
+			active_modem->makeTxViewer(0, 0);
+		break;
+
+	case TX_MENU_CLEAR:
+		clear();
+		break;
+	case TX_MENU_CUT:
+		kf_cut(Fl::event_text()[0], this);
+		break;
+	case TX_MENU_COPY:
+		kf_copy(Fl::event_text()[0], this);
+		break;
+	case TX_MENU_PASTE:
+		kf_paste(Fl::event_text()[0], this);
+		break;
+
+	case TX_MENU_READ:
+		readFile();
+		break;
+
+	case TX_MENU_WRAP:
+		editmenu[TX_MENU_WRAP].flags ^= FL_MENU_VALUE;
+		wrap_mode(!wrap);
+		break;
+	}
+	restoreFocus();
+}
+
+void TextEdit::wrap_mode(bool v)
+{
+	int row, col;
+
+	xy_to_rowcol(this->x(), this->y(), &row, &col, Fl_Text_Display::CHARACTER_POS);
+	Fl_Text_Display::wrap_mode(wrap = v, col);
+}
+
+
+void TextEdit::change_keybindings(void)
+{
+	struct {
+		Fl_Text_Editor::Key_Func function;
+		Fl_Text_Editor::Key_Func override;
+	} fbind[] = { { Fl_Text_Editor::kf_default, TextEdit::kf_default },
+		      { Fl_Text_Editor::kf_enter,   TextEdit::kf_enter	 },
+		      { Fl_Text_Editor::kf_delete,  TextEdit::kf_delete	 },
+		      { Fl_Text_Editor::kf_cut,	    TextEdit::kf_cut	 },
+		      { Fl_Text_Editor::kf_paste,   TextEdit::kf_paste	 } };
+
+	int n = sizeof(fbind) / sizeof(fbind[0]);
+	for (Fl_Text_Editor::Key_Binding *k = key_bindings; k; k = k->next) {
+		for (int i = 0; i < n; i++)
+			if (fbind[i].function == k->function)
+				k->function = fbind[i].override;
+	}
+}
+
+int TextEdit::kf_default(int c, Fl_Text_Editor* e)
+{
+	autolock txlock;
+	return e->insert_position() < *ptxpos ? 1 : Fl_Text_Editor::kf_default(c, e);
+}
+
+int TextEdit::kf_enter(int c, Fl_Text_Editor* e)
+{
+	autolock txlock;
+	return e->insert_position() < *ptxpos ? 1 : Fl_Text_Editor::kf_enter(c, e);
+}
+
+int TextEdit::kf_delete(int c, Fl_Text_Editor* e)
+{
+	autolock txlock;
+
+	// single character
+	if (!e->buffer()->selected())
+		return e->insert_position() < *ptxpos ? 1 : Fl_Text_Editor::kf_delete(c, e);
+
+	// region: delete as much as we can
+	int start, end;
+	e->buffer()->selection_position(&start, &end);
+	if (*ptxpos >= end)
+		return 1;
+	if (*ptxpos > start)
+		e->buffer()->select(*ptxpos, end);
+
+	return Fl_Text_Editor::kf_delete(c, e);
+}
+
+int TextEdit::kf_cut(int c, Fl_Text_Editor* e)
+{
+	autolock txlock;
+
+	if (e->buffer()->selected()) {
+		int start, end;
+		e->buffer()->selection_position(&start, &end);
+		if (*ptxpos >= end)
+			return 1;
+		if (*ptxpos > start)
+			e->buffer()->select(*ptxpos, end);
+	}
+
+	return Fl_Text_Editor::kf_cut(c, e);
+}
+
+int TextEdit::kf_paste(int c, Fl_Text_Editor* e)
+{
+	autolock txlock;
+	return e->insert_position() < *ptxpos ? 1 : Fl_Text_Editor::kf_paste(c, e);
+}

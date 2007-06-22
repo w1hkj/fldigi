@@ -749,7 +749,7 @@ void rigCAT_sendINIT()
 	fl_unlock(&rigCAT_mutex);
 }
 
-static void show_error(char * a, char * b)
+static void show_error(const char * a, const char * b)
 {
 	string msg = a;
 	msg.append(": ");

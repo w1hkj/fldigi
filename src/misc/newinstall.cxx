@@ -114,16 +114,16 @@ CQ CQ CQ de <MYCALL> <MYCALL> <MYCALL> pse k\n\
 }
 
 struct paldata {
-	char *fname;
-	char *rgbstr0;
-	char *rgbstr1;
-	char *rgbstr2;
-	char *rgbstr3;
-	char *rgbstr4;
-	char *rgbstr5;
-	char *rgbstr6;
-	char *rgbstr7;
-	char *rgbstr8;
+	const char *fname;
+	const char *rgbstr0;
+	const char *rgbstr1;
+	const char *rgbstr2;
+	const char *rgbstr3;
+	const char *rgbstr4;
+	const char *rgbstr5;
+	const char *rgbstr6;
+	const char *rgbstr7;
+	const char *rgbstr8;
 };
 
 paldata palfiles[] = {

@@ -25,7 +25,7 @@
 
 #include "globals.h"
 
-char *mode_names[] = {
+const char *mode_names[] = {
 	"MFSK16",
 	"MFSK-8",
 	"OLIVIA",
@@ -57,7 +57,7 @@ char *mode_names[] = {
 	"ANALYSIS"
 };
 
-char *state_names[] = {
+const char *state_names[] = {
 	"PAUSED",
 	"RECEIVE",
 	"TRANSMIT",

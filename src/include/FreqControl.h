@@ -55,7 +55,7 @@
 class cFreqControl : public Fl_Group {
 friend void cbSelectDigit (Fl_Widget *btn, void * nbr);
 public:
-	cFreqControl(int x, int y, int w, int h, char *lbl = "7");
+	cFreqControl(int x, int y, int w, int h, const char *lbl = "7");
 	~cFreqControl();
 	void updatevalue();
 	void value(long lv);
@@ -72,7 +72,7 @@ public:
 	void setCallBack (int (*cbf)() ){ cbFunc = cbf;};
 private:
 	Fl_Button      		*Digit[MAX_DIGITS];
-	static char		 	*Label[];
+	static const char	 	*Label[];
 	int					mult[MAX_DIGITS];
 	Fl_Box				*decbx;
 	Fl_Color OFFCOLOR;

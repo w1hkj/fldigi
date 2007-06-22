@@ -25,7 +25,7 @@
 #ifndef _MFSKVARICODE_H
 #define _MFSKVARICODE_H
 
-extern char *varienc(int c);
+extern const char *varienc(int c);
 extern int varidec(unsigned int symbol);
 
 #endif

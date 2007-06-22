@@ -39,7 +39,7 @@ static int dummy = 0;
 
 static void *hamlib_loop(void *args);
 
-void show_error(char * a, char * b)
+void show_error(const char * a, const char * b)
 {
 	string msg = a;
 	msg.append(": ");

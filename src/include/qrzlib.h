@@ -172,7 +172,7 @@ class QRZ
     unsigned int  datarecsize;
     long          numkeys;
     int           keylen;
-    void          OpenQRZFiles( char * );
+    void          OpenQRZFiles( const char * );
     int           FindCallsign( char * );
     int           FindName( char * );
     int           FindState( char * ); 
@@ -181,30 +181,30 @@ class QRZ
     int           nextrec();
 	bool		  hasImage;
         
-    char *Qcall;
-    char *Qlname;
-    char *Qfname;
-    char *Qdob;
-    char *Qefdate;
-    char *Qexpdate;
-    char *Qmail_str;
-    char *Qmail_city;
-    char *Qmail_st;
-    char *Qmail_zip;
-    char *Qopclass;
-    char *Qp_call;
-    char *Qimagefname;
-    char *Qp_class;
+    const char *Qcall;
+    const char *Qlname;
+    const char *Qfname;
+    const char *Qdob;
+    const char *Qefdate;
+    const char *Qexpdate;
+    const char *Qmail_str;
+    const char *Qmail_city;
+    const char *Qmail_st;
+    const char *Qmail_zip;
+    const char *Qopclass;
+    const char *Qp_call;
+    const char *Qimagefname;
+    const char *Qp_class;
 
     int  QRZvalid;
         
   public:
-    QRZ( char * );
-    QRZ( char *, char );
+    QRZ( const char * );
+    QRZ( const char *, char );
     ~QRZ();
 
     int  CallComp( char *, char * );
-    int  CompState( char *, char *, char * );
+    int  CompState( const char *, const char *, const char * );
 
     int  getQRZvalid();
 
@@ -213,23 +213,23 @@ class QRZ
     int  ReadRec();
     int  GetCount( char * );
     char *GetCall();
-    char *GetLname();
-    char *GetFname();
-    char *GetDOB();
-    char *GetEFdate();
-    char *GetEXPdate();
-    char *GetStreet();
-    char *GetCity();
-    char *GetState();
-    char *GetZIP();
-    char *GetOPclass();
-    char *GetPriorCall();
-    char *GetPriorClass();
-    char *GetImageFileName();
+    const char *GetLname();
+    const char *GetFname();
+    const char *GetDOB();
+    const char *GetEFdate();
+    const char *GetEXPdate();
+    const char *GetStreet();
+    const char *GetCity();
+    const char *GetState();
+    const char *GetZIP();
+    const char *GetOPclass();
+    const char *GetPriorCall();
+    const char *GetPriorClass();
+    const char *GetImageFileName();
     char *CSV_Record();
     char *Fmt_Record();
 	bool ImageExists();
-	char *ImageFileName() {return Qimagefname;};
+	const char *ImageFileName() {return Qimagefname;};
 };
 
 extern void SetQRZdirectory(char *dir);

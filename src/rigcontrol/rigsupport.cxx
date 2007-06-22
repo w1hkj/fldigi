@@ -27,7 +27,7 @@ long int freqlist[LISTSIZE];
 int  numinlist = 0;
 
 #ifndef NOHAMLIB
-char *szmodes[] = {
+const char *szmodes[] = {
 	"AM",
 	"USB",
 	"LSB",
@@ -277,7 +277,7 @@ bool init_Hamlib_RigDialog()
 {
 	opBW->hide();
 	opMODE->clear();
-	char **p;
+	const char **p;
 	p = szmodes;
 	while (*p) 
 		opMODE->add(*p++);

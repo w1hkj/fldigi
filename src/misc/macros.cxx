@@ -22,7 +22,7 @@ CONTESTCNTR contest_count;
 static bool TransmitON = false;
 int mNbr;
 
-struct MTAGS { char *mTAG; void (*fp)(string &, size_t &);};
+struct MTAGS { const char *mTAG; void (*fp)(string &, size_t &);};
 
 void pCALL(string &, size_t &);
 void pFREQ(string &, size_t &);

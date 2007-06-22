@@ -261,7 +261,7 @@ int cw::rx_process(double *buf, int len)
 	complex z;
 	double delta;
 	double value;
-	char *c;
+	const char *c;
 
 // check if user changed filter bandwidth
 	if (bandwidth != progdefaults.CWbandwidth) {
@@ -349,7 +349,7 @@ int cw::usec_diff(unsigned int earlier, unsigned int later)
 //    If there is no data ready, CW_ERROR is returned.
 //=======================================================================
 
-int cw::handle_event(int cw_event, char **c)
+int cw::handle_event(int cw_event, const char **c)
 {
 	static int space_sent = true;	// for word space logic
 	static int last_element = 0;	// length of last dot/dash

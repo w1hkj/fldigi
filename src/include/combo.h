@@ -104,7 +104,7 @@ class Fl_ComboBox : public Fl_Group  {
 
   public:
 
-    Fl_ComboBox (int x, int y, int w, int h, char * = 0);
+    Fl_ComboBox (int x, int y, int w, int h, const char * = 0);
 
     const char *value ();
     void value (const char *);

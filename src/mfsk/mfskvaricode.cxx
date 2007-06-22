@@ -29,7 +29,7 @@
  * The IZ8BLY MFSK Varicode as defined in
  *   http://www.qsl.net/zl1bpu/MFSK/Varicode.html
  */
-static char *varicode[] = {
+static const char *varicode[] = {
 	"11101011100",		/* 000 - <NUL>	*/
 	"11101100000",		/* 001 - <SOH>	*/
 	"11101101000",		/* 002 - <STX>	*/
@@ -291,7 +291,7 @@ static char *varicode[] = {
 /*
  * The same in a format more suitable for decoding.
  */
-static unsigned int varidecode[] = {
+static const unsigned int varidecode[] = {
 	0x75C, 0x760, 0x768, 0x76C, 0x770, 0x774, 0x778, 0x77C, 
 	0x0A8, 0x780, 0x7A0, 0x7A8, 0x7AC, 0x0AC, 0x7B0, 0x7B4, 
 	0x7B8, 0x7BC, 0x7C0, 0x7D0, 0x7D4, 0x7D8, 0x7DC, 0x7E0, 
@@ -326,7 +326,7 @@ static unsigned int varidecode[] = {
 	0x6F4, 0x6F8, 0x6FC, 0x700, 0x740, 0x750, 0x754, 0x758
 };
 
-char *varienc(int c)
+const char *varienc(int c)
 {
 	if (c >= 0 && c < 256)
 		return varicode[c];

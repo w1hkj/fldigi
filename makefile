@@ -9,8 +9,8 @@ CTARG = hamlib
 ifneq (,$(findstring hamlib-debug, $(CFG)))
 	override CTARG = hamlib-debug
 endif
-ifneq (,$(findstring hamlib-local, $(CFG)))
-	override CTARG = hamlib-local
+ifneq (,$(findstring hamlib-static, $(CFG)))
+	override CTARG = hamlib-static
 endif
 ifneq (,$(findstring nhl, $(CFG)))
   	override CTARG = nhl
@@ -18,8 +18,14 @@ endif
 ifneq (,$(findstring nhl-debug, $(CFG)))
 	override CTARG = nhl-debug
 endif
-ifneq (,$(findstring nhl-local, $(CFG)))
-	override CTARG = nhl-local
+ifneq (,$(findstring nhl-static, $(CFG)))
+	override CTARG = nhl-static
+endif
+ifneq (,$(findstring emcomm, $(CFG)))
+    override CTARG = emcomm
+endif
+ifneq (,$(findstring nhl-emcomm, $(CFG)))
+    override CTARG = nhl-emcomm
 endif
 
 #PROJECT = fldigi
@@ -125,8 +131,16 @@ $(TARGET): print_header directories $(SRC_OBJS) $(HAMLIB_OBJS)
 	$(CC) -s -o $(OUTPUT_DIR)/$(TARGET) $(SRC_OBJS) $(HAMLIB_OBJS) $(LDFLAGS) $(HAMLIBS)
 endif
 
-ifeq ($(CTARG),hamlib-local)
+ifeq ($(CTARG),hamlib-static)
 CFLAGS = $(CCFLAGS) -DPORTAUDIO
+LDFLAGS = $(STATIC_LDFLAGS) \
+/usr/local/lib/libportaudiocpp.a /usr/local/lib/libportaudio.a /usr/local/lib/libsndfile.a
+$(TARGET): print_header directories $(SRC_OBJS) $(HAMLIB_OBJS)
+	$(CC) -s -o $(OUTPUT_DIR)/$(TARGET) $(SRC_OBJS) $(HAMLIB_OBJS) $(LDFLAGS) $(HAMLIBS) $(IMGLIBS)
+endif
+
+ifeq ($(CTARG),emcomm)
+CFLAGS = $(CCFLAGS) -DPORTAUDIO -DEMCOMM
 LDFLAGS = $(STATIC_LDFLAGS) \
 /usr/local/lib/libportaudiocpp.a /usr/local/lib/libportaudio.a /usr/local/lib/libsndfile.a
 $(TARGET): print_header directories $(SRC_OBJS) $(HAMLIB_OBJS)
@@ -148,7 +162,7 @@ $(TARGET): print_header directories $(SRC_OBJS)
 	$(CC) -s -o $(OUTPUT_DIR)/$(TARGET) $(SRC_OBJS) $(LDFLAGS)
 endif
 
-ifeq ($(CTARG),nhl-local)
+ifeq ($(CTARG),nhl-static)
 CFLAGS = $(CCFLAGS) -DNOHAMLIB -DPORTAUDIO
 LDFLAGS = $(STATIC_LDFLAGS) \
 /usr/local/lib/libportaudiocpp.a /usr/local/lib/libportaudio.a /usr/local/lib/libsndfile.a
@@ -161,6 +175,14 @@ CFLAGS = $(CCFLAGS) -DNOHAMLIB -DPORTAUDIO -g
 LDFLAGS = $(DYN_LDFLAGS) -lportaudiocpp -lportaudio -lsndfile
 $(TARGET): print_header directories $(SRC_OBJS)
 	$(CC) -o $(OUTPUT_DIR)/$(TARGET) $(SRC_OBJS) $(LDFLAGS)
+endif
+
+ifeq ($(CTARG),nhl-emcomm)
+CFLAGS = $(CCFLAGS) -DNOHAMLIB -DPORTAUDIO -DEMCOMM
+LDFLAGS = $(STATIC_LDFLAGS) \
+/usr/local/lib/libportaudiocpp.a /usr/local/lib/libportaudio.a /usr/local/lib/libsndfile.a
+$(TARGET): print_header directories $(SRC_OBJS)
+	$(CC) -s -o $(OUTPUT_DIR)/$(TARGET) $(SRC_OBJS) $(LDFLAGS) $(IMGLIBS) 
 endif
 
 clean:

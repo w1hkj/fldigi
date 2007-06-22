@@ -26,7 +26,7 @@
 
 #include "ascii.h"
 
-char *ascii[256] = {
+const char *ascii[256] = {
 	"", "", "", "",
 	"", "", "", "",
 	"\b",    "\t",    "\n",    "", 
@@ -61,7 +61,7 @@ char *ascii[256] = {
 	"|",     "}",     "~",     ""
 };
 
-char *ascii2[256] = {
+const char *ascii2[256] = {
 	"<NUL>", "<SOH>", "<STX>", "<ETX>",
 	"<EOT>", "<ENQ>", "<ACK>", "<BEL>",
 	"\b",    "\t",    "\n",    "<VT>", 

@@ -26,7 +26,7 @@
 #ifndef _VARICODE_H
 #define _VARICODE_H
 
-extern char	*psk_varicode_encode(unsigned char c);
-extern int	psk_varicode_decode(unsigned int symbol);
+extern const char	*psk_varicode_encode(unsigned char c);
+extern int		psk_varicode_decode(unsigned int symbol);
 
 #endif

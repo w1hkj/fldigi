@@ -46,9 +46,9 @@
 
 
 struct CW_TABLE{
-	char *chr;	/* The character(s) represented */
-	char *rpr;	/* Dot-dash shape of the character */
-	int type;			/* Type of the entry */
+	const char *chr;	/* The character(s) represented */
+	const char *rpr;	/* Dot-dash shape of the character */
+	int type;	       	/* Type of the entry */
 };
 
 class morse {
@@ -56,7 +56,7 @@ private:
 //	static CW_TABLE		cw_table[];
 	CW_TABLE 			*cw_rx_lookup[256];
 	unsigned long 		cw_tx_lookup[256];
-	unsigned int 	tokenize_representation(char *representation);
+	unsigned int 	tokenize_representation(const char *representation);
 	bool init();
 public:
 	morse() { 
@@ -64,7 +64,7 @@ public:
 	}
 	~morse() {
 	}
-	char 			*rx_lookup(char *r);
+	const char	*rx_lookup(char *r);
 	unsigned long	tx_lookup(int c);
 };
 

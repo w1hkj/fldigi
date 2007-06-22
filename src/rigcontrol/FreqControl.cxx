@@ -24,7 +24,7 @@
 
 #include "FreqControl.h"
 
-char *cFreqControl::Label[10] = {
+const char *cFreqControl::Label[10] = {
 	"0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 	
 void cFreqControl::IncFreq (int nbr) {
@@ -58,7 +58,7 @@ void cbSelectDigit (Fl_Widget *btn, void * nbr)
 	fc->damage();
 }
 
-cFreqControl::cFreqControl(int x, int y, int w, int h, char *lbl):
+cFreqControl::cFreqControl(int x, int y, int w, int h, const char *lbl):
 			  Fl_Group(x,y,w,h,"") {
 	ONCOLOR = FL_YELLOW;
 	OFFCOLOR = FL_BLACK;

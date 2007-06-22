@@ -93,7 +93,7 @@ public:
 	const char *	OutputVolumeName( int i );
 	int				GetNumInputSources();
 	const char *	GetInputSourceName( int i);
-	int				InputSourceNbr(char *source);
+	int				InputSourceNbr(const char *source);
 	double			InputVolume();
 	void			InputVolume( double volume );
 	int				GetCurrentInputSource();

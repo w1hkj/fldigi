@@ -26,8 +26,8 @@
 #ifndef _GLOBALS_H
 #define _GLOBALS_H
 
-extern char *mode_names[];
-extern char *state_names[];
+extern const char *mode_names[];
+extern const char *state_names[];
 
 enum trx_mode {
 	MODE_MFSK16 = 0,

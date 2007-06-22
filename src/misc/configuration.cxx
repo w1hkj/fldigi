@@ -139,7 +139,7 @@ configuration progdefaults = {
 	 {223,226,105},{254,254,   4},{255, 58,  0} }
 };
 
-char *szBaudRates[] = {
+const char *szBaudRates[] = {
 	"", 
 	"300","600","1200","2400",
 	"4800","9600","19200","38400",
@@ -809,7 +809,6 @@ int configuration::openDefaults() {
 		
 		ReceiveText->setFont((Fl_Font)Font);
 		ReceiveText->setFontSize(FontSize);
-		ReceiveText->setFontColor((Fl_Color)FontColor);
 	
 		TransmitText->setFont((Fl_Font)Font);
 		TransmitText->setFontSize(FontSize);

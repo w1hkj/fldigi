@@ -102,7 +102,7 @@ extern void set_video(double *, int);
 extern void set_CWwpm();
 extern void put_rx_char(unsigned int data);
 extern void put_sec_char( char chr );
-extern void put_status(char *msg);
+extern void put_status(const char *msg);
 extern void put_Status2(char *msg);
 extern void put_Status1(char *msg);
 extern void put_WARNstatus(bool);

@@ -151,7 +151,7 @@ protected:
 	void	update_syncscope();
 	void	update_Status();
 	void	sync_parameters();
-	int		handle_event(int cw_event, char **c);
+	int		handle_event(int cw_event, const char **c);
 	int		usec_diff(unsigned int earlier, unsigned int later);
 	void	send_symbol(int symbol);
 	void	send_ch(int c);

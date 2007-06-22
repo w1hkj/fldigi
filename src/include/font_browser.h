@@ -59,7 +59,7 @@ private:
     	fl_draw(label(), x()+3, y()+3, w()-6, h()-6, align()); 
 	}
 public: 
-	Preview_Box(int x, int y, int w, int h, char* l) : Fl_Widget(x, y, w, h, l)
+	Preview_Box(int x, int y, int w, int h, const char* l) : Fl_Widget(x, y, w, h, l)
 	{
     	fontName = 1;
     	fontSize = 14;
@@ -98,7 +98,7 @@ private:
     void	(*callback_)(Fl_Widget*, void *);
 	
 public:
-    Font_Browser(char *lbl = "Font Browser");
+    Font_Browser(const char *lbl = "Font Browser");
     void callback(void (*cb)(Fl_Widget *, void *), void *d = 0) {
     	callback_ = cb;
     	data_     = d;

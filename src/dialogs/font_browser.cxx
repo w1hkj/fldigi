@@ -113,7 +113,7 @@ void cb_FontName_Selected(Fl_Widget*, void*frmWid)
     ft->FontNameSelect();
 }
 
-Font_Browser::Font_Browser(char *lbl ) : 
+Font_Browser::Font_Browser(const char *lbl ) : 
 	Fl_Window(100,100, 400, 225, lbl) 
 {
     txt_OutputFont = new Fl_Output(5, 15, 280, 22, "Font:");

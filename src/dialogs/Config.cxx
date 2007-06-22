@@ -891,14 +891,14 @@ static void cb_btnSaveConfig(Fl_Button*, void*) {
 
 Fl_Double_Window* ConfigureDialog() {
   Fl_Double_Window* w;
-  static char *szShifts  = "23|85|160|170|182|200|240|350|425|850";
-static char *szBauds   = "45|45.45|50|56|75|100|110|150|200|300";
-static char *szSelBits = "5 (baudot)|7 (ascii)|8 (ascii)";
-static char *szParity  = "none|even|odd|zero|one";
-static char *szStopBits = "1|1.5|2";
-static char *szOliviaTones = "2|4|8|16|32|64|128|256";
-static char *szOliviaBandwidth = "125|250|500|1000|2000";
-static char *szBaudRates = "300|600|1200|2400|4800|9600|19200|38400|57600|115200|230400|460800";
+  static const char szShifts[]  = "23|85|160|170|182|200|240|350|425|850";
+static const char szBauds[]   = "45|45.45|50|56|75|100|110|150|200|300";
+static const char szSelBits[] = "5 (baudot)|7 (ascii)|8 (ascii)";
+static const char szParity[]  = "none|even|odd|zero|one";
+static const char szStopBits[] = "1|1.5|2";
+static const char szOliviaTones[] = "2|4|8|16|32|64|128|256";
+static const char szOliviaBandwidth[] = "125|250|500|1000|2000";
+static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600|115200|230400|460800";
   { Fl_Double_Window* o = new Fl_Double_Window(400, 255, "fldigi - config");
     w = o;
     o->color(FL_DARK2);

@@ -5,7 +5,7 @@
 
 #include "log.h"
 
-static 	char *lognames[] = {"RX", "TX"};
+static const char *lognames[] = {"RX", "TX"};
 
 cLogfile::cLogfile(string fname) {
 	logtype = LOG_RX;

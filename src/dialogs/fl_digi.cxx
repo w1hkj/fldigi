@@ -926,7 +926,7 @@ void cb_XmtMixer(Fl_Widget *w, void *d)
 
 
 // XPM Calendar Label
-static char *cal_16[] = {
+static const char *cal_16[] = {
 // width height num_colors chars_per_pixel
 "    15    14        3            1",
 // colors
@@ -1135,19 +1135,23 @@ void create_fl_digi_main() {
 			valXmtMixer->deactivate();
 		MixerFrame->end();
 
-		Fl_Tile *TiledGroup = new Fl_Tile(sw, Y, WNOM-sw, Hrcvtxt + Hxmttxt);
-//		Fl_Group *TiledGroup = new Fl_Group(sw, Y, WNOM-sw, Hrcvtxt + Hxmttxt);
-			Fl_Box *minbox = new Fl_Box(sw,Y + 66, WNOM-sw, Hxmttxt + Hrcvtxt - 66 - 32);
+		Fl_Tile *TiledGroup = new Fl_Tile(sw, Y, WNOM-sw, Htext);
+            int minRxHeight = Hrcvtxt;
+            int minTxHeight;
+            if (minRxHeight < 66) minRxHeight = 66;
+            minTxHeight = Htext - minRxHeight;
+
+			Fl_Box *minbox = new Fl_Box(sw,Y + 66, WNOM-sw, Htext - 66 - 32);
 			minbox->hide();
 
-			ReceiveText = new TextView(sw, Y, WNOM-sw, Hrcvtxt, "");
+			ReceiveText = new TextView(sw, Y, WNOM-sw, minRxHeight, "");
 		
-			FHdisp = new Raster(sw, Y, WNOM-sw, Hrcvtxt);
+			FHdisp = new Raster(sw, Y, WNOM-sw, minRxHeight);
 			FHdisp->hide();
-			Y += Hrcvtxt;
+			Y += minRxHeight;
 
-			TransmitText = new TextEdit(sw, Y, WNOM-sw, Hxmttxt);
-			Y += Hxmttxt;
+			TransmitText = new TextEdit(sw, Y, WNOM-sw, minTxHeight);
+			Y += minTxHeight;
 
 			TiledGroup->resizable(minbox);
 		TiledGroup->end();
@@ -1182,19 +1186,19 @@ void create_fl_digi_main() {
 			wfpack->type(1);
 			wf = new waterfall(0, Y, Wwfall, Hwfall);
 			wf->end();
-			Fl_Pack *ypack = new Fl_Pack(WNOM-(Hwfall-22), Y, Hwfall-22, Hwfall);
+			Fl_Pack *ypack = new Fl_Pack(WNOM-(Hwfall-24), Y, Hwfall-24, Hwfall);
 				ypack->type(0);
 
-				digiscope = new Digiscope (WNOM-(Hwfall-22), Y, Hwfall-22, Hwfall-22);
+				digiscope = new Digiscope (WNOM-(Hwfall-24), Y, Hwfall-24, Hwfall-24);
 	
 				pgrsSquelch = new Fl_Progress(
-					WNOM-(Hwfall-22), Y + Hwfall - 22,
-					Hwfall - 22, 10, "");
+					WNOM-(Hwfall-24), Y + Hwfall - 24,
+					Hwfall - 24, 12, "");
 				pgrsSquelch->color(FL_BACKGROUND2_COLOR, FL_DARK_GREEN);
 				sldrSquelch = new Fl_Slider(
 					FL_HOR_NICE_SLIDER, 
-					WNOM-(Hwfall-22), Y + Hwfall - 12, 
-					Hwfall - 22, 12, "");
+					WNOM-(Hwfall-24), Y + Hwfall - 12, 
+					Hwfall - 24, 12, "");
 							
 				sldrSquelch->minimum(0);
 				sldrSquelch->maximum(100);
@@ -1316,7 +1320,7 @@ void set_video(double *data, int len)
 void put_rx_char(unsigned int data)
 {
 	static bool nulinepending = false;
-	char **asc = ascii;
+	const char **asc = ascii;
 	if (mailclient || mailserver)
 		asc = ascii2;
 
@@ -1354,7 +1358,7 @@ void put_sec_char( char chr )
 	}
 }
 
-void put_status(char *msg)
+void put_status(const char *msg)
 {
 	if (!msg) return;
 	Fl::lock();
@@ -1475,7 +1479,7 @@ char get_tx_char(void)
 void put_echo_char(unsigned int data)
 {
 	static bool nulinepending = false;
-	char **asc = ascii;
+	const char **asc = ascii;
 	if (mailclient || mailserver)
 		asc = ascii2;
 	if (data == '\r' && nulinepending) // reject multiple CRs

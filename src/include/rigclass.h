@@ -34,7 +34,7 @@ class RigException {
 public:
 char message[80];
 	RigException() { *message = 0;}
-	RigException (char * msg) {
+	RigException (const char * msg) {
 		memset(message,0,80);
 		strcpy(message, "Hamlib ");
 		strcat(message, msg);

@@ -74,7 +74,7 @@ static string qrzqth;
 static string qrzgrid;
 static string qrznotes;
 
-static char *error[] = {
+static const char *error[] = {
 "OK",								// err 0
 "Host not found", 					// err 1
 "Not an IP host!", 					// err 2

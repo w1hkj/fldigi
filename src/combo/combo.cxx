@@ -102,7 +102,7 @@ void popbrwsr_cb (Fl_Widget *v, long d)
 }
 
 /* XPM Select_Browser Label */
-static char *brws_12[] = {
+static const char *brws_12[] = {
 /* width height num_colors chars_per_pixel */
 "    12    12        3            1",
 /* colors */
@@ -161,7 +161,7 @@ void btnComboBox_cb (Fl_Widget *v, void *d)
 }
 
 
-Fl_ComboBox::Fl_ComboBox (int X,int Y,int W,int H, char *L)
+Fl_ComboBox::Fl_ComboBox (int X,int Y,int W,int H, const char *L)
  : Fl_Group (X, Y, W, H, L)
 {
   width = W; height = H;

@@ -27,7 +27,7 @@
 
 // PSK31 Varicode for encoding
 
-static char *varicodetab1[] = {
+static const char *varicodetab1[] = {
 	"1010101011",		/*   0 - <NUL>	*/
 	"1011011011",		/*   1 - <SOH>	*/
 	"1011101101",		/*   2 - <STX>	*/
@@ -323,7 +323,7 @@ static unsigned int varicodetab2[] = {
 	0xAF5, 0xAF7, 0xAFB, 0xAFD, 0xAFF, 0xB55, 0xB57, 0xB5B
 };
 
-char *psk_varicode_encode(unsigned char c)
+const char *psk_varicode_encode(unsigned char c)
 {
 	return varicodetab1[c];
 }

@@ -627,7 +627,7 @@ void mfsk::sendbit(int bit)
 
 void mfsk::sendchar(unsigned char c)
 {
-	char *code = varienc(c);
+	const char *code = varienc(c);
 	while (*code)
 		sendbit(*code++ - '0');
 	put_echo_char(c);

@@ -42,17 +42,18 @@
 #define BTN_HEIGHT	20
 
 // use the following for EmComm minimal footprint
-//#define Hwfall		120
-//#define WMINIMUM	(Hwfall + 580)
-//#define HNOM		450 // do not make smaller than 400
-//#define WNOM		WMINIMUM
-
+#ifdef EMCOMM
+#define Hwfall		120
+#define WMINIMUM	(Hwfall + 580)
+#define HNOM		400 // do not make smaller than 400
+#define WNOM		WMINIMUM
+#else
 // use the following for the original fldigi waterfall sizing
 #define Hwfall		140
 #define WMINIMUM	(IMAGE_WIDTH / 4 + Hwfall - BTN_HEIGHT)
 #define HNOM		570
 #define WNOM		WMINIMUM
-
+#endif
 
 #define bwColor		30
 #define bwFFT		30
@@ -75,8 +76,9 @@
 #define Hmacros		22
 
 #define Htext		(HNOM - 4 - Hwfall - Hmenu - Hstatus - Hmacros - Hqsoframe - Hnotes)
-#define Hxmttxt		(Htext) / 4
-#define Hrcvtxt		(Htext - (Hxmttxt))
+// Htext = HNOM - 140 - Hwfall
+#define Hrcvtxt		(Htext) / 2
+#define Hxmttxt		(Htext - (Hrcvtxt))
 
 #define Wwfall		(WNOM - Hwfall + BTN_HEIGHT + 2 * BEZEL)
 #define Wmode 		80

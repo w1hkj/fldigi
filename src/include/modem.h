@@ -90,7 +90,7 @@ public:
 
 //	void 		set_mode(trx_mode);
 	trx_mode	get_mode();
-	char 		*get_mode_name() { return mode_names[get_mode()];}
+	const char	*get_mode_name() { return mode_names[get_mode()];}
 	void		set_state(state_t);
 	void		set_state_wait(state_t);
 	state_t		get_state();

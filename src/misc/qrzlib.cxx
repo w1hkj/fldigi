@@ -34,8 +34,8 @@
 
 static char QRZdir[256] = "";
 
-static char *QRZpath;
-static char *QRZtry[] = { 
+static const char *QRZpath;
+static const char *QRZtry[] = { 
   "~/callbk/",
   "/cdrom/callbk/",
   "/mnt/cdrom/callbk/",  "/mnt/cdrom0/callbk/",  "/mnt/cdrom1/callbk/",
@@ -129,11 +129,11 @@ char *QRZImageFilename (char *call)
   return NULL;
 }
 
-int  checkPath( char *filename )
+int  checkPath( const char *filename )
 {
   char fname[80];
   FILE *f;
-  char **pQRZpath = QRZtry;
+  const char **pQRZpath = QRZtry;
   while (*pQRZpath) {
     strcpy( fname, *pQRZpath );
     strcat( fname, filename );
@@ -176,7 +176,7 @@ bool QRZ::ImageExists() {
   return (hasImage = false);
 }
 
-void QRZ::OpenQRZFiles( char *fname )
+void QRZ::OpenQRZFiles( const char *fname )
 {
   long fsize;
   char dfname[64];
@@ -264,14 +264,14 @@ void QRZ::OpenQRZFiles( char *fname )
 }
 
 
-QRZ::QRZ( char *fname )
+QRZ::QRZ( const char *fname )
 {
   int len = strlen(fname);
   criteria = fname[ len - 1 ];
   OpenQRZFiles( fname );
 }
 
-QRZ::QRZ( char *fname, char c )
+QRZ::QRZ( const char *fname, char c )
 {
   criteria = c;
   OpenQRZFiles( fname );
@@ -531,7 +531,7 @@ int QRZ::FindName( char *field )
   return 0;
 }
 
-int QRZ::CompState( char *field, char *state, char *city )
+int QRZ::CompState( const char *field, const char *state, const char *city )
 {
   int compsize = strlen(field+2),
       chk;
@@ -697,7 +697,7 @@ int QRZ::FindRecord( char *field )
   return( ReadRec() );
 }
 
-static char *empty = "";
+static const char *empty = "";
 
 
 int QRZ::ReadRec()
@@ -746,7 +746,8 @@ int QRZ::ReadRec()
     comma = strchr( Qp_call, ',' );
     *comma = 0;
     Qp_class = comma + 1;
-    Qp_class[1] = 0;
+    //Qp_class[1] = 0;
+    *(comma + 2) = 0;
     Qimagefname = QRZImageFilename (GetCall());
     return( 1 );
   } else {
@@ -818,62 +819,62 @@ char * QRZ::GetCall()
   return( call );
 };
 
-char * QRZ::GetLname()
+const char * QRZ::GetLname()
 {
   return( Qlname );
 };
 
-char * QRZ::GetFname()
+const char * QRZ::GetFname()
 {
   return( Qfname );
 };
 
-char * QRZ::GetDOB()
+const char * QRZ::GetDOB()
 {
   return( Qdob );
 };
 
-char * QRZ::GetEFdate()
+const char * QRZ::GetEFdate()
 {
   return( Qefdate );
 };
 
-char * QRZ::GetEXPdate()
+const char * QRZ::GetEXPdate()
 {
   return( Qexpdate );
 };
 
-char * QRZ::GetStreet()
+const char * QRZ::GetStreet()
 {
   return( Qmail_str );
 };
 
-char * QRZ::GetCity()
+const char * QRZ::GetCity()
 {
   return( Qmail_city );
 };
 
-char * QRZ::GetState()
+const char * QRZ::GetState()
 {
   return( Qmail_st );
 };
 
-char * QRZ::GetZIP()
+const char * QRZ::GetZIP()
 {
   return( Qmail_zip );
 };
 
-char * QRZ::GetOPclass()
+const char * QRZ::GetOPclass()
 {
   return( Qopclass );
 };
 
-char * QRZ::GetPriorCall()
+const char * QRZ::GetPriorCall()
 {
   return( Qp_call );
 };
 
-char * QRZ::GetPriorClass()
+const char * QRZ::GetPriorClass()
 {
   return( Qp_class );
 };
@@ -883,7 +884,7 @@ int QRZ::getQRZvalid()
   return( QRZvalid );
 }
 
-char * QRZ::GetImageFileName ()
+const char * QRZ::GetImageFileName ()
 {
   return (Qimagefname);
 }
@@ -892,9 +893,9 @@ char * QRZ::CSV_Record()
 {
   static char info[256];
   memset( info, 0, 256 );
-  sprintf( info, "%s,%s,%s,%s,%s,%s,%s,%s,%s",
-           GetCall(), Qopclass, Qefdate,
-           Qlname, Qfname, Qmail_str, Qmail_city, Qmail_st, Qmail_zip );
+  snprintf( info, 256, "%s,%s,%s,%s,%s,%s,%s,%s,%s",
+            GetCall(), Qopclass, Qefdate,
+            Qlname, Qfname, Qmail_str, Qmail_city, Qmail_st, Qmail_zip );
   return info;
 }
 

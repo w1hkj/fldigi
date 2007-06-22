@@ -532,7 +532,7 @@ void psk::tx_bit(int bit)
 
 void psk::tx_char(unsigned char c)
 {
-	char *code;
+	const char *code;
 
 	code = psk_varicode_encode(c);
 

@@ -61,7 +61,7 @@ struct XMLIOS {
 	};
 };
 
-struct TAGS { char *tag; void (*fp)(size_t &);};
+struct TAGS { const char *tag; void (*fp)(size_t &);};
 
 struct XMLRIG {
 	string	SYMBOL;

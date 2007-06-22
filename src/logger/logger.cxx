@@ -37,7 +37,7 @@
 #include <FL/fl_ask.H>
 
 struct FIELD {
-  char *name;
+  const char *name;
   unsigned int  size;
 };
   
@@ -78,7 +78,7 @@ FIELD fields[] = {
 #define ADIF_VERS "2.0"
 static string adif;
 
-char *ADIFHEADER = 
+const char *ADIFHEADER = 
 "<ADIF_VERS:%d>%s\n\
 <PROGRAMID:7>fldigi\n\
 <PROGRAMVERSION:%d>%s\n\
