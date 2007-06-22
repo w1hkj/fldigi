@@ -973,54 +973,57 @@ bool waterfall::USB() {
 
 waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	Fl_Group(x0,y0,w0,h0,lbl) {
-	int xpos = x() + 4;
+	int xpos;
 
-	buttonrow = h() - BTN_HEIGHT + y();
+	buttonrow = h() + y() - BTN_HEIGHT - BEZEL;
 	bezel = new Fl_Box(
 				FL_DOWN_BOX, 
 				x(), 
 				y(), 
 				w(), 
-				h() - BTN_HEIGHT - 2, 0);
+				h() - BTN_HEIGHT - 2 * BEZEL, 0);
 	wfdisp = new WFdisp(x() + BEZEL, 
 			y() + BEZEL, 
-			w() - BEZEL - BEZEL,
-			h() - BEZEL - BEZEL - BTN_HEIGHT - 2);
+			w() - 2 * BEZEL,
+			h() - BTN_HEIGHT - 4 * BEZEL);
 	wfdisp->tooltip("Click to set tracking point");
 	
+	xpos = x() + wSpace;
 	bwclr = new Fl_Button(xpos, buttonrow, bwColor, BTN_HEIGHT, "clr");
 	bwclr->callback(bwclr_cb, 0);
 	bwclr->tooltip("Color / BW waterfall");
-	xpos = xpos + bwColor + wSpace;
 
+	xpos = xpos + bwColor + wSpace;
 	mode = new Fl_Button(xpos, buttonrow, bwFFT, BTN_HEIGHT,"Wtr");
 	mode->callback(mode_cb, 0);
 	mode->tooltip("Waterfall/FFT - Shift click for signal scope");
+
 	xpos = xpos + bwFFT + wSpace;
-	
 	x1 = new Fl_Button(xpos, buttonrow, bwX1, BTN_HEIGHT, "x1");
 	x1->callback(x1_cb, 0);
 	x1->tooltip("Change scale");
-	xpos = xpos + bwX1 + wSpace;
 
+	xpos = xpos + bwX1 + wSpace;
 	wfrate = new Fl_Button(xpos, buttonrow, bwRate, BTN_HEIGHT, "Norm");
 	wfrate->callback(rate_cb, 0);
 	wfrate->tooltip("Waterfall drop speed");
-	xpos = xpos + bwRate + 2*wSpace;
-	
+
+	xpos = xpos + bwRate + wSpace;
 	left = new Fl_Repeat_Button(xpos, buttonrow, bwMov, BTN_HEIGHT, "@<");
 	left->callback(slew_left, 0);
 	left->tooltip("Slew display lower in freq");
+
 	xpos += bwMov;
 	center = new Fl_Button(xpos, buttonrow, bwMov, BTN_HEIGHT, "@||");
 	center->callback(center_cb, 0);
 	center->tooltip("Center display on signal");
+
 	xpos += bwMov;
 	right = new Fl_Repeat_Button(xpos, buttonrow, bwMov, BTN_HEIGHT, "@>");
 	right->callback(slew_right, 0);
 	right->tooltip("Slew display higher in freq");
-	xpos = xpos + bwMov + 2*wSpace;
 
+	xpos = xpos + bwMov + wSpace;
 	wfcarrier = new Fl_Counter(xpos, buttonrow, cwCnt, BTN_HEIGHT );
 	wfcarrier->callback(carrier_cb, 0);
 	wfcarrier->step(1.0);
@@ -1029,8 +1032,8 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	wfcarrier->range(16.0, IMAGE_WIDTH - 16.0);
 	wfcarrier->value(wfdisp->carrier());
 	wfcarrier->tooltip("Adjust selected tracking freq");
-	xpos = xpos + cwCnt + 2*wSpace;
-	
+
+	xpos = xpos + cwCnt + wSpace;
 	wfRefLevel = new Fl_Counter(xpos, buttonrow, cwRef, BTN_HEIGHT );
 	wfRefLevel->callback(reflevel_cb, 0);
 	wfRefLevel->step(1.0);
@@ -1040,8 +1043,8 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	wfdisp->Reflevel(0.0);
 	wfRefLevel->tooltip("Upper signal limit in dB");
 	wfRefLevel->type(FL_SIMPLE_COUNTER);
-	xpos = xpos + cwRef + 2*wSpace;
-	
+
+	xpos = xpos + cwRef + wSpace;
 	wfAmpSpan = new Fl_Counter(xpos, buttonrow, cwRef, BTN_HEIGHT );
 	wfAmpSpan->callback(ampspan_cb, 0);
 	wfAmpSpan->step(1.0);
@@ -1052,25 +1055,24 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	wfAmpSpan->tooltip("Signal range in dB");
 	wfAmpSpan->type(FL_SIMPLE_COUNTER);
 
-	xpos = xpos + cwRef + 2*wSpace;
+	xpos = xpos + cwRef + wSpace;
 	qsy = new Fl_Button(xpos, buttonrow, bwQsy, BTN_HEIGHT, "QSY");
 	qsy->callback(qsy_cb, 0);
 	qsy->tooltip("Cntr in Xcvr PB");
 	qsy->deactivate();
 
 	xpos = xpos + bwQsy + wSpace;
-	xmtlock = new Fl_Light_Button(xpos, buttonrow, bwXmtLock, BTN_HEIGHT, "Lck");
+	xmtlock = new Fl_Light_Button(xpos, buttonrow, bwXmtLock, BTN_HEIGHT, "Lk");
 	xmtlock->callback(xmtlock_cb, 0);
 	xmtlock->value(0);
 	xmtlock->tooltip("Xmt freq locked");
+
 	xpos = xpos + bwXmtLock + wSpace;
-	
-	btnRev = new Fl_Light_Button(xpos, buttonrow, bwRev, BTN_HEIGHT, "Rev");
+	btnRev = new Fl_Light_Button(xpos, buttonrow, bwRev, BTN_HEIGHT, "Rv");
 	btnRev->callback(btnRev_cb, 0);
 	btnRev->value(0);
 	btnRev->tooltip("Reverse");
 	reverse = false;
-	
 	
 	xpos = w() - bwXmtRcv - wSpace;
 	xmtrcv = new Fl_Light_Button(xpos, buttonrow, bwXmtRcv, BTN_HEIGHT, "T/R");

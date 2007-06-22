@@ -30,12 +30,10 @@
 #include <FL/fl_ask.H>
 #include <FL/Fl_Pixmap.H>
 #include <FL/Fl_Image.H>
-#include <FL/Fl_Tile.H>
 
 #include "version.h"
 
 #include "waterfall.h"
-#include "raster.h"
 #include "main.h"
 #include "threads.h"
 #include "trx.h"
@@ -80,7 +78,6 @@ cMixer mixer;
 
 Fl_Button			*btnTune = (Fl_Button *)0;
 Fl_Tile				*TiledGroup = (Fl_Tile *)0;
-//Fl_Group				*TiledGroup = (Fl_Group *)0;
 TextView			*ReceiveText=(TextView *)0;
 TextEdit			*TransmitText=(TextEdit *)0;
 Fl_Text_Buffer		*rcvBuffer = (Fl_Text_Buffer *)0;
@@ -117,7 +114,6 @@ Fl_Slider			*valXmtMixer;
 bool				altMacros = false;
 bool				bSaveFreqList = false;
 string				strMacroName[10];
-
 
 waterfall			*wf = (waterfall *)0;
 Digiscope			*digiscope = (Digiscope *)0;
@@ -662,6 +658,31 @@ void cb_mnuConfigModems(Fl_Menu_*, void*) {
 	dlgConfig->show();
 }
 
+bool capval = false;
+void cb_mnuCapture(Fl_Menu_ *m, void *d)
+{
+	if (!scard) return;
+	capval = !capval;
+	scard->Capture(capval);
+}
+
+bool genval = false;
+void cb_mnuGenerate(Fl_Menu_ *m, void *d)
+{
+	if (!scard) return;
+	genval = !genval;
+	scard->Generate(genval);
+}
+
+bool playval = false;
+void cb_mnuPlayback(Fl_Menu_ *m, void *d)
+{
+	if (!scard) return;
+	playval = !playval;
+	scard->Playback(playval);
+}
+
+
 void cb_FontBrowser(Font_Browser*, void* v)
 {
 	Font_Browser *ft= (Font_Browser*)v;
@@ -987,10 +1008,15 @@ Fl_Menu_Item menu_[] = {
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0}, // 57
 {"Rig", 0, (Fl_Callback*)cb_mnuRig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 58
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0}, // 59
-{"Help", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 60
-{"About", 0, (Fl_Callback*)cb_mnuAbout, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 61
-{0,0,0,0,0,0,0,0,0}, // 62
-{0,0,0,0,0,0,0,0,0}, // 63
+{"Test", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 60
+{"Capture", 0,  (Fl_Callback*)cb_mnuCapture, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0}, // 61
+{"Generate", 0,  (Fl_Callback*)cb_mnuGenerate, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0}, // 62
+{"Playback", 0, (Fl_Callback*)cb_mnuPlayback, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0}, // 63
+{0,0,0,0,0,0,0,0,0}, // 64
+{"Help", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 65
+{"About", 0, (Fl_Callback*)cb_mnuAbout, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 66
+{0,0,0,0,0,0,0,0,0}, // 67
+{0,0,0,0,0,0,0,0,0}, // 68
 };
 
 Fl_Menu_Bar *mnu;
@@ -1008,6 +1034,16 @@ void activate_rig_menu_item(bool b)
 	}
 	mnu->redraw();
 }
+
+void activate_test_menu_item(bool b)
+{
+	if (b)
+		menu_[60].show();
+	else
+		menu_[60].hide();
+	mnu->redraw();
+}
+
 
 void create_fl_digi_main() {
 	int Y = 0;
@@ -1076,14 +1112,16 @@ void create_fl_digi_main() {
 		
 		int sw = 15;
 		Fl_Group *MixerFrame = new Fl_Group(0,Y,sw, Hrcvtxt + Hxmttxt);
-			valRcvMixer = new Fl_Slider(0, Y, sw, (Hrcvtxt + Hxmttxt)/2 - 15, "R");
+//			valRcvMixer = new Fl_Slider(0, Y, sw, (Htext)/2 - 15, "R");
+			valRcvMixer = new Fl_Slider(0, Y, sw, (Htext)/2, "");
 			valRcvMixer->type(FL_VERT_NICE_SLIDER);
 			valRcvMixer->color(fl_rgb_color(0,110,30));
 			valRcvMixer->labeltype(FL_ENGRAVED_LABEL);
 			valRcvMixer->selection_color(fl_rgb_color(255,255,0));
 			valRcvMixer->range(1.0,0.0);
 			valRcvMixer->callback( (Fl_Callback *)cb_RcvMixer);
-			valXmtMixer = new Fl_Slider(0, Y + (Hrcvtxt + Hxmttxt)/2, sw, (Hrcvtxt + Hxmttxt)/2 - 15, "T");
+//			valXmtMixer = new Fl_Slider(0, Y + (Htext)/2, sw, (Htext)/2 - 15, "T");
+			valXmtMixer = new Fl_Slider(0, Y + (Htext)/2, sw, (Htext)/2, "");
 			valXmtMixer->type(FL_VERT_NICE_SLIDER);
 			valXmtMixer->color(fl_rgb_color(110,0,30));
 			valXmtMixer->labeltype(FL_ENGRAVED_LABEL);
@@ -1094,9 +1132,8 @@ void create_fl_digi_main() {
 			valXmtMixer->deactivate();
 		MixerFrame->end();
 
-		Fl_Tile *TiledGroup = new Fl_Tile(sw, Y, WNOM-sw, Hrcvtxt + Hxmttxt);
-//		Fl_Group *TiledGroup = new Fl_Group(sw, Y, WNOM-sw, Hrcvtxt + Hxmttxt);
-			Fl_Box *minbox = new Fl_Box(sw,Y + 66, WNOM-sw, Hxmttxt + Hrcvtxt - 66 - 32);
+		Fl_Tile *TiledGroup = new Fl_Tile(sw, Y, WNOM-sw, Htext);
+			Fl_Box *minbox = new Fl_Box(sw,Y + 66, WNOM-sw, Htext - 66 - 32);
 			minbox->hide();
 
 			ReceiveText = new TextView(sw, Y, WNOM-sw, Hrcvtxt, "");
@@ -1141,19 +1178,23 @@ void create_fl_digi_main() {
 			wfpack->type(1);
 			wf = new waterfall(0, Y, Wwfall, Hwfall);
 			wf->end();
-			Fl_Pack *ypack = new Fl_Pack(WNOM-(Hwfall-22), Y, Hwfall-22, Hwfall);
+			int Wscope = Hwfall - BTN_HEIGHT - 2 * BEZEL;
+			Fl_Pack *ypack = new Fl_Pack( WNOM - Wscope, Y, 
+										  Wscope, Hwfall);
 				ypack->type(0);
 
-				digiscope = new Digiscope (WNOM-(Hwfall-22), Y, Hwfall-22, Hwfall-22);
-	
+				digiscope = new Digiscope ( WNOM - Wscope, Y, 
+											Wscope, 
+											Wscope);	
 				pgrsSquelch = new Fl_Progress(
-					WNOM-(Hwfall-22), Y + Hwfall - 22,
-					Hwfall - 22, 10, "");
+					WNOM - Wscope, Y + Wscope,
+					Wscope, (BTN_HEIGHT + 2*BEZEL) / 2, "");
 				pgrsSquelch->color(FL_BACKGROUND2_COLOR, FL_DARK_GREEN);
+
 				sldrSquelch = new Fl_Slider(
 					FL_HOR_NICE_SLIDER, 
-					WNOM-(Hwfall-22), Y + Hwfall - 12, 
-					Hwfall - 22, 12, "");
+					WNOM - Wscope, Y + Wscope + BEZEL + (BTN_HEIGHT + 2*BEZEL) / 2,
+					Wscope, (BTN_HEIGHT + 2*BEZEL) / 2, "");
 							
 				sldrSquelch->minimum(0);
 				sldrSquelch->maximum(100);
@@ -1167,7 +1208,7 @@ void create_fl_digi_main() {
 			Fl_Group::current()->resizable(wf);
 		wfpack->end();
 		Y += (Hwfall + 2);
-
+		
 		Fl_Pack *hpack = new Fl_Pack(0, Y, WNOM, Hstatus);
 			hpack->type(1);
 			MODEstatus = new Fl_Button(0,Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Wmode, Hstatus, "");
@@ -1237,7 +1278,6 @@ void display_metric(double metric)
 
 void put_cwRcvWPM(double wpm)
 {
-//	if (!prgsCWrcvWPM) return;
 	int U = progdefaults.CWupperlimit;
 	int L = progdefaults.CWlowerlimit;
 	double dWPM = 100.0*(wpm - L)/(U - L);

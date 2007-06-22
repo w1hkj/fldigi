@@ -37,9 +37,12 @@
 #include <FL/Fl_Slider.H>
 #include <FL/Fl_Progress.H>
 #include <FL/Fl_Input.H>
+#include <FL/Fl_Tile.H>
+
 #include "combo.h"
 
 #include "TextView.h"
+#include "raster.h"
 #include "waterfall.h"
 #include "digiscope.h"
 #include "globals.h"
@@ -50,6 +53,8 @@ extern cMixer			mixer;
 
 extern TextView			*ReceiveText;
 extern TextEdit			*TransmitText;
+extern Raster			*FHdisp;
+extern Fl_Tile			*TiledGroup;
 extern Fl_Text_Buffer	*rcvBuffer;
 extern Fl_Text_Buffer	*xmtBuffer;
 extern Fl_Box			*StatusBar;
@@ -78,9 +83,6 @@ extern Fl_Slider		*valXmtMixer;
 
 extern bool				altMacros;
 
-//extern Fl_Browser *ReceiveText;
-//extern Fl_Browser *TransmitText;
-
 extern waterfall		*wf;
 extern Digiscope		*digiscope;
 
@@ -88,6 +90,7 @@ extern Digiscope		*digiscope;
 extern void create_fl_digi_main();
 extern Fl_Menu_Item menu_[];
 extern void activate_rig_menu_item(bool b);
+extern void activate_test_menu_item(bool b);
 
 extern void put_freq(double frequency);
 extern void put_Bandwidth(int bandwidth);

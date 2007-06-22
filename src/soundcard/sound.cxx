@@ -3,10 +3,13 @@
 
 cSound::cSound(const char *dev ) {
 	device			= dev;
+	capture = playback = generate = false;
+
 	tx_src_state = 0;
 	tx_src_data = 0;
 	rx_src_state = 0;
 	rx_src_data = 0;
+	cbuff = 0;
 	snd_buffer = 0;
 	src_buffer = 0;
 	txppm = progdefaults.TX_corr;
@@ -24,46 +27,6 @@ cSound::cSound(const char *dev ) {
 			 << " <" << device.c_str()
 			 << ">" << std::endl;
     }
-
-	try {
-		int err;
-		snd_buffer	= new float [2*SND_BUF_LEN]; //new float[SND_BUF_LEN];
-		src_buffer	= new float [2*SND_BUF_LEN]; //new float[SND_BUF_LEN];
-		cbuff 		= new unsigned char [4 * SND_BUF_LEN]; //new unsigned char [2 * SND_BUF_LEN];
-		if (!snd_buffer || !src_buffer || !cbuff)
-			throw("Cannot create src buffers");
-//		for (int i = 0; i < SND_BUF_LEN; i++)
-		for (int i = 0; i < 2*SND_BUF_LEN; i++)
-			snd_buffer[i] = src_buffer[i] = 0.0;
-//		for (int i = 0; i < 2 * SND_BUF_LEN; i++)
-		for (int i = 0; i < 4 * SND_BUF_LEN; i++)
-			cbuff[i] = 0;
-
-		tx_src_data = new SRC_DATA;
-		rx_src_data = new SRC_DATA;
-		if (!tx_src_data || !rx_src_data)
-			throw("Cannot create source data structures");
-			
-//		rx_src_state = src_new(SRC_SINC_FASTEST, 1, &err);
-		rx_src_state = src_new(SRC_SINC_FASTEST, 2, &err);
-		if (rx_src_state == 0)
-			throw(src_strerror(err));
-			
-//		tx_src_state = src_new(SRC_SINC_FASTEST, 1, &err);
-		tx_src_state = src_new(SRC_SINC_FASTEST, 2, &err);
-		if (tx_src_state == 0)
-			throw(src_strerror(err));
-			
-		rx_src_data->src_ratio = 1.0/(1.0 + rxppm/1e6);
-		src_set_ratio ( rx_src_state, 1.0/(1.0 + rxppm/1e6));
-		
-		tx_src_data->src_ratio = 1.0 + txppm/1e6;
-		src_set_ratio ( tx_src_state, 1.0 + txppm/1e6);
-	}
-	catch (SndException){
-		exit(1);
-	};
-
 }
 
 cSound::~cSound()
@@ -76,6 +39,13 @@ cSound::~cSound()
 	if (rx_src_data) delete rx_src_data;
 	if (rx_src_state) src_delete (rx_src_state);
 	if (tx_src_state) src_delete (tx_src_state);
+	tx_src_state = 0;
+	tx_src_data = 0;
+	rx_src_state = 0;
+	rx_src_data = 0;
+	cbuff = 0;
+	snd_buffer = 0;
+	src_buffer = 0;
 }
 
 void cSound::setfragsize()
@@ -95,7 +65,7 @@ void cSound::setfragsize()
 		throw errno;
 }
 
-int cSound::Open(int md, int freq)
+int cSound::Open(int md, int freq, int nchan)
 {
 	mode = md;
 	try {
@@ -103,14 +73,57 @@ int cSound::Open(int md, int freq)
 		if (device_fd == -1)
 			throw SndException(errno);
 		Format(AFMT_S16_LE);	// default: 16 bit little endian
-//		Channels(1);			//          1 channel
-		Channels(2);			//          2 channels
-		Frequency(freq);
+		Channels(nchan);		// 2 channels is default
+		Frequency(freq);		// 8000 Hz is default
 		setfragsize();
 	} 
 	catch (...) {
 		throw;
 	}
+
+	if (cbuff) delete [] cbuff;
+	if (snd_buffer) delete [] snd_buffer;
+	if (src_buffer) delete [] src_buffer;
+	if (tx_src_data) delete tx_src_data;
+	if (rx_src_data) delete rx_src_data;
+	if (rx_src_state) src_delete (rx_src_state);
+	if (tx_src_state) src_delete (tx_src_state);
+
+	try {
+		int err;
+		snd_buffer	= new float [channels * SND_BUF_LEN];
+		src_buffer	= new float [channels * SND_BUF_LEN];
+		cbuff 		= new unsigned char [channels * 2 * SND_BUF_LEN];
+		if (!snd_buffer || !src_buffer || !cbuff)
+			throw("Cannot create src buffers");
+		for (int i = 0; i < channels * SND_BUF_LEN; i++)
+			snd_buffer[i] = src_buffer[i] = 0.0;
+		for (int i = 0; i < channels * 2 * SND_BUF_LEN; i++)
+			cbuff[i] = 0;
+
+		tx_src_data = new SRC_DATA;
+		rx_src_data = new SRC_DATA;
+		if (!tx_src_data || !rx_src_data)
+			throw("Cannot create source data structures");
+			
+		rx_src_state = src_new(SRC_SINC_FASTEST, channels, &err);
+		if (rx_src_state == 0)
+			throw(src_strerror(err));
+			
+		tx_src_state = src_new(SRC_SINC_FASTEST, channels, &err);
+		if (tx_src_state == 0)
+			throw(src_strerror(err));
+			
+		rx_src_data->src_ratio = 1.0/(1.0 + rxppm/1e6);
+		src_set_ratio ( rx_src_state, 1.0/(1.0 + rxppm/1e6));
+		
+		tx_src_data->src_ratio = 1.0 + txppm/1e6;
+		src_set_ratio ( tx_src_state, 1.0 + txppm/1e6);
+	}
+	catch (SndException){
+		exit(1);
+	};
+
 	return device_fd;
 }
 
@@ -256,7 +269,11 @@ int cSound::Read(double *buffer, int buffersize)
 		rx_src_data->src_ratio = 1.0/(1.0 + rxppm/1e6);
 		src_set_ratio ( rx_src_state, 1.0/(1.0 + rxppm/1e6));
 	}
-	if (rxppm == 0)
+
+	if (capture) writeCapture( buffer, buffersize);
+	else if (playback) readPlayback( buffer, buffersize);
+		
+	if (rxppm == 0 || playback)
 		return buffersize;
 	
 // process using samplerate library
@@ -285,6 +302,8 @@ int cSound::write_samples(double *buf, int count)
 	short int *wbuff;
 	unsigned char *p;
 
+	if (generate) writeGenerate( buf, count);
+	
 	if (device_fd == -1 || count <= 0)
 		return -1;
 
@@ -345,6 +364,8 @@ int cSound::write_stereo(double *bufleft, double *bufright, int count)
 	short int *wbuff;
 	unsigned char *p;
 
+	if (generate) writeGenerate( bufleft, count );
+	
 	if (device_fd == -1 || count <= 0)
 		return -1;
 
@@ -355,7 +376,6 @@ int cSound::write_stereo(double *bufleft, double *bufright, int count)
 	}
 	
 	if (txppm == 0) {
-		wbuff = new short int[count];
 		wbuff = new short int[2*count];
 		p = (unsigned char *)wbuff;
 		for (int i = 0; i < count; i++) {
@@ -401,5 +421,62 @@ int cSound::write_stereo(double *bufleft, double *bufright, int count)
 	}
 
 	return retval;
+}
+
+
+void cSound::Capture(bool on) 
+{
+	if (on)
+		ofCapture.open("capture.snd");
+	else
+		ofCapture.close();
+	capture = on;
+}
+
+void cSound::Playback(bool on) 
+{
+//	std::cout << "Playback " << on << endl;
+	if (on) {
+		ifPlayback.open("playback.snd", ios::in | ios::binary);
+		if (ifPlayback.is_open() == true)
+			playback = true;
+		return;
+	} else
+		ifPlayback.close();
+	playback = false;
+}
+
+void cSound::Generate(bool on) 
+{
+	if (on)
+		ofGenerate.open("generate.snd");
+	else
+		ofGenerate.close();
+	generate = on;
+}
+
+void cSound::writeGenerate(double *buff, int count)
+{
+	char *cbuff = (char *)buff;
+	ofGenerate.write(cbuff, count * sizeof(double) );
+}
+
+void cSound::writeCapture(double *buff, int count)
+{
+	char *cbuff = (char *)buff;
+	ofCapture.write(cbuff, count * sizeof(double) );
+}
+
+int  cSound::readPlayback(double *buff, int count)
+{
+	char *cbuff = (char *)buff;
+	if (ifPlayback.eof() == true) {
+		ifPlayback.close();
+		ifPlayback.open("playback.snd", ios::in | ios::binary);
+	}
+	ifPlayback.read(cbuff, count * sizeof(double) );
+//	std::cout << count << " " << ifPlayback.tellg() << endl;
+
+	return count;
 }
 

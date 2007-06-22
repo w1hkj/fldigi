@@ -25,7 +25,7 @@
 #ifndef _CONFIG_H
 #define _CONFIG_H
 
-// You can change the width of the waterfall / spectrum display by modifying this
+// You can change the x1 width of the waterfall / spectrum display by modifying this
 // constant.
 // Suggest that you make the value a multiple of 100.
 // DO NOT EXCEED 4000
@@ -34,5 +34,58 @@
 
 #define IMAGE_WIDTH 3000
 
+// widget sizes internal to the waterfall widget
+#define BEZEL		 2
+#define WFTEXT		10
+#define WFSCALE     10
+#define WFMARKER     6
+#define BTN_HEIGHT	20
+
+// use the following for EmComm minimal footprint
+//#define Hwfall		120
+//#define WMINIMUM	(Hwfall + 580)
+//#define HNOM		450 // do not make smaller than 400
+//#define WNOM		WMINIMUM
+
+// use the following for the original fldigi waterfall sizing
+#define Hwfall		140
+#define WMINIMUM	(IMAGE_WIDTH / 4 + Hwfall - BTN_HEIGHT)
+#define HNOM		570
+#define WNOM		WMINIMUM
+
+
+#define bwColor		30
+#define bwFFT		30
+#define bwX1		30
+#define bwMov		20
+#define cwCnt		100
+#define cwRef		50
+#define cwMode		85
+#define bwQsy		45
+#define bwRate		45
+#define bwXmtLock	45
+#define bwRev		45
+#define bwXmtRcv	45
+#define wSpace		2
+
+#define Hmenu		22
+#define Hqsoframe	48
+#define Hnotes		22
+#define Hstatus		22
+#define Hmacros		22
+
+#define Htext		(HNOM - 4 - Hwfall - Hmenu - Hstatus - Hmacros - Hqsoframe - Hnotes)
+#define Hxmttxt		(Htext) / 4
+#define Hrcvtxt		(Htext - (Hxmttxt))
+
+#define Wwfall		(WNOM - Hwfall + BTN_HEIGHT + 2 * BEZEL)
+#define Wmode 		80
+#define Ws2n  		100
+#define Wimd  		100
+#define Wwarn 		16
+#define bwAfcOnOff	(Hwfall -22)/2
+#define bwSqlOnOff	(Hwfall -22)/2
+
+#define Wstatus (WNOM - Wmode - Ws2n - Wimd - Wwarn - bwAfcOnOff - bwSqlOnOff)
 
 #endif

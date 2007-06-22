@@ -9,6 +9,18 @@ Change Log:
       7) Added PSKmail tab and control to allow disabling the automatic
          return to the PSK sweet spot if running a mail server
       8) Added "Save To" menu item on received text popup menu.
+      9) Added relative sizing of Rx / Tx text widgets to state memory
+      10) Added hidden Menus "Test / Capture / Generate / Playback"
+          Capture - captures current audio input stream to file "capture.snd"
+          Generate - sends current audio output stream to file "generate.snd"
+          Playback - reads audio stream from file "playback.snd" in lieu of
+                     the audio sound card
+          These provide the ability to make repetitive tests of various modems
+          by playing back a known audio stream.
+          If you capture an audio stream and then copy the file to playback.snd
+          you can then play that audio stream back.  The stream will loop repitively
+          until the playback is turned off.
+          The three menu items, Capture, Generate and Playback are all toggle menu items.
 1.34  1) Cleaned up unused code segments
       2) Modified CW decoder to allow setting upper and lower limits on
          Tx WPM

@@ -283,6 +283,7 @@ void psk::searchUp()
 void psk::afc()
 {
 	double error, ftest, sigpwr, noise;
+	static int cntdown = 0;
 	if (mailserver && progdefaults.PSKmailSweetSpot)
 		ftest = wf->peakFreq((int)progdefaults.PSKsweetspot, (int) bandwidth);
 	else
@@ -292,6 +293,7 @@ void psk::afc()
 // fast search for peak signal frequency		
 	if (sigsearch) {
 		freqerr = 0.0;
+		cntdown = 16;
 		if (sigpwr/noise > 2.0) {//afcthreshold) {
 			if (!mailserver || (mailserver && !progdefaults.PSKmailSweetSpot) || 
 			    (mailserver && (fabs(progdefaults.PSKsweetspot - ftest) < 15))) {
@@ -311,11 +313,14 @@ void psk::afc()
 			error += 2 * M_PI;
 		if (error > M_PI / 2)
 			error -= 2 * M_PI;
-		error *= ((samplerate / (symbollen * 2 * M_PI)/16));
-		freqerr = decayavg( freqerr, error, 8);//32);
+		if (cntdown > 0) cntdown--;
+		if (cntdown)
+			freqerr = decayavg( freqerr, error * ((samplerate / (symbollen * 2 * M_PI)/16)), 2);
+		else
+			freqerr = decayavg( freqerr, error * ((samplerate / (symbollen * 2 * M_PI)/16)), 16);
 		frequency -= freqerr;
 		set_freq (frequency);
-//sprintf(phasemsg,"%5.4f  %8.2f", freqerr, frequency);
+//sprintf(phasemsg,"%5.4f  %5.4f  %8.2f", error, freqerr, frequency);
 //put_status(phasemsg);
 	} else if (mailserver && progdefaults.PSKmailSweetSpot)
 		sigsearch = 3;
@@ -323,8 +328,6 @@ void psk::afc()
 
 void psk::rx_symbol(complex symbol)
 {
-//	double phase, error;
-//	int bits, n;
 	int n;
 	phase = (prevsymbol % symbol).arg();
 	prevsymbol = symbol;

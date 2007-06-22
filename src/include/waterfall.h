@@ -60,28 +60,6 @@
 //#define FFT_LEN     2048
 #define FFT_LEN		4096
 #define SC_SMPLRATE	8000
-
-#define BEZEL		 2
-#define WFTEXT		10
-#define WFSCALE     10
-#define WFMARKER     6
-#define BTN_HEIGHT	20
-
-#define bwColor		35
-#define bwFFT		35
-#define bwX1		25
-#define bgX14		75
-#define bwMov		20
-#define bgMov		60
-#define cwCnt		120
-#define cwRef		60
-#define cwMode		85
-#define bwQsy		45
-#define bwRate		45
-#define bwXmtLock	45
-#define bwRev		45
-#define bwXmtRcv	60
-#define wSpace		4
  
 #define fftabs(a,b) sqrt((a)*(a) + (b)*(b))
 

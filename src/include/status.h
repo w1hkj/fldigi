@@ -17,6 +17,7 @@ struct status {
 	int		mainY;
 	int		mainW;
 	int		mainH;
+	int		RxTextHeight;
 	bool	rigShown;
 	int		rigX;
 	int		rigY;

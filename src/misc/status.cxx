@@ -26,6 +26,7 @@ status progStatus = {
 	0,					// int mainY;
 	WNOM,				// int mainW;
 	HNOM,				// int mainH;
+	Hrcvtxt,			// int RxTextHeight;
 	false,				// bool rigShown;
 	0,					// int rigX;
 	0,					// int rigY;
@@ -43,6 +44,7 @@ void status::saveLastState()
 	mainY = fl_digi_main->y();
 	mainW = fl_digi_main->w();
 	mainH = fl_digi_main->h();
+	RxTextHeight = ReceiveText->h();
 	if (rigcontrol)
 		if (rigcontrol->visible()) {
 			rigShown = rigcontrol->visible();
@@ -60,6 +62,7 @@ void status::saveLastState()
 	deffile << rigShown << endl;
 	deffile << rigX << endl;
 	deffile << rigY << endl;
+	deffile << RxTextHeight << endl;
 	deffile.close();
 }
 
@@ -77,6 +80,7 @@ void status::initLastState()
 		deffile >> rigShown;
 		deffile >> rigX;
 		deffile >> rigY;
+		deffile >> RxTextHeight;
 		deffile.close();
 	}
 	trx_mode m = (trx_mode) lastmode;
@@ -118,7 +122,23 @@ void status::initLastState()
 		active_modem->set_freq(progdefaults.RTTYsweetspot);
 	else 
 		active_modem->set_freq(progdefaults.PSKsweetspot);
+
+//std::cout << ReceiveText->h() << std::endl;
+//std::cout << RxTextHeight << std::endl;
+
+	int X, Y, W, H, Yx, Hx;
+	X = ReceiveText->x();
+	Y = ReceiveText->y();
+	W = ReceiveText->w();
+	H = ReceiveText->h();
+	Yx = TransmitText->y();
+	Hx = TransmitText->h();	
+
+	ReceiveText->resize(X,Y,W,RxTextHeight);
+	FHdisp->resize(X,Y,W,RxTextHeight);
+	TransmitText->resize(X, Y + RxTextHeight, W, H + Hx - RxTextHeight);
 	
+//	TiledGroup->position( 0, ReceiveText->h(), 0, RxTextHeight);	
 	fl_digi_main->resize(mainX, mainY, mainW, mainH);
 	if (rigShown == true) {
 		if (!rigcontrol)

@@ -16,6 +16,7 @@
 #include <math.h>
 
 #include <iostream>
+#include <fstream>
 #include <string>
 
 #include "samplerate/samplerate.h"
@@ -27,6 +28,8 @@
 
 #define	SND_BUF_LEN		65536
 //#define	SRC_BUF_LEN		(8*SND_BUF_LEN)
+
+using namespace std;
 
 class SndException {
 public:
@@ -58,6 +61,10 @@ private:
 	int		rxppm;
 	int		mode;
 	bool	formatok;
+	
+	bool	capture;
+	bool	playback;
+	bool	generate;
 
 	void	getVersion();
 	void	getCapabilities();
@@ -77,10 +84,19 @@ private:
 	float	*snd_buffer;
 	float	*src_buffer;
 	unsigned char *cbuff;
+	
+	ofstream ofGenerate;
+	ofstream ofCapture;
+	fstream  ifPlayback;
+	
+	void writeGenerate(double *buff, int count);
+	void writeCapture(double *buff, int count);
+	int  readPlayback(double *buff, int count);
+	
 public:
 	cSound(const char *dev = "/dev/dsp");
 	~cSound();
-	int		Open(int mode, int freq = 8000);
+	int		Open(int mode, int freq = 8000, int nchan = 2);
 	void	Close();
 	int		Write(unsigned char *, int);
 	int		write_samples(double *, int);
@@ -95,6 +111,10 @@ public:
 	int		Channels() { return channels;};
 	int		Format() { return play_format;};
 	bool	FormatOK() { return formatok;};
+	
+	void	Capture(bool on);
+	void	Playback(bool on);
+	void	Generate(bool on);	
 };
 
 #endif

@@ -54,7 +54,7 @@ string PskMailFile;
 string HomeDir;
 string xmlfname;
 
-bool gmfskmail = false;
+bool testmenu = false;
 
 PTT		*push2talk = (PTT *)0;
 #ifndef NOHAMLIB
@@ -63,6 +63,7 @@ Rig		*xcvr = (Rig *)0;
 
 cLogfile	*logfile = 0;;
 
+bool gmfskmail = false;
 cLogfile	*Maillogfile = (cLogfile *)0;
 FILE	*server;
 FILE	*client;
@@ -127,9 +128,16 @@ int main(int argc, char ** argv) {
 	Fl::visual(FL_RGB); // insure 24 bit color operation
 	fl_register_images();
 	Fl::set_fonts(0);
-	
+
+	if (argc == 2)
+		if (strcasecmp(argv[1], "TEST") == 0)
+			testmenu = true;
+
 	rigcontrol = createRigDialog();
 	create_fl_digi_main();
+
+	activate_test_menu_item(testmenu);
+
 	createConfig();
 	macros.loadDefault();
 
@@ -144,11 +152,7 @@ int main(int argc, char ** argv) {
 							progdefaults.btnRTSDTRis,
 							progdefaults.btnPTTREVis );
 	
-	if (argc == 2)
-		scDevice = argv[1];
-	else
-		scDevice = progdefaults.SCdevice;
-	
+	scDevice = progdefaults.SCdevice;	
 	trx_start(scDevice.c_str());
 
 	progdefaults.initInterface();
