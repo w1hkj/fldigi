@@ -163,8 +163,8 @@ void trx_tune_loop()
 			} else
 				xmttune::tune(active_modem->get_txfreq_woffset(), scard);
 		}
-		scard->Close();
 		xmttune::keyup(active_modem->get_txfreq_woffset(), scard);
+		scard->Close();
 		_trx_tune = 0;
 	} else
 		MilliSleep(10);

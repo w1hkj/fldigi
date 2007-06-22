@@ -9,6 +9,9 @@ Change Log:
       7) Added PSKmail tab and control to allow disabling the automatic
          return to the PSK sweet spot if running a mail server
       8) Added "Save To" menu item on received text popup menu.
+      9) Corrected memory leak bugs found in version 1.34
+      10) Added "Test" capability to save Rx or Tx waveforms in ".wav"
+          format and to play them back for testing modem decoders.
 1.34  1) Cleaned up unused code segments
       2) Modified CW decoder to allow setting upper and lower limits on
          Tx WPM

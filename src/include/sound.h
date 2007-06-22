@@ -16,8 +16,8 @@
 #include <math.h>
 
 #include <string>
-#include <fstream.h>
-#include <iostream.h>
+#include <sndfile.hh>
+#include <iostream>
 
 #ifdef PORTAUDIO
 	#include <portaudiocpp/PortAudioCpp.hxx>
@@ -35,24 +35,29 @@
 
 #define powerof2(n) ((((n) - 1) & (n)) == 0)
 
-class SndException {
+class SndException : public std::exception
+{
 public:
-	char	szError[80];
-	int		error;
 	SndException() { *szError = 0; error = 0; }
 	SndException(int e) {
-		sprintf(szError,"Error: %d, %s", e, strerror(e));
+		snprintf(szError, sizeof(szError) - 1, "Error: %d, %s", e, strerror(e));
 		error = e;
 	}
-	SndException(char *s) {
-		sprintf(szError,"Error: %s", s);
+	SndException(const char *s) {
+		snprintf(szError, sizeof(szError) - 1, "Error: %s", s);
 		error = 1;
 	}
+        const char *what(void) const throw() { return szError; }
+
+private:
+	char	szError[80];
+	int		error;
 };
 
 class cSound {
 	
 protected:
+	int		sample_frequency;
 	int		txppm;
 	int		rxppm;
 
@@ -68,10 +73,10 @@ protected:
 	bool	playback;
 	bool	generate;
 	
-	ofstream ofGenerate;
-	ofstream ofCapture;
-	fstream  ifPlayback;
-	
+	SndfileHandle* ofGenerate;
+	SndfileHandle* ofCapture;
+	SndfileHandle* ifPlayback;
+
 	void writeGenerate(double *buff, int count);
 	void writeCapture(double *buff, int count);
 	int  readPlayback(double *buff, int count);
@@ -98,7 +103,6 @@ private:
 	int		format_mask;
 	int		channels;
 	int		play_format;
-	int		sample_frequency;
 	int		mode;
 	bool	formatok;
 	unsigned char	*cbuff;

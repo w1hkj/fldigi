@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <string>
-#include <sstream>
 #include <glob.h>
 #include <FL/Fl_Double_Window.H>
 #include <FL/filename.H>

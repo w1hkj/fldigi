@@ -75,6 +75,7 @@ void fftfilt::create_filter(double f1, double f2)
 	tmpfft->cdft(filter);
 // start outputs after 2 full passes are complete
 	pass = 2;
+	delete tmpfft;
 }
 
 

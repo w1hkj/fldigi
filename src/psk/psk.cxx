@@ -159,8 +159,8 @@ psk::psk(trx_mode pskmode) : modem()
 	dec = (viterbi *)0;
 	
 // create impulse response for experimental FIR filters
-	fir1c = new double[64];
-	fir2c = new double[64];
+	double fir1c[64];
+	double fir2c[64];
 
 //	raisedcosfilt(fir1c);	// creates fir1c
 

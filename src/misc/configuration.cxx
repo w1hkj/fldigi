@@ -113,7 +113,7 @@ configuration progdefaults = {
 	0,			// int		btnAudioIOis
 	"/dev/dsp",		// string	SCdevice;
 	"/dev/dsp",		// string	OSSdevice;
-	"0-/dev/dsp",		// string	PAdevice;
+	"/dev/dsp",		// string	PAdevice;
 	0,				// int		RX_corr;
 	0,				// int		TX_corr;
 	0,				// int		TxOffset;
@@ -274,7 +274,7 @@ void configuration::writeDefaultsXML()
 
 	writeXMLstr(f, "PTTDEV", PTTdev);
 	writeXMLstr(f, "SECONDARYTEXT", secText);		
-        writeXMLint(f, "AUDIOIO", btnAudioIOis);
+    writeXMLint(f, "AUDIOIO", btnAudioIOis);
 	writeXMLstr(f, "SCDEVICE", SCdevice);
 	writeXMLstr(f, "OSSDEVICE", OSSdevice);
 	writeXMLstr(f, "PADEVICE", PAdevice);
@@ -537,7 +537,7 @@ void configuration::readDefaults(ifstream &f)
 	f >> MXdevice;
 	f >> btnAudioIOis;
 	f >> OSSdevice;
-	f >> PAdevice;
+	getline(f >> ws, PAdevice);
 }
 
 void configuration::loadDefaults() {

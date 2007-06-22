@@ -30,3 +30,11 @@ Hamlib Library Source the latest release is 1.2.6, download this release.
 Follow the instruction in the source code top directory.  The library must 
 be installed as super user.  You should compile as your normal login user.  
 The precompiled hamlib RPM and DEB distributions usually work OK.
+
+3. PortAudio - you will need to build and install both libportaudio and 
+libportaudiocpp.  See website, www.portaudio.com
+
+4. Sndfile - you will need to build and install libsndfile.  See website,
+http://www.mega-nerd.com/libsndfile by  Erik de Castro Lopo.  Erik is also
+the author of the resampling library that is used in fldigi to compensate
+for the sound card offsets.

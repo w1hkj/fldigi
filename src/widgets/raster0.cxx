@@ -38,7 +38,7 @@ Raster::Raster (int X, int Y, int W, int H) :
 	height = H - 4;
 	space = 2;
 	rowheight = 60;
-	Nrows = height / (rowheight + space);
+	Nrows = (int)(height / (rowheight + space) - 0.5);
 	vidbuf = new unsigned char[width * height];
 	memset(vidbuf, 255, width * height);
 	col = 0;
@@ -69,7 +69,7 @@ void Raster::data(int data[], int len)
 	col++;
 	if (col >= width) {
 		unsigned char *from = vidbuf + (space + rowheight) * width;
-		int numtocopy = (Nrows-1) * (space + rowheight) * width;
+		int numtocopy = Nrows * (space + rowheight) * width;
 		memmove(vidbuf, from, numtocopy);
 		memset(	vidbuf + yp * width, 
 				255, (space + rowheight) * width);
@@ -90,6 +90,8 @@ void Raster::data(int data[], int len)
 	
 	redraw();
 	Fl::unlock();
+
+//	redraw();
 	Fl::awake();
 }
 
@@ -101,13 +103,14 @@ void Raster::clear()
 	col = width;
 	redraw();
 	Fl::unlock();
+//	redraw();
 	Fl::awake();
 }
 
 void Raster::resize(int x, int y, int w, int h)
 {
 	int Wdest = w - 4, Hdest = h - 4;
-	int Ndest = Hdest / (rowheight + space);
+	int Ndest = (int)(Hdest / (rowheight + space) - 0.5);
 	unsigned char *tempbuf = new unsigned char [Wdest * Hdest];
 	unsigned char *oldbuf;
 	int xfrcols, xfrrows;
@@ -121,14 +124,14 @@ void Raster::resize(int x, int y, int w, int h)
 		xfrcols = Wdest;
 
 	if (Ndest <= Nrows) {
-		xfrrows = Ndest * (rowheight + space);
+		xfrrows = (Ndest + 1)*(rowheight + space);
 		from = (Nrows - Ndest) * (rowheight + space);
 		to = 0;
 		for (int r = 0; r < xfrrows; r++)
 			for (int c = 0; c < xfrcols; c++)
 				tempbuf[(to + r) * Wdest + c] = vidbuf[(from + r) * width + c];
 	} else {
-		xfrrows = Nrows * (rowheight + space);
+		xfrrows = (Nrows + 1)*(rowheight + space);
 		from = 0;
 		to = (Ndest - Nrows) * (rowheight + space);
 		for (int r = 0; r < xfrrows; r++)

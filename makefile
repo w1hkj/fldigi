@@ -120,21 +120,22 @@ endef
 
 ifeq ($(CTARG),hamlib)
 CFLAGS = $(CCFLAGS) -DPORTAUDIO
-LDFLAGS = $(DYN_LDFLAGS) -lportaudiocpp
+LDFLAGS = $(DYN_LDFLAGS) -lportaudiocpp -lportaudio -lsndfile
 $(TARGET): print_header directories $(SRC_OBJS) $(HAMLIB_OBJS)
 	$(CC) -s -o $(OUTPUT_DIR)/$(TARGET) $(SRC_OBJS) $(HAMLIB_OBJS) $(LDFLAGS) $(HAMLIBS)
 endif
 
 ifeq ($(CTARG),hamlib-local)
 CFLAGS = $(CCFLAGS) -DPORTAUDIO
-LDFLAGS = $(STATIC_LDFLAGS) -lportaudiocpp
+LDFLAGS = $(STATIC_LDFLAGS) \
+/usr/local/lib/libportaudiocpp.a /usr/local/lib/libportaudio.a /usr/local/lib/libsndfile.a
 $(TARGET): print_header directories $(SRC_OBJS) $(HAMLIB_OBJS)
 	$(CC) -s -o $(OUTPUT_DIR)/$(TARGET) $(SRC_OBJS) $(HAMLIB_OBJS) $(LDFLAGS) $(HAMLIBS) $(IMGLIBS)
 endif
 
 ifeq ($(CTARG),hamlib-debug)
 CFLAGS = $(CCFLAGS) -g -DPORTAUDIO
-LDFLAGS = $(DYN_LDFLAGS) -lportaudiocpp
+LDFLAGS = $(DYN_LDFLAGS) -lportaudiocpp -lportaudio -lsndfile
 OBJS = $(SRC_OBJS) $(HAMLIB_OBJS)
 $(TARGET): print_header directories $(SRC_OBJS) $(HAMLIB_OBJS)
 	$(CC) -o $(OUTPUT_DIR)/$(TARGET) $(OBJS) $(LDFLAGS) $(HAMLIBS)
@@ -142,21 +143,22 @@ endif
 
 ifeq ($(CTARG),nhl)
 CFLAGS = $(CCFLAGS) -DNOHAMLIB -DPORTAUDIO
-LDFLAGS = $(DYN_LDFLAGS) -lportaudiocpp
+LDFLAGS = $(DYN_LDFLAGS) -lportaudiocpp -lportaudio -lsndfile
 $(TARGET): print_header directories $(SRC_OBJS)
 	$(CC) -s -o $(OUTPUT_DIR)/$(TARGET) $(SRC_OBJS) $(LDFLAGS)
 endif
 
 ifeq ($(CTARG),nhl-local)
 CFLAGS = $(CCFLAGS) -DNOHAMLIB -DPORTAUDIO
-LDFLAGS = $(STATIC_LDFLAGS) /usr/local/lib/libportaudiocpp.a /usr/local/lib/libportaudio.a
+LDFLAGS = $(STATIC_LDFLAGS) \
+/usr/local/lib/libportaudiocpp.a /usr/local/lib/libportaudio.a /usr/local/lib/libsndfile.a
 $(TARGET): print_header directories $(SRC_OBJS)
 	$(CC) -s -o $(OUTPUT_DIR)/$(TARGET) $(SRC_OBJS) $(LDFLAGS) $(IMGLIBS) 
 endif
 
 ifeq ($(CTARG),nhl-debug)
 CFLAGS = $(CCFLAGS) -DNOHAMLIB -DPORTAUDIO -g
-LDFLAGS = $(DYN_LDFLAGS) -lportaudiocpp
+LDFLAGS = $(DYN_LDFLAGS) -lportaudiocpp -lportaudio -lsndfile
 $(TARGET): print_header directories $(SRC_OBJS)
 	$(CC) -o $(OUTPUT_DIR)/$(TARGET) $(SRC_OBJS) $(LDFLAGS)
 endif

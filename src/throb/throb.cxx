@@ -121,7 +121,7 @@ void throb::reset_syms() //call when switching from TX to RX or vice versa
 throb::throb(trx_mode throb_mode) : modem()
 {
 	double bw;
-	double *fp;
+	double *fp = 0;
 
 	mode = throb_mode;
 
@@ -217,6 +217,7 @@ throb::throb(trx_mode throb_mode) : modem()
 
 	syncfilt = new C_FIR_filter();
 	syncfilt->init(symlen / DOWN_SAMPLE, 1, fp, NULL);
+	delete fp;
 	
 	snfilter = new Cmovavg(16);
 

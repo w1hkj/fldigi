@@ -90,12 +90,13 @@ void rtty::init()
 
 rtty::~rtty()
 {
-	delete hilbert;
+	if (hilbert) delete hilbert;
+	if (wfid) delete wfid;
+	if (bitfilt) delete bitfilt;
 //	if (KeyLine) {
 //		delete KeyLine;
 //		KeyLine = (modeIO *)0;
 //	}
-	if (wfid) delete wfid;
 }
 
 void rtty::restart()
@@ -198,6 +199,7 @@ void rtty::clear_syncscope()
 	double *data = new double[symbollen];
 	for (int i = 0; i < symbollen; data[i++] = 0.0);
 	set_scope(data, symbollen, false);
+	delete [] data;
 }
 
 complex rtty::mixer(complex in)

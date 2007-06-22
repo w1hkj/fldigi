@@ -1,12 +1,11 @@
 #include "sound.h"
 #include "configuration.h"
 
-#ifdef MAX
-#undef MAX
-#endif
-
 #ifdef MIN
 #undef MIN
+#endif
+#ifdef MAX
+#undef MAX
 #endif
 
 #define	MAX(a,b)	(((a) > (b)) ? (a) : (b))
@@ -15,10 +14,9 @@
 cSound::cSound()
         : txppm(progdefaults.TX_corr), rxppm(progdefaults.RX_corr),
           tx_src_state(0), tx_src_data(0), rx_src_state(0), rx_src_data(0),
-          snd_buffer(0), src_buffer(0)
-{ 
-	capture = playback = generate = false;
-}
+          snd_buffer(0), src_buffer(0), capture(false), playback(false),
+	  generate(false), ofGenerate(0), ofCapture(0), ifPlayback(0)
+{ }
 
 cSound::~cSound()
 {
@@ -28,60 +26,99 @@ cSound::~cSound()
 	if (rx_src_data) delete rx_src_data;
 	if (rx_src_state) src_delete (rx_src_state);
 	if (tx_src_state) src_delete (tx_src_state);
+	delete ofGenerate;
+	delete ofCapture;
+	delete ifPlayback;
 }
 
 void cSound::Capture(bool on) 
 {
-	if (on)
-		ofCapture.open("capture.snd");
-	else
-		ofCapture.close();
+	if (on) {
+		ofCapture = new SndfileHandle("capture.wav", SFM_WRITE,
+					      SF_FORMAT_WAV | SF_FORMAT_PCM_16,
+					      1, sample_frequency);
+		if (!*ofCapture) {
+			cerr << "Could not write capture.wav" << endl;
+			delete ofCapture;
+			ofCapture = 0;
+			return;
+		}
+//		cerr << "Opened capture.wav" << endl;
+		ofCapture->command(SFC_SET_UPDATE_HEADER_AUTO, 0, SF_TRUE);
+	}
+	else {
+		delete ofCapture;
+		ofCapture = 0;
+//		cerr << "Closed capture.wav" << endl;
+	}
+
 	capture = on;
 }
 
 void cSound::Playback(bool on) 
 {
 	if (on) {
-		ifPlayback.open("playback.snd", ios::in | ios::binary);
-		if (ifPlayback.is_open() == true)
-			playback = true;
-		return;
-	} else
-		ifPlayback.close();
-	playback = false;
+		ifPlayback = new SndfileHandle("playback.wav");
+		if (!*ifPlayback) {
+			cerr << "Could not read playback.wav" << endl;
+			delete ifPlayback;
+			ifPlayback = 0;
+			return;
+		}
+		playback = true;
+	}
+	else {
+		delete ifPlayback;
+		ifPlayback = 0;
+		playback = false;
+	}
 }
 
 void cSound::Generate(bool on) 
 {
-	if (on)
-		ofGenerate.open("generate.snd");
-	else
-		ofGenerate.close();
+	if (on) {
+                cerr << "opening generate.wav" << endl;
+		ofGenerate = new SndfileHandle("generate.wav", SFM_WRITE,
+					       SF_FORMAT_WAV | SF_FORMAT_PCM_16,
+					       1, sample_frequency);
+		if (!*ofGenerate) {
+			cerr << "Could not write generate.wav" << endl;
+			delete ofGenerate;
+			ofGenerate = 0;
+			return;
+		}
+		ofGenerate->command(SFC_SET_UPDATE_HEADER_AUTO, 0, SF_TRUE);
+	}
+	else {
+		delete ofGenerate;
+		ofGenerate = 0;
+	}
+
 	generate = on;
 }
 
 void cSound::writeGenerate(double *buff, int count)
 {
-	char *cbuff = (char *)buff;
-	ofGenerate.write(cbuff, count * sizeof(double) );
+	ofGenerate->writef(buff, count);
 }
 
 void cSound::writeCapture(double *buff, int count)
 {
-	char *cbuff = (char *)buff;
-	ofCapture.write(cbuff, count * sizeof(double) );
+	ofCapture->writef(buff, count);
 }
 
 int  cSound::readPlayback(double *buff, int count)
 {
-	char *cbuff = (char *)buff;
-	if (ifPlayback.eof() == true) {
-		ifPlayback.close();
-		ifPlayback.open("playback.snd", ios::in | ios::binary);
-	}
-	ifPlayback.read(cbuff, count * sizeof(double) );
+	sf_count_t r = ifPlayback->readf(buff, count);
 
-	return count;
+	while (r < count) {
+		ifPlayback->seek(0, SEEK_SET);
+		r += ifPlayback->readf(buff + r, count - r);
+                if (r == 0)
+                        break;
+        }
+
+	return r;
 }
 
 
@@ -97,7 +134,7 @@ cSoundOSS::cSoundOSS(const char *dev ) {
 		Close();
 	}
 	catch (SndException e) {
-		std::cout << e.szError - 1 
+		std::cout << e.what()
 			 << " <" << device.c_str()
 			 << ">" << std::endl;
     }
@@ -491,13 +528,13 @@ cSoundPA::cSoundPA(const char *dev)
         rx_src_data = new SRC_DATA;
         tx_src_data = new SRC_DATA;
         if (!rx_src_data || !tx_src_data)
-                throw("Cannot create source data structures");
+                throw(SndException("Cannot create source data structures"));
 
         snd_buffer = new float[2 * SND_BUF_LEN];
         src_buffer = new float[2 * SND_BUF_LEN];
         fbuf = new float[2 * SND_BUF_LEN];
         if (!snd_buffer || !src_buffer || !fbuf)
-                throw("could not allocate buffers");
+                throw(SndException("could not allocate buffers"));
         memset(snd_buffer, 0, 2 * SND_BUF_LEN);
         memset(src_buffer, 0, 2 * SND_BUF_LEN);
         memset(fbuf, 0, 2 * SND_BUF_LEN);
@@ -513,9 +550,21 @@ int cSoundPA::Open(int mode, int freq)
 {
         open_mode = mode;
         req_sample_rate = freq;
+        sample_frequency = (int)req_sample_rate;
 
         Close();
-        init_stream();
+        try {
+                init_stream();
+        }
+        catch (const exception &e) {
+                cerr << e.what() << endl;
+                // make sure the stream is closed
+                try {
+                        stream.close();
+                }
+                catch (...) { }
+                throw(SndException(e.what()));
+        }
 
         int err;
         if (mode == O_RDONLY) {
@@ -524,7 +573,7 @@ int cSoundPA::Open(int mode, int freq)
                         src_delete(rx_src_state);
                 rx_src_state = src_new(SRC_SINC_FASTEST, 2, &err);
                 if (!rx_src_state)
-                        throw(src_strerror(err));
+                        throw(SndException(src_strerror(err)));
                 rx_src_data->src_ratio = req_sample_rate / (dev_sample_rate * (1.0 + rxppm / 1e6));
         }
         else if (mode == O_WRONLY) {
@@ -533,15 +582,15 @@ int cSoundPA::Open(int mode, int freq)
                         src_delete(tx_src_state);
                 tx_src_state = src_new(SRC_SINC_FASTEST, 2, &err);
                 if (!tx_src_state)
-                        throw(src_strerror(err));
+                        throw(SndException(src_strerror(err)));
                 tx_src_data->src_ratio = dev_sample_rate * (1.0 + txppm / 1e6) / req_sample_rate;
         }
         else
                 return -1;
 
-        if (dev_sample_rate != req_sample_rate)
-                cerr << "PA_debug: resampling " << dev_sample_rate
-                     << " <-> " << req_sample_rate << endl;
+//        if (dev_sample_rate != req_sample_rate)
+//                cerr << "PA_debug: resampling " << dev_sample_rate
+//                     << " <-> " << req_sample_rate << endl;
 
         stream.open(stream_params);
         stream.start();
@@ -559,16 +608,18 @@ void cSoundPA::Close(void)
 
 int cSoundPA::Read(double *buf, int count)
 {
-    int ncount = (int)floor(MIN(count, SND_BUF_LEN) / rx_src_data->src_ratio);
+        int ncount = (int)floor(MIN(count, SND_BUF_LEN) / rx_src_data->src_ratio);
 
-    try {
-        stream.read(fbuf, ncount);
-    }
-    catch (const portaudio::PaException &e) {
-        cerr << e.what() << endl;
-        if (strstr(e.what(), "rflow"))
-            adjust_stream();
-    }
+        try {
+                stream.read(fbuf, ncount);
+        }
+        catch (const portaudio::PaException &e) {
+                cerr << e.what() << endl;
+                if (strstr(e.what(), "rflow"))
+                        adjust_stream();
+                else
+                        throw(SndException(e.what()));
+        }
 
 	if (capture) writeCapture( buf, count);
 
@@ -577,18 +628,18 @@ int cSoundPA::Read(double *buf, int count)
 		return count;
 	}
 
-    float *rbuf = fbuf;
- 
-    if (req_sample_rate != dev_sample_rate || rxppm != progdefaults.RX_corr) {
-        resample(rbuf, ncount, count);
-        rbuf = rx_src_data->data_out;
-        count = rx_src_data->output_frames_gen;
-    }
+        float *rbuf = fbuf;
 
-    for (int i = 0; i < count; i++)
-        buf[i] = rbuf[2*i];
+        if (req_sample_rate != dev_sample_rate || rxppm != progdefaults.RX_corr) {
+                resample(rbuf, ncount, count);
+                rbuf = rx_src_data->data_out;
+                count = rx_src_data->output_frames_gen;
+        }
 
-    return count;
+        for (int i = 0; i < count; i++)
+                buf[i] = rbuf[2*i];
+
+        return count;
 }
 
 int cSoundPA::write_samples(double *buf, int count)
@@ -611,6 +662,8 @@ int cSoundPA::write_samples(double *buf, int count)
                 cerr << e.what() << endl;
                 if (strstr(e.what(), "rflow"))
                         adjust_stream();
+                else
+                        throw SndException(e.what());
         }
 
         return count;
@@ -638,6 +691,8 @@ int cSoundPA::write_stereo(double *bufleft, double *bufright, int count)
                 cerr << e.what() << endl;
                 if (strstr(e.what(), "rflow"))
                         adjust_stream();
+                else
+                        throw SndException(e.what());
         }
 
         return count;
@@ -683,26 +738,21 @@ void cSoundPA::resample(float *buf, int count, int max)
 
 void cSoundPA::init_stream(void)
 {
-        PaDeviceIndex ndev;
-        istringstream ist(device);
-
-        if (!(ist >> ndev))
-                ndev = 0;
-
         bool found = false;
+
         portaudio::System::DeviceIterator idev;
         for (idev = sys.devicesBegin(); idev != sys.devicesEnd(); ++idev) {
-                if (idev->index() == ndev) {
+                if (device == idev->name()) {
                         found = true;
                         break;
                 }
         }
         if (!found) {
                 idev = sys.devicesBegin();
-                cerr << "PA_debug: could not find device " << ndev << endl;
+                cerr << "PA_debug: could not find device \"" << device << '"' << endl;
         }
-        cerr << "PA_debug: using device " << idev->index() << " \""
-             << idev->name() << '"' << endl;
+//        cerr << "PA_debug: using device " << idev->index() << " \""
+//             << idev->name() << '"' << endl;
 
         in_params.setDevice(*idev);
         in_params.setNumChannels(2);
@@ -726,7 +776,7 @@ void cSoundPA::init_stream(void)
         max_frames_per_buffer = ceil2(MIN(SND_BUF_LEN, (unsigned)(SCBLOCKSIZE *
                                                        dev_sample_rate / req_sample_rate)));
         stream_params.setFramesPerBuffer(frames_per_buffer);
-        cerr << "PA_debug: max_frames_per_buffer = " << max_frames_per_buffer << endl;
+//        cerr << "PA_debug: max_frames_per_buffer = " << max_frames_per_buffer << endl;
 }
 
 void cSoundPA::adjust_stream(void)
@@ -769,12 +819,12 @@ double cSoundPA::get_best_srate(void)
                 portaudio::StreamParameters sp(in_params, out_params,
                                                std_sample_rates[i],
                                                0, paNoFlag);
-                cerr << "PA_debug: trying " << std_sample_rates[i] << " Hz" << endl;
+//               cerr << "PA_debug: trying " << std_sample_rates[i] << " Hz" << endl;
                 if (sp.isSupported())
                         return sp.sampleRate();
         }
 
-        throw("could not find a supported sample rate");
+        throw(SndException("Could not find a supported sample rate. Sound device busy?"));
         return -1;
 }
 

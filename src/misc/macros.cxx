@@ -250,21 +250,19 @@ int MACROTEXT::loadMacros(string filename)
 	char   szTemp[10];
 	char   szLine[255];
 	
-	ifstream *mFile;
-
-	mFile = new ifstream(filename.c_str());
+	ifstream mFile(filename.c_str());
 	
-	if (!mFile->is_open()) {
+	if (!mFile) {
 		createDotFldigi();
-		mFile = new ifstream(filename.c_str());
-		if (!mFile->is_open())
+		mFile.open(filename.c_str());
+		if (!mFile)
 			return -1;
 	}
 	
-	mFile->getline(szLine, 255);
+	mFile.getline(szLine, 255);
 	mLine = szLine;
 	if (mLine.find("//fldigi macro definition file") != 0) {
-		mFile->close();
+		mFile.close();
 		return -1;
 	}
 // clear all of the macros
@@ -275,8 +273,8 @@ int MACROTEXT::loadMacros(string filename)
 		text[i] = "";
 	}
 	inMacro = false;
-	while (!mFile->eof()) {
-		mFile->getline(szLine,255);
+	while (!mFile.eof()) {
+		mFile.getline(szLine,255);
 		mLine = szLine;
 		if (mLine.find("//") == 0) // skip over all comment lines
 			continue;
@@ -299,7 +297,7 @@ int MACROTEXT::loadMacros(string filename)
 		}
 		text[mNumber] = text[mNumber] + mLine;
 	}
-	mFile->close();
+	mFile.close();
 	return 0;
 }
 

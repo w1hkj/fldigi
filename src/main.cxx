@@ -157,41 +157,43 @@ int main(int argc, char ** argv) {
 							progdefaults.btnPTTREVis );
 	
 #ifndef PORTAUDIO
-    scDevice = progdefaults.SCdevice;
+	scDevice = progdefaults.SCdevice;
 #else
-    if (progdefaults.btnAudioIOis == 0)
-    	scDevice = progdefaults.OSSdevice;
-    else if (progdefaults.btnAudioIOis == 1)
-        scDevice = progdefaults.PAdevice;
+	if (progdefaults.btnAudioIOis == 0)
+		scDevice = progdefaults.OSSdevice;
+	else if (progdefaults.btnAudioIOis == 1)
+		scDevice = progdefaults.PAdevice;
 #endif
 
-    glob_t gbuf;
-    glob("/dev/dsp*", 0, NULL, &gbuf);
-    for (size_t i = 0; i < gbuf.gl_pathc; i++)
-        menuOSSDev->add(gbuf.gl_pathv[i]);
+	glob_t gbuf;
+	glob("/dev/dsp*", 0, NULL, &gbuf);
+	for (size_t i = 0; i < gbuf.gl_pathc; i++)
+		menuOSSDev->add(gbuf.gl_pathv[i]);
+	globfree(&gbuf);
+	
 #ifdef PORTAUDIO
-    portaudio::AutoSystem autoSys;
-    portaudio::System &sys = portaudio::System::instance();
-    for (portaudio::System::DeviceIterator idev = sys.devicesBegin();
-         idev != sys.devicesEnd(); ++idev) {
-        ostringstream o;
-        string s;
-        string::size_type i = 0;
-        o << idev->index();
-        s += o.str() + '-' + idev->name();
-        while ((i = s.find('/', i)) != string::npos) {
-            s.insert(i, 1, '\\');
-            i += 2;
-        }
-        menuPADev->add(s.c_str());
-    }
-    btnAudioIO[1]->activate();
+	portaudio::AutoSystem autoSys;
+	portaudio::System &sys = portaudio::System::instance();
+	for (portaudio::System::DeviceIterator idev = sys.devicesBegin();
+	     idev != sys.devicesEnd(); ++idev) {
+		string s;
+		s.append(idev->hostApi().name()).append("/").append(idev->name());
+		string::size_type i = s.find('/') + 1;
+
+		// backslash-escape any slashes in the device name
+		while ((i = s.find('/', i)) != string::npos) {
+			s.insert(i, 1, '\\');
+			i += 2;
+		}
+		menuPADev->add(s.c_str());
+	}
+	btnAudioIO[1]->activate();
 #endif
 
-    glob("/dev/mixer*", 0, NULL, &gbuf);
-    for (size_t i = 0; i < gbuf.gl_pathc; i++)
-        menuMix->add(gbuf.gl_pathv[i]);
-    globfree(&gbuf);
+	glob("/dev/mixer*", 0, NULL, &gbuf);
+	for (size_t i = 0; i < gbuf.gl_pathc; i++)
+		menuMix->add(gbuf.gl_pathv[i]);
+	globfree(&gbuf);
 
 	if (progdefaults.MXdevice == "") {
 		int n = 0;
@@ -201,11 +203,13 @@ int main(int argc, char ** argv) {
 		menuMix->value(progdefaults.MXdevice.c_str());
 	}
 
-    resetMixerControls();
+	resetMixerControls();
 
 	trx_start(scDevice.c_str());
 
 	progdefaults.initInterface();
+
+	fl_digi_main->show();
 
 	progStatus.initLastState();
 	wf->opmode();
@@ -223,8 +227,6 @@ int main(int argc, char ** argv) {
 		Maillogfile->log_to_file_start();
 		Fl::add_timeout(10.0, pskmail_loop);
 	}
-
-	fl_digi_main->show();
 
 	return Fl::run();
 }
