@@ -135,7 +135,7 @@ void check_formail() {
 		
 		parse_mailtext();
 		if (mailtext.length() > 0) {
-			if (mailserver)
+			if (mailserver && progdefaults.PSKmailSweetSpot)
 				active_modem->set_freq(progdefaults.PSKsweetspot);
 
 			pText = mailtext.begin();

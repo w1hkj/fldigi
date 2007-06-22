@@ -110,6 +110,10 @@ double modem::get_txfreq(void)
 	return tx_frequency;
 }
 
+double modem::get_txfreq_woffset(void)
+{
+	return (tx_frequency - progdefaults.TxOffset);
+}
 
 int modem::get_freq()
 {
@@ -201,4 +205,19 @@ void modem::ModulateXmtr(double *buffer, int len)
 			}
 		}
 }
+
+void modem::ModulateStereo(double *left, double *right, int len)
+{
+	scard->write_stereo(left, right, len);
+	if (progdefaults.viewXmtSignal)
+		for (int i = 0; i < len; i++) {
+			scdata[scptr] = left[i] * 0.1;
+			scptr++;
+			if (scptr == 512) {
+				wf->sig_data(scdata, 512);
+				scptr = 0;
+			}
+		}
+}
+
 

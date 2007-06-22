@@ -57,9 +57,6 @@ textview :: textview( int x, int y, int w, int h, const char *label )
 	scrollbar->linesize( 1 );
 	scrollbar->callback( _scrollbarCB, this );
 
-	mitems = 0;
-	mpopup = (Fl_Menu_Button *)0;
-
 	box( FL_DOWN_BOX );
 	color( FL_WHITE );
 
@@ -473,29 +470,39 @@ void textview :: resize( int x, int y, int w, int h )
 // Viewer for received text
 // derived from Class textview
 //
-// redfines the handle() and menu_cb() functions specified in the
+// redefines the handle() and menu_cb() functions specified in the
 // base class.  All other functions are in the base class
 //=====================================================================
+
+void TextView::saveFile()
+{
+	char * fn = File_Select(
+					"Select ASCII text file", 
+					"*.txt",
+					"", 0);
+	if (fn) {
+		ofstream out(fn);
+		out << buff;
+		out.close();
+	}
+}
+
+Fl_Menu_Item viewmenu[] = {
+	{"divider", 0, 0, 0, FL_MENU_DIVIDER },
+	{"clear",	0, 0, 0, FL_MENU_DIVIDER },
+	{"Call",	0, 0 },
+	{"Name",	0, 0 },
+	{"Qth",		0, 0 },
+	{"Loc",		0, 0 },
+	{"RstIn",	0, 0, 0, FL_MENU_DIVIDER },
+	{"Save to", 0, 0 },
+	{0}
+};
+int viewmenuNbr = 8;
 
 TextView::TextView( int x, int y, int w, int h, const char *label )
 	: textview ( x, y, w, h, label )
 {
-	static Fl_Menu_Item menupopup[] = {
-		{"Dismiss", 0, _menu_cb, this, FL_MENU_DIVIDER },
-		{"divider", 0, _menu_cb, this, FL_MENU_DIVIDER },
-		{"clear",	0, _menu_cb, this, FL_MENU_DIVIDER },
-		{"Call",	0, _menu_cb, this},
-		{"Name",	0, _menu_cb, this},
-		{"Qth",		0, _menu_cb, this},
-		{"Loc",		0, _menu_cb, this},
-		{"RstIn",	0, _menu_cb, this},
-		{0}
-	};
-	mitems = menupopup;
-	
-	mpopup = new Fl_Menu_Button(-1, -1, -1, -1);
-	mpopup->menu(mitems);
-	mpopup->type(Fl_Menu_Button::POPUP1);
 	cursorStyle = BLOCK_CURSOR;
 	cursorON = true;
 	wordwrap = true;
@@ -503,20 +510,32 @@ TextView::TextView( int x, int y, int w, int h, const char *label )
 
 void TextView::menu_cb(int val)
 {
-	if (val == 1)
-		add("\n     <<================>>\n", RCV);
-	else if (val == 2)
-		clear();
-	else if (val == 3)
-		inpCall->value(findtext().c_str());
-	else if (val == 4)
-		inpName->value(findtext().c_str());
-	else if (val == 5)
-		inpQth->value(findtext().c_str());
-	else if (val == 6) 
-		inpLoc->value(findtext().c_str());
-	else if (val == 7)
-		inpRstIn->value(findtext().c_str());
+	switch (val) {
+		case 0:
+			add("\n     <<================>>\n", RCV);
+			break;
+		case 1:
+			clear();
+			break;
+		case 2:
+			inpCall->value(findtext().c_str());
+			break;
+		case 3:
+			inpName->value(findtext().c_str());
+			break;
+		case 4:
+			inpQth->value(findtext().c_str());
+			break;
+		case 5:
+			inpLoc->value(findtext().c_str());
+			break;
+		case 6:
+			inpRstIn->value(findtext().c_str());
+			break;
+		case 7:
+			saveFile();
+			break;
+	}
 	restoreFocus();
 }
 
@@ -524,16 +543,24 @@ int TextView::handle(int event)
 {
 // handle events inside the textview and invoked by Right Mouse button or scrollbar
 	if (Fl::event_inside( this )) {
+		const Fl_Menu_Item * m;
 		int xpos = Fl::event_x();
 		int ypos = Fl::event_y();
 		if (xpos > x() + w() - 20) {
 			scrollbar->handle(event);
 			return 1;
-		} else if (event == FL_RELEASE && Fl::event_button() == 3) {
+		}
+		if (event == FL_PUSH && Fl::event_button() == 3) {
 			popx = xpos - x();
 			popy = ypos - y();
-			mpopup->resize (xpos, ypos, -1, -1);
-			mpopup->popup();
+			m = viewmenu->popup(xpos, ypos, 0, 0, 0);
+			if (m) {
+				for (int i = 0; i < viewmenuNbr; i++)
+					if (m == &viewmenu[i]) {
+						menu_cb(i);
+						break;
+					}
+			}
 			return 1;
 		}
 	}
@@ -547,23 +574,19 @@ int TextView::handle(int event)
 // base class.  All other functions are in the base class
 //=====================================================================
 
+Fl_Menu_Item editmenu[] = {
+	{"clear",	0, 0, 0, FL_MENU_DIVIDER },
+	{"File",	0, 0, 0, FL_MENU_DIVIDER },
+	{"^t",	0, 0 },
+	{"^r",	0, 0, 0, FL_MENU_DIVIDER },
+	{"Picture", 0, 0 },
+	{0}
+};
+int editmenuNbr = 5;
+
 TextEdit::TextEdit( int x, int y, int w, int h, const char *label )
 	: textview ( x, y, w, h, label )
 {
-	static Fl_Menu_Item menupopup[] = {
-		{"Dismiss", 0, _menu_cb, this, FL_MENU_DIVIDER },
-		{"clear",	0, _menu_cb, this, FL_MENU_DIVIDER },
-		{"File",	0, _menu_cb, this, FL_MENU_DIVIDER },
-		{"^t",	0, _menu_cb, this},
-		{"^r",	0, _menu_cb, this, FL_MENU_DIVIDER },
-		{"Picture", 0, _menu_cb, this },
-		{0}
-	};
-	mitems = menupopup;
-	
-	mpopup = new Fl_Menu_Button(-1, -1, -1, -1);
-	mpopup->menu(mitems);
-	mpopup->type(Fl_Menu_Button::POPUP1);
 	chrptr = 0;
 	bkspaces = 0;
 	textview::cursorStyle = HEAVY_CURSOR;
@@ -595,22 +618,22 @@ void TextEdit::readFile()
 
 void TextEdit::menu_cb(int val)
 {
-	if (val == 1) {
+	if (val == 0) {
 		clear();
 		chrptr = 0;
 		bkspaces = 0;
 	}
-	if (val == 2)
+	if (val == 1)
 		readFile();
-	if (val == 3 && buff.empty()) {
+	if (val == 2 && buff.empty()) {
 		fl_lock(&trx_mutex);
 		trx_state = STATE_TX;
 		fl_unlock(&trx_mutex);
 		wf->set_XmtRcvBtn(true);
 	}
-	if (val == 4)
+	if (val == 3)
 		add("^r");
-	if (val == 5)
+	if (val == 4)
 		if (active_modem->get_mode() == MODE_MFSK16)
 			active_modem->makeTxViewer(0,0);
 }
@@ -678,18 +701,6 @@ int TextEdit::handle_key() {
 		return 1;
 	}
 
-// substitute the FN # you want to map for each
-// ie: F1 ==> 1 + Fl_F
-// then remove the two slashes from each of the following lines
-//	if (key == FL_Left)
-//		return handle_fnckey(n + FL_F);
-//	if (key == FL_Up)
-//		return handle_fnckey(n + FL_F);
-//	if (key == FL_Right)
-//		return handle_fnckey(n + FL_F);
-//	if (key == FL_Down)
-//		return handle_fnckey(n + FL_F);
-
 	if (key == FL_Left) {
 		active_modem->searchDown();
 		return 1;
@@ -732,27 +743,36 @@ int TextEdit::handle(int event)
 		return 1;
 	}
 	if (event == FL_KEYBOARD) {
-//		textview::cursorON = true;
 		return handle_key();
 	}
 	if (Fl::event_inside( this )) {
+		const Fl_Menu_Item * m;
 		int xpos = Fl::event_x();
 		int ypos = Fl::event_y();
 		if (xpos > x() + w() - 20) {
 			scrollbar->handle(event);
 			return 1;
-		} else if (event == FL_RELEASE && Fl::event_button() == 3) {
-			mpopup->resize (xpos, ypos, -1, -1);
-			mpopup->popup();
-			textview::cursorON = true;
-			Fl::focus(this);
-			redraw();
+		}
+		if (event == FL_PUSH && Fl::event_button() == 3) {
+			popx = xpos - x();
+			popy = ypos - y();
+			m = editmenu->popup(xpos, ypos, 0, 0, 0);
+			if (m) {
+				for (int i = 0; i < editmenuNbr; i++)
+					if (m == &editmenu[i]) {
+						menu_cb(i);
+						break;
+					}
+			}
 			return 1;
 		}
+
 		switch (event) {
-			case FL_RELEASE:
+			case FL_PUSH:
 				textview::cursorON = true;
+				redraw();
 				Fl::focus(this);
+				return 1;
 			case FL_FOCUS:
 				textview::cursorON = true;
 				redraw();
@@ -795,78 +815,5 @@ void TextEdit::cursorON()
 { 
 	textview::cursorON = true; 
 	redraw();
-}
-
-//=====================================================================
-// Class MacroEdit
-// derived from base class textview
-// redfines the handle() and menu_cb() functions specified in the
-// base class.  All other functions are in the base class
-//=====================================================================
-
-MacroEdit::MacroEdit( int x, int y, int w, int h, const char *label )
-	: textview ( x, y, w, h, label )
-{
-	static Fl_Menu_Item menupopup[] = {
-		{"Dismiss", 0, _menu_cb, this, FL_MENU_DIVIDER },
-		{"clear",	0, _menu_cb, this, FL_MENU_DIVIDER },
-		{0}
-	};
-	mitems = menupopup;
-	
-	mpopup = new Fl_Menu_Button(-1, -1, -1, -1);
-	mpopup->menu(mitems);
-	mpopup->type(Fl_Menu_Button::POPUP1);
-}
-
-void MacroEdit::menu_cb(int val)
-{
-	if (val == 1) {
-		clear();
-	}
-}
-
-int MacroEdit::handle_key() {
-	int key = Fl::event_key();
-	if (key == FL_Enter) {
-		add('\n');
-		return 1;
-	}
-	if (key == FL_BackSpace) {
-		add (0x08);
-		return 1;
-	}
-	const char *ch = Fl::event_text();
-	add(ch);
-	return 1;
-}
-
-int MacroEdit::handle(int event)
-{
-// handle events inside the MacroEdit widget
-	if (Fl::event_inside( this )) {
-		int xpos = Fl::event_x();
-		int ypos = Fl::event_y();
-		if (xpos > x() + w() - 20) {
-			scrollbar->handle(event);
-			return 1;
-		} else if (event == FL_RELEASE && Fl::event_button() == 3) {
-			mpopup->resize (xpos, ypos, -1, -1);
-			mpopup->popup();
-			Fl::focus(this);
-			return 1;
-		}
-	}
-	switch (event) {
-		case FL_RELEASE:
-		case FL_FOCUS:
-			Fl::focus(this);
-			return 1;
-		case FL_UNFOCUS:
-			return 1;
-		case FL_KEYBOARD : 
-			return handle_key();
-	}
-	return 0;
 }
 

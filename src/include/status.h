@@ -12,11 +12,18 @@
 using namespace std;
 
 struct status {
-	trx_mode	lastmode;
+	int		lastmode;
+	int		mainX;
+	int		mainY;
+	int		mainW;
+	int		mainH;
+	bool	rigShown;
+	int		rigX;
+	int		rigY;
 public:
-	void readLastState();
 	void saveModeState(trx_mode m);
 	void initLastState();
+	void saveLastState();
 	friend std::istream &operator>>(std::istream &stream, status &c);
 	friend std::ostream &operator<<(std::ostream &ostream, status c);
 };

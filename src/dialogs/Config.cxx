@@ -469,6 +469,13 @@ static void cb_cntTxRateCorr(Fl_Spinner* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Spinner *cntTxOffset=(Fl_Spinner *)0;
+
+static void cb_cntTxOffset(Fl_Spinner* o, void*) {
+  progdefaults.TxOffset = (int)o->value();
+progdefaults.changed = true;
+}
+
 Fl_Value_Input *valCWsweetspot=(Fl_Value_Input *)0;
 
 static void cb_valCWsweetspot(Fl_Value_Input* o, void*) {
@@ -543,6 +550,8 @@ Fl_Value_Slider *sldrCWxmtWPM=(Fl_Value_Slider *)0;
 
 static void cb_sldrCWxmtWPM(Fl_Value_Slider* o, void*) {
   progdefaults.CWspeed = (int)o->value();
+cntPreTiming->maximum((int)(2400/o->value())/2.0);
+cntPostTiming->maximum((int)(2400/o->value())/2.0);
 progdefaults.changed = true;
 }
 
@@ -593,6 +602,29 @@ Fl_Counter *cntCWdefWPM=(Fl_Counter *)0;
 
 static void cb_cntCWdefWPM(Fl_Counter* o, void*) {
   progdefaults.defCWspeed = (int)o->value();
+progdefaults.changed = true;
+}
+
+Fl_Group *tabCWQSK=(Fl_Group *)0;
+
+Fl_Check_Button *btnQSK=(Fl_Check_Button *)0;
+
+static void cb_btnQSK(Fl_Check_Button* o, void*) {
+  progdefaults.QSK=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter *cntPreTiming=(Fl_Counter *)0;
+
+static void cb_cntPreTiming(Fl_Counter* o, void*) {
+  progdefaults.CWpre=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter *cntPostTiming=(Fl_Counter *)0;
+
+static void cb_cntPostTiming(Fl_Counter* o, void*) {
+  progdefaults.CWpost=o->value();
 progdefaults.changed = true;
 }
 
@@ -702,6 +734,12 @@ resetOLIVIA();
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnPSKmailSweetSpot=(Fl_Check_Button *)0;
+
+static void cb_btnPSKmailSweetSpot(Fl_Check_Button* o, void*) {
+  progdefaults.PSKmailSweetSpot = o->value();
+}
+
 Fl_Group *tabRTTY=(Fl_Group *)0;
 
 Fl_Choice *selShift=(Fl_Choice *)0;
@@ -734,10 +772,11 @@ static void cb_selStopBits(Fl_Choice*, void*) {
   progdefaults.changed = true;
 }
 
-Fl_Check_Button *chkMsbFirst=(Fl_Check_Button *)0;
+Fl_Check_Button *chkPseudoFSK=(Fl_Check_Button *)0;
 
-static void cb_chkMsbFirst(Fl_Check_Button*, void*) {
-  progdefaults.changed = true;
+static void cb_chkPseudoFSK(Fl_Check_Button* o, void*) {
+  progdefaults.PseudoFSK = o->value();
+progdefaults.changed = true;
 }
 
 Fl_Button *btnRestartRtty=(Fl_Button *)0;
@@ -1109,7 +1148,6 @@ static char *szBaudRates = "300|600|1200|2400|4800|9600|19200|38400|57600|115200
       { Fl_Group* o = tabSoundCard = new Fl_Group(0, 25, 400, 195, "SndCrd");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
-        o->hide();
         { Fl_Group* o = new Fl_Group(0, 27, 400, 190);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
           { Fl_Group* o = new Fl_Group(5, 35, 395, 115, "Mixer");
@@ -1160,10 +1198,17 @@ static char *szBaudRates = "300|600|1200|2400|4800|9600|19200|38400|57600|115200
           { Fl_Spinner* o = cntTxRateCorr = new Fl_Spinner(294, 185, 75, 24, "TX ppm:");
             o->callback((Fl_Callback*)cb_cntTxRateCorr);
             o->step(1);
-            o->minimum(-5000);
-            o->maximum(5000);
+            o->minimum(-50000);
+            o->maximum(50000);
           }
           o->end();
+        }
+        { Fl_Spinner* o = cntTxOffset = new Fl_Spinner(172, 185, 45, 24, "Tx offset:");
+          o->callback((Fl_Callback*)cb_cntTxOffset);
+          o->value(progdefaults.TxOffset);
+          o->step(1);
+          o->minimum(-50);
+          o->maximum(50);
         }
         o->end();
       }
@@ -1215,6 +1260,7 @@ static char *szBaudRates = "300|600|1200|2400|4800|9600|19200|38400|57600|115200
       { Fl_Group* o = tabModems = new Fl_Group(0, 25, 401, 195, "Modems");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
+        o->hide();
         { Fl_Tabs* o = tabsModems = new Fl_Tabs(0, 25, 401, 195);
           o->color((Fl_Color)51);
           o->selection_color((Fl_Color)10);
@@ -1222,6 +1268,7 @@ static char *szBaudRates = "300|600|1200|2400|4800|9600|19200|38400|57600|115200
           { Fl_Group* o = tabCW = new Fl_Group(0, 50, 400, 170, "CW");
             o->color((Fl_Color)51);
             o->selection_color((Fl_Color)51);
+            o->hide();
             { Fl_Group* o = new Fl_Group(1, 60, 398, 155);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Value_Slider* o = sldrCWbandwidth = new Fl_Value_Slider(65, 65, 325, 20, "BW");
@@ -1338,6 +1385,35 @@ static char *szBaudRates = "300|600|1200|2400|4800|9600|19200|38400|57600|115200
             }
             o->end();
           }
+          { Fl_Group* o = tabCWQSK = new Fl_Group(0, 50, 400, 170, "QSK");
+            o->hide();
+            { Fl_Check_Button* o = btnQSK = new Fl_Check_Button(35, 75, 175, 15, "QSK on right channel");
+              o->down_box(FL_DOWN_BOX);
+              o->callback((Fl_Callback*)cb_btnQSK);
+              o->value(progdefaults.QSK);
+            }
+            { Fl_Counter* o = cntPreTiming = new Fl_Counter(25, 109, 64, 21, "Pre Timing");
+              o->type(1);
+              o->minimum(0);
+              o->maximum(50);
+              o->step(0.5);
+              o->value(4);
+              o->callback((Fl_Callback*)cb_cntPreTiming);
+              o->value(progdefaults.CWpre);
+              o->maximum((int)(2400/progdefaults.CWspeed)/2.0);
+            }
+            { Fl_Counter* o = cntPostTiming = new Fl_Counter(125, 109, 64, 21, "Post Timing");
+              o->type(1);
+              o->minimum(0);
+              o->maximum(50);
+              o->step(0.5);
+              o->value(4);
+              o->callback((Fl_Callback*)cb_cntPostTiming);
+              o->value(progdefaults.CWpre);
+              o->maximum((int)(2400/progdefaults.CWspeed)/2.0);
+            }
+            o->end();
+          }
           { Fl_Group* o = tabDomEX = new Fl_Group(0, 50, 401, 170, "DomEX");
             o->color((Fl_Color)51);
             o->selection_color((Fl_Color)51);
@@ -1441,6 +1517,15 @@ static char *szBaudRates = "300|600|1200|2400|4800|9600|19200|38400|57600|115200
             }
             o->end();
           }
+          { Fl_Group* o = new Fl_Group(0, 50, 400, 170, "PSKmail");
+            { Fl_Check_Button* o = btnPSKmailSweetSpot = new Fl_Check_Button(25, 75, 155, 15, "use PSK sweetspot");
+              o->down_box(FL_DOWN_BOX);
+              o->value(1);
+              o->callback((Fl_Callback*)cb_btnPSKmailSweetSpot);
+              o->value(progdefaults.PSKmailSweetSpot);
+            }
+            o->end();
+          }
           { Fl_Group* o = tabRTTY = new Fl_Group(0, 50, 400, 170, "RTTY");
             o->color((Fl_Color)51);
             o->selection_color((Fl_Color)51);
@@ -1470,24 +1555,24 @@ static char *szBaudRates = "300|600|1200|2400|4800|9600|19200|38400|57600|115200
               o->callback((Fl_Callback*)cb_selStopBits);
               o->add(szStopBits);
             }
-            { Fl_Check_Button* o = chkMsbFirst = new Fl_Check_Button(15, 126, 120, 24, "Send msb first");
+            { Fl_Check_Button* o = chkPseudoFSK = new Fl_Check_Button(15, 126, 120, 24, "PseudoFSK");
               o->down_box(FL_DOWN_BOX);
-              o->callback((Fl_Callback*)cb_chkMsbFirst);
-              o->hide();
+              o->callback((Fl_Callback*)cb_chkPseudoFSK);
+              o->value(progdefaults.PseudoFSK);
             }
             { Fl_Button* o = btnRestartRtty = new Fl_Button(300, 180, 79, 28, "Restart");
               o->callback((Fl_Callback*)cb_btnRestartRtty);
             }
-            { Fl_Check_Button* o = btnCRCRLF = new Fl_Check_Button(16, 155, 115, 15, "CR-CR-LF");
+            { Fl_Check_Button* o = btnCRCRLF = new Fl_Check_Button(15, 155, 115, 15, "CR-CR-LF");
               o->down_box(FL_DOWN_BOX);
               o->callback((Fl_Callback*)cb_btnCRCRLF);
               o->when(FL_WHEN_RELEASE_ALWAYS);
             }
-            { Fl_Check_Button* o = btnAUTOCRLF = new Fl_Check_Button(16, 184, 125, 15, "AutoCRLF");
+            { Fl_Check_Button* o = btnAUTOCRLF = new Fl_Check_Button(15, 184, 125, 15, "AutoCRLF");
               o->down_box(FL_DOWN_BOX);
               o->callback((Fl_Callback*)cb_btnAUTOCRLF);
             }
-            { Fl_Counter* o = cntrAUTOCRLF = new Fl_Counter(142, 181, 65, 20, "after:");
+            { Fl_Counter* o = cntrAUTOCRLF = new Fl_Counter(150, 181, 65, 20, "after:");
               o->type(1);
               o->minimum(68);
               o->maximum(80);

@@ -59,7 +59,7 @@ void id::make_pulse()
 void id::make_tones()
 {
 	double f;
-	double frequency = mode->get_txfreq();
+	double frequency = mode->get_txfreq_woffset();
 	double sr = mode->get_samplerate();
 	for (int j = 0; j < NUMCHARS; j++)
 		for (int i = 0; i < NUMTONES; i++) {

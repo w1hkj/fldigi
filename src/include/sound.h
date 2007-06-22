@@ -84,6 +84,7 @@ public:
 	void	Close();
 	int		Write(unsigned char *, int);
 	int		write_samples(double *, int);
+	int		write_stereo(double *, double *, int);
 	int		Read(unsigned char *, int);
 	int		Read(double *, int);
 	int		Fd() { return device_fd; }

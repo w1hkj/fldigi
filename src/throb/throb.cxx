@@ -592,8 +592,8 @@ void throb::send(int symbol)
 		tone2 = (num_tones - 1) - tone2;
 	}
 
-	w1 = 2.0 * M_PI * (tx_frequency + freqs[tone1]) / THROB_SAMPLE_RATE;
-	w2 = 2.0 * M_PI * (tx_frequency + freqs[tone2]) / THROB_SAMPLE_RATE;
+	w1 = 2.0 * M_PI * (get_txfreq_woffset() + freqs[tone1]) / THROB_SAMPLE_RATE;
+	w2 = 2.0 * M_PI * (get_txfreq_woffset() + freqs[tone2]) / THROB_SAMPLE_RATE;
 
 	for (i = 0; i < symlen; i++)
 		outbuf[i] = txpulse[i] * 

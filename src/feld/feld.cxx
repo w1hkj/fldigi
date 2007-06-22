@@ -368,7 +368,7 @@ double feld::nco(double freq)
 
 void feld::send_symbol(int currsymb, int nextsymb)
 {
-	double tone = tx_frequency;
+	double tone = get_txfreq_woffset();
 	double Amp;
 	int outlen = 0;
 	
@@ -377,7 +377,7 @@ void feld::send_symbol(int currsymb, int nextsymb)
 		switch (mode) {
 			case MODE_FSKHELL :
 			case MODE_FSKH105 :
-				tone = tx_frequency + (reverse ? -1 : 1) * (currsymb ? -1 : 1) * bandwidth / 2.0;
+				tone = get_txfreq_woffset() + (reverse ? -1 : 1) * (currsymb ? -1 : 1) * bandwidth / 2.0;
 				break;
 			case MODE_FELDHELL :
 			default :

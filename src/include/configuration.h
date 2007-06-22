@@ -20,6 +20,7 @@ struct configuration {
 	double	RTTYsweetspot;
 	double	PSKsweetspot;
 	bool	StartAtSweetSpot;
+	bool	PSKmailSweetSpot;
 // RTTY
 	double		rtty_squelch;
 	int			rtty_shift;
@@ -39,6 +40,7 @@ struct configuration {
 	bool		RTTY_USB;
 	bool		useUART;
 	bool		PreferXhairScope;
+	bool		PseudoFSK;
 // CW
 	bool		useCWkeylineRTS;	// use RTS for CW
 	bool		useCWkeylineDTR;	// use DTR for CW
@@ -52,6 +54,9 @@ struct configuration {
 	int			CWupperlimit;
 	double		CWrisetime;
 	double		CWdash2dot;
+	bool		QSK;
+	double		CWpre;
+	double		CWpost;
 
 // FELD-HELL
 	bool		FELD_IDLE;
@@ -105,6 +110,7 @@ struct configuration {
 	string	SCdevice;
 	int		RX_corr;
 	int		TX_corr;
+	int		TxOffset;
 // Contest stuff
 	bool	UseLeadingZeros;
 	int		ContestStart;

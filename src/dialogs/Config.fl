@@ -461,7 +461,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabSoundCard {
         label SndCrd open
-        xywh {0 25 400 195} color 51 selection_color 51 hide
+        xywh {0 25 400 195} color 51 selection_color 51
       } {
         Fl_Group {} {open
           xywh {0 27 400 190} align 21
@@ -549,9 +549,19 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
             xywh {294 185 75 24}
             code0 {o->step(1);}
-            code1 {o->minimum(-5000);}
-            code2 {o->maximum(5000);}
+            code1 {o->minimum(-50000);}
+            code2 {o->maximum(50000);}
           }
+        }
+        Fl_Spinner cntTxOffset {
+          label {Tx offset:}
+          callback {progdefaults.TxOffset = (int)o->value();
+progdefaults.changed = true;} selected
+          xywh {172 185 45 24}
+          code0 {o->value(progdefaults.TxOffset);}
+          code1 {o->step(1);}
+          code2 {o->minimum(-50);}
+          code3 {o->maximum(50);}
         }
       }
       Fl_Group {} {
@@ -600,14 +610,14 @@ progdefaults.changed = true;}
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 401 195} color 51 selection_color 51
+        xywh {0 25 401 195} color 51 selection_color 51 hide
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 401 195} color 51 selection_color 10 align 9
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 400 170} color 51 selection_color 51
+            xywh {0 50 400 170} color 51 selection_color 51 hide
           } {
             Fl_Group {} {open
               xywh {1 60 398 155} box ENGRAVED_FRAME
@@ -644,6 +654,8 @@ progdefaults.changed = true;}
               Fl_Value_Slider sldrCWxmtWPM {
                 label TxWPM
                 callback {progdefaults.CWspeed = (int)o->value();
+cntPreTiming->maximum((int)(2400/o->value())/2.0);
+cntPostTiming->maximum((int)(2400/o->value())/2.0);
 progdefaults.changed = true;}
                 xywh {65 135 325 20} type {Horz Knob} color 215 align 4 minimum 5 maximum 100 step 1 value 20 textsize 14
                 code0 {o->value(progdefaults.CWspeed);}
@@ -694,10 +706,38 @@ progdefaults.changed = true;}
               Fl_Counter cntCWdefWPM {
                 label Default
                 callback {progdefaults.defCWspeed = (int)o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
                 xywh {65 160 64 21} type Simple align 4 minimum 5 maximum 200 step 1 value 18
                 code0 {o->value(progdefaults.defCWspeed);}
               }
+            }
+          }
+          Fl_Group tabCWQSK {
+            label QSK open
+            xywh {0 50 400 170} hide
+          } {
+            Fl_Check_Button btnQSK {
+              label {QSK on right channel}
+              callback {progdefaults.QSK=o->value();
+progdefaults.changed = true;}
+              xywh {35 75 175 15} down_box DOWN_BOX
+              code0 {o->value(progdefaults.QSK);}
+            }
+            Fl_Counter cntPreTiming {
+              label {Pre Timing}
+              callback {progdefaults.CWpre=o->value();
+progdefaults.changed = true;}
+              xywh {25 109 64 21} type Simple minimum 0 maximum 50 step 0.5 value 4
+              code0 {o->value(progdefaults.CWpre);}
+              code1 {o->maximum((int)(2400/progdefaults.CWspeed)/2.0);}
+            }
+            Fl_Counter cntPostTiming {
+              label {Post Timing}
+              callback {progdefaults.CWpost=o->value();
+progdefaults.changed = true;}
+              xywh {125 109 64 21} type Simple minimum 0 maximum 50 step 0.5 value 4
+              code0 {o->value(progdefaults.CWpre);}
+              code1 {o->maximum((int)(2400/progdefaults.CWspeed)/2.0);}
             }
           }
           Fl_Group tabDomEX {
@@ -817,6 +857,17 @@ progdefaults.changed = true;}
               xywh {300 172 79 28}
             }
           }
+          Fl_Group {} {
+            label PSKmail open
+            xywh {0 50 400 170}
+          } {
+            Fl_Check_Button btnPSKmailSweetSpot {
+              label {use PSK sweetspot}
+              callback {progdefaults.PSKmailSweetSpot = o->value();}
+              xywh {25 75 155 15} down_box DOWN_BOX value 1
+              code0 {o->value(progdefaults.PSKmailSweetSpot);}
+            }
+          }
           Fl_Group tabRTTY {
             label RTTY open
             xywh {0 50 400 170} color 51 selection_color 51 hide
@@ -851,10 +902,12 @@ progdefaults.changed = true;}
               xywh {179 122 77 24} down_box BORDER_BOX
               code0 {o->add(szStopBits);}
             } {}
-            Fl_Check_Button chkMsbFirst {
-              label {Send msb first}
-              callback {progdefaults.changed = true;}
-              xywh {15 126 120 24} down_box DOWN_BOX hide
+            Fl_Check_Button chkPseudoFSK {
+              label PseudoFSK
+              callback {progdefaults.PseudoFSK = o->value();
+progdefaults.changed = true;}
+              xywh {15 126 120 24} down_box DOWN_BOX
+              code0 {o->value(progdefaults.PseudoFSK);}
             }
             Fl_Button btnRestartRtty {
               label Restart
@@ -865,17 +918,17 @@ resetRTTY();}
             Fl_Check_Button btnCRCRLF {
               label {CR-CR-LF}
               callback {progdefaults.changed = true;}
-              xywh {16 155 115 15} down_box DOWN_BOX when 6
+              xywh {15 155 115 15} down_box DOWN_BOX when 6
             }
             Fl_Check_Button btnAUTOCRLF {
               label AutoCRLF
               callback {progdefaults.changed = true;}
-              xywh {16 184 125 15} down_box DOWN_BOX
+              xywh {15 184 125 15} down_box DOWN_BOX
             }
             Fl_Counter cntrAUTOCRLF {
               label {after:}
               callback {progdefaults.changed = true;}
-              xywh {142 181 65 20} type Simple align 4 minimum 68 maximum 80 step 1 value 72
+              xywh {150 181 65 20} type Simple align 4 minimum 68 maximum 80 step 1 value 72
             }
             Fl_Check_Button btnRTTY_USB {
               label {RTTY is USB}

@@ -58,7 +58,7 @@ void olivia::tx_init(cSound *sc)
 
 	preamblesent = 0;
 	postamblesent = 0;
-	txbasefreq = tx_frequency;
+	txbasefreq = get_txfreq_woffset();
 
 	Rx->Flush();
 
@@ -279,7 +279,7 @@ void olivia::restart()
 	Tx->Bandwidth = 125 * (1 << bw);
 	Tx->SampleRate = 8000.0;//samplerate;
 	Tx->OutputSampleRate = samplerate;
-    txbasefreq = tx_frequency;
+    txbasefreq = get_txfreq_woffset();
 
 	if (reverse) { 
 		Tx->FirstCarrierMultiplier = (txbasefreq + (Tx->Bandwidth / 2)) / 500; 

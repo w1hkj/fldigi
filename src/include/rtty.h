@@ -114,6 +114,10 @@ private:
 	double prevsymbol;
 	complex prevsmpl;
 
+	double FSKbuf[OUTBUFSIZE];		// signal array for qrq drive
+	double FSKphaseacc;
+	double FSKnco();
+
 	int rxmode;
 	int txmode;
 	int preamble;

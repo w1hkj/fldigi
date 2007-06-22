@@ -114,7 +114,7 @@ public:
     	fontnbr = n;
     	lst_Font->value(1);
 		for ( int i = 1; i <= lst_Font->size() - 1; i++ ) {
-			if ((Fl_Font)reinterpret_cast<int>(lst_Font->data(i)) == n) {
+			if ((Fl_Font)reinterpret_cast<long>(lst_Font->data(i)) == n) {
 				lst_Font->value(i);
 				break;
 			}

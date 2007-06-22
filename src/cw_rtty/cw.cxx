@@ -43,6 +43,7 @@ void cw::tx_init(cSound *sc)
 	scard = sc;
 	phaseacc = 0;
 	lastsym = 0;
+	qrqphase = 0;
 }
 
 void cw::rx_init()
@@ -62,6 +63,8 @@ void cw::init()
 	trackingfilter->reset();
 	cw_adaptive_receive_threshold = (long int)trackingfilter->run(2 * cw_send_dot_length);
 	put_cwRcvWPM(cw_send_speed);
+	for (int i = 0; i < OUTBUFSIZE; i++)
+		outbuf[i] = qrqbuf[i] = 0.0;
 	rx_init();
 }
 
@@ -83,8 +86,8 @@ cw::cw() : morse(), modem()
 
 	mode = MODE_CW;
 	freqlock = false;
-	frequency = 800;
-	tx_frequency = 800;
+	frequency = progdefaults.CWsweetspot;
+	tx_frequency = get_txfreq_woffset();
 	risetime = progdefaults.CWrisetime;
 //	keyshape = new double[KNUM];
 	
@@ -518,28 +521,51 @@ inline double cw::nco(double freq)
 	return sin(phaseacc);
 }
 
+inline double cw::qrqnco()
+{
+	qrqphase += 2.0 * M_PI * 1600.0 / samplerate;
+
+	if (qrqphase > M_PI)
+		qrqphase -= 2.0 * M_PI;
+
+	return sin(qrqphase);
+}
+
 //=====================================================================
 // send_symbol()
 // Sends a part of a morse character (one dot duration) of either
 // sound at the correct freq or silence. Rise and fall time is controlled
 // with a raised cosine shape.
+//
+// Left channel contains the shaped A2 CW waveform
+// Right channel contains a square wave burst of 1600 Hz that is used
+// to trigger a QRQ switch.  Right channel has pre and post timings for
+// proper switching of the QRQ switch before and after the A2 element.
+// If the Pre + Post timing exceeds the interelement spacing then the
+// Pre and / or Post is only applied at the beginning and end of the
+// character.
 //=======================================================================
 
-
-void cw::send_symbol(int currsym)
+void cw::send_symbol(int bits)
 {
 	double freq;
 	int sample = 0, i;
 	int delta = 0;
 	int keydown;
 	int keyup;
+	int kpre;
+	int kpost;
 	int duration = 0;
 	int symlen = 0;
 	double dsymlen = 0.0;
+	int currsym = bits & 1;
+	
+	freq = get_txfreq_woffset();
 
-	freq = tx_frequency;
-
-    if ((currsym == 1) && (lastsym == 0)) phaseacc = 0.0;
+    if ((currsym == 1) && (lastsym == 0)) {
+    	phaseacc = 0.0;
+//    	qrqphase = 0.0;
+    }
 
 	if ((currsym == 1 && lastsym == 0) || (currsym == 0 && lastsym == 1))
 		delta = (int) (symbollen * (progdefaults.CWweight - 50) / 100.0);
@@ -559,34 +585,78 @@ void cw::send_symbol(int currsym)
 
 	keydown = symlen - knum + delta;
 	keyup = symlen - knum - delta;
-
-	if (currsym == 1) {
+	
+	kpre = (int)(progdefaults.CWpre * 8);
+	kpost = (int)(progdefaults.CWpost * 8);
+	
+	if ( (kpre + kpost) > keyup) {
+		kpre = keyup / 2;
+		kpost = keyup - kpre;
+	}
+	if (bits == 4) {
+		kpost = (int)(progdefaults.CWpost * 8);
+		if (kpost > keyup)
+			kpost = keyup;
+	}
+	if (firstelement) {
+		kpre = (int)(progdefaults.CWpre * 8);
+		kpost = 0;
+		if (kpre > keydown)
+			kpre = keydown;
+	}
+	
+	if (currsym == 1) { // keydown
 		for (i = 0; i < knum; i++, sample++) {
 			if (lastsym == 0)
 				outbuf[sample] = nco(freq) * keyshape[i];
 			else
 				outbuf[sample] = nco(freq);
+			qrqbuf[sample] = qrqnco();
 		}
 		for (i = 0; i < keydown; i++, sample++) {
 			outbuf[sample] = nco(freq);
+			qrqbuf[sample] = qrqnco();
 		}
 		duration = knum + keydown;
-	} else {
+	}
+	else { // keyup
 		for (i = knum - 1; i >= 0; i--, sample++) {
-			if (lastsym == 1)
+			if (lastsym == 1) {
 				outbuf[sample] = nco(freq) * keyshape[i];
-			else
+			} else {
 				outbuf[sample] = 0.0;
+			}
 		}
 		for (i = 0; i < keyup; i++, sample++) {
 			outbuf[sample] = 0.0;
 		}
+
+		sample -= (knum + keyup);
+				
+		for (i = 0; i < knum + kpost ; i++, sample++) {
+			if (bits > 2 && lastsym == 1)
+				qrqbuf[sample] = qrqnco();
+			else
+				qrqbuf[sample] = 0.0;
+		}
+		for (i = 0; i < (keyup - kpre - kpost); i++, sample++)
+			qrqbuf[sample] = 0.0;
+		for (i = 0; i < kpre; i++, sample++)
+			if (bits > 4)
+				qrqbuf[sample] = qrqnco();
+			else
+				qrqbuf[sample] = 0.0;
+				
 		duration = knum + keyup;
 	}
 
-	ModulateXmtr(outbuf, duration);
+	if (progdefaults.QSK)
+		ModulateStereo(outbuf, qrqbuf, duration);
+	else
+		ModulateXmtr(outbuf, duration);
 	
 	lastsym = currsym;
+	firstelement = false;
 }
 
 //=====================================================================
@@ -603,32 +673,32 @@ void cw::send_ch(int ch)
 // last char already had 2 elements of inter-character spacing 
 
 	if ((ch == ' ') || (ch == '\n')) {
-//		cout << "  ";
+		firstelement = false;
 		send_symbol(0);
 		send_symbol(0);
 		send_symbol(0);
 		send_symbol(0);
 		send_symbol(0);
 		put_echo_char(ch);
-//		cout << endl; cout.flush();
 		return;
 	}
 
 // convert character code to a morse representation 
-	if ((ch < 256) && (ch >= 0))
+	if ((ch < 256) && (ch >= 0)) {
 		code = tx_lookup(ch); //cw_tx_lookup(ch);
-	else
+		firstelement = true;
+	} else {
 		code = 0x04; 	// two extra dot spaces
+		firstelement = false;
+	}
+
 // loop sending out binary bits of cw character 
-
-//	cout << (char) ch << " " << progdefaults.CWdash2dot << " === ";
-
 	while (code > 1) {
-		send_symbol(code & 1);
+		send_symbol(code);// & 1);
 		code = code >> 1;
         Fl::awake();
 	}
-//	cout << endl; cout.flush();
+
 	if (ch != 0)
 		put_echo_char(ch);
 }

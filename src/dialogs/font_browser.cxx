@@ -98,7 +98,7 @@ void Font_Browser::FontNameSelect()
     if (!fn) 
         return;
 
-    fontnbr = (Fl_Font)reinterpret_cast<int>(lst_Font->data(fn));
+    fontnbr = (Fl_Font)reinterpret_cast<long>(lst_Font->data(fn));
     
 // show the font name in the input
     txt_OutputFont->value(Fl::get_font_name(fontnbr));  

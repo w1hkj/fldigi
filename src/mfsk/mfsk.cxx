@@ -588,7 +588,7 @@ void mfsk::sendsymbol(int sym)
 {
 	double f, phaseincr;
 
-	f = tx_frequency - bandwidth / 2;
+	f = get_txfreq_woffset() - bandwidth / 2;
 	
 	sym = grayencode(sym & (numtones - 1));
 //printf("%5d", sym);
@@ -668,9 +668,9 @@ void mfsk::sendpic(unsigned char *data, int len)
 		if (txstate == TX_STATE_PICTURE)
 			updateTxPic(data[i]);
 		if (reverse)
-			f = tx_frequency - bandwidth * (data[i] - 128) / 256.0;
+			f = get_txfreq_woffset() - bandwidth * (data[i] - 128) / 256.0;
 		else
-			f = tx_frequency + bandwidth * (data[i] - 128) / 256.0;
+			f = get_txfreq_woffset() + bandwidth * (data[i] - 128) / 256.0;
 			
 		for (j = 0; j < SAMPLES_PER_PIXEL; j++) {
 			*ptr++ = cos(phaseacc);

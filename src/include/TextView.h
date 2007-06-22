@@ -94,7 +94,6 @@ public:
 protected:
 	Fl_Scrollbar *scrollbar;
 	Fl_Menu_Button *mpopup;
-	Fl_Menu_Item *mitems;
 
 	void scrollbarCB();	
 	inline static void _scrollbarCB( Fl_Widget* w, void* arg )
@@ -102,12 +101,6 @@ protected:
 		((textview*)arg)->scrollbarCB(); 
 	}
 	
-	virtual void menu_cb(int){};
-	inline static void _menu_cb(Fl_Widget *m, void *arg)
-	{
-		((textview*)arg)->menu_cb(((Fl_Menu_*)m)->value());
-	}
-
 	int lineCount();
 	void _backspace();
 	void _add(char c, int attribute);
@@ -127,6 +120,7 @@ public:
 protected:
 	int		handle (int event);
 	void	menu_cb(int val);
+	void	saveFile();
 };
 
 
@@ -152,23 +146,6 @@ private:
 	unsigned int chrptr;
 	int	bkspaces;
 	bool PauseBreak;
-};
-
-class MacroEdit : public textview {
-public:
-	MacroEdit( int x, int y, int w, int h, const char *label = 0 );
-	virtual void add( char *text, int attr = 1 ) {textview::add(text);};
-	virtual void add( const char *text, int attr = 1) {textview::add((char*)text);};
-	virtual void add( char c, int attr = 1) {textview::add(c);};
-	virtual void clear() {textview::clear();};
-protected:
-	int		handle_key();
-	int		handle (int event);
-	void	menu_cb(int val);
-	virtual void setFont(Fl_Font fnt) { textview::setFont(fnt); }
-	virtual void setFontSize(int siz) { textview::setFontSize(siz); }
-	virtual void setFontColor(Fl_Color clr) { textview::setFontColor(clr); }
-private:
 };
 
 #endif

@@ -469,7 +469,7 @@ void dominoex::sendsymbol(int sym)
 	if (reverse)
 		tone = (numtones - 1) - tone;
 
-	f = tone * tonespacing + tx_frequency - bandwidth / 2;
+	f = tone * tonespacing + get_txfreq_woffset() - bandwidth / 2;
 	
 	phaseincr = twopi * f / samplerate;
 	

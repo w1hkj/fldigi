@@ -76,7 +76,7 @@ void psk::rx_init()
 	dcd = 0;
 	bitclk = 0;
 	freqerr = 0.0;
-	if (mailserver) sigsearch = 3;
+	if (mailserver && progdefaults.PSKmailSweetSpot) sigsearch = 3;
 	digiscope->mode(Digiscope::PHASE);
 	put_MODEstatus(mode);
 }
@@ -191,7 +191,7 @@ psk::psk(trx_mode pskmode) : modem()
 	wfid = new id(this);
 	
 	pipeptr = 0;
-	if (mailserver)
+	if (mailserver && progdefaults.PSKmailSweetSpot)
 		sigsearch = 3;
 	else
 		sigsearch = 0;
@@ -283,7 +283,7 @@ void psk::searchUp()
 void psk::afc()
 {
 	double error, ftest, sigpwr, noise;
-	if (mailserver)
+	if (mailserver && progdefaults.PSKmailSweetSpot)
 		ftest = wf->peakFreq((int)progdefaults.PSKsweetspot, (int) bandwidth);
 	else
 		ftest = wf->peakFreq((int)frequency, (int)(bandwidth) );
@@ -293,7 +293,8 @@ void psk::afc()
 	if (sigsearch) {
 		freqerr = 0.0;
 		if (sigpwr/noise > 2.0) {//afcthreshold) {
-			if (!mailserver || (mailserver && (fabs(progdefaults.PSKsweetspot - ftest) < 15))) {
+			if (!mailserver || (mailserver && !progdefaults.PSKmailSweetSpot) || 
+			    (mailserver && (fabs(progdefaults.PSKsweetspot - ftest) < 15))) {
 				frequency = ftest;
 				set_freq(frequency);
 				sigsearch--;
@@ -316,7 +317,7 @@ void psk::afc()
 		set_freq (frequency);
 //sprintf(phasemsg,"%5.4f  %8.2f", freqerr, frequency);
 //put_status(phasemsg);
-	} else if (mailserver)
+	} else if (mailserver && progdefaults.PSKmailSweetSpot)
 		sigsearch = 3;
 }
 
@@ -495,7 +496,7 @@ void psk::tx_symbol(int sym)
 	}
 	symbol = prevsymbol * symbol;	// complex multiplication
 
-	delta = 2.0 * M_PI * tx_frequency / samplerate;
+	delta = 2.0 * M_PI * get_txfreq_woffset() / samplerate;
 
 	for (int i = 0; i < symbollen; i++) {
 		

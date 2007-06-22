@@ -126,6 +126,7 @@ int main(int argc, char ** argv) {
 	Fl::lock();  // start the gui thread!!	
 	Fl::visual(FL_RGB); // insure 24 bit color operation
 	fl_register_images();
+	Fl::set_fonts(0);
 	
 	rigcontrol = createRigDialog();
 	create_fl_digi_main();
@@ -150,15 +151,11 @@ int main(int argc, char ** argv) {
 	
 	trx_start(scDevice.c_str());
 
-	progStatus.readLastState();
-	progStatus.initLastState();
-	
-	wf->opmode();
-
 	progdefaults.initInterface();
 
-	Fl::set_fonts(0);
-
+	progStatus.initLastState();
+	wf->opmode();
+	
 	if (mailserver || mailclient) {
 		std::cout << "Starting pskmail transport layer" << std::endl; fflush(stdout);
 		string PskMailLogName = PskMailDir;

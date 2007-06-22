@@ -1,5 +1,14 @@
 Change Log:
 
+1.35  1) Increased TxPPM to +/- 50000 to match the RxPPM range
+      2) Changed all audio i/o to separate 2 channel control (stereo)
+      3) Added right channel CW QRQ signal
+      4) Added right channel pseudo FSK signal
+      5) Added position and size of main dialog to state memory
+      6) Added status and position of rig control dialog to state memory
+      7) Added PSKmail tab and control to allow disabling the automatic
+         return to the PSK sweet spot if running a mail server
+      8) Added "Save To" menu item on received text popup menu.
 1.34  1) Cleaned up unused code segments
       2) Modified CW decoder to allow setting upper and lower limits on
          Tx WPM

@@ -27,33 +27,37 @@ cSound::cSound(const char *dev ) {
 
 	try {
 		int err;
-		snd_buffer	= new float[SND_BUF_LEN];
-		src_buffer	= new float[SND_BUF_LEN];
-		cbuff 		= new unsigned char [2 * SND_BUF_LEN];
+		snd_buffer	= new float [2*SND_BUF_LEN]; //new float[SND_BUF_LEN];
+		src_buffer	= new float [2*SND_BUF_LEN]; //new float[SND_BUF_LEN];
+		cbuff 		= new unsigned char [4 * SND_BUF_LEN]; //new unsigned char [2 * SND_BUF_LEN];
 		if (!snd_buffer || !src_buffer || !cbuff)
 			throw("Cannot create src buffers");
-		for (int i = 0; i < SND_BUF_LEN; i++)
+//		for (int i = 0; i < SND_BUF_LEN; i++)
+		for (int i = 0; i < 2*SND_BUF_LEN; i++)
 			snd_buffer[i] = src_buffer[i] = 0.0;
-		for (int i = 0; i < 2 * SND_BUF_LEN; i++)
+//		for (int i = 0; i < 2 * SND_BUF_LEN; i++)
+		for (int i = 0; i < 4 * SND_BUF_LEN; i++)
 			cbuff[i] = 0;
 
 		tx_src_data = new SRC_DATA;
 		rx_src_data = new SRC_DATA;
 		if (!tx_src_data || !rx_src_data)
 			throw("Cannot create source data structures");
-		rx_src_state = src_new(SRC_SINC_FASTEST, 1, &err);
+			
+//		rx_src_state = src_new(SRC_SINC_FASTEST, 1, &err);
+		rx_src_state = src_new(SRC_SINC_FASTEST, 2, &err);
 		if (rx_src_state == 0)
 			throw(src_strerror(err));
-		tx_src_data->src_ratio = 1.0;
-		tx_src_state = src_new(SRC_SINC_FASTEST, 1, &err);
-		if (rx_src_state == 0)
+			
+//		tx_src_state = src_new(SRC_SINC_FASTEST, 1, &err);
+		tx_src_state = src_new(SRC_SINC_FASTEST, 2, &err);
+		if (tx_src_state == 0)
 			throw(src_strerror(err));
+			
 		rx_src_data->src_ratio = 1.0/(1.0 + rxppm/1e6);
 		src_set_ratio ( rx_src_state, 1.0/(1.0 + rxppm/1e6));
 		
-//		tx_src_data->src_ratio = 1.0/(1.0 + txppm/1e6);
-		tx_src_data->src_ratio = 1.0 + txppm/1e6; // for gmfsk compatibility
-//		src_set_ratio ( tx_src_state, 1.0/(1.0 + txppm/1e6));
+		tx_src_data->src_ratio = 1.0 + txppm/1e6;
 		src_set_ratio ( tx_src_state, 1.0 + txppm/1e6);
 	}
 	catch (SndException){
@@ -99,7 +103,8 @@ int cSound::Open(int md, int freq)
 		if (device_fd == -1)
 			throw SndException(errno);
 		Format(AFMT_S16_LE);	// default: 16 bit little endian
-		Channels(1);			//          1 channel
+//		Channels(1);			//          1 channel
+		Channels(2);			//          2 channels
 		Frequency(freq);
 		setfragsize();
 	} 
@@ -239,10 +244,12 @@ int cSound::Read(double *buffer, int buffersize)
 	if (device_fd == -1)
 		return -1;
 
-	numread = Read(cbuff, buffersize * 2);
+	numread = Read(cbuff, buffersize * 4);
+	for (int i = 0; i < buffersize * 2; i++)
+		src_buffer[i] = ibuff[i] / MAXSC;
+		
 	for (int i = 0; i < buffersize; i++)
-		src_buffer[i] = 
-		buffer[i] = ibuff[i] / MAXSC;
+		buffer[i] = src_buffer[2*i];
 
 	if (rxppm != progdefaults.RX_corr) {
 		rxppm = progdefaults.RX_corr;
@@ -253,6 +260,7 @@ int cSound::Read(double *buffer, int buffersize)
 		return buffersize;
 	
 // process using samplerate library
+
 	rx_src_data->data_in = src_buffer;
 	rx_src_data->input_frames = buffersize;
 	rx_src_data->data_out = snd_buffer;
@@ -265,9 +273,10 @@ int cSound::Read(double *buffer, int buffersize)
 	numread = rx_src_data->output_frames_gen;
 
 	for (int i = 0; i < numread; i++)
-		buffer[i] = snd_buffer[i];
+		buffer[i] = snd_buffer[2*i];
 	
 	return numread;
+
 }
 
 int cSound::write_samples(double *buf, int count)
@@ -281,28 +290,26 @@ int cSound::write_samples(double *buf, int count)
 
 	if (txppm != progdefaults.TX_corr) {
 		txppm = progdefaults.TX_corr;
-//		tx_src_data->src_ratio = 1.0/(1.0 + txppm/1e6);
-//		src_set_ratio ( tx_src_state, 1.0/(1.0 + txppm/1e6));
 		tx_src_data->src_ratio = 1.0 + txppm/1e6;
 		src_set_ratio ( tx_src_state, 1.0 + txppm/1e6);
 	}
 	
 	if (txppm == 0) {
-		wbuff = new short int[count];
+		wbuff = new short int[2*count];
 		p = (unsigned char *)wbuff;
 		for (int i = 0; i < count; i++) {
-			wbuff[i] = (short int)(buf[i] * maxsc);
+			wbuff[2*i] = wbuff[2*i+1] = (short int)(buf[i] * maxsc);
 		}
 		count *= sizeof(short int);
-		retval = Write(p, count);
+		retval = Write(p, 2*count);
 		delete [] wbuff;
 	}
 	else {
 		float *inbuf;
-		inbuf = new float[count];
+		inbuf = new float[2*count];
 		int bufsize;
 		for (int i = 0; i < count; i++)
-			inbuf[i] = buf[i];
+			inbuf[2*i] = inbuf[2*i+1] = buf[i];
 		tx_src_data->data_in = inbuf;
 		tx_src_data->input_frames = count;
 		tx_src_data->data_out = src_buffer;
@@ -315,15 +322,80 @@ int cSound::write_samples(double *buf, int count)
 		}
 		delete [] inbuf;
 		bufsize = tx_src_data->output_frames_gen;
-		wbuff = new short int[bufsize];
+		wbuff = new short int[2*bufsize];
 		p = (unsigned char *)wbuff;
 		
-		for (int i = 0; i < bufsize; i++)
+		for (int i = 0; i < 2*bufsize; i++)
 			wbuff[i] = (short int)(src_buffer[i] * maxsc);
+		int num2write = bufsize * 2 * sizeof(short int);
 		
-		retval = Write(p, bufsize * 2);
+		retval = Write(p, num2write);
 		delete [] wbuff;
-		if (retval != bufsize * 2)
+		if (retval != num2write)
+			return -1;
+		retval = count;
+	}
+
+	return retval;
+}
+
+int cSound::write_stereo(double *bufleft, double *bufright, int count)
+{
+	int retval;
+	short int *wbuff;
+	unsigned char *p;
+
+	if (device_fd == -1 || count <= 0)
+		return -1;
+
+	if (txppm != progdefaults.TX_corr) {
+		txppm = progdefaults.TX_corr;
+		tx_src_data->src_ratio = 1.0 + txppm/1e6;
+		src_set_ratio ( tx_src_state, 1.0 + txppm/1e6);
+	}
+	
+	if (txppm == 0) {
+		wbuff = new short int[count];
+		wbuff = new short int[2*count];
+		p = (unsigned char *)wbuff;
+		for (int i = 0; i < count; i++) {
+			wbuff[2*i] = (short int)(bufleft[i] * maxsc);
+			wbuff[2*i + 1] = (short int)(bufright[i] * maxsc);
+		}
+		count *= sizeof(short int);
+		retval = Write(p, 2*count);
+		delete [] wbuff;
+	}
+	else {
+		float *inbuf;
+		inbuf = new float[2*count];
+		int bufsize;
+		for (int i = 0; i < count; i++) {
+			inbuf[2*i] = bufleft[i];
+			inbuf[2*i+1] = bufright[i];
+		}
+		tx_src_data->data_in = inbuf;
+		tx_src_data->input_frames = count;
+		tx_src_data->data_out = src_buffer;
+		tx_src_data->output_frames = SND_BUF_LEN;
+		tx_src_data->end_of_input = 0;
+		
+		if (src_process(tx_src_state, tx_src_data) != 0) {
+			delete [] inbuf;
+			return -1;
+		}
+		delete [] inbuf;
+		bufsize = tx_src_data->output_frames_gen;
+		wbuff = new short int[2*bufsize];
+		p = (unsigned char *)wbuff;
+		
+		for (int i = 0; i < 2*bufsize; i++)
+			wbuff[i] = (short int)(src_buffer[i] * maxsc);
+			
+		int num2write = bufsize * 2 * sizeof(short int);
+		retval = Write(p, num2write);
+		delete [] wbuff;
+		if (retval != num2write)
 			return -1;
 		retval = count;
 	}

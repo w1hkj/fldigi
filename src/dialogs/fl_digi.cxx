@@ -30,6 +30,7 @@
 #include <FL/fl_ask.H>
 #include <FL/Fl_Pixmap.H>
 #include <FL/Fl_Image.H>
+#include <FL/Fl_Tile.H>
 
 #include "version.h"
 
@@ -78,6 +79,8 @@ Fl_Double_Window	*fl_digi_main=(Fl_Double_Window *)0;
 cMixer mixer;
 
 Fl_Button			*btnTune = (Fl_Button *)0;
+Fl_Tile				*TiledGroup = (Fl_Tile *)0;
+//Fl_Group				*TiledGroup = (Fl_Group *)0;
 TextView			*ReceiveText=(TextView *)0;
 TextEdit			*TransmitText=(TextEdit *)0;
 Fl_Text_Buffer		*rcvBuffer = (Fl_Text_Buffer *)0;
@@ -122,32 +125,6 @@ Fl_Slider			*sldrSquelch = (Fl_Slider *)0;
 Fl_Progress			*pgrsSquelch = (Fl_Progress *)0;
 
 Fl_RGB_Image		*feld_image = 0;
-
-
-#define Hmenu 24
-#define Hqsoframe 48
-#define Hnotes 24
-#define Hrcvtxt 200
-#define Hxmttxt 100
-//#define Hrcvtxt 160
-//#define Hxmttxt 100
-#define Hwfall 140
-//#define Hwfall 118
-#define Hstatus 22
-#define Hmacros 24
-#define Wmode 80
-#define Ws2n  100
-#define Wimd  100
-#define Wwarn 16
-#define bwAfcOnOff	(Hwfall -22)/2
-#define bwSqlOnOff	(Hwfall -22)/2
-
-#define Wwfall 754
-//#define Wwfall 654
-#define HNOM (Hwfall + Hxmttxt + Hrcvtxt + Hmenu + (Hstatus + 4) + Hmacros + Hqsoframe + Hnotes)
-#define WNOM (Wwfall + Hwfall - 22)
-#define Wstatus (WNOM - Wmode - Ws2n - Wimd - Wwarn - bwAfcOnOff - bwSqlOnOff)
-
 
 void clearStatus()
 {
@@ -207,6 +184,8 @@ void clean_exit() {
 	
 	if (bSaveFreqList)
 		saveFreqList();
+		
+	progStatus.saveLastState();
 
 	mixer.closeMixer();
 	active_modem->set_stopflag(true);
@@ -1115,18 +1094,24 @@ void create_fl_digi_main() {
 			valXmtMixer->deactivate();
 		MixerFrame->end();
 
-		Fl_Group *TextFrame = new Fl_Group(sw,Y, WNOM-sw, Hrcvtxt + Hxmttxt);
+		Fl_Tile *TiledGroup = new Fl_Tile(sw, Y, WNOM-sw, Hrcvtxt + Hxmttxt);
+//		Fl_Group *TiledGroup = new Fl_Group(sw, Y, WNOM-sw, Hrcvtxt + Hxmttxt);
+			Fl_Box *minbox = new Fl_Box(sw,Y + 66, WNOM-sw, Hxmttxt + Hrcvtxt - 66 - 32);
+			minbox->hide();
+
 			ReceiveText = new TextView(sw, Y, WNOM-sw, Hrcvtxt, "");
-			Fl_Group::current()->resizable(ReceiveText);
-			
+		
 			FHdisp = new Raster(sw, Y, WNOM-sw, Hrcvtxt);
 			FHdisp->hide();
 			Y += Hrcvtxt;
 
 			TransmitText = new TextEdit(sw, Y, WNOM-sw, Hxmttxt);
 			Y += Hxmttxt;
-		TextFrame->end();
-		Fl_Group::current()->resizable(TextFrame);
+
+			TiledGroup->resizable(minbox);
+		TiledGroup->end();
+		Fl_Group::current()->resizable(TiledGroup);
+
 		
 		Fl_Box *macroFrame = new Fl_Box(0, Y, WNOM, Hmacros);
 			macroFrame->box(FL_ENGRAVED_FRAME);
@@ -1156,20 +1141,20 @@ void create_fl_digi_main() {
 			wfpack->type(1);
 			wf = new waterfall(0, Y, Wwfall, Hwfall);
 			wf->end();
-		Fl_Pack *ypack = new Fl_Pack(WNOM-(Hwfall-22), Y, Hwfall-22, Hwfall);
-			ypack->type(0);
+			Fl_Pack *ypack = new Fl_Pack(WNOM-(Hwfall-22), Y, Hwfall-22, Hwfall);
+				ypack->type(0);
 
-			digiscope = new Digiscope (WNOM-(Hwfall-22), Y, Hwfall-22, Hwfall-22);
-
-			pgrsSquelch = new Fl_Progress(
-				WNOM-(Hwfall-22), Y + Hwfall - 22,
-				Hwfall - 22, 10, "");
-			pgrsSquelch->color(FL_BACKGROUND2_COLOR, FL_DARK_GREEN);
-			sldrSquelch = new Fl_Slider(
-				FL_HOR_NICE_SLIDER, 
-				WNOM-(Hwfall-22), Y + Hwfall - 12, 
-				Hwfall - 22, 12, "");
-						
+				digiscope = new Digiscope (WNOM-(Hwfall-22), Y, Hwfall-22, Hwfall-22);
+	
+				pgrsSquelch = new Fl_Progress(
+					WNOM-(Hwfall-22), Y + Hwfall - 22,
+					Hwfall - 22, 10, "");
+				pgrsSquelch->color(FL_BACKGROUND2_COLOR, FL_DARK_GREEN);
+				sldrSquelch = new Fl_Slider(
+					FL_HOR_NICE_SLIDER, 
+					WNOM-(Hwfall-22), Y + Hwfall - 12, 
+					Hwfall - 22, 12, "");
+							
 				sldrSquelch->minimum(0);
 				sldrSquelch->maximum(100);
 				sldrSquelch->step(1);
@@ -1178,8 +1163,8 @@ void create_fl_digi_main() {
 				sldrSquelch->callback((Fl_Callback*)cb_sldrSquelch);
 				sldrSquelch->color(FL_INACTIVE_COLOR);
 
-		ypack->end();
-		Fl_Group::current()->resizable(wf);
+			ypack->end();
+			Fl_Group::current()->resizable(wf);
 		wfpack->end();
 		Y += (Hwfall + 2);
 

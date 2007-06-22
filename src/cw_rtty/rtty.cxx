@@ -64,6 +64,7 @@ void rtty::rx_init()
 	rxstate = RTTY_RX_STATE_IDLE;
 	rxmode = LETTERS;
 	phaseacc = 0;
+	FSKphaseacc = 0;
 	for (int i = 0; i < RTTYMaxSymLen; i++ ) {
 		bbfilter[i] = 0.0;
 	}
@@ -117,12 +118,10 @@ void rtty::restart()
 			case 4 : rtty_parity = PARITY_ONE; break;
 			default : rtty_parity = PARITY_NONE; break;
 		}
-	msb = progdefaults.rtty_msbfirst;
 	rtty_stop = progdefaults.rtty_stop;
 
 	txmode = LETTERS;
 	rxmode = LETTERS;
-	msb = chkMsbFirst->value();
 	symbollen = (int) (samplerate / rtty_baud + 0.5);
 	set_bandwidth(shift);
 
@@ -272,9 +271,6 @@ int rtty::decode_char()
 		return 0;
 
 	data = rxdata & ((1 << nbits) - 1);
-
-	if (msb)
-		data = bitreverse(data, nbits);
 
 	if (nbits == 5)
 		return baudot_dec(data);
@@ -543,12 +539,21 @@ double rtty::nco(double freq)
 {
 	phaseacc += twopi * freq / samplerate;
 
-//	if (freq == 0.0)
-//		return 0.0;
 	if (phaseacc > M_PI)
 		phaseacc -= twopi;
 
 	return cos(phaseacc);
+}
+
+double rtty::FSKnco()
+{
+	FSKphaseacc += twopi * 1600 / samplerate;
+
+	if (FSKphaseacc > M_PI)
+		FSKphaseacc -= twopi;
+
+	return sin(FSKphaseacc);
+
 }
 
 void rtty::send_symbol(int symbol)
@@ -561,13 +566,21 @@ void rtty::send_symbol(int symbol)
 		symbol = !symbol;
 
 	if (symbol)
-		freq = tx_frequency + shift / 2.0;
+		freq = get_txfreq_woffset() + shift / 2.0;
 	else
-		freq = tx_frequency - shift / 2.0;
-	for (int i = 0; i < symbollen; i++)
+		freq = get_txfreq_woffset() - shift / 2.0;
+	for (int i = 0; i < symbollen; i++) {
 		outbuf[i] = nco(freq);
+		if (symbol)
+			FSKbuf[i] = FSKnco();
+		else
+			FSKbuf[i] = 0.0;
+	}
 
-	ModulateXmtr(outbuf, symbollen);
+	if (progdefaults.PseudoFSK)
+		ModulateStereo(outbuf, FSKbuf, symbollen);
+	else
+		ModulateXmtr(outbuf, symbollen);
 }
 
 void rtty::send_stop()
@@ -578,19 +591,26 @@ void rtty::send_stop()
 		invert = !invert;
 	
 	if (invert)
-		freq = tx_frequency - shift / 2.0;
+		freq = get_txfreq_woffset() - shift / 2.0;
 	else
-		freq = tx_frequency + shift / 2.0;
+		freq = get_txfreq_woffset() + shift / 2.0;
 
-	for (int i = 0; i < stoplen; i++)
+	for (int i = 0; i < stoplen; i++) {
 		outbuf[i] = nco(freq);
-
-	ModulateXmtr(outbuf, stoplen);
+		if (invert)
+			FSKbuf[i] = FSKnco();
+		else
+			FSKbuf[i] = 0.0;
+	}
+	if (progdefaults.PseudoFSK)
+		ModulateStereo(outbuf, FSKbuf, stoplen);
+	else
+		ModulateXmtr(outbuf, stoplen);
 }
 
 void rtty::send_char(int c)
 {
-	int i, j;
+	int i;
 
 	if (nbits == 5) {
 		if (c == LETTERS)
@@ -602,8 +622,7 @@ void rtty::send_char(int c)
 	send_symbol(0);
 // data bits
 	for (i = 0; i < nbits; i++) {
-		j = (msb) ? (nbits - 1 - i) : i;
-		send_symbol((c >> j) & 1);
+		send_symbol((c >> i) & 1);
 	}
 // parity bit
 	if (rtty_parity != PARITY_NONE)

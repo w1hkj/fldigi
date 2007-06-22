@@ -23,6 +23,7 @@ configuration progdefaults = {
 	1000,			// int		RTTYsweetspot;
 	1000,			// int		PSKsweetspot;
 	true,			// bool		StartAtSweetSpot;
+	true,			// bool		PSKmailSweetSpot;
 // RTTY
 	25.0,			// double		rtty_squelch;
 	3,				// int			rtty_shift; = 170
@@ -42,6 +43,7 @@ configuration progdefaults = {
 	false,			// bool		RTTY_USB;
 	false,			// bool		useUART;
 	false,			// bool		PreferXhairScope;
+	false,			// bool		PseudoFSK;
 // CW
 	false,			// bool		useCWkeylineRTS;
 	false,			// bool		useCWkeylineDTR;
@@ -55,6 +57,9 @@ configuration progdefaults = {
 	50,				// int		CWupperlimit;
 	4.0,			// double	CWrisetime;
 	3.0,			// double	CWdash2dot;
+	false,			// bool		QSK;
+	4.0,			// double	CWpre;
+	4.0,			// double	CWpost;
 
 // FELD-HELL
 	false,			// bool		FELD_IDLE;
@@ -106,8 +111,9 @@ configuration progdefaults = {
 	"fldigi ",		// secondary text
 // Sound card
 	"/dev/dsp",		// string	SCdevice;
-	0,				// double	RX_corr;
-	0,				// double	TX_corr;
+	0,				// int		RX_corr;
+	0,				// int		TX_corr;
+	0,				// int		TxOffset;
 // Contest controls
 	true,			// bool	UseLeadingZeros;
 	0,				// int		ContestStart;
@@ -198,6 +204,7 @@ void configuration::writeDefaultsXML()
 	writeXMLint(f, "FONTCOLOR", FontColor);
 
 	writeXMLbool(f, "STARTATSWEETSPOT", StartAtSweetSpot);
+	writeXMLbool(f, "PSKMAILSWEETSPOT", PSKmailSweetSpot);
 	writeXMLdbl(f, "CWSWEETSPOT", CWsweetspot);
 	writeXMLdbl(f, "PSKSWEETSPOT", PSKsweetspot);
 	writeXMLdbl(f, "RTTYSWEETSPOT", RTTYsweetspot);
@@ -215,6 +222,7 @@ void configuration::writeDefaultsXML()
 	writeXMLint(f, "RTTYAUTOCOUNT", rtty_autocount);
 	writeXMLint(f, "RTTYAFCSPEED", rtty_afcspeed);
 	writeXMLbool(f, "PREFERXHAIRSCOPE", PreferXhairScope);
+	writeXMLbool(f, "PseudoFSK", PseudoFSK);
 
 	writeXMLint(f, "CWWEIGHT", CWweight);	
 	writeXMLint(f, "CWSPEED", CWspeed);
@@ -226,6 +234,10 @@ void configuration::writeDefaultsXML()
 	writeXMLbool(f, "CWTRACK", CWtrack);
 	writeXMLdbl(f, "CWRISETIME", CWrisetime);
 	writeXMLdbl(f, "CWDASH2DOT", CWdash2dot);
+	writeXMLbool(f, "QSK", QSK);
+	writeXMLdbl(f, "CWpre", CWpre);
+	writeXMLdbl(f, "CWpost", CWpost);
+	
 	writeXMLint(f, "OLIVIATONES", oliviatones);
 	writeXMLint(f, "OLIVIABW", oliviabw);
 	writeXMLdbl(f, "DOMINOEXBW", DOMINOEX_BW);
@@ -259,8 +271,9 @@ void configuration::writeDefaultsXML()
 	writeXMLstr(f, "PTTDEV", PTTdev);
 	writeXMLstr(f, "SECONDARYTEXT", secText);		
 	writeXMLstr(f, "SCDEVICE", SCdevice);
-	writeXMLdbl(f, "RXCORR", RX_corr);		
-	writeXMLdbl(f, "TXCORR", TX_corr);
+	writeXMLint(f, "RXCORR", RX_corr);		
+	writeXMLint(f, "TXCORR", TX_corr);
+	writeXMLint(f, "TXOFFSET", TxOffset);
 	writeXMLbool(f, "USELEADINGZEROS", UseLeadingZeros);
 	writeXMLint(f, "CONTESTSTART", ContestStart);
 	writeXMLint(f, "CONTESTDIGITS", ContestDigits);
@@ -390,6 +403,12 @@ void configuration::writeDefaults(ofstream &f)
 	f << CWrisetime << endl;
 	f << CWdash2dot << endl;
 	f << defCWspeed << endl;
+	f << QSK << endl;
+	f << CWpre << endl;
+	f << CWpost << endl;
+	f << PseudoFSK << endl;
+	f << PSKmailSweetSpot << endl;
+	f << TxOffset << endl;
 }
 
 void configuration::readDefaults(ifstream &f)
@@ -497,6 +516,12 @@ void configuration::readDefaults(ifstream &f)
 	f >> CWrisetime;
 	f >> CWdash2dot;
 	f >> defCWspeed;
+	f >> QSK;
+	f >> CWpre;
+	f >> CWpost;
+	f >> PseudoFSK;
+	f >> PSKmailSweetSpot;
+	f >> TxOffset;
 }
 
 void configuration::loadDefaults() {
@@ -514,11 +539,13 @@ void configuration::loadDefaults() {
 		case PARITY_ONE :  selParity->value(4); break;
 		default :          selParity->value(0); break;
 	}
-	chkMsbFirst->value(rtty_msbfirst);
+//	chkMsbFirst->value(rtty_msbfirst);
 	selStopBits->value(rtty_stop);
 	btnCRCRLF->value(rtty_crcrlf);
 	btnAUTOCRLF->value(rtty_autocrlf);
 	cntrAUTOCRLF->value(rtty_autocount);
+	chkPseudoFSK->value(PseudoFSK);
+	
 	for (int i = 0; i < 3; i++)
 		if (rtty_afcspeed == i)
 			btnRTTYafc[i]->value(1);
@@ -550,7 +577,7 @@ void configuration::storeDefaults() {
 			case 4 : rtty_parity = PARITY_ONE; break;
 			default : rtty_parity = PARITY_NONE; break;
 		}
-	rtty_msbfirst = chkMsbFirst->value();
+//	rtty_msbfirst = chkMsbFirst->value();
 	rtty_stop = selStopBits->value();
 	rtty_crcrlf = btnCRCRLF->value();
 	rtty_autocrlf = btnAUTOCRLF->value();
@@ -666,6 +693,7 @@ int configuration::openDefaults() {
 			valRTTYsweetspot->value(RTTYsweetspot);
 			valPSKsweetspot->value(PSKsweetspot);
 			btnStartAtSweetSpot->value(StartAtSweetSpot);
+			btnPSKmailSweetSpot->value(PSKmailSweetSpot);
 			
 //			txtCWFSKport->value(CWFSKport.c_str());
 
@@ -691,6 +719,11 @@ int configuration::openDefaults() {
 			cntCWdash2dot->value(CWdash2dot);
 			sldrCWxmtWPM->minimum(CWlowerlimit);
 			sldrCWxmtWPM->maximum(CWupperlimit);
+			btnQSK->value(QSK);
+			cntPreTiming->maximum((int)(2400/CWspeed)/2.0); 
+			cntPreTiming->value(CWpre);
+			cntPostTiming->maximum((int)(2400/CWspeed)/2.0);
+			cntPostTiming->value(CWpost);
 			
 			selHellFont->value(feldfontnbr);
 			btnFeldHellIdle->value(FELD_IDLE);
@@ -750,6 +783,7 @@ int configuration::openDefaults() {
 			}
 			cntRxRateCorr->value(RX_corr);
 			cntTxRateCorr->value(TX_corr);
+			cntTxOffset->value(TxOffset);
 			
 		Fl::unlock();
 
@@ -853,9 +887,10 @@ void configuration::initInterface() {
 		btnPTT[2]->activate();
 		rigMEM_init();
 		wf->setQSY(1);
+		activate_rig_menu_item(false);
 	} else if (chkUSERIGCATis) { // start the rigCAT thread
 		btnPTT[3]->activate();
-		if (rigCAT_init() == false) { //btnPTTis == 1 ? true : false) == false) {
+		if (rigCAT_init() == false) {
 			wf->USB(true);
 			cboBand->show();
 			btnSideband->show();

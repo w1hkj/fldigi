@@ -16,39 +16,71 @@
 #include "wwv.h"
 #include "analysis.h"
 
+#include "rigsupport.h"
+
 extern void startup_modem(modem *m);
 
 status progStatus = {
-	MODE_BPSK31		// trx_mode	lastmode;
+	(int)MODE_BPSK31,	// trx_mode	lastmode;
+	0,					// int mainX;
+	0,					// int mainY;
+	WNOM,				// int mainW;
+	HNOM,				// int mainH;
+	false,				// bool rigShown;
+	0,					// int rigX;
+	0,					// int rigY;
 };
 
 	
 void status::saveModeState(trx_mode m)
 {
-	progStatus.lastmode = m;
+	lastmode = (int)m;
+}
+
+void status::saveLastState()
+{
+	mainX = fl_digi_main->x();
+	mainY = fl_digi_main->y();
+	mainW = fl_digi_main->w();
+	mainH = fl_digi_main->h();
+	if (rigcontrol)
+		if (rigcontrol->visible()) {
+			rigShown = rigcontrol->visible();
+			rigX = rigcontrol->x();
+			rigY = rigcontrol->y();
+		}
 	string deffname = HomeDir;
 	deffname.append("fldigi.status");
 	ofstream deffile(deffname.c_str(), ios::out);
-	deffile << (int)lastmode << endl;
+	deffile << lastmode << endl;
+	deffile << mainX << endl;
+	deffile << mainY << endl;
+	deffile << mainW << endl;
+	deffile << mainH << endl;
+	deffile << rigShown << endl;
+	deffile << rigX << endl;
+	deffile << rigY << endl;
 	deffile.close();
-}
-
-void status::readLastState()
-{
-	int iMode;
-	string deffname = HomeDir;
-	deffname.append("fldigi.status");
-	ifstream deffile(deffname.c_str(), ios::in);
-	if (deffile) {
-		deffile >> iMode;
-		deffile.close();
-		lastmode = (trx_mode)iMode;
-	}
 }
 
 void status::initLastState()
 {
-	switch (lastmode) {
+	string deffname = HomeDir;
+	deffname.append("fldigi.status");
+	ifstream deffile(deffname.c_str(), ios::in);
+	if (deffile) {
+		deffile >> lastmode;
+		deffile >> mainX;
+		deffile >> mainY;
+		deffile >> mainW;
+		deffile >> mainH;
+		deffile >> rigShown;
+		deffile >> rigX;
+		deffile >> rigY;
+		deffile.close();
+	}
+	trx_mode m = (trx_mode) lastmode;
+	switch (m) {
 		case MODE_CW : 			initCW(); break;
 		case MODE_MFSK8 :		initMFSK8(); break;
 		case MODE_MFSK16 :		initMFSK16(); break;
@@ -86,4 +118,14 @@ void status::initLastState()
 		active_modem->set_freq(progdefaults.RTTYsweetspot);
 	else 
 		active_modem->set_freq(progdefaults.PSKsweetspot);
+	
+	fl_digi_main->resize(mainX, mainY, mainW, mainH);
+	if (rigShown == true) {
+		if (!rigcontrol)
+			createRigDialog();
+		int rdW = rigcontrol->w();
+		int rdH = rigcontrol->h();
+		rigcontrol->resize(rigX, rigY, rdW, rdH);
+		rigcontrol->show();
+	}
 }

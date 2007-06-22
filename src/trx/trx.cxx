@@ -158,13 +158,13 @@ void trx_tune_loop()
 		while (trx_state == STATE_TUNE) {
 			if (_trx_tune == 0) {
 				wf->set_XmtRcvBtn(true);
-				xmttune::keydown(active_modem->get_txfreq(), scard);
+				xmttune::keydown(active_modem->get_txfreq_woffset(), scard);
 				_trx_tune = 1;
 			} else
-				xmttune::tune(active_modem->get_txfreq(), scard);
+				xmttune::tune(active_modem->get_txfreq_woffset(), scard);
 		}
 		scard->Close();
-		xmttune::keyup(active_modem->get_txfreq(), scard);
+		xmttune::keyup(active_modem->get_txfreq_woffset(), scard);
 		_trx_tune = 0;
 	} else
 		MilliSleep(10);

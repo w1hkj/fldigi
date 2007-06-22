@@ -102,10 +102,9 @@ public:
 	void		set_sigsearch(int n) { sigsearch = n; freqerr = 0.0;};
 	bool		freqlocked();
 	double		get_txfreq();
+	double		get_txfreq_woffset();
 	void		set_metric(double);
 	double		get_metric();
-	void		set_txoffset(double);
-	double		get_txoffset();
 	void		set_reverse(bool on);
 	double		get_bandwidth();
 	void		set_bandwidth(double);
@@ -115,6 +114,7 @@ public:
 	int			get_echo_char();
 	
 	void		ModulateXmtr(double *, int);
+	void		ModulateStereo(double *, double *, int);
 	
 	void		set_stopflag(bool b) { stopflag = b;};
 
