@@ -45,6 +45,9 @@ void status::saveLastState()
 	mainW = fl_digi_main->w();
 	mainH = fl_digi_main->h();
 	RxTextHeight = ReceiveText->h();
+	rigShown = false;
+	rigX = 0;
+	rigY = 0;
 	if (rigcontrol)
 		if (rigcontrol->visible()) {
 			rigShown = rigcontrol->visible();
@@ -90,9 +93,11 @@ void status::initLastState()
 		case MODE_MFSK16 :		initMFSK16(); break;
 		case MODE_PSK63 :		initPSK63(); break;
 		case MODE_PSK125 :		initPSK125(); break;
+		case MODE_PSK250 :		initPSK250(); break;
 		case MODE_QPSK31 :		initQPSK31(); break;
 		case MODE_QPSK63 :		initQPSK63(); break;
 		case MODE_QPSK125 :		initQPSK125(); break;
+		case MODE_QPSK250 :		initQPSK250(); break;
 		case MODE_RTTY :		initRTTY(); break;
 		case MODE_OLIVIA :		initOLIVIA(); break;
 		case MODE_DOMINOEX4 :	initDOMINOEX4(); break;
