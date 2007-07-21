@@ -138,16 +138,16 @@ psk::psk(trx_mode pskmode) : modem()
 		_qpsk = true;
 		dcdbits = 128;
 		break;
-//	case MODE_PSK256:
-//		symbollen = 32;
-//		_qpsk = false;
-//		dcdbits = 256;
-//		break;
-//	case MODE_QPSK256:
-//		symbollen = 32;
-//		_qpsk = true;
-//		dcdbits = 256;
-//		break;
+	case MODE_PSK250:
+		symbollen = 32;
+		_qpsk = false;
+		dcdbits = 256;
+		break;
+	case MODE_QPSK250:
+		symbollen = 32;
+		_qpsk = true;
+		dcdbits = 256;
+		break;
 	default:
 		mode = MODE_BPSK31;
 		symbollen = 256;
@@ -584,5 +584,6 @@ int psk::tx_process()
 	}
 	return 0;
 }
+
 
 

@@ -20,6 +20,11 @@
 //
 // Please report all bugs and problems to "w1hkj@w1hkj.com".
 //
+
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+
 #include <FL/Fl_Shared_Image.H>
 #ifdef PORTAUDIO
 	#include <portaudiocpp/PortAudioCpp.hxx>
@@ -54,10 +59,9 @@ char szHomedir[120] = "";
 char szPskMailDir[120] = "";
 string PskMailDir;
 string PskMailFile;
+string ArqFilename;
 string HomeDir;
 string xmlfname;
-
-bool testmenu = false;
 
 bool gmfskmail = false;
 
@@ -71,31 +75,23 @@ cLogfile	*logfile = 0;;
 cLogfile	*Maillogfile = (cLogfile *)0;
 FILE	*server;
 FILE	*client;
-bool	mailserver = false, mailclient = false;
+bool	mailserver = false, mailclient = false, arqmode = false;
 extern	void start_pskmail();
 
-int main(int argc, char ** argv) {
+RXMSGSTRUC rxmsgst;
+int		rxmsgid = -1;
 
-	if (argc == 2)
-		if (strcasecmp(argv[1], "TEST") == 0)
-			testmenu = true;
+TXMSGSTRUC txmsgst;
+int txmsgid = -1;
 
-	fl_filename_expand(szHomedir, 119, "$HOME/.fldigi/");
-	if (fl_filename_isdir(szHomedir) == 0)
-		HomeDir = "./";
-	else
-		HomeDir = szHomedir;
-	xmlfname = HomeDir; 
-	xmlfname.append("rig.xml");
-	
-	string lfname = HomeDir;
-	lfname.append("fldigi.log");
-	logfile = new cLogfile(lfname);
-	logfile->log_to_file_start();
+void arqchecks()
+{
+   	txmsgid = msgget( (key_t) 6789, 0666 );
+	if (txmsgid != -1)
+		return;
 
 	fl_filename_expand(szPskMailDir, 119, "$HOME/pskmail.files/");
 	PskMailDir = szPskMailDir;
-
 	PskMailFile = PskMailDir;
 	PskMailFile += "PSKmailserver";
 	ifstream testFile;
@@ -131,6 +127,24 @@ int main(int argc, char ** argv) {
 			}
 		}
 	}
+}
+
+int main(int argc, char ** argv) {
+
+	fl_filename_expand(szHomedir, 119, "$HOME/.fldigi/");
+	if (fl_filename_isdir(szHomedir) == 0)
+		HomeDir = "./";
+	else
+		HomeDir = szHomedir;
+	xmlfname = HomeDir; 
+	xmlfname.append("rig.xml");
+	
+	string lfname = HomeDir;
+	lfname.append("fldigi.log");
+	logfile = new cLogfile(lfname);
+	logfile->log_to_file_start();
+
+	arqchecks();
 	
 	Fl::lock();  // start the gui thread!!	
 	Fl::visual(FL_RGB); // insure 24 bit color operation
@@ -139,8 +153,6 @@ int main(int argc, char ** argv) {
 	
 	rigcontrol = createRigDialog();
 	create_fl_digi_main();
-
-	activate_test_menu_item(testmenu);
 
 	createConfig();
 	macros.loadDefault();
@@ -218,15 +230,15 @@ int main(int argc, char ** argv) {
 		std::cout << "Starting pskmail transport layer" << std::endl; fflush(stdout);
 		string PskMailLogName = PskMailDir;
 
-		if (gmfskmail == false)
-			PskMailLogName += "mail-io.log";
-		else
+		if (gmfskmail == true)
 			PskMailLogName += "gMFSK.log";
+		else
+			PskMailLogName += "mail-io.log";
 			
 		Maillogfile = new cLogfile(PskMailLogName.c_str());
 		Maillogfile->log_to_file_start();
-		Fl::add_timeout(10.0, pskmail_loop);
 	}
+	Fl::add_timeout(1.0, pskmail_loop);
 
 	return Fl::run();
 }

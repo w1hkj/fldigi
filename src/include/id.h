@@ -49,7 +49,7 @@ private:
 	void	make_pulse();
 	void	make_tones();
 	void	send(long int);
-	void	sendchars(string);
+	void	sendchars(std::string);
 
 public:
 	id(modem *md);

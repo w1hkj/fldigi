@@ -1,6 +1,6 @@
 Change Log:
 
-1.35  1) Increased TxPPM to +/- 50000 to match the RxPPM range
+1.36  1) Increased TxPPM to +/- 50000 to match the RxPPM range
       2) Changed all audio i/o to separate 2 channel control (stereo)
       3) Added right channel CW QRQ signal
       4) Added right channel pseudo FSK signal
@@ -13,12 +13,17 @@ Change Log:
       10) Added "Test" capability to save Rx or Tx waveforms in ".wav"
           format and to play them back for testing modem decoders.
       11) Replaced text editing widgets with new widgets capable of cut,
-          copy and paste.
+          copy and paste. 
+          ===> temporarily disabled pending resolution of cpu% problem
       12) Added new functions on text widget popup menus
       13) Added a QSY undo (right button press)
       14) Added a who is this capability to waterfall -- press right
           button and hold on a signal and decoding occurs on that signal.
           Release and decoding returns to normal tracking point.
+      15) This release requires libsndfile, libportaudio and libportaudiocpp
+          The new libraries provide portaudio sound card mapping, and the
+          ability to save and playback wav files (when fldigi is run as:
+          fldigi TEST).
 1.34  1) Cleaned up unused code segments
       2) Modified CW decoder to allow setting upper and lower limits on
          Tx WPM

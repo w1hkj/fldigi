@@ -22,6 +22,10 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ----------------------------------------------------------------------------
 
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+
 #include <stdlib.h>
 #include <string>
 
@@ -58,6 +62,7 @@
 #include "globals.h"
 #include "misc.h"
 //#include "help.h"
+#include "TextView.h"
 
 #include "Config.h"
 #include "configuration.h"
@@ -141,10 +146,10 @@ void startup_modem(modem *m)
 	if (m == feld_modem ||
 		m == feld_FMmodem ||
 		m == feld_FM105modem ) {
-		ReceiveText->Hide();
+		ReceiveText->hide();
 		FHdisp->show();
 	} else {
-		ReceiveText->Show();
+		ReceiveText->show();
 		FHdisp->hide();
 	}
 	Fl::unlock();
@@ -301,6 +306,19 @@ void cb_mnuPSK125(Fl_Menu_*, void*) {
 	initPSK125();
 }
 
+void initPSK250()
+{
+	clearStatus();
+	if(!psk250_modem)
+		psk250_modem = new psk(MODE_PSK250);
+	startup_modem (psk250_modem);
+	progStatus.saveModeState(MODE_PSK250);
+}
+
+void cb_mnuPSK250(Fl_Menu_*, void*) {
+	initPSK250();
+}
+
 void initQPSK31()
 {
 	clearStatus();
@@ -338,6 +356,19 @@ void initQPSK125()
 
 void cb_mnuQPSK125(Fl_Menu_*, void*) {
 	initQPSK125();
+}
+
+void initQPSK250()
+{
+	clearStatus();
+	if (!qpsk250_modem)
+		qpsk250_modem = new psk(MODE_QPSK250);
+	startup_modem (qpsk250_modem);
+	progStatus.saveModeState(MODE_QPSK250);
+}
+
+void cb_mnuQPSK250(Fl_Menu_*, void*) {
+	initQPSK250();
 }
 
 void initRTTY()
@@ -984,43 +1015,40 @@ Fl_Menu_Item menu_[] = {
 {"qpsk 63", 0,  (Fl_Callback*)cb_mnuQPSK63, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 29
 {"psk 125", 0,  (Fl_Callback*)cb_mnuPSK125, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 30
 {"qpsk 125", 0,  (Fl_Callback*)cb_mnuQPSK125, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 31
-{0,0,0,0,0,0,0,0,0}, // 32
-{"Olivia", 0,  (Fl_Callback*)cb_mnuOlivia, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 33
-{"rtty", 0,  (Fl_Callback*)cb_mnuRTTY, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 34
-{"Throb", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 35
-{"Throb 1", 0,  (Fl_Callback*)cb_mnuTHROB1, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 36
-{"Throb 2", 0,  (Fl_Callback*)cb_mnuTHROB2, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 37
-{"Throb 4", 0,  (Fl_Callback*)cb_mnuTHROB4, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 38
-{"ThrobX 1", 0,  (Fl_Callback*)cb_mnuTHROBX1, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 39
-{"ThrobX 2", 0,  (Fl_Callback*)cb_mnuTHROBX2, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 40
-{"ThrobX 4", 0,  (Fl_Callback*)cb_mnuTHROBX4, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 41
-{0,0,0,0,0,0,0,0,0}, // 42
-{"WWV", 0,  (Fl_Callback*)cb_mnuWWV, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 43
-{"Freq Analysis", 0,  (Fl_Callback*)cb_mnuANALYSIS, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 44
-{0,0,0,0,0,0,0,0,0}, // 45
-{"Configure", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 46
-{"Defaults",  0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 47
-{"Fonts", 0, (Fl_Callback*)cb_mnuConfigFonts, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 48
-{"Interface", 0, (Fl_Callback*)cb_mnuConfigInterface, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 49
-{"Operator", 0, (Fl_Callback*)cb_mnuConfigOperator, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 50
-{"Sound Card", 0, (Fl_Callback*)cb_mnuConfigSoundCard, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 51
-{"Waterfall", 0,  (Fl_Callback*)cb_mnuConfigWaterfall, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 52
-{0,0,0,0,0,0,0,0,0}, // 53
-{"Modems", 0, (Fl_Callback*)cb_mnuConfigModems, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 54
-{"Save Config", 0, (Fl_Callback*)cb_mnuSaveConfig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 55
-{0,0,0,0,0,0,0,0,0}, // 56
-{"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0}, // 57
-{"Rig", 0, (Fl_Callback*)cb_mnuRig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 58
+{"psk 250", 0,  (Fl_Callback*)cb_mnuPSK250, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 32
+{"qpsk 250", 0,  (Fl_Callback*)cb_mnuQPSK250, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 33
+{0,0,0,0,0,0,0,0,0}, // 34
+{"Olivia", 0,  (Fl_Callback*)cb_mnuOlivia, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 35
+{"rtty", 0,  (Fl_Callback*)cb_mnuRTTY, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 36
+{"Throb", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 37
+{"Throb 1", 0,  (Fl_Callback*)cb_mnuTHROB1, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 38
+{"Throb 2", 0,  (Fl_Callback*)cb_mnuTHROB2, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 39
+{"Throb 4", 0,  (Fl_Callback*)cb_mnuTHROB4, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 40
+{"ThrobX 1", 0,  (Fl_Callback*)cb_mnuTHROBX1, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 41
+{"ThrobX 2", 0,  (Fl_Callback*)cb_mnuTHROBX2, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 42
+{"ThrobX 4", 0,  (Fl_Callback*)cb_mnuTHROBX4, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 43
+{0,0,0,0,0,0,0,0,0}, // 44
+{"WWV", 0,  (Fl_Callback*)cb_mnuWWV, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 45
+{"Freq Analysis", 0,  (Fl_Callback*)cb_mnuANALYSIS, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 46
+{0,0,0,0,0,0,0,0,0}, // 47
+{"Configure", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 48
+{"Defaults",  0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 49
+{"Fonts", 0, (Fl_Callback*)cb_mnuConfigFonts, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 50
+{"Interface", 0, (Fl_Callback*)cb_mnuConfigInterface, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 51
+{"Operator", 0, (Fl_Callback*)cb_mnuConfigOperator, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 52
+{"Sound Card", 0, (Fl_Callback*)cb_mnuConfigSoundCard, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 53
+{"Waterfall", 0,  (Fl_Callback*)cb_mnuConfigWaterfall, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 54
+{0,0,0,0,0,0,0,0,0}, // 55
+{"Modems", 0, (Fl_Callback*)cb_mnuConfigModems, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 56
+{"Save Config", 0, (Fl_Callback*)cb_mnuSaveConfig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 57
+{0,0,0,0,0,0,0,0,0}, // 58
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0}, // 59
-{"Test", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 60
-{"Capture", 0,  (Fl_Callback*)cb_mnuCapture, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0}, // 61
-{"Generate", 0,  (Fl_Callback*)cb_mnuGenerate, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0}, // 62
-{"Playback", 0, (Fl_Callback*)cb_mnuPlayback, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0}, // 63
+{"Rig", 0, (Fl_Callback*)cb_mnuRig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 60
+{"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0}, // 61
+{"Help", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 62
+{"About", 0, (Fl_Callback*)cb_mnuAbout, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 63
 {0,0,0,0,0,0,0,0,0}, // 64
-{"Help", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 65
-{"About", 0, (Fl_Callback*)cb_mnuAbout, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 66
-{0,0,0,0,0,0,0,0,0}, // 67
-{0,0,0,0,0,0,0,0,0}, // 68
+{0,0,0,0,0,0,0,0,0}, // 65
 };
 
 Fl_Menu_Bar *mnu;
@@ -1029,22 +1057,13 @@ void activate_rig_menu_item(bool b)
 {
 	if (b) {
 		bSaveFreqList = true;
-		menu_[58].activate();
+		menu_[60].activate();
 		
 	} else {
-		menu_[58].deactivate();
+		menu_[60].deactivate();
 		if (rigcontrol)
 			rigcontrol->hide();
 	}
-	mnu->redraw();
-}
-
-void activate_test_menu_item(bool b)
-{
-	if (b)
-		menu_[60].show();
-	else
-		menu_[60].hide();
 	mnu->redraw();
 }
 
@@ -1053,6 +1072,11 @@ void create_fl_digi_main() {
 	fl_digi_main = new Fl_Double_Window(WNOM, HNOM, "fldigi");
 			mnu = new Fl_Menu_Bar(0, 0, WNOM - 142, Hmenu);
 			mnu->menu(menu_);
+
+#ifndef USE250
+			menu_[32].hide();
+			menu_[33].hide();
+#endif			
 
 			btnTune = new Fl_Button(WNOM - 142, 0, 60, Hmenu, "TUNE");
 			btnTune->type(FL_TOGGLE_BUTTON);
@@ -1115,7 +1139,6 @@ void create_fl_digi_main() {
 		
 		int sw = 15;
 		Fl_Group *MixerFrame = new Fl_Group(0,Y,sw, Hrcvtxt + Hxmttxt);
-//			valRcvMixer = new Fl_Slider(0, Y, sw, (Hrcvtxt + Hxmttxt)/2 - 15, "R");
 			valRcvMixer = new Fl_Slider(0, Y, sw, (Htext)/2, "");
 			valRcvMixer->type(FL_VERT_NICE_SLIDER);
 			valRcvMixer->color(fl_rgb_color(0,110,30));
@@ -1123,7 +1146,6 @@ void create_fl_digi_main() {
 			valRcvMixer->selection_color(fl_rgb_color(255,255,0));
 			valRcvMixer->range(1.0,0.0);
 			valRcvMixer->callback( (Fl_Callback *)cb_RcvMixer);
-//			valXmtMixer = new Fl_Slider(0, Y + (Hrcvtxt + Hxmttxt)/2, sw, (Hrcvtxt + Hxmttxt)/2 - 15, "T");
 			valXmtMixer = new Fl_Slider(0, Y + (Htext)/2, sw, (Htext)/2, "");
 			valXmtMixer->type(FL_VERT_NICE_SLIDER);
 			valXmtMixer->color(fl_rgb_color(110,0,30));
@@ -1321,22 +1343,30 @@ void put_rx_char(unsigned int data)
 {
 	static bool nulinepending = false;
 	const char **asc = ascii;
-	if (mailclient || mailserver)
+	rxmsgid = msgget( (key_t) 9876, 0666);
+	
+	if (mailclient || mailserver || rxmsgid != -1)
 		asc = ascii2;
 
 	if (data == '\r') {
-		ReceiveText->add(asc['\n' & 0x7F],1);
+		ReceiveText->add(asc['\n' & 0x7F], TextBase::RCV);
 		nulinepending = true;
 	} else if (nulinepending && data == '\r') {
-		ReceiveText->add(asc['\n' & 0x7F],1);
+		ReceiveText->add(asc['\n' & 0x7F], TextBase::RCV);
 	} else if (nulinepending && data == '\n') {
 		nulinepending = false;
 	} else if (nulinepending && data != '\n') {
-		ReceiveText->add(asc[data & 0x7F], 1);
+		ReceiveText->add(asc[data & 0x7F], TextBase::RCV);
 		nulinepending = false;
 	} else {
-		ReceiveText->add(asc[data & 0x7F],1);
+		ReceiveText->add(asc[data & 0x7F], TextBase::RCV);
 	}
+	if ( rxmsgid != -1) {
+		rxmsgst.msg_type = 1;
+		rxmsgst.c = data & 0x7F;
+		msgsnd (rxmsgid, (void *)&rxmsgst, 1, IPC_NOWAIT);
+	}
+
 	if (Maillogfile)
 		Maillogfile->log_to_file(cLogfile::LOG_RX, asc[data & 0x7F]);
 	if (logging)
@@ -1480,7 +1510,7 @@ void put_echo_char(unsigned int data)
 {
 	static bool nulinepending = false;
 	const char **asc = ascii;
-	if (mailclient || mailserver)
+	if (mailclient || mailserver || arqmode)
 		asc = ascii2;
 	if (data == '\r' && nulinepending) // reject multiple CRs
 		return;
@@ -1488,7 +1518,7 @@ void put_echo_char(unsigned int data)
 	if (nulinepending && data == '\n') {
 		nulinepending = false;
 	}
-	ReceiveText->add(asc[data & 0x7F],4);
+	ReceiveText->add(asc[data & 0x7F], TextBase::XMT);
 	if (Maillogfile)
 		Maillogfile->log_to_file(cLogfile::LOG_TX, asc[data & 0x7F]);
 	if (logging)

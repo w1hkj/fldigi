@@ -4,6 +4,9 @@
 #include <iostream>
 #include <string>
 #include <ctime>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
 
 #include "main.h"
 #include "configuration.h"
@@ -104,13 +107,50 @@ void mailZDT(string &s)
 
 #define TIMEOUT 180 // 3 minutes
 
+
+void process_msgque()
+{
+	int nbytes = msgrcv (txmsgid, (void *)&txmsgst, BUFSIZ, 0, IPC_NOWAIT);
+	if (nbytes > 0) { 
+		mailtext = txmsgst.buffer;
+		parse_mailtext();
+		if (mailtext.length() > 0) {
+			if (mailserver && progdefaults.PSKmailSweetSpot)
+				active_modem->set_freq(progdefaults.PSKsweetspot);
+
+			pText = mailtext.begin();
+			pskmail_text_available = true;
+
+			active_modem->set_stopflag(false);
+
+			fl_lock(&trx_mutex);
+			trx_state = STATE_TX;
+			fl_unlock(&trx_mutex);
+			wf->set_XmtRcvBtn(true);
+		}
+	}
+}
+
 void check_formail() {
     time_t start_time, prog_time;
     string sAutoFile = PskMailDir;
-    if (gmfskmail == false)
-	    sAutoFile += "pskmail_out";
-	else
+
+   	txmsgid = msgget( (key_t) 6789, 0666 );
+   	if (txmsgid != -1) {
+   		process_msgque();
+   		arqmode = true;
+   		return;
+   	}
+   	arqmode = false;
+    
+    if (! (mailserver || mailclient) )
+    	return;
+    		 
+    if (gmfskmail == true)
 		sAutoFile += "gmfsk_autofile";
+	else
+	    sAutoFile += "pskmail_out";
+
 	ifstream autofile(sAutoFile.c_str());
 	if(autofile) {
 		mailtext = "";
@@ -161,6 +201,13 @@ char pskmail_get_char()
 {
 	if (pText != mailtext.end())
 		return *pText++;
+
+   	rxmsgid = msgget( (key_t) 9876, 0666 );
+   	if ( rxmsgid != -1) {
+		rxmsgst.msg_type = 1;
+		rxmsgst.c = 0x06;  // tell arq client that transmit complete
+		msgsnd (rxmsgid, (void *)&rxmsgst, 1, IPC_NOWAIT);
+	}
 
 	pskmail_text_available = false;
 	return 0x03; // tells psk modem to return to rx

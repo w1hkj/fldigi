@@ -90,4 +90,8 @@
 
 #define Wstatus (WNOM - Wmode - Ws2n - Wimd - Wwarn - bwAfcOnOff - bwSqlOnOff)
 
+//remove the comment delimiter to enable experimental psk250 and qpsk250 modes
+
+#define USE250
+
 #endif

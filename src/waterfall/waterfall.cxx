@@ -1152,6 +1152,14 @@ int waterfall::handle(int event) {
 				wfdisp->redrawCursor();
 				restoreFocus();
 				break;
+			case FL_MIDDLE_MOUSE:
+				if (event == FL_DRAG)
+					break;
+				bool toggle = !active_modem->get_afcOnOff();
+				active_modem->set_afcOnOff(toggle);
+				extern Fl_Light_Button *afconoff;
+				afconoff->value(toggle);
+				break;
 			}
 			break;
 		case FL_RELEASE:
@@ -1167,6 +1175,12 @@ int waterfall::handle(int event) {
 				oldcarrier = nucarrier;
 				break;
 			}
+			break;
+		case FL_MOUSEWHEEL:
+			if (Fl::event_dy() > 0 || Fl::event_dx() > 0)
+				active_modem->searchUp();
+			else if (Fl::event_dy() < 0 || Fl::event_dx() < 0)
+				active_modem->searchDown();
 			break;
 		}
 		return 1;

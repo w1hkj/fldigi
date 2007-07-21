@@ -42,6 +42,8 @@ const char *mode_names[] = {
 	"QPSK63",
 	"PSK125",
 	"QPSK-125",
+	"PSK-250",
+	"QPSK-250",
 	"MT63",
 	"FELDHELL",
 	"FSK-HELL",

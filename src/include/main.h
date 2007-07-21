@@ -28,9 +28,7 @@ extern Fl_Thread	trx_thread;
 extern state_t		trx_state;
 extern modem		*active_modem;
 extern string		HomeDir;
-extern string		PskMailDir;
 extern string		xmlfname;
-extern bool			gmfskmail;
 
 extern std::string	 scDevice;
 extern PTT			*push2talk;
@@ -40,11 +38,30 @@ extern Rig			*xcvr;
 
 extern cLogfile		*Maillogfile;
 extern cLogfile		*logfile;
+extern string		PskMailDir;
+extern bool			gmfskmail;
+extern bool			arqmode;
+extern string		ArqFilename;
 extern bool			mailclient;
 extern bool			mailserver;
 extern bool			pskmail_text_available;
 extern char			pskmail_get_char();
 extern void			pskmail_loop(void *);
+
+struct RXMSGSTRUC {
+	long int msg_type;
+	char c;
+};
+
+struct TXMSGSTRUC {
+	long int msg_type;
+	char buffer[BUFSIZ];
+};
+
+extern RXMSGSTRUC rxmsgst;
+extern int rxmsgid;
+extern TXMSGSTRUC txmsgst;
+extern int txmsgid;
 
 #endif
 
