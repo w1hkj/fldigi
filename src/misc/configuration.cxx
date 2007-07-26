@@ -69,8 +69,8 @@ configuration progdefaults = {
 // DOMINOEX
 	2.0,			// double	DOMINOEX_BW;
 //
-	0, 				// int 		Font
-	0, 				// int 		Fontsize
+	0, 				// int 		Fontnbr
+	16,				// int 		Fontsize
 	0,				// int 		Fontcolor
 	0,				// uchar 	red
 	255,			// uchar 	green
@@ -203,7 +203,7 @@ void configuration::writeDefaultsXML()
 	writeXMLdbl(f, "SQUELCH", squelch);
 	writeXMLdbl(f, "WFREFLEVEL", wfRefLevel);
 	writeXMLdbl(f, "WFAMPSPAN", wfAmpSpan);
-	writeXMLint(f, "FONT", Font);
+	writeXMLint(f, "FONT", Fontnbr);
 	writeXMLint(f, "FONTSIZE", FontSize);
 	writeXMLint(f, "FONTCOLOR", FontColor);
 
@@ -326,7 +326,7 @@ void configuration::writeDefaults(ofstream &f)
 	f << rtty_msbfirst << endl;
 	f << oliviatones << endl;
 	f << oliviabw << endl;
-	f << Font << endl;
+	f << Fontnbr << endl;
 	f << FontSize << endl;
 	f << FontColor << endl;
 	f << btnPTTis << endl;
@@ -438,7 +438,7 @@ void configuration::readDefaults(ifstream &f)
 	f >> rtty_msbfirst;
 	f >> oliviatones;
 	f >> oliviabw;
-	f >> Font;
+	f >> Fontnbr;
 	f >> FontSize;
 	f >> FontColor;
 	f >> btnPTTis;
@@ -807,10 +807,10 @@ int configuration::openDefaults() {
 
 		enableMixer(EnableMixer);
 		
-		ReceiveText->setFont((Fl_Font)Font);
+		ReceiveText->setFont((Fl_Font)Fontnbr);
 		ReceiveText->setFontSize(FontSize);
 	
-		TransmitText->setFont((Fl_Font)Font);
+		TransmitText->setFont((Fl_Font)Fontnbr);
 		TransmitText->setFontSize(FontSize);
 
 		wf->setPrefilter(wfPreFilter);

@@ -143,6 +143,7 @@ public:
 
 	virtual int	handle(int event);
 	virtual void	add(const char *s, text_attr_t attr = DEFAULT);
+	virtual void	add(char c, text_attr_t attr = DEFAULT);
 	void		clear(void);
 	int		nextChar(void);
 
@@ -152,6 +153,8 @@ protected:
 	       TX_MENU_WRAP
 	};
 	int		handle_key(int key);
+	int		handle_key_macro(int key);
+	int		handle_key_ascii(int key);
 	virtual void	menu_cb(int val);
 	static void	changed_cb(int pos, int nins, int ndel, int nsty,
 				   const char *dtext, void *arg);

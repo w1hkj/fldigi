@@ -259,17 +259,20 @@ int WFdisp::peakFreq(int f0, int delta)
 	double avg = 0.0;
 	int f1, fmin =	(int)((f0 - delta)), 
 		f2, fmax =	(int)((f0 + delta));
-	f1 = fmax; f2 = fmin;
+	f1 = fmin; f2 = fmax;
 	if (fmin < 0 || fmax > image_width) return f0;
 	for (int f = fmin; f <= fmax; f++)
 		avg += pwr[f];
 	avg /= 2*(delta + 1);
 	for (int f = fmin; f <= fmax; f++)
 		if (pwr[f] > avg) {
-			if (f < f1) f1 = f;
-			if (f > f2) f2 = f;
+			f1 = f;
 		}
-	return (int)((f1 + f2) / 2.0);
+	for (int f = fmax; f >= fmin; f--)
+		if (pwr[f] > avg) {
+			f2 = f;
+		}
+	return (f1 + f2) / 2;
 }
 
 double WFdisp::powerDensity(double f0, double bw)

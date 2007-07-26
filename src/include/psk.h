@@ -87,6 +87,7 @@ private:
 	void			update_syncscope();
 //	void			goertzel(complex);
 	void			afc();
+	void			findsignal();
 	
 public:
 	psk(trx_mode mode);

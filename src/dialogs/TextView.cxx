@@ -71,9 +71,9 @@ TextBase::TextBase(int x, int y, int w, int h, const char *l)
 	highlight_data(sbuf, styles, NSTYLES, DEFAULT, 0, 0);
 
 	wrap_mode(wrap, wrap_col);
-// change by W1HKJ
-//	scrollbar_width((int)floor(scrollbar_width() * 3.0/4.0));
-	scrollbar_width(16);
+
+	// Do we want narrower scrollbars? The default width is 16.
+	// scrollbar_width((int)floor(scrollbar_width() * 3.0/4.0));
 
 	// set some defaults
 	set_style(NSTYLES, FL_COURIER, 12, FL_FOREGROUND_COLOR);
@@ -115,7 +115,7 @@ void TextBase::resize(int X, int Y, int W, int H)
 #ifdef HSCROLLBAR_KLUDGE
 #	include "TextView_resize.cxx"
 #else
-	Fl_Text_Editor::resize(int X, int Y, int W, int H);
+	Fl_Text_Editor::resize(X, Y, W, H);
 #endif // HSCROLLBAR_KLUDGE
 }
 
@@ -467,30 +467,9 @@ void TextView::changed_cb(int pos, int nins, int ndel, int nsty, const char *dte
 	// it to run *before* our callback, so call it now.
 	v->buffer_modified_cb(pos, nins, ndel, nsty, dtext, arg);
 
-	// Is the last line visible? To scroll when it isn't would make
-	// text selection impossible while receiving.
-	if (v->mTopLineNum + v->mNVisibleLines > v->mNBufferLines) {
-		if (v->wrap) {
-			// v->scroll(v->mNBufferLines, 0);
-
-			// The scrolling code below is a little expensive, but
-			// takes care of the only known case where the simple
-			// scroll above is not enough. Specifically, the height
-			// of the widget and font can be such that the last text
-			// line is partially outside the text area, but
-			// technically still visible. This can only happen once,
-			// until the next newline displays the scrollbar, so I
-			// am just being pedantic here.
-
-			// scroll if the last character is vertically outside the text area
-			int x, y;
-			if (v->position_to_xy(v->tbuf->length() - 1, &x, &y) == 0 ||
-			    y + fl_height() >= v->text_area.h)
-				v->show_insert_position();
-		}
-		else
-			v->show_insert_position();
-	}
+	// Only scroll when the end of the text is visible.
+	if (v->mTopLineNum - 1 + v->mNVisibleLines >= v->mNBufferLines)
+		v->show_insert_position();
 }
 
 /// Removes Fl_Text_Edit keybindings that would modify text and put it out of
@@ -616,10 +595,21 @@ void TextEdit::add(const char *s, text_attr_t attr)
 	char a[n + 1];
 	memset(a, attr, n);
 	a[n] = '\0';
-	sbuf->replace(sbuf->length() - n, sbuf->length(), a);
+	sbuf->replace(insert_position() - n, insert_position(), a);
+}
 
-	insert_position(tbuf->length());
-	show_insert_position();
+/// @see TextEdit::add
+///
+/// @param s 
+/// @param attr 
+///
+void TextEdit::add(char c, text_attr_t attr)
+{
+	char s[] = { c, '\0' };
+	insert(s);
+
+	s[0] = attr;
+	sbuf->replace(insert_position() - 1, insert_position(), s);
 }
 
 /// Clears the buffer.
@@ -777,17 +767,15 @@ int TextEdit::handle_key(int key)
 	//	return 1;
 	//	break;
 	default:
-		if (key >= FL_F && key <= FL_F_Last) { // insert a macro
-			int b = key - FL_F - 1;
-			if (b > 9)
-				return 0;
+		// insert a macro
+		if (key >= FL_F && key <= FL_F_Last && insert_position() >= txpos)
+			return handle_key_macro(key);
 
-			b += (altMacros ? 10 : 0);
-			if (!(macros.text[b]).empty())
-				macros.execute(b);
-
-			return 1;
-		}
+		// read A/M-ddd, where d is a digit, as ascii characters (in base 10)
+		// and insert verbatim; e.g. M-001 inserts a <soh>
+		if (Fl::event_state() & (FL_META | FL_ALT) && isdigit(key) &&
+		    insert_position() >= txpos)
+			return handle_key_ascii(key);
 
 		// do not insert printable characters in the transmitted text
 		if (insert_position() < txpos) {
@@ -800,6 +788,53 @@ int TextEdit::handle_key(int key)
 
 	return 0;
 }
+
+/// Inserts the macro for function key \c key.
+///
+/// @param key An integer in the range [FL_F, FL_F_Last]
+///
+/// @return 1
+///
+int TextEdit::handle_key_macro(int key)
+{
+	key -= FL_F + 1;
+	if (key > 9)
+		return 0;
+
+	key += (altMacros ? 10 : 0);
+	if (!(macros.text[key]).empty())
+		macros.execute(key);
+
+	return 1;
+}
+
+/// Composes ascii characters and adds them to the TextEdit buffer.
+/// Control characters are inserted with the CTRL style. Values larger than 127
+/// (0x7f) are ignored. We cannot really add NULs for the time being.
+/// 
+/// @param key A digit character
+///
+/// @return 1
+///
+int TextEdit::handle_key_ascii(int key)
+{
+	static char ascii_cnt = 0;
+	static unsigned ascii_chr = 0;
+
+	key -= '0';
+	ascii_cnt++;
+	for (int i = 0; i < 3 - ascii_cnt; i++)
+		key *= 10;
+	ascii_chr += key;
+	if (ascii_cnt == 3) {
+		if (ascii_chr <= 0x7F)
+			add(ascii_chr, (iscntrl(ascii_chr) ? CTRL : DEFAULT));
+		ascii_cnt = ascii_chr = 0;
+	}
+
+	return 1;
+}
+
 
 /// The context menu handler
 ///

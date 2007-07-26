@@ -66,7 +66,7 @@ struct configuration {
 // DOMINOEX
 	double		DOMINOEX_BW;
 // User interface data
-	int		Font;
+	int		Fontnbr;
 	int		FontSize;
 	int		FontColor;
 	uchar	red;

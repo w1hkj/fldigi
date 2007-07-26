@@ -731,7 +731,7 @@ void cb_FontBrowser(Font_Browser*, void* v)
 	TransmitText->setFont(fnt);
 	TransmitText->setFontSize(size);
 	
-	progdefaults.Font = (int)(fnt);
+	progdefaults.Fontnbr = (int)(fnt);
 	progdefaults.FontSize = size;
 //	progdefaults.FontColor = (int)clr;
 	
@@ -742,7 +742,7 @@ void cb_mnuConfigFonts(Fl_Menu_*, void *) {
 	static Font_Browser *b = (Font_Browser *)0;
 	if (!b) {
 		b = new Font_Browser;
-		b->fontNumber((Fl_Font)progdefaults.Font);
+		b->fontNumber((Fl_Font)progdefaults.Fontnbr);
 		b->fontSize(progdefaults.FontSize);
 //		b->fontColor(progdefaults.FontColor);
 	}
@@ -1341,26 +1341,29 @@ void set_video(double *data, int len)
 
 void put_rx_char(unsigned int data)
 {
-	static bool nulinepending = false;
+	static unsigned int last = 0;
 	const char **asc = ascii;
 	rxmsgid = msgget( (key_t) 9876, 0666);
-	
+
 	if (mailclient || mailserver || rxmsgid != -1)
 		asc = ascii2;
 
-	if (data == '\r') {
-		ReceiveText->add(asc['\n' & 0x7F], TextBase::RCV);
-		nulinepending = true;
-	} else if (nulinepending && data == '\r') {
-		ReceiveText->add(asc['\n' & 0x7F], TextBase::RCV);
-	} else if (nulinepending && data == '\n') {
-		nulinepending = false;
-	} else if (nulinepending && data != '\n') {
-		ReceiveText->add(asc[data & 0x7F], TextBase::RCV);
-		nulinepending = false;
-	} else {
-		ReceiveText->add(asc[data & 0x7F], TextBase::RCV);
+	switch (data) {
+	case '\n':
+		if (last == '\r')
+			break;
+		// or fall through to insert \n
+	case '\r':
+		ReceiveText->add('\n', TextBase::RCV);
+		break;
+	default:
+		if (asc == ascii2 && iscntrl(data & 0x7F))
+			ReceiveText->add(data & 0x7F, TextBase::CTRL);
+		else
+			ReceiveText->add(asc[data & 0x7F], TextBase::RCV);
 	}
+	last = data;
+
 	if ( rxmsgid != -1) {
 		rxmsgst.msg_type = 1;
 		rxmsgst.c = data & 0x7F;
@@ -1508,17 +1511,20 @@ char get_tx_char(void)
 
 void put_echo_char(unsigned int data)
 {
-	static bool nulinepending = false;
+	static unsigned int last = 0;
 	const char **asc = ascii;
+
 	if (mailclient || mailserver || arqmode)
 		asc = ascii2;
-	if (data == '\r' && nulinepending) // reject multiple CRs
+
+	if (data == '\r' && last == '\r') // reject multiple CRs
 		return;
-	if (data == '\r') nulinepending = true;
-	if (nulinepending && data == '\n') {
-		nulinepending = false;
-	}
-	ReceiveText->add(asc[data & 0x7F], TextBase::XMT);
+	if (asc == ascii2 && iscntrl(data & 0x7F))
+		ReceiveText->add(data & 0x7F, TextBase::CTRL);
+	else
+		ReceiveText->add(asc[data & 0x7F], TextBase::XMT);
+	last = data;
+
 	if (Maillogfile)
 		Maillogfile->log_to_file(cLogfile::LOG_TX, asc[data & 0x7F]);
 	if (logging)
