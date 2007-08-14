@@ -2,6 +2,6 @@
 #define _VERSION_H
 
 #define FLDIGI_NAME    "fldigi"
-#define FLDIGI_VERSION "1.37j"
+#define FLDIGI_VERSION "1.37k"
 
 #endif

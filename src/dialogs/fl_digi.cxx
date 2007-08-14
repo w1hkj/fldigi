@@ -861,7 +861,7 @@ void cb_QRZ(Fl_Widget *b, void *)
 	QRZquery();
 }
 
-void status_btn_left_click()
+void status_btn_right_click()
 {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabModems);
@@ -898,53 +898,125 @@ void status_btn_left_click()
 	dlgConfig->show();
 }
 
-Fl_Menu_Item quick_change_menu[] = {
+Fl_Menu_Item quick_change_psk[] = {
 	{"psk 31", 0,  (Fl_Callback*)cb_mnuPSK31 },
-	{"qpsk 31", 0,  (Fl_Callback*)cb_mnuQPSK31 },
 	{"psk 63", 0,  (Fl_Callback*)cb_mnuPSK63 },
-	{"qpsk 63", 0,  (Fl_Callback*)cb_mnuQPSK63 },
 	{"psk 125", 0,  (Fl_Callback*)cb_mnuPSK125 },
-	{"qpsk 125", 0,  (Fl_Callback*)cb_mnuQPSK125 },
 	{"psk 250", 0,  (Fl_Callback*)cb_mnuPSK250 },
+	{"No change", 0, 0 },
+	{ 0 }
+};
+
+Fl_Menu_Item quick_change_qpsk[] = {
+	{"qpsk 31", 0,  (Fl_Callback*)cb_mnuQPSK31 },
+	{"qpsk 63", 0,  (Fl_Callback*)cb_mnuQPSK63 },
+	{"qpsk 125", 0,  (Fl_Callback*)cb_mnuQPSK125 },
 	{"qpsk 250", 0,  (Fl_Callback*)cb_mnuQPSK250, 0, FL_MENU_DIVIDER },
 	{"No change", 0, 0 },
 	{ 0 }
 };
 
-void status_btn_right_click()
+Fl_Menu_Item quick_change_mfsk[] = {
+	{"mfsk 8", 0,  (Fl_Callback*)cb_mnuMFSK8 },
+	{"mfsk 16", 0,  (Fl_Callback*)cb_mnuMFSK16, 0, FL_MENU_DIVIDER },
+	{"No change", 0, 0 },
+	{ 0 }
+};
+
+Fl_Menu_Item quick_change_domino[] = {
+	{"dominoex 4", 0,  (Fl_Callback*)cb_mnuDOMINOEX4 },
+	{"dominoex 5", 0,  (Fl_Callback*)cb_mnuDOMINOEX5 },
+	{"dominoex 8", 0,  (Fl_Callback*)cb_mnuDOMINOEX8 },
+	{"dominoex 11", 0,  (Fl_Callback*)cb_mnuDOMINOEX11 },
+	{"dominoex 16", 0,  (Fl_Callback*)cb_mnuDOMINOEX16 },
+	{"dominoex 22", 0,  (Fl_Callback*)cb_mnuDOMINOEX22, 0, FL_MENU_DIVIDER },
+	{"No change", 0, 0 },
+	{ 0 }
+};
+
+Fl_Menu_Item quick_change_feld[] = {
+	{"Feld-Hell", 0,  (Fl_Callback*)cb_mnuFELDHELL, },
+	{"FSK-Hell", 0,  (Fl_Callback*)cb_mnuFSKHELL },
+	{"FSK-Hell-105", 0,  (Fl_Callback*)cb_mnuFSKHELL105, 0, FL_MENU_DIVIDER },
+	{"No change", 0, 0 },
+	{ 0 }
+};
+
+Fl_Menu_Item quick_change_throb[] = {
+	{"Throb 1", 0,  (Fl_Callback*)cb_mnuTHROB1 },
+	{"Throb 2", 0,  (Fl_Callback*)cb_mnuTHROB2 },
+	{"Throb 4", 0,  (Fl_Callback*)cb_mnuTHROB4 },
+	{"ThrobX 1", 0,  (Fl_Callback*)cb_mnuTHROBX1 },
+	{"ThrobX 2", 0,  (Fl_Callback*)cb_mnuTHROBX2 },
+	{"ThrobX 4", 0,  (Fl_Callback*)cb_mnuTHROBX4, 0, FL_MENU_DIVIDER },
+	{"No change", 0, 0 },
+	{ 0 }
+};
+
+
+void status_btn_left_click()
 {
 	int xpos = Fl::event_x();
 	int ypos = Fl::event_y();
 	const Fl_Menu_Item * m;
 	switch (active_modem->get_mode()) {
 		case MODE_BPSK31:
-		case MODE_QPSK31 :
 		case MODE_PSK63 :
-		case MODE_QPSK63 :
 		case MODE_PSK125 :
-		case MODE_QPSK125 :
 		case MODE_PSK250 :
-		case MODE_QPSK250 :
-			m = quick_change_menu->popup(xpos, ypos - 200, 0, 0, 0);
+			m = quick_change_psk->popup(xpos, ypos, 0, 0, 0);
 			if (!m) break;
 			if (m->callback_ == 0) break;
 			m->callback_(0,0);
-/*			
-			switch (pressed) {
-				case 1: initPSK31(); break;
-				case 2: initQPSK31(); break;
-				case 3: initPSK63(); break;
-				case 4: initQPSK63(); break;
-				case 5: initPSK125(); break;
-				case 6: initQPSK125(); break;
-				case 7: initPSK250(); break;
-				case 8: initQPSK250(); break;
-				default: break;
-			}
-*/ 
+			break;
+		case MODE_QPSK31 :
+		case MODE_QPSK63 :
+		case MODE_QPSK125 :
+		case MODE_QPSK250 :
+			m = quick_change_qpsk->popup(xpos, ypos, 0, 0, 0);
+			if (!m) break;
+			if (m->callback_ == 0) break;
+			m->callback_(0,0);
+			break;
+		case MODE_MFSK16:
+		case MODE_MFSK8:
+			m = quick_change_mfsk->popup(xpos, ypos, 0, 0, 0);
+			if (!m) break;
+			if (m->callback_ == 0) break;
+			m->callback_(0,0);
+			break;
+		case MODE_DOMINOEX4 :
+		case MODE_DOMINOEX5 :
+		case MODE_DOMINOEX8 :
+		case MODE_DOMINOEX11 :
+		case MODE_DOMINOEX16 :
+		case MODE_DOMINOEX22 :
+			m = quick_change_domino->popup(xpos, ypos, 0, 0, 0);
+			if (!m) break;
+			if (m->callback_ == 0) break;
+			m->callback_(0,0);
+			break;
+		case MODE_FELDHELL :
+		case MODE_FSKHELL :
+		case MODE_FSKH105 :
+			m = quick_change_feld->popup(xpos, ypos, 0, 0, 0);
+			if (!m) break;
+			if (m->callback_ == 0) break;
+			m->callback_(0,0);
+			break;
+		case MODE_THROB1 :
+		case MODE_THROB2 :
+		case MODE_THROB4 :
+		case MODE_THROBX1 :
+		case MODE_THROBX2 :
+		case MODE_THROBX4 :
+			m = quick_change_throb->popup(xpos, ypos, 0, 0, 0);
+			if (!m) break;
+			if (m->callback_ == 0) break;
+			m->callback_(0,0);
 			break;
 		default :
-			break;
+			status_btn_right_click();
 	}
 }
 
@@ -1327,7 +1399,7 @@ void create_fl_digi_main() {
 			MODEstatus->color(FL_BACKGROUND2_COLOR);
 			MODEstatus->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 			MODEstatus->callback(status_cb, (void *)0);
-			MODEstatus->tooltip("Open Modem Tab");
+			MODEstatus->tooltip("Left clk - change mode\nRight clk - Modem Tab");
 			S2Nstatus = new Fl_Box(Wmode,Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Ws2n, Hstatus, "");
 			S2Nstatus->box(FL_DOWN_BOX);
 			S2Nstatus->color(FL_BACKGROUND2_COLOR);
