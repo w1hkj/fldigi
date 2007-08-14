@@ -248,7 +248,7 @@ int MACROTEXT::loadMacros(string filename)
 	int    mNumber = 0;
 	unsigned long int	   crlf; // 64 bit cpu's
 	char   szTemp[10];
-	char   szLine[255];
+	char   szLine[4096];
 	
 	ifstream mFile(filename.c_str());
 	
@@ -259,7 +259,7 @@ int MACROTEXT::loadMacros(string filename)
 			return -1;
 	}
 	
-	mFile.getline(szLine, 255);
+	mFile.getline(szLine, 4095);
 	mLine = szLine;
 	if (mLine.find("//fldigi macro definition file") != 0) {
 		mFile.close();
@@ -274,7 +274,7 @@ int MACROTEXT::loadMacros(string filename)
 	}
 	inMacro = false;
 	while (!mFile.eof()) {
-		mFile.getline(szLine,255);
+		mFile.getline(szLine,4095);
 		mLine = szLine;
 		if (mLine.find("//") == 0) // skip over all comment lines
 			continue;

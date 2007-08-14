@@ -861,7 +861,7 @@ void cb_QRZ(Fl_Widget *b, void *)
 	QRZquery();
 }
 
-void status_cb(Fl_Widget *b, void *)
+void status_btn_left_click()
 {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabModems);
@@ -896,6 +896,65 @@ void status_cb(Fl_Widget *b, void *)
 			tabsModems->value(tabCW);
 	}
 	dlgConfig->show();
+}
+
+Fl_Menu_Item quick_change_menu[] = {
+	{"psk 31", 0,  (Fl_Callback*)cb_mnuPSK31 },
+	{"qpsk 31", 0,  (Fl_Callback*)cb_mnuQPSK31 },
+	{"psk 63", 0,  (Fl_Callback*)cb_mnuPSK63 },
+	{"qpsk 63", 0,  (Fl_Callback*)cb_mnuQPSK63 },
+	{"psk 125", 0,  (Fl_Callback*)cb_mnuPSK125 },
+	{"qpsk 125", 0,  (Fl_Callback*)cb_mnuQPSK125 },
+	{"psk 250", 0,  (Fl_Callback*)cb_mnuPSK250 },
+	{"qpsk 250", 0,  (Fl_Callback*)cb_mnuQPSK250, 0, FL_MENU_DIVIDER },
+	{"No change", 0, 0 },
+	{ 0 }
+};
+
+void status_btn_right_click()
+{
+	int xpos = Fl::event_x();
+	int ypos = Fl::event_y();
+	const Fl_Menu_Item * m;
+	switch (active_modem->get_mode()) {
+		case MODE_BPSK31:
+		case MODE_QPSK31 :
+		case MODE_PSK63 :
+		case MODE_QPSK63 :
+		case MODE_PSK125 :
+		case MODE_QPSK125 :
+		case MODE_PSK250 :
+		case MODE_QPSK250 :
+			m = quick_change_menu->popup(xpos, ypos - 200, 0, 0, 0);
+			if (!m) break;
+			if (m->callback_ == 0) break;
+			m->callback_(0,0);
+/*			
+			switch (pressed) {
+				case 1: initPSK31(); break;
+				case 2: initQPSK31(); break;
+				case 3: initPSK63(); break;
+				case 4: initQPSK63(); break;
+				case 5: initPSK125(); break;
+				case 6: initQPSK125(); break;
+				case 7: initPSK250(); break;
+				case 8: initQPSK250(); break;
+				default: break;
+			}
+*/ 
+			break;
+		default :
+			break;
+	}
+}
+
+void status_cb(Fl_Widget *b, void *)
+{
+	int btn = Fl::event_key();
+	if (btn == FL_Button+1)
+		status_btn_left_click();
+	else if (btn == FL_Button+3)
+		status_btn_right_click();
 }
 
 void cb_cboBand(Fl_Widget *w, void *d) 

@@ -218,7 +218,7 @@ int olivia::rx_process(double *buf, int len)
 	double snr;
 	static char msg1[20];
 	static char msg2[20];
-	static char msg3[60];
+//	static char msg3[60];
 
 	if ((lastfreq != frequency || Rx->Reverse != 0) && !reverse) {
 		Rx->FirstCarrierMultiplier = (frequency - (Rx->Bandwidth / 2)) / 500; 
@@ -257,9 +257,9 @@ int olivia::rx_process(double *buf, int len)
 	put_Status1(msg1);
 	sprintf(msg2, "Freq: %+4.1f", Rx->FrequencyOffset());
 	put_Status2(msg2);
-	sprintf(msg3, "Tune Margin: %4.1f, Time: %5.3f Hz, Block Period: %5.3f sec",
-		Rx->TuneMargin(), Rx->TimeOffset(), Rx->BlockPeriod());
-	put_status(msg3);
+//	sprintf(msg3, "Tune: %4.1f, Time: %5.3f Hz, Block: %5.3f sec",
+//		Rx->TuneMargin(), Rx->TimeOffset(), Rx->BlockPeriod());
+//	put_status(msg3);
 
 	while (Rx->GetChar(ch) > 0)
 		if ((c = unescape(ch)) != -1 && c > 7)

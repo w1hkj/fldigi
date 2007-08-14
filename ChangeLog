@@ -1,6 +1,6 @@
 Change Log:
 
-1.37  1) Increased TxPPM to +/- 50000 to match the RxPPM range
+1.3x  1) Increased TxPPM to +/- 50000 to match the RxPPM range
       2) Changed all audio i/o to separate 2 channel control (stereo)
       3) Added right channel CW QRQ signal
       4) Added right channel pseudo FSK signal
@@ -26,6 +26,11 @@ Change Log:
           fldigi TEST).
       16) Added Azimuth computation to QRZ query (submitted by WA5ZNU).
       17) Corrected adif file header field <PROGRAMID:6>fldigi
+      18) Added fix to psk decoder sync detector.  Thanks to the PocketDigi
+          author, Vojtech Bubnik, OK1IAK.
+      19) Added popup menu (right click) to the lower left corner modem button.
+          Allows quick change on psk modes only.  Left button still opens up
+          the configuration tab for the modem in use.
 1.34  1) Cleaned up unused code segments
       2) Modified CW decoder to allow setting upper and lower limits on
          Tx WPM
