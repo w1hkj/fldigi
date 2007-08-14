@@ -375,11 +375,50 @@ void WFdisp::redrawCursor()
 	cursormoved = true;
 }
 
+bool evaluating = false;
+
+void evaluate(void *who)
+{
+	WFdisp *me = (WFdisp *)who;
+	
+	if (evaluating) return;
+	evaluating = true;
+	
+	static char szFrequency[14];
+	
+	if (me->mode == me->SCOPE)
+		me->process_analog(me->circbuff, FFT_LEN * 2);
+
+	me->processFFT();
+
+	Fl::lock();
+	if (me->usebands)
+		me->rfc = (long long)(atof(cboBand->value()) * 1000.0);
+
+	if (me->rfc) {
+		if (me->usb)
+			me->dfreq = me->rfc + active_modem->get_txfreq();
+		else	
+			me->dfreq = me->rfc - active_modem->get_txfreq();
+		sprintf(szFrequency, "%-.3f", me->dfreq / 1000.0);
+	} else {
+		me->dfreq = active_modem->get_txfreq();
+		sprintf(szFrequency, "%-.0f", me->dfreq);
+	}
+	
+	inpFreq->value(szFrequency);
+	inpFreq->redraw();
+	Fl::unlock();
+	put_WARNstatus(me->overload);
+	
+	Fl::awake();
+	evaluating = false;
+}
+
 void WFdisp::sig_data( double *sig, int len ) {
 	int   movedbls = (FFT_LEN * 2) - len; //SCBLOCKSIZE;
 	int	  movesize = movedbls * sizeof(double);
 	double *pcircbuff1 = &circbuff[len];
-	static char szFrequency[14];
 	
 //if sound card sampling rate changed reset the waterfall buffer
 	if (srate != active_modem->get_samplerate()) {
@@ -388,39 +427,14 @@ void WFdisp::sig_data( double *sig, int len ) {
 	}
 	else
 		memmove(circbuff, pcircbuff1, movesize);
-	
 	overload = false;
 	int i, j;
 	for (i = movedbls, j = 0; j < len; i++, j++)
 		if (fabs(circbuff[i] = sig[j]) > 0.9)
 			overload = true;
 	
-	if (mode == SCOPE)
-		process_analog(circbuff, FFT_LEN * 2);
-
-	processFFT();
-
-	Fl::lock();
-	if (usebands)
-		rfc = (long long)(atof(cboBand->value()) * 1000.0);
-
-	if (rfc) {
-		if (usb)
-			dfreq = rfc + active_modem->get_txfreq();
-		else	
-			dfreq = rfc - active_modem->get_txfreq();
-		sprintf(szFrequency, "%-.3f", dfreq / 1000.0);
-	} else {
-		dfreq = active_modem->get_txfreq();
-		sprintf(szFrequency, "%-.0f", dfreq);
-	}
-	
-	inpFreq->value(szFrequency);
-	inpFreq->redraw();
-	Fl::unlock();
-	put_WARNstatus(overload);
-	
-	Fl::awake();
+	Fl::add_timeout(0.05, evaluate, this);
+	return;
 }
 
 

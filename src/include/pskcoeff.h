@@ -3,8 +3,8 @@
 
 #define	FIRLEN	64
 
-extern double fir1c[FIRLEN];
-extern double fir2c[FIRLEN];
+extern double gmfir1c[FIRLEN];
+extern double gmfir2c[FIRLEN];
 extern double syncfilt[16];
 
 extern void raisedcosfilt(double *);

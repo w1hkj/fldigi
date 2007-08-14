@@ -10,12 +10,12 @@
 #include <math.h>
 
 
-/* 64-tap raised-cosine FIR*/
+// 64-tap raised-cosine FIR
 // implements
 //  u[n] = (1.0 - cos(2PI * n / 64))/128.0
 // used in gmfsk, twpsk etc.
-/*
-double fir1c[64] = {
+
+double gmfir1c[64] = {
 	0.000000, //0
 	0.000038, //1
 	0.000150, //2
@@ -86,7 +86,7 @@ double fir1c[64] = {
 // Designed by G3PLX
 //
 
-double fir2c[64] = {
+double gmfir2c[64] = {
 	0.000625000,
 	0.000820912,
 	0.001374651,
@@ -152,9 +152,11 @@ double fir2c[64] = {
 	0.001374651,
 	0.000820912
 };
-*/
+
 
 // sync filter
+// weighting for sync samples
+// sum of all weights = 1.0
 
 double syncfilt[16] = {
 	-0.097545161,

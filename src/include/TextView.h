@@ -5,9 +5,6 @@
 // Copyright (C) 2006
 //		Dave Freese, W1HKJ
 //
-// Copyright (C) 2007
-//		Stelios Bounanos, 2E0DLX
-//
 // This file is part of fldigi.
 //
 // fldigi is free software; you can redistribute it and/or modify
@@ -17,180 +14,154 @@
 //
 // fldigi is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
 // along with fldigi; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ----------------------------------------------------------------------------
 
 #ifndef _TextView_H
 #define _TextView_H
 
-#include "threads.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <iostream>
+#include <fstream>
+#include <string>
 
 /* fltk includes */
 #include <FL/Fl.H>
+#include <FL/fl_draw.H>
+#include <FL/Fl_Widget.H>
+#include <FL/Fl_Scrollbar.H>
 #include <FL/Enumerations.H>
 #include <FL/Fl_Menu_Button.H>
 #include <FL/Fl_Menu_Item.H>
-#include <FL/Fl_Text_Display.H>
-#include <FL/Fl_Text_Editor.H>
 
+using namespace std;
 
-///
-/// The text widgets base class.
-/// This class implements a basic text editing widget based on Fl_Text_Editor.
-///
-class TextBase : public Fl_Text_Editor
+class textview : public Fl_Widget
 {
-public:
-
-	///
-	/// Text styles used for highlighting
-	///
-	enum text_attr_e {
-		DEFAULT = 'A',	///< Default text style
-		RCV,		///< Received text style
-		XMT,		///< Transmitted text style
-		SKIP,		///< Skipped text style
-		CTRL,		///< Control character style
-		NSTYLES = 5
-	};
-	typedef enum text_attr_e text_attr_t;
+friend void processinput(void *);
 
 public:
-	TextBase(int x, int y, int w, int h, const char *l = 0);
-	virtual ~TextBase() { delete tbuf; delete sbuf; }
-
-	virtual int	handle(int event) { return Fl_Text_Editor::handle(event); };
-	virtual void	add(const char *s, text_attr_t attr = DEFAULT) { insert(s); }
-	void		clear(void) { tbuf->text(""); sbuf->text(""); }
-
-	void		setFont(Fl_Font f, text_attr_t attr = NSTYLES);
-	void		setFontSize(int s, text_attr_t attr = NSTYLES);
-	void		setFontColor(Fl_Color c, text_attr_t attr = NSTYLES);
-
-	void		cursorON(void) { show_cursor(); }
-	virtual void	resize(int X, int Y, int W, int H);
-
+enum TV_ATTR {RCV, XMT};
+enum CURSOR_TYPE {CARET_CURSOR, NORMAL_CURSOR, HEAVY_CURSOR, DIM_CURSOR, BLOCK_CURSOR, NONE};
 protected:
-	void		set_style(text_attr_t attr, Fl_Font f, int s, Fl_Color c,
-				  int set = SET_FONT | SET_SIZE | SET_COLOR);
-	void		readFile(void);
-	void		saveFile(void);
-	char		*get_word(int x, int y);
-	void		show_context_menu(void);
-	virtual void	menu_cb(int val) { }
-	int		reset_wrap_col(void);
-
-private:
-	TextBase();
-	TextBase(const TextBase &t);
-
-protected:
-	enum set_style_op_e { SET_FONT = 1 << 0, SET_SIZE = 1 << 1, SET_COLOR = 1 << 2 };
-	enum { RESIZING = 1 << 0 };
-	Fl_Text_Buffer				*tbuf;	///< text buffer
-	Fl_Text_Buffer				*sbuf;	///< style buffer
-	Fl_Text_Display::Style_Table_Entry	styles[NSTYLES];
-	Fl_Menu_Item				*context_menu;
-	int					popx, popy;
-	bool					wrap;
-	int					wrap_col;
-	int					max_lines;
-};
-
-///
-/// A TextBase subclass to display received & transmitted text
-///
-class TextView : public TextBase
-{
+    string		buff;
+    string		attr;
+    string		inbuff;
+    string		inattr;
+    int			nlines;
+	int			wrappos;
+    int			charwidth;
+	int			maxcharwidth;
+    int			charheight;
+	int			cursorX;
+	int			cursorY;
+	size_t		laststartpos;
+	size_t		lastendpos;
+	int			startidx;
+	int			popx;
+	int			popy;
+	bool		cursorON;
+	bool		wordwrap;
+	bool		inprocess;
+	bool		timerstarted;
+	
+	CURSOR_TYPE	cursorStyle;
+	Fl_Font		TextFont;
+	Fl_Color	TextColor[16];
+	int			TextSize;
 public:
-	TextView(int x, int y, int w, int h, const char *l = 0);
 
-	virtual int	handle(int event);
-	virtual void	add(char c, text_attr_t attr = DEFAULT);
-	virtual	void	add(const char *s, text_attr_t attr = DEFAULT);
+	textview( int x, int y, int w, int h, const char *label = 0 );
+	virtual ~textview() = 0;
+	virtual int handle(int event);
+	virtual void resize( int x, int y, int w, int h );
+	void	draw_cursor();
+	void draw();
+	void drawall();
+	void drawchars();
+	void drawbs();
+	void	Show();
+	void	Hide();
+
+	virtual void add( char *text, int attr = 1 );
+	virtual void add( char c, int attr = 1);
+	virtual void clear();
+	virtual string findtext();
+	
+	virtual void setFont(Fl_Font fnt);
+	virtual void setFontSize(int siz);
+	virtual void setFontColor(Fl_Color clr);
+
+	inline void setTextStyle(int n, Fl_Color c )
+		{ if (n < 0 || n > 15) return;      
+		TextColor[n] = c; 
+	}
 
 protected:
-	enum { RX_MENU_QRZ_THIS, RX_MENU_CALL, RX_MENU_NAME, RX_MENU_QTH,
-	       RX_MENU_LOC, RX_MENU_RST_IN, RX_MENU_DIV, RX_MENU_CLEAR,
-	       RX_MENU_COPY, RX_MENU_SAVE, RX_MENU_WRAP };
+	Fl_Scrollbar *scrollbar;
+	Fl_Menu_Button *mpopup;
 
-	virtual void	menu_cb(int val);
-	static void	changed_cb(int pos, int nins, int ndel, int nsty,
-				   const char *dtext, void *arg);
-	void		change_keybindings(void);
+	void scrollbarCB();	
+	inline static void _scrollbarCB( Fl_Widget* w, void* arg )
+	{ 
+		((textview*)arg)->scrollbarCB(); 
+	}
+	
+	int lineCount();
+	size_t linePosition(int linenbr);
 
-private:
-	TextView();
-	TextView(const TextView &t);
-
-protected:
-	static Fl_Menu_Item view_menu[];
+	void _backspace();
+	void setScrollbar();
+	void rebuildsoft(int w);
 };
 
 
-///
-/// A TextBase subclass to display and edit text to be transmitted
-///
-class TextEdit : public TextBase
-{
+class TextView : public textview {
 public:
-	TextEdit(int x, int y, int w, int h, const char *l = 0);
-
-	virtual int	handle(int event);
-	virtual void	add(const char *s, text_attr_t attr = DEFAULT);
-	virtual void	add(char c, text_attr_t attr = DEFAULT);
-	void		clear(void);
-	int		nextChar(void);
-
+	TextView( int x, int y, int w, int h, const char *label = 0 );
+	virtual void add( char *text, int attr = 1 ) {textview::add(text, attr);};
+	virtual void add( const char *text, int attr = 1) {textview::add((char*)text);};
+	virtual void add( char c, int attr = 1) {textview::add(c, attr);};
+	virtual void clear() {textview::clear();};
+	virtual void setFont(Fl_Font fnt) { textview::setFont(fnt); }
+	virtual void setFontSize(int siz) { textview::setFontSize(siz); }
+	virtual void setFontColor(Fl_Color clr) { textview::setFontColor(clr); }
 protected:
-	enum { TX_MENU_TX, TX_MENU_RX, TX_MENU_MFSK16_IMG, TX_MENU_CLEAR,
-	       TX_MENU_CUT, TX_MENU_COPY, TX_MENU_PASTE, TX_MENU_READ,
-	       TX_MENU_WRAP
-	};
-	int		handle_key(int key);
-	int		handle_key_macro(int key);
-	int		handle_key_ascii(int key);
-	virtual void	menu_cb(int val);
-	static void	changed_cb(int pos, int nins, int ndel, int nsty,
-				   const char *dtext, void *arg);
-	void		change_keybindings(void);
-	static int	kf_default(int c, Fl_Text_Editor* e);
-	static int	kf_enter(int c, Fl_Text_Editor* e);
-	static int	kf_delete(int c, Fl_Text_Editor* e);
-	static int	kf_cut(int c, Fl_Text_Editor* e);
-	static int	kf_paste(int c, Fl_Text_Editor* e);
-
-private:
-	TextEdit();
-	TextEdit(const TextEdit &t);
-
-protected:
-	static Fl_Menu_Item	edit_menu[];
-	bool			PauseBreak;
-	int			txpos;
-	static int		*ptxpos;
-	int			bkspaces;
+	static Fl_Menu_Item viewmenu[];
+	int		handle (int event);
+	void	menu_cb(int val);
+	void	saveFile();
 };
 
-///
-/// A lock class meant to be instantiated on the stack to acquire a lock which
-/// is released when the object goes out of scope.
-/// The no-arg ctor calls Fl::lock(), and the Fl_Mutex ctor locks that mutex.
-///
-class autolock
-{
+
+class TextEdit : public textview {
 public:
-	autolock() : m(0) { Fl::lock(); }
-	autolock(Fl_Mutex *m_) : m(m_) { fl_lock(m); }
-	~autolock() { if (m) fl_unlock(m); else Fl::unlock(); }
+	TextEdit( int x, int y, int w, int h, const char *label = 0 );
+	virtual void add( char *text, int attr = 1 ) {textview::add(text);};
+	virtual void add( const char *text, int attr = 1) {textview::add((char*)text);};
+	virtual void add( char c, int attr = 1) {textview::add(c);};
+	virtual void clear();
+	int		nextChar();
+	void	readFile();	
+	virtual void setFont(Fl_Font fnt) { textview::setFont(fnt); }
+	virtual void setFontSize(int siz) { textview::setFontSize(siz); }
+	virtual void setFontColor(Fl_Color clr) { textview::setFontColor(clr); }
+	void	cursorON();
+protected:
+	int 	handle_fnckey(int key);
+	int		handle_key();
+	int		handle (int event);
+	void	menu_cb(int val);
 private:
-	autolock(const autolock &a); // no copying
-	Fl_Mutex *m;
+	unsigned int chrptr;
+	int	bkspaces;
+	bool PauseBreak;
 };
 
 #endif

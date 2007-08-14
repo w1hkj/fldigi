@@ -62,7 +62,6 @@
 #include "globals.h"
 #include "misc.h"
 //#include "help.h"
-#include "TextView.h"
 
 #include "Config.h"
 #include "configuration.h"
@@ -146,10 +145,10 @@ void startup_modem(modem *m)
 	if (m == feld_modem ||
 		m == feld_FMmodem ||
 		m == feld_FM105modem ) {
-		ReceiveText->hide();
+		ReceiveText->Hide();
 		FHdisp->show();
 	} else {
-		ReceiveText->show();
+		ReceiveText->Show();
 		FHdisp->hide();
 	}
 	Fl::unlock();
@@ -1067,6 +1066,15 @@ void activate_rig_menu_item(bool b)
 	mnu->redraw();
 }
 
+void activate_test_menu_item(bool b)
+{
+	if (b)
+		menu_[60].show();
+	else
+		menu_[60].hide();
+	mnu->redraw();
+}
+
 void create_fl_digi_main() {
 	int Y = 0;
 	fl_digi_main = new Fl_Double_Window(WNOM, HNOM, "fldigi");
@@ -1139,6 +1147,7 @@ void create_fl_digi_main() {
 		
 		int sw = 15;
 		Fl_Group *MixerFrame = new Fl_Group(0,Y,sw, Hrcvtxt + Hxmttxt);
+//			valRcvMixer = new Fl_Slider(0, Y, sw, (Hrcvtxt + Hxmttxt)/2 - 15, "R");
 			valRcvMixer = new Fl_Slider(0, Y, sw, (Htext)/2, "");
 			valRcvMixer->type(FL_VERT_NICE_SLIDER);
 			valRcvMixer->color(fl_rgb_color(0,110,30));
@@ -1146,6 +1155,7 @@ void create_fl_digi_main() {
 			valRcvMixer->selection_color(fl_rgb_color(255,255,0));
 			valRcvMixer->range(1.0,0.0);
 			valRcvMixer->callback( (Fl_Callback *)cb_RcvMixer);
+//			valXmtMixer = new Fl_Slider(0, Y + (Hrcvtxt + Hxmttxt)/2, sw, (Hrcvtxt + Hxmttxt)/2 - 15, "T");
 			valXmtMixer = new Fl_Slider(0, Y + (Htext)/2, sw, (Htext)/2, "");
 			valXmtMixer->type(FL_VERT_NICE_SLIDER);
 			valXmtMixer->color(fl_rgb_color(110,0,30));
@@ -1341,29 +1351,24 @@ void set_video(double *data, int len)
 
 void put_rx_char(unsigned int data)
 {
-	static unsigned int last = 0;
+	static bool nulinepending = false;
 	const char **asc = ascii;
 	rxmsgid = msgget( (key_t) 9876, 0666);
-
 	if (mailclient || mailserver || rxmsgid != -1)
 		asc = ascii2;
-
-	switch (data) {
-	case '\n':
-		if (last == '\r')
-			break;
-		// or fall through to insert \n
-	case '\r':
-		ReceiveText->add('\n', TextBase::RCV);
-		break;
-	default:
-		if (asc == ascii2 && iscntrl(data & 0x7F))
-			ReceiveText->add(data & 0x7F, TextBase::CTRL);
-		else
-			ReceiveText->add(asc[data & 0x7F], TextBase::RCV);
+	if (data == '\r') {
+		ReceiveText->add(asc['\n' & 0x7F],1);
+		nulinepending = true;
+	} else if (nulinepending && data == '\r') {
+		ReceiveText->add(asc['\n' & 0x7F],1);
+	} else if (nulinepending && data == '\n') {
+		nulinepending = false;
+	} else if (nulinepending && data != '\n') {
+		ReceiveText->add(asc[data & 0x7F], 1);
+		nulinepending = false;
+	} else {
+		ReceiveText->add(asc[data & 0x7F],1);
 	}
-	last = data;
-
 	if ( rxmsgid != -1) {
 		rxmsgst.msg_type = 1;
 		rxmsgst.c = data & 0x7F;
@@ -1372,6 +1377,7 @@ void put_rx_char(unsigned int data)
 
 	if (Maillogfile)
 		Maillogfile->log_to_file(cLogfile::LOG_RX, asc[data & 0x7F]);
+
 	if (logging)
 		logfile->log_to_file(cLogfile::LOG_RX, asc[data & 0x7F]);
 }
@@ -1511,20 +1517,17 @@ char get_tx_char(void)
 
 void put_echo_char(unsigned int data)
 {
-	static unsigned int last = 0;
+	static bool nulinepending = false;
 	const char **asc = ascii;
-
 	if (mailclient || mailserver || arqmode)
 		asc = ascii2;
-
-	if (data == '\r' && last == '\r') // reject multiple CRs
+	if (data == '\r' && nulinepending) // reject multiple CRs
 		return;
-	if (asc == ascii2 && iscntrl(data & 0x7F))
-		ReceiveText->add(data & 0x7F, TextBase::CTRL);
-	else
-		ReceiveText->add(asc[data & 0x7F], TextBase::XMT);
-	last = data;
-
+	if (data == '\r') nulinepending = true;
+	if (nulinepending && data == '\n') {
+		nulinepending = false;
+	}
+	ReceiveText->add(asc[data & 0x7F],4);
 	if (Maillogfile)
 		Maillogfile->log_to_file(cLogfile::LOG_TX, asc[data & 0x7F]);
 	if (logging)

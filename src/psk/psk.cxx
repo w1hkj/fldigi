@@ -164,10 +164,14 @@ psk::psk(trx_mode pskmode) : modem()
 
 //	raisedcosfilt(fir1c);	// creates fir1c
 
-	wsincfilt(fir1c, 1.0 / symbollen);		// creates fir1c matched sin(x)/x filter
-
-	wsincfilt(fir2c, 1.0 / 16.0);				// creates fir2c matched sin(x)/x filter
-
+//	wsincfilt(fir1c, 1.0 / symbollen);		// creates fir1c matched sin(x)/x filter
+//	wsincfilt(fir2c, 1.0 / 16.0);			// creates fir2c matched sin(x)/x filter
+// or following uses the original gmfsk matched filters
+	for (int i = 0; i < 64; i++) {
+		fir1c[i] = gmfir1c[i];
+		fir2c[i] = gmfir2c[i];
+	}
+	
 	fir1 = new C_FIR_filter();
 	fir1->init(FIRLEN, symbollen / 16, fir1c, fir1c);
 
@@ -190,7 +194,7 @@ psk::psk(trx_mode pskmode) : modem()
 	bandwidth = samplerate / symbollen;
 	wfid = new id(this);
 	
-	pipeptr = 0;
+//	pipeptr = 0;
 	if (mailserver && progdefaults.PSKmailSweetSpot)
 		sigsearch = 3;
 	else
@@ -330,9 +334,9 @@ void psk::afc()
 		error -= 2 * M_PI;
 	error *= ((samplerate / (symbollen * 2 * M_PI)/16));
 	if (fabs(error) < (bandwidth / 2.0)) {
-//		freqerr = decayavg( freqerr, error, 4);//32);
-//		frequency -= freqerr;
-		frequency -= error;
+		freqerr = decayavg( freqerr, error, 32);
+		frequency -= freqerr;
+//		frequency -= error;
 		set_freq (frequency);
 	}
 	if (mailserver && progdefaults.PSKmailSweetSpot)
@@ -379,12 +383,7 @@ void psk::rx_symbol(complex symbol)
 		else dcd = false;
 	}
 
-	if (squelchon == false)
-		set_phase(phase, true);
-	else if (metric > squelch)
-		set_phase(phase, true);
-	else
-		set_phase(M_PI, false);
+	set_phase(phase, dcd);
 
 	if (dcd == true || squelchon == false) {
 		if (_qpsk)
@@ -430,7 +429,7 @@ void psk::update_syncscope()
 
 }
 
-
+char bitstatus[100];
 
 int psk::rx_process(double *buf, int len)
 {
@@ -455,28 +454,25 @@ int psk::rx_process(double *buf, int len)
 // final filter
 			fir2->run( z, z ); // fir3 returns value on every sample
 			
-// Now the sync correction routine...
-// save amplitude value for the sync scope
 			int idx = (int) bitclk;
 			double sum = 0.0;
-
-//			scope_pipe[pipeptr % PipeLen] = syncbuf[idx] = z.mag();
-			scope_pipe[pipeptr] = syncbuf[idx] = z.mag();
+			syncbuf[idx] = 0.8 * syncbuf[idx] + 0.2 * z.mag();
+//			syncbuf[idx] = z.mag();
 			
 			for (int i = 0; i < 8; i++)
 				sum += (syncbuf[i] - syncbuf[i+8]);
 
 			bitclk -= sum / 5.0;
 			bitclk += 1;
-			if (bitclk < 0) bitclk += 16;
-			if (bitclk >= 16) {
-				bitclk -= 16;
+			
+			if (bitclk < 0) bitclk += 16.0;
+			if (bitclk >= 16.0) {
+				bitclk -= 16.0;
 				rx_symbol(z);
 				update_syncscope();
 				if (dcd && afcon)
 					afc();
 			}
-			pipeptr = (pipeptr + 1) % PipeLen;
 		}
 		if (!dcd && afcon)
 			findsignal();

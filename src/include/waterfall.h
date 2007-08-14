@@ -249,6 +249,8 @@ private:
 	void drawgrayWF();
 	void drawspectrum();
 	void drawsignal();
+friend
+	void evaluate(void *);	
 protected:
 public:
 	bool	wantcursor;
