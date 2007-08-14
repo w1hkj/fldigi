@@ -28,7 +28,8 @@
 #include "main.h"
 #include "fl_digi.h"
 #include "ascii.h"
-#include "rigCAT.h"
+//#include "rigio.h"
+//#include "rigMEM.h"
 #include "misc.h"
 //#include "modeIO.h"
 #include "configuration.h"
@@ -209,11 +210,10 @@ void trx_start_modem_loop()
 		active_modem->shutdown();
 
 	active_modem = trx_m;
-	active_modem->set_freq(wf->carrier());
 	active_modem->init();
-
+	int f = wf->Carrier();
+	active_modem->set_freq(f);
 	trx_state = STATE_RX;
-
 	wf->opmode();
 }
 

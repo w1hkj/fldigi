@@ -490,6 +490,20 @@ int WFdisp::checkMag()
 	return mag;
 }
 
+int WFdisp::setMag(int m)
+{
+	int mid = offset + (disp_width * step / 2);
+	mag = m;
+	checkMag();
+	if (centercarrier || Fl::event_shift()) {
+		offset = mid - (disp_width * step / 2);
+	}
+	else {
+		movetocenter();
+	}
+	return mag;
+}
+
 int WFdisp::wfmag() {
 	int mid = offset + (disp_width * step / 2);
 	if (mag == MAG_1) mag = MAG_2;
@@ -844,17 +858,17 @@ void qsy_cb(Fl_Widget *w, void *v) {
 void rate_cb(Fl_Widget *w, void *v) {
 	Fl::lock();
 	waterfall *wf = (waterfall *)w->parent();
-	WFdisp::WFspeed spd = wf->wfdisp->Speed();
-	if (spd == WFdisp::SLOW) {
+	WFspeed spd = wf->wfdisp->Speed();
+	if (spd == SLOW) {
 		wf->wfrate->label("NORM");
-		wf->wfdisp->Speed(WFdisp::NORMAL);
+		wf->wfdisp->Speed(NORMAL);
 	}
-	else if (spd == WFdisp::NORMAL) {
+	else if (spd == NORMAL) {
 		wf->wfrate->label("FAST");
-		wf->wfdisp->Speed(WFdisp::FAST);
+		wf->wfdisp->Speed(FAST);
 	} else {
 		wf->wfrate->label("SLOW");
-		wf->wfdisp->Speed(WFdisp::SLOW);
+		wf->wfdisp->Speed(SLOW);
 	}
 	Fl::unlock();
 	restoreFocus();
@@ -901,21 +915,21 @@ void mode_cb(Fl_Widget *w, void *v) {
 	Fl::lock();
 	waterfall *wf = (waterfall *)w->parent();
 	if (Fl::event_shift()) {
-		wf->wfdisp->Mode(WFdisp::SCOPE);
+		wf->wfdisp->Mode(SCOPE);
 		w->label("sig");
 		wf->x1->deactivate();
 		wf->bwclr->deactivate();
 		wf->wfcarrier->deactivate();
 		wf->wfRefLevel->deactivate();
 		wf->wfAmpSpan->deactivate();
-	} else if (wf->wfdisp->Mode() == WFdisp::WATERFALL) {
-		wf->wfdisp->Mode(WFdisp::SPECTRUM);
+	} else if (wf->wfdisp->Mode() == WATERFALL) {
+		wf->wfdisp->Mode(SPECTRUM);
 		w->label("fft");
-	} else if (wf->wfdisp->Mode() == WFdisp::SPECTRUM) {
-		wf->wfdisp->Mode(WFdisp::WATERFALL);
+	} else if (wf->wfdisp->Mode() == SPECTRUM) {
+		wf->wfdisp->Mode(WATERFALL);
 		w->label("Wtr");
 	} else {
-		wf->wfdisp->Mode(WFdisp::WATERFALL);
+		wf->wfdisp->Mode(WATERFALL);
 		w->label("Wtr");
 		wf->x1->activate();
 		wf->bwclr->activate();
@@ -976,7 +990,53 @@ void waterfall::carrier(int f) {
 	wfdisp->carrier(f);
 	Fl::lock();
 	wfcarrier->value(f);
+	wfcarrier->damage(FL_DAMAGE_ALL);
 	Fl::unlock();
+}
+
+int waterfall::Speed() { 
+	return (int)wfdisp->Speed();
+}
+
+void waterfall::Speed(int rate) { 
+	WFspeed spd = (WFspeed) rate;
+	Fl::lock();
+	if (spd == SLOW) {
+		wfdisp->Speed(spd);
+		wfrate->label("SLOW");
+	} else if (rate == FAST) {
+		wfdisp->Speed(spd);
+		wfrate->label("FAST");
+	} else {
+		wfdisp->Speed(NORMAL);
+		wfrate->label("NORM");
+	}
+	wfrate->redraw_label();
+	Fl::unlock();
+}
+
+int waterfall::Mag() {
+	return wfdisp->Mag();
+}
+
+void waterfall::Mag(int m) { 
+	Fl::lock();
+	wfdisp->Mag(m);
+	if (m == MAG_1) x1->label("x1");
+	if (m == MAG_2) x1->label("x2");
+	if (m == MAG_4) x1->label("x4");
+	x1->redraw_label();
+	Fl::unlock();
+}
+
+int waterfall::Carrier()
+{
+	return wfdisp->carrier();
+}
+
+void waterfall::Carrier(int f)
+{
+	active_modem->set_freq(f);
 }
 
 void waterfall::rfcarrier(long long cf) {
@@ -1154,7 +1214,6 @@ int waterfall::handle(int event) {
 			case FL_LEFT_MOUSE:
 				nucarrier = wfdisp->cursorFreq(xpos);
 				active_modem->set_freq(nucarrier);
-				carrier(nucarrier);
 				active_modem->set_sigsearch(5);
 				wfdisp->redrawCursor();
 				restoreFocus();
@@ -1173,7 +1232,6 @@ int waterfall::handle(int event) {
 			switch (Fl::event_button()) {
 			case FL_RIGHT_MOUSE:
 				active_modem->set_freq(oldcarrier);
-				carrier(oldcarrier);
 				active_modem->set_sigsearch(5);
 				wfdisp->redrawCursor();
 				restoreFocus();

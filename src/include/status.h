@@ -21,6 +21,12 @@ struct status {
 	bool	rigShown;
 	int		rigX;
 	int		rigY;
+	int		carrier;
+	int		mag;
+	int		speed;
+	double	reflevel;
+	double	ampspan;
+	
 public:
 	void saveModeState(trx_mode m);
 	void initLastState();

@@ -3,6 +3,7 @@
 
 #include "status.h"
 #include "configuration.h"
+#include "waterfall.h"
 
 #include "modem.h"
 #include "psk.h"
@@ -30,6 +31,11 @@ status progStatus = {
 	false,				// bool rigShown;
 	0,					// int rigX;
 	0,					// int rigY;
+	1000,				// int carrier;
+	1,					// int mag;
+	NORMAL,				// WFdisp::WFspeed
+	0,					// reflevel
+	-60					// ampspan
 };
 
 	
@@ -48,6 +54,12 @@ void status::saveLastState()
 	rigShown = false;
 	rigX = 0;
 	rigY = 0;
+	carrier = wf->Carrier();
+	mag = wf->Mag();
+	speed = wf->Speed();
+	reflevel = progdefaults.wfRefLevel;
+	ampspan = progdefaults.wfAmpSpan;
+	
 	if (rigcontrol)
 		if (rigcontrol->visible()) {
 			rigShown = rigcontrol->visible();
@@ -66,6 +78,11 @@ void status::saveLastState()
 	deffile << rigX << endl;
 	deffile << rigY << endl;
 	deffile << RxTextHeight << endl;
+	deffile << carrier << endl;
+	deffile << mag << endl;
+	deffile << speed << endl;
+	deffile << reflevel << endl;
+	deffile << ampspan << endl;	
 	deffile.close();
 }
 
@@ -84,7 +101,14 @@ void status::initLastState()
 		deffile >> rigX;
 		deffile >> rigY;
 		deffile >> RxTextHeight;
+		deffile >> carrier;
+		deffile >> mag;
+		deffile >> speed;
+		deffile >> reflevel;
+		deffile >> ampspan;
 		deffile.close();
+		progdefaults.wfRefLevel = reflevel;
+		progdefaults.wfAmpSpan = ampspan;
 	}
 	trx_mode m = (trx_mode) lastmode;
 	switch (m) {
@@ -120,13 +144,21 @@ void status::initLastState()
 		case MODE_BPSK31 : 
 		default: 				initPSK31();
 	}
-	while (!active_modem) MilliSleep(50);
-	if (lastmode == MODE_CW)
-		active_modem->set_freq(progdefaults.CWsweetspot);
-	else if (lastmode == MODE_RTTY)
-		active_modem->set_freq(progdefaults.RTTYsweetspot);
-	else 
-		active_modem->set_freq(progdefaults.PSKsweetspot);
+	while (!active_modem) MilliSleep(100);
+	wf->Carrier(carrier);
+	wf->opmode();
+	wf->Mag(mag);
+	wf->Speed(speed);
+	wf->setRefLevel();
+	wf->setAmpSpan();
+	wf->movetocenter();
+	
+//	if (lastmode == MODE_CW)
+//		active_modem->set_freq(progdefaults.CWsweetspot);
+//	else if (lastmode == MODE_RTTY)
+//		active_modem->set_freq(progdefaults.RTTYsweetspot);
+//	else 
+//		active_modem->set_freq(progdefaults.PSKsweetspot);
 
 	fl_digi_main->resize(mainX, mainY, mainW, mainH);
 

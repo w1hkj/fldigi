@@ -127,6 +127,18 @@ void arqchecks()
 			}
 		}
 	}
+	if (mailserver || mailclient) {
+		std::cout << "Starting pskmail transport layer" << std::endl; fflush(stdout);
+		string PskMailLogName = PskMailDir;
+
+		if (gmfskmail == true)
+			PskMailLogName += "gMFSK.log";
+		else
+			PskMailLogName += "mail-io.log";
+			
+		Maillogfile = new cLogfile(PskMailLogName.c_str());
+		Maillogfile->log_to_file_start();
+	}
 }
 
 int main(int argc, char ** argv) {
@@ -223,25 +235,11 @@ int main(int argc, char ** argv) {
 	trx_start(scDevice.c_str());
 
 	progdefaults.initInterface();
+	progStatus.initLastState();
+	
+	Fl::add_timeout(1.0, pskmail_loop);
 
 	fl_digi_main->show();
-
-	progStatus.initLastState();
-	wf->opmode();
-	
-	if (mailserver || mailclient) {
-		std::cout << "Starting pskmail transport layer" << std::endl; fflush(stdout);
-		string PskMailLogName = PskMailDir;
-
-		if (gmfskmail == true)
-			PskMailLogName += "gMFSK.log";
-		else
-			PskMailLogName += "mail-io.log";
-			
-		Maillogfile = new cLogfile(PskMailLogName.c_str());
-		Maillogfile->log_to_file_start();
-	}
-	Fl::add_timeout(1.0, pskmail_loop);
 
 	return Fl::run();
 }

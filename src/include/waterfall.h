@@ -86,8 +86,6 @@ struct RGBI {
 extern 	RGBI	mag2RGBI[256];
 extern	RGB		palette[9];
 
-class WFdisp : public Fl_Widget {
-public:
 enum WFmode {
 	WATERFALL,
 	SPECTRUM,
@@ -101,9 +99,14 @@ enum WFmode {
 enum WFspeed {FAST = 1, NORMAL = 2, SLOW = 8};
 //enum WFspeed {NORMAL = 2, SLOW = 8};
 
+class WFdisp : public Fl_Widget {
+public:
+
 	WFdisp (int x, int y, int w, int h, char *lbl = 0);
 	~WFdisp ();
 	int wfmag();
+	int setMag(int m);
+
 	void Mode(WFmode M) {
 		mode = M;
 	}
@@ -149,6 +152,9 @@ enum WFspeed {FAST = 1, NORMAL = 2, SLOW = 8};
 
 	WFspeed Speed() { return wfspeed;}
 	void Speed(WFspeed rate) { wfspeed = rate;}
+	
+	int Mag() { return mag;}
+	void Mag(int m) { setMag(m);}
 	
 	void initmaps();
 	void draw();
@@ -316,6 +322,13 @@ public:
 	{
 		return (wfdisp->powerDensity(f0,bw));
 	}
+
+	int Speed();
+	void Speed(int rate);
+	int Mag();
+	void Mag(int m);
+	int Carrier();
+	void Carrier(int f);
 
 	void movetocenter() { wfdisp->movetocenter();}
 	

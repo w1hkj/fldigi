@@ -46,7 +46,8 @@
 #ifndef NOHAMLIB
 	#include "hamlib.h"
 #endif
-#include "rigCAT.h"
+#include "rigio.h"
+#include "rigMEM.h"
 #include "psk.h"
 #include "cw.h"
 #include "mfsk.h"
@@ -191,11 +192,17 @@ void clean_exit() {
 		
 	progStatus.saveLastState();
 
+#ifndef NOHAMLIB
+	hamlib_close();
+#endif
+	rigCAT_close();
+	rigMEM_close();
+
 	mixer.closeMixer();
 	active_modem->set_stopflag(true);
 	while (trx_state != STATE_RX)
 		MilliSleep(100);
-
+		
 //	fl_lock (&trx_mutex);
 //	if (active_modem) {
 //		active_modem->shutdown();
@@ -1328,7 +1335,6 @@ void display_metric(double metric)
 
 void put_cwRcvWPM(double wpm)
 {
-//	if (!prgsCWrcvWPM) return;
 	int U = progdefaults.CWupperlimit;
 	int L = progdefaults.CWlowerlimit;
 	double dWPM = 100.0*(wpm - L)/(U - L);
