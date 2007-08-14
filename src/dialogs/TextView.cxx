@@ -468,7 +468,7 @@ void textview::drawmodify()
 // find the screen location for the character redraw
     size_t posidx = laststartidx;
     int posX = 0, posY = charheight - descent;
-    char c;
+    char c = 0;
     
 	fl_font(TextFont, TextSize);
 	while (posidx < modidx) {
@@ -483,7 +483,7 @@ void textview::drawmodify()
 	}
 // should now be pointing to the (x,y) screen location for the character
 	char cstr[] = "";
-    cstr[0] = c = buff[modidx];
+    cstr[0] = buff[modidx];
 // erase existing
     if ((attr[modidx] & 0x20) == 0x20)
         fl_color(FL_YELLOW);
@@ -1102,7 +1102,8 @@ int TextEdit::nextChar()
     modidx = xmtidx;
 	damage(4);
 	Fl::unlock();
-    Fl::awake();
+	Fl::flush();
+//    Fl::awake();
 	return (buff[xmtidx++]);
 }
 

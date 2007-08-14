@@ -110,6 +110,7 @@ Fl_Input			*inpRstOut;
 Fl_Input			*inpQth;
 Fl_Input			*inpLoc;
 Fl_Input			*inpNotes;
+Fl_Input			*inpAZ;	// WA5ZNU
 Fl_Button			*qsoTime;
 Fl_Button			*qsoClear;
 Fl_Button			*qsoSave;
@@ -832,6 +833,7 @@ void clearQSO()
 		inpRstOut->value("");
 		inpQth->value("");
 		inpLoc->value("");
+		inpAZ->value(""); // WA5ZNU
 		inpNotes->value("");
 	Fl::unlock();
 }
@@ -1137,13 +1139,19 @@ void create_fl_digi_main() {
 		Y += Hqsoframe;
 
 		Fl_Group *qsoFrame2 = new Fl_Group(0,Y, WNOM, Hnotes);
-			inpNotes = new Fl_Input(89 + 22, Y, WNOM - 89 - 44 - 22, Hnotes,"Notes:");
+
+			inpNotes = new Fl_Input(136, Y, WNOM - 136 - 44 - 120, Hnotes,"Notes:"); // WA5ZNU
 			inpNotes->align(FL_ALIGN_LEFT);
+			
 			cboBand  = new Fl_ComboBox(2, Y, 85, Hnotes, "");
 			cboBand->hide();
 			btnSideband = new Fl_Button(88, Y+1, 22, 22, "U");
 			btnSideband->callback(cb_btnSideband, 0);
 			btnSideband->hide();
+			
+			inpAZ = new Fl_Input(WNOM - 44 - 80, Y, 80, Hnotes, "AZ:"); // WA5ZNU
+			inpAZ->align(FL_ALIGN_LEFT);
+
 			qsoSave = new Fl_Button(WNOM - 42, Y + 1, 40, Hnotes- 2, "Save");
 			qsoSave->callback(qsoSave_cb, 0);
 			qsoFrame2->resizable(inpNotes);
@@ -1152,7 +1160,6 @@ void create_fl_digi_main() {
 		
 		int sw = 15;
 		Fl_Group *MixerFrame = new Fl_Group(0,Y,sw, Hrcvtxt + Hxmttxt);
-//			valRcvMixer = new Fl_Slider(0, Y, sw, (Hrcvtxt + Hxmttxt)/2 - 15, "R");
 			valRcvMixer = new Fl_Slider(0, Y, sw, (Htext)/2, "");
 			valRcvMixer->type(FL_VERT_NICE_SLIDER);
 			valRcvMixer->color(fl_rgb_color(0,110,30));
@@ -1160,7 +1167,6 @@ void create_fl_digi_main() {
 			valRcvMixer->selection_color(fl_rgb_color(255,255,0));
 			valRcvMixer->range(1.0,0.0);
 			valRcvMixer->callback( (Fl_Callback *)cb_RcvMixer);
-//			valXmtMixer = new Fl_Slider(0, Y + (Hrcvtxt + Hxmttxt)/2, sw, (Hrcvtxt + Hxmttxt)/2 - 15, "T");
 			valXmtMixer = new Fl_Slider(0, Y + (Htext)/2, sw, (Htext)/2, "");
 			valXmtMixer->type(FL_VERT_NICE_SLIDER);
 			valXmtMixer->color(fl_rgb_color(110,0,30));
@@ -1438,6 +1444,7 @@ void put_S2Nstatus(char *msg)
 
 void put_WARNstatus(double val)
 {
+	Fl::lock();
 	if (val < 0.05)
 		WARNstatus->color(FL_BLACK);
     if (val > 0.05)
@@ -1447,6 +1454,7 @@ void put_WARNstatus(double val)
     if (val > 0.98)
         WARNstatus->color(FL_DARK_RED);
 	WARNstatus->redraw();
+	Fl::unlock();
 }
 
 
@@ -1463,7 +1471,6 @@ void clear_StatusMessages()
 	StatusBar->label("");
 	S2Nstatus->label("");
 	IMDstatus->label("");
-//	WARNstatus->label("");
 	Fl::unlock();
 	Fl::awake();
 }

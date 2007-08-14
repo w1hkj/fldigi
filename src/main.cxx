@@ -147,9 +147,9 @@ int main(int argc, char ** argv) {
 	arqchecks();
 	
 	Fl::lock();  // start the gui thread!!	
-//	Fl::visual(FL_RGB); // insure 24 bit color operation
+	Fl::visual(FL_RGB); // insure 24 bit color operation
 	
-	Fl::visual(FL_DOUBLE|FL_INDEX|FL_RGB);
+//	Fl::visual(FL_DOUBLE|FL_INDEX| FL_RGB);
 	
 	fl_register_images();
 	Fl::set_fonts(0);

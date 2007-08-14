@@ -1013,6 +1013,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           { Fl_Check_Button* o = btnViewXmtSignal = new Fl_Check_Button(108, 105, 137, 20, "View Xmt Signal");
             o->down_box(FL_DOWN_BOX);
             o->callback((Fl_Callback*)cb_btnViewXmtSignal);
+            o->hide();
             o->value(progdefaults.viewXmtSignal);
           }
           { Fl_Counter* o = cntLowFreqCutoff = new Fl_Counter(280, 84, 94, 21, "Low Freq Cutoff");

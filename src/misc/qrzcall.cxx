@@ -35,6 +35,8 @@
 #include <sys/time.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#include <math.h>
+#include <ctype.h>
 
 #include <FL/fl_ask.H>
 
@@ -243,12 +245,72 @@ int getRecord()
     return 0;
 }
 
+// code submitted by WA5ZNU
+//#define MY_QRA ("CM87wk")
+int bearing(const char *, const char *);
+void qra(const char *, double &, double &);
+
+int bearing(const char *myqra, const char *dxqra) {
+	double	lat1, lat1r, lon1;
+	double	lat2, lat2r, lon2;
+	double	dlong, arg1, arg2a, arg2b, arg2, bearingr, bearing;
+	double	k=180.0/M_PI;
+
+	qra(dxqra, lat2, lon2);
+	qra(myqra, lat1, lon1);
+//std::cout << lat1 << " " << lon1 << std::endl << lat2 << " " << lon2 << std::endl; cout.flush();
+
+	lat1r=lat1/k;
+	lat2r=lat2/k;
+
+	dlong = lon2/k - lon1/k;
+
+	arg1 = sin(dlong) * cos(lat2r);
+	arg2a = cos(lat1r) * sin(lat2r);
+	arg2b = sin(lat1r) * cos(lat2r) * cos(dlong);
+	arg2 =  arg2a -  arg2b;
+	bearingr = atan2(arg1, arg2);
+
+	bearing = floor(0.5+fmod(360.0 + (bearingr * k), 360.0));
+	return (int)bearing;
+}
+
+    
+// code submitted by WA5ZNU
+void qra(const char *szqra, double &lat, double &lon) {
+	int c1 = toupper(szqra[0])-'A';
+	int c2 = toupper(szqra[1])-'A';
+	int c3 = szqra[2]-'0';
+	int c4 = szqra[3]-'0';
+	int c5, c6;
+	if (strlen(szqra) > 4) {
+    	c5 = toupper(szqra[4])-'A';
+    	c6 = toupper(szqra[5])-'A';
+		lat = (((c2 * 10.0) + c4 + ((c6 + 0.5)/24.0)) - 90.0);
+		lon = (((c1 * 20.0) + (c3 * 2.0) + ((c5 + 0.5) / 12.0)) - 180.0);
+	} else {
+		lat = (((c2 * 10.0) + c4 ) - 90.0);
+		lon = (((c1 * 20.0) + (c3 * 2.0)) - 180.0);
+	}
+}
+
 void QRZ_disp_result()
 {
 	Fl::lock();
 		inpName->value(qrzfname.c_str());
 		inpQth->value(qrzqth.c_str());
 		inpLoc->value(qrzgrid.c_str());
+// code provided by WA5ZNU
+		if (!progdefaults.myLocator.empty()) {
+			char buf[10];
+			buf[0] = '\0';
+			if (!qrzgrid.empty()) {
+				int b = bearing( progdefaults.myLocator.c_str(), qrzgrid.c_str() );
+				int br = (b + 180) % 360;
+				snprintf(buf, 256, "%03d / %03d", b, br);
+		  }
+		  inpAZ->value(buf);
+		}
 		inpNotes->value(qrznotes.c_str());
 	Fl::unlock();
 }

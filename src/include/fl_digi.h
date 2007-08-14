@@ -74,6 +74,7 @@ extern Fl_Input			*inpRstOut;
 extern Fl_Input			*inpQth;
 extern Fl_Input			*inpLoc;
 extern Fl_Input			*inpNotes;
+extern Fl_Input			*inpAZ;	// WA5ZNU
 extern Fl_Button		*qsoClear;
 extern Fl_Button		*qsoSave;
 extern Fl_Button		*btnMacroTimer;

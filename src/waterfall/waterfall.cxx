@@ -365,7 +365,7 @@ Fl::lock();
 		for (; sigy > ynext; sigy--) sig_img[sigpixel += IMAGE_WIDTH] = graylevel;
 		sig_img[sigpixel++] = graylevel;
 	}
-	inpFreq->redraw();
+//	inpFreq->redraw();
 	redraw();
 Fl::unlock();
 }
@@ -418,13 +418,11 @@ void WFdisp::sig_data( double *sig, int len ) {
 	}
 	
 	inpFreq->value(szFrequency);
-	inpFreq->redraw();
+	Fl::unlock();
+	Fl::awake();
 
 // signal level indicator
 	put_WARNstatus(peakaudio);
-
-	Fl::unlock();
-	Fl::awake();
 
 	return;
 }

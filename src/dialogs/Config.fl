@@ -168,14 +168,14 @@ progdefaults.changed = true;}
           Fl_Check_Button btnViewXmtSignal {
             label {View Xmt Signal}
             callback {progdefaults.viewXmtSignal=o->value();
-progdefaults.changed = true;}
-            xywh {108 105 137 20} down_box DOWN_BOX
+progdefaults.changed = true;} selected
+            xywh {108 105 137 20} down_box DOWN_BOX hide
             code0 {o->value(progdefaults.viewXmtSignal);}
           }
           Fl_Counter cntLowFreqCutoff {
             label {Low Freq Cutoff}
             callback {progdefaults.LowFreqCutoff=(int)(o->value());
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
             xywh {280 84 94 21} type Simple minimum 0 maximum 500 step 50 value 300
             code0 {o->value(progdefaults.LowFreqCutoff);}
           }
