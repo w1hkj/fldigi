@@ -80,7 +80,7 @@ static string adif;
 
 const char *ADIFHEADER = 
 "<ADIF_VERS:%d>%s\n\
-<PROGRAMID:7>fldigi\n\
+<PROGRAMID:%d>%s\n\
 <PROGRAMVERSION:%d>%s\n\
 <EOH>\n\n";
 
@@ -97,6 +97,7 @@ int writeadif () {
 			return 1;
 		fprintf (adiFile, ADIFHEADER,
 			strlen(ADIF_VERS), ADIF_VERS,
+			strlen(FLDIGI_NAME), FLDIGI_NAME,
 			strlen(FLDIGI_VERSION), FLDIGI_VERSION);
 		fclose(adiFile);
 	} else
@@ -156,7 +157,7 @@ int submit_log(void)
 	
 	Fl::lock();
 	log_msg = "";
-	log_msg = log_msg + "program:"	+ "fldigi v " + FLDIGI_VERSION + LOG_MSEPARATOR;
+	log_msg = log_msg + "program:"	+ FLDIGI_NAME + " v " + FLDIGI_VERSION + LOG_MSEPARATOR;
 	log_msg = log_msg + "version:"	+ LOG_MVERSION			+ LOG_MSEPARATOR;
 	log_msg = log_msg + "date:"		+ logdate				+ LOG_MSEPARATOR;
 	putadif(21, adifdate); 

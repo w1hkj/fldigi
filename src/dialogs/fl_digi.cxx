@@ -84,7 +84,6 @@ cMixer mixer;
 
 Fl_Button			*btnTune = (Fl_Button *)0;
 Fl_Tile				*TiledGroup = (Fl_Tile *)0;
-//Fl_Group				*TiledGroup = (Fl_Group *)0;
 TextView			*ReceiveText=(TextView *)0;
 TextEdit			*TransmitText=(TextEdit *)0;
 Fl_Text_Buffer		*rcvBuffer = (Fl_Text_Buffer *)0;
@@ -194,24 +193,23 @@ void clean_exit() {
 
 	mixer.closeMixer();
 	active_modem->set_stopflag(true);
-	MilliSleep(100);
+	while (trx_state != STATE_RX)
+		MilliSleep(100);
 
-	fl_lock (&trx_mutex);
-	if (active_modem) {
-		active_modem->shutdown();
-		delete active_modem;
-	}
-	active_modem = (modem *) 0;
-	fl_unlock (&trx_mutex);
+//	fl_lock (&trx_mutex);
+//	if (active_modem) {
+//		active_modem->shutdown();
+//		MilliSleep(100);
+//		delete active_modem;
+//	}
+//	active_modem = (modem *) 0;
+//	fl_unlock (&trx_mutex);
 
-#ifndef NOHAMLIB	
-	delete xcvr;
-#endif
-	delete push2talk;
+//#ifndef NOHAMLIB	
+//	delete xcvr;
+//#endif
+//	delete push2talk;
 	
-//	if (KeyLine)
-//		delete KeyLine;
-
 	exit(0);
 }
 
@@ -1140,12 +1138,12 @@ void create_fl_digi_main() {
 
 		Fl_Group *qsoFrame2 = new Fl_Group(0,Y, WNOM, Hnotes);
 
-			inpNotes = new Fl_Input(136, Y, WNOM - 136 - 44 - 120, Hnotes,"Notes:"); // WA5ZNU
+			inpNotes = new Fl_Input(136, Y, WNOM - 136 - 44 - 120, Hnotes,"Notes: ");
 			inpNotes->align(FL_ALIGN_LEFT);
 			
-			cboBand  = new Fl_ComboBox(2, Y, 85, Hnotes, "");
+			cboBand  = new Fl_ComboBox(2, Y, 110, Hnotes, "");
 			cboBand->hide();
-			btnSideband = new Fl_Button(88, Y+1, 22, 22, "U");
+			btnSideband = new Fl_Button(112, Y+1, Hnotes-2, Hnotes-2, "U");
 			btnSideband->callback(cb_btnSideband, 0);
 			btnSideband->hide();
 			

@@ -340,8 +340,8 @@ void psk::afc()
 	if (error > M_PI / 2)
 		error -= 2 * M_PI;
 	error *= ((samplerate / (symbollen * 2 * M_PI)/16));
-	if (fabs(error) < (bandwidth / 2.0)) {
-		freqerr = decayavg( freqerr, error, 32);
+	if (fabs(error) < bandwidth) {
+		freqerr = decayavg( freqerr, error, 8);
 		frequency -= freqerr;
 //		frequency -= error;
 		set_freq (frequency);

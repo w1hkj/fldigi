@@ -409,6 +409,7 @@ void textview::drawchars()
 	size_t startidx = string::npos;
 	size_t len = 0;
 	char c = 0;
+	int a = 0;
 	char cstr[] = " ";
   
 	if ((len = buff.length()) == 0) {
@@ -433,18 +434,19 @@ void textview::drawchars()
 	fl_push_clip( X, Y, W, H );
 
 	while (endidx < len) {
+		fl_color(FL_WHITE);
+		fl_rectf ( X + cursorX, Y + cursorY - charheight + descent, maxcharwidth, charheight);
 		c = buff[endidx];
+		a = attr[endidx];
 		if (c == '\n') {
 			cursorX = 0;
 			cursorY += charheight;
 		} else {
 			cstr[0] = c;
-            if ((attr[endidx] & 0x20) == 0x20)
+            if ((a & 0x20) == 0x20)
                 fl_color(FL_YELLOW);
             else
-                fl_color(FL_WHITE);
-            fl_rectf ( X + cursorX, Y + cursorY - charheight + descent, maxcharwidth, charheight);
-			fl_color (TextColor[(int)attr[endidx] & 0x0F]);
+				fl_color (TextColor[a & 0x0F]);
 			fl_draw ( cstr, 1, X + cursorX, Y + cursorY );
 			cursorX += (int)fl_width(c);
 		}

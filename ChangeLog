@@ -25,6 +25,7 @@ Change Log:
           ability to save and playback wav files (when fldigi is run as:
           fldigi TEST).
       16) Added Azimuth computation to QRZ query (submitted by WA5ZNU).
+      17) Corrected adif file header field <PROGRAMID:6>fldigi
 1.34  1) Cleaned up unused code segments
       2) Modified CW decoder to allow setting upper and lower limits on
          Tx WPM
