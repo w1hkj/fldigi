@@ -132,6 +132,13 @@ static void cb_btnViewXmtSignal(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Counter *cntLowFreqCutoff=(Fl_Counter *)0;
+
+static void cb_cntLowFreqCutoff(Fl_Counter* o, void*) {
+  progdefaults.LowFreqCutoff=(int)(o->value());
+progdefaults.changed = true;
+}
+
 colorbox *Palette=(colorbox *)0;
 
 static void cb_Palette(colorbox*, void*) {
@@ -960,7 +967,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { Fl_Group* o = tabWaterfall = new Fl_Group(0, 25, 400, 195, "W-fall");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
-        o->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 395, 45, "FFT Prefilter");
           o->box(FL_ENGRAVED_BOX);
           o->color((Fl_Color)51);
@@ -989,25 +995,34 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         }
         { Fl_Group* o = new Fl_Group(5, 80, 395, 49);
           o->box(FL_ENGRAVED_FRAME);
-          { Fl_Check_Button* o = btnUseCursorLines = new Fl_Check_Button(25, 85, 165, 20, "Use Cursor BW Lines");
+          { Fl_Check_Button* o = btnUseCursorLines = new Fl_Check_Button(10, 85, 100, 20, "Cursor BW");
             o->down_box(FL_DOWN_BOX);
             o->callback((Fl_Callback*)cb_btnUseCursorLines);
             o->value(progdefaults.UseCursorLines);
           }
-          { Fl_Check_Button* o = btnUseBWTracks = new Fl_Check_Button(25, 105, 165, 20, "Use BW Tracks");
+          { Fl_Check_Button* o = btnUseBWTracks = new Fl_Check_Button(10, 105, 100, 20, "BW Tracks");
             o->down_box(FL_DOWN_BOX);
             o->callback((Fl_Callback*)cb_btnUseBWTracks);
             o->value(progdefaults.UseBWTracks);
           }
-          { Fl_Check_Button* o = btnUseCursorCenterLine = new Fl_Check_Button(200, 84, 165, 20, "Use Cursor Center Line");
+          { Fl_Check_Button* o = btnUseCursorCenterLine = new Fl_Check_Button(108, 84, 137, 21, "Cursor Center");
             o->down_box(FL_DOWN_BOX);
             o->callback((Fl_Callback*)cb_btnUseCursorCenterLine);
             o->value(progdefaults.UseCursorCenterLine);
           }
-          { Fl_Check_Button* o = btnViewXmtSignal = new Fl_Check_Button(200, 105, 165, 20, "View Xmt Signal");
+          { Fl_Check_Button* o = btnViewXmtSignal = new Fl_Check_Button(108, 105, 137, 20, "View Xmt Signal");
             o->down_box(FL_DOWN_BOX);
             o->callback((Fl_Callback*)cb_btnViewXmtSignal);
             o->value(progdefaults.viewXmtSignal);
+          }
+          { Fl_Counter* o = cntLowFreqCutoff = new Fl_Counter(280, 84, 94, 21, "Low Freq Cutoff");
+            o->type(1);
+            o->minimum(0);
+            o->maximum(500);
+            o->step(50);
+            o->value(300);
+            o->callback((Fl_Callback*)cb_cntLowFreqCutoff);
+            o->value(progdefaults.LowFreqCutoff);
           }
           o->end();
         }
@@ -1065,6 +1080,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { Fl_Group* o = tabInterface = new Fl_Group(0, 25, 400, 195, "RigCtl");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
+        o->hide();
         { Fl_Group* o = new Fl_Group(10, 31, 185, 179, "Ptt");
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -1432,6 +1448,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 o->type(1);
                 o->minimum(2.5);
                 o->maximum(4);
+                o->step(0.1);
                 o->value(3);
                 o->callback((Fl_Callback*)cb_cntCWdash2dot);
                 o->align(FL_ALIGN_LEFT);
@@ -1441,6 +1458,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 o->type(1);
                 o->minimum(0);
                 o->maximum(15);
+                o->step(0.1);
                 o->value(4);
                 o->callback((Fl_Callback*)cb_cntCWrisetime);
                 o->align(FL_ALIGN_LEFT);
@@ -1505,6 +1523,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
               o->type(1);
               o->minimum(1);
               o->maximum(3);
+              o->step(0.1);
               o->value(2);
               o->callback((Fl_Callback*)cb_valDominoEX_BW);
               o->value(progdefaults.DOMINOEX_BW);

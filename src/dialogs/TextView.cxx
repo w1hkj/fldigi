@@ -325,8 +325,7 @@ void textview::drawall()
 	int line = 0;
 	size_t len = 0;
 	char c = 0;
-	char cstr[] = " ";
-  
+
 	fl_font(TextFont, TextSize);
 	charheight = fl_height();
 	maxcharwidth = (int)fl_width('X');
@@ -355,27 +354,47 @@ void textview::drawall()
 	
 	fl_push_clip( X, Y, W, H );
 
+	memset(cstr, 0, 1000);
+	int pos = 0;
+	int a;
+  
 	while(endidx < len) {
 		if (cursorY > H) 
 			break;
 		while (endidx < len ) {
 			c = buff[endidx];
+			a = attr[endidx];
 			if (c == '\n') {
 				cursorX = 0;
 				cursorY += charheight;
 				endidx++;
+				memset(cstr, 0, 1000);
+				pos = 0;
 				break;
 			}
-			cstr[0] = c;
-            if ((attr[endidx] & 0x20) == 0x20)
+			cstr[pos++] = c;
+            if ((a & 0x20) == 0x20) {
                 fl_color(FL_YELLOW);
-            else
-                fl_color(FL_WHITE);
-            fl_rectf ( X + cursorX, Y + cursorY - charheight + descent, maxcharwidth, charheight);
-			fl_color (TextColor[(int)attr[endidx] & 0x0F]);
-			fl_draw ( cstr, 1, X + cursorX, Y + cursorY );
-			cursorX += (int)fl_width(c);
-			endidx++;
+	            fl_rectf ( X + cursorX, Y + cursorY - charheight + descent, maxcharwidth, charheight);
+				fl_color (TextColor[(int)a & 0x0F]);
+				fl_draw ( cstr, 1, X + cursorX, Y + cursorY );
+				cursorX += (int)fl_width(c);
+				pos = 0;
+				endidx++;
+            } else {
+            	endidx++;
+            	c = buff[endidx];
+				while (endidx < len && c != '\n' && a == attr[endidx] && pos < 999) {
+					cstr[pos++] = c;
+					++endidx;
+					c = buff[endidx];
+				} 
+				fl_color (TextColor[(int)a & 0x0F]);
+				fl_draw ( cstr, X + cursorX, Y + cursorY );
+				cursorX += (int)fl_width(cstr);
+				memset(cstr, 0, 1000);
+				pos = 0;
+            }
 		}
 	}
 	laststartidx = startidx;
@@ -450,6 +469,8 @@ void textview::drawmodify()
     size_t posidx = laststartidx;
     int posX = 0, posY = charheight - descent;
     char c;
+    
+	fl_font(TextFont, TextSize);
 	while (posidx < modidx) {
 		c = buff[posidx];
 		if (c == '\n') {
@@ -587,7 +608,7 @@ void textview::add( char c, int attribute)
 	} else
 		damage(1);
 	Fl::unlock();
-	Fl::awake();
+//	Fl::awake();
 	
 	setScrollbar();
 }

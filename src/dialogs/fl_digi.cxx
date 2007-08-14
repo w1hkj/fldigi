@@ -93,7 +93,7 @@ Raster				*FHdisp;
 Fl_Box				*StatusBar = (Fl_Box *)0;
 Fl_Box				*IMDstatus = (Fl_Box *)0;
 Fl_Box				*S2Nstatus = (Fl_Box *)0;
-//Fl_Box				*WARNstatus = (Fl_Box *)0;
+Fl_Box				*WARNstatus = (Fl_Box *)0;
 Fl_Button			*MODEstatus = (Fl_Button *)0;
 Fl_Button 			*btnMacro[10];
 Fl_Button			*btnAltMacros;
@@ -127,8 +127,6 @@ waterfall			*wf = (waterfall *)0;
 Digiscope			*digiscope = (Digiscope *)0;
 Fl_Slider			*sldrSquelch = (Fl_Slider *)0;
 Fl_Progress			*pgrsSquelch = (Fl_Progress *)0;
-Fl_Progress		    *pgrsPeakaudio = (Fl_Progress *)0;
-
 
 Fl_RGB_Image		*feld_image = 0;
 
@@ -1273,42 +1271,14 @@ void create_fl_digi_main() {
 			StatusBar->box(FL_DOWN_BOX);
 			StatusBar->color(FL_BACKGROUND2_COLOR);
 			StatusBar->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
-            
-            Fl_Group *o = new Fl_Group( 
-                Wmode+Wimd+Ws2n+Wstatus, Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
-				Wpeakaudio, Hstatus, "");
-                Fl_Group *o2 = new Fl_Group(
-                    Wmode+Wimd+Ws2n+Wstatus, Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
-    				Wpeakaudio, Hstatus / 3, "");
-                    Fl_Box *b1 = new Fl_Box(
-                        Wmode+Wimd+Ws2n+Wstatus + 2, 
-                        Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
-				        9*Wpeakaudio/10 - 4, Hstatus / 3, "");
-                    b1->box(FL_FLAT_BOX);
-                    b1->color(FL_DARK_GREEN);
-                    Fl_Box *b2 = new Fl_Box(
-                        Wmode+Wimd+Ws2n+Wstatus + 9*Wpeakaudio/10 - 2, 
-                        Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
-				        Wpeakaudio/10, Hstatus / 3, "");
-                    b2->box(FL_FLAT_BOX);
-                    b2->color(FL_YELLOW);
-                o2->end();
 
-			    pgrsPeakaudio = new Fl_Progress(
-			    	Wmode+Wimd+Ws2n+Wstatus, Hmenu+Hrcvtxt+Hxmttxt+Hwfall + Hstatus / 3,
-			    	Wpeakaudio, Hstatus * 2 / 3, "");
-			    pgrsPeakaudio->color(FL_BACKGROUND2_COLOR, FL_DARK_GREEN);
-                pgrsPeakaudio->minimum(0.0);
-                pgrsPeakaudio->maximum(1.0);
-            o->end();
-
-//			WARNstatus = new Fl_Box(
-//                Wmode+Wimd+Ws2n+Wstatus+Wpeakaudio, Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
-//                Wwarn, Hstatus, "");
-//			WARNstatus->box(FL_DIAMOND_DOWN_BOX);
-//			WARNstatus->color(FL_BACKGROUND_COLOR);
-//			WARNstatus->labelcolor(FL_RED);
-//			WARNstatus->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE);
+			WARNstatus = new Fl_Box(
+                Wmode+Wimd+Ws2n+Wstatus, Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
+                Wwarn, Hstatus, "");
+			WARNstatus->box(FL_DIAMOND_DOWN_BOX);
+			WARNstatus->color(FL_BACKGROUND_COLOR);
+			WARNstatus->labelcolor(FL_RED);
+			WARNstatus->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE);
 
 			afconoff = new Fl_Light_Button(
 							WNOM - bwAfcOnOff - bwSqlOnOff, 
@@ -1466,29 +1436,17 @@ void put_S2Nstatus(char *msg)
 	Fl::awake();
 }
 
-void put_Peakaudio(double val)
-{
-    pgrsPeakaudio->value((float)val);
-    if (val < 0.9)
-        pgrsPeakaudio->color(FL_BACKGROUND2_COLOR, FL_DARK_GREEN);
-    else if (val < 0.98)
-        pgrsPeakaudio->color(FL_BACKGROUND2_COLOR, FL_YELLOW);
-    else
-        pgrsPeakaudio->color(FL_BACKGROUND2_COLOR, FL_DARK_RED);
-
-    pgrsPeakaudio->damage();
-}
-
 void put_WARNstatus(double val)
 {
-//	WARNstatus->color(FL_BACKGROUND_COLOR);
-//    if (val > 0.05)
-//        WARNstatus->color(FL_DARK_GREEN);
-//    if (val > 0.8)
-//        WARNstatus->color(FL_YELLOW);
-//    if (val > 0.9)
-//        WARNstatus->color(FL_DARK_RED);
-//	WARNstatus->damage();
+	if (val < 0.05)
+		WARNstatus->color(FL_BLACK);
+    if (val > 0.05)
+        WARNstatus->color(FL_DARK_GREEN);
+    if (val > 0.9)
+        WARNstatus->color(FL_YELLOW);
+    if (val > 0.98)
+        WARNstatus->color(FL_DARK_RED);
+	WARNstatus->redraw();
 }
 
 

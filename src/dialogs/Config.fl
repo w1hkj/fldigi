@@ -31,7 +31,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {fldigi - config} open
-    xywh {332 53 400 255} type Double color 45 selection_color 51 align 80 visible
+    xywh {434 71 400 255} type Double color 45 selection_color 51 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 405 220} color 47 selection_color 9
@@ -86,7 +86,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabWaterfall {
         label {W-fall} open
-        xywh {0 25 400 195} color 51 selection_color 51 hide
+        xywh {0 25 400 195} color 51 selection_color 51
       } {
         Fl_Group {} {
           label {FFT Prefilter} open
@@ -145,32 +145,39 @@ progdefaults.changed = true;}
           xywh {5 80 395 49} box ENGRAVED_FRAME
         } {
           Fl_Check_Button btnUseCursorLines {
-            label {Use Cursor BW Lines}
+            label {Cursor BW}
             callback {progdefaults.UseCursorLines = o->value();
 progdefaults.changed = true;}
-            xywh {25 85 165 20} down_box DOWN_BOX
+            xywh {10 85 100 20} down_box DOWN_BOX
             code0 {o->value(progdefaults.UseCursorLines);}
           }
           Fl_Check_Button btnUseBWTracks {
-            label {Use BW Tracks}
+            label {BW Tracks}
             callback {progdefaults.UseBWTracks = o->value();
 progdefaults.changed = true;}
-            xywh {25 105 165 20} down_box DOWN_BOX
+            xywh {10 105 100 20} down_box DOWN_BOX
             code0 {o->value(progdefaults.UseBWTracks);}
           }
           Fl_Check_Button btnUseCursorCenterLine {
-            label {Use Cursor Center Line}
+            label {Cursor Center}
             callback {progdefaults.UseCursorCenterLine = o->value();
 progdefaults.changed = true;}
-            xywh {200 84 165 20} down_box DOWN_BOX
+            xywh {108 84 137 21} down_box DOWN_BOX
             code0 {o->value(progdefaults.UseCursorCenterLine);}
           }
           Fl_Check_Button btnViewXmtSignal {
             label {View Xmt Signal}
             callback {progdefaults.viewXmtSignal=o->value();
 progdefaults.changed = true;}
-            xywh {200 105 165 20} down_box DOWN_BOX
+            xywh {108 105 137 20} down_box DOWN_BOX
             code0 {o->value(progdefaults.viewXmtSignal);}
+          }
+          Fl_Counter cntLowFreqCutoff {
+            label {Low Freq Cutoff}
+            callback {progdefaults.LowFreqCutoff=(int)(o->value());
+progdefaults.changed = true;} selected
+            xywh {280 84 94 21} type Simple minimum 0 maximum 500 step 50 value 300
+            code0 {o->value(progdefaults.LowFreqCutoff);}
           }
         }
         Fl_Group {} {open
@@ -245,7 +252,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabInterface {
         label RigCtl open
-        xywh {0 25 400 195} color 51 selection_color 51
+        xywh {0 25 400 195} color 51 selection_color 51 hide
       } {
         Fl_Group {} {
           label Ptt open
@@ -410,7 +417,7 @@ progdefaults.changed = true;}
           }
           Fl_Input inpRIGdev {
             label {Device:}
-            callback {progdefaults.changed = true;} selected
+            callback {progdefaults.changed = true;}
             tooltip {Enter /dev/ttyS0 for COM1} xywh {274 122 111 22} deactivate
           }
           Fl_Choice mnuBaudRate {
@@ -739,14 +746,14 @@ progdefaults.changed = true;}
                 label {Dash/Dot}
                 callback {progdefaults.CWdash2dot=o->value();
 progdefaults.changed = true;}
-                xywh {205 185 64 21} type Simple align 4 minimum 2.5 maximum 4 value 3
+                xywh {205 185 64 21} type Simple align 4 minimum 2.5 maximum 4 step 0.1 value 3
                 code0 {o->value(progdefaults.CWdash2dot);}
               }
               Fl_Counter cntCWrisetime {
                 label Edge
                 callback {progdefaults.CWrisetime=o->value();
 progdefaults.changed = true;}
-                xywh {325 185 65 21} type Simple align 4 minimum 0 maximum 15 value 4
+                xywh {325 185 65 21} type Simple align 4 minimum 0 maximum 15 step 0.1 value 4
                 code0 {o->value(progdefaults.CWrisetime);}
               }
               Fl_Counter cntCWdefWPM {
@@ -805,7 +812,7 @@ resetDOMEX();}
               label {BW factor:}
               callback {progdefaults.DOMINOEX_BW=o->value();
 progdefaults.changed = true;}
-              xywh {25 134 63 21} type Simple minimum 1 maximum 3 value 2
+              xywh {25 134 63 21} type Simple minimum 1 maximum 3 step 0.1 value 2
               code0 {o->value(progdefaults.DOMINOEX_BW);}
             }
           }

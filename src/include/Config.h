@@ -31,6 +31,8 @@ extern Fl_Check_Button *btnUseCursorLines;
 extern Fl_Check_Button *btnUseBWTracks;
 extern Fl_Check_Button *btnUseCursorCenterLine;
 extern Fl_Check_Button *btnViewXmtSignal;
+#include <FL/Fl_Counter.H>
+extern Fl_Counter *cntLowFreqCutoff;
 #include "colorbox.h"
 extern colorbox *Palette;
 #include <FL/Fl_Button.H>
@@ -89,7 +91,6 @@ extern Fl_Group *tabModems;
 extern Fl_Tabs *tabsModems;
 extern Fl_Group *tabCW;
 extern Fl_Value_Slider *sldrCWbandwidth;
-#include <FL/Fl_Counter.H>
 extern Fl_Counter *cntCWrange;
 extern Fl_Check_Button *btnCWrcvTrack;
 #include <FL/Fl_Value_Output.H>

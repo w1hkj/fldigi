@@ -16,6 +16,7 @@ struct configuration {
 	double 	squelch;
 	double	wfRefLevel;
 	double	wfAmpSpan;
+	int		LowFreqCutoff;
 	double	CWsweetspot;
 	double	RTTYsweetspot;
 	double	PSKsweetspot;

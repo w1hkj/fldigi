@@ -74,7 +74,6 @@
 #define Hnotes		22
 #define Hstatus		22
 #define Hmacros		22
-#define Hpeakaudio  14
 
 #define Htext		(HNOM - 4 - Hwfall - Hmenu - Hstatus - Hmacros - Hqsoframe - Hnotes)
 // Htext = HNOM - 140 - Hwfall
@@ -86,12 +85,10 @@
 #define Ws2n  		100
 #define Wimd  		100
 #define Wwarn 		16
-#define Wpeakaudio  100
 #define bwAfcOnOff	(Hwfall -22)/2
 #define bwSqlOnOff	(Hwfall -22)/2
 
-//#define Wstatus (WNOM - Wmode - Ws2n - Wimd - Wpeakaudio - bwAfcOnOff - bwSqlOnOff - Wwarn)
-#define Wstatus (WNOM - Wmode - Ws2n - Wimd - Wpeakaudio - bwAfcOnOff - bwSqlOnOff)
+#define Wstatus (WNOM - Wmode - Ws2n - Wimd - bwAfcOnOff - bwSqlOnOff - Wwarn)
 
 //remove the comment delimiter to enable experimental psk250 and qpsk250 modes
 

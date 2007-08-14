@@ -88,6 +88,7 @@ protected:
 	Fl_Font		TextFont;
 	Fl_Color	TextColor[16];
 	int			TextSize;
+	char		cstr[1000];
 public:
 
 	textview( int x, int y, int w, int h, const char *label = 0 );

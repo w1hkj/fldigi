@@ -98,7 +98,8 @@ enum WFmode {
 #define MAG_2 2
 #define MAG_4 3
 
-enum WFspeed {FAST = 1, NORMAL = 2, SLOW = 4};
+enum WFspeed {FAST = 1, NORMAL = 2, SLOW = 8};
+//enum WFspeed {NORMAL = 2, SLOW = 8};
 
 	WFdisp (int x, int y, int w, int h, char *lbl = 0);
 	~WFdisp ();

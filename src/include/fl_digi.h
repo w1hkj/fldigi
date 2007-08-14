@@ -79,7 +79,6 @@ extern Fl_Button		*qsoSave;
 extern Fl_Button		*btnMacroTimer;
 extern Fl_Slider		*valRcvMixer;
 extern Fl_Slider		*valXmtMixer;
-extern Fl_Progress		*pgrsPeakaudio;
 
 extern bool				altMacros;
 
@@ -113,7 +112,6 @@ extern void put_IMDstatus(char *msg);
 #define put_Status2(szS) put_IMDstatus(szS)
 
 extern void put_WARNstatus(double);
-extern void put_Peakaudio(double);
 
 extern void put_rx_data(int *data, int len);
 extern char get_tx_char();

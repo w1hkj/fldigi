@@ -306,17 +306,11 @@ void WFdisp::processFFT() {
 	double scale;
 
 	scale = (double)SC_SMPLRATE / active_modem->get_samplerate();
-//	scale *= 2.048;// FFT_LEN = 4096 for the ratio of scrate to fftlen
-//    scale *= 1.024; // FFT_LEN = 2048
     scale *= FFT_LEN / 2000.0;
 
 	if (dispcnt == 0) {
-//        memset(fftout, 0, FFT_LEN * 2 * sizeof(double));
-
-//        memcpy(fftout, circbuff, FFT_LEN * sizeof(double));
         for (int i = 0; i < FFT_LEN*2; i++)
             fftout[i] = fftwindow[i] * circbuff[i];
-//        memcpy(fftout, circbuff, FFT_LEN * 2 * sizeof(double));
 		wfft->rdft(fftout);
 Fl::lock();		
 		memmove(
@@ -329,11 +323,17 @@ Fl::lock();
 			(void*)fft_db,
 			(IMAGE_WIDTH * (image_height - 1)) * sizeof(short int));
 
+		double pw;
+		int ffth;
 		for (int i = 0; i < IMAGE_WIDTH; i++) {
 			n = 2*(int)((scale * i / 2 + 0.5));
-			pwr[i] = fftout[n]*fftout[n];
-			fft_hist[i] = (int)(10.0 * log10(pwr[i] + 1e-10) );
-			fft_db[i] = log2disp(fft_hist[i]);
+			if (i <= progdefaults.LowFreqCutoff)
+				pw = 0.0;
+			else
+				pw = fftout[n]*fftout[n];
+			pwr[i] = pw;
+			ffth = fft_hist[i] = (int)(10.0 * log10(pw + 1e-10) );
+			fft_db[i] = log2disp(ffth);
 		}
 Fl::unlock();
 	}
@@ -341,12 +341,10 @@ Fl::unlock();
 Fl::lock();
 		redraw();
 Fl::unlock();
-//Fl::awake();
 		cursormoved = false;
 	}
 	if (dispcnt == 0)
 		dispcnt = wfspeed * (srate > 8000 ? 2 : 1);
-//        dispcnt = FFT_LEN / SCBLOCKSIZE;
 	--dispcnt;
 }
 
@@ -370,8 +368,6 @@ Fl::lock();
 	inpFreq->redraw();
 	redraw();
 Fl::unlock();
-//	redraw();
-//Fl::awake();
 }
 
 void WFdisp::redrawCursor()
@@ -397,8 +393,7 @@ void WFdisp::sig_data( double *sig, int len ) {
 	for (i = movedbls, j = 0; j < len; i++, j++) {
         overval = fabs(circbuff[i] = sig[j]);
         if (overval > peak) peak = overval;
-        peakaudio = 0.2 * peak + 0.8 * peakaudio;
-//        if (peakaudio > 0.99) overload = true;
+        peakaudio = 0.05 * peak + 0.95 * peakaudio;
     }
 
 	static char szFrequency[14];
@@ -411,7 +406,6 @@ void WFdisp::sig_data( double *sig, int len ) {
 	Fl::lock();
 	if (usebands)
 		rfc = (long long)(atof(cboBand->value()) * 1000.0);
-
 	if (rfc) {
 		if (usb)
 			dfreq = rfc + active_modem->get_txfreq();
@@ -427,8 +421,7 @@ void WFdisp::sig_data( double *sig, int len ) {
 	inpFreq->redraw();
 
 // signal level indicator
-//	put_WARNstatus(peakaudio);
-    put_Peakaudio(peakaudio);
+	put_WARNstatus(peakaudio);
 
 	Fl::unlock();
 	Fl::awake();

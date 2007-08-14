@@ -19,6 +19,7 @@ configuration progdefaults = {
 	25.0,			// double 	squelch;
 	-10.0,			// double	wfRefLevel;
 	40.0,			// double	wfAmpSpan;
+	300,			// int		LowFreqCutoff;
 	1000,			// int		CWsweetspot;
 	1000,			// int		RTTYsweetspot;
 	1000,			// int		PSKsweetspot;
@@ -203,6 +204,7 @@ void configuration::writeDefaultsXML()
 	writeXMLdbl(f, "SQUELCH", squelch);
 	writeXMLdbl(f, "WFREFLEVEL", wfRefLevel);
 	writeXMLdbl(f, "WFAMPSPAN", wfAmpSpan);
+	writeXMLint(f, "LOWFREQCUTOFF", LowFreqCutoff);
 	writeXMLint(f, "FONT", Fontnbr);
 	writeXMLint(f, "FONTSIZE", FontSize);
 	writeXMLint(f, "FONTCOLOR", FontColor);
@@ -421,6 +423,7 @@ void configuration::writeDefaults(ofstream &f)
 	f << btnAudioIOis << endl;
 	f << OSSdevice << endl;
 	f << PAdevice << endl;
+	f << LowFreqCutoff << endl;
 }
 
 void configuration::readDefaults(ifstream &f)
@@ -538,6 +541,7 @@ void configuration::readDefaults(ifstream &f)
 	f >> btnAudioIOis;
 	f >> OSSdevice;
 	getline(f >> ws, PAdevice);
+	f >> LowFreqCutoff;
 }
 
 void configuration::loadDefaults() {
@@ -957,6 +961,7 @@ void configuration::initInterface() {
 	}
 	wf->setRefLevel();
 	wf->setAmpSpan();
+	cntLowFreqCutoff->value(LowFreqCutoff);
 		
 }
 
