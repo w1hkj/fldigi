@@ -88,14 +88,14 @@ void trx_trx_receive_loop()
 		}
 		active_modem->rx_init();
 
-		while (trx_state == STATE_RX) {
+		while (1) {
 			numread = scard->Read(_trx_scdbl, SCBLOCKSIZE);
-			if (numread != -1) {
-				if (trx_state == STATE_RX)
-					wf->sig_data(_trx_scdbl, numread);
-				if (trx_state == STATE_RX)
-					active_modem->rx_process(_trx_scdbl, numread);
-			}
+			if (numread == -1 || (trx_state != STATE_RX))
+                break;
+            if (numread > 0) {
+    			active_modem->rx_process(_trx_scdbl, numread);
+    			wf->sig_data(_trx_scdbl, numread);
+            }
 		}
 		scard->Close();
 	} else

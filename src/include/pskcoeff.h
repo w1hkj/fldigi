@@ -8,6 +8,6 @@ extern double gmfir2c[FIRLEN];
 extern double syncfilt[16];
 
 extern void raisedcosfilt(double *);
-extern void wsincfilt(double *, double fc);
+extern void wsincfilt(double *, double fc, bool blackman);
 
 #endif

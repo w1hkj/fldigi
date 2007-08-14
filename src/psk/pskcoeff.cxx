@@ -185,10 +185,9 @@ void raisedcosfilt(double *firc)
 		firc[i] = (1.0 - cos(M_PI * i / 32.0))/128.0;
 }
 
-void wsincfilt(double *firc, double fc)
+void wsincfilt(double *firc, double fc, bool blackman)
 {
 	double normalize = 0;
-	bool useblackman = 1;
 // sin(x-tau)/(x-tau)	
 	for (int i = 0; i < 64; i++)
 		if (i == 32)
@@ -196,7 +195,7 @@ void wsincfilt(double *firc, double fc)
 		else
 			firc[i] = sin(2*M_PI*fc*(i - 32))/(i-32);
 // blackman window
-	if (useblackman)
+	if (blackman)
 		for (int i = 0; i < 64; i++)
 			firc[i] = firc[i] * (0.42 - 0.5 * cos(2*M_PI*i/64) + 0.08 * cos(4*M_PI*i/64));
 // hamming window

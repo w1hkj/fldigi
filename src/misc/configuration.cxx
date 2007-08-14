@@ -663,7 +663,18 @@ int configuration::openDefaults() {
 				btnPTT[i]->value(0);
 			btnPTT[btnPTTis]->value(1);
 #ifdef NOHAMLIB
-			btnPTT[1]->hide();
+			btnPTT[1]->deactivate();
+			chkUSEHAMLIB->deactivate();
+            inpRIGdev->hide();
+            mnuBaudRate->hide();
+            cboHamlibRig->hide();
+#else
+            btnPTT[1]->activate();
+			chkUSEHAMLIB->activate();
+            inpRIGdev->show();
+            mnuBaudRate->show();
+            cboHamlibRig->show();
+			cboHamlibRig->value(HamRigName.c_str());
 #endif
 			btnRTSptt->value(RTSptt);
 			btnDTRptt->value(DTRptt);
@@ -674,32 +685,31 @@ int configuration::openDefaults() {
 
 			if(chkUSEMEMMAPis) {
 				chkUSEMEMMAP->value(1);
-#ifndef NOHAMLIB
 				chkUSEHAMLIB->value(0);
-#endif
 				chkUSERIGCAT->value(0);
+                cboHamlibRig->deactivate();
+                inpRIGdev->deactivate();
+                mnuBaudRate->deactivate();
 			} else if (chkUSEHAMLIBis) {
 				chkUSEMEMMAP->value(0);
-#ifndef NOHAMLIB
-				chkUSEHAMLIB->value(1);
-#endif				
 				chkUSERIGCAT->value(0);
+				chkUSEHAMLIB->value(1);
+                cboHamlibRig->activate();
+                inpRIGdev->activate();
+                mnuBaudRate->activate();
 			} else if (chkUSERIGCATis) {
 				chkUSEMEMMAP->value(0);
 				chkUSEHAMLIB->value(0);
 				chkUSERIGCAT->value(1);
+                cboHamlibRig->deactivate();
+                inpRIGdev->deactivate();
+                mnuBaudRate->deactivate();
 			} else {
 				chkUSEMEMMAP->value(0);
-#ifndef NOHAMLIB
 				chkUSEHAMLIB->value(0);
 				chkUSERIGCAT->value(0);
-#endif				
 			}
-#ifndef NOHAMLIB
-			cboHamlibRig->value(HamRigName.c_str());
-#else
-			chkUSEHAMLIB->hide();
-#endif
+
 			inpRIGdev->value(HamRigDevice.c_str());
 			mnuBaudRate->value(HamRigBaudrate);
 

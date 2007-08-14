@@ -22,7 +22,7 @@
 //
 
 
-#define USE_BLACKMAN
+//#define USE_BLACKMAN
 //#define USE_HAMMING
 //#define USE_HANNING
 
@@ -70,31 +70,29 @@ WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 	disp_width = w();
 	if (disp_width > IMAGE_WIDTH/4)
 		disp_width = IMAGE_WIDTH/4;
-	image_width = IMAGE_WIDTH;
-	scale_width = image_width + 1000;
+	scale_width = IMAGE_WIDTH + 1000;
 	image_height = h() - WFTEXT - WFSCALE - WFMARKER;
-	image_area = image_width * image_height;
-	sig_image_area = image_width * h();
+    image_area      = IMAGE_WIDTH * image_height;
+    sig_image_area  = IMAGE_WIDTH * h();
 	RGBsize			= sizeof(RGB);
-	RGBwidth		= RGBsize * image_width;
+	RGBwidth		= RGBsize * IMAGE_WIDTH;
 	fft_img			= new RGBI[image_area];
-	markerimage		= new RGB[image_width * WFMARKER];
+	markerimage		= new RGB[IMAGE_WIDTH * WFMARKER];
 	scaleimage		= new uchar[scale_width * WFSCALE];
 	scline			= new uchar[scale_width];
 	fft_sig_img 	= new uchar[image_area];
 	sig_img			= new uchar[sig_image_area];
-	pwr				= new double[image_width];
-	fft_hist		= new short int[FFT_LEN * image_height];
-	fft_db			= new short int[FFT_LEN * image_height];
+	pwr				= new double[IMAGE_WIDTH];
+	fft_hist		= new short int[image_area];
+	fft_db			= new short int[image_area];
 	circbuff		= new double[FFT_LEN * 2];
 	fftout			= new double[FFT_LEN * 2];
 	wfft			= new Cfft(FFT_LEN);
+    fftwindow       = new double[FFT_LEN * 2];
 	setPrefilter(progdefaults.wfPreFilter);
 	
 	for (int i = 0; i < FFT_LEN*2; i++)
 		circbuff[i] = fftout[i] = 0.0;
-	for (int i = 0; i < FFT_LEN * image_height; i++)
-		fft_hist[i] = fft_db[i] = 0;
 
 	mag = 1;
 	step = 4;
@@ -110,6 +108,7 @@ WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 	mode = WATERFALL;
 	centercarrier = false;
 	overload = false;
+    peakaudio = 0.0;
 	rfc = 0L;
 	usb = true;
 	wfspeed = NORMAL;
@@ -119,7 +118,7 @@ WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 	wantcursor = false;
 	cursormoved = false;
 	usebands = false;
-	for (int i = 0; i < image_width; i++)
+	for (int i = 0; i < IMAGE_WIDTH; i++)
 		pwr[i] = 0.0;
 
 	carrier(1000);
@@ -147,15 +146,15 @@ void WFdisp::initMarkers() {
 
 void WFdisp::makeMarker() {
 	RGB *clrMin, *clrMax, *clrM, *clrPos;
-	clrMin = markerimage + image_width;
-	clrMax = clrMin + (WFMARKER - 2) * image_width;
+	clrMin = markerimage + IMAGE_WIDTH;
+	clrMax = clrMin + (WFMARKER - 2) * IMAGE_WIDTH;
 	memset(clrMin, 0, RGBwidth * (WFMARKER - 2));
 	
 	clrM = clrMin + (int)((double)carrierfreq + 0.5);
 	int bw = (int)((double) bandwidth / 2.0) + 1;
 	for (int y = 0; y < WFMARKER - 2; y++) 
 		for (int i = -bw; i <= bw ; i++) {
-			clrPos = clrM + i + y * image_width;
+			clrPos = clrM + i + y * IMAGE_WIDTH;
 			if (clrPos > clrMin && clrPos < clrMax)
 				*clrPos = RGBmarker;
 		}
@@ -163,18 +162,18 @@ void WFdisp::makeMarker() {
 	
 	if (cursorpos > disp_width - bandwidth / 2 / step)
 		cursorpos = disp_width - bandwidth / 2 / step;
-	if (cursorpos >= (image_width - offset - bandwidth/2)/step)
-		cursorpos = (image_width - offset - bandwidth/2)/step - 1;
+	if (cursorpos >= (IMAGE_WIDTH - offset - bandwidth/2)/step)
+		cursorpos = (IMAGE_WIDTH - offset - bandwidth/2)/step - 1;
 	if (cursorpos < bandwidth / 2 / step)
 		cursorpos = bandwidth / 2 / step + 1;
 	
 // Create the cursor marker
 	double xp = offset + step * cursorpos;
-	if (xp < bandwidth / 2.0 || xp > (image_width - bandwidth / 2.0))
+	if (xp < bandwidth / 2.0 || xp > (IMAGE_WIDTH - bandwidth / 2.0))
 		return;
-	clrM = markerimage + image_width + (int)(xp + 0.5);
+	clrM = markerimage + IMAGE_WIDTH + (int)(xp + 0.5);
 	for (int y = 0; y < WFMARKER - 2; y++) {
-		int incr = y * image_width;
+		int incr = y * IMAGE_WIDTH;
 		int msize = (WFMARKER - 2 - y)*RGBsize*step/4;
 		*(clrM + incr - 1)	= 
 		*(clrM + incr) 		= 
@@ -238,13 +237,12 @@ void WFdisp::setcolors() {
 
 
 void WFdisp::initmaps() {
-	
 	for (int i = 0; i < image_area; i++) fft_hist[i] = -1000;
 	for (int i = 0; i < image_area; i++) fft_db[i] = log2disp(-1000);
-	
+
 	memset (fft_img, 0, image_area * sizeof(RGBI) );
 	memset (scaleimage, 0, scale_width * WFSCALE);
-	memset (markerimage, 0, image_width * WFMARKER);
+	memset (markerimage, 0, IMAGE_WIDTH * WFMARKER);
 	memset (fft_sig_img, 0, image_area);
 	memset (sig_img, 0, sig_image_area);
 	
@@ -260,7 +258,7 @@ int WFdisp::peakFreq(int f0, int delta)
 	int f1, fmin =	(int)((f0 - delta)), 
 		f2, fmax =	(int)((f0 + delta));
 	f1 = fmin; f2 = fmax;
-	if (fmin < 0 || fmax > image_width) return f0;
+	if (fmin < 0 || fmax > IMAGE_WIDTH) return f0;
 	for (int f = fmin; f <= fmax; f++)
 		avg += pwr[f];
 	avg /= 2*(delta + 1);
@@ -280,7 +278,7 @@ double WFdisp::powerDensity(double f0, double bw)
 	double pwrdensity = 0.0;
 	int flower = (int)((f0 - bw/2)),
 		fupper = (int)((f0 + bw/2));
-	if (flower < 0 || fupper > image_width) 
+	if (flower < 0 || fupper > IMAGE_WIDTH) 
 		return 0.0;
 	for (int i = flower; i <= fupper; i++)
 		pwrdensity += pwr[i];
@@ -307,27 +305,32 @@ void WFdisp::processFFT() {
 	int		n;
 	double scale;
 
-	scale = (double)SC_SMPLRATE * 2.0 / active_modem->get_samplerate();
-	scale *= 1.024; // for the ratio of scrate to fftlen
+	scale = (double)SC_SMPLRATE / active_modem->get_samplerate();
+//	scale *= 2.048;// FFT_LEN = 4096 for the ratio of scrate to fftlen
+//    scale *= 1.024; // FFT_LEN = 2048
+    scale *= FFT_LEN / 2000.0;
 
 	if (dispcnt == 0) {
-		memset(fftout, 0, FFT_LEN*2*sizeof(double));
-		for (int i = 0; i < FFT_LEN * 2; i++)
-			fftout[i] = circbuff[i];
+//        memset(fftout, 0, FFT_LEN * 2 * sizeof(double));
+
+//        memcpy(fftout, circbuff, FFT_LEN * sizeof(double));
+        for (int i = 0; i < FFT_LEN*2; i++)
+            fftout[i] = fftwindow[i] * circbuff[i];
+//        memcpy(fftout, circbuff, FFT_LEN * 2 * sizeof(double));
 		wfft->rdft(fftout);
 Fl::lock();		
 		memmove(
-			(void*)(fft_hist + image_width), 
+			(void*)(fft_hist + IMAGE_WIDTH), 
 			(void*)fft_hist, 
-			(image_width * (image_height - 1)) * sizeof(short int));
+			(IMAGE_WIDTH * (image_height - 1)) * sizeof(short int));
 			
 		memmove(
-			(void*)(fft_db + image_width),
+			(void*)(fft_db + IMAGE_WIDTH),
 			(void*)fft_db,
-			(image_width * (image_height - 1)) * sizeof(short int));
+			(IMAGE_WIDTH * (image_height - 1)) * sizeof(short int));
 
-		for (int i = 0; i < image_width; i++) {
-			n = 2*(int)((scale * i / 2));
+		for (int i = 0; i < IMAGE_WIDTH; i++) {
+			n = 2*(int)((scale * i / 2 + 0.5));
 			pwr[i] = fftout[n]*fftout[n];
 			fft_hist[i] = (int)(10.0 * log10(pwr[i] + 1e-10) );
 			fft_db[i] = log2disp(fft_hist[i]);
@@ -343,24 +346,25 @@ Fl::unlock();
 	}
 	if (dispcnt == 0)
 		dispcnt = wfspeed * (srate > 8000 ? 2 : 1);
+//        dispcnt = FFT_LEN / SCBLOCKSIZE;
 	--dispcnt;
 }
 
 void WFdisp::process_analog (double *sig, int len) {
 	int h2, sigw, sigy, sigpixel, ynext, graylevel;
 	h2 = h()/2 - 1;
-	sigw = image_width;
+	sigw = IMAGE_WIDTH;
 	graylevel = 220;
 // clear the signal display area
 	sigy = 0;
-	sigpixel = image_width*h2;
+	sigpixel = IMAGE_WIDTH*h2;
 Fl::lock();
 	memset (sig_img, 0, sig_image_area);
-	memset (&sig_img[h2*image_width], 255, image_width);
-	for (int c = 0; c < image_width; c++) {
+	memset (&sig_img[h2*IMAGE_WIDTH], 255, IMAGE_WIDTH);
+	for (int c = 0; c < IMAGE_WIDTH; c++) {
 		ynext = (int)(h2 * sig[c]);
-		for (; sigy < ynext; sigy++) sig_img[sigpixel -= image_width] = graylevel;
-		for (; sigy > ynext; sigy--) sig_img[sigpixel += image_width] = graylevel;
+		for (; sigy < ynext; sigy++) sig_img[sigpixel -= IMAGE_WIDTH] = graylevel;
+		for (; sigy > ynext; sigy--) sig_img[sigpixel += IMAGE_WIDTH] = graylevel;
 		sig_img[sigpixel++] = graylevel;
 	}
 	inpFreq->redraw();
@@ -373,46 +377,6 @@ Fl::unlock();
 void WFdisp::redrawCursor()
 {
 	cursormoved = true;
-}
-
-bool evaluating = false;
-
-void evaluate(void *who)
-{
-	WFdisp *me = (WFdisp *)who;
-	
-	if (evaluating) return;
-	evaluating = true;
-	
-	static char szFrequency[14];
-	
-	if (me->mode == me->SCOPE)
-		me->process_analog(me->circbuff, FFT_LEN * 2);
-
-	me->processFFT();
-
-	Fl::lock();
-	if (me->usebands)
-		me->rfc = (long long)(atof(cboBand->value()) * 1000.0);
-
-	if (me->rfc) {
-		if (me->usb)
-			me->dfreq = me->rfc + active_modem->get_txfreq();
-		else	
-			me->dfreq = me->rfc - active_modem->get_txfreq();
-		sprintf(szFrequency, "%-.3f", me->dfreq / 1000.0);
-	} else {
-		me->dfreq = active_modem->get_txfreq();
-		sprintf(szFrequency, "%-.0f", me->dfreq);
-	}
-	
-	inpFreq->value(szFrequency);
-	inpFreq->redraw();
-	Fl::unlock();
-	put_WARNstatus(me->overload);
-	
-	Fl::awake();
-	evaluating = false;
 }
 
 void WFdisp::sig_data( double *sig, int len ) {
@@ -429,28 +393,63 @@ void WFdisp::sig_data( double *sig, int len ) {
 		memmove(circbuff, pcircbuff1, movesize);
 	overload = false;
 	int i, j;
-	for (i = movedbls, j = 0; j < len; i++, j++)
-		if (fabs(circbuff[i] = sig[j]) > 0.9)
-			overload = true;
+    double overval, peak = 0.0;
+	for (i = movedbls, j = 0; j < len; i++, j++) {
+        overval = fabs(circbuff[i] = sig[j]);
+        if (overval > peak) peak = overval;
+        peakaudio = 0.2 * peak + 0.8 * peakaudio;
+//        if (peakaudio > 0.99) overload = true;
+    }
+
+	static char szFrequency[14];
 	
-	Fl::add_timeout(0.05, evaluate, this);
+	if (mode == SCOPE)
+		process_analog(circbuff, FFT_LEN * 2);
+
+	processFFT();
+
+	Fl::lock();
+	if (usebands)
+		rfc = (long long)(atof(cboBand->value()) * 1000.0);
+
+	if (rfc) {
+		if (usb)
+			dfreq = rfc + active_modem->get_txfreq();
+		else	
+			dfreq = rfc - active_modem->get_txfreq();
+		sprintf(szFrequency, "%-.3f", dfreq / 1000.0);
+	} else {
+		dfreq = active_modem->get_txfreq();
+		sprintf(szFrequency, "%-.0f", dfreq);
+	}
+	
+	inpFreq->value(szFrequency);
+	inpFreq->redraw();
+
+// signal level indicator
+//	put_WARNstatus(peakaudio);
+    put_Peakaudio(peakaudio);
+
+	Fl::unlock();
+	Fl::awake();
+
 	return;
 }
 
 
 
-// Check the display offset & limit to 0 to max image_width displayed
+// Check the display offset & limit to 0 to max IMAGE_WIDTH displayed
 void WFdisp::checkoffset() {
 	if (mode == SCOPE) {
 		if (sigoffset < 0)
 			sigoffset = 0;
-		if (sigoffset > (image_width - disp_width))
-			sigoffset = image_width - disp_width;
+		if (sigoffset > (IMAGE_WIDTH - disp_width))
+			sigoffset = IMAGE_WIDTH - disp_width;
 	} else {
 		if (offset < 0)
 			offset = 0;
-		if (offset > (int)(image_width - step * disp_width))
-			offset = (int)(image_width - step * disp_width);
+		if (offset > (int)(IMAGE_WIDTH - step * disp_width))
+			offset = (int)(IMAGE_WIDTH - step * disp_width);
 	}
 }
 
@@ -464,14 +463,14 @@ void WFdisp::slew(int dir) {
 
 void WFdisp::movetocenter() {
 	if (mode == SCOPE)
-		sigoffset = image_width / 2;
+		sigoffset = IMAGE_WIDTH / 2;
 	else
 		offset = carrierfreq - (disp_width * step / 2);
 	checkoffset();
 }
 
 void WFdisp::carrier(int cf) {
-	if (cf > bandwidth / 2 && cf < (image_width - bandwidth / 2)) {
+	if (cf > bandwidth / 2 && cf < (IMAGE_WIDTH - bandwidth / 2)) {
 		carrierfreq = cf;
 		makeMarker();
 	}
@@ -485,11 +484,11 @@ void WFdisp::checkWidth()
 {
 	disp_width = w();
 	if (mag == MAG_1) step = 4;
-	if (mag == MAG_1 && disp_width > image_width/4)
-		disp_width = image_width/4;
+	if (mag == MAG_1 && disp_width > IMAGE_WIDTH/4)
+		disp_width = IMAGE_WIDTH/4;
 	if (mag == MAG_2) step = 2;
-	if (mag == MAG_2 && disp_width > image_width/2)
-		disp_width = image_width/2;
+	if (mag == MAG_2 && disp_width > IMAGE_WIDTH/2)
+		disp_width = IMAGE_WIDTH/2;
 	if (mag == MAG_4) step = 1;
 }
 
@@ -592,7 +591,7 @@ void WFdisp::update_waterfall() {
 			p4++;
 		}
 		
-		p1 += image_width;
+		p1 += IMAGE_WIDTH;
 		p3 += disp_width;
 	}
 	if (progdefaults.UseBWTracks) {
@@ -671,14 +670,14 @@ void WFdisp::drawspectrum() {
 	int ynext,
 		h1 = image_height - 1,
 		ffty = 0,
-		fftpixel = image_width * h1,
+		fftpixel = IMAGE_WIDTH * h1,
 		graylevel = 220;
 	uchar *pixmap = (uchar *)fft_sig_img + offset / step;
 
 	memset (fft_sig_img, 0, image_area);
 
 	fftpixel /= step;
-	for (int c = 0; c < image_width; c += step) {
+	for (int c = 0; c < IMAGE_WIDTH; c += step) {
 		sig = fft_db[c];
 		if (step == 1)
 			sig = fft_db[c];
@@ -687,8 +686,8 @@ void WFdisp::drawspectrum() {
 		else
 			sig = max( max ( max ( fft_db[c], fft_db[c+1] ), fft_db[c+2] ), fft_db[c+3]);
 		ynext = h1 * sig / 256;
-		while (ffty < ynext) { fft_sig_img[fftpixel -= image_width/step] = graylevel; ffty++;}
-		while (ffty > ynext) { fft_sig_img[fftpixel += image_width/step] = graylevel; ffty--;}
+		while (ffty < ynext) { fft_sig_img[fftpixel -= IMAGE_WIDTH/step] = graylevel; ffty++;}
+		while (ffty > ynext) { fft_sig_img[fftpixel += IMAGE_WIDTH/step] = graylevel; ffty--;}
 		fft_sig_img[fftpixel++] = graylevel;
 	}
 
@@ -698,8 +697,8 @@ void WFdisp::drawspectrum() {
 		if (pos1 >= pixmap && pos2 < pixmap + disp_width)
 			for (int y = 0; y < image_height; y ++) {
 				*pos1 = *pos2 = 255;
-				pos1 += image_width/step;
-				pos2 += image_width/step;
+				pos1 += IMAGE_WIDTH/step;
+				pos2 += IMAGE_WIDTH/step;
 			}
 	}
 	if (wantcursor && (progdefaults.UseCursorLines || progdefaults.UseCursorCenterLine)) {
@@ -711,9 +710,9 @@ void WFdisp::drawspectrum() {
 				*pos1 = *pos2 = 255;
 			if (progdefaults.UseCursorCenterLine)
 				*pos0 = 255;
-			pos0 += image_width/step;
-			pos1 += image_width/step;
-			pos2 += image_width/step;
+			pos0 += IMAGE_WIDTH/step;
+			pos1 += IMAGE_WIDTH/step;
+			pos2 += IMAGE_WIDTH/step;
 		}
 	}
 	
@@ -724,7 +723,7 @@ void WFdisp::drawspectrum() {
 		pixmap, 
 		x(), y() + WFSCALE + WFMARKER + WFTEXT, 
 		disp_width, image_height, 
-		1, image_width / step);
+		1, IMAGE_WIDTH / step);
 	drawScale();
 }
 
@@ -733,7 +732,7 @@ void WFdisp::drawsignal() {
 
 	fl_color(FL_BLACK);
 	fl_rectf(x() + disp_width, y(), w() - disp_width, h());
-	fl_draw_image_mono(pixmap, x(), y(), disp_width, h(), 1, image_width);
+	fl_draw_image_mono(pixmap, x(), y(), disp_width, h(), 1, IMAGE_WIDTH);
 }
 
 void WFdisp::draw() {

@@ -162,21 +162,28 @@ psk::psk(trx_mode pskmode) : modem()
 	double fir1c[64];
 	double fir2c[64];
 
+// use the original gmfsk matched filters
+//	for (int i = 0; i < 64; i++) {
+//		fir1c[i] = gmfir1c[i];
+//		fir2c[i] = gmfir2c[i];
+//	}
+// or matched sync filters
+
+//	wsincfilt(fir1c, 1.0 / symbollen, true);	// creates fir1c matched sin(x)/x filter
+//	wsincfilt(fir2c, 1.0 / 16.0, true);			// creates fir2c matched sin(x)/x filter
+	wsincfilt(fir1c, 1.0 / symbollen, false);	// creates fir1c matched sin(x)/x filter
+	wsincfilt(fir2c, 1.0 / 16.0, false);			// creates fir2c matched sin(x)/x filter
+//    wsincfilt(fir2c, 1.0 / 22.0, false);    // 1/22 with Hamming window
+                                            // nearly identical to gmfir2c
+// experimental raised cosine filter
 //	raisedcosfilt(fir1c);	// creates fir1c
 
-//	wsincfilt(fir1c, 1.0 / symbollen);		// creates fir1c matched sin(x)/x filter
-//	wsincfilt(fir2c, 1.0 / 16.0);			// creates fir2c matched sin(x)/x filter
-// or following uses the original gmfsk matched filters
-	for (int i = 0; i < 64; i++) {
-		fir1c[i] = gmfir1c[i];
-		fir2c[i] = gmfir2c[i];
-	}
 	
 	fir1 = new C_FIR_filter();
 	fir1->init(FIRLEN, symbollen / 16, fir1c, fir1c);
 
 	fir2 = new C_FIR_filter();
-	fir2->init(FIRLEN,1, fir2c, fir2c);
+	fir2->init(FIRLEN, 1, fir2c, fir2c);
 
 	if (_qpsk) {
 		enc = new encoder(K, POLY1, POLY2);
@@ -378,14 +385,14 @@ void psk::rx_symbol(complex symbol)
 		break;
 
 	default:
-		if (metric > squelch)
+		if (metric > squelch || squelchon == false)
 			dcd = true;
 		else dcd = false;
 	}
 
 	set_phase(phase, dcd);
 
-	if (dcd == true || squelchon == false) {
+	if (dcd == true) {
 		if (_qpsk)
 			rx_qpsk(bits);
 		else
@@ -419,13 +426,15 @@ void psk::update_syncscope()
 	s2n = 10.0*log10( snratio );
 	display_metric(metric);
 
-	sprintf(msg1, "s/n %2d dB", (int)(floor(s2n))); put_Status1(msg1);
+	sprintf(msg1, "s/n %2d dB", (int)(floor(s2n))); 
+    put_Status1(msg1);
 
 	if (imdratio < 1)
 		imd = 10.0*log10( imdratio );
 	else
 		imd = 0.0;
-	sprintf(msg2, "imd %3d dB", (int)(floor(imd))); put_Status2(msg2);
+	sprintf(msg2, "imd %3d dB", (int)(floor(imd))); 
+    put_Status2(msg2);
 
 }
 
@@ -456,12 +465,17 @@ int psk::rx_process(double *buf, int len)
 			
 			int idx = (int) bitclk;
 			double sum = 0.0;
+			double ampsum = 0.0;
 			syncbuf[idx] = 0.8 * syncbuf[idx] + 0.2 * z.mag();
-//			syncbuf[idx] = z.mag();
 			
-			for (int i = 0; i < 8; i++)
+			for (int i = 0; i < 8; i++) {
 				sum += (syncbuf[i] - syncbuf[i+8]);
-
+				ampsum += (syncbuf[i] + syncbuf[i+8]);
+			}
+// added correction as per PocketDigi
+// vastly improved performance with synchronous interference !!
+			sum = (ampsum == 0 ? 0 : sum / ampsum);
+			
 			bitclk -= sum / 5.0;
 			bitclk += 1;
 			

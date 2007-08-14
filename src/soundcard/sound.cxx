@@ -365,6 +365,9 @@ int cSoundOSS::Read(double *buffer, int buffersize)
 	
 	if (playback) {
 		readPlayback( buffer, buffersize);
+        double vol = valRcvMixer->value();
+        for (int i = 0; i < buffersize; i++)
+            buffer[i] *= vol;
 		return buffersize;
 	}
 
@@ -625,6 +628,9 @@ int cSoundPA::Read(double *buf, int count)
 
 	if (playback) {
 		readPlayback( buf, count);
+        double vol = valRcvMixer->value();
+        for (int i = 0; i < count; i++)
+            buf[i] *= vol;
 		return count;
 	}
 

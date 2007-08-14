@@ -1,6 +1,6 @@
 #ifndef _VERSION_H
 #define _VERSION_H
 
-#define FLDIGI_VERSION "1.37a-exp"
+#define FLDIGI_VERSION "1.37c-exp"
 
 #endif

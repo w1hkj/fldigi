@@ -54,6 +54,7 @@ protected:
     string		attr;
     string		inbuff;
     string		inattr;
+    string      selword;
     int			nlines;
 	int			wrappos;
     int			charwidth;
@@ -68,9 +69,13 @@ protected:
 	int			H;
 	int			xpos;
 	int			ypos;
-	size_t		laststartpos;
-	size_t		endpos;
-	int			startidx;
+	size_t		laststartidx;
+	size_t		endidx;
+	size_t      startidx;
+	size_t      xmtidx;
+    size_t      modidx;
+    size_t      highlightstart;
+    size_t      highlightend;
 	int			popx;
 	int			popy;
 	int			cursorwidth;
@@ -89,18 +94,18 @@ public:
 	virtual ~textview() = 0;
 	virtual int handle(int event);
 	virtual void resize( int x, int y, int w, int h );
-	void	draw_cursor();
-	void draw();
-	void drawall();
-	void drawchars();
-	void drawbs();
-	void	Show();
+    void    draw_cursor();
+    void    draw();
+    void    drawall();
+    void    drawchars();
+    void    drawmodify();
+    void    drawbs();
+    void    Show();
 	void	Hide();
 
 	virtual void add( char *text, int attr = 1 );
 	virtual void add( char c, int attr = 1);
 	virtual void clear();
-	virtual string findtext();
 	
 	virtual void setFont(Fl_Font fnt);
 	virtual void setFontSize(int siz);
@@ -127,6 +132,10 @@ protected:
 	void _backspace();
 	void setScrollbar();
 	void rebuildsoft(int w);
+    size_t xy2bufidx();
+	string findtext();
+    void    highlightword();
+    void    highlight(bool b);
 };
 
 
@@ -193,7 +202,6 @@ protected:
 	int		handle (int event);
 	void	menu_cb(int val);
 private:
-	unsigned int chrptr;
 	int	bkspaces;
 	bool PauseBreak;
 };

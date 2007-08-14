@@ -31,7 +31,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {fldigi - config} open
-    xywh {361 556 400 255} type Double color 45 selection_color 51 align 80 visible
+    xywh {332 53 400 255} type Double color 45 selection_color 51 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 405 220} color 47 selection_color 9
@@ -245,7 +245,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabInterface {
         label RigCtl open
-        xywh {0 25 400 195} color 51 selection_color 51 hide
+        xywh {0 25 400 195} color 51 selection_color 51
       } {
         Fl_Group {} {
           label Ptt open
@@ -297,7 +297,7 @@ progdefaults.changed = true;}
             Fl_Input inpTTYdev {
               label {Port:}
               callback {progdefaults.changed = true;}
-              xywh {66 120 120 22}
+              tooltip {Enter /dev/ttyS0 for COM1} xywh {66 120 120 22}
             }
             Fl_Round_Button btnRTSptt {
               label RTS
@@ -339,25 +339,6 @@ progdefaults.changed = true;}
           label {Rig Control} open
           xywh {195 31 200 151} box ENGRAVED_FRAME align 21
         } {
-          Fl_Check_Button chkUSEHAMLIB {
-            label Hamlib
-            callback {if (o->value() == 1) {
-  chkUSEMEMMAP->value(0);
-  chkUSERIGCAT->value(0);
-  btnPTT[3]->value(0);
-  btnPTT[3]->deactivate();
-  btnPTT[2]->value(0);
-  btnPTT[2]->deactivate();
-  btnPTT[1]->activate();
-  } else {
-  if (btnPTT[1]->value()==1)
- 	btnPTT[0]->value(1);
-  btnPTT[1]->value(0);
-  btnPTT[1]->deactivate();
-  }
-progdefaults.changed = true;}
-            xywh {205 75 19 15} down_box DOWN_BOX align 8
-          }
           Fl_Check_Button chkUSEMEMMAP {
             label Memmap
             callback {if(o->value() == 1){
@@ -375,26 +356,8 @@ progdefaults.changed = true;}
   btnPTT[2]->deactivate();
   }
 progdefaults.changed = true;}
-            xywh {205 56 19 15} down_box DOWN_BOX align 8
+            xywh {275 55 19 15} down_box DOWN_BOX align 4
           }
-          Fl_Box cboHamlibRig {
-            label {Rig:}
-            callback {progdefaults.changed = true;}
-            xywh {230 101 160 22} box DOWN_BOX color 7 align 4
-            code0 {o->readonly();}
-            class Fl_ComboBox
-          }
-          Fl_Input inpRIGdev {
-            label {Device:}
-            callback {progdefaults.changed = true;}
-            xywh {269 126 120 22}
-          }
-          Fl_Choice mnuBaudRate {
-            label {Baud Rate:}
-            callback {progdefaults.changed = true;} open
-            xywh {288 153 100 22} down_box BORDER_BOX
-            code0 {o->add(szBaudRates);}
-          } {}
           Fl_Check_Button chkUSERIGCAT {
             label RigCAT
             callback {if (o->value() == 1) {
@@ -411,8 +374,51 @@ progdefaults.changed = true;}
   btnPTT[3]->deactivate();
   }
 progdefaults.changed = true;}
-            xywh {305 56 19 15} down_box DOWN_BOX align 8
+            xywh {366 55 19 15} down_box DOWN_BOX align 4
           }
+          Fl_Check_Button chkUSEHAMLIB {
+            label Hamlib
+            callback {if (o->value() == 1) {
+  chkUSEMEMMAP->value(0);
+  chkUSERIGCAT->value(0);
+  btnPTT[3]->value(0);
+  btnPTT[3]->deactivate();
+  btnPTT[2]->value(0);
+  btnPTT[2]->deactivate();
+  btnPTT[1]->activate();
+  cboHamlibRig->activate();
+  inpRIGdev->activate();
+  mnuBaudRate->activate();
+  } else {
+  if (btnPTT[1]->value()==1)
+ 	btnPTT[0]->value(1);
+  btnPTT[1]->value(0);
+  btnPTT[1]->deactivate();
+  cboHamlibRig->deactivate();
+  inpRIGdev->deactivate();
+  mnuBaudRate->deactivate();
+  }
+progdefaults.changed = true;}
+            xywh {366 77 19 15} down_box DOWN_BOX align 4
+          }
+          Fl_Box cboHamlibRig {
+            label {Rig:}
+            callback {progdefaults.changed = true;}
+            xywh {235 96 150 22} box DOWN_BOX color 7 align 4 deactivate
+            code0 {o->readonly();}
+            class Fl_ComboBox
+          }
+          Fl_Input inpRIGdev {
+            label {Device:}
+            callback {progdefaults.changed = true;} selected
+            tooltip {Enter /dev/ttyS0 for COM1} xywh {274 122 111 22} deactivate
+          }
+          Fl_Choice mnuBaudRate {
+            label {Baud Rate:}
+            callback {progdefaults.changed = true;} open
+            xywh {286 148 99 22} down_box BORDER_BOX deactivate
+            code0 {o->add(szBaudRates);}
+          } {}
         }
         Fl_Button btnInit_Interface {
           label Initialize
@@ -461,7 +467,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabSoundCard {
         label SndCrd open
-        xywh {0 25 405 195} color 51 selection_color 51
+        xywh {0 25 405 195} color 51 selection_color 51 hide
       } {
         Fl_Tabs tabsSoundCard {open
           xywh {0 25 405 195} selection_color 10
@@ -519,7 +525,7 @@ progdefaults.changed = true;} open
               label {Manage mixer}
               callback {enableMixer(o->value());
 progdefaults.changed = true;}
-              xywh {55 61 25 25} down_box DOWN_BOX
+              xywh {55 61 125 25} down_box DOWN_BOX
               code0 {extern void resetMixerControls();}
               code1 {o->value(progdefaults.EnableMixer);}
             }
@@ -570,7 +576,7 @@ scDevice = menuOSSDev->value();
 progdefaults.btnAudioIOis = 0;
 progdefaults.changed = true;
 resetSoundCard();}
-                xywh {25 70 25 25} down_box DIAMOND_DOWN_BOX selection_color 1
+                xywh {25 70 95 25} down_box DIAMOND_DOWN_BOX selection_color 1
               }
               Fl_Round_Button {btnAudioIO[1]} {
                 label PortAudio
@@ -582,7 +588,7 @@ scDevice = menuPADev->value();
 progdefaults.btnAudioIOis = 1;
 progdefaults.changed = true;
 resetSoundCard();}
-                xywh {25 95 25 25} down_box DIAMOND_DOWN_BOX selection_color 1
+                xywh {25 95 100 25} down_box DIAMOND_DOWN_BOX selection_color 1
               }
             }
             Fl_Input_Choice menuOSSDev {
@@ -597,7 +603,7 @@ progdefaults.changed = true;} open
               label {PortAudio device}
               callback {scDevice = progdefaults.PAdevice = o->value();
 resetSoundCard();
-progdefaults.changed = true;} open selected
+progdefaults.changed = true;} open
               xywh {155 90 110 25} align 8
               code0 {o->value(progdefaults.PAdevice.c_str());}
             } {}
@@ -733,14 +739,14 @@ progdefaults.changed = true;}
                 label {Dash/Dot}
                 callback {progdefaults.CWdash2dot=o->value();
 progdefaults.changed = true;}
-                xywh {205 185 64 21} type Simple align 4 minimum 2.5 maximum 4 step 0.1 value 3
+                xywh {205 185 64 21} type Simple align 4 minimum 2.5 maximum 4 value 3
                 code0 {o->value(progdefaults.CWdash2dot);}
               }
               Fl_Counter cntCWrisetime {
                 label Edge
                 callback {progdefaults.CWrisetime=o->value();
 progdefaults.changed = true;}
-                xywh {325 185 65 21} type Simple align 4 minimum 0 maximum 15 step 0.1 value 4
+                xywh {325 185 65 21} type Simple align 4 minimum 0 maximum 15 value 4
                 code0 {o->value(progdefaults.CWrisetime);}
               }
               Fl_Counter cntCWdefWPM {
@@ -799,7 +805,7 @@ resetDOMEX();}
               label {BW factor:}
               callback {progdefaults.DOMINOEX_BW=o->value();
 progdefaults.changed = true;}
-              xywh {25 134 63 21} type Simple minimum 1 maximum 3 step 0.1 value 2
+              xywh {25 134 63 21} type Simple minimum 1 maximum 3 value 2
               code0 {o->value(progdefaults.DOMINOEX_BW);}
             }
           }

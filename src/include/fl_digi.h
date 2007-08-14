@@ -57,8 +57,8 @@ extern Fl_Tile			*TiledGroup;
 extern Fl_Text_Buffer	*rcvBuffer;
 extern Fl_Text_Buffer	*xmtBuffer;
 extern Fl_Box			*StatusBar;
-extern Fl_Box			*Status2;
-extern Fl_Box			*Status1;
+extern Fl_Box			*IMDstatus;
+extern Fl_Box			*S2Nstatus;
 extern Fl_Button		*MODEstatus;
 extern Fl_Slider		*sldrSquelch;
 extern Fl_Progress		*pgrsSquelch;
@@ -79,6 +79,7 @@ extern Fl_Button		*qsoSave;
 extern Fl_Button		*btnMacroTimer;
 extern Fl_Slider		*valRcvMixer;
 extern Fl_Slider		*valXmtMixer;
+extern Fl_Progress		*pgrsPeakaudio;
 
 extern bool				altMacros;
 
@@ -102,12 +103,18 @@ extern void set_video(double *, int);
 extern void set_CWwpm();
 extern void put_rx_char(unsigned int data);
 extern void put_sec_char( char chr );
+
 extern void put_status(const char *msg);
-extern void put_Status2(char *msg);
-extern void put_Status1(char *msg);
-extern void put_WARNstatus(bool);
 extern void clear_StatusMessages();
 extern void put_MODEstatus(trx_mode mode);
+extern void put_S2Nstatus(char *msg);
+#define put_Status1(szS) put_S2Nstatus(szS)
+extern void put_IMDstatus(char *msg);
+#define put_Status2(szS) put_IMDstatus(szS)
+
+extern void put_WARNstatus(double);
+extern void put_Peakaudio(double);
+
 extern void put_rx_data(int *data, int len);
 extern char get_tx_char();
 extern int  get_secondary_char();

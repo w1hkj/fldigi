@@ -40,6 +40,26 @@ extern unsigned char graydecode(unsigned char data);
 extern unsigned char grayencode(unsigned char data);
 extern void MilliSleep(long msecs);
 
+inline double sinc(double x)
+{
+	return (fabs(x) < 1e-10) ? 1.0 : (sin(M_PI * x) / (M_PI * x));
+}
+
+inline double cosc(double x)
+{
+	return (fabs(x) < 1e-10) ? 0.0 : ((1.0 - cos(M_PI * x)) / (M_PI * x));
+}
+
+inline double clamp(double x, double min, double max)
+{
+	return (x < min) ? min : ((x > max) ? max : x);
+}
+
+inline double decayavg(double average, double input, double weight)
+{
+	return input * (1.0 / weight) + average * (1.0 - (1.0 / weight));
+}
+
 // following are defined inline to provide best performance
 
 inline double rect(double x)
@@ -62,24 +82,15 @@ inline double hanning(double x)
 	return 0.5 - 0.5 * cos(2 * M_PI * x);
 }
 
-inline double sinc(double x)
-{
-	return (fabs(x) < 1e-10) ? 1.0 : (sin(M_PI * x) / (M_PI * x));
-}
-
-inline double cosc(double x)
-{
-	return (fabs(x) < 1e-10) ? 0.0 : ((1.0 - cos(M_PI * x)) / (M_PI * x));
-}
-
-inline double clamp(double x, double min, double max)
-{
-	return (x < min) ? min : ((x > max) ? max : x);
-}
-
-inline double decayavg(double average, double input, double weight)
-{
-	return input * (1.0 / weight) + average * (1.0 - (1.0 / weight));
-}
+// Rectangular - no pre filtering of data array
+void RectWindow(double *array, int n);
+// Hamming - used by gmfsk
+void HammingWindow(double *array, int n);
+// Hanning - used by winpsk
+void HanningWindow(double *array, int n);
+// Best lob suppression - least in band ripple
+void BlackmanWindow(double *array, int n);
+// Simple about effective as Hamming or Hanning
+void TriangularWindow(double *array, int n);
 
 #endif

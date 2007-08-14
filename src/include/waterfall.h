@@ -57,6 +57,7 @@
 // the actual waterfall will be width -4 (bezel size) and
 //                              height - 4 - 24 (bezel, text, scale & marker)
 
+//#define FFT_LEN     1024
 //#define FFT_LEN     2048
 #define FFT_LEN		4096
 #define SC_SMPLRATE	8000
@@ -142,6 +143,9 @@ enum WFspeed {FAST = 1, NORMAL = 2, SLOW = 4};
 		if (overload == ovr) return;
 		overload = ovr;
 	}
+
+    double AudioPeak() { return peakaudio; }
+
 	WFspeed Speed() { return wfspeed;}
 	void Speed(WFspeed rate) { wfspeed = rate;}
 	
@@ -176,12 +180,19 @@ enum WFspeed {FAST = 1, NORMAL = 2, SLOW = 4};
 	double powerDensity(double f0, double bw);
 	void setPrefilter(int v) {
 		switch (v) {
-			case 0: wfft->setWindow(FFT_NONE); break;
-			case 1: wfft->setWindow(FFT_BLACKMAN); break;
-			case 2: wfft->setWindow(FFT_HAMMING); break;
-			case 3: wfft->setWindow(FFT_HANNING); break;
-			case 4: wfft->setWindow(FFT_TRIANGULAR); break;
+			case 0: RectWindow(fftwindow, FFT_LEN*2); break;
+			case 1: BlackmanWindow(fftwindow, FFT_LEN*2); break;
+			case 2: HammingWindow(fftwindow, FFT_LEN*2); break;
+			case 3: HanningWindow(fftwindow, FFT_LEN*2); break;
+			case 4: TriangularWindow(fftwindow, FFT_LEN*2); break;
 		}
+//		switch (v) {
+//			case 0: wfft->setWindow(FFT_NONE); break;
+//			case 1: wfft->setWindow(FFT_BLACKMAN); break;
+//			case 2: wfft->setWindow(FFT_HAMMING); break;
+//			case 3: wfft->setWindow(FFT_HANNING); break;
+//			case 4: wfft->setWindow(FFT_TRIANGULAR); break;
+//		}
 	}
 	void setcolors();
 	double dFreq() {return dfreq;}
@@ -212,6 +223,7 @@ private:
 	int		wfspdcnt;
 	int		dispcnt;
 	int 	ampspan;
+    double  peakaudio;
 	int 	reflevel;
 	double	dfreq;
 	bool	centercarrier;
@@ -225,6 +237,7 @@ private:
 	RGB		RGBmarker;
 	RGB		RGBcursor;
 	double	*fftout;
+    double  *fftwindow;
 	uchar	*scaleimage;
 	uchar	*fft_sig_img;
 	uchar	*sig_img;
@@ -249,8 +262,7 @@ private:
 	void drawgrayWF();
 	void drawspectrum();
 	void drawsignal();
-friend
-	void evaluate(void *);	
+
 protected:
 public:
 	bool	wantcursor;

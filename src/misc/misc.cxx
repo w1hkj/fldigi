@@ -156,3 +156,59 @@ void MilliSleep(long msecs) {
 #endif
 }
 
+// Rectangular - no pre filtering of data array
+void RectWindow(double *array, int n) {
+	for (int i = 0; i < n; i++)
+		array[i] = 1.0;
+}
+
+// Hamming - used by gmfsk
+void HammingWindow(double *array, int n) {
+	double pwr = 0.0;
+	for (int i = 0; i < n; i++) {
+		array[i] = hamming((double)i/(double)n);
+		pwr += array[i] * array[i];
+	}
+	pwr = sqrt((double)n/pwr);
+	for (int i = 0; i < n; i++)
+		array[i] *= pwr;
+}
+
+// Hanning - used by winpsk
+void HanningWindow(double *array, int n) {
+	double pwr = 0.0;
+	for (int i = 0; i < n; i++) {
+		array[i] = hanning((double)i/(double)n);
+		pwr += array[i] * array[i];
+	}
+	pwr = sqrt((double)n/pwr);
+	for (int i = 0; i < n; i++)
+		array[i] *= pwr;
+}
+
+// Best lob suppression - least in band ripple
+void BlackmanWindow(double *array, int n) {
+	double pwr = 0.0;
+	for (int i = 0; i < n; i++) {
+		array[i] = blackman((double)i/(double)n);
+		pwr += array[i] * array[i];
+	}
+	pwr = sqrt((double)n/pwr);
+	for (int i = 0; i < n; i++)
+		array[i] *= pwr;
+}
+
+// Simple about effective as Hamming or Hanning
+void TriangularWindow(double *array, int n) {
+	double pwr = 0.0;
+	for (int i = 0; i < n; i++) array[i] = 1.0;
+	for (int i = 0; i < n / 4; i++) {
+			array[i] = 4.0 * (double)i / (double)n;
+			array[n-i] = array[i];
+	}
+	for (int i = 0; i < n; i++)	pwr += array[i] * array[i];
+	pwr = sqrt((double)n/pwr);
+	for (int i = 0; i < n; i++)
+		array[i] *= pwr;
+}
+	
