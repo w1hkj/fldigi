@@ -1527,7 +1527,7 @@ void put_echo_char(unsigned int data)
 	if (nulinepending && data == '\n') {
 		nulinepending = false;
 	}
-	ReceiveText->add(asc[data & 0x7F],4);
+	ReceiveText->add(asc[data & 0x7F], 4);
 	if (Maillogfile)
 		Maillogfile->log_to_file(cLogfile::LOG_TX, asc[data & 0x7F]);
 	if (logging)

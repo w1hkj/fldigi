@@ -51,12 +51,14 @@ using namespace std;
 // the attribute of each character is mirrored in another <string> array
 //=====================================================================
 
+#define SBwidth 16
+
 textview :: textview( int x, int y, int w, int h, const char *label )
-  : Fl_Widget( x, y, w, h, label )
+  : Fl_Widget( x, y, w, h, label ),
+    scrollbar(x+w-SBwidth, y+2, SBwidth, h-4 )
 {
-	scrollbar = new Fl_Scrollbar( x+w-20, y+2, 20, h-4 );
-	scrollbar->linesize( 1 );
-	scrollbar->callback( _scrollbarCB, this );
+	scrollbar.linesize( 1 );
+	scrollbar.callback( _scrollbarCB, this );
 
 	box( FL_DOWN_BOX );
 	color( FL_WHITE );
@@ -73,24 +75,29 @@ textview :: textview( int x, int y, int w, int h, const char *label )
 	
 	wrappos = 0;
 	cursorON = false;
+	cursorwidth = 4;
 	startidx = 0;
-	laststartpos = lastendpos = string::npos;
+	laststartpos = string::npos;
 		
+	H = h - 4;
+	W = w - 4 - SBwidth;
+	X = x + 2;
+	Y = y + 2;
+
 	clear();
 }
 
 textview :: ~textview()
 {
-	delete scrollbar;
 }
 
 void textview::Show() {
-	scrollbar->show();
+	scrollbar.show();
 	show();
 }
 
 void textview::Hide() {
-	scrollbar->hide();
+	scrollbar.hide();
 	hide();
 }
 
@@ -103,7 +110,7 @@ void textview::setFont(Fl_Font fnt)
 {
 	Fl::lock();
 	TextFont = fnt;
-	redraw();
+	damage(FL_DAMAGE_ALL);
 	Fl::unlock();
 	Fl::awake();
 }
@@ -112,7 +119,7 @@ void textview::setFontSize(int siz)
 {
 	Fl::lock();
 	TextSize = siz;
-	redraw();
+	damage(FL_DAMAGE_ALL);
 	Fl::unlock();
 	Fl::awake();
 }
@@ -149,70 +156,69 @@ size_t textview::linePosition(int linenbr)
 void textview::draw_cursor()
 {
 	if (cursorStyle == NONE) return;
-  int X = cursorX, Y = cursorY;
   
-  typedef struct {
-    int x1, y1, x2, y2;
-  }
-  Segment;
+	typedef struct { int x1, y1, x2, y2; } Segment;
 
-  Segment segs[ 5 ];
-  int left, right, cursorWidth, midY;
-  int nSegs = 0;
-  int bot = Y  - charheight + 1;
+ 	Segment segs[ 8 ];
+	int nSegs = 0;
+	int left = cursorX + 1,
+		right = left + cursorwidth,
+		bot = cursorY + descent - 2,
+		top = cursorY - charheight + 2;
 
   /* For cursors other than the block, make them around 2/3 of a character
      width, rounded to an even number of pixels so that X will draw an
      odd number centered on the stem at x. */
-  cursorWidth = 4;
-  X += cursorWidth/2;
-  left = X - cursorWidth/2;
-  right = left + cursorWidth;
 
-  if (cursorON == false) {
+	if (cursorON == false)
+		return;
+
 	fl_color(FL_WHITE);
-	fl_rectf ( X, Y - charheight, cursorWidth, charheight );
-	return;
-  }
+	fl_rectf ( X + cursorX, Y + cursorY - charheight, maxcharwidth, charheight + descent);
 
   /* Create segments and draw cursor */
   if ( cursorStyle == CARET_CURSOR ) {
-    midY = bot - charheight / 5;
-    segs[ 0 ].x1 = left; segs[ 0 ].y1 = bot; segs[ 0 ].x2 = X; segs[ 0 ].y2 = midY;
-    segs[ 1 ].x1 = X; segs[ 1 ].y1 = midY; segs[ 1 ].x2 = right; segs[ 1 ].y2 = bot;
-    segs[ 2 ].x1 = left; segs[ 2 ].y1 = bot; segs[ 2 ].x2 = X; segs[ 2 ].y2 = midY - 1;
-    segs[ 3 ].x1 = X; segs[ 3 ].y1 = midY - 1; segs[ 3 ].x2 = right; segs[ 3 ].y2 = bot;
+    int midY = top - charheight / 5;
+    segs[ 0 ].x1 = left;		segs[ 0 ].y1 = top;		segs[ 0 ].x2 = left;		segs[ 0 ].y2 = midY;
+    segs[ 1 ].x1 = left;		segs[ 1 ].y1 = midY;	segs[ 1 ].x2 = right;		segs[ 1 ].y2 = top;
+    segs[ 2 ].x1 = left;		segs[ 2 ].y1 = top;		segs[ 2 ].x2 = left;		segs[ 2 ].y2 = midY - 1;
+    segs[ 3 ].x1 = left;		segs[ 3 ].y1 = midY - 1;segs[ 3 ].x2 = right;		segs[ 3 ].y2 = top;
     nSegs = 4;
   } else if ( cursorStyle == NORMAL_CURSOR ) {
-    segs[ 0 ].x1 = left; segs[ 0 ].y1 = Y; segs[ 0 ].x2 = right; segs[ 0 ].y2 = Y;
-    segs[ 1 ].x1 = X; segs[ 1 ].y1 = Y; segs[ 1 ].x2 = X; segs[ 1 ].y2 = bot;
-    segs[ 2 ].x1 = left; segs[ 2 ].y1 = bot; segs[ 2 ].x2 = right; segs[ 2 ].y2 = bot;
+  	int midX = left + cursorwidth / 2;
+    segs[ 0 ].x1 = left;		segs[ 0 ].y1 = bot;		segs[ 0 ].x2 = right;		segs[ 0 ].y2 = bot;
+    segs[ 1 ].x1 = midX;		segs[ 1 ].y1 = bot;		segs[ 1 ].x2 = midX;		segs[ 1 ].y2 = top;
+    segs[ 2 ].x1 = left; 		segs[ 2 ].y1 = top;		segs[ 2 ].x2 = right;		segs[ 2 ].y2 = top;
     nSegs = 3;
   } else if ( cursorStyle == HEAVY_CURSOR ) {
-    segs[ 0 ].x1 = X - 1; segs[ 0 ].y1 = Y; segs[ 0 ].x2 = X - 1; segs[ 0 ].y2 = bot;
-    segs[ 1 ].x1 = X; segs[ 1 ].y1 = Y; segs[ 1 ].x2 = X; segs[ 1 ].y2 = bot;
-    segs[ 2 ].x1 = X + 1; segs[ 2 ].y1 = Y; segs[ 2 ].x2 = X + 1; segs[ 2 ].y2 = bot;
-    segs[ 3 ].x1 = left; segs[ 3 ].y1 = Y; segs[ 3 ].x2 = right; segs[ 3 ].y2 = Y;
-    segs[ 4 ].x1 = left; segs[ 4 ].y1 = bot; segs[ 4 ].x2 = right; segs[ 4 ].y2 = bot;
-    nSegs = 5;
+  	int topp1 = top + 1, botm1 = bot - 1,
+  		mid = left + cursorwidth / 2,
+  		midp1 = mid + 1;
+    segs[ 0 ].x1 = mid;			segs[ 0 ].y1 = bot;		segs[ 0 ].x2 = mid;			segs[ 0 ].y2 = top;
+    segs[ 1 ].x1 = midp1;		segs[ 1 ].y1 = bot;		segs[ 1 ].x2 = midp1;		segs[ 1 ].y2 = top;
+    segs[ 3 ].x1 = left;		segs[ 3 ].y1 = bot;		segs[ 3 ].x2 = right;		segs[ 3 ].y2 = bot;
+    segs[ 4 ].x1 = left;		segs[ 4 ].y1 = top;		segs[ 4 ].x2 = right;		segs[ 4 ].y2 = top;
+    segs[ 5 ].x1 = left;		segs[ 5 ].y1 = botm1;	segs[ 5 ].x2 = right;		segs[ 5 ].y2 = botm1;
+    segs[ 6 ].x1 = left;		segs[ 6 ].y1 = topp1;	segs[ 6 ].x2 = right;		segs[ 6 ].y2 = topp1;
+    nSegs = 7;
   } else if ( cursorStyle == DIM_CURSOR ) {
-    midY = Y + charheight / 2;
-    segs[ 0 ].x1 = X; segs[ 0 ].y1 = Y; segs[ 0 ].x2 = X; segs[ 0 ].y2 = Y;
-    segs[ 1 ].x1 = X; segs[ 1 ].y1 = midY; segs[ 1 ].x2 = X; segs[ 1 ].y2 = midY;
-    segs[ 2 ].x1 = X; segs[ 2 ].y1 = bot; segs[ 2 ].x2 = X; segs[ 2 ].y2 = bot;
+  	int midX = left + cursorwidth / 2;
+    segs[ 0 ].x1 = left;		segs[ 0 ].y1 = bot;		segs[ 0 ].x2 = right;		segs[ 0 ].y2 = bot;
+    segs[ 1 ].x1 = midX;		segs[ 1 ].y1 = bot;		segs[ 1 ].x2 = midX;		segs[ 1 ].y2 = top;
+    segs[ 2 ].x1 = left; 		segs[ 2 ].y1 = top;		segs[ 2 ].x2 = right;		segs[ 2 ].y2 = top;
     nSegs = 3;
   } else if ( cursorStyle == BLOCK_CURSOR ) {
-    right = X + maxcharwidth;
-    segs[ 0 ].x1 = X; segs[ 0 ].y1 = Y; segs[ 0 ].x2 = right; segs[ 0 ].y2 = Y;
-    segs[ 1 ].x1 = right; segs[ 1 ].y1 = Y; segs[ 1 ].x2 = right; segs[ 1 ].y2 = bot;
-    segs[ 2 ].x1 = right; segs[ 2 ].y1 = bot; segs[ 2 ].x2 = X; segs[ 2 ].y2 = bot;
-    segs[ 3 ].x1 = X; segs[ 3 ].y1 = bot; segs[ 3 ].x2 = X; segs[ 3 ].y2 = Y;
+    right = cursorX + maxcharwidth;
+    segs[ 0 ].x1 = left;		segs[ 0 ].y1 = bot;		segs[ 0 ].x2 = right;		segs[ 0 ].y2 = bot;
+    segs[ 1 ].x1 = right;		segs[ 1 ].y1 = bot;		segs[ 1 ].x2 = right;		segs[ 1 ].y2 = top;
+    segs[ 2 ].x1 = right;		segs[ 2 ].y1 = top;		segs[ 2 ].x2 = left;		segs[ 2 ].y2 = top;
+    segs[ 3 ].x1 = left;		segs[ 3 ].y1 = top;		segs[ 3 ].x2 = left;		segs[ 3 ].y2 = bot;
     nSegs = 4;
   }
   fl_color( FL_BLACK );
 
   for ( int k = 0; k < nSegs; k++ ) {
-    fl_line( segs[ k ].x1, segs[ k ].y1, segs[ k ].x2, segs[ k ].y2 );
+    fl_line( X + segs[ k ].x1, Y + segs[ k ].y1, X + segs[ k ].x2, Y + segs[ k ].y2 );
   }
 }
 
@@ -262,66 +268,60 @@ string textview::findtext()
 void textview::drawall()
 {
 	int line = 0;
-	size_t idx = 0;
 	size_t startpos = string::npos;
-	unsigned int xpos = 0;
-	unsigned int ypos = 0;
-	unsigned int len = 0;
+	size_t len = 0;
 	char c = 0;
 	char cstr[] = " ";
-	unsigned int	H = h() - 4, 
-					W = w() - 4 - 20, 
-					X = x() + 2, 
-					Y = y() + 2;
   
 	fl_font(TextFont, TextSize);
 	charheight = fl_height();
 	maxcharwidth = (int)fl_width('X');
+	descent = fl_descent();
 
 	draw_box();
 // resize the scrollbar to be a constant width
-	scrollbar->resize( x()+w()-20, y()+2, 20, h()-4 );
-	scrollbar->redraw();
+	scrollbar.resize( x()+w()-SBwidth, y()+2, SBwidth, h()-4 );
+	scrollbar.redraw();
 
+	cursorX = 0;
+	cursorY = charheight;
+	endpos = 0;
 	if ((len = buff.length()) == 0) {
 		fl_push_clip( X, Y, W, H);
-		cursorX = X; cursorY = Y + charheight;
 		draw_cursor();
 		fl_pop_clip();
     	return;
 	}
 
 	nlines = lineCount();
-	line = nlines - H / charheight - scrollbar->value();
+	line = nlines - H / charheight - scrollbar.value();
 	  
-	xpos = 0;
-	ypos = charheight;
-	startpos = idx = linePosition(line);
+	startpos = linePosition(line);
+	endpos = startpos;
 	
 	fl_push_clip( X, Y, W, H );
 
-	while(idx < len) {
-		if (ypos > H) 
+	while(endpos < len) {
+		if (cursorY > H) 
 			break;
-		while (idx < len ) { //&& (c = buff[idx]) != '\n') {
-			c = buff[idx];
+		while (endpos < len ) { //&& (c = buff[idx]) != '\n') {
+			c = buff[endpos];
 			if (c == '\n') {
-				xpos = 0;
-				ypos += charheight;
-				idx++;
+				cursorX = 0;
+				cursorY += charheight;
+				endpos++;
 				break;
 			}
+//std::cout << "a: " << c << " " << endpos << " ==> " << cursorX << ", " << cursorY << std::endl; cout.flush();
 			cstr[0] = c;
-			fl_color (TextColor[(int)attr[idx]]);
-			fl_draw ( cstr, 1, X + xpos, Y + ypos );
-			xpos += (int)(fl_width(c) + 0.5);
-			idx++;
+			fl_color (TextColor[(int)attr[endpos]]);
+			fl_draw ( cstr, 1, X + cursorX, Y + cursorY );
+			cursorX += (int)(fl_width(c) + 0.5);
+			endpos++;
 		}
 	}
-	lastendpos = idx;
 	laststartpos = startpos;
 	
-	cursorX = X + xpos; cursorY = Y + ypos;
 	draw_cursor();
 	fl_pop_clip();
 }
@@ -329,17 +329,10 @@ void textview::drawall()
 void textview::drawchars()
 {
 	int line = 0;
-	size_t idx = 0;
 	size_t startpos = string::npos;
-	unsigned int xpos = 0;
-	unsigned int ypos = 0;
-	unsigned int len = 0;
+	size_t len = 0;
 	char c = 0;
 	char cstr[] = " ";
-	unsigned int	H = h() - 4, 
-					W = w() - 4 - 20, 
-					X = x() + 2, 
-					Y = y() + 2;
   
 	if ((len = buff.length()) == 0) {
 		drawall();
@@ -348,69 +341,42 @@ void textview::drawchars()
 
 	fl_font(TextFont, TextSize);
 	charheight = fl_height();
+	descent = fl_descent();
 	maxcharwidth = (int)fl_width('X');
 
 	nlines = lineCount();
-	line = nlines - H / charheight - scrollbar->value();
+	line = nlines - H / charheight - scrollbar.value();
 	  
-	xpos = 0;
-	ypos = charheight;
-	startpos = idx = linePosition(line);
-	
-	if (startpos != string::npos && startpos == laststartpos) {
-		if (lastendpos != string::npos)
-			while (idx < lastendpos ) {
-				if (ypos > H)
-					break;
-				while (idx < lastendpos) {
-					c = buff[idx];
-					if (c == '\n') {
-						xpos = 0;
-						ypos += charheight;
-						idx++;
-						break;
-					}
-					xpos += (int)(fl_width(c) + 0.5);
-					idx++;
-				}
-			}
-	} else {
-		draw_box();
-		scrollbar->resize( x()+w()-20, y()+2, 20, h()-4 );
-		scrollbar->redraw();
+	startpos = linePosition(line);
+	if (startpos != laststartpos) {
+		drawall();
+		return;
 	}
-	
+
 	fl_push_clip( X, Y, W, H );
 
-	while(idx < len) {
-		if (ypos > H) 
-			break;
-		while (idx < len ) { //&& (c = buff[idx]) != '\n') {
-			c = buff[idx];
-			if (c == '\n') {
-				xpos = 0;
-				ypos += charheight;
-				idx++;
-				break;
-			}
+	fl_color(FL_WHITE);
+	fl_rectf ( X + cursorX, Y + cursorY - charheight, maxcharwidth, charheight + descent);
+	while (endpos < len) {
+		c = buff[endpos];
+		if (c == '\n') {
+			cursorX = 0;
+			cursorY += charheight;
+		} else {
+//std::cout << " b: " << c << " " << endpos << " ==> " << cursorX << ", " << cursorY << std::endl; cout.flush();
 			cstr[0] = c;
-			fl_color (TextColor[(int)attr[idx]]);
-			fl_draw ( cstr, 1, X + xpos, Y + ypos );
-			xpos += (int)(fl_width(c) + 0.5);
-			idx++;
+			fl_color (TextColor[(int)attr[endpos]]);
+			fl_draw ( cstr, 1, X + cursorX, Y + cursorY );
+			cursorX += (int)(fl_width(c) + 0.5);
 		}
+		endpos++;
 	}
-	lastendpos = idx;
 	laststartpos = startpos;
 	
-	cursorX = X + xpos; cursorY = Y + ypos;
 	draw_cursor();
 	fl_pop_clip();
 }
 
-void textview::drawbs()
-{
-}
 
 void textview::draw()
 {
@@ -422,11 +388,6 @@ void textview::draw()
 		drawchars();
 		return;
 	}
-	if (damage() & (FL_DAMAGE_ALL | 2)) {
-		drawbs();
-		return;
-	}
-		
 }
 
 void textview::scrollbarCB()
@@ -437,6 +398,8 @@ void textview::scrollbarCB()
 void textview::_backspace()
 {
 	int c;
+	if (buff.empty()) return;
+	
 	size_t lastcrlf = buff.rfind('\n');
 
 	if (lastcrlf == string::npos) lastcrlf = 0;
@@ -475,12 +438,11 @@ void textview::_backspace()
 
 void textview::add( char c, int attribute)
 {
-    Fl::lock();
+	Fl::lock();
 	if (c == 0x08) {
-		if (buff.length() > 0)
-			_backspace();
-        Fl::unlock();
-        Fl::awake();
+		_backspace();
+		Fl::unlock();
+		Fl::awake();
 		return;
 	} else {
 		if (c >= ' ' && c <= '~') {
@@ -498,8 +460,7 @@ void textview::add( char c, int attribute)
 		}
 	}
 
-	int endpos = w() - 24 - maxcharwidth;
-	if (wrappos >= endpos) {
+	if (wrappos >= (w() - 24 - maxcharwidth)) {
 		size_t lastspace = buff.find_last_of(' ');
 		if (!wordwrap 
 			|| lastspace == string::npos 
@@ -520,8 +481,9 @@ void textview::add( char c, int attribute)
 		}
 	} else
 		damage(1);
-    Fl::unlock();
-    Fl::awake();
+	Fl::unlock();
+	Fl::awake();
+	
 	setScrollbar();
 }
 
@@ -539,7 +501,10 @@ void textview::clear()
 	attr.erase();
 	wrappos = 0;
 	startidx = 0;
-	laststartpos = lastendpos = string::npos;
+	endpos = 0;
+	cursorX = 0;
+	cursorY = charheight;
+	laststartpos = string::npos;
 	setScrollbar();
 	damage(FL_DAMAGE_ALL);
 	Fl::unlock();
@@ -554,13 +519,13 @@ void textview :: setScrollbar()
 
 	fl_font(TextFont, TextSize);
 	charheight = fl_height();
-	scrollbar->range (lines, 0);
+	scrollbar.range (lines, 0);
 	if (lines * charheight <= h()-4)
 		size = 1.0;
 	else
 		size = (double)(h()-4) / (double)(lines * charheight);
 	if (size < 0.08) size = 0.08;
-	scrollbar->slider_size( size );
+	scrollbar.slider_size( size );
 }
 
 void textview :: rebuildsoft(int W)
@@ -609,6 +574,10 @@ void textview :: rebuildsoft(int W)
 void textview :: resize( int x, int y, int w, int h )
 {
 	rebuildsoft(w);
+	H = h - 4;
+	W = w - 4 - SBwidth;
+	X = x + 2;
+	Y = y + 2;
 	Fl_Widget::resize( x, y, w, h );
 	setScrollbar();
 }
@@ -716,8 +685,8 @@ int TextView::handle(int event)
 		const Fl_Menu_Item * m;
 		int xpos = Fl::event_x();
 		int ypos = Fl::event_y();
-		if (xpos > x() + w() - 20) {
-			scrollbar->handle(event);
+		if (xpos > x() + w() - SBwidth) {
+			scrollbar.handle(event);
 			return 1;
 		}
 		if (event == FL_PUSH && Fl::event_button() == 3) {
@@ -759,7 +728,7 @@ TextEdit::TextEdit( int x, int y, int w, int h, const char *label )
 {
 	chrptr = 0;
 	bkspaces = 0;
-	textview::cursorStyle = HEAVY_CURSOR;
+	textview::cursorStyle = NORMAL_CURSOR;
 	PauseBreak = false;
 	wordwrap = false;
 }
@@ -784,6 +753,7 @@ void TextEdit::readFile()
 			add (inbuff.c_str());
 		}
 	}
+	Fl::focus(this);
 }
 
 void TextEdit::menu_cb(int val)
@@ -832,6 +802,7 @@ int TextEdit::handle_key() {
 	if (key == FL_Escape) {
 		clear();
 		active_modem->set_stopflag(true);
+		Fl::focus(this);
 		return 1;
 	}
 	
@@ -843,19 +814,23 @@ int TextEdit::handle_key() {
 			wf->set_XmtRcvBtn(true);
 		} else
 			PauseBreak = true;
+		Fl::focus(this);
 		return 1;
 	}
 	
 	if (key == (FL_KP + '+')) {
 		if (active_modem == cw_modem) active_modem->incWPM();
+		Fl::focus(this);
 		return 1;
 	}
 	if (key == (FL_KP + '-')) {
 		if (active_modem == cw_modem) active_modem->decWPM();
+		Fl::focus(this);
 		return 1;
 	}
 	if (key == (FL_KP + '*')) {
 		if (active_modem == cw_modem) active_modem->toggleWPM();
+		Fl::focus(this);
 		return 1;
 	}
 
@@ -868,20 +843,24 @@ int TextEdit::handle_key() {
 			chrptr++;
 		}
 		redraw();
+		Fl::focus(this);
 		return 1;
 	}
 
 	if (key == FL_Left) {
 		active_modem->searchDown();
+		Fl::focus(this);
 		return 1;
 	}
 	if (key == FL_Right) {
 		active_modem->searchUp();
+		Fl::focus(this);
 		return 1;
 	}
 		
 	if (key == FL_Enter) {
 		add('\n');
+		Fl::focus(this);
 		return 1;
 	}
 	
@@ -891,11 +870,13 @@ int TextEdit::handle_key() {
 			chrptr = buff.length();
 			bkspaces++;
 		}
+		Fl::focus(this);
 		return 1;
 	}
 	
 	const char *ch = Fl::event_text();
 	add(ch);
+	Fl::focus(this);
 	return 1;
 }
 
@@ -910,6 +891,7 @@ int TextEdit::handle(int event)
 	if (event == FL_FOCUS && Fl::focus() == this) {
 		textview::cursorON = true;
 		redraw();
+		Fl::focus(this);
 		return 1;
 	}
 	if (event == FL_KEYBOARD) {
@@ -919,8 +901,9 @@ int TextEdit::handle(int event)
 		const Fl_Menu_Item * m;
 		int xpos = Fl::event_x();
 		int ypos = Fl::event_y();
-		if (xpos > x() + w() - 20) {
-			scrollbar->handle(event);
+		if (xpos > x() + w() - SBwidth) {
+			scrollbar.handle(event);
+			Fl::focus(this);
 			return 1;
 		}
 		if (event == FL_PUSH && Fl::event_button() == 3) {
@@ -934,6 +917,7 @@ int TextEdit::handle(int event)
 						break;
 					}
 			}
+			Fl::focus(this);
 			return 1;
 		}
 
@@ -974,9 +958,8 @@ int TextEdit::nextChar()
 	}
 	Fl::lock();
 	attr[chrptr] = 4;
-	redraw();
+	damage(FL_DAMAGE_ALL);
 	Fl::unlock();
-//	Fl::awake();
 	return (buff[chrptr++]);
 }
 

@@ -59,13 +59,21 @@ protected:
     int			charwidth;
 	int			maxcharwidth;
     int			charheight;
+    int			descent;
 	int			cursorX;
 	int			cursorY;
+	int			X;
+	int			Y;
+	int			W;
+	int			H;
+	int			xpos;
+	int			ypos;
 	size_t		laststartpos;
-	size_t		lastendpos;
+	size_t		endpos;
 	int			startidx;
 	int			popx;
 	int			popy;
+	int			cursorwidth;
 	bool		cursorON;
 	bool		wordwrap;
 	bool		inprocess;
@@ -104,7 +112,7 @@ public:
 	}
 
 protected:
-	Fl_Scrollbar *scrollbar;
+	Fl_Scrollbar scrollbar;
 	Fl_Menu_Button *mpopup;
 
 	void scrollbarCB();	
@@ -125,13 +133,27 @@ protected:
 class TextView : public textview {
 public:
 	TextView( int x, int y, int w, int h, const char *label = 0 );
-	virtual void add( char *text, int attr = 1 ) {textview::add(text, attr);};
-	virtual void add( const char *text, int attr = 1) {textview::add((char*)text);};
-	virtual void add( char c, int attr = 1) {textview::add(c, attr);};
-	virtual void clear() {textview::clear();};
-	virtual void setFont(Fl_Font fnt) { textview::setFont(fnt); }
-	virtual void setFontSize(int siz) { textview::setFontSize(siz); }
-	virtual void setFontColor(Fl_Color clr) { textview::setFontColor(clr); }
+	virtual void add( char *text, int attr = 1 ) {
+		textview::add(text, attr);
+	}
+	virtual void add( const char *text, int attr = 1) {
+		textview::add((char*)text, attr);
+	}
+	virtual void add( char c, int attr = 1) {
+		textview::add(c, attr);
+	}
+	virtual void clear() {
+		textview::clear();
+	}
+	virtual void setFont(Fl_Font fnt) { 
+		textview::setFont(fnt); 
+	}
+	virtual void setFontSize(int siz) { 
+		textview::setFontSize(siz); 
+	}
+	virtual void setFontColor(Fl_Color clr) { 
+		textview::setFontColor(clr); 
+	}
 protected:
 	static Fl_Menu_Item viewmenu[];
 	int		handle (int event);
@@ -143,15 +165,27 @@ protected:
 class TextEdit : public textview {
 public:
 	TextEdit( int x, int y, int w, int h, const char *label = 0 );
-	virtual void add( char *text, int attr = 1 ) {textview::add(text);};
-	virtual void add( const char *text, int attr = 1) {textview::add((char*)text);};
-	virtual void add( char c, int attr = 1) {textview::add(c);};
+	virtual void add( char *text, int attr = 1 ) {
+		textview::add(text, attr);
+	}
+	virtual void add( const char *text, int attr = 1) {
+		textview::add((char*)text, attr);
+	}
+	virtual void add( char c, int attr = 1) {
+		textview::add(c, attr);
+	}
 	virtual void clear();
 	int		nextChar();
 	void	readFile();	
-	virtual void setFont(Fl_Font fnt) { textview::setFont(fnt); }
-	virtual void setFontSize(int siz) { textview::setFontSize(siz); }
-	virtual void setFontColor(Fl_Color clr) { textview::setFontColor(clr); }
+	virtual void setFont(Fl_Font fnt) { 
+		textview::setFont(fnt); 
+	}
+	virtual void setFontSize(int siz) { 
+		textview::setFontSize(siz); 
+	}
+	virtual void setFontColor(Fl_Color clr) { 
+		textview::setFontColor(clr); 
+	}
 	void	cursorON();
 protected:
 	int 	handle_fnckey(int key);
