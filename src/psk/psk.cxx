@@ -264,7 +264,7 @@ void psk::searchDown()
 		if (spwr / npwr > 4.0) {
 			frequency = srchfreq;
 			set_freq(frequency);
-			sigsearch = 5;
+			sigsearch = 3;
 			break;
 		}
 		srchfreq -= bandwidth/4;
@@ -282,7 +282,7 @@ void psk::searchUp()
 		if (spwr / npwr > 4.0) {
 			frequency = srchfreq;
 			set_freq(frequency);
-			sigsearch = 5;
+			sigsearch = 3;
 			break;
 		}
 		srchfreq += bandwidth/4;
@@ -294,40 +294,30 @@ void psk::findsignal()
 	double ftest, sigpwr, noise;
 // fast search for peak signal frequency		
 	if (sigsearch) {
-		if (mailserver && progdefaults.PSKmailSweetSpot) {
-			ftest = wf->peakFreq((int)(progdefaults.PSKsweetspot), (int) (bandwidth));
-		} else {
-			ftest = wf->peakFreq((int)(frequency), (int)(bandwidth));
-		}
+		ftest = wf->peakFreq((int)(frequency), (int)(2 * bandwidth));
 		sigpwr = wf->powerDensity(ftest,  bandwidth);
 		noise = wf->powerDensity(ftest + 3 * bandwidth / 2, bandwidth / 2) +
 		        wf->powerDensity(ftest - 3 * bandwidth / 2, bandwidth / 2) + 1e-20;
-		
-		freqerr = 0.0;
-		if (sigpwr/noise > 2.0) {//afcthreshold) {
-			if ( !mailserver || (mailserver && !progdefaults.PSKmailSweetSpot) ) {
-				 if ( fabs(frequency - ftest) < (bandwidth)  ) {
+		if (sigpwr/noise > 2.0) { // larger than the afcthreshold) {
+			if ( (!mailserver || !progdefaults.PSKmailSweetSpot)  && ( fabs(frequency - ftest) < (2 * bandwidth)  ) ) {
 					frequency = ftest;
 					set_freq(frequency);
+					freqerr = 0.0;
 					sigsearch--;
-				 }
-			} else if (mailserver && (fabs(progdefaults.PSKsweetspot - ftest) < (bandwidth) )) {
+			} else if (mailserver && (fabs(progdefaults.PSKsweetspot - ftest) < (2 * bandwidth) )) {
 				frequency = ftest;
 				set_freq(frequency);
+				freqerr = 0.0;
 				sigsearch--;
 			} 
-		} else if (mailserver && progdefaults.PSKmailSweetSpot) {
-			frequency = progdefaults.PSKsweetspot;
-			set_freq(frequency);
-		}
-		else
-			if (!mailserver)
+		} else { // less than the threshold
+			if (mailserver  && progdefaults.PSKmailSweetSpot) {
+				frequency = progdefaults.PSKsweetspot;
+				set_freq(frequency);
+			}
+			else
 				sigsearch--;
-		
-	} else if (mailserver && progdefaults.PSKmailSweetSpot) {
-		frequency = progdefaults.PSKsweetspot;
-		set_freq(frequency);
-		sigsearch = 3;
+		}
 	}
 }
 
@@ -343,11 +333,8 @@ void psk::afc()
 	if (fabs(error) < bandwidth) {
 		freqerr = decayavg( freqerr, error, 8);
 		frequency -= freqerr;
-//		frequency -= error;
 		set_freq (frequency);
 	}
-	if (mailserver && progdefaults.PSKmailSweetSpot)
-		sigsearch = 3;
 }
 
 void psk::rx_symbol(complex symbol)
@@ -488,8 +475,14 @@ int psk::rx_process(double *buf, int len)
 					afc();
 			}
 		}
-		if (!dcd && afcon)
+		if (!dcd && afcon) {
+			if (mailserver && progdefaults.PSKmailSweetSpot) {
+				frequency = progdefaults.PSKsweetspot;
+				set_freq(frequency);
+				sigsearch = 3;
+			}
 			findsignal();
+		}
 	}
 	return 0;
 }
