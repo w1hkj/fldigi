@@ -295,7 +295,7 @@ void psk::findsignal()
 	int searchBW = progdefaults.SearchRange + (int)(2 * bandwidth);
 	
 // fast search for peak signal frequency
-	if (sigsearch) {
+	if (sigsearch > 0) {
 		if (mailserver) { 
 // mail server signal search
 			ftest = wf->peakFreq((int)(frequency), searchBW);
@@ -306,13 +306,21 @@ void psk::findsignal()
 				if (progdefaults.PSKmailSweetSpot) {
 					if (fabs(ftest - progdefaults.PSKsweetspot) < searchBW) {
 						frequency = ftest;
-					} else
-						frequency = progdefaults.PSKmailSweetSpot;
-				} else
+						set_freq(frequency);
+						freqerr = 0.0;
+						sigsearch = 0;
+					} else {
+						frequency = progdefaults.PSKsweetspot;
+						set_freq(frequency);
+						freqerr = 0.0;
+						sigsearch--;
+					}
+				} else {
 					frequency = ftest;
-				set_freq(frequency);
-				freqerr = 0.0;
-				sigsearch--;
+					set_freq(frequency);
+					freqerr = 0.0;
+					sigsearch = 0;
+				}
 			} else { // less than the threshold
 				if (progdefaults.PSKmailSweetSpot) {
 					frequency = progdefaults.PSKsweetspot;
@@ -332,6 +340,7 @@ void psk::findsignal()
 				frequency = ftest;
 				set_freq(frequency);
 				freqerr = 0.0;
+				sigsearch = 0;
 			}
 			sigsearch--;
 		}
@@ -498,8 +507,9 @@ int psk::rx_process(double *buf, int len)
 				set_freq(frequency);
 				sigsearch = 3;
 			}
-			findsignal();
 		}
+		if (sigsearch)
+			findsignal();
 	}
 	return 0;
 }

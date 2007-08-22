@@ -1214,7 +1214,7 @@ int waterfall::handle(int event) {
 			case FL_LEFT_MOUSE:
 				nucarrier = wfdisp->cursorFreq(xpos);
 				active_modem->set_freq(nucarrier);
-				active_modem->set_sigsearch(5);
+				active_modem->set_sigsearch(3);
 				wfdisp->redrawCursor();
 				restoreFocus();
 				break;
@@ -1232,7 +1232,7 @@ int waterfall::handle(int event) {
 			switch (Fl::event_button()) {
 			case FL_RIGHT_MOUSE:
 				active_modem->set_freq(oldcarrier);
-				active_modem->set_sigsearch(5);
+				active_modem->set_sigsearch(3);
 				wfdisp->redrawCursor();
 				restoreFocus();
 				break;
