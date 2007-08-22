@@ -27,10 +27,6 @@ extern Fl_Check_Button *btnBlackman;
 extern Fl_Check_Button *btnHamming;
 extern Fl_Check_Button *btnHanning;
 extern Fl_Check_Button *btnTriangular;
-extern Fl_Check_Button *btnUseCursorLines;
-extern Fl_Check_Button *btnUseBWTracks;
-extern Fl_Check_Button *btnUseCursorCenterLine;
-extern Fl_Check_Button *btnViewXmtSignal;
 #include <FL/Fl_Counter.H>
 extern Fl_Counter *cntLowFreqCutoff;
 #include "colorbox.h"
@@ -39,6 +35,12 @@ extern colorbox *Palette;
 extern Fl_Button *btnColor[9];
 extern Fl_Button *btnLoadPalette;
 extern Fl_Button *btnSavePalette;
+extern Fl_Check_Button *btnUseCursorLines;
+extern Fl_Check_Button *btnUseBWTracks;
+extern Fl_Check_Button *btnUseCursorCenterLine;
+extern Fl_Button *btnCursorBWcolor;
+extern Fl_Button *btnCursorCenterLineColor;
+extern Fl_Button *btnBwTracksColor;
 extern Fl_Group *tabInterface;
 #include <FL/Fl_Round_Button.H>
 extern Fl_Input *inpTTYdev;

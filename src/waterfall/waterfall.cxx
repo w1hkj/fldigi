@@ -54,12 +54,12 @@ static	RGB RGBred		= {254,0,0};
 //static RGB RGBmagenta = {196,0,196};
 //static RGB RGBblack   = {0,0,0};
 
-RGBI	mag2RGBI[256];
-static RGBI RGBIwhite	= {255,255,255,255};
-static RGBI RGBIred		= {255, 0, 0, 255};
-static RGBI RGBIyellow	= {255,255,0,255};
+// RGBI is a structure consisting of the values RED, GREEN, BLUE, INTENSITY
+// each value can range from 0 (extinguished) to 255 (full on)
+// the INTENSITY value is used for the grayscale waterfall display
 
-RGB	palette[9];
+RGBI	mag2RGBI[256];
+RGB		palette[9];
 
 #define max(a,b) (a)>(b)?(a):(b)
 #define min(a,b) (a)<(b)?(a):(b)
@@ -152,6 +152,9 @@ void WFdisp::makeMarker() {
 	
 	clrM = clrMin + (int)((double)carrierfreq + 0.5);
 	int bw = (int)((double) bandwidth / 2.0) + 1;
+	RGBmarker.R = progdefaults.bwTrackRGBI.R;
+	RGBmarker.G = progdefaults.bwTrackRGBI.G;
+	RGBmarker.B = progdefaults.bwTrackRGBI.B;
 	for (int y = 0; y < WFMARKER - 2; y++) 
 		for (int i = -bw; i <= bw ; i++) {
 			clrPos = clrM + i + y * IMAGE_WIDTH;
@@ -172,6 +175,10 @@ void WFdisp::makeMarker() {
 	if (xp < bandwidth / 2.0 || xp > (IMAGE_WIDTH - bandwidth / 2.0))
 		return;
 	clrM = markerimage + IMAGE_WIDTH + (int)(xp + 0.5);
+	RGBcursor.R = progdefaults.cursorLineRGBI.R;
+	RGBcursor.G = progdefaults.cursorLineRGBI.G;
+	RGBcursor.B = progdefaults.cursorLineRGBI.B;
+	
 	for (int y = 0; y < WFMARKER - 2; y++) {
 		int incr = y * IMAGE_WIDTH;
 		int msize = (WFMARKER - 2 - y)*RGBsize*step/4;
@@ -604,7 +611,7 @@ void WFdisp::update_waterfall() {
 		RGBI  *pos2 = fft_img + (carrierfreq - offset + bandwidth/2) / step;
 		if (pos1 >= fft_img && pos2 < fft_img + disp_width)
 			for (int y = 0; y < image_height; y ++) {
-				*pos1 = *pos2 = RGBIred;
+				*pos1 = *pos2 = progdefaults.bwTrackRGBI;
 				pos1 += disp_width;
 				pos2 += disp_width;
 			}
@@ -624,9 +631,9 @@ void WFdisp::drawcolorWF() {
 		if (pos1 >= fft_img && pos2 < fft_img + disp_width)
 			for (int y = 0; y < image_height; y ++) {
 				if (progdefaults.UseCursorLines)
-					*pos1 = *pos2 = RGBIwhite;
+					*pos1 = *pos2 = progdefaults.cursorLineRGBI;
 				if (progdefaults.UseCursorCenterLine)
-					*pos0 = RGBIyellow;
+					*pos0 = progdefaults.cursorCenterRGBI;
 				pos0 += disp_width;
 				pos1 += disp_width;
 				pos2 += disp_width;
@@ -653,9 +660,9 @@ void WFdisp::drawgrayWF() {
 		if (pos1 >= fft_img && pos2 < fft_img + disp_width)
 			for (int y = 0; y < image_height; y ++) {
 				if (progdefaults.UseCursorLines)
-					*pos1 = *pos2 = RGBIwhite;
+					*pos1 = *pos2 = progdefaults.cursorLineRGBI;
 				if (progdefaults.UseCursorCenterLine)
-					*pos0 = RGBIyellow;
+					*pos0 = progdefaults.cursorCenterRGBI;
 				pos0 += disp_width;
 				pos1 += disp_width;
 				pos2 += disp_width;

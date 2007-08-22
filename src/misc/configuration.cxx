@@ -83,6 +83,9 @@ configuration progdefaults = {
 	true,			// bool 	UseCursorLines;
 	true,			// bool 	UseCursorCenterLine;
 	true,			// bool 	UseBWTracks;
+	{255,255,0,255},		// RGBI	cursorLineRGBI;
+	{255, 255, 255, 255},	// RGBI	cursorCenterRGBI;
+	{255,0,0,255},			// RGBI	bwTrackRGBI;
 	4,				// int		feldfontnbr;
 	false,			// bool		viewXmtSignal;
 	false,			// bool		sendid;
@@ -256,7 +259,19 @@ void configuration::writeDefaultsXML()
 	writeXMLint(f, "WFPREFILTER", wfPreFilter);
 	writeXMLbool(f, "USECURSORLINES", UseCursorLines);
 	writeXMLbool(f, "USECURSORCENTERLINE", UseCursorCenterLine);
-	writeXMLbool(f, "USEBWTRACKS", UseBWTracks);	
+	writeXMLbool(f, "USEBWTRACKS", UseBWTracks);
+	writeXMLint(f, "CL_RED", cursorLineRGBI.R);	
+	writeXMLint(f, "CL_GREEN", cursorLineRGBI.G);	
+	writeXMLint(f, "CL_BLUE", cursorLineRGBI.B);
+	writeXMLint(f, "CL_INT", cursorLineRGBI.I);	
+	writeXMLint(f, "CC_RED", cursorCenterRGBI.R);	
+	writeXMLint(f, "CC_GREEN", cursorCenterRGBI.G);	
+	writeXMLint(f, "CC_BLUE", cursorCenterRGBI.B);
+	writeXMLint(f, "CC_INT", cursorCenterRGBI.I);	
+	writeXMLint(f, "BWT_RED", bwTrackRGBI.R);	
+	writeXMLint(f, "BWT_GREEN", bwTrackRGBI.G);	
+	writeXMLint(f, "BWT_BLUE", bwTrackRGBI.B);
+	writeXMLint(f, "BWT_INT", bwTrackRGBI.I);	
 	writeXMLbool(f, "VIEWXMTSIGNAL", viewXmtSignal);
 	writeXMLbool(f, "SENDID", sendid);
 	writeXMLbool(f, "MACROID", macroid);
@@ -428,6 +443,18 @@ void configuration::writeDefaults(ofstream &f)
 	f << PAdevice << endl;
 	f << LowFreqCutoff << endl;
 	f << SearchRange << endl;
+	f << cursorLineRGBI.R << endl;
+	f << cursorLineRGBI.G << endl;
+	f << cursorLineRGBI.B << endl;
+	f << cursorLineRGBI.I << endl;
+	f << cursorCenterRGBI.R << endl;
+	f << cursorCenterRGBI.G << endl; 
+	f << cursorCenterRGBI.B << endl;
+	f << cursorCenterRGBI.I << endl;
+	f << bwTrackRGBI.R << endl;
+	f << bwTrackRGBI.G << endl;
+	f << bwTrackRGBI.B << endl;
+	f << bwTrackRGBI.I << endl;
 }
 
 void configuration::readDefaults(ifstream &f)
@@ -547,6 +574,18 @@ void configuration::readDefaults(ifstream &f)
 	getline(f >> ws, PAdevice);
 	f >> LowFreqCutoff;
 	f >> SearchRange;
+	f >> cursorLineRGBI.R;
+	f >> cursorLineRGBI.G ;
+	f >> cursorLineRGBI.B;
+	f >> cursorLineRGBI.I;
+	f >> cursorCenterRGBI.R;
+	f >> cursorCenterRGBI.G;
+	f >> cursorCenterRGBI.B;
+	f >> cursorCenterRGBI.I;
+	f >> bwTrackRGBI.R;
+	f >> bwTrackRGBI.G;
+	f >> bwTrackRGBI.B;
+	f >> bwTrackRGBI.I;
 
 }
 
@@ -732,6 +771,13 @@ int configuration::openDefaults() {
 			btnPSKmailSweetSpot->value(PSKmailSweetSpot);
 			cntSearchRange->value(SearchRange);
 			
+			btnCursorBWcolor->color(
+				fl_rgb_color(cursorLineRGBI.R, cursorLineRGBI.G, cursorLineRGBI.B) );
+			btnCursorCenterLineColor->color(
+				fl_rgb_color(cursorCenterRGBI.R, cursorCenterRGBI.G, cursorCenterRGBI.B) );
+			btnBwTracksColor->color(
+				fl_rgb_color(bwTrackRGBI.R, bwTrackRGBI.G, bwTrackRGBI.B) );
+				
 //			txtCWFSKport->value(CWFSKport.c_str());
 
 //			btnUseCWkeylineRTS->value(useCWkeylineRTS);
@@ -797,7 +843,7 @@ int configuration::openDefaults() {
 			
 			btnRTTY_USB->value(RTTY_USB);
 //			btnUSE_UART->value(useUART);
-			btnViewXmtSignal->value(viewXmtSignal);
+//			btnViewXmtSignal->value(viewXmtSignal);
 			btnsendid->value(sendid);
 			
 			valRcvMixer->value(RcvMixer);

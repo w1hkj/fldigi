@@ -80,6 +80,9 @@ struct configuration {
 	bool	UseCursorLines;
 	bool	UseCursorCenterLine;
 	bool	UseBWTracks;
+	RGBI	cursorLineRGBI;
+	RGBI	cursorCenterRGBI;
+	RGBI	bwTrackRGBI;
 	int		feldfontnbr;
 	bool	viewXmtSignal;
 	bool	sendid;
