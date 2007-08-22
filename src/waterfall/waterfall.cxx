@@ -261,7 +261,7 @@ int WFdisp::peakFreq(int f0, int delta)
 	if (fmin < 0 || fmax > IMAGE_WIDTH) return f0;
 	for (int f = fmin; f <= fmax; f++)
 		threshold += pwr[f];
-	threshold /= (2*delta);
+	threshold /= delta;
 	for (int f = fmin; f <= fmax; f++)
 		if (pwr[f] > threshold) {
 			f2 = f;
@@ -1214,7 +1214,7 @@ int waterfall::handle(int event) {
 			case FL_LEFT_MOUSE:
 				nucarrier = wfdisp->cursorFreq(xpos);
 				active_modem->set_freq(nucarrier);
-				active_modem->set_sigsearch(3);
+				active_modem->set_sigsearch(SIGSEARCH);
 				wfdisp->redrawCursor();
 				restoreFocus();
 				break;

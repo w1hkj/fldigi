@@ -33,8 +33,13 @@
 #include "pskvaricode.h"
 #include "id.h"
 
+//=====================================================================
 #define	PskSampleRate	(8000)
 #define PipeLen			(64)
+
+#define SNTHRESHOLD 2.0
+#define AFCDECAY 8
+//=====================================================================
 
 class psk : public modem {
 private:
@@ -85,9 +90,10 @@ private:
 	void			tx_char(unsigned char c);
 	void			tx_flush();
 	void			update_syncscope();
-//	void			goertzel(complex);
-	void			afc();
+	void			signalquality();
 	void			findsignal();
+	void			phaseafc();
+	void			afc();
 	
 public:
 	psk(trx_mode mode);

@@ -17,6 +17,9 @@
 #include "config.h"
 
 #define	OUTBUFSIZE	16384
+// Constants for signal searching & s/n threshold
+#define SIGSEARCH 5
+
 
 class modem {
 protected:

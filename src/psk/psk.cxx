@@ -44,7 +44,6 @@ extern waterfall *wf;
 
 //=====================================================================
 
-
 #define	K		5
 #define	POLY1	0x17
 #define	POLY2	0x19
@@ -76,7 +75,7 @@ void psk::rx_init()
 	dcd = 0;
 	bitclk = 0;
 	freqerr = 0.0;
-	if (mailserver && progdefaults.PSKmailSweetSpot) sigsearch = 3;
+	if (mailserver && progdefaults.PSKmailSweetSpot) sigsearch = SIGSEARCH;
 	digiscope->mode(Digiscope::PHASE);
 	put_MODEstatus(mode);
 }
@@ -169,16 +168,15 @@ psk::psk(trx_mode pskmode) : modem()
 //	}
 // or matched sync filters
 
-//	wsincfilt(fir1c, 1.0 / symbollen, true);	// creates fir1c matched sin(x)/x filter
-//	wsincfilt(fir2c, 1.0 / 16.0, true);			// creates fir2c matched sin(x)/x filter
-	wsincfilt(fir1c, 1.0 / symbollen, false);	// creates fir1c matched sin(x)/x filter
-	wsincfilt(fir2c, 1.0 / 16.0, false);			// creates fir2c matched sin(x)/x filter
-//    wsincfilt(fir2c, 1.0 / 22.0, false);    // 1/22 with Hamming window
-                                            // nearly identical to gmfir2c
+//	wsincfilt(fir1c, 1.0 / symbollen, true);	// creates fir1c matched sin(x)/x filter w blackman
+//	wsincfilt(fir2c, 1.0 / 16.0, true);			// creates fir2c matched sin(x)/x filter w blackman
+	wsincfilt(fir1c, 1.0 / symbollen, false);	// creates fir1c matched sin(x)/x filter w hamming
+	wsincfilt(fir2c, 1.0 / 16.0, false);		// creates fir2c matched sin(x)/x filter w hamming
+//	wsincfilt(fir2c, 1.0 / 22.0, false);    	// 1/22 with Hamming window
+                                            	// nearly identical to gmfir2c
 // experimental raised cosine filter
 //	raisedcosfilt(fir1c);	// creates fir1c
 
-	
 	fir1 = new C_FIR_filter();
 	fir1->init(FIRLEN, symbollen / 16, fir1c, fir1c);
 
@@ -203,7 +201,7 @@ psk::psk(trx_mode pskmode) : modem()
 	
 //	pipeptr = 0;
 	if (mailserver && progdefaults.PSKmailSweetSpot)
-		sigsearch = 3;
+		sigsearch = SIGSEARCH;
 	else
 		sigsearch = 0;
 	for (int i = 0; i < 16; i++)
@@ -256,98 +254,94 @@ void psk::rx_qpsk(int bits)
 void psk::searchDown()
 {
 	double srchfreq = frequency - bandwidth * 2;
-	double minfreq = bandwidth * 4;
+	double minfreq = bandwidth * 2;
 	double spwr, npwr;
 	while (srchfreq > minfreq) {
-		spwr = wf->powerDensity(srchfreq, bandwidth/2);
+		spwr = wf->powerDensity(srchfreq, bandwidth);
 		npwr = wf->powerDensity(srchfreq + bandwidth, bandwidth/2) + 1e-10;
-		if (spwr / npwr > 4.0) {
+		if (spwr / npwr > SNTHRESHOLD) {
 			frequency = srchfreq;
 			set_freq(frequency);
-			sigsearch = 3;
+			sigsearch = SIGSEARCH;
 			break;
 		}
-		srchfreq -= bandwidth/4;
+		srchfreq -= bandwidth;
 	}
 }
 
 void psk::searchUp()
 {
 	double srchfreq = frequency + bandwidth * 2;
-	double maxfreq = IMAGE_WIDTH - bandwidth * 4;
+	double maxfreq = IMAGE_WIDTH - bandwidth * 2;
 	double spwr, npwr;
 	while (srchfreq < maxfreq) {
 		spwr = wf->powerDensity(srchfreq, bandwidth/2);
 		npwr = wf->powerDensity(srchfreq - bandwidth, bandwidth/2) + 1e-10;
-		if (spwr / npwr > 4.0) {
+		if (spwr / npwr > SNTHRESHOLD) {
 			frequency = srchfreq;
 			set_freq(frequency);
-			sigsearch = 3;
+			sigsearch = SIGSEARCH;
 			break;
 		}
-		srchfreq += bandwidth/4;
+		srchfreq += bandwidth;
 	}
 }
+
+int waitcount = 0;
 
 void psk::findsignal()
 {
 	double ftest, sigpwr, noise;
-	int searchBW = progdefaults.SearchRange + (int)(2 * bandwidth);
+	int searchBW = progdefaults.SearchRange;// - (int)bandwidth;
 	
 // fast search for peak signal frequency
 	if (sigsearch > 0) {
+		sigsearch--;
 		if (mailserver) { 
 // mail server signal search
 			ftest = wf->peakFreq((int)(frequency), searchBW);
 			sigpwr = wf->powerDensity(ftest,  bandwidth);
-			noise = wf->powerDensity(ftest + 3 * bandwidth / 2, bandwidth / 2) +
-		    	    wf->powerDensity(ftest - 3 * bandwidth / 2, bandwidth / 2) + 1e-20;
-			if (sigpwr/noise > 2.0) { // larger than the search threshold
+			noise = wf->powerDensity(ftest + 2 * bandwidth, bandwidth / 2) +
+		    	    wf->powerDensity(ftest - 2 * bandwidth, bandwidth / 2) + 1e-20;
+			if (sigpwr/noise > SNTHRESHOLD) { // larger than the search threshold
 				if (progdefaults.PSKmailSweetSpot) {
 					if (fabs(ftest - progdefaults.PSKsweetspot) < searchBW) {
 						frequency = ftest;
 						set_freq(frequency);
 						freqerr = 0.0;
-						sigsearch = 0;
 					} else {
 						frequency = progdefaults.PSKsweetspot;
 						set_freq(frequency);
 						freqerr = 0.0;
-						sigsearch--;
 					}
 				} else {
 					frequency = ftest;
 					set_freq(frequency);
 					freqerr = 0.0;
-					sigsearch = 0;
 				}
-			} else { // less than the threshold
+			} else { // less than the detection threshold
 				if (progdefaults.PSKmailSweetSpot) {
 					frequency = progdefaults.PSKsweetspot;
 					set_freq(frequency);
-					sigsearch = 3;
+					sigsearch = SIGSEARCH;
 				}
-				else
-					sigsearch--;
 			}
 		} else { 
-// normal psk usage signal search
+// normal signal search
 			ftest = wf->peakFreq((int)(frequency), searchBW);
 			sigpwr = wf->powerDensity(ftest,  bandwidth);
-			noise = wf->powerDensity(ftest + 3 * bandwidth / 2, bandwidth / 2) +
-		    	    wf->powerDensity(ftest - 3 * bandwidth / 2, bandwidth / 2) + 1e-20;
-			if (sigpwr/noise > 2.0) { // larger than the afcthreshold) {
+			noise = wf->powerDensity(ftest + 2 * bandwidth / 2, bandwidth / 2) +
+		    	    wf->powerDensity(ftest - 2 * bandwidth / 2, bandwidth / 2) + 1e-20;
+			if (sigpwr/noise > SNTHRESHOLD) { // larger than the detection threshold)
 				frequency = ftest;
 				set_freq(frequency);
 				freqerr = 0.0;
-				sigsearch = 0;
 			}
-			sigsearch--;
 		}
 	}		
 }
 
-void psk::afc()
+void psk::phaseafc()
 {
 	double error;
 	error = (phase - bits * M_PI / 2);
@@ -357,11 +351,22 @@ void psk::afc()
 		error -= 2 * M_PI;
 	error *= ((samplerate / (symbollen * 2 * M_PI)/16));
 	if (fabs(error) < bandwidth) {
-		freqerr = decayavg( freqerr, error, 8);
+		freqerr = decayavg( freqerr, error, AFCDECAY);
 		frequency -= freqerr;
 		set_freq (frequency);
 	}
 }
+
+void psk::afc()
+{
+	if (!afcon)
+		return;
+//	if (sigsearch)
+//		findsignal();
+	else if (dcd == true)
+		phaseafc();
+}
+
 
 void psk::rx_symbol(complex symbol)
 {
@@ -400,7 +405,8 @@ void psk::rx_symbol(complex symbol)
 	default:
 		if (metric > squelch || squelchon == false)
 			dcd = true;
-		else dcd = false;
+		else 
+			dcd = false;
 	}
 
 	set_phase(phase, dcd);
@@ -414,28 +420,21 @@ void psk::rx_symbol(complex symbol)
 	
 }
 
+void psk::signalquality()
+{
+	E1 = wf->powerDensity(frequency,  bandwidth);
+	E2 = wf->powerDensity(frequency - 2 * bandwidth, bandwidth/2) +
+		 wf->powerDensity(frequency + 2 * bandwidth, bandwidth/2);
+	E3 = wf->powerDensity(frequency - 3 * bandwidth, bandwidth/2) +
+		 wf->powerDensity(frequency + 3 * bandwidth, bandwidth/2);
+	snratio = decayavg( snratio, E1/(E2 + 1e-10), 8);
+	imdratio = decayavg( imdratio, E3/(E1 + 1e-10), 8);
+}
+
 void psk::update_syncscope()
 {
 	static char msg1[15];
 	static char msg2[15];
-	double bw = bandwidth / 2;
-	double sp = bandwidth / 4;
-	
-	E1 = decayavg(	E1, 
-					wf->powerDensity(frequency - bw,  sp) +
-					wf->powerDensity(frequency + bw, sp), 
-					64);
-	E2 = decayavg(	E2, 
-					wf->powerDensity(frequency - 2 * bw, sp) +
-					wf->powerDensity(frequency + 2 * bw, sp), 
-					64);
-	E3 = decayavg(	E3, 
-					wf->powerDensity(frequency - 3 * bw, sp) +
-					wf->powerDensity(frequency + 3 * bw, sp), 
-					64);
-	snratio = (E1/(E2 + 1e-10));
-	imdratio = (E3/(E1 + 1e-10));
-	
 	s2n = 10.0*log10( snratio );
 	display_metric(metric);
 
@@ -459,6 +458,8 @@ int psk::rx_process(double *buf, int len)
 	complex z;
 
 	delta = 2.0 * M_PI * frequency / samplerate;
+	
+	signalquality();
 
 	while (len-- > 0) {
 // Mix with the internal NCO
@@ -497,19 +498,27 @@ int psk::rx_process(double *buf, int len)
 				bitclk -= 16.0;
 				rx_symbol(z);
 				update_syncscope();
-				if (dcd && afcon)
-					afc();
+				afc();
 			}
 		}
-		if (!dcd && afcon) {
-			if (mailserver && progdefaults.PSKmailSweetSpot) {
-				frequency = progdefaults.PSKsweetspot;
-				set_freq(frequency);
-				sigsearch = 3;
+	}
+	if (sigsearch)
+		findsignal();
+	else if (mailserver) {
+		if (waitcount > 0) {
+			--waitcount;
+			if (waitcount == 0) {
+				if (progdefaults.PSKmailSweetSpot) {
+					frequency = progdefaults.PSKsweetspot;
+					set_freq(frequency);
+				}				
+				sigsearch = SIGSEARCH;
 			}
 		}
-		if (sigsearch)
-			findsignal();
+		else if ( E1/ E2 <= 1.0) { //(snratio <= 1.0) {
+			waitcount = 8;
+			sigsearch = 0;
+		}
 	}
 	return 0;
 }
