@@ -884,6 +884,9 @@ void status_btn_right_click()
 		case MODE_QPSK63 :
 		case MODE_PSK125 :
 		case MODE_QPSK125 :
+		case MODE_PSK250 :
+		case MODE_QPSK250 :
+			tabsModems->value(tabPSK); break;
 		case MODE_MFSK16:
 		case MODE_MFSK8:
 		case MODE_THROB1 :

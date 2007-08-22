@@ -21,7 +21,9 @@ struct configuration {
 	double	RTTYsweetspot;
 	double	PSKsweetspot;
 	bool	StartAtSweetSpot;
+// for PSK mail interface
 	bool	PSKmailSweetSpot;
+	int		SearchRange;
 // RTTY
 	double		rtty_squelch;
 	int			rtty_shift;

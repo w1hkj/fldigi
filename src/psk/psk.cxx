@@ -292,33 +292,50 @@ void psk::searchUp()
 void psk::findsignal()
 {
 	double ftest, sigpwr, noise;
-// fast search for peak signal frequency		
+	int searchBW = progdefaults.SearchRange + (int)(2 * bandwidth);
+	
+// fast search for peak signal frequency
 	if (sigsearch) {
-		ftest = wf->peakFreq((int)(frequency), (int)(2 * bandwidth));
-		sigpwr = wf->powerDensity(ftest,  bandwidth);
-		noise = wf->powerDensity(ftest + 3 * bandwidth / 2, bandwidth / 2) +
-		        wf->powerDensity(ftest - 3 * bandwidth / 2, bandwidth / 2) + 1e-20;
-		if (sigpwr/noise > 2.0) { // larger than the afcthreshold) {
-			if ( (!mailserver || !progdefaults.PSKmailSweetSpot)  && ( fabs(frequency - ftest) < (2 * bandwidth)  ) ) {
+		if (mailserver) { 
+// mail server signal search
+			ftest = wf->peakFreq((int)(frequency), searchBW);
+			sigpwr = wf->powerDensity(ftest,  bandwidth);
+			noise = wf->powerDensity(ftest + 3 * bandwidth / 2, bandwidth / 2) +
+		    	    wf->powerDensity(ftest - 3 * bandwidth / 2, bandwidth / 2) + 1e-20;
+			if (sigpwr/noise > 2.0) { // larger than the search threshold
+				if (progdefaults.PSKmailSweetSpot) {
+					if (fabs(ftest - progdefaults.PSKsweetspot) < searchBW) {
+						frequency = ftest;
+					} else
+						frequency = progdefaults.PSKmailSweetSpot;
+				} else
 					frequency = ftest;
-					set_freq(frequency);
-					freqerr = 0.0;
-					sigsearch--;
-			} else if (mailserver && (fabs(progdefaults.PSKsweetspot - ftest) < (2 * bandwidth) )) {
-				frequency = ftest;
 				set_freq(frequency);
 				freqerr = 0.0;
 				sigsearch--;
-			} 
-		} else { // less than the threshold
-			if (mailserver  && progdefaults.PSKmailSweetSpot) {
-				frequency = progdefaults.PSKsweetspot;
-				set_freq(frequency);
+			} else { // less than the threshold
+				if (progdefaults.PSKmailSweetSpot) {
+					frequency = progdefaults.PSKsweetspot;
+					set_freq(frequency);
+					sigsearch = 3;
+				}
+				else
+					sigsearch--;
 			}
-			else
-				sigsearch--;
+		} else { 
+// normal psk usage signal search
+			ftest = wf->peakFreq((int)(frequency), searchBW);
+			sigpwr = wf->powerDensity(ftest,  bandwidth);
+			noise = wf->powerDensity(ftest + 3 * bandwidth / 2, bandwidth / 2) +
+		    	    wf->powerDensity(ftest - 3 * bandwidth / 2, bandwidth / 2) + 1e-20;
+			if (sigpwr/noise > 2.0) { // larger than the afcthreshold) {
+				frequency = ftest;
+				set_freq(frequency);
+				freqerr = 0.0;
+			}
+			sigsearch--;
 		}
-	}
+	}		
 }
 
 void psk::afc()

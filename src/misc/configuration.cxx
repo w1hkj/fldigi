@@ -24,7 +24,9 @@ configuration progdefaults = {
 	1000,			// int		RTTYsweetspot;
 	1000,			// int		PSKsweetspot;
 	true,			// bool		StartAtSweetSpot;
+//  for PSK mail interface	
 	true,			// bool		PSKmailSweetSpot;
+	200,			// int		SearchRange;
 // RTTY
 	25.0,			// double		rtty_squelch;
 	3,				// int			rtty_shift; = 170
@@ -211,6 +213,7 @@ void configuration::writeDefaultsXML()
 
 	writeXMLbool(f, "STARTATSWEETSPOT", StartAtSweetSpot);
 	writeXMLbool(f, "PSKMAILSWEETSPOT", PSKmailSweetSpot);
+	writeXMLint(f, "PSKSEARCHRANGE", SearchRange);
 	writeXMLdbl(f, "CWSWEETSPOT", CWsweetspot);
 	writeXMLdbl(f, "PSKSWEETSPOT", PSKsweetspot);
 	writeXMLdbl(f, "RTTYSWEETSPOT", RTTYsweetspot);
@@ -424,6 +427,7 @@ void configuration::writeDefaults(ofstream &f)
 	f << OSSdevice << endl;
 	f << PAdevice << endl;
 	f << LowFreqCutoff << endl;
+	f << SearchRange << endl;
 }
 
 void configuration::readDefaults(ifstream &f)
@@ -542,6 +546,8 @@ void configuration::readDefaults(ifstream &f)
 	f >> OSSdevice;
 	getline(f >> ws, PAdevice);
 	f >> LowFreqCutoff;
+	f >> SearchRange;
+
 }
 
 void configuration::loadDefaults() {
@@ -724,6 +730,7 @@ int configuration::openDefaults() {
 			valPSKsweetspot->value(PSKsweetspot);
 			btnStartAtSweetSpot->value(StartAtSweetSpot);
 			btnPSKmailSweetSpot->value(PSKmailSweetSpot);
+			cntSearchRange->value(SearchRange);
 			
 //			txtCWFSKport->value(CWFSKport.c_str());
 

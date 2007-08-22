@@ -789,10 +789,20 @@ resetOLIVIA();
 progdefaults.changed = true;
 }
 
+Fl_Group *tabPSK=(Fl_Group *)0;
+
+Fl_Counter *cntSearchRange=(Fl_Counter *)0;
+
+static void cb_cntSearchRange(Fl_Counter* o, void*) {
+  progdefaults.SearchRange = (int)o->value();
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *btnPSKmailSweetSpot=(Fl_Check_Button *)0;
 
 static void cb_btnPSKmailSweetSpot(Fl_Check_Button* o, void*) {
   progdefaults.PSKmailSweetSpot = o->value();
+progdefaults.changed = true;
 }
 
 Fl_Group *tabRTTY=(Fl_Group *)0;
@@ -967,6 +977,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { Fl_Group* o = tabWaterfall = new Fl_Group(0, 25, 400, 195, "W-fall");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
+        o->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 395, 45, "FFT Prefilter");
           o->box(FL_ENGRAVED_BOX);
           o->color((Fl_Color)51);
@@ -1354,7 +1365,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { Fl_Group* o = tabModems = new Fl_Group(0, 25, 401, 195, "Modems");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
-        o->hide();
         { Fl_Tabs* o = tabsModems = new Fl_Tabs(0, 25, 401, 195);
           o->color((Fl_Color)51);
           o->selection_color((Fl_Color)10);
@@ -1611,8 +1621,18 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             }
             o->end();
           }
-          { Fl_Group* o = new Fl_Group(0, 50, 400, 170, "PSKmail");
-            { Fl_Check_Button* o = btnPSKmailSweetSpot = new Fl_Check_Button(25, 75, 155, 15, "use PSK sweetspot");
+          { Fl_Group* o = tabPSK = new Fl_Group(0, 50, 400, 170, "Psk");
+            { Fl_Counter* o = cntSearchRange = new Fl_Counter(25, 69, 80, 21, "Search Range");
+              o->type(1);
+              o->minimum(10);
+              o->maximum(500);
+              o->step(10);
+              o->value(200);
+              o->callback((Fl_Callback*)cb_cntSearchRange);
+              o->align(FL_ALIGN_RIGHT);
+              o->value(progdefaults.SearchRange);
+            }
+            { Fl_Check_Button* o = btnPSKmailSweetSpot = new Fl_Check_Button(25, 105, 185, 20, "use PSK mail sweetspot");
               o->down_box(FL_DOWN_BOX);
               o->value(1);
               o->callback((Fl_Callback*)cb_btnPSKmailSweetSpot);

@@ -86,7 +86,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabWaterfall {
         label {W-fall} open
-        xywh {0 25 400 195} color 51 selection_color 51
+        xywh {0 25 400 195} color 51 selection_color 51 hide
       } {
         Fl_Group {} {
           label {FFT Prefilter} open
@@ -168,7 +168,7 @@ progdefaults.changed = true;}
           Fl_Check_Button btnViewXmtSignal {
             label {View Xmt Signal}
             callback {progdefaults.viewXmtSignal=o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
             xywh {108 105 137 20} down_box DOWN_BOX hide
             code0 {o->value(progdefaults.viewXmtSignal);}
           }
@@ -663,7 +663,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 401 195} color 51 selection_color 51 hide
+        xywh {0 25 401 195} color 51 selection_color 51
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 401 195} color 51 selection_color 10 align 9
@@ -910,14 +910,22 @@ progdefaults.changed = true;}
               xywh {300 172 79 28}
             }
           }
-          Fl_Group {} {
-            label PSKmail open
+          Fl_Group tabPSK {
+            label Psk open
             xywh {0 50 400 170}
           } {
+            Fl_Counter cntSearchRange {
+              label {Search Range}
+              callback {progdefaults.SearchRange = (int)o->value();
+progdefaults.changed = true;} selected
+              xywh {25 69 80 21} type Simple align 8 minimum 10 maximum 500 step 10 value 200
+              code0 {o->value(progdefaults.SearchRange);}
+            }
             Fl_Check_Button btnPSKmailSweetSpot {
-              label {use PSK sweetspot}
-              callback {progdefaults.PSKmailSweetSpot = o->value();}
-              xywh {25 75 155 15} down_box DOWN_BOX value 1
+              label {use PSK mail sweetspot}
+              callback {progdefaults.PSKmailSweetSpot = o->value();
+progdefaults.changed = true;}
+              xywh {25 105 185 20} down_box DOWN_BOX value 1
               code0 {o->value(progdefaults.PSKmailSweetSpot);}
             }
           }

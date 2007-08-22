@@ -34,6 +34,8 @@ void ParseMode(string src)
 		initPSK63();
 	else if (src.find("PSK125") != string::npos)
 		initPSK125();
+	else if (src.find("PSK250") != string::npos)
+		initPSK250();
 	else if (src.find("DOMINOEX4") != string::npos)
 		initDOMINOEX4();
 	else if (src.find("DOMINOEX5") != string::npos)

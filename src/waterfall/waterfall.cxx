@@ -99,7 +99,7 @@ WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 	dispcolor = true;
 	offset = 0;	
 	sigoffset = 0;
-	ampspan = 40;
+	ampspan = 75;
 	reflevel = -10;
 	initmaps();
 	bandwidth = 32;
@@ -254,21 +254,21 @@ void WFdisp::initmaps() {
 
 int WFdisp::peakFreq(int f0, int delta)
 {
-	double avg = 0.0;
+	double threshold = 0.0;
 	int f1, fmin =	(int)((f0 - delta)), 
 		f2, fmax =	(int)((f0 + delta));
 	f1 = fmin; f2 = fmax;
 	if (fmin < 0 || fmax > IMAGE_WIDTH) return f0;
 	for (int f = fmin; f <= fmax; f++)
-		avg += pwr[f];
-	avg /= 2*delta + 1;
+		threshold += pwr[f];
+	threshold /= delta;
 	for (int f = fmin; f <= fmax; f++)
-		if (pwr[f] > avg) {
-			f1 = f;
+		if (pwr[f] > threshold) {
+			f2 = f;
 		}
 	for (int f = fmax; f >= fmin; f--)
-		if (pwr[f] > avg) {
-			f2 = f;
+		if (pwr[f] > threshold) {
+			f1 = f;
 		}
 	return (f1 + f2) / 2;
 }
