@@ -261,7 +261,7 @@ int WFdisp::peakFreq(int f0, int delta)
 	if (fmin < 0 || fmax > IMAGE_WIDTH) return f0;
 	for (int f = fmin; f <= fmax; f++)
 		threshold += pwr[f];
-	threshold /= delta;
+	threshold /= (2*delta);
 	for (int f = fmin; f <= fmax; f++)
 		if (pwr[f] > threshold) {
 			f2 = f;
