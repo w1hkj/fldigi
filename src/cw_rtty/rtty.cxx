@@ -151,9 +151,7 @@ void rtty::restart()
 	poscnt = negcnt = 0;
 	posfreq = negfreq = 0.0;
 	
-	sum = sum2 = 0.0;
 	metric = 0.0;
-	avgratio = 0.0;
 
 	sprintf(msg1,"Shft %-4.0f", rtty_shift); 
 	put_Status1(msg1);
@@ -358,11 +356,19 @@ int rtty::rx(bool bit)
 	return flag;
 }
 
+//char szSN[10];
+
 void rtty::Metric()
 {
-	double midpwr = wf->powerDensity(frequency + shift, 2) + 1e-10;
-	double sigpwr = wf->powerDensity(frequency + shift/2, 2*rtty_baud) + 1e-10;
-	metric = 10.0*log10(sigpwr / midpwr) ;
+	double delta = rtty_baud/4.0;//rtty_baud / 2.0;
+	double noisepwr = wf->powerDensity(frequency - shift * 1.5, delta) +
+					  wf->powerDensity(frequency + shift * 1.5, delta) + 1e-10;
+	double sigpwr = wf->powerDensity(frequency - shift/2, delta) +
+					wf->powerDensity(frequency + shift/2, delta) + 1e-10;
+	metric = decayavg( metric, 40.0*log10(sigpwr / noisepwr), 8);
+//	sprintf(szSN,"%5.2f dB", metric / 2);
+//	put_status(szSN);	
+//	metric = 20.0*log10(sigpwr / midpwr) ;
 	display_metric(metric);
 }
 
@@ -447,13 +453,9 @@ int rtty::rx_process(double *buf, int len)
 			if (fin >= 0.0) {
 				poscnt++;
 				posfreq += fin;
-				sum  += fin;
-				sum2 += fin  * fin;
 			} else {
 				negcnt++;
 				negfreq += fin;
-				sum -= fin;
-				sum2 += fin  * fin;
 			}
 
 //	hysterisis dead zone in frequency discriminator bit detector
@@ -488,21 +490,8 @@ int rtty::rx_process(double *buf, int len)
 					poserr = posfreq/poscnt;
 					negerr = negfreq/negcnt;
 
-// compute the presence or absence of a signal (DCD)					
-					mean = sum/(poscnt+negcnt);
-					stddev = 1e-6 + (sum2 - sum * sum /(poscnt + negcnt))/(poscnt + negcnt - 1);
-
-					if (avgratio > mean/stddev)
-						avgratio = decayavg(avgratio, mean/stddev,1);
-					else
-						avgratio = decayavg(avgratio, mean/stddev, 8);
-					
-					metric = 100.0 + 40*log10(avgratio);
-					
-					if (metric > 100.0) metric = 100.0;
-					if (metric < 0.0) metric = 0.0;
-					display_metric(metric);
-					
+					Metric();
+				
 // compute the frequency error as the median of + and - relative freq's
 					int fs = progdefaults.rtty_afcspeed;
 					if (sigsearch) {
@@ -520,7 +509,6 @@ int rtty::rx_process(double *buf, int len)
 				}
 				poscnt = 0; posfreq = 0.0;
 				negcnt = 0; negfreq = 0.0;
-				sum = sum2 = 0.0;
 
 				if (afcon) {
 					if (metric > squelch || !squelchon || sigsearch) {

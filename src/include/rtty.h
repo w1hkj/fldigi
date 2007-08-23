@@ -36,7 +36,9 @@
 #include "digiscope.h"
 #include "id.h"
 
-#define	RTTY_SampleRate	8000
+//#define	RTTY_SampleRate	8000
+#define RTTY_SampleRate 11025
+
 #define	RTTYMaxSymLen	1024
 
 #define	LETTERS	0x100
@@ -108,7 +110,6 @@ private:
 	int rxdata;
 	double posfreq, negfreq;
 	double poserr, negerr;
-	double avgratio;
 	int poscnt, negcnt;
 
 	double prevsymbol;
@@ -121,8 +122,6 @@ private:
 	int rxmode;
 	int txmode;
 	int preamble;
-	
-	double sum, sum2, mean, stddev;
 	
 	void clear_syncscope();
 	void update_syncscope();

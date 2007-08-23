@@ -351,7 +351,12 @@ Fl::unlock();
 		cursormoved = false;
 	}
 	if (dispcnt == 0)
-		dispcnt = wfspeed * (srate > 8000 ? 2 : 1);
+		if (srate == 8000)
+			dispcnt = wfspeed;
+		else if (srate == 11025)
+			dispcnt = wfspeed * 4 / 3;
+		else
+			dispcnt = wfspeed * 2;
 	--dispcnt;
 }
 
