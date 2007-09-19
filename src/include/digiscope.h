@@ -39,7 +39,7 @@
 #include <FL/fl_draw.H>
 #include "threads.h"
 
-class Digiscope : Fl_Widget { 
+class Digiscope : public Fl_Widget { 
 public:
 #define DEFAULT_WIDTH	100
 #define DEFAULT_HEIGHT	100

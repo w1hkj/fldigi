@@ -250,7 +250,6 @@ private:
 	uchar	*sig_img;
 	uchar	*scline;
 	
-	short int	*fft_hist;
 	short int	*fft_db;
 	double	 	*circbuff;
 	double	*pwr;

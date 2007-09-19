@@ -54,61 +54,48 @@ STATIC_LDFLAGS = $(shell fltk-config --ldstaticflags --use-images)
 # our source files
 SRC_DIR = src
 SRC = \
-	$(SRC_DIR)/fft/fft.cxx \
-	$(SRC_DIR)/waterfall/waterfall.cxx \
-	$(SRC_DIR)/soundcard/sound.cxx \
-	$(SRC_DIR)/dialogs/fl_digi.cxx \
-	$(SRC_DIR)/misc/threads.cxx \
-	$(SRC_DIR)/filters/viterbi.cxx \
-	$(SRC_DIR)/trx/trx.cxx \
-	$(SRC_DIR)/psk/psk.cxx \
-	$(SRC_DIR)/psk/pskvaricode.cxx \
-	$(SRC_DIR)/psk/pskcoeff.cxx \
-	$(SRC_DIR)/mfsk/mfsk.cxx \
-	$(SRC_DIR)/mfsk/interleave.cxx \
-	$(SRC_DIR)/mfsk/mfskvaricode.cxx \
-	$(SRC_DIR)/misc/ascii.cxx \
-	$(SRC_DIR)/globals/globals.cxx \
-	$(SRC_DIR)/trx/modem.cxx \
-	$(SRC_DIR)/misc/misc.cxx \
-	$(SRC_DIR)/filters/fftfilt.cxx \
-	$(SRC_DIR)/dialogs/Config.cxx \
-	$(SRC_DIR)/misc/configuration.cxx \
-	$(SRC_DIR)/filters/filters.cxx \
-	$(SRC_DIR)/dialogs/TextView.cxx \
-	$(SRC_DIR)/dialogs/font_browser.cxx \
-	$(SRC_DIR)/misc/macros.cxx \
-	$(SRC_DIR)/main.cxx \
-	$(SRC_DIR)/rigcontrol/ptt.cxx \
-	$(SRC_DIR)/waterfall/digiscope.cxx \
-	$(SRC_DIR)/logger/logger.cxx \
-	$(SRC_DIR)/olivia/olivia.cxx \
-	$(SRC_DIR)/dominoex/dominoex.cxx \
-	$(SRC_DIR)/dominoex/dominovar.cxx \
-	$(SRC_DIR)/wwv/wwv.cxx \
-	$(SRC_DIR)/misc/log.cxx \
-	$(SRC_DIR)/misc/pskmail.cxx \
+	$(SRC_DIR)/combo/combo.cxx \
 	$(SRC_DIR)/cw_rtty/cw.cxx \
 	$(SRC_DIR)/cw_rtty/rtty.cxx \
 	$(SRC_DIR)/cw_rtty/morse.cxx \
+	$(SRC_DIR)/dialogs/Config.cxx \
+	$(SRC_DIR)/dialogs/fl_digi.cxx \
+	$(SRC_DIR)/dialogs/font_browser.cxx \
+	$(SRC_DIR)/dominoex/dominoex.cxx \
+	$(SRC_DIR)/dominoex/dominovar.cxx \
 	$(SRC_DIR)/feld/feld.cxx \
-	$(SRC_DIR)/waterfall/raster.cxx \
 	$(SRC_DIR)/feld/feldfonts.cxx \
-	$(SRC_DIR)/wwv/analysis.cxx \
-	$(SRC_DIR)/throb/throb.cxx \
-	$(SRC_DIR)/ider/id.cxx \
-	$(SRC_DIR)/widgets/picture.cxx \
-	$(SRC_DIR)/samplerate/samplerate.c \
-	$(SRC_DIR)/samplerate/src_linear.c \
-	$(SRC_DIR)/samplerate/src_sinc.c \
-	$(SRC_DIR)/samplerate/src_zoh.c \
-	$(SRC_DIR)/combo/combo.cxx \
+	$(SRC_DIR)/fft/fft.cxx \
 	$(SRC_DIR)/fileselector/File_Selector.cxx \
 	$(SRC_DIR)/fileselector/File_Selector2.cxx \
 	$(SRC_DIR)/fileselector/file_dir.cxx \
-	$(SRC_DIR)/misc/status.cxx \
+	$(SRC_DIR)/filters/fftfilt.cxx \
+	$(SRC_DIR)/filters/filters.cxx \
+	$(SRC_DIR)/filters/viterbi.cxx \
+	$(SRC_DIR)/globals/globals.cxx \
+	$(SRC_DIR)/ider/id.cxx \
+	$(SRC_DIR)/logger/logger.cxx \
+	$(SRC_DIR)/main.cxx \
+	$(SRC_DIR)/misc/ascii.cxx \
+	$(SRC_DIR)/misc/configuration.cxx \
+	$(SRC_DIR)/misc/log.cxx \
+	$(SRC_DIR)/misc/macros.cxx \
+	$(SRC_DIR)/misc/macroedit.cxx \
+	$(SRC_DIR)/misc/misc.cxx \
+	$(SRC_DIR)/misc/newinstall.cxx \
+	$(SRC_DIR)/misc/pskmail.cxx \
 	$(SRC_DIR)/misc/qrzcall.cxx \
 	$(SRC_DIR)/misc/qrzlib.cxx \
+	$(SRC_DIR)/misc/status.cxx \
+	$(SRC_DIR)/misc/threads.cxx \
+	$(SRC_DIR)/mfsk/mfsk.cxx \
+	$(SRC_DIR)/mfsk/interleave.cxx \
+	$(SRC_DIR)/mfsk/mfskvaricode.cxx \
+	$(SRC_DIR)/olivia/olivia.cxx \
+	$(SRC_DIR)/psk/psk.cxx \
+	$(SRC_DIR)/psk/pskvaricode.cxx \
+	$(SRC_DIR)/psk/pskcoeff.cxx \
+	$(SRC_DIR)/rigcontrol/ptt.cxx \
 	$(SRC_DIR)/rigcontrol/FreqControl.cxx \
 	$(SRC_DIR)/rigcontrol/rigdialog.cxx \
 	$(SRC_DIR)/rigcontrol/rigsupport.cxx \
@@ -116,10 +103,24 @@ SRC = \
 	$(SRC_DIR)/rigcontrol/rigio.cxx \
 	$(SRC_DIR)/rigcontrol/rigxml.cxx \
 	$(SRC_DIR)/rigcontrol/serial.cxx \
-	$(SRC_DIR)/misc/newinstall.cxx \
-	$(SRC_DIR)/waterfall/colorbox.cxx \
+	$(SRC_DIR)/samplerate/samplerate.c \
+	$(SRC_DIR)/samplerate/src_linear.c \
+	$(SRC_DIR)/samplerate/src_sinc.c \
+	$(SRC_DIR)/samplerate/src_zoh.c \
 	$(SRC_DIR)/soundcard/mixer.cxx \
-	$(SRC_DIR)/misc/macroedit.cxx
+	$(SRC_DIR)/soundcard/sound.cxx \
+	$(SRC_DIR)/throb/throb.cxx \
+	$(SRC_DIR)/trx/modem.cxx \
+	$(SRC_DIR)/trx/trx.cxx \
+	$(SRC_DIR)/waterfall/colorbox.cxx \
+	$(SRC_DIR)/waterfall/raster.cxx \
+	$(SRC_DIR)/waterfall/waterfall.cxx \
+	$(SRC_DIR)/waterfall/digiscope.cxx \
+	$(SRC_DIR)/widgets/displayloop.cxx \
+	$(SRC_DIR)/widgets/picture.cxx \
+	$(SRC_DIR)/widgets/TextView.cxx \
+	$(SRC_DIR)/wwv/analysis.cxx \
+	$(SRC_DIR)/wwv/wwv.cxx
 
 # We do not always compile these. CFG targets that link with hamlib
 # will append HAMLIB_SRC to SRC.

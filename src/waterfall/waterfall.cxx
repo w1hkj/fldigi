@@ -64,6 +64,7 @@ RGB		palette[9];
 #define max(a,b) (a)>(b)?(a):(b)
 #define min(a,b) (a)<(b)?(a):(b)
 
+short int *tmp_fft_db;
 
 WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 			  Fl_Widget(x0,y0,w0,h0,"") {
@@ -83,8 +84,9 @@ WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 	fft_sig_img 	= new uchar[image_area];
 	sig_img			= new uchar[sig_image_area];
 	pwr				= new double[IMAGE_WIDTH];
-	fft_hist		= new short int[image_area];
+//	fft_hist		= new short int[image_area];
 	fft_db			= new short int[image_area];
+	tmp_fft_db		= new short int[image_area];
 	circbuff		= new double[FFT_LEN * 2];
 	fftout			= new double[FFT_LEN * 2];
 	wfft			= new Cfft(FFT_LEN);
@@ -133,8 +135,9 @@ WFdisp::~WFdisp() {
 	delete [] sig_img;
 	delete [] pwr;
 	delete [] scline;
-	delete [] fft_hist;
+//	delete [] fft_hist;
 	delete [] fft_db;
+	delete [] tmp_fft_db;
 }
 
 void WFdisp::initMarkers() {
@@ -244,7 +247,7 @@ void WFdisp::setcolors() {
 
 
 void WFdisp::initmaps() {
-	for (int i = 0; i < image_area; i++) fft_hist[i] = -1000;
+//	for (int i = 0; i < image_area; i++) fft_hist[i] = -1000;
 	for (int i = 0; i < image_area; i++) fft_db[i] = log2disp(-1000);
 
 	memset (fft_img, 0, image_area * sizeof(RGBI) );
@@ -302,10 +305,8 @@ int WFdisp::log2disp(int v)
 
 void WFdisp::update_fft_db()
 {
-	Fl::lock();
-	for (int i = 0; i < image_area; i++)
-		fft_db[i] = log2disp( fft_hist[i] );
-	Fl::unlock();
+//	for (int i = 0; i < image_area; i++)
+//		fft_db[i] = log2disp( fft_hist[i] );
 }
 
 void WFdisp::processFFT() {
@@ -319,12 +320,6 @@ void WFdisp::processFFT() {
         for (int i = 0; i < FFT_LEN*2; i++)
             fftout[i] = fftwindow[i] * circbuff[i];
 		wfft->rdft(fftout);
-Fl::lock();		
-		memmove(
-			(void*)(fft_hist + IMAGE_WIDTH), 
-			(void*)fft_hist, 
-			(IMAGE_WIDTH * (image_height - 1)) * sizeof(short int));
-			
 		memmove(
 			(void*)(fft_db + IMAGE_WIDTH),
 			(void*)fft_db,
@@ -339,16 +334,25 @@ Fl::lock();
 			else
 				pw = fftout[n]*fftout[n];
 			pwr[i] = pw;
-			ffth = fft_hist[i] = (int)(10.0 * log10(pw + 1e-10) );
+			//fft_hist[i] = 
+			ffth = (int)(10.0 * log10(pw + 1e-10) );
 			fft_db[i] = log2disp(ffth);
 		}
-Fl::unlock();
 	}
 	if (cursormoved || dispcnt == 0) {
-Fl::lock();
-		redraw();
-Fl::unlock();
+//Fl::lock();
+		if (dispcnt == 0) {
+			memmove(
+				(void*)tmp_fft_db,
+				(void*)fft_db,
+				(IMAGE_WIDTH * image_height) * sizeof(short int));
+		}
+//		redraw();
+//Fl::unlock();
+//		Fl::awake();
 		cursormoved = false;
+	if (wf_redraw == false)
+		wf_redraw = true;
 	}
 	if (dispcnt == 0)
 		if (srate == 8000)
@@ -368,7 +372,7 @@ void WFdisp::process_analog (double *sig, int len) {
 // clear the signal display area
 	sigy = 0;
 	sigpixel = IMAGE_WIDTH*h2;
-Fl::lock();
+//Fl::lock();
 	memset (sig_img, 0, sig_image_area);
 	memset (&sig_img[h2*IMAGE_WIDTH], 255, IMAGE_WIDTH);
 	for (int c = 0; c < IMAGE_WIDTH; c++) {
@@ -377,9 +381,11 @@ Fl::lock();
 		for (; sigy > ynext; sigy--) sig_img[sigpixel += IMAGE_WIDTH] = graylevel;
 		sig_img[sigpixel++] = graylevel;
 	}
-//	inpFreq->redraw();
-	redraw();
-Fl::unlock();
+	if (wf_redraw == false)
+		wf_redraw = true;
+//	redraw();
+//Fl::unlock();
+//Fl::awake();
 }
 
 void WFdisp::redrawCursor()
@@ -405,36 +411,15 @@ void WFdisp::sig_data( double *sig, int len ) {
 	for (i = movedbls, j = 0; j < len; i++, j++) {
         overval = fabs(circbuff[i] = sig[j]);
         if (overval > peak) peak = overval;
-        peakaudio = 0.05 * peak + 0.95 * peakaudio;
     }
+    peakaudio = 0.1 * peak + 0.9 * peakaudio;
 
-	static char szFrequency[14];
-	
 	if (mode == SCOPE)
 		process_analog(circbuff, FFT_LEN * 2);
-
-	processFFT();
-
-	Fl::lock();
-	if (usebands)
-		rfc = (long long)(atof(cboBand->value()) * 1000.0);
-	if (rfc) {
-		if (usb)
-			dfreq = rfc + active_modem->get_txfreq();
-		else	
-			dfreq = rfc - active_modem->get_txfreq();
-		sprintf(szFrequency, "%-.3f", dfreq / 1000.0);
-	} else {
-		dfreq = active_modem->get_txfreq();
-		sprintf(szFrequency, "%-.0f", dfreq);
-	}
-	
-	inpFreq->value(szFrequency);
-	Fl::unlock();
-	Fl::awake();
-
-// signal level indicator
-	put_WARNstatus(peakaudio);
+	else
+		processFFT();
+		
+//	put_WARNstatus(peakaudio);
 
 	return;
 }
@@ -591,7 +576,7 @@ void WFdisp::update_waterfall() {
 	int sig;
 	short int *p1, *p2;
 	RGBI *p3, *p4;
-	p1 = fft_db + offset;
+	p1 = tmp_fft_db + offset;
 	p3 = fft_img;
 	for (int row = 0; row < image_height; row++) {
 		p2 = p1;
@@ -695,13 +680,13 @@ void WFdisp::drawspectrum() {
 
 	fftpixel /= step;
 	for (int c = 0; c < IMAGE_WIDTH; c += step) {
-		sig = fft_db[c];
+		sig = tmp_fft_db[c];
 		if (step == 1)
-			sig = fft_db[c];
+			sig = tmp_fft_db[c];
 		else if (step == 2)
-			sig = max(fft_db[c], fft_db[c+1]);
+			sig = max(tmp_fft_db[c], tmp_fft_db[c+1]);
 		else
-			sig = max( max ( max ( fft_db[c], fft_db[c+1] ), fft_db[c+2] ), fft_db[c+3]);
+			sig = max( max ( max ( tmp_fft_db[c], tmp_fft_db[c+1] ), tmp_fft_db[c+2] ), tmp_fft_db[c+3]);
 		ynext = h1 * sig / 256;
 		while (ffty < ynext) { fft_sig_img[fftpixel -= IMAGE_WIDTH/step] = graylevel; ffty++;}
 		while (ffty > ynext) { fft_sig_img[fftpixel += IMAGE_WIDTH/step] = graylevel; ffty--;}
@@ -753,6 +738,23 @@ void WFdisp::drawsignal() {
 }
 
 void WFdisp::draw() {
+	static char szFrequency[14];
+	
+	if (usebands) {
+		rfc = (long long)(atof(cboBand->value()) * 1000.0);
+		if (usb)
+			dfreq = rfc + active_modem->get_txfreq();
+		else	
+			dfreq = rfc - active_modem->get_txfreq();
+		sprintf(szFrequency, "%-.3f", dfreq / 1000.0);
+	} else {
+		dfreq = active_modem->get_txfreq();
+		sprintf(szFrequency, "%-.0f", dfreq);
+	}
+	inpFreq->value(szFrequency);
+	
+//	put_WARNstatus(peakaudio);
+
 	checkoffset();
 	checkWidth();
 	switch (mode) {
@@ -771,6 +773,7 @@ void WFdisp::draw() {
 				drawgrayWF();
 		drawMarker();
 	}
+	wf_redraw = false;
 }
 
 //=======================================================================
@@ -1267,3 +1270,4 @@ int waterfall::handle(int event) {
 	}
 	return Fl_Group::handle(event);
 }
+

@@ -48,6 +48,11 @@ extern bool			pskmail_text_available;
 extern char			pskmail_get_char();
 extern void			pskmail_loop(void *);
 
+extern bool			wf_redraw;
+extern bool			scope_redraw;
+extern bool			b_restoreFocus;
+extern void			start_display_loop();
+
 struct RXMSGSTRUC {
 	long int msg_type;
 	char c;

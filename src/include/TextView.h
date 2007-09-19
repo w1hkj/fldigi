@@ -30,6 +30,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <list>
 
 /* fltk includes */
 #include <FL/Fl.H>
@@ -73,7 +74,8 @@ protected:
 	size_t		endidx;
 	size_t      startidx;
 	size_t      xmtidx;
-    size_t      modidx;
+	list <size_t> modidx;
+//    size_t      modidx;
     size_t      highlightstart;
     size_t      highlightend;
 	int			popx;

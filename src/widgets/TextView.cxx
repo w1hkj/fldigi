@@ -460,41 +460,48 @@ void textview::drawchars()
 
 void textview::drawmodify()
 {
-    if (modidx < laststartidx )
-        return;
-    if (modidx > endidx)
-        return;
-    if (buff[modidx] == '\n')
-        return;
+	list <size_t>::iterator p = modidx.begin();
+	while (p != modidx.end()) {
+	    if (*p < laststartidx )
+	        break;
+    	if (*p > endidx)
+        	break;
+	    if (buff[*p] == '\n') {
+    	    p++;
+    	    continue;
+	    }
 // modify the character insitu
 // find the screen location for the character redraw
-    size_t posidx = laststartidx;
-    int posX = 0, posY = charheight - descent;
-    char c = 0;
+	    size_t posidx = laststartidx;
+    	int posX = 0, posY = charheight - descent;
+    	char c = 0;
     
-	fl_font(TextFont, TextSize);
-	while (posidx < modidx) {
-		c = buff[posidx];
-		if (c == '\n') {
-			posX = 0;
-			posY += charheight;
-		} else {
-			posX += (int)(fl_width(c));
+		fl_font(TextFont, TextSize);
+		while (posidx < *p) {
+			c = buff[posidx];
+			if (c == '\n') {
+				posX = 0;
+				posY += charheight;
+			} else {
+				posX += (int)(fl_width(c));
+			}
+			posidx++;
 		}
-		posidx++;
-	}
 // should now be pointing to the (x,y) screen location for the character
-	char cstr[] = "";
-    cstr[0] = buff[modidx];
+		char cstr[] = "";
+    	cstr[0] = buff[*p];
 // erase existing
-    if ((attr[modidx] & 0x20) == 0x20)
-        fl_color(FL_YELLOW);
-    else
-        fl_color(FL_WHITE);
-	fl_rectf ( X + posX, Y + posY - charheight + descent, (int)fl_width(c), charheight);
+    	if ((attr[*p] & 0x20) == 0x20)
+        	fl_color(FL_YELLOW);
+    	else
+        	fl_color(FL_WHITE);
+		fl_rectf ( X + posX, Y + posY - charheight + descent, (int)fl_width(c), charheight);
 // draw new with attribute
-	fl_color (TextColor[(int)attr[modidx] & 0x0F]);
-	fl_draw ( cstr, 1, X + posX, Y + posY );
+		fl_color (TextColor[(int)attr[*p] & 0x0F]);
+		fl_draw ( cstr, 1, X + posX, Y + posY );
+		p++;
+	}
+	modidx.clear();
 }
 
 void textview::draw()
@@ -610,7 +617,7 @@ void textview::add( char c, int attribute)
 	} else
 		damage(1);
 	Fl::unlock();
-//	Fl::awake();
+	Fl::awake();
 	
 	setScrollbar();
 }
@@ -1099,13 +1106,9 @@ int TextEdit::nextChar()
 		xmtidx++;
 		if (xmtidx == buff.length()) return 0;
 	}
-	Fl::lock();
 	attr[xmtidx] = 4;
-    modidx = xmtidx;
+	modidx.push_back(xmtidx);
 	damage(4);
-	Fl::unlock();
-	Fl::flush();
-//    Fl::awake();
 	return (buff[xmtidx++]);
 }
 

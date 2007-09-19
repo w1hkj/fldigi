@@ -78,6 +78,8 @@
 
 #include "rigsupport.h"
 
+extern void add2rxtext( const char *c, int attr);
+
 
 Fl_Double_Window	*fl_digi_main=(Fl_Double_Window *)0;
 
@@ -91,8 +93,8 @@ Fl_Text_Buffer		*rcvBuffer = (Fl_Text_Buffer *)0;
 Fl_Text_Buffer		*xmtBuffer = (Fl_Text_Buffer *)0;
 Raster				*FHdisp;
 Fl_Box				*StatusBar = (Fl_Box *)0;
-Fl_Box				*IMDstatus = (Fl_Box *)0;
-Fl_Box				*S2Nstatus = (Fl_Box *)0;
+Fl_Box				*Status2 = (Fl_Box *)0;
+Fl_Box				*Status1 = (Fl_Box *)0;
 Fl_Box				*WARNstatus = (Fl_Box *)0;
 Fl_Button			*MODEstatus = (Fl_Button *)0;
 Fl_Button 			*btnMacro[10];
@@ -636,16 +638,6 @@ void cb_mnuANALYSIS(Fl_Menu_ *, void *) {
 	initANALYSIS();
 }
 
-void restoreFocus()
-{
-	Fl::lock();
-	Fl::focus(TransmitText);
-	TransmitText->cursorON();
-	TransmitText->redraw();	
-	Fl::unlock();
-	Fl::awake();
-}
-
 void macro_cb(Fl_Widget *w, void *v)
 {
 	int b = (int)(reinterpret_cast<long> (v));
@@ -738,7 +730,6 @@ void cb_FontBrowser(Font_Browser*, void* v)
 	
 	progdefaults.Fontnbr = (int)(fnt);
 	progdefaults.FontSize = size;
-//	progdefaults.FontColor = (int)clr;
 	
 	ft->hide();
 }
@@ -1403,14 +1394,14 @@ void create_fl_digi_main() {
 			MODEstatus->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 			MODEstatus->callback(status_cb, (void *)0);
 			MODEstatus->tooltip("Left clk - change mode\nRight clk - Modem Tab");
-			S2Nstatus = new Fl_Box(Wmode,Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Ws2n, Hstatus, "");
-			S2Nstatus->box(FL_DOWN_BOX);
-			S2Nstatus->color(FL_BACKGROUND2_COLOR);
-			S2Nstatus->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
-			IMDstatus = new Fl_Box(Wmode+Ws2n, Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Wimd, Hstatus, "");
-			IMDstatus->box(FL_DOWN_BOX);
-			IMDstatus->color(FL_BACKGROUND2_COLOR);
-			IMDstatus->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
+			Status1 = new Fl_Box(Wmode,Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Ws2n, Hstatus, "");
+			Status1->box(FL_DOWN_BOX);
+			Status1->color(FL_BACKGROUND2_COLOR);
+			Status1->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
+			Status2 = new Fl_Box(Wmode+Ws2n, Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Wimd, Hstatus, "");
+			Status2->box(FL_DOWN_BOX);
+			Status2->color(FL_BACKGROUND2_COLOR);
+			Status2->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 			StatusBar = new Fl_Box(
                 Wmode+Wimd+Ws2n, Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Wstatus, Hstatus, "");
 			StatusBar->box(FL_DOWN_BOX);
@@ -1459,26 +1450,6 @@ void put_Bandwidth(int bandwidth)
 	wf->Bandwidth ((int)bandwidth);
 }
 
-void display_metric(double metric)
-{
-	Fl::lock();
-	pgrsSquelch->value(metric);
-	Fl::unlock();
-	Fl::awake();
-}
-
-void put_cwRcvWPM(double wpm)
-{
-	int U = progdefaults.CWupperlimit;
-	int L = progdefaults.CWlowerlimit;
-	double dWPM = 100.0*(wpm - L)/(U - L);
-	Fl::lock();
-	prgsCWrcvWPM->value(dWPM);
-	valCWrcvWPM->value((int)wpm);
-	Fl::unlock();
-	Fl::awake();
-}
-
 void set_scope(double *data, int len, bool autoscale)
 {
 	if (digiscope)
@@ -1511,17 +1482,21 @@ void put_rx_char(unsigned int data)
 	if (mailclient || mailserver || rxmsgid != -1)
 		asc = ascii2;
 	if (data == '\r') {
-		ReceiveText->add(asc['\n' & 0x7F],1);
+		add2rxtext(asc['\n' & 0x7F],1);
+//		ReceiveText->add(asc['\n' & 0x7F],1);
 		nulinepending = true;
 	} else if (nulinepending && data == '\r') {
-		ReceiveText->add(asc['\n' & 0x7F],1);
+		add2rxtext(asc['\n' & 0x7F],1);
+//		ReceiveText->add(asc['\n' & 0x7F],1);
 	} else if (nulinepending && data == '\n') {
 		nulinepending = false;
 	} else if (nulinepending && data != '\n') {
-		ReceiveText->add(asc[data & 0x7F], 1);
+		add2rxtext(asc[data & 0x7F], 1);
+//		ReceiveText->add(asc[data & 0x7F], 1);
 		nulinepending = false;
 	} else {
-		ReceiveText->add(asc[data & 0x7F],1);
+		add2rxtext(asc[data & 0x7F],1);
+//		ReceiveText->add(asc[data & 0x7F],1);
 	}
 	if ( rxmsgid != -1) {
 		rxmsgst.msg_type = 1;
@@ -1534,92 +1509,6 @@ void put_rx_char(unsigned int data)
 
 	if (logging)
 		logfile->log_to_file(cLogfile::LOG_RX, asc[data & 0x7F]);
-}
-
-string strSecText = "";
-
-void put_sec_char( char chr )
-{
-	if (chr >= ' ' && chr <= 'z') {
-		strSecText.append(1, chr);
-		if (strSecText.length() > 60)
-			strSecText.erase(0,1);
-		Fl::lock();
-		StatusBar->label(strSecText.c_str());
-		Fl::unlock();
-		Fl::awake();
-	}
-}
-
-void put_status(const char *msg)
-{
-	if (!msg) return;
-	Fl::lock();
-	StatusBar->label(msg);
-	Fl::unlock();
-	Fl::awake();
-}
-
-void put_IMDstatus(char *msg)
-{
-	if (!msg) return;
-	if (strlen(msg) > 60) msg[60] = 0;
-	Fl::lock();
-	IMDstatus->label(msg);
-	Fl::unlock();
-	Fl::awake();
-}
-
-void put_S2Nstatus(char *msg)
-{
-	if (!msg) return;
-	if (strlen(msg) > 60) msg[60] = 0;
-	Fl::lock();
-	S2Nstatus->label(msg);
-	Fl::unlock();
-	Fl::awake();
-}
-
-void put_WARNstatus(double val)
-{
-	Fl::lock();
-	if (val < 0.05)
-		WARNstatus->color(FL_BLACK);
-    if (val > 0.05)
-        WARNstatus->color(FL_DARK_GREEN);
-    if (val > 0.9)
-        WARNstatus->color(FL_YELLOW);
-    if (val > 0.98)
-        WARNstatus->color(FL_DARK_RED);
-	WARNstatus->redraw();
-	Fl::unlock();
-}
-
-
-void set_CWwpm()
-{
-	Fl::lock();
-	sldrCWxmtWPM->value(progdefaults.CWspeed);
-	Fl::unlock();
-}
-
-void clear_StatusMessages()
-{
-	Fl::lock();
-	StatusBar->label("");
-	S2Nstatus->label("");
-	IMDstatus->label("");
-	Fl::unlock();
-	Fl::awake();
-}
-
-	
-void put_MODEstatus(trx_mode mode)
-{
-	Fl::lock();
-	MODEstatus->label(mode_names[mode]);
-	Fl::unlock();
-	Fl::awake();
 }
 
 void put_rx_data(int *data, int len)
@@ -1685,7 +1574,8 @@ void put_echo_char(unsigned int data)
 	if (nulinepending && data == '\n') {
 		nulinepending = false;
 	}
-	ReceiveText->add(asc[data & 0x7F], 4);
+	add2rxtext(asc[data & 0x7F], 4);
+//	ReceiveText->add(asc[data & 0x7F], 4);
 	if (Maillogfile)
 		Maillogfile->log_to_file(cLogfile::LOG_TX, asc[data & 0x7F]);
 	if (logging)

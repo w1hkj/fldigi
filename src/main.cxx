@@ -238,6 +238,8 @@ int main(int argc, char ** argv) {
 	progStatus.initLastState();
 	
 	Fl::add_timeout(1.0, pskmail_loop);
+	
+	start_display_loop();
 
 	fl_digi_main->show();
 

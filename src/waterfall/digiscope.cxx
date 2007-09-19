@@ -32,6 +32,8 @@
 
 #include <iostream>
 
+extern bool scope_redraw;
+
 inline double MAX(double m1, double m2) {
 	if (m1 > m2) return m1;
 	return m2;
@@ -74,7 +76,7 @@ void Digiscope::video(double *data, int len )
 	if (data == NULL || len == 0)
 		return;
 	
-	Fl::lock();
+//	Fl::lock();
 	int W = w() - 4;
 	int H = h() - 4;
 // video signal display
@@ -99,16 +101,17 @@ void Digiscope::video(double *data, int len )
 		memcpy (&vidbuf[3*W*linecnt], vidline, 3*W * sizeof(unsigned char));
 	linecnt++;
 
-	redraw();
-	Fl::unlock();
-	Fl::awake();
+	scope_redraw = true;
+//	redraw();
+//	Fl::unlock();
+//	Fl::awake();
 }
 
 void Digiscope::data(double *data, int len, bool scale)
 {
 	if (data == NULL || len == 0)
 		return;
-	Fl::lock();
+//	Fl::lock();
 	if (len > MAX_LEN) _len = MAX_LEN;
 	else _len = len;
 	memcpy(_buf, data, len * sizeof(double));
@@ -126,30 +129,33 @@ void Digiscope::data(double *data, int len, bool scale)
 			else
 				_buf[i] = 0.0;
 	}
-	redraw();
-	Fl::unlock();
-	Fl::awake();
+	scope_redraw = true;
+//	redraw();
+//	Fl::unlock();
+//	Fl::awake();
 }
 
 void Digiscope::phase(double ph, bool hl)
 {
-	Fl::lock();
+//	Fl::lock();
 	_phase = ph;
 	_highlight = hl;
-	redraw();
-	Fl::unlock();
-	Fl::awake();
+	scope_redraw = true;
+//	redraw();
+//	Fl::unlock();
+//	Fl::awake();
 }
 
 void Digiscope::rtty(double flo, double fhi, double amp)
 {
-	Fl::lock();
+//	Fl::lock();
 	_flo = flo;
 	_fhi = fhi;
 	_amp = amp;
-	redraw();
-	Fl::unlock();
-	Fl::awake();
+	scope_redraw = true;
+//	redraw();
+//	Fl::unlock();
+//	Fl::awake();
 }
 
 
@@ -157,7 +163,7 @@ void Digiscope::mode(scope_mode md)
 {
 	int W = w() - 4;
 	int H = h() - 4;
-	Fl::lock();
+//	Fl::lock();
 	_mode = md;
 	memset(_buf, 0, MAX_LEN * sizeof(double));
 	linecnt = 0;
@@ -168,9 +174,10 @@ void Digiscope::mode(scope_mode md)
 	vidline[3*W/2+2] = 0;
 	for (int i = 0; i < H; i++)
 		memcpy(&vidbuf[3*W*i], vidline, 3*W*sizeof(unsigned char) );
-	redraw();
-	Fl::unlock();
-	Fl::awake();
+	scope_redraw = true;
+//	redraw();
+//	Fl::unlock();
+//	Fl::awake();
 }
 
 void Digiscope::draw_phase()
@@ -316,6 +323,7 @@ void Digiscope::draw()
 		fl_pop_matrix();
 		fl_pop_clip();
 	}
+	scope_redraw = false;
 }
 
 int Digiscope::handle(int event)

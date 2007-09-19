@@ -57,8 +57,9 @@ extern Fl_Tile			*TiledGroup;
 extern Fl_Text_Buffer	*rcvBuffer;
 extern Fl_Text_Buffer	*xmtBuffer;
 extern Fl_Box			*StatusBar;
-extern Fl_Box			*IMDstatus;
-extern Fl_Box			*S2Nstatus;
+extern Fl_Box			*Status2;
+extern Fl_Box			*Status1;
+extern Fl_Box			*WARNstatus;
 extern Fl_Button		*MODEstatus;
 extern Fl_Slider		*sldrSquelch;
 extern Fl_Progress		*pgrsSquelch;
@@ -107,10 +108,8 @@ extern void put_sec_char( char chr );
 extern void put_status(const char *msg);
 extern void clear_StatusMessages();
 extern void put_MODEstatus(trx_mode mode);
-extern void put_S2Nstatus(char *msg);
-#define put_Status1(szS) put_S2Nstatus(szS)
-extern void put_IMDstatus(char *msg);
-#define put_Status2(szS) put_IMDstatus(szS)
+extern void put_Status1(char *msg);
+extern void put_Status2(char *msg);
 
 extern void put_WARNstatus(double);
 

@@ -1,5 +1,7 @@
 #include "sound.h"
 #include "configuration.h"
+#include <FL/Fl.H>
+#include "File_Selector.h"
 
 #ifdef MIN
 #undef MIN
@@ -34,38 +36,43 @@ cSound::~cSound()
 void cSound::Capture(bool on) 
 {
 	if (on) {
-		ofCapture = new SndfileHandle("capture.wav", SFM_WRITE,
-					      SF_FORMAT_WAV | SF_FORMAT_PCM_16,
-					      1, sample_frequency);
-		if (!*ofCapture) {
-			cerr << "Could not write capture.wav" << endl;
-			delete ofCapture;
-			ofCapture = 0;
-			return;
-		}
-//		cerr << "Opened capture.wav" << endl;
+		string deffilename = "./capture.wav";
+    	char *p = File_Select("Capture wav file", "*.wav", deffilename.c_str(), 0);
+	    if (p) {
+			ofCapture = new SndfileHandle(p, SFM_WRITE,
+						      SF_FORMAT_WAV | SF_FORMAT_PCM_16,
+						      1, sample_frequency);
+			if (!*ofCapture) {
+				cerr << "Could not write capture.wav" << endl;
+				delete ofCapture;
+				ofCapture = 0;
+				return;
+			}
+	    }
 		ofCapture->command(SFC_SET_UPDATE_HEADER_AUTO, 0, SF_TRUE);
 	}
 	else {
 		delete ofCapture;
 		ofCapture = 0;
-//		cerr << "Closed capture.wav" << endl;
 	}
-
 	capture = on;
 }
 
 void cSound::Playback(bool on) 
 {
 	if (on) {
-		ifPlayback = new SndfileHandle("playback.wav");
-		if (!*ifPlayback) {
-			cerr << "Could not read playback.wav" << endl;
-			delete ifPlayback;
-			ifPlayback = 0;
-			return;
+		string deffilename = "./playback.wav";
+    	char *p = File_Select("Playback wav file", "*.wav", deffilename.c_str(), 0);
+	    if (p) {
+			ifPlayback = new SndfileHandle(p);
+			if (!*ifPlayback) {
+				cerr << "Could not read playback.wav" << endl;
+				delete ifPlayback;
+				ifPlayback = 0;
+				return;
+			}
+			playback = true;
 		}
-		playback = true;
 	}
 	else {
 		delete ifPlayback;
@@ -77,23 +84,25 @@ void cSound::Playback(bool on)
 void cSound::Generate(bool on) 
 {
 	if (on) {
-                cerr << "opening generate.wav" << endl;
-		ofGenerate = new SndfileHandle("generate.wav", SFM_WRITE,
-					       SF_FORMAT_WAV | SF_FORMAT_PCM_16,
-					       1, sample_frequency);
-		if (!*ofGenerate) {
-			cerr << "Could not write generate.wav" << endl;
-			delete ofGenerate;
-			ofGenerate = 0;
-			return;
+		string deffilename = "./generate.wav";
+    	char *p = File_Select("Generate wav file", "*.wav", deffilename.c_str(), 0);
+	    if (p) {
+			ofGenerate = new SndfileHandle(p, SFM_WRITE,
+						       SF_FORMAT_WAV | SF_FORMAT_PCM_16,
+						       1, sample_frequency);
+			if (!*ofGenerate) {
+				cerr << "Could not write generate.wav" << endl;
+				delete ofGenerate;
+				ofGenerate = 0;
+				return;
+			}
+			ofGenerate->command(SFC_SET_UPDATE_HEADER_AUTO, 0, SF_TRUE);
 		}
-		ofGenerate->command(SFC_SET_UPDATE_HEADER_AUTO, 0, SF_TRUE);
 	}
 	else {
 		delete ofGenerate;
 		ofGenerate = 0;
 	}
-
 	generate = on;
 }
 

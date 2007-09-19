@@ -29,6 +29,8 @@
 #include "Config.h"
 #include "configuration.h"
 
+//#include "modeIO.h"
+
 //static char rttymsg[80];
 static char msg1[20];
 static char msg2[20];
@@ -43,12 +45,18 @@ void rtty::tx_init(cSound *sc)
 	scard = sc;
 	phaseacc = 0;
 	preamble = 20;
-	if (trx_state != STATE_TUNE && progdefaults.sendid == true)
-		wfid->transmit(mode);
-	else if (trx_state != STATE_TUNE && progdefaults.macroid == true) {
-		wfid->transmit(mode);
-		progdefaults.macroid = false;
-	}
+//	useFSK = progdefaults.useFSKkeyline || progdefaults.useFSKkeylineDTR;
+//	if (!KeyLine && useFSK)
+//		KeyLine = new modeIO();
+	
+//	if (!useFSK) {
+		if (trx_state != STATE_TUNE && progdefaults.sendid == true)
+			wfid->transmit(mode);
+		else if (trx_state != STATE_TUNE && progdefaults.macroid == true) {
+			wfid->transmit(mode);
+			progdefaults.macroid = false;
+		}
+//	}
 }
 
 void rtty::rx_init()
@@ -85,6 +93,10 @@ rtty::~rtty()
 	if (hilbert) delete hilbert;
 	if (wfid) delete wfid;
 	if (bitfilt) delete bitfilt;
+//	if (KeyLine) {
+//		delete KeyLine;
+//		KeyLine = (modeIO *)0;
+//	}
 }
 
 void rtty::restart()
@@ -146,6 +158,11 @@ void rtty::restart()
 	sprintf(msg2,"Baud %-4.1f", rtty_baud); 
 	put_Status2(msg2);
 	put_MODEstatus(mode);
+
+//	if (!KeyLine)
+//		KeyLine = new modeIO();
+//	else
+//		KeyLine->initIO();
 }
 
 rtty::rtty(trx_mode tty_mode)
@@ -339,14 +356,19 @@ int rtty::rx(bool bit)
 	return flag;
 }
 
+//char szSN[10];
+
 void rtty::Metric()
 {
-	double delta = rtty_baud/4.0;
+	double delta = rtty_baud/4.0;//rtty_baud / 2.0;
 	double noisepwr = wf->powerDensity(frequency - shift * 1.5, delta) +
 					  wf->powerDensity(frequency + shift * 1.5, delta) + 1e-10;
 	double sigpwr = wf->powerDensity(frequency - shift/2, delta) +
 					wf->powerDensity(frequency + shift/2, delta) + 1e-10;
 	metric = decayavg( metric, 40.0*log10(sigpwr / noisepwr), 8);
+//	sprintf(szSN,"%5.2f dB", metric / 2);
+//	put_status(szSN);	
+//	metric = 20.0*log10(sigpwr / midpwr) ;
 	display_metric(metric);
 }
 
