@@ -48,8 +48,9 @@ int cSound::Capture(bool on)
 				ofCapture = 0;
 				return 0;
 			}
-	    }
-		ofCapture->command(SFC_SET_UPDATE_HEADER_AUTO, 0, SF_TRUE);
+			ofCapture->command(SFC_SET_UPDATE_HEADER_AUTO, 0, SF_TRUE);
+	    } else
+	    	return 0;
 	}
 	else {
 		delete ofCapture;
@@ -73,7 +74,8 @@ int cSound::Playback(bool on)
 				return 0;
 			}
 			playback = true;
-		}
+		} else
+	    	return 0;
 	}
 	else {
 		delete ifPlayback;
@@ -97,9 +99,10 @@ int cSound::Generate(bool on)
 				delete ofGenerate;
 				ofGenerate = 0;
 				return 0;
-			}
+			} 
 			ofGenerate->command(SFC_SET_UPDATE_HEADER_AUTO, 0, SF_TRUE);
-		}
+		} else
+			return 0;
 	}
 	else {
 		delete ofGenerate;

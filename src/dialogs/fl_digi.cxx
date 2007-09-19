@@ -698,35 +698,50 @@ void cb_mnuConfigModems(Fl_Menu_*, void*) {
 }
 
 bool capval = false;
-void cb_mnuCapture(Fl_Menu_ *m, void *d)
-{
-	if (!scard) return;
-	capval = !capval;
-	if(!scard->Capture(capval)) {
-		capval = false;
-		m->clear();
-	}
-}
-
 bool genval = false;
-void cb_mnuGenerate(Fl_Menu_ *m, void *d)
+bool playval = false;
+void cb_mnuCapture(Fl_Widget *w, void *d)
 {
+	Fl_Menu_Item *m = (Fl_Menu_Item *)(((Fl_Menu_*)w)->mvalue());
 	if (!scard) return;
-	genval = !genval;
-	if (!scard->Generate(genval)) {
-		genval = false;
-		m->clear();
+	if (playval || genval) {
+		m->flags &= ~FL_MENU_VALUE;
+		return;
+	}
+	capval = m->value();
+	if(!scard->Capture(capval)) {
+		m->flags &= ~FL_MENU_VALUE;
+		capval = false;
 	}
 }
 
-bool playval = false;
-void cb_mnuPlayback(Fl_Menu_ *m, void *d)
+void cb_mnuGenerate(Fl_Widget *w, void *d)
 {
+	Fl_Menu_Item *m = (Fl_Menu_Item *)(((Fl_Menu_*)w)->mvalue());
 	if (!scard) return;
-	playval = !playval;
+	if (capval || playval) {
+		m->flags &= ~FL_MENU_VALUE;
+		return;
+	}
+	genval = m->value();
+	if (!scard->Generate(genval)) {
+		m->flags &= ~FL_MENU_VALUE;
+		genval = false;
+	}
+}
+
+void cb_mnuPlayback(Fl_Widget *w, void *d)
+{
+	Fl_Menu_Item *m = (Fl_Menu_Item *)(((Fl_Menu_*)w)->mvalue());
+	if (!scard) return;
+	if (capval || genval) {
+		m->flags &= ~FL_MENU_VALUE;
+		return;
+	}
+	playval = m->value();
 	if(!scard->Playback(playval)) {
+		m->flags &= ~FL_MENU_VALUE;
 		playval = false;
-		m->clear();
 	}
 }
 
@@ -1192,15 +1207,16 @@ Fl_Menu_Item menu_[] = {
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0}, // 59
 {"Rig", 0, (Fl_Callback*)cb_mnuRig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 60
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0}, // 61
-{"Wav", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 62
-{"Rx capture",  0, (Fl_Callback*)cb_mnuCapture,  0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//63
-{"Tx generate", 0, (Fl_Callback*)cb_mnuGenerate, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//64
-{"Playback",    0, (Fl_Callback*)cb_mnuPlayback, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//65
-{0,0,0,0,0,0,0,0,0}, // 66
-{"Help", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 66
-{"About", 0, (Fl_Callback*)cb_mnuAbout, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 67
-{0,0,0,0,0,0,0,0,0}, // 68
-{0,0,0,0,0,0,0,0,0}, // 69
+{"Help", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 62
+{"About", 0, (Fl_Callback*)cb_mnuAbout, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 63
+{0,0,0,0,0,0,0,0,0}, // 64
+{"  ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0}, // 65
+{"Wav", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 66
+{"Rx capture",  0, (Fl_Callback*)cb_mnuCapture,  0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//67
+{"Tx generate", 0, (Fl_Callback*)cb_mnuGenerate, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//68
+{"Playback",    0, (Fl_Callback*)cb_mnuPlayback, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//69
+{0,0,0,0,0,0,0,0,0}, // 70
+{0,0,0,0,0,0,0,0,0}, // 71
 };
 
 Fl_Menu_Bar *mnu;
@@ -1237,8 +1253,7 @@ void create_fl_digi_main() {
 #ifndef USE250
 			menu_[32].hide();
 			menu_[33].hide();
-#endif			
-
+#endif	
 			btnTune = new Fl_Button(WNOM - 142, 0, 60, Hmenu, "TUNE");
 			btnTune->type(FL_TOGGLE_BUTTON);
 			btnTune->callback(cbTune, 0);

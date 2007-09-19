@@ -99,7 +99,7 @@ void trx_trx_receive_loop()
 			if (numread == -1 || (trx_state != STATE_RX))
 				break;
 			if (numread > 0) {
-				QUEUE(CMP_CB(&waterfall::sig_data, wf, _trx_scdbl, numread)); //wf->sig_data(_trx_scdbl, numread);
+				QUEUE(CMP_CB(&waterfall::sig_data, wf, _trx_scdbl.ptr(), numread)); //wf->sig_data(_trx_scdbl, numread);
 				active_modem->rx_process(_trx_scdbl, numread);
 				++_trx_scdbl; // swap buffers
 			}

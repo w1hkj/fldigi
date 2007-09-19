@@ -418,7 +418,24 @@ void WFdisp::sig_data( double *sig, int len ) {
 	else
 		processFFT();
 		
-//	put_WARNstatus(peakaudio);
+	put_WARNstatus(peakaudio);
+
+	static char szFrequency[14];
+	
+	FL_LOCK();
+	if (usebands) {
+		rfc = (long long)(atof(cboBand->value()) * 1000.0);
+		if (usb)
+			dfreq = rfc + active_modem->get_txfreq();
+		else	
+			dfreq = rfc - active_modem->get_txfreq();
+		sprintf(szFrequency, "%-.3f", dfreq / 1000.0);
+	} else {
+		dfreq = active_modem->get_txfreq();
+		sprintf(szFrequency, "%-.0f", dfreq);
+	}
+	inpFreq->value(szFrequency);
+	FL_UNLOCK();
 
 	return;
 }
@@ -737,22 +754,6 @@ void WFdisp::drawsignal() {
 }
 
 void WFdisp::draw() {
-	static char szFrequency[14];
-	
-	if (usebands) {
-		rfc = (long long)(atof(cboBand->value()) * 1000.0);
-		if (usb)
-			dfreq = rfc + active_modem->get_txfreq();
-		else	
-			dfreq = rfc - active_modem->get_txfreq();
-		sprintf(szFrequency, "%-.3f", dfreq / 1000.0);
-	} else {
-		dfreq = active_modem->get_txfreq();
-		sprintf(szFrequency, "%-.0f", dfreq);
-	}
-	inpFreq->value(szFrequency);
-	
-//	put_WARNstatus(peakaudio);
 
 	checkoffset();
 	checkWidth();

@@ -476,8 +476,6 @@ bool configuration::readDefaults(void)
 	if (!f)
 		return false;
 
-	char buff[255];
-
 	f >> squelch;
 	f >> rtty_squelch;
 	f >> rtty_shift;
@@ -502,17 +500,19 @@ bool configuration::readDefaults(void)
 	f >> RX_corr;
 	f >> TX_corr;
 
+// discard the trailing \n before a sequence of getline calls
 	f.ignore();
 
-	f.getline(buff,255); myCall = buff;
-	f.getline(buff,255); myName = buff;;
-	f.getline(buff,255); myQth = buff;
-	f.getline(buff,255); myLocator = buff;
-	f.getline(buff,255); PTTdev = buff;
-	f.getline(buff,255); HamRigName = buff;
-	f.getline(buff,255); HamRigDevice = buff;
-	f.getline(buff,255); SCdevice = buff;
-	f.getline(buff,255); secText = buff;
+	getline(f, myCall);
+	getline(f, myName);
+	getline(f, myQth);
+	getline(f, myLocator);
+	getline(f, PTTdev);
+	getline(f, HamRigName);
+	getline(f, HamRigDevice);
+	getline(f, SCdevice);
+	getline(f, secText);
+
 	f >> red;
 	f >> green;
 	f >> blue;
@@ -529,8 +529,10 @@ bool configuration::readDefaults(void)
 
 	f >> useCWkeylineRTS;
 	f >> useFSKkeyline;
+	
 	f.ignore();
-	f.getline(buff,255); CWFSKport = buff;
+	getline(f, CWFSKport);
+	
 	f >> FSKisLSB;
 	f >> feldfontnbr;
 	f >> rtty_crcrlf;
@@ -588,7 +590,10 @@ bool configuration::readDefaults(void)
 	f >> MXdevice;
 	f >> btnAudioIOis;
 	f >> OSSdevice;
-	getline(f >> ws, PAdevice);
+
+	f.ignore();
+	getline(f, PAdevice);
+	
 	f >> LowFreqCutoff;
 	f >> SearchRange;
 	f >> cursorLineRGBI.R;
@@ -605,8 +610,10 @@ bool configuration::readDefaults(void)
 	f >> bwTrackRGBI.I;
 
 	f >> alt_text_widgets;
-	f.getline(buff,255); QRZusername = buff;
-	f.getline(buff,255); QRZuserpassword = buff;
+
+	f.ignore();
+	getline(f, QRZusername);
+	getline(f, QRZuserpassword);
 
         return true;
 }

@@ -29,7 +29,7 @@ class double_buffer
 public:
         double_buffer(void) : bufsize(0), data(0), sw(0) { }
 
-        double_buffer(size_t n)
+        explicit double_buffer(size_t n)
                 : bufsize(2 * n), data(0), sw(0)
         {
                 data = new T[bufsize];
@@ -83,9 +83,8 @@ public:
 
         size_t size(void)        { return bufsize / 2; }
 
-        T*     first(void)	 { return data; }
-        T*     second(void)      { return other; }
-               operator T*(void) { return sw ? second() : first(); }
+        T*     ptr(void)         { return sw ? other : data; }
+               operator T*(void) { return ptr(); }
 
         double_buffer<T> &operator++(void) { sw ^= 1; return *this; } // prefix op. for swap
         double_buffer<T> &operator--(void) { sw  = 0; return *this; } // prefix op. for reset
