@@ -41,6 +41,7 @@
 
 #include "combo.h"
 #include "TextView.h"
+#include "FTextView.h"
 #include "raster.h"
 #include "waterfall.h"
 #include "digiscope.h"
@@ -50,10 +51,10 @@
 extern Fl_Double_Window *fl_digi_main;
 extern cMixer			mixer;
 
-extern TextView			*ReceiveText;
-extern TextEdit			*TransmitText;
+extern ReceiveWidget		*ReceiveText;
+extern TransmitWidget		*TransmitText;
 extern Raster			*FHdisp;
-extern Fl_Tile			*TiledGroup;
+extern Fl_Tile_check		*TiledGroup;
 extern Fl_Text_Buffer	*rcvBuffer;
 extern Fl_Text_Buffer	*xmtBuffer;
 extern Fl_Box			*StatusBar;
@@ -108,8 +109,8 @@ extern void put_sec_char( char chr );
 extern void put_status(const char *msg);
 extern void clear_StatusMessages();
 extern void put_MODEstatus(trx_mode mode);
-extern void put_Status1(char *msg);
-extern void put_Status2(char *msg);
+extern void put_Status1(const char *msg);
+extern void put_Status2(const char *msg);
 
 extern void put_WARNstatus(double);
 

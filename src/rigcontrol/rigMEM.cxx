@@ -144,6 +144,8 @@ void rigMEM_set_qsy(long long f, long long fmid)
 
 static void *rigMEM_loop(void *args)
 {
+	SET_THREAD_ID(RIGCTL_TID);
+
 	int sb = true;
 
 	freqflag->freq = 0L;

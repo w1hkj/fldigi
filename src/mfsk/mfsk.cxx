@@ -85,7 +85,6 @@ void mfsk::init()
 
 mfsk::~mfsk()
 {
-	if (scopedata) delete [] scopedata;
 	if (bpfilt) delete bpfilt;
 	if (rxinlv) delete rxinlv;
 	if (txinlv) delete txinlv;
@@ -149,7 +148,7 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 	bpfilt = new C_FIR_filter();
 	bpfilt->init_bandpass (127, 1, flo, fhi);
 
-	scopedata = new double [symlen * 2];
+	scopedata.alloc(symlen * 2);
 
 	samplerate = MFSKSampleRate;
 	fragmentsize = symlen;
@@ -434,6 +433,7 @@ void mfsk::update_syncscope()
 			scopedata[i] = (pipe[j].vector[prev1symbol]).mag();
 		}
 	set_scope(scopedata, 2 * symlen);
+	++scopedata; // swap buffers
 	sprintf(mfskmsg, "s/n %3.0f dB", 20.0 * log10(s2n) );
 	put_Status1(mfskmsg);
 }
@@ -506,7 +506,7 @@ void mfsk::eval_s2n(complex c, complex n)
 	s2n = decayavg( s2n, fabs((sig - noise) / noise), 8);
 }
 
-int mfsk::rx_process(double *buf, int len)
+int mfsk::rx_process(const double *buf, int len)
 {
 	complex z, *bins = 0;
 	int i;
@@ -776,7 +776,7 @@ int mfsk::tx_process()
 			}
 			txstate = TX_STATE_DATA;
 			put_status("Send picture: done");
-			Fl::lock();
+			FL_LOCK_E();
 			btnpicTxSendAbort->hide();
 			btnpicTxSendColor->show();
 			btnpicTxSendGrey->show();
@@ -786,7 +786,7 @@ int mfsk::tx_process()
 			rxstate = RX_STATE_DATA;
 			counter = 0;
 			memset(picheader, ' ', sizeof(picheader));
-			Fl::unlock();
+			FL_UNLOCK_E();
 			break;
 	}
 
@@ -803,10 +803,10 @@ void mfsk::updateRxPic(unsigned char data, int pos)
 void cb_picRxClose( Fl_Widget *w, void *who)
 {
 	mfsk *me = (mfsk *)who;
-//	Fl::lock();
+//	FL_LOCK();
 	me->picRxWin->hide();
 	me->rxstate = mfsk::RX_STATE_DATA;
-//	Fl::unlock();
+//	FL_UNLOCK();
 }
 
 void cb_picRxSave( Fl_Widget *w, void *who)
@@ -826,7 +826,7 @@ void mfsk::makeRxViewer(int W, int H)
 	winH = H + 34;
 	picX = (winW - W) / 2;
 	picY = 2;
-	Fl::lock();
+	FL_LOCK_E();
 	if (!picRxWin) {
 		picRxWin = new Fl_Window(winW, winH);
 		picRx = new picture(picX, picY, W, H);
@@ -842,7 +842,7 @@ void mfsk::makeRxViewer(int W, int H)
 		picRx->clear();
 	}
 	picRxWin->show();
-	Fl::unlock();
+	FL_UNLOCK_E();
 }
 
 void mfsk::load_file(const char *n) {
@@ -884,11 +884,11 @@ void mfsk::load_file(const char *n) {
 	TxViewerResize(W, H);
 	
 // load the picture widget with the rgb image
-	Fl::lock();
+	FL_LOCK_E();
 	picTx->video(xmtimg, W * H * 3);
 	btnpicTxSendColor->activate();
 	btnpicTxSendGrey->activate();
-	Fl::unlock();
+	FL_UNLOCK_E();
 }
 
 void mfsk::updateTxPic(unsigned char data)
@@ -921,9 +921,9 @@ void cb_picTxLoad(Fl_Widget *,void *who) {
 void cb_picTxClose( Fl_Widget *w, void *who)
 {
 	mfsk *me = (mfsk *)who;
-	Fl::lock();
+	FL_LOCK_E();
 	me->picTxWin->hide();
-	Fl::unlock();
+	FL_UNLOCK_E();
 }
 
 void cb_picTxSendColor( Fl_Widget *w, void *who)
@@ -950,14 +950,14 @@ void cb_picTxSendColor( Fl_Widget *w, void *who)
 	my->col = 0;
 	my->row = 0;
 	my->pixelnbr = 0;
-	Fl::lock();
+	FL_LOCK_E();
 	my->btnpicTxSendColor->hide();
 	my->btnpicTxSendGrey->hide();
 	my->btnpicTxLoad->hide();
 	my->btnpicTxClose->hide();
 	my->btnpicTxSendAbort->show();
 	my->picTx->clear();
-	Fl::unlock();
+	FL_UNLOCK_E();
 // start the transmission
 	fl_lock(&trx_mutex);
 	if (trx_state != STATE_TX)
@@ -986,13 +986,13 @@ void cb_picTxSendGrey( Fl_Widget *w, void *who)
 	my->row = 0;
 	my->pixelnbr = 0;
 	my->picTx->clear();
-	Fl::lock();
+	FL_LOCK_E();
 	my->btnpicTxSendColor->hide();
 	my->btnpicTxSendGrey->hide();
 	my->btnpicTxLoad->hide();
 	my->btnpicTxClose->hide();
 	my->btnpicTxSendAbort->show();
-	Fl::unlock();
+	FL_UNLOCK_E();
 // start the transmission
 	fl_lock(&trx_mutex);
 	if (trx_state != STATE_TX)
@@ -1008,9 +1008,9 @@ void cb_picTxSendAbort( Fl_Widget *w, void *who)
 	mfsk *my = (mfsk *)who;
 	my->abortxmt = true;
 // reload the picture widget with the rgb image
-	Fl::lock();
+	FL_LOCK_E();
 	my->picTx->video(my->xmtimg, my->TxImg->w() * my->TxImg->h() * 3);
-	Fl::unlock();
+	FL_UNLOCK_E();
 }
 
 void mfsk::TxViewerResize(int W, int H)
@@ -1021,7 +1021,7 @@ void mfsk::TxViewerResize(int W, int H)
 	winH = H < 180 ? 180 : H + 30;
 	picX = (winW - W) / 2;
 	picY =  (winH - 30 - H)/2;
-	Fl::lock();
+	FL_LOCK_E();
 	picTxWin->size(winW, winH);
 	picTx->resize(picX, picY, W, H);
 	picTx->clear();
@@ -1030,7 +1030,7 @@ void mfsk::TxViewerResize(int W, int H)
 	btnpicTxSendAbort->resize(winW/2 - 123, winH - 28, 122, 24);
 	btnpicTxLoad->resize(winW/2 + 1, winH - 28, 60, 24);
 	btnpicTxClose->resize(winW/2 + 63, winH - 28, 60, 24);
-	Fl::unlock();
+	FL_UNLOCK_E();
 }
 
 void mfsk::makeTxViewer(int W, int H)
@@ -1041,7 +1041,7 @@ void mfsk::makeTxViewer(int W, int H)
 	winH = H < 180 ? 180 : H + 30;
 	picX = (winW - W) / 2;
 	picY =  2;
-	Fl::lock();
+	FL_LOCK_E();
 	if (!picTxWin) {
 		picTxWin = new Fl_Window(winW, winH);
 		picTx = new picture (picX, picY, W, H);
@@ -1073,6 +1073,6 @@ void mfsk::makeTxViewer(int W, int H)
 		btnpicTxSendAbort->hide();
 	}
 	picTxWin->show();
-	Fl::unlock();
+	FL_UNLOCK_E();
 }
 

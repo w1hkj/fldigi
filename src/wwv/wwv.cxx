@@ -63,11 +63,10 @@ void wwv::init()
 wwv::~wwv() {
 	if (hilbert) delete hilbert;
 	if (vidfilter) delete vidfilter;
-	if (buffer) delete [] buffer;
 }
 
 
-wwv::wwv() : modem()
+wwv::wwv() : modem(), buffer(1000)
 {
 	double lp;
 	mode = MODE_WWV;
@@ -75,7 +74,6 @@ wwv::wwv() : modem()
 	bandwidth = 200;
 	samplerate = 8000;	
 
-	buffer = new double[1000];
 // phase increment expected at the tick freq 
 	phaseincr = 2.0 * M_PI * frequency / samplerate;
 
@@ -112,6 +110,7 @@ void wwv::update_syncscope()
 		set_video(&buffer[400], 200);
 	else
 		set_video(buffer, 1000);
+	++buffer; // swap buffers
 }
 
 
@@ -121,7 +120,7 @@ void wwv::update_syncscope()
 // Nominal sound card sampling rate is set to 8000 Hz
 //=======================================================================
 
-int wwv::rx_process(double *buf, int len)
+int wwv::rx_process(const double *buf, int len)
 {
 	complex z, znco;
 

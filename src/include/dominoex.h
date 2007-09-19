@@ -34,6 +34,7 @@
 #include "filters.h"
 #include "fftfilt.h"
 #include "dominovar.h"
+#include "doublebuf.h"
 
 using namespace std;
 
@@ -71,7 +72,8 @@ protected:
 	domrxpipe			*pipe;
 	unsigned int	pipeptr;
 	unsigned int	datashreg;
-	double			*scopedata;
+	double_buffer<double>		scopedata;
+	double_buffer<double>		videodata;
 
 	complex currvector;
 	complex prev1vector;
@@ -123,7 +125,7 @@ public:
 	void	rx_init();
 	void	tx_init(cSound *sc);
 	void	restart();
-	int		rx_process(double *buf, int len);
+	int		rx_process(const double *buf, int len);
 	int		tx_process();
 };
 

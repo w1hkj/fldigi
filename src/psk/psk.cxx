@@ -452,7 +452,7 @@ void psk::update_syncscope()
 
 char bitstatus[100];
 
-int psk::rx_process(double *buf, int len)
+int psk::rx_process(const double *buf, int len)
 {
 	double delta;
 	complex z;

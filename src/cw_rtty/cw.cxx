@@ -80,7 +80,7 @@ cw::~cw() {
 }
 
 
-cw::cw() : morse(), modem()
+cw::cw() : morse(), modem(), scopedata(CWMaxSymLen)
 {
 	double lp;
 
@@ -119,6 +119,10 @@ cw::cw() : morse(), modem()
 	cwfilter->init_lowpass (CW_FIRLEN, DEC_RATIO, lp);
 	
 	bitfilter = new Cmovavg(8);
+	bitfilterlen = (int)(samplerate / frequency / 2);
+	bitfilterlen = bitfilterlen < 2 ? 2 : bitfilterlen;
+	bitfilter->setLength(bitfilterlen);
+
 	trackingfilter = new Cmovavg(TRACKING_FILTER_SIZE);
 
 	makeshape();
@@ -143,12 +147,16 @@ void cw::sync_parameters()
 		
 	cw_send_dash_length = 3 * cw_send_dot_length;
 	nusymbollen = (int)(1.0 * samplerate * cw_send_dot_length / USECS_PER_SEC);
+
 	if (symbollen != nusymbollen || risetime != progdefaults.CWrisetime) {
 		risetime = progdefaults.CWrisetime;
 		symbollen = nusymbollen;
-		if (symbollen < 12) bitfilter->setLength(4);
-		else				bitfilter->setLength(8);
-		makeshape();
+	}
+	int len = (int)(samplerate / frequency / 2);
+	len = len < 2 ? 2 : len;
+	if (bitfilterlen != len) {
+		bitfilterlen = len;
+		bitfilter->setLength(bitfilterlen);
 	}
 	
 // check if user changed the tracking or the cw default speed
@@ -245,6 +253,7 @@ void cw::update_syncscope()
 		scopedata[i] = 0.1 + 0.8 * pipe[j] / agc_peak;
 	}
 	set_scope(scopedata, pipesize, false);
+	++scopedata; // swap buffers
 	put_cwRcvWPM(cw_receive_speed);
 	update_Status();
 }
@@ -256,7 +265,7 @@ void cw::update_syncscope()
 // Called with a block (512 samples) of audio.
 //=======================================================================
 
-int cw::rx_process(double *buf, int len)
+int cw::rx_process(const double *buf, int len)
 {
 	complex z;
 	double delta;
@@ -696,7 +705,7 @@ void cw::send_ch(int ch)
 	while (code > 1) {
 		send_symbol(code);// & 1);
 		code = code >> 1;
-        Fl::awake();
+        FL_AWAKE();
 	}
 
 	if (ch != 0)

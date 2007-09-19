@@ -39,6 +39,8 @@
 #include <FL/Enumerations.H>
 #include "File_Selector.h"
 
+#include "qrunner.h"
+
 using namespace std;
 
 //=====================================================================
@@ -54,7 +56,7 @@ using namespace std;
 #define SBwidth 16
 
 textview :: textview( int x, int y, int w, int h, const char *label )
-  : Fl_Widget( x, y, w, h, label ),
+  : ReceiveWidget( x, y, w, h, label ),
     scrollbar(x+w-SBwidth, y+2, SBwidth, h-4 )
 {
 	scrollbar.linesize( 1 );
@@ -110,20 +112,20 @@ int textview::handle(int event)
 
 void textview::setFont(Fl_Font fnt)
 {
-	Fl::lock();
+	FL_LOCK_D();
 	TextFont = fnt;
 	damage(FL_DAMAGE_ALL);
-	Fl::unlock();
-	Fl::awake();
+	FL_UNLOCK_D();
+	FL_AWAKE_D();
 }
 
 void textview::setFontSize(int siz)
 {
-	Fl::lock();
+	FL_LOCK_D();
 	TextSize = siz;
 	damage(FL_DAMAGE_ALL);
-	Fl::unlock();
-	Fl::awake();
+	FL_UNLOCK_D();
+	FL_AWAKE_D();
 }
 
 void textview::setFontColor(Fl_Color clr)
@@ -458,50 +460,43 @@ void textview::drawchars()
 	fl_pop_clip();
 }
 
-void textview::drawmodify()
+void textview::drawmodify(size_t modidx)
 {
-	list <size_t>::iterator p = modidx.begin();
-	while (p != modidx.end()) {
-	    if (*p < laststartidx )
-	        break;
-    	if (*p > endidx)
-        	break;
-	    if (buff[*p] == '\n') {
-    	    p++;
-    	    continue;
-	    }
+    if (modidx < laststartidx )
+        return;
+    if (modidx > endidx)
+        return;
+    if (buff[modidx] == '\n')
+        return;
 // modify the character insitu
 // find the screen location for the character redraw
-	    size_t posidx = laststartidx;
-    	int posX = 0, posY = charheight - descent;
-    	char c = 0;
+    size_t posidx = laststartidx;
+    int posX = 0, posY = charheight - descent;
+    char c = 0;
     
-		fl_font(TextFont, TextSize);
-		while (posidx < *p) {
-			c = buff[posidx];
-			if (c == '\n') {
-				posX = 0;
-				posY += charheight;
-			} else {
-				posX += (int)(fl_width(c));
-			}
-			posidx++;
+	fl_font(TextFont, TextSize);
+	while (posidx < modidx) {
+		c = buff[posidx];
+		if (c == '\n') {
+			posX = 0;
+			posY += charheight;
+		} else {
+			posX += (int)(fl_width(c));
 		}
-// should now be pointing to the (x,y) screen location for the character
-		char cstr[] = "";
-    	cstr[0] = buff[*p];
-// erase existing
-    	if ((attr[*p] & 0x20) == 0x20)
-        	fl_color(FL_YELLOW);
-    	else
-        	fl_color(FL_WHITE);
-		fl_rectf ( X + posX, Y + posY - charheight + descent, (int)fl_width(c), charheight);
-// draw new with attribute
-		fl_color (TextColor[(int)attr[*p] & 0x0F]);
-		fl_draw ( cstr, 1, X + posX, Y + posY );
-		p++;
+		posidx++;
 	}
-	modidx.clear();
+// should now be pointing to the (x,y) screen location for the character
+	char cstr[] = "";
+    cstr[0] = buff[modidx];
+// erase existing
+    if ((attr[modidx] & 0x20) == 0x20)
+        fl_color(FL_YELLOW);
+    else
+        fl_color(FL_WHITE);
+	fl_rectf ( X + posX, Y + posY - charheight + descent, (int)fl_width(c), charheight);
+// draw new with attribute
+	fl_color (TextColor[(int)attr[modidx] & 0x0F]);
+	fl_draw ( cstr, 1, X + posX, Y + posY );
 }
 
 void textview::draw()
@@ -514,14 +509,16 @@ void textview::draw()
 		drawchars();
 		return;
 	}
-    if (damage() & (FL_DAMAGE_ALL | 2)) {
-        draw_cursor();
-        return;
-    }
-    if (damage() & (FL_DAMAGE_ALL | 4)) {
-        drawmodify();
-        return;
-    }
+	if (damage() & (FL_DAMAGE_ALL | 2)) {
+		draw_cursor();
+		return;
+	}
+	if (damage() & (FL_DAMAGE_ALL | 4)) {
+		for (size_t i = draw_mod_range.start; i <= draw_mod_range.end; ++i)
+			drawmodify(i);
+		draw_mod_range.start = draw_mod_range.end + 1;
+		return;
+	}
 }
 
 void textview::scrollbarCB()
@@ -538,7 +535,7 @@ void textview::_backspace()
 
 	if (lastcrlf == string::npos) lastcrlf = 0;
 
-Fl::lock();	
+FL_LOCK_D();	
 	if (attr[attr.length() - 1] == -1) { // soft linefeed skip over
 		buff.erase(buff.length()-1);
 		attr.erase(attr.length()-1);
@@ -569,8 +566,8 @@ Fl::lock();
 		wrappos -= (int)fl_width(c);
 	}
 	damage(FL_DAMAGE_ALL);
-Fl::unlock();
-Fl::awake();
+FL_UNLOCK_D();
+FL_AWAKE_D();
 }
 
 void textview::add( char c, int attribute)
@@ -580,7 +577,7 @@ void textview::add( char c, int attribute)
 		return;
 	}
 
-	Fl::lock();
+	FL_LOCK_D();
 	if (c >= ' ' && c <= '~') {
 		buff += c;
 		attr += attribute;
@@ -616,22 +613,21 @@ void textview::add( char c, int attribute)
 		}
 	} else
 		damage(1);
-	Fl::unlock();
-	Fl::awake();
+	FL_UNLOCK_D();
+//	FL_AWAKE();
 	
 	setScrollbar();
 }
 
-void textview::add( char *text, int attr )
+void textview::add( const char *text, int attr )
 {
-	for (unsigned int i = 0; i < strlen(text); i++)
-		add(text[i], attr);
-	return;
+	while (*text)
+		add(*text++, attr);
 }
 
 void textview::clear()
 {
-	Fl::lock();
+	FL_LOCK_D();
 	buff.erase();
 	attr.erase();
     highlightstart = string::npos;
@@ -644,8 +640,8 @@ void textview::clear()
 	laststartidx = string::npos;
 	setScrollbar();
 	damage(FL_DAMAGE_ALL);
-	Fl::unlock();
-	Fl::awake();
+	FL_UNLOCK_D();
+	FL_AWAKE_D();
 }
 
 
@@ -760,7 +756,7 @@ Fl_Menu_Item TextView::viewmenu[] = {
 int viewmenuNbr = 10;
 
 TextView::TextView( int x, int y, int w, int h, const char *label )
-	: textview ( x, y, w, h, label )
+	: ReceiveWidget( x, y, w, h, label ), textview ( x, y, w, h, label )
 {
 	cursorStyle = NONE;// BLOCK_CURSOR;
 	cursorON = true;
@@ -793,7 +789,7 @@ void TextView::menu_cb(int val)
 		inpRstIn->value(findtext().c_str());
 		break;
 	case 6:
-		add("\n	    <<================>>\n", RCV);
+		addstr("\n	    <<================>>\n", RCV);
 		break;
 	case 7:
 		clear();
@@ -874,7 +870,8 @@ Fl_Menu_Item editmenu[] = {
 int editmenuNbr = 5;
 
 TextEdit::TextEdit( int x, int y, int w, int h, const char *label )
-	: textview ( x, y, w, h, label )
+	: ReceiveWidget( x, y, w, h, label ), textview ( x, y, w, h, label ),
+	  TransmitWidget( x, y, w, h, label )
 {
 	xmtidx = 0;
 	bkspaces = 0;
@@ -900,7 +897,7 @@ void TextEdit::readFile()
 				inbuff += ch;
 			}
 			in.close();
-			add (inbuff.c_str());
+			addstr (inbuff.c_str());
 		}
 	}
 	Fl::focus(this);
@@ -922,7 +919,7 @@ void TextEdit::menu_cb(int val)
 		wf->set_XmtRcvBtn(true);
 	}
 	if (val == 3)
-		add("^r");
+		addstr("^r");
 	if (val == 4)
 		if (active_modem->get_mode() == MODE_MFSK16)
 			active_modem->makeTxViewer(0,0);
@@ -1025,7 +1022,7 @@ int TextEdit::handle_key() {
 	}
 	
 	const char *ch = Fl::event_text();
-	add(ch);
+	addstr(ch);
 	Fl::focus(this);
 	return 1;
 }
@@ -1106,9 +1103,10 @@ int TextEdit::nextChar()
 		xmtidx++;
 		if (xmtidx == buff.length()) return 0;
 	}
-	attr[xmtidx] = 4;
-	modidx.push_back(xmtidx);
-	damage(4);
+	FL_LOCK_D();
+	QUEUE(CMP_CB(&TextEdit::update_xmit_text, this, xmtidx));
+	FL_UNLOCK_D();
+//    FL_AWAKE();
 	return (buff[xmtidx++]);
 }
 
@@ -1118,3 +1116,11 @@ void TextEdit::cursorON()
 	damage(2);
 }
 
+void TextEdit::update_xmit_text(size_t i)
+{
+	attr[i] = 4;
+	if (draw_mod_range.start > i)
+		draw_mod_range.start = i;
+	draw_mod_range.end = i;
+	damage(4);
+}

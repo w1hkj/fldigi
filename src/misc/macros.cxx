@@ -285,9 +285,9 @@ int MACROTEXT::loadMacros(string filename)
 				break;
 			name[mNumber] = mLine.substr(idx+1, 8);
 			if (mNumber < 10) {
-				Fl::lock();
+				FL_LOCK_D();
 				btnMacro[mNumber]->label( (macros.name[mNumber]).c_str());
-				Fl::unlock();
+				FL_UNLOCK_D();
 			}
 			continue;
 		}
@@ -352,7 +352,7 @@ string MACROTEXT::expandMacro(int n)
 
 void MACROTEXT::execute(int n) 
 {
-	TransmitText->add( (expandMacro(n)).c_str() );
+	TransmitText->addstr( (expandMacro(n)).c_str() );
 	if ( TransmitON ) {
 		active_modem->set_stopflag(false);
 		fl_lock(&trx_mutex);

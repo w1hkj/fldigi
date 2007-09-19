@@ -52,6 +52,8 @@
 
 #include "log.h"
 
+#include "qrunner.h"
+
 using namespace std;
 
 string scDevice = "/dev/dsp1";
@@ -141,7 +143,15 @@ void arqchecks()
 	}
 }
 
-int main(int argc, char ** argv) {
+int main(int argc, char ** argv)
+{
+	CREATE_THREAD_ID(); // only call this once
+	SET_THREAD_ID(FLMAIN_TID);
+
+	for (int i = 0; i < NUM_THREADS - 1; i++) {
+		cbq[i] = new qrunner(1);
+		cbq[i]->attach();
+	}
 
 	fl_filename_expand(szHomedir, 119, "$HOME/.fldigi/");
 	if (fl_filename_isdir(szHomedir) == 0)
@@ -158,7 +168,7 @@ int main(int argc, char ** argv) {
 
 	arqchecks();
 	
-	Fl::lock();  // start the gui thread!!	
+	FL_LOCK_E();  // start the gui thread!!	
 	Fl::visual(FL_RGB); // insure 24 bit color operation
 	
 //	Fl::visual(FL_DOUBLE|FL_INDEX| FL_RGB);
@@ -167,6 +177,7 @@ int main(int argc, char ** argv) {
 	Fl::set_fonts(0);
 	
 	rigcontrol = createRigDialog();
+	progdefaults.readDefaults();
 	create_fl_digi_main();
 
 	createConfig();
@@ -238,11 +249,13 @@ int main(int argc, char ** argv) {
 	progStatus.initLastState();
 	
 	Fl::add_timeout(1.0, pskmail_loop);
-	
-	start_display_loop();
 
 	fl_digi_main->show();
 
-	return Fl::run();
+	int ret = Fl::run();
+	for (int i = 0; i < NUM_THREADS - 1; i++)
+		cbq[i]->detach();
+
+	return ret;
 }
 

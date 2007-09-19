@@ -275,6 +275,8 @@ pbwidth_t hamlib_getwidth()
 
 static void *hamlib_loop(void *args)
 {
+	SET_THREAD_ID(RIGCTL_TID);
+
 	long int freq = 0L;
 	rmode_t  numode = RIG_MODE_USB;
 	bool freqok = false, modeok = false;
@@ -319,9 +321,9 @@ static void *hamlib_loop(void *args)
 
 		if (freqok && freq && (freq != hamlib_freq)) {
 			hamlib_freq = freq;
-			Fl::lock();
+			FL_LOCK();
 				FreqDisp->value(hamlib_freq);
-			Fl::unlock();
+			FL_UNLOCK();
 			wf->rfcarrier(hamlib_freq);
 		}
 		

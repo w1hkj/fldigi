@@ -44,6 +44,11 @@
 
 #include "misc.h"
 #include "configuration.h"
+#include "version.h"
+
+#include <irrXML.h>
+using namespace irr;
+using namespace io;
 
 #include "qrzcall.h"
 #include "main.h"
@@ -53,40 +58,45 @@
 
 using namespace std;
 
-#define BEGIN_NAME		"Name:</td><td><b>"
-#define BEGIN_ADDR1		"Addr1:</td><td><b>"
-#define BEGIN_ADDR2		"Addr2:</td><td><b>"
-#define BEGIN_COUNTRY	"Country:</td><td><b>"
-#define BEGIN_GRID		"Grid:</td><td><b>"
-#define BEGIN_BORN		"Born:</td><td><b>"
-#define NOT_FOUND		"<b class=red>"
-#define snip_end_RECORD		"</b>"
+#define qrzuser "wa5znu"
+#define qrzpass "******"
 
-static string htmlpage = "";
-static string host = "www.qrz.com";
+static int rotoroffset=0;
+static string xmlpage = "";
+static string sessionpage = "";
+static string host = "online.qrz.com";
 static string detail;
+static string qrzSessionKey;
+static string qrzalert;
+static string qrzerror;
 static string callsign = "";
 static string qrzname;
 static string qrzaddr1;
 static string qrzaddr2;
+static string qrzstate;
+static string qrzzip;
 static string qrzcountry;
 static string qrzborn;
 static string qrzfname;
 static string qrzqth;
 static string qrzgrid;
+static string qrzlatd;
+static string qrzlond;
 static string qrznotes;
 
 static const char *error[] = {
-"OK",								// err 0
-"Host not found", 					// err 1
-"Not an IP host!", 					// err 2
-"No http service",					// err 3
-"Cannot open socket",				// err 4
-"Cannot Connect to www.qrz.com",	// err 5
-"Socket write error",				// err 6
-"Socket timeout",					// err 7
-"Socket select error"				// err 8
+"OK",				// err 0
+"Host not found",		// err 1
+"Not an IP host!",		// err 2
+"No http service",		// err 3
+"Cannot open socket",		// err 4
+"Cannot Connect to www.qrz.com", // err 5
+"Socket write error",		// err 6
+"Socket timeout",		// err 7
+"Socket select error"		// err 8
 };
+
+enum TAG { IGNORE, KEY, ALERT, ERROR, CALL, FNAME, NAME, ADDR1, ADDR2, STATE, ZIP, COUNTRY, LATD, LOND, GRID, DOB };
 
 static char rbuffer[32768];
 
@@ -107,110 +117,258 @@ static void *QRZloop(void *args);
 
 QRZ *qCall;
 
-bool parse_html()
+class IIrrXMLStringReader: public IFileReadCallBack {
+  const char *s;
+  int len;
+  int p;
+public:
+  IIrrXMLStringReader(const char *string) {
+    s=string;
+    len = strlen(s);
+    p=0;
+  }
+  IIrrXMLStringReader(const std::string&string) {
+    s=string.c_str();
+    len = strlen(s);
+    p=0;
+  }
+  int read(void* buffer, int sizeToRead) {
+    char *sss=(char *)buffer;
+    if (p>=len) return 0;
+    int j=0;
+    for (int i = p; i<len && j<sizeToRead; ) {
+      sss[j++] = s[i++];
+    }
+    return 1;
+  }
+    
+  int getSize() {
+    return len-p;
+  }
+
+};
+
+bool parseSessionKey()
 {
-	size_t snip, snip_end;
+	// fprintf(stderr, "parseSessionKey: %s\n", sessionpage.c_str());
+	IrrXMLReader* xml = createIrrXMLReader(new IIrrXMLStringReader(sessionpage));
+	TAG tag=IGNORE;
+	while(xml && xml->read()) {
+		switch(xml->getNodeType())
+		{
+		case EXN_TEXT:
+		case EXN_CDATA:
+			switch (tag) 
+			{
+			default:
+				break;
+			case KEY:
+				qrzSessionKey = xml->getNodeData();
+				break;
+			case ALERT:
+				qrzalert = xml->getNodeData();
+				break;
+			case ERROR:
+				qrzerror = xml->getNodeData();
+				break;
+			}
+			break;
 
-	qrzname = "";
-	qrzfname = "";
-	qrzqth = "";
-	qrzaddr1 = "";
-	qrzaddr2 = "";
-	qrzcountry = "";
-	qrzgrid = "";
-	qrzborn = "";
-	qrznotes = "";
-	
-	if (htmlpage.find(NOT_FOUND) != string::npos) {
-		qrznotes = "NOT FOUND";
-		return false;
+		case EXN_ELEMENT_END:
+			tag=IGNORE;
+			break;
+
+		case EXN_ELEMENT:
+		{
+			const char *nodeName = xml->getNodeName();
+			if (!strcmp("Key", nodeName)) tag=KEY;
+			else if (!strcmp("Alert", nodeName)) tag=ALERT;
+			else if (!strcmp("Error", nodeName)) tag=ERROR;
+			else tag=IGNORE;
+			break;
+		}
+
+		case EXN_NONE:
+		case EXN_COMMENT:
+		case EXN_UNKNOWN:
+			break;
+		}
 	}
-
-
-	snip = htmlpage.find(BEGIN_NAME);
-	if (snip != string::npos) {
-		snip += strlen(BEGIN_NAME);
-		snip_end  = htmlpage.find(snip_end_RECORD, snip);
-		qrzname = htmlpage.substr(snip, snip_end - snip);
-		snip = qrzname.find(' ');
-		qrzfname = qrzname.substr(0, snip);
-		for (size_t i = 0; i < qrzfname.length(); i++)
-			if (qrzfname[i] < ' ' || qrzfname[i] > 'z')
-				qrzfname[i] = ' ';
-		while ((snip = qrzfname.find(' ')) != string::npos)
-			qrzfname.erase(snip, 1);
-	}	
-	
-	snip = htmlpage.find(BEGIN_ADDR1);
-	if (snip != string::npos) {
-		snip += strlen(BEGIN_ADDR1);
-		snip_end  = htmlpage.find(snip_end_RECORD, snip);
-		qrzaddr1 = htmlpage.substr(snip, snip_end - snip);
-	}	
-
-	snip = htmlpage.find(BEGIN_ADDR2);
-	if (snip != string::npos) {
-		snip += strlen(BEGIN_ADDR2);
-		snip_end  = htmlpage.find(snip_end_RECORD, snip);
-		qrzaddr2 = htmlpage.substr(snip, snip_end - snip);
-		qrzqth += qrzaddr2;
-	}	
-
-	snip = htmlpage.find(BEGIN_COUNTRY);
-	if (snip != string::npos) {
-		qrzqth += ", ";
-		snip += strlen(BEGIN_COUNTRY);
-		snip_end  = htmlpage.find(snip_end_RECORD, snip);
-		qrzcountry = htmlpage.substr(snip, snip_end - snip);
-		qrzqth += qrzcountry;
-	}	
-
-	snip = htmlpage.find(BEGIN_GRID);
-	if (snip != string::npos) {
-		snip += strlen(BEGIN_GRID);
-		snip_end  = htmlpage.find(snip_end_RECORD, snip);
-		qrzgrid = htmlpage.substr(snip, snip_end - snip);
-	}	
-	
-	snip = htmlpage.find(BEGIN_BORN);
-	if (snip != string::npos) {
-		snip += strlen(BEGIN_BORN);
-		snip_end  = htmlpage.find(snip_end_RECORD, snip);
-		qrzborn = htmlpage.substr(snip, snip_end - snip);
-		qrznotes = "Born: " + qrzborn;
-	}	
-	return true;
+	delete xml;
+	return 0;
 } 
 
 
-int getRecord()
+bool parse_xml()
 {
-    hostinfo = gethostbyname(host.c_str());
-    if(!hostinfo)
-    	return 1;
-    if(hostinfo->h_addrtype != AF_INET)
-    	return 2;
-    servinfo = getservbyname("http", "tcp");
-    if(!servinfo)
-    	return 3;
+	// fprintf(stderr, "parse_xml: %s\n", xmlpage.c_str());
+	//  IrrXMLReader* xml = createIrrXMLReader("n5lk.xml");
+	IrrXMLReader* xml = createIrrXMLReader(new IIrrXMLStringReader(xmlpage));
 
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	// If we got any result back, clear the session key so that it will be refreshed by this response,
+	// or if not present, will be removed and we'll know to log in next time.
+	if (xml) {
+		qrzSessionKey="";
+		qrzalert="";
+		qrzerror="";
+		qrzname="";
+		qrzaddr1="";
+		qrzaddr2="";
+		qrzstate="";
+		qrzzip="";
+		qrzcountry="";
+		qrzborn="";
+		qrzfname="";
+		qrzqth="";
+		qrzgrid="";
+		qrzlatd="";
+		qrzlond="";
+		qrznotes="";
+	}
+	// strings for storing the data we want to get out of the file
+	std::string call, fname, name, addr1, addr2, state, zip, country, latd, lond, grid, dob;
+	TAG tag=IGNORE;
+	// parse the file until end reached
+	while(xml && xml->read())
+	{
+		switch(xml->getNodeType())
+		{
+		case EXN_TEXT:
+		case EXN_CDATA:
+			switch (tag) {
+			default:
+			case IGNORE:
+				break;
+			case CALL:
+				call = xml->getNodeData();
+				break;
+			case FNAME:
+				qrzfname =  xml->getNodeData();
+				break;
+			case NAME:
+				qrzname =  xml->getNodeData();
+				break;
+			case ADDR1:
+				qrzaddr1 =  xml->getNodeData();
+				break;
+			case ADDR2:
+				qrzaddr2 =  xml->getNodeData();
+				break;
+			case STATE:
+				qrzstate =  xml->getNodeData();
+				break;
+			case ZIP:
+				qrzzip =  xml->getNodeData();
+				break;
+			case COUNTRY:
+				qrzcountry =  xml->getNodeData();
+				break;
+			case LATD:
+				qrzlatd =  xml->getNodeData();
+				break;
+			case LOND:
+				qrzlond =  xml->getNodeData();
+				break;
+			case GRID:
+				qrzgrid =  xml->getNodeData();
+				break;
+			case DOB:
+				qrznotes = "DOB: ";
+				qrznotes += xml->getNodeData();
+				break;
+			case ALERT:
+				qrzalert = xml->getNodeData();
+				break;
+			case ERROR:
+				qrzerror = xml->getNodeData();
+				break;
+			case KEY:
+				qrzSessionKey = xml->getNodeData();
+				break;
+			}
+			break;
+		case EXN_ELEMENT_END:
+			tag=IGNORE;
+			break;
+
+		case EXN_ELEMENT:
+		{
+			const char *nodeName = xml->getNodeName();
+			if (!strcmp("call", nodeName)) tag=CALL;
+			else if (!strcmp("fname", nodeName)) tag=FNAME;
+			else if (!strcmp("name", nodeName)) tag=NAME;
+			else if (!strcmp("addr1", nodeName)) tag=ADDR1;
+			else if (!strcmp("addr2", nodeName)) tag=ADDR2;
+			else if (!strcmp("state", nodeName)) tag=STATE;
+			else if (!strcmp("zip", nodeName)) tag=ZIP;
+			else if (!strcmp("country", nodeName)) tag=COUNTRY;
+			else if (!strcmp("latd", nodeName)) tag=LATD;
+			else if (!strcmp("lond", nodeName)) tag=LOND;
+			else if (!strcmp("grid", nodeName)) tag=GRID;
+			else if (!strcmp("dob", nodeName)) tag=DOB;
+			else if (!strcmp("Alert", nodeName)) tag=ALERT;
+			else if (!strcmp("Error", nodeName)) tag=ERROR;
+			else if (!strcmp("Key", nodeName)) tag=KEY;
+			else tag=IGNORE;
+		}
+		break;
+
+		case EXN_NONE:
+		case EXN_COMMENT:
+		case EXN_UNKNOWN:
+		{
+			break;
+		}
+		}
+	}
+
+	// delete the xml parser after usage
+	delete xml;
+	return 0;
+}
+
+int getSessionKey()
+{
+	hostinfo = gethostbyname(host.c_str());
+	if(!hostinfo)
+		return 1;
+	if(hostinfo->h_addrtype != AF_INET)
+		return 2;
+	servinfo = getservbyname("http", "tcp");
+	if(!servinfo)
+		return 3;
+
+	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	
 	if (sockfd == -1)
 		return 4;
-    address.sin_family = AF_INET;
-    address.sin_port = servinfo->s_port;
-    address.sin_addr = *(struct in_addr *)*hostinfo->h_addr_list;
+	address.sin_family = AF_INET;
+	address.sin_port = servinfo->s_port;
+	address.sin_addr = *(struct in_addr *)*hostinfo->h_addr_list;
 
-    result = connect(sockfd, (struct sockaddr *)&address, sizeof(address));
-    if(result == -1) {
+	result = connect(sockfd, (struct sockaddr *)&address, sizeof(address));
+	if(result == -1) {
 		close(sockfd);
-    	return 5;
+		return 5;
 	}
 
-	detail = "GET /detail/";
-	detail += callsign;
-	detail += "\r\n";
+	{
+		detail = "GET /bin/xml?username=";
+		detail += progdefaults.QRZusername;
+		detail += ";password=";
+		detail += progdefaults.QRZuserpassword;
+		detail += ";version=";
+		detail += FLDIGI_NAME;
+		detail += "/";
+		detail += FLDIGI_VERSION;
+		detail += " HTTP/1.0\n";
+		detail += "Host: ";
+		detail += host;
+		detail += "\n";
+		detail += "Connection: close\n";
+		detail += "\n";
+	}
+  
 	
 	result = write(sockfd, detail.c_str() , detail.length());
 	if (result != (int)detail.length()) {
@@ -221,14 +379,13 @@ int getRecord()
 	FD_ZERO(&readfds);
 	FD_SET(sockfd, &readfds);
 	
-	while (htmlpage.find("</html") == string::npos) {
+	while (1) {
 		testfds = readfds;
 		timeout.tv_sec = 5;		// timeout = 5 seconds
 		timeout.tv_usec = 0;
 		result = select(FD_SETSIZE, &testfds, (fd_set *)0, (fd_set *)0, &timeout);
 		if (result == 0) {
-			close(sockfd);
-			return 7;
+			break;
 		}
 		if (result == -1) {
 			close(sockfd);
@@ -237,12 +394,88 @@ int getRecord()
 		if (FD_ISSET(sockfd, &testfds)) {
 			memset(rbuffer, 0, 32768);
 			result = read(sockfd, rbuffer, sizeof(rbuffer));
-			htmlpage += rbuffer;
+			if (result <= 0) break;
+			sessionpage += rbuffer;
+		} else {
+			break;
 		}
-    }
+	}
     
-    close(sockfd);
-    return 0;
+	close(sockfd);
+	return 0;
+}
+
+int QRZGetXML()
+{
+	hostinfo = gethostbyname(host.c_str());
+	if(!hostinfo)
+		return 1;
+	if(hostinfo->h_addrtype != AF_INET)
+		return 2;
+	servinfo = getservbyname("http", "tcp");
+	if(!servinfo)
+		return 3;
+
+	sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	
+	if (sockfd == -1)
+		return 4;
+	address.sin_family = AF_INET;
+	address.sin_port = servinfo->s_port;
+	address.sin_addr = *(struct in_addr *)*hostinfo->h_addr_list;
+
+	result = connect(sockfd, (struct sockaddr *)&address, sizeof(address));
+	if(result == -1) {
+		close(sockfd);
+		return 5;
+	}
+
+	{
+		detail = "GET /bin/xml?s=";
+		detail += qrzSessionKey;
+		detail += ";callsign=";
+		detail += callsign;
+		detail += " HTTP/1.0\n";
+		detail += "Host: ";
+		detail += host;
+		detail += "\n";
+		detail += "Connection: close\n";
+		detail += "\n";
+	}
+	
+	result = write(sockfd, detail.c_str() , detail.length());
+	if (result != (int)detail.length()) {
+		close(sockfd);
+		return 6;
+	}
+
+	FD_ZERO(&readfds);
+	FD_SET(sockfd, &readfds);
+	
+	while (1) {
+		testfds = readfds;
+		timeout.tv_sec = 5;		// timeout = 5 seconds
+		timeout.tv_usec = 0;
+		result = select(FD_SETSIZE, &testfds, (fd_set *)0, (fd_set *)0, &timeout);
+		if (result == 0) {
+			break;
+		}
+		if (result == -1) {
+			close(sockfd);
+			return 8;
+		}
+		if (FD_ISSET(sockfd, &testfds)) {
+			memset(rbuffer, 0, 32768);
+			result = read(sockfd, rbuffer, sizeof(rbuffer));
+			if (result <= 0) break;
+			xmlpage += rbuffer;
+		} else {
+			break;
+		}
+	}
+    
+	close(sockfd);
+	return 0;
 }
 
 // code submitted by WA5ZNU
@@ -296,23 +529,48 @@ void qra(const char *szqra, double &lat, double &lon) {
 
 void QRZ_disp_result()
 {
-	Fl::lock();
-		inpName->value(qrzfname.c_str());
-		inpQth->value(qrzqth.c_str());
-		inpLoc->value(qrzgrid.c_str());
-// code provided by WA5ZNU
-		if (!progdefaults.myLocator.empty()) {
-			char buf[10];
-			buf[0] = '\0';
-			if (!qrzgrid.empty()) {
-				int b = bearing( progdefaults.myLocator.c_str(), qrzgrid.c_str() );
-				int br = (b + 180) % 360;
-				snprintf(buf, 256, "%03d / %03d", b, br);
-		  }
-		  inpAZ->value(buf);
-		}
-		inpNotes->value(qrznotes.c_str());
-	Fl::unlock();
+   FL_LOCK();
+   {
+           if (qrzfname.length() > 0) {
+           int spacePos = qrzfname.find(" ");
+           //    if fname is "ABC" then display "ABC"
+           // or if fname is "X Y" then display "X Y"
+           if (spacePos ==-1 || (spacePos == 1)) {
+               inpName->value(qrzfname.c_str());
+           }
+           // if fname is "ABC Y" then display "ABC"
+           else if (spacePos == ((int)qrzfname.length())-2) {
+               string fname="";
+               fname.assign(qrzfname, 0, spacePos);
+               inpName->value(fname.c_str());
+           }
+           // fname must be "ABC DEF" so display "ABC DEF"
+           else {
+               inpName->value(qrzfname.c_str());
+           }
+       } else if (qrzname.length() > 0) {
+           // only name is set; don't know first/last, so just show all
+           inpName->value(qrzname.c_str());
+       }
+   }
+
+   inpQth->value(qrzqth.c_str());
+   inpLoc->value(qrzgrid.c_str());
+   if (!progdefaults.myLocator.empty()) {
+       char buf[10];
+       buf[0] = '\0';
+       if (!qrzgrid.empty()) {
+           int b = bearing( progdefaults.myLocator.c_str(), qrzgrid.c_str() );
+           b+=rotoroffset;
+           if (b<0) b+=360;
+           if (b>=360) b-=360;
+           int br = (b + 180) % 360;
+           snprintf(buf, sizeof(buf), "%03d / %03d", b, br);
+       }
+       inpAZ->value(buf);
+   }
+   inpNotes->value(qrznotes.c_str());
+   FL_UNLOCK();
 }
 
 void QRZ_COM_query()
@@ -323,11 +581,11 @@ void QRZ_COM_query()
 			return;
 	}
 
-	htmlpage = "";
+	xmlpage = "";
 	QRZ_query = true;
-	Fl::lock();
+	FL_LOCK();
 	inpNotes->value(" *** Request sent to qrz.com ***");
-	Fl::unlock();
+	FL_UNLOCK();
 }
 
 void QRZ_CD_query()
@@ -364,9 +622,24 @@ void QRZ_CD_query()
 
 void QRZquery()
 {
-	Fl::lock();
+	{
+		FL_LOCK();
 		callsign = inpCall->value();
-	Fl::unlock();
+		// Filter callsign for nonesense characters (remove all but [A-Z0-9/])
+		string ncall = "";
+		for (unsigned int i = 0; i < callsign.length(); i++) {
+			const char ch = callsign.at(i);
+			if ((ch >= 'A' && ch <= 'Z') ||
+			    (ch >= 'a' && ch <= 'z') ||
+			    (ch >= '0' && ch <= '9') ||
+			    (ch == '/')) {
+				ncall += (ch);
+			}
+		}
+		inpCall->value(ncall.c_str());
+		callsign = inpCall->value();
+		FL_UNLOCK();
+	}
 	
 	if (callsign.length() == 0)
 		return;
@@ -404,22 +677,86 @@ void QRZclose(void)
 	QRZ_exit = false;
 }
 
+static void qthappend(string &qth, string &datum) {
+	if (datum.empty()) return;
+	if (!qth.empty()) qth += ", ";
+	qth += datum;
+}
+
+static void QRZAlert()
+{
+// test alert first as QRZ.com requires it be shown
+	if (!qrzalert.empty()) {
+		FL_LOCK();
+		inpNotes->value(qrzalert.c_str());
+		qrzalert="";
+		FL_UNLOCK();
+	} else if (!qrzerror.empty()) {
+		FL_LOCK();
+		inpNotes->value(qrzerror.c_str());
+		qrzerror="";
+		FL_UNLOCK();
+	}
+}
+
+
+static int QRZLogin() {
+	int err=0;
+	if (qrzSessionKey.empty()) {
+		err = getSessionKey();
+		if (!err) err = parseSessionKey();
+	}
+	if (! err) {
+		QRZAlert();
+	}
+	return err;
+}
+
 static void *QRZloop(void *args)
 {
-	int err;
+	SET_THREAD_ID(QRZ_TID);
+
 	for (;;) {
-// see if we are being canceled
+		// see if we are being canceled
 		if (QRZ_exit)
 			break;
 		if (QRZ_query) {
-			err = getRecord();
+			int err=0;
+			if (qrzSessionKey.empty())
+				err = QRZLogin();
+			if (!err)
+				err = QRZGetXML();
 			if (!err) {
-				parse_html();
-				QRZ_disp_result();
-			} else {
-				Fl::lock();
+				if (qrzSessionKey.empty())
+					err = QRZLogin();
+				if (!err)
+					err = QRZGetXML();
+			}
+			if (!err) {
+				parse_xml();
+				if (!qrzalert.empty()) {
+					FL_LOCK();
+					inpNotes->value(qrzalert.c_str());
+					qrzalert="";
+					FL_UNLOCK();
+				} else if (!qrzerror.empty()) {
+					FL_LOCK();
+					inpNotes->value(qrzerror.c_str());
+					qrzerror="";
+					FL_UNLOCK();
+				} else {
+					qrzqth = "";
+					qthappend(qrzqth, qrzaddr1);
+					qthappend(qrzqth, qrzaddr2);
+					qthappend(qrzqth, qrzstate);
+					qthappend(qrzqth, qrzcountry);
+					QRZ_disp_result();
+				}
+			} 
+			if (err) {
+				FL_LOCK();
 				inpNotes->value(error[err]);
-				Fl::unlock();
+				FL_UNLOCK();
 			}
 			QRZ_query = false;
 		}

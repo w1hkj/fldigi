@@ -88,6 +88,8 @@ struct configuration {
 	bool	sendid;
 	bool	macroid;
 	int		QRZ;
+	string	QRZusername;
+	string	QRZuserpassword;
 // Rig Interface data
 	bool	btnusb;
 	int		btnPTTis;
@@ -142,8 +144,9 @@ struct configuration {
 // waterfall palette
 	RGBint	cfgpal[9];
 	
+	bool alt_text_widgets;
 public:
-	void readDefaults(ifstream &f);
+	bool readDefaults(void);
 	void writeDefaults(ofstream &f);
 	void storeDefaults();
 	void loadDefaults();

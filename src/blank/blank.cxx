@@ -141,7 +141,7 @@ void BLANK::afc()
 // adjust "frequency" iaw with afc processing
 }
 
-int BLANK::rx_process(double *buf, int len)
+int BLANK::rx_process(const double *buf, int len)
 {
 	complex z;
 	int i;

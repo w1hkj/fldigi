@@ -1,6 +1,6 @@
 Change Log:
 
-1.3x  1) Increased TxPPM to +/- 50000 to match the RxPPM range
+1.38  1) Increased TxPPM to +/- 50000 to match the RxPPM range
       2) Changed all audio i/o to separate 2 channel control (stereo)
       3) Added right channel CW QRQ signal
       4) Added right channel pseudo FSK signal
@@ -31,6 +31,16 @@ Change Log:
       19) Added popup menu (right click) to the lower left corner modem button.
           Allows quick change on psk modes only.  Left button still opens up
           the configuration tab for the modem in use.
+      20) Changed QRZ.com query to XML registered user query, see QRZ config-
+          uration tab.
+      21) Added grunner and boost libraries.  These separate the modem threads
+          from the gui thread.  This provides a considerable improvement in
+          modem performance.
+      22) Restored the new text editing widgets and also retained the fast
+          text widgets that do not have full editing capability.  User can
+          select which of the text widgets will be used.  Default is the fast
+          text widget.  An fldigi restart is required after making a change to
+          the widget selection on the "misc" configuration tab.
 1.34  1) Cleaned up unused code segments
       2) Modified CW decoder to allow setting upper and lower limits on
          Tx WPM

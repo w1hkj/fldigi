@@ -305,8 +305,10 @@ int WFdisp::log2disp(int v)
 
 void WFdisp::update_fft_db()
 {
+	FL_LOCK_D();
 //	for (int i = 0; i < image_area; i++)
 //		fft_db[i] = log2disp( fft_hist[i] );
+	FL_UNLOCK_D();
 }
 
 void WFdisp::processFFT() {
@@ -320,6 +322,7 @@ void WFdisp::processFFT() {
         for (int i = 0; i < FFT_LEN*2; i++)
             fftout[i] = fftwindow[i] * circbuff[i];
 		wfft->rdft(fftout);
+FL_LOCK_D();		
 		memmove(
 			(void*)(fft_db + IMAGE_WIDTH),
 			(void*)fft_db,
@@ -338,21 +341,20 @@ void WFdisp::processFFT() {
 			ffth = (int)(10.0 * log10(pw + 1e-10) );
 			fft_db[i] = log2disp(ffth);
 		}
+FL_UNLOCK_D();
 	}
 	if (cursormoved || dispcnt == 0) {
-//Fl::lock();
+FL_LOCK_D();
 		if (dispcnt == 0) {
 			memmove(
 				(void*)tmp_fft_db,
 				(void*)fft_db,
 				(IMAGE_WIDTH * image_height) * sizeof(short int));
 		}
-//		redraw();
-//Fl::unlock();
-//		Fl::awake();
+		redraw();
+FL_UNLOCK_D();
+//		FL_AWAKE();
 		cursormoved = false;
-	if (wf_redraw == false)
-		wf_redraw = true;
 	}
 	if (dispcnt == 0)
 		if (srate == 8000)
@@ -372,7 +374,7 @@ void WFdisp::process_analog (double *sig, int len) {
 // clear the signal display area
 	sigy = 0;
 	sigpixel = IMAGE_WIDTH*h2;
-//Fl::lock();
+FL_LOCK();
 	memset (sig_img, 0, sig_image_area);
 	memset (&sig_img[h2*IMAGE_WIDTH], 255, IMAGE_WIDTH);
 	for (int c = 0; c < IMAGE_WIDTH; c++) {
@@ -381,11 +383,8 @@ void WFdisp::process_analog (double *sig, int len) {
 		for (; sigy > ynext; sigy--) sig_img[sigpixel += IMAGE_WIDTH] = graylevel;
 		sig_img[sigpixel++] = graylevel;
 	}
-	if (wf_redraw == false)
-		wf_redraw = true;
-//	redraw();
-//Fl::unlock();
-//Fl::awake();
+	redraw();
+FL_UNLOCK();
 }
 
 void WFdisp::redrawCursor()
@@ -773,7 +772,6 @@ void WFdisp::draw() {
 				drawgrayWF();
 		drawMarker();
 	}
-	wf_redraw = false;
 }
 
 //=======================================================================
@@ -871,7 +869,7 @@ void qsy_cb(Fl_Widget *w, void *v) {
 }
 
 void rate_cb(Fl_Widget *w, void *v) {
-	Fl::lock();
+	FL_LOCK_D();
 	waterfall *wf = (waterfall *)w->parent();
 	WFspeed spd = wf->wfdisp->Speed();
 	if (spd == SLOW) {
@@ -885,16 +883,16 @@ void rate_cb(Fl_Widget *w, void *v) {
 		wf->wfrate->label("SLOW");
 		wf->wfdisp->Speed(SLOW);
 	}
-	Fl::unlock();
+	FL_UNLOCK_D();
 	restoreFocus();
 }
 
 void xmtrcv_cb(Fl_Widget *w, void *vi)
 {
-	Fl::lock();
+	FL_LOCK_D();
 	Fl_Light_Button *b = (Fl_Light_Button *)w;
 	int v = b->value();
-	Fl::unlock();
+	FL_UNLOCK_D();
 	if (v == 1) {
 		active_modem->set_stopflag(false);
 		fl_lock(&trx_mutex);
@@ -911,23 +909,23 @@ void xmtrcv_cb(Fl_Widget *w, void *vi)
 
 void xmtlock_cb(Fl_Widget *w, void *vi)
 {
-	Fl::lock();
+	FL_LOCK_D();
 	Fl_Light_Button *b = (Fl_Light_Button *)w;
 	int v = b->value();
-	Fl::unlock();
+	FL_UNLOCK_D();
 	active_modem->set_freqlock(v ? true : false );
 	restoreFocus();
 }
 
 void waterfall::set_XmtRcvBtn(bool val)
 {
-	Fl::lock();
+	FL_LOCK();
 	xmtrcv->value(val);
-	Fl::unlock();
+	FL_UNLOCK();
 }
 
 void mode_cb(Fl_Widget *w, void *v) {
-	Fl::lock();
+	FL_LOCK_D();
 	waterfall *wf = (waterfall *)w->parent();
 	if (Fl::event_shift()) {
 		wf->wfdisp->Mode(SCOPE);
@@ -952,36 +950,36 @@ void mode_cb(Fl_Widget *w, void *v) {
 		wf->wfRefLevel->activate();
 		wf->wfAmpSpan->activate();
 	}
-	Fl::unlock();
+	FL_UNLOCK_D();
 	restoreFocus();
 }
 
 void reflevel_cb(Fl_Widget *w, void *v) {
-	Fl::lock();
+	FL_LOCK_D();
 	waterfall *wf = (waterfall *)w->parent();
 	double val = wf->wfRefLevel->value();
-	Fl::unlock();
+	FL_UNLOCK_D();
 	wf->wfdisp->Reflevel(val);
 	progdefaults.wfRefLevel = val;
 	restoreFocus();
 }
 
 void ampspan_cb(Fl_Widget *w, void *v) {
-	Fl::lock();
+	FL_LOCK_D();
 	waterfall *wf = (waterfall *)w->parent();
 	double val = wf->wfAmpSpan->value();
-	Fl::unlock();
+	FL_UNLOCK_D();
 	wf->wfdisp->Ampspan(val);
 	progdefaults.wfAmpSpan = val;
 	restoreFocus();
 }
 
 void btnRev_cb(Fl_Widget *w, void *v) {
-	Fl::lock();
+	FL_LOCK_D();
 	waterfall *wf = (waterfall *)w->parent();
 	Fl_Light_Button *b = (Fl_Light_Button *)w;
 	wf->Reverse(b->value());
-	Fl::unlock();
+	FL_UNLOCK_D();
 	active_modem->set_reverse(wf->Reverse());
 	restoreFocus();
 }
@@ -996,17 +994,17 @@ void waterfall::opmode() {
 	if (wfdisp->carrier() > IMAGE_WIDTH - val/2)
 		wfdisp->carrier( IMAGE_WIDTH - val/2);
 	wfdisp->Bandwidth( val );
-	Fl::lock();	
+	FL_LOCK_D();	
 	wfcarrier->range(val/2-1, IMAGE_WIDTH - val/2-1);
-	Fl::unlock();
+	FL_UNLOCK_D();
 }
 
 void waterfall::carrier(int f) {
 	wfdisp->carrier(f);
-	Fl::lock();
+	FL_LOCK_D();
 	wfcarrier->value(f);
 	wfcarrier->damage(FL_DAMAGE_ALL);
-	Fl::unlock();
+	FL_UNLOCK_D();
 }
 
 int waterfall::Speed() { 
@@ -1015,7 +1013,7 @@ int waterfall::Speed() {
 
 void waterfall::Speed(int rate) { 
 	WFspeed spd = (WFspeed) rate;
-	Fl::lock();
+	FL_LOCK_D();
 	if (spd == SLOW) {
 		wfdisp->Speed(spd);
 		wfrate->label("SLOW");
@@ -1027,7 +1025,7 @@ void waterfall::Speed(int rate) {
 		wfrate->label("NORM");
 	}
 	wfrate->redraw_label();
-	Fl::unlock();
+	FL_UNLOCK_D();
 }
 
 int waterfall::Mag() {
@@ -1035,13 +1033,13 @@ int waterfall::Mag() {
 }
 
 void waterfall::Mag(int m) { 
-	Fl::lock();
+	FL_LOCK_D();
 	wfdisp->Mag(m);
 	if (m == MAG_1) x1->label("x1");
 	if (m == MAG_2) x1->label("x2");
 	if (m == MAG_4) x1->label("x4");
 	x1->redraw_label();
-	Fl::unlock();
+	FL_UNLOCK_D();
 }
 
 int waterfall::Carrier()
@@ -1063,17 +1061,17 @@ long long waterfall::rfcarrier() {
 }
 
 void waterfall::setRefLevel() {
-	Fl::lock();
+	FL_LOCK_D();
 	wfRefLevel->value(progdefaults.wfRefLevel);
 	wfdisp->Reflevel(progdefaults.wfRefLevel);
-	Fl::unlock();
+	FL_UNLOCK_D();
 }
 
 void waterfall::setAmpSpan() {
-	Fl::lock();
+	FL_LOCK_D();
 	wfAmpSpan->value(progdefaults.wfAmpSpan);
 	wfdisp->Ampspan(progdefaults.wfAmpSpan);
-	Fl::unlock();
+	FL_UNLOCK_D();
 }
 
 void waterfall::USB(bool b) {

@@ -89,9 +89,9 @@ public:
 	virtual int	write_samples(double *, int) = 0;
 	virtual int	write_stereo(double *, double *, int) = 0;
 	virtual int	Read(double *, int) = 0;
-	void	Capture(bool on);
-	void	Playback(bool on);
-	void	Generate(bool on);	
+	int		Capture(bool on);
+	int		Playback(bool on);
+	int		Generate(bool on);	
 };
 
 class cSoundOSS : public cSound {

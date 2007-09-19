@@ -12,6 +12,7 @@
 #include "complex.h"
 #include "id.h"
 #include "mfskvaricode.h"
+#include "doublebuf.h"
 
 //#include "File_Selector.h"
 
@@ -101,7 +102,7 @@ protected:
 
 	double met1;
 	double met2;
-	double *scopedata;
+	double_buffer<double> scopedata;
 	double s2n;
 	double sig;
 	double noise;
@@ -190,7 +191,7 @@ public:
 	void	rx_init();
 	void	tx_init(cSound *sc);
 	void	restart() {};
-	int		rx_process(double *buf, int len);
+	int		rx_process(const double *buf, int len);
 	int		tx_process();
 	void	shutdown();
 	void	makeTxViewer(int W, int H);

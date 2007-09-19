@@ -91,6 +91,8 @@ configuration progdefaults = {
 	false,			// bool		sendid;
 	false,			// bool		macroid;
 	0,				// int		QRZ;
+	"",				// string	QRZusername;
+	"",				// string	QRZuserpassword;
 //
 	true,			// bool		btnusb;
 	0, 				// int 		btnPTTis
@@ -142,7 +144,9 @@ configuration progdefaults = {
 	50.0,			// double	PCMvolume
 	{{  0,  0,  0},{  0,  0,  62},{  0,  0,126}, // default palette
 	 {  0,  0,214},{145,142,  96},{181,184, 48},
-	 {223,226,105},{254,254,   4},{255, 58,  0} }
+	 {223,226,105},{254,254,   4},{255, 58,  0} },
+
+	false,			// bool		alt_text_widgets;
 };
 
 const char *szBaudRates[] = {
@@ -276,6 +280,8 @@ void configuration::writeDefaultsXML()
 	writeXMLbool(f, "SENDID", sendid);
 	writeXMLbool(f, "MACROID", macroid);
 	writeXMLint(f, "QRZ", QRZ);
+	writeXMLstr(f, "QRZUSER", QRZusername);
+	writeXMLstr(f, "QRZpassword", QRZuserpassword);
 	writeXMLbool(f, "BTNUSB", btnusb);
 	writeXMLint(f, "BTNPTTIS", btnPTTis);
 	writeXMLint(f, "BTNRTSDTRIS", btnRTSDTRis);
@@ -328,6 +334,8 @@ void configuration::writeDefaultsXML()
 //	writeXMLbool(f, "USECWKEYLINERTS", useCWkeylineRTS);
 //	writeXMLbool(f, "USECWKEYLINEDTR", useCWkeylineDTR);
 //	writeXMLstr(f, "CWFSKPORT", CWFSKport);
+
+	writeXMLbool(f, "ALT_TEXT_WIDGETS", alt_text_widgets);
 
 	f << "</FLDIGI_DEFS>\n";
 	f.close();
@@ -455,10 +463,19 @@ void configuration::writeDefaults(ofstream &f)
 	f << bwTrackRGBI.G << endl;
 	f << bwTrackRGBI.B << endl;
 	f << bwTrackRGBI.I << endl;
+	f << alt_text_widgets << endl;
+	f << QRZusername.c_str() << endl;
+	f << QRZuserpassword.c_str() << endl;
 }
 
-void configuration::readDefaults(ifstream &f)
+bool configuration::readDefaults(void)
 {
+	string deffname = HomeDir;
+	deffname.append("fldigi.def");
+	ifstream f(deffname.c_str(), ios::in);
+	if (!f)
+		return false;
+
 	char buff[255];
 
 	f >> squelch;
@@ -587,10 +604,15 @@ void configuration::readDefaults(ifstream &f)
 	f >> bwTrackRGBI.B;
 	f >> bwTrackRGBI.I;
 
+	f >> alt_text_widgets;
+	f.getline(buff,255); QRZusername = buff;
+	f.getline(buff,255); QRZuserpassword = buff;
+
+        return true;
 }
 
 void configuration::loadDefaults() {
-	Fl::lock();
+	FL_LOCK();
 	
 // RTTY
 	selShift->value(rtty_shift);
@@ -621,11 +643,11 @@ void configuration::loadDefaults() {
 	mnuOlivia_Tones->value(oliviatones);
 	mnuOlivia_Bandwidth->value(oliviabw);
 
-	Fl::unlock();
+	FL_UNLOCK();
 }
 
 void configuration::storeDefaults() {
-	Fl::lock();
+	FL_LOCK();
 	
 // RTTY
 	rtty_shift = selShift->value();
@@ -651,11 +673,11 @@ void configuration::storeDefaults() {
 	oliviatones = mnuOlivia_Tones->value();
 	oliviabw = mnuOlivia_Bandwidth->value();
 
-	Fl::unlock();
+	FL_UNLOCK();
 }
 
 void configuration::saveDefaults() {
-	Fl::lock();
+	FL_LOCK();
 // strings
 	myCall = inpMyCallsign->value();
 	myName = inpMyName->value();
@@ -670,7 +692,7 @@ void configuration::saveDefaults() {
 		progdefaults.cfgpal[i].G =  palette[i].G;
 		progdefaults.cfgpal[i].B =  palette[i].B;
 	}
-	Fl::unlock();
+	FL_UNLOCK();
 	
 	string deffname = HomeDir;
 	deffname.append("fldigi.def");
@@ -688,15 +710,8 @@ int configuration::openDefaults() {
 #ifndef NOHAMLIB	
 	getRigs();
 #endif	
-	string deffname = HomeDir;
-	deffname.append("fldigi.def");
-	ifstream deffile(deffname.c_str(), ios::in);
-
-	if (deffile) {
-		readDefaults(deffile);
-		deffile.close();
-		
-		Fl::lock();
+	if (readDefaults()) {
+		FL_LOCK();
 			inpMyCallsign->value(myCall.c_str());
 			inpMyName->value(myName.c_str());
 			inpMyQth->value(myQth.c_str());
@@ -869,8 +884,10 @@ int configuration::openDefaults() {
 			cntRxRateCorr->value(RX_corr);
 			cntTxRateCorr->value(TX_corr);
 			cntTxOffset->value(TxOffset);
+
+			btntextwidgets->value(alt_text_widgets);
 			
-		Fl::unlock();
+		FL_UNLOCK();
 
 		enableMixer(EnableMixer);
 		
@@ -909,7 +926,7 @@ int configuration::openDefaults() {
 }
 
 void configuration::initOperator() {
-	Fl::lock();
+	FL_LOCK();
 		myCall = inpMyCallsign->value();
 		myName = inpMyName->value();
 		myQth  = inpMyQth->value();
@@ -917,7 +934,7 @@ void configuration::initOperator() {
 		UseLeadingZeros = btnUseLeadingZeros->value();
 		ContestStart = (int)nbrContestStart->value();
 		ContestDigits = (int)nbrContestDigits->value();
-	Fl::unlock();
+	FL_UNLOCK();
 }
 
 void configuration::initInterface() {
@@ -931,7 +948,7 @@ void configuration::initInterface() {
 		rigMEM_close();
 		rigCAT_close();
 
-	Fl::lock();
+	FL_LOCK();
 		btnPTTis = (btnPTT[0]->value() ? 0 :
 					btnPTT[1]->value() ? 1 :
 					btnPTT[2]->value() ? 2 :
@@ -944,12 +961,12 @@ void configuration::initInterface() {
 		DTRplus = btnDTRplusV->value();
 		
 		PTTdev = inpTTYdev->value();
-	Fl::unlock();
+	FL_UNLOCK();
 		push2talk->reset(
 			progdefaults.btnPTTis,
 			progdefaults.btnRTSDTRis,
 			progdefaults.btnPTTREVis);
-	Fl::lock();	
+	FL_LOCK();	
 #ifndef NOHAMLIB
 		chkUSEHAMLIBis = chkUSEHAMLIB->value();
 #endif		
@@ -965,7 +982,7 @@ void configuration::initInterface() {
 		inpRIGdev->hide();
 		mnuBaudRate->hide();
 #endif		
-	Fl::unlock();
+	FL_UNLOCK();
 		
 	if (chkUSEMEMMAPis) {// start the memory mapped i/o thread
 		btnPTT[2]->activate();
@@ -1028,12 +1045,12 @@ void configuration::getRigs() {
 list<string>::iterator pstr;
 	xcvr->get_rignames();
 	pstr = (xcvr->rignames).begin();
-Fl::lock();
+FL_LOCK();
 	while (pstr != (xcvr->rignames).end()) {
 		cboHamlibRig->add((*pstr).c_str());
 		++pstr;
 	}
-Fl::unlock();
+FL_UNLOCK();
 }
 #endif
 

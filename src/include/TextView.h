@@ -30,7 +30,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <list>
 
 /* fltk includes */
 #include <FL/Fl.H>
@@ -40,15 +39,54 @@
 #include <FL/Enumerations.H>
 #include <FL/Fl_Menu_Button.H>
 #include <FL/Fl_Menu_Item.H>
+#include <FL/Fl_Text_Editor.H>
 
 using namespace std;
 
-class textview : public Fl_Widget
+// this interface is implemented by both rx,tx widgets
+class ReceiveWidget : public Fl_Text_Editor
+{
+public:
+	enum TV_ATTR { RCV, XMT, NUM_TV_ATTR };
+
+	ReceiveWidget(int x, int y, int w, int h, const char *label)
+		: Fl_Text_Editor(x, y, w, h, label) { }
+	virtual ~ReceiveWidget() { }
+
+	virtual void add(const char *text, int attr = XMT) = 0;
+	virtual void add(char c, int attr = XMT) = 0;
+	void	     addstr(const char *text, int attr = XMT) { add(text, attr); }
+	void	     addchr(char c, int attr = XMT) { add(c, attr); }
+
+	virtual void clear(void) = 0;
+
+	virtual void setFont(Fl_Font fnt) = 0;
+	virtual void setFontSize(int siz) = 0;
+	virtual void setFontColor(Fl_Color clr) = 0;
+
+	virtual void focus(void) { Fl::focus(this); }
+
+	virtual void Show(void) = 0;
+	virtual void Hide(void) = 0;
+};
+
+// this is only implemented by the tx widget
+class TransmitWidget : virtual public ReceiveWidget
+{
+public:
+	TransmitWidget(int x, int y, int w, int h, const char *label)
+		: ReceiveWidget(x, y, w, h, label) { }
+	virtual ~TransmitWidget() { }
+
+	virtual int nextChar(void) = 0;
+};
+
+
+class textview : virtual public ReceiveWidget
 {
 friend void processinput(void *);
 
 public:
-enum TV_ATTR {RCV, XMT};
 enum CURSOR_TYPE {CARET_CURSOR, NORMAL_CURSOR, HEAVY_CURSOR, DIM_CURSOR, BLOCK_CURSOR, NONE};
 protected:
     string		buff;
@@ -74,8 +112,6 @@ protected:
 	size_t		endidx;
 	size_t      startidx;
 	size_t      xmtidx;
-	list <size_t> modidx;
-//    size_t      modidx;
     size_t      highlightstart;
     size_t      highlightend;
 	int			popx;
@@ -101,12 +137,12 @@ public:
     void    draw();
     void    drawall();
     void    drawchars();
-    void    drawmodify();
+    void    drawmodify(size_t modidx);
     void    drawbs();
     void    Show();
 	void	Hide();
 
-	virtual void add( char *text, int attr = 1 );
+	virtual void add( const char *text, int attr = 1 );
 	virtual void add( char c, int attr = 1);
 	virtual void clear();
 	
@@ -139,33 +175,18 @@ protected:
 	string findtext();
     void    highlightword();
     void    highlight(bool b);
+
+        struct modify_range {
+                size_t start, end;
+                modify_range() : start(0), end(0) { }
+        } draw_mod_range;
 };
 
 
 class TextView : public textview {
 public:
 	TextView( int x, int y, int w, int h, const char *label = 0 );
-	virtual void add( char *text, int attr = 1 ) {
-		textview::add(text, attr);
-	}
-	virtual void add( const char *text, int attr = 1) {
-		textview::add((char*)text, attr);
-	}
-	virtual void add( char c, int attr = 1) {
-		textview::add(c, attr);
-	}
-	virtual void clear() {
-		textview::clear();
-	}
-	virtual void setFont(Fl_Font fnt) { 
-		textview::setFont(fnt); 
-	}
-	virtual void setFontSize(int siz) { 
-		textview::setFontSize(siz); 
-	}
-	virtual void setFontColor(Fl_Color clr) { 
-		textview::setFontColor(clr); 
-	}
+
 protected:
 	static Fl_Menu_Item viewmenu[];
 	int		handle (int event);
@@ -174,18 +195,9 @@ protected:
 };
 
 
-class TextEdit : public textview {
+class TextEdit : public textview, public TransmitWidget {
 public:
 	TextEdit( int x, int y, int w, int h, const char *label = 0 );
-	virtual void add( char *text, int attr = 1 ) {
-		textview::add(text, attr);
-	}
-	virtual void add( const char *text, int attr = 1) {
-		textview::add((char*)text, attr);
-	}
-	virtual void add( char c, int attr = 1) {
-		textview::add(c, attr);
-	}
 	virtual void clear();
 	int		nextChar();
 	void	readFile();	
@@ -199,11 +211,13 @@ public:
 		textview::setFontColor(clr); 
 	}
 	void	cursorON();
+	void	focus(void) { Fl::focus(this); cursorON(); damage(2); }
 protected:
 	int 	handle_fnckey(int key);
 	int		handle_key();
 	int		handle (int event);
 	void	menu_cb(int val);
+	void	update_xmit_text(size_t i);
 private:
 	int	bkspaces;
 	bool PauseBreak;

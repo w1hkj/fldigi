@@ -41,6 +41,7 @@
 #include "fftfilt.h"
 #include "digiscope.h"
 #include "main.h"
+#include "doublebuf.h"
 
 #define	anal_SampleRate	8000
 #define	analMaxSymLen	512
@@ -58,7 +59,7 @@ private:
 	Cmovavg *ffilt;
 	Cmovavg *favg;
 	
-	double pipe[analMaxSymLen];
+	double_buffer<double> pipe;
 	int pipeptr;
 
 	double prevsymbol;
@@ -87,7 +88,7 @@ public:
 	void rx_init();
 	void tx_init(cSound *sc);
 	void restart();
-	int rx_process(double *buf, int len);
+	int rx_process(const double *buf, int len);
 	int tx_process();
 
 };

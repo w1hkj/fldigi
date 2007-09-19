@@ -32,6 +32,8 @@
 #include "complex.h"
 #include "id.h"
 
+#include "doublebuf.h"
+
 #define	THROB_SAMPLE_RATE	8000
 #define	SYMLEN			512
 
@@ -86,7 +88,7 @@ protected:
 	complex 		symbol[MAX_RX_SYMLEN];
 
 	double			syncbuf[MAX_RX_SYMLEN];
-	double			dispbuf[MAX_RX_SYMLEN];
+	double_buffer<double>	dispbuf;
 
 	double			rxcntr;
 	double			signal;
@@ -131,7 +133,7 @@ public:
 	void	rx_init();
 	void	tx_init(cSound *sc);
 	void 	restart() {};
-	int		rx_process(double *buf, int len);
+	int		rx_process(const double *buf, int len);
 	int		tx_process();
 	void	update_syncscope();
 

@@ -33,7 +33,7 @@ cSound::~cSound()
 	delete ifPlayback;
 }
 
-void cSound::Capture(bool on) 
+int cSound::Capture(bool on) 
 {
 	if (on) {
 		string deffilename = "./capture.wav";
@@ -46,7 +46,7 @@ void cSound::Capture(bool on)
 				cerr << "Could not write capture.wav" << endl;
 				delete ofCapture;
 				ofCapture = 0;
-				return;
+				return 0;
 			}
 	    }
 		ofCapture->command(SFC_SET_UPDATE_HEADER_AUTO, 0, SF_TRUE);
@@ -56,9 +56,10 @@ void cSound::Capture(bool on)
 		ofCapture = 0;
 	}
 	capture = on;
+	return 1;
 }
 
-void cSound::Playback(bool on) 
+int cSound::Playback(bool on) 
 {
 	if (on) {
 		string deffilename = "./playback.wav";
@@ -69,7 +70,7 @@ void cSound::Playback(bool on)
 				cerr << "Could not read playback.wav" << endl;
 				delete ifPlayback;
 				ifPlayback = 0;
-				return;
+				return 0;
 			}
 			playback = true;
 		}
@@ -79,9 +80,10 @@ void cSound::Playback(bool on)
 		ifPlayback = 0;
 		playback = false;
 	}
+	return 1;
 }
 
-void cSound::Generate(bool on) 
+int cSound::Generate(bool on) 
 {
 	if (on) {
 		string deffilename = "./generate.wav";
@@ -94,7 +96,7 @@ void cSound::Generate(bool on)
 				cerr << "Could not write generate.wav" << endl;
 				delete ofGenerate;
 				ofGenerate = 0;
-				return;
+				return 0;
 			}
 			ofGenerate->command(SFC_SET_UPDATE_HEADER_AUTO, 0, SF_TRUE);
 		}
@@ -104,6 +106,7 @@ void cSound::Generate(bool on)
 		ofGenerate = 0;
 	}
 	generate = on;
+	return 1;
 }
 
 void cSound::writeGenerate(double *buff, int count)

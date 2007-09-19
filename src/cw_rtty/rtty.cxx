@@ -148,7 +148,7 @@ void rtty::restart()
 	put_MODEstatus(mode);
 }
 
-rtty::rtty(trx_mode tty_mode)
+rtty::rtty(trx_mode tty_mode) : pipe(RTTYMaxSymLen)
 {
 	mode = tty_mode;
 
@@ -177,10 +177,7 @@ void rtty::update_syncscope()
 
 void rtty::clear_syncscope()
 {
-	double *data = new double[symbollen];
-	for (int i = 0; i < symbollen; data[i++] = 0.0);
-	set_scope(data, symbollen, false);
-	delete [] data;
+	set_scope(0, 0, false);
 }
 
 complex rtty::mixer(complex in)
@@ -388,7 +385,7 @@ void rtty::searchUp()
 	}
 }
 
-int rtty::rx_process(double *buf, int len)
+int rtty::rx_process(const double *buf, int len)
 {
 	complex z, *zp;
 	double f = 0.0;
@@ -456,8 +453,10 @@ int rtty::rx_process(double *buf, int len)
 			rxflag = rx (reverse ? bit : !bit);
 
 			if (rxflag == 2 || dspcnt == 0) {
-				if ((metric > squelch && squelchon) || !squelchon)
+				if ((metric > squelch && squelchon) || !squelchon) {
 					set_scope(pipe, symbollen, false);
+					++pipe; // swap buffers
+				}
 				else
 					clear_syncscope();
 								

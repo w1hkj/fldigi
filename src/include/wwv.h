@@ -28,7 +28,7 @@
 #include "modem.h"
 #include "filters.h"
 #include "fftfilt.h"
-
+#include "doublebuf.h"
 
 #define	wwvSampleRate	8000
 #define	MaxSymLen	512
@@ -58,7 +58,7 @@ protected:
 	C_FIR_filter	*lpfilter;
 	Cmovavg			*vidfilter;
 
-	double			*buffer;	// storage for 1000 samples/sec video
+	double_buffer<double>	buffer;	// storage for 1000 samples/sec video
 	unsigned int	buffptr;
 	int				sync;
 	int				sync0;
@@ -77,7 +77,7 @@ public:
 	void	rx_init();
 	void	tx_init(cSound *sc);
 	void 	restart() {};
-	int		rx_process(double *buf, int len);
+	int		rx_process(const double *buf, int len);
 	int		tx_process() {return -1;}
 	void	update_syncscope();
 	void	set1(int x, int y);

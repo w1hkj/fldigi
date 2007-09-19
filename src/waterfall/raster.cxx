@@ -62,7 +62,7 @@ void Raster::data(int data[], int len)
 	int pos;
 	int zeropos;
 
-	Fl::lock();
+	FL_LOCK_D();
 
 	if (h > height) 
 		h = height;
@@ -89,22 +89,22 @@ void Raster::data(int data[], int len)
 	if (vidpos < 0) vidpos = 0;
 	
 	redraw();
-	Fl::unlock();
+	FL_UNLOCK_D();
 
 //	redraw();
-	Fl::awake();
+	FL_AWAKE_D();
 }
 
 void Raster::clear()
 {
-	Fl::lock();
+	FL_LOCK_D();
 	for (int i = 0; i < width * height; i++)
 		vidbuf[i] = 255;
 	col = width;
 	redraw();
-	Fl::unlock();
+	FL_UNLOCK_D();
 //	redraw();
-	Fl::awake();
+	FL_AWAKE_D();
 }
 
 void Raster::resize(int x, int y, int w, int h)

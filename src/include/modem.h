@@ -73,7 +73,7 @@ public:
 	virtual void rx_init () = 0;
 	virtual void restart () = 0;
 	virtual int  tx_process () = 0;
-	virtual int  rx_process (double *, int len) = 0;
+	virtual int  rx_process (const double *, int len) = 0;
 	virtual void shutdown(){};
 	virtual void set1(int, int){};
 	virtual void set2(int, int){};
@@ -97,7 +97,6 @@ public:
 	void		set_state(state_t);
 	void		set_state_wait(state_t);
 	state_t		get_state();
-	void		set_freq(int);
 	void		set_freq(double);
 	int			get_freq();
 	void		init_freqlock();

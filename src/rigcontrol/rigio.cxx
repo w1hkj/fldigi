@@ -865,6 +865,8 @@ bool ModeIsLSB(string s)
 
 static void *rigCAT_loop(void *args)
 {
+	SET_THREAD_ID(RIGCTL_TID);
+
 	long long freq = 0L;
 	string sWidth, sMode;
 
@@ -906,16 +908,16 @@ static void *rigCAT_loop(void *args)
 		
 		if (freq && freq != llFreq) {
 			llFreq = freq;
-			Fl::lock();
+			FL_LOCK();
 				FreqDisp->value(freq);
-			Fl::unlock();
+			FL_UNLOCK();
 			wf->rfcarrier(freq);
 		}
 		if (sWidth.size() && sWidth != sRigWidth) {
 			sRigWidth = sWidth;
-			Fl::lock();
+			FL_LOCK();
 				opBW->value(sWidth.c_str());
-			Fl::unlock();
+			FL_UNLOCK();
 		}
 		if (sMode.size() && sMode != sRigMode) {
 			sRigMode = sMode;
@@ -923,11 +925,11 @@ static void *rigCAT_loop(void *args)
 				wf->USB(false);
 			else
 				wf->USB(true);
-			Fl::lock();
+			FL_LOCK();
 				opMODE->value(sMode.c_str());
-			Fl::unlock();
+			FL_UNLOCK();
 		}
-//		Fl::awake();
+//		FL_AWAKE();
 		goto loop0;
 loop3:
 		MilliSleep(10);

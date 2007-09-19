@@ -77,7 +77,7 @@ void anal::restart()
 	put_MODEstatus(mode);
 }
 
-anal::anal()
+anal::anal() : pipe(analMaxSymLen)
 {
 	mode = MODE_ANALYSIS;
 
@@ -98,10 +98,7 @@ anal::anal()
 
 void anal::clear_syncscope()
 {
-	double *data = new double[symbollen];
-	for (int i = 0; i < symbollen; data[i++] = 0.0);
-	set_scope(data, symbollen, false);
-	delete [] data;
+	set_scope(0, 0, false);
 }
 
 complex anal::mixer(complex in)
@@ -127,7 +124,7 @@ void anal::writeFile()
 	analysisFile.close();
 }
 
-int anal::rx_process(double *buf, int len)
+int anal::rx_process(const double *buf, int len)
 {
 	complex z, *zp;
 	double fin;
@@ -156,6 +153,7 @@ int anal::rx_process(double *buf, int len)
 			dspcnt--;
 			if (dspcnt == 0) {
 				set_scope(pipe, symbollen, false);
+				++pipe; // swap buffers
 // filter using second moving average filter & display the result
 				fout_2 = favg->run(fout_1);
 				if (wf->USB())

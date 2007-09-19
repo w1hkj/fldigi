@@ -70,7 +70,7 @@ void Digiscope::video(double *data, int len )
 	if (data == NULL || len == 0)
 		return;
 	
-	Fl::lock();
+	FL_LOCK();
 	int W = w() - 4;
 	int H = h() - 4;
 // video signal display
@@ -89,15 +89,15 @@ void Digiscope::video(double *data, int len )
 	linecnt++;
 
 	redraw();
-	Fl::unlock();
-	Fl::awake();
+	FL_UNLOCK();
+	FL_AWAKE();
 }
 
 void Digiscope::data(double *data, int len, bool scale)
 {
 	if (data == NULL || len == 0)
 		return;
-	Fl::lock();
+	FL_LOCK();
 	if (len > MAX_LEN) _len = MAX_LEN;
 	else _len = len;
 	memcpy(_buf, data, len * sizeof(double));
@@ -116,43 +116,43 @@ void Digiscope::data(double *data, int len, bool scale)
 				_buf[i] = 0.0;
 	}
 	redraw();
-	Fl::unlock();
-	Fl::awake();
+	FL_UNLOCK();
+	FL_AWAKE();
 }
 
 void Digiscope::phase(double ph, bool hl)
 {
-	Fl::lock();
+	FL_LOCK();
 	_phase = ph;
 	_highlight = hl;
 	redraw();
-	Fl::unlock();
-	Fl::awake();
+	FL_UNLOCK();
+	FL_AWAKE();
 }
 
 void Digiscope::rtty(double flo, double fhi, double amp)
 {
-	Fl::lock();
+	FL_LOCK();
 	_flo = flo;
 	_fhi = fhi;
 	_amp = amp;
 	redraw();
-	Fl::unlock();
-	Fl::awake();
+	FL_UNLOCK();
+	FL_AWAKE();
 }
 
 
 void Digiscope::mode(scope_mode md)
 {
-	Fl::lock();
+	FL_LOCK();
 	_mode = md;
 	memset(_buf, 0, MAX_LEN * sizeof(double));
 	linecnt = 0;
 	memset (vidbuf, 0, (w() -4)*(h()-4) * sizeof (unsigned char) );
 	memset (vidline, 0, (w() - 4)*sizeof(unsigned char) );
 	redraw();
-	Fl::unlock();
-	Fl::awake();
+	FL_UNLOCK();
+	FL_AWAKE();
 }
 
 void Digiscope::draw_phase()

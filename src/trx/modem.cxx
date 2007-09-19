@@ -6,6 +6,8 @@
 #include "id.h"
 #include "configuration.h"
 
+#include "qrunner.h"
+
 modem *cw_modem = 0;
 modem *mfsk8_modem = 0;
 modem *mfsk16_modem = 0;
@@ -76,22 +78,13 @@ void modem::init()
 	}
 }
 
-void modem::set_freq(int freq)
-{
-	frequency = freq;
-	freqerr = 0.0;
-	if (freqlock == false)
-		tx_frequency = frequency;
-	put_freq(frequency);
-}
-
 void modem::set_freq(double freq)
 {
 	frequency = freq;
 	freqerr = 0.0;
 	if (freqlock == false)
 		tx_frequency = frequency;
-	put_freq(frequency);
+	QUEUE(CMP_CB(put_freq, frequency)); //put_freq(frequency);
 }
 
 void modem::set_freqlock(bool on)

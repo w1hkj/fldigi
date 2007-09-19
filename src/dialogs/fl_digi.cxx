@@ -78,17 +78,16 @@
 
 #include "rigsupport.h"
 
-extern void add2rxtext( const char *c, int attr);
-
+#include "qrunner.h"
 
 Fl_Double_Window	*fl_digi_main=(Fl_Double_Window *)0;
 
 cMixer mixer;
 
 Fl_Button			*btnTune = (Fl_Button *)0;
-Fl_Tile				*TiledGroup = (Fl_Tile *)0;
-TextView			*ReceiveText=(TextView *)0;
-TextEdit			*TransmitText=(TextEdit *)0;
+Fl_Tile_check				*TiledGroup = 0;
+ReceiveWidget			*ReceiveText = 0;
+TransmitWidget			*TransmitText = 0;
 Fl_Text_Buffer		*rcvBuffer = (Fl_Text_Buffer *)0;
 Fl_Text_Buffer		*xmtBuffer = (Fl_Text_Buffer *)0;
 Raster				*FHdisp;
@@ -144,7 +143,7 @@ void startup_modem(modem *m)
 
 	restoreFocus();
 
-	Fl::lock();
+	FL_LOCK_D();
 	if (m == feld_modem ||
 		m == feld_FMmodem ||
 		m == feld_FM105modem ) {
@@ -154,8 +153,8 @@ void startup_modem(modem *m)
 		ReceiveText->Show();
 		FHdisp->hide();
 	}
-	Fl::unlock();
-	Fl::awake();
+	FL_UNLOCK_D();
+	FL_AWAKE_D();
 
 }
 
@@ -233,19 +232,6 @@ void cb_wMain( Fl_Widget *, void * )
 		active_modem->set_stopflag(true);
 	} else
 		clean_exit();
-}
-
-void initCW()
-{
-	clearStatus();
-	if (!cw_modem)
-		cw_modem = new cw();
-	startup_modem (cw_modem);
-	progStatus.saveModeState(MODE_CW);
-}
-
-void cb_mnuCW(Fl_Menu_*, void*) {
-	initCW();
 }
 
 void initMFSK8()
@@ -376,6 +362,19 @@ void initQPSK250()
 
 void cb_mnuQPSK250(Fl_Menu_*, void*) {
 	initQPSK250();
+}
+
+void initCW()
+{
+	clearStatus();
+	if (!cw_modem)
+		cw_modem = new cw();
+	startup_modem (cw_modem);
+	progStatus.saveModeState(MODE_CW);
+}
+
+void cb_mnuCW(Fl_Menu_*, void*) {
+	initCW();
 }
 
 void initRTTY()
@@ -638,6 +637,14 @@ void cb_mnuANALYSIS(Fl_Menu_ *, void *) {
 	initANALYSIS();
 }
 
+void restoreFocus()
+{
+	FL_LOCK_D();
+	TransmitText->focus();
+	FL_UNLOCK_D();
+	FL_AWAKE_D();
+}
+
 void macro_cb(Fl_Widget *w, void *v)
 {
 	int b = (int)(reinterpret_cast<long> (v));
@@ -653,10 +660,10 @@ void macro_cb(Fl_Widget *w, void *v)
 void altmacro_cb(Fl_Widget *w, void *v)
 {
 	altMacros = !altMacros;
-	Fl::lock();
+	FL_LOCK_D();
 	for (int i = 0; i < 10; i++)
 		btnMacro[i]->label(macros.name[i + (altMacros ? 10: 0)].c_str());
-	Fl::unlock();
+	FL_UNLOCK_D();
 	restoreFocus();
 }
 
@@ -695,7 +702,10 @@ void cb_mnuCapture(Fl_Menu_ *m, void *d)
 {
 	if (!scard) return;
 	capval = !capval;
-	scard->Capture(capval);
+	if(!scard->Capture(capval)) {
+		capval = false;
+		m->clear();
+	}
 }
 
 bool genval = false;
@@ -703,7 +713,10 @@ void cb_mnuGenerate(Fl_Menu_ *m, void *d)
 {
 	if (!scard) return;
 	genval = !genval;
-	scard->Generate(genval);
+	if (!scard->Generate(genval)) {
+		genval = false;
+		m->clear();
+	}
 }
 
 bool playval = false;
@@ -711,7 +724,10 @@ void cb_mnuPlayback(Fl_Menu_ *m, void *d)
 {
 	if (!scard) return;
 	playval = !playval;
-	scard->Playback(playval);
+	if(!scard->Playback(playval)) {
+		playval = false;
+		m->clear();
+	}
 }
 
 
@@ -812,16 +828,16 @@ char *zuluTime()
 
 void qsoTime_cb(Fl_Widget *b, void *)
 {
-	Fl::lock();
+	FL_LOCK_D();
 	inpTime->value(zuluTime());
-	Fl::unlock();
-	Fl::awake();
+	FL_UNLOCK_D();
+	FL_AWAKE_D();
 	restoreFocus();
 }
 
 void clearQSO()
 {
-	Fl::lock();
+	FL_LOCK_D();
 		inpTime->value(zuluTime());
 		inpCall->value("");
 		inpName->value("");
@@ -831,13 +847,13 @@ void clearQSO()
 		inpLoc->value("");
 		inpAZ->value(""); // WA5ZNU
 		inpNotes->value("");
-	Fl::unlock();
+	FL_UNLOCK_D();
 }
 
 void qsoClear_cb(Fl_Widget *b, void *)
 {
 	clearQSO();
-	Fl::awake();
+	FL_AWAKE();
 	restoreFocus();
 }
 
@@ -1031,19 +1047,19 @@ void cb_cboBand(Fl_Widget *w, void *d)
 
 void afconoff_cb(Fl_Widget *w, void *vi)
 {
-	Fl::lock();
+	FL_LOCK_D();
 	Fl_Light_Button *b = (Fl_Light_Button *)w;
 	int v = b->value();
-	Fl::unlock();
+	FL_UNLOCK_D();
 	active_modem->set_afcOnOff( v ? true : false );
 }
 
 void sqlonoff_cb(Fl_Widget *w, void *vi)
 {
-	Fl::lock();
+	FL_LOCK_D();
 	Fl_Light_Button *b = (Fl_Light_Button *)w;
 	int v = b->value();
-	Fl::unlock();
+	FL_UNLOCK_D();
 	active_modem->set_sqlchOnOff( v ? true : false );
 }
 
@@ -1051,7 +1067,7 @@ void sqlonoff_cb(Fl_Widget *w, void *vi)
 void cb_btnSideband(Fl_Widget *w, void *d)
 {
 	Fl_Button *b = (Fl_Button *)w;
-	Fl::lock();
+	FL_LOCK_D();
 	progdefaults.btnusb = !progdefaults.btnusb;
 	if (progdefaults.btnusb) { 
 		b->label("U");
@@ -1061,16 +1077,16 @@ void cb_btnSideband(Fl_Widget *w, void *d)
 		wf->USB(false);
 	}
 	b->redraw();
-	Fl::unlock();
+	FL_UNLOCK_D();
 }
 
 void cbMacroTimerButton(Fl_Widget *w, void *d)
 {
 	Fl_Button *b = (Fl_Button *)w;
 	progdefaults.useTimer = false;
-	Fl::lock();
+	FL_LOCK_D();
 	b->hide();
-	Fl::unlock();
+	FL_UNLOCK_D();
 	restoreFocus();
 }
 
@@ -1308,7 +1324,7 @@ void create_fl_digi_main() {
 			valXmtMixer->deactivate();
 		MixerFrame->end();
 
-		Fl_Tile *TiledGroup = new Fl_Tile(sw, Y, WNOM-sw, Htext);
+		TiledGroup = new Fl_Tile_check(sw, Y, WNOM-sw, Htext);
             int minRxHeight = Hrcvtxt;
             int minTxHeight;
             if (minRxHeight < 66) minRxHeight = 66;
@@ -1317,13 +1333,19 @@ void create_fl_digi_main() {
 			Fl_Box *minbox = new Fl_Box(sw,Y + 66, WNOM-sw, Htext - 66 - 32);
 			minbox->hide();
 
-			ReceiveText = new TextView(sw, Y, WNOM-sw, minRxHeight, "");
+			if (progdefaults.alt_text_widgets)
+				ReceiveText = new FTextView(sw, Y, WNOM-sw, minRxHeight, "");
+			else
+				ReceiveText = new TextView(sw, Y, WNOM-sw, minRxHeight, "");
 		
 			FHdisp = new Raster(sw, Y, WNOM-sw, minRxHeight);
 			FHdisp->hide();
 			Y += minRxHeight;
 
-			TransmitText = new TextEdit(sw, Y, WNOM-sw, minTxHeight);
+			if (progdefaults.alt_text_widgets)
+				TransmitText = new FTextEdit(sw, Y, WNOM-sw, minTxHeight);
+			else
+				TransmitText = new TextEdit(sw, Y, WNOM-sw, minTxHeight);
 			Y += minTxHeight;
 
 			TiledGroup->resizable(minbox);
@@ -1450,6 +1472,26 @@ void put_Bandwidth(int bandwidth)
 	wf->Bandwidth ((int)bandwidth);
 }
 
+void display_metric(double metric)
+{
+	FL_LOCK_D();
+	QUEUE(CMP_CB(&Fl_Progress::value, pgrsSquelch, metric)); //pgrsSquelch->value(metric);
+	FL_UNLOCK_D();
+	FL_AWAKE_D();
+}
+
+void put_cwRcvWPM(double wpm)
+{
+	int U = progdefaults.CWupperlimit;
+	int L = progdefaults.CWlowerlimit;
+	double dWPM = 100.0*(wpm - L)/(U - L);
+	FL_LOCK_D();
+	QUEUE(CMP_CB(&Fl_Progress::value, prgsCWrcvWPM, dWPM)); //prgsCWrcvWPM->value(dWPM);
+	QUEUE(CMP_CB(&Fl_Value_Output::value, valCWrcvWPM, (int)wpm)); //valCWrcvWPM->value((int)wpm);
+	FL_UNLOCK_D();
+	FL_AWAKE_D();
+}
+
 void set_scope(double *data, int len, bool autoscale)
 {
 	if (digiscope)
@@ -1482,21 +1524,17 @@ void put_rx_char(unsigned int data)
 	if (mailclient || mailserver || rxmsgid != -1)
 		asc = ascii2;
 	if (data == '\r') {
-		add2rxtext(asc['\n' & 0x7F],1);
-//		ReceiveText->add(asc['\n' & 0x7F],1);
+		QUEUE(CMP_CB(&ReceiveWidget::addstr, ReceiveText, asc['\n' & 0x7F], 1)); //ReceiveText->add(asc['\n' & 0x7F],1);
 		nulinepending = true;
 	} else if (nulinepending && data == '\r') {
-		add2rxtext(asc['\n' & 0x7F],1);
-//		ReceiveText->add(asc['\n' & 0x7F],1);
+		QUEUE(CMP_CB(&ReceiveWidget::addstr, ReceiveText, asc['\n' & 0x7F], 1)); //ReceiveText->add(asc['\n' & 0x7F],1);
 	} else if (nulinepending && data == '\n') {
 		nulinepending = false;
 	} else if (nulinepending && data != '\n') {
-		add2rxtext(asc[data & 0x7F], 1);
-//		ReceiveText->add(asc[data & 0x7F], 1);
+		QUEUE(CMP_CB(&ReceiveWidget::addstr, ReceiveText, asc[data & 0x7F], 1)); //ReceiveText->add(asc[data & 0x7F], 1);
 		nulinepending = false;
 	} else {
-		add2rxtext(asc[data & 0x7F],1);
-//		ReceiveText->add(asc[data & 0x7F],1);
+		QUEUE(CMP_CB(&ReceiveWidget::addstr, ReceiveText, asc[data & 0x7F], 1)); //ReceiveText->add(asc[data & 0x7F],1);
 	}
 	if ( rxmsgid != -1) {
 		rxmsgst.msg_type = 1;
@@ -1511,9 +1549,103 @@ void put_rx_char(unsigned int data)
 		logfile->log_to_file(cLogfile::LOG_RX, asc[data & 0x7F]);
 }
 
+string strSecText = "";
+
+void put_sec_char( char chr )
+{
+	if (chr >= ' ' && chr <= 'z') {
+		strSecText.append(1, chr);
+		if (strSecText.length() > 60)
+			strSecText.erase(0,1);
+		FL_LOCK_D();
+		QUEUE(CMP_CB(&Fl_Box::label, StatusBar, strSecText.c_str())); //StatusBar->label(strSecText.c_str());
+		FL_UNLOCK_D();
+		FL_AWAKE_D();
+	}
+}
+
+void put_status(const char *msg)
+{
+	static char m[60];
+	strncpy(m, msg, sizeof(m));
+	m[sizeof(m) - 1] = '\0';
+
+	FL_LOCK_D();
+	QUEUE(CMP_CB(&Fl_Box::label, StatusBar, m)); // StatusBar->label(m);
+	FL_UNLOCK_D();
+	FL_AWAKE_D();
+}
+
+void put_Status2(const char *msg)
+{
+	static char m[60];
+	strncpy(m, msg, sizeof(m));
+	m[sizeof(m) - 1] = '\0';
+
+	FL_LOCK_D();
+	QUEUE(CMP_CB(&Fl_Box::label, Status2, m)); //Status2->label(m);
+	FL_UNLOCK_D();
+	FL_AWAKE_D();
+}
+
+void put_Status1(const char *msg)
+{
+	static char m[60];
+	strncpy(m, msg, sizeof(m));
+	m[sizeof(m) - 1] = '\0';
+
+	FL_LOCK_D();
+	QUEUE(CMP_CB(&Fl_Box::label, Status1, m)); //Status1->label(m);
+	FL_UNLOCK_D();
+	FL_AWAKE_D();
+}
+
+
+void put_WARNstatus(double val)
+{
+	FL_LOCK_D();
+	if (val < 0.05)
+		WARNstatus->color(FL_BLACK);
+    if (val > 0.05)
+        WARNstatus->color(FL_DARK_GREEN);
+    if (val > 0.9)
+        WARNstatus->color(FL_YELLOW);
+    if (val > 0.98)
+        WARNstatus->color(FL_DARK_RED);
+	WARNstatus->redraw();
+	FL_UNLOCK_D();
+}
+
+
+void set_CWwpm()
+{
+	FL_LOCK();
+	sldrCWxmtWPM->value(progdefaults.CWspeed);
+	FL_UNLOCK();
+}
+
+void clear_StatusMessages()
+{
+	FL_LOCK_E();
+	StatusBar->label("");
+	Status1->label("");
+	Status2->label("");
+	FL_UNLOCK_E();
+	FL_AWAKE_E();
+}
+
+	
+void put_MODEstatus(trx_mode mode)
+{
+	FL_LOCK_D();
+	QUEUE(CMP_CB(&Fl_Button::label, MODEstatus, mode_names[mode])); //MODEstatus->label(mode_names[mode]);
+	FL_UNLOCK_D();
+	FL_AWAKE_D();
+}
+
 void put_rx_data(int *data, int len)
 {
-	FHdisp->data(data, len);
+	QUEUE(CMP_CB(&Raster::data, FHdisp, data, len)); //FHdisp->data(data, len);
 }
 
 char get_tx_char(void)
@@ -1543,7 +1675,7 @@ char get_tx_char(void)
 		case 'R' :
 			chr = 0x03;
 			ctlpending = false;
-			TransmitText->clear();
+			QUEUE_SYNC(CMP_CB(&TransmitWidget::clear, TransmitText)); //TransmitText->clear();
 			break;
 		case '^' :
 			ctlpending = false;
@@ -1574,8 +1706,7 @@ void put_echo_char(unsigned int data)
 	if (nulinepending && data == '\n') {
 		nulinepending = false;
 	}
-	add2rxtext(asc[data & 0x7F], 4);
-//	ReceiveText->add(asc[data & 0x7F], 4);
+	QUEUE(CMP_CB(&ReceiveWidget::addstr, ReceiveText, asc[data & 0x7F], 4)); //ReceiveText->add(asc[data & 0x7F], 4);
 	if (Maillogfile)
 		Maillogfile->log_to_file(cLogfile::LOG_TX, asc[data & 0x7F]);
 	if (logging)
@@ -1610,7 +1741,7 @@ void resetDOMEX() {
 
 void enableMixer(bool on)
 {
-	Fl::lock();
+	FL_LOCK_D();
 	if (on) {
 		progdefaults.EnableMixer = true;
 		mixer.openMixer(progdefaults.MXdevice.c_str());
@@ -1629,7 +1760,7 @@ void enableMixer(bool on)
 		mixer.closeMixer();
 	}
         resetMixerControls();
-	Fl::unlock();
+	FL_UNLOCK_D();
 }
 
 void resetMixerControls()
@@ -1691,30 +1822,30 @@ void setReverse(int rev) {
 }
 
 void setAfcOnOff(bool b) {
-	Fl::lock();
+	FL_LOCK();
 	afconoff->value(b);
-	Fl::unlock();
-	Fl::awake();
+	FL_UNLOCK();
+	FL_AWAKE();
 }	
 
 void setSqlOnOff(bool b) {
-	Fl::lock();
+	FL_LOCK();
 	sqlonoff->value(b);
-	Fl::unlock();
-	Fl::awake();
+	FL_UNLOCK();
+	FL_AWAKE();
 }
 
 bool QueryAfcOnOff() {
-	Fl::lock();
+	FL_LOCK_E();
 	int v = afconoff->value();
-	Fl::unlock();
+	FL_UNLOCK_E();
 	return v;
 }
 
 bool QuerySqlOnOff() {
-	Fl::lock();
+	FL_LOCK_E();
 	int v = sqlonoff->value();
-	Fl::unlock();
+	FL_UNLOCK_E();
 	return v;
 }
 

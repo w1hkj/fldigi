@@ -49,11 +49,11 @@ void cbMacroEditOK(Fl_Widget *w, void *)
 {
 	macros.text[iMacro] = macrotext->value();
 	macros.name[iMacro] = labeltext->value();
-	Fl::lock();
+	FL_LOCK_D();
 		int n = iMacro;
 		if (n >= 10) n -= 10;
 		btnMacro[n]->label( macros.name[iMacro].c_str());
-	Fl::unlock();
+	FL_UNLOCK_D();
 	MacroEditDialog->hide();
 	macros.changed = true;
 }

@@ -106,7 +106,6 @@ dominoex::~dominoex()
 	if (binsfft) delete binsfft;
 	if (hilbert) delete hilbert;
 	if (pipe) delete [] pipe;
-	if (scopedata) delete [] scopedata;
 	if (filt) delete filt;
 	if (wfid) delete wfid;
 }
@@ -182,7 +181,8 @@ dominoex::dominoex(trx_mode md)
 	afcfilt		= new Cmovavg(AFC_COUNT);
 
 	pipe = new domrxpipe[2 * symlen];
-	scopedata = new double[2 * symlen];
+	scopedata.alloc(2 * symlen);
+	videodata.alloc(numtones * 6);
 	pipeptr = 0;
 	symcounter = 0;
 	metric = 0.0;
@@ -292,7 +292,6 @@ int dominoex::harddecode(complex *in)
 void dominoex::update_syncscope(complex *bins)
 {
 	double max = 0, min = 1e6, range, mag;
-	double buffer[numtones * 6];
 	int numbins = numtones * 3 * (doublespaced ? 2 : 1);
 // dom waterfall
 	for (int i = 0; i < numbins; i++ ) {
@@ -308,10 +307,12 @@ void dominoex::update_syncscope(complex *bins)
 			if (mag < 0) mag = 0;
 		} else
 			mag = 0;
-		buffer[i] = 255*mag;
+		videodata[i] = 255*mag;
 	}
-	if (!squelchon || metric >= squelch)
-		set_video(buffer, numbins);
+	if (!squelchon || metric >= squelch) {
+		set_video(videodata, numbins);
+		++videodata; // swap buffers
+	}
 
 // dom symbol synch data	
 	memset(scopedata, 0, 2 * symlen * sizeof(double));
@@ -321,7 +322,7 @@ void dominoex::update_syncscope(complex *bins)
 			scopedata[i] = (pipe[j].vector[prev1symbol]).mag();
 		}
 	set_scope(scopedata, 2 * symlen);
-
+	++scopedata; // swap buffers
 }
 
 void dominoex::synchronize()
@@ -402,7 +403,7 @@ void dominoex::eval_s2n(complex curr, complex n)
 
 }
 
-int dominoex::rx_process(double *buf, int len)
+int dominoex::rx_process(const double *buf, int len)
 {
 	complex z, *bins, noise;
 

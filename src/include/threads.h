@@ -70,6 +70,26 @@ typedef unsigned long Fl_Thread;
 extern int fl_create_thread(Fl_Thread * t, void *(*f) (void *), void* p);
 
 #  endif // !WIN32
+
+enum { UNKNOWN_TID = -1, TRX_TID, QRZ_TID, RIGCTL_TID, FLMAIN_TID, NUM_THREADS = FLMAIN_TID };
+
+#if (USE_TLS == 1)
+	extern __thread int thread_id_;
+#	define CREATE_THREAD_ID() thread_id_ = UNKNOWN_TID
+#	define SET_THREAD_ID(x)   thread_id_ = (x)
+#	define GET_THREAD_ID()    thread_id_
+#else
+#	ifdef WIN32 // assume no pthreads support
+#		error need TLS support
+#	endif
+	extern pthread_key_t thread_id_;
+#	define CREATE_THREAD_ID() pthread_key_create(&thread_id_, 0);
+#	define SET_THREAD_ID(x)   pthread_setspecific(thread_id_, (void *)(x))
+#	define GET_THREAD_ID()    (int)pthread_getspecific(thread_id_)
+#endif // (USE_TLS == 1)
+
+#include "fl_lock.h"
+
 #endif // !Threads_h
 
 //

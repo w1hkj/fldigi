@@ -35,7 +35,7 @@ int main (int argc, char *argv[])
 	}
 	testfile.close();
 
-	Fl::lock();
+        Fl::lock();
 	window = createRigDialog();
 	window->show ();
 

@@ -33,6 +33,7 @@
 #include "modem.h"
 #include "filters.h"
 #include "morse.h"
+#include "doublebuf.h"
 
 #define	CWSampleRate	8000
 #define	CWMaxSymLen		4096
@@ -95,11 +96,13 @@ protected:
 	Cmovavg			*bitfilter;
 	Cmovavg			*trackingfilter;
 
+	int bitfilterlen;
+
 	CW_RX_STATE		cw_receive_state;	// Indicates receive state 
 	CW_EVENT		cw_event;			// functions used by cw process routine 
 	 
 	double pipe[CWMaxSymLen];			// storage for sync scope data
-	double scopedata[CWMaxSymLen];
+	double_buffer<double> scopedata;
 	int pipeptr;
 	int pipesize;
 	
@@ -168,7 +171,7 @@ public:
 	void	rx_init();
 	void	tx_init(cSound *sc);
 	void	restart() {};
-	int		rx_process(double *buf, int len);
+	int		rx_process(const double *buf, int len);
 	int		tx_process();
 	void	incWPM();
 	void	decWPM();

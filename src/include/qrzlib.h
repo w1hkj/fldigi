@@ -84,21 +84,21 @@ every nth record in the database.
 /*
 **    Standard Record Field Offsets
 */
-#define CALL            0
-#define LNAME           1
-#define JR              2
-#define FNAME           3
-#define MI              4
-#define DOB             5
-#define EFDATE          6
-#define EXPDATE         7
-#define MAIL_STR        8
-#define MAIL_CITY       9
-#define MAIL_ST         10
-#define MAIL_ZIP        11
-#define CLASS           12
-#define P_CALL          13
-#define P_CLASS         14
+#define QRZLIB_CALL            0
+#define QRZLIB_LNAME           1
+#define QRZLIB_JR              2
+#define QRZLIB_FNAME           3
+#define QRZLIB_MI              4
+#define QRZLIB_DOB             5
+#define QRZLIB_EFDATE          6
+#define QRZLIB_EXPDATE         7
+#define QRZLIB_MAIL_STR        8
+#define QRZLIB_MAIL_CITY       9
+#define QRZLIB_MAIL_ST         10
+#define QRZLIB_MAIL_ZIP        11
+#define QRZLIB_CLASS           12
+#define QRZLIB_P_CALL          13
+#define QRZLIB_P_CLASS         14
 
 /*
 

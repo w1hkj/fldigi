@@ -37,6 +37,9 @@
 
 #include "FL/Fl.H"
 
+#include "doublebuf.h"
+#include "qrunner.h"
+
 using namespace std;
 
 void	trx_reset_loop();
@@ -63,7 +66,9 @@ cSound 		*scard;
 int			_trx_tune;
 unsigned char ucdata[SCBLOCKSIZE * 4];
 short int	*sidata;
-double		_trx_scdbl[SCBLOCKSIZE*2]; // double size of normal read to accept overruns
+// Double size of normal read to accept overruns; double buffered because it
+// is QUEUEd and used asynchronously by the GUI thread.
+double_buffer<double> _trx_scdbl(SCBLOCKSIZE * 2);
 
 static int dummy = 0;
 static bool trxrunning = false;
@@ -92,11 +97,12 @@ void trx_trx_receive_loop()
 		while (1) {
 			numread = scard->Read(_trx_scdbl, SCBLOCKSIZE);
 			if (numread == -1 || (trx_state != STATE_RX))
-                break;
-            if (numread > 0) {
-    			active_modem->rx_process(_trx_scdbl, numread);
-    			wf->sig_data(_trx_scdbl, numread);
-            }
+				break;
+			if (numread > 0) {
+				QUEUE(CMP_CB(&waterfall::sig_data, wf, _trx_scdbl, numread)); //wf->sig_data(_trx_scdbl, numread);
+				active_modem->rx_process(_trx_scdbl, numread);
+				++_trx_scdbl; // swap buffers
+			}
 		}
 		scard->Close();
 	} else
@@ -131,7 +137,7 @@ void trx_trx_transmit_loop()
 		MilliSleep(10);
 
 	push2talk->set(false);
-	wf->set_XmtRcvBtn(false);
+	QUEUE_SYNC(CMP_CB(&waterfall::set_XmtRcvBtn, wf, false)); //wf->set_XmtRcvBtn(false);
 
 	if (progdefaults.useTimer == true) {
 		trx_start_macro_timer();
@@ -158,7 +164,7 @@ void trx_tune_loop()
 
 		while (trx_state == STATE_TUNE) {
 			if (_trx_tune == 0) {
-				wf->set_XmtRcvBtn(true);
+				QUEUE_SYNC(CMP_CB(&waterfall::set_XmtRcvBtn, wf, true)); //wf->set_XmtRcvBtn(true);
 				xmttune::keydown(active_modem->get_txfreq_woffset(), scard);
 				_trx_tune = 1;
 			} else
@@ -171,11 +177,13 @@ void trx_tune_loop()
 		MilliSleep(10);
 
 	push2talk->set(false);
-	wf->set_XmtRcvBtn(false);
+	QUEUE_SYNC(CMP_CB(&waterfall::set_XmtRcvBtn, wf, false)); //wf->set_XmtRcvBtn(false);
 }
 
 void *trx_loop(void *args)
 {
+	SET_THREAD_ID(TRX_TID);
+
 	for (;;) {
 		if ( trx_state == STATE_ABORT) {
 			trx_state = STATE_ENDED;
@@ -214,7 +222,7 @@ void trx_start_modem_loop()
 	int f = wf->Carrier();
 	active_modem->set_freq(f);
 	trx_state = STATE_RX;
-	wf->opmode();
+	QUEUE_SYNC(CMP_CB(&waterfall::opmode, wf)); //wf->opmode();
 }
 
 void trx_start_modem(modem *m)
@@ -257,15 +265,15 @@ static void macro_timer(void *)
 	if (progdefaults.timeout == 0) {
 		progdefaults.useTimer = false;
 		macros.execute(progdefaults.macronumber);
-		Fl::lock();
+		FL_LOCK();
 		btnMacroTimer->hide();
-		Fl::unlock();
+		FL_UNLOCK();
 	} else {
 		sprintf(timermsg,"Timer: %d", progdefaults.timeout);
-		Fl::lock();
+		FL_LOCK();
 		btnMacroTimer->label(timermsg);
 		btnMacroTimer->redraw_label();
-		Fl::unlock();
+		FL_UNLOCK();
 		Fl::repeat_timeout(1.0, macro_timer);
 	}
 }
@@ -274,11 +282,11 @@ void trx_start_macro_timer()
 {
 	Fl::add_timeout(1.0, macro_timer);
 	sprintf(timermsg,"Timer: %d", progdefaults.timeout);
-	Fl::lock();
+	FL_LOCK();
 	btnMacroTimer->label(timermsg);
 	btnMacroTimer->redraw_label();
 	btnMacroTimer->show();
-	Fl::unlock();
+	FL_UNLOCK();
 }
 
 void trx_start(const char *scdev)

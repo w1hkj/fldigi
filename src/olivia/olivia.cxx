@@ -211,7 +211,7 @@ int olivia::tx_process()
 	return 0;
 }
 
-int olivia::rx_process(double *buf, int len)
+int olivia::rx_process(const double *buf, int len)
 {
 	int i, c;
 	unsigned char ch = 0;
@@ -348,10 +348,10 @@ olivia::olivia()
 //	samplerate = 11025;
 	samplerate = 8000;
 
-	Fl::lock();
+	FL_LOCK();
 		Tx = new MFSK_Transmitter< float >;
 		Rx = new MFSK_Receiver< float >;
-	Fl::unlock();
+	FL_UNLOCK();
 
 	mode = MODE_OLIVIA;
 	wfid = new id(this);

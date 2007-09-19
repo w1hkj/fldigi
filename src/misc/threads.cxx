@@ -76,3 +76,9 @@ static int fl_create_thread(Fl_Thread * t, void *(*f) (void *), void* p) {
 }
 
 #  endif // !WIN32
+
+#if (USE_TLS == 1)
+	__thread  int thread_id_;
+#else
+	pthread_key_t thread_id_;
+#endif

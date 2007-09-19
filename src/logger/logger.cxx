@@ -155,7 +155,7 @@ int submit_log(void)
 
 	adif.erase();
 	
-	Fl::lock();
+	FL_LOCK();
 	log_msg = "";
 	log_msg = log_msg + "program:"	+ FLDIGI_NAME + " v " + FLDIGI_VERSION + LOG_MSEPARATOR;
 	log_msg = log_msg + "version:"	+ LOG_MVERSION			+ LOG_MSEPARATOR;
@@ -183,7 +183,7 @@ int submit_log(void)
 	putadif(13, inpLoc->value());
 	log_msg = log_msg + "notes:"	+ inpNotes->value()		+ LOG_MSEPARATOR;
 	putadif(16, inpNotes->value());
-	Fl::unlock();
+	FL_UNLOCK();
 
 	writeadif();
 	

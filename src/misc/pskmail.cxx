@@ -162,7 +162,7 @@ void check_formail() {
 			autofile.getline(mailline, 998); // leave space for "\n" and null byte
 			mailtext.append(mailline);
 			mailtext.append("\n");
-            Fl::awake();
+            FL_AWAKE();
             time(&prog_time);
             if (prog_time - start_time > TIMEOUT) {
                 std::cout << "pskmail_out failure" << std::endl;

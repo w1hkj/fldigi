@@ -93,9 +93,9 @@ feld::feld(trx_mode m)
 	double flo, fhi;
 	mode = m;
 	samplerate = FeldSampleRate;
-	Fl::lock();
+	FL_LOCK_E();
 	bandwidth = sldrHellBW->value();
-	Fl::unlock();
+	FL_UNLOCK_E();
 	
 	switch (mode) { 
 		case MODE_FSKHELL: bandwidth = 122.5; break; 
@@ -248,18 +248,18 @@ void feld::rx(complex z)
 	}
 }
 
-int feld::rx_process(double *buf, int len)
+int feld::rx_process(const double *buf, int len)
 {
 
 	complex z, *zp;
 	int i, n;
 
-	Fl::lock();
+	FL_LOCK_E();
 	halfwidth = btnHellRcvWidth->value();
 	blackboard = btnBlackboard->value();
 	squelch = sldrSquelchValue;
 	squelchon = QuerySqlOnOff();
-	Fl::unlock();
+	FL_UNLOCK_E();
 	
 	switch (mode) {
 		default:
@@ -448,10 +448,10 @@ int feld::tx_process()
 	char c;
 	bool hdkey;
 
-	Fl::lock();
+	FL_LOCK_E();
 	dxmode = 1 + btnHellXmtWidth->value();
 	hdkey = btnHellFastAttack->value();
-	Fl::unlock();
+	FL_UNLOCK_E();
 	fntnbr = progdefaults.feldfontnbr;
 	if (hardkeying != hdkey) {
 		hardkeying = hdkey;
