@@ -37,6 +37,9 @@ struct configuration {
 	bool		rtty_autocrlf;
 	int			rtty_autocount;
 	int			rtty_afcspeed;
+	bool		afconoff;
+	bool		sqlonoff;
+	double		sldrSquelchValue;
 	bool		useFSKkeyline;		// use RTS for FSK
 	bool		useFSKkeylineDTR;	// use DTR for FSK
 	bool		FSKisLSB;

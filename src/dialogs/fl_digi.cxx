@@ -822,11 +822,9 @@ void closeRigDialog() {
 	rigcontrol->hide();
 }
 
-double sldrSquelchValue;
-
 void cb_sldrSquelch(Fl_Slider* o, void*) {
 	active_modem->set_squelch(o->value());
-	sldrSquelchValue = o->value();
+	progdefaults.sldrSquelchValue = o->value();
 	restoreFocus();
 }
 
@@ -1067,6 +1065,7 @@ void afconoff_cb(Fl_Widget *w, void *vi)
 	int v = b->value();
 	FL_UNLOCK_D();
 	active_modem->set_afcOnOff( v ? true : false );
+	progdefaults.afconoff = v ? true : false;
 }
 
 void sqlonoff_cb(Fl_Widget *w, void *vi)
@@ -1076,6 +1075,7 @@ void sqlonoff_cb(Fl_Widget *w, void *vi)
 	int v = b->value();
 	FL_UNLOCK_D();
 	active_modem->set_sqlchOnOff( v ? true : false );
+	progdefaults.sqlonoff = v ? true : false;
 }
 
 
@@ -1413,8 +1413,7 @@ void create_fl_digi_main() {
 				sldrSquelch->minimum(0);
 				sldrSquelch->maximum(100);
 				sldrSquelch->step(1);
-				sldrSquelch->value(20);
-				sldrSquelchValue = 20.0;
+				sldrSquelch->value(progdefaults.sldrSquelchValue);
 				sldrSquelch->callback((Fl_Callback*)cb_sldrSquelch);
 				sldrSquelch->color(FL_INACTIVE_COLOR);
 
@@ -1836,6 +1835,7 @@ void setReverse(int rev) {
 	active_modem->set_reverse(rev);
 }
 
+/*
 void setAfcOnOff(bool b) {
 	FL_LOCK();
 	afconoff->value(b);
@@ -1863,5 +1863,6 @@ bool QuerySqlOnOff() {
 	FL_UNLOCK_E();
 	return v;
 }
+*/
 
 

@@ -40,7 +40,6 @@
 #define CLAMP(x,low,high)       (((x)>(high))?(high):(((x)<(low))?(low):(x)))
 
 char feldmsg[80];
-extern double sldrSquelchValue;
 
 void feld::tx_init(cSound *sc)
 {
@@ -257,8 +256,8 @@ int feld::rx_process(const double *buf, int len)
 	FL_LOCK_E();
 	halfwidth = btnHellRcvWidth->value();
 	blackboard = btnBlackboard->value();
-	squelch = sldrSquelchValue;
-	squelchon = QuerySqlOnOff();
+	squelch = progdefaults.sldrSquelchValue;
+	squelchon = progdefaults.sqlonoff;
 	FL_UNLOCK_E();
 	
 	switch (mode) {

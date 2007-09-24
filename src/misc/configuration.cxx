@@ -40,6 +40,9 @@ configuration progdefaults = {
 	true,			// bool		rtty_autocrlf;
 	72,				// int		rtty_autocount;
 	1,				// int		rtty_afcspeed;
+	true,			// bool		afconoff;
+	true,			// bool		sqlonoff;
+	30.0,			// double	sldrSquelchValue;;
 	false,			// bool		useFSKkeyline;
 	false,			// bool		useFSKkeylineDTR;	
 	true,			// bool		FSKisLSB;

@@ -58,13 +58,13 @@ modem::modem()
 	squelchon = true;
 }
 
-extern double sldrSquelchValue;
-
 void modem::init()
 {
-	afcon = QueryAfcOnOff();
-	squelchon = QuerySqlOnOff();
-	squelch = sldrSquelchValue;
+//	afcon = QueryAfcOnOff();
+//	squelchon = QuerySqlOnOff();
+	afcon = progdefaults.afconoff;
+	squelchon = progdefaults.sqlonoff;
+	squelch = progdefaults.sldrSquelchValue;
 	bool wfrev = wf->Reverse();
 	bool wfsb = wf->USB();
 	reverse = wfrev ^ !wfsb;

@@ -422,9 +422,9 @@ void WFdisp::sig_data( double *sig, int len ) {
 
 	static char szFrequency[14];
 	
-	FL_LOCK();
-	if (usebands) {
+	if (usebands)
 		rfc = (long long)(atof(cboBand->value()) * 1000.0);
+	if (rfc != 0) {
 		if (usb)
 			dfreq = rfc + active_modem->get_txfreq();
 		else	
@@ -434,8 +434,10 @@ void WFdisp::sig_data( double *sig, int len ) {
 		dfreq = active_modem->get_txfreq();
 		sprintf(szFrequency, "%-.0f", dfreq);
 	}
+	FL_LOCK_D();
 	inpFreq->value(szFrequency);
-	FL_UNLOCK();
+	inpFreq->redraw();
+	FL_UNLOCK_D();
 
 	return;
 }
