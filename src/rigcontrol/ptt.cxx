@@ -43,8 +43,7 @@
 // "hamlib" - 1
 // "memmap" - 2
 // "rigcat" - 3
-// "/dev/ttys0" - 4
-// "/dev/ttys1" - 5
+// "tty" - 4 (SPECIFIED by progdefaults.PTTdev)
 
 PTT::PTT(int dev, int mode, bool inverted)
 {

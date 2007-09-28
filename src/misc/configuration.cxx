@@ -963,7 +963,7 @@ void configuration::initInterface() {
 					btnPTT[1]->value() ? 1 :
 					btnPTT[2]->value() ? 2 :
 					btnPTT[3]->value() ? 3 :
-					btnPTT[4]->value() ? 4 : 5);
+					btnPTT[4]->value() ? 4 : 0); // default is None
 					
 		RTSptt = btnRTSptt->value();
 		DTRptt = btnDTRptt->value();
@@ -1000,7 +1000,7 @@ void configuration::initInterface() {
 		wf->setQSY(1);
 		activate_rig_menu_item(false);
 	} else if (chkUSERIGCATis) { // start the rigCAT thread
-		btnPTT[3]->activate();
+//		btnPTT[3]->activate();
 		if (rigCAT_init() == false) {
 			wf->USB(true);
 			cboBand->show();
@@ -1016,7 +1016,7 @@ void configuration::initInterface() {
 		}
 #ifndef NOHAMLIB
 	} else if (chkUSEHAMLIBis) { // start the hamlib thread
-		btnPTT[1]->activate();
+//		btnPTT[1]->activate();
 		if (hamlib_init(btnPTTis == 1 ? true : false) == false) {
 			wf->USB(true);
 			cboBand->show();

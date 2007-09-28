@@ -103,8 +103,10 @@ void Rig::close(void)
 
 void Rig::setFreq(freq_t freq, vfo_t vfo) 
 {
+	int err;
 	for (int i = 0; i < NUMTRIES; i++) {
-		if (rig_set_freq(theRig, vfo, freq) == RIG_OK)
+		err = rig_set_freq(theRig, vfo, freq);
+		if (err == RIG_OK)
 			return;
 	}
 	throw RigException ("setFreq");

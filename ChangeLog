@@ -41,6 +41,8 @@ Change Log:
           select which of the text widgets will be used.  Default is the fast
           text widget.  An fldigi restart is required after making a change to
           the widget selection on the "misc" configuration tab.
+      23) Multiple changes to hamlib interface to correct deficient behavior on
+          startup and when changing frequency.
 1.34  1) Cleaned up unused code segments
       2) Modified CW decoder to allow setting upper and lower limits on
          Tx WPM

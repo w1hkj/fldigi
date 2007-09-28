@@ -1,5 +1,13 @@
 //
 // hamlib.cxx  --  Hamlib (rig control) interface for fldigi
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <termios.h>
+#include <string>
+
 #include "configuration.h"
 #include "Config.h"
 #include <FL/fl_ask.H>
@@ -45,6 +53,35 @@ void show_error(const char * a, const char * b)
 	msg.append(": ");
 	msg.append(b);
 	put_status((char*)msg.c_str());
+//		std::cout << msg.c_str() << std::endl; std::cout.flush();
+}
+
+bool hamlib_setRTSDTR()
+{
+	if (progdefaults.RTSplus == false && progdefaults.DTRplus == false)
+		return true;
+		
+	int hamlibfd =  open(progdefaults.HamRigDevice.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
+
+	if (hamlibfd < 0)
+		return false;
+
+	int status;
+	ioctl(hamlibfd, TIOCMGET, &status);
+
+	if (progdefaults.RTSplus)
+		status |= TIOCM_RTS;		// set RTS bit
+	else
+		status &= ~TIOCM_RTS;		// clear RTS bit
+	if (progdefaults.DTRplus)
+		status |= TIOCM_DTR;		// set DTR bit
+	else
+		status &= ~TIOCM_DTR;		// clear DTR bit
+
+	ioctl(hamlibfd, TIOCMSET, &status);
+	close(hamlibfd);
+	
+	return true;
 }
 
 bool hamlib_init(bool bPtt)
@@ -91,6 +128,9 @@ bool hamlib_init(bool bPtt)
 
 	MilliSleep(100);
 
+	if (hamlib_setRTSDTR() == false)
+		return -1;
+	
 	try {
 		need_freq = true;
 		freq = xcvr->getFreq();
@@ -122,14 +162,15 @@ bool hamlib_init(bool bPtt)
 	}
 
 	hamlib_freq = 0;
-	hamlib_rmode = RIG_MODE_USB;
+	hamlib_rmode = RIG_MODE_NONE;//RIG_MODE_USB;
 
 	if (fl_create_thread(hamlib_thread, hamlib_loop, &dummy) < 0) {
 		show_error("Hamlib init:", "pthread_create failed");
 		xcvr->close();
 		return false;
 	} 
-//	std::cout << "Hamlib on" << std::endl; fflush(stdout);
+
+//	std::cout << "Hamlib on" << std::endl; cout.flush();
 
 	init_Hamlib_RigDialog();
 	
@@ -146,19 +187,19 @@ void hamlib_close(void)
 
 	hamlib_exit = true;
 
-//	std::cout << "Waiting for hamlib to exit "; fflush(stdout);
+//	std::cout << "Waiting for hamlib to exit "; cout.flush();
 	while (hamlib_closed == false) {
-//		std::cout << "."; fflush(stdout);
+//		std::cout << "."; cout.flush();
 		MilliSleep(50);
 		count--;
 		if (!count) {
-			std::cout << "\nHamlib stuck\n"; fflush(stdout);
+			std::cout << "\nHamlib stuck\n"; cout.flush();
 			exit(0);
 		}
 	}
 
 	xcvr->close();
-//	std::cout << "\nexit OK" << std::endl; fflush(stdout);
+//	std::cout << "\nexit OK" << std::endl; cout.flush();
 }
 
 bool hamlib_active(void)
@@ -213,11 +254,10 @@ int hamlib_setfreq(long f)
 {
 	if (xcvr->isOnLine() == false)
 		return -1;
-	hamlib_freq = f;
 	fl_lock(&hamlib_mutex);
 		try {
-			xcvr->setFreq(hamlib_freq);
-			wf->rfcarrier(hamlib_freq);
+			xcvr->setFreq(f);
+			wf->rfcarrier(f);//(hamlib_freq);
 		}
 		catch (RigException Ex) {
 		show_error("SetFreq", Ex.message);

@@ -187,6 +187,7 @@ void buildlist()
 {
 	if (readFreqList() == true)
 		return;
+	Fl::lock();
 	for (int n = 0; n < 100; n++) {freqlist[n] = 0;}
 	addtoList (1807000L);
 	addtoList (10135000L);
@@ -206,6 +207,7 @@ void buildlist()
 	addtoList (7030000L);
 	updateSelect();
 	FreqDisp->value(freqlist[0]);
+	Fl::unlock();
 }
 
 void setMode() {
