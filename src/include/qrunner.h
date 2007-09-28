@@ -119,7 +119,8 @@ public:
         {
                 if (fifo->push(f, pri)) {
 #ifdef NDEBUG
-                        write(pfd[1], "", 1);
+                        if (unlikely(write(pfd[1], "", 1) != 1))
+                                throw qexception(errno);
 #else
                         assert(write(pfd[1], "", 1) == 1);
 #endif

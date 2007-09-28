@@ -27,6 +27,7 @@ configuration progdefaults = {
 //  for PSK mail interface	
 	true,			// bool		PSKmailSweetSpot;
 	200,			// int		SearchRange;
+	40,				// int		ServerOffset;
 // RTTY
 	25.0,			// double		rtty_squelch;
 	3,				// int			rtty_shift; = 170
@@ -224,6 +225,7 @@ void configuration::writeDefaultsXML()
 	writeXMLbool(f, "STARTATSWEETSPOT", StartAtSweetSpot);
 	writeXMLbool(f, "PSKMAILSWEETSPOT", PSKmailSweetSpot);
 	writeXMLint(f, "PSKSEARCHRANGE", SearchRange);
+	writeXMLint(f, "PSKServerOffset", ServerOffset);
 	writeXMLdbl(f, "CWSWEETSPOT", CWsweetspot);
 	writeXMLdbl(f, "PSKSWEETSPOT", PSKsweetspot);
 	writeXMLdbl(f, "RTTYSWEETSPOT", RTTYsweetspot);
@@ -328,15 +330,6 @@ void configuration::writeDefaultsXML()
 	for (int i = 0; i < 9; i++)
 		writeXMLtriad(f, cfgpal[i].R, cfgpal[i].G, cfgpal[i].B);
 	f << "</PALETTE>\n";
-
-//	writeXMLbool(f, "USEFSKKEYLINE", useFSKkeyline);		
-//	writeXMLbool(f, "USEFSKKEYLINEDTR", useFSKkeylineDTR);
-//	writeXMLbool(f, "FSKISLSB", FSKisLSB);
-//	writeXMLbool(f, "RTTYUSB", RTTY_USB);
-//	writeXMLbool(f, "USEUART", useUART);	
-//	writeXMLbool(f, "USECWKEYLINERTS", useCWkeylineRTS);
-//	writeXMLbool(f, "USECWKEYLINEDTR", useCWkeylineDTR);
-//	writeXMLstr(f, "CWFSKPORT", CWFSKport);
 
 	writeXMLbool(f, "ALT_TEXT_WIDGETS", alt_text_widgets);
 
@@ -469,6 +462,7 @@ void configuration::writeDefaults(ofstream &f)
 	f << alt_text_widgets << endl;
 	f << QRZusername.c_str() << endl;
 	f << QRZuserpassword.c_str() << endl;
+	f << ServerOffset;
 }
 
 bool configuration::readDefaults(void)
@@ -617,6 +611,8 @@ bool configuration::readDefaults(void)
 	f.ignore();
 	getline(f, QRZusername);
 	getline(f, QRZuserpassword);
+	
+	f >> ServerOffset;
 
         return true;
 }
@@ -795,6 +791,7 @@ int configuration::openDefaults() {
 			btnStartAtSweetSpot->value(StartAtSweetSpot);
 			btnPSKmailSweetSpot->value(PSKmailSweetSpot);
 			cntSearchRange->value(SearchRange);
+			cntServerOffset->value(ServerOffset);
 			
 			btnCursorBWcolor->color(
 				fl_rgb_color(cursorLineRGBI.R, cursorLineRGBI.G, cursorLineRGBI.B) );
@@ -803,16 +800,6 @@ int configuration::openDefaults() {
 			btnBwTracksColor->color(
 				fl_rgb_color(bwTrackRGBI.R, bwTrackRGBI.G, bwTrackRGBI.B) );
 				
-//			txtCWFSKport->value(CWFSKport.c_str());
-
-//			btnUseCWkeylineRTS->value(useCWkeylineRTS);
-//			btnUseCWkeylineDTR->value(useCWkeylineDTR);
-
-//			btnUseFSKkeyline->value(useFSKkeyline);
-//			btnUseFSKkeylineDTR->value(useFSKkeylineDTR);
-
-//			btnFSKisLSB->value(FSKisLSB);
-
 			cntCWweight->value(CWweight);
 			sldrCWxmtWPM->value(CWspeed);
 			cntCWdefWPM->value(defCWspeed);
@@ -867,8 +854,6 @@ int configuration::openDefaults() {
 				btnQRZcdrom->value(1);
 			
 			btnRTTY_USB->value(RTTY_USB);
-//			btnUSE_UART->value(useUART);
-//			btnViewXmtSignal->value(viewXmtSignal);
 			btnsendid->value(sendid);
 			
 			valRcvMixer->value(RcvMixer);
@@ -908,11 +893,6 @@ int configuration::openDefaults() {
 		TransmitText->setFontSize(FontSize);
 
 		wf->setPrefilter(wfPreFilter);
-
-//		if (useCWkeylineRTS || useCWkeylineDTR ) //||
-//			useFSKkeyline || useFSKkeylineDTR ||
-//			useUART )
-//			if (!KeyLine) KeyLine = new modeIO();
 
 		for (int i = 0; i < 9; i++) {
 			palette[i].R = (uchar)cfgpal[i].R;
@@ -1063,4 +1043,44 @@ FL_LOCK();
 FL_UNLOCK();
 }
 #endif
+
+
+void configuration::testCommPorts()
+{
+	char COM[] = "COMx";
+	char ttyS[] = "/dev/ttySx";
+	char ttyUSB[] = "/dev/ttyUSBx";
+	char devttyUSB[] = "/dev/usb/ttyUSBx";
+	int fd;
+
+	strCommPorts = "Ports:";
+	
+	for (int i = 0; i < 4; i++) {
+		ttyS[9] = '0' + i;
+		COM[3] = '1' + i;
+		if ((fd = open( ttyS, O_RDWR | O_NOCTTY | O_NDELAY)) < 0)
+			break;
+		strCommPorts += '\n';
+		strCommPorts.append(ttyS);
+		strCommPorts.append(" or ");
+		strCommPorts.append(COM);
+		close(fd);
+    }
+	for (int i = 0; i < 4; i++) {
+		ttyUSB[11] = '0' + i;
+		if ((fd = open( ttyUSB, O_RDWR | O_NOCTTY | O_NDELAY)) < 0)
+			break;
+		strCommPorts += '\n';
+		strCommPorts.append(ttyUSB);
+		close(fd);
+    }
+	for (int i = 0; i < 4; i++) {
+		devttyUSB[15] = '0' + i;
+		if ((fd = open( devttyUSB, O_RDWR | O_NOCTTY | O_NDELAY)) < 0)
+			break;
+		strCommPorts += '\n';
+		strCommPorts.append(devttyUSB);
+		close(fd);
+    }
+}
 

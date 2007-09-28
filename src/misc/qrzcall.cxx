@@ -3,6 +3,7 @@
 //
 // Copyright (C) 2006
 //		Dave Freese, W1HKJ
+//		Leigh Klotz, WA5ZNU
 //
 // This file is part of fldigi.
 //
@@ -46,22 +47,18 @@
 #include "configuration.h"
 #include "version.h"
 
-#include <irrXML.h>
-using namespace irr;
-using namespace io;
-
 #include "qrzcall.h"
 #include "main.h"
 #include "Config.h"
 #include "fl_digi.h"
 #include "qrzlib.h"
 
+#include "xmlreader.h"
+
 using namespace std;
 
-#define qrzuser "wa5znu"
-#define qrzpass "******"
+static int rotoroffset = 0;
 
-static int rotoroffset=0;
 static string xmlpage = "";
 static string sessionpage = "";
 static string host = "online.qrz.com";
@@ -85,18 +82,22 @@ static string qrzlond;
 static string qrznotes;
 
 static const char *error[] = {
-"OK",				// err 0
-"Host not found",		// err 1
-"Not an IP host!",		// err 2
-"No http service",		// err 3
-"Cannot open socket",		// err 4
-"Cannot Connect to www.qrz.com", // err 5
-"Socket write error",		// err 6
-"Socket timeout",		// err 7
-"Socket select error"		// err 8
+	"OK",								// err 0
+	"Host not found",					// err 1
+	"Not an IP host!",					// err 2
+	"No http service",					// err 3
+	"Cannot open socket",				// err 4
+	"Cannot Connect to www.qrz.com", 	// err 5
+	"Socket write error",				// err 6
+	"Socket timeout",					// err 7
+	"Socket select error"				// err 8
 };
 
-enum TAG { IGNORE, KEY, ALERT, ERROR, CALL, FNAME, NAME, ADDR1, ADDR2, STATE, ZIP, COUNTRY, LATD, LOND, GRID, DOB };
+enum TAG { \
+	IGNORE,	KEY,	ALERT,	ERROR,	CALL, \
+	FNAME,	NAME,	ADDR1,	ADDR2,	STATE, \
+	ZIP,	COUNTRY,LATD,	LOND,	GRID, \
+	DOB };
 
 static char rbuffer[32768];
 
@@ -117,40 +118,8 @@ static void *QRZloop(void *args);
 
 QRZ *qCall;
 
-class IIrrXMLStringReader: public IFileReadCallBack {
-  const char *s;
-  int len;
-  int p;
-public:
-  IIrrXMLStringReader(const char *string) {
-    s=string;
-    len = strlen(s);
-    p=0;
-  }
-  IIrrXMLStringReader(const std::string&string) {
-    s=string.c_str();
-    len = strlen(s);
-    p=0;
-  }
-  int read(void* buffer, int sizeToRead) {
-    char *sss=(char *)buffer;
-    if (p>=len) return 0;
-    int j=0;
-    for (int i = p; i<len && j<sizeToRead; ) {
-      sss[j++] = s[i++];
-    }
-    return 1;
-  }
-    
-  int getSize() {
-    return len-p;
-  }
-
-};
-
 bool parseSessionKey()
 {
-	// fprintf(stderr, "parseSessionKey: %s\n", sessionpage.c_str());
 	IrrXMLReader* xml = createIrrXMLReader(new IIrrXMLStringReader(sessionpage));
 	TAG tag=IGNORE;
 	while(xml && xml->read()) {
@@ -201,12 +170,11 @@ bool parseSessionKey()
 
 bool parse_xml()
 {
-	// fprintf(stderr, "parse_xml: %s\n", xmlpage.c_str());
-	//  IrrXMLReader* xml = createIrrXMLReader("n5lk.xml");
 	IrrXMLReader* xml = createIrrXMLReader(new IIrrXMLStringReader(xmlpage));
 
-	// If we got any result back, clear the session key so that it will be refreshed by this response,
-	// or if not present, will be removed and we'll know to log in next time.
+// If we got any result back, clear the session key so that it will be 
+// refreshed by this response, or if not present, will be removed and we'll
+// know to log in next time.
 	if (xml) {
 		qrzSessionKey="";
 		qrzalert="";
@@ -225,104 +193,114 @@ bool parse_xml()
 		qrzlond="";
 		qrznotes="";
 	}
-	// strings for storing the data we want to get out of the file
-	std::string call, fname, name, addr1, addr2, state, zip, country, latd, lond, grid, dob;
-	TAG tag=IGNORE;
-	// parse the file until end reached
-	while(xml && xml->read())
-	{
-		switch(xml->getNodeType())
-		{
-		case EXN_TEXT:
-		case EXN_CDATA:
-			switch (tag) {
-			default:
-			case IGNORE:
+// strings for storing the data we want to get out of the file
+	string	call, 
+			fname, 
+			name, 
+			addr1, 
+			addr2, 
+			state, 
+			zip, 
+			country, 
+			latd, 
+			lond, 
+			grid, 
+			dob;
+			
+	TAG tag = IGNORE;
+	
+// parse the file until end reached
+	while(xml && xml->read()) {
+		switch(xml->getNodeType()) {
+			case EXN_TEXT:
+			case EXN_CDATA:
+				switch (tag) {
+					default:
+					case IGNORE:
+						break;
+					case CALL:
+						call = xml->getNodeData();
+						break;
+					case FNAME:
+						qrzfname =  xml->getNodeData();
+						break;
+					case NAME:
+						qrzname =  xml->getNodeData();
+						break;
+					case ADDR1:
+						qrzaddr1 =  xml->getNodeData();
+						break;
+					case ADDR2:
+						qrzaddr2 =  xml->getNodeData();
+						break;
+					case STATE:
+						qrzstate =  xml->getNodeData();
+						break;
+					case ZIP:
+						qrzzip =  xml->getNodeData();
+						break;
+					case COUNTRY:
+						qrzcountry =  xml->getNodeData();
+						break;
+					case LATD:
+						qrzlatd =  xml->getNodeData();
+						break;
+					case LOND:
+						qrzlond =  xml->getNodeData();
+						break;
+					case GRID:
+						qrzgrid =  xml->getNodeData();
+						break;
+					case DOB:
+						qrznotes = "DOB: ";
+						qrznotes += xml->getNodeData();
+						break;
+					case ALERT:
+						qrzalert = xml->getNodeData();
+						break;
+					case ERROR:
+						qrzerror = xml->getNodeData();
+						break;
+					case KEY:
+						qrzSessionKey = xml->getNodeData();
+						break;
+				}
 				break;
-			case CALL:
-				call = xml->getNodeData();
+				
+			case EXN_ELEMENT_END:
+				tag=IGNORE;
 				break;
-			case FNAME:
-				qrzfname =  xml->getNodeData();
-				break;
-			case NAME:
-				qrzname =  xml->getNodeData();
-				break;
-			case ADDR1:
-				qrzaddr1 =  xml->getNodeData();
-				break;
-			case ADDR2:
-				qrzaddr2 =  xml->getNodeData();
-				break;
-			case STATE:
-				qrzstate =  xml->getNodeData();
-				break;
-			case ZIP:
-				qrzzip =  xml->getNodeData();
-				break;
-			case COUNTRY:
-				qrzcountry =  xml->getNodeData();
-				break;
-			case LATD:
-				qrzlatd =  xml->getNodeData();
-				break;
-			case LOND:
-				qrzlond =  xml->getNodeData();
-				break;
-			case GRID:
-				qrzgrid =  xml->getNodeData();
-				break;
-			case DOB:
-				qrznotes = "DOB: ";
-				qrznotes += xml->getNodeData();
-				break;
-			case ALERT:
-				qrzalert = xml->getNodeData();
-				break;
-			case ERROR:
-				qrzerror = xml->getNodeData();
-				break;
-			case KEY:
-				qrzSessionKey = xml->getNodeData();
-				break;
-			}
-			break;
-		case EXN_ELEMENT_END:
-			tag=IGNORE;
-			break;
 
-		case EXN_ELEMENT:
-		{
-			const char *nodeName = xml->getNodeName();
-			if (!strcmp("call", nodeName)) tag=CALL;
-			else if (!strcmp("fname", nodeName)) tag=FNAME;
-			else if (!strcmp("name", nodeName)) tag=NAME;
-			else if (!strcmp("addr1", nodeName)) tag=ADDR1;
-			else if (!strcmp("addr2", nodeName)) tag=ADDR2;
-			else if (!strcmp("state", nodeName)) tag=STATE;
-			else if (!strcmp("zip", nodeName)) tag=ZIP;
-			else if (!strcmp("country", nodeName)) tag=COUNTRY;
-			else if (!strcmp("latd", nodeName)) tag=LATD;
-			else if (!strcmp("lond", nodeName)) tag=LOND;
-			else if (!strcmp("grid", nodeName)) tag=GRID;
-			else if (!strcmp("dob", nodeName)) tag=DOB;
-			else if (!strcmp("Alert", nodeName)) tag=ALERT;
-			else if (!strcmp("Error", nodeName)) tag=ERROR;
-			else if (!strcmp("Key", nodeName)) tag=KEY;
-			else tag=IGNORE;
-		}
-		break;
+			case EXN_ELEMENT: 
+				{
+				const char *nodeName = xml->getNodeName();
+				if (!strcmp("call", nodeName)) 			tag = CALL;
+				else if (!strcmp("fname", nodeName)) 	tag = FNAME;
+				else if (!strcmp("name", nodeName)) 	tag = NAME;
+				else if (!strcmp("addr1", nodeName)) 	tag = ADDR1;
+				else if (!strcmp("addr2", nodeName)) 	tag = ADDR2;
+				else if (!strcmp("state", nodeName)) 	tag = STATE;
+				else if (!strcmp("zip", nodeName)) 		tag = ZIP;
+				else if (!strcmp("country", nodeName))	tag = COUNTRY;
+				else if (!strcmp("latd", nodeName)) 	tag = LATD;
+				else if (!strcmp("lond", nodeName)) 	tag = LOND;
+				else if (!strcmp("grid", nodeName)) 	tag = GRID;
+				else if (!strcmp("dob", nodeName)) 		tag = DOB;
+				else if (!strcmp("Alert", nodeName)) 	tag = ALERT;
+				else if (!strcmp("Error", nodeName)) 	tag = ERROR;
+				else if (!strcmp("Key", nodeName)) 		tag = KEY;
+				else tag = IGNORE;
+				}
+				break;
 
-		case EXN_NONE:
-		case EXN_COMMENT:
-		case EXN_UNKNOWN:
-		{
-			break;
-		}
+			case EXN_NONE:
+			case EXN_COMMENT:
+			case EXN_UNKNOWN:
+				break;
 		}
 	}
 
-	// delete the xml parser after usage
+// delete the xml parser after usage
 	delete xml;
 	return 0;
 }
@@ -478,8 +456,6 @@ int QRZGetXML()
 	return 0;
 }
 
-// code submitted by WA5ZNU
-//#define MY_QRA ("CM87wk")
 int bearing(const char *, const char *);
 void qra(const char *, double &, double &);
 
@@ -491,7 +467,6 @@ int bearing(const char *myqra, const char *dxqra) {
 
 	qra(dxqra, lat2, lon2);
 	qra(myqra, lat1, lon1);
-//std::cout << lat1 << " " << lon1 << std::endl << lat2 << " " << lon2 << std::endl; cout.flush();
 
 	lat1r=lat1/k;
 	lat2r=lat2/k;
@@ -508,8 +483,6 @@ int bearing(const char *myqra, const char *dxqra) {
 	return (int)bearing;
 }
 
-    
-// code submitted by WA5ZNU
 void qra(const char *szqra, double &lat, double &lon) {
 	int c1 = toupper(szqra[0])-'A';
 	int c2 = toupper(szqra[1])-'A';
@@ -533,23 +506,23 @@ void QRZ_disp_result()
    {
            if (qrzfname.length() > 0) {
            int spacePos = qrzfname.find(" ");
-           //    if fname is "ABC" then display "ABC"
-           // or if fname is "X Y" then display "X Y"
+//    if fname is "ABC" then display "ABC"
+// or if fname is "X Y" then display "X Y"
            if (spacePos ==-1 || (spacePos == 1)) {
                inpName->value(qrzfname.c_str());
            }
-           // if fname is "ABC Y" then display "ABC"
+// if fname is "ABC Y" then display "ABC"
            else if (spacePos == ((int)qrzfname.length())-2) {
                string fname="";
                fname.assign(qrzfname, 0, spacePos);
                inpName->value(fname.c_str());
            }
-           // fname must be "ABC DEF" so display "ABC DEF"
+// fname must be "ABC DEF" so display "ABC DEF"
            else {
                inpName->value(qrzfname.c_str());
            }
        } else if (qrzname.length() > 0) {
-           // only name is set; don't know first/last, so just show all
+// only name is set; don't know first/last, so just show all
            inpName->value(qrzname.c_str());
        }
    }
@@ -625,7 +598,7 @@ void QRZquery()
 	{
 		FL_LOCK();
 		callsign = inpCall->value();
-		// Filter callsign for nonesense characters (remove all but [A-Z0-9/])
+// Filter callsign for nonesense characters (remove all but [A-Z0-9/])
 		string ncall = "";
 		for (unsigned int i = 0; i < callsign.length(); i++) {
 			const char ch = callsign.at(i);
@@ -672,7 +645,6 @@ void QRZclose(void)
 	QRZ_exit = true;
 // and then wait for it to die
 	fl_join(QRZ_thread);
-//std::cout <<"QRZ down\n"; fflush(stdout);
 	QRZ_enabled = false;
 	QRZ_exit = false;
 }
@@ -717,7 +689,7 @@ static void *QRZloop(void *args)
 	SET_THREAD_ID(QRZ_TID);
 
 	for (;;) {
-		// see if we are being canceled
+// see if this thread has been canceled
 		if (QRZ_exit)
 			break;
 		if (QRZ_query) {

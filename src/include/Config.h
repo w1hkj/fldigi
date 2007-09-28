@@ -135,6 +135,7 @@ extern Fl_Button *btnRestartOlivia;
 extern Fl_Group *tabPSK;
 extern Fl_Counter *cntSearchRange;
 extern Fl_Check_Button *btnPSKmailSweetSpot;
+extern Fl_Counter *cntServerOffset;
 extern Fl_Group *tabRTTY;
 extern Fl_Choice *selShift;
 extern Fl_Choice *selBaud;

@@ -24,6 +24,7 @@ struct configuration {
 // for PSK mail interface
 	bool	PSKmailSweetSpot;
 	int		SearchRange;
+	int		ServerOffset;
 // RTTY
 	double		rtty_squelch;
 	int			rtty_shift;
@@ -148,6 +149,9 @@ struct configuration {
 	RGBint	cfgpal[9];
 	
 	bool alt_text_widgets;
+	
+	string strCommPorts;
+	
 public:
 	bool readDefaults(void);
 	void writeDefaults(ofstream &f);
@@ -159,6 +163,7 @@ public:
 	void initInterface();
 	void initMixerDevices();
 	void writeDefaultsXML();
+	void testCommPorts();
 	
 	void getRigs();
 	string strBaudRate();

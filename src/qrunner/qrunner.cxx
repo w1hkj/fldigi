@@ -69,7 +69,7 @@ void qrunner::execute(int fd, void *arg)
 
         char c;
         while (qr->fifo->execute()) {
-                if (read(fd, &c, 1) == -1 /*&& errno != EWOULDBLOCK*/)
+                if (unlikely(read(fd, &c, 1) == -1 /*&& errno != EWOULDBLOCK*/))
                         throw qexception(errno);
         }
 }

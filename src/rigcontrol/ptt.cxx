@@ -74,7 +74,16 @@ void PTT::reset_(int dev, int mode, bool inverted)
 		return;
 	}
 
-	pttdevName = progdefaults.PTTdev;
+	if (progdefaults.PTTdev == "COM1")
+		pttdevName = "/dev/ttyS0";
+	else if (progdefaults.PTTdev == "COM2")
+		pttdevName = "/dev/ttyS1";
+	else if (progdefaults.PTTdev == "COM3")
+		pttdevName = "/dev/ttyS2";
+	else if (progdefaults.PTTdev == "COM4")
+		pttdevName = "/dev/ttyS3";
+	else
+		pttdevName = progdefaults.PTTdev;
 	
 	openptt();
 	if (pttfd == -1) {

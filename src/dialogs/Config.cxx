@@ -858,6 +858,13 @@ static void cb_btnPSKmailSweetSpot(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Counter *cntServerOffset=(Fl_Counter *)0;
+
+static void cb_cntServerOffset(Fl_Counter* o, void*) {
+  progdefaults.ServerOffset = (int)o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabRTTY=(Fl_Group *)0;
 
 Fl_Choice *selShift=(Fl_Choice *)0;
@@ -1199,7 +1206,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           { Fl_Group* o = new Fl_Group(12, 114, 180, 94);
             o->box(FL_ENGRAVED_FRAME);
             o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-            { Fl_Input* o = inpTTYdev = new Fl_Input(66, 120, 120, 22, "Port:");
+            { Fl_Input* o = inpTTYdev = new Fl_Input(52, 120, 134, 22, "Port:");
               o->tooltip("Enter /dev/ttyS0 for COM1");
               o->callback((Fl_Callback*)cb_inpTTYdev);
             }
@@ -1261,7 +1268,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             o->deactivate();
             o->readonly();
           }
-          { Fl_Input* o = inpRIGdev = new Fl_Input(274, 122, 111, 22, "Device:");
+          { Fl_Input* o = inpRIGdev = new Fl_Input(251, 122, 134, 22, "Port:");
             o->tooltip("Enter /dev/ttyS0 for COM1");
             o->callback((Fl_Callback*)cb_inpRIGdev);
             o->deactivate();
@@ -1282,6 +1289,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { Fl_Group* o = new Fl_Group(0, 25, 400, 195, "QRZ");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
+        o->hide();
         { Fl_Check_Button* o = btnQRZnotavailable = new Fl_Check_Button(31, 50, 200, 20, "QRZ not available");
           o->down_box(FL_DOWN_BOX);
           o->value(1);
@@ -1455,7 +1463,6 @@ fect after a restart.");
       { Fl_Group* o = tabModems = new Fl_Group(0, 25, 401, 195, "Modems");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
-        o->hide();
         { Fl_Tabs* o = tabsModems = new Fl_Tabs(0, 25, 401, 195);
           o->color((Fl_Color)51);
           o->selection_color((Fl_Color)10);
@@ -1723,11 +1730,26 @@ fect after a restart.");
               o->align(FL_ALIGN_RIGHT);
               o->value(progdefaults.SearchRange);
             }
-            { Fl_Check_Button* o = btnPSKmailSweetSpot = new Fl_Check_Button(25, 105, 185, 20, "use PSK mail sweetspot");
-              o->down_box(FL_DOWN_BOX);
-              o->value(1);
-              o->callback((Fl_Callback*)cb_btnPSKmailSweetSpot);
-              o->value(progdefaults.PSKmailSweetSpot);
+            { Fl_Group* o = new Fl_Group(15, 105, 370, 92, "PskMail Server");
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { Fl_Check_Button* o = btnPSKmailSweetSpot = new Fl_Check_Button(30, 138, 185, 20, "use PSK mail sweetspot");
+                o->down_box(FL_DOWN_BOX);
+                o->value(1);
+                o->callback((Fl_Callback*)cb_btnPSKmailSweetSpot);
+                o->value(progdefaults.PSKmailSweetSpot);
+              }
+              { Fl_Counter* o = cntServerOffset = new Fl_Counter(31, 162, 80, 21, "Allowable Rx Carrier Offset");
+                o->type(1);
+                o->minimum(10);
+                o->maximum(500);
+                o->step(10);
+                o->value(200);
+                o->callback((Fl_Callback*)cb_cntServerOffset);
+                o->align(FL_ALIGN_RIGHT);
+                o->value(progdefaults.SearchRange);
+              }
+              o->end();
             }
             o->end();
           }

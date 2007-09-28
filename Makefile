@@ -10,9 +10,20 @@
 # This is the default shell for GNU make. We have tested with bash, zsh and dash.
 SHELL = /bin/sh
 
+
 # If we are compiling for IA-32/64, x86-64, SPARC32/64, SH, Alpha or S390
 # we probably have TLS support.
 USE_TLS ?= 1
+ifeq ($(USE_TLS), 0)
+    $(warning Compiling without TLS)
+endif
+
+# Do we compile with -g? This is not the same as CFG=foo-debug;
+# debug targets will override flags and may compile different code.
+DEBUG ?= 0
+# Do we strip the binary at link time?
+STRIP ?= 1
+
 
 # argument handling
 
@@ -47,7 +58,11 @@ INCLUDE_DIRS = src src/include src/irrxml
 CPPFLAGS = $(addprefix -I,$(INCLUDE_DIRS)) -DNDEBUG -DUSE_TLS=$(USE_TLS)
 
 #CXXFLAGS = -pipe $(shell fltk-config --cxxflags) -Wall -Wno-deprecated -O2 -ffast-math -fno-rtti -fexceptions
-CXXFLAGS = -pipe $(shell fltk-config --cxxflags) -Wno-uninitialized -Wno-deprecated -O2 -ffast-math -fno-rtti -fexceptions
+CXXFLAGS = -pipe $(shell fltk-config --cxxflags) -Wno-uninitialized -Wno-deprecated \
+           -O2 -ffast-math -fno-rtti -fexceptions -finline-functions
+ifeq ($(DEBUG), 1)
+    CXXFLAGS += -g
+endif
 
 # libraries and flags
 HAMLIBS = -lhamlib
@@ -146,68 +161,67 @@ BINARY  = $(BIN_DIR)/fldigi
 
 #################### begin cfg
 ifeq ($(CTARG),hamlib)
-CPPFLAGS += -DPORTAUDIO
-CXXFLAGS += -s
-LDFLAGS = $(DYN_LDFLAGS) -lportaudiocpp -lportaudio -lsndfile $(HAMLIBS)
-SRC += $(HAMLIB_SRC)
+    CPPFLAGS += -DPORTAUDIO
+    LDFLAGS = $(DYN_LDFLAGS) -lportaudiocpp -lportaudio -lsndfile $(HAMLIBS)
+    SRC += $(HAMLIB_SRC)
 endif
 
 ifeq ($(CTARG),hamlib-static)
-CPPFLAGS += -DPORTAUDIO
-CXXFLAGS += -s
-LDFLAGS = $(STATIC_LDFLAGS) /usr/local/lib/libportaudiocpp.a \
-	  /usr/local/lib/libportaudio.a /usr/local/lib/libsndfile.a \
-	  $(HAMLIBS) $(IMGLIBS)
-SRC += $(HAMLIB_SRC)
+    CPPFLAGS += -DPORTAUDIO
+    LDFLAGS = $(STATIC_LDFLAGS) /usr/local/lib/libportaudiocpp.a \
+              /usr/local/lib/libportaudio.a /usr/local/lib/libsndfile.a \
+              $(HAMLIBS) $(IMGLIBS)
+    SRC += $(HAMLIB_SRC)
 endif
 
 ifeq ($(CTARG),emcomm)
-CPPFLAGS += -DPORTAUDIO -DEMCOMM
-CXXFLAGS += -s
-LDFLAGS = $(STATIC_LDFLAGS) /usr/local/lib/libportaudiocpp.a \
-	  /usr/local/lib/libportaudio.a /usr/local/lib/libsndfile.a \
-	  $(HAMLIBS) $(IMGLIBS)
-SRC += $(HAMLIB_SRC)
+    CPPFLAGS += -DPORTAUDIO -DEMCOMM
+    LDFLAGS = $(STATIC_LDFLAGS) /usr/local/lib/libportaudiocpp.a \
+              /usr/local/lib/libportaudio.a /usr/local/lib/libsndfile.a \
+              $(HAMLIBS) $(IMGLIBS)
+    SRC += $(HAMLIB_SRC)
 endif
 
 ifeq ($(CTARG),hamlib-debug)
-CPPFLAGS += -DPORTAUDIO -UNDEBUG
-CXXFLAGS += -O0 -ggdb3
-LDFLAGS = $(DYN_LDFLAGS) -lportaudiocpp -lportaudio -lsndfile $(HAMLIBS)
-SRC += $(HAMLIB_SRC)
-SRC += $(SRC_DIR)/misc/stacktrace.cxx
+    CPPFLAGS += -DPORTAUDIO -UNDEBUG
+    CXXFLAGS += -O0 -ggdb3 -Wall
+    LDFLAGS = $(DYN_LDFLAGS) -lportaudiocpp -lportaudio -lsndfile $(HAMLIBS)
+    SRC += $(HAMLIB_SRC)
+    SRC += $(SRC_DIR)/misc/stacktrace.cxx
+    override STRIP = 0
 endif
 
 ifeq ($(CTARG),nhl)
-CPPFLAGS += -DNOHAMLIB -DPORTAUDIO
-CXXFLAGS += -s
-LDFLAGS = $(DYN_LDFLAGS) -lportaudiocpp -lportaudio -lsndfile
+    CPPFLAGS += -DNOHAMLIB -DPORTAUDIO
+    LDFLAGS = $(DYN_LDFLAGS) -lportaudiocpp -lportaudio -lsndfile
 endif
 
 ifeq ($(CTARG),nhl-static)
-CPPFLAGS += -DNOHAMLIB -DPORTAUDIO
-CXXFLAGS += -s
-LDFLAGS = $(STATIC_LDFLAGS) /usr/local/lib/libportaudiocpp.a \
-	  /usr/local/lib/libportaudio.a /usr/local/lib/libsndfile.a \
-	  $(IMGLIBS)
+    CPPFLAGS += -DNOHAMLIB -DPORTAUDIO
+    LDFLAGS = $(STATIC_LDFLAGS) /usr/local/lib/libportaudiocpp.a \
+              /usr/local/lib/libportaudio.a /usr/local/lib/libsndfile.a \
+              $(IMGLIBS)
 endif
 
 ifeq ($(CTARG),nhl-debug)
-CPPFLAGS += -DNOHAMLIB -DPORTAUDIO -UNDEBUG
-CXXFLAGS += -O0 -ggdb3
-LDFLAGS = $(DYN_LDFLAGS) -lportaudiocpp -lportaudio -lsndfile
-SRC += $(SRC_DIR)/misc/stacktrace.cxx
+    CPPFLAGS += -DNOHAMLIB -DPORTAUDIO -UNDEBUG
+    CXXFLAGS += -O0 -ggdb3 -Wall
+    LDFLAGS = $(DYN_LDFLAGS) -lportaudiocpp -lportaudio -lsndfile
+    SRC += $(SRC_DIR)/misc/stacktrace.cxx
+    override STRIP = 0
 endif
 
 ifeq ($(CTARG),nhl-emcomm)
-CPPFLAGS += -DNOHAMLIB -DPORTAUDIO -DEMCOMM
-CXXFLAGS += -s
-LDFLAGS = $(STATIC_LDFLAGS) /usr/local/lib/libportaudiocpp.a \
-	  /usr/local/lib/libportaudio.a /usr/local/lib/libsndfile.a \
-	  $(IMGLIBS)
+    CPPFLAGS += -DNOHAMLIB -DPORTAUDIO -DEMCOMM
+    LDFLAGS = $(STATIC_LDFLAGS) /usr/local/lib/libportaudiocpp.a \
+              /usr/local/lib/libportaudio.a /usr/local/lib/libsndfile.a \
+              $(IMGLIBS)
 endif
 #################### end cfg
 
+ifeq ($(STRIP), 1)
+    LDFLAGS += -s
+endif
 
 # our object files
 OBJS = $(addprefix $(OBJ_DIR)/,$(addsuffix .o,$(basename $(notdir $(SRC)))))
@@ -215,52 +229,47 @@ OBJS = $(addprefix $(OBJ_DIR)/,$(addsuffix .o,$(basename $(notdir $(SRC)))))
 
 # some "canned commands" variables
 define preproc_cmd
-set -e; mkdir -p $(dir $@); \
-$(CXX) $(CPPFLAGS) -MM "$(subst $(DEP_DIR)/,$(SRC_DIR)/,$(subst .deps,,$@))" \
--MT "$(addprefix $(OBJ_DIR)/,$(addsuffix .o,$(notdir $(basename $(basename $@)))))" \
--MT "$@" -MF "$@"
+    set -e; mkdir -p $(dir $@); \
+    $(CXX) $(CPPFLAGS) -MM "$(subst $(DEP_DIR)/,$(SRC_DIR)/,$(subst .deps,,$@))" \
+    -MT "$(addprefix $(OBJ_DIR)/,$(addsuffix .o,$(notdir $(basename $(basename $@)))))" \
+    -MT "$@" -MF "$@"
 endef
 
 define compile_cmd
-$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+    $(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 endef
 
 define link_cmd
-$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+    $(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 endef
-
 
 ifneq ($(V), 1) # be quiet
+    define preproc_source
+        @echo Generating $@
+        @$(preproc_cmd) || { r=$$?; /bin/echo -e "Failed command was:\n$(preproc_cmd)" >&2; exit $$r; }
+    endef
 
-define preproc_source
-@echo Generating $@
-@$(preproc_cmd) || { r=$$?; /bin/echo -e "Failed command was:\n$(preproc_cmd)" >&2; exit $$r; }
-endef
+    define compile_source
+        @echo Compiling $<
+        @$(compile_cmd) || { r=$$?; /bin/echo -e "Failed command was:\n$(compile_cmd)" >&2; exit $$r; }
+    endef
 
-define compile_source
-@echo Compiling $<
-@$(compile_cmd) || { r=$$?; /bin/echo -e "Failed command was:\n$(compile_cmd)" >&2; exit $$r; }
-endef
-
-define link_objects
-@echo Linking $@
-@$(link_cmd) || { r=$$?; /bin/echo -e "Failed command was:\n$(link_cmd)" >&2; exit $$r; }
-endef
-
+    define link_objects
+        @echo Linking $@
+        @$(link_cmd) || { r=$$?; /bin/echo -e "Failed command was:\n$(link_cmd)" >&2; exit $$r; }
+    endef
 else # be verbose
+    define preproc_source
+        $(preproc_cmd)
+    endef
 
-define preproc_source
-$(preproc_cmd)
-endef
+    define compile_source
+        $(compile_cmd)
+    endef
 
-define compile_source
-$(compile_cmd)
-endef
-
-define link_objects
-$(link_cmd)
-endef
-
+    define link_objects
+        $(link_cmd)
+    endef
 endif # ($(V), 1)
 
 
@@ -283,7 +292,7 @@ DEPS = $(subst src/,$(DEP_DIR)/,$(patsubst %,%.deps,$(SRC)))
 #To ignore multiple targets use this instead:
 #ifeq ($(shell echo $(MAKECMDGOALS) | egrep 'clean|anothertarget|onemore'),)
 ifneq ($(MAKECMDGOALS),clean)
-include $(DEPS)
+    include $(DEPS)
 endif
 
 # this target must appear after the deps have been included

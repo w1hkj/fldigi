@@ -95,7 +95,18 @@ bool hamlib_init(bool bPtt)
 	
 	hamlib_ptt = bPtt;
 
-	port = progdefaults.HamRigDevice;
+	if (progdefaults.HamRigDevice == "COM1")
+		port = "/dev/ttyS0";
+	else if (progdefaults.HamRigDevice == "COM2")
+		port = "/dev/ttyS1";
+	else if (progdefaults.HamRigDevice == "COM3")
+		port = "/dev/ttyS2";
+	else if (progdefaults.HamRigDevice == "COM4")
+		port = "/dev/ttyS3";
+	else
+		port = progdefaults.HamRigDevice;
+std::cout << port.c_str() << std::endl; std::cout.flush();
+
 	spd = progdefaults.strBaudRate();
 
 	list<string>::iterator pstr = (xcvr->rignames).begin();

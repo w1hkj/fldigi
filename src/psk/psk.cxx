@@ -168,10 +168,10 @@ psk::psk(trx_mode pskmode) : modem()
 //	}
 // or matched sync filters
 
-//	wsincfilt(fir1c, 1.0 / symbollen, true);	// creates fir1c matched sin(x)/x filter w blackman
-//	wsincfilt(fir2c, 1.0 / 16.0, true);			// creates fir2c matched sin(x)/x filter w blackman
-	wsincfilt(fir1c, 1.0 / symbollen, false);	// creates fir1c matched sin(x)/x filter w hamming
-	wsincfilt(fir2c, 1.0 / 16.0, false);		// creates fir2c matched sin(x)/x filter w hamming
+	wsincfilt(fir1c, 1.0 / symbollen, true);	// creates fir1c matched sin(x)/x filter w blackman
+	wsincfilt(fir2c, 1.0 / 16.0, true);			// creates fir2c matched sin(x)/x filter w blackman
+//	wsincfilt(fir1c, 1.0 / symbollen, false);	// creates fir1c matched sin(x)/x filter w hamming
+//	wsincfilt(fir2c, 1.0 / 16.0, false);		// creates fir2c matched sin(x)/x filter w hamming
 //	wsincfilt(fir2c, 1.0 / 22.0, false);    	// 1/22 with Hamming window
                                             	// nearly identical to gmfir2c
 // experimental raised cosine filter
@@ -292,14 +292,15 @@ int waitcount = 0;
 void psk::findsignal()
 {
 	double ftest, sigpwr, noise;
-	int searchBW = progdefaults.SearchRange;// - (int)bandwidth;
+	int searchBW;
 	
 // fast search for peak signal frequency
 	if (sigsearch > 0) {
 		sigsearch--;
 		if (mailserver) { 
 // mail server signal search
-			ftest = wf->peakFreq((int)(frequency), searchBW);
+			searchBW = progdefaults.ServerOffset;// - (int)bandwidth;
+			ftest = wf->peakFreq((int)(frequency), searchBW + (int)bandwidth/2);
 			sigpwr = wf->powerDensity(ftest,  bandwidth);
 			noise = wf->powerDensity(ftest + 2 * bandwidth, bandwidth / 2) +
 		    	    wf->powerDensity(ftest - 2 * bandwidth, bandwidth / 2) + 1e-20;
@@ -328,6 +329,7 @@ void psk::findsignal()
 			}
 		} else { 
 // normal signal search
+			searchBW = progdefaults.SearchRange;
 			ftest = wf->peakFreq((int)(frequency), searchBW);
 			sigpwr = wf->powerDensity(ftest,  bandwidth);
 			noise = wf->powerDensity(ftest + 2 * bandwidth / 2, bandwidth / 2) +

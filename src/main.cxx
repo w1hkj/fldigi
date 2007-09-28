@@ -178,9 +178,14 @@ int main(int argc, char ** argv)
 	
 	rigcontrol = createRigDialog();
 	progdefaults.readDefaults();
+	progdefaults.testCommPorts();
+	
 	create_fl_digi_main();
 
 	createConfig();
+	inpTTYdev->tooltip(progdefaults.strCommPorts.c_str());
+	inpRIGdev->tooltip(progdefaults.strCommPorts.c_str());
+	
 	macros.loadDefault();
 
 #ifndef NOHAMLIB
