@@ -89,8 +89,6 @@ int txmsgid = -1;
 void arqchecks()
 {
    	txmsgid = msgget( (key_t) 6789, 0666 );
-	if (txmsgid != -1)
-		return;
 
 	fl_filename_expand(szPskMailDir, 119, "$HOME/pskmail.files/");
 	PskMailDir = szPskMailDir;
