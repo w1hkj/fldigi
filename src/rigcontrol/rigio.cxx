@@ -893,7 +893,7 @@ static void *rigCAT_loop(void *args)
 			freq = rigCAT_getfreq();
 		fl_unlock(&rigCAT_mutex);
 		if (freq <= 0)
-			rigCAT_exit = true;
+			goto loop3;
 			
 		MilliSleep(10);
 		if (rigCAT_exit == true)
