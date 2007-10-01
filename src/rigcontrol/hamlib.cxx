@@ -43,6 +43,8 @@ static long int hamlib_freq;
 static rmode_t hamlib_rmode = RIG_MODE_USB;
 static pbwidth_t hamlib_pbwidth = 3000;
 
+static int ioctl_bits;
+
 static int dummy = 0;
 
 static void *hamlib_loop(void *args);
@@ -53,7 +55,7 @@ void show_error(const char * a, const char * b)
 	msg.append(": ");
 	msg.append(b);
 	put_status((char*)msg.c_str());
-//		std::cout << msg.c_str() << std::endl; std::cout.flush();
+	std::cout << msg.c_str() << std::endl; std::cout.flush();
 }
 
 bool hamlib_setRTSDTR()
@@ -63,23 +65,30 @@ bool hamlib_setRTSDTR()
 		
 	int hamlibfd =  open(progdefaults.HamRigDevice.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
 
-	if (hamlibfd < 0)
+	if (hamlibfd < 0) {
+		show_error("Cannot open PTT device ", progdefaults.HamRigDevice.c_str());
 		return false;
+	}
 
-	int status;
-	ioctl(hamlibfd, TIOCMGET, &status);
+	ioctl(hamlibfd, TIOCMGET, &ioctl_bits);
 
 	if (progdefaults.RTSplus)
-		status |= TIOCM_RTS;		// set RTS bit
+		ioctl_bits |= TIOCM_RTS;		// set RTS bit
 	else
-		status &= ~TIOCM_RTS;		// clear RTS bit
+		ioctl_bits &= ~TIOCM_RTS;		// clear RTS bit
 	if (progdefaults.DTRplus)
-		status |= TIOCM_DTR;		// set DTR bit
+		ioctl_bits |= TIOCM_DTR;		// set DTR bit
 	else
-		status &= ~TIOCM_DTR;		// clear DTR bit
-
-	ioctl(hamlibfd, TIOCMSET, &status);
+		ioctl_bits &= ~TIOCM_DTR;		// clear DTR bit
+std::cout << "TIOCM_RTS " << TIOCM_RTS << ", RTSplus " << progdefaults.RTSplus;
+std::cout << std::endl;
+std::cout << "TIOCM_DTR " << TIOCM_DTR << ", DTRplus " << progdefaults.DTRplus;
+std::cout << std::endl;
+std::cout << ioctl_bits;
+	ioctl(hamlibfd, TIOCMSET, &ioctl_bits);
 	close(hamlibfd);
+	
+std::cout << "=> setRTSDTR() => " << ioctl_bits << std::endl; std::cout.flush();
 	
 	return true;
 }
@@ -94,7 +103,8 @@ bool hamlib_init(bool bPtt)
 	string	port, spd;
 	
 	hamlib_ptt = bPtt;
-
+	hamlib_closed = true;
+	
 	if (progdefaults.HamRigDevice == "COM1")
 		port = "/dev/ttyS0";
 	else if (progdefaults.HamRigDevice == "COM2")
@@ -105,7 +115,6 @@ bool hamlib_init(bool bPtt)
 		port = "/dev/ttyS3";
 	else
 		port = progdefaults.HamRigDevice;
-std::cout << port.c_str() << std::endl; std::cout.flush();
 
 	spd = progdefaults.strBaudRate();
 
@@ -125,11 +134,19 @@ std::cout << port.c_str() << std::endl; std::cout.flush();
 		return -1;
 	}
 
+//	if (hamlib_setRTSDTR() == false) {
+//		return -1;
+//	}
+	
 	try {
 		model = (*prig)->rig_model;
 		xcvr->init(model);
 		xcvr->setConf("rig_pathname", port.c_str());
 		xcvr->setConf("serial_speed", spd.c_str());
+		if (progdefaults.RTSplus)
+			xcvr->setConf("rts_state", "ON");
+		if (progdefaults.DTRplus)
+			xcvr->setConf("dtr_state", "ON");
 		xcvr->open();
 	}
 	catch (RigException Ex) {
@@ -137,14 +154,22 @@ std::cout << port.c_str() << std::endl; std::cout.flush();
 		return -1;
 	}
 
-	MilliSleep(100);
+//	if (hamlib_setRTSDTR() == false)
+//		return -1;
+		
+	MilliSleep(200);
+//char temp[80];
+//xcvr->getConf("dtr_state", temp);
+//std::cout << "Hamlib DTR " << temp << std::endl; std::cout.flush();
 
-	if (hamlib_setRTSDTR() == false)
-		return -1;
-	
 	try {
 		need_freq = true;
 		freq = xcvr->getFreq();
+		if (freq == 0) {
+			xcvr->close();
+			show_error("Transceiver not responding", "");
+			return -1;
+		}
 	}
 	catch (RigException Ex) {
 		show_error("Get Freq",Ex.message);
@@ -176,12 +201,10 @@ std::cout << port.c_str() << std::endl; std::cout.flush();
 	hamlib_rmode = RIG_MODE_NONE;//RIG_MODE_USB;
 
 	if (fl_create_thread(hamlib_thread, hamlib_loop, &dummy) < 0) {
-		show_error("Hamlib init:", "pthread_create failed");
+		std::cout << "Hamlib init:  pthread_create failed\n"; std::cout.flush();
 		xcvr->close();
 		return false;
 	} 
-
-//	std::cout << "Hamlib on" << std::endl; cout.flush();
 
 	init_Hamlib_RigDialog();
 	
@@ -192,25 +215,25 @@ std::cout << port.c_str() << std::endl; std::cout.flush();
 
 void hamlib_close(void)
 {
-	int count = 100;
-	if (xcvr->isOnLine() == false || hamlib_closed == true)
+	int count = 20;
+	if (xcvr->isOnLine() == false)
 		return;
 
+	if (hamlib_closed == true)
+		return;
+		
 	hamlib_exit = true;
 
-//	std::cout << "Waiting for hamlib to exit "; cout.flush();
 	while (hamlib_closed == false) {
-//		std::cout << "."; cout.flush();
+		std::cout << "."; cout.flush();
 		MilliSleep(50);
 		count--;
 		if (!count) {
 			std::cout << "\nHamlib stuck\n"; cout.flush();
+			xcvr->close();
 			exit(0);
 		}
 	}
-
-	xcvr->close();
-//	std::cout << "\nexit OK" << std::endl; cout.flush();
 }
 
 bool hamlib_active(void)
@@ -347,20 +370,27 @@ static void *hamlib_loop(void *args)
 				f = xcvr->getFreq();
 				freq = (long int) f;
 				freqok = true;
+				if (freq == 0)
+					hamlib_exit = true;
 			}
 			catch (RigException Ex) {
-				show_error("Hamlib loop Get Freq", Ex.message);
+				show_error("No transceiver comms", "");
 				freqok = false;
+				hamlib_exit = true;
 			}
 		}
+		if (hamlib_exit)
+			break;
+			
 		if (need_mode) {
 			try {
 				numode = xcvr->getMode(hamlib_pbwidth);
 				modeok = true;
 			}
 			catch (RigException Ex) {
-				show_error("Hamlib loop Get Mode", Ex.message);
+				show_error("No transceiver comms", "");
 				modeok = false;
+				hamlib_exit = true;
 			}
 		}
 		fl_unlock (&hamlib_mutex);
@@ -399,7 +429,21 @@ static void *hamlib_loop(void *args)
 		if (hamlib_exit)
 			break;
 	}
+
+	xcvr->close();
 	hamlib_closed = true;
+
+	if (rigcontrol)
+		rigcontrol->hide();
+	wf->USB(true);
+	wf->rfcarrier(atoi(cboBand->value())*1000L);
+	wf->setQSY(0);
+	FL_LOCK();
+	cboBand->show();
+	btnSideband->show();
+	activate_rig_menu_item(false);
+	FL_UNLOCK();
+
 	return NULL;
 }
 

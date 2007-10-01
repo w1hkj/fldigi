@@ -934,9 +934,12 @@ void configuration::initInterface() {
 // close down any possible rig interface threads
 #ifndef NOHAMLIB
 		hamlib_close();
+		MilliSleep(100);
 #endif
 		rigMEM_close();
+		MilliSleep(100);
 		rigCAT_close();
+		MilliSleep(100);
 
 	FL_LOCK();
 		btnPTTis = (btnPTT[0]->value() ? 0 :
@@ -951,12 +954,9 @@ void configuration::initInterface() {
 		DTRplus = btnDTRplusV->value();
 		
 		PTTdev = inpTTYdev->value();
-	FL_UNLOCK();
-		push2talk->reset(
-			progdefaults.btnPTTis,
-			progdefaults.btnRTSDTRis,
-			progdefaults.btnPTTREVis);
-	FL_LOCK();	
+//	FL_UNLOCK();
+//		push2talk->reset(btnPTTis);//, btnRTSDTRis, btnPTTREVis);
+//	FL_LOCK();	
 #ifndef NOHAMLIB
 		chkUSEHAMLIBis = chkUSEHAMLIB->value();
 #endif		
@@ -1019,6 +1019,8 @@ void configuration::initInterface() {
 		wf->setQSY(0);
 		activate_rig_menu_item(false);
 	}
+	
+	push2talk->reset(btnPTTis);
 	wf->setRefLevel();
 	wf->setAmpSpan();
 	cntLowFreqCutoff->value(LowFreqCutoff);

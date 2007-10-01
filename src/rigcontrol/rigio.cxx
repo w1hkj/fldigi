@@ -7,15 +7,19 @@
 
 #include <string>
 
-#include "fl_digi.h"
-#include "misc.h"
+#ifdef RIGCATTEST
+	#include "rigCAT.h"
+#else
+	#include "fl_digi.h"
+	#include "misc.h"
+	#include "configuration.h"
+#endif
 
 #include "rigsupport.h"
 #include "rigdialog.h"
 #include "rigxml.h"
 #include "serial.h"
 #include "rigio.h"
-#include "configuration.h"
 
 #include "threads.h"
 
@@ -765,24 +769,29 @@ bool rigCAT_init()
 	}
 
 	if (readRigXML() == false) {
-		show_error("No rig.xml file present","");
+		std::cout << "No rig.xml file present\n"; std::cout.flush();
 		return false;
 	}
 
 	if (rigio.OpenPort() == false) {
-		show_error("Cannot open serial port", (char *)rigio.Device().c_str());
+		std::cout << "Cannot open serial port " << (char *)rigio.Device().c_str();
+		std::cout << std::endl; std::cout.flush();
 		return false;
 	}
 	llFreq = 0;
 	sRigMode = "";
 	sRigWidth = "";
 	
+	if (rigCAT_getfreq() <= 0) {
+		std::cout << "Transceiver not responding\n"; std::cout.flush();
+		return false;
+	}
+	
 	if (fl_create_thread(rigCAT_thread, rigCAT_loop, &dummy) < 0) {
-		show_error("rig init:", "pthread_create failed");
+		std::cout << "rig init: pthread_create failed\n"; std::cout.flush();
 		rigio.ClosePort();
 		return false;
 	} 
-//	std::cout << "RigCAT on" << std::endl; fflush(stdout);
 
 	init_Xml_RigDialog();
 	rigCAT_sendINIT();
@@ -805,13 +814,13 @@ void rigCAT_close(void)
 		count--;
 		if (!count) {
 			std::cout << "\nRigCAT stuck\n"; fflush(stdout);
+		fl_lock(&rigCAT_mutex);
+			rigio.ClosePort();
+		fl_unlock(&rigCAT_mutex);
 			exit(0);
 		}
 	}
 	
-	fl_lock(&rigCAT_mutex);
-		rigio.ClosePort();
-	fl_unlock(&rigCAT_mutex);
 //	std::cout << "\nExit OK" << std::endl; fflush(stdout);
 }
 
@@ -833,6 +842,7 @@ void rigCAT_set_ptt(int ptt)
 	fl_unlock(&rigCAT_mutex);
 }
 
+#ifndef RIGCATTEST
 void rigCAT_set_qsy(long long f, long long fmid)
 {
 	if (rigCAT_open == false)
@@ -850,7 +860,7 @@ void rigCAT_set_qsy(long long f, long long fmid)
 	wf->rfcarrier(f);
 	wf->movetocenter();
 }
-
+#endif
 
 bool ModeIsLSB(string s)
 {
@@ -882,6 +892,9 @@ static void *rigCAT_loop(void *args)
 		fl_lock(&rigCAT_mutex);
 			freq = rigCAT_getfreq();
 		fl_unlock(&rigCAT_mutex);
+		if (freq <= 0)
+			rigCAT_exit = true;
+			
 		MilliSleep(10);
 		if (rigCAT_exit == true)
 			goto exitloop;
@@ -911,7 +924,9 @@ static void *rigCAT_loop(void *args)
 			FL_LOCK();
 				FreqDisp->value(freq);
 			FL_UNLOCK();
+#ifndef RIGCATTEST
 			wf->rfcarrier(freq);
+#endif
 		}
 		if (sWidth.size() && sWidth != sRigWidth) {
 			sRigWidth = sWidth;
@@ -921,10 +936,12 @@ static void *rigCAT_loop(void *args)
 		}
 		if (sMode.size() && sMode != sRigMode) {
 			sRigMode = sMode;
+#ifndef RIGCATTEST
 			if (ModeIsLSB(sMode))
 				wf->USB(false);
 			else
 				wf->USB(true);
+#endif
 			FL_LOCK();
 				opMODE->value(sMode.c_str());
 			FL_UNLOCK();
@@ -943,6 +960,21 @@ loop0:
 exitloop:
 	rigCAT_open = false;
 	rigCAT_exit = false;
+	if (rigcontrol)
+		rigcontrol->hide();
+	wf->USB(true);
+	wf->rfcarrier(atoi(cboBand->value())*1000L);
+	wf->setQSY(0);
+	FL_LOCK();
+	cboBand->show();
+	btnSideband->show();
+	activate_rig_menu_item(false);
+	FL_UNLOCK();
+
+	fl_lock(&rigCAT_mutex);
+		rigio.ClosePort();
+	fl_unlock(&rigCAT_mutex);
+
 	return NULL;
 }
 

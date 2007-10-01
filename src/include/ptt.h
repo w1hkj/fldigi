@@ -42,18 +42,18 @@ using namespace std;
 class PTT {
 private:
 	int pttfd;
-	int pttinv;
-	int pttmode;
+//	int pttinv;
+//	int pttmode;
 	int pttarg;
 	int pttdev;
 	string pttdevName;
 	struct termios oldtio;
 	void  openptt();
-	void reset_(int dev, int mode, bool inverted);
+	void reset_(int dev);//, int mode, bool inverted);
 public:
-	PTT(int dev = 0, int mode = 0, bool inverted = false);
+	PTT(int dev = 0);//, int mode = 0, bool inverted = false);
 	~PTT();
-	void reset(int dev = 0, int mode = 0, bool inverted = false);
+	void reset(int dev = 0);//, int mode = 0, bool inverted = false);
 	void set(bool on);
 
 };

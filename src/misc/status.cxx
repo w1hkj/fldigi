@@ -182,4 +182,5 @@ void status::initLastState()
 		rigcontrol->resize(rigX, rigY, rdW, rdH);
 		rigcontrol->show();
 	}
+
 }

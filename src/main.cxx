@@ -146,7 +146,7 @@ int main(int argc, char ** argv)
 	CREATE_THREAD_ID(); // only call this once
 	SET_THREAD_ID(FLMAIN_TID);
 
-	for (int i = 0; i < NUM_THREADS - 1; i++) {
+	for (int i = 0; i < NUM_THREADS; i++) {
 		cbq[i] = new qrunner(1);
 		cbq[i]->attach();
 	}
@@ -192,10 +192,11 @@ int main(int argc, char ** argv)
 	
 	push2talk = new PTT();
 
-	if (progdefaults.openDefaults())
-		push2talk->reset(	progdefaults.btnPTTis,
-							progdefaults.btnRTSDTRis,
-							progdefaults.btnPTTREVis );
+	progdefaults.openDefaults();
+//	if (progdefaults.openDefaults())
+//		push2talk->reset(	progdefaults.btnPTTis,
+//							progdefaults.btnRTSDTRis,
+//							progdefaults.btnPTTREVis );
 	
 #ifndef PORTAUDIO
 	scDevice = progdefaults.SCdevice;
@@ -256,7 +257,8 @@ int main(int argc, char ** argv)
 	fl_digi_main->show();
 
 	int ret = Fl::run();
-	for (int i = 0; i < NUM_THREADS - 1; i++)
+//	for (int i = 0; i < NUM_THREADS - 1; i++)
+	for (int i = 0; i < NUM_THREADS; i++)
 		cbq[i]->detach();
 
 	return ret;

@@ -8,10 +8,17 @@
 //
 //########################################################################
 
+#include <iostream>
+#include <fstream>
+
 #include "rigio.h"
 #include "rigxml.h"
 #include "rigsupport.h"
-#include "main.h"
+#ifdef RIGCATTEST
+	#include "rigCAT.h"
+#else
+	#include "main.h"
+#endif
 
 //#define DEBUGXML
 

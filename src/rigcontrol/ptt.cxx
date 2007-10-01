@@ -45,10 +45,10 @@
 // "rigcat" - 3
 // "tty" - 4 (SPECIFIED by progdefaults.PTTdev)
 
-PTT::PTT(int dev, int mode, bool inverted)
+PTT::PTT(int dev)//, int mode, bool inverted)
 {
 	pttfd = -1;
-	reset_(dev, mode, inverted);
+	reset_(dev);//, mode, inverted);
 }
 
 PTT::~PTT()
@@ -63,14 +63,14 @@ PTT::~PTT()
 	}
 }
 
-void PTT::reset_(int dev, int mode, bool inverted)
+void PTT::reset_(int dev)//, int mode, bool inverted)
 {
 	pttdev = dev;
-	pttinv = inverted;
-	pttmode = mode;
+//	pttinv = inverted;
+//	pttmode = mode;
 
 	if (pttdev < 4) {
-		set(0);
+		set(false);
 		return;
 	}
 
@@ -96,14 +96,14 @@ void PTT::reset_(int dev, int mode, bool inverted)
 }
 
 
-void PTT::reset(int dev, int mode, bool inverted)
+void PTT::reset(int dev)//, int mode, bool inverted)
 {
 	if (pttfd != -1) {
 		tcsetattr (pttfd, TCSANOW, &oldtio);
 		close(pttfd);
 		pttfd = -1;
 	}
-	reset_(dev, mode, inverted);
+	reset_(dev);//, mode, inverted);
 }
 
 void PTT::set(bool ptt)

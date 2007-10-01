@@ -5,11 +5,19 @@
 #include "rigdialog.h"
 #include "serial.h"
 #include "threads.h"
+#include "File_Selector.h"
+
+void MilliSleep(long msecs) {
+	struct timeval tv;
+	tv.tv_sec = 0;
+	tv.tv_usec = msecs * 1000L;
+	select (0, (fd_set *)0, (fd_set *)0, (fd_set *)0, &tv);
+}
+
 
 Fl_Double_Window *window;
 char homedir[FL_PATH_MAX];
 string xmlfname;
-
 
 int main (int argc, char *argv[])
 {	
@@ -35,7 +43,7 @@ int main (int argc, char *argv[])
 	}
 	testfile.close();
 
-        Fl::lock();
+    Fl::lock();
 	window = createRigDialog();
 	window->show ();
 
