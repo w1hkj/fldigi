@@ -66,7 +66,7 @@ wwv::~wwv() {
 }
 
 
-wwv::wwv() : modem(), buffer(1000)
+wwv::wwv() : modem()
 {
 	double lp;
 	mode = MODE_WWV;
@@ -110,7 +110,7 @@ void wwv::update_syncscope()
 		set_video(&buffer[400], 200);
 	else
 		set_video(buffer, 1000);
-	++buffer; // swap buffers
+	buffer.next(); // change buffers
 }
 
 

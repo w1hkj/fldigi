@@ -225,7 +225,7 @@ void hamlib_close(void)
 	hamlib_exit = true;
 
 	while (hamlib_closed == false) {
-		std::cout << "."; cout.flush();
+//		std::cout << "."; cout.flush();
 		MilliSleep(50);
 		count--;
 		if (!count) {
@@ -356,6 +356,7 @@ static void *hamlib_loop(void *args)
 	bool freqok = false, modeok = false;
 	
 	for (;;) {
+loop:
 		MilliSleep(100);
 		if (hamlib_exit)
 			break;
@@ -370,8 +371,11 @@ static void *hamlib_loop(void *args)
 				f = xcvr->getFreq();
 				freq = (long int) f;
 				freqok = true;
-				if (freq == 0)
-					hamlib_exit = true;
+				if (freq == 0) {
+					fl_unlock (&hamlib_mutex);
+					goto loop;
+//					hamlib_exit = true;
+				}
 			}
 			catch (RigException Ex) {
 				show_error("No transceiver comms", "");

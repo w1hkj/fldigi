@@ -33,6 +33,7 @@
 
 #include "File_Selector.h"
 
+#include "ascii.h"
 #include "qrunner.h"
 
 
@@ -50,17 +51,12 @@ FTextBase::FTextBase(int x, int y, int w, int h, const char *l)
 	: ReceiveWidget(x, y, w, h, l),
           wrap(true), wrap_col(80), max_lines(0), scroll_hint(false), scroll_tweak(3)
 {
-        if (static_cast<int>(ReceiveWidget::NUM_TV_ATTR) >= static_cast<int>(DEFAULT)) {
-                std::cerr << "Please adjust text_attr_e and its users\n";
-                abort();
-        }
-
 	tbuf = new Fl_Text_Buffer;
 	sbuf = new Fl_Text_Buffer;
 
 	cursor_style(Fl_Text_Editor::NORMAL_CURSOR);
 	buffer(tbuf);
-	highlight_data(sbuf, styles, NSTYLES, DEFAULT, 0, 0);
+	highlight_data(sbuf, styles, NATTR, FTEXT_DEF, 0, 0);
 
 	wrap_mode(wrap, wrap_col);
 
@@ -68,10 +64,11 @@ FTextBase::FTextBase(int x, int y, int w, int h, const char *l)
 	// scrollbar_width((int)floor(scrollbar_width() * 3.0/4.0));
 
 	// set some defaults
-	set_style(NSTYLES, FL_SCREEN, 12, FL_FOREGROUND_COLOR);
-	set_style(XMT, FL_SCREEN, 12, FL_RED, SET_COLOR);
+	set_style(NATTR, FL_SCREEN, 12, FL_FOREGROUND_COLOR);
+	set_style(XMIT, FL_SCREEN, 12, FL_RED, SET_COLOR);
+	set_style(CTRL, FL_SCREEN, 12, FL_DARK_RED, SET_COLOR);
 	set_style(SKIP, FL_SCREEN, 12, FL_BLUE, SET_COLOR);
-	set_style(CTRL, FL_SCREEN, 12, FL_DARK_GREEN, SET_COLOR);
+	set_style(ALTR, FL_SCREEN, 12, FL_DARK_GREEN, SET_COLOR);
 }
 
 
@@ -125,19 +122,20 @@ void FTextBase::resize(int X, int Y, int W, int H)
 /// @param xd The horizontal increment (ignored)
 /// @param yd The vertical increment
 ///
-/// @return True if the new text area height would be a multiple of the font height.
+/// @return True if the widget is visible, and the new text area height would be
+///         a multiple of the font height.
 ///
 bool FTextBase::wheight_mult_tsize(void *arg, int, int yd)
 {
 	FTextBase *v = reinterpret_cast<FTextBase *>(arg);
-	if (v->mMaxsize == 0)
+	if (!v->visible())
 		return true;
-	return (v->text_area.h + yd) % v->mMaxsize == 0;
+	return v->mMaxsize > 0 && (v->text_area.h + yd) % v->mMaxsize == 0;
 }
 
 /// Changes text style attributes
 ///
-/// @param attr The attribute name to change, or \c NSTYLES to change all styles.
+/// @param attr The attribute name to change, or \c NATTR to change all styles.
 /// @param f The new font
 /// @param s The new font size
 /// @param c The new font color
@@ -147,9 +145,9 @@ void FTextBase::set_style(int attr, Fl_Font f, int s, Fl_Color c, int set)
 {
 	int start, end;
 
-	if (attr == NSTYLES) { // update all styles
+	if (attr == NATTR) { // update all styles
 		start = 0;
-		end = NSTYLES;
+		end = NATTR;
 		if (set & SET_FONT)
 			textfont(f);
 		if (set & SET_SIZE)
@@ -158,7 +156,7 @@ void FTextBase::set_style(int attr, Fl_Font f, int s, Fl_Color c, int set)
 			textcolor(c);
 	}
 	else {
-		start = attr - DEFAULT;
+		start = attr;
 		end = start + 1;
 	}
 	for (int i = start; i < end; i++) {
@@ -395,7 +393,7 @@ int FTextView::handle(int event)
 /// Adds a char to the buffer
 ///
 /// @param c The character
-/// @param attr The attribute (@see enum text_attr_e); DEFAULT if omitted.
+/// @param attr The attribute (@see enum text_attr_e); RECV if omitted.
 ///
 void FTextView::add(char c, int attr)
 {
@@ -424,11 +422,19 @@ void FTextView::add(char c, int attr)
 		}
 		// fall-through
 	default:
-		char s[] = { (attr < DEFAULT ? attr + DEFAULT : attr), '\0' };
-		sbuf->append(s);
-		// sbuf->select(sbuf->length() - 1, sbuf->length());
-		s[0] = c;
-		insert(s);
+		char s[] = { '\0', '\0', FTEXT_DEF + attr, '\0' };
+		const char *cp;
+
+		if ((c < ' ' || c == 127) && attr != CTRL) // look it up
+			cp = ascii[(unsigned char)c];
+		else { // insert verbatim
+			s[0] = c;
+			cp = &s[0];
+		}
+
+		for (int i = 0; cp[i]; ++i)
+			sbuf->append(s + 2);
+		insert(cp);
 		break;
 	}
 
@@ -478,7 +484,7 @@ void FTextView::menu_cb(int val)
 		break;
 
 	case RX_MENU_DIV:
-		add("\n	    <<================>>\n", RCV);
+		add("\n	    <<================>>\n", RECV);
 		break;
 	case RX_MENU_CLEAR:
 		clear();
@@ -493,7 +499,7 @@ void FTextView::menu_cb(int val)
                 readFile();
                 char *t = tbuf->text();
                 int n = tbuf->length();
-                memset(t, DEFAULT, n);
+                memset(t, FTEXT_DEF, n);
                 sbuf->text(t);
                 free(t);
         }
@@ -655,9 +661,7 @@ void FTextEdit::add(const char *s, int attr)
 	// handle the text attribute first
 	int n = strlen(s);
 	char a[n + 1];
-        if (attr < DEFAULT)
-                attr += DEFAULT;
-	memset(a, attr, n);
+	memset(a, FTEXT_DEF + attr, n);
 	a[n] = '\0';
 	sbuf->replace(insert_position(), insert_position() + n, a);
 
@@ -671,7 +675,7 @@ void FTextEdit::add(const char *s, int attr)
 ///
 void FTextEdit::add(char c, int attr)
 {
-	char s[] = { (attr < DEFAULT ? attr + DEFAULT : attr), '\0' };
+	char s[] = { FTEXT_DEF + attr, '\0' };
 	sbuf->replace(insert_position(), insert_position() + 1, s);
 
 	s[0] = c;
@@ -787,7 +791,7 @@ int FTextEdit::handle_key(int key)
 		if (!(Fl::event_state() & FL_CTRL) && active_modem == cw_modem) {
 			int n = tbuf->length() - txpos;
 			char s[n + 1];
-			memset(s, SKIP, n);
+			memset(s, FTEXT_DEF + SKIP, n);
 			s[n] = 0;
 
 			sbuf->replace(txpos, sbuf->length(), s);
@@ -885,7 +889,7 @@ int FTextEdit::handle_key_ascii(int key)
 	ascii_chr += key;
 	if (ascii_cnt == 3) {
 		if (ascii_chr <= 0x7F)
-			add(ascii_chr, (iscntrl(ascii_chr) ? CTRL : DEFAULT));
+			add(ascii_chr, (iscntrl(ascii_chr) ? CTRL : RECV));
 		ascii_cnt = ascii_chr = 0;
 	}
 
@@ -947,7 +951,7 @@ void FTextEdit::menu_cb(int val)
 /// corresponding amount of text in the style buffer.
 ///
 /// In the latter case, nins, ndel, pos and nsty are all zero and we update the
-/// style buffer to mark the last character in the buffer with the XMT
+/// style buffer to mark the last character in the buffer with the XMIT
 /// attribute.
 ///
 /// @param pos 
@@ -963,7 +967,7 @@ void FTextEdit::changed_cb(int pos, int nins, int ndel, int nsty, const char *dt
 
 	if (nins == 0 && ndel == 0) {
 		if (pos == 0 && nsty == 0) { // update transmitted text style
-			char s[2] = { XMT, '\0' };
+			char s[] = { FTEXT_DEF + XMIT, '\0' };
 			e->sbuf->replace(e->txpos - 1, e->txpos, s);
 			e->redisplay_range(e->txpos - 1, e->txpos);
 		}
@@ -975,12 +979,12 @@ void FTextEdit::changed_cb(int pos, int nins, int ndel, int nsty, const char *dt
 		// read, mouse-2 paste or, most likely, direct keyboard entry.
 		int n = e->tbuf->length() - e->sbuf->length();
 		if (n == 1) {
-			char s[] = { DEFAULT, '\0' };
+			char s[] = { FTEXT_DEF, '\0' };
 			e->sbuf->append(s);
 		}
 		else {
 			char *s = new char [n + 1];
-			memset(s, DEFAULT, n);
+			memset(s, FTEXT_DEF, n);
 			s[n] = '\0';
 			e->sbuf->append(s);
 			delete [] s;

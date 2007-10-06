@@ -352,7 +352,7 @@ string MACROTEXT::expandMacro(int n)
 
 void MACROTEXT::execute(int n) 
 {
-	TransmitText->addstr( (expandMacro(n)).c_str() );
+	TransmitText->add( (expandMacro(n)).c_str() );
 	if ( TransmitON ) {
 		active_modem->set_stopflag(false);
 		fl_lock(&trx_mutex);

@@ -327,12 +327,16 @@ static void cb_chkUSEMEMMAP(Fl_Check_Button* o, void*) {
   btnPTT[1]->value(0);
   btnPTT[1]->deactivate();
   btnPTT[2]->activate();
+  cboHamlibRig->deactivate();
+  inpRIGdev->deactivate();
+  mnuBaudRate->deactivate();
   } else {
   if (btnPTT[2]->value()==1)
   	btnPTT[0]->value(1);
   btnPTT[2]->value(0);
   btnPTT[2]->deactivate();
   }
+for (int i = 0; i < 4; btnPTT[i++]->redraw());  
 progdefaults.changed = true;
 }
 
@@ -342,16 +346,21 @@ static void cb_chkUSERIGCAT(Fl_Check_Button* o, void*) {
   if (o->value() == 1) {
   chkUSEHAMLIB->value(0);
   chkUSEMEMMAP->value(0);
+  btnPTT[1]->value(0);
   btnPTT[1]->deactivate();
   btnPTT[2]->value(0);
   btnPTT[2]->deactivate();
   btnPTT[3]->activate();
+  cboHamlibRig->deactivate();
+  inpRIGdev->deactivate();
+  mnuBaudRate->deactivate();
   } else {
   if (btnPTT[3]->value() == 1)
   	btnPTT[0]->value(1);
   btnPTT[3]->value(0);
   btnPTT[3]->deactivate();
   }
+for (int i = 0; i < 4; btnPTT[i++]->redraw());
 progdefaults.changed = true;
 }
 
@@ -378,6 +387,7 @@ static void cb_chkUSEHAMLIB(Fl_Check_Button* o, void*) {
   inpRIGdev->deactivate();
   mnuBaudRate->deactivate();
   }
+for (int i = 0; i < 4; btnPTT[i++]->redraw());
 progdefaults.changed = true;
 }
 
@@ -1175,7 +1185,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { Fl_Group* o = tabInterface = new Fl_Group(0, 25, 400, 195, "RigCtl");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
-        o->hide();
         { Fl_Group* o = new Fl_Group(10, 31, 185, 179, "Ptt");
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -1463,6 +1472,7 @@ fect after a restart.");
       { Fl_Group* o = tabModems = new Fl_Group(0, 25, 401, 195, "Modems");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
+        o->hide();
         { Fl_Tabs* o = tabsModems = new Fl_Tabs(0, 25, 401, 195);
           o->color((Fl_Color)51);
           o->selection_color((Fl_Color)10);

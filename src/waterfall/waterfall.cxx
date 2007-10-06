@@ -1198,6 +1198,7 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	xmtrcv->value(0);
 	xmtrcv->tooltip("Transmit/Receive");
 
+	oldcarrier = newcarrier = 0;
 }
 
 int waterfall::handle(int event) {
@@ -1212,7 +1213,6 @@ int waterfall::handle(int event) {
 			return 1;
 		int xpos = Fl::event_x() - wfdisp->x();
 
-		static int nucarrier, oldcarrier;
 		switch (event) {
 		case FL_MOVE:
 			wfdisp->wantcursor = true;
@@ -1228,8 +1228,8 @@ int waterfall::handle(int event) {
 					oldcarrier = carrier();
 				// fall through
 			case FL_LEFT_MOUSE:
-				nucarrier = wfdisp->cursorFreq(xpos);
-				active_modem->set_freq(nucarrier);
+				newcarrier = wfdisp->cursorFreq(xpos);
+				active_modem->set_freq(newcarrier);
 				active_modem->set_sigsearch(SIGSEARCH);
 				wfdisp->redrawCursor();
 				restoreFocus();
@@ -1251,9 +1251,9 @@ int waterfall::handle(int event) {
 				active_modem->set_sigsearch(3);
 				wfdisp->redrawCursor();
 				restoreFocus();
-				break;
+				// fall through
 			case FL_LEFT_MOUSE:
-				oldcarrier = nucarrier;
+				oldcarrier = newcarrier;
 				break;
 			}
 			break;

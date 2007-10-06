@@ -33,6 +33,7 @@
 #include "feld.h"
 #include "fontdef.h"
 #include "Config.h"
+#include "qrunner.h"
 
 #undef  MAX
 #define MAX(a,b)		(((a)>(b))?(a):(b))
@@ -92,9 +93,9 @@ feld::feld(trx_mode m)
 	double flo, fhi;
 	mode = m;
 	samplerate = FeldSampleRate;
-	FL_LOCK_E();
+	FL_LOCK_D();
 	bandwidth = sldrHellBW->value();
-	FL_UNLOCK_E();
+	FL_UNLOCK_D();
 	
 	switch (mode) { 
 		case MODE_FSKHELL: bandwidth = 122.5; break; 
@@ -188,9 +189,9 @@ void feld::FSKHELL_rx(complex z)
 	col_data[col_pointer + RxColumnLen] = vid;
 	col_pointer++;
 	if (col_pointer == RxColumnLen) {
-		put_rx_data(col_data, 2*RxColumnLen);
+		QUEUE(CMP_CB(put_rx_data, col_data, col_data.size())); //put_rx_data(col_data, 2*RxColumnLen);
 		if (!halfwidth)
-			put_rx_data(col_data, 2*RxColumnLen);
+			QUEUE(CMP_CB(put_rx_data, col_data, col_data.size())); //put_rx_data(col_data, 2*RxColumnLen);
 		col_pointer = 0;
 		for (int i = 0; i < RxColumnLen; i++)
 			col_data[i] = col_data[i + RxColumnLen];
@@ -237,9 +238,9 @@ void feld::rx(complex z)
 	col_pointer++;
 	if (col_pointer == RxColumnLen) {
 		if (metric > squelch || squelchon == false) {
-			put_rx_data(col_data, 2*RxColumnLen);
+			QUEUE(CMP_CB(put_rx_data, col_data, col_data.size())); //put_rx_data(col_data, 2*RxColumnLen);
 			if (!halfwidth)
-				put_rx_data(col_data, 2*RxColumnLen);
+				QUEUE(CMP_CB(put_rx_data, col_data, col_data.size())); //put_rx_data(col_data, 2*RxColumnLen);
 		}
 		col_pointer = 0;
 		for (int i = 0; i < RxColumnLen; i++)
@@ -253,12 +254,12 @@ int feld::rx_process(const double *buf, int len)
 	complex z, *zp;
 	int i, n;
 
-	FL_LOCK_E();
+	FL_LOCK_D();
 	halfwidth = btnHellRcvWidth->value();
 	blackboard = btnBlackboard->value();
 	squelch = progdefaults.sldrSquelchValue;
 	squelchon = progdefaults.sqlonoff;
-	FL_UNLOCK_E();
+	FL_UNLOCK_D();
 	
 	switch (mode) {
 		default:
@@ -447,10 +448,10 @@ int feld::tx_process()
 	char c;
 	bool hdkey;
 
-	FL_LOCK_E();
+	FL_LOCK_D();
 	dxmode = 1 + btnHellXmtWidth->value();
 	hdkey = btnHellFastAttack->value();
-	FL_UNLOCK_E();
+	FL_UNLOCK_D();
 	fntnbr = progdefaults.feldfontnbr;
 	if (hardkeying != hdkey) {
 		hardkeying = hdkey;

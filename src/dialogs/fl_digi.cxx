@@ -640,7 +640,7 @@ void cb_mnuANALYSIS(Fl_Menu_ *, void *) {
 void restoreFocus()
 {
 	FL_LOCK_D();
-	TransmitText->focus();
+	TransmitText->take_focus();
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }
@@ -1532,35 +1532,44 @@ void set_video(double *data, int len)
 
 void put_rx_char(unsigned int data)
 {
-	static bool nulinepending = false;
+	static unsigned int last = 0;
 	const char **asc = ascii;
 	rxmsgid = msgget( (key_t) 9876, 0666);
 	if (mailclient || mailserver || rxmsgid != -1)
 		asc = ascii2;
-	if (data == '\r') {
-		QUEUE(CMP_CB(&ReceiveWidget::addstr, ReceiveText, asc['\n' & 0x7F], 1)); //ReceiveText->add(asc['\n' & 0x7F],1);
-		nulinepending = true;
-	} else if (nulinepending && data == '\r') {
-		QUEUE(CMP_CB(&ReceiveWidget::addstr, ReceiveText, asc['\n' & 0x7F], 1)); //ReceiveText->add(asc['\n' & 0x7F],1);
-	} else if (nulinepending && data == '\n') {
-		nulinepending = false;
-	} else if (nulinepending && data != '\n') {
-		QUEUE(CMP_CB(&ReceiveWidget::addstr, ReceiveText, asc[data & 0x7F], 1)); //ReceiveText->add(asc[data & 0x7F], 1);
-		nulinepending = false;
-	} else {
-		QUEUE(CMP_CB(&ReceiveWidget::addstr, ReceiveText, asc[data & 0x7F], 1)); //ReceiveText->add(asc[data & 0x7F],1);
+	if (active_modem->get_mode() == MODE_RTTY ||
+		active_modem->get_mode() == MODE_CW)
+		asc = ascii;
+
+	int style = ReceiveWidget::RECV;
+	data &= 0x7F;
+	switch (data) {
+	case '\n':
+		if (last == '\r')
+			break;
+		// or fall-through to insert '\n'
+	case '\r':
+		data = '\n';
+	default:
+		if (asc == ascii2 && iscntrl(data))
+			style = ReceiveWidget::CTRL;
+		if (wf->tmp_carrier())
+			style = ReceiveWidget::ALTR;
+		QUEUE(CMP_CB(&ReceiveWidget::addchr, ReceiveText, data, style));
 	}
+	last = data;
+
 	if ( rxmsgid != -1) {
 		rxmsgst.msg_type = 1;
-		rxmsgst.c = data & 0x7F;
+		rxmsgst.c = data;
 		msgsnd (rxmsgid, (void *)&rxmsgst, 1, IPC_NOWAIT);
 	}
 
 	if (Maillogfile)
-		Maillogfile->log_to_file(cLogfile::LOG_RX, asc[data & 0x7F]);
+		Maillogfile->log_to_file(cLogfile::LOG_RX, ascii2[data & 0x7F]);
 
 	if (logging)
-		logfile->log_to_file(cLogfile::LOG_RX, asc[data & 0x7F]);
+		logfile->log_to_file(cLogfile::LOG_RX, ascii2[data & 0x7F]);
 }
 
 string strSecText = "";
@@ -1659,7 +1668,7 @@ void put_MODEstatus(trx_mode mode)
 
 void put_rx_data(int *data, int len)
 {
-	QUEUE(CMP_CB(&Raster::data, FHdisp, data, len)); //FHdisp->data(data, len);
+ 	FHdisp->data(data, len);
 }
 
 char get_tx_char(void)
@@ -1710,21 +1719,30 @@ char get_tx_char(void)
 
 void put_echo_char(unsigned int data)
 {
-	static bool nulinepending = false;
+	static unsigned int last = 0;
 	const char **asc = ascii;
+	
 	if (mailclient || mailserver || arqmode)
 		asc = ascii2;
-	if (data == '\r' && nulinepending) // reject multiple CRs
+	if (active_modem->get_mode() == MODE_RTTY ||
+		active_modem->get_mode() == MODE_CW)
+		asc = ascii;
+
+	data &= 0x7F;
+	if (data == '\r' && last == '\r') // reject multiple CRs
 		return;
-	if (data == '\r') nulinepending = true;
-	if (nulinepending && data == '\n') {
-		nulinepending = false;
-	}
-	QUEUE(CMP_CB(&ReceiveWidget::addstr, ReceiveText, asc[data & 0x7F], 4)); //ReceiveText->add(asc[data & 0x7F], 4);
+
+	last = data;
+
+	int style = ReceiveWidget::XMIT;
+	if (asc == ascii2 && iscntrl(data))
+		style = ReceiveWidget::CTRL;
+	QUEUE(CMP_CB(&ReceiveWidget::addchr, ReceiveText, data, style));
+
 	if (Maillogfile)
-		Maillogfile->log_to_file(cLogfile::LOG_TX, asc[data & 0x7F]);
+		Maillogfile->log_to_file(cLogfile::LOG_TX, ascii2[data & 0x7F]);
 	if (logging)
-		logfile->log_to_file(cLogfile::LOG_TX, asc[data & 0x7F]);
+		logfile->log_to_file(cLogfile::LOG_TX, ascii2[data & 0x7F]);
 }
 
 void resetRTTY() {

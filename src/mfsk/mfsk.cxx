@@ -36,6 +36,8 @@
 
 #include "File_Selector.h"
 
+#include "qrunner.h"
+
 #undef  MAX
 #define MAX(a,b)		(((a)>(b))?(a):(b))
 #undef  CLAMP
@@ -238,7 +240,7 @@ void mfsk::recvpic(complex z)
 		
 		if (color) {
 			pixelnbr = rgb + row + 3*col;
-			updateRxPic( byte, pixelnbr);
+			QUEUE(CMP_CB(&mfsk::updateRxPic, this, byte, pixelnbr)); //updateRxPic( byte, pixelnbr);
 			if (++col == picW) {
 				col = 0;
 				if (++rgb == 3) {
@@ -247,9 +249,8 @@ void mfsk::recvpic(complex z)
 				}
 			}
 		} else {
-			updateRxPic( byte, pixelnbr++ );
-			updateRxPic( byte, pixelnbr++ );
-			updateRxPic( byte, pixelnbr++ );
+			for (int i = 0; i < 3; i++)
+				QUEUE(CMP_CB(&mfsk::updateRxPic, this, byte, pixelnbr++)); //updateRxPic( byte, pixelnbr++ );
 		}			
 		picf = 0.0;
 	}
@@ -433,7 +434,7 @@ void mfsk::update_syncscope()
 			scopedata[i] = (pipe[j].vector[prev1symbol]).mag();
 		}
 	set_scope(scopedata, 2 * symlen);
-	++scopedata; // swap buffers
+	scopedata.next(); // change buffers
 	sprintf(mfskmsg, "s/n %3.0f dB", 20.0 * log10(s2n) );
 	put_Status1(mfskmsg);
 }
@@ -540,6 +541,7 @@ int mfsk::rx_process(const double *buf, int len)
 			if (counter++ == picturesize) {
 				counter = 0;
 				rxstate = RX_STATE_DATA;
+				// QUEUE_FLUSH();
 			} else
 				recvpic(z);
 			continue;
@@ -666,7 +668,7 @@ void mfsk::sendpic(unsigned char *data, int len)
 
 	for (i = 0; i < len; i++) {
 		if (txstate == TX_STATE_PICTURE)
-			updateTxPic(data[i]);
+			QUEUE(CMP_CB(&mfsk::updateTxPic, this, data[i])); //updateTxPic(data[i]);
 		if (reverse)
 			f = get_txfreq_woffset() - bandwidth * (data[i] - 128) / 256.0;
 		else
@@ -774,6 +776,8 @@ int mfsk::tx_process()
 				sprintf(mfskmsg,"Send picture: %.1f %%", (100.0 * i) / xmtbytes);
 				put_status(mfskmsg);
 			}
+			QUEUE_FLUSH();
+
 			txstate = TX_STATE_DATA;
 			put_status("Send picture: done");
 			FL_LOCK_E();
@@ -884,11 +888,11 @@ void mfsk::load_file(const char *n) {
 	TxViewerResize(W, H);
 	
 // load the picture widget with the rgb image
-	FL_LOCK_E();
+	FL_LOCK_D();
 	picTx->video(xmtimg, W * H * 3);
 	btnpicTxSendColor->activate();
 	btnpicTxSendGrey->activate();
-	FL_UNLOCK_E();
+	FL_UNLOCK_D();
 }
 
 void mfsk::updateTxPic(unsigned char data)
@@ -921,9 +925,9 @@ void cb_picTxLoad(Fl_Widget *,void *who) {
 void cb_picTxClose( Fl_Widget *w, void *who)
 {
 	mfsk *me = (mfsk *)who;
-	FL_LOCK_E();
+	FL_LOCK_D();
 	me->picTxWin->hide();
-	FL_UNLOCK_E();
+	FL_UNLOCK_D();
 }
 
 void cb_picTxSendColor( Fl_Widget *w, void *who)
@@ -950,14 +954,14 @@ void cb_picTxSendColor( Fl_Widget *w, void *who)
 	my->col = 0;
 	my->row = 0;
 	my->pixelnbr = 0;
-	FL_LOCK_E();
+	FL_LOCK_D();
 	my->btnpicTxSendColor->hide();
 	my->btnpicTxSendGrey->hide();
 	my->btnpicTxLoad->hide();
 	my->btnpicTxClose->hide();
 	my->btnpicTxSendAbort->show();
 	my->picTx->clear();
-	FL_UNLOCK_E();
+	FL_UNLOCK_D();
 // start the transmission
 	fl_lock(&trx_mutex);
 	if (trx_state != STATE_TX)
@@ -986,13 +990,13 @@ void cb_picTxSendGrey( Fl_Widget *w, void *who)
 	my->row = 0;
 	my->pixelnbr = 0;
 	my->picTx->clear();
-	FL_LOCK_E();
+	FL_LOCK_D();
 	my->btnpicTxSendColor->hide();
 	my->btnpicTxSendGrey->hide();
 	my->btnpicTxLoad->hide();
 	my->btnpicTxClose->hide();
 	my->btnpicTxSendAbort->show();
-	FL_UNLOCK_E();
+	FL_UNLOCK_D();
 // start the transmission
 	fl_lock(&trx_mutex);
 	if (trx_state != STATE_TX)
@@ -1008,9 +1012,9 @@ void cb_picTxSendAbort( Fl_Widget *w, void *who)
 	mfsk *my = (mfsk *)who;
 	my->abortxmt = true;
 // reload the picture widget with the rgb image
-	FL_LOCK_E();
+	FL_LOCK_D();
 	my->picTx->video(my->xmtimg, my->TxImg->w() * my->TxImg->h() * 3);
-	FL_UNLOCK_E();
+	FL_UNLOCK_D();
 }
 
 void mfsk::TxViewerResize(int W, int H)
@@ -1021,7 +1025,7 @@ void mfsk::TxViewerResize(int W, int H)
 	winH = H < 180 ? 180 : H + 30;
 	picX = (winW - W) / 2;
 	picY =  (winH - 30 - H)/2;
-	FL_LOCK_E();
+	FL_LOCK_D();
 	picTxWin->size(winW, winH);
 	picTx->resize(picX, picY, W, H);
 	picTx->clear();
@@ -1030,7 +1034,7 @@ void mfsk::TxViewerResize(int W, int H)
 	btnpicTxSendAbort->resize(winW/2 - 123, winH - 28, 122, 24);
 	btnpicTxLoad->resize(winW/2 + 1, winH - 28, 60, 24);
 	btnpicTxClose->resize(winW/2 + 63, winH - 28, 60, 24);
-	FL_UNLOCK_E();
+	FL_UNLOCK_D();
 }
 
 void mfsk::makeTxViewer(int W, int H)
@@ -1041,7 +1045,7 @@ void mfsk::makeTxViewer(int W, int H)
 	winH = H < 180 ? 180 : H + 30;
 	picX = (winW - W) / 2;
 	picY =  2;
-	FL_LOCK_E();
+	FL_LOCK_D();
 	if (!picTxWin) {
 		picTxWin = new Fl_Window(winW, winH);
 		picTx = new picture (picX, picY, W, H);
@@ -1073,6 +1077,6 @@ void mfsk::makeTxViewer(int W, int H)
 		btnpicTxSendAbort->hide();
 	}
 	picTxWin->show();
-	FL_UNLOCK_E();
+	FL_UNLOCK_D();
 }
 

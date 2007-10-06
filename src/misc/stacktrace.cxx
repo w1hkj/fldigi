@@ -21,15 +21,13 @@
 // ----------------------------------------------------------------------------
 
 #include <cstdio>
+#include <cstdlib>
 #include <dlfcn.h>
-
-FILE *locklog = fopen("locklog", "a");
-FILE *awakelog = fopen("awakelog", "a");
 
 void pstack(FILE *log)
 {
 #if (defined(__i386__) || defined(__i486__) || defined(__i586__) || defined(__i686__))
-        if (!log)
+        if (!log || !getenv("FLDIGI_TRACE_LOCKS"))
                 return;
 
         register unsigned *ebp asm("ebp");
@@ -37,6 +35,7 @@ void pstack(FILE *log)
 
         Dl_info dli;
 
+        fprintf(log, "\t");
         while (base) {
                 dladdr((void *)*(base + 1), &dli);
                 fprintf(log, "%s@0x%08x ", dli.dli_fname, *(base + 1));

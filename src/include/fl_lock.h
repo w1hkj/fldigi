@@ -33,25 +33,12 @@
 #define FL_AWAKE_E(x)  FL_AWAKE(x)
 
 #ifdef NDEBUG
-
-#define FL_LOCK(x)   Fl::lock(x)
-#define FL_UNLOCK(x) Fl::unlock(x)
-#define FL_AWAKE(x)  Fl::awake(x)
-
+#	define FL_LOCK(x)   Fl::lock(x)
+#	define FL_UNLOCK(x) Fl::unlock(x)
+#	define FL_AWAKE(x)  Fl::awake(x)
 #else // debugging
 #	include <cstdio>
-	extern FILE *locklog;
-	extern FILE *awakelog;
 	void pstack(FILE *log);
-
-#	ifdef TRACE_LOCKS
-#		define FL_LOCK(x)     do { Fl::lock(); pstack(locklog); } while (0)
-#		define FL_UNLOCK(x)   do { Fl::unlock(); } while (0)
-#		define FL_AWAKE(x)    do { pstack(awakelog); Fl::awake(); } while (0)
-#		define FL_LOCK_D(x)   FL_LOCK(x)
-#		define FL_UNLOCK_D(x) FL_UNLOCK(x)
-#		define FL_AWAKE_D(x)  FL_AWAKE(x)
-#	endif // TRACE_LOCKS
 
 #	ifndef NO_LOCKS
 #		define FL_LOCK(x)                                       \
@@ -69,7 +56,7 @@
                                 printf("I: lock in %s at %s:%d\n",      \
                                        __func__, __FILE__, __LINE__);   \
                         }                                               \
-                        printf("\t"); pstack(stdout);                   \
+                        pstack(stdout);                                 \
                         Fl::lock(x);                                    \
                 } while (0);
 

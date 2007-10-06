@@ -80,7 +80,7 @@ cw::~cw() {
 }
 
 
-cw::cw() : morse(), modem(), scopedata(CWMaxSymLen)
+cw::cw() : morse(), modem()
 {
 	double lp;
 
@@ -253,7 +253,7 @@ void cw::update_syncscope()
 		scopedata[i] = 0.1 + 0.8 * pipe[j] / agc_peak;
 	}
 	set_scope(scopedata, pipesize, false);
-	++scopedata; // swap buffers
+	scopedata.next(); // change buffers
 	put_cwRcvWPM(cw_receive_speed);
 	update_Status();
 }

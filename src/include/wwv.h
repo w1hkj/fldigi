@@ -28,7 +28,7 @@
 #include "modem.h"
 #include "filters.h"
 #include "fftfilt.h"
-#include "doublebuf.h"
+#include "mbuffer.h"
 
 #define	wwvSampleRate	8000
 #define	MaxSymLen	512
@@ -58,7 +58,7 @@ protected:
 	C_FIR_filter	*lpfilter;
 	Cmovavg			*vidfilter;
 
-	double_buffer<double>	buffer;	// storage for 1000 samples/sec video
+	mbuffer<double, 1000, 2>	buffer;	// storage for 1000 samples/sec video
 	unsigned int	buffptr;
 	int				sync;
 	int				sync0;

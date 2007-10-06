@@ -35,7 +35,7 @@
 #include "fftfilt.h"
 #include "digiscope.h"
 #include "id.h"
-#include "doublebuf.h"
+#include "mbuffer.h"
 
 //#define	RTTY_SampleRate	8000
 #define RTTY_SampleRate 11025
@@ -98,7 +98,7 @@ private:
 	Cmovavg *bitfilt;
 	fftfilt *bpfilt;
 
-	double_buffer<double> pipe;
+	mbuffer<double, RTTYMaxSymLen, 2> pipe;
 	int pipeptr;
 
 	double bbfilter[RTTYMaxSymLen];

@@ -71,7 +71,9 @@ extern int fl_create_thread(Fl_Thread * t, void *(*f) (void *), void* p);
 
 #  endif // !WIN32
 
-enum { UNKNOWN_TID = -1, TRX_TID, QRZ_TID, RIGCTL_TID, FLMAIN_TID, NUM_THREADS = FLMAIN_TID };
+// we have 4 threads, only 3 of which will use qrunner
+enum { UNKNOWN_TID = -1, TRX_TID, QRZ_TID, RIGCTL_TID, FLMAIN_TID,
+       NUM_THREADS, NUM_QRUNNER_THREADS = NUM_THREADS - 1 };
 
 #if (USE_TLS == 1)
 	extern __thread int thread_id_;

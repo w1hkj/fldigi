@@ -39,6 +39,7 @@
 #include <FL/Enumerations.H>
 #include "File_Selector.h"
 
+#include "ascii.h"
 #include "qrunner.h"
 
 using namespace std;
@@ -68,12 +69,14 @@ textview :: textview( int x, int y, int w, int h, const char *label )
 	TextFont = FL_SCREEN;
 	TextSize = FL_NORMAL_SIZE;
 	
-	for (int i = 0; i < 16; i++) {
+	for (unsigned i = 0; i < sizeof(TextColor)/sizeof(TextColor[0]); i++) {
 		TextColor[i] = FL_BLACK;
 	}
-	TextColor[2] = FL_BLUE;
-	TextColor[3] = FL_GREEN;
-	TextColor[4] = FL_RED;
+	TextColor[ReceiveWidget::RECV] = FL_BLACK;
+	TextColor[ReceiveWidget::XMIT] = FL_RED;
+	TextColor[ReceiveWidget::CTRL] = FL_DARK_RED;
+	TextColor[ReceiveWidget::SKIP] = FL_BLUE;
+	TextColor[ReceiveWidget::ALTR] = FL_DARK_GREEN;
 	
 	wrappos = 0;
 	cursorON = false;
@@ -570,7 +573,7 @@ FL_UNLOCK_D();
 FL_AWAKE_D();
 }
 
-void textview::add( char c, int attribute)
+void textview::add_( char c, int attribute)
 {
 	if (c == 0x08) {
 		_backspace();
@@ -619,10 +622,23 @@ void textview::add( char c, int attribute)
 	setScrollbar();
 }
 
+void textview::add( char c, int attribute)
+{
+	if (c < ' ' || c == 127) { // we must look this up and insert it as a string
+		unsigned char i = c;
+		const char *cp = (attribute == CTRL) ? ascii2[i] : ascii[i];
+		while (*cp)
+			add_(*cp++, attribute);
+		return;
+	}
+
+	add_(c, attribute);
+}
+
 void textview::add( const char *text, int attr )
 {
 	while (*text)
-		add(*text++, attr);
+		add_(*text++, attr);
 }
 
 void textview::clear()
@@ -789,7 +805,7 @@ void TextView::menu_cb(int val)
 		inpRstIn->value(findtext().c_str());
 		break;
 	case 6:
-		addstr("\n	    <<================>>\n", RCV);
+		add("\n	    <<================>>\n", RECV);
 		break;
 	case 7:
 		clear();
@@ -888,16 +904,13 @@ void TextEdit::readFile()
 					"*.txt",
 					"", 0);
 	if (fn)  {
-		string inbuff;
 		ifstream in(fn);
 		if (in) {
 			char ch;
-			while (!in.eof()) {
-				ch = in.get();
-				inbuff += ch;
+			while (in.get(ch)) {
+				add_(ch, RECV);
 			}
 			in.close();
-			addstr (inbuff.c_str());
 		}
 	}
 	Fl::focus(this);
@@ -986,7 +999,7 @@ int TextEdit::handle_key() {
 		
 	if (key == FL_Tab && active_modem == cw_modem) {
 		while (xmtidx < buff.length()) {
-			attr[xmtidx] = 2;
+			attr[xmtidx] = SKIP;
 			xmtidx++;
 		}
 		damage(FL_DAMAGE_ALL);
@@ -1035,10 +1048,9 @@ int TextEdit::handle(int event)
 		damage(3);
 		return 1;
 	}
-	if (event == FL_FOCUS && Fl::focus() == this) {
+	if (event == FL_FOCUS) {
 		textview::cursorON = true;
 		damage(2);
-		Fl::focus(this);
 		return 1;
 	}
 	if (event == FL_KEYBOARD) {
@@ -1118,7 +1130,7 @@ void TextEdit::cursorON()
 
 void TextEdit::update_xmit_text(size_t i)
 {
-	attr[i] = 4;
+	attr[i] = XMIT;
 	if (draw_mod_range.start > i)
 		draw_mod_range.start = i;
 	draw_mod_range.end = i;

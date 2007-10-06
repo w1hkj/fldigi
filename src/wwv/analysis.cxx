@@ -77,7 +77,7 @@ void anal::restart()
 	put_MODEstatus(mode);
 }
 
-anal::anal() : pipe(analMaxSymLen)
+anal::anal()
 {
 	mode = MODE_ANALYSIS;
 
@@ -153,7 +153,7 @@ int anal::rx_process(const double *buf, int len)
 			dspcnt--;
 			if (dspcnt == 0) {
 				set_scope(pipe, symbollen, false);
-				++pipe; // swap buffers
+				pipe.next(); // change buffers
 // filter using second moving average filter & display the result
 				fout_2 = favg->run(fout_1);
 				if (wf->USB())

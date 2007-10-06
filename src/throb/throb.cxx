@@ -118,7 +118,7 @@ void throb::reset_syms() //call when switching from TX to RX or vice versa
 	}
 }
 
-throb::throb(trx_mode throb_mode) : modem(), dispbuf(MAX_RX_SYMLEN)
+throb::throb(trx_mode throb_mode) : modem()
 {
 	double bw;
 	double *fp = 0;
@@ -487,7 +487,7 @@ void throb::sync(complex in)
 		dispbuf[0] = 0.0;
 		set_scope(dispbuf, 1);
 	}
-	++dispbuf; // swap buffers
+	dispbuf.next(); // change buffers
 }
 
 int throb::rx_process(const double *buf, int len)

@@ -52,6 +52,10 @@ void ParseMode(string src)
 		initMFSK8();
 	else if (src.find("MFSK16") != string::npos)
 		initMFSK16();
+	else if (src.find("RTTY") != string::npos)
+		initRTTY();
+	else if (src.find("CW") != string::npos)
+		initCW();
 	else if (src.find("PTTTUNE") != string::npos)
 	{
 		int msecs = 100;

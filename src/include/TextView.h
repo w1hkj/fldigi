@@ -47,24 +47,22 @@ using namespace std;
 class ReceiveWidget : public Fl_Text_Editor
 {
 public:
-	enum TV_ATTR { RCV, XMT, NUM_TV_ATTR };
+	enum TEXT_ATTR { RECV, XMIT, CTRL, SKIP, ALTR, NATTR };
 
 	ReceiveWidget(int x, int y, int w, int h, const char *label)
 		: Fl_Text_Editor(x, y, w, h, label) { }
 	virtual ~ReceiveWidget() { }
 
-	virtual void add(const char *text, int attr = XMT) = 0;
-	virtual void add(char c, int attr = XMT) = 0;
-	void	     addstr(const char *text, int attr = XMT) { add(text, attr); }
-	void	     addchr(char c, int attr = XMT) { add(c, attr); }
+	virtual void add(const char *text, int attr = RECV) = 0;
+	virtual void add(char c, int attr = RECV) = 0;
+	void	     addstr(const char *text, int attr = RECV) { add(text, attr); }
+	void	     addchr(char c, int attr = RECV) { add(c, attr); }
 
 	virtual void clear(void) = 0;
 
 	virtual void setFont(Fl_Font fnt) = 0;
 	virtual void setFontSize(int siz) = 0;
 	virtual void setFontColor(Fl_Color clr) = 0;
-
-	virtual void focus(void) { Fl::focus(this); }
 
 	virtual void Show(void) = 0;
 	virtual void Hide(void) = 0;
@@ -142,8 +140,8 @@ public:
     void    Show();
 	void	Hide();
 
-	virtual void add( const char *text, int attr = 1 );
-	virtual void add( char c, int attr = 1);
+	virtual void add( const char *text, int attr = RECV );
+	virtual void add( char c, int attr = RECV);
 	virtual void clear();
 	
 	virtual void setFont(Fl_Font fnt);
@@ -159,6 +157,7 @@ protected:
 	Fl_Scrollbar scrollbar;
 	Fl_Menu_Button *mpopup;
 
+	void add_( char c, int attr );
 	void scrollbarCB();	
 	inline static void _scrollbarCB( Fl_Widget* w, void* arg )
 	{ 
@@ -211,7 +210,6 @@ public:
 		textview::setFontColor(clr); 
 	}
 	void	cursorON();
-	void	focus(void) { Fl::focus(this); cursorON(); damage(2); }
 protected:
 	int 	handle_fnckey(int key);
 	int		handle_key();

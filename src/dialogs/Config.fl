@@ -296,7 +296,7 @@ progdefaults.changed = true;
       }
       Fl_Group tabInterface {
         label RigCtl open
-        xywh {0 25 400 195} color 51 selection_color 51 hide
+        xywh {0 25 400 195} color 51 selection_color 51
       } {
         Fl_Group {} {
           label Ptt open
@@ -400,12 +400,16 @@ progdefaults.changed = true;}
   btnPTT[1]->value(0);
   btnPTT[1]->deactivate();
   btnPTT[2]->activate();
+  cboHamlibRig->deactivate();
+  inpRIGdev->deactivate();
+  mnuBaudRate->deactivate();
   } else {
   if (btnPTT[2]->value()==1)
   	btnPTT[0]->value(1);
   btnPTT[2]->value(0);
   btnPTT[2]->deactivate();
   }
+for (int i = 0; i < 4; btnPTT[i++]->redraw());  
 progdefaults.changed = true;}
             xywh {275 55 19 15} down_box DOWN_BOX align 4
           }
@@ -414,16 +418,21 @@ progdefaults.changed = true;}
             callback {if (o->value() == 1) {
   chkUSEHAMLIB->value(0);
   chkUSEMEMMAP->value(0);
+  btnPTT[1]->value(0);
   btnPTT[1]->deactivate();
   btnPTT[2]->value(0);
   btnPTT[2]->deactivate();
   btnPTT[3]->activate();
+  cboHamlibRig->deactivate();
+  inpRIGdev->deactivate();
+  mnuBaudRate->deactivate();
   } else {
   if (btnPTT[3]->value() == 1)
   	btnPTT[0]->value(1);
   btnPTT[3]->value(0);
   btnPTT[3]->deactivate();
   }
+for (int i = 0; i < 4; btnPTT[i++]->redraw());
 progdefaults.changed = true;}
             xywh {366 55 19 15} down_box DOWN_BOX align 4
           }
@@ -449,7 +458,8 @@ progdefaults.changed = true;}
   inpRIGdev->deactivate();
   mnuBaudRate->deactivate();
   }
-progdefaults.changed = true;}
+for (int i = 0; i < 4; btnPTT[i++]->redraw());
+progdefaults.changed = true;} selected
             xywh {366 77 19 15} down_box DOWN_BOX align 4
           }
           Fl_Box cboHamlibRig {
@@ -728,7 +738,7 @@ This option takes effect after a restart.} xywh {50 155 180 20} down_box DOWN_BO
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 401 195} color 51 selection_color 51
+        xywh {0 25 401 195} color 51 selection_color 51 hide
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 401 195} color 51 selection_color 10 align 9
@@ -1000,7 +1010,7 @@ progdefaults.changed = true;}
               Fl_Counter cntServerOffset {
                 label {Allowable Rx Carrier Offset}
                 callback {progdefaults.ServerOffset = (int)o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
                 xywh {31 162 80 21} type Simple align 8 minimum 10 maximum 500 step 10 value 200
                 code0 {o->value(progdefaults.SearchRange);}
               }

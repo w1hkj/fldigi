@@ -34,7 +34,7 @@
 #include "filters.h"
 #include "fftfilt.h"
 #include "dominovar.h"
-#include "doublebuf.h"
+#include "mbuffer.h"
 
 using namespace std;
 
@@ -72,8 +72,8 @@ protected:
 	domrxpipe			*pipe;
 	unsigned int	pipeptr;
 	unsigned int	datashreg;
-	double_buffer<double>		scopedata;
-	double_buffer<double>		videodata;
+	mbuffer<double, 0, 2>	scopedata;
+	mbuffer<double, 0, 2>	videodata;
 
 	complex currvector;
 	complex prev1vector;

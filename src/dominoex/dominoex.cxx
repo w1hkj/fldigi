@@ -311,7 +311,7 @@ void dominoex::update_syncscope(complex *bins)
 	}
 	if (!squelchon || metric >= squelch) {
 		set_video(videodata, numbins);
-		++videodata; // swap buffers
+		videodata.next(); // change buffers
 	}
 
 // dom symbol synch data	
@@ -322,7 +322,7 @@ void dominoex::update_syncscope(complex *bins)
 			scopedata[i] = (pipe[j].vector[prev1symbol]).mag();
 		}
 	set_scope(scopedata, 2 * symlen);
-	++scopedata; // swap buffers
+	scopedata.next(); // change buffers
 }
 
 void dominoex::synchronize()

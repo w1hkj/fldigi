@@ -55,31 +55,17 @@
 class FTextBase : virtual public ReceiveWidget
 {
 public:
-
-	///
-	/// Text styles used for highlighting
-	///
-	enum text_attr_e {
-		DEFAULT = 'A',	///< Default text style
-		RCV,		///< Received text style
-		SKIP,		///< Skipped text style
-		CTRL,		///< Control character style
-		XMT,		///< Transmitted text style
-		NSTYLES = 5
-	};
-
-public:
 	FTextBase(int x, int y, int w, int h, const char *l = 0);
 	virtual ~FTextBase() { delete tbuf; delete sbuf; }
 
 	void		clear(void) { tbuf->text(""); sbuf->text(""); }
 
-	void		setFont(Fl_Font f, int attr = NSTYLES);
-	void		setFontSize(int s, int attr = NSTYLES);
-	void		setFontColor(Fl_Color c, int attr = NSTYLES);
-	virtual void	setFont(Fl_Font f)       { setFont(f, NSTYLES); }
-	virtual void	setFontSize(int s)       { setFontSize(s, NSTYLES); }
-	virtual void	setFontColor(Fl_Color c) { setFontColor(c, NSTYLES); }
+	void		setFont(Fl_Font f, int attr = NATTR);
+	void		setFontSize(int s, int attr = NATTR);
+	void		setFontColor(Fl_Color c, int attr = NATTR);
+	virtual void	setFont(Fl_Font f)       { setFont(f, NATTR); }
+	virtual void	setFontSize(int s)       { setFontSize(s, NATTR); }
+	virtual void	setFontColor(Fl_Color c) { setFontColor(c, NATTR); }
 
 	void		cursorON(void) { show_cursor(); }
 	virtual void	resize(int X, int Y, int W, int H);
@@ -105,10 +91,11 @@ private:
 	FTextBase(const FTextBase &t);
 
 protected:
+	enum { FTEXT_DEF = 'A' };
 	enum set_style_op_e { SET_FONT = 1 << 0, SET_SIZE = 1 << 1, SET_COLOR = 1 << 2 };
 	Fl_Text_Buffer				*tbuf;	///< text buffer
 	Fl_Text_Buffer				*sbuf;	///< style buffer
-	Fl_Text_Display::Style_Table_Entry	styles[NSTYLES];
+	Fl_Text_Display::Style_Table_Entry	styles[ReceiveWidget::NATTR];
 	Fl_Menu_Item				*context_menu;
 	int					popx, popy;
 	bool					wrap;
@@ -128,8 +115,8 @@ public:
         ~FTextView();
 
 	virtual int	handle(int event);
-	virtual void	add(char c, int attr = DEFAULT);
-	virtual	void	add(const char *s, int attr = DEFAULT)
+	virtual void	add(char c, int attr = RECV);
+	virtual	void	add(const char *s, int attr = RECV)
         {
                 while (*s)
                         add(*s++, attr);
@@ -168,8 +155,8 @@ public:
 
 	virtual int	handle(int event);
 
-	virtual void	add(const char *s, int attr = DEFAULT);
-	virtual void	add(char c, int attr = DEFAULT);
+	virtual void	add(const char *s, int attr = RECV);
+	virtual void	add(char c, int attr = RECV);
 	void		clear(void);
 	int		nextChar(void);
 

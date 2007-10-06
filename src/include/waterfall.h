@@ -304,6 +304,7 @@ public:
 	void carrier(int f);
 	void rfcarrier(long long cf);
 	long long rfcarrier();
+	bool tmp_carrier(void) { return oldcarrier != newcarrier; }
 	void set_XmtRcvBtn(bool val);
 	void USB(bool b);
 	bool USB();
@@ -369,7 +370,9 @@ private:
 	Fl_Light_Button *xmtlock;
 	int			buttonrow;
 	bool	reverse;
-protected:
+
+	int newcarrier;
+	int oldcarrier;
 };
 
 #endif

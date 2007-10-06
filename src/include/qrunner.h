@@ -104,6 +104,11 @@ struct timer
 };
 #endif
 
+struct nop
+{
+        void operator()(void) const { }
+};
+
 class qrunner
 {
 public:
@@ -207,7 +212,7 @@ protected:
 
 #define QUEUE_SYNC(...)                                                 \
         do {                                                            \
-                if (thread_id_ != FLMAIN_TID)                           \
+                if (GET_THREAD_ID() != FLMAIN_TID)                      \
                         cbq[GET_THREAD_ID()]->request_sync(boost::protect(boost::bind(__VA_ARGS__))); \
                 else                                                    \
                         boost::bind(__VA_ARGS__)();                     \
@@ -215,7 +220,7 @@ protected:
 
 #define QUEUE_DL(d_, ...)                                               \
         do {                                                            \
-                if (thread_id_ != FLMAIN_TID)                           \
+                if (GET_THREAD_ID() != FLMAIN_TID)                      \
                         cbq[GET_THREAD_ID()]->request_dl(boost::protect(boost::bind(__VA_ARGS__)), d_); \
                 else                                                    \
                         boost::bind(__VA_ARGS__)();                     \
@@ -223,7 +228,14 @@ protected:
 
 
 
-extern qrunner *cbq[NUM_THREADS];
+#define QUEUE_FLUSH()                                                   \
+        do {                                                            \
+                if (GET_THREAD_ID() != FLMAIN_TID)                      \
+                        cbq[GET_THREAD_ID()]->request_sync(nop());      \
+        } while (0)
+
+
+extern qrunner *cbq[NUM_QRUNNER_THREADS];
 
 #endif // QRUNNER_H_
 

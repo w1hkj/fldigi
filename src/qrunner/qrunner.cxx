@@ -75,4 +75,4 @@ void qrunner::execute(int fd, void *arg)
 }
 
 
-qrunner *cbq[NUM_THREADS];
+qrunner *cbq[NUM_QRUNNER_THREADS];

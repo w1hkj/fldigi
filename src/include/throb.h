@@ -32,7 +32,7 @@
 #include "complex.h"
 #include "id.h"
 
-#include "doublebuf.h"
+#include "mbuffer.h"
 
 #define	THROB_SAMPLE_RATE	8000
 #define	SYMLEN			512
@@ -88,7 +88,7 @@ protected:
 	complex 		symbol[MAX_RX_SYMLEN];
 
 	double			syncbuf[MAX_RX_SYMLEN];
-	double_buffer<double>	dispbuf;
+	mbuffer<double, MAX_RX_SYMLEN, 2> dispbuf;
 
 	double			rxcntr;
 	double			signal;

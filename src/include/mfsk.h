@@ -12,7 +12,7 @@
 #include "complex.h"
 #include "id.h"
 #include "mfskvaricode.h"
-#include "doublebuf.h"
+#include "mbuffer.h"
 
 //#include "File_Selector.h"
 
@@ -102,7 +102,7 @@ protected:
 
 	double met1;
 	double met2;
-	double_buffer<double> scopedata;
+	mbuffer<double, 0, 2> scopedata;
 	double s2n;
 	double sig;
 	double noise;

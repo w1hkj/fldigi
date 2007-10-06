@@ -49,19 +49,19 @@ picture::~picture()
 void picture::video(unsigned char *data, int len )
 {
 	if (len > bufsize) return;
-	FL_LOCK_E();
+	FL_LOCK_D();
 	memmove( vidbuf, data, len );
 	redraw();
-	FL_UNLOCK_E();
+	FL_UNLOCK_D();
 }
 
 void picture::pixel(unsigned char data, int pos)
 {
 	if (pos < 0 || pos >= bufsize) return;
-	FL_LOCK_E();
+	FL_LOCK_D();
 	vidbuf[pos] = data;
 	redraw();
-	FL_UNLOCK_E();
+	FL_UNLOCK_D();
 }
 
 unsigned char picture::pixel(int pos)
@@ -72,16 +72,16 @@ unsigned char picture::pixel(int pos)
 
 void picture::clear()
 {
-	FL_LOCK_E();
+	FL_LOCK_D();
 	memset(vidbuf, 0, bufsize);
 	redraw();
-	FL_UNLOCK_E();
+	FL_UNLOCK_D();
 }
 
 
 void picture::resize(int x, int y, int w, int h)
 {
-	FL_LOCK_E();
+	FL_LOCK_D();
 	width = w;
 	height = h;
 	delete [] vidbuf;
@@ -89,7 +89,7 @@ void picture::resize(int x, int y, int w, int h)
 	vidbuf = new unsigned char[bufsize];
 	memset( vidbuf, 0, bufsize );
 	Fl_Widget::resize(x,y,w,h);
-	FL_UNLOCK_E();
+	FL_UNLOCK_D();
 }
 
 void picture::draw()

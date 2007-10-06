@@ -148,7 +148,7 @@ void rtty::restart()
 	put_MODEstatus(mode);
 }
 
-rtty::rtty(trx_mode tty_mode) : pipe(RTTYMaxSymLen)
+rtty::rtty(trx_mode tty_mode)
 {
 	mode = tty_mode;
 
@@ -455,7 +455,7 @@ int rtty::rx_process(const double *buf, int len)
 			if (rxflag == 2 || dspcnt == 0) {
 				if ((metric > squelch && squelchon) || !squelchon) {
 					set_scope(pipe, symbollen, false);
-					++pipe; // swap buffers
+					pipe.next(); // change buffers
 				}
 				else
 					clear_syncscope();

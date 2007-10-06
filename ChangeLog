@@ -1,5 +1,6 @@
 Change Log:
 
+         	  
 1.38  1) Increased TxPPM to +/- 50000 to match the RxPPM range
       2) Changed all audio i/o to separate 2 channel control (stereo)
       3) Added right channel CW QRQ signal
@@ -43,6 +44,35 @@ Change Log:
           the widget selection on the "misc" configuration tab.
       23) Multiple changes to hamlib interface to correct deficient behavior on
           startup and when changing frequency.
+      24  Changes to several modem code structures associated with qrunner
+          implementation.
+      25) Text widgets support additional text styles:
+		  	 NATTR : FOREGROUND_COLOR
+			 XMIT  : FL_RED  - used in Rx widget to show Xmt'd text
+			 CTRL  : FL_DARK_RED - used in Rx/Tx widgets for control chars
+			 SKIP  : FL_BLUE - used in Rx/Tx for skipped chars (eg: Tx ON/OFF)
+			 ALTR  : FL_DARK_GREEN - used in Rx widget for quick view of signal
+			         when right-clicking on a waterfall signal
+      26) Added additional control/mode commands to the pskmail/ARQ SYSV message
+          queue processor.  Mode command strings are now:
+             CW          : <cmd><mode>CW</mode></cmd>
+             DOMINO EX4  : <cmd><mode>DOMINOEX4</mode></cmd>
+             DOMINO EX5  : <cmd><mode>DOMINOEX5</mode></cmd>
+             DOMINO EX8  : <cmd><mode>DOMINOEX8</mode></cmd>
+             DOMINO EX11 : <cmd><mode>DOMINOEX11</mode></cmd>
+             DOMINO EX16 : <cmd><mode>DOMINOEX16</mode></cmd>
+             DOMINO EX22 : <cmd><mode>DOMINOEX22</mode></cmd>
+             MFSK8       : <cmd><mode>MFSK8</mode></cmd>
+             MFSK16      : <cmd><mode>MFSK8</mode></cmd>
+             PSK31       : <cmd><mode>PSK31</mode></cmd>
+             PSK63       : <cmd><mode>PSK63</mode></cmd>
+             PSK125      : <cmd><mode>PSK125</mode></cmd>
+             PSK250      : <cmd><mode>PSK250</mode></cmd>
+             RTTY        : <cmd><mode>RTTY</mode></cmd>
+             TUNE        : <cmd><mode>PTTTUNE</mode></cmd>
+               this will cause fldigi to enter the TUNE mode for a very brief
+               100 milliseconds.
+
 1.34  1) Cleaned up unused code segments
       2) Modified CW decoder to allow setting upper and lower limits on
          Tx WPM

@@ -33,7 +33,7 @@
 #include "modem.h"
 #include "filters.h"
 #include "morse.h"
-#include "doublebuf.h"
+#include "mbuffer.h"
 
 #define	CWSampleRate	8000
 #define	CWMaxSymLen		4096
@@ -102,7 +102,7 @@ protected:
 	CW_EVENT		cw_event;			// functions used by cw process routine 
 	 
 	double pipe[CWMaxSymLen];			// storage for sync scope data
-	double_buffer<double> scopedata;
+	mbuffer<double, CWMaxSymLen, 2> scopedata;
 	int pipeptr;
 	int pipesize;
 	

@@ -37,7 +37,7 @@
 
 #include "FL/Fl.H"
 
-#include "doublebuf.h"
+#include "mbuffer.h"
 #include "qrunner.h"
 
 using namespace std;
@@ -68,7 +68,7 @@ unsigned char ucdata[SCBLOCKSIZE * 4];
 short int	*sidata;
 // Double size of normal read to accept overruns; double buffered because it
 // is QUEUEd and used asynchronously by the GUI thread.
-double_buffer<double> _trx_scdbl(SCBLOCKSIZE * 2);
+mbuffer<double, SCBLOCKSIZE * 2, 2> _trx_scdbl;
 
 static int dummy = 0;
 static bool trxrunning = false;
@@ -99,9 +99,9 @@ void trx_trx_receive_loop()
 			if (numread == -1 || (trx_state != STATE_RX))
 				break;
 			if (numread > 0) {
-				QUEUE(CMP_CB(&waterfall::sig_data, wf, _trx_scdbl.ptr(), numread)); //wf->sig_data(_trx_scdbl, numread);
+				QUEUE(CMP_CB(&waterfall::sig_data, wf, _trx_scdbl.c_array(), numread)); //wf->sig_data(_trx_scdbl, numread);
 				active_modem->rx_process(_trx_scdbl, numread);
-				++_trx_scdbl; // swap buffers
+				_trx_scdbl.next(); // change buffers
 			}
 		}
 		scard->Close();

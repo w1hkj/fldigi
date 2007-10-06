@@ -1,4 +1,3 @@
-#!/bin/sh
 # build file to generate the various distribution binaries
 
 make CFG=hamlib-static USE_TLS=0

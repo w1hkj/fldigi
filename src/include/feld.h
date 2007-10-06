@@ -34,6 +34,7 @@
 #include "id.h"
 #include "filters.h"
 #include "fftfilt.h"
+#include "mbuffer.h"
 
 #define	FeldSampleRate	8000
 #define FeldMaxSymLen	1024
@@ -91,7 +92,7 @@ protected:
 	double OnShape[80];
 	double OffShape[80];
 	
-	int col_data[2*RxColumnLen];
+	mbuffer<int, 2*RxColumnLen> col_data;
 	int col_pointer;
 	int fntnbr;
 	
