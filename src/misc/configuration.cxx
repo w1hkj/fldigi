@@ -1,5 +1,6 @@
 #include "configuration.h"
 #include "Config.h"
+#include "xmlreader.h"
 
 #ifndef NOHAMLIB
 	#include "hamlib.h"
@@ -150,7 +151,7 @@ configuration progdefaults = {
 	 {  0,  0,214},{145,142,  96},{181,184, 48},
 	 {223,226,105},{254,254,   4},{255, 58,  0} },
 
-	false,			// bool		alt_text_widgets;
+	true			// bool		alt_text_widgets;
 };
 
 const char *szBaudRates[] = {
@@ -163,48 +164,91 @@ const char *szBands[] = {
 	"",
 	"1830", "3580", "7030", "7070", "10138",
 	"14070", "18100", "21070", "21080", "24920", "28070", "28120", 0};
+
+
+// XML config file support
+enum TAG { \
+	IGNORE,
+	MYCALL, MYNAME, MYQTH, MYLOC, 
+	SQUELCH, WFREFLEVEL, WFAMPSPAN, LOWFREQCUTOFF, 
+	FONTNBR, FONTSIZE, FONTCOLOR,
+	STARTATSWEETSPOT, PSKMAILSWEETSPOT, 
+	PSKSEARCHRANGE, PSKSERVEROFFSET,
+	CWSWEETSPOT, PSKSWEETSPOT, RTTYSWEETSPOT,
+	RTTYSQUELCH, RTTYSHIFT, RTTYBAUD,
+	RTTYBITS, RTTYPARITY, RTTYSTOP, RTTYREVERSE,
+	RTTYMSBFIRST, RTTYCRCLF, RTTYAUTOCRLF,
+	RTTYAUTOCOUNT, RTTYAFCSPEED,
+	PREFERXHAIRSCOPE, 
+	PSEUDOFSK, 
+	CWWEIGHT, CWSPEED, CWDEFSPEED,
+	CWBANDWIDTH, CWRANGE, CWLOWERLIMIT, CWUPPERLIMIT,
+	CWTRACK, CWRISETIME, CWDASH2DOT,
+	XQSK, CWPRE, CWPOST,
+	OLIVIATONES, OLIVIABW,
+	DOMINOEXBW, 
+	FELDFONTNBR, FELDIDLE,
+	WFPREFILTER,
+	USECURSORLINES, USECURSORCENTERLINE, USEBWTRACKS,
+	CLCOLORS,
+	CCCOLORS,
+	BWTCOLORS,
+	VIEWXMTSIGNAL, SENDID, MACROID,
+	QRZTYPE, QRZUSER, QRZPASSWORD,
+	BTNUSB, BTNPTTIS, BTNRTSDTRIS, BTNPTTREVIS,
+	RTSPTT, DTRPTT, RTSPLUS, DTRPLUS,
+	CHOICEHAMLIBIS, CHKUSEMEMMAPIS,
+	CHKUSEHAMLIBIS, CHKUSERIGCATIS,
+	HAMRIGNAME, HAMRIGDEVICE, HAMRIGBAUDRATE,
+	PTTDEV,
+	SECONDARYTEXT, 
+	AUDIOIO, SCDEVICE, OSSDEVICE, PADEVICE,
+	RXCORR, TXCORR, TXOFFSET,
+	USELEADINGZEROS, CONTESTSTART, CONTESTDIGITS,
+	USETIMER, MACRONUMBER, TIMEOUT,
+	MXDEVICE, RCVMIXER, XMTMIXER, PCMVOLUME,
+	MICIN, LINEIN, ENABLEMIXER, MUTEINPUT,
+	PALETTE0, PALETTE1, PALETTE2, PALETTE3, PALETTE4, 
+	PALETTE5, PALETTE6, PALETTE7, PALETTE8,
+	ALT_TEXT_WIDGETS };
 	
 void writeXMLint(ofstream &f, const char * tag,  int val)
 {
-	f << "<" << tag << ">\n";
-	f << "\t<INT>" << val << "</INT>\n";
-	f << "</" << tag << ">\n";
+	f << "<" << tag << ">" << val << "</" << tag << ">\n";
 }
 
 void writeXMLdbl(ofstream &f, const char * tag, double val)
 {
-	f << "<" << tag << ">\n";
-	f << "\t<DBL>" << val << "</DBL>\n";
-	f << "</" << tag << ">\n";
+	f << "<" << tag << ">" << val << "</" << tag << ">\n";
 }
 
 void writeXMLstr(ofstream &f, const char * tag, string val)
 {
-	f << "<" << tag << ">\n";
-	f << "\t<STR>" << val.c_str() << "</STR>\n";
-	f << "</" << tag << ">\n";
+	f << "<" << tag << ">" << val.c_str() << "</" << tag << ">\n";
 }
 
 void writeXMLbool(ofstream &f, const char * tag, bool val)
 {
-	f << "<" << tag << ">\n";
-	f << "\t<BOOL>" << val << "</BOOL>\n";
-	f << "</" << tag << ">\n";
+	f << "<" << tag << ">" << val << "</" << tag << ">\n";
 }
 
-void writeXMLtriad(ofstream &f, int r, int g, int b)
+void writeXMLPalette(ofstream &f, int n, int r, int g, int b)
 {
-	f << "\t";
-	f << "<R>" << r << "</R>";
-	f << "<G>" << g << "</G>";
-	f << "<B>" << b << "</B>";
-	f << "\n";
+	f << "<PALETTE" << n << ">";
+	f << r << " " << g << " " << b;
+	f << "</PALETTE" << n << ">\n";
+}
+
+void writeXMLrgbi(ofstream &f, const char *tag, int r, int g, int b, int i)
+{
+	f << "<" << tag << ">" << r << " " << g << " " << b << " " << i;
+	f << "</" << tag << ">\n";
 }
 
 void configuration::writeDefaultsXML()
 {
 	string deffname = HomeDir;
-	deffname.append("FLDIGI_XML.DEF");
+	deffname.append("fldigi_def.xml");
 	ofstream f(deffname.c_str(), ios::out);
 
 	f << "<FLDIGI_DEFS>\n";
@@ -218,21 +262,20 @@ void configuration::writeDefaultsXML()
 	writeXMLdbl(f, "WFREFLEVEL", wfRefLevel);
 	writeXMLdbl(f, "WFAMPSPAN", wfAmpSpan);
 	writeXMLint(f, "LOWFREQCUTOFF", LowFreqCutoff);
-	writeXMLint(f, "FONT", Fontnbr);
+	writeXMLint(f, "FONTNBR", Fontnbr);
 	writeXMLint(f, "FONTSIZE", FontSize);
 	writeXMLint(f, "FONTCOLOR", FontColor);
 
 	writeXMLbool(f, "STARTATSWEETSPOT", StartAtSweetSpot);
 	writeXMLbool(f, "PSKMAILSWEETSPOT", PSKmailSweetSpot);
 	writeXMLint(f, "PSKSEARCHRANGE", SearchRange);
-	writeXMLint(f, "PSKServerOffset", ServerOffset);
+	writeXMLint(f, "PSKSERVEROFFSET", ServerOffset);
 	writeXMLdbl(f, "CWSWEETSPOT", CWsweetspot);
 	writeXMLdbl(f, "PSKSWEETSPOT", PSKsweetspot);
 	writeXMLdbl(f, "RTTYSWEETSPOT", RTTYsweetspot);
 	writeXMLdbl(f, "RTTYSQUELCH", rtty_squelch);	
 	writeXMLint(f, "RTTYSHIFT", rtty_shift);
 	writeXMLint(f, "RTTYBAUD", rtty_baud);
-	writeXMLint(f, "RTTYSHIFT", rtty_shift);
 	writeXMLint(f, "RTTYBITS", rtty_bits);
 	writeXMLint(f, "RTTYPARITY", rtty_parity);
 	writeXMLint(f, "RTTYSTOP", rtty_stop);
@@ -243,7 +286,7 @@ void configuration::writeDefaultsXML()
 	writeXMLint(f, "RTTYAUTOCOUNT", rtty_autocount);
 	writeXMLint(f, "RTTYAFCSPEED", rtty_afcspeed);
 	writeXMLbool(f, "PREFERXHAIRSCOPE", PreferXhairScope);
-	writeXMLbool(f, "PseudoFSK", PseudoFSK);
+	writeXMLbool(f, "PSEUDOFSK", PseudoFSK);
 
 	writeXMLint(f, "CWWEIGHT", CWweight);	
 	writeXMLint(f, "CWSPEED", CWspeed);
@@ -256,8 +299,8 @@ void configuration::writeDefaultsXML()
 	writeXMLdbl(f, "CWRISETIME", CWrisetime);
 	writeXMLdbl(f, "CWDASH2DOT", CWdash2dot);
 	writeXMLbool(f, "QSK", QSK);
-	writeXMLdbl(f, "CWpre", CWpre);
-	writeXMLdbl(f, "CWpost", CWpost);
+	writeXMLdbl(f, "CWPRE", CWpre);
+	writeXMLdbl(f, "CWPOST", CWpost);
 	
 	writeXMLint(f, "OLIVIATONES", oliviatones);
 	writeXMLint(f, "OLIVIABW", oliviabw);
@@ -269,24 +312,27 @@ void configuration::writeDefaultsXML()
 	writeXMLbool(f, "USECURSORLINES", UseCursorLines);
 	writeXMLbool(f, "USECURSORCENTERLINE", UseCursorCenterLine);
 	writeXMLbool(f, "USEBWTRACKS", UseBWTracks);
-	writeXMLint(f, "CL_RED", cursorLineRGBI.R);	
-	writeXMLint(f, "CL_GREEN", cursorLineRGBI.G);	
-	writeXMLint(f, "CL_BLUE", cursorLineRGBI.B);
-	writeXMLint(f, "CL_INT", cursorLineRGBI.I);	
-	writeXMLint(f, "CC_RED", cursorCenterRGBI.R);	
-	writeXMLint(f, "CC_GREEN", cursorCenterRGBI.G);	
-	writeXMLint(f, "CC_BLUE", cursorCenterRGBI.B);
-	writeXMLint(f, "CC_INT", cursorCenterRGBI.I);	
-	writeXMLint(f, "BWT_RED", bwTrackRGBI.R);	
-	writeXMLint(f, "BWT_GREEN", bwTrackRGBI.G);	
-	writeXMLint(f, "BWT_BLUE", bwTrackRGBI.B);
-	writeXMLint(f, "BWT_INT", bwTrackRGBI.I);	
+	writeXMLrgbi(f, "CLCOLORS", 
+		cursorLineRGBI.R,
+		cursorLineRGBI.G,
+		cursorLineRGBI.B,
+		cursorLineRGBI.I);	
+	writeXMLrgbi(f, "CCCOLORS", 
+		cursorCenterRGBI.R,
+		cursorCenterRGBI.G,
+		cursorCenterRGBI.B,
+		cursorCenterRGBI.I);
+	writeXMLrgbi(f, "BWTCOLORS",
+		bwTrackRGBI.R,
+		bwTrackRGBI.G,
+		bwTrackRGBI.B,
+		bwTrackRGBI.I);	
 	writeXMLbool(f, "VIEWXMTSIGNAL", viewXmtSignal);
 	writeXMLbool(f, "SENDID", sendid);
 	writeXMLbool(f, "MACROID", macroid);
-	writeXMLint(f, "QRZ", QRZ);
+	writeXMLint(f, "QRZTYPE", QRZ);
 	writeXMLstr(f, "QRZUSER", QRZusername);
-	writeXMLstr(f, "QRZpassword", QRZuserpassword);
+	writeXMLstr(f, "QRZPASSWORD", QRZuserpassword);
 	writeXMLbool(f, "BTNUSB", btnusb);
 	writeXMLint(f, "BTNPTTIS", btnPTTis);
 	writeXMLint(f, "BTNRTSDTRIS", btnRTSDTRis);
@@ -326,10 +372,8 @@ void configuration::writeDefaultsXML()
 	writeXMLbool(f, "LINEIN", LineIn);
 	writeXMLbool(f, "ENABLEMIXER", EnableMixer);
 	writeXMLbool(f, "MUTEINPUT", MuteInput);
-	f << "<PALETTE>\n";
 	for (int i = 0; i < 9; i++)
-		writeXMLtriad(f, cfgpal[i].R, cfgpal[i].G, cfgpal[i].B);
-	f << "</PALETTE>\n";
+		writeXMLPalette(f, i, cfgpal[i].R, cfgpal[i].G, cfgpal[i].B);
 
 	writeXMLbool(f, "ALT_TEXT_WIDGETS", alt_text_widgets);
 
@@ -337,284 +381,524 @@ void configuration::writeDefaultsXML()
 	f.close();
 }
 	
-void configuration::writeDefaults(ofstream &f)
-{
-	f << squelch << endl;
-	f << rtty_squelch << endl;
-	f << rtty_shift << endl;
-	f << rtty_baud << endl;
-	f << rtty_bits << endl;
-	f << rtty_parity << endl;
-	f << rtty_stop << endl;
-	f << rtty_reverse << endl;
-	f << rtty_msbfirst << endl;
-	f << oliviatones << endl;
-	f << oliviabw << endl;
-	f << Fontnbr << endl;
-	f << FontSize << endl;
-	f << FontColor << endl;
-	f << btnPTTis << endl;
-	f << btnRTSDTRis << endl;
-	f << btnPTTREVis << endl;
-	f << choiceHAMLIBis << endl;
-	f << chkUSEMEMMAPis << endl;
-	f << chkUSEHAMLIBis << endl;
-	f << HamRigBaudrate << endl;
-	f << RX_corr << endl;
-	f << TX_corr << endl;
-	f << myCall.c_str() << endl;
-	f << myName.c_str() << endl;
-	f << myQth.c_str() << endl;
-	f << myLocator.c_str() << endl;
-	f << PTTdev.c_str() << endl;
-	f << HamRigName.c_str() << endl;
-	f << HamRigDevice.c_str() << endl;
-	f << SCdevice.c_str() << endl;
-	f << secText.c_str() << endl;
-	f << red << endl;
-	f << green << endl;
-	f << blue << endl;
-	f << wfPreFilter << endl;
-	f << wfRefLevel << endl;
-	f << wfAmpSpan << endl;
-	f << MultiColorWF << endl;
-	f << UseCursorLines << endl;
-	f << UseBWTracks << endl;
-	f << CWsweetspot << endl;
-	f << RTTYsweetspot << endl;
-	f << PSKsweetspot << endl;
-	f << UseCursorCenterLine << endl;
-	f << useCWkeylineRTS << endl;
-	f << useFSKkeyline << endl;
-	f << CWFSKport << endl;
-	f << FSKisLSB << endl;
-	f << feldfontnbr << endl;
-	f << rtty_crcrlf << endl;
-	f << rtty_autocrlf << endl;
-	f << rtty_autocount << endl;
-	f << FELD_IDLE << endl;
-	f << QRZ << endl;
-	f << RTTY_USB << endl;
-	f << useUART << endl;
-	f << viewXmtSignal << endl;
-	f << sendid << endl;
-	f << chkUSERIGCATis << endl;
-	f << useCWkeylineDTR << endl;
-	f << useFSKkeylineDTR << endl;
-	f << StartAtSweetSpot << endl;
-	f << rtty_afcspeed << endl;
-	f << PreferXhairScope << endl;
-	f << RTSptt << endl;
-	f << DTRptt << endl;
-	f << RTSplus << endl;
-	f << DTRplus << endl;
-	f << cfgpal[0].R << endl; f << cfgpal[0].G << endl; f << cfgpal[0].B << endl;
-	f << cfgpal[1].R << endl; f << cfgpal[1].G << endl; f << cfgpal[1].B << endl;
-	f << cfgpal[2].R << endl; f << cfgpal[2].G << endl; f << cfgpal[2].B << endl;
-	f << cfgpal[3].R << endl; f << cfgpal[3].G << endl; f << cfgpal[3].B << endl;
-	f << cfgpal[4].R << endl; f << cfgpal[4].G << endl; f << cfgpal[4].B << endl;
-	f << cfgpal[5].R << endl; f << cfgpal[5].G << endl; f << cfgpal[5].B << endl;
-	f << cfgpal[6].R << endl; f << cfgpal[6].G << endl; f << cfgpal[6].B << endl;
-	f << cfgpal[7].R << endl; f << cfgpal[7].G << endl; f << cfgpal[7].B << endl;
-	f << cfgpal[8].R << endl; f << cfgpal[8].G << endl; f << cfgpal[8].B << endl;
-	f << MicIn << endl;
-	f << RcvMixer << endl;
-	f << XmtMixer << endl;
-	f << EnableMixer << endl;
-	f << PCMvolume << endl;
-	f << DOMINOEX_BW << endl;
-	f << LineIn << endl;
-	f << CWweight << endl;
-	f << CWspeed << endl;
-	f << CWbandwidth << endl;
-	f << CWtrack << endl;
-	f << CWrange << endl;
-	f << MuteInput << endl;
-	f << CWlowerlimit << endl;
-	f << CWupperlimit << endl;
-	f << CWrisetime << endl;
-	f << CWdash2dot << endl;
-	f << defCWspeed << endl;
-	f << QSK << endl;
-	f << CWpre << endl;
-	f << CWpost << endl;
-	f << PseudoFSK << endl;
-	f << PSKmailSweetSpot << endl;
-	f << TxOffset << endl;
-	f << MXdevice << endl;
-	f << btnAudioIOis << endl;
-	f << OSSdevice << endl;
-	f << PAdevice << endl;
-	f << LowFreqCutoff << endl;
-	f << SearchRange << endl;
-	f << cursorLineRGBI.R << endl;
-	f << cursorLineRGBI.G << endl;
-	f << cursorLineRGBI.B << endl;
-	f << cursorLineRGBI.I << endl;
-	f << cursorCenterRGBI.R << endl;
-	f << cursorCenterRGBI.G << endl; 
-	f << cursorCenterRGBI.B << endl;
-	f << cursorCenterRGBI.I << endl;
-	f << bwTrackRGBI.R << endl;
-	f << bwTrackRGBI.G << endl;
-	f << bwTrackRGBI.B << endl;
-	f << bwTrackRGBI.I << endl;
-	f << alt_text_widgets << endl;
-	f << QRZusername.c_str() << endl;
-	f << QRZuserpassword.c_str() << endl;
-	f << ServerOffset;
-}
-
-bool configuration::readDefaults(void)
+bool configuration::readDefaultsXML()
 {
 	string deffname = HomeDir;
-	deffname.append("fldigi.def");
-	ifstream f(deffname.c_str(), ios::in);
-	if (!f)
-		return false;
+	deffname.append("fldigi_def.xml");
+	ifstream f_in(deffname.c_str(), ios::in);
 
-	f >> squelch;
-	f >> rtty_squelch;
-	f >> rtty_shift;
-	f >> rtty_baud;
-	f >> rtty_bits;
-	f >> rtty_parity;
-	f >> rtty_stop;
-	f >> rtty_reverse;
-	f >> rtty_msbfirst;
-	f >> oliviatones;
-	f >> oliviabw;
-	f >> Fontnbr;
-	f >> FontSize;
-	f >> FontColor;
-	f >> btnPTTis;
-	f >> btnRTSDTRis;
-	f >> btnPTTREVis;
-	f >> choiceHAMLIBis;
-	f >> chkUSEMEMMAPis;
-	f >> chkUSEHAMLIBis;
-	f >> HamRigBaudrate;
-	f >> RX_corr;
-	f >> TX_corr;
+	if (!f_in) return false;
+	string xmlpage;
+	char str[255];
+	while (f_in) {
+		f_in.getline(str, 255);
+		xmlpage += str;
+		xmlpage += '\n';
+	}
+	f_in.close();
+		
+	IrrXMLReader* xml = createIrrXMLReader(new IIrrXMLStringReader(xmlpage));
 
-// discard the trailing \n before a sequence of getline calls
-	f.ignore();
-
-	getline(f, myCall);
-	getline(f, myName);
-	getline(f, myQth);
-	getline(f, myLocator);
-	getline(f, PTTdev);
-	getline(f, HamRigName);
-	getline(f, HamRigDevice);
-	getline(f, SCdevice);
-	getline(f, secText);
-
-	f >> red;
-	f >> green;
-	f >> blue;
-	f >> wfPreFilter;
-	f >> wfRefLevel;
-	f >> wfAmpSpan;
-	f >> MultiColorWF;
-	f >> UseCursorLines;
-	f >> UseBWTracks;
-	f >> CWsweetspot;
-	f >> RTTYsweetspot;
-	f >> PSKsweetspot;
-	f >> UseCursorCenterLine;
-
-	f >> useCWkeylineRTS;
-	f >> useFSKkeyline;
+// strings for storing the data we want to get out of the file
+	TAG tag = IGNORE;
 	
-	f.ignore();
-	getline(f, CWFSKport);
-	
-	f >> FSKisLSB;
-	f >> feldfontnbr;
-	f >> rtty_crcrlf;
-	f >> rtty_autocrlf;
-	f >> rtty_autocount;
-	f >> FELD_IDLE;
-	f >> QRZ;
-	f >> RTTY_USB;
-	f >> useUART;
-	f >> viewXmtSignal;
-	f >> sendid;
-	f >> chkUSERIGCATis;
-	f >> useCWkeylineDTR;
-	f >> useFSKkeylineDTR;
-	f >> StartAtSweetSpot;
-	f >> rtty_afcspeed;
-	f >> PreferXhairScope;
-	f >> RTSptt;
-	f >> DTRptt;
-	f >> RTSplus;
-	f >> DTRplus;
-	f >> cfgpal[0].R; f >> cfgpal[0].G; f >> cfgpal[0].B;
-	f >> cfgpal[1].R; f >> cfgpal[1].G; f >> cfgpal[1].B;
-	f >> cfgpal[2].R; f >> cfgpal[2].G; f >> cfgpal[2].B;
-	f >> cfgpal[3].R; f >> cfgpal[3].G; f >> cfgpal[3].B;
-	f >> cfgpal[4].R; f >> cfgpal[4].G; f >> cfgpal[4].B;
-	f >> cfgpal[5].R; f >> cfgpal[5].G; f >> cfgpal[5].B;
-	f >> cfgpal[6].R; f >> cfgpal[6].G; f >> cfgpal[6].B;
-	f >> cfgpal[7].R; f >> cfgpal[7].G; f >> cfgpal[7].B;
-	f >> cfgpal[8].R; f >> cfgpal[8].G; f >> cfgpal[8].B;
-	f >> MicIn;
-	f >> RcvMixer;
-	f >> XmtMixer;
-	f >> EnableMixer;
-	f >> PCMvolume;
-	f >> DOMINOEX_BW;
-	f >> LineIn;
-	f >> CWweight;
-	f >> CWspeed;
-	f >> CWbandwidth;
-	f >> CWtrack;
-	f >> CWrange;
-	f >> MuteInput;
-	f >> CWlowerlimit;
-	f >> CWupperlimit;
-	f >> CWrisetime;
-	f >> CWdash2dot;
-	f >> defCWspeed;
-	f >> QSK;
-	f >> CWpre;
-	f >> CWpost;
-	f >> PseudoFSK;
-	f >> PSKmailSweetSpot;
-	f >> TxOffset;
-	f >> MXdevice;
-	f >> btnAudioIOis;
-	f >> OSSdevice;
+// parse the file until end reached
+	while(xml && xml->read()) {
+		switch(xml->getNodeType()) {
+			case EXN_TEXT:
+			case EXN_CDATA:
+				switch (tag) {
+					default:
+					case IGNORE:
+						break;
+					case MYCALL :
+						myCall = xml->getNodeData();
+						break;
+					case MYNAME:
+						myName = xml->getNodeData();
+						break;
+					case MYQTH:
+						myQth = xml->getNodeData();
+						break;
+					case MYLOC:
+						myLocator = xml->getNodeData();
+						break;
+					case SQUELCH:
+						squelch = atof(xml->getNodeData());
+						break;
+					case WFREFLEVEL:
+						wfRefLevel = atof(xml->getNodeData());
+						break;
+					case WFAMPSPAN :
+						wfAmpSpan = atof(xml->getNodeData());
+						break;
+					case LOWFREQCUTOFF :
+						LowFreqCutoff = atoi(xml->getNodeData());
+						break;
+					case FONTSIZE :
+						FontSize = atoi(xml->getNodeData());
+						break;
+					case FONTCOLOR :
+						FontColor = atoi(xml->getNodeData());
+						break;
+					case FONTNBR :
+						Fontnbr = atoi(xml->getNodeData());
+						break;
+					case STARTATSWEETSPOT :
+						StartAtSweetSpot = atoi(xml->getNodeData());
+						break;
+					case PSKMAILSWEETSPOT :
+						PSKmailSweetSpot = atoi(xml->getNodeData());
+						break;
+					case PSKSEARCHRANGE :
+						SearchRange = atoi(xml->getNodeData());
+						break;
+					case PSKSERVEROFFSET :
+						ServerOffset = atoi(xml->getNodeData());
+						break;
+					case CWSWEETSPOT :
+						CWsweetspot = atof(xml->getNodeData());
+						break;
+					case PSKSWEETSPOT :
+						PSKsweetspot = atof(xml->getNodeData());
+						break;
+					case RTTYSWEETSPOT :
+						RTTYsweetspot = atof(xml->getNodeData());
+						break;
+					case RTTYSQUELCH :
+						rtty_squelch = atof(xml->getNodeData());
+						break;
+					case RTTYSHIFT :
+						rtty_shift = atoi(xml->getNodeData());
+						break;
+					case RTTYBAUD :
+						rtty_baud = atoi(xml->getNodeData());
+						break;
+					case RTTYBITS :
+						rtty_bits = atoi(xml->getNodeData());
+						break;
+					case RTTYPARITY :
+						rtty_parity = atoi(xml->getNodeData());
+						break;
+					case RTTYSTOP :
+						rtty_stop = atoi(xml->getNodeData());
+						break;
+					case RTTYREVERSE :
+						rtty_reverse = atoi(xml->getNodeData());
+						break;
+					case RTTYMSBFIRST :
+						rtty_msbfirst = atoi(xml->getNodeData());
+						break;
+					case RTTYCRCLF :
+						rtty_crcrlf = atoi(xml->getNodeData());
+						break;
+					case RTTYAUTOCRLF :
+						rtty_autocrlf = atoi(xml->getNodeData());
+						break;
+					case RTTYAUTOCOUNT :
+						rtty_autocount = atoi(xml->getNodeData());
+						break;
+					case RTTYAFCSPEED :
+						rtty_afcspeed = atoi(xml->getNodeData());
+						break;
+					case PREFERXHAIRSCOPE :
+						PreferXhairScope = atoi(xml->getNodeData());
+						break;
+					case PSEUDOFSK :
+						PseudoFSK = atoi(xml->getNodeData());
+						break;
+					case CWWEIGHT :
+						CWweight = atoi(xml->getNodeData());
+						break;
+					case CWSPEED :
+						CWspeed = atoi(xml->getNodeData());
+						break;
+					case CWDEFSPEED :
+						defCWspeed = atoi(xml->getNodeData());
+						break;
+					case CWBANDWIDTH :
+						CWbandwidth = atoi(xml->getNodeData());
+						break;
+					case CWRANGE :
+						CWrange = atoi(xml->getNodeData());
+						break;
+					case CWLOWERLIMIT :
+						CWlowerlimit = atoi(xml->getNodeData());
+						break;
+					case CWUPPERLIMIT :
+						CWupperlimit = atoi(xml->getNodeData());
+						break;
+					case CWTRACK :
+						CWtrack = atoi(xml->getNodeData());
+						break;
+					case CWRISETIME :
+						CWrisetime = atof(xml->getNodeData());
+						break;
+					case CWDASH2DOT :
+						CWdash2dot = atof(xml->getNodeData());
+						break;
+					case XQSK :
+						QSK = atoi(xml->getNodeData());
+						break;
+					case CWPRE :
+						CWpre = atof(xml->getNodeData());
+						break;
+					case CWPOST :
+						CWpost = atof(xml->getNodeData());
+						break;
+					case OLIVIATONES :
+						oliviatones = atoi(xml->getNodeData());
+						break;
+					case OLIVIABW :
+						oliviabw = atoi(xml->getNodeData());
+						break;
+					case DOMINOEXBW :
+						DOMINOEX_BW = atof(xml->getNodeData());
+						break;
+					case FELDFONTNBR :
+						feldfontnbr = atoi(xml->getNodeData());
+						break;
+					case FELDIDLE :
+						FELD_IDLE = atoi(xml->getNodeData());
+						break;
+					case WFPREFILTER :
+						wfPreFilter = atoi(xml->getNodeData());
+						break;
+					case USECURSORLINES :
+						UseCursorLines = atoi(xml->getNodeData());
+						break;
+					case USECURSORCENTERLINE :
+						UseCursorCenterLine = atoi(xml->getNodeData());
+						break;
+					case USEBWTRACKS :
+						UseBWTracks = atoi(xml->getNodeData());
+						break;
+					case CLCOLORS :
+						sscanf( xml->getNodeData(), "%d %d %d",
+							&cursorLineRGBI.R,
+							&cursorLineRGBI.G,
+							&cursorLineRGBI.B,
+							&cursorLineRGBI.I );	
+						break;
+					case CCCOLORS :
+						sscanf( xml->getNodeData(), "%d %d %d",
+							&cursorCenterRGBI.R,
+							&cursorCenterRGBI.G,
+							&cursorCenterRGBI.B,
+							&cursorCenterRGBI.I );	
+						break;
+					case BWTCOLORS :
+						sscanf( xml->getNodeData(), "%d %d %d",
+							&bwTrackRGBI.R,
+							&bwTrackRGBI.G,
+							&bwTrackRGBI.B,
+							&bwTrackRGBI.I );	
+						break;
+					case VIEWXMTSIGNAL :
+						viewXmtSignal = atoi(xml->getNodeData());
+						break;
+					case SENDID :
+						sendid = atoi(xml->getNodeData());
+						break;
+					case MACROID :
+						macroid = atoi(xml->getNodeData());
+						break;
+					case QRZTYPE :
+						QRZ = atoi(xml->getNodeData());
+						break;
+					case QRZUSER :
+						QRZusername = xml->getNodeData();
+						break;
+					case QRZPASSWORD :
+						QRZuserpassword = xml->getNodeData();
+						break;
+					case BTNUSB :
+						btnusb = atoi(xml->getNodeData());
+						break;
+					case BTNPTTIS :
+						btnPTTis = atoi(xml->getNodeData());
+						break;
+					case BTNRTSDTRIS :
+						btnRTSDTRis = atoi(xml->getNodeData());
+						break;
+					case BTNPTTREVIS :
+						btnPTTREVis = atoi(xml->getNodeData());
+						break;
+					case RTSPTT :
+						RTSptt = atoi(xml->getNodeData());
+						break;
+					case DTRPTT :
+						DTRptt = atoi(xml->getNodeData());
+						break;
+					case RTSPLUS :
+						RTSplus = atoi(xml->getNodeData());
+						break;
+					case DTRPLUS :
+						DTRplus = atoi(xml->getNodeData());
+						break;
+					case CHOICEHAMLIBIS :
+						choiceHAMLIBis = atoi(xml->getNodeData());
+						break;
+					case CHKUSEMEMMAPIS :
+						chkUSEMEMMAPis = atoi(xml->getNodeData());
+						break;
+					case CHKUSEHAMLIBIS :
+						chkUSEHAMLIBis = atoi(xml->getNodeData());
+						break;
+					case CHKUSERIGCATIS :
+						chkUSERIGCATis = atoi(xml->getNodeData());
+						break;
+					case HAMRIGNAME :
+						HamRigName = xml->getNodeData();
+						break;
+					case HAMRIGDEVICE :
+						HamRigDevice = xml->getNodeData();
+						break;
+					case HAMRIGBAUDRATE :
+						HamRigBaudrate = atoi(xml->getNodeData());
+						break;
+					case PTTDEV :
+						PTTdev = xml->getNodeData();
+						break;
+					case SECONDARYTEXT :
+						secText = xml->getNodeData();
+						break;
+					case AUDIOIO :
+						btnAudioIOis = atoi(xml->getNodeData());
+						break;
+					case SCDEVICE :
+						SCdevice = xml->getNodeData();
+						break;
+					case OSSDEVICE :
+						OSSdevice = xml->getNodeData();
+						break;
+					case PADEVICE :
+						PAdevice = xml->getNodeData();
+						break;
+					case RXCORR :
+						RX_corr = atoi(xml->getNodeData());
+						break;
+					case TXCORR :
+						TX_corr = atoi(xml->getNodeData());
+						break;
+					case TXOFFSET :
+						TxOffset = atoi(xml->getNodeData());
+						break;
+					case USELEADINGZEROS :
+						UseLeadingZeros = atoi(xml->getNodeData());
+						break;
+					case CONTESTSTART :
+						ContestStart = atoi(xml->getNodeData());
+						break;
+					case CONTESTDIGITS :
+						ContestDigits = atoi(xml->getNodeData());
+						break;
+					case USETIMER :
+						useTimer = atoi(xml->getNodeData());
+						break;
+					case MACRONUMBER :
+						macronumber = atoi(xml->getNodeData());
+						break;
+					case TIMEOUT :
+						timeout = atoi(xml->getNodeData());
+						break;
+					case MXDEVICE :
+						MXdevice = xml->getNodeData();
+						break;
+					case RCVMIXER :
+						RcvMixer = atof(xml->getNodeData());
+						break;
+					case XMTMIXER :
+						XmtMixer = atof(xml->getNodeData());
+						break;
+					case PCMVOLUME :
+						PCMvolume = atof(xml->getNodeData());
+						break;
+					case MICIN :
+						MicIn = atoi(xml->getNodeData());
+						break;
+					case LINEIN :
+						LineIn = atoi(xml->getNodeData());
+						break;
+					case ENABLEMIXER :
+						EnableMixer = atoi(xml->getNodeData());
+						break;
+					case MUTEINPUT :
+						MuteInput = atoi(xml->getNodeData());
+						break;
+					case PALETTE0 :
+						sscanf( xml->getNodeData(), "%d %d %d",
+								&cfgpal[0].R, &cfgpal[0].G, &cfgpal[0].B );
+						break;
+					case PALETTE1 :
+						sscanf( xml->getNodeData(), "%d %d %d",
+								&cfgpal[1].R, &cfgpal[1].G, &cfgpal[1].B );
+						break;
+					case PALETTE2 :
+						sscanf( xml->getNodeData(), "%d %d %d",
+								&cfgpal[2].R, &cfgpal[2].G, &cfgpal[2].B );
+						break;
+					case PALETTE3 :
+						sscanf( xml->getNodeData(), "%d %d %d",
+								&cfgpal[3].R, &cfgpal[3].G, &cfgpal[3].B );
+						break;
+					case PALETTE4 :
+						sscanf( xml->getNodeData(), "%d %d %d",
+								&cfgpal[4].R, &cfgpal[4].G, &cfgpal[4].B );
+						break;
+					case PALETTE5 :
+						sscanf( xml->getNodeData(), "%d %d %d",
+								&cfgpal[5].R, &cfgpal[5].G, &cfgpal[5].B );
+						break;
+					case PALETTE6 :
+						sscanf( xml->getNodeData(), "%d %d %d",
+								&cfgpal[6].R, &cfgpal[6].G, &cfgpal[6].B );
+						break;
+					case PALETTE7 :
+						sscanf( xml->getNodeData(), "%d %d %d",
+								&cfgpal[7].R, &cfgpal[7].G, &cfgpal[7].B );
+						break;
+					case PALETTE8 :
+						sscanf( xml->getNodeData(), "%d %d %d",
+								&cfgpal[8].R, &cfgpal[8].G, &cfgpal[8].B );
+						break;
+					case ALT_TEXT_WIDGETS :
+						alt_text_widgets = atoi(xml->getNodeData());
+						break;
+				}
+				break;
+				
+			case EXN_ELEMENT_END:
+				tag=IGNORE;
+				break;
 
-	f.ignore();
-	getline(f, PAdevice);
-	
-	f >> LowFreqCutoff;
-	f >> SearchRange;
-	f >> cursorLineRGBI.R;
-	f >> cursorLineRGBI.G ;
-	f >> cursorLineRGBI.B;
-	f >> cursorLineRGBI.I;
-	f >> cursorCenterRGBI.R;
-	f >> cursorCenterRGBI.G;
-	f >> cursorCenterRGBI.B;
-	f >> cursorCenterRGBI.I;
-	f >> bwTrackRGBI.R;
-	f >> bwTrackRGBI.G;
-	f >> bwTrackRGBI.B;
-	f >> bwTrackRGBI.I;
+			case EXN_ELEMENT: 
+				{
+				const char *nodeName = xml->getNodeName();
+				if (!strcmp("MYCALL", nodeName)) 		tag = MYCALL;
+				else if (!strcmp("MYNAME", nodeName)) 	tag = MYNAME;
+				else if (!strcmp("MYQTH", nodeName)) 	tag = MYQTH;
+				else if (!strcmp("MYLOC", nodeName)) 	tag = MYLOC;
+				else if (!strcmp("SQUELCH", nodeName)) 	tag = SQUELCH;
+				else if (!strcmp("WFREFLEVEL", nodeName)) 	tag = WFREFLEVEL;
+				else if (!strcmp("WFAMPSPAN", nodeName)) 	tag = WFAMPSPAN;
+				else if (!strcmp("LOWFREQCUTOFF", nodeName)) 	tag = LOWFREQCUTOFF;
+				else if (!strcmp("FONTSIZE", nodeName)) 	tag = FONTSIZE;
+				else if (!strcmp("FONTCOLOR", nodeName)) 	tag = FONTCOLOR;
+				else if (!strcmp("FONTNBR", nodeName)) 	tag = FONTNBR;
+				else if (!strcmp("STARTATSWEETSPOT", nodeName)) 	tag = STARTATSWEETSPOT;
+				else if (!strcmp("PSKMAILSWEETSPOT", nodeName)) 	tag = PSKMAILSWEETSPOT;
+				else if (!strcmp("PSKSEARCHRANGE", nodeName)) 	tag = PSKSEARCHRANGE;
+				else if (!strcmp("PSKSERVEROFFSET", nodeName)) 	tag = PSKSERVEROFFSET;
+				else if (!strcmp("CWSWEETSPOT", nodeName)) 	tag = CWSWEETSPOT;
+				else if (!strcmp("PSKSWEETSPOT", nodeName)) 	tag = PSKSWEETSPOT;
+				else if (!strcmp("RTTYSWEETSPOT", nodeName)) 	tag = RTTYSWEETSPOT;
+				else if (!strcmp("RTTYSQUELCH", nodeName)) 	tag = RTTYSQUELCH;
+				else if (!strcmp("RTTYSHIFT", nodeName)) 	tag = RTTYSHIFT;
+				else if (!strcmp("RTTYBAUD", nodeName)) 	tag = RTTYBAUD;
+				else if (!strcmp("RTTYBITS", nodeName)) 	tag = RTTYBITS;
+				else if (!strcmp("RTTYPARITY", nodeName)) 	tag = RTTYPARITY;
+				else if (!strcmp("RTTYSTOP", nodeName)) 	tag = RTTYSTOP;
+				else if (!strcmp("RTTYREVERSE", nodeName)) 	tag = RTTYREVERSE;
+				else if (!strcmp("RTTYMSBFIRST", nodeName)) 	tag = RTTYMSBFIRST;
+				else if (!strcmp("RTTYCRCLF", nodeName)) 	tag = RTTYCRCLF;
+				else if (!strcmp("RTTYAUTOCRLF", nodeName)) 	tag = RTTYAUTOCRLF;
+				else if (!strcmp("RTTYAUTOCOUNT", nodeName)) 	tag = RTTYAUTOCOUNT;
+				else if (!strcmp("RTTYAFCSPEED", nodeName)) 	tag = RTTYAFCSPEED;
+				else if (!strcmp("PREFERXHAIRSCOPE", nodeName)) 	tag = PREFERXHAIRSCOPE;
+				else if (!strcmp("PSEUDOFSK", nodeName)) 	tag = PSEUDOFSK;
+				else if (!strcmp("CWWEIGHT", nodeName)) 	tag = CWWEIGHT;
+				else if (!strcmp("CWSPEED", nodeName)) 	tag = CWSPEED;
+				else if (!strcmp("CWDEFSPEED", nodeName)) 	tag = CWDEFSPEED;
+				else if (!strcmp("CWBANDWIDTH", nodeName)) 	tag = CWBANDWIDTH;
+				else if (!strcmp("CWRANGE", nodeName)) 	tag = CWRANGE;
+				else if (!strcmp("CWLOWERLIMIT", nodeName)) 	tag = CWLOWERLIMIT;
+				else if (!strcmp("CWUPPERLIMIT", nodeName)) 	tag = CWUPPERLIMIT;
+				else if (!strcmp("CWTRACK", nodeName)) 	tag = CWTRACK;
+				else if (!strcmp("CWRISETIME", nodeName)) 	tag = CWRISETIME;
+				else if (!strcmp("CWDASH2DOT", nodeName)) 	tag = CWDASH2DOT;
+				else if (!strcmp("QSK", nodeName)) 	tag = XQSK;
+				else if (!strcmp("CWPRE", nodeName)) 	tag = CWPRE;
+				else if (!strcmp("CWPOST", nodeName)) 	tag = CWPOST;
+				else if (!strcmp("OLIVIATONES", nodeName)) 	tag = OLIVIATONES;
+				else if (!strcmp("OLIVIABW", nodeName)) 	tag = OLIVIABW;
+				else if (!strcmp("DOMINOEXBW", nodeName)) 	tag = DOMINOEXBW;
+				else if (!strcmp("FELDFONTNBR", nodeName)) 	tag = FELDFONTNBR;
+				else if (!strcmp("FELDIDLE", nodeName)) 	tag = FELDIDLE;
+				else if (!strcmp("WFPREFILTER", nodeName)) 	tag = WFPREFILTER;
+				else if (!strcmp("USECURSORLINES", nodeName)) 	tag = USECURSORLINES;
+				else if (!strcmp("USECURSORCENTERLINE", nodeName)) 	tag = USECURSORCENTERLINE;
+				else if (!strcmp("USEBWTRACKS", nodeName)) 	tag = USEBWTRACKS;
+				else if (!strcmp("CLCOLORS", nodeName)) 	tag = CLCOLORS;
+				else if (!strcmp("CCCOLORS", nodeName)) 	tag = CCCOLORS;
+				else if (!strcmp("BWTCOLORS", nodeName)) 	tag = BWTCOLORS;
+				else if (!strcmp("VIEWXMTSIGNAL", nodeName)) 	tag = VIEWXMTSIGNAL;
+				else if (!strcmp("SENDID", nodeName)) 	tag = SENDID;
+				else if (!strcmp("MACROID", nodeName)) 	tag = MACROID;
+				else if (!strcmp("QRZUSER", nodeName)) 	tag = QRZUSER;
+				else if (!strcmp("QRZPASSWORD", nodeName)) 	tag = QRZPASSWORD;
+				else if (!strcmp("QRZTYPE", nodeName)) 	tag = QRZTYPE;
+				else if (!strcmp("BTNUSB", nodeName)) 	tag = BTNUSB;
+				else if (!strcmp("BTNPTTIS", nodeName)) 	tag = BTNPTTIS;
+				else if (!strcmp("BTNRTSDTRIS", nodeName)) 	tag = BTNRTSDTRIS;
+				else if (!strcmp("BTNPTTREVIS", nodeName)) 	tag = BTNPTTREVIS;
+				else if (!strcmp("RTSPTT", nodeName)) 	tag = RTSPTT;
+				else if (!strcmp("DTRPTT", nodeName)) 	tag = DTRPTT;
+				else if (!strcmp("RTSPLUS", nodeName)) 	tag = RTSPLUS;
+				else if (!strcmp("DTRPLUS", nodeName)) 	tag = DTRPLUS;
+				else if (!strcmp("CHOICEHAMLIBIS", nodeName)) 	tag = CHOICEHAMLIBIS;
+				else if (!strcmp("CHKUSEMEMMAPIS", nodeName)) 	tag = CHKUSEMEMMAPIS;
+				else if (!strcmp("CHKUSEHAMLIBIS", nodeName)) 	tag = CHKUSEHAMLIBIS;
+				else if (!strcmp("CHKUSERIGCATIS", nodeName)) 	tag = CHKUSERIGCATIS;
+				else if (!strcmp("HAMRIGNAME", nodeName)) 	tag = HAMRIGNAME;
+				else if (!strcmp("HAMRIGDEVICE", nodeName)) 	tag = HAMRIGDEVICE;
+				else if (!strcmp("HAMRIGBAUDRATE", nodeName)) 	tag = HAMRIGBAUDRATE;
+				else if (!strcmp("PTTDEV", nodeName)) 	tag = PTTDEV;
+				else if (!strcmp("SECONDARYTEXT", nodeName)) 	tag = SECONDARYTEXT;
+				else if (!strcmp("AUDIOIO", nodeName)) 	tag = AUDIOIO;
+				else if (!strcmp("SCDEVICE", nodeName)) 	tag = SCDEVICE;
+				else if (!strcmp("OSSDEVICE", nodeName)) 	tag = OSSDEVICE;
+				else if (!strcmp("PADEVICE", nodeName)) 	tag = PADEVICE;
+				else if (!strcmp("RXCORR", nodeName)) 	tag = RXCORR;
+				else if (!strcmp("TXCORR", nodeName)) 	tag = TXCORR;
+				else if (!strcmp("TXOFFSET", nodeName)) 	tag = TXOFFSET;
+				else if (!strcmp("USELEADINGZEROS", nodeName)) 	tag = USELEADINGZEROS;
+				else if (!strcmp("CONTESTSTART", nodeName)) 	tag = CONTESTSTART;
+				else if (!strcmp("CONTESTDIGITS", nodeName)) 	tag = CONTESTDIGITS;
+				else if (!strcmp("USETIMER", nodeName)) 	tag = USETIMER;
+				else if (!strcmp("MACRONUMBER", nodeName)) 	tag = MACRONUMBER;
+				else if (!strcmp("TIMEOUT", nodeName)) 	tag = TIMEOUT;
+				else if (!strcmp("MXDEVICE", nodeName)) 	tag = MXDEVICE;
+				else if (!strcmp("RCVMIXER", nodeName)) 	tag = RCVMIXER;
+				else if (!strcmp("XMTMIXER", nodeName)) 	tag = XMTMIXER;
+				else if (!strcmp("PCMVOLUME", nodeName)) 	tag = PCMVOLUME;
+				else if (!strcmp("MICIN", nodeName)) 	tag = MICIN;
+				else if (!strcmp("LINEIN", nodeName)) 	tag = LINEIN;
+				else if (!strcmp("ENABLEMIXER", nodeName)) 	tag = ENABLEMIXER;
+				else if (!strcmp("MUTEINPUT", nodeName)) 	tag = MUTEINPUT;
+				else if (!strcmp("PALETTE0", nodeName)) 	tag = PALETTE0;
+				else if (!strcmp("PALETTE1", nodeName)) 	tag = PALETTE1;
+				else if (!strcmp("PALETTE2", nodeName)) 	tag = PALETTE2;
+				else if (!strcmp("PALETTE3", nodeName)) 	tag = PALETTE3;
+				else if (!strcmp("PALETTE4", nodeName)) 	tag = PALETTE4;
+				else if (!strcmp("PALETTE5", nodeName)) 	tag = PALETTE5;
+				else if (!strcmp("PALETTE6", nodeName)) 	tag = PALETTE6;
+				else if (!strcmp("PALETTE7", nodeName)) 	tag = PALETTE7;
+				else if (!strcmp("PALETTE8", nodeName)) 	tag = PALETTE8;
+				else if (!strcmp("ALT_TEXT_WIDGETS", nodeName)) 	tag = ALT_TEXT_WIDGETS;
+				else tag = IGNORE;
+				}
+				break;
 
-	f >> alt_text_widgets;
-
-	f.ignore();
-	getline(f, QRZusername);
-	getline(f, QRZuserpassword);
-	
-	f >> ServerOffset;
-
-        return true;
+			case EXN_NONE:
+			case EXN_COMMENT:
+			case EXN_UNKNOWN:
+				break;
+		}
+	}
+// delete the xml parser after usage
+	delete xml;
+	return true;
 }
 
 void configuration::loadDefaults() {
@@ -700,12 +984,12 @@ void configuration::saveDefaults() {
 	}
 	FL_UNLOCK();
 	
-	string deffname = HomeDir;
-	deffname.append("fldigi.def");
-	ofstream deffile(deffname.c_str(), ios::out);
-	writeDefaults(deffile);
+//	string deffname = HomeDir;
+//	deffname.append("fldigi.def");
+//	ofstream deffile(deffname.c_str(), ios::out);
+//	writeDefaults(deffile);
 
-	deffile.close();
+//	deffile.close();
 	
 	writeDefaultsXML();
 	
@@ -716,7 +1000,8 @@ int configuration::openDefaults() {
 #ifndef NOHAMLIB	
 	getRigs();
 #endif	
-	if (readDefaults()) {
+	if (readDefaultsXML()) {
+//	if (readDefaults()) {
 		FL_LOCK();
 			inpMyCallsign->value(myCall.c_str());
 			inpMyName->value(myName.c_str());
@@ -729,8 +1014,10 @@ int configuration::openDefaults() {
 			txtSecondary->value(secText.c_str());
 			valDominoEX_BW->value(DOMINOEX_BW);
 			
-			for (int i = 0; i < 5; i++)
+			for (int i = 0; i < 5; i++) {
 				btnPTT[i]->value(0);
+				btnPTT[i]->activate();
+			}
 			btnPTT[btnPTTis]->value(1);
 #ifdef NOHAMLIB
 			btnPTT[1]->deactivate();
@@ -760,6 +1047,9 @@ int configuration::openDefaults() {
                 cboHamlibRig->deactivate();
                 inpRIGdev->deactivate();
                 mnuBaudRate->deactivate();
+                btnPTT[1]->deactivate();
+                btnPTT[2]->activate();
+                btnPTT[3]->deactivate();
 			} else if (chkUSEHAMLIBis) {
 				chkUSEMEMMAP->value(0);
 				chkUSERIGCAT->value(0);
@@ -767,6 +1057,9 @@ int configuration::openDefaults() {
                 cboHamlibRig->activate();
                 inpRIGdev->activate();
                 mnuBaudRate->activate();
+                btnPTT[1]->activate();
+                btnPTT[2]->deactivate();
+                btnPTT[3]->deactivate();
 			} else if (chkUSERIGCATis) {
 				chkUSEMEMMAP->value(0);
 				chkUSEHAMLIB->value(0);
@@ -774,10 +1067,16 @@ int configuration::openDefaults() {
                 cboHamlibRig->deactivate();
                 inpRIGdev->deactivate();
                 mnuBaudRate->deactivate();
+                btnPTT[1]->deactivate();
+                btnPTT[2]->deactivate();
+                btnPTT[3]->activate();
 			} else {
 				chkUSEMEMMAP->value(0);
 				chkUSEHAMLIB->value(0);
 				chkUSERIGCAT->value(0);
+                btnPTT[1]->deactivate();
+                btnPTT[2]->deactivate();
+                btnPTT[3]->deactivate();
 			}
 
 			inpRIGdev->value(HamRigDevice.c_str());
@@ -879,9 +1178,13 @@ int configuration::openDefaults() {
 			cntRxRateCorr->value(RX_corr);
 			cntTxRateCorr->value(TX_corr);
 			cntTxOffset->value(TxOffset);
-
+#ifdef USE_BOTH_TEXT_WIDGETS
 			btntextwidgets->value(alt_text_widgets);
-			
+			btntextwidgets->activate();
+#else
+			alt_text_widgets = true;
+			btntextwidgets->deactivate();
+#endif			
 		FL_UNLOCK();
 
 		enableMixer(EnableMixer);
@@ -954,9 +1257,7 @@ void configuration::initInterface() {
 		DTRplus = btnDTRplusV->value();
 		
 		PTTdev = inpTTYdev->value();
-//	FL_UNLOCK();
-//		push2talk->reset(btnPTTis);//, btnRTSDTRis, btnPTTREVis);
-//	FL_LOCK();	
+
 #ifndef NOHAMLIB
 		chkUSEHAMLIBis = chkUSEHAMLIB->value();
 #endif		

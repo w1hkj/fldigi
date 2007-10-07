@@ -175,7 +175,7 @@ int main(int argc, char ** argv)
 	Fl::set_fonts(0);
 	
 	rigcontrol = createRigDialog();
-	progdefaults.readDefaults();
+	progdefaults.readDefaultsXML();
 	progdefaults.testCommPorts();
 	
 	create_fl_digi_main();
@@ -193,10 +193,6 @@ int main(int argc, char ** argv)
 	push2talk = new PTT();
 
 	progdefaults.openDefaults();
-//	if (progdefaults.openDefaults())
-//		push2talk->reset(	progdefaults.btnPTTis,
-//							progdefaults.btnRTSDTRis,
-//							progdefaults.btnPTTREVis );
 	
 #ifndef PORTAUDIO
 	scDevice = progdefaults.SCdevice;

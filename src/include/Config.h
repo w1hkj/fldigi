@@ -42,7 +42,7 @@ extern Fl_Check_Button *btnUseCursorCenterLine;
 extern Fl_Button *btnCursorBWcolor;
 extern Fl_Button *btnCursorCenterLineColor;
 extern Fl_Button *btnBwTracksColor;
-extern Fl_Group *tabInterface;
+extern Fl_Group *tabRig;
 #include <FL/Fl_Round_Button.H>
 extern Fl_Input *inpTTYdev;
 extern Fl_Round_Button *btnRTSptt;
@@ -51,13 +51,13 @@ extern Fl_Round_Button *btnRTSplusV;
 extern Fl_Round_Button *btnDTRplusV;
 #include <FL/Fl_Box.H>
 extern Fl_Round_Button *btnPTT[5];
-extern Fl_Check_Button *chkUSEMEMMAP;
 extern Fl_Check_Button *chkUSERIGCAT;
 extern Fl_Check_Button *chkUSEHAMLIB;
 extern Fl_ComboBox *cboHamlibRig;
 extern Fl_Input *inpRIGdev;
 #include <FL/Fl_Choice.H>
 extern Fl_Choice *mnuBaudRate;
+extern Fl_Check_Button *chkUSEMEMMAP;
 extern Fl_Button *btnInit_Interface;
 extern Fl_Check_Button *btnQRZnotavailable;
 extern Fl_Check_Button *btnQRZsocket;

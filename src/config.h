@@ -94,4 +94,13 @@
 
 #define USE250
 
+//remove the comment delimiter to enable both old and new text widget class
+//switching from one to the other requires a restart of the program before
+//the newly selected widget becomes effective.
+//
+//default is to use the new text widget class that is a fully enabled editor
+//widget
+//#define USE_BOTH_TEXT_WIDGETS
+
+
 #endif

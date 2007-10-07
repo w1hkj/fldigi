@@ -237,39 +237,12 @@ progdefaults.changed = true;
 };
 }
 
-Fl_Group *tabInterface=(Fl_Group *)0;
+Fl_Group *tabRig=(Fl_Group *)0;
 
 static void cb_btnPTT(Fl_Round_Button* o, void*) {
   btnPTT[1]->value(0);
 btnPTT[2]->value(0);
 btnPTT[3]->value(0);
-btnPTT[4]->value(0);
-o->value(1);
-progdefaults.changed = true;
-}
-
-static void cb_btnPTT1(Fl_Round_Button* o, void*) {
-  btnPTT[0]->value(0);
-btnPTT[2]->value(0);
-btnPTT[3]->value(0);
-btnPTT[4]->value(0);
-o->value(1);
-progdefaults.changed = true;
-}
-
-static void cb_btnPTT2(Fl_Round_Button* o, void*) {
-  btnPTT[0]->value(0);
-btnPTT[1]->value(0);
-btnPTT[3]->value(0);
-btnPTT[4]->value(0);
-o->value(1);
-progdefaults.changed = true;
-}
-
-static void cb_btnPTT3(Fl_Round_Button* o, void*) {
-  btnPTT[0]->value(0);
-btnPTT[1]->value(0);
-btnPTT[2]->value(0);
 btnPTT[4]->value(0);
 o->value(1);
 progdefaults.changed = true;
@@ -307,36 +280,12 @@ static void cb_btnDTRplusV(Fl_Round_Button*, void*) {
 
 Fl_Round_Button *btnPTT[5]={(Fl_Round_Button *)0};
 
-static void cb_btnPTT4(Fl_Round_Button* o, void*) {
+static void cb_btnPTT1(Fl_Round_Button* o, void*) {
   btnPTT[0]->value(0);
 btnPTT[1]->value(0);
 btnPTT[2]->value(0);
 btnPTT[3]->value(0);
 o->value(1);
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *chkUSEMEMMAP=(Fl_Check_Button *)0;
-
-static void cb_chkUSEMEMMAP(Fl_Check_Button* o, void*) {
-  if(o->value() == 1){
-  chkUSEHAMLIB->value(0);
-  chkUSERIGCAT->value(0);
-  btnPTT[3]->value(0);
-  btnPTT[3]->deactivate();
-  btnPTT[1]->value(0);
-  btnPTT[1]->deactivate();
-  btnPTT[2]->activate();
-  cboHamlibRig->deactivate();
-  inpRIGdev->deactivate();
-  mnuBaudRate->deactivate();
-  } else {
-  if (btnPTT[2]->value()==1)
-  	btnPTT[0]->value(1);
-  btnPTT[2]->value(0);
-  btnPTT[2]->deactivate();
-  }
-for (int i = 0; i < 4; btnPTT[i++]->redraw());  
 progdefaults.changed = true;
 }
 
@@ -361,6 +310,15 @@ static void cb_chkUSERIGCAT(Fl_Check_Button* o, void*) {
   btnPTT[3]->deactivate();
   }
 for (int i = 0; i < 4; btnPTT[i++]->redraw());
+progdefaults.changed = true;
+}
+
+static void cb_btnPTT2(Fl_Round_Button* o, void*) {
+  btnPTT[0]->value(0);
+btnPTT[1]->value(0);
+btnPTT[2]->value(0);
+btnPTT[4]->value(0);
+o->value(1);
 progdefaults.changed = true;
 }
 
@@ -407,6 +365,48 @@ Fl_Choice *mnuBaudRate=(Fl_Choice *)0;
 
 static void cb_mnuBaudRate(Fl_Choice*, void*) {
   progdefaults.changed = true;
+}
+
+static void cb_btnPTT3(Fl_Round_Button* o, void*) {
+  btnPTT[0]->value(0);
+btnPTT[2]->value(0);
+btnPTT[3]->value(0);
+btnPTT[4]->value(0);
+o->value(1);
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *chkUSEMEMMAP=(Fl_Check_Button *)0;
+
+static void cb_chkUSEMEMMAP(Fl_Check_Button* o, void*) {
+  if(o->value() == 1){
+  chkUSEHAMLIB->value(0);
+  chkUSERIGCAT->value(0);
+  btnPTT[3]->value(0);
+  btnPTT[3]->deactivate();
+  btnPTT[1]->value(0);
+  btnPTT[1]->deactivate();
+  btnPTT[2]->activate();
+  cboHamlibRig->deactivate();
+  inpRIGdev->deactivate();
+  mnuBaudRate->deactivate();
+  } else {
+  if (btnPTT[2]->value()==1)
+  	btnPTT[0]->value(1);
+  btnPTT[2]->value(0);
+  btnPTT[2]->deactivate();
+  }
+for (int i = 0; i < 4; btnPTT[i++]->redraw());  
+progdefaults.changed = true;
+}
+
+static void cb_btnPTT4(Fl_Round_Button* o, void*) {
+  btnPTT[0]->value(0);
+btnPTT[1]->value(0);
+btnPTT[3]->value(0);
+btnPTT[4]->value(0);
+o->value(1);
+progdefaults.changed = true;
 }
 
 Fl_Button *btnInit_Interface=(Fl_Button *)0;
@@ -1005,7 +1005,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         o->selection_color((Fl_Color)51);
         o->callback((Fl_Callback*)cb_tabOperator);
         o->when(FL_WHEN_CHANGED);
-        o->hide();
         inpMyCallsign = new Fl_Input(78, 36, 85, 24, "Callsign:");
         { Fl_Input* o = inpMyName = new Fl_Input(78, 62, 120, 24, "Name:");
           o->callback((Fl_Callback*)cb_inpMyName);
@@ -1050,7 +1049,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         o->hide();
         { Fl_Tabs* o = new Fl_Tabs(0, 25, 405, 195);
           { Fl_Group* o = new Fl_Group(0, 50, 400, 170, "Filters/Colors");
-            o->hide();
             { Fl_Group* o = new Fl_Group(5, 55, 390, 75, "FFT Prefilter");
               o->box(FL_ENGRAVED_BOX);
               o->color((Fl_Color)51);
@@ -1139,6 +1137,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             o->end();
           }
           { Fl_Group* o = new Fl_Group(0, 50, 405, 166, "Cursors");
+            o->hide();
             { Fl_Group* o = new Fl_Group(5, 56, 390, 158);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnUseCursorLines = new Fl_Check_Button(170, 75, 100, 20, "Cursor BW");
@@ -1182,115 +1181,126 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         }
         o->end();
       }
-      { Fl_Group* o = tabInterface = new Fl_Group(0, 25, 400, 195, "RigCtl");
-        o->color((Fl_Color)51);
-        o->selection_color((Fl_Color)51);
-        { Fl_Group* o = new Fl_Group(10, 31, 185, 179, "Ptt");
+      { Fl_Group* o = tabRig = new Fl_Group(0, 25, 400, 195, "Rig");
+        o->hide();
+        { Fl_Group* o = new Fl_Group(10, 36, 185, 150, "Ptt");
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-          { Fl_Round_Button* o = btnPTT[0] = new Fl_Round_Button(25, 52, 64, 15, "none");
+          { Fl_Round_Button* o = btnPTT[0] = new Fl_Round_Button(25, 57, 64, 15, "none");
             o->down_box(FL_DIAMOND_DOWN_BOX);
             o->value(1);
             o->selection_color((Fl_Color)1);
             o->callback((Fl_Callback*)cb_btnPTT);
           }
-          { Fl_Round_Button* o = btnPTT[1] = new Fl_Round_Button(107, 53, 67, 15, "Hamlib");
-            o->down_box(FL_DIAMOND_DOWN_BOX);
-            o->selection_color((Fl_Color)1);
-            o->callback((Fl_Callback*)cb_btnPTT1);
-            o->deactivate();
-          }
-          { Fl_Round_Button* o = btnPTT[2] = new Fl_Round_Button(25, 73, 85, 15, "Memmap");
-            o->down_box(FL_DIAMOND_DOWN_BOX);
-            o->selection_color((Fl_Color)1);
-            o->callback((Fl_Callback*)cb_btnPTT2);
-            o->deactivate();
-          }
-          { Fl_Round_Button* o = btnPTT[3] = new Fl_Round_Button(107, 74, 85, 15, "RigCAT");
-            o->down_box(FL_DIAMOND_DOWN_BOX);
-            o->selection_color((Fl_Color)1);
-            o->callback((Fl_Callback*)cb_btnPTT3);
-            o->deactivate();
-          }
-          { Fl_Group* o = new Fl_Group(12, 114, 180, 94);
+          { Fl_Group* o = new Fl_Group(12, 81, 180, 94);
             o->box(FL_ENGRAVED_FRAME);
             o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-            { Fl_Input* o = inpTTYdev = new Fl_Input(52, 120, 134, 22, "Port:");
+            { Fl_Input* o = inpTTYdev = new Fl_Input(52, 87, 134, 22, "Port:");
               o->tooltip("Enter /dev/ttyS0 for COM1");
               o->callback((Fl_Callback*)cb_inpTTYdev);
             }
-            { Fl_Round_Button* o = btnRTSptt = new Fl_Round_Button(20, 167, 54, 15, "RTS");
+            { Fl_Round_Button* o = btnRTSptt = new Fl_Round_Button(20, 134, 54, 15, "RTS");
               o->down_box(FL_DOWN_BOX);
               o->callback((Fl_Callback*)cb_btnRTSptt);
             }
-            { Fl_Round_Button* o = btnDTRptt = new Fl_Round_Button(20, 187, 59, 15, "DTR");
+            { Fl_Round_Button* o = btnDTRptt = new Fl_Round_Button(20, 154, 59, 15, "DTR");
               o->down_box(FL_DOWN_BOX);
               o->callback((Fl_Callback*)cb_btnDTRptt);
             }
-            { Fl_Round_Button* o = btnRTSplusV = new Fl_Round_Button(83, 167, 87, 15, "RTS=+V");
+            { Fl_Round_Button* o = btnRTSplusV = new Fl_Round_Button(83, 134, 87, 15, "RTS=+V");
               o->down_box(FL_DOWN_BOX);
               o->callback((Fl_Callback*)cb_btnRTSplusV);
             }
-            { Fl_Round_Button* o = btnDTRplusV = new Fl_Round_Button(83, 187, 87, 15, "DTR=+V");
+            { Fl_Round_Button* o = btnDTRplusV = new Fl_Round_Button(83, 154, 87, 15, "DTR=+V");
               o->down_box(FL_DOWN_BOX);
               o->callback((Fl_Callback*)cb_btnDTRplusV);
             }
-            new Fl_Box(80, 147, 105, 17, "Initial value");
+            new Fl_Box(80, 114, 105, 17, "Initial value");
             o->end();
           }
-          { Fl_Round_Button* o = btnPTT[4] = new Fl_Round_Button(26, 95, 52, 14, "TTY");
+          { Fl_Round_Button* o = btnPTT[4] = new Fl_Round_Button(100, 56, 52, 14, "TTY");
             o->down_box(FL_DIAMOND_DOWN_BOX);
             o->selection_color((Fl_Color)1);
-            o->callback((Fl_Callback*)cb_btnPTT4);
+            o->callback((Fl_Callback*)cb_btnPTT1);
           }
           o->end();
         }
-        { Fl_Group* o = new Fl_Group(195, 31, 200, 151, "Rig Control");
-          o->box(FL_ENGRAVED_FRAME);
-          o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-          { Fl_Check_Button* o = chkUSEMEMMAP = new Fl_Check_Button(275, 55, 19, 15, "Memmap");
-            o->down_box(FL_DOWN_BOX);
-            o->callback((Fl_Callback*)cb_chkUSEMEMMAP);
-            o->align(FL_ALIGN_LEFT);
+        { Fl_Tabs* o = new Fl_Tabs(200, 34, 200, 152);
+          { Fl_Group* o = new Fl_Group(200, 60, 200, 120, "RigCAT");
+            { Fl_Check_Button* o = chkUSERIGCAT = new Fl_Check_Button(345, 75, 20, 20, "use rigCAT");
+              o->down_box(FL_DOWN_BOX);
+              o->callback((Fl_Callback*)cb_chkUSERIGCAT);
+              o->align(FL_ALIGN_LEFT);
+            }
+            { Fl_Round_Button* o = btnPTT[3] = new Fl_Round_Button(345, 105, 20, 19, "use RigCAT PTT");
+              o->down_box(FL_DIAMOND_DOWN_BOX);
+              o->selection_color((Fl_Color)1);
+              o->callback((Fl_Callback*)cb_btnPTT2);
+              o->align(FL_ALIGN_LEFT);
+              o->deactivate();
+            }
+            o->end();
           }
-          { Fl_Check_Button* o = chkUSERIGCAT = new Fl_Check_Button(366, 55, 19, 15, "RigCAT");
-            o->down_box(FL_DOWN_BOX);
-            o->callback((Fl_Callback*)cb_chkUSERIGCAT);
-            o->align(FL_ALIGN_LEFT);
+          { Fl_Group* o = new Fl_Group(200, 60, 200, 120, "Hamlib");
+            o->hide();
+            { Fl_Check_Button* o = chkUSEHAMLIB = new Fl_Check_Button(350, 64, 20, 20, "use Hamlib");
+              o->down_box(FL_DOWN_BOX);
+              o->callback((Fl_Callback*)cb_chkUSEHAMLIB);
+              o->align(FL_ALIGN_LEFT);
+            }
+            { Fl_ComboBox* o = cboHamlibRig = new Fl_ComboBox(240, 104, 150, 22, "Rig:");
+              o->box(FL_DOWN_BOX);
+              o->color(FL_BACKGROUND2_COLOR);
+              o->selection_color(FL_BACKGROUND_COLOR);
+              o->labeltype(FL_NORMAL_LABEL);
+              o->labelfont(0);
+              o->labelsize(14);
+              o->labelcolor(FL_FOREGROUND_COLOR);
+              o->callback((Fl_Callback*)cb_cboHamlibRig);
+              o->align(FL_ALIGN_LEFT);
+              o->when(FL_WHEN_RELEASE);
+              o->deactivate();
+              o->readonly();
+            }
+            { Fl_Input* o = inpRIGdev = new Fl_Input(256, 129, 134, 22, "Port:");
+              o->tooltip("Enter /dev/ttyS0 for COM1");
+              o->callback((Fl_Callback*)cb_inpRIGdev);
+              o->deactivate();
+            }
+            { Fl_Choice* o = mnuBaudRate = new Fl_Choice(291, 154, 99, 22, "Baud Rate:");
+              o->down_box(FL_BORDER_BOX);
+              o->callback((Fl_Callback*)cb_mnuBaudRate);
+              o->deactivate();
+              o->add(szBaudRates);
+            }
+            { Fl_Round_Button* o = btnPTT[1] = new Fl_Round_Button(350, 83, 20, 20, "use Hamlib PTT");
+              o->down_box(FL_DIAMOND_DOWN_BOX);
+              o->selection_color((Fl_Color)1);
+              o->callback((Fl_Callback*)cb_btnPTT3);
+              o->align(FL_ALIGN_LEFT);
+              o->deactivate();
+            }
+            o->end();
           }
-          { Fl_Check_Button* o = chkUSEHAMLIB = new Fl_Check_Button(366, 77, 19, 15, "Hamlib");
-            o->down_box(FL_DOWN_BOX);
-            o->callback((Fl_Callback*)cb_chkUSEHAMLIB);
-            o->align(FL_ALIGN_LEFT);
-          }
-          { Fl_ComboBox* o = cboHamlibRig = new Fl_ComboBox(235, 96, 150, 22, "Rig:");
-            o->box(FL_DOWN_BOX);
-            o->color(FL_BACKGROUND2_COLOR);
-            o->selection_color(FL_BACKGROUND_COLOR);
-            o->labeltype(FL_NORMAL_LABEL);
-            o->labelfont(0);
-            o->labelsize(14);
-            o->labelcolor(FL_FOREGROUND_COLOR);
-            o->callback((Fl_Callback*)cb_cboHamlibRig);
-            o->align(FL_ALIGN_LEFT);
-            o->when(FL_WHEN_RELEASE);
-            o->deactivate();
-            o->readonly();
-          }
-          { Fl_Input* o = inpRIGdev = new Fl_Input(251, 122, 134, 22, "Port:");
-            o->tooltip("Enter /dev/ttyS0 for COM1");
-            o->callback((Fl_Callback*)cb_inpRIGdev);
-            o->deactivate();
-          }
-          { Fl_Choice* o = mnuBaudRate = new Fl_Choice(286, 148, 99, 22, "Baud Rate:");
-            o->down_box(FL_BORDER_BOX);
-            o->callback((Fl_Callback*)cb_mnuBaudRate);
-            o->deactivate();
-            o->add(szBaudRates);
+          { Fl_Group* o = new Fl_Group(200, 60, 200, 120, "Memmap");
+            o->hide();
+            { Fl_Check_Button* o = chkUSEMEMMAP = new Fl_Check_Button(345, 75, 20, 20, "use Memmap");
+              o->down_box(FL_DOWN_BOX);
+              o->callback((Fl_Callback*)cb_chkUSEMEMMAP);
+              o->align(FL_ALIGN_LEFT);
+            }
+            { Fl_Round_Button* o = btnPTT[2] = new Fl_Round_Button(345, 105, 20, 20, "use Memmap PTT");
+              o->down_box(FL_DIAMOND_DOWN_BOX);
+              o->selection_color((Fl_Color)1);
+              o->callback((Fl_Callback*)cb_btnPTT4);
+              o->align(FL_ALIGN_LEFT);
+              o->deactivate();
+            }
+            o->end();
           }
           o->end();
         }
-        { Fl_Button* o = btnInit_Interface = new Fl_Button(308, 185, 80, 24, "Initialize");
+        { Fl_Button* o = btnInit_Interface = new Fl_Button(262, 190, 80, 24, "Initialize");
           o->callback((Fl_Callback*)cb_btnInit_Interface);
         }
         o->end();
@@ -1326,16 +1336,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         }
         o->end();
       }
-      { Fl_Group* o = tabSoundCard = new Fl_Group(0, 25, 405, 195, "SndCrd");
+      { Fl_Group* o = tabSoundCard = new Fl_Group(0, 25, 400, 195, "SndCrd");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
         o->hide();
-        { Fl_Tabs* o = tabsSoundCard = new Fl_Tabs(0, 25, 405, 195);
+        { Fl_Tabs* o = tabsSoundCard = new Fl_Tabs(0, 25, 400, 195);
           o->selection_color((Fl_Color)10);
           { Fl_Group* o = tabMixer = new Fl_Group(0, 50, 400, 170, "Mixer");
             o->color((Fl_Color)51);
             o->selection_color((Fl_Color)51);
-            o->hide();
             { Fl_Light_Button* o = btnLineIn = new Fl_Light_Button(295, 64, 74, 22, "Line In");
               o->selection_color((Fl_Color)3);
               o->callback((Fl_Callback*)cb_btnLineIn);
@@ -1347,9 +1356,8 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
               o->type(5);
               o->color((Fl_Color)26);
               o->selection_color((Fl_Color)1);
-              o->maximum(100);
-              o->step(1);
-              o->value(80);
+              o->step(0.01);
+              o->value(0.8);
               o->textsize(14);
               o->callback((Fl_Callback*)cb_valPCMvolume);
               o->align(FL_ALIGN_RIGHT);
@@ -1368,6 +1376,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           { Fl_Group* o = tabAudio = new Fl_Group(0, 50, 400, 170, "Audio");
             o->color((Fl_Color)51);
             o->selection_color((Fl_Color)51);
+            o->hide();
             { Fl_Spinner* o = cntRxRateCorr = new Fl_Spinner(299, 161, 75, 24, "RX ppm:");
               o->callback((Fl_Callback*)cb_cntRxRateCorr);
               o->step(1);
@@ -1465,7 +1474,9 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           o->tooltip("These widgets have full editing support but are slower.\nThis option takes ef\
 fect after a restart.");
           o->down_box(FL_DOWN_BOX);
+          o->value(1);
           o->callback((Fl_Callback*)cb_btntextwidgets);
+          o->hide();
         }
         o->end();
       }

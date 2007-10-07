@@ -153,16 +153,15 @@ struct configuration {
 	string strCommPorts;
 	
 public:
-	bool readDefaults(void);
-	void writeDefaults(ofstream &f);
+	void writeDefaultsXML();
 	void storeDefaults();
+	bool readDefaultsXML();
 	void loadDefaults();
 	void saveDefaults();
 	int  openDefaults();
 	void initOperator();
 	void initInterface();
 	void initMixerDevices();
-	void writeDefaultsXML();
 	void testCommPorts();
 	
 	void getRigs();

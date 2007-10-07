@@ -514,7 +514,7 @@ double rtty::nco(double freq)
 
 double rtty::FSKnco()
 {
-	FSKphaseacc += twopi * 1600 / samplerate;
+	FSKphaseacc += twopi * 1000 / samplerate;
 
 	if (FSKphaseacc > M_PI)
 		FSKphaseacc -= twopi;

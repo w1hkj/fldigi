@@ -681,7 +681,7 @@ void cb_mnuConfigWaterfall(Fl_Menu_*, void*) {
 
 void cb_mnuConfigInterface(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
-	tabsConfigure->value(tabInterface);
+	tabsConfigure->value(tabRig);
 	dlgConfig->show();
 }
 
@@ -865,8 +865,10 @@ void clearQSO()
 
 void qsoClear_cb(Fl_Widget *b, void *)
 {
-	clearQSO();
-	FL_AWAKE();
+	if (fl_choice ("Confirm Clear", "Cancel", "OK", NULL) == 1) {
+		clearQSO();
+		FL_AWAKE();
+	}
 	restoreFocus();
 }
 
@@ -1566,10 +1568,10 @@ void put_rx_char(unsigned int data)
 	}
 
 	if (Maillogfile)
-		Maillogfile->log_to_file(cLogfile::LOG_RX, ascii2[data & 0x7F]);
+		Maillogfile->log_to_file(cLogfile::LOG_RX, ascii2[data]);
 
 	if (logging)
-		logfile->log_to_file(cLogfile::LOG_RX, ascii2[data & 0x7F]);
+		logfile->log_to_file(cLogfile::LOG_RX, ascii2[data]);
 }
 
 string strSecText = "";
@@ -1778,7 +1780,7 @@ void enableMixer(bool on)
 		progdefaults.EnableMixer = true;
 		mixer.openMixer(progdefaults.MXdevice.c_str());
 
-		mixer.PCMVolume(progdefaults.PCMvolume/100.0);
+		mixer.PCMVolume(progdefaults.PCMvolume);
 		mixer.setXmtLevel(valXmtMixer->value());
 		mixer.setRcvGain(valRcvMixer->value());
 		if (progdefaults.LineIn == true)
@@ -1819,7 +1821,7 @@ void resetMixerControls()
 
 void setPCMvolume(double vol)
 {
-	mixer.PCMVolume(vol/100.0);
+	mixer.PCMVolume(vol);
 	progdefaults.PCMvolume = vol;
 }
 

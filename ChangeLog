@@ -72,6 +72,15 @@ Change Log:
              TUNE        : <cmd><mode>PTTTUNE</mode></cmd>
                this will cause fldigi to enter the TUNE mode for a very brief
                100 milliseconds.
+      27) Abandoned the original fldigi.def configuration file and changed to
+          an xml based configuration file.  New file is $HOME/.fldigi/fldigi_cfg.xml
+          You may delete all occurances of 
+              $HOME/.fldigi/fldigi.def, and
+              $HOME/.fldigi/FLDIGI_XML.DEF
+          Future changes to the configuration should never require deleting the old
+          configuration file.
+          You will need to reconfigure and save the program configuration the 
+          first time the new version of fldigi is executed.
 
 1.34  1) Cleaned up unused code segments
       2) Modified CW decoder to allow setting upper and lower limits on

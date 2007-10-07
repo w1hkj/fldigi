@@ -38,8 +38,8 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     } {
       Fl_Group tabOperator {
         label Oper
-        callback {progdefaults.changed = true;} open
-        xywh {0 25 400 195} color 51 selection_color 51 when 1 hide
+        callback {progdefaults.changed = true;} open selected
+        xywh {0 25 400 195} color 51 selection_color 51 when 1
       } {
         Fl_Input inpMyCallsign {
           label {Callsign:}
@@ -93,7 +93,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label {Filters/Colors} open
-            xywh {0 50 400 170} hide
+            xywh {0 50 400 170}
           } {
             Fl_Group {} {
               label {FFT Prefilter} open
@@ -227,7 +227,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label Cursors open
-            xywh {0 50 405 166}
+            xywh {0 50 405 166} hide
           } {
             Fl_Group {} {open
               xywh {5 56 390 158} box ENGRAVED_FRAME
@@ -294,13 +294,13 @@ progdefaults.changed = true;
           }
         }
       }
-      Fl_Group tabInterface {
-        label RigCtl open
-        xywh {0 25 400 195} color 51 selection_color 51
+      Fl_Group tabRig {
+        label Rig open
+        xywh {0 25 400 195} hide
       } {
         Fl_Group {} {
           label Ptt open
-          xywh {10 31 185 179} box ENGRAVED_FRAME align 21
+          xywh {10 36 185 150} box ENGRAVED_FRAME align 21
         } {
           Fl_Round_Button {btnPTT[0]} {
             label none
@@ -310,69 +310,39 @@ btnPTT[3]->value(0);
 btnPTT[4]->value(0);
 o->value(1);
 progdefaults.changed = true;}
-            xywh {25 52 64 15} down_box DIAMOND_DOWN_BOX value 1 selection_color 1
-          }
-          Fl_Round_Button {btnPTT[1]} {
-            label Hamlib
-            callback {btnPTT[0]->value(0);
-btnPTT[2]->value(0);
-btnPTT[3]->value(0);
-btnPTT[4]->value(0);
-o->value(1);
-progdefaults.changed = true;}
-            xywh {107 53 67 15} down_box DIAMOND_DOWN_BOX selection_color 1 deactivate
-          }
-          Fl_Round_Button {btnPTT[2]} {
-            label Memmap
-            callback {btnPTT[0]->value(0);
-btnPTT[1]->value(0);
-btnPTT[3]->value(0);
-btnPTT[4]->value(0);
-o->value(1);
-progdefaults.changed = true;}
-            xywh {25 73 85 15} down_box DIAMOND_DOWN_BOX selection_color 1 deactivate
-          }
-          Fl_Round_Button {btnPTT[3]} {
-            label RigCAT
-            callback {btnPTT[0]->value(0);
-btnPTT[1]->value(0);
-btnPTT[2]->value(0);
-btnPTT[4]->value(0);
-o->value(1);
-progdefaults.changed = true;}
-            xywh {107 74 85 15} down_box DIAMOND_DOWN_BOX selection_color 1 deactivate
+            xywh {25 57 64 15} down_box DIAMOND_DOWN_BOX value 1 selection_color 1
           }
           Fl_Group {} {open
-            xywh {12 114 180 94} box ENGRAVED_FRAME align 21
+            xywh {12 81 180 94} box ENGRAVED_FRAME align 21
           } {
             Fl_Input inpTTYdev {
               label {Port:}
               callback {progdefaults.changed = true;}
-              tooltip {Enter /dev/ttyS0 for COM1} xywh {52 120 134 22}
+              tooltip {Enter /dev/ttyS0 for COM1} xywh {52 87 134 22}
             }
             Fl_Round_Button btnRTSptt {
               label RTS
               callback {progdefaults.changed = true;}
-              xywh {20 167 54 15} down_box DOWN_BOX
+              xywh {20 134 54 15} down_box DOWN_BOX
             }
             Fl_Round_Button btnDTRptt {
               label DTR
               callback {progdefaults.changed = true;}
-              xywh {20 187 59 15} down_box DOWN_BOX
+              xywh {20 154 59 15} down_box DOWN_BOX
             }
             Fl_Round_Button btnRTSplusV {
               label {RTS=+V}
               callback {progdefaults.changed = true;}
-              xywh {83 167 87 15} down_box DOWN_BOX
+              xywh {83 134 87 15} down_box DOWN_BOX
             }
             Fl_Round_Button btnDTRplusV {
               label {DTR=+V}
               callback {progdefaults.changed = true;}
-              xywh {83 187 87 15} down_box DOWN_BOX
+              xywh {83 154 87 15} down_box DOWN_BOX
             }
             Fl_Box {} {
               label {Initial value}
-              xywh {80 147 105 17}
+              xywh {80 114 105 17}
             }
           }
           Fl_Round_Button {btnPTT[4]} {
@@ -383,39 +353,19 @@ btnPTT[2]->value(0);
 btnPTT[3]->value(0);
 o->value(1);
 progdefaults.changed = true;}
-            xywh {26 95 52 14} down_box DIAMOND_DOWN_BOX selection_color 1
+            xywh {100 56 52 14} down_box DIAMOND_DOWN_BOX selection_color 1
           }
         }
-        Fl_Group {} {
-          label {Rig Control} open
-          xywh {195 31 200 151} box ENGRAVED_FRAME align 21
+        Fl_Tabs {} {open
+          xywh {200 34 200 152}
         } {
-          Fl_Check_Button chkUSEMEMMAP {
-            label Memmap
-            callback {if(o->value() == 1){
-  chkUSEHAMLIB->value(0);
-  chkUSERIGCAT->value(0);
-  btnPTT[3]->value(0);
-  btnPTT[3]->deactivate();
-  btnPTT[1]->value(0);
-  btnPTT[1]->deactivate();
-  btnPTT[2]->activate();
-  cboHamlibRig->deactivate();
-  inpRIGdev->deactivate();
-  mnuBaudRate->deactivate();
-  } else {
-  if (btnPTT[2]->value()==1)
-  	btnPTT[0]->value(1);
-  btnPTT[2]->value(0);
-  btnPTT[2]->deactivate();
-  }
-for (int i = 0; i < 4; btnPTT[i++]->redraw());  
-progdefaults.changed = true;}
-            xywh {275 55 19 15} down_box DOWN_BOX align 4
-          }
-          Fl_Check_Button chkUSERIGCAT {
-            label RigCAT
-            callback {if (o->value() == 1) {
+          Fl_Group {} {
+            label RigCAT open
+            xywh {200 60 200 120}
+          } {
+            Fl_Check_Button chkUSERIGCAT {
+              label {use rigCAT}
+              callback {if (o->value() == 1) {
   chkUSEHAMLIB->value(0);
   chkUSEMEMMAP->value(0);
   btnPTT[1]->value(0);
@@ -434,11 +384,26 @@ progdefaults.changed = true;}
   }
 for (int i = 0; i < 4; btnPTT[i++]->redraw());
 progdefaults.changed = true;}
-            xywh {366 55 19 15} down_box DOWN_BOX align 4
+              xywh {345 75 20 20} down_box DOWN_BOX align 4
+            }
+            Fl_Round_Button {btnPTT[3]} {
+              label {use RigCAT PTT}
+              callback {btnPTT[0]->value(0);
+btnPTT[1]->value(0);
+btnPTT[2]->value(0);
+btnPTT[4]->value(0);
+o->value(1);
+progdefaults.changed = true;}
+              xywh {345 105 20 19} down_box DIAMOND_DOWN_BOX selection_color 1 align 4 deactivate
+            }
           }
-          Fl_Check_Button chkUSEHAMLIB {
-            label Hamlib
-            callback {if (o->value() == 1) {
+          Fl_Group {} {
+            label Hamlib open
+            xywh {200 60 200 120} hide
+          } {
+            Fl_Check_Button chkUSEHAMLIB {
+              label {use Hamlib}
+              callback {if (o->value() == 1) {
   chkUSEMEMMAP->value(0);
   chkUSERIGCAT->value(0);
   btnPTT[3]->value(0);
@@ -459,33 +424,82 @@ progdefaults.changed = true;}
   mnuBaudRate->deactivate();
   }
 for (int i = 0; i < 4; btnPTT[i++]->redraw());
-progdefaults.changed = true;} selected
-            xywh {366 77 19 15} down_box DOWN_BOX align 4
+progdefaults.changed = true;}
+              xywh {350 64 20 20} down_box DOWN_BOX align 4
+            }
+            Fl_Box cboHamlibRig {
+              label {Rig:}
+              callback {progdefaults.changed = true;}
+              xywh {240 104 150 22} box DOWN_BOX color 7 align 4 deactivate
+              code0 {o->readonly();}
+              class Fl_ComboBox
+            }
+            Fl_Input inpRIGdev {
+              label {Port:}
+              callback {progdefaults.changed = true;}
+              tooltip {Enter /dev/ttyS0 for COM1} xywh {256 129 134 22} deactivate
+            }
+            Fl_Choice mnuBaudRate {
+              label {Baud Rate:}
+              callback {progdefaults.changed = true;} open
+              xywh {291 154 99 22} down_box BORDER_BOX deactivate
+              code0 {o->add(szBaudRates);}
+            } {}
+            Fl_Round_Button {btnPTT[1]} {
+              label {use Hamlib PTT}
+              callback {btnPTT[0]->value(0);
+btnPTT[2]->value(0);
+btnPTT[3]->value(0);
+btnPTT[4]->value(0);
+o->value(1);
+progdefaults.changed = true;}
+              xywh {350 83 20 20} down_box DIAMOND_DOWN_BOX selection_color 1 align 4 deactivate
+            }
           }
-          Fl_Box cboHamlibRig {
-            label {Rig:}
-            callback {progdefaults.changed = true;}
-            xywh {235 96 150 22} box DOWN_BOX color 7 align 4 deactivate
-            code0 {o->readonly();}
-            class Fl_ComboBox
+          Fl_Group {} {
+            label Memmap open
+            xywh {200 60 200 120} hide
+          } {
+            Fl_Check_Button chkUSEMEMMAP {
+              label {use Memmap}
+              callback {if(o->value() == 1){
+  chkUSEHAMLIB->value(0);
+  chkUSERIGCAT->value(0);
+  btnPTT[3]->value(0);
+  btnPTT[3]->deactivate();
+  btnPTT[1]->value(0);
+  btnPTT[1]->deactivate();
+  btnPTT[2]->activate();
+  cboHamlibRig->deactivate();
+  inpRIGdev->deactivate();
+  mnuBaudRate->deactivate();
+  } else {
+  if (btnPTT[2]->value()==1)
+  	btnPTT[0]->value(1);
+  btnPTT[2]->value(0);
+  btnPTT[2]->deactivate();
+  }
+for (int i = 0; i < 4; btnPTT[i++]->redraw());  
+progdefaults.changed = true;}
+              xywh {345 75 20 20} down_box DOWN_BOX align 4
+            }
+            Fl_Round_Button {btnPTT[2]} {
+              label {use Memmap PTT}
+              callback {btnPTT[0]->value(0);
+btnPTT[1]->value(0);
+btnPTT[3]->value(0);
+btnPTT[4]->value(0);
+o->value(1);
+progdefaults.changed = true;}
+              xywh {345 105 20 20} down_box DIAMOND_DOWN_BOX selection_color 1 align 4 deactivate
+            }
           }
-          Fl_Input inpRIGdev {
-            label {Port:}
-            callback {progdefaults.changed = true;}
-            tooltip {Enter /dev/ttyS0 for COM1} xywh {251 122 134 22} deactivate
-          }
-          Fl_Choice mnuBaudRate {
-            label {Baud Rate:}
-            callback {progdefaults.changed = true;} open
-            xywh {286 148 99 22} down_box BORDER_BOX deactivate
-            code0 {o->add(szBaudRates);}
-          } {}
         }
         Fl_Button btnInit_Interface {
           label Initialize
           callback {progdefaults.initInterface();
 progdefaults.changed = true;}
-          xywh {308 185 80 24}
+          xywh {262 190 80 24}
         }
       }
       Fl_Group {} {
@@ -542,14 +556,14 @@ progdefaults.changed = true;}
       }
       Fl_Group tabSoundCard {
         label SndCrd open
-        xywh {0 25 405 195} color 51 selection_color 51 hide
+        xywh {0 25 400 195} color 51 selection_color 51 hide
       } {
         Fl_Tabs tabsSoundCard {open
-          xywh {0 25 405 195} selection_color 10
+          xywh {0 25 400 195} selection_color 10
         } {
           Fl_Group tabMixer {
             label Mixer open
-            xywh {0 50 400 170} color 51 selection_color 51 hide
+            xywh {0 50 400 170} color 51 selection_color 51
           } {
             Fl_Light_Button btnLineIn {
               label {Line In}
@@ -584,7 +598,7 @@ progdefaults.changed = true;}
               label PCM
               callback {setPCMvolume(o->value());
 progdefaults.changed = true;}
-              xywh {19 125 340 21} type {Horz Knob} color 26 selection_color 1 align 8 maximum 100 step 1 value 80 textsize 14
+              xywh {19 125 340 21} type {Horz Knob} color 26 selection_color 1 align 8 step 0.01 value 0.8 textsize 14
               code0 {extern void setPCMvolume(double);}
             }
             Fl_Input_Choice menuMix {
@@ -607,7 +621,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabAudio {
             label Audio open
-            xywh {0 50 400 170} color 51 selection_color 51
+            xywh {0 50 400 170} color 51 selection_color 51 hide
           } {
             Fl_Spinner cntRxRateCorr {
               label {RX ppm:}
@@ -733,7 +747,7 @@ progdefaults.changed = true;}
           callback {progdefaults.alt_text_widgets = o->value();
 progdefaults.changed = true;}
           tooltip {These widgets have full editing support but are slower.
-This option takes effect after a restart.} xywh {50 155 180 20} down_box DOWN_BOX
+This option takes effect after a restart.} xywh {50 155 180 20} down_box DOWN_BOX value 1 hide
         }
       }
       Fl_Group tabModems {
