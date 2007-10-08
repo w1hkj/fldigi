@@ -141,7 +141,7 @@ void check_formail() {
     time_t start_time, prog_time;
     string sAutoFile = PskMailDir;
 
-   	txmsgid = msgget( (key_t) 6789, 0666 );
+   	txmsgid = msgget( (key_t) progdefaults.tx_msgid, 0666 );
    	if (txmsgid != -1) {
    		process_msgque();
    		arqmode = true;
@@ -208,7 +208,7 @@ char pskmail_get_char()
 	if (pText != mailtext.end())
 		return *pText++;
 
-   	rxmsgid = msgget( (key_t) 9876, 0666 );
+   	rxmsgid = msgget( (key_t) progdefaults.rx_msgid, 0666 );
    	if ( rxmsgid != -1) {
 		rxmsgst.msg_type = 1;
 		rxmsgst.c = 0x06;  // tell arq client that transmit complete

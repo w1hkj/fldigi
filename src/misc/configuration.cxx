@@ -151,7 +151,11 @@ configuration progdefaults = {
 	 {  0,  0,214},{145,142,  96},{181,184, 48},
 	 {223,226,105},{254,254,   4},{255, 58,  0} },
 
-	true			// bool		alt_text_widgets;
+	true,			// bool		alt_text_widgets;
+
+	"",			// string	strCommPorts
+        9876,			// int		rx_msgid
+        6789,			// int		tx_msgid
 };
 
 const char *szBaudRates[] = {
@@ -179,6 +183,7 @@ enum TAG { \
 	RTTYBITS, RTTYPARITY, RTTYSTOP, RTTYREVERSE,
 	RTTYMSBFIRST, RTTYCRCLF, RTTYAUTOCRLF,
 	RTTYAUTOCOUNT, RTTYAFCSPEED,
+	RTTYUSB,
 	PREFERXHAIRSCOPE, 
 	PSEUDOFSK, 
 	CWWEIGHT, CWSPEED, CWDEFSPEED,
@@ -285,6 +290,7 @@ void configuration::writeDefaultsXML()
 	writeXMLbool(f, "RTTYAUTOCRLF", rtty_autocrlf);
 	writeXMLint(f, "RTTYAUTOCOUNT", rtty_autocount);
 	writeXMLint(f, "RTTYAFCSPEED", rtty_afcspeed);
+	writeXMLbool(f, "RTTYUSB", RTTY_USB);
 	writeXMLbool(f, "PREFERXHAIRSCOPE", PreferXhairScope);
 	writeXMLbool(f, "PSEUDOFSK", PseudoFSK);
 
@@ -501,6 +507,9 @@ bool configuration::readDefaultsXML()
 					case RTTYAFCSPEED :
 						rtty_afcspeed = atoi(xml->getNodeData());
 						break;
+					case RTTYUSB :
+						RTTY_USB = atoi(xml->getNodeData());
+						break;
 					case PREFERXHAIRSCOPE :
 						PreferXhairScope = atoi(xml->getNodeData());
 						break;
@@ -574,21 +583,24 @@ bool configuration::readDefaultsXML()
 						UseBWTracks = atoi(xml->getNodeData());
 						break;
 					case CLCOLORS :
-						sscanf( xml->getNodeData(), "%d %d %d",
+//						sscanf( xml->getNodeData(), "%d %d %d %d",
+						sscanf( xml->getNodeData(), "%hhu %hhu %hhu %hhu",
 							&cursorLineRGBI.R,
 							&cursorLineRGBI.G,
 							&cursorLineRGBI.B,
 							&cursorLineRGBI.I );	
 						break;
 					case CCCOLORS :
-						sscanf( xml->getNodeData(), "%d %d %d",
+//						sscanf( xml->getNodeData(), "%d %d %d %d",
+						sscanf( xml->getNodeData(), "%hhu %hhu %hhu %hhu",
 							&cursorCenterRGBI.R,
 							&cursorCenterRGBI.G,
 							&cursorCenterRGBI.B,
 							&cursorCenterRGBI.I );	
 						break;
 					case BWTCOLORS :
-						sscanf( xml->getNodeData(), "%d %d %d",
+//						sscanf( xml->getNodeData(), "%d %d %d %d",
+						sscanf( xml->getNodeData(), "%hhu %hhu %hhu %hhu",
 							&bwTrackRGBI.R,
 							&bwTrackRGBI.G,
 							&bwTrackRGBI.B,
@@ -805,6 +817,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("RTTYAUTOCRLF", nodeName)) 	tag = RTTYAUTOCRLF;
 				else if (!strcmp("RTTYAUTOCOUNT", nodeName)) 	tag = RTTYAUTOCOUNT;
 				else if (!strcmp("RTTYAFCSPEED", nodeName)) 	tag = RTTYAFCSPEED;
+				else if (!strcmp("RTTYUSB", nodeName))		tag = RTTYUSB;
 				else if (!strcmp("PREFERXHAIRSCOPE", nodeName)) 	tag = PREFERXHAIRSCOPE;
 				else if (!strcmp("PSEUDOFSK", nodeName)) 	tag = PSEUDOFSK;
 				else if (!strcmp("CWWEIGHT", nodeName)) 	tag = CWWEIGHT;

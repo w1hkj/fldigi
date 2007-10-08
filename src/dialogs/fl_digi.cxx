@@ -35,6 +35,7 @@
 #include <FL/Fl_Pixmap.H>
 #include <FL/Fl_Image.H>
 #include <FL/Fl_Tile.H>
+#include <FL/x.H>
 
 #include "version.h"
 
@@ -73,6 +74,7 @@
 
 #include "combo.h"
 #include "font_browser.h"
+#include "fldigi-icon-48.xpm"
 
 #include "status.h"
 
@@ -131,6 +133,8 @@ Fl_Slider			*sldrSquelch = (Fl_Slider *)0;
 Fl_Progress			*pgrsSquelch = (Fl_Progress *)0;
 
 Fl_RGB_Image		*feld_image = 0;
+
+Pixmap				fldigi_icon_pixmap;
 
 void clearStatus()
 {
@@ -679,7 +683,7 @@ void cb_mnuConfigWaterfall(Fl_Menu_*, void*) {
 	dlgConfig->show();
 }
 
-void cb_mnuConfigInterface(Fl_Menu_*, void*) {
+void cb_mnuConfigRigCtrl(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabRig);
 	dlgConfig->show();
@@ -1198,8 +1202,8 @@ Fl_Menu_Item menu_[] = {
 {"Configure", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 48
 {"Defaults",  0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 49
 {"Fonts", 0, (Fl_Callback*)cb_mnuConfigFonts, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 50
-{"Interface", 0, (Fl_Callback*)cb_mnuConfigInterface, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 51
-{"Operator", 0, (Fl_Callback*)cb_mnuConfigOperator, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 52
+{"Operator", 0, (Fl_Callback*)cb_mnuConfigOperator, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 51
+{"Rig Ctrl", 0, (Fl_Callback*)cb_mnuConfigRigCtrl, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 52
 {"Sound Card", 0, (Fl_Callback*)cb_mnuConfigSoundCard, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 53
 {"Waterfall", 0,  (Fl_Callback*)cb_mnuConfigWaterfall, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 54
 {0,0,0,0,0,0,0,0,0}, // 55
@@ -1244,6 +1248,25 @@ void activate_test_menu_item(bool b)
 	else
 		menu_[60].hide();
 	mnu->redraw();
+}
+
+void make_pixmap(Pixmap *xpm, const char **data)
+{
+	// We need a displayed window to provide a GC for X_CreatePixmap
+	Fl_Window w(0, 0, FLDIGI_NAME);
+	w.xclass(FLDIGI_NAME);
+	w.show();
+	w.make_current();
+
+	Fl_Pixmap icon(data);
+	int maxd = max(icon.w(), icon.h());
+	*xpm = fl_create_offscreen(maxd, maxd);
+
+	fl_begin_offscreen(*xpm);
+	fl_color(FL_BACKGROUND_COLOR);
+	fl_rectf(0, 0, maxd, maxd);
+	icon.draw(maxd - icon.w(), maxd - icon.h());
+	fl_end_offscreen();
 }
 
 void create_fl_digi_main() {
@@ -1476,6 +1499,11 @@ void create_fl_digi_main() {
 		fl_digi_main->size_range(WNOM, HNOM);
 	fl_digi_main->end();
 	fl_digi_main->callback(cb_wMain);
+
+	make_pixmap(&fldigi_icon_pixmap, fldigi_icon_48_xpm);
+	fl_digi_main->icon((char *)fldigi_icon_pixmap);
+
+	fl_digi_main->xclass(FLDIGI_NAME);
 }
 
 void put_freq(double frequency)
@@ -1536,7 +1564,7 @@ void put_rx_char(unsigned int data)
 {
 	static unsigned int last = 0;
 	const char **asc = ascii;
-	rxmsgid = msgget( (key_t) 9876, 0666);
+	rxmsgid = msgget( (key_t) progdefaults.rx_msgid, 0666);
 	if (mailclient || mailserver || rxmsgid != -1)
 		asc = ascii2;
 	if (active_modem->get_mode() == MODE_RTTY ||

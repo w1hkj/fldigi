@@ -58,6 +58,7 @@ public:
 	FTextBase(int x, int y, int w, int h, const char *l = 0);
 	virtual ~FTextBase() { delete tbuf; delete sbuf; }
 
+	virtual int	handle(int event);
 	void		clear(void) { tbuf->text(""); sbuf->text(""); }
 
 	void		setFont(Fl_Font f, int attr = NATTR);
@@ -86,6 +87,7 @@ protected:
 #ifdef HSCROLLBAR_KLUDGE
         void		scroll_(int topLineNum, int horizOffset);
 #endif
+        void		adjust_colours(void);
 private:
 	FTextBase();
 	FTextBase(const FTextBase &t);
@@ -103,6 +105,7 @@ protected:
 	int					max_lines;
 	bool					scroll_hint;
 	int					scroll_tweak;
+	bool					adjusted_colours;
 };
 
 ///
@@ -135,6 +138,7 @@ protected:
 	static void	changed_cb(int pos, int nins, int ndel, int nsty,
 				   const char *dtext, void *arg);
 	void		change_keybindings(void);
+	static void	v_scrollbar_cb(Fl_Widget* w, void* arg);
 
 private:
 	FTextView();

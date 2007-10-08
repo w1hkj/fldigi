@@ -1884,7 +1884,7 @@ fect after a restart.");
 }
 
 void openConfig() {
-  if (!dlgConfig) dlgConfig = ConfigureDialog();
+  if (!dlgConfig) createConfig();
 progdefaults.loadDefaults();
 }
 
@@ -1893,5 +1893,8 @@ void closeDialog() {
 }
 
 void createConfig() {
-  if (!dlgConfig) dlgConfig = ConfigureDialog();
+  if (!dlgConfig) {
+    dlgConfig = ConfigureDialog();
+    dlgConfig->xclass(FLDIGI_NAME);
+  }
 }

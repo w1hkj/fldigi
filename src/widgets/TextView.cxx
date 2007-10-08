@@ -58,25 +58,25 @@ using namespace std;
 
 textview :: textview( int x, int y, int w, int h, const char *label )
   : ReceiveWidget( x, y, w, h, label ),
-    scrollbar(x+w-SBwidth, y+2, SBwidth, h-4 )
+    adjusted_colours(false), scrollbar(x+w-SBwidth, y+2, SBwidth, h-4 )
 {
 	scrollbar.linesize( 1 );
 	scrollbar.callback( _scrollbarCB, this );
 
 	box( FL_DOWN_BOX );
-	color( FL_WHITE );
+	color( FL_BACKGROUND2_COLOR );
 
 	TextFont = FL_SCREEN;
 	TextSize = FL_NORMAL_SIZE;
 	
 	for (unsigned i = 0; i < sizeof(TextColor)/sizeof(TextColor[0]); i++) {
-		TextColor[i] = FL_BLACK;
+		TextColor[i] = FL_FOREGROUND_COLOR;
 	}
-	TextColor[ReceiveWidget::RECV] = FL_BLACK;
+	TextColor[ReceiveWidget::RECV] = FL_FOREGROUND_COLOR;
 	TextColor[ReceiveWidget::XMIT] = FL_RED;
-	TextColor[ReceiveWidget::CTRL] = FL_DARK_RED;
+	TextColor[ReceiveWidget::CTRL] = FL_DARK_GREEN;
 	TextColor[ReceiveWidget::SKIP] = FL_BLUE;
-	TextColor[ReceiveWidget::ALTR] = FL_DARK_GREEN;
+	TextColor[ReceiveWidget::ALTR] = FL_DARK_MAGENTA;
 	
 	wrappos = 0;
 	cursorON = false;
@@ -110,6 +110,11 @@ void textview::Hide() {
 
 int textview::handle(int event)
 {
+        if (!adjusted_colours && event == FL_SHOW) {
+                adjust_colours();
+                adjusted_colours = true;
+        }
+
 	return 0;
 }
 
@@ -210,6 +215,21 @@ void textview::highlight(bool b)
     damage(FL_DAMAGE_ALL);        
 }
 
+void textview::adjust_colours(void)
+{
+        for (int i = 0; i < NATTR; i++) {
+                Fl_Color adj;
+
+                while ((adj = fl_contrast(TextColor[i],
+                                          FL_BACKGROUND2_COLOR)) != TextColor[i]) {
+                        TextColor[i] = (adj == FL_WHITE) ?
+                                fl_lighter(TextColor[i]) :
+                                fl_darker(TextColor[i]);
+                }
+        }
+}
+
+
 string textview::findtext()
 {
 	size_t idx, wordstart, wordend;
@@ -276,7 +296,7 @@ void textview::draw_cursor()
 	if (cursorON == false)
 		return;
 
-	fl_color(FL_WHITE);
+	fl_color(FL_BACKGROUND2_COLOR);
 	fl_rectf ( X + cursorX, Y + cursorY - charheight + descent, maxcharwidth, charheight);
 
   /* Create segments and draw cursor */
@@ -318,7 +338,7 @@ void textview::draw_cursor()
     segs[ 3 ].x1 = left;		segs[ 3 ].y1 = top;		segs[ 3 ].x2 = left;		segs[ 3 ].y2 = bot;
     nSegs = 4;
   }
-  fl_color( FL_BLACK );
+  fl_color( TextColor[ReceiveWidget::RECV] );
 
   for ( int k = 0; k < nSegs; k++ ) {
     fl_line( X + segs[ k ].x1, Y + segs[ k ].y1, X + segs[ k ].x2, Y + segs[ k ].y2 );
@@ -379,7 +399,7 @@ void textview::drawall()
 			}
 			cstr[pos++] = c;
             if ((a & 0x20) == 0x20) {
-                fl_color(FL_YELLOW);
+                fl_color(FL_SELECTION_COLOR);
 	            fl_rectf ( X + cursorX, Y + cursorY - charheight + descent, maxcharwidth, charheight);
 				fl_color (TextColor[(int)a & 0x0F]);
 				fl_draw ( cstr, 1, X + cursorX, Y + cursorY );
@@ -439,7 +459,7 @@ void textview::drawchars()
 	fl_push_clip( X, Y, W, H );
 
 	while (endidx < len) {
-		fl_color(FL_WHITE);
+		fl_color(FL_BACKGROUND2_COLOR);
 		fl_rectf ( X + cursorX, Y + cursorY - charheight + descent, maxcharwidth, charheight);
 		c = buff[endidx];
 		a = attr[endidx];
@@ -449,7 +469,7 @@ void textview::drawchars()
 		} else {
 			cstr[0] = c;
             if ((a & 0x20) == 0x20)
-                fl_color(FL_YELLOW);
+                fl_color(FL_SELECTION_COLOR);
             else
 				fl_color (TextColor[a & 0x0F]);
 			fl_draw ( cstr, 1, X + cursorX, Y + cursorY );
@@ -493,9 +513,9 @@ void textview::drawmodify(size_t modidx)
     cstr[0] = buff[modidx];
 // erase existing
     if ((attr[modidx] & 0x20) == 0x20)
-        fl_color(FL_YELLOW);
+        fl_color(FL_SELECTION_COLOR);
     else
-        fl_color(FL_WHITE);
+        fl_color(FL_BACKGROUND2_COLOR);
 	fl_rectf ( X + posX, Y + posY - charheight + descent, (int)fl_width(c), charheight);
 // draw new with attribute
 	fl_color (TextColor[(int)attr[modidx] & 0x0F]);
@@ -865,7 +885,7 @@ int TextView::handle(int event)
 //        }
 
 	}
-	return 0;
+	return textview::handle(event);
 }
 
 //=====================================================================
@@ -1096,7 +1116,7 @@ int TextEdit::handle(int event)
 				return 1;
 		}
 	}
-	return 0;
+	return textview::handle(event);
 }
 
 int TextEdit::nextChar()

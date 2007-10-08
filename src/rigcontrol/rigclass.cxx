@@ -104,50 +104,50 @@ void Rig::close(void)
 void Rig::setFreq(freq_t freq, vfo_t vfo) 
 {
 	int err;
-//	for (int i = 0; i < NUMTRIES; i++) {
+	for (int i = 0; i < NUMTRIES; i++) {
 		err = rig_set_freq(theRig, vfo, freq);
 		if (err == RIG_OK)
 			return;
-//	}
+	}
 	throw RigException ("setFreq");
 }
 
 freq_t Rig::getFreq(vfo_t vfo)
 {
 	freq_t freq;
-//	for (int i = 0; i < NUMTRIES; i++) {
+	for (int i = 0; i < NUMTRIES; i++) {
 		if ( rig_get_freq(theRig, vfo, &freq) == RIG_OK)
 			return freq;
-//	}
+	}
 	return 0;
-//	throw RigException ("getFreq");
+	throw RigException ("getFreq");
 }
 
 void Rig::setMode(rmode_t mode, pbwidth_t width, vfo_t vfo) 
 {
-//	for (int i = 0; i < NUMTRIES; i++) {
+	for (int i = 0; i < NUMTRIES; i++) {
 		if (rig_set_mode(theRig, vfo, mode, width) == RIG_OK)
 			return;
-//	}
+	}
 	throw RigException ("setFreq");
 }
 
 rmode_t Rig::getMode(pbwidth_t& width, vfo_t vfo) 
 {
 	rmode_t mode;
-//	for (int i = 0; i < NUMTRIES; i++) {
+	for (int i = 0; i < NUMTRIES; i++) {
 		if (rig_get_mode(theRig, vfo, &mode, &width) == RIG_OK)
 			return mode;
-//	}
+	}
 	throw RigException ("getMode");
 }
 
 void Rig::setPTT(ptt_t ptt, vfo_t vfo)
 {
-//	for (int i = 0; i < NUMTRIES; i++) {
+	for (int i = 0; i < NUMTRIES; i++) {
 		if (rig_set_ptt(theRig, vfo, ptt) == RIG_OK)
 			return;
-//	}
+	}
 	throw RigException ("setPTT");
 }
 
@@ -155,10 +155,10 @@ ptt_t Rig::getPTT(vfo_t vfo)
 {
 	ptt_t ptt;
 	int erc;
-//	for (int i = 0; i < NUMTRIES; i++) {
+	for (int i = 0; i < NUMTRIES; i++) {
 		if ((erc = rig_get_ptt(theRig, vfo, &ptt)) == RIG_OK)
 			return ptt;
-//	}
+	}
 	throw RigException ("getPTT");
 }
 

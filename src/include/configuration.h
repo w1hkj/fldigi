@@ -152,6 +152,9 @@ struct configuration {
 	
 	string strCommPorts;
 	
+	int rx_msgid;
+	int tx_msgid;
+
 public:
 	void writeDefaultsXML();
 	void storeDefaults();

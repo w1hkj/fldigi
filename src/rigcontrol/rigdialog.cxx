@@ -104,24 +104,24 @@ Fl_Double_Window* rig_dialog() {
     }
     { Fl_Button* o = btnAddFreq = new Fl_Button(261, 6, 20, 20, "@|>");
       o->tooltip("Add to list");
-      o->box(FL_PLASTIC_UP_BOX);
+      o->box(FL_UP_BOX);
       o->labelsize(10);
       o->callback((Fl_Callback*)cb_btnAddFreq);
     }
     { Fl_Button* o = btnDelFreq = new Fl_Button(261, 30, 20, 20, "@1+");
       o->tooltip("Delete from list");
-      o->box(FL_PLASTIC_UP_BOX);
+      o->box(FL_UP_BOX);
       o->labelsize(10);
       o->callback((Fl_Callback*)cb_btnDelFreq);
     }
     { Fl_Button* o = btnClearList = new Fl_Button(261, 54, 20, 20, "@-1square");
       o->tooltip("Clear list");
-      o->box(FL_PLASTIC_UP_BOX);
+      o->box(FL_UP_BOX);
       o->labelsize(10);
       o->callback((Fl_Callback*)cb_btnClearList);
     }
     { Fl_Button* o = btnRCclose = new Fl_Button(6, 5, 50, 20, "Close");
-      o->box(FL_PLASTIC_UP_BOX);
+      o->box(FL_UP_BOX);
       o->callback((Fl_Callback*)cb_btnRCclose);
     }
     o->end();

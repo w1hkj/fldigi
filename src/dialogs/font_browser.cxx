@@ -30,6 +30,7 @@
 #include <string>
 
 #include "font_browser.h"
+#include "version.h"
 
 using namespace std;
 
@@ -201,4 +202,5 @@ Font_Browser::Font_Browser(const char *lbl ) :
 
     Fl::focus(lst_Font);
 
+    xclass(FLDIGI_NAME);
 }

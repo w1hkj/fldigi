@@ -64,6 +64,8 @@ public:
 	virtual void setFontSize(int siz) = 0;
 	virtual void setFontColor(Fl_Color clr) = 0;
 
+	virtual void adjust_colours(void) = 0;
+
 	virtual void Show(void) = 0;
 	virtual void Hide(void) = 0;
 };
@@ -125,6 +127,7 @@ protected:
 	Fl_Color	TextColor[16];
 	int			TextSize;
 	char		cstr[1000];
+	bool		adjusted_colours;
 public:
 
 	textview( int x, int y, int w, int h, const char *label = 0 );
@@ -174,6 +177,7 @@ protected:
 	string findtext();
     void    highlightword();
     void    highlight(bool b);
+    void    adjust_colours(void);
 
         struct modify_range {
                 size_t start, end;

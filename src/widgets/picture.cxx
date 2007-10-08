@@ -21,11 +21,12 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ----------------------------------------------------------------------------
 
+#include <sys/stat.h>
+#include <sys/types.h>
+
 #include <FL/fl_ask.H>
 
 #include "picture.h"
-
-#include <iostream>
 
 picture::picture (int X, int Y, int W, int H) :
 	Fl_Widget (X, Y, W, H) 
@@ -206,16 +207,36 @@ int picture::handle(int event)
 // save_jpeg - Write a captured picture to a JPEG format file.
 //
 
-int picture::save_jpeg(char *filename)
+int picture::save_jpeg(const char *filename)
 {
 	unsigned char		*ptr;		// Pointer to image data
 	FILE				*fp;		// File pointer
 	struct jpeg_compress_struct	info;		// Compressor info
 	struct jpeg_error_mgr		err;		// Error handler info
 
-// Create the output file...
-	if ((fp = fopen(filename, "wb")) == NULL)
-		return -1;
+	size_t flen = strlen(filename);
+	if (filename[flen - 1] == '/') {
+		// if the filename ends in a slash we will generate
+		// a timestamped filename in the following  format:
+		const char t[] = "pic_YYYY-MM-DD_HH:MM:SSz.jpg";
+
+		size_t newlen = flen + sizeof(t);
+		char newfn[newlen];
+		memcpy(newfn, filename, flen);
+
+		time_t time_sec = time(0);
+		struct tm ztime;
+		(void)gmtime_r(&time_sec, &ztime);
+
+		if (strftime(newfn + flen, newlen - flen, "pic_%F_%Tz.jpg", &ztime) > 0) {
+			mkdir(filename, 0777);
+			if ((fp = fopen(newfn, "wb")) == NULL)
+				return -1;
+		}
+	}
+	else
+		if ((fp = fopen(filename, "wb")) == NULL)
+			return -1;
 
 // Setup the JPEG compression stuff...
 	info.err = jpeg_std_error(&err);

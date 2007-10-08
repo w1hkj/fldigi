@@ -184,6 +184,8 @@ protected:
 	void	clearbits();
 	void	sendpic(unsigned char *data, int len);
 	bool	check_picture_header();
+	int	print_time_left(size_t bytes, char *str, size_t len,
+			  const char *prefix = "", const char *suffix = "");
 public:
 	mfsk (trx_mode md);
 	~mfsk ();

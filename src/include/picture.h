@@ -66,7 +66,7 @@ public:
 	void	clear();
 	void	image(Fl_Image *img) {Fl_Widget::image(img);}
 	void	resize(int, int, int, int);
-	int		save_jpeg(char *);
+	int		save_jpeg(const char *);
 };
 
 #endif

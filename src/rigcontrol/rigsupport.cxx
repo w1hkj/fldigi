@@ -294,6 +294,7 @@ Fl_Double_Window *createRigDialog()
 {
 	Fl_Double_Window *w;
 	w = rig_dialog();
+	w->xclass(FLDIGI_NAME);
 	return w;
 }
 

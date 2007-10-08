@@ -17,6 +17,7 @@
 #include "fl_digi.h"
 #include "ptt.h"
 #include "log.h"
+#include "version.h"
 
 #ifndef NOHAMLIB
 	#include "rigclass.h"

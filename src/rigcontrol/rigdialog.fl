@@ -40,22 +40,22 @@ selectFreq();}
     Fl_Button btnAddFreq {
       label {@|>}
       callback {addFreq();}
-      tooltip {Add to list} xywh {261 6 20 20} box PLASTIC_UP_BOX labelsize 10
+      tooltip {Add to list} xywh {261 6 20 20} box UP_BOX labelsize 10
     }
     Fl_Button btnDelFreq {
       label {@1+}
       callback {delFreq();}
-      tooltip {Delete from list} xywh {261 30 20 20} box PLASTIC_UP_BOX labelsize 10
+      tooltip {Delete from list} xywh {261 30 20 20} box UP_BOX labelsize 10
     }
     Fl_Button btnClearList {
       label {@-1square}
       callback {clearList()}
-      tooltip {Clear list} xywh {261 54 20 20} box PLASTIC_UP_BOX labelsize 10
+      tooltip {Clear list} xywh {261 54 20 20} box UP_BOX labelsize 10
     }
     Fl_Button btnRCclose {
       label Close
       callback {closeRigDialog();}
-      xywh {6 5 50 20} box PLASTIC_UP_BOX
+      xywh {6 5 50 20} box UP_BOX
       code0 {extern void closeRigDialog();}
     }
   }

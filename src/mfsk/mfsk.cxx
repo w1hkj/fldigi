@@ -47,6 +47,8 @@
 
 
 char mfskmsg[80];
+char txclr_tooltip[24];
+char txgry_tooltip[24];
 
 void  mfsk::tx_init(cSound *sc)
 {
@@ -251,8 +253,16 @@ void mfsk::recvpic(complex z)
 		} else {
 			for (int i = 0; i < 3; i++)
 				QUEUE(CMP_CB(&mfsk::updateRxPic, this, byte, pixelnbr++)); //updateRxPic( byte, pixelnbr++ );
-		}			
+		}
 		picf = 0.0;
+
+		int picsize = picW * picH * (color ? 3 : 1);
+		int n = snprintf(mfskmsg, sizeof(mfskmsg),
+				 "Recv picture: %04.1f%% done",
+				 (100.0f * pixelnbr) / picsize);
+		print_time_left(picsize - pixelnbr, mfskmsg + n,
+				sizeof(mfskmsg) - n, ", ", " left");
+		put_status(mfskmsg);
 	}
 }
 
@@ -435,7 +445,7 @@ void mfsk::update_syncscope()
 		}
 	set_scope(scopedata, 2 * symlen);
 	scopedata.next(); // change buffers
-	sprintf(mfskmsg, "s/n %3.0f dB", 20.0 * log10(s2n) );
+	snprintf(mfskmsg, sizeof(mfskmsg), "s/n %3.0f dB", 20.0 * log10(s2n) );
 	put_Status1(mfskmsg);
 }
 
@@ -542,6 +552,9 @@ int mfsk::rx_process(const double *buf, int len)
 				counter = 0;
 				rxstate = RX_STATE_DATA;
 				// QUEUE_FLUSH();
+				put_status("");
+				string autosave_dir = HomeDir + "mfsk_pics/";
+				picRx->save_jpeg(autosave_dir.c_str());
 			} else
 				recvpic(z);
 			continue;
@@ -773,7 +786,11 @@ int mfsk::tx_process()
 				else
 					sendpic( &xmtpicbuff[i], xmtbytes - i);
 				i += blocklen;
-				sprintf(mfskmsg,"Send picture: %.1f %%", (100.0 * i) / xmtbytes);
+				int n = snprintf(mfskmsg, sizeof(mfskmsg),
+						 "Send picture: %04.1f%% done",
+						 (100.0f * i) / xmtbytes);
+				print_time_left(xmtbytes - i, mfskmsg + n,
+						sizeof(mfskmsg) - n, ", ", " left");
 				put_status(mfskmsg);
 			}
 			QUEUE_FLUSH();
@@ -810,6 +827,7 @@ void cb_picRxClose( Fl_Widget *w, void *who)
 //	FL_LOCK();
 	me->picRxWin->hide();
 	me->rxstate = mfsk::RX_STATE_DATA;
+	put_status("");
 //	FL_UNLOCK();
 }
 
@@ -833,6 +851,7 @@ void mfsk::makeRxViewer(int W, int H)
 	FL_LOCK_E();
 	if (!picRxWin) {
 		picRxWin = new Fl_Window(winW, winH);
+		picRxWin->xclass(FLDIGI_NAME);
 		picRx = new picture(picX, picY, W, H);
 		btnpicRxSave = new Fl_Button(winW/2 - 65, H + 6, 60, 24,"Save");
 		btnpicRxSave->callback(cb_picRxSave,this);
@@ -890,7 +909,11 @@ void mfsk::load_file(const char *n) {
 // load the picture widget with the rgb image
 	FL_LOCK_D();
 	picTx->video(xmtimg, W * H * 3);
+	if (print_time_left(W * H * 3, txclr_tooltip, sizeof(txclr_tooltip), "Time needed: ") > 0)
+		btnpicTxSendColor->tooltip(txclr_tooltip);
 	btnpicTxSendColor->activate();
+	if (print_time_left(W * H, txgry_tooltip, sizeof(txgry_tooltip), "Time needed: ") > 0)
+		btnpicTxSendGrey->tooltip(txgry_tooltip);
 	btnpicTxSendGrey->activate();
 	FL_UNLOCK_D();
 }
@@ -1048,6 +1071,7 @@ void mfsk::makeTxViewer(int W, int H)
 	FL_LOCK_D();
 	if (!picTxWin) {
 		picTxWin = new Fl_Window(winW, winH);
+		picTxWin->xclass(FLDIGI_NAME);
 		picTx = new picture (picX, picY, W, H);
 		btnpicTxSendColor = new Fl_Button(winW/2 - 123, winH - 28, 60, 24, "XmtClr");
 		btnpicTxSendColor->callback(cb_picTxSendColor, this);
@@ -1080,3 +1104,16 @@ void mfsk::makeTxViewer(int W, int H)
 	FL_UNLOCK_D();
 }
 
+int mfsk::print_time_left(size_t bytes, char *str, size_t len,
+			  const char *prefix, const char *suffix)
+{
+	float time_sec = bytes * 0.001;
+	int time_min = (int)(time_sec / 60);
+	time_sec -= time_min * 60;
+
+	if (time_min)
+		return snprintf(str, len, "%s%02dm%2.1fs%s",
+				prefix, time_min, time_sec, suffix);
+	else
+		return snprintf(str, len, "%s%2.1fs%s", prefix, time_sec, suffix);
+}

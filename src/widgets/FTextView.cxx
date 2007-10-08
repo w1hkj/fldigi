@@ -49,7 +49,8 @@ using namespace std;
 /// @param l 
 FTextBase::FTextBase(int x, int y, int w, int h, const char *l)
 	: ReceiveWidget(x, y, w, h, l),
-          wrap(true), wrap_col(80), max_lines(0), scroll_hint(false), scroll_tweak(3)
+          wrap(true), wrap_col(80), max_lines(0), scroll_hint(false),
+          scroll_tweak(3), adjusted_colours(false)
 {
 	tbuf = new Fl_Text_Buffer;
 	sbuf = new Fl_Text_Buffer;
@@ -66,11 +67,20 @@ FTextBase::FTextBase(int x, int y, int w, int h, const char *l)
 	// set some defaults
 	set_style(NATTR, FL_SCREEN, 12, FL_FOREGROUND_COLOR);
 	set_style(XMIT, FL_SCREEN, 12, FL_RED, SET_COLOR);
-	set_style(CTRL, FL_SCREEN, 12, FL_DARK_RED, SET_COLOR);
+	set_style(CTRL, FL_SCREEN, 12, FL_DARK_GREEN, SET_COLOR);
 	set_style(SKIP, FL_SCREEN, 12, FL_BLUE, SET_COLOR);
-	set_style(ALTR, FL_SCREEN, 12, FL_DARK_GREEN, SET_COLOR);
+	set_style(ALTR, FL_SCREEN, 12, FL_DARK_MAGENTA, SET_COLOR);
 }
 
+int FTextBase::handle(int event)
+{
+        if (!adjusted_colours && event == FL_SHOW) {
+                adjust_colours();
+                adjusted_colours = true;
+        }
+
+        return ReceiveWidget::handle(event);
+}
 
 void FTextBase::setFont(Fl_Font f, int attr)
 {
@@ -160,6 +170,7 @@ void FTextBase::set_style(int attr, Fl_Font f, int s, Fl_Color c, int set)
 		end = start + 1;
 	}
 	for (int i = start; i < end; i++) {
+		styles[i].attr = 0;
 		if (set & SET_FONT)
 			styles[i].font = f;
 		if (set & SET_SIZE)
@@ -285,6 +296,24 @@ void FTextBase::scroll_(int topLineNum, int horizOffset)
 }
 #endif
 
+void FTextBase::adjust_colours(void)
+{
+        // Fl_Text_Display::draw_string may mindlessly clobber our colours with
+        // FL_WHITE or FL_BLACK to satisfy contrast requirements. We adjust the
+        // luminosity here so that at least we get something resembling the
+        // requested hue.
+        for (int i = 0; i < NATTR; i++) {
+                Fl_Color adj;
+
+                while ((adj = fl_contrast(styles[i].color,
+                                          FL_BACKGROUND2_COLOR)) != styles[i].color) {
+                        styles[i].color = (adj == FL_WHITE) ?
+                                          fl_lighter(styles[i].color) :
+                                          fl_darker(styles[i].color);
+                }
+        }
+}
+
 // ----------------------------------------------------------------------------
 
 
@@ -321,7 +350,8 @@ FTextView::FTextView(int x, int y, int w, int h, const char *l)
 	tbuf->remove_modify_callback(buffer_modified_cb,
                                      dynamic_cast<Fl_Text_Editor *>(this));
 	tbuf->add_modify_callback(changed_cb, this);
-        scroll_tweak = 2;
+	scroll_tweak = 2;
+	mVScrollBar->callback(v_scrollbar_cb, this);
 
 	cursor_style(Fl_Text_Display::NORMAL_CURSOR);
 
@@ -563,6 +593,16 @@ void FTextView::change_keybindings(void)
 	}
 }
 
+void FTextView::v_scrollbar_cb(Fl_Widget* w, void* arg)
+{
+	Fl_Scrollbar* b = static_cast<Fl_Scrollbar *>(w);
+	FTextView* t = reinterpret_cast<FTextView *>(arg);
+
+	if (b->value() == t->mTopLineNum + 1)
+		b->value(t->mTopLineNum, t->mNVisibleLines, 1, t->mNBufferLines);
+	else
+		t->scroll(b->value(), t->mHorizOffset);
+}
 
 // ----------------------------------------------------------------------------
 

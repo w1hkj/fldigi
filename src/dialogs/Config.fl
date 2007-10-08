@@ -1148,7 +1148,7 @@ progdefaults.changed = true;}
 
 Function {openConfig()} {open return_type void
 } {
-  code {if (!dlgConfig) dlgConfig = ConfigureDialog();
+  code {if (!dlgConfig) createConfig();
 progdefaults.loadDefaults();} {}
 } 
 
@@ -1159,5 +1159,8 @@ Function {closeDialog()} {open return_type void
 
 Function {createConfig()} {open return_type void
 } {
-  code {if (!dlgConfig) dlgConfig = ConfigureDialog();} {}
+  code {if (!dlgConfig) {
+    dlgConfig = ConfigureDialog();
+    dlgConfig->xclass(FLDIGI_NAME);
+  }} {}
 } 

@@ -151,6 +151,7 @@ void cw::sync_parameters()
 	if (symbollen != nusymbollen || risetime != progdefaults.CWrisetime) {
 		risetime = progdefaults.CWrisetime;
 		symbollen = nusymbollen;
+		makeshape();
 	}
 	int len = (int)(samplerate / frequency / 2);
 	len = len < 2 ? 2 : len;

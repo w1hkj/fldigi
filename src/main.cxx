@@ -21,6 +21,11 @@
 // Please report all bugs and problems to "w1hkj@w1hkj.com".
 //
 
+#include <iostream>
+#include <iomanip>
+#include <sstream>
+#include <cstdlib>
+#include <getopt.h>
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
@@ -86,60 +91,12 @@ int		rxmsgid = -1;
 TXMSGSTRUC txmsgst;
 int txmsgid = -1;
 
-void arqchecks()
-{
-   	txmsgid = msgget( (key_t) 6789, 0666 );
+string option_help;
 
-	fl_filename_expand(szPskMailDir, 119, "$HOME/pskmail.files/");
-	PskMailDir = szPskMailDir;
-	PskMailFile = PskMailDir;
-	PskMailFile += "PSKmailserver";
-	ifstream testFile;
-	testFile.open(PskMailFile.c_str());
-	if (testFile.is_open()) {
-		mailserver = true;
-		testFile.close();
-	} else {
-		PskMailFile = PskMailDir;
-		PskMailFile += "PSKmailclient";
-		testFile.open(PskMailFile.c_str());
-		if (testFile.is_open()) {
-			mailclient = true;
-			testFile.close();
-		} else {
-			PskMailDir = "./";
-			PskMailFile = PskMailDir;
-			PskMailFile += "PSKmailserver";
-			testFile.open(PskMailFile.c_str());
-			if (testFile.is_open()) {
-				mailserver = true;
-				testFile.close();
-				gmfskmail = true;
-			} else {
-				PskMailFile = PskMailDir;
-				PskMailFile += "PSKmailclient";
-				testFile.open(PskMailFile.c_str());
-				if (testFile.is_open()) {
-					mailclient = true;
-					testFile.close();
-					gmfskmail = true;
-				}
-			}
-		}
-	}
-	if (mailserver || mailclient) {
-		std::cout << "Starting pskmail transport layer" << std::endl; fflush(stdout);
-		string PskMailLogName = PskMailDir;
 
-		if (gmfskmail == true)
-			PskMailLogName += "gMFSK.log";
-		else
-			PskMailLogName += "mail-io.log";
-			
-		Maillogfile = new cLogfile(PskMailLogName.c_str());
-		Maillogfile->log_to_file_start();
-	}
-}
+void arqchecks(void);
+void generate_option_help(void);
+int parse_args(int argc, char **argv, int& idx);
 
 int main(int argc, char ** argv)
 {
@@ -156,6 +113,11 @@ int main(int argc, char ** argv)
 		HomeDir = "./";
 	else
 		HomeDir = szHomedir;
+
+	generate_option_help();
+	int arg_idx;
+	Fl::args(argc, argv, arg_idx, parse_args);
+
 	xmlfname = HomeDir; 
 	xmlfname.append("rig.xml");
 	
@@ -250,7 +212,7 @@ int main(int argc, char ** argv)
 	
 	Fl::add_timeout(1.0, pskmail_loop);
 
-	fl_digi_main->show();
+	fl_digi_main->show(argc, argv);
 
 	int ret = Fl::run();
 	for (int i = 0; i < NUM_QRUNNER_THREADS; i++)
@@ -259,3 +221,230 @@ int main(int argc, char ** argv)
 	return ret;
 }
 
+void arqchecks()
+{
+   	txmsgid = msgget( (key_t) progdefaults.tx_msgid, 0666 );
+
+	fl_filename_expand(szPskMailDir, 119, "$HOME/pskmail.files/");
+	PskMailDir = szPskMailDir;
+	PskMailFile = PskMailDir;
+	PskMailFile += "PSKmailserver";
+	ifstream testFile;
+	testFile.open(PskMailFile.c_str());
+	if (testFile.is_open()) {
+		mailserver = true;
+		testFile.close();
+	} else {
+		PskMailFile = PskMailDir;
+		PskMailFile += "PSKmailclient";
+		testFile.open(PskMailFile.c_str());
+		if (testFile.is_open()) {
+			mailclient = true;
+			testFile.close();
+		} else {
+			PskMailDir = "./";
+			PskMailFile = PskMailDir;
+			PskMailFile += "PSKmailserver";
+			testFile.open(PskMailFile.c_str());
+			if (testFile.is_open()) {
+				mailserver = true;
+				testFile.close();
+				gmfskmail = true;
+			} else {
+				PskMailFile = PskMailDir;
+				PskMailFile += "PSKmailclient";
+				testFile.open(PskMailFile.c_str());
+				if (testFile.is_open()) {
+					mailclient = true;
+					testFile.close();
+					gmfskmail = true;
+				}
+			}
+		}
+	}
+	if (mailserver || mailclient) {
+		std::cout << "Starting pskmail transport layer" << std::endl; fflush(stdout);
+		string PskMailLogName = PskMailDir;
+
+		if (gmfskmail == true)
+			PskMailLogName += "gMFSK.log";
+		else
+			PskMailLogName += "mail-io.log";
+			
+		Maillogfile = new cLogfile(PskMailLogName.c_str());
+		Maillogfile->log_to_file_start();
+	}
+}
+
+void generate_option_help(void) {
+	// is there a better way of enumerating schemes?
+	string schemes = "none";
+	const char *possible_schemes[] = { "plastic", "gtk+", 0 };
+	const char *old = Fl::scheme();
+	const char **s = possible_schemes;
+	while (*s) {
+		Fl::scheme(*s);
+		if (strcasecmp(*s, Fl::scheme()) == 0)
+			schemes.append(" ").append(*s);
+		s++;
+	}
+	Fl::scheme(old ? old : "none");
+
+
+	ostringstream help;
+	int width = 37;
+	help << "Usage:\n " << FLDIGI_NAME << " [option...]\n";
+
+	help << '\n' << FLDIGI_NAME << " options:\n"
+
+	     << setw(width) << setiosflags(ios::left)
+	     << " --config-dir DIRECTORY"
+	     << "Look for configuration files in DIRECTORY\n"
+	     << setw(width) << setiosflags(ios::left)
+	     << "" << "The default is: " << HomeDir << '\n'
+
+	     << setw(width) << setiosflags(ios::left)
+	     << " --rx-ipc-key KEY" << "Set the receive message queue key\n"
+	     << setw(width) << setiosflags(ios::left)
+	     << "" << "May be given in hex if prefixed with \"0x\"\n"
+	     << setw(width) << setiosflags(ios::left)
+	     << "" << "The default is: " << progdefaults.rx_msgid
+	     << " or 0x" << hex << progdefaults.rx_msgid << dec << '\n'
+
+	     << setw(width) << setiosflags(ios::left)
+	     << " --tx-ipc-key KEY" << "Set the transmit message queue key\n"
+	     << setw(width) << setiosflags(ios::left)
+	     << "" << "May be given in hex if prefixed with \"0x\"\n"
+	     << setw(width) << setiosflags(ios::left)
+	     << "" << "The default is: " << progdefaults.tx_msgid
+	     << " or 0x" << hex << progdefaults.tx_msgid << dec << '\n'
+
+	     << setw(width) << setiosflags(ios::left)
+	     << " --version" << "Print version information\n"
+
+	     << setw(width) << setiosflags(ios::left)
+	     << " --help" << "Print this option help\n";
+
+
+	// Fl::help looks ugly so we'll write our own
+
+	help << "\nFLTK options:\n"
+
+	     << setw(width) << setiosflags(ios::left)
+	     << " -bg COLOR, -background COLOR"
+	     << "Set the background color\n"
+
+	     << setw(width) << setiosflags(ios::left)
+	     << " -bg2 COLOR, -background2 COLOR"
+	     << "Set the secondary (text) background color\n"
+
+	     << setw(width) << setiosflags(ios::left)
+	     << " -di, -display DISPLAY"
+	     << "Set the X display to use\n"
+	     << setw(width) << setiosflags(ios::left)
+	     << "" << "DISPLAY format is ``host:n.n''\n"
+
+	     << setw(width) << setiosflags(ios::left)
+	     << " -dn, -dnd or -nodn, -nodnd"
+	     << "Enable or disable drag and drop copy and\n"
+	     << setw(width) << setiosflags(ios::left)
+	     << "" << "paste in text fields\n"
+
+	     << setw(width) << setiosflags(ios::left)
+	     << " -fg COLOR, -foreground COLOR"
+	     << "Set the foreground color\n"
+
+	     << setw(width) << setiosflags(ios::left)
+	     << " -g GEOMETRY, -geometry GEOMETRY"
+	     << "Set the initial window size and position\n"
+	     << setw(width) << setiosflags(ios::left)
+	     << "" << "GEOMETRY format is ``WxH+X+Y''\n"
+
+	     << setw(width) << setiosflags(ios::left)
+	     << " -i, -iconic"
+	     << "Start " << FLDIGI_NAME << " in iconified state\n"
+
+	     << setw(width) << setiosflags(ios::left)
+	     << " -k, -kbd or -nok, -nokbd"
+	     << "Enable or disable visible keyboard focus\n"
+	     << setw(width) << setiosflags(ios::left)
+	     << "" << "in non-text widgets\n"
+
+	     << setw(width) << setiosflags(ios::left)
+	     << " -na CLASSNAME, -name CLASSNAME"
+	     << "Set the window class to CLASSNAME\n"
+
+	     << setw(width) << setiosflags(ios::left)
+	     << " -s SCHEME, -scheme SCHEME"
+	     << "Set the widget scheme\n"
+	     << setw(width) << setiosflags(ios::left)
+	     << "" << "SCHEME can be one of: " << schemes << '\n'
+
+	     << setw(width) << setiosflags(ios::left)
+	     << " -ti WINDOWTITLE, -title WINDOWTITLE"
+	     << "Set the window title\n"
+
+	     << setw(width) << setiosflags(ios::left)
+	     << " -to, -tooltips or -not, -notooltips"
+	     << "Enable or disable tooltips\n";
+
+
+	option_help = help.str();
+}
+
+int parse_args(int argc, char **argv, int& idx)
+{
+	size_t arg_size = strlen(argv[idx]);
+	if ( !(arg_size == 2 && argv[idx][0] == '-' ||
+	       arg_size > 2 && argv[idx][1] == '-') )
+		return 0;
+
+	const char shortopts[] = "+";
+	static struct option longopts[] = {
+		{ "rx-ipc-key",	   1, 0, 'r' },
+		{ "tx-ipc-key",	   1, 0, 't' },
+		{ "config-dir",	   1, 0, 'c' },
+		{ "help",	   0, 0, 'h' },
+		{ "version",	   0, 0, 'v' },
+		{ 0 }
+	};
+	int longindex;
+
+	int c = getopt_long(argc - idx + 1, argv + idx - 1, shortopts, longopts, &longindex);
+	switch (c) {
+	case -1:
+		return 0;
+	case 0:
+		// handle options with non-0 flag here
+		return 0;
+	case 'r': case 't':
+	{
+		errno = 0;
+		int key = strtol(optarg, NULL, (strncasecmp(optarg, "0x", 2) ? 10 : 16));
+		if (errno || key <= 0)
+			cerr << "Hmm, " << key << " doesn't look like a valid IPC key\n";
+		if (c == 'r')
+			progdefaults.rx_msgid = key;
+		else
+			progdefaults.tx_msgid = key;
+	}
+		idx += 2;
+		return 2;
+	case 'c':
+		HomeDir = optarg;
+		if (*HomeDir.rbegin() != '/')
+			HomeDir += '/';
+		idx += 2;
+		return 2;
+	case 'h':
+		cerr << option_help;
+		exit(EXIT_SUCCESS);
+	case 'v':
+		cerr << FLDIGI_NAME << ' ' << FLDIGI_VERSION << '\n';
+		exit(EXIT_SUCCESS);
+	default:
+		break;
+	}
+
+	return 0;
+}

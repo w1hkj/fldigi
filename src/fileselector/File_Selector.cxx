@@ -193,6 +193,7 @@ File_Selector::File_Selector(const char *d, const char *p, int t, const char *ti
   }
 data_ = 0;
 directory_[0] = 0;
+window->xclass(FLDIGI_NAME);
 window->size_range(window->w(), window->h(), Fl::w(), Fl::h());
 type(t);
 filter(p);
