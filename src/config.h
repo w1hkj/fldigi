@@ -31,8 +31,19 @@
 // DO NOT EXCEED 4000
 // The larger the number the greater the cpu load will be for creating the
 // waterfall display
+#define DEFAULT_IMAGE_WIDTH 3000
+#define DEFAULT_HWFALL 140
+#define DEFAULT_HNOM 570
+#define DEFAULT_WNOM (DEFAULT_IMAGE_WIDTH / 4 + DEFAULT_HWFALL - BTN_HEIGHT)
 
-#define IMAGE_WIDTH 3000
+#define EMC_HWFALL 120
+#define EMC_HNOM 400
+#define EMC_WNOM (EMC_HWFALL + 580)
+
+extern int IMAGE_WIDTH;
+extern int Hwfall;
+extern int HNOM;
+extern int WNOM;
 
 // widget sizes internal to the waterfall widget
 #define BEZEL		 2
@@ -40,20 +51,6 @@
 #define WFSCALE     10
 #define WFMARKER     6
 #define BTN_HEIGHT	20
-
-// use the following for EmComm minimal footprint
-#ifdef EMCOMM
-#define Hwfall		120
-#define WMINIMUM	(Hwfall + 580)
-#define HNOM		400 // do not make smaller than 400
-#define WNOM		WMINIMUM
-#else
-// use the following for the original fldigi waterfall sizing
-#define Hwfall		140
-#define WMINIMUM	(IMAGE_WIDTH / 4 + Hwfall - BTN_HEIGHT)
-#define HNOM		570
-#define WNOM		WMINIMUM
-#endif
 
 #define bwColor		30
 #define bwFFT		30

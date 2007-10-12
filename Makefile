@@ -43,12 +43,6 @@ endif
 ifneq (,$(findstring nhl-static, $(CFG)))
 	override CTARG = nhl-static
 endif
-ifneq (,$(findstring emcomm, $(CFG)))
-    override CTARG = emcomm
-endif
-ifneq (,$(findstring nhl-emcomm, $(CFG)))
-    override CTARG = nhl-emcomm
-endif
 
 
 # compiler and preprocessor options
@@ -174,14 +168,6 @@ ifeq ($(CTARG),hamlib-static)
     SRC += $(HAMLIB_SRC)
 endif
 
-ifeq ($(CTARG),emcomm)
-    CPPFLAGS += -DPORTAUDIO -DEMCOMM
-    LDFLAGS = $(STATIC_LDFLAGS) /usr/local/lib/libportaudiocpp.a \
-              /usr/local/lib/libportaudio.a /usr/local/lib/libsndfile.a \
-              $(HAMLIBS) $(IMGLIBS)
-    SRC += $(HAMLIB_SRC)
-endif
-
 ifeq ($(CTARG),hamlib-debug)
     CPPFLAGS += -DPORTAUDIO -UNDEBUG
     CXXFLAGS += -O0 -ggdb3 -Wall
@@ -209,13 +195,6 @@ ifeq ($(CTARG),nhl-debug)
     LDFLAGS = $(DYN_LDFLAGS) -lportaudiocpp -lportaudio -lsndfile
     SRC += $(SRC_DIR)/misc/stacktrace.cxx
     override STRIP = 0
-endif
-
-ifeq ($(CTARG),nhl-emcomm)
-    CPPFLAGS += -DNOHAMLIB -DPORTAUDIO -DEMCOMM
-    LDFLAGS = $(STATIC_LDFLAGS) /usr/local/lib/libportaudiocpp.a \
-              /usr/local/lib/libportaudio.a /usr/local/lib/libsndfile.a \
-              $(IMGLIBS)
 endif
 #################### end cfg
 

@@ -256,12 +256,12 @@ void mfsk::recvpic(complex z)
 		}
 		picf = 0.0;
 
-		int picsize = picW * picH * (color ? 3 : 1);
-		int n = snprintf(mfskmsg, sizeof(mfskmsg),
+		int n = picW * picH * 3;
+		int s = snprintf(mfskmsg, sizeof(mfskmsg),
 				 "Recv picture: %04.1f%% done",
-				 (100.0f * pixelnbr) / picsize);
-		print_time_left(picsize - pixelnbr, mfskmsg + n,
-				sizeof(mfskmsg) - n, ", ", " left");
+				 (100.0f * pixelnbr) / n);
+		print_time_left(n - pixelnbr, mfskmsg + s,
+				sizeof(mfskmsg) - s, ", ", " left");
 		put_status(mfskmsg);
 	}
 }

@@ -153,27 +153,24 @@ void status::initLastState()
 	wf->setAmpSpan();
 	wf->movetocenter();
 	
-//	if (lastmode == MODE_CW)
-//		active_modem->set_freq(progdefaults.CWsweetspot);
-//	else if (lastmode == MODE_RTTY)
-//		active_modem->set_freq(progdefaults.RTTYsweetspot);
-//	else 
-//		active_modem->set_freq(progdefaults.PSKsweetspot);
+//	if (IMAGE_WIDTH == DEFAULT_IMAGE_WIDTH && Hwfall == DEFAULT_HWFALL &&
+//	    HNOM == DEFAULT_HNOM && WNOM == DEFAULT_WNOM) 
+	{
+		fl_digi_main->resize(mainX, mainY, mainW, mainH);
 
-	fl_digi_main->resize(mainX, mainY, mainW, mainH);
+		int X, Y, W, H, Yx, Hx;
+		X = ReceiveText->x();
+		Y = ReceiveText->y();
+		W = ReceiveText->w();
+		H = ReceiveText->h();
+		Yx = TransmitText->y();
+		Hx = TransmitText->h();	
 
-	int X, Y, W, H, Yx, Hx;
-	X = ReceiveText->x();
-	Y = ReceiveText->y();
-	W = ReceiveText->w();
-	H = ReceiveText->h();
-	Yx = TransmitText->y();
-	Hx = TransmitText->h();	
+		ReceiveText->resize(X,Y,W,RxTextHeight);
+		FHdisp->resize(X,Y,W,RxTextHeight);
+		TransmitText->resize(X, Y + RxTextHeight, W, H + Hx - RxTextHeight);
+	}
 
-	ReceiveText->resize(X,Y,W,RxTextHeight);
-	FHdisp->resize(X,Y,W,RxTextHeight);
-	TransmitText->resize(X, Y + RxTextHeight, W, H + Hx - RxTextHeight);
-	
 	if (rigShown == true) {
 		if (!rigcontrol)
 			createRigDialog();

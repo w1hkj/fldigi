@@ -105,7 +105,6 @@ protected:
 	int					max_lines;
 	bool					scroll_hint;
 	int					scroll_tweak;
-	int					scrollbar_tweak;
 	bool					adjusted_colours;
 };
 

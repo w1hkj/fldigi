@@ -50,7 +50,7 @@ using namespace std;
 FTextBase::FTextBase(int x, int y, int w, int h, const char *l)
 	: ReceiveWidget(x, y, w, h, l),
           wrap(true), wrap_col(80), max_lines(0), scroll_hint(false),
-          scroll_tweak(3), scrollbar_tweak(2), adjusted_colours(false)
+          scroll_tweak(3), adjusted_colours(false)
 {
 	tbuf = new Fl_Text_Buffer;
 	sbuf = new Fl_Text_Buffer;
@@ -351,7 +351,6 @@ FTextView::FTextView(int x, int y, int w, int h, const char *l)
                                      dynamic_cast<Fl_Text_Editor *>(this));
 	tbuf->add_modify_callback(changed_cb, this);
 	scroll_tweak = 2;
-	scrollbar_tweak = 0;
 
 	cursor_style(Fl_Text_Display::NORMAL_CURSOR);
 
@@ -1073,8 +1072,13 @@ int FTextEdit::kf_enter(int c, Fl_Text_Editor* e)
 int FTextEdit::kf_delete(int c, Fl_Text_Editor* e)
 {
 	// single character
-	if (!e->buffer()->selected())
-		return e->insert_position() < *ptxpos ? 1 : Fl_Text_Editor::kf_delete(c, e);
+	if (!e->buffer()->selected()) {
+                if (e->insert_position() >= *ptxpos &&
+                    e->insert_position() != e->buffer()->length())
+                        return Fl_Text_Editor::kf_delete(c, e);
+                else
+                        return 1;
+        }
 
 	// region: delete as much as we can
 	int start, end;

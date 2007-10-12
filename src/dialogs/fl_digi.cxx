@@ -136,6 +136,13 @@ Fl_RGB_Image		*feld_image = 0;
 
 Pixmap				fldigi_icon_pixmap;
 
+
+int IMAGE_WIDTH = DEFAULT_IMAGE_WIDTH;
+int Hwfall = DEFAULT_HWFALL;
+int HNOM = DEFAULT_HNOM;
+int WNOM = DEFAULT_WNOM;
+
+
 void clearStatus()
 {
 	clear_StatusMessages();

@@ -319,9 +319,9 @@ void generate_option_help(void) {
 	     << "" << "The default is: " << progdefaults.tx_msgid
 	     << " or 0x" << hex << progdefaults.tx_msgid << dec << '\n'
 
-		 << setw(width) << setiosflags(ios::left)
-		 << " --fast-text" << "Use fast text widgets\n"
-		 
+	     << setw(width) << setiosflags(ios::left)
+	     << " --fast-text" << "Use fast text widgets\n"
+
 	     << setw(width) << setiosflags(ios::left)
 	     << " --version" << "Print version information\n"
 
@@ -362,6 +362,8 @@ void generate_option_help(void) {
 	     << "Set the initial window size and position\n"
 	     << setw(width) << setiosflags(ios::left)
 	     << "" << "GEOMETRY format is ``WxH+X+Y''\n"
+	     << setw(width) << setiosflags(ios::left)
+	     << "" << "** " << FLDIGI_NAME << " may override this settting **\n"
 
 	     << setw(width) << setiosflags(ios::left)
 	     << " -i, -iconic"
@@ -398,8 +400,16 @@ void generate_option_help(void) {
 	     << " --font FONT[:SIZE]"
 	     << "Set the widget font and (optional) size\n"
 	     << setw(width) << setiosflags(ios::left)
-	     << "" << "The defaults are: " << Fl::get_font(FL_HELVETICA)
-	     << ':' << FL_NORMAL_SIZE << '\n';
+	     << "" << "The default is: " << Fl::get_font(FL_HELVETICA)
+	     << ':' << FL_NORMAL_SIZE << '\n'
+
+	     << setw(width) << setiosflags(ios::left)
+	     << " --profile PROFILE"
+	     << "If PROFILE is ``emc'', ``emcomm'', or\n"
+	     << setw(width) << setiosflags(ios::left)
+	     << "" << "``minimal'', widget sizes will be adjusted\n"
+	     << setw(width) << setiosflags(ios::left)
+	     << "" << "for a minimal screen footprint.\n";
 
 
 	option_help = help.str();
@@ -411,14 +421,26 @@ int parse_args(int argc, char **argv, int& idx)
 	if ( !(strlen(argv[idx]) >= 2 && strncmp(argv[idx], "--", 2) == 0) )
 		return 0;
 
+        enum { ZERO, RX_IPC_KEY, TX_IPC_KEY, CONFIG_DIR, FAST_TEXT, FONT,
+               WFALL_WIDTH, WFALL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, PROFILE,
+               HELP, VERSION };
+
 	const char shortopts[] = "+";
 	static struct option longopts[] = {
-		{ "rx-ipc-key",	   1, 0, 'r' },
-		{ "tx-ipc-key",	   1, 0, 't' },
-		{ "config-dir",	   1, 0, 'c' },
- 		{ "font",    	   1, 0, 'F' },
-		{ "help",	       0, 0, 'h' },
-		{ "version",	   0, 0, 'v' },
+		{ "rx-ipc-key",	   1, 0, RX_IPC_KEY },
+		{ "tx-ipc-key",	   1, 0, TX_IPC_KEY },
+		{ "config-dir",	   1, 0, CONFIG_DIR },
+		{ "fast-text",	   0, 0, FAST_TEXT },
+		{ "font",	   1, 0, FONT },
+
+		{ "wfall-width",   1, 0, WFALL_WIDTH },
+		{ "wfall-height",  1, 0, WFALL_HEIGHT },
+		{ "window-width",  1, 0, WINDOW_WIDTH },
+		{ "window-height", 1, 0, WINDOW_HEIGHT },
+		{ "profile",	   1, 0, PROFILE },
+
+		{ "help",	   0, 0, HELP },
+		{ "version",	   0, 0, VERSION },
 		{ 0 }
 	};
 	int longindex;
@@ -431,7 +453,7 @@ int parse_args(int argc, char **argv, int& idx)
 		// handle options with non-0 flag here
 		return 0;
 
-	case 'r': case 't':
+	case RX_IPC_KEY: case TX_IPC_KEY:
 	{
 		errno = 0;
 		int key = strtol(optarg, NULL, (strncasecmp(optarg, "0x", 2) ? 10 : 16));
@@ -445,14 +467,19 @@ int parse_args(int argc, char **argv, int& idx)
 		idx += 2;
 		return 2;
 
-	case 'c':
+	case CONFIG_DIR:
 		HomeDir = optarg;
 		if (*HomeDir.rbegin() != '/')
 			HomeDir += '/';
 		idx += 2;
 		return 2;
 
-	case 'F':
+	case FAST_TEXT:
+		progdefaults.alt_text_widgets = false;
+		idx += 1;
+		return 1;
+
+	case FONT:
 	{
 		char *p;
 		if ((p = strchr(optarg, ':'))) {
@@ -465,11 +492,40 @@ int parse_args(int argc, char **argv, int& idx)
 		idx += 2;
 		return 2;
 
-	case 'h':
+	case WFALL_WIDTH:
+		IMAGE_WIDTH = strtol(optarg, NULL, 10);
+		idx += 2;
+		return 2;
+	case WFALL_HEIGHT:
+		Hwfall = strtol(optarg, NULL, 10);
+		idx += 2;
+		return 2;
+	case WINDOW_WIDTH:
+		WNOM = strtol(optarg, NULL, 10);
+		idx += 2;
+		return 2;
+	case WINDOW_HEIGHT:
+		HNOM = strtol(optarg, NULL, 10);
+		idx += 2;
+		return 2;
+
+	case PROFILE:
+		if (!strcasecmp(optarg, "emcomm") || !strcasecmp(optarg, "emc") ||
+                    !strcasecmp(optarg, "minimal")) {
+			IMAGE_WIDTH = DEFAULT_IMAGE_WIDTH;
+			Hwfall = EMC_HWFALL;
+			HNOM = EMC_HNOM;
+			WNOM = EMC_WNOM;
+			FL_NORMAL_SIZE = 12;
+		}
+		idx += 2;
+		return 2;
+
+	case HELP:
 		cerr << option_help;
 		exit(EXIT_SUCCESS);
 
-	case 'v':
+	case VERSION:
 		cerr << FLDIGI_NAME << ' ' << FLDIGI_VERSION << '\n';
 		exit(EXIT_SUCCESS);
 
