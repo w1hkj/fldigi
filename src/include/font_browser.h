@@ -62,7 +62,7 @@ public:
 	Preview_Box(int x, int y, int w, int h, const char* l) : Fl_Widget(x, y, w, h, l)
 	{
     	fontName = 1;
-    	fontSize = 14;
+    	fontSize = FL_NORMAL_SIZE;
     	box(FL_DOWN_BOX);  
     	color(FL_WHITE);
     	fontColor = FL_BLACK;

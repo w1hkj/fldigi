@@ -214,8 +214,9 @@ enum TAG { \
 	MXDEVICE, RCVMIXER, XMTMIXER, PCMVOLUME,
 	MICIN, LINEIN, ENABLEMIXER, MUTEINPUT,
 	PALETTE0, PALETTE1, PALETTE2, PALETTE3, PALETTE4, 
-	PALETTE5, PALETTE6, PALETTE7, PALETTE8,
-	ALT_TEXT_WIDGETS };
+	PALETTE5, PALETTE6, PALETTE7, PALETTE8 
+};
+//	, ALT_TEXT_WIDGETS };
 	
 void writeXMLint(ofstream &f, const char * tag,  int val)
 {
@@ -244,17 +245,26 @@ void writeXMLPalette(ofstream &f, int n, int r, int g, int b)
 	f << "</PALETTE" << n << ">\n";
 }
 
-void writeXMLrgbi(ofstream &f, const char *tag, int r, int g, int b, int i)
+void writeXMLrgb(ofstream &f, const char *tag, int r, int g, int b)
 {
-	f << "<" << tag << ">" << r << " " << g << " " << b << " " << i;
+	f << "<" << tag << ">" << r << " " << g << " " << b ;
 	f << "</" << tag << ">\n";
 }
 
 void configuration::writeDefaultsXML()
 {
-	string deffname = HomeDir;
+	string deffname(HomeDir);
 	deffname.append("fldigi_def.xml");
+
+	string deffname_backup(deffname);
+	deffname_backup.append("-old");
+	rename(deffname.c_str(), deffname_backup.c_str());
+
 	ofstream f(deffname.c_str(), ios::out);
+	if (!f) {
+		cerr << "Could not write " << deffname << '\n';
+		return;
+	}
 
 	f << "<FLDIGI_DEFS>\n";
 
@@ -318,21 +328,18 @@ void configuration::writeDefaultsXML()
 	writeXMLbool(f, "USECURSORLINES", UseCursorLines);
 	writeXMLbool(f, "USECURSORCENTERLINE", UseCursorCenterLine);
 	writeXMLbool(f, "USEBWTRACKS", UseBWTracks);
-	writeXMLrgbi(f, "CLCOLORS", 
+	writeXMLrgb(f, "CLCOLORS", 
 		cursorLineRGBI.R,
 		cursorLineRGBI.G,
-		cursorLineRGBI.B,
-		cursorLineRGBI.I);	
-	writeXMLrgbi(f, "CCCOLORS", 
+		cursorLineRGBI.B);	
+	writeXMLrgb(f, "CCCOLORS", 
 		cursorCenterRGBI.R,
 		cursorCenterRGBI.G,
-		cursorCenterRGBI.B,
-		cursorCenterRGBI.I);
-	writeXMLrgbi(f, "BWTCOLORS",
+		cursorCenterRGBI.B);
+	writeXMLrgb(f, "BWTCOLORS",
 		bwTrackRGBI.R,
 		bwTrackRGBI.G,
-		bwTrackRGBI.B,
-		bwTrackRGBI.I);	
+		bwTrackRGBI.B);	
 	writeXMLbool(f, "VIEWXMTSIGNAL", viewXmtSignal);
 	writeXMLbool(f, "SENDID", sendid);
 	writeXMLbool(f, "MACROID", macroid);
@@ -381,7 +388,7 @@ void configuration::writeDefaultsXML()
 	for (int i = 0; i < 9; i++)
 		writeXMLPalette(f, i, cfgpal[i].R, cfgpal[i].G, cfgpal[i].B);
 
-	writeXMLbool(f, "ALT_TEXT_WIDGETS", alt_text_widgets);
+//	writeXMLbool(f, "ALT_TEXT_WIDGETS", alt_text_widgets);
 
 	f << "</FLDIGI_DEFS>\n";
 	f.close();
@@ -584,27 +591,24 @@ bool configuration::readDefaultsXML()
 						break;
 					case CLCOLORS :
 //						sscanf( xml->getNodeData(), "%d %d %d %d",
-						sscanf( xml->getNodeData(), "%hhu %hhu %hhu %hhu",
+						sscanf( xml->getNodeData(), "%hhu %hhu %hhu",
 							&cursorLineRGBI.R,
 							&cursorLineRGBI.G,
-							&cursorLineRGBI.B,
-							&cursorLineRGBI.I );	
+							&cursorLineRGBI.B );	
 						break;
 					case CCCOLORS :
 //						sscanf( xml->getNodeData(), "%d %d %d %d",
-						sscanf( xml->getNodeData(), "%hhu %hhu %hhu %hhu",
+						sscanf( xml->getNodeData(), "%hhu %hhu %hhu",
 							&cursorCenterRGBI.R,
 							&cursorCenterRGBI.G,
-							&cursorCenterRGBI.B,
-							&cursorCenterRGBI.I );	
+							&cursorCenterRGBI.B );	
 						break;
 					case BWTCOLORS :
 //						sscanf( xml->getNodeData(), "%d %d %d %d",
-						sscanf( xml->getNodeData(), "%hhu %hhu %hhu %hhu",
+						sscanf( xml->getNodeData(), "%hhu %hhu %hhu",
 							&bwTrackRGBI.R,
 							&bwTrackRGBI.G,
-							&bwTrackRGBI.B,
-							&bwTrackRGBI.I );	
+							&bwTrackRGBI.B );	
 						break;
 					case VIEWXMTSIGNAL :
 						viewXmtSignal = atoi(xml->getNodeData());
@@ -774,9 +778,9 @@ bool configuration::readDefaultsXML()
 						sscanf( xml->getNodeData(), "%d %d %d",
 								&cfgpal[8].R, &cfgpal[8].G, &cfgpal[8].B );
 						break;
-					case ALT_TEXT_WIDGETS :
-						alt_text_widgets = atoi(xml->getNodeData());
-						break;
+//					case ALT_TEXT_WIDGETS :
+//						alt_text_widgets = atoi(xml->getNodeData());
+//						break;
 				}
 				break;
 				
@@ -898,7 +902,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("PALETTE6", nodeName)) 	tag = PALETTE6;
 				else if (!strcmp("PALETTE7", nodeName)) 	tag = PALETTE7;
 				else if (!strcmp("PALETTE8", nodeName)) 	tag = PALETTE8;
-				else if (!strcmp("ALT_TEXT_WIDGETS", nodeName)) 	tag = ALT_TEXT_WIDGETS;
+//				else if (!strcmp("ALT_TEXT_WIDGETS", nodeName)) 	tag = ALT_TEXT_WIDGETS;
 				else tag = IGNORE;
 				}
 				break;
@@ -1195,7 +1199,7 @@ int configuration::openDefaults() {
 			btntextwidgets->value(alt_text_widgets);
 			btntextwidgets->activate();
 #else
-			alt_text_widgets = true;
+//			alt_text_widgets = true;
 			btntextwidgets->deactivate();
 #endif			
 		FL_UNLOCK();

@@ -168,7 +168,10 @@
       vscrollbarvisible != mVScrollBar->visible())
     redraw();
 
-  update_v_scrollbar();
+//  update_v_scrollbar();
+  mVScrollBar->value(mTopLineNum, mNVisibleLines, 1, mNBufferLines + scrollbar_tweak);
+  mVScrollBar->linesize(3);
+
   if (!mContinuousWrap)
     update_h_scrollbar();
 

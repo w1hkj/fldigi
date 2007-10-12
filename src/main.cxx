@@ -319,6 +319,9 @@ void generate_option_help(void) {
 	     << "" << "The default is: " << progdefaults.tx_msgid
 	     << " or 0x" << hex << progdefaults.tx_msgid << dec << '\n'
 
+		 << setw(width) << setiosflags(ios::left)
+		 << " --fast-text" << "Use fast text widgets\n"
+		 
 	     << setw(width) << setiosflags(ios::left)
 	     << " --version" << "Print version information\n"
 
@@ -328,7 +331,7 @@ void generate_option_help(void) {
 
 	// Fl::help looks ugly so we'll write our own
 
-	help << "\nFLTK options:\n"
+	help << "\nStandard FLTK options:\n"
 
 	     << setw(width) << setiosflags(ios::left)
 	     << " -bg COLOR, -background COLOR"
@@ -389,14 +392,23 @@ void generate_option_help(void) {
 	     << "Enable or disable tooltips\n";
 
 
+	help << "\nAdditional options:\n"
+
+	     << setw(width) << setiosflags(ios::left)
+	     << " --font FONT[:SIZE]"
+	     << "Set the widget font and (optional) size\n"
+	     << setw(width) << setiosflags(ios::left)
+	     << "" << "The defaults are: " << Fl::get_font(FL_HELVETICA)
+	     << ':' << FL_NORMAL_SIZE << '\n';
+
+
 	option_help = help.str();
 }
 
 int parse_args(int argc, char **argv, int& idx)
 {
-	size_t arg_size = strlen(argv[idx]);
-	if ( !(arg_size == 2 && argv[idx][0] == '-' ||
-	       arg_size > 2 && argv[idx][1] == '-') )
+	// Only handle long options
+	if ( !(strlen(argv[idx]) >= 2 && strncmp(argv[idx], "--", 2) == 0) )
 		return 0;
 
 	const char shortopts[] = "+";
@@ -404,7 +416,8 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "rx-ipc-key",	   1, 0, 'r' },
 		{ "tx-ipc-key",	   1, 0, 't' },
 		{ "config-dir",	   1, 0, 'c' },
-		{ "help",	   0, 0, 'h' },
+ 		{ "font",    	   1, 0, 'F' },
+		{ "help",	       0, 0, 'h' },
 		{ "version",	   0, 0, 'v' },
 		{ 0 }
 	};
@@ -417,6 +430,7 @@ int parse_args(int argc, char **argv, int& idx)
 	case 0:
 		// handle options with non-0 flag here
 		return 0;
+
 	case 'r': case 't':
 	{
 		errno = 0;
@@ -430,20 +444,42 @@ int parse_args(int argc, char **argv, int& idx)
 	}
 		idx += 2;
 		return 2;
+
 	case 'c':
 		HomeDir = optarg;
 		if (*HomeDir.rbegin() != '/')
 			HomeDir += '/';
 		idx += 2;
 		return 2;
+
+	case 'F':
+	{
+		char *p;
+		if ((p = strchr(optarg, ':'))) {
+			*p = '\0';
+			extern int FL_NORMAL_SIZE;
+			FL_NORMAL_SIZE = strtol(p + 1, 0, 10);
+		}
+	}
+		Fl::set_font(FL_HELVETICA, optarg);
+		idx += 2;
+		return 2;
+
 	case 'h':
 		cerr << option_help;
 		exit(EXIT_SUCCESS);
+
 	case 'v':
 		cerr << FLDIGI_NAME << ' ' << FLDIGI_VERSION << '\n';
 		exit(EXIT_SUCCESS);
+
+	case '?':
+		cerr << "Try `" << FLDIGI_NAME << " --help' for more information.\n";
+		exit(EXIT_FAILURE);
+
 	default:
-		break;
+		cerr << option_help;
+		exit(EXIT_FAILURE);
 	}
 
 	return 0;

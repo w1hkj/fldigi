@@ -192,7 +192,7 @@ Font_Browser::Font_Browser(const char *lbl ) :
     }
 
 	fontnbr = (Fl_Font)1;
-    fontsize = 14; // Font Size to be used
+    fontsize = FL_NORMAL_SIZE; // Font Size to be used
     fontcolor = FL_BLACK;
 
     lst_Size->value( fontsize );

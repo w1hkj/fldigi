@@ -467,61 +467,6 @@ Fl_Group *tabSoundCard=(Fl_Group *)0;
 
 Fl_Tabs *tabsSoundCard=(Fl_Tabs *)0;
 
-Fl_Group *tabMixer=(Fl_Group *)0;
-
-Fl_Light_Button *btnLineIn=(Fl_Light_Button *)0;
-
-static void cb_btnLineIn(Fl_Light_Button* o, void*) {
-  if (o->value() == 1) {
-    btnMicIn->value(0);
-    progdefaults.LineIn = true;
-    progdefaults.MicIn = false;
-    setMixerInput(1);
-} else {
-    setMixerInput(0);
-    progdefaults.LineIn = false;
-}
-progdefaults.changed = true;
-}
-
-Fl_Light_Button *btnMicIn=(Fl_Light_Button *)0;
-
-static void cb_btnMicIn(Fl_Light_Button* o, void*) {
-  if (o->value() == 1) {
-    btnLineIn->value(0);
-    progdefaults.LineIn = false;
-    progdefaults.MicIn = true;
-    setMixerInput(2);
-} else {
-    setMixerInput(0);
-    progdefaults.MicIn = false;
-}
-progdefaults.changed = true;
-}
-
-Fl_Value_Slider *valPCMvolume=(Fl_Value_Slider *)0;
-
-static void cb_valPCMvolume(Fl_Value_Slider* o, void*) {
-  setPCMvolume(o->value());
-progdefaults.changed = true;
-}
-
-Fl_Input_Choice *menuMix=(Fl_Input_Choice *)0;
-
-static void cb_menuMix(Fl_Input_Choice* o, void*) {
-  progdefaults.MXdevice = o->value();
-enableMixer(false);
-enableMixer(true);
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnMixer=(Fl_Check_Button *)0;
-
-static void cb_btnMixer(Fl_Check_Button* o, void*) {
-  enableMixer(o->value());
-progdefaults.changed = true;
-}
-
 Fl_Group *tabAudio=(Fl_Group *)0;
 
 Fl_Spinner *cntRxRateCorr=(Fl_Spinner *)0;
@@ -584,6 +529,61 @@ Fl_Input_Choice *menuPADev=(Fl_Input_Choice *)0;
 static void cb_menuPADev(Fl_Input_Choice* o, void*) {
   scDevice = progdefaults.PAdevice = o->value();
 resetSoundCard();
+progdefaults.changed = true;
+}
+
+Fl_Group *tabMixer=(Fl_Group *)0;
+
+Fl_Light_Button *btnLineIn=(Fl_Light_Button *)0;
+
+static void cb_btnLineIn(Fl_Light_Button* o, void*) {
+  if (o->value() == 1) {
+    btnMicIn->value(0);
+    progdefaults.LineIn = true;
+    progdefaults.MicIn = false;
+    setMixerInput(1);
+} else {
+    setMixerInput(0);
+    progdefaults.LineIn = false;
+}
+progdefaults.changed = true;
+}
+
+Fl_Light_Button *btnMicIn=(Fl_Light_Button *)0;
+
+static void cb_btnMicIn(Fl_Light_Button* o, void*) {
+  if (o->value() == 1) {
+    btnLineIn->value(0);
+    progdefaults.LineIn = false;
+    progdefaults.MicIn = true;
+    setMixerInput(2);
+} else {
+    setMixerInput(0);
+    progdefaults.MicIn = false;
+}
+progdefaults.changed = true;
+}
+
+Fl_Value_Slider *valPCMvolume=(Fl_Value_Slider *)0;
+
+static void cb_valPCMvolume(Fl_Value_Slider* o, void*) {
+  setPCMvolume(o->value());
+progdefaults.changed = true;
+}
+
+Fl_Input_Choice *menuMix=(Fl_Input_Choice *)0;
+
+static void cb_menuMix(Fl_Input_Choice* o, void*) {
+  progdefaults.MXdevice = o->value();
+enableMixer(false);
+enableMixer(true);
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnMixer=(Fl_Check_Button *)0;
+
+static void cb_btnMixer(Fl_Check_Button* o, void*) {
+  enableMixer(o->value());
 progdefaults.changed = true;
 }
 
@@ -1342,41 +1342,9 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         o->hide();
         { Fl_Tabs* o = tabsSoundCard = new Fl_Tabs(0, 25, 400, 195);
           o->selection_color((Fl_Color)10);
-          { Fl_Group* o = tabMixer = new Fl_Group(0, 50, 400, 170, "Mixer");
-            o->color((Fl_Color)51);
-            o->selection_color((Fl_Color)51);
-            { Fl_Light_Button* o = btnLineIn = new Fl_Light_Button(295, 64, 74, 22, "Line In");
-              o->selection_color((Fl_Color)3);
-              o->callback((Fl_Callback*)cb_btnLineIn);
-            }
-            { Fl_Light_Button* o = btnMicIn = new Fl_Light_Button(295, 94, 74, 22, "Mic In");
-              o->callback((Fl_Callback*)cb_btnMicIn);
-            }
-            { Fl_Value_Slider* o = valPCMvolume = new Fl_Value_Slider(19, 125, 340, 21, "PCM");
-              o->type(5);
-              o->color((Fl_Color)26);
-              o->selection_color((Fl_Color)1);
-              o->step(0.01);
-              o->value(0.8);
-              o->textsize(14);
-              o->callback((Fl_Callback*)cb_valPCMvolume);
-              o->align(FL_ALIGN_RIGHT);
-            }
-            { Fl_Input_Choice* o = menuMix = new Fl_Input_Choice(105, 90, 110, 25, "Device");
-              o->callback((Fl_Callback*)cb_menuMix);
-              o->value(progdefaults.MXdevice.c_str());
-            }
-            { Fl_Check_Button* o = btnMixer = new Fl_Check_Button(55, 61, 125, 25, "Manage mixer");
-              o->down_box(FL_DOWN_BOX);
-              o->callback((Fl_Callback*)cb_btnMixer);
-              o->value(progdefaults.EnableMixer);
-            }
-            o->end();
-          }
           { Fl_Group* o = tabAudio = new Fl_Group(0, 50, 400, 170, "Audio");
             o->color((Fl_Color)51);
             o->selection_color((Fl_Color)51);
-            o->hide();
             { Fl_Spinner* o = cntRxRateCorr = new Fl_Spinner(299, 161, 75, 24, "RX ppm:");
               o->callback((Fl_Callback*)cb_cntRxRateCorr);
               o->step(1);
@@ -1420,6 +1388,38 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
               o->callback((Fl_Callback*)cb_menuPADev);
               o->align(FL_ALIGN_RIGHT);
               o->value(progdefaults.PAdevice.c_str());
+            }
+            o->end();
+          }
+          { Fl_Group* o = tabMixer = new Fl_Group(0, 50, 400, 170, "Mixer");
+            o->color((Fl_Color)51);
+            o->selection_color((Fl_Color)51);
+            o->hide();
+            { Fl_Light_Button* o = btnLineIn = new Fl_Light_Button(295, 64, 74, 22, "Line In");
+              o->selection_color((Fl_Color)3);
+              o->callback((Fl_Callback*)cb_btnLineIn);
+            }
+            { Fl_Light_Button* o = btnMicIn = new Fl_Light_Button(295, 94, 74, 22, "Mic In");
+              o->callback((Fl_Callback*)cb_btnMicIn);
+            }
+            { Fl_Value_Slider* o = valPCMvolume = new Fl_Value_Slider(19, 125, 340, 21, "PCM");
+              o->type(5);
+              o->color((Fl_Color)26);
+              o->selection_color((Fl_Color)1);
+              o->step(0.01);
+              o->value(0.8);
+              o->textsize(14);
+              o->callback((Fl_Callback*)cb_valPCMvolume);
+              o->align(FL_ALIGN_RIGHT);
+            }
+            { Fl_Input_Choice* o = menuMix = new Fl_Input_Choice(105, 90, 110, 25, "Device");
+              o->callback((Fl_Callback*)cb_menuMix);
+              o->value(progdefaults.MXdevice.c_str());
+            }
+            { Fl_Check_Button* o = btnMixer = new Fl_Check_Button(55, 61, 125, 25, "Manage mixer");
+              o->down_box(FL_DOWN_BOX);
+              o->callback((Fl_Callback*)cb_btnMixer);
+              o->value(progdefaults.EnableMixer);
             }
             o->end();
           }

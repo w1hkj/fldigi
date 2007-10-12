@@ -105,6 +105,7 @@ protected:
 	int					max_lines;
 	bool					scroll_hint;
 	int					scroll_tweak;
+	int					scrollbar_tweak;
 	bool					adjusted_colours;
 };
 
@@ -138,7 +139,6 @@ protected:
 	static void	changed_cb(int pos, int nins, int ndel, int nsty,
 				   const char *dtext, void *arg);
 	void		change_keybindings(void);
-	static void	v_scrollbar_cb(Fl_Widget* w, void* arg);
 
 private:
 	FTextView();

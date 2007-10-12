@@ -8,12 +8,14 @@ make CFG=emcomm USE_TLS=0
 tar czf fldigi-$1.emc.bin.tgz -C Install fldigi
 
 make clean
+mv *.tgz $HOME/uploads
 
-make CFG=nhl-static USE_TLS=0
-tar czf fldigi-$1.nhl.bin.tgz -C Install fldigi
-rm Objects/fl_digi.o
+#make CFG=nhl-static USE_TLS=0
+#tar czf fldigi-$1.nhl.bin.tgz -C Install fldigi
+#rm Objects/fl_digi.o
 
-make CFG=nhl-emcomm USE_TLS=0
-tar czf fldigi-$1.emc.nhl.bin.tgz -C Install fldigi
 
-make clean
+#make CFG=nhl-emcomm USE_TLS=0
+#tar czf fldigi-$1.emc.nhl.bin.tgz -C Install fldigi
+
+#make clean

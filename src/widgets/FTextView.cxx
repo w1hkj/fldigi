@@ -50,7 +50,7 @@ using namespace std;
 FTextBase::FTextBase(int x, int y, int w, int h, const char *l)
 	: ReceiveWidget(x, y, w, h, l),
           wrap(true), wrap_col(80), max_lines(0), scroll_hint(false),
-          scroll_tweak(3), adjusted_colours(false)
+          scroll_tweak(3), scrollbar_tweak(2), adjusted_colours(false)
 {
 	tbuf = new Fl_Text_Buffer;
 	sbuf = new Fl_Text_Buffer;
@@ -275,9 +275,9 @@ void FTextBase::scroll_(int topLineNum, int horizOffset)
                 topLineNum = mNBufferLines + scroll_tweak - mNVisibleLines;
         if (topLineNum < 1) topLineNum = 1;
 
-        // if (horizOffset > longest_vline() - text_area.w)
-        //   horizOffset = longest_vline() - text_area.w;
-        // if (horizOffset < 0) horizOffset = 0;
+        if (horizOffset > longest_vline() - text_area.w)
+           horizOffset = longest_vline() - text_area.w;
+        if (horizOffset < 0) horizOffset = 0;
 
         /* Do nothing if scroll position hasn't actually changed or there's no
            window to draw in yet */
@@ -351,7 +351,7 @@ FTextView::FTextView(int x, int y, int w, int h, const char *l)
                                      dynamic_cast<Fl_Text_Editor *>(this));
 	tbuf->add_modify_callback(changed_cb, this);
 	scroll_tweak = 2;
-	mVScrollBar->callback(v_scrollbar_cb, this);
+	scrollbar_tweak = 0;
 
 	cursor_style(Fl_Text_Display::NORMAL_CURSOR);
 
@@ -591,17 +591,6 @@ void FTextView::change_keybindings(void)
 			if (k->function == fdelete[i])
 				remove_key_binding(k->key, k->state);
 	}
-}
-
-void FTextView::v_scrollbar_cb(Fl_Widget* w, void* arg)
-{
-	Fl_Scrollbar* b = static_cast<Fl_Scrollbar *>(w);
-	FTextView* t = reinterpret_cast<FTextView *>(arg);
-
-	if (b->value() == t->mTopLineNum + 1)
-		b->value(t->mTopLineNum, t->mNVisibleLines, 1, t->mNBufferLines);
-	else
-		t->scroll(b->value(), t->mHorizOffset);
 }
 
 // ----------------------------------------------------------------------------
@@ -1011,6 +1000,9 @@ void FTextEdit::changed_cb(int pos, int nins, int ndel, int nsty, const char *dt
 			e->sbuf->replace(e->txpos - 1, e->txpos, s);
 			e->redisplay_range(e->txpos - 1, e->txpos);
 		}
+		else if (nsty > 0) // restyled, e.g. selected, text
+			return e->buffer_modified_cb(pos, nins, ndel, nsty, dtext,
+						     dynamic_cast<Fl_Text_Editor *>(e));
 
 		return;
 	}

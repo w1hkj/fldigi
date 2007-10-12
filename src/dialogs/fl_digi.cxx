@@ -1273,6 +1273,10 @@ void create_fl_digi_main() {
 	int Y = 0;
 	fl_digi_main = new Fl_Double_Window(WNOM, HNOM, "fldigi");
 			mnu = new Fl_Menu_Bar(0, 0, WNOM - 142, Hmenu);
+			// FL_NORMAL_SIZE may have changed; update the menu items
+			for (size_t i = 0; i < sizeof(menu_)/sizeof(menu_[0]); i++)
+				if (menu_[i].text)
+					menu_[i].labelsize_ = FL_NORMAL_SIZE;
 			mnu->menu(menu_);
 
 #ifndef USE250

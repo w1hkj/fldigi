@@ -561,67 +561,9 @@ progdefaults.changed = true;}
         Fl_Tabs tabsSoundCard {open
           xywh {0 25 400 195} selection_color 10
         } {
-          Fl_Group tabMixer {
-            label Mixer open
-            xywh {0 50 400 170} color 51 selection_color 51
-          } {
-            Fl_Light_Button btnLineIn {
-              label {Line In}
-              callback {if (o->value() == 1) {
-    btnMicIn->value(0);
-    progdefaults.LineIn = true;
-    progdefaults.MicIn = false;
-    setMixerInput(1);
-} else {
-    setMixerInput(0);
-    progdefaults.LineIn = false;
-}
-progdefaults.changed = true;}
-              xywh {295 64 74 22} selection_color 3
-              code0 {extern void setMixerInput(int);}
-            }
-            Fl_Light_Button btnMicIn {
-              label {Mic In}
-              callback {if (o->value() == 1) {
-    btnLineIn->value(0);
-    progdefaults.LineIn = false;
-    progdefaults.MicIn = true;
-    setMixerInput(2);
-} else {
-    setMixerInput(0);
-    progdefaults.MicIn = false;
-}
-progdefaults.changed = true;}
-              xywh {295 94 74 22}
-            }
-            Fl_Value_Slider valPCMvolume {
-              label PCM
-              callback {setPCMvolume(o->value());
-progdefaults.changed = true;}
-              xywh {19 125 340 21} type {Horz Knob} color 26 selection_color 1 align 8 step 0.01 value 0.8 textsize 14
-              code0 {extern void setPCMvolume(double);}
-            }
-            Fl_Input_Choice menuMix {
-              label Device
-              callback {progdefaults.MXdevice = o->value();
-enableMixer(false);
-enableMixer(true);
-progdefaults.changed = true;} open
-              xywh {105 90 110 25}
-              code0 {o->value(progdefaults.MXdevice.c_str());}
-            } {}
-            Fl_Check_Button btnMixer {
-              label {Manage mixer}
-              callback {enableMixer(o->value());
-progdefaults.changed = true;}
-              xywh {55 61 125 25} down_box DOWN_BOX
-              code0 {extern void resetMixerControls();}
-              code1 {o->value(progdefaults.EnableMixer);}
-            }
-          }
           Fl_Group tabAudio {
             label Audio open
-            xywh {0 50 400 170} color 51 selection_color 51 hide
+            xywh {0 50 400 170} color 51 selection_color 51
           } {
             Fl_Spinner cntRxRateCorr {
               label {RX ppm:}
@@ -696,6 +638,64 @@ progdefaults.changed = true;} open
               xywh {155 90 110 25} align 8
               code0 {o->value(progdefaults.PAdevice.c_str());}
             } {}
+          }
+          Fl_Group tabMixer {
+            label Mixer open
+            xywh {0 50 400 170} color 51 selection_color 51 hide
+          } {
+            Fl_Light_Button btnLineIn {
+              label {Line In}
+              callback {if (o->value() == 1) {
+    btnMicIn->value(0);
+    progdefaults.LineIn = true;
+    progdefaults.MicIn = false;
+    setMixerInput(1);
+} else {
+    setMixerInput(0);
+    progdefaults.LineIn = false;
+}
+progdefaults.changed = true;}
+              xywh {295 64 74 22} selection_color 3
+              code0 {extern void setMixerInput(int);}
+            }
+            Fl_Light_Button btnMicIn {
+              label {Mic In}
+              callback {if (o->value() == 1) {
+    btnLineIn->value(0);
+    progdefaults.LineIn = false;
+    progdefaults.MicIn = true;
+    setMixerInput(2);
+} else {
+    setMixerInput(0);
+    progdefaults.MicIn = false;
+}
+progdefaults.changed = true;}
+              xywh {295 94 74 22}
+            }
+            Fl_Value_Slider valPCMvolume {
+              label PCM
+              callback {setPCMvolume(o->value());
+progdefaults.changed = true;}
+              xywh {19 125 340 21} type {Horz Knob} color 26 selection_color 1 align 8 step 0.01 value 0.8 textsize 14
+              code0 {extern void setPCMvolume(double);}
+            }
+            Fl_Input_Choice menuMix {
+              label Device
+              callback {progdefaults.MXdevice = o->value();
+enableMixer(false);
+enableMixer(true);
+progdefaults.changed = true;} open
+              xywh {105 90 110 25}
+              code0 {o->value(progdefaults.MXdevice.c_str());}
+            } {}
+            Fl_Check_Button btnMixer {
+              label {Manage mixer}
+              callback {enableMixer(o->value());
+progdefaults.changed = true;}
+              xywh {55 61 125 25} down_box DOWN_BOX
+              code0 {extern void resetMixerControls();}
+              code1 {o->value(progdefaults.EnableMixer);}
+            }
           }
         }
       }
