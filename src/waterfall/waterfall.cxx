@@ -1182,12 +1182,14 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	xmtlock = new Fl_Light_Button(xpos, buttonrow, bwXmtLock, BTN_HEIGHT, "Lk");
 	xmtlock->callback(xmtlock_cb, 0);
 	xmtlock->value(0);
+	xmtlock->selection_color(FL_DARK_RED);
 	xmtlock->tooltip("Xmt freq locked");
 
 	xpos = xpos + bwXmtLock + wSpace;
 	btnRev = new Fl_Light_Button(xpos, buttonrow, bwRev, BTN_HEIGHT, "Rv");
 	btnRev->callback(btnRev_cb, 0);
 	btnRev->value(0);
+	btnRev->selection_color(FL_DARK_GREEN);
 	btnRev->tooltip("Reverse");
 	reverse = false;
 	

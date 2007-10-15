@@ -1494,6 +1494,7 @@ void create_fl_digi_main() {
 							bwAfcOnOff, Hstatus, "Afc");
 			afconoff->callback(afconoff_cb, 0);
 			afconoff->value(1);
+			afconoff->selection_color(FL_DARK_GREEN);
 			afconoff->tooltip("AFC on/off");
 
 			sqlonoff = new Fl_Light_Button(
@@ -1502,6 +1503,7 @@ void create_fl_digi_main() {
 							bwSqlOnOff, Hstatus, "Sql");
 			sqlonoff->callback(sqlonoff_cb, 0);
 			sqlonoff->value(1);
+			sqlonoff->selection_color(FL_DARK_GREEN);
 			sqlonoff->tooltip("SQL on/off");
 				
 			Fl_Group::current()->resizable(StatusBar);
