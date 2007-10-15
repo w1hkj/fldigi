@@ -1,7 +1,7 @@
 Change Log:
 
          	  
-1.38  1) Increased TxPPM to +/- 50000 to match the RxPPM range
+2.0   1) Increased TxPPM to +/- 50000 to match the RxPPM range
       2) Changed all audio i/o to separate 2 channel control (stereo)
       3) Added right channel CW QRQ signal
       4) Added right channel pseudo FSK signal
@@ -73,7 +73,7 @@ Change Log:
                this will cause fldigi to enter the TUNE mode for a very brief
                100 milliseconds.
       27) Abandoned the original fldigi.def configuration file and changed to
-          an xml based configuration file.  New file is $HOME/.fldigi/fldigi_cfg.xml
+          an xml based configuration file.  New file is $HOME/.fldigi/fldigi_def.xml
           You may delete all occurances of 
               $HOME/.fldigi/fldigi.def, and
               $HOME/.fldigi/FLDIGI_XML.DEF

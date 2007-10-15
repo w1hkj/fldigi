@@ -38,6 +38,8 @@
 #include <FL/Fl_Progress.H>
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Tile.H>
+#include <FL/Fl_Light_Button.H>
+#include <FL/Fl_Check_Button.H>
 
 #include "combo.h"
 #include "TextView.h"
@@ -82,7 +84,12 @@ extern Fl_Button		*qsoSave;
 extern Fl_Button		*btnMacroTimer;
 extern Fl_Slider		*valRcvMixer;
 extern Fl_Slider		*valXmtMixer;
+extern Fl_Light_Button	*afconoff;
+extern Fl_Light_Button	*sqlonoff;
+extern Fl_Check_Button	*chk_afconoff;
+extern Fl_Check_Button	*chk_sqlonoff;
 
+extern bool				useCheckButtons;
 extern bool				altMacros;
 
 extern waterfall		*wf;
@@ -115,7 +122,7 @@ extern void put_Status2(const char *msg);
 extern void put_WARNstatus(double);
 
 extern void put_rx_data(int *data, int len);
-extern char get_tx_char();
+extern int get_tx_char();
 extern int  get_secondary_char();
 extern void put_echo_char(unsigned int data);
 extern void resetRTTY();

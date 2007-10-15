@@ -187,17 +187,20 @@ void modem::set_samplerate(int smprate)
 	samplerate = smprate;
 }
 
+//mbuffer<double, 512 * 2, 2> _mdm_scdbl;
+
 void modem::ModulateXmtr(double *buffer, int len) 
 {
 	scard->write_samples(buffer, len);
 	return;
 //	if (progdefaults.viewXmtSignal)
 //		for (int i = 0; i < len; i++) {
-//			scdata[scptr] = buffer[i] * 0.01;
+//			_mdm_scdbl[scptr] = buffer[i] * 0.1;
 //			scptr++;
 //			if (scptr == 512) {
-//				wf->sig_data(scdata, 512);
+//				QUEUE(CMP_CB(&waterfall::sig_data, wf, _mdm_scdbl.c_array(), 512)); //wf->sig_data(scdata, 512);
 //				scptr = 0;
+//				_mdm_scdbl.next(); // change buffers
 //			}
 //		}
 }
@@ -208,11 +211,12 @@ void modem::ModulateStereo(double *left, double *right, int len)
 	return;
 //	if (progdefaults.viewXmtSignal)
 //		for (int i = 0; i < len; i++) {
-//			scdata[scptr] = left[i] * 0.01;
+//			_mdm_scdbl[scptr] = left[i] * 0.1;
 //			scptr++;
 //			if (scptr == 512) {
-//				wf->sig_data(scdata, 512);
+//				QUEUE(CMP_CB(&waterfall::sig_data, wf, _mdm_scdbl.c_array(), 512)); //wf->sig_data(scdata, 512);
 //				scptr = 0;
+//				_mdm_scdbl.next(); // change buffers
 //			}
 //		}
 }

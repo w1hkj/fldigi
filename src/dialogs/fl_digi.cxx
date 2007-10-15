@@ -86,6 +86,8 @@ Fl_Double_Window	*fl_digi_main=(Fl_Double_Window *)0;
 
 cMixer mixer;
 
+bool useCheckButtons = false;
+
 Fl_Button			*btnTune = (Fl_Button *)0;
 Fl_Tile_check				*TiledGroup = 0;
 ReceiveWidget			*ReceiveText = 0;
@@ -102,6 +104,8 @@ Fl_Button 			*btnMacro[10];
 Fl_Button			*btnAltMacros;
 Fl_Light_Button		*afconoff;
 Fl_Light_Button		*sqlonoff;
+Fl_Check_Button		*chk_afconoff;
+Fl_Check_Button		*chk_sqlonoff;
 Fl_Input			*inpFreq;
 Fl_ComboBox			*cboBand;
 Fl_Button			*btnSideband;
@@ -1074,7 +1078,8 @@ void cb_cboBand(Fl_Widget *w, void *d)
 void afconoff_cb(Fl_Widget *w, void *vi)
 {
 	FL_LOCK_D();
-	Fl_Light_Button *b = (Fl_Light_Button *)w;
+	Fl_Button *b = (Fl_Button *)w;
+//	Fl_Light_Button *b = (Fl_Light_Button *)w;
 	int v = b->value();
 	FL_UNLOCK_D();
 	active_modem->set_afcOnOff( v ? true : false );
@@ -1084,7 +1089,8 @@ void afconoff_cb(Fl_Widget *w, void *vi)
 void sqlonoff_cb(Fl_Widget *w, void *vi)
 {
 	FL_LOCK_D();
-	Fl_Light_Button *b = (Fl_Light_Button *)w;
+	Fl_Button *b = (Fl_Button *)w;
+//	Fl_Light_Button *b = (Fl_Light_Button *)w;
 	int v = b->value();
 	FL_UNLOCK_D();
 	active_modem->set_sqlchOnOff( v ? true : false );
@@ -1488,23 +1494,37 @@ void create_fl_digi_main() {
 			WARNstatus->labelcolor(FL_RED);
 			WARNstatus->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE);
 
-			afconoff = new Fl_Light_Button(
-							WNOM - bwAfcOnOff - bwSqlOnOff, 
-							Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
-							bwAfcOnOff, Hstatus, "Afc");
-			afconoff->callback(afconoff_cb, 0);
-			afconoff->value(1);
-			afconoff->selection_color(FL_DARK_GREEN);
-			afconoff->tooltip("AFC on/off");
-
-			sqlonoff = new Fl_Light_Button(
-							WNOM - bwSqlOnOff, 
-							Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
-							bwSqlOnOff, Hstatus, "Sql");
-			sqlonoff->callback(sqlonoff_cb, 0);
-			sqlonoff->value(1);
-			sqlonoff->selection_color(FL_DARK_GREEN);
-			sqlonoff->tooltip("SQL on/off");
+			if (useCheckButtons) {
+				chk_afconoff = new Fl_Check_Button(
+								WNOM - bwAfcOnOff - bwSqlOnOff, 
+								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
+								bwAfcOnOff, Hstatus, "Afc");
+				chk_afconoff->callback(afconoff_cb, 0);
+				chk_afconoff->value(1);
+				chk_afconoff->tooltip("AFC on/off");
+				chk_sqlonoff = new Fl_Check_Button(
+								WNOM - bwSqlOnOff, 
+								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
+								bwSqlOnOff, Hstatus, "Sql");
+				chk_sqlonoff->callback(sqlonoff_cb, 0);
+				chk_sqlonoff->value(1);
+				chk_sqlonoff->tooltip("SQL on/off");
+			} else {
+				afconoff = new Fl_Light_Button(
+								WNOM - bwAfcOnOff - bwSqlOnOff, 
+								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
+								bwAfcOnOff, Hstatus, "Afc");
+				afconoff->callback(afconoff_cb, 0);
+				afconoff->value(1);
+				afconoff->tooltip("AFC on/off");
+				sqlonoff = new Fl_Light_Button(
+								WNOM - bwSqlOnOff, 
+								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
+								bwSqlOnOff, Hstatus, "Sql");
+				sqlonoff->callback(sqlonoff_cb, 0);
+				sqlonoff->value(1);
+				sqlonoff->tooltip("SQL on/off");
+			}
 				
 			Fl_Group::current()->resizable(StatusBar);
 		hpack->end();
@@ -1714,51 +1734,51 @@ void put_rx_data(int *data, int len)
  	FHdisp->data(data, len);
 }
 
-char get_tx_char(void)
+int get_tx_char(void)
 {
-	char chr;
-	static bool lfpending = false;
-	static bool ctlpending = false;
-
-	if (pskmail_text_available == true)
+	if (pskmail_text_available)
 		return pskmail_get_char();
-	
-	if (lfpending == true) {
-		lfpending = false;
-		return '\n';
-	}
-	chr = TransmitText->nextChar();
-	
-	if (chr == '\n') {
-		lfpending = true;
-		return '\r';
-	}
-	if (ctlpending == true) {
-		switch (chr) {
-		case 0x00: 
-			break;
-		case 'r':
-		case 'R' :
-			chr = 0x03;
-			ctlpending = false;
-			QUEUE_SYNC(CMP_CB(&TransmitWidget::clear, TransmitText)); //TransmitText->clear();
-			break;
-		case '^' :
-			ctlpending = false;
-			break;
-		default :
-			ctlpending = false;
-			chr = 0x00;
-		}
-		return chr;
-	}
-	if (chr == '^') {
-		ctlpending = true;
-		chr = 0x00;
-	}
-	return chr;
-}
 
+	int c;
+	static int pending = -1;
+	if (pending >= 0) {
+		c = pending;
+		pending = -1;
+		return c;
+	}
+
+	enum { STATE_CHAR, STATE_CTRL };
+	static int state = STATE_CHAR;
+
+	switch (c = TransmitText->nextChar()) {
+	case '\n':
+		pending = '\n';
+		return '\r';
+	case '^':
+		if (state == STATE_CTRL)
+			break;
+		state = STATE_CTRL;
+		return -1;
+	case 'r': case 'R':
+		if (state != STATE_CTRL)
+			break;
+		QUEUE_SYNC(CMP_CB(&TransmitWidget::clear, TransmitText));
+		state = STATE_CHAR;
+		c = 3; // ETX
+		break;
+	case -1:
+		break;
+	default:
+		if (state == STATE_CTRL) {
+			state = STATE_CHAR;
+			pending = c;
+			return '^';
+		}
+	}
+
+	pending = -1;
+	return c;
+}
 
 void put_echo_char(unsigned int data)
 {

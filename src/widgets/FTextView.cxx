@@ -728,7 +728,7 @@ void FTextEdit::clear(void)
 ///
 int FTextEdit::nextChar(void)
 {
-	char c;
+	int c;
 
 	if (bkspaces) {
 		--bkspaces;
@@ -739,11 +739,11 @@ int FTextEdit::nextChar(void)
 		c = 0x03;
 	}
 	else if (insert_position() <= txpos) // empty buffer or cursor inside transmitted text
-		c = '\0';
+		c = -1;
 	else {
 		if ((c = tbuf->character(txpos))) {
 			++txpos;
-			QUEUE(CMP_CB(FTextEdit::changed_cb, 0, 0, 0, 0,
+			QUEUE(CMP_CB(FTextEdit::changed_cb, txpos, 0, 0, 0,
 				     static_cast<const char *>(0), this));
 		}
 	}
@@ -994,10 +994,10 @@ void FTextEdit::changed_cb(int pos, int nins, int ndel, int nsty, const char *dt
 	FTextEdit *e = reinterpret_cast<FTextEdit *>(arg);
 
 	if (nins == 0 && ndel == 0) {
-		if (pos == 0 && nsty == 0) { // update transmitted text style
+		if (nsty == 0) { // update transmitted text style
 			char s[] = { FTEXT_DEF + XMIT, '\0' };
-			e->sbuf->replace(e->txpos - 1, e->txpos, s);
-			e->redisplay_range(e->txpos - 1, e->txpos);
+			e->sbuf->replace(pos - 1, pos, s);
+			e->redisplay_range(pos - 1, pos);
 		}
 		else if (nsty > 0) // restyled, e.g. selected, text
 			return e->buffer_modified_cb(pos, nins, ndel, nsty, dtext,

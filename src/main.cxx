@@ -393,7 +393,6 @@ void generate_option_help(void) {
 	     << " -to, -tooltips or -not, -notooltips"
 	     << "Enable or disable tooltips\n";
 
-
 	help << "\nAdditional options:\n"
 
 	     << setw(width) << setiosflags(ios::left)
@@ -409,7 +408,11 @@ void generate_option_help(void) {
 	     << setw(width) << setiosflags(ios::left)
 	     << "" << "``minimal'', widget sizes will be adjusted\n"
 	     << setw(width) << setiosflags(ios::left)
-	     << "" << "for a minimal screen footprint.\n";
+	     << "" << "for a minimal screen footprint.\n"
+
+	     << setw(width) << setiosflags(ios::left)
+	     << " --usechkbtns"
+	     << "Use check buttons for AFC / SQL\n";
 
 
 	option_help = help.str();
@@ -423,7 +426,7 @@ int parse_args(int argc, char **argv, int& idx)
 
         enum { ZERO, RX_IPC_KEY, TX_IPC_KEY, CONFIG_DIR, FAST_TEXT, FONT,
                WFALL_WIDTH, WFALL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, PROFILE,
-               HELP, VERSION };
+               USE_CHECK, HELP, VERSION };
 
 	const char shortopts[] = "+";
 	static struct option longopts[] = {
@@ -431,13 +434,14 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "tx-ipc-key",	   1, 0, TX_IPC_KEY },
 		{ "config-dir",	   1, 0, CONFIG_DIR },
 		{ "fast-text",	   0, 0, FAST_TEXT },
-		{ "font",	   1, 0, FONT },
+		{ "font",	   	   1, 0, FONT },
 
 		{ "wfall-width",   1, 0, WFALL_WIDTH },
 		{ "wfall-height",  1, 0, WFALL_HEIGHT },
 		{ "window-width",  1, 0, WINDOW_WIDTH },
 		{ "window-height", 1, 0, WINDOW_HEIGHT },
 		{ "profile",	   1, 0, PROFILE },
+		{ "usechkbtns",    0, 0, USE_CHECK },
 
 		{ "help",	   0, 0, HELP },
 		{ "version",	   0, 0, VERSION },
@@ -520,6 +524,10 @@ int parse_args(int argc, char **argv, int& idx)
 		}
 		idx += 2;
 		return 2;
+	case USE_CHECK:
+		useCheckButtons = true;
+		idx += 1;
+		return 1;
 
 	case HELP:
 		cerr << option_help;

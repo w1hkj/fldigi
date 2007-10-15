@@ -750,11 +750,11 @@ int mfsk::tx_process()
 				flushtx();
 				startpic = false;
 				txstate = TX_STATE_PICTURE_START;
-			} else if (xmtbyte == -1)
-				sendidle();
-			else if ( xmtbyte == 0x03 || stopflag) {
-				txstate = TX_STATE_FLUSH;
 			}
+			else if ( xmtbyte == 0x03 || stopflag)
+				txstate = TX_STATE_FLUSH;
+			else if (xmtbyte == -1)
+				sendidle();
 			else
 				sendchar(xmtbyte);
 			break;

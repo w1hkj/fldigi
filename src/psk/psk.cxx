@@ -638,7 +638,7 @@ int psk::tx_process()
 		return -1;	/* we're done */
 	}
 
-	if (!c)
+	if (c == -1)
 		tx_bit(0);
 	else {
 		tx_char(c);

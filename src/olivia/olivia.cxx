@@ -178,6 +178,8 @@ int olivia::tx_process()
 			Tx->Stop();
 		} else {
 			/* Replace un-representable characters with a dot */
+			if (c == -1)
+                                c = 0;
 			if (c > (olivia_esc ? 255 : 127))
 				c = '.';
 			if (c > 127) {
@@ -186,7 +188,7 @@ int olivia::tx_process()
 			}
 			Tx->PutChar(c);
 		}
-    }
+	}
 
 	if (Tx->GetChar(ch) > 0)
 		if ((c = unescape(ch)) != -1)

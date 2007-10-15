@@ -652,8 +652,8 @@ int rtty::tx_process()
 		return 0;
 	}
 
-// send idle character if c == 0
-	if (!c) {
+// send idle character if c == -1
+	if (c == -1) {
 		send_idle();
 		txmode = LETTERS;
 		return 0;

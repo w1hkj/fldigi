@@ -445,7 +445,7 @@ void feld::tx_char(char c)
 
 int feld::tx_process()
 {
-	char c;
+	int c;
 	bool hdkey;
 
 	FL_LOCK_D();
@@ -486,7 +486,7 @@ int feld::tx_process()
 
 // if TX buffer empty
 // send idle character
-	if (c == 0)
+	if (c == -1)
 		if (progdefaults.FELD_IDLE == true)
 			c = '.';
 		else {

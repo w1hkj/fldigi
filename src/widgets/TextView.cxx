@@ -1129,11 +1129,11 @@ int TextEdit::nextChar()
 		PauseBreak = false;
 		return 0x03;
 	}
-	if (buff.empty()) return 0;
-	if (xmtidx == buff.length()) return 0;
+	if (buff.empty()) return -1;
+	if (xmtidx == buff.length()) return -1;
 	if (attr[xmtidx] == -1) {
 		xmtidx++;
-		if (xmtidx == buff.length()) return 0;
+		if (xmtidx == buff.length()) return -1;
 	}
 	FL_LOCK_D();
 	QUEUE(CMP_CB(&TextEdit::update_xmit_text, this, xmtidx));
