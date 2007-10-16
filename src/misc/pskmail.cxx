@@ -197,10 +197,27 @@ void check_formail() {
 	} 
 }
 
+bool bSend0x06 = false;
+
+void send0x06()
+{
+	if (trx_state == STATE_RX) {
+		bSend0x06 = false;
+	   	rxmsgid = msgget( (key_t) progdefaults.rx_msgid, 0666 );
+   		if ( rxmsgid != -1) {
+			rxmsgst.msg_type = 1;
+			rxmsgst.c = 0x06;  // tell arq client that transmit complete
+			msgsnd (rxmsgid, (void *)&rxmsgst, 1, IPC_NOWAIT);
+		}
+	}
+}
+
 void pskmail_loop(void *)
 {
+	if (bSend0x06)
+		send0x06();
 	check_formail();
-	Fl::repeat_timeout(1.0, pskmail_loop);
+	Fl::repeat_timeout(0.2, pskmail_loop);//1.0, pskmail_loop);
 }
 
 char pskmail_get_char()
@@ -208,13 +225,7 @@ char pskmail_get_char()
 	if (pText != mailtext.end())
 		return *pText++;
 
-   	rxmsgid = msgget( (key_t) progdefaults.rx_msgid, 0666 );
-   	if ( rxmsgid != -1) {
-		rxmsgst.msg_type = 1;
-		rxmsgst.c = 0x06;  // tell arq client that transmit complete
-		msgsnd (rxmsgid, (void *)&rxmsgst, 1, IPC_NOWAIT);
-	}
-
+	bSend0x06 = true;
 	pskmail_text_available = false;
 	return 0x03; // tells psk modem to return to rx
 }

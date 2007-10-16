@@ -81,6 +81,8 @@ Change Log:
           configuration file.
           You will need to reconfigure and save the program configuration the 
           first time the new version of fldigi is executed.
+      28) Added numerous command line switches which control the look and feel.
+          use "fltk --help" from a terminal window to view the switch options.
 
 1.34  1) Cleaned up unused code segments
       2) Modified CW decoder to allow setting upper and lower limits on

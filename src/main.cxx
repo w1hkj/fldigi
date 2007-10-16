@@ -29,6 +29,7 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
+#include <sys/utsname.h>
 
 #include <FL/Fl_Shared_Image.H>
 #ifdef PORTAUDIO
@@ -97,6 +98,7 @@ string option_help;
 void arqchecks(void);
 void generate_option_help(void);
 int parse_args(int argc, char **argv, int& idx);
+void print_versions(void);
 
 int main(int argc, char ** argv)
 {
@@ -320,9 +322,6 @@ void generate_option_help(void) {
 	     << " or 0x" << hex << progdefaults.tx_msgid << dec << '\n'
 
 	     << setw(width) << setiosflags(ios::left)
-	     << " --fast-text" << "Use fast text widgets\n"
-
-	     << setw(width) << setiosflags(ios::left)
 	     << " --version" << "Print version information\n"
 
 	     << setw(width) << setiosflags(ios::left)
@@ -393,7 +392,10 @@ void generate_option_help(void) {
 	     << " -to, -tooltips or -not, -notooltips"
 	     << "Enable or disable tooltips\n";
 
-	help << "\nAdditional options:\n"
+	help << "\nAdditional UI options:\n"
+
+	     << setw(width) << setiosflags(ios::left)
+	     << " --fast-text" << "Use fast text widgets\n"
 
 	     << setw(width) << setiosflags(ios::left)
 	     << " --font FONT[:SIZE]"
@@ -534,7 +536,7 @@ int parse_args(int argc, char **argv, int& idx)
 		exit(EXIT_SUCCESS);
 
 	case VERSION:
-		cerr << FLDIGI_NAME << ' ' << FLDIGI_VERSION << '\n';
+		print_versions();
 		exit(EXIT_SUCCESS);
 
 	case '?':
@@ -547,4 +549,42 @@ int parse_args(int argc, char **argv, int& idx)
 	}
 
 	return 0;
+}
+
+void print_versions(void)
+{
+	cerr << FLDIGI_NAME << ' ' << FLDIGI_VERSION << "\n\nSystem: ";
+        struct utsname u;
+        if (uname(&u) != -1) {
+                cerr << u.sysname << ' ' << u.nodename
+                     << ' ' << u.release << ' ' << u.version << ' '
+                     << u.machine << '\n';
+        }
+
+#include "versions.h"
+#ifdef HAVE_VERSIONS_H
+	cerr << "\nConfigured with: " << COMPILE_CFG << '\n'
+	     << "Built on " << COMPILE_DATE << " by " << COMPILE_USER
+	     << '@' << COMPILE_HOST << " with:\n"
+	     << ' ' << COMPILER << '\n'
+	     << " CFLAGS=" << CFLAGS << '\n'
+	     << " LDFLAGS=" << LDFLAGS << '\n';
+#endif // HAVE_VERSIONS_H
+
+	cerr << "Libraries:\n"
+	     << " FLTK " << FL_MAJOR_VERSION << '.' << FL_MINOR_VERSION << '.'
+	     << FL_PATCH_VERSION << '\n';
+
+#ifndef NO_HAMLIB
+	cerr << ' ' << hamlib_version << '\n';
+#endif
+
+#ifdef PORTAUDIO
+	cerr << ' ' << portaudio::System::versionText() << ' '
+	     << portaudio::System::version() << '\n';
+#endif
+
+        char sndfile_version[32];
+        sf_command(NULL, SFC_GET_LIB_VERSION, sndfile_version, sizeof(sndfile_version));
+        cerr << ' ' << sndfile_version << endl;
 }

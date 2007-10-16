@@ -152,6 +152,7 @@ DEP_DIR = Depends
 OBJ_DIR = Objects
 BIN_DIR = Install
 BINARY  = $(BIN_DIR)/fldigi
+VERSIONS = $(SRC_DIR)/include/versions.h
 
 #################### begin cfg
 ifeq ($(CTARG),hamlib)
@@ -211,7 +212,7 @@ define preproc_cmd
     set -e; mkdir -p $(dir $@); \
     $(CXX) $(CPPFLAGS) -MM "$(subst $(DEP_DIR)/,$(SRC_DIR)/,$(subst .deps,,$@))" \
     -MT "$(addprefix $(OBJ_DIR)/,$(addsuffix .o,$(notdir $(basename $(basename $@)))))" \
-    -MT "$@" -MF "$@"
+    -MT "$@" -MF "$@" -MG
 endef
 
 define compile_cmd
@@ -255,8 +256,14 @@ endif # ($(V), 1)
 # targets
 
 .PHONY: all print_header directories clean
+.EXPORT_ALL_VARIABLES: $(VERSIONS)
 
-all: print_header directories $(BINARY)
+all: print_header directories $(VERSIONS) $(BINARY)
+
+$(VERSIONS): $(VERSIONS).in
+	@echo Generating $@
+	@sh scripts/mkversions $< $@ || touch $@
+versions.h: $(VERSIONS)
 
 $(BINARY): $(OBJS)
 	$(link_objects)
@@ -288,4 +295,4 @@ directories:
 
 clean:
 	@echo Deleting intermediate files for fldigi
-	@rm -rf $(DEP_DIR) $(OBJ_DIR) $(BINARY)
+	@rm -rf $(DEP_DIR) $(OBJ_DIR) $(BINARY) $(VERSIONS)
