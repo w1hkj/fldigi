@@ -146,7 +146,8 @@ void status::initLastState()
 	}
 	while (!active_modem) MilliSleep(100);
 	wf->Carrier(carrier);
-	wf->opmode();
+    active_modem->set_freq(wf->Carrier());
+ 	wf->opmode();
 	wf->Mag(mag);
 	wf->Speed(speed);
 	wf->setRefLevel();

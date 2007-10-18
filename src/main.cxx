@@ -117,8 +117,14 @@ int main(int argc, char ** argv)
 		HomeDir = szHomedir;
 
 	generate_option_help();
+
 	int arg_idx;
-	Fl::args(argc, argv, arg_idx, parse_args);
+    if (Fl::args(argc, argv, arg_idx, parse_args) != argc) {
+            cerr << FLDIGI_NAME << ": unrecognized option `" << argv[arg_idx]
+                 << "'\nTry `" << FLDIGI_NAME
+                 << " --help' for more information.\n";
+            exit(EXIT_FAILURE);
+    }
 
 	xmlfname = HomeDir; 
 	xmlfname.append("rig.xml");
@@ -445,109 +451,114 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "profile",	   1, 0, PROFILE },
 		{ "usechkbtns",    0, 0, USE_CHECK },
 
-		{ "help",	   0, 0, HELP },
+		{ "help",	       0, 0, HELP },
 		{ "version",	   0, 0, VERSION },
 		{ 0 }
 	};
+
 	int longindex;
+    optind = idx;
+    int c = getopt_long(argc, argv, shortopts, longopts, &longindex);
 
-	int c = getopt_long(argc - idx + 1, argv + idx - 1, shortopts, longopts, &longindex);
 	switch (c) {
-	case -1:
-		return 0;
-	case 0:
-		// handle options with non-0 flag here
-		return 0;
+		case -1:
+			return 0;
+		case 0:
+			// handle options with non-0 flag here
+			return 0;
 
-	case RX_IPC_KEY: case TX_IPC_KEY:
-	{
-		errno = 0;
-		int key = strtol(optarg, NULL, (strncasecmp(optarg, "0x", 2) ? 10 : 16));
-		if (errno || key <= 0)
-			cerr << "Hmm, " << key << " doesn't look like a valid IPC key\n";
-		if (c == 'r')
-			progdefaults.rx_msgid = key;
-		else
-			progdefaults.tx_msgid = key;
-	}
-		idx += 2;
-		return 2;
-
-	case CONFIG_DIR:
-		HomeDir = optarg;
-		if (*HomeDir.rbegin() != '/')
-			HomeDir += '/';
-		idx += 2;
-		return 2;
-
-	case FAST_TEXT:
-		progdefaults.alt_text_widgets = false;
-		idx += 1;
-		return 1;
-
-	case FONT:
-	{
-		char *p;
-		if ((p = strchr(optarg, ':'))) {
-			*p = '\0';
-			extern int FL_NORMAL_SIZE;
-			FL_NORMAL_SIZE = strtol(p + 1, 0, 10);
+		case RX_IPC_KEY: case TX_IPC_KEY:
+		{
+			errno = 0;
+			int key = strtol(optarg, NULL, (strncasecmp(optarg, "0x", 2) ? 10 : 16));
+			if (errno || key <= 0)
+				cerr << "Hmm, " << key << " doesn't look like a valid IPC key\n";
+			if (c == 'r')
+				progdefaults.rx_msgid = key;
+			else
+				progdefaults.tx_msgid = key;
 		}
-	}
-		Fl::set_font(FL_HELVETICA, optarg);
-		idx += 2;
-		return 2;
+			idx += 2;
+			return 2;
 
-	case WFALL_WIDTH:
-		IMAGE_WIDTH = strtol(optarg, NULL, 10);
-		idx += 2;
-		return 2;
-	case WFALL_HEIGHT:
-		Hwfall = strtol(optarg, NULL, 10);
-		idx += 2;
-		return 2;
-	case WINDOW_WIDTH:
-		WNOM = strtol(optarg, NULL, 10);
-		idx += 2;
-		return 2;
-	case WINDOW_HEIGHT:
-		HNOM = strtol(optarg, NULL, 10);
-		idx += 2;
-		return 2;
+		case CONFIG_DIR:
+			HomeDir = optarg;
+			if (*HomeDir.rbegin() != '/')
+				HomeDir += '/';
+			idx += 2;
+			return 2;
 
-	case PROFILE:
-		if (!strcasecmp(optarg, "emcomm") || !strcasecmp(optarg, "emc") ||
-                    !strcasecmp(optarg, "minimal")) {
-			IMAGE_WIDTH = DEFAULT_IMAGE_WIDTH;
-			Hwfall = EMC_HWFALL;
-			HNOM = EMC_HNOM;
-			WNOM = EMC_WNOM;
-			FL_NORMAL_SIZE = 12;
+		case FAST_TEXT:
+			progdefaults.alt_text_widgets = false;
+			idx += 1;
+			return 1;
+
+		case FONT:
+		{
+			char *p;
+			if ((p = strchr(optarg, ':'))) {
+				*p = '\0';
+				extern int FL_NORMAL_SIZE;
+				FL_NORMAL_SIZE = strtol(p + 1, 0, 10);
+			}
 		}
-		idx += 2;
-		return 2;
-	case USE_CHECK:
-		useCheckButtons = true;
-		idx += 1;
-		return 1;
+			Fl::set_font(FL_HELVETICA, optarg);
+			idx += 2;
+			return 2;
 
-	case HELP:
-		cerr << option_help;
-		exit(EXIT_SUCCESS);
+		case WFALL_WIDTH:
+			IMAGE_WIDTH = strtol(optarg, NULL, 10);
+			idx += 2;
+			return 2;
 
-	case VERSION:
-		print_versions();
-		exit(EXIT_SUCCESS);
+		case WFALL_HEIGHT:
+			Hwfall = strtol(optarg, NULL, 10);
+			idx += 2;
+			return 2;
 
-	case '?':
-		cerr << "Try `" << FLDIGI_NAME << " --help' for more information.\n";
-		exit(EXIT_FAILURE);
+		case WINDOW_WIDTH:
+			WNOM = strtol(optarg, NULL, 10);
+			idx += 2;
+			return 2;
 
-	default:
-		cerr << option_help;
-		exit(EXIT_FAILURE);
-	}
+		case WINDOW_HEIGHT:
+			HNOM = strtol(optarg, NULL, 10);
+			idx += 2;
+			return 2;
 
+		case PROFILE:
+			if (!strcasecmp(optarg, "emcomm") || !strcasecmp(optarg, "emc") ||
+        	            !strcasecmp(optarg, "minimal")) {
+				IMAGE_WIDTH = DEFAULT_IMAGE_WIDTH;
+				Hwfall = EMC_HWFALL;
+				HNOM = EMC_HNOM;
+				WNOM = EMC_WNOM;
+				FL_NORMAL_SIZE = 12;
+			}
+			idx += 2;
+			return 2;
+
+		case USE_CHECK:
+			useCheckButtons = true;
+			idx += 1;
+			return 1;
+
+		case HELP:
+			cerr << option_help;
+			exit(EXIT_SUCCESS);
+
+		case VERSION:
+			print_versions();
+			exit(EXIT_SUCCESS);
+
+		case '?':
+			cerr << "Try `" << FLDIGI_NAME << " --help' for more information.\n";
+			exit(EXIT_FAILURE);
+
+		default:
+			cerr << option_help;
+			exit(EXIT_FAILURE);
+		}
 	return 0;
 }
 

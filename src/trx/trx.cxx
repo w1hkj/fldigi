@@ -219,8 +219,6 @@ void trx_start_modem_loop()
 
 	active_modem = trx_m;
 	active_modem->init();
-	int f = wf->Carrier();
-	active_modem->set_freq(f);
 	trx_state = STATE_RX;
 	QUEUE_SYNC(CMP_CB(&waterfall::opmode, wf)); //wf->opmode();
 }
