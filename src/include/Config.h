@@ -93,6 +93,7 @@ extern Fl_Value_Input *valPSKsweetspot;
 extern Fl_Check_Button *btnStartAtSweetSpot;
 extern Fl_Check_Button *btnsendid;
 extern Fl_Check_Button *btntextwidgets;
+extern Fl_Check_Button *btnViewXmtSignal;
 extern Fl_Group *tabModems;
 extern Fl_Tabs *tabsModems;
 extern Fl_Group *tabCW;

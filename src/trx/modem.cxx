@@ -60,14 +60,13 @@ modem::modem()
 
 void modem::init()
 {
-//	afcon = QueryAfcOnOff();
-//	squelchon = QuerySqlOnOff();
 	afcon = progdefaults.afconoff;
 	squelchon = progdefaults.sqlonoff;
 	squelch = progdefaults.sldrSquelchValue;
 	bool wfrev = wf->Reverse();
 	bool wfsb = wf->USB();
 	reverse = wfrev ^ !wfsb;
+	
 	if (progdefaults.StartAtSweetSpot) {
 		if (active_modem == cw_modem)
 			set_freq(progdefaults.CWsweetspot);
@@ -75,7 +74,8 @@ void modem::init()
 			set_freq(progdefaults.RTTYsweetspot);
 		else
 			set_freq(progdefaults.PSKsweetspot);
-	}
+	} else
+		set_freq(wf->Carrier());
 }
 
 void modem::set_freq(double freq)
@@ -187,38 +187,40 @@ void modem::set_samplerate(int smprate)
 	samplerate = smprate;
 }
 
-//mbuffer<double, 512 * 2, 2> _mdm_scdbl;
+mbuffer<double, 512 * 2, 2> _mdm_scdbl;
 
 void modem::ModulateXmtr(double *buffer, int len) 
 {
 	scard->write_samples(buffer, len);
-	return;
-//	if (progdefaults.viewXmtSignal)
-//		for (int i = 0; i < len; i++) {
-//			_mdm_scdbl[scptr] = buffer[i] * 0.1;
-//			scptr++;
-//			if (scptr == 512) {
-//				QUEUE(CMP_CB(&waterfall::sig_data, wf, _mdm_scdbl.c_array(), 512)); //wf->sig_data(scdata, 512);
-//				scptr = 0;
-//				_mdm_scdbl.next(); // change buffers
-//			}
-//		}
+
+	if (!progdefaults.viewXmtSignal)
+		return;
+	for (int i = 0; i < len; i++) {
+		_mdm_scdbl[scptr] = buffer[i] * 0.1;
+		scptr++;
+		if (scptr == 512) {
+			QUEUE(CMP_CB(&waterfall::sig_data, wf, _mdm_scdbl.c_array(), 512)); //wf->sig_data(scdata, 512);
+			scptr = 0;
+			_mdm_scdbl.next(); // change buffers
+		}
+	}
 }
 
 void modem::ModulateStereo(double *left, double *right, int len)
 {
 	scard->write_stereo(left, right, len);
-	return;
-//	if (progdefaults.viewXmtSignal)
-//		for (int i = 0; i < len; i++) {
-//			_mdm_scdbl[scptr] = left[i] * 0.1;
-//			scptr++;
-//			if (scptr == 512) {
-//				QUEUE(CMP_CB(&waterfall::sig_data, wf, _mdm_scdbl.c_array(), 512)); //wf->sig_data(scdata, 512);
-//				scptr = 0;
-//				_mdm_scdbl.next(); // change buffers
-//			}
-//		}
+
+	if (!progdefaults.viewXmtSignal)
+		return;
+	for (int i = 0; i < len; i++) {
+		_mdm_scdbl[scptr] = left[i] * 0.1;
+		scptr++;
+		if (scptr == 512) {
+			QUEUE(CMP_CB(&waterfall::sig_data, wf, _mdm_scdbl.c_array(), 512)); //wf->sig_data(scdata, 512);
+			scptr = 0;
+			_mdm_scdbl.next(); // change buffers
+		}
+	}
 }
 
 

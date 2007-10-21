@@ -629,6 +629,13 @@ static void cb_btntextwidgets(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnViewXmtSignal=(Fl_Check_Button *)0;
+
+static void cb_btnViewXmtSignal(Fl_Check_Button* o, void*) {
+  progdefaults.viewXmtSignal=o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabModems=(Fl_Group *)0;
 
 Fl_Tabs *tabsModems=(Fl_Tabs *)0;
@@ -1477,6 +1484,11 @@ fect after a restart.");
           o->value(1);
           o->callback((Fl_Callback*)cb_btntextwidgets);
           o->hide();
+        }
+        { Fl_Check_Button* o = btnViewXmtSignal = new Fl_Check_Button(50, 150, 135, 20, "View Xmt Signal");
+          o->down_box(FL_DOWN_BOX);
+          o->callback((Fl_Callback*)cb_btnViewXmtSignal);
+          o->value(progdefaults.viewXmtSignal);
         }
         o->end();
       }

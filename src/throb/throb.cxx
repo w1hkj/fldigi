@@ -155,6 +155,7 @@ throb::throb(trx_mode throb_mode) : modem()
 	case MODE_THROB4:
 	default:
 		symlen = SYMLEN_4;
+		mk_full_pulse(symlen);
 		txpulse = mk_full_pulse(symlen);
 		fp = mk_full_pulse(symlen / DOWN_SAMPLE);
 		num_tones = 9;
@@ -172,8 +173,8 @@ throb::throb(trx_mode throb_mode) : modem()
                 fp = mk_semi_pulse(symlen / DOWN_SAMPLE);
                 num_tones = 11;
                 num_chars = 55;
-		idlesym = 0;
-		spacesym = 1;
+				idlesym = 0;
+				spacesym = 1;
                 for (int i = 0; i < num_tones; i++)
                         freqs[i] = ThrobXToneFreqsNar[i];
                 bw = 47.0 / THROB_SAMPLE_RATE;
@@ -185,21 +186,22 @@ throb::throb(trx_mode throb_mode) : modem()
                 fp = mk_semi_pulse(symlen / DOWN_SAMPLE);
                 num_tones = 11;
                 num_chars = 55;
-		idlesym = 0;
-		spacesym = 1;
+				idlesym = 0;
+				spacesym = 1;
                 for (int i = 0; i < num_tones; i++)
-			freqs[i] = ThrobXToneFreqsNar[i];
+					freqs[i] = ThrobXToneFreqsNar[i];
                 bw = 47.0 / THROB_SAMPLE_RATE;
                 break;
 
         case MODE_THROBX4: //NONSTANDARD
                 symlen = SYMLEN_4;
+				mk_full_pulse(symlen);
                 txpulse = mk_full_pulse(symlen);
                 fp = mk_full_pulse(symlen / DOWN_SAMPLE);
                 num_tones = 11;
                 num_chars = 55;
-		idlesym = 0;
-		spacesym = 1;
+				idlesym = 0;
+				spacesym = 1;
                 for (int i = 0; i < num_tones; i++)
                         freqs[i] = ThrobXToneFreqsWid[i];
                 bw = 94.0 / THROB_SAMPLE_RATE;
@@ -617,18 +619,18 @@ int throb::tx_process()
 
 	c = get_tx_char();
 
-// TX buffer empty
-	if (c == -1) {
-		send(idlesym);	/* send idle throbs */
-		flip_syms(); //FIXME: syms don't flip here, dunno why
-		return 0;
-	}
-
 // end of transmission
 	if (c == 0x03 || stopflag) {
 		send(idlesym);
 		reset_syms(); //prepare RX. idle/space syms always start as 0 and 1, respectively.
 		return -1;
+	}
+
+// TX buffer empty
+	if (c == -1) {
+		send(idlesym);	/* send idle throbs */
+		flip_syms(); //FIXME: syms don't flip here, dunno why
+		return 0;
 	}
 
 	switch(mode) {
