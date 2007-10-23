@@ -1605,20 +1605,21 @@ void put_rx_char(unsigned int data)
 		asc = ascii;
 
 	int style = ReceiveWidget::RECV;
+	if (asc == ascii2 && iscntrl(data))
+		style = ReceiveWidget::CTRL;
+	if (wf->tmp_carrier)
+		style = ReceiveWidget::ALTR;
+
 	data &= 0x7F;
 	switch (data) {
-	case '\n':
-		if (last == '\r')
+		case '\n':
+			if (last == '\r')
+				break;
+		case '\r':
+			QUEUE(CMP_CB(&ReceiveWidget::addchr, ReceiveText, '\n', style));
 			break;
-		// or fall-through to insert '\n'
-	case '\r':
-		data = '\n';
-	default:
-		if (asc == ascii2 && iscntrl(data))
-			style = ReceiveWidget::CTRL;
-		if (wf->tmp_carrier())
-			style = ReceiveWidget::ALTR;
-		QUEUE(CMP_CB(&ReceiveWidget::addchr, ReceiveText, data, style));
+		default:
+			QUEUE(CMP_CB(&ReceiveWidget::addchr, ReceiveText, data, style));
 	}
 	last = data;
 

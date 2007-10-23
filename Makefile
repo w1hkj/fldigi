@@ -134,6 +134,9 @@ SRC = \
 	$(SRC_DIR)/waterfall/digiscope.cxx \
 	$(SRC_DIR)/widgets/picture.cxx \
 	$(SRC_DIR)/widgets/TextView.cxx \
+	$(SRC_DIR)/misc/flstring.c \
+	$(SRC_DIR)/widgets/Fl_Text_Display_mod.cxx \
+	$(SRC_DIR)/widgets/Fl_Text_Editor_mod.cxx \
 	$(SRC_DIR)/widgets/FTextView.cxx \
 	$(SRC_DIR)/wwv/analysis.cxx \
 	$(SRC_DIR)/wwv/wwv.cxx \

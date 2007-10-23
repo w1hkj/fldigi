@@ -39,18 +39,18 @@
 #include <FL/Enumerations.H>
 #include <FL/Fl_Menu_Button.H>
 #include <FL/Fl_Menu_Item.H>
-#include <FL/Fl_Text_Editor.H>
+#include "Fl_Text_Editor_mod.H"
 
 using namespace std;
 
 // this interface is implemented by both rx,tx widgets
-class ReceiveWidget : public Fl_Text_Editor
+class ReceiveWidget : public Fl_Text_Editor_mod
 {
 public:
 	enum TEXT_ATTR { RECV, XMIT, CTRL, SKIP, ALTR, NATTR };
 
 	ReceiveWidget(int x, int y, int w, int h, const char *label)
-		: Fl_Text_Editor(x, y, w, h, label) { }
+		: Fl_Text_Editor_mod(x, y, w, h, label) { }
 	virtual ~ReceiveWidget() { }
 
 	virtual void add(const char *text, int attr = RECV) = 0;

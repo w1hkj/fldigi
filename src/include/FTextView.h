@@ -33,24 +33,13 @@
 #include <FL/Enumerations.H>
 #include <FL/Fl_Menu_Button.H>
 #include <FL/Fl_Menu_Item.H>
-#include <FL/Fl_Text_Display.H>
-#include <FL/Fl_Text_Editor.H>
+#include "Fl_Text_Display_mod.H"
+#include "Fl_Text_Editor_mod.H"
 #include <FL/Fl_Tile.H>
-
-#if (FL_MAJOR_VERSION == 1 && FL_MINOR_VERSION == 1 &&		\
-     (FL_PATCH_VERSION == 7 || FL_PATCH_VERSION == 8)) &&	\
-	!defined(NO_HSCROLLBAR_KLUDGE)
-#	define HSCROLLBAR_KLUDGE
-#else
-#	ifndef NO_HSCROLLBAR_KLUDGE
-#		warning "Not suppressing horizontal scrollbars with this version of fltk"
-#	endif
-#	undef HSCROLLBAR_KLUDGE
-#endif
 
 ///
 /// The text widgets base class.
-/// This class implements a basic text editing widget based on Fl_Text_Editor.
+/// This class implements a basic text editing widget based on Fl_Text_Editor_mod.
 ///
 class FTextBase : virtual public ReceiveWidget
 {
@@ -71,8 +60,8 @@ public:
 	void		cursorON(void) { show_cursor(); }
 	virtual void	resize(int X, int Y, int W, int H);
 
-        virtual void	Show(void) { Fl_Text_Editor::show(); }
-        virtual void	Hide(void) { Fl_Text_Editor::hide(); }
+        virtual void	Show(void) { Fl_Text_Editor_mod::show(); }
+        virtual void	Hide(void) { Fl_Text_Editor_mod::hide(); }
 	static bool	wheight_mult_tsize(void *arg, int xd, int yd);
 
 protected:
@@ -84,9 +73,6 @@ protected:
 	void		show_context_menu(void);
 	virtual void	menu_cb(int val) { }
 	int		reset_wrap_col(void);
-#ifdef HSCROLLBAR_KLUDGE
-        void		scroll_(int topLineNum, int horizOffset);
-#endif
         void		adjust_colours(void);
 private:
 	FTextBase();
@@ -97,14 +83,13 @@ protected:
 	enum set_style_op_e { SET_FONT = 1 << 0, SET_SIZE = 1 << 1, SET_COLOR = 1 << 2 };
 	Fl_Text_Buffer				*tbuf;	///< text buffer
 	Fl_Text_Buffer				*sbuf;	///< style buffer
-	Fl_Text_Display::Style_Table_Entry	styles[ReceiveWidget::NATTR];
+	Fl_Text_Display_mod::Style_Table_Entry	styles[ReceiveWidget::NATTR];
 	Fl_Menu_Item				*context_menu;
 	int					popx, popy;
 	bool					wrap;
 	int					wrap_col;
 	int					max_lines;
 	bool					scroll_hint;
-	int					scroll_tweak;
 	bool					adjusted_colours;
 };
 
@@ -175,11 +160,11 @@ protected:
 	static void	changed_cb(int pos, int nins, int ndel, int nsty,
 				   const char *dtext, void *arg);
 	void		change_keybindings(void);
-	static int	kf_default(int c, Fl_Text_Editor* e);
-	static int	kf_enter(int c, Fl_Text_Editor* e);
-	static int	kf_delete(int c, Fl_Text_Editor* e);
-	static int	kf_cut(int c, Fl_Text_Editor* e);
-	static int	kf_paste(int c, Fl_Text_Editor* e);
+	static int	kf_default(int c, Fl_Text_Editor_mod* e);
+	static int	kf_enter(int c, Fl_Text_Editor_mod* e);
+	static int	kf_delete(int c, Fl_Text_Editor_mod* e);
+	static int	kf_cut(int c, Fl_Text_Editor_mod* e);
+	static int	kf_paste(int c, Fl_Text_Editor_mod* e);
 
 private:
 	FTextEdit();

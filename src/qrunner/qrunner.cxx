@@ -25,7 +25,7 @@
 #include <errno.h>
 // #include <cstring>
 
-#include <FL/Fl.h>
+#include <FL/Fl.H>
 
 #include "fqueue.h"
 #include "qrunner.h"

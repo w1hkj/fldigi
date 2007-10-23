@@ -1,8 +1,11 @@
 Change Log:
 
+2.02  1) additional fixes for extended text widgets
 2.01  1) Bug fix release
          a) Throb modems failing to stop with t/r button
-         b) Modem startup problem when switching modes.         	  
+         b) Modem startup problem when switching modes.
+         c) crlf fix for received characters
+         d) scrollbar fix for extended text widgets         	  
 2.0   1) Increased TxPPM to +/- 50000 to match the RxPPM range
       2) Changed all audio i/o to separate 2 channel control (stereo)
       3) Added right channel CW QRQ signal

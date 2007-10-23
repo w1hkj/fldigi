@@ -31,8 +31,6 @@
 #include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_Pack.H>
 #include <FL/Fl_Text_Buffer.H>
-#include <FL/Fl_Text_Display.H>
-#include <FL/Fl_Text_Editor.H>
 #include <FL/Fl_Browser.H>
 #include <FL/Fl_Slider.H>
 #include <FL/Fl_Progress.H>

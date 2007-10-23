@@ -50,12 +50,12 @@ using namespace std;
 FTextBase::FTextBase(int x, int y, int w, int h, const char *l)
 	: ReceiveWidget(x, y, w, h, l),
           wrap(true), wrap_col(80), max_lines(0), scroll_hint(false),
-          scroll_tweak(3), adjusted_colours(false)
+          adjusted_colours(false)
 {
 	tbuf = new Fl_Text_Buffer;
 	sbuf = new Fl_Text_Buffer;
 
-	cursor_style(Fl_Text_Editor::NORMAL_CURSOR);
+	cursor_style(Fl_Text_Editor_mod::NORMAL_CURSOR);
 	buffer(tbuf);
 	highlight_data(sbuf, styles, NATTR, FTEXT_DEF, 0, 0);
 
@@ -98,7 +98,7 @@ void FTextBase::setFontColor(Fl_Color c, int attr)
 }
 
 /// Resizes the text widget.
-/// The real work is done by \c Fl_Text_Editor::resize or, if \c HSCROLLBAR_KLUDGE
+/// The real work is done by \c Fl_Text_Editor_mod::resize or, if \c HSCROLLBAR_KLUDGE
 /// is defined, a version of that code modified so that no horizontal
 /// scrollbars are displayed when word wrapping.
 ///
@@ -117,11 +117,7 @@ void FTextBase::resize(int X, int Y, int W, int H)
                 scroll_hint = false;
         }
 
-#ifdef HSCROLLBAR_KLUDGE
-#	include "FTextView_resize.cxx"
-#else
-	Fl_Text_Editor::resize(X, Y, W, H);
-#endif // HSCROLLBAR_KLUDGE
+	Fl_Text_Editor_mod::resize(X, Y, W, H);
 }
 
 /// Checks the new widget height.
@@ -216,7 +212,7 @@ void FTextBase::saveFile(void)
 char *FTextBase::get_word(int x, int y)
 {
 	int p = xy_to_position(x + this->x(), y + this->y(),
-                               Fl_Text_Display::CURSOR_POS);
+                               Fl_Text_Display_mod::CURSOR_POS);
 	tbuf->select(word_start(p), word_end(p));
 	char *s = tbuf->selection_text();
 	tbuf->unselect();
@@ -266,39 +262,9 @@ int FTextBase::reset_wrap_col(void)
 	return old_wrap_col;
 }
 
-#ifdef HSCROLLBAR_KLUDGE
-// From Fl_Text_Display::scroll_
-void FTextBase::scroll_(int topLineNum, int horizOffset)
-{
-        /* Limit the requested scroll position to allowable values */
-        if (topLineNum > mNBufferLines + scroll_tweak - mNVisibleLines)
-                topLineNum = mNBufferLines + scroll_tweak - mNVisibleLines;
-        if (topLineNum < 1) topLineNum = 1;
-
-        if (horizOffset > longest_vline() - text_area.w)
-           horizOffset = longest_vline() - text_area.w;
-        if (horizOffset < 0) horizOffset = 0;
-
-        /* Do nothing if scroll position hasn't actually changed or there's no
-           window to draw in yet */
-        if (mHorizOffset == horizOffset && mTopLineNum == topLineNum)
-                return;
-
-        /* If the vertical scroll position has changed, update the line
-           starts array and related counters in the text display */
-        offset_line_starts(topLineNum);
-
-        /* Just setting mHorizOffset is enough information for redisplay */
-        mHorizOffset = horizOffset;
-
-        // redraw all text
-        damage(FL_DAMAGE_EXPOSE);
-}
-#endif
-
 void FTextBase::adjust_colours(void)
 {
-        // Fl_Text_Display::draw_string may mindlessly clobber our colours with
+        // Fl_Text_Display_mod::draw_string may mindlessly clobber our colours with
         // FL_WHITE or FL_BLACK to satisfy contrast requirements. We adjust the
         // luminosity here so that at least we get something resembling the
         // requested hue.
@@ -336,7 +302,7 @@ Fl_Menu_Item FTextView::view_menu[] = {
 };
 
 /// FTextView constructor.
-/// We remove \c Fl_Text_Display::buffer_modified_cb from the list of callbacks
+/// We remove \c Fl_Text_Display_mod::buffer_modified_cb from the list of callbacks
 /// because we want to scroll depending on the visibility of the last line; @see
 /// changed_cb.
 /// @param x 
@@ -348,11 +314,10 @@ FTextView::FTextView(int x, int y, int w, int h, const char *l)
         : ReceiveWidget(x, y, w, h, l), FTextBase(x, y, w, h, l)
 {
 	tbuf->remove_modify_callback(buffer_modified_cb,
-                                     dynamic_cast<Fl_Text_Editor *>(this));
+                                     dynamic_cast<Fl_Text_Editor_mod *>(this));
 	tbuf->add_modify_callback(changed_cb, this);
-	scroll_tweak = 2;
 
-	cursor_style(Fl_Text_Display::NORMAL_CURSOR);
+	cursor_style(Fl_Text_Display_mod::NORMAL_CURSOR);
 
 	context_menu = view_menu;
 	// disable some keybindings that are not allowed in FTextView buffers
@@ -382,7 +347,7 @@ int FTextView::handle(int event)
 	case FL_PUSH:
 		if (!Fl::event_inside(this))
 			break;
-		// stop mouse2 text paste events from reaching Fl_Text_Editor
+		// stop mouse2 text paste events from reaching Fl_Text_Editor_mod
 		if (Fl::event_button() == FL_MIDDLE_MOUSE)
 			return 1;
 		if (Fl::event_button() != FL_RIGHT_MOUSE)
@@ -565,7 +530,7 @@ void FTextView::changed_cb(int pos, int nins, int ndel, int nsty, const char *dt
 	if (v->mTopLineNum + v->mNVisibleLines - 1 == v->mNBufferLines)
 		v->scroll_hint = true;
 
-	v->buffer_modified_cb(pos, nins, ndel, nsty, dtext, dynamic_cast<Fl_Text_Editor *>(v));
+	v->buffer_modified_cb(pos, nins, ndel, nsty, dtext, dynamic_cast<Fl_Text_Editor_mod *>(v));
 }
 
 /// Removes Fl_Text_Edit keybindings that would modify text and put it out of
@@ -576,16 +541,16 @@ void FTextView::changed_cb(int pos, int nins, int ndel, int nsty, const char *dt
 ///
 void FTextView::change_keybindings(void)
 {
-	Fl_Text_Editor::Key_Func fdelete[] = { Fl_Text_Editor::kf_default,
-					       Fl_Text_Editor::kf_enter,
-					       Fl_Text_Editor::kf_delete,
-					       Fl_Text_Editor::kf_cut,
-					       Fl_Text_Editor::kf_paste };
+	Fl_Text_Editor_mod::Key_Func fdelete[] = { Fl_Text_Editor_mod::kf_default,
+					       Fl_Text_Editor_mod::kf_enter,
+					       Fl_Text_Editor_mod::kf_delete,
+					       Fl_Text_Editor_mod::kf_cut,
+					       Fl_Text_Editor_mod::kf_paste };
 	int n = sizeof(fdelete) / sizeof(fdelete[0]);
 
 	// walk the keybindings linked list and delete items containing elements
 	// of fdelete
-	for (Fl_Text_Editor::Key_Binding *k = key_bindings; k; k = k->next) {
+	for (Fl_Text_Editor_mod::Key_Binding *k = key_bindings; k; k = k->next) {
 		for (int i = 0; i < n; i++)
 			if (k->function == fdelete[i])
 				remove_key_binding(k->key, k->state);
@@ -618,9 +583,9 @@ FTextEdit::FTextEdit(int x, int y, int w, int h, const char *l)
           PauseBreak(false), txpos(0), bkspaces(0)
 {
 	ptxpos = &txpos;
-	cursor_style(Fl_Text_Display::NORMAL_CURSOR);
+	cursor_style(Fl_Text_Display_mod::NORMAL_CURSOR);
 	tbuf->remove_modify_callback(buffer_modified_cb,
-				     dynamic_cast<Fl_Text_Editor *>(this));
+				     dynamic_cast<Fl_Text_Editor_mod *>(this));
 	tbuf->add_modify_callback(changed_cb, this);
 
 	context_menu = edit_menu;
@@ -647,7 +612,7 @@ int FTextEdit::handle(int event)
 	// ignore mouse2 presses (text pastes) inside the transmitted text
 	if (Fl::event_button() == FL_MIDDLE_MOUSE &&
 	    xy_to_position(Fl::event_x(), Fl::event_y(),
-			   Fl_Text_Display::CHARACTER_POS) < txpos)
+			   Fl_Text_Display_mod::CHARACTER_POS) < txpos)
 		return 1;
 
 	if (Fl::event_button() != FL_RIGHT_MOUSE)
@@ -751,7 +716,7 @@ int FTextEdit::nextChar(void)
 	return c;
 }
 
-/// Handles keyboard events to override Fl_Text_Editor's handling of some
+/// Handles keyboard events to override Fl_Text_Editor_mod's handling of some
 /// keystrokes.
 ///
 /// @param key 
@@ -1001,7 +966,7 @@ void FTextEdit::changed_cb(int pos, int nins, int ndel, int nsty, const char *dt
 		}
 		else if (nsty > 0) // restyled, e.g. selected, text
 			return e->buffer_modified_cb(pos, nins, ndel, nsty, dtext,
-						     dynamic_cast<Fl_Text_Editor *>(e));
+						     dynamic_cast<Fl_Text_Editor_mod *>(e));
 
 		return;
 	}
@@ -1026,7 +991,7 @@ void FTextEdit::changed_cb(int pos, int nins, int ndel, int nsty, const char *dt
 
 	e->sbuf->select(pos, pos + nins - ndel);
 
-	e->buffer_modified_cb(pos, nins, ndel, nsty, dtext, dynamic_cast<Fl_Text_Editor *>(e));
+	e->buffer_modified_cb(pos, nins, ndel, nsty, dtext, dynamic_cast<Fl_Text_Editor_mod *>(e));
 	// We may need to scroll if the text was inserted by the
 	// add() methods, e.g. by a macro
 	if (e->mTopLineNum + e->mNVisibleLines - 1 <= e->mNBufferLines)
@@ -1039,43 +1004,43 @@ void FTextEdit::changed_cb(int pos, int nins, int ndel, int nsty, const char *dt
 void FTextEdit::change_keybindings(void)
 {
 	struct {
-		Fl_Text_Editor::Key_Func function, override;
-	} fbind[] = { { Fl_Text_Editor::kf_default, FTextEdit::kf_default },
-		      { Fl_Text_Editor::kf_enter,   FTextEdit::kf_enter	  },
-		      { Fl_Text_Editor::kf_delete,  FTextEdit::kf_delete  },
-		      { Fl_Text_Editor::kf_cut,	    FTextEdit::kf_cut	  },
-		      { Fl_Text_Editor::kf_paste,   FTextEdit::kf_paste	  } };
+		Fl_Text_Editor_mod::Key_Func function, override;
+	} fbind[] = { { Fl_Text_Editor_mod::kf_default, FTextEdit::kf_default },
+		      { Fl_Text_Editor_mod::kf_enter,   FTextEdit::kf_enter	  },
+		      { Fl_Text_Editor_mod::kf_delete,  FTextEdit::kf_delete  },
+		      { Fl_Text_Editor_mod::kf_cut,	    FTextEdit::kf_cut	  },
+		      { Fl_Text_Editor_mod::kf_paste,   FTextEdit::kf_paste	  } };
 	int n = sizeof(fbind) / sizeof(fbind[0]);
 
 	// walk the keybindings linked list and replace items containing
 	// functions for which we have an override in fbind
-	for (Fl_Text_Editor::Key_Binding *k = key_bindings; k; k = k->next) {
+	for (Fl_Text_Editor_mod::Key_Binding *k = key_bindings; k; k = k->next) {
 		for (int i = 0; i < n; i++)
 			if (fbind[i].function == k->function)
 				k->function = fbind[i].override;
 	}
 }
 
-// The kf_* functions below call the corresponding Fl_Text_Editor routines, but
+// The kf_* functions below call the corresponding Fl_Text_Editor_mod routines, but
 // may make adjustments so that no transmitted text is modified.
 
-int FTextEdit::kf_default(int c, Fl_Text_Editor* e)
+int FTextEdit::kf_default(int c, Fl_Text_Editor_mod* e)
 {
-	return e->insert_position() < *ptxpos ? 1 : Fl_Text_Editor::kf_default(c, e);
+	return e->insert_position() < *ptxpos ? 1 : Fl_Text_Editor_mod::kf_default(c, e);
 }
 
-int FTextEdit::kf_enter(int c, Fl_Text_Editor* e)
+int FTextEdit::kf_enter(int c, Fl_Text_Editor_mod* e)
 {
-	return e->insert_position() < *ptxpos ? 1 : Fl_Text_Editor::kf_enter(c, e);
+	return e->insert_position() < *ptxpos ? 1 : Fl_Text_Editor_mod::kf_enter(c, e);
 }
 
-int FTextEdit::kf_delete(int c, Fl_Text_Editor* e)
+int FTextEdit::kf_delete(int c, Fl_Text_Editor_mod* e)
 {
 	// single character
 	if (!e->buffer()->selected()) {
                 if (e->insert_position() >= *ptxpos &&
                     e->insert_position() != e->buffer()->length())
-                        return Fl_Text_Editor::kf_delete(c, e);
+                        return Fl_Text_Editor_mod::kf_delete(c, e);
                 else
                         return 1;
         }
@@ -1088,10 +1053,10 @@ int FTextEdit::kf_delete(int c, Fl_Text_Editor* e)
 	if (*ptxpos > start)
 		e->buffer()->select(*ptxpos, end);
 
-	return Fl_Text_Editor::kf_delete(c, e);
+	return Fl_Text_Editor_mod::kf_delete(c, e);
 }
 
-int FTextEdit::kf_cut(int c, Fl_Text_Editor* e)
+int FTextEdit::kf_cut(int c, Fl_Text_Editor_mod* e)
 {
 	if (e->buffer()->selected()) {
 		int start, end;
@@ -1102,10 +1067,10 @@ int FTextEdit::kf_cut(int c, Fl_Text_Editor* e)
 			e->buffer()->select(*ptxpos, end);
 	}
 
-	return Fl_Text_Editor::kf_cut(c, e);
+	return Fl_Text_Editor_mod::kf_cut(c, e);
 }
 
-int FTextEdit::kf_paste(int c, Fl_Text_Editor* e)
+int FTextEdit::kf_paste(int c, Fl_Text_Editor_mod* e)
 {
-	return e->insert_position() < *ptxpos ? 1 : Fl_Text_Editor::kf_paste(c, e);
+	return e->insert_position() < *ptxpos ? 1 : Fl_Text_Editor_mod::kf_paste(c, e);
 }
