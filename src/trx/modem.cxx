@@ -8,6 +8,8 @@
 
 #include "qrunner.h"
 
+#include "status.h"
+
 modem *cw_modem = 0;
 modem *mfsk8_modem = 0;
 modem *mfsk16_modem = 0;
@@ -74,6 +76,9 @@ void modem::init()
 			set_freq(progdefaults.RTTYsweetspot);
 		else
 			set_freq(progdefaults.PSKsweetspot);
+	} else if (progStatus.carrier != 0) {
+			set_freq(progStatus.carrier);
+			progStatus.carrier = 0;
 	} else
 		set_freq(wf->Carrier());
 }

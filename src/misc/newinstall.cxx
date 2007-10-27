@@ -258,7 +258,6 @@ void newpalettes()
 void createDotFldigi()
 {
 	string Filename = HomeDir;
-	mkdir(Filename.c_str(), O_CREAT | S_IRUSR|S_IWUSR|S_IXUSR);
 	Filename.append("macros.mdf");
 	newmacros();
 	macros.saveMacros(Filename);

@@ -1,5 +1,8 @@
 Change Log:
 
+2.03  1) bug fix for new startup Sound Card / Mixer naming on configuration tab.
+      2) bug fix for initial startup frequency
+      3) bug fix for homedir discovery
 2.02  1) additional fixes for extended text widgets
 2.01  1) Bug fix release
          a) Throb modems failing to stop with t/r button

@@ -144,9 +144,9 @@ void status::initLastState()
 		case MODE_BPSK31 : 
 		default: 				initPSK31();
 	}
+
 	while (!active_modem) MilliSleep(100);
-	wf->Carrier(carrier);
-    active_modem->set_freq(wf->Carrier());
+
  	wf->opmode();
 	wf->Mag(mag);
 	wf->Speed(speed);

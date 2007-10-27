@@ -18,8 +18,8 @@
 configuration progdefaults = {
 	false,			// bool		changed;
 	25.0,			// double 	squelch;
-	-10.0,			// double	wfRefLevel;
-	40.0,			// double	wfAmpSpan;
+	0.0,			// double	wfRefLevel;
+	70.0,			// double	wfAmpSpan;
 	300,			// int		LowFreqCutoff;
 	1000,			// int		CWsweetspot;
 	1000,			// int		RTTYsweetspot;
@@ -124,9 +124,9 @@ configuration progdefaults = {
 	"fldigi ",		// secondary text
 // Sound card
 	0,			// int		btnAudioIOis
-	"/dev/dsp",		// string	SCdevice;
-	"/dev/dsp",		// string	OSSdevice;
-	"/dev/dsp",		// string	PAdevice;
+	"",		// string	SCdevice;
+	"",		// string	OSSdevice;
+	"",		// string	PAdevice;
 	0,				// int		RX_corr;
 	0,				// int		TX_corr;
 	0,				// int		TxOffset;
@@ -140,8 +140,8 @@ configuration progdefaults = {
 	0,				// int		timeout;
 	
 	"",			// string	MXdevice
-	0.8,			// double	RcvMixer;
-	0.6,			// double	XmtMixer;
+	1.0,			// double	RcvMixer;
+	1.0,			// double	XmtMixer;
 	false,			// bool		MicIn;
 	true,			// bool		LineIn;
 	false,			// bool		EnableMixer;

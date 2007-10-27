@@ -111,20 +111,23 @@ int main(int argc, char ** argv)
 	}
 
 	fl_filename_expand(szHomedir, 119, "$HOME/.fldigi/");
-	if (fl_filename_isdir(szHomedir) == 0)
-		HomeDir = "./";
-	else
-		HomeDir = szHomedir;
+	HomeDir = szHomedir;
 
 	generate_option_help();
-
 	int arg_idx;
-    if (Fl::args(argc, argv, arg_idx, parse_args) != argc) {
-            cerr << FLDIGI_NAME << ": unrecognized option `" << argv[arg_idx]
-                 << "'\nTry `" << FLDIGI_NAME
-                 << " --help' for more information.\n";
-            exit(EXIT_FAILURE);
-    }
+	if (Fl::args(argc, argv, arg_idx, parse_args) != argc) {
+	    cerr << FLDIGI_NAME << ": unrecognized option `" << argv[arg_idx]
+		 << "'\nTry `" << FLDIGI_NAME
+		 << " --help' for more information.\n";
+	    exit(EXIT_FAILURE);
+	}
+
+	if (fl_filename_isdir(HomeDir.c_str()) == 0 &&
+	    mkdir(HomeDir.c_str(), 0777) == -1) {
+		cerr << "Could not make directory " << HomeDir << ": "
+		     << strerror(errno) << endl;
+		exit(EXIT_FAILURE);
+	}
 
 	xmlfname = HomeDir; 
 	xmlfname.append("rig.xml");
@@ -138,8 +141,6 @@ int main(int argc, char ** argv)
 	
 	FL_LOCK_E();  // start the gui thread!!	
 	Fl::visual(FL_RGB); // insure 24 bit color operation
-	
-//	Fl::visual(FL_DOUBLE|FL_INDEX| FL_RGB);
 	
 	fl_register_images();
 	Fl::set_fonts(0);
@@ -164,19 +165,13 @@ int main(int argc, char ** argv)
 
 	progdefaults.openDefaults();
 	
-#ifndef PORTAUDIO
-	scDevice = progdefaults.SCdevice;
-#else
-	if (progdefaults.btnAudioIOis == 0)
-		scDevice = progdefaults.OSSdevice;
-	else if (progdefaults.btnAudioIOis == 1)
-		scDevice = progdefaults.PAdevice;
-#endif
-
 	glob_t gbuf;
 	glob("/dev/dsp*", 0, NULL, &gbuf);
 	for (size_t i = 0; i < gbuf.gl_pathc; i++)
 		menuOSSDev->add(gbuf.gl_pathv[i]);
+	if (progdefaults.OSSdevice == "")
+		progdefaults.OSSdevice = gbuf.gl_pathv[0];
+	menuOSSDev->value(progdefaults.OSSdevice.c_str());
 	globfree(&gbuf);
 	
 #ifdef PORTAUDIO
@@ -187,30 +182,43 @@ int main(int argc, char ** argv)
 		string s;
 		s.append(idev->hostApi().name()).append("/").append(idev->name());
 		string::size_type i = s.find('/') + 1;
-
-		// backslash-escape any slashes in the device name
+// backslash-escape any slashes in the device name
 		while ((i = s.find('/', i)) != string::npos) {
 			s.insert(i, 1, '\\');
 			i += 2;
 		}
 		menuPADev->add(s.c_str());
+// set the initial value in the configuration structure
+		if (progdefaults.PAdevice == "" && idev == sys.devicesBegin())
+			progdefaults.PAdevice = idev->name();
 	}
+	menuPADev->value(progdefaults.PAdevice.c_str());
+	
 	btnAudioIO[1]->activate();
 #endif
 
 	glob("/dev/mixer*", 0, NULL, &gbuf);
-	for (size_t i = 0; i < gbuf.gl_pathc; i++)
+	for (size_t i = 0; i < gbuf.gl_pathc; i++) 
 		menuMix->add(gbuf.gl_pathv[i]);
+	if (progdefaults.MXdevice == "") 
+		progdefaults.MXdevice = gbuf.gl_pathv[0];
 	globfree(&gbuf);
-
-	if (progdefaults.MXdevice == "") {
-		int n = 0;
-		progdefaults.MXdevice = "/dev/mixer";
-		if (sscanf(progdefaults.SCdevice.c_str(), "/dev/dsp%d", &n) == 1)
-			progdefaults.MXdevice += n;
-		menuMix->value(progdefaults.MXdevice.c_str());
+	menuMix->value(progdefaults.MXdevice.c_str());
+	
+// set the Sound Card configuration tab to the correct initial values
+	if (progdefaults.btnAudioIOis == 0) {
+		scDevice = progdefaults.OSSdevice;
+		btnAudioIO[0]->value(1);
+		btnAudioIO[1]->value(0);
+		menuOSSDev->activate();
+		menuPADev->deactivate();
+	} else {
+		scDevice = progdefaults.PAdevice;
+		btnAudioIO[0]->value(0);
+		btnAudioIO[1]->value(1);
+		menuOSSDev->deactivate();
+		menuPADev->activate();
 	}
-
 	resetMixerControls();
 
 	trx_start(scDevice.c_str());
@@ -586,7 +594,7 @@ void print_versions(void)
 	     << " FLTK " << FL_MAJOR_VERSION << '.' << FL_MINOR_VERSION << '.'
 	     << FL_PATCH_VERSION << '\n';
 
-#ifndef NO_HAMLIB
+#ifndef NOHAMLIB
 	cerr << ' ' << hamlib_version << '\n';
 #endif
 

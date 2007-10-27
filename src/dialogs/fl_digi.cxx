@@ -1369,6 +1369,7 @@ void create_fl_digi_main() {
 			valRcvMixer->labeltype(FL_ENGRAVED_LABEL);
 			valRcvMixer->selection_color(fl_rgb_color(255,255,0));
 			valRcvMixer->range(1.0,0.0);
+			valRcvMixer->value(1.0);
 			valRcvMixer->callback( (Fl_Callback *)cb_RcvMixer);
 			valXmtMixer = new Fl_Slider(0, Y + (Htext)/2, sw, (Htext)/2, "");
 			valXmtMixer->type(FL_VERT_NICE_SLIDER);
@@ -1376,6 +1377,7 @@ void create_fl_digi_main() {
 			valXmtMixer->labeltype(FL_ENGRAVED_LABEL);
 			valXmtMixer->selection_color(fl_rgb_color(255,255,0));
 			valXmtMixer->range(1.0,0.0);
+			valXmtMixer->value(1.0);
 			valXmtMixer->callback( (Fl_Callback *)cb_XmtMixer);
 			valRcvMixer->deactivate();
 			valXmtMixer->deactivate();
