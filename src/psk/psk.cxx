@@ -57,12 +57,7 @@ void psk::tx_init(cSound *sc)
 	prevsymbol = complex (1.0, 0.0);
 	preamble = dcdbits;
 	shreg = 0;
-	if (trx_state != STATE_TUNE && progdefaults.sendid == true)
-		wfid->transmit(mode);
-	else if (trx_state != STATE_TUNE && progdefaults.macroid == true) {
-		wfid->transmit(mode);
-		progdefaults.macroid = false;
-	}
+	videoText();
 }
 
 void psk::rx_init()
@@ -99,7 +94,7 @@ psk::~psk()
 	if (dec) delete dec;
 	if (fir1) delete fir1;
 	if (fir2) delete fir2;
-	if (wfid) delete wfid;
+//	if (wfid) delete wfid;
 }
 
 psk::psk(trx_mode pskmode) : modem()
@@ -197,7 +192,7 @@ psk::psk(trx_mode pskmode) : modem()
 	samplerate = PskSampleRate;
 	fragmentsize = symbollen;
 	bandwidth = samplerate / symbollen;
-	wfid = new id(this);
+//	wfid = new id(this);
 	
 //	pipeptr = 0;
 	if (mailserver && progdefaults.PSKmailSweetSpot)

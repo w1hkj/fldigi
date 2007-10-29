@@ -79,13 +79,39 @@ void parse_mailtext()
 	if ( idxCmd != string::npos && idxCmdEnd != string::npos && idxCmdEnd > idxCmd ) {
 
 		strCmdText = mailtext.substr(idxCmd + 5, idxCmdEnd - idxCmd - 5);
-		while ((idxSubCmd = strCmdText.find("<mode>")) != string::npos) {
-			idxSubCmdEnd = strCmdText.find("</mode>");
-			if (	idxSubCmdEnd != string::npos && 
-					idxSubCmdEnd > idxSubCmd ) {
-				strSubCmd = strCmdText.substr(idxSubCmd + 6, idxSubCmdEnd - idxSubCmd - 6);
-				ParseMode(strSubCmd);
-				strCmdText.erase(idxSubCmd, idxSubCmdEnd - idxSubCmd + 7);
+		if (strCmdText == "server" && mailserver == false && mailclient == false) {
+			mailserver = true;
+			mailclient = false;
+			std::cout << "Starting pskmail server transport layer" << std::endl; std::cout.flush();
+			string PskMailLogName = PskMailDir;
+			PskMailLogName += "gMFSK.log";
+			Maillogfile = new cLogfile(PskMailLogName.c_str());
+			Maillogfile->log_to_file_start();
+		} else if (strCmdText == "client" && mailclient == false && mailserver == false) {
+			mailclient = true;
+			mailserver = false;
+			std::cout << "Starting pskmail client transport layer" << std::endl; std::cout.flush();
+			string PskMailLogName = PskMailDir;
+			PskMailLogName += "gMFSK.log";
+			Maillogfile = new cLogfile(PskMailLogName.c_str());
+			Maillogfile->log_to_file_start();
+		} else if (strCmdText == "normal") {
+			std::cout << "Closing pskmail transport layer" << std::endl; std::cout.flush();
+			mailserver = false;
+			mailclient = false;
+			if (Maillogfile) {
+				delete Maillogfile;
+				Maillogfile = 0;
+			}
+		} else {
+			while ((idxSubCmd = strCmdText.find("<mode>")) != string::npos) {
+				idxSubCmdEnd = strCmdText.find("</mode>");
+				if (	idxSubCmdEnd != string::npos && 
+						idxSubCmdEnd > idxSubCmd ) {
+					strSubCmd = strCmdText.substr(idxSubCmd + 6, idxSubCmdEnd - idxSubCmd - 6);
+					ParseMode(strSubCmd);
+					strCmdText.erase(idxSubCmd, idxSubCmdEnd - idxSubCmd + 7);
+				}
 			}
 		}
 		mailtext.erase(idxCmd, idxCmdEnd - idxCmd + 8);

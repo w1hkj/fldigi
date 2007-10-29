@@ -88,7 +88,6 @@ SRC = \
 	$(SRC_DIR)/filters/filters.cxx \
 	$(SRC_DIR)/filters/viterbi.cxx \
 	$(SRC_DIR)/globals/globals.cxx \
-	$(SRC_DIR)/ider/id.cxx \
 	$(SRC_DIR)/irrxml/irrXML.cpp \
 	$(SRC_DIR)/logger/logger.cxx \
 	$(SRC_DIR)/main.cxx \

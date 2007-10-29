@@ -30,7 +30,6 @@
 #include "fftfilt.h"
 #include "filters.h"
 #include "complex.h"
-#include "id.h"
 
 #include "mbuffer.h"
 
@@ -62,8 +61,6 @@ static int  ThrobTonePairs[][2];
 static int  ThrobXTonePairs[][2];
 
 protected:
-// waterfall ID
-	id				*wfid;
 	
 	int			num_tones;
 	int			num_chars;

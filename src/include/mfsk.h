@@ -10,7 +10,6 @@
 #include "interleave.h"
 #include "viterbi.h"
 #include "complex.h"
-#include "id.h"
 #include "mfskvaricode.h"
 #include "mbuffer.h"
 
@@ -66,8 +65,6 @@ enum {
 };
 
 protected:
-// waterfall ID
-	id				*wfid;
 // general
 	double phaseacc;
 	int symlen;

@@ -31,7 +31,6 @@
 #include "filters.h"
 #include "pskcoeff.h"
 #include "pskvaricode.h"
-#include "id.h"
 
 //=====================================================================
 #define	PskSampleRate	(8000)
@@ -43,8 +42,6 @@
 
 class psk : public modem {
 private:
-// waterfall ID
-	id				*wfid;
 // tx & rx
 	int				symbollen;
 	bool			_qpsk;

@@ -31,7 +31,6 @@
 #define _FELD_H
 
 #include "modem.h"
-#include "id.h"
 #include "filters.h"
 #include "fftfilt.h"
 #include "mbuffer.h"
@@ -56,8 +55,6 @@
 class feld : public modem {
 enum FELD_STATE {PREAMBLE, POSTAMBLE, DATA};
 protected:
-// waterfall ID
-	id				*wfid;
 //rx
 	double rxphacc;
 	double rxcounter;

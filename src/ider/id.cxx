@@ -29,27 +29,22 @@
 #undef  CLAMP
 #define CLAMP(x,low,high)       (((x)>(high))?(high):(((x)<(low))?(low):(x)))
 
-using namespace std;
-
 id::~id()
 {
-//	if (txpulse) delete [] txpulse;
-//	if (outbuf) delete[] outbuf;
 }
 
-id::id(modem *md)
+id::id()
 {
-	mode = md;
-	make_pulse();
 }
 
 //=====================================================================
 // transmit processing
 //=====================================================================
 
-void id::make_pulse()
+void id::make_pulse(double samplerate)
 {
-	int risetime = mode->get_samplerate() / 50;
+// nominal 5 msec rise time at 8000 samples per second
+	double risetime = samplerate / 50;
 	for (int i = 0; i < IDSYMLEN; i++)
 		txpulse[i] = 1.0;
 	for (int i = 0; i < risetime; i++)
@@ -57,15 +52,13 @@ void id::make_pulse()
 			0.5 * (1 - cos(M_PI * i / risetime));
 }
 
-void id::make_tones()
+void id::make_tones(double frequency, double samplerate)
 {
 	double f;
-	double frequency = mode->get_txfreq_woffset();
-	double sr = mode->get_samplerate();
 	for (int j = 0; j < NUMCHARS; j++)
 		for (int i = 0; i < NUMTONES; i++) {
 			f = frequency + TONESPACING *(NUMTONES - i - j*(NUMTONES + 1));
-			w[i + NUMTONES * j] = 2 * M_PI * f / sr;
+			w[i + NUMTONES * j] = 2 * M_PI * f / samplerate;
 		}
 }
 
@@ -133,19 +126,19 @@ void id::sendchars(string s)
 	send (0);
 }
 
-void id::transmit(trx_mode m)
+void id::text(string s, double frequency, double samplerate)
 {
 	int numlines = 0;
-	int len;
-	string s;
+	int len = s.length();
 	string tosend;
-
-	s = mode_names[m];
-	len = s.length();
-
-	make_tones();
+	string video = "Video text: ";
+	video += s;
 	
-	put_status("Sending ID");
+	make_pulse(samplerate);
+	make_tones(frequency, samplerate);
+	
+	put_status(video.c_str());
+
 	while (numlines < len) numlines += NUMCHARS;
 	numlines -= NUMCHARS;
 	while (numlines >= 0) {
@@ -153,6 +146,7 @@ void id::transmit(trx_mode m)
 		sendchars(tosend);
 		numlines -= NUMCHARS;
 	}
+
 	put_status("");
 }
 

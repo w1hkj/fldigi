@@ -137,8 +137,10 @@ int main(int argc, char ** argv)
 	logfile = new cLogfile(lfname);
 	logfile->log_to_file_start();
 
-	arqchecks();
-	
+   	txmsgid = msgget( (key_t) progdefaults.tx_msgid, 0666 );
+	fl_filename_expand(szPskMailDir, 119, "$HOME/pskmail.files/");
+	PskMailDir = szPskMailDir;
+
 	FL_LOCK_E();  // start the gui thread!!	
 	Fl::visual(FL_RGB); // insure 24 bit color operation
 	
@@ -235,61 +237,6 @@ int main(int argc, char ** argv)
 		cbq[i]->detach();
 
 	return ret;
-}
-
-void arqchecks()
-{
-   	txmsgid = msgget( (key_t) progdefaults.tx_msgid, 0666 );
-
-	fl_filename_expand(szPskMailDir, 119, "$HOME/pskmail.files/");
-	PskMailDir = szPskMailDir;
-	PskMailFile = PskMailDir;
-	PskMailFile += "PSKmailserver";
-	ifstream testFile;
-	testFile.open(PskMailFile.c_str());
-	if (testFile.is_open()) {
-		mailserver = true;
-		testFile.close();
-	} else {
-		PskMailFile = PskMailDir;
-		PskMailFile += "PSKmailclient";
-		testFile.open(PskMailFile.c_str());
-		if (testFile.is_open()) {
-			mailclient = true;
-			testFile.close();
-		} else {
-			PskMailDir = "./";
-			PskMailFile = PskMailDir;
-			PskMailFile += "PSKmailserver";
-			testFile.open(PskMailFile.c_str());
-			if (testFile.is_open()) {
-				mailserver = true;
-				testFile.close();
-				gmfskmail = true;
-			} else {
-				PskMailFile = PskMailDir;
-				PskMailFile += "PSKmailclient";
-				testFile.open(PskMailFile.c_str());
-				if (testFile.is_open()) {
-					mailclient = true;
-					testFile.close();
-					gmfskmail = true;
-				}
-			}
-		}
-	}
-	if (mailserver || mailclient) {
-		std::cout << "Starting pskmail transport layer" << std::endl; fflush(stdout);
-		string PskMailLogName = PskMailDir;
-
-		if (gmfskmail == true)
-			PskMailLogName += "gMFSK.log";
-		else
-			PskMailLogName += "mail-io.log";
-			
-		Maillogfile = new cLogfile(PskMailLogName.c_str());
-		Maillogfile->log_to_file_start();
-	}
 }
 
 void generate_option_help(void) {

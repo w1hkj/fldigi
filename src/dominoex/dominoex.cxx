@@ -49,12 +49,7 @@ void dominoex::tx_init(cSound *sc)
 	txprevtone = 0;
 	counter = 0;
 	phaseacc = 0.0;
-	if (trx_state != STATE_TUNE && progdefaults.sendid == true)
-		wfid->transmit(mode);
-	else if (trx_state != STATE_TUNE && progdefaults.macroid == true) {
-		wfid->transmit(mode);
-		progdefaults.macroid = false;
-	}
+	videoText();
 }
 
 void dominoex::rx_init()
@@ -107,7 +102,7 @@ dominoex::~dominoex()
 	if (hilbert) delete hilbert;
 	if (pipe) delete [] pipe;
 	if (filt) delete filt;
-	if (wfid) delete wfid;
+//	if (wfid) delete wfid;
 }
 
 dominoex::dominoex(trx_mode md)
@@ -201,7 +196,7 @@ dominoex::dominoex(trx_mode md)
 	fragmentsize = symlen;
 
 	s2n = 0.0;
-	wfid = new id(this);
+//	wfid = new id(this);
 
 	prev1symbol = prev2symbol = 0;
 	prev1vector = prev2vector = complex(0.0, 0.0);

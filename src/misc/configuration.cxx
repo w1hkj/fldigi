@@ -95,6 +95,9 @@ configuration progdefaults = {
 	false,			// bool		viewXmtSignal;
 	false,			// bool		sendid;
 	false,			// bool		macroid;
+	false,			// bool		sendtextid;
+	"CQEM",			// string	strTextid;
+	false,			// bool		macrotextid;
 	0,				// int		QRZ;
 	"",				// string	QRZusername;
 	"",				// string	QRZuserpassword;
@@ -198,7 +201,7 @@ enum TAG { \
 	CLCOLORS,
 	CCCOLORS,
 	BWTCOLORS,
-	VIEWXMTSIGNAL, SENDID, MACROID,
+	VIEWXMTSIGNAL, SENDID, MACROID, SENDTEXTID,
 	QRZTYPE, QRZUSER, QRZPASSWORD,
 	BTNUSB, BTNPTTIS, BTNRTSDTRIS, BTNPTTREVIS,
 	RTSPTT, DTRPTT, RTSPLUS, DTRPLUS,
@@ -343,6 +346,7 @@ void configuration::writeDefaultsXML()
 	writeXMLbool(f, "VIEWXMTSIGNAL", viewXmtSignal);
 	writeXMLbool(f, "SENDID", sendid);
 	writeXMLbool(f, "MACROID", macroid);
+	writeXMLbool(f, "SENDTEXTID", sendtextid);
 	writeXMLint(f, "QRZTYPE", QRZ);
 	writeXMLstr(f, "QRZUSER", QRZusername);
 	writeXMLstr(f, "QRZPASSWORD", QRZuserpassword);
@@ -619,6 +623,9 @@ bool configuration::readDefaultsXML()
 					case MACROID :
 						macroid = atoi(xml->getNodeData());
 						break;
+					case SENDTEXTID :
+						sendtextid = atoi(xml->getNodeData());
+						break;
 					case QRZTYPE :
 						QRZ = atoi(xml->getNodeData());
 						break;
@@ -852,6 +859,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("VIEWXMTSIGNAL", nodeName)) 	tag = VIEWXMTSIGNAL;
 				else if (!strcmp("SENDID", nodeName)) 	tag = SENDID;
 				else if (!strcmp("MACROID", nodeName)) 	tag = MACROID;
+				else if (!strcmp("SENDTEXTID", nodeName))	tag = SENDTEXTID;
 				else if (!strcmp("QRZUSER", nodeName)) 	tag = QRZUSER;
 				else if (!strcmp("QRZPASSWORD", nodeName)) 	tag = QRZPASSWORD;
 				else if (!strcmp("QRZTYPE", nodeName)) 	tag = QRZTYPE;
@@ -1171,6 +1179,7 @@ int configuration::openDefaults() {
 			
 			btnRTTY_USB->value(RTTY_USB);
 			btnsendid->value(sendid);
+			btnsendvideotext->value(sendtextid);
 			
 			valRcvMixer->value(RcvMixer);
 			valXmtMixer->value(XmtMixer);

@@ -38,8 +38,8 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     } {
       Fl_Group tabOperator {
         label Oper
-        callback {progdefaults.changed = true;} open selected
-        xywh {0 25 400 195} color 51 selection_color 51 when 1
+        callback {progdefaults.changed = true;} open
+        xywh {0 25 400 195} color 51 selection_color 51 when 1 hide
       } {
         Fl_Input inpMyCallsign {
           label {Callsign:}
@@ -701,11 +701,11 @@ progdefaults.changed = true;}
       }
       Fl_Group {} {
         label Misc open
-        xywh {0 25 400 195} color 51 selection_color 51 hide
+        xywh {0 25 400 195} color 51 selection_color 51
       } {
         Fl_Group {} {
           label {Sweet Spot} open
-          xywh {5 30 390 90} box ENGRAVED_FRAME align 21
+          xywh {5 35 390 90} box ENGRAVED_FRAME align 21
         } {
           Fl_Value_Input valCWsweetspot {
             label CW
@@ -736,12 +736,6 @@ progdefaults.changed = true;}
             code0 {o->value(progdefaults.StartAtSweetSpot);}
           }
         }
-        Fl_Check_Button btnsendid {
-          label {Xmt Mode ID}
-          callback {progdefaults.sendid=o->value();
-progdefaults.changed = true;}
-          xywh {50 130 115 20} down_box DOWN_BOX
-        }
         Fl_Check_Button btntextwidgets {
           label {Alternative text widgets}
           callback {progdefaults.alt_text_widgets = o->value();
@@ -753,8 +747,32 @@ This option takes effect after a restart.} xywh {50 155 180 20} down_box DOWN_BO
           label {View Xmt Signal}
           callback {progdefaults.viewXmtSignal=o->value();
 progdefaults.changed = true;}
-          xywh {50 150 135 20} down_box DOWN_BOX
+          xywh {15 194 135 20} down_box DOWN_BOX
           code0 {o->value(progdefaults.viewXmtSignal);}
+        }
+        Fl_Group {} {open
+          xywh {5 125 390 60} box ENGRAVED_FRAME
+        } {
+          Fl_Check_Button btnsendid {
+            label {Xmt Mode ID}
+            callback {progdefaults.sendid=o->value();
+progdefaults.changed = true;}
+            xywh {15 133 115 20} down_box DOWN_BOX
+          }
+          Fl_Check_Button btnsendvideotext {
+            label {Xmt Video Text}
+            callback {progdefaults.sendtextid=o->value();
+progdefaults.changed = true;} selected
+            xywh {15 158 115 20} down_box DOWN_BOX
+            code0 {o->value(progdefaults.sendtextid);}
+          }
+          Fl_Input valVideotext {
+            label {Video Text:}
+            callback {progdefaults.strTextid = o->value();
+progdefaults.changed = true;}
+            tooltip {Limit to a few characters as in CQEM or IOTA etc.} xywh {162 158 94 20} align 5
+            code0 {o->value(progdefaults.strTextid.c_str());}
+          }
         }
       }
       Fl_Group tabModems {

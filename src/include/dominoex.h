@@ -53,8 +53,6 @@ public:
 		TX_STATE_FLUSH
 	};
 protected:
-// waterfall ID
-	id				*wfid;
 // common variables
 	double	phaseacc;
 	int		symlen;

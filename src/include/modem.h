@@ -3,6 +3,8 @@
 #ifndef	_MODEM_H
 #define	_MODEM_H
 
+#include <string>
+
 #include "threads.h"
 
 #include "misc.h"
@@ -13,6 +15,7 @@
 #include "fl_digi.h"
 #include "globals.h"
 #include "fl_digi.h"
+//#include "id.h"
 
 #include "config.h"
 
@@ -20,6 +23,7 @@
 // Constants for signal searching & s/n threshold
 #define SIGSEARCH 5
 
+struct idfntchr { char c; int byte[5]; };
 
 class modem {
 protected:
@@ -118,6 +122,8 @@ public:
 	void		ModulateXmtr(double *, int);
 	void		ModulateStereo(double *, double *, int);
 	
+	void		videoText();
+	
 	void		set_stopflag(bool b) { stopflag = b;};
 
 // for CW modem use only
@@ -131,6 +137,31 @@ public:
 	virtual	void		incWPM() {};
 	virtual void		decWPM() {};
 	virtual void		toggleWPM() {};
+	
+// for waterfall id transmission
+public:
+#define NUMROWS				5
+#define NUMCHARS			2
+#define NUMTONES			5
+#define TONESPACING			6
+#define IDSYMLEN			3072
+
+private:
+	
+	static	idfntchr	wfid_idch[];
+	static	int			wfid_mask[];
+	static  double		wfid_w[];
+	static  double		wfid_txpulse[];
+	static  double		wfid_outbuf[];
+	
+	void	wfid_make_pulse();
+	void	wfid_make_tones();
+	void	wfid_send(long int);
+	void	wfid_sendchars(std::string);
+
+public:
+	void	wfid_text(string s);
+
 };
 
 extern modem *cw_modem;

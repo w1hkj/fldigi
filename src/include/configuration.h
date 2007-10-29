@@ -91,6 +91,9 @@ struct configuration {
 	bool	viewXmtSignal;
 	bool	sendid;
 	bool	macroid;
+	bool	sendtextid;
+	string	strTextid;
+	bool	macrotextid;
 	int		QRZ;
 	string	QRZusername;
 	string	QRZuserpassword;

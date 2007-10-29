@@ -34,7 +34,7 @@
 #include "filters.h"
 #include "fftfilt.h"
 #include "digiscope.h"
-#include "id.h"
+//#include "id.h"
 #include "mbuffer.h"
 
 //#define	RTTY_SampleRate	8000
@@ -72,8 +72,6 @@ extern int _BITS[];
 
 class rtty : public modem {
 private:
-// waterfall ID
-	id				*wfid;
 
 	double shift;
 	int symbollen;

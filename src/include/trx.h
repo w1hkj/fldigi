@@ -35,8 +35,6 @@
 #include "globals.h"
 #include "fl_digi.h"
 
-
-
 // ----------------------------------------------------------------------------
 
 extern	void	trx_start_modem(modem *);

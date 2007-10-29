@@ -615,13 +615,6 @@ static void cb_btnStartAtSweetSpot(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *btnsendid=(Fl_Check_Button *)0;
-
-static void cb_btnsendid(Fl_Check_Button* o, void*) {
-  progdefaults.sendid=o->value();
-progdefaults.changed = true;
-}
-
 Fl_Check_Button *btntextwidgets=(Fl_Check_Button *)0;
 
 static void cb_btntextwidgets(Fl_Check_Button* o, void*) {
@@ -633,6 +626,27 @@ Fl_Check_Button *btnViewXmtSignal=(Fl_Check_Button *)0;
 
 static void cb_btnViewXmtSignal(Fl_Check_Button* o, void*) {
   progdefaults.viewXmtSignal=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnsendid=(Fl_Check_Button *)0;
+
+static void cb_btnsendid(Fl_Check_Button* o, void*) {
+  progdefaults.sendid=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnsendvideotext=(Fl_Check_Button *)0;
+
+static void cb_btnsendvideotext(Fl_Check_Button* o, void*) {
+  progdefaults.sendtextid=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Input *valVideotext=(Fl_Input *)0;
+
+static void cb_valVideotext(Fl_Input* o, void*) {
+  progdefaults.strTextid = o->value();
 progdefaults.changed = true;
 }
 
@@ -1012,6 +1026,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         o->selection_color((Fl_Color)51);
         o->callback((Fl_Callback*)cb_tabOperator);
         o->when(FL_WHEN_CHANGED);
+        o->hide();
         inpMyCallsign = new Fl_Input(78, 36, 85, 24, "Callsign:");
         { Fl_Input* o = inpMyName = new Fl_Input(78, 62, 120, 24, "Name:");
           o->callback((Fl_Callback*)cb_inpMyName);
@@ -1437,8 +1452,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { Fl_Group* o = new Fl_Group(0, 25, 400, 195, "Misc");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
-        o->hide();
-        { Fl_Group* o = new Fl_Group(5, 30, 390, 90, "Sweet Spot");
+        { Fl_Group* o = new Fl_Group(5, 35, 390, 90, "Sweet Spot");
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
           { Fl_Value_Input* o = valCWsweetspot = new Fl_Value_Input(50, 59, 65, 20, "CW");
@@ -1473,10 +1487,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           }
           o->end();
         }
-        { Fl_Check_Button* o = btnsendid = new Fl_Check_Button(50, 130, 115, 20, "Xmt Mode ID");
-          o->down_box(FL_DOWN_BOX);
-          o->callback((Fl_Callback*)cb_btnsendid);
-        }
         { Fl_Check_Button* o = btntextwidgets = new Fl_Check_Button(50, 155, 180, 20, "Alternative text widgets");
           o->tooltip("These widgets have full editing support but are slower.\nThis option takes ef\
 fect after a restart.");
@@ -1485,10 +1495,29 @@ fect after a restart.");
           o->callback((Fl_Callback*)cb_btntextwidgets);
           o->hide();
         }
-        { Fl_Check_Button* o = btnViewXmtSignal = new Fl_Check_Button(50, 150, 135, 20, "View Xmt Signal");
+        { Fl_Check_Button* o = btnViewXmtSignal = new Fl_Check_Button(15, 194, 135, 20, "View Xmt Signal");
           o->down_box(FL_DOWN_BOX);
           o->callback((Fl_Callback*)cb_btnViewXmtSignal);
           o->value(progdefaults.viewXmtSignal);
+        }
+        { Fl_Group* o = new Fl_Group(5, 125, 390, 60);
+          o->box(FL_ENGRAVED_FRAME);
+          { Fl_Check_Button* o = btnsendid = new Fl_Check_Button(15, 133, 115, 20, "Xmt Mode ID");
+            o->down_box(FL_DOWN_BOX);
+            o->callback((Fl_Callback*)cb_btnsendid);
+          }
+          { Fl_Check_Button* o = btnsendvideotext = new Fl_Check_Button(15, 158, 115, 20, "Xmt Video Text");
+            o->down_box(FL_DOWN_BOX);
+            o->callback((Fl_Callback*)cb_btnsendvideotext);
+            o->value(progdefaults.sendtextid);
+          }
+          { Fl_Input* o = valVideotext = new Fl_Input(162, 158, 94, 20, "Video Text:");
+            o->tooltip("Limit to a few characters as in CQEM or IOTA etc.");
+            o->callback((Fl_Callback*)cb_valVideotext);
+            o->align(FL_ALIGN_TOP_LEFT);
+            o->value(progdefaults.strTextid.c_str());
+          }
+          o->end();
         }
         o->end();
       }

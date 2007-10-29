@@ -24,8 +24,10 @@
 #ifndef _ID_H
 #define _ID_H
 
-#include "trx.h"
+#include <string>
 #include "complex.h"
+
+using namespace std;
 
 struct idfntchr { char c; int byte[5]; };
 
@@ -38,7 +40,6 @@ public:
 #define IDSYMLEN			3072
 
 private:
-	modem	*mode;
 	
 	static	idfntchr idch[];
 	static	int mask[];
@@ -46,15 +47,15 @@ private:
 	static  double	txpulse[];
 	static  double	outbuf[];
 	
-	void	make_pulse();
-	void	make_tones();
+	void	make_pulse(double samplerate);
+	void	make_tones(double frequency, double samplerate);
 	void	send(long int);
 	void	sendchars(std::string);
 
 public:
-	id(modem *md);
+	id();
 	~id();
-	void	transmit(trx_mode mode);
+	void	text(string s, double frequency, int samplerate);
 };
 
 #endif

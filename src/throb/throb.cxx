@@ -42,12 +42,7 @@ void  throb::tx_init(cSound *sc)
 	scard = sc;
 	preamble = 4;
 	reset_syms();
-	if (trx_state != STATE_TUNE && progdefaults.sendid == true)
-		wfid->transmit(mode);
-	else if (trx_state != STATE_TUNE && progdefaults.macroid == true) {
-		wfid->transmit(mode);
-		progdefaults.macroid = false;
-	}
+	videoText();
 }
 
 void  throb::rx_init()
@@ -79,7 +74,7 @@ throb::~throb()
 	if (outbuf) delete[] outbuf;
 	for (int i = 0; i < num_tones; i++)
 		if (rxtone[i]) delete [] rxtone[i];
-	if (wfid) delete wfid;
+//	if (wfid) delete wfid;
 }
 
 void throb::flip_syms() //call this whenever a space or idle is sent or received
@@ -233,7 +228,7 @@ throb::throb(trx_mode throb_mode) : modem()
 	syncpos = 0.5;
 
 	scope_data	= new double [SCOPE_DATA_LEN];
-	wfid = new id(this);
+//	wfid = new id(this);
 	
 	phaseacc = 0.0;
 	metric = 0.0;

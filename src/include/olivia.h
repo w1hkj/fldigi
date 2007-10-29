@@ -29,13 +29,10 @@
 #define _OLIVIA_H
 
 #include "trx.h"
-#include "id.h"
 #include "jalocha/pj_mfsk.h"
 
 class olivia : public modem {
 private:
-// waterfall ID
-	id				*wfid;
 
 	MFSK_Transmitter < float >*Tx;
 	MFSK_Receiver < float >*Rx;

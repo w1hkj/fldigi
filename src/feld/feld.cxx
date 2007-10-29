@@ -49,12 +49,7 @@ void feld::tx_init(cSound *sc)
 	tx_state = PREAMBLE;
 	preamble = 3;
 	prevsymb = false;
-	if (trx_state != STATE_TUNE && progdefaults.sendid == true)
-		wfid->transmit(mode);
-	else if (trx_state != STATE_TUNE && progdefaults.macroid == true) {
-		wfid->transmit(mode);
-		progdefaults.macroid = false;
-	}
+	videoText();
 	return;
 }
 
@@ -84,7 +79,7 @@ feld::~feld()
 	if (hilbert) delete hilbert;
 	if (bpfilt) delete bpfilt;
 	if (bbfilt) delete bbfilt;
-	if (wfid) delete wfid;
+//	if (wfid) delete wfid;
 }
 
 feld::feld(trx_mode m)
@@ -124,7 +119,7 @@ feld::feld(trx_mode m)
 	
 	blackboard = false;
 	hardkeying = false;
-	wfid = new id(this);
+//	wfid = new id(this);
 
 	rxphacc = 0.0;
 	txphacc = 0.0;

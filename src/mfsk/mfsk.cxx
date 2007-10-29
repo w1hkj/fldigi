@@ -56,12 +56,7 @@ void  mfsk::tx_init(cSound *sc)
 	txstate = TX_STATE_PREAMBLE;
 	bitstate = 0;
 	counter = 0;
-	if (trx_state != STATE_TUNE && progdefaults.sendid == true)
-		wfid->transmit(mode);
-	else if (trx_state != STATE_TUNE && progdefaults.macroid == true) {
-		wfid->transmit(mode);
-		progdefaults.macroid = false;
-	}
+	videoText();
 }
 
 void  mfsk::rx_init()
@@ -98,7 +93,7 @@ mfsk::~mfsk()
 	if (pipe) delete [] pipe;
 	if (hbfilt) delete hbfilt;
 	if (binsfft) delete binsfft;
-	if (wfid) delete wfid;
+//	if (wfid) delete wfid;
 }
 
 mfsk::mfsk(trx_mode mfsk_mode) : modem()
@@ -157,7 +152,7 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 	samplerate = MFSKSampleRate;
 	fragmentsize = symlen;
 	bandwidth = (numtones - 1) * tonespacing;
-	wfid = new id(this);
+//	wfid = new id(this);
 	
 	picRxWin = 0;
 	picRxBox = 0;

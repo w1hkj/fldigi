@@ -73,12 +73,7 @@ void olivia::tx_init(cSound *sc)
 		Tx->Reverse = 0; 
 	}
 
-	if (trx_state != STATE_TUNE && progdefaults.sendid == true)
-		wfid->transmit(mode);
-	else if (trx_state != STATE_TUNE && progdefaults.macroid == true) {
-		wfid->transmit(mode);
-		progdefaults.macroid = false;
-	}
+	videoText();
 
 	Tx->Preset();
 	Tx->Start();
@@ -356,7 +351,7 @@ olivia::olivia()
 	FL_UNLOCK();
 
 	mode = MODE_OLIVIA;
-	wfid = new id(this);
+//	wfid = new id(this);
 	init();
 }
 
@@ -367,6 +362,6 @@ olivia::~olivia()
 	if (txbuffer) delete [] txbuffer;
 	if (txfbuffer) delete [] txfbuffer;
 	if (rxbuffer) delete [] rxbuffer;
-	if (wfid) delete wfid;
+//	if (wfid) delete wfid;
 }
 

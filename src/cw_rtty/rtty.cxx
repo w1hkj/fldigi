@@ -43,12 +43,7 @@ void rtty::tx_init(cSound *sc)
 	scard = sc;
 	phaseacc = 0;
 	preamble = 20;
-	if (trx_state != STATE_TUNE && progdefaults.sendid == true)
-		wfid->transmit(mode);
-	else if (trx_state != STATE_TUNE && progdefaults.macroid == true) {
-		wfid->transmit(mode);
-		progdefaults.macroid = false;
-	}
+	videoText();
 }
 
 void rtty::rx_init()
@@ -83,7 +78,7 @@ void rtty::init()
 rtty::~rtty()
 {
 	if (hilbert) delete hilbert;
-	if (wfid) delete wfid;
+//	if (wfid) delete wfid;
 	if (bitfilt) delete bitfilt;
 }
 
@@ -160,7 +155,7 @@ rtty::rtty(trx_mode tty_mode)
 	
 	hilbert = new C_FIR_filter();
 	hilbert->init_hilbert(37, 1);
-	wfid = new id(this);
+//	wfid = new id(this);
 
 	restart();
 }
