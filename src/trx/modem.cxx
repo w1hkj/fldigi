@@ -200,7 +200,7 @@ void modem::ModulateXmtr(double *buffer, int len)
 	if (!progdefaults.viewXmtSignal)
 		return;
 	for (int i = 0; i < len; i++) {
-            _mdm_scdbl[scptr] = buffer[i];
+		_mdm_scdbl[scptr] = buffer[i] * 0.5;
 		scptr++;
 		if (scptr == 512) {
 			QUEUE(CMP_CB(&waterfall::sig_data, wf, _mdm_scdbl.c_array(), 512)); //wf->sig_data(scdata, 512);
@@ -217,7 +217,7 @@ void modem::ModulateStereo(double *left, double *right, int len)
 	if (!progdefaults.viewXmtSignal)
 		return;
 	for (int i = 0; i < len; i++) {
-            _mdm_scdbl[scptr] = left[i];
+		_mdm_scdbl[scptr] = left[i] * 0.5;
 		scptr++;
 		if (scptr == 512) {
 			QUEUE(CMP_CB(&waterfall::sig_data, wf, _mdm_scdbl.c_array(), 512)); //wf->sig_data(scdata, 512);
@@ -249,9 +249,11 @@ void modem::videoText()
 //=====================================================================
 // transmit processing of waterfall video id
 //=====================================================================
-#define NUMCHARS			1
+//#define progdefaults.videowidth			3
+#define MAXCHARS			4
 #define NUMCOLS				8
 #define NUMROWS				14
+#define CHARSPACE			2
 #define TONESPACING			8
 #define IDSYMLEN			4096
 #define RISETIME			20
@@ -271,12 +273,14 @@ void modem::wfid_make_pulse()
 
 void modem::wfid_make_tones()
 {
-	double f = frequency + (TONESPACING * (NUMCOLS - 1)) / 2.0;
-	for (int i = 0; i < NUMCOLS; i++) {
+	double f;
+	f = frequency + TONESPACING * ( progdefaults.videowidth * ((NUMCOLS - 1)) / 2.0 + (progdefaults.videowidth - 1) * CHARSPACE);
+	for (int i = 0; i < NUMCOLS * progdefaults.videowidth; i++) {
 		wfid_w[i] = f * 2.0 * M_PI / samplerate;
 		f -= TONESPACING;
 		if ( (i > 0) && (i % NUMCOLS == 0) )
-			f -= TONESPACING;
+			f -= TONESPACING * CHARSPACE;
+cout << f << endl;
 	}
 }
 
@@ -288,7 +292,7 @@ void modem::wfid_send(long int symbol)
 	for (i = 0; i < IDSYMLEN; i++) {
 		wfid_outbuf[i] = 0.0;
 		sym = symbol;
-		for (j = 0; j < NUMCOLS; j++) {
+		for (j = 0; j < NUMCOLS * progdefaults.videowidth; j++) {
 			if (sym & 1 == 1)
 				wfid_outbuf[i] += (msk & 1 == 1 ? -1 : 1 ) * sin(wfid_w[j] * i)* wfid_txpulse[i];
 			sym = sym >> 1;
@@ -296,7 +300,7 @@ void modem::wfid_send(long int symbol)
 		}
 	}
 	for (i = 0; i < IDSYMLEN; i++)
-		wfid_outbuf[i] = wfid_outbuf[i] / NUMCOLS;
+		wfid_outbuf[i] = wfid_outbuf[i] / (NUMCOLS * progdefaults.videowidth);
 		
 	ModulateXmtr(wfid_outbuf, IDSYMLEN);
 }
@@ -311,6 +315,36 @@ void modem::wfid_sendchar(char c)
 	for (int row = 0; row < NUMROWS; row++) {
 		symbol = (idch[c].byte[NUMROWS - 1 -row]) >> (16 - NUMCOLS);
 		wfid_send (symbol);
+		if (stopflag)
+			return;
+	}
+}
+
+void modem::wfid_sendchars(string s)
+{
+	long int symbol;
+	int  len = s.length();
+	int  n[progdefaults.videowidth];
+	int  c;
+	while (len++ < progdefaults.videowidth) s.insert(0," ");
+
+	for (int i = 0; i < progdefaults.videowidth; i++) {
+		c = s[i];
+		if (c > 'z' || c < ' ') c = ' ';
+		c = toupper(c) - ' ';
+		n[i] = c;
+	}
+// send rows from bottom to top so they appear to scroll down the waterfall correctly
+	for (int row = 0; row < NUMROWS; row++) {
+		symbol = 0;
+		for (int i = 0; i < progdefaults.videowidth; i++) {
+			symbol |= (idch[n[i]].byte[NUMROWS - 1 -row] >> (16 - NUMCOLS));
+			if (i != (progdefaults.videowidth - 1) )
+				symbol = symbol << NUMCOLS;
+		}
+		wfid_send (symbol);
+		if (stopflag)
+			return;
 	}
 }
 
@@ -324,16 +358,30 @@ void modem::wfid_text(string s)
 	wfid_make_tones();
 	
 	put_status(video.c_str());
-	
-	for (int i = len - 1; i >= 0; i--) {
-		wfid_sendchar(s[i]);
+
+	if (progdefaults.videowidth == 1) {
+		for (int i = len - 1; i >= 0; i--) {
+			wfid_sendchar(s[i]);
+		}
+	} else {
+		int numlines = 0;
+		string tosend;
+		while (numlines < len) numlines += progdefaults.videowidth;
+		numlines -= progdefaults.videowidth;
+		while (numlines >= 0) {
+			tosend = s.substr(numlines, progdefaults.videowidth);
+			wfid_sendchars(tosend);
+			numlines -= progdefaults.videowidth;
+			if (stopflag)
+				break;
+		}
 	}
 	put_status("");
 }
 
 double	modem::wfid_txpulse[IDSYMLEN];
 double	modem::wfid_outbuf[IDSYMLEN];
-double  modem::wfid_w[NUMCOLS];
+double  modem::wfid_w[NUMCOLS * MAXCHARS];
 
 mfntchr idch[] = {
 {' ', { 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000 }, },

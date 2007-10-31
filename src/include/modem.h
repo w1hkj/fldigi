@@ -153,6 +153,7 @@ private:
 	int 	findmask(int symbol);
 
 	void	wfid_sendchar(char c);
+	void	wfid_sendchars(string s);
 
 public:
 	void	wfid_text(string s);

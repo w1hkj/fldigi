@@ -97,6 +97,7 @@ configuration progdefaults = {
 	false,			// bool		macroid;
 	false,			// bool		sendtextid;
 	"CQ",			// string	strTextid;
+	2,				// int		videowidth;
 	false,			// bool		macrotextid;
 	0,				// int		QRZ;
 	"",				// string	QRZusername;
@@ -201,7 +202,7 @@ enum TAG { \
 	CLCOLORS,
 	CCCOLORS,
 	BWTCOLORS,
-	VIEWXMTSIGNAL, SENDID, MACROID, SENDTEXTID, STRTEXTID,
+	VIEWXMTSIGNAL, SENDID, MACROID, SENDTEXTID, STRTEXTID, VIDEOWIDTH,
 	QRZTYPE, QRZUSER, QRZPASSWORD,
 	BTNUSB, BTNPTTIS, BTNRTSDTRIS, BTNPTTREVIS,
 	RTSPTT, DTRPTT, RTSPLUS, DTRPLUS,
@@ -348,6 +349,7 @@ void configuration::writeDefaultsXML()
 	writeXMLbool(f, "MACROID", macroid);
 	writeXMLbool(f, "SENDTEXTID", sendtextid);
 	writeXMLstr(f, "STRTEXTID", strTextid);
+	writeXMLint(f, "VIDEOWIDTH", videowidth);
 	writeXMLint(f, "QRZTYPE", QRZ);
 	writeXMLstr(f, "QRZUSER", QRZusername);
 	writeXMLstr(f, "QRZPASSWORD", QRZuserpassword);
@@ -629,6 +631,8 @@ bool configuration::readDefaultsXML()
 						break;
 					case STRTEXTID :
 						strTextid = xml->getNodeData();
+					case VIDEOWIDTH :
+						videowidth = atoi(xml->getNodeData());
 					case QRZTYPE :
 						QRZ = atoi(xml->getNodeData());
 						break;
@@ -864,6 +868,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("MACROID", nodeName)) 	tag = MACROID;
 				else if (!strcmp("SENDTEXTID", nodeName))	tag = SENDTEXTID;
 				else if (!strcmp("STRTEXTID", nodeName))	tag = STRTEXTID;
+				else if (!strcmp("VIDEOWIDTH", nodeName))	tag = VIDEOWIDTH;
 				else if (!strcmp("QRZUSER", nodeName)) 	tag = QRZUSER;
 				else if (!strcmp("QRZPASSWORD", nodeName)) 	tag = QRZPASSWORD;
 				else if (!strcmp("QRZTYPE", nodeName)) 	tag = QRZTYPE;

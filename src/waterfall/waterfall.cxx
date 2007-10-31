@@ -1242,17 +1242,9 @@ int waterfall::handle(int event) {
 			case FL_MIDDLE_MOUSE:
 				if (event == FL_DRAG)
 					break;
-				bool toggle = !active_modem->get_afcOnOff();
-				active_modem->set_afcOnOff(toggle);
-//				extern  Fl_Light_Button *afconoff;
-//				extern	Fl_Check_Button *chk_afconoff;
-//				extern  bool useCheckButtons;
-//				extern Fl_Light_Button *afconoff;
-				if (useCheckButtons)
-					chk_afconoff->value(toggle);
-				else
-					afconoff->value(toggle);
-				break;
+				Fl_Button *b = useCheckButtons ? chk_afconoff : afconoff;
+				b->value(!active_modem->get_afcOnOff());
+				b->do_callback();
 			}
 			break;
 		case FL_RELEASE:
