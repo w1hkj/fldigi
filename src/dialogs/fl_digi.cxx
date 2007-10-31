@@ -694,6 +694,24 @@ void cb_mnuConfigWaterfall(Fl_Menu_*, void*) {
 	dlgConfig->show();
 }
 
+void cb_mnuConfigVideo(Fl_Menu_*, void*) {
+	progdefaults.loadDefaults();
+	tabsConfigure->value(tabVideo);
+	dlgConfig->show();
+}
+
+void cb_mnuConfigQRZ(Fl_Menu_*, void*) {
+	progdefaults.loadDefaults();
+	tabsConfigure->value(tabQRZ);
+	dlgConfig->show();
+}
+
+void cb_mnuConfigMisc(Fl_Menu_*, void*) {
+	progdefaults.loadDefaults();
+	tabsConfigure->value(tabMisc);
+	dlgConfig->show();
+}
+
 void cb_mnuConfigRigCtrl(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabRig);
@@ -1216,26 +1234,29 @@ Fl_Menu_Item menu_[] = {
 {"Defaults",  0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 49
 {"Fonts", 0, (Fl_Callback*)cb_mnuConfigFonts, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 50
 {"Operator", 0, (Fl_Callback*)cb_mnuConfigOperator, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 51
-{"Rig Ctrl", 0, (Fl_Callback*)cb_mnuConfigRigCtrl, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 52
-{"Sound Card", 0, (Fl_Callback*)cb_mnuConfigSoundCard, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 53
-{"Waterfall", 0,  (Fl_Callback*)cb_mnuConfigWaterfall, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 54
-{0,0,0,0,0,0,0,0,0}, // 55
-{"Modems", 0, (Fl_Callback*)cb_mnuConfigModems, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 56
-{"Save Config", 0, (Fl_Callback*)cb_mnuSaveConfig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 57
+{"Waterfall", 0,  (Fl_Callback*)cb_mnuConfigWaterfall, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 52
+{"Video", 0,  (Fl_Callback*)cb_mnuConfigVideo, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 53
+{"Rig Ctrl", 0, (Fl_Callback*)cb_mnuConfigRigCtrl, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 54
+{"QRZ", 0,  (Fl_Callback*)cb_mnuConfigQRZ, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 55
+{"Sound Card", 0, (Fl_Callback*)cb_mnuConfigSoundCard, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 56
+{"Misc", 0,  (Fl_Callback*)cb_mnuConfigMisc, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 57
 {0,0,0,0,0,0,0,0,0}, // 58
-{"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0}, // 59
-{"Rig", 0, (Fl_Callback*)cb_mnuRig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 60
-{"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0}, // 61
-{"Help", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 62
-{"About", 0, (Fl_Callback*)cb_mnuAbout, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 63
-{0,0,0,0,0,0,0,0,0}, // 64
-{"  ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0}, // 65
-{"Wav", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 66
-{"Rx capture",  0, (Fl_Callback*)cb_mnuCapture,  0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//67
-{"Tx generate", 0, (Fl_Callback*)cb_mnuGenerate, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//68
-{"Playback",    0, (Fl_Callback*)cb_mnuPlayback, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//69
-{0,0,0,0,0,0,0,0,0}, // 70
-{0,0,0,0,0,0,0,0,0}, // 71
+{"Modems", 0, (Fl_Callback*)cb_mnuConfigModems, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 59
+{"Save Config", 0, (Fl_Callback*)cb_mnuSaveConfig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 60
+{0,0,0,0,0,0,0,0,0}, // 61
+{"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0}, // 62
+{"Rig", 0, (Fl_Callback*)cb_mnuRig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 63
+{"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0}, // 64
+{"Help", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 65
+{"About", 0, (Fl_Callback*)cb_mnuAbout, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 66
+{0,0,0,0,0,0,0,0,0}, // 67
+{"  ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0}, // 68
+{"Wav", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 69
+{"Rx capture",  0, (Fl_Callback*)cb_mnuCapture,  0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//70
+{"Tx generate", 0, (Fl_Callback*)cb_mnuGenerate, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//71
+{"Playback",    0, (Fl_Callback*)cb_mnuPlayback, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//72
+{0,0,0,0,0,0,0,0,0}, // 73
+{0,0,0,0,0,0,0,0,0}, // 74
 };
 
 Fl_Menu_Bar *mnu;
@@ -1244,22 +1265,13 @@ void activate_rig_menu_item(bool b)
 {
 	if (b) {
 		bSaveFreqList = true;
-		menu_[60].activate();
+		menu_[63].activate();
 		
 	} else {
-		menu_[60].deactivate();
+		menu_[63].deactivate();
 		if (rigcontrol)
 			rigcontrol->hide();
 	}
-	mnu->redraw();
-}
-
-void activate_test_menu_item(bool b)
-{
-	if (b)
-		menu_[60].show();
-	else
-		menu_[60].hide();
 	mnu->redraw();
 }
 
