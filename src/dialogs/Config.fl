@@ -38,8 +38,8 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     } {
       Fl_Group tabOperator {
         label Oper
-        callback {progdefaults.changed = true;} open selected
-        xywh {0 25 400 195} color 51 selection_color 51 when 1
+        callback {progdefaults.changed = true;} open
+        xywh {0 25 400 195} color 51 selection_color 51 when 1 hide
       } {
         Fl_Input inpMyCallsign {
           label {Callsign:}
@@ -294,7 +294,7 @@ progdefaults.changed = true;
           }
         }
       }
-      Fl_Group {} {
+      Fl_Group tabVideo {
         label Video open
         xywh {0 25 400 195} color 51 selection_color 51 hide
       } {
@@ -545,7 +545,7 @@ progdefaults.changed = true;}
           xywh {262 190 80 24}
         }
       }
-      Fl_Group {} {
+      Fl_Group tabQRZ {
         label QRZ open
         xywh {0 25 400 195} color 51 selection_color 51 hide
       } {
@@ -742,9 +742,9 @@ progdefaults.changed = true;}
           }
         }
       }
-      Fl_Group {} {
-        label Misc open
-        xywh {0 25 400 195} color 51 selection_color 51 hide
+      Fl_Group tabMisc {
+        label Misc open selected
+        xywh {0 25 400 195} color 51 selection_color 51
       } {
         Fl_Group {} {
           label {Sweet Spot} open

@@ -237,6 +237,8 @@ progdefaults.changed = true;
 };
 }
 
+Fl_Group *tabVideo=(Fl_Group *)0;
+
 Fl_Check_Button *btnsendid=(Fl_Check_Button *)0;
 
 static void cb_btnsendid(Fl_Check_Button* o, void*) {
@@ -451,6 +453,8 @@ static void cb_btnInit_Interface(Fl_Button*, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Group *tabQRZ=(Fl_Group *)0;
+
 Fl_Check_Button *btnQRZnotavailable=(Fl_Check_Button *)0;
 
 static void cb_btnQRZnotavailable(Fl_Check_Button* o, void*) {
@@ -621,6 +625,8 @@ static void cb_btnMixer(Fl_Check_Button* o, void*) {
   enableMixer(o->value());
 progdefaults.changed = true;
 }
+
+Fl_Group *tabMisc=(Fl_Group *)0;
 
 Fl_Value_Input *valCWsweetspot=(Fl_Value_Input *)0;
 
@@ -1033,6 +1039,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         o->selection_color((Fl_Color)51);
         o->callback((Fl_Callback*)cb_tabOperator);
         o->when(FL_WHEN_CHANGED);
+        o->hide();
         inpMyCallsign = new Fl_Input(78, 36, 85, 24, "Callsign:");
         { Fl_Input* o = inpMyName = new Fl_Input(78, 62, 120, 24, "Name:");
           o->callback((Fl_Callback*)cb_inpMyName);
@@ -1209,7 +1216,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         }
         o->end();
       }
-      { Fl_Group* o = new Fl_Group(0, 25, 400, 195, "Video");
+      { Fl_Group* o = tabVideo = new Fl_Group(0, 25, 400, 195, "Video");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
         o->hide();
@@ -1376,7 +1383,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         }
         o->end();
       }
-      { Fl_Group* o = new Fl_Group(0, 25, 400, 195, "QRZ");
+      { Fl_Group* o = tabQRZ = new Fl_Group(0, 25, 400, 195, "QRZ");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
         o->hide();
@@ -1498,10 +1505,9 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         }
         o->end();
       }
-      { Fl_Group* o = new Fl_Group(0, 25, 400, 195, "Misc");
+      { Fl_Group* o = tabMisc = new Fl_Group(0, 25, 400, 195, "Misc");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
-        o->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 390, 90, "Sweet Spot");
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
