@@ -1082,8 +1082,8 @@ void afconoff_cb(Fl_Widget *w, void *vi)
 //	Fl_Light_Button *b = (Fl_Light_Button *)w;
 	int v = b->value();
 	FL_UNLOCK_D();
-	active_modem->set_afcOnOff( v ? true : false );
-	progdefaults.afconoff = v ? true : false;
+	active_modem->set_afcOnOff(v);
+	progdefaults.afconoff = v;
 }
 
 void sqlonoff_cb(Fl_Widget *w, void *vi)
