@@ -93,6 +93,7 @@ struct configuration {
 	bool	macroid;
 	bool	sendtextid;
 	string	strTextid;
+	int		videowidth;
 	bool	macrotextid;
 	int		QRZ;
 	string	QRZusername;

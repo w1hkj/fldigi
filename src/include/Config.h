@@ -42,6 +42,12 @@ extern Fl_Check_Button *btnUseCursorCenterLine;
 extern Fl_Button *btnCursorBWcolor;
 extern Fl_Button *btnCursorCenterLineColor;
 extern Fl_Button *btnBwTracksColor;
+extern Fl_Check_Button *btnsendid;
+extern Fl_Check_Button *btnsendvideotext;
+extern Fl_Input *valVideotext;
+#include <FL/Fl_Value_Slider.H>
+extern Fl_Value_Slider *sldrVideowidth;
+extern Fl_Check_Button *btnViewXmtSignal;
 extern Fl_Group *tabRig;
 #include <FL/Fl_Round_Button.H>
 extern Fl_Input *inpTTYdev;
@@ -81,7 +87,6 @@ extern Fl_Group *tabMixer;
 extern void setMixerInput(int);
 extern Fl_Light_Button *btnLineIn;
 extern Fl_Light_Button *btnMicIn;
-#include <FL/Fl_Value_Slider.H>
 extern void setPCMvolume(double);
 extern Fl_Value_Slider *valPCMvolume;
 extern Fl_Input_Choice *menuMix;
@@ -92,10 +97,6 @@ extern Fl_Value_Input *valRTTYsweetspot;
 extern Fl_Value_Input *valPSKsweetspot;
 extern Fl_Check_Button *btnStartAtSweetSpot;
 extern Fl_Check_Button *btntextwidgets;
-extern Fl_Check_Button *btnViewXmtSignal;
-extern Fl_Check_Button *btnsendid;
-extern Fl_Check_Button *btnsendvideotext;
-extern Fl_Input *valVideotext;
 extern Fl_Group *tabModems;
 extern Fl_Tabs *tabsModems;
 extern Fl_Group *tabCW;

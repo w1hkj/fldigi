@@ -34,12 +34,12 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     xywh {527 153 400 255} type Double color 45 selection_color 51 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
-      xywh {0 0 433 220} color 47 selection_color 9
+      xywh {0 0 400 220} color 47 selection_color 9
     } {
       Fl_Group tabOperator {
         label Oper
-        callback {progdefaults.changed = true;} open
-        xywh {0 25 400 195} color 51 selection_color 51 when 1 hide
+        callback {progdefaults.changed = true;} open selected
+        xywh {0 25 400 195} color 51 selection_color 51 when 1
       } {
         Fl_Input inpMyCallsign {
           label {Callsign:}
@@ -86,7 +86,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabWaterfall {
         label {W-fall} open
-        xywh {0 25 433 195} color 51 selection_color 51 hide
+        xywh {0 25 400 195} color 51 selection_color 51 hide
       } {
         Fl_Tabs {} {open
           xywh {0 25 405 195}
@@ -292,6 +292,49 @@ progdefaults.changed = true;
               }
             }
           }
+        }
+      }
+      Fl_Group {} {
+        label Video open
+        xywh {0 25 400 195} color 51 selection_color 51 hide
+      } {
+        Fl_Group {} {open
+          xywh {5 40 390 60} box ENGRAVED_FRAME
+        } {
+          Fl_Check_Button btnsendid {
+            label {Xmt Mode ID}
+            callback {progdefaults.sendid=o->value();
+progdefaults.changed = true;}
+            xywh {15 48 115 20} down_box DOWN_BOX
+          }
+          Fl_Check_Button btnsendvideotext {
+            label {Xmt Video Text}
+            callback {progdefaults.sendtextid=o->value();
+progdefaults.changed = true;}
+            xywh {15 73 115 20} down_box DOWN_BOX
+            code0 {o->value(progdefaults.sendtextid);}
+          }
+          Fl_Input valVideotext {
+            label {Video Text:}
+            callback {progdefaults.strTextid = o->value();
+progdefaults.changed = true;}
+            tooltip {Limit to a few characters as in CQEM or IOTA etc.} xywh {162 73 94 20} align 5
+            code0 {o->value(progdefaults.strTextid.c_str());}
+          }
+          Fl_Value_Slider sldrVideowidth {
+            label {Video Width:}
+            callback {progdefaults.videowidth = (int)o->value();
+progdefaults.changed = true;}
+            tooltip {Set the \# of chars per row} xywh {270 73 101 20} type Horizontal color 26 align 1 minimum 1 maximum 4 step 1 value 2 textsize 14
+            code0 {o->value(progdefaults.videowidth);}
+          }
+        }
+        Fl_Check_Button btnViewXmtSignal {
+          label {View Xmt Signal}
+          callback {progdefaults.viewXmtSignal=o->value();
+progdefaults.changed = true;}
+          xywh {15 110 135 20} down_box DOWN_BOX
+          code0 {o->value(progdefaults.viewXmtSignal);}
         }
       }
       Fl_Group tabRig {
@@ -701,7 +744,7 @@ progdefaults.changed = true;}
       }
       Fl_Group {} {
         label Misc open
-        xywh {0 25 400 195} color 51 selection_color 51
+        xywh {0 25 400 195} color 51 selection_color 51 hide
       } {
         Fl_Group {} {
           label {Sweet Spot} open
@@ -743,41 +786,10 @@ progdefaults.changed = true;}
           tooltip {These widgets have full editing support but are slower.
 This option takes effect after a restart.} xywh {50 155 180 20} down_box DOWN_BOX value 1 hide
         }
-        Fl_Check_Button btnViewXmtSignal {
-          label {View Xmt Signal}
-          callback {progdefaults.viewXmtSignal=o->value();
-progdefaults.changed = true;}
-          xywh {15 194 135 20} down_box DOWN_BOX
-          code0 {o->value(progdefaults.viewXmtSignal);}
-        }
-        Fl_Group {} {open
-          xywh {5 125 390 60} box ENGRAVED_FRAME
-        } {
-          Fl_Check_Button btnsendid {
-            label {Xmt Mode ID}
-            callback {progdefaults.sendid=o->value();
-progdefaults.changed = true;}
-            xywh {15 133 115 20} down_box DOWN_BOX
-          }
-          Fl_Check_Button btnsendvideotext {
-            label {Xmt Video Text}
-            callback {progdefaults.sendtextid=o->value();
-progdefaults.changed = true;} selected
-            xywh {15 158 115 20} down_box DOWN_BOX
-            code0 {o->value(progdefaults.sendtextid);}
-          }
-          Fl_Input valVideotext {
-            label {Video Text:}
-            callback {progdefaults.strTextid = o->value();
-progdefaults.changed = true;}
-            tooltip {Limit to a few characters as in CQEM or IOTA etc.} xywh {162 158 94 20} align 5
-            code0 {o->value(progdefaults.strTextid.c_str());}
-          }
-        }
       }
       Fl_Group tabModems {
-        label Modems open
-        xywh {0 25 401 195} color 51 selection_color 51 hide
+        label Modem open
+        xywh {0 25 400 195} color 51 selection_color 51 hide
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 401 195} color 51 selection_color 10 align 9
@@ -909,7 +921,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabDomEX {
             label DomEX open
-            xywh {0 50 401 170} color 51 selection_color 51 hide
+            xywh {0 50 400 170} color 51 selection_color 51 hide
           } {
             Fl_Input txtSecondary {
               label {Secondary Text}
@@ -1026,7 +1038,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabPSK {
             label Psk open
-            xywh {0 50 400 170}
+            xywh {0 50 400 170} hide
           } {
             Fl_Counter cntSearchRange {
               label {Search Range}
@@ -1057,7 +1069,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabRTTY {
             label RTTY open
-            xywh {0 50 400 170} color 51 selection_color 51 hide
+            xywh {0 50 400 170} color 51 selection_color 51
           } {
             Fl_Choice selShift {
               label Shift
