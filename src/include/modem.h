@@ -23,8 +23,6 @@
 // Constants for signal searching & s/n threshold
 #define SIGSEARCH 5
 
-struct idfntchr { char c; int byte[5]; };
-
 class modem {
 protected:
 	trx_mode mode;
@@ -140,15 +138,9 @@ public:
 	
 // for waterfall id transmission
 public:
-#define NUMROWS				5
-#define NUMCHARS			2
-#define NUMTONES			5
-#define TONESPACING			6
-#define IDSYMLEN			3072
 
 private:
 	
-	static	idfntchr	wfid_idch[];
 	static	int			wfid_mask[];
 	static  double		wfid_w[];
 	static  double		wfid_txpulse[];
@@ -157,7 +149,10 @@ private:
 	void	wfid_make_pulse();
 	void	wfid_make_tones();
 	void	wfid_send(long int);
-	void	wfid_sendchars(std::string);
+	double	peakval(int symbol, int mask);
+	int 	findmask(int symbol);
+
+	void	wfid_sendchar(char c);
 
 public:
 	void	wfid_text(string s);
