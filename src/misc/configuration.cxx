@@ -97,7 +97,7 @@ configuration progdefaults = {
 	false,			// bool		macroid;
 	false,			// bool		sendtextid;
 	"CQ",			// string	strTextid;
-	2,				// int		videowidth;
+	1,				// int		videowidth;
 	false,			// bool		macrotextid;
 	0,				// int		QRZ;
 	"",				// string	QRZusername;
@@ -150,7 +150,7 @@ configuration progdefaults = {
 	true,			// bool		LineIn;
 	false,			// bool		EnableMixer;
 	true,			// bool 	MuteInput;
-	50.0,			// double	PCMvolume
+	80.0,			// double	PCMvolume
 	{{  0,  0,  0},{  0,  0,  62},{  0,  0,126}, // default palette
 	 {  0,  0,214},{145,142,  96},{181,184, 48},
 	 {223,226,105},{254,254,   4},{255, 58,  0} },
@@ -1193,22 +1193,21 @@ int configuration::openDefaults() {
 			valRcvMixer->value(RcvMixer);
 			valXmtMixer->value(XmtMixer);
 			valPCMvolume->value(PCMvolume);
-                        btnMicIn->value(MicIn);
-                        btnLineIn->value(LineIn);
+            btnMicIn->value(MicIn);
+            btnLineIn->value(LineIn);
 
-                        btnAudioIO[0]->value(0);
-                        btnAudioIO[0]->value(0);
-                        btnAudioIO[btnAudioIOis]->value(1);
+            btnAudioIO[0]->value(0);
+            btnAudioIO[0]->value(0);
+            btnAudioIO[btnAudioIOis]->value(1);
 
-                        menuOSSDev->value(OSSdevice.c_str());
-                        menuPADev->value(PAdevice.c_str());
-                        if (btnAudioIOis == 1)
-                            menuPADev->activate();
+            menuOSSDev->value(OSSdevice.c_str());
+            menuPADev->value(PAdevice.c_str());
+            if (btnAudioIOis == 1)
+                menuPADev->activate();
 
-
-                        btnMixer->value(EnableMixer);
-                        resetMixerControls();
-                        menuMix->value(MXdevice.c_str());
+            btnMixer->value(EnableMixer);
+            resetMixerControls();
+            menuMix->value(MXdevice.c_str());
 
 			cntRxRateCorr->value(RX_corr);
 			cntTxRateCorr->value(TX_corr);

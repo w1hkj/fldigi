@@ -30,6 +30,8 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <sys/utsname.h>
+#include <unistd.h>
+#include <dirent.h>
 
 #include <FL/Fl_Shared_Image.H>
 #ifdef PORTAUDIO
@@ -112,9 +114,11 @@ int main(int argc, char ** argv)
 
 	fl_filename_expand(szHomedir, 119, "$HOME/.fldigi/");
 	HomeDir = szHomedir;
+cout << HomeDir.c_str() << endl;
 
 	generate_option_help();
 	int arg_idx;
+	
 	if (Fl::args(argc, argv, arg_idx, parse_args) != argc) {
 	    cerr << FLDIGI_NAME << ": unrecognized option `" << argv[arg_idx]
 		 << "'\nTry `" << FLDIGI_NAME
@@ -122,11 +126,16 @@ int main(int argc, char ** argv)
 	    exit(EXIT_FAILURE);
 	}
 
-	if (fl_filename_isdir(HomeDir.c_str()) == 0 &&
-	    mkdir(HomeDir.c_str(), 0777) == -1) {
-		cerr << "Could not make directory " << HomeDir << ": "
-		     << strerror(errno) << endl;
-		exit(EXIT_FAILURE);
+	{
+		DIR *dir = opendir(HomeDir.c_str());
+		if (dir == 0) {
+			if ( mkdir(HomeDir.c_str(), 0777) == -1) {
+				cerr << "Could not make directory " << HomeDir << ": "
+				     << strerror(errno) << endl;
+				exit(EXIT_FAILURE);
+			}
+		} else
+			closedir(dir);
 	}
 
 	xmlfname = HomeDir; 

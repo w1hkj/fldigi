@@ -291,7 +291,7 @@ int MACROTEXT::loadMacros(string filename)
 			sscanf((mLine.substr(3, idx - 3)).c_str(), "%d", &mNumber);
 			if (mNumber < 0 || mNumber > 19)
 				break;
-			name[mNumber] = mLine.substr(idx+1, 8);
+			name[mNumber] = mLine.substr(idx+1, 9);
 			if (mNumber < 10) {
 				FL_LOCK_D();
 				btnMacro[mNumber]->label( (macros.name[mNumber]).c_str());
