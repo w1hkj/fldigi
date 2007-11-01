@@ -8,7 +8,7 @@ out="$2"
 export LC_ALL=C
 
 COMMENT="This file is generated at compile time. Do not include in source tarballs."
-COMPILE_CFG="CFG=$CTARG"
+COMPILE_CFG="CFG=$CFG"
 COMPILE_DATE="`date`"
 COMPILE_USER="`whoami`"
 COMPILE_HOST="`hostname`"
