@@ -18,12 +18,14 @@
 //#include "id.h"
 
 #include "config.h"
+#include "morse.h"
 
 #define	OUTBUFSIZE	16384
 // Constants for signal searching & s/n threshold
 #define SIGSEARCH 5
 
-class modem {
+
+class modem : public morse {
 protected:
 	trx_mode mode;
 	cSound	*scard;
@@ -157,6 +159,21 @@ private:
 
 public:
 	void	wfid_text(string s);
+
+// for CW ID transmission
+private:
+	double	cwid_keyshape[128];
+	double	cwid_phaseacc;
+	int		RT;
+	int		cwid_symbollen;
+	int		cwid_lastsym;
+public:
+	void	cwid_makeshape();
+	double	cwid_nco(double freq);
+	void	cwid_send_symbol(int bits);
+	void	cwid_send_ch(int ch);
+	void	cwid_sendtext (string s);
+	void	cwid();
 
 };
 

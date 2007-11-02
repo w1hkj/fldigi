@@ -550,6 +550,7 @@ int dominoex::tx_process()
 		break;
 	case TX_STATE_FLUSH:
 		flushtx();
+		cwid();
 		return -1;
 	}
 	return 0;

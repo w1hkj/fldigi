@@ -40,6 +40,7 @@ void pLDT(string &, size_t &);
 void pZDT(string &, size_t &);
 void pID(string &, size_t &);
 void pTEXT(string &, size_t &);
+void pCWID(string &, size_t &);
 void pRX(string &, size_t &);
 void pTX(string &, size_t &);
 void pVER(string &, size_t &);
@@ -66,6 +67,7 @@ MTAGS mtags[] = {
 {"<ZDT>",		pZDT},
 {"<ID>",		pID},
 {"<TEXT>",		pTEXT},
+{"<CWID>",		pCWID},
 {"<RX>",		pRX},
 {"<TX>",		pTX},
 {"<VER>",		pVER},
@@ -173,6 +175,12 @@ void pID(string &s, size_t &i)
 void pTEXT(string &s, size_t &i)
 {
 	progdefaults.macrotextid = true;
+	s.replace( i, 6, "");
+}
+
+void pCWID(string &s, size_t &i)
+{
+	progdefaults.macroCWid = true;
 	s.replace( i, 6, "");
 }
 
@@ -397,6 +405,7 @@ string mtext =
 // <FREQ>  my frequency\n\
 // <ID>  send Mode Idenfier - waterfall script\n\
 // <TEXT> send video text - waterfall script\n\
+// <CWID> send CW identifer at end of transmission (not for CW)\n\
 // <LOC>  remote locator\n\
 // <LOG>  submit QSO data to logbook program & clear the QSO data fields\n\
 //     Not constrained to a particular position in the macro.\n\

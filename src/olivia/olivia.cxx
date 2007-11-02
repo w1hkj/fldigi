@@ -202,8 +202,10 @@ int olivia::tx_process()
 		send_postamble();
 	}
 
-	if (!Tx->Running())
+	if (!Tx->Running()) {
+		cwid();
 		return -1;
+	}
 
 	return 0;
 }

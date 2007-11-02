@@ -626,10 +626,10 @@ int psk::tx_process()
 
 	c = get_tx_char();
 
-// end of transmission == 0x03 <ETX>
 	if (c == 0x03 || stopflag) {
 		tx_flush();
 		stopflag = false;
+		cwid();
 		return -1;	/* we're done */
 	}
 

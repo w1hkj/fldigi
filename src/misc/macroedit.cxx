@@ -36,6 +36,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add("<ZDT>\tZulu datetime");
 	w->add("<ID>\tMode ID'r");
 	w->add("<TEXT>\tVideo text");
+	w->add("<CWID>\tCW identifier");
 	w->add("<RX>\treceive");
 	w->add("<TX>\ttransmit");
 	w->add("<VER>\tFldigi + version");

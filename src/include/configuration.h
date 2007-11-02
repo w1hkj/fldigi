@@ -64,6 +64,8 @@ struct configuration {
 	bool		QSK;
 	double		CWpre;
 	double		CWpost;
+	bool		CWid;
+	int			CWIDwpm;
 
 // FELD-HELL
 	bool		FELD_IDLE;
@@ -93,6 +95,7 @@ struct configuration {
 	bool	macroid;
 	bool	sendtextid;
 	string	strTextid;
+	bool	macroCWid;
 	int		videowidth;
 	bool	macrotextid;
 	int		QRZ;

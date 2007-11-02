@@ -480,3 +480,141 @@ mfntchr idch[] = {
 {'}', { 0x0000, 0x8000, 0xC000, 0x4000, 0x4000, 0x4000, 0x6000, 0x6000, 0x4000, 0x4000, 0x4000, 0xC000, 0x8000, 0x0000 }, },
 {'~', { 0x0000, 0x9800, 0xFC00, 0x6400, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000 }, }
 };
+
+// CW ID transmit routines
+
+//===========================================================================
+// cw transmit routines to send a post amble message
+// Define the amplitude envelop for key down events      
+// this is 1/2 cycle of a raised cosine                                    
+//===========================================================================
+
+void modem::cwid_makeshape()
+{
+	for (int i = 0; i < 128; i++) cwid_keyshape[i] = 1.0;
+	for (int i = 0; i < RT; i++)
+		cwid_keyshape[i] = 0.5 * (1.0 - cos (M_PI * i / RT));
+}
+
+double modem::cwid_nco(double freq)
+{
+	cwid_phaseacc += 2.0 * M_PI * freq / samplerate;
+
+	if (cwid_phaseacc > M_PI)
+		cwid_phaseacc -= 2.0 * M_PI;
+
+	return sin(cwid_phaseacc);
+}
+
+//=====================================================================
+// cwid_send_symbol()
+// Sends a part of a morse character (one dot duration) of either
+// sound at the correct freq or silence. Rise and fall time is controlled
+// with a raised cosine shape.
+//
+// Left channel contains the shaped A2 CW waveform
+//=======================================================================
+
+void modem::cwid_send_symbol(int bits)
+{
+	double freq;
+	int i,
+		keydown,
+		keyup,
+		sample = 0, 
+		currsym = bits & 1;
+	
+	freq = tx_frequency - progdefaults.TxOffset;
+
+    if ((currsym == 1) && (cwid_lastsym == 0))
+    	cwid_phaseacc = 0.0;
+
+	keydown = cwid_symbollen - RT;
+	keyup = cwid_symbollen - RT;
+	
+	if (currsym == 1) {
+		for (i = 0; i < RT; i++, sample++) {
+			if (cwid_lastsym == 0)
+				outbuf[sample] = cwid_nco(freq) * cwid_keyshape[i];
+			else
+				outbuf[sample] = cwid_nco(freq);
+		}
+		for (i = 0; i < keydown; i++, sample++) {
+			outbuf[sample] = cwid_nco(freq);
+		}
+	}
+	else {
+		for (i = RT - 1; i >= 0; i--, sample++) {
+			if (cwid_lastsym == 1) {
+				outbuf[sample] = cwid_nco(freq) * cwid_keyshape[i];
+			} else {
+				outbuf[sample] = 0.0;
+			}
+		}
+		for (i = 0; i < keyup; i++, sample++) {
+			outbuf[sample] = 0.0;
+		}
+	}
+
+	ModulateXmtr(outbuf, cwid_symbollen);
+	
+	cwid_lastsym = currsym;
+}
+
+//=====================================================================
+// send_ch()
+// sends a morse character and the space afterwards
+//=======================================================================
+
+void modem::cwid_send_ch(int ch)
+{
+	int code;
+
+// handle word space separately (7 dots spacing) 
+// last char already had 2 elements of inter-character spacing 
+
+	if ((ch == ' ') || (ch == '\n')) {
+		cwid_send_symbol(0);
+		cwid_send_symbol(0);
+		cwid_send_symbol(0);
+		cwid_send_symbol(0);
+		cwid_send_symbol(0);
+		put_echo_char(ch);
+		return;
+	}
+
+// convert character code to a morse representation 
+	if ((ch < 256) && (ch >= 0)) {
+		code = tx_lookup(ch); //cw_tx_lookup(ch);
+	} else {
+		code = 0x04; 	// two extra dot spaces
+	}
+
+// loop sending out binary bits of cw character 
+	while (code > 1) {
+		cwid_send_symbol(code);// & 1);
+		code = code >> 1;
+	}
+
+}
+
+void modem::cwid_sendtext (string s)
+{
+	cwid_symbollen = (int)(1.2 * samplerate / progdefaults.CWIDwpm);
+	RT = (int) (samplerate * 6 / 1000.0); // 6 msec risetime for CW pulse
+	cwid_makeshape();
+	cwid_lastsym = 0;
+	for (int i = 0; i < s.length(); i++) {
+		cwid_send_ch(s[i]);
+	}
+}
+
+void modem::cwid()
+{
+	if (progdefaults.CWid == true || progdefaults.macroCWid == true) {
+		string tosend = " DE ";
+		tosend += progdefaults.myCall;
+		cwid_sendtext(tosend);
+		progdefaults.macroCWid = false;
+	}
+}

@@ -80,7 +80,8 @@ cw::~cw() {
 }
 
 
-cw::cw() : morse(), modem()
+//cw::cw() : morse(), modem()
+cw::cw() : modem()
 {
 	double lp;
 

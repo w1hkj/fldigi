@@ -32,7 +32,7 @@
 //#include "complex.h"
 #include "modem.h"
 #include "filters.h"
-#include "morse.h"
+//#include "morse.h"
 #include "mbuffer.h"
 
 #define	CWSampleRate	8000
@@ -85,7 +85,8 @@ enum CW_EVENT {
 	CW_QUERY_EVENT
 };
 
-class cw : public morse, public modem {
+//class cw : public morse, public modem {
+class cw : public modem {
 protected:
 	int				symbollen;		// length of a dot in sound samples (tx)
 	double			phaseacc;		// used by NCO for rx/tx tones
