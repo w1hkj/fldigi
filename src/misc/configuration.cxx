@@ -68,6 +68,8 @@ configuration progdefaults = {
 	false,			// bool		QSK;
 	4.0,			// double	CWpre;
 	4.0,			// double	CWpost;
+	false,			// bool		CWid;
+	18,				// int		CWIDwpm;
 
 // FELD-HELL
 	false,			// bool		FELD_IDLE;
@@ -97,6 +99,7 @@ configuration progdefaults = {
 	false,			// bool		macroid;
 	false,			// bool		sendtextid;
 	"CQ",			// string	strTextid;
+	false,			// bool		macroCWid;
 	1,				// int		videowidth;
 	false,			// bool		macrotextid;
 	0,				// int		QRZ;
@@ -193,7 +196,7 @@ enum TAG { \
 	CWWEIGHT, CWSPEED, CWDEFSPEED,
 	CWBANDWIDTH, CWRANGE, CWLOWERLIMIT, CWUPPERLIMIT,
 	CWTRACK, CWRISETIME, CWDASH2DOT,
-	XQSK, CWPRE, CWPOST,
+	XQSK, CWPRE, CWPOST, CWID, CWIDWPM,
 	OLIVIATONES, OLIVIABW,
 	DOMINOEXBW, 
 	FELDFONTNBR, FELDIDLE,
@@ -321,6 +324,8 @@ void configuration::writeDefaultsXML()
 	writeXMLbool(f, "QSK", QSK);
 	writeXMLdbl(f, "CWPRE", CWpre);
 	writeXMLdbl(f, "CWPOST", CWpost);
+	writeXMLbool(f, "CWID", CWid);
+	writeXMLint(f, "IDWPM", CWIDwpm);
 	
 	writeXMLint(f, "OLIVIATONES", oliviatones);
 	writeXMLint(f, "OLIVIABW", oliviabw);
@@ -568,6 +573,12 @@ bool configuration::readDefaultsXML()
 						break;
 					case CWPOST :
 						CWpost = atof(xml->getNodeData());
+						break;
+					case CWID :
+						CWid = atoi(xml->getNodeData());
+						break;
+					case CWIDWPM :
+						CWIDwpm = atoi(xml->getNodeData());
 						break;
 					case OLIVIATONES :
 						oliviatones = atoi(xml->getNodeData());
@@ -851,6 +862,8 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("QSK", nodeName)) 	tag = XQSK;
 				else if (!strcmp("CWPRE", nodeName)) 	tag = CWPRE;
 				else if (!strcmp("CWPOST", nodeName)) 	tag = CWPOST;
+				else if (!strcmp("CWID", nodeName))	tag = CWID;
+				else if (!strcmp("IDWPM", nodeName)) tag = CWIDWPM;
 				else if (!strcmp("OLIVIATONES", nodeName)) 	tag = OLIVIATONES;
 				else if (!strcmp("OLIVIABW", nodeName)) 	tag = OLIVIABW;
 				else if (!strcmp("DOMINOEXBW", nodeName)) 	tag = DOMINOEXBW;
@@ -1152,6 +1165,7 @@ int configuration::openDefaults() {
 			cntPreTiming->value(CWpre);
 			cntPostTiming->maximum((int)(2400/CWspeed)/2.0);
 			cntPostTiming->value(CWpost);
+			btnCWID->value(CWid);
 			
 			selHellFont->value(feldfontnbr);
 			btnFeldHellIdle->value(FELD_IDLE);

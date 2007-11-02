@@ -618,6 +618,7 @@ int throb::tx_process()
 	if (c == 0x03 || stopflag) {
 		send(idlesym);
 		reset_syms(); //prepare RX. idle/space syms always start as 0 and 1, respectively.
+		cwid();
 		return -1;
 	}
 

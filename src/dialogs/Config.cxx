@@ -274,6 +274,22 @@ static void cb_btnViewXmtSignal(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Group *sld=(Fl_Group *)0;
+
+Fl_Check_Button *btnCWID=(Fl_Check_Button *)0;
+
+static void cb_btnCWID(Fl_Check_Button* o, void*) {
+  progdefaults.CWid = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Value_Slider *sldrCWIDwpm=(Fl_Value_Slider *)0;
+
+static void cb_sldrCWIDwpm(Fl_Value_Slider* o, void*) {
+  progdefaults.CWIDwpm = (int)o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabRig=(Fl_Group *)0;
 
 static void cb_btnPTT(Fl_Round_Button* o, void*) {
@@ -1031,7 +1047,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     o->color(FL_DARK2);
     o->selection_color((Fl_Color)51);
     o->align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE);
-    { Fl_Tabs* o = tabsConfigure = new Fl_Tabs(0, 0, 400, 220);
+    { Fl_Tabs* o = tabsConfigure = new Fl_Tabs(0, 0, 405, 220);
       o->color(FL_DARK1);
       o->selection_color((Fl_Color)9);
       { Fl_Group* o = tabOperator = new Fl_Group(0, 25, 400, 195, "Oper");
@@ -1078,7 +1094,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         }
         o->end();
       }
-      { Fl_Group* o = tabWaterfall = new Fl_Group(0, 25, 400, 195, "W-fall");
+      { Fl_Group* o = tabWaterfall = new Fl_Group(0, 25, 405, 195, "W-fall");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
         o->hide();
@@ -1219,32 +1235,32 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { Fl_Group* o = tabVideo = new Fl_Group(0, 25, 400, 195, "Video");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
-        o->hide();
-        { Fl_Group* o = new Fl_Group(5, 40, 390, 60);
+        { Fl_Group* o = new Fl_Group(5, 40, 390, 67, "Video Preamble");
           o->box(FL_ENGRAVED_FRAME);
-          { Fl_Check_Button* o = btnsendid = new Fl_Check_Button(15, 48, 115, 20, "Xmt Mode ID");
+          o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+          { Fl_Check_Button* o = btnsendid = new Fl_Check_Button(11, 57, 115, 20, "Xmt Mode ID");
             o->down_box(FL_DOWN_BOX);
             o->callback((Fl_Callback*)cb_btnsendid);
           }
-          { Fl_Check_Button* o = btnsendvideotext = new Fl_Check_Button(15, 73, 115, 20, "Xmt Video Text");
+          { Fl_Check_Button* o = btnsendvideotext = new Fl_Check_Button(11, 82, 115, 20, "Xmt Video Text");
             o->down_box(FL_DOWN_BOX);
             o->callback((Fl_Callback*)cb_btnsendvideotext);
             o->value(progdefaults.sendtextid);
           }
-          { Fl_Input* o = valVideotext = new Fl_Input(162, 73, 94, 20, "Video Text:");
+          { Fl_Input* o = valVideotext = new Fl_Input(159, 82, 94, 20, "Video Text:");
             o->tooltip("Limit to a few characters as in CQEM or IOTA etc.");
             o->callback((Fl_Callback*)cb_valVideotext);
             o->align(FL_ALIGN_TOP_LEFT);
             o->value(progdefaults.strTextid.c_str());
           }
-          { Fl_Value_Slider* o = sldrVideowidth = new Fl_Value_Slider(270, 73, 101, 20, "Video Width:");
+          { Fl_Value_Slider* o = sldrVideowidth = new Fl_Value_Slider(286, 82, 101, 20, "Video Width:");
             o->tooltip("Set the # of chars per row");
             o->type(1);
             o->color((Fl_Color)26);
             o->minimum(1);
             o->maximum(4);
             o->step(1);
-            o->value(2);
+            o->value(1);
             o->textsize(14);
             o->callback((Fl_Callback*)cb_sldrVideowidth);
             o->align(FL_ALIGN_TOP);
@@ -1252,10 +1268,32 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           }
           o->end();
         }
-        { Fl_Check_Button* o = btnViewXmtSignal = new Fl_Check_Button(15, 110, 135, 20, "View Xmt Signal");
+        { Fl_Check_Button* o = btnViewXmtSignal = new Fl_Check_Button(11, 115, 135, 20, "View Xmt Signal");
           o->down_box(FL_DOWN_BOX);
           o->callback((Fl_Callback*)cb_btnViewXmtSignal);
           o->value(progdefaults.viewXmtSignal);
+        }
+        { Fl_Group* o = sld = new Fl_Group(5, 143, 390, 70, "CW Postamble");
+          o->box(FL_ENGRAVED_FRAME);
+          o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+          { Fl_Check_Button* o = btnCWID = new Fl_Check_Button(13, 179, 98, 15, "Xmt CWID");
+            o->down_box(FL_DOWN_BOX);
+            o->callback((Fl_Callback*)cb_btnCWID);
+            o->value(progdefaults.CWid);
+          }
+          { Fl_Value_Slider* o = sldrCWIDwpm = new Fl_Value_Slider(124, 176, 233, 20, "CWID wpm:");
+            o->type(1);
+            o->color((Fl_Color)26);
+            o->minimum(15);
+            o->maximum(40);
+            o->step(1);
+            o->value(18);
+            o->textsize(14);
+            o->callback((Fl_Callback*)cb_sldrCWIDwpm);
+            o->align(FL_ALIGN_TOP_LEFT);
+            o->value(progdefaults.CWIDwpm);
+          }
+          o->end();
         }
         o->end();
       }
@@ -1508,6 +1546,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { Fl_Group* o = tabMisc = new Fl_Group(0, 25, 400, 195, "Misc");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
+        o->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 390, 90, "Sweet Spot");
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -1553,7 +1592,7 @@ fect after a restart.");
         }
         o->end();
       }
-      { Fl_Group* o = tabModems = new Fl_Group(0, 25, 400, 195, "Modem");
+      { Fl_Group* o = tabModems = new Fl_Group(0, 25, 401, 195, "Modem");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
         o->hide();

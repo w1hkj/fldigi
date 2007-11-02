@@ -49,6 +49,9 @@ extern Fl_Input *valVideotext;
 #include <FL/Fl_Value_Slider.H>
 extern Fl_Value_Slider *sldrVideowidth;
 extern Fl_Check_Button *btnViewXmtSignal;
+extern Fl_Group *sld;
+extern Fl_Check_Button *btnCWID;
+extern Fl_Value_Slider *sldrCWIDwpm;
 extern Fl_Group *tabRig;
 #include <FL/Fl_Round_Button.H>
 extern Fl_Input *inpTTYdev;

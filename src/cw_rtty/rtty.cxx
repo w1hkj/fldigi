@@ -638,6 +638,7 @@ int rtty::tx_process()
 			send_char(0x02);
 		}
 //		KeyLine->clearDTR();
+		cwid();
 		return -1;
 	}
 
