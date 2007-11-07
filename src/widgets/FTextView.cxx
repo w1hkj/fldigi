@@ -377,8 +377,10 @@ int FTextView::handle(int event)
 		if (Fl::compose(d))
 			return 1;
 		int k = Fl::event_key();
-		if (k == FL_BackSpace || k == FL_Tab)
+		if (k == FL_BackSpace)
 			return 1;
+		else if (k == FL_Tab)
+		    return Fl_Widget::handle(event);
 	}
 
 	return FTextBase::handle(event);

@@ -159,6 +159,8 @@ public:
 	void initmaps();
 	void draw();
 //	void resize (int, int, int, int);
+	int handle(int event);
+	void handle_mouse_wheel(int event);
 	void update_sigmap();
 	void update_waterfall();
 	void checkoffset();
@@ -272,7 +274,11 @@ private:
 protected:
 public:
 	bool	wantcursor;
-	int		cursorpos;
+	int	cursorpos;
+
+	int	newcarrier;
+	int	oldcarrier;
+	bool	tmp_carrier;
 };
 
 class waterfall: public Fl_Group {
@@ -304,6 +310,7 @@ public:
 	void carrier(int f);
 	void rfcarrier(long long cf);
 	long long rfcarrier();
+	bool tmp_carrier(void) { return wfdisp->tmp_carrier; }
 	void set_XmtRcvBtn(bool val);
 	void USB(bool b);
 	bool USB();
@@ -330,7 +337,7 @@ public:
 	void Carrier(int f);
 
 	void movetocenter() { wfdisp->movetocenter();}
-	
+	void redraw_marker() { wfdisp->makeMarker(); }
 	void setPrefilter(int v) {wfdisp->setPrefilter(v);}
 	
 	void setcolors() { wfdisp->setcolors(); }
@@ -351,7 +358,6 @@ public:
 /*
 */
 	Fl_Button	*btnRev;
-	bool		tmp_carrier;
 private:
 	Fl_Box		*bezel;
 	WFdisp		*wfdisp;
@@ -370,9 +376,6 @@ private:
 	Fl_Light_Button *xmtlock;
 	int			buttonrow;
 	bool	reverse;
-
-	int newcarrier;
-	int oldcarrier;
 };
 
 #endif
