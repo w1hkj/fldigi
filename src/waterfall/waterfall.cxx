@@ -124,6 +124,9 @@ WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 		pwr[i] = 0.0;
 
 	carrier(1000);
+
+	oldcarrier = newcarrier = 0;
+	tmp_carrier = false;
 }
 
 WFdisp::~WFdisp() {
@@ -152,9 +155,17 @@ void WFdisp::makeMarker() {
 	clrMin = markerimage + IMAGE_WIDTH;
 	clrMax = clrMin + (WFMARKER - 2) * IMAGE_WIDTH;
 	memset(clrMin, 0, RGBwidth * (WFMARKER - 2));
-	
 	clrM = clrMin + (int)((double)carrierfreq + 0.5);
-	int bw = (int)((double) bandwidth / 2.0) + 1;
+
+	int bw = bandwidth;
+	if (active_modem) {
+		int mode = active_modem->get_mode();
+		if (mode >= MODE_BPSK31 && mode <= MODE_QPSK250)
+			bw += mailserver ? progdefaults.ServerOffset :
+				progdefaults.SearchRange;
+	}
+	bw = bw / 2.0 + 1;
+
 	RGBmarker.R = progdefaults.bwTrackRGBI.R;
 	RGBmarker.G = progdefaults.bwTrackRGBI.G;
 	RGBmarker.B = progdefaults.bwTrackRGBI.B;
@@ -1103,7 +1114,7 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 			y() + BEZEL, 
 			w() - 2 * BEZEL,
 			h() - BTN_HEIGHT - 4 * BEZEL);
-	wfdisp->tooltip("Click to set tracking point");
+	// wfdisp->tooltip("Click to set tracking point");
 	
 	xpos = x() + wSpace;
 	bwclr = new Fl_Button(xpos, buttonrow, bwColor, BTN_HEIGHT, "clr");
@@ -1199,80 +1210,202 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	xmtrcv->selection_color(FL_RED);
 	xmtrcv->value(0);
 	xmtrcv->tooltip("Transmit/Receive");
-
-	oldcarrier = newcarrier = 0;
-	tmp_carrier = false;
 }
 
-int waterfall::handle(int event) {
-	if (Fl::event() == FL_LEAVE) {
-		wfdisp->wantcursor = false;
-		wfdisp->makeMarker();
-		return 1;
-	}
-	
-	if (Fl::event_inside( wfdisp )) {
-		if (trx_state != STATE_RX)
-			return 1;
-		int xpos = Fl::event_x() - wfdisp->x();
+int waterfall::handle(int event)
+{
+	if (event != FL_MOUSEWHEEL || Fl::event_inside(wfdisp))
+		return Fl_Group::handle(event);
 
-		switch (event) {
-		case FL_MOVE:
-			wfdisp->wantcursor = true;
-			wfdisp->cursorpos = xpos;
-			wfdisp->makeMarker();
-			wfdisp->redrawCursor();
-			break;
-		case FL_DRAG: case FL_PUSH:
-			switch (Fl::event_button()) {
-			case FL_RIGHT_MOUSE:
-				wfdisp->wantcursor = false;
-				if (event == FL_PUSH) {
-					tmp_carrier = true;
-					oldcarrier = carrier();
-				}
-				// fall through
-			case FL_LEFT_MOUSE:
-				newcarrier = wfdisp->cursorFreq(xpos);
-				active_modem->set_freq(newcarrier);
-				active_modem->set_sigsearch(SIGSEARCH);
-				wfdisp->redrawCursor();
-				restoreFocus();
-				break;
-			case FL_MIDDLE_MOUSE:
-				if (event == FL_DRAG)
-					break;
-				Fl_Button *b = useCheckButtons ? chk_afconoff : afconoff;
-				b->value(!active_modem->get_afcOnOff());
-				b->do_callback();
+	int d;
+	if ( !((d = Fl::event_dy()) || (d = Fl::event_dx())) )
+		return 1;
+
+	Fl_Valuator *val;
+	if (Fl::event_inside(sldrSquelch) || Fl::event_inside(pgrsSquelch))
+		val = sldrSquelch;
+	else if (Fl::event_inside(wfcarrier))
+		 val = wfcarrier;
+	else if (Fl::event_inside(wfRefLevel))
+		val = wfRefLevel;
+	else if (Fl::event_inside(wfAmpSpan))
+		val = wfAmpSpan;
+	else
+		return 0;//Fl_Group::handle(event);
+
+	val->value(val->clamp(val->increment(val->value(), d)));
+	val->do_callback();
+
+	return 1;
+}
+
+static void hide_cursor(void *w)
+{
+	reinterpret_cast<Fl_Widget *>(w)->window()->cursor(FL_CURSOR_NONE);
+}
+
+int WFdisp::handle(int event)
+{
+	if (!(event == FL_LEAVE || Fl::event_inside(this)))
+		return 0;
+
+	if (trx_state != STATE_RX)
+		return 1;
+	int xpos = Fl::event_x() - x();
+
+	switch (event) {
+	case FL_MOVE:
+		window()->cursor(FL_CURSOR_DEFAULT);
+		if (!Fl::has_timeout(hide_cursor, this))
+			Fl::add_timeout(1, hide_cursor, this);
+		wantcursor = true;
+		cursorpos = xpos;
+		makeMarker();
+		redrawCursor();
+		break;
+	case FL_DRAG: case FL_PUSH:
+		switch (Fl::event_button()) {
+		case FL_RIGHT_MOUSE:
+			wantcursor = false;
+			if (event == FL_PUSH) {
+				tmp_carrier = true;
+				oldcarrier = carrier();
 			}
+			// fall through
+		case FL_LEFT_MOUSE:
+			newcarrier = cursorFreq(xpos);
+			active_modem->set_freq(newcarrier);
+			active_modem->set_sigsearch(SIGSEARCH);
+			redrawCursor();
+			restoreFocus();
 			break;
-		case FL_RELEASE:
-			switch (Fl::event_button()) {
-			case FL_RIGHT_MOUSE:
-				tmp_carrier = false;
-				active_modem->set_freq(oldcarrier);
-				active_modem->set_sigsearch(3);
-				wfdisp->redrawCursor();
-				restoreFocus();
-				// fall through
-			case FL_LEFT_MOUSE:
-				oldcarrier = newcarrier;
+		case FL_MIDDLE_MOUSE:
+			if (event == FL_DRAG)
 				break;
-			}
-			break;
-		case FL_MOUSEWHEEL:
-			if (Fl::event_dy() > 0 || Fl::event_dx() > 0)
-				active_modem->searchUp();
-			else if (Fl::event_dy() < 0 || Fl::event_dx() < 0)
-				active_modem->searchDown();
+			Fl_Button *b = useCheckButtons ? chk_afconoff : afconoff;
+			b->value(!active_modem->get_afcOnOff());
+			b->do_callback();
+		}
+		break;
+	case FL_RELEASE:
+		switch (Fl::event_button()) {
+		case FL_RIGHT_MOUSE:
+			tmp_carrier = false;
+			active_modem->set_freq(oldcarrier);
+			active_modem->set_sigsearch(3);
+			redrawCursor();
+			restoreFocus();
+			// fall through
+		case FL_LEFT_MOUSE:
+			oldcarrier = newcarrier;
 			break;
 		}
-		return 1;
-	} else if (wfdisp->wantcursor == true) {
-		wfdisp->wantcursor = false;
-		wfdisp->makeMarker();
+		break;
+
+	case FL_MOUSEWHEEL:
+		handle_mouse_wheel(event);
+		return handle(FL_MOVE);
+		break;
+
+	case FL_SHORTCUT:
+		if (Fl::event_inside(this))
+			take_focus();
+		break;
+	case FL_KEYBOARD:
+	{
+		int d = (Fl::event_state() & FL_CTRL) ? 10 : 1;
+		switch (Fl::event_key()) {
+		case FL_Left:
+			if (xpos > 0) {
+				active_modem->set_freq(oldcarrier = newcarrier = carrier() - d);
+				redrawCursor();
+			}
+			break;
+		case FL_Right:
+			if (xpos < w()) {
+				active_modem->set_freq(oldcarrier = newcarrier = carrier() + d);
+				redrawCursor();
+			}
+			break;
+		case FL_Tab:
+			restoreFocus();
+			break;
+		}
+		break;
 	}
-	return Fl_Group::handle(event);
+	case FL_KEYUP:
+	{
+		if (Fl::event_inside(this)) {
+			int k = Fl::event_key();
+			if (k == FL_Shift_L || k == FL_Shift_R || k == FL_Control_L ||
+			    k == FL_Control_R || k == FL_Meta_L || k == FL_Meta_R ||
+			    k == FL_Alt_L || k == FL_Alt_R)
+				restoreFocus();
+		}
+		break;
+	}
+
+	case FL_LEAVE:
+		Fl::remove_timeout(hide_cursor, this);
+		window()->cursor(FL_CURSOR_DEFAULT);
+		wantcursor = false;
+		makeMarker();
+		// restoreFocus();
+		break;
+
+	}
+
+	return 1;
 }
 
+void WFdisp::handle_mouse_wheel(int event)
+{
+	int d;
+	if ( !((d = Fl::event_dy()) || (d = Fl::event_dx())) )
+		return;
+
+	int state = Fl::event_state();
+	if (state & (FL_META | FL_ALT)) {
+		if (d > 0)
+			active_modem->searchUp();
+		else if (d < 0)
+			active_modem->searchDown();
+		return;
+	}
+	if (!(state & (FL_CTRL | FL_SHIFT)))
+		return; // suggestions?
+
+	extern Fl_Valuator *cntServerOffset, *cntSearchRange,
+			   *sldrHellBW, *sldrCWbandwidth;
+	Fl_Valuator *val = 0;
+	if (state & FL_CTRL) {
+		switch (active_modem->get_mode()) {
+		case MODE_BPSK31: case MODE_QPSK31: case MODE_PSK63: case MODE_QPSK63:
+		case MODE_PSK125: case MODE_QPSK125: case MODE_PSK250: case MODE_QPSK250:
+			val = mailserver ? cntServerOffset : cntSearchRange;
+			break;
+		case MODE_FELDHELL:
+			val = sldrHellBW;
+			break;
+		case MODE_CW:
+			val = sldrCWbandwidth;
+			break;
+		default:
+			return;
+		}
+	}
+	else if (state & FL_SHIFT)
+		val = sldrSquelch;
+
+	val->value(val->clamp(val->increment(val->value(), d)));
+	val->do_callback();
+	if (val == cntServerOffset || val == cntSearchRange)
+		active_modem->set_sigsearch(SIGSEARCH);
+	else if (val == sldrSquelch) // sldrSquelch gives focus to TextWidget
+		take_focus();
+
+	char msg[60];
+	const char *suffix = val == sldrSquelch ? "%" : "Hz";
+	snprintf(msg, sizeof(msg), "%s = %2.0f %s", val->label(), val->value(), suffix);
+	put_status(msg, 2);
+}

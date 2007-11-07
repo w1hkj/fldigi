@@ -1063,6 +1063,7 @@ progdefaults.changed = true;}
             Fl_Counter cntSearchRange {
               label {Search Range}
               callback {progdefaults.SearchRange = (int)o->value();
+wf->redraw_marker();
 progdefaults.changed = true;}
               xywh {25 69 80 21} type Simple align 8 minimum 10 maximum 500 step 10 value 200
               code0 {o->value(progdefaults.SearchRange);}
@@ -1081,6 +1082,7 @@ progdefaults.changed = true;}
               Fl_Counter cntServerOffset {
                 label {Allowable Rx Carrier Offset}
                 callback {progdefaults.ServerOffset = (int)o->value();
+wf->redraw_marker();
 progdefaults.changed = true;}
                 xywh {31 162 80 21} type Simple align 8 minimum 10 maximum 500 step 10 value 200
                 code0 {o->value(progdefaults.SearchRange);}

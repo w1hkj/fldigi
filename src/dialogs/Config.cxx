@@ -908,6 +908,7 @@ Fl_Counter *cntSearchRange=(Fl_Counter *)0;
 
 static void cb_cntSearchRange(Fl_Counter* o, void*) {
   progdefaults.SearchRange = (int)o->value();
+wf->redraw_marker();
 progdefaults.changed = true;
 }
 
@@ -922,6 +923,7 @@ Fl_Counter *cntServerOffset=(Fl_Counter *)0;
 
 static void cb_cntServerOffset(Fl_Counter* o, void*) {
   progdefaults.ServerOffset = (int)o->value();
+wf->redraw_marker();
 progdefaults.changed = true;
 }
 

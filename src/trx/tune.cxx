@@ -96,10 +96,7 @@ void keydown(double freq, cSound *scard)
 		outbuf[i] = nco() * kdshape[i];
 	for (; i < BUFLEN; i++)
 		outbuf[i] = nco();
-//	if (active_modem == cw_modem && progdefaults.useCWkeyline == true)
-//			KeyLine->setDTR();
-//	else
-		active_modem->ModulateXmtr(outbuf, BUFLEN);
+	active_modem->ModulateXmtr(outbuf, BUFLEN);
 }
 
 //=====================================================================
@@ -112,9 +109,6 @@ void keyup(double freq, cSound *scard)
 		outbuf[i] = nco() * kushape[i];
 	for (; i < BUFLEN; i++)
 		outbuf[i] = 0.0;
-//	if (active_modem == cw_modem && progdefaults.useCWkeyline == true)
-//		KeyLine->clearDTR();
-//	else
 	active_modem->ModulateXmtr(outbuf, BUFLEN);
 }
 
@@ -126,10 +120,6 @@ void tune(double freq, cSound *scard)
 	phaseincr = 2.0 * M_PI * freq / active_modem->get_samplerate();
 	for (i = 0; i < BUFLEN; i++)
 		outbuf[i] = nco();
-//	if (active_modem == cw_modem && progdefaults.useCWkeyline == true) {
-//		KeyLine->setDTR();
-//		MicroSleep(100000); // 100 msec
-//	} else
 	active_modem->ModulateXmtr(outbuf, BUFLEN);
 }
 

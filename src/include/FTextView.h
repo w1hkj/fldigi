@@ -146,6 +146,7 @@ public:
 	virtual void	add(const char *s, int attr = RECV);
 	virtual void	add(char c, int attr = RECV);
 	void		clear(void);
+	void		clear_sent(void);
 	int		nextChar(void);
 
 protected:

@@ -3,6 +3,7 @@ Change Log:
 2.04  1) added full waterfall video texting using FeldHell Modern-8-14 font.
          1, 2, 3 or 4 characters per video line.
       2) bug fix for center mouse button toggle of AFC.
+      3) added option to insert CW identifier at end of transmission
 2.03  1) bug fix for new startup Sound Card / Mixer naming on configuration tab.
       2) bug fix for initial startup frequency
       3) bug fix for homedir discovery

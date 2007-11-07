@@ -24,6 +24,14 @@ DEBUG ?= 0
 # Do we strip the binary at link time?
 STRIP ?= 1
 
+# the prefix for our install target
+prefix ?= /usr/local
+
+# pkg-config error template
+pkg_config_error = $(1) could not find the location of $(2). Install the $(2) \
+                   development headers and libraries, or set $(3) to the \
+                   directory containing $(4) and rerun make. Alternatively, set \
+                   the $(5)_CFLAGS and $(5)_LIBS variables and rerun make
 
 # compiler and preprocessor options
 CXX = g++
@@ -32,16 +40,41 @@ INCLUDE_DIRS = src src/include src/irrxml
 CPPFLAGS = $(addprefix -I,$(INCLUDE_DIRS)) -DNDEBUG -DUSE_TLS=$(USE_TLS) -DPORTAUDIO
 
 CXXFLAGS = -pipe -Wno-uninitialized -Wno-deprecated -O2 -ffast-math -fno-rtti \
-           -fexceptions -finline-functions \
-           $(shell fltk-config --cxxflags) \
-           $(shell pkg-config --cflags portaudiocpp sndfile)
+           -fexceptions -finline-functions
 ifeq ($(DEBUG), 1)
     CXXFLAGS += -g
 endif
 
+FLTK_CFLAGS ?= $(shell fltk-config --cxxflags 2>/dev/null)
+PORTAUDIO_CFLAGS ?= $(shell pkg-config --silence-errors --cflags portaudiocpp)
+SNDFILE_CFLAGS ?= $(shell pkg-config --silence-errors --cflags sndfile)
+SAMPLERATE_CFLAGS ?= $(shell pkg-config --silence-errors --cflags samplerate)
+HAMLIB_CFLAGS ?= $(shell pkg-config --silence-errors --cflags hamlib)
+# we always need these
+CXXFLAGS += $(FLTK_CFLAGS) $(PORTAUDIO_CFLAGS) $(SNDFILE_CFLAGS)
+
+
+FLTK_LIBS = $(shell fltk-config --ldflags --use-images 2>/dev/null)
+ifeq (,$(FLTK_LIBS))
+    $(error $(call pkg_config_error,fltk-config,fltk,PATH,fltk-config,FLTK))
+endif
+FLTK_STATIC_LIBS = $(shell fltk-config --ldstaticflags --use-images)
+
+PORTAUDIO_LIBS ?= $(shell pkg-config --silence-errors --libs portaudiocpp)
+ifeq (,$(PORTAUDIO_LIBS))
+    $(error $(call pkg_config_error,pkg-config,portaudio,PKG_CONFIG_PATH,portaudiocpp.pc,PORTAUDIO))
+endif
+
+SNDFILE_LIBS ?= $(shell pkg-config --silence-errors --libs sndfile)
+ifeq (,$(SNDFILE_LIBS))
+    $(error $(call pkg_config_error,pkg-config,sndfile,PKG_CONFIG_PATH,sndfile.pc,SNDFILE))
+endif
+
+SAMPLERATE_LIBS ?= $(shell pkg-config --silence-errors --libs samplerate)
+HAMLIB_LIBS ?= $(shell pkg-config --silence-errors --libs hamlib)
+
 # libraries and flags
-DYN_LDFLAGS = $(shell fltk-config --ldflags --use-images) \
-              $(shell pkg-config --libs portaudiocpp sndfile)
+DYN_LDFLAGS = $(FLTK_LIBS) $(PORTAUDIO_LIBS) $(SNDFILE_LIBS)
 
 # pkg-config --static does not return anything useful for portaudio and
 # sndfile. Therefore, assume that these libs have been configured with
@@ -52,8 +85,7 @@ DYN_LDFLAGS = $(shell fltk-config --ldflags --use-images) \
 # and sndfile with:
 #     --disable-flac
 # When linking PA statically we also need -lrt for clock_gettime().
-STATIC_LDFLAGS = $(shell fltk-config --ldstaticflags --use-images) \
-                 $(shell pkg-config --libs portaudiocpp sndfile) -lrt
+STATIC_LDFLAGS = $(FLTK_STATIC_LIBS) $(PORTAUDIO_LIBS) $(SNDFILE_LIBS) -lrt
 
 
 # our source files
@@ -108,10 +140,6 @@ SRC = \
 	$(SRC_DIR)/rigcontrol/rigio.cxx \
 	$(SRC_DIR)/rigcontrol/rigxml.cxx \
 	$(SRC_DIR)/rigcontrol/serial.cxx \
-	$(SRC_DIR)/samplerate/samplerate.c \
-	$(SRC_DIR)/samplerate/src_linear.c \
-	$(SRC_DIR)/samplerate/src_sinc.c \
-	$(SRC_DIR)/samplerate/src_zoh.c \
 	$(SRC_DIR)/soundcard/mixer.cxx \
 	$(SRC_DIR)/soundcard/sound.cxx \
 	$(SRC_DIR)/throb/throb.cxx \
@@ -139,6 +167,13 @@ HAMLIB_SRC = \
 	$(SRC_DIR)/rigcontrol/hamlib.cxx \
 	$(SRC_DIR)/rigcontrol/rigclass.cxx
 
+# We compile these if there is no system-wide libsamplerate, or if
+# CFG contains the string "w1hkj-static"
+SAMPLERATE_SRC = \
+	$(SRC_DIR)/samplerate/samplerate.c \
+	$(SRC_DIR)/samplerate/src_linear.c \
+	$(SRC_DIR)/samplerate/src_sinc.c \
+	$(SRC_DIR)/samplerate/src_zoh.c
 
 #################### begin cfg
 CFG ?= hamlib
@@ -152,15 +187,20 @@ endif
 
 # CFG is *w1hkj-dist*
 ifneq (,$(findstring w1hkj-dist,$(CFG)))
-    LDFLAGS = $(shell fltk-config --ldstaticflags --use-images) \
+    LDFLAGS = $(FLTK_STATIC_LIBS) \
               /usr/local/lib/libportaudiocpp.a /usr/local/lib/libportaudio.a \
               /usr/local/lib/libsndfile.a -lfltk_jpeg -lfltk_png -lfltk_z
+    SAMPLERATE_CFLAGS =
+    SAMPLERATE_LIBS =
 endif
 
 # CFG is *hamlib*
 ifneq (,$(findstring hamlib,$(CFG)))
-    CXXFLAGS += $(shell pkg-config --cflags hamlib)
-    LDFLAGS += $(shell pkg-config --libs hamlib)
+    ifeq (,$(HAMLIB_LIBS))
+            $(error $(call pkg_config_error,pkg-config,hamlib,PKG_CONFIG_PATH,hamlib.pc,HAMLIB))
+    endif
+    CXXFLAGS += $(HAMLIB_CFLAGS)
+    LDFLAGS += $(HAMLIB_LIBS)
     SRC += $(HAMLIB_SRC)
 else # nhl
     CPPFLAGS += -DNOHAMLIB
@@ -172,6 +212,14 @@ ifneq (,$(findstring debug,$(CFG)))
     CXXFLAGS += -O0 -ggdb3 -Wall
     SRC += $(SRC_DIR)/misc/stacktrace.cxx
     override STRIP = 0
+endif
+
+ifeq (,$(or $(SAMPLERATE_CFLAGS),$(SAMPLERATE_LIBS)))
+    SRC += $(SAMPLERATE_SRC)
+    CPPFLAGS += -Isrc/samplerate
+else
+    CXXFLAGS += $(SAMPLERATE_CFLAGS)
+    LDFLAGS += $(SAMPLERATE_LIBS)
 endif
 
 ifeq ($(STRIP), 1)
@@ -281,3 +329,11 @@ directories:
 clean:
 	@echo Deleting intermediate files for fldigi
 	@rm -rf $(DEP_DIR) $(OBJ_DIR) $(BINARY) $(VERSIONS)
+
+install: $(BINARY)
+	@echo Installing $(BINARY) in $(prefix)/bin
+	@install -m 755 $(BINARY) $(prefix)/bin
+
+uninstall:
+	@echo Deleting $(subst $(BIN_DIR),$(prefix)/bin,$(BINARY))
+	@rm -f $(subst $(BIN_DIR),$(prefix)/bin,$(BINARY))

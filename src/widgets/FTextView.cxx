@@ -377,8 +377,10 @@ int FTextView::handle(int event)
 		if (Fl::compose(d))
 			return 1;
 		int k = Fl::event_key();
-		if (k == FL_BackSpace || k == FL_Tab)
+		if (k == FL_BackSpace)
 			return 1;
+		else if (k == FL_Tab)
+		    return Fl_Widget::handle(event);
 	}
 
 	return FTextBase::handle(event);
@@ -686,6 +688,17 @@ void FTextEdit::clear(void)
 	PauseBreak = false;
 }
 
+/// Clears the sent text.
+/// Also resets the transmit position, stored backspaces and tx pause flag.
+///
+void FTextEdit::clear_sent(void)
+{
+	tbuf->remove(0, txpos);
+	txpos = 0;
+	bkspaces = 0;
+	PauseBreak = false;
+}
+
 /// Returns the next character to be transmitted.
 ///
 /// @return The next character, or ETX if the transmission has been paused, or
@@ -730,7 +743,6 @@ int FTextEdit::handle_key(int key)
 		clear();
 		active_modem->set_stopflag(true);
 		return 1;
-		break;
 	case 't': // transmit for C-t
 		if (Fl::event_state() & FL_CTRL) {
 			menu_cb(TX_MENU_TX);
@@ -755,22 +767,18 @@ int FTextEdit::handle_key(int key)
 		else
 			PauseBreak = true;
 		return 1;
-		break;
 	case (FL_KP + '+'):
 		if (active_modem == cw_modem)
 			active_modem->incWPM();
 		return 1;
-		break;
 	case (FL_KP + '-'):
 		if (active_modem == cw_modem)
 			active_modem->decWPM();
 		return 1;
-		break;
 	case (FL_KP + '*'):
 		if (active_modem == cw_modem)
 			active_modem->toggleWPM();
 		return 1;
-		break;
 	case FL_Tab:
 		// In non-CW modes: Tab and Ctrl-tab both pause until user moves the
 		// cursor to let some more text through. Another (ctrl-)tab goes back to
@@ -794,20 +802,19 @@ int FTextEdit::handle_key(int key)
 		}
 		// show_insert_position();
 		return 1;
-		break;
 		// Move cursor, or search up/down with the Meta/Alt modifiers
 	case FL_Left:
 		if (Fl::event_state() & (FL_META | FL_ALT)) {
 			active_modem->searchDown();
 			return 1;
 		}
-		break;
+		return 0;
 	case FL_Right:
 		if (Fl::event_state() & (FL_META | FL_ALT)) {
 			active_modem->searchUp();
 			return 1;
 		}
-		break;
+		return 0;
 		// queue a BS and decr. the txpos, unless the cursor is in the tx text
 	case FL_BackSpace:
 	{
@@ -821,24 +828,25 @@ int FTextEdit::handle_key(int key)
 		return 0;
 	}
 	default:
-		// insert a macro
-		if (key >= FL_F && key <= FL_F_Last && insert_position() >= txpos)
-			return handle_key_macro(key);
-
-		// read A/M-ddd, where d is a digit, as ascii characters (in base 10)
-		// and insert verbatim; e.g. M-001 inserts a <soh>
-		if (Fl::event_state() & (FL_META | FL_ALT) && isdigit(key) &&
-		    insert_position() >= txpos)
-			return handle_key_ascii(key);
-
-		// do not insert printable characters in the transmitted text
-		if (insert_position() < txpos) {
-			int d;
-			if (Fl::compose(d))
-				return 1;
-		}
 		break;
 	}
+
+        // insert a macro
+        if (key >= FL_F && key <= FL_F_Last && insert_position() >= txpos)
+            return handle_key_macro(key);
+
+        // read A/M-ddd, where d is a digit, as ascii characters (in base 10)
+        // and insert verbatim; e.g. M-001 inserts a <soh>
+        if (Fl::event_state() & (FL_META | FL_ALT) && isdigit(key) &&
+            insert_position() >= txpos)
+            return handle_key_ascii(key);
+
+        // do not insert printable characters in the transmitted text
+        if (insert_position() < txpos) {
+            int d;
+            if (Fl::compose(d))
+                return 1;
+        }
 
 	return 0;
 }
@@ -906,6 +914,7 @@ void FTextEdit::menu_cb(int val)
 		wf->set_XmtRcvBtn(true);
 		break;
 	case TX_MENU_RX:
+		insert_position(tbuf->length());
 		add("^r", CTRL);
 		break;
 	case TX_MENU_MFSK16_IMG:

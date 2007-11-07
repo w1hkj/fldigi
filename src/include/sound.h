@@ -1,3 +1,30 @@
+// ----------------------------------------------------------------------------
+//
+//      sound.h
+//
+// Copyright (C) 2006-2007
+//              Dave Freese, W1HKJ
+//
+// Copyright (C) 2007
+//              Stelios Bounanos, M0GLD
+//
+// This file is part of fldigi.
+//
+// fldigi is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// fldigi is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with fldigi; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+// ----------------------------------------------------------------------------
+
 #ifndef _SOUND_H
 #define _SOUND_H
 
@@ -23,7 +50,7 @@
 	#include <portaudiocpp/PortAudioCpp.hxx>
 #endif
 
-#include "samplerate/samplerate.h"
+#include <samplerate.h>
 
 #define MAXSC 32767.0;
 #define maxsc 32000.0
@@ -55,7 +82,6 @@ private:
 };
 
 class cSound {
-	
 protected:
 	int		sample_frequency;
 	int		txppm;
@@ -68,11 +94,11 @@ protected:
 	SRC_DATA	*rx_src_data;
 	float		*snd_buffer;
 	float		*src_buffer;
-	
+
 	bool	capture;
 	bool	playback;
 	bool	generate;
-	
+
 	SndfileHandle* ofGenerate;
 	SndfileHandle* ofCapture;
 	SndfileHandle* ifPlayback;
@@ -80,6 +106,9 @@ protected:
 	void writeGenerate(double *buff, int count);
 	void writeCapture(double *buff, int count);
 	int  readPlayback(double *buff, int count);
+
+	bool format_supported(int format);
+	void tag_file(SndfileHandle *fh, const char *title);
 
 public:
 	cSound();
@@ -89,9 +118,10 @@ public:
 	virtual int	write_samples(double *, int) = 0;
 	virtual int	write_stereo(double *, double *, int) = 0;
 	virtual int	Read(double *, int) = 0;
+	virtual bool	full_duplex(void) { return false; }
 	int		Capture(bool on);
 	int		Playback(bool on);
-	int		Generate(bool on);	
+	int		Generate(bool on);
 };
 
 class cSoundOSS : public cSound {
@@ -152,9 +182,11 @@ public:
 	int 		write_samples(double *buf, int count);
 	int		write_stereo(double *bufleft, double *bufright, int count);
 	int 		Read(double *buf, int count);
+	bool		full_duplex(void);
 
 private:
-        void		resample(float *buf, int count, int max = 0);
+        void		src_data_reset(int mode);
+        void		resample(int mode, float *buf, int count, int max = 0);
         void 		init_stream(void);
         void		adjust_stream(void);
         double		get_best_srate(void);
@@ -167,6 +199,7 @@ private:
         portaudio::System 			     &sys;
         portaudio::BlockingStream 		     stream;
 
+        portaudio::System::DeviceIterator	     idev;
         portaudio::DirectionSpecificStreamParameters in_params;
         portaudio::DirectionSpecificStreamParameters out_params;
         portaudio::StreamParameters 		     stream_params;
@@ -176,7 +209,6 @@ private:
         double	 	req_sample_rate;
         double		dev_sample_rate;
         float 		*fbuf;
-        int 		open_mode;
         static double	std_sample_rates[];
 };
 

@@ -604,7 +604,7 @@ void modem::cwid_sendtext (string s)
 	RT = (int) (samplerate * 6 / 1000.0); // 6 msec risetime for CW pulse
 	cwid_makeshape();
 	cwid_lastsym = 0;
-	for (int i = 0; i < s.length(); i++) {
+	for (unsigned int i = 0; i < s.length(); i++) {
 		cwid_send_ch(s[i]);
 	}
 }

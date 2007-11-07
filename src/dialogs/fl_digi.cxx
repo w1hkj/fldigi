@@ -147,11 +147,6 @@ int HNOM = DEFAULT_HNOM;
 int WNOM = DEFAULT_WNOM;
 
 
-void clearStatus()
-{
-	clear_StatusMessages();
-}
-
 void startup_modem(modem *m)
 {
 	trx_start_modem(m);
@@ -251,7 +246,7 @@ void cb_wMain( Fl_Widget *, void * )
 
 void initMFSK8()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if (!mfsk8_modem)
 		mfsk8_modem = new mfsk(MODE_MFSK8);
 	startup_modem (mfsk8_modem);
@@ -264,7 +259,7 @@ void cb_mnuMFSK8(Fl_Menu_*, void*) {
 
 void initMFSK16()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if (!mfsk16_modem) 
 		mfsk16_modem = new mfsk(MODE_MFSK16);
 	startup_modem (mfsk16_modem);
@@ -277,7 +272,7 @@ void cb_mnuMFSK16(Fl_Menu_*, void*) {
 
 void initPSK31()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if (!psk31_modem)
 		psk31_modem = new psk(MODE_BPSK31);
 	startup_modem (psk31_modem);
@@ -290,7 +285,7 @@ void cb_mnuPSK31(Fl_Menu_*, void*) {
 
 void initPSK63()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if(!psk63_modem)
 		psk63_modem = new psk(MODE_PSK63);
 	startup_modem (psk63_modem);
@@ -303,7 +298,7 @@ void cb_mnuPSK63(Fl_Menu_*, void*) {
 
 void initPSK125()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if(!psk125_modem)
 		psk125_modem = new psk(MODE_PSK125);
 	startup_modem (psk125_modem);
@@ -316,7 +311,7 @@ void cb_mnuPSK125(Fl_Menu_*, void*) {
 
 void initPSK250()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if(!psk250_modem)
 		psk250_modem = new psk(MODE_PSK250);
 	startup_modem (psk250_modem);
@@ -329,7 +324,7 @@ void cb_mnuPSK250(Fl_Menu_*, void*) {
 
 void initQPSK31()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if (!qpsk31_modem)
 		qpsk31_modem = new psk(MODE_QPSK31);
 	startup_modem (qpsk31_modem);
@@ -342,7 +337,7 @@ void cb_mnuQPSK31(Fl_Menu_*, void*) {
 
 void initQPSK63()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if (!qpsk63_modem)
 		qpsk63_modem = new psk(MODE_QPSK63);
 	startup_modem (qpsk63_modem);
@@ -355,7 +350,7 @@ void cb_mnuQPSK63(Fl_Menu_*, void*) {
 
 void initQPSK125()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if (!qpsk125_modem)
 		qpsk125_modem = new psk(MODE_QPSK125);
 	startup_modem (qpsk125_modem);
@@ -368,7 +363,7 @@ void cb_mnuQPSK125(Fl_Menu_*, void*) {
 
 void initQPSK250()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if (!qpsk250_modem)
 		qpsk250_modem = new psk(MODE_QPSK250);
 	startup_modem (qpsk250_modem);
@@ -381,7 +376,7 @@ void cb_mnuQPSK250(Fl_Menu_*, void*) {
 
 void initCW()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if (!cw_modem)
 		cw_modem = new cw();
 	startup_modem (cw_modem);
@@ -394,7 +389,7 @@ void cb_mnuCW(Fl_Menu_*, void*) {
 
 void initRTTY()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if (!rtty_modem)
 		rtty_modem = new rtty(MODE_RTTY);
 	startup_modem (rtty_modem);
@@ -407,7 +402,7 @@ void cb_mnuRTTY(Fl_Menu_*, void*) {
 
 void initOLIVIA()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if (!olivia_modem)
 		olivia_modem = new olivia();
 	startup_modem (olivia_modem);
@@ -420,7 +415,7 @@ void cb_mnuOlivia(Fl_Menu_*, void*) {
 
 void initDOMINOEX4()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if (!dominoex4_modem) {
 		dominoex4_modem = new dominoex(MODE_DOMINOEX4);
 	}
@@ -434,7 +429,7 @@ void cb_mnuDOMINOEX4(Fl_Menu_ *, void *) {
 
 void initDOMINOEX5()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if (!dominoex5_modem) {
 		dominoex5_modem = new dominoex(MODE_DOMINOEX5);
 	}
@@ -448,7 +443,7 @@ void cb_mnuDOMINOEX5(Fl_Menu_ *, void *) {
 
 void initDOMINOEX8()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if (!dominoex8_modem)
 		dominoex8_modem = new dominoex(MODE_DOMINOEX8);
 	startup_modem (dominoex8_modem);
@@ -461,7 +456,7 @@ void cb_mnuDOMINOEX8(Fl_Menu_ *, void *) {
 
 void initDOMINOEX11()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if (!dominoex11_modem)
 		dominoex11_modem = new dominoex(MODE_DOMINOEX11);
 	startup_modem (dominoex11_modem);
@@ -474,7 +469,7 @@ void cb_mnuDOMINOEX11(Fl_Menu_ *, void *) {
 
 void initDOMINOEX16()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if (!dominoex16_modem)
 		dominoex16_modem = new dominoex(MODE_DOMINOEX16);
 	startup_modem (dominoex16_modem);
@@ -487,7 +482,7 @@ void cb_mnuDOMINOEX16(Fl_Menu_ *, void *) {
 
 void initDOMINOEX22()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if (!dominoex22_modem)
 		dominoex22_modem = new dominoex(MODE_DOMINOEX22);
 	startup_modem (dominoex22_modem);
@@ -500,7 +495,7 @@ void cb_mnuDOMINOEX22(Fl_Menu_ *, void *) {
 
 void initFELDHELL()
 {
-	clearStatus();
+	clear_StatusMessages();
 	FHdisp->clear();
 	if (!feld_modem)
 		feld_modem = new feld(MODE_FELDHELL);
@@ -514,7 +509,7 @@ void cb_mnuFELDHELL(Fl_Menu_ *, void *) {
 
 void initFSKHELL()
 {
-	clearStatus();
+	clear_StatusMessages();
 	FHdisp->clear();
 	if (!feld_FMmodem)
 		feld_FMmodem = new feld(MODE_FSKHELL);
@@ -528,7 +523,7 @@ void cb_mnuFSKHELL(Fl_Menu_ *, void *) {
 
 void initFSKHELL105()
 {
-	clearStatus();
+	clear_StatusMessages();
 	FHdisp->clear();
 	if (!feld_FM105modem)
 		feld_FM105modem = new feld(MODE_FSKH105);
@@ -541,7 +536,7 @@ void cb_mnuFSKHELL105(Fl_Menu_ *, void *) {
 }	
 
 //void cb_mnuCMTHELL(Fl_Menu_ *, void *) {
-//	clearStatus();
+//	clear_StatusMessages();
 //	FHdisp->clear();
 //	if (!feld_CMTmodem)
 //		feld_CMTmodem = new feld(MODE_FMCMT);
@@ -550,7 +545,7 @@ void cb_mnuFSKHELL105(Fl_Menu_ *, void *) {
 
 void initTHROB1()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if (!throb1_modem)
 		throb1_modem = new throb(MODE_THROB1);
 	startup_modem (throb1_modem);
@@ -563,7 +558,7 @@ void cb_mnuTHROB1(Fl_Menu_ *, void *) {
 
 void initTHROB2()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if (!throb2_modem)
 		throb2_modem = new throb(MODE_THROB2);
 	startup_modem (throb2_modem);
@@ -576,7 +571,7 @@ void cb_mnuTHROB2(Fl_Menu_ *, void *) {
 
 void initTHROB4()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if (!throb4_modem)
 		throb4_modem = new throb(MODE_THROB4);
 	startup_modem (throb4_modem);
@@ -589,7 +584,7 @@ void cb_mnuTHROB4(Fl_Menu_ *, void *) {
 
 void initTHROBX1()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if (!throbx1_modem)
 		throbx1_modem = new throb(MODE_THROBX1);
 	startup_modem (throbx1_modem);
@@ -602,7 +597,7 @@ void cb_mnuTHROBX1(Fl_Menu_ *, void *) {
 
 void initTHROBX2()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if (!throbx2_modem)
 		throbx2_modem = new throb(MODE_THROBX2);
 	startup_modem (throbx2_modem);
@@ -615,7 +610,7 @@ void cb_mnuTHROBX2(Fl_Menu_ *, void *) {
 
 void initTHROBX4()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if (!throbx4_modem)
 		throbx4_modem = new throb(MODE_THROBX4);
 	startup_modem (throbx4_modem);
@@ -628,7 +623,7 @@ void cb_mnuTHROBX4(Fl_Menu_ *, void *) {
 
 void initWWV()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if (!wwv_modem)
 		wwv_modem = new wwv();
 	startup_modem (wwv_modem);
@@ -641,7 +636,7 @@ void cb_mnuWWV(Fl_Menu_ *, void *) {
 
 void initANALYSIS()
 {
-	clearStatus();
+	clear_StatusMessages();
 	if (!anal_modem)
 		anal_modem = new anal();
 	startup_modem (anal_modem);
@@ -1251,7 +1246,7 @@ Fl_Menu_Item menu_[] = {
 {"About", 0, (Fl_Callback*)cb_mnuAbout, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 66
 {0,0,0,0,0,0,0,0,0}, // 67
 {"  ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0}, // 68
-{"Wav", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 69
+{"Audio", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 69
 {"Rx capture",  0, (Fl_Callback*)cb_mnuCapture,  0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//70
 {"Tx generate", 0, (Fl_Callback*)cb_mnuGenerate, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//71
 {"Playback",    0, (Fl_Callback*)cb_mnuPlayback, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//72
@@ -1621,7 +1616,7 @@ void put_rx_char(unsigned int data)
 	int style = ReceiveWidget::RECV;
 	if (asc == ascii2 && iscntrl(data))
 		style = ReceiveWidget::CTRL;
-	if (wf->tmp_carrier)
+	if (wf->tmp_carrier())
 		style = ReceiveWidget::ALTR;
 
 	data &= 0x7F;
@@ -1665,7 +1660,12 @@ void put_sec_char( char chr )
 	}
 }
 
-void put_status(const char *msg)
+void clear_status_cb(void *)
+{
+	StatusBar->label("");
+}
+
+void put_status(const char *msg, double timeout)
 {
 	static char m[60];
 	strncpy(m, msg, sizeof(m));
@@ -1673,6 +1673,13 @@ void put_status(const char *msg)
 
 	FL_LOCK_D();
 	QUEUE(CMP_CB(&Fl_Box::label, StatusBar, m)); // StatusBar->label(m);
+	// While it is safe to call to use Fl::add_timeout without qrunner
+	// regardless of our caller's context, queuing ensures that clear_status_cb
+	// really gets called at least ``timeout'' seconds after the label is set.
+	if (timeout > 0 && !Fl::has_timeout(clear_status_cb)) { // clear after timeout
+		Fl::remove_timeout(clear_status_cb);
+		QUEUE(CMP_CB(&Fl::add_timeout, timeout, clear_status_cb, (void*)0));
+	}
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }
@@ -1777,7 +1784,7 @@ int get_tx_char(void)
 	case 'r': case 'R':
 		if (state != STATE_CTRL)
 			break;
-		QUEUE_SYNC(CMP_CB(&TransmitWidget::clear, TransmitText));
+		QUEUE_SYNC(CMP_CB(&TransmitWidget::clear_sent, TransmitText));
 		state = STATE_CHAR;
 		c = 3; // ETX
 		break;
