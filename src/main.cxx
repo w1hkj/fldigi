@@ -65,7 +65,10 @@
 using namespace std;
 
 string scDevice = "/dev/dsp1";
-bool allow_full_duplex = false;
+bool pa_allow_full_duplex = false;
+int pa_frames_per_buffer = 0;
+double pa_sample_rate = 0;
+
 char szHomedir[120] = "";
 char szPskMailDir[120] = "";
 string PskMailDir;
@@ -293,6 +296,13 @@ void generate_option_help(void) {
 	     << " or 0x" << hex << progdefaults.tx_msgid << dec << '\n'
 
 	     << setw(width) << setiosflags(ios::left)
+	     << " --sample-rate SAMPLE_RATE"
+	     << "Force the PortAudio stream to be opened\n"
+	     << setw(width) << setiosflags(ios::left)
+	     << "" << "with a sample rate of SAMPLE_RATE Hz\n"
+
+
+	     << setw(width) << setiosflags(ios::left)
 	     << " --version" << "Print version information\n"
 
 	     << setw(width) << setiosflags(ios::left)
@@ -399,7 +409,8 @@ int parse_args(int argc, char **argv, int& idx)
 
         enum { ZERO, RX_IPC_KEY, TX_IPC_KEY, CONFIG_DIR, FAST_TEXT, FONT,
                WFALL_WIDTH, WFALL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, PROFILE,
-               USE_CHECK, ALLOW_FULL_DUPLEX, HELP, VERSION };
+               USE_CHECK, ALLOW_FULL_DUPLEX, FRAMES_PER_BUFFER, SAMPLE_RATE,
+               HELP, VERSION };
 
 	const char shortopts[] = "+";
 	static struct option longopts[] = {
@@ -416,6 +427,8 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "profile",	   1, 0, PROFILE },
 		{ "usechkbtns",    0, 0, USE_CHECK },
 		{ "full-duplex",   0, 0, ALLOW_FULL_DUPLEX },
+		{ "frames-per-buf",1, 0, FRAMES_PER_BUFFER },
+		{ "sample-rate",   1, 0, SAMPLE_RATE },
 
 		{ "help",	   0, 0, HELP },
 		{ "version",	   0, 0, VERSION },
@@ -510,9 +523,17 @@ int parse_args(int argc, char **argv, int& idx)
 			return 1;
 
 		case ALLOW_FULL_DUPLEX:
-			allow_full_duplex = true;
+			pa_allow_full_duplex = true;
 			idx += 1;
 			return 1;
+		case FRAMES_PER_BUFFER:
+			pa_frames_per_buffer = strtol(optarg, 0, 10);
+			idx += 2;
+			return 2;
+		case SAMPLE_RATE:
+			pa_sample_rate = strtod(optarg, 0);
+			idx += 2;
+			return 2;
 
 		case HELP:
 			cerr << option_help;

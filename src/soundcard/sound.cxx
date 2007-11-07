@@ -788,8 +788,8 @@ int cSoundPA::write_stereo(double *bufleft, double *bufright, int count)
 
 bool cSoundPA::full_duplex(void)
 {
-        extern bool allow_full_duplex;
-        return allow_full_duplex && idev->isFullDuplexDevice() ||
+        extern bool pa_allow_full_duplex;
+        return pa_allow_full_duplex && idev->isFullDuplexDevice() ||
                 idev->hostApi().typeId() == paJACK;
 }
 
@@ -908,6 +908,10 @@ void cSoundPA::init_stream(void)
 
         max_frames_per_buffer = ceil2(MIN(SND_BUF_LEN, (unsigned)(SCBLOCKSIZE *
                                                        dev_sample_rate / req_sample_rate)));
+        extern int pa_frames_per_buffer;
+        if (pa_frames_per_buffer)
+                frames_per_buffer = pa_frames_per_buffer;
+
         stream_params.setFramesPerBuffer(frames_per_buffer);
 #ifndef NDEBUG
         cerr << "PA_debug: max_frames_per_buffer = " << max_frames_per_buffer << endl;
@@ -947,6 +951,10 @@ double cSoundPA::std_sample_rates[] = { -1, 8000, 9600, 11025, 12000,
 // goes through the array, and may even try the same rate twice.
 double cSoundPA::get_best_srate(void)
 {
+        extern double pa_sample_rate;
+        if (pa_sample_rate)
+                return pa_sample_rate;
+
         int asize = sizeof(std_sample_rates) / sizeof(std_sample_rates[0]);
 
         std_sample_rates[0] = req_sample_rate;
