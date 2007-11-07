@@ -50,7 +50,7 @@
 	#include <portaudiocpp/PortAudioCpp.hxx>
 #endif
 
-#include "samplerate/samplerate.h"
+#include <samplerate.h>
 
 #define MAXSC 32767.0;
 #define maxsc 32000.0
