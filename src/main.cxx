@@ -65,6 +65,7 @@
 using namespace std;
 
 string scDevice = "/dev/dsp1";
+bool allow_full_duplex = false;
 char szHomedir[120] = "";
 char szPskMailDir[120] = "";
 string PskMailDir;
@@ -398,7 +399,7 @@ int parse_args(int argc, char **argv, int& idx)
 
         enum { ZERO, RX_IPC_KEY, TX_IPC_KEY, CONFIG_DIR, FAST_TEXT, FONT,
                WFALL_WIDTH, WFALL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, PROFILE,
-               USE_CHECK, HELP, VERSION };
+               USE_CHECK, ALLOW_FULL_DUPLEX, HELP, VERSION };
 
 	const char shortopts[] = "+";
 	static struct option longopts[] = {
@@ -406,7 +407,7 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "tx-ipc-key",	   1, 0, TX_IPC_KEY },
 		{ "config-dir",	   1, 0, CONFIG_DIR },
 		{ "fast-text",	   0, 0, FAST_TEXT },
-		{ "font",	   	   1, 0, FONT },
+		{ "font",	   1, 0, FONT },
 
 		{ "wfall-width",   1, 0, WFALL_WIDTH },
 		{ "wfall-height",  1, 0, WFALL_HEIGHT },
@@ -414,8 +415,9 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "window-height", 1, 0, WINDOW_HEIGHT },
 		{ "profile",	   1, 0, PROFILE },
 		{ "usechkbtns",    0, 0, USE_CHECK },
+		{ "full-duplex",   0, 0, ALLOW_FULL_DUPLEX },
 
-		{ "help",	       0, 0, HELP },
+		{ "help",	   0, 0, HELP },
 		{ "version",	   0, 0, VERSION },
 		{ 0 }
 	};
@@ -504,6 +506,11 @@ int parse_args(int argc, char **argv, int& idx)
 
 		case USE_CHECK:
 			useCheckButtons = true;
+			idx += 1;
+			return 1;
+
+		case ALLOW_FULL_DUPLEX:
+			allow_full_duplex = true;
 			idx += 1;
 			return 1;
 

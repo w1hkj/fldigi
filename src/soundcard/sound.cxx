@@ -14,7 +14,7 @@
 #define	MIN(a,b)	(((a) < (b)) ? (a) : (b))
 
 cSound::cSound()
-        : txppm(progdefaults.TX_corr), rxppm(progdefaults.RX_corr),
+        : sample_frequency(0), txppm(progdefaults.TX_corr), rxppm(progdefaults.RX_corr),
           tx_src_state(0), tx_src_data(0), rx_src_state(0), rx_src_data(0),
           snd_buffer(0), src_buffer(0), capture(false), playback(false),
 	  generate(false), ofGenerate(0), ofCapture(0), ifPlayback(0)
@@ -541,7 +541,8 @@ int cSoundOSS::write_stereo(double *bufleft, double *bufright, int count)
 
 cSoundPA::cSoundPA(const char *dev)
         : device(dev), sys(portaudio::System::instance()),
-          frames_per_buffer(0), fbuf(0)
+          frames_per_buffer(paFramesPerBufferUnspecified), req_sample_rate(0),
+          dev_sample_rate(0), fbuf(0)
 {
         rx_src_data = new SRC_DATA;
         tx_src_data = new SRC_DATA;
@@ -566,9 +567,24 @@ cSoundPA::~cSoundPA()
 
 int cSoundPA::Open(int mode, int freq)
 {
-        open_mode = mode;
-        req_sample_rate = freq;
-        sample_frequency = (int)req_sample_rate;
+        cerr << "cSoundPA::Open(" << mode << ", " << freq << "); req_sample_rate="
+             << req_sample_rate << " sample_frequency=" << sample_frequency << endl;
+
+        int old_sample_rate = req_sample_rate;
+        req_sample_rate = sample_frequency = freq;
+
+        // Try to keep the stream open if we are using jack, or if we
+        // are in full duplex mode and the sample rate has not changed.
+        if (stream.isOpen()) {
+                if (idev->hostApi().typeId() == paJACK) {
+                        // If we have a new sample rate, we must reset the src data.
+                        if (old_sample_rate != freq)
+                                src_data_reset(1 << O_RDONLY | 1 << O_WRONLY);
+                        return 0;
+                }
+                else if (idev->isFullDuplexDevice() && old_sample_rate == freq)
+                        return 0;
+        }
 
         Close();
         try {
@@ -584,31 +600,22 @@ int cSoundPA::Open(int mode, int freq)
                 throw(SndException(e.what()));
         }
 
-        int err;
-        if (mode == O_RDONLY) {
-                stream_params.setOutputParameters(portaudio::DirectionSpecificStreamParameters::null());
-                if (rx_src_state)
-                        src_delete(rx_src_state);
-                rx_src_state = src_new(SRC_SINC_FASTEST, 2, &err);
-                if (!rx_src_state)
-                        throw(SndException(src_strerror(err)));
-                rx_src_data->src_ratio = req_sample_rate / (dev_sample_rate * (1.0 + rxppm / 1e6));
+        mode = full_duplex()  ?  1 << O_RDONLY | 1 << O_WRONLY  :  1 << mode;
+        if (mode & 1 << O_RDONLY) {
+                if (!(mode & 1 << O_WRONLY))
+                        stream_params.setOutputParameters(portaudio::DirectionSpecificStreamParameters::null());
         }
-        else if (mode == O_WRONLY) {
-                stream_params.setInputParameters(portaudio::DirectionSpecificStreamParameters::null());
-                if (tx_src_state)
-                        src_delete(tx_src_state);
-                tx_src_state = src_new(SRC_SINC_FASTEST, 2, &err);
-                if (!tx_src_state)
-                        throw(SndException(src_strerror(err)));
-                tx_src_data->src_ratio = dev_sample_rate * (1.0 + txppm / 1e6) / req_sample_rate;
+        if (mode & 1 << O_WRONLY) {
+                if (!(mode & 1 << O_RDONLY))
+                        stream_params.setInputParameters(portaudio::DirectionSpecificStreamParameters::null());
         }
-        else
-                return -1;
+        src_data_reset(mode);
 
-//        if (dev_sample_rate != req_sample_rate)
-//                cerr << "PA_debug: resampling " << dev_sample_rate
-//                     << " <-> " << req_sample_rate << endl;
+#ifndef NDEBUG
+       if (dev_sample_rate != req_sample_rate)
+               cerr << "PA_debug: resampling " << dev_sample_rate
+                    << " <-> " << req_sample_rate << endl;
+#endif
 
         stream.open(stream_params);
         stream.start();
@@ -652,7 +659,7 @@ int cSoundPA::Read(double *buf, int count)
         float *rbuf = fbuf;
 
         if (req_sample_rate != dev_sample_rate || progdefaults.RX_corr != 0) {
-                resample(rbuf, ncount, count);
+                resample(1 << O_RDONLY, rbuf, ncount, count);
                 rbuf = rx_src_data->data_out;
                 count = rx_src_data->output_frames_gen;
         }
@@ -672,7 +679,7 @@ int cSoundPA::write_samples(double *buf, int count)
 
         float *wbuf = fbuf;
         if (req_sample_rate != dev_sample_rate || progdefaults.TX_corr != 0) {
-                resample(wbuf, count);
+                resample(1 << O_WRONLY, wbuf, count);
                 wbuf = tx_src_data->data_out;
                 count = tx_src_data->output_frames_gen;
         }
@@ -701,7 +708,7 @@ int cSoundPA::write_stereo(double *bufleft, double *bufright, int count)
 
         float *wbuf = fbuf;
         if (req_sample_rate != dev_sample_rate || progdefaults.TX_corr != 0) {
-                resample(wbuf, count);
+                resample(1 << O_WRONLY, wbuf, count);
                 wbuf = tx_src_data->data_out;
                 count = tx_src_data->output_frames_gen;
         }
@@ -719,9 +726,37 @@ int cSoundPA::write_stereo(double *bufleft, double *bufright, int count)
         return count;
 }
 
-void cSoundPA::resample(float *buf, int count, int max)
+bool cSoundPA::full_duplex(void)
 {
-        if (open_mode == O_RDONLY) {
+        extern bool allow_full_duplex;
+        return allow_full_duplex && idev->isFullDuplexDevice() ||
+                idev->hostApi().typeId() == paJACK;
+}
+
+void cSoundPA::src_data_reset(int mode)
+{
+        int err;
+        if (mode & 1 << O_RDONLY) {
+                if (rx_src_state)
+                        src_delete(rx_src_state);
+                rx_src_state = src_new(SRC_SINC_FASTEST, 2, &err);
+                if (!rx_src_state)
+                        throw SndException(src_strerror(err));
+                rx_src_data->src_ratio = req_sample_rate / (dev_sample_rate * (1.0 + rxppm / 1e6));
+        }
+        if (mode & 1 << O_WRONLY) {
+                if (tx_src_state)
+                        src_delete(tx_src_state);
+                tx_src_state = src_new(SRC_SINC_FASTEST, 2, &err);
+                if (!tx_src_state)
+                        throw SndException(src_strerror(err));
+                tx_src_data->src_ratio = dev_sample_rate * (1.0 + txppm / 1e6) / req_sample_rate;
+        }
+}
+
+void cSoundPA::resample(int mode, float *buf, int count, int max)
+{
+        if (mode & 1 << O_RDONLY) {
                 if (rxppm != progdefaults.RX_corr) {
                         rxppm = progdefaults.RX_corr;
                         rx_src_data->src_ratio = req_sample_rate
@@ -738,7 +773,7 @@ void cSoundPA::resample(float *buf, int count, int max)
 
                 src_process(rx_src_state, rx_src_data);
         }
-        else if (open_mode == O_WRONLY) {
+        else if (mode & 1 << O_WRONLY) {
                 if (txppm != progdefaults.TX_corr) {
                         txppm = progdefaults.TX_corr;
                         tx_src_data->src_ratio = dev_sample_rate
@@ -759,21 +794,38 @@ void cSoundPA::resample(float *buf, int count, int max)
 
 void cSoundPA::init_stream(void)
 {
-        bool found = false;
-
-        portaudio::System::DeviceIterator idev;
-        for (idev = sys.devicesBegin(); idev != sys.devicesEnd(); ++idev) {
-                if (device == idev->name()) {
-                        found = true;
+#ifndef NDEBUG
+        cerr << "PA_debug: looking for \"" << device << "\"\n";
+#endif
+        for (idev = sys.devicesBegin(); idev != sys.devicesEnd(); ++idev)
+                if (device == idev->name())
                         break;
-                }
-        }
-        if (!found) {
+        if (idev == sys.devicesEnd()) {
                 idev = sys.devicesBegin();
-                cerr << "PA_debug: could not find device \"" << device << '"' << endl;
+                cerr << "PA_debug: could not find device \"" << device << "\"\n";
         }
-//        cerr << "PA_debug: using device " << idev->index() << " \""
-//             << idev->name() << '"' << endl;
+#ifndef NDEBUG
+        cerr << "PA_debug: using device:"
+             << "\n index: " << idev->index()
+             << "\n name: " << idev->name()
+             << "\n hostAPI: " << idev->hostApi().name()
+             << "\n maxInputChannels: " << idev->maxInputChannels()
+             << "\n maxOutputChannels: " << idev->maxOutputChannels()
+             << "\n defaultLowInputLatency: " << idev->defaultLowInputLatency()
+             << "\n defaultHighInputLatency: " << idev->defaultHighInputLatency()
+             << "\n defaultLowOutputLatency: " << idev->defaultLowOutputLatency()
+             << "\n defaultHighOutputLatency: " << idev->defaultHighOutputLatency()
+             << "\n defaultSampleRate: " << idev->defaultSampleRate()
+             << boolalpha
+             << "\n isInputOnlyDevice: " << idev->isInputOnlyDevice()
+             << "\n isOutputOnlyDevice: " << idev->isOutputOnlyDevice()
+             << "\n isFullDuplexDevice: " << idev->isFullDuplexDevice()
+             << "\n isSystemDefaultInputDevice: " << idev->isSystemDefaultInputDevice()
+             << "\n isSystemDefaultOutputDevice: " << idev->isSystemDefaultOutputDevice()
+             << "\n isHostApiDefaultInputDevice: " << idev->isHostApiDefaultInputDevice()
+             << "\n isHostApiDefaultOutputDevice: " << idev->isHostApiDefaultOutputDevice()
+             << "\n\n";
+#endif
 
         in_params.setDevice(*idev);
         in_params.setNumChannels(2);
@@ -797,7 +849,9 @@ void cSoundPA::init_stream(void)
         max_frames_per_buffer = ceil2(MIN(SND_BUF_LEN, (unsigned)(SCBLOCKSIZE *
                                                        dev_sample_rate / req_sample_rate)));
         stream_params.setFramesPerBuffer(frames_per_buffer);
-//        cerr << "PA_debug: max_frames_per_buffer = " << max_frames_per_buffer << endl;
+#ifndef NDEBUG
+        cerr << "PA_debug: max_frames_per_buffer = " << max_frames_per_buffer << endl;
+#endif
 }
 
 void cSoundPA::adjust_stream(void)
@@ -840,7 +894,9 @@ double cSoundPA::get_best_srate(void)
                 portaudio::StreamParameters sp(in_params, out_params,
                                                std_sample_rates[i],
                                                0, paNoFlag);
-//               cerr << "PA_debug: trying " << std_sample_rates[i] << " Hz" << endl;
+#ifndef NDEBUG
+                cerr << "PA_debug: trying " << std_sample_rates[i] << " Hz" << endl;
+#endif
                 if (sp.isSupported())
                         return sp.sampleRate();
         }

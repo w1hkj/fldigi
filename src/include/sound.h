@@ -89,6 +89,7 @@ public:
 	virtual int	write_samples(double *, int) = 0;
 	virtual int	write_stereo(double *, double *, int) = 0;
 	virtual int	Read(double *, int) = 0;
+	virtual bool	full_duplex(void) { return false; }
 	int		Capture(bool on);
 	int		Playback(bool on);
 	int		Generate(bool on);	
@@ -152,9 +153,11 @@ public:
 	int 		write_samples(double *buf, int count);
 	int		write_stereo(double *bufleft, double *bufright, int count);
 	int 		Read(double *buf, int count);
+	bool		full_duplex(void);
 
 private:
-        void		resample(float *buf, int count, int max = 0);
+        void		src_data_reset(int mode);
+        void		resample(int mode, float *buf, int count, int max = 0);
         void 		init_stream(void);
         void		adjust_stream(void);
         double		get_best_srate(void);
@@ -167,6 +170,7 @@ private:
         portaudio::System 			     &sys;
         portaudio::BlockingStream 		     stream;
 
+        portaudio::System::DeviceIterator	     idev;
         portaudio::DirectionSpecificStreamParameters in_params;
         portaudio::DirectionSpecificStreamParameters out_params;
         portaudio::StreamParameters 		     stream_params;
@@ -176,7 +180,6 @@ private:
         double	 	req_sample_rate;
         double		dev_sample_rate;
         float 		*fbuf;
-        int 		open_mode;
         static double	std_sample_rates[];
 };
 

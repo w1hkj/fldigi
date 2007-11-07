@@ -104,7 +104,8 @@ void trx_trx_receive_loop()
 				_trx_scdbl.next(); // change buffers
 			}
 		}
-		scard->Close();
+		if (!scard->full_duplex())
+			scard->Close();
 	} else
 		MilliSleep(10);
 }
@@ -132,7 +133,8 @@ void trx_trx_transmit_loop()
 			if (active_modem->tx_process() < 0)
 				trx_state = STATE_RX;
 		}
-		scard->Close();
+		if (!scard->full_duplex())
+			scard->Close();
 	} else
 		MilliSleep(10);
 
@@ -171,7 +173,8 @@ void trx_tune_loop()
 				xmttune::tune(active_modem->get_txfreq_woffset(), scard);
 		}
 		xmttune::keyup(active_modem->get_txfreq_woffset(), scard);
-		scard->Close();
+		if (!scard->full_duplex())
+			scard->Close();
 		_trx_tune = 0;
 	} else
 		MilliSleep(10);
