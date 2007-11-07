@@ -1,3 +1,30 @@
+// ----------------------------------------------------------------------------
+//
+//      sound.h
+//
+// Copyright (C) 2006-2007
+//              Dave Freese, W1HKJ
+//
+// Copyright (C) 2007
+//              Stelios Bounanos, M0GLD
+//
+// This file is part of fldigi.
+//
+// fldigi is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// fldigi is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with fldigi; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+// ----------------------------------------------------------------------------
+
 #ifndef _SOUND_H
 #define _SOUND_H
 
@@ -55,7 +82,6 @@ private:
 };
 
 class cSound {
-	
 protected:
 	int		sample_frequency;
 	int		txppm;
@@ -68,11 +94,11 @@ protected:
 	SRC_DATA	*rx_src_data;
 	float		*snd_buffer;
 	float		*src_buffer;
-	
+
 	bool	capture;
 	bool	playback;
 	bool	generate;
-	
+
 	SndfileHandle* ofGenerate;
 	SndfileHandle* ofCapture;
 	SndfileHandle* ifPlayback;
@@ -95,7 +121,7 @@ public:
 	virtual bool	full_duplex(void) { return false; }
 	int		Capture(bool on);
 	int		Playback(bool on);
-	int		Generate(bool on);	
+	int		Generate(bool on);
 };
 
 class cSoundOSS : public cSound {

@@ -1,17 +1,44 @@
+// ----------------------------------------------------------------------------
+//
+//      sound.cxx
+//
+// Copyright (C) 2006-2007
+//              Dave Freese, W1HKJ
+//
+// Copyright (C) 2007
+//              Stelios Bounanos, M0GLD
+//
+// This file is part of fldigi.
+//
+// fldigi is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// fldigi is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with fldigi; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+// ----------------------------------------------------------------------------
+
 #include "sound.h"
 #include "configuration.h"
 #include <FL/Fl.H>
 #include "File_Selector.h"
 
 #ifdef MIN
-#undef MIN
+# undef MIN
+# define MIN(a,b) (((a) < (b)) ? (a) : (b))
 #endif
 #ifdef MAX
-#undef MAX
+# undef MAX
+# define MAX(a,b) (((a) > (b)) ? (a) : (b))
 #endif
 
-#define	MAX(a,b)	(((a) > (b)) ? (a) : (b))
-#define	MIN(a,b)	(((a) < (b)) ? (a) : (b))
 
 cSound::cSound()
         : sample_frequency(0), txppm(progdefaults.TX_corr), rxppm(progdefaults.RX_corr),
@@ -33,7 +60,7 @@ cSound::~cSound()
 	delete ifPlayback;
 }
 
-int cSound::Capture(bool on) 
+int cSound::Capture(bool on)
 {
 	if (on) {
 		string deffilename = "./capture.wav";
@@ -62,7 +89,8 @@ int cSound::Capture(bool on)
 			}
 			ofCapture->command(SFC_SET_UPDATE_HEADER_AUTO, 0, SF_TRUE);
 			tag_file(ofCapture, "Captured audio");
-		} else
+		}
+		else
 			return 0;
 	}
 	else {
@@ -73,7 +101,7 @@ int cSound::Capture(bool on)
 	return 1;
 }
 
-int cSound::Playback(bool on) 
+int cSound::Playback(bool on)
 {
 	if (on) {
 		string deffilename = "./playback.wav";
@@ -93,7 +121,8 @@ int cSound::Playback(bool on)
 				return 0;
 			}
 			playback = true;
-		} else
+		}
+		else
 			return 0;
 	}
 	else {
@@ -104,7 +133,7 @@ int cSound::Playback(bool on)
 	return 1;
 }
 
-int cSound::Generate(bool on) 
+int cSound::Generate(bool on)
 {
 	if (on) {
 		string deffilename = "./generate.wav";
@@ -130,11 +159,12 @@ int cSound::Generate(bool on)
 				delete ofGenerate;
 				ofGenerate = 0;
 				return 0;
-			} 
+			}
 			ofGenerate->command(SFC_SET_UPDATE_HEADER_AUTO, 0, SF_TRUE);
 			tag_file(ofGenerate, "Generated audio");
 
-		} else
+		}
+		else
 			return 0;
 	}
 	else {
@@ -187,7 +217,7 @@ void cSound::tag_file(SndfileHandle *fh, const char *title)
 
        char s[64];
        snprintf(s, sizeof(s), "%s freq=%s",
-                active_modem->get_mode_name(), inpFreq->value());//wf->carrier());
+                active_modem->get_mode_name(), inpFreq->value());
        fh->setString(SF_STR_COMMENT, s);
 
        time_t t = time(0);
@@ -220,7 +250,7 @@ cSoundOSS::cSoundOSS(const char *dev ) {
 		src_buffer	= new float [2*SND_BUF_LEN];
 		cbuff 		= new unsigned char [4 * SND_BUF_LEN];
 		if (!snd_buffer || !src_buffer || !cbuff)
-			throw("Cannot create src buffers");
+			throw "Cannot create libsamplerate buffers";
 		for (int i = 0; i < 2*SND_BUF_LEN; i++)
 			snd_buffer[i] = src_buffer[i] = 0.0;
 		for (int i = 0; i < 4 * SND_BUF_LEN; i++)
@@ -229,19 +259,19 @@ cSoundOSS::cSoundOSS(const char *dev ) {
 		tx_src_data = new SRC_DATA;
 		rx_src_data = new SRC_DATA;
 		if (!tx_src_data || !rx_src_data)
-			throw("Cannot create source data structures");
-			
+			throw "Cannot create libsamplerate data structures";
+
 		rx_src_state = src_new(SRC_SINC_FASTEST, 2, &err);
 		if (rx_src_state == 0)
-			throw(src_strerror(err));
-			
+			throw src_strerror(err);
+
 		tx_src_state = src_new(SRC_SINC_FASTEST, 2, &err);
 		if (tx_src_state == 0)
-			throw(src_strerror(err));
-			
+			throw src_strerror(err);
+
 		rx_src_data->src_ratio = 1.0/(1.0 + rxppm/1e6);
 		src_set_ratio ( rx_src_state, 1.0/(1.0 + rxppm/1e6));
-		
+
 		tx_src_data->src_ratio = 1.0 + txppm/1e6;
 		src_set_ratio ( tx_src_state, 1.0 + txppm/1e6);
 	}
@@ -286,7 +316,7 @@ int cSoundOSS::Open(int md, int freq)
 		Channels(2);			//          2 channels
 		Frequency(freq);
 		setfragsize();
-	} 
+	}
 	catch (...) {
 		throw;
 	}
@@ -351,7 +381,7 @@ void cSoundOSS::Channels(int nuchannels)
 }
 
 void cSoundOSS::Frequency(int frequency)
-{	
+{
 	sample_frequency = frequency;
 	if (ioctl(device_fd, SNDCTL_DSP_SPEED, &sample_frequency) == -1) {
 		device_fd = -1;
@@ -412,7 +442,7 @@ int cSoundOSS::Read(unsigned char *buffer, int buffersize)
 {
 	if (device_fd == -1)
 		return -1;
-	
+
 	return read (device_fd, buffer, buffersize);
 }
 
@@ -426,7 +456,7 @@ int cSoundOSS::Read(double *buffer, int buffersize)
 	numread = Read(cbuff, buffersize * 4);
 	for (int i = 0; i < buffersize * 2; i++)
 		src_buffer[i] = ibuff[i] / MAXSC;
-		
+
 	for (int i = 0; i < buffersize; i++)
 		buffer[i] = src_buffer[2*i];
 
@@ -437,18 +467,18 @@ int cSoundOSS::Read(double *buffer, int buffersize)
 	}
 
 	if (capture) writeCapture( buffer, buffersize);
-	
+
 	if (playback) {
 		readPlayback( buffer, buffersize);
-        double vol = valRcvMixer->value();
-        for (int i = 0; i < buffersize; i++)
-            buffer[i] *= vol;
+		double vol = valRcvMixer->value();
+		for (int i = 0; i < buffersize; i++)
+			buffer[i] *= vol;
 		return buffersize;
 	}
 
 	if (rxppm == 0)
 		return buffersize;
-	
+
 // process using samplerate library
 
 	rx_src_data->data_in = src_buffer;
@@ -464,7 +494,7 @@ int cSoundOSS::Read(double *buffer, int buffersize)
 
 	for (int i = 0; i < numread; i++)
 		buffer[i] = snd_buffer[2*i];
-	
+
 	return numread;
 
 }
@@ -476,7 +506,7 @@ int cSoundOSS::write_samples(double *buf, int count)
 	unsigned char *p;
 
 	if (generate) writeGenerate( buf, count );
-	
+
 	if (device_fd == -1 || count <= 0)
 		return -1;
 
@@ -485,7 +515,7 @@ int cSoundOSS::write_samples(double *buf, int count)
 		tx_src_data->src_ratio = 1.0 + txppm/1e6;
 		src_set_ratio ( tx_src_state, 1.0 + txppm/1e6);
 	}
-	
+
 	if (txppm == 0) {
 		wbuff = new short int[2*count];
 		p = (unsigned char *)wbuff;
@@ -507,7 +537,7 @@ int cSoundOSS::write_samples(double *buf, int count)
 		tx_src_data->data_out = src_buffer;
 		tx_src_data->output_frames = SND_BUF_LEN;
 		tx_src_data->end_of_input = 0;
-		
+
 		if (src_process(tx_src_state, tx_src_data) != 0) {
 			delete [] inbuf;
 			return -1;
@@ -516,11 +546,11 @@ int cSoundOSS::write_samples(double *buf, int count)
 		bufsize = tx_src_data->output_frames_gen;
 		wbuff = new short int[2*bufsize];
 		p = (unsigned char *)wbuff;
-		
+
 		for (int i = 0; i < 2*bufsize; i++)
 			wbuff[i] = (short int)(src_buffer[i] * maxsc);
 		int num2write = bufsize * 2 * sizeof(short int);
-		
+
 		retval = Write(p, num2write);
 		delete [] wbuff;
 		if (retval != num2write)
@@ -538,7 +568,7 @@ int cSoundOSS::write_stereo(double *bufleft, double *bufright, int count)
 	unsigned char *p;
 
 	if (generate) writeGenerate( bufleft, count );
-	
+
 	if (device_fd == -1 || count <= 0)
 		return -1;
 
@@ -547,7 +577,7 @@ int cSoundOSS::write_stereo(double *bufleft, double *bufright, int count)
 		tx_src_data->src_ratio = 1.0 + txppm/1e6;
 		src_set_ratio ( tx_src_state, 1.0 + txppm/1e6);
 	}
-	
+
 	if (txppm == 0) {
 		wbuff = new short int[2*count];
 		p = (unsigned char *)wbuff;
@@ -572,7 +602,7 @@ int cSoundOSS::write_stereo(double *bufleft, double *bufright, int count)
 		tx_src_data->data_out = src_buffer;
 		tx_src_data->output_frames = SND_BUF_LEN;
 		tx_src_data->end_of_input = 0;
-		
+
 		if (src_process(tx_src_state, tx_src_data) != 0) {
 			delete [] inbuf;
 			return -1;
@@ -581,10 +611,10 @@ int cSoundOSS::write_stereo(double *bufleft, double *bufright, int count)
 		bufsize = tx_src_data->output_frames_gen;
 		wbuff = new short int[2*bufsize];
 		p = (unsigned char *)wbuff;
-		
+
 		for (int i = 0; i < 2*bufsize; i++)
 			wbuff[i] = (short int)(src_buffer[i] * maxsc);
-			
+
 		int num2write = bufsize * 2 * sizeof(short int);
 		retval = Write(p, num2write);
 		delete [] wbuff;
@@ -607,13 +637,13 @@ cSoundPA::cSoundPA(const char *dev)
         rx_src_data = new SRC_DATA;
         tx_src_data = new SRC_DATA;
         if (!rx_src_data || !tx_src_data)
-                throw(SndException("Cannot create source data structures"));
+                throw SndException("Cannot create libsamplerate data structures");
 
         snd_buffer = new float[2 * SND_BUF_LEN];
         src_buffer = new float[2 * SND_BUF_LEN];
         fbuf = new float[2 * SND_BUF_LEN];
         if (!snd_buffer || !src_buffer || !fbuf)
-                throw(SndException("could not allocate buffers"));
+                throw SndException("Cannot allocate libsamplerate buffers");
         memset(snd_buffer, 0, 2 * SND_BUF_LEN);
         memset(src_buffer, 0, 2 * SND_BUF_LEN);
         memset(fbuf, 0, 2 * SND_BUF_LEN);
@@ -657,18 +687,14 @@ int cSoundPA::Open(int mode, int freq)
                         stream.close();
                 }
                 catch (...) { }
-                throw(SndException(e.what()));
+                throw SndException(e.what());
         }
 
         mode = full_duplex()  ?  1 << O_RDONLY | 1 << O_WRONLY  :  1 << mode;
-        if (mode & 1 << O_RDONLY) {
-                if (!(mode & 1 << O_WRONLY))
-                        stream_params.setOutputParameters(portaudio::DirectionSpecificStreamParameters::null());
-        }
-        if (mode & 1 << O_WRONLY) {
-                if (!(mode & 1 << O_RDONLY))
-                        stream_params.setInputParameters(portaudio::DirectionSpecificStreamParameters::null());
-        }
+        if (!(mode & 1 << O_WRONLY))
+            stream_params.setOutputParameters(portaudio::DirectionSpecificStreamParameters::null());
+        if (!(mode & 1 << O_RDONLY))
+            stream_params.setInputParameters(portaudio::DirectionSpecificStreamParameters::null());
         src_data_reset(mode);
 
 #ifndef NDEBUG
@@ -703,7 +729,7 @@ int cSoundPA::Read(double *buf, int count)
                 if (strstr(e.what(), "rflow"))
                         adjust_stream();
                 else
-                        throw(SndException(e.what()));
+                        throw SndException(e.what());
         }
 
 	if (capture) writeCapture( buf, count);
@@ -733,7 +759,7 @@ int cSoundPA::Read(double *buf, int count)
 int cSoundPA::write_samples(double *buf, int count)
 {
 	if (generate) writeGenerate( buf, count );
-	
+
         for (int i = 0; i < count; i++)
                 fbuf[2*i] = fbuf[2*i + 1] = buf[i];
 
@@ -760,7 +786,7 @@ int cSoundPA::write_samples(double *buf, int count)
 int cSoundPA::write_stereo(double *bufleft, double *bufright, int count)
 {
 	if (generate) writeGenerate( bufleft, count );
-	
+
         for (int i = 0; i < count; i++) {
                 fbuf[2*i] = bufleft[i];
                 fbuf[2*i + 1] = bufright[i];
@@ -969,7 +995,7 @@ double cSoundPA::get_best_srate(void)
                         return sp.sampleRate();
         }
 
-        throw(SndException("Could not find a supported sample rate. Sound device busy?"));
+        throw SndException("Could not find a supported sample rate. Sound device busy?");
         return -1;
 }
 
