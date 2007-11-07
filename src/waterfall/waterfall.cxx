@@ -164,7 +164,7 @@ void WFdisp::makeMarker() {
 			bw += mailserver ? progdefaults.ServerOffset :
 				progdefaults.SearchRange;
 	}
-	bw = bw / 2.0 + 1;
+	bw = (int)(bw / 2.0 + 1);
 
 	RGBmarker.R = progdefaults.bwTrackRGBI.R;
 	RGBmarker.G = progdefaults.bwTrackRGBI.G;
