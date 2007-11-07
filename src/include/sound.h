@@ -81,6 +81,9 @@ protected:
 	void writeCapture(double *buff, int count);
 	int  readPlayback(double *buff, int count);
 
+	bool format_supported(int format);
+	void tag_file(SndfileHandle *fh, const char *title);
+
 public:
 	cSound();
 	virtual ~cSound();

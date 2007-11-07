@@ -37,20 +37,33 @@ int cSound::Capture(bool on)
 {
 	if (on) {
 		string deffilename = "./capture.wav";
-    	char *p = File_Select("Capture wav file", "*.wav", deffilename.c_str(), 0);
-	    if (p) {
-			ofCapture = new SndfileHandle(p, SFM_WRITE,
-						      SF_FORMAT_WAV | SF_FORMAT_PCM_16,
+		const char *formats;
+		if (format_supported(SF_FORMAT_FLAC | SF_FORMAT_PCM_16))
+			formats = "*.{wav,flac}";
+		else
+			formats = "*.wav";
+
+		char *fn = File_Select("Capture audio file", formats, deffilename.c_str(), 0);
+		if (fn) {
+			int format;
+			char *suffix = strrchr(fn, '.');
+			if (suffix && !strcasecmp(suffix, ".flac"))
+				format = SF_FORMAT_FLAC;
+			else
+				format = SF_FORMAT_WAV;
+			ofCapture = new SndfileHandle(fn, SFM_WRITE,
+						      format | SF_FORMAT_PCM_16,
 						      1, sample_frequency);
 			if (!*ofCapture) {
-				cerr << "Could not write capture.wav" << endl;
+				cerr << "Could not write " << fn << endl;
 				delete ofCapture;
 				ofCapture = 0;
 				return 0;
 			}
 			ofCapture->command(SFC_SET_UPDATE_HEADER_AUTO, 0, SF_TRUE);
-	    } else
-	    	return 0;
+			tag_file(ofCapture, "Captured audio");
+		} else
+			return 0;
 	}
 	else {
 		delete ofCapture;
@@ -64,18 +77,24 @@ int cSound::Playback(bool on)
 {
 	if (on) {
 		string deffilename = "./playback.wav";
-    	char *p = File_Select("Playback wav file", "*.wav", deffilename.c_str(), 0);
-	    if (p) {
-			ifPlayback = new SndfileHandle(p);
+		const char *formats;
+		if (format_supported(SF_FORMAT_FLAC | SF_FORMAT_PCM_16))
+			formats = "*.{wav,flac}";
+		else
+			formats = "*.wav";
+
+		char *fn = File_Select("Playback audio file", formats, deffilename.c_str(), 0);
+		if (fn) {
+			ifPlayback = new SndfileHandle(fn);
 			if (!*ifPlayback) {
-				cerr << "Could not read playback.wav" << endl;
+				cerr << "Could not read " << fn << endl;
 				delete ifPlayback;
 				ifPlayback = 0;
 				return 0;
 			}
 			playback = true;
 		} else
-	    	return 0;
+			return 0;
 	}
 	else {
 		delete ifPlayback;
@@ -89,18 +108,32 @@ int cSound::Generate(bool on)
 {
 	if (on) {
 		string deffilename = "./generate.wav";
-    	char *p = File_Select("Generate wav file", "*.wav", deffilename.c_str(), 0);
-	    if (p) {
-			ofGenerate = new SndfileHandle(p, SFM_WRITE,
-						       SF_FORMAT_WAV | SF_FORMAT_PCM_16,
+		const char *formats;
+		if (format_supported(SF_FORMAT_FLAC | SF_FORMAT_PCM_16))
+			formats = "*.{wav,flac}";
+		else
+			formats = "*.wav";
+
+		char *fn = File_Select("Generate audio file", formats, deffilename.c_str(), 0);
+		if (fn) {
+			int format;
+			char *suffix = strrchr(fn, '.');
+			if (suffix && !strcasecmp(suffix, ".flac"))
+				format = SF_FORMAT_FLAC;
+			else
+				format = SF_FORMAT_WAV;
+			ofGenerate = new SndfileHandle(fn, SFM_WRITE,
+						       format | SF_FORMAT_PCM_16,
 						       1, sample_frequency);
 			if (!*ofGenerate) {
-				cerr << "Could not write generate.wav" << endl;
+				cerr << "Could not write " << fn << endl;
 				delete ofGenerate;
 				ofGenerate = 0;
 				return 0;
 			} 
 			ofGenerate->command(SFC_SET_UPDATE_HEADER_AUTO, 0, SF_TRUE);
+			tag_file(ofGenerate, "Generated audio");
+
 		} else
 			return 0;
 	}
@@ -136,6 +169,33 @@ int  cSound::readPlayback(double *buff, int count)
 	return r;
 }
 
+bool cSound::format_supported(int format)
+{
+
+        SF_INFO fmt_test = { 0, sample_frequency, 2, format, 0, 0 };
+        return sf_format_check(&fmt_test);
+}
+
+void cSound::tag_file(SndfileHandle *fh, const char *title)
+{
+       if (fh->setString(SF_STR_TITLE, title))
+               return;
+
+       fh->setString(SF_STR_COPYRIGHT, progdefaults.myName.c_str());
+       fh->setString(SF_STR_SOFTWARE, FLDIGI_NAME "-" FLDIGI_VERSION);
+       fh->setString(SF_STR_ARTIST, progdefaults.myCall.c_str());
+
+       char s[64];
+       snprintf(s, sizeof(s), "%s freq=%s",
+                active_modem->get_mode_name(), inpFreq->value());//wf->carrier());
+       fh->setString(SF_STR_COMMENT, s);
+
+       time_t t = time(0);
+       struct tm zt;
+       (void)gmtime_r(&t, &zt);
+       if (strftime(s, sizeof(s), "%F %Tz", &zt) > 0)
+               fh->setString(SF_STR_DATE, s);
+}
 
 
 cSoundOSS::cSoundOSS(const char *dev ) {
