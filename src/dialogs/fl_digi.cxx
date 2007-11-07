@@ -1777,7 +1777,7 @@ int get_tx_char(void)
 	case 'r': case 'R':
 		if (state != STATE_CTRL)
 			break;
-		QUEUE_SYNC(CMP_CB(&TransmitWidget::clear, TransmitText));
+		QUEUE_SYNC(CMP_CB(&TransmitWidget::clear_sent, TransmitText));
 		state = STATE_CHAR;
 		c = 3; // ETX
 		break;

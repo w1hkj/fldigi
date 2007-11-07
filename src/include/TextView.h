@@ -78,6 +78,7 @@ public:
 		: ReceiveWidget(x, y, w, h, label) { }
 	virtual ~TransmitWidget() { }
 
+	virtual void clear_sent(void) = 0;
 	virtual int nextChar(void) = 0;
 };
 
@@ -202,6 +203,7 @@ class TextEdit : public textview, public TransmitWidget {
 public:
 	TextEdit( int x, int y, int w, int h, const char *label = 0 );
 	virtual void clear();
+	virtual void clear_sent();
 	int		nextChar();
 	void	readFile();	
 	virtual void setFont(Fl_Font fnt) { 

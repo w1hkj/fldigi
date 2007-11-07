@@ -964,6 +964,11 @@ void TextEdit::clear() {
 	PauseBreak = false;
 }
 
+void TextEdit::clear_sent() {
+	// FIXME: clear from 0 to xmtidx
+	clear();
+}
+
 int TextEdit::handle_fnckey(int key) {
 	int b = key - FL_F - 1;
 	if (b > 9)
