@@ -1231,9 +1231,9 @@ int waterfall::handle(int event)
 	else if (Fl::event_inside(wfAmpSpan))
 		val = wfAmpSpan;
 	else
-		return 0;//Fl_Group::handle(event);
+		return 0;
 
-	val->value(val->clamp(val->increment(val->value(), d)));
+	val->value(val->clamp(val->increment(val->value(), -d)));
 	val->do_callback();
 
 	return 1;
@@ -1405,7 +1405,9 @@ void WFdisp::handle_mouse_wheel(int event)
 		take_focus();
 
 	char msg[60];
-	const char *suffix = val == sldrSquelch ? "%" : "Hz";
-	snprintf(msg, sizeof(msg), "%s = %2.0f %s", val->label(), val->value(), suffix);
+	if (val != sldrSquelch)
+		snprintf(msg, sizeof(msg), "%s = %2.0f Hz", val->label(), val->value());
+	else
+		snprintf(msg, sizeof(msg), "Squelch = %2.0f %%", val->value());
 	put_status(msg, 2);
 }

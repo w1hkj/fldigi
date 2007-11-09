@@ -1459,8 +1459,7 @@ void create_fl_digi_main() {
 				sldrSquelch = new Fl_Slider(
 					FL_HOR_NICE_SLIDER, 
 					WNOM-(Hwfall-24), Y + Hwfall - 12, 
-					Hwfall - 24, 12, "Squelch");
-				sldrSquelch->align(FL_ALIGN_TOP);
+					Hwfall - 24, 12, "");
 				sldrSquelch->minimum(0);
 				sldrSquelch->maximum(100);
 				sldrSquelch->step(1);
