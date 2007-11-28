@@ -22,6 +22,8 @@
  *
  */
 
+#include <config.h>
+
 #include "dominovar.h"
 
 static unsigned char varicode[][3] = {

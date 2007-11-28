@@ -199,6 +199,9 @@ protected:
 };
 
 
+extern qrunner *cbq[NUM_QRUNNER_THREADS];
+
+
 #define QUEUE QUEUE_ASYNC
 
 #define CMP_CB(...) __VA_ARGS__
@@ -234,8 +237,6 @@ protected:
                         cbq[GET_THREAD_ID()]->request_sync(nop());      \
         } while (0)
 
-
-extern qrunner *cbq[NUM_QRUNNER_THREADS];
 
 #endif // QRUNNER_H_
 

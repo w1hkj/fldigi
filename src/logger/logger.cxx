@@ -22,6 +22,8 @@
 //
 // ====================================================================
 
+#include <config.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ipc.h>
@@ -31,7 +33,6 @@
 
 #include "logger.h"
 #include "main.h"
-#include "version.h"
 #include "modem.h"
 
 #include <FL/fl_ask.H>
@@ -97,8 +98,8 @@ int writeadif () {
 			return 1;
 		fprintf (adiFile, ADIFHEADER,
 			strlen(ADIF_VERS), ADIF_VERS,
-			strlen(FLDIGI_NAME), FLDIGI_NAME,
-			strlen(FLDIGI_VERSION), FLDIGI_VERSION);
+			strlen(PACKAGE_NAME), PACKAGE_NAME,
+			strlen(PACKAGE_VERSION), PACKAGE_VERSION);
 		fclose(adiFile);
 	} else
 		fclose(adiFile);
@@ -157,7 +158,7 @@ int submit_log(void)
 	
 	FL_LOCK();
 	log_msg = "";
-	log_msg = log_msg + "program:"	+ FLDIGI_NAME + " v " + FLDIGI_VERSION + LOG_MSEPARATOR;
+	log_msg = log_msg + "program:"	+ PACKAGE_NAME + " v " + PACKAGE_VERSION + LOG_MSEPARATOR;
 	log_msg = log_msg + "version:"	+ LOG_MVERSION			+ LOG_MSEPARATOR;
 	log_msg = log_msg + "date:"		+ logdate				+ LOG_MSEPARATOR;
 	putadif(21, adifdate); 

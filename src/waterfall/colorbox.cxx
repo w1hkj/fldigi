@@ -1,3 +1,5 @@
+#include <config.h>
+
 #include "colorbox.h"
 #include "waterfall.h"
 #include "Config.h"

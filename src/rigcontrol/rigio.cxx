@@ -5,6 +5,8 @@
 //
 // ====================================================================
 
+#include <config.h>
+
 #include <string>
 
 #ifdef RIGCATTEST

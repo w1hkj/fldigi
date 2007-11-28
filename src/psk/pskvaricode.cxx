@@ -23,6 +23,8 @@
 // ----------------------------------------------------------------------------
 
 
+#include <config.h>
+
 #include "pskvaricode.h"
 
 // PSK31 Varicode for encoding

@@ -27,11 +27,13 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ----------------------------------------------------------------------------
 
+#include <config.h>
+
 #include "ptt.h"
 #include "configuration.h"
 #include "rigMEM.h"
 #include "rigio.h"
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 	#include "hamlib.h"
 #endif
 
@@ -116,7 +118,7 @@ void PTT::set(bool ptt)
 		return;
 
 // Hamlib ptt
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 	if (pttdev == 1) {
 		hamlib_set_ptt(ptt);
 		return;

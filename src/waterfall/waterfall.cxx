@@ -26,18 +26,20 @@
 //#define USE_HAMMING
 //#define USE_HANNING
 
+#include <config.h>
+
 #include "waterfall.h"
 #include "threads.h"
 #include "main.h"
 #include "modem.h"
 
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 	#include "hamlib.h"
 #endif
 #include "rigMEM.h"
 #include "rigio.h"
 
-#include "config.h"
+#include "fldigi-config.h"
 #include "configuration.h"
 
 Fl_Mutex	wf_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -164,7 +166,7 @@ void WFdisp::makeMarker() {
 			bw += mailserver ? progdefaults.ServerOffset :
 				progdefaults.SearchRange;
 	}
-	bw = bw / 2.0 + 1;
+	bw = (int)(bw / 2.0 + 1);
 
 	RGBmarker.R = progdefaults.bwTrackRGBI.R;
 	RGBmarker.G = progdefaults.bwTrackRGBI.G;
@@ -876,7 +878,7 @@ void qsy_cb(Fl_Widget *w, void *v) {
 
 	rigCAT_set_qsy(p->f, p->fmid);
 	rigMEM_set_qsy(p->f, p->fmid);
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 	hamlib_set_qsy(p->f, p->fmid);
 #endif	
 	restoreFocus();
@@ -1231,9 +1233,9 @@ int waterfall::handle(int event)
 	else if (Fl::event_inside(wfAmpSpan))
 		val = wfAmpSpan;
 	else
-		return 0;//Fl_Group::handle(event);
+		return 0;
 
-	val->value(val->clamp(val->increment(val->value(), d)));
+	val->value(val->clamp(val->increment(val->value(), -d)));
 	val->do_callback();
 
 	return 1;
@@ -1405,7 +1407,9 @@ void WFdisp::handle_mouse_wheel(int event)
 		take_focus();
 
 	char msg[60];
-	const char *suffix = val == sldrSquelch ? "%" : "Hz";
-	snprintf(msg, sizeof(msg), "%s = %2.0f %s", val->label(), val->value(), suffix);
+	if (val != sldrSquelch)
+		snprintf(msg, sizeof(msg), "%s = %2.0f Hz", val->label(), val->value());
+	else
+		snprintf(msg, sizeof(msg), "Squelch = %2.0f %%", val->value());
 	put_status(msg, 2);
 }

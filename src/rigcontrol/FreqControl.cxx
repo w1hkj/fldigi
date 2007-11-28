@@ -22,6 +22,8 @@
 // Please report all bugs and problems to "w1hkj@w1hkj.com".
 //
 
+#include <config.h>
+
 #include "FreqControl.h"
 
 const char *cFreqControl::Label[10] = {

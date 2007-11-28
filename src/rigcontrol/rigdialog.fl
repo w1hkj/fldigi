@@ -2,6 +2,7 @@
 version 1.0107 
 header_name {.h} 
 code_name {.cxx}
+decl {\#include <config.h>} {} 
 decl {\#include "rigsupport.h"} {} 
 
 Function {rig_dialog()} {open

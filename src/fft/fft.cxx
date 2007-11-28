@@ -17,6 +17,8 @@
 //	 fft algorithims in the public domain.  Thank you Takuya Ooura!
 //===========================================================================
 
+#include <config.h>
+
 #include "fft.h"
 
 // n = size of fourier transform in complex pairs

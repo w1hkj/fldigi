@@ -15,8 +15,6 @@
 
 #include <hamlib/rig.h>
 
-#include "config.h"
-
 using namespace std;
 
 extern void get_rignames();

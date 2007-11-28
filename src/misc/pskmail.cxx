@@ -1,6 +1,8 @@
 // pskmail.cxx
 // support for pskmail server/client system
 
+#include <config.h>
+
 #include <iostream>
 #include <string>
 #include <ctime>

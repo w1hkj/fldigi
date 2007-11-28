@@ -32,6 +32,8 @@
 // Fl::unlock() to surround calls to FLTK (such as to change widgets or
 // redraw them).
 
+#include <config.h>
+
 #include "threads.h"
 
 #ifndef WIN32
@@ -77,7 +79,7 @@ static int fl_create_thread(Fl_Thread * t, void *(*f) (void *), void* p) {
 
 #  endif // !WIN32
 
-#if (USE_TLS == 1)
+#if USE_TLS
 	__thread  int thread_id_;
 #else
 	pthread_key_t thread_id_;

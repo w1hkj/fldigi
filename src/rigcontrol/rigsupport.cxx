@@ -8,6 +8,8 @@
 //
 //########################################################################
 
+#include <config.h>
+
 #include "rigdialog.h"
 #include "rigsupport.h"
 #include "rigxml.h"
@@ -26,7 +28,7 @@ string windowTitle;
 long int freqlist[LISTSIZE];
 int  numinlist = 0;
 
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 const char *szmodes[] = {
 	"AM",
 	"USB",
@@ -211,7 +213,7 @@ void buildlist()
 }
 
 void setMode() {
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 	if (progdefaults.chkUSEHAMLIBis)
 		hamlib_setmode(modes[opMODE->index()-1]);
 	else
@@ -226,7 +228,7 @@ void setBW() {
 int movFreq() {
 	long int f;
 	f = FreqDisp->value();
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 	if (progdefaults.chkUSEHAMLIBis)
 		hamlib_setfreq(f);
 	else
@@ -274,7 +276,7 @@ bool init_Xml_RigDialog()
 	return true;
 }
 
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 bool init_Hamlib_RigDialog()
 {
 	opBW->hide();
@@ -294,7 +296,7 @@ Fl_Double_Window *createRigDialog()
 {
 	Fl_Double_Window *w;
 	w = rig_dialog();
-	w->xclass(FLDIGI_NAME);
+	w->xclass(PACKAGE_NAME);
 	return w;
 }
 

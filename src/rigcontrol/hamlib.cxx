@@ -1,5 +1,6 @@
 //
 // hamlib.cxx  --  Hamlib (rig control) interface for fldigi
+#include <config.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>

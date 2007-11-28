@@ -21,6 +21,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ----------------------------------------------------------------------------
 
+#include <config.h>
+
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -210,7 +212,7 @@ int picture::handle(int event)
 int picture::save_jpeg(const char *filename)
 {
 	unsigned char		*ptr;		// Pointer to image data
-	FILE				*fp;		// File pointer
+	FILE				*fp = 0;	// File pointer
 	struct jpeg_compress_struct	info;		// Compressor info
 	struct jpeg_error_mgr		err;		// Error handler info
 

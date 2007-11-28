@@ -25,6 +25,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ----------------------------------------------------------------------------
 
+#include <config.h>
+
 #include "sound.h"
 #include "configuration.h"
 #include <FL/Fl.H>
@@ -32,19 +34,22 @@
 
 #ifdef MIN
 # undef MIN
-# define MIN(a,b) (((a) < (b)) ? (a) : (b))
 #endif
+#define MIN(a,b) (((a) < (b)) ? (a) : (b))
 #ifdef MAX
 # undef MAX
-# define MAX(a,b) (((a) > (b)) ? (a) : (b))
 #endif
+#define MAX(a,b) (((a) > (b)) ? (a) : (b))
 
 
 cSound::cSound()
         : sample_frequency(0), txppm(progdefaults.TX_corr), rxppm(progdefaults.RX_corr),
           tx_src_state(0), tx_src_data(0), rx_src_state(0), rx_src_data(0),
-          snd_buffer(0), src_buffer(0), capture(false), playback(false),
-	  generate(false), ofGenerate(0), ofCapture(0), ifPlayback(0)
+          snd_buffer(0), src_buffer(0),
+#if USE_SNDFILE
+          ofCapture(0), ifPlayback(0), ofGenerate(0),
+#endif
+	  capture(false), playback(false), generate(false)
 { }
 
 cSound::~cSound()
@@ -55,11 +60,14 @@ cSound::~cSound()
 	if (rx_src_data) delete rx_src_data;
 	if (rx_src_state) src_delete (rx_src_state);
 	if (tx_src_state) src_delete (tx_src_state);
+#if USE_SNDFILE
 	delete ofGenerate;
 	delete ofCapture;
 	delete ifPlayback;
+#endif
 }
 
+#if USE_SNDFILE
 int cSound::Capture(bool on)
 {
 	if (on) {
@@ -174,19 +182,25 @@ int cSound::Generate(bool on)
 	generate = on;
 	return 1;
 }
+#endif // USE_SNDFILE
 
 void cSound::writeGenerate(double *buff, int count)
 {
+#if USE_SNDFILE
 	ofGenerate->writef(buff, count);
+#endif
 }
 
 void cSound::writeCapture(double *buff, int count)
 {
+#if USE_SNDFILE
 	ofCapture->writef(buff, count);
+#endif
 }
 
 int  cSound::readPlayback(double *buff, int count)
 {
+#if USE_SNDFILE
 	sf_count_t r = ifPlayback->readf(buff, count);
 
 	while (r < count) {
@@ -197,8 +211,12 @@ int  cSound::readPlayback(double *buff, int count)
         }
 
 	return r;
+#else
+	return 0;
+#endif
 }
 
+#if USE_SNDFILE
 bool cSound::format_supported(int format)
 {
 
@@ -212,7 +230,7 @@ void cSound::tag_file(SndfileHandle *fh, const char *title)
                return;
 
        fh->setString(SF_STR_COPYRIGHT, progdefaults.myName.c_str());
-       fh->setString(SF_STR_SOFTWARE, FLDIGI_NAME "-" FLDIGI_VERSION);
+       fh->setString(SF_STR_SOFTWARE, PACKAGE_NAME "-" PACKAGE_VERSION);
        fh->setString(SF_STR_ARTIST, progdefaults.myCall.c_str());
 
        char s[64];
@@ -226,7 +244,7 @@ void cSound::tag_file(SndfileHandle *fh, const char *title)
        if (strftime(s, sizeof(s), "%F %Tz", &zt) > 0)
                fh->setString(SF_STR_DATE, s);
 }
-
+#endif // USE_SNDFILE
 
 cSoundOSS::cSoundOSS(const char *dev ) {
 	device			= dev;
@@ -627,7 +645,7 @@ int cSoundOSS::write_stereo(double *bufleft, double *bufright, int count)
 }
 
 
-#ifdef PORTAUDIO
+#if USE_PORTAUDIO
 
 cSoundPA::cSoundPA(const char *dev)
         : device(dev), sys(portaudio::System::instance()),
@@ -657,10 +675,7 @@ cSoundPA::~cSoundPA()
 
 int cSoundPA::Open(int mode, int freq)
 {
-        cerr << "cSoundPA::Open(" << mode << ", " << freq << "); req_sample_rate="
-             << req_sample_rate << " sample_frequency=" << sample_frequency << endl;
-
-        int old_sample_rate = req_sample_rate;
+        int old_sample_rate = (int)req_sample_rate;
         req_sample_rate = sample_frequency = freq;
 
         // Try to keep the stream open if we are using jack, or if we
@@ -1024,4 +1039,4 @@ unsigned cSoundPA::floor2(unsigned n)
         return n - (n >> 1);
 }
 
-#endif // PORTAUDIO
+#endif // USE_PORTAUDIO

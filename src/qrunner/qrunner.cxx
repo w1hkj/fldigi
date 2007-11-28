@@ -20,6 +20,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------------------------------------------------------------------
 
+#include <config.h>
+
 #include <unistd.h>
 // #include <fcntl.h>
 #include <errno.h>
@@ -73,6 +75,3 @@ void qrunner::execute(int fd, void *arg)
                         throw qexception(errno);
         }
 }
-
-
-qrunner *cbq[NUM_QRUNNER_THREADS];

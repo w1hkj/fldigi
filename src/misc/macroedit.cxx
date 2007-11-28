@@ -1,3 +1,5 @@
+#include <config.h>
+
 #include "macros.h"
 #include "macroedit.h"
 
@@ -110,7 +112,7 @@ void editMacro(int n)
 	macrotext->value(macros.text[n].c_str());
 	labeltext->value(macros.name[n].c_str());
 	iMacro = n;
-	MacroEditDialog->xclass(FLDIGI_NAME);
+	MacroEditDialog->xclass(PACKAGE_NAME);
 	MacroEditDialog->show();
 }
 

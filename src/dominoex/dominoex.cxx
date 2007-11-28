@@ -22,11 +22,12 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ----------------------------------------------------------------------------
 
+#include <config.h>
+
 #include <stdlib.h>
 
 #include <iostream>
 
-#include "version.h"
 #include "Config.h"
 
 #include "dominoex.h"
@@ -84,7 +85,7 @@ void dominoex::restart()
 
 	strSecXmtText = txtSecondary->value();
 	if (strSecXmtText.length() == 0)
-		strSecXmtText = "fldigi "FLDIGI_VERSION" ";
+		strSecXmtText = "fldigi "PACKAGE_VERSION" ";
 }
 
 void dominoex::init()

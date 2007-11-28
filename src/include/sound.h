@@ -43,10 +43,12 @@
 #include <math.h>
 
 #include <string>
-#include <sndfile.hh>
+#if USE_SNDFILE
+	#include <sndfile.hh>
+#endif
 #include <iostream>
 
-#ifdef PORTAUDIO
+#if USE_PORTAUDIO
 	#include <portaudiocpp/PortAudioCpp.hxx>
 #endif
 
@@ -95,21 +97,23 @@ protected:
 	float		*snd_buffer;
 	float		*src_buffer;
 
+#if USE_SNDFILE
+	SndfileHandle* ofCapture;
+	SndfileHandle* ifPlayback;
+	SndfileHandle* ofGenerate;
+#endif
+
 	bool	capture;
 	bool	playback;
 	bool	generate;
 
-	SndfileHandle* ofGenerate;
-	SndfileHandle* ofCapture;
-	SndfileHandle* ifPlayback;
-
 	void writeGenerate(double *buff, int count);
 	void writeCapture(double *buff, int count);
 	int  readPlayback(double *buff, int count);
-
+#if USE_SNDFILE
 	bool format_supported(int format);
 	void tag_file(SndfileHandle *fh, const char *title);
-
+#endif
 public:
 	cSound();
 	virtual ~cSound();
@@ -119,9 +123,11 @@ public:
 	virtual int	write_stereo(double *, double *, int) = 0;
 	virtual int	Read(double *, int) = 0;
 	virtual bool	full_duplex(void) { return false; }
+#if USE_SNDFILE
 	int		Capture(bool on);
 	int		Playback(bool on);
 	int		Generate(bool on);
+#endif
 };
 
 class cSoundOSS : public cSound {
@@ -170,7 +176,7 @@ private:
 	bool	FormatOK() { return formatok;};
 };
 
-#ifdef PORTAUDIO
+#if USE_PORTAUDIO
 
 class cSoundPA : public cSound
 {
@@ -212,6 +218,6 @@ private:
         static double	std_sample_rates[];
 };
 
-#endif // PORTAUDIO
+#endif // USE_PORTAUDIO
 
 #endif

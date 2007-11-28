@@ -24,6 +24,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ----------------------------------------------------------------------------
 
+#include <config.h>
+
 #include <stdlib.h>
 #include <iostream>
 
@@ -847,7 +849,7 @@ void mfsk::makeRxViewer(int W, int H)
 	FL_LOCK_E();
 	if (!picRxWin) {
 		picRxWin = new Fl_Window(winW, winH);
-		picRxWin->xclass(FLDIGI_NAME);
+		picRxWin->xclass(PACKAGE_NAME);
 		picRx = new picture(picX, picY, W, H);
 		btnpicRxSave = new Fl_Button(winW/2 - 65, H + 6, 60, 24,"Save");
 		btnpicRxSave->callback(cb_picRxSave,this);
@@ -1067,7 +1069,7 @@ void mfsk::makeTxViewer(int W, int H)
 	FL_LOCK_D();
 	if (!picTxWin) {
 		picTxWin = new Fl_Window(winW, winH);
-		picTxWin->xclass(FLDIGI_NAME);
+		picTxWin->xclass(PACKAGE_NAME);
 		picTx = new picture (picX, picY, W, H);
 		btnpicTxSendColor = new Fl_Button(winW/2 - 123, winH - 28, 60, 24, "XmtClr");
 		btnpicTxSendColor->callback(cb_picTxSendColor, this);

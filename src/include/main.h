@@ -13,13 +13,11 @@
 
 #include "trx.h"
 #include "modem.h"
-#include "ScopeDialog.h"
 #include "fl_digi.h"
 #include "ptt.h"
 #include "log.h"
-#include "version.h"
 
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 	#include "rigclass.h"
 #endif
 
@@ -33,7 +31,7 @@ extern string		xmlfname;
 
 extern std::string	 scDevice;
 extern PTT			*push2talk;
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 extern Rig			*xcvr;
 #endif
 

@@ -22,6 +22,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ----------------------------------------------------------------------------
 
+#include <config.h>
+
 #include <string>
 
 #include "trx.h"
@@ -35,7 +37,7 @@
 #include "configuration.h"
 #include "macros.h"
 
-#include "FL/Fl.H"
+#include <FL/Fl.H>
 
 #include "mbuffer.h"
 #include "qrunner.h"
@@ -240,7 +242,7 @@ void trx_reset_loop()
 		delete scard;
 		scard = 0;
 	}
-#ifdef PORTAUDIO
+#if USE_PORTAUDIO
 	if (progdefaults.btnAudioIOis == 1)
 		scard = new cSoundPA(trx_scdev.c_str());
 	else
@@ -298,7 +300,7 @@ void trx_start(const char *scdev)
 	}
 	
 	if (scard) delete scard;
-#ifdef PORTAUDIO
+#if USE_PORTAUDIO
 	if (progdefaults.btnAudioIOis == 1)
 		scard = new cSoundPA(scdev);
 	else

@@ -46,8 +46,6 @@
 #include <FL/Fl_Return_Button.H>
 #include <FL/fl_ask.H>
 
-#include "version.h"
-
 class File_Selector {
 public:
   enum { SINGLE = 0, MULTI = 1, CREATE = 2, DIRECTORY = 4 };

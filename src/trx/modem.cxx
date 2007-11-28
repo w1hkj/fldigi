@@ -1,6 +1,8 @@
 // modem class - base for all modems
 //
 
+#include <config.h>
+
 #include "Config.h"
 #include "modem.h"
 #include "configuration.h"
@@ -288,7 +290,7 @@ void modem::wfid_send(long int symbol)
 {
 	int i, j;
 	int sym;
-	int msk;
+	int msk = 0;
 	for (i = 0; i < IDSYMLEN; i++) {
 		wfid_outbuf[i] = 0.0;
 		sym = symbol;

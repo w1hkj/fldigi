@@ -22,6 +22,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ----------------------------------------------------------------------------
 
+#include <config.h>
+
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
@@ -37,14 +39,12 @@
 #include <FL/Fl_Tile.H>
 #include <FL/x.H>
 
-#include "version.h"
-
 #include "waterfall.h"
 #include "raster.h"
 #include "main.h"
 #include "threads.h"
 #include "trx.h"
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 	#include "hamlib.h"
 #endif
 #include "rigio.h"
@@ -203,7 +203,7 @@ void clean_exit() {
 		
 	progStatus.saveLastState();
 
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 	hamlib_close();
 #endif
 	rigCAT_close();
@@ -223,7 +223,7 @@ void clean_exit() {
 //	active_modem = (modem *) 0;
 //	fl_unlock (&trx_mutex);
 
-//#ifndef NOHAMLIB	
+//#if USE_HAMLIB	
 //	delete xcvr;
 //#endif
 //	delete push2talk;
@@ -725,6 +725,7 @@ void cb_mnuConfigModems(Fl_Menu_*, void*) {
 	dlgConfig->show();
 }
 
+#if USE_SNDFILE
 bool capval = false;
 bool genval = false;
 bool playval = false;
@@ -772,7 +773,7 @@ void cb_mnuPlayback(Fl_Widget *w, void *d)
 		playval = false;
 	}
 }
-
+#endif // USE_SNDFILE
 
 void cb_FontBrowser(Font_Browser*, void* v)
 {
@@ -816,7 +817,7 @@ void cb_mnuSaveConfig(Fl_Menu_ *, void *) {
 //}
 
 void cb_mnuAbout(Fl_Menu_*,void*) {
-	fl_message ("fldigi @@W1HKJ\n\nw1hkj@@w1hkj.com\n\nVersion - %s", FLDIGI_VERSION);
+	fl_message ("fldigi @@W1HKJ\n\nw1hkj@@w1hkj.com\n\nVersion - %s", PACKAGE_VERSION);
 	restoreFocus();
 }
 
@@ -1246,10 +1247,12 @@ Fl_Menu_Item menu_[] = {
 {"About", 0, (Fl_Callback*)cb_mnuAbout, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 66
 {0,0,0,0,0,0,0,0,0}, // 67
 {"  ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0}, // 68
+#if USE_SNDFILE
 {"Audio", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 69
 {"Rx capture",  0, (Fl_Callback*)cb_mnuCapture,  0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//70
 {"Tx generate", 0, (Fl_Callback*)cb_mnuGenerate, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//71
 {"Playback",    0, (Fl_Callback*)cb_mnuPlayback, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//72
+#endif
 {0,0,0,0,0,0,0,0,0}, // 73
 {0,0,0,0,0,0,0,0,0}, // 74
 };
@@ -1273,8 +1276,8 @@ void activate_rig_menu_item(bool b)
 void make_pixmap(Pixmap *xpm, const char **data)
 {
 	// We need a displayed window to provide a GC for X_CreatePixmap
-	Fl_Window w(0, 0, FLDIGI_NAME);
-	w.xclass(FLDIGI_NAME);
+	Fl_Window w(0, 0, PACKAGE_NAME);
+	w.xclass(PACKAGE_NAME);
 	w.show();
 	w.make_current();
 
@@ -1545,7 +1548,7 @@ void create_fl_digi_main() {
 	make_pixmap(&fldigi_icon_pixmap, fldigi_icon_48_xpm);
 	fl_digi_main->icon((char *)fldigi_icon_pixmap);
 
-	fl_digi_main->xclass(FLDIGI_NAME);
+	fl_digi_main->xclass(PACKAGE_NAME);
 }
 
 void put_freq(double frequency)

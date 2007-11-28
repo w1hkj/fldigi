@@ -31,7 +31,6 @@
 #include "misc.h"
 #include "sound.h"
 #include "waterfall.h"
-#include "ScopeDialog.h"
 #include "globals.h"
 #include "fl_digi.h"
 

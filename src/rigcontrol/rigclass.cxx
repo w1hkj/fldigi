@@ -3,6 +3,7 @@
 // to the hamlib library
 //
 // derived from rigclass.cc distributed with hamlib
+#include <config.h>
 
 #include <hamlib/rig.h>
 #include "rigclass.h"
