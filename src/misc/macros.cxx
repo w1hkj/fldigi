@@ -1,3 +1,5 @@
+#include <config.h>
+
 #include "macros.h"
 
 #include "main.h"
@@ -5,7 +7,6 @@
 #include "fl_digi.h"
 #include "configuration.h"
 #include "Config.h"
-#include "version.h"
 #include "logger.h"
 #include "newinstall.h"
 
@@ -199,7 +200,7 @@ void pVER(string &s, size_t &i)
 {
 	string progname;
 	progname = "Fldigi ";
-	progname.append(FLDIGI_VERSION);
+	progname.append(PACKAGE_VERSION);
 	s.replace( i, 5, progname );
 }
 

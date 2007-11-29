@@ -21,14 +21,14 @@
   This is safe for the case of one read thread and one write thread.
 */
 
-/* #include <config.h> */
-/* #undef USE_MLOCK */
+#include <config.h>
+#undef USE_MLOCK
 
 #include <stdlib.h>
 #include <string.h>
-/* #ifdef USE_MLOCK
- * #include <sys/mman.h>
- * #endif /\* USE_MLOCK *\/ */
+#ifdef USE_MLOCK
+#include <sys/mman.h>
+#endif /* USE_MLOCK */
 #include "ringbuffer.h"
 
 /* Create a new ringbuffer to hold at least `sz' bytes of data. The

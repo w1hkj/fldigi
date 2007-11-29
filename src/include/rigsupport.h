@@ -5,13 +5,13 @@
 
 #include <string>
 #include <list>
-#include <strstream>
+#include <sstream>
 #include <iostream>
 #include <ctype.h>
 
 #include "serial.h"
 
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 	#include "hamlib.h"
 #endif
 
@@ -41,7 +41,7 @@ extern void saveFreqList();
 
 extern bool readRigXML();
 extern bool init_Xml_RigDialog();
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 extern bool init_Hamlib_RigDialog();
 extern void selMode(rmode_t m);
 #endif

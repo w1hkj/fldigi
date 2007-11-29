@@ -22,6 +22,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ----------------------------------------------------------------------------
 
+#include <config.h>
+
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -45,7 +47,6 @@
 
 #include "misc.h"
 #include "configuration.h"
-#include "version.h"
 
 #include "qrzcall.h"
 #include "main.h"
@@ -336,9 +337,9 @@ int getSessionKey()
 		detail += ";password=";
 		detail += progdefaults.QRZuserpassword;
 		detail += ";version=";
-		detail += FLDIGI_NAME;
+		detail += PACKAGE_NAME;
 		detail += "/";
-		detail += FLDIGI_VERSION;
+		detail += PACKAGE_VERSION;
 		detail += " HTTP/1.0\n";
 		detail += "Host: ";
 		detail += host;

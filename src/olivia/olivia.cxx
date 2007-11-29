@@ -25,6 +25,8 @@
 //
 //
 
+#include <config.h>
+
 #include <string>
 #include <FL/Fl.H>
 #include <FL/fl_ask.H>

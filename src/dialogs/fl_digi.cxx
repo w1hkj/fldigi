@@ -22,6 +22,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ----------------------------------------------------------------------------
 
+#include <config.h>
+
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
@@ -37,14 +39,12 @@
 #include <FL/Fl_Tile.H>
 #include <FL/x.H>
 
-#include "version.h"
-
 #include "waterfall.h"
 #include "raster.h"
 #include "main.h"
 #include "threads.h"
 #include "trx.h"
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 	#include "hamlib.h"
 #endif
 #include "rigio.h"
@@ -203,7 +203,7 @@ void clean_exit() {
 		
 	progStatus.saveLastState();
 
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 	hamlib_close();
 #endif
 	rigCAT_close();
@@ -223,7 +223,7 @@ void clean_exit() {
 //	active_modem = (modem *) 0;
 //	fl_unlock (&trx_mutex);
 
-//#ifndef NOHAMLIB	
+//#if USE_HAMLIB	
 //	delete xcvr;
 //#endif
 //	delete push2talk;
@@ -816,7 +816,7 @@ void cb_mnuSaveConfig(Fl_Menu_ *, void *) {
 //}
 
 void cb_mnuAbout(Fl_Menu_*,void*) {
-	fl_message ("fldigi @@W1HKJ\n\nw1hkj@@w1hkj.com\n\nVersion - %s", FLDIGI_VERSION);
+	fl_message ("fldigi @@W1HKJ\n\nw1hkj@@w1hkj.com\n\nVersion - %s", PACKAGE_VERSION);
 	restoreFocus();
 }
 
@@ -1273,8 +1273,8 @@ void activate_rig_menu_item(bool b)
 void make_pixmap(Pixmap *xpm, const char **data)
 {
 	// We need a displayed window to provide a GC for X_CreatePixmap
-	Fl_Window w(0, 0, FLDIGI_NAME);
-	w.xclass(FLDIGI_NAME);
+	Fl_Window w(0, 0, PACKAGE_NAME);
+	w.xclass(PACKAGE_NAME);
 	w.show();
 	w.make_current();
 
@@ -1544,7 +1544,7 @@ void create_fl_digi_main() {
 	make_pixmap(&fldigi_icon_pixmap, fldigi_icon_48_xpm);
 	fl_digi_main->icon((char *)fldigi_icon_pixmap);
 
-	fl_digi_main->xclass(FLDIGI_NAME);
+	fl_digi_main->xclass(PACKAGE_NAME);
 }
 
 void put_freq(double frequency)

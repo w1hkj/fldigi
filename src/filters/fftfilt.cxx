@@ -10,6 +10,8 @@
 //     Chapters 16, 18 and 21
 //
 
+#include <config.h>
+
 #include <stdlib.h>
 #include <math.h>
 

@@ -5,6 +5,8 @@
 // Special font definition file(s) for fuzzy mode fonts used by the fldigi application
 //
 
+#include <config.h>
+
 #include "fontdef.h"
 
 #include "Feld7x7-14.cxx"

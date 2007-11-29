@@ -46,7 +46,7 @@
 #include <sndfile.hh>
 #include <iostream>
 
-#ifdef PORTAUDIO
+#if USE_PORTAUDIO
 	#include <portaudiocpp/PortAudioCpp.hxx>
 #endif
 
@@ -170,7 +170,7 @@ private:
 	bool	FormatOK() { return formatok;};
 };
 
-#ifdef PORTAUDIO
+#if USE_PORTAUDIO
 
 class cSoundPA : public cSound
 {
@@ -212,6 +212,6 @@ private:
         static double	std_sample_rates[];
 };
 
-#endif // PORTAUDIO
+#endif // USE_PORTAUDIO
 
 #endif

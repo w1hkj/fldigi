@@ -1,16 +1,16 @@
+#include <config.h>
+
 #include "configuration.h"
 #include "Config.h"
 #include "xmlreader.h"
 
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 	#include "hamlib.h"
 	#include "rigclass.h"
 #endif
 
 #include "rigMEM.h"
 #include "rigio.h"
-
-#include "modeIO.h"
 
 #include <iostream>
 #include <fstream>
@@ -1044,7 +1044,7 @@ void configuration::saveDefaults() {
 }
 
 int configuration::openDefaults() {
-#ifndef NOHAMLIB	
+#if USE_HAMLIB	
 	getRigs();
 #endif	
 	if (readDefaultsXML()) {
@@ -1066,7 +1066,7 @@ int configuration::openDefaults() {
 				btnPTT[i]->activate();
 			}
 			btnPTT[btnPTTis]->value(1);
-#ifdef NOHAMLIB
+#if !USE_HAMLIB
 			btnPTT[1]->deactivate();
 			chkUSEHAMLIB->deactivate();
             inpRIGdev->hide();
@@ -1283,7 +1283,7 @@ void configuration::initInterface() {
 
 
 // close down any possible rig interface threads
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 		hamlib_close();
 		MilliSleep(100);
 #endif
@@ -1306,13 +1306,13 @@ void configuration::initInterface() {
 		
 		PTTdev = inpTTYdev->value();
 
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 		chkUSEHAMLIBis = chkUSEHAMLIB->value();
 #endif		
 		chkUSEMEMMAPis = chkUSEMEMMAP->value();
 		chkUSERIGCATis = chkUSERIGCAT->value();
 
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 		HamRigName = cboHamlibRig->value();
 		HamRigDevice = inpRIGdev->value();
 		HamRigBaudrate = mnuBaudRate->value();
@@ -1343,7 +1343,7 @@ void configuration::initInterface() {
 			wf->setQSY(1);
 			activate_rig_menu_item(true);
 		}
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 	} else if (chkUSEHAMLIBis) { // start the hamlib thread
 //		btnPTT[1]->activate();
 		if (hamlib_init(btnPTTis == 1 ? true : false) == false) {
@@ -1381,7 +1381,7 @@ string configuration::strBaudRate()
 	return (szBaudRates[HamRigBaudrate + 1]);
 }
 
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 void configuration::getRigs() {
 list<string>::iterator pstr;
 	xcvr->get_rignames();

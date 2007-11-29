@@ -25,6 +25,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ----------------------------------------------------------------------------
 
+#include <config.h>
+
 #include "sound.h"
 #include "configuration.h"
 #include <FL/Fl.H>
@@ -32,12 +34,12 @@
 
 #ifdef MIN
 # undef MIN
-# define MIN(a,b) (((a) < (b)) ? (a) : (b))
 #endif
+#define MIN(a,b) (((a) < (b)) ? (a) : (b))
 #ifdef MAX
 # undef MAX
-# define MAX(a,b) (((a) > (b)) ? (a) : (b))
 #endif
+#define MAX(a,b) (((a) > (b)) ? (a) : (b))
 
 
 cSound::cSound()
@@ -212,7 +214,7 @@ void cSound::tag_file(SndfileHandle *fh, const char *title)
                return;
 
        fh->setString(SF_STR_COPYRIGHT, progdefaults.myName.c_str());
-       fh->setString(SF_STR_SOFTWARE, FLDIGI_NAME "-" FLDIGI_VERSION);
+       fh->setString(SF_STR_SOFTWARE, PACKAGE_NAME "-" PACKAGE_VERSION);
        fh->setString(SF_STR_ARTIST, progdefaults.myCall.c_str());
 
        char s[64];
@@ -627,7 +629,7 @@ int cSoundOSS::write_stereo(double *bufleft, double *bufright, int count)
 }
 
 
-#ifdef PORTAUDIO
+#if USE_PORTAUDIO
 
 cSoundPA::cSoundPA(const char *dev)
         : device(dev), sys(portaudio::System::instance()),
@@ -1024,4 +1026,4 @@ unsigned cSoundPA::floor2(unsigned n)
         return n - (n >> 1);
 }
 
-#endif // PORTAUDIO
+#endif // USE_PORTAUDIO

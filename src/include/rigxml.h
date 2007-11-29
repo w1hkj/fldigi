@@ -4,7 +4,7 @@
 #include <string>
 #include <list>
 #include <map>
-#include <strstream>
+#include <sstream>
 #include <iostream>
 #include <ctype.h>
 

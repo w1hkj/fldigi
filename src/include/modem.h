@@ -17,7 +17,7 @@
 #include "fl_digi.h"
 //#include "id.h"
 
-#include "config.h"
+#include "fldigi-config.h"
 #include "morse.h"
 
 #define	OUTBUFSIZE	16384

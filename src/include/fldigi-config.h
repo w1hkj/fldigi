@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// config.h  --  user configuration items for fldigi
+// fldigi-config.h  --  user configuration items for fldigi
 //
 // Copyright (C) 2006
 //		Dave Freese, W1HKJ
@@ -22,8 +22,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ----------------------------------------------------------------------------
 
-#ifndef _CONFIG_H
-#define _CONFIG_H
+#ifndef FLDIGI_CONFIG_H
+#define FLDIGI_CONFIG_H
 
 // You can change the x1 width of the waterfall / spectrum display by modifying this
 // constant.
@@ -100,4 +100,4 @@ extern int WNOM;
 //#define USE_BOTH_TEXT_WIDGETS
 
 
-#endif
+#endif // FLDIGI_CONFIG_H

@@ -3,6 +3,8 @@
  *
  */
 
+#include <config.h>
+
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <sys/shm.h>

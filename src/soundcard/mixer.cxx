@@ -1,3 +1,5 @@
+#include <config.h>
+
 #include "mixer.h"
 #include "configuration.h"
 

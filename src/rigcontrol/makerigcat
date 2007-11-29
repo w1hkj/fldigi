@@ -7,7 +7,7 @@ CXXFLAGS = $(shell fltk-config --cxxflags) \
 all: rigCAT
 
 rigCAT:
-	g++ $(CXXFLAGS) -DNOHAMLIB -DRIGCATTEST \
+	g++ $(CXXFLAGS) -DUSE_HAMLIB=0 -DRIGCATTEST \
 	rigxml.cxx rigio.cxx rigclass.cxx rigdialog.cxx rigsupport.cxx \
 	serial.cxx FreqControl.cxx \
 	rigCAT.cxx \

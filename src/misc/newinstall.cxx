@@ -1,3 +1,5 @@
+#include <config.h>
+
 #include "macros.h"
 
 #include "main.h"
@@ -5,7 +7,6 @@
 #include "fl_digi.h"
 #include "configuration.h"
 #include "Config.h"
-#include "version.h"
 #include "logger.h"
 
 #include <string>

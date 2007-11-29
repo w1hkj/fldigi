@@ -1,3 +1,5 @@
+#include <config.h>
+
 #include "combo.h"
 
 void popbrwsr_cb (Fl_Widget *v, long d);

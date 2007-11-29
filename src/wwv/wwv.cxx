@@ -24,6 +24,8 @@
 // This modem is only used for reception of WWV "tick" signals to determine
 // the correction factor to be applied to the sound card oscillator.
 
+#include <config.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>

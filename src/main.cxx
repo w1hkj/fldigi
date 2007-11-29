@@ -21,6 +21,8 @@
 // Please report all bugs and problems to "w1hkj@w1hkj.com".
 //
 
+#include <config.h>
+
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -34,7 +36,7 @@
 #include <dirent.h>
 
 #include <FL/Fl_Shared_Image.H>
-#ifdef PORTAUDIO
+#if USE_PORTAUDIO
 	#include <portaudiocpp/PortAudioCpp.hxx>
 #endif
 #include "main.h"
@@ -53,7 +55,7 @@
 #include "macros.h"
 #include "status.h"
 
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 	#include "rigclass.h"
 #endif
 #include "rigsupport.h"
@@ -80,7 +82,7 @@ string xmlfname;
 bool gmfskmail = false;
 
 PTT		*push2talk = (PTT *)0;
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 Rig		*xcvr = (Rig *)0;
 #endif
 
@@ -100,6 +102,7 @@ int txmsgid = -1;
 
 string option_help;
 
+qrunner *cbq[NUM_QRUNNER_THREADS];
 
 void arqchecks(void);
 void generate_option_help(void);
@@ -118,14 +121,12 @@ int main(int argc, char ** argv)
 
 	fl_filename_expand(szHomedir, 119, "$HOME/.fldigi/");
 	HomeDir = szHomedir;
-cout << HomeDir.c_str() << endl;
 
 	generate_option_help();
 	int arg_idx;
-	
 	if (Fl::args(argc, argv, arg_idx, parse_args) != argc) {
-	    cerr << FLDIGI_NAME << ": unrecognized option `" << argv[arg_idx]
-		 << "'\nTry `" << FLDIGI_NAME
+	    cerr << PACKAGE_NAME << ": unrecognized option `" << argv[arg_idx]
+		 << "'\nTry `" << PACKAGE_NAME
 		 << " --help' for more information.\n";
 	    exit(EXIT_FAILURE);
 	}
@@ -172,7 +173,7 @@ cout << HomeDir.c_str() << endl;
 	
 	macros.loadDefault();
 
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 	xcvr = new Rig();
 #endif
 	
@@ -189,7 +190,7 @@ cout << HomeDir.c_str() << endl;
 	menuOSSDev->value(progdefaults.OSSdevice.c_str());
 	globfree(&gbuf);
 	
-#ifdef PORTAUDIO
+#if USE_PORTAUDIO
 	portaudio::AutoSystem autoSys;
 	portaudio::System &sys = portaudio::System::instance();
 	for (portaudio::System::DeviceIterator idev = sys.devicesBegin();
@@ -221,6 +222,10 @@ cout << HomeDir.c_str() << endl;
 	menuMix->value(progdefaults.MXdevice.c_str());
 	
 // set the Sound Card configuration tab to the correct initial values
+#if !USE_PORTAUDIO
+	progdefaults.btnAudioIOis = 0;
+	btnAudioIO[1]->deactivate();
+#endif
 	if (progdefaults.btnAudioIOis == 0) {
 		scDevice = progdefaults.OSSdevice;
 		btnAudioIO[0]->value(1);
@@ -269,9 +274,9 @@ void generate_option_help(void) {
 
 	ostringstream help;
 	int width = 37;
-	help << "Usage:\n " << FLDIGI_NAME << " [option...]\n";
+	help << "Usage:\n " << PACKAGE_NAME << " [option...]\n";
 
-	help << '\n' << FLDIGI_NAME << " options:\n"
+	help << '\n' << PACKAGE_NAME << " options:\n"
 
 	     << setw(width) << setiosflags(ios::left)
 	     << " --config-dir DIRECTORY"
@@ -343,11 +348,11 @@ void generate_option_help(void) {
 	     << setw(width) << setiosflags(ios::left)
 	     << "" << "GEOMETRY format is ``WxH+X+Y''\n"
 	     << setw(width) << setiosflags(ios::left)
-	     << "" << "** " << FLDIGI_NAME << " may override this settting **\n"
+	     << "" << "** " << PACKAGE_NAME << " may override this settting **\n"
 
 	     << setw(width) << setiosflags(ios::left)
 	     << " -i, -iconic"
-	     << "Start " << FLDIGI_NAME << " in iconified state\n"
+	     << "Start " << PACKAGE_NAME << " in iconified state\n"
 
 	     << setw(width) << setiosflags(ios::left)
 	     << " -k, -kbd or -nok, -nokbd"
@@ -407,31 +412,32 @@ int parse_args(int argc, char **argv, int& idx)
 	if ( !(strlen(argv[idx]) >= 2 && strncmp(argv[idx], "--", 2) == 0) )
 		return 0;
 
-        enum { ZERO, RX_IPC_KEY, TX_IPC_KEY, CONFIG_DIR, FAST_TEXT, FONT,
-               WFALL_WIDTH, WFALL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, PROFILE,
-               USE_CHECK, ALLOW_FULL_DUPLEX, FRAMES_PER_BUFFER, SAMPLE_RATE,
-               HELP, VERSION };
+        enum { OPT_ZERO, OPT_RX_IPC_KEY, OPT_TX_IPC_KEY, OPT_CONFIG_DIR,
+               OPT_FAST_TEXT, OPT_FONT, OPT_WFALL_WIDTH, OPT_WFALL_HEIGHT,
+               OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT, OPT_PROFILE, OPT_USE_CHECK,
+               OPT_ALLOW_FULL_DUPLEX, OPT_FRAMES_PER_BUFFER, OPT_SAMPLE_RATE,
+               OPT_HELP, OPT_VERSION };
 
 	const char shortopts[] = "+";
 	static struct option longopts[] = {
-		{ "rx-ipc-key",	   1, 0, RX_IPC_KEY },
-		{ "tx-ipc-key",	   1, 0, TX_IPC_KEY },
-		{ "config-dir",	   1, 0, CONFIG_DIR },
-		{ "fast-text",	   0, 0, FAST_TEXT },
-		{ "font",	   1, 0, FONT },
+		{ "rx-ipc-key",	   1, 0, OPT_RX_IPC_KEY },
+		{ "tx-ipc-key",	   1, 0, OPT_TX_IPC_KEY },
+		{ "config-dir",	   1, 0, OPT_CONFIG_DIR },
+		{ "fast-text",	   0, 0, OPT_FAST_TEXT },
+		{ "font",	   1, 0, OPT_FONT },
 
-		{ "wfall-width",   1, 0, WFALL_WIDTH },
-		{ "wfall-height",  1, 0, WFALL_HEIGHT },
-		{ "window-width",  1, 0, WINDOW_WIDTH },
-		{ "window-height", 1, 0, WINDOW_HEIGHT },
-		{ "profile",	   1, 0, PROFILE },
-		{ "usechkbtns",    0, 0, USE_CHECK },
-		{ "full-duplex",   0, 0, ALLOW_FULL_DUPLEX },
-		{ "frames-per-buf",1, 0, FRAMES_PER_BUFFER },
-		{ "sample-rate",   1, 0, SAMPLE_RATE },
+		{ "wfall-width",   1, 0, OPT_WFALL_WIDTH },
+		{ "wfall-height",  1, 0, OPT_WFALL_HEIGHT },
+		{ "window-width",  1, 0, OPT_WINDOW_WIDTH },
+		{ "window-height", 1, 0, OPT_WINDOW_HEIGHT },
+		{ "profile",	   1, 0, OPT_PROFILE },
+		{ "usechkbtns",    0, 0, OPT_USE_CHECK },
+		{ "full-duplex",   0, 0, OPT_ALLOW_FULL_DUPLEX },
+		{ "frames-per-buf",1, 0, OPT_FRAMES_PER_BUFFER },
+		{ "sample-rate",   1, 0, OPT_SAMPLE_RATE },
 
-		{ "help",	   0, 0, HELP },
-		{ "version",	   0, 0, VERSION },
+		{ "help",	   0, 0, OPT_HELP },
+		{ "version",	   0, 0, OPT_VERSION },
 		{ 0 }
 	};
 
@@ -446,13 +452,13 @@ int parse_args(int argc, char **argv, int& idx)
 			// handle options with non-0 flag here
 			return 0;
 
-		case RX_IPC_KEY: case TX_IPC_KEY:
+		case OPT_RX_IPC_KEY: case OPT_TX_IPC_KEY:
 		{
 			errno = 0;
 			int key = strtol(optarg, NULL, (strncasecmp(optarg, "0x", 2) ? 10 : 16));
 			if (errno || key <= 0)
 				cerr << "Hmm, " << key << " doesn't look like a valid IPC key\n";
-			if (c == 'r')
+			if (c == OPT_RX_IPC_KEY)
 				progdefaults.rx_msgid = key;
 			else
 				progdefaults.tx_msgid = key;
@@ -460,19 +466,19 @@ int parse_args(int argc, char **argv, int& idx)
 			idx += 2;
 			return 2;
 
-		case CONFIG_DIR:
+		case OPT_CONFIG_DIR:
 			HomeDir = optarg;
 			if (*HomeDir.rbegin() != '/')
 				HomeDir += '/';
 			idx += 2;
 			return 2;
 
-		case FAST_TEXT:
+		case OPT_FAST_TEXT:
 			progdefaults.alt_text_widgets = false;
 			idx += 1;
 			return 1;
 
-		case FONT:
+		case OPT_FONT:
 		{
 			char *p;
 			if ((p = strchr(optarg, ':'))) {
@@ -485,27 +491,27 @@ int parse_args(int argc, char **argv, int& idx)
 			idx += 2;
 			return 2;
 
-		case WFALL_WIDTH:
+		case OPT_WFALL_WIDTH:
 			IMAGE_WIDTH = strtol(optarg, NULL, 10);
 			idx += 2;
 			return 2;
 
-		case WFALL_HEIGHT:
+		case OPT_WFALL_HEIGHT:
 			Hwfall = strtol(optarg, NULL, 10);
 			idx += 2;
 			return 2;
 
-		case WINDOW_WIDTH:
+		case OPT_WINDOW_WIDTH:
 			WNOM = strtol(optarg, NULL, 10);
 			idx += 2;
 			return 2;
 
-		case WINDOW_HEIGHT:
+		case OPT_WINDOW_HEIGHT:
 			HNOM = strtol(optarg, NULL, 10);
 			idx += 2;
 			return 2;
 
-		case PROFILE:
+		case OPT_PROFILE:
 			if (!strcasecmp(optarg, "emcomm") || !strcasecmp(optarg, "emc") ||
         	            !strcasecmp(optarg, "minimal")) {
 				IMAGE_WIDTH = DEFAULT_IMAGE_WIDTH;
@@ -517,34 +523,34 @@ int parse_args(int argc, char **argv, int& idx)
 			idx += 2;
 			return 2;
 
-		case USE_CHECK:
+		case OPT_USE_CHECK:
 			useCheckButtons = true;
 			idx += 1;
 			return 1;
 
-		case ALLOW_FULL_DUPLEX:
+		case OPT_ALLOW_FULL_DUPLEX:
 			pa_allow_full_duplex = true;
 			idx += 1;
 			return 1;
-		case FRAMES_PER_BUFFER:
+		case OPT_FRAMES_PER_BUFFER:
 			pa_frames_per_buffer = strtol(optarg, 0, 10);
 			idx += 2;
 			return 2;
-		case SAMPLE_RATE:
+		case OPT_SAMPLE_RATE:
 			pa_sample_rate = strtod(optarg, 0);
 			idx += 2;
 			return 2;
 
-		case HELP:
+		case OPT_HELP:
 			cerr << option_help;
 			exit(EXIT_SUCCESS);
 
-		case VERSION:
+		case OPT_VERSION:
 			print_versions();
 			exit(EXIT_SUCCESS);
 
 		case '?':
-			cerr << "Try `" << FLDIGI_NAME << " --help' for more information.\n";
+			cerr << "Try `" << PACKAGE_NAME << " --help' for more information.\n";
 			exit(EXIT_FAILURE);
 
 		default:
@@ -556,7 +562,7 @@ int parse_args(int argc, char **argv, int& idx)
 
 void print_versions(void)
 {
-	cerr << FLDIGI_NAME << ' ' << FLDIGI_VERSION << "\n\nSystem: ";
+	cerr << PACKAGE_NAME << ' ' << PACKAGE_VERSION << "\n\nSystem: ";
         struct utsname u;
         if (uname(&u) != -1) {
                 cerr << u.sysname << ' ' << u.nodename
@@ -566,7 +572,7 @@ void print_versions(void)
 
 #include "versions.h"
 #ifdef HAVE_VERSIONS_H
-	cerr << "\nConfigured with: " << COMPILE_CFG << '\n'
+	cerr /*<< "\nConfigured with: " << COMPILE_CFG*/ << '\n'
 	     << "Built on " << COMPILE_DATE << " by " << COMPILE_USER
 	     << '@' << COMPILE_HOST << " with:\n"
 	     << ' ' << COMPILER << '\n'
@@ -578,11 +584,11 @@ void print_versions(void)
 	     << " FLTK " << FL_MAJOR_VERSION << '.' << FL_MINOR_VERSION << '.'
 	     << FL_PATCH_VERSION << '\n';
 
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 	cerr << ' ' << hamlib_version << '\n';
 #endif
 
-#ifdef PORTAUDIO
+#if USE_PORTAUDIO
 	cerr << ' ' << portaudio::System::versionText() << ' '
 	     << portaudio::System::version() << '\n';
 #endif

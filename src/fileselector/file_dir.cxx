@@ -25,6 +25,8 @@
 //     http://www.fltk.org/str.php
 //
 
+#include <config.h>
+
 #include <FL/filename.H>
 #include <FL/fl_ask.H>
 

@@ -1,3 +1,5 @@
+#include <config.h>
+
 #include "pskcoeff.h"
 
 // Linux PSK31 modem driver for soundcard -- Filter coefficients

@@ -26,8 +26,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "config.h"
-
 #include "complex.h"
 #include "fft.h"
 #include "sound.h"

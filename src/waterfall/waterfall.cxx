@@ -26,18 +26,20 @@
 //#define USE_HAMMING
 //#define USE_HANNING
 
+#include <config.h>
+
 #include "waterfall.h"
 #include "threads.h"
 #include "main.h"
 #include "modem.h"
 
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 	#include "hamlib.h"
 #endif
 #include "rigMEM.h"
 #include "rigio.h"
 
-#include "config.h"
+#include "fldigi-config.h"
 #include "configuration.h"
 
 Fl_Mutex	wf_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -876,7 +878,7 @@ void qsy_cb(Fl_Widget *w, void *v) {
 
 	rigCAT_set_qsy(p->f, p->fmid);
 	rigMEM_set_qsy(p->f, p->fmid);
-#ifndef NOHAMLIB
+#if USE_HAMLIB
 	hamlib_set_qsy(p->f, p->fmid);
 #endif	
 	restoreFocus();

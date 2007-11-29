@@ -20,6 +20,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------------------------------------------------------------------
 
+#include <config.h>
+
 #include "timeops.h"
 
 struct timespec operator+(const struct timespec &t0, const double &t)

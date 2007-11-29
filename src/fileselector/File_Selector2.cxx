@@ -46,6 +46,8 @@
 //
 
 
+#include <config.h>
+
 #include <FL/filename.H>
 #include <FL/fl_ask.H>
 #include <FL/x.H>

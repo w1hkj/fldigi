@@ -3,6 +3,8 @@
  */
 
 
+#include <config.h>
+
 #include "log.h"
 
 static const char *lognames[] = {"RX", "TX"};
