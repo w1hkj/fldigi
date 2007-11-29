@@ -1,6 +1,0 @@
-# build file to generate the distribution binary tarball
-
-make CFG=w1hkj-dist-hamlib USE_TLS=0
-tar czf fldigi-$1.bin.tgz -C Install fldigi
-make clean
-mv *.tgz $HOME/uploads

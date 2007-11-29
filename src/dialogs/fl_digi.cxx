@@ -1463,6 +1463,7 @@ void create_fl_digi_main() {
 					FL_HOR_NICE_SLIDER, 
 					WNOM-(Hwfall-24), Y + Hwfall - 12, 
 					Hwfall - 24, 12, "");
+							
 				sldrSquelch->minimum(0);
 				sldrSquelch->maximum(100);
 				sldrSquelch->step(1);

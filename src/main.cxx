@@ -605,6 +605,4 @@ void print_versions(void)
 #ifdef src_get_version
 	cerr << ' ' << src_get_version() << '\n';
 #endif
-
-        cerr << ' ' << src_get_version() << endl;
 }
