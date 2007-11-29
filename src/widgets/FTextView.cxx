@@ -76,6 +76,9 @@ FTextBase::FTextBase(int x, int y, int w, int h, const char *l)
 
 int FTextBase::handle(int event)
 {
+        if (event == FL_MOUSEWHEEL && !Fl::event_inside(this))
+                return 1;
+
         if (!adjusted_colours && event == FL_SHOW) {
                 adjust_colours();
                 adjusted_colours = true;
