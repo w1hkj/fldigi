@@ -13,7 +13,6 @@
 
 #include "trx.h"
 #include "modem.h"
-#include "ScopeDialog.h"
 #include "fl_digi.h"
 #include "ptt.h"
 #include "log.h"

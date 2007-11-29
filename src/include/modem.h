@@ -8,14 +8,11 @@
 #include "threads.h"
 
 #include "misc.h"
-//#include "configuration.h"
 #include "sound.h"
 #include "waterfall.h"
-#include "ScopeDialog.h"
 #include "fl_digi.h"
 #include "globals.h"
 #include "fl_digi.h"
-//#include "id.h"
 
 #include "fldigi-config.h"
 #include "morse.h"

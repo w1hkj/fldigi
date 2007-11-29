@@ -82,7 +82,6 @@ fldigi_SOURCES += \
 	include/Fl_Text_Display_mod.H \
 	include/Fl_Text_Editor_mod.H \
 	include/FreqControl.h \
-	include/ScopeDialog.h \
 	include/TextView.h \
 	include/analysis.h \
 	include/ascii.h \
@@ -224,7 +223,6 @@ fldigi_SOURCES += \
 EXTRA_fldigi_SOURCES += \
 	blank/blank.cxx \
 	blank/blank.h \
-	dialogs/ScopeDialog.cxx \
 	feld/Feld7x7-14.cxx \
 	feld/Feld7x7n-14.cxx \
 	feld/FeldDx-14.cxx \
@@ -258,5 +256,4 @@ EXTRA_DIST = \
 	fileselector/ns_mask.xbm \
 	fileselector/up.xbm \
 	dialogs/Config.fl \
-	dialogs/ScopeDialog.fl \
 	rigcontrol/rigdialog.fl
