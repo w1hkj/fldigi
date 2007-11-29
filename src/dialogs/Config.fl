@@ -634,7 +634,7 @@ progdefaults.changed = true;}
               label {RX ppm:}
               callback {progdefaults.RX_corr = (int)o->value();
 progdefaults.changed = true;}
-              xywh {299 161 75 24}
+              xywh {300 160 75 24}
               code0 {o->step(1);}
               code1 {o->minimum(-50000);}
               code2 {o->maximum(50000);}
@@ -643,7 +643,7 @@ progdefaults.changed = true;}
               label {TX ppm:}
               callback {progdefaults.TX_corr = (int)o->value();
 progdefaults.changed = true;}
-              xywh {299 190 75 24}
+              xywh {300 130 75 24}
               code0 {o->step(1);}
               code1 {o->minimum(-50000);}
               code2 {o->maximum(50000);}
@@ -652,7 +652,7 @@ progdefaults.changed = true;}
               label {Tx offset:}
               callback {progdefaults.TxOffset = (int)o->value();
 progdefaults.changed = true;}
-              xywh {177 190 45 24}
+              xywh {330 190 45 24}
               code0 {o->value(progdefaults.TxOffset);}
               code1 {o->step(1);}
               code2 {o->minimum(-50);}
@@ -668,6 +668,7 @@ progdefaults.changed = true;}
 o->value(1);
 menuOSSDev->activate();
 menuPADev->deactivate();
+menuSampleRate->deactivate();
 scDevice = menuOSSDev->value();
 progdefaults.btnAudioIOis = 0;
 progdefaults.changed = true;
@@ -680,6 +681,7 @@ resetSoundCard();}
 o->value(1);
 menuPADev->activate();
 menuOSSDev->deactivate();
+menuSampleRate->activate();
 scDevice = menuPADev->value();
 progdefaults.btnAudioIOis = 1;
 progdefaults.changed = true;
@@ -702,6 +704,15 @@ resetSoundCard();
 progdefaults.changed = true;} open
               xywh {155 90 110 25} align 8
               code0 {o->value(progdefaults.PAdevice.c_str());}
+            } {}
+            Fl_Choice menuSampleRate {
+              label {Sample rate}
+              callback {progdefaults.sample_rate = o->value() ? strtol(o->mvalue()->text, 0, 10) : 0;
+resetSoundCard();
+progdefaults.changed = true;} open selected
+              xywh {5 190 85 25} down_box BORDER_BOX align 8
+              code0 {extern Fl_Menu_Item sample_rate_menu[];}
+              code1 {o->menu(sample_rate_menu);}
             } {}
           }
           Fl_Group tabMixer {

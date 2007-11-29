@@ -868,6 +868,13 @@ Fl_Menu_Item menu_[] = {
 
 Fl_Menu_Bar *mnu;
 
+Fl_Menu_Item sample_rate_menu[] = {
+	{ "Auto" }, { "8000" }, { "9600" }, { "11025" }, { "12000" },
+	{ "16000" }, { "22050" }, { "24000" }, { "32000" }, { "44100" },
+	{ "48000" }, { "88200" }, { "96000" }, { "192000" },
+	{ 0 }
+};
+
 void activate_rig_menu_item(bool b)
 {
 	if (b) {

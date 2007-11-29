@@ -91,7 +91,8 @@ void trx_trx_receive_loop()
 		try {
 			scard->Open(O_RDONLY, active_modem->get_samplerate());
 		}
-		catch (SndException e) {
+		catch (const SndException& e) {
+			put_status(e.what(), 1);
 			MilliSleep(10);
 			return;
 		}
@@ -124,7 +125,8 @@ void trx_trx_transmit_loop()
 		try {
 			scard->Open(O_WRONLY, active_modem->get_samplerate());
 		}
-		catch (SndException e) {
+		catch (const SndException& e) {
+			put_status(e.what(), 1);
 			MilliSleep(10);
 			return;
 		}
@@ -159,7 +161,8 @@ void trx_tune_loop()
 		try {
 			scard->Open(O_WRONLY, active_modem->get_samplerate());
 		}
-		catch (SndException e) {
+		catch (const SndException& e) {
+			put_status(e.what(), 1);
 			MilliSleep(10);
 			return;
 		}

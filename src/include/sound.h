@@ -69,11 +69,12 @@ class SndException : public std::exception
 public:
 	SndException() { *szError = 0; error = 0; }
 	SndException(int e) {
-		snprintf(szError, sizeof(szError) - 1, "Error: %d, %s", e, strerror(e));
+		snprintf(szError, sizeof(szError), "Error: %d, %s", e, strerror(e));
 		error = e;
 	}
 	SndException(const char *s) {
-		snprintf(szError, sizeof(szError) - 1, "Error: %s", s);
+		strncpy(szError, s, sizeof(szError));
+		szError[sizeof(szError) - 1] = '\0';
 		error = 1;
 	}
         const char *what(void) const throw() { return szError; }
@@ -195,7 +196,7 @@ private:
         void		resample(int mode, float *buf, int count, int max = 0);
         void 		init_stream(void);
         void		adjust_stream(void);
-        double		get_best_srate(void);
+        double		find_srate(void);
         static unsigned ceil2(unsigned n);
         static unsigned floor2(unsigned n);
 
@@ -215,7 +216,6 @@ private:
         double	 	req_sample_rate;
         double		dev_sample_rate;
         float 		*fbuf;
-        static double	std_sample_rates[];
 };
 
 #endif // USE_PORTAUDIO
