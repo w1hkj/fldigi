@@ -92,7 +92,10 @@ AM_CONDITIONAL([ENABLE_DEBUG], [test "x$ac_cv_debug" = "xyes"])
 AC_DEFINE([USE_TLS], [], [Defined if we are using TLS])
 AC_ARG_ENABLE([tls],
               AC_HELP_STRING([--disable-tls], [disable use of TLS]),
-               [],
+              [case "${enableval}" in
+                yes|no) ac_cv_tls="${enableval}" ;;
+                *)      AC_MSG_ERROR([bad value "${withval}" for --disable-tls]) ;;
+               esac],
                [ac_cv_tls=yes])
 if test "x$ac_cv_tls" = "xyes"; then
     AC_DEFINE(USE_TLS, 1)
@@ -185,6 +188,8 @@ else
     else # $ac_cv_want_sndfile is yes
         if test "x$ac_cv_sndfile" = "xno"; then
             AC_MSG_NOTICE([--with-sndfile was given, but test for sndfile failed])
+        else
+            AC_DEFINE(USE_SNDFILE, 1)
         fi
         PKG_CHECK_MODULES(SNDFILE, sndfile >= 1.0.10) # for the error message
     fi
@@ -200,7 +205,10 @@ AC_DEFINE([USE_PORTAUDIO], [], [Set to 1 if we are using PortAudio, 0 otherwise]
 AC_ARG_WITH([portaudio],
             AC_HELP_STRING([--without-portaudio],
                            [disable support for PortAudio]),
-            [],
+            [case "${withval}" in
+              yes|no) ac_cv_want_portaudio="${withval}" ;;
+              *)      AC_MSG_ERROR([bad value "${withval}" for --without-portaudio]) ;;
+             esac],
             [ac_cv_want_portaudio=yes])
 if test "x$ac_cv_want_portaudio" = "xyes"; then
     PKG_CHECK_EXISTS(portaudiocpp >= 12, ac_cv_portaudio=yes, ac_cv_portaudio=no)
@@ -245,6 +253,8 @@ else
     else # $ac_cv_want_hamlib is yes
         if test "x$ac_cv_hamlib" = "xno"; then
             AC_MSG_NOTICE([--with-hamlib was given, but test for hamlib failed])
+        else
+            AC_DEFINE(USE_HAMLIB, 1)
         fi
         PKG_CHECK_MODULES(HAMLIB, hamlib >= 1.2.4) # for the error message
     fi
