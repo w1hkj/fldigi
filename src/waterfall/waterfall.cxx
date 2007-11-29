@@ -1046,7 +1046,7 @@ void btnMem_cb(Fl_Widget *, void *menu_event)
                 case FL_RIGHT_MOUSE:
                         return;
                 case FL_MIDDLE_MOUSE: // select last
-                        if ((elem = qrg_list.size() - 1) < 0);
+                        if ((elem = qrg_list.size() - 1) < 0)
                                 return;
                         op = SELECT;
                         break;
