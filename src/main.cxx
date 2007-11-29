@@ -299,13 +299,13 @@ void generate_option_help(void) {
 	     << setw(width) << setiosflags(ios::left)
 	     << "" << "The default is: " << progdefaults.tx_msgid
 	     << " or 0x" << hex << progdefaults.tx_msgid << dec << '\n'
-
+#if USE_PORTAUDIO
 	     << setw(width) << setiosflags(ios::left)
 	     << " --sample-rate SAMPLE_RATE"
 	     << "Force the PortAudio stream to be opened\n"
 	     << setw(width) << setiosflags(ios::left)
 	     << "" << "with a sample rate of SAMPLE_RATE Hz\n"
-
+#endif
 
 	     << setw(width) << setiosflags(ios::left)
 	     << " --version" << "Print version information\n"
@@ -415,7 +415,9 @@ int parse_args(int argc, char **argv, int& idx)
         enum { OPT_ZERO, OPT_RX_IPC_KEY, OPT_TX_IPC_KEY, OPT_CONFIG_DIR,
                OPT_FAST_TEXT, OPT_FONT, OPT_WFALL_WIDTH, OPT_WFALL_HEIGHT,
                OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT, OPT_PROFILE, OPT_USE_CHECK,
+#if USE_PORTAUDIO
                OPT_ALLOW_FULL_DUPLEX, OPT_FRAMES_PER_BUFFER, OPT_SAMPLE_RATE,
+#endif
                OPT_HELP, OPT_VERSION };
 
 	const char shortopts[] = "+";
@@ -432,10 +434,11 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "window-height", 1, 0, OPT_WINDOW_HEIGHT },
 		{ "profile",	   1, 0, OPT_PROFILE },
 		{ "usechkbtns",    0, 0, OPT_USE_CHECK },
+#if USE_PORTAUDIO
 		{ "full-duplex",   0, 0, OPT_ALLOW_FULL_DUPLEX },
 		{ "frames-per-buf",1, 0, OPT_FRAMES_PER_BUFFER },
 		{ "sample-rate",   1, 0, OPT_SAMPLE_RATE },
-
+#endif
 		{ "help",	   0, 0, OPT_HELP },
 		{ "version",	   0, 0, OPT_VERSION },
 		{ 0 }
@@ -527,7 +530,7 @@ int parse_args(int argc, char **argv, int& idx)
 			useCheckButtons = true;
 			idx += 1;
 			return 1;
-
+#if USE_PORTAUDIO
 		case OPT_ALLOW_FULL_DUPLEX:
 			pa_allow_full_duplex = true;
 			idx += 1;
@@ -540,7 +543,7 @@ int parse_args(int argc, char **argv, int& idx)
 			pa_sample_rate = strtod(optarg, 0);
 			idx += 2;
 			return 2;
-
+#endif // USE_PORTAUDIO
 		case OPT_HELP:
 			cerr << option_help;
 			exit(EXIT_SUCCESS);
