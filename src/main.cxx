@@ -599,7 +599,11 @@ void print_versions(void)
 #if USE_SNDFILE
         char sndfile_version[32];
         sf_command(NULL, SFC_GET_LIB_VERSION, sndfile_version, sizeof(sndfile_version));
-        cerr << ' ' << sndfile_version << endl;
+        cerr << ' ' << sndfile_version << '\n';
+#endif
+
+#ifdef src_get_version
+	cerr << ' ' << src_get_version() << '\n';
 #endif
 
         cerr << ' ' << src_get_version() << endl;

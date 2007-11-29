@@ -13,10 +13,15 @@ LDADD = @BOOST_LDFLAGS@ @FLTK_LIBS@ @PORTAUDIOCPP_LIBS@ @SNDFILE_LIBS@ \
 	@SAMPLERATE_LIBS@ @HAMLIB_LIBS@ @RTLIB@
 
 
+SAMPLERATE_SRC = samplerate/common.h samplerate/fastest_coeffs.h \
+	samplerate/float_cast.h samplerate/samplerate.c samplerate/samplerate.h \
+	samplerate/src_linear.c samplerate/src_sinc.c samplerate/src_zoh.c \
+	samplerate/srconfig.h
 HAMLIB_SRC = include/hamlib.h rigcontrol/hamlib.cxx include/rigclass.h rigcontrol/rigclass.cxx
 TRACE_SRC = misc/stacktrace.cxx
+
 # We distribute these but do not always compile them
-EXTRA_fldigi_SOURCES = $(HAMLIB_SRC) $(TRACE_SRC)
+EXTRA_fldigi_SOURCES = $(SAMPLERATE_SRC) $(HAMLIB_SRC) $(TRACE_SRC)
 
 fldigi_SOURCES =
 
@@ -27,6 +32,11 @@ else
   AM_CPPFLAGS += -DNDEBUG
 endif
 
+if NO_SAMPLERATE
+  AM_CPPFLAGS += -I$(srcdir)/samplerate
+  fldigi_SOURCES += $(SAMPLERATE_SRC)
+endif
+
 if ENABLE_HAMLIB
   fldigi_SOURCES += $(HAMLIB_SRC)
 endif
@@ -34,10 +44,13 @@ endif
 
 .EXPORT_ALL_VARIABLES: versions.h
 versions.h: $(srcdir)/include/versions.h.in
-	sh $(srcdir)/../scripts/mkversions.sh $(srcdir)/include/versions.h.in $@ || echo > $@
+	sh $(srcdir)/../scripts/mkversions.sh $^ $@ || echo > $@
 
+# Sources that are generated,
 BUILT_SOURCES = versions.h
+# not distributed,
 nodist_fldigi_SOURCES = $(BUILT_SOURCES)
+# and deleted by the clean targets
 CLEANFILES = $(BUILT_SOURCES)
 
 
