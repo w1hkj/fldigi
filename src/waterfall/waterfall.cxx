@@ -162,24 +162,34 @@ void WFdisp::makeMarker() {
 	memset(clrMin, 0, RGBwidth * (WFMARKER - 2));
 	clrM = clrMin + (int)((double)carrierfreq + 0.5);
 
-	int bw = bandwidth;
+	int bw, marker_width = bandwidth;
 	if (active_modem) {
 		int mode = active_modem->get_mode();
 		if (mode >= MODE_BPSK31 && mode <= MODE_QPSK250)
-			bw += mailserver ? progdefaults.ServerOffset :
+			marker_width += mailserver ? progdefaults.ServerOffset :
 				progdefaults.SearchRange;
 	}
-	bw = (int)(bw / 2.0 + 1);
+	marker_width = (int)(marker_width / 2.0 + 1);
 
 	RGBmarker.R = progdefaults.bwTrackRGBI.R;
 	RGBmarker.G = progdefaults.bwTrackRGBI.G;
 	RGBmarker.B = progdefaults.bwTrackRGBI.B;
-	for (int y = 0; y < WFMARKER - 2; y++) 
-		for (int i = -bw; i <= bw ; i++) {
+
+	// clamp marker to image width
+	bw = marker_width;
+	int bw_lower = -bw, bw_upper = +bw;
+	if (bw_lower + carrierfreq+0.5 < 0)
+		bw_lower -= bw_lower + carrierfreq+0.5;
+	if (bw_upper + carrierfreq+0.5 > IMAGE_WIDTH)
+		bw_upper -= bw_upper + carrierfreq+0.5 - IMAGE_WIDTH;
+	for (int y = 0; y < WFMARKER - 2; y++) {
+		for (int i = bw_lower; i <= bw_upper ; i++) {
 			clrPos = clrM + i + y * IMAGE_WIDTH;
 			if (clrPos > clrMin && clrPos < clrMax)
 				*clrPos = RGBmarker;
 		}
+	}
+
 	if (!wantcursor) return;
 	
 	if (cursorpos > disp_width - bandwidth / 2 / step)
@@ -197,17 +207,22 @@ void WFdisp::makeMarker() {
 	RGBcursor.R = progdefaults.cursorLineRGBI.R;
 	RGBcursor.G = progdefaults.cursorLineRGBI.G;
 	RGBcursor.B = progdefaults.cursorLineRGBI.B;
-	
+
+	bw = marker_width;
 	for (int y = 0; y < WFMARKER - 2; y++) {
 		int incr = y * IMAGE_WIDTH;
 		int msize = (WFMARKER - 2 - y)*RGBsize*step/4;
 		*(clrM + incr - 1)	= 
-		*(clrM + incr) 		= 
-		*(clrM + incr + 1) 	= RGBcursor;
-		for (int i = bw - msize; i <= bw + msize; i++) {
-			*(clrM + i + incr) = 
-			*(clrM - i + incr) = RGBcursor;
-		}	
+		*(clrM + incr)		= 
+		*(clrM + incr + 1)	= RGBcursor;
+
+		if (xp - (bw + msize) > 0)
+			for (int i = bw - msize; i <= bw + msize; i++)
+				*(clrM - i + incr) = RGBcursor;
+
+		if (xp + (bw + msize) < IMAGE_WIDTH)
+			for (int i = bw - msize; i <= bw + msize; i++)
+				*(clrM + i + incr) = RGBcursor;
 	}
 }
 
@@ -1510,7 +1525,7 @@ void WFdisp::handle_mouse_wheel(int event)
 	else if (state & FL_SHIFT)
 		val = sldrSquelch;
 
-	val->value(val->clamp(val->increment(val->value(), d)));
+	val->value(val->clamp(val->increment(val->value(), -d)));
 	val->do_callback();
 	if (val == cntServerOffset || val == cntSearchRange)
 		active_modem->set_sigsearch(SIGSEARCH);
