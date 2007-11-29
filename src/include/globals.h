@@ -26,10 +26,23 @@
 #ifndef _GLOBALS_H
 #define _GLOBALS_H
 
-extern const char *mode_names[];
+enum state_t {
+	STATE_PAUSE = 0,
+	STATE_RX,
+	STATE_TX,
+	STATE_RESTART,
+	STATE_TUNE,
+	STATE_ABORT,
+	STATE_FLUSH,
+	STATE_NOOP,
+	STATE_EXIT,
+	STATE_ENDED,
+	STATE_IDLE,
+	STATE_NEW_MODEM
+};
 extern const char *state_names[];
 
-enum trx_mode {
+enum {
 	MODE_MFSK16 = 0,
 	MODE_MFSK8,
 	MODE_OLIVIA,
@@ -53,30 +66,27 @@ enum trx_mode {
 	MODE_FSKHELL,
 	MODE_FSKH105,
 	MODE_CW,
-    MODE_DOMINOEX4,
+	MODE_DOMINOEX4,
 	MODE_DOMINOEX5,
-    MODE_DOMINOEX8,
-    MODE_DOMINOEX11,
-    MODE_DOMINOEX16,
-    MODE_DOMINOEX22,
+	MODE_DOMINOEX8,
+	MODE_DOMINOEX11,
+	MODE_DOMINOEX16,
+	MODE_DOMINOEX22,
 	MODE_WWV,
-	MODE_ANALYSIS
+	MODE_ANALYSIS,
+	NUM_MODES
+};
+typedef int trx_mode;
+
+struct mode_info_t {
+	trx_mode mode;
+	class modem **modem;
+	const char *sname;
+	const char *name;
+	const char *pskmail_name;
 };
 
-enum state_t {
-	STATE_PAUSE = 0,
-	STATE_RX,
-	STATE_TX,
-	STATE_RESTART,
-	STATE_TUNE,
-	STATE_ABORT,
-	STATE_FLUSH,
-	STATE_NOOP,
-	STATE_EXIT,
-	STATE_ENDED,
-	STATE_IDLE,
-	STATE_NEW_MODEM
-};
+extern const struct mode_info_t mode_info[NUM_MODES];
 
 
 #endif

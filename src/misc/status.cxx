@@ -112,40 +112,7 @@ void status::initLastState()
 		progdefaults.wfRefLevel = reflevel;
 		progdefaults.wfAmpSpan = ampspan;
 	}
-	trx_mode m = (trx_mode) lastmode;
-	switch (m) {
-		case MODE_CW : 			initCW(); break;
-		case MODE_MFSK8 :		initMFSK8(); break;
-		case MODE_MFSK16 :		initMFSK16(); break;
-		case MODE_PSK63 :		initPSK63(); break;
-		case MODE_PSK125 :		initPSK125(); break;
-		case MODE_PSK250 :		initPSK250(); break;
-		case MODE_QPSK31 :		initQPSK31(); break;
-		case MODE_QPSK63 :		initQPSK63(); break;
-		case MODE_QPSK125 :		initQPSK125(); break;
-		case MODE_QPSK250 :		initQPSK250(); break;
-		case MODE_RTTY :		initRTTY(); break;
-		case MODE_OLIVIA :		initOLIVIA(); break;
-		case MODE_DOMINOEX4 :	initDOMINOEX4(); break;
-		case MODE_DOMINOEX5 :	initDOMINOEX5(); break;
-		case MODE_DOMINOEX8 : 	initDOMINOEX8(); break;
-		case MODE_DOMINOEX11 :	initDOMINOEX11(); break;
-		case MODE_DOMINOEX16 :	initDOMINOEX16(); break;
-		case MODE_DOMINOEX22 :	initDOMINOEX22(); break;
-		case MODE_FELDHELL :	initFELDHELL(); break;
-		case MODE_FSKHELL :		initFSKHELL(); break;
-		case MODE_FSKH105 :		initFSKHELL105(); break;
-		case MODE_THROB1 :		initTHROB1(); break;
-		case MODE_THROB2 :		initTHROB2(); break;
-		case MODE_THROB4 :		initTHROB4(); break;
-		case MODE_THROBX1 :		initTHROBX1(); break;
-		case MODE_THROBX2 :		initTHROBX2(); break;
-		case MODE_THROBX4 :  	initTHROBX4(); break;
-		case MODE_WWV :			initWWV(); break;
-		case MODE_ANALYSIS: 	initANALYSIS(); break;
-		case MODE_BPSK31 : 
-		default: 				initPSK31();
-	}
+	init_modem((trx_mode)lastmode);
 
 	while (!active_modem) MilliSleep(100);
 

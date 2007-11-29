@@ -45,7 +45,6 @@ void anal::init()
 {
 	modem::init();
 	rx_init();
-	clear_StatusMessages();
 	digiscope->mode(Digiscope::RTTY);
 }
 

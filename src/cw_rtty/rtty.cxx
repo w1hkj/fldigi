@@ -65,7 +65,6 @@ void rtty::init()
 {
 	modem::init();
 	rx_init();
-	clear_StatusMessages();
 	put_MODEstatus(mode);
 	sprintf(msg1,"Shft %-4.0f", rtty_shift); 
 	put_Status1(msg1);

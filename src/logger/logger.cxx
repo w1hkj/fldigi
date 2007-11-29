@@ -150,7 +150,7 @@ int submit_log(void)
 		sprintf(adifdate,"%04d%02d%02d", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday);
 		strftime(logtime, sizeof(logtime), "%H%M", tm);
 
-	string mode = mode_names[active_modem->get_mode()];
+	const char *mode = mode_info[active_modem->get_mode()].sname;
 	
 	sprintf(strFreqMhz,"%-12f", wf->dFreq()/1.0e6);
 
@@ -171,7 +171,7 @@ int submit_log(void)
 	log_msg = log_msg + "mhz:"		+ strFreqMhz			+ LOG_MSEPARATOR;
 	putadif(12, strFreqMhz);
 	log_msg = log_msg + "mode:"		+ mode					+ LOG_MSEPARATOR;
-	putadif(14, mode.c_str());
+	putadif(14, mode);
 	log_msg = log_msg + "tx:"		+ inpRstOut->value()	+ LOG_MSEPARATOR;
 	putadif(24, inpRstOut->value());
 	log_msg = log_msg + "rx:"		+ inpRstIn->value() 	+ LOG_MSEPARATOR;

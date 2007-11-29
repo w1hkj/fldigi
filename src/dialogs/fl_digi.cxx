@@ -147,6 +147,59 @@ int HNOM = DEFAULT_HNOM;
 int WNOM = DEFAULT_WNOM;
 
 
+void cb_init_mode(Fl_Widget *, void *arg);
+Fl_Widget *modem_config_tab;
+Fl_Menu_Item *quick_change;
+Fl_Menu_Item quick_change_psk[] = {
+	{ mode_info[MODE_BPSK31].name, 0, cb_init_mode, (void *)MODE_BPSK31 },
+	{ mode_info[MODE_PSK63].name, 0, cb_init_mode, (void *)MODE_PSK63 },
+	{ mode_info[MODE_PSK125].name, 0, cb_init_mode, (void *)MODE_PSK125 },
+	{ mode_info[MODE_PSK250].name, 0, cb_init_mode, (void *)MODE_PSK250 },
+	{ 0 }
+};
+
+Fl_Menu_Item quick_change_qpsk[] = {
+	{ mode_info[MODE_QPSK31].name, 0, cb_init_mode, (void *)MODE_QPSK31 },
+	{ mode_info[MODE_QPSK63].name, 0, cb_init_mode, (void *)MODE_QPSK63 },
+	{ mode_info[MODE_QPSK125].name, 0, cb_init_mode, (void *)MODE_QPSK125 },
+	{ mode_info[MODE_QPSK250].name, 0, cb_init_mode, (void *)MODE_QPSK250 },
+	{ 0 }
+};
+
+Fl_Menu_Item quick_change_mfsk[] = {
+	{ mode_info[MODE_MFSK8].name, 0, cb_init_mode, (void *)MODE_MFSK8 },
+	{ mode_info[MODE_MFSK16].name, 0, cb_init_mode, (void *)MODE_MFSK16 },
+	{ 0 }
+};
+
+Fl_Menu_Item quick_change_domino[] = {
+	{ mode_info[MODE_DOMINOEX4].name, 0, cb_init_mode, (void *)MODE_DOMINOEX4 },
+	{ mode_info[MODE_DOMINOEX5].name, 0, cb_init_mode, (void *)MODE_DOMINOEX5 },
+	{ mode_info[MODE_DOMINOEX8].name, 0, cb_init_mode, (void *)MODE_DOMINOEX8 },
+	{ mode_info[MODE_DOMINOEX11].name, 0, cb_init_mode, (void *)MODE_DOMINOEX11 },
+	{ mode_info[MODE_DOMINOEX16].name, 0, cb_init_mode, (void *)MODE_DOMINOEX16 },
+	{ mode_info[MODE_DOMINOEX22].name, 0, cb_init_mode, (void *)MODE_DOMINOEX22 },
+	{ 0 }
+};
+
+Fl_Menu_Item quick_change_feld[] = {
+	{ mode_info[MODE_FELDHELL].name, 0, cb_init_mode, (void *)MODE_FELDHELL },
+	{ mode_info[MODE_FSKHELL].name, 0, cb_init_mode, (void *)MODE_FSKHELL },
+	{ mode_info[MODE_FSKH105].name, 0, cb_init_mode, (void *)MODE_FSKH105 },
+	{ 0 }
+};
+
+Fl_Menu_Item quick_change_throb[] = {
+	{ mode_info[MODE_THROB1].name, 0, cb_init_mode, (void *)MODE_THROB1 },
+	{ mode_info[MODE_THROB2].name, 0, cb_init_mode, (void *)MODE_THROB2 },
+	{ mode_info[MODE_THROB4].name, 0, cb_init_mode, (void *)MODE_THROB4 },
+	{ mode_info[MODE_THROBX1].name, 0, cb_init_mode, (void *)MODE_THROBX1 },
+	{ mode_info[MODE_THROBX2].name, 0, cb_init_mode, (void *)MODE_THROBX2 },
+	{ mode_info[MODE_THROBX4].name, 0, cb_init_mode, (void *)MODE_THROBX4 },
+	{ 0 }
+};
+
+
 void startup_modem(modem *m)
 {
 	trx_start_modem(m);
@@ -244,408 +297,106 @@ void cb_wMain( Fl_Widget *, void * )
 		clean_exit();
 }
 
-void initMFSK8()
+void init_modem(trx_mode mode)
 {
-	clear_StatusMessages();
-	if (!mfsk8_modem)
-		mfsk8_modem = new mfsk(MODE_MFSK8);
-	startup_modem (mfsk8_modem);
-	progStatus.saveModeState(MODE_MFSK8);
-}
+	quick_change = 0;
+	modem_config_tab = tabsModems->child(0);
 
-void cb_mnuMFSK8(Fl_Menu_*, void*) {
-	initMFSK8();
-}
+	switch (mode) {
+	case MODE_MFSK16: case MODE_MFSK8:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new mfsk(mode));
+		quick_change = quick_change_mfsk;
+		break;
 
-void initMFSK16()
-{
-	clear_StatusMessages();
-	if (!mfsk16_modem) 
-		mfsk16_modem = new mfsk(MODE_MFSK16);
-	startup_modem (mfsk16_modem);
-	progStatus.saveModeState(MODE_MFSK16);
-}
+	case MODE_OLIVIA:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new olivia);
+		modem_config_tab = tabOlivia;
+		break;
 
-void cb_mnuMFSK16(Fl_Menu_*, void*) {
-	initMFSK16();
-}
+	case MODE_RTTY:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new rtty(mode));
+		modem_config_tab = tabRTTY;
+		break;
 
-void initPSK31()
-{
-	clear_StatusMessages();
-	if (!psk31_modem)
-		psk31_modem = new psk(MODE_BPSK31);
-	startup_modem (psk31_modem);
-	progStatus.saveModeState(MODE_BPSK31);
-}
+	case MODE_THROB1: case MODE_THROB2: case MODE_THROB4:
+	case MODE_THROBX1: case MODE_THROBX2: case MODE_THROBX4:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new throb(mode));
+		quick_change = quick_change_throb;
+		break;
 
-void cb_mnuPSK31(Fl_Menu_*, void*) {
-	initPSK31();
-}
+	case MODE_BPSK31: case MODE_PSK63: case MODE_PSK125: case MODE_PSK250:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new psk(mode));
+		quick_change = quick_change_psk;
+		modem_config_tab = tabPSK;
+		break;
+	case MODE_QPSK31: case MODE_QPSK63: case MODE_QPSK125: case MODE_QPSK250:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new psk(mode));
+		quick_change = quick_change_qpsk;
+		modem_config_tab = tabPSK;
+		break;
 
-void initPSK63()
-{
-	clear_StatusMessages();
-	if(!psk63_modem)
-		psk63_modem = new psk(MODE_PSK63);
-	startup_modem (psk63_modem);
-	progStatus.saveModeState(MODE_PSK63);
-}
+	case MODE_FELDHELL: case MODE_FSKHELL: case MODE_FSKH105:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new feld(mode));
+		quick_change = quick_change_feld;
+		modem_config_tab = tabFeld;
+		break;
 
-void cb_mnuPSK63(Fl_Menu_*, void*) {
-	initPSK63();
-}
+	case MODE_CW:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem : new cw);
+		modem_config_tab = tabCW;
+		break;
 
-void initPSK125()
-{
-	clear_StatusMessages();
-	if(!psk125_modem)
-		psk125_modem = new psk(MODE_PSK125);
-	startup_modem (psk125_modem);
-	progStatus.saveModeState(MODE_PSK125);
-}
+	case MODE_DOMINOEX4: case MODE_DOMINOEX5: case MODE_DOMINOEX8:
+	case MODE_DOMINOEX11: case MODE_DOMINOEX16: case MODE_DOMINOEX22:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new dominoex(mode));
+		quick_change = quick_change_domino;
+		modem_config_tab = tabDomEX;
+		break;
 
-void cb_mnuPSK125(Fl_Menu_*, void*) {
-	initPSK125();
-}
+	case MODE_WWV:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new wwv);
+		break;
 
-void initPSK250()
-{
-	clear_StatusMessages();
-	if(!psk250_modem)
-		psk250_modem = new psk(MODE_PSK250);
-	startup_modem (psk250_modem);
-	progStatus.saveModeState(MODE_PSK250);
-}
+	case MODE_ANALYSIS:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new anal);
+		break;
 
-void cb_mnuPSK250(Fl_Menu_*, void*) {
-	initPSK250();
-}
-
-void initQPSK31()
-{
-	clear_StatusMessages();
-	if (!qpsk31_modem)
-		qpsk31_modem = new psk(MODE_QPSK31);
-	startup_modem (qpsk31_modem);
-	progStatus.saveModeState(MODE_QPSK31);
-}
-
-void cb_mnuQPSK31(Fl_Menu_*, void*) {
-	initQPSK31();
-}
-
-void initQPSK63()
-{
-	clear_StatusMessages();
-	if (!qpsk63_modem)
-		qpsk63_modem = new psk(MODE_QPSK63);
-	startup_modem (qpsk63_modem);
-	progStatus.saveModeState(MODE_QPSK63);
-}
-
-void cb_mnuQPSK63(Fl_Menu_*, void*) {
-	initQPSK63();
-}
-
-void initQPSK125()
-{
-	clear_StatusMessages();
-	if (!qpsk125_modem)
-		qpsk125_modem = new psk(MODE_QPSK125);
-	startup_modem (qpsk125_modem);
-	progStatus.saveModeState(MODE_QPSK125);
-}
-
-void cb_mnuQPSK125(Fl_Menu_*, void*) {
-	initQPSK125();
-}
-
-void initQPSK250()
-{
-	clear_StatusMessages();
-	if (!qpsk250_modem)
-		qpsk250_modem = new psk(MODE_QPSK250);
-	startup_modem (qpsk250_modem);
-	progStatus.saveModeState(MODE_QPSK250);
-}
-
-void cb_mnuQPSK250(Fl_Menu_*, void*) {
-	initQPSK250();
-}
-
-void initCW()
-{
-	clear_StatusMessages();
-	if (!cw_modem)
-		cw_modem = new cw();
-	startup_modem (cw_modem);
-	progStatus.saveModeState(MODE_CW);
-}
-
-void cb_mnuCW(Fl_Menu_*, void*) {
-	initCW();
-}
-
-void initRTTY()
-{
-	clear_StatusMessages();
-	if (!rtty_modem)
-		rtty_modem = new rtty(MODE_RTTY);
-	startup_modem (rtty_modem);
-	progStatus.saveModeState(MODE_RTTY);
-}
-
-void cb_mnuRTTY(Fl_Menu_*, void*) {
-	initRTTY();
-}
-
-void initOLIVIA()
-{
-	clear_StatusMessages();
-	if (!olivia_modem)
-		olivia_modem = new olivia();
-	startup_modem (olivia_modem);
-	progStatus.saveModeState(MODE_OLIVIA);
-}
-
-void cb_mnuOlivia(Fl_Menu_*, void*) {
-	initOLIVIA();
-}
-
-void initDOMINOEX4()
-{
-	clear_StatusMessages();
-	if (!dominoex4_modem) {
-		dominoex4_modem = new dominoex(MODE_DOMINOEX4);
+	default:
+		cerr << "Unknown mode: " << mode << '\n';
+		return init_modem(MODE_BPSK31);
 	}
-	startup_modem (dominoex4_modem);
-	progStatus.saveModeState(MODE_DOMINOEX4);
-}
 
-void cb_mnuDOMINOEX4(Fl_Menu_ *, void *) {
-	initDOMINOEX4();
-}
-
-void initDOMINOEX5()
-{
 	clear_StatusMessages();
-	if (!dominoex5_modem) {
-		dominoex5_modem = new dominoex(MODE_DOMINOEX5);
-	}
-	startup_modem (dominoex5_modem);
-	progStatus.saveModeState(MODE_DOMINOEX5);
+	progStatus.saveModeState(mode);
 }
 
-void cb_mnuDOMINOEX5(Fl_Menu_ *, void *) {
-	initDOMINOEX5();
-}
-
-void initDOMINOEX8()
+void init_modem_sync(trx_mode m)
 {
-	clear_StatusMessages();
-	if (!dominoex8_modem)
-		dominoex8_modem = new dominoex(MODE_DOMINOEX8);
-	startup_modem (dominoex8_modem);
-	progStatus.saveModeState(MODE_DOMINOEX8);
+#ifndef NDEBUG
+        if (GET_THREAD_ID() == TRX_TID)
+                cerr << "trx thread called init_modem_sync!\n";
+#endif
+
+        wait_modem_ready_prep();
+        init_modem(m);
+        wait_modem_ready_cmpl();
 }
 
-void cb_mnuDOMINOEX8(Fl_Menu_ *, void *) {
-	initDOMINOEX8();
-}
-
-void initDOMINOEX11()
+void cb_init_mode(Fl_Widget *, void *mode)
 {
-	clear_StatusMessages();
-	if (!dominoex11_modem)
-		dominoex11_modem = new dominoex(MODE_DOMINOEX11);
-	startup_modem (dominoex11_modem);
-	progStatus.saveModeState(MODE_DOMINOEX11);
+	init_modem(reinterpret_cast<trx_mode>(mode));
 }
 
-void cb_mnuDOMINOEX11(Fl_Menu_ *, void *) {
-	initDOMINOEX11();
-}
-
-void initDOMINOEX16()
-{
-	clear_StatusMessages();
-	if (!dominoex16_modem)
-		dominoex16_modem = new dominoex(MODE_DOMINOEX16);
-	startup_modem (dominoex16_modem);
-	progStatus.saveModeState(MODE_DOMINOEX16);
-}
-
-void cb_mnuDOMINOEX16(Fl_Menu_ *, void *) {
-	initDOMINOEX16();
-}
-
-void initDOMINOEX22()
-{
-	clear_StatusMessages();
-	if (!dominoex22_modem)
-		dominoex22_modem = new dominoex(MODE_DOMINOEX22);
-	startup_modem (dominoex22_modem);
-	progStatus.saveModeState(MODE_DOMINOEX22);
-}
-
-void cb_mnuDOMINOEX22(Fl_Menu_ *, void *) {
-	initDOMINOEX22();
-}
-
-void initFELDHELL()
-{
-	clear_StatusMessages();
-	FHdisp->clear();
-	if (!feld_modem)
-		feld_modem = new feld(MODE_FELDHELL);
-	startup_modem (feld_modem);
-	progStatus.saveModeState(MODE_FELDHELL);
-}
-
-void cb_mnuFELDHELL(Fl_Menu_ *, void *) {
-	initFELDHELL();
-}	
-
-void initFSKHELL()
-{
-	clear_StatusMessages();
-	FHdisp->clear();
-	if (!feld_FMmodem)
-		feld_FMmodem = new feld(MODE_FSKHELL);
-	startup_modem (feld_FMmodem);
-	progStatus.saveModeState(MODE_FSKHELL);
-}
-
-void cb_mnuFSKHELL(Fl_Menu_ *, void *) {
-	initFSKHELL();
-}	
-
-void initFSKHELL105()
-{
-	clear_StatusMessages();
-	FHdisp->clear();
-	if (!feld_FM105modem)
-		feld_FM105modem = new feld(MODE_FSKH105);
-	startup_modem (feld_FM105modem);
-	progStatus.saveModeState(MODE_FSKH105);
-}
-
-void cb_mnuFSKHELL105(Fl_Menu_ *, void *) {
-	initFSKHELL105();
-}	
-
-//void cb_mnuCMTHELL(Fl_Menu_ *, void *) {
-//	clear_StatusMessages();
-//	FHdisp->clear();
-//	if (!feld_CMTmodem)
-//		feld_CMTmodem = new feld(MODE_FMCMT);
-//	startup_modem (feld_CMTmodem);
-//}	
-
-void initTHROB1()
-{
-	clear_StatusMessages();
-	if (!throb1_modem)
-		throb1_modem = new throb(MODE_THROB1);
-	startup_modem (throb1_modem);
-	progStatus.saveModeState(MODE_THROB1);
-}
-
-void cb_mnuTHROB1(Fl_Menu_ *, void *) {
-	initTHROB1();
-}
-
-void initTHROB2()
-{
-	clear_StatusMessages();
-	if (!throb2_modem)
-		throb2_modem = new throb(MODE_THROB2);
-	startup_modem (throb2_modem);
-	progStatus.saveModeState(MODE_THROB2);
-}
-
-void cb_mnuTHROB2(Fl_Menu_ *, void *) {
-	initTHROB2();
-}
-
-void initTHROB4()
-{
-	clear_StatusMessages();
-	if (!throb4_modem)
-		throb4_modem = new throb(MODE_THROB4);
-	startup_modem (throb4_modem);
-	progStatus.saveModeState(MODE_THROB4);
-}
-
-void cb_mnuTHROB4(Fl_Menu_ *, void *) {
-	initTHROB4();
-}
-
-void initTHROBX1()
-{
-	clear_StatusMessages();
-	if (!throbx1_modem)
-		throbx1_modem = new throb(MODE_THROBX1);
-	startup_modem (throbx1_modem);
-	progStatus.saveModeState(MODE_THROBX1);
-}
-
-void cb_mnuTHROBX1(Fl_Menu_ *, void *) {
-	initTHROBX1();
-}
-
-void initTHROBX2()
-{
-	clear_StatusMessages();
-	if (!throbx2_modem)
-		throbx2_modem = new throb(MODE_THROBX2);
-	startup_modem (throbx2_modem);
-	progStatus.saveModeState(MODE_THROBX2);
-}
-
-void cb_mnuTHROBX2(Fl_Menu_ *, void *) {
-	initTHROBX2();
-}
-
-void initTHROBX4()
-{
-	clear_StatusMessages();
-	if (!throbx4_modem)
-		throbx4_modem = new throb(MODE_THROBX4);
-	startup_modem (throbx4_modem);
-	progStatus.saveModeState(MODE_THROBX4);
-}
-
-void cb_mnuTHROBX4(Fl_Menu_ *, void *) {
-	initTHROBX4();
-}
-
-void initWWV()
-{
-	clear_StatusMessages();
-	if (!wwv_modem)
-		wwv_modem = new wwv();
-	startup_modem (wwv_modem);
-	progStatus.saveModeState(MODE_WWV);
-}
-
-void cb_mnuWWV(Fl_Menu_ *, void *) {
-	initWWV();
-}
-
-void initANALYSIS()
-{
-	clear_StatusMessages();
-	if (!anal_modem)
-		anal_modem = new anal();
-	startup_modem (anal_modem);
-	progStatus.saveModeState(MODE_ANALYSIS);
-}
-
-void cb_mnuANALYSIS(Fl_Menu_ *, void *) {
-	initANALYSIS();
-}
 
 void restoreFocus()
 {
@@ -912,175 +663,22 @@ void cb_QRZ(Fl_Widget *b, void *)
 	QRZquery();
 }
 
-void status_btn_right_click()
+void status_cb(Fl_Widget *b, void *arg)
 {
-	progdefaults.loadDefaults();
-	tabsConfigure->value(tabModems);
-	switch (active_modem->get_mode()) {
-		case MODE_CW : tabsModems->value(tabCW); break;
-		case MODE_OLIVIA : tabsModems->value(tabOlivia); break;
-		case MODE_RTTY: tabsModems->value(tabRTTY); break;
-		case MODE_FELDHELL :
-		case MODE_FSKHELL :
-		case MODE_FSKH105 : tabsModems->value(tabFeld); break;
-		case MODE_DOMINOEX4 :
-		case MODE_DOMINOEX5 :
-		case MODE_DOMINOEX8 :
-		case MODE_DOMINOEX11 :
-		case MODE_DOMINOEX16 :
-		case MODE_DOMINOEX22 : tabsModems->value(tabDomEX); break;
-		case MODE_BPSK31 :
-		case MODE_QPSK31 :
-		case MODE_PSK63 :
-		case MODE_QPSK63 :
-		case MODE_PSK125 :
-		case MODE_QPSK125 :
-		case MODE_PSK250 :
-		case MODE_QPSK250 :
-			tabsModems->value(tabPSK); break;
-		case MODE_MFSK16:
-		case MODE_MFSK8:
-		case MODE_THROB1 :
-		case MODE_THROB2 :
-		case MODE_THROB4 :
-		case MODE_THROBX1 :
-		case MODE_THROBX2 :
-		case MODE_THROBX4 :
-		default :
-			tabsModems->value(tabCW);
-	}
-	dlgConfig->show();
-}
-
-Fl_Menu_Item quick_change_psk[] = {
-	{"psk 31", 0,  (Fl_Callback*)cb_mnuPSK31 },
-	{"psk 63", 0,  (Fl_Callback*)cb_mnuPSK63 },
-	{"psk 125", 0,  (Fl_Callback*)cb_mnuPSK125 },
-	{"psk 250", 0,  (Fl_Callback*)cb_mnuPSK250 },
-	{"No change", 0, 0 },
-	{ 0 }
-};
-
-Fl_Menu_Item quick_change_qpsk[] = {
-	{"qpsk 31", 0,  (Fl_Callback*)cb_mnuQPSK31 },
-	{"qpsk 63", 0,  (Fl_Callback*)cb_mnuQPSK63 },
-	{"qpsk 125", 0,  (Fl_Callback*)cb_mnuQPSK125 },
-	{"qpsk 250", 0,  (Fl_Callback*)cb_mnuQPSK250, 0, FL_MENU_DIVIDER },
-	{"No change", 0, 0 },
-	{ 0 }
-};
-
-Fl_Menu_Item quick_change_mfsk[] = {
-	{"mfsk 8", 0,  (Fl_Callback*)cb_mnuMFSK8 },
-	{"mfsk 16", 0,  (Fl_Callback*)cb_mnuMFSK16, 0, FL_MENU_DIVIDER },
-	{"No change", 0, 0 },
-	{ 0 }
-};
-
-Fl_Menu_Item quick_change_domino[] = {
-	{"dominoex 4", 0,  (Fl_Callback*)cb_mnuDOMINOEX4 },
-	{"dominoex 5", 0,  (Fl_Callback*)cb_mnuDOMINOEX5 },
-	{"dominoex 8", 0,  (Fl_Callback*)cb_mnuDOMINOEX8 },
-	{"dominoex 11", 0,  (Fl_Callback*)cb_mnuDOMINOEX11 },
-	{"dominoex 16", 0,  (Fl_Callback*)cb_mnuDOMINOEX16 },
-	{"dominoex 22", 0,  (Fl_Callback*)cb_mnuDOMINOEX22, 0, FL_MENU_DIVIDER },
-	{"No change", 0, 0 },
-	{ 0 }
-};
-
-Fl_Menu_Item quick_change_feld[] = {
-	{"Feld-Hell", 0,  (Fl_Callback*)cb_mnuFELDHELL, },
-	{"FSK-Hell", 0,  (Fl_Callback*)cb_mnuFSKHELL },
-	{"FSK-Hell-105", 0,  (Fl_Callback*)cb_mnuFSKHELL105, 0, FL_MENU_DIVIDER },
-	{"No change", 0, 0 },
-	{ 0 }
-};
-
-Fl_Menu_Item quick_change_throb[] = {
-	{"Throb 1", 0,  (Fl_Callback*)cb_mnuTHROB1 },
-	{"Throb 2", 0,  (Fl_Callback*)cb_mnuTHROB2 },
-	{"Throb 4", 0,  (Fl_Callback*)cb_mnuTHROB4 },
-	{"ThrobX 1", 0,  (Fl_Callback*)cb_mnuTHROBX1 },
-	{"ThrobX 2", 0,  (Fl_Callback*)cb_mnuTHROBX2 },
-	{"ThrobX 4", 0,  (Fl_Callback*)cb_mnuTHROBX4, 0, FL_MENU_DIVIDER },
-	{"No change", 0, 0 },
-	{ 0 }
-};
-
-
-void status_btn_left_click()
-{
-	int xpos = Fl::event_x();
-	int ypos = Fl::event_y();
-	const Fl_Menu_Item * m;
-	switch (active_modem->get_mode()) {
-		case MODE_BPSK31:
-		case MODE_PSK63 :
-		case MODE_PSK125 :
-		case MODE_PSK250 :
-			m = quick_change_psk->popup(xpos, ypos, 0, 0, 0);
-			if (!m) break;
-			if (m->callback_ == 0) break;
-			m->callback_(0,0);
-			break;
-		case MODE_QPSK31 :
-		case MODE_QPSK63 :
-		case MODE_QPSK125 :
-		case MODE_QPSK250 :
-			m = quick_change_qpsk->popup(xpos, ypos, 0, 0, 0);
-			if (!m) break;
-			if (m->callback_ == 0) break;
-			m->callback_(0,0);
-			break;
-		case MODE_MFSK16:
-		case MODE_MFSK8:
-			m = quick_change_mfsk->popup(xpos, ypos, 0, 0, 0);
-			if (!m) break;
-			if (m->callback_ == 0) break;
-			m->callback_(0,0);
-			break;
-		case MODE_DOMINOEX4 :
-		case MODE_DOMINOEX5 :
-		case MODE_DOMINOEX8 :
-		case MODE_DOMINOEX11 :
-		case MODE_DOMINOEX16 :
-		case MODE_DOMINOEX22 :
-			m = quick_change_domino->popup(xpos, ypos, 0, 0, 0);
-			if (!m) break;
-			if (m->callback_ == 0) break;
-			m->callback_(0,0);
-			break;
-		case MODE_FELDHELL :
-		case MODE_FSKHELL :
-		case MODE_FSKH105 :
-			m = quick_change_feld->popup(xpos, ypos, 0, 0, 0);
-			if (!m) break;
-			if (m->callback_ == 0) break;
-			m->callback_(0,0);
-			break;
-		case MODE_THROB1 :
-		case MODE_THROB2 :
-		case MODE_THROB4 :
-		case MODE_THROBX1 :
-		case MODE_THROBX2 :
-		case MODE_THROBX4 :
-			m = quick_change_throb->popup(xpos, ypos, 0, 0, 0);
-			if (!m) break;
-			if (m->callback_ == 0) break;
-			m->callback_(0,0);
-			break;
-		default :
-			status_btn_right_click();
-	}
-}
-
-void status_cb(Fl_Widget *b, void *)
-{
-	int btn = Fl::event_key();
-	if (btn == FL_Button+1)
-		status_btn_left_click();
-	else if (btn == FL_Button+3)
-		status_btn_right_click();
+        if (Fl::event_button() == FL_RIGHT_MOUSE) {
+                tabsConfigure->value(tabModems);
+                tabsModems->value(modem_config_tab);
+                dlgConfig->show();
+        }
+        else {
+                if (!quick_change)
+                        return;
+                const Fl_Menu_Item *m;
+                m = quick_change->popup(Fl::event_x(),
+                                        Fl::event_y(), 0, 0, 0);
+                if (m && m->callback_)
+                        m->do_callback(0);
+        }
 }
 
 void cb_cboBand(Fl_Widget *w, void *d) 
@@ -1185,47 +783,58 @@ Fl_Menu_Item menu_[] = {
 {"E&xit", 0,  (Fl_Callback*)cb_E, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 4
 {0,0,0,0,0,0,0,0,0}, // 5
 {"Op &Mode", 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 6
-{"CW", 0,  (Fl_Callback*)cb_mnuCW, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 7
+
+{ mode_info[MODE_CW].name, 0, cb_init_mode, (void *)MODE_CW, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 7
+
 {"DominoEX", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 8
-{"dominoex 4", 0,  (Fl_Callback*)cb_mnuDOMINOEX4, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 9
-{"dominoex 5", 0,  (Fl_Callback*)cb_mnuDOMINOEX5, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 10
-{"dominoex 8", 0,  (Fl_Callback*)cb_mnuDOMINOEX8, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 11
-{"dominoex 11", 0,  (Fl_Callback*)cb_mnuDOMINOEX11, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 12
-{"dominoex 16", 0,  (Fl_Callback*)cb_mnuDOMINOEX16, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 13
-{"dominoex 22", 0,  (Fl_Callback*)cb_mnuDOMINOEX22, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 14
+{ mode_info[MODE_DOMINOEX4].name, 0, cb_init_mode, (void *)MODE_DOMINOEX4, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 9
+{ mode_info[MODE_DOMINOEX5].name, 0, cb_init_mode, (void *)MODE_DOMINOEX5, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 10
+{ mode_info[MODE_DOMINOEX8].name, 0, cb_init_mode, (void *)MODE_DOMINOEX8, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 11
+{ mode_info[MODE_DOMINOEX11].name, 0, cb_init_mode, (void *)MODE_DOMINOEX11, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 12
+{ mode_info[MODE_DOMINOEX16].name, 0, cb_init_mode, (void *)MODE_DOMINOEX16, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 13
+{ mode_info[MODE_DOMINOEX22].name, 0, cb_init_mode, (void *)MODE_DOMINOEX22, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 14
 {0,0,0,0,0,0,0,0,0}, // 15
+
 {"Hell", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 16
-{"Feld-Hell", 0,  (Fl_Callback*)cb_mnuFELDHELL, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 17
-{"FSK-Hell", 0,  (Fl_Callback*)cb_mnuFSKHELL, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 18
-{"FSK-Hell-105", 0,  (Fl_Callback*)cb_mnuFSKHELL105, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 19
+{ mode_info[MODE_FELDHELL].name, 0, cb_init_mode, (void *)MODE_FELDHELL, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 17
+{ mode_info[MODE_FSKHELL].name, 0, cb_init_mode, (void *)MODE_FSKHELL, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 18
+{ mode_info[MODE_FSKH105].name, 0, cb_init_mode, (void *)MODE_FSKH105, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 19
 {0,0,0,0,0,0,0,0,0}, // 20
+
 {"MFSK", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 21
-{"mfsk 8", 0,  (Fl_Callback*)cb_mnuMFSK8, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 22
-{"mfsk 16", 0,  (Fl_Callback*)cb_mnuMFSK16, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 23
+{ mode_info[MODE_MFSK8].name, 0,  cb_init_mode, (void *)MODE_MFSK8, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 22
+{ mode_info[MODE_MFSK16].name, 0,  cb_init_mode, (void *)MODE_MFSK16, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 23
 {0,0,0,0,0,0,0,0,0}, // 24
-{"Psk", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 25
-{"psk 31", 0,  (Fl_Callback*)cb_mnuPSK31, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 26
-{"qpsk 31", 0,  (Fl_Callback*)cb_mnuQPSK31, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 27
-{"psk 63", 0,  (Fl_Callback*)cb_mnuPSK63, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 28
-{"qpsk 63", 0,  (Fl_Callback*)cb_mnuQPSK63, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 29
-{"psk 125", 0,  (Fl_Callback*)cb_mnuPSK125, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 30
-{"qpsk 125", 0,  (Fl_Callback*)cb_mnuQPSK125, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 31
-{"psk 250", 0,  (Fl_Callback*)cb_mnuPSK250, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 32
-{"qpsk 250", 0,  (Fl_Callback*)cb_mnuQPSK250, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 33
+
+{"PSK", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 25
+{ mode_info[MODE_BPSK31].name, 0, cb_init_mode, (void *)MODE_BPSK31, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 26
+{ mode_info[MODE_QPSK31].name, 0, cb_init_mode, (void *)MODE_QPSK31, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 27
+{ mode_info[MODE_PSK63].name, 0, cb_init_mode, (void *)MODE_PSK63, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 28
+{ mode_info[MODE_QPSK63].name, 0, cb_init_mode, (void *)MODE_QPSK63, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 29
+{ mode_info[MODE_PSK125].name, 0, cb_init_mode, (void *)MODE_PSK125, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 30
+{ mode_info[MODE_QPSK125].name, 0, cb_init_mode, (void *)MODE_QPSK125, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 31
+{ mode_info[MODE_PSK250].name, 0, cb_init_mode, (void *)MODE_PSK250, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 32
+{ mode_info[MODE_QPSK250].name, 0, cb_init_mode, (void *)MODE_QPSK250, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 33
 {0,0,0,0,0,0,0,0,0}, // 34
-{"Olivia", 0,  (Fl_Callback*)cb_mnuOlivia, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 35
-{"rtty", 0,  (Fl_Callback*)cb_mnuRTTY, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 36
+
+{ mode_info[MODE_OLIVIA].name, 0, cb_init_mode, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 35
+
+{ mode_info[MODE_RTTY].name, 0, cb_init_mode, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 36
+
 {"Throb", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 37
-{"Throb 1", 0,  (Fl_Callback*)cb_mnuTHROB1, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 38
-{"Throb 2", 0,  (Fl_Callback*)cb_mnuTHROB2, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 39
-{"Throb 4", 0,  (Fl_Callback*)cb_mnuTHROB4, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 40
-{"ThrobX 1", 0,  (Fl_Callback*)cb_mnuTHROBX1, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 41
-{"ThrobX 2", 0,  (Fl_Callback*)cb_mnuTHROBX2, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 42
-{"ThrobX 4", 0,  (Fl_Callback*)cb_mnuTHROBX4, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 43
+{ mode_info[MODE_THROB1].name, 0, cb_init_mode, (void *)MODE_THROB1, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 38
+{ mode_info[MODE_THROB2].name, 0, cb_init_mode, (void *)MODE_THROB2, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 39
+{ mode_info[MODE_THROB4].name, 0, cb_init_mode, (void *)MODE_THROB4, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 40
+{ mode_info[MODE_THROBX1].name, 0, cb_init_mode, (void *)MODE_THROBX1, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 41
+{ mode_info[MODE_THROBX2].name, 0, cb_init_mode, (void *)MODE_THROBX2, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 42
+{ mode_info[MODE_THROBX4].name, 0, cb_init_mode, (void *)MODE_THROBX4, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 43
 {0,0,0,0,0,0,0,0,0}, // 44
-{"WWV", 0,  (Fl_Callback*)cb_mnuWWV, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 45
-{"Freq Analysis", 0,  (Fl_Callback*)cb_mnuANALYSIS, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 46
+
+{ mode_info[MODE_WWV].name, 0, cb_init_mode, (void *)MODE_WWV, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 45
+
+{ mode_info[MODE_ANALYSIS].name, 0, cb_init_mode, (void *)MODE_ANALYSIS, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 46
 {0,0,0,0,0,0,0,0,0}, // 47
+
 {"Configure", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 48
 {"Defaults",  0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 49
 {"Fonts", 0, (Fl_Callback*)cb_mnuConfigFonts, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 50
@@ -1483,6 +1092,7 @@ void create_fl_digi_main() {
 			MODEstatus->color(FL_BACKGROUND2_COLOR);
 			MODEstatus->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 			MODEstatus->callback(status_cb, (void *)0);
+			MODEstatus->when(FL_WHEN_CHANGED);
 			MODEstatus->tooltip("Left clk - change mode\nRight clk - Modem Tab");
 			Status1 = new Fl_Box(Wmode,Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Ws2n, Hstatus, "");
 			Status1->box(FL_DOWN_BOX);
@@ -1749,7 +1359,7 @@ void clear_StatusMessages()
 void put_MODEstatus(trx_mode mode)
 {
 	FL_LOCK_D();
-	QUEUE(CMP_CB(&Fl_Button::label, MODEstatus, mode_names[mode])); //MODEstatus->label(mode_names[mode]);
+	QUEUE(CMP_CB(&Fl_Button::label, MODEstatus, mode_info[mode].sname)); //MODEstatus->label(mode_names[mode]);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }

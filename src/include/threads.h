@@ -57,6 +57,7 @@ extern int fl_mutex_init(Fl_Mutex * m);
 extern int fl_cond_init(Fl_Cond * c);
 extern int fl_cond_wait(Fl_Cond *c, Fl_Mutex *m);
 extern int fl_cond_signal(Fl_Cond *c);
+extern int fl_cond_bcast(Fl_Cond *c);
 extern int fl_lock(Fl_Mutex *m);
 extern int fl_unlock(Fl_Mutex *m);
 extern int fl_join(Fl_Thread t);

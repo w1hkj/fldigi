@@ -59,6 +59,10 @@ int fl_cond_signal(Fl_Cond *c) {
 	return pthread_cond_signal( (pthread_cond_t *) c);
 }
 
+int fl_cond_bcast(Fl_Cond *c) {
+	return pthread_cond_broadcast( (pthread_cond_t *) c);
+}
+
 int fl_lock(Fl_Mutex *m) {
 	return pthread_mutex_lock((pthread_mutex_t*)m);
 }

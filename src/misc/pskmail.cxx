@@ -24,48 +24,18 @@ bool pskmail_text_available = false;
 
 void ParseMode(string src)
 {
-	if (src.find("QPSK31") != string::npos)
-		initQPSK31();
-	else if (src.find("QPSK63") != string::npos)
-		initQPSK63();
-	else if (src.find("QPSK125") != string::npos)
-		initQPSK125();
-	else if (src.find("PSK31") != string::npos)
-		initPSK31();
-	else if (src.find("PSK63") != string::npos)
-		initPSK63();
-	else if (src.find("PSK125") != string::npos)
-		initPSK125();
-	else if (src.find("PSK250") != string::npos)
-		initPSK250();
-	else if (src.find("DOMINOEX4") != string::npos)
-		initDOMINOEX4();
-	else if (src.find("DOMINOEX5") != string::npos)
-		initDOMINOEX5();
-	else if (src.find("DOMINOEX8") != string::npos)
-		initDOMINOEX8();
-	else if (src.find("DOMINOEX11") != string::npos)
-		initDOMINOEX11();
-	else if (src.find("DOMINOEX16") != string::npos)
-		initDOMINOEX16();
-	else if (src.find("DOMINOEX22") != string::npos)
-		initDOMINOEX22();
-	else if (src.find("MFSK8") != string::npos)
-		initMFSK8();
-	else if (src.find("MFSK16") != string::npos)
-		initMFSK16();
-	else if (src.find("RTTY") != string::npos)
-		initRTTY();
-	else if (src.find("CW") != string::npos)
-		initCW();
-	else if (src.find("PTTTUNE") != string::npos)
-	{
-		int msecs = 100;
-		if (src.length() > 7)
-			sscanf( src.substr(7, src.length() - 7).c_str(), "%d", &msecs);
-		push2talk->set(true);
-		MilliSleep(msecs);
-		push2talk->set(false);
+	for (size_t i = 0; i < sizeof(mode_info)/sizeof(mode_info[0]); ++i) {
+		if (src.find(mode_info[i].pskmail_name) != string::npos)
+			init_modem(mode_info[i].mode);
+		else if (src.find("PTTTUNE") != string::npos) {
+			int msecs = 100;
+			if (src.length() > 7)
+				sscanf( src.substr(7, src.length() - 7).c_str(), "%d", &msecs);
+			push2talk->set(true);
+			MilliSleep(msecs);
+			push2talk->set(false);
+		}
+		break;
 	}
 }
 

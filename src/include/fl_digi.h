@@ -138,36 +138,7 @@ extern void setSqlOnOff(bool b);
 extern bool QueryAfcOnOff();
 extern bool QuerySqlOnOff();
 
-
-extern void initCW();
-extern void initMFSK8();
-extern void initMFSK16();
-extern void initPSK31();
-extern void initPSK63();
-extern void initPSK125();
-extern void initPSK250();
-extern void initQPSK31();
-extern void initQPSK63();
-extern void initQPSK125();
-extern void initQPSK250();
-extern void initRTTY();
-extern void initOLIVIA();
-extern void initDOMINOEX4();
-extern void initDOMINOEX5();
-extern void initDOMINOEX8();
-extern void initDOMINOEX11();
-extern void initDOMINOEX16();
-extern void initDOMINOEX22();
-extern void initFELDHELL();
-extern void initFSKHELL();
-extern void initFSKHELL105();
-extern void initTHROB1();
-extern void initTHROB2();
-extern void initTHROB4();
-extern void initTHROBX1();
-extern void initTHROBX2();
-extern void initTHROBX4();
-extern void initWWV();
-extern void initANALYSIS();
+extern void init_modem(trx_mode mode);
+extern void init_modem_sync(trx_mode mode);
 
 #endif

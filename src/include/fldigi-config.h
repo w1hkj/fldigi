@@ -63,6 +63,7 @@ extern int WNOM;
 #define bwRate		45
 #define bwXmtLock	45
 #define bwRev		45
+#define bwMem		45
 #define bwXmtRcv	45
 #define wSpace		2
 
