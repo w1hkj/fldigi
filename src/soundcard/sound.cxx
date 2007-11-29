@@ -675,9 +675,6 @@ cSoundPA::~cSoundPA()
 
 int cSoundPA::Open(int mode, int freq)
 {
-        cerr << "cSoundPA::Open(" << mode << ", " << freq << "); req_sample_rate="
-             << req_sample_rate << " sample_frequency=" << sample_frequency << endl;
-
         int old_sample_rate = (int)req_sample_rate;
         req_sample_rate = sample_frequency = freq;
 
