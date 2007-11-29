@@ -45,8 +45,11 @@
 cSound::cSound()
         : sample_frequency(0), txppm(progdefaults.TX_corr), rxppm(progdefaults.RX_corr),
           tx_src_state(0), tx_src_data(0), rx_src_state(0), rx_src_data(0),
-          snd_buffer(0), src_buffer(0), capture(false), playback(false),
-	  generate(false), ofGenerate(0), ofCapture(0), ifPlayback(0)
+          snd_buffer(0), src_buffer(0),
+#if USE_SNDFILE
+          ofCapture(0), ifPlayback(0), ofGenerate(0),
+#endif
+	  capture(false), playback(false), generate(false)
 { }
 
 cSound::~cSound()
@@ -57,11 +60,14 @@ cSound::~cSound()
 	if (rx_src_data) delete rx_src_data;
 	if (rx_src_state) src_delete (rx_src_state);
 	if (tx_src_state) src_delete (tx_src_state);
+#if USE_SNDFILE
 	delete ofGenerate;
 	delete ofCapture;
 	delete ifPlayback;
+#endif
 }
 
+#if USE_SNDFILE
 int cSound::Capture(bool on)
 {
 	if (on) {
@@ -176,19 +182,25 @@ int cSound::Generate(bool on)
 	generate = on;
 	return 1;
 }
+#endif // USE_SNDFILE
 
 void cSound::writeGenerate(double *buff, int count)
 {
+#if USE_SNDFILE
 	ofGenerate->writef(buff, count);
+#endif
 }
 
 void cSound::writeCapture(double *buff, int count)
 {
+#if USE_SNDFILE
 	ofCapture->writef(buff, count);
+#endif
 }
 
 int  cSound::readPlayback(double *buff, int count)
 {
+#if USE_SNDFILE
 	sf_count_t r = ifPlayback->readf(buff, count);
 
 	while (r < count) {
@@ -199,8 +211,12 @@ int  cSound::readPlayback(double *buff, int count)
         }
 
 	return r;
+#else
+	return 0;
+#endif
 }
 
+#if USE_SNDFILE
 bool cSound::format_supported(int format)
 {
 
@@ -228,7 +244,7 @@ void cSound::tag_file(SndfileHandle *fh, const char *title)
        if (strftime(s, sizeof(s), "%F %Tz", &zt) > 0)
                fh->setString(SF_STR_DATE, s);
 }
-
+#endif // USE_SNDFILE
 
 cSoundOSS::cSoundOSS(const char *dev ) {
 	device			= dev;

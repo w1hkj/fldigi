@@ -52,6 +52,8 @@ AC_CHECK_FUNCS([gethostbyname localtime_r memmove memset mkdir select socket str
 
 AC_PRESERVE_HELP_ORDER
 
+dnl blank line
+AC_ARG_WITH([], [], [], [])
 
 ###########################
 # static flag
@@ -155,7 +157,34 @@ AC_SUBST([SAMPLERATE_LIBS])
 ###########################
 # libsndfile
 ###########################
-PKG_CHECK_MODULES(SNDFILE, sndfile >= 1.0.10)
+AC_DEFINE([USE_SNDFILE], [], [Set to 1 if we are using sndfile, 0 otherwise])
+AC_ARG_WITH([sndfile],
+            AC_HELP_STRING([--with-sndfile],
+                           [enable reading/writing of audio files via libsndfile @<:@autodetect@:>@]),
+            [case "${withval}" in
+              yes|no) ac_cv_want_sndfile="${withval}" ;;
+              *)      AC_MSG_ERROR([bad value "${withval}" for --with-sndfile]) ;;
+             esac],
+            [ac_cv_want_sndfile=check])
+if test "x$ac_cv_want_sndfile" = "xno"; then
+    AC_DEFINE(USE_SNDFILE, 0)
+    ac_cv_sndfile=no
+else
+    PKG_CHECK_EXISTS(sndfile >= 1.0.10, ac_cv_sndfile=yes, ac_cv_sndfile=no)
+    if test "x$ac_cv_want_sndfile" = "xcheck"; then
+        PKG_CHECK_MODULES(SNDFILE, sndfile >= 1.0.10, [:], [:])
+        if test "x$ac_cv_sndfile" = "xyes"; then
+            AC_DEFINE(USE_SNDFILE, 1)
+        else
+            AC_DEFINE(USE_SNDFILE, 0)
+        fi
+    else # $ac_cv_want_sndfile is yes
+        if test "x$ac_cv_sndfile" = "xno"; then
+            AC_MSG_NOTICE([--with-sndfile was given, but test for sndfile failed])
+        fi
+        PKG_CHECK_MODULES(SNDFILE, sndfile >= 1.0.10) # for the error message
+    fi
+fi
 AC_SUBST([SNDFILE_CFLAGS])
 AC_SUBST([SNDFILE_LIBS])
 
@@ -238,6 +267,7 @@ Configuration summary:
   Debugging ........................... $ac_cv_debug
   TLS ................................. $ac_cv_tls
 
+  sndfile ............................. $ac_cv_sndfile
   PortAudio ........................... $ac_cv_portaudio
-  Hamlib .............................. $ac_cv_hamlib
+  hamlib .............................. $ac_cv_hamlib
 ])

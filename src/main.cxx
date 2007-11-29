@@ -596,9 +596,11 @@ void print_versions(void)
 	     << portaudio::System::version() << '\n';
 #endif
 
+#if USE_SNDFILE
         char sndfile_version[32];
         sf_command(NULL, SFC_GET_LIB_VERSION, sndfile_version, sizeof(sndfile_version));
         cerr << ' ' << sndfile_version << endl;
+#endif
 
         cerr << ' ' << src_get_version() << endl;
 }

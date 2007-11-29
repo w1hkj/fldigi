@@ -725,6 +725,7 @@ void cb_mnuConfigModems(Fl_Menu_*, void*) {
 	dlgConfig->show();
 }
 
+#if USE_SNDFILE
 bool capval = false;
 bool genval = false;
 bool playval = false;
@@ -772,7 +773,7 @@ void cb_mnuPlayback(Fl_Widget *w, void *d)
 		playval = false;
 	}
 }
-
+#endif // USE_SNDFILE
 
 void cb_FontBrowser(Font_Browser*, void* v)
 {
@@ -1246,10 +1247,12 @@ Fl_Menu_Item menu_[] = {
 {"About", 0, (Fl_Callback*)cb_mnuAbout, 0, 0, FL_NORMAL_LABEL, 0, 14, 0}, // 66
 {0,0,0,0,0,0,0,0,0}, // 67
 {"  ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0}, // 68
+#if USE_SNDFILE
 {"Audio", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0}, // 69
 {"Rx capture",  0, (Fl_Callback*)cb_mnuCapture,  0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//70
 {"Tx generate", 0, (Fl_Callback*)cb_mnuGenerate, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//71
 {"Playback",    0, (Fl_Callback*)cb_mnuPlayback, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//72
+#endif
 {0,0,0,0,0,0,0,0,0}, // 73
 {0,0,0,0,0,0,0,0,0}, // 74
 };
