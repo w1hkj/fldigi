@@ -1023,7 +1023,7 @@ void btnRev_cb(Fl_Widget *w, void *v) {
 void btnMem_cb(Fl_Widget *, void *menu_event)
 {
 	static std::vector<struct qrg_mode_t> qrg_list;
-        enum { SELECT, APPEND, REPLACE, REMOVE };
+        enum { SELECT, APPEND, REPLACE, REMOVE, CLEAR };
         int op = SELECT, elem = 0;
 
         if (menu_event) { // event on popup menu
@@ -1034,10 +1034,7 @@ void btnMem_cb(Fl_Widget *, void *menu_event)
                         op = REPLACE;
                         break;
                 case FL_LEFT_MOUSE: case FL_RIGHT_MOUSE: default:
-                        if (Fl::event_state() & FL_SHIFT)
-                                op = REMOVE;
-                        else
-                                op = SELECT;
+                        op = (Fl::event_state() & FL_SHIFT) ? REMOVE : SELECT;
                         break;
                 }
         }
@@ -1051,7 +1048,7 @@ void btnMem_cb(Fl_Widget *, void *menu_event)
                         op = SELECT;
                         break;
                 case FL_LEFT_MOUSE: default:
-                        op = APPEND;
+                        op = (Fl::event_state() & FL_SHIFT) ? CLEAR : APPEND;
                         break;
                 }
         }
@@ -1077,6 +1074,10 @@ void btnMem_cb(Fl_Widget *, void *menu_event)
         case REMOVE:
                 wf->mbtnMem->remove(elem);
                 qrg_list.erase(qrg_list.begin() + elem);
+                break;
+        case CLEAR:
+                wf->mbtnMem->clear();
+                qrg_list.clear();
                 break;
         case APPEND: case REPLACE:
                 m.rfcarrier = wf->rfcarrier();
