@@ -24,7 +24,7 @@ bool pskmail_text_available = false;
 
 void ParseMode(string src)
 {
-	for (size_t i = 0; i < sizeof(mode_info)/sizeof(mode_info[0]); ++i) {
+	for (size_t i = 0; i < NUM_MODES; ++i) {
 		if (src.find(mode_info[i].pskmail_name) != string::npos)
 			init_modem(mode_info[i].mode);
 		else if (src.find("PTTTUNE") != string::npos) {

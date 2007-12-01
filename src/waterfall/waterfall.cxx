@@ -1349,22 +1349,23 @@ int waterfall::handle(int event)
 	if ( !((d = Fl::event_dy()) || (d = Fl::event_dx())) )
 		return 1;
 
-	Fl_Valuator *val;
-	if (Fl::event_inside(sldrSquelch) || Fl::event_inside(pgrsSquelch))
-		val = sldrSquelch;
-	else if (Fl::event_inside(wfcarrier))
-		 val = wfcarrier;
-	else if (Fl::event_inside(wfRefLevel))
-		val = wfRefLevel;
-	else if (Fl::event_inside(wfAmpSpan))
-		val = wfAmpSpan;
-	else
-		return 0;
+	Fl_Valuator* v[] = { sldrSquelch, wfcarrier, wfRefLevel, wfAmpSpan };
+	for (size_t i = 0; i < sizeof(v)/sizeof(v[0]); i++) {
+		if (Fl::event_inside(v[i])) {
+			v[i]->value(v[i]->clamp(v[i]->increment(v[i]->value(), -d)));
+			v[i]->do_callback();
+			return 1;
+		}
+	}
 
-	val->value(val->clamp(val->increment(val->value(), -d)));
-	val->do_callback();
+	// this does not belong here, but we don't have access to this widget's
+	// handle method (or its parent's)
+	if (Fl::event_inside(MODEstatus)) {
+		init_modem(d > 0 ? MODE_NEXT : MODE_PREV);
+		return 1;
+	}
 
-	return 1;
+	return 0;
 }
 
 static void hide_cursor(void *w)
