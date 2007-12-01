@@ -39,6 +39,7 @@ void anal::tx_init(cSound *sc)
 void anal::rx_init()
 {
 	phaseacc = 0;
+	put_MODEstatus(mode);
 }
 
 void anal::init()
@@ -74,8 +75,6 @@ void anal::restart()
 	
 	sum = 0.0;
 	fout_1 = fout_2 = 0.0;
-	
-	put_MODEstatus(mode);
 }
 
 anal::anal()
