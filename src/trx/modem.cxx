@@ -241,9 +241,9 @@ void modem::videoText()
 		progdefaults.macrotextid = false;
 	}
 	if (progdefaults.sendid == true) {
-		wfid_text(mode_names[mode]);
+		wfid_text(mode_info[mode].sname);
 	} else if (progdefaults.macroid == true) {
-		wfid_text(mode_names[mode]);
+		wfid_text(mode_info[mode].sname);
 		progdefaults.macroid = false;
 	}
 }

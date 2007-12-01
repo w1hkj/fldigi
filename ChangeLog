@@ -1,5 +1,13 @@
 Change Log:
 
+2.05  1) Converted entire make system over to the GNU autoconf / automake
+         format.  See the INSTALL file for additional information
+      2) Corrected various minor bugs
+      3) Added mouse wheel functions when mouse is in waterfall display
+         a) click - toggle AFC
+         b) shift - alter SQL level
+         c) ctrl - alter PSK search range.
+      4) modified waterfall cursors to show the search range
 2.04  1) added full waterfall video texting using FeldHell Modern-8-14 font.
          1, 2, 3 or 4 characters per video line.
       2) bug fix for center mouse button toggle of AFC.

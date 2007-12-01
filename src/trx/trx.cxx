@@ -56,6 +56,7 @@ void	trx_tune_loop();
 
 
 Fl_Mutex	trx_mutex = PTHREAD_MUTEX_INITIALIZER;
+Fl_Mutex	trx_cond_mutex = PTHREAD_MUTEX_INITIALIZER;
 Fl_Cond		trx_cond = PTHREAD_COND_INITIALIZER;
 Fl_Thread	trx_thread;
 state_t 	trx_state;
@@ -90,7 +91,8 @@ void trx_trx_receive_loop()
 		try {
 			scard->Open(O_RDONLY, active_modem->get_samplerate());
 		}
-		catch (SndException e) {
+		catch (const SndException& e) {
+			put_status(e.what(), 1);
 			MilliSleep(10);
 			return;
 		}
@@ -123,7 +125,8 @@ void trx_trx_transmit_loop()
 		try {
 			scard->Open(O_WRONLY, active_modem->get_samplerate());
 		}
-		catch (SndException e) {
+		catch (const SndException& e) {
+			put_status(e.what(), 1);
 			MilliSleep(10);
 			return;
 		}
@@ -158,7 +161,8 @@ void trx_tune_loop()
 		try {
 			scard->Open(O_WRONLY, active_modem->get_samplerate());
 		}
-		catch (SndException e) {
+		catch (const SndException& e) {
+			put_status(e.what(), 1);
 			MilliSleep(10);
 			return;
 		}
@@ -225,7 +229,8 @@ void trx_start_modem_loop()
 	active_modem = trx_m;
 	active_modem->init();
 	trx_state = STATE_RX;
-	QUEUE_SYNC(CMP_CB(&waterfall::opmode, wf)); //wf->opmode();
+	signal_modem_ready();
+	QUEUE(CMP_CB(&waterfall::opmode, wf)); //wf->opmode();
 }
 
 void trx_start_modem(modem *m)
@@ -333,5 +338,37 @@ void trx_close() {
 
 //---------------------------------------------------------------------
 
+void wait_modem_ready_prep(void)
+{
+#ifndef NDEBUG
+        if (GET_THREAD_ID() == TRX_TID)
+                cerr << "trx thread called wait_modem_ready_prep!\n";
+#endif
+
+        fl_lock(&trx_cond_mutex);
+}
+
+void wait_modem_ready_cmpl(void)
+{
+#ifndef NDEBUG
+        if (GET_THREAD_ID() == TRX_TID)
+                cerr << "trx thread called wait_modem_ready_cmpl!\n";
+#endif
+
+        fl_cond_wait(&trx_cond, &trx_cond_mutex);
+        fl_unlock(&trx_cond_mutex);
+}
 
 
+void signal_modem_ready(void)
+{
+#ifndef NDEBUG
+        if (GET_THREAD_ID() != TRX_TID)
+                cerr << "thread " << GET_THREAD_ID()
+                     << " called signal_modem_ready!\n";
+#endif
+
+        fl_lock(&trx_cond_mutex);
+        fl_cond_bcast(&trx_cond);
+        fl_unlock(&trx_cond_mutex);
+}

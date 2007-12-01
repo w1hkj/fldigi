@@ -21,11 +21,6 @@
 	#include "rigclass.h"
 #endif
 
-extern Fl_Mutex		trx_mutex;
-extern Fl_Cond		trx_cond;
-extern Fl_Thread	trx_thread;
-extern state_t		trx_state;
-extern modem		*active_modem;
 extern string		HomeDir;
 extern string		xmlfname;
 

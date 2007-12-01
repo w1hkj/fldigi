@@ -87,6 +87,8 @@ extern Fl_Round_Button *btnAudioIO[2];
 #include <FL/Fl_Input_Choice.H>
 extern Fl_Input_Choice *menuOSSDev;
 extern Fl_Input_Choice *menuPADev;
+extern Fl_Menu_Item sample_rate_menu[];
+extern Fl_Choice *menuSampleRate;
 extern Fl_Group *tabMixer;
 #include <FL/Fl_Light_Button.H>
 extern void setMixerInput(int);

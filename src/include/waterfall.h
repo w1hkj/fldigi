@@ -29,12 +29,14 @@
 #include "complex.h"
 #include "fft.h"
 #include "sound.h"
+#include "globals.h"
 
 #include <FL/Fl.H>
 #include <FL/fl_draw.H>
 #include <FL/Fl_Widget.H>
 #include <FL/Fl_Repeat_Button.H>
 #include <FL/Fl_Light_Button.H>
+#include <FL/Fl_Menu_Button.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Group.H>
 #include <FL/Fl_Box.H>
@@ -96,6 +98,12 @@ enum WFmode {
 
 enum WFspeed {FAST = 1, NORMAL = 2, SLOW = 8};
 //enum WFspeed {NORMAL = 2, SLOW = 8};
+
+struct qrg_mode_t {
+	long long rfcarrier;
+	int carrier;
+	trx_mode mode;
+};
 
 class WFdisp : public Fl_Widget {
 public:
@@ -255,6 +263,7 @@ private:
 	double	*pwr;
 	Cfft	*wfft;
 
+
 	int checkMag();
 	void checkWidth();
 	void initMarkers();
@@ -292,6 +301,7 @@ class waterfall: public Fl_Group {
 	friend void ampspan_cb(Fl_Widget *w, void *v);
 	friend void qsy_cb(Fl_Widget *w, void *v);
 	friend void rate_cb(Fl_Widget *w, void *v);
+	friend void btnMem_cb(Fl_Widget *w, void *v);
 public:
 	waterfall(int x, int y, int w, int h, char *lbl= 0);
 	~waterfall(){};
@@ -372,6 +382,8 @@ private:
 	Fl_Button	*wfrate;
 	Fl_Light_Button	*xmtrcv;
 	Fl_Light_Button *xmtlock;
+	Fl_Button	*btnMem;
+	Fl_Menu_Button	*mbtnMem;
 	int			buttonrow;
 	bool	reverse;
 };

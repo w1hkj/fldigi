@@ -553,6 +553,7 @@ static void cb_btnAudioIO(Fl_Round_Button* o, void*) {
 o->value(1);
 menuOSSDev->activate();
 menuPADev->deactivate();
+menuSampleRate->deactivate();
 scDevice = menuOSSDev->value();
 progdefaults.btnAudioIOis = 0;
 progdefaults.changed = true;
@@ -566,6 +567,7 @@ static void cb_btnAudioIO1(Fl_Round_Button* o, void*) {
 o->value(1);
 menuPADev->activate();
 menuOSSDev->deactivate();
+menuSampleRate->activate();
 scDevice = menuPADev->value();
 progdefaults.btnAudioIOis = 1;
 progdefaults.changed = true;
@@ -584,6 +586,14 @@ Fl_Input_Choice *menuPADev=(Fl_Input_Choice *)0;
 
 static void cb_menuPADev(Fl_Input_Choice* o, void*) {
   scDevice = progdefaults.PAdevice = o->value();
+resetSoundCard();
+progdefaults.changed = true;
+}
+
+Fl_Choice *menuSampleRate=(Fl_Choice *)0;
+
+static void cb_menuSampleRate(Fl_Choice* o, void*) {
+  progdefaults.sample_rate = o->value() ? strtol(o->mvalue()->text, 0, 10) : 0;
 resetSoundCard();
 progdefaults.changed = true;
 }
@@ -1464,19 +1474,19 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           { Fl_Group* o = tabAudio = new Fl_Group(0, 50, 400, 170, "Audio");
             o->color((Fl_Color)51);
             o->selection_color((Fl_Color)51);
-            { Fl_Spinner* o = cntRxRateCorr = new Fl_Spinner(299, 161, 75, 24, "RX ppm:");
+            { Fl_Spinner* o = cntRxRateCorr = new Fl_Spinner(300, 160, 75, 24, "RX ppm:");
               o->callback((Fl_Callback*)cb_cntRxRateCorr);
               o->step(1);
               o->minimum(-50000);
               o->maximum(50000);
             }
-            { Fl_Spinner* o = cntTxRateCorr = new Fl_Spinner(299, 190, 75, 24, "TX ppm:");
+            { Fl_Spinner* o = cntTxRateCorr = new Fl_Spinner(300, 130, 75, 24, "TX ppm:");
               o->callback((Fl_Callback*)cb_cntTxRateCorr);
               o->step(1);
               o->minimum(-50000);
               o->maximum(50000);
             }
-            { Fl_Spinner* o = cntTxOffset = new Fl_Spinner(177, 190, 45, 24, "Tx offset:");
+            { Fl_Spinner* o = cntTxOffset = new Fl_Spinner(330, 190, 45, 24, "Tx offset:");
               o->callback((Fl_Callback*)cb_cntTxOffset);
               o->value(progdefaults.TxOffset);
               o->step(1);
@@ -1507,6 +1517,12 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
               o->callback((Fl_Callback*)cb_menuPADev);
               o->align(FL_ALIGN_RIGHT);
               o->value(progdefaults.PAdevice.c_str());
+            }
+            { Fl_Choice* o = menuSampleRate = new Fl_Choice(5, 190, 85, 25, "Sample rate");
+              o->down_box(FL_BORDER_BOX);
+              o->callback((Fl_Callback*)cb_menuSampleRate);
+              o->align(FL_ALIGN_RIGHT);
+              o->menu(sample_rate_menu);
             }
             o->end();
           }

@@ -69,7 +69,6 @@ using namespace std;
 string scDevice = "/dev/dsp1";
 bool pa_allow_full_duplex = false;
 int pa_frames_per_buffer = 0;
-double pa_sample_rate = 0;
 
 char szHomedir[120] = "";
 char szPskMailDir[120] = "";
@@ -232,6 +231,7 @@ int main(int argc, char ** argv)
 		btnAudioIO[1]->value(0);
 		menuOSSDev->activate();
 		menuPADev->deactivate();
+		menuSampleRate->deactivate();
 	} else {
 		scDevice = progdefaults.PAdevice;
 		btnAudioIO[0]->value(0);
@@ -299,13 +299,6 @@ void generate_option_help(void) {
 	     << setw(width) << setiosflags(ios::left)
 	     << "" << "The default is: " << progdefaults.tx_msgid
 	     << " or 0x" << hex << progdefaults.tx_msgid << dec << '\n'
-#if USE_PORTAUDIO
-	     << setw(width) << setiosflags(ios::left)
-	     << " --sample-rate SAMPLE_RATE"
-	     << "Force the PortAudio stream to be opened\n"
-	     << setw(width) << setiosflags(ios::left)
-	     << "" << "with a sample rate of SAMPLE_RATE Hz\n"
-#endif
 
 	     << setw(width) << setiosflags(ios::left)
 	     << " --version" << "Print version information\n"
@@ -540,7 +533,8 @@ int parse_args(int argc, char **argv, int& idx)
 			idx += 2;
 			return 2;
 		case OPT_SAMPLE_RATE:
-			pa_sample_rate = strtod(optarg, 0);
+			cerr << "The --sample-rate switch is deprecated and will be removed in a future release\n";
+			progdefaults.sample_rate = strtol(optarg, 0, 10);
 			idx += 2;
 			return 2;
 #endif // USE_PORTAUDIO

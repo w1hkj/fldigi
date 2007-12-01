@@ -134,6 +134,7 @@ configuration progdefaults = {
 	"",		// string	SCdevice;
 	"",		// string	OSSdevice;
 	"",		// string	PAdevice;
+	0,				// int		sample_rate;
 	0,				// int		RX_corr;
 	0,				// int		TX_corr;
 	0,				// int		TxOffset;
@@ -215,7 +216,7 @@ enum TAG { \
 	PTTDEV,
 	SECONDARYTEXT, 
 	AUDIOIO, SCDEVICE, OSSDEVICE, PADEVICE,
-	RXCORR, TXCORR, TXOFFSET,
+	SAMPLERATE, RXCORR, TXCORR, TXOFFSET,
 	USELEADINGZEROS, CONTESTSTART, CONTESTDIGITS,
 	USETIMER, MACRONUMBER, TIMEOUT,
 	MXDEVICE, RCVMIXER, XMTMIXER, PCMVOLUME,
@@ -380,6 +381,7 @@ void configuration::writeDefaultsXML()
 	writeXMLstr(f, "SCDEVICE", SCdevice);
 	writeXMLstr(f, "OSSDEVICE", OSSdevice);
 	writeXMLstr(f, "PADEVICE", PAdevice);
+	writeXMLint(f, "SAMPLERATE", sample_rate);
 	writeXMLint(f, "RXCORR", RX_corr);		
 	writeXMLint(f, "TXCORR", TX_corr);
 	writeXMLint(f, "TXOFFSET", TxOffset);
@@ -716,6 +718,9 @@ bool configuration::readDefaultsXML()
 					case PADEVICE :
 						PAdevice = xml->getNodeData();
 						break;
+					case SAMPLERATE :
+						sample_rate = atoi(xml->getNodeData());
+						break;
 					case RXCORR :
 						RX_corr = atoi(xml->getNodeData());
 						break;
@@ -906,6 +911,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("SCDEVICE", nodeName)) 	tag = SCDEVICE;
 				else if (!strcmp("OSSDEVICE", nodeName)) 	tag = OSSDEVICE;
 				else if (!strcmp("PADEVICE", nodeName)) 	tag = PADEVICE;
+				else if (!strcmp("SAMPLERATE", nodeName)) 	tag = SAMPLERATE;
 				else if (!strcmp("RXCORR", nodeName)) 	tag = RXCORR;
 				else if (!strcmp("TXCORR", nodeName)) 	tag = TXCORR;
 				else if (!strcmp("TXOFFSET", nodeName)) 	tag = TXOFFSET;
@@ -1222,6 +1228,14 @@ int configuration::openDefaults() {
             btnMixer->value(EnableMixer);
             resetMixerControls();
             menuMix->value(MXdevice.c_str());
+
+	    if (sample_rate) {
+		    char s[6+1];
+		    snprintf(s, sizeof(s), "%d", sample_rate);
+		    menuSampleRate->value(menuSampleRate->find_item(s));
+	    }
+	    else
+		    menuSampleRate->value(0);
 
 			cntRxRateCorr->value(RX_corr);
 			cntTxRateCorr->value(TX_corr);

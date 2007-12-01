@@ -718,10 +718,20 @@ int cSoundPA::Open(int mode, int freq)
                     << " <-> " << req_sample_rate << endl;
 #endif
 
-        stream.open(stream_params);
-        stream.start();
+       try {
+               stream.open(stream_params);
+               stream.start();
+       }
+       catch (const exception& e) {
+               cerr << e.what() << endl;
+               try {
+                       stream.close();
+               }
+               catch (...) { }
+               throw SndException(e.what());
+       }
 
-        return 0;
+       return 0;
 }
 
 void cSoundPA::Close(void)
@@ -944,7 +954,7 @@ void cSoundPA::init_stream(void)
         stream_params.setInputParameters(in_params);
         stream_params.setOutputParameters(out_params);
 
-        dev_sample_rate = get_best_srate();
+        dev_sample_rate = find_srate();
         stream_params.setSampleRate(dev_sample_rate);
 
         max_frames_per_buffer = ceil2(MIN(SND_BUF_LEN, (unsigned)(SCBLOCKSIZE *
@@ -983,34 +993,26 @@ void cSoundPA::adjust_stream(void)
         stream.start();
 }
 
-double cSoundPA::std_sample_rates[] = { -1, 8000, 9600, 11025, 12000,
-                                        16000, 22050, 24000, 32000,
-                                        44100, 48000, 88200, 96000 };
-
-// Return the hardware-supported sample rate that is closest to the one
-// requested by the modem. This needs to be a little smarter; atm it simply
-// goes through the array, and may even try the same rate twice.
-double cSoundPA::get_best_srate(void)
+// Determine the sample rate that we will use. We try the modem's rate
+// first and fall back to the device's default rate. If there is a user
+// setting we just return that without making any checks.
+double cSoundPA::find_srate(void)
 {
-        extern double pa_sample_rate;
-        if (pa_sample_rate)
-                return pa_sample_rate;
+        if (progdefaults.sample_rate)
+                return progdefaults.sample_rate;
 
-        int asize = sizeof(std_sample_rates) / sizeof(std_sample_rates[0]);
-
-        std_sample_rates[0] = req_sample_rate;
-        for (int i = 0; i < asize; i++) {
+        double srates[] = { req_sample_rate, idev->defaultSampleRate() };
+        for (unsigned i = 0; i < sizeof(srates)/sizeof(srates[0]); i++) {
                 portaudio::StreamParameters sp(in_params, out_params,
-                                               std_sample_rates[i],
-                                               0, paNoFlag);
+                                               srates[i], 0, paNoFlag);
 #ifndef NDEBUG
-                cerr << "PA_debug: trying " << std_sample_rates[i] << " Hz" << endl;
+                cerr << "PA_debug: trying " << srates[i] << " Hz" << endl;
 #endif
                 if (sp.isSupported())
                         return sp.sampleRate();
         }
 
-        throw SndException("Could not find a supported sample rate. Sound device busy?");
+        throw SndException("No supported sample rate found. Sound device busy?");
         return -1;
 }
 

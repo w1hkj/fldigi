@@ -130,6 +130,7 @@ struct configuration {
 	string	SCdevice;
 	string	OSSdevice;
 	string	PAdevice;
+	int		sample_rate;
 	int		RX_corr;
 	int		TX_corr;
 	int		TxOffset;

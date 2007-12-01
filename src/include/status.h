@@ -9,8 +9,6 @@
 #include "main.h"
 #include "globals.h"
 
-using namespace std;
-
 struct status {
 	int		lastmode;
 	int		mainX;

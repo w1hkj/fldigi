@@ -185,6 +185,7 @@ public:
 #endif
 
         static void execute(int fd, void *arg);
+        void flush(void);
 
         size_t nprio(void) { return fifo->queues(); }
         void drop(size_t pri) { fifo->drop(pri); }
@@ -235,6 +236,9 @@ extern qrunner *cbq[NUM_QRUNNER_THREADS];
         do {                                                            \
                 if (GET_THREAD_ID() != FLMAIN_TID)                      \
                         cbq[GET_THREAD_ID()]->request_sync(nop());      \
+                else                                                    \
+                        for (int i = 0; i < NUM_QRUNNER_THREADS; i++)   \
+                                cbq[i]->flush();                        \
         } while (0)
 
 

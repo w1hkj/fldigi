@@ -62,7 +62,6 @@ void dominoex::rx_init()
 	counter = 0;
 	phaseacc = 0.0;
 	freqerr = 0.0;
-	clear_StatusMessages();
 	put_MODEstatus(mode);
 	put_sec_char(0);
 }

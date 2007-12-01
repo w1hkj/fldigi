@@ -67,11 +67,20 @@ void qrunner::detach(void)
 
 void qrunner::execute(int fd, void *arg)
 {
-        qrunner *qr = static_cast<qrunner *>(arg);
+        qrunner *qr = reinterpret_cast<qrunner *>(arg);
 
         char c;
         while (qr->fifo->execute()) {
                 if (unlikely(read(fd, &c, 1) == -1 /*&& errno != EWOULDBLOCK*/))
+                        throw qexception(errno);
+        }
+}
+
+void qrunner::flush(void)
+{
+        char c;
+        while (fifo->execute()) {
+                if (unlikely(read(pfd[0], &c, 1) == -1 /*&& errno != EWOULDBLOCK*/))
                         throw qexception(errno);
         }
 }

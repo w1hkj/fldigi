@@ -28,10 +28,13 @@
 
 #include <config.h>
 
+#include <sstream>
+#include <vector>
 #include "waterfall.h"
 #include "threads.h"
 #include "main.h"
 #include "modem.h"
+#include "qrunner.h"
 
 #if USE_HAMLIB
 	#include "hamlib.h"
@@ -159,24 +162,34 @@ void WFdisp::makeMarker() {
 	memset(clrMin, 0, RGBwidth * (WFMARKER - 2));
 	clrM = clrMin + (int)((double)carrierfreq + 0.5);
 
-	int bw = bandwidth;
+	int bw, marker_width = bandwidth;
 	if (active_modem) {
 		int mode = active_modem->get_mode();
 		if (mode >= MODE_BPSK31 && mode <= MODE_QPSK250)
-			bw += mailserver ? progdefaults.ServerOffset :
+			marker_width += mailserver ? progdefaults.ServerOffset :
 				progdefaults.SearchRange;
 	}
-	bw = (int)(bw / 2.0 + 1);
+	marker_width = (int)(marker_width / 2.0 + 1);
 
 	RGBmarker.R = progdefaults.bwTrackRGBI.R;
 	RGBmarker.G = progdefaults.bwTrackRGBI.G;
 	RGBmarker.B = progdefaults.bwTrackRGBI.B;
-	for (int y = 0; y < WFMARKER - 2; y++) 
-		for (int i = -bw; i <= bw ; i++) {
+
+	// clamp marker to image width
+	bw = marker_width;
+	int bw_lower = -bw, bw_upper = +bw;
+	if (bw_lower + carrierfreq+0.5 < 0)
+		bw_lower -= bw_lower + carrierfreq+0.5;
+	if (bw_upper + carrierfreq+0.5 > IMAGE_WIDTH)
+		bw_upper -= bw_upper + carrierfreq+0.5 - IMAGE_WIDTH;
+	for (int y = 0; y < WFMARKER - 2; y++) {
+		for (int i = bw_lower; i <= bw_upper ; i++) {
 			clrPos = clrM + i + y * IMAGE_WIDTH;
 			if (clrPos > clrMin && clrPos < clrMax)
 				*clrPos = RGBmarker;
 		}
+	}
+
 	if (!wantcursor) return;
 	
 	if (cursorpos > disp_width - bandwidth / 2 / step)
@@ -194,17 +207,22 @@ void WFdisp::makeMarker() {
 	RGBcursor.R = progdefaults.cursorLineRGBI.R;
 	RGBcursor.G = progdefaults.cursorLineRGBI.G;
 	RGBcursor.B = progdefaults.cursorLineRGBI.B;
-	
+
+	bw = marker_width;
 	for (int y = 0; y < WFMARKER - 2; y++) {
 		int incr = y * IMAGE_WIDTH;
 		int msize = (WFMARKER - 2 - y)*RGBsize*step/4;
 		*(clrM + incr - 1)	= 
-		*(clrM + incr) 		= 
-		*(clrM + incr + 1) 	= RGBcursor;
-		for (int i = bw - msize; i <= bw + msize; i++) {
-			*(clrM + i + incr) = 
-			*(clrM - i + incr) = RGBcursor;
-		}	
+		*(clrM + incr)		= 
+		*(clrM + incr + 1)	= RGBcursor;
+
+		if (xp - (bw + msize) > 0)
+			for (int i = bw - msize; i <= bw + msize; i++)
+				*(clrM - i + incr) = RGBcursor;
+
+		if (xp + (bw + msize) < IMAGE_WIDTH)
+			for (int i = bw - msize; i <= bw + msize; i++)
+				*(clrM + i + incr) = RGBcursor;
 	}
 }
 
@@ -841,46 +859,48 @@ void carrier_cb(Fl_Widget *w, void *v) {
 	restoreFocus();
 }
 
-void qsy_cb(Fl_Widget *w, void *v) {
-	static const int qrgs_size = 16 + 1;
-	static struct qrg {
-		long long f;
-		long long fmid;
-	} qrgs[qrgs_size], *top = qrgs, *p;
+void qsy_cb(Fl_Widget *w, void *v)
+{
+        static vector<struct qrg_mode_t> qsy_stack;
+        struct qrg_mode_t m = { -1, -1, 0 };
 
-	if (Fl::event_button() != FL_RIGHT_MOUSE) { // store
-		if (top < qrgs + qrgs_size - 1)
-			top++;
-		else
-			memmove(qrgs + 1, qrgs + 2, qrgs_size - 2);
-		top->f = wf->rfcarrier();
-		top->fmid = active_modem->get_freq();
+        if (Fl::event_button() != FL_RIGHT_MOUSE) {
+                // store
+                m.rfcarrier = wf->rfcarrier();
+                m.carrier = active_modem->get_freq();
+                qsy_stack.push_back(m);
 
-		p = qrgs;
-		// this is the sweet spot frequency that is the center of the PBF in the rig
-		if (active_modem->get_mode() == MODE_CW)
-			p->fmid = (long long)progdefaults.CWsweetspot;
-		else if (active_modem->get_mode() == MODE_RTTY)
-			p->fmid = (long long)progdefaults.RTTYsweetspot;
-		else
-			p->fmid = (long long)progdefaults.PSKsweetspot;
-		p->f = wf->rfcarrier();
+                // qsy to the sweet spot frequency that is the center of the PBF in the rig
+                switch (active_modem->get_mode()) {
+                case MODE_CW:
+                        m.carrier = (long long)progdefaults.CWsweetspot;
+                        break;
+                case MODE_RTTY:
+                        m.carrier = (long long)progdefaults.RTTYsweetspot;
+                        break;
+                default:
+                        m.carrier = (long long)progdefaults.PSKsweetspot;
+                        break;
+                }
 		if (wf->USB())
-			p->f += (wf->carrier() - p->fmid);
+			m.rfcarrier += (wf->carrier() - m.carrier);
 		else
-			p->f -= (wf->carrier() - p->fmid);
-	}
-	else { // qsy to top of stack
-		if (top == qrgs)
-			return;
-		p = top--;
-	}
+			m.rfcarrier -= (wf->carrier() - m.carrier);
+        }
+        else { // qsy to top of stack
+                if (qsy_stack.size()) {
+                        m = qsy_stack.back();
+                        qsy_stack.pop_back();
+                }
+        }
 
-	rigCAT_set_qsy(p->f, p->fmid);
-	rigMEM_set_qsy(p->f, p->fmid);
+        if (m.carrier > 0) {
+                rigCAT_set_qsy(m.rfcarrier, m.carrier);
+                rigMEM_set_qsy(m.rfcarrier, m.carrier);
 #if USE_HAMLIB
-	hamlib_set_qsy(p->f, p->fmid);
-#endif	
+                hamlib_set_qsy(m.rfcarrier, m.carrier);
+#endif
+        }
 	restoreFocus();
 }
 
@@ -998,6 +1018,104 @@ void btnRev_cb(Fl_Widget *w, void *v) {
 	FL_UNLOCK_D();
 	active_modem->set_reverse(wf->Reverse());
 	restoreFocus();
+}
+
+void btnMem_cb(Fl_Widget *, void *menu_event)
+{
+	static std::vector<struct qrg_mode_t> qrg_list;
+        enum { SELECT, APPEND, REPLACE, REMOVE };
+        int op = SELECT, elem = 0;
+
+        if (menu_event) { // event on popup menu
+                elem = wf->mbtnMem->value();
+
+                switch (Fl::event_button()) {
+                case FL_MIDDLE_MOUSE:
+                        op = REPLACE;
+                        break;
+                case FL_LEFT_MOUSE: case FL_RIGHT_MOUSE: default:
+                        if (Fl::event_state() & FL_SHIFT)
+                                op = REMOVE;
+                        else
+                                op = SELECT;
+                        break;
+                }
+        }
+        else { // button press
+                switch (Fl::event_button()) {
+                case FL_RIGHT_MOUSE:
+                        return;
+                case FL_MIDDLE_MOUSE: // select last
+                        if ((elem = qrg_list.size() - 1) < 0)
+                                return;
+                        op = SELECT;
+                        break;
+                case FL_LEFT_MOUSE: default:
+                        op = APPEND;
+                        break;
+                }
+        }
+
+        struct qrg_mode_t m;
+        switch (op) {
+        case SELECT:
+                m = qrg_list[elem];
+                if (active_modem != *mode_info[m.mode].modem) {
+                        init_modem_sync(m.mode);
+                        QUEUE_FLUSH();
+                }
+                if (m.rfcarrier && m.rfcarrier != wf->rfcarrier()) {
+                        rigCAT_set_qsy(m.rfcarrier, m.carrier);
+                        rigMEM_set_qsy(m.rfcarrier, m.carrier);
+#if USE_HAMLIB
+                        hamlib_set_qsy(m.rfcarrier, m.carrier);
+#endif
+                }
+                else
+                        active_modem->set_freq(m.carrier);
+                break;
+        case REMOVE:
+                wf->mbtnMem->remove(elem);
+                qrg_list.erase(qrg_list.begin() + elem);
+                break;
+        case APPEND: case REPLACE:
+                m.rfcarrier = wf->rfcarrier();
+                m.carrier = active_modem->get_freq();
+                m.mode = active_modem->get_mode();
+                if (op == APPEND)
+                        qrg_list.push_back(m);
+                else
+                        qrg_list[elem] = m;
+
+        // write the menu item text
+        {
+                ostringstream o;
+                o << mode_info[m.mode].sname << " @@ ";
+                if (m.rfcarrier > 0) { // write 1000s separators
+                        char s[20], *p = s + sizeof(s) - 1;
+                        int i = 0;
+
+                        *p = '\0';
+                        do {
+                                if (i % 3 == 0 && i)
+                                        *--p = '.';
+                                *--p = '0' + m.rfcarrier % 10;
+                                ++i;
+                        } while ((m.rfcarrier /= 10) && p > s);
+
+                        o << p << (wf->USB() ? " + " : " - ");
+                }
+                o << m.carrier;
+                if (op == APPEND)
+                        wf->mbtnMem->add(o.str().c_str());
+                else
+                        wf->mbtnMem->replace(elem, o.str().c_str());
+
+        }
+                break;
+        }
+
+        restoreFocus();
 }
 
 void waterfall::opmode() {
@@ -1192,6 +1310,14 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	qsy->deactivate();
 
 	xpos = xpos + bwQsy + wSpace;
+	btnMem = new Fl_Button(xpos, buttonrow, bwMem, BTN_HEIGHT, "M @-9UpArrow");
+	btnMem->callback(btnMem_cb, 0);
+	btnMem->tooltip("Store mode and frequency\nRight click for menu");
+	mbtnMem = new Fl_Menu_Button(btnMem->x(), btnMem->y(), btnMem->w(), btnMem->h(), 0);
+	mbtnMem->callback(btnMem->callback(), mbtnMem);
+	mbtnMem->type(Fl_Menu_Button::POPUP3);
+
+	xpos = xpos + bwMem + wSpace;
 	xmtlock = new Fl_Light_Button(xpos, buttonrow, bwXmtLock, BTN_HEIGHT, "Lk");
 	xmtlock->callback(xmtlock_cb, 0);
 	xmtlock->value(0);
@@ -1205,7 +1331,7 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	btnRev->selection_color(FL_GREEN);
 	btnRev->tooltip("Reverse");
 	reverse = false;
-	
+
 	xpos = w() - bwXmtRcv - wSpace;
 	xmtrcv = new Fl_Light_Button(xpos, buttonrow, bwXmtRcv, BTN_HEIGHT, "T/R");
 	xmtrcv->callback(xmtrcv_cb, 0);
@@ -1399,7 +1525,7 @@ void WFdisp::handle_mouse_wheel(int event)
 	else if (state & FL_SHIFT)
 		val = sldrSquelch;
 
-	val->value(val->clamp(val->increment(val->value(), d)));
+	val->value(val->clamp(val->increment(val->value(), -d)));
 	val->do_callback();
 	if (val == cntServerOffset || val == cntSearchRange)
 		active_modem->set_sigsearch(SIGSEARCH);
