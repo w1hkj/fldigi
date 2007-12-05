@@ -1023,7 +1023,7 @@ void btnRev_cb(Fl_Widget *w, void *v) {
 void btnMem_cb(Fl_Widget *, void *menu_event)
 {
 	static std::vector<struct qrg_mode_t> qrg_list;
-        enum { SELECT, APPEND, REPLACE, REMOVE };
+        enum { SELECT, APPEND, REPLACE, REMOVE, CLEAR };
         int op = SELECT, elem = 0;
 
         if (menu_event) { // event on popup menu
@@ -1034,10 +1034,7 @@ void btnMem_cb(Fl_Widget *, void *menu_event)
                         op = REPLACE;
                         break;
                 case FL_LEFT_MOUSE: case FL_RIGHT_MOUSE: default:
-                        if (Fl::event_state() & FL_SHIFT)
-                                op = REMOVE;
-                        else
-                                op = SELECT;
+                        op = (Fl::event_state() & FL_SHIFT) ? REMOVE : SELECT;
                         break;
                 }
         }
@@ -1051,7 +1048,7 @@ void btnMem_cb(Fl_Widget *, void *menu_event)
                         op = SELECT;
                         break;
                 case FL_LEFT_MOUSE: default:
-                        op = APPEND;
+                        op = (Fl::event_state() & FL_SHIFT) ? CLEAR : APPEND;
                         break;
                 }
         }
@@ -1077,6 +1074,10 @@ void btnMem_cb(Fl_Widget *, void *menu_event)
         case REMOVE:
                 wf->mbtnMem->remove(elem);
                 qrg_list.erase(qrg_list.begin() + elem);
+                break;
+        case CLEAR:
+                wf->mbtnMem->clear();
+                qrg_list.clear();
                 break;
         case APPEND: case REPLACE:
                 m.rfcarrier = wf->rfcarrier();
@@ -1349,22 +1350,23 @@ int waterfall::handle(int event)
 	if ( !((d = Fl::event_dy()) || (d = Fl::event_dx())) )
 		return 1;
 
-	Fl_Valuator *val;
-	if (Fl::event_inside(sldrSquelch) || Fl::event_inside(pgrsSquelch))
-		val = sldrSquelch;
-	else if (Fl::event_inside(wfcarrier))
-		 val = wfcarrier;
-	else if (Fl::event_inside(wfRefLevel))
-		val = wfRefLevel;
-	else if (Fl::event_inside(wfAmpSpan))
-		val = wfAmpSpan;
-	else
-		return 0;
+	Fl_Valuator* v[] = { sldrSquelch, wfcarrier, wfRefLevel, wfAmpSpan };
+	for (size_t i = 0; i < sizeof(v)/sizeof(v[0]); i++) {
+		if (Fl::event_inside(v[i])) {
+			v[i]->value(v[i]->clamp(v[i]->increment(v[i]->value(), -d)));
+			v[i]->do_callback();
+			return 1;
+		}
+	}
 
-	val->value(val->clamp(val->increment(val->value(), -d)));
-	val->do_callback();
+	// this does not belong here, but we don't have access to this widget's
+	// handle method (or its parent's)
+	if (Fl::event_inside(MODEstatus)) {
+		init_modem(d > 0 ? MODE_NEXT : MODE_PREV);
+		return 1;
+	}
 
-	return 1;
+	return 0;
 }
 
 static void hide_cursor(void *w)

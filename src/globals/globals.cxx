@@ -40,39 +40,6 @@ const char *state_names[] = {
 // Elements are in enum trx_mode order. Mode name video-id uses the
 // first string (sname), so its length should be a multiple of 2.
 const struct mode_info_t mode_info[NUM_MODES] = {
-	{ MODE_MFSK16, &mfsk16_modem, "MFSK16", "MFSK-16", "MFSK8" },
-	{ MODE_MFSK8, &mfsk8_modem, "MFSK-8", "MFSK-8", "MFSK16" },
-
-	{ MODE_OLIVIA, &olivia_modem, "OLIVIA", "Olivia", "" },
-
-	{ MODE_RTTY, &rtty_modem, "RTTY", "RTTY", "RTTY" },
-
-	{ MODE_THROB1, &throb1_modem, "THROB1", "Throb 1", "" },
-	{ MODE_THROB2, &throb2_modem, "THROB2", "Throb 2", "" },
-	{ MODE_THROB4, &throb4_modem, "THROB4", "Throb 4", "" },
-
-	{ MODE_THROBX1, &throbx1_modem, "THRBX1", "ThrobX 1", "" },
-	{ MODE_THROBX2, &throbx2_modem, "THRBX2", "ThrobX 2", "" },
-	{ MODE_THROBX4, &throbx4_modem, "THRBX4", "ThrobX 4", "" },
-
-	{ MODE_BPSK31, &psk31_modem, "BPSK31", "BPSK-31", "PSK31" },
-	{ MODE_QPSK31, &qpsk31_modem, "QPSK31", "QPSK-31", "QPSK31" },
-
-	{ MODE_PSK63, &psk63_modem, "PSK-63", "BPSK-63", "PSK63" },
-	{ MODE_QPSK63, &qpsk63_modem, "QPSK63", "QPSK-63", "QPSK63" },
-
-	{ MODE_PSK125, &psk125_modem, "PSK125", "BPSK-125", "PSK125" },
-	{ MODE_QPSK125, &qpsk125_modem, "QPSK-125", "QPSK-125", "QPSK125" },
-
-	{ MODE_PSK250, &psk250_modem, "PSK-250", "BPSK-250", "PSK250" },
-	{ MODE_QPSK250, &qpsk250_modem, "QPSK-250", "QPSK-250", "QPSK250" },
-
-	{ MODE_MT63, 0, "MT63", "MT-63", "" },
-
-	{ MODE_FELDHELL, &feld_modem, "FELDHELL", "Feld Hell", "" },
-	{ MODE_FSKHELL, &feld_FMmodem, "FSK-HELL", "FSK Hell", "" },
-	{ MODE_FSKH105, &feld_FM105modem, "FSK-H105", "FSK Hell-105", "" },
-
 	{ MODE_CW, &cw_modem, "CW", "CW", "CW" },
 
 	{ MODE_DOMINOEX4, &dominoex4_modem, "DomEX4", "DominoEX 4", "DOMINOEX4" },
@@ -82,6 +49,36 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_DOMINOEX16, &dominoex16_modem, "DomX16", "DominoEX 16", "DOMINOEX16" },
 	{ MODE_DOMINOEX22, &dominoex22_modem, "DomX22", "DominoEX 22", "DOMINOEX22" },
 
+	{ MODE_FELDHELL, &feld_modem, "FELDHELL", "Feld Hell", "" },
+	{ MODE_FSKHELL, &feld_FMmodem, "FSK-HELL", "FSK Hell", "" },
+	{ MODE_FSKH105, &feld_FM105modem, "FSK-H105", "FSK Hell-105", "" },
+
+	{ MODE_MFSK8, &mfsk8_modem, "MFSK-8", "MFSK-8", "MFSK16" },
+	{ MODE_MFSK16, &mfsk16_modem, "MFSK16", "MFSK-16", "MFSK8" },
+
+	{ MODE_BPSK31, &psk31_modem, "BPSK31", "BPSK-31", "PSK31" },
+	{ MODE_QPSK31, &qpsk31_modem, "QPSK31", "QPSK-31", "QPSK31" },
+	{ MODE_PSK63, &psk63_modem, "PSK-63", "BPSK-63", "PSK63" },
+	{ MODE_QPSK63, &qpsk63_modem, "QPSK63", "QPSK-63", "QPSK63" },
+	{ MODE_PSK125, &psk125_modem, "PSK125", "BPSK-125", "PSK125" },
+	{ MODE_QPSK125, &qpsk125_modem, "QPSK-125", "QPSK-125", "QPSK125" },
+	{ MODE_PSK250, &psk250_modem, "PSK-250", "BPSK-250", "PSK250" },
+	{ MODE_QPSK250, &qpsk250_modem, "QPSK-250", "QPSK-250", "QPSK250" },
+
+	{ MODE_OLIVIA, &olivia_modem, "OLIVIA", "Olivia", "" },
+
+	{ MODE_RTTY, &rtty_modem, "RTTY", "RTTY", "RTTY" },
+
+	{ MODE_THROB1, &throb1_modem, "THROB1", "Throb 1", "" },
+	{ MODE_THROB2, &throb2_modem, "THROB2", "Throb 2", "" },
+	{ MODE_THROB4, &throb4_modem, "THROB4", "Throb 4", "" },
+	{ MODE_THROBX1, &throbx1_modem, "THRBX1", "ThrobX 1", "" },
+	{ MODE_THROBX2, &throbx2_modem, "THRBX2", "ThrobX 2", "" },
+	{ MODE_THROBX4, &throbx4_modem, "THRBX4", "ThrobX 4", "" },
+
+//	{ MODE_MT63, 0, "MT63", "MT-63", "" },
+
 	{ MODE_WWV, &wwv_modem, "WWV", "WWV", "" },
+
 	{ MODE_ANALYSIS, &anal_modem, "ANALYSIS", "Freq Analysis", "" }
 };

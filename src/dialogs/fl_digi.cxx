@@ -303,10 +303,52 @@ void init_modem(trx_mode mode)
 	modem_config_tab = tabsModems->child(0);
 
 	switch (mode) {
-	case MODE_MFSK16: case MODE_MFSK8:
+	case MODE_NEXT:
+		if ((mode = active_modem->get_mode() + 1) == NUM_MODES)
+			mode = 0;
+		return init_modem(mode);
+	case MODE_PREV:
+		if ((mode = active_modem->get_mode() - 1) < 0)
+			mode = NUM_MODES - 1;
+		return init_modem(mode);
+
+	case MODE_CW:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem : new cw);
+		modem_config_tab = tabCW;
+		break;
+
+	case MODE_DOMINOEX4: case MODE_DOMINOEX5: case MODE_DOMINOEX8:
+	case MODE_DOMINOEX11: case MODE_DOMINOEX16: case MODE_DOMINOEX22:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new dominoex(mode));
+		quick_change = quick_change_domino;
+		modem_config_tab = tabDomEX;
+		break;
+
+	case MODE_FELDHELL: case MODE_FSKHELL: case MODE_FSKH105:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new feld(mode));
+		quick_change = quick_change_feld;
+		modem_config_tab = tabFeld;
+		break;
+
+	case MODE_MFSK8: case MODE_MFSK16:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new mfsk(mode));
 		quick_change = quick_change_mfsk;
+		break;
+
+	case MODE_BPSK31: case MODE_PSK63: case MODE_PSK125: case MODE_PSK250:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new psk(mode));
+		quick_change = quick_change_psk;
+		modem_config_tab = tabPSK;
+		break;
+	case MODE_QPSK31: case MODE_QPSK63: case MODE_QPSK125: case MODE_QPSK250:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new psk(mode));
+		quick_change = quick_change_qpsk;
+		modem_config_tab = tabPSK;
 		break;
 
 	case MODE_OLIVIA:
@@ -326,39 +368,6 @@ void init_modem(trx_mode mode)
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new throb(mode));
 		quick_change = quick_change_throb;
-		break;
-
-	case MODE_BPSK31: case MODE_PSK63: case MODE_PSK125: case MODE_PSK250:
-		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new psk(mode));
-		quick_change = quick_change_psk;
-		modem_config_tab = tabPSK;
-		break;
-	case MODE_QPSK31: case MODE_QPSK63: case MODE_QPSK125: case MODE_QPSK250:
-		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new psk(mode));
-		quick_change = quick_change_qpsk;
-		modem_config_tab = tabPSK;
-		break;
-
-	case MODE_FELDHELL: case MODE_FSKHELL: case MODE_FSKH105:
-		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new feld(mode));
-		quick_change = quick_change_feld;
-		modem_config_tab = tabFeld;
-		break;
-
-	case MODE_CW:
-		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem : new cw);
-		modem_config_tab = tabCW;
-		break;
-
-	case MODE_DOMINOEX4: case MODE_DOMINOEX5: case MODE_DOMINOEX8:
-	case MODE_DOMINOEX11: case MODE_DOMINOEX16: case MODE_DOMINOEX22:
-		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new dominoex(mode));
-		quick_change = quick_change_domino;
-		modem_config_tab = tabDomEX;
 		break;
 
 	case MODE_WWV:
