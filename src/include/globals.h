@@ -26,6 +26,8 @@
 #ifndef _GLOBALS_H
 #define _GLOBALS_H
 
+#include <stdint.h>
+
 enum state_t {
 	STATE_PAUSE = 0,
 	STATE_RX,
@@ -89,7 +91,7 @@ enum {
 
 	NUM_MODES
 };
-typedef int trx_mode;
+typedef intptr_t trx_mode;
 
 struct mode_info_t {
 	trx_mode mode;
