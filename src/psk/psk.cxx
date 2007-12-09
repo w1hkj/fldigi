@@ -44,6 +44,9 @@ extern waterfall *wf;
 
 #define DCDOFF  32
 
+// Change the following for DCD low pass filter adjustment
+#define SQLCOEFF 0.01
+
 //=====================================================================
 
 #define	K		5
@@ -383,8 +386,10 @@ void psk::rx_symbol(complex symbol)
 		n = 2;
 	}
 // simple low pass filter for quality of signal
-	quality.re = 0.02 * cos(n * phase) + 0.98 * quality.re;
-	quality.im = 0.02 * sin(n * phase) + 0.98 * quality.im;
+//	quality.re = 0.02 * cos(n * phase) + 0.98 * quality.re;
+//	quality.im = 0.02 * sin(n * phase) + 0.98 * quality.im;
+	quality.re = SQLCOEFF * cos(n * phase) + (1.0 - SQLCOEFF) * quality.re;
+	quality.im = SQLCOEFF * sin(n * phase) + (1.0 - SQLCOEFF) * quality.im;
 
 	metric = 100.0 * quality.norm();
 	

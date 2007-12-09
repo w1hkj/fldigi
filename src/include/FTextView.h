@@ -179,22 +179,6 @@ protected:
 	int			bkspaces;
 };
 
-///
-/// A lock class meant to be instantiated on the stack to acquire a lock which
-/// is released when the object goes out of scope.
-/// The no-arg ctor calls Fl::lock(), and the Fl_Mutex* ctor locks that mutex.
-///
-class autolock
-{
-public:
-	autolock() : m(0) { FL_LOCK(); }
-	autolock(Fl_Mutex *m_) : m(m_) { fl_lock(m); }
-	~autolock() { if (m) fl_unlock(m); else FL_UNLOCK(); }
-private:
-	autolock(const autolock &a); // no copying
-        autolock& operator=(const autolock&); // no copying
-	Fl_Mutex *m;
-};
 
 /// A version of Fl_Tile that runs check callbacks and moves the boundary
 /// between its child widgets only all resize checks return true.

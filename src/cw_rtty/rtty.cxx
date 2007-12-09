@@ -156,7 +156,6 @@ rtty::rtty(trx_mode tty_mode)
 	
 	hilbert = new C_FIR_filter();
 	hilbert->init_hilbert(37, 1);
-//	wfid = new id(this);
 
 	restart();
 }

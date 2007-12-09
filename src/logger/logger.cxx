@@ -122,7 +122,7 @@ void putadif(int num, const char *s)
 	strcpy(tempfld, s);
 	if (strlen(tempfld) > fields[num].size)
 		tempfld[fields[num].size -1] = 0;
-	sprintf(tempstr, "<%s:%d>%s", fields[num].name, strlen(tempfld), tempfld);
+	sprintf(tempstr, "<%s:%zu>%s", fields[num].name, strlen(tempfld), tempfld);
 	adif.append(tempstr);
 }
 

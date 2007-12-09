@@ -178,10 +178,10 @@ void WFdisp::makeMarker() {
 	// clamp marker to image width
 	bw = marker_width;
 	int bw_lower = -bw, bw_upper = +bw;
-	if (bw_lower + carrierfreq+0.5 < 0)
-		bw_lower -= bw_lower + carrierfreq+0.5;
-	if (bw_upper + carrierfreq+0.5 > IMAGE_WIDTH)
-		bw_upper -= bw_upper + carrierfreq+0.5 - IMAGE_WIDTH;
+	if (bw_lower + static_cast<int>(carrierfreq+0.5) < 0)
+            bw_lower -= bw_lower + static_cast<int>(carrierfreq+0.5);
+	if (bw_upper + static_cast<int>(carrierfreq+0.5) > IMAGE_WIDTH)
+            bw_upper -= bw_upper + static_cast<int>(carrierfreq+0.5) - IMAGE_WIDTH;
 	for (int y = 0; y < WFMARKER - 2; y++) {
 		for (int i = bw_lower; i <= bw_upper ; i++) {
 			clrPos = clrM + i + y * IMAGE_WIDTH;
