@@ -28,10 +28,6 @@
 
 #include <stdint.h>
 
-#include <stdint.h>
-
-#include <cstdlib>
-
 enum state_t {
 	STATE_PAUSE = 0,
 	STATE_RX,
