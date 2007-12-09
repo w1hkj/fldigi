@@ -19,6 +19,7 @@
 
 #include <config.h>
 #include <cassert>
+#include <new>
 
 #include "fft.h"
 
@@ -30,9 +31,9 @@ Cfft::Cfft(int n)
 	int tablesize = (int)(sqrt(n*1.0)+0.5) + 2;
 	fftlen = n;
 	fftsiz = 2 * n;
-	assert (ip	= new int[tablesize]);
-	assert (w 	= new double[fftlen]);
-	assert (fftwin = new double[fftlen*2]);
+	assert (ip	= new(std::nothrow) int[tablesize]);
+	assert (w 	= new(std::nothrow) double[fftlen]);
+	assert (fftwin = new(std::nothrow) double[fftlen*2]);
     makewt();
     makect();
     wintype = FFT_NONE;
@@ -52,11 +53,11 @@ void Cfft::resize(int n)
 	fftlen = n;
 	fftsiz = 2 * n;
 	if (ip) delete [] ip;
-	assert (ip	= new int[tablesize]);
+	assert (ip	= new(std::nothrow) int[tablesize]);
 	if (w) delete [] w;
-	assert (w 	= new double[fftlen]);
+	assert (w 	= new(std::nothrow) double[fftlen]);
 	if (fftwin) delete [] fftwin;
-	assert (fftwin = new double[fftlen*2]);
+	assert (fftwin = new(std::nothrow) double[fftlen*2]);
     makewt();
     makect();
     wintype = FFT_NONE;

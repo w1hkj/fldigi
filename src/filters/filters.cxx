@@ -75,11 +75,11 @@ void C_FIR_filter::init(int len, int dec, double *itaps, double *qtaps) {
 		ibuffer[i] = qbuffer[i] = 0.0;
 	
 	if (itaps) {
-		assert (ifilter = new double[len]);
+            assert (ifilter = new(std::nothrow) double[len]);
 		for (int i = 0; i < len; i++) ifilter[i] = itaps[i];
 	}
 	if (qtaps) {
-		assert (qfilter = new double[len]);
+		assert (qfilter = new(std::nothrow) double[len]);
 		for (int i = 0; i < len; i++) qfilter[i] = qtaps[i];
 	}
 
@@ -98,7 +98,7 @@ double * C_FIR_filter::bp_FIR(int len, int hilbert, double f1, double f2)
 	double *fir;
 	double t, h, x;
 
-	assert (fir = new double[len]);
+	assert (fir = new(std::nothrow) double[len]);
 
 	for (int i = 0; i < len; i++) {
 		t = i - (len - 1.0) / 2.0;
@@ -264,7 +264,7 @@ int C_FIR_filter::Qrun (double &in, double &out) {
 Cmovavg::Cmovavg (int filtlen)
 {
 	len = filtlen;
-	assert (in = new double[len]);
+	assert (in = new(std::nothrow) double[len]);
 	empty = true;
 }
 
@@ -297,7 +297,7 @@ void Cmovavg::setLength(int filtlen)
 {
 	if (filtlen > len) {
 		if (in) delete [] in;
-		assert (in = new double[filtlen]);
+		assert (in = new(std::nothrow) double[filtlen]);
 	}
 	len = filtlen;
 	empty = true;
@@ -405,9 +405,9 @@ void Cmovavg::reset()
 
 sfft::sfft(int len, int _first, int _last)
 {
-	assert (vrot = new complex[len]);
-	assert (delay  = new complex[len]);
-	assert (bins     = new complex[len]);
+	assert (vrot = new(std::nothrow) complex[len]);
+	assert (delay  = new(std::nothrow) complex[len]);
+	assert (bins     = new(std::nothrow) complex[len]);
 	fftlen = len;
 	first = _first;
 	last = _last;
