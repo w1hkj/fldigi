@@ -1986,7 +1986,7 @@ template <class Type=float>
 
    Type *ModulatorOutput;
 
-   RateConverter<Type> RateConverter; // output rate converter
+   RateConverter<Type> Converter; // output rate converter
 
    Type *ConverterOutput;
 
@@ -2008,7 +2008,7 @@ template <class Type=float>
        Encoder.Free();
        Modulator.Free();
        free(ModulatorOutput); ModulatorOutput=0;
-	   RateConverter.Free();
+	   Converter.Free();
        free(ConverterOutput); ConverterOutput=0; }
 
    // set default primary parameters
@@ -2056,8 +2056,8 @@ template <class Type=float>
        if(ReallocArray(&ModulatorOutput,Modulator.SymbolSepar)<0) goto Error;
 
        // preset the rate converter
-       RateConverter.OutputRate=OutputSampleRate/SampleRate;
-	   if(RateConverter.Preset()<0) goto Error;
+       Converter.OutputRate=OutputSampleRate/SampleRate;
+	   if(Converter.Preset()<0) goto Error;
 
        MaxOutputLen=(size_t)ceil(Modulator.SymbolSepar*OutputSampleRate/SampleRate+2);
        if(ReallocArray(&ConverterOutput,MaxOutputLen)<0) goto Error;
@@ -2075,7 +2075,7 @@ template <class Type=float>
 	   Monitor.Reset();
        SymbolPtr=0;
        State=0;
-	   RateConverter.Reset(); }
+	   Converter.Reset(); }
 
    Type BaudRate(void)
    { return SampleRate/Modulator.SymbolSepar; }
@@ -2137,7 +2137,7 @@ template <class Type=float>
 	   { Modulator.Send(Encoder.OutputBlock[SymbolPtr]);
          SymbolPtr+=1; if(SymbolPtr>=SymbolsPerBlock) SymbolPtr=0; }
        int ModLen=Modulator.Output(ModulatorOutput);
-	   int ConvLen=RateConverter.Process(ModulatorOutput,ModLen,ConverterOutput);
+	   int ConvLen=Converter.Process(ModulatorOutput,ModLen,ConverterOutput);
        if(ConvLen<0) return ConvLen;
        ConvertToS16(ConverterOutput,Buffer,ConvLen);
 	   return ConvLen; }
@@ -2246,7 +2246,7 @@ template <class Type=float>
 
   private:
 
-   RateConverter<Type> RateConverter;
+   RateConverter<Type> Converter;
 
    Seq<Type> InputBuffer;
 
@@ -2304,7 +2304,7 @@ template <class Type=float>
            DecodePipe[Idx].Free();
          free(DecodePipe); DecodePipe=0; }
 
-       RateConverter.Free();
+       Converter.Free();
        InputBuffer.Free();
        InputProcessor.Free();
        Demodulator.Free();
@@ -2344,8 +2344,8 @@ template <class Type=float>
        BitsPerSymbol=Log2(Tones);
        Tones=Exp2(BitsPerSymbol);
 
-       RateConverter.OutputRate=SampleRate/InputSampleRate;
-       if(RateConverter.Preset()<0) goto Error;
+       Converter.OutputRate=SampleRate/InputSampleRate;
+       if(Converter.Preset()<0) goto Error;
 
        Demodulator.BitsPerSymbol=BitsPerSymbol;
        Demodulator.SymbolLen=Exp2(BitsPerSymbol+7-Log2(Bandwidth/125));
@@ -2423,7 +2423,7 @@ template <class Type=float>
    void Reset(void)
      { size_t Idx;
 
-       RateConverter.Reset();
+       Converter.Reset();
 
        InputBuffer.Clear();
 
@@ -2498,7 +2498,7 @@ template <class Type=float>
    // process an audio batch: first the input processor, then the demodulator
    template <class InpType>
     int Process(InpType *Input, size_t InputLen)
-     { if(RateConverter.Process(Input, InputLen, InputBuffer)<0) return -1;
+     { if(Converter.Process(Input, InputLen, InputBuffer)<0) return -1;
        ProcessInputBuffer();
 	   return 0; }
 

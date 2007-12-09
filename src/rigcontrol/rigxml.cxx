@@ -832,7 +832,7 @@ void parseXML()
 
 bool readRigXML()
 {
-	char szLine[256] = "";
+	char szLine[256];
 	int lines = 0;
 
 	commands.clear();
@@ -850,7 +850,7 @@ bool readRigXML()
 	if (xmlfile) {
 		while (!xmlfile.eof()) {
 			lines++;
-			memset(szLine, 0, 256);
+			memset(szLine, 0, sizeof(szLine));
 			xmlfile.getline(szLine,255);
 			strXML.append(szLine);
 		}

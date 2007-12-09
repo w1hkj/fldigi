@@ -30,6 +30,8 @@
 #include <config.h>
 
 #include <string>
+#include <cstdlib>
+#include <cstring>
 
 #include "font_browser.h"
 

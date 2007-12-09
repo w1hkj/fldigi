@@ -851,7 +851,7 @@ int cSoundPA::write_stereo(double *bufleft, double *bufright, int count)
 bool cSoundPA::full_duplex(void)
 {
         extern bool pa_allow_full_duplex;
-        return pa_allow_full_duplex && idev->isFullDuplexDevice() ||
+        return (pa_allow_full_duplex && idev->isFullDuplexDevice()) ||
                 idev->hostApi().typeId() == paJACK;
 }
 

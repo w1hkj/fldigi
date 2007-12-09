@@ -484,7 +484,7 @@ int feld::tx_process()
 
 // if TX buffer empty
 // send idle character
-	if (c == -1)
+	if (c == -1) {
 		if (progdefaults.FELD_IDLE == true)
 			c = '.';
 		else {
@@ -492,7 +492,7 @@ int feld::tx_process()
 			send_null_column();
 			return 0;
 		}
-
+	}
 	if (c == '\r' || c == '\n')
 		c = ' ';
 

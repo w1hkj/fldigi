@@ -15,7 +15,8 @@
 #include <sys/param.h>
 #endif
 #include <iostream>
-#include <string>
+#include <cstring>
+#include <cstdio>
 #include <list>
 
 #include <hamlib/rig.h>
@@ -35,10 +36,7 @@ public:
 char message[80];
 	RigException() { *message = 0;}
 	RigException (const char * msg) {
-		memset(message,0,80);
-		strcpy(message, "Hamlib ");
-		strcat(message, msg);
-		strcat(message, " error");
+		snprintf(message, sizeof(message), "Hamlib %s error", msg);
 	}
 };
 

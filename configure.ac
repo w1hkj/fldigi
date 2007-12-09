@@ -90,7 +90,6 @@ AM_CONDITIONAL([ENABLE_DEBUG], [test "x$ac_cv_debug" = "xyes"])
 ###########################
 # TLS flag
 ###########################
-AC_DEFINE([USE_TLS], [], [Defined if we are using TLS])
 AC_ARG_ENABLE([tls],
               AC_HELP_STRING([--disable-tls], [disable use of TLS]),
               [case "${enableval}" in
@@ -99,9 +98,9 @@ AC_ARG_ENABLE([tls],
                esac],
                [ac_cv_tls=yes])
 if test "x$ac_cv_tls" = "xyes"; then
-    AC_DEFINE(USE_TLS, 1)
+    AC_DEFINE(USE_TLS, 1, [Defined if we are using TLS])
 else
-    AC_DEFINE(USE_TLS, 0)
+    AC_DEFINE(USE_TLS, 0, [Defined if we are using TLS])
 fi
 
 
@@ -165,7 +164,6 @@ AM_CONDITIONAL([NO_SAMPLERATE], [test "x$ac_cv_samplerate" = "xno"])
 ###########################
 # libsndfile
 ###########################
-AC_DEFINE([USE_SNDFILE], [], [Set to 1 if we are using sndfile, 0 otherwise])
 AC_ARG_WITH([sndfile],
             AC_HELP_STRING([--with-sndfile],
                            [enable reading/writing of audio files via libsndfile @<:@autodetect@:>@]),
@@ -175,22 +173,22 @@ AC_ARG_WITH([sndfile],
              esac],
             [ac_cv_want_sndfile=check])
 if test "x$ac_cv_want_sndfile" = "xno"; then
-    AC_DEFINE(USE_SNDFILE, 0)
+    AC_DEFINE(USE_SNDFILE, 0, [Set to 1 if we are using sndfile, 0 otherwise])
     ac_cv_sndfile=no
 else
     PKG_CHECK_EXISTS(sndfile >= 1.0.10, ac_cv_sndfile=yes, ac_cv_sndfile=no)
     if test "x$ac_cv_want_sndfile" = "xcheck"; then
         PKG_CHECK_MODULES(SNDFILE, sndfile >= 1.0.10, [:], [:])
         if test "x$ac_cv_sndfile" = "xyes"; then
-            AC_DEFINE(USE_SNDFILE, 1)
+            AC_DEFINE(USE_SNDFILE, 1, [Set to 1 if we are using sndfile, 0 otherwise])
         else
-            AC_DEFINE(USE_SNDFILE, 0)
+            AC_DEFINE(USE_SNDFILE, 0, [Set to 1 if we are using sndfile, 0 otherwise])
         fi
     else # $ac_cv_want_sndfile is yes
         if test "x$ac_cv_sndfile" = "xno"; then
             AC_MSG_NOTICE([--with-sndfile was given, but test for sndfile failed])
         else
-            AC_DEFINE(USE_SNDFILE, 1)
+            AC_DEFINE(USE_SNDFILE, 1, [Set to 1 if we are using sndfile, 0 otherwise])
         fi
         PKG_CHECK_MODULES(SNDFILE, sndfile >= 1.0.10) # for the error message
     fi
@@ -202,7 +200,6 @@ AC_SUBST([SNDFILE_LIBS])
 ###########################
 # portaudio
 ###########################
-AC_DEFINE([USE_PORTAUDIO], [], [Set to 1 if we are using PortAudio, 0 otherwise])
 AC_ARG_WITH([portaudio],
             AC_HELP_STRING([--without-portaudio],
                            [disable support for PortAudio]),
@@ -214,13 +211,13 @@ AC_ARG_WITH([portaudio],
 if test "x$ac_cv_want_portaudio" = "xyes"; then
     PKG_CHECK_EXISTS(portaudiocpp >= 12, ac_cv_portaudio=yes, ac_cv_portaudio=no)
     if test "x$ac_cv_portaudio" = "xyes"; then
-        AC_DEFINE(USE_PORTAUDIO, 1)
+        AC_DEFINE(USE_PORTAUDIO, 1, [Set to 1 if we are using PortAudio, 0 otherwise])
     else
         AC_MSG_NOTICE([portaudio test failed (use --without-portaudio to disable)])
     fi
     PKG_CHECK_MODULES(PORTAUDIOCPP, portaudiocpp >= 12)
 else
-    AC_DEFINE(USE_PORTAUDIO, 0)
+    AC_DEFINE(USE_PORTAUDIO, 0, [Set to 1 if we are using PortAudio, 0 otherwise])
     ac_cv_portaudio=no
 fi
 AC_SUBST([PORTAUDIOCPP_CFLAGS])
@@ -230,7 +227,6 @@ AC_SUBST([PORTAUDIOCPP_LIBS])
 ###########################
 # hamlib
 ###########################
-AC_DEFINE([USE_HAMLIB], [], [Set to 1 if we are using hamlib, 0 otherwise])
 AC_ARG_WITH([hamlib],
             AC_HELP_STRING([--with-hamlib],
                            [use hamradio control libraries @<:@autodetect@:>@]),
@@ -247,15 +243,15 @@ else
     if test "x$ac_cv_want_hamlib" = "xcheck"; then
         PKG_CHECK_MODULES(HAMLIB, hamlib >= 1.2.0, [:], [:])
         if test "x$ac_cv_hamlib" = "xyes"; then
-            AC_DEFINE(USE_HAMLIB, 1)
+            AC_DEFINE(USE_HAMLIB, 1, [Set to 1 if we are using hamlib, 0 otherwise])
         else
-            AC_DEFINE(USE_HAMLIB, 0)
+            AC_DEFINE(USE_HAMLIB, 0, [Set to 1 if we are using hamlib, 0 otherwise])
         fi
     else # $ac_cv_want_hamlib is yes
         if test "x$ac_cv_hamlib" = "xno"; then
             AC_MSG_NOTICE([--with-hamlib was given, but test for hamlib failed])
         else
-            AC_DEFINE(USE_HAMLIB, 1)
+            AC_DEFINE(USE_HAMLIB, 1, [Set to 1 if we are using hamlib, 0 otherwise])
         fi
         PKG_CHECK_MODULES(HAMLIB, hamlib >= 1.2.4) # for the error message
     fi

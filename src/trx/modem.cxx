@@ -295,8 +295,8 @@ void modem::wfid_send(long int symbol)
 		wfid_outbuf[i] = 0.0;
 		sym = symbol;
 		for (j = 0; j < NUMCOLS * progdefaults.videowidth; j++) {
-			if (sym & 1 == 1)
-				wfid_outbuf[i] += (msk & 1 == 1 ? -1 : 1 ) * sin(wfid_w[j] * i)* wfid_txpulse[i];
+			if ((sym & 1) == 1)
+				wfid_outbuf[i] += ((msk & 1) == 1 ? -1 : 1 ) * sin(wfid_w[j] * i)* wfid_txpulse[i];
 			sym = sym >> 1;
 			msk = msk >> 1;
 		}

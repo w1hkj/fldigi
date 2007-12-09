@@ -5,6 +5,8 @@
 
 #include <config.h>
 
+#include <cstring>
+
 #include "log.h"
 
 static const char *lognames[] = {"RX", "TX"};

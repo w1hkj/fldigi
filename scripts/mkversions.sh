@@ -12,7 +12,7 @@ COMPILE_CFG="FIXME"
 COMPILE_DATE=`date`
 COMPILE_USER=`whoami`
 COMPILE_HOST=`hostname`
-COMPILER=`$CXX -v 2>&1 | grep version`
+COMPILER=`$CXX -v 2>&1 | tail -n 1 | tr -d \'\"`
 CFLAGS="$AM_CPPFLAGS $AM_CXXFLAGS"
 LDFLAGS="$LDADD"
 
