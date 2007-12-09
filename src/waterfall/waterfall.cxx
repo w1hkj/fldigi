@@ -862,8 +862,8 @@ void carrier_cb(Fl_Widget *w, void *v) {
 
 void qsy_cb(Fl_Widget *w, void *v)
 {
-        static vector<struct qrg_mode_t> qsy_stack;
-        struct qrg_mode_t m = { -1, -1, 0 };
+        static vector<qrg_mode_t> qsy_stack;
+        qrg_mode_t m;
 
         if (Fl::event_button() != FL_RIGHT_MOUSE) {
                 // store
@@ -1023,7 +1023,7 @@ void btnRev_cb(Fl_Widget *w, void *v) {
 
 void btnMem_cb(Fl_Widget *, void *menu_event)
 {
-	static std::vector<struct qrg_mode_t> qrg_list;
+	static std::vector<qrg_mode_t> qrg_list;
         enum { SELECT, APPEND, REPLACE, REMOVE, CLEAR };
         int op = SELECT, elem = 0;
 
@@ -1054,7 +1054,7 @@ void btnMem_cb(Fl_Widget *, void *menu_event)
                 }
         }
 
-        struct qrg_mode_t m;
+        qrg_mode_t m;
         switch (op) {
         case SELECT:
                 m = qrg_list[elem];

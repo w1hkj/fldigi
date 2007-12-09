@@ -24,6 +24,7 @@
 // ----------------------------------------------------------------------------
 
 #include <config.h>
+#include <iosfwd>
 
 #include "globals.h"
 #include "modem.h"
@@ -82,3 +83,14 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 
 	{ MODE_ANALYSIS, &anal_modem, "ANALYSIS", "Freq Analysis", "" }
 };
+
+std::ostream& operator<<(std::ostream& s, const qrg_mode_t& m)
+{
+	return s << m.rfcarrier << ' ' << m.rmode << ' ' << m.carrier << ' ' << m.mode;
+
+}
+
+std::istream& operator>>(std::istream& s, qrg_mode_t& m)
+{
+	return s >> m.rfcarrier >> m.rmode >> m.carrier >> m.mode;
+}

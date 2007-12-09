@@ -3,18 +3,19 @@ version 1.0107
 header_name {.h} 
 code_name {.cxx}
 decl {\#include <config.h>} {} 
+
 decl {\#include "rigsupport.h"} {} 
 
 Function {rig_dialog()} {open
 } {
   Fl_Window {} {
-    label {Rig Controller} open selected
-    xywh {667 282 390 80} type Double box DOWN_BOX color 23
+    label {Rig Controller} open
+    xywh {667 292 390 100} type Double box DOWN_BOX color 23
     code0 {\#include <stdlib.h>} visible
   } {
     Fl_Box FreqDisp {
       label 9
-      xywh {5 29 253 44} box DOWN_BOX
+      xywh {4 29 253 44} box DOWN_BOX
       code0 {\#include "FreqControl.h"}
       code1 {extern int movFreq();}
       code2 {o->setCallBack(movFreq);}
@@ -24,40 +25,45 @@ Function {rig_dialog()} {open
     Fl_Browser FreqSelect {
       callback {if (FreqSelect->value())
 selectFreq();}
-      tooltip {Select operating frequency} xywh {284 5 100 70} type Hold box DOWN_BOX labelfont 4 labelsize 12 textfont 4
+      tooltip {Select operating frequency} xywh {278 5 108 90} type Hold box DOWN_BOX labelfont 4 labelsize 12 textfont 4
     }
     Fl_Group opMODE {
-      callback {setMode();} open
-      xywh {69 5 85 20} box DOWN_BOX color 7
+      callback {setMode();} open selected
+      xywh {69 5 96 20} box DOWN_BOX color 7
       code0 {\#include "combo.h"}
       class Fl_ComboBox
     } {}
     Fl_Group opBW {
       callback {setBW();} open
-      xywh {165 5 85 20} box DOWN_BOX color 7
+      xywh {170 5 85 20} box DOWN_BOX color 7
       code0 {\#include "combo.h"}
       class Fl_ComboBox
     } {}
     Fl_Button btnAddFreq {
       label {@|>}
       callback {addFreq();}
-      tooltip {Add to list} xywh {261 6 20 20} box UP_BOX labelsize 10
+      tooltip {Add to list} xywh {257 6 20 20} box UP_BOX labelsize 10
     }
     Fl_Button btnDelFreq {
       label {@1+}
       callback {delFreq();}
-      tooltip {Delete from list} xywh {261 30 20 20} box UP_BOX labelsize 10
+      tooltip {Delete from list} xywh {257 30 20 20} box UP_BOX labelsize 10
     }
     Fl_Button btnClearList {
       label {@-1square}
       callback {clearList()}
-      tooltip {Clear list} xywh {261 54 20 20} box UP_BOX labelsize 10
+      tooltip {Clear list} xywh {257 54 20 20} box UP_BOX labelsize 10
     }
     Fl_Button btnRCclose {
       label Close
       callback {closeRigDialog();}
-      xywh {6 5 50 20} box UP_BOX
+      xywh {4 5 50 20} box UP_BOX 
       code0 {extern void closeRigDialog();}
+    }
+    Fl_Adjuster adjFreq {
+      callback {FreqDisp->value(o->value());
+FreqDisp->do_callback();}
+      tooltip {Click and drag to adjust frequency (1000, 100, 10 Hz)} xywh {4 75 253 20} step 10
     }
   }
 } 

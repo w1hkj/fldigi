@@ -99,12 +99,6 @@ enum WFmode {
 enum WFspeed {FAST = 1, NORMAL = 2, SLOW = 8};
 //enum WFspeed {NORMAL = 2, SLOW = 8};
 
-struct qrg_mode_t {
-	long long rfcarrier;
-	int carrier;
-	trx_mode mode;
-};
-
 class WFdisp : public Fl_Widget {
 public:
 

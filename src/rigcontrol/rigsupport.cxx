@@ -10,6 +10,11 @@
 
 #include <config.h>
 
+#include <vector>
+#include <map>
+#include <algorithm>
+#include <iterator>
+
 #include "rigdialog.h"
 #include "rigsupport.h"
 #include "rigxml.h"
@@ -24,39 +29,41 @@ using namespace std;
 Fl_Double_Window *rigcontrol = (Fl_Double_Window *)0;
 string windowTitle;
 
-#define LISTSIZE 1000
-long int freqlist[LISTSIZE];
-int  numinlist = 0;
+vector<qrg_mode_t> freqlist;
 
 #if USE_HAMLIB
-const char *szmodes[] = {
-	"AM",
-	"USB",
-	"LSB",
-	"CW", "CWR",
-	"FM",
-	"RTTY", "RTTYR", 
-	0};
-rmode_t modes[] = {
-	RIG_MODE_AM,
-	RIG_MODE_USB,
-	RIG_MODE_LSB,
-	RIG_MODE_CW, RIG_MODE_CWR,
-	RIG_MODE_FM,
-	RIG_MODE_RTTY, RIG_MODE_RTTYR
+struct rmode_name_t {
+	rmode_t mode;
+	const char *name;
+} modes[] = {
+	{ RIG_MODE_NONE, "NONE" },
+	{ RIG_MODE_AM, "AM" },
+	{ RIG_MODE_CW, "CW" },
+	{ RIG_MODE_USB, "USB" },
+	{ RIG_MODE_LSB, "LSB" },
+	{ RIG_MODE_RTTY, "RTTY" },
+	{ RIG_MODE_FM, "FM" },
+	{ RIG_MODE_WFM, "WFM" },
+	{ RIG_MODE_CWR, "CWR" },
+	{ RIG_MODE_RTTYR, "RTTYR" },
+	{ RIG_MODE_AMS, "AMS" },
+	{ RIG_MODE_PKTLSB, "PKTLSB" },
+	{ RIG_MODE_PKTUSB, "PKTUSB" },
+	{ RIG_MODE_PKTFM, "PKTFM" },
+	{ RIG_MODE_ECSSUSB, "ECSSUSB" },
+	{ RIG_MODE_ECSSLSB, "ECSSLSB" },
+	{ RIG_MODE_FAX, "FAX" },
+	{ RIG_MODE_SAM, "SAM" },
+	{ RIG_MODE_SAL, "SAL" },
+	{ RIG_MODE_SAH, "SAH" }
 };
-int nummodes = 8;
+
+map<string, rmode_t> mode_nums;
+map<rmode_t, string> mode_names;
 
 void selMode(rmode_t m)
 {
-	int i;
-	for (i = 0; i < nummodes; i++)
-		if (modes[i] == m)
-			break;
-	if (i == nummodes)
-		return;
-	if (opMODE)
-		opMODE->value(szmodes[i]);
+	opMODE->value(mode_names[m].c_str());
 }
 
 void selFreq(long int f)
@@ -64,9 +71,7 @@ void selFreq(long int f)
 	if (FreqDisp)
 		FreqDisp->value(f);
 }
-
-#endif
-
+#endif // USE_HAMLIB
 
 void initOptionMenus()
 {
@@ -77,7 +82,7 @@ void initOptionMenus()
 		pMD = &lmodes;
 	else if (lmodeCMD.empty() == false)
 		pMD = &lmodeCMD;
-	
+
 	if (pMD) {
 		MD = pMD->begin();
 		while (MD != pMD->end()) {
@@ -97,7 +102,7 @@ void initOptionMenus()
 		pBW = &lbws;
 	else if (lbwCMD.empty() == false)
 		pBW = &lbwCMD;
-	
+
 	if (pBW) {
 		bw = pBW->begin();
 		while (bw != pBW->end()) {
@@ -111,78 +116,72 @@ void initOptionMenus()
 		opBW->hide();
 }
 
-void sortList() {
-	if (!numinlist) return;
-	long int temp;
-	for (int i = 0; i < numinlist - 1; i++)
-		for (int j = i + 1; j < numinlist; j++)
-			if (freqlist[i] > freqlist[j]) {
-					temp = freqlist[i];
-					freqlist[i] = freqlist[j];
-					freqlist[j] = temp;
-			}
+void clearList()
+{
+	freqlist.clear();
+	FreqSelect->clear();
 }
 
-void clearList() {
-	if (!numinlist) return;
-	for (int i = 0; i < LISTSIZE; i++)
-		freqlist[i] = 0;
+void updateSelect()
+{
+	if (freqlist.size() == 0)
+		return;
 
 	FreqSelect->clear();
-	numinlist = 0;
-}
-
-void updateSelect() {
-	char szFREQ[20];
-	if (!numinlist) return;
-	sortList();
-	FreqSelect->clear();
-	for (int n = 0; n < numinlist; n++) {
-		sprintf(szFREQ, "%9.3f", freqlist[n] / 1000.0);
-		FreqSelect->add (szFREQ);
+	char freq[20];
+	for (size_t i = 0; i < freqlist.size(); i++) {
+		snprintf(freq, sizeof(freq), "%9.3f", freqlist[i].rfcarrier / 1000.0);
+		FreqSelect->add(freq);
 	}
 }
 
-void addtoList(long val) {
-	freqlist[numinlist] = val;
-	numinlist++;
+void addtoList(long val)
+{
+	qrg_mode_t m;
+
+	m.rfcarrier = val;
+	m.rmode = opMODE->value();
+	if (active_modem) {
+		m.carrier = active_modem->get_freq();
+		m.mode = active_modem->get_mode();
+	}
+	freqlist.push_back(m);
+	sort(freqlist.begin(), freqlist.end());
 }
 
 bool readFreqList()
 {
-	long int freq;
-	string freqfname = HomeDir;
-	freqfname.append("frequencies.txt");
-	ifstream freqfile(freqfname.c_str(), ios::in);
-	if (freqfile) {
-		while (!freqfile.eof()) {
-			freq = 0;
-			freqfile >> freq;
-			if (freq > 0)
-				addtoList(freq);
-		}
-		freqfile.close();
-		updateSelect();
-		if (numinlist) {
-			FreqDisp->value(freqlist[0]);
-			return true;
-		}
+	ifstream freqfile((HomeDir + "frequencies2.txt").c_str());
+	if (!freqfile)
+		return false;
+
+	string line;
+	qrg_mode_t m;
+	while (!getline(freqfile, line).eof()) {
+		if (line[0] == '#')
+			continue;
+		istringstream is(line);
+		is >> m;
+		freqlist.push_back(m);
 	}
-	return false;
+	updateSelect();
+
+	return freqlist.size();
 }
 
 void saveFreqList()
 {
-    if (!numinlist) 
+	if (freqlist.empty())
 		return;
-	string freqfname = HomeDir;
-	freqfname.append("frequencies.txt");
-	ofstream freqfile(freqfname.c_str(), ios::out);
-	if (freqfile) {
-		for (int i = 0; i < numinlist; i++)
-			freqfile << freqlist[i] << endl;
-		freqfile.close();
-	}
+
+	ofstream freqfile((HomeDir + "frequencies2.txt").c_str());
+	if (!freqfile)
+		return;
+	copy(freqlist.begin(), freqlist.end(),
+	     ostream_iterator<qrg_mode_t>(cout, "\n"));
+	freqfile << "# rfcarrier rig_mode carrier mode\n";
+	copy(freqlist.begin(), freqlist.end(),
+	     ostream_iterator<qrg_mode_t>(freqfile, "\n"));
 }
 
 void buildlist()
@@ -190,7 +189,6 @@ void buildlist()
 	if (readFreqList() == true)
 		return;
 	Fl::lock();
-	for (int n = 0; n < 100; n++) {freqlist[n] = 0;}
 	addtoList (1807000L);
 	addtoList (10135000L);
 	addtoList (21070000L);
@@ -208,62 +206,80 @@ void buildlist()
 	addtoList (3662000L);
 	addtoList (7030000L);
 	updateSelect();
-	FreqDisp->value(freqlist[0]);
+	FreqDisp->value(freqlist[0].rfcarrier);
 	Fl::unlock();
 }
 
-void setMode() {
+void setMode()
+{
 #if USE_HAMLIB
 	if (progdefaults.chkUSEHAMLIBis)
-		hamlib_setmode(modes[opMODE->index()-1]);
+		hamlib_setmode(mode_nums[opMODE->value()]);
 	else
-#endif		
-		rigCAT_setmode (opMODE->value());
+#endif
+		rigCAT_setmode(opMODE->value());
 }
 
-void setBW() {
+void setBW()
+{
 	rigCAT_setwidth (opBW->value());
 }
 
-int movFreq() {
+int movFreq()
+{
 	long int f;
 	f = FreqDisp->value();
+	adjFreq->value(f);
 #if USE_HAMLIB
 	if (progdefaults.chkUSEHAMLIBis)
 		hamlib_setfreq(f);
 	else
-#endif		
+#endif
 		rigCAT_setfreq(f);
 	return 0;
 }
-	
-void selectFreq() {
-	int n = FreqSelect->value();
-	if (!n) return;
-	n--;
-	FreqDisp->value(freqlist[n]);
+
+void selectFreq()
+{
+	int n = FreqSelect->value() - 1;
+
+	if (freqlist[n].rmode != "NONE") {
+#if USE_HAMLIB
+		if (progdefaults.chkUSEHAMLIBis)
+			hamlib_setmode(mode_nums[freqlist[n].rmode]);
+		else
+#endif
+			rigCAT_setmode(freqlist[n].rmode);
+	}
+
+	if (freqlist[n].mode != NUM_MODES) {
+		if (freqlist[n].mode != active_modem->get_mode())
+			init_modem(freqlist[n].mode);
+		active_modem->set_freq(freqlist[n].carrier);
+	}
+
+	FreqDisp->value(freqlist[n].rfcarrier);
 	movFreq();
 }
 
-void delFreq() {
-	if (FreqSelect->value()) {
-		int n = FreqSelect->value() - 1;
-		for (int i = n; i < numinlist; i ++)
-			freqlist[i] = freqlist[i+1];
-		freqlist[numinlist - 1] = 0;
-		numinlist--;
+void delFreq()
+{
+	int v = FreqSelect->value() - 1;
+
+	if (v > 0) {
+		freqlist.erase(freqlist.begin() + v);
 		updateSelect();
 	}
 }
 
-void addFreq() {
+void addFreq()
+{
 	long freq = FreqDisp->value();
-	if (!freq) return;
-	for (int n = 0; n < numinlist; n++) 
-		if (freq == freqlist[n]) return;
-	addtoList(freq);
-	updateSelect();
-}	
+	if (freq) {
+		addtoList(freq);
+		updateSelect();
+	}
+}
 
 
 bool init_Xml_RigDialog()
@@ -281,10 +297,11 @@ bool init_Hamlib_RigDialog()
 {
 	opBW->hide();
 	opMODE->clear();
-	const char **p;
-	p = szmodes;
-	while (*p) 
-		opMODE->add(*p++);
+	for (size_t i = 0; i < sizeof(modes)/sizeof(modes[0]); i++) {
+		mode_nums[modes[i].name] = modes[i].mode;
+		mode_names[modes[i].mode] = modes[i].name;
+		opMODE->add(modes[i].name);
+	}
 	clearList();
 	buildlist();
 	rigcontrol->label("Hamlib Controller");
@@ -299,27 +316,3 @@ Fl_Double_Window *createRigDialog()
 	w->xclass(PACKAGE_NAME);
 	return w;
 }
-
-/*
-void configColor()
-{
-	uchar red, green, blue;
-	{
-		FreqDisp->GetONCOLOR(red,green,blue);
-		char *title = "LED on color";
-		if (fl_color_chooser(title, red, green, blue)) {
-			FreqDisp->SetONCOLOR( red, green, blue);
-		}
-	}
-	{
-		FreqDisp->GetOFFCOLOR(red,green,blue);
-		char *title = "LED off color";
-		if (fl_color_chooser(title, red, green, blue)) {
-			FreqDisp->SetOFFCOLOR( red, green, blue);
-		}
-	}
-}
-
-
-
-*/

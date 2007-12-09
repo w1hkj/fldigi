@@ -407,9 +407,9 @@ loop:
 
 		if (freqok && freq && (freq != hamlib_freq)) {
 			hamlib_freq = freq;
-			FL_LOCK();
+			FL_LOCK_D();
 				FreqDisp->value(hamlib_freq);
-			FL_UNLOCK();
+			FL_UNLOCK_D();
 			wf->rfcarrier(hamlib_freq);
 		}
 		
