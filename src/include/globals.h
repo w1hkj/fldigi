@@ -28,6 +28,10 @@
 
 #include <stdint.h>
 
+#include <stdint.h>
+
+#include <cstdlib>
+
 enum state_t {
 	STATE_PAUSE = 0,
 	STATE_RX,
@@ -91,6 +95,7 @@ enum {
 
 	NUM_MODES
 };
+
 typedef intptr_t trx_mode;
 
 struct mode_info_t {

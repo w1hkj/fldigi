@@ -92,7 +92,6 @@ cw::cw() : modem()
 	frequency = progdefaults.CWsweetspot;
 	tx_frequency = get_txfreq_woffset();
 	risetime = progdefaults.CWrisetime;
-//	keyshape = new double[KNUM];
 	
 	samplerate = CWSampleRate;
 	fragmentsize = CWMaxSymLen;

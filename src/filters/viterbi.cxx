@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <cassert>
 
 #include "viterbi.h"
 #include "misc.h"
@@ -40,7 +41,7 @@ viterbi::viterbi(int k, int poly1, int poly2)
 	_chunksize = 8;
 	nstates = 1 << (k - 1);
 	
-	output = new int[outsize];
+	assert (output = new int[outsize]);
 
 	for (int i = 0; i < outsize; i++) {
 		output[i] = parity(poly1 & i) | (parity(poly2 & i) << 1);
@@ -49,8 +50,8 @@ viterbi::viterbi(int k, int poly1, int poly2)
 //	printf("\n");
 	
 	for (int i = 0; i < PATHMEM; i++) {
-		metrics[i] = new int[nstates];
-		history[i] = new int[nstates];
+		assert (metrics[i] = new int[nstates]);
+		assert (history[i] = new int[nstates]);
 		sequence[i] = 0;
 		for (int j = 0; j < nstates; j++)
 			metrics[i][j] = history[i][j] = 0;
@@ -205,7 +206,7 @@ encoder::encoder(int k, int poly1, int poly2)
 {
 	int size = 1 << k;	/* size of the output table */
 
-	output = new int[size];
+	assert (output = new int[size]);
 // output contains 2 bits in positions 0 and 1 describing the state machine
 // for each bit delay, ie: for k = 7 there are 128 possible state pairs.
 // the modulo-2 addition for polynomial 1 is in bit 0
