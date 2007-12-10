@@ -52,7 +52,7 @@ static void cb_btnRCclose(Fl_Button*, void*) {
 Fl_Adjuster *adjFreq=(Fl_Adjuster *)0;
 
 static void cb_adjFreq(Fl_Adjuster* o, void*) {
-  FreqDisp->value(o->value());
+    FreqDisp->value(static_cast<long>(o->value()));
 FreqDisp->do_callback();
 }
 

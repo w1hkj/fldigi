@@ -61,7 +61,7 @@ selectFreq();}
       code0 {extern void closeRigDialog();}
     }
     Fl_Adjuster adjFreq {
-      callback {FreqDisp->value(o->value());
+      callback {FreqDisp->value(static_cast<long>(o->value()));
 FreqDisp->do_callback();}
       tooltip {Click and drag to adjust frequency (1000, 100, 10 Hz)} xywh {4 75 253 20} step 10
     }
