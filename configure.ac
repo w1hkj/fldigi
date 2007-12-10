@@ -18,7 +18,7 @@ AC_PROG_CC
 # Checks for header files.
 AC_HEADER_STDC
 AC_HEADER_DIRENT
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h memory.h netdb.h netinet/in.h stdint.h stdlib.h string.h strings.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h termios.h unistd.h values.h])
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h memory.h netdb.h netinet/in.h stdint.h stdlib.h string.h strings.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h termios.h unistd.h values.h execinfo.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
@@ -82,10 +82,14 @@ AC_ARG_ENABLE([debug],
                esac],
                [ac_cv_debug=no])
 if test "x$ac_cv_debug" = "xyes"; then
+    if test "x$GXX" = "xyes"; then
+        RDYNAMIC=-rdynamic
+    fi
     CXXFLAGS="-O0 -ggdb3 -Wall"
     AC_MSG_NOTICE([debugging enabled; overriding CXXFLAGS])
 fi
 AM_CONDITIONAL([ENABLE_DEBUG], [test "x$ac_cv_debug" = "xyes"])
+AC_SUBST([RDYNAMIC])
 
 ###########################
 # TLS flag

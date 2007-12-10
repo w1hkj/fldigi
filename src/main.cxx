@@ -34,6 +34,8 @@
 #include <sys/utsname.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <exception>
+#include <signal.h>
 
 #include <FL/Fl_Shared_Image.H>
 #if USE_PORTAUDIO
@@ -63,6 +65,7 @@
 #include "log.h"
 
 #include "qrunner.h"
+#include "stacktrace.h"
 
 using namespace std;
 
@@ -106,7 +109,7 @@ qrunner *cbq[NUM_QRUNNER_THREADS];
 void arqchecks(void);
 void generate_option_help(void);
 int parse_args(int argc, char **argv, int& idx);
-void print_versions(void);
+void print_versions(std::ostream& s);
 
 int main(int argc, char ** argv)
 {
@@ -117,6 +120,11 @@ int main(int argc, char ** argv)
 		cbq[i] = new qrunner(1);
 		cbq[i]->attach();
 	}
+
+	set_unexpected(handle_unexpected);
+	set_terminate(diediedie);
+	signal(SIGSEGV, handle_signal);
+	signal(SIGILL, handle_signal);
 
 	fl_filename_expand(szHomedir, 119, "$HOME/.fldigi/");
 	HomeDir = szHomedir;
@@ -543,7 +551,7 @@ int parse_args(int argc, char **argv, int& idx)
 			exit(EXIT_SUCCESS);
 
 		case OPT_VERSION:
-			print_versions();
+			print_versions(cerr);
 			exit(EXIT_SUCCESS);
 
 		case '?':
@@ -557,46 +565,46 @@ int parse_args(int argc, char **argv, int& idx)
 	return 0;
 }
 
-void print_versions(void)
+void print_versions(std::ostream& s)
 {
-	cerr << PACKAGE_NAME << ' ' << PACKAGE_VERSION << "\n\nSystem: ";
+	s << PACKAGE_NAME << ' ' << PACKAGE_VERSION << "\n\nSystem: ";
         struct utsname u;
         if (uname(&u) != -1) {
-                cerr << u.sysname << ' ' << u.nodename
-                     << ' ' << u.release << ' ' << u.version << ' '
-                     << u.machine << '\n';
-        }
+		s << u.sysname << ' ' << u.nodename
+		  << ' ' << u.release << ' ' << u.version << ' '
+		  << u.machine << '\n';
+	}
 
 #include "versions.h"
 #ifdef HAVE_VERSIONS_H
-	cerr /*<< "\nConfigured with: " << COMPILE_CFG*/ << '\n'
-	     << "Built on " << COMPILE_DATE << " by " << COMPILE_USER
-	     << '@' << COMPILE_HOST << " with:\n"
-	     << ' ' << COMPILER << '\n'
-	     << " CFLAGS=" << CFLAGS << '\n'
-	     << " LDFLAGS=" << LDFLAGS << '\n';
+	s /*<< "\nConfigured with: " << COMPILE_CFG*/ << '\n'
+	    << "Built on " << COMPILE_DATE << " by " << COMPILE_USER
+	    << '@' << COMPILE_HOST << " with:\n"
+	    << ' ' << COMPILER << '\n'
+	    << " CFLAGS=" << CFLAGS << '\n'
+	    << " LDFLAGS=" << LDFLAGS << '\n';
 #endif // HAVE_VERSIONS_H
 
-	cerr << "Libraries:\n"
-	     << " FLTK " << FL_MAJOR_VERSION << '.' << FL_MINOR_VERSION << '.'
-	     << FL_PATCH_VERSION << '\n';
+	s << "Libraries:\n"
+	  << " FLTK " << FL_MAJOR_VERSION << '.' << FL_MINOR_VERSION << '.'
+	  << FL_PATCH_VERSION << '\n';
 
 #if USE_HAMLIB
-	cerr << ' ' << hamlib_version << '\n';
+	s << ' ' << hamlib_version << '\n';
 #endif
 
 #if USE_PORTAUDIO
-	cerr << ' ' << portaudio::System::versionText() << ' '
+	s << ' ' << portaudio::System::versionText() << ' '
 	     << portaudio::System::version() << '\n';
 #endif
 
 #if USE_SNDFILE
-        char sndfile_version[32];
-        sf_command(NULL, SFC_GET_LIB_VERSION, sndfile_version, sizeof(sndfile_version));
-        cerr << ' ' << sndfile_version << '\n';
+	char sndfile_version[32];
+	sf_command(NULL, SFC_GET_LIB_VERSION, sndfile_version, sizeof(sndfile_version));
+	s << ' ' << sndfile_version << '\n';
 #endif
 
 #ifdef src_get_version
-	cerr << ' ' << src_get_version() << '\n';
+	s << ' ' << src_get_version() << '\n';
 #endif
 }

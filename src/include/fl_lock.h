@@ -37,8 +37,7 @@
 #	define FL_UNLOCK(x) Fl::unlock(x)
 #	define FL_AWAKE(x)  Fl::awake(x)
 #else // debugging
-#	include <cstdio>
-	void pstack(FILE *log);
+#	include <stacktrace.h>
 
 #	ifndef NO_LOCKS
 #		define FL_LOCK(x)                                       \
@@ -56,7 +55,7 @@
                                 printf("I: lock in %s at %s:%d\n",      \
                                        __func__, __FILE__, __LINE__);   \
                         }                                               \
-                        pstack(stdout);                                 \
+                        pstack_maybe();                                 \
                         Fl::lock(x);                                    \
                 } while (0);
 

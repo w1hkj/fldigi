@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-//	stacktrace.cxx
+//	stacktrace.cxx: portable stack trace and error handlers
 //
 // Copyright (C) 2007
 //		Stelios Bounanos, M0GLD
@@ -21,30 +21,53 @@
 // ----------------------------------------------------------------------------
 
 #include <config.h>
-
-#include <cstdio>
+#include <iostream>
 #include <cstdlib>
-#include <dlfcn.h>
 
-void pstack(FILE *log)
+#if HAVE_EXECINFO_H
+#  include <execinfo.h>
+#endif
+
+#define MAX_STACK_FRAMES 64
+
+
+void pstack(int fd)
 {
-#if (defined(__i386__) || defined(__i486__) || defined(__i586__) || defined(__i686__))
-        if (!log || !getenv("FLDIGI_TRACE_LOCKS"))
-                return;
+#if HAVE_EXECINFO_H
+        void* stack[MAX_STACK_FRAMES];
 
-        register unsigned *ebp asm("ebp");
-        register unsigned *base = ebp;
+        backtrace_symbols_fd(stack, backtrace(stack, MAX_STACK_FRAMES), fd);
+#endif
+}
 
-        Dl_info dli;
+void pstack_maybe(void)
+{
+        static bool trace = getenv("TRACE_LOCKS");
 
-        fprintf(log, "\t");
-        while (base) {
-                dladdr((void *)*(base + 1), &dli);
-                fprintf(log, "%s@0x%08x ", dli.dli_fname, *(base + 1));
+        if (trace)
+                pstack(STDERR_FILENO);
+}
 
-                base = (unsigned *)*base;
-        }
-        fprintf(log, "\n");
-        fflush(log);
-#endif // x86
+void diediedie(void)
+{
+        std::cerr << "\n\nAborting " PACKAGE
+                     " due to a fatal error.\nPlease report this to "
+                     PACKAGE_BUGREPORT << '\n';
+        pstack(STDERR_FILENO);
+        extern void print_versions(std::ostream&);
+        print_versions(std::cerr << "\nVersion information:\n");
+        abort();
+}
+
+void handle_unexpected(void)
+{
+        std::cerr << "Uncaught exception. Not again!\n";
+        std::terminate();
+}
+
+// this may not give us anything useful, but we can try...
+void handle_signal(int s)
+{
+        std::cerr << "Caught signal " << s;
+        diediedie();
 }
