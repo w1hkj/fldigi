@@ -177,8 +177,6 @@ void saveFreqList()
 	ofstream freqfile((HomeDir + "frequencies2.txt").c_str());
 	if (!freqfile)
 		return;
-	copy(freqlist.begin(), freqlist.end(),
-	     ostream_iterator<qrg_mode_t>(cout, "\n"));
 	freqfile << "# rfcarrier rig_mode carrier mode\n";
 	copy(freqlist.begin(), freqlist.end(),
 	     ostream_iterator<qrg_mode_t>(freqfile, "\n"));
