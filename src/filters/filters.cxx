@@ -32,7 +32,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <cassert>
 
 #include "filters.h"
 
@@ -75,11 +74,11 @@ void C_FIR_filter::init(int len, int dec, double *itaps, double *qtaps) {
 		ibuffer[i] = qbuffer[i] = 0.0;
 	
 	if (itaps) {
-		assert (ifilter = new double[len]);
+            ifilter = new double[len];
 		for (int i = 0; i < len; i++) ifilter[i] = itaps[i];
 	}
 	if (qtaps) {
-		assert (qfilter = new double[len]);
+		qfilter = new double[len];
 		for (int i = 0; i < len; i++) qfilter[i] = qtaps[i];
 	}
 
@@ -98,7 +97,7 @@ double * C_FIR_filter::bp_FIR(int len, int hilbert, double f1, double f2)
 	double *fir;
 	double t, h, x;
 
-	assert (fir = new double[len]);
+	fir = new double[len];
 
 	for (int i = 0; i < len; i++) {
 		t = i - (len - 1.0) / 2.0;
@@ -264,7 +263,7 @@ int C_FIR_filter::Qrun (double &in, double &out) {
 Cmovavg::Cmovavg (int filtlen)
 {
 	len = filtlen;
-	assert (in = new double[len]);
+	in = new double[len];
 	empty = true;
 }
 
@@ -288,8 +287,8 @@ double Cmovavg::run(double a)
 		return a;
 	}
 	out = out - in[pint] + a;
-	in[pint++] = a;
-	pint %= len;
+	in[pint] = a;
+	if (++pint >= len) pint = 0;
 	return out / len;
 }
 
@@ -297,7 +296,7 @@ void Cmovavg::setLength(int filtlen)
 {
 	if (filtlen > len) {
 		if (in) delete [] in;
-		assert (in = new double[filtlen]);
+		in = new double[filtlen];
 	}
 	len = filtlen;
 	empty = true;
@@ -405,9 +404,9 @@ void Cmovavg::reset()
 
 sfft::sfft(int len, int _first, int _last)
 {
-	assert (vrot = new complex[len]);
-	assert (delay  = new complex[len]);
-	assert (bins     = new complex[len]);
+	vrot = new complex[len];
+	delay  = new complex[len];
+	bins     = new complex[len];
 	fftlen = len;
 	first = _first;
 	last = _last;

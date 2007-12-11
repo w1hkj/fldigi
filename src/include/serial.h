@@ -18,8 +18,6 @@
 
 using namespace std;
 
-#define bzero(b,len) memset(b,0,(size_t)(len))
-
 class Cserial  {
 public:
 	Cserial();

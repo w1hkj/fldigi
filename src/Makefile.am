@@ -18,16 +18,15 @@ SAMPLERATE_SRC = samplerate/common.h samplerate/fastest_coeffs.h \
 	samplerate/src_linear.c samplerate/src_sinc.c samplerate/src_zoh.c \
 	samplerate/srconfig.h
 HAMLIB_SRC = include/hamlib.h rigcontrol/hamlib.cxx include/rigclass.h rigcontrol/rigclass.cxx
-TRACE_SRC = misc/stacktrace.cxx
 
 # We distribute these but do not always compile them
-EXTRA_fldigi_SOURCES = $(SAMPLERATE_SRC) $(HAMLIB_SRC) $(TRACE_SRC)
+EXTRA_fldigi_SOURCES = $(SAMPLERATE_SRC) $(HAMLIB_SRC)
 
 fldigi_SOURCES =
 
 if ENABLE_DEBUG
   AM_CPPFLAGS += -UNDEBUG
-  fldigi_SOURCES += $(TRACE_SRC)
+  LDADD += @RDYNAMIC@
 else
   AM_CPPFLAGS += -DNDEBUG
 endif
@@ -160,6 +159,7 @@ fldigi_SOURCES += \
 	include/rtty.h \
 	include/serial.h \
 	include/sound.h \
+	include/stacktrace.h \
 	include/status.h \
 	include/testmodem.h \
 	include/threads.h \
@@ -195,6 +195,7 @@ fldigi_SOURCES += \
 	misc/pskmail.cxx \
 	misc/qrzcall.cxx \
 	misc/qrzlib.cxx \
+	misc/stacktrace.cxx \
 	misc/status.cxx \
 	misc/threads.cxx \
 	misc/timeops.cxx \

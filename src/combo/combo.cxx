@@ -199,7 +199,7 @@ void Fl_ComboBox::readonly()
 void Fl_ComboBox::value( const char *s )
 {
 	int i;
-	if (listtype & FL_COMBO_UNIQUE_NOCASE == FL_COMBO_UNIQUE_NOCASE) {
+	if ((listtype & FL_COMBO_UNIQUE_NOCASE) == FL_COMBO_UNIQUE_NOCASE) {
 		for (i = 0; i < listsize; i++) {
 			if (strcasecmp (s, datalist[i]->s) == 0)
 				break;
@@ -240,8 +240,8 @@ void Fl_ComboBox::add( const char *s, void * d)
     Brwsr = new Fl_PopBrowser(0, 0, width, height, R);
   }
 // test for uniqueness of entry if required
-  if (listtype & FL_COMBO_UNIQUE == FL_COMBO_UNIQUE) {
-    if (listtype & FL_COMBO_UNIQUE_NOCASE == FL_COMBO_UNIQUE_NOCASE) {
+  if ((listtype & FL_COMBO_UNIQUE) == FL_COMBO_UNIQUE) {
+    if ((listtype & FL_COMBO_UNIQUE_NOCASE) == FL_COMBO_UNIQUE_NOCASE) {
       for (int i = 0; i < listsize; i++) {
         if (strcasecmp (s, datalist[i]->s) == 0)
 	  return;

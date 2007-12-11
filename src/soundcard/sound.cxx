@@ -260,43 +260,45 @@ cSoundOSS::cSoundOSS(const char *dev ) {
 		std::cout << e.what()
 			 << " <" << device.c_str()
 			 << ">" << std::endl;
-    }
+	}
 
+	int err;
 	try {
-		int err;
 		snd_buffer	= new float [2*SND_BUF_LEN];
 		src_buffer	= new float [2*SND_BUF_LEN];
-		cbuff 		= new unsigned char [4 * SND_BUF_LEN];
-		if (!snd_buffer || !src_buffer || !cbuff)
-			throw "Cannot create libsamplerate buffers";
-		for (int i = 0; i < 2*SND_BUF_LEN; i++)
-			snd_buffer[i] = src_buffer[i] = 0.0;
-		for (int i = 0; i < 4 * SND_BUF_LEN; i++)
-			cbuff[i] = 0;
+		cbuff		= new unsigned char [4 * SND_BUF_LEN];
+	}
+	catch (const std::bad_alloc& e) {
+		cerr << "Cannot allocate libsamplerate buffers\n";
+		throw;
+	}
+	for (int i = 0; i < 2*SND_BUF_LEN; i++)
+		snd_buffer[i] = src_buffer[i] = 0.0;
+	for (int i = 0; i < 4 * SND_BUF_LEN; i++)
+		cbuff[i] = 0;
 
+	try {
 		tx_src_data = new SRC_DATA;
 		rx_src_data = new SRC_DATA;
-		if (!tx_src_data || !rx_src_data)
-			throw "Cannot create libsamplerate data structures";
-
-		rx_src_state = src_new(SRC_SINC_FASTEST, 2, &err);
-		if (rx_src_state == 0)
-			throw src_strerror(err);
-
-		tx_src_state = src_new(SRC_SINC_FASTEST, 2, &err);
-		if (tx_src_state == 0)
-			throw src_strerror(err);
-
-		rx_src_data->src_ratio = 1.0/(1.0 + rxppm/1e6);
-		src_set_ratio ( rx_src_state, 1.0/(1.0 + rxppm/1e6));
-
-		tx_src_data->src_ratio = 1.0 + txppm/1e6;
-		src_set_ratio ( tx_src_state, 1.0 + txppm/1e6);
 	}
-	catch (SndException){
-		exit(1);
-	};
+	catch (const std::bad_alloc& e) {
+		cerr << "Cannot create libsamplerate data structures\n";
+		throw;
+	}
 
+	rx_src_state = src_new(SRC_SINC_FASTEST, 2, &err);
+	if (rx_src_state == 0)
+		throw SndException(src_strerror(err));
+
+	tx_src_state = src_new(SRC_SINC_FASTEST, 2, &err);
+	if (tx_src_state == 0)
+		throw SndException(src_strerror(err));
+
+	rx_src_data->src_ratio = 1.0/(1.0 + rxppm/1e6);
+	src_set_ratio ( rx_src_state, 1.0/(1.0 + rxppm/1e6));
+
+	tx_src_data->src_ratio = 1.0 + txppm/1e6;
+	src_set_ratio ( tx_src_state, 1.0 + txppm/1e6);
 }
 
 cSoundOSS::~cSoundOSS()
@@ -319,7 +321,7 @@ void cSoundOSS::setfragsize()
 		sndparam |= 0x00040000;
 
 	if (ioctl(device_fd, SNDCTL_DSP_SETFRAGMENT, &sndparam) < 0)
-		throw errno;
+		throw SndException(errno);
 }
 
 int cSoundOSS::Open(int md, int freq)
@@ -652,16 +654,25 @@ cSoundPA::cSoundPA(const char *dev)
           frames_per_buffer(paFramesPerBufferUnspecified), req_sample_rate(0),
           dev_sample_rate(0), fbuf(0)
 {
-        rx_src_data = new SRC_DATA;
-        tx_src_data = new SRC_DATA;
-        if (!rx_src_data || !tx_src_data)
-                throw SndException("Cannot create libsamplerate data structures");
+        try {
+                rx_src_data = new SRC_DATA;
+                tx_src_data = new SRC_DATA;
+        }
+        catch (const std::bad_alloc& e) {
+                cerr << "Cannot create libsamplerate data structures\n";
+                throw;
+        }
 
-        snd_buffer = new float[2 * SND_BUF_LEN];
-        src_buffer = new float[2 * SND_BUF_LEN];
-        fbuf = new float[2 * SND_BUF_LEN];
-        if (!snd_buffer || !src_buffer || !fbuf)
-                throw SndException("Cannot allocate libsamplerate buffers");
+        try {
+                snd_buffer = new float[2 * SND_BUF_LEN];
+                src_buffer = new float[2 * SND_BUF_LEN];
+                fbuf = new float[2 * SND_BUF_LEN];
+        }
+        catch (const std::bad_alloc& e) {
+                cerr << "Cannot allocate libsamplerate buffers\n";
+                throw;
+        }
+
         memset(snd_buffer, 0, 2 * SND_BUF_LEN);
         memset(src_buffer, 0, 2 * SND_BUF_LEN);
         memset(fbuf, 0, 2 * SND_BUF_LEN);
@@ -840,7 +851,7 @@ int cSoundPA::write_stereo(double *bufleft, double *bufright, int count)
 bool cSoundPA::full_duplex(void)
 {
         extern bool pa_allow_full_duplex;
-        return pa_allow_full_duplex && idev->isFullDuplexDevice() ||
+        return (pa_allow_full_duplex && idev->isFullDuplexDevice()) ||
                 idev->hostApi().typeId() == paJACK;
 }
 

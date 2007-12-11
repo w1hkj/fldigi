@@ -28,7 +28,7 @@
 #include "ringbuffer.h"
 // #include <iostream>
 // #include <cstdio>
-// extern void pstack(FILE *log);
+// #include <stacktrace.h>
 
 #define likely(x)   __builtin_expect(!!(x), 1)
 #define unlikely(x) __builtin_expect(!!(x), 0)
@@ -125,7 +125,7 @@ public:
                 // we assume a no-throw ctor!
                 new (wvec[0].buf) func_wrap<T>(t);
                 // std::cout << time(0) << " push " << typeid(*reinterpret_cast<func_base *>(wvec[0].buf)).name() << std::endl;
-                //pstack("push-stack");
+                //pstack(1);
                 jack_ringbuffer_write_advance(rb[q], blocksize);
 
                 return true;

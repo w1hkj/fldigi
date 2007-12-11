@@ -28,6 +28,7 @@
 #endif
 
 #include <stdexcept>
+#include <cstring>
 #include <boost/bind.hpp>
 #include <boost/bind/protect.hpp>
 

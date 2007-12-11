@@ -387,13 +387,14 @@ FL_UNLOCK_D();
 //		FL_AWAKE();
 		cursormoved = false;
 	}
-	if (dispcnt == 0)
+	if (dispcnt == 0) {
 		if (srate == 8000)
 			dispcnt = wfspeed;
 		else if (srate == 11025)
 			dispcnt = wfspeed * 4 / 3;
 		else
 			dispcnt = wfspeed * 2;
+	}
 	--dispcnt;
 }
 
