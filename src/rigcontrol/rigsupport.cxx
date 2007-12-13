@@ -248,6 +248,7 @@ void selectFreq()
 		else
 #endif
 			rigCAT_setmode(freqlist[n].rmode);
+		opMODE->value(freqlist[n].rmode.c_str());
 	}
 
 	if (freqlist[n].mode != NUM_MODES) {
