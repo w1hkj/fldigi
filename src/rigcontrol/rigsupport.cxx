@@ -124,10 +124,10 @@ void clearList()
 
 void updateSelect()
 {
+	FreqSelect->clear();
 	if (freqlist.size() == 0)
 		return;
 
-	FreqSelect->clear();
 	char freq[20];
 	for (size_t i = 0; i < freqlist.size(); i++) {
 		snprintf(freq, sizeof(freq), "%9.3f", freqlist[i].rfcarrier / 1000.0);
@@ -265,7 +265,7 @@ void delFreq()
 {
 	int v = FreqSelect->value() - 1;
 
-	if (v > 0) {
+	if (v >= 0) {
 		freqlist.erase(freqlist.begin() + v);
 		updateSelect();
 	}

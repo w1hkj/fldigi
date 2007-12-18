@@ -10,7 +10,7 @@ Fl_Browser *FreqSelect=(Fl_Browser *)0;
 
 static void cb_FreqSelect(Fl_Browser*, void*) {
   if (FreqSelect->value())
-selectFreq();
+(Fl::event_state() & FL_SHIFT) ? delFreq() : selectFreq();
 }
 
 Fl_ComboBox *opMODE=(Fl_ComboBox *)0;
@@ -115,7 +115,7 @@ Fl_Double_Window* rig_dialog() {
       o->labelsize(10);
       o->callback((Fl_Callback*)cb_btnAddFreq);
     }
-    { Fl_Button* o = btnDelFreq = new Fl_Button(257, 30, 20, 20, "@1+");
+    { Fl_Button* o = btnDelFreq = new Fl_Button(257, 30, 20, 20, "@-11+");
       o->tooltip("Delete from list");
       o->labelsize(10);
       o->callback((Fl_Callback*)cb_btnDelFreq);

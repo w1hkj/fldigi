@@ -24,7 +24,7 @@ Function {rig_dialog()} {open
     }
     Fl_Browser FreqSelect {
       callback {if (FreqSelect->value())
-selectFreq();}
+(Fl::event_state() & FL_SHIFT) ? delFreq() : selectFreq();}
       tooltip {Select operating frequency} xywh {278 5 108 90} type Hold box DOWN_BOX labelfont 4 labelsize 12 textfont 4
     }
     Fl_Group opMODE {
@@ -45,7 +45,7 @@ selectFreq();}
       tooltip {Add to list} xywh {257 6 20 20} box UP_BOX labelsize 10
     }
     Fl_Button btnDelFreq {
-      label {@1+}
+      label {@-11+}
       callback {delFreq();}
       tooltip {Delete from list} xywh {257 30 20 20} box UP_BOX labelsize 10
     }
