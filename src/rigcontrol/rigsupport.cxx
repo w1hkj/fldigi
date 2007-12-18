@@ -227,7 +227,6 @@ int movFreq()
 {
 	long int f;
 	f = FreqDisp->value();
-	adjFreq->value(f);
 #if USE_HAMLIB
 	if (progdefaults.chkUSEHAMLIBis)
 		hamlib_setfreq(f);

@@ -129,8 +129,6 @@ void cFreqControl::updatevalue()
 		v /= 10;
 	}
 	damage();
-	if (adjFreq)
-		adjFreq->value(val);
 }
 
 void cFreqControl::SetONOFFCOLOR( Fl_Color ONcolor, Fl_Color OFFcolor)

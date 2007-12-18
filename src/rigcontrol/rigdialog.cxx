@@ -49,20 +49,13 @@ static void cb_btnRCclose(Fl_Button*, void*) {
   closeRigDialog();
 }
 
-Fl_Adjuster *adjFreq=(Fl_Adjuster *)0;
-
-static void cb_adjFreq(Fl_Adjuster* o, void*) {
-    FreqDisp->value(static_cast<long>(o->value()));
-FreqDisp->do_callback();
-}
-
 Fl_Double_Window* rig_dialog() {
   Fl_Double_Window* w;
-  { Fl_Double_Window* o = new Fl_Double_Window(390, 100, "Rig Controller");
+  { Fl_Double_Window* o = new Fl_Double_Window(390, 80, "Rig Controller");
     w = o;
     o->box(FL_DOWN_BOX);
     o->color((Fl_Color)23);
-    { cFreqControl* o = FreqDisp = new cFreqControl(4, 29, 253, 44, "9");
+    { cFreqControl* o = FreqDisp = new cFreqControl(4, 31, 253, 44, "9");
       o->box(FL_DOWN_BOX);
       o->color(FL_BACKGROUND_COLOR);
       o->selection_color(FL_BACKGROUND_COLOR);
@@ -75,7 +68,7 @@ Fl_Double_Window* rig_dialog() {
       o->setCallBack(movFreq);
       o->SetONOFFCOLOR( FL_RED, FL_BLACK);
     }
-    { Fl_Browser* o = FreqSelect = new Fl_Browser(278, 5, 108, 90);
+    { Fl_Browser* o = FreqSelect = new Fl_Browser(278, 5, 108, 70);
       o->tooltip("Select operating frequency");
       o->type(2);
       o->box(FL_DOWN_BOX);
@@ -110,7 +103,7 @@ Fl_Double_Window* rig_dialog() {
       o->when(FL_WHEN_RELEASE);
       o->end();
     }
-    { Fl_Button* o = btnAddFreq = new Fl_Button(257, 6, 20, 20, "@|>");
+    { Fl_Button* o = btnAddFreq = new Fl_Button(257, 5, 20, 20, "@|>");
       o->tooltip("Add to list");
       o->labelsize(10);
       o->callback((Fl_Callback*)cb_btnAddFreq);
@@ -127,11 +120,6 @@ Fl_Double_Window* rig_dialog() {
     }
     { Fl_Button* o = btnRCclose = new Fl_Button(4, 5, 50, 20, "Close");
       o->callback((Fl_Callback*)cb_btnRCclose);
-    }
-    { Fl_Adjuster* o = adjFreq = new Fl_Adjuster(4, 75, 253, 20);
-      o->tooltip("Click and drag to adjust frequency (1000, 100, 10 Hz)");
-      o->step(10);
-      o->callback((Fl_Callback*)cb_adjFreq);
     }
     o->end();
   }

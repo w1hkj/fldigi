@@ -19,7 +19,5 @@ extern Fl_Button *btnDelFreq;
 extern Fl_Button *btnClearList;
 extern void closeRigDialog();
 extern Fl_Button *btnRCclose;
-#include <FL/Fl_Adjuster.H>
-extern Fl_Adjuster *adjFreq;
 Fl_Double_Window* rig_dialog();
 #endif
