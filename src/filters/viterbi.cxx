@@ -28,8 +28,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
-#include <cassert>
-#include <new>
 
 #include "viterbi.h"
 #include "misc.h"
@@ -42,8 +40,8 @@ viterbi::viterbi(int k, int poly1, int poly2)
 	_chunksize = 8;
 	nstates = 1 << (k - 1);
 	
-	assert (output = new(std::nothrow) int[outsize]);
-
+	output = new int[outsize];
+	
 	for (int i = 0; i < outsize; i++) {
 		output[i] = parity(poly1 & i) | (parity(poly2 & i) << 1);
 //		printf("%5d", output[i]);
@@ -51,8 +49,8 @@ viterbi::viterbi(int k, int poly1, int poly2)
 //	printf("\n");
 	
 	for (int i = 0; i < PATHMEM; i++) {
-		assert (metrics[i] = new(std::nothrow) int[nstates]);
-		assert (history[i] = new(std::nothrow) int[nstates]);
+		metrics[i] = new int[nstates];
+		history[i] = new int[nstates];
 		sequence[i] = 0;
 		for (int j = 0; j < nstates; j++)
 			metrics[i][j] = history[i][j] = 0;
@@ -207,7 +205,7 @@ encoder::encoder(int k, int poly1, int poly2)
 {
 	int size = 1 << k;	/* size of the output table */
 
-	assert (output = new(std::nothrow) int[size]);
+	output = new int[size];
 // output contains 2 bits in positions 0 and 1 describing the state machine
 // for each bit delay, ie: for k = 7 there are 128 possible state pairs.
 // the modulo-2 addition for polynomial 1 is in bit 0

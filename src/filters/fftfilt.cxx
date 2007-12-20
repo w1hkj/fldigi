@@ -14,8 +14,6 @@
 
 #include <stdlib.h>
 #include <math.h>
-#include <cassert>
-#include <new>
 
 #include "fftfilt.h"
 
@@ -23,12 +21,12 @@
 fftfilt::fftfilt(double f1, double f2, int len)
 {
 	filterlen = len;
-	assert (fft = new(std::nothrow) Cfft(filterlen));
-	assert (ift = new(std::nothrow) Cfft(filterlen));
+	fft = new Cfft(filterlen);
+	ift = new Cfft(filterlen);
 
-	assert (ovlbuf		= new(std::nothrow) complex[filterlen/2]);
-	assert (filter		= new(std::nothrow) complex[filterlen]);
-	assert (filtdata	= new(std::nothrow) complex[filterlen]);
+	ovlbuf		= new complex[filterlen/2];
+	filter		= new complex[filterlen];
+	filtdata	= new complex[filterlen];
 	
 	for (int i = 0; i < filterlen; i++)
 		filter[i].re = filter[i].im =
@@ -56,7 +54,7 @@ void fftfilt::create_filter(double f1, double f2)
 	int len = filterlen / 2 + 1;
 	double t, h, x, it;
 	Cfft *tmpfft;
-	assert (tmpfft = new(std::nothrow) Cfft(filterlen));
+	tmpfft = new Cfft(filterlen);
 	
 // initialize the filter to zero	
 	for (int i = 0; i < filterlen; i++)
