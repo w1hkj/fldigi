@@ -35,7 +35,9 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add("<MYQTH>\tmy qth");
 	w->add("<MYRST>\tmy RST");
 	w->add("<LDT>\tLocal datetime");
+	w->add("<ILDT>\tLocal datetime in iso-8601");
 	w->add("<ZDT>\tZulu datetime");
+	w->add("<IZDT>\tZulu datetime in iso-8601");
 	w->add("<ID>\tMode ID'r");
 	w->add("<TEXT>\tVideo text");
 	w->add("<CWID>\tCW identifier");

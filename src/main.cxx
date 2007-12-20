@@ -36,6 +36,7 @@
 #include <dirent.h>
 #include <exception>
 #include <signal.h>
+#include <locale.h>
 
 #include <FL/Fl_Shared_Image.H>
 #if USE_PORTAUDIO
@@ -125,6 +126,8 @@ int main(int argc, char ** argv)
 	set_terminate(diediedie);
 	signal(SIGSEGV, handle_signal);
 	signal(SIGILL, handle_signal);
+
+	setlocale(LC_ALL, "");
 
 	fl_filename_expand(szHomedir, 119, "$HOME/.fldigi/");
 	HomeDir = szHomedir;

@@ -211,7 +211,6 @@ fldigi_SOURCES += \
 	rigcontrol/ptt.cxx \
 	rigcontrol/rigMEM.cxx \
 	rigcontrol/rigdialog.cxx \
-	rigcontrol/rigdialog.h \
 	rigcontrol/rigio.cxx \
 	rigcontrol/rigsupport.cxx \
 	rigcontrol/rigxml.cxx \

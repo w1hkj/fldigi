@@ -1597,4 +1597,55 @@ bool QuerySqlOnOff() {
 }
 */
 
+void change_modem_param(int state)
+{
+	int d;
+	if ( !((d = Fl::event_dy()) || (d = Fl::event_dx())) )
+		return;
 
+	if (state & (FL_META | FL_ALT)) {
+		if (d > 0)
+			active_modem->searchUp();
+		else if (d < 0)
+			active_modem->searchDown();
+		return;
+	}
+	if (!(state & (FL_CTRL | FL_SHIFT)))
+		return; // suggestions?
+
+	Fl_Valuator *val = 0;
+	if (state & FL_CTRL) {
+		switch (active_modem->get_mode()) {
+		case MODE_BPSK31: case MODE_QPSK31: case MODE_PSK63: case MODE_QPSK63:
+		case MODE_PSK125: case MODE_QPSK125: case MODE_PSK250: case MODE_QPSK250:
+			val = mailserver ? cntServerOffset : cntSearchRange;
+			break;
+		case MODE_FELDHELL:
+			val = sldrHellBW;
+			break;
+		case MODE_CW:
+			val = sldrCWbandwidth;
+			break;
+		default:
+			return;
+		}
+	}
+	else if (state & FL_SHIFT)
+		val = sldrSquelch;
+
+	val->value(val->clamp(val->increment(val->value(), -d)));
+	bool changed_save = progdefaults.changed;
+	val->do_callback();
+	progdefaults.changed = changed_save;
+	if (val == cntServerOffset || val == cntSearchRange)
+		active_modem->set_sigsearch(SIGSEARCH);
+	else if (val == sldrSquelch) // sldrSquelch gives focus to TextWidget
+		wf->take_focus();
+
+	char msg[60];
+	if (val != sldrSquelch)
+		snprintf(msg, sizeof(msg), "%s = %2.0f Hz", val->label(), val->value());
+	else
+		snprintf(msg, sizeof(msg), "Squelch = %2.0f %%", val->value());
+	put_status(msg, 2);
+}

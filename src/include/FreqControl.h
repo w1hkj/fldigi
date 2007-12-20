@@ -70,8 +70,10 @@ public:
 	};
     void SetONOFFCOLOR( Fl_Color, Fl_Color);
 	void setCallBack (int (*cbf)() ){ cbFunc = cbf;};
+	void do_callback() { if (cbFunc) cbFunc(); }
+	int handle(int event);
 private:
-	Fl_Button      		*Digit[MAX_DIGITS];
+	Fl_Repeat_Button      		*Digit[MAX_DIGITS];
 	static const char	 	*Label[];
 	int					mult[MAX_DIGITS];
 	Fl_Box				*decbx;

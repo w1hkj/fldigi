@@ -15,20 +15,15 @@
 	#include "hamlib.h"
 #endif
 
-using namespace std;
-
 extern Fl_Double_Window *rigcontrol;
 extern string windowTitle;
 extern Cserial rigio;
 
-extern long int freqlist[];
 extern void initOptionMenus();
 extern void setMode();
 extern void setBW();
-extern void selMode(int);
 extern void selBW(int);
 extern void selFreq(long int);
-extern void sortList();
 extern void clearList();
 extern void updateSelect();
 extern void addtoList(long val);

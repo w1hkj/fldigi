@@ -38,7 +38,9 @@ void pMYNAME(string &, size_t &);
 void pMYQTH(string &, size_t &);
 void pMYRST(string &, size_t &);
 void pLDT(string &, size_t &);
+void pILDT(string &, size_t &);
 void pZDT(string &, size_t &);
+void pIZDT(string &, size_t &);
 void pID(string &, size_t &);
 void pTEXT(string &, size_t &);
 void pCWID(string &, size_t &);
@@ -65,7 +67,9 @@ MTAGS mtags[] = {
 {"<MYQTH>",		pMYQTH},
 {"<MYRST>",		pMYRST},
 {"<LDT>",		pLDT},
+{"<ILDT>",		pILDT},
 {"<ZDT>",		pZDT},
+{"<IZDT>",		pIZDT},
 {"<ID>",		pID},
 {"<TEXT>",		pTEXT},
 {"<CWID>",		pCWID},
@@ -156,6 +160,17 @@ void pLDT(string &s, size_t &i)
 	s.replace( i, 5, szDt);
 }
 
+void pILDT(string &s, size_t &i)
+{
+	char szDt[80];
+	time_t tmptr;
+	tm sTime;
+	time (&tmptr);
+	localtime_r(&tmptr, &sTime);
+	mystrftime(szDt, 79, "%Y-%m-%d %H:%M:%S%z", &sTime);
+	s.replace( i, 6, szDt);
+}
+
 void pZDT(string &s, size_t &i)
 {
 	char szDt[80];
@@ -165,6 +180,17 @@ void pZDT(string &s, size_t &i)
 	gmtime_r(&tmptr, &sTime);
 	mystrftime(szDt, 79, "%x %H:%M %Z", &sTime);
 	s.replace( i, 5, szDt);
+}
+
+void pIZDT(string &s, size_t &i)
+{
+	char szDt[80];
+	time_t tmptr;
+	tm sTime;
+	time (&tmptr);
+	gmtime_r(&tmptr, &sTime);
+	mystrftime(szDt, 79, "%Y-%m-%d %H:%M:%SZ", &sTime);
+	s.replace( i, 6, szDt);
 }
 
 void pID(string &s, size_t &i)
@@ -401,8 +427,10 @@ string mtext =
 //           %H is ho with leading 0\n\
 //           %M is minute with leading 0\n\
 //           %Z is abbreviated time zone ie: EDT or GMT\n\
-// <ZDT>  GMT date time Zone\n\
+// <ILDT> local date and time in iso-8601 format: %Y-%m-%d %H:%M:%S%z\n\
+// <ZDT>  UTC date time Zone\n\
 //     format : %x %H:%M %Z\n\
+// <IZDT> UTC date and time in iso-8601 format: %Y-%m-%d %H:%M:%SZ\n\
 // <FREQ>  my frequency\n\
 // <ID>  send Mode Idenfier - waterfall script\n\
 // <TEXT> send video text - waterfall script\n\

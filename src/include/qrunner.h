@@ -27,6 +27,7 @@
 #	include <iostream>
 #endif
 
+#include <errno.h>
 #include <stdexcept>
 #include <cstring>
 #include <boost/bind.hpp>

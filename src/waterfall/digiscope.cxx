@@ -328,38 +328,41 @@ void Digiscope::draw()
 
 int Digiscope::handle(int event)
 {
-	if (Fl::event_inside( this )) {
-		if (event == FL_RELEASE) {
-			if (_mode == RTTY || _mode == XHAIRS) {
-				if (_mode == RTTY) {
-					_mode = XHAIRS;
-					return 1;
-				}
-				_mode = RTTY;
-				return 1;
-			}
-			if (_mode == DOMDATA || _mode == DOMWF) {
-				if (_mode == DOMDATA) {
-					_mode = DOMWF;
-					return 1;
-				}
-				_mode = DOMDATA;
-				return 1;
-			}
-			if (_mode == WWV ) {
-				int xpos = Fl::event_x() - x();
-				int ypos = Fl::event_y() - y();
-				int evb = Fl::event_button();
-				if (evb == 1)
-					wwv_modem->set1(xpos,w());//ypos);
-//					std::cout << "#1 " << xpos << ", " << ypos << std::endl; fflush(stdout);
-				if (evb == 3)
-					wwv_modem->set2(xpos,ypos);
-//					std::cout << "#2 " << xpos << ", " << ypos << std::endl; fflush(stdout);
-				return 1;
-			}
+	if (!Fl::event_inside(this))
+		return 0;
+
+	switch (event) {
+	case FL_RELEASE:
+		switch (_mode) {
+		case RTTY:
+			_mode = XHAIRS;
+			break;
+		case XHAIRS:
+			_mode = RTTY;
+			break;
+		case DOMDATA:
+			_mode = DOMWF;
+			break;
+		case DOMWF:
+			_mode = DOMDATA;
+			break;
+		case WWV:
+			event = Fl::event_button();
+			if (event == FL_LEFT_MOUSE)
+				wwv_modem->set1(Fl::event_x() - x(), w());
+			else if (event == FL_RIGHT_MOUSE)
+				wwv_modem->set2(Fl::event_x() - x(), Fl::event_y() - y());
+			break;
+		default:
+			break;
 		}
 		return 1;
+	case FL_MOUSEWHEEL:
+		change_modem_param(FL_CTRL);
+		break;
+	default:
+		break;
 	}
-	return 0;
+
+	return 1;
 }

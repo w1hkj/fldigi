@@ -924,9 +924,9 @@ static void *rigCAT_loop(void *args)
 		
 		if (freq && freq != llFreq) {
 			llFreq = freq;
-			FL_LOCK();
+			FL_LOCK_D();
 				FreqDisp->value(freq);
-			FL_UNLOCK();
+			FL_UNLOCK_D();
 #ifndef RIGCATTEST
 			wf->rfcarrier(freq);
 #endif

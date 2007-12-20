@@ -27,6 +27,7 @@
 #define _GLOBALS_H
 
 #include <stdint.h>
+#include <string>
 
 enum state_t {
 	STATE_PAUSE = 0,
@@ -101,8 +102,25 @@ struct mode_info_t {
 	const char *name;
 	const char *pskmail_name;
 };
-
 extern const struct mode_info_t mode_info[NUM_MODES];
 
+class qrg_mode_t
+{
+public:
+	long long rfcarrier;
+	std::string rmode;
+	int carrier;
+	trx_mode mode;
+
+	qrg_mode_t() : rfcarrier(0), rmode("NONE"), carrier(0), mode(NUM_MODES) { }
+	qrg_mode_t(long long rfc_, std::string rm_, int c_, trx_mode m_)
+                : rfcarrier(rfc_), rmode(rm_), carrier(c_), mode(m_) { }
+	bool operator<(const qrg_mode_t& rhs) const
+        {
+		return rfcarrier < rhs.rfcarrier;
+	}
+};
+std::ostream& operator<<(std::ostream& s, const qrg_mode_t& m);
+std::istream& operator>>(std::istream& s, qrg_mode_t& m);
 
 #endif

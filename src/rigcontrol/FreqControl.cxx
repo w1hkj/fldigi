@@ -24,7 +24,10 @@
 
 #include <config.h>
 
+#include "qrunner.h"
+
 #include "FreqControl.h"
+#include "rigdialog.h"
 
 const char *cFreqControl::Label[10] = {
 	"0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
@@ -34,7 +37,7 @@ void cFreqControl::IncFreq (int nbr) {
 	v = val + mult[nbr];
 	if (v <= maxVal) val = v;
 	updatevalue();
-	if (cbFunc) (*cbFunc)();
+	do_callback();
 }
 
 void cFreqControl::DecFreq (int nbr) {
@@ -43,7 +46,7 @@ void cFreqControl::DecFreq (int nbr) {
 	if (v >= minVal)
  	  val = v;
 	updatevalue();
-	if (cbFunc) (*cbFunc)();
+	do_callback();
 }
 
 void cbSelectDigit (Fl_Widget *btn, void * nbr)
@@ -82,7 +85,7 @@ cFreqControl::cFreqControl(int x, int y, int w, int h, const char *lbl):
 	for (int n = 0; n < nD; n++) {
 		xpos = fcFirst + (nD - 1 - n) * fcWidth + 2;
 		if (n < 3) xpos += pw;
-		Digit[n] = new Fl_Button (
+		Digit[n] = new Fl_Repeat_Button (
 			xpos,
 			fcTop + 2,
 			fcWidth,
@@ -169,6 +172,51 @@ void cFreqControl::SetOFFCOLOR (uchar r, uchar g, uchar b)
 void cFreqControl::value(long lv)
 {
   val = lv;
-  updatevalue();
+  QUEUE(&cFreqControl::updatevalue, this); //updatevalue();
 }
 
+int cFreqControl::handle(int event)
+{
+	if (!Fl::event_inside(this))
+		return Fl_Group::handle(event);
+
+	switch (event) {
+		int d;
+	case FL_KEYBOARD:
+		switch (Fl::event_key()) {
+		case FL_Left:
+			d = -1;
+			break;
+		case FL_Down:
+			d = -10;
+			break;
+		case FL_Right:
+			d = 1;
+			break;
+		case FL_Up:
+			d = 10;
+			break;
+		default:
+			return 1;
+		}
+		val += d;
+		updatevalue();
+		do_callback();
+		break;
+	case FL_MOUSEWHEEL:
+		if ( !((d = Fl::event_dy()) || (d = Fl::event_dx())) )
+			return 1;
+
+		for (int i = 0; i < nD; i++) {
+			if (Fl::event_inside(Digit[i])) {
+				d > 0 ? DecFreq(i) : IncFreq(i);
+				break;
+			}
+		}
+		break;
+	case FL_PUSH:
+		return Fl_Group::handle(event);
+	}
+
+	return 1;
+}
