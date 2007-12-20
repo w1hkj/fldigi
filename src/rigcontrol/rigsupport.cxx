@@ -14,6 +14,7 @@
 #include <map>
 #include <algorithm>
 #include <iterator>
+#include <cstring>
 
 #include "rigdialog.h"
 #include "rigsupport.h"
@@ -140,7 +141,8 @@ void addtoList(long val)
 	qrg_mode_t m;
 
 	m.rfcarrier = val;
-	m.rmode = opMODE->value();
+	if (strlen(opMODE->value()))
+		m.rmode = opMODE->value();
 	if (active_modem) {
 		m.carrier = active_modem->get_freq();
 		m.mode = active_modem->get_mode();
