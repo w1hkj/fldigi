@@ -1,5 +1,11 @@
 Change Log:
 
+2.06  1) source code fixes for 64 bit compilers
+      2) LDT / ZDT local settings are now recognized in macro expansion
+      3) additional mouse wheel function: when mouse is over the digiscope
+         display the mouse wheel (no key modifier) performs the alter
+         PSK search range the same as the 2.05.3.c change.
+      
 2.05  1) Converted entire make system over to the GNU autoconf / automake
          format.  See the INSTALL file for additional information
       2) Corrected various minor bugs
