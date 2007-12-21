@@ -353,7 +353,7 @@ static void *hamlib_loop(void *args)
 	SET_THREAD_ID(RIGCTL_TID);
 
 	long int freq = 0L;
-	rmode_t  numode = RIG_MODE_USB;
+	rmode_t  numode = RIG_MODE_NONE;
 	bool freqok = false, modeok = false;
 	
 	for (;;) {
@@ -387,7 +387,7 @@ loop:
 		if (hamlib_exit)
 			break;
 			
-		if (need_mode) {
+		if (need_mode && hamlib_rmode == numode) {
 			try {
 				numode = xcvr->getMode(hamlib_pbwidth);
 				modeok = true;
@@ -442,8 +442,8 @@ loop:
 		rigcontrol->hide();
 	wf->USB(true);
 	wf->rfcarrier(atoi(cboBand->value())*1000L);
-	wf->setQSY(0);
 	FL_LOCK();
+	wf->setQSY(0);
 	cboBand->show();
 	btnSideband->show();
 	activate_rig_menu_item(false);
