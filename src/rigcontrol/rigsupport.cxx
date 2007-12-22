@@ -205,6 +205,7 @@ void buildlist()
 	addtoList (3500000L);
 	addtoList (3662000L);
 	addtoList (7030000L);
+	addtoList (18100000L);
 	updateSelect();
 	FreqDisp->value(freqlist[0].rfcarrier);
 	Fl::unlock();
@@ -242,24 +243,22 @@ void selectFreq()
 {
 	int n = FreqSelect->value() - 1;
 
+	if (freqlist[n].rfcarrier > 0) {
+		FreqDisp->value(freqlist[n].rfcarrier);
+		movFreq();
+	}
+
 	if (freqlist[n].rmode != "NONE") {
-#if USE_HAMLIB
-		if (progdefaults.chkUSEHAMLIBis)
-			hamlib_setmode(mode_nums[freqlist[n].rmode]);
-		else
-#endif
-			rigCAT_setmode(freqlist[n].rmode);
 		opMODE->value(freqlist[n].rmode.c_str());
+		setMode();
 	}
 
 	if (freqlist[n].mode != NUM_MODES) {
 		if (freqlist[n].mode != active_modem->get_mode())
-			init_modem(freqlist[n].mode);
-		active_modem->set_freq(freqlist[n].carrier);
+			init_modem_sync(freqlist[n].mode);
+		if (freqlist[n].carrier > 0)
+			active_modem->set_freq(freqlist[n].carrier);
 	}
-
-	FreqDisp->value(freqlist[n].rfcarrier);
-	movFreq();
 }
 
 void delFreq()
