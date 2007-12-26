@@ -1,10 +1,15 @@
 Change Log:
 
-2.06  1) source code fixes for 64 bit compilers
-      2) LDT / ZDT local settings are now recognized in macro expansion
-      3) additional mouse wheel function: when mouse is over the digiscope
-         display the mouse wheel (no key modifier) performs the alter
-         PSK search range the same as the 2.05.3.c change.
+2.06  1) Source code fixes for 64 bit compilers
+      2) New stacktrace code, used by default exception & signal handlers
+      3) LDT / ZDT: locale settings are now recognized in macro expansion.
+         New ILDT / IZDT macros to expand date in iso-8601 format
+      4) The rig control window's frequency list now stores rig mode, modem and
+         waterfall carrier. Hence, ~/.fldigi/frequencies.txt uses a new format
+      5) Additional mouse wheel function: when pointer is over the digiscope
+         display, the mouse wheel (no key modifier) alters the PSK AFC search
+         range, FeldHell filter BW, or CW filter BW
+      6) The Audio menu is now a submenu of Files
       
 2.05  1) Converted entire make system over to the GNU autoconf / automake
          format.  See the INSTALL file for additional information
