@@ -85,7 +85,6 @@ public:
         ~qrunner();
 
         void attach(void);
-        static void attach_cb(void *arg);
         void detach(void);
 
         template <typename F>
@@ -145,17 +144,15 @@ protected:
         int pfd[2];
         size_t npri;
         bool attached;
-        char rbuf[64];
 };
 
 
 extern qrunner *cbq[NUM_QRUNNER_THREADS];
 
 
-#define QUEUE QUEUE_ASYNC
+#define REQ REQ_ASYNC
 
-#define CMP_CB(...) __VA_ARGS__
-#define QUEUE_ASYNC(...)                                                \
+#define REQ_ASYNC(...)                                                  \
         do {                                                            \
                 if (GET_THREAD_ID() != FLMAIN_TID)                      \
                         cbq[GET_THREAD_ID()]->request(bind(__VA_ARGS__)); \
@@ -163,7 +160,7 @@ extern qrunner *cbq[NUM_QRUNNER_THREADS];
                         bind(__VA_ARGS__)();                            \
         } while (0)
 
-#define QUEUE_SYNC(...)                                                 \
+#define REQ_SYNC(...)                                                   \
         do {                                                            \
                 if (GET_THREAD_ID() != FLMAIN_TID)                      \
                         cbq[GET_THREAD_ID()]->request_sync(bind(__VA_ARGS__)); \
@@ -171,7 +168,7 @@ extern qrunner *cbq[NUM_QRUNNER_THREADS];
                         bind(__VA_ARGS__)();                            \
         } while (0)
 
-#define QUEUE_FLUSH()                                                   \
+#define REQ_FLUSH()                                                     \
         do {                                                            \
                 if (GET_THREAD_ID() != FLMAIN_TID)                      \
                         cbq[GET_THREAD_ID()]->request_sync(nop());      \

@@ -172,7 +172,7 @@ void cFreqControl::SetOFFCOLOR (uchar r, uchar g, uchar b)
 void cFreqControl::value(long lv)
 {
   val = lv;
-  QUEUE(&cFreqControl::updatevalue, this); //updatevalue();
+  REQ(&cFreqControl::updatevalue, this);
 }
 
 int cFreqControl::handle(int event)

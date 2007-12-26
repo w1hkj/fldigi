@@ -1202,7 +1202,7 @@ void put_Bandwidth(int bandwidth)
 void display_metric(double metric)
 {
 	FL_LOCK_D();
-	QUEUE(CMP_CB(static_cast<void (Fl_Progress::*)(float)>(&Fl_Progress::value), pgrsSquelch, metric)); //pgrsSquelch->value(metric);
+	REQ(static_cast<void (Fl_Progress::*)(float)>(&Fl_Progress::value), pgrsSquelch, metric);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }
@@ -1213,8 +1213,8 @@ void put_cwRcvWPM(double wpm)
 	int L = progdefaults.CWlowerlimit;
 	double dWPM = 100.0*(wpm - L)/(U - L);
 	FL_LOCK_D();
-	QUEUE(CMP_CB(static_cast<void (Fl_Progress::*)(float)>(&Fl_Progress::value), prgsCWrcvWPM, dWPM)); //prgsCWrcvWPM->value(dWPM);
-	QUEUE(CMP_CB(static_cast<int (Fl_Value_Output::*)(double)>(&Fl_Value_Output::value), valCWrcvWPM, (int)wpm)); //valCWrcvWPM->value((int)wpm);
+	REQ(static_cast<void (Fl_Progress::*)(float)>(&Fl_Progress::value), prgsCWrcvWPM, dWPM);
+	REQ(static_cast<int (Fl_Value_Output::*)(double)>(&Fl_Value_Output::value), valCWrcvWPM, (int)wpm);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }
@@ -1266,10 +1266,10 @@ void put_rx_char(unsigned int data)
 			if (last == '\r')
 				break;
 		case '\r':
-			QUEUE(CMP_CB(&ReceiveWidget::addchr, ReceiveText, '\n', style));
+			REQ(&ReceiveWidget::addchr, ReceiveText, '\n', style);
 			break;
 		default:
-			QUEUE(CMP_CB(&ReceiveWidget::addchr, ReceiveText, data, style));
+			REQ(&ReceiveWidget::addchr, ReceiveText, data, style);
 	}
 	last = data;
 
@@ -1295,7 +1295,7 @@ void put_sec_char( char chr )
 		if (strSecText.length() > 60)
 			strSecText.erase(0,1);
 		FL_LOCK_D();
-		QUEUE(CMP_CB(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), StatusBar, strSecText.c_str())); //StatusBar->label(strSecText.c_str());
+		REQ(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), StatusBar, strSecText.c_str());
 		FL_UNLOCK_D();
 		FL_AWAKE_D();
 	}
@@ -1313,13 +1313,13 @@ void put_status(const char *msg, double timeout)
 	m[sizeof(m) - 1] = '\0';
 
 	FL_LOCK_D();
-	QUEUE(CMP_CB(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), StatusBar, m)); // StatusBar->label(m);
+	REQ(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), StatusBar, m);
 	// While it is safe to call to use Fl::add_timeout without qrunner
 	// regardless of our caller's context, queuing ensures that clear_status_cb
 	// really gets called at least ``timeout'' seconds after the label is set.
 	if (timeout > 0 && !Fl::has_timeout(clear_status_cb)) { // clear after timeout
 		Fl::remove_timeout(clear_status_cb);
-		QUEUE(CMP_CB(&Fl::add_timeout, timeout, clear_status_cb, (void*)0));
+		REQ(&Fl::add_timeout, timeout, clear_status_cb, (void*)0);
 	}
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
@@ -1332,7 +1332,7 @@ void put_Status2(const char *msg)
 	m[sizeof(m) - 1] = '\0';
 
 	FL_LOCK_D();
-	QUEUE(CMP_CB(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), Status2, m)); //Status2->label(m);
+	REQ(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), Status2, m);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }
@@ -1344,7 +1344,7 @@ void put_Status1(const char *msg)
 	m[sizeof(m) - 1] = '\0';
 
 	FL_LOCK_D();
-	QUEUE(CMP_CB(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), Status1, m)); //Status1->label(m);
+	REQ(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), Status1, m);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }
@@ -1387,7 +1387,7 @@ void clear_StatusMessages()
 void put_MODEstatus(trx_mode mode)
 {
 	FL_LOCK_D();
-	QUEUE(CMP_CB(static_cast<void (Fl_Button::*)(const char *)>(&Fl_Button::label), MODEstatus, mode_info[mode].sname)); //MODEstatus->label(mode_names[mode]);
+	REQ(static_cast<void (Fl_Button::*)(const char *)>(&Fl_Button::label), MODEstatus, mode_info[mode].sname);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }
@@ -1425,7 +1425,7 @@ int get_tx_char(void)
 	case 'r': case 'R':
 		if (state != STATE_CTRL)
 			break;
-		QUEUE_SYNC(CMP_CB(&TransmitWidget::clear_sent, TransmitText));
+		REQ_SYNC(&TransmitWidget::clear_sent, TransmitText);
 		state = STATE_CHAR;
 		c = 3; // ETX
 		break;
@@ -1463,7 +1463,7 @@ void put_echo_char(unsigned int data)
 	int style = ReceiveWidget::XMIT;
 	if (asc == ascii2 && iscntrl(data))
 		style = ReceiveWidget::CTRL;
-	QUEUE(CMP_CB(&ReceiveWidget::addchr, ReceiveText, data, style));
+	REQ(&ReceiveWidget::addchr, ReceiveText, data, style);
 
 	if (Maillogfile)
 		Maillogfile->log_to_file(cLogfile::LOG_TX, ascii2[data & 0x7F]);

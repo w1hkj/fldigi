@@ -1060,7 +1060,7 @@ void btnMem_cb(Fl_Widget *, void *menu_event)
                 m = qrg_list[elem];
                 if (active_modem != *mode_info[m.mode].modem) {
                         init_modem_sync(m.mode);
-                        QUEUE_FLUSH();
+                        REQ_FLUSH();
                 }
                 if (m.rfcarrier && m.rfcarrier != wf->rfcarrier()) {
                         rigCAT_set_qsy(m.rfcarrier, m.carrier);

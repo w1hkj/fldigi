@@ -1143,7 +1143,7 @@ int TextEdit::nextChar()
 		if (xmtidx == buff.length()) return -1;
 	}
 	FL_LOCK_D();
-	QUEUE(CMP_CB(&TextEdit::update_xmit_text, this, xmtidx));
+	REQ(&TextEdit::update_xmit_text, this, xmtidx);
 	FL_UNLOCK_D();
 //    FL_AWAKE();
 	return (buff[xmtidx++]);

@@ -239,7 +239,7 @@ void mfsk::recvpic(complex z)
 		
 		if (color) {
 			pixelnbr = rgb + row + 3*col;
-			QUEUE(CMP_CB(&mfsk::updateRxPic, this, byte, pixelnbr)); //updateRxPic( byte, pixelnbr);
+			REQ(&mfsk::updateRxPic, this, byte, pixelnbr);
 			if (++col == picW) {
 				col = 0;
 				if (++rgb == 3) {
@@ -249,7 +249,7 @@ void mfsk::recvpic(complex z)
 			}
 		} else {
 			for (int i = 0; i < 3; i++)
-				QUEUE(CMP_CB(&mfsk::updateRxPic, this, byte, pixelnbr++)); //updateRxPic( byte, pixelnbr++ );
+				REQ(&mfsk::updateRxPic, this, byte, pixelnbr++);
 		}
 		picf = 0.0;
 
@@ -548,7 +548,7 @@ int mfsk::rx_process(const double *buf, int len)
 			if (counter++ == picturesize) {
 				counter = 0;
 				rxstate = RX_STATE_DATA;
-				// QUEUE_FLUSH();
+				// REQ_FLUSH();
 				put_status("");
 				string autosave_dir = HomeDir + "mfsk_pics/";
 				picRx->save_jpeg(autosave_dir.c_str());
@@ -678,7 +678,7 @@ void mfsk::sendpic(unsigned char *data, int len)
 
 	for (i = 0; i < len; i++) {
 		if (txstate == TX_STATE_PICTURE)
-			QUEUE(CMP_CB(&mfsk::updateTxPic, this, data[i])); //updateTxPic(data[i]);
+			REQ(&mfsk::updateTxPic, this, data[i]);
 		if (reverse)
 			f = get_txfreq_woffset() - bandwidth * (data[i] - 128) / 256.0;
 		else
@@ -791,7 +791,7 @@ int mfsk::tx_process()
 						sizeof(mfskmsg) - n, ", ", " left");
 				put_status(mfskmsg);
 			}
-			QUEUE_FLUSH();
+			REQ_FLUSH();
 
 			txstate = TX_STATE_DATA;
 			put_status("Send picture: done");

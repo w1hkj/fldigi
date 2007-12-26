@@ -103,7 +103,7 @@ void Digiscope::video(double *data, int len )
 		memcpy (&vidbuf[3*W*linecnt], vidline, 3*W * sizeof(unsigned char));
 	linecnt++;
 
-	QUEUE(CMP_CB(&Digiscope::redraw, this)); //redraw();
+	REQ(&Digiscope::redraw, this);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }
@@ -134,7 +134,7 @@ void Digiscope::data(double *data, int len, bool scale)
 			else
 				_buf[i] = 0.0;
 	}
-	QUEUE(CMP_CB(&Digiscope::redraw, this)); //redraw();
+	REQ(&Digiscope::redraw, this);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }
@@ -144,7 +144,7 @@ void Digiscope::phase(double ph, bool hl)
 	FL_LOCK_D();
 	_phase = ph;
 	_highlight = hl;
-	QUEUE(CMP_CB(&Digiscope::redraw, this)); //redraw();
+	REQ(&Digiscope::redraw, this);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }
@@ -155,7 +155,7 @@ void Digiscope::rtty(double flo, double fhi, double amp)
 	_flo = flo;
 	_fhi = fhi;
 	_amp = amp;
-	QUEUE(CMP_CB(&Digiscope::redraw, this)); //redraw();
+	REQ(&Digiscope::redraw, this);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }
@@ -176,7 +176,7 @@ void Digiscope::mode(scope_mode md)
 	vidline[3*W/2+2] = 0;
 	for (int i = 0; i < H; i++)
 		memcpy(&vidbuf[3*W*i], vidline, 3*W*sizeof(unsigned char) );
-	QUEUE(CMP_CB(&Digiscope::redraw, this)); //redraw();
+	REQ(&Digiscope::redraw, this);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }

@@ -186,9 +186,9 @@ void feld::FSKHELL_rx(complex z)
 	col_data[col_pointer + RxColumnLen] = vid;
 	col_pointer++;
 	if (col_pointer == RxColumnLen) {
-		QUEUE(CMP_CB(put_rx_data, col_data, col_data.size())); //put_rx_data(col_data, 2*RxColumnLen);
+		REQ(put_rx_data, col_data, col_data.size());
 		if (!halfwidth)
-			QUEUE(CMP_CB(put_rx_data, col_data, col_data.size())); //put_rx_data(col_data, 2*RxColumnLen);
+			REQ(put_rx_data, col_data, col_data.size());
 		col_pointer = 0;
 		for (int i = 0; i < RxColumnLen; i++)
 			col_data[i] = col_data[i + RxColumnLen];
@@ -235,9 +235,9 @@ void feld::rx(complex z)
 	col_pointer++;
 	if (col_pointer == RxColumnLen) {
 		if (metric > squelch || squelchon == false) {
-			QUEUE(CMP_CB(put_rx_data, col_data, col_data.size())); //put_rx_data(col_data, 2*RxColumnLen);
+			REQ(put_rx_data, col_data, col_data.size());
 			if (!halfwidth)
-				QUEUE(CMP_CB(put_rx_data, col_data, col_data.size())); //put_rx_data(col_data, 2*RxColumnLen);
+				REQ(put_rx_data, col_data, col_data.size());
 		}
 		col_pointer = 0;
 		for (int i = 0; i < RxColumnLen; i++)
