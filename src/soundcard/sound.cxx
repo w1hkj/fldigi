@@ -1080,29 +1080,4 @@ double cSoundPA::find_srate(void)
         return -1;
 }
 
-// Return smallest power of 2 greater than n
-uint32_t cSoundPA::ceil2(uint32_t n)
-{
-        --n;
-        n |= n >> 1;
-        n |= n >> 2;
-        n |= n >> 4;
-        n |= n >> 8;
-        n |= n >> 16;
-
-        return n + 1;
-}
-
-// Return biggest power of 2 less than n
-uint32_t cSoundPA::floor2(uint32_t n)
-{
-        n |= n >> 1;
-        n |= n >> 2;
-        n |= n >> 4;
-        n |= n >> 8;
-        n |= n >> 16;
-
-        return n - (n >> 1);
-}
-
 #endif // USE_PORTAUDIO

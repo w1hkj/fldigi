@@ -314,6 +314,14 @@ AM_CONDITIONAL([ENABLE_HAMLIB], [test "x$ac_cv_hamlib" = "xyes"])
 ###########################
 # output
 ###########################
+AH_TOP([
+#ifndef CONFIG_H_
+#define CONFIG_H_
+])
+AH_BOTTOM([
+#include "util.h"
+#endif /* CONFIG_H_ */
+])
 AC_CONFIG_FILES([Makefile src/Makefile])
 AC_OUTPUT
 

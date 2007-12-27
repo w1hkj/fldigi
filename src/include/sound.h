@@ -207,8 +207,6 @@ private:
         bool		full_duplex_device(const PaDeviceInfo* dev);
         void		adjust_stream(void);
         double		find_srate(void);
-        static uint32_t ceil2(uint32_t n);
-        static uint32_t floor2(uint32_t n);
 
 private:
         std::string	device;

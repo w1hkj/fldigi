@@ -755,8 +755,7 @@ void rigCAT_sendINIT()
 	fl_unlock(&rigCAT_mutex);
 }
 
-__attribute__((unused))
-static void show_error(const char * a, const char * b)
+unused__ static void show_error(const char * a, const char * b)
 {
 	string msg = a;
 	msg.append(": ");

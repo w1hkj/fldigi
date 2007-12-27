@@ -157,6 +157,7 @@ fldigi_SOURCES += \
 	include/rigio.h \
 	include/rigsupport.h \
 	include/rigxml.h \
+	include/ringbuffer.h \
 	include/rtty.h \
 	include/serial.h \
 	include/sound.h \
@@ -167,6 +168,7 @@ fldigi_SOURCES += \
 	include/throb.h \
 	include/timeops.h \
 	include/trx.h \
+	include/util.h \
 	include/versions.h.in \
 	include/viterbi.h \
 	include/waterfall.h \
@@ -200,14 +202,13 @@ fldigi_SOURCES += \
 	misc/status.cxx \
 	misc/threads.cxx \
 	misc/timeops.cxx \
+	misc/util.cxx \
 	olivia/olivia.cxx \
 	psk/psk.cxx \
 	psk/pskcoeff.cxx \
 	psk/pskvaricode.cxx \
 	qrunner/fqueue.h \
 	qrunner/qrunner.cxx \
-	qrunner/ringbuffer.c \
-	qrunner/ringbuffer.h \
 	rigcontrol/FreqControl.cxx \
 	rigcontrol/ptt.cxx \
 	rigcontrol/rigMEM.cxx \
