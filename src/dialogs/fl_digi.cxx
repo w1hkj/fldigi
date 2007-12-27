@@ -675,6 +675,7 @@ void cb_QRZ(Fl_Widget *b, void *)
 void status_cb(Fl_Widget *b, void *arg)
 {
         if (Fl::event_button() == FL_RIGHT_MOUSE) {
+				progdefaults.loadDefaults();
                 tabsConfigure->value(tabModems);
                 tabsModems->value(modem_config_tab);
                 dlgConfig->show();

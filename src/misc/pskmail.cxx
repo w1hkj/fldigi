@@ -24,18 +24,21 @@ bool pskmail_text_available = false;
 
 void ParseMode(string src)
 {
+	if (src.find("PTTTUNE") != string::npos) {
+		int msecs = 100;
+		if (src.length() > 7)
+			sscanf( src.substr(7, src.length() - 7).c_str(), "%d", &msecs);
+		push2talk->set(true);
+		MilliSleep(msecs);
+		push2talk->set(false);
+		return;
+	}
 	for (size_t i = 0; i < NUM_MODES; ++i) {
-		if (src.find(mode_info[i].pskmail_name) != string::npos)
-			init_modem(mode_info[i].mode);
-		else if (src.find("PTTTUNE") != string::npos) {
-			int msecs = 100;
-			if (src.length() > 7)
-				sscanf( src.substr(7, src.length() - 7).c_str(), "%d", &msecs);
-			push2talk->set(true);
-			MilliSleep(msecs);
-			push2talk->set(false);
-		}
-		break;
+		if (strlen(mode_info[i].pskmail_name) > 0) 
+			if (src.find(mode_info[i].pskmail_name) != string::npos) {
+				init_modem(mode_info[i].mode);
+				break;
+			}
 	}
 }
 
