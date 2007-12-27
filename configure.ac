@@ -96,18 +96,32 @@ AC_SUBST([RDYNAMIC])
 # TLS flag
 ###########################
 AC_ARG_ENABLE([tls],
-              AC_HELP_STRING([--disable-tls], [disable use of TLS]),
+              AC_HELP_STRING([--enable-tls], [enable use of TLS @<:@autodetect@:>@]),
               [case "${enableval}" in
-                yes|no) ac_cv_tls="${enableval}" ;;
-                *)      AC_MSG_ERROR([bad value "${withval}" for --disable-tls]) ;;
+                yes|no) ac_cv_want_tls="${enableval}" ;;
+                *)      AC_MSG_ERROR([bad value "${enableval}" for --enable-tls]) ;;
                esac],
-               [ac_cv_tls=yes])
-if test "x$ac_cv_tls" = "xyes"; then
-    AC_DEFINE(USE_TLS, 1, [Defined if we are using TLS])
-else
-    AC_DEFINE(USE_TLS, 0, [Defined if we are using TLS])
-fi
+               [ac_cv_want_tls=check])
 
+if test "x$ac_cv_want_tls" = "xno"; then
+    AC_DEFINE(USE_TLS, 0, [Defined if we are using TLS])
+    ac_cv_have_tls=no
+else
+    CHECK_TLS()
+    if test "x$ac_cv_want_tls" = "xcheck"; then
+        if test "x$ac_cv_have_tls" = "xyes"; then
+            AC_DEFINE(USE_TLS, 1, [Defined if we are using TLS])
+        else
+            AC_DEFINE(USE_TLS, 0, [Defined if we are using TLS])
+        fi
+    else # $ac_cv_want_tls is yes
+        if test "x$ac_cv_have_tls" = "xno"; then
+            AC_MSG_FAILURE([--enable-tls was given, but TLS is not supported])
+        else
+            AC_DEFINE(USE_TLS, 1, [Defined if we are using TLS])
+        fi
+    fi
+fi
 
 ###########################
 # bind
@@ -313,7 +327,7 @@ Configuration summary:
 
   Static linking ...................... $ac_cv_static
   Debugging ........................... $ac_cv_debug
-  TLS ................................. $ac_cv_tls
+  TLS ................................. $ac_cv_have_tls
 
   sndfile ............................. $ac_cv_sndfile
   PortAudio ........................... $ac_cv_portaudio
