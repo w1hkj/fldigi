@@ -86,6 +86,7 @@ if test "x$ac_cv_debug" = "xyes"; then
         RDYNAMIC=-rdynamic
     fi
     CXXFLAGS="-O0 -ggdb3 -Wall"
+    CFLAGS="$CXXFLAGS"
     AC_MSG_NOTICE([debugging enabled; overriding CXXFLAGS])
 fi
 AM_CONDITIONAL([ENABLE_DEBUG], [test "x$ac_cv_debug" = "xyes"])
