@@ -24,14 +24,23 @@
 #define QRUNNER_H_
 
 #ifndef NDEBUG
-#	include <iostream>
+#    include <iostream>
 #endif
 
 #include <errno.h>
 #include <stdexcept>
 #include <cstring>
-#include <boost/bind.hpp>
-#include <boost/bind/protect.hpp>
+
+#if HAVE_STD_BIND
+#   include <functional>
+    using std::bind;
+#elif HAVE_STD_TR1_BIND
+#   include <tr1/functional>
+    using std::tr1::bind;
+#else
+#   include <boost/bind.hpp>
+    using boost::bind;
+#endif
 
 #include "threads.h"
 #include "qrunner/fqueue.h"
@@ -48,66 +57,24 @@ private:
         std::string msg;
 };
 
-struct signal_after
+struct fsignal
 {
+        typedef void result_type;
         Fl_Mutex *m;
         Fl_Cond *c;
 
-        signal_after(Fl_Mutex *m_, Fl_Cond *c_) : m(m_), c(c_) { }
-        template <typename F>
-        void operator()(const F& f) const
+        fsignal(Fl_Mutex *m_, Fl_Cond *c_) : m(m_), c(c_) { }
+        void operator()(void) const
         {
-                f();
                 fl_lock(m);
                 fl_cond_signal(c);
                 fl_unlock(m);
         }
 };
 
-struct deadline
-{
-        struct timespec dl;
-
-        deadline(const struct timespec &dl_) : dl(dl_) { }
-        template <typename F>
-        void operator()(const F& f) const
-        {
-                struct timespec now;
-                if (clock_gettime(CLOCK_REALTIME, &now) == -1)
-                        throw qexception(errno);
-
-                if (dl > now)
-                        f();
-#ifndef NDEBUG
-                else
-                        std::cerr << "too late for event\n";
-#endif
-        }
-};
-
-#ifndef NDEBUG
-struct timer
-{
-        struct timespec t;
-
-        timer(const struct timespec &t_) : t(t_) { }
-        template <typename F>
-        void operator()(const F& f) const
-        {
-                struct timespec now;
-                if (clock_gettime(CLOCK_REALTIME, &now) == -1)
-                        throw qexception(errno);
-
-                struct timespec diff = now - t;
-                std::cout << "t: " << (double)diff.tv_sec + diff.tv_nsec/1e9 << '\n';
-
-                f();
-        }
-};
-#endif
-
 struct nop
 {
+        typedef void result_type;
         void operator()(void) const { }
 };
 
@@ -146,13 +113,17 @@ public:
                 if (!attached)
                         return request(f, pri);
 
+                for (;;) {
+                        if (request(f, pri))
+                                break;
+                        sched_yield();
+                }
                 Fl_Mutex m = PTHREAD_MUTEX_INITIALIZER;
                 Fl_Cond c = PTHREAD_COND_INITIALIZER;
-
+                fsignal s(&m, &c);
                 fl_lock(&m);
-                signal_after sa(&m, &c);
                 for (;;) {
-                        if (request(boost::bind<void>(sa, f), pri))
+                        if (request(s, pri))
                                 break;
                         sched_yield();
                 }
@@ -161,30 +132,6 @@ public:
 
                 return true;
         }
-
-        template <typename F>
-        bool request_dl(const F &f, double dtime, size_t pri = 0)
-        {
-                struct timespec now, dl;
-                if (clock_gettime(CLOCK_REALTIME, &now) == -1)
-                        throw qexception(errno);
-                dl = now + dtime;
-
-                deadline d(dl);
-                return request(boost::bind<void>(d, f), pri);
-        }
-
-#ifndef NDEBUG
-        template <typename F>
-        bool request_time(const F &f, size_t pri = 0)
-        {
-                struct timespec now;
-                if (clock_gettime(CLOCK_REALTIME, &now) == -1)
-                        throw qexception(errno);
-                timer t(now);
-                return request(boost::bind<void>(t, f), pri);
-        }
-#endif
 
         static void execute(int fd, void *arg);
         void flush(void);
@@ -211,28 +158,18 @@ extern qrunner *cbq[NUM_QRUNNER_THREADS];
 #define QUEUE_ASYNC(...)                                                \
         do {                                                            \
                 if (GET_THREAD_ID() != FLMAIN_TID)                      \
-                        cbq[GET_THREAD_ID()]->request(boost::bind(__VA_ARGS__)); \
+                        cbq[GET_THREAD_ID()]->request(bind(__VA_ARGS__)); \
                 else                                                    \
-                        boost::bind(__VA_ARGS__)();                     \
+                        bind(__VA_ARGS__)();                            \
         } while (0)
 
 #define QUEUE_SYNC(...)                                                 \
         do {                                                            \
                 if (GET_THREAD_ID() != FLMAIN_TID)                      \
-                        cbq[GET_THREAD_ID()]->request_sync(boost::protect(boost::bind(__VA_ARGS__))); \
+                        cbq[GET_THREAD_ID()]->request_sync(bind(__VA_ARGS__)); \
                 else                                                    \
-                        boost::bind(__VA_ARGS__)();                     \
+                        bind(__VA_ARGS__)();                            \
         } while (0)
-
-#define QUEUE_DL(d_, ...)                                               \
-        do {                                                            \
-                if (GET_THREAD_ID() != FLMAIN_TID)                      \
-                        cbq[GET_THREAD_ID()]->request_dl(boost::protect(boost::bind(__VA_ARGS__)), d_); \
-                else                                                    \
-                        boost::bind(__VA_ARGS__)();                     \
-        } while (0)
-
-
 
 #define QUEUE_FLUSH()                                                   \
         do {                                                            \

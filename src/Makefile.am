@@ -7,7 +7,7 @@ AM_CPPFLAGS = -I$(srcdir) -I$(srcdir)/include -I$(srcdir)/irrxml @BOOST_CPPFLAGS
 
 AM_CXXFLAGS = @FLTK_CFLAGS@ @PORTAUDIO_CFLAGS@ @SNDFILE_CFLAGS@ \
 	@SAMPLERATE_CFLAGS@ @HAMLIB_CFLAGS@ \
-	-pipe -Wall -O2 -ffast-math -fno-rtti -fexceptions -finline-functions
+	-pipe -Wall -O2 -ffast-math -fexceptions -finline-functions
 AM_CFLAGS = $(AM_CXXFLAGS)
 
 LDADD = @BOOST_LDFLAGS@ @FLTK_LIBS@ @PORTAUDIO_LIBS@ @SNDFILE_LIBS@ \

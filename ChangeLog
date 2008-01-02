@@ -1,6 +1,8 @@
 Change Log:
 
 2.08  1) Use PortAudio's C API; the C++ bindings are no longer required
+      2) Boost is no longer required when std::(tr1::)bind is available, as is
+         the case with g++ >= 4.0
 
 2.07  1) bug fix for mode changes via SysV interface (pskmail / flarq)
       2) bug fix for modem configuration post quick change from status
