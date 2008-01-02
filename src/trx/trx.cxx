@@ -92,10 +92,17 @@ void trx_trx_receive_loop()
 			scard->Open(O_RDONLY, active_modem->get_samplerate());
 		}
 		catch (const SndException& e) {
-			put_status(e.what(), 1);
-			MilliSleep(10);
+			put_status(e.what());
+#if USE_PORTAUDIO
+			if (e.error() == EBUSY) {
+				cSoundPA::terminate();
+				cSoundPA::initialize();
+			}
+#endif
+			MilliSleep(1000);
 			return;
 		}
+		put_status("");
 		active_modem->rx_init();
 
 		while (1) {

@@ -9,9 +9,8 @@ To compile fldigi you will need:
   * the development files for the Boost C++ library.
 
 You should also install the libraries and headers for PortAudio, the
-Portable audio I/O library, together with its C++ bindings.  It is
-possible (but not recommended) to compile fldigi without PortAudio;
-see below.
+Portable audio I/O library.  It is possible, but not recommended, to
+compile fldigi without PortAudio; see below.
 
 Additional features are enabled if the corresponding libraries are
 present on your system:

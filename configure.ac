@@ -214,19 +214,19 @@ AC_ARG_WITH([portaudio],
              esac],
             [ac_cv_want_portaudio=yes])
 if test "x$ac_cv_want_portaudio" = "xyes"; then
-    PKG_CHECK_EXISTS(portaudiocpp >= 12, ac_cv_portaudio=yes, ac_cv_portaudio=no)
+    PKG_CHECK_EXISTS(portaudio-2.0 >= 19, ac_cv_portaudio=yes, ac_cv_portaudio=no)
     if test "x$ac_cv_portaudio" = "xyes"; then
         AC_DEFINE(USE_PORTAUDIO, 1, [Set to 1 if we are using PortAudio, 0 otherwise])
     else
         AC_MSG_NOTICE([portaudio test failed (use --without-portaudio to disable)])
     fi
-    PKG_CHECK_MODULES(PORTAUDIOCPP, portaudiocpp >= 12)
+    PKG_CHECK_MODULES(PORTAUDIO, portaudio-2.0 >= 19)
 else
     AC_DEFINE(USE_PORTAUDIO, 0, [Set to 1 if we are using PortAudio, 0 otherwise])
     ac_cv_portaudio=no
 fi
-AC_SUBST([PORTAUDIOCPP_CFLAGS])
-AC_SUBST([PORTAUDIOCPP_LIBS])
+AC_SUBST([PORTAUDIO_CFLAGS])
+AC_SUBST([PORTAUDIO_LIBS])
 
 
 ###########################
@@ -258,7 +258,7 @@ else
         else
             AC_DEFINE(USE_HAMLIB, 1, [Set to 1 if we are using hamlib, 0 otherwise])
         fi
-        PKG_CHECK_MODULES(HAMLIB, hamlib >= 1.2.4) # for the error message
+        PKG_CHECK_MODULES(HAMLIB, hamlib >= 1.2.0) # for the error message
     fi
 fi
 AC_SUBST([HAMLIB_CFLAGS])
