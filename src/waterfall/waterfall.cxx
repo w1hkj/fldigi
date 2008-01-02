@@ -1424,7 +1424,6 @@ int WFdisp::handle(int event)
 		case FL_RIGHT_MOUSE:
 			tmp_carrier = false;
 			active_modem->set_freq(oldcarrier);
-			active_modem->set_sigsearch(3);
 			redrawCursor();
 			restoreFocus();
 			// fall through
