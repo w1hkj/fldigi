@@ -313,7 +313,8 @@ void init_modem(trx_mode mode)
 		return init_modem(mode);
 
 	case MODE_CW:
-		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem : new cw);
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new cw);
 		modem_config_tab = tabCW;
 		break;
 

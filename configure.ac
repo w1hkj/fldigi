@@ -4,7 +4,7 @@
 # Copyright (C) 2007 Stelios Bounanos, M0GLD (m0gld AT enotty DOT net)
 
 AC_PREREQ(2.61)
-AC_INIT([fldigi], [2.07], [w1hkj AT w1hkj DOT com])
+AC_INIT([fldigi], [2.08a], [w1hkj AT w1hkj DOT com])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([-Wall foreign 1.9.6])
 AM_MAINTAINER_MODE
@@ -86,6 +86,7 @@ if test "x$ac_cv_debug" = "xyes"; then
         RDYNAMIC=-rdynamic
     fi
     CXXFLAGS="-O0 -ggdb3 -Wall"
+    CFLAGS="$CXXFLAGS"
     AC_MSG_NOTICE([debugging enabled; overriding CXXFLAGS])
 fi
 AM_CONDITIONAL([ENABLE_DEBUG], [test "x$ac_cv_debug" = "xyes"])
