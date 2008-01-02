@@ -707,10 +707,10 @@ progdefaults.changed = true;} open
             } {}
             Fl_Choice menuSampleRate {
               label {Sample rate}
-              callback {progdefaults.sample_rate = o->value() ? strtol(o->mvalue()->text, 0, 10) : 0;
+              callback {progdefaults.sample_rate = o->value() > 1 ? strtol(o->mvalue()->text, 0, 10) : o->value();
 resetSoundCard();
 progdefaults.changed = true;} open selected
-              xywh {5 190 85 25} down_box BORDER_BOX align 8
+              tooltip {Force a specific sample rate. Select "Native" if "Auto" does not work well with your sound hardware.} xywh {5 190 85 25} down_box BORDER_BOX align 8
               code0 {extern Fl_Menu_Item sample_rate_menu[];}
               code1 {o->menu(sample_rate_menu);}
             } {}

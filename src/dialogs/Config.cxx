@@ -593,7 +593,7 @@ progdefaults.changed = true;
 Fl_Choice *menuSampleRate=(Fl_Choice *)0;
 
 static void cb_menuSampleRate(Fl_Choice* o, void*) {
-  progdefaults.sample_rate = o->value() ? strtol(o->mvalue()->text, 0, 10) : 0;
+  progdefaults.sample_rate = o->value() > 1 ? strtol(o->mvalue()->text, 0, 10) : o->value();
 resetSoundCard();
 progdefaults.changed = true;
 }
@@ -1519,6 +1519,8 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
               o->value(progdefaults.PAdevice.c_str());
             }
             { Fl_Choice* o = menuSampleRate = new Fl_Choice(5, 190, 85, 25, "Sample rate");
+              o->tooltip("Force a specific sample rate. Select \"Native\" if \"Auto\" does not work wel\
+l with your sound hardware.");
               o->down_box(FL_BORDER_BOX);
               o->callback((Fl_Callback*)cb_menuSampleRate);
               o->align(FL_ALIGN_RIGHT);

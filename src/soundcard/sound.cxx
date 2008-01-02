@@ -1059,8 +1059,14 @@ void cSoundPA::adjust_stream(void)
 // setting we just return that without making any checks.
 double cSoundPA::find_srate(void)
 {
-        if (progdefaults.sample_rate)
+        switch (progdefaults.sample_rate) {
+        case 0:
+                break;
+        case 1:
+                return (*idev)->defaultSampleRate;
+        default:
                 return progdefaults.sample_rate;
+        }
 
         double srates[] = { req_sample_rate, (*idev)->defaultSampleRate };
         int err;

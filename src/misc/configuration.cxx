@@ -1229,13 +1229,13 @@ int configuration::openDefaults() {
             resetMixerControls();
             menuMix->value(MXdevice.c_str());
 
-	    if (sample_rate) {
+	    if (sample_rate > 1) {
 		    char s[6+1];
 		    snprintf(s, sizeof(s), "%d", sample_rate);
 		    menuSampleRate->value(menuSampleRate->find_item(s));
 	    }
 	    else
-		    menuSampleRate->value(0);
+		    menuSampleRate->value(sample_rate);
 
 			cntRxRateCorr->value(RX_corr);
 			cntTxRateCorr->value(TX_corr);
