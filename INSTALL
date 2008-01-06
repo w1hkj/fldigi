@@ -36,10 +36,6 @@ to `configure':
 
   ./configure --without-portaudio
 
-If your distro/arch does not support Thread Local Storage, disable
-fldigi's use of TLS with the `--disable-tls' option.
-
-
 Fldigi also requires the samplerate library, but has its own copy to
 fall back on should it not be detected on your system.  The following
 message will be printed in that case:
