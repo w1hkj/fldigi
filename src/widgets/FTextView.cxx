@@ -236,6 +236,7 @@ void FTextBase::show_context_menu(void)
 
 	popx = xpos - x();
 	popy = ypos - y();
+	window()->cursor(FL_CURSOR_DEFAULT);
 	m = context_menu->popup(xpos, ypos, 0, 0, 0);
 	if (!m)
 		return;
