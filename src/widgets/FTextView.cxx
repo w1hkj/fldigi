@@ -726,8 +726,8 @@ int FTextEdit::nextChar(void)
 	else {
 		if ((c = tbuf->character(txpos))) {
 			++txpos;
-			QUEUE(CMP_CB(FTextEdit::changed_cb, txpos, 0, 0, 0,
-				     static_cast<const char *>(0), this));
+			REQ(FTextEdit::changed_cb, txpos, 0, 0, 0,
+			    static_cast<const char *>(0), this);
 		}
 	}
 

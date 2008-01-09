@@ -3,15 +3,16 @@ Installation Instructions for fldigi
 
 To compile fldigi you will need:
 
-  * version 1.1.x of the Fast Light Tool Kit (FLTK), with its
-    development libraries and headers, and
+  * A recent C++ compiler. The GNU C++ compilers in the 4.x series are
+    known to work.  Building with g++ 3.x requires the development files
+    for the Boost C++ library.
 
-  * the development files for the Boost C++ library.
+  * Version 1.1.x of the Fast Light Tool Kit (FLTK), with its
+    development libraries and headers.
 
 You should also install the libraries and headers for PortAudio, the
-Portable audio I/O library, together with its C++ bindings.  It is
-possible (but not recommended) to compile fldigi without PortAudio;
-see below.
+Portable audio I/O library.  It is possible, but not recommended, to
+compile fldigi without PortAudio; see below.
 
 Additional features are enabled if the corresponding libraries are
 present on your system:
@@ -34,10 +35,6 @@ To disable PortAudio support you will need to pass an additional option
 to `configure':
 
   ./configure --without-portaudio
-
-If your distro/arch does not support Thread Local Storage, disable
-fldigi's use of TLS with the `--disable-tls' option.
-
 
 Fldigi also requires the samplerate library, but has its own copy to
 fall back on should it not be detected on your system.  The following

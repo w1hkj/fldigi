@@ -23,9 +23,7 @@
 #include <config.h>
 
 #include <unistd.h>
-// #include <fcntl.h>
 #include <errno.h>
-// #include <cstring>
 
 #include <FL/Fl.H>
 
@@ -38,12 +36,6 @@ qrunner::qrunner(size_t npri_)
         fifo = new fqueue(2048, npri);
         if (pipe(pfd) == -1)
                 throw qexception(errno);
-
-        // int flags;
-        // if ((flags = fcntl(pfd[0], F_GETFL)) == -1)
-        //         throw qexception(errno);
-        // if (fcntl(pfd[0], F_SETFL, flags | O_NONBLOCK) == -1)
-        //         throw qexception(errno);
 }
 
 qrunner::~qrunner()
@@ -71,16 +63,12 @@ void qrunner::execute(int fd, void *arg)
 
         char c;
         while (qr->fifo->execute()) {
-                if (unlikely(read(fd, &c, 1) == -1 /*&& errno != EWOULDBLOCK*/))
+                if (unlikely(read(fd, &c, 1) == -1))
                         throw qexception(errno);
         }
 }
 
 void qrunner::flush(void)
 {
-        char c;
-        while (fifo->execute()) {
-                if (unlikely(read(pfd[0], &c, 1) == -1 /*&& errno != EWOULDBLOCK*/))
-                        throw qexception(errno);
-        }
+        execute(pfd[0], this);
 }

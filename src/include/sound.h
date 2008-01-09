@@ -44,13 +44,14 @@
 #include <math.h>
 
 #include <string>
+#include <vector>
 #if USE_SNDFILE
 	#include <sndfile.hh>
 #endif
 #include <iostream>
 
 #if USE_PORTAUDIO
-	#include <portaudiocpp/PortAudioCpp.hxx>
+	#include <portaudio.h>
 #endif
 
 #include <samplerate.h>
@@ -63,27 +64,26 @@
 #define	SND_BUF_LEN		65536
 //#define	SRC_BUF_LEN		(8*SND_BUF_LEN)
 
-#define powerof2(n) ((((n) - 1) & (n)) == 0)
 
+#define msgprefix std::string("Sound error: ")
 class SndException : public std::exception
 {
 public:
-	SndException() { *szError = 0; error = 0; }
-	SndException(int e) {
-		snprintf(szError, sizeof(szError), "Error: %d, %s", e, strerror(e));
-		error = e;
-	}
-	SndException(const char *s) {
-		strncpy(szError, s, sizeof(szError));
-		szError[sizeof(szError) - 1] = '\0';
-		error = 1;
-	}
-        const char *what(void) const throw() { return szError; }
-
+	SndException() : err(0) { }
+#if USE_PORTAUDIO
+	SndException(int e) : err(e), msg(msgprefix + (e >= 0 ? strerror(e) : Pa_GetErrorText(e))) { }
+#else
+	SndException(int e) : err(e), msg(msgprefix + strerror(e)) { }
+#endif
+	SndException(const char *s) : err(1), msg(msgprefix + s) { }
+	~SndException() throw() { }
+	const char *what(void) const throw() { return msg.c_str(); }
+	int error(void) const { return err; }
 private:
-	char	szError[80];
-	int		error;
+	int		err;
+	std::string	msg;
 };
+#undef msgprefix
 
 class cSound {
 protected:
@@ -183,6 +183,12 @@ private:
 class cSoundPA : public cSound
 {
 public:
+        typedef std::vector<const PaDeviceInfo*>::const_iterator device_iterator;
+        static void	initialize(void);
+        static void	terminate(void);
+        static const std::vector<const PaDeviceInfo*>& devices(void);
+
+public:
         cSoundPA(const char *dev);
         ~cSoundPA();
 	int 		Open(int mode, int freq = 8000);
@@ -196,21 +202,29 @@ private:
         void		src_data_reset(int mode);
         void		resample(int mode, float *buf, int count, int max = 0);
         void 		init_stream(void);
+        void 		start_stream(void);
+        bool		stream_active(void);
+        bool		full_duplex_device(const PaDeviceInfo* dev);
         void		adjust_stream(void);
         double		find_srate(void);
-        static unsigned ceil2(unsigned n);
-        static unsigned floor2(unsigned n);
 
 private:
         std::string	device;
 
-        portaudio::System 			     &sys;
-        portaudio::BlockingStream 		     stream;
+        // portaudio::System 			     &sys;
+        // portaudio::BlockingStream 		     stream;
+        static bool                                  pa_init;
+        PaStream*                                    stream;
 
-        portaudio::System::DeviceIterator	     idev;
-        portaudio::DirectionSpecificStreamParameters in_params;
-        portaudio::DirectionSpecificStreamParameters out_params;
-        portaudio::StreamParameters 		     stream_params;
+        device_iterator				     idev;
+        // portaudio::DirectionSpecificStreamParameters in_params;
+        // portaudio::DirectionSpecificStreamParameters out_params;
+        // portaudio::StreamParameters 		     stream_params;
+	static std::vector<const PaDeviceInfo*>      devs;
+        PaStreamParameters                           in_params;
+        PaStreamParameters                           out_params;
+        enum { STREAM_IN, STREAM_OUT };
+        PaStreamParameters*			     stream_params[2];
 
         unsigned	frames_per_buffer;
         unsigned	max_frames_per_buffer;

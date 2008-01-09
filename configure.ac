@@ -4,7 +4,7 @@
 # Copyright (C) 2007 Stelios Bounanos, M0GLD (m0gld AT enotty DOT net)
 
 AC_PREREQ(2.61)
-AC_INIT([fldigi], [2.08a], [w1hkj AT w1hkj DOT com])
+AC_INIT([fldigi], [2.08b], [w1hkj AT w1hkj DOT com])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([-Wall foreign 1.9.6])
 AM_MAINTAINER_MODE
@@ -96,25 +96,71 @@ AC_SUBST([RDYNAMIC])
 # TLS flag
 ###########################
 AC_ARG_ENABLE([tls],
-              AC_HELP_STRING([--disable-tls], [disable use of TLS]),
+              AC_HELP_STRING([--enable-tls], [enable use of TLS @<:@autodetect@:>@]),
               [case "${enableval}" in
-                yes|no) ac_cv_tls="${enableval}" ;;
-                *)      AC_MSG_ERROR([bad value "${withval}" for --disable-tls]) ;;
+                yes|no) ac_cv_want_tls="${enableval}" ;;
+                *)      AC_MSG_ERROR([bad value "${enableval}" for --enable-tls]) ;;
                esac],
-               [ac_cv_tls=yes])
-if test "x$ac_cv_tls" = "xyes"; then
-    AC_DEFINE(USE_TLS, 1, [Defined if we are using TLS])
-else
+               [ac_cv_want_tls=check])
+
+if test "x$ac_cv_want_tls" = "xno"; then
     AC_DEFINE(USE_TLS, 0, [Defined if we are using TLS])
+    ac_cv_have_tls=no
+else
+    CHECK_TLS()
+    if test "x$ac_cv_want_tls" = "xcheck"; then
+        if test "x$ac_cv_have_tls" = "xyes"; then
+            AC_DEFINE(USE_TLS, 1, [Defined if we are using TLS])
+        else
+            AC_DEFINE(USE_TLS, 0, [Defined if we are using TLS])
+        fi
+    else # $ac_cv_want_tls is yes
+        if test "x$ac_cv_have_tls" = "xno"; then
+            AC_MSG_FAILURE([--enable-tls was given, but TLS is not supported])
+        else
+            AC_DEFINE(USE_TLS, 1, [Defined if we are using TLS])
+        fi
+    fi
 fi
 
+###########################
+# bind
+###########################
+# Look for a working std::bind or std::tr1::bind. If neither is present
+# we will need Boost >= 1.32.0, which provides boost::bind.
+AC_LANG_PUSH(C++)
+AC_MSG_CHECKING([for std::bind in <functional>])
+AC_COMPILE_IFELSE( [AC_LANG_PROGRAM([[#include <functional>
+                                      void f(void) { }]],
+                                    [[std::bind(f)();]])],
+                   [ac_cv_std_bind=yes], [ac_cv_std_bind=no] )
+AC_MSG_RESULT([$ac_cv_std_bind])
+if test "x$ac_cv_std_bind" = "xyes"; then
+    AC_DEFINE(HAVE_STD_BIND, 1, [Define to 1 if we have std::bind in <functional>])
+else
+    AC_DEFINE(HAVE_STD_BIND, 0, [Define to 1 if we have std::bind in <functional>])
+fi
 
-###########################
-# Boost
-###########################
-AX_BOOST_BASE(1.32.0)
-if test "x$want_boost" = "xno"; then
-    AC_MSG_ERROR([Boost is required])
+if test "x$ac_cv_std_bind" = "xno"; then
+    AC_MSG_CHECKING([for std::tr1::bind in <tr1/functional>])
+    AC_COMPILE_IFELSE( [AC_LANG_PROGRAM([[#include <tr1/functional>
+                                          void f(void) { }]],
+                                        [[std::tr1::bind(f)();]])],
+                       [ac_cv_std_tr1_bind=yes], [ac_cv_std_tr1_bind=no] )
+    AC_MSG_RESULT([$ac_cv_std_tr1_bind])
+    if test "x$ac_cv_std_tr1_bind" = "xyes"; then
+        AC_DEFINE(HAVE_STD_TR1_BIND, 1, [Define to 1 if we have std::tr1::bind in <tr1/functional>])
+    else
+        AC_DEFINE(HAVE_STD_TR1_BIND, 0, [Define to 1 if we have std::tr1::bind in <tr1/functional>])
+    fi
+fi
+AC_LANG_POP(C++)
+
+if test "x$ac_cv_std_bind" = "xno" && test "x$ac_cv_std_tr1_bind" = "xno"; then
+    AX_BOOST_BASE(1.32.0)
+    if test "x$want_boost" = "xno"; then
+        AC_MSG_ERROR([Boost is required])
+    fi
 fi
 
 ###########################
@@ -178,22 +224,22 @@ AC_ARG_WITH([sndfile],
              esac],
             [ac_cv_want_sndfile=check])
 if test "x$ac_cv_want_sndfile" = "xno"; then
-    AC_DEFINE(USE_SNDFILE, 0, [Set to 1 if we are using sndfile, 0 otherwise])
+    AC_DEFINE(USE_SNDFILE, 0, [Define to 1 if we are using sndfile])
     ac_cv_sndfile=no
 else
     PKG_CHECK_EXISTS(sndfile >= 1.0.10, ac_cv_sndfile=yes, ac_cv_sndfile=no)
     if test "x$ac_cv_want_sndfile" = "xcheck"; then
         PKG_CHECK_MODULES(SNDFILE, sndfile >= 1.0.10, [:], [:])
         if test "x$ac_cv_sndfile" = "xyes"; then
-            AC_DEFINE(USE_SNDFILE, 1, [Set to 1 if we are using sndfile, 0 otherwise])
+            AC_DEFINE(USE_SNDFILE, 1, [Define to 1 if we are using sndfile])
         else
-            AC_DEFINE(USE_SNDFILE, 0, [Set to 1 if we are using sndfile, 0 otherwise])
+            AC_DEFINE(USE_SNDFILE, 0, [Define to 1 if we are using sndfile])
         fi
     else # $ac_cv_want_sndfile is yes
         if test "x$ac_cv_sndfile" = "xno"; then
             AC_MSG_NOTICE([--with-sndfile was given, but test for sndfile failed])
         else
-            AC_DEFINE(USE_SNDFILE, 1, [Set to 1 if we are using sndfile, 0 otherwise])
+            AC_DEFINE(USE_SNDFILE, 1, [Define to 1 if we are using sndfile])
         fi
         PKG_CHECK_MODULES(SNDFILE, sndfile >= 1.0.10) # for the error message
     fi
@@ -214,19 +260,19 @@ AC_ARG_WITH([portaudio],
              esac],
             [ac_cv_want_portaudio=yes])
 if test "x$ac_cv_want_portaudio" = "xyes"; then
-    PKG_CHECK_EXISTS(portaudiocpp >= 12, ac_cv_portaudio=yes, ac_cv_portaudio=no)
+    PKG_CHECK_EXISTS(portaudio-2.0 >= 19, ac_cv_portaudio=yes, ac_cv_portaudio=no)
     if test "x$ac_cv_portaudio" = "xyes"; then
-        AC_DEFINE(USE_PORTAUDIO, 1, [Set to 1 if we are using PortAudio, 0 otherwise])
+        AC_DEFINE(USE_PORTAUDIO, 1, [Define to 1 if we are using PortAudio])
     else
         AC_MSG_NOTICE([portaudio test failed (use --without-portaudio to disable)])
     fi
-    PKG_CHECK_MODULES(PORTAUDIOCPP, portaudiocpp >= 12)
+    PKG_CHECK_MODULES(PORTAUDIO, portaudio-2.0 >= 19)
 else
-    AC_DEFINE(USE_PORTAUDIO, 0, [Set to 1 if we are using PortAudio, 0 otherwise])
+    AC_DEFINE(USE_PORTAUDIO, 0, [Define to 1 if we are using PortAudio])
     ac_cv_portaudio=no
 fi
-AC_SUBST([PORTAUDIOCPP_CFLAGS])
-AC_SUBST([PORTAUDIOCPP_LIBS])
+AC_SUBST([PORTAUDIO_CFLAGS])
+AC_SUBST([PORTAUDIO_LIBS])
 
 
 ###########################
@@ -248,17 +294,17 @@ else
     if test "x$ac_cv_want_hamlib" = "xcheck"; then
         PKG_CHECK_MODULES(HAMLIB, hamlib >= 1.2.0, [:], [:])
         if test "x$ac_cv_hamlib" = "xyes"; then
-            AC_DEFINE(USE_HAMLIB, 1, [Set to 1 if we are using hamlib, 0 otherwise])
+            AC_DEFINE(USE_HAMLIB, 1, [Define to 1 if we are using hamlib])
         else
-            AC_DEFINE(USE_HAMLIB, 0, [Set to 1 if we are using hamlib, 0 otherwise])
+            AC_DEFINE(USE_HAMLIB, 0, [Define to 1 if we are using hamlib])
         fi
     else # $ac_cv_want_hamlib is yes
         if test "x$ac_cv_hamlib" = "xno"; then
             AC_MSG_NOTICE([--with-hamlib was given, but test for hamlib failed])
         else
-            AC_DEFINE(USE_HAMLIB, 1, [Set to 1 if we are using hamlib, 0 otherwise])
+            AC_DEFINE(USE_HAMLIB, 1, [Define to 1 if we are using hamlib])
         fi
-        PKG_CHECK_MODULES(HAMLIB, hamlib >= 1.2.4) # for the error message
+        PKG_CHECK_MODULES(HAMLIB, hamlib >= 1.2.0) # for the error message
     fi
 fi
 AC_SUBST([HAMLIB_CFLAGS])
@@ -268,6 +314,14 @@ AM_CONDITIONAL([ENABLE_HAMLIB], [test "x$ac_cv_hamlib" = "xyes"])
 ###########################
 # output
 ###########################
+AH_TOP([
+#ifndef CONFIG_H_
+#define CONFIG_H_
+])
+AH_BOTTOM([
+#include "util.h"
+#endif /* CONFIG_H_ */
+])
 AC_CONFIG_FILES([Makefile src/Makefile])
 AC_OUTPUT
 
@@ -281,7 +335,7 @@ Configuration summary:
 
   Static linking ...................... $ac_cv_static
   Debugging ........................... $ac_cv_debug
-  TLS ................................. $ac_cv_tls
+  TLS ................................. $ac_cv_have_tls
 
   sndfile ............................. $ac_cv_sndfile
   PortAudio ........................... $ac_cv_portaudio

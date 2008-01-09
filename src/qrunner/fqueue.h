@@ -26,12 +26,10 @@
 #include <stdexcept>
 #include <cassert>
 #include "ringbuffer.h"
+#include "util.h"
 // #include <iostream>
 // #include <cstdio>
 // #include <stacktrace.h>
-
-#define likely(x)   __builtin_expect(!!(x), 1)
-#define unlikely(x) __builtin_expect(!!(x), 0)
 
 class func_base
 {
@@ -57,20 +55,21 @@ private:
 
 class fqueue
 {
+        typedef ringbuffer<char> fqueue_ringbuffer_t;
+
 public:
         fqueue(size_t count = 2048, size_t nqueues_ = 1, size_t blocksize_ = 128)
                 : nqueues(nqueues_), blocksize(blocksize_)
         {
-                rb = new jack_ringbuffer_t*[nqueues];
+                rb = new fqueue_ringbuffer_t*[nqueues];
                 for (size_t i = 0; i < nqueues; i++)
-                        if ((rb[i] = jack_ringbuffer_create(blocksize * count)) == 0)
-                                throw std::bad_alloc();
+                        rb[i] = new fqueue_ringbuffer_t(blocksize * count);
         }
         ~fqueue()
         {
                 for (size_t i = 0; i < nqueues; i++) {
                         drop(i);
-                        jack_ringbuffer_free(rb[i]);
+                        delete rb[i];
                 }
                 delete [] rb;
         }
@@ -78,10 +77,10 @@ public:
         bool empty(size_t q)
         {
                 if (q != nqueues)
-                        return jack_ringbuffer_read_space(rb[q]) == 0;
+                        return rb[q]->read_space() == 0;
 
                 for (size_t i = 0; i < nqueues; i++)
-                        if (jack_ringbuffer_read_space(rb[i]) > 0)
+                        if (rb[i]->read_space() > 0)
                                 return false;
                 return true;
         }
@@ -90,10 +89,10 @@ public:
         bool full(size_t q)
         {
                 if (q != nqueues)
-                        return jack_ringbuffer_write_space(rb[q]) == 0;
+                        return rb[q]->write_space() == 0;
 
                 for (size_t i = 0; i < nqueues; i++)
-                        if (jack_ringbuffer_write_space(rb[i]) > 0)
+                        if (rb[i]->write_space() > 0)
                                 return false;
                 return true;
         }
@@ -101,11 +100,11 @@ public:
         size_t size(size_t q)
         {
                 if (q != nqueues)
-                        return jack_ringbuffer_read_space(rb[q]) / blocksize;
+                        return rb[q]->read_space() / blocksize;
 
                 size_t n = 0;
                 for (size_t i = 0; i < nqueues; i++)
-                        n += jack_ringbuffer_read_space(rb[i]) / blocksize;
+                        n += rb[i]->read_space() / blocksize;
                 return n;
         }
         size_t size(void) { return size(nqueues); }
@@ -117,16 +116,14 @@ public:
         {
                 // If we have any space left at all, it will be at least
                 // a blocksize. It will not wrap around the end of the rb.
-                jack_ringbuffer_get_write_vector(rb[q], wvec);
+                rb[q]->get_wv(wvec);
                 if (unlikely(wvec[0].len < blocksize))
                         return false;
 
                 assert(blocksize >= sizeof(func_wrap<T>));
                 // we assume a no-throw ctor!
                 new (wvec[0].buf) func_wrap<T>(t);
-                // std::cout << time(0) << " push " << typeid(*reinterpret_cast<func_base *>(wvec[0].buf)).name() << std::endl;
-                //pstack(1);
-                jack_ringbuffer_write_advance(rb[q], blocksize);
+                rb[q]->write_advance(blocksize);
 
                 return true;
         }
@@ -142,12 +139,11 @@ public:
                 }
 
                 for (size_t i = start; i <= end; i++) {
-                        jack_ringbuffer_get_read_vector(rb[i], rvec);
+                        rb[i]->get_rv(rvec);
                         if (rvec[0].len < blocksize)
                                 continue;
-                        // std::cout << time(0) << " pop " << typeid(*reinterpret_cast<func_base *>(rvec[0].buf)).name() << std::endl;
                         reinterpret_cast<func_base *>(rvec[0].buf)->destroy(exec);
-                        jack_ringbuffer_read_advance(rb[i], blocksize);
+                        rb[i]->read_advance(blocksize);
 
                         return true;
                 }
@@ -166,8 +162,8 @@ public:
         }
 
 protected:
-        jack_ringbuffer_t **rb;
-        jack_ringbuffer_data_t rvec[2], wvec[2];
+        fqueue_ringbuffer_t **rb;
+        fqueue_ringbuffer_t::vector_type rvec[2], wvec[2];
         size_t nqueues, blocksize;
 };
 

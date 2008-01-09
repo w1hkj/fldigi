@@ -5,12 +5,12 @@ bin_PROGRAMS = fldigi
 
 AM_CPPFLAGS = -I$(srcdir) -I$(srcdir)/include -I$(srcdir)/irrxml @BOOST_CPPFLAGS@
 
-AM_CXXFLAGS = @FLTK_CFLAGS@ @PORTAUDIOCPP_CFLAGS@ @SNDFILE_CFLAGS@ \
+AM_CXXFLAGS = @FLTK_CFLAGS@ @PORTAUDIO_CFLAGS@ @SNDFILE_CFLAGS@ \
 	@SAMPLERATE_CFLAGS@ @HAMLIB_CFLAGS@ \
-	-pipe -Wall -O2 -ffast-math -fno-rtti -fexceptions -finline-functions
+	-pipe -Wall -O2 -ffast-math -fexceptions -finline-functions
 AM_CFLAGS = $(AM_CXXFLAGS)
 
-LDADD = @BOOST_LDFLAGS@ @FLTK_LIBS@ @PORTAUDIOCPP_LIBS@ @SNDFILE_LIBS@ \
+LDADD = @BOOST_LDFLAGS@ @FLTK_LIBS@ @PORTAUDIO_LIBS@ @SNDFILE_LIBS@ \
 	@SAMPLERATE_LIBS@ @HAMLIB_LIBS@ @RTLIB@
 
 
@@ -157,6 +157,7 @@ fldigi_SOURCES += \
 	include/rigio.h \
 	include/rigsupport.h \
 	include/rigxml.h \
+	include/ringbuffer.h \
 	include/rtty.h \
 	include/serial.h \
 	include/sound.h \
@@ -167,6 +168,7 @@ fldigi_SOURCES += \
 	include/throb.h \
 	include/timeops.h \
 	include/trx.h \
+	include/util.h \
 	include/versions.h.in \
 	include/viterbi.h \
 	include/waterfall.h \
@@ -200,14 +202,13 @@ fldigi_SOURCES += \
 	misc/status.cxx \
 	misc/threads.cxx \
 	misc/timeops.cxx \
+	misc/util.cxx \
 	olivia/olivia.cxx \
 	psk/psk.cxx \
 	psk/pskcoeff.cxx \
 	psk/pskvaricode.cxx \
 	qrunner/fqueue.h \
 	qrunner/qrunner.cxx \
-	qrunner/ringbuffer.c \
-	qrunner/ringbuffer.h \
 	rigcontrol/FreqControl.cxx \
 	rigcontrol/ptt.cxx \
 	rigcontrol/rigMEM.cxx \

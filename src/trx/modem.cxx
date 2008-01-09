@@ -90,7 +90,7 @@ void modem::set_freq(double freq)
 	freqerr = 0.0;
 	if (freqlock == false)
 		tx_frequency = frequency;
-	QUEUE(CMP_CB(put_freq, frequency)); //put_freq(frequency);
+	REQ(put_freq, frequency);
 }
 
 void modem::set_freqlock(bool on)
@@ -205,7 +205,7 @@ void modem::ModulateXmtr(double *buffer, int len)
 		_mdm_scdbl[scptr] = buffer[i] * 0.5;
 		scptr++;
 		if (scptr == 512) {
-			QUEUE(CMP_CB(&waterfall::sig_data, wf, _mdm_scdbl.c_array(), 512)); //wf->sig_data(scdata, 512);
+			REQ(&waterfall::sig_data, wf, _mdm_scdbl.c_array(), 512);
 			scptr = 0;
 			_mdm_scdbl.next(); // change buffers
 		}
@@ -222,7 +222,7 @@ void modem::ModulateStereo(double *left, double *right, int len)
 		_mdm_scdbl[scptr] = left[i] * 0.5;
 		scptr++;
 		if (scptr == 512) {
-			QUEUE(CMP_CB(&waterfall::sig_data, wf, _mdm_scdbl.c_array(), 512)); //wf->sig_data(scdata, 512);
+			REQ(&waterfall::sig_data, wf, _mdm_scdbl.c_array(), 512);
 			scptr = 0;
 			_mdm_scdbl.next(); // change buffers
 		}

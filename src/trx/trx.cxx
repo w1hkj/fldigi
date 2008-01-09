@@ -70,7 +70,7 @@ int			_trx_tune;
 unsigned char ucdata[SCBLOCKSIZE * 4];
 short int	*sidata;
 // Double size of normal read to accept overruns; double buffered because it
-// is QUEUEd and used asynchronously by the GUI thread.
+// is used asynchronously by the GUI thread.
 mbuffer<double, SCBLOCKSIZE * 2, 2> _trx_scdbl;
 
 static int dummy = 0;
@@ -92,10 +92,17 @@ void trx_trx_receive_loop()
 			scard->Open(O_RDONLY, active_modem->get_samplerate());
 		}
 		catch (const SndException& e) {
-			put_status(e.what(), 1);
-			MilliSleep(10);
+			put_status(e.what());
+#if USE_PORTAUDIO
+			if (e.error() == EBUSY) {
+				cSoundPA::terminate();
+				cSoundPA::initialize();
+			}
+#endif
+			MilliSleep(1000);
 			return;
 		}
+		put_status("");
 		active_modem->rx_init();
 
 		while (1) {
@@ -103,7 +110,7 @@ void trx_trx_receive_loop()
 			if (numread == -1 || (trx_state != STATE_RX))
 				break;
 			if (numread > 0) {
-				QUEUE(CMP_CB(&waterfall::sig_data, wf, _trx_scdbl.c_array(), numread)); //wf->sig_data(_trx_scdbl, numread);
+				REQ(&waterfall::sig_data, wf, _trx_scdbl.c_array(), numread);
 				active_modem->rx_process(_trx_scdbl, numread);
 				_trx_scdbl.next(); // change buffers
 			}
@@ -144,7 +151,7 @@ void trx_trx_transmit_loop()
 		MilliSleep(10);
 
 	push2talk->set(false);
-	QUEUE_SYNC(CMP_CB(&waterfall::set_XmtRcvBtn, wf, false)); //wf->set_XmtRcvBtn(false);
+	REQ_SYNC(&waterfall::set_XmtRcvBtn, wf, false);
 
 	if (progdefaults.useTimer == true) {
 		trx_start_macro_timer();
@@ -172,7 +179,7 @@ void trx_tune_loop()
 
 		while (trx_state == STATE_TUNE) {
 			if (_trx_tune == 0) {
-				QUEUE_SYNC(CMP_CB(&waterfall::set_XmtRcvBtn, wf, true)); //wf->set_XmtRcvBtn(true);
+				REQ_SYNC(&waterfall::set_XmtRcvBtn, wf, true);
 				xmttune::keydown(active_modem->get_txfreq_woffset(), scard);
 				_trx_tune = 1;
 			} else
@@ -186,7 +193,7 @@ void trx_tune_loop()
 		MilliSleep(10);
 
 	push2talk->set(false);
-	QUEUE_SYNC(CMP_CB(&waterfall::set_XmtRcvBtn, wf, false)); //wf->set_XmtRcvBtn(false);
+	REQ_SYNC(&waterfall::set_XmtRcvBtn, wf, false);
 }
 
 void *trx_loop(void *args)
@@ -230,7 +237,7 @@ void trx_start_modem_loop()
 	active_modem->init();
 	trx_state = STATE_RX;
 	signal_modem_ready();
-	QUEUE(CMP_CB(&waterfall::opmode, wf)); //wf->opmode();
+	REQ(&waterfall::opmode, wf);
 }
 
 void trx_start_modem(modem *m)

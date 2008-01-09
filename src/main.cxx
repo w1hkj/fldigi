@@ -39,9 +39,7 @@
 #include <locale.h>
 
 #include <FL/Fl_Shared_Image.H>
-#if USE_PORTAUDIO
-	#include <portaudiocpp/PortAudioCpp.hxx>
-#endif
+
 #include "main.h"
 #include "waterfall.h"
 #include "fft.h"
@@ -201,12 +199,13 @@ int main(int argc, char ** argv)
 	globfree(&gbuf);
 	
 #if USE_PORTAUDIO
-	portaudio::AutoSystem autoSys;
-	portaudio::System &sys = portaudio::System::instance();
-	for (portaudio::System::DeviceIterator idev = sys.devicesBegin();
-	     idev != sys.devicesEnd(); ++idev) {
+	cSoundPA::initialize();
+
+	for (cSoundPA::device_iterator idev = cSoundPA::devices().begin();
+	     idev != cSoundPA::devices().end(); ++idev) {
 		string s;
-		s.append(idev->hostApi().name()).append("/").append(idev->name());
+		s.append(Pa_GetHostApiInfo((*idev)->hostApi)->name).append("/").append((*idev)->name);
+
 		string::size_type i = s.find('/') + 1;
 // backslash-escape any slashes in the device name
 		while ((i = s.find('/', i)) != string::npos) {
@@ -215,11 +214,11 @@ int main(int argc, char ** argv)
 		}
 		menuPADev->add(s.c_str());
 // set the initial value in the configuration structure
-		if (progdefaults.PAdevice == "" && idev == sys.devicesBegin())
-			progdefaults.PAdevice = idev->name();
+		if (progdefaults.PAdevice == "" && idev == cSoundPA::devices().begin())
+			progdefaults.PAdevice = (*idev)->name;
 	}
 	menuPADev->value(progdefaults.PAdevice.c_str());
-	
+
 	btnAudioIO[1]->activate();
 #endif
 
@@ -265,6 +264,7 @@ int main(int argc, char ** argv)
 	for (int i = 0; i < NUM_QRUNNER_THREADS; i++)
 		cbq[i]->detach();
 
+	cSoundPA::terminate();
 	return ret;
 }
 
@@ -597,8 +597,7 @@ void print_versions(std::ostream& s)
 #endif
 
 #if USE_PORTAUDIO
-	s << ' ' << portaudio::System::versionText() << ' '
-	     << portaudio::System::version() << '\n';
+	s << ' ' << Pa_GetVersionText() << ' ' << Pa_GetVersion() << '\n';
 #endif
 
 #if USE_SNDFILE
