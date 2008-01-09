@@ -125,7 +125,7 @@ int main(int argc, char ** argv)
 	signal(SIGSEGV, handle_signal);
 	signal(SIGILL, handle_signal);
 
-	setlocale(LC_ALL, "");
+	setlocale(LC_TIME, "");
 
 	fl_filename_expand(szHomedir, 119, "$HOME/.fldigi/");
 	HomeDir = szHomedir;
