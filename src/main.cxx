@@ -264,7 +264,9 @@ int main(int argc, char ** argv)
 	for (int i = 0; i < NUM_QRUNNER_THREADS; i++)
 		cbq[i]->detach();
 
+#if USE_PORTAUDIO
 	cSoundPA::terminate();
+#endif
 	return ret;
 }
 
