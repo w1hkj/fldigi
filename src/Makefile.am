@@ -55,13 +55,18 @@ CLEANFILES = $(BUILT_SOURCES)
 
 
 install-data-local:
-	if test -f $(srcdir)/../icons/fldigi.xpm; then \
+	if test -f $(srcdir)/../data/fldigi.xpm; then \
 	    $(mkinstalldirs) $(DESTDIR)$(datadir)/pixmaps; \
-	    $(INSTALL_DATA) $(srcdir)/../icons/fldigi.xpm $(DESTDIR)/$(datadir)/pixmaps; \
+	    $(INSTALL_DATA) $(srcdir)/../data/fldigi.xpm $(DESTDIR)/$(datadir)/pixmaps; \
+	fi
+	if test -f $(srcdir)/../data/fldigi.desktop; then \
+	    $(mkinstalldirs) $(DESTDIR)$(datadir)/applications; \
+	    $(INSTALL_DATA) $(srcdir)/../data/fldigi.desktop $(DESTDIR)/$(datadir)/applications; \
 	fi
 
 uninstall-local:
 	rm -f $(DESTDIR)/$(datadir)/pixmaps/fldigi.xpm
+	rm -f $(DESTDIR)/$(datadir)/applications/fldigi.desktop
 
 # Sources that we build. It is OK to have headers here.
 fldigi_SOURCES += \
@@ -258,9 +263,10 @@ EXTRA_fldigi_SOURCES += \
 # Additional non-source files that we distribute
 EXTRA_DIST = \
 	$(srcdir)/../scripts/mkversions.sh \
-	$(srcdir)/../icons/fldigi-psk.png \
-	$(srcdir)/../icons/fldigi-rtty.png \
-	$(srcdir)/../icons/fldigi.xpm \
+	$(srcdir)/../data/fldigi-psk.png \
+	$(srcdir)/../data/fldigi-rtty.png \
+	$(srcdir)/../data/fldigi.xpm \
+	$(srcdir)/../data/fldigi.desktop \
 	fileselector/allfiles.xbm \
 	fileselector/d1.xbm \
 	fileselector/d1_mask.xbm \
