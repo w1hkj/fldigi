@@ -1,12 +1,28 @@
 Change Log:
 
 2.08  1) Use PortAudio's C API; the C++ bindings are no longer required
-      2) Boost is no longer required when std::(tr1::)bind is available, as is
-         the case with g++ >= 4.0
+      2) Boost is no longer required when std::(tr1::)bind is available,
+         as is the case with g++ >= 4.0
       3) Autodetect TLS support
-      4) Added a "Native" item to the sample rate menu. Versions prior to 2.08
-         will not recognise this and complain abount the sample rate being
-         invalid.  Reselect "Auto" or a specific sample rate value to fix this.
+      4) Switch to the PortAudio C API (portaudiocpp no longer required). 
+         Improved PortAudio error handling.
+      5) Use std::bind (or std::tr1::bind) if available. Boost no longer 
+         needed with g++-4.x, still required with with very old compilers 
+         (g++ 3.x).
+      6) qrunner cleanups
+      7) Add m4 macros for TLS autodetection (the --enable-tls/--disable-tls 
+         switches are still supported).
+      8) New ringbuffer and other utility code
+      9) New item in the sample rate menu: "Native" selects the hardware's 
+         preferred sample rate. Breaks backward compatibility: saving this 
+         with fldigi-2.08 will result in an "invalid sample rate" message if 
+         the same fldigi_def.xml file is then used with 2.07 -- until "Auto" 
+         or a specific value is selected again.
+     10) Correction to the waterfall's "casual tuning" feature: don't set the 
+         modem to SIGSEARCH when the right mouse button is released.
+     11) Set locale only for LC_TIME
+     12) Add .desktop, move icons to data/
+     13) Minor changes to configure.ac
 
 2.07  1) bug fix for mode changes via SysV interface (pskmail / flarq)
       2) bug fix for modem configuration post quick change from status
