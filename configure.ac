@@ -4,7 +4,7 @@
 # Copyright (C) 2007 Stelios Bounanos, M0GLD (m0gld AT enotty DOT net)
 
 AC_PREREQ(2.61)
-AC_INIT([fldigi], [2.08b], [w1hkj AT w1hkj DOT com])
+AC_INIT([fldigi], [2.08c], [w1hkj AT w1hkj DOT com])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([-Wall foreign 1.9.6])
 AM_MAINTAINER_MODE
@@ -84,8 +84,10 @@ AC_ARG_ENABLE([debug],
 if test "x$ac_cv_debug" = "xyes"; then
     if test "x$GXX" = "xyes"; then
         RDYNAMIC=-rdynamic
+        CXXFLAGS="-O0 -ggdb3 -Wall"
+    else
+        CXXFLAGS="-O0 -g -Wall"
     fi
-    CXXFLAGS="-O0 -ggdb3 -Wall"
     CFLAGS="$CXXFLAGS"
     AC_MSG_NOTICE([debugging enabled; overriding CXXFLAGS])
 fi
@@ -162,6 +164,8 @@ if test "x$ac_cv_std_bind" = "xno" && test "x$ac_cv_std_tr1_bind" = "xno"; then
         AC_MSG_ERROR([Boost is required])
     fi
 fi
+AC_SUBST([BOOST_CPPFLAGS])
+AC_SUBST([BOOST_LDFLAGS])
 
 ###########################
 # FLTK
