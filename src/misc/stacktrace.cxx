@@ -28,15 +28,18 @@
 #  include <execinfo.h>
 #endif
 
+#include "stacktrace.h"
+
 #define MAX_STACK_FRAMES 64
 
 
-void pstack(int fd)
+void pstack(int fd, unsigned skip)
 {
 #if HAVE_EXECINFO_H
         void* stack[MAX_STACK_FRAMES];
 
-        backtrace_symbols_fd(stack, backtrace(stack, MAX_STACK_FRAMES), fd);
+        ++skip;
+        backtrace_symbols_fd(stack + skip, backtrace(stack, MAX_STACK_FRAMES) - skip, fd);
 #endif
 }
 
@@ -45,14 +48,14 @@ void pstack_maybe(void)
         static bool trace = getenv("TRACE_LOCKS");
 
         if (trace)
-                pstack(STDERR_FILENO);
+                pstack(STDERR_FILENO, 1);
 }
 
 void diediedie(void)
 {
-        std::cerr << "\n\nAborting " PACKAGE
+        std::cerr << "\nAborting " PACKAGE
                      " due to a fatal error.\nPlease report this to "
-                     PACKAGE_BUGREPORT << '\n';
+                     PACKAGE_BUGREPORT << "\n\n";
         pstack(STDERR_FILENO);
         extern void print_versions(std::ostream&);
         print_versions(std::cerr << "\nVersion information:\n");
