@@ -356,8 +356,8 @@ olivia::olivia()
 
 	mode = MODE_OLIVIA;
 //	wfid = new id(this);
-	smargin = 2;
-	sinteg = 2;
+	smargin = progdefaults.oliviasmargin;
+	sinteg = progdefaults.oliviasinteg;
 	lastfreq = 0;
 	init();
 }

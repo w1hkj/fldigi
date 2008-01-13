@@ -1048,14 +1048,14 @@ progdefaults.changed = true;}
             xywh {0 50 400 170} color 51 selection_color 51 hide
           } {
             Fl_Choice mnuOlivia_Tones {
-              label {Tones:}
+              label Tones
               callback {progdefaults.changed = true;} open
               xywh {90 72 85 20} down_box BORDER_BOX
               code0 {o->add(szOliviaTones);}
               code1 {o->value(2);}
             } {}
             Fl_Choice mnuOlivia_Bandwidth {
-              label {Bandwidth:}
+              label Bandwidth
               callback {progdefaults.changed = true;} open
               xywh {270 72 85 20} down_box BORDER_BOX
               code0 {o->add(szOliviaBandwidth);}
@@ -1067,6 +1067,16 @@ progdefaults.changed = true;}
 resetOLIVIA();
 progdefaults.changed = true;}
               xywh {300 172 79 28}
+            }
+            Fl_Counter cntOlivia_smargin {
+              label {RX sync tune margin}
+              callback {progdefaults.changed = true;}
+              xywh {90 105 85 20} type Simple align 8 minimum 2 maximum 128 step 1 value 2
+            }
+            Fl_Counter cntOlivia_sinteg {
+              label {RX sync integration period}
+              callback {progdefaults.changed = true;} selected
+              xywh {90 135 85 20} type Simple align 8 minimum 2 maximum 128 step 1 value 2
             }
           }
           Fl_Group tabPSK {

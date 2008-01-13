@@ -76,6 +76,8 @@ configuration progdefaults = {
 // OLIVIA
 	2,				// int		oliviatones;
 	2,				// int		oliviabw;
+	2,				// int		oliviasmargin
+	2,				// int		oliviasinteg
 // DOMINOEX
 	2.0,			// double	DOMINOEX_BW;
 //
@@ -198,7 +200,7 @@ enum TAG { \
 	CWBANDWIDTH, CWRANGE, CWLOWERLIMIT, CWUPPERLIMIT,
 	CWTRACK, CWRISETIME, CWDASH2DOT,
 	XQSK, CWPRE, CWPOST, CWID, CWIDWPM,
-	OLIVIATONES, OLIVIABW,
+	OLIVIATONES, OLIVIABW, OLIVIASMARGIN, OLIVIASINTEG,
 	DOMINOEXBW, 
 	FELDFONTNBR, FELDIDLE,
 	WFPREFILTER,
@@ -330,6 +332,8 @@ void configuration::writeDefaultsXML()
 	
 	writeXMLint(f, "OLIVIATONES", oliviatones);
 	writeXMLint(f, "OLIVIABW", oliviabw);
+	writeXMLint(f, "OLIVIASMARGIN", oliviasmargin);
+	writeXMLint(f, "OLIVIASINTEG", oliviasinteg);
 	writeXMLdbl(f, "DOMINOEXBW", DOMINOEX_BW);
 	writeXMLint(f, "FELDFONTNBR", feldfontnbr);
 	writeXMLbool(f, "FELDIDLE", FELD_IDLE);
@@ -587,6 +591,12 @@ bool configuration::readDefaultsXML()
 						break;
 					case OLIVIABW :
 						oliviabw = atoi(xml->getNodeData());
+						break;
+					case OLIVIASMARGIN :
+						oliviasmargin = atoi(xml->getNodeData());
+						break;
+					case OLIVIASINTEG :
+						oliviasinteg = atoi(xml->getNodeData());
 						break;
 					case DOMINOEXBW :
 						DOMINOEX_BW = atof(xml->getNodeData());
@@ -871,6 +881,8 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("IDWPM", nodeName)) tag = CWIDWPM;
 				else if (!strcmp("OLIVIATONES", nodeName)) 	tag = OLIVIATONES;
 				else if (!strcmp("OLIVIABW", nodeName)) 	tag = OLIVIABW;
+				else if (!strcmp("OLIVIASMARGIN", nodeName)) 	tag = OLIVIASMARGIN;
+				else if (!strcmp("OLIVIASINTEG", nodeName)) 	tag = OLIVIASINTEG;
 				else if (!strcmp("DOMINOEXBW", nodeName)) 	tag = DOMINOEXBW;
 				else if (!strcmp("FELDFONTNBR", nodeName)) 	tag = FELDFONTNBR;
 				else if (!strcmp("FELDIDLE", nodeName)) 	tag = FELDIDLE;
@@ -985,6 +997,8 @@ void configuration::loadDefaults() {
 // OLIVIA
 	mnuOlivia_Tones->value(oliviatones);
 	mnuOlivia_Bandwidth->value(oliviabw);
+	cntOlivia_smargin->value(oliviasmargin);
+	cntOlivia_sinteg->value(oliviasinteg);
 
 	FL_UNLOCK();
 }

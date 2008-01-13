@@ -72,6 +72,8 @@ struct configuration {
 // OLIVIA
 	int			oliviatones;
 	int			oliviabw;
+	int			oliviasmargin;
+	int			oliviasinteg;
 // DOMINOEX
 	double		DOMINOEX_BW;
 // User interface data
