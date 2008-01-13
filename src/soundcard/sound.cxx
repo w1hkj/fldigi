@@ -769,9 +769,9 @@ void cSoundPA::Close(void)
         int err;
 
         if ((err = Pa_StopStream(stream)) != paNoError)
-                cerr << "Pa_StopStream error: " << Pa_GetErrorText(err) << '\n';
+                pa_perror(err, "Pa_StopStream");
         if ((err = Pa_CloseStream(stream)) != paNoError)
-                cerr << "Pa_CloseStream error: " << Pa_GetErrorText(err) << '\n';
+                pa_perror(err, "Pa_CloseStream");
 
         stream = 0;
 }
@@ -782,11 +782,10 @@ int cSoundPA::Read(double *buf, int count)
         int err;
 
         if ((err = Pa_ReadStream(stream, fbuf, ncount)) != paNoError) {
-                cerr << "Pa_ReadStream: " << Pa_GetErrorText(err) << '\n';
+                pa_perror(err, "Pa_ReadStream");
                 if (err == paInputOverflowed)
-                        adjust_stream();
-                else
-                        throw SndException(err);
+                        return adjust_stream() ? Read(buf, count) : 0;
+                throw SndException(err);
         }
 
 	if (capture)
@@ -829,11 +828,10 @@ int cSoundPA::write_samples(double *buf, int count)
 
         int err;
         if ((err = Pa_WriteStream(stream, wbuf, count)) != paNoError) {
-                cerr << "Pa_WriteStream: " << Pa_GetErrorText(err) << '\n';
+                pa_perror(err, "Pa_WriteStream");
                 if (err == paOutputUnderflowed)
-                        adjust_stream();
-                else
-                        throw SndException(err);
+                        return adjust_stream() ? write_samples(buf, count) : 0;
+                throw SndException(err);
         }
 
         return count;
@@ -858,11 +856,10 @@ int cSoundPA::write_stereo(double *bufleft, double *bufright, int count)
 
         int err;
         if ((err = Pa_WriteStream(stream, wbuf, count)) != paNoError) {
-                cerr << "Pa_WriteStream: " << Pa_GetErrorText(err) << '\n';
+                pa_perror(err, "Pa_WriteStream");
                 if (err == paOutputUnderflowed)
-                        adjust_stream();
-                else
-                        throw SndException(err);
+                        return adjust_stream() ? write_stereo(bufleft, bufright, count) : 0;
+                throw SndException(err);
         }
 
         return count;
@@ -1033,10 +1030,10 @@ bool cSoundPA::full_duplex_device(const PaDeviceInfo* dev)
         return dev->maxInputChannels > 0 && dev->maxOutputChannels > 0;
 }
 
-void cSoundPA::adjust_stream(void)
+bool cSoundPA::adjust_stream(void)
 {
         if (frames_per_buffer == max_frames_per_buffer)
-                return;
+                return false;
 
         if (frames_per_buffer != paFramesPerBufferUnspecified)
                 frames_per_buffer *= 2;
@@ -1052,6 +1049,8 @@ void cSoundPA::adjust_stream(void)
              << frames_per_buffer << endl;
         Close();
         start_stream();
+
+        return true;
 }
 
 // Determine the sample rate that we will use. We try the modem's rate
@@ -1078,12 +1077,33 @@ double cSoundPA::find_srate(void)
                         return srates[i];
 #ifndef NDEBUG
                 else
-                        cerr << "Pa_IsFormatSupported: " << Pa_GetErrorText(err) << '\n';
+                        pa_perror(err, "Pa_IsFormatSupported");
 #endif
         }
 
         throw SndException(err);
         return -1;
+}
+
+void cSoundPA::pa_perror(int err, const char* str)
+{
+        if (str)
+                cerr << str << ": " << Pa_GetErrorText(err) << '\n';
+
+        if (err == paUnanticipatedHostError) {
+                const PaHostErrorInfo* hosterr = Pa_GetLastHostErrorInfo();
+                PaHostApiIndex i = Pa_HostApiTypeIdToHostApiIndex(hosterr->hostApiType);
+
+                if (i < 0) { // PA failed without setting its "last host error" info. Sigh...
+                        cerr << "Host API error info not available\n";
+                        if ((*idev)->hostApi == paOSS && errno)
+                                cerr << "Possible OSS error " << errno << ": "
+                                     << strerror(errno) << '\n';
+                }
+                else
+                        cerr << Pa_GetHostApiInfo(i)->name << " error "
+                             << hosterr->errorCode << ": " << hosterr->errorText << '\n';
+        }
 }
 
 #endif // USE_PORTAUDIO
