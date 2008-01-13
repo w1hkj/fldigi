@@ -637,7 +637,7 @@ void debug_exec(char** argv)
         setenv("FLDIGI_NO_EXEC", "1", 0);
         setenv("MALLOC_CHECK_", "3", 0);
         setenv("MALLOC_PERTURB_", "42", 0);
-        if (execv(*argv, argv) == -1)
-                perror("execv");
+        if (execvp(*argv, argv) == -1)
+                perror("execvp");
 #endif
 }
