@@ -26,6 +26,8 @@
 
 #include <config.h>
 
+#include <cstring>
+
 #include "interleave.h"
 
 // ---------------------------------------------------------------------- 
@@ -37,11 +39,12 @@ interleave::interleave (int _size, int dir)
 	else depth = 5;
 	direction = dir;
 	table = new unsigned char [depth * size * size];
+	memset(table, 0, depth * size * size);
 }
 
 interleave::~interleave ()
 {
-	if (table) delete [] table;
+	delete [] table;
 }
 
 
@@ -68,9 +71,8 @@ void interleave::symbols(unsigned char *psyms)
 
 void interleave::bits(unsigned int *pbits)
 {
-	unsigned char *syms;
+	unsigned char syms[size];
 	int i;
-	syms = new unsigned char [size];
 
 	for (i = 0; i < size; i++)
 		syms[i] = (*pbits >> (size - i - 1)) & 1;

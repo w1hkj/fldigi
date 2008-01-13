@@ -169,6 +169,8 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 	pipeptr = 0;
 	squelch = 0;
 	metric = 0;
+	prev1symbol = prev2symbol = 0;
+	symbolpair[0] = symbolpair[1] = 0;
 
 	init();
 }
