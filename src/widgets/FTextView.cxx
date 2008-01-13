@@ -558,10 +558,14 @@ void FTextView::change_keybindings(void)
 
 	// walk the keybindings linked list and delete items containing elements
 	// of fdelete
+loop:
 	for (Fl_Text_Editor_mod::Key_Binding *k = key_bindings; k; k = k->next) {
-		for (int i = 0; i < n; i++)
-			if (k->function == fdelete[i])
+		for (int i = 0; i < n; i++) {
+			if (k->function == fdelete[i]) {
 				remove_key_binding(k->key, k->state);
+				goto loop;
+			}
+		}
 	}
 }
 
