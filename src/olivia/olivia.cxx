@@ -254,11 +254,11 @@ int olivia::rx_process(const double *buf, int len)
 	
 	double s2n = 20.0 * log10(snr);
 
-	sprintf(msg1, "s/n %4.1f", s2n);//Rx->SignalToNoiseRatio()); 
+	snprintf(msg1, sizeof(msg1), "s/n %4.1f", s2n);//Rx->SignalToNoiseRatio()); 
 	put_Status1(msg1);
-	sprintf(msg2, "Freq: %+4.1f", Rx->FrequencyOffset());
+	snprintf(msg2, sizeof(msg2), "Freq: %+4.1f", Rx->FrequencyOffset());
 	put_Status2(msg2);
-//	sprintf(msg3, "Tune: %4.1f, Time: %5.3f Hz, Block: %5.3f sec",
+//	snprintf(msg3, sizeof(msg3), "Tune: %4.1f, Time: %5.3f Hz, Block: %5.3f sec",
 //		Rx->TuneMargin(), Rx->TimeOffset(), Rx->BlockPeriod());
 //	put_status(msg3);
 
@@ -356,6 +356,9 @@ olivia::olivia()
 
 	mode = MODE_OLIVIA;
 //	wfid = new id(this);
+	smargin = 2;
+	sinteg = 2;
+	lastfreq = 0;
 	init();
 }
 
