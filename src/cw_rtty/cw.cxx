@@ -89,6 +89,7 @@ cw::cw() : modem()
 
 	mode = MODE_CW;
 	freqlock = false;
+	usedefaultWPM = false;
 	frequency = progdefaults.CWsweetspot;
 	tx_frequency = get_txfreq_woffset();
 	risetime = progdefaults.CWrisetime;
