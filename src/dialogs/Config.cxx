@@ -519,6 +519,14 @@ static void cb_inpQRZuserpassword(Fl_Input* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Button *btnQRZpasswordShow=(Fl_Button *)0;
+
+static void cb_btnQRZpasswordShow(Fl_Button* o, void*) {
+  inpQRZuserpassword->type(inpQRZuserpassword->type() ^ FL_SECRET_INPUT);
+inpQRZuserpassword->redraw();
+o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");
+}
+
 Fl_Group *tabSoundCard=(Fl_Group *)0;
 
 Fl_Tabs *tabsSoundCard=(Fl_Tabs *)0;
@@ -1473,7 +1481,10 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         }
         { Fl_Input* o = inpQRZuserpassword = new Fl_Input(150, 160, 90, 25, "User password:");
           o->callback((Fl_Callback*)cb_inpQRZuserpassword);
-          o->value(progdefaults.QRZuserpassword.c_str());
+          o->value(progdefaults.QRZuserpassword.c_str()); o->type(FL_SECRET_INPUT);
+        }
+        { Fl_Button* o = btnQRZpasswordShow = new Fl_Button(245, 160, 50, 25, "Show");
+          o->callback((Fl_Callback*)cb_btnQRZpasswordShow);
         }
         o->end();
       }
