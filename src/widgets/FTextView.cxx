@@ -36,6 +36,7 @@
 #include "File_Selector.h"
 
 #include "ascii.h"
+#include "configuration.h"
 #include "qrunner.h"
 
 
@@ -290,16 +291,16 @@ void FTextBase::adjust_colours(void)
 
 
 Fl_Menu_Item FTextView::view_menu[] = {
-	{ "@-9$returnarrow &QRZ this call",	0, 0 },
+	{ "@-4>> &QRZ this call",		0, 0 },
 	{ "@-9-> &Call",			0, 0 },
 	{ "@-9-> &Name",			0, 0 },
 	{ "@-9-> QT&H",				0, 0 },
 	{ "@-9-> &Locator",			0, 0 },
-	{ "@-9-> &RSTin",			0, 0, 0, FL_MENU_DIVIDER },
+	{ "@-9-> &RST(r)",			0, 0, 0, FL_MENU_DIVIDER },
 	{ "Insert divider",			0, 0 },
 	{ "C&lear",				0, 0 },
 	{ "&Copy",				0, 0, 0, FL_MENU_DIVIDER },
-#ifndef NDEBUG
+#if 0 //#ifndef NDEBUG
         { "(debug) &Append file...",		0, 0, 0, FL_MENU_DIVIDER },
 #endif
 	{ "Save to &file...",			0, 0, 0, FL_MENU_DIVIDER },
@@ -373,6 +374,7 @@ int FTextView::handle(int event)
 			view_menu[RX_MENU_WRAP].flags |= FL_MENU_VALUE;
 		else
 			view_menu[RX_MENU_WRAP].flags &= ~FL_MENU_VALUE;
+		context_menu = progdefaults.QRZ ? view_menu : view_menu + 1;
 
 		show_context_menu();
 		return 1;
@@ -450,7 +452,8 @@ void FTextView::add(char c, int attr)
 ///
 void FTextView::menu_cb(int val)
 {
-	handle(FL_UNFOCUS);
+	if (progdefaults.QRZ == 0)
+		++val;
 
 	switch (val) {
 		char *s;
@@ -914,7 +917,6 @@ int FTextEdit::handle_key_ascii(int key)
 ///
 void FTextEdit::menu_cb(int val)
 {
-	handle(FL_UNFOCUS);
 	switch (val) {
 	case TX_MENU_TX:
 		active_modem->set_stopflag(false);
