@@ -731,7 +731,7 @@ int FTextEdit::nextChar(void)
 	else {
 		if ((c = tbuf->character(txpos))) {
 			++txpos;
-			REQ(FTextEdit::changed_cb, txpos, 0, 0, 0,
+			REQ(FTextEdit::changed_cb, txpos, 0, 0, -1,
 			    static_cast<const char *>(0), this);
 		}
 	}
@@ -978,7 +978,7 @@ void FTextEdit::changed_cb(int pos, int nins, int ndel, int nsty, const char *dt
 	FTextEdit *e = reinterpret_cast<FTextEdit *>(arg);
 
 	if (nins == 0 && ndel == 0) {
-		if (nsty == 0) { // update transmitted text style
+		if (nsty == -1) { // called by nextChar to update transmitted text style
 			char s[] = { FTEXT_DEF + XMIT, '\0' };
 			e->sbuf->replace(pos - 1, pos, s);
 			e->redisplay_range(pos - 1, pos);
@@ -986,7 +986,7 @@ void FTextEdit::changed_cb(int pos, int nins, int ndel, int nsty, const char *dt
 		else if (nsty > 0) // restyled, e.g. selected, text
 			return e->buffer_modified_cb(pos, nins, ndel, nsty, dtext,
 						     dynamic_cast<Fl_Text_Editor_mod *>(e));
-
+                // No changes, e.g., a paste with an empty clipboard.
 		return;
 	}
 	else if (nins > 0 && e->sbuf->length() < e->tbuf->length()) {
