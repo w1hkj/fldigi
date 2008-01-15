@@ -52,18 +52,18 @@ extern int WNOM;
 #define WFMARKER     6
 #define BTN_HEIGHT	20
 
-#define bwColor		30
+#define bwColor		25
 #define bwFFT		30
-#define bwX1		30
+#define bwX1		20
 #define bwMov		20
 #define cwCnt		100
 #define cwRef		50
 #define cwMode		85
-#define bwQsy		45
+#define bwQsy		35
 #define bwRate		45
-#define bwXmtLock	45
-#define bwRev		45
-#define bwMem		45
+#define bwXmtLock	40
+#define bwRev		40
+#define bwMem		37
 #define bwXmtRcv	45
 #define wSpace		2
 
