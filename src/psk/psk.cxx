@@ -197,6 +197,7 @@ psk::psk(trx_mode pskmode) : modem()
 	samplerate = PskSampleRate;
 	fragmentsize = symbollen;
 	bandwidth = samplerate / symbollen;
+	snratio = s2n = imdratio = imd = 0;
 //	wfid = new id(this);
 	
 //	pipeptr = 0;

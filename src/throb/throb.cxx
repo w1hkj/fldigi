@@ -216,7 +216,7 @@ throb::throb(trx_mode throb_mode) : modem()
 
 	syncfilt = new C_FIR_filter();
 	syncfilt->init(symlen / DOWN_SAMPLE, 1, fp, NULL);
-	delete fp;
+	delete [] fp;
 	
 	snfilter = new Cmovavg(16);
 

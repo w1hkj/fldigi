@@ -246,6 +246,7 @@ void selectFreq()
 	if (freqlist[n].rfcarrier > 0) {
 		FreqDisp->value(freqlist[n].rfcarrier);
 		movFreq();
+		MilliSleep(100);
 	}
 
 	if (freqlist[n].rmode != "NONE") {

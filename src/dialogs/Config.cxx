@@ -913,6 +913,18 @@ resetOLIVIA();
 progdefaults.changed = true;
 }
 
+Fl_Counter *cntOlivia_smargin=(Fl_Counter *)0;
+
+static void cb_cntOlivia_smargin(Fl_Counter*, void*) {
+  progdefaults.changed = true;
+}
+
+Fl_Counter *cntOlivia_sinteg=(Fl_Counter *)0;
+
+static void cb_cntOlivia_sinteg(Fl_Counter*, void*) {
+  progdefaults.changed = true;
+}
+
 Fl_Group *tabPSK=(Fl_Group *)0;
 
 Fl_Counter *cntSearchRange=(Fl_Counter *)0;
@@ -1856,13 +1868,13 @@ fect after a restart.");
             o->color((Fl_Color)51);
             o->selection_color((Fl_Color)51);
             o->hide();
-            { Fl_Choice* o = mnuOlivia_Tones = new Fl_Choice(90, 72, 85, 20, "Tones:");
+            { Fl_Choice* o = mnuOlivia_Tones = new Fl_Choice(90, 72, 85, 20, "Tones");
               o->down_box(FL_BORDER_BOX);
               o->callback((Fl_Callback*)cb_mnuOlivia_Tones);
               o->add(szOliviaTones);
               o->value(2);
             }
-            { Fl_Choice* o = mnuOlivia_Bandwidth = new Fl_Choice(270, 72, 85, 20, "Bandwidth:");
+            { Fl_Choice* o = mnuOlivia_Bandwidth = new Fl_Choice(270, 72, 85, 20, "Bandwidth");
               o->down_box(FL_BORDER_BOX);
               o->callback((Fl_Callback*)cb_mnuOlivia_Bandwidth);
               o->add(szOliviaBandwidth);
@@ -1870,6 +1882,24 @@ fect after a restart.");
             }
             { Fl_Button* o = btnRestartOlivia = new Fl_Button(300, 172, 79, 28, "Restart");
               o->callback((Fl_Callback*)cb_btnRestartOlivia);
+            }
+            { Fl_Counter* o = cntOlivia_smargin = new Fl_Counter(90, 105, 85, 20, "RX sync tune margin");
+              o->type(1);
+              o->minimum(2);
+              o->maximum(128);
+              o->step(1);
+              o->value(2);
+              o->callback((Fl_Callback*)cb_cntOlivia_smargin);
+              o->align(FL_ALIGN_RIGHT);
+            }
+            { Fl_Counter* o = cntOlivia_sinteg = new Fl_Counter(90, 135, 85, 20, "RX sync integration period");
+              o->type(1);
+              o->minimum(2);
+              o->maximum(128);
+              o->step(1);
+              o->value(2);
+              o->callback((Fl_Callback*)cb_cntOlivia_sinteg);
+              o->align(FL_ALIGN_RIGHT);
             }
             o->end();
           }

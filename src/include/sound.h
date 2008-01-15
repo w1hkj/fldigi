@@ -205,8 +205,9 @@ private:
         void 		start_stream(void);
         bool		stream_active(void);
         bool		full_duplex_device(const PaDeviceInfo* dev);
-        void		adjust_stream(void);
+        bool		adjust_stream(void);
         double		find_srate(void);
+        void		pa_perror(int err, const char* str = 0);
 
 private:
         std::string	device;

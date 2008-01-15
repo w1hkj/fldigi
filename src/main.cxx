@@ -109,9 +109,11 @@ void arqchecks(void);
 void generate_option_help(void);
 int parse_args(int argc, char **argv, int& idx);
 void print_versions(std::ostream& s);
+void debug_exec(char** argv);
 
 int main(int argc, char ** argv)
 {
+	debug_exec(argv);
 	CREATE_THREAD_ID(); // only call this once
 	SET_THREAD_ID(FLMAIN_TID);
 
@@ -264,7 +266,9 @@ int main(int argc, char ** argv)
 	for (int i = 0; i < NUM_QRUNNER_THREADS; i++)
 		cbq[i]->detach();
 
+#if USE_PORTAUDIO
 	cSoundPA::terminate();
+#endif
 	return ret;
 }
 
@@ -608,5 +612,32 @@ void print_versions(std::ostream& s)
 
 #ifdef src_get_version
 	s << ' ' << src_get_version() << '\n';
+#endif
+}
+
+// When debugging is enabled, reexec with malloc debugging hooks enabled, unless
+// the env var FLDIGI_NO_EXEC is set, or our parent process is gdb or valgrind.
+void debug_exec(char** argv)
+{
+#ifndef NDEBUG
+        if (getenv("FLDIGI_NO_EXEC"))
+                return;
+
+	char ppath[32], lname[32];
+	ssize_t n;
+	snprintf(ppath, sizeof(ppath), "/proc/%u/exe", getppid());
+	if ((n = readlink(ppath, lname, sizeof(lname))) > 0) {
+		lname[n] = '\0';
+		if (strstr(lname, "gdb")) {
+                        cerr << "Not using malloc debugging hooks\n";
+                        return;
+                }
+	}
+
+        setenv("FLDIGI_NO_EXEC", "1", 0);
+        setenv("MALLOC_CHECK_", "3", 0);
+        setenv("MALLOC_PERTURB_", "42", 0);
+        if (execvp(*argv, argv) == -1)
+                perror("execvp");
 #endif
 }
