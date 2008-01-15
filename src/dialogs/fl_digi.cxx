@@ -577,10 +577,73 @@ void cb_mnuSaveConfig(Fl_Menu_ *, void *) {
 //	restoreFocus();
 //}
 
-void cb_mnuAbout(Fl_Menu_*,void*) {
-	fl_message ("fldigi @@W1HKJ\n\nw1hkj@@w1hkj.com\n\nVersion - %s", PACKAGE_VERSION);
+void cb_mnuAbout(Fl_Widget*, void*)
+{
+	fl_message ("%s @@W1HKJ\n\n%s\n\n%s\n\nVersion %s", PACKAGE_NAME,
+		    PACKAGE_BUGREPORT, PACKAGE_HOME, PACKAGE_VERSION);
 	restoreFocus();
 }
+
+void cb_mnuVisitURL(Fl_Widget*, void* arg)
+{
+	const char* url = reinterpret_cast<const char *>(arg);
+	const char* browsers[] = { getenv("BROWSER"), "xdg-open", "sensible-brower",
+				   "firefox", "mozilla" };
+	switch (fork()) {
+	case 0:
+		for (size_t i = 0; i < sizeof(browsers)/sizeof(browsers[0]); i++)
+			if (browsers[i])
+				execlp(browsers[i], browsers[i], url, (char*)0);
+		perror("Could not execute a web browser");
+		exit(EXIT_FAILURE);
+	case -1:
+		fl_alert("Could not run a web browser:\n%s\n\n"
+			 "Open this URL manually:\n%s",
+			 strerror(errno), url);
+	}
+
+        restoreFocus();
+}
+
+void cb_mnuCmdLineHelp(Fl_Widget*, void*)
+{
+	extern std::string option_help;
+
+	fl_message_font(FL_SCREEN, FL_NORMAL_SIZE - 1);
+	fl_message("%s", option_help.c_str());
+	fl_message_font(FL_HELVETICA, FL_NORMAL_SIZE);
+
+	restoreFocus();
+}
+
+void cb_mnuBuildInfo(Fl_Widget*, void*)
+{
+	extern void print_versions(std::ostream&);
+
+	std::ostringstream ss;
+	print_versions(ss);
+	std::string s = ss.str();
+	std::string::size_type i = 0;
+
+        // escape the at chars
+	while ((i = s.find('@', i)) != std::string::npos) {
+		s.insert(i, 1, '@');
+		i += 2;
+	}
+
+	fl_message_font(FL_SCREEN, FL_NORMAL_SIZE - 1);
+	fl_message("%s", s.c_str());
+	fl_message_font(FL_HELVETICA, FL_NORMAL_SIZE);
+
+	restoreFocus();
+}
+
+#ifndef NDEBUG
+void cb_mnuFun(Fl_Widget*, void*)
+{
+        fl_message("Sunspot creation underway!");
+}
+#endif
 
 void cbTune(Fl_Widget *w, void *) {
 	Fl_Button *b = (Fl_Button *)w;
@@ -869,12 +932,23 @@ Fl_Menu_Item menu_[] = {
 {"Modems", 0, (Fl_Callback*)cb_mnuConfigModems, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"Save Config", 0, (Fl_Callback*)cb_mnuSaveConfig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
+
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
 {"Rig", 0, (Fl_Callback*)cb_mnuRig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
+
 {"Help", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{"About", 0, (Fl_Callback*)cb_mnuAbout, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+#ifndef NDEBUG
+// settle the gmfsk vs fldigi argument once and for all
+{"@-1circle  Create sunspots", 0, cb_mnuFun, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+#endif
+{"Online documentation", 0, cb_mnuVisitURL, (void *)PACKAGE_DOCS, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{"Home page", 0, cb_mnuVisitURL, (void *)PACKAGE_HOME, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{"Command line options", 0, cb_mnuCmdLineHelp, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{"Build info", 0, cb_mnuBuildInfo, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{"About", 0, cb_mnuAbout, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
+
 {"  ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 };

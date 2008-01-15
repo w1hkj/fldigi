@@ -11,6 +11,9 @@ AM_MAINTAINER_MODE
 AC_CONFIG_SRCDIR([src/main.cxx])
 AC_CONFIG_HEADER([src/config.h])
 
+AC_DEFINE(PACKAGE_HOME, ["http://www.w1hkj.com/Fldigi-2.x.html"], [Home page])
+AC_DEFINE(PACKAGE_DOCS, ["http://www.w1hkj.com/FldigiHelp-2.0/index.html"], [Docs index])
+
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
