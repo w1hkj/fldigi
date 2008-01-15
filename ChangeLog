@@ -23,6 +23,25 @@ Change Log:
      11) Set locale only for LC_TIME
      12) Add .desktop, move icons to data/
      13) Minor changes to configure.ac
+     14) Stacktrace updates Kill a newline in Aborting... message.
+         Skip pstack's own frame when printing stack trace.
+     15) Print host API errors
+     16) Add debug_exec
+     17) Fix key bindings loop
+     18) Olivia bug fixes.  Set smargin and sinteg to avoid access to 
+         uninitialised memory.  Also set lastfreq to 0 in ctor to avoid 
+         valgrind warnings
+     19) MFSK bug fixes.  Set some variables to avoid accessing uninitialised 
+         memory.  Initialise interleave table with 0s; the original gmfsk code
+         used g_new0 to do this. This avoids another access to random bits.
+         Fix memory leak by creating the small syms array on the stack.
+         Initialise symbolpair[] with 0s in ctor to avoid vargrind warnings
+     20) CW fix.  Initialise usedefaultWPM in ctor to avoid valgrind warning 
+         about conditional jump depending on access to uninitialised memory
+     21) Throb bug fix.  Plug a memory leak caused by using the wrong delete 
+         operator.
+     22) PSK bug fix. Initialise s/n and imd variables.
+     23) Add Olivia settings.
 
 2.07  1) bug fix for mode changes via SysV interface (pskmail / flarq)
       2) bug fix for modem configuration post quick change from status
