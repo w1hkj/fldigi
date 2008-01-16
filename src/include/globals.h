@@ -119,6 +119,12 @@ public:
         {
 		return rfcarrier < rhs.rfcarrier;
 	}
+	bool operator==(const qrg_mode_t& rhs) const
+	{
+		return rfcarrier == rhs.rfcarrier && rmode == rhs.rmode &&
+		       carrier == rhs.carrier && mode == rhs.mode;
+	}
+        std::string str(void);
 };
 std::ostream& operator<<(std::ostream& s, const qrg_mode_t& m);
 std::istream& operator>>(std::istream& s, qrg_mode_t& m);

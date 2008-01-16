@@ -51,10 +51,9 @@ static void cb_btnRCclose(Fl_Button*, void*) {
 
 Fl_Double_Window* rig_dialog() {
   Fl_Double_Window* w;
-  { Fl_Double_Window* o = new Fl_Double_Window(390, 80, "Rig Controller");
+  { Fl_Double_Window* o = new Fl_Double_Window(560, 80, "Rig Controller");
     w = o;
     o->box(FL_DOWN_BOX);
-    o->color((Fl_Color)23);
     { cFreqControl* o = FreqDisp = new cFreqControl(4, 31, 253, 44, "9");
       o->box(FL_DOWN_BOX);
       o->color(FL_BACKGROUND_COLOR);
@@ -68,8 +67,8 @@ Fl_Double_Window* rig_dialog() {
       o->setCallBack(movFreq);
       o->SetONOFFCOLOR( FL_RED, FL_BLACK);
     }
-    { Fl_Browser* o = FreqSelect = new Fl_Browser(278, 5, 108, 70);
-      o->tooltip("Select operating frequency");
+    { Fl_Browser* o = FreqSelect = new Fl_Browser(278, 5, 280, 70);
+      o->tooltip("Select operating mode and frequency");
       o->type(2);
       o->box(FL_DOWN_BOX);
       o->labelfont(4);
@@ -123,5 +122,14 @@ Fl_Double_Window* rig_dialog() {
     }
     o->end();
   }
+  // Resizable kludge
+// Move FreqSelect one pixel down so that we can define a box
+// that will be used resize this widget only. There has to be
+// a better way of doing this...
+{
+FreqSelect->resize(FreqSelect->x(), FreqSelect->y() + 1, FreqSelect->w(), FreqSelect->h());
+Fl_Box* b_ = new Fl_Box(FreqSelect->x() + FreqSelect->w() - 1, FreqSelect->y() + FreqSelect->h() - 1, 1, 1);
+w->add_resizable(*b_);
+}
   return w;
 }

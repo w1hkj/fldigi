@@ -32,6 +32,10 @@ string windowTitle;
 
 vector<qrg_mode_t> freqlist;
 
+const unsigned char nfields = 4;
+int fwidths[nfields];
+enum { max_rfcarrier, max_rmode, max_mode };
+
 #if USE_HAMLIB
 struct rmode_name_t {
 	rmode_t mode;
@@ -126,17 +130,13 @@ void clearList()
 void updateSelect()
 {
 	FreqSelect->clear();
-	if (freqlist.size() == 0)
+	if (freqlist.empty())
 		return;
-
-	char freq[20];
-	for (size_t i = 0; i < freqlist.size(); i++) {
-		snprintf(freq, sizeof(freq), "%9.3f", freqlist[i].rfcarrier / 1000.0);
-		FreqSelect->add(freq);
-	}
+        for (size_t i = 0; i < freqlist.size(); i++)
+                FreqSelect->add(freqlist[i].str().c_str());
 }
 
-void addtoList(long val)
+size_t addtoList(long val)
 {
 	qrg_mode_t m;
 
@@ -149,6 +149,12 @@ void addtoList(long val)
 	}
 	freqlist.push_back(m);
 	sort(freqlist.begin(), freqlist.end());
+
+	vector<qrg_mode_t>::const_iterator pos = find(freqlist.begin(), freqlist.end(), m);
+	if (pos != freqlist.end())
+		return pos - freqlist.begin();
+	else
+		return 0;
 }
 
 bool readFreqList()
@@ -166,6 +172,7 @@ bool readFreqList()
 		is >> m;
 		freqlist.push_back(m);
 	}
+	sort(freqlist.begin(), freqlist.end());
 	updateSelect();
 
 	return freqlist.size();
@@ -186,6 +193,30 @@ void saveFreqList()
 
 void buildlist()
 {
+	// calculate the column widths
+	memset(fwidths, 0, sizeof(fwidths));
+	// these need to be a little wider than fl_width thinks
+	fwidths[max_rmode] = fwidths[max_mode] = 10;
+	fl_font(FreqSelect->textfont(), FreqSelect->textsize());
+
+	fwidths[max_rfcarrier] += (int)ceil(fl_width("99999999.999"));
+
+        fwidths[max_rmode] += (int)ceil(fl_width("XXXX"));
+
+	// find mode with longest shortname
+	size_t s, smax = 0, mmax = 0;
+	for (size_t i = 0; i < NUM_MODES; i++) {
+		s = strlen(mode_info[i].sname);
+		if (smax < s) {
+			smax = s;
+			mmax = i;
+		}
+	}
+	fwidths[max_mode] += (int)ceil(fl_width(mode_info[mmax].sname));
+
+	FreqSelect->column_widths(fwidths);
+
+
 	if (readFreqList() == true)
 		return;
 	Fl::lock();
@@ -268,7 +299,7 @@ void delFreq()
 
 	if (v >= 0) {
 		freqlist.erase(freqlist.begin() + v);
-		updateSelect();
+		FreqSelect->remove(v + 1);
 	}
 }
 
@@ -276,8 +307,8 @@ void addFreq()
 {
 	long freq = FreqDisp->value();
 	if (freq) {
-		addtoList(freq);
-		updateSelect();
+		size_t pos = addtoList(freq);
+		FreqSelect->insert(pos+1, freqlist[pos].str().c_str());
 	}
 }
 

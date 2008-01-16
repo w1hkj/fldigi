@@ -10,7 +10,7 @@ Function {rig_dialog()} {open
 } {
   Fl_Window {} {
     label {Rig Controller} open selected
-    xywh {667 300 390 80} type Double box DOWN_BOX color 23
+    xywh {667 300 560 80} type Double box DOWN_BOX
     code0 {\#include <stdlib.h>} visible
   } {
     Fl_Box FreqDisp {
@@ -25,7 +25,7 @@ Function {rig_dialog()} {open
     Fl_Browser FreqSelect {
       callback {if (FreqSelect->value())
 (Fl::event_state() & FL_SHIFT) ? delFreq() : selectFreq();}
-      tooltip {Select operating frequency} xywh {278 5 108 70} type Hold box DOWN_BOX labelfont 4 labelsize 12 textfont 4
+      tooltip {Select operating mode and frequency} xywh {278 5 280 70} type Hold box DOWN_BOX labelfont 4 labelsize 12 textfont 4
     }
     Fl_Group opMODE {
       callback {setMode();} open
@@ -61,4 +61,13 @@ Function {rig_dialog()} {open
       code0 {extern void closeRigDialog();}
     }
   }
+  code {// Resizable kludge
+// Move FreqSelect one pixel down so that we can define a box
+// that will be used resize this widget only. There has to be
+// a better way of doing this...
+{
+FreqSelect->resize(FreqSelect->x(), FreqSelect->y() + 1, FreqSelect->w(), FreqSelect->h());
+Fl_Box* b_ = new Fl_Box(FreqSelect->x() + FreqSelect->w() - 1, FreqSelect->y() + FreqSelect->h() - 1, 1, 1);
+w->add_resizable(*b_);
+}} {}
 } 
