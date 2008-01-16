@@ -1096,7 +1096,7 @@ void cSoundPA::pa_perror(int err, const char* str)
 
                 if (i < 0) { // PA failed without setting its "last host error" info. Sigh...
                         cerr << "Host API error info not available\n";
-                        if ((*idev)->hostApi == paOSS && errno)
+                        if (Pa_GetHostApiInfo((*idev)->hostApi)->type == paOSS && errno)
                                 cerr << "Possible OSS error " << errno << ": "
                                      << strerror(errno) << '\n';
                 }
