@@ -92,9 +92,9 @@ void trx_trx_receive_loop()
 			scard->Open(O_RDONLY, active_modem->get_samplerate());
 		}
 		catch (const SndException& e) {
-			put_status(e.what());
+			put_status(e.what(), 5);
 #if USE_PORTAUDIO
-			if (e.error() == EBUSY) {
+			if (e.error() == EBUSY && progdefaults.btnAudioIOis == 1) {
 				cSoundPA::terminate();
 				cSoundPA::initialize();
 			}
@@ -102,11 +102,18 @@ void trx_trx_receive_loop()
 			MilliSleep(1000);
 			return;
 		}
-		put_status("");
 		active_modem->rx_init();
 
 		while (1) {
-			numread = scard->Read(_trx_scdbl, SCBLOCKSIZE);
+			try {
+				numread = scard->Read(_trx_scdbl, SCBLOCKSIZE);
+			}
+			catch (const SndException& e) {
+				scard->Close();
+				put_status(e.what(), 5);
+				MilliSleep(10);
+				return;
+			}
 			if (numread == -1 || (trx_state != STATE_RX))
 				break;
 			if (numread > 0) {
@@ -142,8 +149,16 @@ void trx_trx_transmit_loop()
 		active_modem->tx_init(scard);
 
 		while (trx_state == STATE_TX) {
-			if (active_modem->tx_process() < 0)
-				trx_state = STATE_RX;
+			try {
+				if (active_modem->tx_process() < 0)
+					trx_state = STATE_RX;
+			}
+			catch (const SndException& e) {
+				scard->Close();
+				put_status(e.what(), 5);
+				MilliSleep(10);
+				return;
+			}
 		}
 		if (!scard->full_duplex())
 			scard->Close();
@@ -177,15 +192,23 @@ void trx_tune_loop()
 		push2talk->set(true);
 		active_modem->tx_init(scard);
 
-		while (trx_state == STATE_TUNE) {
-			if (_trx_tune == 0) {
-				REQ_SYNC(&waterfall::set_XmtRcvBtn, wf, true);
-				xmttune::keydown(active_modem->get_txfreq_woffset(), scard);
-				_trx_tune = 1;
-			} else
-				xmttune::tune(active_modem->get_txfreq_woffset(), scard);
+		try {
+			while (trx_state == STATE_TUNE) {
+				if (_trx_tune == 0) {
+					REQ_SYNC(&waterfall::set_XmtRcvBtn, wf, true);
+					xmttune::keydown(active_modem->get_txfreq_woffset(), scard);
+					_trx_tune = 1;
+				} else
+					xmttune::tune(active_modem->get_txfreq_woffset(), scard);
+			}
+			xmttune::keyup(active_modem->get_txfreq_woffset(), scard);
 		}
-		xmttune::keyup(active_modem->get_txfreq_woffset(), scard);
+		catch (const SndException& e) {
+			scard->Close();
+			put_status(e.what(), 5);
+			MilliSleep(10);
+			return;
+		}
 		if (!scard->full_duplex())
 			scard->Close();
 		_trx_tune = 0;
