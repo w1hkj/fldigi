@@ -274,15 +274,15 @@ void selectFreq()
 {
 	int n = FreqSelect->value() - 1;
 
-	if (freqlist[n].rfcarrier > 0) {
-		FreqDisp->value(freqlist[n].rfcarrier);
-		movFreq();
-		MilliSleep(100);
-	}
-
 	if (freqlist[n].rmode != "NONE") {
 		opMODE->value(freqlist[n].rmode.c_str());
 		setMode();
+		MilliSleep(100);
+	}
+
+	if (freqlist[n].rfcarrier > 0) {
+		FreqDisp->value(freqlist[n].rfcarrier);
+		movFreq();
 	}
 
 	if (freqlist[n].mode != NUM_MODES) {
