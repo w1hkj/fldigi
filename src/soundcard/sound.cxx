@@ -32,20 +32,6 @@
 #include <FL/Fl.H>
 #include "File_Selector.h"
 
-#ifdef MIN
-# undef MIN
-#endif
-#define MIN(a,b) (((a) < (b)) ? (a) : (b))
-#ifdef MAX
-# undef MAX
-#endif
-#define MAX(a,b) (((a) > (b)) ? (a) : (b))
-
-#ifdef powerof2
-# undef powerof2
-#endif
-#define powerof2(n) ((((n) - 1) & (n)) == 0)
-
 
 cSound::cSound()
         : sample_frequency(0), txppm(progdefaults.TX_corr), rxppm(progdefaults.RX_corr),

@@ -997,7 +997,7 @@ void make_pixmap(Pixmap *xpm, const char **data)
 	w.make_current();
 
 	Fl_Pixmap icon(data);
-	int maxd = max(icon.w(), icon.h());
+	int maxd = MAX(icon.w(), icon.h());
 	*xpm = fl_create_offscreen(maxd, maxd);
 
 	fl_begin_offscreen(*xpm);

@@ -12,7 +12,15 @@ extern "C" {
 #ifndef powerof2
 #    define powerof2(n) ((((n) - 1) & (n)) == 0)
 #endif
-
+#ifndef MAX
+#    define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#endif
+#ifndef MIN
+#    define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#endif
+#ifndef CLAMP
+#    define CLAMP(x, low, high) (((x)>(high))?(high):(((x)<(low))?(low):(x)))
+#endif
 
 #ifdef __GNUC__
 #    if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)
