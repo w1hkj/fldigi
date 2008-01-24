@@ -26,7 +26,7 @@ extern void selBW(int);
 extern void selFreq(long int);
 extern void clearList();
 extern void updateSelect();
-extern void addtoList(long val);
+extern size_t addtoList(long val);
 extern void buildlist();
 extern int  movFreq();
 extern void selectFreq();

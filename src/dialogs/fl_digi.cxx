@@ -577,10 +577,73 @@ void cb_mnuSaveConfig(Fl_Menu_ *, void *) {
 //	restoreFocus();
 //}
 
-void cb_mnuAbout(Fl_Menu_*,void*) {
-	fl_message ("fldigi @@W1HKJ\n\nw1hkj@@w1hkj.com\n\nVersion - %s", PACKAGE_VERSION);
+void cb_mnuAbout(Fl_Widget*, void*)
+{
+	fl_message ("%s @@W1HKJ\n\n%s\n\n%s\n\nVersion %s", PACKAGE_NAME,
+		    PACKAGE_BUGREPORT, PACKAGE_HOME, PACKAGE_VERSION);
 	restoreFocus();
 }
+
+void cb_mnuVisitURL(Fl_Widget*, void* arg)
+{
+	const char* url = reinterpret_cast<const char *>(arg);
+	const char* browsers[] = { getenv("BROWSER"), "xdg-open", "sensible-brower",
+				   "firefox", "mozilla" };
+	switch (fork()) {
+	case 0:
+		for (size_t i = 0; i < sizeof(browsers)/sizeof(browsers[0]); i++)
+			if (browsers[i])
+				execlp(browsers[i], browsers[i], url, (char*)0);
+		perror("Could not execute a web browser");
+		exit(EXIT_FAILURE);
+	case -1:
+		fl_alert("Could not run a web browser:\n%s\n\n"
+			 "Open this URL manually:\n%s",
+			 strerror(errno), url);
+	}
+
+        restoreFocus();
+}
+
+void cb_mnuCmdLineHelp(Fl_Widget*, void*)
+{
+	extern std::string option_help;
+
+	fl_message_font(FL_SCREEN, FL_NORMAL_SIZE - 1);
+	fl_message("%s", option_help.c_str());
+	fl_message_font(FL_HELVETICA, FL_NORMAL_SIZE);
+
+	restoreFocus();
+}
+
+void cb_mnuBuildInfo(Fl_Widget*, void*)
+{
+	extern void print_versions(std::ostream&);
+
+	std::ostringstream ss;
+	print_versions(ss);
+	std::string s = ss.str();
+	std::string::size_type i = 0;
+
+        // escape the at chars
+	while ((i = s.find('@', i)) != std::string::npos) {
+		s.insert(i, 1, '@');
+		i += 2;
+	}
+
+	fl_message_font(FL_SCREEN, FL_NORMAL_SIZE - 1);
+	fl_message("%s", s.c_str());
+	fl_message_font(FL_HELVETICA, FL_NORMAL_SIZE);
+
+	restoreFocus();
+}
+
+#ifndef NDEBUG
+void cb_mnuFun(Fl_Widget*, void*)
+{
+        fl_message("Sunspot creation underway!");
+}
+#endif
 
 void cbTune(Fl_Widget *w, void *) {
 	Fl_Button *b = (Fl_Button *)w;
@@ -869,12 +932,23 @@ Fl_Menu_Item menu_[] = {
 {"Modems", 0, (Fl_Callback*)cb_mnuConfigModems, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"Save Config", 0, (Fl_Callback*)cb_mnuSaveConfig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
+
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
 {"Rig", 0, (Fl_Callback*)cb_mnuRig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
+
 {"Help", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{"About", 0, (Fl_Callback*)cb_mnuAbout, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+#ifndef NDEBUG
+// settle the gmfsk vs fldigi argument once and for all
+{"@-1circle  Create sunspots", 0, cb_mnuFun, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+#endif
+{"Online documentation", 0, cb_mnuVisitURL, (void *)PACKAGE_DOCS, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{"Home page", 0, cb_mnuVisitURL, (void *)PACKAGE_HOME, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{"Command line options", 0, cb_mnuCmdLineHelp, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{"Build info", 0, cb_mnuBuildInfo, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{"About", 0, cb_mnuAbout, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
+
 {"  ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 };
@@ -933,8 +1007,72 @@ void make_pixmap(Pixmap *xpm, const char **data)
 	fl_end_offscreen();
 }
 
+int rightof(Fl_Widget* w)
+{
+	int a = w->align();
+	if (a == FL_ALIGN_CENTER || a & FL_ALIGN_INSIDE)
+		return w->x() + w->w();
+
+	fl_font(FL_HELVETICA, FL_NORMAL_SIZE);
+	int lw = static_cast<int>(ceil(fl_width(w->label())));
+
+	if (a & (FL_ALIGN_TOP | FL_ALIGN_BOTTOM)) {
+		if (a & FL_ALIGN_LEFT)
+			return w->x() + MAX(w->w(), lw);
+		else if (a & FL_ALIGN_RIGHT)
+			return w->x() + w->w();
+		else
+			return w->x() + ((lw > w->w()) ? (lw - w->w())/2 : w->w());
+	}
+	else
+		return w->x() + w->w() + lw;
+}
+
+int leftof(Fl_Widget* w)
+{
+	int a = w->align();
+	if (a == FL_ALIGN_CENTER || a & FL_ALIGN_INSIDE)
+		return w->x();
+
+	fl_font(FL_HELVETICA, FL_NORMAL_SIZE);
+	int lw = static_cast<int>(ceil(fl_width(w->label())));
+
+	if (a & (FL_ALIGN_TOP | FL_ALIGN_BOTTOM)) {
+		if (a & FL_ALIGN_LEFT)
+			return w->x();
+		else if (a & FL_ALIGN_RIGHT)
+			return w->x() - (lw > w->w() ? lw - w->w() : 0);
+		else
+			return w->x() - (lw > w->w() ? (lw - w->w())/2 : 0);
+	}
+	else {
+		if (a & FL_ALIGN_LEFT)
+			return w->x() - lw;
+		else
+			return w->x();
+	}
+}
+
+int above(Fl_Widget* w)
+{
+	int a = w->align();
+	if (a == FL_ALIGN_CENTER || a & FL_ALIGN_INSIDE)
+		return w->y();
+
+	return (a & FL_ALIGN_TOP) ? w->y() + FL_NORMAL_SIZE : w->y();
+}
+
+int below(Fl_Widget* w)
+{
+	int a = w->align();
+	if (a == FL_ALIGN_CENTER || a & FL_ALIGN_INSIDE)
+		return w->y() + w->h();
+
+	return (a & FL_ALIGN_BOTTOM) ? w->y() + w->h() + FL_NORMAL_SIZE : w->y() + w->h();
+}
+
 void create_fl_digi_main() {
-	int Y = 0;
+	int pad = wSpace, Y = 0;
 	fl_digi_main = new Fl_Double_Window(WNOM, HNOM, "fldigi");
 			mnu = new Fl_Menu_Bar(0, 0, WNOM - 142, Hmenu);
 			// FL_NORMAL_SIZE may have changed; update the menu items
@@ -947,64 +1085,78 @@ void create_fl_digi_main() {
 			btnTune->type(FL_TOGGLE_BUTTON);
 			btnTune->callback(cbTune, 0);
 			
-			btnMacroTimer = new Fl_Button(WNOM - 82, 0, 80, Hmenu);
+			btnMacroTimer = new Fl_Button(WNOM - 80 - pad, 0, 80, Hmenu);
 			btnMacroTimer->color(fl_rgb_color(255, 255, 100));
 			btnMacroTimer->labelcolor(FL_RED);
 			btnMacroTimer->callback(cbMacroTimerButton, 0);
 			btnMacroTimer->hide();
-			Fl_Box *bx = new Fl_Box(WNOM - 82, 0, 80, Hmenu,"");
+			Fl_Box *bx = new Fl_Box(WNOM - 80 - pad, 0, 80, Hmenu,"");
 			bx->box(FL_UP_BOX);
 			
 		
 		Y += Hmenu;
 
-		Fl_Group *qsoFrame = new Fl_Group(0,Y, WNOM, Hqsoframe);
-			inpFreq = new Fl_Input(2,Y + Hqsoframe/2 - 2, 85, Hqsoframe/2,"Freq: ");
+		Fl_Group *qsoFrame = new Fl_Group(0, Y, WNOM, Hqsoframe);
+			inpFreq = new Fl_Input(pad, Y + Hqsoframe/2 - pad, 85, Hqsoframe/2, "Frequency");
 			inpFreq->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-			inpTime = new Fl_Input(89,Y + Hqsoframe/2 - 2, 45, Hqsoframe/2,"Time: ");
+
+			inpTime = new Fl_Input(rightof(inpFreq) + pad, Y + Hqsoframe/2 - pad, 45, Hqsoframe/2, "Time");
 			inpTime->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-			qsoTime = new Fl_Button(136, Y + Hqsoframe/2 - 2, 24, Hqsoframe/2);
+
+			qsoTime = new Fl_Button(rightof(inpTime) + pad, Y + Hqsoframe/2 - pad, 24, Hqsoframe/2);
 			Fl_Image *pixmap = new Fl_Pixmap(cal_16);
 			qsoTime->image(pixmap);
 			qsoTime->callback(qsoTime_cb, 0);
-			inpCall = new Fl_Input(162,Y + Hqsoframe/2 - 2, 80,Hqsoframe/2,"Call: ");
+
+			inpCall = new Fl_Input(rightof(qsoTime) + pad, Y + Hqsoframe/2 - pad, 80, Hqsoframe/2, "Call");
 			inpCall->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-			inpName = new Fl_Input(244,Y + Hqsoframe/2 - 2, 100,Hqsoframe/2,"Name: ");
+			// this is likely to be more readable in a constant width font
+			inpCall->textfont(FL_SCREEN);
+
+			inpName = new Fl_Input(rightof(inpCall) + pad, Y + Hqsoframe/2 - pad, 100, Hqsoframe/2, "Name");
 			inpName->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-			inpRstIn = new Fl_Input(346,Y + Hqsoframe/2 - 2, 40,Hqsoframe/2,"Rst(r): ");
+
+			inpRstIn = new Fl_Input(rightof(inpName) + pad, Y + Hqsoframe/2 - pad, 40, Hqsoframe/2, "RST(r)");
 			inpRstIn->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-			inpRstOut = new Fl_Input(388,Y + Hqsoframe/2 - 2, 40,Hqsoframe/2,"Rst(s): ");
+
+			inpRstOut = new Fl_Input(rightof(inpRstIn) + pad, Y + Hqsoframe/2 - pad, 40, Hqsoframe/2, "RST(s)");
 			inpRstOut->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-			inpQth = new Fl_Input(430,Y + Hqsoframe/2 - 2, WNOM - 430 - 126,Hqsoframe/2,"Qth: ");
-			inpQth->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-			inpLoc = new Fl_Input(WNOM - 124,Y + Hqsoframe/2 - 2, 80,Hqsoframe/2,"Loc: ");
-			inpLoc->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-			qsoClear = new Fl_Button(WNOM - 42, Y + Hqsoframe/2 + 1, 40, Hqsoframe/2 - 2, "Clear");
-			qsoClear->callback(qsoClear_cb, 0);
-			btnQRZ = new Fl_Button( WNOM - 42, Y + 1, 40, Hqsoframe/2 - 2, "QRZ");
+
+			btnQRZ = new Fl_Button(WNOM - 40 - pad, Y + 1, 40, Hqsoframe/2 - pad, "QRZ");
 			btnQRZ->callback(cb_QRZ, 0);
-				
+
+			inpLoc = new Fl_Input(leftof(btnQRZ) - pad - 80, Y + Hqsoframe/2 - pad, 80, Hqsoframe/2, "Locator");
+			inpLoc->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+			inpLoc->textfont(FL_SCREEN);
+
+			inpQth = new Fl_Input(rightof(inpRstOut) + pad, Y + Hqsoframe/2 - pad,
+					      leftof(inpLoc) - rightof(inpRstOut) - 2*pad, Hqsoframe/2, "QTH");
+			inpQth->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 			qsoFrame->resizable(inpQth);
+
+			qsoClear = new Fl_Button(WNOM - 40 - pad, Y + Hqsoframe/2 + 1, 40, Hqsoframe/2 - pad, "Clear");
+			qsoClear->callback(qsoClear_cb, 0);
+
 		qsoFrame->end();
 		Y += Hqsoframe;
 
 		Fl_Group *qsoFrame2 = new Fl_Group(0,Y, WNOM, Hnotes);
+			qsoSave = new Fl_Button(WNOM - 40 - pad, Y + 1, 40, Hnotes - 2, "Save");
+			qsoSave->callback(qsoSave_cb, 0);
 
-			inpNotes = new Fl_Input(136, Y, WNOM - 136 - 44 - 120, Hnotes,"Notes: ");
-			inpNotes->align(FL_ALIGN_LEFT);
-			
-			cboBand  = new Fl_ComboBox(2, Y, 110, Hnotes, "");
-			cboBand->hide();
-			btnSideband = new Fl_Button(112, Y+1, Hnotes-2, Hnotes-2, "U");
-			btnSideband->callback(cb_btnSideband, 0);
-			btnSideband->hide();
-			
-			inpAZ = new Fl_Input(WNOM - 44 - 80, Y, 80, Hnotes, "AZ:"); // WA5ZNU
+			inpAZ = new Fl_Input(leftof(qsoSave) - 80 - pad, Y, 80, Hnotes, "AZ"); // WA5ZNU
 			inpAZ->align(FL_ALIGN_LEFT);
 
-			qsoSave = new Fl_Button(WNOM - 42, Y + 1, 40, Hnotes- 2, "Save");
-			qsoSave->callback(qsoSave_cb, 0);
+			// align this vertically with the Call field
+			inpNotes = new Fl_Input(leftof(inpCall), Y, leftof(inpAZ) - leftof(inpCall) - 2*pad, Hnotes, "Notes");
+			inpNotes->align(FL_ALIGN_LEFT);
 			qsoFrame2->resizable(inpNotes);
+
+			btnSideband = new Fl_Button(leftof(inpNotes) - 2*pad - (Hnotes-2), Y+1, Hnotes-2, Hnotes-2, "U");
+			btnSideband->callback(cb_btnSideband, 0);
+			btnSideband->hide();
+			cboBand	 = new Fl_ComboBox(pad, Y, leftof(btnSideband) - pad, Hnotes, "");
+			cboBand->hide();
 		qsoFrame2->end();
 		Y += Hnotes;
 		

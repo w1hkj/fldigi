@@ -75,6 +75,7 @@ extern Fl_Check_Button *btnQRZsocket;
 extern Fl_Check_Button *btnQRZcdrom;
 extern Fl_Input *inpQRZusername;
 extern Fl_Input *inpQRZuserpassword;
+extern Fl_Button *btnQRZpasswordShow;
 extern Fl_Group *tabSoundCard;
 extern Fl_Tabs *tabsSoundCard;
 extern Fl_Group *tabAudio;

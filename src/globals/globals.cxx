@@ -25,6 +25,8 @@
 
 #include <config.h>
 #include <iosfwd>
+#include <iomanip>
+#include <sstream>
 
 #include "globals.h"
 #include "modem.h"
@@ -93,4 +95,37 @@ std::ostream& operator<<(std::ostream& s, const qrg_mode_t& m)
 std::istream& operator>>(std::istream& s, qrg_mode_t& m)
 {
 	return s >> m.rfcarrier >> m.rmode >> m.carrier >> m.mode;
+}
+
+std::string qrg_mode_t::str(void)
+{
+	ostringstream s;
+	s << setiosflags(ios::fixed) << setprecision(3) << rfcarrier/1000.0 << '\t'
+          << rmode << '\t'
+          << (mode < NUM_MODES ? mode_info[mode].sname : "NONE") << '\t'
+          << carrier;
+	return s.str();
+
+
+	// This an example of how we would do things if we were not using
+	// Fl_Browser and had to format the fields manually and add the string
+	// to a menu
+
+	// static unsigned max_mode_sname = 0;
+
+	// if (max_mode_sname == 0)
+	//	   for (size_t i = 0; i < NUM_MODES; i++)
+	//		   if (max_mode_sname < strlen(mode_info[i].sname))
+	//			   max_mode_sname = strlen(mode_info[i].sname);
+
+	// ostringstream s;
+
+	// s << setw(11) << setiosflags(ios::right) << setiosflags(ios::fixed) << setprecision(3)
+	//   << rfcarrier/1000.0 << ' '
+	//   << setw(max_mode_sname) << resetiosflags(ios::right) << setiosflags(ios::left)
+	//   << (mode < NUM_MODES ? mode_info[mode].sname : "NONE") << ' '
+	//   << setw(4) << resetiosflags(ios::left) << setiosflags(ios::right)
+	//   << carrier << ' ' << rmode;
+
+	// return s.str();
 }

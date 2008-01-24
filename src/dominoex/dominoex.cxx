@@ -258,7 +258,7 @@ void dominoex::decodesymbol(unsigned char curtone, unsigned char prevtone)
 	}
 
 // Add to the symbol buffer. Position 0 is the newest symbol.
-	for (int i = MAX_VARICODE_LEN-1; i >= 0; i--)
+	for (int i = MAX_VARICODE_LEN-1; i > 0; i--)
 		symbolbuf[i] = symbolbuf[i-1];
 	symbolbuf[0] = c;
 

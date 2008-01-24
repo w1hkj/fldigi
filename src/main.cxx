@@ -388,8 +388,8 @@ void generate_option_help(void) {
 
 	help << "\nAdditional UI options:\n"
 
-	     << setw(width) << setiosflags(ios::left)
-	     << " --fast-text" << "Use fast text widgets\n"
+	     // << setw(width) << setiosflags(ios::left)
+	     // << " --fast-text" << "Use fast text widgets\n"
 
 	     << setw(width) << setiosflags(ios::left)
 	     << " --font FONT[:SIZE]"

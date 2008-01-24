@@ -8,7 +8,8 @@ To compile fldigi you will need:
     for the Boost C++ library.
 
   * Version 1.1.x of the Fast Light Tool Kit (FLTK), with its
-    development libraries and headers.
+    development libraries and headers. Version 1.1.7 and pre-releases of
+    1.1.8 are known to work. FLTK's multi-threading support is required.
 
 You should also install the libraries and headers for PortAudio, the
 Portable audio I/O library.  It is possible, but not recommended, to

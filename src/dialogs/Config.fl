@@ -616,7 +616,14 @@ progdefaults.changed = true;}
           callback {progdefaults.QRZuserpassword = o->value();
 progdefaults.changed = true;}
           xywh {150 160 90 25}
-          code0 {o->value(progdefaults.QRZuserpassword.c_str());}
+          code0 {o->value(progdefaults.QRZuserpassword.c_str()); o->type(FL_SECRET_INPUT);}
+        }
+        Fl_Button btnQRZpasswordShow {
+          label Show
+          callback {inpQRZuserpassword->type(inpQRZuserpassword->type() ^ FL_SECRET_INPUT);
+inpQRZuserpassword->redraw();
+o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");}
+          xywh {245 160 50 25}
         }
       }
       Fl_Group tabSoundCard {

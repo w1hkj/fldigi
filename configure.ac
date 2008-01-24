@@ -4,12 +4,15 @@
 # Copyright (C) 2007 Stelios Bounanos, M0GLD (m0gld AT enotty DOT net)
 
 AC_PREREQ(2.61)
-AC_INIT([fldigi], [2.08d], [w1hkj AT w1hkj DOT com])
+AC_INIT([fldigi], [2.08F], [w1hkj AT w1hkj DOT com])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([-Wall foreign 1.9.6])
 AM_MAINTAINER_MODE
 AC_CONFIG_SRCDIR([src/main.cxx])
 AC_CONFIG_HEADER([src/config.h])
+
+AC_DEFINE(PACKAGE_HOME, ["http://www.w1hkj.com/Fldigi-2.x.html"], [Home page])
+AC_DEFINE(PACKAGE_DOCS, ["http://www.w1hkj.com/FldigiHelp-2.0/index.html"], [Docs index])
 
 # Checks for programs.
 AC_PROG_CXX

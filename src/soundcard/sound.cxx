@@ -495,9 +495,11 @@ int cSoundOSS::Read(double *buffer, int buffersize)
 
 	if (playback) {
 		readPlayback( buffer, buffersize);
-		double vol = valRcvMixer->value();
-		for (int i = 0; i < buffersize; i++)
-			buffer[i] *= vol;
+		if (progdefaults.EnableMixer) {
+			double vol = valRcvMixer->value();
+			for (int i = 0; i < buffersize; i++)
+				buffer[i] *= vol;
+		}
 		return buffersize;
 	}
 
@@ -779,22 +781,37 @@ void cSoundPA::Close(void)
 int cSoundPA::Read(double *buf, int count)
 {
         int ncount = (int)floor(MIN(count, SND_BUF_LEN) / rx_src_data->src_ratio);
-        int err;
 
+        int err;
+        static int retries = 0;
         if ((err = Pa_ReadStream(stream, fbuf, ncount)) != paNoError) {
                 pa_perror(err, "Pa_ReadStream");
-                if (err == paInputOverflowed)
+                switch (err) {
+                case paInputOverflowed:
                         return adjust_stream() ? Read(buf, count) : 0;
-                throw SndException(err);
+                case paUnanticipatedHostError:
+                        if (Pa_GetHostApiInfo((*idev)->hostApi)->type == paOSS && retries++ < 8) {
+                                cerr << "Retrying read\n";
+                                return Read(buf, count);
+                        }
+                        else
+                                cerr << "Giving up\n";
+                        // fall through
+                default:
+                        throw SndException(err);
+                }
         }
+        retries = 0;
 
 	if (capture)
                 writeCapture(buf, count);
 	if (playback) {
 		readPlayback(buf, count);
-                double vol = valRcvMixer->value();
-                for (int i = 0; i < count; i++)
-                        buf[i] *= vol;
+		if (progdefaults.EnableMixer) {
+	                double vol = valRcvMixer->value();
+	                for (int i = 0; i < count; i++)
+        	                buf[i] *= vol;
+		}
 		return count;
 	}
 
@@ -827,12 +844,25 @@ int cSoundPA::write_samples(double *buf, int count)
         }
 
         int err;
+        static int retries = 0;
         if ((err = Pa_WriteStream(stream, wbuf, count)) != paNoError) {
                 pa_perror(err, "Pa_WriteStream");
-                if (err == paOutputUnderflowed)
+                switch (err) {
+                case paOutputUnderflowed:
                         return adjust_stream() ? write_samples(buf, count) : 0;
-                throw SndException(err);
+                case paUnanticipatedHostError:
+                        if (Pa_GetHostApiInfo((*idev)->hostApi)->type == paOSS && retries++ < 8) {
+                                cerr << "Retrying write\n";
+                                return write_samples(buf, count);
+                        }
+                        else
+                                cerr << "Giving up\n";
+                        // fall through
+                default:
+                        throw SndException(err);
+                }
         }
+        retries = 0;
 
         return count;
 }
@@ -855,12 +885,27 @@ int cSoundPA::write_stereo(double *bufleft, double *bufright, int count)
         }
 
         int err;
+        static int retries = 0;
         if ((err = Pa_WriteStream(stream, wbuf, count)) != paNoError) {
                 pa_perror(err, "Pa_WriteStream");
-                if (err == paOutputUnderflowed)
+                switch (err) {
+                case paOutputUnderflowed:
                         return adjust_stream() ? write_stereo(bufleft, bufright, count) : 0;
+                case paUnanticipatedHostError:
+                        if (Pa_GetHostApiInfo((*idev)->hostApi)->type == paOSS && retries++ < 8) {
+                                cerr << "Retrying write\n";
+                                return write_stereo(bufleft, bufright, count);
+                        }
+                        else
+                                cerr << "Giving up\n";
+                        // fall through
+                default:
+                        throw SndException(err);
+                }
+
                 throw SndException(err);
         }
+        retries = 0;
 
         return count;
 }
@@ -1096,7 +1141,7 @@ void cSoundPA::pa_perror(int err, const char* str)
 
                 if (i < 0) { // PA failed without setting its "last host error" info. Sigh...
                         cerr << "Host API error info not available\n";
-                        if ((*idev)->hostApi == paOSS && errno)
+                        if (Pa_GetHostApiInfo((*idev)->hostApi)->type == paOSS && errno)
                                 cerr << "Possible OSS error " << errno << ": "
                                      << strerror(errno) << '\n';
                 }
