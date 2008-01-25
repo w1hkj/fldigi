@@ -618,11 +618,8 @@ void cb_mnuCmdLineHelp(Fl_Widget*, void*)
 
 void cb_mnuBuildInfo(Fl_Widget*, void*)
 {
-	extern void print_versions(std::ostream&);
-
-	std::ostringstream ss;
-	print_versions(ss);
-	std::string s = ss.str();
+	extern std::string version_text;
+	std::string s = version_text;
 	std::string::size_type i = 0;
 
         // escape the at chars

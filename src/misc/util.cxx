@@ -1,5 +1,7 @@
 #include <config.h>
 
+#include "util.h"
+
 /* Return the smallest power of 2 not less than n */
 uint32_t ceil2(uint32_t n)
 {

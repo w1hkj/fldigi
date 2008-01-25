@@ -57,8 +57,8 @@ void diediedie(void)
                      " due to a fatal error.\nPlease report this to "
                      PACKAGE_BUGREPORT << "\n\n";
         pstack(STDERR_FILENO);
-        extern void print_versions(std::ostream&);
-        print_versions(std::cerr << "\nVersion information:\n");
+        extern std::string version_text;
+        std::cerr << "\nVersion information:\n" << version_text;
         abort();
 }
 

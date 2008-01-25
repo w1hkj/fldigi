@@ -101,15 +101,16 @@ int		rxmsgid = -1;
 TXMSGSTRUC txmsgst;
 int txmsgid = -1;
 
-string option_help;
+string option_help, version_text;
 
 qrunner *cbq[NUM_QRUNNER_THREADS];
 
 void arqchecks(void);
 void generate_option_help(void);
 int parse_args(int argc, char **argv, int& idx);
-void print_versions(std::ostream& s);
+void generate_version_text(void);
 void debug_exec(char** argv);
+void string_wrap(std::string& s, unsigned c);
 
 int main(int argc, char ** argv)
 {
@@ -133,6 +134,8 @@ int main(int argc, char ** argv)
 	HomeDir = szHomedir;
 
 	generate_option_help();
+	generate_version_text();
+	string_wrap(version_text, 80);
 	int arg_idx;
 	if (Fl::args(argc, argv, arg_idx, parse_args) != argc) {
 	    cerr << PACKAGE_NAME << ": unrecognized option `" << argv[arg_idx]
@@ -335,7 +338,7 @@ void generate_option_help(void) {
 	     << "Set the secondary (text) background color\n"
 
 	     << setw(width) << setiosflags(ios::left)
-	     << " -di, -display DISPLAY"
+	     << " -di DISPLAY, -display DISPLAY"
 	     << "Set the X display to use\n"
 	     << setw(width) << setiosflags(ios::left)
 	     << "" << "DISPLAY format is ``host:n.n''\n"
@@ -393,7 +396,7 @@ void generate_option_help(void) {
 
 	     << setw(width) << setiosflags(ios::left)
 	     << " --font FONT[:SIZE]"
-	     << "Set the widget font and (optional) size\n"
+	     << "Set the widget font and (optionally) size\n"
 	     << setw(width) << setiosflags(ios::left)
 	     << "" << "The default is: " << Fl::get_font(FL_HELVETICA)
 	     << ':' << FL_NORMAL_SIZE << '\n'
@@ -404,11 +407,11 @@ void generate_option_help(void) {
 	     << setw(width) << setiosflags(ios::left)
 	     << "" << "``minimal'', widget sizes will be adjusted\n"
 	     << setw(width) << setiosflags(ios::left)
-	     << "" << "for a minimal screen footprint.\n"
+	     << "" << "for a minimal screen footprint\n"
 
 	     << setw(width) << setiosflags(ios::left)
 	     << " --usechkbtns"
-	     << "Use check buttons for AFC / SQL\n";
+	     << "Use check buttons for AFC / SQL.\n";
 
 
 	option_help = help.str();
@@ -558,7 +561,7 @@ int parse_args(int argc, char **argv, int& idx)
 			exit(EXIT_SUCCESS);
 
 		case OPT_VERSION:
-			print_versions(cerr);
+			cerr << version_text;
 			exit(EXIT_SUCCESS);
 
 		case '?':
@@ -572,8 +575,9 @@ int parse_args(int argc, char **argv, int& idx)
 	return 0;
 }
 
-void print_versions(std::ostream& s)
+void generate_version_text(void)
 {
+	ostringstream s;
 	s << PACKAGE_NAME << ' ' << PACKAGE_VERSION << "\n\nSystem: ";
         struct utsname u;
         if (uname(&u) != -1) {
@@ -587,32 +591,34 @@ void print_versions(std::ostream& s)
 	s /*<< "\nConfigured with: " << COMPILE_CFG*/ << '\n'
 	    << "Built on " << COMPILE_DATE << " by " << COMPILE_USER
 	    << '@' << COMPILE_HOST << " with:\n"
-	    << ' ' << COMPILER << '\n'
-	    << " CFLAGS=" << CFLAGS << '\n'
-	    << " LDFLAGS=" << LDFLAGS << '\n';
+	    << COMPILER << '\n'
+	    << "CFLAGS=" << CFLAGS << '\n'
+	    << "LDFLAGS=" << LDFLAGS << '\n';
 #endif // HAVE_VERSIONS_H
 
 	s << "Libraries:\n"
-	  << " FLTK " << FL_MAJOR_VERSION << '.' << FL_MINOR_VERSION << '.'
+	  << "FLTK " << FL_MAJOR_VERSION << '.' << FL_MINOR_VERSION << '.'
 	  << FL_PATCH_VERSION << '\n';
 
 #if USE_HAMLIB
-	s << ' ' << hamlib_version << '\n';
+	s << hamlib_version << '\n';
 #endif
 
 #if USE_PORTAUDIO
-	s << ' ' << Pa_GetVersionText() << ' ' << Pa_GetVersion() << '\n';
+	s << Pa_GetVersionText() << ' ' << Pa_GetVersion() << '\n';
 #endif
 
 #if USE_SNDFILE
 	char sndfile_version[32];
 	sf_command(NULL, SFC_GET_LIB_VERSION, sndfile_version, sizeof(sndfile_version));
-	s << ' ' << sndfile_version << '\n';
+	s << sndfile_version << '\n';
 #endif
 
 #ifdef src_get_version
 	s << ' ' << src_get_version() << '\n';
 #endif
+
+	version_text = s.str();
 }
 
 // When debugging is enabled, reexec with malloc debugging hooks enabled, unless
@@ -640,4 +646,21 @@ void debug_exec(char** argv)
         if (execvp(*argv, argv) == -1)
                 perror("execvp");
 #endif
+}
+
+void string_wrap(std::string& s, unsigned c)
+{
+	string::size_type spos = s.find(' '), prev = spos, line = 0;
+
+	while ((spos = s.find_first_of(" \n", spos+1)) != string::npos) {
+		if (spos - line > c) {
+			s[prev] = '\n';
+			line = prev + 1;
+		}
+		if (s[spos] == '\n')
+			line = spos + 1;
+		prev = spos;
+	}
+	if (s.length() - line > c)
+		s[prev] = '\n';
 }
