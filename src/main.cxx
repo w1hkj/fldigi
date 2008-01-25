@@ -291,127 +291,93 @@ void generate_option_help(void) {
 
 
 	ostringstream help;
-	int width = 37;
-	help << "Usage:\n " << PACKAGE_NAME << " [option...]\n";
+//	int width = 72;
+	help << "Usage:\n" 
+	     << "    " << PACKAGE_NAME << " [option...]\n\n";
 
-	help << '\n' << PACKAGE_NAME << " options:\n"
+	help << PACKAGE_NAME << " options:\n\n"
+	
+		 << "  --config-dir DIRECTORY\n"
+	     << "    Look for configuration files in DIRECTORY\n"
+	     << "    The default is: " << HomeDir << "\n\n"
+	     
+	     << "  --rx-ipc-key KEY" << "Set the receive message queue key\n"
+	     << "    May be given in hex if prefixed with \"0x\"\n"
+	     << "    The default is: " << progdefaults.rx_msgid
+	     << " or 0x" << hex << progdefaults.rx_msgid << dec << "\n\n"
 
-	     << setw(width) << setiosflags(ios::left)
-	     << " --config-dir DIRECTORY"
-	     << "Look for configuration files in DIRECTORY\n"
-	     << setw(width) << setiosflags(ios::left)
-	     << "" << "The default is: " << HomeDir << '\n'
+	     << "  --tx-ipc-key KEY" << "Set the transmit message queue key\n"
+	     << "    May be given in hex if prefixed with \"0x\"\n"
+	     << "    The default is: " << progdefaults.tx_msgid
+	     << " or 0x" << hex << progdefaults.tx_msgid << dec << "\n\n"
 
-	     << setw(width) << setiosflags(ios::left)
-	     << " --rx-ipc-key KEY" << "Set the receive message queue key\n"
-	     << setw(width) << setiosflags(ios::left)
-	     << "" << "May be given in hex if prefixed with \"0x\"\n"
-	     << setw(width) << setiosflags(ios::left)
-	     << "" << "The default is: " << progdefaults.rx_msgid
-	     << " or 0x" << hex << progdefaults.rx_msgid << dec << '\n'
+	     << "  --version\n" 
+	     << "    Print version information\n\n"
 
-	     << setw(width) << setiosflags(ios::left)
-	     << " --tx-ipc-key KEY" << "Set the transmit message queue key\n"
-	     << setw(width) << setiosflags(ios::left)
-	     << "" << "May be given in hex if prefixed with \"0x\"\n"
-	     << setw(width) << setiosflags(ios::left)
-	     << "" << "The default is: " << progdefaults.tx_msgid
-	     << " or 0x" << hex << progdefaults.tx_msgid << dec << '\n'
+	     << "  --help\n" 
+	     << "    Print this option help\n\n";
 
-	     << setw(width) << setiosflags(ios::left)
-	     << " --version" << "Print version information\n"
+// Fl::help looks ugly so we'll write our own
 
-	     << setw(width) << setiosflags(ios::left)
-	     << " --help" << "Print this option help\n";
+	help << "Standard FLTK options:\n\n"
 
+	     << "   -bg COLOR, -background COLOR\n"
+	     << "    Set the background color\n"
 
-	// Fl::help looks ugly so we'll write our own
+	     << "   -bg2 COLOR, -background2 COLOR\n"
+	     << "    Set the secondary (text) background color\n\n"
 
-	help << "\nStandard FLTK options:\n"
+	     << "   -di DISPLAY, -display DISPLAY\n"
+	     << "    Set the X display to use DISPLAY,\n"
+	     << "    format is ``host:n.n''\n\n"
 
-	     << setw(width) << setiosflags(ios::left)
-	     << " -bg COLOR, -background COLOR"
-	     << "Set the background color\n"
+	     << "   -dn, -dnd or -nodn, -nodnd\n"
+	     << "    Enable or disable drag and drop copy and\n"
+	     << "    paste in text fields\n\n"
 
-	     << setw(width) << setiosflags(ios::left)
-	     << " -bg2 COLOR, -background2 COLOR"
-	     << "Set the secondary (text) background color\n"
+	     << "   -fg COLOR, -foreground COLOR\n"
+	     << "    Set the foreground color\n\n"
 
-	     << setw(width) << setiosflags(ios::left)
-	     << " -di DISPLAY, -display DISPLAY"
-	     << "Set the X display to use\n"
-	     << setw(width) << setiosflags(ios::left)
-	     << "" << "DISPLAY format is ``host:n.n''\n"
+	     << "   -g GEOMETRY, -geometry GEOMETRY\n"
+	     << "    Set the initial window size and position\n"
+	     << "    GEOMETRY format is ``WxH+X+Y''\n"
+	     << "    ** " << PACKAGE_NAME << " may override this settting **\n\n"
 
-	     << setw(width) << setiosflags(ios::left)
-	     << " -dn, -dnd or -nodn, -nodnd"
-	     << "Enable or disable drag and drop copy and\n"
-	     << setw(width) << setiosflags(ios::left)
-	     << "" << "paste in text fields\n"
+	     << "   -i, -iconic\n"
+	     << "    Start " << PACKAGE_NAME << " in iconified state\n\n"
 
-	     << setw(width) << setiosflags(ios::left)
-	     << " -fg COLOR, -foreground COLOR"
-	     << "Set the foreground color\n"
+	     << "   -k, -kbd or -nok, -nokbd\n"
+	     << "    Enable or disable visible keyboard focus in non-text widgets\n\n"
 
-	     << setw(width) << setiosflags(ios::left)
-	     << " -g GEOMETRY, -geometry GEOMETRY"
-	     << "Set the initial window size and position\n"
-	     << setw(width) << setiosflags(ios::left)
-	     << "" << "GEOMETRY format is ``WxH+X+Y''\n"
-	     << setw(width) << setiosflags(ios::left)
-	     << "" << "** " << PACKAGE_NAME << " may override this settting **\n"
+	     << "   -na CLASSNAME, -name CLASSNAME\n"
+	     << "    Set the window class to CLASSNAME\n\n"
 
-	     << setw(width) << setiosflags(ios::left)
-	     << " -i, -iconic"
-	     << "Start " << PACKAGE_NAME << " in iconified state\n"
+	     << "   -s SCHEME, -scheme SCHEME\n"
+	     << "    Set the widget scheme\n"
+	     << "    SCHEME can be one of: " << schemes << "\n\n"
 
-	     << setw(width) << setiosflags(ios::left)
-	     << " -k, -kbd or -nok, -nokbd"
-	     << "Enable or disable visible keyboard focus\n"
-	     << setw(width) << setiosflags(ios::left)
-	     << "" << "in non-text widgets\n"
+	     << "   -ti WINDOWTITLE, -title WINDOWTITLE\n"
+	     << "    Set the window title\n\n"
 
-	     << setw(width) << setiosflags(ios::left)
-	     << " -na CLASSNAME, -name CLASSNAME"
-	     << "Set the window class to CLASSNAME\n"
+	     << "   -to, -tooltips or -not, -notooltips\n"
+	     << "    Enable or disable tooltips\n\n";
 
-	     << setw(width) << setiosflags(ios::left)
-	     << " -s SCHEME, -scheme SCHEME"
-	     << "Set the widget scheme\n"
-	     << setw(width) << setiosflags(ios::left)
-	     << "" << "SCHEME can be one of: " << schemes << '\n'
-
-	     << setw(width) << setiosflags(ios::left)
-	     << " -ti WINDOWTITLE, -title WINDOWTITLE"
-	     << "Set the window title\n"
-
-	     << setw(width) << setiosflags(ios::left)
-	     << " -to, -tooltips or -not, -notooltips"
-	     << "Enable or disable tooltips\n";
-
-	help << "\nAdditional UI options:\n"
+	help << "Additional UI options:\n\n"
 
 	     // << setw(width) << setiosflags(ios::left)
 	     // << " --fast-text" << "Use fast text widgets\n"
 
-	     << setw(width) << setiosflags(ios::left)
-	     << " --font FONT[:SIZE]"
-	     << "Set the widget font and (optionally) size\n"
-	     << setw(width) << setiosflags(ios::left)
-	     << "" << "The default is: " << Fl::get_font(FL_HELVETICA)
-	     << ':' << FL_NORMAL_SIZE << '\n'
+	     << "  --font FONT[:SIZE]\n"
+	     << "    Set the widget font and (optionally) size\n"
+	     << "    The default is: " << Fl::get_font(FL_HELVETICA)
+	     << ':' << FL_NORMAL_SIZE << "\n\n"
 
-	     << setw(width) << setiosflags(ios::left)
-	     << " --profile PROFILE"
-	     << "If PROFILE is ``emc'', ``emcomm'', or\n"
-	     << setw(width) << setiosflags(ios::left)
-	     << "" << "``minimal'', widget sizes will be adjusted\n"
-	     << setw(width) << setiosflags(ios::left)
-	     << "" << "for a minimal screen footprint\n"
+	     << "  --profile PROFILE\n"
+	     << "    If PROFILE is ``emc'', ``emcomm'', or ``minimal'',\n"
+	     << "    widget sizes will be adjusted for a minimal screen footprint\n\n"
 
-	     << setw(width) << setiosflags(ios::left)
-	     << " --usechkbtns"
-	     << "Use check buttons for AFC / SQL.\n";
+	     << "  --usechkbtns\n"
+	     << "    Use check buttons for AFC / SQL.\n";
 
 
 	option_help = help.str();

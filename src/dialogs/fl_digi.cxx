@@ -38,6 +38,7 @@
 #include <FL/Fl_Image.H>
 #include <FL/Fl_Tile.H>
 #include <FL/x.H>
+#include <FL/Fl_Help_Dialog.H>
 
 #include "waterfall.h"
 #include "raster.h"
@@ -83,6 +84,40 @@
 #include "qrunner.h"
 
 Fl_Double_Window	*fl_digi_main=(Fl_Double_Window *)0;
+Fl_Help_Dialog 		*help_dialog = (Fl_Help_Dialog *)0;
+
+void fldigi_help(string theHelp) {
+ 	if (!help_dialog)
+   		help_dialog = new Fl_Help_Dialog();
+
+	string htmlHelp = 
+		"<HTML>"//\n"
+		"<HEAD>"//\n"
+		"<TITLE>fldigi Help</TITLE>"//\n"
+		"</HEAD>"//\n"
+		"<BODY BGCOLOR='#ffffff'>"//\n"
+		"<FONT FACE=fixed, SIZE=18>"
+		"<P><TT>";
+	string postHelp = 
+		"</TT></P>"//\n"
+		"</BODY>";//\n";
+	string sHelp;
+	for (size_t i = 0; i < theHelp.length(); i++)
+		if (theHelp[i] == '\n') {
+			if (theHelp[i+1] == '\n') {
+				sHelp += "</TT></P><P><TT>";
+				i++;
+			} else
+				sHelp += "<BR>";//"\n<BR>";
+		} else
+			sHelp += theHelp[i];
+	htmlHelp += sHelp;
+	htmlHelp += postHelp;
+	
+	help_dialog->value(htmlHelp.c_str());
+
+	help_dialog->show();
+}
 
 cMixer mixer;
 
@@ -609,9 +644,10 @@ void cb_mnuCmdLineHelp(Fl_Widget*, void*)
 {
 	extern std::string option_help;
 
-	fl_message_font(FL_SCREEN, FL_NORMAL_SIZE - 1);
-	fl_message("%s", option_help.c_str());
-	fl_message_font(FL_HELVETICA, FL_NORMAL_SIZE);
+	fldigi_help(option_help);
+//	fl_message_font(FL_SCREEN, FL_NORMAL_SIZE - 1);
+//	fl_message("%s", option_help.c_str());
+//	fl_message_font(FL_HELVETICA, FL_NORMAL_SIZE);
 
 	restoreFocus();
 }
@@ -628,9 +664,10 @@ void cb_mnuBuildInfo(Fl_Widget*, void*)
 		i += 2;
 	}
 
-	fl_message_font(FL_SCREEN, FL_NORMAL_SIZE - 1);
-	fl_message("%s", s.c_str());
-	fl_message_font(FL_HELVETICA, FL_NORMAL_SIZE);
+	fldigi_help(s);
+//	fl_message_font(FL_SCREEN, FL_NORMAL_SIZE - 1);
+//	fl_message("%s", s.c_str());
+//	fl_message_font(FL_HELVETICA, FL_NORMAL_SIZE);
 
 	restoreFocus();
 }
