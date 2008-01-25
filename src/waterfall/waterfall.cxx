@@ -66,9 +66,6 @@ static	RGB RGBred		= {254,0,0};
 RGBI	mag2RGBI[256];
 RGB		palette[9];
 
-#define max(a,b) (a)>(b)?(a):(b)
-#define min(a,b) (a)<(b)?(a):(b)
-
 short int *tmp_fft_db;
 
 WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
@@ -633,9 +630,9 @@ void WFdisp::update_waterfall() {
 		p4 = p3;
 		for (int col = 0; col < disp_width; col++) {
 			if (step == 4)
-				sig = max( max ( max ( *p2, *(p2+1) ), *(p2+2) ), *(p2+3) );
+				sig = MAX( MAX ( MAX ( *p2, *(p2+1) ), *(p2+2) ), *(p2+3) );
 			else if (step == 2)
-				sig = max( *p2, *(p2 + 1) );
+				sig = MAX( *p2, *(p2 + 1) );
 			else 
 				sig = *p2;
 			*p4 = mag2RGBI[ sig ];
@@ -734,9 +731,9 @@ void WFdisp::drawspectrum() {
 		if (step == 1)
 			sig = tmp_fft_db[c];
 		else if (step == 2)
-			sig = max(tmp_fft_db[c], tmp_fft_db[c+1]);
+			sig = MAX(tmp_fft_db[c], tmp_fft_db[c+1]);
 		else
-			sig = max( max ( max ( tmp_fft_db[c], tmp_fft_db[c+1] ), tmp_fft_db[c+2] ), tmp_fft_db[c+3]);
+			sig = MAX( MAX ( MAX ( tmp_fft_db[c], tmp_fft_db[c+1] ), tmp_fft_db[c+2] ), tmp_fft_db[c+3]);
 		ynext = h1 * sig / 256;
 		while (ffty < ynext) { fft_sig_img[fftpixel -= IMAGE_WIDTH/step] = graylevel; ffty++;}
 		while (ffty > ynext) { fft_sig_img[fftpixel += IMAGE_WIDTH/step] = graylevel; ffty--;}

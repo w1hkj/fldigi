@@ -1,6 +1,8 @@
 #include <config.h>
 
-// Return the smallest power of 2 not less than n
+#include "util.h"
+
+/* Return the smallest power of 2 not less than n */
 uint32_t ceil2(uint32_t n)
 {
         --n;
@@ -13,7 +15,7 @@ uint32_t ceil2(uint32_t n)
         return n + 1;
 }
 
-// Return the largest power of 2 not greater than n
+/* Return the largest power of 2 not greater than n */
 uint32_t floor2(uint32_t n)
 {
         n |= n >> 1;

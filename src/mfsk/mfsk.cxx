@@ -40,11 +40,6 @@
 
 #include "qrunner.h"
 
-#undef  MAX
-#define MAX(a,b)		(((a)>(b))?(a):(b))
-#undef  CLAMP
-#define CLAMP(x,low,high)       (((x)>(high))?(high):(((x)<(low))?(low):(x)))
-
 #define AFC_COUNT	32
 
 

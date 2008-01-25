@@ -36,26 +36,6 @@
 
 #include "qrunner.h"
 
-inline double MAX(double m1, double m2) {
-	if (m1 > m2) return m1;
-	return m2;
-}
-
-inline int MAX(int m1, int m2) {
-	if (m1 > m2) return m1;
-	return m2;
-}
-
-inline double MIN(double m1, double m2) {
-	if (m1 < m2) return m1;
-	return m2;
-}
-
-inline int MIN (int m1, int m2) {
-	if (m1 < m2) return m1;
-	return m2;
-}
-
 
 Digiscope::Digiscope (int X, int Y, int W, int H) :
 	Fl_Widget (X, Y, W, H) {
