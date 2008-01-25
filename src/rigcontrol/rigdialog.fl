@@ -23,9 +23,22 @@ Function {rig_dialog()} {open
       class cFreqControl
     }
     Fl_Browser FreqSelect {
-      callback {if (FreqSelect->value())
-(Fl::event_state() & FL_SHIFT) ? delFreq() : selectFreq();}
-      tooltip {Select operating mode and frequency} xywh {278 5 280 70} type Hold box DOWN_BOX labelfont 4 labelsize 12 textfont 4
+      callback {if (FreqSelect->value()) {
+  switch (Fl::event_button()) {
+  case FL_MIDDLE_MOUSE:
+    delFreq();
+    addFreq();
+    break;
+  case FL_LEFT_MOUSE: default:
+    if (Fl::event_state() & FL_SHIFT)
+      delFreq();
+    else
+      selectFreq();
+    break;
+  }
+}}
+      tooltip {Select operating mode and frequency
+Middle click to replace, Shift-left click to delete} xywh {278 5 280 70} type Hold box DOWN_BOX labelfont 4 labelsize 12 textfont 4
     }
     Fl_Group opMODE {
       callback {setMode();} open
@@ -63,11 +76,12 @@ Function {rig_dialog()} {open
   }
   code {// Resizable kludge
 // Move FreqSelect one pixel down so that we can define a box
-// that will be used resize this widget only. There has to be
+// that will be used to resize this widget only. There has to be
 // a better way of doing this...
 {
 FreqSelect->resize(FreqSelect->x(), FreqSelect->y() + 1, FreqSelect->w(), FreqSelect->h());
 Fl_Box* b_ = new Fl_Box(FreqSelect->x() + FreqSelect->w() - 1, FreqSelect->y() + FreqSelect->h() - 1, 1, 1);
 w->add_resizable(*b_);
+w->size_range(FreqDisp->x() + FreqDisp->w(), w->h());
 }} {}
 } 
