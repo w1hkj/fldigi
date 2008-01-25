@@ -143,7 +143,10 @@ k to delete");
 FreqSelect->resize(FreqSelect->x(), FreqSelect->y() + 1, FreqSelect->w(), FreqSelect->h());
 Fl_Box* b_ = new Fl_Box(FreqSelect->x() + FreqSelect->w() - 1, FreqSelect->y() + FreqSelect->h() - 1, 1, 1);
 w->add_resizable(*b_);
+// make the minimum width equal to that of the frequency display
 w->size_range(FreqDisp->x() + FreqDisp->w(), w->h());
+// get rid of the horizontal scrollbar, we will resize the window instead
+FreqSelect->has_scrollbar(Fl_Browser_::VERTICAL);
 }
   return w;
 }
