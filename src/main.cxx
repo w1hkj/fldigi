@@ -519,11 +519,11 @@ int parse_args(int argc, char **argv, int& idx)
 			return 2;
 #endif // USE_PORTAUDIO
 		case OPT_HELP:
-			cerr << option_help;
+			cout << option_help;
 			exit(EXIT_SUCCESS);
 
 		case OPT_VERSION:
-			cerr << version_text;
+			cout << version_text;
 			exit(EXIT_SUCCESS);
 
 		case '?':
