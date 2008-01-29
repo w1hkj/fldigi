@@ -86,39 +86,6 @@
 Fl_Double_Window	*fl_digi_main=(Fl_Double_Window *)0;
 Fl_Help_Dialog 		*help_dialog = (Fl_Help_Dialog *)0;
 
-void fldigi_help(string theHelp) {
- 	if (!help_dialog)
-   		help_dialog = new Fl_Help_Dialog();
-
-	string htmlHelp = 
-		"<HTML>"//\n"
-		"<HEAD>"//\n"
-		"<TITLE>fldigi Help</TITLE>"//\n"
-		"</HEAD>"//\n"
-		"<BODY BGCOLOR='#ffffff'>"//\n"
-		"<FONT FACE=fixed, SIZE=18>"
-		"<P><TT>";
-	string postHelp = 
-		"</TT></P>"//\n"
-		"</BODY>";//\n";
-	string sHelp;
-	for (size_t i = 0; i < theHelp.length(); i++)
-		if (theHelp[i] == '\n') {
-			if (theHelp[i+1] == '\n') {
-				sHelp += "</TT></P><P><TT>";
-				i++;
-			} else
-				sHelp += "<BR>";//"\n<BR>";
-		} else
-			sHelp += theHelp[i];
-	htmlHelp += sHelp;
-	htmlHelp += postHelp;
-	
-	help_dialog->value(htmlHelp.c_str());
-
-	help_dialog->show();
-}
-
 cMixer mixer;
 
 bool useCheckButtons = false;
@@ -640,35 +607,57 @@ void cb_mnuVisitURL(Fl_Widget*, void* arg)
         restoreFocus();
 }
 
+void html_help( const string &Html)
+{
+	if (!help_dialog)
+		help_dialog = new Fl_Help_Dialog;
+	help_dialog->value(Html.c_str());
+	help_dialog->show();
+}
+
+void fldigi_help(const string& theHelp)
+{
+	string htmlHelp = 
+"<HTML>"
+"<HEAD>"
+"<TITLE>" PACKAGE " Help</TITLE>"
+"</HEAD>"
+"<BODY>"
+"<FONT FACE=fixed>"
+"<P><TT>";
+
+	for (size_t i = 0; i < theHelp.length(); i++) {
+		if (theHelp[i] == '\n') {
+			if (theHelp[i+1] == '\n') {
+				htmlHelp += "</TT></P><P><TT>";
+				i++;
+			}
+			else
+				htmlHelp += "<BR>";
+		} else if (theHelp[i] == ' ' && theHelp[i+1] == ' ') {
+			htmlHelp += "&nbsp;&nbsp;";
+			i++;
+		} else
+			htmlHelp += theHelp[i];
+	}
+	htmlHelp += 
+"</TT></P>"
+"</BODY>"
+"</HTML>";
+	html_help(htmlHelp);
+}
+
 void cb_mnuCmdLineHelp(Fl_Widget*, void*)
 {
-	extern std::string option_help;
-
+	extern string option_help;
 	fldigi_help(option_help);
-//	fl_message_font(FL_SCREEN, FL_NORMAL_SIZE - 1);
-//	fl_message("%s", option_help.c_str());
-//	fl_message_font(FL_HELVETICA, FL_NORMAL_SIZE);
-
 	restoreFocus();
 }
 
 void cb_mnuBuildInfo(Fl_Widget*, void*)
 {
-	extern std::string version_text;
-	std::string s = version_text;
-	std::string::size_type i = 0;
-
-        // escape the at chars
-	while ((i = s.find('@', i)) != std::string::npos) {
-		s.insert(i, 1, '@');
-		i += 2;
-	}
-
-	fldigi_help(s);
-//	fl_message_font(FL_SCREEN, FL_NORMAL_SIZE - 1);
-//	fl_message("%s", s.c_str());
-//	fl_message_font(FL_HELVETICA, FL_NORMAL_SIZE);
-
+	extern string version_text;
+	fldigi_help(version_text);
 	restoreFocus();
 }
 

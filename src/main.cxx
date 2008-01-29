@@ -291,30 +291,30 @@ void generate_option_help(void) {
 
 
 	ostringstream help;
-//	int width = 72;
-	help << "Usage:\n" 
+	help << "Usage:\n"
 	     << "    " << PACKAGE_NAME << " [option...]\n\n";
 
 	help << PACKAGE_NAME << " options:\n\n"
-	
-		 << "  --config-dir DIRECTORY\n"
+	     << "  --config-dir DIRECTORY\n"
 	     << "    Look for configuration files in DIRECTORY\n"
 	     << "    The default is: " << HomeDir << "\n\n"
-	     
-	     << "  --rx-ipc-key KEY" << "Set the receive message queue key\n"
+
+	     << "  --rx-ipc-key KEY\n"
+	     << "    Set the receive message queue key\n"
 	     << "    May be given in hex if prefixed with \"0x\"\n"
 	     << "    The default is: " << progdefaults.rx_msgid
 	     << " or 0x" << hex << progdefaults.rx_msgid << dec << "\n\n"
 
-	     << "  --tx-ipc-key KEY" << "Set the transmit message queue key\n"
+	     << "  --tx-ipc-key KEY\n"
+	     << "    Set the transmit message queue key\n"
 	     << "    May be given in hex if prefixed with \"0x\"\n"
 	     << "    The default is: " << progdefaults.tx_msgid
 	     << " or 0x" << hex << progdefaults.tx_msgid << dec << "\n\n"
 
-	     << "  --version\n" 
+	     << "  --version\n"
 	     << "    Print version information\n\n"
 
-	     << "  --help\n" 
+	     << "  --help\n"
 	     << "    Print this option help\n\n";
 
 // Fl::help looks ugly so we'll write our own
@@ -332,8 +332,7 @@ void generate_option_help(void) {
 	     << "    format is ``host:n.n''\n\n"
 
 	     << "   -dn, -dnd or -nodn, -nodnd\n"
-	     << "    Enable or disable drag and drop copy and\n"
-	     << "    paste in text fields\n\n"
+	     << "    Enable or disable drag and drop copy and paste in text fields\n\n"
 
 	     << "   -fg COLOR, -foreground COLOR\n"
 	     << "    Set the foreground color\n\n"
@@ -363,9 +362,6 @@ void generate_option_help(void) {
 	     << "    Enable or disable tooltips\n\n";
 
 	help << "Additional UI options:\n\n"
-
-	     // << setw(width) << setiosflags(ios::left)
-	     // << " --fast-text" << "Use fast text widgets\n"
 
 	     << "  --font FONT[:SIZE]\n"
 	     << "    Set the widget font and (optionally) size\n"
@@ -523,11 +519,11 @@ int parse_args(int argc, char **argv, int& idx)
 			return 2;
 #endif // USE_PORTAUDIO
 		case OPT_HELP:
-			cerr << option_help;
+			cout << option_help;
 			exit(EXIT_SUCCESS);
 
 		case OPT_VERSION:
-			cerr << version_text;
+			cout << version_text;
 			exit(EXIT_SUCCESS);
 
 		case '?':

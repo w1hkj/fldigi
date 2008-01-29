@@ -1,47 +1,34 @@
 Change Log:
 
-2.08  1) Use PortAudio's C API; the C++ bindings are no longer required
-      2) Boost is no longer required when std::(tr1::)bind is available,
-         as is the case with g++ >= 4.0
-      3) Autodetect TLS support
-      4) Switch to the PortAudio C API (portaudiocpp no longer required). 
-         Improved PortAudio error handling.
-      5) Use std::bind (or std::tr1::bind) if available. Boost no longer 
-         needed with g++-4.x, still required with with very old compilers 
-         (g++ 3.x).
-      6) qrunner cleanups
-      7) Add m4 macros for TLS autodetection (the --enable-tls/--disable-tls 
-         switches are still supported).
-      8) New ringbuffer and other utility code
-      9) New item in the sample rate menu: "Native" selects the hardware's 
+2.08  1) Changes to build process:
+	     a. Use PortAudio's C API; the C++ bindings are no longer required
+         b. Boost is no longer required when std::(tr1::)bind is available,
+            as is the case with g++ >= 4.0
+         c. Autodetect TLS support
+         d. Use std::bind (or std::tr1::bind) if available. 
+         e. Add m4 macros for TLS autodetection (the --enable-tls/--disable-tls 
+            switches are still supported).
+         f. Minor changes to configure.ac
+      2) qrunner cleanups
+      3) New ringbuffer and other utility code
+      4) New item in the sample rate menu: "Native" selects the hardware's 
          preferred sample rate. Breaks backward compatibility: saving this 
          with fldigi-2.08 will result in an "invalid sample rate" message if 
          the same fldigi_def.xml file is then used with 2.07 -- until "Auto" 
          or a specific value is selected again.
-     10) Correction to the waterfall's "casual tuning" feature: don't set the 
+      5) Correction to the waterfall's "casual tuning" feature: don't set the 
          modem to SIGSEARCH when the right mouse button is released.
-     11) Set locale only for LC_TIME
-     12) Add .desktop, move icons to data/
-     13) Minor changes to configure.ac
-     14) Stacktrace updates Kill a newline in Aborting... message.
-         Skip pstack's own frame when printing stack trace.
-     15) Print host API errors
-     16) Add debug_exec
-     17) Fix key bindings loop
-     18) Olivia bug fixes.  Set smargin and sinteg to avoid access to 
-         uninitialised memory.  Also set lastfreq to 0 in ctor to avoid 
-         valgrind warnings
-     19) MFSK bug fixes.  Set some variables to avoid accessing uninitialised 
-         memory.  Initialise interleave table with 0s; the original gmfsk code
-         used g_new0 to do this. This avoids another access to random bits.
-         Fix memory leak by creating the small syms array on the stack.
-         Initialise symbolpair[] with 0s in ctor to avoid vargrind warnings
-     20) CW fix.  Initialise usedefaultWPM in ctor to avoid valgrind warning 
-         about conditional jump depending on access to uninitialised memory
-     21) Throb bug fix.  Plug a memory leak caused by using the wrong delete 
-         operator.
-     22) PSK bug fix. Initialise s/n and imd variables.
-     23) Add Olivia settings.
+      6) Set locale only for LC_TIME
+      7) Add .desktop, move icons to data/; for deb / rpm build compatibility
+      8) Exception trapping and print to stdout on program failure 
+      9) Fixes to modem class logic:
+         a. Olivia  Corrected uninitialized variables.
+         b. MFSK    Corrected uninitialized variables. Fixed memory leak.
+         c. CW      Corrected uinitialized variable. 
+         d. Throb   Fix memory leak caused by using the wrong delete operator.
+         e. PSK     Corrected uninitialized variables.
+     10) Rigcat/Hamlib dialog.  Added mode, sideband, and current audio
+         frequency to "saved" frequencies list.
 
 2.07  1) bug fix for mode changes via SysV interface (pskmail / flarq)
       2) bug fix for modem configuration post quick change from status
