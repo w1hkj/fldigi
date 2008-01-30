@@ -34,6 +34,7 @@
 #include "psk.h"
 #include "waterfall.h"
 #include "configuration.h"
+#include "viewpsk.h"
 
 extern waterfall *wf;
 
@@ -54,6 +55,7 @@ extern waterfall *wf;
 #define	POLY2	0x19
 
 char pskmsg[80];
+viewpsk *pskviewer = (viewpsk *)0;
 
 void psk::tx_init(cSound *sc)
 {
@@ -99,11 +101,15 @@ psk::~psk()
 	if (dec) delete dec;
 	if (fir1) delete fir1;
 	if (fir2) delete fir2;
+	if (pskviewer) delete pskviewer;
 //	if (wfid) delete wfid;
 }
 
 psk::psk(trx_mode pskmode) : modem()
 {
+	if (!pskviewer) pskviewer = new viewpsk(pskmode);
+	else pskviewer->restart(pskmode);
+	
 	mode = pskmode;
 
 	switch (mode) {
@@ -462,6 +468,8 @@ int psk::rx_process(const double *buf, int len)
 	double delta;
 	complex z;
 
+	if (pskviewer) pskviewer->rx_process(buf, len);
+	
 	delta = 2.0 * M_PI * frequency / samplerate;
 	
 	signalquality();

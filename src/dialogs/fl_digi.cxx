@@ -83,6 +83,8 @@
 
 #include "qrunner.h"
 
+#include "Viewer.h"
+
 Fl_Double_Window	*fl_digi_main=(Fl_Double_Window *)0;
 Fl_Help_Dialog 		*help_dialog = (Fl_Help_Dialog *)0;
 
@@ -694,6 +696,10 @@ void cb_mnuRig(Fl_Menu_ *, void *) {
 	rigcontrol->show();
 }
 
+void cb_mnuViewer(Fl_Menu_ *, void *) {
+	openViewer();
+}
+
 void closeRigDialog() {
 	rigcontrol->hide();
 }
@@ -971,6 +977,8 @@ Fl_Menu_Item menu_[] = {
 {"Build info", 0, cb_mnuBuildInfo, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 {"About", 0, cb_mnuAbout, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
+	
+{"Viewer", 0, (Fl_Callback*)cb_mnuViewer, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 
 {"  ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},

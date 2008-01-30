@@ -1,5 +1,7 @@
 Change Log:
 
+2.09  1) Modified src/Makefile.am for FreeBSD name space clash
+
 2.08  1) Changes to build process:
 	     a. Use PortAudio's C API; the C++ bindings are no longer required
          b. Boost is no longer required when std::(tr1::)bind is available,
