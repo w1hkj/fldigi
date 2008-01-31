@@ -84,7 +84,8 @@ void psk::rx_init()
 
 void psk::restart()
 {
-//	reverse = false;
+	if (!pskviewer) pskviewer = new viewpsk(mode);
+	else		    pskviewer->restart(mode);
 }
 
 void psk::init()
@@ -101,15 +102,10 @@ psk::~psk()
 	if (dec) delete dec;
 	if (fir1) delete fir1;
 	if (fir2) delete fir2;
-	if (pskviewer) delete pskviewer;
-//	if (wfid) delete wfid;
 }
 
 psk::psk(trx_mode pskmode) : modem()
 {
-	if (!pskviewer) pskviewer = new viewpsk(pskmode);
-	else pskviewer->restart(pskmode);
-	
 	mode = pskmode;
 
 	switch (mode) {
@@ -204,9 +200,7 @@ psk::psk(trx_mode pskmode) : modem()
 	fragmentsize = symbollen;
 	bandwidth = samplerate / symbollen;
 	snratio = s2n = imdratio = imd = 0;
-//	wfid = new id(this);
-	
-//	pipeptr = 0;
+
 	if (mailserver && progdefaults.PSKmailSweetSpot)
 		sigsearch = SIGSEARCH;
 	else

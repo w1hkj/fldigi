@@ -52,7 +52,8 @@ viewpsk::viewpsk(trx_mode pskmode)
 	for (int i = 0; i < CHANNELS; i++) {
 		fir1[i] = (C_FIR_filter *)0;
 		fir2[i] = (C_FIR_filter *)0;
-	}	
+	}
+	viewmode = MODE_PREV;	
 	restart(pskmode);
 }
 
@@ -84,15 +85,13 @@ void viewpsk::init()
 
 void viewpsk::restart(trx_mode pskmode)
 {
+	if (viewmode == pskmode) return;
+	viewmode = pskmode;
+		
 	double			fir1c[64];
 	double			fir2c[64];
 
-	for (int i = 0; i < CHANNELS; i++) {
-		if (fir1[i]) delete fir1[i];
-		if (fir2[i]) delete fir2[i];
-	}
-	
-	switch (pskmode) {
+	switch (viewmode) {
 	case MODE_BPSK31:
 		symbollen = 256;
 		dcdbits = 32;
@@ -118,9 +117,11 @@ void viewpsk::restart(trx_mode pskmode)
 	wsincfilt(fir2c, 1.0 / 16.0, true);			// creates fir2c matched sin(x)/x filter w blackman
 
 	for (int i = 0; i < CHANNELS; i++) {
+		if (fir1[i]) delete fir1[i];
 		fir1[i] = new C_FIR_filter();
 		fir1[i]->init(FIRLEN, symbollen / 16, fir1c, fir1c);
 
+		if (fir2[i]) delete fir2[i];
 		fir2[i] = new C_FIR_filter();
 		fir2[i]->init(FIRLEN, 1, fir2c, fir2c);
 	}
@@ -152,15 +153,14 @@ void viewpsk::findsignal(int ch)
 	double ftest, sigpwr, noise;
 	if (sigsearch[ch] > 0) {
 		sigsearch[ch]--;
-		ftest = wf->peakFreq((int)(frequency[ch]), VSEARCHWIDTH);
+		ftest = wf->peakFreq((int)(frequency[ch]), VSEARCHWIDTH + (int)(bandwidth / 2));
 		sigpwr = wf->powerDensity(ftest,  bandwidth);
 		noise = wf->powerDensity(ftest + 2 * bandwidth, bandwidth / 2) +
 		   	    wf->powerDensity(ftest - 2 * bandwidth, bandwidth / 2) + 1e-20;
 		if (sigpwr/noise > VSNTHRESHOLD) { // larger than the search threshold
-			if (fabs(ftest - nomfreq[ch]) > VSEARCHWIDTH)
-				frequency[ch] = nomfreq[ch];
-			else
-				frequency[ch] = ftest;
+			if (ftest - nomfreq[ch] > VSEARCHWIDTH) ftest = nomfreq[ch] + VSEARCHWIDTH;
+			if (ftest - nomfreq[ch] < -VSEARCHWIDTH) ftest = nomfreq[ch] - VSEARCHWIDTH;
+			frequency[ch] = ftest;
 		} else { // less than the detection threshold
 			frequency[ch] = nomfreq[ch];
 			sigsearch[ch] = VSIGSEARCH;

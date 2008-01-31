@@ -4,6 +4,8 @@
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Hold_Browser.H>
+#include <Fl/Fl_Group.H>
+#include <Fl/Fl_Pack.H>
 
 extern Fl_Double_Window *dlgViewer;
 extern Fl_Button *btnCloseViewer;

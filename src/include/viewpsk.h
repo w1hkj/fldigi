@@ -41,6 +41,8 @@
 
 class viewpsk {
 private:
+	trx_mode viewmode;
+
 	int				symbollen;
 	double			phaseacc[CHANNELS];
 	complex			prevsymbol[CHANNELS];
