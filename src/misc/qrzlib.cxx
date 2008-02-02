@@ -226,8 +226,13 @@ void QRZ::OpenQRZFiles( const char *fname )
   }
   memset( index, 0, idxsize );
 
-  fread( &idxhdr.dataname, 1, 48, idxfile );
-  fread( index, 1, idxsize, idxfile ) ;
+  if (fread( &idxhdr.dataname, 1, 48, idxfile ) != 1 ||
+      fread( index, 1, idxsize, idxfile ) != 1) {
+    fclose( idxfile );
+    free( index );
+    QRZvalid = 0;
+    return;
+  }
 
   fflush( stdout );
 
