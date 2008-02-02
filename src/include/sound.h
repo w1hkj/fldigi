@@ -5,7 +5,7 @@
 // Copyright (C) 2006-2007
 //              Dave Freese, W1HKJ
 //
-// Copyright (C) 2007
+// Copyright (C) 2007-2008
 //              Stelios Bounanos, M0GLD
 //
 // This file is part of fldigi.
@@ -28,32 +28,15 @@
 #ifndef _SOUND_H
 #define _SOUND_H
 
-#include <stdio.h>
-#include <errno.h>
-#include <stdlib.h>
 #include <cstring>
-#include <unistd.h>
-
-#include <sys/ioctl.h>
-#include <fcntl.h>
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <errno.h>
-#include <sys/soundcard.h>
-#include <math.h>
-
 #include <string>
 #include <vector>
 #if USE_SNDFILE
-	#include <sndfile.hh>
+	#include <sndfile.h>
 #endif
-#include <iostream>
-
 #if USE_PORTAUDIO
 	#include <portaudio.h>
 #endif
-
 #include <samplerate.h>
 
 #define MAXSC 32767.0;
@@ -100,9 +83,9 @@ protected:
 	float		*src_buffer;
 
 #if USE_SNDFILE
-	SndfileHandle* ofCapture;
-	SndfileHandle* ifPlayback;
-	SndfileHandle* ofGenerate;
+	SNDFILE* ofCapture;
+	SNDFILE* ifPlayback;
+	SNDFILE* ofGenerate;
 #endif
 
 	bool	capture;
@@ -114,7 +97,7 @@ protected:
 	int  readPlayback(double *buff, int count);
 #if USE_SNDFILE
 	bool format_supported(int format);
-	void tag_file(SndfileHandle *fh, const char *title);
+	void tag_file(SNDFILE *sndfile, const char *title);
 #endif
 public:
 	cSound();
@@ -126,9 +109,10 @@ public:
 	virtual int	Read(double *, int) = 0;
 	virtual bool	full_duplex(void) { return false; }
 #if USE_SNDFILE
-	int		Capture(bool on);
-	int		Playback(bool on);
-	int		Generate(bool on);
+	void		get_file_params(const char* def_fname, char** fname, int* format);
+	int		Capture(bool val);
+	int		Playback(bool val);
+	int		Generate(bool val);
 #endif
 };
 

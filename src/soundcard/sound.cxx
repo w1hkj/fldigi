@@ -5,7 +5,7 @@
 // Copyright (C) 2006-2007
 //              Dave Freese, W1HKJ
 //
-// Copyright (C) 2007
+// Copyright (C) 2007-2008
 //              Stelios Bounanos, M0GLD
 //
 // This file is part of fldigi.
@@ -26,6 +26,21 @@
 // ----------------------------------------------------------------------------
 
 #include <config.h>
+
+#include <iostream>
+
+#include <cstdio>
+#include <cstdlib>
+#include <errno.h>
+#include <unistd.h>
+
+#include <sys/ioctl.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#include <sys/soundcard.h>
+#include <math.h>
 
 #include "sound.h"
 #include "configuration.h"
@@ -52,125 +67,124 @@ cSound::~cSound()
 	if (rx_src_state) src_delete (rx_src_state);
 	if (tx_src_state) src_delete (tx_src_state);
 #if USE_SNDFILE
-	delete ofGenerate;
-	delete ofCapture;
-	delete ifPlayback;
+	if (ofGenerate) sf_close(ofGenerate);
+	if (ofCapture) sf_close(ofCapture);
+	if (ifPlayback) sf_close(ifPlayback);
 #endif
 }
 
 #if USE_SNDFILE
-int cSound::Capture(bool on)
+void cSound::get_file_params(const char* def_fname, char** fname, int* format)
 {
-	if (on) {
-		string deffilename = "./capture.wav";
-		const char *formats;
-		if (format_supported(SF_FORMAT_FLAC | SF_FORMAT_PCM_16))
-			formats = "*.{wav,flac}";
-		else
-			formats = "*.wav";
+	const char* suffixes;
+	if (format_supported(SF_FORMAT_FLAC | SF_FORMAT_PCM_16))
+		suffixes = "*.{wav,flac,au}";
+	else
+		suffixes = "*.{wav,au}";
 
-		char *fn = File_Select("Capture audio file", formats, deffilename.c_str(), 0);
-		if (fn) {
-			int format;
-			char *suffix = strrchr(fn, '.');
-			if (suffix && !strcasecmp(suffix, ".flac"))
-				format = SF_FORMAT_FLAC;
-			else
-				format = SF_FORMAT_WAV;
-			ofCapture = new SndfileHandle(fn, SFM_WRITE,
-						      format | SF_FORMAT_PCM_16,
-						      1, sample_frequency);
-			if (!*ofCapture) {
-				cerr << "Could not write " << fn << endl;
-				delete ofCapture;
-				ofCapture = 0;
-				return 0;
-			}
-			ofCapture->command(SFC_SET_UPDATE_HEADER_AUTO, 0, SF_TRUE);
-			tag_file(ofCapture, "Captured audio");
+	if ((*fname = File_Select("Audio file", suffixes, def_fname, 0)) == 0)
+		return;
+
+	char* suffix = strrchr(*fname, '.');
+	if (suffix && !strcasecmp(suffix, ".flac"))
+		*format = SF_FORMAT_FLAC | SF_FORMAT_PCM_16;
+	else if (suffix && !strcasecmp(suffix, ".au"))
+		*format = SF_FORMAT_AU | SF_FORMAT_FLOAT | SF_ENDIAN_CPU;
+	else
+		*format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
+}
+
+int cSound::Capture(bool val)
+{
+	if (!val) {
+		if (ofCapture) {
+			int err;
+			if ((err = sf_close(ofCapture)) != 0)
+				cerr << "sf_close error: " << sf_error_number(err) << '\n';
+			ofCapture = 0;
 		}
-		else
-			return 0;
+		capture = false;
+		return 1;
 	}
-	else {
-		delete ofCapture;
-		ofCapture = 0;
+
+	char* fname;
+	int format;
+	get_file_params("./capture.wav", &fname, &format);
+	if (!fname)
+		return 0;
+
+	// frames (ignored), freq, channels, format, sections (ignored), seekable (ignored)
+	SF_INFO info = { 0, sample_frequency, 1, format, 0, 0 };
+	if ((ofCapture = sf_open(fname, SFM_WRITE, &info)) == NULL) {
+		cerr << "Could not write " << fname << '\n';
+		return 0;
 	}
-	capture = on;
+	if (sf_command(ofCapture, SFC_SET_UPDATE_HEADER_AUTO, NULL, SF_TRUE) != SF_TRUE)
+		cerr << "ofCapture update header command failed: " << sf_strerror(ofCapture) << '\n';
+	tag_file(ofCapture, "Captured audio");
+
+	capture = true;
 	return 1;
 }
 
-int cSound::Playback(bool on)
+int cSound::Playback(bool val)
 {
-	if (on) {
-		string deffilename = "./playback.wav";
-		const char *formats;
-		if (format_supported(SF_FORMAT_FLAC | SF_FORMAT_PCM_16))
-			formats = "*.{wav,flac}";
-		else
-			formats = "*.wav";
-
-		char *fn = File_Select("Playback audio file", formats, deffilename.c_str(), 0);
-		if (fn) {
-			ifPlayback = new SndfileHandle(fn);
-			if (!*ifPlayback) {
-				cerr << "Could not read " << fn << endl;
-				delete ifPlayback;
-				ifPlayback = 0;
-				return 0;
-			}
-			playback = true;
+	if (!val) {
+		if (ifPlayback) {
+			int err;
+			if ((err = sf_close(ifPlayback)) != 0)
+				cerr << "sf_close error: " << sf_error_number(err) << '\n';
+			ifPlayback = 0;
 		}
-		else
-			return 0;
-	}
-	else {
-		delete ifPlayback;
-		ifPlayback = 0;
 		playback = false;
+		return 1;
 	}
+	char* fname;
+	int format;
+	get_file_params("./playback.wav", &fname, &format);
+	if (!fname)
+		return 0;
+
+	SF_INFO info = { 0, 0, 0, 0, 0, 0 };
+	if ((ifPlayback = sf_open(fname, SFM_READ, &info)) == NULL) {
+		cerr << "Could not read " << fname << '\n';
+		return 0;
+	}
+
+	playback = true;
 	return 1;
 }
 
-int cSound::Generate(bool on)
+int cSound::Generate(bool val)
 {
-	if (on) {
-		string deffilename = "./generate.wav";
-		const char *formats;
-		if (format_supported(SF_FORMAT_FLAC | SF_FORMAT_PCM_16))
-			formats = "*.{wav,flac}";
-		else
-			formats = "*.wav";
-
-		char *fn = File_Select("Generate audio file", formats, deffilename.c_str(), 0);
-		if (fn) {
-			int format;
-			char *suffix = strrchr(fn, '.');
-			if (suffix && !strcasecmp(suffix, ".flac"))
-				format = SF_FORMAT_FLAC;
-			else
-				format = SF_FORMAT_WAV;
-			ofGenerate = new SndfileHandle(fn, SFM_WRITE,
-						       format | SF_FORMAT_PCM_16,
-						       1, sample_frequency);
-			if (!*ofGenerate) {
-				cerr << "Could not write " << fn << endl;
-				delete ofGenerate;
-				ofGenerate = 0;
-				return 0;
-			}
-			ofGenerate->command(SFC_SET_UPDATE_HEADER_AUTO, 0, SF_TRUE);
-			tag_file(ofGenerate, "Generated audio");
-
+	if (!val) {
+		if (ofGenerate) {
+			int err;
+			if ((err = sf_close(ofGenerate)) != 0)
+				cerr << "sf_close error: " << sf_error_number(err) << '\n';
+			ofGenerate = 0;
 		}
-		else
-			return 0;
+		generate = false;
+		return 1;
 	}
-	else {
-		delete ofGenerate;
-		ofGenerate = 0;
+
+	char* fname;
+	int format;
+	get_file_params("./generate.wav", &fname, &format);
+	if (!fname)
+		return 0;
+
+	// frames (ignored), freq, channels, format, sections (ignored), seekable (ignored)
+	SF_INFO info = { 0, sample_frequency, 1, format, 0, 0 };
+	if ((ofGenerate = sf_open(fname, SFM_WRITE, &info)) == NULL) {
+		cerr << "Could not write " << fname << '\n';
+		return 0;
 	}
-	generate = on;
+	if (sf_command(ofGenerate, SFC_SET_UPDATE_HEADER_AUTO, NULL, SF_TRUE) != SF_TRUE)
+		cerr << "ofGenerate update header command failed: " << sf_strerror(ofGenerate) << '\n';
+	tag_file(ofGenerate, "Generated audio");
+
+	generate = true;
 	return 1;
 }
 #endif // USE_SNDFILE
@@ -178,25 +192,25 @@ int cSound::Generate(bool on)
 void cSound::writeGenerate(double *buff, int count)
 {
 #if USE_SNDFILE
-	ofGenerate->writef(buff, count);
+	sf_writef_double(ofGenerate, buff, count);
 #endif
 }
 
 void cSound::writeCapture(double *buff, int count)
 {
 #if USE_SNDFILE
-	ofCapture->writef(buff, count);
+	sf_writef_double(ofCapture, buff, count);
 #endif
 }
 
-int  cSound::readPlayback(double *buff, int count)
+int cSound::readPlayback(double *buff, int count)
 {
 #if USE_SNDFILE
-	sf_count_t r = ifPlayback->readf(buff, count);
+	sf_count_t r = sf_readf_double(ifPlayback, buff, count);
 
 	while (r < count) {
-		ifPlayback->seek(0, SEEK_SET);
-		r += ifPlayback->readf(buff + r, count - r);
+		sf_seek(ifPlayback, 0, SEEK_SET);
+		r += sf_readf_double(ifPlayback, buff + r, count - r);
                 if (r == 0)
                         break;
         }
@@ -215,27 +229,31 @@ bool cSound::format_supported(int format)
         return sf_format_check(&fmt_test);
 }
 
-void cSound::tag_file(SndfileHandle *fh, const char *title)
+void cSound::tag_file(SNDFILE *sndfile, const char *title)
 {
-       if (fh->setString(SF_STR_TITLE, title))
-               return;
+	int err;
+	if ((err = sf_set_string(sndfile, SF_STR_TITLE, title)) != 0) {
+		cerr << "sf_set_string STR_TITLE: " << sf_error_number(err) << '\n';
+		return;
+	}
 
-       fh->setString(SF_STR_COPYRIGHT, progdefaults.myName.c_str());
-       fh->setString(SF_STR_SOFTWARE, PACKAGE_NAME "-" PACKAGE_VERSION);
-       fh->setString(SF_STR_ARTIST, progdefaults.myCall.c_str());
+	sf_set_string(sndfile, SF_STR_COPYRIGHT, progdefaults.myName.c_str());
+	sf_set_string(sndfile, SF_STR_SOFTWARE, PACKAGE_NAME "-" PACKAGE_VERSION);
+	sf_set_string(sndfile, SF_STR_ARTIST, progdefaults.myCall.c_str());
 
-       char s[64];
-       snprintf(s, sizeof(s), "%s freq=%s",
-                active_modem->get_mode_name(), inpFreq->value());
-       fh->setString(SF_STR_COMMENT, s);
+	char s[64];
+	snprintf(s, sizeof(s), "%s freq=%s",
+		 active_modem->get_mode_name(), inpFreq->value());
+	sf_set_string(sndfile, SF_STR_COMMENT, s);
 
-       time_t t = time(0);
-       struct tm zt;
-       (void)gmtime_r(&t, &zt);
-       if (strftime(s, sizeof(s), "%F %Tz", &zt) > 0)
-               fh->setString(SF_STR_DATE, s);
+	time_t t = time(0);
+	struct tm zt;
+	(void)gmtime_r(&t, &zt);
+	if (strftime(s, sizeof(s), "%F %Tz", &zt) > 0)
+		sf_set_string(sndfile, SF_STR_DATE, s);
 }
 #endif // USE_SNDFILE
+
 
 cSoundOSS::cSoundOSS(const char *dev ) {
 	device			= dev;
