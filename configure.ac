@@ -299,7 +299,7 @@ if test "x$ac_cv_want_hamlib" = "xno"; then
 else
     PKG_CHECK_EXISTS(hamlib >= 1.2.4, ac_cv_hamlib=yes, ac_cv_hamlib=no)
     if test "x$ac_cv_want_hamlib" = "xcheck"; then
-        PKG_CHECK_MODULES(HAMLIB, hamlib >= 1.2.0, [:], [:])
+        PKG_CHECK_MODULES(HAMLIB, hamlib >= 1.2.4, [:], [:])
         if test "x$ac_cv_hamlib" = "xyes"; then
             AC_DEFINE(USE_HAMLIB, 1, [Define to 1 if we are using hamlib])
         else
@@ -311,7 +311,7 @@ else
         else
             AC_DEFINE(USE_HAMLIB, 1, [Define to 1 if we are using hamlib])
         fi
-        PKG_CHECK_MODULES(HAMLIB, hamlib >= 1.2.0) # for the error message
+        PKG_CHECK_MODULES(HAMLIB, hamlib >= 1.2.4) # for the error message
     fi
 fi
 AC_SUBST([HAMLIB_CFLAGS])
