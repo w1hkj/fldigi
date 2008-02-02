@@ -7,25 +7,14 @@
 
 #include <string>
 
-extern viewpsk *pskviewer;
-
-Fl_Double_Window *dlgViewer = (Fl_Double_Window *)0;
-
-Fl_Button *btnCloseViewer=(Fl_Button *)0;
-Fl_Button *btnClearViewer=(Fl_Button *)0;
-Fl_Hold_Browser *brwsViewer=(Fl_Hold_Browser *)0;
-Fl_Input  *inpSeek = (Fl_Input *)0;
-
 string bwsrfreq;
 string bwsrline[MAXCHANNELS];
 string ucaseline[MAXCHANNELS];
 string tofind;
 
-static char szFreq[40];
 static int  brwsFreq[MAXCHANNELS];
 static int  freq;
 static double dfreq;
-int wline;
 
 static long long rfc;
 static bool usb;
@@ -40,7 +29,76 @@ string slategray1;
 string bkgnd[2];
 
 int cols[] = {100, 0};
-int smcols[] = {30, 0};
+int cwidth;
+int cheight;
+int rfwidth;
+int chwidth;
+
+unsigned int nchars = 40;
+
+extern viewpsk *pskviewer;
+
+string freqformat(int i)
+{
+static char szLine[80];
+string fline;
+	if (pskviewer) freq = pskviewer->get_freq(progdefaults.VIEWERchannels - 1 - i);
+	else 		   freq = progdefaults.VIEWERstart + 100 * (progdefaults.VIEWERchannels - 1 - i);
+	brwsFreq[i] = freq;
+
+	if (rfc != 0) {
+		if (usb) dfreq = rfc + freq;
+		else     dfreq = rfc - freq;
+ 	} else 
+ 		dfreq = freq;
+	if (progdefaults.VIEWERshowfreq)
+		sprintf(szLine,"%10.3f", dfreq / 1000.0);
+	else
+		sprintf(szLine,"%3d", progdefaults.VIEWERchannels - i);	
+//	if (szLine[0] == ' ') strcpy(szLine, &szLine[1]);
+	fline = "@f";
+	fline += bkselect.c_str();
+	fline += white.c_str();
+	fline += szLine;
+  	fline += '\t';
+	fline += bkgnd[i % 2];
+	fline += "@f";
+
+	return fline;
+}
+
+void pskBrowser::resize(int x, int y, int w, int h) {
+		unsigned int nuchars = (w - cols[0] - 20) / cwidth;
+		string bline;
+		if (nuchars < nchars) {
+			Fl_Hold_Browser::clear();
+			for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
+				if (bwsrline[i].length() > nuchars)
+					bwsrline[i] = bwsrline[i].substr(0,nuchars);
+
+				bline = freqformat(i);
+
+				if (!tofind.empty())
+				if (ucaseline[i].find(tofind) != string::npos)
+					bline.append(dkred);
+				else if (!progdefaults.myCall.empty())
+					if (ucaseline[i].find(progdefaults.myCall) != string::npos)
+						bline.append(dkgreen);
+			
+				bline.append(bwsrline[i]);
+				Fl_Hold_Browser::add(bline.c_str());
+			}
+		}
+		nchars = nuchars;
+		Fl_Hold_Browser::resize(x,y,w,h);
+}		
+
+Fl_Double_Window *dlgViewer = (Fl_Double_Window *)0;
+
+Fl_Button *btnCloseViewer=(Fl_Button *)0;
+Fl_Button *btnClearViewer=(Fl_Button *)0;
+pskBrowser *brwsViewer=(pskBrowser *)0;
+Fl_Input  *inpSeek = (Fl_Input *)0;
 
 static void make_colors()
 {
@@ -84,6 +142,15 @@ static void make_colors()
     bkgnd[1] = slategray1;
 }
 
+static void evalcwidth()
+{
+	fl_font(FL_COURIER, 14);
+	cwidth = (int)fl_width("W");
+	cheight = fl_height();
+	rfwidth = 11 * cwidth;
+	chwidth = 4 * cwidth;
+}
+
 static void cb_btnCloseViewer(Fl_Button*, void*) {
   dlgViewer->hide();
 }
@@ -92,38 +159,33 @@ void ClearViewer() {
   	brwsViewer->clear();
   	usb = wf->USB();
   	rfc = wf->rfcarrier();
-  	
+	string bline;  	
   	for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
   		if (pskviewer) freq = pskviewer->get_freq(progdefaults.VIEWERchannels - 1 - i);
   		else 		   freq = progdefaults.VIEWERstart + 100 * (progdefaults.VIEWERchannels - 1 - i);
-  		if (rfc != 0) {
-  			if (usb) dfreq = rfc + freq;
-  			else     dfreq = rfc - freq;
-  		} else dfreq = freq;
-  			
-  		brwsFreq[i] = freq;
-  		if (progdefaults.VIEWERshowfreq)
-			sprintf(szFreq,"@f%s%s%11.3f", bkselect.c_str(), white.c_str(), dfreq / 1.0e3);
-		else
-			sprintf(szFreq,"@f%s%s%3d", bkselect.c_str(), white.c_str(), progdefaults.VIEWERchannels - i);	
-  		bwsrfreq = szFreq;
-  		bwsrfreq += '\t';
-  		bwsrfreq += bkgnd[i % 2];
+
+		bline = freqformat(i);
   		bwsrline[i] = "";
   		ucaseline[i] = "";
-  		brwsViewer->add(bwsrfreq.c_str());
+  		brwsViewer->add(bline.c_str());
   	}
-	if (progdefaults.VIEWERshowfreq) {
-   		brwsViewer->column_widths(cols);
-	} else {
-		brwsViewer->column_widths(smcols);	
-	}
+	if (progdefaults.VIEWERshowfreq)
+		cols[0] = rfwidth;
+	else
+		cols[0] = chwidth;
+  	brwsViewer->column_widths(cols);
+	nchars = (brwsViewer->w() - cols[0] - 20) / cwidth;
 }
 
 void initViewer()
 {
-	if (pskviewer) pskviewer->init();
-	ClearViewer();
+	if (pskviewer)
+		pskviewer->init();
+	if (dlgViewer)
+		ClearViewer();
+	nchars = (brwsViewer->w() - cols[0]  - 20) / cwidth;
+	dlgViewer->resize(dlgViewer->x(), dlgViewer->y(),
+	                  dlgViewer->w(), cheight * progdefaults.VIEWERchannels + 54);
 }
 
 static void cb_btnClearViewer(Fl_Button*, void*) {
@@ -149,10 +211,14 @@ Fl_Double_Window* createViewer() {
 	Fl_Pack *p;
 
 	make_colors();
+	evalcwidth();
+	
+	int viewerwidth = 450;
+	int viewerheight = 50 + cheight * progdefaults.VIEWERchannels + 4;
 
-	w = new Fl_Double_Window(450, 450, "Psk Viewer");
-	p = new Fl_Pack(0,0,450,490);
-		Fl_Pack *p1 = new Fl_Pack(0, 0, 450, 25);
+	w = new Fl_Double_Window(viewerwidth, viewerheight, "Psk Viewer");
+	p = new Fl_Pack(0,0,viewerwidth, viewerheight);
+		Fl_Pack *p1 = new Fl_Pack(0, 0, viewerwidth, 25);
 			p1->type(1);
 			Fl_Box *bx = new Fl_Box(0,0,50, 25);
 	    	inpSeek = new Fl_Input(50, 5, 200, 25, "Find: "); 
@@ -164,15 +230,17 @@ Fl_Double_Window* createViewer() {
     	p1->end();
     	tofind = "CQ";
 
-    	brwsViewer = new Fl_Hold_Browser(2, 35, 450, 400);
+    	brwsViewer = new pskBrowser(2, 25, viewerwidth, viewerheight - 50);
     	brwsViewer->callback((Fl_Callback*)cb_brwsViewer);
-		if (progdefaults.VIEWERshowfreq) {
-    		brwsViewer->column_widths(cols);
-		} else {
-			brwsViewer->column_widths(smcols);	
-		}
-			
-		Fl_Pack *p2 = new Fl_Pack(0, 435, 450, 25);
+
+		if (progdefaults.VIEWERshowfreq)
+			cols[0] = rfwidth;
+		else
+			cols[0] = chwidth;
+    	brwsViewer->column_widths(cols);
+		nchars = (brwsViewer->w() - cols[0] - 20) / cwidth;
+		
+		Fl_Pack *p2 = new Fl_Pack(0, viewerheight - 25, viewerwidth, 25);
 			p2->type(1);
 			bx = new Fl_Box(0,435, 10, 25);
     		btnClearViewer = new Fl_Button(10, 435, 65, 25, "Clear");
@@ -204,32 +272,17 @@ void viewer_redraw()
 	if (!dlgViewer) return;
   	usb = wf->USB();
   	rfc = wf->rfcarrier();
-	  	
+	string bline;
+		  	
   	for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
-  		if (pskviewer) freq = pskviewer->get_freq(24 - i);
-  		else 		   freq = progdefaults.VIEWERstart + 100 * (24 - i);
-  		if (rfc) {
-  			if (usb) dfreq = rfc + freq;
-  			else     dfreq = rfc - freq;
-  		} else dfreq = freq;
-  			
-  		brwsFreq[i] = freq;
-//		sprintf(szFreq,"@f%s%s%11.3f", bkselect.c_str(), white.c_str(), dfreq / 1.0e3);
-  		if (progdefaults.VIEWERshowfreq)
-			sprintf(szFreq,"@f%s%s%11.3f", bkselect.c_str(), white.c_str(), dfreq / 1.0e3);
-		else
-			sprintf(szFreq,"@f%s%s%3d", bkselect.c_str(), white.c_str(), 25 - i);	
-
-  		bwsrfreq = szFreq;
-  		bwsrfreq += '\t';
-  		bwsrfreq += bkgnd[i % 2];
+		bline = freqformat(i);
   		brwsViewer->text(i + 1, bwsrfreq.c_str());
   	}
-	if (progdefaults.VIEWERshowfreq) {
-    	brwsViewer->column_widths(cols);
-	} else {
-		brwsViewer->column_widths(smcols);	
-	}
+	if (progdefaults.VIEWERshowfreq)
+		cols[0] = rfwidth;
+	else
+		cols[0] = chwidth;
+    brwsViewer->column_widths(cols);
 }
 
 void viewaddchr(int ch, int freq, char c) {
@@ -238,16 +291,18 @@ void viewaddchr(int ch, int freq, char c) {
 	if (rfc != wf->rfcarrier() || usb != wf->USB()) viewer_redraw();
 		
 	static string nuline;
+	string bline;
+
 	int index = progdefaults.VIEWERchannels - 1 - ch;
 	if (progdefaults.VIEWERmarquee) {
-		if (bwsrline[index].length() > 40 ) {
-			bwsrline[index].erase(0,1); //2,1);
-			ucaseline[index].erase(0,1); //2,1);
+		if (bwsrline[index].length() > nchars ) {
+			bwsrline[index].erase(0,1);
+			ucaseline[index].erase(0,1);
 		}
 		if (c >= ' ' && c <= 'z') {
 			bwsrline[index] += c;
 			ucaseline[index] += toupper(c);
-		} else if (c == '\n') {
+		} else {
 			bwsrline[index] += ' ';
 			ucaseline[index] += ' ';
 		}
@@ -255,32 +310,16 @@ void viewaddchr(int ch, int freq, char c) {
 		if (c >= ' ' && c <= 'z') {
 			bwsrline[index] += c;
 			ucaseline[index] += toupper(c);
-		} else if (c == '\n') {
+		} else {
 			bwsrline[index] += ' ';
 			ucaseline[index] += ' ';
 		}
-		if (bwsrline[index].length() > 42) {
+		if (bwsrline[index].length() > nchars) {
 			bwsrline[index] = "";
 			ucaseline[index] = "";
 		}
 	}
-	brwsFreq[index] = freq;
-	if (rfc) {
-  		if (usb) dfreq = rfc + freq;
-  		else     dfreq = rfc - freq;
-  	} else dfreq = freq;
-	
-//	sprintf(szFreq,"@f%s%s%11.3f", bkselect.c_str(), white.c_str(), dfreq / 1.0e3);
- 	if (progdefaults.VIEWERshowfreq)
-		sprintf(szFreq,"@f%s%s%11.3f", bkselect.c_str(), white.c_str(), dfreq / 1.0e3);
-	else
-			sprintf(szFreq,"@f%s%s%3d", bkselect.c_str(), white.c_str(), ch);	
-	
-  	bwsrfreq = szFreq;
-  	bwsrfreq += '\t';
-  	bwsrfreq += bkgnd[(index) % 2];
-	nuline = bwsrfreq;
-	nuline.append("@f");
+	nuline = freqformat(index);
 
 	if (!tofind.empty())
 		if (ucaseline[index].find(tofind) != string::npos)

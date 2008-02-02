@@ -34,7 +34,7 @@
 #define VSNTHRESHOLD 2.0
 #define VAFCDECAY 8
 #define MAXCHANNELS 30
-#define VSEARCHWIDTH 50
+#define VSEARCHWIDTH 60
 #define VSIGSEARCH 5
 #define VWAITCOUNT 4
 //=====================================================================
