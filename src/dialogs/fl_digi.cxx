@@ -965,6 +965,9 @@ Fl_Menu_Item menu_[] = {
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
 {"Rig", 0, (Fl_Callback*)cb_mnuRig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
+{"Viewer", 0, (Fl_Callback*)cb_mnuViewer, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+
+{"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
 
 {"Help", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 #ifndef NDEBUG
@@ -978,8 +981,6 @@ Fl_Menu_Item menu_[] = {
 {"About", 0, cb_mnuAbout, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 	
-{"Viewer", 0, (Fl_Callback*)cb_mnuViewer, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-
 {"  ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 };

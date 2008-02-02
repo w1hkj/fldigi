@@ -21,10 +21,11 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, 
 // Boston, MA  02111-1307  USA
 // --------------------------------------------------------------------
-// viewpsk is a 25 channel psk decoder which allows the parallel processing
-// of the complete audio spectrum from 500 to 3000 Hz in 25 equal 100 Hz
+// viewpsk is a multi channel psk decoder which allows the parallel processing
+// of the complete audio spectrum from 200 to 3500 Hz in equal 100 Hz
 // channels.  Each channel is separately decoded and the decoded characters
-// passed to the user interface routines for presentation
+// passed to the user interface routines for presentation.  The number of
+// channels can be up to and including 30.
 // --------------------------------------------------------------------
 
 #include <config.h>
@@ -49,7 +50,7 @@ extern waterfall *wf;
 
 viewpsk::viewpsk(trx_mode pskmode)
 {
-	for (int i = 0; i < CHANNELS; i++) {
+	for (int i = 0; i < MAXCHANNELS; i++) {
 		fir1[i] = (C_FIR_filter *)0;
 		fir2[i] = (C_FIR_filter *)0;
 	}
@@ -59,7 +60,7 @@ viewpsk::viewpsk(trx_mode pskmode)
 
 viewpsk::~viewpsk()
 {
-	for (int i = 0; i < CHANNELS; i++) {
+	for (int i = 0; i < MAXCHANNELS; i++) {
 		if (fir1[i]) delete fir1[i];
 		if (fir2[i]) delete fir2[i];
 	}
@@ -67,7 +68,7 @@ viewpsk::~viewpsk()
 
 void viewpsk::init()
 {
-	for (int i = 0; i < CHANNELS; i++) {
+	for (int i = 0; i < MAXCHANNELS; i++) {
 		phaseacc[i] = 0;
 		prevsymbol[i]	= complex (1.0, 0.0);
 		shreg[i] = 0;
@@ -76,7 +77,7 @@ void viewpsk::init()
 		bitclk[i] = 0;
 		freqerr[i] = 0.0;
 		waitcount[i] = VWAITCOUNT;
-		nomfreq[i] = 500 + 100 * i;
+		nomfreq[i] = progdefaults.VIEWERstart + 100 * i;
 		frequency[i] = nomfreq[i];
 		for (int j = 0; j < 16; j++)
 			syncbuf[i * 16 + j] = 0.0;
@@ -116,7 +117,7 @@ void viewpsk::restart(trx_mode pskmode)
 	wsincfilt(fir1c, 1.0 / symbollen, true);	// creates fir1c matched sin(x)/x filter w blackman
 	wsincfilt(fir2c, 1.0 / 16.0, true);			// creates fir2c matched sin(x)/x filter w blackman
 
-	for (int i = 0; i < CHANNELS; i++) {
+	for (int i = 0; i < MAXCHANNELS; i++) {
 		if (fir1[i]) delete fir1[i];
 		fir1[i] = new C_FIR_filter();
 		fir1[i]->init(FIRLEN, symbollen / 16, fir1c, fir1c);
@@ -231,14 +232,17 @@ void viewpsk::rx_symbol(int ch, complex symbol)
 
 int viewpsk::rx_process(const double *buf, int len)
 {
+	if (!(dlgViewer && dlgViewer->shown()))
+		return 0;
+
 	double sum;
 	double ampsum;
 	int idx;
-	complex z[CHANNELS];
+	complex z[MAXCHANNELS];
 
 	while (len-- > 0) {
 // process all CHANNELS (25)
-		for (int channel = 0; channel < CHANNELS; channel++) {
+		for (int channel = 0; channel < progdefaults.VIEWERchannels; channel++) {
 // Mix with the internal NCO for each channel
 			z[channel] = complex ( *buf * cos(phaseacc[channel]), *buf * sin(phaseacc[channel]) );
 
@@ -274,14 +278,13 @@ int viewpsk::rx_process(const double *buf, int len)
 		}
 		buf++;
 	}
-	for (int channel = 0; channel < CHANNELS; channel++) {		
+	for (int channel = 0; channel < progdefaults.VIEWERchannels; channel++) {		
 		if (sigsearch[channel])
 			findsignal(channel);
 		else {
 			if (waitcount[channel] > 0) {
 				--waitcount[channel];
 				if (waitcount[channel] == 0) {
-//					frequency[channel] = nomfreq[channel];
 					sigsearch[channel] = VSIGSEARCH;
 				}
 			}

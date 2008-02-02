@@ -1214,6 +1214,8 @@ void waterfall::USB(bool b) {
 		return;
 	wfdisp->USB(b);
 	active_modem->set_reverse(reverse);
+extern void viewer_redraw();
+	viewer_redraw();
 }
 	
 bool waterfall::USB() {

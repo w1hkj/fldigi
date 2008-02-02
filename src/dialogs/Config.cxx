@@ -4,6 +4,7 @@
 #include <config.h>
 #include "main.h"
 #include "combo.h"
+extern void initViewer();
 Fl_Double_Window *dlgConfig;
 
 Fl_Tabs *tabsConfigure=(Fl_Tabs *)0;
@@ -958,6 +959,38 @@ wf->redraw_marker();
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnMarquee=(Fl_Check_Button *)0;
+
+static void cb_btnMarquee(Fl_Check_Button* o, void*) {
+  progdefaults.VIEWERmarquee = o->value();
+progdefaults.changed = true;
+initViewer();
+}
+
+Fl_Check_Button *btnShowFrequencies=(Fl_Check_Button *)0;
+
+static void cb_btnShowFrequencies(Fl_Check_Button* o, void*) {
+  progdefaults.VIEWERshowfreq = o->value();
+progdefaults.changed = true;
+initViewer();
+}
+
+Fl_Spinner *cntStartFrequency=(Fl_Spinner *)0;
+
+static void cb_cntStartFrequency(Fl_Spinner* o, void*) {
+  progdefaults.VIEWERstart = (int)(o->value());
+progdefaults.changed = true;
+initViewer();
+}
+
+Fl_Spinner *cntChannels=(Fl_Spinner *)0;
+
+static void cb_cntChannels(Fl_Spinner* o, void*) {
+  progdefaults.VIEWERchannels = (int)(o->value());
+progdefaults.changed = true;
+initViewer();
+}
+
 Fl_Group *tabRTTY=(Fl_Group *)0;
 
 Fl_Choice *selShift=(Fl_Choice *)0;
@@ -1268,6 +1301,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { Fl_Group* o = tabVideo = new Fl_Group(0, 25, 400, 195, "Video");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
+        o->hide();
         { Fl_Group* o = new Fl_Group(5, 40, 390, 67, "Video Preamble");
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -1639,7 +1673,6 @@ fect after a restart.");
       { Fl_Group* o = tabModems = new Fl_Group(0, 25, 401, 195, "Modem");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
-        o->hide();
         { Fl_Tabs* o = tabsModems = new Fl_Tabs(0, 25, 401, 195);
           o->color((Fl_Color)51);
           o->selection_color((Fl_Color)10);
@@ -1915,8 +1948,7 @@ fect after a restart.");
             o->end();
           }
           { Fl_Group* o = tabPSK = new Fl_Group(0, 50, 400, 170, "Psk");
-            o->hide();
-            { Fl_Counter* o = cntSearchRange = new Fl_Counter(25, 69, 80, 21, "Search Range");
+            { Fl_Counter* o = cntSearchRange = new Fl_Counter(25, 60, 80, 21, "Search Range");
               o->type(1);
               o->minimum(10);
               o->maximum(500);
@@ -1926,16 +1958,16 @@ fect after a restart.");
               o->align(FL_ALIGN_RIGHT);
               o->value(progdefaults.SearchRange);
             }
-            { Fl_Group* o = new Fl_Group(15, 105, 370, 92, "PskMail Server");
+            { Fl_Group* o = new Fl_Group(15, 87, 370, 53, "PskMail Server");
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = btnPSKmailSweetSpot = new Fl_Check_Button(30, 138, 185, 20, "use PSK mail sweetspot");
+              { Fl_Check_Button* o = btnPSKmailSweetSpot = new Fl_Check_Button(20, 106, 130, 20, "use sweetspot");
                 o->down_box(FL_DOWN_BOX);
                 o->value(1);
                 o->callback((Fl_Callback*)cb_btnPSKmailSweetSpot);
                 o->value(progdefaults.PSKmailSweetSpot);
               }
-              { Fl_Counter* o = cntServerOffset = new Fl_Counter(31, 162, 80, 21, "Allowable Rx Carrier Offset");
+              { Fl_Counter* o = cntServerOffset = new Fl_Counter(150, 104, 80, 21, "Server Search Range");
                 o->type(1);
                 o->minimum(10);
                 o->maximum(500);
@@ -1947,11 +1979,41 @@ fect after a restart.");
               }
               o->end();
             }
+            { Fl_Group* o = new Fl_Group(15, 140, 370, 75, "PSK Viewer");
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { Fl_Check_Button* o = btnMarquee = new Fl_Check_Button(25, 162, 120, 15, "Marquee style");
+                o->down_box(FL_DOWN_BOX);
+                o->callback((Fl_Callback*)cb_btnMarquee);
+                o->value(progdefaults.VIEWERmarquee);
+              }
+              { Fl_Check_Button* o = btnShowFrequencies = new Fl_Check_Button(25, 190, 150, 15, "Show Frequencies");
+                o->down_box(FL_DOWN_BOX);
+                o->callback((Fl_Callback*)cb_btnShowFrequencies);
+                o->value(progdefaults.VIEWERshowfreq);
+              }
+              { Fl_Spinner* o = cntStartFrequency = new Fl_Spinner(315, 185, 60, 25, "Start Frequency:");
+                o->callback((Fl_Callback*)cb_cntStartFrequency);
+                o->minimum(200);
+                o->maximum(1000);
+                o->step(100);
+                o->value(progdefaults.VIEWERstart);
+              }
+              { Fl_Spinner* o = cntChannels = new Fl_Spinner(325, 157, 50, 25, "# Channels:");
+                o->callback((Fl_Callback*)cb_cntChannels);
+                o->minimum(5);
+                o->maximum(30);
+                o->step(1);
+                o->value(progdefaults.VIEWERchannels);
+              }
+              o->end();
+            }
             o->end();
           }
           { Fl_Group* o = tabRTTY = new Fl_Group(0, 50, 400, 170, "RTTY");
             o->color((Fl_Color)51);
             o->selection_color((Fl_Color)51);
+            o->hide();
             { Fl_Choice* o = selShift = new Fl_Choice(58, 65, 77, 24, "Shift");
               o->down_box(FL_BORDER_BOX);
               o->callback((Fl_Callback*)cb_selShift);

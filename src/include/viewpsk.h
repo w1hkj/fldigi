@@ -33,9 +33,9 @@
 #define	VPSKSAMPLERATE	(8000)
 #define VSNTHRESHOLD 2.0
 #define VAFCDECAY 8
-#define CHANNELS 25
+#define MAXCHANNELS 30
 #define VSEARCHWIDTH 50
-#define VSIGSEARCH 3
+#define VSIGSEARCH 5
 #define VWAITCOUNT 4
 //=====================================================================
 
@@ -44,29 +44,29 @@ private:
 	trx_mode viewmode;
 
 	int				symbollen;
-	double			phaseacc[CHANNELS];
-	complex			prevsymbol[CHANNELS];
-	complex			quality[CHANNELS];
-	unsigned int	shreg[CHANNELS];
-	double			metric[CHANNELS];
+	double			phaseacc[MAXCHANNELS];
+	complex			prevsymbol[MAXCHANNELS];
+	complex			quality[MAXCHANNELS];
+	unsigned int	shreg[MAXCHANNELS];
+	double			metric[MAXCHANNELS];
 	
-	double			frequency[CHANNELS];
-	int				nomfreq[CHANNELS];
-	double			freqerr[CHANNELS];
-	double			phase[CHANNELS];
+	double			frequency[MAXCHANNELS];
+	int				nomfreq[MAXCHANNELS];
+	double			freqerr[MAXCHANNELS];
+	double			phase[MAXCHANNELS];
 	double			bandwidth;
 
-	C_FIR_filter	*fir1[CHANNELS];
-	C_FIR_filter	*fir2[CHANNELS];
+	C_FIR_filter	*fir1[MAXCHANNELS];
+	C_FIR_filter	*fir2[MAXCHANNELS];
 
-	int				bits[CHANNELS];
-	double 			bitclk[CHANNELS];
-	double 			syncbuf[CHANNELS * 16];
-	unsigned int	dcdshreg[CHANNELS];
-	int 			dcd[CHANNELS];
+	int				bits[MAXCHANNELS];
+	double 			bitclk[MAXCHANNELS];
+	double 			syncbuf[MAXCHANNELS * 16];
+	unsigned int	dcdshreg[MAXCHANNELS];
+	int 			dcd[MAXCHANNELS];
 	int				dcdbits;
-	int				sigsearch[CHANNELS];
-	int				waitcount[CHANNELS];
+	int				sigsearch[MAXCHANNELS];
+	int				waitcount[MAXCHANNELS];
 
 	void			rx_symbol(int ch, complex symbol);
 	void 			rx_bit(int ch, int bit);

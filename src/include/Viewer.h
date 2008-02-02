@@ -16,5 +16,6 @@ extern Fl_Double_Window* createViewer();
 
 extern void openViewer();
 extern void viewaddchr(int ch, int freq, char c);
+extern void initViewer();
 
 #endif
