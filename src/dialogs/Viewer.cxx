@@ -179,10 +179,10 @@ void ClearViewer() {
 
 void initViewer()
 {
-	if (pskviewer)
-		pskviewer->init();
-	if (dlgViewer)
-		ClearViewer();
+	if (!pskviewer) return;
+	if (!dlgViewer) return;
+	pskviewer->init();
+	ClearViewer();
 	nchars = (brwsViewer->w() - cols[0]  - 20) / cwidth;
 	dlgViewer->resize(dlgViewer->x(), dlgViewer->y(),
 	                  dlgViewer->w(), cheight * progdefaults.VIEWERchannels + 54);
@@ -272,12 +272,9 @@ void viewer_redraw()
 	if (!dlgViewer) return;
   	usb = wf->USB();
   	rfc = wf->rfcarrier();
-	string bline;
 		  	
-  	for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
-		bline = freqformat(i);
-  		brwsViewer->text(i + 1, bwsrfreq.c_str());
-  	}
+  	for (int i = 0; i < progdefaults.VIEWERchannels; i++)
+  		brwsViewer->text(i + 1, freqformat(i).c_str() );
 	if (progdefaults.VIEWERshowfreq)
 		cols[0] = rfwidth;
 	else
