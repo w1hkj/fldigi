@@ -1,3 +1,5 @@
+#include <config.h>
+
 #include "Viewer.h"
 #include "main.h"
 #include "viewpsk.h"
@@ -24,8 +26,6 @@ string dkblue;
 string dkgreen;
 string bkselect;
 string white;
-string snow;
-string slategray1;
 string bkgnd[2];
 
 int cols[] = {100, 0};
@@ -100,46 +100,58 @@ Fl_Button *btnClearViewer=(Fl_Button *)0;
 pskBrowser *brwsViewer=(pskBrowser *)0;
 Fl_Input  *inpSeek = (Fl_Input *)0;
 
+// Adjust and return fg color to ensure good contrast with bg
+static Fl_Color adjust_color(Fl_Color fg, Fl_Color bg)
+{
+	Fl_Color adj;
+	unsigned max = 24;
+	while ((adj = fl_contrast(fg, bg)) != fg  &&  max--)
+		fg = (adj == FL_WHITE) ? fl_color_average(fg, FL_WHITE, .9)
+				       : fl_color_average(fg, FL_BLACK, .9);
+	return fg;
+}
+
+
 static void make_colors()
 {
 	char tempstr[20];
-	sprintf(tempstr,"@C%d", 
-			fl_color_cube(128 * (FL_NUM_RED - 1) / 255,
-            0 * (FL_NUM_GREEN - 1) / 255,
-            0 * (FL_NUM_BLUE - 1) / 255)); // dark red
-    dkred = "@b";
-    dkred += tempstr;
-	sprintf(tempstr,"@C%d", 
-			fl_color_cube(0 * (FL_NUM_RED - 1) / 255,
-            128 * (FL_NUM_GREEN - 1) / 255,
-            0 * (FL_NUM_BLUE - 1) / 255)); // dark green
-    dkgreen = "@b";
-    dkgreen += tempstr;
-	sprintf(tempstr,"@C%d", 
-			fl_color_cube(0 * (FL_NUM_RED - 1) / 255,
-            0 * (FL_NUM_GREEN - 1) / 255,
-            128 * (FL_NUM_BLUE - 1) / 255)); // dark blue
-    dkblue = "@b";
-    dkblue += tempstr;
-	sprintf(tempstr,"@C%d", 
-			fl_color_cube(248 * (FL_NUM_RED - 1) / 255,
-            248 * (FL_NUM_GREEN - 1) / 255,
-            248 * (FL_NUM_BLUE - 1) / 255)); // white foreground
-    white = tempstr;
-    sprintf(tempstr, "@B%d", FL_SELECTION_COLOR);
-    bkselect = tempstr;                      // default selection color bkgnd
-	sprintf(tempstr,"@B%d", 
-			fl_color_cube(255 * (FL_NUM_RED - 1) / 255,
-            255 * (FL_NUM_GREEN - 1) / 255,
-            255 * (FL_NUM_BLUE - 1) / 255)); // snow background
-    snow = tempstr;
-    bkgnd[0] = snow;
-	sprintf(tempstr,"@B%d", 
-			fl_color_cube(198 * (FL_NUM_RED - 1) / 255,
-            226 * (FL_NUM_GREEN - 1) / 255,
-            255 * (FL_NUM_BLUE - 1) / 255)); // slategray1 background
-    slategray1 = tempstr;
-    bkgnd[1] = slategray1;
+
+	snprintf(tempstr, sizeof(tempstr), "@b@C%d",
+		 adjust_color(fl_color_cube(128 * (FL_NUM_RED - 1) / 255,
+					    0 * (FL_NUM_GREEN - 1) / 255,
+					    0 * (FL_NUM_BLUE - 1) / 255),
+			      FL_BACKGROUND2_COLOR)); // dark red
+	dkred = tempstr;
+
+	snprintf(tempstr, sizeof(tempstr), "@b@C%d",
+		 adjust_color(fl_color_cube(0 * (FL_NUM_RED - 1) / 255,
+					    128 * (FL_NUM_GREEN - 1) / 255,
+					    0 * (FL_NUM_BLUE - 1) / 255),
+			      FL_BACKGROUND2_COLOR)); // dark green
+	dkgreen = tempstr;
+
+	snprintf(tempstr, sizeof(tempstr), "@b@C%d",
+		 adjust_color(fl_color_cube(0 * (FL_NUM_RED - 1) / 255,
+					    0 * (FL_NUM_GREEN - 1) / 255,
+					    128 * (FL_NUM_BLUE - 1) / 255),
+			      FL_BACKGROUND2_COLOR)); // dark blue
+	dkblue = tempstr;
+
+	snprintf(tempstr, sizeof(tempstr), "@C%d", FL_FOREGROUND_COLOR); // foreground
+	white = tempstr;
+
+	snprintf(tempstr, sizeof(tempstr), "@B%d",
+		 adjust_color(FL_SELECTION_COLOR, FL_FOREGROUND_COLOR)); // default selection color bkgnd
+	bkselect = tempstr;
+
+	snprintf(tempstr, sizeof(tempstr), "@B%d", FL_BACKGROUND2_COLOR); // background for odd rows
+	bkgnd[0] = tempstr;
+
+	Fl_Color bg2 = fl_color_average(FL_BACKGROUND2_COLOR, FL_BLACK, .9);
+	if (bg2 == FL_BLACK)
+		bg2 = fl_color_average(FL_BACKGROUND2_COLOR, FL_WHITE, .9);
+	snprintf(tempstr, sizeof(tempstr), "@B%d", adjust_color(bg2, FL_FOREGROUND_COLOR)); // even rows
+	bkgnd[1] = tempstr;
 }
 
 static void evalcwidth()
@@ -217,6 +229,7 @@ Fl_Double_Window* createViewer() {
 	int viewerheight = 50 + cheight * progdefaults.VIEWERchannels + 4;
 
 	w = new Fl_Double_Window(viewerwidth, viewerheight, "Psk Viewer");
+	w->xclass(PACKAGE_NAME);
 	p = new Fl_Pack(0,0,viewerwidth, viewerheight);
 		Fl_Pack *p1 = new Fl_Pack(0, 0, viewerwidth, 25);
 			p1->type(1);
@@ -325,7 +338,7 @@ void viewaddchr(int ch, int freq, char c) {
 		if (ucaseline[index].find(progdefaults.myCall) != string::npos)
 			nuline.append(dkgreen);
 			
-	nuline.append(bwsrline[index]);
+	nuline.append("@.").append(bwsrline[index]);
 	brwsViewer->text(1 + index, nuline.c_str());
 	brwsViewer->redraw();
 }
