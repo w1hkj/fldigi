@@ -1,4 +1,5 @@
 # Copyright (C) 2007 Stelios Bounanos, M0GLD (m0gld AT enotty DOT net)
+# Copyright (c) 2008 Dave Freese, W1HKJ (w1hkj AT w1hkj DOT com)
 
 bin_PROGRAMS = fldigi
 
@@ -77,6 +78,7 @@ fldigi_SOURCES += \
 	dialogs/Config.cxx \
 	dialogs/fl_digi.cxx \
 	dialogs/font_browser.cxx \
+	dialogs/Viewer.cxx \
 	dominoex/dominoex.cxx \
 	dominoex/dominovar.cxx \
 	feld/feld.cxx \
@@ -149,6 +151,7 @@ fldigi_SOURCES += \
 	include/olivia.h \
 	include/picture.h \
 	include/psk.h \
+	include/viewpsk.h \
 	include/pskcoeff.h \
 	include/pskvaricode.h \
 	include/ptt.h \
@@ -175,6 +178,7 @@ fldigi_SOURCES += \
 	include/trx.h \
 	include/util.h \
 	include/versions.h.in \
+	include/Viewer.h \
 	include/viterbi.h \
 	include/waterfall.h \
 	include/wwv.h \
@@ -212,6 +216,7 @@ fldigi_SOURCES += \
 	psk/psk.cxx \
 	psk/pskcoeff.cxx \
 	psk/pskvaricode.cxx \
+	psk/viewpsk.cxx \
 	qrunner/fqueue.h \
 	qrunner/qrunner.cxx \
 	rigcontrol/FreqControl.cxx \

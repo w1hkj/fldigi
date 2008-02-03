@@ -1186,7 +1186,9 @@ void waterfall::Carrier(int f)
 }
 
 void waterfall::rfcarrier(long long cf) {
+extern void viewer_redraw();
 	wfdisp->rfcarrier(cf);
+	viewer_redraw();
 }
 	
 long long waterfall::rfcarrier() {
@@ -1212,6 +1214,8 @@ void waterfall::USB(bool b) {
 		return;
 	wfdisp->USB(b);
 	active_modem->set_reverse(reverse);
+extern void viewer_redraw();
+	viewer_redraw();
 }
 	
 bool waterfall::USB() {

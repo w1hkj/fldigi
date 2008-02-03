@@ -83,6 +83,8 @@
 
 #include "qrunner.h"
 
+#include "Viewer.h"
+
 Fl_Double_Window	*fl_digi_main=(Fl_Double_Window *)0;
 Fl_Help_Dialog 		*help_dialog = (Fl_Help_Dialog *)0;
 
@@ -607,15 +609,24 @@ void cb_mnuVisitURL(Fl_Widget*, void* arg)
         restoreFocus();
 }
 
+void html_help( const string &Html)
+{
+	if (!help_dialog)
+		help_dialog = new Fl_Help_Dialog;
+	help_dialog->value(Html.c_str());
+	help_dialog->show();
+}
+
 void fldigi_help(const string& theHelp)
 {
-	string htmlHelp = "<HTML>"
-			  "<HEAD>"
-			  "<TITLE>" PACKAGE " Help</TITLE>"
-			  "</HEAD>"
-			  "<BODY>"
-			  "<FONT FACE=fixed>"
-			  "<P><TT>";
+	string htmlHelp = 
+"<HTML>"
+"<HEAD>"
+"<TITLE>" PACKAGE " Help</TITLE>"
+"</HEAD>"
+"<BODY>"
+"<FONT FACE=fixed>"
+"<P><TT>";
 
 	for (size_t i = 0; i < theHelp.length(); i++) {
 		if (theHelp[i] == '\n') {
@@ -625,18 +636,17 @@ void fldigi_help(const string& theHelp)
 			}
 			else
 				htmlHelp += "<BR>";
-		}
-		else
+		} else if (theHelp[i] == ' ' && theHelp[i+1] == ' ') {
+			htmlHelp += "&nbsp;&nbsp;";
+			i++;
+		} else
 			htmlHelp += theHelp[i];
 	}
-	htmlHelp += "</TT></P>"
-		    "</BODY>"
-		    "</HTML>";
-
-	if (!help_dialog)
-		help_dialog = new Fl_Help_Dialog;
-	help_dialog->value(htmlHelp.c_str());
-	help_dialog->show();
+	htmlHelp += 
+"</TT></P>"
+"</BODY>"
+"</HTML>";
+	html_help(htmlHelp);
 }
 
 void cb_mnuCmdLineHelp(Fl_Widget*, void*)
@@ -684,6 +694,10 @@ void cb_mnuRig(Fl_Menu_ *, void *) {
 	if (!rigcontrol)
 		createRigDialog();
 	rigcontrol->show();
+}
+
+void cb_mnuViewer(Fl_Menu_ *, void *) {
+	openViewer();
 }
 
 void closeRigDialog() {
@@ -951,6 +965,9 @@ Fl_Menu_Item menu_[] = {
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
 {"Rig", 0, (Fl_Callback*)cb_mnuRig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
+{"Viewer", 0, (Fl_Callback*)cb_mnuViewer, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+
+{"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
 
 {"Help", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 #ifndef NDEBUG
@@ -963,7 +980,7 @@ Fl_Menu_Item menu_[] = {
 {"Build info", 0, cb_mnuBuildInfo, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 {"About", 0, cb_mnuAbout, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
-
+	
 {"  ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 };

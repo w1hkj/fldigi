@@ -17,6 +17,8 @@ decl {\#include "configuration.h"} {public
 
 decl {\#include "combo.h"} {} 
 
+decl {extern void initViewer();} {} 
+
 decl {Fl_Double_Window *dlgConfig;} {public
 } 
 
@@ -298,7 +300,7 @@ progdefaults.changed = true;
       }
       Fl_Group tabVideo {
         label Video open
-        xywh {0 25 400 195} color 51 selection_color 51
+        xywh {0 25 400 195} color 51 selection_color 51 hide
       } {
         Fl_Group {} {
           label {Video Preamble} open
@@ -327,7 +329,7 @@ progdefaults.changed = true;}
           Fl_Value_Slider sldrVideowidth {
             label {Video Width:}
             callback {progdefaults.videowidth = (int)o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
             tooltip {Set the \# of chars per row} xywh {286 82 101 20} type Horizontal color 26 align 1 minimum 1 maximum 4 step 1 value 1 textsize 14
             code0 {o->value(progdefaults.videowidth);}
           }
@@ -716,7 +718,7 @@ progdefaults.changed = true;} open
               label {Sample rate}
               callback {progdefaults.sample_rate = o->value() > 1 ? strtol(o->mvalue()->text, 0, 10) : o->value();
 resetSoundCard();
-progdefaults.changed = true;} open selected
+progdefaults.changed = true;} open
               tooltip {Force a specific sample rate. Select "Native" if "Auto" does not work well with your sound hardware.} xywh {5 190 85 25} down_box BORDER_BOX align 8
               code0 {extern Fl_Menu_Item sample_rate_menu[];}
               code1 {o->menu(sample_rate_menu);}
@@ -829,7 +831,7 @@ This option takes effect after a restart.} xywh {50 155 180 20} down_box DOWN_BO
       }
       Fl_Group tabModems {
         label Modem open
-        xywh {0 25 401 195} color 51 selection_color 51 hide
+        xywh {0 25 401 195} color 51 selection_color 51
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 401 195} color 51 selection_color 10 align 9
@@ -1082,46 +1084,89 @@ progdefaults.changed = true;}
             }
             Fl_Counter cntOlivia_sinteg {
               label {RX sync integration period}
-              callback {progdefaults.changed = true;} selected
+              callback {progdefaults.changed = true;}
               xywh {90 135 85 20} type Simple align 8 minimum 2 maximum 128 step 1 value 2
             }
           }
           Fl_Group tabPSK {
             label Psk open
-            xywh {0 50 400 170} hide
+            xywh {0 50 400 170}
           } {
             Fl_Counter cntSearchRange {
               label {Search Range}
               callback {progdefaults.SearchRange = (int)o->value();
 wf->redraw_marker();
 progdefaults.changed = true;}
-              xywh {25 69 80 21} type Simple align 8 minimum 10 maximum 500 step 10 value 200
+              xywh {25 60 80 21} type Simple align 8 minimum 10 maximum 500 step 10 value 200
               code0 {o->value(progdefaults.SearchRange);}
             }
             Fl_Group {} {
               label {PskMail Server} open
-              xywh {15 105 370 92} box ENGRAVED_FRAME align 21
+              xywh {15 87 370 53} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnPSKmailSweetSpot {
-                label {use PSK mail sweetspot}
+                label {use sweetspot}
                 callback {progdefaults.PSKmailSweetSpot = o->value();
 progdefaults.changed = true;}
-                xywh {30 138 185 20} down_box DOWN_BOX value 1
+                xywh {20 106 130 20} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.PSKmailSweetSpot);}
               }
               Fl_Counter cntServerOffset {
-                label {Allowable Rx Carrier Offset}
+                label {Server Search Range}
                 callback {progdefaults.ServerOffset = (int)o->value();
 wf->redraw_marker();
 progdefaults.changed = true;}
-                xywh {31 162 80 21} type Simple align 8 minimum 10 maximum 500 step 10 value 200
+                xywh {150 104 80 21} type Simple align 8 minimum 10 maximum 500 step 10 value 200
                 code0 {o->value(progdefaults.SearchRange);}
+              }
+            }
+            Fl_Group {} {
+              label {PSK Viewer} open
+              xywh {15 140 370 75} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Check_Button btnMarquee {
+                label {Marquee style}
+                callback {progdefaults.VIEWERmarquee = o->value();
+progdefaults.changed = true;
+initViewer();}
+                xywh {25 162 120 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.VIEWERmarquee);}
+              }
+              Fl_Check_Button btnShowFrequencies {
+                label {Show Frequencies}
+                callback {progdefaults.VIEWERshowfreq = o->value();
+progdefaults.changed = true;
+initViewer();}
+                xywh {25 190 150 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.VIEWERshowfreq);}
+              }
+              Fl_Spinner cntStartFrequency {
+                label {Start Frequency:}
+                callback {progdefaults.VIEWERstart = (int)(o->value());
+progdefaults.changed = true;
+initViewer();}
+                xywh {315 185 60 25}
+                code0 {o->minimum(200);}
+                code1 {o->maximum(1000);}
+                code2 {o->step(100);}
+                code3 {o->value(progdefaults.VIEWERstart);}
+              }
+              Fl_Spinner cntChannels {
+                label {\# Channels:}
+                callback {progdefaults.VIEWERchannels = (int)(o->value());
+progdefaults.changed = true;
+initViewer();} selected
+                xywh {325 157 50 25}
+                code0 {o->minimum(5);}
+                code1 {o->maximum(30);}
+                code2 {o->step(1);}
+                code3 {o->value(progdefaults.VIEWERchannels);}
               }
             }
           }
           Fl_Group tabRTTY {
             label RTTY open
-            xywh {0 50 400 170} color 51 selection_color 51
+            xywh {0 50 400 170} color 51 selection_color 51 hide
           } {
             Fl_Choice selShift {
               label Shift

@@ -163,9 +163,14 @@ configuration progdefaults = {
 
 	true,			// bool		alt_text_widgets;
 
-	"",			// string	strCommPorts
-        9876,			// int		rx_msgid
-        6789,			// int		tx_msgid
+	"",				// string	strCommPorts
+        9876,		// int		rx_msgid
+        6789,		// int		tx_msgid
+// PSK viewer parameters
+	true,			// bool	VIEWERmarquee
+	true,			// bool	VIEWERshowfreq
+	500,			// int		VIEWERstart
+	20,				// int		VIEWERchannels
 };
 
 const char *szBaudRates[] = {
@@ -224,7 +229,8 @@ enum TAG { \
 	MXDEVICE, RCVMIXER, XMTMIXER, PCMVOLUME,
 	MICIN, LINEIN, ENABLEMIXER, MUTEINPUT,
 	PALETTE0, PALETTE1, PALETTE2, PALETTE3, PALETTE4, 
-	PALETTE5, PALETTE6, PALETTE7, PALETTE8 
+	PALETTE5, PALETTE6, PALETTE7, PALETTE8,
+	VIEWERMARQUEE, VIEWERSHOWFREQ, VIEWERSTART, VIEWERCHANNELS
 };
 //	, ALT_TEXT_WIDGETS };
 	
@@ -408,6 +414,11 @@ void configuration::writeDefaultsXML()
 
 //	writeXMLbool(f, "ALT_TEXT_WIDGETS", alt_text_widgets);
 
+	writeXMLbool(f, "VIEWERMARQUEE", VIEWERmarquee);
+	writeXMLbool(f, "VIEWERSHOWFREQ", VIEWERshowfreq);
+	writeXMLint(f, "VIEWERSTART", VIEWERstart);
+	writeXMLint(f, "VIEWERCHANNELS", VIEWERchannels);
+	
 	f << "</FLDIGI_DEFS>\n";
 	f.close();
 }
@@ -818,6 +829,18 @@ bool configuration::readDefaultsXML()
 						sscanf( xml->getNodeData(), "%d %d %d",
 								&cfgpal[8].R, &cfgpal[8].G, &cfgpal[8].B );
 						break;
+					case VIEWERMARQUEE :
+						VIEWERmarquee = atoi(xml->getNodeData());
+						break;
+					case VIEWERSHOWFREQ :
+						VIEWERshowfreq = atoi(xml->getNodeData());
+						break;
+					case VIEWERSTART :
+						VIEWERstart = atoi(xml->getNodeData());
+						break;
+					case VIEWERCHANNELS :
+						VIEWERchannels = atoi(xml->getNodeData());
+						break;
 //					case ALT_TEXT_WIDGETS :
 //						alt_text_widgets = atoi(xml->getNodeData());
 //						break;
@@ -950,6 +973,10 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("PALETTE6", nodeName)) 	tag = PALETTE6;
 				else if (!strcmp("PALETTE7", nodeName)) 	tag = PALETTE7;
 				else if (!strcmp("PALETTE8", nodeName)) 	tag = PALETTE8;
+				else if (!strcmp("VIEWERMARQUEE", nodeName))	tag = VIEWERMARQUEE;
+				else if (!strcmp("VIEWERSHOWFREQ", nodeName))	tag = VIEWERSHOWFREQ;
+				else if (!strcmp("VIEWERSTART", nodeName))		tag = VIEWERSTART;
+				else if (!strcmp("VIEWERCHANNELS", nodeName))	tag = VIEWERCHANNELS;
 //				else if (!strcmp("ALT_TEXT_WIDGETS", nodeName)) 	tag = ALT_TEXT_WIDGETS;
 				else tag = IGNORE;
 				}

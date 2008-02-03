@@ -164,6 +164,12 @@ struct configuration {
 	
 	int rx_msgid;
 	int tx_msgid;
+	
+// PSK viewer parameters
+	bool	VIEWERmarquee;
+	bool	VIEWERshowfreq;
+	int		VIEWERstart;
+	int		VIEWERchannels;
 
 public:
 	void writeDefaultsXML();
