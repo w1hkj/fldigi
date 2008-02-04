@@ -393,7 +393,7 @@ void dominoex::eval_s2n(complex curr, complex n)
 
 	display_metric(metric);
 
-	sprintf(dommsg, "s/n %3.0f dB", metric);
+	snprintf(dommsg, sizeof(dommsg), "s/n %3.0f dB", metric);
 	put_Status1(dommsg);
 
 }

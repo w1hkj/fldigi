@@ -170,6 +170,8 @@ struct configuration {
 	bool	VIEWERshowfreq;
 	int		VIEWERstart;
 	int		VIEWERchannels;
+	double	VIEWERsquelch;
+	int		VIEWERtimeout;
 
 public:
 	void writeDefaultsXML();

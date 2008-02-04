@@ -1,16 +1,20 @@
+#include <config.h>
+
 #include "Viewer.h"
 #include "main.h"
 #include "viewpsk.h"
 #include "configuration.h"
 #include "waterfall.h"
 #include <FL/Enumerations.H>
+#include <FL/Fl_Slider.H>
+
+#include <sys/types.h>
+#include <regex.h>
 
 #include <string>
 
 string bwsrfreq;
 string bwsrline[MAXCHANNELS];
-string ucaseline[MAXCHANNELS];
-string tofind;
 
 static int  brwsFreq[MAXCHANNELS];
 static int  freq;
@@ -24,8 +28,6 @@ string dkblue;
 string dkgreen;
 string bkselect;
 string white;
-string snow;
-string slategray1;
 string bkgnd[2];
 
 int cols[] = {100, 0};
@@ -51,11 +53,11 @@ string fline;
 		else     dfreq = rfc - freq;
  	} else 
  		dfreq = freq;
-	if (progdefaults.VIEWERshowfreq)
-		sprintf(szLine,"%10.3f", dfreq / 1000.0);
-	else
-		sprintf(szLine,"%3d", progdefaults.VIEWERchannels - i);	
-//	if (szLine[0] == ' ') strcpy(szLine, &szLine[1]);
+  	if (progdefaults.VIEWERshowfreq)
+ 		snprintf(szLine, sizeof(szLine), "%10.3f", dfreq / 1000.0);
+  	else
+ 		snprintf(szLine, sizeof(szLine), "%3d", progdefaults.VIEWERchannels - i);	
+
 	fline = "@f";
 	fline += bkselect.c_str();
 	fline += white.c_str();
@@ -66,6 +68,44 @@ string fline;
 
 	return fline;
 }
+
+regex_t* seek_re = 0;
+void re_comp(const char* needle)
+{
+        if (seek_re)
+                regfree(seek_re);
+        else
+                seek_re = new regex_t;
+        if (!(needle && *needle && regcomp(seek_re, needle, REG_EXTENDED | REG_ICASE | REG_NOSUB) == 0)) {
+                delete seek_re;
+                seek_re = 0;
+        }
+}
+// match haystack against seek_re
+bool re_find(const char* haystack)
+{
+        return seek_re && !regexec(seek_re, haystack, 0, 0, REG_NOTBOL | REG_NOTEOL);
+}
+#if !HAVE_STRCASESTR
+// a simple inefficient implementation of strcasestr
+char* strcasestr(const char* haystack, const char* needle)
+{
+        char *h = NULL, *n = NULL, *p;
+	if ((h = strdup(haystack)) == NULL || (n = strdup(needle)) == NULL) {
+		free(h);
+                free(n);
+                return NULL;
+        }
+	for (p = h; *p; p++)
+		*p = tolower(*p);
+	for (p = n; *p; p++)
+		*p = tolower(*p);
+	p = strstr(h, n);
+	free(h);
+	free(n);
+	return p;
+}
+#endif // !HAVE_STRCASESTR
 
 void pskBrowser::resize(int x, int y, int w, int h) {
 		unsigned int nuchars = (w - cols[0] - 20) / cwidth;
@@ -78,14 +118,13 @@ void pskBrowser::resize(int x, int y, int w, int h) {
 
 				bline = freqformat(i);
 
-				if (!tofind.empty())
-				if (ucaseline[i].find(tofind) != string::npos)
+				if (re_find(bwsrline[i].c_str()))
 					bline.append(dkred);
-				else if (!progdefaults.myCall.empty())
-					if (ucaseline[i].find(progdefaults.myCall) != string::npos)
-						bline.append(dkgreen);
-			
-				bline.append(bwsrline[i]);
+				else if (!progdefaults.myCall.empty() &&
+					 strcasestr(bwsrline[i].c_str(), progdefaults.myCall.c_str()))
+					bline.append(dkgreen);
+
+				bline.append("@.").append(bwsrline[i]);
 				Fl_Hold_Browser::add(bline.c_str());
 			}
 		}
@@ -99,47 +138,59 @@ Fl_Button *btnCloseViewer=(Fl_Button *)0;
 Fl_Button *btnClearViewer=(Fl_Button *)0;
 pskBrowser *brwsViewer=(pskBrowser *)0;
 Fl_Input  *inpSeek = (Fl_Input *)0;
+Fl_Slider *sldrViewerSquelch = (Fl_Slider *)0;
+Fl_Light_Button *chkBeep = 0;
 
+// Adjust and return fg color to ensure good contrast with bg
+static Fl_Color adjust_color(Fl_Color fg, Fl_Color bg)
+{
+	Fl_Color adj;
+	unsigned max = 24;
+	while ((adj = fl_contrast(fg, bg)) != fg  &&  max--)
+		fg = (adj == FL_WHITE) ? fl_color_average(fg, FL_WHITE, .9)
+				       : fl_color_average(fg, FL_BLACK, .9);
+	return fg;
+}
 static void make_colors()
 {
 	char tempstr[20];
-	sprintf(tempstr,"@C%d", 
-			fl_color_cube(128 * (FL_NUM_RED - 1) / 255,
-            0 * (FL_NUM_GREEN - 1) / 255,
-            0 * (FL_NUM_BLUE - 1) / 255)); // dark red
-    dkred = "@b";
-    dkred += tempstr;
-	sprintf(tempstr,"@C%d", 
-			fl_color_cube(0 * (FL_NUM_RED - 1) / 255,
-            128 * (FL_NUM_GREEN - 1) / 255,
-            0 * (FL_NUM_BLUE - 1) / 255)); // dark green
-    dkgreen = "@b";
-    dkgreen += tempstr;
-	sprintf(tempstr,"@C%d", 
-			fl_color_cube(0 * (FL_NUM_RED - 1) / 255,
-            0 * (FL_NUM_GREEN - 1) / 255,
-            128 * (FL_NUM_BLUE - 1) / 255)); // dark blue
-    dkblue = "@b";
-    dkblue += tempstr;
-	sprintf(tempstr,"@C%d", 
-			fl_color_cube(248 * (FL_NUM_RED - 1) / 255,
-            248 * (FL_NUM_GREEN - 1) / 255,
-            248 * (FL_NUM_BLUE - 1) / 255)); // white foreground
-    white = tempstr;
-    sprintf(tempstr, "@B%d", FL_SELECTION_COLOR);
-    bkselect = tempstr;                      // default selection color bkgnd
-	sprintf(tempstr,"@B%d", 
-			fl_color_cube(255 * (FL_NUM_RED - 1) / 255,
-            255 * (FL_NUM_GREEN - 1) / 255,
-            255 * (FL_NUM_BLUE - 1) / 255)); // snow background
-    snow = tempstr;
-    bkgnd[0] = snow;
-	sprintf(tempstr,"@B%d", 
-			fl_color_cube(198 * (FL_NUM_RED - 1) / 255,
-            226 * (FL_NUM_GREEN - 1) / 255,
-            255 * (FL_NUM_BLUE - 1) / 255)); // slategray1 background
-    slategray1 = tempstr;
-    bkgnd[1] = slategray1;
+
+	snprintf(tempstr, sizeof(tempstr), "@b@C%d",
+		 adjust_color(fl_color_cube(128 * (FL_NUM_RED - 1) / 255,
+					    0 * (FL_NUM_GREEN - 1) / 255,
+					    0 * (FL_NUM_BLUE - 1) / 255),
+			      FL_BACKGROUND2_COLOR)); // dark red
+	dkred = tempstr;
+
+	snprintf(tempstr, sizeof(tempstr), "@b@C%d",
+		 adjust_color(fl_color_cube(0 * (FL_NUM_RED - 1) / 255,
+					    128 * (FL_NUM_GREEN - 1) / 255,
+					    0 * (FL_NUM_BLUE - 1) / 255),
+			      FL_BACKGROUND2_COLOR)); // dark green
+	dkgreen = tempstr;
+
+	snprintf(tempstr, sizeof(tempstr), "@b@C%d",
+		 adjust_color(fl_color_cube(0 * (FL_NUM_RED - 1) / 255,
+					    0 * (FL_NUM_GREEN - 1) / 255,
+					    128 * (FL_NUM_BLUE - 1) / 255),
+			      FL_BACKGROUND2_COLOR)); // dark blue
+	dkblue = tempstr;
+
+	snprintf(tempstr, sizeof(tempstr), "@C%d", FL_FOREGROUND_COLOR); // foreground
+	white = tempstr;
+
+	snprintf(tempstr, sizeof(tempstr), "@B%d",
+		 adjust_color(FL_SELECTION_COLOR, FL_FOREGROUND_COLOR)); // default selection color bkgnd
+	bkselect = tempstr;
+
+	snprintf(tempstr, sizeof(tempstr), "@B%d", FL_BACKGROUND2_COLOR); // background for odd rows
+	bkgnd[0] = tempstr;
+
+	Fl_Color bg2 = fl_color_average(FL_BACKGROUND2_COLOR, FL_BLACK, .9);
+	if (bg2 == FL_BLACK)
+		bg2 = fl_color_average(FL_BACKGROUND2_COLOR, FL_WHITE, .9);
+	snprintf(tempstr, sizeof(tempstr), "@B%d", adjust_color(bg2, FL_FOREGROUND_COLOR)); // even rows
+	bkgnd[1] = tempstr;
 }
 
 static void evalcwidth()
@@ -165,8 +216,7 @@ void ClearViewer() {
   		else 		   freq = progdefaults.VIEWERstart + 100 * (progdefaults.VIEWERchannels - 1 - i);
 
 		bline = freqformat(i);
-  		bwsrline[i] = "";
-  		ucaseline[i] = "";
+  		bwsrline[i].clear();
   		brwsViewer->add(bline.c_str());
   	}
 	if (progdefaults.VIEWERshowfreq)
@@ -201,9 +251,13 @@ static void cb_brwsViewer(Fl_Hold_Browser*, void*) {
 
 static void cb_Seek(Fl_Input *, void *)
 {
-	tofind = inpSeek->value();
-	for (size_t i = 0; i < tofind.length(); i++)
-		tofind[i] = toupper(tofind[i]);
+	re_comp(inpSeek->value());
+}
+
+static void cb_Squelch(Fl_Slider *, void *)
+{
+	progdefaults.VIEWERsquelch = sldrViewerSquelch->value();
+	progdefaults.changed = true;
 }
 
 Fl_Double_Window* createViewer() {
@@ -217,6 +271,7 @@ Fl_Double_Window* createViewer() {
 	int viewerheight = 50 + cheight * progdefaults.VIEWERchannels + 4;
 
 	w = new Fl_Double_Window(viewerwidth, viewerheight, "Psk Viewer");
+	w->xclass(PACKAGE_NAME);
 	p = new Fl_Pack(0,0,viewerwidth, viewerheight);
 		Fl_Pack *p1 = new Fl_Pack(0, 0, viewerwidth, 25);
 			p1->type(1);
@@ -224,11 +279,13 @@ Fl_Double_Window* createViewer() {
 	    	inpSeek = new Fl_Input(50, 5, 200, 25, "Find: "); 
     		inpSeek->callback((Fl_Callback*)cb_Seek);
     		inpSeek->when(FL_WHEN_CHANGED);
+			inpSeek->textfont(FL_SCREEN);
     		inpSeek->value("CQ");
+			chkBeep = new Fl_Light_Button(inpSeek->x() + 4, inpSeek->y(), 60, inpSeek->h(), "Beep");
     		bx = new Fl_Box(250, 5, 200, 25);
     		p1->resizable(bx);
     	p1->end();
-    	tofind = "CQ";
+    	inpSeek->do_callback();
 
     	brwsViewer = new pskBrowser(2, 25, viewerwidth, viewerheight - 50);
     	brwsViewer->callback((Fl_Callback*)cb_brwsViewer);
@@ -242,13 +299,20 @@ Fl_Double_Window* createViewer() {
 		
 		Fl_Pack *p2 = new Fl_Pack(0, viewerheight - 25, viewerwidth, 25);
 			p2->type(1);
-			bx = new Fl_Box(0,435, 10, 25);
-    		btnClearViewer = new Fl_Button(10, 435, 65, 25, "Clear");
+			bx = new Fl_Box(0,viewerheight - 25, 10, 25);
+    		btnClearViewer = new Fl_Button(10, viewerheight - 25, 65, 25, "Clear");
     		btnClearViewer->callback((Fl_Callback*)cb_btnClearViewer);
-    		bx = new Fl_Box(75, 435, 10, 25);
-	    	btnCloseViewer = new Fl_Button(85, 435, 65, 25, "Close");
+    		bx = new Fl_Box(75, viewerheight - 25, 10, 25);
+	    	btnCloseViewer = new Fl_Button(85, viewerheight - 25, 65, 25, "Close");
     		btnCloseViewer->callback((Fl_Callback*)cb_btnCloseViewer);
-    		bx = new Fl_Box(150, 435, 300, 25);
+    		bx = new Fl_Box(140, viewerheight - 25, 5, 25);
+    		sldrViewerSquelch = new Fl_Slider(145, viewerheight - 25, 200, 25);
+    		sldrViewerSquelch->tooltip("Set Viewer Squelch");
+    		sldrViewerSquelch->type(FL_HOR_NICE_SLIDER);
+    		sldrViewerSquelch->range(0.0, 100.0);
+    		sldrViewerSquelch->value(progdefaults.VIEWERsquelch);
+    		sldrViewerSquelch->callback((Fl_Callback*)cb_Squelch);
+    		bx = new Fl_Box(345, viewerheight - 25, 25, 25);
     		p2->resizable(bx);
 		p2->end();
 		p->resizable(brwsViewer);
@@ -292,40 +356,44 @@ void viewaddchr(int ch, int freq, char c) {
 
 	int index = progdefaults.VIEWERchannels - 1 - ch;
 	if (progdefaults.VIEWERmarquee) {
-		if (bwsrline[index].length() > nchars ) {
+		if (bwsrline[index].length() > nchars )
 			bwsrline[index].erase(0,1);
-			ucaseline[index].erase(0,1);
-		}
-		if (c >= ' ' && c <= 'z') {
+		if (c >= ' ' && c <= '~')
 			bwsrline[index] += c;
-			ucaseline[index] += toupper(c);
-		} else {
+		else
 			bwsrline[index] += ' ';
-			ucaseline[index] += ' ';
-		}
 	} else {
-		if (c >= ' ' && c <= 'z') {
+		if (c >= ' ' && c <= '~')
 			bwsrline[index] += c;
-			ucaseline[index] += toupper(c);
-		} else {
+		else
 			bwsrline[index] += ' ';
-			ucaseline[index] += ' ';
-		}
-		if (bwsrline[index].length() > nchars) {
-			bwsrline[index] = "";
-			ucaseline[index] = "";
-		}
+		if (bwsrline[index].length() > nchars)
+			bwsrline[index].clear();
 	}
 	nuline = freqformat(index);
 
-	if (!tofind.empty())
-		if (ucaseline[index].find(tofind) != string::npos)
-			nuline.append(dkred);
-	else if (!progdefaults.myCall.empty())
-		if (ucaseline[index].find(progdefaults.myCall) != string::npos)
-			nuline.append(dkgreen);
-			
-	nuline.append(bwsrline[index]);
+	if (re_find(bwsrline[index].c_str())) {
+		nuline.append(dkred);
+		if (chkBeep->value())
+			fl_beep();
+	}
+	else if (!progdefaults.myCall.empty() &&
+		 strcasestr(bwsrline[index].c_str(), progdefaults.myCall.c_str())) {
+		nuline.append(dkgreen);
+		if (chkBeep->value())
+			fl_beep();
+	}
+
+	nuline.append("@.").append(bwsrline[index]);
 	brwsViewer->text(1 + index, nuline.c_str());
+	brwsViewer->redraw();
+}
+
+void viewclearchannel(int ch)
+{
+	int index = progdefaults.VIEWERchannels - 1 - ch;
+	string nuline = freqformat(index);
+	bwsrline[index] = "";
+	brwsViewer->text( 1 + index, nuline.c_str());
 	brwsViewer->redraw();
 }

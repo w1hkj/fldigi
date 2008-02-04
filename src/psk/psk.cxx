@@ -443,14 +443,14 @@ void psk::update_syncscope()
 	s2n = 10.0*log10( snratio );
 	display_metric(metric);
 
-	sprintf(msg1, "s/n %2d dB", (int)(floor(s2n))); 
+	snprintf(msg1, sizeof(msg1), "s/n %2d dB", (int)(floor(s2n))); 
     put_Status1(msg1);
 
 	if (imdratio < 1)
 		imd = 10.0*log10( imdratio );
 	else
 		imd = 0.0;
-	sprintf(msg2, "imd %3d dB", (int)(floor(imd))); 
+	snprintf(msg2, sizeof(msg2), "imd %3d dB", (int)(floor(imd))); 
     put_Status2(msg2);
 
 }

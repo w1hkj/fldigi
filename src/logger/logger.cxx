@@ -117,13 +117,17 @@ int writeadif () {
 
 void putadif(int num, const char *s)
 {
-	char tempstr[80], tempfld[80];
-	memset(tempstr, 0, 80);
-	strcpy(tempfld, s);
-	if (strlen(tempfld) > fields[num].size)
-		tempfld[fields[num].size -1] = 0;
-	sprintf(tempstr, "<%s:%zu>%s", fields[num].name, strlen(tempfld), tempfld);
-	adif.append(tempstr);
+        char tempstr[100];
+        size_t slen = strlen(s);
+        if (slen > fields[num].size) slen = fields[num].size;
+        int n = snprintf(tempstr, sizeof(tempstr), "<%s:%zu>", fields[num].name, slen);
+        if (n == -1) {
+                perror("putadif snprintf");
+                return;
+        }
+        memcpy(tempstr + n, s, slen);
+        tempstr[n + slen] = '\0';
+        adif.append(tempstr);
 }
 
 
@@ -147,12 +151,12 @@ int submit_log(void)
 	time(&t);
         tm = gmtime(&t);
 		strftime(logdate, sizeof(logdate), "%d %b %Y", tm);
-		sprintf(adifdate,"%04d%02d%02d", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday);
+		snprintf(adifdate, sizeof(adifdate), "%04d%02d%02d", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday);
 		strftime(logtime, sizeof(logtime), "%H%M", tm);
 
 	const char *mode = mode_info[active_modem->get_mode()].sname;
 	
-	sprintf(strFreqMhz,"%-12f", wf->dFreq()/1.0e6);
+	snprintf(strFreqMhz, sizeof(strFreqMhz), "%-12f", wf->dFreq()/1.0e6);
 
 	adif.erase();
 	
@@ -188,8 +192,9 @@ int submit_log(void)
 
 	writeadif();
 	
-	strcpy(msgbuf.mtext, log_msg.c_str());
-	
+	strncpy(msgbuf.mtext, log_msg.c_str(), sizeof(msgbuf.mtext));
+	msgbuf.mtext[sizeof(msgbuf.mtext) - 1] = '\0';
+
 	if ((msqid = msgget(LOG_MKEY, 0666 | IPC_CREAT)) == -1) {
 		errmsg = "msgget: ";
 		errmsg.append(strerror(errno));

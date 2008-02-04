@@ -1090,7 +1090,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabPSK {
             label Psk open
-            xywh {0 50 400 170}
+            xywh {0 50 400 170} hide
           } {
             Fl_Counter cntSearchRange {
               label {Search Range}
@@ -1120,16 +1120,20 @@ progdefaults.changed = true;}
                 code0 {o->value(progdefaults.SearchRange);}
               }
             }
-            Fl_Group {} {
-              label {PSK Viewer} open
-              xywh {15 140 370 75} box ENGRAVED_FRAME align 21
+          }
+          Fl_Group {} {
+            label PskViewer open
+            xywh {0 50 400 170}
+          } {
+            Fl_Group {} {open
+              xywh {5 60 390 155} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnMarquee {
                 label {Marquee style}
                 callback {progdefaults.VIEWERmarquee = o->value();
 progdefaults.changed = true;
 initViewer();}
-                xywh {25 162 120 15} down_box DOWN_BOX
+                xywh {25 87 120 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.VIEWERmarquee);}
               }
               Fl_Check_Button btnShowFrequencies {
@@ -1137,7 +1141,7 @@ initViewer();}
                 callback {progdefaults.VIEWERshowfreq = o->value();
 progdefaults.changed = true;
 initViewer();}
-                xywh {25 190 150 15} down_box DOWN_BOX
+                xywh {25 125 150 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.VIEWERshowfreq);}
               }
               Fl_Spinner cntStartFrequency {
@@ -1145,7 +1149,7 @@ initViewer();}
                 callback {progdefaults.VIEWERstart = (int)(o->value());
 progdefaults.changed = true;
 initViewer();}
-                xywh {315 185 60 25}
+                xywh {190 120 60 25} align 8
                 code0 {o->minimum(200);}
                 code1 {o->maximum(1000);}
                 code2 {o->step(100);}
@@ -1155,12 +1159,22 @@ initViewer();}
                 label {\# Channels:}
                 callback {progdefaults.VIEWERchannels = (int)(o->value());
 progdefaults.changed = true;
-initViewer();} selected
-                xywh {325 157 50 25}
+initViewer();}
+                xywh {190 82 50 25} align 8
                 code0 {o->minimum(5);}
                 code1 {o->maximum(30);}
                 code2 {o->step(1);}
                 code3 {o->value(progdefaults.VIEWERchannels);}
+              }
+              Fl_Spinner cntTimeout {
+                label {Aging (sec)}
+                callback {progdefaults.VIEWERtimeout = (int)(o->value());
+progdefaults.changed = true;} selected
+                xywh {190 155 50 25} align 8
+                code0 {o->minimum(10);}
+                code1 {o->maximum(180);}
+                code2 {o->step(1);}
+                code3 {o->value(progdefaults.VIEWERtimeout);}
               }
             }
           }

@@ -25,11 +25,11 @@ public:
 	int		error;
 	MixerException() { *szError = 0; error = 0; }
 	MixerException(int e) {
-		sprintf(szError,"Error: %d, %s", e, strerror(e));
+		snprintf(szError, sizeof(szError), "Error: %d, %s", e, strerror(e));
 		error = e;
 	}
 	MixerException(char *s) {
-		sprintf(szError,"Error: %s", s);
+		snprintf(szError, sizeof(szError), "Error: %s", s);
 		error = 1;
 	}
 };

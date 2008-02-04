@@ -62,7 +62,14 @@ void loadPalette()
 	if (!p) return;
 	if ((clrfile = fopen(p, "r")) != NULL) {
 		for (int i = 0; i < 9; i++) {
-			fscanf(clrfile, "%d;%d;%d\n", &r, &g, &b);
+			if (fscanf(clrfile, "%d;%d;%d\n", &r, &g, &b) == EOF) {
+				if (ferror(clrfile))
+					perror("fscanf");
+				else
+					cerr << p << ": unexpected EOF\n";
+				fclose(clrfile);
+				return;
+			}
 			palette[i].R = r;
 			palette[i].G = g;
 			palette[i].B = b;

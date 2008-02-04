@@ -2,6 +2,8 @@ Change Log:
 
 2.09  1) Modified src/Makefile.am for FreeBSD name space clash
       2) Added psk multi-channel viewer
+      3) Rewrote audio capture/playback/generate routines to use the
+         libsndfile C API. Added .au support (32bit floats, host endianness)
 
 2.08  1) Changes to build process:
 	     a. Use PortAudio's C API; the C++ bindings are no longer required

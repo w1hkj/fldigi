@@ -235,7 +235,7 @@ void pCNTR(string &s, size_t &i)
 	int  contestval;
 	contestval = contest_count.count + progdefaults.ContestStart;
 	contest_count.Format(progdefaults.ContestDigits, progdefaults.UseLeadingZeros);
-	sprintf(contest_count.szCount, contest_count.fmt.c_str(), contestval);
+	snprintf(contest_count.szCount, sizeof(contest_count.szCount), contest_count.fmt.c_str(), contestval);
 	s.replace (i, 6, contest_count.szCount);
 }
 
@@ -245,8 +245,8 @@ void pDECR(string &s, size_t &i)
 	contest_count.count--;
 	contestval = contest_count.count + progdefaults.ContestStart;
 	s.replace (i, 6, "");
-	sprintf(contest_count.szCount, contest_count.fmt.c_str(), contestval);
-	sprintf(contest_count.szDisp,"Next Nbr: %s", contest_count.szCount);
+	snprintf(contest_count.szCount, sizeof(contest_count.szCount), contest_count.fmt.c_str(), contestval);
+	snprintf(contest_count.szDisp, sizeof(contest_count.szDisp), "Next Nbr: %s", contest_count.szCount);
 	put_status(contest_count.szDisp);
 }
 
@@ -256,8 +256,8 @@ void pINCR(string &s, size_t &i)
 	contest_count.count++;
 	contestval = contest_count.count + progdefaults.ContestStart;
 	s.replace (i, 6, "");
-	sprintf(contest_count.szCount, contest_count.fmt.c_str(), contestval);
-	sprintf(contest_count.szDisp,"Next Nbr: %s", contest_count.szCount);
+	snprintf(contest_count.szCount, sizeof(contest_count.szCount), contest_count.fmt.c_str(), contestval);
+	snprintf(contest_count.szDisp, sizeof(contest_count.szDisp), "Next Nbr: %s", contest_count.szCount);
 	put_status(contest_count.szDisp);
 }
 
@@ -310,7 +310,7 @@ int MACROTEXT::loadMacros(string filename)
 	}
 // clear all of the macros
 	for (int i = 0; i < 20; i++) {
-		sprintf(szTemp,"%d", i+1);
+		snprintf(szTemp, sizeof(szTemp), "%d", i+1);
 		name[i] = "Macro ";
 		name[i] = name[i] + szTemp;
 		text[i] = "";

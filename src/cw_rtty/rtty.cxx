@@ -66,9 +66,9 @@ void rtty::init()
 	modem::init();
 	rx_init();
 	put_MODEstatus(mode);
-	sprintf(msg1,"Shft %-4.0f", rtty_shift); 
+	snprintf(msg1, sizeof(msg1), "Shft %-4.0f", rtty_shift); 
 	put_Status1(msg1);
-	sprintf(msg2,"Baud %-4.1f", rtty_baud); 
+	snprintf(msg2, sizeof(msg2), "Baud %-4.1f", rtty_baud); 
 	put_Status2(msg2);
 	if (progdefaults.PreferXhairScope)
 		digiscope->mode(Digiscope::XHAIRS);
@@ -137,9 +137,9 @@ void rtty::restart()
 	
 	metric = 0.0;
 
-	sprintf(msg1,"Shft %-4.0f", rtty_shift); 
+	snprintf(msg1, sizeof(msg1), "Shft %-4.0f", rtty_shift); 
 	put_Status1(msg1);
-	sprintf(msg2,"Baud %-4.1f", rtty_baud); 
+	snprintf(msg2, sizeof(msg2), "Baud %-4.1f", rtty_baud); 
 	put_Status2(msg2);
 	put_MODEstatus(mode);
 }

@@ -157,9 +157,9 @@ int anal::rx_process(const double *buf, int len)
 // filter using second moving average filter & display the result
 				fout_2 = favg->run(fout_1);
 				if (wf->USB())
-					sprintf(msg1, "Freq: %12.2f", wf->rfcarrier() + frequency + fout_2 ); 
+					snprintf(msg1, sizeof(msg1), "Freq: %12.2f", wf->rfcarrier() + frequency + fout_2 ); 
 				else
-					sprintf(msg1, "Freq: %12.2f", wf->rfcarrier() - frequency - fout_2 );
+					snprintf(msg1, sizeof(msg1), "Freq: %12.2f", wf->rfcarrier() - frequency - fout_2 );
 				put_status(msg1);
 				writeFile();
 // reset the display counter & the pipe pointer

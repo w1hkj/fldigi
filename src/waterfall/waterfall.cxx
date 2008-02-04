@@ -458,10 +458,10 @@ void WFdisp::sig_data( double *sig, int len ) {
 			dfreq = rfc + active_modem->get_txfreq();
 		else	
 			dfreq = rfc - active_modem->get_txfreq();
-		sprintf(szFrequency, "%-.3f", dfreq / 1000.0);
+		snprintf(szFrequency, sizeof(szFrequency), "%-.3f", dfreq / 1000.0);
 	} else {
 		dfreq = active_modem->get_txfreq();
-		sprintf(szFrequency, "%-.0f", dfreq);
+		snprintf(szFrequency, sizeof(szFrequency), "%-.0f", dfreq);
 	}
 	FL_LOCK_D();
 	inpFreq->value(szFrequency);
@@ -595,7 +595,7 @@ void WFdisp::drawScale() {
 			else
 				fr = (rfc - (rfc %500))/1000.0 + 0.5 - 0.5*i;
 		}
-		sprintf(szFreq,"%7.1f", fr);
+		snprintf(szFreq, sizeof(szFreq), "%7.1f", fr);
 		fw = (int)fl_width(szFreq);
 		if (usb)
 			xchar = (int) ( ( (1000.0/step) * i - fw) / 2.0 - 

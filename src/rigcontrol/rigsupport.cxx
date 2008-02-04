@@ -57,10 +57,14 @@ struct rmode_name_t {
 	{ RIG_MODE_PKTFM, "PKTFM" },
 	{ RIG_MODE_ECSSUSB, "ECSSUSB" },
 	{ RIG_MODE_ECSSLSB, "ECSSLSB" },
-	{ RIG_MODE_FAX, "FAX" },
+	{ RIG_MODE_FAX, "FAX" }
+// the above are covered by our requirement that hamlib be >= 1.2.4
+#if (defined(RIG_MODE_SAM) && defined(RIG_MODE_SAL) && defined(RIG_MODE_SAH))
+	, // C99 trailing commas in enumerations not yet in the C++ standard
 	{ RIG_MODE_SAM, "SAM" },
 	{ RIG_MODE_SAL, "SAL" },
 	{ RIG_MODE_SAH, "SAH" }
+#endif
 };
 
 map<string, rmode_t> mode_nums;

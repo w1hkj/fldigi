@@ -226,8 +226,13 @@ void QRZ::OpenQRZFiles( const char *fname )
   }
   memset( index, 0, idxsize );
 
-  fread( &idxhdr.dataname, 1, 48, idxfile );
-  fread( index, 1, idxsize, idxfile ) ;
+  if (fread( &idxhdr.dataname, 1, 48, idxfile ) != 1 ||
+      fread( index, 1, idxsize, idxfile ) != 1) {
+    fclose( idxfile );
+    free( index );
+    QRZvalid = 0;
+    return;
+  }
 
   fflush( stdout );
 
@@ -895,7 +900,7 @@ char * QRZ::CSV_Record()
 {
   static char info[256];
   memset( info, 0, 256 );
-  snprintf( info, 256, "%s,%s,%s,%s,%s,%s,%s,%s,%s",
+  snprintf( info,  sizeof(info) - 1, "%s,%s,%s,%s,%s,%s,%s,%s,%s",
             GetCall(), Qopclass, Qefdate,
             Qlname, Qfname, Qmail_str, Qmail_city, Qmail_st, Qmail_zip );
   return info;
@@ -905,7 +910,7 @@ char *QRZ::Fmt_Record()
 {
   static char info[256];
   memset( info, 0, 256 );
-  sprintf( info, "%s   %s : %s\n%s %s\n%s\n%s, %s  %s\n",
+  snprintf( info, sizeof(info) - 1, "%s   %s : %s\n%s %s\n%s\n%s, %s  %s\n",
            GetCall(), Qopclass, Qefdate,
            Qfname, Qlname,
            Qmail_str,
