@@ -991,6 +991,13 @@ progdefaults.changed = true;
 initViewer();
 }
 
+Fl_Spinner *cntTimeout=(Fl_Spinner *)0;
+
+static void cb_cntTimeout(Fl_Spinner* o, void*) {
+  progdefaults.VIEWERtimeout = (int)(o->value());
+progdefaults.changed = true;
+}
+
 Fl_Group *tabRTTY=(Fl_Group *)0;
 
 Fl_Choice *selShift=(Fl_Choice *)0;
@@ -1948,6 +1955,7 @@ fect after a restart.");
             o->end();
           }
           { Fl_Group* o = tabPSK = new Fl_Group(0, 50, 400, 170, "Psk");
+            o->hide();
             { Fl_Counter* o = cntSearchRange = new Fl_Counter(25, 60, 80, 21, "Search Range");
               o->type(1);
               o->minimum(10);
@@ -1979,32 +1987,45 @@ fect after a restart.");
               }
               o->end();
             }
-            { Fl_Group* o = new Fl_Group(15, 140, 370, 75, "PSK Viewer");
+            o->end();
+          }
+          { Fl_Group* o = new Fl_Group(0, 50, 400, 170, "PskViewer");
+            { Fl_Group* o = new Fl_Group(5, 60, 390, 155);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = btnMarquee = new Fl_Check_Button(25, 162, 120, 15, "Marquee style");
+              { Fl_Check_Button* o = btnMarquee = new Fl_Check_Button(25, 87, 120, 15, "Marquee style");
                 o->down_box(FL_DOWN_BOX);
                 o->callback((Fl_Callback*)cb_btnMarquee);
                 o->value(progdefaults.VIEWERmarquee);
               }
-              { Fl_Check_Button* o = btnShowFrequencies = new Fl_Check_Button(25, 190, 150, 15, "Show Frequencies");
+              { Fl_Check_Button* o = btnShowFrequencies = new Fl_Check_Button(25, 125, 150, 15, "Show Frequencies");
                 o->down_box(FL_DOWN_BOX);
                 o->callback((Fl_Callback*)cb_btnShowFrequencies);
                 o->value(progdefaults.VIEWERshowfreq);
               }
-              { Fl_Spinner* o = cntStartFrequency = new Fl_Spinner(315, 185, 60, 25, "Start Frequency:");
+              { Fl_Spinner* o = cntStartFrequency = new Fl_Spinner(190, 120, 60, 25, "Start Frequency:");
                 o->callback((Fl_Callback*)cb_cntStartFrequency);
+                o->align(FL_ALIGN_RIGHT);
                 o->minimum(200);
                 o->maximum(1000);
                 o->step(100);
                 o->value(progdefaults.VIEWERstart);
               }
-              { Fl_Spinner* o = cntChannels = new Fl_Spinner(325, 157, 50, 25, "# Channels:");
+              { Fl_Spinner* o = cntChannels = new Fl_Spinner(190, 82, 50, 25, "# Channels:");
                 o->callback((Fl_Callback*)cb_cntChannels);
+                o->align(FL_ALIGN_RIGHT);
                 o->minimum(5);
                 o->maximum(30);
                 o->step(1);
                 o->value(progdefaults.VIEWERchannels);
+              }
+              { Fl_Spinner* o = cntTimeout = new Fl_Spinner(190, 155, 50, 25, "Aging (sec)");
+                o->callback((Fl_Callback*)cb_cntTimeout);
+                o->align(FL_ALIGN_RIGHT);
+                o->minimum(10);
+                o->maximum(180);
+                o->step(1);
+                o->value(progdefaults.VIEWERtimeout);
               }
               o->end();
             }

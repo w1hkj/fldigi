@@ -67,6 +67,8 @@ private:
 	int				dcdbits;
 	int				sigsearch[MAXCHANNELS];
 	int				waitcount[MAXCHANNELS];
+	time_t			now;
+	time_t			timeout[MAXCHANNELS];
 
 	void			rx_symbol(int ch, complex symbol);
 	void 			rx_bit(int ch, int bit);

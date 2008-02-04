@@ -899,7 +899,8 @@ const char * QRZ::GetImageFileName ()
 char * QRZ::CSV_Record()
 {
   static char info[256];
-  snprintf( info, 256, "%s,%s,%s,%s,%s,%s,%s,%s,%s",
+  memset( info, 0, 256 );
+  snprintf( info,  sizeof(info) - 1, "%s,%s,%s,%s,%s,%s,%s,%s,%s",
             GetCall(), Qopclass, Qefdate,
             Qlname, Qfname, Qmail_str, Qmail_city, Qmail_st, Qmail_zip );
   return info;
@@ -908,12 +909,13 @@ char * QRZ::CSV_Record()
 char *QRZ::Fmt_Record()
 {
   static char info[256];
-  snprintf( info, sizeof(info), "%s   %s : %s\n%s %s\n%s\n%s, %s  %s\n",
-            GetCall(), Qopclass, Qefdate,
-            Qfname, Qlname,
-            Qmail_str,
-            Qmail_city, Qmail_st, Qmail_zip
-          );
+  memset( info, 0, 256 );
+  snprintf( info, sizeof(info) - 1, "%s   %s : %s\n%s %s\n%s\n%s, %s  %s\n",
+           GetCall(), Qopclass, Qefdate,
+           Qfname, Qlname,
+           Qmail_str,
+           Qmail_city, Qmail_st, Qmail_zip
+         );
   return info;
 }
 

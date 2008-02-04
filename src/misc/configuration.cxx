@@ -171,6 +171,8 @@ configuration progdefaults = {
 	true,			// bool	VIEWERshowfreq
 	500,			// int		VIEWERstart
 	20,				// int		VIEWERchannels
+	20.0,			// double	VIEWERsquelch
+	15,				// int  VIEWERtimeout
 };
 
 const char *szBaudRates[] = {
@@ -230,7 +232,8 @@ enum TAG { \
 	MICIN, LINEIN, ENABLEMIXER, MUTEINPUT,
 	PALETTE0, PALETTE1, PALETTE2, PALETTE3, PALETTE4, 
 	PALETTE5, PALETTE6, PALETTE7, PALETTE8,
-	VIEWERMARQUEE, VIEWERSHOWFREQ, VIEWERSTART, VIEWERCHANNELS
+	VIEWERMARQUEE, VIEWERSHOWFREQ, VIEWERSTART, 
+	VIEWERCHANNELS, VIEWERSQUELCH, VIEWERTIMEOUT
 };
 //	, ALT_TEXT_WIDGETS };
 	
@@ -418,6 +421,8 @@ void configuration::writeDefaultsXML()
 	writeXMLbool(f, "VIEWERSHOWFREQ", VIEWERshowfreq);
 	writeXMLint(f, "VIEWERSTART", VIEWERstart);
 	writeXMLint(f, "VIEWERCHANNELS", VIEWERchannels);
+	writeXMLdbl(f, "VIEWERSQUELCH", VIEWERsquelch);
+	writeXMLint(f, "VIEWERTIMEOUT", VIEWERtimeout);
 	
 	f << "</FLDIGI_DEFS>\n";
 	f.close();
@@ -841,6 +846,12 @@ bool configuration::readDefaultsXML()
 					case VIEWERCHANNELS :
 						VIEWERchannels = atoi(xml->getNodeData());
 						break;
+					case VIEWERSQUELCH :
+						VIEWERsquelch = atof(xml->getNodeData());
+						break;
+					case VIEWERTIMEOUT :
+						VIEWERtimeout = atoi(xml->getNodeData());
+						break;
 //					case ALT_TEXT_WIDGETS :
 //						alt_text_widgets = atoi(xml->getNodeData());
 //						break;
@@ -977,6 +988,8 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("VIEWERSHOWFREQ", nodeName))	tag = VIEWERSHOWFREQ;
 				else if (!strcmp("VIEWERSTART", nodeName))		tag = VIEWERSTART;
 				else if (!strcmp("VIEWERCHANNELS", nodeName))	tag = VIEWERCHANNELS;
+				else if (!strcmp("VIEWERSQUELCH", nodeName))	tag = VIEWERSQUELCH;
+				else if (!strcmp("VIEWERTIMEOUT", nodeName))	tag = VIEWERTIMEOUT;
 //				else if (!strcmp("ALT_TEXT_WIDGETS", nodeName)) 	tag = ALT_TEXT_WIDGETS;
 				else tag = IGNORE;
 				}

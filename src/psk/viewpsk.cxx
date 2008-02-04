@@ -81,6 +81,7 @@ void viewpsk::init()
 		frequency[i] = nomfreq[i];
 		for (int j = 0; j < 16; j++)
 			syncbuf[i * 16 + j] = 0.0;
+		timeout[i] = -1;
 	}
 }
 
@@ -144,8 +145,10 @@ void viewpsk::rx_bit(int ch, int bit)
 	if ((shreg[ch] & 3) == 0) {
 		c = psk_varicode_decode(shreg[ch] >> 2);
 		shreg[ch] = 0;
-		if (c != -1)
+		if (c != -1) {
 			REQ(&viewaddchr, ch, (int)frequency[ch], c);
+			timeout[ch] = now + progdefaults.VIEWERtimeout;
+		}
 	}
 }
 
@@ -220,7 +223,7 @@ void viewpsk::rx_symbol(int ch, complex symbol)
 		break;
 
 	default:
-		if (metric[ch] > progdefaults.sldrSquelchValue)
+		if (metric[ch] > progdefaults.VIEWERsquelch)
 			dcd[ch] = true;
 		else 
 			dcd[ch] = false;
@@ -243,6 +246,8 @@ int viewpsk::rx_process(const double *buf, int len)
 	while (len-- > 0) {
 // process all CHANNELS (25)
 		for (int channel = 0; channel < progdefaults.VIEWERchannels; channel++) {
+			now = time(NULL);
+			
 // Mix with the internal NCO for each channel
 			z[channel] = complex ( *buf * cos(phaseacc[channel]), *buf * sin(phaseacc[channel]) );
 
@@ -279,6 +284,10 @@ int viewpsk::rx_process(const double *buf, int len)
 		buf++;
 	}
 	for (int channel = 0; channel < progdefaults.VIEWERchannels; channel++) {		
+		if (timeout[channel] != -1 && timeout[channel] < now) {
+			REQ( &viewclearchannel, channel);
+			timeout[channel] = -1;
+		}
 		if (sigsearch[channel])
 			findsignal(channel);
 		else {

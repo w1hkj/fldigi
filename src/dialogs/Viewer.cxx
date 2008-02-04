@@ -6,6 +6,7 @@
 #include "configuration.h"
 #include "waterfall.h"
 #include <FL/Enumerations.H>
+#include <FL/Fl_Slider.H>
 
 #include <sys/types.h>
 #include <regex.h>
@@ -52,11 +53,11 @@ string fline;
 		else     dfreq = rfc - freq;
  	} else 
  		dfreq = freq;
-	if (progdefaults.VIEWERshowfreq)
-		snprintf(szLine, sizeof(szLine), "%10.3f", dfreq / 1000.0);
-	else
-		snprintf(szLine, sizeof(szLine), "%3d", progdefaults.VIEWERchannels - i);	
-//	if (szLine[0] == ' ') strcpy(szLine, &szLine[1]);
+  	if (progdefaults.VIEWERshowfreq)
+ 		snprintf(szLine, sizeof(szLine), "%10.3f", dfreq / 1000.0);
+  	else
+ 		snprintf(szLine, sizeof(szLine), "%3d", progdefaults.VIEWERchannels - i);	
+
 	fline = "@f";
 	fline += bkselect.c_str();
 	fline += white.c_str();
@@ -137,6 +138,7 @@ Fl_Button *btnCloseViewer=(Fl_Button *)0;
 Fl_Button *btnClearViewer=(Fl_Button *)0;
 pskBrowser *brwsViewer=(pskBrowser *)0;
 Fl_Input  *inpSeek = (Fl_Input *)0;
+Fl_Slider *sldrViewerSquelch = (Fl_Slider *)0;
 Fl_Light_Button *chkBeep = 0;
 
 // Adjust and return fg color to ensure good contrast with bg
@@ -252,6 +254,12 @@ static void cb_Seek(Fl_Input *, void *)
 	re_comp(inpSeek->value());
 }
 
+static void cb_Squelch(Fl_Slider *, void *)
+{
+	progdefaults.VIEWERsquelch = sldrViewerSquelch->value();
+	progdefaults.changed = true;
+}
+
 Fl_Double_Window* createViewer() {
 	Fl_Double_Window* w;
 	Fl_Pack *p;
@@ -271,9 +279,9 @@ Fl_Double_Window* createViewer() {
 	    	inpSeek = new Fl_Input(50, 5, 200, 25, "Find: "); 
     		inpSeek->callback((Fl_Callback*)cb_Seek);
     		inpSeek->when(FL_WHEN_CHANGED);
-		inpSeek->textfont(FL_SCREEN);
+			inpSeek->textfont(FL_SCREEN);
     		inpSeek->value("CQ");
-		chkBeep = new Fl_Light_Button(inpSeek->x() + 4, inpSeek->y(), 60, inpSeek->h(), "Beep");
+			chkBeep = new Fl_Light_Button(inpSeek->x() + 4, inpSeek->y(), 60, inpSeek->h(), "Beep");
     		bx = new Fl_Box(250, 5, 200, 25);
     		p1->resizable(bx);
     	p1->end();
@@ -291,13 +299,20 @@ Fl_Double_Window* createViewer() {
 		
 		Fl_Pack *p2 = new Fl_Pack(0, viewerheight - 25, viewerwidth, 25);
 			p2->type(1);
-			bx = new Fl_Box(0,435, 10, 25);
-    		btnClearViewer = new Fl_Button(10, 435, 65, 25, "Clear");
+			bx = new Fl_Box(0,viewerheight - 25, 10, 25);
+    		btnClearViewer = new Fl_Button(10, viewerheight - 25, 65, 25, "Clear");
     		btnClearViewer->callback((Fl_Callback*)cb_btnClearViewer);
-    		bx = new Fl_Box(75, 435, 10, 25);
-	    	btnCloseViewer = new Fl_Button(85, 435, 65, 25, "Close");
+    		bx = new Fl_Box(75, viewerheight - 25, 10, 25);
+	    	btnCloseViewer = new Fl_Button(85, viewerheight - 25, 65, 25, "Close");
     		btnCloseViewer->callback((Fl_Callback*)cb_btnCloseViewer);
-    		bx = new Fl_Box(150, 435, 300, 25);
+    		bx = new Fl_Box(140, viewerheight - 25, 5, 25);
+    		sldrViewerSquelch = new Fl_Slider(145, viewerheight - 25, 200, 25);
+    		sldrViewerSquelch->tooltip("Set Viewer Squelch");
+    		sldrViewerSquelch->type(FL_HOR_NICE_SLIDER);
+    		sldrViewerSquelch->range(0.0, 100.0);
+    		sldrViewerSquelch->value(progdefaults.VIEWERsquelch);
+    		sldrViewerSquelch->callback((Fl_Callback*)cb_Squelch);
+    		bx = new Fl_Box(345, viewerheight - 25, 25, 25);
     		p2->resizable(bx);
 		p2->end();
 		p->resizable(brwsViewer);
@@ -371,5 +386,14 @@ void viewaddchr(int ch, int freq, char c) {
 
 	nuline.append("@.").append(bwsrline[index]);
 	brwsViewer->text(1 + index, nuline.c_str());
+	brwsViewer->redraw();
+}
+
+void viewclearchannel(int ch)
+{
+	int index = progdefaults.VIEWERchannels - 1 - ch;
+	string nuline = freqformat(index);
+	bwsrline[index] = "";
+	brwsViewer->text( 1 + index, nuline.c_str());
 	brwsViewer->redraw();
 }
