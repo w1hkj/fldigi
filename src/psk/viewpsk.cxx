@@ -243,10 +243,11 @@ int viewpsk::rx_process(const double *buf, int len)
 	int idx;
 	complex z[MAXCHANNELS];
 
+	now = time(NULL);
+
 	while (len-- > 0) {
 // process all CHANNELS (25)
 		for (int channel = 0; channel < progdefaults.VIEWERchannels; channel++) {
-			now = time(NULL);
 			
 // Mix with the internal NCO for each channel
 			z[channel] = complex ( *buf * cos(phaseacc[channel]), *buf * sin(phaseacc[channel]) );
