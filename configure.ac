@@ -21,7 +21,7 @@ AC_PROG_CC
 # Checks for header files.
 AC_HEADER_STDC
 AC_HEADER_DIRENT
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h memory.h netdb.h netinet/in.h stdint.h stdlib.h string.h strings.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h termios.h unistd.h values.h execinfo.h])
+AC_CHECK_HEADERS([arpa/inet.h execinfo.h fcntl.h limits.h memory.h netdb.h netinet/in.h regex.h stdint.h stdlib.h string.h strings.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h termios.h unistd.h values.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
@@ -51,7 +51,7 @@ AC_FUNC_SELECT_ARGTYPES
 AC_TYPE_SIGNAL
 AC_FUNC_STRFTIME
 AC_FUNC_STRTOD
-AC_CHECK_FUNCS([gethostbyname localtime_r memmove memset mkdir select snprintf socket strcasecmp strchr strdup strerror strncasecmp strrchr strstr strtol uname vsnprintf])
+AC_CHECK_FUNCS([gethostbyname localtime_r memmove memset mkdir select snprintf socket strcasecmp strchr strdup strerror strncasecmp strcasestr strrchr strstr strtol uname vsnprintf])
 
 
 AC_PRESERVE_HELP_ORDER

@@ -7,12 +7,13 @@
 #include "waterfall.h"
 #include <FL/Enumerations.H>
 
+#include <sys/types.h>
+#include <regex.h>
+
 #include <string>
 
 string bwsrfreq;
 string bwsrline[MAXCHANNELS];
-string ucaseline[MAXCHANNELS];
-string tofind;
 
 static int  brwsFreq[MAXCHANNELS];
 static int  freq;
@@ -67,6 +68,44 @@ string fline;
 	return fline;
 }
 
+regex_t* seek_re = 0;
+void re_comp(const char* needle)
+{
+        if (seek_re)
+                regfree(seek_re);
+        else
+                seek_re = new regex_t;
+        if (!(needle && *needle && regcomp(seek_re, needle, REG_EXTENDED | REG_ICASE | REG_NOSUB) == 0)) {
+                delete seek_re;
+                seek_re = 0;
+        }
+}
+// match haystack against seek_re
+bool re_find(const char* haystack)
+{
+        return seek_re && !regexec(seek_re, haystack, 0, 0, REG_NOTBOL | REG_NOTEOL);
+}
+#if !HAVE_STRCASESTR
+// a simple inefficient implementation of strcasestr
+char* strcasestr(const char* haystack, const char* needle)
+{
+        char *h = NULL, *n = NULL, *p;
+	if ((h = strdup(haystack)) == NULL || (n = strdup(needle)) == NULL) {
+		free(h);
+                free(n);
+                return NULL;
+        }
+	for (p = h; *p; p++)
+		*p = tolower(*p);
+	for (p = n; *p; p++)
+		*p = tolower(*p);
+	p = strstr(h, n);
+	free(h);
+	free(n);
+	return p;
+}
+#endif // !HAVE_STRCASESTR
+
 void pskBrowser::resize(int x, int y, int w, int h) {
 		unsigned int nuchars = (w - cols[0] - 20) / cwidth;
 		string bline;
@@ -78,14 +117,13 @@ void pskBrowser::resize(int x, int y, int w, int h) {
 
 				bline = freqformat(i);
 
-				if (!tofind.empty())
-				if (ucaseline[i].find(tofind) != string::npos)
+				if (re_find(bwsrline[i].c_str()))
 					bline.append(dkred);
-				else if (!progdefaults.myCall.empty())
-					if (ucaseline[i].find(progdefaults.myCall) != string::npos)
-						bline.append(dkgreen);
-			
-				bline.append(bwsrline[i]);
+				else if (!progdefaults.myCall.empty() &&
+					 strcasestr(bwsrline[i].c_str(), progdefaults.myCall.c_str()))
+					bline.append(dkgreen);
+
+				bline.append("@.").append(bwsrline[i]);
 				Fl_Hold_Browser::add(bline.c_str());
 			}
 		}
@@ -99,6 +137,7 @@ Fl_Button *btnCloseViewer=(Fl_Button *)0;
 Fl_Button *btnClearViewer=(Fl_Button *)0;
 pskBrowser *brwsViewer=(pskBrowser *)0;
 Fl_Input  *inpSeek = (Fl_Input *)0;
+Fl_Light_Button *chkBeep = 0;
 
 // Adjust and return fg color to ensure good contrast with bg
 static Fl_Color adjust_color(Fl_Color fg, Fl_Color bg)
@@ -110,8 +149,6 @@ static Fl_Color adjust_color(Fl_Color fg, Fl_Color bg)
 				       : fl_color_average(fg, FL_BLACK, .9);
 	return fg;
 }
-
-
 static void make_colors()
 {
 	char tempstr[20];
@@ -177,8 +214,7 @@ void ClearViewer() {
   		else 		   freq = progdefaults.VIEWERstart + 100 * (progdefaults.VIEWERchannels - 1 - i);
 
 		bline = freqformat(i);
-  		bwsrline[i] = "";
-  		ucaseline[i] = "";
+  		bwsrline[i].clear();
   		brwsViewer->add(bline.c_str());
   	}
 	if (progdefaults.VIEWERshowfreq)
@@ -213,9 +249,7 @@ static void cb_brwsViewer(Fl_Hold_Browser*, void*) {
 
 static void cb_Seek(Fl_Input *, void *)
 {
-	tofind = inpSeek->value();
-	for (size_t i = 0; i < tofind.length(); i++)
-		tofind[i] = toupper(tofind[i]);
+	re_comp(inpSeek->value());
 }
 
 Fl_Double_Window* createViewer() {
@@ -237,11 +271,13 @@ Fl_Double_Window* createViewer() {
 	    	inpSeek = new Fl_Input(50, 5, 200, 25, "Find: "); 
     		inpSeek->callback((Fl_Callback*)cb_Seek);
     		inpSeek->when(FL_WHEN_CHANGED);
+		inpSeek->textfont(FL_SCREEN);
     		inpSeek->value("CQ");
+		chkBeep = new Fl_Light_Button(inpSeek->x() + 4, inpSeek->y(), 60, inpSeek->h(), "Beep");
     		bx = new Fl_Box(250, 5, 200, 25);
     		p1->resizable(bx);
     	p1->end();
-    	tofind = "CQ";
+    	inpSeek->do_callback();
 
     	brwsViewer = new pskBrowser(2, 25, viewerwidth, viewerheight - 50);
     	brwsViewer->callback((Fl_Callback*)cb_brwsViewer);
@@ -305,39 +341,34 @@ void viewaddchr(int ch, int freq, char c) {
 
 	int index = progdefaults.VIEWERchannels - 1 - ch;
 	if (progdefaults.VIEWERmarquee) {
-		if (bwsrline[index].length() > nchars ) {
+		if (bwsrline[index].length() > nchars )
 			bwsrline[index].erase(0,1);
-			ucaseline[index].erase(0,1);
-		}
-		if (c >= ' ' && c <= 'z') {
+		if (c >= ' ' && c <= '~')
 			bwsrline[index] += c;
-			ucaseline[index] += toupper(c);
-		} else {
+		else
 			bwsrline[index] += ' ';
-			ucaseline[index] += ' ';
-		}
 	} else {
-		if (c >= ' ' && c <= 'z') {
+		if (c >= ' ' && c <= '~')
 			bwsrline[index] += c;
-			ucaseline[index] += toupper(c);
-		} else {
+		else
 			bwsrline[index] += ' ';
-			ucaseline[index] += ' ';
-		}
-		if (bwsrline[index].length() > nchars) {
-			bwsrline[index] = "";
-			ucaseline[index] = "";
-		}
+		if (bwsrline[index].length() > nchars)
+			bwsrline[index].clear();
 	}
 	nuline = freqformat(index);
 
-	if (!tofind.empty())
-		if (ucaseline[index].find(tofind) != string::npos)
-			nuline.append(dkred);
-	else if (!progdefaults.myCall.empty())
-		if (ucaseline[index].find(progdefaults.myCall) != string::npos)
-			nuline.append(dkgreen);
-			
+	if (re_find(bwsrline[index].c_str())) {
+		nuline.append(dkred);
+		if (chkBeep->value())
+			fl_beep();
+	}
+	else if (!progdefaults.myCall.empty() &&
+		 strcasestr(bwsrline[index].c_str(), progdefaults.myCall.c_str())) {
+		nuline.append(dkgreen);
+		if (chkBeep->value())
+			fl_beep();
+	}
+
 	nuline.append("@.").append(bwsrline[index]);
 	brwsViewer->text(1 + index, nuline.c_str());
 	brwsViewer->redraw();
