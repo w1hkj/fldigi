@@ -233,11 +233,11 @@ void cw::update_Status()
 {
 	static char RXmsg[20];
 	static char TXmsg[20];
-	sprintf(RXmsg,"Rx %d", cw_receive_speed);
+	snprintf(RXmsg, sizeof(RXmsg), "Rx %d", cw_receive_speed);
 	if (usedefaultWPM)
-		sprintf(TXmsg,"Tx %d **", progdefaults.defCWspeed);
+		snprintf(TXmsg, sizeof(TXmsg), "Tx %d **", progdefaults.defCWspeed);
 	else
-		sprintf(TXmsg,"Tx %d", progdefaults.CWspeed);
+		snprintf(TXmsg, sizeof(TXmsg), "Tx %d", progdefaults.CWspeed);
 	put_Status1(RXmsg);
 	put_Status2(TXmsg);	
 }

@@ -444,7 +444,7 @@ void throb::rx(complex in)
 	rxcntr = rxsymlen;
 	waitsync = 1;
 
-	sprintf(throbmsg, "S/N: %3d dB", (int)(floor(s2n)));
+	snprintf(throbmsg, sizeof(throbmsg), "S/N: %3d dB", (int)(floor(s2n)));
 	put_Status1(throbmsg);
 	display_metric(metric);
 

@@ -190,7 +190,7 @@ Font_Browser::Font_Browser(const char *lbl ) :
   
 	char buf[5];
 	for (int i = 1; i < 48; i+=1) {
-		sprintf(buf, "%d", i);
+            snprintf(buf, sizeof(buf), "%d", i);
         lst_Size->add(buf);
     }
 

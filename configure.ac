@@ -51,7 +51,7 @@ AC_FUNC_SELECT_ARGTYPES
 AC_TYPE_SIGNAL
 AC_FUNC_STRFTIME
 AC_FUNC_STRTOD
-AC_CHECK_FUNCS([gethostbyname localtime_r memmove memset mkdir select socket strcasecmp strchr strdup strerror strncasecmp strrchr strstr strtol uname])
+AC_CHECK_FUNCS([gethostbyname localtime_r memmove memset mkdir select snprintf socket strcasecmp strchr strdup strerror strncasecmp strrchr strstr strtol uname vsnprintf])
 
 
 AC_PRESERVE_HELP_ORDER

@@ -965,7 +965,7 @@ void cb_picTxSendColor( Fl_Widget *w, void *who)
 			for (ix = 0; ix < W; ix++)
 				outbuf[rowstart + rgb*W + ix] = inbuf[rowstart + rgb + ix*3];
 	}
-	sprintf(my->picheader, "\nSending Pic:%dx%dC;", W, H);
+	snprintf(my->picheader, sizeof(my->picheader), "\nSending Pic:%dx%dC;", W, H);
 	my->xmtbytes = W * H * 3;
 	my->color = true;
 	my->rgb = 0;
@@ -1001,7 +1001,7 @@ void cb_picTxSendGrey( Fl_Widget *w, void *who)
 	unsigned char *inbuf = my->xmtimg;
 	for (int i = 0; i < W*H; i++)
 		outbuf[i] = ( 31 * inbuf[i*3] + 61 * inbuf[i*3 + 1] + 8 * inbuf[i*3 + 2])/100;
-	sprintf(my->picheader, "\nSending Pic:%dx%d;", W, H);
+	snprintf(my->picheader, sizeof(my->picheader), "\nSending Pic:%dx%d;", W, H);
 	my->xmtbytes = W * H;
 	my->color = false;
 	my->col = 0;

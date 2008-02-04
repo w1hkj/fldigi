@@ -52,9 +52,9 @@ string fline;
  	} else 
  		dfreq = freq;
 	if (progdefaults.VIEWERshowfreq)
-		sprintf(szLine,"%10.3f", dfreq / 1000.0);
+		snprintf(szLine, sizeof(szLine), "%10.3f", dfreq / 1000.0);
 	else
-		sprintf(szLine,"%3d", progdefaults.VIEWERchannels - i);	
+		snprintf(szLine, sizeof(szLine), "%3d", progdefaults.VIEWERchannels - i);	
 //	if (szLine[0] == ' ') strcpy(szLine, &szLine[1]);
 	fline = "@f";
 	fline += bkselect.c_str();

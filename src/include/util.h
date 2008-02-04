@@ -100,6 +100,16 @@ const__ uint32_t floor2(uint32_t n);
 } // extern "C"
 #endif
 
+#if !defined(NDEBUG) && defined(deprecated__)
+#include <stdio.h>
+#include <string.h>
+deprecated__ typeof(sprintf) sprintf;
+/* there are far too many of these in the qrz code
+deprecated__ typeof(strcpy) strcpy;
+deprecated__ typeof(strcat) strcat;
+*/
+#endif
+
 #endif /* UTIL_H */
 
 /*
