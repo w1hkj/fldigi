@@ -73,7 +73,8 @@ void status::saveLastState()
 			VIEWERxpos = dlgViewer->x();
 			VIEWERypos = dlgViewer->y();
 			VIEWERvisible = true;
-		}
+		} else
+			VIEWERvisible = false;
 	}
 	
 	if (rigcontrol)
