@@ -4,9 +4,11 @@
 #include "main.h"
 #include "viewpsk.h"
 #include "configuration.h"
+#include "status.h"
 #include "waterfall.h"
 #include <FL/Enumerations.H>
 #include <FL/Fl_Slider.H>
+#include <FL/fl_ask.H>
 
 #include <sys/types.h>
 #include <regex.h>
@@ -35,8 +37,10 @@ int cwidth;
 int cheight;
 int rfwidth;
 int chwidth;
+int sbarwidth = 16;
+int border = 4;
 
-unsigned int nchars = 40;
+//unsigned int nchars = 80;
 
 extern viewpsk *pskviewer;
 
@@ -108,28 +112,28 @@ char* strcasestr(const char* haystack, const char* needle)
 #endif // !HAVE_STRCASESTR
 
 void pskBrowser::resize(int x, int y, int w, int h) {
-		unsigned int nuchars = (w - cols[0] - 20) / cwidth;
-		string bline;
-		if (nuchars < nchars) {
-			Fl_Hold_Browser::clear();
-			for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
-				if (bwsrline[i].length() > nuchars)
-					bwsrline[i] = bwsrline[i].substr(0,nuchars);
-
-				bline = freqformat(i);
-
-				if (re_find(bwsrline[i].c_str()))
-					bline.append(dkred);
-				else if (!progdefaults.myCall.empty() &&
-					 strcasestr(bwsrline[i].c_str(), progdefaults.myCall.c_str()))
-					bline.append(dkgreen);
-
-				bline.append("@.").append(bwsrline[i]);
-				Fl_Hold_Browser::add(bline.c_str());
-			}
+	unsigned int nuchars = (w - cols[0] - (sbarwidth + border)) / cwidth;
+	string bline;
+	if (nuchars < progStatus.VIEWERnchars) {
+		Fl_Hold_Browser::clear();
+		for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
+			size_t len = bwsrline[i].length();
+			if (len > nuchars)
+				bwsrline[i] = bwsrline[i].substr(len - nuchars);
+			bline = freqformat(i);
+			if (re_find(bwsrline[i].c_str()))
+				bline.append(dkred);
+			else if (!progdefaults.myCall.empty() &&
+					strcasestr(bwsrline[i].c_str(), progdefaults.myCall.c_str()))
+				bline.append(dkgreen);
+			bline.append("@.").append(bwsrline[i]);
+			Fl_Hold_Browser::add(bline.c_str());
 		}
-		nchars = nuchars;
-		Fl_Hold_Browser::resize(x,y,w,h);
+	}
+	progStatus.VIEWERnchars = nuchars;
+	progStatus.VIEWERxpos = dlgViewer->x();
+	progStatus.VIEWERypos = dlgViewer->y();
+	Fl_Hold_Browser::resize(x,y,w,h);
 }		
 
 Fl_Double_Window *dlgViewer = (Fl_Double_Window *)0;
@@ -139,7 +143,7 @@ Fl_Button *btnClearViewer=(Fl_Button *)0;
 pskBrowser *brwsViewer=(pskBrowser *)0;
 Fl_Input  *inpSeek = (Fl_Input *)0;
 Fl_Slider *sldrViewerSquelch = (Fl_Slider *)0;
-Fl_Light_Button *chkBeep = 0;
+//Fl_Light_Button *chkBeep = 0;
 
 // Adjust and return fg color to ensure good contrast with bg
 static Fl_Color adjust_color(Fl_Color fg, Fl_Color bg)
@@ -195,7 +199,7 @@ static void make_colors()
 
 static void evalcwidth()
 {
-	fl_font(FL_COURIER, 14);
+	fl_font(FL_COURIER, FL_NORMAL_SIZE);
 	cwidth = (int)fl_width("W");
 	cheight = fl_height();
 	rfwidth = 11 * cwidth;
@@ -203,7 +207,9 @@ static void evalcwidth()
 }
 
 static void cb_btnCloseViewer(Fl_Button*, void*) {
-  dlgViewer->hide();
+	progStatus.VIEWERxpos = dlgViewer->x();
+	progStatus.VIEWERypos = dlgViewer->y();
+	dlgViewer->hide();
 }
 
 void ClearViewer() {
@@ -224,7 +230,6 @@ void ClearViewer() {
 	else
 		cols[0] = chwidth;
   	brwsViewer->column_widths(cols);
-	nchars = (brwsViewer->w() - cols[0] - 20) / cwidth;
 }
 
 void initViewer()
@@ -233,9 +238,9 @@ void initViewer()
 	if (!dlgViewer) return;
 	pskviewer->init();
 	ClearViewer();
-	nchars = (brwsViewer->w() - cols[0]  - 20) / cwidth;
 	dlgViewer->resize(dlgViewer->x(), dlgViewer->y(),
-	                  dlgViewer->w(), cheight * progdefaults.VIEWERchannels + 54);
+	                  progStatus.VIEWERnchars * cwidth + cols[0] + (sbarwidth + border),
+	                  cheight * progdefaults.VIEWERchannels + 50 + border);
 }
 
 static void cb_btnClearViewer(Fl_Button*, void*) {
@@ -266,11 +271,15 @@ Fl_Double_Window* createViewer() {
 
 	make_colors();
 	evalcwidth();
+	if (progdefaults.VIEWERshowfreq)
+		cols[0] = rfwidth;
+	else
+		cols[0] = chwidth;
 	
-	int viewerwidth = 450;
-	int viewerheight = 50 + cheight * progdefaults.VIEWERchannels + 4;
+	static int viewerwidth = (progStatus.VIEWERnchars * cwidth) + cols[0] + sbarwidth + border;
+	static int viewerheight = 50 + cheight * progdefaults.VIEWERchannels + border;
 
-	w = new Fl_Double_Window(viewerwidth, viewerheight, "Psk Viewer");
+	w = new Fl_Double_Window(progStatus.VIEWERxpos, progStatus.VIEWERypos, viewerwidth, viewerheight, "Psk Viewer");
 	w->xclass(PACKAGE_NAME);
 	p = new Fl_Pack(0,0,viewerwidth, viewerheight);
 		Fl_Pack *p1 = new Fl_Pack(0, 0, viewerwidth, 25);
@@ -281,7 +290,7 @@ Fl_Double_Window* createViewer() {
     		inpSeek->when(FL_WHEN_CHANGED);
 			inpSeek->textfont(FL_SCREEN);
     		inpSeek->value("CQ");
-			chkBeep = new Fl_Light_Button(inpSeek->x() + 4, inpSeek->y(), 60, inpSeek->h(), "Beep");
+//			chkBeep = new Fl_Light_Button(inpSeek->x() + border, inpSeek->y(), 60, inpSeek->h(), "Beep");
     		bx = new Fl_Box(250, 5, 200, 25);
     		p1->resizable(bx);
     	p1->end();
@@ -289,13 +298,7 @@ Fl_Double_Window* createViewer() {
 
     	brwsViewer = new pskBrowser(2, 25, viewerwidth, viewerheight - 50);
     	brwsViewer->callback((Fl_Callback*)cb_brwsViewer);
-
-		if (progdefaults.VIEWERshowfreq)
-			cols[0] = rfwidth;
-		else
-			cols[0] = chwidth;
     	brwsViewer->column_widths(cols);
-		nchars = (brwsViewer->w() - cols[0] - 20) / cwidth;
 		
 		Fl_Pack *p2 = new Fl_Pack(0, viewerheight - 25, viewerwidth, 25);
 			p2->type(1);
@@ -319,6 +322,7 @@ Fl_Double_Window* createViewer() {
 	p->end();
 	w->resizable(p);
     w->end();
+    w->callback((Fl_Callback*)cb_btnCloseViewer);
 	return w;
 }
 
@@ -356,7 +360,7 @@ void viewaddchr(int ch, int freq, char c) {
 
 	int index = progdefaults.VIEWERchannels - 1 - ch;
 	if (progdefaults.VIEWERmarquee) {
-		if (bwsrline[index].length() > nchars )
+		if (bwsrline[index].length() > progStatus.VIEWERnchars )
 			bwsrline[index].erase(0,1);
 		if (c >= ' ' && c <= '~')
 			bwsrline[index] += c;
@@ -367,21 +371,21 @@ void viewaddchr(int ch, int freq, char c) {
 			bwsrline[index] += c;
 		else
 			bwsrline[index] += ' ';
-		if (bwsrline[index].length() > nchars)
+		if (bwsrline[index].length() > progStatus.VIEWERnchars)
 			bwsrline[index].clear();
 	}
 	nuline = freqformat(index);
 
 	if (re_find(bwsrline[index].c_str())) {
 		nuline.append(dkred);
-		if (chkBeep->value())
-			fl_beep();
+//		if (chkBeep->value())
+//			fl_beep();
 	}
 	else if (!progdefaults.myCall.empty() &&
 		 strcasestr(bwsrline[index].c_str(), progdefaults.myCall.c_str())) {
 		nuline.append(dkgreen);
-		if (chkBeep->value())
-			fl_beep();
+//		if (chkBeep->value())
+//			fl_beep();
 	}
 
 	nuline.append("@.").append(bwsrline[index]);

@@ -987,7 +987,6 @@ Fl_Spinner *cntChannels=(Fl_Spinner *)0;
 
 static void cb_cntChannels(Fl_Spinner* o, void*) {
   progdefaults.VIEWERchannels = (int)(o->value());
-progdefaults.changed = true;
 initViewer();
 }
 

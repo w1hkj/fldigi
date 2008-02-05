@@ -1158,8 +1158,7 @@ initViewer();}
               Fl_Spinner cntChannels {
                 label {\# Channels:}
                 callback {progdefaults.VIEWERchannels = (int)(o->value());
-progdefaults.changed = true;
-initViewer();}
+initViewer();} selected
                 xywh {190 82 50 25} align 8
                 code0 {o->minimum(5);}
                 code1 {o->maximum(30);}
@@ -1169,7 +1168,7 @@ initViewer();}
               Fl_Spinner cntTimeout {
                 label {Aging (sec)}
                 callback {progdefaults.VIEWERtimeout = (int)(o->value());
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
                 xywh {190 155 50 25} align 8
                 code0 {o->minimum(10);}
                 code1 {o->maximum(180);}

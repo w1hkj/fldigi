@@ -22,6 +22,8 @@
 #include "rigsupport.h"
 
 extern void startup_modem(modem *m);
+extern Fl_Double_Window *dlgViewer;
+extern void openViewer();
 
 status progStatus = {
 	(int)MODE_BPSK31,	// trx_mode	lastmode;
@@ -37,7 +39,11 @@ status progStatus = {
 	1,					// int mag;
 	NORMAL,				// WFdisp::WFspeed
 	0,					// reflevel
-	-60					// ampspan
+	-60,				// ampspan
+	40,					// uint	VIEWERnchars
+	50,					// uint	VIEWERxpos
+	50,					// uint	VIEWERypos
+	false				// bool VIEWERvisible
 };
 
 	
@@ -62,6 +68,14 @@ void status::saveLastState()
 	reflevel = progdefaults.wfRefLevel;
 	ampspan = progdefaults.wfAmpSpan;
 	
+	if (dlgViewer) {
+		if (dlgViewer->visible()) {
+			VIEWERxpos = dlgViewer->x();
+			VIEWERypos = dlgViewer->y();
+			VIEWERvisible = true;
+		}
+	}
+	
 	if (rigcontrol)
 		if (rigcontrol->visible()) {
 			rigShown = rigcontrol->visible();
@@ -84,7 +98,11 @@ void status::saveLastState()
 	deffile << mag << endl;
 	deffile << speed << endl;
 	deffile << reflevel << endl;
-	deffile << ampspan << endl;	
+	deffile << ampspan << endl;
+	deffile << VIEWERnchars << endl;
+	deffile << VIEWERxpos << endl;
+	deffile << VIEWERypos << endl;
+	deffile << VIEWERvisible << endl;
 	deffile.close();
 }
 
@@ -108,6 +126,10 @@ void status::initLastState()
 		deffile >> speed;
 		deffile >> reflevel;
 		deffile >> ampspan;
+		deffile >> VIEWERnchars;
+		deffile >> VIEWERxpos;
+		deffile >> VIEWERypos;
+		deffile >> VIEWERvisible;
 		deffile.close();
 		progdefaults.wfRefLevel = reflevel;
 		progdefaults.wfAmpSpan = ampspan;
@@ -149,5 +171,7 @@ void status::initLastState()
 		rigcontrol->resize(rigX, rigY, rdW, rdH);
 		rigcontrol->show();
 	}
+	if (VIEWERvisible == true)
+		openViewer();
 
 }
