@@ -24,6 +24,11 @@ struct status {
 	int		speed;
 	double	reflevel;
 	double	ampspan;
+	unsigned int	VIEWERnchars;
+	unsigned int	VIEWERxpos;
+	unsigned int	VIEWERypos;
+	bool	VIEWERvisible;
+	
 	
 public:
 	void saveModeState(trx_mode m);
