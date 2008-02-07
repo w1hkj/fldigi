@@ -28,13 +28,14 @@
 #include "complex.h"
 #include "trx.h"
 #include "filters.h"
+#include "fldigi-config.h"
 
 //=====================================================================
 #define	VPSKSAMPLERATE	(8000)
-#define VSNTHRESHOLD 2.0
+#define VSNTHRESHOLD 2.0 // 3 db s/n
 #define VAFCDECAY 8
 #define MAXCHANNELS 30
-#define VSEARCHWIDTH 60
+#define VSEARCHWIDTH 50
 #define VSIGSEARCH 5
 #define VWAITCOUNT 4
 //=====================================================================
@@ -58,6 +59,11 @@ private:
 
 	C_FIR_filter	*fir1[MAXCHANNELS];
 	C_FIR_filter	*fir2[MAXCHANNELS];
+	
+	double			sigpwr[4000];
+	double			sigavg;
+	double			sigmin;
+	Cmovavg			*power[MAXCHANNELS];
 
 	int				bits[MAXCHANNELS];
 	double 			bitclk[MAXCHANNELS];
@@ -75,6 +81,8 @@ private:
 
 	void			findsignal(int);
 	void			afc(int);
+	void			sigdensity();
+	double			sigpeak(int &f, int f1, int f2);
 	
 public:
 	viewpsk(trx_mode mode);
