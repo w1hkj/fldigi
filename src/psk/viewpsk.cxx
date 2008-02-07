@@ -53,7 +53,14 @@ viewpsk::viewpsk(trx_mode pskmode)
 	for (int i = 0; i < MAXCHANNELS; i++) {
 		fir1[i] = (C_FIR_filter *)0;
 		fir2[i] = (C_FIR_filter *)0;
+		power[i] = (Cmovavg *)0;
 	}
+
+	for (int i = 0; i < 4000; i++)
+		sigpwr[i] = 0.0;
+	sigavg = 0.0;
+	sigmin = 1e6;
+	
 	viewmode = MODE_PREV;	
 	restart(pskmode);
 }
@@ -63,6 +70,7 @@ viewpsk::~viewpsk()
 	for (int i = 0; i < MAXCHANNELS; i++) {
 		if (fir1[i]) delete fir1[i];
 		if (fir2[i]) delete fir2[i];
+		if (power[i]) delete power[i];
 	}
 }
 
@@ -126,6 +134,9 @@ void viewpsk::restart(trx_mode pskmode)
 		if (fir2[i]) delete fir2[i];
 		fir2[i] = new C_FIR_filter();
 		fir2[i]->init(FIRLEN, 1, fir2c, fir2c);
+		
+		if (power[i]) delete power[i];
+		power[i] = new Cmovavg(8);
 	}
 	
 	bandwidth = VPSKSAMPLERATE / symbollen;
@@ -133,9 +144,58 @@ void viewpsk::restart(trx_mode pskmode)
 	init();
 }
 
+int sigcnt = 0;
+//=============================================================================
+//========================== viewpsk signal evaluation ========================
+//=============================================================================
+void viewpsk::sigdensity() {
+	sigcnt++;
+	double sig = 0.0;
+	double val;
+	int hbw = (int)(bandwidth / 2);
+	int twohbw = 2 * hbw;
+	int flower = progdefaults.VIEWERstart - 50; //nomfreq[0] - 50;
+	int fupper = flower + 100 * progdefaults.VIEWERchannels + 100;  //nomfreq[MAXCHANNELS-1] + 50;
+	double *vals = new double[twohbw + 1];
+	int j = -1;
+	sigavg = 0.0;
+//	sigmin = 1e6;
+	for (int i = flower - hbw; i < fupper + hbw; i++) {
+		j++;
+		if (j == twohbw + 1) j = 0;
+		val = wf->Pwr(i);
+		if (i >= flower + twohbw) {
+			sigpwr[i - hbw - 1] = sig;
+			sig -= vals[j];
+		}
+		vals[j] = val;
+		sig += val;
+		sigavg += val;
+//		if (sig && sig < sigmin) sigmin = sig;
+	}		
+
+	sigavg /= (fupper - flower - 100);
+//if (sigcnt == 32)
+//	for (int i = flower; i <= fupper; i++)
+//		std::cout << i << ", " << sigpwr[i] / sigavg << std::endl;
+
+}
+
+double viewpsk::sigpeak(int &f, int f1, int f2)
+{
+	double peak = 0;
+	f = (f1 + f2) / 2;
+	for (int i = f1; i <= f2; i++)
+		if (sigpwr[i] > peak) {
+			peak = sigpwr[i];
+			f = i;
+		}
+	return peak / sigavg;
+//	return peak / sigmin;
+}
 
 //=============================================================================
-//=========================== viewpsk receive routines ==========================
+//========================= viewpsk receive routines ==========================
 //=============================================================================
 
 void viewpsk::rx_bit(int ch, int bit)
@@ -145,7 +205,8 @@ void viewpsk::rx_bit(int ch, int bit)
 	if ((shreg[ch] & 3) == 0) {
 		c = psk_varicode_decode(shreg[ch] >> 2);
 		shreg[ch] = 0;
-		if (c != -1) {
+//		if (c != -1) {
+		if (c >= ' ' && c <= 'z') {
 			REQ(&viewaddchr, ch, (int)frequency[ch], c);
 			timeout[ch] = now + progdefaults.VIEWERtimeout;
 		}
@@ -154,23 +215,36 @@ void viewpsk::rx_bit(int ch, int bit)
 
 void viewpsk::findsignal(int ch)
 {
-	double ftest, sigpwr, noise;
-	if (sigsearch[ch] > 0) {
-		sigsearch[ch]--;
-		ftest = wf->peakFreq((int)(frequency[ch]), VSEARCHWIDTH + (int)(bandwidth / 2));
-		sigpwr = wf->powerDensity(ftest,  bandwidth);
-		noise = wf->powerDensity(ftest + 2 * bandwidth, bandwidth / 2) +
-		   	    wf->powerDensity(ftest - 2 * bandwidth, bandwidth / 2) + 1e-20;
-		if (sigpwr/noise > VSNTHRESHOLD) { // larger than the search threshold
-			if (ftest - nomfreq[ch] > VSEARCHWIDTH) ftest = nomfreq[ch] + VSEARCHWIDTH;
-			if (ftest - nomfreq[ch] < -VSEARCHWIDTH) ftest = nomfreq[ch] - VSEARCHWIDTH;
+//	double ftest, sigpwr, noise;
+	if (waitcount[ch] > 0) {
+			waitcount[ch]--;
+			return;
+	}
+		
+//		ftest = wf->peakFreq((int)(frequency[ch]), VSEARCHWIDTH + (int)(bandwidth / 2));
+//		sigpwr = wf->powerDensity(ftest,  bandwidth);
+//		noise = wf->powerDensity(ftest + 2 * bandwidth, bandwidth / 2) +
+//		   	    wf->powerDensity(ftest - 2 * bandwidth, bandwidth / 2) + 1e-20;
+
+//		if (sigpwr/noise > VSNTHRESHOLD) { // larger than the search threshold
+//			if (ftest - nomfreq[ch] > VSEARCHWIDTH) ftest = nomfreq[ch] + VSEARCHWIDTH;
+//			if (ftest - nomfreq[ch] < -VSEARCHWIDTH) ftest = nomfreq[ch] - VSEARCHWIDTH;
+//			frequency[ch] = ftest;
+//		} else { // less than the detection threshold
+//			frequency[ch] = nomfreq[ch];
+//			sigsearch[ch] = VSIGSEARCH;
+//		}
+		int ftest;
+		int f1 = (int)(nomfreq[ch] - VSEARCHWIDTH);
+		int f2 = (int)(nomfreq[ch] + VSEARCHWIDTH);
+		if (sigpeak(ftest, f1, f2) > VSNTHRESHOLD) {
 			frequency[ch] = ftest;
-		} else { // less than the detection threshold
-			frequency[ch] = nomfreq[ch];
-			sigsearch[ch] = VSIGSEARCH;
+			sigsearch[ch] =  0;
 		}
+		else
+			frequency[ch] = nomfreq[ch];
 		freqerr[ch] = 0.0;
-	}		
+//	}		
 }
 
 void viewpsk::afc(int ch)
@@ -225,12 +299,16 @@ void viewpsk::rx_symbol(int ch, complex symbol)
 	default:
 		if (metric[ch] > progdefaults.VIEWERsquelch)
 			dcd[ch] = true;
-		else 
+		else
 			dcd[ch] = false;
 	}
 
 	if (dcd[ch] == true)
 		rx_bit(ch, !bits[ch]);
+	else {
+		sigsearch[ch] = 1;
+		waitcount[ch] = VWAITCOUNT;
+	}
 }
 
 int viewpsk::rx_process(const double *buf, int len)
@@ -244,6 +322,7 @@ int viewpsk::rx_process(const double *buf, int len)
 	complex z[MAXCHANNELS];
 
 	now = time(NULL);
+	sigdensity();
 
 	while (len-- > 0) {
 // process all CHANNELS (25)
@@ -286,28 +365,38 @@ int viewpsk::rx_process(const double *buf, int len)
 	}
 	for (int channel = 0; channel < progdefaults.VIEWERchannels; channel++) {		
 		if (timeout[channel] != -1 && timeout[channel] < now) {
+			frequency[channel] = nomfreq[channel];
 			REQ( &viewclearchannel, channel);
 			timeout[channel] = -1;
 		}
+//		if (sigpwr[(int)(frequency[channel])] / sigmin < VSNTHRESHOLD)
+		if (sigpwr[(int)(frequency[channel])] / sigavg < VSNTHRESHOLD)
+			sigsearch[channel] = 1;
 		if (sigsearch[channel])
+			findsignal(channel);
+		
+/*		if (sigsearch[channel])
 			findsignal(channel);
 		else {
 			if (waitcount[channel] > 0) {
 				--waitcount[channel];
 				if (waitcount[channel] == 0) {
-					sigsearch[channel] = VSIGSEARCH;
+//					sigsearch[channel] = VSIGSEARCH;
+					sigsearch[channel] = 1;
 				}
 			}
 			else {
-				double E1 = wf->powerDensity(frequency[channel],  bandwidth);
-				double E2 = wf->powerDensity(frequency[channel] - 2 * bandwidth, bandwidth/2) +
-			 		        wf->powerDensity(frequency[channel] + 2 * bandwidth, bandwidth/2);
-				if ( E1/ E2 <= VSNTHRESHOLD) {
+//				double E1 = wf->powerDensity(frequency[channel],  bandwidth);
+//				double E2 = wf->powerDensity(frequency[channel] - 2 * bandwidth, bandwidth/2) +
+//			 		        wf->powerDensity(frequency[channel] + 2 * bandwidth, bandwidth/2);
+//				if ( E1/ E2 <= VSNTHRESHOLD) {
+				if (sigpwr[(int)(frequency[channel])] / sigavg < VSNTHRESHOLD) {
 					waitcount[channel] = VWAITCOUNT;
 					sigsearch[channel] = 0;
 				}
 			}
 		}
+*/
 	}
 	return 0;
 }

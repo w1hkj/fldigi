@@ -30,6 +30,7 @@
 #include "fft.h"
 #include "sound.h"
 #include "globals.h"
+#include "fldigi-config.h"
 
 #include <FL/Fl.H>
 #include <FL/fl_draw.H>
@@ -271,6 +272,7 @@ private:
 	void drawgrayWF();
 	void drawspectrum();
 	void drawsignal();
+	
 
 protected:
 public:
@@ -280,6 +282,10 @@ public:
 	int	newcarrier;
 	int	oldcarrier;
 	bool	tmp_carrier;
+	double Pwr(int i) {
+		if ( i > 0 && i < IMAGE_WIDTH) return pwr[i];
+		return 0.0;
+	}
 };
 
 class waterfall: public Fl_Group {
@@ -354,7 +360,7 @@ public:
 			qsy->deactivate();
 		wfdisp->useBands(!on);
 	}
-	
+	double Pwr(int i) { return wfdisp->Pwr(i); }	
 	
 	int handle(int event);
 /*
