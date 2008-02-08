@@ -106,6 +106,7 @@ string option_help, version_text;
 qrunner *cbq[NUM_QRUNNER_THREADS];
 
 void arqchecks(void);
+void sound_init(void);
 void generate_option_help(void);
 int parse_args(int argc, char **argv, int& idx);
 void generate_version_text(void);
@@ -193,7 +194,28 @@ int main(int argc, char ** argv)
 	push2talk = new PTT();
 
 	progdefaults.openDefaults();
+
+	sound_init();
+	trx_start(scDevice.c_str());
+
+	progdefaults.initInterface();
+	fl_digi_main->show(argc, argv);
+	progStatus.initLastState();
 	
+	Fl::add_timeout(1.0, pskmail_loop);
+
+	int ret = Fl::run();
+	for (int i = 0; i < NUM_QRUNNER_THREADS; i++)
+		cbq[i]->detach();
+
+#if USE_PORTAUDIO
+	cSoundPA::terminate();
+#endif
+	return ret;
+}
+
+void sound_init(void)
+{
 	glob_t gbuf;
 	glob("/dev/dsp*", 0, NULL, &gbuf);
 	for (size_t i = 0; i < gbuf.gl_pathc; i++)
@@ -255,24 +277,6 @@ int main(int argc, char ** argv)
 		menuPADev->activate();
 	}
 	resetMixerControls();
-
-	trx_start(scDevice.c_str());
-
-	progdefaults.initInterface();
-	progStatus.initLastState();
-	
-	Fl::add_timeout(1.0, pskmail_loop);
-
-	fl_digi_main->show(argc, argv);
-
-	int ret = Fl::run();
-	for (int i = 0; i < NUM_QRUNNER_THREADS; i++)
-		cbq[i]->detach();
-
-#if USE_PORTAUDIO
-	cSoundPA::terminate();
-#endif
-	return ret;
 }
 
 void generate_option_help(void) {
@@ -379,6 +383,8 @@ void generate_option_help(void) {
 	option_help = help.str();
 }
 
+void exit_cb(void*) { exit(EXIT_SUCCESS); }
+
 int parse_args(int argc, char **argv, int& idx)
 {
 	// Only handle long options
@@ -391,6 +397,7 @@ int parse_args(int argc, char **argv, int& idx)
 #if USE_PORTAUDIO
                OPT_ALLOW_FULL_DUPLEX, OPT_FRAMES_PER_BUFFER, OPT_SAMPLE_RATE,
 #endif
+               OPT_EXIT_AFTER,
                OPT_HELP, OPT_VERSION };
 
 	const char shortopts[] = "+";
@@ -412,14 +419,16 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "frames-per-buf",1, 0, OPT_FRAMES_PER_BUFFER },
 		{ "sample-rate",   1, 0, OPT_SAMPLE_RATE },
 #endif
+		{ "exit-after",    1, 0, OPT_EXIT_AFTER },
+
 		{ "help",	   0, 0, OPT_HELP },
 		{ "version",	   0, 0, OPT_VERSION },
 		{ 0 }
 	};
 
 	int longindex;
-    optind = idx;
-    int c = getopt_long(argc, argv, shortopts, longopts, &longindex);
+	optind = idx;
+	int c = getopt_long(argc, argv, shortopts, longopts, &longindex);
 
 	switch (c) {
 		case -1:
@@ -439,53 +448,44 @@ int parse_args(int argc, char **argv, int& idx)
 			else
 				progdefaults.tx_msgid = key;
 		}
-			idx += 2;
-			return 2;
+			break;
 
 		case OPT_CONFIG_DIR:
 			HomeDir = optarg;
 			if (*HomeDir.rbegin() != '/')
 				HomeDir += '/';
-			idx += 2;
-			return 2;
+			break;
 
 		case OPT_FAST_TEXT:
 			progdefaults.alt_text_widgets = false;
-			idx += 1;
-			return 1;
+			break;
 
 		case OPT_FONT:
 		{
 			char *p;
 			if ((p = strchr(optarg, ':'))) {
 				*p = '\0';
-				extern int FL_NORMAL_SIZE;
 				FL_NORMAL_SIZE = strtol(p + 1, 0, 10);
 			}
 		}
 			Fl::set_font(FL_HELVETICA, optarg);
-			idx += 2;
-			return 2;
+			break;
 
 		case OPT_WFALL_WIDTH:
 			IMAGE_WIDTH = strtol(optarg, NULL, 10);
-			idx += 2;
-			return 2;
+			break;
 
 		case OPT_WFALL_HEIGHT:
 			Hwfall = strtol(optarg, NULL, 10);
-			idx += 2;
-			return 2;
+			break;
 
 		case OPT_WINDOW_WIDTH:
 			WNOM = strtol(optarg, NULL, 10);
-			idx += 2;
-			return 2;
+			break;
 
 		case OPT_WINDOW_HEIGHT:
 			HNOM = strtol(optarg, NULL, 10);
-			idx += 2;
-			return 2;
+			break;
 
 		case OPT_PROFILE:
 			if (!strcasecmp(optarg, "emcomm") || !strcasecmp(optarg, "emc") ||
@@ -496,28 +496,29 @@ int parse_args(int argc, char **argv, int& idx)
 				WNOM = EMC_WNOM;
 				FL_NORMAL_SIZE = 12;
 			}
-			idx += 2;
-			return 2;
+			break;
 
 		case OPT_USE_CHECK:
 			useCheckButtons = true;
-			idx += 1;
-			return 1;
+			break;
+
 #if USE_PORTAUDIO
 		case OPT_ALLOW_FULL_DUPLEX:
 			pa_allow_full_duplex = true;
-			idx += 1;
-			return 1;
+			break;
 		case OPT_FRAMES_PER_BUFFER:
 			pa_frames_per_buffer = strtol(optarg, 0, 10);
-			idx += 2;
-			return 2;
+			break;
 		case OPT_SAMPLE_RATE:
 			cerr << "The --sample-rate switch is deprecated and will be removed in a future release\n";
 			progdefaults.sample_rate = strtol(optarg, 0, 10);
-			idx += 2;
-			return 2;
+			break;
 #endif // USE_PORTAUDIO
+
+		case OPT_EXIT_AFTER:
+			Fl::add_timeout(strtod(optarg, 0), exit_cb);
+			break;
+
 		case OPT_HELP:
 			cout << option_help;
 			exit(EXIT_SUCCESS);
@@ -533,8 +534,14 @@ int parse_args(int argc, char **argv, int& idx)
 		default:
 			cerr << option_help;
 			exit(EXIT_FAILURE);
-		}
-	return 0;
+	}
+
+	// Increment idx by the number of args we used and return that number.
+	// We must check whether the option argument is in the same argv element
+	// as the option name itself, i.e., --opt=arg.
+	c = (longopts[longindex].has_arg && !strstr(argv[idx], optarg)) ? 2 : 1;
+	idx += c;
+	return c;
 }
 
 void generate_version_text(void)
@@ -584,7 +591,7 @@ void generate_version_text(void)
 }
 
 // When debugging is enabled, reexec with malloc debugging hooks enabled, unless
-// the env var FLDIGI_NO_EXEC is set, or our parent process is gdb or valgrind.
+// the env var FLDIGI_NO_EXEC is set, or our parent process is gdb.
 void debug_exec(char** argv)
 {
 #ifndef NDEBUG
