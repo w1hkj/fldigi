@@ -278,6 +278,10 @@ static void cb_brwsViewer(Fl_Hold_Browser*, void*) {
 	int sel = brwsViewer->value();
 	if (sel == 0) return;
 	if (sel > progdefaults.VIEWERchannels) return;
+	int style = ReceiveWidget::ALTR;
+	ReceiveText->addchr('\n', style);
+	for (size_t i = 0; i < bwsrline[sel - 1].length(); i++)
+		ReceiveText->addchr(bwsrline[sel-1][i], style);
 	active_modem->set_freq(brwsFreq[sel - 1]);
 }
 
