@@ -209,7 +209,7 @@ int main(int argc, char ** argv)
 		cbq[i]->detach();
 
 #if USE_PORTAUDIO
-	cSoundPA::terminate();
+	SoundPort::terminate();
 #endif
 	return ret;
 }
@@ -226,10 +226,10 @@ void sound_init(void)
 	globfree(&gbuf);
 	
 #if USE_PORTAUDIO
-	cSoundPA::initialize();
+	SoundPort::initialize();
 
-	for (cSoundPA::device_iterator idev = cSoundPA::devices().begin();
-	     idev != cSoundPA::devices().end(); ++idev) {
+	for (SoundPort::device_iterator idev = SoundPort::devices().begin();
+	     idev != SoundPort::devices().end(); ++idev) {
 		string s;
 		s.append(Pa_GetHostApiInfo((*idev)->hostApi)->name).append("/").append((*idev)->name);
 
@@ -241,7 +241,7 @@ void sound_init(void)
 		}
 		menuPADev->add(s.c_str());
 // set the initial value in the configuration structure
-		if (progdefaults.PAdevice == "" && idev == cSoundPA::devices().begin())
+		if (progdefaults.PAdevice == "" && idev == SoundPort::devices().begin())
 			progdefaults.PAdevice = (*idev)->name;
 	}
 	menuPADev->value(progdefaults.PAdevice.c_str());

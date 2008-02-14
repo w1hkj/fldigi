@@ -88,7 +88,7 @@ inline double nco()
 
 //=====================================================================
 
-void keydown(double freq, cSound *scard)
+void keydown(double freq, SoundBase *scard)
 {
 	int i;
 	phaseincr = 2.0 * M_PI * freq / active_modem->get_samplerate();
@@ -101,7 +101,7 @@ void keydown(double freq, cSound *scard)
 
 //=====================================================================
 
-void keyup(double freq, cSound *scard)
+void keyup(double freq, SoundBase *scard)
 {
 	int i;
 	phaseincr = 2.0 * M_PI * freq / active_modem->get_samplerate();
@@ -114,7 +114,7 @@ void keyup(double freq, cSound *scard)
 
 //=====================================================================
 
-void tune(double freq, cSound *scard)
+void tune(double freq, SoundBase *scard)
 {
 	int i;
 	phaseincr = 2.0 * M_PI * freq / active_modem->get_samplerate();

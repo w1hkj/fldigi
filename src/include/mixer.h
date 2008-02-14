@@ -51,11 +51,11 @@ public:
 	}
 };
 
-class cMixer
+class MixerBase
 {
 public:
-	// cMixer() { }
-	// virtual ~cMixer() { }
+	MixerBase() { }
+	virtual ~MixerBase() { }
 
 	virtual void	openMixer(const char* dev = "/dev/mixer") { };
 	virtual void	closeMixer(void) { };
@@ -73,7 +73,7 @@ public:
 
 #if USE_OSS
 
-class cMixerOSS : public cMixer
+class MixerOSS : public MixerBase
 {
 private:
         std::string	mixer;
@@ -113,8 +113,8 @@ private:
 	void	restoreValues();
 
 public:
-	cMixerOSS();
-	~cMixerOSS();
+	MixerOSS();
+	~MixerOSS();
 	void		openMixer(const char *dev = "/dev/mixer");
 	void		closeMixer();
 	

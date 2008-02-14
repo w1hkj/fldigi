@@ -48,7 +48,7 @@ double olivia::nco(double freq)
 	return cos(preamblephase);
 }
 
-void olivia::tx_init(cSound *sc)
+void olivia::tx_init(SoundBase *sc)
 {
 	unsigned char c;
 

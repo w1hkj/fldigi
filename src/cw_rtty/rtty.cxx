@@ -39,7 +39,7 @@ double _SHIFT[] = {23, 85, 160, 170, 182, 200, 240, 350, 425, 850};
 double _BAUD[] = {45, 45.45, 50, 56, 75, 100, 110, 150, 200, 300};
 int    _BITS[] = {5, 7, 8};
 
-void rtty::tx_init(cSound *sc)
+void rtty::tx_init(SoundBase *sc)
 {
 // start each new transmission 20 bit lengths MARK tone
 	scard = sc;

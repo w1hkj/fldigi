@@ -89,7 +89,7 @@
 Fl_Double_Window	*fl_digi_main=(Fl_Double_Window *)0;
 Fl_Help_Dialog 		*help_dialog = (Fl_Help_Dialog *)0;
 
-cMixer* mixer = 0;
+MixerBase* mixer = 0;
 
 bool useCheckButtons = false;
 
@@ -1696,9 +1696,9 @@ void enableMixer(bool on)
 	if (on) {
 		progdefaults.EnableMixer = true;
 #if USE_OSS
-		mixer = new cMixerOSS;
+		mixer = new MixerOSS;
 #else
-		mixer = new cMixer;
+		mixer = new MixerBase;
 #endif
 		mixer->openMixer(progdefaults.MXdevice.c_str());
 

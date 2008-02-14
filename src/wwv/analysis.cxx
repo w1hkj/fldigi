@@ -32,7 +32,7 @@
 
 static char msg1[80];
 
-void anal::tx_init(cSound *sc)
+void anal::tx_init(SoundBase *sc)
 {
 }
 

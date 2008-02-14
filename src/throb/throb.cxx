@@ -39,7 +39,7 @@
 
 char throbmsg[80];
 
-void  throb::tx_init(cSound *sc)
+void  throb::tx_init(SoundBase *sc)
 {
 	scard = sc;
 	preamble = 4;

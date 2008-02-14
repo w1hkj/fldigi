@@ -51,7 +51,7 @@ extern Fl_Thread	trx_thread;
 extern state_t		trx_state;
 extern modem		*active_modem;
 
-extern	cSound 	*scard;
+extern	SoundBase 	*scard;
 
 extern  bool bHistory;
 

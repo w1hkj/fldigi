@@ -34,7 +34,7 @@
 
 char BLANKmsg[80];
 
-void  BLANK::tx_init(cSound *sc)
+void  BLANK::tx_init(SoundBase *sc)
 {
 	scard = sc;
 }

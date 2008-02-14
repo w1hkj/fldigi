@@ -64,7 +64,7 @@ bool		restartOK = false;
 bool		trx_wait = false;
 
 modem		*active_modem = 0;
-cSound 		*scard;
+SoundBase 		*scard;
 
 int			_trx_tune;
 
@@ -98,8 +98,8 @@ void trx_trx_receive_loop()
 			put_status(e.what(), 5);
 #if USE_PORTAUDIO
 			if (e.error() == EBUSY && progdefaults.btnAudioIOis == 1) {
-				cSoundPA::terminate();
-				cSoundPA::initialize();
+				SoundPort::terminate();
+				SoundPort::initialize();
 			}
 #endif
 			MilliSleep(1000);
@@ -299,15 +299,15 @@ void trx_reset_loop()
 	}
 #if USE_PORTAUDIO && USE_OSS
 	if (progdefaults.btnAudioIOis == 1)
-		scard = new cSoundPA(trx_scdev.c_str());
+		scard = new SoundPort(trx_scdev.c_str());
 	else
-		scard = new cSoundOSS(trx_scdev.c_str());
+		scard = new SoundOSS(trx_scdev.c_str());
 #else
 #  if USE_PORTAUDIO
-	scard = new cSoundPA(trx_scdev.c_str());
+	scard = new SoundPort(trx_scdev.c_str());
 #  endif
 #  if USE_OSS
-	scard = new cSoundOSS(trx_scdev.c_str());
+	scard = new SoundOSS(trx_scdev.c_str());
 #  endif
 #endif
 	trx_state = STATE_RX;	
@@ -362,15 +362,15 @@ void trx_start(const char *scdev)
 	if (scard) delete scard;
 #if USE_PORTAUDIO && USE_OSS
 	if (progdefaults.btnAudioIOis == 1)
-		scard = new cSoundPA(scdev);
+		scard = new SoundPort(scdev);
 	else
-		scard = new cSoundOSS(scdev);
+		scard = new SoundOSS(scdev);
 #else
 #  if USE_PORTAUDIO
-	scard = new cSoundPA(scdev);
+	scard = new SoundPort(scdev);
 #  endif
 #  if USE_OSS
-	scard = new cSoundOSS(scdev);
+	scard = new SoundOSS(scdev);
 #  endif
 #endif
 
