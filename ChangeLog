@@ -1,5 +1,9 @@
 Change Log:
 
+2.10  1) Added history (ctrl-Left-click in waterfall). Available after tracking 
+         has started.  This does not start a new signal acquisition.
+      2) Psk and ViewPsk use shared signal detection class
+      
 2.09  1) Modified src/Makefile.am for FreeBSD name space clash
       2) Added psk multi-channel viewer with regex search capability
       3) Rewrote audio capture/playback/generate routines to use the

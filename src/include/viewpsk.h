@@ -1,7 +1,7 @@
 // ----------------------------------------------------------------------------
-// psk.h  --  psk modem
+// viewpsk.h  --  psk modem
 //
-// Copyright (C) 2006
+// Copyright (C) 2008
 //		Dave Freese, W1HKJ
 //
 // This file is part of fldigi.  Adapted from code contained in gmfsk source code 

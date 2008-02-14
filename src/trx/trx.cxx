@@ -73,6 +73,11 @@ short int	*sidata;
 // is used asynchronously by the GUI thread.
 mbuffer<double, SCBLOCKSIZE * 2, 2> _trx_scdbl;
 
+#define    HISTSIZE   1024 * SCBLOCKSIZE
+double  histbuff[HISTSIZE];
+size_t  numinbuff = 0;
+bool    bHistory = false;
+
 static int dummy = 0;
 static bool trxrunning = false;
 #include "tune.cxx"
@@ -117,9 +122,25 @@ void trx_trx_receive_loop()
 			if (numread == -1 || (trx_state != STATE_RX))
 				break;
 			if (numread > 0) {
-				REQ(&waterfall::sig_data, wf, _trx_scdbl.c_array(), numread);
-				active_modem->rx_process(_trx_scdbl, numread);
-				_trx_scdbl.next(); // change buffers
+			    	
+    			if (bHistory) {
+    				active_modem->set_afcOnOff(0);
+        			active_modem->rx_process( histbuff, numinbuff );
+    				active_modem->set_afcOnOff(1);
+        			bHistory = false;
+    			}
+
+       			active_modem->rx_process(_trx_scdbl, numread);
+
+			    if (numinbuff + numread > HISTSIZE) {
+			    	memcpy( &histbuff[0], &histbuff[numread], (numinbuff - numread)*sizeof(double));
+			    	numinbuff -= numread;
+			    }
+			    for (int n = 0; n < numread; n++)
+			    	histbuff[numinbuff++] = _trx_scdbl[n];
+        			
+    			REQ(&waterfall::sig_data, wf, _trx_scdbl.c_array(), numread);
+    			_trx_scdbl.next(); // change buffers
 			}
 		}
 		if (!scard->full_duplex())

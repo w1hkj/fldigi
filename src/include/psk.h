@@ -37,7 +37,7 @@
 #define PipeLen			(64)
 
 #define SNTHRESHOLD 2.0
-#define AFCDECAY 8
+#define AFCDECAYSLOW 8
 //=====================================================================
 
 class psk : public modem {
@@ -53,6 +53,7 @@ private:
 
 	C_FIR_filter	*fir1;
 	C_FIR_filter	*fir2;
+//	C_FIR_filter	*fir3;
 	double		*fir1c;
 	double		*fir2c;
 
@@ -69,6 +70,7 @@ private:
 	int 			dcd;
 	int				dcdbits;
 	complex			quality;
+
 	void			rx_symbol(complex symbol);
 	void 			rx_bit(int bit);
 	void			rx_qpsk(int bits);
@@ -78,6 +80,8 @@ private:
 	double			I11, I12, I21, I22, I31, I32;
 	double			snratio, s2n, imdratio, imd;
 	double			E1, E2, E3;
+	double			twopi;
+	
 //	complex thirdorder;
 // tx variables & functions
 	double			*tx_shape;
@@ -91,6 +95,7 @@ private:
 	void			findsignal();
 	void			phaseafc();
 	void			afc();
+	void			coreafc();
 	
 public:
 	psk(trx_mode mode);
