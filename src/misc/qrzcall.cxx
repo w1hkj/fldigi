@@ -50,7 +50,7 @@
 
 #include "qrzcall.h"
 #include "main.h"
-#include "Config.h"
+#include "confdialog.h"
 #include "fl_digi.h"
 #include "qrzlib.h"
 

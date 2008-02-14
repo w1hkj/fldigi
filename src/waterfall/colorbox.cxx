@@ -2,7 +2,7 @@
 
 #include "colorbox.h"
 #include "waterfall.h"
-#include "Config.h"
+#include "confdialog.h"
 #include <string>
 #include <FL/Fl_Color_Chooser.H>
 

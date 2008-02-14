@@ -28,7 +28,7 @@
 
 #include <iostream>
 
-#include "Config.h"
+#include "confdialog.h"
 
 #include "dominoex.h"
 #include "trx.h"

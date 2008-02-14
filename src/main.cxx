@@ -51,7 +51,7 @@
 #include "psk.h"
 #include "cw.h"
 #include "mfsk.h"
-#include "Config.h"
+#include "confdialog.h"
 #include "configuration.h"
 #include "macros.h"
 #include "status.h"

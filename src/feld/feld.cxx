@@ -34,7 +34,7 @@
 
 #include "feld.h"
 #include "fontdef.h"
-#include "Config.h"
+#include "confdialog.h"
 #include "qrunner.h"
 
 char feldmsg[80];

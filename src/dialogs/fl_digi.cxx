@@ -66,7 +66,7 @@
 #include "misc.h"
 //#include "help.h"
 
-#include "Config.h"
+#include "confdialog.h"
 #include "configuration.h"
 #include "macros.h"
 #include "macroedit.h"

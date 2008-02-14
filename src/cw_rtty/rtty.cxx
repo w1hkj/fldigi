@@ -28,7 +28,7 @@
 
 #include "rtty.h"
 #include "waterfall.h"
-#include "Config.h"
+#include "confdialog.h"
 #include "configuration.h"
 
 //static char rttymsg[80];

@@ -70,9 +70,9 @@ uninstall-local:
 	rm -f $(DESTDIR)/$(datadir)/applications/fldigi.desktop
 
 if HAVE_FLUID
-flgen: $(srcdir)/dialogs/Config.fl $(srcdir)/rigcontrol/rigdialog.fl
+flgen: $(srcdir)/dialogs/confdialog.fl $(srcdir)/rigcontrol/rigdialog.fl
 	(cd $(srcdir)/include; \
-	$(FLUID) -c -o ../dialogs/Config.cxx -h Config.h ../dialogs/Config.fl; \
+	$(FLUID) -c -o ../dialogs/confdialog.cxx -h confdialog.h ../dialogs/confdialog.fl; \
 	$(FLUID) -c -o ../rigcontrol/rigdialog.cxx -h rigdialog.h ../rigcontrol/rigdialog.fl)
 else
 flgen:
@@ -89,7 +89,7 @@ fldigi_SOURCES += \
 	cw_rtty/cw.cxx \
 	cw_rtty/morse.cxx \
 	cw_rtty/rtty.cxx \
-	dialogs/Config.cxx \
+	dialogs/confdialog.cxx \
 	dialogs/fl_digi.cxx \
 	dialogs/font_browser.cxx \
 	dialogs/Viewer.cxx \
@@ -107,7 +107,7 @@ fldigi_SOURCES += \
 	globals/globals.cxx \
 	include/Combo_Box.h \
 	include/Combo_List.h \
-	include/Config.h \
+	include/confdialog.h \
 	include/Enumerations.h \
 	include/FLdigiTypes.h \
 	include/FTextView.h \
@@ -297,5 +297,5 @@ EXTRA_DIST = \
 	fileselector/ns.xbm \
 	fileselector/ns_mask.xbm \
 	fileselector/up.xbm \
-	dialogs/Config.fl \
+	dialogs/confdialog.fl \
 	rigcontrol/rigdialog.fl

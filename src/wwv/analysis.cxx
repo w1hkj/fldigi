@@ -25,7 +25,7 @@
 
 #include "analysis.h"
 #include "waterfall.h"
-#include "Config.h"
+#include "confdialog.h"
 #include "configuration.h"
 
 #define anal_BW         4

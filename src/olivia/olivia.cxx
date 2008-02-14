@@ -34,7 +34,7 @@
 #include "olivia.h"
 #include "sound.h"
 
-#include "Config.h"
+#include "confdialog.h"
 
 using namespace std;
 
