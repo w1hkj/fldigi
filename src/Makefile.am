@@ -69,6 +69,20 @@ uninstall-local:
 	rm -f $(DESTDIR)/$(datadir)/pixmaps/fldigi.xpm
 	rm -f $(DESTDIR)/$(datadir)/applications/fldigi.desktop
 
+if HAVE_FLUID
+flgen: $(srcdir)/dialogs/Config.fl $(srcdir)/rigcontrol/rigdialog.fl
+	(cd $(srcdir)/include; \
+	$(FLUID) -c -o ../dialogs/Config.cxx -h Config.h ../dialogs/Config.fl; \
+	$(FLUID) -c -o ../rigcontrol/rigdialog.cxx -h rigdialog.h ../rigcontrol/rigdialog.fl)
+else
+flgen:
+	@echo
+	@echo "*** The code and headers cannot be generated from the .fl source" >&2
+	@echo "*** files because the fluid utility was not found on your system" >&2
+	@echo
+	@false
+endif
+
 # Sources that we build. It is OK to have headers here.
 fldigi_SOURCES += \
 	combo/combo.cxx \

@@ -207,6 +207,9 @@ fi
 AC_SUBST([FLTK_CFLAGS])
 AC_SUBST([FLTK_LIBS])
 
+AC_ARG_VAR([FLUID], [Fast Light User-Interface Designer])
+AC_CHECK_PROG([FLUID], [fluid], [fluid])
+AM_CONDITIONAL([HAVE_FLUID], [test -n "$FLUID"])
 
 ###########################
 # libsamplerate
