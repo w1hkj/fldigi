@@ -1,23 +1,40 @@
+// ----------------------------------------------------------------------------
+//
+//      mixer.h
+//
+// Copyright (C) 2006-2007
+//              Dave Freese, W1HKJ
+//
+// Copyright (C) 2007-2008
+//              Stelios Bounanos, M0GLD
+//
+// This file is part of fldigi.
+//
+// fldigi is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// fldigi is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with fldigi; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+// ----------------------------------------------------------------------------
+
 #ifndef MIXER_H
 #define MIXER_H
 
-#include <stdio.h>
-#include <errno.h>
-#include <stdlib.h>
-#include <unistd.h>
-
-#include <sys/ioctl.h>
-#include <fcntl.h>
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <errno.h>
-#include <sys/soundcard.h>
-#include <math.h>
-
-#include <iostream>
-#include <string>
+#include <cstdio>
 #include <cstring>
+#include <string>
+
+#if USE_OSS
+#    include <sys/soundcard.h>
+#endif
 
 class MixerException {
 public:
@@ -34,9 +51,32 @@ public:
 	}
 };
 
-class cMixer {
+class cMixer
+{
+public:
+	// cMixer() { }
+	// virtual ~cMixer() { }
+
+	virtual void	openMixer(const char* dev = "/dev/mixer") { };
+	virtual void	closeMixer(void) { };
+
+	virtual void	setXmtLevel(double v) { };
+	virtual void	setRcvGain(double v) { };
+
+	virtual double	PCMVolume(void) { return 0; };
+	virtual void	PCMVolume(double volume) { };
+
+	virtual int	InputSourceNbr(const char *source) { return 0; };
+
+	virtual void	SetCurrentInputSource(int i) { };
+};
+
+#if USE_OSS
+
+class cMixerOSS : public cMixer
+{
 private:
-	std::string mixer;
+        std::string	mixer;
 	int		mixer_fd;
 	int		recmask;
 	int		devmask;
@@ -73,36 +113,41 @@ private:
 	void	restoreValues();
 
 public:
-	cMixer();
-	~cMixer();
-	void			openMixer(const char *dev = "/dev/mixer");
-	void			closeMixer();
+	cMixerOSS();
+	~cMixerOSS();
+	void		openMixer(const char *dev = "/dev/mixer");
+	void		closeMixer();
 	
-	void			setXmtLevel(double v);
-	void			setRcvGain(double v);
+	void		setXmtLevel(double v);
+	void		setRcvGain(double v);
 	
-	int				numMixers() { return NumMixers;}
-	int				MixerNum(int i) { return Devices[i];}
+	double		PCMVolume();
+	void		PCMVolume(double volume );
+	int		InputSourceNbr(const char *source);
+	void		SetCurrentInputSource( int i );
+//	double		GetPlaythrough();
+//	void		SetPlaythrough( double volume );
+//	void		SetMuteInput(bool);
+
+protected:
+	int		numMixers() { return NumMixers;}
+	int		MixerNum(int i) { return Devices[i];}
 	const char *	MixerName( int index );
-	double			OutVolume();
-	void			OutVolume(double vol);
-	double			PCMVolume();
-	void			PCMVolume(double volume );
-	int				NumOutputVolumes();
-	double			OutputVolume( int i );
-	void			OutputVolume( int i, double volume );
+	double		OutVolume();
+	void		OutVolume(double vol);
+
+	int		NumOutputVolumes();
+	double		OutputVolume( int i );
+	void		OutputVolume( int i, double volume );
 	const char *	OutputVolumeName( int i );
 	int				GetNumInputSources();
 	const char *	GetInputSourceName( int i);
-	int				InputSourceNbr(const char *source);
-	double			InputVolume();
-	void			InputVolume( double volume );
-	int				GetCurrentInputSource();
-	void			SetCurrentInputSource( int i );
-//	double			GetPlaythrough();
-//	void			SetPlaythrough( double volume );
-//	void			SetMuteInput(bool);
-	
+
+	double		InputVolume();
+	void		InputVolume( double volume );
+	int		GetCurrentInputSource();
 };
+
+#endif // USE_OSS
 
 #endif

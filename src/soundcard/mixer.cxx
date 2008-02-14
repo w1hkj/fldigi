@@ -1,16 +1,65 @@
+// ----------------------------------------------------------------------------
+//
+//      mixer.cxx
+//
+// Copyright (C) 2006-2007
+//              Dave Freese, W1HKJ
+//
+// Copyright (C) 2007-2008
+//              Stelios Bounanos, M0GLD
+//
+// This file is part of fldigi.
+//
+// fldigi is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// fldigi is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with fldigi; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+// ----------------------------------------------------------------------------
+
 #include <config.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#include <sys/ioctl.h>
+#include <fcntl.h>
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <errno.h>
+#if USE_OSS
+#    include <sys/soundcard.h>
+#endif
+#include <math.h>
+
+#include <iostream>
+#include <string>
+#include <cstring>
 
 #include "mixer.h"
 #include "configuration.h"
 
-cMixer::cMixer() {
+
+#if USE_OSS
+
+cMixerOSS::cMixerOSS() {
 	strcpy (szDevice, "/dev/mixerX");
 	mixer = "/dev/mixer";
 	mixer_fd		= -1;
 	findNumMixers();
 }
 
-cMixer::~cMixer()
+cMixerOSS::~cMixerOSS()
 {
 	closeMixer();
 }
@@ -18,7 +67,7 @@ cMixer::~cMixer()
 //=======================================
 // mixer methods
 //=======================================
-void cMixer::openMixer(const char *dev)
+void cMixerOSS::openMixer(const char *dev)
 {
 	int err;
 	if (mixer_fd != -1) closeMixer();
@@ -36,7 +85,7 @@ void cMixer::openMixer(const char *dev)
 	initValues();
 }
 
-void cMixer::closeMixer()
+void cMixerOSS::closeMixer()
 {
 	if (mixer_fd == -1) return;
 	restoreValues();
@@ -44,7 +93,7 @@ void cMixer::closeMixer()
 	mixer_fd = -1;
 }
 
-void cMixer::initValues()
+void cMixerOSS::initValues()
 {
 	int devnbr;
 
@@ -73,7 +122,7 @@ void cMixer::initValues()
 */
 }
 
-void cMixer::restoreValues()
+void cMixerOSS::restoreValues()
 {
 	int devnbr;
 	devnbr = InputSourceNbr("Line");
@@ -91,7 +140,7 @@ void cMixer::restoreValues()
 	ioctl(mixer_fd, MIXER_WRITE(SOUND_MIXER_READ_RECSRC), &recsrc0);
 }
 
-void cMixer::findNumMixers()
+void cMixerOSS::findNumMixers()
 {
 	int fd;
 	NumMixers = 0;
@@ -109,7 +158,7 @@ void cMixer::findNumMixers()
    }
 }
 
-const char * cMixer::MixerName( int index )
+const char * cMixerOSS::MixerName( int index )
 {
 	if (NumMixers <= 0)
 		findNumMixers();
@@ -124,19 +173,19 @@ const char * cMixer::MixerName( int index )
 	return szDevice;
 }
 
-void cMixer::setXmtLevel(double v)
+void cMixerOSS::setXmtLevel(double v)
 {
 	if (mixer_fd == -1) return;
 	OutVolume(v);
 }
 
-void cMixer::setRcvGain(double v)
+void cMixerOSS::setRcvGain(double v)
 {
 	if (mixer_fd == -1) return;
 	InputVolume(v);
 }
 
-int cMixer::initMask()
+int cMixerOSS::initMask()
 {
 	if (mixer_fd == -1) return -1;
 	
@@ -169,7 +218,7 @@ int cMixer::initMask()
 }
 
 // returns value between 0.0 and 1.0
-double cMixer::ChannelVolume(int channel)
+double cMixerOSS::ChannelVolume(int channel)
 {
 	int vol;
 	int stereo;
@@ -191,14 +240,14 @@ double cMixer::ChannelVolume(int channel)
  Master (output) volume
 */
 
-double cMixer::OutVolume()
+double cMixerOSS::OutVolume()
 {
 	if (mixer_fd == -1) return 0.0;
 
 	return ChannelVolume(SOUND_MIXER_VOLUME);
 }
 
-void cMixer::OutVolume(double volume)
+void cMixerOSS::OutVolume(double volume)
 {
 	if (mixer_fd == -1) return;
 	int vol = (int)((volume * 100.0) + 0.5);
@@ -206,13 +255,13 @@ void cMixer::OutVolume(double volume)
 	ioctl(mixer_fd, MIXER_WRITE(SOUND_MIXER_VOLUME), &vol);
 }
 
-double cMixer::PCMVolume()
+double cMixerOSS::PCMVolume()
 {
 	if (mixer_fd == -1) return 0.0;
 	return ChannelVolume(SOUND_MIXER_PCM);
 }
 
-void cMixer::PCMVolume(double volume )
+void cMixerOSS::PCMVolume(double volume )
 {
 	if (mixer_fd == -1) return;
 	
@@ -221,41 +270,41 @@ void cMixer::PCMVolume(double volume )
 	ioctl(mixer_fd, MIXER_WRITE(SOUND_MIXER_PCM), &vol);
 }
 
-int cMixer::NumOutputVolumes()
+int cMixerOSS::NumOutputVolumes()
 {
 	return num_out;
 }
 
-const char *cMixer::OutputVolumeName( int i )
+const char *cMixerOSS::OutputVolumeName( int i )
 {
 	const char *labels[] = SOUND_DEVICE_LABELS;
 	return labels[outs[i]];
 }
 
-double cMixer::OutputVolume( int i )
+double cMixerOSS::OutputVolume( int i )
 {
 	return ChannelVolume(outs[i]);
 }
 
-void cMixer::OutputVolume( int i, double volume )
+void cMixerOSS::OutputVolume( int i, double volume )
 {
 	int vol = (int)((volume * 100.0) + 0.5);
 	vol = (vol | (vol<<8));
 	ioctl(mixer_fd, MIXER_WRITE(outs[i]), &vol);
 }
 
-int cMixer::GetNumInputSources()
+int cMixerOSS::GetNumInputSources()
 {
 	return num_rec;
 }
 
-const char *cMixer::GetInputSourceName( int i)
+const char *cMixerOSS::GetInputSourceName( int i)
 {
 	const char *labels[] = SOUND_DEVICE_LABELS;
 	return labels[recs[i]];
 }
 
-int cMixer::InputSourceNbr(const char *source)
+int cMixerOSS::InputSourceNbr(const char *source)
 {
 	const char *labels[] = SOUND_DEVICE_LABELS;
 	char lbl[80];
@@ -273,7 +322,7 @@ int cMixer::InputSourceNbr(const char *source)
   return -1;
 }
 
-int cMixer::GetCurrentInputSource()
+int cMixerOSS::GetCurrentInputSource()
 {
 	if (mixer_fd == -1) return -1;
 	for(int i = 0; i < num_rec; i++)
@@ -282,7 +331,7 @@ int cMixer::GetCurrentInputSource()
 	return -1; /* none */
 }
 
-void cMixer::SetCurrentInputSource( int i )
+void cMixerOSS::SetCurrentInputSource( int i )
 {
 	if (mixer_fd == -1) return;
 	int newrecsrcmask = (1 << (recs[i]));
@@ -293,7 +342,7 @@ void cMixer::SetCurrentInputSource( int i )
  Input volume
 */
 
-double cMixer::InputVolume()
+double cMixerOSS::InputVolume()
 {
 	if (mixer_fd == -1) return 0.0;
 //	int i = GetCurrentInputSource();
@@ -302,7 +351,7 @@ double cMixer::InputVolume()
 	return ChannelVolume(SOUND_MIXER_IGAIN);
 }
 
-void cMixer::InputVolume( double volume )
+void cMixerOSS::InputVolume( double volume )
 {
 	int vol;
 	vol = (int)((volume * 100.0) + 0.5);
@@ -311,7 +360,7 @@ void cMixer::InputVolume( double volume )
 }
 
 /*
-double cMixer::GetPlaythrough()
+double cMixerOSS::GetPlaythrough()
 {
 	int i = GetCurrentInputSource();
 	if (i < 0)
@@ -319,7 +368,7 @@ double cMixer::GetPlaythrough()
 	return ChannelVolume(recs[i]);
 }
 
-void cMixer::SetPlaythrough( double volume )
+void cMixerOSS::SetPlaythrough( double volume )
 {
 	if (mixer_fd == -1) return;
 	
@@ -333,7 +382,7 @@ void cMixer::SetPlaythrough( double volume )
 	ioctl(mixer_fd, MIXER_WRITE(recs[i]), &vol);
 }
 
-void cMixer::SetMuteInput(bool b)
+void cMixerOSS::SetMuteInput(bool b)
 {
 	return;
 	if (b == 1)
@@ -343,3 +392,5 @@ void cMixer::SetMuteInput(bool b)
 }
 
 */
+
+#endif // USE_OSS

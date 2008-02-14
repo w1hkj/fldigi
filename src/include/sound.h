@@ -116,6 +116,9 @@ public:
 #endif
 };
 
+
+#if USE_OSS
+
 class cSoundOSS : public cSound {
 private:
 	std::string	device;
@@ -161,6 +164,9 @@ private:
 	int		Format() { return play_format;};
 	bool	FormatOK() { return formatok;};
 };
+
+#endif // USE_OSS
+
 
 #if USE_PORTAUDIO
 

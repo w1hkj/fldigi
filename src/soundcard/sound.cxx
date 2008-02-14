@@ -39,7 +39,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include <sys/soundcard.h>
+#if USE_OSS
+#    include <sys/soundcard.h>
+#endif
 #include <math.h>
 
 #include "sound.h"
@@ -254,7 +256,7 @@ void cSound::tag_file(SNDFILE *sndfile, const char *title)
 }
 #endif // USE_SNDFILE
 
-
+#if USE_OSS
 cSoundOSS::cSoundOSS(const char *dev ) {
 	device			= dev;
 	cbuff			= 0;
@@ -656,6 +658,7 @@ int cSoundOSS::write_stereo(double *bufleft, double *bufright, int count)
 
 	return retval;
 }
+#endif // USE_OSS
 
 
 #if USE_PORTAUDIO

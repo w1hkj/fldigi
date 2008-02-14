@@ -249,6 +249,7 @@ void sound_init(void)
 	btnAudioIO[1]->activate();
 #endif
 
+#if USE_OSS
 	glob("/dev/mixer*", 0, NULL, &gbuf);
 	for (size_t i = 0; i < gbuf.gl_pathc; i++) 
 		menuMix->add(gbuf.gl_pathv[i]);
@@ -256,11 +257,19 @@ void sound_init(void)
 		progdefaults.MXdevice = gbuf.gl_pathv[0];
 	globfree(&gbuf);
 	menuMix->value(progdefaults.MXdevice.c_str());
-	
+#else
+	progdefaults.EnableMixer = false;
+        tabMixer->deactivate();
+#endif
+
 // set the Sound Card configuration tab to the correct initial values
 #if !USE_PORTAUDIO
 	progdefaults.btnAudioIOis = 0;
 	btnAudioIO[1]->deactivate();
+#endif
+#if !USE_OSS
+	progdefaults.btnAudioIOis = 1;
+	btnAudioIO[0]->deactivate();
 #endif
 	if (progdefaults.btnAudioIOis == 0) {
 		scDevice = progdefaults.OSSdevice;
