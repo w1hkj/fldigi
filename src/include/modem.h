@@ -89,7 +89,7 @@ public:
 	double		get_squelch() { return squelch; }
 	void		set_sqlchOnOff(bool val) {squelchon = val;}
 	bool		get_sqlchOnOff() { return squelchon;}
-	void		set_afcOnOff(bool val) {afcon = val;}
+	void		set_afcOnOff(int val) {afcon = val;}
 	bool		get_afcOnOff() { return afcon;}
 
 //	void 		set_mode(trx_mode);

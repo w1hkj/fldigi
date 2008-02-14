@@ -30,11 +30,13 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <iomanip>
 
 #include "psk.h"
 #include "waterfall.h"
 #include "configuration.h"
 #include "viewpsk.h"
+#include "pskeval.h"
 
 extern waterfall *wf;
 
@@ -47,6 +49,7 @@ extern waterfall *wf;
 
 // Change the following for DCD low pass filter adjustment
 #define SQLCOEFF 0.01
+#define SQLDECAY 100
 
 //=====================================================================
 
@@ -56,6 +59,7 @@ extern waterfall *wf;
 
 char pskmsg[80];
 viewpsk *pskviewer = (viewpsk *)0;
+pskeval *evalpsk = (pskeval *)0;
 
 void psk::tx_init(cSound *sc)
 {
@@ -86,6 +90,8 @@ void psk::restart()
 {
 	if (!pskviewer) pskviewer = new viewpsk(mode);
 	else		    pskviewer->restart(mode);
+	if (!evalpsk) evalpsk = new pskeval;
+	evalpsk->setbw(bandwidth);
 }
 
 void psk::init()
@@ -107,6 +113,8 @@ psk::~psk()
 psk::psk(trx_mode pskmode) : modem()
 {
 	mode = pskmode;
+	
+	twopi = 2.0 * M_PI;
 
 	switch (mode) {
 	case MODE_BPSK31:
@@ -172,6 +180,7 @@ psk::psk(trx_mode pskmode) : modem()
 
 	wsincfilt(fir1c, 1.0 / symbollen, true);	// creates fir1c matched sin(x)/x filter w blackman
 	wsincfilt(fir2c, 1.0 / 16.0, true);			// creates fir2c matched sin(x)/x filter w blackman
+
 //	wsincfilt(fir1c, 1.0 / symbollen, false);	// creates fir1c matched sin(x)/x filter w hamming
 //	wsincfilt(fir2c, 1.0 / 16.0, false);		// creates fir2c matched sin(x)/x filter w hamming
 //	wsincfilt(fir2c, 1.0 / 22.0, false);    	// 1/22 with Hamming window
@@ -184,6 +193,7 @@ psk::psk(trx_mode pskmode) : modem()
 
 	fir2 = new C_FIR_filter();
 	fir2->init(FIRLEN, 1, fir2c, fir2c);
+
 
 	if (_qpsk) {
 		enc = new encoder(K, POLY1, POLY2);
@@ -330,31 +340,40 @@ void psk::findsignal()
 			}
 		} else { 
 // normal signal search
-			searchBW = progdefaults.SearchRange;
-			ftest = wf->peakFreq((int)(frequency), searchBW);
-			sigpwr = wf->powerDensity(ftest,  bandwidth);
-			noise = wf->powerDensity(ftest + 2 * bandwidth / 2, bandwidth / 2) +
-		    	    wf->powerDensity(ftest - 2 * bandwidth / 2, bandwidth / 2) + 1e-20;
-			if (sigpwr/noise > SNTHRESHOLD) { // larger than the detection threshold)
-				frequency = ftest;
-				set_freq(frequency);
-				freqerr = 0.0;
-			}
+	int ftest;
+	int f1 = (int)(frequency - progdefaults.SearchRange/2);
+	int f2 = (int)(frequency + progdefaults.SearchRange/2);
+	if (evalpsk->sigpeak(ftest, f1, f2) > SNTHRESHOLD ){//SNTHRESHOLD) {
+		frequency = ftest;
+		set_freq(frequency);
+		freqerr = 0.0;
+	}
+//			searchBW = progdefaults.SearchRange;
+//			ftest = wf->peakFreq((int)(frequency), searchBW);
+//			sigpwr = wf->powerDensity(ftest,  bandwidth);
+//			noise = wf->powerDensity(ftest + 2 * bandwidth / 2, bandwidth / 2) +
+//		    	    wf->powerDensity(ftest - 2 * bandwidth / 2, bandwidth / 2) + 1e-20;
+//			if (sigpwr/noise > SNTHRESHOLD) { // larger than the detection threshold)
+//				frequency = ftest;
+//				set_freq(frequency);
+//				freqerr = 0.0;
+//			}
 		}
 	}		
+
 }
 
 void psk::phaseafc()
 {
 	double error;
-	error = (phase - bits * M_PI / 2);
-	if (error < M_PI / 2)
-		error += 2 * M_PI;
-	if (error > M_PI / 2)
-		error -= 2 * M_PI;
-	error *= ((samplerate / (symbollen * 2 * M_PI)/16));
+	error = (phase - bits * M_PI / 2.0);
+	if (error < -M_PI/2.0)
+		error += twopi;
+	if (error > M_PI/2.0)
+		error -= twopi;
+	error *= ((samplerate / twopi) / (16.0 * symbollen));
 	if (fabs(error) < bandwidth) {
-		freqerr = decayavg( freqerr, error, AFCDECAY);
+		freqerr = decayavg( freqerr, error, AFCDECAYSLOW);
 		frequency -= freqerr;
 		set_freq (frequency);
 	}
@@ -378,7 +397,7 @@ void psk::rx_symbol(complex symbol)
 	prevsymbol = symbol;
 
 	if (phase < 0) 
-		phase += 2 * M_PI;
+		phase += twopi;
 	if (_qpsk) {
 		bits = ((int) (phase / M_PI_2 + 0.5)) & 3;
 		n = 4;
@@ -389,9 +408,9 @@ void psk::rx_symbol(complex symbol)
 // simple low pass filter for quality of signal
 //	quality.re = 0.02 * cos(n * phase) + 0.98 * quality.re;
 //	quality.im = 0.02 * sin(n * phase) + 0.98 * quality.im;
-	quality.re = SQLCOEFF * cos(n * phase) + (1.0 - SQLCOEFF) * quality.re;
-	quality.im = SQLCOEFF * sin(n * phase) + (1.0 - SQLCOEFF) * quality.im;
-
+	quality.re = decayavg(quality.re, cos(n*phase), SQLDECAY);
+	quality.im = decayavg(quality.im, cos(n*phase), SQLDECAY);
+	
 	metric = 100.0 * quality.norm();
 	
 	dcdshreg = (dcdshreg << 2) | bits;
@@ -460,11 +479,15 @@ char bitstatus[100];
 int psk::rx_process(const double *buf, int len)
 {
 	double delta;
-	complex z;
+	complex z, z2;//, z3;
 
-	if (pskviewer) pskviewer->rx_process(buf, len);
-	
-	delta = 2.0 * M_PI * frequency / samplerate;
+	if (pskviewer && !bHistory) pskviewer->rx_process(buf, len);
+	if (evalpsk) evalpsk->sigdensity();
+		
+	if (afcon == 2)
+		sigsearch = 0;
+		
+	delta = twopi * frequency / samplerate;
 	
 	signalquality();
 
@@ -474,27 +497,30 @@ int psk::rx_process(const double *buf, int len)
 		buf++;
 		phaseacc += delta;
 		if (phaseacc > M_PI)
-			phaseacc -= 2.0 * M_PI;
+			phaseacc -= twopi;
 // Filter and downsample 
 // by 16 (psk31, qpsk31) 
 // by  8 (psk63, qpsk63)
 // by  4 (psk125, qpsk125)
+// by  2 (psk250, qpsk250)
 // first filter
 		if (fir1->run( z, z )) { // fir1 returns true every Nth sample
 // final filter
-			fir2->run( z, z ); // fir3 returns value on every sample
-			
+			fir2->run( z, z2 ); // fir2 returns value on every sample
+
+//			fir3->run( z, z3);
+//			coreafc(z3);
+						
 			int idx = (int) bitclk;
 			double sum = 0.0;
 			double ampsum = 0.0;
-			syncbuf[idx] = 0.8 * syncbuf[idx] + 0.2 * z.mag();
+			syncbuf[idx] = 0.8 * syncbuf[idx] + 0.2 * z2.mag();
 			
 			for (int i = 0; i < 8; i++) {
 				sum += (syncbuf[i] - syncbuf[i+8]);
 				ampsum += (syncbuf[i] + syncbuf[i+8]);
 			}
 // added correction as per PocketDigi
-// vastly improved performance with synchronous interference !!
 			sum = (ampsum == 0 ? 0 : sum / ampsum);
 			
 			bitclk -= sum / 5.0;
@@ -503,7 +529,7 @@ int psk::rx_process(const double *buf, int len)
 			if (bitclk < 0) bitclk += 16.0;
 			if (bitclk >= 16.0) {
 				bitclk -= 16.0;
-				rx_symbol(z);
+				rx_symbol(z2);
 				update_syncscope();
 				afc();
 			}

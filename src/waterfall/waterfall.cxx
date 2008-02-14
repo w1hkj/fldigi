@@ -630,9 +630,11 @@ void WFdisp::update_waterfall() {
 		p4 = p3;
 		for (int col = 0; col < disp_width; col++) {
 			if (step == 4)
-				sig = MAX( MAX ( MAX ( *p2, *(p2+1) ), *(p2+2) ), *(p2+3) );
+				// sig = MAX( MAX ( MAX ( *p2, *(p2+1) ), *(p2+2) ), *(p2+3) );
+				sig = (*p2+ *(p2+1)+ *(p2+2)+ *(p2+3))/4;
 			else if (step == 2)
-				sig = MAX( *p2, *(p2 + 1) );
+				// sig = MAX( *p2, *(p2 + 1) );
+				sig = (*p2  + *(p2 + 1))/2;
 			else 
 				sig = *p2;
 			*p4 = mag2RGBI[ sig ];
@@ -1405,12 +1407,16 @@ int WFdisp::handle(int event)
 			}
 			// fall through
 		case FL_LEFT_MOUSE:
-			newcarrier = cursorFreq(xpos);
-			active_modem->set_freq(newcarrier);
-			if (!(Fl::event_state() & FL_SHIFT))
-				active_modem->set_sigsearch(SIGSEARCH);
-			redrawCursor();
-			restoreFocus();
+			if ((Fl::event_state() & FL_CTRL))
+				bHistory = true;
+			else {
+				newcarrier = cursorFreq(xpos);
+				active_modem->set_freq(newcarrier);
+				if (!(Fl::event_state() & FL_SHIFT))
+					active_modem->set_sigsearch(SIGSEARCH);
+				redrawCursor();
+				restoreFocus();
+			}
 			break;
 		case FL_MIDDLE_MOUSE:
 			if (event == FL_DRAG)

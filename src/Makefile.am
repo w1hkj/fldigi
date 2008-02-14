@@ -154,6 +154,7 @@ fldigi_SOURCES += \
 	include/viewpsk.h \
 	include/pskcoeff.h \
 	include/pskvaricode.h \
+	include/pskeval.h \
 	include/ptt.h \
 	include/qrunner.h \
 	include/qrzcall.h \
@@ -217,6 +218,7 @@ fldigi_SOURCES += \
 	psk/pskcoeff.cxx \
 	psk/pskvaricode.cxx \
 	psk/viewpsk.cxx \
+	psk/pskeval.cxx \
 	qrunner/fqueue.h \
 	qrunner/qrunner.cxx \
 	rigcontrol/FreqControl.cxx \

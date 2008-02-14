@@ -1,7 +1,7 @@
 // ----------------------------------------------------------------------------
-// trx.h
+// pskeval.cxx  --  psk signal evaluator
 //
-// Copyright (C) 2006
+// Copyright (C) 2008
 //		Dave Freese, W1HKJ
 //
 // This file is part of fldigi.  Adapted from code contained in gmfsk source code 
@@ -22,37 +22,30 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ----------------------------------------------------------------------------
 
-#ifndef	TRX_H
-#define	TRX_H
+#ifndef _PSKEVAL_H
+#define _PSKEVAL_H
 
-#include "threads.h"
-#include "modem.h"
-
-#include "misc.h"
-#include "sound.h"
+#include "complex.h"
+#include "trx.h"
+#include "filters.h"
+#include "fldigi-config.h"
 #include "waterfall.h"
-#include "globals.h"
-#include "fl_digi.h"
 
-// ----------------------------------------------------------------------------
+#define FLOWER 200
+#define FUPPER 4000
 
-extern	void	trx_start_modem(modem *);
-extern	void	trx_start(const char *scdev);
-extern	void	trx_close();
-extern	void	trx_reset(const char *scdev);
-extern	void	trx_start_macro_timer();
-
-extern	void	wait_modem_ready_prep(void);
-extern	void	wait_modem_ready_cmpl(void);
-extern	void	signal_modem_ready(void);
-
-extern Fl_Mutex		trx_mutex;
-extern Fl_Thread	trx_thread;
-extern state_t		trx_state;
-extern modem		*active_modem;
-
-extern	cSound 	*scard;
-
-extern  bool bHistory;
+class pskeval {
+private:
+	double	sigpwr[FFT_LEN];
+	double	sigavg;
+	double	bw;
+public:
+	pskeval();
+	~pskeval();
+	void	clear();
+	void	setbw(double w) { bw = w;}
+	void	sigdensity();
+	double	sigpeak(int &f, int f1, int f2);
+};
 
 #endif
