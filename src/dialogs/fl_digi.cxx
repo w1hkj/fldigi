@@ -75,8 +75,9 @@
 
 #include "combo.h"
 #include "font_browser.h"
-#include "fldigi-icon-48.xpm"
-
+#ifndef __APPLE__
+#        include "fldigi-icon-48.xpm"
+#endif
 #include "status.h"
 
 #include "rigsupport.h"
@@ -142,7 +143,9 @@ Fl_Progress			*pgrsSquelch = (Fl_Progress *)0;
 
 Fl_RGB_Image		*feld_image = 0;
 
+#ifndef __APPLE__
 Pixmap				fldigi_icon_pixmap;
+#endif
 
 int IMAGE_WIDTH = DEFAULT_IMAGE_WIDTH;
 int Hwfall = DEFAULT_HWFALL;
@@ -1020,6 +1023,7 @@ void activate_rig_menu_item(bool b)
 	mnu->redraw();
 }
 
+#ifndef __APPLE__
 void make_pixmap(Pixmap *xpm, const char **data)
 {
 	// We need a displayed window to provide a GC for X_CreatePixmap
@@ -1038,6 +1042,7 @@ void make_pixmap(Pixmap *xpm, const char **data)
 	icon.draw(maxd - icon.w(), maxd - icon.h());
 	fl_end_offscreen();
 }
+#endif
 
 int rightof(Fl_Widget* w)
 {
@@ -1365,8 +1370,10 @@ void create_fl_digi_main() {
 	fl_digi_main->end();
 	fl_digi_main->callback(cb_wMain);
 
+#ifndef __APPLE__
 	make_pixmap(&fldigi_icon_pixmap, fldigi_icon_48_xpm);
 	fl_digi_main->icon((char *)fldigi_icon_pixmap);
+#endif
 
 	fl_digi_main->xclass(PACKAGE_NAME);
 }
