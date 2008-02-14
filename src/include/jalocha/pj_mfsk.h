@@ -44,7 +44,7 @@ template <class Type>
 // =====================================================================
 
 template <class Type>
- class Delay
+ class MFSK_Delay
 { public:
 
    size_t Len;
@@ -53,10 +53,10 @@ template <class Type>
    
   public:
 
-   Delay()
+   MFSK_Delay()
      { Tap=0; Len=0; }
 
-   ~Delay()
+   ~MFSK_Delay()
      { free(Tap); }
      
    int Preset(size_t NewLen)

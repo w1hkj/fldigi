@@ -30,7 +30,7 @@ extern Fl_Check_Button *btnTriangular;
 #include <FL/Fl_Counter.H>
 extern Fl_Counter *cntLowFreqCutoff;
 #include "colorbox.h"
-extern colorbox *Palette;
+extern colorbox *WF_Palette;
 #include <FL/Fl_Button.H>
 extern Fl_Button *btnColor[9];
 extern Fl_Button *btnLoadPalette;

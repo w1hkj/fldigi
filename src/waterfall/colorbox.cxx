@@ -44,7 +44,7 @@ void selectColor(int n)
 	btnColor[n]->color( fl_rgb_color( palette[n].R, palette[n].G, palette[n].B ) );
 	btnColor[n]->redraw();
 	wf->setcolors();
-	Palette->redraw();
+	WF_Palette->redraw();
 }
 
 static string palfilename = "";
@@ -82,8 +82,8 @@ void loadPalette()
 		size_t pos = palLabelStr.find_last_of('/');
 		if (pos != string::npos) palLabelStr.erase(0, pos+1);
 		palLabelStr = "Palette: " + palLabelStr;
-		Palette->label(palLabelStr.c_str());
-		Palette->redraw();
+		WF_Palette->label(palLabelStr.c_str());
+		WF_Palette->redraw();
 	}
 }
 
@@ -106,6 +106,6 @@ void savePalette()
 		size_t pos = palLabelStr.find_last_of('/');
 		if (pos != string::npos) palLabelStr.erase(0, pos+1);
 		palLabelStr = "Palette: " + palLabelStr;
-		Palette->label(palLabelStr.c_str());
+		WF_Palette->label(palLabelStr.c_str());
    	}
 }

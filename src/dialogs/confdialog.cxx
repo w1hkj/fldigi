@@ -113,9 +113,9 @@ static void cb_cntLowFreqCutoff(Fl_Counter* o, void*) {
 progdefaults.changed = true;
 }
 
-colorbox *Palette=(colorbox *)0;
+colorbox *WF_Palette=(colorbox *)0;
 
-static void cb_Palette(colorbox*, void*) {
+static void cb_WF_Palette(colorbox*, void*) {
   progdefaults.changed = true;
 }
 
@@ -1210,7 +1210,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             }
             { Fl_Group* o = new Fl_Group(5, 131, 390, 85);
               o->box(FL_ENGRAVED_FRAME);
-              { colorbox* o = Palette = new colorbox(28, 152, 260, 24, "Palette:");
+              { colorbox* o = WF_Palette = new colorbox(28, 152, 260, 24, "Palette:");
                 o->box(FL_DOWN_BOX);
                 o->color(FL_FOREGROUND_COLOR);
                 o->selection_color(FL_BACKGROUND_COLOR);
@@ -1218,7 +1218,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 o->labelfont(0);
                 o->labelsize(14);
                 o->labelcolor(FL_FOREGROUND_COLOR);
-                o->callback((Fl_Callback*)cb_Palette);
+                o->callback((Fl_Callback*)cb_WF_Palette);
                 o->align(FL_ALIGN_TOP_LEFT);
                 o->when(FL_WHEN_RELEASE);
               }
