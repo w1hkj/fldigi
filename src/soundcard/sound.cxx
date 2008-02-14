@@ -787,7 +787,7 @@ void SoundPort::Close(void)
 
 int SoundPort::Read(double *buf, int count)
 {
-        int ncount = (int)floor(MIN(count, SND_BUF_LEN) / rx_src_data->src_ratio);
+        int ncount = (int)MIN(SND_BUF_LEN, ceil(count / rx_src_data->src_ratio));
 
         int err;
         static int retries = 0;
