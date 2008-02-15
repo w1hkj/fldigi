@@ -90,9 +90,15 @@ bool hexout( string s, int retnbr)
 		rigio.ReadBuffer (replybuff, s.size());
 
 	memset (replybuff, 0, 200);
+	
+// wait interval before trying to read response
+	if ((readtimeout = rig.wait) > 0)
+		while (readtimeout--)
+			MilliSleep(1);
 
 	if (retnbr > 0) {
 		num = rigio.ReadBuffer (replybuff, retnbr > 200 ? 200 : retnbr);
+// debug code
 //		if (num)
 //			printhex(replybuff, num);
 //		else

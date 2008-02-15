@@ -89,6 +89,7 @@ configuration progdefaults = {
 	255,			// uchar 	blue
 	0,				// bool 	MultiColorWF;
 	1,				// int  	wfPreFilter == Blackman
+	false,			// bool		WFaveraging
 	true,			// bool 	UseCursorLines;
 	true,			// bool 	UseCursorCenterLine;
 	true,			// bool 	UseBWTracks;
@@ -233,7 +234,7 @@ enum TAG { \
 	PALETTE0, PALETTE1, PALETTE2, PALETTE3, PALETTE4, 
 	PALETTE5, PALETTE6, PALETTE7, PALETTE8,
 	VIEWERMARQUEE, VIEWERSHOWFREQ, VIEWERSTART, 
-	VIEWERCHANNELS, VIEWERSQUELCH, VIEWERTIMEOUT,
+	VIEWERCHANNELS, VIEWERSQUELCH, VIEWERTIMEOUT, WFAVERAGING
 };
 //	, ALT_TEXT_WIDGETS };
 	
@@ -423,6 +424,7 @@ void configuration::writeDefaultsXML()
 	writeXMLint(f, "VIEWERCHANNELS", VIEWERchannels);
 	writeXMLdbl(f, "VIEWERSQUELCH", VIEWERsquelch);
 	writeXMLint(f, "VIEWERTIMEOUT", VIEWERtimeout);
+	writeXMLbool(f,"WFAVERAGEING", WFaveraging);
 	
 	f << "</FLDIGI_DEFS>\n";
 	f.close();
@@ -852,6 +854,9 @@ bool configuration::readDefaultsXML()
 					case VIEWERTIMEOUT :
 						VIEWERtimeout = atoi(xml->getNodeData());
 						break;
+					case WFAVERAGING :
+						WFaveraging = atoi(xml->getNodeData());
+						break;
 //					case ALT_TEXT_WIDGETS :
 //						alt_text_widgets = atoi(xml->getNodeData());
 //						break;
@@ -990,6 +995,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("VIEWERCHANNELS", nodeName))	tag = VIEWERCHANNELS;
 				else if (!strcmp("VIEWERSQUELCH", nodeName))	tag = VIEWERSQUELCH;
 				else if (!strcmp("VIEWERTIMEOUT", nodeName))	tag = VIEWERTIMEOUT;
+				else if (!strcmp("WFAVERAGING", nodeName))	tag = WFAVERAGING;
 //				else if (!strcmp("ALT_TEXT_WIDGETS", nodeName)) 	tag = ALT_TEXT_WIDGETS;
 				else tag = IGNORE;
 				}
