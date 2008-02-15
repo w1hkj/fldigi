@@ -102,7 +102,7 @@ public:
 	~psk();
 	void init();
 	void rx_init();
-	void tx_init(cSound *sc);
+	void tx_init(SoundBase *sc);
 	void restart();
 	int rx_process(const double *buf, int len);
 	int tx_process();

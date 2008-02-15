@@ -3,7 +3,7 @@
 
 #include <config.h>
 
-#include "Config.h"
+#include "confdialog.h"
 #include "modem.h"
 #include "configuration.h"
 

@@ -47,7 +47,7 @@ char mfskmsg[80];
 char txclr_tooltip[24];
 char txgry_tooltip[24];
 
-void  mfsk::tx_init(cSound *sc)
+void  mfsk::tx_init(SoundBase *sc)
 {
 	scard = sc;
 	txstate = TX_STATE_PREAMBLE;

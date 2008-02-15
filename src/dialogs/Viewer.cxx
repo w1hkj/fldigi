@@ -1,10 +1,4 @@
 // special test version of Viewer.cxx
-//
-// To enable REGULAR EXPRESSION EVALUATION FOR THE FIND STRING
-// uncomment the following line
-
-#define REGEX
-
 
 #include <config.h>
 
@@ -18,14 +12,24 @@
 #include <FL/Fl_Slider.H>
 #include <FL/fl_ask.H>
 
-#include <sys/types.h>
-#include <regex.h>
-
 #include <string>
+
+// To disable REGULAR EXPRESSION EVALUATION FOR THE FIND STRING
+// uncomment the following two lines
+// #undef HAVE_REGEX_H
+// #define HAVE_REGEX_H 0
+
+#if HAVE_REGEX_H
+#    if HAVE_SYS_TYPES_H
+#        include <sys/types.h>
+#    endif
+#    include <regex.h>
+#endif
+
 
 string bwsrfreq;
 string bwsrline[MAXCHANNELS];
-#ifndef REGEX
+#if !HAVE_REGEX_H
 string ucaseline[MAXCHANNELS];
 string tofind;
 #endif
@@ -85,7 +89,7 @@ string fline;
 	return fline;
 }
 
-#ifdef REGEX
+#if HAVE_REGEX_H
 regex_t* seek_re = 0;
 void re_comp(const char* needle)
 {
@@ -123,8 +127,7 @@ char* strcasestr(const char* haystack, const char* needle)
 	return p;
 }
 #endif // !HAVE_STRCASESTR
-
-#endif // REGEX
+#endif // HAVE_REGEX_H
 
 void pskBrowser::resize(int x, int y, int w, int h) {
 	unsigned int nuchars = (w - cols[0] - (sbarwidth + border)) / cwidth;
@@ -136,10 +139,11 @@ void pskBrowser::resize(int x, int y, int w, int h) {
 			if (len > nuchars)
 				bwsrline[i] = bwsrline[i].substr(len - nuchars);
 			bline = freqformat(i);
-#ifndef REGEX			
-			if (!tofind.empty())
-			if (ucaseline[i].find(tofind) != string::npos)
-				bline.append(dkred);
+#if !HAVE_REGEX_H
+			if (!tofind.empty()) {
+				if (ucaseline[i].find(tofind) != string::npos)
+					bline.append(dkred);
+			}
 			else if (!progdefaults.myCall.empty())
 				if (ucaseline[i].find(progdefaults.myCall) != string::npos)
 					bline.append(dkgreen);
@@ -247,9 +251,9 @@ void ClearViewer() {
 
 		bline = freqformat(i);
   		bwsrline[i].clear();
-#ifndef REGEX
+#if !HAVE_REGEX_H
   		ucaseline[i].clear();
-#endif  		
+#endif
   		brwsViewer->add(bline.c_str());
   	}
 	if (progdefaults.VIEWERshowfreq)
@@ -287,7 +291,7 @@ static void cb_brwsViewer(Fl_Hold_Browser*, void*) {
 
 static void cb_Seek(Fl_Input *, void *)
 {
-#ifndef REGEX
+#if !HAVE_REGEX_H
 	tofind = inpSeek->value();
 	for (size_t i = 0; i < tofind.length(); i++)
 		tofind[i] = toupper(tofind[i]);
@@ -399,30 +403,30 @@ void viewaddchr(int ch, int freq, char c) {
 	if (progdefaults.VIEWERmarquee) {
 		if (bwsrline[index].length() > progStatus.VIEWERnchars ) {
 			bwsrline[index].erase(0,1);
-#ifndef REGEX
+#if !HAVE_REGEX_H
 			ucaseline[index].erase(0,1);
 #endif
 		}
 		if (c >= ' ' && c <= '~') {
 			bwsrline[index] += c;
-#ifndef REGEX
+#if !HAVE_REGEX_H
 			ucaseline[index] += toupper(c);
 #endif
 		} else {
 			bwsrline[index] += ' ';
-#ifndef REGEX
+#if !HAVE_REGEX_H
 			ucaseline[index] += ' ';
 #endif
 		}
 	} else {
 		if (c >= ' ' && c <= '~') {
 			bwsrline[index] += c;
-#ifndef REGEX
+#if !HAVE_REGEX_H
 			ucaseline[index] += toupper(c);
 #endif
 		} else {
 			bwsrline[index] += ' ';
-#ifndef REGEX
+#if !HAVE_REGEX_H
 			ucaseline[index] += ' ';
 #endif
 		}
@@ -430,10 +434,11 @@ void viewaddchr(int ch, int freq, char c) {
 			bwsrline[index].clear();
 	}
 	nuline = freqformat(index);
-#ifndef REGEX
-	if (!tofind.empty())
+#if !HAVE_REGEX_H
+	if (!tofind.empty()) {
 		if (ucaseline[index].find(tofind) != string::npos)
 			nuline.append(dkred);
+	}
 	else if (!progdefaults.myCall.empty())
 		if (ucaseline[index].find(progdefaults.myCall) != string::npos)
 			nuline.append(dkgreen);
@@ -460,7 +465,7 @@ void viewclearchannel(int ch)
 	int index = progdefaults.VIEWERchannels - 1 - ch;
 	string nuline = freqformat(index);
 	bwsrline[index] = "";
-#ifndef REGEX
+#if !HAVE_REGEX_H
 	ucaseline[index] = "";
 #endif
 	brwsViewer->text( 1 + index, nuline.c_str());

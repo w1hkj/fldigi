@@ -25,14 +25,14 @@
 
 #include "analysis.h"
 #include "waterfall.h"
-#include "Config.h"
+#include "confdialog.h"
 #include "configuration.h"
 
 #define anal_BW         4
 
 static char msg1[80];
 
-void anal::tx_init(cSound *sc)
+void anal::tx_init(SoundBase *sc)
 {
 }
 

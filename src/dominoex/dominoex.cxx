@@ -28,7 +28,7 @@
 
 #include <iostream>
 
-#include "Config.h"
+#include "confdialog.h"
 
 #include "dominoex.h"
 #include "trx.h"
@@ -43,7 +43,7 @@ using namespace std;
 
 char dommsg[80];
 
-void dominoex::tx_init(cSound *sc)
+void dominoex::tx_init(SoundBase *sc)
 {
 	scard = sc;
 	txstate = TX_STATE_PREAMBLE;

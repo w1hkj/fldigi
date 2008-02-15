@@ -51,7 +51,7 @@
 #include "psk.h"
 #include "cw.h"
 #include "mfsk.h"
-#include "Config.h"
+#include "confdialog.h"
 #include "configuration.h"
 #include "macros.h"
 #include "status.h"
@@ -209,7 +209,7 @@ int main(int argc, char ** argv)
 		cbq[i]->detach();
 
 #if USE_PORTAUDIO
-	cSoundPA::terminate();
+	SoundPort::terminate();
 #endif
 	return ret;
 }
@@ -226,10 +226,10 @@ void sound_init(void)
 	globfree(&gbuf);
 	
 #if USE_PORTAUDIO
-	cSoundPA::initialize();
+	SoundPort::initialize();
 
-	for (cSoundPA::device_iterator idev = cSoundPA::devices().begin();
-	     idev != cSoundPA::devices().end(); ++idev) {
+	for (SoundPort::device_iterator idev = SoundPort::devices().begin();
+	     idev != SoundPort::devices().end(); ++idev) {
 		string s;
 		s.append(Pa_GetHostApiInfo((*idev)->hostApi)->name).append("/").append((*idev)->name);
 
@@ -241,7 +241,7 @@ void sound_init(void)
 		}
 		menuPADev->add(s.c_str());
 // set the initial value in the configuration structure
-		if (progdefaults.PAdevice == "" && idev == cSoundPA::devices().begin())
+		if (progdefaults.PAdevice == "" && idev == SoundPort::devices().begin())
 			progdefaults.PAdevice = (*idev)->name;
 	}
 	menuPADev->value(progdefaults.PAdevice.c_str());
@@ -249,6 +249,7 @@ void sound_init(void)
 	btnAudioIO[1]->activate();
 #endif
 
+#if USE_OSS
 	glob("/dev/mixer*", 0, NULL, &gbuf);
 	for (size_t i = 0; i < gbuf.gl_pathc; i++) 
 		menuMix->add(gbuf.gl_pathv[i]);
@@ -256,11 +257,19 @@ void sound_init(void)
 		progdefaults.MXdevice = gbuf.gl_pathv[0];
 	globfree(&gbuf);
 	menuMix->value(progdefaults.MXdevice.c_str());
-	
+#else
+	progdefaults.EnableMixer = false;
+        tabMixer->deactivate();
+#endif
+
 // set the Sound Card configuration tab to the correct initial values
 #if !USE_PORTAUDIO
 	progdefaults.btnAudioIOis = 0;
 	btnAudioIO[1]->deactivate();
+#endif
+#if !USE_OSS
+	progdefaults.btnAudioIOis = 1;
+	btnAudioIO[0]->deactivate();
 #endif
 	if (progdefaults.btnAudioIOis == 0) {
 		scDevice = progdefaults.OSSdevice;

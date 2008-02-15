@@ -25,7 +25,7 @@
 class modem : public morse {
 protected:
 	trx_mode mode;
-	cSound	*scard;
+	SoundBase	*scard;
 	
 	int		afcon;
 	int		squelchon;
@@ -70,7 +70,7 @@ public:
 	virtual ~modem(){};
 
 	virtual void init();
-	virtual void tx_init (cSound *sc) = 0;
+	virtual void tx_init (SoundBase *sc) = 0;
 	virtual void rx_init () = 0;
 	virtual void restart () = 0;
 	virtual int  tx_process () = 0;

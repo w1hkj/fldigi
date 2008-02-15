@@ -1,7 +1,7 @@
 #include <config.h>
 
 #include "configuration.h"
-#include "Config.h"
+#include "confdialog.h"
 #include "xmlreader.h"
 
 #if USE_HAMLIB

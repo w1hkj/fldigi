@@ -68,7 +68,7 @@ private:
 };
 #undef msgprefix
 
-class cSound {
+class SoundBase {
 protected:
 	int		sample_frequency;
 	int		txppm;
@@ -100,8 +100,8 @@ protected:
 	void tag_file(SNDFILE *sndfile, const char *title);
 #endif
 public:
-	cSound();
-	virtual ~cSound();
+	SoundBase();
+	virtual ~SoundBase();
 	virtual int	Open(int mode, int freq = 8000) = 0;
 	virtual void    Close() = 0;
 	virtual int	write_samples(double *, int) = 0;
@@ -116,7 +116,10 @@ public:
 #endif
 };
 
-class cSoundOSS : public cSound {
+
+#if USE_OSS
+
+class SoundOSS : public SoundBase {
 private:
 	std::string	device;
 	int		device_fd;
@@ -141,8 +144,8 @@ private:
 	bool	reset_device();
 
 public:
-	cSoundOSS(const char *dev = "/dev/dsp");
-	~cSoundOSS();
+	SoundOSS(const char *dev = "/dev/dsp");
+	~SoundOSS();
 	int		Open(int mode, int freq = 8000);
 	void	Close();
 	int		write_samples(double *, int);
@@ -162,9 +165,12 @@ private:
 	bool	FormatOK() { return formatok;};
 };
 
+#endif // USE_OSS
+
+
 #if USE_PORTAUDIO
 
-class cSoundPA : public cSound
+class SoundPort : public SoundBase
 {
 public:
         typedef std::vector<const PaDeviceInfo*>::const_iterator device_iterator;
@@ -173,8 +179,8 @@ public:
         static const std::vector<const PaDeviceInfo*>& devices(void);
 
 public:
-        cSoundPA(const char *dev);
-        ~cSoundPA();
+        SoundPort(const char *dev);
+        ~SoundPort();
 	int 		Open(int mode, int freq = 8000);
 	void 		Close();
 	int 		write_samples(double *buf, int count);
@@ -196,15 +202,10 @@ private:
 private:
         std::string	device;
 
-        // portaudio::System 			     &sys;
-        // portaudio::BlockingStream 		     stream;
         static bool                                  pa_init;
         PaStream*                                    stream;
 
         device_iterator				     idev;
-        // portaudio::DirectionSpecificStreamParameters in_params;
-        // portaudio::DirectionSpecificStreamParameters out_params;
-        // portaudio::StreamParameters 		     stream_params;
 	static std::vector<const PaDeviceInfo*>      devs;
         PaStreamParameters                           in_params;
         PaStreamParameters                           out_params;

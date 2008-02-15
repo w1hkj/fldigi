@@ -34,7 +34,7 @@
 #include "olivia.h"
 #include "sound.h"
 
-#include "Config.h"
+#include "confdialog.h"
 
 using namespace std;
 
@@ -48,7 +48,7 @@ double olivia::nco(double freq)
 	return cos(preamblephase);
 }
 
-void olivia::tx_init(cSound *sc)
+void olivia::tx_init(SoundBase *sc)
 {
 	unsigned char c;
 

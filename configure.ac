@@ -4,15 +4,25 @@
 AC_COPYRIGHT([Copyright (C) 2007 Stelios Bounanos, M0GLD (m0gld AT enotty DOT net)])
 
 AC_PREREQ(2.61)
-AC_INIT([fldigi], [2.10A], [w1hkj AT w1hkj DOT com])
+AC_INIT([fldigi], [2.10B], [w1hkj AT w1hkj DOT com])
 AC_CONFIG_AUX_DIR([build-aux])
+
+# define build, build_cpu, build_vendor, build_os
+AC_CANONICAL_BUILD
+# define host, host_cpu, host_vendor, host_os
+AC_CANONICAL_HOST
+#define target, target_cpu, target_vendor, target_os
+AC_CANONICAL_TARGET
+
 AM_INIT_AUTOMAKE([-Wall foreign std-options 1.9.6])
 AM_MAINTAINER_MODE
 AC_CONFIG_SRCDIR([src/main.cxx])
 AC_CONFIG_HEADER([src/config.h])
 
+
 AC_DEFINE(PACKAGE_HOME, ["http://www.w1hkj.com/Fldigi-2.x.html"], [Home page])
 AC_DEFINE(PACKAGE_DOCS, ["http://www.w1hkj.com/FldigiHelp-2.0/index.html"], [Docs index])
+
 
 # Checks for programs.
 AC_PROG_CXX
@@ -86,11 +96,23 @@ AC_ARG_ENABLE([debug],
                [ac_cv_debug=no])
 if test "x$ac_cv_debug" = "xyes"; then
     if test "x$GXX" = "xyes"; then
-        RDYNAMIC=-rdynamic
         CXXFLAGS="-O0 -ggdb3 -Wall"
     else
         CXXFLAGS="-O0 -g -Wall"
     fi
+
+    # check for -rdynamic support
+    AC_MSG_CHECKING([whether $CXX supports -rdynamic])
+    LDFLAGS_saved="$LDFLAGS"
+    LDFLAGS="$LDFLAGS -rdynamic"
+    AC_TRY_LINK([], [], [ac_cv_rdynamic=yes], [ac_cv_rdynamic=no])
+    AC_MSG_RESULT([$ac_cv_rdynamic])
+    LDFLAGS="$LDFLAGS_saved"
+
+    if test "x$ac_cv_rdynamic" = "xyes"; then
+        RDYNAMIC=-rdynamic
+    fi
+
     CFLAGS="$CXXFLAGS"
     AC_MSG_NOTICE([debugging enabled; overriding CXXFLAGS])
 fi
@@ -207,6 +229,9 @@ fi
 AC_SUBST([FLTK_CFLAGS])
 AC_SUBST([FLTK_LIBS])
 
+AC_ARG_VAR([FLUID], [Fast Light User-Interface Designer])
+AC_CHECK_PROG([FLUID], [fluid], [fluid])
+AM_CONDITIONAL([HAVE_FLUID], [test -n "$FLUID"])
 
 ###########################
 # libsamplerate
@@ -254,6 +279,37 @@ fi
 AC_SUBST([SNDFILE_CFLAGS])
 AC_SUBST([SNDFILE_LIBS])
 
+###########################
+# OSS
+###########################
+AC_ARG_ENABLE([oss],
+              AC_HELP_STRING([--disable-oss], [disable support for OSS @<:@autodetect@:>@]),
+              [case "${enableval}" in
+                yes|no) ac_cv_want_oss="${enableval}" ;;
+                *)      AC_MSG_ERROR([bad value "${enableval}" for --disable-oss]) ;;
+               esac],
+               [ac_cv_want_oss=check])
+ac_cv_oss=no
+if test "x$ac_cv_want_oss" = "xno"; then
+    AC_DEFINE(USE_OSS, 0, [Defined if we are using OSS])
+else
+    AC_CHECK_HEADER( [sys/soundcard.h], [ac_cv_oss=yes],
+                     [AC_CHECK_HEADER([machine/soundcard.h], [ac_cv_oss=yes], [])] )
+    if test "x$ac_cv_want_oss" = "xcheck"; then
+        if test "x$ac_cv_oss" = "xyes"; then
+            AC_DEFINE(USE_OSS, 1, [Defined if we are using OSS])
+        else
+            AC_MSG_NOTICE([disabling OSS driver])
+            AC_DEFINE(USE_OSS, 0, [Defined if we are using OSS])
+        fi
+    else # $ac_cv_want_oss is yes
+        if test "x$ac_cv_oss" = "xno"; then
+            AC_MSG_FAILURE([--enable-oss was given, but test for OSS failed])
+        else
+            AC_DEFINE(USE_OSS, 1, [Defined if we are using OSS])
+        fi
+    fi
+fi
 
 ###########################
 # portaudio
@@ -281,6 +337,9 @@ fi
 AC_SUBST([PORTAUDIO_CFLAGS])
 AC_SUBST([PORTAUDIO_LIBS])
 
+if test "$ac_cv_oss" = "no" && test "$ac_cv_portaudio" = "no"; then
+    AC_MSG_FAILURE([$PACKAGE requires OSS or PortAudio])
+fi
 
 ###########################
 # hamlib
@@ -345,6 +404,7 @@ Configuration summary:
   TLS ................................. $ac_cv_have_tls
 
   sndfile ............................. $ac_cv_sndfile
+  OSS ................................. $ac_cv_oss
   PortAudio ........................... $ac_cv_portaudio
   hamlib .............................. $ac_cv_hamlib
 ])

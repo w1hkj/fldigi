@@ -10,7 +10,7 @@
 #include <string>
 
 #include "configuration.h"
-#include "Config.h"
+#include "confdialog.h"
 #include <FL/fl_ask.H>
 
 #include "rigclass.h"

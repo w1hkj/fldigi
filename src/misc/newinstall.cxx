@@ -6,7 +6,7 @@
 
 #include "fl_digi.h"
 #include "configuration.h"
-#include "Config.h"
+#include "confdialog.h"
 #include "logger.h"
 
 #include <string>

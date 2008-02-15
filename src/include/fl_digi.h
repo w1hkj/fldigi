@@ -49,7 +49,6 @@
 #include "mixer.h"
 
 extern Fl_Double_Window *fl_digi_main;
-extern cMixer			mixer;
 
 extern ReceiveWidget		*ReceiveText;
 extern TransmitWidget		*TransmitText;

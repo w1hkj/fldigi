@@ -40,7 +40,7 @@
 //#include "modeIO.h"
 #include "configuration.h"
 
-void cw::tx_init(cSound *sc)
+void cw::tx_init(SoundBase *sc)
 {
 	scard = sc;
 	phaseacc = 0;

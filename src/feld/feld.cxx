@@ -34,12 +34,12 @@
 
 #include "feld.h"
 #include "fontdef.h"
-#include "Config.h"
+#include "confdialog.h"
 #include "qrunner.h"
 
 char feldmsg[80];
 
-void feld::tx_init(cSound *sc)
+void feld::tx_init(SoundBase *sc)
 {
 	scard = sc;
 	txcounter = 0.0;

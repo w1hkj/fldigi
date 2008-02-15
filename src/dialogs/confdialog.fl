@@ -162,7 +162,7 @@ progdefaults.changed = true;}
             Fl_Group {} {open
               xywh {5 131 390 85} box ENGRAVED_FRAME
             } {
-              Fl_Button Palette {
+              Fl_Button WF_Palette {
                 label {Palette:}
                 callback {progdefaults.changed = true;}
                 xywh {28 152 260 24} box DOWN_BOX color 0 align 5

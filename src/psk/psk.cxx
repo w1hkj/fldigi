@@ -61,7 +61,7 @@ char pskmsg[80];
 viewpsk *pskviewer = (viewpsk *)0;
 pskeval *evalpsk = (pskeval *)0;
 
-void psk::tx_init(cSound *sc)
+void psk::tx_init(SoundBase *sc)
 {
 	scard = sc;
 	phaseacc = 0;

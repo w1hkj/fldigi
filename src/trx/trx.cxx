@@ -39,7 +39,7 @@
 
 #include <FL/Fl.H>
 
-#include "mbuffer.h"
+#include "ringbuffer.h"
 #include "qrunner.h"
 
 using namespace std;
@@ -64,18 +64,15 @@ bool		restartOK = false;
 bool		trx_wait = false;
 
 modem		*active_modem = 0;
-cSound 		*scard;
+SoundBase 		*scard;
 
 int			_trx_tune;
-unsigned char ucdata[SCBLOCKSIZE * 4];
-short int	*sidata;
-// Double size of normal read to accept overruns; double buffered because it
-// is used asynchronously by the GUI thread.
-mbuffer<double, SCBLOCKSIZE * 2, 2> _trx_scdbl;
 
-#define    HISTSIZE   1024 * SCBLOCKSIZE
-double  histbuff[HISTSIZE];
-size_t  numinbuff = 0;
+// Ringbuffer for the audio "history". A pointer into this buffer
+// is also passed to the waterfall signal drawing routines.
+ringbuffer<double> trxrb(ceil2(1024 * SCBLOCKSIZE));
+// Vector used for direct access to the ringbuffer
+ringbuffer<double>::vector_type rbvec[2];
 bool    bHistory = false;
 
 static int dummy = 0;
@@ -87,7 +84,8 @@ static bool trxrunning = false;
 void trx_trx_receive_loop()
 {
 	int  numread;
-	sidata = (short int *)ucdata;
+	assert(powerof2(SCBLOCKSIZE));
+
 	if (!scard) {
 		MilliSleep(10);
 		return;
@@ -100,8 +98,8 @@ void trx_trx_receive_loop()
 			put_status(e.what(), 5);
 #if USE_PORTAUDIO
 			if (e.error() == EBUSY && progdefaults.btnAudioIOis == 1) {
-				cSoundPA::terminate();
-				cSoundPA::initialize();
+				SoundPort::terminate();
+				SoundPort::initialize();
 			}
 #endif
 			MilliSleep(1000);
@@ -111,7 +109,10 @@ void trx_trx_receive_loop()
 
 		while (1) {
 			try {
-				numread = scard->Read(_trx_scdbl, SCBLOCKSIZE);
+				if (trxrb.write_space() == 0) // discard some old data
+					trxrb.read_advance(SCBLOCKSIZE);
+				trxrb.get_wv(rbvec);
+				numread = scard->Read(rbvec[0].buf, SCBLOCKSIZE);
 			}
 			catch (const SndException& e) {
 				scard->Close();
@@ -121,26 +122,24 @@ void trx_trx_receive_loop()
 			}
 			if (numread == -1 || (trx_state != STATE_RX))
 				break;
-			if (numread > 0) {
-			    	
-    			if (bHistory) {
-    				active_modem->set_afcOnOff(0);
-        			active_modem->rx_process( histbuff, numinbuff );
-    				active_modem->set_afcOnOff(1);
-        			bHistory = false;
-    			}
+			else if (numread == 0) // overflow
+				continue;
 
-       			active_modem->rx_process(_trx_scdbl, numread);
+			trxrb.write_advance(SCBLOCKSIZE);
+			REQ(&waterfall::sig_data, wf, rbvec[0].buf, numread);
 
-			    if (numinbuff + numread > HISTSIZE) {
-			    	memcpy( &histbuff[0], &histbuff[numread], (numinbuff - numread)*sizeof(double));
-			    	numinbuff -= numread;
-			    }
-			    for (int n = 0; n < numread; n++)
-			    	histbuff[numinbuff++] = _trx_scdbl[n];
-        			
-    			REQ(&waterfall::sig_data, wf, _trx_scdbl.c_array(), numread);
-    			_trx_scdbl.next(); // change buffers
+			if (!bHistory)
+				active_modem->rx_process(rbvec[0].buf, numread);
+			else {
+				bool afc = active_modem->get_afcOnOff();
+				active_modem->set_afcOnOff(0);
+				trxrb.get_rv(rbvec);
+				if (rbvec[0].len)
+					active_modem->rx_process(rbvec[0].buf, rbvec[0].len);
+				if (rbvec[1].len)
+					active_modem->rx_process(rbvec[1].buf, rbvec[1].len);
+				active_modem->set_afcOnOff(afc);
+				bHistory = false;
 			}
 		}
 		if (!scard->full_duplex())
@@ -298,13 +297,18 @@ void trx_reset_loop()
 		delete scard;
 		scard = 0;
 	}
-#if USE_PORTAUDIO
+#if USE_PORTAUDIO && USE_OSS
 	if (progdefaults.btnAudioIOis == 1)
-		scard = new cSoundPA(trx_scdev.c_str());
+		scard = new SoundPort(trx_scdev.c_str());
 	else
-		scard = new cSoundOSS(trx_scdev.c_str());
+		scard = new SoundOSS(trx_scdev.c_str());
 #else
-	scard = new cSoundOSS(trx_scdev.c_str());
+#  if USE_PORTAUDIO
+	scard = new SoundPort(trx_scdev.c_str());
+#  endif
+#  if USE_OSS
+	scard = new SoundOSS(trx_scdev.c_str());
+#  endif
 #endif
 	trx_state = STATE_RX;	
 }
@@ -356,13 +360,18 @@ void trx_start(const char *scdev)
 	}
 	
 	if (scard) delete scard;
-#if USE_PORTAUDIO
+#if USE_PORTAUDIO && USE_OSS
 	if (progdefaults.btnAudioIOis == 1)
-		scard = new cSoundPA(scdev);
+		scard = new SoundPort(scdev);
 	else
-		scard = new cSoundOSS(scdev);
+		scard = new SoundOSS(scdev);
 #else
-	scard = new cSoundOSS(scdev);
+#  if USE_PORTAUDIO
+	scard = new SoundPort(scdev);
+#  endif
+#  if USE_OSS
+	scard = new SoundOSS(scdev);
+#  endif
 #endif
 
 	trx_state = STATE_RX;
