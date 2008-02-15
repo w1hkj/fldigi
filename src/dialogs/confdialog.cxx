@@ -106,13 +106,6 @@ btnBlackman->value(0);
 progdefaults.changed = true;
 }
 
-Fl_Counter *cntLowFreqCutoff=(Fl_Counter *)0;
-
-static void cb_cntLowFreqCutoff(Fl_Counter* o, void*) {
-  progdefaults.LowFreqCutoff=(int)(o->value());
-progdefaults.changed = true;
-}
-
 colorbox *WF_Palette=(colorbox *)0;
 
 static void cb_WF_Palette(colorbox*, void*) {
@@ -177,6 +170,20 @@ Fl_Button *btnSavePalette=(Fl_Button *)0;
 
 static void cb_btnSavePalette(Fl_Button*, void*) {
   savePalette();
+}
+
+Fl_Counter *cntLowFreqCutoff=(Fl_Counter *)0;
+
+static void cb_cntLowFreqCutoff(Fl_Counter* o, void*) {
+  progdefaults.LowFreqCutoff=(int)(o->value());
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnWFaveraging=(Fl_Check_Button *)0;
+
+static void cb_btnWFaveraging(Fl_Check_Button* o, void*) {
+  progdefaults.WFaveraging = o->value();
+progdefaults.changed = true;
 }
 
 Fl_Check_Button *btnUseCursorLines=(Fl_Check_Button *)0;
@@ -1169,10 +1176,9 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { Fl_Group* o = tabWaterfall = new Fl_Group(0, 25, 405, 195, "W-fall");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
-        o->hide();
         { Fl_Tabs* o = new Fl_Tabs(0, 25, 405, 195);
           { Fl_Group* o = new Fl_Group(0, 50, 400, 170, "Filters/Colors");
-            { Fl_Group* o = new Fl_Group(5, 55, 390, 75, "FFT Prefilter");
+            { Fl_Group* o = new Fl_Group(5, 55, 390, 42, "FFT Prefilter");
               o->box(FL_ENGRAVED_BOX);
               o->color((Fl_Color)51);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -1195,16 +1201,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 o->down_box(FL_DOWN_BOX);
                 o->callback((Fl_Callback*)cb_btnTriangular);
                 if(progdefaults.wfPreFilter==4)o->value(1);else o->value(0);
-              }
-              { Fl_Counter* o = cntLowFreqCutoff = new Fl_Counter(155, 97, 94, 21, "Low Freq Cutoff");
-                o->type(1);
-                o->minimum(0);
-                o->maximum(500);
-                o->step(50);
-                o->value(300);
-                o->callback((Fl_Callback*)cb_cntLowFreqCutoff);
-                o->align(FL_ALIGN_LEFT);
-                o->value(progdefaults.LowFreqCutoff);
               }
               o->end();
             }
@@ -1256,6 +1252,21 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 o->callback((Fl_Callback*)cb_btnSavePalette);
               }
               o->end();
+            }
+            { Fl_Counter* o = cntLowFreqCutoff = new Fl_Counter(117, 103, 70, 20, "Low Freq Cutoff");
+              o->type(1);
+              o->minimum(0);
+              o->maximum(500);
+              o->step(50);
+              o->value(300);
+              o->callback((Fl_Callback*)cb_cntLowFreqCutoff);
+              o->align(FL_ALIGN_LEFT);
+              o->value(progdefaults.LowFreqCutoff);
+            }
+            { Fl_Check_Button* o = btnWFaveraging = new Fl_Check_Button(206, 105, 114, 15, "wf averaging");
+              o->down_box(FL_DOWN_BOX);
+              o->callback((Fl_Callback*)cb_btnWFaveraging);
+              o->value(progdefaults.WFaveraging);
             }
             o->end();
           }
@@ -1679,6 +1690,7 @@ fect after a restart.");
       { Fl_Group* o = tabModems = new Fl_Group(0, 25, 401, 195, "Modem");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
+        o->hide();
         { Fl_Tabs* o = tabsModems = new Fl_Tabs(0, 25, 401, 195);
           o->color((Fl_Color)51);
           o->selection_color((Fl_Color)10);

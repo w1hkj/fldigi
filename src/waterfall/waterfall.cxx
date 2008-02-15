@@ -618,33 +618,54 @@ void WFdisp::drawMarker() {
 		step * RGBsize, RGBwidth);
 }
 
+
 void WFdisp::update_waterfall() {
 // transfer the fft history data into the WF image
-	int sig;
 	short int *p1, *p2;
 	RGBI *p3, *p4;
 	p1 = tmp_fft_db + offset;
 	p3 = fft_img;
+	
 	for (int row = 0; row < image_height; row++) {
 		p2 = p1;
 		p4 = p3;
-		for (int col = 0; col < disp_width; col++) {
+		if (progdefaults.WFaveraging) {
 			if (step == 4)
-				// sig = MAX( MAX ( MAX ( *p2, *(p2+1) ), *(p2+2) ), *(p2+3) );
-				sig = (*p2+ *(p2+1)+ *(p2+2)+ *(p2+3))/4;
+				for (int col = 0; col < disp_width; col++) {
+					*(p4++) = mag2RGBI[ (*p2+ *(p2+1)+ *(p2+2)+ *(p2+3))/4 ];
+					p2 += step;
+				}
 			else if (step == 2)
-				// sig = MAX( *p2, *(p2 + 1) );
-				sig = (*p2  + *(p2 + 1))/2;
+				for (int col = 0; col < disp_width; col++) {
+					*(p4++) = mag2RGBI[ (*p2  + *(p2+1))/2 ];
+					p2 += step;
+				}
 			else 
-				sig = *p2;
-			*p4 = mag2RGBI[ sig ];
-			p2 += step;
-			p4++;
+				for (int col = 0; col < disp_width; col++) {
+					*(p4++) = mag2RGBI[ *p2 ];
+					p2 += step;
+				}
+		} else {
+			if (step == 4)
+				for (int col = 0; col < disp_width; col++) {
+					*(p4++) = mag2RGBI[ MAX( MAX ( MAX ( *p2, *(p2+1) ), *(p2+2) ), *(p2+3) ) ];
+					p2 += step;
+				}
+			else if (step == 2)
+				for (int col = 0; col < disp_width; col++) {
+					*(p4++) = mag2RGBI[ MAX( *p2, *(p2+1) ) ];
+					p2 += step;
+				}
+			else 
+				for (int col = 0; col < disp_width; col++) {
+					*(p4++) = mag2RGBI[ *p2 ];
+					p2 += step;
+				}
 		}
-		
 		p1 += IMAGE_WIDTH;
 		p3 += disp_width;
 	}
+
 	if (progdefaults.UseBWTracks) {
 		RGBI  *pos1 = fft_img + (carrierfreq - offset - bandwidth/2) / step;
 		RGBI  *pos2 = fft_img + (carrierfreq - offset + bandwidth/2) / step;

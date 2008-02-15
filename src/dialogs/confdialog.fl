@@ -35,7 +35,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {fldigi - config} open
-    xywh {527 153 400 255} type Double color 45 selection_color 51 align 80 visible
+    xywh {528 602 400 255} type Double color 45 selection_color 51 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 405 220} color 47 selection_color 9
@@ -90,7 +90,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabWaterfall {
         label {W-fall} open
-        xywh {0 25 405 195} color 51 selection_color 51 hide
+        xywh {0 25 405 195} color 51 selection_color 51
       } {
         Fl_Tabs {} {open
           xywh {0 25 405 195}
@@ -101,7 +101,7 @@ progdefaults.changed = true;}
           } {
             Fl_Group {} {
               label {FFT Prefilter} open
-              xywh {5 55 390 75} box ENGRAVED_BOX color 51 align 21
+              xywh {5 55 390 42} box ENGRAVED_BOX color 51 align 21
             } {
               Fl_Check_Button btnBlackman {
                 label Blackman
@@ -150,13 +150,6 @@ btnBlackman->value(0);
 progdefaults.changed = true;}
                 xywh {304 75 90 15} down_box DOWN_BOX
                 code0 {if(progdefaults.wfPreFilter==4)o->value(1);else o->value(0);}
-              }
-              Fl_Counter cntLowFreqCutoff {
-                label {Low Freq Cutoff}
-                callback {progdefaults.LowFreqCutoff=(int)(o->value());
-progdefaults.changed = true;}
-                xywh {155 97 94 21} type Simple align 4 minimum 0 maximum 500 step 50 value 300
-                code0 {o->value(progdefaults.LowFreqCutoff);}
               }
             }
             Fl_Group {} {open
@@ -227,6 +220,20 @@ progdefaults.changed = true;}
                 xywh {320 184 70 24}
                 code0 {\#include "colorbox.h"}
               }
+            }
+            Fl_Counter cntLowFreqCutoff {
+              label {Low Freq Cutoff}
+              callback {progdefaults.LowFreqCutoff=(int)(o->value());
+progdefaults.changed = true;}
+              xywh {117 103 70 20} type Simple align 4 minimum 0 maximum 500 step 50 value 300
+              code0 {o->value(progdefaults.LowFreqCutoff);}
+            }
+            Fl_Check_Button btnWFaveraging {
+              label {wf averaging}
+              callback {progdefaults.WFaveraging = o->value();
+progdefaults.changed = true;} selected
+              xywh {206 105 114 15} down_box DOWN_BOX
+              code0 {o->value(progdefaults.WFaveraging);}
             }
           }
           Fl_Group {} {
@@ -831,7 +838,7 @@ This option takes effect after a restart.} xywh {50 155 180 20} down_box DOWN_BO
       }
       Fl_Group tabModems {
         label Modem open
-        xywh {0 25 401 195} color 51 selection_color 51
+        xywh {0 25 401 195} color 51 selection_color 51 hide
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 401 195} color 51 selection_color 10 align 9
@@ -1158,7 +1165,7 @@ initViewer();}
               Fl_Spinner cntChannels {
                 label {\# Channels:}
                 callback {progdefaults.VIEWERchannels = (int)(o->value());
-initViewer();} selected
+initViewer();}
                 xywh {190 82 50 25} align 8
                 code0 {o->minimum(5);}
                 code1 {o->maximum(30);}
