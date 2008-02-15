@@ -6,13 +6,23 @@ AC_COPYRIGHT([Copyright (C) 2007 Stelios Bounanos, M0GLD (m0gld AT enotty DOT ne
 AC_PREREQ(2.61)
 AC_INIT([fldigi], [2.10A], [w1hkj AT w1hkj DOT com])
 AC_CONFIG_AUX_DIR([build-aux])
+
+# define build, build_cpu, build_vendor, build_os
+AC_CANONICAL_BUILD
+# define host, host_cpu, host_vendor, host_os
+AC_CANONICAL_HOST
+#define target, target_cpu, target_vendor, target_os
+AC_CANONICAL_TARGET
+
 AM_INIT_AUTOMAKE([-Wall foreign std-options 1.9.6])
 AM_MAINTAINER_MODE
 AC_CONFIG_SRCDIR([src/main.cxx])
 AC_CONFIG_HEADER([src/config.h])
 
+
 AC_DEFINE(PACKAGE_HOME, ["http://www.w1hkj.com/Fldigi-2.x.html"], [Home page])
 AC_DEFINE(PACKAGE_DOCS, ["http://www.w1hkj.com/FldigiHelp-2.0/index.html"], [Docs index])
+
 
 # Checks for programs.
 AC_PROG_CXX
@@ -86,11 +96,23 @@ AC_ARG_ENABLE([debug],
                [ac_cv_debug=no])
 if test "x$ac_cv_debug" = "xyes"; then
     if test "x$GXX" = "xyes"; then
-        RDYNAMIC=-rdynamic
         CXXFLAGS="-O0 -ggdb3 -Wall"
     else
         CXXFLAGS="-O0 -g -Wall"
     fi
+
+    # check for -rdynamic support
+    AC_MSG_CHECKING([whether $CXX supports -rdynamic])
+    LDFLAGS_saved="$LDFLAGS"
+    LDFLAGS="$LDFLAGS -rdynamic"
+    AC_TRY_LINK([], [], [ac_cv_rdynamic=yes], [ac_cv_rdynamic=no])
+    AC_MSG_RESULT([$ac_cv_rdynamic])
+    LDFLAGS="$LDFLAGS_saved"
+
+    if test "x$ac_cv_rdynamic" = "xyes"; then
+        RDYNAMIC=-rdynamic
+    fi
+
     CFLAGS="$CXXFLAGS"
     AC_MSG_NOTICE([debugging enabled; overriding CXXFLAGS])
 fi
