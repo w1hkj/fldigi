@@ -9,6 +9,7 @@
 #include "confdialog.h"
 #include "logger.h"
 #include "newinstall.h"
+#include "globals.h"
 
 #include <FL/Fl.H>
 #include "File_Selector.h"
@@ -52,6 +53,7 @@ void pDECR(string &, size_t &);
 void pINCR(string &, size_t &);
 void pLOG(string &, size_t &);
 void pTIMER(string &, size_t &);
+void pMODEM(string &, size_t &);
 
 MTAGS mtags[] = {
 {"<CALL>",		pCALL},
@@ -81,6 +83,7 @@ MTAGS mtags[] = {
 {"<INCR>",		pINCR},
 {"<LOG>",		pLOG},
 {"<TIMER>",		pTIMER},
+{"<MODEM>",		pMODEM},
 {0, 0}
 };
 
@@ -282,6 +285,31 @@ void pTIMER(string &s, size_t &i)
 	progdefaults.useTimer = true;
 }
 
+void pMODEM(string &s, size_t &i)
+{
+	if ((i = s.find('>', i)) == string::npos)
+		return;
+
+	size_t len = s.length();
+	while (++i < len)
+	    if (!isspace(s[i]))
+		break;
+	size_t j = i;
+	while (++j < len)
+	    if (isspace(s[j]))
+		break;
+
+	string name = s.substr(i, j-i);
+	for (j = 0; j < NUM_MODES; j++) {
+		if (name == mode_info[j].sname) {
+			if (active_modem->get_mode() != mode_info[j].mode)
+				init_modem(mode_info[j].mode);
+			s.clear();
+			break;
+		}
+	}
+}
+
 int MACROTEXT::loadMacros(string filename)
 {
 	string mLine;
@@ -453,6 +481,9 @@ string mtext =
 // <RX>  retn to receive\n\
 // <TX>  start transmit\n\
 // <VERSION>  Fldigi + version\n\
+// <MODEM> name  changes the current modem to name. name is the short modem name\n\
+//               as it appears in the status/quick change box at the bottom left corner\n\
+//               of the main window\n\
 //\n\
 // Contest macro definitions:\n\
 // <CNTR>  substitute the contest counter - no change in value\n\

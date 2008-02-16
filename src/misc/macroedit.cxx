@@ -2,6 +2,7 @@
 
 #include "macros.h"
 #include "macroedit.h"
+#include "globals.h"
 
 #include <string>
 
@@ -20,35 +21,57 @@ Fl_Hold_Browser *macroDefs=(Fl_Hold_Browser *)0;
 
 static int iMacro;
 
+// fl_color(0) is always the foreground colour
+#define LINE_SEP "@B0"
+
 void loadBrowser(Fl_Widget *widget) {
 	Fl_Browser *w = (Fl_Browser *)widget;
-	w->add("<CALL>\tother call");
-	w->add("<FREQ>\tmy frequency");
-	w->add("<LOC>\tother locator");
-	w->add("<MODE>\tmode");
-	w->add("<NAME>\tremote name");
-	w->add("<QTH>\tother qth");
-	w->add("<RST>\tother RST");
 	w->add("<MYCALL>\tmy call");
 	w->add("<MYLOC>\tmy locator");
 	w->add("<MYNAME>\tmy name");
 	w->add("<MYQTH>\tmy qth");
 	w->add("<MYRST>\tmy RST");
+
+	w->add(LINE_SEP);
+	w->add("<CALL>\tother call");
+	w->add("<LOC>\tother locator");
+	w->add("<NAME>\tremote name");
+	w->add("<QTH>\tother qth");
+	w->add("<RST>\tother RST");
+
+	w->add(LINE_SEP);
+	w->add("<FREQ>\tmy frequency");
+	w->add("<MODE>\tmode");
+
+	w->add(LINE_SEP);
 	w->add("<LDT>\tLocal datetime");
-	w->add("<ILDT>\tLocal datetime in iso-8601");
+	w->add("<ILDT>\tLDT in iso-8601 format");
 	w->add("<ZDT>\tZulu datetime");
-	w->add("<IZDT>\tZulu datetime in iso-8601");
-	w->add("<ID>\tMode ID'r");
-	w->add("<TEXT>\tVideo text");
-	w->add("<CWID>\tCW identifier");
-	w->add("<RX>\treceive");
-	w->add("<TX>\ttransmit");
-	w->add("<VER>\tFldigi + version");
+	w->add("<IZDT>\tZDT in iso-8601 format");
+
+	w->add(LINE_SEP);
 	w->add("<CNTR>\tcontest cnt");
 	w->add("<DECR>\tdecr cnt");
 	w->add("<INCR>\tincr cnt");
+
+	w->add(LINE_SEP);
+	w->add("<ID>\tMode ID'r");
+	w->add("<TEXT>\tVideo text");
+	w->add("<CWID>\tCW identifier");
+
+	w->add(LINE_SEP);
+	w->add("<RX>\treceive");
+	w->add("<TX>\ttransmit");
 	w->add("<LOG>\tsave QSO data");
+	w->add("<VER>\tFldigi + version");
 	w->add("<TIMER>\trepeat every NNN sec");
+
+	w->add(LINE_SEP);
+	char s[48];
+	for (size_t i = 0; i < NUM_MODES; i++) {
+		snprintf(s, sizeof(s), "<MODEM>%s", mode_info[i].sname);
+		w->add(s);
+	}
 }
 
 void cbMacroEditOK(Fl_Widget *w, void *)
@@ -76,7 +99,10 @@ void cbInsertMacro(Fl_Widget *, void *)
 	string edittext = macrotext->value();
 	string text = macroDefs->text(nbr);
 	size_t tab = text.find('\t');
-	text.erase(tab);
+	if (tab != string::npos)
+		text.erase(tab);
+	if (text == LINE_SEP)
+		return;
 	macrotext->insert(text.c_str());
 	macrotext->take_focus();
 }

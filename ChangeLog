@@ -7,6 +7,7 @@ Change Log:
       4) The volume sliders will now be hidden if the mixer is disabled
       5) Rename some classes so that fldigi builds on Mac OSX.
          Many thanks to Justin Burket and Diane Bruce.
+      6) Added a <MODEM> macro that changes the current modem
 
 2.09  1) Modified src/Makefile.am for FreeBSD name space clash
       2) Added psk multi-channel viewer with regex search capability

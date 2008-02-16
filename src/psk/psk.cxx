@@ -49,7 +49,7 @@ extern waterfall *wf;
 
 // Change the following for DCD low pass filter adjustment
 #define SQLCOEFF 0.01
-#define SQLDECAY 100
+#define SQLDECAY 50
 
 //=====================================================================
 
@@ -347,6 +347,7 @@ void psk::findsignal()
 		frequency = ftest;
 		set_freq(frequency);
 		freqerr = 0.0;
+		sigsearch = 0;
 	}
 //			searchBW = progdefaults.SearchRange;
 //			ftest = wf->peakFreq((int)(frequency), searchBW);
@@ -383,10 +384,7 @@ void psk::afc()
 {
 	if (!afcon)
 		return;
-//	if (sigsearch)
-//		findsignal();
-	else if (dcd == true)
-		phaseafc();
+	phaseafc();
 }
 
 
@@ -484,8 +482,8 @@ int psk::rx_process(const double *buf, int len)
 	if (pskviewer && !bHistory) pskviewer->rx_process(buf, len);
 	if (evalpsk) evalpsk->sigdensity();
 		
-	if (afcon == 2)
-		sigsearch = 0;
+//	if (afcon == 2)
+//		sigsearch = 0;
 		
 	delta = twopi * frequency / samplerate;
 	
