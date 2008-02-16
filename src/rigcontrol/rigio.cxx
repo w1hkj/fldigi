@@ -8,6 +8,7 @@
 #include <config.h>
 
 #include <string>
+#include <ctime>
 
 #ifdef RIGCATTEST
 	#include "rigCAT.h"
@@ -59,6 +60,15 @@ void printhex(unsigned char *s, int len)
 		std::cout << hex << (unsigned int)(s[i] & 0xFF) << " ";
 	std::cout << std::endl;
 }
+char * printtime()
+{
+	time_t t;
+	time(&t);
+	tm *now = gmtime(&t);
+	static char sztime[80];
+	strftime(sztime, 79, "[%H:%M:%S]", now);
+	return sztime;
+}
 
 bool readpending = false;
 int  readtimeout;
@@ -68,8 +78,11 @@ bool hexout( string s, int retnbr)
 // thread might call this function while a read from the rig is in process
 // wait here until that processing is finished or a timeout occurs
 // reset the readpending & return false if a timeout occurs
-//printhex(s);
-	readtimeout = 500; // 500 msec timeout
+
+// debug code
+//std::cout << printtime() << "Cmd: "; printhex(s);
+
+	readtimeout = (rig.wait +rig.timeout) * rig.retries + 2000; // 2 second min timeout
 	while (readpending && readtimeout--)
 		MilliSleep(1);
 	if (readtimeout == 0) {
@@ -78,38 +91,51 @@ bool hexout( string s, int retnbr)
 		return false;
 	}
 
-	int num = 0;
-	memset(sendbuff,0, 200);
-	for (unsigned int i = 0; i < s.length(); i++)
-		sendbuff[i] = s[i];
-
 	readpending = true;
-	rigio.FlushBuffer();
-	rigio.WriteBuffer(sendbuff, s.size());
-	if (rig.echo == true)
-		rigio.ReadBuffer (replybuff, s.size());
 
-	memset (replybuff, 0, 200);
+	for (int n = 0; n < rig.retries; n++) {	
+		int num = 0;
+		memset(sendbuff,0, 200);
+		for (unsigned int i = 0; i < s.length(); i++)
+			sendbuff[i] = s[i];
+
+		rigio.FlushBuffer();
+		rigio.WriteBuffer(sendbuff, s.size());
+		if (rig.echo == true)
+			rigio.ReadBuffer (replybuff, s.size());
+
+		memset (replybuff, 0, 200);
 	
 // wait interval before trying to read response
-	if ((readtimeout = rig.wait) > 0)
-		while (readtimeout--)
-			MilliSleep(1);
+		if ((readtimeout = rig.wait) > 0)
+			while (readtimeout--)
+				MilliSleep(1);
 
-	if (retnbr > 0) {
-		num = rigio.ReadBuffer (replybuff, retnbr > 200 ? 200 : retnbr);
+		if (retnbr > 0) {
+			num = rigio.ReadBuffer (replybuff, retnbr > 200 ? 200 : retnbr);
 // debug code
-//		if (num)
-//			printhex(replybuff, num);
-//		else
-//			std::cout << "no reply" << std::endl; fflush(stdout);
+/*
+			if (num) {
+				std::cout << printtime() << "Rsp (" << n << "): ";
+				printhex(replybuff, num);
+			} else
+				std::cout << printtime() << "Rsp (" << n << "): no reply" << std::endl;
+			std::cout.flush();
+*/			
+		}
+
+		if (retnbr == 0 || num == retnbr) {
+			readpending = false;
+			return true;
+//
+		if ((readtimeout = rig.timeout) > 0)
+			while (readtimeout--)
+				MilliSleep(1);
+
+		}
 	}
-	
+
 	readpending = false;
-
-	if (retnbr == 0 || num == retnbr)
-		return true;
-
 	return false;
 }
 
