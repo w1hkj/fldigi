@@ -81,8 +81,6 @@ private:
 
 	void			findsignal(int);
 	void			afc(int);
-	void			sigdensity();
-	double			sigpeak(int &f, int f1, int f2);
 	
 public:
 	viewpsk(trx_mode mode);

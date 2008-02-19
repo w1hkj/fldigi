@@ -147,49 +147,6 @@ void viewpsk::restart(trx_mode pskmode)
 }
 
 //=============================================================================
-//========================== viewpsk signal evaluation ========================
-//=============================================================================
-void viewpsk::sigdensity() {
-	double sig = 0.0;
-	double val;
-	int hbw = (int)(bandwidth / 2);
-	int twohbw = 2 * hbw;
-	int flower = progdefaults.VIEWERstart - 50;
-	int fupper = flower + 100 * progdefaults.VIEWERchannels + 100;
-	double *vals = new double[twohbw + 1];
-	int j = -1;
-	sigavg = 0.0;
-	sigmin = 1e6;
-	for (int i = flower - hbw; i < fupper + hbw; i++) {
-		j++;
-		if (j == twohbw + 1) j = 0;
-		val = wf->Pwr(i);
-		if (i >= flower + twohbw) {
-			sigpwr[i - hbw - 1] = sig;
-			sig -= vals[j];
-		}
-		vals[j] = val;
-		sig += val;
-		sigavg += val;
-		if (sig > 0 && sig < sigmin) sigmin = sig;
-	}		
-	sigavg /= (fupper - flower - 100);
-}
-
-double viewpsk::sigpeak(int &f, int f1, int f2)
-{
-	double peak = 0;
-	f = (f1 + f2) / 2;
-	for (int i = f1; i <= f2; i++)
-		if (sigpwr[i] > peak) {
-			peak = sigpwr[i];
-			f = i;
-		}
-	return peak / sigavg;
-//	return peak / sigmin;
-}
-
-//=============================================================================
 //========================= viewpsk receive routines ==========================
 //=============================================================================
 

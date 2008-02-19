@@ -302,22 +302,16 @@ int waitcount = 0;
 
 void psk::findsignal()
 {
-	double ftest, sigpwr, noise;
-	int searchBW;
+	int ftest, f1, f2;
 	
-// fast search for peak signal frequency
 	if (sigsearch > 0) {
 		sigsearch--;
-		if (mailserver) { 
-// mail server signal search
-			searchBW = progdefaults.ServerOffset;// - (int)bandwidth;
-			ftest = wf->peakFreq((int)(frequency), searchBW + (int)bandwidth/2);
-			sigpwr = wf->powerDensity(ftest,  bandwidth);
-			noise = wf->powerDensity(ftest + 2 * bandwidth, bandwidth / 2) +
-		    	    wf->powerDensity(ftest - 2 * bandwidth, bandwidth / 2) + 1e-20;
-			if (sigpwr/noise > SNTHRESHOLD) { // larger than the search threshold
+		if (mailserver) { // mail server search algorithm
+			f1 = (int)(frequency - progdefaults.ServerOffset);
+			f2 = (int)(frequency + progdefaults.ServerOffset);
+			if (evalpsk->sigpeak(ftest, f1, f2) > SNTHRESHOLD ) {
 				if (progdefaults.PSKmailSweetSpot) {
-					if (fabs(ftest - progdefaults.PSKsweetspot) < searchBW) {
+					if (fabs(ftest - progdefaults.PSKsweetspot) < progdefaults.ServerOffset) {
 						frequency = ftest;
 						set_freq(frequency);
 						freqerr = 0.0;
@@ -338,30 +332,17 @@ void psk::findsignal()
 					sigsearch = SIGSEARCH;
 				}
 			}
-		} else { 
-// normal signal search
-	int ftest;
-	int f1 = (int)(frequency - progdefaults.SearchRange/2);
-	int f2 = (int)(frequency + progdefaults.SearchRange/2);
-	if (evalpsk->sigpeak(ftest, f1, f2) > SNTHRESHOLD ){//SNTHRESHOLD) {
-		frequency = ftest;
-		set_freq(frequency);
-		freqerr = 0.0;
-		sigsearch = 0;
-	}
-//			searchBW = progdefaults.SearchRange;
-//			ftest = wf->peakFreq((int)(frequency), searchBW);
-//			sigpwr = wf->powerDensity(ftest,  bandwidth);
-//			noise = wf->powerDensity(ftest + 2 * bandwidth / 2, bandwidth / 2) +
-//		    	    wf->powerDensity(ftest - 2 * bandwidth / 2, bandwidth / 2) + 1e-20;
-//			if (sigpwr/noise > SNTHRESHOLD) { // larger than the detection threshold)
-//				frequency = ftest;
-//				set_freq(frequency);
-//				freqerr = 0.0;
-//			}
+		} else { // normal signal search algorithm
+			f1 = (int)(frequency - progdefaults.SearchRange/2);
+			f2 = (int)(frequency + progdefaults.SearchRange/2);
+			if (evalpsk->sigpeak(ftest, f1, f2) > SNTHRESHOLD ) {
+				frequency = ftest;
+				set_freq(frequency);
+				freqerr = 0.0;
+				sigsearch = 0;
+			}
 		}
-	}		
-
+	}
 }
 
 void psk::phaseafc()
