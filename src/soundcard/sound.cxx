@@ -993,7 +993,7 @@ void SoundPort::init_stream(void)
                         break;
         if (idev == devs.end()) {
                 cerr << "PA_debug: could not find device \"" << device << "\"\n";
-                idev = devs.begin();
+                idev = devs.begin() + Pa_GetDefaultOutputDevice();
         }
         PaDeviceIndex idx = idev - devs.begin();
 

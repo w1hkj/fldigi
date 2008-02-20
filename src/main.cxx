@@ -216,6 +216,7 @@ int main(int argc, char ** argv)
 
 void sound_init(void)
 {
+#if USE_OSS
 	glob_t gbuf;
 	glob("/dev/dsp*", 0, NULL, &gbuf);
 	for (size_t i = 0; i < gbuf.gl_pathc; i++)
@@ -224,9 +225,17 @@ void sound_init(void)
 		progdefaults.OSSdevice = gbuf.gl_pathv[0];
 	menuOSSDev->value(progdefaults.OSSdevice.c_str());
 	globfree(&gbuf);
-	
+#endif
+
 #if USE_PORTAUDIO
 	SoundPort::initialize();
+	if (SoundPort::devices().size() == 0) {
+		cerr << "PortAudio did not find any devices!\n";
+		if (menuOSSDev->menu()->size() - 1 > 0)
+			goto init_mixer;
+		else
+			exit(EXIT_FAILURE);
+	}
 
 	for (SoundPort::device_iterator idev = SoundPort::devices().begin();
 	     idev != SoundPort::devices().end(); ++idev) {
@@ -234,21 +243,22 @@ void sound_init(void)
 		s.append(Pa_GetHostApiInfo((*idev)->hostApi)->name).append("/").append((*idev)->name);
 
 		string::size_type i = s.find('/') + 1;
-// backslash-escape any slashes in the device name
+		// backslash-escape any slashes in the device name
 		while ((i = s.find('/', i)) != string::npos) {
 			s.insert(i, 1, '\\');
 			i += 2;
 		}
 		menuPADev->add(s.c_str());
-// set the initial value in the configuration structure
-		if (progdefaults.PAdevice == "" && idev == SoundPort::devices().begin())
-			progdefaults.PAdevice = (*idev)->name;
 	}
+	// set the initial value in the configuration structure
+	if (progdefaults.PAdevice == "")
+		progdefaults.PAdevice = (*(SoundPort::devices().begin() + Pa_GetDefaultOutputDevice()))->name;
 	menuPADev->value(progdefaults.PAdevice.c_str());
 
 	btnAudioIO[1]->activate();
 #endif
 
+init_mixer:
 #if USE_OSS
 	glob("/dev/mixer*", 0, NULL, &gbuf);
 	for (size_t i = 0; i < gbuf.gl_pathc; i++) 
@@ -404,7 +414,7 @@ int parse_args(int argc, char **argv, int& idx)
                OPT_FAST_TEXT, OPT_FONT, OPT_WFALL_WIDTH, OPT_WFALL_HEIGHT,
                OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT, OPT_PROFILE, OPT_USE_CHECK,
 #if USE_PORTAUDIO
-               OPT_ALLOW_FULL_DUPLEX, OPT_FRAMES_PER_BUFFER, OPT_SAMPLE_RATE,
+               OPT_ALLOW_FULL_DUPLEX, OPT_FRAMES_PER_BUFFER,
 #endif
                OPT_EXIT_AFTER,
                OPT_HELP, OPT_VERSION };
@@ -426,7 +436,6 @@ int parse_args(int argc, char **argv, int& idx)
 #if USE_PORTAUDIO
 		{ "full-duplex",   0, 0, OPT_ALLOW_FULL_DUPLEX },
 		{ "frames-per-buf",1, 0, OPT_FRAMES_PER_BUFFER },
-		{ "sample-rate",   1, 0, OPT_SAMPLE_RATE },
 #endif
 		{ "exit-after",    1, 0, OPT_EXIT_AFTER },
 
@@ -517,10 +526,6 @@ int parse_args(int argc, char **argv, int& idx)
 			break;
 		case OPT_FRAMES_PER_BUFFER:
 			pa_frames_per_buffer = strtol(optarg, 0, 10);
-			break;
-		case OPT_SAMPLE_RATE:
-			cerr << "The --sample-rate switch is deprecated and will be removed in a future release\n";
-			progdefaults.sample_rate = strtol(optarg, 0, 10);
 			break;
 #endif // USE_PORTAUDIO
 
