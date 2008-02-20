@@ -85,7 +85,7 @@ extern Fl_Spinner *cntRxRateCorr;
 extern Fl_Spinner *cntTxRateCorr;
 extern Fl_Spinner *cntTxOffset;
 extern Fl_Group *AudioIO;
-extern Fl_Round_Button *btnAudioIO[2];
+extern Fl_Round_Button *btnAudioIO[3];
 #include <FL/Fl_Input_Choice.H>
 extern Fl_Input_Choice *menuOSSDev;
 extern Fl_Input_Choice *menuPADev;

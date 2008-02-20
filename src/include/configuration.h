@@ -134,6 +134,7 @@ struct configuration {
 	string	OSSdevice;
 	string	PAdevice;
 	int		sample_rate;
+	string		sample_converter;
 	int		RX_corr;
 	int		TX_corr;
 	int		TxOffset;

@@ -27,13 +27,11 @@
 // ----------------------------------------------------------------------------
 
 #include <config.h>
-
-#include "digiscope.h"
-
-#include "modem.h"
-
 #include <iostream>
 
+#include "digiscope.h"
+#include "modem.h"
+#include "trx.h"
 #include "qrunner.h"
 
 
@@ -55,21 +53,17 @@ Digiscope::~Digiscope()
 
 void Digiscope::video(double *data, int len )
 {
+	if (active_modem->HistoryON()) return;
+	
 	if (data == NULL || len == 0)
 		return;
 	
 	FL_LOCK_D();
 	int W = w() - 4;
 	int H = h() - 4;
-// video signal display
-//	if (len < W)
-//		for (int i = 0; i < W; i++) 
-//			vidline[3*i] = vidline[3*i+1] = 
-//			vidline[3*i+2] = (unsigned char)(data[i * W / len]);
-//	else
-		for (int i = 0; i < W; i++) 
-			vidline[3*i] = vidline[3*i+1] = 
-			vidline[3*i+2] = (unsigned char)(data[i * len / W]);
+	for (int i = 0; i < W; i++) 
+		vidline[3*i] = vidline[3*i+1] = 
+		vidline[3*i+2] = (unsigned char)(data[i * len / W]);
 	vidline[3*W/2] = 255;
 	vidline[3*W/2+1] = 0;
 	vidline[3*W/2+2] = 0;
@@ -83,13 +77,15 @@ void Digiscope::video(double *data, int len )
 		memcpy (&vidbuf[3*W*linecnt], vidline, 3*W * sizeof(unsigned char));
 	linecnt++;
 
-	REQ(&Digiscope::redraw, this);
+	REQ_DROP(&Digiscope::redraw, this);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }
 
 void Digiscope::data(double *data, int len, bool scale)
 {
+	if (active_modem->HistoryON()) return;
+	
 	if (data == 0) {
 		memset(_buf, 0, MAX_LEN * sizeof(*_buf));
 		return;
@@ -114,28 +110,32 @@ void Digiscope::data(double *data, int len, bool scale)
 			else
 				_buf[i] = 0.0;
 	}
-	REQ(&Digiscope::redraw, this);
+	REQ_DROP(&Digiscope::redraw, this);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }
 
 void Digiscope::phase(double ph, bool hl)
 {
+	if (active_modem->HistoryON()) return;
+	
 	FL_LOCK_D();
 	_phase = ph;
 	_highlight = hl;
-	REQ(&Digiscope::redraw, this);
+	REQ_DROP(&Digiscope::redraw, this);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }
 
 void Digiscope::rtty(double flo, double fhi, double amp)
 {
+	if (active_modem->HistoryON()) return;
+	
 	FL_LOCK_D();
 	_flo = flo;
 	_fhi = fhi;
 	_amp = amp;
-	REQ(&Digiscope::redraw, this);
+	REQ_DROP(&Digiscope::redraw, this);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }
@@ -156,7 +156,7 @@ void Digiscope::mode(scope_mode md)
 	vidline[3*W/2+2] = 0;
 	for (int i = 0; i < H; i++)
 		memcpy(&vidbuf[3*W*i], vidline, 3*W*sizeof(unsigned char) );
-	REQ(&Digiscope::redraw, this);
+	REQ_DROP(&Digiscope::redraw, this);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }
@@ -278,8 +278,7 @@ void Digiscope::draw_video()
 	fl_draw_image(
 		vidbuf, 
 		x() + 2, y() + 2, 
-		w() - 4, h() - 4);//, 
-//		3, 3* (w() - 4));
+		w() - 4, h() - 4);
 }
 
 void Digiscope::draw()

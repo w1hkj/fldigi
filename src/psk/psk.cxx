@@ -365,7 +365,8 @@ void psk::afc()
 {
 	if (!afcon)
 		return;
-	phaseafc();
+	if (dcd == true)
+		phaseafc();
 }
 
 

@@ -566,6 +566,7 @@ Fl_Group *AudioIO=(Fl_Group *)0;
 
 static void cb_btnAudioIO(Fl_Round_Button* o, void*) {
   btnAudioIO[1]->value(0);
+btnAudioIO[2]->value(0);
 o->value(1);
 menuOSSDev->activate();
 menuPADev->deactivate();
@@ -576,16 +577,30 @@ progdefaults.changed = true;
 resetSoundCard();
 }
 
-Fl_Round_Button *btnAudioIO[2]={(Fl_Round_Button *)0};
-
 static void cb_btnAudioIO1(Fl_Round_Button* o, void*) {
   btnAudioIO[0]->value(0);
+btnAudioIO[2]->value(0);
 o->value(1);
 menuPADev->activate();
 menuOSSDev->deactivate();
 menuSampleRate->activate();
 scDevice = menuPADev->value();
 progdefaults.btnAudioIOis = 1;
+progdefaults.changed = true;
+resetSoundCard();
+}
+
+Fl_Round_Button *btnAudioIO[3]={(Fl_Round_Button *)0};
+
+static void cb_btnAudioIO2(Fl_Round_Button* o, void*) {
+  btnAudioIO[0]->value(0);
+btnAudioIO[1]->value(0);
+o->value(1);
+menuPADev->deactivate();
+menuOSSDev->deactivate();
+menuSampleRate->deactivate();
+scDevice = "localhost";
+progdefaults.btnAudioIOis = 2;
 progdefaults.changed = true;
 resetSoundCard();
 }
@@ -1176,6 +1191,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { Fl_Group* o = tabWaterfall = new Fl_Group(0, 25, 405, 195, "W-fall");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
+        o->hide();
         { Fl_Tabs* o = new Fl_Tabs(0, 25, 405, 195);
           { Fl_Group* o = new Fl_Group(0, 50, 400, 170, "Filters/Colors");
             { Fl_Group* o = new Fl_Group(5, 55, 390, 42, "FFT Prefilter");
@@ -1542,7 +1558,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { Fl_Group* o = tabSoundCard = new Fl_Group(0, 25, 400, 195, "SndCrd");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
-        o->hide();
         { Fl_Tabs* o = tabsSoundCard = new Fl_Tabs(0, 25, 400, 195);
           o->selection_color((Fl_Color)10);
           { Fl_Group* o = tabAudio = new Fl_Group(0, 50, 400, 170, "Audio");
@@ -1570,15 +1585,20 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             { Fl_Group* o = AudioIO = new Fl_Group(0, 55, 140, 70, "I/O");
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Round_Button* o = btnAudioIO[0] = new Fl_Round_Button(25, 70, 95, 25, "OSS");
+              { Fl_Round_Button* o = btnAudioIO[0] = new Fl_Round_Button(35, 60, 100, 25, "OSS");
                 o->down_box(FL_DIAMOND_DOWN_BOX);
                 o->selection_color((Fl_Color)1);
                 o->callback((Fl_Callback*)cb_btnAudioIO);
               }
-              { Fl_Round_Button* o = btnAudioIO[1] = new Fl_Round_Button(25, 95, 100, 25, "PortAudio");
+              { Fl_Round_Button* o = btnAudioIO[1] = new Fl_Round_Button(35, 80, 100, 25, "PortAudio");
                 o->down_box(FL_DIAMOND_DOWN_BOX);
                 o->selection_color((Fl_Color)1);
                 o->callback((Fl_Callback*)cb_btnAudioIO1);
+              }
+              { Fl_Round_Button* o = btnAudioIO[2] = new Fl_Round_Button(35, 100, 100, 25, "PulseAudio");
+                o->down_box(FL_DIAMOND_DOWN_BOX);
+                o->selection_color((Fl_Color)1);
+                o->callback((Fl_Callback*)cb_btnAudioIO2);
               }
               o->end();
             }

@@ -43,7 +43,8 @@ status progStatus = {
 	40,					// uint	VIEWERnchars
 	50,					// uint	VIEWERxpos
 	50,					// uint	VIEWERypos
-	false				// bool VIEWERvisible
+	false,				// bool VIEWERvisible
+	false				// bool LOGenabled
 };
 
 	
@@ -67,6 +68,12 @@ void status::saveLastState()
 	speed = wf->Speed();
 	reflevel = progdefaults.wfRefLevel;
 	ampspan = progdefaults.wfAmpSpan;
+
+	Fl_Menu_Item *mnulogging = getMenuItem("Log File");
+	if (mnulogging)
+		LOGenabled = mnulogging->value();
+	else
+		LOGenabled = false;
 	
 	if (dlgViewer) {
 		if (dlgViewer->visible()) {
@@ -104,6 +111,7 @@ void status::saveLastState()
 	deffile << VIEWERxpos << endl;
 	deffile << VIEWERypos << endl;
 	deffile << VIEWERvisible << endl;
+	deffile << LOGenabled << endl;
 	deffile.close();
 }
 
@@ -131,6 +139,7 @@ void status::initLastState()
 		deffile >> VIEWERxpos;
 		deffile >> VIEWERypos;
 		deffile >> VIEWERvisible;
+		deffile >> LOGenabled;
 		deffile.close();
 		progdefaults.wfRefLevel = reflevel;
 		progdefaults.wfAmpSpan = ampspan;
@@ -175,4 +184,10 @@ void status::initLastState()
 	if (VIEWERvisible == true)
 		openViewer();
 
+	if (LOGenabled) {
+		Fl_Menu_Item *mnulogging = getMenuItem("Log File");
+		if (!mnulogging)
+			return;
+		mnulogging->set();
+	}		
 }

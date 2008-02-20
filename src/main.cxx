@@ -216,6 +216,7 @@ int main(int argc, char ** argv)
 
 void sound_init(void)
 {
+#if USE_OSS
 	glob_t gbuf;
 	glob("/dev/dsp*", 0, NULL, &gbuf);
 	for (size_t i = 0; i < gbuf.gl_pathc; i++)
@@ -224,9 +225,12 @@ void sound_init(void)
 		progdefaults.OSSdevice = gbuf.gl_pathv[0];
 	menuOSSDev->value(progdefaults.OSSdevice.c_str());
 	globfree(&gbuf);
-	
+#endif
+
 #if USE_PORTAUDIO
 	SoundPort::initialize();
+	if (SoundPort::devices().size() == 0)
+		cerr << "PortAudio did not find any devices!\n";
 
 	for (SoundPort::device_iterator idev = SoundPort::devices().begin();
 	     idev != SoundPort::devices().end(); ++idev) {
@@ -234,16 +238,16 @@ void sound_init(void)
 		s.append(Pa_GetHostApiInfo((*idev)->hostApi)->name).append("/").append((*idev)->name);
 
 		string::size_type i = s.find('/') + 1;
-// backslash-escape any slashes in the device name
+		// backslash-escape any slashes in the device name
 		while ((i = s.find('/', i)) != string::npos) {
 			s.insert(i, 1, '\\');
 			i += 2;
 		}
 		menuPADev->add(s.c_str());
-// set the initial value in the configuration structure
-		if (progdefaults.PAdevice == "" && idev == SoundPort::devices().begin())
-			progdefaults.PAdevice = (*idev)->name;
 	}
+	// set the initial value in the configuration structure
+	if (progdefaults.PAdevice == "")
+		progdefaults.PAdevice = (*(SoundPort::devices().begin() + Pa_GetDefaultOutputDevice()))->name;
 	menuPADev->value(progdefaults.PAdevice.c_str());
 
 	btnAudioIO[1]->activate();
@@ -263,27 +267,49 @@ void sound_init(void)
 #endif
 
 // set the Sound Card configuration tab to the correct initial values
-#if !USE_PORTAUDIO
-	progdefaults.btnAudioIOis = 0;
-	btnAudioIO[1]->deactivate();
-#endif
 #if !USE_OSS
-	progdefaults.btnAudioIOis = 1;
 	btnAudioIO[0]->deactivate();
 #endif
-	if (progdefaults.btnAudioIOis == 0) {
+#if !USE_PORTAUDIO
+	btnAudioIO[1]->deactivate();
+#endif
+#if !USE_PULSEAUDIO
+	btnAudioIO[2]->deactivate();
+#endif
+	if (progdefaults.btnAudioIOis == -1 || !btnAudioIO[progdefaults.btnAudioIOis]->active()) {
+		for (size_t i = 0; i < sizeof(btnAudioIO)/sizeof(*btnAudioIO); i++) {
+			if (btnAudioIO[i]->active()) {
+				progdefaults.btnAudioIOis = i;
+				break;
+			}
+		}
+	}
+	switch (progdefaults.btnAudioIOis) {
+	case 0:
 		scDevice = progdefaults.OSSdevice;
 		btnAudioIO[0]->value(1);
 		btnAudioIO[1]->value(0);
+		btnAudioIO[2]->value(0);
 		menuOSSDev->activate();
 		menuPADev->deactivate();
 		menuSampleRate->deactivate();
-	} else {
+		break;
+	case 1:
 		scDevice = progdefaults.PAdevice;
 		btnAudioIO[0]->value(0);
 		btnAudioIO[1]->value(1);
+		btnAudioIO[2]->value(0);
 		menuOSSDev->deactivate();
 		menuPADev->activate();
+		break;
+	case 2:
+		scDevice = "localhost";
+		btnAudioIO[0]->value(0);
+		btnAudioIO[1]->value(0);
+		btnAudioIO[2]->value(1);
+		menuOSSDev->deactivate();
+		menuPADev->deactivate();
+		break;
 	}
 	resetMixerControls();
 }
@@ -323,6 +349,12 @@ void generate_option_help(void) {
 	     << "    May be given in hex if prefixed with \"0x\"\n"
 	     << "    The default is: " << progdefaults.tx_msgid
 	     << " or 0x" << hex << progdefaults.tx_msgid << dec << "\n\n"
+
+	     << "  --resample CONVERTER\n"
+	     << "    Set the resampling method\n"
+	     << "    CONVERTER can be of `src-sinc-best-quality', `src-sinc-medium-quality',\n"
+		"    `src-sinc-fastest', `src-zero-order-hold', or `src-linear'\n"
+		"    The default is `src-sinc-fastest'\n\n"
 
 	     << "  --version\n"
 	     << "    Print version information\n\n"
@@ -403,8 +435,9 @@ int parse_args(int argc, char **argv, int& idx)
         enum { OPT_ZERO, OPT_RX_IPC_KEY, OPT_TX_IPC_KEY, OPT_CONFIG_DIR,
                OPT_FAST_TEXT, OPT_FONT, OPT_WFALL_WIDTH, OPT_WFALL_HEIGHT,
                OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT, OPT_PROFILE, OPT_USE_CHECK,
+	       OPT_RESAMPLE,
 #if USE_PORTAUDIO
-               OPT_ALLOW_FULL_DUPLEX, OPT_FRAMES_PER_BUFFER, OPT_SAMPLE_RATE,
+               OPT_ALLOW_FULL_DUPLEX, OPT_FRAMES_PER_BUFFER,
 #endif
                OPT_EXIT_AFTER,
                OPT_HELP, OPT_VERSION };
@@ -423,10 +456,12 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "window-height", 1, 0, OPT_WINDOW_HEIGHT },
 		{ "profile",	   1, 0, OPT_PROFILE },
 		{ "usechkbtns",    0, 0, OPT_USE_CHECK },
+
+		{ "resample",      1, 0, OPT_RESAMPLE },
+
 #if USE_PORTAUDIO
 		{ "full-duplex",   0, 0, OPT_ALLOW_FULL_DUPLEX },
 		{ "frames-per-buf",1, 0, OPT_FRAMES_PER_BUFFER },
-		{ "sample-rate",   1, 0, OPT_SAMPLE_RATE },
 #endif
 		{ "exit-after",    1, 0, OPT_EXIT_AFTER },
 
@@ -511,16 +546,20 @@ int parse_args(int argc, char **argv, int& idx)
 			useCheckButtons = true;
 			break;
 
+		case OPT_RESAMPLE:
+			if (SoundBase::get_converter(optarg) == INT_MIN) {
+				cerr << "Unknown converter `" << optarg << "'\n";
+				goto help;
+			}
+			progdefaults.sample_converter = optarg;
+			break;
+
 #if USE_PORTAUDIO
 		case OPT_ALLOW_FULL_DUPLEX:
 			pa_allow_full_duplex = true;
 			break;
 		case OPT_FRAMES_PER_BUFFER:
 			pa_frames_per_buffer = strtol(optarg, 0, 10);
-			break;
-		case OPT_SAMPLE_RATE:
-			cerr << "The --sample-rate switch is deprecated and will be removed in a future release\n";
-			progdefaults.sample_rate = strtol(optarg, 0, 10);
 			break;
 #endif // USE_PORTAUDIO
 
@@ -536,6 +575,7 @@ int parse_args(int argc, char **argv, int& idx)
 			cout << version_text;
 			exit(EXIT_SUCCESS);
 
+	help:
 		case '?':
 			cerr << "Try `" << PACKAGE_NAME << " --help' for more information.\n";
 			exit(EXIT_FAILURE);

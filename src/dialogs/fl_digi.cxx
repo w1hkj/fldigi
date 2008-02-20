@@ -237,11 +237,11 @@ void cb_mnuSaveMacro(Fl_Menu_*, void*) {
 	restoreFocus();
 }
 
-bool logging = false;
-void cb_mnuLogFile(Fl_Menu_ *, void *) {
-	logging = !logging;
-	restoreFocus();
-}
+//bool logging = false;
+//void cb_mnuLogFile(Fl_Menu_ *, void *) {
+//	logging = !logging;
+//	restoreFocus();
+//}
 
 void clean_exit() {
 	if (progdefaults.changed == true) {
@@ -885,7 +885,8 @@ Fl_Menu_Item menu_[] = {
 {"&Files", 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 {"Open Macros", 0,  (Fl_Callback*)cb_mnuOpenMacro, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"Save Macros", 0,  (Fl_Callback*)cb_mnuSaveMacro, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
-{"Log File", 0, (Fl_Callback*)cb_mnuLogFile, 0, FL_MENU_DIVIDER | FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
+//{"Log File", 0, (Fl_Callback*)cb_mnuLogFile, 0, FL_MENU_DIVIDER | FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
+{"Log File", 0, 0, 0, FL_MENU_DIVIDER | FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 #if USE_SNDFILE
 {"Audio", 0, 0, 0, FL_MENU_DIVIDER | FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 {"Rx capture",  0, (Fl_Callback*)cb_mnuCapture,  0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//70
@@ -997,19 +998,25 @@ Fl_Menu_Item sample_rate_menu[] = {
 	{ "88200" }, { "96000" }, { "192000" }, { 0 }
 };
 
-void activate_rig_menu_item(bool b)
+Fl_Menu_Item *getMenuItem(char *caption)
 {
-	Fl_Menu_Item *rig = 0;
+	Fl_Menu_Item *item = 0;
 	for (size_t i = 0; i < sizeof(menu_)/sizeof(menu_[0]); i++) {
-		if (menu_[i].text && !strcmp(menu_[i].text, "Rig")) {
-			rig = menu_ + i;
+		if (menu_[i].text && !strcmp(menu_[i].text, caption)) {
+			item = menu_ + i;
 			break;
 		}
 	}
-	if (!rig) {
-		cerr << "FIXME: could not find Rig menu\n";
+	if (!item)
+		cerr << "FIXME: could not find '" << caption << "' menu\n";
+	return item;
+}
+
+void activate_rig_menu_item(bool b)
+{
+	Fl_Menu_Item *rig = getMenuItem("Rig");
+	if (!rig)
 		return;
-	}
 
 	if (b) {
 		bSaveFreqList = true;
@@ -1391,7 +1398,7 @@ void put_Bandwidth(int bandwidth)
 void display_metric(double metric)
 {
 	FL_LOCK_D();
-	REQ(static_cast<void (Fl_Progress::*)(float)>(&Fl_Progress::value), pgrsSquelch, metric);
+	REQ_DROP(static_cast<void (Fl_Progress::*)(float)>(&Fl_Progress::value), pgrsSquelch, metric);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }
@@ -1402,8 +1409,8 @@ void put_cwRcvWPM(double wpm)
 	int L = progdefaults.CWlowerlimit;
 	double dWPM = 100.0*(wpm - L)/(U - L);
 	FL_LOCK_D();
-	REQ(static_cast<void (Fl_Progress::*)(float)>(&Fl_Progress::value), prgsCWrcvWPM, dWPM);
-	REQ(static_cast<int (Fl_Value_Output::*)(double)>(&Fl_Value_Output::value), valCWrcvWPM, (int)wpm);
+	REQ_DROP(static_cast<void (Fl_Progress::*)(float)>(&Fl_Progress::value), prgsCWrcvWPM, dWPM);
+	REQ_DROP(static_cast<int (Fl_Value_Output::*)(double)>(&Fl_Value_Output::value), valCWrcvWPM, (int)wpm);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }
@@ -1431,6 +1438,8 @@ void set_video(double *data, int len)
 	if (digiscope)
 		digiscope->video(data, len);
 }
+
+Fl_Menu_Item *mnuLogging = (Fl_Menu_Item *)0;
 
 void put_rx_char(unsigned int data)
 {
@@ -1471,8 +1480,10 @@ void put_rx_char(unsigned int data)
 	if (Maillogfile)
 		Maillogfile->log_to_file(cLogfile::LOG_RX, ascii2[data]);
 
-	if (logging)
-		logfile->log_to_file(cLogfile::LOG_RX, ascii2[data]);
+	if (!mnuLogging) mnuLogging = getMenuItem("Log File");
+	if (mnuLogging)
+		if (mnuLogging->value())
+			logfile->log_to_file(cLogfile::LOG_RX, ascii2[data]);
 }
 
 string strSecText = "";
@@ -1521,7 +1532,7 @@ void put_Status2(const char *msg)
 	m[sizeof(m) - 1] = '\0';
 
 	FL_LOCK_D();
-	REQ(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), Status2, m);
+	REQ_DROP(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), Status2, m);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }
@@ -1533,7 +1544,7 @@ void put_Status1(const char *msg)
 	m[sizeof(m) - 1] = '\0';
 
 	FL_LOCK_D();
-	REQ(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), Status1, m);
+	REQ_DROP(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), Status1, m);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }
@@ -1656,8 +1667,11 @@ void put_echo_char(unsigned int data)
 
 	if (Maillogfile)
 		Maillogfile->log_to_file(cLogfile::LOG_TX, ascii2[data & 0x7F]);
-	if (logging)
-		logfile->log_to_file(cLogfile::LOG_TX, ascii2[data & 0x7F]);
+
+	if (!mnuLogging) mnuLogging = getMenuItem("Log File"); // should only be called once
+	if (mnuLogging)
+		if (mnuLogging->value())
+			logfile->log_to_file(cLogfile::LOG_TX, ascii2[data & 0x7F]);
 }
 
 void resetRTTY() {

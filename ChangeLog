@@ -8,6 +8,9 @@ Change Log:
       5) Rename some classes so that fldigi builds on Mac OSX.
          Many thanks to Justin Burket and Diane Bruce.
       6) Added a <MODEM> macro that changes the current modem
+      7) Added "Log File" status to saved application state
+      8) Added Pulse Audio support
+      9) Added "use default audio device" if h/w changes
 
 2.09  1) Modified src/Makefile.am for FreeBSD name space clash
       2) Added psk multi-channel viewer with regex search capability
