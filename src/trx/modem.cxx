@@ -59,6 +59,7 @@ modem::modem()
 	reverse = wfrev ^ !wfsb;
 	afcon = true;
 	squelchon = true;
+	historyON = false;
 }
 
 void modem::init()

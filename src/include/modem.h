@@ -59,7 +59,8 @@ protected:
 	unsigned char *txptr;
 
 	double outbuf[OUTBUFSIZE];
-// these processes must be declared in the derived class
+
+	bool	historyON;
 	Digiscope::scope_mode scopemode;
 	
 	double scdata[512];
@@ -69,6 +70,7 @@ public:
 	modem();
 	virtual ~modem(){};
 
+// these processes must be declared in the derived class
 	virtual void init();
 	virtual void tx_init (SoundBase *sc) = 0;
 	virtual void rx_init () = 0;
@@ -91,6 +93,8 @@ public:
 	bool		get_sqlchOnOff() { return squelchon;}
 	void		set_afcOnOff(int val) {afcon = val;}
 	bool		get_afcOnOff() { return afcon;}
+	void		HistoryON(bool val) {historyON = val;}
+	bool		HistoryON() { return historyON;}
 
 //	void 		set_mode(trx_mode);
 	trx_mode	get_mode();

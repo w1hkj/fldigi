@@ -76,13 +76,11 @@ feld::~feld()
 	if (hilbert) delete hilbert;
 	if (bpfilt) delete bpfilt;
 	if (bbfilt) delete bbfilt;
-//	if (wfid) delete wfid;
 }
 
 feld::feld(trx_mode m)
 {
 	double lp;
-	double flo, fhi;
 	mode = m;
 	samplerate = FeldSampleRate;
 	FL_LOCK_D();
@@ -102,13 +100,7 @@ feld::feld(trx_mode m)
 
 	lp = 1.5 * bandwidth / 2.0 / samplerate;
 	
-	fhi = (bandwidth / 2 + TxPixRate * 1.5) / samplerate;
-	flo = (bandwidth / 2 - TxPixRate * 1.5) / samplerate;
-	
-	if (mode == MODE_FSKHELL || mode == MODE_FSKH105)
-		bpfilt = new fftfilt (flo, fhi, 1024);
-	else
-		bpfilt = new fftfilt(0, lp, 1024);
+	bpfilt = new fftfilt(0, lp, 1024);
 	
 	bbfilt = new Cmovavg(8);
 	
@@ -116,7 +108,6 @@ feld::feld(trx_mode m)
 	
 	blackboard = false;
 	hardkeying = false;
-//	wfid = new id(this);
 
 	rxphacc = 0.0;
 	txphacc = 0.0;
@@ -172,12 +163,6 @@ void feld::FSKHELL_rx(complex z)
 	if (blackboard)
 		vid = 255 - vid;
 
-//	x = z.mag();
-//	if (x > peakhold)
-//		peakhold = x;
-//	else
-//		peakhold *= (1 - 0.02 / RxColumnLen);
-	
 	col_data[col_pointer + RxColumnLen] = vid;
 	col_pointer++;
 	if (col_pointer == RxColumnLen) {
@@ -214,8 +199,6 @@ void feld::rx(complex z)
 	
 	x = CLAMP (x / peakhold, 0.0, 1.0);
 
-//	agc = decayavg(agc, peakhold - minhold, 40);
-	
 	agc = minmaxfilt->run(peakhold - minhold);
 	
 	metric = CLAMP(100*agc, 0.0, 100.0); 

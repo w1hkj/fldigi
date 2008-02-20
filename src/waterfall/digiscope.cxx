@@ -27,13 +27,11 @@
 // ----------------------------------------------------------------------------
 
 #include <config.h>
-
-#include "digiscope.h"
-
-#include "modem.h"
-
 #include <iostream>
 
+#include "digiscope.h"
+#include "modem.h"
+#include "trx.h"
 #include "qrunner.h"
 
 
@@ -55,21 +53,17 @@ Digiscope::~Digiscope()
 
 void Digiscope::video(double *data, int len )
 {
+	if (active_modem->HistoryON()) return;
+	
 	if (data == NULL || len == 0)
 		return;
 	
 	FL_LOCK_D();
 	int W = w() - 4;
 	int H = h() - 4;
-// video signal display
-//	if (len < W)
-//		for (int i = 0; i < W; i++) 
-//			vidline[3*i] = vidline[3*i+1] = 
-//			vidline[3*i+2] = (unsigned char)(data[i * W / len]);
-//	else
-		for (int i = 0; i < W; i++) 
-			vidline[3*i] = vidline[3*i+1] = 
-			vidline[3*i+2] = (unsigned char)(data[i * len / W]);
+	for (int i = 0; i < W; i++) 
+		vidline[3*i] = vidline[3*i+1] = 
+		vidline[3*i+2] = (unsigned char)(data[i * len / W]);
 	vidline[3*W/2] = 255;
 	vidline[3*W/2+1] = 0;
 	vidline[3*W/2+2] = 0;
@@ -90,6 +84,8 @@ void Digiscope::video(double *data, int len )
 
 void Digiscope::data(double *data, int len, bool scale)
 {
+	if (active_modem->HistoryON()) return;
+	
 	if (data == 0) {
 		memset(_buf, 0, MAX_LEN * sizeof(*_buf));
 		return;
@@ -121,6 +117,8 @@ void Digiscope::data(double *data, int len, bool scale)
 
 void Digiscope::phase(double ph, bool hl)
 {
+	if (active_modem->HistoryON()) return;
+	
 	FL_LOCK_D();
 	_phase = ph;
 	_highlight = hl;
@@ -131,6 +129,8 @@ void Digiscope::phase(double ph, bool hl)
 
 void Digiscope::rtty(double flo, double fhi, double amp)
 {
+	if (active_modem->HistoryON()) return;
+	
 	FL_LOCK_D();
 	_flo = flo;
 	_fhi = fhi;
@@ -278,8 +278,7 @@ void Digiscope::draw_video()
 	fl_draw_image(
 		vidbuf, 
 		x() + 2, y() + 2, 
-		w() - 4, h() - 4);//, 
-//		3, 3* (w() - 4));
+		w() - 4, h() - 4);
 }
 
 void Digiscope::draw()

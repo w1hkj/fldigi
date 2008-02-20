@@ -28,6 +28,7 @@ struct status {
 	unsigned int	VIEWERxpos;
 	unsigned int	VIEWERypos;
 	bool	VIEWERvisible;
+	bool	LOGenabled;
 	
 	
 public:

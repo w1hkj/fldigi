@@ -134,6 +134,7 @@ void trx_trx_receive_loop()
 				bool afc = active_modem->get_afcOnOff();
 				active_modem->set_afcOnOff(0);
 				QRUNNER_DROP(true);
+				active_modem->HistoryON(true);
 				trxrb.get_rv(rbvec);
 				if (rbvec[0].len)
 					active_modem->rx_process(rbvec[0].buf, rbvec[0].len);
@@ -142,6 +143,7 @@ void trx_trx_receive_loop()
 				QRUNNER_DROP(false);
 				active_modem->set_afcOnOff(afc);
 				bHistory = false;
+				active_modem->HistoryON(false);
 			}
 		}
 		if (!scard->full_duplex())
