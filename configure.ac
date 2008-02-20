@@ -337,9 +337,48 @@ fi
 AC_SUBST([PORTAUDIO_CFLAGS])
 AC_SUBST([PORTAUDIO_LIBS])
 
-if test "$ac_cv_oss" = "no" && test "$ac_cv_portaudio" = "no"; then
-    AC_MSG_FAILURE([$PACKAGE requires OSS or PortAudio])
+
+###########################
+# pulseaudio
+###########################
+AC_ARG_WITH([pulseaudio],
+            AC_HELP_STRING([--with-pulseaudio],
+                           [use hamradio control libraries @<:@autodetect@:>@]),
+            [case "${withval}" in
+              yes|no) ac_cv_want_pulseaudio="${withval}" ;;
+              *)      AC_MSG_ERROR([bad value "${withval}" for --with-pulseaudio]) ;;
+             esac],
+            [ac_cv_want_pulseaudio=check])
+if test "x$ac_cv_want_pulseaudio" = "xno"; then
+    AC_DEFINE(USE_PULSEAUDIO, 0)
+    ac_cv_pulseaudio=no
+else
+    PKG_CHECK_EXISTS(libpulse-simple >= 0.9.9, ac_cv_pulseaudio=yes, ac_cv_pulseaudio=no)
+    if test "x$ac_cv_want_pulseaudio" = "xcheck"; then
+        PKG_CHECK_MODULES(PULSEAUDIO, libpulse-simple >= 0.9.9, [:], [:])
+        if test "x$ac_cv_pulseaudio" = "xyes"; then
+            AC_DEFINE(USE_PULSEAUDIO, 1, [Define to 1 if we are using pulseaudio])
+        else
+            AC_DEFINE(USE_PULSEAUDIO, 0, [Define to 1 if we are using pulseaudio])
+        fi
+    else # $ac_cv_want_pulseaudio is yes
+        if test "x$ac_cv_pulseaudio" = "xno"; then
+            AC_MSG_NOTICE([--with-pulseaudio was given, but test for pulseaudio failed])
+        else
+            AC_DEFINE(USE_PULSEAUDIO, 1, [Define to 1 if we are using pulseaudio])
+        fi
+        PKG_CHECK_MODULES(PULSEAUDIO, libpulse-simple >= 0.9.9) # for the error message
+    fi
 fi
+AC_SUBST([PULSEAUDIO_CFLAGS])
+AC_SUBST([PULSEAUDIO_LIBS])
+
+if test "$ac_cv_oss" = "no" && \
+   test "$ac_cv_portaudio" = "no" && \
+   test "$ac_cv_pulseaudio" = "no"; then
+    AC_MSG_ERROR([$PACKAGE requires OSS, PortAudio, or PulseAudio])
+fi
+
 
 ###########################
 # hamlib
@@ -406,5 +445,6 @@ Configuration summary:
   sndfile ............................. $ac_cv_sndfile
   OSS ................................. $ac_cv_oss
   PortAudio ........................... $ac_cv_portaudio
+  PulseAudio .......................... $ac_cv_pulseaudio
   hamlib .............................. $ac_cv_hamlib
 ])

@@ -133,11 +133,12 @@ configuration progdefaults = {
 	"/dev/ttyS0",	// PTTdev
 	"fldigi ",		// secondary text
 // Sound card
-	0,			// int		btnAudioIOis
+	-1,			// int		btnAudioIOis
 	"",		// string	SCdevice;
 	"",		// string	OSSdevice;
 	"",		// string	PAdevice;
 	0,				// int		sample_rate;
+	"src-sinc-fastest",		// string	sample_converter;
 	0,				// int		RX_corr;
 	0,				// int		TX_corr;
 	0,				// int		TxOffset;

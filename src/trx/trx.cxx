@@ -299,19 +299,27 @@ void trx_reset_loop()
 		delete scard;
 		scard = 0;
 	}
-#if USE_PORTAUDIO && USE_OSS
-	if (progdefaults.btnAudioIOis == 1)
-		scard = new SoundPort(trx_scdev.c_str());
-	else
+
+	switch (progdefaults.btnAudioIOis) {
+#if USE_OSS
+	case 0:
 		scard = new SoundOSS(trx_scdev.c_str());
-#else
-#  if USE_PORTAUDIO
-	scard = new SoundPort(trx_scdev.c_str());
-#  endif
-#  if USE_OSS
-	scard = new SoundOSS(trx_scdev.c_str());
-#  endif
+		break;
 #endif
+#if USE_PORTAUDIO
+	case 1:
+		scard = new SoundPort(trx_scdev.c_str());
+		break;
+#endif
+#if USE_PULSEAUDIO
+	case 2:
+		scard = new SoundPulse(trx_scdev.c_str());
+		break;
+#endif
+	default:
+		abort();
+	}
+
 	trx_state = STATE_RX;	
 }
 
@@ -362,19 +370,26 @@ void trx_start(const char *scdev)
 	}
 	
 	if (scard) delete scard;
-#if USE_PORTAUDIO && USE_OSS
-	if (progdefaults.btnAudioIOis == 1)
-		scard = new SoundPort(scdev);
-	else
+
+	switch (progdefaults.btnAudioIOis) {
+#if USE_OSS
+	case 0:
 		scard = new SoundOSS(scdev);
-#else
-#  if USE_PORTAUDIO
-	scard = new SoundPort(scdev);
-#  endif
-#  if USE_OSS
-	scard = new SoundOSS(scdev);
-#  endif
+		break;
 #endif
+#if USE_PORTAUDIO
+	case 1:
+		scard = new SoundPort(scdev);
+		break;
+#endif
+#if USE_PULSEAUDIO
+	case 2:
+		scard = new SoundPulse(scdev);
+		break;
+#endif
+	default:
+		abort();
+	}
 
 	trx_state = STATE_RX;
 	_trx_tune = 0;

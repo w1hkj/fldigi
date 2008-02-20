@@ -37,6 +37,10 @@
 #if USE_PORTAUDIO
 	#include <portaudio.h>
 #endif
+#if USE_PULSEAUDIO
+	#include <pulse/simple.h>
+	#include <pulse/error.h>
+#endif
 #include <samplerate.h>
 
 #define MAXSC 32767.0;
@@ -48,29 +52,50 @@
 //#define	SRC_BUF_LEN		(8*SND_BUF_LEN)
 
 
-#define msgprefix std::string("Sound error: ")
 class SndException : public std::exception
 {
 public:
-	SndException() : err(0) { }
-#if USE_PORTAUDIO
-	SndException(int e) : err(e), msg(msgprefix + (e >= 0 ? strerror(e) : Pa_GetErrorText(e))) { }
-#else
-	SndException(int e) : err(e), msg(msgprefix + strerror(e)) { }
-#endif
-	SndException(const char *s) : err(1), msg(msgprefix + s) { }
-	~SndException() throw() { }
-	const char *what(void) const throw() { return msg.c_str(); }
-	int error(void) const { return err; }
-private:
+	SndException(int err_ = 0) : err(err_), msg(std::string("Sound error: ") + err_to_str()) { }
+	SndException(const char* msg_) : err(1), msg(msg_) { }
+	virtual ~SndException() throw() { }
+
+	const char*	what(void) const throw() { return msg.c_str(); }
+	int		error(void) const { return err; }
+
+protected:
+	virtual const char* err_to_str(void) { return strerror(err); }
+
 	int		err;
 	std::string	msg;
 };
-#undef msgprefix
+
+#if USE_PORTAUDIO
+class SndPortException : public SndException
+{
+public:
+	SndPortException(int err_ = 0) : SndException(err_) { }
+	SndPortException(const char* msg_) : SndException(msg_) { }
+protected:
+	const char* err_to_str(void) { return Pa_GetErrorText(err); }
+};
+#endif
+
+#if USE_PULSEAUDIO
+class SndPulseException : public SndException
+{
+public:
+	SndPulseException(int err_ = 0) : SndException(err_) { }
+	SndPulseException(const char* msg_) : SndException(msg_) { }
+protected:
+	const char* err_to_str(void) { return pa_strerror(err); }
+};
+#endif
+
 
 class SoundBase {
 protected:
 	int		sample_frequency;
+	int		sample_converter;
 	int		txppm;
 	int		rxppm;
 
@@ -114,6 +139,7 @@ public:
 	int		Playback(bool val);
 	int		Generate(bool val);
 #endif
+	static int	get_converter(const char* name);
 };
 
 
@@ -221,4 +247,34 @@ private:
 
 #endif // USE_PORTAUDIO
 
-#endif
+#if USE_PULSEAUDIO
+
+class SoundPulse : public SoundBase
+{
+public:
+	SoundPulse(const char* dev);
+	virtual ~SoundPulse();
+
+	int	Open(int mode, int freq = 8000);
+	void    Close(void);
+	int	write_samples(double* buf, int count);
+	int	write_stereo(double* bufleft, double* bufright, int count);
+	int	Read(double *buf, int count);
+	bool	full_duplex(void) { return true; }
+
+private:
+	void	src_data_reset(int mode);
+        void	resample(int mode, float *buf, int count, int max = 0);
+
+private:
+	double		dev_sample_rate;
+	pa_simple*	in_stream;
+	pa_simple*	out_stream;
+	pa_sample_spec	stream_params;
+
+	float* fbuf;
+};
+
+#endif // USE_PULSEAUDIO
+
+#endif // SOUND_H
