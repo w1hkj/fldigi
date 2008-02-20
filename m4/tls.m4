@@ -40,14 +40,45 @@ AC_DEFUN([CHECK_TLS], [
                                                             return 0;
                                                         return (a_in_other_thread == a_in_main_thread);]] )
                                     ],
-                                    [ac_cv_have_tls=yes], [ac_cv_have_tls=no] )
+                                    [ac_cv_tls=yes], [ac_cv_tls=no] )
                      CXXFLAGS="$chktls_save_CXXFLAGS"
                  fi],
-                [ac_cv_have_tls=no],
+                [ac_cv_tls=no],
                 [AC_LINK_IFELSE([__thread int a; int b; int main() { return a = b; }],
-		                [ac_cv_have_tls=yes], [ac_cv_have_tls=no])]
+		                [ac_cv_tls=yes], [ac_cv_tls=no])]
   )
 
   AC_LANG_POP(C++)
-  AC_MSG_RESULT([$ac_cv_have_tls])
+  AC_MSG_RESULT([$ac_cv_tls])
+])
+
+
+AC_DEFUN([AC_FLDIGI_TLS], [
+  AC_ARG_ENABLE([tls],
+                AC_HELP_STRING([--enable-tls], [enable use of TLS @<:@autodetect@:>@]),
+                [case "${enableval}" in
+                  yes|no) ac_cv_want_tls="${enableval}" ;;
+                  *)      AC_MSG_ERROR([bad value "${enableval}" for --enable-tls]) ;;
+                 esac],
+                 [ac_cv_want_tls=check])
+
+  if test "x$ac_cv_want_tls" = "xno"; then
+      AC_DEFINE(USE_TLS, 0, [Defined if we are using TLS])
+      ac_cv_tls=no
+  else
+      CHECK_TLS()
+      if test "x$ac_cv_want_tls" = "xcheck"; then
+          if test "x$ac_cv_tls" = "xyes"; then
+              AC_DEFINE(USE_TLS, 1, [Defined if we are using TLS])
+          else
+              AC_DEFINE(USE_TLS, 0, [Defined if we are using TLS])
+          fi
+      else # $ac_cv_want_tls is yes
+          if test "x$ac_cv_tls" = "xno"; then
+              AC_MSG_FAILURE([--enable-tls was given, but TLS is not supported])
+          else
+              AC_DEFINE(USE_TLS, 1, [Defined if we are using TLS])
+          fi
+      fi
+  fi
 ])
