@@ -1391,7 +1391,7 @@ void put_Bandwidth(int bandwidth)
 void display_metric(double metric)
 {
 	FL_LOCK_D();
-	REQ(static_cast<void (Fl_Progress::*)(float)>(&Fl_Progress::value), pgrsSquelch, metric);
+	REQ_DROP(static_cast<void (Fl_Progress::*)(float)>(&Fl_Progress::value), pgrsSquelch, metric);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }
@@ -1402,8 +1402,8 @@ void put_cwRcvWPM(double wpm)
 	int L = progdefaults.CWlowerlimit;
 	double dWPM = 100.0*(wpm - L)/(U - L);
 	FL_LOCK_D();
-	REQ(static_cast<void (Fl_Progress::*)(float)>(&Fl_Progress::value), prgsCWrcvWPM, dWPM);
-	REQ(static_cast<int (Fl_Value_Output::*)(double)>(&Fl_Value_Output::value), valCWrcvWPM, (int)wpm);
+	REQ_DROP(static_cast<void (Fl_Progress::*)(float)>(&Fl_Progress::value), prgsCWrcvWPM, dWPM);
+	REQ_DROP(static_cast<int (Fl_Value_Output::*)(double)>(&Fl_Value_Output::value), valCWrcvWPM, (int)wpm);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }
@@ -1521,7 +1521,7 @@ void put_Status2(const char *msg)
 	m[sizeof(m) - 1] = '\0';
 
 	FL_LOCK_D();
-	REQ(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), Status2, m);
+	REQ_DROP(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), Status2, m);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }
@@ -1533,7 +1533,7 @@ void put_Status1(const char *msg)
 	m[sizeof(m) - 1] = '\0';
 
 	FL_LOCK_D();
-	REQ(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), Status1, m);
+	REQ_DROP(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), Status1, m);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }

@@ -144,6 +144,8 @@ protected:
         int pfd[2];
         size_t npri;
         bool attached;
+public:
+	bool drop_flag;
 };
 
 
@@ -151,19 +153,40 @@ extern qrunner *cbq[NUM_QRUNNER_THREADS];
 
 
 #define REQ REQ_ASYNC
+#define REQ_DROP REQ_ASYNC_DROP
 
-#define REQ_ASYNC(...)                                                  \
+#define REQ_ASYNC(...)							\
+	do {								\
+		if (GET_THREAD_ID() != FLMAIN_TID)			\
+			cbq[GET_THREAD_ID()]->request(bind(__VA_ARGS__)); \
+		else							\
+			bind(__VA_ARGS__)();				\
+	} while (0)
+#define REQ_SYNC(...)							\
+	do {								\
+		if (GET_THREAD_ID() != FLMAIN_TID)			\
+			cbq[GET_THREAD_ID()]->request_sync(bind(__VA_ARGS__)); \
+		else							\
+			bind(__VA_ARGS__)();				\
+	} while (0)
+
+#define REQ_ASYNC_DROP(...)						\
         do {                                                            \
-                if (GET_THREAD_ID() != FLMAIN_TID)                      \
+                if (GET_THREAD_ID() != FLMAIN_TID) {			\
+			if (unlikely(cbq[GET_THREAD_ID()]->drop_flag))	\
+				break;					\
                         cbq[GET_THREAD_ID()]->request(bind(__VA_ARGS__)); \
+		}							\
                 else                                                    \
                         bind(__VA_ARGS__)();                            \
         } while (0)
-
-#define REQ_SYNC(...)                                                   \
+#define REQ_SYNC_DROP(...)						\
         do {                                                            \
-                if (GET_THREAD_ID() != FLMAIN_TID)                      \
+                if (GET_THREAD_ID() != FLMAIN_TID) {			\
+			if (unlikely(cbq[GET_THREAD_ID()]->drop_flag))	\
+				break;					\
                         cbq[GET_THREAD_ID()]->request_sync(bind(__VA_ARGS__)); \
+		}							\
                 else                                                    \
                         bind(__VA_ARGS__)();                            \
         } while (0)
@@ -177,6 +200,11 @@ extern qrunner *cbq[NUM_QRUNNER_THREADS];
                                 cbq[i]->flush();                        \
         } while (0)
 
+#define QRUNNER_DROP(v_)					\
+	do {							\
+		if ((GET_THREAD_ID() != FLMAIN_TID))		\
+			cbq[GET_THREAD_ID()]->drop_flag = v_;	\
+	} while (0)
 
 #endif // QRUNNER_H_
 

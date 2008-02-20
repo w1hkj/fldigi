@@ -133,11 +133,13 @@ void trx_trx_receive_loop()
 			else {
 				bool afc = active_modem->get_afcOnOff();
 				active_modem->set_afcOnOff(0);
+				QRUNNER_DROP(true);
 				trxrb.get_rv(rbvec);
 				if (rbvec[0].len)
 					active_modem->rx_process(rbvec[0].buf, rbvec[0].len);
 				if (rbvec[1].len)
 					active_modem->rx_process(rbvec[1].buf, rbvec[1].len);
+				QRUNNER_DROP(false);
 				active_modem->set_afcOnOff(afc);
 				bHistory = false;
 			}

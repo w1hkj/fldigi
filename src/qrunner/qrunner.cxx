@@ -31,7 +31,7 @@
 #include "qrunner.h"
 
 qrunner::qrunner(size_t npri_)
-        : npri(npri_), attached(false)
+        : npri(npri_), attached(false), drop_flag(false)
 {
         fifo = new fqueue(2048, npri);
         if (pipe(pfd) == -1)
