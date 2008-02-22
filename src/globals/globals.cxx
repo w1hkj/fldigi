@@ -55,7 +55,7 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_FELDHELL, &feld_modem, "FELDHELL", "Feld Hell", "" },
 	{ MODE_FSKHELL, &feld_FMmodem, "FSK-HELL", "FSK Hell", "" },
 	{ MODE_FSKH105, &feld_FM105modem, "FSK-H105", "FSK Hell-105", "" },
-	{ MODE_HELL80, &feld_80modem, "HELL-80", "Hell 80", "" },
+	{ MODE_HELL80, &feld_80modem, "HELL80", "Hell 80", "" },
 
 	{ MODE_MFSK8, &mfsk8_modem, "MFSK-8", "MFSK-8", "MFSK16" },
 	{ MODE_MFSK16, &mfsk16_modem, "MFSK16", "MFSK-16", "MFSK8" },
@@ -89,13 +89,26 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 
 std::ostream& operator<<(std::ostream& s, const qrg_mode_t& m)
 {
-	return s << m.rfcarrier << ' ' << m.rmode << ' ' << m.carrier << ' ' << m.mode;
-
+	return s << m.rfcarrier << ' ' << m.rmode << ' ' << m.carrier << ' ' << mode_info[m.mode].sname;
 }
 
 std::istream& operator>>(std::istream& s, qrg_mode_t& m)
 {
-	return s >> m.rfcarrier >> m.rmode >> m.carrier >> m.mode;
+	string sMode;
+	int mnbr;
+	s >> m.rfcarrier >> m.rmode >> m.carrier >> sMode;
+// handle case for reading older type of specification string
+	if (sscanf(sMode.c_str(), "%d", &mnbr)) {
+		m.mode = mnbr;
+		return s;
+	}
+	m.mode = MODE_BPSK31;
+	for (mnbr = MODE_CW; mnbr < NUM_MODES; mnbr++)
+		if (sMode == mode_info[mnbr].sname) {
+			m.mode = mnbr;
+			break;
+		}
+	return s;
 }
 
 std::string qrg_mode_t::str(void)

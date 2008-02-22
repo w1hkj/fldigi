@@ -163,6 +163,7 @@ size_t addtoList(long val)
 
 bool readFreqList()
 {
+	bool newstyle = false;
 	ifstream freqfile((HomeDir + "frequencies2.txt").c_str());
 	if (!freqfile)
 		return false;
@@ -170,10 +171,13 @@ bool readFreqList()
 	string line;
 	qrg_mode_t m;
 	while (!getline(freqfile, line).eof()) {
-		if (line[0] == '#')
+		if (line[0] == '#') {
+			if (strstr(line.c_str(),"Post 2.09")) newstyle = true;
 			continue;
+		}
 		istringstream is(line);
 		is >> m;
+		if (!newstyle && m.mode >= MODE_HELL80) m.mode++;
 		freqlist.push_back(m);
 	}
 	sort(freqlist.begin(), freqlist.end());
@@ -191,6 +195,7 @@ void saveFreqList()
 	if (!freqfile)
 		return;
 	freqfile << "# rfcarrier rig_mode carrier mode\n";
+	freqfile << "# Post 2.09\n";
 	copy(freqlist.begin(), freqlist.end(),
 	     ostream_iterator<qrg_mode_t>(freqfile, "\n"));
 }
