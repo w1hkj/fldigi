@@ -805,7 +805,7 @@ void SoundPort::Close(void)
 
 int SoundPort::Read(double *buf, int count)
 {
-        int ncount = (int)MIN(SND_BUF_LEN, ceil(count / rx_src_data->src_ratio));
+        int ncount = (int)MIN(SND_BUF_LEN, floor(count / rx_src_data->src_ratio));
 
         int err;
         static int retries = 0;
@@ -1317,7 +1317,7 @@ int SoundPulse::write_stereo(double* bufleft, double* bufright, int count)
 
 int SoundPulse::Read(double *buf, int count)
 {
-        int ncount = (int)MIN(SND_BUF_LEN, ceil(count / rx_src_data->src_ratio));
+        int ncount = (int)MIN(SND_BUF_LEN, floor(count / rx_src_data->src_ratio));
 
 	int err;
 	if (pa_simple_read(in_stream, fbuf, sizeof(double) * ncount, &err) == -1)
