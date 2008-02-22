@@ -55,6 +55,7 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_FELDHELL, &feld_modem, "FELDHELL", "Feld Hell", "" },
 	{ MODE_FSKHELL, &feld_FMmodem, "FSK-HELL", "FSK Hell", "" },
 	{ MODE_FSKH105, &feld_FM105modem, "FSK-H105", "FSK Hell-105", "" },
+	{ MODE_HELL80, &feld_80modem, "HELL-80", "Hell 80", "" },
 
 	{ MODE_MFSK8, &mfsk8_modem, "MFSK-8", "MFSK-8", "MFSK16" },
 	{ MODE_MFSK16, &mfsk16_modem, "MFSK16", "MFSK-16", "MFSK8" },

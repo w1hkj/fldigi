@@ -117,9 +117,9 @@ protected:
 	bool	playback;
 	bool	generate;
 
-	void writeGenerate(double *buff, int count);
-	void writeCapture(double *buff, int count);
-	int  readPlayback(double *buff, int count);
+	void writeGenerate(double *buff, size_t count);
+	void writeCapture(double *buff, size_t count);
+	int  readPlayback(double *buff, size_t count);
 #if USE_SNDFILE
 	bool format_supported(int format);
 	void tag_file(SNDFILE *sndfile, const char *title);
@@ -129,9 +129,9 @@ public:
 	virtual ~SoundBase();
 	virtual int	Open(int mode, int freq = 8000) = 0;
 	virtual void    Close() = 0;
-	virtual int	write_samples(double *, int) = 0;
-	virtual int	write_stereo(double *, double *, int) = 0;
-	virtual int	Read(double *, int) = 0;
+	virtual size_t	Write(double *, size_t) = 0;
+	virtual size_t	Write_stereo(double *, double *, size_t) = 0;
+	virtual size_t	Read(double *, size_t) = 0;
 	virtual bool	full_duplex(void) { return false; }
 #if USE_SNDFILE
 	void		get_file_params(const char* def_fname, char** fname, int* format);
@@ -174,13 +174,11 @@ public:
 	~SoundOSS();
 	int		Open(int mode, int freq = 8000);
 	void	Close();
-	int		write_samples(double *, int);
-	int		write_stereo(double *, double *, int);
-	int		Read(double *, int);
+	size_t		Write(double *, size_t);
+	size_t		Write_stereo(double *, double *, size_t);
+	size_t		Read(double *, size_t);
 
 private:
-	int		Read(unsigned char *, int);
-	int		Write(unsigned char *, int);
 	int		Fd() { return device_fd; }
 	int		Frequency() { return sample_frequency;};
 	int		Version() {return version;};
@@ -209,14 +207,14 @@ public:
         ~SoundPort();
 	int 		Open(int mode, int freq = 8000);
 	void 		Close();
-	int 		write_samples(double *buf, int count);
-	int		write_stereo(double *bufleft, double *bufright, int count);
-	int 		Read(double *buf, int count);
+	size_t 		Write(double *buf, size_t count);
+	size_t		Write_stereo(double *bufleft, double *bufright, size_t count);
+	size_t 		Read(double *buf, size_t count);
 	bool		full_duplex(void);
 
 private:
         void		src_data_reset(int mode);
-        void		resample(int mode, float *buf, int count, int max = 0);
+        void		resample(int mode, float *buf, size_t count, size_t max = 0);
         void 		init_stream(void);
         void 		start_stream(void);
         bool		stream_active(void);
@@ -257,14 +255,14 @@ public:
 
 	int	Open(int mode, int freq = 8000);
 	void    Close(void);
-	int	write_samples(double* buf, int count);
-	int	write_stereo(double* bufleft, double* bufright, int count);
-	int	Read(double *buf, int count);
+	size_t	Write(double* buf, size_t count);
+	size_t	Write_stereo(double* bufleft, double* bufright, size_t count);
+	size_t	Read(double *buf, size_t count);
 	bool	full_duplex(void) { return true; }
 
 private:
 	void	src_data_reset(int mode);
-        void	resample(int mode, float *buf, int count, int max = 0);
+        void	resample(int mode, float *buf, size_t count, size_t max = 0);
 
 private:
 	double		dev_sample_rate;

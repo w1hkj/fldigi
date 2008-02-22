@@ -17,6 +17,7 @@ modem *mfsk16_modem = 0;
 modem *feld_modem = 0;
 modem *feld_FMmodem = 0;
 modem *feld_FM105modem = 0;
+modem *feld_80modem = 0;
 modem *feld_CMTmodem = 0;
 modem *psk31_modem = 0;
 modem *psk63_modem = 0;
@@ -198,7 +199,7 @@ mbuffer<double, 512 * 2, 2> _mdm_scdbl;
 
 void modem::ModulateXmtr(double *buffer, int len) 
 {
-	scard->write_samples(buffer, len);
+	scard->Write(buffer, len);
 
 	if (!progdefaults.viewXmtSignal)
 		return;
@@ -215,7 +216,7 @@ void modem::ModulateXmtr(double *buffer, int len)
 
 void modem::ModulateStereo(double *left, double *right, int len)
 {
-	scard->write_stereo(left, right, len);
+	scard->Write_stereo(left, right, len);
 
 	if (!progdefaults.viewXmtSignal)
 		return;

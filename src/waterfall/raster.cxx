@@ -31,6 +31,7 @@
 #include <string.h>
 
 #include "raster.h"
+#include "qrunner.h"
 
 bool rowschanged = false;
 
@@ -90,10 +91,10 @@ void Raster::data(int data[], int len)
 	vidpos = col - numcols;
 	if (vidpos < 0) vidpos = 0;
 	
-	redraw();
+//	redraw();
+	REQ_DROP(&Raster::redraw, this);
 	FL_UNLOCK_D();
 
-//	redraw();
 	FL_AWAKE_D();
 }
 
@@ -103,9 +104,9 @@ void Raster::clear()
 	for (int i = 0; i < width * height; i++)
 		vidbuf[i] = 255;
 	col = width;
-	redraw();
-	FL_UNLOCK_D();
+	REQ_DROP(&Raster::redraw, this);
 //	redraw();
+	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }
 
@@ -151,6 +152,7 @@ void Raster::resize(int x, int y, int w, int h)
 	delete [] oldbuf;
 
 	Fl_Widget::resize(x,y,w,h);
+
 	redraw();
 }
 

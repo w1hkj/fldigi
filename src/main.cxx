@@ -352,9 +352,12 @@ void generate_option_help(void) {
 
 	     << "  --resample CONVERTER\n"
 	     << "    Set the resampling method\n"
-	     << "    CONVERTER can be of `src-sinc-best-quality', `src-sinc-medium-quality',\n"
-		"    `src-sinc-fastest', `src-zero-order-hold', or `src-linear'\n"
-		"    The default is `src-sinc-fastest'\n\n"
+	     << "    CONVERTER can be of `src-sinc-best-quality',\n"
+	     << "                        `src-sinc-medium-quality',\n"
+		 << "                        `src-sinc-fastest',\n"
+		 << "                        `src-zero-order-hold', or\n"
+		 << "                        `src-linear'\n"
+		 << "    The default is `src-sinc-fastest'\n\n"
 
 	     << "  --version\n"
 	     << "    Print version information\n\n"

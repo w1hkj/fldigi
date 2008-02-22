@@ -42,6 +42,7 @@
 
 #define AFC_COUNT	32
 
+using namespace std;
 
 char mfskmsg[80];
 char txclr_tooltip[24];
@@ -69,6 +70,8 @@ void  mfsk::rx_init()
 			(pipe[i].vector[j]).re = (pipe[i].vector[j]).im = 0.0;
 	reset_afc();
 	s2n = 0.0;
+	memset(picheader, ' ', PICHEADER - 1);
+	picheader[PICHEADER -1] = 0;
 	put_MODEstatus(mode);
 }
 
@@ -90,7 +93,6 @@ mfsk::~mfsk()
 	if (pipe) delete [] pipe;
 	if (hbfilt) delete hbfilt;
 	if (binsfft) delete binsfft;
-//	if (wfid) delete wfid;
 }
 
 mfsk::mfsk(trx_mode mfsk_mode) : modem()
@@ -149,7 +151,6 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 	samplerate = MFSKSampleRate;
 	fragmentsize = symlen;
 	bandwidth = (numtones - 1) * tonespacing;
-//	wfid = new id(this);
 	
 	picRxWin = 0;
 	picRxBox = 0;
@@ -183,10 +184,14 @@ void mfsk::shutdown()
 //=====================================================================
 
 
-bool mfsk::check_picture_header()
+bool mfsk::check_picture_header(char c)
 {
 	char *p;
 
+	if (c >= ' ' && c <= 'z') {
+		memmove(picheader, picheader + 1, PICHEADER - 1);
+		picheader[PICHEADER - 2] = c;
+	}
 	picW = 0;
 	picH = 0;
 	color = false;
@@ -262,15 +267,10 @@ void mfsk::recvpic(complex z)
 
 void mfsk::recvchar(int c)
 {
-	if (c == -1)
+	if (c == -1 || c == 0)
 		return;
 
-	memmove(picheader, picheader + 1, sizeof(picheader) - 1);
-
-	picheader[sizeof(picheader) - 2] = (c == 0) ? ' ' : c;
-	picheader[sizeof(picheader) - 1] = 0;
-
-	if (check_picture_header() == true) {
+	if (check_picture_header(c) == true) {
 		if (symbolbit == 4) {
 			rxstate = RX_STATE_PICTURE_START_1;
 		}
@@ -287,7 +287,8 @@ void mfsk::recvchar(int c)
 		row = 0;
 		rgb = 0;
 
-		memset(picheader, ' ', sizeof(picheader));
+		memset(picheader, ' ', PICHEADER - 1);
+		picheader[PICHEADER -1] = 0;		
 	}
 
 	put_rx_char(c);
@@ -801,7 +802,8 @@ int mfsk::tx_process()
 			abortxmt = false;
 			rxstate = RX_STATE_DATA;
 			counter = 0;
-			memset(picheader, ' ', sizeof(picheader));
+			memset(picheader, ' ', PICHEADER - 1);
+			picheader[PICHEADER -1] = 0;
 			FL_UNLOCK_E();
 			break;
 	}
@@ -965,7 +967,7 @@ void cb_picTxSendColor( Fl_Widget *w, void *who)
 			for (ix = 0; ix < W; ix++)
 				outbuf[rowstart + rgb*W + ix] = inbuf[rowstart + rgb + ix*3];
 	}
-	snprintf(my->picheader, sizeof(my->picheader), "\nSending Pic:%dx%dC;", W, H);
+	snprintf(my->picheader, PICHEADER - 1, "\nSending Pic:%dx%dC;", W, H);
 	my->xmtbytes = W * H * 3;
 	my->color = true;
 	my->rgb = 0;
@@ -1001,7 +1003,7 @@ void cb_picTxSendGrey( Fl_Widget *w, void *who)
 	unsigned char *inbuf = my->xmtimg;
 	for (int i = 0; i < W*H; i++)
 		outbuf[i] = ( 31 * inbuf[i*3] + 61 * inbuf[i*3 + 1] + 8 * inbuf[i*3 + 2])/100;
-	snprintf(my->picheader, sizeof(my->picheader), "\nSending Pic:%dx%d;", W, H);
+	snprintf(my->picheader, PICHEADER - 1, "\nSending Pic:%dx%d;", W, H);
 	my->xmtbytes = W * H;
 	my->color = false;
 	my->col = 0;

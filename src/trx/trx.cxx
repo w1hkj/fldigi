@@ -70,7 +70,8 @@ int			_trx_tune;
 
 // Ringbuffer for the audio "history". A pointer into this buffer
 // is also passed to the waterfall signal drawing routines.
-ringbuffer<double> trxrb(ceil2(1024 * SCBLOCKSIZE));
+#define NUMMEMBUFS 1024
+ringbuffer<double> trxrb(ceil2(NUMMEMBUFS * SCBLOCKSIZE));
 // Vector used for direct access to the ringbuffer
 ringbuffer<double>::vector_type rbvec[2];
 bool    bHistory = false;
@@ -112,7 +113,9 @@ void trx_trx_receive_loop()
 				if (trxrb.write_space() == 0) // discard some old data
 					trxrb.read_advance(SCBLOCKSIZE);
 				trxrb.get_wv(rbvec);
-				numread = scard->Read(rbvec[0].buf, SCBLOCKSIZE);
+				numread = 0;
+				while (numread < SCBLOCKSIZE)
+					numread += scard->Read(rbvec[0].buf + numread, SCBLOCKSIZE - numread);
 			}
 			catch (const SndException& e) {
 				scard->Close();
@@ -120,12 +123,10 @@ void trx_trx_receive_loop()
 				MilliSleep(10);
 				return;
 			}
-			if (numread == -1 || (trx_state != STATE_RX))
+			if (trx_state != STATE_RX)
 				break;
-			else if (numread == 0) // overflow
-				continue;
 
-			trxrb.write_advance(SCBLOCKSIZE);
+			trxrb.write_advance(numread);
 			REQ(&waterfall::sig_data, wf, rbvec[0].buf, numread);
 
 			if (!bHistory)

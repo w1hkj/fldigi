@@ -184,6 +184,7 @@ extern modem *mfsk16_modem;
 extern modem *feld_modem;
 extern modem *feld_FMmodem;
 extern modem *feld_FM105modem;
+extern modem *feld_80modem;
 extern modem *feld_CMTmodem;
 extern modem *psk31_modem;
 extern modem *psk63_modem;
