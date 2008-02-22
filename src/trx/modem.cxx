@@ -198,7 +198,7 @@ mbuffer<double, 512 * 2, 2> _mdm_scdbl;
 
 void modem::ModulateXmtr(double *buffer, int len) 
 {
-	scard->write_samples(buffer, len);
+	scard->Write(buffer, len);
 
 	if (!progdefaults.viewXmtSignal)
 		return;
@@ -215,7 +215,7 @@ void modem::ModulateXmtr(double *buffer, int len)
 
 void modem::ModulateStereo(double *left, double *right, int len)
 {
-	scard->write_stereo(left, right, len);
+	scard->Write_stereo(left, right, len);
 
 	if (!progdefaults.viewXmtSignal)
 		return;

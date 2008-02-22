@@ -192,21 +192,21 @@ int SoundBase::Generate(bool val)
 }
 #endif // USE_SNDFILE
 
-void SoundBase::writeGenerate(double *buff, int count)
+void SoundBase::writeGenerate(double *buff, size_t count)
 {
 #if USE_SNDFILE
 	sf_writef_double(ofGenerate, buff, count);
 #endif
 }
 
-void SoundBase::writeCapture(double *buff, int count)
+void SoundBase::writeCapture(double *buff, size_t count)
 {
 #if USE_SNDFILE
 	sf_writef_double(ofCapture, buff, count);
 #endif
 }
 
-int SoundBase::readPlayback(double *buff, int count)
+int SoundBase::readPlayback(double *buff, size_t count)
 {
 #if USE_SNDFILE
 	sf_count_t r = sf_readf_double(ifPlayback, buff, count);
@@ -480,33 +480,19 @@ bool SoundOSS::reset_device()
 	return 1; /* sounddevice has been reset */
 }
 
-int SoundOSS::Write(unsigned char *buffer, int buffersize)
-{
-	if (device_fd == -1)
-		return -1;
-	return write (device_fd, buffer, buffersize);
-}
-
-int SoundOSS::Read(unsigned char *buffer, int buffersize)
-{
-	if (device_fd == -1)
-		return -1;
-
-	return read (device_fd, buffer, buffersize);
-}
-
-int SoundOSS::Read(double *buffer, int buffersize)
+size_t SoundOSS::Read(double *buffer, size_t buffersize)
 {
 	short int *ibuff = (short int *)cbuff;
 	int numread;
-	if (device_fd == -1)
-		return -1;
 
-	numread = Read(cbuff, buffersize * 4);
-	for (int i = 0; i < buffersize * 2; i++)
+	numread = read(device_fd, cbuff, buffersize * 4);
+	if (numread == -1)
+		throw SndException(errno);
+
+	for (size_t i = 0; i < buffersize * 2; i++)
 		src_buffer[i] = ibuff[i] / MAXSC;
 
-	for (int i = 0; i < buffersize; i++)
+	for (size_t i = 0; i < buffersize; i++)
 		buffer[i] = src_buffer[2*i];
 
 	if (rxppm != progdefaults.RX_corr) {
@@ -521,7 +507,7 @@ int SoundOSS::Read(double *buffer, int buffersize)
 		readPlayback( buffer, buffersize);
 		if (progdefaults.EnableMixer) {
 			double vol = valRcvMixer->value();
-			for (int i = 0; i < buffersize; i++)
+			for (size_t i = 0; i < buffersize; i++)
 				buffer[i] *= vol;
 		}
 		return buffersize;
@@ -539,7 +525,7 @@ int SoundOSS::Read(double *buffer, int buffersize)
 	rx_src_data->end_of_input = 0;
 
 	if ((numread = src_process(rx_src_state, rx_src_data)) != 0)
-		return -1;
+		throw SndException(src_strerror(numread));
 
 	numread = rx_src_data->output_frames_gen;
 
@@ -550,7 +536,7 @@ int SoundOSS::Read(double *buffer, int buffersize)
 
 }
 
-int SoundOSS::write_samples(double *buf, int count)
+size_t SoundOSS::Write(double *buf, size_t count)
 {
 	int retval;
 	short int *wbuff;
@@ -558,9 +544,6 @@ int SoundOSS::write_samples(double *buf, int count)
 
 	if (generate) writeGenerate( buf, count );
 
-	if (device_fd == -1 || count <= 0)
-		return -1;
-
 	if (txppm != progdefaults.TX_corr) {
 		txppm = progdefaults.TX_corr;
 		tx_src_data->src_ratio = 1.0 + txppm/1e6;
@@ -570,18 +553,20 @@ int SoundOSS::write_samples(double *buf, int count)
 	if (txppm == 0) {
 		wbuff = new short int[2*count];
 		p = (unsigned char *)wbuff;
-		for (int i = 0; i < count; i++) {
+		for (size_t i = 0; i < count; i++) {
 			wbuff[2*i] = wbuff[2*i+1] = (short int)(buf[i] * maxsc);
 		}
 		count *= sizeof(short int);
-		retval = Write(p, 2*count);
+		retval = write(device_fd, p, 2*count);
 		delete [] wbuff;
+		if (retval == -1)
+			throw SndException(errno);
 	}
 	else {
 		float *inbuf;
 		inbuf = new float[2*count];
-		int bufsize;
-		for (int i = 0; i < count; i++)
+		size_t bufsize;
+		for (size_t i = 0; i < count; i++)
 			inbuf[2*i] = inbuf[2*i+1] = buf[i];
 		tx_src_data->data_in = inbuf;
 		tx_src_data->input_frames = count;
@@ -589,39 +574,36 @@ int SoundOSS::write_samples(double *buf, int count)
 		tx_src_data->output_frames = SND_BUF_LEN;
 		tx_src_data->end_of_input = 0;
 
-		if (src_process(tx_src_state, tx_src_data) != 0) {
-			delete [] inbuf;
-			return -1;
-		}
+		retval = src_process(tx_src_state, tx_src_data);
 		delete [] inbuf;
+		if (retval != 0)
+			throw SndException(src_strerror(retval));
+
 		bufsize = tx_src_data->output_frames_gen;
 		wbuff = new short int[2*bufsize];
 		p = (unsigned char *)wbuff;
 
-		for (int i = 0; i < 2*bufsize; i++)
+		for (size_t i = 0; i < 2*bufsize; i++)
 			wbuff[i] = (short int)(src_buffer[i] * maxsc);
 		int num2write = bufsize * 2 * sizeof(short int);
 
-		retval = Write(p, num2write);
+		retval = write(device_fd, p, num2write);
 		delete [] wbuff;
 		if (retval != num2write)
-			return -1;
+			throw SndException(errno);
 		retval = count;
 	}
 
 	return retval;
 }
 
-int SoundOSS::write_stereo(double *bufleft, double *bufright, int count)
+size_t SoundOSS::Write_stereo(double *bufleft, double *bufright, size_t count)
 {
 	int retval;
 	short int *wbuff;
 	unsigned char *p;
 
 	if (generate) writeGenerate( bufleft, count );
-
-	if (device_fd == -1 || count <= 0)
-		return -1;
 
 	if (txppm != progdefaults.TX_corr) {
 		txppm = progdefaults.TX_corr;
@@ -632,19 +614,21 @@ int SoundOSS::write_stereo(double *bufleft, double *bufright, int count)
 	if (txppm == 0) {
 		wbuff = new short int[2*count];
 		p = (unsigned char *)wbuff;
-		for (int i = 0; i < count; i++) {
+		for (size_t i = 0; i < count; i++) {
 			wbuff[2*i] = (short int)(bufleft[i] * maxsc);
 			wbuff[2*i + 1] = (short int)(bufright[i] * maxsc);
 		}
 		count *= sizeof(short int);
-		retval = Write(p, 2*count);
+		retval = write(device_fd, p, 2*count);
 		delete [] wbuff;
+		if (retval == -1)
+			throw SndException(errno);
 	}
 	else {
 		float *inbuf;
 		inbuf = new float[2*count];
-		int bufsize;
-		for (int i = 0; i < count; i++) {
+		size_t bufsize;
+		for (size_t i = 0; i < count; i++) {
 			inbuf[2*i] = bufleft[i];
 			inbuf[2*i+1] = bufright[i];
 		}
@@ -654,23 +638,23 @@ int SoundOSS::write_stereo(double *bufleft, double *bufright, int count)
 		tx_src_data->output_frames = SND_BUF_LEN;
 		tx_src_data->end_of_input = 0;
 
-		if (src_process(tx_src_state, tx_src_data) != 0) {
-			delete [] inbuf;
-			return -1;
-		}
+		retval = src_process(tx_src_state, tx_src_data);
 		delete [] inbuf;
+		if (retval != 0)
+			throw SndException(src_strerror(retval));
+
 		bufsize = tx_src_data->output_frames_gen;
 		wbuff = new short int[2*bufsize];
 		p = (unsigned char *)wbuff;
 
-		for (int i = 0; i < 2*bufsize; i++)
+		for (size_t i = 0; i < 2*bufsize; i++)
 			wbuff[i] = (short int)(src_buffer[i] * maxsc);
 
 		int num2write = bufsize * 2 * sizeof(short int);
-		retval = Write(p, num2write);
+		retval = write(device_fd, p, num2write);
 		delete [] wbuff;
 		if (retval != num2write)
-			return -1;
+			throw SndException(errno);
 		retval = count;
 	}
 
@@ -803,9 +787,9 @@ void SoundPort::Close(void)
         stream = 0;
 }
 
-int SoundPort::Read(double *buf, int count)
+size_t SoundPort::Read(double *buf, size_t count)
 {
-        int ncount = (int)MIN(SND_BUF_LEN, floor(count / rx_src_data->src_ratio));
+        size_t ncount = (int)MIN(SND_BUF_LEN, floor(count / rx_src_data->src_ratio));
 
         int err;
         static int retries = 0;
@@ -834,7 +818,7 @@ int SoundPort::Read(double *buf, int count)
 		readPlayback(buf, count);
 		if (progdefaults.EnableMixer) {
 	                double vol = valRcvMixer->value();
-	                for (int i = 0; i < count; i++)
+	                for (size_t i = 0; i < count; i++)
         	                buf[i] *= vol;
 		}
 		return count;
@@ -847,18 +831,18 @@ int SoundPort::Read(double *buf, int count)
                 count = rx_src_data->output_frames_gen;
         }
 
-        for (int i = 0; i < count; i++)
+        for (size_t i = 0; i < count; i++)
                 buf[i] = rbuf[2*i];
 
         return count;
 }
 
-int SoundPort::write_samples(double *buf, int count)
+size_t SoundPort::Write(double *buf, size_t count)
 {
 	if (generate)
                 writeGenerate(buf, count);
 
-        for (int i = 0; i < count; i++)
+        for (size_t i = 0; i < count; i++)
                 fbuf[2*i] = fbuf[2*i + 1] = buf[i];
 
         float *wbuf = fbuf;
@@ -874,11 +858,11 @@ int SoundPort::write_samples(double *buf, int count)
                 pa_perror(err, "Pa_WriteStream");
                 switch (err) {
                 case paOutputUnderflowed:
-                        return adjust_stream() ? write_samples(buf, count) : 0;
+                        return adjust_stream() ? Write(buf, count) : 0;
                 case paUnanticipatedHostError:
                         if (Pa_GetHostApiInfo((*idev)->hostApi)->type == paOSS && retries++ < 8) {
                                 cerr << "Retrying write\n";
-                                return write_samples(buf, count);
+                                return Write(buf, count);
                         }
                         else
                                 cerr << "Giving up\n";
@@ -892,12 +876,12 @@ int SoundPort::write_samples(double *buf, int count)
         return count;
 }
 
-int SoundPort::write_stereo(double *bufleft, double *bufright, int count)
+size_t SoundPort::Write_stereo(double *bufleft, double *bufright, size_t count)
 {
 	if (generate)
                 writeGenerate(bufleft, count);
 
-        for (int i = 0; i < count; i++) {
+        for (size_t i = 0; i < count; i++) {
                 fbuf[2*i] = bufleft[i];
                 fbuf[2*i + 1] = bufright[i];
         }
@@ -915,11 +899,11 @@ int SoundPort::write_stereo(double *bufleft, double *bufright, int count)
                 pa_perror(err, "Pa_WriteStream");
                 switch (err) {
                 case paOutputUnderflowed:
-                        return adjust_stream() ? write_stereo(bufleft, bufright, count) : 0;
+                        return adjust_stream() ? Write_stereo(bufleft, bufright, count) : 0;
                 case paUnanticipatedHostError:
                         if (Pa_GetHostApiInfo((*idev)->hostApi)->type == paOSS && retries++ < 8) {
                                 cerr << "Retrying write\n";
-                                return write_stereo(bufleft, bufright, count);
+                                return Write_stereo(bufleft, bufright, count);
                         }
                         else
                                 cerr << "Giving up\n";
@@ -963,8 +947,10 @@ void SoundPort::src_data_reset(int mode)
         }
 }
 
-void SoundPort::resample(int mode, float *buf, int count, int max)
+void SoundPort::resample(int mode, float *buf, size_t count, size_t max)
 {
+        int r;
+
         if (mode & 1 << O_RDONLY) {
                 if (rxppm != progdefaults.RX_corr) {
                         rxppm = progdefaults.RX_corr;
@@ -980,7 +966,8 @@ void SoundPort::resample(int mode, float *buf, int count, int max)
                 rx_src_data->output_frames = max ? max : SND_BUF_LEN;
                 rx_src_data->end_of_input = 0;
 
-                src_process(rx_src_state, rx_src_data);
+                if ((r = src_process(rx_src_state, rx_src_data)) != 0)
+			throw SndException(src_strerror(r));
         }
         else if (mode & 1 << O_WRONLY) {
                 if (txppm != progdefaults.TX_corr) {
@@ -997,7 +984,8 @@ void SoundPort::resample(int mode, float *buf, int count, int max)
                 tx_src_data->output_frames = max ? max : SND_BUF_LEN;
                 tx_src_data->end_of_input = 0;
 
-                src_process(tx_src_state, tx_src_data);
+                if ((r = src_process(tx_src_state, tx_src_data)) != 0)
+			throw SndException(src_strerror(r));
         }
 }
 
@@ -1152,7 +1140,6 @@ double SoundPort::find_srate(void)
         }
 
         throw SndPortException(err);
-        return -1;
 }
 
 void SoundPort::pa_perror(int err, const char* str)
@@ -1269,12 +1256,12 @@ void SoundPulse::Close(void)
 	}
 }
 
-int SoundPulse::write_samples(double* buf, int count)
+size_t SoundPulse::Write(double* buf, size_t count)
 {
 	if (generate)
                 writeGenerate(buf, count);
 
-        for (int i = 0; i < count; i++)
+        for (size_t i = 0; i < count; i++)
                 fbuf[2*i] = fbuf[2*i + 1] = buf[i];
 
         float *wbuf = fbuf;
@@ -1291,12 +1278,12 @@ int SoundPulse::write_samples(double* buf, int count)
 	return count;
 }
 
-int SoundPulse::write_stereo(double* bufleft, double* bufright, int count)
+size_t SoundPulse::Write_stereo(double* bufleft, double* bufright, size_t count)
 {
 	if (generate)
                 writeGenerate(bufleft, count);
 
-	for (int i = 0; i < count; i++) {
+	for (size_t i = 0; i < count; i++) {
 		fbuf[2*i] = bufleft[i];
 		fbuf[2*i + 1] = bufright[i];
 	}
@@ -1314,10 +1301,9 @@ int SoundPulse::write_stereo(double* bufleft, double* bufright, int count)
 
 	return count;
 }
-
-int SoundPulse::Read(double *buf, int count)
+size_t SoundPulse::Read(double *buf, size_t count)
 {
-        int ncount = (int)MIN(SND_BUF_LEN, floor(count / rx_src_data->src_ratio));
+        size_t ncount = (int)MIN(SND_BUF_LEN, floor(count / rx_src_data->src_ratio));
 
 	int err;
 	if (pa_simple_read(in_stream, fbuf, sizeof(double) * ncount, &err) == -1)
@@ -1329,7 +1315,7 @@ int SoundPulse::Read(double *buf, int count)
 		readPlayback(buf, count);
 		if (progdefaults.EnableMixer) {
 	                double vol = valRcvMixer->value();
-	                for (int i = 0; i < count; i++)
+	                for (size_t i = 0; i < count; i++)
         	                buf[i] *= vol;
 		}
 		return count;
@@ -1342,7 +1328,7 @@ int SoundPulse::Read(double *buf, int count)
                 count = rx_src_data->output_frames_gen;
         }
 
-	for (int i = 0; i < count; i++)
+	for (size_t i = 0; i < count; i++)
                 buf[i] = rbuf[2*i];
 
 	return count;
@@ -1369,8 +1355,10 @@ void SoundPulse::src_data_reset(int mode)
         }
 }
 
-void SoundPulse::resample(int mode, float *buf, int count, int max)
+void SoundPulse::resample(int mode, float *buf, size_t count, size_t max)
 {
+        int r;
+
         if (mode & 1 << O_RDONLY) {
                 if (rxppm != progdefaults.RX_corr) {
                         rxppm = progdefaults.RX_corr;
@@ -1386,7 +1374,8 @@ void SoundPulse::resample(int mode, float *buf, int count, int max)
                 rx_src_data->output_frames = max ? max : SND_BUF_LEN;
                 rx_src_data->end_of_input = 0;
 
-                src_process(rx_src_state, rx_src_data);
+                if ((r = src_process(rx_src_state, rx_src_data)) != 0)
+			throw SndException(src_strerror(r));
         }
         else if (mode & 1 << O_WRONLY) {
                 if (txppm != progdefaults.TX_corr) {
@@ -1403,7 +1392,8 @@ void SoundPulse::resample(int mode, float *buf, int count, int max)
                 tx_src_data->output_frames = max ? max : SND_BUF_LEN;
                 tx_src_data->end_of_input = 0;
 
-                src_process(tx_src_state, tx_src_data);
+                if ((r = src_process(tx_src_state, tx_src_data)) != 0)
+			throw SndException(src_strerror(r));
         }
 }
 

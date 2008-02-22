@@ -112,7 +112,9 @@ void trx_trx_receive_loop()
 				if (trxrb.write_space() == 0) // discard some old data
 					trxrb.read_advance(SCBLOCKSIZE);
 				trxrb.get_wv(rbvec);
-				numread = scard->Read(rbvec[0].buf, SCBLOCKSIZE);
+				numread = 0;
+				while (numread < SCBLOCKSIZE)
+					numread += scard->Read(rbvec[0].buf + numread, SCBLOCKSIZE - numread);
 			}
 			catch (const SndException& e) {
 				scard->Close();
@@ -120,12 +122,10 @@ void trx_trx_receive_loop()
 				MilliSleep(10);
 				return;
 			}
-			if (numread == -1 || (trx_state != STATE_RX))
+			if (trx_state != STATE_RX)
 				break;
-			else if (numread == 0) // overflow
-				continue;
 
-			trxrb.write_advance(SCBLOCKSIZE);
+			trxrb.write_advance(numread);
 			REQ(&waterfall::sig_data, wf, rbvec[0].buf, numread);
 
 			if (!bHistory)
