@@ -12,6 +12,8 @@ Change Log:
       8) Added Pulse Audio support
       9) Added "use default audio device" if h/w changes
      10) Added HELL80 mode
+     11) Fixes to ringbuffer / audio backends
+     12) Fixes to mfsk picture mode decoding
 
 2.09  1) Modified src/Makefile.am for FreeBSD name space clash
       2) Added psk multi-channel viewer with regex search capability
