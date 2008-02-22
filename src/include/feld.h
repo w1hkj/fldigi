@@ -37,17 +37,9 @@
 
 #define	FeldSampleRate	8000
 #define FeldMaxSymLen	1024
-#define	FeldColumnRate	17.5
-#define FeldBandWidth	245.0
 
 #define	RxColumnLen	30
 #define	TxColumnLen	14
-
-#define	RxPixRate	((RxColumnLen)*(FeldColumnRate))
-#define	TxPixRate	((TxColumnLen)*(FeldColumnRate))
-
-#define	DownSampleInc	((double)(RxPixRate)/(samplerate))
-#define	UpSampleInc	((double)(TxPixRate)/(samplerate))
 
 #define	PIXMAP_W	14
 #define	PIXMAP_H	(TxColumnLen)
@@ -61,6 +53,11 @@ protected:
 	double agc;
 	double peakhold;
 	double minhold;
+	
+	double rxpixrate;
+	double txpixrate;
+	double downsampleinc;
+	double upsampleinc;
 
 	C_FIR_filter	*hilbert;
 	fftfilt			*bpfilt;
@@ -80,6 +77,7 @@ protected:
 	int halfwidth;
 	bool blackboard;
 	bool hardkeying;
+	double feldcolumnrate;
 
 	int preamble;
 	int postamble;

@@ -87,12 +87,33 @@ feld::feld(trx_mode m)
 	bandwidth = sldrHellBW->value();
 	FL_UNLOCK_D();
 	
-	switch (mode) { 
-		case MODE_FSKHELL: bandwidth = 122.5; break; 
-		case MODE_FSKH105: bandwidth = 55; break; 
-		default :
+ 	switch (mode) { 
+		case MODE_FSKHELL: 
+			bandwidth = 122.5; 
+			feldcolumnrate = 17.5; 
 			break; 
-	}
+		case MODE_FSKH105: 
+			bandwidth = 55; 
+			feldcolumnrate = 17.5; 
+			break; 
+		case MODE_HELL80: 
+			bandwidth = 300; 
+			feldcolumnrate = 35; 
+			break;
+		case MODE_FELDHELL: 
+ 		default :
+ 			bandwidth = 122.5; 
+ 			feldcolumnrate = 17.5;
+ 			break; 
+ 	}
+ 	hell_bandwidth = bandwidth;
+
+	rxpixrate = (RxColumnLen * feldcolumnrate);
+	txpixrate = (TxColumnLen * feldcolumnrate);
+	downsampleinc = (double)(rxpixrate/samplerate);
+	upsampleinc = (double)(txpixrate/samplerate);
+
+/////////////
 	hell_bandwidth = bandwidth;
 	
 	hilbert = new C_FIR_filter();
@@ -139,29 +160,29 @@ complex feld::mixer(complex in)
 
 void feld::FSKHELL_rx(complex z)
 {
-	double f;//, x;
+	double f;
 	int vid;
-	
+
 	f = (prev % z).arg() * samplerate / M_PI / bandwidth / 2.0;
 	prev = z;
 	
 	f = bbfilt->run(f);
 
-	rxcounter += DownSampleInc;
+	rxcounter += downsampleinc;
 	if (rxcounter < 1.0)
 		return;
 
 	rxcounter -= 1.0;
-
-	f += 0.5;
-
+	
+	f = CLAMP(f + 0.5, 0.0, 1.0);
+	if (mode == MODE_HELL80)
+		f = 1.0 - f;
+	
 	if (reverse)
-		vid = (int)(255 * CLAMP(1.0 - f, 0.0, 1.0));
-	else
-		vid = (int)(255 * CLAMP(f, 0.0, 1.0));
-
+		f = 1.0 - f;
 	if (blackboard)
-		vid = 255 - vid;
+		f = 1.0 - f;
+	vid = (int)(255 * f);
 
 	col_data[col_pointer + RxColumnLen] = vid;
 	col_pointer++;
@@ -182,7 +203,7 @@ void feld::rx(complex z)
 
 	x = bbfilt->run(z.mag());
 	
-	rxcounter += DownSampleInc;
+	rxcounter += downsampleinc;
 	if (rxcounter < 1.0)
 		return;
 
@@ -212,7 +233,7 @@ void feld::rx(complex z)
 	col_data[col_pointer + RxColumnLen] = (int)x;
 	col_pointer++;
 	if (col_pointer == RxColumnLen) {
-		if (metric > squelch || squelchon == false) {
+		if (metric > progdefaults.sldrSquelchValue || progdefaults.sqlonoff == false) {
 			REQ(put_rx_data, col_data, col_data.size());
 			if (!halfwidth)
 				REQ(put_rx_data, col_data, col_data.size());
@@ -232,8 +253,8 @@ int feld::rx_process(const double *buf, int len)
 	FL_LOCK_D();
 	halfwidth = btnHellRcvWidth->value();
 	blackboard = btnBlackboard->value();
-	squelch = progdefaults.sldrSquelchValue;
-	squelchon = progdefaults.sqlonoff;
+//	squelch = progdefaults.sldrSquelchValue;
+//	squelchon = progdefaults.sqlonoff;
 	FL_UNLOCK_D();
 	
 	switch (mode) {
@@ -247,6 +268,7 @@ int feld::rx_process(const double *buf, int len)
 			break;
 		case MODE_FSKHELL:
 		case MODE_FSKH105:
+		case MODE_HELL80:
 			break;
 	}
 
@@ -262,16 +284,17 @@ int feld::rx_process(const double *buf, int len)
 		n = bpfilt->run(z, &zp);
 
 		switch (mode) {
-		case MODE_FSKHELL:
-		case MODE_FSKH105:
-			for (i = 0; i < n; i++) {
-				FSKHELL_rx(zp[i]);
-			}
-			break;
-		default:
-			for (i = 0; i < n; i++)
-				rx(zp[i]);
-			break;
+			case MODE_FSKHELL:
+			case MODE_FSKH105:
+			case MODE_HELL80:
+				for (i = 0; i < n; i++) {
+					FSKHELL_rx(zp[i]);
+				}
+				break;
+			default:
+				for (i = 0; i < n; i++)
+					rx(zp[i]);
+				break;
 		}
 	}
 
@@ -354,6 +377,9 @@ void feld::send_symbol(int currsymb, int nextsymb)
 			case MODE_FSKH105 :
 				tone = get_txfreq_woffset() + (reverse ? -1 : 1) * (currsymb ? -1 : 1) * bandwidth / 2.0;
 				break;
+			case MODE_HELL80:
+				tone = get_txfreq_woffset() - (reverse ? -1 : 1) * (currsymb ? -1 : 1) * bandwidth / 2.0;
+				break;
 			case MODE_FELDHELL :
 			default :
 				if (prevsymb == 0 && currsymb == 1) {
@@ -368,7 +394,7 @@ void feld::send_symbol(int currsymb, int nextsymb)
 
 		if (outlen >= OUTBUFSIZE)
 			break;
-		txcounter += UpSampleInc;
+		txcounter += upsampleinc;
 		if (txcounter < 1.0)
 			continue;
 		txcounter -= 1.0;

@@ -17,6 +17,7 @@ modem *mfsk16_modem = 0;
 modem *feld_modem = 0;
 modem *feld_FMmodem = 0;
 modem *feld_FM105modem = 0;
+modem *feld_80modem = 0;
 modem *feld_CMTmodem = 0;
 modem *psk31_modem = 0;
 modem *psk63_modem = 0;

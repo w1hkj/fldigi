@@ -29,7 +29,7 @@
 #include <FL/Fl_Widget.H>
 #include <FL/fl_draw.H>
 
-class Raster : Fl_Widget { 
+class Raster : public Fl_Widget { 
 public:
 private:
 	unsigned char *vidbuf;

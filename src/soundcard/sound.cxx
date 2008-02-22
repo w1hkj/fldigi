@@ -789,28 +789,28 @@ void SoundPort::Close(void)
 
 size_t SoundPort::Read(double *buf, size_t count)
 {
-        size_t ncount = (int)MIN(SND_BUF_LEN, floor(count / rx_src_data->src_ratio));
+	size_t ncount = (int)MIN(SND_BUF_LEN, floor(count / rx_src_data->src_ratio));
 
-        int err;
-        static int retries = 0;
-        if ((err = Pa_ReadStream(stream, fbuf, ncount)) != paNoError) {
-                pa_perror(err, "Pa_ReadStream");
-                switch (err) {
-                case paInputOverflowed:
-                        return adjust_stream() ? Read(buf, count) : 0;
-                case paUnanticipatedHostError:
-                        if (Pa_GetHostApiInfo((*idev)->hostApi)->type == paOSS && retries++ < 8) {
-                                cerr << "Retrying read\n";
-                                return Read(buf, count);
-                        }
-                        else
-                                cerr << "Giving up\n";
+	int err;
+	static int retries = 0;
+	if ((err = Pa_ReadStream(stream, fbuf, ncount)) != paNoError) {
+		pa_perror(err, "Pa_ReadStream");
+		switch (err) {
+			case paInputOverflowed:
+				return adjust_stream() ? Read(buf, count) : 0;
+			case paUnanticipatedHostError:
+				if (Pa_GetHostApiInfo((*idev)->hostApi)->type == paOSS && retries++ < 8) {
+					cerr << "Retrying read\n";
+					return Read(buf, count);
+				}
+                else
+                	cerr << "Giving up\n";
                         // fall through
-                default:
-                        throw SndPortException(err);
-                }
-        }
-        retries = 0;
+			default:
+				throw SndPortException(err);
+		}
+	}
+	retries = 0;
 
 	if (capture)
                 writeCapture(buf, count);
@@ -1301,9 +1301,10 @@ size_t SoundPulse::Write_stereo(double* bufleft, double* bufright, size_t count)
 
 	return count;
 }
-size_t SoundPulse::Read(double *buf, size_t count)
+
+size_t SoundPulse::Read(double *buf, int count)
 {
-        size_t ncount = (int)MIN(SND_BUF_LEN, floor(count / rx_src_data->src_ratio));
+	size_t ncount = (int)MIN(SND_BUF_LEN, floor(count / rx_src_data->src_ratio));
 
 	int err;
 	if (pa_simple_read(in_stream, fbuf, sizeof(double) * ncount, &err) == -1)

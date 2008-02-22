@@ -70,7 +70,8 @@ int			_trx_tune;
 
 // Ringbuffer for the audio "history". A pointer into this buffer
 // is also passed to the waterfall signal drawing routines.
-ringbuffer<double> trxrb(ceil2(1024 * SCBLOCKSIZE));
+#define NUMMEMBUFS 1024
+ringbuffer<double> trxrb(ceil2(NUMMEMBUFS * SCBLOCKSIZE));
 // Vector used for direct access to the ringbuffer
 ringbuffer<double>::vector_type rbvec[2];
 bool    bHistory = false;

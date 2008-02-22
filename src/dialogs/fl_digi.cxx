@@ -192,6 +192,7 @@ Fl_Menu_Item quick_change_feld[] = {
 	{ mode_info[MODE_FELDHELL].name, 0, cb_init_mode, (void *)MODE_FELDHELL },
 	{ mode_info[MODE_FSKHELL].name, 0, cb_init_mode, (void *)MODE_FSKHELL },
 	{ mode_info[MODE_FSKH105].name, 0, cb_init_mode, (void *)MODE_FSKH105 },
+	{ mode_info[MODE_HELL80].name, 0, cb_init_mode, (void *)MODE_HELL80 },
 	{ 0 }
 };
 
@@ -215,7 +216,8 @@ void startup_modem(modem *m)
 	FL_LOCK_D();
 	if (m == feld_modem ||
 		m == feld_FMmodem ||
-		m == feld_FM105modem ) {
+		m == feld_FM105modem ||
+		m == feld_80modem ) {
 		ReceiveText->Hide();
 		FHdisp->show();
 	} else {
@@ -333,7 +335,7 @@ void init_modem(trx_mode mode)
 		modem_config_tab = tabDomEX;
 		break;
 
-	case MODE_FELDHELL: case MODE_FSKHELL: case MODE_FSKH105:
+	case MODE_FELDHELL: case MODE_FSKHELL: case MODE_FSKH105: case MODE_HELL80:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new feld(mode));
 		quick_change = quick_change_feld;
@@ -913,6 +915,7 @@ Fl_Menu_Item menu_[] = {
 { mode_info[MODE_FELDHELL].name, 0, cb_init_mode, (void *)MODE_FELDHELL, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_FSKHELL].name, 0, cb_init_mode, (void *)MODE_FSKHELL, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_FSKH105].name, 0, cb_init_mode, (void *)MODE_FSKH105, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_HELL80].name, 0, cb_init_mode, (void *)MODE_HELL80, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"MFSK", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
@@ -998,7 +1001,7 @@ Fl_Menu_Item sample_rate_menu[] = {
 	{ "88200" }, { "96000" }, { "192000" }, { 0 }
 };
 
-Fl_Menu_Item *getMenuItem(char *caption)
+Fl_Menu_Item *getMenuItem(const char *caption)
 {
 	Fl_Menu_Item *item = 0;
 	for (size_t i = 0; i < sizeof(menu_)/sizeof(menu_[0]); i++) {

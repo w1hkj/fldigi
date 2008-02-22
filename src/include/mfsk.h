@@ -23,6 +23,7 @@
 // 1 ms per pixel
 #define	SAMPLES_PER_PIXEL	8
 #define MAX_SYMBOLS			32
+#define PICHEADER			64
 
 // NASA coefficients for viterbi encode/decode algorithms
 
@@ -121,7 +122,7 @@ protected:
 
 // Picutre data and methods
 	int picturesize;
-	char picheader[64];
+	char picheader[PICHEADER];
 	complex prevz;
 	double picf;
 	int		row;
@@ -180,7 +181,7 @@ protected:
 	void	flushtx();
 	void	clearbits();
 	void	sendpic(unsigned char *data, int len);
-	bool	check_picture_header();
+	bool	check_picture_header(char c);
 	int	print_time_left(size_t bytes, char *str, size_t len,
 			  const char *prefix = "", const char *suffix = "");
 public:
