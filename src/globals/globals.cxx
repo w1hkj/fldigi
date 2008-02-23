@@ -53,6 +53,9 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_DOMINOEX22, &dominoex22_modem, "DomX22", "DominoEX 22", "DOMINOEX22" },
 
 	{ MODE_FELDHELL, &feld_modem, "FELDHELL", "Feld Hell", "" },
+	{ MODE_SLOWHELL, &feld_slowmodem, "SLOWHELL", "Slow Hell", "" },
+	{ MODE_HELLX5, &feld_x5modem, "HELLX5", "Feld Hell X5", "" },
+	{ MODE_HELLX9, &feld_x9modem, "HELLX9", "Feld Hell X9", "" },	
 	{ MODE_FSKHELL, &feld_FMmodem, "FSK-HELL", "FSK Hell", "" },
 	{ MODE_FSKH105, &feld_FM105modem, "FSK-H105", "FSK Hell-105", "" },
 	{ MODE_HELL80, &feld_80modem, "HELL80", "Hell 80", "" },

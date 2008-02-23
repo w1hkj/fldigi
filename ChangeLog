@@ -14,6 +14,8 @@ Change Log:
      10) Added HELL80 mode
      11) Fixes to ringbuffer / audio backends
      12) Fixes to mfsk picture mode decoding
+     13) Changed frequency2 data file format, downward compatible
+     14) Added FELD_SLOWHELL, FELD_HELLX5 and FELD_HELLX9 modems
 
 2.09  1) Modified src/Makefile.am for FreeBSD name space clash
       2) Added psk multi-channel viewer with regex search capability

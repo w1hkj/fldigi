@@ -1302,7 +1302,7 @@ size_t SoundPulse::Write_stereo(double* bufleft, double* bufright, size_t count)
 	return count;
 }
 
-size_t SoundPulse::Read(double *buf, int count)
+size_t SoundPulse::Read(double *buf, size_t count)
 {
 	size_t ncount = (int)MIN(SND_BUF_LEN, floor(count / rx_src_data->src_ratio));
 

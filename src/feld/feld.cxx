@@ -4,6 +4,8 @@
 // Copyright (C) 2006
 //		Dave Freese, W1HKJ
 //
+// This modem code owes much to the efforts of Joe Veldhius, N8FQ
+//
 // This file is part of fldigi.  Adapted from code contained in gmfsk source code 
 // distribution.
 //  gmfsk Copyright (C) 2001, 2002, 2003
@@ -92,6 +94,18 @@ feld::feld(trx_mode m)
 			bandwidth = 122.5; 
 			feldcolumnrate = 17.5; 
 			break; 
+		case MODE_SLOWHELL: 
+			bandwidth = 50; 
+			feldcolumnrate = 2.1875; 
+			break;
+		case MODE_HELLX5: 
+			bandwidth = 1000; 
+			feldcolumnrate = 87.5; 
+			break;
+		case MODE_HELLX9: 
+			bandwidth = 2000; 
+			feldcolumnrate = 157.5; 
+			break;
 		case MODE_FSKH105: 
 			bandwidth = 55; 
 			feldcolumnrate = 17.5; 
@@ -113,7 +127,6 @@ feld::feld(trx_mode m)
 	downsampleinc = (double)(rxpixrate/samplerate);
 	upsampleinc = (double)(txpixrate/samplerate);
 
-/////////////
 	hell_bandwidth = bandwidth;
 	
 	hilbert = new C_FIR_filter();
