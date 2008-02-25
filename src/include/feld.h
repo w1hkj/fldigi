@@ -43,6 +43,7 @@
 
 #define	PIXMAP_W	14
 #define	PIXMAP_H	(TxColumnLen)
+#define MAXLEN 512
 
 class feld : public modem {
 enum FELD_STATE {PREAMBLE, POSTAMBLE, DATA};
@@ -84,8 +85,8 @@ protected:
 	int prevsymb;
 	complex prev;
 	
-	double OnShape[80];
-	double OffShape[80];
+	double OnShape[MAXLEN];
+	double OffShape[MAXLEN];
 	
 	mbuffer<int, 2*RxColumnLen> col_data;
 	int col_pointer;

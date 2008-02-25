@@ -486,6 +486,7 @@ static void cb_btnQRZnotavailable(Fl_Check_Button* o, void*) {
   if (o->value() == 1) {
 btnQRZcdrom->value(0);
 btnQRZsocket->value(0);
+btnHAMCALLsocket->value(0);
 progdefaults.QRZ = 0;
 }
 progdefaults.changed = true;
@@ -497,6 +498,7 @@ static void cb_btnQRZsocket(Fl_Check_Button* o, void*) {
   if (o->value() == 1) {
 btnQRZcdrom->value(0);
 btnQRZnotavailable->value(0);
+btnHAMCALLsocket->value(0);
 progdefaults.QRZ = 1;
 }
 progdefaults.changed = true;
@@ -508,7 +510,20 @@ static void cb_btnQRZcdrom(Fl_Check_Button* o, void*) {
   if (o->value() == 1) {
 btnQRZsocket->value(0);
 btnQRZnotavailable->value(0);
+btnHAMCALLsocket->value(0);
 progdefaults.QRZ = 2;
+}
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnHAMCALLsocket=(Fl_Check_Button *)0;
+
+static void cb_btnHAMCALLsocket(Fl_Check_Button* o, void*) {
+  if (o->value() == 1) {
+btnQRZcdrom->value(0);
+btnQRZnotavailable->value(0);
+btnQRZsocket->value(0);
+progdefaults.QRZ = 3;
 }
 progdefaults.changed = true;
 }
@@ -1521,26 +1536,31 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         }
         o->end();
       }
-      { Fl_Group* o = tabQRZ = new Fl_Group(0, 25, 400, 195, "QRZ");
+      { Fl_Group* o = tabQRZ = new Fl_Group(0, 25, 400, 195, "qrz");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
-        o->hide();
-        { Fl_Check_Button* o = btnQRZnotavailable = new Fl_Check_Button(31, 50, 200, 20, "QRZ not available");
+        { Fl_Check_Button* o = btnQRZnotavailable = new Fl_Check_Button(31, 45, 200, 20, "Not available");
           o->down_box(FL_DOWN_BOX);
           o->value(1);
           o->callback((Fl_Callback*)cb_btnQRZnotavailable);
           if (progdefaults.QRZ == 0) o->value(1); else o->value(0);
         }
-        { Fl_Check_Button* o = btnQRZsocket = new Fl_Check_Button(32, 103, 205, 20, "QRZ internet subscription");
+        { Fl_Check_Button* o = btnQRZsocket = new Fl_Check_Button(32, 74, 205, 20, "QRZ online subscription");
           o->tooltip("You need a QRZ on-line subscription to access QRZ.com");
           o->down_box(FL_DOWN_BOX);
           o->callback((Fl_Callback*)cb_btnQRZsocket);
           if (progdefaults.QRZ == 1) o->value(1); else o->value(0);
         }
-        { Fl_Check_Button* o = btnQRZcdrom = new Fl_Check_Button(31, 76, 200, 20, "QRZ cdrom");
+        { Fl_Check_Button* o = btnQRZcdrom = new Fl_Check_Button(185, 45, 200, 20, "QRZ cdrom");
           o->down_box(FL_DOWN_BOX);
           o->callback((Fl_Callback*)cb_btnQRZcdrom);
           if (progdefaults.QRZ == 2) o->value(1); else o->value(0);
+        }
+        { Fl_Check_Button* o = btnHAMCALLsocket = new Fl_Check_Button(31, 103, 205, 20, "Hamcall online subscription");
+          o->tooltip("You need a QRZ on-line subscription to access QRZ.com");
+          o->down_box(FL_DOWN_BOX);
+          o->callback((Fl_Callback*)cb_btnHAMCALLsocket);
+          if (progdefaults.QRZ == 3) o->value(1); else o->value(0);
         }
         { Fl_Input* o = inpQRZusername = new Fl_Input(150, 129, 90, 25, "User name:");
           o->callback((Fl_Callback*)cb_inpQRZusername);
@@ -1558,6 +1578,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { Fl_Group* o = tabSoundCard = new Fl_Group(0, 25, 400, 195, "SndCrd");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
+        o->hide();
         { Fl_Tabs* o = tabsSoundCard = new Fl_Tabs(0, 25, 400, 195);
           o->selection_color((Fl_Color)10);
           { Fl_Group* o = tabAudio = new Fl_Group(0, 50, 400, 170, "Audio");

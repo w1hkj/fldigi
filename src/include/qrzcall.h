@@ -2,9 +2,9 @@
 #define QRZCALL_H
 
 
-extern void QRZinit(void);
-extern void QRZclose(void);
+//extern void QRZinit(void);
+//extern void QRZclose(void);
 
-extern void QRZquery();
+extern void CALLSIGNquery();
 
 #endif

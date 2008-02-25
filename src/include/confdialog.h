@@ -74,6 +74,7 @@ extern Fl_Group *tabQRZ;
 extern Fl_Check_Button *btnQRZnotavailable;
 extern Fl_Check_Button *btnQRZsocket;
 extern Fl_Check_Button *btnQRZcdrom;
+extern Fl_Check_Button *btnHAMCALLsocket;
 extern Fl_Input *inpQRZusername;
 extern Fl_Input *inpQRZuserpassword;
 extern Fl_Button *btnQRZpasswordShow;

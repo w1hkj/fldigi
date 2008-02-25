@@ -1260,12 +1260,15 @@ int configuration::openDefaults() {
 			btnQRZnotavailable->value(0);
 			btnQRZsocket->value(0);
 			btnQRZcdrom->value(0);
+			btnHAMCALLsocket->value(0);
 			if (QRZ == 0)
 				btnQRZnotavailable->value(1);
 			else if (QRZ == 1)
 				btnQRZsocket->value(1);
-			else
+			else if (QRZ == 2)
 				btnQRZcdrom->value(1);
+			else if (QRZ == 3)
+				btnHAMCALLsocket->value(1);
 			
 			btnRTTY_USB->value(RTTY_USB);
 			btnsendid->value(sendid);
