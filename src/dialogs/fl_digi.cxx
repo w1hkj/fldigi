@@ -779,7 +779,7 @@ void qsoSave_cb(Fl_Widget *b, void *)
 
 void cb_QRZ(Fl_Widget *b, void *)
 {
-	QRZquery();
+	CALLSIGNquery();
 }
 
 void status_cb(Fl_Widget *b, void *arg)

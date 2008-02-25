@@ -577,29 +577,31 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabQRZ {
-        label QRZ open
-        xywh {0 25 400 195} color 51 selection_color 51 hide
+        label qrz open
+        xywh {0 25 400 195} color 51 selection_color 51
       } {
         Fl_Check_Button btnQRZnotavailable {
-          label {QRZ not available}
+          label {Not available}
           callback {if (o->value() == 1) {
 btnQRZcdrom->value(0);
 btnQRZsocket->value(0);
+btnHAMCALLsocket->value(0);
 progdefaults.QRZ = 0;
 }
 progdefaults.changed = true;}
-          xywh {31 50 200 20} down_box DOWN_BOX value 1
+          xywh {31 45 200 20} down_box DOWN_BOX value 1
           code0 {if (progdefaults.QRZ == 0) o->value(1); else o->value(0);}
         }
         Fl_Check_Button btnQRZsocket {
-          label {QRZ internet subscription}
+          label {QRZ online subscription}
           callback {if (o->value() == 1) {
 btnQRZcdrom->value(0);
 btnQRZnotavailable->value(0);
+btnHAMCALLsocket->value(0);
 progdefaults.QRZ = 1;
 }
-progdefaults.changed = true;}
-          tooltip {You need a QRZ on-line subscription to access QRZ.com} xywh {32 103 205 20} down_box DOWN_BOX
+progdefaults.changed = true;} selected
+          tooltip {You need a QRZ on-line subscription to access QRZ.com} xywh {32 74 205 20} down_box DOWN_BOX
           code0 {if (progdefaults.QRZ == 1) o->value(1); else o->value(0);}
         }
         Fl_Check_Button btnQRZcdrom {
@@ -607,11 +609,24 @@ progdefaults.changed = true;}
           callback {if (o->value() == 1) {
 btnQRZsocket->value(0);
 btnQRZnotavailable->value(0);
+btnHAMCALLsocket->value(0);
 progdefaults.QRZ = 2;
 }
 progdefaults.changed = true;}
-          xywh {31 76 200 20} down_box DOWN_BOX
+          xywh {185 45 200 20} down_box DOWN_BOX
           code0 {if (progdefaults.QRZ == 2) o->value(1); else o->value(0);}
+        }
+        Fl_Check_Button btnHAMCALLsocket {
+          label {Hamcall online subscription}
+          callback {if (o->value() == 1) {
+btnQRZcdrom->value(0);
+btnQRZnotavailable->value(0);
+btnQRZsocket->value(0);
+progdefaults.QRZ = 3;
+}
+progdefaults.changed = true;}
+          tooltip {You need a QRZ on-line subscription to access QRZ.com} xywh {31 103 205 20} down_box DOWN_BOX
+          code0 {if (progdefaults.QRZ == 3) o->value(1); else o->value(0);}
         }
         Fl_Input inpQRZusername {
           label {User name:}
@@ -637,7 +652,7 @@ o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");}
       }
       Fl_Group tabSoundCard {
         label SndCrd open
-        xywh {0 25 400 195} color 51 selection_color 51
+        xywh {0 25 400 195} color 51 selection_color 51 hide
       } {
         Fl_Tabs tabsSoundCard {open
           xywh {0 25 400 195} selection_color 10
@@ -717,7 +732,7 @@ menuSampleRate->deactivate();
 scDevice = "localhost";
 progdefaults.btnAudioIOis = 2;
 progdefaults.changed = true;
-resetSoundCard();} selected
+resetSoundCard();}
                 xywh {35 100 100 25} down_box DIAMOND_DOWN_BOX selection_color 1
               }
             }
@@ -784,7 +799,7 @@ progdefaults.changed = true;}
               label PCM
               callback {setPCMvolume(o->value());
 progdefaults.changed = true;}
-              xywh {19 125 340 21} type {Horz Knob} color 26 selection_color 1 align 8 value 0.8 textsize 14
+              xywh {19 125 340 21} type {Horz Knob} color 26 selection_color 1 align 8 step 0.01 value 0.8 textsize 14
               code0 {extern void setPCMvolume(double);}
             }
             Fl_Input_Choice menuMix {
@@ -937,14 +952,14 @@ progdefaults.changed = true;}
                 label {Dash/Dot}
                 callback {progdefaults.CWdash2dot=o->value();
 progdefaults.changed = true;}
-                xywh {205 185 64 21} type Simple align 4 minimum 2.5 maximum 4 value 3
+                xywh {205 185 64 21} type Simple align 4 minimum 2.5 maximum 4 step 0.1 value 3
                 code0 {o->value(progdefaults.CWdash2dot);}
               }
               Fl_Counter cntCWrisetime {
                 label Edge
                 callback {progdefaults.CWrisetime=o->value();
 progdefaults.changed = true;}
-                xywh {325 185 65 21} type Simple align 4 minimum 0 maximum 15 value 4
+                xywh {325 185 65 21} type Simple align 4 minimum 0 maximum 15 step 0.1 value 4
                 code0 {o->value(progdefaults.CWrisetime);}
               }
               Fl_Counter cntCWdefWPM {
@@ -1003,7 +1018,7 @@ resetDOMEX();}
               label {BW factor:}
               callback {progdefaults.DOMINOEX_BW=o->value();
 progdefaults.changed = true;}
-              xywh {25 134 63 21} type Simple minimum 1 maximum 3 value 2
+              xywh {25 134 63 21} type Simple minimum 1 maximum 3 step 0.1 value 2
               code0 {o->value(progdefaults.DOMINOEX_BW);}
             }
           }

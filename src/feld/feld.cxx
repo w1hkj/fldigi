@@ -95,7 +95,8 @@ feld::feld(trx_mode m)
 			feldcolumnrate = 17.5; 
 			break; 
 		case MODE_SLOWHELL: 
-			bandwidth = 50; 
+			bandwidth = 122.5;
+//			bandwidth = 50; 
 			feldcolumnrate = 2.1875; 
 			break;
 		case MODE_HELLX5: 
@@ -132,7 +133,11 @@ feld::feld(trx_mode m)
 	hilbert = new C_FIR_filter();
 	hilbert->init_hilbert(37, 1);
 
-	lp = 1.5 * bandwidth / 2.0 / samplerate;
+	if (mode == MODE_FELDHELL || mode == MODE_SLOWHELL || 
+	    mode == MODE_HELLX5   || mode == MODE_HELLX9 )
+		lp = 1.5 * bandwidth / 2.0 / samplerate;
+	else
+		lp = 1.5 * txpixrate / samplerate;
 	
 	bpfilt = new fftfilt(0, lp, 1024);
 	
@@ -380,6 +385,7 @@ double feld::nco(double freq)
 void feld::send_symbol(int currsymb, int nextsymb)
 {
 	double tone = get_txfreq_woffset();
+	double midtone = tone;
 	double Amp;
 	int outlen = 0;
 	
@@ -388,12 +394,15 @@ void feld::send_symbol(int currsymb, int nextsymb)
 		switch (mode) {
 			case MODE_FSKHELL :
 			case MODE_FSKH105 :
-				tone = get_txfreq_woffset() + (reverse ? -1 : 1) * (currsymb ? -1 : 1) * bandwidth / 2.0;
+				tone = midtone + (reverse ? -1 : 1) * (currsymb ? -1 : 1) * bandwidth / 2.0;
 				break;
 			case MODE_HELL80:
-				tone = get_txfreq_woffset() - (reverse ? -1 : 1) * (currsymb ? -1 : 1) * bandwidth / 2.0;
+				tone = midtone - (reverse ? -1 : 1) * (currsymb ? -1 : 1) * bandwidth / 2.0;
 				break;
-			case MODE_FELDHELL :
+			case MODE_HELLX5 : case MODE_HELLX9 :
+				Amp = currsymb;
+				break;
+			case MODE_FELDHELL : case MODE_SLOWHELL :
 			default :
 				if (prevsymb == 0 && currsymb == 1) {
 					Amp = OnShape[outlen];
@@ -405,8 +414,10 @@ void feld::send_symbol(int currsymb, int nextsymb)
 		}
 		outbuf[outlen++] = Amp * nco(tone);
 
-		if (outlen >= OUTBUFSIZE)
+		if (outlen >= OUTBUFSIZE) {
+std::cout << "reset\n"; std::cout.flush();
 			break;
+		}
 		txcounter += upsampleinc;
 		if (txcounter < 1.0)
 			continue;
@@ -417,8 +428,6 @@ void feld::send_symbol(int currsymb, int nextsymb)
 
 // write to soundcard & display
 	ModulateXmtr(outbuf, outlen);
-
-// rx echo
 	rx_process(outbuf, outlen);
 	
 }
@@ -520,7 +529,7 @@ int feld::tx_process()
 
 void feld::initKeyWaveform()
 {
-	for (int i = 0; i < 80; i++) {
+	for (int i = 0; i < MAXLEN; i++) {
 		OnShape[i] = 1.0;
 		OffShape[i] = 0.0;
 	}
