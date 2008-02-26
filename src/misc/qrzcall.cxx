@@ -4,6 +4,8 @@
 // Copyright (C) 2006
 //		Dave Freese, W1HKJ
 //		Leigh Klotz, WA5ZNU
+// Copyright (C) 2008
+//              Stelios Bounanos, M0GLD
 //
 // This file is part of fldigi.
 //
@@ -60,11 +62,7 @@ using namespace std;
 
 int rotoroffset = 0;
 
-string htmlpage = "";
-string xmlpage = "";
-string sessionpage = "";
 string host = "online.qrz.com";
-string detail;
 string qrzSessionKey;
 string qrzalert;
 string qrzerror;
@@ -83,17 +81,7 @@ string qrzlatd;
 string qrzlond;
 string qrznotes;
 
-const char *error[] = {
-	"OK",								// err 0
-	"Host not found",					// err 1
-	"Not an IP host!",					// err 2
-	"No http service",					// err 3
-	"Cannot open socket",				// err 4
-	"Cannot Connect to server",		 	// err 5
-	"Socket write error",				// err 6
-	"Socket timeout",					// err 7
-	"Socket select error"				// err 8
-};
+const char* error_string;
 
 enum QUERYTYPE { NONE, QRZCD, QRZNET, HAMCALLNET };
 QUERYTYPE DB_query = NONE;
@@ -104,16 +92,6 @@ enum TAG { \
 	ZIP,	COUNTRY,LATD,	LOND,	GRID, \
 	DOB };
 
-char rbuffer[32768];
-
-fd_set readfds, testfds;
-struct timeval timeout;
-int sockfd = -1;
-int result;
-struct sockaddr_in address;
-struct hostent *hostinfo;
-struct servent *servinfo;
-
 int qrzdummy;
 Fl_Thread QRZ_thread;
 bool QRZ_exit = false;
@@ -123,8 +101,12 @@ static void *CALLSIGNloop(void *args);
 
 bool parseSessionKey();
 bool parse_xml();
-int  getSessionKey();
-int  QRZGetXML();
+
+int connect_to_server(const char* node, const char* service, int* fd);
+ssize_t read_from_server(int fd, const string& request, string& reply, struct timeval* timeout);
+
+bool getSessionKey(string& sessionpage);
+bool QRZGetXML(string& xmlpage);
 int  bearing(const char *, const char *);
 void qra(const char *, double &, double &);
 void QRZ_disp_result();
@@ -135,16 +117,16 @@ void QRZinit(void);
 void QRZclose(void);
 void qthappend(string &qth, string &datum);
 void QRZAlert();
-int  QRZLogin();
+bool QRZLogin(string& sessionpage);
 void QRZquery();
-void parse_html();
-int  HAMCALLget();
+void parse_html(const string& htmlpage);
+bool HAMCALLget(string& htmlpage);
 void HAMCALLquery();
 
 
 QRZ *qCall;
 
-bool parseSessionKey()
+bool parseSessionKey(const string& sessionpage)
 {
 	IrrXMLReader* xml = createIrrXMLReader(new IIrrXMLStringReader(sessionpage));
 	TAG tag=IGNORE;
@@ -190,11 +172,11 @@ bool parseSessionKey()
 		}
 	}
 	delete xml;
-	return 0;
+	return true;
 } 
 
 
-bool parse_xml()
+bool parse_xml(const string& xmlpage)
 {
 	IrrXMLReader* xml = createIrrXMLReader(new IIrrXMLStringReader(xmlpage));
 
@@ -328,158 +310,158 @@ bool parse_xml()
 
 // delete the xml parser after usage
 	delete xml;
-	return 0;
+	return true;
 }
 
-int getSessionKey()
+// Open a stream socket, connect it to "service" running on "node", and copy it
+// to *fd. Return 0 if successful, < 0 if getaddrinfo failed, or errno if there
+// was some other error.
+int connect_to_server(const char* node, const char* service, int* fd)
 {
-	hostinfo = gethostbyname(host.c_str());
-	if(!hostinfo)
-		return 1;
-	if(hostinfo->h_addrtype != AF_INET)
-		return 2;
-	servinfo = getservbyname("http", "tcp");
-	if(!servinfo)
-		return 3;
+	struct addrinfo hints, *ai, *aip;
 
-	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	
-	if (sockfd == -1)
-		return 4;
-	address.sin_family = AF_INET;
-	address.sin_port = servinfo->s_port;
-	address.sin_addr = *(struct in_addr *)*hostinfo->h_addr_list;
+	memset(&hints, 0, sizeof(hints));
+#ifdef AI_ADDRCONFIG
+	hints.ai_flags = AI_ADDRCONFIG;
+#endif
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
 
-	result = connect(sockfd, (struct sockaddr *)&address, sizeof(address));
-	if(result == -1) {
-		close(sockfd);
-		return 5;
-	}
-
-	{
-		detail = "GET /bin/xml?username=";
-		detail += progdefaults.QRZusername;
-		detail += ";password=";
-		detail += progdefaults.QRZuserpassword;
-		detail += ";version=";
-		detail += PACKAGE_NAME;
-		detail += "/";
-		detail += PACKAGE_VERSION;
-		detail += " HTTP/1.0\n";
-		detail += "Host: ";
-		detail += host;
-		detail += "\n";
-		detail += "Connection: close\n";
-		detail += "\n";
-	}
-  
-	
-	result = write(sockfd, detail.c_str() , detail.length());
-	if (result != (int)detail.length()) {
-		close(sockfd);
-		return 6;
-	}
-
-	FD_ZERO(&readfds);
-	FD_SET(sockfd, &readfds);
-	
-	while (1) {
-		testfds = readfds;
-		timeout.tv_sec = 5;		// timeout = 5 seconds
-		timeout.tv_usec = 0;
-		result = select(FD_SETSIZE, &testfds, (fd_set *)0, (fd_set *)0, &timeout);
-		if (result == 0) {
+	int res;
+	if ((res = getaddrinfo(node, service, &hints, &ai)) < 0)
+		return res;
+	for (aip = ai; aip; aip = ai->ai_next) { // use the first one that works
+		if ((*fd = socket(aip->ai_family, aip->ai_socktype, aip->ai_protocol)) == -1)
+			continue;
+		if (connect(*fd, aip->ai_addr, aip->ai_addrlen) == 0)
 			break;
-		}
-		if (result == -1) {
-			close(sockfd);
-			return 8;
-		}
-		if (FD_ISSET(sockfd, &testfds)) {
-			memset(rbuffer, 0, 32768);
-			result = read(sockfd, rbuffer, sizeof(rbuffer));
-			if (result <= 0) break;
-			sessionpage += rbuffer;
-		} else {
-			break;
-		}
 	}
-    
-	close(sockfd);
-	return 0;
+	if (!aip) { // no usable address found
+		res = errno;
+		if (*fd >= 0)
+			close(*fd);
+	}
+
+	freeaddrinfo(ai);
+	return res;
 }
 
-int QRZGetXML()
+// Write "request" to socket fd, append reply to "reply". Wait a maximum of
+// "timeout" for each operation. Return the number of bytes read, or -ETIMEDOUT
+// if a read or write timed out, or -errno if there was some other error.
+ssize_t read_from_server(int fd, const string& request, string& reply, struct timeval* timeout)
 {
-	hostinfo = gethostbyname(host.c_str());
-	if(!hostinfo)
-		return 1;
-	if(hostinfo->h_addrtype != AF_INET)
-		return 2;
-	servinfo = getservbyname("http", "tcp");
-	if(!servinfo)
-		return 3;
+	char rbuffer[32768];
+	fd_set rwset;
+	ssize_t res, n;
 
-	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	
-	if (sockfd == -1)
-		return 4;
-	address.sin_family = AF_INET;
-	address.sin_port = servinfo->s_port;
-	address.sin_addr = *(struct in_addr *)*hostinfo->h_addr_list;
+	// write request
+	n = 0;
+	for (;;) {
+		FD_ZERO(&rwset);
+		FD_SET(fd, &rwset);
+		res = select(fd + 1, 0, &rwset, 0, timeout);
+		if (res == -1)
+			return -errno;
+		else if (res == 0)
+			return -ETIMEDOUT;
 
-	result = connect(sockfd, (struct sockaddr *)&address, sizeof(address));
-	if(result == -1) {
-		close(sockfd);
-		return 5;
-	}
-
-	{
-		detail = "GET /bin/xml?s=";
-		detail += qrzSessionKey;
-		detail += ";callsign=";
-		detail += callsign;
-		detail += " HTTP/1.0\n";
-		detail += "Host: ";
-		detail += host;
-		detail += "\n";
-		detail += "Connection: close\n";
-		detail += "\n";
-	}
-	
-	result = write(sockfd, detail.c_str() , detail.length());
-	if (result != (int)detail.length()) {
-		close(sockfd);
-		return 6;
-	}
-
-	FD_ZERO(&readfds);
-	FD_SET(sockfd, &readfds);
-	
-	while (1) {
-		testfds = readfds;
-		timeout.tv_sec = 5;		// timeout = 5 seconds
-		timeout.tv_usec = 0;
-		result = select(FD_SETSIZE, &testfds, (fd_set *)0, (fd_set *)0, &timeout);
-		if (result == 0) {
+		res = write(fd, request.c_str() + n, request.length() - n);
+		if (res > 0)
+			n += res;
+		else
+			return -errno;
+		if ((size_t)n == request.length())
 			break;
+	}
+
+	// read reply
+	n = 0;
+	for (;;) {
+		FD_ZERO(&rwset);
+		FD_SET(fd, &rwset);
+		res = select(fd + 1, &rwset, 0, 0, timeout);
+		if (res == -1)
+			return -errno;
+		else if (res == 0)
+			return -ETIMEDOUT;
+
+		res = read(fd, rbuffer, sizeof(rbuffer));
+		if (res > 0) {
+			reply.append(rbuffer, (unsigned)res);
+			n += res;
 		}
-		if (result == -1) {
-			close(sockfd);
-			return 8;
-		}
-		if (FD_ISSET(sockfd, &testfds)) {
-			memset(rbuffer, 0, 32768);
-			result = read(sockfd, rbuffer, sizeof(rbuffer));
-			if (result <= 0) break;
-			xmlpage += rbuffer;
-		} else {
+		else {
+			if (res < 0)
+				return -errno;
 			break;
 		}
 	}
-    
+
+	return n;
+}
+
+bool getSessionKey(string& sessionpage)
+{
+	int r, sockfd;
+	if ((r = connect_to_server(host.c_str(), "http", &sockfd)) != 0) {
+		error_string = r > 0 ? strerror(r) : gai_strerror(r);
+		return false;
+	}
+
+	string detail;
+	detail =  "GET /bin/xml?username=";
+	detail += progdefaults.QRZusername;
+	detail += ";password=";
+	detail += progdefaults.QRZuserpassword;
+	detail += ";version=";
+	detail += PACKAGE_NAME;
+	detail += "/";
+	detail += PACKAGE_VERSION;
+	detail += " HTTP/1.0\n";
+	detail += "Host: ";
+	detail += host;
+	detail += "\n";
+	detail += "Connection: close\n";
+	detail += "\n";
+
+	struct timeval timeout = { 5, 0 }; // timeout = 5 seconds
+	ssize_t nread = read_from_server(sockfd, detail, sessionpage, &timeout);
 	close(sockfd);
-	return 0;
+	if (nread < 0 && nread != -ETIMEDOUT)
+		error_string = strerror(-nread);
+
+	// for some strange reason we return successfully even if we time out
+	return nread == -ETIMEDOUT || nread > 0;
+}
+
+bool QRZGetXML(string& xmlpage)
+{
+	int r, sockfd;
+	if ((r = connect_to_server(host.c_str(), "http", &sockfd)) != 0) {
+		error_string = r > 0 ? strerror(r) : gai_strerror(r);
+		return false;
+	}
+
+	string detail;
+	detail = "GET /bin/xml?s=";
+	detail += qrzSessionKey;
+	detail += ";callsign=";
+	detail += callsign;
+	detail += " HTTP/1.0\n";
+	detail += "Host: ";
+	detail += host;
+	detail += "\n";
+	detail += "Connection: close\n";
+	detail += "\n";
+
+	struct timeval timeout = { 5, 0 }; // timeout = 5 seconds
+	ssize_t nread = read_from_server(sockfd, detail, xmlpage, &timeout);
+	close(sockfd);
+	if (nread < 0)
+		error_string = strerror(-nread);
+
+	return nread > 0;
 }
 
 int bearing(const char *myqra, const char *dxqra) {
@@ -528,14 +510,14 @@ void QRZ_disp_result()
    FL_LOCK();
    {
        if (qrzfname.length() > 0) {
-           int spacePos = qrzfname.find(" ");
+           string::size_type spacePos = qrzfname.find(" ");
 //    if fname is "ABC" then display "ABC"
 // or if fname is "X Y" then display "X Y"
-           if (spacePos ==-1 || (spacePos == 1)) {
+           if (spacePos == string::npos || (spacePos == 1)) {
                inpName->value(qrzfname.c_str());
            }
 // if fname is "ABC Y" then display "ABC"
-           else if (spacePos == ((int)qrzfname.length())-2) {
+           else if (spacePos == qrzfname.length() - 2) {
                string fname="";
                fname.assign(qrzfname, 0, spacePos);
                inpName->value(fname.c_str());
@@ -577,7 +559,6 @@ void QRZ_COM_query()
 			return;
 	}
 
-	xmlpage = "";
 	DB_query = QRZNET;
 	FL_LOCK();
 	inpNotes->value(" *** Request sent to qrz.com ***");
@@ -591,10 +572,9 @@ void HAMCALL_COM_query()
 		if (!QRZ_enabled)
 			return;
 	}
-	htmlpage = "";
 	DB_query = HAMCALLNET;
 	FL_LOCK();
-	inpNotes->value(" *** Request sent to www.hamcomm.net ***");
+	inpNotes->value(" *** Request sent to www.hamcall.net ***");
 	FL_UNLOCK();	
 }
 
@@ -673,33 +653,36 @@ void QRZAlert()
 	}
 }
 
-int QRZLogin() {
-	int err=0;
+bool QRZLogin(string& sessionpage) {
+	bool ok = true;
 	if (qrzSessionKey.empty()) {
-		err = getSessionKey();
-		if (!err) err = parseSessionKey();
+		ok = getSessionKey(sessionpage);
+		if (ok) ok = parseSessionKey(sessionpage);
 	}
-	if (! err) {
+	if (!ok) {
 		QRZAlert();
 	}
-	return err;
+	return ok;
 }
 
 void QRZquery()
 {
-	int err=0;
+	bool ok = true;
+
+	string qrzpage;
+
 	if (qrzSessionKey.empty())
-		err = QRZLogin();
-	if (!err)
-		err = QRZGetXML();
-	if (!err) {
+		ok = QRZLogin(qrzpage);
+	if (ok)
+		ok = QRZGetXML(qrzpage);
+	if (ok) {
 		if (qrzSessionKey.empty())
-			err = QRZLogin();
-		if (!err)
-			err = QRZGetXML();
+			ok = QRZLogin(qrzpage);
+		if (ok)
+			ok = QRZGetXML(qrzpage);
 	}
-	if (!err) {
-		parse_xml();
+	if (ok) {
+		parse_xml(qrzpage);
 		if (!qrzalert.empty()) {
 			FL_LOCK();
 			inpNotes->value(qrzalert.c_str());
@@ -719,9 +702,9 @@ void QRZquery()
 			QRZ_disp_result();
 		}
 	} 
-	if (err) {
+	if (!ok) {
 		FL_LOCK();
-		inpNotes->value(error[err]);
+		inpNotes->value(error_string);
 		FL_UNLOCK();
 	}
 }
@@ -736,7 +719,7 @@ void QRZquery()
 #define HAMCALL_GRID 202
 #define HAMCALL_DOB 194
 
-void parse_html()
+void parse_html(const string& htmlpage)
 {
 	size_t p;
 	qrzborn="";
@@ -776,12 +759,16 @@ void parse_html()
 	}	
 }
 
-int HAMCALLget()
+bool HAMCALLget(string& htmlpage)
 {
+	int r, sockfd;
+	if ((r = connect_to_server(HAMCALL_HOST, "http", &sockfd)) != 0) {
+		error_string = r > 0 ? strerror(r) : gai_strerror(r);
+		return false;
+	}
+
 	string url_detail;
-	int len;
-	
-	url_detail = "GET /call?username=";
+	url_detail =  "GET /call?username=";
 	url_detail += progdefaults.QRZusername;
 	url_detail += "&password=";
 	url_detail += progdefaults.QRZuserpassword;
@@ -789,72 +776,25 @@ int HAMCALLget()
 	url_detail += callsign;
 	url_detail += "&program=WA5ZNU/Testing/0.0+\r\n";
 
-    hostinfo = gethostbyname(HAMCALL_HOST);
-    if(!hostinfo)
-    	return 1;
-    if(hostinfo->h_addrtype != AF_INET)
-    	return 2;
-    servinfo = getservbyname("http", "tcp");
-    if(!servinfo)
-    	return 3;
+	struct timeval timeout = { 10, 0 }; // timeout = 10 seconds
+	ssize_t nread = read_from_server(sockfd, url_detail, htmlpage, &timeout);
+	close(sockfd);
+	if (nread < 0)
+		error_string = strerror(-nread);
 
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	if (sockfd == -1)
-		return 4;
-
-    address.sin_family = AF_INET;
-    address.sin_port = servinfo->s_port;
-    address.sin_addr = *(struct in_addr *)*hostinfo->h_addr_list;
-
-    result = connect(sockfd, (struct sockaddr *)&address, sizeof(address));
-    if(result == -1) {
-		close(sockfd);
-    	return 5;
-	}
-	
-	len = url_detail.length();
-	result = write(sockfd, url_detail.c_str() , len);
-	if (result != len) {
-		close(sockfd);
-		return 6;
-	}
-
-	FD_ZERO(&readfds);
-	FD_SET(sockfd, &readfds);
-	
-	testfds = readfds;
-	timeout.tv_sec = 15;		// timeout = 10 seconds
-	timeout.tv_usec = 0;
-	result = select(FD_SETSIZE, &testfds, (fd_set *)0, (fd_set *)0, &timeout);
-
-	if (result == 0) {
-		close(sockfd);
-		return 7;
-	}
-	if (result == -1) {
-		close(sockfd);
-		return 8;
-	}
-	if (FD_ISSET(sockfd, &testfds)) {
-		memset(rbuffer, 0, 32768);
-		result = read(sockfd, rbuffer, sizeof(rbuffer));
-		if (result && result < 32768)
-			htmlpage += rbuffer;
-	}
-    
-    close(sockfd);
-	return 0;          
+	return nread > 0;
 }
 
 void HAMCALLquery()
 {
-int err;
-	if ((err = HAMCALLget()) == 0) {
-		parse_html();
+	string htmlpage;
+
+	if (HAMCALLget(htmlpage)) {
+		parse_html(htmlpage);
 		QRZ_disp_result();
 	} else {
 		FL_LOCK();
-		inpNotes->value(error[err]);
+		inpNotes->value(error_string);
 		FL_UNLOCK();
 	}
 }
