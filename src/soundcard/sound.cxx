@@ -678,7 +678,7 @@ void SoundPort::initialize(void)
                 throw SndPortException(err);
         pa_init = true;
 
-        PaDeviceIndex ndev = Pa_GetDeviceCount();
+        PaDeviceIndex ndev;
         if ((ndev = Pa_GetDeviceCount()) < 0)
                 throw SndPortException(ndev);
         if (ndev == 0)
@@ -700,10 +700,15 @@ const std::vector<const PaDeviceInfo*>& SoundPort::devices(void)
         return devs;
 }
 
-SoundPort::SoundPort(const char *dev)
-        : device(dev), stream(0), frames_per_buffer(paFramesPerBufferUnspecified),
-          req_sample_rate(0), dev_sample_rate(0), fbuf(0)
+SoundPort::SoundPort(const char *in_dev, const char *out_dev)
+        : req_sample_rate(0), fbuf(0)
 {
+	device[STREAM_IN] = in_dev;
+	device[STREAM_OUT] = out_dev;
+	stream[STREAM_IN] = stream[STREAM_OUT] = 0;
+	frames_per_buffer[STREAM_IN] = frames_per_buffer[STREAM_OUT] = paFramesPerBufferUnspecified;
+	dev_sample_rate[STREAM_IN] = dev_sample_rate[STREAM_OUT] = 0;
+
         try {
                 rx_src_data = new SRC_DATA;
                 tx_src_data = new SRC_DATA;
@@ -741,50 +746,61 @@ int SoundPort::Open(int mode, int freq)
 
         // Try to keep the stream open if we are using jack, or if we
         // are in full duplex mode and the sample rate has not changed.
-        if (stream_active()) {
-                if (Pa_GetHostApiInfo((*idev)->hostApi)->type == paJACK) {
+        if (stream_active(STREAM_IN) && stream_active(STREAM_OUT)) {
+                if (Pa_GetHostApiInfo((*idev[STREAM_IN])->hostApi)->type == paJACK ||
+		    Pa_GetHostApiInfo((*idev[STREAM_OUT])->hostApi)->type == paJACK) {
                         // If we have a new sample rate, we must reset the src data.
                         if (old_sample_rate != freq)
                                 src_data_reset(1 << O_RDONLY | 1 << O_WRONLY);
                         return 0;
                 }
-                else if (full_duplex_device(*idev) && old_sample_rate == freq)
+		else if ( (idev[STREAM_IN] != idev[STREAM_OUT] ||
+			   full_duplex_device(*idev[STREAM_IN])) &&
+			  old_sample_rate == freq)
                         return 0;
         }
 
         Close();
-        init_stream();
+
+        init_stream(STREAM_IN);
 #ifndef NDEBUG
-        if (dev_sample_rate != req_sample_rate)
-                cerr << "PA_debug: resampling " << dev_sample_rate
+        if (dev_sample_rate[STREAM_IN] != req_sample_rate)
+                cerr << "PA_debug: input: resampling " << dev_sample_rate[STREAM_IN]
+                     << " <-> " << req_sample_rate << endl;
+#endif
+
+        init_stream(STREAM_OUT);
+#ifndef NDEBUG
+        if (dev_sample_rate[STREAM_OUT] != req_sample_rate)
+                cerr << "PA_debug: output: resampling " << dev_sample_rate[STREAM_OUT]
                      << " <-> " << req_sample_rate << endl;
 #endif
 
         mode = full_duplex()  ?  1 << O_RDONLY | 1 << O_WRONLY  :  1 << mode;
-        if (!(mode & 1 << O_WRONLY))
-                stream_params[STREAM_OUT] = NULL;
-        if (!(mode & 1 << O_RDONLY))
-                stream_params[STREAM_IN] = NULL;
         src_data_reset(mode);
 
-        start_stream();
+        if (mode & 1 << O_RDONLY)
+		start_stream(STREAM_IN);
+        if (mode & 1 << O_WRONLY)
+		start_stream(STREAM_OUT);
 
         return 0;
 }
 
 void SoundPort::Close(void)
 {
-        if (!stream_active())
-                return;
+	int err;
+	for (int i = 0; i < 2; i++) {
+		if (!stream_active(i))
+			return;
 
-        int err;
+		if ((err = Pa_StopStream(stream[i])) != paNoError)
+			pa_perror(err, "Pa_StopStream");
+		if ((err = Pa_CloseStream(stream[i])) != paNoError)
+			pa_perror(err, "Pa_CloseStream");
 
-        if ((err = Pa_StopStream(stream)) != paNoError)
-                pa_perror(err, "Pa_StopStream");
-        if ((err = Pa_CloseStream(stream)) != paNoError)
-                pa_perror(err, "Pa_CloseStream");
-
-        stream = 0;
+		stream[i] = 0;
+	}
 }
 
 size_t SoundPort::Read(double *buf, size_t count)
@@ -793,13 +809,13 @@ size_t SoundPort::Read(double *buf, size_t count)
 
 	int err;
 	static int retries = 0;
-	if ((err = Pa_ReadStream(stream, fbuf, ncount)) != paNoError) {
+	if ((err = Pa_ReadStream(stream[STREAM_IN], fbuf, ncount)) != paNoError) {
 		pa_perror(err, "Pa_ReadStream");
 		switch (err) {
 			case paInputOverflowed:
-				return adjust_stream() ? Read(buf, count) : 0;
+				return 0;
 			case paUnanticipatedHostError:
-				if (Pa_GetHostApiInfo((*idev)->hostApi)->type == paOSS && retries++ < 8) {
+				if (Pa_GetHostApiInfo((*idev[STREAM_IN])->hostApi)->type == paOSS && retries++ < 8) {
 					cerr << "Retrying read\n";
 					return Read(buf, count);
 				}
@@ -825,7 +841,7 @@ size_t SoundPort::Read(double *buf, size_t count)
 	}
 
         float *rbuf = fbuf;
-        if (req_sample_rate != dev_sample_rate || progdefaults.RX_corr != 0) {
+        if (req_sample_rate != dev_sample_rate[STREAM_IN] || progdefaults.RX_corr != 0) {
                 resample(1 << O_RDONLY, rbuf, ncount, count);
                 rbuf = rx_src_data->data_out;
                 count = rx_src_data->output_frames_gen;
@@ -846,21 +862,21 @@ size_t SoundPort::Write(double *buf, size_t count)
                 fbuf[2*i] = fbuf[2*i + 1] = buf[i];
 
         float *wbuf = fbuf;
-        if (req_sample_rate != dev_sample_rate || progdefaults.TX_corr != 0) {
+        if (req_sample_rate != dev_sample_rate[STREAM_OUT] || progdefaults.TX_corr != 0) {
                 resample(1 << O_WRONLY, wbuf, count);
                 wbuf = tx_src_data->data_out;
                 count = tx_src_data->output_frames_gen;
         }
 
         int err;
-        static int retries = 0;
-        if ((err = Pa_WriteStream(stream, wbuf, count)) != paNoError) {
+        static unsigned retries = 0;
+        if ((err = Pa_WriteStream(stream[STREAM_OUT], wbuf, count)) != paNoError) {
                 pa_perror(err, "Pa_WriteStream");
                 switch (err) {
                 case paOutputUnderflowed:
-                        return adjust_stream() ? Write(buf, count) : 0;
+			return 0;
                 case paUnanticipatedHostError:
-                        if (Pa_GetHostApiInfo((*idev)->hostApi)->type == paOSS && retries++ < 8) {
+                        if (Pa_GetHostApiInfo((*idev[STREAM_OUT])->hostApi)->type == paOSS && retries++ < 8) {
                                 cerr << "Retrying write\n";
                                 return Write(buf, count);
                         }
@@ -887,26 +903,28 @@ size_t SoundPort::Write_stereo(double *bufleft, double *bufright, size_t count)
         }
 
         float *wbuf = fbuf;
-        if (req_sample_rate != dev_sample_rate || progdefaults.TX_corr != 0) {
+        if (req_sample_rate != dev_sample_rate[STREAM_OUT] || progdefaults.TX_corr != 0) {
                 resample(1 << O_WRONLY, wbuf, count);
                 wbuf = tx_src_data->data_out;
                 count = tx_src_data->output_frames_gen;
         }
 
         int err;
-        static int retries = 0;
+        static unsigned retries = 0;
         if ((err = Pa_WriteStream(stream, wbuf, count)) != paNoError) {
                 pa_perror(err, "Pa_WriteStream");
                 switch (err) {
                 case paOutputUnderflowed:
-                        return adjust_stream() ? Write_stereo(bufleft, bufright, count) : 0;
+			return 0;
                 case paUnanticipatedHostError:
-                        if (Pa_GetHostApiInfo((*idev)->hostApi)->type == paOSS && retries++ < 8) {
+                        if (Pa_GetHostApiInfo((*idev[STREAM_OUT])->hostApi)->type == paOSS && retries++ < 8) {
                                 cerr << "Retrying write\n";
                                 return Write_stereo(bufleft, bufright, count);
                         }
-                        else
+                        else {
                                 cerr << "Giving up\n";
+				retries = 0;
+			}
                         // fall through
                 default:
                         throw SndPortException(err);
@@ -922,8 +940,10 @@ size_t SoundPort::Write_stereo(double *bufleft, double *bufright, size_t count)
 bool SoundPort::full_duplex(void)
 {
         extern bool pa_allow_full_duplex;
-        return (pa_allow_full_duplex && full_duplex_device(*idev)) ||
-                Pa_GetHostApiInfo((*idev)->hostApi)->type == paJACK;
+	return (pa_allow_full_duplex && full_duplex_device(*idev[STREAM_IN])) ||
+	        idev[STREAM_IN] != idev[STREAM_OUT] ||
+	        (Pa_GetHostApiInfo((*idev[STREAM_IN])->hostApi)->type == paJACK ||
+		 Pa_GetHostApiInfo((*idev[STREAM_OUT])->hostApi)->type == paJACK);
 }
 
 void SoundPort::src_data_reset(int mode)
@@ -935,7 +955,7 @@ void SoundPort::src_data_reset(int mode)
                 rx_src_state = src_new(sample_converter, 2, &err);
                 if (!rx_src_state)
                         throw SndException(src_strerror(err));
-                rx_src_data->src_ratio = req_sample_rate / (dev_sample_rate * (1.0 + rxppm / 1e6));
+                rx_src_data->src_ratio = req_sample_rate / (dev_sample_rate[STREAM_IN] * (1.0 + rxppm / 1e6));
         }
         if (mode & 1 << O_WRONLY) {
                 if (tx_src_state)
@@ -943,7 +963,7 @@ void SoundPort::src_data_reset(int mode)
                 tx_src_state = src_new(sample_converter, 2, &err);
                 if (!tx_src_state)
                         throw SndException(src_strerror(err));
-                tx_src_data->src_ratio = dev_sample_rate * (1.0 + txppm / 1e6) / req_sample_rate;
+                tx_src_data->src_ratio = dev_sample_rate[STREAM_OUT] * (1.0 + txppm / 1e6) / req_sample_rate;
         }
 }
 
@@ -955,7 +975,7 @@ void SoundPort::resample(int mode, float *buf, size_t count, size_t max)
                 if (rxppm != progdefaults.RX_corr) {
                         rxppm = progdefaults.RX_corr;
                         rx_src_data->src_ratio = req_sample_rate
-                                / dev_sample_rate
+                                / dev_sample_rate[STREAM_IN]
                                 * (1.0 + rxppm / 1e6);
                         src_set_ratio(rx_src_state, rx_src_data->src_ratio);
                 }
@@ -972,7 +992,7 @@ void SoundPort::resample(int mode, float *buf, size_t count, size_t max)
         else if (mode & 1 << O_WRONLY) {
                 if (txppm != progdefaults.TX_corr) {
                         txppm = progdefaults.TX_corr;
-                        tx_src_data->src_ratio = dev_sample_rate
+                        tx_src_data->src_ratio = dev_sample_rate[STREAM_OUT]
                                 * (1.0 + txppm / 1e6)
                                 / req_sample_rate;
                         src_set_ratio(tx_src_state, tx_src_data->src_ratio);
@@ -989,97 +1009,98 @@ void SoundPort::resample(int mode, float *buf, size_t count, size_t max)
         }
 }
 
-void SoundPort::init_stream(void)
+void SoundPort::init_stream(unsigned dir)
 {
 #ifndef NDEBUG
-        cerr << "PA_debug: looking for \"" << device << "\"\n";
+        cerr << "PA_debug: looking for \"" << device[dir] << "\"\n";
 #endif
-        for (idev = devs.begin(); idev != devs.end(); ++idev)
-                if (device == (*idev)->name)
+        for (idev[dir] = devs.begin(); idev[dir] != devs.end(); ++idev[dir])
+                if (device[dir] == (*idev[dir])->name)
                         break;
-        if (idev == devs.end()) {
-                cerr << "PA_debug: could not find device \"" << device << "\"\n";
-                idev = devs.begin() + Pa_GetDefaultOutputDevice();
+        if (idev[dir] == devs.end()) {
+                cerr << "PA_debug: could not find device \"" << device[dir] << "\"\n";
+                idev[dir] = devs.begin() + (dir == STREAM_IN ? Pa_GetDefaultInputDevice() : Pa_GetDefaultOutputDevice());
         }
-        PaDeviceIndex idx = idev - devs.begin();
+        PaDeviceIndex idx = idev[dir] - devs.begin();
 
 #ifndef NDEBUG
-        cerr << "PA_debug: using device:"
+        cerr << "PA_debug: using " << (dir == STREAM_IN ? "input" : "output") << " device:"
              << "\n index: " << idx
-             << "\n name: " << (*idev)->name
-             << "\n hostAPI: " << Pa_GetHostApiInfo((*idev)->hostApi)->name
-             << "\n maxInputChannels: " << (*idev)->maxInputChannels
-             << "\n maxOutputChannels: " << (*idev)->maxOutputChannels
-             << "\n defaultLowInputLatency: " << (*idev)->defaultLowInputLatency
-             << "\n defaultHighInputLatency: " << (*idev)->defaultHighInputLatency
-             << "\n defaultLowOutputLatency: " << (*idev)->defaultLowOutputLatency
-             << "\n defaultHighOutputLatency: " << (*idev)->defaultHighOutputLatency
-             << "\n defaultSampleRate: " << (*idev)->defaultSampleRate
+             << "\n name: " << (*idev[dir])->name
+             << "\n hostAPI: " << Pa_GetHostApiInfo((*idev[dir])->hostApi)->name
+             << "\n maxInputChannels: " << (*idev[dir])->maxInputChannels
+             << "\n maxOutputChannels: " << (*idev[dir])->maxOutputChannels
+             << "\n defaultLowInputLatency: " << (*idev[dir])->defaultLowInputLatency
+             << "\n defaultHighInputLatency: " << (*idev[dir])->defaultHighInputLatency
+             << "\n defaultLowOutputLatency: " << (*idev[dir])->defaultLowOutputLatency
+             << "\n defaultHighOutputLatency: " << (*idev[dir])->defaultHighOutputLatency
+             << "\n defaultSampleRate: " << (*idev[dir])->defaultSampleRate
              << boolalpha
-             << "\n isInputOnlyDevice: " << ((*idev)->maxOutputChannels == 0)
-             << "\n isOutputOnlyDevice: " << ((*idev)->maxInputChannels == 0)
-             << "\n isFullDuplexDevice: " << full_duplex_device(*idev)
+             << "\n isInputOnlyDevice: " << ((*idev[dir])->maxOutputChannels == 0)
+             << "\n isOutputOnlyDevice: " << ((*idev[dir])->maxInputChannels == 0)
+             << "\n isFullDuplexDevice: " << full_duplex_device(*idev[dir])
              << "\n isSystemDefaultInputDevice: " << (idx == Pa_GetDefaultInputDevice())
              << "\n isSystemDefaultOutputDevice: " << (idx == Pa_GetDefaultOutputDevice())
-             << "\n isHostApiDefaultInputDevice: " << (idx == Pa_GetHostApiInfo((*idev)->hostApi)->defaultInputDevice)
-             << "\n isHostApiDefaultOutputDevice: " << (idx == Pa_GetHostApiInfo((*idev)->hostApi)->defaultOutputDevice)
+             << "\n isHostApiDefaultInputDevice: " << (idx == Pa_GetHostApiInfo((*idev[dir])->hostApi)->defaultInputDevice)
+             << "\n isHostApiDefaultOutputDevice: " << (idx == Pa_GetHostApiInfo((*idev[dir])->hostApi)->defaultOutputDevice)
              << "\n\n";
 #endif
 
-        // we are unlikely to have an output-only device
-        if ((*idev)->maxInputChannels == 0)
-                throw SndPortException(EBUSY);
+	if ((dir == STREAM_IN && (*idev[dir])->maxInputChannels == 0) ||
+	    (dir == STREAM_OUT && (*idev[dir])->maxOutputChannels == 0))
+		throw SndException(EBUSY);
 
-        in_params.device = idx;
-        in_params.channelCount = 2;
-        in_params.sampleFormat = paFloat32;
-        in_params.suggestedLatency = (*idev)->defaultHighInputLatency;
-        in_params.hostApiSpecificStreamInfo = NULL;
-        stream_params[STREAM_IN] = &in_params;
+	if (dir == STREAM_IN) {
+		stream_params[STREAM_IN].device = idx;
+		stream_params[STREAM_IN].channelCount = 2;
+		stream_params[STREAM_IN].sampleFormat = paFloat32;
+		stream_params[STREAM_IN].suggestedLatency = (*idev[dir])->defaultHighInputLatency;
+		stream_params[STREAM_IN].hostApiSpecificStreamInfo = NULL;
+	}
+	else {
+		stream_params[STREAM_OUT].device = idx;
+		stream_params[STREAM_OUT].channelCount = 2;
+		stream_params[STREAM_OUT].sampleFormat = paFloat32;
+		stream_params[STREAM_OUT].suggestedLatency = (*idev[dir])->defaultHighOutputLatency;
+		stream_params[STREAM_OUT].hostApiSpecificStreamInfo = NULL;
+	}
 
-        out_params.device = idx;
-        out_params.channelCount = 2;
-        out_params.sampleFormat = paFloat32;
-        out_params.suggestedLatency = (*idev)->defaultHighOutputLatency;
-        out_params.hostApiSpecificStreamInfo = NULL;
-        stream_params[STREAM_OUT] = &out_params;
+        dev_sample_rate[dir] = find_srate(dir);
 
-        dev_sample_rate = find_srate();
-
-        max_frames_per_buffer = ceil2(MIN(SND_BUF_LEN, (unsigned)(SCBLOCKSIZE *
-                                                                  dev_sample_rate / req_sample_rate)));
-#ifndef NDEBUG
-        cerr << "PA_debug: max_frames_per_buffer = " << max_frames_per_buffer << endl;
-#endif
         extern int pa_frames_per_buffer;
         if (pa_frames_per_buffer)
-                frames_per_buffer = pa_frames_per_buffer;
+                frames_per_buffer[dir] = pa_frames_per_buffer;
 }
 
-void SoundPort::start_stream(void)
+void SoundPort::start_stream(unsigned dir)
 {
         int err;
 
-        err = Pa_OpenStream(&stream, stream_params[STREAM_IN], stream_params[STREAM_OUT],
-                            dev_sample_rate, frames_per_buffer, paNoFlag, NULL, NULL);
-        if (err != paNoError)
-                throw SndPortException(err);
-        if ((err = Pa_StartStream(stream)) != paNoError) {
-                Close();
-                throw SndPortException(err);
-        }
+	if (dir == STREAM_IN)
+		err = Pa_OpenStream(&stream[STREAM_IN], &stream_params[STREAM_IN], NULL,
+				    dev_sample_rate[STREAM_IN], frames_per_buffer[STREAM_IN],
+				    paNoFlag, NULL, NULL);
+	else
+		err = Pa_OpenStream(&stream[STREAM_OUT], NULL, &stream_params[STREAM_OUT],
+				    dev_sample_rate[STREAM_OUT], frames_per_buffer[STREAM_OUT],
+				    paNoFlag, NULL, NULL);
+	if (err != paNoError)
+		throw SndPortException(err);
+
+	if ((err = Pa_StartStream(stream[dir])) != paNoError) {
+		Close();
+		throw SndPortException(err);
+	}
 }
 
-bool SoundPort::stream_active(void)
+bool SoundPort::stream_active(unsigned dir)
 {
-        if (!stream)
+        if (!stream[dir])
                 return false;
 
         int err;
-
-        if ((err = Pa_IsStreamActive(stream)) < 0)
+        if ((err = Pa_IsStreamActive(stream[dir])) < 0)
                 throw SndPortException(err);
-
         return err == 1;
 }
 
@@ -1088,50 +1109,30 @@ bool SoundPort::full_duplex_device(const PaDeviceInfo* dev)
         return dev->maxInputChannels > 0 && dev->maxOutputChannels > 0;
 }
 
-bool SoundPort::adjust_stream(void)
-{
-        if (frames_per_buffer == max_frames_per_buffer)
-                return false;
-
-        if (frames_per_buffer != paFramesPerBufferUnspecified)
-                frames_per_buffer *= 2;
-        else
-                frames_per_buffer = SCBLOCKSIZE;
-
-        if (!powerof2(frames_per_buffer))
-                frames_per_buffer = ceil2(frames_per_buffer);
-
-        frames_per_buffer = MIN(max_frames_per_buffer, frames_per_buffer);
-
-        cerr << "PA_debug: adjusting frames_per_buffer to "
-             << frames_per_buffer << endl;
-        Close();
-        start_stream();
-
-        return true;
-}
-
 // Determine the sample rate that we will use. We try the modem's rate
 // first and fall back to the device's default rate. If there is a user
 // setting we just return that without making any checks.
-double SoundPort::find_srate(void)
+double SoundPort::find_srate(unsigned dir)
 {
-        switch (progdefaults.sample_rate) {
-        case 0:
+	int sr = (dir == STREAM_IN ? progdefaults.in_sample_rate : progdefaults.out_sample_rate);
+        switch (sr) {
+        case -1: case 0:
                 break;
         case 1:
-                return (*idev)->defaultSampleRate;
+                return (*idev[dir])->defaultSampleRate;
         default:
-                return progdefaults.sample_rate;
+                return sr;
         }
 
-        double srates[] = { req_sample_rate, (*idev)->defaultSampleRate };
+        double srates[] = { req_sample_rate, (*idev[dir])->defaultSampleRate };
         int err;
         for (size_t i = 0; i < sizeof(srates)/sizeof(srates[0]); i++) {
 #ifndef NDEBUG
                 cerr << "PA_debug: trying " << srates[i] << " Hz" << endl;
 #endif
-                if ((err = Pa_IsFormatSupported(&in_params, &out_params, srates[i])) == paFormatIsSupported)
+                if ((err = Pa_IsFormatSupported((dir == STREAM_IN ? &stream_params[STREAM_IN] : NULL),
+						(dir == STREAM_OUT ? &stream_params[STREAM_OUT] : NULL),
+						srates[i])) == paFormatIsSupported)
                         return srates[i];
 #ifndef NDEBUG
                 else
@@ -1153,7 +1154,8 @@ void SoundPort::pa_perror(int err, const char* str)
 
                 if (i < 0) { // PA failed without setting its "last host error" info. Sigh...
                         cerr << "Host API error info not available\n";
-                        if (Pa_GetHostApiInfo((*idev)->hostApi)->type == paOSS && errno)
+                        if ((Pa_GetHostApiInfo((*idev[STREAM_IN])->hostApi)->type == paOSS ||
+			     Pa_GetHostApiInfo((*idev[STREAM_OUT])->hostApi)->type == paOSS) && errno)
                                 cerr << "Possible OSS error " << errno << ": "
                                      << strerror(errno) << '\n';
                 }
@@ -1169,8 +1171,10 @@ void SoundPort::pa_perror(int err, const char* str)
 #if USE_PULSEAUDIO
 
 SoundPulse::SoundPulse(const char *dev)
-	: dev_sample_rate(48000), in_stream(0), out_stream(0), fbuf(0)
+	: fbuf(0)
 {
+	stream[0] = stream[1] = 0;
+
         try {
                 rx_src_data = new SRC_DATA;
                 tx_src_data = new SRC_DATA;
@@ -1200,9 +1204,14 @@ SoundPulse::~SoundPulse()
 int SoundPulse::Open(int mode, int freq)
 {
 	int old_sample_rate = sample_frequency;
-	sample_frequency = freq;
 
-	if (in_stream && out_stream) {
+	dev_sample_rate[0] = (progdefaults.in_sample_rate > 1 ?
+			      progdefaults.in_sample_rate : 48000);
+	dev_sample_rate[1] = (progdefaults.out_sample_rate > 1 ?
+			      progdefaults.out_sample_rate : 48000);
+
+	sample_frequency = freq;
+	if (stream[0] && stream[1]) {
 		if (sample_frequency != old_sample_rate) {
 			src_data_reset(1 << O_RDONLY | 1 << O_WRONLY);
 			return 0;
@@ -1210,25 +1219,30 @@ int SoundPulse::Open(int mode, int freq)
 	}
         else
 		Close();
-	stream_params.format = PA_SAMPLE_FLOAT32LE;
-	stream_params.channels = 2;
-	stream_params.rate = dev_sample_rate;
 
+	const char* server = (progdefaults.PulseServer.length() ?
+			      progdefaults.PulseServer.c_str() : NULL);
 	char sname[32];
 	int err;
+
+	stream_params.format = PA_SAMPLE_FLOAT32LE;
+	stream_params.channels = 2;
+
+	stream_params.rate = dev_sample_rate[0];
 	snprintf(sname, sizeof(sname), "capture (%u)", getpid());
-	if (!in_stream) {
-		in_stream = pa_simple_new(NULL, PACKAGE_NAME, PA_STREAM_RECORD, NULL,
+	if (!stream[0]) {
+		stream[0] = pa_simple_new(server, PACKAGE_NAME, PA_STREAM_RECORD, NULL,
 					  sname, &stream_params, NULL, NULL, &err);
-		if (!in_stream)
+		if (!stream[0])
 			throw SndPulseException(err);
 	}
 
+	stream_params.rate = dev_sample_rate[1];
 	snprintf(sname, sizeof(sname), "playback (%u)", getpid());
-	if (!out_stream) {
-		out_stream = pa_simple_new(NULL, PACKAGE_NAME, PA_STREAM_PLAYBACK, NULL,
+	if (!stream[1]) {
+		stream[1] = pa_simple_new(server, PACKAGE_NAME, PA_STREAM_PLAYBACK, NULL,
 					   sname, &stream_params, NULL, NULL, &err);
-		if (!out_stream)
+		if (!stream[1])
 			throw SndPulseException(err);
 	}
 
@@ -1240,19 +1254,19 @@ int SoundPulse::Open(int mode, int freq)
 void SoundPulse::Close(void)
 {
 	int err = PA_OK;
-	if (in_stream) {
-		pa_simple_drain(in_stream, &err);
+	if (stream[0]) {
+		pa_simple_drain(stream[0], &err);
 		if (err != PA_OK)
 			cerr << pa_strerror(err) << '\n';
-		pa_simple_free(in_stream);
-		in_stream = 0;
+		pa_simple_free(stream[0]);
+		stream[0] = 0;
 	}
-	if (out_stream) {
-		pa_simple_drain(out_stream, &err);
+	if (stream[1]) {
+		pa_simple_drain(stream[1], &err);
 		if (err != PA_OK)
 			cerr << pa_strerror(err) << '\n';
-		pa_simple_free(out_stream);
-		out_stream = 0;
+		pa_simple_free(stream[1]);
+		stream[1] = 0;
 	}
 }
 
@@ -1265,14 +1279,14 @@ size_t SoundPulse::Write(double* buf, size_t count)
                 fbuf[2*i] = fbuf[2*i + 1] = buf[i];
 
         float *wbuf = fbuf;
-        if (sample_frequency != dev_sample_rate || progdefaults.TX_corr != 0) {
+        if (sample_frequency != dev_sample_rate[1] || progdefaults.TX_corr != 0) {
                 resample(1 << O_WRONLY, wbuf, count);
                 wbuf = tx_src_data->data_out;
                 count = tx_src_data->output_frames_gen;
         }
 
 	int err;
-	if (pa_simple_write(out_stream, wbuf, count * sizeof(double), &err) == -1)
+	if (pa_simple_write(stream[1], wbuf, count * sizeof(double), &err) == -1)
 		throw SndPulseException(err);
 
 	return count;
@@ -1289,14 +1303,14 @@ size_t SoundPulse::Write_stereo(double* bufleft, double* bufright, size_t count)
 	}
 
         float *wbuf = fbuf;
-        if (sample_frequency != dev_sample_rate || progdefaults.TX_corr != 0) {
+        if (sample_frequency != dev_sample_rate[1] || progdefaults.TX_corr != 0) {
                 resample(1 << O_WRONLY, wbuf, count);
                 wbuf = tx_src_data->data_out;
                 count = tx_src_data->output_frames_gen;
         }
 
 	int err;
-	if (pa_simple_write(out_stream, wbuf, count * sizeof(double), &err) == -1)
+	if (pa_simple_write(stream[1], wbuf, count * sizeof(double), &err) == -1)
 		throw SndPulseException(err);
 
 	return count;
@@ -1307,7 +1321,7 @@ size_t SoundPulse::Read(double *buf, size_t count)
 	size_t ncount = (int)MIN(SND_BUF_LEN, floor(count / rx_src_data->src_ratio));
 
 	int err;
-	if (pa_simple_read(in_stream, fbuf, sizeof(double) * ncount, &err) == -1)
+	if (pa_simple_read(stream[0], fbuf, sizeof(double) * ncount, &err) == -1)
 		throw SndPulseException(err);
 
 	if (capture)
@@ -1323,7 +1337,7 @@ size_t SoundPulse::Read(double *buf, size_t count)
 	}
 
         float *rbuf = fbuf;
-        if (sample_frequency != dev_sample_rate || progdefaults.RX_corr != 0) {
+        if (sample_frequency != dev_sample_rate[0] || progdefaults.RX_corr != 0) {
                 resample(1 << O_RDONLY, rbuf, ncount, count);
                 rbuf = rx_src_data->data_out;
                 count = rx_src_data->output_frames_gen;
@@ -1344,7 +1358,7 @@ void SoundPulse::src_data_reset(int mode)
                 rx_src_state = src_new(sample_converter, stream_params.channels, &err);
                 if (!rx_src_state)
                         throw SndException(src_strerror(err));
-                rx_src_data->src_ratio = sample_frequency / (dev_sample_rate * (1.0 + rxppm / 1e6));
+                rx_src_data->src_ratio = sample_frequency / (dev_sample_rate[0] * (1.0 + rxppm / 1e6));
         }
         if (mode & 1 << O_WRONLY) {
                 if (tx_src_state)
@@ -1352,7 +1366,7 @@ void SoundPulse::src_data_reset(int mode)
                 tx_src_state = src_new(sample_converter, stream_params.channels, &err);
                 if (!tx_src_state)
                         throw SndException(src_strerror(err));
-                tx_src_data->src_ratio = dev_sample_rate * (1.0 + txppm / 1e6) / sample_frequency;
+                tx_src_data->src_ratio = dev_sample_rate[1] * (1.0 + txppm / 1e6) / sample_frequency;
         }
 }
 
@@ -1364,7 +1378,7 @@ void SoundPulse::resample(int mode, float *buf, size_t count, size_t max)
                 if (rxppm != progdefaults.RX_corr) {
                         rxppm = progdefaults.RX_corr;
                         rx_src_data->src_ratio = sample_frequency
-                                / dev_sample_rate
+                                / dev_sample_rate[0]
                                 * (1.0 + rxppm / 1e6);
                         src_set_ratio(rx_src_state, rx_src_data->src_ratio);
                 }
@@ -1381,7 +1395,7 @@ void SoundPulse::resample(int mode, float *buf, size_t count, size_t max)
         else if (mode & 1 << O_WRONLY) {
                 if (txppm != progdefaults.TX_corr) {
                         txppm = progdefaults.TX_corr;
-                        tx_src_data->src_ratio = dev_sample_rate
+                        tx_src_data->src_ratio = dev_sample_rate[1]
                                 * (1.0 + txppm / 1e6)
                                 / sample_frequency;
                         src_set_ratio(tx_src_state, tx_src_data->src_ratio);
@@ -1398,5 +1412,45 @@ void SoundPulse::resample(int mode, float *buf, size_t count, size_t max)
         }
 }
 
-
 #endif // USE_PULSEAUDIO
+
+
+size_t SoundNull::Write(double* buf, size_t count)
+{
+	if (generate)
+                writeGenerate(buf, count);
+
+	usleep((useconds_t)ceil((1e6 * count) / sample_frequency));
+
+	return count;
+}
+
+size_t SoundNull::Write_stereo(double* bufleft, double* bufright, size_t count)
+{
+	if (generate)
+                writeGenerate(bufleft, count);
+
+	usleep((useconds_t)ceil((1e6 * count) / sample_frequency));
+
+	return count;
+}
+
+size_t SoundNull::Read(double *buf, size_t count)
+{
+	memset(buf, 0, count * sizeof(*buf));
+
+	if (capture)
+                writeCapture(buf, count);
+	if (playback) {
+		readPlayback(buf, count);
+		if (progdefaults.EnableMixer) {
+	                double vol = valRcvMixer->value();
+	                for (size_t i = 0; i < count; i++)
+        	                buf[i] *= vol;
+		}
+	}
+
+	usleep((useconds_t)ceil((1e6 * count) / sample_frequency));
+
+	return count;
+}

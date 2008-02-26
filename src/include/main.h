@@ -24,7 +24,7 @@
 extern string		HomeDir;
 extern string		xmlfname;
 
-extern std::string	 scDevice;
+extern std::string	 scDevice[2];
 extern PTT			*push2talk;
 #if USE_HAMLIB
 extern Rig			*xcvr;

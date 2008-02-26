@@ -1694,13 +1694,13 @@ void put_echo_char(unsigned int data)
 
 void resetRTTY() {
 	if (active_modem->get_mode() != MODE_RTTY) return;
-	trx_reset(scDevice.c_str());
+	trx_reset();
 	active_modem->restart();
 }
 
 void resetOLIVIA() {
 	if (active_modem->get_mode() != MODE_OLIVIA) return;
-	trx_reset(scDevice.c_str());
+	trx_reset();
 	active_modem->restart();
 }
 
@@ -1713,7 +1713,7 @@ void resetDOMEX() {
 		md == MODE_DOMINOEX16 ||
 		md == MODE_DOMINOEX22 ) {
 
-		trx_reset(scDevice.c_str());
+		trx_reset();
 		active_modem->restart();
 	}
 }
@@ -1823,10 +1823,51 @@ void resetSoundCard()
 {
     bool mixer_enabled = progdefaults.EnableMixer;
 	enableMixer(false);
-	trx_reset(scDevice.c_str());
-	progdefaults.SCdevice = scDevice;
+	trx_reset();
     if (mixer_enabled)
         enableMixer(true);
+}
+
+void update_sound_config(unsigned idx)
+{
+	// radio button
+	for (size_t i = 0; i < sizeof(btnAudioIO)/sizeof(*btnAudioIO); i++)
+		btnAudioIO[i]->value(i == idx);
+
+	// devices
+	menuOSSDev->deactivate();
+	menuPortInDev->deactivate();
+	menuPortOutDev->deactivate();
+	inpPulseServer->deactivate();
+
+	// settings
+	menuInSampleRate->deactivate();
+	menuOutSampleRate->deactivate();
+
+	progdefaults.btnAudioIOis = idx;
+	switch (idx) {
+	case SND_IDX_OSS:
+		menuOSSDev->activate();
+		scDevice[0] = scDevice[1] = menuOSSDev->value();
+		break;
+	case SND_IDX_PORT:
+		menuPortInDev->activate();
+		menuPortOutDev->activate();
+		menuInSampleRate->activate();
+		menuOutSampleRate->activate();
+		scDevice[0] = menuPortInDev->value();
+		scDevice[1] = menuPortOutDev->value();
+		break;
+	case SND_IDX_PULSE:
+		inpPulseServer->activate();
+		menuInSampleRate->activate();
+		menuOutSampleRate->activate();
+		scDevice[0] = scDevice[1] = inpPulseServer->value();
+		break;
+	case SND_IDX_NULL:
+		scDevice[0] = scDevice[1] = "";
+		break;
+	};
 }
 
 void setReverse(int rev) {

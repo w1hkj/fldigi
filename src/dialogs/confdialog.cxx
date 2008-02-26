@@ -556,6 +556,74 @@ Fl_Tabs *tabsSoundCard=(Fl_Tabs *)0;
 
 Fl_Group *tabAudio=(Fl_Group *)0;
 
+Fl_Group *AudioOSS=(Fl_Group *)0;
+
+static void cb_btnAudioIO(Fl_Round_Button*, void*) {
+  update_sound_config(SND_IDX_OSS);
+progdefaults.changed = true;
+resetSoundCard();
+}
+
+Fl_Input_Choice *menuOSSDev=(Fl_Input_Choice *)0;
+
+static void cb_menuOSSDev(Fl_Input_Choice* o, void*) {
+  scDevice[0] = scDevice[1] = progdefaults.OSSdevice = o->value();
+resetSoundCard();
+progdefaults.changed = true;
+}
+
+Fl_Group *AudioPort=(Fl_Group *)0;
+
+static void cb_btnAudioIO1(Fl_Round_Button*, void*) {
+  update_sound_config(SND_IDX_PORT);
+progdefaults.changed = true;
+resetSoundCard();
+}
+
+Fl_Input_Choice *menuPortInDev=(Fl_Input_Choice *)0;
+
+static void cb_menuPortInDev(Fl_Input_Choice* o, void*) {
+  scDevice[0] = progdefaults.PortInDevice = o->value();
+resetSoundCard();
+progdefaults.changed = true;
+}
+
+Fl_Input_Choice *menuPortOutDev=(Fl_Input_Choice *)0;
+
+static void cb_menuPortOutDev(Fl_Input_Choice* o, void*) {
+  scDevice[1] = progdefaults.PortOutDevice = o->value();
+resetSoundCard();
+progdefaults.changed = true;
+}
+
+Fl_Group *AudioPulse=(Fl_Group *)0;
+
+static void cb_btnAudioIO2(Fl_Round_Button*, void*) {
+  update_sound_config(SND_IDX_PULSE);
+progdefaults.changed = true;
+resetSoundCard();
+}
+
+Fl_Input *inpPulseServer=(Fl_Input *)0;
+
+static void cb_inpPulseServer(Fl_Input* o, void*) {
+  scDevice[0] = scDevice[1] = progdefaults.PulseServer = o->value();
+resetSoundCard();
+progdefaults.changed = true;
+}
+
+Fl_Group *AudioNull=(Fl_Group *)0;
+
+Fl_Round_Button *btnAudioIO[4]={(Fl_Round_Button *)0};
+
+static void cb_btnAudioIO3(Fl_Round_Button*, void*) {
+  update_sound_config(SND_IDX_NULL);
+progdefaults.changed = true;
+resetSoundCard();
+}
+
+Fl_Group *tabAudioOpt=(Fl_Group *)0;
+
 Fl_Spinner *cntRxRateCorr=(Fl_Spinner *)0;
 
 static void cb_cntRxRateCorr(Fl_Spinner* o, void*) {
@@ -577,69 +645,18 @@ static void cb_cntTxOffset(Fl_Spinner* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Group *AudioIO=(Fl_Group *)0;
+Fl_Choice *menuOutSampleRate=(Fl_Choice *)0;
 
-static void cb_btnAudioIO(Fl_Round_Button* o, void*) {
-  btnAudioIO[1]->value(0);
-btnAudioIO[2]->value(0);
-o->value(1);
-menuOSSDev->activate();
-menuPADev->deactivate();
-menuSampleRate->deactivate();
-scDevice = menuOSSDev->value();
-progdefaults.btnAudioIOis = 0;
-progdefaults.changed = true;
-resetSoundCard();
-}
-
-static void cb_btnAudioIO1(Fl_Round_Button* o, void*) {
-  btnAudioIO[0]->value(0);
-btnAudioIO[2]->value(0);
-o->value(1);
-menuPADev->activate();
-menuOSSDev->deactivate();
-menuSampleRate->activate();
-scDevice = menuPADev->value();
-progdefaults.btnAudioIOis = 1;
-progdefaults.changed = true;
-resetSoundCard();
-}
-
-Fl_Round_Button *btnAudioIO[3]={(Fl_Round_Button *)0};
-
-static void cb_btnAudioIO2(Fl_Round_Button* o, void*) {
-  btnAudioIO[0]->value(0);
-btnAudioIO[1]->value(0);
-o->value(1);
-menuPADev->deactivate();
-menuOSSDev->deactivate();
-menuSampleRate->deactivate();
-scDevice = "localhost";
-progdefaults.btnAudioIOis = 2;
-progdefaults.changed = true;
-resetSoundCard();
-}
-
-Fl_Input_Choice *menuOSSDev=(Fl_Input_Choice *)0;
-
-static void cb_menuOSSDev(Fl_Input_Choice* o, void*) {
-  scDevice = progdefaults.OSSdevice = o->value();
+static void cb_menuOutSampleRate(Fl_Choice* o, void*) {
+  progdefaults.out_sample_rate = o->value() > 1 ? strtol(o->mvalue()->text, 0, 10) : o->value();
 resetSoundCard();
 progdefaults.changed = true;
 }
 
-Fl_Input_Choice *menuPADev=(Fl_Input_Choice *)0;
+Fl_Choice *menuInSampleRate=(Fl_Choice *)0;
 
-static void cb_menuPADev(Fl_Input_Choice* o, void*) {
-  scDevice = progdefaults.PAdevice = o->value();
-resetSoundCard();
-progdefaults.changed = true;
-}
-
-Fl_Choice *menuSampleRate=(Fl_Choice *)0;
-
-static void cb_menuSampleRate(Fl_Choice* o, void*) {
-  progdefaults.sample_rate = o->value() > 1 ? strtol(o->mvalue()->text, 0, 10) : o->value();
+static void cb_menuInSampleRate(Fl_Choice* o, void*) {
+  progdefaults.in_sample_rate = o->value() > 1 ? strtol(o->mvalue()->text, 0, 10) : o->value();
 resetSoundCard();
 progdefaults.changed = true;
 }
@@ -1151,7 +1168,7 @@ static const char szStopBits[] = "1|1.5|2";
 static const char szOliviaTones[] = "2|4|8|16|32|64|128|256";
 static const char szOliviaBandwidth[] = "125|250|500|1000|2000";
 static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600|115200|230400|460800";
-  { Fl_Double_Window* o = new Fl_Double_Window(400, 255, "fldigi - config");
+  { Fl_Double_Window* o = new Fl_Double_Window(400, 254, "fldigi - config");
     w = o;
     o->color(FL_DARK2);
     o->selection_color((Fl_Color)51);
@@ -1581,63 +1598,103 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         o->hide();
         { Fl_Tabs* o = tabsSoundCard = new Fl_Tabs(0, 25, 400, 195);
           o->selection_color((Fl_Color)10);
-          { Fl_Group* o = tabAudio = new Fl_Group(0, 50, 400, 170, "Audio");
+          { Fl_Group* o = tabAudio = new Fl_Group(0, 50, 400, 170, "Audio devices");
             o->color((Fl_Color)51);
             o->selection_color((Fl_Color)51);
-            { Fl_Spinner* o = cntRxRateCorr = new Fl_Spinner(300, 160, 75, 24, "RX ppm:");
+            { Fl_Group* o = AudioOSS = new Fl_Group(5, 58, 391, 35);
+              o->box(FL_ENGRAVED_FRAME);
+              { Fl_Round_Button* o = btnAudioIO[0] = new Fl_Round_Button(5, 63, 100, 25, "OSS");
+                o->down_box(FL_DIAMOND_DOWN_BOX);
+                o->selection_color((Fl_Color)1);
+                o->callback((Fl_Callback*)cb_btnAudioIO);
+              }
+              { Fl_Input_Choice* o = menuOSSDev = new Fl_Input_Choice(280, 63, 110, 25, "Device");
+                o->callback((Fl_Callback*)cb_menuOSSDev);
+                o->value(progdefaults.OSSdevice.c_str());
+              }
+              o->end();
+            }
+            { Fl_Group* o = AudioPort = new Fl_Group(5, 95, 390, 61);
+              o->box(FL_ENGRAVED_FRAME);
+              { Fl_Round_Button* o = btnAudioIO[1] = new Fl_Round_Button(5, 115, 95, 25, "PortAudio");
+                o->down_box(FL_DIAMOND_DOWN_BOX);
+                o->selection_color((Fl_Color)1);
+                o->callback((Fl_Callback*)cb_btnAudioIO1);
+              }
+              { Fl_Input_Choice* o = menuPortInDev = new Fl_Input_Choice(165, 99, 225, 25, "Capture");
+                o->callback((Fl_Callback*)cb_menuPortInDev);
+                o->value(progdefaults.PortInDevice.c_str());
+              }
+              { Fl_Input_Choice* o = menuPortOutDev = new Fl_Input_Choice(165, 127, 225, 25, "Playback");
+                o->callback((Fl_Callback*)cb_menuPortOutDev);
+                o->value(progdefaults.PortOutDevice.c_str());
+              }
+              o->end();
+            }
+            { Fl_Group* o = AudioPulse = new Fl_Group(5, 158, 390, 32);
+              o->box(FL_ENGRAVED_FRAME);
+              { Fl_Round_Button* o = btnAudioIO[2] = new Fl_Round_Button(5, 159, 100, 30, "PulseAudio");
+                o->down_box(FL_DIAMOND_DOWN_BOX);
+                o->selection_color((Fl_Color)1);
+                o->callback((Fl_Callback*)cb_btnAudioIO2);
+              }
+              { Fl_Input* o = inpPulseServer = new Fl_Input(165, 161, 225, 25, "Server");
+                o->tooltip("Leave this blank or refer to\nhttp://www.pulseaudio.org/wiki/ServerStrings");
+                o->callback((Fl_Callback*)cb_inpPulseServer);
+                o->value(progdefaults.PulseServer.c_str());
+              }
+              o->end();
+            }
+            { Fl_Group* o = AudioNull = new Fl_Group(5, 192, 390, 25);
+              o->box(FL_ENGRAVED_FRAME);
+              { Fl_Round_Button* o = btnAudioIO[3] = new Fl_Round_Button(5, 192, 100, 25, "File I/O only");
+                o->down_box(FL_DIAMOND_DOWN_BOX);
+                o->selection_color((Fl_Color)1);
+                o->callback((Fl_Callback*)cb_btnAudioIO3);
+              }
+              o->end();
+            }
+            o->end();
+          }
+          { Fl_Group* o = tabAudioOpt = new Fl_Group(0, 50, 400, 170, "Audio settings");
+            o->color((Fl_Color)51);
+            o->selection_color((Fl_Color)51);
+            o->hide();
+            { Fl_Spinner* o = cntRxRateCorr = new Fl_Spinner(5, 160, 85, 25, "RX ppm");
               o->callback((Fl_Callback*)cb_cntRxRateCorr);
+              o->align(FL_ALIGN_RIGHT);
               o->step(1);
               o->minimum(-50000);
               o->maximum(50000);
             }
-            { Fl_Spinner* o = cntTxRateCorr = new Fl_Spinner(300, 130, 75, 24, "TX ppm:");
+            { Fl_Spinner* o = cntTxRateCorr = new Fl_Spinner(5, 130, 85, 25, "TX ppm");
               o->callback((Fl_Callback*)cb_cntTxRateCorr);
+              o->align(FL_ALIGN_RIGHT);
               o->step(1);
               o->minimum(-50000);
               o->maximum(50000);
             }
-            { Fl_Spinner* o = cntTxOffset = new Fl_Spinner(330, 190, 45, 24, "Tx offset:");
+            { Fl_Spinner* o = cntTxOffset = new Fl_Spinner(5, 190, 85, 25, "TX offset");
               o->callback((Fl_Callback*)cb_cntTxOffset);
+              o->align(FL_ALIGN_RIGHT);
               o->value(progdefaults.TxOffset);
               o->step(1);
               o->minimum(-50);
               o->maximum(50);
             }
-            { Fl_Group* o = AudioIO = new Fl_Group(0, 55, 140, 70, "I/O");
-              o->box(FL_ENGRAVED_FRAME);
-              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Round_Button* o = btnAudioIO[0] = new Fl_Round_Button(35, 60, 100, 25, "OSS");
-                o->down_box(FL_DIAMOND_DOWN_BOX);
-                o->selection_color((Fl_Color)1);
-                o->callback((Fl_Callback*)cb_btnAudioIO);
-              }
-              { Fl_Round_Button* o = btnAudioIO[1] = new Fl_Round_Button(35, 80, 100, 25, "PortAudio");
-                o->down_box(FL_DIAMOND_DOWN_BOX);
-                o->selection_color((Fl_Color)1);
-                o->callback((Fl_Callback*)cb_btnAudioIO1);
-              }
-              { Fl_Round_Button* o = btnAudioIO[2] = new Fl_Round_Button(35, 100, 100, 25, "PulseAudio");
-                o->down_box(FL_DIAMOND_DOWN_BOX);
-                o->selection_color((Fl_Color)1);
-                o->callback((Fl_Callback*)cb_btnAudioIO2);
-              }
-              o->end();
-            }
-            { Fl_Input_Choice* o = menuOSSDev = new Fl_Input_Choice(155, 60, 110, 25, "OSS device");
-              o->callback((Fl_Callback*)cb_menuOSSDev);
-              o->align(FL_ALIGN_RIGHT);
-              o->value(progdefaults.OSSdevice.c_str());
-            }
-            { Fl_Input_Choice* o = menuPADev = new Fl_Input_Choice(155, 90, 110, 25, "PortAudio device");
-              o->callback((Fl_Callback*)cb_menuPADev);
-              o->align(FL_ALIGN_RIGHT);
-              o->value(progdefaults.PAdevice.c_str());
-            }
-            { Fl_Choice* o = menuSampleRate = new Fl_Choice(5, 190, 85, 25, "Sample rate");
+            { Fl_Choice* o = menuOutSampleRate = new Fl_Choice(5, 90, 85, 25, "Playback sample rate");
               o->tooltip("Force a specific sample rate. Select \"Native\" if \"Auto\" does not work wel\
 l with your sound hardware.");
               o->down_box(FL_BORDER_BOX);
-              o->callback((Fl_Callback*)cb_menuSampleRate);
+              o->callback((Fl_Callback*)cb_menuOutSampleRate);
+              o->align(FL_ALIGN_RIGHT);
+              o->menu(sample_rate_menu);
+            }
+            { Fl_Choice* o = menuInSampleRate = new Fl_Choice(5, 60, 85, 25, "Capture sample rate");
+              o->tooltip("Force a specific sample rate. Select \"Native\" if \"Auto\" does not work wel\
+l with your sound hardware.");
+              o->down_box(FL_BORDER_BOX);
+              o->callback((Fl_Callback*)cb_menuInSampleRate);
               o->align(FL_ALIGN_RIGHT);
               o->menu(sample_rate_menu);
             }

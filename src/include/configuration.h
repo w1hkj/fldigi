@@ -130,10 +130,14 @@ struct configuration {
 	string	secText;
 // Sound card
 	int	btnAudioIOis;
-	string	SCdevice;
 	string	OSSdevice;
 	string	PAdevice;
+	string	PortInDevice;
+	string	PortOutDevice;
+	string	PulseServer;
 	int		sample_rate;
+	int		in_sample_rate;
+	int		out_sample_rate;
 	string		sample_converter;
 	int		RX_corr;
 	int		TX_corr;

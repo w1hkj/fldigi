@@ -121,7 +121,7 @@ AC_FLDIGI_PKG_CHECK([sndfile], [sndfile >= 1.0.10], [with], [SNDFILE],
 # Set ac_cv_portaudio to yes/no
 # Define USE_PORTAUDIO in config.h
 # Substitute PORTAUDIO_CFLAGS and PORTAUDIO_LIBS in Makefile
-AC_FLDIGI_PKG_CHECK([portaudio], [portaudio-2.0 >= 19], [without], [PORTAUDIO],
+AC_FLDIGI_PKG_CHECK([portaudio], [portaudio-2.0 >= 19], [with], [PORTAUDIO],
                     [enable support for PortAudio @<:@autodetect@:>@] )
 
 ### pulseaudio
@@ -134,7 +134,7 @@ AC_FLDIGI_PKG_CHECK([pulseaudio], [libpulse-simple >= 0.9.7], [with], [PULSEAUDI
 if test "x$ac_cv_oss" = "xno" && \
    test "x$ac_cv_portaudio" = "xno" && \
    test "x$ac_cv_pulseaudio" = "xno"; then
-    AC_MSG_FAILURE([$PACKAGE requires OSS, PortAudio, or PulseAudio])
+    AC_MSG_WARN([*** $PACKAGE will be compiled without audio device support ***])
 fi
 
 ### hamlib

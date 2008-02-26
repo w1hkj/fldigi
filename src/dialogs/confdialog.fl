@@ -35,14 +35,14 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {fldigi - config} open
-    xywh {663 306 400 255} type Double color 45 selection_color 51 align 80 visible
+    xywh {868 365 400 254} type Double color 45 selection_color 51 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 405 220} color 47 selection_color 9
     } {
       Fl_Group tabOperator {
         label Oper
-        callback {progdefaults.changed = true;} open
+        callback {progdefaults.changed = true;}
         xywh {0 25 400 195} color 51 selection_color 51 when 1 hide
       } {
         Fl_Input inpMyCallsign {
@@ -89,7 +89,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabWaterfall {
-        label {W-fall} open
+        label {W-fall}
         xywh {0 25 405 195} color 51 selection_color 51 hide
       } {
         Fl_Tabs {} {open
@@ -306,7 +306,7 @@ progdefaults.changed = true;
         }
       }
       Fl_Group tabVideo {
-        label Video open
+        label Video
         xywh {0 25 400 195} color 51 selection_color 51 hide
       } {
         Fl_Group {} {
@@ -369,7 +369,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabRig {
-        label Rig open
+        label Rig
         xywh {0 25 400 195} hide
       } {
         Fl_Group {} {
@@ -658,112 +658,140 @@ o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");}
           xywh {0 25 400 195} selection_color 10
         } {
           Fl_Group tabAudio {
-            label Audio open
+            label {Audio devices} open
             xywh {0 50 400 170} color 51 selection_color 51
           } {
+            Fl_Group AudioOSS {open
+              xywh {5 58 391 35} box ENGRAVED_FRAME
+            } {
+              Fl_Round_Button {btnAudioIO[0]} {
+                label OSS
+                callback {update_sound_config(SND_IDX_OSS);
+progdefaults.changed = true;
+resetSoundCard();} selected
+                xywh {5 63 100 25} down_box DIAMOND_DOWN_BOX selection_color 1
+              }
+              Fl_Input_Choice menuOSSDev {
+                label Device
+                callback {scDevice[0] = scDevice[1] = progdefaults.OSSdevice = o->value();
+resetSoundCard();
+progdefaults.changed = true;} open
+                xywh {280 63 110 25}
+                code0 {o->value(progdefaults.OSSdevice.c_str());}
+              } {}
+            }
+            Fl_Group AudioPort {open
+              xywh {5 95 390 61} box ENGRAVED_FRAME
+            } {
+              Fl_Round_Button {btnAudioIO[1]} {
+                label PortAudio
+                callback {update_sound_config(SND_IDX_PORT);
+progdefaults.changed = true;
+resetSoundCard();}
+                xywh {5 115 95 25} down_box DIAMOND_DOWN_BOX selection_color 1
+              }
+              Fl_Input_Choice menuPortInDev {
+                label Capture
+                callback {scDevice[0] = progdefaults.PortInDevice = o->value();
+resetSoundCard();
+progdefaults.changed = true;} open
+                xywh {165 99 225 25}
+                code0 {o->value(progdefaults.PortInDevice.c_str());}
+              } {}
+              Fl_Input_Choice menuPortOutDev {
+                label Playback
+                callback {scDevice[1] = progdefaults.PortOutDevice = o->value();
+resetSoundCard();
+progdefaults.changed = true;} open
+                xywh {165 127 225 25}
+                code0 {o->value(progdefaults.PortOutDevice.c_str());}
+              } {}
+            }
+            Fl_Group AudioPulse {open
+              xywh {5 158 390 32} box ENGRAVED_FRAME
+            } {
+              Fl_Round_Button {btnAudioIO[2]} {
+                label PulseAudio
+                callback {update_sound_config(SND_IDX_PULSE);
+progdefaults.changed = true;
+resetSoundCard();}
+                xywh {5 159 100 30} down_box DIAMOND_DOWN_BOX selection_color 1
+              }
+              Fl_Input inpPulseServer {
+                label Server
+                callback {scDevice[0] = scDevice[1] = progdefaults.PulseServer = o->value();
+resetSoundCard();
+progdefaults.changed = true;}
+                tooltip {Leave this blank or refer to
+http://www.pulseaudio.org/wiki/ServerStrings} xywh {165 161 225 25}
+                code0 {o->value(progdefaults.PulseServer.c_str());}
+              }
+            }
+            Fl_Group AudioNull {open
+              xywh {5 192 390 25} box ENGRAVED_FRAME
+            } {
+              Fl_Round_Button {btnAudioIO[3]} {
+                label {File I/O only}
+                callback {update_sound_config(SND_IDX_NULL);
+progdefaults.changed = true;
+resetSoundCard();}
+                xywh {5 192 100 25} down_box DIAMOND_DOWN_BOX selection_color 1
+              }
+            }
+          }
+          Fl_Group tabAudioOpt {
+            label {Audio settings} open
+            xywh {0 50 400 170} color 51 selection_color 51 hide
+          } {
             Fl_Spinner cntRxRateCorr {
-              label {RX ppm:}
+              label {RX ppm}
               callback {progdefaults.RX_corr = (int)o->value();
 progdefaults.changed = true;}
-              xywh {300 160 75 24}
+              xywh {5 160 85 25} align 8
               code0 {o->step(1);}
               code1 {o->minimum(-50000);}
               code2 {o->maximum(50000);}
             }
             Fl_Spinner cntTxRateCorr {
-              label {TX ppm:}
+              label {TX ppm}
               callback {progdefaults.TX_corr = (int)o->value();
 progdefaults.changed = true;}
-              xywh {300 130 75 24}
+              xywh {5 130 85 25} align 8
               code0 {o->step(1);}
               code1 {o->minimum(-50000);}
               code2 {o->maximum(50000);}
             }
             Fl_Spinner cntTxOffset {
-              label {Tx offset:}
+              label {TX offset}
               callback {progdefaults.TxOffset = (int)o->value();
 progdefaults.changed = true;}
-              xywh {330 190 45 24}
+              xywh {5 190 85 25} align 8
               code0 {o->value(progdefaults.TxOffset);}
               code1 {o->step(1);}
               code2 {o->minimum(-50);}
               code3 {o->maximum(50);}
             }
-            Fl_Group AudioIO {
-              label {I/O} open
-              xywh {0 55 140 70} box ENGRAVED_FRAME align 21
-            } {
-              Fl_Round_Button {btnAudioIO[0]} {
-                label OSS
-                callback {btnAudioIO[1]->value(0);
-btnAudioIO[2]->value(0);
-o->value(1);
-menuOSSDev->activate();
-menuPADev->deactivate();
-menuSampleRate->deactivate();
-scDevice = menuOSSDev->value();
-progdefaults.btnAudioIOis = 0;
-progdefaults.changed = true;
-resetSoundCard();}
-                xywh {35 60 100 25} down_box DIAMOND_DOWN_BOX selection_color 1
-              }
-              Fl_Round_Button {btnAudioIO[1]} {
-                label PortAudio
-                callback {btnAudioIO[0]->value(0);
-btnAudioIO[2]->value(0);
-o->value(1);
-menuPADev->activate();
-menuOSSDev->deactivate();
-menuSampleRate->activate();
-scDevice = menuPADev->value();
-progdefaults.btnAudioIOis = 1;
-progdefaults.changed = true;
-resetSoundCard();}
-                xywh {35 80 100 25} down_box DIAMOND_DOWN_BOX selection_color 1
-              }
-              Fl_Round_Button {btnAudioIO[2]} {
-                label PulseAudio
-                callback {btnAudioIO[0]->value(0);
-btnAudioIO[1]->value(0);
-o->value(1);
-menuPADev->deactivate();
-menuOSSDev->deactivate();
-menuSampleRate->deactivate();
-scDevice = "localhost";
-progdefaults.btnAudioIOis = 2;
-progdefaults.changed = true;
-resetSoundCard();}
-                xywh {35 100 100 25} down_box DIAMOND_DOWN_BOX selection_color 1
-              }
-            }
-            Fl_Input_Choice menuOSSDev {
-              label {OSS device}
-              callback {scDevice = progdefaults.OSSdevice = o->value();
+            Fl_Choice menuOutSampleRate {
+              label {Playback sample rate}
+              callback {progdefaults.out_sample_rate = o->value() > 1 ? strtol(o->mvalue()->text, 0, 10) : o->value();
 resetSoundCard();
 progdefaults.changed = true;} open
-              xywh {155 60 110 25} align 8
-              code0 {o->value(progdefaults.OSSdevice.c_str());}
+              tooltip {Force a specific sample rate. Select "Native" if "Auto" does not work well with your sound hardware.} xywh {5 90 85 25} down_box BORDER_BOX align 8
+              code0 {extern Fl_Menu_Item sample_rate_menu[];}
+              code1 {o->menu(sample_rate_menu);}
             } {}
-            Fl_Input_Choice menuPADev {
-              label {PortAudio device}
-              callback {scDevice = progdefaults.PAdevice = o->value();
+            Fl_Choice menuInSampleRate {
+              label {Capture sample rate}
+              callback {progdefaults.in_sample_rate = o->value() > 1 ? strtol(o->mvalue()->text, 0, 10) : o->value();
 resetSoundCard();
 progdefaults.changed = true;} open
-              xywh {155 90 110 25} align 8
-              code0 {o->value(progdefaults.PAdevice.c_str());}
-            } {}
-            Fl_Choice menuSampleRate {
-              label {Sample rate}
-              callback {progdefaults.sample_rate = o->value() > 1 ? strtol(o->mvalue()->text, 0, 10) : o->value();
-resetSoundCard();
-progdefaults.changed = true;} open
-              tooltip {Force a specific sample rate. Select "Native" if "Auto" does not work well with your sound hardware.} xywh {5 190 85 25} down_box BORDER_BOX align 8
+              tooltip {Force a specific sample rate. Select "Native" if "Auto" does not work well with your sound hardware.} xywh {5 60 85 25} down_box BORDER_BOX align 8
               code0 {extern Fl_Menu_Item sample_rate_menu[];}
               code1 {o->menu(sample_rate_menu);}
             } {}
           }
           Fl_Group tabMixer {
-            label Mixer open
+            label Mixer
             xywh {0 50 400 170} color 51 selection_color 51 hide
           } {
             Fl_Light_Button btnLineIn {

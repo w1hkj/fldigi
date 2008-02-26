@@ -16,6 +16,8 @@ Change Log:
      12) Fixes to mfsk picture mode decoding
      13) Changed frequency2 data file format, downward compatible
      14) Added FELD_SLOWHELL, FELD_HELLX5 and FELD_HELLX9 modems
+     15 Added support to the PortAudio backend for separate capture and playback
+        devices and sample rates
 
 2.09  1) Modified src/Makefile.am for FreeBSD name space clash
       2) Added psk multi-channel viewer with regex search capability

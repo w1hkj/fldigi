@@ -28,6 +28,8 @@
 #ifndef _SOUND_H
 #define _SOUND_H
 
+enum { SND_IDX_UNKNOWN = -1, SND_IDX_OSS, SND_IDX_PORT, SND_IDX_PULSE, SND_IDX_NULL, SND_IDX_END };
+
 #include <cstring>
 #include <string>
 #include <vector>
@@ -55,15 +57,20 @@
 class SndException : public std::exception
 {
 public:
-	SndException(int err_ = 0) : err(err_), msg(std::string("Sound error: ") + err_to_str()) { }
-	SndException(const char* msg_) : err(1), msg(msg_) { }
+	SndException(int err_ = 0)
+		: err(err_), msg(std::string("Sound error: ") + err_to_str(err_))
+	{ }
+	SndException(const char* msg_)
+		: err(1), msg(msg_)
+	{ }
+	SndException(int err_, const std::string& msg_) : err(err_), msg(msg_) { }
 	virtual ~SndException() throw() { }
 
 	const char*	what(void) const throw() { return msg.c_str(); }
 	int		error(void) const { return err; }
 
 protected:
-	virtual const char* err_to_str(void) { return strerror(err); }
+	const char* err_to_str(int e) { return strerror(e); }
 
 	int		err;
 	std::string	msg;
@@ -73,10 +80,12 @@ protected:
 class SndPortException : public SndException
 {
 public:
-	SndPortException(int err_ = 0) : SndException(err_) { }
+	SndPortException(int err_ = 0)
+		: SndException(err_, std::string("PortAudio error: ") + err_to_str(err_))
+	{ }
 	SndPortException(const char* msg_) : SndException(msg_) { }
 protected:
-	const char* err_to_str(void) { return Pa_GetErrorText(err); }
+	const char* err_to_str(int e) { return Pa_GetErrorText(e); }
 };
 #endif
 
@@ -84,10 +93,12 @@ protected:
 class SndPulseException : public SndException
 {
 public:
-	SndPulseException(int err_ = 0) : SndException(err_) { }
+	SndPulseException(int err_ = 0)
+		: SndException(err_, std::string("PulseAudio error: ") + err_to_str(err_))
+	{ }
 	SndPulseException(const char* msg_) : SndException(msg_) { }
 protected:
-	const char* err_to_str(void) { return pa_strerror(err); }
+	const char* err_to_str(int e) { return pa_strerror(e); }
 };
 #endif
 
@@ -203,7 +214,7 @@ public:
         static const std::vector<const PaDeviceInfo*>& devices(void);
 
 public:
-        SoundPort(const char *dev);
+        SoundPort(const char *in_dev, const char *out_dev);
         ~SoundPort();
 	int 		Open(int mode, int freq = 8000);
 	void 		Close();
@@ -215,31 +226,27 @@ public:
 private:
         void		src_data_reset(int mode);
         void		resample(int mode, float *buf, size_t count, size_t max = 0);
-        void 		init_stream(void);
-        void 		start_stream(void);
-        bool		stream_active(void);
+        void 		init_stream(unsigned dir);
+        void 		start_stream(unsigned dir);
+        bool		stream_active(unsigned dir);
         bool		full_duplex_device(const PaDeviceInfo* dev);
-        bool		adjust_stream(void);
-        double		find_srate(void);
+        double		find_srate(unsigned dir);
         void		pa_perror(int err, const char* str = 0);
 
 private:
-        std::string	device;
+        enum { STREAM_IN, STREAM_OUT };
+        std::string	device[2];
 
         static bool                                  pa_init;
-        PaStream*                                    stream;
+        PaStream*                                    stream[2];
 
-        device_iterator				     idev;
+        device_iterator				     idev[2];
 	static std::vector<const PaDeviceInfo*>      devs;
-        PaStreamParameters                           in_params;
-        PaStreamParameters                           out_params;
-        enum { STREAM_IN, STREAM_OUT };
-        PaStreamParameters*			     stream_params[2];
+        PaStreamParameters			     stream_params[2];
 
-        unsigned	frames_per_buffer;
-        unsigned	max_frames_per_buffer;
+        unsigned	frames_per_buffer[2];
         double	 	req_sample_rate;
-        double		dev_sample_rate;
+        double		dev_sample_rate[2];
         float 		*fbuf;
 };
 
@@ -265,14 +272,25 @@ private:
         void	resample(int mode, float *buf, size_t count, size_t max = 0);
 
 private:
-	double		dev_sample_rate;
-	pa_simple*	in_stream;
-	pa_simple*	out_stream;
+	double		dev_sample_rate[2];
+	pa_simple*	stream[2];
 	pa_sample_spec	stream_params;
 
 	float* fbuf;
 };
 
 #endif // USE_PULSEAUDIO
+
+
+class SoundNull : public SoundBase
+{
+public:
+	int	Open(int mode, int freq = 8000) { sample_frequency = freq; return 0; }
+	void    Close(void) { }
+	size_t	Write(double* buf, size_t count);
+	size_t	Write_stereo(double* bufleft, double* bufright, size_t count);
+	size_t	Read(double *buf, size_t count);
+	bool	full_duplex(void) { return true; }
+};
 
 #endif // SOUND_H

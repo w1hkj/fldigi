@@ -134,10 +134,14 @@ configuration progdefaults = {
 	"fldigi ",		// secondary text
 // Sound card
 	-1,			// int		btnAudioIOis
-	"",		// string	SCdevice;
 	"",		// string	OSSdevice;
 	"",		// string	PAdevice;
+	"",		// string	PortIndevice;
+	"",		// string	PortOutDevice;
+	"",		// string	PulseServer
 	0,				// int		sample_rate;
+	-1,				// int		in_sample_rate;
+	-1,				// int		out_sample_rate;
 	"src-sinc-fastest",		// string	sample_converter;
 	0,				// int		RX_corr;
 	0,				// int		TX_corr;
@@ -226,8 +230,8 @@ enum TAG { \
 	HAMRIGNAME, HAMRIGDEVICE, HAMRIGBAUDRATE,
 	PTTDEV,
 	SECONDARYTEXT, 
-	AUDIOIO, SCDEVICE, OSSDEVICE, PADEVICE,
-	SAMPLERATE, RXCORR, TXCORR, TXOFFSET,
+	AUDIOIO, OSSDEVICE, PADEVICE, PORTINDEVICE, PORTOUTDEVICE, PULSESERVER,
+	SAMPLERATE, INSAMPLERATE, OUTSAMPLERATE, RXCORR, TXCORR, TXOFFSET,
 	USELEADINGZEROS, CONTESTSTART, CONTESTDIGITS,
 	USETIMER, MACRONUMBER, TIMEOUT,
 	MXDEVICE, RCVMIXER, XMTMIXER, PCMVOLUME,
@@ -392,11 +396,14 @@ void configuration::writeDefaultsXML()
 
 	writeXMLstr(f, "PTTDEV", PTTdev);
 	writeXMLstr(f, "SECONDARYTEXT", secText);		
-    writeXMLint(f, "AUDIOIO", btnAudioIOis);
-	writeXMLstr(f, "SCDEVICE", SCdevice);
+	writeXMLint(f, "AUDIOIO", btnAudioIOis);
 	writeXMLstr(f, "OSSDEVICE", OSSdevice);
 	writeXMLstr(f, "PADEVICE", PAdevice);
+	writeXMLstr(f, "PORTINDEVICE", PortInDevice);
+	writeXMLstr(f, "PORTOUTDEVICE", PortOutDevice);
 	writeXMLint(f, "SAMPLERATE", sample_rate);
+	writeXMLint(f, "INSAMPLERATE", in_sample_rate);
+	writeXMLint(f, "OUTSAMPLERATE", out_sample_rate);
 	writeXMLint(f, "RXCORR", RX_corr);		
 	writeXMLint(f, "TXCORR", TX_corr);
 	writeXMLint(f, "TXOFFSET", TxOffset);
@@ -738,17 +745,29 @@ bool configuration::readDefaultsXML()
 					case AUDIOIO :
 						btnAudioIOis = atoi(xml->getNodeData());
 						break;
-					case SCDEVICE :
-						SCdevice = xml->getNodeData();
-						break;
 					case OSSDEVICE :
 						OSSdevice = xml->getNodeData();
 						break;
 					case PADEVICE :
 						PAdevice = xml->getNodeData();
 						break;
+					case PORTINDEVICE :
+						PortInDevice = xml->getNodeData();
+						break;
+					case PORTOUTDEVICE :
+						PortOutDevice = xml->getNodeData();
+						break;
+					case PULSESERVER :
+						PulseServer = xml->getNodeData();
+						break;
 					case SAMPLERATE :
 						sample_rate = atoi(xml->getNodeData());
+						break;
+					case INSAMPLERATE :
+						in_sample_rate = atoi(xml->getNodeData());
+						break;
+					case OUTSAMPLERATE :
+						out_sample_rate = atoi(xml->getNodeData());
 						break;
 					case RXCORR :
 						RX_corr = atoi(xml->getNodeData());
@@ -960,10 +979,13 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("PTTDEV", nodeName)) 	tag = PTTDEV;
 				else if (!strcmp("SECONDARYTEXT", nodeName)) 	tag = SECONDARYTEXT;
 				else if (!strcmp("AUDIOIO", nodeName)) 	tag = AUDIOIO;
-				else if (!strcmp("SCDEVICE", nodeName)) 	tag = SCDEVICE;
 				else if (!strcmp("OSSDEVICE", nodeName)) 	tag = OSSDEVICE;
 				else if (!strcmp("PADEVICE", nodeName)) 	tag = PADEVICE;
+				else if (!strcmp("PORTINDEVICE", nodeName)) 	tag = PORTINDEVICE;
+				else if (!strcmp("PORTOUTDEVICE", nodeName)) 	tag = PORTOUTDEVICE;
 				else if (!strcmp("SAMPLERATE", nodeName)) 	tag = SAMPLERATE;
+				else if (!strcmp("INSAMPLERATE", nodeName)) 	tag = INSAMPLERATE;
+				else if (!strcmp("OUTSAMPLERATE", nodeName)) 	tag = OUTSAMPLERATE;
 				else if (!strcmp("RXCORR", nodeName)) 	tag = RXCORR;
 				else if (!strcmp("TXCORR", nodeName)) 	tag = TXCORR;
 				else if (!strcmp("TXOFFSET", nodeName)) 	tag = TXOFFSET;
@@ -1280,26 +1302,32 @@ int configuration::openDefaults() {
             btnMicIn->value(MicIn);
             btnLineIn->value(LineIn);
 
-            btnAudioIO[0]->value(0);
-            btnAudioIO[0]->value(0);
-            btnAudioIO[btnAudioIOis]->value(1);
-
             menuOSSDev->value(OSSdevice.c_str());
-            menuPADev->value(PAdevice.c_str());
-            if (btnAudioIOis == 1)
-                menuPADev->activate();
+            menuPortInDev->value(PortInDevice.c_str());
+            menuPortOutDev->value(PortOutDevice.c_str());
+            inpPulseServer->value(PulseServer.c_str());
 
             btnMixer->value(EnableMixer);
             resetMixerControls();
             menuMix->value(MXdevice.c_str());
 
-	    if (sample_rate > 1) {
-		    char s[6+1];
-		    snprintf(s, sizeof(s), "%d", sample_rate);
-		    menuSampleRate->value(menuSampleRate->find_item(s));
+	    char sr[6+1];
+	    if (in_sample_rate == -1)
+		    in_sample_rate = sample_rate;
+	    if (in_sample_rate > 1) {
+		    snprintf(sr, sizeof(sr), "%d", in_sample_rate);
+		    menuInSampleRate->value(menuInSampleRate->find_item(sr));
 	    }
 	    else
-		    menuSampleRate->value(sample_rate);
+		    menuInSampleRate->value(in_sample_rate);
+	    if (out_sample_rate == -1)
+		    out_sample_rate = sample_rate;
+	    if (out_sample_rate > 1) {
+		    snprintf(sr, sizeof(sr), "%d", out_sample_rate);
+		    menuOutSampleRate->value(menuOutSampleRate->find_item(sr));
+	    }
+	    else
+		    menuOutSampleRate->value(out_sample_rate);
 
 			cntRxRateCorr->value(RX_corr);
 			cntTxRateCorr->value(TX_corr);

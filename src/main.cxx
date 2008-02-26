@@ -68,7 +68,7 @@
 
 using namespace std;
 
-string scDevice = "/dev/dsp1";
+string scDevice[2];
 bool pa_allow_full_duplex = false;
 int pa_frames_per_buffer = 0;
 
@@ -196,7 +196,7 @@ int main(int argc, char ** argv)
 	progdefaults.openDefaults();
 
 	sound_init();
-	trx_start(scDevice.c_str());
+	trx_start();
 
 	progdefaults.initInterface();
 	fl_digi_main->show(argc, argv);
@@ -221,7 +221,7 @@ void sound_init(void)
 	glob("/dev/dsp*", 0, NULL, &gbuf);
 	for (size_t i = 0; i < gbuf.gl_pathc; i++)
 		menuOSSDev->add(gbuf.gl_pathv[i]);
-	if (progdefaults.OSSdevice == "")
+	if (progdefaults.OSSdevice.length() == 0)
 		progdefaults.OSSdevice = gbuf.gl_pathv[0];
 	menuOSSDev->value(progdefaults.OSSdevice.c_str());
 	globfree(&gbuf);
@@ -243,21 +243,33 @@ void sound_init(void)
 			s.insert(i, 1, '\\');
 			i += 2;
 		}
-		menuPADev->add(s.c_str());
+		if ((*idev)->maxInputChannels > 0)
+			menuPortInDev->add(s.c_str());
+		if ((*idev)->maxOutputChannels > 0)
+			menuPortOutDev->add(s.c_str());
 	}
-	// set the initial value in the configuration structure
-	if (progdefaults.PAdevice == "")
-		progdefaults.PAdevice = (*(SoundPort::devices().begin() + Pa_GetDefaultOutputDevice()))->name;
-	menuPADev->value(progdefaults.PAdevice.c_str());
 
-	btnAudioIO[1]->activate();
+	if (progdefaults.PortInDevice.length() == 0) {
+		if (progdefaults.PAdevice.length() == 0)
+			progdefaults.PortInDevice = (*(SoundPort::devices().begin() + Pa_GetDefaultInputDevice()))->name;
+		else
+			progdefaults.PortInDevice = progdefaults.PAdevice;
+	}
+	menuPortInDev->value(progdefaults.PortInDevice.c_str());
+	if (progdefaults.PortOutDevice.length() == 0) {
+		if (progdefaults.PAdevice.length() == 0)
+			progdefaults.PortOutDevice = (*(SoundPort::devices().begin() + Pa_GetDefaultOutputDevice()))->name;
+		else
+			progdefaults.PortOutDevice = progdefaults.PAdevice;
+	}
+	menuPortOutDev->value(progdefaults.PortOutDevice.c_str());
 #endif
 
 #if USE_OSS
 	glob("/dev/mixer*", 0, NULL, &gbuf);
-	for (size_t i = 0; i < gbuf.gl_pathc; i++) 
+	for (size_t i = 0; i < gbuf.gl_pathc; i++)
 		menuMix->add(gbuf.gl_pathv[i]);
-	if (progdefaults.MXdevice == "") 
+	if (progdefaults.MXdevice.length() == 0)
 		progdefaults.MXdevice = gbuf.gl_pathv[0];
 	globfree(&gbuf);
 	menuMix->value(progdefaults.MXdevice.c_str());
@@ -268,15 +280,19 @@ void sound_init(void)
 
 // set the Sound Card configuration tab to the correct initial values
 #if !USE_OSS
-	btnAudioIO[0]->deactivate();
+	AudioOSS->deactivate();
+	btnAudioIO[SND_IDX_OSS]->deactivate();
 #endif
 #if !USE_PORTAUDIO
-	btnAudioIO[1]->deactivate();
+	AudioPort->deactivate();
+	btnAudioIO[SND_IDX_PORT]->deactivate();
 #endif
 #if !USE_PULSEAUDIO
-	btnAudioIO[2]->deactivate();
+	AudioPulse->deactivate();
+	btnAudioIO[SND_IDX_PULSE]->deactivate();
 #endif
-	if (progdefaults.btnAudioIOis == -1 || !btnAudioIO[progdefaults.btnAudioIOis]->active()) {
+	if (progdefaults.btnAudioIOis == SND_IDX_UNKNOWN ||
+	    !btnAudioIO[progdefaults.btnAudioIOis]->active()) { // or saved sound api now disabled
 		for (size_t i = 0; i < sizeof(btnAudioIO)/sizeof(*btnAudioIO); i++) {
 			if (btnAudioIO[i]->active()) {
 				progdefaults.btnAudioIOis = i;
@@ -284,33 +300,8 @@ void sound_init(void)
 			}
 		}
 	}
-	switch (progdefaults.btnAudioIOis) {
-	case 0:
-		scDevice = progdefaults.OSSdevice;
-		btnAudioIO[0]->value(1);
-		btnAudioIO[1]->value(0);
-		btnAudioIO[2]->value(0);
-		menuOSSDev->activate();
-		menuPADev->deactivate();
-		menuSampleRate->deactivate();
-		break;
-	case 1:
-		scDevice = progdefaults.PAdevice;
-		btnAudioIO[0]->value(0);
-		btnAudioIO[1]->value(1);
-		btnAudioIO[2]->value(0);
-		menuOSSDev->deactivate();
-		menuPADev->activate();
-		break;
-	case 2:
-		scDevice = "localhost";
-		btnAudioIO[0]->value(0);
-		btnAudioIO[1]->value(0);
-		btnAudioIO[2]->value(1);
-		menuOSSDev->deactivate();
-		menuPADev->deactivate();
-		break;
-	}
+	update_sound_config(progdefaults.btnAudioIOis);
+
 	resetMixerControls();
 }
 

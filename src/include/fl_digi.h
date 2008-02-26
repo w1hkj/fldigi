@@ -129,6 +129,7 @@ extern void resetRTTY();
 extern void resetOLIVIA();
 extern void resetDOMEX();
 extern void resetSoundCard();
+extern void update_sound_config(unsigned idx);
 extern void restoreFocus();
 extern void setReverse(int);
 extern void clearQSO();
