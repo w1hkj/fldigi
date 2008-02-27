@@ -904,8 +904,7 @@ progdefaults.changed = true;
 Fl_Value_Slider *sldrHellBW=(Fl_Value_Slider *)0;
 
 static void cb_sldrHellBW(Fl_Value_Slider*, void*) {
-  if (active_modem->get_mode() == MODE_FELDHELL)
-      active_modem->set_bandwidth(sldrHellBW->value());
+  active_modem->set_bandwidth(sldrHellBW->value());
 progdefaults.changed = true;
 }
 
@@ -1556,6 +1555,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { Fl_Group* o = tabQRZ = new Fl_Group(0, 25, 400, 195, "qrz");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
+        o->hide();
         { Fl_Check_Button* o = btnQRZnotavailable = new Fl_Check_Button(31, 45, 200, 20, "Not available");
           o->down_box(FL_DOWN_BOX);
           o->value(1);
@@ -1788,7 +1788,6 @@ fect after a restart.");
       { Fl_Group* o = tabModems = new Fl_Group(0, 25, 401, 195, "Modem");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
-        o->hide();
         { Fl_Tabs* o = tabsModems = new Fl_Tabs(0, 25, 401, 195);
           o->color((Fl_Color)51);
           o->selection_color((Fl_Color)10);
@@ -1968,7 +1967,6 @@ fect after a restart.");
           { Fl_Group* o = tabFeld = new Fl_Group(0, 50, 400, 170, "Feld");
             o->color((Fl_Color)51);
             o->selection_color((Fl_Color)51);
-            o->hide();
             { Fl_Choice* o = selHellFont = new Fl_Choice(175, 62, 122, 20, "Feld Hell Font:");
               o->down_box(FL_BORDER_BOX);
               o->labelfont(4);
@@ -1980,10 +1978,10 @@ fect after a restart.");
             { Fl_Value_Slider* o = sldrHellBW = new Fl_Value_Slider(30, 190, 345, 20, "Filter BW");
               o->type(1);
               o->color((Fl_Color)215);
-              o->minimum(50);
-              o->maximum(600);
+              o->minimum(10);
+              o->maximum(2400);
               o->step(5);
-              o->value(245);
+              o->value(400);
               o->textsize(14);
               o->callback((Fl_Callback*)cb_sldrHellBW);
               o->align(FL_ALIGN_TOP_LEFT);
@@ -2099,6 +2097,7 @@ fect after a restart.");
             o->end();
           }
           { Fl_Group* o = new Fl_Group(0, 50, 400, 170, "PskViewer");
+            o->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 390, 155);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);

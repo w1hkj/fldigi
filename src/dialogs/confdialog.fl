@@ -578,7 +578,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabQRZ {
         label qrz open
-        xywh {0 25 400 195} color 51 selection_color 51
+        xywh {0 25 400 195} color 51 selection_color 51 hide
       } {
         Fl_Check_Button btnQRZnotavailable {
           label {Not available}
@@ -600,7 +600,7 @@ btnQRZnotavailable->value(0);
 btnHAMCALLsocket->value(0);
 progdefaults.QRZ = 1;
 }
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
           tooltip {You need a QRZ on-line subscription to access QRZ.com} xywh {32 74 205 20} down_box DOWN_BOX
           code0 {if (progdefaults.QRZ == 1) o->value(1); else o->value(0);}
         }
@@ -897,7 +897,7 @@ This option takes effect after a restart.} xywh {50 155 180 20} down_box DOWN_BO
       }
       Fl_Group tabModems {
         label Modem open
-        xywh {0 25 401 195} color 51 selection_color 51 hide
+        xywh {0 25 401 195} color 51 selection_color 51
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 401 195} color 51 selection_color 10 align 9
@@ -1052,7 +1052,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabFeld {
             label Feld open
-            xywh {0 50 400 170} color 51 selection_color 51 hide
+            xywh {0 50 400 170} color 51 selection_color 51
           } {
             Fl_Choice selHellFont {
               label {Feld Hell Font:}
@@ -1065,10 +1065,9 @@ progdefaults.changed = true;} open
             } {}
             Fl_Value_Slider sldrHellBW {
               label {Filter BW}
-              callback {if (active_modem->get_mode() == MODE_FELDHELL)
-      active_modem->set_bandwidth(sldrHellBW->value());
-progdefaults.changed = true;}
-              xywh {30 190 345 20} type Horizontal color 215 align 5 minimum 50 maximum 600 step 5 value 245 textsize 14
+              callback {active_modem->set_bandwidth(sldrHellBW->value());
+progdefaults.changed = true;} selected
+              xywh {30 190 345 20} type Horizontal color 215 align 5 minimum 10 maximum 2400 step 5 value 400 textsize 14
             }
             Fl_Check_Button btnHellXmtWidth {
               label {2x Xmt Width}
@@ -1189,7 +1188,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label PskViewer open
-            xywh {0 50 400 170}
+            xywh {0 50 400 170} hide
           } {
             Fl_Group {} {open
               xywh {5 60 390 155} box ENGRAVED_FRAME align 21

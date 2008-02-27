@@ -774,7 +774,9 @@ bool HAMCALLget(string& htmlpage)
 	url_detail += progdefaults.QRZuserpassword;
 	url_detail += "&rawlookup=1&callsign=";
 	url_detail += callsign;
-	url_detail += "&program=WA5ZNU/Testing/0.0+\r\n";
+	url_detail += "&program=fldigi-";
+	url_detail += VERSION;
+	url_detail += "\r\n";
 
 	struct timeval timeout = { 10, 0 }; // timeout = 10 seconds
 	ssize_t nread = read_from_server(sockfd, url_detail, htmlpage, &timeout);

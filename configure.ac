@@ -4,7 +4,7 @@
 AC_COPYRIGHT([Copyright (C) 2007, 2008 Stelios Bounanos, M0GLD (m0gld AT enotty DOT net)])
 
 AC_PREREQ(2.61)
-AC_INIT([fldigi], [2.10J], [w1hkj AT w1hkj DOT com])
+AC_INIT([fldigi], [2.10K], [w1hkj AT w1hkj DOT com])
 AC_CONFIG_AUX_DIR([build-aux])
 
 # define build, build_cpu, build_vendor, build_os

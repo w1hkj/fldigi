@@ -59,14 +59,12 @@ protected:
 	double txpixrate;
 	double downsampleinc;
 	double upsampleinc;
+	double phi2freq;
 
 	C_FIR_filter	*hilbert;
 	fftfilt			*bpfilt;
 	Cmovavg			*bbfilt;
 	Cmovavg			*minmaxfilt;
-//	double bbfilter[MaxSymLen];
-//	unsigned int filterptr;
-
 //tx
 	FELD_STATE	tx_state;
 	double txphacc;

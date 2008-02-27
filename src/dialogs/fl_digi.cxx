@@ -226,6 +226,7 @@ void startup_modem(modem *m)
 		m == feld_80modem ) {
 		ReceiveText->Hide();
 		FHdisp->show();
+		sldrHellBW->value(m->get_bandwidth());
 	} else {
 		ReceiveText->Show();
 		FHdisp->hide();

@@ -39,6 +39,9 @@
 #include "confdialog.h"
 #include "qrunner.h"
 
+#include <FL/Fl.H>
+#include <FL/Fl_Value_Slider.H>
+
 char feldmsg[80];
 
 void feld::tx_init(SoundBase *sc)
@@ -85,59 +88,50 @@ feld::feld(trx_mode m)
 	double lp;
 	mode = m;
 	samplerate = FeldSampleRate;
-	FL_LOCK_D();
-	bandwidth = sldrHellBW->value();
-	FL_UNLOCK_D();
 	
- 	switch (mode) { 
-		case MODE_FSKHELL: 
-			bandwidth = 122.5; 
-			feldcolumnrate = 17.5; 
-			break; 
+ 	switch (mode) {
+// Amplitude modulation modes
+		case MODE_FELDHELL:
+ 			feldcolumnrate = 17.5;
+ 			break; 
 		case MODE_SLOWHELL: 
-			bandwidth = 122.5;
-//			bandwidth = 50; 
 			feldcolumnrate = 2.1875; 
 			break;
 		case MODE_HELLX5: 
-			bandwidth = 1000; 
 			feldcolumnrate = 87.5; 
 			break;
 		case MODE_HELLX9: 
-			bandwidth = 2000; 
 			feldcolumnrate = 157.5; 
 			break;
+// Frequency modulation modes
+		case MODE_FSKHELL: 
+			feldcolumnrate = 17.5; 
+			break; 
 		case MODE_FSKH105: 
-			bandwidth = 55; 
 			feldcolumnrate = 17.5; 
 			break; 
 		case MODE_HELL80: 
-			bandwidth = 300; 
 			feldcolumnrate = 35; 
 			break;
-		case MODE_FELDHELL: 
  		default :
- 			bandwidth = 122.5; 
  			feldcolumnrate = 17.5;
  			break; 
  	}
- 	hell_bandwidth = bandwidth;
 
 	rxpixrate = (RxColumnLen * feldcolumnrate);
 	txpixrate = (TxColumnLen * feldcolumnrate);
 	downsampleinc = (double)(rxpixrate/samplerate);
 	upsampleinc = (double)(txpixrate/samplerate);
+	phi2freq = samplerate / txpixrate / 2.0 / M_PI;
+	
+	hell_bandwidth = txpixrate;
 
-	hell_bandwidth = bandwidth;
+	set_bandwidth(hell_bandwidth);
 	
 	hilbert = new C_FIR_filter();
 	hilbert->init_hilbert(37, 1);
 
-	if (mode == MODE_FELDHELL || mode == MODE_SLOWHELL || 
-	    mode == MODE_HELLX5   || mode == MODE_HELLX9 )
-		lp = 1.5 * bandwidth / 2.0 / samplerate;
-	else
-		lp = 1.5 * txpixrate / samplerate;
+	lp = 1.5 * bandwidth / samplerate;
 	
 	bpfilt = new fftfilt(0, lp, 1024);
 	
@@ -181,7 +175,7 @@ void feld::FSKHELL_rx(complex z)
 	double f;
 	int vid;
 
-	f = (prev % z).arg() * samplerate / M_PI / bandwidth / 2.0;
+	f = (prev % z).arg() * phi2freq;
 	prev = z;
 	
 	f = bbfilt->run(f);
@@ -275,20 +269,20 @@ int feld::rx_process(const double *buf, int len)
 //	squelchon = progdefaults.sqlonoff;
 	FL_UNLOCK_D();
 	
-	switch (mode) {
-		default:
+//	switch (mode) {
+//		default:
 			if (bandwidth != hell_bandwidth) {
 				double lp;
 				hell_bandwidth = bandwidth;
 				lp = 1.5 * bandwidth / 2.0 / samplerate;
 				bpfilt->create_filter(0, lp);
 			}
-			break;
-		case MODE_FSKHELL:
-		case MODE_FSKH105:
-		case MODE_HELL80:
-			break;
-	}
+//			break;
+//		case MODE_FSKHELL:
+//		case MODE_FSKH105:
+//		case MODE_HELL80:
+//			break;
+//	}
 
 	while (len-- > 0) {
 		/* create analytic signal... */
@@ -394,10 +388,10 @@ void feld::send_symbol(int currsymb, int nextsymb)
 		switch (mode) {
 			case MODE_FSKHELL :
 			case MODE_FSKH105 :
-				tone = midtone + (reverse ? -1 : 1) * (currsymb ? -1 : 1) * bandwidth / 2.0;
+				tone = midtone + (reverse ? -1 : 1) * (currsymb ? -1 : 1) * txpixrate / 2.0;
 				break;
 			case MODE_HELL80:
-				tone = midtone - (reverse ? -1 : 1) * (currsymb ? -1 : 1) * bandwidth / 2.0;
+				tone = midtone - (reverse ? -1 : 1) * (currsymb ? -1 : 1) * txpixrate / 2.0;
 				break;
 			case MODE_HELLX5 : case MODE_HELLX9 :
 				Amp = currsymb;
