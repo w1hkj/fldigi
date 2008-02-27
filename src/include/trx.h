@@ -37,9 +37,9 @@
 // ----------------------------------------------------------------------------
 
 extern	void	trx_start_modem(modem *);
-extern	void	trx_start(const char *scdev);
+extern	void	trx_start(void);
 extern	void	trx_close();
-extern	void	trx_reset(const char *scdev);
+extern	void	trx_reset(void);
 extern	void	trx_start_macro_timer();
 
 extern	void	wait_modem_ready_prep(void);

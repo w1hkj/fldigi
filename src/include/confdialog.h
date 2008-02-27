@@ -81,17 +81,24 @@ extern Fl_Button *btnQRZpasswordShow;
 extern Fl_Group *tabSoundCard;
 extern Fl_Tabs *tabsSoundCard;
 extern Fl_Group *tabAudio;
+extern Fl_Group *AudioOSS;
+#include <FL/Fl_Input_Choice.H>
+extern Fl_Input_Choice *menuOSSDev;
+extern Fl_Group *AudioPort;
+extern Fl_Input_Choice *menuPortInDev;
+extern Fl_Input_Choice *menuPortOutDev;
+extern Fl_Group *AudioPulse;
+extern Fl_Input *inpPulseServer;
+extern Fl_Group *AudioNull;
+extern Fl_Round_Button *btnAudioIO[4];
+extern Fl_Group *tabAudioOpt;
 #include <FL/Fl_Spinner.H>
 extern Fl_Spinner *cntRxRateCorr;
 extern Fl_Spinner *cntTxRateCorr;
 extern Fl_Spinner *cntTxOffset;
-extern Fl_Group *AudioIO;
-extern Fl_Round_Button *btnAudioIO[3];
-#include <FL/Fl_Input_Choice.H>
-extern Fl_Input_Choice *menuOSSDev;
-extern Fl_Input_Choice *menuPADev;
 extern Fl_Menu_Item sample_rate_menu[];
-extern Fl_Choice *menuSampleRate;
+extern Fl_Choice *menuOutSampleRate;
+extern Fl_Choice *menuInSampleRate;
 extern Fl_Group *tabMixer;
 #include <FL/Fl_Light_Button.H>
 extern void setMixerInput(int);

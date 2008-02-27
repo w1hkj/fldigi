@@ -291,7 +291,7 @@ void FTextBase::adjust_colours(void)
 
 
 Fl_Menu_Item FTextView::view_menu[] = {
-	{ "@-4>> &QRZ this call",		0, 0 },
+	{ "@-4>> &Look up call",		0, 0 },
 	{ "@-9-> &Call",			0, 0 },
 	{ "@-9-> &Name",			0, 0 },
 	{ "@-9-> QT&H",				0, 0 },
@@ -459,8 +459,8 @@ void FTextView::menu_cb(int val)
 		char *s;
 	case RX_MENU_QRZ_THIS:
 		menu_cb(RX_MENU_CALL);
-		extern void QRZquery();
-		QRZquery();
+		extern void CALLSIGNquery();
+		CALLSIGNquery();
 		break;
 	case RX_MENU_CALL:
 		s = get_word(popx, popy);

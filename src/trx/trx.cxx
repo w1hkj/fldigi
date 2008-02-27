@@ -294,8 +294,6 @@ void trx_start_modem(modem *m)
 	trx_state = STATE_NEW_MODEM;
 }
 
-string trx_scdev;
-
 void trx_reset_loop()
 {
 	if (scard)  {
@@ -305,20 +303,23 @@ void trx_reset_loop()
 
 	switch (progdefaults.btnAudioIOis) {
 #if USE_OSS
-	case 0:
-		scard = new SoundOSS(trx_scdev.c_str());
+	case SND_IDX_OSS:
+		scard = new SoundOSS(scDevice[0].c_str());
 		break;
 #endif
 #if USE_PORTAUDIO
-	case 1:
-		scard = new SoundPort(trx_scdev.c_str());
+	case SND_IDX_PORT:
+	    scard = new SoundPort(scDevice[0].c_str(), scDevice[1].c_str());
 		break;
 #endif
 #if USE_PULSEAUDIO
-	case 2:
-		scard = new SoundPulse(trx_scdev.c_str());
+	case SND_IDX_PULSE:
+		scard = new SoundPulse(scDevice[0].c_str());
 		break;
 #endif
+	case SND_IDX_NULL:
+		scard = new SoundNull;
+		break;
 	default:
 		abort();
 	}
@@ -326,9 +327,8 @@ void trx_reset_loop()
 	trx_state = STATE_RX;	
 }
 
-void trx_reset(const char *scdev)
+void trx_reset(void)
 {
-	trx_scdev = scdev;
 	trx_state = STATE_RESTART;
 }
 
@@ -365,7 +365,7 @@ void trx_start_macro_timer()
 	FL_UNLOCK();
 }
 
-void trx_start(const char *scdev)
+void trx_start(void)
 {
 	if (trxrunning) {
 		std::cout<< "trx already running!\n"; fflush(stdout);
@@ -376,20 +376,23 @@ void trx_start(const char *scdev)
 
 	switch (progdefaults.btnAudioIOis) {
 #if USE_OSS
-	case 0:
-		scard = new SoundOSS(scdev);
+	case SND_IDX_OSS:
+		scard = new SoundOSS(scDevice[0].c_str());
 		break;
 #endif
 #if USE_PORTAUDIO
-	case 1:
-		scard = new SoundPort(scdev);
+	case SND_IDX_PORT:
+		scard = new SoundPort(scDevice[0].c_str(), scDevice[1].c_str());
 		break;
 #endif
 #if USE_PULSEAUDIO
-	case 2:
-		scard = new SoundPulse(scdev);
+	case SND_IDX_PULSE:
+		scard = new SoundPulse(scDevice[0].c_str());
 		break;
 #endif
+	case SND_IDX_NULL:
+		scard = new SoundNull;
+		break;
 	default:
 		abort();
 	}
