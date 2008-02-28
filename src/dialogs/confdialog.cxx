@@ -1028,6 +1028,13 @@ progdefaults.changed = true;
 initViewer();
 }
 
+Fl_Spinner *cntChannels=(Fl_Spinner *)0;
+
+static void cb_cntChannels(Fl_Spinner* o, void*) {
+  progdefaults.VIEWERchannels = (int)(o->value());
+initViewer();
+}
+
 Fl_Spinner *cntStartFrequency=(Fl_Spinner *)0;
 
 static void cb_cntStartFrequency(Fl_Spinner* o, void*) {
@@ -1036,17 +1043,29 @@ progdefaults.changed = true;
 initViewer();
 }
 
-Fl_Spinner *cntChannels=(Fl_Spinner *)0;
-
-static void cb_cntChannels(Fl_Spinner* o, void*) {
-  progdefaults.VIEWERchannels = (int)(o->value());
-initViewer();
-}
-
 Fl_Spinner *cntTimeout=(Fl_Spinner *)0;
 
 static void cb_cntTimeout(Fl_Spinner* o, void*) {
   progdefaults.VIEWERtimeout = (int)(o->value());
+progdefaults.changed = true;
+}
+
+Fl_Group *tabMT63=(Fl_Group *)0;
+
+Fl_Check_Button *btnMT63_8bit=(Fl_Check_Button *)0;
+
+static void cb_btnMT63_8bit(Fl_Check_Button* o, void*) {
+  progdefaults.mt63_8bit = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnmt63_interleave=(Fl_Check_Button *)0;
+
+static void cb_btnmt63_interleave(Fl_Check_Button* o, void*) {
+  if (o->value() == 1)
+progdefaults.mt63_interleave = 64;
+else
+progdefaults.mt63_interleave = 32;
 progdefaults.changed = true;
 }
 
@@ -1167,7 +1186,7 @@ static const char szStopBits[] = "1|1.5|2";
 static const char szOliviaTones[] = "2|4|8|16|32|64|128|256";
 static const char szOliviaBandwidth[] = "125|250|500|1000|2000";
 static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600|115200|230400|460800";
-  { Fl_Double_Window* o = new Fl_Double_Window(400, 254, "fldigi - config");
+  { Fl_Double_Window* o = new Fl_Double_Window(400, 250, "fldigi - config");
     w = o;
     o->color(FL_DARK2);
     o->selection_color((Fl_Color)51);
@@ -1967,6 +1986,7 @@ fect after a restart.");
           { Fl_Group* o = tabFeld = new Fl_Group(0, 50, 400, 170, "Feld");
             o->color((Fl_Color)51);
             o->selection_color((Fl_Color)51);
+            o->hide();
             { Fl_Choice* o = selHellFont = new Fl_Choice(175, 62, 122, 20, "Feld Hell Font:");
               o->down_box(FL_BORDER_BOX);
               o->labelfont(4);
@@ -2063,7 +2083,7 @@ fect after a restart.");
           }
           { Fl_Group* o = tabPSK = new Fl_Group(0, 50, 400, 170, "Psk");
             o->hide();
-            { Fl_Counter* o = cntSearchRange = new Fl_Counter(25, 60, 80, 21, "Search Range");
+            { Fl_Counter* o = cntSearchRange = new Fl_Counter(120, 60, 80, 21, "Search Range");
               o->type(1);
               o->minimum(10);
               o->maximum(500);
@@ -2073,16 +2093,16 @@ fect after a restart.");
               o->align(FL_ALIGN_RIGHT);
               o->value(progdefaults.SearchRange);
             }
-            { Fl_Group* o = new Fl_Group(15, 87, 370, 53, "PskMail Server");
+            { Fl_Group* o = new Fl_Group(3, 175, 395, 43, "PskMail Server");
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = btnPSKmailSweetSpot = new Fl_Check_Button(20, 106, 130, 20, "use sweetspot");
+              { Fl_Check_Button* o = btnPSKmailSweetSpot = new Fl_Check_Button(25, 190, 130, 20, "use sweetspot");
                 o->down_box(FL_DOWN_BOX);
                 o->value(1);
                 o->callback((Fl_Callback*)cb_btnPSKmailSweetSpot);
                 o->value(progdefaults.PSKmailSweetSpot);
               }
-              { Fl_Counter* o = cntServerOffset = new Fl_Counter(150, 104, 80, 21, "Server Search Range");
+              { Fl_Counter* o = cntServerOffset = new Fl_Counter(165, 189, 80, 21, "Server Search Range");
                 o->type(1);
                 o->minimum(10);
                 o->maximum(500);
@@ -2094,32 +2114,20 @@ fect after a restart.");
               }
               o->end();
             }
-            o->end();
-          }
-          { Fl_Group* o = new Fl_Group(0, 50, 400, 170, "PskViewer");
-            o->hide();
-            { Fl_Group* o = new Fl_Group(5, 60, 390, 155);
+            { Fl_Group* o = new Fl_Group(3, 85, 395, 90, "Psk Viewer");
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = btnMarquee = new Fl_Check_Button(25, 87, 120, 15, "Marquee style");
+              { Fl_Check_Button* o = btnMarquee = new Fl_Check_Button(11, 110, 120, 15, "Marquee style");
                 o->down_box(FL_DOWN_BOX);
                 o->callback((Fl_Callback*)cb_btnMarquee);
                 o->value(progdefaults.VIEWERmarquee);
               }
-              { Fl_Check_Button* o = btnShowFrequencies = new Fl_Check_Button(25, 125, 150, 15, "Show Frequencies");
+              { Fl_Check_Button* o = btnShowFrequencies = new Fl_Check_Button(11, 144, 109, 15, "Show Freq\'s");
                 o->down_box(FL_DOWN_BOX);
                 o->callback((Fl_Callback*)cb_btnShowFrequencies);
                 o->value(progdefaults.VIEWERshowfreq);
               }
-              { Fl_Spinner* o = cntStartFrequency = new Fl_Spinner(190, 120, 60, 25, "Start Frequency:");
-                o->callback((Fl_Callback*)cb_cntStartFrequency);
-                o->align(FL_ALIGN_RIGHT);
-                o->minimum(200);
-                o->maximum(1000);
-                o->step(100);
-                o->value(progdefaults.VIEWERstart);
-              }
-              { Fl_Spinner* o = cntChannels = new Fl_Spinner(190, 82, 50, 25, "# Channels:");
+              { Fl_Spinner* o = cntChannels = new Fl_Spinner(135, 140, 39, 25, "# Channels");
                 o->callback((Fl_Callback*)cb_cntChannels);
                 o->align(FL_ALIGN_RIGHT);
                 o->minimum(5);
@@ -2127,13 +2135,39 @@ fect after a restart.");
                 o->step(1);
                 o->value(progdefaults.VIEWERchannels);
               }
-              { Fl_Spinner* o = cntTimeout = new Fl_Spinner(190, 155, 50, 25, "Aging (sec)");
+              { Fl_Spinner* o = cntStartFrequency = new Fl_Spinner(135, 105, 50, 25, "Start Freq");
+                o->callback((Fl_Callback*)cb_cntStartFrequency);
+                o->align(FL_ALIGN_RIGHT);
+                o->minimum(200);
+                o->maximum(1000);
+                o->step(100);
+                o->value(progdefaults.VIEWERstart);
+              }
+              { Fl_Spinner* o = cntTimeout = new Fl_Spinner(261, 105, 50, 25, "Aging (sec)");
                 o->callback((Fl_Callback*)cb_cntTimeout);
                 o->align(FL_ALIGN_RIGHT);
                 o->minimum(10);
                 o->maximum(180);
                 o->step(1);
                 o->value(progdefaults.VIEWERtimeout);
+              }
+              o->end();
+            }
+            o->end();
+          }
+          { Fl_Group* o = tabMT63 = new Fl_Group(0, 50, 400, 170, "MT-63");
+            { Fl_Group* o = new Fl_Group(5, 60, 390, 155);
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { Fl_Check_Button* o = btnMT63_8bit = new Fl_Check_Button(55, 90, 163, 15, "8 bit extended chars");
+                o->down_box(FL_DOWN_BOX);
+                o->callback((Fl_Callback*)cb_btnMT63_8bit);
+                o->value(progdefaults.mt63_8bit);
+              }
+              { Fl_Check_Button* o = btnmt63_interleave = new Fl_Check_Button(55, 120, 165, 15, "64 bit interleave");
+                o->down_box(FL_DOWN_BOX);
+                o->callback((Fl_Callback*)cb_btnmt63_interleave);
+                o->value(0);if (progdefaults.mt63_interleave == 64) o->value(1);
               }
               o->end();
             }

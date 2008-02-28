@@ -161,6 +161,9 @@ fldigi_SOURCES += \
 	include/mixer.h \
 	include/modem.h \
 	include/morse.h \
+	include/mt63base.h \
+	include/mt63.h \
+	include/dsp.h \
 	include/newinstall.h \
 	include/olivia.h \
 	include/picture.h \
@@ -227,6 +230,9 @@ fldigi_SOURCES += \
 	misc/threads.cxx \
 	misc/timeops.cxx \
 	misc/util.cxx \
+	mt63/dsp.cxx \
+	mt63/mt63.cxx \
+	mt63/mt63base.cxx \
 	olivia/olivia.cxx \
 	psk/psk.cxx \
 	psk/pskcoeff.cxx \
@@ -279,6 +285,12 @@ EXTRA_fldigi_SOURCES += \
 	feld/FeldStyl-14.cxx \
 	feld/FeldVert-14.cxx \
 	feld/FeldWide-14.cxx \
+	mt63/alias_1k.dat \
+	mt63/alias_2k.dat \
+	mt63/morse.dat \
+	mt63/symbol.dat \
+	mt63/alias_k5.dat \
+	mt63/mt63intl.dat \
 	trx/tune.cxx
 
 # Additional non-source files that we distribute

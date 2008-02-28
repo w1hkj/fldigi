@@ -63,6 +63,10 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_MFSK8, &mfsk8_modem, "MFSK-8", "MFSK-8", "MFSK16" },
 	{ MODE_MFSK16, &mfsk16_modem, "MFSK16", "MFSK-16", "MFSK8" },
 
+	{ MODE_MT63_500, &mt63_500_modem, "MT63-500", "MT63-500", "" },
+	{ MODE_MT63_1000, &mt63_1000_modem, "MT63-1XX", "MT63-1000", "" },
+	{ MODE_MT63_2000, &mt63_2000_modem, "MT63-2XX", "MT63-2000", "" },
+
 	{ MODE_BPSK31, &psk31_modem, "BPSK31", "BPSK-31", "PSK31" },
 	{ MODE_QPSK31, &qpsk31_modem, "QPSK31", "QPSK-31", "QPSK31" },
 	{ MODE_PSK63, &psk63_modem, "PSK-63", "BPSK-63", "PSK63" },
@@ -82,8 +86,6 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_THROBX1, &throbx1_modem, "THRBX1", "ThrobX 1", "" },
 	{ MODE_THROBX2, &throbx2_modem, "THRBX2", "ThrobX 2", "" },
 	{ MODE_THROBX4, &throbx4_modem, "THRBX4", "ThrobX 4", "" },
-
-//	{ MODE_MT63, 0, "MT63", "MT-63", "" },
 
 	{ MODE_WWV, &wwv_modem, "WWV", "WWV", "" },
 
