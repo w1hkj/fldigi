@@ -66,7 +66,6 @@ struct configuration {
 	double		CWpost;
 	bool		CWid;
 	int			CWIDwpm;
-
 // FELD-HELL
 	bool		FELD_IDLE;
 // OLIVIA
@@ -76,6 +75,9 @@ struct configuration {
 	int			oliviasinteg;
 // DOMINOEX
 	double		DOMINOEX_BW;
+// MT63
+	bool 		mt63_8bit;
+	int			mt63_interleave;
 // User interface data
 	int		Fontnbr;
 	int		FontSize;

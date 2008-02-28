@@ -181,6 +181,9 @@ public:
 extern modem *cw_modem;
 extern modem *mfsk8_modem;
 extern modem *mfsk16_modem;
+extern modem *mt63_500_modem;
+extern modem *mt63_1000_modem;
+extern modem *mt63_2000_modem;
 extern modem *feld_modem;
 extern modem *feld_slowmodem;
 extern modem *feld_x5modem;

@@ -53,6 +53,7 @@
 #include "psk.h"
 #include "cw.h"
 #include "mfsk.h"
+#include "mt63.h"
 #include "rtty.h"
 #include "olivia.h"
 #include "dominoex.h"
@@ -175,6 +176,13 @@ Fl_Menu_Item quick_change_qpsk[] = {
 Fl_Menu_Item quick_change_mfsk[] = {
 	{ mode_info[MODE_MFSK8].name, 0, cb_init_mode, (void *)MODE_MFSK8 },
 	{ mode_info[MODE_MFSK16].name, 0, cb_init_mode, (void *)MODE_MFSK16 },
+	{ 0 }
+};
+
+Fl_Menu_Item quick_change_mt63[] = {
+	{ mode_info[MODE_MT63_500].name, 0, cb_init_mode, (void *)MODE_MT63_500 },
+	{ mode_info[MODE_MT63_1000].name, 0, cb_init_mode, (void *)MODE_MT63_1000 },
+	{ mode_info[MODE_MT63_2000].name, 0, cb_init_mode, (void *)MODE_MT63_2000 },
 	{ 0 }
 };
 
@@ -359,6 +367,13 @@ void init_modem(trx_mode mode)
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new mfsk(mode));
 		quick_change = quick_change_mfsk;
+		break;
+
+	case MODE_MT63_500: case MODE_MT63_1000: case MODE_MT63_2000 :
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new mt63(mode));
+		quick_change = quick_change_mt63;
+		modem_config_tab = tabMT63;
 		break;
 
 	case MODE_BPSK31: case MODE_PSK63: case MODE_PSK125: case MODE_PSK250:
@@ -939,6 +954,12 @@ Fl_Menu_Item menu_[] = {
 { mode_info[MODE_MFSK16].name, 0,  cb_init_mode, (void *)MODE_MFSK16, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
+{"MT63", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MT63_500].name, 0,  cb_init_mode, (void *)MODE_MT63_500, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MT63_1000].name, 0,  cb_init_mode, (void *)MODE_MT63_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MT63_2000].name, 0,  cb_init_mode, (void *)MODE_MT63_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
 {"PSK", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_BPSK31].name, 0, cb_init_mode, (void *)MODE_BPSK31, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_QPSK31].name, 0, cb_init_mode, (void *)MODE_QPSK31, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -946,10 +967,8 @@ Fl_Menu_Item menu_[] = {
 { mode_info[MODE_QPSK63].name, 0, cb_init_mode, (void *)MODE_QPSK63, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_PSK125].name, 0, cb_init_mode, (void *)MODE_PSK125, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_QPSK125].name, 0, cb_init_mode, (void *)MODE_QPSK125, 0, FL_NORMAL_LABEL, 0, 14, 0},
-#ifdef USE250
 { mode_info[MODE_PSK250].name, 0, cb_init_mode, (void *)MODE_PSK250, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_QPSK250].name, 0, cb_init_mode, (void *)MODE_QPSK250, 0, FL_NORMAL_LABEL, 0, 14, 0},
-#endif
 {0,0,0,0,0,0,0,0,0},
 
 { mode_info[MODE_OLIVIA].name, 0, cb_init_mode, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},

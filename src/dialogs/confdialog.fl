@@ -35,7 +35,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {fldigi - config} open
-    xywh {868 365 400 254} type Double color 45 selection_color 51 align 80 visible
+    xywh {520 101 400 250} type Double color 45 selection_color 51 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 405 220} color 47 selection_color 9
@@ -668,7 +668,7 @@ o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");}
                 label OSS
                 callback {update_sound_config(SND_IDX_OSS);
 progdefaults.changed = true;
-resetSoundCard();} selected
+resetSoundCard();}
                 xywh {5 63 100 25} down_box DIAMOND_DOWN_BOX selection_color 1
               }
               Fl_Input_Choice menuOSSDev {
@@ -1052,7 +1052,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabFeld {
             label Feld open
-            xywh {0 50 400 170} color 51 selection_color 51
+            xywh {0 50 400 170} color 51 selection_color 51 hide
           } {
             Fl_Choice selHellFont {
               label {Feld Hell Font:}
@@ -1066,7 +1066,7 @@ progdefaults.changed = true;} open
             Fl_Value_Slider sldrHellBW {
               label {Filter BW}
               callback {active_modem->set_bandwidth(sldrHellBW->value());
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
               xywh {30 190 345 20} type Horizontal color 215 align 5 minimum 10 maximum 2400 step 5 value 400 textsize 14
             }
             Fl_Check_Button btnHellXmtWidth {
@@ -1162,18 +1162,18 @@ progdefaults.changed = true;}
               callback {progdefaults.SearchRange = (int)o->value();
 wf->redraw_marker();
 progdefaults.changed = true;}
-              xywh {25 60 80 21} type Simple align 8 minimum 10 maximum 500 step 10 value 200
+              xywh {120 60 80 21} type Simple align 8 minimum 10 maximum 500 step 10 value 200
               code0 {o->value(progdefaults.SearchRange);}
             }
             Fl_Group {} {
               label {PskMail Server} open
-              xywh {15 87 370 53} box ENGRAVED_FRAME align 21
+              xywh {3 175 395 43} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnPSKmailSweetSpot {
                 label {use sweetspot}
                 callback {progdefaults.PSKmailSweetSpot = o->value();
 progdefaults.changed = true;}
-                xywh {20 106 130 20} down_box DOWN_BOX value 1
+                xywh {25 190 130 20} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.PSKmailSweetSpot);}
               }
               Fl_Counter cntServerOffset {
@@ -1181,64 +1181,86 @@ progdefaults.changed = true;}
                 callback {progdefaults.ServerOffset = (int)o->value();
 wf->redraw_marker();
 progdefaults.changed = true;}
-                xywh {150 104 80 21} type Simple align 8 minimum 10 maximum 500 step 10 value 200
+                xywh {165 189 80 21} type Simple align 8 minimum 10 maximum 500 step 10 value 200
                 code0 {o->value(progdefaults.SearchRange);}
               }
             }
-          }
-          Fl_Group {} {
-            label PskViewer open
-            xywh {0 50 400 170} hide
-          } {
-            Fl_Group {} {open
-              xywh {5 60 390 155} box ENGRAVED_FRAME align 21
+            Fl_Group {} {
+              label {Psk Viewer} open
+              xywh {3 85 395 90} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnMarquee {
                 label {Marquee style}
                 callback {progdefaults.VIEWERmarquee = o->value();
 progdefaults.changed = true;
 initViewer();}
-                xywh {25 87 120 15} down_box DOWN_BOX
+                xywh {11 110 120 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.VIEWERmarquee);}
               }
               Fl_Check_Button btnShowFrequencies {
-                label {Show Frequencies}
+                label {Show Freq's}
                 callback {progdefaults.VIEWERshowfreq = o->value();
 progdefaults.changed = true;
 initViewer();}
-                xywh {25 125 150 15} down_box DOWN_BOX
+                xywh {11 144 109 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.VIEWERshowfreq);}
               }
-              Fl_Spinner cntStartFrequency {
-                label {Start Frequency:}
-                callback {progdefaults.VIEWERstart = (int)(o->value());
-progdefaults.changed = true;
-initViewer();}
-                xywh {190 120 60 25} align 8
-                code0 {o->minimum(200);}
-                code1 {o->maximum(1000);}
-                code2 {o->step(100);}
-                code3 {o->value(progdefaults.VIEWERstart);}
-              }
               Fl_Spinner cntChannels {
-                label {\# Channels:}
+                label {\# Channels}
                 callback {progdefaults.VIEWERchannels = (int)(o->value());
 initViewer();}
-                xywh {190 82 50 25} align 8
+                xywh {135 140 39 25} align 8
                 code0 {o->minimum(5);}
                 code1 {o->maximum(30);}
                 code2 {o->step(1);}
                 code3 {o->value(progdefaults.VIEWERchannels);}
               }
+              Fl_Spinner cntStartFrequency {
+                label {Start Freq}
+                callback {progdefaults.VIEWERstart = (int)(o->value());
+progdefaults.changed = true;
+initViewer();}
+                xywh {135 105 50 25} align 8
+                code0 {o->minimum(200);}
+                code1 {o->maximum(1000);}
+                code2 {o->step(100);}
+                code3 {o->value(progdefaults.VIEWERstart);}
+              }
               Fl_Spinner cntTimeout {
                 label {Aging (sec)}
                 callback {progdefaults.VIEWERtimeout = (int)(o->value());
 progdefaults.changed = true;}
-                xywh {190 155 50 25} align 8
+                xywh {261 105 50 25} align 8
                 code0 {o->minimum(10);}
                 code1 {o->maximum(180);}
                 code2 {o->step(1);}
                 code3 {o->value(progdefaults.VIEWERtimeout);}
+              }
+            }
+          }
+          Fl_Group tabMT63 {
+            label {MT-63} open selected
+            xywh {0 50 400 170}
+          } {
+            Fl_Group {} {open
+              xywh {5 60 390 155} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Check_Button btnMT63_8bit {
+                label {8 bit extended chars}
+                callback {progdefaults.mt63_8bit = o->value();
+progdefaults.changed = true;}
+                xywh {55 90 163 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.mt63_8bit);}
+              }
+              Fl_Check_Button btnmt63_interleave {
+                label {64 bit interleave}
+                callback {if (o->value() == 1)
+progdefaults.mt63_interleave = 64;
+else
+progdefaults.mt63_interleave = 32;
+progdefaults.changed = true;}
+                xywh {55 120 165 15} down_box DOWN_BOX
+                code0 {o->value(0);if (progdefaults.mt63_interleave == 64) o->value(1);}
               }
             }
           }

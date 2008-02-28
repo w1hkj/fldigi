@@ -80,6 +80,9 @@ configuration progdefaults = {
 	2,				// int		oliviasinteg
 // DOMINOEX
 	2.0,			// double	DOMINOEX_BW;
+// MT63
+	false,			// bool 	mt63_8bit;
+	32,				// int		mt63_interleave;
 //
 	0, 				// int 		Fontnbr
 	16,				// int 		Fontsize
