@@ -21,10 +21,11 @@ struct configuration {
 	double	RTTYsweetspot;
 	double	PSKsweetspot;
 	bool	StartAtSweetSpot;
-// for PSK mail interface
+// for PSK  & PSK mail interface
 	bool	PSKmailSweetSpot;
 	int		SearchRange;
 	int		ServerOffset;
+	double	ACQsn;
 // RTTY
 	double		rtty_squelch;
 	int			rtty_shift;

@@ -94,11 +94,11 @@ int mt63::rx_process(const double *buf, int len)
 	unsigned int c;
 	int i;
 
-	if 	(Interleave != progdefaults.mt63_interleave) {
+	if (Interleave != progdefaults.mt63_interleave) {
 		Interleave = progdefaults.mt63_interleave;
 		restart();
 	}
-
+	
 	if (InpBuff->EnsureSpace(len) == -1) {
 		fprintf(stderr, "mt63_rxprocess: buffer error\n");
 		return -1;
@@ -114,6 +114,11 @@ int mt63::rx_process(const double *buf, int len)
 	if (snr > 99.9)
 		snr = 99.9;
 	display_metric(snr);
+
+//	static char msg1[15];
+//	double s2n = 10.0*log10( snr );
+//	snprintf(msg1, sizeof(msg1), "s/n %2d dB", (int)(floor(s2n))); 
+//  put_Status1(msg1);
 
 	if (squelchon && snr < squelch)
 		return 0;

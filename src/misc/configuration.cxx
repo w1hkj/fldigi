@@ -29,6 +29,7 @@ configuration progdefaults = {
 	true,			// bool		PSKmailSweetSpot;
 	200,			// int		SearchRange;
 	40,				// int		ServerOffset;
+	6.0,			// double	ACQsn;
 // RTTY
 	25.0,			// double		rtty_squelch;
 	3,				// int			rtty_shift; = 170
@@ -204,6 +205,7 @@ enum TAG { \
 	FONTNBR, FONTSIZE, FONTCOLOR,
 	STARTATSWEETSPOT, PSKMAILSWEETSPOT, 
 	PSKSEARCHRANGE, PSKSERVEROFFSET,
+	ACQSN,
 	CWSWEETSPOT, PSKSWEETSPOT, RTTYSWEETSPOT,
 	RTTYSQUELCH, RTTYSHIFT, RTTYBAUD,
 	RTTYBITS, RTTYPARITY, RTTYSTOP, RTTYREVERSE,
@@ -315,6 +317,7 @@ void configuration::writeDefaultsXML()
 	writeXMLint(f, "PSKSERVEROFFSET", ServerOffset);
 	writeXMLdbl(f, "CWSWEETSPOT", CWsweetspot);
 	writeXMLdbl(f, "PSKSWEETSPOT", PSKsweetspot);
+	writeXMLdbl(f, "ACQSN", ACQsn);
 	writeXMLdbl(f, "RTTYSWEETSPOT", RTTYsweetspot);
 	writeXMLdbl(f, "RTTYSQUELCH", rtty_squelch);	
 	writeXMLint(f, "RTTYSHIFT", rtty_shift);
@@ -516,6 +519,8 @@ bool configuration::readDefaultsXML()
 					case PSKSERVEROFFSET :
 						ServerOffset = atoi(xml->getNodeData());
 						break;
+					case ACQSN :
+						ACQsn = atof(xml->getNodeData());
 					case CWSWEETSPOT :
 						CWsweetspot = atof(xml->getNodeData());
 						break;
@@ -908,6 +913,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("PSKMAILSWEETSPOT", nodeName)) 	tag = PSKMAILSWEETSPOT;
 				else if (!strcmp("PSKSEARCHRANGE", nodeName)) 	tag = PSKSEARCHRANGE;
 				else if (!strcmp("PSKSERVEROFFSET", nodeName)) 	tag = PSKSERVEROFFSET;
+				else if (!strcmp("ACQSN", nodeName)) tag = ACQSN;
 				else if (!strcmp("CWSWEETSPOT", nodeName)) 	tag = CWSWEETSPOT;
 				else if (!strcmp("PSKSWEETSPOT", nodeName)) 	tag = PSKSWEETSPOT;
 				else if (!strcmp("RTTYSWEETSPOT", nodeName)) 	tag = RTTYSWEETSPOT;
@@ -1230,6 +1236,7 @@ int configuration::openDefaults() {
 			btnPSKmailSweetSpot->value(PSKmailSweetSpot);
 			cntSearchRange->value(SearchRange);
 			cntServerOffset->value(ServerOffset);
+			cntACQsn->value(ACQsn);
 			
 			btnCursorBWcolor->color(
 				fl_rgb_color(cursorLineRGBI.R, cursorLineRGBI.G, cursorLineRGBI.B) );

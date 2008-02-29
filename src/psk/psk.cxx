@@ -218,6 +218,8 @@ psk::psk(trx_mode pskmode) : modem()
 	for (int i = 0; i < 16; i++)
 		syncbuf[i] = 0.0;
 	E1 = E2 = E3 = 0.0;
+	acquire = 0;
+	
 	init();
 }
 
@@ -335,11 +337,12 @@ void psk::findsignal()
 		} else { // normal signal search algorithm
 			f1 = (int)(frequency - progdefaults.SearchRange/2);
 			f2 = (int)(frequency + progdefaults.SearchRange/2);
-			if (evalpsk->sigpeak(ftest, f1, f2) > SNTHRESHOLD ) {
+			if (evalpsk->sigpeak(ftest, f1, f2) > pow(10, progdefaults.ACQsn / 10.0) ) {
 				frequency = ftest;
 				set_freq(frequency);
 				freqerr = 0.0;
 				sigsearch = 0;
+				acquire = DCDOFF;
 			}
 		}
 	}
@@ -359,13 +362,14 @@ void psk::phaseafc()
 		frequency -= freqerr;
 		set_freq (frequency);
 	}
+	if (acquire) acquire--;
 }
 
 void psk::afc()
 {
 	if (!afcon)
 		return;
-	if (dcd == true)
+	if (dcd == true || acquire)
 		phaseafc();
 }
 
@@ -398,11 +402,13 @@ void psk::rx_symbol(complex symbol)
 	switch (dcdshreg) {
 	case 0xAAAAAAAA:	/* DCD on by preamble */
 		dcd = true;
+		acquire = 0;
 		quality = complex (1.0, 0.0);
 		break;
 
 	case 0:			/* DCD off by postamble */
 		dcd = false;
+		acquire = 0;
 		quality = complex (0.0, 0.0);
 		break;
 

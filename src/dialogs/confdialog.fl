@@ -35,7 +35,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {fldigi - config} open
-    xywh {520 101 400 250} type Double color 45 selection_color 51 align 80 visible
+    xywh {396 414 400 250} type Double color 45 selection_color 51 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 405 220} color 47 selection_color 9
@@ -1155,14 +1155,14 @@ progdefaults.changed = true;}
           }
           Fl_Group tabPSK {
             label Psk open
-            xywh {0 50 400 170} hide
+            xywh {0 50 400 170}
           } {
             Fl_Counter cntSearchRange {
-              label {Search Range}
+              label {Acq Srch Range}
               callback {progdefaults.SearchRange = (int)o->value();
 wf->redraw_marker();
 progdefaults.changed = true;}
-              xywh {120 60 80 21} type Simple align 8 minimum 10 maximum 500 step 10 value 200
+              xywh {11 60 80 21} type Simple align 8 minimum 10 maximum 500 step 10 value 200
               code0 {o->value(progdefaults.SearchRange);}
             }
             Fl_Group {} {
@@ -1237,10 +1237,17 @@ progdefaults.changed = true;}
                 code3 {o->value(progdefaults.VIEWERtimeout);}
               }
             }
+            Fl_Counter cntACQsn {
+              label {Acq s/n (db)}
+              callback {progdefaults.ACQsn = (int)o->value();
+progdefaults.changed = true;} selected
+              xywh {220 60 80 21} type Simple align 8 minimum 3 maximum 20 step 1 value 6
+              code0 {o->value(progdefaults.ACQsn);}
+            }
           }
           Fl_Group tabMT63 {
-            label {MT-63} open selected
-            xywh {0 50 400 170}
+            label {MT-63} open
+            xywh {0 50 400 170} hide
           } {
             Fl_Group {} {open
               xywh {5 60 390 155} box ENGRAVED_FRAME align 21
