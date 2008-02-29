@@ -36,7 +36,7 @@
 #define	PskSampleRate	(8000)
 #define PipeLen			(64)
 
-#define SNTHRESHOLD 2.0
+#define SNTHRESHOLD 6.0
 #define AFCDECAYSLOW 8
 //=====================================================================
 
@@ -70,6 +70,7 @@ private:
 	int 			dcd;
 	int				dcdbits;
 	complex			quality;
+	int				acquire;
 
 	void			rx_symbol(complex symbol);
 	void 			rx_bit(int bit);

@@ -175,12 +175,13 @@ void viewpsk::findsignal(int ch)
 	int ftest;
 	int f1 = (int)(nomfreq[ch] - VSEARCHWIDTH);
 	int f2 = (int)(nomfreq[ch] + VSEARCHWIDTH);
-	if (evalpsk->sigpeak(ftest, f1, f2) > VSNTHRESHOLD) {
+	if (evalpsk->sigpeak(ftest, f1, f2) > pow(10, progdefaults.ACQsn / 10.0) ) {
 		frequency[ch] = ftest;
 		sigsearch[ch] =  0;
 	}
-	else
+	else {
 		frequency[ch] = nomfreq[ch];
+	}
 	freqerr[ch] = 0.0;
 }
 

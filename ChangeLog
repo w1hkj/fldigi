@@ -19,6 +19,7 @@ Change Log:
      15) Added support to the PortAudio backend for separate capture and playback
          devices and sample rates
      16) Added mt63 500/1000/2000 modes
+     17) Added psk acquisition level control
 
 2.09  1) Modified src/Makefile.am for FreeBSD name space clash
       2) Added psk multi-channel viewer with regex search capability

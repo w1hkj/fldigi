@@ -1050,6 +1050,13 @@ static void cb_cntTimeout(Fl_Spinner* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Counter *cntACQsn=(Fl_Counter *)0;
+
+static void cb_cntACQsn(Fl_Counter* o, void*) {
+  progdefaults.ACQsn = (int)o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabMT63=(Fl_Group *)0;
 
 Fl_Check_Button *btnMT63_8bit=(Fl_Check_Button *)0;
@@ -2082,8 +2089,7 @@ fect after a restart.");
             o->end();
           }
           { Fl_Group* o = tabPSK = new Fl_Group(0, 50, 400, 170, "Psk");
-            o->hide();
-            { Fl_Counter* o = cntSearchRange = new Fl_Counter(120, 60, 80, 21, "Search Range");
+            { Fl_Counter* o = cntSearchRange = new Fl_Counter(11, 60, 80, 21, "Acq Srch Range");
               o->type(1);
               o->minimum(10);
               o->maximum(500);
@@ -2153,9 +2159,20 @@ fect after a restart.");
               }
               o->end();
             }
+            { Fl_Counter* o = cntACQsn = new Fl_Counter(220, 60, 80, 21, "Acq s/n (db)");
+              o->type(1);
+              o->minimum(3);
+              o->maximum(20);
+              o->step(1);
+              o->value(6);
+              o->callback((Fl_Callback*)cb_cntACQsn);
+              o->align(FL_ALIGN_RIGHT);
+              o->value(progdefaults.ACQsn);
+            }
             o->end();
           }
           { Fl_Group* o = tabMT63 = new Fl_Group(0, 50, 400, 170, "MT-63");
+            o->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 390, 155);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);

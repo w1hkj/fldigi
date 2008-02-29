@@ -42,6 +42,7 @@
 #include <sys/ioctl.h>
 #include <math.h>
 #include <ctype.h>
+#include <errno.h>
 
 #include <FL/fl_ask.H>
 

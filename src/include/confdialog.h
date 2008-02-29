@@ -165,6 +165,7 @@ extern Fl_Check_Button *btnShowFrequencies;
 extern Fl_Spinner *cntChannels;
 extern Fl_Spinner *cntStartFrequency;
 extern Fl_Spinner *cntTimeout;
+extern Fl_Counter *cntACQsn;
 extern Fl_Group *tabMT63;
 extern Fl_Check_Button *btnMT63_8bit;
 extern Fl_Check_Button *btnmt63_interleave;
