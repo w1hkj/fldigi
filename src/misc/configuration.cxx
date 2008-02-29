@@ -143,9 +143,9 @@ configuration progdefaults = {
 	"",		// string	PortIndevice;
 	"",		// string	PortOutDevice;
 	"",		// string	PulseServer
-	0,				// int		sample_rate;
-	-1,				// int		in_sample_rate;
-	-1,				// int		out_sample_rate;
+	SAMPLE_RATE_UNSET,		// int		sample_rate;
+	SAMPLE_RATE_UNSET,		// int		in_sample_rate;
+	SAMPLE_RATE_UNSET,		// int		out_sample_rate;
 	"src-sinc-fastest",		// string	sample_converter;
 	0,				// int		RX_corr;
 	0,				// int		TX_corr;
@@ -1321,23 +1321,28 @@ int configuration::openDefaults() {
             resetMixerControls();
             menuMix->value(MXdevice.c_str());
 
+
 	    char sr[6+1];
-	    if (in_sample_rate == -1)
-		    in_sample_rate = sample_rate;
-	    if (in_sample_rate > 1) {
+	    if (in_sample_rate == SAMPLE_RATE_UNSET &&
+		(in_sample_rate = sample_rate) == SAMPLE_RATE_UNSET)
+		    in_sample_rate = SAMPLE_RATE_AUTO;
+	    else if (in_sample_rate > SAMPLE_RATE_OTHER)
 		    snprintf(sr, sizeof(sr), "%d", in_sample_rate);
-		    menuInSampleRate->value(menuInSampleRate->find_item(sr));
-	    }
-	    else
+	    if (in_sample_rate <= SAMPLE_RATE_NATIVE)
 		    menuInSampleRate->value(in_sample_rate);
-	    if (out_sample_rate == -1)
-		    out_sample_rate = sample_rate;
-	    if (out_sample_rate > 1) {
-		    snprintf(sr, sizeof(sr), "%d", out_sample_rate);
-		    menuOutSampleRate->value(menuOutSampleRate->find_item(sr));
-	    }
 	    else
+		    menuInSampleRate->value(menuInSampleRate->find_item(sr));
+
+	    if (out_sample_rate == SAMPLE_RATE_UNSET &&
+		(out_sample_rate = sample_rate) == SAMPLE_RATE_UNSET)
+		    out_sample_rate = SAMPLE_RATE_AUTO;
+	    else if (out_sample_rate > SAMPLE_RATE_OTHER)
+		    snprintf(sr, sizeof(sr), "%d", out_sample_rate);
+	    if (out_sample_rate <= SAMPLE_RATE_NATIVE)
 		    menuOutSampleRate->value(out_sample_rate);
+	    else
+		    menuOutSampleRate->value(menuOutSampleRate->find_item(sr));
+
 
 			cntRxRateCorr->value(RX_corr);
 			cntTxRateCorr->value(TX_corr);

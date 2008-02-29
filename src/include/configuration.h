@@ -206,4 +206,6 @@ extern configuration progdefaults;
 extern void mixerInputs();
 extern void enableMixer(bool);
 
+enum { SAMPLE_RATE_UNSET = -1, SAMPLE_RATE_AUTO, SAMPLE_RATE_NATIVE, SAMPLE_RATE_OTHER };
+
 #endif

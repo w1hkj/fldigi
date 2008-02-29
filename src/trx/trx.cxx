@@ -147,8 +147,6 @@ void trx_trx_receive_loop()
 				active_modem->HistoryON(false);
 			}
 		}
-		if (!scard->full_duplex())
-			scard->Close();
 	} else
 		MilliSleep(10);
 }
@@ -185,8 +183,6 @@ void trx_trx_transmit_loop()
 				return;
 			}
 		}
-		if (!scard->full_duplex())
-			scard->Close();
 	} else
 		MilliSleep(10);
 
@@ -234,8 +230,6 @@ void trx_tune_loop()
 			MilliSleep(10);
 			return;
 		}
-		if (!scard->full_duplex())
-			scard->Close();
 		_trx_tune = 0;
 	} else
 		MilliSleep(10);
