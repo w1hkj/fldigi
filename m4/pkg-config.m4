@@ -28,8 +28,8 @@ else
         PKG_CHECK_MODULES([$4], [$2]) # for the error message
     fi
 fi
-AC_SUBST([$3][_CFLAGS])
-AC_SUBST([$3][_LIBS])
+AC_SUBST([$4][_CFLAGS])
+AC_SUBST([$4][_LIBS])
 
 m4_ifval([$6], [ AM_CONDITIONAL([$6], [test "x$ac_cv_[]$1" = "xyes"]) ], [:])
 ])

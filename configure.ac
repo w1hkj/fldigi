@@ -4,7 +4,24 @@
 AC_COPYRIGHT([Copyright (C) 2007, 2008 Stelios Bounanos, M0GLD (m0gld AT enotty DOT net)])
 
 AC_PREREQ(2.61)
-AC_INIT([fldigi], [2.10M], [w1hkj AT w1hkj DOT com])
+
+dnl major and minor must be integers; patch may
+dnl contain other characters or be empty
+m4_define(FLDIGI_MAJOR, [2])
+m4_define(FLDIGI_MINOR, [10])
+m4_define(FLDIGI_PATCH, [M])
+
+AC_INIT([fldigi], FLDIGI_MAJOR.FLDIGI_MINOR[FLDIGI_PATCH], [w1hkj AT w1hkj DOT com])
+
+# substitute in Makefiles
+AC_SUBST([FLDIGI_VERSION_MAJOR], [FLDIGI_MAJOR])
+AC_SUBST([FLDIGI_VERSION_MINOR], [FLDIGI_MINOR])
+AC_SUBST([FLDIGI_VERSION_PATCH], [FLDIGI_PATCH])
+# define in config.h
+AC_DEFINE([FLDIGI_VERSION_MAJOR], [FLDIGI_MAJOR], [Major version number])
+AC_DEFINE([FLDIGI_VERSION_MINOR], [FLDIGI_MINOR], [Minor version number])
+AC_DEFINE([FLDIGI_VERSION_PATCH], ["FLDIGI_PATCH"], [Patch/alpha version string])
+
 AC_CONFIG_AUX_DIR([build-aux])
 
 # define build, build_cpu, build_vendor, build_os
@@ -21,8 +38,8 @@ AC_CONFIG_HEADER([src/config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 
-AC_DEFINE(PACKAGE_HOME, ["http://www.w1hkj.com/Fldigi-2.x.html"], [Home page])
-AC_DEFINE(PACKAGE_DOCS, ["http://www.w1hkj.com/FldigiHelp-2.0/index.html"], [Docs index])
+AC_DEFINE([PACKAGE_HOME], ["http://www.w1hkj.com/Fldigi-2.x.html"], [Home page])
+AC_DEFINE([PACKAGE_DOCS], ["http://www.w1hkj.com/FldigiHelp-2.0/index.html"], [Docs index])
 
 
 # Checks for programs.
@@ -145,6 +162,12 @@ fi
 AC_FLDIGI_PKG_CHECK([hamlib], [hamlib >= 1.2.4], [with], [HAMLIB],
                     [use hamradio control libraries @<:@autodetect@:>@],
                     [ENABLE_HAMLIB])
+
+### OSX
+# Set ac_cv_mac_universal to yes/no
+# Set DARWIN Makefile conditional
+# Substitute MAC_UNIVERSAL_CFLAGS and MAC_UNIVERSAL_LDFLAGS in Makefile
+AC_FLDIGI_MACOSX
 
 
 ### output

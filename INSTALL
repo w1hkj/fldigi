@@ -3,17 +3,16 @@ Installation Instructions for fldigi
 
 To compile fldigi you will need:
 
-  * A recent C++ compiler. The GNU C++ compilers in the 4.x series are
+  * A recent C++ compiler.  The GNU C++ compilers in the 4.x series are
     known to work.  Building with g++ 3.x requires the development files
     for the Boost C++ library.
 
   * Version 1.1.x of the Fast Light Tool Kit (FLTK), with its
-    development libraries and headers. Version 1.1.7 and pre-releases of
-    1.1.8 are known to work. FLTK's multi-threading support is required.
+    development library and headers.  Version 1.1.7 and pre-releases of
+    1.1.8 are known to work.  FLTK's multi-threading support is required.
 
 You should also install the libraries and headers for PortAudio, the
-Portable audio I/O library.  It is possible, but not recommended, to
-compile fldigi without PortAudio; see below.
+Portable audio I/O library.
 
 Additional features are enabled if the corresponding libraries are
 present on your system:
@@ -24,6 +23,18 @@ present on your system:
   * Audio file generation, capture and playback support is enabled if
     `configure' can find the sndfile library.
 
+  * The PulseAudio sound backend is compiled if the development files
+    for libpulse-simple, the PulseAudio simple API library, are present.
+
+Finally, fldigi requires the samplerate library but has its own copy to
+fall back on should it not be detected on your system.  The following
+message will be printed in that case:
+
+configure: WARNING: using bundled libsamplerate
+
+If you are building packages for other users you should link fldigi
+with the libsamplerate that comes with your distribution.
+
 
 Once you have installed the required packages, the following commands
 should be sufficient to compile fldigi and install it under /usr/local:
@@ -32,19 +43,33 @@ should be sufficient to compile fldigi and install it under /usr/local:
   make
   make install    (you may need superuser privileges for installation)
 
-To disable PortAudio support you will need to pass an additional option
-to `configure':
+The `install' target installs the executable, an icon, and a .desktop
+file. After installation, an fldigi launcher should appear somewhere in
+your applications menu.
 
-  ./configure --without-portaudio
 
-Fldigi also requires the samplerate library, but has its own copy to
-fall back on should it not be detected on your system.  The following
-message will be printed in that case:
+To run fldigi on Mac OS X you will need to create an app bundle.  The
+Makefile has an `appbundle' target for this purpose that can be used
+instead of `install':
 
-configure: using bundled libsamplerate
+  make appbundle
 
-If you are building packages for other users you should link fldigi
-with the libsamplerate that comes with your distribution.
+This target will generate two bundles inside the build directory (by
+default src/):
+
+  * mac-bundle/fldigi.app, which only contains the bare minimum that is
+    required to run fldigi on the build system
+
+  * mac-libs-bundle/fldigi.app, which also includes copies of non-system
+    libraries (such as PortAudio and FLTK) that the binary links to
+
+The configure script has some support for building universal x86/ppc
+binaries. Pass the following additional arguments to enable it:
+
+  --enable-mac-universal --disable-dependency-tracking
+
+OS X support is not yet well tested and any feedback/suggestions/patches
+will be very welcomed.
 
 
 

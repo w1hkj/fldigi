@@ -5,3 +5,6 @@ SUBDIRS = src
 
 flgen:
 	(cd src && $(MAKE) $(AM_MAKEFLAGS) $@)
+
+appbundle:
+	(cd src && $(MAKE) $(AM_MAKEFLAGS) $@)
