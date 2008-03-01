@@ -103,6 +103,8 @@ appbundle:
 	@false
 endif
 
+TESTS = $(srcdir)/../scripts/tests/config-h.sh
+
 # Sources that we build. It is OK to have headers here.
 fldigi_SOURCES += \
 	combo/combo.cxx \
