@@ -44,7 +44,7 @@ extern void cbTxFontBrowser(Font_Browser*, void* v);
 extern void cb_ColorFontOK();
 extern void make_colorsfonts();
 
-extern Fl_Check_Button *btnUseColoredFkeys;
+extern Fl_Check_Button *btnUseGroupColors;
 extern Fl_Button *btnGroup1;
 extern Fl_Button *btnGroup2;
 extern Fl_Button *btnGroup3;

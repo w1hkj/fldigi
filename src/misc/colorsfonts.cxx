@@ -25,7 +25,7 @@
 #include "colorsfonts.h"
 
 Fl_Double_Window	*dlgColorFont = (Fl_Double_Window *)0;
-Fl_Check_Button		*btnUseColoredFkeys=(Fl_Check_Button *)0;
+Fl_Check_Button		*btnUseGroupColors=(Fl_Check_Button *)0;
 Fl_Button			*btnGroup1=(Fl_Button *)0;
 Fl_Button			*btnGroup2=(Fl_Button *)0;
 Fl_Button			*btnGroup3=(Fl_Button *)0;
@@ -38,6 +38,7 @@ Fl_Button			*btnRxFont=(Fl_Button *)0;
 Fl_Button			*btnTxColor=(Fl_Button *)0;
 Fl_Button			*btnTxFont=(Fl_Button *)0;
 Fl_Button			*btnTextDefaults=(Fl_Button *)0;
+Fl_Button			*btnNoTextColor=(Fl_Button *)0;
 Fl_Button			*btnClrFntOK=(Fl_Button *)0;
 
 void selectColorsFonts() 
@@ -52,10 +53,11 @@ void cb_ColorFontOK()
 	dlgColorFont->hide();
 }
 
-static void cb_btnUseColoredFkeys(Fl_Check_Button* o, void*) 
+static void cb_btnUseGroupColors(Fl_Check_Button* o, void*) 
 {
-//	progdefaults.UseColoredFkeys = o->value();
-//	progdefaults.changed = true;
+	progdefaults.useGroupColors = o->value();
+	colorize_macros();
+	progdefaults.changed = true;
 }
 
 static void cb_btnGroup1(Fl_Button* o, void*) 
@@ -294,6 +296,26 @@ static void cb_btnTxFont(Fl_Button*, void*)
 	b->show();
 }
 
+static void cb_btnNoTextColor(Fl_Button*, void*) 
+{
+	uchar r, g, b;
+	Fl_Color clr;
+
+	r = 255; g = 255; b = 255;
+	clr = fl_rgb_color(r,g,b);
+	RxText->color(clr);
+	RxText->redraw();
+	ReceiveText->color(clr);
+	ReceiveText->redraw();
+
+	TxText->color(clr);
+	TxText->redraw();
+	TransmitText->color(clr);
+	TransmitText->redraw();
+	
+	progdefaults.changed = true;
+}
+
 static void cb_btnTextDefaults(Fl_Button*, void*) 
 {
 	uchar r, g, b;
@@ -330,12 +352,12 @@ void make_colorsfonts()
 			o->box(FL_ENGRAVED_FRAME);
 			o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
 
-			btnUseColoredFkeys = new Fl_Check_Button(10, 30, 70, 15, "use colored buttons");
-			btnUseColoredFkeys->down_box(FL_DOWN_BOX);
-			btnUseColoredFkeys->callback((Fl_Callback*)cb_btnUseColoredFkeys);
-//			btnUseColoredFkeys->value(progdefaults.UseColoredFkeys);
+			btnUseGroupColors = new Fl_Check_Button(10, 30, 70, 15, "use colored buttons");
+			btnUseGroupColors->down_box(FL_DOWN_BOX);
+			btnUseGroupColors->callback((Fl_Callback*)cb_btnUseGroupColors);
+			btnUseGroupColors->value(progdefaults.useGroupColors);
 			
-			btnGroup1 = new Fl_Button(95, 55, 70, 20, "Text");
+			btnGroup1 = new Fl_Button(90, 55, 75, 20, "Group 1");
 			btnGroup1->callback((Fl_Callback*)cb_btnGroup1);
 			btnGroup1->color(
 				fl_rgb_color(
@@ -346,10 +368,11 @@ void make_colorsfonts()
 				fl_rgb_color(
 					progdefaults.btnFkeyTextColor.R,
 					progdefaults.btnFkeyTextColor.G,
-					progdefaults.btnFkeyTextColor.B));
+					progdefaults.btnFkeyTextColor.B));		
+			btnGroup1->tooltip("Background color for Fkey group");				
+			new Fl_Box(15, 56, 75, 20, "Bkgnd");
 			
-			new Fl_Box(15, 56, 75, 20, "Group 1");
-			btnGroup2 = new Fl_Button(95, 84, 70, 20, "Text");
+			btnGroup2 = new Fl_Button(90, 84, 75, 20, "Group 2");
 			btnGroup2->callback((Fl_Callback*)cb_btnGroup2);
 			btnGroup2->color(
 				fl_rgb_color(
@@ -360,10 +383,11 @@ void make_colorsfonts()
 				fl_rgb_color(
 					progdefaults.btnFkeyTextColor.R,
 					progdefaults.btnFkeyTextColor.G,
-					progdefaults.btnFkeyTextColor.B));
+					progdefaults.btnFkeyTextColor.B));			
+			btnGroup2->tooltip("Background color for Fkey group");				
+			new Fl_Box(15, 85, 75, 20, "Bkgnd");
 			
-			new Fl_Box(15, 85, 75, 20, "Group 2");
-			btnGroup3 = new Fl_Button(95, 114, 70, 20, "Text");
+			btnGroup3 = new Fl_Button(90, 114, 75, 20, "Group 3");
 			btnGroup3->callback((Fl_Callback*)cb_btnGroup3);
 			btnGroup3->color(
 				fl_rgb_color(
@@ -374,19 +398,20 @@ void make_colorsfonts()
 				fl_rgb_color(
 					progdefaults.btnFkeyTextColor.R,
 					progdefaults.btnFkeyTextColor.G,
-					progdefaults.btnFkeyTextColor.B));
+					progdefaults.btnFkeyTextColor.B));			
+			btnGroup3->tooltip("Background color for Fkey group");				
+			new Fl_Box(15, 115, 75, 20, "Bkgnd");
 			
-			new Fl_Box(15, 115, 75, 20, "Group 3");
-			btnFkeyTextColor = new Fl_Button(95, 145, 70, 20);
+			btnFkeyTextColor = new Fl_Button(90, 145, 75, 20);
 			btnFkeyTextColor->callback((Fl_Callback*)cb_btnFkeyTextColor);
 			btnFkeyTextColor->color(
 				fl_rgb_color(
 					progdefaults.btnFkeyTextColor.R,
 					progdefaults.btnFkeyTextColor.G,
 					progdefaults.btnFkeyTextColor.B));
+			new Fl_Box(15, 145, 75, 20, "Label Txt");
 			
-			new Fl_Box(15, 145, 75, 20, "Text Color");
-			btnFkeyDefaults = new Fl_Button(95, 175, 70, 20, "Defaults");
+			btnFkeyDefaults = new Fl_Button(90, 175, 75, 20, "Defaults");
 			btnFkeyDefaults->callback((Fl_Callback*)cb_btnFkeyDefaults);
 			
 			o->end();
@@ -411,19 +436,22 @@ void make_colorsfonts()
 					progdefaults.TxColor.G,
 					progdefaults.TxColor.B));
 			
-			btnRxColor = new Fl_Button(205, 75, 70, 20, "Rx Color");
+			btnRxColor = new Fl_Button(200, 75, 70, 20, "Rx Bkgnd");
 			btnRxColor->callback((Fl_Callback*)cb_btnRxColor);
 			
-			btnRxFont = new Fl_Button(291, 75, 72, 20, "Rx Font");
+			btnRxFont = new Fl_Button(285, 75, 70, 20, "Rx Font");
 			btnRxFont->callback((Fl_Callback*)cb_btnRxFont);
 			
-			btnTxColor = new Fl_Button(210, 145, 70, 20, "Tx Color");
+			btnTxColor = new Fl_Button(200, 145, 70, 20, "Tx Bkgnd");
 			btnTxColor->callback((Fl_Callback*)cb_btnTxColor);
 			
-			btnTxFont = new Fl_Button(291, 145, 72, 20, "Tx Font");
+			btnTxFont = new Fl_Button(285, 145, 70, 20, "Tx Font");
 			btnTxFont->callback((Fl_Callback*)cb_btnTxFont);
-			
-			btnTextDefaults = new Fl_Button(295, 175, 70, 20, "Defaults");
+
+			btnNoTextColor  = new Fl_Button(200, 175, 70, 20, "No Color");
+			btnNoTextColor->callback((Fl_Callback*)cb_btnNoTextColor);
+						
+			btnTextDefaults = new Fl_Button(285, 175, 70, 20, "Defaults");
 			btnTextDefaults->callback((Fl_Callback*)cb_btnTextDefaults);
 
 			o->end();

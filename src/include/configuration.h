@@ -168,6 +168,7 @@ struct configuration {
 	RGBint	cfgpal[9];
 
 // Button key color palette
+	bool	useGroupColors;
 	RGBint	btnGroup1;
 	RGBint	btnGroup2;
 	RGBint	btnGroup3;
