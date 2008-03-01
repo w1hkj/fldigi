@@ -172,6 +172,7 @@ configuration progdefaults = {
 	 {223,226,105},{254,254,   4},{255, 58,  0} },
 	 	
 // Button key color palette
+	true,			  // bool useGroupColors;
 	{  80, 144, 144}, // RGBint btnGroup1;
 	{ 144,  80,  80}, // RGBint btnGroup2;
 	{  80,  80, 144}, // RGBint btnGroup3;
@@ -260,7 +261,7 @@ enum TAG { \
 	PALETTE5, PALETTE6, PALETTE7, PALETTE8,
 	VIEWERMARQUEE, VIEWERSHOWFREQ, VIEWERSTART, 
 	VIEWERCHANNELS, VIEWERSQUELCH, VIEWERTIMEOUT, WFAVERAGING,
-	FKEYGROUP1, FKEYGROUP2, FKEYGROUP3,
+	USEGROUPCOLORS, FKEYGROUP1, FKEYGROUP2, FKEYGROUP3,
 	FKEYTEXTCOLOR,
 	RXFONTNBR, RXFONTSIZE, TXFONTNBR, TXFONTSIZE,
 	RXFONTCOLOR, TXFONTCOLOR
@@ -459,6 +460,7 @@ void configuration::writeDefaultsXML()
 	writeXMLint(f, "VIEWERTIMEOUT", VIEWERtimeout);
 	writeXMLbool(f,"WFAVERAGEING", WFaveraging);
 
+	writeXMLbool(f,"USEGROUPCOLORS", useGroupColors);
 	writeXMLrgb(f, "FKEYGROUP1", btnGroup1.R, btnGroup1.G, btnGroup1.B);
 	writeXMLrgb(f, "FKEYGROUP2", btnGroup2.R, btnGroup2.G, btnGroup2.B);
 	writeXMLrgb(f, "FKEYGROUP3", btnGroup3.R, btnGroup3.G, btnGroup3.B);
@@ -914,6 +916,8 @@ bool configuration::readDefaultsXML()
 					case WFAVERAGING :
 						WFaveraging = atoi(xml->getNodeData());
 						break;
+					case USEGROUPCOLORS :
+						useGroupColors = atoi(xml->getNodeData());
 					case FKEYGROUP1 :
 						sscanf( xml->getNodeData(), "%d %d %d",
 							&btnGroup1.R, &btnGroup1.G, &btnGroup1.B);
@@ -1092,6 +1096,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("VIEWERSQUELCH", nodeName))	tag = VIEWERSQUELCH;
 				else if (!strcmp("VIEWERTIMEOUT", nodeName))	tag = VIEWERTIMEOUT;
 				else if (!strcmp("WFAVERAGING", nodeName))	tag = WFAVERAGING;
+				else if (!strcmp("USEGROUPCOLORS", nodeName)) tag = USEGROUPCOLORS;
 				else if (!strcmp("FKEYGROUP1", nodeName)) tag = FKEYGROUP1;
 				else if (!strcmp("FKEYGROUP2", nodeName)) tag = FKEYGROUP2;
 				else if (!strcmp("FKEYGROUP3", nodeName)) tag = FKEYGROUP3;

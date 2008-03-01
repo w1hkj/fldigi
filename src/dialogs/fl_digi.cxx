@@ -469,29 +469,32 @@ void macro_cb(Fl_Widget *w, void *v)
 
 void colorize_macro(int i) 
 {
-	if (i < 4){
-		btnMacro[i]->color(fl_rgb_color(
-			progdefaults.btnGroup1.R, 
-			progdefaults.btnGroup1.G, 
-			progdefaults.btnGroup1.B));
-	} else if (i < 8) {
-		btnMacro[i]->color(fl_rgb_color(
-			progdefaults.btnGroup2.R, 
-			progdefaults.btnGroup2.G, 
-			progdefaults.btnGroup2.B));
-		btnMacro[i]->labelcolor(FL_WHITE);
+	if (progdefaults.useGroupColors == true) {
+		if (i < 4){
+			btnMacro[i]->color(fl_rgb_color(
+				progdefaults.btnGroup1.R, 
+				progdefaults.btnGroup1.G, 
+				progdefaults.btnGroup1.B));
+		} else if (i < 8) {
+			btnMacro[i]->color(fl_rgb_color(
+				progdefaults.btnGroup2.R, 
+				progdefaults.btnGroup2.G, 
+				progdefaults.btnGroup2.B));
+		} else {
+			btnMacro[i]->color(fl_rgb_color(
+				progdefaults.btnGroup3.R, 
+				progdefaults.btnGroup3.G, 
+				progdefaults.btnGroup3.B));
+		}
+		btnMacro[i]->labelcolor(
+			fl_rgb_color(
+				progdefaults.btnFkeyTextColor.R,
+				progdefaults.btnFkeyTextColor.G,
+				progdefaults.btnFkeyTextColor.B ));
 	} else {
-		btnMacro[i]->color(fl_rgb_color(
-			progdefaults.btnGroup3.R, 
-			progdefaults.btnGroup3.G, 
-			progdefaults.btnGroup3.B));
-		btnMacro[i]->labelcolor(FL_WHITE);
+		btnMacro[i]->color(FL_BACKGROUND2_COLOR);
+		btnMacro[i]->labelcolor(FL_FOREGROUND_COLOR);
 	}
-	btnMacro[i]->labelcolor(
-		fl_rgb_color(
-			progdefaults.btnFkeyTextColor.R,
-			progdefaults.btnFkeyTextColor.G,
-			progdefaults.btnFkeyTextColor.B ));
 }
 
 void colorize_macros()
@@ -996,7 +999,7 @@ Fl_Menu_Item menu_[] = {
 
 {"Configure", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 {"Defaults",  0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{"Fonts-Colors", 0, (Fl_Callback*)cb_mnuConfigFonts, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{"Colors-Fonts", 0, (Fl_Callback*)cb_mnuConfigFonts, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"Operator", 0, (Fl_Callback*)cb_mnuConfigOperator, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"Waterfall", 0,  (Fl_Callback*)cb_mnuConfigWaterfall, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"Video", 0,  (Fl_Callback*)cb_mnuConfigVideo, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
