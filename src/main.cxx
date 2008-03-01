@@ -577,7 +577,13 @@ int parse_args(int argc, char **argv, int& idx)
 	// Increment idx by the number of args we used and return that number.
 	// We must check whether the option argument is in the same argv element
 	// as the option name itself, i.e., --opt=arg.
-	c = (longopts[longindex].has_arg && !strstr(argv[idx], optarg)) ? 2 : 1;
+        c = longopts[longindex].has_arg ? 2 : 1;
+        if (c == 2) {
+                string arg = argv[idx];
+                string::size_type p;
+                if ((p = arg.rfind(optarg)) != string::npos && arg.substr(p) == optarg)
+                        c = 1;
+        }
 	idx += c;
 	return c;
 }
