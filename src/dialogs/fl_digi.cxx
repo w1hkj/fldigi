@@ -69,6 +69,8 @@
 
 #include "confdialog.h"
 #include "configuration.h"
+#include "colorsfonts.h"
+
 #include "macros.h"
 #include "macroedit.h"
 #include "logger.h"
@@ -465,6 +467,43 @@ void macro_cb(Fl_Widget *w, void *v)
 	restoreFocus();
 }
 
+void colorize_macro(int i) 
+{
+	if (i < 4){
+		btnMacro[i]->color(fl_rgb_color(
+			progdefaults.btnGroup1.R, 
+			progdefaults.btnGroup1.G, 
+			progdefaults.btnGroup1.B));
+	} else if (i < 8) {
+		btnMacro[i]->color(fl_rgb_color(
+			progdefaults.btnGroup2.R, 
+			progdefaults.btnGroup2.G, 
+			progdefaults.btnGroup2.B));
+		btnMacro[i]->labelcolor(FL_WHITE);
+	} else {
+		btnMacro[i]->color(fl_rgb_color(
+			progdefaults.btnGroup3.R, 
+			progdefaults.btnGroup3.G, 
+			progdefaults.btnGroup3.B));
+		btnMacro[i]->labelcolor(FL_WHITE);
+	}
+	btnMacro[i]->labelcolor(
+		fl_rgb_color(
+			progdefaults.btnFkeyTextColor.R,
+			progdefaults.btnFkeyTextColor.G,
+			progdefaults.btnFkeyTextColor.B ));
+}
+
+void colorize_macros()
+{
+	FL_LOCK_D();
+	for (int i = 0; i < 10; i++) {
+		colorize_macro(i);
+		btnMacro[i]->redraw_label();
+	}
+	FL_UNLOCK_D();
+}
+
 void altmacro_cb(Fl_Widget *w, void *v)
 {
 	altMacros = !altMacros;
@@ -573,46 +612,14 @@ void cb_mnuPlayback(Fl_Widget *w, void *d)
 }
 #endif // USE_SNDFILE
 
-void cb_FontBrowser(Font_Browser*, void* v)
-{
-	Font_Browser *ft= (Font_Browser*)v;
-
-	Fl_Font fnt = ft->fontNumber();
-	int size = ft->fontSize();
-
-	ReceiveText->setFont(fnt);
-	ReceiveText->setFontSize(size);
-	
-	TransmitText->setFont(fnt);
-	TransmitText->setFontSize(size);
-	
-	progdefaults.Fontnbr = (int)(fnt);
-	progdefaults.FontSize = size;
-	
-	ft->hide();
-}
-
 void cb_mnuConfigFonts(Fl_Menu_*, void *) {
-	static Font_Browser *b = (Font_Browser *)0;
-	if (!b) {
-		b = new Font_Browser;
-		b->fontNumber((Fl_Font)progdefaults.Fontnbr);
-		b->fontSize(progdefaults.FontSize);
-//		b->fontColor(progdefaults.FontColor);
-	}
-	b->callback((Fl_Callback*)cb_FontBrowser, (void*)(b));
-	b->show();
+	selectColorsFonts();
 }
 
 void cb_mnuSaveConfig(Fl_Menu_ *, void *) {
 	progdefaults.saveDefaults();
 	restoreFocus();
 }
-
-//void cb_mnuHelp(Fl_Menu_*,void*) {
-//	show_help();
-//	restoreFocus();
-//}
 
 void cb_mnuAbout(Fl_Widget*, void*)
 {
@@ -827,7 +834,6 @@ void afconoff_cb(Fl_Widget *w, void *vi)
 {
 	FL_LOCK_D();
 	Fl_Button *b = (Fl_Button *)w;
-//	Fl_Light_Button *b = (Fl_Light_Button *)w;
 	int v = b->value();
 	FL_UNLOCK_D();
 	active_modem->set_afcOnOff(v);
@@ -838,7 +844,6 @@ void sqlonoff_cb(Fl_Widget *w, void *vi)
 {
 	FL_LOCK_D();
 	Fl_Button *b = (Fl_Button *)w;
-//	Fl_Light_Button *b = (Fl_Light_Button *)w;
 	int v = b->value();
 	FL_UNLOCK_D();
 	active_modem->set_sqlchOnOff( v ? true : false );
@@ -991,7 +996,7 @@ Fl_Menu_Item menu_[] = {
 
 {"Configure", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 {"Defaults",  0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{"Fonts", 0, (Fl_Callback*)cb_mnuConfigFonts, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{"Fonts-Colors", 0, (Fl_Callback*)cb_mnuConfigFonts, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"Operator", 0, (Fl_Callback*)cb_mnuConfigOperator, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"Waterfall", 0,  (Fl_Callback*)cb_mnuConfigWaterfall, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"Video", 0,  (Fl_Callback*)cb_mnuConfigVideo, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -1275,7 +1280,11 @@ void create_fl_digi_main() {
 				ReceiveText = new FTextView(sw, Y, WNOM-sw, minRxHeight, "");
 			else
 				ReceiveText = new TextView(sw, Y, WNOM-sw, minRxHeight, "");
-		
+			ReceiveText->color(
+				fl_rgb_color(
+					progdefaults.RxColor.R,
+					progdefaults.RxColor.G,
+					progdefaults.RxColor.B));		
 			FHdisp = new Raster(sw, Y, WNOM-sw, minRxHeight);
 			FHdisp->hide();
 			Y += minRxHeight;
@@ -1284,6 +1293,12 @@ void create_fl_digi_main() {
 				TransmitText = new FTextEdit(sw, Y, WNOM-sw, minTxHeight);
 			else
 				TransmitText = new TextEdit(sw, Y, WNOM-sw, minTxHeight);
+			TransmitText->color(
+				fl_rgb_color(
+					progdefaults.TxColor.R,
+					progdefaults.TxColor.G,
+					progdefaults.TxColor.B));		
+
 			Y += minTxHeight;
 
 			TiledGroup->resizable(minbox);
@@ -1305,6 +1320,7 @@ void create_fl_digi_main() {
 				btnMacro[i] = new Fl_Button(xpos, Y+2, Wbtn, Hmacros - 4);
 				btnMacro[i]->callback(macro_cb, (void *)i);
 				btnMacro[i]->label( (macros.name[i]).c_str());
+				colorize_macro(i);
 				xpos += Wbtn;
 			}
 			bx = new Fl_Box(xpos, Y+2, WNOM - 32 - xpos, Hmacros - 4);

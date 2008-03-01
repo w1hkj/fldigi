@@ -37,6 +37,10 @@ extern "C" {
 #        define read_memory_barrier() asm volatile ("lfence":::"memory")
 #        define write_memory_barrier() asm volatile ("sfence":::"memory")
 */
+#    elif defined(__ppc__) || defined(__powerpc__) || defined(__PPC__)
+#        define full_memory_barrier() asm volatile("sync":::"memory")
+#        define read_memory_barrier() full_memory_barrier()
+#        define write_memory_barrier() full_memory_barrier()
 #    else
 #        warning Memory barriers not defined on this system
 #        define full_memory_barrier() ((void)0)

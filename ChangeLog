@@ -16,10 +16,11 @@ Change Log:
      12) Fixes to mfsk picture mode decoding
      13) Changed frequency2 data file format, downward compatible
      14) Added FELD_SLOWHELL, FELD_HELLX5 and FELD_HELLX9 modems
-     15) Added support to the PortAudio backend for separate capture and playback
-         devices and sample rates
+     15) Added support to the PortAudio backend for separate capture and 
+         playback devices and sample rates
      16) Added mt63 500/1000/2000 modes
      17) Added psk acquisition level control
+     18) Added script to create .app bundles on OS X
 
 2.09  1) Modified src/Makefile.am for FreeBSD name space clash
       2) Added psk multi-channel viewer with regex search capability
@@ -142,8 +143,8 @@ Change Log:
 			 SKIP  : FL_BLUE - used in Rx/Tx for skipped chars (eg: Tx ON/OFF)
 			 ALTR  : FL_DARK_GREEN - used in Rx widget for quick view of signal
 			         when right-clicking on a waterfall signal
-      26) Added additional control/mode commands to the pskmail/ARQ SYSV message
-          queue processor.  Mode command strings are now:
+      26) Added additional control/mode commands to the pskmail/ARQ SYSV 
+          message queue processor.  Mode command strings are now:
              CW          : <cmd><mode>CW</mode></cmd>
              DOMINO EX4  : <cmd><mode>DOMINOEX4</mode></cmd>
              DOMINO EX5  : <cmd><mode>DOMINOEX5</mode></cmd>
@@ -162,12 +163,13 @@ Change Log:
                this will cause fldigi to enter the TUNE mode for a very brief
                100 milliseconds.
       27) Abandoned the original fldigi.def configuration file and changed to
-          an xml based configuration file.  New file is $HOME/.fldigi/fldigi_def.xml
+          an xml based configuration file.  New file is 
+          $HOME/.fldigi/fldigi_def.xml
           You may delete all occurances of 
               $HOME/.fldigi/fldigi.def, and
               $HOME/.fldigi/FLDIGI_XML.DEF
-          Future changes to the configuration should never require deleting the old
-          configuration file.
+          Future changes to the configuration should never require deleting the
+          old configuration file.
           You will need to reconfigure and save the program configuration the 
           first time the new version of fldigi is executed.
       28) Added numerous command line switches which control the look and feel.

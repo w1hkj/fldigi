@@ -143,7 +143,6 @@ public:
 	virtual size_t	Write(double *, size_t) = 0;
 	virtual size_t	Write_stereo(double *, double *, size_t) = 0;
 	virtual size_t	Read(double *, size_t) = 0;
-	virtual bool	full_duplex(void) { return false; }
 #if USE_SNDFILE
 	void		get_file_params(const char* def_fname, char** fname, int* format);
 	int		Capture(bool val);
@@ -221,13 +220,13 @@ public:
 	size_t 		Write(double *buf, size_t count);
 	size_t		Write_stereo(double *bufleft, double *bufright, size_t count);
 	size_t 		Read(double *buf, size_t count);
-	bool		full_duplex(void);
 
 private:
         void		src_data_reset(int mode);
         void		resample(int mode, float *buf, size_t count, size_t max = 0);
         void 		init_stream(unsigned dir);
         void 		start_stream(unsigned dir);
+        void		close_stream(unsigned dir);
         bool		stream_active(unsigned dir);
         bool		full_duplex_device(const PaDeviceInfo* dev);
         double		find_srate(unsigned dir);
@@ -265,7 +264,6 @@ public:
 	size_t	Write(double* buf, size_t count);
 	size_t	Write_stereo(double* bufleft, double* bufright, size_t count);
 	size_t	Read(double *buf, size_t count);
-	bool	full_duplex(void) { return true; }
 
 private:
 	void	src_data_reset(int mode);
@@ -290,7 +288,6 @@ public:
 	size_t	Write(double* buf, size_t count);
 	size_t	Write_stereo(double* bufleft, double* bufright, size_t count);
 	size_t	Read(double *buf, size_t count);
-	bool	full_duplex(void) { return true; }
 };
 
 #endif // SOUND_H

@@ -8,8 +8,11 @@ AM_CPPFLAGS = -I$(srcdir) -I$(srcdir)/include -I$(srcdir)/irrxml @BOOST_CPPFLAGS
 
 AM_CXXFLAGS = @PORTAUDIO_CFLAGS@ @FLTK_CFLAGS@ @SNDFILE_CFLAGS@ \
 	@SAMPLERATE_CFLAGS@ @PULSEAUDIO_CFLAGS@ @HAMLIB_CFLAGS@ \
+	@MAC_UNIVERSAL_CFLAGS@ \
 	-pipe -Wall -O2 -ffast-math -fexceptions -finline-functions
 AM_CFLAGS = $(AM_CXXFLAGS)
+
+AM_LDFLAGS = @MAC_UNIVERSAL_LDFLAGS@
 
 LDADD = @PORTAUDIO_LIBS@ @BOOST_LDFLAGS@ @FLTK_LIBS@ @SNDFILE_LIBS@ \
 	@SAMPLERATE_LIBS@ @PULSEAUDIO_LIBS@ @HAMLIB_LIBS@ @RTLIB@
@@ -28,7 +31,7 @@ fldigi_SOURCES =
 
 if ENABLE_DEBUG
   AM_CPPFLAGS += -UNDEBUG
-  LDFLAGS += @RDYNAMIC@
+  AM_LDFLAGS += @RDYNAMIC@
 else
   AM_CPPFLAGS += -DNDEBUG
 endif
@@ -42,8 +45,12 @@ if ENABLE_HAMLIB
   fldigi_SOURCES += $(HAMLIB_SRC)
 endif
 
+FLDIGI_VERSION_MAJOR = @FLDIGI_VERSION_MAJOR@
+FLDIGI_VERSION_MINOR = @FLDIGI_VERSION_MINOR@
+FLDIGI_VERSION_PATCH = @FLDIGI_VERSION_PATCH@
 
-.EXPORT_ALL_VARIABLES: versions.h
+.EXPORT_ALL_VARIABLES: versions.h appbundle
+
 versions.h: $(srcdir)/include/versions.h.in
 	sh $(srcdir)/../scripts/mkversions.sh $^ $@ || echo > $@
 
@@ -76,10 +83,23 @@ flgen: $(srcdir)/dialogs/confdialog.fl $(srcdir)/rigcontrol/rigdialog.fl
 	$(FLUID) -c -o ../rigcontrol/rigdialog.cxx -h rigdialog.h ../rigcontrol/rigdialog.fl)
 else
 flgen:
-	@echo
+	@echo >&2
 	@echo "*** The code and headers cannot be generated from the .fl source" >&2
 	@echo "*** files because the fluid utility was not found on your system" >&2
-	@echo
+	@echo >&2
+	@false
+endif
+
+if DARWIN
+appbundle:
+	sh $(srcdir)/../scripts/mkappbundle.sh "$(srcdir)/../data" .
+clean-local:
+	@rm -rf mac-bundle mac-libs-bundle
+else
+appbundle:
+	@echo >&2
+	@echo "*** This target only works on OSX ***" >&2
+	@echo >&2
 	@false
 endif
 
@@ -120,6 +140,7 @@ fldigi_SOURCES += \
 	include/analysis.h \
 	include/ascii.h \
 	include/colorbox.h \
+	include/colorsfonts.h \
 	include/combo.h \
 	include/complex.h \
 	include/configuration.h \
@@ -216,6 +237,7 @@ fldigi_SOURCES += \
 	mfsk/mfskvaricode.cxx \
 	misc/ascii.cxx \
 	misc/configuration.cxx \
+	misc/colorsfonts.cxx \
 	misc/flstring.c \
 	misc/log.cxx \
 	misc/macroedit.cxx \
@@ -296,10 +318,12 @@ EXTRA_fldigi_SOURCES += \
 # Additional non-source files that we distribute
 EXTRA_DIST = \
 	$(srcdir)/../scripts/mkversions.sh \
+	$(srcdir)/../scripts/mkappbundle.sh \
 	$(srcdir)/../data/fldigi-psk.png \
 	$(srcdir)/../data/fldigi-rtty.png \
 	$(srcdir)/../data/fldigi.xpm \
 	$(srcdir)/../data/fldigi.desktop \
+	$(srcdir)/../data/mac/Info.plist.in \
 	fileselector/allfiles.xbm \
 	fileselector/d1.xbm \
 	fileselector/d1_mask.xbm \

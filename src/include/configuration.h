@@ -166,6 +166,20 @@ struct configuration {
 	
 // waterfall palette
 	RGBint	cfgpal[9];
+
+// Button key color palette
+	RGBint	btnGroup1;
+	RGBint	btnGroup2;
+	RGBint	btnGroup3;
+	RGBint  btnFkeyTextColor;
+	
+// Rx / Tx fonts & palettes
+	int 	RxFontnbr;
+	int 	RxFontsize;
+	int 	TxFontnbr;
+	int 	TxFontsize;
+	RGBint	RxColor;
+	RGBint	TxColor;
 	
 	bool alt_text_widgets;
 	
@@ -205,5 +219,7 @@ extern configuration progdefaults;
 
 extern void mixerInputs();
 extern void enableMixer(bool);
+
+enum { SAMPLE_RATE_UNSET = -1, SAMPLE_RATE_AUTO, SAMPLE_RATE_NATIVE, SAMPLE_RATE_OTHER };
 
 #endif

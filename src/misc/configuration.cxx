@@ -143,9 +143,9 @@ configuration progdefaults = {
 	"",		// string	PortIndevice;
 	"",		// string	PortOutDevice;
 	"",		// string	PulseServer
-	0,				// int		sample_rate;
-	-1,				// int		in_sample_rate;
-	-1,				// int		out_sample_rate;
+	SAMPLE_RATE_UNSET,		// int		sample_rate;
+	SAMPLE_RATE_UNSET,		// int		in_sample_rate;
+	SAMPLE_RATE_UNSET,		// int		out_sample_rate;
 	"src-sinc-fastest",		// string	sample_converter;
 	0,				// int		RX_corr;
 	0,				// int		TX_corr;
@@ -170,6 +170,21 @@ configuration progdefaults = {
 	{{  0,  0,  0},{  0,  0,  62},{  0,  0,126}, // default palette
 	 {  0,  0,214},{145,142,  96},{181,184, 48},
 	 {223,226,105},{254,254,   4},{255, 58,  0} },
+	 	
+// Button key color palette
+	{  80, 144, 144}, // RGBint btnGroup1;
+	{ 144,  80,  80}, // RGBint btnGroup2;
+	{  80,  80, 144}, // RGBint btnGroup3;
+	{ 255, 255, 255}, // RGBint btnFkeyTextColor;
+
+// Rx / Tx Text Widgets
+
+	0, 				// int 		RxFontnbr
+	16,				// int 		RxFontsize
+	0, 				// int 		TxFontnbr
+	16,				// int 		TxFontsize
+	{ 255, 242, 190}, // RGBint RxColor;
+	{ 200, 235, 255}, // RGBint TxColor;
 
 	true,			// bool		alt_text_widgets;
 
@@ -244,7 +259,11 @@ enum TAG { \
 	PALETTE0, PALETTE1, PALETTE2, PALETTE3, PALETTE4, 
 	PALETTE5, PALETTE6, PALETTE7, PALETTE8,
 	VIEWERMARQUEE, VIEWERSHOWFREQ, VIEWERSTART, 
-	VIEWERCHANNELS, VIEWERSQUELCH, VIEWERTIMEOUT, WFAVERAGING
+	VIEWERCHANNELS, VIEWERSQUELCH, VIEWERTIMEOUT, WFAVERAGING,
+	FKEYGROUP1, FKEYGROUP2, FKEYGROUP3,
+	FKEYTEXTCOLOR,
+	RXFONTNBR, RXFONTSIZE, TXFONTNBR, TXFONTSIZE,
+	RXFONTCOLOR, TXFONTCOLOR
 };
 //	, ALT_TEXT_WIDGETS };
 	
@@ -439,6 +458,19 @@ void configuration::writeDefaultsXML()
 	writeXMLdbl(f, "VIEWERSQUELCH", VIEWERsquelch);
 	writeXMLint(f, "VIEWERTIMEOUT", VIEWERtimeout);
 	writeXMLbool(f,"WFAVERAGEING", WFaveraging);
+
+	writeXMLrgb(f, "FKEYGROUP1", btnGroup1.R, btnGroup1.G, btnGroup1.B);
+	writeXMLrgb(f, "FKEYGROUP2", btnGroup2.R, btnGroup2.G, btnGroup2.B);
+	writeXMLrgb(f, "FKEYGROUP3", btnGroup3.R, btnGroup3.G, btnGroup3.B);
+	writeXMLrgb(f, "FKEYTEXTCOLOR", 
+		btnFkeyTextColor.R, btnFkeyTextColor.G, btnFkeyTextColor.B);
+	
+	writeXMLint(f, "RXFONTNBR", RxFontnbr);
+	writeXMLint(f, "RXFONTSIZE", RxFontsize);
+	writeXMLint(f, "TXFONTNBR", TxFontnbr);
+	writeXMLint(f, "TXFONTSIZE", RxFontsize);
+	writeXMLrgb(f, "RXFONTCOLOR", RxColor.R, RxColor.G, RxColor.B);
+	writeXMLrgb(f, "TXFONTCOLOR", TxColor.R, TxColor.G, TxColor.B);	
 	
 	f << "</FLDIGI_DEFS>\n";
 	f.close();
@@ -654,21 +686,18 @@ bool configuration::readDefaultsXML()
 						UseBWTracks = atoi(xml->getNodeData());
 						break;
 					case CLCOLORS :
-//						sscanf( xml->getNodeData(), "%d %d %d %d",
 						sscanf( xml->getNodeData(), "%hhu %hhu %hhu",
 							&cursorLineRGBI.R,
 							&cursorLineRGBI.G,
 							&cursorLineRGBI.B );	
 						break;
 					case CCCOLORS :
-//						sscanf( xml->getNodeData(), "%d %d %d %d",
 						sscanf( xml->getNodeData(), "%hhu %hhu %hhu",
 							&cursorCenterRGBI.R,
 							&cursorCenterRGBI.G,
 							&cursorCenterRGBI.B );	
 						break;
 					case BWTCOLORS :
-//						sscanf( xml->getNodeData(), "%d %d %d %d",
 						sscanf( xml->getNodeData(), "%hhu %hhu %hhu",
 							&bwTrackRGBI.R,
 							&bwTrackRGBI.G,
@@ -885,9 +914,44 @@ bool configuration::readDefaultsXML()
 					case WFAVERAGING :
 						WFaveraging = atoi(xml->getNodeData());
 						break;
-//					case ALT_TEXT_WIDGETS :
-//						alt_text_widgets = atoi(xml->getNodeData());
-//						break;
+					case FKEYGROUP1 :
+						sscanf( xml->getNodeData(), "%d %d %d",
+							&btnGroup1.R, &btnGroup1.G, &btnGroup1.B);
+						break;
+					case FKEYGROUP2 :
+						sscanf( xml->getNodeData(), "%d %d %d",
+							&btnGroup2.R, &btnGroup2.G, &btnGroup2.B);
+						break;
+					case FKEYGROUP3 :
+						sscanf( xml->getNodeData(), "%d %d %d",
+							&btnGroup3.R, &btnGroup3.G, &btnGroup3.B);
+						break;
+					case FKEYTEXTCOLOR : 
+						sscanf( xml->getNodeData(), "%d %d %d",
+							&btnFkeyTextColor.R, 
+							&btnFkeyTextColor.G, 
+							&btnFkeyTextColor.B);
+						break;
+					case RXFONTNBR :
+						RxFontnbr = atoi(xml->getNodeData());
+						break;
+					case RXFONTSIZE :
+						RxFontsize = atoi(xml->getNodeData());
+						break;
+					case TXFONTNBR :
+						TxFontnbr = atoi(xml->getNodeData());
+						break;
+					case TXFONTSIZE :
+						RxFontsize = atoi(xml->getNodeData());
+						break;
+					case RXFONTCOLOR :
+						sscanf( xml->getNodeData(), "%d %d %d",
+							&RxColor.R, &RxColor.G, &RxColor.B);
+						break;
+					case TXFONTCOLOR :
+						sscanf( xml->getNodeData(), "%d %d %d",
+							&TxColor.R, &TxColor.G, &TxColor.B);
+						break;
 				}
 				break;
 				
@@ -1028,7 +1092,16 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("VIEWERSQUELCH", nodeName))	tag = VIEWERSQUELCH;
 				else if (!strcmp("VIEWERTIMEOUT", nodeName))	tag = VIEWERTIMEOUT;
 				else if (!strcmp("WFAVERAGING", nodeName))	tag = WFAVERAGING;
-//				else if (!strcmp("ALT_TEXT_WIDGETS", nodeName)) 	tag = ALT_TEXT_WIDGETS;
+				else if (!strcmp("FKEYGROUP1", nodeName)) tag = FKEYGROUP1;
+				else if (!strcmp("FKEYGROUP2", nodeName)) tag = FKEYGROUP2;
+				else if (!strcmp("FKEYGROUP3", nodeName)) tag = FKEYGROUP3;
+				else if (!strcmp("FKEYTEXTCOLOR", nodeName)) tag = FKEYTEXTCOLOR;
+				else if (!strcmp("RXFONTNBR", nodeName)) tag = RXFONTNBR;
+				else if (!strcmp("RXFONTSIZE", nodeName)) tag = RXFONTSIZE;
+				else if (!strcmp("TXFONTNBR", nodeName)) tag = TXFONTNBR;
+				else if (!strcmp("TXFONTSIZE", nodeName)) tag = TXFONTSIZE;
+				else if (!strcmp("RXFONTCOLOR", nodeName)) tag = RXFONTCOLOR;
+				else if (!strcmp("TXFONTCOLOR", nodeName)) tag = TXFONTCOLOR;
 				else tag = IGNORE;
 				}
 				break;
@@ -1321,23 +1394,28 @@ int configuration::openDefaults() {
             resetMixerControls();
             menuMix->value(MXdevice.c_str());
 
+
 	    char sr[6+1];
-	    if (in_sample_rate == -1)
-		    in_sample_rate = sample_rate;
-	    if (in_sample_rate > 1) {
+	    if (in_sample_rate == SAMPLE_RATE_UNSET &&
+		(in_sample_rate = sample_rate) == SAMPLE_RATE_UNSET)
+		    in_sample_rate = SAMPLE_RATE_AUTO;
+	    else if (in_sample_rate > SAMPLE_RATE_OTHER)
 		    snprintf(sr, sizeof(sr), "%d", in_sample_rate);
-		    menuInSampleRate->value(menuInSampleRate->find_item(sr));
-	    }
-	    else
+	    if (in_sample_rate <= SAMPLE_RATE_NATIVE)
 		    menuInSampleRate->value(in_sample_rate);
-	    if (out_sample_rate == -1)
-		    out_sample_rate = sample_rate;
-	    if (out_sample_rate > 1) {
-		    snprintf(sr, sizeof(sr), "%d", out_sample_rate);
-		    menuOutSampleRate->value(menuOutSampleRate->find_item(sr));
-	    }
 	    else
+		    menuInSampleRate->value(menuInSampleRate->find_item(sr));
+
+	    if (out_sample_rate == SAMPLE_RATE_UNSET &&
+		(out_sample_rate = sample_rate) == SAMPLE_RATE_UNSET)
+		    out_sample_rate = SAMPLE_RATE_AUTO;
+	    else if (out_sample_rate > SAMPLE_RATE_OTHER)
+		    snprintf(sr, sizeof(sr), "%d", out_sample_rate);
+	    if (out_sample_rate <= SAMPLE_RATE_NATIVE)
 		    menuOutSampleRate->value(out_sample_rate);
+	    else
+		    menuOutSampleRate->value(menuOutSampleRate->find_item(sr));
+
 
 			cntRxRateCorr->value(RX_corr);
 			cntTxRateCorr->value(TX_corr);

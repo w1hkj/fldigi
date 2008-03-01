@@ -355,6 +355,8 @@ void SoundOSS::setfragsize()
 
 int SoundOSS::Open(int md, int freq)
 {
+	Close();
+
 	mode = md;
 	try {
 		device_fd = open(device.c_str(), mode, 0);
@@ -744,63 +746,43 @@ int SoundPort::Open(int mode, int freq)
         int old_sample_rate = (int)req_sample_rate;
         req_sample_rate = sample_frequency = freq;
 
-        // Try to keep the stream open if we are using jack, or if we
-        // are in full duplex mode and the sample rate has not changed.
-        if (stream_active(STREAM_IN) && stream_active(STREAM_OUT)) {
-                if (Pa_GetHostApiInfo((*idev[STREAM_IN])->hostApi)->type == paJACK ||
-		    Pa_GetHostApiInfo((*idev[STREAM_OUT])->hostApi)->type == paJACK) {
-                        // If we have a new sample rate, we must reset the src data.
-                        if (old_sample_rate != freq)
-                                src_data_reset(1 << O_RDONLY | 1 << O_WRONLY);
-                        return 0;
-                }
-		else if ( (idev[STREAM_IN] != idev[STREAM_OUT] ||
-			   full_duplex_device(*idev[STREAM_IN])) &&
-			  old_sample_rate == freq)
-                        return 0;
-        }
+	// do we need to (re)initialise the streams?
+	int sr[2] = { progdefaults.in_sample_rate, progdefaults.out_sample_rate };
+	int m[2] = { 1 << O_RDONLY, 1 << O_WRONLY };
+	for (size_t i = 0; i < 2; i++) {
+		if ( !(stream_active(i) && (Pa_GetHostApiInfo((*idev[i])->hostApi)->type == paJACK ||
+					    old_sample_rate == freq ||
+					    sr[i] != SAMPLE_RATE_AUTO)) ) {
+			close_stream(i);
+			init_stream(i);
+			src_data_reset(m[i]);
+			start_stream(i);
+		}
+		else if (old_sample_rate != freq)
+			src_data_reset(m[i]);
+	}
 
-        Close();
-
-        init_stream(STREAM_IN);
-#ifndef NDEBUG
-        if (dev_sample_rate[STREAM_IN] != req_sample_rate)
-                cerr << "PA_debug: input: resampling " << dev_sample_rate[STREAM_IN]
-                     << " <-> " << req_sample_rate << endl;
-#endif
-
-        init_stream(STREAM_OUT);
-#ifndef NDEBUG
-        if (dev_sample_rate[STREAM_OUT] != req_sample_rate)
-                cerr << "PA_debug: output: resampling " << dev_sample_rate[STREAM_OUT]
-                     << " <-> " << req_sample_rate << endl;
-#endif
-
-        mode = full_duplex()  ?  1 << O_RDONLY | 1 << O_WRONLY  :  1 << mode;
-        src_data_reset(mode);
-
-        if (mode & 1 << O_RDONLY)
-		start_stream(STREAM_IN);
-        if (mode & 1 << O_WRONLY)
-		start_stream(STREAM_OUT);
-
-        return 0;
+	return 0;
 }
 
-void SoundPort::Close(void)
+void SoundPort::Close()
+{
+	close_stream(STREAM_IN);
+	close_stream(STREAM_OUT);
+}
+
+void SoundPort::close_stream(unsigned dir)
 {
 	int err;
-	for (int i = 0; i < 2; i++) {
-		if (!stream_active(i))
-			return;
+	if (!stream_active(dir))
+		return;
 
-		if ((err = Pa_StopStream(stream[i])) != paNoError)
-			pa_perror(err, "Pa_StopStream");
-		if ((err = Pa_CloseStream(stream[i])) != paNoError)
-			pa_perror(err, "Pa_CloseStream");
+	if ((err = Pa_StopStream(stream[dir])) != paNoError)
+		pa_perror(err, "Pa_StopStream");
+	if ((err = Pa_CloseStream(stream[dir])) != paNoError)
+		pa_perror(err, "Pa_CloseStream");
 
-		stream[i] = 0;
-	}
+	stream[dir] = 0;
 }
 
 size_t SoundPort::Read(double *buf, size_t count)
@@ -937,15 +919,6 @@ size_t SoundPort::Write_stereo(double *bufleft, double *bufright, size_t count)
         return count;
 }
 
-bool SoundPort::full_duplex(void)
-{
-        extern bool pa_allow_full_duplex;
-	return (pa_allow_full_duplex && full_duplex_device(*idev[STREAM_IN])) ||
-	        idev[STREAM_IN] != idev[STREAM_OUT] ||
-	        (Pa_GetHostApiInfo((*idev[STREAM_IN])->hostApi)->type == paJACK ||
-		 Pa_GetHostApiInfo((*idev[STREAM_OUT])->hostApi)->type == paJACK);
-}
-
 void SoundPort::src_data_reset(int mode)
 {
         int err;
@@ -1011,6 +984,8 @@ void SoundPort::resample(int mode, float *buf, size_t count, size_t max)
 
 void SoundPort::init_stream(unsigned dir)
 {
+	const char* dir_str[2] = { "input", "output" };
+
 #ifndef NDEBUG
         cerr << "PA_debug: looking for \"" << device[dir] << "\"\n";
 #endif
@@ -1018,13 +993,14 @@ void SoundPort::init_stream(unsigned dir)
                 if (device[dir] == (*idev[dir])->name)
                         break;
         if (idev[dir] == devs.end()) {
-                cerr << "PA_debug: could not find device \"" << device[dir] << "\"\n";
+                cerr << "PA_debug: could not find \"" << device[dir]
+		     << "\", using default " << dir_str[dir] << " device\n";
                 idev[dir] = devs.begin() + (dir == STREAM_IN ? Pa_GetDefaultInputDevice() : Pa_GetDefaultOutputDevice());
         }
         PaDeviceIndex idx = idev[dir] - devs.begin();
 
 #ifndef NDEBUG
-        cerr << "PA_debug: using " << (dir == STREAM_IN ? "input" : "output") << " device:"
+        cerr << "PA_debug: using " << dir_str[dir] << " device:"
              << "\n index: " << idx
              << "\n name: " << (*idev[dir])->name
              << "\n hostAPI: " << Pa_GetHostApiInfo((*idev[dir])->hostApi)->name
@@ -1043,7 +1019,7 @@ void SoundPort::init_stream(unsigned dir)
              << "\n isSystemDefaultOutputDevice: " << (idx == Pa_GetDefaultOutputDevice())
              << "\n isHostApiDefaultInputDevice: " << (idx == Pa_GetHostApiInfo((*idev[dir])->hostApi)->defaultInputDevice)
              << "\n isHostApiDefaultOutputDevice: " << (idx == Pa_GetHostApiInfo((*idev[dir])->hostApi)->defaultOutputDevice)
-             << "\n\n";
+             << "\n";
 #endif
 
 	if ((dir == STREAM_IN && (*idev[dir])->maxInputChannels == 0) ||
@@ -1066,6 +1042,11 @@ void SoundPort::init_stream(unsigned dir)
 	}
 
         dev_sample_rate[dir] = find_srate(dir);
+#ifndef NDEBUG
+        if (dev_sample_rate[dir] != req_sample_rate)
+                cerr << "PA_debug: " << dir_str[dir] << ": resampling "
+		     << dev_sample_rate[dir] << " <-> " << req_sample_rate << "\n\n";
+#endif
 
         extern int pa_frames_per_buffer;
         if (pa_frames_per_buffer)
@@ -1116,9 +1097,9 @@ double SoundPort::find_srate(unsigned dir)
 {
 	int sr = (dir == STREAM_IN ? progdefaults.in_sample_rate : progdefaults.out_sample_rate);
         switch (sr) {
-        case -1: case 0:
+        case SAMPLE_RATE_UNSET: case SAMPLE_RATE_AUTO:
                 break;
-        case 1:
+        case SAMPLE_RATE_NATIVE:
                 return (*idev[dir])->defaultSampleRate;
         default:
                 return sr;

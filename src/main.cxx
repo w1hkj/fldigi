@@ -69,7 +69,6 @@
 using namespace std;
 
 string scDevice[2];
-bool pa_allow_full_duplex = false;
 int pa_frames_per_buffer = 0;
 
 char szHomedir[120] = "";
@@ -431,7 +430,7 @@ int parse_args(int argc, char **argv, int& idx)
                OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT, OPT_PROFILE, OPT_USE_CHECK,
 	       OPT_RESAMPLE,
 #if USE_PORTAUDIO
-               OPT_ALLOW_FULL_DUPLEX, OPT_FRAMES_PER_BUFFER,
+               OPT_FRAMES_PER_BUFFER,
 #endif
                OPT_EXIT_AFTER,
                OPT_HELP, OPT_VERSION };
@@ -454,7 +453,6 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "resample",      1, 0, OPT_RESAMPLE },
 
 #if USE_PORTAUDIO
-		{ "full-duplex",   0, 0, OPT_ALLOW_FULL_DUPLEX },
 		{ "frames-per-buf",1, 0, OPT_FRAMES_PER_BUFFER },
 #endif
 		{ "exit-after",    1, 0, OPT_EXIT_AFTER },
@@ -549,9 +547,6 @@ int parse_args(int argc, char **argv, int& idx)
 			break;
 
 #if USE_PORTAUDIO
-		case OPT_ALLOW_FULL_DUPLEX:
-			pa_allow_full_duplex = true;
-			break;
 		case OPT_FRAMES_PER_BUFFER:
 			pa_frames_per_buffer = strtol(optarg, 0, 10);
 			break;

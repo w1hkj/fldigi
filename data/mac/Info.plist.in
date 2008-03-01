@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+
+	<key>CFBundleIdentifier</key>
+	<string>%%IDENTIFIER%%</string>
+
+	<key>CFBundleName</key>
+	<string>%%NAME%%</string>
+
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+
+	<key>CFBundleSignature</key>
+	<string>%%SIGNATURE%%</string>
+
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+
+	<key>CFBundleExecutable</key>
+	<string>%%BINARY%%</string>
+
+	<key>CFBundleVersion</key>
+	<string>%%VERSION%%</string>
+
+	<key>CFBundleShortVersionString</key>
+    	<string>%%VERSION%%</string>
+
+	<key>CFBundleLongVersionString</key>
+	<string>%%VERSION%%</string>
+
+<!--
+	<key>CFBundleIconFile</key>
+	<string>%%ICON%%</string>
+-->
+
+	<key>NSAppleScriptEnabled</key>
+	<string>No</string>
+
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright (c) 2006-2008 Dave Freese W1HKJ and others</string>
+</dict>
+</plist>

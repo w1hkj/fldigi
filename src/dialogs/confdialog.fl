@@ -35,7 +35,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {fldigi - config} open
-    xywh {396 414 400 250} type Double color 45 selection_color 51 align 80 visible
+    xywh {562 95 400 250} type Double color 45 selection_color 51 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 405 220} color 47 selection_color 9
@@ -1118,20 +1118,20 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabOlivia {
-            label Olivia open
-            xywh {0 50 400 170} color 51 selection_color 51 hide
+            label Olivia open selected
+            xywh {0 50 400 170} color 51 selection_color 51
           } {
             Fl_Choice mnuOlivia_Tones {
               label Tones
               callback {progdefaults.changed = true;} open
-              xywh {90 72 85 20} down_box BORDER_BOX
+              xywh {105 72 70 22} down_box BORDER_BOX
               code0 {o->add(szOliviaTones);}
               code1 {o->value(2);}
             } {}
             Fl_Choice mnuOlivia_Bandwidth {
               label Bandwidth
               callback {progdefaults.changed = true;} open
-              xywh {270 72 85 20} down_box BORDER_BOX
+              xywh {270 72 85 22} down_box BORDER_BOX
               code0 {o->add(szOliviaBandwidth);}
               code1 {o->value(2);}
             } {}
@@ -1145,17 +1145,17 @@ progdefaults.changed = true;}
             Fl_Counter cntOlivia_smargin {
               label {RX sync tune margin}
               callback {progdefaults.changed = true;}
-              xywh {90 105 85 20} type Simple align 8 minimum 2 maximum 128 step 1 value 2
+              xywh {90 105 85 22} type Simple align 8 minimum 2 maximum 128 step 1 value 8
             }
             Fl_Counter cntOlivia_sinteg {
               label {RX sync integration period}
               callback {progdefaults.changed = true;}
-              xywh {90 135 85 20} type Simple align 8 minimum 2 maximum 128 step 1 value 2
+              xywh {90 135 85 22} type Simple align 8 minimum 2 maximum 128 step 1 value 4
             }
           }
           Fl_Group tabPSK {
             label Psk open
-            xywh {0 50 400 170}
+            xywh {0 50 400 170} hide
           } {
             Fl_Counter cntSearchRange {
               label {Acq Srch Range}
@@ -1240,7 +1240,7 @@ progdefaults.changed = true;}
             Fl_Counter cntACQsn {
               label {Acq s/n (db)}
               callback {progdefaults.ACQsn = (int)o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
               xywh {220 60 80 21} type Simple align 8 minimum 3 maximum 20 step 1 value 6
               code0 {o->value(progdefaults.ACQsn);}
             }
