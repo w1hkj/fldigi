@@ -166,6 +166,20 @@ struct configuration {
 	
 // waterfall palette
 	RGBint	cfgpal[9];
+
+// Button key color palette
+	RGBint	btnGroup1;
+	RGBint	btnGroup2;
+	RGBint	btnGroup3;
+	RGBint  btnFkeyTextColor;
+	
+// Rx / Tx fonts & palettes
+	int 	RxFontnbr;
+	int 	RxFontsize;
+	int 	TxFontnbr;
+	int 	TxFontsize;
+	RGBint	RxColor;
+	RGBint	TxColor;
 	
 	bool alt_text_widgets;
 	

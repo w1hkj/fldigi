@@ -140,6 +140,7 @@ fldigi_SOURCES += \
 	include/analysis.h \
 	include/ascii.h \
 	include/colorbox.h \
+	include/colorsfonts.h \
 	include/combo.h \
 	include/complex.h \
 	include/configuration.h \
@@ -236,6 +237,7 @@ fldigi_SOURCES += \
 	mfsk/mfskvaricode.cxx \
 	misc/ascii.cxx \
 	misc/configuration.cxx \
+	misc/colorsfonts.cxx \
 	misc/flstring.c \
 	misc/log.cxx \
 	misc/macroedit.cxx \
