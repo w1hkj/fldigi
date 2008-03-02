@@ -17,31 +17,31 @@
 
 using namespace std;
 
-static string label[20];
-static string text[20];
+static string label[24];
+static string text[24];
 
 void newmacros()
 {
-label[0] = "CQ";
+label[0] = "CQ @>|";
 text[0] = "<TX>\n\
 CQ CQ CQ de <MYCALL> <MYCALL> <MYCALL>\n\
 CQ CQ CQ de <MYCALL> <MYCALL> <MYCALL> pse k\n\
 <RX>";
 
-label[1] = "ANS";
+label[1] = "ANS @>|";
 text[1] = "<TX>\
 <CALL> <CALL> de <MYCALL> <MYCALL> <MYCALL> kn\n\
 <RX>";
 
-label[2] ="QSO";
+label[2] ="QSO @>>";
 text[2] = "<TX>\n\
 <CALL> de <MYCALL> ";
 
-label[3] = "KN";
+label[3] = "KN @||";
 text[3] = " btu <NAME> <CALL> de <MYCALL> k\n\
 <RX>";
 
-label[4] = "SK";
+label[4] = "SK @||";
 text[4] = "\n\
 tnx fer QSO <NAME>, 73, God bless.\n\
 <ZDT> <CALL> de <MYCALL> sk\n\
@@ -65,50 +65,63 @@ Soft:  <VER>\n\
 Web:   \n\
 Email: ";
 
-label[8] = "Tx";
+label[8] = "Tx @>>";
 text[8] = "<TX>";
 
-label[9] = "Rx";
+label[9] = "Rx @||";
 text[9] = "<RX>";
 
-label[10] = "C Answer";
-text[10] = "<TX>de <MYCALL> <MYCALL><RX>";
+label[10] = "";
+text[10] = "";
 
-label[11] = "C Again";
-text[11] = "<TX><DECR><CNTR> <CNTR><INCR> QSL DE <MYCALL> K\n\
+label[11] = "";
+text[11] = "";
+
+label[12] = "C Ans @>|";
+text[12] = "<TX>de <MYCALL> <MYCALL><RX>";
+
+label[13] = "C rpt @>|";
+text[13] = "<TX><DECR><CNTR> <CNTR><INCR> QSL DE <MYCALL> K\n\
 <RX>";
 
-label[12] = "C Report";
-text[12] = "<TX>\n\
+label[14] = "C Rep @>|";
+text[14] = "<TX>\n\
 <CALL> RR NBR <CNTR> <CNTR><INCR> TU DE <MYCALL> K\n\
 <RX>";
 
-label[13] = "C Incr";
-text[13] = "<INCR>";
+label[15] = "C Incr";
+text[15] = "<INCR>";
 
-label[14] = "C Decr";
-text[14] = "<DECR>";
+label[16] = "C Decr";
+text[16] = "<DECR>";
 
-label[15] = "Log QSO";
-text[15] = "<LOG>";
+label[17] = "Log QSO";
+text[17] = "<LOG>";
 
-label[16] = "CW-CQ";
-text[16] = "<TX>CQ CQ CQ DE <MYCALL> <MYCALL> <MYCALL>  CQ CQ CQ DE <MYCALL> K<RX>";
+label[18] = "CW-CQ @>|";
+text[18] = "<TX>CQ CQ CQ DE <MYCALL> <MYCALL> <MYCALL>  CQ CQ CQ DE <MYCALL> K<RX>";
 
-label[17] = "";
-text[17] = "";
+label[19] = "";
+text[19] = "";
 
-label[18] = "AUTO-CQ";
-text[18] = "<TX>\n\
+label[20] = "CQ @-3+";
+text[20] = "<TX>\n\
 CQ CQ CQ de <MYCALL> <MYCALL> <MYCALL>\n\
 CQ CQ CQ de <MYCALL> <MYCALL> <MYCALL> k<TIMER>15 <RX>";
 
-label[19] = "CQ-ID";
-text[19] = "<TX><ID>\n\
+label[21] = "CQ-ID @>|";
+text[21] = "<TX><ID>\n\
 CQ CQ CQ de <MYCALL> <MYCALL> <MYCALL>\n\
 CQ CQ CQ de <MYCALL> <MYCALL> <MYCALL> pse k\n\
 <RX>";
-	for (int i = 0; i < 20; i++) {
+
+label[22] = "";
+text[22] = "";
+
+label[23] = "";
+text[23] = "";
+
+	for (int i = 0; i < 24; i++) {
 		macros.text[i] = text[i];
 		macros.name[i] = label[i];
 	}

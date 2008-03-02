@@ -22,6 +22,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ----------------------------------------------------------------------------
 
+#include <config.h>
+
 #include "colorsfonts.h"
 
 Fl_Double_Window	*dlgColorFont = (Fl_Double_Window *)0;
@@ -463,4 +465,5 @@ void make_colorsfonts()
     	o->end();
 	}
 	dlgColorFont = w;
+        dlgColorFont->xclass(PACKAGE);
 }

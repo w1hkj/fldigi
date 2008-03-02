@@ -30,6 +30,8 @@
  *
  */
 
+#include <config.h>
+
 #include <stdio.h> // only for control printf's
 // #include <alloc.h>
 

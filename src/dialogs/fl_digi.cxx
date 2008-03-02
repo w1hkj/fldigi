@@ -108,7 +108,7 @@ Fl_Box				*Status2 = (Fl_Box *)0;
 Fl_Box				*Status1 = (Fl_Box *)0;
 Fl_Box				*WARNstatus = (Fl_Box *)0;
 Fl_Button			*MODEstatus = (Fl_Button *)0;
-Fl_Button 			*btnMacro[10];
+Fl_Button 			*btnMacro[12];
 Fl_Button			*btnAltMacros;
 Fl_Light_Button		*afconoff;
 Fl_Light_Button		*sqlonoff;
@@ -136,7 +136,7 @@ Fl_Slider			*valXmtMixer;
 
 bool				altMacros = false;
 bool				bSaveFreqList = false;
-string				strMacroName[10];
+string				strMacroName[12];
 
 
 waterfall			*wf = (waterfall *)0;
@@ -458,7 +458,7 @@ void restoreFocus()
 void macro_cb(Fl_Widget *w, void *v)
 {
 	int b = (int)(reinterpret_cast<long> (v));
-	b += (altMacros ? 10 : 0);
+	b += (altMacros ? 12 : 0);
 	int mouse = Fl::event_button();
 	if (mouse == 1 && !macros.text[b].empty())
 		macros.execute(b);
@@ -500,7 +500,7 @@ void colorize_macro(int i)
 void colorize_macros()
 {
 	FL_LOCK_D();
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 12; i++) {
 		colorize_macro(i);
 		btnMacro[i]->redraw_label();
 	}
@@ -511,8 +511,8 @@ void altmacro_cb(Fl_Widget *w, void *v)
 {
 	altMacros = !altMacros;
 	FL_LOCK_D();
-	for (int i = 0; i < 10; i++)
-		btnMacro[i]->label(macros.name[i + (altMacros ? 10: 0)].c_str());
+	for (int i = 0; i < 12; i++)
+		btnMacro[i]->label(macros.name[i + (altMacros ? 12: 0)].c_str());
 	FL_UNLOCK_D();
 	restoreFocus();
 }
@@ -1311,9 +1311,9 @@ void create_fl_digi_main() {
 		
 		Fl_Box *macroFrame = new Fl_Box(0, Y, WNOM, Hmacros);
 			macroFrame->box(FL_ENGRAVED_FRAME);
-			int Wbtn = (WNOM - 30 - 8 - 4)/10;
+			int Wbtn = (WNOM - 30 - 8 - 4)/12;
 			int xpos = 2;
-			for (int i = 0; i < 10; i++) {
+			for (int i = 0; i < 12; i++) {
 				if (i == 4 || i == 8) {
 					bx = new Fl_Box(xpos, Y+2, 5, Hmacros - 4);
 					bx->box(FL_FLAT_BOX);

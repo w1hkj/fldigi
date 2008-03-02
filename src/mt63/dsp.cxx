@@ -28,6 +28,8 @@
 // differences in respect to the mathematical formulas: signs flipped,
 // orders swapped, etc.
 
+#include <config.h>
+
 #include <stdio.h> // only when we do some control printf's
 #include <stdlib.h>
 #include <math.h>
