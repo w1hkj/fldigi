@@ -32,8 +32,8 @@ struct CONTESTCNTR {
 
 struct MACROTEXT {
 	bool	changed;
-	string name[20];
-	string text[20];
+	string name[24];
+	string text[24];
 	int  loadMacros(string filename);
 	void loadDefault();
 	void openMacroFile();
@@ -43,7 +43,7 @@ struct MACROTEXT {
 	void execute(int n);
 	MACROTEXT() {
 		changed = false;
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 24; i++) {
 			name[i] = "";
 			text[i] = "";
 		}
