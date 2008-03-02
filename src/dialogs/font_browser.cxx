@@ -38,6 +38,7 @@
 using namespace std;
 
 // Font Color selected
+
 void Font_Browser::ColorSelect()
 {
     fontcolor = fl_show_colormap( fontcolor );
@@ -50,6 +51,7 @@ void cb_Color_Select(Fl_Widget*, void*frmWid)
     Font_Browser *ft=(Font_Browser*)frmWid;
     ft->ColorSelect();
 }
+
 
 // OK button pressed
 void Font_Browser::okBtn()
@@ -152,14 +154,15 @@ Font_Browser::Font_Browser(const char *lbl ) :
     btn_Cancel =new Fl_Button(345, 70, 50, 25, "Cancel");
     btn_Cancel->labelsize(12);
     btn_Cancel->callback((Fl_Callback*)cb_Cancel, this );
-    
+
     btn_Color = new Fl_Button(345, 100, 50, 25, "");
     btn_Color->down_box(FL_BORDER_BOX);
     btn_Color->labelsize(12);
     btn_Color->align(FL_ALIGN_TOP_LEFT);
     btn_Color->color(FL_BLACK);
     btn_Color->callback( (Fl_Callback*)cb_Color_Select, this );
-     
+    btn_Color->hide(); // comment this out if you need color selection
+
     box_Example = new Preview_Box(5, 145, 390, 75, "abcdefghijk ABCDEFGHIJK\n0 1 2 3 4 5 6 7 8 9");
     box_Example->box(FL_DOWN_BOX);
     box_Example->labelsize(12);
