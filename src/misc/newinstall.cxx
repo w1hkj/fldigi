@@ -125,6 +125,10 @@ text[23] = "";
 		macros.text[i] = text[i];
 		macros.name[i] = label[i];
 	}
+	for (int i = 24; i < MAXMACROS; i++) {
+		macros.text[i] = "";
+		macros.name[i] = "";
+	}
 }
 
 struct paldata {

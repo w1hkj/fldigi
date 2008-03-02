@@ -85,9 +85,11 @@ extern Fl_Light_Button	*afconoff;
 extern Fl_Light_Button	*sqlonoff;
 extern Fl_Check_Button	*chk_afconoff;
 extern Fl_Check_Button	*chk_sqlonoff;
+extern Fl_Button		*btnAltMacros;
+
 
 extern bool				useCheckButtons;
-extern bool				altMacros;
+extern int				altMacros;
 
 extern waterfall		*wf;
 extern Digiscope		*digiscope;

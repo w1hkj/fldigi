@@ -221,8 +221,8 @@ void cbRxFontBrowser(Font_Browser*, void* v)
 	progdefaults.RxFontsize = size;
 	progdefaults.changed = true;
 	
-	ReceiveText->textfont(fnt);
-	ReceiveText->textsize(size);
+	ReceiveText->setFont(fnt);
+	ReceiveText->setFontSize(size);
 	ReceiveText->redraw();
 	
 	ft->hide();
@@ -233,8 +233,8 @@ static void cb_btnRxFont(Fl_Button*, void*)
 	static Font_Browser *b = (Font_Browser *)0;
 	if (!b) {
 		b = new Font_Browser;
-		b->fontNumber((Fl_Font)progdefaults.Fontnbr);
-		b->fontSize(progdefaults.FontSize);
+		b->fontNumber((Fl_Font)progdefaults.RxFontnbr);
+		b->fontSize(progdefaults.RxFontsize);
 	}
 	b->callback((Fl_Callback*)cbRxFontBrowser, (void*)(b));
 	b->show();
@@ -279,8 +279,8 @@ void cbTxFontBrowser(Font_Browser*, void* v)
 	progdefaults.TxFontsize = size;
 	progdefaults.changed = true;
 	
-	TransmitText->textfont(fnt);
-	TransmitText->textsize(size);
+	TransmitText->setFont(fnt);
+	TransmitText->setFontSize(size);
 	TransmitText->redraw();
 	
 	ft->hide();
@@ -291,8 +291,8 @@ static void cb_btnTxFont(Fl_Button*, void*)
 	static Font_Browser *b = (Font_Browser *)0;
 	if (!b) {
 		b = new Font_Browser;
-		b->fontNumber((Fl_Font)progdefaults.Fontnbr);
-		b->fontSize(progdefaults.FontSize);
+		b->fontNumber((Fl_Font)progdefaults.TxFontnbr);
+		b->fontSize(progdefaults.TxFontsize);
 	}
 	b->callback((Fl_Callback*)cbTxFontBrowser, (void*)(b));
 	b->show();
@@ -315,6 +315,13 @@ static void cb_btnNoTextColor(Fl_Button*, void*)
 	TransmitText->color(clr);
 	TransmitText->redraw();
 	
+	progdefaults.RxColor.R = r;
+	progdefaults.RxColor.G = g;
+	progdefaults.RxColor.B = b;
+	progdefaults.TxColor.R = r;
+	progdefaults.TxColor.G = g;
+	progdefaults.TxColor.B = b;
+
 	progdefaults.changed = true;
 }
 
@@ -329,6 +336,9 @@ static void cb_btnTextDefaults(Fl_Button*, void*)
 	RxText->redraw();
 	ReceiveText->color(clr);
 	ReceiveText->redraw();
+	progdefaults.RxColor.R = r;
+	progdefaults.RxColor.G = g;
+	progdefaults.RxColor.B = b;
 	
 	r = 200; g = 235; b = 255;
 	clr = fl_rgb_color(r,g,b);
@@ -336,6 +346,9 @@ static void cb_btnTextDefaults(Fl_Button*, void*)
 	TxText->redraw();
 	TransmitText->color(clr);
 	TransmitText->redraw();
+	progdefaults.TxColor.R = r;
+	progdefaults.TxColor.G = g;
+	progdefaults.TxColor.B = b;
 	
 	progdefaults.changed = true;
 }
@@ -429,6 +442,8 @@ void make_colorsfonts()
 					progdefaults.RxColor.R,
 					progdefaults.RxColor.G,
 					progdefaults.RxColor.B));
+			RxText->textfont(progdefaults.RxFontnbr);
+			RxText->textsize(progdefaults.RxFontsize);
 			
 			TxText = new Fl_Multiline_Output(195, 103, 165, 37, "");
 			TxText->value("Transmit Text");
@@ -437,6 +452,8 @@ void make_colorsfonts()
 					progdefaults.TxColor.R,
 					progdefaults.TxColor.G,
 					progdefaults.TxColor.B));
+			TxText->textfont(progdefaults.TxFontnbr);
+			TxText->textsize(progdefaults.TxFontsize);
 			
 			btnRxColor = new Fl_Button(200, 75, 70, 20, "Rx Bkgnd");
 			btnRxColor->callback((Fl_Callback*)cb_btnRxColor);

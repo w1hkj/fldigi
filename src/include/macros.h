@@ -11,6 +11,9 @@
 
 using namespace std;
 
+#define NUMMACKEYS 12
+#define MAXMACROS (4 * NUMMACKEYS)
+
 struct CONTESTCNTR {
 	int count;
 	char   szCount[20];
@@ -32,8 +35,8 @@ struct CONTESTCNTR {
 
 struct MACROTEXT {
 	bool	changed;
-	string name[24];
-	string text[24];
+	string name[MAXMACROS];
+	string text[MAXMACROS];
 	int  loadMacros(string filename);
 	void loadDefault();
 	void openMacroFile();
@@ -43,7 +46,7 @@ struct MACROTEXT {
 	void execute(int n);
 	MACROTEXT() {
 		changed = false;
-		for (int i = 0; i < 24; i++) {
+		for (int i = 0; i < MAXMACROS; i++) {
 			name[i] = "";
 			text[i] = "";
 		}
