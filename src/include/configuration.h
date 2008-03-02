@@ -80,9 +80,9 @@ struct configuration {
 	bool 		mt63_8bit;
 	int			mt63_interleave;
 // User interface data
-	int		Fontnbr;
-	int		FontSize;
-	int		FontColor;
+//	int		Fontnbr;
+//	int		FontSize;
+//	int		FontColor;
 	uchar	red;
 	uchar	green;
 	uchar	blue;
@@ -177,8 +177,10 @@ struct configuration {
 // Rx / Tx fonts & palettes
 	int 	RxFontnbr;
 	int 	RxFontsize;
+	int		RxFontcolor;
 	int 	TxFontnbr;
 	int 	TxFontsize;
+	int		TxFontcolor;
 	RGBint	RxColor;
 	RGBint	TxColor;
 	

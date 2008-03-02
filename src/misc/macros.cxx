@@ -320,6 +320,7 @@ int MACROTEXT::loadMacros(string filename)
 	unsigned long int	   crlf; // 64 bit cpu's
 	char   szTemp[10];
 	char   szLine[4096];
+	bool   convert = false;
 	
 	ifstream mFile(filename.c_str());
 	
@@ -336,11 +337,13 @@ int MACROTEXT::loadMacros(string filename)
 		mFile.close();
 		return -1;
 	}
+	if (mLine.find("extended") == string::npos) {
+		convert = true;
+		changed = true;
+	}		
 // clear all of the macros
-	for (int i = 0; i < 24; i++) {
-		snprintf(szTemp, sizeof(szTemp), "%d", i+1);
-		name[i] = "Macro ";
-		name[i] = name[i] + szTemp;
+	for (int i = 0; i < MAXMACROS; i++) {
+		name[i] = "";
 		text[i] = "";
 	}
 	inMacro = false;
@@ -352,8 +355,9 @@ int MACROTEXT::loadMacros(string filename)
 		if (mLine.find("/$") == 0) {
 			int idx = mLine.find_first_not_of("0123456789", 3);
 			sscanf((mLine.substr(3, idx - 3)).c_str(), "%d", &mNumber);
-			if (mNumber < 0 || mNumber > 23)
+			if (mNumber < 0 || mNumber > (MAXMACROS - 1))
 				break;
+			if (convert && mNumber > 9) mNumber += 2;
             name[mNumber] = mLine.substr(idx+1);
 			if (mNumber < 12) {
 				FL_LOCK_D();
@@ -435,7 +439,7 @@ void MACROTEXT::execute(int n)
 }
 
 string mtext = 
-"//fldigi macro definition file\n\
+"//fldigi macro definition file extended\n\
 // This file defines the macro structe(s) for the digital modem program, fldigi\n\
 // It also serves as a basis for any macros that are written by the user\n\
 //\n\
@@ -448,7 +452,7 @@ void MACROTEXT::saveMacros(string fname) {
 	string work;
 	ofstream mfile(fname.c_str());
 	mfile << mtext;
-	for (int i = 0; i < 24; i++) {
+	for (int i = 0; i < MAXMACROS; i++) {
 		mfile << "\n//\n// Macro # " << i+1 << "\n";
 		mfile << "/$ " << i << " " << macros.name[i].c_str() << "\n";
 		work = macros.text[i];

@@ -134,7 +134,7 @@ Fl_Button			*btnQRZ;
 Fl_Slider			*valRcvMixer;
 Fl_Slider			*valXmtMixer;
 
-bool				altMacros = false;
+int					altMacros = 0;
 bool				bSaveFreqList = false;
 string				strMacroName[12];
 
@@ -458,7 +458,7 @@ void restoreFocus()
 void macro_cb(Fl_Widget *w, void *v)
 {
 	int b = (int)(reinterpret_cast<long> (v));
-	b += (altMacros ? 12 : 0);
+	b += altMacros * NUMMACKEYS;
 	int mouse = Fl::event_button();
 	if (mouse == 1 && !macros.text[b].empty())
 		macros.execute(b);
@@ -509,10 +509,15 @@ void colorize_macros()
 
 void altmacro_cb(Fl_Widget *w, void *v)
 {
-	altMacros = !altMacros;
+	static char alt_text[4];
+	altMacros++;
+	if (altMacros == 4) altMacros = 0;
+	snprintf(alt_text, sizeof(alt_text), "%d", altMacros + 1);
 	FL_LOCK_D();
 	for (int i = 0; i < 12; i++)
-		btnMacro[i]->label(macros.name[i + (altMacros ? 12: 0)].c_str());
+		btnMacro[i]->label(macros.name[i + (altMacros * NUMMACKEYS)].c_str());
+	btnAltMacros->label(alt_text);
+	btnAltMacros->redraw_label();
 	FL_UNLOCK_D();
 	restoreFocus();
 }
@@ -1329,7 +1334,7 @@ void create_fl_digi_main() {
 			bx = new Fl_Box(xpos, Y+2, WNOM - 32 - xpos, Hmacros - 4);
 			bx->box(FL_FLAT_BOX);
 			bx->color(FL_BLACK);
-			btnAltMacros = new Fl_Button(WNOM-32, Y+2, 30, Hmacros - 4, "Alt");
+			btnAltMacros = new Fl_Button(WNOM-32, Y+2, 30, Hmacros - 4, "1");
 			btnAltMacros->callback(altmacro_cb, 0);
 				
 		Y += Hmacros;

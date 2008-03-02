@@ -973,10 +973,10 @@ void TextEdit::clear_sent() {
 
 int TextEdit::handle_fnckey(int key) {
 	int b = key - FL_F - 1;
-	if (b > 9)
+	if (b > 11)
 		return 0;
 	
-	b += (altMacros ? 10 : 0);
+	b += altMacros * NUMMACKEYS;
 	if (!(macros.text[b]).empty())
 		macros.execute(b);
 
@@ -1060,6 +1060,17 @@ int TextEdit::handle_key() {
 		Fl::focus(this);
 		return 1;
 	}
+	if (key == '1' || key == '2' || key == '3' || key == '4')
+		if (Fl::event_state() && FL_ALT) {
+			altMacros = key - '1';
+			for (int i = 0; i < 12; i++)
+				btnMacro[i]->label(macros.name[i + (altMacros * NUMMACKEYS)].c_str());
+			static char alt_text[4];
+			snprintf(alt_text, sizeof(alt_text), "%d", altMacros + 1);
+			btnAltMacros->label(alt_text);
+			btnAltMacros->redraw_label();
+			return 1;
+		}
 	
 	const char *ch = Fl::event_text();
 	addstr(ch);

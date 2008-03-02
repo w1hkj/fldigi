@@ -840,6 +840,22 @@ int FTextEdit::handle_key(int key)
 		}
 		return 0;
 	}
+// alt - 1 through alt - 4 changes macro sets
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+		if (Fl::event_state() && FL_ALT) {
+			altMacros = key - '1';
+			for (int i = 0; i < 12; i++)
+				btnMacro[i]->label(macros.name[i + (altMacros * NUMMACKEYS)].c_str());
+			static char alt_text[4];
+			snprintf(alt_text, sizeof(alt_text), "%d", altMacros + 1);
+			btnAltMacros->label(alt_text);
+			btnAltMacros->redraw_label();
+			return 1;
+		}
+		break;
 	default:
 		break;
 	}
@@ -873,10 +889,10 @@ int FTextEdit::handle_key(int key)
 int FTextEdit::handle_key_macro(int key)
 {
 	key -= FL_F + 1;
-	if (key > 9)
+	if (key > 11)
 		return 0;
 
-	key += (altMacros ? 10 : 0);
+	key += altMacros * NUMMACKEYS;
 	if (!(macros.text[key]).empty())
 		macros.execute(key);
 

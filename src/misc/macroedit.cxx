@@ -80,7 +80,8 @@ void cbMacroEditOK(Fl_Widget *w, void *)
 	macros.name[iMacro] = labeltext->value();
 	FL_LOCK_D();
 		int n = iMacro;
-		if (n >= 12) n -= 12;
+		while (n >= 12) n-= 12;
+//		if (n >= 12) n -= 12;
 		btnMacro[n]->label( macros.name[iMacro].c_str());
 	FL_UNLOCK_D();
 	MacroEditDialog->hide();

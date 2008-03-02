@@ -85,9 +85,9 @@ configuration progdefaults = {
 	false,			// bool 	mt63_8bit;
 	32,				// int		mt63_interleave;
 //
-	0, 				// int 		Fontnbr
-	16,				// int 		Fontsize
-	0,				// int 		Fontcolor
+//	FL_SCREEN,		// int 		Fontnbr - obsolete
+//	16,				// int 		Fontsize - obsolete
+//	0,				// int 		Fontcolor - obsolete
 	0,				// uchar 	red
 	255,			// uchar 	green
 	255,			// uchar 	blue
@@ -180,10 +180,12 @@ configuration progdefaults = {
 
 // Rx / Tx Text Widgets
 
-	0, 				// int 		RxFontnbr
+	FL_SCREEN,		// int 		RxFontnbr
 	16,				// int 		RxFontsize
-	0, 				// int 		TxFontnbr
+	0,				// int		RxFontcolor
+	FL_SCREEN,		// int 		TxFontnbr
 	16,				// int 		TxFontsize
+	0,				// int		TxFontcolor
 	{ 255, 242, 190}, // RGBint RxColor;
 	{ 200, 235, 255}, // RGBint TxColor;
 
@@ -218,7 +220,7 @@ enum TAG { \
 	IGNORE,
 	MYCALL, MYNAME, MYQTH, MYLOC, 
 	SQUELCH, WFREFLEVEL, WFAMPSPAN, LOWFREQCUTOFF, 
-	FONTNBR, FONTSIZE, FONTCOLOR,
+//	FONTNBR, FONTSIZE, FONTCOLOR,
 	STARTATSWEETSPOT, PSKMAILSWEETSPOT, 
 	PSKSEARCHRANGE, PSKSERVEROFFSET,
 	ACQSN,
@@ -327,9 +329,9 @@ void configuration::writeDefaultsXML()
 	writeXMLdbl(f, "WFREFLEVEL", wfRefLevel);
 	writeXMLdbl(f, "WFAMPSPAN", wfAmpSpan);
 	writeXMLint(f, "LOWFREQCUTOFF", LowFreqCutoff);
-	writeXMLint(f, "FONTNBR", Fontnbr);
-	writeXMLint(f, "FONTSIZE", FontSize);
-	writeXMLint(f, "FONTCOLOR", FontColor);
+//	writeXMLint(f, "FONTNBR", Fontnbr);
+//	writeXMLint(f, "FONTSIZE", FontSize);
+//	writeXMLint(f, "FONTCOLOR", FontColor);
 
 	writeXMLbool(f, "STARTATSWEETSPOT", StartAtSweetSpot);
 	writeXMLbool(f, "PSKMAILSWEETSPOT", PSKmailSweetSpot);
@@ -532,15 +534,15 @@ bool configuration::readDefaultsXML()
 					case LOWFREQCUTOFF :
 						LowFreqCutoff = atoi(xml->getNodeData());
 						break;
-					case FONTSIZE :
-						FontSize = atoi(xml->getNodeData());
-						break;
-					case FONTCOLOR :
-						FontColor = atoi(xml->getNodeData());
-						break;
-					case FONTNBR :
-						Fontnbr = atoi(xml->getNodeData());
-						break;
+//					case FONTSIZE :
+//						FontSize = atoi(xml->getNodeData());
+//						break;
+//					case FONTCOLOR :
+//						FontColor = atoi(xml->getNodeData());
+//						break;
+//					case FONTNBR :
+//						Fontnbr = atoi(xml->getNodeData());
+//						break;
 					case STARTATSWEETSPOT :
 						StartAtSweetSpot = atoi(xml->getNodeData());
 						break;
@@ -974,9 +976,9 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("WFREFLEVEL", nodeName)) 	tag = WFREFLEVEL;
 				else if (!strcmp("WFAMPSPAN", nodeName)) 	tag = WFAMPSPAN;
 				else if (!strcmp("LOWFREQCUTOFF", nodeName)) 	tag = LOWFREQCUTOFF;
-				else if (!strcmp("FONTSIZE", nodeName)) 	tag = FONTSIZE;
-				else if (!strcmp("FONTCOLOR", nodeName)) 	tag = FONTCOLOR;
-				else if (!strcmp("FONTNBR", nodeName)) 	tag = FONTNBR;
+//				else if (!strcmp("FONTSIZE", nodeName)) 	tag = FONTSIZE;
+//				else if (!strcmp("FONTCOLOR", nodeName)) 	tag = FONTCOLOR;
+//				else if (!strcmp("FONTNBR", nodeName)) 	tag = FONTNBR;
 				else if (!strcmp("STARTATSWEETSPOT", nodeName)) 	tag = STARTATSWEETSPOT;
 				else if (!strcmp("PSKMAILSWEETSPOT", nodeName)) 	tag = PSKMAILSWEETSPOT;
 				else if (!strcmp("PSKSEARCHRANGE", nodeName)) 	tag = PSKSEARCHRANGE;
@@ -1436,11 +1438,11 @@ int configuration::openDefaults() {
 
 		enableMixer(EnableMixer);
 		
-		ReceiveText->setFont((Fl_Font)Fontnbr);
-		ReceiveText->setFontSize(FontSize);
+		ReceiveText->setFont((Fl_Font)RxFontnbr);
+		ReceiveText->setFontSize(RxFontsize);
 	
-		TransmitText->setFont((Fl_Font)Fontnbr);
-		TransmitText->setFontSize(FontSize);
+		TransmitText->setFont((Fl_Font)TxFontnbr);
+		TransmitText->setFontSize(TxFontsize);
 
 		wf->setPrefilter(wfPreFilter);
 
