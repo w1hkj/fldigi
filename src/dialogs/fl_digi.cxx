@@ -510,8 +510,8 @@ void colorize_macros()
 void altmacro_cb(Fl_Widget *w, void *v)
 {
 	static char alt_text[4];
-	altMacros++;
-	if (altMacros == 4) altMacros = 0;
+	altMacros = altMacros + (Fl::event_button() == FL_RIGHT_MOUSE ? -1 : 1);
+	altMacros = WCLAMP(altMacros, 0, 3);
 	snprintf(alt_text, sizeof(alt_text), "%d", altMacros + 1);
 	FL_LOCK_D();
 	for (int i = 0; i < 12; i++)

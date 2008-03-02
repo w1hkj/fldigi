@@ -845,7 +845,7 @@ int FTextEdit::handle_key(int key)
 	case '2':
 	case '3':
 	case '4':
-		if (Fl::event_state() && FL_ALT) {
+		if (Fl::event_state() & FL_ALT) {
 			altMacros = key - '1';
 			for (int i = 0; i < 12; i++)
 				btnMacro[i]->label(macros.name[i + (altMacros * NUMMACKEYS)].c_str());
@@ -866,7 +866,7 @@ int FTextEdit::handle_key(int key)
 
         // read A/M-ddd, where d is a digit, as ascii characters (in base 10)
         // and insert verbatim; e.g. M-001 inserts a <soh>
-        if (Fl::event_state() & (FL_META | FL_ALT) && isdigit(key) &&
+        if (Fl::event_state() & FL_CTRL && isdigit(key) &&
             insert_position() >= txpos)
             return handle_key_ascii(key);
 

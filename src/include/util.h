@@ -21,6 +21,7 @@ extern "C" {
 #ifndef CLAMP
 #    define CLAMP(x, low, high) (((x)>(high))?(high):(((x)<(low))?(low):(x)))
 #endif
+#define WCLAMP(x, low, high) (((x)>(high))?(low):(((x)<(low))?(high):(x)))
 
 #ifdef __GNUC__
 #    if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)

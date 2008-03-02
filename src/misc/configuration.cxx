@@ -472,7 +472,7 @@ void configuration::writeDefaultsXML()
 	writeXMLint(f, "RXFONTNBR", RxFontnbr);
 	writeXMLint(f, "RXFONTSIZE", RxFontsize);
 	writeXMLint(f, "TXFONTNBR", TxFontnbr);
-	writeXMLint(f, "TXFONTSIZE", RxFontsize);
+	writeXMLint(f, "TXFONTSIZE", TxFontsize);
 	writeXMLrgb(f, "RXFONTCOLOR", RxColor.R, RxColor.G, RxColor.B);
 	writeXMLrgb(f, "TXFONTCOLOR", TxColor.R, TxColor.G, TxColor.B);	
 	
@@ -948,7 +948,7 @@ bool configuration::readDefaultsXML()
 						TxFontnbr = atoi(xml->getNodeData());
 						break;
 					case TXFONTSIZE :
-						RxFontsize = atoi(xml->getNodeData());
+						TxFontsize = atoi(xml->getNodeData());
 						break;
 					case RXFONTCOLOR :
 						sscanf( xml->getNodeData(), "%d %d %d",
