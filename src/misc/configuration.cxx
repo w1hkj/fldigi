@@ -557,6 +557,7 @@ bool configuration::readDefaultsXML()
 						break;
 					case ACQSN :
 						ACQsn = atof(xml->getNodeData());
+						break;
 					case CWSWEETSPOT :
 						CWsweetspot = atof(xml->getNodeData());
 						break;
