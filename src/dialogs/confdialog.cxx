@@ -977,14 +977,16 @@ progdefaults.changed = true;
 
 Fl_Counter *cntOlivia_smargin=(Fl_Counter *)0;
 
-static void cb_cntOlivia_smargin(Fl_Counter*, void*) {
-  progdefaults.changed = true;
+static void cb_cntOlivia_smargin(Fl_Counter* o, void*) {
+  progdefaults.oliviasmargin = (int)(o->value());
+progdefaults.changed = true;
 }
 
 Fl_Counter *cntOlivia_sinteg=(Fl_Counter *)0;
 
-static void cb_cntOlivia_sinteg(Fl_Counter*, void*) {
-  progdefaults.changed = true;
+static void cb_cntOlivia_sinteg(Fl_Counter* o, void*) {
+  progdefaults.oliviasinteg = (int)(o->value());
+progdefaults.changed = true;
 }
 
 Fl_Group *tabPSK=(Fl_Group *)0;
@@ -2052,14 +2054,13 @@ fect after a restart.");
           { Fl_Group* o = tabOlivia = new Fl_Group(0, 50, 400, 170, "Olivia");
             o->color((Fl_Color)51);
             o->selection_color((Fl_Color)51);
-            o->hide();
-            { Fl_Choice* o = mnuOlivia_Tones = new Fl_Choice(90, 72, 85, 20, "Tones");
+            { Fl_Choice* o = mnuOlivia_Tones = new Fl_Choice(105, 72, 70, 22, "Tones");
               o->down_box(FL_BORDER_BOX);
               o->callback((Fl_Callback*)cb_mnuOlivia_Tones);
               o->add(szOliviaTones);
               o->value(2);
             }
-            { Fl_Choice* o = mnuOlivia_Bandwidth = new Fl_Choice(270, 72, 85, 20, "Bandwidth");
+            { Fl_Choice* o = mnuOlivia_Bandwidth = new Fl_Choice(270, 72, 85, 22, "Bandwidth");
               o->down_box(FL_BORDER_BOX);
               o->callback((Fl_Callback*)cb_mnuOlivia_Bandwidth);
               o->add(szOliviaBandwidth);
@@ -2068,27 +2069,28 @@ fect after a restart.");
             { Fl_Button* o = btnRestartOlivia = new Fl_Button(300, 172, 79, 28, "Restart");
               o->callback((Fl_Callback*)cb_btnRestartOlivia);
             }
-            { Fl_Counter* o = cntOlivia_smargin = new Fl_Counter(90, 105, 85, 20, "RX sync tune margin");
+            { Fl_Counter* o = cntOlivia_smargin = new Fl_Counter(90, 105, 85, 22, "RX sync tune margin");
               o->type(1);
               o->minimum(2);
               o->maximum(128);
               o->step(1);
-              o->value(2);
+              o->value(8);
               o->callback((Fl_Callback*)cb_cntOlivia_smargin);
               o->align(FL_ALIGN_RIGHT);
             }
-            { Fl_Counter* o = cntOlivia_sinteg = new Fl_Counter(90, 135, 85, 20, "RX sync integration period");
+            { Fl_Counter* o = cntOlivia_sinteg = new Fl_Counter(90, 135, 85, 22, "RX sync integration period");
               o->type(1);
               o->minimum(2);
               o->maximum(128);
               o->step(1);
-              o->value(2);
+              o->value(4);
               o->callback((Fl_Callback*)cb_cntOlivia_sinteg);
               o->align(FL_ALIGN_RIGHT);
             }
             o->end();
           }
           { Fl_Group* o = tabPSK = new Fl_Group(0, 50, 400, 170, "Psk");
+            o->hide();
             { Fl_Counter* o = cntSearchRange = new Fl_Counter(11, 60, 80, 21, "Acq Srch Range");
               o->type(1);
               o->minimum(10);

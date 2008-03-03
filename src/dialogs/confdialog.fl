@@ -1118,7 +1118,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabOlivia {
-            label Olivia open selected
+            label Olivia open
             xywh {0 50 400 170} color 51 selection_color 51
           } {
             Fl_Choice mnuOlivia_Tones {
@@ -1144,12 +1144,14 @@ progdefaults.changed = true;}
             }
             Fl_Counter cntOlivia_smargin {
               label {RX sync tune margin}
-              callback {progdefaults.changed = true;}
+              callback {progdefaults.oliviasmargin = (int)(o->value());
+progdefaults.changed = true;} selected
               xywh {90 105 85 22} type Simple align 8 minimum 2 maximum 128 step 1 value 8
             }
             Fl_Counter cntOlivia_sinteg {
               label {RX sync integration period}
-              callback {progdefaults.changed = true;}
+              callback {progdefaults.oliviasinteg = (int)(o->value());
+progdefaults.changed = true;}
               xywh {90 135 85 22} type Simple align 8 minimum 2 maximum 128 step 1 value 4
             }
           }
