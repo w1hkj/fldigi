@@ -301,10 +301,9 @@ static void cb_btnTxFont(Fl_Button*, void*)
 static void cb_btnNoTextColor(Fl_Button*, void*) 
 {
 	uchar r, g, b;
-	Fl_Color clr;
+	Fl_Color clr = FL_BACKGROUND2_COLOR;
 
-	r = 255; g = 255; b = 255;
-	clr = fl_rgb_color(r,g,b);
+	Fl::get_color(clr, r, g, b);
 	RxText->color(clr);
 	RxText->redraw();
 	ReceiveText->color(clr);
