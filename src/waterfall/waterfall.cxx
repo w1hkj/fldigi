@@ -1407,6 +1407,7 @@ int WFdisp::handle(int event)
 	if (trx_state != STATE_RX)
 		return 1;
 	int xpos = Fl::event_x() - x();
+	int eb;
 
 	switch (event) {
 	case FL_MOVE:
@@ -1419,7 +1420,7 @@ int WFdisp::handle(int event)
 		redrawCursor();
 		break;
 	case FL_DRAG: case FL_PUSH:
-		switch (Fl::event_button()) {
+		switch (eb = Fl::event_button()) {
 		case FL_RIGHT_MOUSE:
 			wantcursor = false;
 			if (event == FL_PUSH) {
@@ -1428,22 +1429,25 @@ int WFdisp::handle(int event)
 			}
 			// fall through
 		case FL_LEFT_MOUSE:
-			if ((Fl::event_state() & FL_CTRL))
+			if (event != FL_DRAG && Fl::event_state() & FL_CTRL) {
 				bHistory = true;
-			else {
-				newcarrier = cursorFreq(xpos);
-				active_modem->set_freq(newcarrier);
-				if (!(Fl::event_state() & FL_SHIFT))
-					active_modem->set_sigsearch(SIGSEARCH);
-				redrawCursor();
-				restoreFocus();
+				if (eb == FL_LEFT_MOUSE) {
+				       restoreFocus();
+				       break;
+				}
 			}
+			newcarrier = cursorFreq(xpos);
+			active_modem->set_freq(newcarrier);
+			if (!(Fl::event_state() & FL_SHIFT))
+				active_modem->set_sigsearch(SIGSEARCH);
+			redrawCursor();
+			restoreFocus();
 			break;
 		case FL_MIDDLE_MOUSE:
 			if (event == FL_DRAG)
 				break;
 			Fl_Button *b = useCheckButtons ? chk_afconoff : afconoff;
-			b->value(!active_modem->get_afcOnOff());
+			b->value(!b->value());
 			b->do_callback();
 		}
 		break;
