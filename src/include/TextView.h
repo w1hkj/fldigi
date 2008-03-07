@@ -54,9 +54,9 @@ public:
 	virtual ~ReceiveWidget() { }
 
 	virtual void add(const char *text, int attr = RECV) = 0;
-	virtual void add(char c, int attr = RECV) = 0;
+	virtual void add(unsigned char c, int attr = RECV) = 0;
 	void	     addstr(const char *text, int attr = RECV) { add(text, attr); }
-	void	     addchr(char c, int attr = RECV) { add(c, attr); }
+	void	     addchr(unsigned char c, int attr = RECV) { add(c, attr); }
 
 	virtual void clear(void) = 0;
 
@@ -145,7 +145,7 @@ public:
 	void	Hide();
 
 	virtual void add( const char *text, int attr = RECV );
-	virtual void add( char c, int attr = RECV);
+	virtual void add( unsigned char c, int attr = RECV);
 	virtual void clear();
 	
 	virtual void setFont(Fl_Font fnt);
@@ -161,7 +161,7 @@ protected:
 	Fl_Scrollbar scrollbar;
 	Fl_Menu_Button *mpopup;
 
-	void add_( char c, int attr );
+	void add_( unsigned char c, int attr );
 	void scrollbarCB();	
 	inline static void _scrollbarCB( Fl_Widget* w, void* arg )
 	{ 

@@ -595,7 +595,7 @@ FL_UNLOCK_D();
 FL_AWAKE_D();
 }
 
-void textview::add_( char c, int attribute)
+void textview::add_( unsigned char c, int attribute)
 {
 	if (c == 0x08) {
 		_backspace();
@@ -644,7 +644,7 @@ void textview::add_( char c, int attribute)
 	setScrollbar();
 }
 
-void textview::add( char c, int attribute)
+void textview::add( unsigned char c, int attribute)
 {
 	if (c < ' ' || c == 127) { // we must look this up and insert it as a string
 		unsigned char i = c;

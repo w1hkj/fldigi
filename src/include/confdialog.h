@@ -156,6 +156,7 @@ extern Fl_Choice *mnuOlivia_Bandwidth;
 extern Fl_Button *btnRestartOlivia;
 extern Fl_Counter *cntOlivia_smargin;
 extern Fl_Counter *cntOlivia_sinteg;
+extern Fl_Check_Button *btnOlivia_8bit;
 extern Fl_Group *tabPSK;
 extern Fl_Counter *cntSearchRange;
 extern Fl_Check_Button *btnPSKmailSweetSpot;

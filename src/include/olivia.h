@@ -54,7 +54,6 @@ private:
 	int			escape;
 	int			smargin;
 	int			sinteg;
-	bool		olivia_esc;
 	int			tones;
 	int			bw;
 

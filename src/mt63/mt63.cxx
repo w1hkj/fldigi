@@ -74,7 +74,8 @@ int mt63::tx_process()
 	if ((progdefaults.mt63_8bit && c > 255) || (!progdefaults.mt63_8bit && c > 127))
 		c = '.';
 
-	put_echo_char(c);
+	if (c != -1)
+		put_echo_char(c);
 
 	if (c > 127) {
 		c &= 127;

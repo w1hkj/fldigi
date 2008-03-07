@@ -989,6 +989,13 @@ static void cb_cntOlivia_sinteg(Fl_Counter* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnOlivia_8bit=(Fl_Check_Button *)0;
+
+static void cb_btnOlivia_8bit(Fl_Check_Button* o, void*) {
+  progdefaults.olivia8bit = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabPSK=(Fl_Group *)0;
 
 Fl_Counter *cntSearchRange=(Fl_Counter *)0;
@@ -2086,6 +2093,10 @@ fect after a restart.");
               o->value(4);
               o->callback((Fl_Callback*)cb_cntOlivia_sinteg);
               o->align(FL_ALIGN_RIGHT);
+            }
+            { Fl_Check_Button* o = btnOlivia_8bit = new Fl_Check_Button(90, 173, 163, 15, "8 bit extended chars");
+              o->down_box(FL_DOWN_BOX);
+              o->callback((Fl_Callback*)cb_btnOlivia_8bit);
             }
             o->end();
           }

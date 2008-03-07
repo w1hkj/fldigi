@@ -399,7 +399,7 @@ int FTextView::handle(int event)
 /// @param c The character
 /// @param attr The attribute (@see enum text_attr_e); RECV if omitted.
 ///
-void FTextView::add(char c, int attr)
+void FTextView::add(unsigned char c, int attr)
 {
 	if (c == '\r')
 		return;
@@ -681,7 +681,7 @@ void FTextEdit::add(const char *s, int attr)
 /// @param s 
 /// @param attr 
 ///
-void FTextEdit::add(char c, int attr)
+void FTextEdit::add(unsigned char c, int attr)
 {
 	char s[] = { FTEXT_DEF + attr, '\0' };
 	sbuf->replace(insert_position(), insert_position() + 1, s);
@@ -732,7 +732,7 @@ int FTextEdit::nextChar(void)
 	else if (insert_position() <= txpos) // empty buffer or cursor inside transmitted text
 		c = -1;
 	else {
-		if ((c = tbuf->character(txpos))) {
+		if ((c = static_cast<unsigned char>(tbuf->character(txpos)))) {
 			++txpos;
 			REQ(FTextEdit::changed_cb, txpos, 0, 0, -1,
 			    static_cast<const char *>(0), this);
