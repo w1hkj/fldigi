@@ -38,20 +38,15 @@ static int IntegLen = 32;	// integration period for sync./data tracking
 void mt63::tx_init(SoundBase *sb)
 {
 	scard = sb;
-//	int err;
-//	err = Tx->Preset((int)bandwidth, Interleave);
-//	if (err)
-//		fprintf(stderr, "mt63_txinit: init failed\n");
+	Tx->Preset((int)bandwidth, Interleave);
 	set_freq(500.0 + bandwidth / 2.0);
 	flush = Tx->DataInterleave;
+	videoText();
 }
 
 void mt63::rx_init()
 {
-//	int err;
-//	err = Rx->Preset((int)bandwidth, Interleave, IntegLen);
-//	if (err)
-//		fprintf(stderr, "mt63_rxinit: init failed\n");
+	Rx->Preset((int)bandwidth, Interleave, IntegLen);
 	set_freq(500.0 + bandwidth / 2.0);
 	InpLevel->Preset(64.0, 0.75);
 	escape = 0;
@@ -68,14 +63,16 @@ int mt63::tx_process()
 		c = 0;
 	}
 
-	if (stopflag && flush-- == 0)
-		return -1;
+	if (c == -1 || stopflag == true) c = 0;
+	
+	if (stopflag && flush-- == 0) {
+		stopflag = false;
+		cwid();
+		return -1;	/* we're done */
+	}
 
 	if ((progdefaults.mt63_8bit && c > 255) || (!progdefaults.mt63_8bit && c > 127))
 		c = '.';
-
-	if (c != -1)
-		put_echo_char(c);
 
 	if (c > 127) {
 		c &= 127;
@@ -83,6 +80,8 @@ int mt63::tx_process()
 		ModulateXmtr((Tx->Comb.Output.Data), Tx->Comb.Output.Len);
 	}
 
+	put_echo_char(c);
+	
 	Tx->SendChar(c);
 	ModulateXmtr((Tx->Comb.Output.Data), Tx->Comb.Output.Len);
 
@@ -212,36 +211,3 @@ mt63::~mt63()
 	if (InpLevel) delete InpLevel;
 	if (InpBuff) delete InpBuff;
 }
-
-/*
-static int mt63_txprocess(struct trx *trx)
-{
-	struct mt63 *s = (struct mt63 *) trx->modem;
-	int c;
-
-	c = trx_get_tx_char();
-
-	if (c == -1) {
-		if (trx->stopflag && s->flush-- == 0)
-			return -1;
-		c = 0;
-	} else
-		s->flush = s->Tx->DataInterleave;
-
-	if ((trx->mt63_esc && c > 255) || (!trx->mt63_esc && c > 127))
-		c = '.';
-
-	trx_put_echo_char(c);
-
-	if (c > 127) {
-		c &= 127;
-		s->Tx->SendChar(127);
-		sound_write(s->Tx->Comb.Output.Data, s->Tx->Comb.Output.Len);
-	}
-
-	s->Tx->SendChar(c);
-	sound_write(s->Tx->Comb.Output.Data, s->Tx->Comb.Output.Len);
-
-	return 0;
-}
-*/
