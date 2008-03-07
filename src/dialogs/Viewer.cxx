@@ -274,19 +274,47 @@ void initViewer()
 	                  cheight * progdefaults.VIEWERchannels + 50 + border);
 }
 
+// i in [1, progdefaults.VIEWERchannels]
+static void set_freq(int i, int freq)
+{
+	string new_line;
+
+	if (freq == 0) // reset
+		freq = progdefaults.VIEWERstart + 100 * (progdefaults.VIEWERchannels - i);
+
+	pskviewer->set_freq(progdefaults.VIEWERchannels - i, freq);
+	new_line.append(freqformat(i - 1)).append("@.").append(bwsrline[i - 1]);
+	brwsViewer->replace(i, new_line.c_str());
+}
+
 static void cb_btnClearViewer(Fl_Button*, void*) {
-	ClearViewer();
+	if (Fl::event_button() == FL_LEFT_MOUSE)
+		ClearViewer();
+	else
+		for (int i = 1; i <= progdefaults.VIEWERchannels; i++)
+			set_freq(i, 0);
 }
 
 static void cb_brwsViewer(Fl_Hold_Browser*, void*) {
 	int sel = brwsViewer->value();
-	if (sel == 0) return;
-	if (sel > progdefaults.VIEWERchannels) return;
-	int style = ReceiveWidget::ALTR;
-	ReceiveText->addchr('\n', style);
-	for (size_t i = 0; i < bwsrline[sel - 1].length(); i++)
-		ReceiveText->addchr(bwsrline[sel-1][i], style);
-	active_modem->set_freq(brwsFreq[sel - 1]);
+	if (sel == 0 || sel > progdefaults.VIEWERchannels)
+		return;
+
+	switch (Fl::event_button()) {
+	case FL_LEFT_MOUSE:
+		ReceiveText->addchr('\n', ReceiveWidget::ALTR);
+		ReceiveText->addstr(bwsrline[sel - 1].c_str(), ReceiveWidget::ALTR);
+		active_modem->set_freq(brwsFreq[sel - 1]);
+		break;
+	case FL_MIDDLE_MOUSE: // copy from modem
+		set_freq(sel, active_modem->get_freq());
+		break;
+	case FL_RIGHT_MOUSE: // reset
+		set_freq(sel, 0);
+		break;
+	default:
+		break;
+	}
 }
 
 static void cb_Seek(Fl_Input *, void *)
@@ -346,6 +374,7 @@ Fl_Double_Window* createViewer() {
 			bx = new Fl_Box(0,viewerheight - 25, 10, 25);
     		btnClearViewer = new Fl_Button(10, viewerheight - 25, 65, 25, "Clear");
     		btnClearViewer->callback((Fl_Callback*)cb_btnClearViewer);
+		btnClearViewer->tooltip("Left click to clear text\nRight click to reset frequencies");
     		bx = new Fl_Box(75, viewerheight - 25, 10, 25);
 	    	btnCloseViewer = new Fl_Button(85, viewerheight - 25, 65, 25, "Close");
     		btnCloseViewer->callback((Fl_Callback*)cb_btnCloseViewer);

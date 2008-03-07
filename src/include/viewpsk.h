@@ -92,6 +92,7 @@ public:
 	void restart() {};
 	int rx_process(const double *buf, int len);
 	int get_freq(int n) { return (int)frequency[n];}
+	void set_freq(int n, double f) { frequency[n] = f; nomfreq[n] = (int)f; }
 };
 
 #endif
