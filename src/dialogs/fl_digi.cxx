@@ -755,7 +755,7 @@ void closeRigDialog() {
 
 void cb_sldrSquelch(Fl_Slider* o, void*) {
 	active_modem->set_squelch(o->value());
-	progdefaults.sldrSquelchValue = o->value();
+	progdefaults.squelch = o->value();
 	restoreFocus();
 }
 
@@ -1361,7 +1361,7 @@ void create_fl_digi_main() {
 				sldrSquelch->minimum(0);
 				sldrSquelch->maximum(100);
 				sldrSquelch->step(1);
-				sldrSquelch->value(progdefaults.sldrSquelchValue);
+				sldrSquelch->value(progdefaults.squelch);
 				sldrSquelch->callback((Fl_Callback*)cb_sldrSquelch);
 				sldrSquelch->color(FL_INACTIVE_COLOR);
 

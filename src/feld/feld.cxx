@@ -245,7 +245,7 @@ void feld::rx(complex z)
 	col_data[col_pointer + RxColumnLen] = (int)x;
 	col_pointer++;
 	if (col_pointer == RxColumnLen) {
-		if (metric > progdefaults.sldrSquelchValue || progdefaults.sqlonoff == false) {
+		if (metric > progdefaults.squelch || progdefaults.sqlonoff == false) {
 			REQ(put_rx_data, col_data, col_data.size());
 			if (!halfwidth)
 				REQ(put_rx_data, col_data, col_data.size());
@@ -265,7 +265,7 @@ int feld::rx_process(const double *buf, int len)
 	FL_LOCK_D();
 	halfwidth = btnHellRcvWidth->value();
 	blackboard = btnBlackboard->value();
-//	squelch = progdefaults.sldrSquelchValue;
+//	squelch = progdefaults.squelch;
 //	squelchon = progdefaults.sqlonoff;
 	FL_UNLOCK_D();
 	
