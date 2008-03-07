@@ -211,7 +211,7 @@ int SoundBase::readPlayback(double *buff, size_t count)
 #if USE_SNDFILE
 	sf_count_t r = sf_readf_double(ifPlayback, buff, count);
 
-	while (r < count) {
+	while (r < (sf_count_t)count) {
 		sf_seek(ifPlayback, 0, SEEK_SET);
 		r += sf_readf_double(ifPlayback, buff + r, count - r);
                 if (r == 0)
@@ -995,7 +995,10 @@ void SoundPort::init_stream(unsigned dir)
         if (idev[dir] == devs.end()) {
                 cerr << "PA_debug: could not find \"" << device[dir]
 		     << "\", using default " << dir_str[dir] << " device\n";
-                idev[dir] = devs.begin() + (dir == STREAM_IN ? Pa_GetDefaultInputDevice() : Pa_GetDefaultOutputDevice());
+		PaDeviceIndex def = (dir == STREAM_IN ? Pa_GetDefaultInputDevice() : Pa_GetDefaultOutputDevice());
+		if (def == paNoDevice)
+			throw SndPortException(paDeviceUnavailable);
+                idev[dir] = devs.begin() + def;
         }
         PaDeviceIndex idx = idev[dir] - devs.begin();
 
@@ -1088,6 +1091,12 @@ bool SoundPort::stream_active(unsigned dir)
 bool SoundPort::full_duplex_device(const PaDeviceInfo* dev)
 {
         return dev->maxInputChannels > 0 && dev->maxOutputChannels > 0;
+}
+
+bool SoundPort::must_close(void)
+{
+	return stream_active(STREAM_OUT) &&
+		Pa_GetHostApiInfo((*idev[STREAM_OUT])->hostApi)->type == paOSS;
 }
 
 // Determine the sample rate that we will use. We try the modem's rate
