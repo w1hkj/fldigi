@@ -131,6 +131,7 @@ Fl_Button			*qsoClear;
 Fl_Button			*qsoSave;
 Fl_Button			*btnMacroTimer;
 Fl_Button			*btnQRZ;
+Fl_Group			*MixerFrame;
 Fl_Slider			*valRcvMixer;
 Fl_Slider			*valXmtMixer;
 
@@ -1256,7 +1257,7 @@ void create_fl_digi_main() {
 		Y += Hnotes;
 		
 		int sw = 15;
-		Fl_Group *MixerFrame = new Fl_Group(0,Y,sw, Hrcvtxt + Hxmttxt);
+		MixerFrame = new Fl_Group(0,Y,sw, Hrcvtxt + Hxmttxt);
 			valRcvMixer = new Fl_Slider(0, Y, sw, (Htext)/2, "");
 			valRcvMixer->type(FL_VERT_NICE_SLIDER);
 			valRcvMixer->color(fl_rgb_color(0,110,30));
@@ -1800,25 +1801,19 @@ void enableMixer(bool on)
 
 void enable_vol_sliders(bool val)
 {
-        if (valRcvMixer->visible() || valXmtMixer->visible()) {
+        if (MixerFrame->visible()) {
                 if (val)
                         return;
-                valRcvMixer->hide();
-                valXmtMixer->hide();
-                ReceiveText->resize(ReceiveText->x() - valRcvMixer->w(), ReceiveText->y(),
-                                    ReceiveText->w() + valRcvMixer->w(), ReceiveText->h());
-                TransmitText->resize(ReceiveText->x(), TransmitText->y(),
-                                     ReceiveText->w(), TransmitText->h());
+		MixerFrame->hide();
+		TiledGroup->resize(TiledGroup->x() - MixerFrame->w(), TiledGroup->y(),
+				   TiledGroup->w() + MixerFrame->w(), TiledGroup->h());
         }
         else {
                 if (!val)
                         return;
-                ReceiveText->resize(ReceiveText->x() + valRcvMixer->w(), ReceiveText->y(),
-                                    ReceiveText->w() - valRcvMixer->w(), ReceiveText->h());
-                TransmitText->resize(ReceiveText->x(), TransmitText->y(),
-                                     ReceiveText->w(), TransmitText->h());
-                valRcvMixer->show();
-                valXmtMixer->show();
+		TiledGroup->resize(TiledGroup->x() + MixerFrame->w(), TiledGroup->y(),
+				   TiledGroup->w() - MixerFrame->w(), TiledGroup->h());
+		MixerFrame->show();
         }
 }
 
