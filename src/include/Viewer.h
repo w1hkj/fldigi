@@ -26,5 +26,6 @@ extern void openViewer();
 extern void viewaddchr(int ch, int freq, char c);
 extern void initViewer();
 extern void viewclearchannel(int ch);
+extern void viewer_paste_freq(int freq);
 
 #endif

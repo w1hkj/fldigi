@@ -500,3 +500,22 @@ void viewclearchannel(int ch)
 	brwsViewer->text( 1 + index, nuline.c_str());
 	brwsViewer->redraw();
 }
+
+void viewer_paste_freq(int freq)
+{
+	if (!dlgViewer)
+		return;
+
+	int sel = 1, n = brwsViewer->size();
+
+	for (int i = 0; i < n; i++) {
+		if (brwsViewer->selected(i)) {
+			brwsViewer->select(i, false);
+			sel = i;
+			break;
+		}
+	}
+
+	set_freq(sel, freq);
+	brwsViewer->select(WCLAMP(sel+1, 1, n));
+}

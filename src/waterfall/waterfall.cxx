@@ -44,6 +44,7 @@
 
 #include "fldigi-config.h"
 #include "configuration.h"
+#include "Viewer.h"
 
 Fl_Mutex	wf_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -1446,9 +1447,13 @@ int WFdisp::handle(int event)
 		case FL_MIDDLE_MOUSE:
 			if (event == FL_DRAG)
 				break;
-			Fl_Button *b = useCheckButtons ? chk_afconoff : afconoff;
-			b->value(!b->value());
-			b->do_callback();
+			if (Fl::event_state() & FL_CTRL)
+				viewer_paste_freq(cursorFreq(xpos));
+			else {
+				Fl_Button *b = useCheckButtons ? chk_afconoff : afconoff;
+				b->value(!b->value());
+				b->do_callback();
+			}
 		}
 		break;
 	case FL_RELEASE:
