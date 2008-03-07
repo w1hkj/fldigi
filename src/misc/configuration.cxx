@@ -77,8 +77,8 @@ configuration progdefaults = {
 // OLIVIA
 	2,				// int		oliviatones;
 	2,				// int		oliviabw;
-	2,				// int		oliviasmargin
-	2,				// int		oliviasinteg
+	8,				// int		oliviasmargin
+	4,				// int		oliviasinteg
 	false,				// bool		olivia8bit
 // DOMINOEX
 	2.0,			// double	DOMINOEX_BW;
