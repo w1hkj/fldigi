@@ -287,6 +287,8 @@ void pTIMER(string &s, size_t &i)
 
 void pMODEM(string &s, size_t &i)
 {
+	size_t si = i;
+
 	if ((i = s.find('>', i)) == string::npos)
 		return;
 
@@ -296,18 +298,20 @@ void pMODEM(string &s, size_t &i)
 		break;
 	size_t j = i;
 	while (++j < len)
-	    if (isspace(s[j]))
+	    if (isspace(s[j]) || s[j] == '<')
 		break;
 
 	string name = s.substr(i, j-i);
 	for (j = 0; j < NUM_MODES; j++) {
 		if (name == mode_info[j].sname) {
 			if (active_modem->get_mode() != mode_info[j].mode)
-				init_modem(mode_info[j].mode);
-			s.clear();
+				init_modem_sync(mode_info[j].mode);
 			break;
 		}
 	}
+
+	s.erase(si, i + name.length());
+	i = si;
 }
 
 int MACROTEXT::loadMacros(string filename)
