@@ -5,23 +5,27 @@
 
 #include <config.h>
 
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <stdio.h>
+#include <sys/time.h>
+#include <string>
 #include <cstring>
 
 #include "log.h"
 
+using namespace std;
+
 static const char *lognames[] = {"RX", "TX"};
 
-cLogfile::cLogfile(string fname) {
+cLogfile::cLogfile(const string& fname) {
 	logtype = LOG_RX;
 	retflag = true;
 	logfilename = fname;
 }
-	
-cLogfile::~cLogfile() 
-{
-}
 
-void cLogfile::log_to_file(log_t type, string s)
+void cLogfile::log_to_file(log_t type, const string& s)
 {
 	char timestr[64];
 	struct tm *tm;

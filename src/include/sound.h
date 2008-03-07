@@ -143,6 +143,7 @@ public:
 	virtual size_t	Write(double *, size_t) = 0;
 	virtual size_t	Write_stereo(double *, double *, size_t) = 0;
 	virtual size_t	Read(double *, size_t) = 0;
+	virtual bool	must_close(void) = 0;
 #if USE_SNDFILE
 	void		get_file_params(const char* def_fname, char** fname, int* format);
 	int		Capture(bool val);
@@ -187,6 +188,7 @@ public:
 	size_t		Write(double *, size_t);
 	size_t		Write_stereo(double *, double *, size_t);
 	size_t		Read(double *, size_t);
+	bool		must_close(void) { return true; }
 
 private:
 	int		Fd() { return device_fd; }
@@ -220,6 +222,7 @@ public:
 	size_t 		Write(double *buf, size_t count);
 	size_t		Write_stereo(double *bufleft, double *bufright, size_t count);
 	size_t 		Read(double *buf, size_t count);
+	bool		must_close(void);
 
 private:
         void		src_data_reset(int mode);
@@ -264,6 +267,7 @@ public:
 	size_t	Write(double* buf, size_t count);
 	size_t	Write_stereo(double* bufleft, double* bufright, size_t count);
 	size_t	Read(double *buf, size_t count);
+	bool	must_close(void) { return false; }
 
 private:
 	void	src_data_reset(int mode);
@@ -288,6 +292,7 @@ public:
 	size_t	Write(double* buf, size_t count);
 	size_t	Write_stereo(double* bufleft, double* bufright, size_t count);
 	size_t	Read(double *buf, size_t count);
+	bool	must_close(void) { return false; }
 };
 
 #endif // SOUND_H

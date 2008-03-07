@@ -204,6 +204,7 @@ static void cb_btnRxColor(Fl_Button*, void*)
 				progdefaults.RxColor.G,
 				progdefaults.RxColor.B));
 		ReceiveText->redraw();
+		ReceiveText->handle(FL_SHOW);
 	}
 }
 
@@ -262,6 +263,7 @@ static void cb_btnTxColor(Fl_Button*, void*)
 				progdefaults.TxColor.G,
 				progdefaults.TxColor.B));		
 		TransmitText->redraw();
+		TransmitText->handle(FL_SHOW);
 	}
 }
 

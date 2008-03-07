@@ -249,15 +249,21 @@ void sound_init(void)
 	}
 
 	if (progdefaults.PortInDevice.length() == 0) {
-		if (progdefaults.PAdevice.length() == 0)
-			progdefaults.PortInDevice = (*(SoundPort::devices().begin() + Pa_GetDefaultInputDevice()))->name;
+		if (progdefaults.PAdevice.length() == 0) {
+			PaDeviceIndex def = Pa_GetDefaultInputDevice();
+			if (def != paNoDevice)
+				progdefaults.PortInDevice = (*(SoundPort::devices().begin() + def))->name;
+		}
 		else
 			progdefaults.PortInDevice = progdefaults.PAdevice;
 	}
 	menuPortInDev->value(progdefaults.PortInDevice.c_str());
 	if (progdefaults.PortOutDevice.length() == 0) {
-		if (progdefaults.PAdevice.length() == 0)
-			progdefaults.PortOutDevice = (*(SoundPort::devices().begin() + Pa_GetDefaultOutputDevice()))->name;
+		if (progdefaults.PAdevice.length() == 0) {
+			PaDeviceIndex def = Pa_GetDefaultOutputDevice();
+			if (def != paNoDevice)
+				progdefaults.PortOutDevice = (*(SoundPort::devices().begin() + def))->name;
+		}
 		else
 			progdefaults.PortOutDevice = progdefaults.PAdevice;
 	}

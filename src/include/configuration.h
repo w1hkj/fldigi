@@ -74,6 +74,7 @@ struct configuration {
 	int			oliviabw;
 	int			oliviasmargin;
 	int			oliviasinteg;
+	bool			olivia8bit;
 // DOMINOEX
 	double		DOMINOEX_BW;
 // MT63

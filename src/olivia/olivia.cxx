@@ -138,7 +138,7 @@ void olivia::rx_init()
 
 int olivia::unescape(int c)
 {
-	if (olivia_esc == 0)
+	if (progdefaults.olivia8bit == 0)
 		return c;
 
 	if (escape) {
@@ -177,7 +177,7 @@ int olivia::tx_process()
 			/* Replace un-representable characters with a dot */
 			if (c == -1)
                                 c = 0;
-			if (c > (olivia_esc ? 255 : 127))
+			if (c > (progdefaults.olivia8bit ? 255 : 127))
 				c = '.';
 			if (c > 127) {
 				c &= 127;

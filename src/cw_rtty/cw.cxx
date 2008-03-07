@@ -712,7 +712,7 @@ void cw::send_ch(int ch)
         FL_AWAKE();
 	}
 
-	if (ch != 0)
+	if (ch != -1)
 		put_echo_char(ch);
 }
 

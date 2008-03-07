@@ -131,6 +131,7 @@ Fl_Button			*qsoClear;
 Fl_Button			*qsoSave;
 Fl_Button			*btnMacroTimer;
 Fl_Button			*btnQRZ;
+Fl_Group			*MixerFrame;
 Fl_Slider			*valRcvMixer;
 Fl_Slider			*valXmtMixer;
 
@@ -1256,7 +1257,7 @@ void create_fl_digi_main() {
 		Y += Hnotes;
 		
 		int sw = 15;
-		Fl_Group *MixerFrame = new Fl_Group(0,Y,sw, Hrcvtxt + Hxmttxt);
+		MixerFrame = new Fl_Group(0,Y,sw, Hrcvtxt + Hxmttxt);
 			valRcvMixer = new Fl_Slider(0, Y, sw, (Htext)/2, "");
 			valRcvMixer->type(FL_VERT_NICE_SLIDER);
 			valRcvMixer->color(fl_rgb_color(0,110,30));
@@ -1520,7 +1521,6 @@ void put_rx_char(unsigned int data)
 	if (wf->tmp_carrier())
 		style = ReceiveWidget::ALTR;
 
-	data &= 0x7F;
 	switch (data) {
 		case '\n':
 			if (last == '\r')
@@ -1539,13 +1539,14 @@ void put_rx_char(unsigned int data)
 		msgsnd (rxmsgid, (void *)&rxmsgst, 1, IPC_NOWAIT);
 	}
 
+	string s = iscntrl(data) ? ascii2[data & 0x7F] : string(1, data);
 	if (Maillogfile)
-		Maillogfile->log_to_file(cLogfile::LOG_RX, ascii2[data]);
+		Maillogfile->log_to_file(cLogfile::LOG_RX, s);
 
 	if (!mnuLogging) mnuLogging = getMenuItem("Log File");
 	if (mnuLogging)
 		if (mnuLogging->value())
-			logfile->log_to_file(cLogfile::LOG_RX, ascii2[data]);
+			logfile->log_to_file(cLogfile::LOG_RX, s);
 }
 
 string strSecText = "";
@@ -1716,7 +1717,6 @@ void put_echo_char(unsigned int data)
 		active_modem->get_mode() == MODE_CW)
 		asc = ascii;
 
-	data &= 0x7F;
 	if (data == '\r' && last == '\r') // reject multiple CRs
 		return;
 
@@ -1727,13 +1727,14 @@ void put_echo_char(unsigned int data)
 		style = ReceiveWidget::CTRL;
 	REQ(&ReceiveWidget::addchr, ReceiveText, data, style);
 
+	string s = iscntrl(data) ? ascii2[data & 0x7F] : string(1, data);
 	if (Maillogfile)
-		Maillogfile->log_to_file(cLogfile::LOG_TX, ascii2[data & 0x7F]);
+		Maillogfile->log_to_file(cLogfile::LOG_TX, s);
 
 	if (!mnuLogging) mnuLogging = getMenuItem("Log File"); // should only be called once
 	if (mnuLogging)
 		if (mnuLogging->value())
-			logfile->log_to_file(cLogfile::LOG_TX, ascii2[data & 0x7F]);
+			logfile->log_to_file(cLogfile::LOG_TX, s);
 }
 
 void resetRTTY() {
@@ -1800,25 +1801,19 @@ void enableMixer(bool on)
 
 void enable_vol_sliders(bool val)
 {
-        if (valRcvMixer->visible() || valXmtMixer->visible()) {
+        if (MixerFrame->visible()) {
                 if (val)
                         return;
-                valRcvMixer->hide();
-                valXmtMixer->hide();
-                ReceiveText->resize(ReceiveText->x() - valRcvMixer->w(), ReceiveText->y(),
-                                    ReceiveText->w() + valRcvMixer->w(), ReceiveText->h());
-                TransmitText->resize(ReceiveText->x(), TransmitText->y(),
-                                     ReceiveText->w(), TransmitText->h());
+		MixerFrame->hide();
+		TiledGroup->resize(TiledGroup->x() - MixerFrame->w(), TiledGroup->y(),
+				   TiledGroup->w() + MixerFrame->w(), TiledGroup->h());
         }
         else {
                 if (!val)
                         return;
-                ReceiveText->resize(ReceiveText->x() + valRcvMixer->w(), ReceiveText->y(),
-                                    ReceiveText->w() - valRcvMixer->w(), ReceiveText->h());
-                TransmitText->resize(ReceiveText->x(), TransmitText->y(),
-                                     ReceiveText->w(), TransmitText->h());
-                valRcvMixer->show();
-                valXmtMixer->show();
+		TiledGroup->resize(TiledGroup->x() + MixerFrame->w(), TiledGroup->y(),
+				   TiledGroup->w() - MixerFrame->w(), TiledGroup->h());
+		MixerFrame->show();
         }
 }
 

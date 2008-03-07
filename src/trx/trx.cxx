@@ -183,6 +183,8 @@ void trx_trx_transmit_loop()
 				return;
 			}
 		}
+		if (scard->must_close())
+			scard->Close();
 	} else
 		MilliSleep(10);
 
@@ -230,6 +232,8 @@ void trx_tune_loop()
 			MilliSleep(10);
 			return;
 		}
+		if (scard->must_close())
+			scard->Close();
 		_trx_tune = 0;
 	} else
 		MilliSleep(10);

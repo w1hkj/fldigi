@@ -77,8 +77,9 @@ configuration progdefaults = {
 // OLIVIA
 	2,				// int		oliviatones;
 	2,				// int		oliviabw;
-	2,				// int		oliviasmargin
-	2,				// int		oliviasinteg
+	8,				// int		oliviasmargin
+	4,				// int		oliviasinteg
+	false,				// bool		olivia8bit
 // DOMINOEX
 	2.0,			// double	DOMINOEX_BW;
 // MT63
@@ -236,7 +237,7 @@ enum TAG { \
 	CWBANDWIDTH, CWRANGE, CWLOWERLIMIT, CWUPPERLIMIT,
 	CWTRACK, CWRISETIME, CWDASH2DOT,
 	XQSK, CWPRE, CWPOST, CWID, CWIDWPM,
-	OLIVIATONES, OLIVIABW, OLIVIASMARGIN, OLIVIASINTEG,
+	OLIVIATONES, OLIVIABW, OLIVIASMARGIN, OLIVIASINTEG, OLIVIA8BIT,
 	DOMINOEXBW, 
 	FELDFONTNBR, FELDIDLE,
 	WFPREFILTER,
@@ -377,6 +378,7 @@ void configuration::writeDefaultsXML()
 	writeXMLint(f, "OLIVIABW", oliviabw);
 	writeXMLint(f, "OLIVIASMARGIN", oliviasmargin);
 	writeXMLint(f, "OLIVIASINTEG", oliviasinteg);
+	writeXMLbool(f, "OLIVIA8BIT", olivia8bit);
 	writeXMLdbl(f, "DOMINOEXBW", DOMINOEX_BW);
 	writeXMLint(f, "FELDFONTNBR", feldfontnbr);
 	writeXMLbool(f, "FELDIDLE", FELD_IDLE);
@@ -668,6 +670,9 @@ bool configuration::readDefaultsXML()
 						break;
 					case OLIVIASINTEG :
 						oliviasinteg = atoi(xml->getNodeData());
+						break;
+					case OLIVIA8BIT :
+						olivia8bit = atoi(xml->getNodeData());
 						break;
 					case DOMINOEXBW :
 						DOMINOEX_BW = atof(xml->getNodeData());
@@ -1022,6 +1027,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("OLIVIABW", nodeName)) 	tag = OLIVIABW;
 				else if (!strcmp("OLIVIASMARGIN", nodeName)) 	tag = OLIVIASMARGIN;
 				else if (!strcmp("OLIVIASINTEG", nodeName)) 	tag = OLIVIASINTEG;
+				else if (!strcmp("OLIVIA8BIT", nodeName)) 	tag = OLIVIA8BIT;
 				else if (!strcmp("DOMINOEXBW", nodeName)) 	tag = DOMINOEXBW;
 				else if (!strcmp("FELDFONTNBR", nodeName)) 	tag = FELDFONTNBR;
 				else if (!strcmp("FELDIDLE", nodeName)) 	tag = FELDIDLE;
@@ -1158,6 +1164,7 @@ void configuration::loadDefaults() {
 	mnuOlivia_Bandwidth->value(oliviabw);
 	cntOlivia_smargin->value(oliviasmargin);
 	cntOlivia_sinteg->value(oliviasinteg);
+	btnOlivia_8bit->value(olivia8bit);
 
 	FL_UNLOCK();
 }

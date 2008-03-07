@@ -74,6 +74,7 @@ protected:
 	virtual void	menu_cb(int val) { }
 	int		reset_wrap_col(void);
         void		adjust_colours(void);
+        void		reset_styles(int set);
 private:
 	FTextBase();
 	FTextBase(const FTextBase &t);
@@ -90,7 +91,6 @@ protected:
 	int					wrap_col;
 	int					max_lines;
 	bool					scroll_hint;
-	bool					adjusted_colours;
 };
 
 ///
@@ -103,7 +103,7 @@ public:
         ~FTextView();
 
 	virtual int	handle(int event);
-	virtual void	add(char c, int attr = RECV);
+	virtual void	add(unsigned char c, int attr = RECV);
 	virtual	void	add(const char *s, int attr = RECV)
         {
                 while (*s)
@@ -144,7 +144,7 @@ public:
 	virtual int	handle(int event);
 
 	virtual void	add(const char *s, int attr = RECV);
-	virtual void	add(char c, int attr = RECV);
+	virtual void	add(unsigned char c, int attr = RECV);
 	void		clear(void);
 	void		clear_sent(void);
 	int		nextChar(void);
