@@ -74,6 +74,7 @@ protected:
 	virtual void	menu_cb(int val) { }
 	int		reset_wrap_col(void);
         void		adjust_colours(void);
+        void		reset_styles(int set);
 private:
 	FTextBase();
 	FTextBase(const FTextBase &t);
@@ -90,7 +91,6 @@ protected:
 	int					wrap_col;
 	int					max_lines;
 	bool					scroll_hint;
-	bool					adjusted_colours;
 };
 
 ///

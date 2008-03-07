@@ -52,8 +52,7 @@ using namespace std;
 /// @param l 
 FTextBase::FTextBase(int x, int y, int w, int h, const char *l)
 	: ReceiveWidget(x, y, w, h, l),
-          wrap(true), wrap_col(80), max_lines(0), scroll_hint(false),
-          adjusted_colours(false)
+          wrap(true), wrap_col(80), max_lines(0), scroll_hint(false)
 {
 	tbuf = new Fl_Text_Buffer;
 	sbuf = new Fl_Text_Buffer;
@@ -67,12 +66,7 @@ FTextBase::FTextBase(int x, int y, int w, int h, const char *l)
 	// Do we want narrower scrollbars? The default width is 16.
 	// scrollbar_width((int)floor(scrollbar_width() * 3.0/4.0));
 
-	// set some defaults
-	set_style(NATTR, FL_SCREEN, 12, FL_FOREGROUND_COLOR);
-	set_style(XMIT, FL_SCREEN, 12, FL_RED, SET_COLOR);
-	set_style(CTRL, FL_SCREEN, 12, FL_DARK_GREEN, SET_COLOR);
-	set_style(SKIP, FL_SCREEN, 12, FL_BLUE, SET_COLOR);
-	set_style(ALTR, FL_SCREEN, 12, FL_DARK_MAGENTA, SET_COLOR);
+	reset_styles(SET_FONT | SET_SIZE | SET_COLOR);
 }
 
 int FTextBase::handle(int event)
@@ -80,9 +74,9 @@ int FTextBase::handle(int event)
         if (event == FL_MOUSEWHEEL && !Fl::event_inside(this))
                 return 1;
 
-        if (!adjusted_colours && event == FL_SHOW) {
+        if (event == FL_SHOW) {
+                reset_styles(SET_COLOR);
                 adjust_colours();
-                adjusted_colours = true;
         }
 
         return ReceiveWidget::handle(event);
@@ -278,13 +272,21 @@ void FTextBase::adjust_colours(void)
         for (int i = 0; i < NATTR; i++) {
                 Fl_Color adj;
 
-                while ((adj = fl_contrast(styles[i].color,
-                                          FL_BACKGROUND2_COLOR)) != styles[i].color) {
+                while ((adj = fl_contrast(styles[i].color, color())) != styles[i].color) {
                         styles[i].color = (adj == FL_WHITE) ?
                                           fl_lighter(styles[i].color) :
                                           fl_darker(styles[i].color);
                 }
         }
+}
+
+void FTextBase::reset_styles(int set)
+{
+	set_style(NATTR, FL_SCREEN, 12, FL_FOREGROUND_COLOR, set);
+	set_style(XMIT, FL_SCREEN, 12, FL_RED, set);
+	set_style(CTRL, FL_SCREEN, 12, FL_DARK_GREEN, set);
+	set_style(SKIP, FL_SCREEN, 12, FL_BLUE, set);
+	set_style(ALTR, FL_SCREEN, 12, FL_DARK_MAGENTA, set);
 }
 
 // ----------------------------------------------------------------------------
