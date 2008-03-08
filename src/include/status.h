@@ -35,11 +35,14 @@ struct status {
 	double	RcvMixer;
 	double	XmtMixer;
 	
+	bool	bLastStateRead;
+	
 	
 public:
 	void saveModeState(trx_mode m);
 	void initLastState();
 	void saveLastState();
+	void loadLastState();
 	friend std::istream &operator>>(std::istream &stream, status &c);
 	friend std::ostream &operator<<(std::ostream &ostream, status c);
 };

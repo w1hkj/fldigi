@@ -1166,30 +1166,33 @@ int below(Fl_Widget* w)
 
 void create_fl_digi_main() {
 	int pad = wSpace, Y = 0;
-	fl_digi_main = new Fl_Double_Window(WNOM, HNOM, "fldigi");
-			mnu = new Fl_Menu_Bar(0, 0, WNOM - 142, Hmenu);
+	fl_digi_main = new Fl_Double_Window(
+		progStatus.mainX, progStatus.mainY,
+		progStatus.mainW, progStatus.mainH,
+		"fldigi");
+			mnu = new Fl_Menu_Bar(0, 0, progStatus.mainW - 142, Hmenu);
 			// FL_NORMAL_SIZE may have changed; update the menu items
 			for (size_t i = 0; i < sizeof(menu_)/sizeof(menu_[0]); i++)
 				if (menu_[i].text)
 					menu_[i].labelsize_ = FL_NORMAL_SIZE;
 			mnu->menu(menu_);
 
-			btnTune = new Fl_Button(WNOM - 142, 0, 60, Hmenu, "TUNE");
+			btnTune = new Fl_Button(progStatus.mainW - 142, 0, 60, Hmenu, "TUNE");
 			btnTune->type(FL_TOGGLE_BUTTON);
 			btnTune->callback(cbTune, 0);
 			
-			btnMacroTimer = new Fl_Button(WNOM - 80 - pad, 0, 80, Hmenu);
+			btnMacroTimer = new Fl_Button(progStatus.mainW - 80 - pad, 0, 80, Hmenu);
 			btnMacroTimer->color(fl_rgb_color(255, 255, 100));
 			btnMacroTimer->labelcolor(FL_RED);
 			btnMacroTimer->callback(cbMacroTimerButton, 0);
 			btnMacroTimer->hide();
-			Fl_Box *bx = new Fl_Box(WNOM - 80 - pad, 0, 80, Hmenu,"");
+			Fl_Box *bx = new Fl_Box(progStatus.mainW - 80 - pad, 0, 80, Hmenu,"");
 			bx->box(FL_UP_BOX);
 			
 		
 		Y += Hmenu;
 
-		Fl_Group *qsoFrame = new Fl_Group(0, Y, WNOM, Hqsoframe);
+		Fl_Group *qsoFrame = new Fl_Group(0, Y, progStatus.mainW, Hqsoframe);
 			inpFreq = new Fl_Input(pad, Y + Hqsoframe/2 - pad, 85, Hqsoframe/2, "Frequency");
 			inpFreq->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
@@ -1215,7 +1218,7 @@ void create_fl_digi_main() {
 			inpRstOut = new Fl_Input(rightof(inpRstIn) + pad, Y + Hqsoframe/2 - pad, 40, Hqsoframe/2, "RST(s)");
 			inpRstOut->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
-			btnQRZ = new Fl_Button(WNOM - 40 - pad, Y + 1, 40, Hqsoframe/2 - pad, "QRZ");
+			btnQRZ = new Fl_Button(progStatus.mainW - 40 - pad, Y + 1, 40, Hqsoframe/2 - pad, "QRZ");
 			btnQRZ->callback(cb_QRZ, 0);
 
 			inpLoc = new Fl_Input(leftof(btnQRZ) - pad - 80, Y + Hqsoframe/2 - pad, 80, Hqsoframe/2, "Locator");
@@ -1227,14 +1230,14 @@ void create_fl_digi_main() {
 			inpQth->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 			qsoFrame->resizable(inpQth);
 
-			qsoClear = new Fl_Button(WNOM - 40 - pad, Y + Hqsoframe/2 + 1, 40, Hqsoframe/2 - pad, "Clear");
+			qsoClear = new Fl_Button(progStatus.mainW - 40 - pad, Y + Hqsoframe/2 + 1, 40, Hqsoframe/2 - pad, "Clear");
 			qsoClear->callback(qsoClear_cb, 0);
 
 		qsoFrame->end();
 		Y += Hqsoframe;
 
-		Fl_Group *qsoFrame2 = new Fl_Group(0,Y, WNOM, Hnotes);
-			qsoSave = new Fl_Button(WNOM - 40 - pad, Y + 1, 40, Hnotes - 2, "Save");
+		Fl_Group *qsoFrame2 = new Fl_Group(0,Y, progStatus.mainW, Hnotes);
+			qsoSave = new Fl_Button(progStatus.mainW - 40 - pad, Y + 1, 40, Hnotes - 2, "Save");
 			qsoSave->callback(qsoSave_cb, 0);
 
 			inpAZ = new Fl_Input(leftof(qsoSave) - 80 - pad, Y, 80, Hnotes, "AZ"); // WA5ZNU
@@ -1254,8 +1257,9 @@ void create_fl_digi_main() {
 		Y += Hnotes;
 		
 		int sw = 15;
-		MixerFrame = new Fl_Group(0,Y,sw, Hrcvtxt + Hxmttxt);
-			valRcvMixer = new Fl_Slider(0, Y, sw, (Htext)/2, "");
+		int TextH = progStatus.mainH - 140 - Hwfall;
+		MixerFrame = new Fl_Group(0,Y,sw, TextH);
+			valRcvMixer = new Fl_Slider(0, Y, sw, (TextH)/2, "");
 			valRcvMixer->type(FL_VERT_NICE_SLIDER);
 			valRcvMixer->color(fl_rgb_color(0,110,30));
 			valRcvMixer->labeltype(FL_ENGRAVED_LABEL);
@@ -1263,7 +1267,7 @@ void create_fl_digi_main() {
 			valRcvMixer->range(1.0,0.0);
 			valRcvMixer->value(1.0);
 			valRcvMixer->callback( (Fl_Callback *)cb_RcvMixer);
-			valXmtMixer = new Fl_Slider(0, Y + (Htext)/2, sw, (Htext)/2, "");
+			valXmtMixer = new Fl_Slider(0, Y + (TextH)/2, sw, (TextH)/2, "");
 			valXmtMixer->type(FL_VERT_NICE_SLIDER);
 			valXmtMixer->color(fl_rgb_color(110,0,30));
 			valXmtMixer->labeltype(FL_ENGRAVED_LABEL);
@@ -1273,32 +1277,31 @@ void create_fl_digi_main() {
 			valXmtMixer->callback( (Fl_Callback *)cb_XmtMixer);
 		MixerFrame->end();
 
-		TiledGroup = new Fl_Tile_check(sw, Y, WNOM-sw, Htext);
-            int minRxHeight = Hrcvtxt;
+		TiledGroup = new Fl_Tile_check(sw, Y, progStatus.mainW - sw, TextH);
+            int minRxHeight = progStatus.RxTextHeight;
             int minTxHeight;
             if (minRxHeight < 66) minRxHeight = 66;
-            minTxHeight = Htext - minRxHeight;
-
-			Fl_Box *minbox = new Fl_Box(sw,Y + 66, WNOM-sw, Htext - 66 - 32);
+            minTxHeight = TextH - minRxHeight;
+			Fl_Box *minbox = new Fl_Box(sw,Y + 66, progStatus.mainW - sw, TextH - 66 - 32);
 			minbox->hide();
 
 			if (progdefaults.alt_text_widgets)
-				ReceiveText = new FTextView(sw, Y, WNOM-sw, minRxHeight, "");
+				ReceiveText = new FTextView(sw, Y, progStatus.mainW - sw, minRxHeight, "");
 			else
-				ReceiveText = new TextView(sw, Y, WNOM-sw, minRxHeight, "");
+				ReceiveText = new TextView(sw, Y, progStatus.mainW - sw, minRxHeight, "");
 			ReceiveText->color(
 				fl_rgb_color(
 					progdefaults.RxColor.R,
 					progdefaults.RxColor.G,
 					progdefaults.RxColor.B));		
-			FHdisp = new Raster(sw, Y, WNOM-sw, minRxHeight);
+			FHdisp = new Raster(sw, Y, progStatus.mainW - sw, minRxHeight);
 			FHdisp->hide();
 			Y += minRxHeight;
 
 			if (progdefaults.alt_text_widgets)
-				TransmitText = new FTextEdit(sw, Y, WNOM-sw, minTxHeight);
+				TransmitText = new FTextEdit(sw, Y, progStatus.mainW - sw, minTxHeight);
 			else
-				TransmitText = new TextEdit(sw, Y, WNOM-sw, minTxHeight);
+				TransmitText = new TextEdit(sw, Y, progStatus.mainW - sw, minTxHeight);
 			TransmitText->color(
 				fl_rgb_color(
 					progdefaults.TxColor.R,
@@ -1312,9 +1315,9 @@ void create_fl_digi_main() {
 		Fl_Group::current()->resizable(TiledGroup);
 
 		
-		Fl_Box *macroFrame = new Fl_Box(0, Y, WNOM, Hmacros);
+		Fl_Box *macroFrame = new Fl_Box(0, Y, progStatus.mainW, Hmacros);
 			macroFrame->box(FL_ENGRAVED_FRAME);
-			int Wbtn = (WNOM - 30 - 8 - 4)/12;
+			int Wbtn = (progStatus.mainW - 30 - 8 - 4)/12;
 			int xpos = 2;
 			for (int i = 0; i < 12; i++) {
 				if (i == 4 || i == 8) {
@@ -1329,30 +1332,30 @@ void create_fl_digi_main() {
 				colorize_macro(i);
 				xpos += Wbtn;
 			}
-			bx = new Fl_Box(xpos, Y+2, WNOM - 32 - xpos, Hmacros - 4);
+			bx = new Fl_Box(xpos, Y+2, progStatus.mainW - 32 - xpos, Hmacros - 4);
 			bx->box(FL_FLAT_BOX);
 			bx->color(FL_BLACK);
-			btnAltMacros = new Fl_Button(WNOM-32, Y+2, 30, Hmacros - 4, "1");
+			btnAltMacros = new Fl_Button(progStatus.mainW - 32, Y+2, 30, Hmacros - 4, "1");
 			btnAltMacros->callback(altmacro_cb, 0);
 				
 		Y += Hmacros;
 
-		Fl_Pack *wfpack = new Fl_Pack(0, Y, WNOM, Hwfall);
+		Fl_Pack *wfpack = new Fl_Pack(0, Y, progStatus.mainW, Hwfall);
 			wfpack->type(1);
 			wf = new waterfall(0, Y, Wwfall, Hwfall);
 			wf->end();
-			Fl_Pack *ypack = new Fl_Pack(WNOM-(Hwfall-24), Y, Hwfall-24, Hwfall);
+			Fl_Pack *ypack = new Fl_Pack(progStatus.mainW - (Hwfall-24), Y, Hwfall-24, Hwfall);
 				ypack->type(0);
 
-				digiscope = new Digiscope (WNOM-(Hwfall-24), Y, Hwfall-24, Hwfall-24);
+				digiscope = new Digiscope (progStatus.mainW - (Hwfall-24), Y, Hwfall-24, Hwfall-24);
 	
 				pgrsSquelch = new Fl_Progress(
-					WNOM-(Hwfall-24), Y + Hwfall - 24,
+					progStatus.mainW - (Hwfall-24), Y + Hwfall - 24,
 					Hwfall - 24, 12, "");
 				pgrsSquelch->color(FL_BACKGROUND2_COLOR, FL_DARK_GREEN);
 				sldrSquelch = new Fl_Slider(
 					FL_HOR_NICE_SLIDER, 
-					WNOM-(Hwfall-24), Y + Hwfall - 12, 
+					progStatus.mainW - (Hwfall-24), Y + Hwfall - 12, 
 					Hwfall - 24, 12, "");
 							
 				sldrSquelch->minimum(0);
@@ -1367,31 +1370,31 @@ void create_fl_digi_main() {
 		wfpack->end();
 		Y += (Hwfall + 2);
 
-		Fl_Pack *hpack = new Fl_Pack(0, Y, WNOM, Hstatus);
+		Fl_Pack *hpack = new Fl_Pack(0, Y, progStatus.mainW, Hstatus);
 			hpack->type(1);
-			MODEstatus = new Fl_Button(0,Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Wmode, Hstatus, "");
+			MODEstatus = new Fl_Button(0,Hmenu+progStatus.mainW+Hxmttxt+Hwfall, Wmode, Hstatus, "");
 			MODEstatus->box(FL_DOWN_BOX);
 			MODEstatus->color(FL_BACKGROUND2_COLOR);
 			MODEstatus->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 			MODEstatus->callback(status_cb, (void *)0);
 			MODEstatus->when(FL_WHEN_CHANGED);
 			MODEstatus->tooltip("Left clk - change mode\nRight clk - Modem Tab");
-			Status1 = new Fl_Box(Wmode,Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Ws2n, Hstatus, "");
+			Status1 = new Fl_Box(Wmode,Hmenu+progStatus.mainW+Hxmttxt+Hwfall, Ws2n, Hstatus, "");
 			Status1->box(FL_DOWN_BOX);
 			Status1->color(FL_BACKGROUND2_COLOR);
 			Status1->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
-			Status2 = new Fl_Box(Wmode+Ws2n, Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Wimd, Hstatus, "");
+			Status2 = new Fl_Box(Wmode+Ws2n, Hmenu+progStatus.mainW+Hxmttxt+Hwfall, Wimd, Hstatus, "");
 			Status2->box(FL_DOWN_BOX);
 			Status2->color(FL_BACKGROUND2_COLOR);
 			Status2->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 			StatusBar = new Fl_Box(
-                Wmode+Wimd+Ws2n, Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Wstatus, Hstatus, "");
+                Wmode+Wimd+Ws2n, Hmenu+progStatus.mainW+Hxmttxt+Hwfall, Wstatus, Hstatus, "");
 			StatusBar->box(FL_DOWN_BOX);
 			StatusBar->color(FL_BACKGROUND2_COLOR);
 			StatusBar->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 
 			WARNstatus = new Fl_Box(
-                Wmode+Wimd+Ws2n+Wstatus, Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
+                Wmode+Wimd+Ws2n+Wstatus, Hmenu+progStatus.mainW+Hxmttxt+Hwfall, 
                 Wwarn, Hstatus, "");
 			WARNstatus->box(FL_DIAMOND_DOWN_BOX);
 			WARNstatus->color(FL_BACKGROUND_COLOR);
@@ -1400,30 +1403,30 @@ void create_fl_digi_main() {
 
 			if (useCheckButtons) {
 				chk_afconoff = new Fl_Check_Button(
-								WNOM - bwAfcOnOff - bwSqlOnOff, 
-								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
+								progStatus.mainW - bwAfcOnOff - bwSqlOnOff, 
+								Hmenu+progStatus.mainW+Hxmttxt+Hwfall, 
 								bwAfcOnOff, Hstatus, "Afc");
 				chk_afconoff->callback(afconoff_cb, 0);
 				chk_afconoff->value(progStatus.afconoff);
 				chk_afconoff->tooltip("AFC on/off");
 				chk_sqlonoff = new Fl_Check_Button(
-								WNOM - bwSqlOnOff, 
-								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
+								progStatus.mainW - bwSqlOnOff, 
+								Hmenu+progStatus.mainW+Hxmttxt+Hwfall, 
 								bwSqlOnOff, Hstatus, "Sql");
 				chk_sqlonoff->callback(sqlonoff_cb, 0);
 				chk_sqlonoff->value(progStatus.sqlonoff);
 				chk_sqlonoff->tooltip("SQL on/off");
 			} else {
 				btn_afconoff = new Fl_Light_Button(
-								WNOM - bwAfcOnOff - bwSqlOnOff, 
-								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
+								progStatus.mainW - bwAfcOnOff - bwSqlOnOff, 
+								Hmenu+progStatus.mainW+Hxmttxt+Hwfall, 
 								bwAfcOnOff, Hstatus, "Afc");
 				btn_afconoff->callback(afconoff_cb, 0);
 				btn_afconoff->value(progStatus.afconoff);
 				btn_afconoff->tooltip("AFC on/off");
 				btn_sqlonoff = new Fl_Light_Button(
-								WNOM - bwSqlOnOff, 
-								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
+								progStatus.mainW - bwSqlOnOff, 
+								Hmenu+progStatus.mainW+Hxmttxt+Hwfall, 
 								bwSqlOnOff, Hstatus, "Sql");
 				btn_sqlonoff->callback(sqlonoff_cb, 0);
 				btn_sqlonoff->value(progStatus.sqlonoff);

@@ -51,7 +51,8 @@ status progStatus = {
 	true,				// bool afconoff
 	true,				// bool sqlonoff
 	1.0,				// double	RcvMixer;
-	1.0					// double	XmtMixer;
+	1.0,				// double	XmtMixer;
+	false				// bool bLastStateRead;
 };
 
 	
@@ -128,7 +129,7 @@ void status::saveLastState()
 	deffile.close();
 }
 
-void status::initLastState()
+void status::loadLastState()
 {
 	string deffname = HomeDir;
 	deffname.append("fldigi.status");
@@ -161,7 +162,15 @@ void status::initLastState()
 		deffile.close();
 		progdefaults.wfRefLevel = reflevel;
 		progdefaults.wfAmpSpan = ampspan;
+		bLastStateRead = true;
 	}
+}
+
+void status::initLastState()
+{
+	if (!bLastStateRead)
+		loadLastState();
+
 	init_modem((trx_mode)lastmode);
 
 	while (!active_modem) MilliSleep(100);
@@ -185,24 +194,6 @@ void status::initLastState()
 	valRcvMixer->value(RcvMixer);
 	valXmtMixer->value(XmtMixer);
 	FL_UNLOCK_D();
-
-//	if (IMAGE_WIDTH == DEFAULT_IMAGE_WIDTH && Hwfall == DEFAULT_HWFALL &&
-//	    HNOM == DEFAULT_HNOM && WNOM == DEFAULT_WNOM) 
-	{
-		fl_digi_main->resize(mainX, mainY, mainW, mainH);
-
-		int X, Y, W, H, Yx, Hx;
-		X = ReceiveText->x();
-		Y = ReceiveText->y();
-		W = ReceiveText->w();
-		H = ReceiveText->h();
-		Yx = TransmitText->y();
-		Hx = TransmitText->h();	
-
-		ReceiveText->resize(X,Y,W,RxTextHeight);
-		FHdisp->resize(X,Y,W,RxTextHeight);
-		TransmitText->resize(X, Y + RxTextHeight, W, H + Hx - RxTextHeight);
-	}
 
 	if (rigShown == true) {
 		if (!rigcontrol)

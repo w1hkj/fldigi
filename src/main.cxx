@@ -178,6 +178,8 @@ int main(int argc, char ** argv)
 	progdefaults.readDefaultsXML();
 	progdefaults.testCommPorts();
 	
+	progStatus.loadLastState();
+	
 	create_fl_digi_main();
 
 	createConfig();
