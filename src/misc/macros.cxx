@@ -287,31 +287,26 @@ void pTIMER(string &s, size_t &i)
 
 void pMODEM(string &s, size_t &i)
 {
-	size_t si = i;
+	size_t	j, k, 
+			len = s.length();
+	string name;
 
-	if ((i = s.find('>', i)) == string::npos)
+	if ((j = s.find('>', i)) == string::npos)
 		return;
-
-	size_t len = s.length();
-	while (++i < len)
-	    if (!isspace(s[i]))
-		break;
-	size_t j = i;
 	while (++j < len)
-	    if (isspace(s[j]) || s[j] == '<')
-		break;
-
-	string name = s.substr(i, j-i);
-	for (j = 0; j < NUM_MODES; j++) {
-		if (name == mode_info[j].sname) {
-			if (active_modem->get_mode() != mode_info[j].mode)
-				init_modem_sync(mode_info[j].mode);
+	    if (!isspace(s[j])) break;
+	k = j;
+	while (++k < len)
+	    if (isspace(s[k])  || s[k] == '<') break;
+	name = s.substr(j, k - j);
+	for (int m = 0; m < NUM_MODES; m++) {
+		if (name == mode_info[m].sname) {
+			if (active_modem->get_mode() != mode_info[m].mode)
+				init_modem_sync(mode_info[m].mode);
 			break;
 		}
 	}
-
-	s.erase(si, i + name.length());
-	i = si;
+	s.erase(i, k-i);
 }
 
 int MACROTEXT::loadMacros(string filename)
@@ -322,7 +317,6 @@ int MACROTEXT::loadMacros(string filename)
 	bool   inMacro = false;
 	int    mNumber = 0;
 	unsigned long int	   crlf; // 64 bit cpu's
-	char   szTemp[10];
 	char   szLine[4096];
 	bool   convert = false;
 	

@@ -30,6 +30,7 @@
 #include <FL/fl_ask.H>
 
 #include "mt63.h"
+#include "status.h"
 
 using namespace std;
 
@@ -38,7 +39,7 @@ static int IntegLen = 32;	// integration period for sync./data tracking
 void mt63::tx_init(SoundBase *sb)
 {
 	scard = sb;
-	Tx->Preset((int)bandwidth, Interleave);
+	Tx->Preset((int)bandwidth, Interleave == 64 ? 1 : 0);
 	set_freq(500.0 + bandwidth / 2.0);
 	flush = Tx->DataInterleave;
 	videoText();
@@ -46,7 +47,7 @@ void mt63::tx_init(SoundBase *sb)
 
 void mt63::rx_init()
 {
-	Rx->Preset((int)bandwidth, Interleave, IntegLen);
+	Rx->Preset((int)bandwidth, Interleave == 64 ? 1 : 0, IntegLen);
 	set_freq(500.0 + bandwidth / 2.0);
 	InpLevel->Preset(64.0, 0.75);
 	escape = 0;
@@ -74,14 +75,14 @@ int mt63::tx_process()
 	if ((progdefaults.mt63_8bit && c > 255) || (!progdefaults.mt63_8bit && c > 127))
 		c = '.';
 
+	put_echo_char(c);
+	
 	if (c > 127) {
 		c &= 127;
 		Tx->SendChar(127);
 		ModulateXmtr((Tx->Comb.Output.Data), Tx->Comb.Output.Len);
 	}
 
-	put_echo_char(c);
-	
 	Tx->SendChar(c);
 	ModulateXmtr((Tx->Comb.Output.Data), Tx->Comb.Output.Len);
 
@@ -120,7 +121,7 @@ int mt63::rx_process(const double *buf, int len)
 //	snprintf(msg1, sizeof(msg1), "s/n %2d dB", (int)(floor(s2n))); 
 //  put_Status1(msg1);
 
-	if (squelchon && snr < squelch)
+	if (progStatus.sqlonoff && snr < progStatus.sldrSquelchValue)
 		return 0;
 
 	for (i = 0; i < Rx->Output.Len; i++) {
@@ -158,12 +159,12 @@ void mt63::restart()
 	digiscope->mode(Digiscope::BLANK);
 	set_freq(500.0 + bandwidth / 2.0);
 
-	err = Tx->Preset((int)bandwidth, Interleave);
+	err = Tx->Preset((int)bandwidth, Interleave == 64 ? 1 : 0);
 	if (err)
 		fprintf(stderr, "mt63_txinit: init failed\n");
 //	flush = Tx->DataInterleave;
 
-	err = Rx->Preset((int)bandwidth, Interleave, IntegLen);
+	err = Rx->Preset((int)bandwidth, Interleave == 64 ? 1 : 0, IntegLen);
 	if (err)
 		fprintf(stderr, "mt63_rxinit: init failed\n");
 	InpLevel->Preset(64.0, 0.75);

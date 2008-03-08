@@ -33,6 +33,7 @@
 #include "throb.h"
 #include "ascii.h"
 #include "configuration.h"
+#include "status.h"
 
 #undef  CLAMP
 #define CLAMP(x,low,high)       (((x)>(high))?(high):(((x)<(low))?(low):(x)))
@@ -340,7 +341,7 @@ int throb::findtones(complex *word, int &tone1, int &tone2)
 }
 
 void throb::show_char(int c) {
-	if (metric > squelch || squelchon == false)
+	if (metric > progStatus.sldrSquelchValue || progStatus.sqlonoff == false)
 		put_rx_char(c);
 }
 
@@ -426,7 +427,7 @@ void throb::rx(complex in)
 	else
 		decodechar (tone1, tone2);
 
-	if (afcon == true && (metric >= squelch || squelchon == false)) {
+	if (progStatus.afconoff == true && (metric >= progStatus.sldrSquelchValue || progStatus.sqlonoff == false)) {
 		complex z1, z2;
 		double f;
 
@@ -480,7 +481,7 @@ void throb::sync(complex in)
 	/* correct sync */
 	rxcntr += (maxpos - rxsymlen / 2) / (num_tones - 1);
 	waitsync = 0;
-	if (metric >= squelch || squelchon == false)
+	if (metric >= progStatus.sldrSquelchValue || progStatus.sqlonoff == false)
 		set_scope(dispbuf, rxsymlen);
 	else {
 		dispbuf[0] = 0.0;

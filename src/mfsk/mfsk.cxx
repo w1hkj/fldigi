@@ -32,6 +32,7 @@
 #include "mfsk.h"
 #include "modem.h"
 #include "configuration.h"
+#include "status.h"
 #include "trx.h"
 
 #include "ascii.h"
@@ -163,7 +164,6 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 	bitstate = 0;
 	phaseacc = 0;
 	pipeptr = 0;
-	squelch = 0;
 	metric = 0;
 	prev1symbol = prev2symbol = 0;
 	symbolpair[0] = symbolpair[1] = 0;
@@ -343,7 +343,7 @@ void mfsk::decodesymbol(unsigned char symbol)
 	}
 	display_metric(metric);
 	
-	if (squelchon && metric < squelch)
+	if (progStatus.sqlonoff && metric < progStatus.sldrSquelchValue)
 		return;
 
 	recvbit(c);
@@ -433,7 +433,7 @@ void mfsk::update_syncscope()
 {
 	int j;
 	memset(scopedata, 0, 2 * symlen * sizeof(double));
-	if (!squelchon || metric >= squelch)
+	if (!progStatus.sqlonoff || metric >= progStatus.sldrSquelchValue)
 		for (int i = 0; i < 2 * symlen; i++) {
 			j = (i + pipeptr) % (2 * symlen);
 			scopedata[i] = (pipe[j].vector[prev1symbol]).mag();
@@ -497,7 +497,7 @@ void mfsk::afc()
 	f = z.arg() * samplerate / twopi;
 	f -= (1000 + tonespacing * currsymbol);
 
-	if (afcon && (metric > squelch || squelchon == false)) {
+	if (progStatus.afconoff && (metric > progStatus.sldrSquelchValue || progStatus.sqlonoff == false)) {
 		if (fabs(f) <= tonespacing / 2.0)
 			freqerr = afcfilt->run(f / numtones);
 		set_freq(frequency + freqerr);

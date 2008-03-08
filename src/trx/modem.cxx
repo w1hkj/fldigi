@@ -64,16 +64,11 @@ modem::modem()
 	bool wfrev = wf->Reverse();
 	bool wfsb = wf->USB();
 	reverse = wfrev ^ !wfsb;
-	afcon = true;
-	squelchon = true;
 	historyON = false;
 }
 
 void modem::init()
 {
-	afcon = progdefaults.afconoff;
-	squelchon = progdefaults.sqlonoff;
-	squelch = progdefaults.squelch;
 	bool wfrev = wf->Reverse();
 	bool wfsb = wf->USB();
 	reverse = wfrev ^ !wfsb;

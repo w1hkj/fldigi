@@ -29,6 +29,7 @@
 #include <iostream>
 
 #include "confdialog.h"
+#include "status.h"
 
 #include "dominoex.h"
 #include "trx.h"
@@ -251,7 +252,7 @@ void dominoex::decodesymbol(unsigned char curtone, unsigned char prevtone)
 			for (int i = 0; i < symcounter; i++)
 				sym |= symbolbuf[i] << (4 * i);
 			ch = dominoex_varidec(sym);
-			if (!squelchon || metric > squelch)		
+			if (!progStatus.sqlonoff || metric > progStatus.sldrSquelchValue)		
 				recvchar(ch);
 		}
 		symcounter = 0;
@@ -304,14 +305,14 @@ void dominoex::update_syncscope(complex *bins)
 			mag = 0;
 		videodata[i] = 255*mag;
 	}
-	if (!squelchon || metric >= squelch) {
+	if (!progStatus.sqlonoff || metric >= progStatus.sldrSquelchValue) {
 		set_video(videodata, numbins);
 		videodata.next(); // change buffers
 	}
 
 // dom symbol synch data	
 	memset(scopedata, 0, 2 * symlen * sizeof(double));
-	if (!squelchon || metric >= squelch)
+	if (!progStatus.sqlonoff || metric >= progStatus.sldrSquelchValue)
 		for (int i = 0, j = 0; i < 2 * symlen; i++) {
 			j = (i + pipeptr) % (2 * symlen);
 			scopedata[i] = (pipe[j].vector[prev1symbol]).mag();
@@ -377,7 +378,7 @@ void dominoex::afc()
 //	std::cout << currsymbol << ", " << freqerr << std::endl; 
 	fflush(stdout);
 	
-	if (afcon && (metric > squelch || squelchon == false)) {
+	if (progStatus.afconoff && (metric > progStatus.sldrSquelchValue || progStatus.sqlonoff == false)) {
 		set_freq(frequency + freqerr);
 	}
 }
@@ -385,9 +386,10 @@ void dominoex::afc()
 void dominoex::eval_s2n(complex curr, complex n)
 {
 	sig = curr.mag(); // signal + noise energy
-	noise = n.mag() + 1e-10; // noise energy
-
-	s2n = decayavg( s2n, fabs((sig - noise) / noise), 8);
+	noise = n.mag();// + 1e-10; // noise energy
+	if (noise < 1e-20) noise = 1e-20;
+	
+	s2n = decayavg( s2n, sig / noise, 8);
 
 	metric = 20*log10(s2n);
 

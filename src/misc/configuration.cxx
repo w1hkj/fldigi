@@ -17,7 +17,6 @@
 
 configuration progdefaults = {
 	false,			// bool		changed;
-	25.0,			// double 	squelch;
 	0.0,			// double	wfRefLevel;
 	70.0,			// double	wfAmpSpan;
 	300,			// int		LowFreqCutoff;
@@ -31,7 +30,6 @@ configuration progdefaults = {
 	40,				// int		ServerOffset;
 	6.0,			// double	ACQsn;
 // RTTY
-	25.0,			// double		rtty_squelch;
 	3,				// int			rtty_shift; = 170
 	0,				// int			rtty_baud; = 45
 	0,				// int 			rtty_bits; = 5
@@ -43,8 +41,6 @@ configuration progdefaults = {
 	true,			// bool		rtty_autocrlf;
 	72,				// int		rtty_autocount;
 	1,				// int		rtty_afcspeed;
-	true,			// bool		afconoff;
-	true,			// bool		sqlonoff;
 	false,			// bool		useFSKkeyline;
 	false,			// bool		useFSKkeylineDTR;	
 	true,			// bool		FSKisLSB;
@@ -85,9 +81,6 @@ configuration progdefaults = {
 	false,			// bool 	mt63_8bit;
 	32,				// int		mt63_interleave;
 //
-//	FL_SCREEN,		// int 		Fontnbr - obsolete
-//	16,				// int 		Fontsize - obsolete
-//	0,				// int 		Fontcolor - obsolete
 	0,				// uchar 	red
 	255,			// uchar 	green
 	255,			// uchar 	blue
@@ -115,8 +108,6 @@ configuration progdefaults = {
 //
 	true,			// bool		btnusb;
 	0, 				// int 		btnPTTis
-	0, 				// int 		btnRTSDTRis
-	0, 				// int 		btnPTTREVis
 	false,			// bool		RTSptt;
 	false,			// bool		DTRptt;
 	false,			// bool		RTSplus;
@@ -160,8 +151,6 @@ configuration progdefaults = {
 	0,				// int		timeout;
 	
 	"",			// string	MXdevice
-	1.0,			// double	RcvMixer;
-	1.0,			// double	XmtMixer;
 	false,			// bool		MicIn;
 	true,			// bool		LineIn;
 	false,			// bool		EnableMixer;
@@ -220,12 +209,11 @@ enum TAG { \
 	IGNORE,
 	MYCALL, MYNAME, MYQTH, MYLOC, 
 	SQUELCH, WFREFLEVEL, WFAMPSPAN, LOWFREQCUTOFF, 
-//	FONTNBR, FONTSIZE, FONTCOLOR,
 	STARTATSWEETSPOT, PSKMAILSWEETSPOT, 
 	PSKSEARCHRANGE, PSKSERVEROFFSET,
 	ACQSN,
 	CWSWEETSPOT, PSKSWEETSPOT, RTTYSWEETSPOT,
-	RTTYSQUELCH, RTTYSHIFT, RTTYBAUD,
+	RTTYSHIFT, RTTYBAUD,
 	RTTYBITS, RTTYPARITY, RTTYSTOP, RTTYREVERSE,
 	RTTYMSBFIRST, RTTYCRCLF, RTTYAUTOCRLF,
 	RTTYAUTOCOUNT, RTTYAFCSPEED,
@@ -246,7 +234,7 @@ enum TAG { \
 	BWTCOLORS,
 	VIEWXMTSIGNAL, SENDID, MACROID, SENDTEXTID, STRTEXTID, VIDEOWIDTH,
 	QRZTYPE, QRZUSER, QRZPASSWORD,
-	BTNUSB, BTNPTTIS, BTNRTSDTRIS, BTNPTTREVIS,
+	BTNUSB, BTNPTTIS,
 	RTSPTT, DTRPTT, RTSPLUS, DTRPLUS,
 	CHOICEHAMLIBIS, CHKUSEMEMMAPIS,
 	CHKUSEHAMLIBIS, CHKUSERIGCATIS,
@@ -257,7 +245,8 @@ enum TAG { \
 	SAMPLERATE, INSAMPLERATE, OUTSAMPLERATE, RXCORR, TXCORR, TXOFFSET,
 	USELEADINGZEROS, CONTESTSTART, CONTESTDIGITS,
 	USETIMER, MACRONUMBER, TIMEOUT,
-	MXDEVICE, RCVMIXER, XMTMIXER, PCMVOLUME,
+	MXDEVICE, 
+	PCMVOLUME,
 	MICIN, LINEIN, ENABLEMIXER, MUTEINPUT,
 	PALETTE0, PALETTE1, PALETTE2, PALETTE3, PALETTE4, 
 	PALETTE5, PALETTE6, PALETTE7, PALETTE8,
@@ -268,7 +257,6 @@ enum TAG { \
 	RXFONTNBR, RXFONTSIZE, TXFONTNBR, TXFONTSIZE,
 	RXFONTCOLOR, TXFONTCOLOR
 };
-//	, ALT_TEXT_WIDGETS };
 	
 void writeXMLint(ofstream &f, const char * tag,  int val)
 {
@@ -325,13 +313,9 @@ void configuration::writeDefaultsXML()
 	writeXMLstr(f, "MYQTH", myQth);
 	writeXMLstr(f, "MYLOC", myLocator);
 
-	writeXMLdbl(f, "SQUELCH", squelch);
 	writeXMLdbl(f, "WFREFLEVEL", wfRefLevel);
 	writeXMLdbl(f, "WFAMPSPAN", wfAmpSpan);
 	writeXMLint(f, "LOWFREQCUTOFF", LowFreqCutoff);
-//	writeXMLint(f, "FONTNBR", Fontnbr);
-//	writeXMLint(f, "FONTSIZE", FontSize);
-//	writeXMLint(f, "FONTCOLOR", FontColor);
 
 	writeXMLbool(f, "STARTATSWEETSPOT", StartAtSweetSpot);
 	writeXMLbool(f, "PSKMAILSWEETSPOT", PSKmailSweetSpot);
@@ -341,7 +325,6 @@ void configuration::writeDefaultsXML()
 	writeXMLdbl(f, "PSKSWEETSPOT", PSKsweetspot);
 	writeXMLdbl(f, "ACQSN", ACQsn);
 	writeXMLdbl(f, "RTTYSWEETSPOT", RTTYsweetspot);
-	writeXMLdbl(f, "RTTYSQUELCH", rtty_squelch);	
 	writeXMLint(f, "RTTYSHIFT", rtty_shift);
 	writeXMLint(f, "RTTYBAUD", rtty_baud);
 	writeXMLint(f, "RTTYBITS", rtty_bits);
@@ -409,8 +392,6 @@ void configuration::writeDefaultsXML()
 	writeXMLstr(f, "QRZPASSWORD", QRZuserpassword);
 	writeXMLbool(f, "BTNUSB", btnusb);
 	writeXMLint(f, "BTNPTTIS", btnPTTis);
-	writeXMLint(f, "BTNRTSDTRIS", btnRTSDTRis);
-	writeXMLint(f, "BTNPTTREVIS", btnPTTREVis);
 	writeXMLbool(f, "RTSPTT", RTSptt);
 	writeXMLbool(f, "DTRPTT", DTRptt);
 	writeXMLbool(f, "RTSPLUS", RTSplus);
@@ -443,8 +424,6 @@ void configuration::writeDefaultsXML()
 	writeXMLint(f, "MACRONUMBER", macronumber);
 	writeXMLint(f, "TIMEOUT", timeout);	
 	writeXMLstr(f, "MXDEVICE", MXdevice);
-	writeXMLdbl(f, "RCVMIXER", RcvMixer);
-	writeXMLdbl(f, "XMTMIXER", XmtMixer);
 	writeXMLdbl(f, "PCMVOLUME", PCMvolume);
 	writeXMLbool(f, "MICIN", MicIn);
 	writeXMLbool(f, "LINEIN", LineIn);
@@ -452,8 +431,6 @@ void configuration::writeDefaultsXML()
 	writeXMLbool(f, "MUTEINPUT", MuteInput);
 	for (int i = 0; i < 9; i++)
 		writeXMLPalette(f, i, cfgpal[i].R, cfgpal[i].G, cfgpal[i].B);
-
-//	writeXMLbool(f, "ALT_TEXT_WIDGETS", alt_text_widgets);
 
 	writeXMLbool(f, "VIEWERMARQUEE", VIEWERmarquee);
 	writeXMLbool(f, "VIEWERSHOWFREQ", VIEWERshowfreq);
@@ -523,9 +500,6 @@ bool configuration::readDefaultsXML()
 					case MYLOC:
 						myLocator = xml->getNodeData();
 						break;
-					case SQUELCH:
-						squelch = atof(xml->getNodeData());
-						break;
 					case WFREFLEVEL:
 						wfRefLevel = atof(xml->getNodeData());
 						break;
@@ -535,15 +509,6 @@ bool configuration::readDefaultsXML()
 					case LOWFREQCUTOFF :
 						LowFreqCutoff = atoi(xml->getNodeData());
 						break;
-//					case FONTSIZE :
-//						FontSize = atoi(xml->getNodeData());
-//						break;
-//					case FONTCOLOR :
-//						FontColor = atoi(xml->getNodeData());
-//						break;
-//					case FONTNBR :
-//						Fontnbr = atoi(xml->getNodeData());
-//						break;
 					case STARTATSWEETSPOT :
 						StartAtSweetSpot = atoi(xml->getNodeData());
 						break;
@@ -567,9 +532,6 @@ bool configuration::readDefaultsXML()
 						break;
 					case RTTYSWEETSPOT :
 						RTTYsweetspot = atof(xml->getNodeData());
-						break;
-					case RTTYSQUELCH :
-						rtty_squelch = atof(xml->getNodeData());
 						break;
 					case RTTYSHIFT :
 						rtty_shift = atoi(xml->getNodeData());
@@ -743,12 +705,6 @@ bool configuration::readDefaultsXML()
 					case BTNPTTIS :
 						btnPTTis = atoi(xml->getNodeData());
 						break;
-					case BTNRTSDTRIS :
-						btnRTSDTRis = atoi(xml->getNodeData());
-						break;
-					case BTNPTTREVIS :
-						btnPTTREVis = atoi(xml->getNodeData());
-						break;
 					case RTSPTT :
 						RTSptt = atoi(xml->getNodeData());
 						break;
@@ -844,12 +800,6 @@ bool configuration::readDefaultsXML()
 						break;
 					case MXDEVICE :
 						MXdevice = xml->getNodeData();
-						break;
-					case RCVMIXER :
-						RcvMixer = atof(xml->getNodeData());
-						break;
-					case XMTMIXER :
-						XmtMixer = atof(xml->getNodeData());
 						break;
 					case PCMVOLUME :
 						PCMvolume = atof(xml->getNodeData());
@@ -981,9 +931,6 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("WFREFLEVEL", nodeName)) 	tag = WFREFLEVEL;
 				else if (!strcmp("WFAMPSPAN", nodeName)) 	tag = WFAMPSPAN;
 				else if (!strcmp("LOWFREQCUTOFF", nodeName)) 	tag = LOWFREQCUTOFF;
-//				else if (!strcmp("FONTSIZE", nodeName)) 	tag = FONTSIZE;
-//				else if (!strcmp("FONTCOLOR", nodeName)) 	tag = FONTCOLOR;
-//				else if (!strcmp("FONTNBR", nodeName)) 	tag = FONTNBR;
 				else if (!strcmp("STARTATSWEETSPOT", nodeName)) 	tag = STARTATSWEETSPOT;
 				else if (!strcmp("PSKMAILSWEETSPOT", nodeName)) 	tag = PSKMAILSWEETSPOT;
 				else if (!strcmp("PSKSEARCHRANGE", nodeName)) 	tag = PSKSEARCHRANGE;
@@ -992,7 +939,6 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("CWSWEETSPOT", nodeName)) 	tag = CWSWEETSPOT;
 				else if (!strcmp("PSKSWEETSPOT", nodeName)) 	tag = PSKSWEETSPOT;
 				else if (!strcmp("RTTYSWEETSPOT", nodeName)) 	tag = RTTYSWEETSPOT;
-				else if (!strcmp("RTTYSQUELCH", nodeName)) 	tag = RTTYSQUELCH;
 				else if (!strcmp("RTTYSHIFT", nodeName)) 	tag = RTTYSHIFT;
 				else if (!strcmp("RTTYBAUD", nodeName)) 	tag = RTTYBAUD;
 				else if (!strcmp("RTTYBITS", nodeName)) 	tag = RTTYBITS;
@@ -1048,8 +994,6 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("QRZTYPE", nodeName)) 	tag = QRZTYPE;
 				else if (!strcmp("BTNUSB", nodeName)) 	tag = BTNUSB;
 				else if (!strcmp("BTNPTTIS", nodeName)) 	tag = BTNPTTIS;
-				else if (!strcmp("BTNRTSDTRIS", nodeName)) 	tag = BTNRTSDTRIS;
-				else if (!strcmp("BTNPTTREVIS", nodeName)) 	tag = BTNPTTREVIS;
 				else if (!strcmp("RTSPTT", nodeName)) 	tag = RTSPTT;
 				else if (!strcmp("DTRPTT", nodeName)) 	tag = DTRPTT;
 				else if (!strcmp("RTSPLUS", nodeName)) 	tag = RTSPLUS;
@@ -1081,8 +1025,6 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("MACRONUMBER", nodeName)) 	tag = MACRONUMBER;
 				else if (!strcmp("TIMEOUT", nodeName)) 	tag = TIMEOUT;
 				else if (!strcmp("MXDEVICE", nodeName)) 	tag = MXDEVICE;
-				else if (!strcmp("RCVMIXER", nodeName)) 	tag = RCVMIXER;
-				else if (!strcmp("XMTMIXER", nodeName)) 	tag = XMTMIXER;
 				else if (!strcmp("PCMVOLUME", nodeName)) 	tag = PCMVOLUME;
 				else if (!strcmp("MICIN", nodeName)) 	tag = MICIN;
 				else if (!strcmp("LINEIN", nodeName)) 	tag = LINEIN;
@@ -1208,7 +1150,6 @@ void configuration::saveDefaults() {
 	secText = txtSecondary->value();
 	PTTdev = inpTTYdev->value();
 
-	squelch = sldrSquelch->value();
 	for (int i = 0; i < 9; i++) {
 		progdefaults.cfgpal[i].R =  palette[i].R;
 		progdefaults.cfgpal[i].G =  palette[i].G;
@@ -1216,262 +1157,221 @@ void configuration::saveDefaults() {
 	}
 	FL_UNLOCK();
 	
-//	string deffname = HomeDir;
-//	deffname.append("fldigi.def");
-//	ofstream deffile(deffname.c_str(), ios::out);
-//	writeDefaults(deffile);
-
-//	deffile.close();
-	
 	writeDefaultsXML();
-	
 	changed = false;
 }
 
-int configuration::openDefaults() {
+int configuration::setDefaults() {
 #if USE_HAMLIB	
 	getRigs();
 #endif	
-	if (readDefaultsXML()) {
-//	if (readDefaults()) {
-		FL_LOCK();
-			inpMyCallsign->value(myCall.c_str());
-			inpMyName->value(myName.c_str());
-			inpMyQth->value(myQth.c_str());
-			inpMyLocator->value(myLocator.c_str());
-			UseLeadingZeros = btnUseLeadingZeros->value();
-			ContestStart = (int)nbrContestStart->value();
-			ContestDigits = (int)nbrContestDigits->value();
-			
-			txtSecondary->value(secText.c_str());
-			valDominoEX_BW->value(DOMINOEX_BW);
-			
-			for (int i = 0; i < 5; i++) {
-				btnPTT[i]->value(0);
-				btnPTT[i]->activate();
-			}
-			btnPTT[btnPTTis]->value(1);
-#if !USE_HAMLIB
-			btnPTT[1]->deactivate();
-			chkUSEHAMLIB->deactivate();
-            inpRIGdev->hide();
-            mnuBaudRate->hide();
-            cboHamlibRig->hide();
-#else
-            btnPTT[1]->activate();
-			chkUSEHAMLIB->activate();
-            inpRIGdev->show();
-            mnuBaudRate->show();
-            cboHamlibRig->show();
-			cboHamlibRig->value(HamRigName.c_str());
-#endif
-			btnRTSptt->value(RTSptt);
-			btnDTRptt->value(DTRptt);
-			btnRTSplusV->value(RTSplus);
-			btnDTRplusV->value(DTRplus);
-
-			inpTTYdev->value(PTTdev.c_str());
-
-			if(chkUSEMEMMAPis) {
-				chkUSEMEMMAP->value(1);
-				chkUSEHAMLIB->value(0);
-				chkUSERIGCAT->value(0);
-                cboHamlibRig->deactivate();
-                inpRIGdev->deactivate();
-                mnuBaudRate->deactivate();
-                btnPTT[1]->deactivate();
-                btnPTT[2]->activate();
-                btnPTT[3]->deactivate();
-			} else if (chkUSEHAMLIBis) {
-				chkUSEMEMMAP->value(0);
-				chkUSERIGCAT->value(0);
-				chkUSEHAMLIB->value(1);
-                cboHamlibRig->activate();
-                inpRIGdev->activate();
-                mnuBaudRate->activate();
-                btnPTT[1]->activate();
-                btnPTT[2]->deactivate();
-                btnPTT[3]->deactivate();
-			} else if (chkUSERIGCATis) {
-				chkUSEMEMMAP->value(0);
-				chkUSEHAMLIB->value(0);
-				chkUSERIGCAT->value(1);
-                cboHamlibRig->deactivate();
-                inpRIGdev->deactivate();
-                mnuBaudRate->deactivate();
-                btnPTT[1]->deactivate();
-                btnPTT[2]->deactivate();
-                btnPTT[3]->activate();
-			} else {
-				chkUSEMEMMAP->value(0);
-				chkUSEHAMLIB->value(0);
-				chkUSERIGCAT->value(0);
-                btnPTT[1]->deactivate();
-                btnPTT[2]->deactivate();
-                btnPTT[3]->deactivate();
-			}
-
-			inpRIGdev->value(HamRigDevice.c_str());
-			mnuBaudRate->value(HamRigBaudrate);
-
-			sldrSquelch->value(squelch);
-			
-			valCWsweetspot->value(CWsweetspot);
-			valRTTYsweetspot->value(RTTYsweetspot);
-			valPSKsweetspot->value(PSKsweetspot);
-			btnStartAtSweetSpot->value(StartAtSweetSpot);
-			btnPSKmailSweetSpot->value(PSKmailSweetSpot);
-			cntSearchRange->value(SearchRange);
-			cntServerOffset->value(ServerOffset);
-			cntACQsn->value(ACQsn);
-			
-			btnCursorBWcolor->color(
-				fl_rgb_color(cursorLineRGBI.R, cursorLineRGBI.G, cursorLineRGBI.B) );
-			btnCursorCenterLineColor->color(
-				fl_rgb_color(cursorCenterRGBI.R, cursorCenterRGBI.G, cursorCenterRGBI.B) );
-			btnBwTracksColor->color(
-				fl_rgb_color(bwTrackRGBI.R, bwTrackRGBI.G, bwTrackRGBI.B) );
-				
-			cntCWweight->value(CWweight);
-			sldrCWxmtWPM->value(CWspeed);
-			cntCWdefWPM->value(defCWspeed);
-			sldrCWbandwidth->value(CWbandwidth);
-			btnCWrcvTrack->value(CWtrack);
-			cntCWrange->value(CWrange);
-			cntCWlowerlimit->value(CWlowerlimit);
-			cntCWupperlimit->value(CWupperlimit);
-			cntCWlowerlimit->maximum(CWupperlimit - 20);
-			cntCWupperlimit->minimum(CWlowerlimit + 20);
-			cntCWrisetime->value(CWrisetime);
-			cntCWdash2dot->value(CWdash2dot);
-			sldrCWxmtWPM->minimum(CWlowerlimit);
-			sldrCWxmtWPM->maximum(CWupperlimit);
-			btnQSK->value(QSK);
-			cntPreTiming->maximum((int)(2400/CWspeed)/2.0); 
-			cntPreTiming->value(CWpre);
-			cntPostTiming->maximum((int)(2400/CWspeed)/2.0);
-			cntPostTiming->value(CWpost);
-			btnCWID->value(CWid);
-			
-			selHellFont->value(feldfontnbr);
-			btnFeldHellIdle->value(FELD_IDLE);
-			
-			string bandsfname = HomeDir;
-			bandsfname.append("frequencies.def");
-			ifstream bandsfile(bandsfname.c_str(), ios::in);
-			if (bandsfile) {
-				string sBand;
-				cboBand->add(" ");
-				while (!bandsfile.eof()) {
-					sBand = "";
-					bandsfile >> sBand; bandsfile.ignore();
-					if (sBand.length() > 0)
-						cboBand->add(sBand.c_str());
-				}
-				bandsfile.close();
-			} else {
-				int i = 0;
-				while (szBands[i]) {
-					cboBand->add((char *)szBands[i]);
-					i++;
-				}
-			}
-			btnQRZnotavailable->value(0);
-			btnQRZsocket->value(0);
-			btnQRZcdrom->value(0);
-			btnHAMCALLsocket->value(0);
-			if (QRZ == 0)
-				btnQRZnotavailable->value(1);
-			else if (QRZ == 1)
-				btnQRZsocket->value(1);
-			else if (QRZ == 2)
-				btnQRZcdrom->value(1);
-			else if (QRZ == 3)
-				btnHAMCALLsocket->value(1);
-			
-			btnRTTY_USB->value(RTTY_USB);
-			btnsendid->value(sendid);
-			btnsendvideotext->value(sendtextid);
-			
-			valRcvMixer->value(RcvMixer);
-			valXmtMixer->value(XmtMixer);
-			valPCMvolume->value(PCMvolume);
-            btnMicIn->value(MicIn);
-            btnLineIn->value(LineIn);
-
-            menuOSSDev->value(OSSdevice.c_str());
-            menuPortInDev->value(PortInDevice.c_str());
-            menuPortOutDev->value(PortOutDevice.c_str());
-            inpPulseServer->value(PulseServer.c_str());
-
-            btnMixer->value(EnableMixer);
-            resetMixerControls();
-            menuMix->value(MXdevice.c_str());
-
-
-	    char sr[6+1];
-	    if (in_sample_rate == SAMPLE_RATE_UNSET &&
-		(in_sample_rate = sample_rate) == SAMPLE_RATE_UNSET)
-		    in_sample_rate = SAMPLE_RATE_AUTO;
-	    else if (in_sample_rate > SAMPLE_RATE_OTHER)
-		    snprintf(sr, sizeof(sr), "%d", in_sample_rate);
-	    if (in_sample_rate <= SAMPLE_RATE_NATIVE)
-		    menuInSampleRate->value(in_sample_rate);
-	    else
-		    menuInSampleRate->value(menuInSampleRate->find_item(sr));
-
-	    if (out_sample_rate == SAMPLE_RATE_UNSET &&
-		(out_sample_rate = sample_rate) == SAMPLE_RATE_UNSET)
-		    out_sample_rate = SAMPLE_RATE_AUTO;
-	    else if (out_sample_rate > SAMPLE_RATE_OTHER)
-		    snprintf(sr, sizeof(sr), "%d", out_sample_rate);
-	    if (out_sample_rate <= SAMPLE_RATE_NATIVE)
-		    menuOutSampleRate->value(out_sample_rate);
-	    else
-		    menuOutSampleRate->value(menuOutSampleRate->find_item(sr));
-
-
-			cntRxRateCorr->value(RX_corr);
-			cntTxRateCorr->value(TX_corr);
-			cntTxOffset->value(TxOffset);
-#ifdef USE_BOTH_TEXT_WIDGETS
-			btntextwidgets->value(alt_text_widgets);
-			btntextwidgets->activate();
-#else
-//			alt_text_widgets = true;
-			btntextwidgets->deactivate();
-#endif			
-		FL_UNLOCK();
-
-		enableMixer(EnableMixer);
+	FL_LOCK();
+	inpMyCallsign->value(myCall.c_str());
+	inpMyName->value(myName.c_str());
+	inpMyQth->value(myQth.c_str());
+	inpMyLocator->value(myLocator.c_str());
+	UseLeadingZeros = btnUseLeadingZeros->value();
+	ContestStart = (int)nbrContestStart->value();
+	ContestDigits = (int)nbrContestDigits->value();
 		
-		ReceiveText->setFont((Fl_Font)RxFontnbr);
-		ReceiveText->setFontSize(RxFontsize);
-	
-		TransmitText->setFont((Fl_Font)TxFontnbr);
-		TransmitText->setFontSize(TxFontsize);
-
-		wf->setPrefilter(wfPreFilter);
-
-		for (int i = 0; i < 9; i++) {
-			palette[i].R = (uchar)cfgpal[i].R;
-			palette[i].G = (uchar)cfgpal[i].G;
-			palette[i].B = (uchar)cfgpal[i].B;
-		}
-		wf->setcolors();
-		setColorButtons();
-
-		return 1;
-	} else {
-		for (int i = 0; i < 9; i++) {
-			palette[i].R = (uchar)cfgpal[i].R;
-			palette[i].G = (uchar)cfgpal[i].G;
-			palette[i].B = (uchar)cfgpal[i].B;
-		}
-		wf->setcolors();
-		setColorButtons();
+	txtSecondary->value(secText.c_str());
+	valDominoEX_BW->value(DOMINOEX_BW);
+			
+	for (int i = 0; i < 5; i++) {
+		btnPTT[i]->value(0);
+		btnPTT[i]->activate();
 	}
-	return 0;
+	btnPTT[btnPTTis]->value(1);
+#if !USE_HAMLIB
+	btnPTT[1]->deactivate();
+	chkUSEHAMLIB->deactivate();
+    inpRIGdev->hide();
+    mnuBaudRate->hide();
+    cboHamlibRig->hide();
+#else
+    btnPTT[1]->activate();
+	chkUSEHAMLIB->activate();
+	inpRIGdev->show();
+	mnuBaudRate->show();
+    cboHamlibRig->show();
+	cboHamlibRig->value(HamRigName.c_str());
+#endif
+	btnRTSptt->value(RTSptt);
+	btnDTRptt->value(DTRptt);
+	btnRTSplusV->value(RTSplus);
+	btnDTRplusV->value(DTRplus);
+
+	inpTTYdev->value(PTTdev.c_str());
+
+	if(chkUSEMEMMAPis) {
+		chkUSEMEMMAP->value(1); chkUSEHAMLIB->value(0); chkUSERIGCAT->value(0);
+		cboHamlibRig->deactivate();
+		inpRIGdev->deactivate();
+		mnuBaudRate->deactivate();
+		btnPTT[1]->deactivate(); btnPTT[2]->activate(); btnPTT[3]->deactivate();
+	} else if (chkUSEHAMLIBis) {
+		chkUSEMEMMAP->value(0); chkUSERIGCAT->value(0); chkUSEHAMLIB->value(1);
+		cboHamlibRig->activate();
+		inpRIGdev->activate();
+		mnuBaudRate->activate();
+		btnPTT[1]->activate(); btnPTT[2]->deactivate(); btnPTT[3]->deactivate();
+	} else if (chkUSERIGCATis) {
+		chkUSEMEMMAP->value(0); chkUSEHAMLIB->value(0); chkUSERIGCAT->value(1);
+		cboHamlibRig->deactivate();
+		inpRIGdev->deactivate();
+		mnuBaudRate->deactivate();
+		btnPTT[1]->deactivate(); btnPTT[2]->deactivate(); btnPTT[3]->activate();
+	} else {
+		chkUSEMEMMAP->value(0); chkUSEHAMLIB->value(0); chkUSERIGCAT->value(0);
+		btnPTT[1]->deactivate(); btnPTT[2]->deactivate(); btnPTT[3]->deactivate();
+	}
+
+	inpRIGdev->value(HamRigDevice.c_str());
+	mnuBaudRate->value(HamRigBaudrate);
+
+	valCWsweetspot->value(CWsweetspot);
+	valRTTYsweetspot->value(RTTYsweetspot);
+	valPSKsweetspot->value(PSKsweetspot);
+	btnStartAtSweetSpot->value(StartAtSweetSpot);
+	btnPSKmailSweetSpot->value(PSKmailSweetSpot);
+	cntSearchRange->value(SearchRange);
+	cntServerOffset->value(ServerOffset);
+	cntACQsn->value(ACQsn);
+			
+	btnCursorBWcolor->color(
+		fl_rgb_color(cursorLineRGBI.R, cursorLineRGBI.G, cursorLineRGBI.B) );
+	btnCursorCenterLineColor->color(
+		fl_rgb_color(cursorCenterRGBI.R, cursorCenterRGBI.G, cursorCenterRGBI.B) );
+	btnBwTracksColor->color(
+		fl_rgb_color(bwTrackRGBI.R, bwTrackRGBI.G, bwTrackRGBI.B) );
+				
+	cntCWweight->value(CWweight);
+	sldrCWxmtWPM->value(CWspeed);
+	cntCWdefWPM->value(defCWspeed);
+	sldrCWbandwidth->value(CWbandwidth);
+	btnCWrcvTrack->value(CWtrack);
+	cntCWrange->value(CWrange);
+	cntCWlowerlimit->value(CWlowerlimit);
+	cntCWupperlimit->value(CWupperlimit);
+	cntCWlowerlimit->maximum(CWupperlimit - 20);
+	cntCWupperlimit->minimum(CWlowerlimit + 20);
+	cntCWrisetime->value(CWrisetime);
+	cntCWdash2dot->value(CWdash2dot);
+	sldrCWxmtWPM->minimum(CWlowerlimit);
+	sldrCWxmtWPM->maximum(CWupperlimit);
+	btnQSK->value(QSK);
+	cntPreTiming->maximum((int)(2400/CWspeed)/2.0); 
+	cntPreTiming->value(CWpre);
+	cntPostTiming->maximum((int)(2400/CWspeed)/2.0);
+	cntPostTiming->value(CWpost);
+	btnCWID->value(CWid);
+			
+	selHellFont->value(feldfontnbr);
+	btnFeldHellIdle->value(FELD_IDLE);
+			
+	string bandsfname = HomeDir;
+	bandsfname.append("frequencies.def");
+	ifstream bandsfile(bandsfname.c_str(), ios::in);
+	if (bandsfile) {
+		string sBand;
+		cboBand->add(" ");
+		while (!bandsfile.eof()) {
+			sBand = "";
+			bandsfile >> sBand; bandsfile.ignore();
+			if (sBand.length() > 0)
+				cboBand->add(sBand.c_str());
+		}
+		bandsfile.close();
+	} else {
+		int i = 0;
+		while (szBands[i]) {
+			cboBand->add((char *)szBands[i]);
+			i++;
+		}
+	}
+	btnQRZnotavailable->value(0);
+	btnQRZsocket->value(0);
+	btnQRZcdrom->value(0);
+	btnHAMCALLsocket->value(0);
+	if (QRZ == 0)
+		btnQRZnotavailable->value(1);
+	else if (QRZ == 1)
+		btnQRZsocket->value(1);
+	else if (QRZ == 2)
+		btnQRZcdrom->value(1);
+	else if (QRZ == 3)
+		btnHAMCALLsocket->value(1);
+			
+	btnRTTY_USB->value(RTTY_USB);
+	btnsendid->value(sendid);
+	btnsendvideotext->value(sendtextid);
+			
+	valPCMvolume->value(PCMvolume);
+	btnMicIn->value(MicIn);
+	btnLineIn->value(LineIn);
+
+	menuOSSDev->value(OSSdevice.c_str());
+	menuPortInDev->value(PortInDevice.c_str());
+	menuPortOutDev->value(PortOutDevice.c_str());
+	inpPulseServer->value(PulseServer.c_str());
+
+	btnMixer->value(EnableMixer);
+	resetMixerControls();
+	menuMix->value(MXdevice.c_str());
+
+
+	char sr[6+1];
+	if (in_sample_rate == SAMPLE_RATE_UNSET &&
+		(in_sample_rate = sample_rate) == SAMPLE_RATE_UNSET)
+		in_sample_rate = SAMPLE_RATE_AUTO;
+	else if (in_sample_rate > SAMPLE_RATE_OTHER)
+		snprintf(sr, sizeof(sr), "%d", in_sample_rate);
+	if (in_sample_rate <= SAMPLE_RATE_NATIVE)
+		menuInSampleRate->value(in_sample_rate);
+	else
+		menuInSampleRate->value(menuInSampleRate->find_item(sr));
+
+	if (out_sample_rate == SAMPLE_RATE_UNSET &&
+		(out_sample_rate = sample_rate) == SAMPLE_RATE_UNSET)
+		out_sample_rate = SAMPLE_RATE_AUTO;
+	else if (out_sample_rate > SAMPLE_RATE_OTHER)
+		snprintf(sr, sizeof(sr), "%d", out_sample_rate);
+	if (out_sample_rate <= SAMPLE_RATE_NATIVE)
+		menuOutSampleRate->value(out_sample_rate);
+	else
+		menuOutSampleRate->value(menuOutSampleRate->find_item(sr));
+
+
+	cntRxRateCorr->value(RX_corr);
+	cntTxRateCorr->value(TX_corr);
+	cntTxOffset->value(TxOffset);
+#ifdef USE_BOTH_TEXT_WIDGETS
+	btntextwidgets->value(alt_text_widgets);
+	btntextwidgets->activate();
+#else
+	btntextwidgets->deactivate();
+#endif			
+	FL_UNLOCK();
+
+	enableMixer(EnableMixer);
+		
+	ReceiveText->setFont((Fl_Font)RxFontnbr);
+	ReceiveText->setFontSize(RxFontsize);
+	
+	TransmitText->setFont((Fl_Font)TxFontnbr);
+	TransmitText->setFontSize(TxFontsize);
+
+	wf->setPrefilter(wfPreFilter);
+
+	for (int i = 0; i < 9; i++) {
+		palette[i].R = (uchar)cfgpal[i].R;
+		palette[i].G = (uchar)cfgpal[i].G;
+		palette[i].B = (uchar)cfgpal[i].B;
+	}
+	wf->setcolors();
+	setColorButtons();
+
+	return 1;
 }
 
 void configuration::initOperator() {
@@ -1537,7 +1437,6 @@ void configuration::initInterface() {
 		wf->setQSY(1);
 		activate_rig_menu_item(false);
 	} else if (chkUSERIGCATis) { // start the rigCAT thread
-//		btnPTT[3]->activate();
 		if (rigCAT_init() == false) {
 			wf->USB(true);
 			cboBand->show();
@@ -1553,7 +1452,6 @@ void configuration::initInterface() {
 		}
 #if USE_HAMLIB
 	} else if (chkUSEHAMLIBis) { // start the hamlib thread
-//		btnPTT[1]->activate();
 		if (hamlib_init(btnPTTis == 1 ? true : false) == false) {
 			wf->USB(true);
 			cboBand->show();
