@@ -38,6 +38,7 @@
 #include "fontdef.h"
 #include "confdialog.h"
 #include "qrunner.h"
+#include "status.h"
 
 #include <FL/Fl.H>
 #include <FL/Fl_Value_Slider.H>
@@ -245,7 +246,7 @@ void feld::rx(complex z)
 	col_data[col_pointer + RxColumnLen] = (int)x;
 	col_pointer++;
 	if (col_pointer == RxColumnLen) {
-		if (metric > progdefaults.sldrSquelchValue || progdefaults.sqlonoff == false) {
+		if (metric > progStatus.sldrSquelchValue || progStatus.sqlonoff == false) {
 			REQ(put_rx_data, col_data, col_data.size());
 			if (!halfwidth)
 				REQ(put_rx_data, col_data, col_data.size());

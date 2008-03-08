@@ -192,7 +192,7 @@ int main(int argc, char ** argv)
 	
 	push2talk = new PTT();
 
-	progdefaults.openDefaults();
+	progdefaults.setDefaults();
 
 	sound_init();
 	trx_start();

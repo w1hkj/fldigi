@@ -33,6 +33,7 @@
 
 #include "olivia.h"
 #include "sound.h"
+#include "status.h"
 
 #include "confdialog.h"
 
@@ -243,7 +244,7 @@ int olivia::rx_process(const double *buf, int len)
 	for (i = 0; i < len; i++)
 		rxbuffer[i] = (short int) (buf[i] * 32767.0);
 
-	Rx->SyncThreshold = squelchon ? squelch : 0.0;
+	Rx->SyncThreshold = progStatus.sqlonoff ? progStatus.sldrSquelchValue : 0.0;
 
 	Rx->Process(rxbuffer, len);
 
@@ -309,7 +310,7 @@ void olivia::restart()
 	Rx->Bandwidth = Tx->Bandwidth;
 	Rx->SyncMargin = smargin;
 	Rx->SyncIntegLen = sinteg;
-	Rx->SyncThreshold = squelchon ? squelch : 0.0;
+	Rx->SyncThreshold = progStatus.sqlonoff ? progStatus.sldrSquelchValue : 0.0;
 
 	Rx->SampleRate = 8000.0;//samplerate;
 	Rx->InputSampleRate = samplerate;

@@ -39,6 +39,7 @@
 #include "misc.h"
 //#include "modeIO.h"
 #include "configuration.h"
+#include "status.h"
 
 void cw::tx_init(SoundBase *sc)
 {
@@ -317,7 +318,7 @@ int cw::rx_process(const double *buf, int len)
 			if (pipeptr == pipesize - 1)
 				update_syncscope();
 
-			if (!squelchon || metric > squelch ) {
+			if (!progStatus.sqlonoff || metric > progStatus.sldrSquelchValue ) {
 // upward trend means tone starting 
 				if ((value > 0.66 * agc_peak) && (cw_receive_state != RS_IN_TONE))
 					handle_event(CW_KEYDOWN_EVENT, NULL);

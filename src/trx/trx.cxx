@@ -35,6 +35,7 @@
 #include "misc.h"
 //#include "modeIO.h"
 #include "configuration.h"
+#include "status.h"
 #include "macros.h"
 
 #include <FL/Fl.H>
@@ -132,8 +133,8 @@ void trx_trx_receive_loop()
 			if (!bHistory)
 				active_modem->rx_process(rbvec[0].buf, numread);
 			else {
-				bool afc = active_modem->get_afcOnOff();
-				active_modem->set_afcOnOff(0);
+				bool afc = progStatus.afconoff;
+				progStatus.afconoff = false;
 				QRUNNER_DROP(true);
 				active_modem->HistoryON(true);
 				trxrb.get_rv(rbvec);
@@ -142,7 +143,7 @@ void trx_trx_receive_loop()
 				if (rbvec[1].len)
 					active_modem->rx_process(rbvec[1].buf, rbvec[1].len);
 				QRUNNER_DROP(false);
-				active_modem->set_afcOnOff(afc);
+				progStatus.afconoff = afc;
 				bHistory = false;
 				active_modem->HistoryON(false);
 			}

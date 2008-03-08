@@ -35,6 +35,7 @@
 #include "psk.h"
 #include "waterfall.h"
 #include "configuration.h"
+#include "status.h"
 #include "viewpsk.h"
 #include "pskeval.h"
 
@@ -367,7 +368,7 @@ void psk::phaseafc()
 
 void psk::afc()
 {
-	if (!afcon)
+	if (!progStatus.afconoff)
 		return;
 	if (dcd == true || acquire)
 		phaseafc();
@@ -413,7 +414,7 @@ void psk::rx_symbol(complex symbol)
 		break;
 
 	default:
-		if (metric > squelch || squelchon == false)
+		if (metric > progStatus.sldrSquelchValue || progStatus.sqlonoff == false)
 			dcd = true;
 		else 
 			dcd = false;
@@ -469,9 +470,6 @@ int psk::rx_process(const double *buf, int len)
 
 	if (pskviewer && !bHistory) pskviewer->rx_process(buf, len);
 	if (evalpsk) evalpsk->sigdensity();
-		
-//	if (afcon == 2)
-//		sigsearch = 0;
 		
 	delta = twopi * frequency / samplerate;
 	

@@ -29,6 +29,11 @@ struct status {
 	unsigned int	VIEWERypos;
 	bool	VIEWERvisible;
 	bool	LOGenabled;
+	double  sldrSquelchValue;
+	bool	afconoff;
+	bool	sqlonoff;
+	double	RcvMixer;
+	double	XmtMixer;
 	
 	
 public:

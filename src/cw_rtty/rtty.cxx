@@ -30,6 +30,7 @@
 #include "waterfall.h"
 #include "confdialog.h"
 #include "configuration.h"
+#include "status.h"
 
 //static char rttymsg[80];
 static char msg1[20];
@@ -309,7 +310,7 @@ int rtty::rx(bool bit)
 	case RTTY_RX_STATE_STOP:
 		if (--counter == 0) {
 			if (bit) {
-				if ((metric >= squelch && squelchon)|| !squelchon) {				
+				if ((metric >= progStatus.sldrSquelchValue && progStatus.sqlonoff)|| !progStatus.sqlonoff) {				
 					c = decode_char();
 					if ( c != 0 )
 						put_rx_char(c);
@@ -448,7 +449,7 @@ int rtty::rx_process(const double *buf, int len)
 			rxflag = rx (reverse ? bit : !bit);
 
 			if (rxflag == 2 || dspcnt == 0) {
-				if ((metric > squelch && squelchon) || !squelchon) {
+				if ((metric > progStatus.sldrSquelchValue && progStatus.sqlonoff) || !progStatus.sqlonoff) {
 					set_scope(pipe, symbollen, false);
 					pipe.next(); // change buffers
 				}
@@ -482,8 +483,8 @@ int rtty::rx_process(const double *buf, int len)
 				poscnt = 0; posfreq = 0.0;
 				negcnt = 0; negfreq = 0.0;
 
-				if (afcon) {
-					if (metric > squelch || !squelchon || sigsearch) {
+				if (progStatus.afconoff) {
+					if (metric > progStatus.sldrSquelchValue || !progStatus.sqlonoff || sigsearch) {
 						set_freq(frequency + freqerr);
 					}
 				}

@@ -13,7 +13,6 @@ using namespace std;
 
 struct configuration {
 	bool	changed;
-	double 	squelch;
 	double	wfRefLevel;
 	double	wfAmpSpan;
 	int		LowFreqCutoff;
@@ -27,7 +26,7 @@ struct configuration {
 	int		ServerOffset;
 	double	ACQsn;
 // RTTY
-	double		rtty_squelch;
+//	double		rtty_squelch;
 	int			rtty_shift;
 	int			rtty_baud;
 	int 		rtty_bits;
@@ -39,9 +38,9 @@ struct configuration {
 	bool		rtty_autocrlf;
 	int			rtty_autocount;
 	int			rtty_afcspeed;
-	bool		afconoff;
-	bool		sqlonoff;
-	double		sldrSquelchValue;
+//	bool		afconoff;
+//	bool		sqlonoff;
+//	double		sldrSquelchValue;
 	bool		useFSKkeyline;		// use RTS for FSK
 	bool		useFSKkeylineDTR;	// use DTR for FSK
 	bool		FSKisLSB;
@@ -81,9 +80,6 @@ struct configuration {
 	bool 		mt63_8bit;
 	int			mt63_interleave;
 // User interface data
-//	int		Fontnbr;
-//	int		FontSize;
-//	int		FontColor;
 	uchar	red;
 	uchar	green;
 	uchar	blue;
@@ -111,8 +107,6 @@ struct configuration {
 // Rig Interface data
 	bool	btnusb;
 	int		btnPTTis;
-	int		btnRTSDTRis; // obsolete
-	int		btnPTTREVis; // obsolete
 	bool	RTSptt;
 	bool	DTRptt;
 	bool	RTSplus;
@@ -157,8 +151,6 @@ struct configuration {
 	
 // Mixer configuration
 	string	MXdevice;
-	double	RcvMixer;
-	double	XmtMixer;
 	bool	MicIn;
 	bool	LineIn;
 	bool	EnableMixer;
@@ -206,7 +198,7 @@ public:
 	bool readDefaultsXML();
 	void loadDefaults();
 	void saveDefaults();
-	int  openDefaults();
+	int  setDefaults();
 	void initOperator();
 	void initInterface();
 	void initMixerDevices();

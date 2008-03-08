@@ -110,8 +110,8 @@ Fl_Box				*WARNstatus = (Fl_Box *)0;
 Fl_Button			*MODEstatus = (Fl_Button *)0;
 Fl_Button 			*btnMacro[12];
 Fl_Button			*btnAltMacros;
-Fl_Light_Button		*afconoff;
-Fl_Light_Button		*sqlonoff;
+Fl_Light_Button		*btn_afconoff;
+Fl_Light_Button		*btn_sqlonoff;
 Fl_Check_Button		*chk_afconoff;
 Fl_Check_Button		*chk_sqlonoff;
 Fl_Input			*inpFreq;
@@ -754,8 +754,7 @@ void closeRigDialog() {
 }
 
 void cb_sldrSquelch(Fl_Slider* o, void*) {
-	active_modem->set_squelch(o->value());
-	progdefaults.sldrSquelchValue = o->value();
+	progStatus.sldrSquelchValue = o->value();
 	restoreFocus();
 }
 
@@ -845,8 +844,7 @@ void afconoff_cb(Fl_Widget *w, void *vi)
 	Fl_Button *b = (Fl_Button *)w;
 	int v = b->value();
 	FL_UNLOCK_D();
-	active_modem->set_afcOnOff(v);
-	progdefaults.afconoff = v;
+	progStatus.afconoff = v;
 }
 
 void sqlonoff_cb(Fl_Widget *w, void *vi)
@@ -855,8 +853,7 @@ void sqlonoff_cb(Fl_Widget *w, void *vi)
 	Fl_Button *b = (Fl_Button *)w;
 	int v = b->value();
 	FL_UNLOCK_D();
-	active_modem->set_sqlchOnOff( v ? true : false );
-	progdefaults.sqlonoff = v ? true : false;
+	progStatus.sqlonoff = v ? true : false;
 }
 
 
@@ -888,14 +885,14 @@ void cbMacroTimerButton(Fl_Widget *w, void *d)
 
 void cb_RcvMixer(Fl_Widget *w, void *d)
 {
-	progdefaults.RcvMixer = valRcvMixer->value();
-	mixer->setRcvGain(progdefaults.RcvMixer);
+	progStatus.RcvMixer = valRcvMixer->value();
+	mixer->setRcvGain(progStatus.RcvMixer);
 }
 
 void cb_XmtMixer(Fl_Widget *w, void *d)
 {
-	progdefaults.XmtMixer = valXmtMixer->value();
-	mixer->setXmtLevel(progdefaults.XmtMixer);
+	progStatus.XmtMixer = valXmtMixer->value();
+	mixer->setXmtLevel(progStatus.XmtMixer);
 }
 
 
@@ -1361,7 +1358,7 @@ void create_fl_digi_main() {
 				sldrSquelch->minimum(0);
 				sldrSquelch->maximum(100);
 				sldrSquelch->step(1);
-				sldrSquelch->value(progdefaults.sldrSquelchValue);
+				sldrSquelch->value(progStatus.sldrSquelchValue);
 				sldrSquelch->callback((Fl_Callback*)cb_sldrSquelch);
 				sldrSquelch->color(FL_INACTIVE_COLOR);
 
@@ -1407,30 +1404,30 @@ void create_fl_digi_main() {
 								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
 								bwAfcOnOff, Hstatus, "Afc");
 				chk_afconoff->callback(afconoff_cb, 0);
-				chk_afconoff->value(1);
+				chk_afconoff->value(progStatus.afconoff);
 				chk_afconoff->tooltip("AFC on/off");
 				chk_sqlonoff = new Fl_Check_Button(
 								WNOM - bwSqlOnOff, 
 								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
 								bwSqlOnOff, Hstatus, "Sql");
 				chk_sqlonoff->callback(sqlonoff_cb, 0);
-				chk_sqlonoff->value(1);
+				chk_sqlonoff->value(progStatus.sqlonoff);
 				chk_sqlonoff->tooltip("SQL on/off");
 			} else {
-				afconoff = new Fl_Light_Button(
+				btn_afconoff = new Fl_Light_Button(
 								WNOM - bwAfcOnOff - bwSqlOnOff, 
 								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
 								bwAfcOnOff, Hstatus, "Afc");
-				afconoff->callback(afconoff_cb, 0);
-				afconoff->value(1);
-				afconoff->tooltip("AFC on/off");
-				sqlonoff = new Fl_Light_Button(
+				btn_afconoff->callback(afconoff_cb, 0);
+				btn_afconoff->value(progStatus.afconoff);
+				btn_afconoff->tooltip("AFC on/off");
+				btn_sqlonoff = new Fl_Light_Button(
 								WNOM - bwSqlOnOff, 
 								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
 								bwSqlOnOff, Hstatus, "Sql");
-				sqlonoff->callback(sqlonoff_cb, 0);
-				sqlonoff->value(1);
-				sqlonoff->tooltip("SQL on/off");
+				btn_sqlonoff->callback(sqlonoff_cb, 0);
+				btn_sqlonoff->value(progStatus.sqlonoff);
+				btn_sqlonoff->tooltip("SQL on/off");
 			}
 				
 			Fl_Group::current()->resizable(StatusBar);

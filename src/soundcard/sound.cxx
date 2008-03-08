@@ -46,6 +46,7 @@
 
 #include "sound.h"
 #include "configuration.h"
+#include "status.h"
 #include <FL/Fl.H>
 #include "File_Selector.h"
 
@@ -508,7 +509,7 @@ size_t SoundOSS::Read(double *buffer, size_t buffersize)
 	if (playback) {
 		readPlayback( buffer, buffersize);
 		if (progdefaults.EnableMixer) {
-			double vol = valRcvMixer->value();
+			double vol = progStatus.RcvMixer;
 			for (size_t i = 0; i < buffersize; i++)
 				buffer[i] *= vol;
 		}
@@ -815,7 +816,7 @@ size_t SoundPort::Read(double *buf, size_t count)
 	if (playback) {
 		readPlayback(buf, count);
 		if (progdefaults.EnableMixer) {
-	                double vol = valRcvMixer->value();
+	                double vol = progStatus.RcvMixer;
 	                for (size_t i = 0; i < count; i++)
         	                buf[i] *= vol;
 		}
@@ -1319,7 +1320,7 @@ size_t SoundPulse::Read(double *buf, size_t count)
 	if (playback) {
 		readPlayback(buf, count);
 		if (progdefaults.EnableMixer) {
-	                double vol = valRcvMixer->value();
+	                double vol = progStatus.RcvMixer;
 	                for (size_t i = 0; i < count; i++)
         	                buf[i] *= vol;
 		}
@@ -1434,7 +1435,7 @@ size_t SoundNull::Read(double *buf, size_t count)
 	if (playback) {
 		readPlayback(buf, count);
 		if (progdefaults.EnableMixer) {
-	                double vol = valRcvMixer->value();
+	                double vol = progStatus.RcvMixer;
 	                for (size_t i = 0; i < count; i++)
         	                buf[i] *= vol;
 		}

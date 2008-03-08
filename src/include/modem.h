@@ -27,8 +27,6 @@ protected:
 	trx_mode mode;
 	SoundBase	*scard;
 	
-	int		afcon;
-	int		squelchon;
 	bool	stopflag;
 	int		fragmentsize;
 	int		samplerate;
@@ -87,12 +85,6 @@ public:
 
 //	void update_syncscope();
 
-	void 		set_squelch(double val) { squelch = val; }
-	double		get_squelch() { return squelch; }
-	void		set_sqlchOnOff(bool val) {squelchon = val;}
-	bool		get_sqlchOnOff() { return squelchon;}
-	void		set_afcOnOff(int val) {afcon = val;}
-	bool		get_afcOnOff() { return afcon;}
 	void		HistoryON(bool val) {historyON = val;}
 	bool		HistoryON() { return historyON;}
 

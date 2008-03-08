@@ -5,6 +5,8 @@
 
 #include "status.h"
 #include "configuration.h"
+#include "fl_digi.h"
+
 #include "waterfall.h"
 
 #include "modem.h"
@@ -44,7 +46,12 @@ status progStatus = {
 	50,					// uint	VIEWERxpos
 	50,					// uint	VIEWERypos
 	false,				// bool VIEWERvisible
-	false				// bool LOGenabled
+	false,				// bool LOGenabled
+	30.0,				// double sldrSquelchValue
+	true,				// bool afconoff
+	true,				// bool sqlonoff
+	1.0,				// double	RcvMixer;
+	1.0					// double	XmtMixer;
 };
 
 	
@@ -112,6 +119,12 @@ void status::saveLastState()
 	deffile << VIEWERypos << endl;
 	deffile << VIEWERvisible << endl;
 	deffile << LOGenabled << endl;
+	deffile << sldrSquelchValue << endl;
+	deffile << afconoff << endl;
+	deffile << sqlonoff << endl;
+	deffile << RcvMixer << endl;
+	deffile << XmtMixer << endl;
+	
 	deffile.close();
 }
 
@@ -140,6 +153,11 @@ void status::initLastState()
 		deffile >> VIEWERypos;
 		deffile >> VIEWERvisible;
 		deffile >> LOGenabled;
+		deffile >> sldrSquelchValue;
+		deffile >> afconoff;
+		deffile >> sqlonoff;
+		deffile >> RcvMixer;
+		deffile >> XmtMixer;
 		deffile.close();
 		progdefaults.wfRefLevel = reflevel;
 		progdefaults.wfAmpSpan = ampspan;
@@ -155,6 +173,19 @@ void status::initLastState()
 	wf->setAmpSpan();
 	wf->movetocenter();
 	
+	FL_LOCK_D();
+	if (useCheckButtons) {
+		chk_afconoff->value(afconoff);
+		chk_sqlonoff->value(sqlonoff);
+	} else {
+		btn_afconoff->value(afconoff);
+		btn_sqlonoff->value(sqlonoff);
+	}
+	sldrSquelch->value(sldrSquelchValue);
+	valRcvMixer->value(RcvMixer);
+	valXmtMixer->value(XmtMixer);
+	FL_UNLOCK_D();
+
 //	if (IMAGE_WIDTH == DEFAULT_IMAGE_WIDTH && Hwfall == DEFAULT_HWFALL &&
 //	    HNOM == DEFAULT_HNOM && WNOM == DEFAULT_WNOM) 
 	{

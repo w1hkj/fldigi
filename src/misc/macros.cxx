@@ -318,7 +318,6 @@ int MACROTEXT::loadMacros(string filename)
 	bool   inMacro = false;
 	int    mNumber = 0;
 	unsigned long int	   crlf; // 64 bit cpu's
-	char   szTemp[10];
 	char   szLine[4096];
 	bool   convert = false;
 	
