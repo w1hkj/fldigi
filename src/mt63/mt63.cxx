@@ -68,6 +68,8 @@ int mt63::tx_process()
 	
 	if (stopflag && flush-- == 0) {
 		stopflag = false;
+		Tx->SendJam();
+		ModulateXmtr((Tx->Comb.Output.Data), Tx->Comb.Output.Len);
 		cwid();
 		return -1;	/* we're done */
 	}
@@ -109,6 +111,7 @@ int mt63::rx_process(const double *buf, int len)
 	InpBuff->Len = len;
 
 	InpLevel->Process(InpBuff);
+	
 	Rx->Process(InpBuff);
 
 	snr = Rx->FEC_SNR();

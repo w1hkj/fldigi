@@ -2065,8 +2065,8 @@ void enableMixer(bool on)
 		mixer->openMixer(progdefaults.MXdevice.c_str());
 
 		mixer->PCMVolume(progdefaults.PCMvolume);
-		mixer->setXmtLevel(valXmtMixer->value());
-		mixer->setRcvGain(valRcvMixer->value());
+		mixer->setXmtLevel(progStatus.XmtMixer); //valXmtMixer->value());
+		mixer->setRcvGain(progStatus.RcvMixer); //valRcvMixer->value());
 		if (progdefaults.LineIn == true)
 			setMixerInput(1);
 		else if (progdefaults.MicIn == true)

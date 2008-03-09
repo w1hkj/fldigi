@@ -34,6 +34,7 @@
 
 #include <stdio.h> // only for control printf's
 // #include <alloc.h>
+#include <iostream>
 
 #include "dsp.h"
 
@@ -137,8 +138,14 @@ int MT63tx::Preset(int BandWidth, int LongInterleave)
 	CarrMarkCode=0x16918BBEL;
 	CarrMarkdspAmpl=0; // WindowLen/32;
 
-	if(LongInterleave) { DataInterleave=64; InterleavePattern=LongIntlvPatt; }
-	else { DataInterleave=32; InterleavePattern=ShortIntlvPatt; }
+	if(LongInterleave) { 
+		DataInterleave=64; 
+		InterleavePattern=LongIntlvPatt; 
+	}
+	else { 
+		DataInterleave=32; 
+		InterleavePattern=ShortIntlvPatt; 
+	}
 
 	if(dspRedspAllocArray(&TxVect,    DataCarriers)) goto Error;
 	if(dspRedspAllocArray(&dspPhaseCorr, DataCarriers)) goto Error;
