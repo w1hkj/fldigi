@@ -201,19 +201,21 @@ void FTextBase::saveFile(void)
 		tbuf->outputfile(fn, 0, tbuf->length());
 }
 
-/// Returns a character string containing the word at (\a x, \a y) relative to
-/// the widget's \c x() and \c y().
+/// Returns a character string containing the selected text, if any,
+/// or the word at (\a x, \a y) relative to the widget's \c x() and \c y().
 ///
 /// @param x 
 /// @param y 
 ///
-/// @return The word text at (x,y). <b>Must be freed by the caller</b>.
+/// @return The selection, or the word text at (x,y). <b>Must be freed by the caller</b>.
 ///
 char *FTextBase::get_word(int x, int y)
 {
-	int p = xy_to_position(x + this->x(), y + this->y(),
-                               Fl_Text_Display_mod::CURSOR_POS);
-	tbuf->select(word_start(p), word_end(p));
+	if (!tbuf->selected()) {
+		int p = xy_to_position(x + this->x(), y + this->y(),
+				       Fl_Text_Display_mod::CURSOR_POS);
+		tbuf->select(word_start(p), word_end(p));
+	}
 	char *s = tbuf->selection_text();
 	tbuf->unselect();
 
