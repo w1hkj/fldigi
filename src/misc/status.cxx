@@ -193,6 +193,7 @@ void status::initLastState()
 	sldrSquelch->value(sldrSquelchValue);
 	valRcvMixer->value(RcvMixer);
 	valXmtMixer->value(XmtMixer);
+
 	FL_UNLOCK_D();
 
 	{
