@@ -195,6 +195,22 @@ void status::initLastState()
 	valXmtMixer->value(XmtMixer);
 	FL_UNLOCK_D();
 
+	{
+		fl_digi_main->resize(mainX, mainY, mainW, mainH);
+
+		int X, Y, W, H, Yx, Hx;
+		X = ReceiveText->x();
+		Y = ReceiveText->y();
+		W = ReceiveText->w();
+		H = ReceiveText->h();
+		Yx = TransmitText->y();
+		Hx = TransmitText->h();	
+
+		ReceiveText->resize(X,Y,W,RxTextHeight);
+		FHdisp->resize(X,Y,W,RxTextHeight);
+		TransmitText->resize(X, Y + RxTextHeight, W, H + Hx - RxTextHeight);
+	}
+
 	if (rigShown == true) {
 		if (!rigcontrol)
 			createRigDialog();

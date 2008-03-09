@@ -162,7 +162,7 @@ void mt63::restart()
 	err = Tx->Preset((int)bandwidth, Interleave == 64 ? 1 : 0);
 	if (err)
 		fprintf(stderr, "mt63_txinit: init failed\n");
-//	flush = Tx->DataInterleave;
+	flush = Tx->DataInterleave;
 
 	err = Rx->Preset((int)bandwidth, Interleave == 64 ? 1 : 0, IntegLen);
 	if (err)
