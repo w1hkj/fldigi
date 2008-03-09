@@ -756,7 +756,17 @@ int FTextEdit::nextChar(void)
 int FTextEdit::handle_key(int key)
 {
 	switch (key) {
-	case FL_Escape:
+	case FL_Escape: // set stop flag and clear
+	{
+		static time_t t[2] = { 0, 0 };
+		static unsigned char i = 0;
+		if (t[i] == time(&t[!i])) { // two presses in a second: reset modem
+			trx_start_modem(active_modem);
+			t[i = !i] = 0;
+			return 1;
+		}
+		i = !i;
+	}
 		clear();
 		active_modem->set_stopflag(true);
 		return 1;
