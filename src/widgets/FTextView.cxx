@@ -201,19 +201,21 @@ void FTextBase::saveFile(void)
 		tbuf->outputfile(fn, 0, tbuf->length());
 }
 
-/// Returns a character string containing the word at (\a x, \a y) relative to
-/// the widget's \c x() and \c y().
+/// Returns a character string containing the selected text, if any,
+/// or the word at (\a x, \a y) relative to the widget's \c x() and \c y().
 ///
 /// @param x 
 /// @param y 
 ///
-/// @return The word text at (x,y). <b>Must be freed by the caller</b>.
+/// @return The selection, or the word text at (x,y). <b>Must be freed by the caller</b>.
 ///
 char *FTextBase::get_word(int x, int y)
 {
-	int p = xy_to_position(x + this->x(), y + this->y(),
-                               Fl_Text_Display_mod::CURSOR_POS);
-	tbuf->select(word_start(p), word_end(p));
+	if (!tbuf->selected()) {
+		int p = xy_to_position(x + this->x(), y + this->y(),
+				       Fl_Text_Display_mod::CURSOR_POS);
+		tbuf->select(word_start(p), word_end(p));
+	}
 	char *s = tbuf->selection_text();
 	tbuf->unselect();
 
@@ -754,7 +756,17 @@ int FTextEdit::nextChar(void)
 int FTextEdit::handle_key(int key)
 {
 	switch (key) {
-	case FL_Escape:
+	case FL_Escape: // set stop flag and clear
+	{
+		static time_t t[2] = { 0, 0 };
+		static unsigned char i = 0;
+		if (t[i] == time(&t[!i])) { // two presses in a second: reset modem
+			trx_start_modem(active_modem);
+			t[i = !i] = 0;
+			return 1;
+		}
+		i = !i;
+	}
 		clear();
 		active_modem->set_stopflag(true);
 		return 1;
