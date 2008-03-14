@@ -98,8 +98,9 @@ void trx_trx_receive_loop()
 		}
 		catch (const SndException& e) {
 			put_status(e.what(), 5);
+			scard->Close();
 #if USE_PORTAUDIO
-			if (e.error() == EBUSY && progdefaults.btnAudioIOis == 1) {
+			if (e.error() == EBUSY && progdefaults.btnAudioIOis == SND_IDX_PORT) {
 				SoundPort::terminate();
 				SoundPort::initialize();
 			}

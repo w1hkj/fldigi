@@ -9,7 +9,7 @@ dnl major and minor must be integers; patch may
 dnl contain other characters or be empty
 m4_define(FLDIGI_MAJOR, [2])
 m4_define(FLDIGI_MINOR, [10])
-m4_define(FLDIGI_PATCH, [Z])
+m4_define(FLDIGI_PATCH, [])
 
 AC_INIT([fldigi], FLDIGI_MAJOR.FLDIGI_MINOR[FLDIGI_PATCH], [w1hkj AT w1hkj DOT com])
 
@@ -38,8 +38,8 @@ AC_CONFIG_HEADER([src/config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 
-AC_DEFINE([PACKAGE_HOME], ["http://www.w1hkj.com/Fldigi-2.x.html"], [Home page])
-AC_DEFINE([PACKAGE_DOCS], ["http://www.w1hkj.com/FldigiHelp-2.0/index.html"], [Docs index])
+AC_DEFINE([PACKAGE_HOME], ["http://www.w1hkj.com/Fldigi.html"], [Home page])
+AC_DEFINE([PACKAGE_DOCS], ["http://www.w1hkj.com/FldigiHelp/index.html"], [Docs index])
 
 
 # Checks for programs.
