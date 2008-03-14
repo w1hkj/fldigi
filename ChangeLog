@@ -1,26 +1,31 @@
 Change Log:
 
-2.10  1) Added history (ctrl-Left-click in waterfall). Available after tracking 
-         has started.  This does not start a new signal acquisition.
-      2) Psk and ViewPsk use shared signal detection class
+2.10  1) Added history decoding (ctrl-Left-click in waterfall). Available after
+         tracking has started.  This does not start a new signal acquisition.
+      2) Rewrote Psk and ViewPsk to use shared signal detection class
       3) Made OSS optional and added autoconf macro to detect its presence
       4) The volume sliders will now be hidden if the mixer is disabled
-      5) Rename some classes so that fldigi builds on Mac OSX.
-         Many thanks to Justin Burket and Diane Bruce.
-      6) Added a <MODEM> macro that changes the current modem
-      7) Added "Log File" status to saved application state
-      8) Added Pulse Audio support
-      9) Added "use default audio device" if h/w changes
-     10) Added HELL80 mode
-     11) Fixes to ringbuffer / audio backends
-     12) Fixes to mfsk picture mode decoding
-     13) Changed frequency2 data file format, downward compatible
-     14) Added FELD_SLOWHELL, FELD_HELLX5 and FELD_HELLX9 modems
-     15) Added support to the PortAudio backend for separate capture and 
+      5) Added a <MODEM> macro that changes the current modem
+      6) Added "Log File" status to saved application state
+      7) Added "use default audio device" if h/w changes
+      8) Fixes to ringbuffer / audio backends
+      9) Fixes to mfsk picture mode decoding
+     10) Changed frequency2 data file format, downward compatible
+     11) Added HELL80, FELD_SLOWHELL, FELD_HELLX5 and FELD_HELLX9 modems
+     12) Added Pulse Audio support with support for separate capture and
          playback devices and sample rates
-     16) Added mt63 500/1000/2000 modes
-     17) Added psk acquisition level control
-     18) Added script to create .app bundles on OS X
+     13) Added mt63 500/1000/2000 modes
+     14) Added psk acquisition level control
+     15) Rename some classes so that fldigi builds on Mac OSX.
+         Added script to create .app bundles on OS X
+         Many thanks to Justin Burket and Diane Bruce.
+     16) Rx-slider, Tx-slider, Squelch-slider values added to the saved
+         application state.
+     17) Increased number of macros to 48.  F11 & F12 now accessible by mouse
+         or keyboard.  Alt Function key button changed to rotate forward (left-
+         click) and rotate reverse (right-click) through macro sets.
+     18) New color and font selection dialog - Rx / Tx widgets and macro button
+         background colors are user selectable
 
 2.09  1) Modified src/Makefile.am for FreeBSD name space clash
       2) Added psk multi-channel viewer with regex search capability
