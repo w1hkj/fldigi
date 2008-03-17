@@ -36,9 +36,9 @@
 #define DEFAULT_HNOM 570
 #define DEFAULT_WNOM (DEFAULT_IMAGE_WIDTH / 4 + DEFAULT_HWFALL - BTN_HEIGHT)
 
-#define EMC_HWFALL 120
-#define EMC_HNOM 400
-#define EMC_WNOM (EMC_HWFALL + 580)
+#define EMC_HWFALL 140
+#define EMC_HNOM 500
+#define EMC_WNOM (EMC_HWFALL - BTN_HEIGHT + 500)
 
 extern int IMAGE_WIDTH;
 extern int Hwfall;

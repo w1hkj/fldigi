@@ -1264,42 +1264,42 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	// wfdisp->tooltip("Click to set tracking point");
 	
 	xpos = x() + wSpace;
-	bwclr = new Fl_Button(xpos, buttonrow, bwColor, BTN_HEIGHT, "clr");
+	bwclr = new Fl_Button(xpos, buttonrow, bwColor*(w0<600?w0/6:100)/100, BTN_HEIGHT, "clr");
 	bwclr->callback(bwclr_cb, 0);
 	bwclr->tooltip("Color / BW waterfall");
 
-	xpos = xpos + bwColor + wSpace;
-	mode = new Fl_Button(xpos, buttonrow, bwFFT, BTN_HEIGHT,"Wtr");
+	xpos = xpos + bwColor*(w0<600?w0/6:100)/100 + wSpace;
+	mode = new Fl_Button(xpos, buttonrow, bwFFT*(w0<600?w0/6:100)/100, BTN_HEIGHT,"Wtr");
 	mode->callback(mode_cb, 0);
 	mode->tooltip("Waterfall/FFT - Shift click for signal scope");
 
-	xpos = xpos + bwFFT + wSpace;
-	x1 = new Fl_Button(xpos, buttonrow, bwX1, BTN_HEIGHT, "x1");
+	xpos = xpos + bwFFT*(w0<600?w0/6:100)/100 + wSpace;
+	x1 = new Fl_Button(xpos, buttonrow, bwX1*(w0<600?w0/6:100)/100, BTN_HEIGHT, "x1");
 	x1->callback(x1_cb, 0);
 	x1->tooltip("Change scale");
 
-	xpos = xpos + bwX1 + wSpace;
-	wfrate = new Fl_Button(xpos, buttonrow, bwRate, BTN_HEIGHT, "Norm");
+	xpos = xpos + bwX1*(w0<600?w0/6:100)/100 + wSpace;
+	wfrate = new Fl_Button(xpos, buttonrow, bwRate*(w0<600?w0/6:100)/100, BTN_HEIGHT, "Norm");
 	wfrate->callback(rate_cb, 0);
 	wfrate->tooltip("Waterfall drop speed");
 
-	xpos = xpos + bwRate + wSpace;
-	left = new Fl_Repeat_Button(xpos, buttonrow, bwMov, BTN_HEIGHT, "@<");
+	xpos = xpos + bwRate*(w0<600?w0/6:100)/100 + wSpace;
+	left = new Fl_Repeat_Button(xpos, buttonrow, bwMov*(w0<600?w0/6:100)/100, BTN_HEIGHT, "@<");
 	left->callback(slew_left, 0);
 	left->tooltip("Slew display lower in freq");
 
-	xpos += bwMov;
-	center = new Fl_Button(xpos, buttonrow, bwMov, BTN_HEIGHT, "@||");
+	xpos += bwMov*(w0<600?w0/6:100)/100;
+	center = new Fl_Button(xpos, buttonrow, bwMov*(w0<600?w0/6:100)/100, BTN_HEIGHT, "@||");
 	center->callback(center_cb, 0);
 	center->tooltip("Center display on signal");
 
-	xpos += bwMov;
-	right = new Fl_Repeat_Button(xpos, buttonrow, bwMov, BTN_HEIGHT, "@>");
+	xpos += bwMov*(w0<600?w0/6:100)/100;
+	right = new Fl_Repeat_Button(xpos, buttonrow, bwMov*(w0<600?w0/6:100)/100, BTN_HEIGHT, "@>");
 	right->callback(slew_right, 0);
 	right->tooltip("Slew display higher in freq");
 
-	xpos = xpos + bwMov + wSpace;
-	wfcarrier = new Fl_Counter(xpos, buttonrow, cwCnt, BTN_HEIGHT );
+	xpos = xpos + bwMov*(w0<600?w0/6:100)/100 + wSpace;
+	wfcarrier = new Fl_Counter(xpos, buttonrow, cwCnt*(w0<600?w0/6:100)/100, BTN_HEIGHT );
 	wfcarrier->callback(carrier_cb, 0);
 	wfcarrier->step(1.0);
 	wfcarrier->lstep(10.0);
@@ -1308,8 +1308,8 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	wfcarrier->value(wfdisp->carrier());
 	wfcarrier->tooltip("Adjust selected tracking freq");
 
-	xpos = xpos + cwCnt + wSpace;
-	wfRefLevel = new Fl_Counter(xpos, buttonrow, cwRef, BTN_HEIGHT );
+	xpos = xpos + cwCnt*(w0<600?w0/6:100)/100 + wSpace;
+	wfRefLevel = new Fl_Counter(xpos, buttonrow, cwRef*(w0<600?w0/6:100)/100, BTN_HEIGHT );
 	wfRefLevel->callback(reflevel_cb, 0);
 	wfRefLevel->step(1.0);
 	wfRefLevel->precision(0);
@@ -1319,8 +1319,8 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	wfRefLevel->tooltip("Upper signal limit in dB");
 	wfRefLevel->type(FL_SIMPLE_COUNTER);
 
-	xpos = xpos + cwRef + wSpace;
-	wfAmpSpan = new Fl_Counter(xpos, buttonrow, cwRef, BTN_HEIGHT );
+	xpos = xpos + cwRef*(w0<600?w0/6:100)/100 + wSpace;
+	wfAmpSpan = new Fl_Counter(xpos, buttonrow, cwRef*(w0<600?w0/6:100)/100, BTN_HEIGHT );
 	wfAmpSpan->callback(ampspan_cb, 0);
 	wfAmpSpan->step(1.0);
 	wfAmpSpan->precision(0);
@@ -1330,37 +1330,37 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	wfAmpSpan->tooltip("Signal range in dB");
 	wfAmpSpan->type(FL_SIMPLE_COUNTER);
 
-	xpos = xpos + cwRef + wSpace;
-	qsy = new Fl_Button(xpos, buttonrow, bwQsy, BTN_HEIGHT, "QSY");
+	xpos = xpos + cwRef*(w0<600?w0/6:100)/100 + wSpace;
+	qsy = new Fl_Button(xpos, buttonrow, bwQsy*(w0<600?w0/6:100)/100, BTN_HEIGHT, "QSY");
 	qsy->callback(qsy_cb, 0);
 	qsy->tooltip("Cntr in Xcvr PB\nRight click to undo");
 	qsy->deactivate();
 
-	xpos = xpos + bwQsy + wSpace;
-	btnMem = new Fl_Button(xpos, buttonrow, bwMem, BTN_HEIGHT, "M @-9UpArrow");
+	xpos = xpos + bwQsy*(w0<600?w0/6:100)/100 + wSpace;
+	btnMem = new Fl_Button(xpos, buttonrow, bwMem*(w0<600?w0/6:100)/100, BTN_HEIGHT, "M @-9UpArrow");
 	btnMem->callback(btnMem_cb, 0);
 	btnMem->tooltip("Store mode and frequency\nRight click for menu");
 	mbtnMem = new Fl_Menu_Button(btnMem->x(), btnMem->y(), btnMem->w(), btnMem->h(), 0);
 	mbtnMem->callback(btnMem->callback(), mbtnMem);
 	mbtnMem->type(Fl_Menu_Button::POPUP3);
 
-	xpos = xpos + bwMem + wSpace;
-	xmtlock = new Fl_Light_Button(xpos, buttonrow, bwXmtLock, BTN_HEIGHT, "Lk");
+	xpos = xpos + bwMem*(w0<600?w0/6:100)/100 + wSpace;
+	xmtlock = new Fl_Light_Button(xpos, buttonrow, bwXmtLock*(w0<600?w0/6:100)/100, BTN_HEIGHT, "Lk");
 	xmtlock->callback(xmtlock_cb, 0);
 	xmtlock->value(0);
 	xmtlock->selection_color(FL_RED);
 	xmtlock->tooltip("Xmt freq locked");
 
-	xpos = xpos + bwXmtLock + wSpace;
-	btnRev = new Fl_Light_Button(xpos, buttonrow, bwRev, BTN_HEIGHT, "Rv");
+	xpos = xpos + bwXmtLock*(w0<600?w0/6:100)/100 + wSpace;
+	btnRev = new Fl_Light_Button(xpos, buttonrow, bwRev*(w0<600?w0/6:100)/100, BTN_HEIGHT, "Rv");
 	btnRev->callback(btnRev_cb, 0);
 	btnRev->value(0);
 	btnRev->selection_color(FL_GREEN);
 	btnRev->tooltip("Reverse");
 	reverse = false;
 
-	xpos = w() - bwXmtRcv - wSpace;
-	xmtrcv = new Fl_Light_Button(xpos, buttonrow, bwXmtRcv, BTN_HEIGHT, "T/R");
+	xpos = w() - bwXmtRcv*(w0<600?w0/6:100)/100 - wSpace;
+	xmtrcv = new Fl_Light_Button(xpos, buttonrow, bwXmtRcv*(w0<600?w0/6:100)/100, BTN_HEIGHT, "T/R");
 	xmtrcv->callback(xmtrcv_cb, 0);
 	xmtrcv->selection_color(FL_RED);
 	xmtrcv->value(0);
