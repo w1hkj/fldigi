@@ -788,7 +788,9 @@ void SoundPort::close_stream(unsigned dir)
 
 size_t SoundPort::Read(double *buf, size_t count)
 {
-	size_t ncount = (int)MIN(SND_BUF_LEN, floor(count / rx_src_data->src_ratio));
+	size_t ncount = (size_t)MIN(SND_BUF_LEN, floor(count / rx_src_data->src_ratio));
+	if (count == 1 && ncount == 0)
+		ncount = 1;
 
 	int err;
 	static int retries = 0;
@@ -929,7 +931,7 @@ void SoundPort::src_data_reset(int mode)
                 rx_src_state = src_new(sample_converter, 2, &err);
                 if (!rx_src_state)
                         throw SndException(src_strerror(err));
-                rx_src_data->src_ratio = req_sample_rate / dev_sample_rate[STREAM_IN] * (1.0 + rxppm / 1e6);
+                rx_src_data->src_ratio = req_sample_rate / (dev_sample_rate[STREAM_IN] * (1.0 + rxppm / 1e6));
         }
         if (mode & 1 << O_WRONLY) {
                 if (tx_src_state)
@@ -948,9 +950,7 @@ void SoundPort::resample(int mode, float *buf, size_t count, size_t max)
         if (mode & 1 << O_RDONLY) {
                 if (rxppm != progdefaults.RX_corr) {
                         rxppm = progdefaults.RX_corr;
-                        rx_src_data->src_ratio = req_sample_rate
-                                / dev_sample_rate[STREAM_IN]
-                                * (1.0 + rxppm / 1e6);
+                        rx_src_data->src_ratio = req_sample_rate / (dev_sample_rate[STREAM_IN] * (1.0 + rxppm / 1e6));
                         src_set_ratio(rx_src_state, rx_src_data->src_ratio);
                 }
 
@@ -966,9 +966,7 @@ void SoundPort::resample(int mode, float *buf, size_t count, size_t max)
         else if (mode & 1 << O_WRONLY) {
                 if (txppm != progdefaults.TX_corr) {
                         txppm = progdefaults.TX_corr;
-                        tx_src_data->src_ratio = dev_sample_rate[STREAM_OUT]
-                                * (1.0 + txppm / 1e6)
-                                / req_sample_rate;
+                        tx_src_data->src_ratio = dev_sample_rate[STREAM_OUT] * (1.0 + txppm / 1e6) / req_sample_rate;
                         src_set_ratio(tx_src_state, tx_src_data->src_ratio);
                 }
 
@@ -1309,7 +1307,9 @@ size_t SoundPulse::Write_stereo(double* bufleft, double* bufright, size_t count)
 
 size_t SoundPulse::Read(double *buf, size_t count)
 {
-	size_t ncount = (int)MIN(SND_BUF_LEN, floor(count / rx_src_data->src_ratio));
+	size_t ncount = (size_t)MIN(SND_BUF_LEN, floor(count / rx_src_data->src_ratio));
+	if (count == 1 && ncount == 0)
+		ncount = 1;
 
 	int err;
 	if (pa_simple_read(stream[0], fbuf, sizeof(double) * ncount, &err) == -1)
@@ -1349,7 +1349,7 @@ void SoundPulse::src_data_reset(int mode)
                 rx_src_state = src_new(sample_converter, stream_params.channels, &err);
                 if (!rx_src_state)
                         throw SndException(src_strerror(err));
-                rx_src_data->src_ratio = sample_frequency / dev_sample_rate[0] * (1.0 + rxppm / 1e6);
+                rx_src_data->src_ratio = sample_frequency / (dev_sample_rate[0] * (1.0 + rxppm / 1e6));
         }
         if (mode & 1 << O_WRONLY) {
                 if (tx_src_state)
@@ -1368,9 +1368,7 @@ void SoundPulse::resample(int mode, float *buf, size_t count, size_t max)
         if (mode & 1 << O_RDONLY) {
                 if (rxppm != progdefaults.RX_corr) {
                         rxppm = progdefaults.RX_corr;
-                        rx_src_data->src_ratio = sample_frequency
-                                / dev_sample_rate[0]
-                                * (1.0 + rxppm / 1e6);
+                        rx_src_data->src_ratio = sample_frequency / (dev_sample_rate[0] * (1.0 + rxppm / 1e6));
                         src_set_ratio(rx_src_state, rx_src_data->src_ratio);
                 }
 
@@ -1386,9 +1384,7 @@ void SoundPulse::resample(int mode, float *buf, size_t count, size_t max)
         else if (mode & 1 << O_WRONLY) {
                 if (txppm != progdefaults.TX_corr) {
                         txppm = progdefaults.TX_corr;
-                        tx_src_data->src_ratio = dev_sample_rate[1]
-                                * (1.0 + txppm / 1e6)
-                                / sample_frequency;
+                        tx_src_data->src_ratio = dev_sample_rate[1] * (1.0 + txppm / 1e6) / sample_frequency;
                         src_set_ratio(tx_src_state, tx_src_data->src_ratio);
                 }
 

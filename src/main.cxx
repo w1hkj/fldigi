@@ -538,7 +538,7 @@ int parse_args(int argc, char **argv, int& idx)
 				Hwfall = EMC_HWFALL;
 				HNOM = EMC_HNOM;
 				WNOM = EMC_WNOM;
-				FL_NORMAL_SIZE = 12;
+				FL_NORMAL_SIZE = 11;//12;
 			}
 			break;
 
