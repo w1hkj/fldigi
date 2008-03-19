@@ -432,6 +432,9 @@ void init_modem(trx_mode mode)
 
 void init_modem_sync(trx_mode m)
 {
+	if (trx_state != STATE_RX)
+		return;
+
 #ifndef NDEBUG
         if (GET_THREAD_ID() == TRX_TID)
                 cerr << "trx thread called init_modem_sync!\n";
