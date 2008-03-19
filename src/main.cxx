@@ -623,6 +623,8 @@ void generate_version_text(void)
 	  << "FLTK " << FL_MAJOR_VERSION << '.' << FL_MINOR_VERSION << '.'
 	  << FL_PATCH_VERSION << '\n';
 
+	s << src_get_version() << '\n';
+
 #if USE_HAMLIB
 	s << hamlib_version << '\n';
 #endif
@@ -635,10 +637,6 @@ void generate_version_text(void)
 	char sndfile_version[32];
 	sf_command(NULL, SFC_GET_LIB_VERSION, sndfile_version, sizeof(sndfile_version));
 	s << sndfile_version << '\n';
-#endif
-
-#ifdef src_get_version
-	s << ' ' << src_get_version() << '\n';
 #endif
 
 	version_text = s.str();

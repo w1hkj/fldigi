@@ -123,29 +123,30 @@ AC_FLDIGI_FLTK
 AC_FLDIGI_OSS
 
 ### libsamplerate
+# Set ac_cv_samplerate to yes/no    (not used because we require samplerate)
+# Define USE_SAMPLERATE in config.h (as above)
 # Substitute SAMPLERATE_CFLAGS and SAMPLERATE_LIBS in Makefile
-# Set NO_SAMPLERATE Makefile conditional
-AC_FLDIGI_SAMPLERATE
+AC_FLDIGI_PKG_CHECK([samplerate], [samplerate >= 0.1.1], [no], [], [SAMPLERATE], [])
 
 ### libsndfile
 # Set ac_cv_sndfile to yes/no
 # Define USE_SNDFILE in config.h
 # Substitute SNDFILE_CFLAGS and SNDFILE_LIBS in Makefile
-AC_FLDIGI_PKG_CHECK([sndfile], [sndfile >= 1.0.10], [with], [SNDFILE],
+AC_FLDIGI_PKG_CHECK([sndfile], [sndfile >= 1.0.10], [yes], [with], [SNDFILE],
                     [enable reading/writing of audio files via libsndfile @<:@autodetect@:>@] )
 
 ### portaudio
 # Set ac_cv_portaudio to yes/no
 # Define USE_PORTAUDIO in config.h
 # Substitute PORTAUDIO_CFLAGS and PORTAUDIO_LIBS in Makefile
-AC_FLDIGI_PKG_CHECK([portaudio], [portaudio-2.0 >= 19], [with], [PORTAUDIO],
+AC_FLDIGI_PKG_CHECK([portaudio], [portaudio-2.0 >= 19], [yes], [with], [PORTAUDIO],
                     [enable support for PortAudio @<:@autodetect@:>@] )
 
 ### pulseaudio
 # Set ac_cv_pulseaudio to yes/no
 # Define USE_PULSEAUDIO in config.h
 # Substitute PULSEAUDIO_CFLAGS and PULSEAUDIO_LIBS in Makefile
-AC_FLDIGI_PKG_CHECK([pulseaudio], [libpulse-simple >= 0.9.7], [with], [PULSEAUDIO],
+AC_FLDIGI_PKG_CHECK([pulseaudio], [libpulse-simple >= 0.9.7], [yes], [with], [PULSEAUDIO],
                     [enable support for PulseAudio @<:@autodetect@:>@] )
 
 if test "x$ac_cv_oss" = "xno" && \
@@ -159,7 +160,7 @@ fi
 # Define USE_HAMLIB in config.h
 # Substitute HAMLIB_CFLAGS and HAMLIB_LIBS in Makefile
 # Set ENABLE_HAMLIB Makefile conditional
-AC_FLDIGI_PKG_CHECK([hamlib], [hamlib >= 1.2.4], [with], [HAMLIB],
+AC_FLDIGI_PKG_CHECK([hamlib], [hamlib >= 1.2.4], [yes], [with], [HAMLIB],
                     [use hamradio control libraries @<:@autodetect@:>@],
                     [ENABLE_HAMLIB])
 
