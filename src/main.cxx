@@ -224,7 +224,7 @@ void sound_init(void)
 	glob("/dev/dsp*", 0, NULL, &gbuf);
 	for (size_t i = 0; i < gbuf.gl_pathc; i++)
 		menuOSSDev->add(gbuf.gl_pathv[i]);
-	if (progdefaults.OSSdevice.length() == 0)
+	if (progdefaults.OSSdevice.length() == 0 && gbuf.gl_pathc)
 		progdefaults.OSSdevice = gbuf.gl_pathv[0];
 	menuOSSDev->value(progdefaults.OSSdevice.c_str());
 	globfree(&gbuf);
@@ -278,7 +278,7 @@ void sound_init(void)
 	glob("/dev/mixer*", 0, NULL, &gbuf);
 	for (size_t i = 0; i < gbuf.gl_pathc; i++)
 		menuMix->add(gbuf.gl_pathv[i]);
-	if (progdefaults.MXdevice.length() == 0)
+	if (progdefaults.MXdevice.length() == 0 && gbuf.gl_pathc)
 		progdefaults.MXdevice = gbuf.gl_pathv[0];
 	globfree(&gbuf);
 	menuMix->value(progdefaults.MXdevice.c_str());
