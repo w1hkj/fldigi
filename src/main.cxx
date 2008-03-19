@@ -127,6 +127,8 @@ int main(int argc, char ** argv)
 	set_terminate(diediedie);
 	signal(SIGSEGV, handle_signal);
 	signal(SIGILL, handle_signal);
+	signal(SIGCHLD, SIG_IGN);
+	signal(SIGPIPE, SIG_IGN);
 
 	setlocale(LC_TIME, "");
 

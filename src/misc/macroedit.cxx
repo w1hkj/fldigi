@@ -1,5 +1,11 @@
 #include <config.h>
 
+#include <glob.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <cstring>
+
 #include "macros.h"
 #include "macroedit.h"
 #include "globals.h"
@@ -67,11 +73,32 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add("<TIMER>\trepeat every NNN sec");
 
 	w->add(LINE_SEP);
-	char s[48];
+	char s[256];
 	for (size_t i = 0; i < NUM_MODES; i++) {
 		snprintf(s, sizeof(s), "<MODEM>%s", mode_info[i].sname);
 		w->add(s);
 	}
+
+	glob_t gbuf;
+	glob(string(HomeDir).append("/scripts/*").c_str(), 0, NULL, &gbuf);
+	if (gbuf.gl_pathc == 0) {
+		globfree(&gbuf);
+		return;
+	}
+	w->add(LINE_SEP);
+	struct stat st;
+	for (size_t i = 0; i < gbuf.gl_pathc; i++) {
+		if (!(stat(gbuf.gl_pathv[i], &st) == 0
+		      && S_ISREG(st.st_mode) && (st.st_mode & S_IXUSR)))
+			continue;
+
+		const char* p;
+		if ((p = strrchr(gbuf.gl_pathv[i], '/'))) {
+			snprintf(s, sizeof(s), "<EXEC>%s</EXEC>", p+1);
+			w->add(s);
+		}
+	}
+	globfree(&gbuf);
 }
 
 void cbMacroEditOK(Fl_Widget *w, void *)
