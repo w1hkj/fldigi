@@ -177,8 +177,6 @@ struct configuration {
 	RGBint	RxColor;
 	RGBint	TxColor;
 	
-	bool alt_text_widgets;
-	
 	string strCommPorts;
 	
 	int rx_msgid;

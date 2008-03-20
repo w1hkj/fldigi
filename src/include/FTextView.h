@@ -26,7 +26,6 @@
 #define FTextView_H_
 
 #include "threads.h"
-#include "TextView.h"
 
 /* fltk includes */
 #include <FL/Fl.H>
@@ -41,11 +40,18 @@
 /// The text widgets base class.
 /// This class implements a basic text editing widget based on Fl_Text_Editor_mod.
 ///
-class FTextBase : virtual public ReceiveWidget
+class FTextBase : public Fl_Text_Editor_mod
 {
 public:
+	enum TEXT_ATTR { RECV, XMIT, CTRL, SKIP, ALTR, NATTR };
+
 	FTextBase(int x, int y, int w, int h, const char *l = 0);
 	virtual ~FTextBase() { delete tbuf; delete sbuf; }
+
+	virtual void	add(const char *text, int attr = RECV) = 0;
+	virtual void	add(unsigned char c, int attr = RECV) = 0;
+	void	     	addstr(const char *text, int attr = RECV) { add(text, attr); }
+	void	     	addchr(unsigned char c, int attr = RECV) { add(c, attr); }
 
 	virtual int	handle(int event);
 	void		clear(void) { tbuf->text(""); sbuf->text(""); }
@@ -53,15 +59,10 @@ public:
 	void		setFont(Fl_Font f, int attr = NATTR);
 	void		setFontSize(int s, int attr = NATTR);
 	void		setFontColor(Fl_Color c, int attr = NATTR);
-	virtual void	setFont(Fl_Font f)       { setFont(f, NATTR); }
-	virtual void	setFontSize(int s)       { setFontSize(s, NATTR); }
-	virtual void	setFontColor(Fl_Color c) { setFontColor(c, NATTR); }
 
 	void		cursorON(void) { show_cursor(); }
 	virtual void	resize(int X, int Y, int W, int H);
 
-        virtual void	Show(void) { Fl_Text_Editor_mod::show(); }
-        virtual void	Hide(void) { Fl_Text_Editor_mod::hide(); }
 	static bool	wheight_mult_tsize(void *arg, int xd, int yd);
 
 protected:
@@ -84,7 +85,7 @@ protected:
 	enum set_style_op_e { SET_FONT = 1 << 0, SET_SIZE = 1 << 1, SET_COLOR = 1 << 2 };
 	Fl_Text_Buffer				*tbuf;	///< text buffer
 	Fl_Text_Buffer				*sbuf;	///< style buffer
-	Fl_Text_Display_mod::Style_Table_Entry	styles[ReceiveWidget::NATTR];
+	Fl_Text_Display_mod::Style_Table_Entry	styles[NATTR];
 	Fl_Menu_Item				*context_menu;
 	int					popx, popy;
 	bool					wrap;
@@ -114,7 +115,7 @@ protected:
 	enum { RX_MENU_QRZ_THIS, RX_MENU_CALL, RX_MENU_NAME, RX_MENU_QTH,
 	       RX_MENU_LOC, RX_MENU_RST_IN, RX_MENU_DIV, RX_MENU_CLEAR,
 	       RX_MENU_COPY,
-#ifndef NDEBUG
+#if 0 //#ifndef NDEBUG
                RX_MENU_READ,
 #endif
                RX_MENU_SAVE, RX_MENU_WRAP };
@@ -136,7 +137,7 @@ protected:
 ///
 /// A FTextBase subclass to display and edit text to be transmitted
 ///
-class FTextEdit : public FTextBase, public TransmitWidget
+class FTextEdit : public FTextBase
 {
 public:
 	FTextEdit(int x, int y, int w, int h, const char *l = 0);

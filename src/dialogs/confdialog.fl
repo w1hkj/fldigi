@@ -35,7 +35,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {fldigi - config} open
-    xywh {819 179 400 250} type Double color 45 selection_color 51 align 80 visible
+    xywh {1067 549 400 250} type Double color 45 selection_color 51 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 405 220} color 47 selection_color 9
@@ -851,8 +851,8 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabMisc {
-        label Misc open
-        xywh {0 25 400 195} color 51 selection_color 51 hide
+        label Misc open selected
+        xywh {0 25 400 195} color 51 selection_color 51
       } {
         Fl_Group {} {
           label {Sweet Spot} open
@@ -887,17 +887,10 @@ progdefaults.changed = true;}
             code0 {o->value(progdefaults.StartAtSweetSpot);}
           }
         }
-        Fl_Check_Button btntextwidgets {
-          label {Alternative text widgets}
-          callback {progdefaults.alt_text_widgets = o->value();
-progdefaults.changed = true;}
-          tooltip {These widgets have full editing support but are slower.
-This option takes effect after a restart.} xywh {50 155 180 20} down_box DOWN_BOX value 1 hide
-        }
       }
       Fl_Group tabModems {
         label Modem open
-        xywh {0 25 401 195} color 51 selection_color 51
+        xywh {0 25 401 195} color 51 selection_color 51 hide
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 401 195} color 51 selection_color 10 align 9
@@ -1157,7 +1150,7 @@ progdefaults.changed = true;}
             Fl_Check_Button btnOlivia_8bit {
               label {8 bit extended chars}
               callback {progdefaults.olivia8bit = o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
               xywh {90 173 163 15} down_box DOWN_BOX
             }
           }

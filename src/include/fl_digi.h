@@ -40,7 +40,6 @@
 #include <FL/Fl_Check_Button.H>
 
 #include "combo.h"
-#include "TextView.h"
 #include "FTextView.h"
 #include "raster.h"
 #include "waterfall.h"
@@ -50,12 +49,10 @@
 
 extern Fl_Double_Window *fl_digi_main;
 
-extern ReceiveWidget		*ReceiveText;
-extern TransmitWidget		*TransmitText;
+extern FTextView		*ReceiveText;
+extern FTextEdit		*TransmitText;
 extern Raster			*FHdisp;
 extern Fl_Tile_check		*TiledGroup;
-extern Fl_Text_Buffer	*rcvBuffer;
-extern Fl_Text_Buffer	*xmtBuffer;
 extern Fl_Box			*StatusBar;
 extern Fl_Box			*Status2;
 extern Fl_Box			*Status1;

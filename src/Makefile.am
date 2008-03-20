@@ -129,7 +129,6 @@ fldigi_SOURCES += \
 	include/Fl_Text_Display_mod.H \
 	include/Fl_Text_Editor_mod.H \
 	include/FreqControl.h \
-	include/TextView.h \
 	include/analysis.h \
 	include/ascii.h \
 	include/colorbox.h \
@@ -276,7 +275,6 @@ fldigi_SOURCES += \
 	widgets/FTextView.cxx \
 	widgets/Fl_Text_Display_mod.cxx \
 	widgets/Fl_Text_Editor_mod.cxx \
-	widgets/TextView.cxx \
 	widgets/picture.cxx \
 	wwv/analysis.cxx \
 	wwv/wwv.cxx

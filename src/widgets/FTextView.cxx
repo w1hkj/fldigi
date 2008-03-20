@@ -51,7 +51,7 @@ using namespace std;
 /// @param h 
 /// @param l 
 FTextBase::FTextBase(int x, int y, int w, int h, const char *l)
-	: ReceiveWidget(x, y, w, h, l),
+	: Fl_Text_Editor_mod(x, y, w, h, l),
           wrap(true), wrap_col(80), max_lines(0), scroll_hint(false)
 {
 	tbuf = new Fl_Text_Buffer;
@@ -79,7 +79,7 @@ int FTextBase::handle(int event)
                 adjust_colours();
         }
 
-        return ReceiveWidget::handle(event);
+        return Fl_Text_Editor_mod::handle(event);
 }
 
 void FTextBase::setFont(Fl_Font f, int attr)
@@ -322,10 +322,9 @@ Fl_Menu_Item FTextView::view_menu[] = {
 /// @param h 
 /// @param l 
 FTextView::FTextView(int x, int y, int w, int h, const char *l)
-        : ReceiveWidget(x, y, w, h, l), FTextBase(x, y, w, h, l)
+        : FTextBase(x, y, w, h, l)
 {
-	tbuf->remove_modify_callback(buffer_modified_cb,
-                                     dynamic_cast<Fl_Text_Editor_mod *>(this));
+	tbuf->remove_modify_callback(buffer_modified_cb, this);
 	tbuf->add_modify_callback(changed_cb, this);
 
 	cursor_style(Fl_Text_Display_mod::NORMAL_CURSOR);
@@ -502,7 +501,7 @@ void FTextView::menu_cb(int val)
 		kf_copy(Fl::event_key(), this);
 		break;
 
-#ifndef NDEBUG
+#if 0 //#ifndef NDEBUG
         case RX_MENU_READ:
         {
                 readFile();
@@ -545,7 +544,7 @@ void FTextView::changed_cb(int pos, int nins, int ndel, int nsty, const char *dt
 	if (v->mTopLineNum + v->mNVisibleLines - 1 == v->mNBufferLines)
 		v->scroll_hint = true;
 
-	v->buffer_modified_cb(pos, nins, ndel, nsty, dtext, dynamic_cast<Fl_Text_Editor_mod *>(v));
+	v->buffer_modified_cb(pos, nins, ndel, nsty, dtext, v);
 }
 
 /// Removes Fl_Text_Edit keybindings that would modify text and put it out of
@@ -597,14 +596,13 @@ Fl_Menu_Item FTextEdit::edit_menu[] = {
 int *FTextEdit::ptxpos;
 
 FTextEdit::FTextEdit(int x, int y, int w, int h, const char *l)
-	: ReceiveWidget(x, y, w, h, l), FTextBase(x, y, w, h, l),
-          TransmitWidget(x, y, w, h, l),
+	: FTextBase(x, y, w, h, l),
           PauseBreak(false), txpos(0), bkspaces(0)
 {
 	ptxpos = &txpos;
 	cursor_style(Fl_Text_Display_mod::NORMAL_CURSOR);
-	tbuf->remove_modify_callback(buffer_modified_cb,
-				     dynamic_cast<Fl_Text_Editor_mod *>(this));
+	tbuf->remove_modify_callback(buffer_modified_cb, this);
+
 	tbuf->add_modify_callback(changed_cb, this);
 
 	context_menu = edit_menu;
@@ -1016,8 +1014,8 @@ void FTextEdit::changed_cb(int pos, int nins, int ndel, int nsty, const char *dt
 			e->redisplay_range(pos - 1, pos);
 		}
 		else if (nsty > 0) // restyled, e.g. selected, text
-			return e->buffer_modified_cb(pos, nins, ndel, nsty, dtext,
-						     dynamic_cast<Fl_Text_Editor_mod *>(e));
+			return e->buffer_modified_cb(pos, nins, ndel, nsty, dtext, e);
+
                 // No changes, e.g., a paste with an empty clipboard.
 		return;
 	}
@@ -1042,7 +1040,7 @@ void FTextEdit::changed_cb(int pos, int nins, int ndel, int nsty, const char *dt
 
 	e->sbuf->select(pos, pos + nins - ndel);
 
-	e->buffer_modified_cb(pos, nins, ndel, nsty, dtext, dynamic_cast<Fl_Text_Editor_mod *>(e));
+	e->buffer_modified_cb(pos, nins, ndel, nsty, dtext, e);
 	// We may need to scroll if the text was inserted by the
 	// add() methods, e.g. by a macro
 	if (e->mTopLineNum + e->mNVisibleLines - 1 <= e->mNBufferLines)

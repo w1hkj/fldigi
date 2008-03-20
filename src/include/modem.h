@@ -148,10 +148,10 @@ private:
 	int 	findmask(int symbol);
 
 	void	wfid_sendchar(char c);
-	void	wfid_sendchars(string s);
+	void	wfid_sendchars(std::string s);
 
 public:
-	void	wfid_text(string s);
+	void	wfid_text(std::string s);
 
 // for CW ID transmission
 private:
@@ -165,7 +165,7 @@ public:
 	double	cwid_nco(double freq);
 	void	cwid_send_symbol(int bits);
 	void	cwid_send_ch(int ch);
-	void	cwid_sendtext (string s);
+	void	cwid_sendtext (std::string s);
 	void	cwid();
 
 };

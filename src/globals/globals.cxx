@@ -27,9 +27,12 @@
 #include <iosfwd>
 #include <iomanip>
 #include <sstream>
+#include <string>
 
 #include "globals.h"
 #include "modem.h"
+
+using namespace std;
 
 const char *state_names[] = {
 	"PAUSED",

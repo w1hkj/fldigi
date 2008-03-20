@@ -436,7 +436,7 @@ int parse_args(int argc, char **argv, int& idx)
 		return 0;
 
         enum { OPT_ZERO, OPT_RX_IPC_KEY, OPT_TX_IPC_KEY, OPT_CONFIG_DIR,
-               OPT_FAST_TEXT, OPT_FONT, OPT_WFALL_WIDTH, OPT_WFALL_HEIGHT,
+               OPT_FONT, OPT_WFALL_WIDTH, OPT_WFALL_HEIGHT,
                OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT, OPT_PROFILE, OPT_USE_CHECK,
 	       OPT_RESAMPLE,
 #if USE_PORTAUDIO
@@ -450,7 +450,6 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "rx-ipc-key",	   1, 0, OPT_RX_IPC_KEY },
 		{ "tx-ipc-key",	   1, 0, OPT_TX_IPC_KEY },
 		{ "config-dir",	   1, 0, OPT_CONFIG_DIR },
-		{ "fast-text",	   0, 0, OPT_FAST_TEXT },
 		{ "font",	   1, 0, OPT_FONT },
 
 		{ "wfall-width",   1, 0, OPT_WFALL_WIDTH },
@@ -500,10 +499,6 @@ int parse_args(int argc, char **argv, int& idx)
 			HomeDir = optarg;
 			if (*HomeDir.rbegin() != '/')
 				HomeDir += '/';
-			break;
-
-		case OPT_FAST_TEXT:
-			progdefaults.alt_text_widgets = false;
 			break;
 
 		case OPT_FONT:

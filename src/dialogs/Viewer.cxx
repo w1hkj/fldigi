@@ -302,8 +302,8 @@ static void cb_brwsViewer(Fl_Hold_Browser*, void*) {
 
 	switch (Fl::event_button()) {
 	case FL_LEFT_MOUSE:
-		ReceiveText->addchr('\n', ReceiveWidget::ALTR);
-		ReceiveText->addstr(bwsrline[sel - 1].c_str(), ReceiveWidget::ALTR);
+		ReceiveText->addchr('\n', FTextBase::ALTR);
+		ReceiveText->addstr(bwsrline[sel - 1].c_str(), FTextBase::ALTR);
 		active_modem->set_freq(brwsFreq[sel - 1]);
 		break;
 	case FL_MIDDLE_MOUSE: // copy from modem

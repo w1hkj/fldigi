@@ -98,10 +98,8 @@ bool useCheckButtons = false;
 
 Fl_Button			*btnTune = (Fl_Button *)0;
 Fl_Tile_check				*TiledGroup = 0;
-ReceiveWidget			*ReceiveText = 0;
-TransmitWidget			*TransmitText = 0;
-Fl_Text_Buffer		*rcvBuffer = (Fl_Text_Buffer *)0;
-Fl_Text_Buffer		*xmtBuffer = (Fl_Text_Buffer *)0;
+FTextView			*ReceiveText = 0;
+FTextEdit			*TransmitText = 0;
 Raster				*FHdisp;
 Fl_Box				*StatusBar = (Fl_Box *)0;
 Fl_Box				*Status2 = (Fl_Box *)0;
@@ -235,11 +233,11 @@ void startup_modem(modem *m)
 		m == feld_FMmodem ||
 		m == feld_FM105modem ||
 		m == feld_80modem ) {
-		ReceiveText->Hide();
+		ReceiveText->hide();
 		FHdisp->show();
 		sldrHellBW->value(m->get_bandwidth());
 	} else {
-		ReceiveText->Show();
+		ReceiveText->show();
 		FHdisp->hide();
 	}
 	FL_UNLOCK_D();
@@ -1287,10 +1285,7 @@ void create_fl_digi_main() {
 			Fl_Box *minbox = new Fl_Box(sw,Y + 66, WNOM-sw, Htext - 66 - 32);
 			minbox->hide();
 
-			if (progdefaults.alt_text_widgets)
-				ReceiveText = new FTextView(sw, Y, WNOM-sw, minRxHeight, "");
-			else
-				ReceiveText = new TextView(sw, Y, WNOM-sw, minRxHeight, "");
+			ReceiveText = new FTextView(sw, Y, WNOM-sw, minRxHeight, "");
 			ReceiveText->color(
 				fl_rgb_color(
 					progdefaults.RxColor.R,
@@ -1300,10 +1295,7 @@ void create_fl_digi_main() {
 			FHdisp->hide();
 			Y += minRxHeight;
 
-			if (progdefaults.alt_text_widgets)
-				TransmitText = new FTextEdit(sw, Y, WNOM-sw, minTxHeight);
-			else
-				TransmitText = new TextEdit(sw, Y, WNOM-sw, minTxHeight);
+			TransmitText = new FTextEdit(sw, Y, WNOM-sw, minTxHeight);
 			TransmitText->color(
 				fl_rgb_color(
 					progdefaults.TxColor.R,
@@ -1518,21 +1510,21 @@ void put_rx_char(unsigned int data)
 		active_modem->get_mode() == MODE_CW)
 		asc = ascii;
 
-	int style = ReceiveWidget::RECV;
+	int style = FTextBase::RECV;
 	if (asc == ascii2 && iscntrl(data))
-		style = ReceiveWidget::CTRL;
+		style = FTextBase::CTRL;
 	if (wf->tmp_carrier())
-		style = ReceiveWidget::ALTR;
+		style = FTextBase::ALTR;
 
 	switch (data) {
 		case '\n':
 			if (last == '\r')
 				break;
 		case '\r':
-			REQ(&ReceiveWidget::addchr, ReceiveText, '\n', style);
+			REQ(&FTextBase::addchr, ReceiveText, '\n', style);
 			break;
 		default:
-			REQ(&ReceiveWidget::addchr, ReceiveText, data, style);
+			REQ(&FTextBase::addchr, ReceiveText, data, style);
 	}
 	last = data;
 
@@ -1691,7 +1683,7 @@ int get_tx_char(void)
 	case 'r': case 'R':
 		if (state != STATE_CTRL)
 			break;
-		REQ_SYNC(&TransmitWidget::clear_sent, TransmitText);
+		REQ_SYNC(&FTextEdit::clear_sent, TransmitText);
 		state = STATE_CHAR;
 		c = 3; // ETX
 		break;
@@ -1725,10 +1717,10 @@ void put_echo_char(unsigned int data)
 
 	last = data;
 
-	int style = ReceiveWidget::XMIT;
+	int style = FTextBase::XMIT;
 	if (asc == ascii2 && iscntrl(data))
-		style = ReceiveWidget::CTRL;
-	REQ(&ReceiveWidget::addchr, ReceiveText, data, style);
+		style = FTextBase::CTRL;
+	REQ(&FTextBase::addchr, ReceiveText, data, style);
 
 	string s = iscntrl(data) ? ascii2[data & 0x7F] : string(1, data);
 	if (Maillogfile)

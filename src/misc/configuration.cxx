@@ -178,8 +178,6 @@ configuration progdefaults = {
 	{ 255, 242, 190}, // RGBint RxColor;
 	{ 200, 235, 255}, // RGBint TxColor;
 
-	true,			// bool		alt_text_widgets;
-
 	"",				// string	strCommPorts
         9876,		// int		rx_msgid
         6789,		// int		tx_msgid
@@ -1345,12 +1343,6 @@ int configuration::setDefaults() {
 	cntRxRateCorr->value(RX_corr);
 	cntTxRateCorr->value(TX_corr);
 	cntTxOffset->value(TxOffset);
-#ifdef USE_BOTH_TEXT_WIDGETS
-	btntextwidgets->value(alt_text_widgets);
-	btntextwidgets->activate();
-#else
-	btntextwidgets->deactivate();
-#endif			
 	FL_UNLOCK();
 
 	enableMixer(EnableMixer);
