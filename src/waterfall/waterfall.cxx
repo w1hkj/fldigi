@@ -45,6 +45,7 @@
 #include "fldigi-config.h"
 #include "configuration.h"
 #include "Viewer.h"
+#include "macros.h"
 
 Fl_Mutex	wf_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -1387,6 +1388,19 @@ int waterfall::handle(int event)
 	// handle method (or its parent's)
 	if (Fl::event_inside(MODEstatus)) {
 		init_modem(d > 0 ? MODE_NEXT : MODE_PREV);
+		return 1;
+	}
+
+	// as above; handle wheel events for the macro bar
+	extern void altmacro_cb(Fl_Widget *w, void *v);
+	for (int i = 0; i < NUMMACKEYS; i++) {
+		if (Fl::event_inside(btnMacro[i])) {
+			altmacro_cb(btnAltMacros, reinterpret_cast<void *>(d));
+			return 1;
+		}
+	}
+	if (Fl::event_inside(btnAltMacros)) {
+		altmacro_cb(btnAltMacros, reinterpret_cast<void *>(d));
 		return 1;
 	}
 

@@ -12,7 +12,8 @@
 using namespace std;
 
 #define NUMMACKEYS 12
-#define MAXMACROS (4 * NUMMACKEYS)
+#define NUMKEYROWS 4
+#define MAXMACROS (NUMKEYROWS * NUMMACKEYS)
 
 struct CONTESTCNTR {
 	int count;
