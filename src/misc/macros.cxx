@@ -373,13 +373,13 @@ void set_env(void)
 	// PATH
 	static string path;
 	if (path.length() == 0) {
+		path = HomeDir;
+		if (*path.rbegin() != '/')
+			path += '/';
+		path.append("scripts");
 		const char* p;
 		if ((p = getenv("PATH")))
-			path.append(p).append(":");
-		path.append(HomeDir);
-		if (*path.rbegin() != '/')
-			path.append("/");
-		path.append("scripts");
+			path.append(":").append(p);
 	}
 	env[PATH].val = path.c_str();
 
@@ -480,6 +480,9 @@ void pEXEC(string &s, size_t &i)
 		s.insert(start, ln, end);
 		start += end;
 	}
+	// delete the trailing newline of what we read
+	if (start > i && s[start - 1] == '\n')
+		s.erase(start - 1, 1);
 
 	fclose(fp);
 	close(pfd[0]);
