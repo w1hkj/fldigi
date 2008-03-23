@@ -1079,10 +1079,8 @@ void btnMem_cb(Fl_Widget *, void *menu_event)
         switch (op) {
         case SELECT:
                 m = qrg_list[elem];
-                if (active_modem != *mode_info[m.mode].modem) {
+                if (active_modem != *mode_info[m.mode].modem)
                         init_modem_sync(m.mode);
-                        REQ_FLUSH();
-                }
                 if (m.rfcarrier && m.rfcarrier != wf->rfcarrier()) {
                         rigCAT_set_qsy(m.rfcarrier, m.carrier);
                         rigMEM_set_qsy(m.rfcarrier, m.carrier);

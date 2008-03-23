@@ -14,8 +14,11 @@
 #include <FL/Fl.H>
 #include "File_Selector.h"
 
-#include <string>
 #include <ctime>
+#include <cstdio>
+#include <cstdlib>
+#include <unistd.h>
+#include <string>
 #include <iostream>
 #include <fstream>
 
@@ -54,6 +57,9 @@ void pINCR(string &, size_t &);
 void pLOG(string &, size_t &);
 void pTIMER(string &, size_t &);
 void pMODEM(string &, size_t &);
+void pEXEC(string &, size_t &);
+void pSTOP(string &, size_t &);
+void pCONT(string &, size_t &);
 
 MTAGS mtags[] = {
 {"<CALL>",		pCALL},
@@ -84,8 +90,13 @@ MTAGS mtags[] = {
 {"<LOG>",		pLOG},
 {"<TIMER>",		pTIMER},
 {"<MODEM>",		pMODEM},
+{"<EXEC>",		pEXEC},
+{"<STOP>",		pSTOP},
+{"<CONT>",		pCONT},
 {0, 0}
 };
+
+static bool expand;
 
 size_t mystrftime( char *s, size_t max, const char *fmt, const struct tm *tm) {
 	return strftime(s, max, fmt, tm);
@@ -309,6 +320,188 @@ void pMODEM(string &s, size_t &i)
 	s.erase(i, k-i);
 }
 
+void set_env(void)
+{
+	enum { PATH, FLDIGI_RX_IPC_KEY, FLDIGI_TX_IPC_KEY, FLDIGI_VERSION,
+	       FLDIGI_PID, FLDIGI_CONFIG_DIR,
+
+	       FLDIGI_MY_CALL, FLDIGI_MY_NAME, FLDIGI_MY_LOCATOR,
+
+	       FLDIGI_MODEM, FLDIGI_MODEM_LONG_NAME, FLDIGI_DIAL_FREQUENCY,
+	       FLDIGI_AUDIO_FREQUENCY, FLDIGI_FREQUENCY,
+
+	       FLDIGI_LOG_FREQUENCY, FLDIGI_LOG_TIME, FLDIGI_LOG_CALL, FLDIGI_LOG_NAME,
+	       FLDIGI_LOG_RST_IN, FLDIGI_LOG_RST_OUT, FLDIGI_LOG_QTH, FLDIGI_LOG_LOCATOR,
+	       FLDIGI_LOG_NOTES, FLDIGI_AZ1, FLDIGI_AZ2, ENV_SIZE
+	};
+
+	struct {
+		const char* var;
+		const char* val;
+	} env[] = {
+		{ "PATH", "" },
+		{ "FLDIGI_RX_IPC_KEY", "" },
+		{ "FLDIGI_TX_IPC_KEY", "" },
+		{ "FLDIGI_VERSION", PACKAGE_VERSION },
+		{ "FLDIGI_PID", "" },
+		{ "FLDIGI_CONFIG_DIR", HomeDir.c_str() },
+
+		{ "FLDIGI_MY_CALL", progdefaults.myCall.c_str() },
+		{ "FLDIGI_MY_NAME", progdefaults.myName.c_str() },
+		{ "FLDIGI_MY_LOCATOR", progdefaults.myLocator.c_str() },
+
+		{ "FLDIGI_MODEM", mode_info[active_modem->get_mode()].sname },
+		{ "FLDIGI_MODEM_LONG_NAME", mode_info[active_modem->get_mode()].name },
+		{ "FLDIGI_DIAL_FREQUENCY", "" },
+		{ "FLDIGI_AUDIO_FREQUENCY", "" },
+		{ "FLDIGI_FREQUENCY", "" },
+
+		// logging frame
+		{ "FLDIGI_LOG_FREQUENCY", inpFreq->value() },
+		{ "FLDIGI_LOG_TIME", inpTime->value() },
+		{ "FLDIGI_LOG_CALL", inpCall->value() },
+		{ "FLDIGI_LOG_NAME", inpName->value() },
+		{ "FLDIGI_LOG_RST_IN", inpRstIn->value() },
+		{ "FLDIGI_LOG_RST_OUT", inpRstOut->value() },
+		{ "FLDIGI_LOG_QTH", inpQth->value() },
+		{ "FLDIGI_LOG_LOCATOR", inpLoc->value() },
+		{ "FLDIGI_LOG_NOTES", inpNotes->value() },
+		{ "FLDIGI_AZ1", "" },
+		{ "FLDIGI_AZ2", "" }
+	};
+
+	// PATH
+	static string path;
+	if (path.length() == 0) {
+		const char* p;
+		if ((p = getenv("PATH")))
+			path.append(p).append(":");
+		path.append(HomeDir);
+		if (*path.rbegin() != '/')
+			path.append("/");
+		path.append("scripts");
+	}
+	env[PATH].val = path.c_str();
+
+	// IPC keys
+        char key[2][8];
+	snprintf(key[0], sizeof(key[0]), "%d", progdefaults.rx_msgid);
+	env[FLDIGI_RX_IPC_KEY].val = key[0];
+	snprintf(key[1], sizeof(key[1]), "%d", progdefaults.tx_msgid);
+	env[FLDIGI_TX_IPC_KEY].val = key[1];
+
+	// pid
+	char pid[6];
+	snprintf(pid, sizeof(pid), "%d", getpid());
+	env[FLDIGI_PID].val = pid;
+
+	// frequencies
+	char dial_freq[20];
+	snprintf(dial_freq, sizeof(dial_freq), "%lld", wf->rfcarrier());
+	env[FLDIGI_DIAL_FREQUENCY].val = dial_freq;
+	char audio_freq[6];
+	snprintf(audio_freq, sizeof(audio_freq), "%d", active_modem->get_freq());
+	env[FLDIGI_AUDIO_FREQUENCY].val = audio_freq;
+	char freq[20];
+	snprintf(freq, sizeof(freq), "%lld", wf->rfcarrier() + (wf->USB()
+								? active_modem->get_freq()
+								: -active_modem->get_freq()));
+	env[FLDIGI_FREQUENCY].val = freq;
+
+	// azimuth
+	int az_int[2];
+	char az_str[2][4];
+	if (sscanf(inpAZ->value(), "%03d / %03d", &az_int[0], &az_int[1]) == 2) {
+		snprintf(az_str[0], sizeof(az_str[0]), "%d", az_int[0]);
+		env[FLDIGI_AZ1].val = az_str[0];
+		snprintf(az_str[1], sizeof(az_str[1]), "%d", az_int[1]);
+		env[FLDIGI_AZ2].val = az_str[1];
+	}
+
+	// debugging vars
+#ifndef NDEBUG
+	unsetenv("FLDIGI_NO_EXEC");
+	unsetenv("MALLOC_CHECK_");
+	unsetenv("MALLOC_PERTURB_");
+#endif
+
+	for (size_t j = 0; j < ENV_SIZE; j++)
+		setenv(env[j].var, env[j].val, 1);
+}
+
+void pEXEC(string &s, size_t &i)
+{
+	size_t start, end;
+	if ((start = s.find('>', i)) == string::npos ||
+	    (end = s.find("</EXEC>", start)) == string::npos) {
+		i++;
+		return;
+	}
+	start++;
+	i++;
+
+	int pfd[2];
+	if (pipe(pfd) == -1) {
+		perror("pipe");
+		return;
+	}
+	pid_t pid;
+	switch (pid = fork()) {
+	case -1:
+		perror("fork");
+		return;
+	case 0: // child
+		close(pfd[0]);
+		if (dup2(pfd[1], STDOUT_FILENO) != STDOUT_FILENO) {
+			perror("dup2");
+			exit(EXIT_FAILURE);
+		}
+		close(pfd[1]);
+		set_env();
+		execl("/bin/sh", "sh", "-c", s.substr(start, end-start).c_str(), (char *)NULL);
+		perror("execl");
+		exit(EXIT_FAILURE);
+	}
+	// parent
+	close(pfd[1]);
+	FILE* fp = fdopen(pfd[0], "r");
+	if (!fp) {
+		perror("fdopen");
+		close(pfd[0]);
+		return;
+	}
+
+	start = --i;
+	end = s.find('>', end) + 1;
+	s.erase(start, end-start);
+	char ln[BUFSIZ];
+	while (fgets(ln, sizeof(ln), fp)) {
+		end = strlen(ln);
+		s.insert(start, ln, end);
+		start += end;
+	}
+
+	fclose(fp);
+	close(pfd[0]);
+
+	// what should we do with the shell-generated text?
+	// option 1: uncomment this line to skip & ignore it
+	// i = start;
+	// option 2: do nothing and allow it to be parsed for more macros
+}
+
+void pSTOP(string &s, size_t &i)
+{
+	s.erase(i, s.find('>', i) + 1 - i);
+	expand = false;
+}
+
+void pCONT(string &s, size_t &i)
+{
+	s.erase(i, s.find('>', i) + 1 - i);
+	expand = true;
+}
+
 int MACROTEXT::loadMacros(string filename)
 {
 	string mLine;
@@ -402,13 +595,21 @@ void MACROTEXT::saveMacroFile()
 string MACROTEXT::expandMacro(int n)
 {
 	size_t idx = 0;
-	
+	expand = true;
 	TransmitON = false;
 	mNbr = n;
 	expanded = text[n];
 	MTAGS *pMtags;
 
 	while ((idx = expanded.find('<', idx)) != string::npos) {
+		// we must handle this specially
+		if (expanded.find("<CONT>", idx) == idx)
+			pCONT(expanded, idx);
+		if (!expand) {
+			idx++;
+			continue;
+		}
+
 		pMtags = mtags;
 		while (pMtags->mTAG != 0) {
 			if (expanded.find(pMtags->mTAG,idx) == idx) {

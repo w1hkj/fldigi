@@ -127,6 +127,8 @@ int main(int argc, char ** argv)
 	set_terminate(diediedie);
 	signal(SIGSEGV, handle_signal);
 	signal(SIGILL, handle_signal);
+	signal(SIGCHLD, SIG_IGN);
+	signal(SIGPIPE, SIG_IGN);
 
 	setlocale(LC_TIME, "");
 
@@ -222,7 +224,7 @@ void sound_init(void)
 	glob("/dev/dsp*", 0, NULL, &gbuf);
 	for (size_t i = 0; i < gbuf.gl_pathc; i++)
 		menuOSSDev->add(gbuf.gl_pathv[i]);
-	if (progdefaults.OSSdevice.length() == 0)
+	if (progdefaults.OSSdevice.length() == 0 && gbuf.gl_pathc)
 		progdefaults.OSSdevice = gbuf.gl_pathv[0];
 	menuOSSDev->value(progdefaults.OSSdevice.c_str());
 	globfree(&gbuf);
@@ -276,7 +278,7 @@ void sound_init(void)
 	glob("/dev/mixer*", 0, NULL, &gbuf);
 	for (size_t i = 0; i < gbuf.gl_pathc; i++)
 		menuMix->add(gbuf.gl_pathv[i]);
-	if (progdefaults.MXdevice.length() == 0)
+	if (progdefaults.MXdevice.length() == 0 && gbuf.gl_pathc)
 		progdefaults.MXdevice = gbuf.gl_pathv[0];
 	globfree(&gbuf);
 	menuMix->value(progdefaults.MXdevice.c_str());
@@ -621,6 +623,8 @@ void generate_version_text(void)
 	  << "FLTK " << FL_MAJOR_VERSION << '.' << FL_MINOR_VERSION << '.'
 	  << FL_PATCH_VERSION << '\n';
 
+	s << src_get_version() << '\n';
+
 #if USE_HAMLIB
 	s << hamlib_version << '\n';
 #endif
@@ -633,10 +637,6 @@ void generate_version_text(void)
 	char sndfile_version[32];
 	sf_command(NULL, SFC_GET_LIB_VERSION, sndfile_version, sizeof(sndfile_version));
 	s << sndfile_version << '\n';
-#endif
-
-#ifdef src_get_version
-	s << ' ' << src_get_version() << '\n';
 #endif
 
 	version_text = s.str();

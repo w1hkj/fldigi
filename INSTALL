@@ -11,6 +11,8 @@ To compile fldigi you will need:
     development library and headers.  Version 1.1.7 and pre-releases of
     1.1.8 are known to work.  FLTK's multi-threading support is required.
 
+  * The samplerate (a.k.a. secret rabbit code) library.
+
 You should also install the libraries and headers for PortAudio, the
 Portable audio I/O library.
 
@@ -25,15 +27,6 @@ present on your system:
 
   * The PulseAudio sound backend is compiled if the development files
     for libpulse-simple, the PulseAudio simple API library, are present.
-
-Finally, fldigi requires the samplerate library but has its own copy to
-fall back on should it not be detected on your system.  The following
-message will be printed in that case:
-
-configure: WARNING: using bundled libsamplerate
-
-If you are building packages for other users you should link fldigi
-with the libsamplerate that comes with your distribution.
 
 
 Once you have installed the required packages, the following commands

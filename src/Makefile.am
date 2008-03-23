@@ -18,14 +18,10 @@ LDADD = @PORTAUDIO_LIBS@ @BOOST_LDFLAGS@ @FLTK_LIBS@ @SNDFILE_LIBS@ \
 	@SAMPLERATE_LIBS@ @PULSEAUDIO_LIBS@ @HAMLIB_LIBS@ @RTLIB@
 
 
-SAMPLERATE_SRC = samplerate/common.h samplerate/fastest_coeffs.h \
-	samplerate/float_cast.h samplerate/samplerate.c samplerate/samplerate.h \
-	samplerate/src_linear.c samplerate/src_sinc.c samplerate/src_zoh.c \
-	samplerate/srconfig.h
 HAMLIB_SRC = include/hamlib.h rigcontrol/hamlib.cxx include/rigclass.h rigcontrol/rigclass.cxx
 
 # We distribute these but do not always compile them
-EXTRA_fldigi_SOURCES = $(SAMPLERATE_SRC) $(HAMLIB_SRC)
+EXTRA_fldigi_SOURCES = $(HAMLIB_SRC)
 
 fldigi_SOURCES =
 
@@ -34,11 +30,6 @@ if ENABLE_DEBUG
   AM_LDFLAGS += @RDYNAMIC@
 else
   AM_CPPFLAGS += -DNDEBUG
-endif
-
-if NO_SAMPLERATE
-  AM_CPPFLAGS += -I$(srcdir)/samplerate
-  fldigi_SOURCES += $(SAMPLERATE_SRC)
 endif
 
 if ENABLE_HAMLIB
