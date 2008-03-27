@@ -2618,7 +2618,7 @@ template <class Type=float>
          if(SyncSNR>=SyncThreshold)
          {
 /*
-         printf("%4.1f/%+2d => %4.1f/%3.1f = %4.1f  ",
+         printf("%4.1f/%+2d => %4.1f/%3.1f = %4.1f  \n",
              (float)SyncBestBlockPhase/2,
              (int)SyncBestFreqOffset-(FreqOffsets/2),
              SyncBestSignal, BestNoise,

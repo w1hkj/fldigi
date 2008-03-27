@@ -108,7 +108,7 @@ Fl_Box				*Status2 = (Fl_Box *)0;
 Fl_Box				*Status1 = (Fl_Box *)0;
 Fl_Box				*WARNstatus = (Fl_Box *)0;
 Fl_Button			*MODEstatus = (Fl_Button *)0;
-Fl_Button 			*btnMacro[12];
+Fl_Button 			*btnMacro[NUMMACKEYS];
 Fl_Button			*btnAltMacros;
 Fl_Light_Button		*btn_afconoff;
 Fl_Light_Button		*btn_sqlonoff;
@@ -137,7 +137,7 @@ Fl_Slider			*valXmtMixer;
 
 int					altMacros = 0;
 bool				bSaveFreqList = false;
-string				strMacroName[12];
+string				strMacroName[NUMMACKEYS];
 
 
 waterfall			*wf = (waterfall *)0;
@@ -475,7 +475,7 @@ void macro_cb(Fl_Widget *w, void *v)
 void colorize_macro(int i) 
 {
 	if (progdefaults.useGroupColors == true) {
-		if (i < 4){
+		if (i < NUMKEYROWS){
 			btnMacro[i]->color(fl_rgb_color(
 				progdefaults.btnGroup1.R, 
 				progdefaults.btnGroup1.G, 
@@ -505,7 +505,7 @@ void colorize_macro(int i)
 void colorize_macros()
 {
 	FL_LOCK_D();
-	for (int i = 0; i < 12; i++) {
+	for (int i = 0; i < NUMMACKEYS; i++) {
 		colorize_macro(i);
 		btnMacro[i]->redraw_label();
 	}
@@ -514,12 +514,18 @@ void colorize_macros()
 
 void altmacro_cb(Fl_Widget *w, void *v)
 {
-	static char alt_text[4];
-	altMacros = altMacros + (Fl::event_button() == FL_RIGHT_MOUSE ? -1 : 1);
+	static char alt_text[NUMKEYROWS];
+
+	intptr_t arg = reinterpret_cast<intptr_t>(v);
+	if (arg)
+		altMacros += arg;
+	else
+		altMacros = altMacros + (Fl::event_button() == FL_RIGHT_MOUSE ? -1 : 1);
 	altMacros = WCLAMP(altMacros, 0, 3);
+
 	snprintf(alt_text, sizeof(alt_text), "%d", altMacros + 1);
 	FL_LOCK_D();
-	for (int i = 0; i < 12; i++)
+	for (int i = 0; i < NUMMACKEYS; i++)
 		btnMacro[i]->label(macros.name[i + (altMacros * NUMMACKEYS)].c_str());
 	btnAltMacros->label(alt_text);
 	btnAltMacros->redraw_label();
@@ -1319,9 +1325,9 @@ void create_fl_digi_main() {
 		
 		Fl_Box *macroFrame = new Fl_Box(0, Y, WNOM, Hmacros);
 			macroFrame->box(FL_ENGRAVED_FRAME);
-			int Wbtn = (WNOM - 30 - 8 - 4)/12;
+			int Wbtn = (WNOM - 30 - 8 - 4)/NUMMACKEYS;
 			int xpos = 2;
-			for (int i = 0; i < 12; i++) {
+			for (int i = 0; i < NUMMACKEYS; i++) {
 				if (i == 4 || i == 8) {
 					bx = new Fl_Box(xpos, Y+2, 5, Hmacros - 4);
 					bx->box(FL_FLAT_BOX);

@@ -1,15 +1,21 @@
 Change Log:
 
-2.11  1) Deleted local copy of libsamplerate as it was deprecated.
-      2) Deleted the fast text widgets that were a part of the early versions
+2.11  1) Added EXEC macro
+      2) Added mousewheel over Macro buttons to move between macro button sets.
+      3) Fixed bug in Olivia signal level display.
+      
+2.10.2
+      1) Bug fix for QRZ CDROM access
+2.10.1
+      1) Fixed bug in MODEM macro that caused TX to hang
+      2) Fixed sound_init crash.  This would happen with an empty 
+         progdefaults.OSSdevice (e.g. new install) on a system without 
+         OSS devices.
+      3) Deleted local copy of libsamplerate as it was deprecated.
+      4) Deleted the fast text widgets that were a part of the early versions
          of fldigi and had been retained for some performance improvement.
          Recent changes to the more complete text widgets have equalled the
          performance of the fast text widgets.
-      3) Added EXEC macro
-      4) Fixed bug in MODEM macro that caused TX to hang
-      5) Fixed sound_init crash.  This would happen with an empty 
-         progdefaults.OSSdevice (e.g. new install) on a system without 
-         OSS devices.
 2.10  1) Added history decoding (ctrl-Left-click in waterfall). Available after
          tracking has started.  This does not start a new signal acquisition.
       2) Rewrote Psk and ViewPsk to use shared signal detection class
