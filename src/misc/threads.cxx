@@ -36,9 +36,6 @@
 
 #include "threads.h"
 
-#ifndef WIN32
-// Use POSIX threading...
-
 int fl_create_thread(Fl_Thread & t, void *(*f) (void *), void* p) {
   return pthread_create((pthread_t*)&t, NULL, f, p);
 }
@@ -75,13 +72,6 @@ int fl_join (Fl_Thread  t) {
 	return pthread_join ((pthread_t) t, 0);
 }
 
-#else
-
-static int fl_create_thread(Fl_Thread * t, void *(*f) (void *), void* p) {
-  return t = (Fl_Thread)_beginthread((void( __cdecl * )( void * ))f, 0, p);
-}
-
-#  endif // !WIN32
 
 #if USE_TLS
 	__thread  int thread_id_;

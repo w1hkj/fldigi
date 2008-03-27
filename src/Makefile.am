@@ -19,9 +19,10 @@ LDADD = @PORTAUDIO_LIBS@ @BOOST_LDFLAGS@ @FLTK_LIBS@ @SNDFILE_LIBS@ \
 
 
 HAMLIB_SRC = include/hamlib.h rigcontrol/hamlib.cxx include/rigclass.h rigcontrol/rigclass.cxx
+WIN32_RES_SRC = fldigirc.rc
 
 # We distribute these but do not always compile them
-EXTRA_fldigi_SOURCES = $(HAMLIB_SRC)
+EXTRA_fldigi_SOURCES = $(HAMLIB_SRC) $(WIN32_RES_SRC)
 
 fldigi_SOURCES =
 
@@ -52,6 +53,14 @@ nodist_fldigi_SOURCES = $(BUILT_SOURCES)
 # and deleted by the clean targets
 CLEANFILES = $(BUILT_SOURCES)
 
+
+if WIN32
+if HAVE_WINDRES
+.rc.o:
+	$(WINDRES) -I$(srcdir)/../data/win32 $< $@
+fldigi_SOURCES += $(WIN32_RES_SRC)
+endif
+endif
 
 install-data-local:
 	if test -f $(srcdir)/../data/fldigi.xpm; then \
@@ -310,12 +319,13 @@ EXTRA_fldigi_SOURCES += \
 EXTRA_DIST = \
 	$(srcdir)/../scripts/mkversions.sh \
 	$(srcdir)/../scripts/mkappbundle.sh \
-    $(srcdir)/../scripts/tests/config-h.sh \
+	$(srcdir)/../scripts/tests/config-h.sh \
 	$(srcdir)/../data/fldigi-psk.png \
 	$(srcdir)/../data/fldigi-rtty.png \
 	$(srcdir)/../data/fldigi.xpm \
 	$(srcdir)/../data/fldigi.desktop \
 	$(srcdir)/../data/mac/Info.plist.in \
+	$(srcdir)/../data/win32/fldigi.ico \
 	fileselector/allfiles.xbm \
 	fileselector/d1.xbm \
 	fileselector/d1_mask.xbm \

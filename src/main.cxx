@@ -29,8 +29,10 @@
 #include <cstdlib>
 #include <getopt.h>
 #include <sys/types.h>
-#include <sys/ipc.h>
-#include <sys/msg.h>
+#ifndef __CYGWIN__
+#  include <sys/ipc.h>
+#  include <sys/msg.h>
+#endif
 #include <sys/utsname.h>
 #include <unistd.h>
 #include <dirent.h>
@@ -166,7 +168,11 @@ int main(int argc, char ** argv)
 	logfile = new cLogfile(lfname);
 	logfile->log_to_file_start();
 
+#ifndef __CYGWIN__
    	txmsgid = msgget( (key_t) progdefaults.tx_msgid, 0666 );
+#else
+	txmsgid = -1;
+#endif
 	fl_filename_expand(szPskMailDir, 119, "$HOME/pskmail.files/");
 	PskMailDir = szPskMailDir;
 
@@ -338,6 +344,7 @@ void generate_option_help(void) {
 	     << "    Look for configuration files in DIRECTORY\n"
 	     << "    The default is: " << HomeDir << "\n\n"
 
+#ifndef __CYGWIN__
 	     << "  --rx-ipc-key KEY\n"
 	     << "    Set the receive message queue key\n"
 	     << "    May be given in hex if prefixed with \"0x\"\n"
@@ -349,6 +356,7 @@ void generate_option_help(void) {
 	     << "    May be given in hex if prefixed with \"0x\"\n"
 	     << "    The default is: " << progdefaults.tx_msgid
 	     << " or 0x" << hex << progdefaults.tx_msgid << dec << "\n\n"
+#endif
 
 	     << "  --resample CONVERTER\n"
 	     << "    Set the resampling method\n"
@@ -435,7 +443,11 @@ int parse_args(int argc, char **argv, int& idx)
 	if ( !(strlen(argv[idx]) >= 2 && strncmp(argv[idx], "--", 2) == 0) )
 		return 0;
 
-        enum { OPT_ZERO, OPT_RX_IPC_KEY, OPT_TX_IPC_KEY, OPT_CONFIG_DIR,
+        enum { OPT_ZERO,
+#ifndef __CYGWIN__
+	       OPT_RX_IPC_KEY, OPT_TX_IPC_KEY,
+#endif
+	       OPT_CONFIG_DIR,
                OPT_FONT, OPT_WFALL_WIDTH, OPT_WFALL_HEIGHT,
                OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT, OPT_PROFILE, OPT_USE_CHECK,
 	       OPT_RESAMPLE,
@@ -447,8 +459,10 @@ int parse_args(int argc, char **argv, int& idx)
 
 	const char shortopts[] = "+";
 	static struct option longopts[] = {
+#ifndef __CYGWIN__
 		{ "rx-ipc-key",	   1, 0, OPT_RX_IPC_KEY },
 		{ "tx-ipc-key",	   1, 0, OPT_TX_IPC_KEY },
+#endif
 		{ "config-dir",	   1, 0, OPT_CONFIG_DIR },
 		{ "font",	   1, 0, OPT_FONT },
 
@@ -482,6 +496,7 @@ int parse_args(int argc, char **argv, int& idx)
 			// handle options with non-0 flag here
 			return 0;
 
+#ifndef __CYGWIN__
 		case OPT_RX_IPC_KEY: case OPT_TX_IPC_KEY:
 		{
 			errno = 0;
@@ -494,6 +509,7 @@ int parse_args(int argc, char **argv, int& idx)
 				progdefaults.tx_msgid = key;
 		}
 			break;
+#endif
 
 		case OPT_CONFIG_DIR:
 			HomeDir = optarg;
@@ -641,7 +657,7 @@ void generate_version_text(void)
 // the env var FLDIGI_NO_EXEC is set, or our parent process is gdb.
 void debug_exec(char** argv)
 {
-#ifndef NDEBUG
+#if !defined(NDEBUG) && !defined(__CYGWIN__)
         if (getenv("FLDIGI_NO_EXEC"))
                 return;
 

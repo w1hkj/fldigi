@@ -5,9 +5,11 @@
 
 #include <config.h>
 
-#include <sys/ipc.h>
-#include <sys/msg.h>
-#include <sys/shm.h>
+#ifndef __CYGWIN__
+#  include <sys/ipc.h>
+#  include <sys/msg.h>
+#  include <sys/shm.h>
+#endif
 #include <sys/time.h>
 
 #include <FL/Fl.H>
@@ -26,12 +28,16 @@
 #define PTT_OFF false
 #define PTT_ON  true
 
+#ifndef __CYGWIN__
 static int dummy;
+#endif
 
 static Fl_Thread rigMEM_thread;
 static bool rigMEM_exit = false;
 static bool rigMEM_enabled;
+#ifndef __CYGWIN__
 static void *rigMEM_loop(void *args);
+#endif
 static bool rigMEM_PTT = PTT_OFF;
 static bool rig_qsy = false;
 static bool TogglePTT = false;
@@ -61,6 +67,7 @@ key_t hash (char *str)
 	return key;
 }
 
+#ifndef __CYGWIN__
 void rigMEM_init(void)
 {
 //  szFreqFormat[2] = '0' + TEN_TEC_LOG_PREC;
@@ -99,6 +106,9 @@ void rigMEM_init(void)
 //	}
 	rigMEM_enabled = true;
 }
+#else // __CYGWIN__
+void rigMEM_init(void) { }
+#endif
 
 void rigMEM_close(void)
 {
@@ -144,6 +154,7 @@ void rigMEM_set_qsy(long long f, long long fmid)
 	rig_qsy = true;
 }
 
+#ifndef __CYGWIN__
 static void *rigMEM_loop(void *args)
 {
 	SET_THREAD_ID(RIGCTL_TID);
@@ -218,6 +229,7 @@ static void *rigMEM_loop(void *args)
 	/* this will exit the rigMEM thread */
 	return NULL;
 }
+#endif
 
 /* ---------------------------------------------------------------------- */
 

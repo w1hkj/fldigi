@@ -35,7 +35,11 @@ extern int parity(unsigned long w);
 extern unsigned long rbits32(unsigned long w);
 extern unsigned short int rbits16(unsigned short int w);
 extern unsigned char rbits8(unsigned char w);
+
+#ifndef __CYGWIN__
 extern unsigned int log2(unsigned int x);
+#endif
+
 extern unsigned char graydecode(unsigned char data);
 extern unsigned char grayencode(unsigned char data);
 extern void MilliSleep(long msecs);

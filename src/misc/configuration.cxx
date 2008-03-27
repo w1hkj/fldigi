@@ -33,7 +33,7 @@ configuration progdefaults = {
 	3,				// int			rtty_shift; = 170
 	0,				// int			rtty_baud; = 45
 	0,				// int 			rtty_bits; = 5
-	PARITY_NONE,	// RTTY_PARITY	rtty_parity;
+	RTTY_PARITY_NONE,	// RTTY_PARITY	rtty_parity;
 	1,				// int			rtty_stop;
 	false,			// bool 		rtty_reverse;
 	false,			// bool		rtty_msbfirst;
@@ -1078,11 +1078,11 @@ void configuration::loadDefaults() {
 	selBaud->value(rtty_baud);
 	selBits->value(rtty_bits);
 	switch (rtty_parity) {
-		case PARITY_NONE : selParity->value(0); break;
-		case PARITY_EVEN : selParity->value(1); break;
-		case PARITY_ODD :  selParity->value(2); break;
-		case PARITY_ZERO : selParity->value(3); break;
-		case PARITY_ONE :  selParity->value(4); break;
+		case RTTY_PARITY_NONE : selParity->value(0); break;
+		case RTTY_PARITY_EVEN : selParity->value(1); break;
+		case RTTY_PARITY_ODD :  selParity->value(2); break;
+		case RTTY_PARITY_ZERO : selParity->value(3); break;
+		case RTTY_PARITY_ONE :  selParity->value(4); break;
 		default :          selParity->value(0); break;
 	}
 //	chkMsbFirst->value(rtty_msbfirst);
@@ -1116,15 +1116,15 @@ void configuration::storeDefaults() {
 	rtty_baud = selBaud->value();
 	rtty_bits = selBits->value();
 	if (rtty_bits == 0)
-		rtty_parity = PARITY_NONE;
+		rtty_parity = RTTY_PARITY_NONE;
 	else
 		switch (selParity->value()) {
-			case 0 : rtty_parity = PARITY_NONE; break;
-			case 1 : rtty_parity = PARITY_EVEN; break;
-			case 2 : rtty_parity = PARITY_ODD; break;
-			case 3 : rtty_parity = PARITY_ZERO; break;
-			case 4 : rtty_parity = PARITY_ONE; break;
-			default : rtty_parity = PARITY_NONE; break;
+			case 0 : rtty_parity = RTTY_PARITY_NONE; break;
+			case 1 : rtty_parity = RTTY_PARITY_EVEN; break;
+			case 2 : rtty_parity = RTTY_PARITY_ODD; break;
+			case 3 : rtty_parity = RTTY_PARITY_ZERO; break;
+			case 4 : rtty_parity = RTTY_PARITY_ONE; break;
+			default : rtty_parity = RTTY_PARITY_NONE; break;
 		}
 //	rtty_msbfirst = chkMsbFirst->value();
 	rtty_stop = selStopBits->value();

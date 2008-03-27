@@ -26,8 +26,10 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/ipc.h>
-#include <sys/msg.h>
+#ifndef __CYGWIN__
+#  include <sys/ipc.h>
+#  include <sys/msg.h>
+#endif
 #include <errno.h>
 #include <string>
 
@@ -133,7 +135,9 @@ void putadif(int num, const char *s)
 
 //---------------------------------------------------------------------
 
+#ifndef __CYGWIN__
 static msgtype msgbuf;
+#endif
 static string log_msg;
 static string errmsg;
 static char strFreqMhz[20];
@@ -144,7 +148,9 @@ char   LOG_MSEPARATOR[2] = {1,0};
 int submit_log(void)
 {
 	char logdate[32], logtime[32], adifdate[32];
+#ifndef __CYGWIN__
 	int msqid, len;
+#endif
 	struct tm *tm;
 	time_t t;
 
@@ -191,7 +197,8 @@ int submit_log(void)
 	FL_UNLOCK();
 
 	writeadif();
-	
+
+#ifndef __CYGWIN__
 	strncpy(msgbuf.mtext, log_msg.c_str(), sizeof(msgbuf.mtext));
 	msgbuf.mtext[sizeof(msgbuf.mtext) - 1] = '\0';
 
@@ -211,6 +218,9 @@ int submit_log(void)
 		return -1;
 	}
 	return 0;
+#else
+	return -1;
+#endif
 }
 
 

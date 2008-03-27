@@ -24,6 +24,10 @@
 
 #include <unistd.h>
 #include <errno.h>
+#if __CYGWIN__
+#  include <sys/types.h>
+#  include <sys/socket.h>
+#endif
 
 #include <FL/Fl.H>
 
@@ -34,7 +38,11 @@ qrunner::qrunner(size_t npri_)
         : npri(npri_), attached(false), drop_flag(false)
 {
         fifo = new fqueue(2048, npri);
+#ifndef __CYGWIN__
         if (pipe(pfd) == -1)
+#else
+	if (socketpair(PF_UNIX, SOCK_DGRAM, 0, pfd) == -1)
+#endif
                 throw qexception(errno);
 }
 

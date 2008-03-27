@@ -25,8 +25,10 @@
 #include <config.h>
 
 #include <sys/types.h>
-#include <sys/ipc.h>
-#include <sys/msg.h>
+#ifndef __CYGWIN__
+#  include <sys/ipc.h>
+#  include <sys/msg.h>
+#endif
 
 #include <stdlib.h>
 #include <string>
@@ -78,7 +80,7 @@
 
 #include "combo.h"
 #include "font_browser.h"
-#ifndef __APPLE__
+#if !defined(__APPLE__) && !defined(__CYGWIN__)
 #        include "fldigi-icon-48.xpm"
 #endif
 #include "status.h"
@@ -145,7 +147,7 @@ Fl_Progress			*pgrsSquelch = (Fl_Progress *)0;
 
 Fl_RGB_Image		*feld_image = 0;
 
-#ifndef __APPLE__
+#if !defined(__APPLE__) && !defined(__CYGWIN__)
 Pixmap				fldigi_icon_pixmap;
 #endif
 
@@ -1087,7 +1089,7 @@ void activate_rig_menu_item(bool b)
 	mnu->redraw();
 }
 
-#ifndef __APPLE__
+#if !defined(__APPLE__) && !defined(__CYGWIN__)
 void make_pixmap(Pixmap *xpm, const char **data)
 {
 	// We need a displayed window to provide a GC for X_CreatePixmap
@@ -1440,7 +1442,7 @@ void create_fl_digi_main() {
 	fl_digi_main->end();
 	fl_digi_main->callback(cb_wMain);
 
-#ifndef __APPLE__
+#if !defined(__APPLE__) && !defined(__CYGWIN__)
 	make_pixmap(&fldigi_icon_pixmap, fldigi_icon_48_xpm);
 	fl_digi_main->icon((char *)fldigi_icon_pixmap);
 #endif
@@ -1509,7 +1511,13 @@ void put_rx_char(unsigned int data)
 {
 	static unsigned int last = 0;
 	const char **asc = ascii;
+
+#ifndef __CYGWIN__
 	rxmsgid = msgget( (key_t) progdefaults.rx_msgid, 0666);
+#else
+	rxmsgid = -1;
+#endif
+
 	if (mailclient || mailserver || rxmsgid != -1)
 		asc = ascii2;
 	if (active_modem->get_mode() == MODE_RTTY ||
@@ -1534,11 +1542,13 @@ void put_rx_char(unsigned int data)
 	}
 	last = data;
 
+#ifndef __CYGWIN__
 	if ( rxmsgid != -1) {
 		rxmsgst.msg_type = 1;
 		rxmsgst.c = data;
 		msgsnd (rxmsgid, (void *)&rxmsgst, 1, IPC_NOWAIT);
 	}
+#endif
 
 	string s = iscntrl(data) ? ascii2[data & 0x7F] : string(1, data);
 	if (Maillogfile)

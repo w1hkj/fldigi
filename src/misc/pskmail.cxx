@@ -7,8 +7,10 @@
 #include <string>
 #include <ctime>
 #include <sys/types.h>
-#include <sys/ipc.h>
-#include <sys/msg.h>
+#ifndef __CYGWIN__
+#  include <sys/ipc.h>
+#  include <sys/msg.h>
+#endif
 
 #include "main.h"
 #include "configuration.h"
@@ -114,7 +116,9 @@ void mailZDT(string &s)
 
 #define TIMEOUT 180 // 3 minutes
 
+bool bSend0x06 = false;
 
+#ifndef __CYGWIN__
 void process_msgque()
 {
 	int nbytes = msgrcv (txmsgid, (void *)&txmsgst, BUFSIZ, 0, IPC_NOWAIT);
@@ -198,8 +202,6 @@ void check_formail() {
 	} 
 }
 
-bool bSend0x06 = false;
-
 void send0x06()
 {
 	if (trx_state == STATE_RX) {
@@ -212,6 +214,11 @@ void send0x06()
 		}
 	}
 }
+#else // __CYGWIN__
+void process_msgque() { }
+void check_formail() { }
+void send0x06() { }
+#endif
 
 void pskmail_loop(void *)
 {

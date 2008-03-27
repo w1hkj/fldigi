@@ -36,7 +36,29 @@
 
 
 extern "C" {
-#  include <jpeglib.h>
+
+// This is needed to avoid a boolean conflict with jmorecfg.h
+#ifdef __CYGWIN__
+#  include <w32api/wtypes.h>
+#  define HAVE_BOOLEAN 1
+#endif
+
+// This is needed to avoid a conflict between a
+// system-defined INT32 typedef, and a macro defined in
+// jmorecfg.h, included by jpeglib.h. If ADDRESS_TAG_BIT
+// is defined, basestd.h has been included and we will have
+// the typedef from cygwin, so we define XMD_H to avoid
+// defining the macro in jmorecfg.h
+#if defined(__CYGWIN__) && !defined(XMD_H)
+#  define XMD_H
+#  define FLDIGI_JPEG_XMD_H
+#endif
+#include <jpeglib.h>
+#ifdef FLDIGI_JPEG_XMD_H
+#  undef FLDIGI_JPEG_XMD_H
+#  undef XMD_H
+#endif
+
 //#  include "transupp.h"
 };
 
