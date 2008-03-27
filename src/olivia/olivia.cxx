@@ -248,20 +248,17 @@ int olivia::rx_process(const double *buf, int len)
 
 	Rx->Process(rxbuffer, len);
 
-	if ((snr = Rx->SignalToNoiseRatio()) > 99.9)
-		snr = 99.9;
+	snr = Rx->SignalToNoiseRatio();
 
 	set_metric(snr);
+	display_metric(snr > 100.0 ? 100.0 : snr);
 	
-	double s2n = 20.0 * log10(snr);
+	double s2n = 20.0 * log10(snr < 0.1 ? 0.1 : snr);
 
 	snprintf(msg1, sizeof(msg1), "s/n %4.1f", s2n);//Rx->SignalToNoiseRatio()); 
 	put_Status1(msg1);
 	snprintf(msg2, sizeof(msg2), "Freq: %+4.1f", Rx->FrequencyOffset());
 	put_Status2(msg2);
-//	snprintf(msg3, sizeof(msg3), "Tune: %4.1f, Time: %5.3f Hz, Block: %5.3f sec",
-//		Rx->TuneMargin(), Rx->TimeOffset(), Rx->BlockPeriod());
-//	put_status(msg3);
 
 	while (Rx->GetChar(ch) > 0)
 		if ((c = unescape(ch)) != -1 && c > 7)
@@ -274,12 +271,12 @@ void olivia::restart()
 {
 	tones	= progdefaults.oliviatones;
 	bw 		= progdefaults.oliviabw;
-//	samplerate = 8000;
+	samplerate = 8000;
 //	samplerate = 11025;
 	
 	Tx->Tones = 2 * (1 << tones);
 	Tx->Bandwidth = 125 * (1 << bw);
-	Tx->SampleRate = 8000.0;//samplerate;
+	Tx->SampleRate = samplerate; //8000.0; //samplerate;
 	Tx->OutputSampleRate = samplerate;
     txbasefreq = get_txfreq_woffset();
 
@@ -312,7 +309,7 @@ void olivia::restart()
 	Rx->SyncIntegLen = sinteg;
 	Rx->SyncThreshold = progStatus.sqlonoff ? progStatus.sldrSquelchValue : 0.0;
 
-	Rx->SampleRate = 8000.0;//samplerate;
+	Rx->SampleRate = samplerate; // 8000.0;//samplerate;
 	Rx->InputSampleRate = samplerate;
 
 	if (reverse) { 

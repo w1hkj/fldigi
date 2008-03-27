@@ -32,6 +32,9 @@
 # include <unistd.h>
 # include <pwd.h>
 
+#include <iostream>
+using namespace std;
+
 #include "qrzlib.h"
 
 static char QRZdir[256] = "";
@@ -183,6 +186,10 @@ void QRZ::OpenQRZFiles( const char *fname )
   long fsize;
   char dfname[64];
   char idxname[64];
+  int num1;
+  int num2;
+  num1 = 0;
+  num2 = 0;
 
   if( fname[0] == 0 ) {
     QRZvalid = 0;
@@ -226,8 +233,10 @@ void QRZ::OpenQRZFiles( const char *fname )
   }
   memset( index, 0, idxsize );
 
-  if (fread( &idxhdr.dataname, 1, 48, idxfile ) != 1 ||
-      fread( index, 1, idxsize, idxfile ) != 1) {
+  num1 =  fread( &idxhdr.dataname, 48, 1, idxfile );
+  num2 =  fread( index, idxsize, 1, idxfile );
+ 
+  if (num1 != 1 || num2 != 1) {
     fclose( idxfile );
     free( index );
     QRZvalid = 0;
