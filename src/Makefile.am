@@ -209,6 +209,7 @@ fldigi_SOURCES += \
 	include/rtty.h \
 	include/serial.h \
 	include/sound.h \
+	include/soundconf.h \
 	include/stacktrace.h \
 	include/status.h \
 	include/testmodem.h \
@@ -274,6 +275,7 @@ fldigi_SOURCES += \
 	rigcontrol/serial.cxx \
 	soundcard/mixer.cxx \
 	soundcard/sound.cxx \
+	soundcard/soundconf.cxx \
 	throb/throb.cxx \
 	trx/modem.cxx \
 	trx/trx.cxx \

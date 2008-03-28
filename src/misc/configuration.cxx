@@ -132,7 +132,9 @@ configuration progdefaults = {
 	"",		// string	OSSdevice;
 	"",		// string	PAdevice;
 	"",		// string	PortIndevice;
+	-1,		// int		PortInIndex;
 	"",		// string	PortOutDevice;
+	-1,		// int		PortOutIndex;
 	"",		// string	PulseServer
 	SAMPLE_RATE_UNSET,		// int		sample_rate;
 	SAMPLE_RATE_UNSET,		// int		in_sample_rate;
@@ -239,7 +241,7 @@ enum TAG { \
 	HAMRIGNAME, HAMRIGDEVICE, HAMRIGBAUDRATE,
 	PTTDEV,
 	SECONDARYTEXT, 
-	AUDIOIO, OSSDEVICE, PADEVICE, PORTINDEVICE, PORTOUTDEVICE, PULSESERVER,
+	AUDIOIO, OSSDEVICE, PADEVICE, PORTINDEVICE, PORTININDEX, PORTOUTDEVICE, PORTOUTINDEX, PULSESERVER,
 	SAMPLERATE, INSAMPLERATE, OUTSAMPLERATE, RXCORR, TXCORR, TXOFFSET,
 	USELEADINGZEROS, CONTESTSTART, CONTESTDIGITS,
 	USETIMER, MACRONUMBER, TIMEOUT,
@@ -408,7 +410,10 @@ void configuration::writeDefaultsXML()
 	writeXMLstr(f, "OSSDEVICE", OSSdevice);
 	writeXMLstr(f, "PADEVICE", PAdevice);
 	writeXMLstr(f, "PORTINDEVICE", PortInDevice);
+	writeXMLint(f, "PORTININDEX", PortInIndex);
 	writeXMLstr(f, "PORTOUTDEVICE", PortOutDevice);
+	writeXMLint(f, "PORTOUTINDEX", PortOutIndex);
+	writeXMLstr(f, "PULSESERVER", PulseServer);
 	writeXMLint(f, "SAMPLERATE", sample_rate);
 	writeXMLint(f, "INSAMPLERATE", in_sample_rate);
 	writeXMLint(f, "OUTSAMPLERATE", out_sample_rate);
@@ -754,8 +759,14 @@ bool configuration::readDefaultsXML()
 					case PORTINDEVICE :
 						PortInDevice = xml->getNodeData();
 						break;
+					case PORTININDEX :
+						PortInIndex = atoi(xml->getNodeData());
+						break;
 					case PORTOUTDEVICE :
 						PortOutDevice = xml->getNodeData();
+						break;
+					case PORTOUTINDEX :
+						PortOutIndex = atoi(xml->getNodeData());
 						break;
 					case PULSESERVER :
 						PulseServer = xml->getNodeData();
@@ -1009,7 +1020,9 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("OSSDEVICE", nodeName)) 	tag = OSSDEVICE;
 				else if (!strcmp("PADEVICE", nodeName)) 	tag = PADEVICE;
 				else if (!strcmp("PORTINDEVICE", nodeName)) 	tag = PORTINDEVICE;
+				else if (!strcmp("PORTININDEX", nodeName)) 	tag = PORTININDEX;
 				else if (!strcmp("PORTOUTDEVICE", nodeName)) 	tag = PORTOUTDEVICE;
+				else if (!strcmp("PORTOUTINDEX", nodeName)) 	tag = PORTOUTINDEX;
 				else if (!strcmp("SAMPLERATE", nodeName)) 	tag = SAMPLERATE;
 				else if (!strcmp("INSAMPLERATE", nodeName)) 	tag = INSAMPLERATE;
 				else if (!strcmp("OUTSAMPLERATE", nodeName)) 	tag = OUTSAMPLERATE;
@@ -1309,8 +1322,6 @@ int configuration::setDefaults() {
 	btnLineIn->value(LineIn);
 
 	menuOSSDev->value(OSSdevice.c_str());
-	menuPortInDev->value(PortInDevice.c_str());
-	menuPortOutDev->value(PortOutDevice.c_str());
 	inpPulseServer->value(PulseServer.c_str());
 
 	btnMixer->value(EnableMixer);

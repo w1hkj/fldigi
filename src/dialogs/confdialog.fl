@@ -6,6 +6,8 @@ decl {\#include <config.h>} {}
 
 decl {\#include "main.h"} {} 
 
+decl {\#include "soundconf.h"} {} 
+
 decl {\#include "globals.h"} {public
 } 
 
@@ -666,7 +668,7 @@ o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");}
             } {
               Fl_Round_Button {btnAudioIO[0]} {
                 label OSS
-                callback {update_sound_config(SND_IDX_OSS);
+                callback {sound_update(SND_IDX_OSS);
 progdefaults.changed = true;
 resetSoundCard();}
                 xywh {5 63 100 25} down_box DIAMOND_DOWN_BOX selection_color 1
@@ -685,26 +687,26 @@ progdefaults.changed = true;} open
             } {
               Fl_Round_Button {btnAudioIO[1]} {
                 label PortAudio
-                callback {update_sound_config(SND_IDX_PORT);
+                callback {sound_update(SND_IDX_PORT);
 progdefaults.changed = true;
 resetSoundCard();}
                 xywh {5 115 95 25} down_box DIAMOND_DOWN_BOX selection_color 1
               }
-              Fl_Input_Choice menuPortInDev {
+              Fl_Choice menuPortInDev {
                 label Capture
-                callback {scDevice[0] = progdefaults.PortInDevice = o->value();
+                callback {scDevice[0] = progdefaults.PortInDevice = o->text();
+progdefaults.PortInIndex = reinterpret_cast<intptr_t>(o->mvalue()->user_data());
 resetSoundCard();
 progdefaults.changed = true;} open
                 xywh {165 99 225 25}
-                code0 {o->value(progdefaults.PortInDevice.c_str());}
               } {}
-              Fl_Input_Choice menuPortOutDev {
+              Fl_Choice menuPortOutDev {
                 label Playback
-                callback {scDevice[1] = progdefaults.PortOutDevice = o->value();
+                callback {scDevice[1] = progdefaults.PortOutDevice = o->text();
+progdefaults.PortOutIndex = reinterpret_cast<intptr_t>(o->mvalue()->user_data());
 resetSoundCard();
 progdefaults.changed = true;} open
                 xywh {165 127 225 25}
-                code0 {o->value(progdefaults.PortOutDevice.c_str());}
               } {}
             }
             Fl_Group AudioPulse {open
@@ -712,7 +714,7 @@ progdefaults.changed = true;} open
             } {
               Fl_Round_Button {btnAudioIO[2]} {
                 label PulseAudio
-                callback {update_sound_config(SND_IDX_PULSE);
+                callback {sound_update(SND_IDX_PULSE);
 progdefaults.changed = true;
 resetSoundCard();}
                 xywh {5 159 100 30} down_box DIAMOND_DOWN_BOX selection_color 1
@@ -732,7 +734,7 @@ http://www.pulseaudio.org/wiki/ServerStrings} xywh {165 161 225 25}
             } {
               Fl_Round_Button {btnAudioIO[3]} {
                 label {File I/O only}
-                callback {update_sound_config(SND_IDX_NULL);
+                callback {sound_update(SND_IDX_NULL);
 progdefaults.changed = true;
 resetSoundCard();}
                 xywh {5 192 100 25} down_box DIAMOND_DOWN_BOX selection_color 1

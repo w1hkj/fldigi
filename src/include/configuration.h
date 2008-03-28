@@ -131,7 +131,9 @@ struct configuration {
 	string	OSSdevice;
 	string	PAdevice;
 	string	PortInDevice;
+	int	PortInIndex;
 	string	PortOutDevice;
+	int	PortOutIndex;
 	string	PulseServer;
 	int		sample_rate;
 	int		in_sample_rate;

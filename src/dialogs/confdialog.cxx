@@ -3,6 +3,7 @@
 #include "confdialog.h"
 #include <config.h>
 #include "main.h"
+#include "soundconf.h"
 #include "combo.h"
 extern void initViewer();
 Fl_Double_Window *dlgConfig;
@@ -559,7 +560,7 @@ Fl_Group *tabAudio=(Fl_Group *)0;
 Fl_Group *AudioOSS=(Fl_Group *)0;
 
 static void cb_btnAudioIO(Fl_Round_Button*, void*) {
-  update_sound_config(SND_IDX_OSS);
+  sound_update(SND_IDX_OSS);
 progdefaults.changed = true;
 resetSoundCard();
 }
@@ -575,23 +576,25 @@ progdefaults.changed = true;
 Fl_Group *AudioPort=(Fl_Group *)0;
 
 static void cb_btnAudioIO1(Fl_Round_Button*, void*) {
-  update_sound_config(SND_IDX_PORT);
+  sound_update(SND_IDX_PORT);
 progdefaults.changed = true;
 resetSoundCard();
 }
 
-Fl_Input_Choice *menuPortInDev=(Fl_Input_Choice *)0;
+Fl_Choice *menuPortInDev=(Fl_Choice *)0;
 
-static void cb_menuPortInDev(Fl_Input_Choice* o, void*) {
-  scDevice[0] = progdefaults.PortInDevice = o->value();
+static void cb_menuPortInDev(Fl_Choice* o, void*) {
+  scDevice[0] = progdefaults.PortInDevice = o->text();
+progdefaults.PortInIndex = reinterpret_cast<intptr_t>(o->mvalue()->user_data());
 resetSoundCard();
 progdefaults.changed = true;
 }
 
-Fl_Input_Choice *menuPortOutDev=(Fl_Input_Choice *)0;
+Fl_Choice *menuPortOutDev=(Fl_Choice *)0;
 
-static void cb_menuPortOutDev(Fl_Input_Choice* o, void*) {
-  scDevice[1] = progdefaults.PortOutDevice = o->value();
+static void cb_menuPortOutDev(Fl_Choice* o, void*) {
+  scDevice[1] = progdefaults.PortOutDevice = o->text();
+progdefaults.PortOutIndex = reinterpret_cast<intptr_t>(o->mvalue()->user_data());
 resetSoundCard();
 progdefaults.changed = true;
 }
@@ -599,7 +602,7 @@ progdefaults.changed = true;
 Fl_Group *AudioPulse=(Fl_Group *)0;
 
 static void cb_btnAudioIO2(Fl_Round_Button*, void*) {
-  update_sound_config(SND_IDX_PULSE);
+  sound_update(SND_IDX_PULSE);
 progdefaults.changed = true;
 resetSoundCard();
 }
@@ -617,7 +620,7 @@ Fl_Group *AudioNull=(Fl_Group *)0;
 Fl_Round_Button *btnAudioIO[4]={(Fl_Round_Button *)0};
 
 static void cb_btnAudioIO3(Fl_Round_Button*, void*) {
-  update_sound_config(SND_IDX_NULL);
+  sound_update(SND_IDX_NULL);
 progdefaults.changed = true;
 resetSoundCard();
 }
@@ -1649,13 +1652,13 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 o->selection_color((Fl_Color)1);
                 o->callback((Fl_Callback*)cb_btnAudioIO1);
               }
-              { Fl_Input_Choice* o = menuPortInDev = new Fl_Input_Choice(165, 99, 225, 25, "Capture");
+              { Fl_Choice* o = menuPortInDev = new Fl_Choice(165, 99, 225, 25, "Capture");
+                o->down_box(FL_BORDER_BOX);
                 o->callback((Fl_Callback*)cb_menuPortInDev);
-                o->value(progdefaults.PortInDevice.c_str());
               }
-              { Fl_Input_Choice* o = menuPortOutDev = new Fl_Input_Choice(165, 127, 225, 25, "Playback");
+              { Fl_Choice* o = menuPortOutDev = new Fl_Choice(165, 127, 225, 25, "Playback");
+                o->down_box(FL_BORDER_BOX);
                 o->callback((Fl_Callback*)cb_menuPortOutDev);
-                o->value(progdefaults.PortOutDevice.c_str());
               }
               o->end();
             }

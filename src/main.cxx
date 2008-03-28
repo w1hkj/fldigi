@@ -45,7 +45,7 @@
 #include "main.h"
 #include "waterfall.h"
 #include "fft.h"
-#include "sound.h"
+#include "soundconf.h"
 #include "complex.h"
 #include "fl_digi.h"
 #include "rigio.h"
@@ -107,7 +107,6 @@ string option_help, version_text;
 qrunner *cbq[NUM_QRUNNER_THREADS];
 
 void arqchecks(void);
-void sound_init(void);
 void generate_option_help(void);
 int parse_args(int argc, char **argv, int& idx);
 void generate_version_text(void);
@@ -204,6 +203,7 @@ int main(int argc, char ** argv)
 
 	progdefaults.setDefaults();
 
+	atexit(sound_close);
 	sound_init();
 	trx_start();
 
@@ -217,108 +217,9 @@ int main(int argc, char ** argv)
 	for (int i = 0; i < NUM_QRUNNER_THREADS; i++)
 		cbq[i]->detach();
 
-#if USE_PORTAUDIO
-	SoundPort::terminate();
-#endif
 	return ret;
 }
 
-void sound_init(void)
-{
-#if USE_OSS
-	glob_t gbuf;
-	glob("/dev/dsp*", 0, NULL, &gbuf);
-	for (size_t i = 0; i < gbuf.gl_pathc; i++)
-		menuOSSDev->add(gbuf.gl_pathv[i]);
-	if (progdefaults.OSSdevice.length() == 0 && gbuf.gl_pathc)
-		progdefaults.OSSdevice = gbuf.gl_pathv[0];
-	menuOSSDev->value(progdefaults.OSSdevice.c_str());
-	globfree(&gbuf);
-#endif
-
-#if USE_PORTAUDIO
-	SoundPort::initialize();
-	if (SoundPort::devices().size() == 0)
-		cerr << "PortAudio did not find any devices!\n";
-
-	for (SoundPort::device_iterator idev = SoundPort::devices().begin();
-	     idev != SoundPort::devices().end(); ++idev) {
-		string s;
-		s.append(Pa_GetHostApiInfo((*idev)->hostApi)->name).append("/").append((*idev)->name);
-
-		string::size_type i = s.find('/') + 1;
-		// backslash-escape any slashes in the device name
-		while ((i = s.find('/', i)) != string::npos) {
-			s.insert(i, 1, '\\');
-			i += 2;
-		}
-		if ((*idev)->maxInputChannels > 0)
-			menuPortInDev->add(s.c_str());
-		if ((*idev)->maxOutputChannels > 0)
-			menuPortOutDev->add(s.c_str());
-	}
-
-	if (progdefaults.PortInDevice.length() == 0) {
-		if (progdefaults.PAdevice.length() == 0) {
-			PaDeviceIndex def = Pa_GetDefaultInputDevice();
-			if (def != paNoDevice)
-				progdefaults.PortInDevice = (*(SoundPort::devices().begin() + def))->name;
-		}
-		else
-			progdefaults.PortInDevice = progdefaults.PAdevice;
-	}
-	menuPortInDev->value(progdefaults.PortInDevice.c_str());
-	if (progdefaults.PortOutDevice.length() == 0) {
-		if (progdefaults.PAdevice.length() == 0) {
-			PaDeviceIndex def = Pa_GetDefaultOutputDevice();
-			if (def != paNoDevice)
-				progdefaults.PortOutDevice = (*(SoundPort::devices().begin() + def))->name;
-		}
-		else
-			progdefaults.PortOutDevice = progdefaults.PAdevice;
-	}
-	menuPortOutDev->value(progdefaults.PortOutDevice.c_str());
-#endif
-
-#if USE_OSS
-	glob("/dev/mixer*", 0, NULL, &gbuf);
-	for (size_t i = 0; i < gbuf.gl_pathc; i++)
-		menuMix->add(gbuf.gl_pathv[i]);
-	if (progdefaults.MXdevice.length() == 0 && gbuf.gl_pathc)
-		progdefaults.MXdevice = gbuf.gl_pathv[0];
-	globfree(&gbuf);
-	menuMix->value(progdefaults.MXdevice.c_str());
-#else
-	progdefaults.EnableMixer = false;
-        tabMixer->deactivate();
-#endif
-
-// set the Sound Card configuration tab to the correct initial values
-#if !USE_OSS
-	AudioOSS->deactivate();
-	btnAudioIO[SND_IDX_OSS]->deactivate();
-#endif
-#if !USE_PORTAUDIO
-	AudioPort->deactivate();
-	btnAudioIO[SND_IDX_PORT]->deactivate();
-#endif
-#if !USE_PULSEAUDIO
-	AudioPulse->deactivate();
-	btnAudioIO[SND_IDX_PULSE]->deactivate();
-#endif
-	if (progdefaults.btnAudioIOis == SND_IDX_UNKNOWN ||
-	    !btnAudioIO[progdefaults.btnAudioIOis]->active()) { // or saved sound api now disabled
-		for (size_t i = 0; i < sizeof(btnAudioIO)/sizeof(*btnAudioIO); i++) {
-			if (btnAudioIO[i]->active()) {
-				progdefaults.btnAudioIOis = i;
-				break;
-			}
-		}
-	}
-	update_sound_config(progdefaults.btnAudioIOis);
-
-	resetMixerControls();
-}
 
 void generate_option_help(void) {
 	// is there a better way of enumerating schemes?

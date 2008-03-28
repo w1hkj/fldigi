@@ -984,22 +984,30 @@ void SoundPort::resample(int mode, float *buf, size_t count, size_t max)
 void SoundPort::init_stream(unsigned dir)
 {
 	const char* dir_str[2] = { "input", "output" };
+	PaDeviceIndex conf_idx[2] = { progdefaults.PortInIndex, progdefaults.PortOutIndex };
+	PaDeviceIndex idx = paNoDevice;
 
 #ifndef NDEBUG
         cerr << "PA_debug: looking for \"" << device[dir] << "\"\n";
 #endif
-        for (idev[dir] = devs.begin(); idev[dir] != devs.end(); ++idev[dir])
-                if (device[dir] == (*idev[dir])->name)
-                        break;
-        if (idev[dir] == devs.end()) {
+        for (idev[dir] = devs.begin(); idev[dir] != devs.end(); ++idev[dir]) {
+                if (device[dir] == (*idev[dir])->name) {
+			idx = idev[dir] - devs.begin(); // save this device index
+			if (idx == conf_idx[dir]) // found it
+				break;
+		}
+	}
+        if (idx == paNoDevice) { // no match
                 cerr << "PA_debug: could not find \"" << device[dir]
 		     << "\", using default " << dir_str[dir] << " device\n";
 		PaDeviceIndex def = (dir == STREAM_IN ? Pa_GetDefaultInputDevice() : Pa_GetDefaultOutputDevice());
 		if (def == paNoDevice)
 			throw SndPortException(paDeviceUnavailable);
                 idev[dir] = devs.begin() + def;
+		idx = def;
         }
-        PaDeviceIndex idx = idev[dir] - devs.begin();
+	else if (idev[dir] == devs.end()) // if we only found a near-match point the idev iterator to it
+		idev[dir] = devs.begin() + idx;
 
 #ifndef NDEBUG
         cerr << "PA_debug: using " << dir_str[dir] << " device:"

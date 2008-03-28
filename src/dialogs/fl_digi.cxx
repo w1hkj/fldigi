@@ -1878,48 +1878,6 @@ void resetSoundCard()
         enableMixer(true);
 }
 
-void update_sound_config(unsigned idx)
-{
-	// radio button
-	for (size_t i = 0; i < sizeof(btnAudioIO)/sizeof(*btnAudioIO); i++)
-		btnAudioIO[i]->value(i == idx);
-
-	// devices
-	menuOSSDev->deactivate();
-	menuPortInDev->deactivate();
-	menuPortOutDev->deactivate();
-	inpPulseServer->deactivate();
-
-	// settings
-	menuInSampleRate->deactivate();
-	menuOutSampleRate->deactivate();
-
-	progdefaults.btnAudioIOis = idx;
-	switch (idx) {
-	case SND_IDX_OSS:
-		menuOSSDev->activate();
-		scDevice[0] = scDevice[1] = menuOSSDev->value();
-		break;
-	case SND_IDX_PORT:
-		menuPortInDev->activate();
-		menuPortOutDev->activate();
-		menuInSampleRate->activate();
-		menuOutSampleRate->activate();
-		scDevice[0] = menuPortInDev->value();
-		scDevice[1] = menuPortOutDev->value();
-		break;
-	case SND_IDX_PULSE:
-		inpPulseServer->activate();
-		menuInSampleRate->activate();
-		menuOutSampleRate->activate();
-		scDevice[0] = scDevice[1] = inpPulseServer->value();
-		break;
-	case SND_IDX_NULL:
-		scDevice[0] = scDevice[1] = "";
-		break;
-	};
-}
-
 void setReverse(int rev) {
 	active_modem->set_reverse(rev);
 }
