@@ -1328,9 +1328,8 @@ void create_fl_digi_main() {
 					bx->color(FL_BLACK);
 					xpos += 4;
 				}
-				btnMacro[i] = new Fl_Button(xpos, Y+2, Wbtn, Hmacros - 4);
+				btnMacro[i] = new Fl_Button(xpos, Y+2, Wbtn, Hmacros - 4, macros.name[i].c_str());
 				btnMacro[i]->callback(macro_cb, (void *)i);
-				btnMacro[i]->label( (macros.name[i]).c_str());
 				colorize_macro(i);
 				xpos += Wbtn;
 			}
@@ -1548,6 +1547,8 @@ void put_rx_char(unsigned int data)
 		rxmsgst.c = data;
 		msgsnd (rxmsgid, (void *)&rxmsgst, 1, IPC_NOWAIT);
 	}
+#else
+	writeToARQfile(data);
 #endif
 
 	string s = iscntrl(data) ? ascii2[data & 0x7F] : string(1, data);

@@ -16,11 +16,19 @@
 #include "configuration.h"
 #include "fl_digi.h"
 
+#ifdef __CYGWIN__
+	string str_infile = "c:/NBEMS/ARQXFR/txfile";
+	string str_outfile = "c:/NBEMS/ARQXFR/rxfile";
+#endif
+
 using namespace std;
 
 static string mailtext;
 string::iterator pText;
+
+#ifndef __CYGWIN__
 static char mailline[1000];
+#endif
 
 bool pskmail_text_available = false;
 
@@ -97,23 +105,6 @@ void parse_mailtext()
 	}
 }
 
-/*
-size_t mailstrftime( char *s, size_t max, const char *fmt, const struct tm *tm) {
-	return strftime(s, max, fmt, tm);
-}
-
-void mailZDT(string &s)
-{
-	char szDt[80];
-	time_t tmptr;
-	tm sTime;
-	time (&tmptr);
-	gmtime_r(&tmptr, &sTime);
-	mailstrftime(szDt, 79, "%x %H:%M %Z", &sTime);
-	s = szDt;
-}
-*/
-
 #define TIMEOUT 180 // 3 minutes
 
 bool bSend0x06 = false;
@@ -141,8 +132,30 @@ void process_msgque()
 		}
 	}
 }
+#endif
+
+
+#ifdef __CYGWIN__
+long infileptr = 0;
+bool bInitFilePtr = false;
+
+void initFilePtr()
+{
+	FILE *infile;
+	infile = fopen(str_infile.c_str(), "rb");
+	if (infile) {
+		fseek(infile, 0, SEEK_END);
+		infileptr = ftell(infile);
+		fclose(infile);
+	}
+	bInitFilePtr = true;
+std::cout << "Init file pointer = " << infileptr << std::endl; std::cout.flush();
+}
+#endif
 
 void check_formail() {
+
+#ifndef __CYGWIN__
     time_t start_time, prog_time;
     string sAutoFile = PskMailDir;
 
@@ -152,7 +165,8 @@ void check_formail() {
    		arqmode = true;
    		return;
    	}
-   	arqmode = false;
+
+	arqmode = false;
     
     if (! (mailserver || mailclient) )
     	return;
@@ -200,10 +214,52 @@ void check_formail() {
 			wf->set_XmtRcvBtn(true);
 		}
 	} 
+#else
+// Windows file handling for input strings
+	FILE *infile;
+	infile = fopen(str_infile.c_str(), "rb");
+	if (infile) {
+		fseek(infile, 0, SEEK_END);
+		long sz = ftell(infile);
+		if (sz > infileptr) {
+			mailtext = "";
+			fseek(infile, infileptr, SEEK_SET);
+				while (infileptr < sz) {
+					mailtext += fgetc(infile);
+					infileptr++;
+				}
+			if (mailtext.length() > 0) {
+				parse_mailtext();
+				pText = mailtext.begin();
+				pskmail_text_available = true;
+				active_modem->set_stopflag(false);
+				fl_lock(&trx_mutex);
+				trx_state = STATE_TX;
+				fl_unlock(&trx_mutex);
+				wf->set_XmtRcvBtn(true);
+				arqmode = true;
+			}
+		}
+		fclose(infile);
+	}
+#endif
 }
+
+#ifdef __CYGWIN__
+void writeToARQfile(unsigned int data)
+{
+	FILE *outfile;
+	outfile = fopen(str_outfile.c_str(), "ab");
+	if (outfile) {
+		putc((unsigned char)data, outfile );
+		fclose(outfile);
+	}
+}
+#endif
 
 void send0x06()
 {
+#ifndef __CYGWIN__
 	if (trx_state == STATE_RX) {
 		bSend0x06 = false;
 	   	rxmsgid = msgget( (key_t) progdefaults.rx_msgid, 0666 );
@@ -213,15 +269,21 @@ void send0x06()
 			msgsnd (rxmsgid, (void *)&rxmsgst, 1, IPC_NOWAIT);
 		}
 	}
-}
-#else // __CYGWIN__
-void process_msgque() { }
-void check_formail() { }
-void send0x06() { }
+#else
+// process output strings for Windows file i/o
+	if (trx_state == STATE_RX) {
+		bSend0x06 = false;
+		writeToARQfile(0x06);
+	}
 #endif
+}
 
 void pskmail_loop(void *)
 {
+#ifdef __CYGWIN__
+	if (!bInitFilePtr)
+		initFilePtr();
+#endif
 	if (bSend0x06)
 		send0x06();
 	check_formail();

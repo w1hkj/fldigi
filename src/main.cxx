@@ -40,7 +40,11 @@
 #include <signal.h>
 #include <locale.h>
 
+#include <FL/Fl.H>
+#include <FL/Enumerations.H>
+#include <FL/Fl_Window.H>
 #include <FL/Fl_Shared_Image.H>
+#include <FL/x.H>
 
 #include "main.h"
 #include "waterfall.h"
@@ -208,6 +212,11 @@ int main(int argc, char ** argv)
 	trx_start();
 
 	progdefaults.initInterface();
+	
+#ifdef __CYGWIN__
+	fl_digi_main->icon((char*)LoadIcon(fl_display, MAKEINTRESOURCE(IDI_ICON)));
+#endif
+	
 	fl_digi_main->show(argc, argv);
 	progStatus.initLastState();
 	
@@ -349,7 +358,7 @@ int parse_args(int argc, char **argv, int& idx)
 	       OPT_RX_IPC_KEY, OPT_TX_IPC_KEY,
 #endif
 	       OPT_CONFIG_DIR,
-               OPT_FONT, OPT_WFALL_WIDTH, OPT_WFALL_HEIGHT,
+               OPT_FAST_TEXT, OPT_FONT, OPT_WFALL_WIDTH, OPT_WFALL_HEIGHT,
                OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT, OPT_PROFILE, OPT_USE_CHECK,
 	       OPT_RESAMPLE,
 #if USE_PORTAUDIO

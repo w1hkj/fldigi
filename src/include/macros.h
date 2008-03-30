@@ -47,8 +47,10 @@ struct MACROTEXT {
 	void execute(int n);
 	MACROTEXT() {
 		changed = false;
+		char szname[5];
 		for (int i = 0; i < MAXMACROS; i++) {
-			name[i] = "";
+			snprintf(szname, sizeof(szname), "F-%d", i+1);
+			name[i] = szname;//"";
 			text[i] = "";
 		}
 	}

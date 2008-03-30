@@ -42,6 +42,10 @@ extern bool			pskmail_text_available;
 extern char			pskmail_get_char();
 extern void			pskmail_loop(void *);
 
+#ifdef __CYGWIN__
+extern void			writeToARQfile(unsigned int);
+#endif
+
 struct RXMSGSTRUC {
 	long int msg_type;
 	char c;

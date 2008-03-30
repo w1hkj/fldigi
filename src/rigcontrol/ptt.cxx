@@ -76,6 +76,8 @@ void PTT::reset_(int dev)//, int mode, bool inverted)
 		return;
 	}
 
+// convert to and from Windows / Linux serial port naming
+#ifndef __CYGWIN__
 	if (progdefaults.PTTdev == "COM1")
 		pttdevName = "/dev/ttyS0";
 	else if (progdefaults.PTTdev == "COM2")
@@ -86,6 +88,18 @@ void PTT::reset_(int dev)//, int mode, bool inverted)
 		pttdevName = "/dev/ttyS3";
 	else
 		pttdevName = progdefaults.PTTdev;
+#else
+	if (progdefaults.PTTdev == "/dev/ttyS0")
+		pttdevName = "COM1";
+	else if (progdefaults.PTTdev == "/dev/ttyS1")
+		pttdevName = "COM2";
+	else if (progdefaults.PTTdev == "/dev/ttyS2")
+		pttdevName = "COM3";
+	else if (progdefaults.PTTdev == "/dev/ttyS3")
+		pttdevName = "COM4";
+	else
+		pttdevName = progdefaults.PTTdev;
+#endif
 	
 	openptt();
 	if (pttfd == -1) {
