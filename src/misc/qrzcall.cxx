@@ -105,6 +105,7 @@ bool parse_xml();
 
 int connect_to_server(const char* node, const char* service, int* fd);
 ssize_t read_from_server(int fd, const string& request, string& reply, struct timeval* timeout);
+const char* get_error_string(int err);
 
 bool getSessionKey(string& sessionpage);
 bool QRZGetXML(string& xmlpage);
@@ -319,16 +320,18 @@ bool parse_xml(const string& xmlpage)
 // was some other error.
 int connect_to_server(const char* node, const char* service, int* fd)
 {
+	int res = 0;
+
+#if HAVE_GETADDRINFO
 	struct addrinfo hints, *ai, *aip;
 
 	memset(&hints, 0, sizeof(hints));
-#ifdef AI_ADDRCONFIG
+#  ifdef AI_ADDRCONFIG
 	hints.ai_flags = AI_ADDRCONFIG;
-#endif
+#  endif
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 
-	int res;
 	if ((res = getaddrinfo(node, service, &hints, &ai)) < 0)
 		return res;
 	for (aip = ai; aip; aip = ai->ai_next) { // use the first one that works
@@ -344,6 +347,29 @@ int connect_to_server(const char* node, const char* service, int* fd)
 	}
 
 	freeaddrinfo(ai);
+#else
+	struct sockaddr_in server_addr;
+	struct hostent* server_entry;
+	struct servent* service_entry;
+
+	if ((service_entry = getservbyname(service, NULL)) == NULL)
+		return errno;
+	if ((server_entry = gethostbyname(node)) == NULL)
+		return errno;
+
+	memset(&server_addr, 0, sizeof(server_addr));
+	server_addr.sin_family = AF_INET;
+	server_addr.sin_addr = *((struct in_addr *)server_entry->h_addr_list[0]);
+	server_addr.sin_port = service_entry->s_port;
+
+	if ((*fd = socket(server_addr.sin_family, SOCK_STREAM, 0)) == -1)
+		return errno;
+	if (connect(*fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1)
+		return errno;
+
+	res = 0;
+#endif // HAVE_GETADDRINFO
+
 	return res;
 }
 
@@ -402,11 +428,21 @@ ssize_t read_from_server(int fd, const string& request, string& reply, struct ti
 	return n;
 }
 
+const char* get_error_string(int err)
+{
+#if HAVE_GETADDRINFO
+	if (err < 0)
+		return gai_strerror(err);
+	else
+#endif
+		return strerror(err);
+}
+
 bool getSessionKey(string& sessionpage)
 {
 	int r, sockfd;
 	if ((r = connect_to_server(host.c_str(), "http", &sockfd)) != 0) {
-		error_string = r > 0 ? strerror(r) : gai_strerror(r);
+		error_string = get_error_string(r);
 		return false;
 	}
 
@@ -440,7 +476,7 @@ bool QRZGetXML(string& xmlpage)
 {
 	int r, sockfd;
 	if ((r = connect_to_server(host.c_str(), "http", &sockfd)) != 0) {
-		error_string = r > 0 ? strerror(r) : gai_strerror(r);
+		error_string = get_error_string(r);
 		return false;
 	}
 
@@ -764,7 +800,7 @@ bool HAMCALLget(string& htmlpage)
 {
 	int r, sockfd;
 	if ((r = connect_to_server(HAMCALL_HOST, "http", &sockfd)) != 0) {
-		error_string = r > 0 ? strerror(r) : gai_strerror(r);
+		error_string = get_error_string(r);
 		return false;
 	}
 

@@ -115,6 +115,10 @@ deprecated__ typeof(strcat) strcat;
 */
 #endif
 
+#ifdef __CYGWIN__
+#  define NOMINMAX 1
+#endif
+
 #endif /* UTIL_H */
 
 /*

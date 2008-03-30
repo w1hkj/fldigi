@@ -1,0 +1,5 @@
+#include <windows.h> // include for version info constants
+
+#include "fldig-config.h"
+
+IDI_ICON ICON DISCARDABLE "fldigi.ico"

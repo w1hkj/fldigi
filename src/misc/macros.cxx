@@ -520,16 +520,21 @@ int MACROTEXT::loadMacros(string filename)
 	
 	if (!mFile) {
 		createDotFldigi();
-		mFile.open(filename.c_str());
-		if (!mFile)
-			return -1;
+		for (int i = 0; i < 12; i++) {
+			btnMacro[i]->label( name[i].c_str());
+			btnMacro[i]->redraw_label();
+		}
+		return 0;
+//		mFile.open(filename.c_str());
+//		if (!mFile)
+//			return -1;
 	}
 	
 	mFile.getline(szLine, 4095);
 	mLine = szLine;
 	if (mLine.find("//fldigi macro definition file") != 0) {
 		mFile.close();
-		return -1;
+		return -2;
 	}
 	if (mLine.find("extended") == string::npos) {
 		convert = true;
@@ -555,7 +560,7 @@ int MACROTEXT::loadMacros(string filename)
             name[mNumber] = mLine.substr(idx+1);
 			if (mNumber < 12) {
 				FL_LOCK_D();
-				btnMacro[mNumber]->label( (macros.name[mNumber]).c_str());
+				btnMacro[mNumber]->label( (name[mNumber]).c_str());
 				FL_UNLOCK_D();
 			}
 			continue;
@@ -572,9 +577,11 @@ int MACROTEXT::loadMacros(string filename)
 
 void MACROTEXT::loadDefault()
 {
+	int erc;
 	string Filename = HomeDir;
 	Filename.append("macros.mdf");
-	loadMacros(Filename);
+	if ((erc = loadMacros(Filename)) != 0)
+		printf("Error #%d loading %s\n", erc, Filename.c_str());
 }
 
 void MACROTEXT::openMacroFile()

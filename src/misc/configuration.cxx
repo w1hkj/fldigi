@@ -33,7 +33,7 @@ configuration progdefaults = {
 	3,				// int			rtty_shift; = 170
 	0,				// int			rtty_baud; = 45
 	0,				// int 			rtty_bits; = 5
-	PARITY_NONE,	// RTTY_PARITY	rtty_parity;
+	RTTY_PARITY_NONE,	// RTTY_PARITY	rtty_parity;
 	1,				// int			rtty_stop;
 	false,			// bool 		rtty_reverse;
 	false,			// bool		rtty_msbfirst;
@@ -132,7 +132,9 @@ configuration progdefaults = {
 	"",		// string	OSSdevice;
 	"",		// string	PAdevice;
 	"",		// string	PortIndevice;
+	-1,		// int		PortInIndex;
 	"",		// string	PortOutDevice;
+	-1,		// int		PortOutIndex;
 	"",		// string	PulseServer
 	SAMPLE_RATE_UNSET,		// int		sample_rate;
 	SAMPLE_RATE_UNSET,		// int		in_sample_rate;
@@ -241,7 +243,7 @@ enum TAG { \
 	HAMRIGNAME, HAMRIGDEVICE, HAMRIGBAUDRATE,
 	PTTDEV,
 	SECONDARYTEXT, 
-	AUDIOIO, OSSDEVICE, PADEVICE, PORTINDEVICE, PORTOUTDEVICE, PULSESERVER,
+	AUDIOIO, OSSDEVICE, PADEVICE, PORTINDEVICE, PORTININDEX, PORTOUTDEVICE, PORTOUTINDEX, PULSESERVER,
 	SAMPLERATE, INSAMPLERATE, OUTSAMPLERATE, RXCORR, TXCORR, TXOFFSET,
 	USELEADINGZEROS, CONTESTSTART, CONTESTDIGITS,
 	USETIMER, MACRONUMBER, TIMEOUT,
@@ -410,7 +412,10 @@ void configuration::writeDefaultsXML()
 	writeXMLstr(f, "OSSDEVICE", OSSdevice);
 	writeXMLstr(f, "PADEVICE", PAdevice);
 	writeXMLstr(f, "PORTINDEVICE", PortInDevice);
+	writeXMLint(f, "PORTININDEX", PortInIndex);
 	writeXMLstr(f, "PORTOUTDEVICE", PortOutDevice);
+	writeXMLint(f, "PORTOUTINDEX", PortOutIndex);
+	writeXMLstr(f, "PULSESERVER", PulseServer);
 	writeXMLint(f, "SAMPLERATE", sample_rate);
 	writeXMLint(f, "INSAMPLERATE", in_sample_rate);
 	writeXMLint(f, "OUTSAMPLERATE", out_sample_rate);
@@ -756,8 +761,14 @@ bool configuration::readDefaultsXML()
 					case PORTINDEVICE :
 						PortInDevice = xml->getNodeData();
 						break;
+					case PORTININDEX :
+						PortInIndex = atoi(xml->getNodeData());
+						break;
 					case PORTOUTDEVICE :
 						PortOutDevice = xml->getNodeData();
+						break;
+					case PORTOUTINDEX :
+						PortOutIndex = atoi(xml->getNodeData());
 						break;
 					case PULSESERVER :
 						PulseServer = xml->getNodeData();
@@ -1011,7 +1022,9 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("OSSDEVICE", nodeName)) 	tag = OSSDEVICE;
 				else if (!strcmp("PADEVICE", nodeName)) 	tag = PADEVICE;
 				else if (!strcmp("PORTINDEVICE", nodeName)) 	tag = PORTINDEVICE;
+				else if (!strcmp("PORTININDEX", nodeName)) 	tag = PORTININDEX;
 				else if (!strcmp("PORTOUTDEVICE", nodeName)) 	tag = PORTOUTDEVICE;
+				else if (!strcmp("PORTOUTINDEX", nodeName)) 	tag = PORTOUTINDEX;
 				else if (!strcmp("SAMPLERATE", nodeName)) 	tag = SAMPLERATE;
 				else if (!strcmp("INSAMPLERATE", nodeName)) 	tag = INSAMPLERATE;
 				else if (!strcmp("OUTSAMPLERATE", nodeName)) 	tag = OUTSAMPLERATE;
@@ -1080,11 +1093,11 @@ void configuration::loadDefaults() {
 	selBaud->value(rtty_baud);
 	selBits->value(rtty_bits);
 	switch (rtty_parity) {
-		case PARITY_NONE : selParity->value(0); break;
-		case PARITY_EVEN : selParity->value(1); break;
-		case PARITY_ODD :  selParity->value(2); break;
-		case PARITY_ZERO : selParity->value(3); break;
-		case PARITY_ONE :  selParity->value(4); break;
+		case RTTY_PARITY_NONE : selParity->value(0); break;
+		case RTTY_PARITY_EVEN : selParity->value(1); break;
+		case RTTY_PARITY_ODD :  selParity->value(2); break;
+		case RTTY_PARITY_ZERO : selParity->value(3); break;
+		case RTTY_PARITY_ONE :  selParity->value(4); break;
 		default :          selParity->value(0); break;
 	}
 //	chkMsbFirst->value(rtty_msbfirst);
@@ -1118,15 +1131,15 @@ void configuration::storeDefaults() {
 	rtty_baud = selBaud->value();
 	rtty_bits = selBits->value();
 	if (rtty_bits == 0)
-		rtty_parity = PARITY_NONE;
+		rtty_parity = RTTY_PARITY_NONE;
 	else
 		switch (selParity->value()) {
-			case 0 : rtty_parity = PARITY_NONE; break;
-			case 1 : rtty_parity = PARITY_EVEN; break;
-			case 2 : rtty_parity = PARITY_ODD; break;
-			case 3 : rtty_parity = PARITY_ZERO; break;
-			case 4 : rtty_parity = PARITY_ONE; break;
-			default : rtty_parity = PARITY_NONE; break;
+			case 0 : rtty_parity = RTTY_PARITY_NONE; break;
+			case 1 : rtty_parity = RTTY_PARITY_EVEN; break;
+			case 2 : rtty_parity = RTTY_PARITY_ODD; break;
+			case 3 : rtty_parity = RTTY_PARITY_ZERO; break;
+			case 4 : rtty_parity = RTTY_PARITY_ONE; break;
+			default : rtty_parity = RTTY_PARITY_NONE; break;
 		}
 //	rtty_msbfirst = chkMsbFirst->value();
 	rtty_stop = selStopBits->value();
@@ -1311,8 +1324,6 @@ int configuration::setDefaults() {
 	btnLineIn->value(LineIn);
 
 	menuOSSDev->value(OSSdevice.c_str());
-	menuPortInDev->value(PortInDevice.c_str());
-	menuPortOutDev->value(PortOutDevice.c_str());
 	inpPulseServer->value(PulseServer.c_str());
 
 	btnMixer->value(EnableMixer);

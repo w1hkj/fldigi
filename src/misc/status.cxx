@@ -29,14 +29,14 @@ extern void openViewer();
 
 status progStatus = {
 	(int)MODE_BPSK31,	// trx_mode	lastmode;
-	0,					// int mainX;
-	0,					// int mainY;
+	50,					// int mainX;
+	50,					// int mainY;
 	WNOM,				// int mainW;
 	HNOM,				// int mainH;
 	Hrcvtxt,			// int RxTextHeight;
 	false,				// bool rigShown;
-	0,					// int rigX;
-	0,					// int rigY;
+	50,					// int rigX;
+	50,					// int rigY;
 	1000,				// int carrier;
 	1,					// int mag;
 	NORMAL,				// WFdisp::WFspeed

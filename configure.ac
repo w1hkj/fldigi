@@ -9,7 +9,7 @@ dnl major and minor must be integers; patch may
 dnl contain other characters or be empty
 m4_define(FLDIGI_MAJOR, [2])
 m4_define(FLDIGI_MINOR, [11])
-m4_define(FLDIGI_PATCH, [D])
+m4_define(FLDIGI_PATCH, [E])
 
 AC_INIT([fldigi], FLDIGI_MAJOR.FLDIGI_MINOR[FLDIGI_PATCH], [w1hkj AT w1hkj DOT com])
 
@@ -79,13 +79,26 @@ AC_FUNC_SELECT_ARGTYPES
 AC_TYPE_SIGNAL
 AC_FUNC_STRFTIME
 AC_FUNC_STRTOD
-AC_CHECK_FUNCS([gethostbyname localtime_r memmove memset mkdir select snprintf socket strcasecmp strchr strdup strerror strncasecmp strcasestr strrchr strstr strtol uname vsnprintf])
+AC_CHECK_FUNCS([getaddrinfo gethostbyname localtime_r memmove memset mkdir select snprintf socket strcasecmp strchr strdup strerror strncasecmp strcasestr strrchr strstr strtol uname vsnprintf])
 
 
 AC_PRESERVE_HELP_ORDER
 
 dnl blank line before our options in configure's help text
 AC_ARG_WITH([], [], [], [])
+
+
+###### OS support
+### OSX
+# Set ac_cv_mac_universal to yes/no
+# Set DARWIN Makefile conditional
+# Substitute MAC_UNIVERSAL_CFLAGS and MAC_UNIVERSAL_LDFLAGS in Makefile
+AC_FLDIGI_MACOSX
+### win32
+# Set WIN32 Makefile conditional
+# Set HAVE_WINDRES Makefile conditional
+# Substitute WINDRES in Makefile
+AC_FLDIGI_WIN32
 
 ### static flag
 # Set ac_cv_static to yes/no
@@ -163,12 +176,6 @@ fi
 AC_FLDIGI_PKG_CHECK([hamlib], [hamlib >= 1.2.4], [yes], [with], [HAMLIB],
                     [use hamradio control libraries @<:@autodetect@:>@],
                     [ENABLE_HAMLIB])
-
-### OSX
-# Set ac_cv_mac_universal to yes/no
-# Set DARWIN Makefile conditional
-# Substitute MAC_UNIVERSAL_CFLAGS and MAC_UNIVERSAL_LDFLAGS in Makefile
-AC_FLDIGI_MACOSX
 
 
 ### output

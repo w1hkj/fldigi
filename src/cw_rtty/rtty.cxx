@@ -94,15 +94,15 @@ void rtty::restart()
 	rtty_baud = _BAUD[progdefaults.rtty_baud];
 	nbits = rtty_bits = _BITS[progdefaults.rtty_bits];
 	if (rtty_bits == 5)
-		rtty_parity = PARITY_NONE;
+		rtty_parity = RTTY_PARITY_NONE;
 	else
 		switch (progdefaults.rtty_parity) {
-			case 0 : rtty_parity = PARITY_NONE; break;
-			case 1 : rtty_parity = PARITY_EVEN; break;
-			case 2 : rtty_parity = PARITY_ODD; break;
-			case 3 : rtty_parity = PARITY_ZERO; break;
-			case 4 : rtty_parity = PARITY_ONE; break;
-			default : rtty_parity = PARITY_NONE; break;
+			case 0 : rtty_parity = RTTY_PARITY_NONE; break;
+			case 1 : rtty_parity = RTTY_PARITY_EVEN; break;
+			case 2 : rtty_parity = RTTY_PARITY_ODD; break;
+			case 3 : rtty_parity = RTTY_PARITY_ZERO; break;
+			case 4 : rtty_parity = RTTY_PARITY_ONE; break;
+			default : rtty_parity = RTTY_PARITY_NONE; break;
 		}
 	rtty_stop = progdefaults.rtty_stop;
 
@@ -219,19 +219,19 @@ int rtty::rttyparity(unsigned int c)
 
 	switch (rtty_parity) {
 	default:
-	case PARITY_NONE:
+	case RTTY_PARITY_NONE:
 		return 0;
 
-	case PARITY_ODD:
+	case RTTY_PARITY_ODD:
 		return rparity(c);
 
-	case PARITY_EVEN:
+	case RTTY_PARITY_EVEN:
 		return !rparity(c);
 
-	case PARITY_ZERO:
+	case RTTY_PARITY_ZERO:
 		return 0;
 
-	case PARITY_ONE:
+	case RTTY_PARITY_ONE:
 		return 1;
 	}
 }
@@ -243,7 +243,7 @@ int rtty::decode_char()
 	parbit = (rxdata >> nbits) & 1;
 	par = rttyparity(rxdata);
 
-	if (rtty_parity != PARITY_NONE && parbit != par)
+	if (rtty_parity != RTTY_PARITY_NONE && parbit != par)
 		return 0;
 
 	data = rxdata & ((1 << nbits) - 1);
@@ -289,7 +289,7 @@ int rtty::rx(bool bit)
 		}
 
 		if (bitcntr == nbits) {
-			if (rtty_parity == PARITY_NONE) {
+			if (rtty_parity == RTTY_PARITY_NONE) {
 				rxstate = RTTY_RX_STATE_STOP;
 			}
 			else {
@@ -588,7 +588,7 @@ void rtty::send_char(int c)
 		send_symbol((c >> i) & 1);
 	}
 // parity bit
-	if (rtty_parity != PARITY_NONE)
+	if (rtty_parity != RTTY_PARITY_NONE)
 		send_symbol(rttyparity(c));
 // stop bit(s)
 	send_stop();

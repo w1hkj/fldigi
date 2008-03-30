@@ -43,10 +43,7 @@
 #ifndef Threads_H
 #  define Threads_H
 
-#ifndef WIN32
-// Use POSIX threading...
-
-#    include <pthread.h>
+#include <pthread.h>
 
 typedef pthread_t			Fl_Thread;
 typedef pthread_mutex_t		Fl_Mutex;
@@ -62,15 +59,6 @@ extern int fl_lock(Fl_Mutex *m);
 extern int fl_unlock(Fl_Mutex *m);
 extern int fl_join(Fl_Thread t);
 
-#else
-
-#    include <windows.h>
-#    include <process.h>
-
-typedef unsigned long Fl_Thread;
-extern int fl_create_thread(Fl_Thread * t, void *(*f) (void *), void* p);
-
-#  endif // !WIN32
 
 // we have 4 threads, only 3 of which will use qrunner
 enum { UNKNOWN_TID = -1, TRX_TID, QRZ_TID, RIGCTL_TID, FLMAIN_TID,
@@ -82,9 +70,6 @@ enum { UNKNOWN_TID = -1, TRX_TID, QRZ_TID, RIGCTL_TID, FLMAIN_TID,
 #	define SET_THREAD_ID(x)   thread_id_ = (x)
 #	define GET_THREAD_ID()    thread_id_
 #else
-#	ifdef WIN32 // assume no pthreads support
-#		error need TLS support
-#	endif
 	extern pthread_key_t thread_id_;
 #	define CREATE_THREAD_ID() pthread_key_create(&thread_id_, 0);
 #	define SET_THREAD_ID(x)   pthread_setspecific(thread_id_, (void *)(x))

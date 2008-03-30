@@ -85,8 +85,8 @@ extern Fl_Group *AudioOSS;
 #include <FL/Fl_Input_Choice.H>
 extern Fl_Input_Choice *menuOSSDev;
 extern Fl_Group *AudioPort;
-extern Fl_Input_Choice *menuPortInDev;
-extern Fl_Input_Choice *menuPortOutDev;
+extern Fl_Choice *menuPortInDev;
+extern Fl_Choice *menuPortOutDev;
 extern Fl_Group *AudioPulse;
 extern Fl_Input *inpPulseServer;
 extern Fl_Group *AudioNull;

@@ -55,6 +55,7 @@ FILE *imagefile = NULL;
 
 #define isdirsep(c) ((c)=='/')
 
+#ifndef __CYGWIN__
 size_t strlcpy(
         char       *dst,	/* O - Destination string */
         const char *src,	/* I - Source string */
@@ -68,6 +69,7 @@ size_t strlcpy(
   dst[srclen] = '\0';
   return (srclen);
 }
+#endif
 
 int filename_expand(char *to,int tolen, const char *from) {
 

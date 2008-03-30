@@ -25,8 +25,10 @@
 #include <config.h>
 
 #include <sys/types.h>
-#include <sys/ipc.h>
-#include <sys/msg.h>
+#ifndef __CYGWIN__
+#  include <sys/ipc.h>
+#  include <sys/msg.h>
+#endif
 
 #include <stdlib.h>
 #include <string>
@@ -78,7 +80,7 @@
 
 #include "combo.h"
 #include "font_browser.h"
-#ifndef __APPLE__
+#if !defined(__APPLE__) && !defined(__CYGWIN__)
 #        include "fldigi-icon-48.xpm"
 #endif
 #include "status.h"
@@ -147,7 +149,7 @@ Fl_Progress			*pgrsSquelch = (Fl_Progress *)0;
 
 Fl_RGB_Image		*feld_image = 0;
 
-#ifndef __APPLE__
+#if !defined(__APPLE__) && !defined(__CYGWIN__)
 Pixmap				fldigi_icon_pixmap;
 #endif
 
@@ -1089,7 +1091,7 @@ void activate_rig_menu_item(bool b)
 	mnu->redraw();
 }
 
-#ifndef __APPLE__
+#if !defined(__APPLE__) && !defined(__CYGWIN__)
 void make_pixmap(Pixmap *xpm, const char **data)
 {
 	// We need a displayed window to provide a GC for X_CreatePixmap
@@ -1334,9 +1336,8 @@ void create_fl_digi_main() {
 					bx->color(FL_BLACK);
 					xpos += 4;
 				}
-				btnMacro[i] = new Fl_Button(xpos, Y+2, Wbtn, Hmacros - 4);
+				btnMacro[i] = new Fl_Button(xpos, Y+2, Wbtn, Hmacros - 4, macros.name[i].c_str());
 				btnMacro[i]->callback(macro_cb, (void *)i);
-				btnMacro[i]->label( (macros.name[i]).c_str());
 				colorize_macro(i);
 				xpos += Wbtn;
 			}
@@ -1448,7 +1449,7 @@ void create_fl_digi_main() {
 	fl_digi_main->end();
 	fl_digi_main->callback(cb_wMain);
 
-#ifndef __APPLE__
+#if !defined(__APPLE__) && !defined(__CYGWIN__)
 	make_pixmap(&fldigi_icon_pixmap, fldigi_icon_48_xpm);
 	fl_digi_main->icon((char *)fldigi_icon_pixmap);
 #endif
@@ -1517,7 +1518,13 @@ void put_rx_char(unsigned int data)
 {
 	static unsigned int last = 0;
 	const char **asc = ascii;
+
+#ifndef __CYGWIN__
 	rxmsgid = msgget( (key_t) progdefaults.rx_msgid, 0666);
+#else
+	rxmsgid = -1;
+#endif
+
 	if (mailclient || mailserver || rxmsgid != -1)
 		asc = ascii2;
 	if (active_modem->get_mode() == MODE_RTTY ||
@@ -1542,11 +1549,15 @@ void put_rx_char(unsigned int data)
 	}
 	last = data;
 
+#ifndef __CYGWIN__
 	if ( rxmsgid != -1) {
 		rxmsgst.msg_type = 1;
 		rxmsgst.c = data;
 		msgsnd (rxmsgid, (void *)&rxmsgst, 1, IPC_NOWAIT);
 	}
+#else
+	writeToARQfile(data);
+#endif
 
 	string s = iscntrl(data) ? ascii2[data & 0x7F] : string(1, data);
 	if (Maillogfile)
@@ -1874,48 +1885,6 @@ void resetSoundCard()
 	trx_reset();
     if (mixer_enabled)
         enableMixer(true);
-}
-
-void update_sound_config(unsigned idx)
-{
-	// radio button
-	for (size_t i = 0; i < sizeof(btnAudioIO)/sizeof(*btnAudioIO); i++)
-		btnAudioIO[i]->value(i == idx);
-
-	// devices
-	menuOSSDev->deactivate();
-	menuPortInDev->deactivate();
-	menuPortOutDev->deactivate();
-	inpPulseServer->deactivate();
-
-	// settings
-	menuInSampleRate->deactivate();
-	menuOutSampleRate->deactivate();
-
-	progdefaults.btnAudioIOis = idx;
-	switch (idx) {
-	case SND_IDX_OSS:
-		menuOSSDev->activate();
-		scDevice[0] = scDevice[1] = menuOSSDev->value();
-		break;
-	case SND_IDX_PORT:
-		menuPortInDev->activate();
-		menuPortOutDev->activate();
-		menuInSampleRate->activate();
-		menuOutSampleRate->activate();
-		scDevice[0] = menuPortInDev->value();
-		scDevice[1] = menuPortOutDev->value();
-		break;
-	case SND_IDX_PULSE:
-		inpPulseServer->activate();
-		menuInSampleRate->activate();
-		menuOutSampleRate->activate();
-		scDevice[0] = scDevice[1] = inpPulseServer->value();
-		break;
-	case SND_IDX_NULL:
-		scDevice[0] = scDevice[1] = "";
-		break;
-	};
 }
 
 void setReverse(int rev) {

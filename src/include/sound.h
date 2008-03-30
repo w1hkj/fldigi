@@ -28,8 +28,6 @@
 #ifndef _SOUND_H
 #define _SOUND_H
 
-enum { SND_IDX_UNKNOWN = -1, SND_IDX_OSS, SND_IDX_PORT, SND_IDX_PULSE, SND_IDX_NULL, SND_IDX_END };
-
 #include <cstring>
 #include <string>
 #include <vector>
