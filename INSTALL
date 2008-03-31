@@ -4,14 +4,16 @@ Installation Instructions for fldigi
 To compile fldigi you will need:
 
   * A recent C++ compiler.  The GNU C++ compilers in the 4.x series are
-    known to work.  Building with g++ 3.x requires the development files
-    for the Boost C++ library.
+    known to work.  Building with g++ 3.x requires the development
+    headers for the Boost C++ library.
 
   * Version 1.1.x of the Fast Light Tool Kit (FLTK), with its
-    development library and headers.  Version 1.1.7 and pre-releases of
-    1.1.8 are known to work.  FLTK's multi-threading support is required.
+    development library and headers.  Version 1.1.7 and 1.1.8 are known
+    to work.  FLTK's multi-threading support is required.
 
   * The samplerate (a.k.a. secret rabbit code) library.
+
+  * The Independent JPEG Group's JPEG library.
 
 You should also install the libraries and headers for PortAudio, the
 Portable audio I/O library.
