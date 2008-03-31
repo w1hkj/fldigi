@@ -120,19 +120,16 @@ protected:
 	SNDFILE* ofCapture;
 	SNDFILE* ifPlayback;
 	SNDFILE* ofGenerate;
+	sf_count_t  read_file(SNDFILE* file, double* buf, size_t count);
+	sf_count_t  write_file(SNDFILE* file, double* buf, size_t count);
+	bool	 format_supported(int format);
+	void	 tag_file(SNDFILE *sndfile, const char *title);
 #endif
 
 	bool	capture;
 	bool	playback;
 	bool	generate;
 
-	void writeGenerate(double *buff, size_t count);
-	void writeCapture(double *buff, size_t count);
-	int  readPlayback(double *buff, size_t count);
-#if USE_SNDFILE
-	bool format_supported(int format);
-	void tag_file(SNDFILE *sndfile, const char *title);
-#endif
 public:
 	SoundBase();
 	virtual ~SoundBase();
