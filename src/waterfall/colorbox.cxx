@@ -8,7 +8,7 @@
 
 using namespace std;
 
-#include "File_Selector.h"
+#include "fileselect.h"
 
 void colorbox::draw() {
 	int ypos = y() + 2;
@@ -58,7 +58,7 @@ void loadPalette()
 		palfilename = HomeDir;
 		palfilename.append ("/fldigi.pal");
 	}
-    char *p = File_Select("Open palette", "*.pal", palfilename.c_str(), 0);
+    const char *p = file_select("Open palette", "Fldigi palette\t*.pal", palfilename.c_str());
 	if (!p) return;
 	if ((clrfile = fopen(p, "r")) != NULL) {
 		for (int i = 0; i < 9; i++) {
@@ -94,7 +94,7 @@ void savePalette()
 		palfilename = HomeDir;
 		palfilename.append ("/fldigi.pal");
 	}
-	char *p = File_Select("Save palette", "*.pal", palfilename.c_str(), 0);
+	const char *p = file_saveas("Save palette", "Fldigi palette\t*.pal", palfilename.c_str());
 	if (!p) return;
 	if ((clrfile = fopen(p, "w")) != NULL) {
 		for (int i = 0; i < 9; i++) {

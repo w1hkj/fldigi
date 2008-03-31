@@ -28,6 +28,7 @@
 #include <config.h>
 
 #include <iostream>
+#include <string>
 
 #include <cstdio>
 #include <cstdlib>
@@ -48,7 +49,7 @@
 #include "configuration.h"
 #include "status.h"
 #include <FL/Fl.H>
-#include "File_Selector.h"
+#include "fileselect.h"
 
 
 SoundBase::SoundBase()
@@ -78,15 +79,17 @@ SoundBase::~SoundBase()
 }
 
 #if USE_SNDFILE
-void SoundBase::get_file_params(const char* def_fname, char** fname, int* format)
+void SoundBase::get_file_params(const char* def_fname, const char** fname, int* format)
 {
-	const char* suffixes;
+	std::string filters = "Waveform Audio Format\t*.wav\n" "AU\t*.{au,snd}\n";
 	if (format_supported(SF_FORMAT_FLAC | SF_FORMAT_PCM_16))
-		suffixes = "*.{wav,flac,au}";
-	else
-		suffixes = "*.{wav,au}";
+		filters += "Free Lossless Audio Codec\t*.flac";
 
-	if ((*fname = File_Select("Audio file", suffixes, def_fname, 0)) == 0)
+	if (strstr(def_fname, "playback"))
+		*fname = file_select("Audio file", filters.c_str(), def_fname);
+	else
+		*fname = file_saveas("Audio file", filters.c_str(), def_fname);
+	if (!*fname)
 		return;
 
 	char* suffix = strrchr(*fname, '.');
@@ -111,7 +114,7 @@ int SoundBase::Capture(bool val)
 		return 1;
 	}
 
-	char* fname;
+	const char* fname;
 	int format;
 	get_file_params("./capture.wav", &fname, &format);
 	if (!fname)
@@ -143,7 +146,7 @@ int SoundBase::Playback(bool val)
 		playback = false;
 		return 1;
 	}
-	char* fname;
+	const char* fname;
 	int format;
 	get_file_params("./playback.wav", &fname, &format);
 	if (!fname)
@@ -172,7 +175,7 @@ int SoundBase::Generate(bool val)
 		return 1;
 	}
 
-	char* fname;
+	const char* fname;
 	int format;
 	get_file_params("./generate.wav", &fname, &format);
 	if (!fname)

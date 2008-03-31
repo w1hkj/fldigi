@@ -143,7 +143,7 @@ public:
 	virtual size_t	Read(double *, size_t) = 0;
 	virtual bool	must_close(void) = 0;
 #if USE_SNDFILE
-	void		get_file_params(const char* def_fname, char** fname, int* format);
+	void		get_file_params(const char* def_fname, const char** fname, int* format);
 	int		Capture(bool val);
 	int		Playback(bool val);
 	int		Generate(bool val);

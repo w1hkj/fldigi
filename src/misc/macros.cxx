@@ -12,7 +12,7 @@
 #include "globals.h"
 
 #include <FL/Fl.H>
-#include "File_Selector.h"
+#include "fileselect.h"
 
 #include <ctime>
 #include <cstdio>
@@ -588,7 +588,7 @@ void MACROTEXT::openMacroFile()
 {
 	string deffilename = HomeDir;
 	deffilename.append("/macros.mdf");
-    char *p = File_Select("Open macro file", "*.mdf", deffilename.c_str(), 0);
+    const char *p = file_select("Open macro file", "Fldigi macro definition file\t*.mdf", deffilename.c_str());
     if (p)
 		loadMacros(p);
 }
@@ -597,7 +597,7 @@ void MACROTEXT::saveMacroFile()
 {
 	string deffilename = HomeDir;
 	deffilename.append("/macros.mdf");
-    char *p = File_Select("Save macro file", "*.mdf", deffilename.c_str(), 0);
+    const char *p = file_saveas("Save macro file", "Fldigi macro definition file\t*.mdf", deffilename.c_str());
     if (p)
 		saveMacros(p);
 }

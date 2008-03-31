@@ -33,7 +33,7 @@
 
 #include "cw.h"
 
-#include "File_Selector.h"
+#include "fileselect.h"
 
 #include "ascii.h"
 #include "configuration.h"
@@ -183,7 +183,7 @@ void FTextBase::set_style(int attr, Fl_Font f, int s, Fl_Color c, int set)
 ///
 void FTextBase::readFile(void)
 {
-	char *fn = File_Select("Select ASCII text file", "*.txt", "", 0);
+	const char *fn = file_select("Append text", "Text\t*.txt");
 	if (fn) {
 		tbuf->appendfile(fn);
 		insert_position(tbuf->length());
@@ -196,7 +196,7 @@ void FTextBase::readFile(void)
 ///
 void FTextBase::saveFile(void)
 {
-	char *fn = File_Select("Select ASCII text file", "*.txt", "", 0);
+	const char *fn = file_saveas("Save text as", "Text\t*.txt");
 	if (fn)
 		tbuf->outputfile(fn, 0, tbuf->length());
 }
