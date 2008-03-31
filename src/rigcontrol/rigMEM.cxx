@@ -28,9 +28,7 @@
 #define PTT_OFF false
 #define PTT_ON  true
 
-#ifndef __CYGWIN__
 static int dummy;
-#endif
 
 static Fl_Thread rigMEM_thread;
 static bool rigMEM_exit = false;
