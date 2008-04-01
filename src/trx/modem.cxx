@@ -200,7 +200,16 @@ mbuffer<double, 512 * 2, 2> _mdm_scdbl;
 
 void modem::ModulateXmtr(double *buffer, int len) 
 {
-	scard->Write(buffer, len);
+	try {
+		unsigned n = 4;
+		while (scard->Write(buffer, len) == 0 && --n);
+		if (n == 0)
+			throw SndException("Sound write failed");
+	}
+	catch (const SndException& e) {
+		cerr << e.what() << '\n';
+		return;
+	}
 
 	if (!progdefaults.viewXmtSignal)
 		return;
@@ -217,7 +226,16 @@ void modem::ModulateXmtr(double *buffer, int len)
 
 void modem::ModulateStereo(double *left, double *right, int len)
 {
-	scard->Write_stereo(left, right, len);
+	try {
+		unsigned n = 4;
+		while (scard->Write_stereo(left, right, len) == 0 && --n);
+		if (n == 0)
+			throw SndException("Sound write failed");
+	}
+	catch (const SndException& e) {
+		cerr << e.what() << '\n';
+		return;
+	}
 
 	if (!progdefaults.viewXmtSignal)
 		return;

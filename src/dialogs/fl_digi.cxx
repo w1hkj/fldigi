@@ -1449,7 +1449,11 @@ void create_fl_digi_main() {
 	fl_digi_main->end();
 	fl_digi_main->callback(cb_wMain);
 
-#if !defined(__APPLE__) && !defined(__CYGWIN__)
+#if defined(__APPLE__)
+        // FIXME: how do we set the window icon on OS X?
+#elif defined (__CYGWIN__)
+	fl_digi_main->icon((char*)LoadIcon(fl_display, MAKEINTRESOURCE(IDI_ICON)));
+#else
 	make_pixmap(&fldigi_icon_pixmap, fldigi_icon_48_xpm);
 	fl_digi_main->icon((char *)fldigi_icon_pixmap);
 #endif

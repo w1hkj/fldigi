@@ -4,7 +4,7 @@
 bin_PROGRAMS = fldigi
 
 
-AM_CPPFLAGS = -I$(srcdir) -I$(srcdir)/include -I$(srcdir)/irrxml @BOOST_CPPFLAGS@
+AM_CPPFLAGS = -I$(srcdir) -I$(srcdir)/include -I$(srcdir)/irrxml -Ifileselector @BOOST_CPPFLAGS@
 
 AM_CXXFLAGS = @PORTAUDIO_CFLAGS@ @FLTK_CFLAGS@ @SNDFILE_CFLAGS@ \
 	@SAMPLERATE_CFLAGS@ @PULSEAUDIO_CFLAGS@ @HAMLIB_CFLAGS@ \
@@ -57,7 +57,7 @@ CLEANFILES = $(BUILT_SOURCES)
 if WIN32
 if HAVE_WINDRES
 .rc.o:
-	$(WINDRES) -I$(srcdir)/../data/win32 $< $@
+	$(WINDRES) -I$(srcdir)/include -I$(srcdir)/../data/win32 $< $@
 fldigi_SOURCES += $(WIN32_RES_SRC)
 endif
 endif
@@ -120,9 +120,9 @@ fldigi_SOURCES += \
 	feld/feld.cxx \
 	feld/feldfonts.cxx \
 	fft/fft.cxx \
-	fileselector/File_Selector.cxx \
-	fileselector/File_Selector2.cxx \
-	fileselector/file_dir.cxx \
+	fileselector/FL/Fl_Native_File_Chooser.H \
+	fileselector/Fl_Native_File_Chooser.cxx \
+	fileselector/fileselect.cxx \
 	filters/fftfilt.cxx \
 	filters/filters.cxx \
 	filters/viterbi.cxx \
@@ -133,8 +133,7 @@ fldigi_SOURCES += \
 	include/Enumerations.h \
 	include/FLdigiTypes.h \
 	include/FTextView.h \
-	include/FileString.h \
-	include/File_Selector.h \
+	include/fileselect.h \
 	include/Fl_Text_Display_mod.H \
 	include/Fl_Text_Editor_mod.H \
 	include/FreqControl.h \
@@ -292,10 +291,17 @@ fldigi_SOURCES += \
 	wwv/analysis.cxx \
 	wwv/wwv.cxx
 
-# Sources that are part of the distribution but are not compiled
+# Sources that are part of the distribution but are not compiled directly
 EXTRA_fldigi_SOURCES += \
 	blank/blank.cxx \
 	blank/blank.h \
+	fileselector/FL/Fl_Native_File_Chooser_FLTK.H \
+	fileselector/FL/Fl_Native_File_Chooser_MAC.H \
+	fileselector/FL/Fl_Native_File_Chooser_WIN32.H \
+	fileselector/Fl_Native_File_Chooser_FLTK.cxx \
+	fileselector/Fl_Native_File_Chooser_MAC.cxx \
+	fileselector/Fl_Native_File_Chooser_WIN32.cxx \
+	fileselector/flnfc_common.cxx \
 	feld/Feld7x7-14.cxx \
 	feld/Feld7x7n-14.cxx \
 	feld/FeldDx-14.cxx \
@@ -330,14 +336,5 @@ EXTRA_DIST = \
 	$(srcdir)/../data/fldigi.desktop \
 	$(srcdir)/../data/mac/Info.plist.in \
 	$(srcdir)/../data/win32/fldigi.ico \
-	fileselector/allfiles.xbm \
-	fileselector/d1.xbm \
-	fileselector/d1_mask.xbm \
-	fileselector/ew.xbm \
-	fileselector/ew_mask.xbm \
-	fileselector/new.xbm \
-	fileselector/ns.xbm \
-	fileselector/ns_mask.xbm \
-	fileselector/up.xbm \
 	dialogs/confdialog.fl \
 	rigcontrol/rigdialog.fl

@@ -137,7 +137,11 @@ int main(int argc, char ** argv)
 
 	setlocale(LC_TIME, "");
 
+#ifndef __CYGWIN__
 	fl_filename_expand(szHomedir, 119, "$HOME/.fldigi/");
+#else
+	fl_filename_expand(szHomedir, 119, "$APPDATA/fldigi/");
+#endif
 	HomeDir = szHomedir;
 
 	generate_option_help();
@@ -212,10 +216,6 @@ int main(int argc, char ** argv)
 	trx_start();
 
 	progdefaults.initInterface();
-	
-#ifdef __CYGWIN__
-	fl_digi_main->icon((char*)LoadIcon(fl_display, MAKEINTRESOURCE(IDI_ICON)));
-#endif
 	
 	fl_digi_main->show(argc, argv);
 	progStatus.initLastState();
@@ -358,7 +358,7 @@ int parse_args(int argc, char **argv, int& idx)
 	       OPT_RX_IPC_KEY, OPT_TX_IPC_KEY,
 #endif
 	       OPT_CONFIG_DIR,
-               OPT_FAST_TEXT, OPT_FONT, OPT_WFALL_WIDTH, OPT_WFALL_HEIGHT,
+               OPT_FONT, OPT_WFALL_WIDTH, OPT_WFALL_HEIGHT,
                OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT, OPT_PROFILE, OPT_USE_CHECK,
 	       OPT_RESAMPLE,
 #if USE_PORTAUDIO
@@ -374,7 +374,6 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "tx-ipc-key",	   1, 0, OPT_TX_IPC_KEY },
 #endif
 		{ "config-dir",	   1, 0, OPT_CONFIG_DIR },
-		{ "fast-text",	   0, 0, OPT_FAST_TEXT },
 		{ "font",	   1, 0, OPT_FONT },
 
 		{ "wfall-width",   1, 0, OPT_WFALL_WIDTH },
@@ -426,10 +425,6 @@ int parse_args(int argc, char **argv, int& idx)
 			HomeDir = optarg;
 			if (*HomeDir.rbegin() != '/')
 				HomeDir += '/';
-			break;
-
-		case OPT_FAST_TEXT:
-			progdefaults.alt_text_widgets = false;
 			break;
 
 		case OPT_FONT:

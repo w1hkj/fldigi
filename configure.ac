@@ -9,7 +9,7 @@ dnl major and minor must be integers; patch may
 dnl contain other characters or be empty
 m4_define(FLDIGI_MAJOR, [2])
 m4_define(FLDIGI_MINOR, [11])
-m4_define(FLDIGI_PATCH, [E])
+m4_define(FLDIGI_PATCH, [F])
 
 AC_INIT([fldigi], FLDIGI_MAJOR.FLDIGI_MINOR[FLDIGI_PATCH], [w1hkj AT w1hkj DOT com])
 
@@ -49,7 +49,7 @@ AC_PROG_CC
 # Checks for header files.
 AC_HEADER_STDC
 AC_HEADER_DIRENT
-AC_CHECK_HEADERS([arpa/inet.h execinfo.h fcntl.h limits.h memory.h netdb.h netinet/in.h regex.h stdint.h stdlib.h string.h strings.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h termios.h unistd.h values.h])
+AC_CHECK_HEADERS([arpa/inet.h execinfo.h fcntl.h jpeglib.h limits.h memory.h netdb.h netinet/in.h regex.h stdint.h stdlib.h string.h strings.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h termios.h unistd.h values.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
@@ -129,6 +129,12 @@ AC_FLDIGI_BIND
 # Set FLUID variable
 # Set HAVE_FLUID Makefile conditional
 AC_FLDIGI_FLTK
+
+### JPEG
+# Test if we can compile a program that includes jpeglib.h
+# and link it with the FLTK flags set above.
+# Set ac_cv_have_jpeg to yes/no
+AC_FLDIGI_FLTK_JPEG
 
 ### OSS
 # Set ac_cv_oss to yes/no

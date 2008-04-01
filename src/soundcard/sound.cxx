@@ -28,6 +28,7 @@
 #include <config.h>
 
 #include <iostream>
+#include <string>
 
 #include <cstdio>
 #include <cstdlib>
@@ -48,7 +49,7 @@
 #include "configuration.h"
 #include "status.h"
 #include <FL/Fl.H>
-#include "File_Selector.h"
+#include "fileselect.h"
 
 
 SoundBase::SoundBase()
@@ -78,15 +79,17 @@ SoundBase::~SoundBase()
 }
 
 #if USE_SNDFILE
-void SoundBase::get_file_params(const char* def_fname, char** fname, int* format)
+void SoundBase::get_file_params(const char* def_fname, const char** fname, int* format)
 {
-	const char* suffixes;
+	std::string filters = "Waveform Audio Format\t*.wav\n" "AU\t*.{au,snd}\n";
 	if (format_supported(SF_FORMAT_FLAC | SF_FORMAT_PCM_16))
-		suffixes = "*.{wav,flac,au}";
-	else
-		suffixes = "*.{wav,au}";
+		filters += "Free Lossless Audio Codec\t*.flac";
 
-	if ((*fname = File_Select("Audio file", suffixes, def_fname, 0)) == 0)
+	if (strstr(def_fname, "playback"))
+		*fname = file_select("Audio file", filters.c_str(), def_fname);
+	else
+		*fname = file_saveas("Audio file", filters.c_str(), def_fname);
+	if (!*fname)
 		return;
 
 	char* suffix = strrchr(*fname, '.');
@@ -111,7 +114,7 @@ int SoundBase::Capture(bool val)
 		return 1;
 	}
 
-	char* fname;
+	const char* fname;
 	int format;
 	get_file_params("./capture.wav", &fname, &format);
 	if (!fname)
@@ -143,7 +146,7 @@ int SoundBase::Playback(bool val)
 		playback = false;
 		return 1;
 	}
-	char* fname;
+	const char* fname;
 	int format;
 	get_file_params("./playback.wav", &fname, &format);
 	if (!fname)
@@ -172,7 +175,7 @@ int SoundBase::Generate(bool val)
 		return 1;
 	}
 
-	char* fname;
+	const char* fname;
 	int format;
 	get_file_params("./generate.wav", &fname, &format);
 	if (!fname)
@@ -191,41 +194,26 @@ int SoundBase::Generate(bool val)
 	generate = true;
 	return 1;
 }
-#endif // USE_SNDFILE
 
-void SoundBase::writeGenerate(double *buff, size_t count)
+sf_count_t SoundBase::read_file(SNDFILE* file, double* buf, size_t count)
 {
-#if USE_SNDFILE
-	sf_writef_double(ofGenerate, buff, count);
-#endif
-}
-
-void SoundBase::writeCapture(double *buff, size_t count)
-{
-#if USE_SNDFILE
-	sf_writef_double(ofCapture, buff, count);
-#endif
-}
-
-int SoundBase::readPlayback(double *buff, size_t count)
-{
-#if USE_SNDFILE
-	sf_count_t r = sf_readf_double(ifPlayback, buff, count);
+	sf_count_t r = sf_readf_double(file, buf, count);
 
 	while (r < (sf_count_t)count) {
-		sf_seek(ifPlayback, 0, SEEK_SET);
-		r += sf_readf_double(ifPlayback, buff + r, count - r);
+		sf_seek(file, 0, SEEK_SET);
+		r += sf_readf_double(file, buf + r, count - r);
                 if (r == 0)
                         break;
         }
 
 	return r;
-#else
-	return 0;
-#endif
 }
 
-#if USE_SNDFILE
+sf_count_t SoundBase::write_file(SNDFILE* file, double* buf, size_t count)
+{
+	return sf_writef_double(file, buf, count);
+}
+
 bool SoundBase::format_supported(int format)
 {
 
@@ -498,22 +486,24 @@ size_t SoundOSS::Read(double *buffer, size_t buffersize)
 	for (size_t i = 0; i < buffersize; i++)
 		buffer[i] = src_buffer[2*i];
 
-	if (rxppm != progdefaults.RX_corr) {
-		rxppm = progdefaults.RX_corr;
-		rx_src_data->src_ratio = 1.0/(1.0 + rxppm/1e6);
-		src_set_ratio ( rx_src_state, 1.0/(1.0 + rxppm/1e6));
-	}
-
-	if (capture) writeCapture( buffer, buffersize);
-
+#if USE_SNDFILE
+	if (capture)
+		write_file(ofCapture, buffer, buffersize);
 	if (playback) {
-		readPlayback( buffer, buffersize);
+		read_file(ifPlayback, buffer, buffersize);
 		if (progdefaults.EnableMixer) {
 			double vol = progStatus.RcvMixer;
 			for (size_t i = 0; i < buffersize; i++)
 				buffer[i] *= vol;
 		}
 		return buffersize;
+	}
+#endif
+
+	if (rxppm != progdefaults.RX_corr) {
+		rxppm = progdefaults.RX_corr;
+		rx_src_data->src_ratio = 1.0/(1.0 + rxppm/1e6);
+		src_set_ratio ( rx_src_state, 1.0/(1.0 + rxppm/1e6));
 	}
 
 	if (rxppm == 0)
@@ -545,7 +535,10 @@ size_t SoundOSS::Write(double *buf, size_t count)
 	short int *wbuff;
 	unsigned char *p;
 
-	if (generate) writeGenerate( buf, count );
+#if USE_SNDFILE
+	if (generate)
+		write_file(ofGenerate, buf, count);
+#endif
 
 	if (txppm != progdefaults.TX_corr) {
 		txppm = progdefaults.TX_corr;
@@ -606,7 +599,10 @@ size_t SoundOSS::Write_stereo(double *bufleft, double *bufright, size_t count)
 	short int *wbuff;
 	unsigned char *p;
 
-	if (generate) writeGenerate( bufleft, count );
+#if USE_SNDFILE
+	if (generate)
+		write_file(ofGenerate, bufleft, count);
+#endif
 
 	if (txppm != progdefaults.TX_corr) {
 		txppm = progdefaults.TX_corr;
@@ -813,10 +809,9 @@ size_t SoundPort::Read(double *buf, size_t count)
 	}
 	retries = 0;
 
-	if (capture)
-                writeCapture(buf, count);
+#if USE_SNDFILE
 	if (playback) {
-		readPlayback(buf, count);
+		read_file(ifPlayback, buf, count);
 		if (progdefaults.EnableMixer) {
 	                double vol = progStatus.RcvMixer;
 	                for (size_t i = 0; i < count; i++)
@@ -824,6 +819,7 @@ size_t SoundPort::Read(double *buf, size_t count)
 		}
 		return count;
 	}
+#endif
 
         float *rbuf = fbuf;
         if (req_sample_rate != dev_sample_rate[STREAM_IN] || progdefaults.RX_corr != 0) {
@@ -835,13 +831,20 @@ size_t SoundPort::Read(double *buf, size_t count)
         for (size_t i = 0; i < count; i++)
                 buf[i] = rbuf[2*i];
 
+#if USE_SNDFILE
+	if (capture)
+		write_file(ofCapture, buf, count);
+#endif
+
         return count;
 }
 
 size_t SoundPort::Write(double *buf, size_t count)
 {
+#if USE_SNDFILE
 	if (generate)
-                writeGenerate(buf, count);
+                write_file(ofGenerate, buf, count);
+#endif
 
         for (size_t i = 0; i < count; i++)
                 fbuf[2*i] = fbuf[2*i + 1] = buf[i];
@@ -879,8 +882,10 @@ size_t SoundPort::Write(double *buf, size_t count)
 
 size_t SoundPort::Write_stereo(double *bufleft, double *bufright, size_t count)
 {
+#if USE_SNDFILE
 	if (generate)
-                writeGenerate(bufleft, count);
+                write_file(ofCapture, bufleft, count);
+#endif
 
         for (size_t i = 0; i < count; i++) {
                 fbuf[2*i] = bufleft[i];
@@ -1271,8 +1276,10 @@ void SoundPulse::Close(void)
 
 size_t SoundPulse::Write(double* buf, size_t count)
 {
+#if USE_SNDFILE
 	if (generate)
-                writeGenerate(buf, count);
+		write_file(ofGenerate, buf, count);
+#endif
 
         for (size_t i = 0; i < count; i++)
                 fbuf[2*i] = fbuf[2*i + 1] = buf[i];
@@ -1293,8 +1300,10 @@ size_t SoundPulse::Write(double* buf, size_t count)
 
 size_t SoundPulse::Write_stereo(double* bufleft, double* bufright, size_t count)
 {
+#if USE_SNDFILE
 	if (generate)
-                writeGenerate(bufleft, count);
+		write_file(ofGenerate, bufleft, count);
+#endif
 
 	for (size_t i = 0; i < count; i++) {
 		fbuf[2*i] = bufleft[i];
@@ -1325,10 +1334,9 @@ size_t SoundPulse::Read(double *buf, size_t count)
 	if (pa_simple_read(stream[0], fbuf, sizeof(double) * ncount, &err) == -1)
 		throw SndPulseException(err);
 
-	if (capture)
-                writeCapture(buf, count);
+#if USE_SNDFILE
 	if (playback) {
-		readPlayback(buf, count);
+		read_file(ifPlayback, buf, count);
 		if (progdefaults.EnableMixer) {
 	                double vol = progStatus.RcvMixer;
 	                for (size_t i = 0; i < count; i++)
@@ -1336,6 +1344,7 @@ size_t SoundPulse::Read(double *buf, size_t count)
 		}
 		return count;
 	}
+#endif
 
         float *rbuf = fbuf;
         if (sample_frequency != dev_sample_rate[0] || progdefaults.RX_corr != 0) {
@@ -1346,6 +1355,11 @@ size_t SoundPulse::Read(double *buf, size_t count)
 
 	for (size_t i = 0; i < count; i++)
                 buf[i] = rbuf[2*i];
+
+#if USE_SNDFILE
+	if (capture)
+                write_file(ofCapture, buf, count);
+#endif
 
 	return count;
 }
@@ -1414,8 +1428,10 @@ void SoundPulse::resample(int mode, float *buf, size_t count, size_t max)
 
 size_t SoundNull::Write(double* buf, size_t count)
 {
+#if USE_SNDFILE
 	if (generate)
-                writeGenerate(buf, count);
+                write_file(ofGenerate, buf, count);
+#endif
 
 	usleep((useconds_t)ceil((1e6 * count) / sample_frequency));
 
@@ -1424,8 +1440,10 @@ size_t SoundNull::Write(double* buf, size_t count)
 
 size_t SoundNull::Write_stereo(double* bufleft, double* bufright, size_t count)
 {
+#if USE_SNDFILE
 	if (generate)
-                writeGenerate(bufleft, count);
+                write_file(ofGenerate, bufleft, count);
+#endif
 
 	usleep((useconds_t)ceil((1e6 * count) / sample_frequency));
 
@@ -1436,16 +1454,18 @@ size_t SoundNull::Read(double *buf, size_t count)
 {
 	memset(buf, 0, count * sizeof(*buf));
 
+#if USE_SNDFILE
 	if (capture)
-                writeCapture(buf, count);
+                write_file(ofCapture, buf, count);
 	if (playback) {
-		readPlayback(buf, count);
+		read_file(ifPlayback, buf, count);
 		if (progdefaults.EnableMixer) {
 	                double vol = progStatus.RcvMixer;
 	                for (size_t i = 0; i < count; i++)
         	                buf[i] *= vol;
 		}
 	}
+#endif
 
 	usleep((useconds_t)ceil((1e6 * count) / sample_frequency));
 

@@ -37,7 +37,7 @@
 
 #include "ascii.h"
 
-#include "File_Selector.h"
+#include "fileselect.h"
 
 #include "qrunner.h"
 
@@ -831,8 +831,10 @@ void cb_picRxClose( Fl_Widget *w, void *who)
 void cb_picRxSave( Fl_Widget *w, void *who)
 {
 	mfsk *me = (mfsk *)who;
-	char *fn = 
-		File_Select("Save Image file?","*.{gif,jpg,png}", "", 0);
+	const char *fn = 
+		file_saveas("Save image file", "Portable Network Graphics\t*.png\n"
+			    "Independent JPEG Group\t*.{jpg,jif,jpeg,jpe}\n"
+			    "Graphics Interchange Format\t*.gif");
 	if (!fn) return;
 	me->picRx->save_jpeg(fn);
 }
@@ -936,8 +938,10 @@ void mfsk::updateTxPic(unsigned char data)
 
 void cb_picTxLoad(Fl_Widget *,void *who) {
 	mfsk *TxWho = (mfsk *)who;
-	char *fn = 
-		File_Select("Image file?","*.{gif,jpg,png}", "", 0);
+	const char *fn = 
+		file_select("Load image file", "Portable Network Graphics\t*.png\n"
+			    "Independent JPEG Group\t*.{jpg,jif,jpeg,jpe}\n"
+			    "Graphics Interchange Format\t*.gif");
 	if (!fn) return;
 	TxWho->load_file(fn);
 }

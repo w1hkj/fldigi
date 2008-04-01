@@ -13,7 +13,7 @@
 #include "mfskvaricode.h"
 #include "mbuffer.h"
 
-//#include "File_Selector.h"
+//#include "fileselect.h"
 
 #include "picture.h"
 #include <FL/Fl_Shared_Image.H>
