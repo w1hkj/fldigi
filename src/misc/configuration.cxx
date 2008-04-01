@@ -117,15 +117,25 @@ configuration progdefaults = {
 	0,				// int 		chkUSEHAMLIBis
 	0,				// int		chkUSERIGCATis
 	"",				// string	HamRigName
+#ifdef __CYGWIN__
+	"COM1",			// string	HamRigDevice
+	1,				// int		HamRigBaudrate
+	"COM2",			// string	CWFSKport
+#else
 	"/dev/ttyS0",	// string	HamRigDevice
 	1,				// int		HamRigBaudrate
 	"/dev/ttyS1",	// string	CWFSKport
+#endif
 //
 	"",				// myCall
 	"",				// myName
 	"",				// myQth
 	"",				// myLoc
+#ifdef __CYGWIN__
+	"COM1",			// PTTdev
+#else
 	"/dev/ttyS0",	// PTTdev
+#endif
 	"fldigi ",		// secondary text
 // Sound card
 	-1,			// int		btnAudioIOis

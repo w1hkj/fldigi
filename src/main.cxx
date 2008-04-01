@@ -137,7 +137,11 @@ int main(int argc, char ** argv)
 
 	setlocale(LC_TIME, "");
 
+#ifndef __CYGWIN__
 	fl_filename_expand(szHomedir, 119, "$HOME/.fldigi/");
+#else
+	fl_filename_expand(szHomedir, 119, "$APPDATA/fldigi/");
+#endif
 	HomeDir = szHomedir;
 
 	generate_option_help();

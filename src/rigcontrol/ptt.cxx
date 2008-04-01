@@ -77,7 +77,8 @@ void PTT::reset_(int dev)//, int mode, bool inverted)
 	}
 
 // convert to and from Windows / Linux serial port naming
-#ifndef __CYGWIN__
+
+#ifdef __CYGWIN__
 	if (progdefaults.PTTdev == "COM1")
 		pttdevName = "/dev/ttyS0";
 	else if (progdefaults.PTTdev == "COM2")
@@ -86,25 +87,36 @@ void PTT::reset_(int dev)//, int mode, bool inverted)
 		pttdevName = "/dev/ttyS2";
 	else if (progdefaults.PTTdev == "COM4")
 		pttdevName = "/dev/ttyS3";
+	else if (progdefaults.PTTdev == "COM5")
+		pttdevName = "/dev/ttyS4";
+	else if (progdefaults.PTTdev == "COM6")
+		pttdevName = "/dev/ttyS5";
+	else if (progdefaults.PTTdev == "COM7")
+		pttdevName = "/dev/ttyS6";
+	else if (progdefaults.PTTdev == "COM8")
+		pttdevName = "/dev/ttyS7";
+	else if (progdefaults.PTTdev == "COM9")
+		pttdevName = "/dev/ttyS8";
+	else if (progdefaults.PTTdev == "COM10")
+		pttdevName = "/dev/ttyS9";
+	else if (progdefaults.PTTdev == "COM11")
+		pttdevName = "/dev/ttyS10";
+	else if (progdefaults.PTTdev == "COM12")
+		pttdevName = "/dev/ttyS11";
+	else if (progdefaults.PTTdev == "COM13")
+		pttdevName = "/dev/ttyS12";
+	else if (progdefaults.PTTdev == "COM14")
+		pttdevName = "/dev/ttyS13";
 	else
 		pttdevName = progdefaults.PTTdev;
 #else
-	if (progdefaults.PTTdev == "/dev/ttyS0")
-		pttdevName = "COM1";
-	else if (progdefaults.PTTdev == "/dev/ttyS1")
-		pttdevName = "COM2";
-	else if (progdefaults.PTTdev == "/dev/ttyS2")
-		pttdevName = "COM3";
-	else if (progdefaults.PTTdev == "/dev/ttyS3")
-		pttdevName = "COM4";
-	else
-		pttdevName = progdefaults.PTTdev;
+	pttdevName = progdefaults.PTTdev;
 #endif
-	
+
 	openptt();
 	if (pttfd == -1) {
 		string msg = "Cannot open ";
-		msg = msg + pttdevName;
+		msg = msg + progdefaults.PTTdev; //pttdevName;
 		fl_message( msg.c_str() );
 		return;
 	}
