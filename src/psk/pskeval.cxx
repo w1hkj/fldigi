@@ -40,7 +40,6 @@ pskeval::pskeval() {
 pskeval::~pskeval() {
 }
 
-//static int evalcount = 1;
 
 void pskeval::sigdensity() {
 	double sig = 0.0;
@@ -58,7 +57,6 @@ void pskeval::sigdensity() {
 		val = wf->Pwr(i);
 		if (i >= fstart) {
 			sigpwr[i - ihbw - 1] = (1-alpha)*sigpwr[i - ihbw - 1] + alpha * sig;
-//			sigpwr[i - ihbw - 1] = sig;
 			sig -= vals[j];
 		}
 		vals[j] = val;
@@ -67,11 +65,7 @@ void pskeval::sigdensity() {
 	}		
 	sigavg /= (FFT_LEN - FLOWER);
 	if (sigavg == 0) sigavg = 1e-20;
-//	if (evalcount++ < 100) {
-//		for (int i = FLOWER; i < IMAGE_WIDTH; i++)
-//			std::cout << i << "," << sigpwr[i] / sigavg << std::endl;
-//		std::cout.flush();
-//	}
+	delete [] vals;
 }
 
 double pskeval::sigpeak(int &f, int f1, int f2)
