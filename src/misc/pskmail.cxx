@@ -294,9 +294,9 @@ void pskmail_loop(void *)
 	if (bInitFilePtr == false)
 		initFilePtr();
 #endif
-//	if (bSend0x06)
-//		send0x06();
-//	check_formail();
+	if (bSend0x06)
+		send0x06();
+	check_formail();
 	Fl::repeat_timeout(0.2, pskmail_loop);//1.0, pskmail_loop);
 }
 
