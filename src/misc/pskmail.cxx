@@ -221,6 +221,8 @@ void check_formail() {
 	if (infile) {
 		fseek(infile, 0, SEEK_END);
 		long sz = ftell(infile);
+		if (sz < infileptr)
+			infileptr = 0; // txfile was probably deleted & restarted
 		if (sz > infileptr) {
 			mailtext = "";
 			fseek(infile, infileptr, SEEK_SET);

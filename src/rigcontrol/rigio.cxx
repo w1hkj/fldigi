@@ -80,7 +80,7 @@ bool hexout( string s, int retnbr)
 // reset the readpending & return false if a timeout occurs
 
 // debug code
-std::cout << printtime() << "Cmd: "; printhex(s);
+//std::cout << printtime() << "Cmd: "; printhex(s);
 
 	readtimeout = (rig.wait +rig.timeout) * rig.retries + 2000; // 2 second min timeout
 	while (readpending && readtimeout--)
@@ -115,12 +115,12 @@ std::cout << printtime() << "Cmd: "; printhex(s);
 			num = rigio.ReadBuffer (replybuff, retnbr > 200 ? 200 : retnbr);
 // debug code
 
-			if (num) {
-				std::cout << printtime() << "Rsp (" << n << "): ";
-				printhex(replybuff, num);
-			} else
-				std::cout << printtime() << "Rsp (" << n << "): no reply" << std::endl;
-			std::cout.flush();
+//			if (num) {
+//				std::cout << printtime() << "Rsp (" << n << "): ";
+//				printhex(replybuff, num);
+//			} else
+//				std::cout << printtime() << "Rsp (" << n << "): no reply" << std::endl;
+//			std::cout.flush();
 // to here			
 		}
 

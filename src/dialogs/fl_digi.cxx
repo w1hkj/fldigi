@@ -1292,13 +1292,7 @@ void create_fl_digi_main() {
             if (minRxHeight < 66) minRxHeight = 66;
             minTxHeight = Htext - minRxHeight;
 
-			Fl_Box *minbox = new Fl_Box(sw,Y + 66, WNOM-sw, Htext - 66 - 32);
-			minbox->hide();
-
-			if (progdefaults.alt_text_widgets)
-				ReceiveText = new FTextView(sw, Y, WNOM-sw, minRxHeight, "");
-			else
-				ReceiveText = new TextView(sw, Y, WNOM-sw, minRxHeight, "");
+			ReceiveText = new FTextView(sw, Y, WNOM-sw, minRxHeight, "");
 			ReceiveText->color(
 				fl_rgb_color(
 					progdefaults.RxColor.R,
@@ -1306,21 +1300,20 @@ void create_fl_digi_main() {
 					progdefaults.RxColor.B));		
 			FHdisp = new Raster(sw, Y, WNOM-sw, minRxHeight);
 			FHdisp->hide();
-			Y += minRxHeight;
 
-			if (progdefaults.alt_text_widgets)
-				TransmitText = new FTextEdit(sw, Y, WNOM-sw, minTxHeight);
-			else
-				TransmitText = new TextEdit(sw, Y, WNOM-sw, minTxHeight);
+			TransmitText = new FTextEdit(sw, Y + minRxHeight, WNOM-sw, minTxHeight);
 			TransmitText->color(
 				fl_rgb_color(
 					progdefaults.TxColor.R,
 					progdefaults.TxColor.G,
 					progdefaults.TxColor.B));		
 
-			Y += minTxHeight;
-
+			Fl_Box *minbox = new Fl_Box(sw,Y + 66, WNOM-sw, Htext - 66 - 32);
+			minbox->hide();
 			TiledGroup->resizable(minbox);
+
+			Y += Htext;
+			
 		TiledGroup->end();
 		Fl_Group::current()->resizable(TiledGroup);
 
