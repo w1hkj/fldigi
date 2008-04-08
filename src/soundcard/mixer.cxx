@@ -110,6 +110,7 @@ void MixerOSS::initValues()
 	pcmlevel0 = PCMVolume();
 	vollevel0 = OutVolume();
 /*
+#ifndef __CYGWIN__
 	std::cout << "Sound card initial state:" << std::endl;
 	std::cout << "  Dev mask " << hex << devmask << std::endl;
 	std::cout << "  Rec mask " << hex << recmask << std::endl;
@@ -119,6 +120,7 @@ void MixerOSS::initValues()
 	std::cout << "  Mic  Level = " << miclevel0  << std::endl;
 	std::cout << "  Pcm  Level = " << pcmlevel0  << std::endl;
 	std::cout << "  Vol  Level = " << vollevel0  << std::endl;
+#endif
 */
 }
 

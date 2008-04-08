@@ -25,16 +25,169 @@
 #ifndef FTextView_H_
 #define FTextView_H_
 
+#include <iostream>
+#include <fstream>
+#include <string>
+
 #include "threads.h"
+//#include "TextView.h"
 
 /* fltk includes */
 #include <FL/Fl.H>
 #include <FL/Enumerations.H>
 #include <FL/Fl_Menu_Button.H>
 #include <FL/Fl_Menu_Item.H>
+#include <FL/Fl_Tile.H>
+
+/* Modifier includes */
 #include "Fl_Text_Display_mod.H"
 #include "Fl_Text_Editor_mod.H"
-#include <FL/Fl_Tile.H>
+
+using namespace std;
+
+// this interface is implemented by both rx,tx widgets
+class ReceiveWidget : public Fl_Text_Editor_mod
+{
+public:
+	enum TEXT_ATTR { RECV, XMIT, CTRL, SKIP, ALTR, NATTR };
+
+	ReceiveWidget(int x, int y, int w, int h, const char *label)
+		: Fl_Text_Editor_mod(x, y, w, h, label) { }
+	virtual ~ReceiveWidget() { }
+
+	virtual void add(const char *text, int attr = RECV) = 0;
+	virtual void add(unsigned char c, int attr = RECV) = 0;
+	void	     addstr(const char *text, int attr = RECV) { add(text, attr); }
+	void	     addchr(unsigned char c, int attr = RECV) { add(c, attr); }
+
+	virtual void clear(void) = 0;
+
+	virtual void setFont(Fl_Font fnt) = 0;
+	virtual void setFontSize(int siz) = 0;
+	virtual void setFontColor(Fl_Color clr) = 0;
+
+	virtual void adjust_colours(void) = 0;
+
+	virtual void Show(void) = 0;
+	virtual void Hide(void) = 0;
+};
+
+// this is only implemented by the tx widget
+class TransmitWidget : virtual public ReceiveWidget
+{
+public:
+	TransmitWidget(int x, int y, int w, int h, const char *label)
+		: ReceiveWidget(x, y, w, h, label) { }
+	virtual ~TransmitWidget() { }
+
+	virtual void clear_sent(void) = 0;
+	virtual int nextChar(void) = 0;
+};
+
+
+class textview : virtual public ReceiveWidget
+{
+friend void processinput(void *);
+
+public:
+enum CURSOR_TYPE {CARET_CURSOR, NORMAL_CURSOR, HEAVY_CURSOR, DIM_CURSOR, BLOCK_CURSOR, NONE};
+protected:
+    string		buff;
+    string		attr;
+    string		inbuff;
+    string		inattr;
+    string      selword;
+    int			nlines;
+	int			wrappos;
+    int			charwidth;
+	int			maxcharwidth;
+    int			charheight;
+    int			descent;
+	int			cursorX;
+	int			cursorY;
+	int			X;
+	int			Y;
+	int			W;
+	int			H;
+	int			xpos;
+	int			ypos;
+	size_t		laststartidx;
+	size_t		endidx;
+	size_t      startidx;
+	size_t      xmtidx;
+    size_t      highlightstart;
+    size_t      highlightend;
+	int			popx;
+	int			popy;
+	int			cursorwidth;
+	bool		cursorON;
+	bool		wordwrap;
+	bool		inprocess;
+	bool		timerstarted;
+	
+	CURSOR_TYPE	cursorStyle;
+	Fl_Font		TextFont;
+	Fl_Color	TextColor[16];
+	int			TextSize;
+	char		cstr[1000];
+	bool		adjusted_colours;
+public:
+
+	textview( int x, int y, int w, int h, const char *label = 0 );
+	virtual ~textview() = 0;
+	virtual int handle(int event);
+	virtual void resize( int x, int y, int w, int h );
+    void    draw_cursor();
+    void    draw();
+    void    drawall();
+    void    drawchars();
+    void    drawmodify(size_t modidx);
+    void    drawbs();
+    void    Show();
+	void	Hide();
+
+	virtual void add( const char *text, int attr = RECV );
+	virtual void add( unsigned char c, int attr = RECV);
+	virtual void clear();
+	
+	virtual void setFont(Fl_Font fnt);
+	virtual void setFontSize(int siz);
+	virtual void setFontColor(Fl_Color clr);
+
+	inline void setTextStyle(int n, Fl_Color c )
+		{ if (n < 0 || n > 15) return;      
+		TextColor[n] = c; 
+	}
+
+protected:
+	Fl_Scrollbar scrollbar;
+	Fl_Menu_Button *mpopup;
+
+	void add_( unsigned char c, int attr );
+	void scrollbarCB();	
+	inline static void _scrollbarCB( Fl_Widget* w, void* arg )
+	{ 
+		((textview*)arg)->scrollbarCB(); 
+	}
+	
+	int lineCount();
+	size_t linePosition(int linenbr);
+
+	void _backspace();
+	void setScrollbar();
+	void rebuildsoft(int w);
+    size_t xy2bufidx();
+	string findtext();
+    void    highlightword();
+    void    highlight(bool b);
+    void    adjust_colours(void);
+
+        struct modify_range {
+                size_t start, end;
+                modify_range() : start(0), end(0) { }
+        } draw_mod_range;
+};
+
 
 ///
 /// The text widgets base class.

@@ -40,6 +40,7 @@
 #include <FL/Fl_Check_Button.H>
 
 #include "combo.h"
+//#include "TextView.h"
 #include "FTextView.h"
 #include "raster.h"
 #include "waterfall.h"

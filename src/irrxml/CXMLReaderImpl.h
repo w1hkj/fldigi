@@ -11,7 +11,9 @@
 #include "fast_atof.h"
 
 #ifdef _DEBUG
+#ifndef __CYGWIN__
 #define IRR_DEBUGPRINT(x) printf((x));
+#endif
 #else // _DEBUG 
 #define IRR_DEBUGPRINT(x)
 #endif // _DEBUG

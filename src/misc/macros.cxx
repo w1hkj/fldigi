@@ -581,7 +581,11 @@ void MACROTEXT::loadDefault()
 	string Filename = HomeDir;
 	Filename.append("macros.mdf");
 	if ((erc = loadMacros(Filename)) != 0)
+#ifndef __CYGWIN__
 		printf("Error #%d loading %s\n", erc, Filename.c_str());
+#else
+	;
+#endif
 }
 
 void MACROTEXT::openMacroFile()

@@ -410,7 +410,9 @@ void feld::send_symbol(int currsymb, int nextsymb)
 		outbuf[outlen++] = Amp * nco(tone);
 
 		if (outlen >= OUTBUFSIZE) {
+#ifndef __CYGWIN__
 std::cout << "reset\n"; std::cout.flush();
+#endif
 			break;
 		}
 		txcounter += upsampleinc;

@@ -217,6 +217,10 @@ int main(int argc, char ** argv)
 
 	progdefaults.initInterface();
 	
+#ifdef __CYGWIN__
+	fl_digi_main->icon((char*)LoadIcon(fl_display, MAKEINTRESOURCE(IDI_ICON)));
+#endif
+
 	fl_digi_main->show(argc, argv);
 	progStatus.initLastState();
 	

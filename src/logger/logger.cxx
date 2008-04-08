@@ -90,9 +90,15 @@ const char *ADIFHEADER =
 
 int writeadif () {
 // open the adif file
+#ifndef __CYGWIN__
 	string sfname = HomeDir;
-	FILE *adiFile;
 	sfname.append("fldigi.adif");
+#else
+	string sfname = "C:/FL_LOGBOOK/log.adif";
+#endif
+	FILE *adiFile;
+
+#ifndef __CYGWIN__
 	adiFile = fopen (sfname.c_str(), "r");
 	if (!adiFile) {
 		adiFile = fopen(sfname.c_str(),"w");
@@ -105,6 +111,7 @@ int writeadif () {
 		fclose(adiFile);
 	} else
 		fclose(adiFile);
+#endif
 	adiFile = fopen (sfname.c_str(), "a");
 	if (!adiFile)
 		return 1;

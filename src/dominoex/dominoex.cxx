@@ -374,10 +374,7 @@ void dominoex::afc()
 
 //	freqerr = afcfilt->run(freqerr/numtones);
 	freqerr = decayavg(freqerr, err, 64);
-	
-//	std::cout << currsymbol << ", " << freqerr << std::endl; 
-	fflush(stdout);
-	
+
 	if (progStatus.afconoff && (metric > progStatus.sldrSquelchValue || progStatus.sqlonoff == false)) {
 		set_freq(frequency + freqerr);
 	}

@@ -67,7 +67,9 @@ void parse_mailtext()
 		if (strCmdText == "server" && mailserver == false && mailclient == false) {
 			mailserver = true;
 			mailclient = false;
+#ifndef __CYGWIN__
 			std::cout << "Starting pskmail server transport layer" << std::endl; std::cout.flush();
+#endif
 			string PskMailLogName = PskMailDir;
 			PskMailLogName += "gMFSK.log";
 			Maillogfile = new cLogfile(PskMailLogName.c_str());
@@ -75,13 +77,17 @@ void parse_mailtext()
 		} else if (strCmdText == "client" && mailclient == false && mailserver == false) {
 			mailclient = true;
 			mailserver = false;
+#ifndef __CYGWIN__
 			std::cout << "Starting pskmail client transport layer" << std::endl; std::cout.flush();
+#endif
 			string PskMailLogName = PskMailDir;
 			PskMailLogName += "gMFSK.log";
 			Maillogfile = new cLogfile(PskMailLogName.c_str());
 			Maillogfile->log_to_file_start();
 		} else if (strCmdText == "normal") {
+#ifndef __CYGWIN__
 			std::cout << "Closing pskmail transport layer" << std::endl; std::cout.flush();
+#endif
 			mailserver = false;
 			mailclient = false;
 			if (Maillogfile) {
@@ -149,7 +155,9 @@ void initFilePtr()
 		fclose(infile);
 	}
 	bInitFilePtr = true;
+#ifndef __CYGWIN__
 std::cout << "Init file pointer = " << infileptr << std::endl; std::cout.flush();
+#endif
 }
 #endif
 
@@ -221,6 +229,8 @@ void check_formail() {
 	if (infile) {
 		fseek(infile, 0, SEEK_END);
 		long sz = ftell(infile);
+		if (sz < infileptr)
+			infileptr = 0; // txfile was probably deleted & restarted
 		if (sz > infileptr) {
 			mailtext = "";
 			fseek(infile, infileptr, SEEK_SET);
@@ -281,7 +291,7 @@ void send0x06()
 void pskmail_loop(void *)
 {
 #ifdef __CYGWIN__
-	if (!bInitFilePtr)
+	if (bInitFilePtr == false)
 		initFilePtr();
 #endif
 	if (bSend0x06)
