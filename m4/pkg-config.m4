@@ -1,16 +1,15 @@
 # name, version, optional?, opt-prefix, subst-var-prefix, help-text, [am-cond]
 AC_DEFUN([AC_FLDIGI_PKG_CHECK], [
 
-if test "x$3" = "xyes"; then
-    AC_ARG_WITH($1, AC_HELP_STRING([--[]$4-[]$1], [$6]),
-                    [case "${withval}" in
-                       yes|no) ac_cv_want_[]$1="${withval}" ;;
-                       *)      AC_MSG_ERROR([bad value "${withval}" for --[]$4-[]$1]) ;;
-                     esac],
-                [ac_cv_want_[]$1=check])
-else
-    ac_cv_want_[]$1=yes
-fi
+m4_ifval([$3],
+    [ AC_ARG_WITH($1, AC_HELP_STRING([--[]$4-[]$1], [$6]),
+                     [case "${withval}" in
+                        yes|no) ac_cv_want_[]$1="${withval}" ;;
+                        *)      AC_MSG_ERROR([bad value "${withval}" for --[]$4-[]$1]) ;;
+                      esac],
+                 [ac_cv_want_[]$1=check])
+    ],
+    [ac_cv_want_[]$1=yes] )
 
 if test "x$ac_cv_want_[]$1" = "xno"; then
     AC_DEFINE([USE_][$5], 0)

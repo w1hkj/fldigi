@@ -9,7 +9,7 @@ AM_CPPFLAGS = -I$(srcdir) -I$(srcdir)/include -I$(srcdir)/irrxml -Ifileselector 
 AM_CXXFLAGS = @PORTAUDIO_CFLAGS@ @FLTK_CFLAGS@ @SNDFILE_CFLAGS@ \
 	@SAMPLERATE_CFLAGS@ @PULSEAUDIO_CFLAGS@ @HAMLIB_CFLAGS@ \
 	@MAC_UNIVERSAL_CFLAGS@ \
-	-pipe -Wall -O2 -ffast-math -fexceptions -finline-functions
+	-pipe -Wall -fexceptions @OPT_CFLAGS@ @DEBUG_CFLAGS@
 AM_CFLAGS = $(AM_CXXFLAGS)
 
 AM_LDFLAGS = @MAC_UNIVERSAL_LDFLAGS@
