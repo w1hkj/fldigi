@@ -57,7 +57,7 @@ CLEANFILES = $(BUILT_SOURCES)
 if WIN32
 if HAVE_WINDRES
 .rc.o:
-	$(WINDRES) -I$(srcdir)/include -I$(srcdir)/../data/win32 $< $@
+	$(WINDRES) -I$(srcdir)/include -I$(srcdir)/../data/win32 $< -O coff $@
 fldigi_SOURCES += $(WIN32_RES_SRC)
 endif
 endif

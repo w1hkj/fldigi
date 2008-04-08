@@ -367,7 +367,9 @@ void trx_start_macro_timer()
 void trx_start(void)
 {
 	if (trxrunning) {
+#ifndef __CYGWIN__
 		std::cout<< "trx already running!\n"; fflush(stdout);
+#endif
 		return;
 	}
 	
@@ -400,7 +402,9 @@ void trx_start(void)
 	_trx_tune = 0;
 	active_modem = 0;
 	if (fl_create_thread(trx_thread, trx_loop, &dummy) < 0) {
+#ifndef __CYGWIN__
 		std::cout <<  "trx pthread_create:" << std::endl; fflush(stdout);
+#endif		
 		trxrunning = false;
 		exit(1);
 	} 

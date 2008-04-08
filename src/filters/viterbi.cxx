@@ -44,9 +44,13 @@ viterbi::viterbi(int k, int poly1, int poly2)
 	
 	for (int i = 0; i < outsize; i++) {
 		output[i] = parity(poly1 & i) | (parity(poly2 & i) << 1);
+#ifndef __CYGWIN__		
 //		printf("%5d", output[i]);
 	}
 //	printf("\n");
+#else
+}
+#endif
 	
 	for (int i = 0; i < PATHMEM; i++) {
 		metrics[i] = new int[nstates];

@@ -73,7 +73,9 @@ void parseDREV(size_t &);
 void parseDMAKS(size_t &);
 void parseDSHIFT(size_t &);
 
+#ifndef __CYGWIN__
 void print(size_t &);
+#endif
 
 list<XMLIOS>	commands;
 list<XMLIOS>	reply;
@@ -167,6 +169,7 @@ TAGS datatags[] = {
 
 //=====================================================================
 
+#ifndef __CYGWIN__
 void print(size_t &p0, int indent)
 {
 #ifdef DEBUGXML
@@ -176,6 +179,7 @@ void print(size_t &p0, int indent)
 	std::cout << strXML.substr(p0, tend - p0 + 1).c_str() << std::endl;
 #endif
 }
+#endif
 
 size_t tagEnd(size_t p0)
 {
@@ -331,7 +335,9 @@ void parseMODEdefs(size_t &p0, list<MODE> &lmd)
 		p0++;
 		return;
 	}
+#ifndef __CYGWIN__
 	print(p0,0);
+#endif
 	p0 = nextTag(p0);
 	while (p0 != string::npos && p0 < pend && tagIs(p0, "<ELEMENT")) {
 		elend = tagEnd(p0);
@@ -340,7 +346,9 @@ void parseMODEdefs(size_t &p0, list<MODE> &lmd)
 			p0 = tagEnd(p0);
 			p0 = nextTag(p0);
 			while (p0 != string::npos && p0 < elend) {
+#ifndef __CYGWIN__
 				print(p0,1);
+#endif
 				if ( isBytes(p0, stemp) ) {
 					lmd.push_back(MODE(strELEMENT,stemp));
 				}
@@ -384,11 +392,15 @@ void parseLSBMODES(size_t &p0)
 {
 	size_t pend = tagEnd(p0);
 	string sMode;
+#ifndef __CYGWIN__
 	print(p0,0);
+#endif
 	p0 = nextTag(p0);
 	while (p0 < pend && isString(p0, sMode)) {
 		LSBmodes.push_back(sMode);
+#ifndef __CYGWIN__
 		print (p0,1);
+#endif
 		p0 = tagEnd(p0);
 		p0 = nextTag(p0);
 	}
@@ -411,7 +423,9 @@ void parseBWdefs(size_t &p0, list<BW> &lbw)
 		p0++;
 		return;
 	}
+#ifndef __CYGWIN__
 	print(p0,0);
+#endif
 	p0 = nextTag(p0);
 	while (p0 != string::npos && p0 < pend && tagIs(p0, "<ELEMENT")) {
 		elend = tagEnd(p0);
@@ -420,7 +434,9 @@ void parseBWdefs(size_t &p0, list<BW> &lbw)
 			p0 = tagEnd(p0);
 			p0 = nextTag(p0);
 			while (p0 != string::npos && p0 < elend) {
+#ifndef __CYGWIN__
 				print(p0,1);
+#endif				
 				if ( isBytes(p0, stemp) ) {
 					lbw.push_back(BW(strELEMENT,stemp));
 				}
@@ -558,7 +574,9 @@ void parsePORT(size_t &p0)
 	size_t p1;
 	TAGS *pv;
 
+#ifndef __CYGWIN__
 	print(p0,0);
+#endif	
 
 	rig.clear();
 	p1 = nextTag(p0);
@@ -566,7 +584,9 @@ void parsePORT(size_t &p0)
 		pv = porttags;
 		while (pv->tag) {
 			if (strXML.find(pv->tag, p1) == p1) {
+#ifndef __CYGWIN__
 				print(p1, 1);
+#endif				
 				if (pv->fp) 
 					(pv->fp)(p1);
 				break;
@@ -589,6 +609,7 @@ void parsePORT(size_t &p0)
 	}
 	p0 = pend;
 #ifdef DEBUGXML
+#ifndef __CYGWIN__
 	std::cout << "port: " << rig.port.c_str() << std::endl;
 	std::cout << "baud: " << rig.baud << std::endl;
 	std::cout << "retries: " << rig.retries << std::endl;
@@ -598,6 +619,7 @@ void parsePORT(size_t &p0)
 	std::cout << "initial dts: " << (rig.dtr ? "+12" : "-12") << std::endl;
 	std::cout << "use dtr ptt: " << (rig.dtrptt ? "T" : "F") << std::endl;
 	std::cout << "use flowcontrol: " << (rig.rtscts ? "T" : "F") << std :: endl;
+#endif
 #endif	
 }
 
@@ -644,49 +666,65 @@ void parseIOSint(size_t &p0)
 
 void parseDTYPE(size_t &p1)
 {
+#ifndef __CYGWIN__
 	print(p1,2);
+#endif	
 	iosTemp.data.dtype = getElement(p1);
 }
 
 void parseDSIZE(size_t &p1)
 {
+#ifndef __CYGWIN__
 	print(p1,2);
+#endif	
 	iosTemp.data.size = getInt(p1);
 }
 
 void parseDMAX(size_t &p1)
 {
+#ifndef __CYGWIN__
 	print(p1,2);
+#endif	
 	iosTemp.data.max = getInt(p1);
 }
 
 void parseDMIN(size_t &p1)
 {
+#ifndef __CYGWIN__
 	print(p1,2);
+#endif	
 	iosTemp.data.min = getInt(p1);
 }
 
 void parseDRESOL(size_t &p1)
 {
+#ifndef __CYGWIN__
 	print(p1,2);
+#endif	
 	iosTemp.data.resolution = getFloat(p1);
 }
 
 void parseDREV(size_t &p1)
 {
+#ifndef __CYGWIN__
 	print(p1,2);
+#endif	
 	iosTemp.data.reverse = getBool(p1);
 }
 
 void parseDMAKS(size_t &p1)
 {
+#ifndef __CYGWIN__
 	print(p1,2);
+#endif	
 	iosTemp.data.andmask = getInt(p1);
 }
 
 void parseDSHIFT(size_t &p1)
 {
+#ifndef __CYGWIN__
 	print(p1,2);
+#endif	
 	iosTemp.data.shiftbits = getInt(p1);
 }
 
@@ -701,7 +739,9 @@ void parseIOSdata(size_t &p0)
 		pv = datatags;
 		while (pv->tag) {
 			if (strXML.find(pv->tag, p1) == p1) {
+#ifndef __CYGWIN__
 				print(p1, 1);
+#endif				
 				if (pv->fp) 
 					(pv->fp)(p1);
 				break;
@@ -757,7 +797,9 @@ bool parseIOS(size_t &p0, TAGS *valid)
 	size_t p1;
 	TAGS *pv;
 
+#ifndef __CYGWIN__
 	print(p0,0);
+#endif	
 
 	iosTemp.clear();
 	p1 = nextTag(p0);
@@ -765,7 +807,9 @@ bool parseIOS(size_t &p0, TAGS *valid)
 		pv = valid;
 		while (pv->tag) {
 			if (strXML.find(pv->tag, p1) == p1) {
+#ifndef __CYGWIN__
 				print(p1, 1);
+#endif				
 				if (pv->fp) 
 					(pv->fp)(p1);
 				break;

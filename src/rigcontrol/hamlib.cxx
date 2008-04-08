@@ -56,7 +56,9 @@ void show_error(const char * a, const char * b)
 	msg.append(": ");
 	msg.append(b);
 	put_status((char*)msg.c_str());
+#ifndef __CYGWIN__
 	std::cout << msg.c_str() << std::endl; std::cout.flush();
+#endif
 }
 
 bool hamlib_setRTSDTR()
@@ -81,16 +83,19 @@ bool hamlib_setRTSDTR()
 		ioctl_bits |= TIOCM_DTR;		// set DTR bit
 	else
 		ioctl_bits &= ~TIOCM_DTR;		// clear DTR bit
+#ifndef __CYGWIN__
 std::cout << "TIOCM_RTS " << TIOCM_RTS << ", RTSplus " << progdefaults.RTSplus;
 std::cout << std::endl;
 std::cout << "TIOCM_DTR " << TIOCM_DTR << ", DTRplus " << progdefaults.DTRplus;
 std::cout << std::endl;
 std::cout << ioctl_bits;
+#endif
 	ioctl(hamlibfd, TIOCMSET, &ioctl_bits);
 	close(hamlibfd);
 	
+#ifndef __CYGWIN__
 std::cout << "=> setRTSDTR() => " << ioctl_bits << std::endl; std::cout.flush();
-	
+#endif	
 	return true;
 }
 
@@ -202,7 +207,9 @@ bool hamlib_init(bool bPtt)
 	hamlib_rmode = RIG_MODE_NONE;//RIG_MODE_USB;
 
 	if (fl_create_thread(hamlib_thread, hamlib_loop, &dummy) < 0) {
+#ifndef __CYGWIN__
 		std::cout << "Hamlib init:  pthread_create failed\n"; std::cout.flush();
+#endif
 		xcvr->close();
 		return false;
 	} 
@@ -230,7 +237,9 @@ void hamlib_close(void)
 		MilliSleep(50);
 		count--;
 		if (!count) {
+#ifndef __CYGWIN__
 			std::cout << "\nHamlib stuck\n"; cout.flush();
+#endif
 			xcvr->close();
 			exit(0);
 		}
