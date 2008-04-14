@@ -39,6 +39,8 @@
 #include "configuration.h"
 #include "qrunner.h"
 
+#include "mfsk.h"
+
 
 using namespace std;
 
@@ -959,7 +961,7 @@ void FTextEdit::menu_cb(int val)
 		break;
 	case TX_MENU_MFSK16_IMG:
 		if (active_modem->get_mode() == MODE_MFSK16)
-			active_modem->makeTxViewer(0, 0);
+			showTxViewer(0, 0, (mfsk *)active_modem);
 		break;
 
 	case TX_MENU_CLEAR:

@@ -88,7 +88,6 @@ WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 	fft_sig_img 	= new uchar[image_area];
 	sig_img			= new uchar[sig_image_area];
 	pwr				= new double[IMAGE_WIDTH];
-//	fft_hist		= new short int[image_area];
 	fft_db			= new short int[image_area];
 	tmp_fft_db		= new short int[image_area];
 	circbuff		= new double[FFT_LEN * 2];
@@ -142,7 +141,6 @@ WFdisp::~WFdisp() {
 	delete [] sig_img;
 	delete [] pwr;
 	delete [] scline;
-//	delete [] fft_hist;
 	delete [] fft_db;
 	delete [] tmp_fft_db;
 }
@@ -277,7 +275,6 @@ void WFdisp::setcolors() {
 
 
 void WFdisp::initmaps() {
-//	for (int i = 0; i < image_area; i++) fft_hist[i] = -1000;
 	for (int i = 0; i < image_area; i++) fft_db[i] = log2disp(-1000);
 
 	memset (fft_img, 0, image_area * sizeof(RGBI) );
@@ -336,8 +333,6 @@ int WFdisp::log2disp(int v)
 void WFdisp::update_fft_db()
 {
 	FL_LOCK_D();
-//	for (int i = 0; i < image_area; i++)
-//		fft_db[i] = log2disp( fft_hist[i] );
 	FL_UNLOCK_D();
 }
 
@@ -367,7 +362,6 @@ FL_LOCK_D();
 			else
 				pw = fftout[n]*fftout[n];
 			pwr[i] = pw;
-			//fft_hist[i] = 
 			ffth = (int)(10.0 * log10(pw + 1e-10) );
 			fft_db[i] = log2disp(ffth);
 		}

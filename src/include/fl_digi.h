@@ -33,7 +33,6 @@
 #include <FL/Fl_Text_Buffer.H>
 #include <FL/Fl_Browser.H>
 #include <FL/Fl_Slider.H>
-#include <FL/Fl_Progress.H>
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Tile.H>
 #include <FL/Fl_Light_Button.H>
@@ -47,6 +46,7 @@
 #include "digiscope.h"
 #include "globals.h"
 #include "mixer.h"
+#include "progress.h"
 
 extern Fl_Double_Window *fl_digi_main;
 
@@ -60,7 +60,7 @@ extern Fl_Box			*Status1;
 extern Fl_Box			*WARNstatus;
 extern Fl_Button		*MODEstatus;
 extern Fl_Slider		*sldrSquelch;
-extern Fl_Progress		*pgrsSquelch;
+extern Progress			*pgrsSquelch;
 extern Fl_Button 		*btnMacro[];
 extern Fl_Input			*inpFreq;
 extern Fl_ComboBox		*cboBand;
@@ -98,6 +98,7 @@ extern Fl_Menu_Item menu_[];
 extern Fl_Menu_Item *getMenuItem(const char *caption);
 extern void activate_rig_menu_item(bool b);
 extern void activate_test_menu_item(bool b);
+extern void activate_mfsk_image_item(bool b);
 
 
 extern void put_freq(double frequency);

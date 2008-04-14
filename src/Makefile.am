@@ -188,6 +188,7 @@ fldigi_SOURCES += \
 	include/newinstall.h \
 	include/olivia.h \
 	include/picture.h \
+	include/progress.h \
 	include/psk.h \
 	include/viewpsk.h \
 	include/pskcoeff.h \
@@ -286,6 +287,7 @@ fldigi_SOURCES += \
 	widgets/Fl_Text_Display_mod.cxx \
 	widgets/Fl_Text_Editor_mod.cxx \
 	widgets/picture.cxx \
+	widgets/progress.cxx \
 	wwv/analysis.cxx \
 	wwv/wwv.cxx
 

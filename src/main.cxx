@@ -631,7 +631,7 @@ void redirect_streams(const std::string& dir)
 	string log = dir;
 	if (*log.rbegin() != '/')
 		log += '/';
-	log += "log";
+	log += "status_log.txt";
 	outlogfile.open(log.c_str());
 
 	if (!isatty(STDOUT_FILENO)) {

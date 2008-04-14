@@ -31,19 +31,64 @@
 #define	POLY1	0x6d
 #define	POLY2	0x4f
 
+class	mfsk;
+
+extern 	int		print_time_left(size_t bytes, char *str, size_t len,
+			  		const char *prefix = "", const char *suffix = "");
+extern	void	updateTxPic(unsigned char data, mfsk *me);
+extern	void	updateRxPic(unsigned char data, int pos);
+extern	void	TxViewerResize(int W, int H);
+extern	void	showTxViewer(int W, int H, mfsk *who);
+extern	void	createTxViewer(mfsk *who);
+extern	void	createRxViewer(mfsk *who);
+extern	void	showRxViewer(int W, int H, mfsk *who);
+extern	void	deleteRxViewer();
+extern	void	deleteTxViewer();
+
+extern void cb_picRxClose( Fl_Widget *w, void *who);
+extern void cb_picRxAbort( Fl_Widget *w, void *who);
+extern void cb_picTxSendColor( Fl_Widget *w, void *who);
+extern void cb_picTxSendGrey( Fl_Widget *w, void *who);
+extern void cb_picTxSendAbort( Fl_Widget *w, void *who);
+
+
+extern	void	load_file(const char *n);
+
+extern	Fl_Double_Window	*picRxWin;
+extern	picture		*picRx;
+extern	Fl_Button	*btnpicRxSave;
+extern	Fl_Button	*btnpicRxAbort;
+extern	Fl_Button	*btnpicRxClose;
+
+extern	Fl_Double_Window	*picTxWin;
+extern	picture		*picTx;
+extern	Fl_Button	*btnpicTxSendColor;
+extern	Fl_Button	*btnpicTxSendGrey;
+extern	Fl_Button	*btnpicTxSendAbort;
+extern	Fl_Button	*btnpicTxLoad;
+extern	Fl_Button	*btnpicTxClose;
+
+extern	Fl_Shared_Image	*TxImg;
+extern	unsigned char *xmtimg;
+extern	unsigned char *xmtpicbuff;
+
 struct rxpipe {
 	complex vector[MAX_SYMBOLS];	//numtones <= 32
 };
 
+struct history {
+	complex val;
+	int symnbr;
+};
+	
 class mfsk : public modem {
 
+friend void updateTxPic(unsigned char data, mfsk *me);
 friend void cb_picRxClose( Fl_Widget *w, void *who);
-friend void cb_picTxClose( Fl_Widget *w, void *who);
-friend void cb_picTxLoad(Fl_Widget *,void *who);
+friend void cb_picRxAbort( Fl_Widget *w, void *who);
 friend void cb_picTxSendColor( Fl_Widget *w, void *who);
 friend void cb_picTxSendGrey( Fl_Widget *w, void *who);
 friend void cb_picTxSendAbort( Fl_Widget *w, void *who);
-friend void cb_picRxSave( Fl_Widget *w, void *who);
 
 public:
 enum {
@@ -80,6 +125,8 @@ protected:
 	sfft			*binsfft;
 	C_FIR_filter	*bpfilt;
 	Cmovavg			*afcfilt;
+	Cmovavg			*met1filt;
+	Cmovavg			*met2filt;
 
 	viterbi		*dec1;
 	viterbi		*dec2;
@@ -97,6 +144,8 @@ protected:
 	int currsymbol;
 	int prev1symbol;
 	int prev2symbol;
+	double maxval;
+	double prevmaxval;
 
 	double met1;
 	double met2;
@@ -125,6 +174,7 @@ protected:
 	char picheader[PICHEADER];
 	complex prevz;
 	double picf;
+	
 	int		row;
 	int		col;
 	int		rgb;
@@ -134,31 +184,10 @@ protected:
 	int		picH;
 	bool	color;
 	
-	Fl_Window	*picRxWin;
-	Fl_Box		*picRxBox;
-	picture		*picRx;
-	Fl_Button	*btnpicRxSave;
-	Fl_Button	*btnpicRxClose;
-	Fl_Window	*picTxWin;
-	picture		*picTx;
-	Fl_Button	*btnpicTxSendColor;
-	Fl_Button	*btnpicTxSendGrey;
-	Fl_Button	*btnpicTxSendAbort;
-	Fl_Button	*btnpicTxLoad;
-	Fl_Button	*btnpicTxClose;
-	Fl_Shared_Image	*TxImg;
-	unsigned char *xmtimg;
-	unsigned char *xmtpicbuff;
 	unsigned char picprologue[44];
 	int			xmtbytes;
 	bool		startpic;
 	bool		abortxmt;
-
-	void		updateTxPic(unsigned char data);
-	void		TxViewerResize(int W, int H);
-	void		updateRxPic(unsigned char data, int pos);
-	void		makeRxViewer(int W, int H);
-	void		load_file(const char *n);
 
 	void	recvpic(complex z);
 	void	recvchar(int c);
@@ -182,8 +211,6 @@ protected:
 	void	clearbits();
 	void	sendpic(unsigned char *data, int len);
 	bool	check_picture_header(char c);
-	int	print_time_left(size_t bytes, char *str, size_t len,
-			  const char *prefix = "", const char *suffix = "");
 public:
 	mfsk (trx_mode md);
 	~mfsk ();
@@ -194,7 +221,6 @@ public:
 	int		rx_process(const double *buf, int len);
 	int		tx_process();
 	void	shutdown();
-	void	makeTxViewer(int W, int H);
 };
 
 #endif

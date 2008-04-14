@@ -155,9 +155,6 @@ void initFilePtr()
 		fclose(infile);
 	}
 	bInitFilePtr = true;
-#ifndef __CYGWIN__
-std::cout << "Init file pointer = " << infileptr << std::endl; std::cout.flush();
-#endif
 }
 #endif
 
