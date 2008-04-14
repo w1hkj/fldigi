@@ -35,12 +35,14 @@
 // DO NOT EXCEED 4000
 // The larger the number the greater the cpu load will be for creating the
 // waterfall display
-#define DEFAULT_IMAGE_WIDTH 3000
-#define DEFAULT_HWFALL 140
+#define DEFAULT_SW 15
+#define DEFAULT_IMAGE_WIDTH 3200
+#define DEFAULT_HWFALL 144
 #define DEFAULT_HNOM 570
-#define DEFAULT_WNOM (DEFAULT_IMAGE_WIDTH / 4 + DEFAULT_HWFALL - BTN_HEIGHT)
+#define DEFAULT_WNOM (DEFAULT_IMAGE_WIDTH / 4 + 2 * DEFAULT_SW)
+//#define DEFAULT_WNOM (DEFAULT_IMAGE_WIDTH / 4 + DEFAULT_HWFALL - BTN_HEIGHT)
 
-#define EMC_HWFALL 140
+#define EMC_HWFALL 144
 #define EMC_HNOM 500
 #define EMC_WNOM (EMC_HWFALL - BTN_HEIGHT + 500)
 

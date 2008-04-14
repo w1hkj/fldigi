@@ -30,6 +30,10 @@
 #  include <sys/msg.h>
 #endif
 
+#ifdef __CYGWIN__
+#  include <w32api/windows.h>
+#endif
+
 #include <stdlib.h>
 #include <string>
 
@@ -41,9 +45,12 @@
 #include <FL/Fl_Tile.H>
 #include <FL/x.H>
 #include <FL/Fl_Help_Dialog.H>
+#include <FL/Fl_Progress.H>
 
 #include "waterfall.h"
 #include "raster.h"
+#include "progress.h"
+
 #include "main.h"
 #include "threads.h"
 #include "trx.h"
@@ -93,6 +100,7 @@
 
 Fl_Double_Window	*fl_digi_main=(Fl_Double_Window *)0;
 Fl_Help_Dialog 		*help_dialog = (Fl_Help_Dialog *)0;
+Fl_Double_Window	*scopeview = (Fl_Double_Window *)0;
 
 MixerBase* mixer = 0;
 
@@ -145,7 +153,7 @@ string				strMacroName[NUMMACKEYS];
 waterfall			*wf = (waterfall *)0;
 Digiscope			*digiscope = (Digiscope *)0;
 Fl_Slider			*sldrSquelch = (Fl_Slider *)0;
-Fl_Progress			*pgrsSquelch = (Fl_Progress *)0;
+Progress			*pgrsSquelch = (Progress *)0;
 
 Fl_RGB_Image		*feld_image = 0;
 
@@ -652,6 +660,7 @@ void cb_mnuAbout(Fl_Widget*, void*)
 void cb_mnuVisitURL(Fl_Widget*, void* arg)
 {
 	const char* url = reinterpret_cast<const char *>(arg);
+#ifndef __CYGWIN__
 	const char* browsers[] = { getenv("BROWSER"), "xdg-open", "sensible-brower",
 				   "firefox", "mozilla" };
 	switch (fork()) {
@@ -666,6 +675,17 @@ void cb_mnuVisitURL(Fl_Widget*, void* arg)
 			 "Open this URL manually:\n%s",
 			 strerror(errno), url);
 	}
+#else
+	// gurgle... gurgle... HOWL
+	// "The return value is cast as an HINSTANCE for backward
+	// compatibility with 16-bit Windows applications. It is
+	// not a true HINSTANCE, however. The only thing that can
+	// be done with the returned HINSTANCE is to cast it to an
+	// int and compare it with the value 32 or one of the error
+	// codes below." (Error codes omitted to preserve sanity).
+	if ((int)ShellExecute(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL) <= 32)
+		fl_alert("Could not open url:\n%s\n", url);
+#endif
 
         restoreFocus();
 }
@@ -751,6 +771,10 @@ void cbTune(Fl_Widget *w, void *) {
 	restoreFocus();
 }
 
+void cb_mnuDigiscope(Fl_Menu_ *w, void *d) {
+	scopeview->show();
+}
+
 void cb_mnuRig(Fl_Menu_ *, void *) {
 	if (!rigcontrol)
 		createRigDialog();
@@ -759,6 +783,13 @@ void cb_mnuRig(Fl_Menu_ *, void *) {
 
 void cb_mnuViewer(Fl_Menu_ *, void *) {
 	openViewer();
+}
+
+void cb_mnuPicViewer(Fl_Menu_ *, void *) {
+	if (picRxWin) {
+		picRx->redraw();
+		picRxWin->show();
+	}
 }
 
 void closeRigDialog() {
@@ -1027,11 +1058,13 @@ Fl_Menu_Item menu_[] = {
 {"Save Config", 0, (Fl_Callback*)cb_mnuSaveConfig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
-{"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
+{"View", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{"Digiscope", 0, (Fl_Callback*)cb_mnuDigiscope, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{"MFSK Image", 0, (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
+{"PSK Browser", 0, (Fl_Callback*)cb_mnuViewer, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"Rig", 0, (Fl_Callback*)cb_mnuRig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
 
-{"Viewer", 0, (Fl_Callback*)cb_mnuViewer, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
 
 {"Help", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
@@ -1076,6 +1109,24 @@ Fl_Menu_Item *getMenuItem(const char *caption)
 void activate_rig_menu_item(bool b)
 {
 	Fl_Menu_Item *rig = getMenuItem("Rig");
+	if (!rig)
+		return;
+
+	if (b) {
+		bSaveFreqList = true;
+		rig->activate();
+		
+	} else {
+		rig->deactivate();
+		if (rigcontrol)
+			rigcontrol->hide();
+	}
+	mnu->redraw();
+}
+
+void activate_mfsk_image_item(bool b)
+{
+	Fl_Menu_Item *rig = getMenuItem("MFSK Image");
 	if (!rig)
 		return;
 
@@ -1177,6 +1228,7 @@ int below(Fl_Widget* w)
 }
 
 
+
 void create_fl_digi_main() {
 	int pad = wSpace, Y = 0;
 	fl_digi_main = new Fl_Double_Window(WNOM, HNOM, "fldigi");
@@ -1266,7 +1318,7 @@ void create_fl_digi_main() {
 		qsoFrame2->end();
 		Y += Hnotes;
 		
-		int sw = 15;
+		int sw = DEFAULT_SW;
 		MixerFrame = new Fl_Group(0,Y,sw, Hrcvtxt + Hxmttxt);
 			valRcvMixer = new Fl_Slider(0, Y, sw, (Htext)/2, "");
 			valRcvMixer->type(FL_VERT_NICE_SLIDER);
@@ -1344,30 +1396,50 @@ void create_fl_digi_main() {
 
 		Fl_Pack *wfpack = new Fl_Pack(0, Y, WNOM, Hwfall);
 			wfpack->type(1);
-			wf = new waterfall(0, Y, Wwfall, Hwfall);
-			wf->end();
-			Fl_Pack *ypack = new Fl_Pack(WNOM-(Hwfall-24), Y, Hwfall-24, Hwfall);
-				ypack->type(0);
-
-				digiscope = new Digiscope (WNOM-(Hwfall-24), Y, Hwfall-24, Hwfall-24);
-	
-				pgrsSquelch = new Fl_Progress(
-					WNOM-(Hwfall-24), Y + Hwfall - 24,
-					Hwfall - 24, 12, "");
-				pgrsSquelch->color(FL_BACKGROUND2_COLOR, FL_DARK_GREEN);
-				sldrSquelch = new Fl_Slider(
-					FL_HOR_NICE_SLIDER, 
-					WNOM-(Hwfall-24), Y + Hwfall - 12, 
-					Hwfall - 24, 12, "");
+			pgrsSquelch = new Progress(
+				0, Y+2,
+				DEFAULT_SW, Hwfall-4, "");
+			pgrsSquelch->color(FL_BACKGROUND2_COLOR, FL_DARK_GREEN);
+			pgrsSquelch->type(Progress::VERTICAL);
+			sldrSquelch = new Fl_Slider(
+				FL_VERT_NICE_SLIDER, 
+				DEFAULT_SW, Y+2, 
+				DEFAULT_SW, Hwfall-4, "");
 							
-				sldrSquelch->minimum(0);
-				sldrSquelch->maximum(100);
-				sldrSquelch->step(1);
-				sldrSquelch->value(progStatus.sldrSquelchValue);
-				sldrSquelch->callback((Fl_Callback*)cb_sldrSquelch);
-				sldrSquelch->color(FL_INACTIVE_COLOR);
+			sldrSquelch->minimum(100);
+			sldrSquelch->maximum(0);
+			sldrSquelch->step(1);
+			sldrSquelch->value(progStatus.sldrSquelchValue);
+			sldrSquelch->callback((Fl_Callback*)cb_sldrSquelch);
+			sldrSquelch->color(FL_INACTIVE_COLOR);
+						
+//			wf = new waterfall(0, Y, Wwfall, Hwfall);
+			wf = new waterfall(2*DEFAULT_SW, Y, Wwfall, Hwfall);//Wwfall, Hwfall);
+			wf->end();
 
-			ypack->end();
+//			Fl_Pack *ypack = new Fl_Pack(WNOM-(Hwfall-24 - 2*sw), Y, Hwfall-26, Hwfall);
+//				ypack->type(0);
+
+//				digiscope = new Digiscope (2*DEFAULT_SW + Wwfall - (Hwfall - 24), Y, Hwfall-24, Hwfall-24);
+//				digiscope->hide();
+	
+//				pgrsSquelch = new Progress(
+//					WNOM-(Hwfall-24), Y + Hwfall - 24,
+//					Hwfall - 24, 12, "");
+//				pgrsSquelch->color(FL_BACKGROUND2_COLOR, FL_DARK_GREEN);
+//				sldrSquelch = new Fl_Slider(
+//					FL_HOR_NICE_SLIDER, 
+//					WNOM-(Hwfall-24), Y + Hwfall - 12, 
+//					Hwfall - 24, 12, "");
+							
+//				sldrSquelch->minimum(0);
+//				sldrSquelch->maximum(100);
+//				sldrSquelch->step(1);
+//				sldrSquelch->value(progStatus.sldrSquelchValue);
+//				sldrSquelch->callback((Fl_Callback*)cb_sldrSquelch);
+//				sldrSquelch->color(FL_INACTIVE_COLOR);
+
+//			ypack->end();
 			Fl_Group::current()->resizable(wf);
 		wfpack->end();
 		Y += (Hwfall + 2);
@@ -1452,6 +1524,11 @@ void create_fl_digi_main() {
 #endif
 
 	fl_digi_main->xclass(PACKAGE_NAME);
+	
+	scopeview = new Fl_Double_Window(0,0,140,140, "Scope");
+	digiscope = new Digiscope (0, 0, 140, 140);
+	scopeview->end();
+	scopeview->hide();	
 }
 
 
@@ -1468,7 +1545,7 @@ void put_Bandwidth(int bandwidth)
 void display_metric(double metric)
 {
 	FL_LOCK_D();
-	REQ_DROP(static_cast<void (Fl_Progress::*)(float)>(&Fl_Progress::value), pgrsSquelch, metric);
+	REQ_DROP(static_cast<void (Progress::*)(double)>(&Progress::value), pgrsSquelch, metric);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }

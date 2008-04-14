@@ -46,7 +46,6 @@ static int dummy = 0;
 
 static void *rigCAT_loop(void *args);
 
-#ifndef __CYGWIN__
 void printhex(string s)
 {
 	for (unsigned int i = 0; i < s.length(); i++) {
@@ -70,7 +69,6 @@ char * printtime()
 	strftime(sztime, 79, "[%H:%M:%S]", now);
 	return sztime;
 }
-#endif
 
 bool readpending = false;
 int  readtimeout;
@@ -89,9 +87,7 @@ bool hexout( string s, int retnbr)
 		MilliSleep(1);
 	if (readtimeout == 0) {
 		readpending = false;
-#ifndef __CYGWIN__
-		std::cout << "rigio timeout!" << std::endl; fflush(stdout);
-#endif
+		std::cout << "rigio timeout!" << std::endl;
 		return false;
 	}
 
@@ -118,15 +114,12 @@ bool hexout( string s, int retnbr)
 		if (retnbr > 0) {
 			num = rigio.ReadBuffer (replybuff, retnbr > 200 ? 200 : retnbr);
 // debug code
-#ifndef __CYGWIN__
 //			if (num) {
 //				std::cout << printtime() << "Rsp (" << n << "): ";
 //				printhex(replybuff, num);
 //			} else
 //				std::cout << printtime() << "Rsp (" << n << "): no reply" << std::endl;
-//			std::cout.flush();
 // to here			
-#endif
 		}
 
 		if (retnbr == 0 || num == retnbr) {
@@ -797,32 +790,24 @@ unused__ static void show_error(const char * a, const char * b)
 	string msg = a;
 	msg.append(": ");
 	msg.append(b);
-#ifndef __CYGWIN__
 	std::cout << msg << std::endl;
-#endif
 }
 
 bool rigCAT_init()
 {
 	if (rigCAT_open == true) {
-#ifndef __CYGWIN__
-		std::cout << "RigCAT already open file present\n"; fflush(stdout);
-#endif
+		std::cout << "RigCAT already open file present" << std::endl;
 		return false;
 	}
 
 	if (readRigXML() == false) {
-#ifndef __CYGWIN__
-		std::cout << "No rig.xml file present\n"; std::cout.flush();
-#endif
+		std::cout << "No rig.xml file present" << std::endl;
 		return false;
 	}
 
 	if (rigio.OpenPort() == false) {
-#ifndef __CYGWIN__
 		std::cout << "Cannot open serial port " << (char *)rigio.Device().c_str();
-		std::cout << std::endl; std::cout.flush();
-#endif
+		std::cout << std::endl;
 		return false;
 	}
 	llFreq = 0;
@@ -830,16 +815,12 @@ bool rigCAT_init()
 	sRigWidth = "";
 	
 	if (rigCAT_getfreq() <= 0) {
-#ifndef __CYGWIN__
-		std::cout << "Transceiver not responding\n"; std::cout.flush();
-#endif
+		std::cout << "Transceiver not responding" << std::endl;
 		return false;
 	}
 	
 	if (fl_create_thread(rigCAT_thread, rigCAT_loop, &dummy) < 0) {
-#ifndef __CYGWIN__
-		std::cout << "rig init: pthread_create failed\n"; std::cout.flush();
-#endif
+		std::cout << "rig init: pthread_create failed" << std::endl;
 		rigio.ClosePort();
 		return false;
 	} 
@@ -864,9 +845,7 @@ void rigCAT_close(void)
 		MilliSleep(50);
 		count--;
 		if (!count) {
-#ifndef __CYGWIN__
-			std::cout << "\nRigCAT stuck\n"; fflush(stdout);
-#endif
+			std::cout << "\nRigCAT stuck" << std::endl;
 		fl_lock(&rigCAT_mutex);
 			rigio.ClosePort();
 		fl_unlock(&rigCAT_mutex);

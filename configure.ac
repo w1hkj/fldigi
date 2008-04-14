@@ -9,7 +9,7 @@ dnl major and minor must be integers; patch may
 dnl contain other characters or be empty
 m4_define(FLDIGI_MAJOR, [2])
 m4_define(FLDIGI_MINOR, [11])
-m4_define(FLDIGI_PATCH, [J])
+m4_define(FLDIGI_PATCH, [L])
 
 AC_INIT([fldigi], FLDIGI_MAJOR.FLDIGI_MINOR[FLDIGI_PATCH], [w1hkj AT w1hkj DOT com])
 
@@ -105,6 +105,11 @@ AC_FLDIGI_WIN32
 # Substitute RTLIB in Makefile
 AC_FLDIGI_STATIC
 
+### optimizations
+# Set ac_cv_opt to arg
+# Substitute OPT_FLAGS in Makefile
+AC_FLDIGI_OPT
+
 ### debug flag
 # Set ac_cv_debug to yes/no
 # Override CXXFLAGS
@@ -145,7 +150,7 @@ AC_FLDIGI_OSS
 # Set ac_cv_samplerate to yes/no    (not used because we require samplerate)
 # Define USE_SAMPLERATE in config.h (as above)
 # Substitute SAMPLERATE_CFLAGS and SAMPLERATE_LIBS in Makefile
-AC_FLDIGI_PKG_CHECK([samplerate], [samplerate >= 0.1.1], [no], [], [SAMPLERATE], [])
+AC_FLDIGI_PKG_CHECK([samplerate], [samplerate >= 0.1.1], [], [], [SAMPLERATE], [])
 
 ### libsndfile
 # Set ac_cv_sndfile to yes/no
@@ -204,6 +209,7 @@ Configuration summary:
   Version ............................. $VERSION
 
   Static linking ...................... $ac_cv_static
+  Optimizations ....................... $ac_cv_opt
   Debugging ........................... $ac_cv_debug
 
   sndfile ............................. $ac_cv_sndfile

@@ -117,6 +117,11 @@ void generate_version_text(void);
 void debug_exec(char** argv);
 void string_wrap(std::string& s, unsigned c);
 
+#ifdef __CYGWIN__
+void redirect_streams(const std::string& dir);
+void restore_streams(void);
+#endif
+
 int main(int argc, char ** argv)
 {
 	debug_exec(argv);
@@ -143,6 +148,11 @@ int main(int argc, char ** argv)
 	fl_filename_expand(szHomedir, 119, "$APPDATA/fldigi/");
 #endif
 	HomeDir = szHomedir;
+
+#ifdef __CYGWIN__
+	redirect_streams(HomeDir);
+	atexit(restore_streams);
+#endif
 
 	generate_option_help();
 	generate_version_text();
@@ -610,3 +620,45 @@ void string_wrap(std::string& s, unsigned c)
 	if (s.length() - line > c)
 		s[prev] = '\n';
 }
+
+#ifdef __CYGWIN__
+static ofstream outlogfile;
+static ostringstream outlogstring;
+static streambuf* streambufs[3];
+
+void redirect_streams(const std::string& dir)
+{
+	string log = dir;
+	if (*log.rbegin() != '/')
+		log += '/';
+	log += "status_log.txt";
+	outlogfile.open(log.c_str());
+
+	if (!isatty(STDOUT_FILENO)) {
+		streambufs[0] = cout.rdbuf();
+		if (outlogfile)
+			cout.rdbuf(outlogfile.rdbuf());
+		else
+			cout.rdbuf(outlogstring.rdbuf());
+	}
+	if (!isatty(STDERR_FILENO)) {
+		streambufs[1] = cerr.rdbuf();
+		streambufs[2] = clog.rdbuf();
+		if (outlogfile) {
+			cerr.rdbuf(outlogfile.rdbuf());
+			clog.rdbuf(outlogfile.rdbuf());
+		}
+		else {
+			cerr.rdbuf(outlogstring.rdbuf());
+			clog.rdbuf(outlogstring.rdbuf());
+		}
+	}
+}
+
+void restore_streams(void)
+{
+	cout.rdbuf(streambufs[0]);
+	cerr.rdbuf(streambufs[1]);
+	clog.rdbuf(streambufs[2]);
+}
+#endif // __CYGWIN__
