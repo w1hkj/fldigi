@@ -24,6 +24,8 @@
 // Include necessary header files...
 //
 
+#include <config.h>
+
 #include <FL/Fl.H>
 #include <FL/fl_draw.H>
 

@@ -1524,7 +1524,10 @@ void create_fl_digi_main() {
 	fl_digi_main->xclass(PACKAGE_NAME);
 	
 	scopeview = new Fl_Double_Window(0,0,140,140, "Scope");
+	scopeview->xclass(PACKAGE_NAME);
 	digiscope = new Digiscope (0, 0, 140, 140);
+	scopeview->resizable(digiscope);
+	scopeview->size_range(50, 50, 0, 0, 0, 0, 1);
 	scopeview->end();
 	scopeview->hide();	
 }
@@ -2026,8 +2029,10 @@ void change_modem_param(int state)
 			return;
 		}
 	}
-	else if (state & FL_SHIFT)
+	else if (state & FL_SHIFT) {
 		val = sldrSquelch;
+		d = -d;
+	}
 
 	val->value(val->clamp(val->increment(val->value(), -d)));
 	bool changed_save = progdefaults.changed;
