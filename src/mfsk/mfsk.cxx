@@ -253,8 +253,8 @@ void mfsk::recvpic(complex z)
 		
 		if (color) {
 			pixelnbr = rgb + row + 3*col;
-			updateRxPic(byte, pixelnbr);
-//			REQ(&mfsk::updateRxPic, this, byte, pixelnbr);
+//!			updateRxPic(byte, pixelnbr);
+			REQ(updateRxPic, byte, pixelnbr);
 			if (++col == picW) {
 				col = 0;
 				if (++rgb == 3) {
@@ -264,8 +264,8 @@ void mfsk::recvpic(complex z)
 			}
 		} else {
 			for (int i = 0; i < 3; i++)
-			updateRxPic(byte, pixelnbr);
-//				REQ(&mfsk::updateRxPic, this, byte, pixelnbr++);
+//!			updateRxPic(byte, pixelnbr++);
+				REQ(updateRxPic, byte, pixelnbr++);
 		}
 		picf = 0.0;
 
@@ -566,10 +566,10 @@ int mfsk::rx_process(const double *buf, int len)
 				rxstate = RX_STATE_DATA;
 				// REQ_FLUSH();
 				put_status("");
-#ifndef __CYGWIN__
+//#ifndef __CYGWIN__
 				string autosave_dir = HomeDir + "mfsk_pics/";
-				picRx->save_jpeg(autosave_dir.c_str());
-#endif
+				picRx->save_png(autosave_dir.c_str());
+//#endif
 			} else
 				recvpic(z);
 			continue;
@@ -696,8 +696,8 @@ void mfsk::sendpic(unsigned char *data, int len)
 
 	for (i = 0; i < len; i++) {
 		if (txstate == TX_STATE_PICTURE)
-			updateTxPic(data[i], this);
-//			REQ(&mfsk::updateTxPic, this, data[i]);
+//!			updateTxPic(data[i], this);
+		    REQ(updateTxPic, data[i], this);
 		if (reverse)
 			f = get_txfreq_woffset() - bandwidth * (data[i] - 128) / 256.0;
 		else
@@ -877,14 +877,14 @@ void cb_picRxSave( Fl_Widget *w, void *who)
 {
 //	mfsk *me = (mfsk *)who;
 	const char *fn = 
-		file_saveas( "Save image as:", "Independent JPEG Group\t*.{jpg,jpeg}", NULL );
+	    file_saveas( "Save image as:", "Portable Network Graphics\t*.png", "." );
 	if (!fn) return;
-	picRx->save_jpeg(fn);
+	picRx->save_png(fn);
 }
 
 void createRxViewer(mfsk *who)
 {
-	FL_LOCK_E();
+	FL_LOCK_D();
 	picRxWin = new Fl_Double_Window(200, 140);
 	picRxWin->xclass(PACKAGE_NAME);
 	picRx = new picture(2, 2, 136, 104);
@@ -898,11 +898,12 @@ void createRxViewer(mfsk *who)
 	btnpicRxClose = new Fl_Button(135, 140 - 30, 60, 24, "Hide");
 	btnpicRxClose->callback(cb_picRxClose, who);
 	activate_mfsk_image_item(true);
-	FL_UNLOCK_E();
+	FL_UNLOCK_D();
 }
 
 void showRxViewer(int W, int H, mfsk *who)
 {
+	FL_LOCK_E();
 	if (!picRxWin) createRxViewer(who);
 	int winW, winH;
 	int picX, picY;
@@ -910,7 +911,6 @@ void showRxViewer(int W, int H, mfsk *who)
 	winH = H + 34;
 	picX = (winW - W) / 2;
 	picY = 2;
-	FL_LOCK_D();
 	picRxWin->size(winW, winH);
 	picRx->resize(picX, picY, W, H);
 	btnpicRxSave->resize(winW/2 - 65, H + 6, 60, 24);
@@ -919,7 +919,7 @@ void showRxViewer(int W, int H, mfsk *who)
 #ifndef __CYGWIN__
 	picRxWin->show();
 #endif
-	FL_UNLOCK_D();
+	FL_UNLOCK_E();
 }
 
 void load_file(const char *n) {
