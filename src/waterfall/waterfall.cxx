@@ -1372,6 +1372,8 @@ int waterfall::handle(int event)
 	Fl_Valuator* v[] = { sldrSquelch, wfcarrier, wfRefLevel, wfAmpSpan };
 	for (size_t i = 0; i < sizeof(v)/sizeof(v[0]); i++) {
 		if (Fl::event_inside(v[i])) {
+			if (v[i] == sldrSquelch)
+				d = -d;
 			v[i]->value(v[i]->clamp(v[i]->increment(v[i]->value(), -d)));
 			v[i]->do_callback();
 			return 1;

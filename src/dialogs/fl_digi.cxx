@@ -104,7 +104,8 @@ Fl_Double_Window	*scopeview = (Fl_Double_Window *)0;
 
 MixerBase* mixer = 0;
 
-bool useCheckButtons = false;
+bool	useCheckButtons = false;
+bool	twoscopes = false;
 
 Fl_Button			*btnTune = (Fl_Button *)0;
 Fl_Tile_check				*TiledGroup = 0;
@@ -152,6 +153,8 @@ string				strMacroName[NUMMACKEYS];
 
 waterfall			*wf = (waterfall *)0;
 Digiscope			*digiscope = (Digiscope *)0;
+Digiscope			*wfscope = (Digiscope *)0;
+
 Fl_Slider			*sldrSquelch = (Fl_Slider *)0;
 Progress			*pgrsSquelch = (Progress *)0;
 
@@ -1231,6 +1234,9 @@ int below(Fl_Widget* w)
 
 void create_fl_digi_main() {
 	int pad = wSpace, Y = 0;
+
+	if (twoscopes) 	WNOM -= 2*DEFAULT_SW;
+	
 	fl_digi_main = new Fl_Double_Window(WNOM, HNOM, "fldigi");
 			mnu = new Fl_Menu_Bar(0, 0, WNOM - 142, Hmenu);
 			// FL_NORMAL_SIZE may have changed; update the menu items
@@ -1394,54 +1400,64 @@ void create_fl_digi_main() {
 				
 		Y += Hmacros;
 
-		Fl_Pack *wfpack = new Fl_Pack(0, Y, WNOM, Hwfall);
-			wfpack->type(1);
-			pgrsSquelch = new Progress(
-				0, Y+2,
-				DEFAULT_SW, Hwfall-4, "");
-			pgrsSquelch->color(FL_BACKGROUND2_COLOR, FL_DARK_GREEN);
-			pgrsSquelch->type(Progress::VERTICAL);
-			sldrSquelch = new Fl_Slider(
-				FL_VERT_NICE_SLIDER, 
-				DEFAULT_SW, Y+2, 
-				DEFAULT_SW, Hwfall-4, "");
+		if (twoscopes) {
+			Fl_Pack *wfpack = new Fl_Pack(0, Y, WNOM, Hwfall);
+				wfpack->type(1);
+				wf = new waterfall(0, Y, Wwfall - Hwfall + 24, Hwfall);
+				wf->end();
+				Fl_Pack *ypack = new Fl_Pack(Wwfall - Hwfall + 24, Y, Hwfall - 24, Hwfall);
+					ypack->type(0);
+
+					wfscope = new Digiscope (Wwfall - Hwfall, Y, Hwfall - 24, Hwfall - 24);
+		
+					pgrsSquelch = new Progress(
+						Wwfall - Hwfall + 24, Y + Hwfall - 24,
+						Hwfall - 24, 12, "");
+					pgrsSquelch->color(FL_BACKGROUND2_COLOR, FL_DARK_GREEN);
+					sldrSquelch = new Fl_Slider(
+						FL_HOR_NICE_SLIDER, 
+						Wwfall - Hwfall + 24, Y + Hwfall - 12, 
+						Hwfall - 24, 12, "");
 							
-			sldrSquelch->minimum(100);
-			sldrSquelch->maximum(0);
-			sldrSquelch->step(1);
-			sldrSquelch->value(progStatus.sldrSquelchValue);
-			sldrSquelch->callback((Fl_Callback*)cb_sldrSquelch);
-			sldrSquelch->color(FL_INACTIVE_COLOR);
-						
-//			wf = new waterfall(0, Y, Wwfall, Hwfall);
-			wf = new waterfall(2*DEFAULT_SW, Y, Wwfall, Hwfall);//Wwfall, Hwfall);
-			wf->end();
+					sldrSquelch->minimum(0);
+					sldrSquelch->maximum(100);
+					sldrSquelch->step(1);
+					sldrSquelch->value(progStatus.sldrSquelchValue);
+					sldrSquelch->callback((Fl_Callback*)cb_sldrSquelch);
+					sldrSquelch->color(FL_INACTIVE_COLOR);
 
-//			Fl_Pack *ypack = new Fl_Pack(WNOM-(Hwfall-24 - 2*sw), Y, Hwfall-26, Hwfall);
-//				ypack->type(0);
+				ypack->end();
+				Fl_Group::current()->resizable(wf);
+			wfpack->end();
+		} else {
+			Fl_Pack *wfpack = new Fl_Pack(0, Y, WNOM, Hwfall);
+				wfpack->type(1);
 
-//				digiscope = new Digiscope (2*DEFAULT_SW + Wwfall - (Hwfall - 24), Y, Hwfall-24, Hwfall-24);
-//				digiscope->hide();
-	
-//				pgrsSquelch = new Progress(
-//					WNOM-(Hwfall-24), Y + Hwfall - 24,
-//					Hwfall - 24, 12, "");
-//				pgrsSquelch->color(FL_BACKGROUND2_COLOR, FL_DARK_GREEN);
-//				sldrSquelch = new Fl_Slider(
-//					FL_HOR_NICE_SLIDER, 
-//					WNOM-(Hwfall-24), Y + Hwfall - 12, 
-//					Hwfall - 24, 12, "");
-							
-//				sldrSquelch->minimum(0);
-//				sldrSquelch->maximum(100);
-//				sldrSquelch->step(1);
-//				sldrSquelch->value(progStatus.sldrSquelchValue);
-//				sldrSquelch->callback((Fl_Callback*)cb_sldrSquelch);
-//				sldrSquelch->color(FL_INACTIVE_COLOR);
+				wf = new waterfall(0, Y, Wwfall, Hwfall);
+				wf->end();
 
-//			ypack->end();
-			Fl_Group::current()->resizable(wf);
-		wfpack->end();
+				pgrsSquelch = new Progress(
+					WNOM - 2*DEFAULT_SW, Y + 4,
+					DEFAULT_SW, Hwfall - 8, "");
+				pgrsSquelch->color(FL_BACKGROUND2_COLOR, FL_DARK_GREEN);
+				pgrsSquelch->type(Progress::VERTICAL);
+				pgrsSquelch->tooltip("Detected signal level");
+
+				sldrSquelch = new Fl_Slider(
+					FL_VERT_NICE_SLIDER, 
+					WNOM - DEFAULT_SW, Y + 4, 
+					DEFAULT_SW, Hwfall - 8, "");
+				sldrSquelch->minimum(100);
+				sldrSquelch->maximum(0);
+				sldrSquelch->step(1);
+				sldrSquelch->value(progStatus.sldrSquelchValue);
+				sldrSquelch->callback((Fl_Callback*)cb_sldrSquelch);
+				sldrSquelch->color(FL_INACTIVE_COLOR);
+				sldrSquelch->tooltip("Squelch level");
+									
+				Fl_Group::current()->resizable(wf);
+			wfpack->end();
+		}
 		Y += (Hwfall + 2);
 
 		Fl_Pack *hpack = new Fl_Pack(0, Y, WNOM, Hstatus);
@@ -1526,7 +1542,10 @@ void create_fl_digi_main() {
 	fl_digi_main->xclass(PACKAGE_NAME);
 	
 	scopeview = new Fl_Double_Window(0,0,140,140, "Scope");
+	scopeview->xclass(PACKAGE_NAME);
 	digiscope = new Digiscope (0, 0, 140, 140);
+	scopeview->resizable(digiscope);
+	scopeview->size_range(50, 50, 0, 0, 0, 0, 1);
 	scopeview->end();
 	scopeview->hide();	
 }
@@ -1562,28 +1581,44 @@ void put_cwRcvWPM(double wpm)
 	FL_AWAKE_D();
 }
 
+void set_scope_mode(Digiscope::scope_mode md)
+{
+	if (digiscope)
+		digiscope->mode(md);
+	if (wfscope)
+		wfscope->mode(md);
+}
+
 void set_scope(double *data, int len, bool autoscale)
 {
 	if (digiscope)
 		digiscope->data(data, len, autoscale);
+	if (wfscope)
+		wfscope->data(data, len, autoscale);
 }
 
 void set_phase(double phase, bool highlight)
 {
 	if (digiscope)
 		digiscope->phase(phase, highlight);
+	if (wfscope)
+		wfscope->phase(phase, highlight);
 }
 
 void set_rtty(double flo, double fhi, double amp)
 {
 	if (digiscope)
 		digiscope->rtty(flo, fhi, amp);
+	if (wfscope)
+		wfscope->rtty(flo, fhi, amp);
 }
 
 void set_video(double *data, int len)
 {
 	if (digiscope)
 		digiscope->video(data, len);
+	if (wfscope)
+		wfscope->video(data, len);
 }
 
 Fl_Menu_Item *mnuLogging = (Fl_Menu_Item *)0;
@@ -2028,8 +2063,10 @@ void change_modem_param(int state)
 			return;
 		}
 	}
-	else if (state & FL_SHIFT)
+	else if (state & FL_SHIFT) {
 		val = sldrSquelch;
+		d = -d;
+	}
 
 	val->value(val->clamp(val->increment(val->value(), -d)));
 	bool changed_save = progdefaults.changed;

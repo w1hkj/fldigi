@@ -55,7 +55,7 @@ void cw::rx_init()
 	smpl_ctr = 0;				
 	cw_rr_current = 0;			
 	agc_peak = 0;	
-	digiscope->mode(Digiscope::SCOPE);
+	set_scope_mode(Digiscope::SCOPE);
 	put_MODEstatus(mode);
 	usedefaultWPM = false;
 }

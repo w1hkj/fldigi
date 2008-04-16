@@ -57,6 +57,7 @@ extern "C" {
 //#  include "transupp.h"
 };
 
+#include <png.h>
 
 #include "picture.h"
 
@@ -237,6 +238,43 @@ int picture::handle(int event)
 	return 0;
 }
 
+static FILE* open_file(const char* name, const char* suffix)
+{
+	FILE* fp;
+
+	size_t flen = strlen(name);
+	if (name[flen - 1] == '/') {
+		// if the name ends in a slash we will generate
+		// a timestamped name in the following  format:
+		const char t[] = "pic_YYYY-MM-DD_HHMMSSz";
+
+		size_t newlen = flen + sizeof(t);
+		if (suffix)
+			newlen += 5;
+		char* newfn = new char[newlen];
+		memcpy(newfn, name, flen);
+
+		time_t time_sec = time(0);
+		struct tm ztime;
+		(void)gmtime_r(&time_sec, &ztime);
+
+		size_t sz;
+		if ((sz = strftime(newfn + flen, newlen - flen, "pic_%F_%H%M%Sz", &ztime)) > 0) {
+			strncpy(newfn + flen + sz, suffix, newlen - flen - sz);
+			newfn[newlen - 1] = '\0';
+			mkdir(name, 0777);
+			fp = fopen(newfn, "wb");
+		}
+		else
+			fp = NULL;
+		delete [] newfn;
+	}
+	else
+		fp = fopen(name, "wb");
+
+	return fp;
+}
+
 //
 // save_jpeg - Write a captured picture to a JPEG format file.
 //
@@ -248,29 +286,8 @@ int picture::save_jpeg(const char *filename)
 	struct jpeg_compress_struct	info;		// Compressor info
 	struct jpeg_error_mgr		err;		// Error handler info
 
-	size_t flen = strlen(filename);
-	if (filename[flen - 1] == '/') {
-		// if the filename ends in a slash we will generate
-		// a timestamped filename in the following  format:
-		const char t[] = "pic_YYYY-MM-DD_HH:MM:SSz.jpg";
-
-		size_t newlen = flen + sizeof(t);
-		char newfn[newlen];
-		memcpy(newfn, filename, flen);
-
-		time_t time_sec = time(0);
-		struct tm ztime;
-		(void)gmtime_r(&time_sec, &ztime);
-
-		if (strftime(newfn + flen, newlen - flen, "pic_%F_%Tz.jpg", &ztime) > 0) {
-			mkdir(filename, 0777);
-			if ((fp = fopen(newfn, "wb")) == NULL)
-				return -1;
-		}
-	}
-	else
-		if ((fp = fopen(filename, "wb")) == NULL)
-			return -1;
+	if ((fp = open_file(filename, ".jpg")) == NULL)
+		return -1;
 
 // Setup the JPEG compression stuff...
 	info.err = jpeg_std_error(&err);
@@ -302,3 +319,61 @@ int picture::save_jpeg(const char *filename)
 	return 0;
 }
 
+int picture::save_png(const char* filename)
+{
+	FILE* fp;
+	if ((fp = open_file(filename, ".png")) == NULL)
+		return -1;
+
+	// set up the png structures
+	png_structp png;
+	png_infop info;
+	if ((png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL)) == NULL) {
+		fclose(fp);
+		return -1;
+	}
+	if ((info = png_create_info_struct(png)) == NULL) {
+		png_destroy_write_struct(&png, png_infopp_NULL);
+		fclose(fp);
+		return -1;
+	}
+	if (setjmp(png_jmpbuf(png))) {
+		png_destroy_write_struct(&png, &info);
+		fclose(fp);
+		return -1;
+	}
+
+	// use an stdio stream
+	png_init_io(png, fp);
+
+	// set png header
+	png_set_IHDR(png, info, width, height, 1 << depth,
+		     PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
+		     PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+
+	// TODO: write more useful image comments
+	png_text text;
+	text.key = strdup("Comment");
+	text.text = strdup("MFSK-16 image decoded by " PACKAGE_STRING);
+	text.compression = PNG_TEXT_COMPRESSION_NONE;
+	png_set_text(png, info, &text, 1);
+
+	// write header
+	png_write_info(png, info);
+
+	// write image
+	png_bytep row;
+	for (int i = 0; i < height; i++) {
+		row = &vidbuf[i * width * depth];
+		png_write_rows(png, &row, 1);
+	}
+	png_write_end(png, info);
+
+	// clean up
+	free(text.key);
+	free(text.text);
+	png_destroy_write_struct(&png, &info);
+	fclose(fp);
+
+	return 0;
+}

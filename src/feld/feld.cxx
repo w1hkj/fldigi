@@ -73,7 +73,7 @@ void feld::init()
 {
 	modem::init();
 	initKeyWaveform();
-	digiscope->mode(Digiscope::BLANK);
+	set_scope_mode(Digiscope::BLANK);
 	put_MODEstatus(mode);
 }
 

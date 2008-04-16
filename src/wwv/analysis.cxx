@@ -46,7 +46,7 @@ void anal::init()
 {
 	modem::init();
 	rx_init();
-	digiscope->mode(Digiscope::RTTY);
+	set_scope_mode(Digiscope::RTTY);
 }
 
 anal::~anal()

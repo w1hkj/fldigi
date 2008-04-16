@@ -63,7 +63,7 @@ void throb::init()
 {
 	modem::init();
 	rx_init();
-	digiscope->mode(Digiscope::SCOPE);
+	set_scope_mode(Digiscope::SCOPE);
 }
 
 throb::~throb()

@@ -345,3 +345,14 @@ int Digiscope::handle(int event)
 
 	return 1;
 }
+
+void Digiscope::resize(int x, int y, int w, int h)
+{
+	delete [] vidbuf;
+	delete [] vidline;
+	vidbuf = new unsigned char[ 3 * (w-4) * (h-4)];
+	vidline = new unsigned char[ 3 * (w-4)];
+
+	Fl_Widget::resize(x, y, w, h);
+	mode(_mode);
+}

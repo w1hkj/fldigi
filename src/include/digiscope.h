@@ -69,6 +69,7 @@ public:
 	Digiscope(int, int, int, int);
 	~Digiscope();
 	int handle(int);
+	void resize(int x, int y, int w, int h);
 	void draw();
 	void draw_scope();
 	void draw_phase();

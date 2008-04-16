@@ -352,6 +352,10 @@ void generate_option_help(void) {
 	     << "    If PROFILE is ``emc'', ``emcomm'', or ``minimal'',\n"
 	     << "    widget sizes will be adjusted for a minimal screen footprint\n\n"
 
+	     << "  --twoscopes\n"
+	     << "    digiscope adjacent to waterfall and,\n"
+	     << "    digiscope in separate resizeable window\n\n"
+
 	     << "  --usechkbtns\n"
 	     << "    Use check buttons for AFC / SQL.\n";
 
@@ -378,6 +382,7 @@ int parse_args(int argc, char **argv, int& idx)
 #if USE_PORTAUDIO
                OPT_FRAMES_PER_BUFFER,
 #endif
+			   OPT_TWO_SCOPES,
                OPT_EXIT_AFTER,
                OPT_HELP, OPT_VERSION };
 
@@ -395,6 +400,7 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "window-width",  1, 0, OPT_WINDOW_WIDTH },
 		{ "window-height", 1, 0, OPT_WINDOW_HEIGHT },
 		{ "profile",	   1, 0, OPT_PROFILE },
+		{ "twoscopes",     0, 0, OPT_TWO_SCOPES },
 		{ "usechkbtns",    0, 0, OPT_USE_CHECK },
 
 		{ "resample",      1, 0, OPT_RESAMPLE },
@@ -477,6 +483,10 @@ int parse_args(int argc, char **argv, int& idx)
 				WNOM = EMC_WNOM;
 				FL_NORMAL_SIZE = 11;//12;
 			}
+			break;
+
+		case OPT_TWO_SCOPES:
+			twoscopes = true;
 			break;
 
 		case OPT_USE_CHECK:

@@ -93,8 +93,7 @@ void dominoex::init()
 	modem::init();
 	restart();
 	rx_init();
-//	digiscope->mode(Digiscope::SCOPE);
-	digiscope->mode(Digiscope::DOMDATA);
+	set_scope_mode(Digiscope::DOMDATA);
 }
 
 dominoex::~dominoex()
