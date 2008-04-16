@@ -46,7 +46,7 @@
 // where BEZEL is set to 2 (border around the waterfall), and
 // DEFAULT_SW is the width of the signal level and squelch controls
 
-#define DEFAULT_IMAGE_WIDTH 3200
+#define DEFAULT_IMAGE_WIDTH 3000
 //=============================================================================
 
 // widget sizes internal to the waterfall widget
@@ -73,13 +73,13 @@
 
 #define DEFAULT_SW 15
 #define DEFAULT_HWFALL 144
-#define DEFAULT_HNOM 570
-#define Wwfall		(DEFAULT_IMAGE_WIDTH / 4 + 2 * BEZEL)
+#define DEFAULT_HNOM 500
+#define Wwfall		(DEFAULT_HNOM + 2 * BEZEL)
 #define DEFAULT_WNOM (Wwfall + 2* DEFAULT_SW)
 
-#define EMC_HWFALL 144
-#define EMC_HNOM 500
-#define EMC_WNOM (EMC_HWFALL - BTN_HEIGHT + 500)
+//#define EMC_HWFALL 144
+//#define EMC_HNOM 500
+//#define EMC_WNOM (500 + 2 * DEFAULT_SW + 2 * BEZEL)
 
 extern int IMAGE_WIDTH;
 extern int Hwfall;

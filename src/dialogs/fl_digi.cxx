@@ -1274,27 +1274,23 @@ void create_fl_digi_main() {
 
 			inpCall = new Fl_Input(rightof(qsoTime) + pad, Y + Hqsoframe/2 - pad, 80, Hqsoframe/2, "Call");
 			inpCall->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-			// this is likely to be more readable in a constant width font
-			inpCall->textfont(FL_SCREEN);
+			// this is likely to be more readable in a constant width bold font
+			inpCall->textfont(FL_SCREEN_BOLD);
 
 			inpName = new Fl_Input(rightof(inpCall) + pad, Y + Hqsoframe/2 - pad, 100, Hqsoframe/2, "Name");
 			inpName->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
-			inpRstIn = new Fl_Input(rightof(inpName) + pad, Y + Hqsoframe/2 - pad, 40, Hqsoframe/2, "RST(r)");
-			inpRstIn->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+			inpRstIn = new Fl_Input(rightof(inpName) + pad, Y + Hqsoframe/2 - pad, 35, Hqsoframe/2, "RST In ");
+			inpRstIn->align(FL_ALIGN_TOP | FL_ALIGN_RIGHT);
 
-			inpRstOut = new Fl_Input(rightof(inpRstIn) + pad, Y + Hqsoframe/2 - pad, 40, Hqsoframe/2, "RST(s)");
+			inpRstOut = new Fl_Input(rightof(inpRstIn) + pad, Y + Hqsoframe/2 - pad, 35, Hqsoframe/2, "Out");
 			inpRstOut->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
 			btnQRZ = new Fl_Button(WNOM - 40 - pad, Y + 1, 40, Hqsoframe/2 - pad, "QRZ");
 			btnQRZ->callback(cb_QRZ, 0);
 
-			inpLoc = new Fl_Input(leftof(btnQRZ) - pad - 80, Y + Hqsoframe/2 - pad, 80, Hqsoframe/2, "Locator");
-			inpLoc->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-			inpLoc->textfont(FL_SCREEN);
-
 			inpQth = new Fl_Input(rightof(inpRstOut) + pad, Y + Hqsoframe/2 - pad,
-					      leftof(inpLoc) - rightof(inpRstOut) - 2*pad, Hqsoframe/2, "QTH");
+					      leftof(btnQRZ) - rightof(inpRstOut) - 2*pad, Hqsoframe/2, "QTH");
 			inpQth->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 			qsoFrame->resizable(inpQth);
 
@@ -1308,11 +1304,15 @@ void create_fl_digi_main() {
 			qsoSave = new Fl_Button(WNOM - 40 - pad, Y + 1, 40, Hnotes - 2, "Save");
 			qsoSave->callback(qsoSave_cb, 0);
 
-			inpAZ = new Fl_Input(leftof(qsoSave) - 80 - pad, Y, 80, Hnotes, "AZ"); // WA5ZNU
+			inpAZ = new Fl_Input(leftof(qsoSave) - 40 - pad, Y, 40, Hnotes, "AZ"); // WA5ZNU
 			inpAZ->align(FL_ALIGN_LEFT);
 
+			inpLoc = new Fl_Input(leftof(inpAZ) - pad - 70, Y, 70, Hnotes, "LOC");
+			inpLoc->align(FL_ALIGN_LEFT);
+
 			// align this vertically with the Call field
-			inpNotes = new Fl_Input(leftof(inpCall), Y, leftof(inpAZ) - leftof(inpCall) - 2*pad, Hnotes, "Notes");
+			inpNotes = new Fl_Input(leftof(inpLoc) - pad - (leftof(inpLoc) - leftof(inpCall)), Y, 
+			                        leftof(inpLoc) - leftof(inpCall) - 2*pad, Hnotes, "Notes");
 			inpNotes->align(FL_ALIGN_LEFT);
 			qsoFrame2->resizable(inpNotes);
 
