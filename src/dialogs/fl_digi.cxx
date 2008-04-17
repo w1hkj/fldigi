@@ -274,14 +274,28 @@ void cb_mnuSaveMacro(Fl_Menu_*, void*) {
 //	restoreFocus();
 //}
 
-void clean_exit() {
+bool clean_exit() {
 	if (progdefaults.changed == true) {
-		if (fl_choice("Configuration changed, Save", "No", "Yes", 0) == 1)
+		switch (fl_choice("Save changed configuration?", "Don't exit", "Save", "Don't save")) {
+		case 0:
+			return false;
+		case 1:
 			progdefaults.saveDefaults();
+			// fall through
+		case 2:
+			break;
+		}
 	}
 	if (macros.changed == true) {
-		if (fl_choice("Macros changed, Save", "No", "Yes", 0) == 1)
+		switch (fl_choice("Save changed macros?", "Don't exit", "Save", "Don't save")) {
+		case 0:
+			return false;
+		case 1:
 			macros.saveMacroFile();
+			// fall through
+		case 2:
+			break;
+		}
 	}
 	if (Maillogfile)
 		Maillogfile->log_to_file_stop();
@@ -318,21 +332,32 @@ void clean_exit() {
 //	delete xcvr;
 //#endif
 //	delete push2talk;
-	
-	exit(0);
+
+	return true;
 }
 
 void cb_E(Fl_Menu_*, void*) {
-	clean_exit();
+	fl_digi_main->do_callback();
 }
 
-void cb_wMain( Fl_Widget *, void * ) 
+void cb_wMain(Fl_Widget*, void*)
 {
 	if (Fl::event_key(FL_Escape)) {
 		TransmitText->clear();
 		active_modem->set_stopflag(true);
-	} else
-		clean_exit();
+		return;
+	}
+
+	if (!clean_exit())
+		return;
+	// hide all shown windows
+	Fl::first_window(fl_digi_main);
+	for (Fl_Window* w = Fl::next_window(fl_digi_main); w; w = Fl::next_window(w)) {
+		w->do_callback();
+		w = fl_digi_main;
+	}
+	// this will make Fl::run return
+	fl_digi_main->hide();
 }
 
 void init_modem(trx_mode mode)
@@ -1529,7 +1554,8 @@ void create_fl_digi_main() {
 #endif
 
 	fl_digi_main->xclass(PACKAGE_NAME);
-	
+//	Fl::set_atclose(clean_exit);
+
 	scopeview = new Fl_Double_Window(0,0,140,140, "Scope");
 	scopeview->xclass(PACKAGE_NAME);
 	digiscope = new Digiscope (0, 0, 140, 140);
