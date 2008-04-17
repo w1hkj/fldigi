@@ -107,26 +107,6 @@ bool re_find(const char* haystack)
 {
         return seek_re && !regexec(seek_re, haystack, 0, 0, REG_NOTBOL | REG_NOTEOL);
 }
-#if !HAVE_STRCASESTR
-// a simple inefficient implementation of strcasestr
-char* strcasestr(const char* haystack, const char* needle)
-{
-        char *h = NULL, *n = NULL, *p;
-	if ((h = strdup(haystack)) == NULL || (n = strdup(needle)) == NULL) {
-		free(h);
-                free(n);
-                return NULL;
-        }
-	for (p = h; *p; p++)
-		*p = tolower(*p);
-	for (p = n; *p; p++)
-		*p = tolower(*p);
-	p = strstr(h, n);
-	free(h);
-	free(n);
-	return p;
-}
-#endif // !HAVE_STRCASESTR
 #endif // HAVE_REGEX_H
 
 void pskBrowser::resize(int x, int y, int w, int h) {

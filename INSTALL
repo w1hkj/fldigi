@@ -13,7 +13,7 @@ To compile fldigi you will need:
 
   * The samplerate (a.k.a. secret rabbit code) library.
 
-  * The Independent JPEG Group's JPEG library.
+  * The Independent JPEG Group's JPEG library, or the PNG library.
 
 You should also install the libraries and headers for PortAudio, the
 Portable audio I/O library.

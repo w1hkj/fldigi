@@ -572,10 +572,15 @@ int mfsk::rx_process(const double *buf, int len)
 				rxstate = RX_STATE_DATA;
 				// REQ_FLUSH();
 				put_status("");
-//#ifndef __CYGWIN__
+#if USE_LIBPNG
 				string autosave_dir = HomeDir + "mfsk_pics/";
 				picRx->save_png(autosave_dir.c_str());
-//#endif
+#else
+#  if USE_LIBJPEG
+				string autosave_dir = HomeDir + "mfsk_pics/";
+				picRx->save_jpeg(autosave_dir.c_str());
+#  endif
+#endif
 			} else
 				recvpic(z);
 			continue;
@@ -882,10 +887,38 @@ void cb_picRxAbort( Fl_Widget *w, void *who)
 void cb_picRxSave( Fl_Widget *w, void *who)
 {
 //	mfsk *me = (mfsk *)who;
-	const char *fn = 
-	    file_saveas( "Save image as:", "Portable Network Graphics\t*.png", "." );
+	const char ffilter[] = ""
+#if USE_LIBPNG
+		"Portable Network Graphics\t*.png\n"
+#endif
+#if USE_LIBJPEG
+		"Independent JPEG Group\t*.{jpg,jpeg}"
+#endif
+		;
+	const char dfname[] = "image."
+#if USE_LIBPNG
+		"png"
+#else
+		"jpg"
+#endif
+		;
+
+	int fsel;
+	const char *fn = file_saveas("Save image as:", ffilter, dfname, &fsel);
 	if (!fn) return;
-	picRx->save_png(fn);
+        // selected filter determines format
+	switch (fsel) {
+	case 0:
+#if USE_LIBPNG
+		picRx->save_png(fn);
+		break;
+#endif
+		// fall through if no libpng
+	case 1:
+#if USE_LIBJPEG
+		picRx->save_jpeg(fn);
+#endif
+	}
 }
 
 void createRxViewer(mfsk *who)
@@ -894,9 +927,12 @@ void createRxViewer(mfsk *who)
 	picRxWin = new Fl_Double_Window(200, 140);
 	picRxWin->xclass(PACKAGE_NAME);
 	picRx = new picture(2, 2, 136, 104);
-	btnpicRxSave = new Fl_Button(5, 140 - 30, 60, 24,"Save");
+	btnpicRxSave = new Fl_Button(5, 140 - 30, 60, 24,"Save...");
 	btnpicRxSave->callback(cb_picRxSave, who);
 	btnpicRxSave->hide();
+#if !(USE_LIBPNG || USE_LIBJPEG)
+	btnpicRxSave->deactivate();
+#endif
 	btnpicRxAbort = new Fl_Button(70, 140 - 30, 60, 24, "Abort");
 	btnpicRxAbort->callback(cb_picRxAbort, who);
 	btnpicRxClose = new Fl_Button(135, 140 - 30, 60, 24, "Hide");
