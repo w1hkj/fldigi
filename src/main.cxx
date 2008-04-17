@@ -282,14 +282,8 @@ void generate_option_help(void) {
 	     << " or 0x" << hex << progdefaults.tx_msgid << dec << "\n\n"
 #endif
 
-	     << "  --resample CONVERTER\n"
-	     << "    Set the resampling method\n"
-	     << "    CONVERTER can be of `src-sinc-best-quality',\n"
-	     << "                        `src-sinc-medium-quality',\n"
-		 << "                        `src-sinc-fastest',\n"
-		 << "                        `src-zero-order-hold', or\n"
-		 << "                        `src-linear'\n"
-		 << "    The default is `src-sinc-fastest'\n\n"
+	     << "  --resample CONVERTER  **DEPRECATED**\n"
+	     << "    This option has been deprecated and will be removed in a future release\n\n"
 
 	     << "  --version\n"
 	     << "    Print version information\n\n"
@@ -488,11 +482,8 @@ int parse_args(int argc, char **argv, int& idx)
 			break;
 
 		case OPT_RESAMPLE:
-			if (SoundBase::get_converter(optarg) == INT_MIN) {
-				cerr << "Unknown converter `" << optarg << "'\n";
-				goto help;
-			}
-			progdefaults.sample_converter = optarg;
+			cerr << "The --" << longopts[longindex].name
+			     << " option has been deprecated and will be removed in a future release\n";
 			break;
 
 #if USE_PORTAUDIO
@@ -513,7 +504,6 @@ int parse_args(int argc, char **argv, int& idx)
 			cout << version_text;
 			exit(EXIT_SUCCESS);
 
-	help:
 		case '?': default:
 			cerr << "Try `" << PACKAGE_NAME << " --help' for more information.\n";
 			exit(EXIT_FAILURE);

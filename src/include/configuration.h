@@ -138,7 +138,7 @@ struct configuration {
 	int		sample_rate;
 	int		in_sample_rate;
 	int		out_sample_rate;
-	string		sample_converter;
+	int		sample_converter;
 	int		RX_corr;
 	int		TX_corr;
 	int		TxOffset;

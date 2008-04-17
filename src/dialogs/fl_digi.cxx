@@ -1086,13 +1086,6 @@ Fl_Menu_Item menu_[] = {
 
 Fl_Menu_Bar *mnu;
 
-Fl_Menu_Item sample_rate_menu[] = {
-	{ "Auto" }, { "Native", 0, 0, 0, FL_MENU_DIVIDER },
-	{ "8000" }, { "9600" }, { "11025" }, { "12000" }, { "16000" },
-	{ "22050" }, { "24000" }, { "32000" }, { "44100" }, { "48000" },
-	{ "88200" }, { "96000" }, { "192000" }, { 0 }
-};
-
 Fl_Menu_Item *getMenuItem(const char *caption)
 {
 	Fl_Menu_Item *item = 0;

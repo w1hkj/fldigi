@@ -176,6 +176,62 @@ static void init_portaudio(void)
 #endif
 }
 
+static void sound_init_options(void)
+{
+	static const Fl_Menu_Item sample_rate_menu[] = {
+		{ "Auto" }, { "Native", 0, 0, 0, FL_MENU_DIVIDER },
+		{ "8000" }, { "9600" }, { "11025" }, { "12000" }, { "16000" },
+		{ "22050" }, { "24000" }, { "32000" }, { "44100" }, { "48000" },
+		{ "88200" }, { "96000" }, { "192000" }, { 0 }
+	};
+	menuInSampleRate->menu(sample_rate_menu);
+	menuOutSampleRate->menu(sample_rate_menu);
+
+	const char* cname;
+	for (int i = 0; (cname = src_get_name(i)); i++)
+		menuSampleConverter->add(cname);
+	menuSampleConverter->value(progdefaults.sample_converter);
+	menuSampleConverter->tooltip(src_get_description(progdefaults.sample_converter));
+
+
+	valPCMvolume->value(progdefaults.PCMvolume);
+	btnMicIn->value(progdefaults.MicIn);
+	btnLineIn->value(progdefaults.LineIn);
+
+	menuOSSDev->value(progdefaults.OSSdevice.c_str());
+	inpPulseServer->value(progdefaults.PulseServer.c_str());
+
+	btnMixer->value(progdefaults.EnableMixer);
+	menuMix->value(progdefaults.MXdevice.c_str());
+
+	enableMixer(progdefaults.EnableMixer);
+
+	char sr[6+1];
+	if (progdefaults.in_sample_rate == SAMPLE_RATE_UNSET &&
+		(progdefaults.in_sample_rate = progdefaults.sample_rate) == SAMPLE_RATE_UNSET)
+		progdefaults.in_sample_rate = SAMPLE_RATE_NATIVE;
+	else if (progdefaults.in_sample_rate > SAMPLE_RATE_OTHER)
+		snprintf(sr, sizeof(sr), "%d", progdefaults.in_sample_rate);
+	if (progdefaults.in_sample_rate <= SAMPLE_RATE_NATIVE)
+		menuInSampleRate->value(progdefaults.in_sample_rate);
+	else
+		menuInSampleRate->value(menuInSampleRate->find_item(sr));
+
+	if (progdefaults.out_sample_rate == SAMPLE_RATE_UNSET &&
+		(progdefaults.out_sample_rate = progdefaults.sample_rate) == SAMPLE_RATE_UNSET)
+		progdefaults.out_sample_rate = SAMPLE_RATE_NATIVE;
+	else if (progdefaults.out_sample_rate > SAMPLE_RATE_OTHER)
+		snprintf(sr, sizeof(sr), "%d", progdefaults.out_sample_rate);
+	if (progdefaults.out_sample_rate <= SAMPLE_RATE_NATIVE)
+		menuOutSampleRate->value(progdefaults.out_sample_rate);
+	else
+		menuOutSampleRate->value(menuOutSampleRate->find_item(sr));
+
+	cntRxRateCorr->value(progdefaults.RX_corr);
+	cntTxRateCorr->value(progdefaults.TX_corr);
+	cntTxOffset->value(progdefaults.TxOffset);
+}
+
 void sound_init(void)
 {
 	init_oss();
@@ -204,6 +260,8 @@ void sound_init(void)
 			}
 		}
 	}
+
+	sound_init_options();
 
 	sound_update(progdefaults.btnAudioIOis);
 

@@ -773,24 +773,37 @@ progdefaults.changed = true;}
               code2 {o->minimum(-50);}
               code3 {o->maximum(50);}
             }
-            Fl_Choice menuOutSampleRate {
-              label {Playback sample rate}
-              callback {progdefaults.out_sample_rate = o->value() > 1 ? strtol(o->mvalue()->text, 0, 10) : o->value();
+            Fl_Group AudioSampleRate {
+              label {Sample rate} open
+              xywh {4 58 392 62} box ENGRAVED_FRAME align 25
+            } {
+              Fl_Choice menuOutSampleRate {
+                label Playback
+                callback {progdefaults.out_sample_rate = o->value() > 1 ? strtol(o->mvalue()->text, 0, 10) : o->value();
 resetSoundCard();
 progdefaults.changed = true;} open
-              tooltip {Force a specific sample rate. Select "Native" if "Auto" does not work well with your sound hardware.} xywh {5 90 85 25} down_box BORDER_BOX align 8
-              code0 {extern Fl_Menu_Item sample_rate_menu[];}
-              code1 {o->menu(sample_rate_menu);}
-            } {}
-            Fl_Choice menuInSampleRate {
-              label {Capture sample rate}
-              callback {progdefaults.in_sample_rate = o->value() > 1 ? strtol(o->mvalue()->text, 0, 10) : o->value();
+                tooltip {Force a specific sample rate. Select "Native" if "Auto" does not work well with your sound hardware.} xywh {8 91 85 25} down_box BORDER_BOX align 8
+                code0 {//extern Fl_Menu_Item sample_rate_menu[];}
+                code1 {//o->menu(sample_rate_menu);}
+              } {}
+              Fl_Choice menuInSampleRate {
+                label Capture
+                callback {progdefaults.in_sample_rate = o->value() > 1 ? strtol(o->mvalue()->text, 0, 10) : o->value();
 resetSoundCard();
 progdefaults.changed = true;} open
-              tooltip {Force a specific sample rate. Select "Native" if "Auto" does not work well with your sound hardware.} xywh {5 60 85 25} down_box BORDER_BOX align 8
-              code0 {extern Fl_Menu_Item sample_rate_menu[];}
-              code1 {o->menu(sample_rate_menu);}
-            } {}
+                tooltip {Force a specific sample rate. Select "Native" if "Auto" does not work well with your sound hardware.} xywh {8 62 85 25} down_box BORDER_BOX align 8
+                code0 {//extern Fl_Menu_Item sample_rate_menu[];}
+                code1 {//o->menu(sample_rate_menu);}
+              } {}
+              Fl_Choice menuSampleConverter {
+                label Converter
+                callback {progdefaults.sample_converter = o->value();
+resetSoundCard();
+progdefaults.changed = true;
+o->tooltip(src_get_description(o->value()));} open selected
+                xywh {174 91 216 25} down_box BORDER_BOX align 5
+              } {}
+            }
           }
           Fl_Group tabMixer {
             label Mixer

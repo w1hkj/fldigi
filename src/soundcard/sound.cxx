@@ -53,7 +53,7 @@
 
 
 SoundBase::SoundBase()
-        : sample_frequency(0), sample_converter(get_converter(progdefaults.sample_converter.c_str())),
+        : sample_frequency(0),
 	  txppm(progdefaults.TX_corr), rxppm(progdefaults.RX_corr),
           tx_src_state(0), tx_src_data(0), rx_src_state(0), rx_src_data(0),
           snd_buffer(0), src_buffer(0),
@@ -246,22 +246,6 @@ void SoundBase::tag_file(SNDFILE *sndfile, const char *title)
 }
 #endif // USE_SNDFILE
 
-int SoundBase::get_converter(const char* name)
-{
-	if (!strcasecmp(name, "src-sinc-best-quality"))
-		return SRC_SINC_BEST_QUALITY;
-	else if (!strcasecmp(name, "src-sinc-medium-quality"))
-		return SRC_SINC_MEDIUM_QUALITY;
-	else if (!strcasecmp(name, "src-sinc-fastest"))
-		return SRC_SINC_FASTEST;
-	else if (!strcasecmp(name, "src-zero-order-hold"))
-		return SRC_ZERO_ORDER_HOLD;
-	else if (!strcasecmp(name, "src-linear"))
-		return SRC_LINEAR;
-	else
-		return INT_MIN;
-}
-
 
 #if USE_OSS
 SoundOSS::SoundOSS(const char *dev ) {
@@ -304,11 +288,11 @@ SoundOSS::SoundOSS(const char *dev ) {
 		throw;
 	}
 
-	rx_src_state = src_new(sample_converter, 2, &err);
+	rx_src_state = src_new(progdefaults.sample_converter, 2, &err);
 	if (rx_src_state == 0)
 		throw SndException(src_strerror(err));
 
-	tx_src_state = src_new(sample_converter, 2, &err);
+	tx_src_state = src_new(progdefaults.sample_converter, 2, &err);
 	if (tx_src_state == 0)
 		throw SndException(src_strerror(err));
 
@@ -933,7 +917,7 @@ void SoundPort::src_data_reset(int mode)
         if (mode & 1 << O_RDONLY) {
                 if (rx_src_state)
                         src_delete(rx_src_state);
-                rx_src_state = src_new(sample_converter, 2, &err);
+                rx_src_state = src_new(progdefaults.sample_converter, 2, &err);
                 if (!rx_src_state)
                         throw SndException(src_strerror(err));
                 rx_src_data->src_ratio = req_sample_rate / (dev_sample_rate[STREAM_IN] * (1.0 + rxppm / 1e6));
@@ -941,7 +925,7 @@ void SoundPort::src_data_reset(int mode)
         if (mode & 1 << O_WRONLY) {
                 if (tx_src_state)
                         src_delete(tx_src_state);
-                tx_src_state = src_new(sample_converter, 2, &err);
+                tx_src_state = src_new(progdefaults.sample_converter, 2, &err);
                 if (!tx_src_state)
                         throw SndException(src_strerror(err));
                 tx_src_data->src_ratio = dev_sample_rate[STREAM_OUT] * (1.0 + txppm / 1e6) / req_sample_rate;
@@ -1370,7 +1354,7 @@ void SoundPulse::src_data_reset(int mode)
         if (mode & 1 << O_RDONLY) {
                 if (rx_src_state)
                         src_delete(rx_src_state);
-                rx_src_state = src_new(sample_converter, stream_params.channels, &err);
+                rx_src_state = src_new(progdefaults.sample_converter, stream_params.channels, &err);
                 if (!rx_src_state)
                         throw SndException(src_strerror(err));
                 rx_src_data->src_ratio = sample_frequency / (dev_sample_rate[0] * (1.0 + rxppm / 1e6));
@@ -1378,7 +1362,7 @@ void SoundPulse::src_data_reset(int mode)
         if (mode & 1 << O_WRONLY) {
                 if (tx_src_state)
                         src_delete(tx_src_state);
-                tx_src_state = src_new(sample_converter, stream_params.channels, &err);
+                tx_src_state = src_new(progdefaults.sample_converter, stream_params.channels, &err);
                 if (!tx_src_state)
                         throw SndException(src_strerror(err));
                 tx_src_data->src_ratio = dev_sample_rate[1] * (1.0 + txppm / 1e6) / sample_frequency;

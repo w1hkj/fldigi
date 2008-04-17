@@ -96,9 +96,10 @@ extern Fl_Group *tabAudioOpt;
 extern Fl_Spinner *cntRxRateCorr;
 extern Fl_Spinner *cntTxRateCorr;
 extern Fl_Spinner *cntTxOffset;
-extern Fl_Menu_Item sample_rate_menu[];
+extern Fl_Group *AudioSampleRate;
 extern Fl_Choice *menuOutSampleRate;
 extern Fl_Choice *menuInSampleRate;
+extern Fl_Choice *menuSampleConverter;
 extern Fl_Group *tabMixer;
 #include <FL/Fl_Light_Button.H>
 extern void setMixerInput(int);

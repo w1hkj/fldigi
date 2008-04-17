@@ -104,7 +104,6 @@ protected:
 class SoundBase {
 protected:
 	int		sample_frequency;
-	int		sample_converter;
 	int		txppm;
 	int		rxppm;
 
@@ -145,7 +144,6 @@ public:
 	int		Playback(bool val);
 	int		Generate(bool val);
 #endif
-	static int	get_converter(const char* name);
 };
 
 

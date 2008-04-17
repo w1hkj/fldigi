@@ -648,6 +648,8 @@ static void cb_cntTxOffset(Fl_Spinner* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Group *AudioSampleRate=(Fl_Group *)0;
+
 Fl_Choice *menuOutSampleRate=(Fl_Choice *)0;
 
 static void cb_menuOutSampleRate(Fl_Choice* o, void*) {
@@ -662,6 +664,15 @@ static void cb_menuInSampleRate(Fl_Choice* o, void*) {
   progdefaults.in_sample_rate = o->value() > 1 ? strtol(o->mvalue()->text, 0, 10) : o->value();
 resetSoundCard();
 progdefaults.changed = true;
+}
+
+Fl_Choice *menuSampleConverter=(Fl_Choice *)0;
+
+static void cb_menuSampleConverter(Fl_Choice* o, void*) {
+  progdefaults.sample_converter = o->value();
+resetSoundCard();
+progdefaults.changed = true;
+o->tooltip(src_get_description(o->value()));
 }
 
 Fl_Group *tabMixer=(Fl_Group *)0;
@@ -1713,21 +1724,33 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
               o->minimum(-50);
               o->maximum(50);
             }
-            { Fl_Choice* o = menuOutSampleRate = new Fl_Choice(5, 90, 85, 25, "Playback sample rate");
-              o->tooltip("Force a specific sample rate. Select \"Native\" if \"Auto\" does not work wel\
+            { Fl_Group* o = AudioSampleRate = new Fl_Group(4, 58, 392, 62, "Sample rate");
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP_RIGHT|FL_ALIGN_INSIDE);
+              { Fl_Choice* o = menuOutSampleRate = new Fl_Choice(8, 91, 85, 25, "Playback");
+                o->tooltip("Force a specific sample rate. Select \"Native\" if \"Auto\" does not work wel\
 l with your sound hardware.");
-              o->down_box(FL_BORDER_BOX);
-              o->callback((Fl_Callback*)cb_menuOutSampleRate);
-              o->align(FL_ALIGN_RIGHT);
-              o->menu(sample_rate_menu);
-            }
-            { Fl_Choice* o = menuInSampleRate = new Fl_Choice(5, 60, 85, 25, "Capture sample rate");
-              o->tooltip("Force a specific sample rate. Select \"Native\" if \"Auto\" does not work wel\
+                o->down_box(FL_BORDER_BOX);
+                o->callback((Fl_Callback*)cb_menuOutSampleRate);
+                o->align(FL_ALIGN_RIGHT);
+                //extern Fl_Menu_Item sample_rate_menu[];
+                //o->menu(sample_rate_menu);
+              }
+              { Fl_Choice* o = menuInSampleRate = new Fl_Choice(8, 62, 85, 25, "Capture");
+                o->tooltip("Force a specific sample rate. Select \"Native\" if \"Auto\" does not work wel\
 l with your sound hardware.");
-              o->down_box(FL_BORDER_BOX);
-              o->callback((Fl_Callback*)cb_menuInSampleRate);
-              o->align(FL_ALIGN_RIGHT);
-              o->menu(sample_rate_menu);
+                o->down_box(FL_BORDER_BOX);
+                o->callback((Fl_Callback*)cb_menuInSampleRate);
+                o->align(FL_ALIGN_RIGHT);
+                //extern Fl_Menu_Item sample_rate_menu[];
+                //o->menu(sample_rate_menu);
+              }
+              { Fl_Choice* o = menuSampleConverter = new Fl_Choice(174, 91, 216, 25, "Converter");
+                o->down_box(FL_BORDER_BOX);
+                o->callback((Fl_Callback*)cb_menuSampleConverter);
+                o->align(FL_ALIGN_TOP_LEFT);
+              }
+              o->end();
             }
             o->end();
           }
