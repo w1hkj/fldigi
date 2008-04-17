@@ -105,4 +105,7 @@ extern int WNOM;
 
 #define Wstatus (WNOM - Wmode - Ws2n - Wimd - bwAfcOnOff - bwSqlOnOff - Wwarn)
 
+#define SCOPEWIN_MIN_WIDTH 48
+#define SCOPEWIN_MIN_HEIGHT SCOPEWIN_MIN_WIDTH
+
 #endif // FLDIGI_CONFIG_H

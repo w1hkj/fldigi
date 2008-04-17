@@ -1372,7 +1372,7 @@ int waterfall::handle(int event)
 	Fl_Valuator* v[] = { sldrSquelch, wfcarrier, wfRefLevel, wfAmpSpan };
 	for (size_t i = 0; i < sizeof(v)/sizeof(v[0]); i++) {
 		if (Fl::event_inside(v[i])) {
-			if (v[i] == sldrSquelch)
+			if (v[i] == sldrSquelch && !twoscopes)
 				d = -d;
 			v[i]->value(v[i]->clamp(v[i]->increment(v[i]->value(), -d)));
 			v[i]->do_callback();
@@ -1438,7 +1438,9 @@ int WFdisp::handle(int event)
 			}
 			// fall through
 		case FL_LEFT_MOUSE:
-			if (event != FL_DRAG && Fl::event_state() & FL_CTRL) {
+			if (Fl::event_state() & FL_CTRL) {
+				if (event == FL_DRAG)
+					break;
 				bHistory = true;
 				if (eb == FL_LEFT_MOUSE) {
 				       restoreFocus();
