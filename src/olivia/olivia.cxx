@@ -336,7 +336,7 @@ void olivia::init()
 {
 	modem::init();
 	restart();
-	digiscope->mode(Digiscope::BLANK);
+	set_scope_mode(Digiscope::BLANK);
 }
 
 olivia::olivia()

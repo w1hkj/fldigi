@@ -52,7 +52,7 @@ void wwv::rx_init()
 	ticks = 0;
 	calc = false;
 	zoom = false;
-	digiscope->mode(Digiscope::WWV);
+	set_scope_mode(Digiscope::WWV);
 	put_MODEstatus(mode);
 }
 

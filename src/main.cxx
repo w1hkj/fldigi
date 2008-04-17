@@ -348,9 +348,13 @@ void generate_option_help(void) {
 	     << "    The default is: " << Fl::get_font(FL_HELVETICA)
 	     << ':' << FL_NORMAL_SIZE << "\n\n"
 
-	     << "  --profile PROFILE\n"
-	     << "    If PROFILE is ``emc'', ``emcomm'', or ``minimal'',\n"
-	     << "    widget sizes will be adjusted for a minimal screen footprint\n\n"
+//	     << "  --profile PROFILE\n"
+//	     << "    If PROFILE is ``emc'', ``emcomm'', or ``minimal'',\n"
+//	     << "    widget sizes will be adjusted for a minimal screen footprint\n\n"
+
+	     << "  --twoscopes\n"
+	     << "    digiscope adjacent to waterfall and,\n"
+	     << "    digiscope in separate resizeable window\n\n"
 
 	     << "  --usechkbtns\n"
 	     << "    Use check buttons for AFC / SQL.\n";
@@ -373,11 +377,14 @@ int parse_args(int argc, char **argv, int& idx)
 #endif
 	       OPT_CONFIG_DIR,
                OPT_FONT, OPT_WFALL_WIDTH, OPT_WFALL_HEIGHT,
-               OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT, OPT_PROFILE, OPT_USE_CHECK,
-	       OPT_RESAMPLE,
+               OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT, 
+//               OPT_PROFILE, 
+               OPT_USE_CHECK,
+	       	   OPT_RESAMPLE,
 #if USE_PORTAUDIO
                OPT_FRAMES_PER_BUFFER,
 #endif
+			   OPT_TWO_SCOPES,
                OPT_EXIT_AFTER,
                OPT_HELP, OPT_VERSION };
 
@@ -394,7 +401,8 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "wfall-height",  1, 0, OPT_WFALL_HEIGHT },
 		{ "window-width",  1, 0, OPT_WINDOW_WIDTH },
 		{ "window-height", 1, 0, OPT_WINDOW_HEIGHT },
-		{ "profile",	   1, 0, OPT_PROFILE },
+//		{ "profile",	   1, 0, OPT_PROFILE },
+		{ "twoscopes",     0, 0, OPT_TWO_SCOPES },
 		{ "usechkbtns",    0, 0, OPT_USE_CHECK },
 
 		{ "resample",      1, 0, OPT_RESAMPLE },
@@ -468,15 +476,19 @@ int parse_args(int argc, char **argv, int& idx)
 			HNOM = strtol(optarg, NULL, 10);
 			break;
 
-		case OPT_PROFILE:
-			if (!strcasecmp(optarg, "emcomm") || !strcasecmp(optarg, "emc") ||
-        	            !strcasecmp(optarg, "minimal")) {
-				IMAGE_WIDTH = DEFAULT_IMAGE_WIDTH;
-				Hwfall = EMC_HWFALL;
-				HNOM = EMC_HNOM;
-				WNOM = EMC_WNOM;
-				FL_NORMAL_SIZE = 11;//12;
-			}
+//		case OPT_PROFILE:
+//			if (!strcasecmp(optarg, "emcomm") || !strcasecmp(optarg, "emc") ||
+//       	            !strcasecmp(optarg, "minimal")) {
+//				IMAGE_WIDTH = DEFAULT_IMAGE_WIDTH;
+//				Hwfall = EMC_HWFALL;
+//				HNOM = EMC_HNOM;
+//				WNOM = EMC_WNOM;
+//				FL_NORMAL_SIZE = 11;//12;
+//			}
+//			break;
+
+		case OPT_TWO_SCOPES:
+			twoscopes = true;
 			break;
 
 		case OPT_USE_CHECK:

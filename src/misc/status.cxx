@@ -52,7 +52,14 @@ status progStatus = {
 	true,				// bool sqlonoff
 	1.0,				// double	RcvMixer;
 	1.0,				// double	XmtMixer;
+	0,					// int	scopeX;
+	0,					// int	scopeY;
+	false,				// bool	scopeVisible;
+	50,					// int	scopeW;
+	50,					// int	scopeH;
+		
 	false				// bool bLastStateRead;
+	
 };
 
 	
@@ -98,6 +105,17 @@ void status::saveLastState()
 			rigX = rigcontrol->x();
 			rigY = rigcontrol->y();
 		}
+	if (scopeview) {
+		if (scopeview->visible())
+			scopeVisible = true;
+		else
+			scopeVisible = false;
+		scopeX = scopeview->x();
+		scopeY = scopeview->y();
+		scopeW = scopeview->w();
+		scopeH = scopeview->h();
+	}
+		
 	string deffname = HomeDir;
 	deffname.append("fldigi.status");
 	ofstream deffile(deffname.c_str(), ios::out);
@@ -125,6 +143,11 @@ void status::saveLastState()
 	deffile << sqlonoff << endl;
 	deffile << RcvMixer << endl;
 	deffile << XmtMixer << endl;
+	deffile << scopeX << endl;
+	deffile << scopeY << endl;
+	deffile << scopeVisible << endl;
+	deffile << scopeW << endl;
+	deffile << scopeH << endl;
 	
 	deffile.close();
 }
@@ -159,6 +182,11 @@ void status::loadLastState()
 		deffile >> sqlonoff;
 		deffile >> RcvMixer;
 		deffile >> XmtMixer;
+		deffile >> scopeX;
+		deffile >> scopeY;
+		deffile >> scopeVisible;
+		deffile >> scopeW;
+		deffile >> scopeH;
 		deffile.close();
 		progdefaults.wfRefLevel = reflevel;
 		progdefaults.wfAmpSpan = ampspan;
@@ -223,6 +251,10 @@ void status::initLastState()
 	if (VIEWERvisible == true)
 		openViewer();
 
+	scopeview->resize(scopeX, scopeY, scopeW, scopeH);
+	if (scopeVisible == true)
+		scopeview->show();
+	
 	if (LOGenabled) {
 		Fl_Menu_Item *mnulogging = getMenuItem("Log File");
 		if (!mnulogging)

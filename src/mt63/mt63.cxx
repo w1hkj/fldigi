@@ -159,7 +159,7 @@ void mt63::restart()
 	int err;
 
 	put_MODEstatus(mode);
-	digiscope->mode(Digiscope::BLANK);
+	set_scope_mode(Digiscope::BLANK);
 	set_freq(500.0 + bandwidth / 2.0);
 
 	err = Tx->Preset((int)bandwidth, Interleave == 64 ? 1 : 0);

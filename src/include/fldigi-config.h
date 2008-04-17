@@ -29,27 +29,25 @@
 	#define IDI_ICON  101
 #endif
 
+//=============================================================================
 // You can change the x1 width of the waterfall / spectrum display by modifying this
 // constant.
 // Suggest that you make the value a multiple of 100.
 // DO NOT EXCEED 4000
 // The larger the number the greater the cpu load will be for creating the
 // waterfall display
-#define DEFAULT_SW 15
-#define DEFAULT_IMAGE_WIDTH 3200
-#define DEFAULT_HWFALL 144
-#define DEFAULT_HNOM 570
-#define DEFAULT_WNOM (DEFAULT_IMAGE_WIDTH / 4 + 2 * DEFAULT_SW)
-//#define DEFAULT_WNOM (DEFAULT_IMAGE_WIDTH / 4 + DEFAULT_HWFALL - BTN_HEIGHT)
+//
+// Setting the DEFAULT_IMAGE_WIDTH to 3200 will size the x1 waterfall to be
+// 800 pixels wide.  The x1 waterfall size is always DEFAULT_IMAGE_WIDTH / 4
+// and the minimum width of main display would then be
+//
+// DEFAULT_IMAGE_WIDTH / 4 + 2 * BEZEL + 2 * DEFAULT_SW
+//
+// where BEZEL is set to 2 (border around the waterfall), and
+// DEFAULT_SW is the width of the signal level and squelch controls
 
-#define EMC_HWFALL 144
-#define EMC_HNOM 500
-#define EMC_WNOM (EMC_HWFALL - BTN_HEIGHT + 500)
-
-extern int IMAGE_WIDTH;
-extern int Hwfall;
-extern int HNOM;
-extern int WNOM;
+#define DEFAULT_IMAGE_WIDTH 3000
+//=============================================================================
 
 // widget sizes internal to the waterfall widget
 #define BEZEL		 2
@@ -73,6 +71,21 @@ extern int WNOM;
 #define bwXmtRcv	45
 #define wSpace		2
 
+#define DEFAULT_SW 15
+#define DEFAULT_HWFALL 144
+#define DEFAULT_HNOM 500
+#define Wwfall		(DEFAULT_HNOM + 2 * BEZEL)
+#define DEFAULT_WNOM (Wwfall + 2* DEFAULT_SW)
+
+//#define EMC_HWFALL 144
+//#define EMC_HNOM 500
+//#define EMC_WNOM (500 + 2 * DEFAULT_SW + 2 * BEZEL)
+
+extern int IMAGE_WIDTH;
+extern int Hwfall;
+extern int HNOM;
+extern int WNOM;
+
 #define Hmenu		22
 #define Hqsoframe	48
 #define Hnotes		22
@@ -80,11 +93,9 @@ extern int WNOM;
 #define Hmacros		22
 
 #define Htext		(HNOM - 4 - Hwfall - Hmenu - Hstatus - Hmacros - Hqsoframe - Hnotes)
-// Htext = HNOM - 140 - Hwfall
 #define Hrcvtxt		(Htext) / 2
 #define Hxmttxt		(Htext - (Hrcvtxt))
 
-#define Wwfall		(WNOM - Hwfall + BTN_HEIGHT + 2 * BEZEL)
 #define Wmode 		80
 #define Ws2n  		100
 #define Wimd  		100
@@ -93,9 +104,5 @@ extern int WNOM;
 #define bwSqlOnOff	(Hwfall -22)/2
 
 #define Wstatus (WNOM - Wmode - Ws2n - Wimd - bwAfcOnOff - bwSqlOnOff - Wwarn)
-
-//remove the comment delimiter to enable experimental psk250 and qpsk250 modes
-
-#define USE250
 
 #endif // FLDIGI_CONFIG_H

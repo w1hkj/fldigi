@@ -82,7 +82,7 @@ void mfsk::init()
 {
 	modem::init();
 	rx_init();
-	digiscope->mode(Digiscope::SCOPE);
+	set_scope_mode(Digiscope::SCOPE);
 }
 
 mfsk::~mfsk()
@@ -563,6 +563,12 @@ int mfsk::rx_process(const double *buf, int len)
 		if (rxstate == RX_STATE_PICTURE) {
 			if (counter++ == picturesize) {
 				counter = 0;
+				if (btnpicRxAbort) {
+					FL_LOCK_E();
+					btnpicRxAbort->hide();
+					btnpicRxSave->show();
+					FL_UNLOCK_E();
+				}
 				rxstate = RX_STATE_DATA;
 				// REQ_FLUSH();
 				put_status("");
@@ -890,9 +896,7 @@ void createRxViewer(mfsk *who)
 	picRx = new picture(2, 2, 136, 104);
 	btnpicRxSave = new Fl_Button(5, 140 - 30, 60, 24,"Save");
 	btnpicRxSave->callback(cb_picRxSave, who);
-#ifdef __CYGWIN__
 	btnpicRxSave->hide();
-#endif
 	btnpicRxAbort = new Fl_Button(70, 140 - 30, 60, 24, "Abort");
 	btnpicRxAbort->callback(cb_picRxAbort, who);
 	btnpicRxClose = new Fl_Button(135, 140 - 30, 60, 24, "Hide");
@@ -914,6 +918,9 @@ void showRxViewer(int W, int H, mfsk *who)
 	picRxWin->size(winW, winH);
 	picRx->resize(picX, picY, W, H);
 	btnpicRxSave->resize(winW/2 - 65, H + 6, 60, 24);
+	btnpicRxSave->hide();
+	btnpicRxAbort->resize(winW/2 - 65, H + 6, 60, 24);
+	btnpicRxAbort->show();
 	btnpicRxClose->resize(winW/2 + 5, H + 6, 60, 24);
 	picRx->clear();
 #ifndef __CYGWIN__

@@ -83,7 +83,7 @@ void psk::rx_init()
 	bitclk = 0;
 	freqerr = 0.0;
 	if (mailserver && progdefaults.PSKmailSweetSpot) sigsearch = SIGSEARCH;
-	digiscope->mode(Digiscope::PHASE);
+	set_scope_mode(Digiscope::PHASE);
 	put_MODEstatus(mode);
 }
 

@@ -34,6 +34,11 @@ struct status {
 	bool	sqlonoff;
 	double	RcvMixer;
 	double	XmtMixer;
+	int		scopeX;
+	int		scopeY;
+	bool	scopeVisible;
+	int		scopeW;
+	int		scopeH;
 	
 	bool	bLastStateRead;
 	

@@ -4,6 +4,10 @@ Change Log:
       2) Added mousewheel over Macro buttons to move between macro button sets.
       3) Fixed bug in Olivia signal level display.
       4) Ported to Windows (win32)
+      5) Added floating digiscope and / or fixed scope abutting waterfall
+         specified with command line switch --twoscopes
+         Default is floating digiscope without the fixed scope
+      6) Added save as png to mfsk-pic reception
       
 2.10.3)
       1) Corrected memory leak bug.

@@ -49,6 +49,7 @@
 #include "progress.h"
 
 extern Fl_Double_Window *fl_digi_main;
+extern Fl_Double_Window *scopeview;
 
 extern FTextView		*ReceiveText;
 extern FTextEdit		*TransmitText;
@@ -87,6 +88,7 @@ extern Fl_Button		*btnAltMacros;
 
 
 extern bool				useCheckButtons;
+extern bool				twoscopes;
 extern int				altMacros;
 
 extern waterfall		*wf;
@@ -105,6 +107,8 @@ extern void put_freq(double frequency);
 extern void put_Bandwidth(int bandwidth);
 extern void display_metric(double metric);
 extern void put_cwRcvWPM(double wpm);
+
+extern void set_scope_mode(Digiscope::scope_mode md);
 extern void set_scope(double *data, int len, bool autoscale = true);
 extern void set_phase(double phase, bool highlight);
 extern void set_rtty(double, double, double);
