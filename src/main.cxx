@@ -75,7 +75,6 @@
 using namespace std;
 
 string scDevice[2];
-int pa_frames_per_buffer = 0;
 
 char szHomedir[120] = "";
 char szPskMailDir[120] = "";
@@ -137,6 +136,7 @@ int main(int argc, char ** argv)
 	set_terminate(diediedie);
 	signal(SIGSEGV, handle_signal);
 	signal(SIGILL, handle_signal);
+	signal(SIGABRT, handle_signal);
 	signal(SIGCHLD, SIG_IGN);
 	signal(SIGPIPE, SIG_IGN);
 
@@ -488,7 +488,7 @@ int parse_args(int argc, char **argv, int& idx)
 
 #if USE_PORTAUDIO
 		case OPT_FRAMES_PER_BUFFER:
-			pa_frames_per_buffer = strtol(optarg, 0, 10);
+			progdefaults.PortFramesPerBuffer = strtol(optarg, 0, 10);
 			break;
 #endif // USE_PORTAUDIO
 

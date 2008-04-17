@@ -68,9 +68,14 @@ public:
 static void init_portaudio(void)
 {
 #if USE_PORTAUDIO
-	SoundPort::initialize();
-	if (SoundPort::devices().size() == 0) {
-		cerr << "PortAudio did not find any devices!\n";
+	try {
+		SoundPort::initialize();
+	}
+	catch (const SndPortException& e) {
+		cerr << e.what() << endl;
+	       	AudioPort->deactivate();
+		btnAudioIO[SND_IDX_PORT]->deactivate();
+		progdefaults.btnAudioIOis = SND_IDX_NULL;
 		return;
 	}
 

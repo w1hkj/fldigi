@@ -42,6 +42,10 @@
 	#include <pulse/error.h>
 #endif
 #include <samplerate.h>
+#include <semaphore.h>
+#include <limits.h>
+
+#include "ringbuffer.h"
 
 #define MAXSC 32767.0;
 #define maxsc 32000.0
@@ -133,10 +137,12 @@ public:
 	SoundBase();
 	virtual ~SoundBase();
 	virtual int	Open(int mode, int freq = 8000) = 0;
-	virtual void    Close() = 0;
+	virtual void    Close(unsigned dir = UINT_MAX) = 0;
+	virtual void    Abort(unsigned dir = UINT_MAX) = 0;
 	virtual size_t	Write(double *, size_t) = 0;
 	virtual size_t	Write_stereo(double *, double *, size_t) = 0;
 	virtual size_t	Read(double *, size_t) = 0;
+	virtual void    flush(unsigned dir = UINT_MAX) = 0;
 	virtual bool	must_close(void) = 0;
 #if USE_SNDFILE
 	void		get_file_params(const char* def_fname, const char** fname, int* format);
@@ -177,11 +183,13 @@ public:
 	SoundOSS(const char *dev = "/dev/dsp");
 	~SoundOSS();
 	int		Open(int mode, int freq = 8000);
-	void	Close();
+	void	Close(unsigned dir = UINT_MAX);
+	void	Abort(unsigned dir = UINT_MAX) { Close(dir); }
 	size_t		Write(double *, size_t);
 	size_t		Write_stereo(double *, double *, size_t);
 	size_t		Read(double *, size_t);
 	bool		must_close(void) { return true; }
+	void		flush(unsigned dir = UINT_MAX) { wait_till_finished(); }
 
 private:
 	int		Fd() { return device_fd; }
@@ -199,6 +207,8 @@ private:
 
 #if USE_PORTAUDIO
 
+class Cmovavg;
+
 class SoundPort : public SoundBase
 {
 public:
@@ -211,38 +221,58 @@ public:
         SoundPort(const char *in_dev, const char *out_dev);
         ~SoundPort();
 	int 		Open(int mode, int freq = 8000);
-	void 		Close();
+	void 		Close(unsigned dir = UINT_MAX);
+	void 		Abort(unsigned dir = UINT_MAX);
 	size_t 		Write(double *buf, size_t count);
 	size_t		Write_stereo(double *bufleft, double *bufright, size_t count);
 	size_t 		Read(double *buf, size_t count);
 	bool		must_close(void);
+	void		flush(unsigned dir = UINT_MAX);
 
 private:
         void		src_data_reset(int mode);
-        void		resample(int mode, float *buf, size_t count, size_t max = 0);
+        void		resample(int mode, float* inbuf, float* outbuf, size_t count, size_t max = 0);
+        size_t          resample_write(float* buf, size_t count);
         void 		init_stream(unsigned dir);
         void 		start_stream(unsigned dir);
-        void		close_stream(unsigned dir);
         bool		stream_active(unsigned dir);
         bool		full_duplex_device(const PaDeviceInfo* dev);
         double		find_srate(unsigned dir);
         void		pa_perror(int err, const char* str = 0);
+        static PaStreamCallback stream_process;
+        static PaStreamFinishedCallback stream_stopped;
 
 private:
         enum { STREAM_IN, STREAM_OUT };
-        std::string	device[2];
+        static bool                             pa_init;
+	static std::vector<const PaDeviceInfo*> devs;
+        double	 				req_sample_rate;
+        float* 					fbuf;
 
-        static bool                                  pa_init;
-        PaStream*                                    stream[2];
+        enum {
+                spa_continue = paContinue, spa_complete = paComplete,
+                spa_abort = paAbort, spa_drain
+        };
+        struct stream_data {
+                std::string device;
+                device_iterator idev;
 
-        device_iterator				     idev[2];
-	static std::vector<const PaDeviceInfo*>      devs;
-        PaStreamParameters			     stream_params[2];
+                PaStream* stream;
+                PaStreamParameters params;
 
-        unsigned	frames_per_buffer[2];
-        double	 	req_sample_rate;
-        double		dev_sample_rate[2];
-        float 		*fbuf;
+                unsigned frames_per_buffer;
+                double dev_sample_rate;
+
+                sem_t* rwsem;
+                sem_t* csem;
+                int state;
+                ringbuffer<float>* rb;
+
+                Cmovavg* avg;
+                double est_sample_rate;
+                unsigned long nframes;
+                PaTime stime;
+        } sd[2];
 };
 
 #endif // USE_PORTAUDIO
@@ -256,11 +286,13 @@ public:
 	virtual ~SoundPulse();
 
 	int	Open(int mode, int freq = 8000);
-	void    Close(void);
+	void    Close(unsigned dir = UINT_MAX);
+	void    Abort(unsigned dir = UINT_MAX);
 	size_t	Write(double* buf, size_t count);
 	size_t	Write_stereo(double* bufleft, double* bufright, size_t count);
 	size_t	Read(double *buf, size_t count);
 	bool	must_close(void) { return false; }
+	void	flush(unsigned dir = UINT_MAX);
 
 private:
 	void	src_data_reset(int mode);
@@ -281,11 +313,13 @@ class SoundNull : public SoundBase
 {
 public:
 	int	Open(int mode, int freq = 8000) { sample_frequency = freq; return 0; }
-	void    Close(void) { }
+	void    Close(unsigned) { }
+	void    Abort(unsigned) { }
 	size_t	Write(double* buf, size_t count);
 	size_t	Write_stereo(double* bufleft, double* bufright, size_t count);
 	size_t	Read(double *buf, size_t count);
 	bool	must_close(void) { return false; }
+	void	flush(unsigned) { }
 };
 
 #endif // SOUND_H

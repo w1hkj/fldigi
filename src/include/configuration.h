@@ -134,6 +134,7 @@ struct configuration {
 	int	PortInIndex;
 	string	PortOutDevice;
 	int	PortOutIndex;
+	int	PortFramesPerBuffer;
 	string	PulseServer;
 	int		sample_rate;
 	int		in_sample_rate;

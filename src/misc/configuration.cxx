@@ -145,6 +145,7 @@ configuration progdefaults = {
 	-1,		// int		PortInIndex;
 	"",		// string	PortOutDevice;
 	-1,		// int		PortOutIndex;
+	0,		// int		PortFramesPerBuffer
 	"",		// string	PulseServer
 	SAMPLE_RATE_UNSET,		// int		sample_rate;
 	SAMPLE_RATE_UNSET,		// int		in_sample_rate;
