@@ -108,9 +108,9 @@ bool	useCheckButtons = false;
 bool	twoscopes = false;
 
 Fl_Button			*btnTune = (Fl_Button *)0;
-Fl_Tile_check				*TiledGroup = 0;
-ReceiveWidget			*ReceiveText = 0;
-TransmitWidget			*TransmitText = 0;
+Fl_Tile_check		*TiledGroup = 0;
+ReceiveWidget		*ReceiveText = 0;
+TransmitWidget		*TransmitText = 0;
 Fl_Text_Buffer		*rcvBuffer = (Fl_Text_Buffer *)0;
 Fl_Text_Buffer		*xmtBuffer = (Fl_Text_Buffer *)0;
 Raster				*FHdisp;
@@ -276,14 +276,28 @@ void cb_mnuSaveMacro(Fl_Menu_*, void*) {
 //	restoreFocus();
 //}
 
-void clean_exit() {
+bool clean_exit() {
 	if (progdefaults.changed == true) {
-		if (fl_choice("Configuration changed, Save", "No", "Yes", 0) == 1)
+		switch (fl_choice("Save changed configuration?", "Don't exit", "Save", "Don't save")) {
+		case 0:
+			return false;
+		case 1:
 			progdefaults.saveDefaults();
+			// fall through
+		case 2:
+			break;
+		}
 	}
 	if (macros.changed == true) {
-		if (fl_choice("Macros changed, Save", "No", "Yes", 0) == 1)
+		switch (fl_choice("Save changed macros?", "Don't exit", "Save", "Don't save")) {
+		case 0:
+			return false;
+		case 1:
 			macros.saveMacroFile();
+			// fall through
+		case 2:
+			break;
+		}
 	}
 	if (Maillogfile)
 		Maillogfile->log_to_file_stop();
@@ -320,21 +334,32 @@ void clean_exit() {
 //	delete xcvr;
 //#endif
 //	delete push2talk;
-	
-	exit(0);
+
+	return true;
 }
 
 void cb_E(Fl_Menu_*, void*) {
-	clean_exit();
+	fl_digi_main->do_callback();
 }
 
-void cb_wMain( Fl_Widget *, void * ) 
+void cb_wMain(Fl_Widget*, void*)
 {
 	if (Fl::event_key(FL_Escape)) {
 		TransmitText->clear();
 		active_modem->set_stopflag(true);
-	} else
-		clean_exit();
+		return;
+	}
+
+	if (!clean_exit())
+		return;
+	// hide all shown windows
+	Fl::first_window(fl_digi_main);
+	for (Fl_Window* w = Fl::next_window(fl_digi_main); w; w = Fl::next_window(w)) {
+		w->do_callback();
+		w = fl_digi_main;
+	}
+	// this will make Fl::run return
+	fl_digi_main->hide();
 }
 
 void init_modem(trx_mode mode)
@@ -1088,13 +1113,6 @@ Fl_Menu_Item menu_[] = {
 
 Fl_Menu_Bar *mnu;
 
-Fl_Menu_Item sample_rate_menu[] = {
-	{ "Auto" }, { "Native", 0, 0, 0, FL_MENU_DIVIDER },
-	{ "8000" }, { "9600" }, { "11025" }, { "12000" }, { "16000" },
-	{ "22050" }, { "24000" }, { "32000" }, { "44100" }, { "48000" },
-	{ "88200" }, { "96000" }, { "192000" }, { 0 }
-};
-
 Fl_Menu_Item *getMenuItem(const char *caption)
 {
 	Fl_Menu_Item *item = 0;
@@ -1274,8 +1292,6 @@ void create_fl_digi_main() {
 
 			inpCall = new Fl_Input(rightof(qsoTime) + pad, Y + Hqsoframe/2 - pad, 80, Hqsoframe/2, "Call");
 			inpCall->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-			// this is likely to be more readable in a constant width bold font
-			inpCall->textfont(FL_SCREEN_BOLD);
 
 			inpName = new Fl_Input(rightof(inpCall) + pad, Y + Hqsoframe/2 - pad, 100, Hqsoframe/2, "Name");
 			inpName->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
@@ -1540,7 +1556,8 @@ void create_fl_digi_main() {
 #endif
 
 	fl_digi_main->xclass(PACKAGE_NAME);
-	
+//	Fl::set_atclose(clean_exit);
+
 	scopeview = new Fl_Double_Window(0,0,140,140, "Scope");
 	scopeview->xclass(PACKAGE_NAME);
 	digiscope = new Digiscope (0, 0, 140, 140);
@@ -1561,10 +1578,24 @@ void put_Bandwidth(int bandwidth)
 	wf->Bandwidth ((int)bandwidth);
 }
 
+static void set_metric(double metric)
+{
+	pgrsSquelch->value(metric);
+	static Fl_Button* sqlbtn = (useCheckButtons ? chk_sqlonoff : btn_sqlonoff);
+	static Fl_Color sqlcol = sqlbtn->selection_color();
+	if (!progStatus.sqlonoff)
+		return;
+	if (metric < progStatus.sldrSquelchValue)
+		sqlbtn->selection_color(sqlcol);
+	else
+	        sqlbtn->selection_color(FL_GREEN);
+	sqlbtn->redraw_label();
+}
+
 void display_metric(double metric)
 {
 	FL_LOCK_D();
-	REQ_DROP(static_cast<void (Progress::*)(double)>(&Progress::value), pgrsSquelch, metric);
+	REQ_DROP(set_metric, metric);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }

@@ -43,6 +43,7 @@
 #ifndef RINGBUFFER_H
 #define RINGBUFFER_H
 
+#include <cassert>
 #include <cstdlib>
 #include "util.h"
 
@@ -61,8 +62,7 @@ public:
         ringbuffer(size_t s)
                 : ridx(0), widx(0)
         {
-                if (!powerof2(s))
-                        std::terminate();
+                assert(powerof2(s));
 
                 size = s;
                 big_mask = size * 2 - 1;

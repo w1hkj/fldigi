@@ -23,6 +23,7 @@
 #include <config.h>
 #include <iostream>
 #include <cstdlib>
+#include <csignal>
 
 #if HAVE_EXECINFO_H
 #  include <execinfo.h>
@@ -32,6 +33,7 @@
 
 #define MAX_STACK_FRAMES 64
 
+static volatile sig_atomic_t signum = 0;
 
 void pstack(int fd, unsigned skip)
 {
@@ -59,18 +61,20 @@ void diediedie(void)
         pstack(STDERR_FILENO);
         extern std::string version_text;
         std::cerr << "\nVersion information:\n" << version_text;
-        abort();
+        if (signum != SIGABRT)
+                abort();
 }
 
 void handle_unexpected(void)
 {
         std::cerr << "Uncaught exception. Not again!\n";
-        std::terminate();
+        abort();
 }
 
 // this may not give us anything useful, but we can try...
 void handle_signal(int s)
 {
         std::cerr << "Caught signal " << s;
+        signum = s;
         diediedie();
 }

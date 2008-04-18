@@ -48,6 +48,8 @@ struct configuration {
 	bool		useUART;
 	bool		PreferXhairScope;
 	bool		PseudoFSK;
+	bool		UOSrx;
+	bool		UOStx;
 // CW
 	bool		useCWkeylineRTS;	// use RTS for CW
 	bool		useCWkeylineDTR;	// use DTR for CW
@@ -134,11 +136,12 @@ struct configuration {
 	int	PortInIndex;
 	string	PortOutDevice;
 	int	PortOutIndex;
+	int	PortFramesPerBuffer;
 	string	PulseServer;
 	int		sample_rate;
 	int		in_sample_rate;
 	int		out_sample_rate;
-	string		sample_converter;
+	int		sample_converter;
 	int		RX_corr;
 	int		TX_corr;
 	int		TxOffset;

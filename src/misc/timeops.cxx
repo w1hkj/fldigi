@@ -29,6 +29,10 @@ struct timespec operator+(const struct timespec &t0, const double &t)
         struct timespec r;
         r.tv_sec = t0.tv_sec + static_cast<time_t>(t);
         r.tv_nsec = t0.tv_nsec + static_cast<long>((t - static_cast<time_t>(t)) * 1e9);
+        if (r.tv_nsec > 1000000000) {
+                r.tv_nsec -= 1000000000;
+                r.tv_sec++;
+        }
         return r;
 }
 

@@ -75,7 +75,6 @@
 using namespace std;
 
 string scDevice[2];
-int pa_frames_per_buffer = 0;
 
 char szHomedir[120] = "";
 char szPskMailDir[120] = "";
@@ -137,6 +136,7 @@ int main(int argc, char ** argv)
 	set_terminate(diediedie);
 	signal(SIGSEGV, handle_signal);
 	signal(SIGILL, handle_signal);
+	signal(SIGABRT, handle_signal);
 	signal(SIGCHLD, SIG_IGN);
 	signal(SIGPIPE, SIG_IGN);
 
@@ -282,14 +282,8 @@ void generate_option_help(void) {
 	     << " or 0x" << hex << progdefaults.tx_msgid << dec << "\n\n"
 #endif
 
-	     << "  --resample CONVERTER\n"
-	     << "    Set the resampling method\n"
-	     << "    CONVERTER can be of `src-sinc-best-quality',\n"
-	     << "                        `src-sinc-medium-quality',\n"
-		 << "                        `src-sinc-fastest',\n"
-		 << "                        `src-zero-order-hold', or\n"
-		 << "                        `src-linear'\n"
-		 << "    The default is `src-sinc-fastest'\n\n"
+	     << "  --resample CONVERTER  **DEPRECATED**\n"
+	     << "    This option has been deprecated and will be removed in a future release\n\n"
 
 	     << "  --version\n"
 	     << "    Print version information\n\n"
@@ -348,13 +342,11 @@ void generate_option_help(void) {
 	     << "    The default is: " << Fl::get_font(FL_HELVETICA)
 	     << ':' << FL_NORMAL_SIZE << "\n\n"
 
-//	     << "  --profile PROFILE\n"
-//	     << "    If PROFILE is ``emc'', ``emcomm'', or ``minimal'',\n"
-//	     << "    widget sizes will be adjusted for a minimal screen footprint\n\n"
+	     << "  --profile PROFILE  **DEPRECATED**\n"
+	     << "    This option has been deprecated and will be removed in a future release\n\n"
 
 	     << "  --twoscopes\n"
-	     << "    digiscope adjacent to waterfall and,\n"
-	     << "    digiscope in separate resizeable window\n\n"
+	     << "    Dock a second digiscope adjacent to the waterfall\n\n"
 
 	     << "  --usechkbtns\n"
 	     << "    Use check buttons for AFC / SQL.\n";
@@ -378,13 +370,13 @@ int parse_args(int argc, char **argv, int& idx)
 	       OPT_CONFIG_DIR,
                OPT_FONT, OPT_WFALL_WIDTH, OPT_WFALL_HEIGHT,
                OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT, 
-//               OPT_PROFILE, 
+               OPT_PROFILE,
                OPT_USE_CHECK,
 	       	   OPT_RESAMPLE,
 #if USE_PORTAUDIO
                OPT_FRAMES_PER_BUFFER,
 #endif
-			   OPT_TWO_SCOPES,
+               OPT_TWO_SCOPES,
                OPT_EXIT_AFTER,
                OPT_HELP, OPT_VERSION };
 
@@ -401,7 +393,7 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "wfall-height",  1, 0, OPT_WFALL_HEIGHT },
 		{ "window-width",  1, 0, OPT_WINDOW_WIDTH },
 		{ "window-height", 1, 0, OPT_WINDOW_HEIGHT },
-//		{ "profile",	   1, 0, OPT_PROFILE },
+		{ "profile",	   1, 0, OPT_PROFILE },
 		{ "twoscopes",     0, 0, OPT_TWO_SCOPES },
 		{ "usechkbtns",    0, 0, OPT_USE_CHECK },
 
@@ -476,16 +468,10 @@ int parse_args(int argc, char **argv, int& idx)
 			HNOM = strtol(optarg, NULL, 10);
 			break;
 
-//		case OPT_PROFILE:
-//			if (!strcasecmp(optarg, "emcomm") || !strcasecmp(optarg, "emc") ||
-//       	            !strcasecmp(optarg, "minimal")) {
-//				IMAGE_WIDTH = DEFAULT_IMAGE_WIDTH;
-//				Hwfall = EMC_HWFALL;
-//				HNOM = EMC_HNOM;
-//				WNOM = EMC_WNOM;
-//				FL_NORMAL_SIZE = 11;//12;
-//			}
-//			break;
+		case OPT_PROFILE:
+			cerr << "The --" << longopts[longindex].name
+			     << " option has been deprecated and will be removed in a future release\n";
+			break;
 
 		case OPT_TWO_SCOPES:
 			twoscopes = true;
@@ -496,16 +482,13 @@ int parse_args(int argc, char **argv, int& idx)
 			break;
 
 		case OPT_RESAMPLE:
-			if (SoundBase::get_converter(optarg) == INT_MIN) {
-				cerr << "Unknown converter `" << optarg << "'\n";
-				goto help;
-			}
-			progdefaults.sample_converter = optarg;
+			cerr << "The --" << longopts[longindex].name
+			     << " option has been deprecated and will be removed in a future release\n";
 			break;
 
 #if USE_PORTAUDIO
 		case OPT_FRAMES_PER_BUFFER:
-			pa_frames_per_buffer = strtol(optarg, 0, 10);
+			progdefaults.PortFramesPerBuffer = strtol(optarg, 0, 10);
 			break;
 #endif // USE_PORTAUDIO
 
@@ -521,13 +504,8 @@ int parse_args(int argc, char **argv, int& idx)
 			cout << version_text;
 			exit(EXIT_SUCCESS);
 
-	help:
-		case '?':
+		case '?': default:
 			cerr << "Try `" << PACKAGE_NAME << " --help' for more information.\n";
-			exit(EXIT_FAILURE);
-
-		default:
-			cerr << option_help;
 			exit(EXIT_FAILURE);
 	}
 

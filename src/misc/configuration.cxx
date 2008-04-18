@@ -48,6 +48,8 @@ configuration progdefaults = {
 	false,			// bool		useUART;
 	false,			// bool		PreferXhairScope;
 	false,			// bool		PseudoFSK;
+	true,			// bool		UOSrx; // unshift on space - receive
+	true,			// bool		UOStx; // unshift on space - transmit
 // CW
 	false,			// bool		useCWkeylineRTS;
 	false,			// bool		useCWkeylineDTR;
@@ -145,11 +147,12 @@ configuration progdefaults = {
 	-1,		// int		PortInIndex;
 	"",		// string	PortOutDevice;
 	-1,		// int		PortOutIndex;
+	0,		// int		PortFramesPerBuffer
 	"",		// string	PulseServer
 	SAMPLE_RATE_UNSET,		// int		sample_rate;
 	SAMPLE_RATE_UNSET,		// int		in_sample_rate;
 	SAMPLE_RATE_UNSET,		// int		out_sample_rate;
-	"src-sinc-fastest",		// string	sample_converter;
+	SRC_SINC_FASTEST,		// string	sample_converter;
 	0,				// int		RX_corr;
 	0,				// int		TX_corr;
 	0,				// int		TxOffset;
@@ -231,7 +234,8 @@ enum TAG { \
 	RTTYAUTOCOUNT, RTTYAFCSPEED,
 	RTTYUSB,
 	PREFERXHAIRSCOPE, 
-	PSEUDOFSK, 
+	PSEUDOFSK,
+	UOSRX, UOSTX,
 	CWWEIGHT, CWSPEED, CWDEFSPEED,
 	CWBANDWIDTH, CWRANGE, CWLOWERLIMIT, CWUPPERLIMIT,
 	CWTRACK, CWRISETIME, CWDASH2DOT,
@@ -254,7 +258,7 @@ enum TAG { \
 	PTTDEV,
 	SECONDARYTEXT, 
 	AUDIOIO, OSSDEVICE, PADEVICE, PORTINDEVICE, PORTININDEX, PORTOUTDEVICE, PORTOUTINDEX, PULSESERVER,
-	SAMPLERATE, INSAMPLERATE, OUTSAMPLERATE, RXCORR, TXCORR, TXOFFSET,
+	SAMPLERATE, INSAMPLERATE, OUTSAMPLERATE, SAMPLECONVERTER, RXCORR, TXCORR, TXOFFSET,
 	USELEADINGZEROS, CONTESTSTART, CONTESTDIGITS,
 	USETIMER, MACRONUMBER, TIMEOUT,
 	MXDEVICE, 
@@ -351,6 +355,8 @@ void configuration::writeDefaultsXML()
 	writeXMLbool(f, "RTTYUSB", RTTY_USB);
 	writeXMLbool(f, "PREFERXHAIRSCOPE", PreferXhairScope);
 	writeXMLbool(f, "PSEUDOFSK", PseudoFSK);
+	writeXMLbool(f, "UOSRX", UOSrx);
+	writeXMLbool(f, "UOSTX", UOStx);
 
 	writeXMLint(f, "CWWEIGHT", CWweight);	
 	writeXMLint(f, "CWSPEED", CWspeed);
@@ -429,6 +435,7 @@ void configuration::writeDefaultsXML()
 	writeXMLint(f, "SAMPLERATE", sample_rate);
 	writeXMLint(f, "INSAMPLERATE", in_sample_rate);
 	writeXMLint(f, "OUTSAMPLERATE", out_sample_rate);
+	writeXMLint(f, "SAMPLECONVERTER", sample_converter);
 	writeXMLint(f, "RXCORR", RX_corr);		
 	writeXMLint(f, "TXCORR", TX_corr);
 	writeXMLint(f, "TXOFFSET", TxOffset);
@@ -589,6 +596,12 @@ bool configuration::readDefaultsXML()
 						break;
 					case PSEUDOFSK :
 						PseudoFSK = atoi(xml->getNodeData());
+						break;
+					case UOSRX :
+						UOSrx = atoi(xml->getNodeData());
+						break;
+					case UOSTX :
+						UOStx = atoi(xml->getNodeData());
 						break;
 					case CWWEIGHT :
 						CWweight = atoi(xml->getNodeData());
@@ -792,6 +805,9 @@ bool configuration::readDefaultsXML()
 					case OUTSAMPLERATE :
 						out_sample_rate = atoi(xml->getNodeData());
 						break;
+					case SAMPLECONVERTER :
+						sample_converter = atoi(xml->getNodeData());
+						break;
 					case RXCORR :
 						RX_corr = atoi(xml->getNodeData());
 						break;
@@ -974,6 +990,8 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("RTTYUSB", nodeName))		tag = RTTYUSB;
 				else if (!strcmp("PREFERXHAIRSCOPE", nodeName)) 	tag = PREFERXHAIRSCOPE;
 				else if (!strcmp("PSEUDOFSK", nodeName)) 	tag = PSEUDOFSK;
+				else if (!strcmp("UOSRX", nodeName)) 	tag = UOSRX;
+				else if (!strcmp("UOSTX", nodeName)) 	tag = UOSTX;
 				else if (!strcmp("CWWEIGHT", nodeName)) 	tag = CWWEIGHT;
 				else if (!strcmp("CWSPEED", nodeName)) 	tag = CWSPEED;
 				else if (!strcmp("CWDEFSPEED", nodeName)) 	tag = CWDEFSPEED;
@@ -1038,6 +1056,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("SAMPLERATE", nodeName)) 	tag = SAMPLERATE;
 				else if (!strcmp("INSAMPLERATE", nodeName)) 	tag = INSAMPLERATE;
 				else if (!strcmp("OUTSAMPLERATE", nodeName)) 	tag = OUTSAMPLERATE;
+				else if (!strcmp("SAMPLECONVERTER", nodeName)) 	tag = SAMPLECONVERTER;
 				else if (!strcmp("RXCORR", nodeName)) 	tag = RXCORR;
 				else if (!strcmp("TXCORR", nodeName)) 	tag = TXCORR;
 				else if (!strcmp("TXOFFSET", nodeName)) 	tag = TXOFFSET;
@@ -1116,6 +1135,8 @@ void configuration::loadDefaults() {
 	btnAUTOCRLF->value(rtty_autocrlf);
 	cntrAUTOCRLF->value(rtty_autocount);
 	chkPseudoFSK->value(PseudoFSK);
+	chkUOSrx->value(UOSrx);
+	chkUOStx->value(UOStx);
 	
 	for (int i = 0; i < 3; i++)
 		if (rtty_afcspeed == i)
@@ -1329,53 +1350,8 @@ int configuration::setDefaults() {
 	btnsendid->value(sendid);
 	btnsendvideotext->value(sendtextid);
 			
-	valPCMvolume->value(PCMvolume);
-	btnMicIn->value(MicIn);
-	btnLineIn->value(LineIn);
-
-	menuOSSDev->value(OSSdevice.c_str());
-	inpPulseServer->value(PulseServer.c_str());
-
-	btnMixer->value(EnableMixer);
-	resetMixerControls();
-	menuMix->value(MXdevice.c_str());
-
-
-	char sr[6+1];
-	if (in_sample_rate == SAMPLE_RATE_UNSET &&
-		(in_sample_rate = sample_rate) == SAMPLE_RATE_UNSET)
-		in_sample_rate = SAMPLE_RATE_AUTO;
-	else if (in_sample_rate > SAMPLE_RATE_OTHER)
-		snprintf(sr, sizeof(sr), "%d", in_sample_rate);
-	if (in_sample_rate <= SAMPLE_RATE_NATIVE)
-		menuInSampleRate->value(in_sample_rate);
-	else
-		menuInSampleRate->value(menuInSampleRate->find_item(sr));
-
-	if (out_sample_rate == SAMPLE_RATE_UNSET &&
-		(out_sample_rate = sample_rate) == SAMPLE_RATE_UNSET)
-		out_sample_rate = SAMPLE_RATE_AUTO;
-	else if (out_sample_rate > SAMPLE_RATE_OTHER)
-		snprintf(sr, sizeof(sr), "%d", out_sample_rate);
-	if (out_sample_rate <= SAMPLE_RATE_NATIVE)
-		menuOutSampleRate->value(out_sample_rate);
-	else
-		menuOutSampleRate->value(menuOutSampleRate->find_item(sr));
-
-
-	cntRxRateCorr->value(RX_corr);
-	cntTxRateCorr->value(TX_corr);
-	cntTxOffset->value(TxOffset);
-#ifdef USE_BOTH_TEXT_WIDGETS
-	btntextwidgets->value(alt_text_widgets);
-	btntextwidgets->activate();
-#else
-	btntextwidgets->deactivate();
-#endif			
 	FL_UNLOCK();
 
-	enableMixer(EnableMixer);
-		
 	ReceiveText->setFont((Fl_Font)RxFontnbr);
 	ReceiveText->setFontSize(RxFontsize);
 	
