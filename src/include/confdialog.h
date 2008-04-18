@@ -184,6 +184,8 @@ extern Fl_Counter *cntrAUTOCRLF;
 extern Fl_Check_Button *btnRTTY_USB;
 extern Fl_Round_Button *btnRTTYafc[3];
 extern Fl_Check_Button *btnPreferXhairScope;
+extern Fl_Check_Button *chkUOSrx;
+extern Fl_Check_Button *chkUOStx;
 #include <FL/Fl_Return_Button.H>
 extern Fl_Return_Button *btnCloseConfig;
 extern Fl_Button *btnSaveConfig;

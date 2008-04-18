@@ -48,6 +48,8 @@ configuration progdefaults = {
 	false,			// bool		useUART;
 	false,			// bool		PreferXhairScope;
 	false,			// bool		PseudoFSK;
+	true,			// bool		UOSrx; // unshift on space - receive
+	true,			// bool		UOStx; // unshift on space - transmit
 // CW
 	false,			// bool		useCWkeylineRTS;
 	false,			// bool		useCWkeylineDTR;
@@ -230,7 +232,8 @@ enum TAG { \
 	RTTYAUTOCOUNT, RTTYAFCSPEED,
 	RTTYUSB,
 	PREFERXHAIRSCOPE, 
-	PSEUDOFSK, 
+	PSEUDOFSK,
+	UOSRX, UOSTX,
 	CWWEIGHT, CWSPEED, CWDEFSPEED,
 	CWBANDWIDTH, CWRANGE, CWLOWERLIMIT, CWUPPERLIMIT,
 	CWTRACK, CWRISETIME, CWDASH2DOT,
@@ -350,6 +353,8 @@ void configuration::writeDefaultsXML()
 	writeXMLbool(f, "RTTYUSB", RTTY_USB);
 	writeXMLbool(f, "PREFERXHAIRSCOPE", PreferXhairScope);
 	writeXMLbool(f, "PSEUDOFSK", PseudoFSK);
+	writeXMLbool(f, "UOSRX", UOSrx);
+	writeXMLbool(f, "UOSTX", UOStx);
 
 	writeXMLint(f, "CWWEIGHT", CWweight);	
 	writeXMLint(f, "CWSPEED", CWspeed);
@@ -589,6 +594,12 @@ bool configuration::readDefaultsXML()
 						break;
 					case PSEUDOFSK :
 						PseudoFSK = atoi(xml->getNodeData());
+						break;
+					case UOSRX :
+						UOSrx = atoi(xml->getNodeData());
+						break;
+					case UOSTX :
+						UOStx = atoi(xml->getNodeData());
 						break;
 					case CWWEIGHT :
 						CWweight = atoi(xml->getNodeData());
@@ -977,6 +988,8 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("RTTYUSB", nodeName))		tag = RTTYUSB;
 				else if (!strcmp("PREFERXHAIRSCOPE", nodeName)) 	tag = PREFERXHAIRSCOPE;
 				else if (!strcmp("PSEUDOFSK", nodeName)) 	tag = PSEUDOFSK;
+				else if (!strcmp("UOSRX", nodeName)) 	tag = UOSRX;
+				else if (!strcmp("UOSTX", nodeName)) 	tag = UOSTX;
 				else if (!strcmp("CWWEIGHT", nodeName)) 	tag = CWWEIGHT;
 				else if (!strcmp("CWSPEED", nodeName)) 	tag = CWSPEED;
 				else if (!strcmp("CWDEFSPEED", nodeName)) 	tag = CWDEFSPEED;
@@ -1120,6 +1133,8 @@ void configuration::loadDefaults() {
 	btnAUTOCRLF->value(rtty_autocrlf);
 	cntrAUTOCRLF->value(rtty_autocount);
 	chkPseudoFSK->value(PseudoFSK);
+	chkUOSrx->value(UOSrx);
+	chkUOStx->value(UOStx);
 	
 	for (int i = 0; i < 3; i++)
 		if (rtty_afcspeed == i)
@@ -1332,7 +1347,7 @@ int configuration::setDefaults() {
 	btnRTTY_USB->value(RTTY_USB);
 	btnsendid->value(sendid);
 	btnsendvideotext->value(sendtextid);
-
+			
 	FL_UNLOCK();
 
 	ReceiveText->setFont((Fl_Font)RxFontnbr);

@@ -48,6 +48,8 @@ struct configuration {
 	bool		useUART;
 	bool		PreferXhairScope;
 	bool		PseudoFSK;
+	bool		UOSrx;
+	bool		UOStx;
 // CW
 	bool		useCWkeylineRTS;	// use RTS for CW
 	bool		useCWkeylineDTR;	// use DTR for CW

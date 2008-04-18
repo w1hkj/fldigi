@@ -8,6 +8,26 @@ Change Log:
          specified with command line switch --twoscopes
          Default is floating digiscope without the fixed scope
       6) Added save as png to mfsk-pic reception
+      7) Added RTTY Baudot Unshift-On-Space configuration for Rx and Tx
+      8) Modified mouse wheel handler to accommodate horizontal or vertical 
+         squelch slider.
+      9) Call scopeview->size_range when the floating digiscope changes mode;
+         so that the phase and crosshair rtty scope should maintain aspect 
+         ratio.
+     10) Modified the Ctrl+Left/Right mouse button combo to not drag the marker.
+     11) Deprecate the --resample switch in favour of the new menu in the Audio
+         Settings tab. Move sound initialisation code out of configuration.cxx
+         and into soundconf.cxx. Make Native the default sample rate selection.
+     12) Changed the main window's callback and the File->Exit handler to not
+         exit() but, rather, hide the windows so that Fl::run will return and
+         main can clean up. (fix for Sig 11 faults at exit).
+     13) Rename jpeg.m4 to images.m4 and extend it to also detect libpng. Make
+         both libraries optional. Add new optional fourth argument to the file
+         selector functions, used to determine file format regardless of
+         filename suffix.
+     14) New sound callback code implementation.
+     15) Two-colour squelch button shows Yellow Squelch enabled but not open,
+         Light Green enabled and open.
       
 2.10.3)
       1) Corrected memory leak bug.

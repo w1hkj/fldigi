@@ -108,9 +108,11 @@ bool	useCheckButtons = false;
 bool	twoscopes = false;
 
 Fl_Button			*btnTune = (Fl_Button *)0;
-Fl_Tile_check				*TiledGroup = 0;
-FTextView			*ReceiveText = 0;
-FTextEdit			*TransmitText = 0;
+Fl_Tile_check		*TiledGroup = 0;
+ReceiveWidget		*ReceiveText = 0;
+TransmitWidget		*TransmitText = 0;
+Fl_Text_Buffer		*rcvBuffer = (Fl_Text_Buffer *)0;
+Fl_Text_Buffer		*xmtBuffer = (Fl_Text_Buffer *)0;
 Raster				*FHdisp;
 Fl_Box				*StatusBar = (Fl_Box *)0;
 Fl_Box				*Status2 = (Fl_Box *)0;
@@ -1290,8 +1292,6 @@ void create_fl_digi_main() {
 
 			inpCall = new Fl_Input(rightof(qsoTime) + pad, Y + Hqsoframe/2 - pad, 80, Hqsoframe/2, "Call");
 			inpCall->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-			// this is likely to be more readable in a constant width bold font
-			inpCall->textfont(FL_SCREEN_BOLD);
 
 			inpName = new Fl_Input(rightof(inpCall) + pad, Y + Hqsoframe/2 - pad, 100, Hqsoframe/2, "Name");
 			inpName->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
@@ -1575,10 +1575,24 @@ void put_Bandwidth(int bandwidth)
 	wf->Bandwidth ((int)bandwidth);
 }
 
+static void set_metric(double metric)
+{
+	pgrsSquelch->value(metric);
+	static Fl_Button* sqlbtn = (useCheckButtons ? chk_sqlonoff : btn_sqlonoff);
+	static Fl_Color sqlcol = sqlbtn->selection_color();
+	if (!progStatus.sqlonoff)
+		return;
+	if (metric < progStatus.sldrSquelchValue)
+		sqlbtn->selection_color(sqlcol);
+	else
+	        sqlbtn->selection_color(FL_GREEN);
+	sqlbtn->redraw_label();
+}
+
 void display_metric(double metric)
 {
 	FL_LOCK_D();
-	REQ_DROP(static_cast<void (Progress::*)(double)>(&Progress::value), pgrsSquelch, metric);
+	REQ_DROP(set_metric, metric);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }

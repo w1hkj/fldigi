@@ -1187,6 +1187,20 @@ static void cb_btnPreferXhairScope(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *chkUOSrx=(Fl_Check_Button *)0;
+
+static void cb_chkUOSrx(Fl_Check_Button* o, void*) {
+  progdefaults.UOSrx=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *chkUOStx=(Fl_Check_Button *)0;
+
+static void cb_chkUOStx(Fl_Check_Button* o, void*) {
+  progdefaults.UOStx=o->value();
+progdefaults.changed = true;
+}
+
 Fl_Return_Button *btnCloseConfig=(Fl_Return_Button *)0;
 
 static void cb_btnCloseConfig(Fl_Return_Button*, void*) {
@@ -2072,6 +2086,7 @@ l with your sound hardware.");
           { Fl_Group* o = tabOlivia = new Fl_Group(0, 50, 400, 170, "Olivia");
             o->color((Fl_Color)51);
             o->selection_color((Fl_Color)51);
+            o->hide();
             { Fl_Choice* o = mnuOlivia_Tones = new Fl_Choice(105, 72, 70, 22, "Tones");
               o->down_box(FL_BORDER_BOX);
               o->callback((Fl_Callback*)cb_mnuOlivia_Tones);
@@ -2217,50 +2232,52 @@ l with your sound hardware.");
           { Fl_Group* o = tabRTTY = new Fl_Group(0, 50, 400, 170, "RTTY");
             o->color((Fl_Color)51);
             o->selection_color((Fl_Color)51);
-            o->hide();
-            { Fl_Choice* o = selShift = new Fl_Choice(58, 65, 77, 24, "Shift");
+            { Fl_Choice* o = selShift = new Fl_Choice(48, 60, 77, 22, "Shift");
               o->down_box(FL_BORDER_BOX);
               o->callback((Fl_Callback*)cb_selShift);
               o->add(szShifts);
             }
-            { Fl_Choice* o = selBaud = new Fl_Choice(58, 95, 77, 24, "Baud");
+            { Fl_Choice* o = selBaud = new Fl_Choice(48, 84, 77, 22, "Baud");
               o->down_box(FL_BORDER_BOX);
               o->callback((Fl_Callback*)cb_selBaud);
               o->add(szBauds);
             }
-            { Fl_Choice* o = selBits = new Fl_Choice(179, 65, 77, 24, "Bits");
+            { Fl_Choice* o = selBits = new Fl_Choice(48, 109, 77, 22, "Bits");
               o->down_box(FL_BORDER_BOX);
               o->callback((Fl_Callback*)cb_selBits);
               o->add(szSelBits);
             }
-            { Fl_Choice* o = selParity = new Fl_Choice(179, 95, 77, 24, "Parity");
+            { Fl_Choice* o = selParity = new Fl_Choice(48, 133, 77, 22, "Parity");
               o->down_box(FL_BORDER_BOX);
               o->callback((Fl_Callback*)cb_selParity);
               o->add(szParity);
             }
-            { Fl_Choice* o = selStopBits = new Fl_Choice(179, 122, 77, 24, "Stop");
+            { Fl_Choice* o = selStopBits = new Fl_Choice(48, 158, 77, 22, "Stop");
               o->down_box(FL_BORDER_BOX);
               o->callback((Fl_Callback*)cb_selStopBits);
               o->add(szStopBits);
             }
-            { Fl_Check_Button* o = chkPseudoFSK = new Fl_Check_Button(15, 126, 120, 24, "PseudoFSK");
+            { Fl_Check_Button* o = chkPseudoFSK = new Fl_Check_Button(100, 192, 22, 22, "PseudoFSK");
               o->down_box(FL_DOWN_BOX);
               o->callback((Fl_Callback*)cb_chkPseudoFSK);
+              o->align(FL_ALIGN_LEFT);
               o->value(progdefaults.PseudoFSK);
             }
-            { Fl_Button* o = btnRestartRtty = new Fl_Button(300, 180, 79, 28, "Restart");
+            { Fl_Button* o = btnRestartRtty = new Fl_Button(310, 180, 79, 28, "Restart");
               o->callback((Fl_Callback*)cb_btnRestartRtty);
             }
-            { Fl_Check_Button* o = btnCRCRLF = new Fl_Check_Button(15, 155, 115, 15, "CR-CR-LF");
+            { Fl_Check_Button* o = btnCRCRLF = new Fl_Check_Button(365, 60, 22, 22, "CR-CR-LF");
               o->down_box(FL_DOWN_BOX);
               o->callback((Fl_Callback*)cb_btnCRCRLF);
+              o->align(FL_ALIGN_LEFT);
               o->when(FL_WHEN_RELEASE_ALWAYS);
             }
-            { Fl_Check_Button* o = btnAUTOCRLF = new Fl_Check_Button(15, 184, 125, 15, "AutoCRLF");
+            { Fl_Check_Button* o = btnAUTOCRLF = new Fl_Check_Button(365, 88, 22, 22, "AutoCRLF");
               o->down_box(FL_DOWN_BOX);
               o->callback((Fl_Callback*)cb_btnAUTOCRLF);
+              o->align(FL_ALIGN_LEFT);
             }
-            { Fl_Counter* o = cntrAUTOCRLF = new Fl_Counter(150, 181, 65, 20, "after:");
+            { Fl_Counter* o = cntrAUTOCRLF = new Fl_Counter(322, 117, 65, 20, "after:");
               o->type(1);
               o->minimum(68);
               o->maximum(80);
@@ -2269,29 +2286,30 @@ l with your sound hardware.");
               o->callback((Fl_Callback*)cb_cntrAUTOCRLF);
               o->align(FL_ALIGN_LEFT);
             }
-            { Fl_Check_Button* o = btnRTTY_USB = new Fl_Check_Button(140, 153, 109, 20, "RTTY is USB");
+            { Fl_Check_Button* o = btnRTTY_USB = new Fl_Check_Button(365, 144, 22, 22, "RTTY is USB");
               o->down_box(FL_DOWN_BOX);
               o->callback((Fl_Callback*)cb_btnRTTY_USB);
+              o->align(FL_ALIGN_LEFT);
               o->value(progdefaults.RTTY_USB);
             }
-            { Fl_Group* o = new Fl_Group(265, 65, 125, 65, "AFC");
+            { Fl_Group* o = new Fl_Group(135, 60, 130, 65, "AFC");
               o->box(FL_ENGRAVED_FRAME);
               o->color((Fl_Color)51);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Round_Button* o = btnRTTYafc[0] = new Fl_Round_Button(315, 70, 70, 15, "Slow");
+              { Fl_Round_Button* o = btnRTTYafc[0] = new Fl_Round_Button(190, 60, 70, 20, "Slow");
                 o->type(102);
                 o->down_box(FL_DIAMOND_DOWN_BOX);
                 o->selection_color((Fl_Color)2);
                 o->callback((Fl_Callback*)cb_btnRTTYafc);
               }
-              { Fl_Round_Button* o = btnRTTYafc[1] = new Fl_Round_Button(315, 90, 70, 15, "Normal");
+              { Fl_Round_Button* o = btnRTTYafc[1] = new Fl_Round_Button(190, 85, 70, 15, "Normal");
                 o->type(102);
                 o->down_box(FL_DIAMOND_DOWN_BOX);
                 o->value(1);
                 o->selection_color((Fl_Color)2);
                 o->callback((Fl_Callback*)cb_btnRTTYafc1);
               }
-              { Fl_Round_Button* o = btnRTTYafc[2] = new Fl_Round_Button(315, 110, 70, 15, "Fast");
+              { Fl_Round_Button* o = btnRTTYafc[2] = new Fl_Round_Button(190, 105, 70, 15, "Fast");
                 o->type(102);
                 o->down_box(FL_DIAMOND_DOWN_BOX);
                 o->selection_color((Fl_Color)2);
@@ -2299,10 +2317,28 @@ l with your sound hardware.");
               }
               o->end();
             }
-            { Fl_Check_Button* o = btnPreferXhairScope = new Fl_Check_Button(265, 155, 120, 15, "X hair scope");
+            { Fl_Check_Button* o = btnPreferXhairScope = new Fl_Check_Button(240, 192, 22, 22, "X hair scope");
               o->down_box(FL_DOWN_BOX);
               o->callback((Fl_Callback*)cb_btnPreferXhairScope);
+              o->align(FL_ALIGN_LEFT);
               o->value(progdefaults.PreferXhairScope);
+            }
+            { Fl_Group* o = new Fl_Group(135, 125, 130, 65, "Unshift On Space");
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { Fl_Check_Button* o = chkUOSrx = new Fl_Check_Button(190, 144, 24, 18, "Rx");
+                o->down_box(FL_DOWN_BOX);
+                o->callback((Fl_Callback*)cb_chkUOSrx);
+                o->align(FL_ALIGN_LEFT);
+                o->value(progdefaults.UOSrx);
+              }
+              { Fl_Check_Button* o = chkUOStx = new Fl_Check_Button(190, 163, 24, 19, "Tx");
+                o->down_box(FL_DOWN_BOX);
+                o->callback((Fl_Callback*)cb_chkUOStx);
+                o->align(FL_ALIGN_LEFT);
+                o->value(progdefaults.UOStx);
+              }
+              o->end();
             }
             o->end();
           }

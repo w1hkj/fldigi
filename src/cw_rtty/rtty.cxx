@@ -72,9 +72,9 @@ void rtty::init()
 	snprintf(msg2, sizeof(msg2), "Baud %-4.1f", rtty_baud); 
 	put_Status2(msg2);
 	if (progdefaults.PreferXhairScope)
-		digiscope->mode(Digiscope::XHAIRS);
+		set_scope_mode(Digiscope::XHAIRS);
 	else
-		digiscope->mode(Digiscope::RTTY);
+		set_scope_mode(Digiscope::RTTY);
 }
 
 rtty::~rtty()
@@ -688,9 +688,12 @@ int rtty::tx_process()
 
 /* unshift-on-space */
 	if (c == ' ') {
-		send_char(LETTERS);
-		send_char(0x04); // coded value for a space
-		txmode = LETTERS;
+		if (progdefaults.UOStx) {
+			send_char(LETTERS);
+			send_char(0x04); // coded value for a space
+			txmode = LETTERS;
+		} else
+			send_char(0x04);
 		return 0;
 	}
 
@@ -797,7 +800,8 @@ char rtty::baudot_dec(unsigned char data)
 		rxmode = FIGURES;
 		break;
 	case 0x04:		/* unshift-on-space */
-		rxmode = LETTERS;
+		if (progdefaults.UOSrx)
+			rxmode = LETTERS;
 		return ' ';
 		break;
 	default:
