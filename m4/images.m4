@@ -31,8 +31,15 @@ AC_DEFUN([AC_FLDIGI_JPEG], [
       ac_cv_libjpeg=no
   else
       AC_MSG_CHECKING([for libjpeg])
-      test "x$LIBJPEG_LIBS" = "x" && LIBJPEG_LIBS="-ljpeg"
-      AC_FLDIGI_JPEG_LIB([$LIBJPEG_CFLAGS], [$LIBJPEG_LIBS])
+      if test "x$LIBJPEG_CFLAGS" != "x" || test "x$LIBJPEG_LIBS" != "x"; then
+          AC_FLDIGI_JPEG_LIB([$LIBJPEG_CFLAGS], [$LIBJPEG_LIBS])
+      else
+          AC_FLDIGI_JPEG_LIB([$FLTK_CFLAGS], [$FLTK_LIBS])
+          if test "x$ac_cv_libjpeg" != "xyes"; then
+              LIBJPEG_LIBS="-ljpeg"
+              AC_FLDIGI_JPEG_LIB([$LIBJPEG_CFLAGS], [$LIBJPEG_LIBS])
+          fi
+      fi
       AC_MSG_RESULT([$ac_cv_libjpeg])
   fi
   if test "x$ac_cv_libjpeg" = "xyes"; then
@@ -43,15 +50,67 @@ AC_DEFUN([AC_FLDIGI_JPEG], [
 ])
 
 
+AC_DEFUN([AC_FLDIGI_PNG_HDR], [
+  CXXFLAGS_saved="$CXXFLAGS"
+  m4_ifval([$1], [CXXFLAGS="$CXXFLAGS $1"], [:])
+  AC_CHECK_HEADER([png.h])
+  CXXFLAGS="$CXXFLAGS_saved"
+])
+
+AC_DEFUN([AC_FLDIGI_PNG_LIB], [
+  CXXFLAGS_saved="$CXXFLAGS"
+  LDFLAGS_saved="$LDFLAGS"
+  m4_ifval([$1], [CXXFLAGS="$CXXFLAGS $1"], [:])
+  m4_ifval([$2], [LDFLAGS="$LDFLAGS $2"], [:])
+  AC_LANG_PUSH(C++)
+  AC_LINK_IFELSE( [AC_LANG_PROGRAM( [[#include <png.h>
+                                      png_structp png = png_create_write_struct(0, 0, 0, 0);]],
+                                    [] )
+                  ],
+                  [ac_cv_libpng=yes], [ac_cv_libpng=no] )
+  AC_LANG_POP(C++)
+  CXXFLAGS="$CXXFLAGS_saved"
+  LDFLAGS="$LDFLAGS_saved"
+])
+
+AC_DEFUN([AC_FLDIGI_PNG], [
+  AC_ARG_VAR([LIBPNG_CFLAGS], [C compiler flags for PNG])
+  AC_ARG_VAR([LIBPNG_LIBS], [linker flags for PNG])
+
+  if test "x$LIBPNG_CFLAGS" != "x" || test "x$LIBPNG_LIBS" != "x"; then
+      AC_FLDIGI_PKG_CHECK([libpng], [libpng >= 1.2.8], [no], [yes])
+  else
+      AC_FLDIGI_PNG_HDR([$LIBPNG_CFLAGS])
+      if test "x$ac_cv_header_png_h" != "xyes"; then
+          AC_FLDIGI_PKG_CHECK([libpng], [libpng >= 1.2.8], [no], [yes])
+      else
+          AC_MSG_CHECKING([for libpng in fltk libs])
+          AC_FLDIGI_PNG_LIB([$FLTK_CFLAGS], [$FLTK_LIBS])
+          AC_MSG_RESULT([$ac_cv_libpng])
+          if test "x$ac_cv_libpng" != "xyes"; then
+              AC_FLDIGI_PKG_CHECK([libpng], [libpng >= 1.2.8], [no], [yes])
+          fi
+      fi
+  fi
+
+  if test "x$ac_cv_libpng" = "xyes"; then
+      AC_DEFINE([USE_LIBPNG], 1, [Define to 1 if we are using libpng])
+  else
+      AC_DEFINE([USE_LIBPNG], 0, [Define to 1 if we are using libpng])
+  fi
+])
+
+
 AC_DEFUN([AC_FLDIGI_IMAGES], [
+  AC_REQUIRE([AC_FLDIGI_FLTK])
+
   AC_FLDIGI_JPEG
   if test "x$ac_cv_libjpeg" = "xyes"; then
       IMAGE_CFLAGS="$IMAGE_CFLAGS $LIBJPEG_CFLAGS"
       IMAGE_LIBS="$IMAGE_LIBS $LIBJPEG_LIBS"
   fi
 
-  AC_FLDIGI_PKG_CHECK([libpng], [libpng >= 1.2.8], [no], [yes],
-                      [support saving images in PNG format @<:@autodetect@:>@])
+  AC_FLDIGI_PNG
   if test "x$ac_cv_libpng" = "xyes"; then
       IMAGE_CFLAGS="$IMAGE_CFLAGS $LIBPNG_CFLAGS"
       IMAGE_LIBS="$IMAGE_LIBS $LIBPNG_LIBS"
