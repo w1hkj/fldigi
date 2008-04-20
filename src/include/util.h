@@ -115,6 +115,10 @@ deprecated__ typeof(strcat) strcat;
 */
 #endif
 
+#if !HAVE_STRCASESTR
+char* strcasestr(const char* haystack, const char* needle);
+#endif
+
 #ifdef __CYGWIN__
 #  define NOMINMAX 1
 #endif

@@ -193,8 +193,6 @@ configuration progdefaults = {
 	{ 255, 242, 190}, // RGBint RxColor;
 	{ 200, 235, 255}, // RGBint TxColor;
 
-	true,			// bool		alt_text_widgets;
-
 	"",				// string	strCommPorts
         9876,		// int		rx_msgid
         6789,		// int		tx_msgid

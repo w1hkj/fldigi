@@ -29,35 +29,12 @@
 
 #include <FL/fl_ask.H>
 
-extern "C" {
-// This is needed to avoid a boolean conflict with jmorecfg.h
-#ifdef __CYGWIN__
-#  include <w32api/wtypes.h>
-#  define HAVE_BOOLEAN 1
+#if USE_LIBJPEG
+#  include <jpeglib.h>
 #endif
-
-// This is needed to avoid a conflict between a
-// system-defined INT32 typedef, and a macro defined in
-// jmorecfg.h, included by jpeglib.h. If ADDRESS_TAG_BIT
-// is defined, basestd.h has been included and we will have
-// the typedef from cygwin, so we define XMD_H to avoid
-// defining the macro in jmorecfg.h
-#if defined(__CYGWIN__) && !defined(XMD_H)
-#  define XMD_H
-#  define FLDIGI_JPEG_XMD_H
+#if USE_LIBPNG
+#  include <png.h>
 #endif
-
-#include <jpeglib.h>
-
-#ifdef FLDIGI_JPEG_XMD_H
-#  undef FLDIGI_JPEG_XMD_H
-#  undef XMD_H
-#endif
-
-//#  include "transupp.h"
-};
-
-#include <png.h>
 
 #include "picture.h"
 
@@ -275,6 +252,7 @@ static FILE* open_file(const char* name, const char* suffix)
 	return fp;
 }
 
+#if USE_LIBJPEG
 //
 // save_jpeg - Write a captured picture to a JPEG format file.
 //
@@ -318,7 +296,9 @@ int picture::save_jpeg(const char *filename)
 
 	return 0;
 }
+#endif // USE_LIBJPEG
 
+#if USE_LIBPNG
 int picture::save_png(const char* filename)
 {
 	FILE* fp;
@@ -377,3 +357,4 @@ int picture::save_png(const char* filename)
 
 	return 0;
 }
+#endif // USE_LIBPNG

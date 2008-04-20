@@ -37,10 +37,12 @@
 //#include "id.h"
 #include "mbuffer.h"
 
-//#define	RTTY_SampleRate	8000
-#define RTTY_SampleRate 11025
+#define	RTTY_SampleRate	8000
+//#define RTTY_SampleRate 11025
+//#define RTTY_SampleRate 12000
 
-#define	RTTYMaxSymLen	1024
+#define	RTTYMaxSymLen	(RTTY_SampleRate / 23)
+#define MAXPIPE (2*RTTYMaxSymLen)
 
 #define	LETTERS	0x100
 #define	FIGURES	0x200
@@ -96,10 +98,10 @@ private:
 	Cmovavg *bitfilt;
 	fftfilt *bpfilt;
 
-	mbuffer<double, RTTYMaxSymLen, 2> pipe;
+	mbuffer<double, MAXPIPE, 2> pipe;
 	int pipeptr;
 
-	double bbfilter[RTTYMaxSymLen];
+	double bbfilter[MAXPIPE];
 	unsigned int filterptr;
 
 	RTTY_RX_STATE rxstate;
@@ -113,6 +115,16 @@ private:
 
 	double prevsymbol;
 	complex prevsmpl;
+	
+	complex QI[1024];
+	int QIptr;
+	double markphase;
+	double spacephase;
+	double marksig;
+	double spacesig;
+	double f1, f2;
+	fftfilt *markfilt;
+	fftfilt *spacefilt;
 
 	double FSKbuf[OUTBUFSIZE];		// signal array for qrq drive
 	double FSKphaseacc;
@@ -125,10 +137,12 @@ private:
 	void clear_syncscope();
 	void update_syncscope();
 	inline complex mixer(complex in);
+	void MarkSpace(complex in);
 	unsigned char bitreverse(unsigned char in, int n);
 	int decode_char();
 	int rttyparity(unsigned int);
 	int rx(bool bit);
+// transmit	
 	double nco(double freq);
 	void send_symbol(int symbol);
 	void send_stop();

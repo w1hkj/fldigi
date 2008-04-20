@@ -396,7 +396,7 @@ void Cmovavg::reset()
 // require the store of the history associated with those bins over the 
 // kernel length.
 //
-// Use in the MFSK modem for extraction of the frequency spectra
+// Use in the MFSK / DOMINO modem for extraction of the frequency spectra
 //
 //=====================================================================
 

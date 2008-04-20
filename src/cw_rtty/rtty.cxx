@@ -82,6 +82,9 @@ rtty::~rtty()
 	if (hilbert) delete hilbert;
 //	if (wfid) delete wfid;
 	if (bitfilt) delete bitfilt;
+	if (markfilt) delete markfilt;
+	if (spacefilt) delete spacefilt;
+	if (bpfilt) delete bpfilt;
 }
 
 void rtty::restart()
@@ -111,13 +114,18 @@ void rtty::restart()
 	symbollen = (int) (samplerate / rtty_baud + 0.5);
 	set_bandwidth(shift);
 
-	fhi = (shift / 2 + rtty_baud * 1.1) / samplerate;
-	flo = (shift / 2 - rtty_baud * 1.1) / samplerate;
-
+	fhi = (shift / 2 + rtty_baud* 1.1) / samplerate;
+	flo = (shift / 2 - rtty_baud* 1.1) / samplerate;
 	if (bpfilt) 
 		bpfilt->create_filter(flo, fhi);
 	else
 		bpfilt = new fftfilt(flo, fhi, 1024);
+
+	f1 = 0.0 * rtty_baud / samplerate;
+	f2 = 1.0 * rtty_baud / samplerate;
+	
+	if (!markfilt) markfilt = new fftfilt(f1, f2, 1024);
+	if (!spacefilt) spacefilt = new fftfilt(f1, f2, 1024);
 
 	if (bitfilt)
 		bitfilt->setLength(symbollen / 4);//6);
@@ -143,6 +151,10 @@ void rtty::restart()
 	snprintf(msg2, sizeof(msg2), "Baud %-4.1f", rtty_baud); 
 	put_Status2(msg2);
 	put_MODEstatus(mode);
+	for (int i = 0; i < 1024; i++) QI[i].re = QI[i].im = 0.0;
+	QIptr = 0;
+	markphase = spacephase = 0.0;
+	marksig = spacesig = 0.0;
 }
 
 rtty::rtty(trx_mode tty_mode)
@@ -153,6 +165,9 @@ rtty::rtty(trx_mode tty_mode)
 	fragmentsize = 256;
 	
 	bpfilt = (fftfilt *)0;
+//	markfilt = (fftfilt *)0;
+//	spacefilt = (fftfilt *)0;
+	
 	bitfilt = (Cmovavg *)0;
 	
 	hilbert = new C_FIR_filter();
@@ -163,12 +178,11 @@ rtty::rtty(trx_mode tty_mode)
 
 void rtty::update_syncscope()
 {
-	double data[RTTYMaxSymLen];
+	double data[2*symbollen];
 	int i;
-
-	for (i = 0; i < symbollen; i++)
+	for (i = 0; i < 2*symbollen; i++)
 		data[i] = pipe[i];
-	set_scope(data, symbollen, false);
+	set_scope(data, 2*symbollen, false);
 }
 
 void rtty::clear_syncscope()
@@ -190,6 +204,35 @@ complex rtty::mixer(complex in)
 		phaseacc += twopi;
 
 	return z;
+}
+
+void rtty::MarkSpace(complex in)
+{
+	complex z, zm, zs, *zmp, *zsp;
+
+	z.re = cos(markphase);
+	z.im = sin(markphase);
+	zm = z * in;
+	markphase -= twopi * (frequency - (shift + rtty_baud) / 2.0) / samplerate;
+	if (markphase > M_PI) markphase -= twopi;
+	if (markphase < M_PI) markphase += twopi;
+
+	z.re = cos(spacephase);
+	z.im = sin(spacephase);
+	zs = z * in;
+	spacephase  -= twopi * (frequency + (shift + rtty_baud) / 2.0) / samplerate;
+	if (spacephase > M_PI) spacephase -= twopi;
+	if (spacephase < M_PI) spacephase += twopi;
+	
+	int n = markfilt->run(zm, &zmp);
+	spacefilt->run(zs, &zsp);
+	if (n) {
+		for (int i = 0; i < n; i++) {
+			QI[i].re = zmp[i].re;
+			QI[i].im = zsp[i].re;
+		}
+		set_zdata(QI, n);
+	}
 }
 
 unsigned char rtty::bitreverse(unsigned char in, int n)
@@ -397,6 +440,8 @@ int rtty::rx_process(const double *buf, int len)
 		
 		z.re = z.im = *buf++;
 		hilbert->run(z, z);
+
+		MarkSpace(z);
 		
 // mix it with the audio carrier frequency to create a baseband signal
 
@@ -413,7 +458,7 @@ int rtty::rx_process(const double *buf, int len)
 			
 			fin = (prevsmpl % zp[i]).arg() * samplerate / twopi;
 			prevsmpl = zp[i];
-			
+						
 // filter the result with a moving average filter
 			
 			f = bitfilt->run(fin);
@@ -440,7 +485,7 @@ int rtty::rx_process(const double *buf, int len)
 			
 			if (--dspcnt % (nbits + 2) == 0) {
 				pipe[pipeptr] = f / shift; // display filtered signal		
-				pipeptr = (pipeptr + 1) % symbollen;
+				pipeptr = (pipeptr + 1) % (2*symbollen);
 			}
 
 			if (!progdefaults.RTTY_USB)

@@ -902,13 +902,6 @@ progdefaults.changed = true;}
             code0 {o->value(progdefaults.StartAtSweetSpot);}
           }
         }
-        Fl_Check_Button btntextwidgets {
-          label {Alternative text widgets}
-          callback {progdefaults.alt_text_widgets = o->value();
-progdefaults.changed = true;}
-          tooltip {These widgets have full editing support but are slower.
-This option takes effect after a restart.} xywh {50 155 180 20} down_box DOWN_BOX value 1 hide
-        }
       }
       Fl_Group tabModems {
         label Modem open

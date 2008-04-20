@@ -9,7 +9,7 @@ dnl major and minor must be integers; patch may
 dnl contain other characters or be empty
 m4_define(FLDIGI_MAJOR, [2])
 m4_define(FLDIGI_MINOR, [11])
-m4_define(FLDIGI_PATCH, [O])
+m4_define(FLDIGI_PATCH, [P])
 
 AC_INIT([fldigi], FLDIGI_MAJOR.FLDIGI_MINOR[FLDIGI_PATCH], [w1hkj AT w1hkj DOT com])
 
@@ -49,7 +49,7 @@ AC_PROG_CC
 # Checks for header files.
 AC_HEADER_STDC
 AC_HEADER_DIRENT
-AC_CHECK_HEADERS([arpa/inet.h execinfo.h fcntl.h jpeglib.h limits.h memory.h netdb.h netinet/in.h regex.h stdint.h stdlib.h string.h strings.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h termios.h unistd.h values.h])
+AC_CHECK_HEADERS([arpa/inet.h execinfo.h fcntl.h limits.h memory.h netdb.h netinet/in.h regex.h stdint.h stdlib.h string.h strings.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h termios.h unistd.h values.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
@@ -135,11 +135,23 @@ AC_FLDIGI_BIND
 # Set HAVE_FLUID Makefile conditional
 AC_FLDIGI_FLTK
 
-### JPEG
-# Test if we can compile a program that includes jpeglib.h
-# and link it with the FLTK flags set above.
-# Set ac_cv_have_jpeg to yes/no
-AC_FLDIGI_FLTK_JPEG
+### Image libraries
+# JPEG:
+#   Test if we can compile a program that includes jpeglib.h
+#   and link it either using the FLTK flags set above, or
+#   with -ljpeg.
+#   Set ac_cv_libjpeg to yes/no
+#   Define LIBJPEG_CFLAGS and LIBJPEG_CFLAGS and add them to
+#   IMAGE_CFLAGS and IMAGE_LIBS.
+#   Define USE_LIBJPEG in config.h
+# PNG:
+#   Check with the AC_FLDIGI_PKG_CHECK macro
+#   Set ac_cv_libpng to yes/no
+#   Define LIBJPEG_CFLAGS and LIBJPEG_CFLAGS and add them to
+#   IMAGE_CFLAGS and IMAGE_LIBS.
+#   Define USE_LIBPNG in config.h
+# Substitute IMAGE_CFLAGS and IMAGE_LIBS in Makefile
+AC_FLDIGI_IMAGES
 
 ### OSS
 # Set ac_cv_oss to yes/no
@@ -150,27 +162,27 @@ AC_FLDIGI_OSS
 # Set ac_cv_samplerate to yes/no    (not used because we require samplerate)
 # Define USE_SAMPLERATE in config.h (as above)
 # Substitute SAMPLERATE_CFLAGS and SAMPLERATE_LIBS in Makefile
-AC_FLDIGI_PKG_CHECK([samplerate], [samplerate >= 0.1.1], [], [], [SAMPLERATE], [])
+AC_FLDIGI_PKG_CHECK([samplerate], [samplerate >= 0.1.1], [no], [no])
 
 ### libsndfile
 # Set ac_cv_sndfile to yes/no
 # Define USE_SNDFILE in config.h
 # Substitute SNDFILE_CFLAGS and SNDFILE_LIBS in Makefile
-AC_FLDIGI_PKG_CHECK([sndfile], [sndfile >= 1.0.10], [yes], [with], [SNDFILE],
+AC_FLDIGI_PKG_CHECK([sndfile], [sndfile >= 1.0.10], [yes], [yes],
                     [enable reading/writing of audio files via libsndfile @<:@autodetect@:>@] )
 
 ### portaudio
 # Set ac_cv_portaudio to yes/no
 # Define USE_PORTAUDIO in config.h
 # Substitute PORTAUDIO_CFLAGS and PORTAUDIO_LIBS in Makefile
-AC_FLDIGI_PKG_CHECK([portaudio], [portaudio-2.0 >= 19], [yes], [with], [PORTAUDIO],
+AC_FLDIGI_PKG_CHECK([portaudio], [portaudio-2.0 >= 19], [yes], [yes],
                     [enable support for PortAudio @<:@autodetect@:>@] )
 
 ### pulseaudio
 # Set ac_cv_pulseaudio to yes/no
 # Define USE_PULSEAUDIO in config.h
 # Substitute PULSEAUDIO_CFLAGS and PULSEAUDIO_LIBS in Makefile
-AC_FLDIGI_PKG_CHECK([pulseaudio], [libpulse-simple >= 0.9.7], [yes], [with], [PULSEAUDIO],
+AC_FLDIGI_PKG_CHECK([pulseaudio], [libpulse-simple >= 0.9.7], [yes], [yes],
                     [enable support for PulseAudio @<:@autodetect@:>@] )
 
 if test "x$ac_cv_oss" = "xno" && \
@@ -184,7 +196,7 @@ fi
 # Define USE_HAMLIB in config.h
 # Substitute HAMLIB_CFLAGS and HAMLIB_LIBS in Makefile
 # Set ENABLE_HAMLIB Makefile conditional
-AC_FLDIGI_PKG_CHECK([hamlib], [hamlib >= 1.2.4], [yes], [with], [HAMLIB],
+AC_FLDIGI_PKG_CHECK([hamlib], [hamlib >= 1.2.4], [yes], [yes],
                     [use hamradio control libraries @<:@autodetect@:>@],
                     [ENABLE_HAMLIB])
 
@@ -209,7 +221,7 @@ Configuration summary:
   Version ............................. $VERSION
 
   Static linking ...................... $ac_cv_static
-  Optimizations ....................... $ac_cv_opt
+  CPU optimizations ................... $ac_cv_opt
   Debugging ........................... $ac_cv_debug
 
   sndfile ............................. $ac_cv_sndfile

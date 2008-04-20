@@ -21,7 +21,7 @@ static const char* get_file(void)
 	}
 }
 
-const char* file_select(const char* title, const char* filter, const char* def)
+const char* file_select(const char* title, const char* filter, const char* def, int* fsel)
 {
 	if (!chooser)
 		chooser = new Fl_Native_File_Chooser;
@@ -33,10 +33,13 @@ const char* file_select(const char* title, const char* filter, const char* def)
 	chooser->options(Fl_Native_File_Chooser::PREVIEW);
 	chooser->type(Fl_Native_File_Chooser::BROWSE_FILE);
 
-	return get_file();
+	const char* fn = get_file();
+	if (fsel)
+	    *fsel = chooser->filter_value();
+	return fn;
 }
 
-const char* file_saveas(const char* title, const char* filter, const char* def)
+const char* file_saveas(const char* title, const char* filter, const char* def, int* fsel)
 {
 	if (!chooser)
 		chooser = new Fl_Native_File_Chooser;
@@ -50,7 +53,10 @@ const char* file_saveas(const char* title, const char* filter, const char* def)
 			 Fl_Native_File_Chooser::PREVIEW);
 	chooser->type(Fl_Native_File_Chooser::BROWSE_SAVE_FILE);
 
-	return get_file();
+	const char* fn = get_file();
+	if (fsel)
+	    *fsel = chooser->filter_value();
+	return fn;
 }
 
 const char* dir_select(const char* title, const char* filter, const char* def)

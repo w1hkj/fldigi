@@ -760,13 +760,6 @@ static void cb_btnStartAtSweetSpot(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *btntextwidgets=(Fl_Check_Button *)0;
-
-static void cb_btntextwidgets(Fl_Check_Button* o, void*) {
-  progdefaults.alt_text_widgets = o->value();
-progdefaults.changed = true;
-}
-
 Fl_Group *tabModems=(Fl_Group *)0;
 
 Fl_Tabs *tabsModems=(Fl_Tabs *)0;
@@ -1850,19 +1843,12 @@ l with your sound hardware.");
           }
           o->end();
         }
-        { Fl_Check_Button* o = btntextwidgets = new Fl_Check_Button(50, 155, 180, 20, "Alternative text widgets");
-          o->tooltip("These widgets have full editing support but are slower.\nThis option takes ef\
-fect after a restart.");
-          o->down_box(FL_DOWN_BOX);
-          o->value(1);
-          o->callback((Fl_Callback*)cb_btntextwidgets);
-          o->hide();
-        }
         o->end();
       }
       { Fl_Group* o = tabModems = new Fl_Group(0, 25, 401, 195, "Modem");
         o->color((Fl_Color)51);
         o->selection_color((Fl_Color)51);
+        o->hide();
         { Fl_Tabs* o = tabsModems = new Fl_Tabs(0, 25, 401, 195);
           o->color((Fl_Color)51);
           o->selection_color((Fl_Color)10);

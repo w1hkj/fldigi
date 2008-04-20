@@ -39,7 +39,6 @@
 #include <FL/Fl_Check_Button.H>
 
 #include "combo.h"
-//#include "TextView.h"
 #include "FTextView.h"
 #include "raster.h"
 #include "waterfall.h"
@@ -51,12 +50,10 @@
 extern Fl_Double_Window *fl_digi_main;
 extern Fl_Double_Window *scopeview;
 
-extern ReceiveWidget		*ReceiveText;
-extern TransmitWidget		*TransmitText;
+extern FTextView		*ReceiveText;
+extern FTextEdit		*TransmitText;
 extern Raster			*FHdisp;
 extern Fl_Tile_check		*TiledGroup;
-extern Fl_Text_Buffer	*rcvBuffer;
-extern Fl_Text_Buffer	*xmtBuffer;
 extern Fl_Box			*StatusBar;
 extern Fl_Box			*Status2;
 extern Fl_Box			*Status1;
@@ -115,6 +112,8 @@ extern void set_scope(double *data, int len, bool autoscale = true);
 extern void set_phase(double phase, bool highlight);
 extern void set_rtty(double, double, double);
 extern void set_video(double *, int);
+extern void set_zdata(complex *, int);
+
 extern void set_CWwpm();
 extern void put_rx_char(unsigned int data);
 extern void put_sec_char( char chr );

@@ -28,6 +28,8 @@ Change Log:
      14) New sound callback code implementation.
      15) Two-colour squelch button shows Yellow Squelch enabled but not open,
          Light Green enabled and open.
+     16) Experimental RTTY mark/space cross hair display using mark / space
+         filters.
       
 2.10.3)
       1) Corrected memory leak bug.
