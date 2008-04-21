@@ -121,6 +121,7 @@ private:
 	int QIptr;
 	double sigpwr;
 	double noisepwr;
+	double avgsig;
 
 	double FSKbuf[OUTBUFSIZE];		// signal array for qrq drive
 	double FSKphaseacc;

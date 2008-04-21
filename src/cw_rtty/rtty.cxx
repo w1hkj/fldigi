@@ -395,6 +395,8 @@ int rtty::rx_process(const double *buf, int len)
 	int n, rxflag;
 	double deadzone = shift/8;
 	static int dspcnt = symbollen * nbits;
+	double rotate;
+	double halfshift = rtty_shift/2.0;
 
 	while (len-- > 0) {
 		
@@ -427,7 +429,6 @@ int rtty::rx_process(const double *buf, int len)
 				f = bitfilt->run(fin);
 			
 // track the + and - frequency excursions separately to derive an afc signal
-// track the sum and sum^2 for derivation of DCD
 			
 				if (fin >= 0.0) {
 					poscnt++;
@@ -443,13 +444,18 @@ int rtty::rx_process(const double *buf, int len)
 				
 //				double rotate = (freqerr - rtty_shift/2.0) * (M_PI/4.0) / (rtty_shift / 2.0);
 //				QI[i] = QI[i] * complex(cos(rotate), sin(rotate));
-				double rotate;
-				if (fin >= 0.0)
-					rotate = (freqerrhi) * (M_PI/4.0) / (rtty_shift / 2.0);
-				else
-					rotate = (-freqerrlo) * (M_PI/4.0) / (rtty_shift / 2.0);
-				QI[i] = QI[i] * complex(cos(rotate), sin(rotate));
 
+				if (fin >= 0.0)
+					rotate = (halfshift - freqerrhi) * (M_PI/4.0) / halfshift;
+				else
+					rotate = -(halfshift + freqerrlo) * (M_PI/4.0) / halfshift;
+				QI[i] = QI[i] * complex(cos(rotate), sin(rotate));
+				avgsig = decayavg(avgsig, QI[i].mag(), 32);
+				
+				if (avgsig > 0.05) {
+					QI[i].re = (0.4 / avgsig) * QI[i].re;
+					QI[i].im = (0.4 / avgsig) * QI[i].im;
+				}
 //	hysterisis dead zone in frequency discriminator bit detector
 
 				if (f > deadzone )  {

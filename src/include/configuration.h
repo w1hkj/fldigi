@@ -50,6 +50,7 @@ struct configuration {
 	bool		PseudoFSK;
 	bool		UOSrx;
 	bool		UOStx;
+	bool		Xagc;
 // CW
 	bool		useCWkeylineRTS;	// use RTS for CW
 	bool		useCWkeylineDTR;	// use DTR for CW
