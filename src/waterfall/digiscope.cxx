@@ -43,6 +43,7 @@ Digiscope::Digiscope (int X, int Y, int W, int H) :
 	vidline = new unsigned char[ 3 * (W-4)];
 	_highlight = false;
 	_len = MAX_LEN;
+	_zptr = 0;
 }
 
 Digiscope::~Digiscope()
@@ -76,6 +77,24 @@ void Digiscope::video(double *data, int len )
 	else
 		memcpy (&vidbuf[3*W*linecnt], vidline, 3*W * sizeof(unsigned char));
 	linecnt++;
+
+	REQ_DROP(&Digiscope::redraw, this);
+	FL_UNLOCK_D();
+	FL_AWAKE_D();
+}
+
+void Digiscope::zdata(complex *zarray, int len )
+{
+	if (active_modem->HistoryON()) return;
+	
+	if (zarray == NULL || len == 0)
+		return;
+	
+	FL_LOCK_D();
+	for (int i = 0; i < len; i++) {
+		_zdata[_zptr++] = zarray[i];
+		if (_zptr == MAX_ZLEN) _zptr = 0;
+	}
 
 	REQ_DROP(&Digiscope::redraw, this);
 	FL_UNLOCK_D();
@@ -163,6 +182,10 @@ void Digiscope::mode(scope_mode md)
 
 void Digiscope::draw_phase()
 {
+	fl_clip(x()+2,y()+2,w()-4,h()-4);
+	fl_color(FL_BLACK);
+	fl_rectf(x()+2,y()+2,w()-4,h()-4);
+	fl_push_matrix();
 	fl_translate(x() + w() / 2.0, y() + w() / 2.0);
 	fl_scale( 0.9*w()/2, -0.9*w()/2);
 	fl_color(FL_WHITE);
@@ -193,11 +216,17 @@ void Digiscope::draw_phase()
 	} else {
 		fl_circle( 0.0, 0.0, 0.1);
 	}
+	fl_pop_matrix();
+	fl_pop_clip();
 }
 
 void Digiscope::draw_crosshairs()
 {
 	double phi, xp, yp;
+	fl_clip(x()+2,y()+2,w()-4,h()-4);
+	fl_color(FL_BLACK);
+	fl_rectf(x()+2,y()+2,w()-4,h()-4);
+	fl_push_matrix();
 	fl_translate(x() + w() / 2.0, y() + w() / 2.0);
 	fl_scale( 0.9*w()/2, -0.9*w()/2);
 	fl_color(FL_WHITE);
@@ -234,11 +263,17 @@ void Digiscope::draw_crosshairs()
 		fl_vertex(-xp, -yp);
 		fl_vertex( xp,  yp);
 	fl_end_line();
+	fl_pop_matrix();
+	fl_pop_clip();
 }
 
 void Digiscope::draw_scope()
 {
 	int npts;
+	fl_clip(x()+2,y()+2,w()-4,h()-4);
+	fl_color(FL_BLACK);
+	fl_rectf(x()+2,y()+2,w()-4,h()-4);
+	fl_push_matrix();
 	npts = MIN(w(), _len);
 	npts = MAX(1, npts);
 	fl_translate(x()+2, y() + h() - 2);
@@ -248,11 +283,47 @@ void Digiscope::draw_scope()
 	for (int i = 0; i < npts; i++)
 		fl_vertex( (double)i / npts, _buf[i * _len / npts] );
 	fl_end_line();
+	fl_pop_matrix();
+	fl_pop_clip();
+}
+
+void Digiscope::draw_xy()
+{
+	fl_clip(x()+2,y()+2,w()-4,h()-4);
+	fl_color(FL_BLACK);
+	fl_rectf(x()+2,y()+2,w()-4,h()-4);
+	fl_push_matrix();
+	fl_translate(x() + w() / 2.0, y() + w() / 2.0);
+	fl_scale( w()/2.0, -w()/2.0);
+// x & y axis	
+	fl_color(FL_WHITE);
+	fl_begin_line();
+		fl_vertex(-1.0, 0.0);
+		fl_vertex(+1.0, 0.0);
+	fl_end_line();
+	fl_begin_line();
+		fl_vertex(0.0, -1.0);
+		fl_vertex(0.0, +1.0);
+	fl_end_line();
+// data
+	fl_color(FL_GREEN);
+	int xp, yp;
+	for (int i = 0; i <  MAX_ZLEN; i++ ) {
+		xp = (int)((_zdata[i].re + 1.0) * w() / 2.0);
+		yp = (int)((_zdata[i].im + 1.0) * h() / 2.0);
+		fl_point(xp,yp);
+	}
+	fl_pop_matrix();
+	fl_pop_clip();
 }
 
 void Digiscope::draw_rtty()
 {
 	int npts;
+	fl_clip(x()+2,y()+2,w()-4,h()-4);
+	fl_color(FL_BLACK);
+	fl_rectf(x()+2,y()+2,w()-4,h()-4);
+	fl_push_matrix();
 	npts = MIN(w(), _len);
 	npts = MAX(1, npts);
 	fl_translate(x()+2, y() + h() - 2);
@@ -271,6 +342,8 @@ void Digiscope::draw_rtty()
 	for (int i = 0; i < npts; i++)
 		fl_vertex( (double)i / npts, 0.5 + 0.75 * _buf[i * _len / npts] );
 	fl_end_line();
+	fl_pop_matrix();
+	fl_pop_clip();
 }
 
 void Digiscope::draw_video()
@@ -287,21 +360,16 @@ void Digiscope::draw()
 	if (_mode == WWV || _mode == DOMWF)
 		draw_video();
 	else {
-		fl_clip(x()+2,y()+2,w()-4,h()-4);
-		fl_color(FL_BLACK);
-		fl_rectf(x()+2,y()+2,w()-4,h()-4);
-		fl_push_matrix();
 		switch (_mode) {
 			case SCOPE :	draw_scope(); break;
 			case PHASE :	draw_phase(); break;
 			case RTTY :		draw_rtty(); break;
-			case XHAIRS :	draw_crosshairs(); break;
+//			case XHAIRS :	draw_crosshairs(); break;
+			case XHAIRS :	draw_xy(); break;
 			case DOMDATA :	draw_scope(); break;
 			case BLANK : 
 			default: break;
 		}
-		fl_pop_matrix();
-		fl_pop_clip();
 	}
 }
 

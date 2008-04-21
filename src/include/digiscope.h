@@ -38,12 +38,14 @@
 #include <FL/Fl_Widget.H>
 #include <FL/fl_draw.H>
 #include "threads.h"
+#include "complex.h"
 
 class Digiscope : public Fl_Widget { 
 public:
 #define DEFAULT_WIDTH	100
 #define DEFAULT_HEIGHT	100
 #define	MAX_LEN			4096
+#define MAX_ZLEN		16184
 	enum scope_mode {
 		SCOPE,
 		PHASE,
@@ -58,6 +60,9 @@ public:
 private:
 	scope_mode _mode;
 	double _buf[MAX_LEN];
+	complex _zdata[MAX_ZLEN];
+	int _zlen;
+	int _zptr;
 	unsigned char *vidbuf;
 	unsigned char *vidline;
 	int _len;
@@ -65,6 +70,7 @@ private:
 	double _phase;
 	double _flo, _fhi, _amp;
 	bool _highlight;
+
 public:
 	Digiscope(int, int, int, int);
 	~Digiscope();
@@ -75,10 +81,12 @@ public:
 	void draw_phase();
 	void draw_rtty();
 	void draw_crosshairs();
+	void draw_xy();
 	void draw_video();
 	void data(double *data, int len, bool scale = true);
 	void phase(double ph, bool hl);
 	void video(double *data, int len );
+	void zdata(complex *z, int len);
 	void rtty(double flo, double fhi, double amp);
 	void mode(scope_mode md);
 	scope_mode mode() { return _mode;};

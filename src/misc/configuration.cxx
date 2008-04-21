@@ -50,6 +50,7 @@ configuration progdefaults = {
 	false,			// bool		PseudoFSK;
 	true,			// bool		UOSrx; // unshift on space - receive
 	true,			// bool		UOStx; // unshift on space - transmit
+	false,			// bool		Xagc; // use agc for X-scope
 // CW
 	false,			// bool		useCWkeylineRTS;
 	false,			// bool		useCWkeylineDTR;
@@ -234,6 +235,7 @@ enum TAG { \
 	PREFERXHAIRSCOPE, 
 	PSEUDOFSK,
 	UOSRX, UOSTX,
+	XAGC,
 	CWWEIGHT, CWSPEED, CWDEFSPEED,
 	CWBANDWIDTH, CWRANGE, CWLOWERLIMIT, CWUPPERLIMIT,
 	CWTRACK, CWRISETIME, CWDASH2DOT,
@@ -355,6 +357,7 @@ void configuration::writeDefaultsXML()
 	writeXMLbool(f, "PSEUDOFSK", PseudoFSK);
 	writeXMLbool(f, "UOSRX", UOSrx);
 	writeXMLbool(f, "UOSTX", UOStx);
+	writeXMLbool(f, "XAGC", Xagc);
 
 	writeXMLint(f, "CWWEIGHT", CWweight);	
 	writeXMLint(f, "CWSPEED", CWspeed);
@@ -600,6 +603,9 @@ bool configuration::readDefaultsXML()
 						break;
 					case UOSTX :
 						UOStx = atoi(xml->getNodeData());
+						break;
+					case XAGC :
+						Xagc = atoi(xml->getNodeData());
 						break;
 					case CWWEIGHT :
 						CWweight = atoi(xml->getNodeData());
@@ -990,6 +996,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("PSEUDOFSK", nodeName)) 	tag = PSEUDOFSK;
 				else if (!strcmp("UOSRX", nodeName)) 	tag = UOSRX;
 				else if (!strcmp("UOSTX", nodeName)) 	tag = UOSTX;
+				else if (!strcmp("XAGC", nodeName)) 	tag = XAGC;
 				else if (!strcmp("CWWEIGHT", nodeName)) 	tag = CWWEIGHT;
 				else if (!strcmp("CWSPEED", nodeName)) 	tag = CWSPEED;
 				else if (!strcmp("CWDEFSPEED", nodeName)) 	tag = CWDEFSPEED;
@@ -1135,6 +1142,7 @@ void configuration::loadDefaults() {
 	chkPseudoFSK->value(PseudoFSK);
 	chkUOSrx->value(UOSrx);
 	chkUOStx->value(UOStx);
+	chkXagc->value(Xagc);
 	
 	for (int i = 0; i < 3; i++)
 		if (rtty_afcspeed == i)

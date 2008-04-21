@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+#include <string.h>
+
 #include "util.h"
 
 /* Return the smallest power of 2 not less than n */

@@ -30,7 +30,6 @@
 #include <string>
 
 #include "threads.h"
-//#include "TextView.h"
 
 /* fltk includes */
 #include <FL/Fl.H>

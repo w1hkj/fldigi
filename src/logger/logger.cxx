@@ -78,7 +78,7 @@ FIELD fields[] = {
   {"TX_PWR",     4}   // 29 - power transmitted by this station
 };
 
-#define ADIF_VERS "2.0"
+#define ADIF_VERS "2.1.9"
 static string adif;
 
 const char *ADIFHEADER = 
@@ -167,7 +167,7 @@ int submit_log(void)
 		snprintf(adifdate, sizeof(adifdate), "%04d%02d%02d", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday);
 		strftime(logtime, sizeof(logtime), "%H%M", tm);
 
-	const char *mode = mode_info[active_modem->get_mode()].sname;
+	const char *mode = mode_info[active_modem->get_mode()].adif_name;
 	
 	snprintf(strFreqMhz, sizeof(strFreqMhz), "%-12f", wf->dFreq()/1.0e6);
 

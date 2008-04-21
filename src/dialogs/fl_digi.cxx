@@ -107,12 +107,11 @@ MixerBase* mixer = 0;
 bool	useCheckButtons = false;
 bool	twoscopes = false;
 
+
 Fl_Button			*btnTune = (Fl_Button *)0;
-Fl_Tile_check		*TiledGroup = 0;
-ReceiveWidget		*ReceiveText = 0;
-TransmitWidget		*TransmitText = 0;
-Fl_Text_Buffer		*rcvBuffer = (Fl_Text_Buffer *)0;
-Fl_Text_Buffer		*xmtBuffer = (Fl_Text_Buffer *)0;
+Fl_Tile_check				*TiledGroup = 0;
+FTextView			*ReceiveText = 0;
+FTextEdit			*TransmitText = 0;
 Raster				*FHdisp;
 Fl_Box				*StatusBar = (Fl_Box *)0;
 Fl_Box				*Status2 = (Fl_Box *)0;
@@ -1652,6 +1651,14 @@ void set_video(double *data, int len)
 		digiscope->video(data, len);
 	if (wfscope)
 		wfscope->video(data, len);
+}
+
+void set_zdata(complex *zarray, int len)
+{
+	if (digiscope)
+		digiscope->zdata(zarray, len);
+	if (wfscope)
+		digiscope->zdata(zarray, len);
 }
 
 Fl_Menu_Item *mnuLogging = (Fl_Menu_Item *)0;

@@ -39,7 +39,6 @@
 #include <FL/Fl_Check_Button.H>
 
 #include "combo.h"
-//#include "TextView.h"
 #include "FTextView.h"
 #include "raster.h"
 #include "waterfall.h"
@@ -113,6 +112,8 @@ extern void set_scope(double *data, int len, bool autoscale = true);
 extern void set_phase(double phase, bool highlight);
 extern void set_rtty(double, double, double);
 extern void set_video(double *, int);
+extern void set_zdata(complex *, int);
+
 extern void set_CWwpm();
 extern void put_rx_char(unsigned int data);
 extern void put_sec_char( char chr );

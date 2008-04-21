@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0107 
+version 1.0108 
 header_name {.h} 
 code_name {.cxx}
 decl {\#include <config.h>} {} 
@@ -749,7 +749,7 @@ resetSoundCard();}
               label {RX ppm}
               callback {progdefaults.RX_corr = (int)o->value();
 progdefaults.changed = true;}
-              xywh {5 160 85 25} align 8
+              xywh {5 160 85 25} align 8 value 1
               code0 {o->step(1);}
               code1 {o->minimum(-50000);}
               code2 {o->maximum(50000);}
@@ -758,7 +758,7 @@ progdefaults.changed = true;}
               label {TX ppm}
               callback {progdefaults.TX_corr = (int)o->value();
 progdefaults.changed = true;}
-              xywh {5 130 85 25} align 8
+              xywh {5 130 85 25} align 8 value 1
               code0 {o->step(1);}
               code1 {o->minimum(-50000);}
               code2 {o->maximum(50000);}
@@ -767,7 +767,7 @@ progdefaults.changed = true;}
               label {TX offset}
               callback {progdefaults.TxOffset = (int)o->value();
 progdefaults.changed = true;}
-              xywh {5 190 85 25} align 8
+              xywh {5 190 85 25} align 8 value 1
               code0 {o->value(progdefaults.TxOffset);}
               code1 {o->step(1);}
               code2 {o->minimum(-50);}
@@ -800,7 +800,7 @@ progdefaults.changed = true;} open
                 callback {progdefaults.sample_converter = o->value();
 resetSoundCard();
 progdefaults.changed = true;
-o->tooltip(src_get_description(o->value()));} open selected
+o->tooltip(src_get_description(o->value()));} open
                 xywh {174 91 216 25} down_box BORDER_BOX align 5
               } {}
             }
@@ -1225,7 +1225,7 @@ initViewer();}
                 label {\# Channels}
                 callback {progdefaults.VIEWERchannels = (int)(o->value());
 initViewer();}
-                xywh {135 140 39 25} align 8
+                xywh {135 140 39 25} align 8 value 1
                 code0 {o->minimum(5);}
                 code1 {o->maximum(30);}
                 code2 {o->step(1);}
@@ -1236,7 +1236,7 @@ initViewer();}
                 callback {progdefaults.VIEWERstart = (int)(o->value());
 progdefaults.changed = true;
 initViewer();}
-                xywh {135 105 50 25} align 8
+                xywh {135 105 50 25} align 8 value 1
                 code0 {o->minimum(200);}
                 code1 {o->maximum(1000);}
                 code2 {o->step(100);}
@@ -1246,7 +1246,7 @@ initViewer();}
                 label {Aging (sec)}
                 callback {progdefaults.VIEWERtimeout = (int)(o->value());
 progdefaults.changed = true;}
-                xywh {261 105 50 25} align 8
+                xywh {261 105 50 25} align 8 value 1
                 code0 {o->minimum(10);}
                 code1 {o->maximum(180);}
                 code2 {o->step(1);}
@@ -1293,72 +1293,76 @@ progdefaults.changed = true;}
           } {
             Fl_Choice selShift {
               label Shift
-              callback {progdefaults.changed = true;} open
-              xywh {48 60 77 22} down_box BORDER_BOX
+              callback {progdefaults.changed = true;
+progdefaults.storeDefaults();
+resetRTTY();} open
+              xywh {48 60 77 22} down_box BORDER_BOX when 1
               code0 {o->add(szShifts);}
             } {}
             Fl_Choice selBaud {
               label Baud
-              callback {progdefaults.changed = true;} open
-              xywh {48 84 77 22} down_box BORDER_BOX
+              callback {progdefaults.changed = true;
+progdefaults.storeDefaults();
+resetRTTY();} open
+              xywh {48 84 77 22} down_box BORDER_BOX when 1
               code0 {o->add(szBauds);}
             } {}
             Fl_Choice selBits {
               label Bits
-              callback {progdefaults.changed = true;} open
-              xywh {48 109 77 22} down_box BORDER_BOX
+              callback {progdefaults.changed = true;
+progdefaults.storeDefaults();
+resetRTTY();} open
+              xywh {48 109 77 22} down_box BORDER_BOX when 1
               code0 {o->add(szSelBits);}
             } {}
             Fl_Choice selParity {
               label Parity
-              callback {progdefaults.changed = true;} open
-              xywh {48 133 77 22} down_box BORDER_BOX
+              callback {progdefaults.changed = true;
+progdefaults.storeDefaults();
+resetRTTY();} open
+              xywh {48 133 77 22} down_box BORDER_BOX when 1
               code0 {o->add(szParity);}
             } {}
             Fl_Choice selStopBits {
               label Stop
-              callback {progdefaults.changed = true;} open
-              xywh {48 158 77 22} down_box BORDER_BOX
+              callback {progdefaults.changed = true;
+progdefaults.storeDefaults();
+resetRTTY();} open selected
+              xywh {48 158 77 22} down_box BORDER_BOX when 1
               code0 {o->add(szStopBits);}
             } {}
             Fl_Check_Button chkPseudoFSK {
               label PseudoFSK
               callback {progdefaults.PseudoFSK = o->value();
 progdefaults.changed = true;}
-              xywh {100 192 22 22} down_box DOWN_BOX align 4
+              xywh {98 185 22 22} down_box DOWN_BOX align 4
               code0 {o->value(progdefaults.PseudoFSK);}
-            }
-            Fl_Button btnRestartRtty {
-              label Restart
-              callback {progdefaults.storeDefaults();
-resetRTTY();}
-              xywh {310 180 79 28}
             }
             Fl_Check_Button btnCRCRLF {
               label {CR-CR-LF}
               callback {progdefaults.changed = true;}
-              xywh {365 60 22 22} down_box DOWN_BOX align 4 when 6
+              xywh {364 60 22 22} down_box DOWN_BOX align 4 when 6
             }
             Fl_Check_Button btnAUTOCRLF {
               label AutoCRLF
               callback {progdefaults.changed = true;}
-              xywh {365 88 22 22} down_box DOWN_BOX align 4
+              xywh {364 88 22 22} down_box DOWN_BOX align 4
             }
             Fl_Counter cntrAUTOCRLF {
               label {after:}
               callback {progdefaults.changed = true;}
-              xywh {322 117 65 20} type Simple align 4 minimum 68 maximum 80 step 1 value 72
+              xywh {321 117 65 20} type Simple align 4 minimum 68 maximum 80 step 1 value 72
             }
             Fl_Check_Button btnRTTY_USB {
               label {RTTY is USB}
               callback {progdefaults.RTTY_USB = o->value();
 progdefaults.changed = true;}
-              xywh {365 144 22 22} down_box DOWN_BOX align 4
+              xywh {235 185 22 22} down_box DOWN_BOX align 4
               code0 {o->value(progdefaults.RTTY_USB);}
             }
             Fl_Group {} {
               label AFC open
-              xywh {135 60 130 65} box ENGRAVED_FRAME color 51 align 21
+              xywh {135 60 130 60} box ENGRAVED_FRAME color 51 align 21
             } {
               Fl_Round_Button {btnRTTYafc[0]} {
                 label Slow
@@ -1370,38 +1374,45 @@ progdefaults.changed = true;}
                 label Normal
                 callback {progdefaults.rtty_afcspeed=1;
 progdefaults.changed = true;}
-                xywh {190 85 70 15} type Radio down_box DIAMOND_DOWN_BOX value 1 selection_color 2
+                xywh {190 82 70 15} type Radio down_box DIAMOND_DOWN_BOX value 1 selection_color 2
               }
               Fl_Round_Button {btnRTTYafc[2]} {
                 label Fast
                 callback {progdefaults.rtty_afcspeed=2;
 progdefaults.changed = true;}
-                xywh {190 105 70 15} type Radio down_box DIAMOND_DOWN_BOX selection_color 2
+                xywh {190 100 70 15} type Radio down_box DIAMOND_DOWN_BOX selection_color 2
               }
             }
             Fl_Check_Button btnPreferXhairScope {
-              label {X hair scope}
+              label {X-scope}
               callback {progdefaults.PreferXhairScope=o->value();
 progdefaults.changed = true;}
-              xywh {240 192 22 22} down_box DOWN_BOX align 4
+              xywh {364 153 22 22} down_box DOWN_BOX align 4
               code0 {o->value(progdefaults.PreferXhairScope);}
+            }
+            Fl_Check_Button chkXagc {
+              label {X-agc}
+              callback {progdefaults.Xagc=o->value();
+progdefaults.changed = true;}
+              xywh {364 185 22 22} down_box DOWN_BOX align 4
+              code0 {o->value(progdefaults.Xagc);}
             }
             Fl_Group {} {
               label {Unshift On Space} open
-              xywh {135 125 130 65} box ENGRAVED_FRAME align 21
+              xywh {135 119 130 62} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button chkUOSrx {
                 label Rx
                 callback {progdefaults.UOSrx=o->value();
-progdefaults.changed = true;} selected
-                xywh {190 144 24 18} down_box DOWN_BOX align 4
+progdefaults.changed = true;}
+                xywh {167 148 24 18} down_box DOWN_BOX align 4
                 code0 {o->value(progdefaults.UOSrx);}
               }
               Fl_Check_Button chkUOStx {
                 label Tx
                 callback {progdefaults.UOStx=o->value();
 progdefaults.changed = true;}
-                xywh {190 163 24 19} down_box DOWN_BOX align 4
+                xywh {224 147 24 19} down_box DOWN_BOX align 4
                 code0 {o->value(progdefaults.UOStx);}
               }
             }
