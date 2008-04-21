@@ -82,8 +82,6 @@ rtty::~rtty()
 	if (hilbert) delete hilbert;
 //	if (wfid) delete wfid;
 	if (bitfilt) delete bitfilt;
-	if (markfilt) delete markfilt;
-	if (spacefilt) delete spacefilt;
 	if (bpfilt) delete bpfilt;
 }
 
@@ -121,11 +119,6 @@ void rtty::restart()
 	else
 		bpfilt = new fftfilt(flo, fhi, 1024);
 
-	f1 = 0.0 * rtty_baud / samplerate;
-	f2 = 1.0 * rtty_baud / samplerate;
-	
-	if (!markfilt) markfilt = new fftfilt(f1, f2, 1024);
-	if (!spacefilt) spacefilt = new fftfilt(f1, f2, 1024);
 
 	if (bitfilt)
 		bitfilt->setLength(symbollen / 4);//6);
@@ -152,9 +145,9 @@ void rtty::restart()
 	put_Status2(msg2);
 	put_MODEstatus(mode);
 	for (int i = 0; i < 1024; i++) QI[i].re = QI[i].im = 0.0;
-	QIptr = 0;
-	markphase = spacephase = 0.0;
-	marksig = spacesig = 0.0;
+	sigpwr = 0.0;
+	noisepwr = 0.0;
+	freqerrlo = freqerrhi = 0.0;
 }
 
 rtty::rtty(trx_mode tty_mode)
@@ -165,8 +158,6 @@ rtty::rtty(trx_mode tty_mode)
 	fragmentsize = 256;
 	
 	bpfilt = (fftfilt *)0;
-//	markfilt = (fftfilt *)0;
-//	spacefilt = (fftfilt *)0;
 	
 	bitfilt = (Cmovavg *)0;
 	
@@ -204,35 +195,6 @@ complex rtty::mixer(complex in)
 		phaseacc += twopi;
 
 	return z;
-}
-
-void rtty::MarkSpace(complex in)
-{
-	complex z, zm, zs, *zmp, *zsp;
-
-	z.re = cos(markphase);
-	z.im = sin(markphase);
-	zm = z * in;
-	markphase -= twopi * (frequency - (shift + rtty_baud) / 2.0) / samplerate;
-	if (markphase > M_PI) markphase -= twopi;
-	if (markphase < M_PI) markphase += twopi;
-
-	z.re = cos(spacephase);
-	z.im = sin(spacephase);
-	zs = z * in;
-	spacephase  -= twopi * (frequency + (shift + rtty_baud) / 2.0) / samplerate;
-	if (spacephase > M_PI) spacephase -= twopi;
-	if (spacephase < M_PI) spacephase += twopi;
-	
-	int n = markfilt->run(zm, &zmp);
-	spacefilt->run(zs, &zsp);
-	if (n) {
-		for (int i = 0; i < n; i++) {
-			QI[i].re = zmp[i].re;
-			QI[i].im = zsp[i].re;
-		}
-		set_zdata(QI, n);
-	}
 }
 
 unsigned char rtty::bitreverse(unsigned char in, int n)
@@ -378,10 +340,10 @@ int rtty::rx(bool bit)
 void rtty::Metric()
 {
 	double delta = rtty_baud/4.0;
-	double noisepwr = wf->powerDensity(frequency - shift * 1.5, delta) +
-					  wf->powerDensity(frequency + shift * 1.5, delta) + 1e-10;
-	double sigpwr = wf->powerDensity(frequency - shift/2, delta) +
-					wf->powerDensity(frequency + shift/2, delta) + 1e-10;
+	noisepwr = wf->powerDensity(frequency - shift * 1.5, delta) +
+	 		   wf->powerDensity(frequency + shift * 1.5, delta) + 1e-10;
+	sigpwr = wf->powerDensity(frequency - shift/2, delta) +
+			 wf->powerDensity(frequency + shift/2, delta) + 1e-10;
 	metric = decayavg( metric, 40.0*log10(sigpwr / noisepwr), 8);
 	display_metric(metric);
 }
@@ -441,7 +403,7 @@ int rtty::rx_process(const double *buf, int len)
 		z.re = z.im = *buf++;
 		hilbert->run(z, z);
 
-		MarkSpace(z);
+//		MarkSpace(z);
 		
 // mix it with the audio carrier frequency to create a baseband signal
 
@@ -450,92 +412,112 @@ int rtty::rx_process(const double *buf, int len)
 // low pass filter using Windowed Sinc - Overlap-Add convolution filter
 
 		n = bpfilt->run(z, &zp);
-		for (int i = 0; i < n; i++) {
+		if (n) {
+			for (int i = 0; i < n; i++) {
 			
 // measure phase difference between successive samples to determine
 // the frequency of the baseband signal (+rtty_baud or -rtty_baud)
 // see class complex definiton for operator %
 			
-			fin = (prevsmpl % zp[i]).arg() * samplerate / twopi;
-			prevsmpl = zp[i];
-						
+				fin = (prevsmpl % zp[i]).arg() * samplerate / twopi;
+				prevsmpl = zp[i];
+
 // filter the result with a moving average filter
 			
-			f = bitfilt->run(fin);
+				f = bitfilt->run(fin);
 			
 // track the + and - frequency excursions separately to derive an afc signal
 // track the sum and sum^2 for derivation of DCD
 			
-			if (fin >= 0.0) {
-				poscnt++;
-				posfreq += fin;
-			} else {
-				negcnt++;
-				negfreq += fin;
-			}
+				if (fin >= 0.0) {
+					poscnt++;
+					posfreq += fin;
+					QI[i].re = zp[i].re;
+					QI[i].im = 0.1 * zp[i].im;
+				} else {
+					negcnt++;
+					negfreq += fin;
+					QI[i].re = 0.1 * zp[i].im;
+					QI[i].im = zp[i].re;
+				}
+				
+//				double rotate = (freqerr - rtty_shift/2.0) * (M_PI/4.0) / (rtty_shift / 2.0);
+//				QI[i] = QI[i] * complex(cos(rotate), sin(rotate));
+				double rotate;
+				if (fin >= 0.0)
+					rotate = (freqerrhi) * (M_PI/4.0) / (rtty_shift / 2.0);
+				else
+					rotate = (-freqerrlo) * (M_PI/4.0) / (rtty_shift / 2.0);
+				QI[i] = QI[i] * complex(cos(rotate), sin(rotate));
 
 //	hysterisis dead zone in frequency discriminator bit detector
 
-			if (f > deadzone )  {
-				bit = false;
-			}
-			if (f < -deadzone) {
-				bit = true;
-			}
-			
-			if (--dspcnt % (nbits + 2) == 0) {
-				pipe[pipeptr] = f / shift; // display filtered signal		
-				pipeptr = (pipeptr + 1) % (2*symbollen);
-			}
-
-			if (!progdefaults.RTTY_USB)
-				bit = !bit;
-			
-			rxflag = rx (reverse ? bit : !bit);
-
-			if (rxflag == 2 || dspcnt == 0) {
-				if ((metric > progStatus.sldrSquelchValue && progStatus.sqlonoff) || !progStatus.sqlonoff) {
-					set_scope(pipe, symbollen, false);
-					pipe.next(); // change buffers
+				if (f > deadzone )  {
+					bit = false;
 				}
-				else
-					clear_syncscope();
-								
-				dspcnt = symbollen * (nbits + 2);
-				pipeptr = 0;
+				if (f < -deadzone) {
+					bit = true;
+				}
+			
+				if (--dspcnt % (nbits + 2) == 0) {
+					pipe[pipeptr] = f / shift; // display filtered signal		
+					pipeptr = (pipeptr + 1) % (2*symbollen);
+				}
 
-				if (poscnt && negcnt) {
-					poserr = posfreq/poscnt;
-					negerr = negfreq/negcnt;
+				if (!progdefaults.RTTY_USB)
+					bit = !bit;
+	
+				rxflag = rx (reverse ? bit : !bit);
 
-					Metric();
+				if (rxflag == 2 || dspcnt == 0) {
+					if ((metric > progStatus.sldrSquelchValue && progStatus.sqlonoff) || !progStatus.sqlonoff) {
+						set_scope(pipe, symbollen, false);
+						pipe.next(); // change buffers
+					}
+					else
+						clear_syncscope();
+
+					dspcnt = symbollen * (nbits + 2);
+					pipeptr = 0;
+
+					if (poscnt && negcnt) {
+						poserr = posfreq/poscnt;
+						negerr = negfreq/negcnt;
+
+						Metric();
 				
 // compute the frequency error as the median of + and - relative freq's
-					int fs = progdefaults.rtty_afcspeed;
-					if (sigsearch) {
-						freqerr = decayavg(freqerr, poserr + negerr, 4);
-						sigsearch--;
-					} else
-						freqerr = decayavg(freqerr, poserr + negerr, 
-										   fs == 0 ? 50 : fs = 1 ? 100 : 200 );
+						int fs = progdefaults.rtty_afcspeed;
+						if (sigsearch) {
+							freqerr = decayavg(freqerr, poserr + negerr, 4);
+							sigsearch--;
+						} else
+							freqerr = decayavg(freqerr, poserr + negerr, 
+											   fs == 0 ? 50 : fs = 1 ? 100 : 200 );
+											   
+						freqerrhi = decayavg(freqerrhi, poserr, 8);
+						freqerrlo = decayavg(freqerrlo, negerr, 8);
 					
 // display the FSK +/- signals on the digiscope					
-					set_rtty( 
-						negerr/(rtty_shift/2.0), 
-						poserr/(rtty_shift/2.0), 
-						1.0 );
-				}
-				poscnt = 0; posfreq = 0.0;
-				negcnt = 0; negfreq = 0.0;
+						set_rtty( 
+							negerr/(rtty_shift/2.0), 
+							poserr/(rtty_shift/2.0), 
+							1.0 );
+					}
+					poscnt = 0; posfreq = 0.0;
+					negcnt = 0; negfreq = 0.0;
 
-				if (progStatus.afconoff) {
-					if (metric > progStatus.sldrSquelchValue || !progStatus.sqlonoff || sigsearch) {
-						set_freq(frequency + freqerr);
+					if (progStatus.afconoff) {
+						if (metric > progStatus.sldrSquelchValue || !progStatus.sqlonoff || sigsearch) {
+							set_freq(frequency + freqerr);
+						}
 					}
 				}
 			}
 		}
+		set_zdata(QI, n);
 	}
+
 	return 0;
 }
 
@@ -558,6 +540,7 @@ double rtty::FSKnco()
 	FSKphaseacc += twopi * 1000 / samplerate;
 
 	if (FSKphaseacc > M_PI)
+
 		FSKphaseacc -= twopi;
 
 	return sin(FSKphaseacc);

@@ -110,6 +110,7 @@ private:
 	int bitcntr;
 	int rxdata;
 	double posfreq, negfreq;
+	double freqerrhi, freqerrlo;
 	double poserr, negerr;
 	int poscnt, negcnt;
 
@@ -118,13 +119,8 @@ private:
 	
 	complex QI[1024];
 	int QIptr;
-	double markphase;
-	double spacephase;
-	double marksig;
-	double spacesig;
-	double f1, f2;
-	fftfilt *markfilt;
-	fftfilt *spacefilt;
+	double sigpwr;
+	double noisepwr;
 
 	double FSKbuf[OUTBUFSIZE];		// signal array for qrq drive
 	double FSKphaseacc;
@@ -137,7 +133,7 @@ private:
 	void clear_syncscope();
 	void update_syncscope();
 	inline complex mixer(complex in);
-	void MarkSpace(complex in);
+
 	unsigned char bitreverse(unsigned char in, int n);
 	int decode_char();
 	int rttyparity(unsigned int);
