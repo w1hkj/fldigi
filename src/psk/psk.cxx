@@ -391,10 +391,8 @@ void psk::rx_symbol(complex symbol)
 		n = 2;
 	}
 // simple low pass filter for quality of signal
-//	quality.re = 0.02 * cos(n * phase) + 0.98 * quality.re;
-//	quality.im = 0.02 * sin(n * phase) + 0.98 * quality.im;
 	quality.re = decayavg(quality.re, cos(n*phase), SQLDECAY);
-	quality.im = decayavg(quality.im, cos(n*phase), SQLDECAY);
+	quality.im = decayavg(quality.im, sin(n*phase), SQLDECAY);
 	
 	metric = 100.0 * quality.norm();
 	
@@ -420,7 +418,7 @@ void psk::rx_symbol(complex symbol)
 			dcd = false;
 	}
 
-	set_phase(phase, dcd);
+	set_phase(phase, quality.norm(), dcd);
 
 	if (dcd == true) {
 		if (_qpsk)

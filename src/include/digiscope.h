@@ -45,10 +45,14 @@ public:
 #define DEFAULT_WIDTH	100
 #define DEFAULT_HEIGHT	100
 #define	MAX_LEN			4096
-#define MAX_ZLEN		16184
+//#define MAX_ZLEN		16184
+//#define MAX_ZLEN		8192
+#define MAX_ZLEN		4096
 	enum scope_mode {
 		SCOPE,
 		PHASE,
+		PHASE2,
+		PHASE3,
 		RTTY,
 		XHAIRS,
 		WWV,
@@ -68,6 +72,7 @@ private:
 	int _len;
 	int linecnt;
 	double _phase;
+	double _quality;
 	double _flo, _fhi, _amp;
 	bool _highlight;
 
@@ -84,7 +89,7 @@ public:
 	void draw_xy();
 	void draw_video();
 	void data(double *data, int len, bool scale = true);
-	void phase(double ph, bool hl);
+	void phase(double ph, double ql, bool hl);
 	void video(double *data, int len );
 	void zdata(complex *z, int len);
 	void rtty(double flo, double fhi, double amp);

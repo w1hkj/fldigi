@@ -112,8 +112,10 @@ void rtty::restart()
 	symbollen = (int) (samplerate / rtty_baud + 0.5);
 	set_bandwidth(shift);
 
-	fhi = (shift / 2 + rtty_baud* 1.1) / samplerate;
-	flo = (shift / 2 - rtty_baud* 1.1) / samplerate;
+//	fhi = (shift / 2 + rtty_baud* 1.5) / samplerate;
+	fhi = (shift / 2 + rtty_baud * 2.0) / samplerate;
+	flo = 0.0;
+//	flo = (shift / 2 - rtty_baud* 1.5) / samplerate;
 	if (bpfilt) 
 		bpfilt->create_filter(flo, fhi);
 	else
@@ -394,7 +396,7 @@ int rtty::rx_process(const double *buf, int len)
 	static bool bit = false;
 	int n, rxflag;
 	double deadzone = shift/8;
-	static int dspcnt = symbollen * nbits;
+	static int dspcnt = symbollen * (nbits + 2);
 	double rotate;
 	double halfshift = rtty_shift/2.0;
 
@@ -411,7 +413,7 @@ int rtty::rx_process(const double *buf, int len)
 
 		z = mixer(z);
 
-// low pass filter using Windowed Sinc - Overlap-Add convolution filter
+// bandpass filter using Windowed Sinc - Overlap-Add convolution filter
 
 		n = bpfilt->run(z, &zp);
 		if (n) {
@@ -430,12 +432,13 @@ int rtty::rx_process(const double *buf, int len)
 			
 // track the + and - frequency excursions separately to derive an afc signal
 			
-				if (fin >= 0.0) {
+				if (fin > 0.0) {
 					poscnt++;
 					posfreq += fin;
 					QI[i].re = zp[i].re;
 					QI[i].im = 0.1 * zp[i].im;
-				} else {
+				} 
+				if (fin < 0.0) {
 					negcnt++;
 					negfreq += fin;
 					QI[i].re = 0.1 * zp[i].im;
@@ -450,11 +453,12 @@ int rtty::rx_process(const double *buf, int len)
 				else
 					rotate = -(halfshift + freqerrlo) * (M_PI/4.0) / halfshift;
 				QI[i] = QI[i] * complex(cos(rotate), sin(rotate));
-				avgsig = decayavg(avgsig, QI[i].mag(), 32);
+//				avgsig = decayavg(avgsig, QI[i].mag(), 32);
+				avgsig = decayavg(avgsig, zp[i].mag(), 32);
 				
-				if (avgsig > 0.05) {
-					QI[i].re = (0.4 / avgsig) * QI[i].re;
-					QI[i].im = (0.4 / avgsig) * QI[i].im;
+				if (avgsig > 0.025) {
+					QI[i].re = (0.7 / avgsig) * QI[i].re;
+					QI[i].im = (0.7 / avgsig) * QI[i].im;
 				}
 //	hysterisis dead zone in frequency discriminator bit detector
 
@@ -501,8 +505,8 @@ int rtty::rx_process(const double *buf, int len)
 							freqerr = decayavg(freqerr, poserr + negerr, 
 											   fs == 0 ? 50 : fs = 1 ? 100 : 200 );
 											   
-						freqerrhi = decayavg(freqerrhi, poserr, 8);
-						freqerrlo = decayavg(freqerrlo, negerr, 8);
+						freqerrhi = decayavg(freqerrhi, poserr, 4);
+						freqerrlo = decayavg(freqerrlo, negerr, 4);
 					
 // display the FSK +/- signals on the digiscope					
 						set_rtty( 
