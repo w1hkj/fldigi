@@ -40,7 +40,9 @@
 
 using namespace std;
 
-#define AFC_COUNT	32
+#define RESOLUTION 1
+
+#define AFC_COUNT	64
 
 char dommsg[80];
 
@@ -70,22 +72,26 @@ void dominoex::rx_init()
 void dominoex::restart()
 {
 	double flo, fhi, bw, cf;
-	
 
+// basetone is always 1000 Hz
+// mid frequency is always 1000 Hz + bandwidth / 2
 
 	bw = bandwidth * progdefaults.DOMINOEX_BW;
-	cf = 1000.0 + bandwidth / 2.0;	// basetone is always 1000 Hz
-					
 
-	// mid frequency is always 1000 Hz + bandwidth / 2
+	cf = 1000.0 + bandwidth / 2.0;	
 	flo = (cf - bw/2) / samplerate;
 	fhi = (cf + bw/2) / samplerate;
+
 	if (filt)
 		filt->init_bandpass (127, 1, flo, fhi);
 
 	strSecXmtText = txtSecondary->value();
 	if (strSecXmtText.length() == 0)
 		strSecXmtText = "fldigi "PACKAGE_VERSION" ";
+
+	prev1symbol = prev2symbol = 0;
+	prev1vector = prev2vector = complex(0.0, 0.0);
+	
 }
 
 void dominoex::init()
@@ -102,7 +108,6 @@ dominoex::~dominoex()
 	if (hilbert) delete hilbert;
 	if (pipe) delete [] pipe;
 	if (filt) delete filt;
-//	if (wfid) delete wfid;
 }
 
 dominoex::dominoex(trx_mode md)
@@ -116,21 +121,21 @@ dominoex::dominoex(trx_mode md)
 // 8kHz modes
 	case MODE_DOMINOEX4:
 		symlen = 2048;
-		basetone = 256;		// 1000 Hz
+		basetone = 256;		// = 1000 * symlen / samplerate
 		doublespaced = 1;
 		samplerate = 8000;
 		break;
 
 	case MODE_DOMINOEX8:
 		symlen = 1024;
-		basetone = 128;		// 1000 Hz
+		basetone = 128;		// = 1000 * symlen / samplerate
 		doublespaced = 1;
 		samplerate = 8000;
 		break;
 
 	case MODE_DOMINOEX16:
 		symlen = 512;
-		basetone = 64;		// 1000 Hz
+		basetone = 64;		// = 1000 * symlen / samplerate
 		doublespaced = 0;
 		samplerate = 8000;
 		break;
@@ -166,27 +171,32 @@ dominoex::dominoex(trx_mode md)
 
 	tonespacing = (double) (samplerate * ((doublespaced) ? 2 : 1)) / symlen;
 
-	binsfft = new sfft(	symlen, 
-						basetone - numtones*(doublespaced?2:1), 
-						basetone + 2*numtones*(doublespaced ? 2 : 1) );
-
+//	binsfft = new sfft(	symlen, 
+//						basetone - numtones*(doublespaced?2:1), 
+//						basetone + 2*numtones*(doublespaced ? 2 : 1) );
+//exp
+	binsfft = new sfft(	RESOLUTION *  symlen, 
+						RESOLUTION * (basetone - numtones*(doublespaced ? 2 : 1)), 
+						RESOLUTION * (basetone + 2*numtones*(doublespaced ? 2 : 1)) );
 
 	hilbert	= new C_FIR_filter();
 	hilbert->init_hilbert(37, 1);
 	afcfilt		= new Cmovavg(AFC_COUNT);
 
-	pipe = new domrxpipe[2 * symlen];
-	scopedata.alloc(2 * symlen);
-	videodata.alloc(numtones * 6);
+	twosym = 2 * symlen;
+	pipe = new domrxpipe[twosym];
+	
+	scopedata.alloc(twosym);
+	videodata.alloc(RESOLUTION * numtones * 6);
 	pipeptr = 0;
+	
 	symcounter = 0;
 	metric = 0.0;
 
-	bandwidth = (numtones - 1) * tonespacing;
+	bandwidth = numtones * tonespacing;
 	bw = bandwidth * progdefaults.DOMINOEX_BW;
 	
-	cf = 1000.0 + bandwidth / 2.0; // basetone is always 1000 Hz
-
+	cf = 1000.0 + bandwidth / 2.0;
 	flo = (cf - bw/2) / samplerate;
 	fhi = (cf + bw/2) / samplerate;
 
@@ -196,7 +206,6 @@ dominoex::dominoex(trx_mode md)
 	fragmentsize = symlen;
 
 	s2n = 0.0;
-//	wfid = new id(this);
 
 	prev1symbol = prev2symbol = 0;
 	prev1vector = prev2vector = complex(0.0, 0.0);
@@ -236,14 +245,19 @@ void dominoex::recvchar(int c)
 void dominoex::decodesymbol(unsigned char curtone, unsigned char prevtone)
 {
 	int c, sym, ch;
+	int diff;
 
 // Decode the IFK+ sequence, which results in a single nibble
-	c = curtone - prevtone;
-	if (reverse) c = -c;
-	if (doublespaced) c /= 2;
-	c -= 2;
-	if (c < 0) c += numtones;
 
+	diff = curtone - prevtone;
+	if (reverse) diff = -diff;
+	if (doublespaced) diff /= 2;
+	diff /= RESOLUTION;
+	diff -= 2;
+	if (diff < 0) diff += numtones;
+	
+	c = diff;
+	
 //	If the new symbol is the start of a new character (MSB is low), complete the previous character
 	if (!(c & 0x8)) {
 		if (symcounter <= MAX_VARICODE_LEN) {
@@ -273,8 +287,8 @@ int dominoex::harddecode(complex *in)
 {
 	double x, max = 0.0;
 	int symbol = 0;
-	
-	for (int i = 0; i < numtones * 3*(doublespaced?2:1); i++) {
+    int count = RESOLUTION * numtones * 3 *(doublespaced?2:1);
+	for (int i = 0; i < count; i++) {
 		x = in[i].mag();
 		if (x > max) {
 			max = x;
@@ -287,14 +301,16 @@ int dominoex::harddecode(complex *in)
 void dominoex::update_syncscope(complex *bins)
 {
 	double max = 0, min = 1e6, range, mag;
-	int numbins = numtones * 3 * (doublespaced ? 2 : 1);
+	int numbins = RESOLUTION * (numtones * 3 * (doublespaced ? 2 : 1)); //exp
 // dom waterfall
+
 	for (int i = 0; i < numbins; i++ ) {
 		mag = bins[i].mag();
 		if (max < mag) max = mag;
 		if (min > mag) min = mag;
 	}
 	range = max - min;
+	memset(videodata, 0, numbins * sizeof(double));
 	for (int i = 0; i < numbins; i++ ) {
 		if (range > 2) {
 			mag = (bins[i].mag() - min) / range;
@@ -310,14 +326,15 @@ void dominoex::update_syncscope(complex *bins)
 	}
 
 // dom symbol synch data	
-	memset(scopedata, 0, 2 * symlen * sizeof(double));
-	if (!progStatus.sqlonoff || metric >= progStatus.sldrSquelchValue)
-		for (int i = 0, j = 0; i < 2 * symlen; i++) {
-			j = (i + pipeptr) % (2 * symlen);
-			scopedata[i] = (pipe[j].vector[prev1symbol]).mag();
+	memset(scopedata, 0, twosym * sizeof(double));
+	if (!progStatus.sqlonoff || metric >= progStatus.sldrSquelchValue) {
+		for (int i = 0, j = 0; i < twosym; i++) {
+			j = (pipeptr + i + 1) % (twosym);
+			scopedata[i] = pipe[j].vector[prev1symbol].mag();
 		}
-	set_scope(scopedata, 2 * symlen);
-	scopedata.next(); // change buffers
+		set_scope(scopedata, twosym);
+		scopedata.next(); // change buffers
+	}
 }
 
 void dominoex::synchronize()
@@ -330,27 +347,28 @@ void dominoex::synchronize()
 	if (prev1symbol == prev2symbol)
 		return;
 
-	for (int i = 0, j = pipeptr; i < 2 * symlen; i++) {
+	for (int i = 0, j = pipeptr; i < twosym; i++) {
 		val = (pipe[j].vector[prev1symbol]).mag();
 		if (val > max) {
 			max = val;
 			syn = i;
 		}
-		j = (j + 1) % (2 * symlen);
+		j = (j + 1) % twosym;
 	}
-	synccounter += (int) floor((syn - symlen) / numtones + 0.5);
+	synccounter += (int) floor(1.0 * (syn - symlen) / numtones + 0.5);
 }
 
 void dominoex::reset_afc() {
 	freqerr = 0.0;
-	for (int i = 0; i < AFC_COUNT; i++) afcfilt->run(0.0);
+//	for (int i = 0; i < AFC_COUNT; i++) afcfilt->run(0.0);
+	afcfilt->reset();
 	return;
 }
 
 void dominoex::afc()
 {
 	complex z;
-	complex prevvector;
+	complex vec1, vec2;
 	double f, fsym, err;
 	double ds = doublespaced ? 2 : 1;
 
@@ -358,24 +376,25 @@ void dominoex::afc()
 		reset_afc();
 		sigsearch = 0;
 	}
-	
-	if (pipeptr == 0)
-		prevvector = pipe[2*symlen - 1].vector[currsymbol];
+
+	vec1 = pipe[pipeptr].vector[currsymbol];
+	if (pipeptr == 0) 
+		vec2 = pipe[2*symlen].vector[currsymbol];
 	else
-		prevvector = pipe[pipeptr - 1].vector[currsymbol];
+		vec2 = pipe[pipeptr - 1].vector[currsymbol];
 	
-	z = prevvector % currvector;
-
+//	z = prevvector % currvector;
+	z = vec2 % vec1;
+	
 	f = z.arg() * samplerate / twopi;
-	fsym = (currsymbol / ds - numtones) * samplerate * ds / symlen;
+	fsym = (currsymbol/RESOLUTION - numtones * ds) * samplerate / symlen;
 	fsym += 1000;
-	err = f - fsym;
-
-//	freqerr = afcfilt->run(freqerr/numtones);
-	freqerr = decayavg(freqerr, err, 64);
-
+	err = fsym - f;
+//	freqerr = afcfilt->run(err / numtones);
+	freqerr = decayavg(freqerr, err / numtones, 32);
+//std::cout << currsymbol << ", " << fsym << ", " << f << ", " << err << ", " << freqerr << std::endl;
 	if (progStatus.afconoff && (metric > progStatus.sldrSquelchValue || progStatus.sqlonoff == false)) {
-		set_freq(frequency + freqerr);
+		set_freq(frequency - freqerr);
 	}
 }
 
@@ -396,11 +415,13 @@ void dominoex::eval_s2n(complex curr, complex n)
 
 }
 
+int testcount = 2;
+
 int dominoex::rx_process(const double *buf, int len)
 {
 	complex z, *bins, noise;
 
-	while (len-- > 0) {
+	while (len) {
 // create analytic signal...shift in frequency to base band & bandpass filter
 		z.re = z.im = *buf++;
 		hilbert->run(z, z);
@@ -411,29 +432,36 @@ int dominoex::rx_process(const double *buf, int len)
 		bins = binsfft->run(z);
 
 // copy current vector to the pipe
-		for (int i = 0; i < numtones*3*(doublespaced?2:1); i++)
+		for (int i = 0; i < RESOLUTION * numtones * 3 * (doublespaced?2:1); i++) {
 			pipe[pipeptr].vector[i] = bins[i];
-
+		}
 		if (--synccounter <= 0) {
 			synccounter = symlen;
 			currsymbol = harddecode(bins);
+//std::cout << currsymbol << " "; std::cout.flush();
 			currvector = bins[currsymbol];
 // decode symbol
             decodesymbol(currsymbol, prev1symbol);
 // update the scope
-			update_syncscope(bins);
+//			update_syncscope(bins);
 // symbol sync
 			synchronize();
+// update the scope
+			update_syncscope(bins);
 // frequency tracking
 			afc();
-			eval_s2n(currvector, bins[(numtones + 2) * (doublespaced ? 2 : 1)]);
+			eval_s2n(currvector, bins[RESOLUTION * (numtones + 2) * (doublespaced ? 2 : 1)]);
 
 			prev2symbol = prev1symbol;
 			prev2vector = prev1vector;
 			prev1symbol = currsymbol;
 			prev1vector = currvector;
 		}
-		pipeptr = (pipeptr + 1) % (2 * symlen);
+		pipeptr++;
+		if (pipeptr >= twosym)
+			pipeptr = 0;
+
+		--len;
 	}
 	return 0;
 }

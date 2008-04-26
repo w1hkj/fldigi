@@ -38,9 +38,11 @@
 
 using namespace std;
 
+#define MAXRESOLUTION 4
 #define DOMNUMTONES 18
+
 struct domrxpipe {
-	complex vector[DOMNUMTONES * 8];	/* numtones <= 18 */
+	complex vector[MAXRESOLUTION * DOMNUMTONES * 6];	/* numtones <= 18 */
 };
 
 class dominoex : public modem {
@@ -61,13 +63,15 @@ protected:
 	int		doublespaced;
 	double	tonespacing;
 	int		counter;
+	unsigned int		twosym;
+	
 // rx variables
 	C_FIR_filter	*hilbert;
 	C_FIR_filter	*filt;
 	sfft			*binsfft;
 	Cmovavg			*afcfilt;
 	
-	domrxpipe			*pipe;
+	domrxpipe		*pipe;
 	unsigned int	pipeptr;
 	unsigned int	datashreg;
 	mbuffer<double, 0, 2>	scopedata;

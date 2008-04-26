@@ -799,7 +799,8 @@ void cbTune(Fl_Widget *w, void *) {
 }
 
 void cb_mnuDigiscope(Fl_Menu_ *w, void *d) {
-	scopeview->show();
+	if (scopeview)
+		scopeview->show();
 }
 
 void cb_mnuRig(Fl_Menu_ *, void *) {
@@ -1250,6 +1251,7 @@ int below(Fl_Widget* w)
 
 
 void create_fl_digi_main() {
+
 	int pad = wSpace, Y = 0;
 
 	if (twoscopes) 	WNOM -= 2*DEFAULT_SW;
@@ -1561,6 +1563,7 @@ void create_fl_digi_main() {
 	scopeview->resizable(digiscope);
 	scopeview->end();
 	scopeview->hide();	
+
 }
 
 
@@ -1629,12 +1632,12 @@ void set_scope(double *data, int len, bool autoscale)
 		wfscope->data(data, len, autoscale);
 }
 
-void set_phase(double phase, bool highlight)
+void set_phase(double phase, double quality, bool highlight)
 {
 	if (digiscope)
-		digiscope->phase(phase, highlight);
+		digiscope->phase(phase, quality, highlight);
 	if (wfscope)
-		wfscope->phase(phase, highlight);
+		wfscope->phase(phase, quality, highlight);
 }
 
 void set_rtty(double flo, double fhi, double amp)
@@ -1658,7 +1661,7 @@ void set_zdata(complex *zarray, int len)
 	if (digiscope)
 		digiscope->zdata(zarray, len);
 	if (wfscope)
-		digiscope->zdata(zarray, len);
+		wfscope->zdata(zarray, len);
 }
 
 Fl_Menu_Item *mnuLogging = (Fl_Menu_Item *)0;

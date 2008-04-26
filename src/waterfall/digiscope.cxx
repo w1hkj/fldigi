@@ -37,7 +37,7 @@
 
 Digiscope::Digiscope (int X, int Y, int W, int H) :
 	Fl_Widget (X, Y, W, H) {
-	_phase = _flo = _fhi = _amp = 0.0;
+	_phase = _quality = _flo = _fhi = _amp = 0.0;
 	box(FL_DOWN_BOX);
 	vidbuf = new unsigned char[ 3 * (W-4) * (H-4)];
 	vidline = new unsigned char[ 3 * (W-4)];
@@ -95,7 +95,6 @@ void Digiscope::zdata(complex *zarray, int len )
 		_zdata[_zptr++] = zarray[i];
 		if (_zptr == MAX_ZLEN) _zptr = 0;
 	}
-
 	REQ_DROP(&Digiscope::redraw, this);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
@@ -134,12 +133,13 @@ void Digiscope::data(double *data, int len, bool scale)
 	FL_AWAKE_D();
 }
 
-void Digiscope::phase(double ph, bool hl)
+void Digiscope::phase(double ph, double ql, bool hl)
 {
 	if (active_modem->HistoryON()) return;
 	
 	FL_LOCK_D();
 	_phase = ph;
+	_quality = ql;
 	_highlight = hl;
 	REQ_DROP(&Digiscope::redraw, this);
 	FL_UNLOCK_D();
@@ -182,6 +182,11 @@ void Digiscope::mode(scope_mode md)
 
 void Digiscope::draw_phase()
 {
+	// max number of shown vectors is first dimension
+	static double pvecstack[8][2];
+	static const size_t psz = sizeof(pvecstack)/sizeof(*pvecstack);
+	static unsigned pszn = 0;
+
 	fl_clip(x()+2,y()+2,w()-4,h()-4);
 	fl_color(FL_BLACK);
 	fl_rectf(x()+2,y()+2,w()-4,h()-4);
@@ -206,14 +211,40 @@ void Digiscope::draw_phase()
 		fl_vertex(0.0, 1.0);
 		fl_vertex(0.0, 0.9);
 	fl_end_line();
-	
-	fl_color(FL_GREEN);
+
 	if (_highlight) {
-		fl_begin_line();
-			fl_vertex(0.0, 0.0);
-			fl_vertex(0.9 * cos(_phase - M_PI / 2), 0.9 * sin( _phase - M_PI / 2));
-		fl_end_line();
+		if (_mode > PHASE) {
+			if (pszn == psz - 1)
+				memmove(pvecstack, pvecstack + 1, (psz - 1) * sizeof(*pvecstack));
+			else
+				pszn++;
+			pvecstack[pszn][0] = _phase;
+			pvecstack[pszn][1] = _quality;
+
+			// draw the stack in progressively brighter green
+			for (unsigned i = 0; i <= pszn; i++) {
+//				fl_color(fl_color_average(FL_GREEN, FL_BLACK, 1.0 - 0.8 * (n-i)/ pszn));
+				fl_color(fl_color_average(FL_GREEN, FL_BLACK, 0.2 + 0.8 * i / pszn));
+				fl_begin_line();
+				fl_vertex(0.0, 0.0);
+				if (_mode == PHASE3) // scale length by quality
+					fl_vertex(0.9 * cos(pvecstack[i][0] - M_PI / 2) * pvecstack[i][1],
+						  0.9 * sin(pvecstack[i][0] - M_PI / 2) * pvecstack[i][1]);
+				else
+					fl_vertex(0.9 * cos(pvecstack[i][0] - M_PI / 2),
+						  0.9 * sin(pvecstack[i][0] - M_PI / 2));
+				fl_end_line();
+			}
+		}
+		else { // original style
+			fl_color(FL_GREEN);
+			fl_begin_line();
+                        fl_vertex(0.0, 0.0);
+                        fl_vertex(0.9 * cos(_phase - M_PI / 2), 0.9 * sin( _phase - M_PI / 2));
+			fl_end_line();
+		}
 	} else {
+		fl_color(FL_GREEN);
 		fl_circle( 0.0, 0.0, 0.1);
 	}
 	fl_pop_matrix();
@@ -257,7 +288,7 @@ void Digiscope::draw_crosshairs()
 	fl_end_line();
 	
 	fl_color(FL_RED);
-	phi = M_PI / 2.0 + (_flo + 1.0)*M_PI/4.0; // -
+	phi = M_PI / 2.0 + (_flo + 1.0)*M_PI/4.0;
 	xp = 0.9*cos(phi); yp = 0.9*sin(phi);
 	fl_begin_line();
 		fl_vertex(-xp, -yp);
@@ -308,11 +339,19 @@ void Digiscope::draw_xy()
 // data
 	fl_color(FL_GREEN);
 	int xp, yp;
-	for (int i = 0; i <  MAX_ZLEN; i++ ) {
-		xp = (int)((_zdata[i].re + 1.0) * w() / 2.0);
-		yp = (int)((_zdata[i].im + 1.0) * h() / 2.0);
+	int W = w() / 2;
+	int H = h() / 2;
+	int X = x();
+	int Y = y();
+	for (int i = 0, j = _zptr; i <  MAX_ZLEN; i++ ) {
+		xp = X + (int)((_zdata[j].re + 1.0) * W);
+		yp = Y + (int)((_zdata[j].im + 1.0) * H);
+		fl_color(fl_color_average(FL_GREEN, FL_BLACK, 0.2 + 0.8 * i / MAX_ZLEN));
 		fl_point(xp,yp);
+		j++;
+		if (j == MAX_ZLEN) j = 0;
 	}
+
 	fl_pop_matrix();
 	fl_pop_clip();
 }
@@ -362,7 +401,7 @@ void Digiscope::draw()
 	else {
 		switch (_mode) {
 			case SCOPE :	draw_scope(); break;
-			case PHASE :	draw_phase(); break;
+			case PHASE: case PHASE2: case PHASE3:	draw_phase(); break;
 			case RTTY :		draw_rtty(); break;
 //			case XHAIRS :	draw_crosshairs(); break;
 			case XHAIRS :	draw_xy(); break;
@@ -381,6 +420,12 @@ int Digiscope::handle(int event)
 	switch (event) {
 	case FL_RELEASE:
 		switch (_mode) {
+		case PHASE: case PHASE2:
+			_mode = (scope_mode)((int)_mode + 1);
+			break;
+		case PHASE3:
+			_mode = PHASE;
+			break;
 		case RTTY:
 			_mode = XHAIRS;
 			break;

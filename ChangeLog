@@ -30,6 +30,12 @@ Change Log:
          Light Green enabled and open.
      16) Experimental RTTY mark/space cross hair display using mark / space
          filters.
+     17) Psk phase scope: 3 modes selectable by multiple left clicks on face
+         of digiscope.
+           1) original single vector display
+           2) fading fixed length vector display
+           3) fading variable length vector display; length proportional to
+              signal quality.
       
 2.10.3)
       1) Corrected memory leak bug.

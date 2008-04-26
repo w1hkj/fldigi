@@ -251,9 +251,11 @@ void status::initLastState()
 	if (VIEWERvisible == true)
 		openViewer();
 
-	scopeview->resize(scopeX, scopeY, scopeW, scopeH);
-	if (scopeVisible == true)
-		scopeview->show();
+	if (scopeview) {
+		scopeview->resize(scopeX, scopeY, scopeW, scopeH);
+		if (scopeVisible == true)
+			scopeview->show();
+	}
 	
 	if (LOGenabled) {
 		Fl_Menu_Item *mnulogging = getMenuItem("Log File");
