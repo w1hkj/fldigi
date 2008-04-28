@@ -194,8 +194,8 @@ static void sound_init_options(void)
 
 	const char* cname;
 	for (int i = 0; (cname = src_get_name(i)); i++) {
-		if (strstr( cname, "ZOH") != 0) continue;
-		if (strstr( cname, "Linear") != 0) continue;
+		if (i == SRC_ZERO_ORDER_HOLD || i == SRC_LINEAR)
+			continue;
 		menuSampleConverter->add(cname);
 	}
 	menuSampleConverter->value(progdefaults.sample_converter);
