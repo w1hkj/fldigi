@@ -1042,7 +1042,7 @@ progdefaults.changed = true;}
             Fl_Input txtSecondary {
               label {Secondary Text}
               callback {progdefaults.secText = o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
               xywh {20 75 360 44} type Multiline align 5 when 1
             }
             Fl_Button btnRestartDomEX {
@@ -1053,10 +1053,18 @@ resetDOMEX();}
             }
             Fl_Counter valDominoEX_BW {
               label {BW factor:}
-              callback {progdefaults.DOMINOEX_BW=o->value();
+              callback {progdefaults.DOMINOEX_BW = o->value();
+resetDOMEX();
 progdefaults.changed = true;}
-              xywh {25 134 63 21} type Simple minimum 1 maximum 3 step 0.1 value 2 hide
+              xywh {25 134 63 21} type Simple minimum 1 maximum 2 step 0.1 value 2
               code0 {o->value(progdefaults.DOMINOEX_BW);}
+            }
+            Fl_Check_Button valDominoEX_FILTER {
+              label {Filter ON}
+              callback {progdefaults.DOMINOEX_FILTER = o->value();
+progdefaults.changed = true;} selected
+              xywh {107 136 83 19} down_box DOWN_BOX
+              code0 {o->value(progdefaults.DOMINOEX_FILTER);}
             }
           }
           Fl_Group tabFeld {
@@ -1424,12 +1432,12 @@ progdefaults.changed = true;}
     Fl_Return_Button btnCloseConfig {
       label Close
       callback {closeDialog();}
-      xywh {285 225 100 25}
+      xywh {285 222 100 25}
     }
     Fl_Button btnSaveConfig {
       label {Save Config}
       callback {progdefaults.saveDefaults();}
-      xywh {15 225 100 25}
+      xywh {15 222 100 25}
     }
   }
 } 

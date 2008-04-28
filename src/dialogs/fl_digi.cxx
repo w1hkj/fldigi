@@ -1928,7 +1928,7 @@ void resetDOMEX() {
 		md == MODE_DOMINOEX16 ||
 		md == MODE_DOMINOEX22 ) {
 
-		trx_reset();
+//		trx_reset();
 		active_modem->restart();
 	}
 }

@@ -896,7 +896,15 @@ resetDOMEX();
 Fl_Counter *valDominoEX_BW=(Fl_Counter *)0;
 
 static void cb_valDominoEX_BW(Fl_Counter* o, void*) {
-  progdefaults.DOMINOEX_BW=o->value();
+  progdefaults.DOMINOEX_BW = o->value();
+resetDOMEX();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *valDominoEX_FILTER=(Fl_Check_Button *)0;
+
+static void cb_valDominoEX_FILTER(Fl_Check_Button* o, void*) {
+  progdefaults.DOMINOEX_FILTER = o->value();
 progdefaults.changed = true;
 }
 
@@ -2033,13 +2041,17 @@ l with your sound hardware.");
             { Fl_Counter* o = valDominoEX_BW = new Fl_Counter(25, 134, 63, 21, "BW factor:");
               valDominoEX_BW->type(1);
               valDominoEX_BW->minimum(1);
-              valDominoEX_BW->maximum(3);
+              valDominoEX_BW->maximum(2);
               valDominoEX_BW->step(0.1);
               valDominoEX_BW->value(2);
               valDominoEX_BW->callback((Fl_Callback*)cb_valDominoEX_BW);
-              valDominoEX_BW->hide();
               o->value(progdefaults.DOMINOEX_BW);
             } // Fl_Counter* valDominoEX_BW
+            { Fl_Check_Button* o = valDominoEX_FILTER = new Fl_Check_Button(107, 136, 83, 19, "Filter ON");
+              valDominoEX_FILTER->down_box(FL_DOWN_BOX);
+              valDominoEX_FILTER->callback((Fl_Callback*)cb_valDominoEX_FILTER);
+              o->value(progdefaults.DOMINOEX_FILTER);
+            } // Fl_Check_Button* valDominoEX_FILTER
             tabDomEX->end();
           } // Fl_Group* tabDomEX
           { tabFeld = new Fl_Group(0, 50, 400, 170, "Feld");
@@ -2378,10 +2390,10 @@ l with your sound hardware.");
       } // Fl_Group* tabModems
       tabsConfigure->end();
     } // Fl_Tabs* tabsConfigure
-    { btnCloseConfig = new Fl_Return_Button(285, 225, 100, 25, "Close");
+    { btnCloseConfig = new Fl_Return_Button(285, 222, 100, 25, "Close");
       btnCloseConfig->callback((Fl_Callback*)cb_btnCloseConfig);
     } // Fl_Return_Button* btnCloseConfig
-    { btnSaveConfig = new Fl_Button(15, 225, 100, 25, "Save Config");
+    { btnSaveConfig = new Fl_Button(15, 222, 100, 25, "Save Config");
       btnSaveConfig->callback((Fl_Callback*)cb_btnSaveConfig);
     } // Fl_Button* btnSaveConfig
     o->end();

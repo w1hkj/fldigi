@@ -396,7 +396,7 @@ void Digiscope::draw_video()
 void Digiscope::draw()
 {
 	draw_box();
-	if (_mode == WWV) // || _mode == DOMWF)
+	if (_mode == WWV || _mode == DOMWF)
 		draw_video();
 	else {
 		switch (_mode) {
@@ -439,12 +439,12 @@ int Digiscope::handle(int event)
 		case XHAIRS:
 			_mode = RTTY;
 			break;
-//		case DOMDATA:
-//			_mode = DOMWF;
-//			break;
-//		case DOMWF:
-//			_mode = DOMDATA;
-//			break;
+		case DOMDATA:
+			_mode = DOMWF;
+			break;
+		case DOMWF:
+			_mode = DOMDATA;
+			break;
 		case WWV:
 			event = Fl::event_button();
 			if (event == FL_LEFT_MOUSE)

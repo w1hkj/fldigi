@@ -80,6 +80,7 @@ configuration progdefaults = {
 	false,				// bool		olivia8bit
 // DOMINOEX
 	2.0,			// double	DOMINOEX_BW;
+	false,			// bool		DOMINOEX_FILTER
 // MT63
 	false,			// bool 	mt63_8bit;
 	32,				// int		mt63_interleave;
@@ -241,7 +242,7 @@ enum TAG { \
 	CWTRACK, CWRISETIME, CWDASH2DOT,
 	XQSK, CWPRE, CWPOST, CWID, CWIDWPM,
 	OLIVIATONES, OLIVIABW, OLIVIASMARGIN, OLIVIASINTEG, OLIVIA8BIT,
-	DOMINOEXBW, 
+	DOMINOEXBW, DOMINOEXFILTER,
 	FELDFONTNBR, FELDIDLE,
 	WFPREFILTER,
 	USECURSORLINES, USECURSORCENTERLINE, USEBWTRACKS,
@@ -381,6 +382,7 @@ void configuration::writeDefaultsXML()
 	writeXMLint(f, "OLIVIASINTEG", oliviasinteg);
 	writeXMLbool(f, "OLIVIA8BIT", olivia8bit);
 	writeXMLdbl(f, "DOMINOEXBW", DOMINOEX_BW);
+	writeXMLbool(f, "DOMINOEXFILTER", DOMINOEX_FILTER);
 	writeXMLint(f, "FELDFONTNBR", feldfontnbr);
 	writeXMLbool(f, "FELDIDLE", FELD_IDLE);
 
@@ -669,6 +671,9 @@ bool configuration::readDefaultsXML()
 						break;
 					case DOMINOEXBW :
 						DOMINOEX_BW = atof(xml->getNodeData());
+						break;
+					case DOMINOEXFILTER :
+						DOMINOEX_FILTER = atoi(xml->getNodeData());
 						break;
 					case FELDFONTNBR :
 						feldfontnbr = atoi(xml->getNodeData());
@@ -1018,6 +1023,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("OLIVIASINTEG", nodeName)) 	tag = OLIVIASINTEG;
 				else if (!strcmp("OLIVIA8BIT", nodeName)) 	tag = OLIVIA8BIT;
 				else if (!strcmp("DOMINOEXBW", nodeName)) 	tag = DOMINOEXBW;
+				else if (!strcmp("DOMINOEXFILTER", nodeName))	tag = DOMINOEXFILTER;
 				else if (!strcmp("FELDFONTNBR", nodeName)) 	tag = FELDFONTNBR;
 				else if (!strcmp("FELDIDLE", nodeName)) 	tag = FELDIDLE;
 				else if (!strcmp("WFPREFILTER", nodeName)) 	tag = WFPREFILTER;
@@ -1226,6 +1232,7 @@ int configuration::setDefaults() {
 		
 	txtSecondary->value(secText.c_str());
 	valDominoEX_BW->value(DOMINOEX_BW);
+	valDominoEX_FILTER->value(DOMINOEX_FILTER);
 			
 	for (int i = 0; i < 5; i++) {
 		btnPTT[i]->value(0);

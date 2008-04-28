@@ -39,11 +39,11 @@
 using namespace std;
 
 #define NUMTONES 18
-//#define NUMBINS (4 * NUMTONES * 6)
-#define NUMBINS (4 * NUMTONES * 3)
+#define NUMFFTS  4
+#define BASEFREQ 1000.0
 
 struct domrxpipe {
-	complex vector[NUMBINS];
+	complex vector[NUMFFTS * NUMTONES * 6];
 };
 
 class dominoex : public modem {
@@ -60,7 +60,6 @@ protected:
 	double	phase[4];
 	double	txphase;
 	int		symlen;
-	int		basetone;
 	int		doublespaced;
 	double	tonespacing;
 	int		counter;
@@ -68,8 +67,8 @@ protected:
 	
 // rx variables
 	C_FIR_filter	*hilbert;
-	C_FIR_filter	*filt[4];
-	sfft			*binsfft[4];
+	C_FIR_filter	*filt[NUMFFTS];
+	sfft			*binsfft[NUMFFTS];
 	
 	domrxpipe		*pipe;
 	unsigned int	pipeptr;
