@@ -661,7 +661,7 @@ o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");}
         } {
           Fl_Group tabAudio {
             label {Audio devices} open
-            xywh {0 50 400 170} color 51 selection_color 51
+            xywh {0 50 400 170} color 51 selection_color 51 hide
           } {
             Fl_Group AudioOSS {open
               xywh {5 58 391 35} box ENGRAVED_FRAME
@@ -743,7 +743,7 @@ resetSoundCard();}
           }
           Fl_Group tabAudioOpt {
             label {Audio settings} open
-            xywh {0 50 400 170} color 51 selection_color 51 hide
+            xywh {0 50 400 170} color 51 selection_color 51
           } {
             Fl_Spinner cntRxRateCorr {
               label {RX ppm}
@@ -1037,25 +1037,34 @@ progdefaults.changed = true;}
           }
           Fl_Group tabDomEX {
             label DomEX open
-            xywh {0 50 400 170} color 51 selection_color 51 hide
+            xywh {0 50 400 170} color 51 selection_color 51
           } {
             Fl_Input txtSecondary {
               label {Secondary Text}
-              callback {progdefaults.changed = true;}
-              xywh {20 75 360 44} type Multiline align 5
+              callback {progdefaults.secText = o->value();
+progdefaults.changed = true;}
+              xywh {20 75 360 44} type Multiline align 5 when 1
             }
             Fl_Button btnRestartDomEX {
               label Restart
               callback {progdefaults.storeDefaults();
 resetDOMEX();}
-              xywh {300 172 79 28}
+              xywh {300 172 79 28} hide
             }
             Fl_Counter valDominoEX_BW {
               label {BW factor:}
-              callback {progdefaults.DOMINOEX_BW=o->value();
+              callback {progdefaults.DOMINOEX_BW = o->value();
+resetDOMEX();
 progdefaults.changed = true;}
-              xywh {25 134 63 21} type Simple minimum 1 maximum 3 step 0.1 value 2
+              xywh {25 134 63 21} type Simple minimum 1 maximum 2 step 0.1 value 2
               code0 {o->value(progdefaults.DOMINOEX_BW);}
+            }
+            Fl_Check_Button valDominoEX_FILTER {
+              label {Filter ON}
+              callback {progdefaults.DOMINOEX_FILTER = o->value();
+progdefaults.changed = true;} selected
+              xywh {107 136 83 19} down_box DOWN_BOX
+              code0 {o->value(progdefaults.DOMINOEX_FILTER);}
             }
           }
           Fl_Group tabFeld {
@@ -1289,7 +1298,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabRTTY {
             label RTTY open
-            xywh {0 50 400 170} color 51 selection_color 51
+            xywh {0 50 400 170} color 51 selection_color 51 hide
           } {
             Fl_Choice selShift {
               label Shift
@@ -1327,7 +1336,7 @@ resetRTTY();} open
               label Stop
               callback {progdefaults.changed = true;
 progdefaults.storeDefaults();
-resetRTTY();} open selected
+resetRTTY();} open
               xywh {48 158 77 22} down_box BORDER_BOX when 1
               code0 {o->add(szStopBits);}
             } {}
@@ -1423,12 +1432,12 @@ progdefaults.changed = true;}
     Fl_Return_Button btnCloseConfig {
       label Close
       callback {closeDialog();}
-      xywh {285 225 100 25}
+      xywh {285 222 100 25}
     }
     Fl_Button btnSaveConfig {
       label {Save Config}
       callback {progdefaults.saveDefaults();}
-      xywh {15 225 100 25}
+      xywh {15 222 100 25}
     }
   }
 } 

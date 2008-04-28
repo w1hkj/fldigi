@@ -407,7 +407,14 @@ void Digiscope::draw()
 			case XHAIRS :	draw_xy(); break;
 			case DOMDATA :	draw_scope(); break;
 			case BLANK : 
-			default: break;
+			default: 
+				fl_clip(x()+2,y()+2,w()-4,h()-4);
+				fl_color(FL_BLACK);
+				fl_rectf(x()+2,y()+2,w()-4,h()-4);
+				fl_push_matrix();
+				fl_pop_matrix();
+				fl_pop_clip();
+				break;
 		}
 	}
 }

@@ -6,6 +6,7 @@
 #include "status.h"
 #include "configuration.h"
 #include "fl_digi.h"
+#include "versions.h"
 
 #include "waterfall.h"
 
@@ -115,10 +116,16 @@ void status::saveLastState()
 		scopeW = scopeview->w();
 		scopeH = scopeview->h();
 	}
-		
+	
+	string str = PACKAGE_NAME;
+	str.append(" ");
+	str.append(PACKAGE_VERSION);
+
 	string deffname = HomeDir;
 	deffname.append("fldigi.status");
 	ofstream deffile(deffname.c_str(), ios::out);
+
+	deffile << str.c_str() << endl;	
 	deffile << lastmode << endl;
 	deffile << mainX << endl;
 	deffile << mainY << endl;
@@ -154,43 +161,51 @@ void status::saveLastState()
 
 void status::loadLastState()
 {
+	char line[255];
+	string str = PACKAGE_NAME;
+	str.append(" ");
+	str.append(PACKAGE_VERSION);
+	
 	string deffname = HomeDir;
 	deffname.append("fldigi.status");
 	ifstream deffile(deffname.c_str(), ios::in);
 	if (deffile) {
-		deffile >> lastmode;
-		deffile >> mainX;
-		deffile >> mainY;
-		deffile >> mainW;
-		deffile >> mainH;
-		deffile >> rigShown;
-		deffile >> rigX;
-		deffile >> rigY;
-		deffile >> RxTextHeight;
-		deffile >> carrier;
-		deffile >> mag;
-		deffile >> speed;
-		deffile >> reflevel;
-		deffile >> ampspan;
-		deffile >> VIEWERnchars;
-		deffile >> VIEWERxpos;
-		deffile >> VIEWERypos;
-		deffile >> VIEWERvisible;
-		deffile >> LOGenabled;
-		deffile >> sldrSquelchValue;
-		deffile >> afconoff;
-		deffile >> sqlonoff;
-		deffile >> RcvMixer;
-		deffile >> XmtMixer;
-		deffile >> scopeX;
-		deffile >> scopeY;
-		deffile >> scopeVisible;
-		deffile >> scopeW;
-		deffile >> scopeH;
-		deffile.close();
-		progdefaults.wfRefLevel = reflevel;
-		progdefaults.wfAmpSpan = ampspan;
-		bLastStateRead = true;
+		deffile.getline(line, 255);
+		if (str == line) {
+			deffile >> lastmode;
+			deffile >> mainX;
+			deffile >> mainY;
+			deffile >> mainW;
+			deffile >> mainH;
+			deffile >> rigShown;
+			deffile >> rigX;
+			deffile >> rigY;
+			deffile >> RxTextHeight;
+			deffile >> carrier;
+			deffile >> mag;
+			deffile >> speed;
+			deffile >> reflevel;
+			deffile >> ampspan;
+			deffile >> VIEWERnchars;
+			deffile >> VIEWERxpos;
+			deffile >> VIEWERypos;
+			deffile >> VIEWERvisible;
+			deffile >> LOGenabled;
+			deffile >> sldrSquelchValue;
+			deffile >> afconoff;
+			deffile >> sqlonoff;
+			deffile >> RcvMixer;
+			deffile >> XmtMixer;
+			deffile >> scopeX;
+			deffile >> scopeY;
+			deffile >> scopeVisible;
+			deffile >> scopeW;
+			deffile >> scopeH;
+			deffile.close();
+			progdefaults.wfRefLevel = reflevel;
+			progdefaults.wfAmpSpan = ampspan;
+			bLastStateRead = true;
+		}
 	}
 }
 

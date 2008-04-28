@@ -193,8 +193,11 @@ static void sound_init_options(void)
 	menuOutSampleRate->menu(sample_rate_menu);
 
 	const char* cname;
-	for (int i = 0; (cname = src_get_name(i)); i++)
+	for (int i = 0; (cname = src_get_name(i)); i++) {
+		if (strstr( cname, "ZOH") != 0) continue;
+		if (strstr( cname, "Linear") != 0) continue;
 		menuSampleConverter->add(cname);
+	}
 	menuSampleConverter->value(progdefaults.sample_converter);
 	menuSampleConverter->tooltip(src_get_description(progdefaults.sample_converter));
 

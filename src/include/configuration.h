@@ -26,7 +26,6 @@ struct configuration {
 	int		ServerOffset;
 	double	ACQsn;
 // RTTY
-//	double		rtty_squelch;
 	int			rtty_shift;
 	int			rtty_baud;
 	int 		rtty_bits;
@@ -38,9 +37,6 @@ struct configuration {
 	bool		rtty_autocrlf;
 	int			rtty_autocount;
 	int			rtty_afcspeed;
-//	bool		afconoff;
-//	bool		sqlonoff;
-//	double		sldrSquelchValue;
 	bool		useFSKkeyline;		// use RTS for FSK
 	bool		useFSKkeylineDTR;	// use DTR for FSK
 	bool		FSKisLSB;
@@ -79,6 +75,7 @@ struct configuration {
 	bool			olivia8bit;
 // DOMINOEX
 	double		DOMINOEX_BW;
+	bool		DOMINOEX_FILTER;
 // MT63
 	bool 		mt63_8bit;
 	int			mt63_interleave;

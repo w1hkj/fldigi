@@ -140,6 +140,7 @@ extern Fl_Group *tabDomEX;
 extern Fl_Input *txtSecondary;
 extern Fl_Button *btnRestartDomEX;
 extern Fl_Counter *valDominoEX_BW;
+extern Fl_Check_Button *valDominoEX_FILTER;
 extern Fl_Group *tabFeld;
 #include "fontdef.h"
 extern Fl_Choice *selHellFont;
