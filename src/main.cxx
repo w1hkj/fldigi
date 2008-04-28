@@ -237,8 +237,10 @@ int main(int argc, char ** argv)
 	Fl::add_timeout(1.0, pskmail_loop);
 
 	int ret = Fl::run();
-	for (int i = 0; i < NUM_QRUNNER_THREADS; i++)
+	for (int i = 0; i < NUM_QRUNNER_THREADS; i++) {
 		cbq[i]->detach();
+		delete cbq[i];
+	}
 
 	return ret;
 }
