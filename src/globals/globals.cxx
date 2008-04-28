@@ -43,8 +43,7 @@ const char *state_names[] = {
 // Elements are in enum trx_mode order. Mode name video-id uses the
 // first string (sname), so its length should be a multiple of 2.
 const struct mode_info_t mode_info[NUM_MODES] = {
-	{ MODE_CW, &cw_modem, "CW", "CW", "CW" },
-
+    { MODE_CW, &cw_modem, "CW", "CW", "CW", "CW" }, 
 	{ MODE_DOMINOEX4, &dominoex4_modem, "DomEX4", "DominoEX 4", "DOMINOEX4", "DOMINO" }, // These aren't Domino FEC, right?
 	{ MODE_DOMINOEX5, &dominoex5_modem, "DomEX5", "DominoEX 5", "DOMINOEX5", "DOMINO" },
 	{ MODE_DOMINOEX8, &dominoex8_modem, "DomEX8", "DominoEX 8", "DOMINOEX8", "DOMINO" },

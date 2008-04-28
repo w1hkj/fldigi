@@ -1062,7 +1062,7 @@ void SoundPort::src_data_reset(int mode)
                 rbsize = ceil2((unsigned)(2 * CHANNELS * SCBLOCKSIZE *
                                           MAX(req_sample_rate, sd[0].dev_sample_rate) /
                                           MIN(req_sample_rate, sd[0].dev_sample_rate)));
-                rbsize = MAX(rbsize, 4096);
+                rbsize = 2 * MAX(rbsize, 4096);
 #ifndef NDEBUG
                 cerr << "input rbsize=" << rbsize << endl;
 #endif

@@ -881,8 +881,9 @@ Fl_Group *tabDomEX=(Fl_Group *)0;
 
 Fl_Input *txtSecondary=(Fl_Input *)0;
 
-static void cb_txtSecondary(Fl_Input*, void*) {
-  progdefaults.changed = true;
+static void cb_txtSecondary(Fl_Input* o, void*) {
+  progdefaults.secText = o->value();
+progdefaults.changed = true;
 }
 
 Fl_Button *btnRestartDomEX=(Fl_Button *)0;
@@ -1669,6 +1670,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           { tabAudio = new Fl_Group(0, 50, 400, 170, "Audio devices");
             tabAudio->color((Fl_Color)51);
             tabAudio->selection_color((Fl_Color)51);
+            tabAudio->hide();
             { AudioOSS = new Fl_Group(5, 58, 391, 35);
               AudioOSS->box(FL_ENGRAVED_FRAME);
               { btnAudioIO[0] = new Fl_Round_Button(5, 63, 100, 25, "OSS");
@@ -1727,7 +1729,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           { tabAudioOpt = new Fl_Group(0, 50, 400, 170, "Audio settings");
             tabAudioOpt->color((Fl_Color)51);
             tabAudioOpt->selection_color((Fl_Color)51);
-            tabAudioOpt->hide();
             { Fl_Spinner* o = cntRxRateCorr = new Fl_Spinner(5, 160, 85, 25, "RX ppm");
               cntRxRateCorr->value(1);
               cntRxRateCorr->callback((Fl_Callback*)cb_cntRxRateCorr);
@@ -2019,14 +2020,15 @@ l with your sound hardware.");
           { tabDomEX = new Fl_Group(0, 50, 400, 170, "DomEX");
             tabDomEX->color((Fl_Color)51);
             tabDomEX->selection_color((Fl_Color)51);
-            tabDomEX->hide();
             { txtSecondary = new Fl_Input(20, 75, 360, 44, "Secondary Text");
               txtSecondary->type(4);
               txtSecondary->callback((Fl_Callback*)cb_txtSecondary);
               txtSecondary->align(FL_ALIGN_TOP_LEFT);
+              txtSecondary->when(FL_WHEN_CHANGED);
             } // Fl_Input* txtSecondary
             { btnRestartDomEX = new Fl_Button(300, 172, 79, 28, "Restart");
               btnRestartDomEX->callback((Fl_Callback*)cb_btnRestartDomEX);
+              btnRestartDomEX->hide();
             } // Fl_Button* btnRestartDomEX
             { Fl_Counter* o = valDominoEX_BW = new Fl_Counter(25, 134, 63, 21, "BW factor:");
               valDominoEX_BW->type(1);
@@ -2035,6 +2037,7 @@ l with your sound hardware.");
               valDominoEX_BW->step(0.1);
               valDominoEX_BW->value(2);
               valDominoEX_BW->callback((Fl_Callback*)cb_valDominoEX_BW);
+              valDominoEX_BW->hide();
               o->value(progdefaults.DOMINOEX_BW);
             } // Fl_Counter* valDominoEX_BW
             tabDomEX->end();
@@ -2250,6 +2253,7 @@ l with your sound hardware.");
           { tabRTTY = new Fl_Group(0, 50, 400, 170, "RTTY");
             tabRTTY->color((Fl_Color)51);
             tabRTTY->selection_color((Fl_Color)51);
+            tabRTTY->hide();
             { Fl_Choice* o = selShift = new Fl_Choice(48, 60, 77, 22, "Shift");
               selShift->down_box(FL_BORDER_BOX);
               selShift->callback((Fl_Callback*)cb_selShift);

@@ -396,7 +396,7 @@ void Digiscope::draw_video()
 void Digiscope::draw()
 {
 	draw_box();
-	if (_mode == WWV || _mode == DOMWF)
+	if (_mode == WWV) // || _mode == DOMWF)
 		draw_video();
 	else {
 		switch (_mode) {
@@ -407,7 +407,14 @@ void Digiscope::draw()
 			case XHAIRS :	draw_xy(); break;
 			case DOMDATA :	draw_scope(); break;
 			case BLANK : 
-			default: break;
+			default: 
+				fl_clip(x()+2,y()+2,w()-4,h()-4);
+				fl_color(FL_BLACK);
+				fl_rectf(x()+2,y()+2,w()-4,h()-4);
+				fl_push_matrix();
+				fl_pop_matrix();
+				fl_pop_clip();
+				break;
 		}
 	}
 }
@@ -432,12 +439,12 @@ int Digiscope::handle(int event)
 		case XHAIRS:
 			_mode = RTTY;
 			break;
-		case DOMDATA:
-			_mode = DOMWF;
-			break;
-		case DOMWF:
-			_mode = DOMDATA;
-			break;
+//		case DOMDATA:
+//			_mode = DOMWF;
+//			break;
+//		case DOMWF:
+//			_mode = DOMDATA;
+//			break;
 		case WWV:
 			event = Fl::event_button();
 			if (event == FL_LEFT_MOUSE)

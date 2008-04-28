@@ -38,11 +38,12 @@
 
 using namespace std;
 
-#define MAXRESOLUTION 4
-#define DOMNUMTONES 18
+#define NUMTONES 18
+//#define NUMBINS (4 * NUMTONES * 6)
+#define NUMBINS (4 * NUMTONES * 3)
 
 struct domrxpipe {
-	complex vector[MAXRESOLUTION * DOMNUMTONES * 6];	/* numtones <= 18 */
+	complex vector[NUMBINS];
 };
 
 class dominoex : public modem {
@@ -56,9 +57,9 @@ public:
 	};
 protected:
 // common variables
-	double	phaseacc;
+	double	phase[4];
+	double	txphase;
 	int		symlen;
-	int		numtones;
 	int		basetone;
 	int		doublespaced;
 	double	tonespacing;
@@ -67,9 +68,8 @@ protected:
 	
 // rx variables
 	C_FIR_filter	*hilbert;
-	C_FIR_filter	*filt;
-	sfft			*binsfft;
-	Cmovavg			*afcfilt;
+	C_FIR_filter	*filt[4];
+	sfft			*binsfft[4];
 	
 	domrxpipe		*pipe;
 	unsigned int	pipeptr;
@@ -78,8 +78,6 @@ protected:
 	mbuffer<double, 0, 2>	videodata;
 
 	complex currvector;
-	complex prev1vector;
-	complex prev2vector;
 
 	int currsymbol;
 	int prev1symbol;
@@ -105,15 +103,15 @@ protected:
 	string strSecXmtText;
 
 private:
-	complex	mixer(complex in, double f);
+	complex	mixer(int n, complex in);
 	void	recvchar(int c);
-	void	decodesymbol(unsigned char curtone, unsigned char prevtone);
-	int		harddecode(complex *in);
-	void	update_syncscope(complex *);
+	void	decodesymbol();
+	int		harddecode();
+	void	update_syncscope();
 	void	synchronize();
 	void	afc();
 	void	reset_afc();
-	void	eval_s2n(complex, complex);
+	void	eval_s2n();
 	void	sendsymbol(int sym);
 	void	sendchar(unsigned char c, int secondary);
 	void	sendidle();

@@ -525,9 +525,12 @@ void mfsk::afc()
 void mfsk::eval_s2n(complex c, complex n)
 {
 	sig = c.mag(); // signal + noise energy
-	noise = n.mag() + 1e-10; // noise energy
+	noise = n.mag() + 1e-20; // noise energy
 
-	s2n = decayavg( s2n, fabs((sig - noise) / noise), 8);
+	if (metric > progStatus.sldrSquelchValue)
+		s2n = decayavg( s2n, fabs(sig / noise), 16 );
+	else
+		s2n = decayavg( s2n, 1.0, 16 );
 }
 
 int mfsk::rx_process(const double *buf, int len)
@@ -601,7 +604,7 @@ int mfsk::rx_process(const double *buf, int len)
 // frequency tracking 
 			afc();
 			
-			eval_s2n(currvector, bins[numtones + 2]);
+			eval_s2n(currvector, bins[(currsymbol + numtones/2) % numtones]);
 // decode symbol 
 			softdecode(bins);
 // symbol sync 

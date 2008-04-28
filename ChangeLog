@@ -36,6 +36,13 @@ Change Log:
            2) fading fixed length vector display
            3) fading variable length vector display; length proportional to
               signal quality.
+     18) Completely new DominoEX decoder - similar in theory to ZL2AFP
+         DominoEX, which has FFT bin resolution 4x the tone spacing.  No AFC is
+         required for proper tracking of the Rx signal.
+     19) Removed ZOH and Linear interpolator choices from the resampling choice
+         menu under Sound Card configuration.
+     20) Fixed a bug in the global.cxx structures.  Missing field in "CW"
+         definition.
       
 2.10.3)
       1) Corrected memory leak bug.

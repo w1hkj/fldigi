@@ -1725,7 +1725,7 @@ void put_sec_char( char chr )
 {
 	if (chr >= ' ' && chr <= 'z') {
 		strSecText.append(1, chr);
-		if (strSecText.length() > 60)
+		if (strSecText.length() > 50)
 			strSecText.erase(0,1);
 		FL_LOCK_D();
 		REQ(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), StatusBar, strSecText.c_str());
