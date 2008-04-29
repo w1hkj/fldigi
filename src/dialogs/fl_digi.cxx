@@ -316,10 +316,18 @@ bool clean_exit() {
 
 	if (mixer)
 		mixer->closeMixer();
-	active_modem->set_stopflag(true);
-	while (trx_state != STATE_RX)
-		MilliSleep(100);
-		
+
+	if (trx_state == STATE_RX || trx_state == STATE_TX || trx_state == STATE_TUNE)
+		trx_state = STATE_ABORT;
+	else {
+		cerr << "trx in unexpected state " << trx_state << '\n';
+		exit(1);
+	}
+	while (trx_state != STATE_ENDED) {
+		REQ_FLUSH();
+		MilliSleep(10);
+	}
+
 //	fl_lock (&trx_mutex);
 //	if (active_modem) {
 //		active_modem->shutdown();

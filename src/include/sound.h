@@ -267,11 +267,6 @@ private:
                 sem_t* csem;
                 int state;
                 ringbuffer<float>* rb;
-
-                Cmovavg* avg;
-                double est_sample_rate;
-                unsigned long nframes;
-                PaTime stime;
         } sd[2];
 };
 

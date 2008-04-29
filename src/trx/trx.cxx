@@ -115,7 +115,7 @@ void trx_trx_receive_loop()
 					trxrb.read_advance(SCBLOCKSIZE);
 				trxrb.get_wv(rbvec);
 				numread = 0;
-				while (numread < SCBLOCKSIZE)
+				while (numread < SCBLOCKSIZE && trx_state == STATE_RX)
 					numread += scard->Read(rbvec[0].buf + numread, SCBLOCKSIZE - numread);
 			}
 			catch (const SndException& e) {
@@ -250,6 +250,8 @@ void *trx_loop(void *args)
 
 	for (;;) {
 		if ( trx_state == STATE_ABORT) {
+			delete scard;
+			scard = 0;
 			trx_state = STATE_ENDED;
 			return 0;
 		}

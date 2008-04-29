@@ -55,7 +55,6 @@
 
 #include "timeops.h"
 #include "ringbuffer.h"
-#include "filters.h"
 
 // We always read and write 2 channels from/to the audio device.
 // * input:  we ignore the right channel of captured samples
@@ -709,21 +708,13 @@ SoundPort::SoundPort(const char *in_dev, const char *out_dev)
         sd[0].dev_sample_rate = sd[1].dev_sample_rate = 0;
         sd[0].state = sd[1].state = spa_continue;
         sd[0].rb = sd[1].rb = 0;
-        sd[0].est_sample_rate = sd[1].est_sample_rate = 0.0;
-        sd[0].avg = new Cmovavg(128);
-        sd[1].avg = new Cmovavg(128);
 
-       sem_t** sems[] = { &sd[0].rwsem, &sd[0].csem, &sd[1].rwsem, &sd[1].csem };
-        char sname[32];
+	sem_t** sems[] = { &sd[0].rwsem, &sd[0].csem, &sd[1].rwsem, &sd[1].csem };
         for (size_t i = 0; i < sizeof(sems)/sizeof(*sems); i++) {
-                snprintf(sname, sizeof(sname), "%u-%u-%s", i, getpid(), PACKAGE);
-                if ((*sems[i] = sem_open(sname, O_CREAT | O_EXCL, 0600, 0)) == SEM_FAILED)
-                        throw SndException(errno);
-#ifndef __CYGWIN__ // FIXME: write an autoconf macro for sem_unlink
-                if (sem_unlink(sname) == -1)
-                        throw SndException(errno);
-#endif
-        }
+		*sems[i] = new sem_t;
+		if (sem_init(*sems[i], 0, 0) == -1)
+			throw SndException(errno);
+	}
 
         try {
                 rx_src_data = new SRC_DATA;
@@ -753,13 +744,12 @@ SoundPort::~SoundPort()
 {
         Close();
 
-        sem_t** sems[] = { &sd[0].rwsem, &sd[0].csem, &sd[1].rwsem, &sd[1].csem };
-        for (size_t i = 0; i < sizeof(sems)/sizeof(*sems); i++)
-                if (sem_close(*sems[i]) == -1)
+        sem_t* sems[] = { sd[0].rwsem, sd[0].csem, sd[1].rwsem, sd[1].csem };
+        for (size_t i = 0; i < sizeof(sems)/sizeof(*sems); i++) {
+                if (sem_destroy(sems[i]) == -1)
                         perror("sem_close");
-
-        delete sd[0].avg;
-        delete sd[1].avg;
+		delete sems[i];
+	}
 
         delete [] fbuf;
 }
