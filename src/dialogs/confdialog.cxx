@@ -59,54 +59,6 @@ progdefaults.changed = true;
 
 Fl_Group *tabWaterfall=(Fl_Group *)0;
 
-Fl_Check_Button *btnBlackman=(Fl_Check_Button *)0;
-
-static void cb_btnBlackman(Fl_Check_Button* o, void*) {
-  if (o->value() == 1) {
-progdefaults.wfPreFilter=1;
-btnHamming->value(0);
-btnHanning->value(0);
-btnTriangular->value(0);
-} else o->value(1);
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnHamming=(Fl_Check_Button *)0;
-
-static void cb_btnHamming(Fl_Check_Button* o, void*) {
-  if (o->value() == 1) {
-progdefaults.wfPreFilter=2;
-btnBlackman->value(0);
-btnHanning->value(0);
-btnTriangular->value(0);
-} else o->value(1);
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnHanning=(Fl_Check_Button *)0;
-
-static void cb_btnHanning(Fl_Check_Button* o, void*) {
-  if (o->value() == 1) {
-progdefaults.wfPreFilter=3;
-btnHamming->value(0);
-btnBlackman->value(0);
-btnTriangular->value(0);
-} else o->value(1);
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnTriangular=(Fl_Check_Button *)0;
-
-static void cb_btnTriangular(Fl_Check_Button* o, void*) {
-  if (o->value() == 1) {
-progdefaults.wfPreFilter=4;
-btnHamming->value(0);
-btnHanning->value(0);
-btnBlackman->value(0);
-} else o->value(1);
-progdefaults.changed = true;
-}
-
 colorbox *WF_Palette=(colorbox *)0;
 
 static void cb_WF_Palette(colorbox*, void*) {
@@ -184,6 +136,61 @@ Fl_Check_Button *btnWFaveraging=(Fl_Check_Button *)0;
 
 static void cb_btnWFaveraging(Fl_Check_Button* o, void*) {
   progdefaults.WFaveraging = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnBlackman=(Fl_Check_Button *)0;
+
+static void cb_btnBlackman(Fl_Check_Button* o, void*) {
+  if (o->value() == 1) {
+progdefaults.wfPreFilter=1;
+btnHamming->value(0);
+btnHanning->value(0);
+btnTriangular->value(0);
+} else o->value(1);
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnHamming=(Fl_Check_Button *)0;
+
+static void cb_btnHamming(Fl_Check_Button* o, void*) {
+  if (o->value() == 1) {
+progdefaults.wfPreFilter=2;
+btnBlackman->value(0);
+btnHanning->value(0);
+btnTriangular->value(0);
+} else o->value(1);
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnHanning=(Fl_Check_Button *)0;
+
+static void cb_btnHanning(Fl_Check_Button* o, void*) {
+  if (o->value() == 1) {
+progdefaults.wfPreFilter=3;
+btnHamming->value(0);
+btnBlackman->value(0);
+btnTriangular->value(0);
+} else o->value(1);
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnTriangular=(Fl_Check_Button *)0;
+
+static void cb_btnTriangular(Fl_Check_Button* o, void*) {
+  if (o->value() == 1) {
+progdefaults.wfPreFilter=4;
+btnHamming->value(0);
+btnHanning->value(0);
+btnBlackman->value(0);
+} else o->value(1);
+progdefaults.changed = true;
+}
+
+Fl_Counter *valLatency=(Fl_Counter *)0;
+
+static void cb_valLatency(Fl_Counter* o, void*) {
+  progdefaults.latency = (int)o->value();
 progdefaults.changed = true;
 }
 
@@ -1298,38 +1305,12 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { tabWaterfall = new Fl_Group(0, 25, 405, 195, "W-fall");
         tabWaterfall->color((Fl_Color)51);
         tabWaterfall->selection_color((Fl_Color)51);
-        tabWaterfall->hide();
         { Fl_Tabs* o = new Fl_Tabs(0, 25, 405, 195);
           { Fl_Group* o = new Fl_Group(0, 50, 400, 170, "Filters/Colors");
-            { Fl_Group* o = new Fl_Group(5, 55, 390, 42, "FFT Prefilter");
-              o->box(FL_ENGRAVED_BOX);
-              o->color((Fl_Color)51);
-              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = btnBlackman = new Fl_Check_Button(11, 75, 90, 15, "Blackman");
-                btnBlackman->down_box(FL_DOWN_BOX);
-                btnBlackman->callback((Fl_Callback*)cb_btnBlackman);
-                if(progdefaults.wfPreFilter==1)o->value(1);else o->value(0);
-              } // Fl_Check_Button* btnBlackman
-              { Fl_Check_Button* o = btnHamming = new Fl_Check_Button(108, 75, 90, 15, "Hamming");
-                btnHamming->down_box(FL_DOWN_BOX);
-                btnHamming->callback((Fl_Callback*)cb_btnHamming);
-                if(progdefaults.wfPreFilter==2)o->value(1);else o->value(0);
-              } // Fl_Check_Button* btnHamming
-              { Fl_Check_Button* o = btnHanning = new Fl_Check_Button(206, 75, 90, 15, "Hanning");
-                btnHanning->down_box(FL_DOWN_BOX);
-                btnHanning->callback((Fl_Callback*)cb_btnHanning);
-                if(progdefaults.wfPreFilter==3)o->value(1);else o->value(0);
-              } // Fl_Check_Button* btnHanning
-              { Fl_Check_Button* o = btnTriangular = new Fl_Check_Button(304, 75, 90, 15, "Triangular");
-                btnTriangular->down_box(FL_DOWN_BOX);
-                btnTriangular->callback((Fl_Callback*)cb_btnTriangular);
-                if(progdefaults.wfPreFilter==4)o->value(1);else o->value(0);
-              } // Fl_Check_Button* btnTriangular
-              o->end();
-            } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(5, 131, 390, 85);
+            o->hide();
+            { Fl_Group* o = new Fl_Group(10, 100, 385, 110);
               o->box(FL_ENGRAVED_FRAME);
-              { WF_Palette = new colorbox(28, 152, 260, 24, "Palette:");
+              { WF_Palette = new colorbox(28, 130, 260, 24, "Palette:");
                 WF_Palette->box(FL_DOWN_BOX);
                 WF_Palette->color(FL_FOREGROUND_COLOR);
                 WF_Palette->selection_color(FL_BACKGROUND_COLOR);
@@ -1341,42 +1322,42 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 WF_Palette->align(FL_ALIGN_TOP_LEFT);
                 WF_Palette->when(FL_WHEN_RELEASE);
               } // colorbox* WF_Palette
-              { btnColor[0] = new Fl_Button(20, 184, 20, 24);
+              { btnColor[0] = new Fl_Button(20, 162, 20, 24);
                 btnColor[0]->callback((Fl_Callback*)cb_btnColor);
               } // Fl_Button* btnColor[0]
-              { btnColor[1] = new Fl_Button(52, 184, 20, 24);
+              { btnColor[1] = new Fl_Button(52, 162, 20, 24);
                 btnColor[1]->callback((Fl_Callback*)cb_btnColor1);
               } // Fl_Button* btnColor[1]
-              { btnColor[2] = new Fl_Button(84, 184, 20, 24);
+              { btnColor[2] = new Fl_Button(84, 162, 20, 24);
                 btnColor[2]->callback((Fl_Callback*)cb_btnColor2);
               } // Fl_Button* btnColor[2]
-              { btnColor[3] = new Fl_Button(116, 184, 20, 24);
+              { btnColor[3] = new Fl_Button(116, 162, 20, 24);
                 btnColor[3]->callback((Fl_Callback*)cb_btnColor3);
               } // Fl_Button* btnColor[3]
-              { btnColor[4] = new Fl_Button(148, 184, 20, 24);
+              { btnColor[4] = new Fl_Button(148, 162, 20, 24);
                 btnColor[4]->callback((Fl_Callback*)cb_btnColor4);
               } // Fl_Button* btnColor[4]
-              { btnColor[5] = new Fl_Button(180, 184, 20, 24);
+              { btnColor[5] = new Fl_Button(180, 162, 20, 24);
                 btnColor[5]->callback((Fl_Callback*)cb_btnColor5);
               } // Fl_Button* btnColor[5]
-              { btnColor[6] = new Fl_Button(212, 184, 20, 24);
+              { btnColor[6] = new Fl_Button(212, 162, 20, 24);
                 btnColor[6]->callback((Fl_Callback*)cb_btnColor6);
               } // Fl_Button* btnColor[6]
-              { btnColor[7] = new Fl_Button(244, 184, 20, 24);
+              { btnColor[7] = new Fl_Button(244, 162, 20, 24);
                 btnColor[7]->callback((Fl_Callback*)cb_btnColor7);
               } // Fl_Button* btnColor[7]
-              { btnColor[8] = new Fl_Button(276, 184, 20, 24);
+              { btnColor[8] = new Fl_Button(276, 162, 20, 24);
                 btnColor[8]->callback((Fl_Callback*)cb_btnColor8);
               } // Fl_Button* btnColor[8]
-              { btnLoadPalette = new Fl_Button(320, 152, 70, 24, "Load");
+              { btnLoadPalette = new Fl_Button(314, 130, 70, 24, "Load");
                 btnLoadPalette->callback((Fl_Callback*)cb_btnLoadPalette);
               } // Fl_Button* btnLoadPalette
-              { btnSavePalette = new Fl_Button(320, 184, 70, 24, "Save");
+              { btnSavePalette = new Fl_Button(314, 162, 70, 24, "Save");
                 btnSavePalette->callback((Fl_Callback*)cb_btnSavePalette);
               } // Fl_Button* btnSavePalette
               o->end();
             } // Fl_Group* o
-            { Fl_Counter* o = cntLowFreqCutoff = new Fl_Counter(117, 103, 70, 20, "Low Freq Cutoff");
+            { Fl_Counter* o = cntLowFreqCutoff = new Fl_Counter(120, 63, 70, 20, "Low Freq Cutoff");
               cntLowFreqCutoff->type(1);
               cntLowFreqCutoff->minimum(0);
               cntLowFreqCutoff->maximum(500);
@@ -1386,11 +1367,56 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
               cntLowFreqCutoff->align(FL_ALIGN_LEFT);
               o->value(progdefaults.LowFreqCutoff);
             } // Fl_Counter* cntLowFreqCutoff
-            { Fl_Check_Button* o = btnWFaveraging = new Fl_Check_Button(206, 105, 114, 15, "wf averaging");
+            { Fl_Check_Button* o = btnWFaveraging = new Fl_Check_Button(226, 65, 114, 15, "wf averaging");
               btnWFaveraging->down_box(FL_DOWN_BOX);
               btnWFaveraging->callback((Fl_Callback*)cb_btnWFaveraging);
               o->value(progdefaults.WFaveraging);
             } // Fl_Check_Button* btnWFaveraging
+            o->end();
+          } // Fl_Group* o
+          { Fl_Group* o = new Fl_Group(0, 49, 400, 170, "FFT Processing");
+            { Fl_Group* o = new Fl_Group(5, 58, 390, 42, "FFT Prefilter");
+              o->box(FL_ENGRAVED_BOX);
+              o->color((Fl_Color)51);
+              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { Fl_Check_Button* o = btnBlackman = new Fl_Check_Button(11, 78, 90, 15, "Blackman");
+                btnBlackman->down_box(FL_DOWN_BOX);
+                btnBlackman->callback((Fl_Callback*)cb_btnBlackman);
+                if(progdefaults.wfPreFilter==1)o->value(1);else o->value(0);
+              } // Fl_Check_Button* btnBlackman
+              { Fl_Check_Button* o = btnHamming = new Fl_Check_Button(108, 78, 90, 15, "Hamming");
+                btnHamming->down_box(FL_DOWN_BOX);
+                btnHamming->callback((Fl_Callback*)cb_btnHamming);
+                if(progdefaults.wfPreFilter==2)o->value(1);else o->value(0);
+              } // Fl_Check_Button* btnHamming
+              { Fl_Check_Button* o = btnHanning = new Fl_Check_Button(206, 78, 90, 15, "Hanning");
+                btnHanning->down_box(FL_DOWN_BOX);
+                btnHanning->callback((Fl_Callback*)cb_btnHanning);
+                if(progdefaults.wfPreFilter==3)o->value(1);else o->value(0);
+              } // Fl_Check_Button* btnHanning
+              { Fl_Check_Button* o = btnTriangular = new Fl_Check_Button(304, 78, 90, 15, "Triangular");
+                btnTriangular->down_box(FL_DOWN_BOX);
+                btnTriangular->callback((Fl_Callback*)cb_btnTriangular);
+                if(progdefaults.wfPreFilter==4)o->value(1);else o->value(0);
+              } // Fl_Check_Button* btnTriangular
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(5, 105, 390, 50, "FFT Latency");
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { Fl_Counter* o = valLatency = new Fl_Counter(225, 119, 63, 21, "Scan merging:");
+                valLatency->tooltip("1 = none");
+                valLatency->type(1);
+                valLatency->minimum(1);
+                valLatency->maximum(8);
+                valLatency->step(1);
+                valLatency->value(4);
+                valLatency->callback((Fl_Callback*)cb_valLatency);
+                valLatency->align(FL_ALIGN_LEFT);
+                o->value(progdefaults.latency);
+              } // Fl_Counter* valLatency
+              o->end();
+            } // Fl_Group* o
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 405, 166, "Cursors");
@@ -1872,6 +1898,7 @@ l with your sound hardware.");
       { tabModems = new Fl_Group(0, 25, 401, 195, "Modem");
         tabModems->color((Fl_Color)51);
         tabModems->selection_color((Fl_Color)51);
+        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 401, 195);
           tabsModems->color((Fl_Color)51);
           tabsModems->selection_color((Fl_Color)10);

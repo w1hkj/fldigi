@@ -43,6 +43,12 @@ Change Log:
          menu under Sound Card configuration.
      20) Fixed a bug in the global.cxx structures.  Missing field in "CW"
          definition.
+     21) Added Latency setting for waterfall FFT.  Latency relates to the
+         amount of signal that is shared between waterfall scans.  A higher
+         latency gives better resolution in frequency and blurriness in time
+         (waterfall drop).  A lower latency gives better resolution in time
+         and less in frequency.  The waterfall accuracy is still related to the
+         FFT size and that remains fixed for an accuracy of 1 Hz.
       
 2.10.3)
       1) Corrected memory leak bug.

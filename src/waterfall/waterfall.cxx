@@ -344,8 +344,11 @@ void WFdisp::processFFT() {
     scale *= FFT_LEN / 2000.0;
 
 	if (dispcnt == 0) {
-        for (int i = 0; i < FFT_LEN*2; i++)
-            fftout[i] = fftwindow[i] * circbuff[i];
+		memset (fftout, 0, FFT_LEN*2*sizeof(double));
+//        for (int i = 0; i < FFT_LEN*2; i++)
+//            fftout[i] = fftwindow[i] * circbuff[i];
+        for (int i = 0; i < FFT_LEN * 2 * progdefaults.latency / 8; i++)
+            fftout[i] = fftwindow[i * 8 / progdefaults.latency] * circbuff[i];
 		wfft->rdft(fftout);
 FL_LOCK_D();		
 		memmove(

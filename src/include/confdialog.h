@@ -23,10 +23,6 @@ extern Fl_Check_Button *btnUseLeadingZeros;
 extern Fl_Value_Input *nbrContestStart;
 extern Fl_Value_Input *nbrContestDigits;
 extern Fl_Group *tabWaterfall;
-extern Fl_Check_Button *btnBlackman;
-extern Fl_Check_Button *btnHamming;
-extern Fl_Check_Button *btnHanning;
-extern Fl_Check_Button *btnTriangular;
 #include "colorbox.h"
 extern colorbox *WF_Palette;
 #include <FL/Fl_Button.H>
@@ -36,6 +32,11 @@ extern Fl_Button *btnSavePalette;
 #include <FL/Fl_Counter.H>
 extern Fl_Counter *cntLowFreqCutoff;
 extern Fl_Check_Button *btnWFaveraging;
+extern Fl_Check_Button *btnBlackman;
+extern Fl_Check_Button *btnHamming;
+extern Fl_Check_Button *btnHanning;
+extern Fl_Check_Button *btnTriangular;
+extern Fl_Counter *valLatency;
 extern Fl_Check_Button *btnUseCursorLines;
 extern Fl_Check_Button *btnUseBWTracks;
 extern Fl_Check_Button *btnUseCursorCenterLine;

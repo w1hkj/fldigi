@@ -91,6 +91,7 @@ configuration progdefaults = {
 	0,				// bool 	MultiColorWF;
 	1,				// int  	wfPreFilter == Blackman
 	false,			// bool		WFaveraging
+	4,				// int		latency;
 	true,			// bool 	UseCursorLines;
 	true,			// bool 	UseCursorCenterLine;
 	true,			// bool 	UseBWTracks;
@@ -244,7 +245,7 @@ enum TAG { \
 	OLIVIATONES, OLIVIABW, OLIVIASMARGIN, OLIVIASINTEG, OLIVIA8BIT,
 	DOMINOEXBW, DOMINOEXFILTER,
 	FELDFONTNBR, FELDIDLE,
-	WFPREFILTER,
+	WFPREFILTER, LATENCY,
 	USECURSORLINES, USECURSORCENTERLINE, USEBWTRACKS,
 	CLCOLORS,
 	CCCOLORS,
@@ -387,6 +388,7 @@ void configuration::writeDefaultsXML()
 	writeXMLbool(f, "FELDIDLE", FELD_IDLE);
 
 	writeXMLint(f, "WFPREFILTER", wfPreFilter);
+	writeXMLint(f, "LATENCY", latency);
 	writeXMLbool(f, "USECURSORLINES", UseCursorLines);
 	writeXMLbool(f, "USECURSORCENTERLINE", UseCursorCenterLine);
 	writeXMLbool(f, "USEBWTRACKS", UseBWTracks);
@@ -683,6 +685,9 @@ bool configuration::readDefaultsXML()
 						break;
 					case WFPREFILTER :
 						wfPreFilter = atoi(xml->getNodeData());
+						break;
+					case LATENCY :
+						latency = atoi(xml->getNodeData());
 						break;
 					case USECURSORLINES :
 						UseCursorLines = atoi(xml->getNodeData());
@@ -1027,6 +1032,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("FELDFONTNBR", nodeName)) 	tag = FELDFONTNBR;
 				else if (!strcmp("FELDIDLE", nodeName)) 	tag = FELDIDLE;
 				else if (!strcmp("WFPREFILTER", nodeName)) 	tag = WFPREFILTER;
+				else if (!strcmp("LATENCY", nodeName)) 	tag = LATENCY;
 				else if (!strcmp("USECURSORLINES", nodeName)) 	tag = USECURSORLINES;
 				else if (!strcmp("USECURSORCENTERLINE", nodeName)) 	tag = USECURSORCENTERLINE;
 				else if (!strcmp("USEBWTRACKS", nodeName)) 	tag = USEBWTRACKS;
@@ -1372,6 +1378,7 @@ int configuration::setDefaults() {
 	TransmitText->setFontSize(TxFontsize);
 
 	wf->setPrefilter(wfPreFilter);
+	valLatency->value(latency);
 
 	for (int i = 0; i < 9; i++) {
 		palette[i].R = (uchar)cfgpal[i].R;

@@ -58,8 +58,6 @@
 // the actual waterfall will be width -4 (bezel size) and
 //                              height - 4 - 24 (bezel, text, scale & marker)
 
-//#define FFT_LEN     1024
-//#define FFT_LEN     2048
 #define FFT_LEN		4096
 #define SC_SMPLRATE	8000
  
@@ -97,8 +95,8 @@ enum WFmode {
 #define MAG_2 2
 #define MAG_4 3
 
-enum WFspeed {FAST = 1, NORMAL = 2, SLOW = 8};
-//enum WFspeed {NORMAL = 2, SLOW = 8};
+//enum WFspeed {FAST = 1, NORMAL = 2, SLOW = 8};
+enum WFspeed {FAST = 1, NORMAL = 2, SLOW = 4};
 
 class WFdisp : public Fl_Widget {
 public:
