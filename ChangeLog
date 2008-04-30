@@ -3,7 +3,7 @@ Change Log:
 2.11  1) Added EXEC macro
       2) Added mousewheel over Macro buttons to move between macro button sets.
       3) Fixed bug in Olivia signal level display.
-      4) Ported to Windows (win32)
+      4) Ported to Windows (win32) and OS-X
       5) Added floating digiscope and / or fixed scope abutting waterfall
          specified with command line switch --twoscopes
          Default is floating digiscope without the fixed scope
