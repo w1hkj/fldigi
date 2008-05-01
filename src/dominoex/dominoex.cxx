@@ -219,17 +219,17 @@ void dominoex::recvchar(int c)
 void dominoex::decodesymbol()
 {
 	int c, sym, ch;
-	int diff;
+	double fdiff;
 
 // Decode the IFK+ sequence, which results in a single nibble
 
-	diff = currsymbol - prev1symbol;
-	if (reverse) diff = -diff;
-	diff /= 4; // 4 sets of interleaved bins
-	if (doublespaced) diff /= 2;
-	diff -= 2;
-	if (diff < 0) diff += NUMTONES;
-	c = diff;
+	fdiff = currsymbol - prev1symbol;
+	if (reverse) fdiff = -fdiff;
+	if (doublespaced) fdiff /= 8.0;
+	else              fdiff /= 4.0;
+	fdiff -= 2.0;
+	if (fdiff < 0) fdiff += NUMTONES;
+	c = (int)floor(fdiff + 0.5);
 	
 //	If the new symbol is the start of a new character (MSB is low), complete the previous character
 	if (!(c & 0x8)) {
@@ -336,17 +336,20 @@ void dominoex::eval_s2n()
 {
 	if (currsymbol != prev1symbol && prev1symbol != prev2symbol) {
 		sig = pipe[pipeptr].vector[currsymbol].mag();
-		noise = pipe[pipeptr].vector[prev2symbol].mag();
-
-		if (noise < 1.0e-6) noise = 1e-6;
+		noise = 0.0;
+		for (int i = 0; i < 4 * NUMTONES * 3  * (doublespaced?2:1); i++) {
+			if (i != currsymbol)
+				noise += pipe[pipeptr].vector[i].mag();
+		}	
+		noise /= (4 * NUMTONES * 3  * (doublespaced?2:1) - 1);
 	
 		s2n = decayavg( s2n, sig / noise, 8);
 
-		metric = 20*log10(s2n);
+		metric = 3*(20*log10(s2n) - 9.0);
 
 		display_metric(metric);
 
-		snprintf(dommsg, sizeof(dommsg), "s/n %3.0f dB", metric);
+		snprintf(dommsg, sizeof(dommsg), "s/n %3.0f dB", metric / 3.0);
 		put_Status1(dommsg);
 	}
 }
@@ -354,6 +357,7 @@ void dominoex::eval_s2n()
 int dominoex::rx_process(const double *buf, int len)
 {
 	complex zref, z, *bins;
+//	double  lastre, lastim;
 
 	while (len) {
 // create analytic signal
