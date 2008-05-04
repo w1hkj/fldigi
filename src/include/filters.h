@@ -118,7 +118,7 @@ public:
 //=====================================================================
 
 class sfft {
-#define	K1	0.99999
+#define K1 0.99999999999L
 private:
 	int fftlen;
 	int first;

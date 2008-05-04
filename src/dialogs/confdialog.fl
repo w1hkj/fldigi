@@ -92,7 +92,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabWaterfall {
         label {W-fall} open
-        xywh {0 25 405 195} color 51 selection_color 51
+        xywh {0 25 405 195} color 51 selection_color 51 hide
       } {
         Fl_Tabs {} {open
           xywh {0 25 405 195}
@@ -249,7 +249,7 @@ progdefaults.changed = true;}
               Fl_Counter valLatency {
                 label {Scan merging:}
                 callback {progdefaults.latency = (int)o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
                 tooltip {1 = none} xywh {225 119 63 21} type Simple align 4 minimum 1 maximum 8 step 1 value 4
                 code0 {o->value(progdefaults.latency);}
               }
@@ -922,7 +922,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabModems {
         label Modem open
-        xywh {0 25 401 195} color 51 selection_color 51 hide
+        xywh {0 25 401 195} color 51 selection_color 51
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 401 195} color 51 selection_color 10 align 9
@@ -1079,7 +1079,8 @@ progdefaults.changed = true;}
             Fl_Check_Button valDominoEX_FILTER {
               label {Filter ON}
               callback {progdefaults.DOMINOEX_FILTER = o->value();
-progdefaults.changed = true;}
+resetDOMEX();
+progdefaults.changed = true;} selected
               xywh {107 136 83 19} down_box DOWN_BOX
               code0 {o->value(progdefaults.DOMINOEX_FILTER);}
             }

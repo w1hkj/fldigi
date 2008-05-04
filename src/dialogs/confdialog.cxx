@@ -912,6 +912,7 @@ Fl_Check_Button *valDominoEX_FILTER=(Fl_Check_Button *)0;
 
 static void cb_valDominoEX_FILTER(Fl_Check_Button* o, void*) {
   progdefaults.DOMINOEX_FILTER = o->value();
+resetDOMEX();
 progdefaults.changed = true;
 }
 
@@ -1305,6 +1306,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { tabWaterfall = new Fl_Group(0, 25, 405, 195, "W-fall");
         tabWaterfall->color((Fl_Color)51);
         tabWaterfall->selection_color((Fl_Color)51);
+        tabWaterfall->hide();
         { Fl_Tabs* o = new Fl_Tabs(0, 25, 405, 195);
           { Fl_Group* o = new Fl_Group(0, 50, 400, 170, "Filters/Colors");
             o->hide();
@@ -1898,7 +1900,6 @@ l with your sound hardware.");
       { tabModems = new Fl_Group(0, 25, 401, 195, "Modem");
         tabModems->color((Fl_Color)51);
         tabModems->selection_color((Fl_Color)51);
-        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 401, 195);
           tabsModems->color((Fl_Color)51);
           tabsModems->selection_color((Fl_Color)10);

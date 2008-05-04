@@ -402,7 +402,8 @@ void WFdisp::process_analog (double *sig, int len) {
 // clear the signal display area
 	sigy = 0;
 	sigpixel = IMAGE_WIDTH*h2;
-FL_LOCK();
+//FL_LOCK();
+FL_LOCK_D();
 	memset (sig_img, 0, sig_image_area);
 	memset (&sig_img[h2*IMAGE_WIDTH], 255, IMAGE_WIDTH);
 	for (int c = 0; c < IMAGE_WIDTH; c++) {
@@ -412,7 +413,8 @@ FL_LOCK();
 		sig_img[sigpixel++] = graylevel;
 	}
 	redraw();
-FL_UNLOCK();
+//FL_UNLOCK();
+FL_UNLOCK_D();
 }
 
 void WFdisp::redrawCursor()

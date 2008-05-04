@@ -400,10 +400,6 @@ void Cmovavg::reset()
 //
 //=====================================================================
 
-// K1 is defined in filters.h to be 0.9999
-
-#define TESTK 0.99999999999L
-
 sfft::sfft(int len, int _first, int _last)
 {
 	vrot = new complex[len];
@@ -416,14 +412,11 @@ sfft::sfft(int len, int _first, int _last)
 	double phi = 0.0, tau = 2.0 * M_PI/ len;
 	k2 = 1.0;
 	for (int i = 0; i < len; i++) {
-//		vrot[i].re = K1 * cos (phi);
-//		vrot[i].im = K1 * sin (phi);
-		vrot[i].re = TESTK * cos (phi);
-		vrot[i].im = TESTK * sin (phi);
+		vrot[i].re = K1 * cos (phi);
+		vrot[i].im = K1 * sin (phi);
 		phi += tau;
 		delay[i] = bins[i] = 0.0;
-//		k2 *= K1;
-		k2 *= TESTK;
+		k2 *= K1;
 	}
 }
 

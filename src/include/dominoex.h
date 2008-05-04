@@ -39,8 +39,12 @@
 using namespace std;
 
 #define NUMTONES 18
-#define NUMFFTS  4
-#define BASEFREQ 1000.0
+//#define NUMFFTS  4
+#define NUMFFTS  8
+//#define BASEFREQ 1000.0
+#define BASEFREQ 500.0
+#define FIRSTIF 1000.0
+#define SCOPESIZE 64
 
 struct domrxpipe {
 	complex vector[NUMFFTS * NUMTONES * 6];
@@ -57,7 +61,7 @@ public:
 	};
 protected:
 // common variables
-	double	phase[4];
+	double	phase[NUMFFTS + 1];
 	double	txphase;
 	int		symlen;
 	int		doublespaced;
@@ -67,8 +71,9 @@ protected:
 	
 // rx variables
 	C_FIR_filter	*hilbert;
-	C_FIR_filter	*filt[NUMFFTS];
 	sfft			*binsfft[NUMFFTS];
+	fftfilt			*fft;
+	Cmovavg			*vidfilter[SCOPESIZE];
 	
 	domrxpipe		*pipe;
 	unsigned int	pipeptr;
@@ -94,6 +99,8 @@ protected:
 	int symcounter;
 
 	int symbolbit;
+	
+	bool filter_reset;
 
 // tx variables
 	int txstate;
@@ -117,6 +124,7 @@ private:
 	void	sendsecondary();
 	void	flushtx();
 	int		get_secondary_char();
+	void	reset_filters();
 public:
 	dominoex (trx_mode md);
 	~dominoex ();

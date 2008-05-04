@@ -90,7 +90,7 @@ public:
 	void draw_video();
 	void data(double *data, int len, bool scale = true);
 	void phase(double ph, double ql, bool hl);
-	void video(double *data, int len );
+	void video(double *data, int len, bool dir );
 	void zdata(complex *z, int len);
 	void rtty(double flo, double fhi, double amp);
 	void mode(scope_mode md);
