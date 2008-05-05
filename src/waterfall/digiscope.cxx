@@ -52,7 +52,7 @@ Digiscope::~Digiscope()
 	if (vidline) delete [] vidline;
 }
 
-void Digiscope::video(double *data, int len )
+void Digiscope::video(double *data, int len , bool dir)
 {
 	if (active_modem->HistoryON()) return;
 	
@@ -68,15 +68,21 @@ void Digiscope::video(double *data, int len )
 	vidline[3*W/2] = 255;
 	vidline[3*W/2+1] = 0;
 	vidline[3*W/2+2] = 0;
-	if (linecnt == H) {
-		linecnt--;
+	if (dir) {
+		if (linecnt == H) {
+			linecnt--;
+			unsigned char *p = &vidbuf[3*W];
+			memmove (vidbuf, p, 3*(W * (H-1))*sizeof(unsigned char));
+			memcpy (&vidbuf[3*W*(H-1)], vidline, 3*W * sizeof (unsigned char));
+		}
+		else
+			memcpy (&vidbuf[3*W*linecnt], vidline, 3*W * sizeof(unsigned char));
+		linecnt++;
+	} else {
 		unsigned char *p = &vidbuf[3*W];
-		memmove (vidbuf, p, 3*(W * (H-1))*sizeof(unsigned char));
-		memcpy (&vidbuf[3*W*(H-1)], vidline, 3*W * sizeof (unsigned char));
+		memmove (p, vidbuf, 3 * (W * (H-1)) * sizeof(unsigned char));
+		memcpy(vidbuf, vidline, 3 * W * sizeof(unsigned char));
 	}
-	else
-		memcpy (&vidbuf[3*W*linecnt], vidline, 3*W * sizeof(unsigned char));
-	linecnt++;
 
 	REQ_DROP(&Digiscope::redraw, this);
 	FL_UNLOCK_D();

@@ -58,32 +58,35 @@ void dominoex::rx_init()
 	met1 = 0.0;
 	met2 = 0.0;
 	counter = 0;
-	phase[0] = phase[1] = phase[2] = phase[3] = 0.0;
+	phase[0] = 0.0;
+	for (int i = 0; i < NUMFFTS; i++)
+		phase[i+1] = 0.0;
 	put_MODEstatus(mode);
 	put_sec_char(0);
 }
 
+void dominoex::reset_filters()
+{
+// fft filter at first IF frequency
+	if (progdefaults.DOMINOEX_FILTER == false) {
+		fft->create_filter( (FIRSTIF - 2.0 * bandwidth) / samplerate,
+ 		                    (FIRSTIF + 2.0 * bandwidth)/ samplerate );
+	} else {
+		fft->create_filter( (FIRSTIF - 0.5 * progdefaults.DOMINOEX_BW * bandwidth) / samplerate,
+ 		                    (FIRSTIF + 0.5 * progdefaults.DOMINOEX_BW * bandwidth)/ samplerate );
+	}
+	filter_reset = false;               
+}
+
 void dominoex::restart()
 {
-	double flo, fhi, bw, cf;
-	bw = bandwidth * progdefaults.DOMINOEX_BW;
-
-	cf = BASEFREQ + bandwidth / 2.0;	
-	flo = (cf - 0.8 * bw) / samplerate;
-	fhi = (cf + 0.8 * bw) / samplerate;
-
-	for (int i = 0; i < NUMFFTS; i++)
-		if (filt[i])
-			filt[i]->init_bandpass (127, 1, flo, fhi);
-		
-	prev1symbol = prev2symbol = 0;
-	
+	filter_reset = true;
 }
 
 void dominoex::init()
 {
 	modem::init();
-	restart();
+	reset_filters();
 	rx_init();
 
 	strSecXmtText = txtSecondary->value();
@@ -99,10 +102,14 @@ dominoex::~dominoex()
 	
 	for (int i = 0; i < NUMFFTS; i++) {
 		if (binsfft[i]) delete binsfft[i];
-		if (filt[i])    delete filt[i];
 	}
 
+	for (int i = 0; i < SCOPESIZE; i++) {
+		if (vidfilter[i]) delete vidfilter[i];
+	}
+	
 	if (pipe) delete [] pipe;
+	if (fft) delete fft;
 }
 
 dominoex::dominoex(trx_mode md)
@@ -151,8 +158,8 @@ dominoex::dominoex(trx_mode md)
 	}
 
 	basetone = (int)floor(BASEFREQ * symlen / samplerate + 0.5);
-	lotone = basetone - NUMTONES * (doublespaced ? 2 : 1);
-	hitone = basetone + 2 * NUMTONES * (doublespaced ? 2 : 1);
+	lotone = basetone - (NUMTONES/2) * (doublespaced ? 2 : 1);
+	hitone = basetone + 3 * (NUMTONES/2) * (doublespaced ? 2 : 1);
 
 	tonespacing = (double) (samplerate * ((doublespaced) ? 2 : 1)) / symlen;
 
@@ -163,14 +170,21 @@ dominoex::dominoex(trx_mode md)
 
 	for (int i = 0; i < NUMFFTS; i++) {
 		binsfft[i] = new sfft (symlen, lotone, hitone);
-		filt[i] = new C_FIR_filter();
 	}
 
+// fft filter at first if frequency
+	fft = new fftfilt( (FIRSTIF - 0.5 * progdefaults.DOMINOEX_BW * bandwidth) / samplerate,
+	                   (FIRSTIF + 0.5 * progdefaults.DOMINOEX_BW * bandwidth)/ samplerate,
+	                   1024 );
+
+	for (int i = 0; i < SCOPESIZE; i++)
+		vidfilter[i] = new Cmovavg(16);
+		
 	twosym = 2 * symlen;
 	pipe = new domrxpipe[twosym];
 	
-	scopedata.alloc(twosym);
-	videodata.alloc((4 * NUMTONES * 3  * (doublespaced?2:1) ));
+	scopedata.alloc(SCOPESIZE);
+	videodata.alloc((NUMFFTS * NUMTONES * 2  * (doublespaced?2:1) ));
 
 	pipeptr = 0;
 	
@@ -193,8 +207,13 @@ complex dominoex::mixer(int n, complex in)
 {
 	complex z;
 	double f;
-// 4 mixers are supported each separated by 1/4 bin size
-	f = frequency - BASEFREQ - bandwidth/2 + (samplerate / symlen) * (n / 4.0);
+// first IF mixer (n == 0) plus
+// NUMFFTS mixers are supported each separated by 1/NUMFFTS bin size
+// n == 1, 2, 3, 4 ... NUMFFTS
+	if (n == 0)
+		f = frequency - FIRSTIF;
+	else
+		f = FIRSTIF - BASEFREQ - bandwidth/2 + (samplerate / symlen) * (1.0 * n / NUMFFTS);
 	z.re = cos(phase[n]);
 	z.im = sin(phase[n]);
 	z = z * in;
@@ -219,17 +238,16 @@ void dominoex::recvchar(int c)
 void dominoex::decodesymbol()
 {
 	int c, sym, ch;
-	int diff;
+	double fdiff;
 
 // Decode the IFK+ sequence, which results in a single nibble
 
-	diff = currsymbol - prev1symbol;
-	if (reverse) diff = -diff;
-	diff /= 4; // 4 sets of interleaved bins
-	if (doublespaced) diff /= 2;
-	diff -= 2;
-	if (diff < 0) diff += NUMTONES;
-	c = diff;
+	fdiff = currsymbol - prev1symbol;
+	if (reverse) fdiff = -fdiff;
+	if (doublespaced) fdiff /= 2 * NUMFFTS;
+	else              fdiff /= NUMFFTS;
+	c = (int)floor(fdiff + .5) - 2;
+	if (c < 0) c += NUMTONES;
 	
 //	If the new symbol is the start of a new character (MSB is low), complete the previous character
 	if (!(c & 0x8)) {
@@ -260,7 +278,7 @@ int dominoex::harddecode()
 {
 	double x, max = 0.0;
 	int symbol = 0;
-	for (int i = 0; i <  (4 * NUMTONES * 3  * (doublespaced?2:1) ); i++) {
+	for (int i = 0; i <  (NUMFFTS * NUMTONES * 2  * (doublespaced?2:1) ); i++) {
 		x = pipe[pipeptr].vector[i].mag();
 		if (x > max) {
 			max = x;
@@ -276,37 +294,40 @@ void dominoex::update_syncscope()
 	double max = 0, min = 1e6, range, mag;
 
 // dom waterfall
-	memset(videodata, 0, (4 * NUMTONES * 3  * (doublespaced?2:1) ) * sizeof(double));
+	memset(videodata, 0, (NUMFFTS * NUMTONES * 2  * (doublespaced?2:1) ) * sizeof(double));
 
 	if (!progStatus.sqlonoff || metric >= progStatus.sldrSquelchValue) {
-		for (int i = 0; i < (4 * NUMTONES * 3  * (doublespaced?2:1) ); i++ ) {
+		for (int i = 0; i < (NUMFFTS * NUMTONES * 2  * (doublespaced?2:1) ); i++ ) {
 			mag = pipe[pipeptr].vector[i].mag();
 			if (max < mag) max = mag;
 			if (min > mag) min = mag;
 		}
 		range = max - min;
-		for (int i = 0; i < (4 * NUMTONES * 3  * (doublespaced?2:1) ); i++ ) {
+		for (int i = 0; i < (NUMFFTS * NUMTONES * 2  * (doublespaced?2:1) ); i++ ) {
 			if (range > 2) {
-				mag = (pipe[pipeptr].vector[i].mag() - min) / range;
-				mag = 1 + log10(mag);
+				mag = (pipe[pipeptr].vector[i].mag() - min) / range + 0.0001;
+				mag = 1 + 2 * log10(mag);
 				if (mag < 0) mag = 0;
 			} else
 				mag = 0;
 			videodata[i] = 255*mag;
 		}
 	}
-	set_video(videodata, (4 * NUMTONES * 3  * (doublespaced?2:1) ));
+	set_video(videodata, (NUMFFTS * NUMTONES * 2  * (doublespaced?2:1) ), false);
 	videodata.next();
 
-// dom symbol synch data	
-	memset(scopedata, 0, twosym * sizeof(double));
+//	set_scope(scopedata, twosym);
+// 64 data points is sufficient to show the signal progression through the
+// convolution filter.
+	memset(scopedata, 0, SCOPESIZE * sizeof(double));
 	if (!progStatus.sqlonoff || metric >= progStatus.sldrSquelchValue) {
-		for (unsigned int i = 0, j = 0; i < twosym; i++) {
-			j = (pipeptr + i + 1) % (twosym);
-			scopedata[i] = pipe[j].vector[prev1symbol].mag();
+		for (unsigned int i = 0, j = 0; i < SCOPESIZE; i++) {
+			j = (pipeptr + i * twosym / SCOPESIZE + 1) % (twosym);
+			scopedata[i] = vidfilter[i]->run(pipe[j].vector[prev1symbol].mag());
+//			scopedata[i] = pipe[j].vector[prev1symbol].mag();
 		}
 	}
-	set_scope(scopedata, twosym);
+	set_scope(scopedata, SCOPESIZE);
 	scopedata.next();
 }
 
@@ -336,59 +357,70 @@ void dominoex::eval_s2n()
 {
 	if (currsymbol != prev1symbol && prev1symbol != prev2symbol) {
 		sig = pipe[pipeptr].vector[currsymbol].mag();
-		noise = pipe[pipeptr].vector[prev2symbol].mag();
-
-		if (noise < 1.0e-6) noise = 1e-6;
+		noise = 0.0;
+		for (int i = 0; i < NUMFFTS * NUMTONES * 2  * (doublespaced?2:1); i++) {
+			if (i != currsymbol)
+				noise += pipe[pipeptr].vector[i].mag();
+		}	
+		noise /= (NUMFFTS * NUMTONES * 2  * (doublespaced?2:1) - 1);
 	
 		s2n = decayavg( s2n, sig / noise, 8);
 
-		metric = 20*log10(s2n);
+		metric = 3*(20*log10(s2n) - 9.0);
 
 		display_metric(metric);
 
-		snprintf(dommsg, sizeof(dommsg), "s/n %3.0f dB", metric);
+		snprintf(dommsg, sizeof(dommsg), "s/n %3.0f dB", metric / 3.0);
 		put_Status1(dommsg);
 	}
 }
 
 int dominoex::rx_process(const double *buf, int len)
 {
-	complex zref, z, *bins;
+	complex zref,  z, *zp, *bins;
+	int n;
 
+	if (filter_reset) reset_filters();
+	
 	while (len) {
-// create analytic signal
+// create analytic signal at first IF
 		zref.re = zref.im = *buf++;
 		hilbert->run(zref, zref);
-
-// process 4 sets of sliding FFTs spaced at 1/4 bin intervals each of which
+		zref = mixer(0, zref);
+// filter using fft convolution
+		n = fft->run(zref, &zp);
+		
+		if (n) {
+			for (int i = 0; i < n; i++) {
+// process NUMFFTS sets of sliding FFTs spaced at 1/NUMFFTS bin intervals each of which
 // is a matched filter for the current symbol length
-		for (int n = 0; n < 4; n++) {
-// shift in frequency to base band & bandpass filter
-			z = mixer(n, zref);
-			if (progdefaults.DOMINOEX_FILTER)
-				filt[n]->run(z, z);
-// feed it to the sliding FFTs
-			bins = binsfft[n]->run(z);
+				for (int n = 0; n < NUMFFTS; n++) {
+// shift in frequency to base band for the sliding FFTs
+					z = mixer(n + 1, zp[i]);
+					bins = binsfft[n]->run(z);
 // copy current vector to the pipe interleaving the FFT vectors
-			for (int i = 0; i < NUMTONES * 3 * (doublespaced ? 2 : 1); i++) {
-				pipe[pipeptr].vector[n + 4 * i] = bins[i];
+					for (int i = 0; i < NUMTONES * 2 * (doublespaced ? 2 : 1); i++) {
+						pipe[pipeptr].vector[n + NUMFFTS * i] = bins[i];
+					}
+				}
+				if (--synccounter <= 0) {
+					synccounter = symlen;
+					currsymbol = harddecode();
+        		    decodesymbol();
+					synchronize();
+					update_syncscope();
+					eval_s2n();
+					prev2symbol = prev1symbol;
+					prev1symbol = currsymbol;
+				}
+				pipeptr++;
+				if (pipeptr >= twosym)
+					pipeptr = 0;
 			}
 		}
-		if (--synccounter <= 0) {
-			synccounter = symlen;
-			currsymbol = harddecode();
-            decodesymbol();
-			synchronize();
-			update_syncscope();
-			eval_s2n();
-			prev2symbol = prev1symbol;
-			prev1symbol = currsymbol;
-		}
-		pipeptr++;
-		if (pipeptr >= twosym)
-			pipeptr = 0;
 		--len;
 	}
+			
 	return 0;
 }
 

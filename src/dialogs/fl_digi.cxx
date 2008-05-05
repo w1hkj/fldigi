@@ -1656,12 +1656,12 @@ void set_rtty(double flo, double fhi, double amp)
 		wfscope->rtty(flo, fhi, amp);
 }
 
-void set_video(double *data, int len)
+void set_video(double *data, int len, bool dir)
 {
 	if (digiscope)
-		digiscope->video(data, len);
+		digiscope->video(data, len, dir);
 	if (wfscope)
-		wfscope->video(data, len);
+		wfscope->video(data, len, dir);
 }
 
 void set_zdata(complex *zarray, int len)

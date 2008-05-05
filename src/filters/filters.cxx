@@ -355,7 +355,7 @@ void Cmovavg::reset()
 // subtracted. These end-effects are easy to perform if we treat the new sample
 // as occurring at time t = 0, because the transform of a single sample at t = 0,
 // say (a + bj), simply has all frequency bins equal to (a + bj). Similarly, the
-// oldest sample that has just isappeared off the end of the window is exactly N
+// oldest sample that has just disappeared off the end of the window is exactly N
 // samples old. I.e. it occurred at t = -N. The transform of this sample, 
 // say (c + dj), is also straightforward since every frequency bin has now been
 // phase-rotated an integer number of times from when the sample was at t = 0. 
@@ -400,8 +400,6 @@ void Cmovavg::reset()
 //
 //=====================================================================
 
-// K1 is defined in filters.h to be 0.9999
-
 sfft::sfft(int len, int _first, int _last)
 {
 	vrot = new complex[len];
@@ -412,15 +410,14 @@ sfft::sfft(int len, int _first, int _last)
 	last = _last;
 	ptr = 0;
 	double phi = 0.0, tau = 2.0 * M_PI/ len;
+	k2 = 1.0;
 	for (int i = 0; i < len; i++) {
 		vrot[i].re = K1 * cos (phi);
 		vrot[i].im = K1 * sin (phi);
 		phi += tau;
 		delay[i] = bins[i] = 0.0;
+		k2 *= K1;
 	}
-	k2 = pow(K1, len); 
-// could also compute k2 *= K1 in the loop,
-// initializing k2 = K1;
 }
 
 sfft::~sfft()
@@ -437,12 +434,14 @@ sfft::~sfft()
 
 complex *sfft::run(complex input)
 {
-	complex z;// = input - delay[ptr] * k2;
+	complex z;
 	complex y;
-	z.re = - k2 * delay[ptr].re + input.re;
-	z.im = - k2 * delay[ptr].im + input.im;
-	delay[ptr++] = input;
-	ptr %= fftlen;
+
+	z.re = input.re - k2 * delay[ptr].re;
+	z.im = input.im - k2 * delay[ptr].im;
+	delay[ptr] = input;
+
+	ptr = (ptr + 1) % fftlen;
 	
 	for (int i = first; i < last; i++) {
 		y = bins[i] + z;
@@ -450,3 +449,4 @@ complex *sfft::run(complex input)
 	}
 	return &bins[first];
 }
+

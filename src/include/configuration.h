@@ -86,6 +86,7 @@ struct configuration {
 	bool	MultiColorWF;
 	int		wfPreFilter;
 	bool	WFaveraging;
+	int		latency;
 	bool	UseCursorLines;
 	bool	UseCursorCenterLine;
 	bool	UseBWTracks;

@@ -91,7 +91,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabWaterfall {
-        label {W-fall}
+        label {W-fall} open
         xywh {0 25 405 195} color 51 selection_color 51 hide
       } {
         Fl_Tabs {} {open
@@ -99,11 +99,99 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label {Filters/Colors} open
-            xywh {0 50 400 170}
+            xywh {0 50 400 170} hide
+          } {
+            Fl_Group {} {open
+              xywh {10 100 385 110} box ENGRAVED_FRAME
+            } {
+              Fl_Button WF_Palette {
+                label {Palette:}
+                callback {progdefaults.changed = true;}
+                xywh {28 130 260 24} box DOWN_BOX color 0 align 5
+                code0 {\#include "colorbox.h"}
+                class colorbox
+              }
+              Fl_Button {btnColor[0]} {
+                callback {selectColor(0);
+progdefaults.changed = true;}
+                xywh {20 162 20 24}
+              }
+              Fl_Button {btnColor[1]} {
+                callback {selectColor(1);
+progdefaults.changed = true;}
+                xywh {52 162 20 24}
+              }
+              Fl_Button {btnColor[2]} {
+                callback {selectColor(2);
+progdefaults.changed = true;}
+                xywh {84 162 20 24}
+              }
+              Fl_Button {btnColor[3]} {
+                callback {selectColor(3);
+progdefaults.changed = true;}
+                xywh {116 162 20 24}
+              }
+              Fl_Button {btnColor[4]} {
+                callback {selectColor(4);
+progdefaults.changed = true;}
+                xywh {148 162 20 24}
+              }
+              Fl_Button {btnColor[5]} {
+                callback {selectColor(5);
+progdefaults.changed = true;}
+                xywh {180 162 20 24}
+              }
+              Fl_Button {btnColor[6]} {
+                callback {selectColor(6);
+progdefaults.changed = true;}
+                xywh {212 162 20 24}
+              }
+              Fl_Button {btnColor[7]} {
+                callback {selectColor(7);
+progdefaults.changed = true;}
+                xywh {244 162 20 24}
+              }
+              Fl_Button {btnColor[8]} {
+                callback {selectColor(8);
+progdefaults.changed = true;}
+                xywh {276 162 20 24}
+              }
+              Fl_Button btnLoadPalette {
+                label Load
+                callback {loadPalette();
+progdefaults.changed = true;}
+                xywh {314 130 70 24}
+                code0 {\#include "colorbox.h"}
+              }
+              Fl_Button btnSavePalette {
+                label Save
+                callback {savePalette();}
+                xywh {314 162 70 24}
+                code0 {\#include "colorbox.h"}
+              }
+            }
+            Fl_Counter cntLowFreqCutoff {
+              label {Low Freq Cutoff}
+              callback {progdefaults.LowFreqCutoff=(int)(o->value());
+progdefaults.changed = true;}
+              xywh {120 63 70 20} type Simple align 4 minimum 0 maximum 500 step 50 value 300
+              code0 {o->value(progdefaults.LowFreqCutoff);}
+            }
+            Fl_Check_Button btnWFaveraging {
+              label {wf averaging}
+              callback {progdefaults.WFaveraging = o->value();
+progdefaults.changed = true;}
+              xywh {226 65 114 15} down_box DOWN_BOX
+              code0 {o->value(progdefaults.WFaveraging);}
+            }
+          }
+          Fl_Group {} {
+            label {FFT Processing} open
+            xywh {0 49 400 170}
           } {
             Fl_Group {} {
               label {FFT Prefilter} open
-              xywh {5 55 390 42} box ENGRAVED_BOX color 51 align 21
+              xywh {5 58 390 42} box ENGRAVED_BOX color 51 align 21
             } {
               Fl_Check_Button btnBlackman {
                 label Blackman
@@ -114,7 +202,7 @@ btnHanning->value(0);
 btnTriangular->value(0);
 } else o->value(1);
 progdefaults.changed = true;}
-                xywh {11 75 90 15} down_box DOWN_BOX
+                xywh {11 78 90 15} down_box DOWN_BOX
                 code0 {if(progdefaults.wfPreFilter==1)o->value(1);else o->value(0);}
               }
               Fl_Check_Button btnHamming {
@@ -126,7 +214,7 @@ btnHanning->value(0);
 btnTriangular->value(0);
 } else o->value(1);
 progdefaults.changed = true;}
-                xywh {108 75 90 15} down_box DOWN_BOX
+                xywh {108 78 90 15} down_box DOWN_BOX
                 code0 {if(progdefaults.wfPreFilter==2)o->value(1);else o->value(0);}
               }
               Fl_Check_Button btnHanning {
@@ -138,7 +226,7 @@ btnBlackman->value(0);
 btnTriangular->value(0);
 } else o->value(1);
 progdefaults.changed = true;}
-                xywh {206 75 90 15} down_box DOWN_BOX
+                xywh {206 78 90 15} down_box DOWN_BOX
                 code0 {if(progdefaults.wfPreFilter==3)o->value(1);else o->value(0);}
               }
               Fl_Check_Button btnTriangular {
@@ -150,92 +238,21 @@ btnHanning->value(0);
 btnBlackman->value(0);
 } else o->value(1);
 progdefaults.changed = true;}
-                xywh {304 75 90 15} down_box DOWN_BOX
+                xywh {304 78 90 15} down_box DOWN_BOX
                 code0 {if(progdefaults.wfPreFilter==4)o->value(1);else o->value(0);}
               }
             }
-            Fl_Group {} {open
-              xywh {5 131 390 85} box ENGRAVED_FRAME
+            Fl_Group {} {
+              label {FFT Latency} open
+              xywh {5 105 390 50} box ENGRAVED_FRAME align 21
             } {
-              Fl_Button WF_Palette {
-                label {Palette:}
-                callback {progdefaults.changed = true;}
-                xywh {28 152 260 24} box DOWN_BOX color 0 align 5
-                code0 {\#include "colorbox.h"}
-                class colorbox
-              }
-              Fl_Button {btnColor[0]} {
-                callback {selectColor(0);
+              Fl_Counter valLatency {
+                label {Scan merging:}
+                callback {progdefaults.latency = (int)o->value();
 progdefaults.changed = true;}
-                xywh {20 184 20 24}
+                tooltip {1 = none} xywh {225 119 63 21} type Simple align 4 minimum 1 maximum 8 step 1 value 4
+                code0 {o->value(progdefaults.latency);}
               }
-              Fl_Button {btnColor[1]} {
-                callback {selectColor(1);
-progdefaults.changed = true;}
-                xywh {52 184 20 24}
-              }
-              Fl_Button {btnColor[2]} {
-                callback {selectColor(2);
-progdefaults.changed = true;}
-                xywh {84 184 20 24}
-              }
-              Fl_Button {btnColor[3]} {
-                callback {selectColor(3);
-progdefaults.changed = true;}
-                xywh {116 184 20 24}
-              }
-              Fl_Button {btnColor[4]} {
-                callback {selectColor(4);
-progdefaults.changed = true;}
-                xywh {148 184 20 24}
-              }
-              Fl_Button {btnColor[5]} {
-                callback {selectColor(5);
-progdefaults.changed = true;}
-                xywh {180 184 20 24}
-              }
-              Fl_Button {btnColor[6]} {
-                callback {selectColor(6);
-progdefaults.changed = true;}
-                xywh {212 184 20 24}
-              }
-              Fl_Button {btnColor[7]} {
-                callback {selectColor(7);
-progdefaults.changed = true;}
-                xywh {244 184 20 24}
-              }
-              Fl_Button {btnColor[8]} {
-                callback {selectColor(8);
-progdefaults.changed = true;}
-                xywh {276 184 20 24}
-              }
-              Fl_Button btnLoadPalette {
-                label Load
-                callback {loadPalette();
-progdefaults.changed = true;}
-                xywh {320 152 70 24}
-                code0 {\#include "colorbox.h"}
-              }
-              Fl_Button btnSavePalette {
-                label Save
-                callback {savePalette();}
-                xywh {320 184 70 24}
-                code0 {\#include "colorbox.h"}
-              }
-            }
-            Fl_Counter cntLowFreqCutoff {
-              label {Low Freq Cutoff}
-              callback {progdefaults.LowFreqCutoff=(int)(o->value());
-progdefaults.changed = true;}
-              xywh {117 103 70 20} type Simple align 4 minimum 0 maximum 500 step 50 value 300
-              code0 {o->value(progdefaults.LowFreqCutoff);}
-            }
-            Fl_Check_Button btnWFaveraging {
-              label {wf averaging}
-              callback {progdefaults.WFaveraging = o->value();
-progdefaults.changed = true;}
-              xywh {206 105 114 15} down_box DOWN_BOX
-              code0 {o->value(progdefaults.WFaveraging);}
             }
           }
           Fl_Group {} {
@@ -1062,6 +1079,7 @@ progdefaults.changed = true;}
             Fl_Check_Button valDominoEX_FILTER {
               label {Filter ON}
               callback {progdefaults.DOMINOEX_FILTER = o->value();
+resetDOMEX();
 progdefaults.changed = true;} selected
               xywh {107 136 83 19} down_box DOWN_BOX
               code0 {o->value(progdefaults.DOMINOEX_FILTER);}

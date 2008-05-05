@@ -250,9 +250,10 @@ void status::initLastState()
 		Yx = TransmitText->y();
 		Hx = TransmitText->h();	
 
-		ReceiveText->resize(X,Y,W,RxTextHeight);
-		FHdisp->resize(X,Y,W,RxTextHeight);
-		TransmitText->resize(X, Y + RxTextHeight, W, H + Hx - RxTextHeight);
+//		ReceiveText->resize(X,Y,W,RxTextHeight);
+//		FHdisp->resize(X,Y,W,RxTextHeight);
+//		TransmitText->resize(X, Y + RxTextHeight, W, H + Hx - RxTextHeight);
+		TiledGroup->position( X, Y + H, X, Y + RxTextHeight);
 	}
 
 	if (rigShown == true) {

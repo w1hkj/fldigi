@@ -344,8 +344,11 @@ void WFdisp::processFFT() {
     scale *= FFT_LEN / 2000.0;
 
 	if (dispcnt == 0) {
-        for (int i = 0; i < FFT_LEN*2; i++)
-            fftout[i] = fftwindow[i] * circbuff[i];
+		memset (fftout, 0, FFT_LEN*2*sizeof(double));
+//        for (int i = 0; i < FFT_LEN*2; i++)
+//            fftout[i] = fftwindow[i] * circbuff[i];
+        for (int i = 0; i < FFT_LEN * 2 * progdefaults.latency / 8; i++)
+            fftout[i] = fftwindow[i * 8 / progdefaults.latency] * circbuff[i];
 		wfft->rdft(fftout);
 FL_LOCK_D();		
 		memmove(
@@ -399,7 +402,8 @@ void WFdisp::process_analog (double *sig, int len) {
 // clear the signal display area
 	sigy = 0;
 	sigpixel = IMAGE_WIDTH*h2;
-FL_LOCK();
+//FL_LOCK();
+FL_LOCK_D();
 	memset (sig_img, 0, sig_image_area);
 	memset (&sig_img[h2*IMAGE_WIDTH], 255, IMAGE_WIDTH);
 	for (int c = 0; c < IMAGE_WIDTH; c++) {
@@ -409,7 +413,8 @@ FL_LOCK();
 		sig_img[sigpixel++] = graylevel;
 	}
 	redraw();
-FL_UNLOCK();
+//FL_UNLOCK();
+FL_UNLOCK_D();
 }
 
 void WFdisp::redrawCursor()

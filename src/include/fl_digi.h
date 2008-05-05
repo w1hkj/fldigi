@@ -111,7 +111,7 @@ extern void set_scope_mode(Digiscope::scope_mode md);
 extern void set_scope(double *data, int len, bool autoscale = true);
 extern void set_phase(double phase, double quality, bool highlight);
 extern void set_rtty(double, double, double);
-extern void set_video(double *, int);
+extern void set_video(double *, int, bool = true);
 extern void set_zdata(complex *, int);
 
 extern void set_CWwpm();
