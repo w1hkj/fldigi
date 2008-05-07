@@ -2,6 +2,12 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
+
+#include <FL/Fl_Preferences.H>
+
+#include "main.h"
+#include "globals.h"
 
 #include "status.h"
 #include "configuration.h"
@@ -24,12 +30,12 @@
 
 #include "rigsupport.h"
 
-extern void startup_modem(modem *m);
-extern Fl_Double_Window *dlgViewer;
-extern void openViewer();
+#include "Viewer.h"
+
+#define STATUS_FILENAME "status"
 
 status progStatus = {
-	(int)MODE_BPSK31,	// trx_mode	lastmode;
+	MODE_BPSK31,		// trx_mode	lastmode;
 	50,					// int mainX;
 	50,					// int mainY;
 	WNOM,				// int mainW;
@@ -58,16 +64,9 @@ status progStatus = {
 	false,				// bool	scopeVisible;
 	50,					// int	scopeW;
 	50,					// int	scopeH;
-		
-	false				// bool bLastStateRead;
-	
-};
 
-	
-void status::saveModeState(trx_mode m)
-{
-	lastmode = (int)m;
-}
+	false				// bool bLastStateRead;
+};
 
 void status::saveLastState()
 {
@@ -76,137 +75,135 @@ void status::saveLastState()
 	mainW = fl_digi_main->w();
 	mainH = fl_digi_main->h();
 	RxTextHeight = ReceiveText->h();
-	rigShown = false;
-	rigX = 0;
-	rigY = 0;
 	carrier = wf->Carrier();
 	mag = wf->Mag();
 	speed = wf->Speed();
 	reflevel = progdefaults.wfRefLevel;
 	ampspan = progdefaults.wfAmpSpan;
 
+	LOGenabled = false;
 	Fl_Menu_Item *mnulogging = getMenuItem("Log File");
 	if (mnulogging)
 		LOGenabled = mnulogging->value();
-	else
-		LOGenabled = false;
-	
-	if (dlgViewer) {
-		if (dlgViewer->visible()) {
-			VIEWERxpos = dlgViewer->x();
-			VIEWERypos = dlgViewer->y();
-			VIEWERvisible = true;
-		} else
-			VIEWERvisible = false;
+
+	VIEWERvisible = false;
+	if (dlgViewer && dlgViewer->visible()) {
+		VIEWERxpos = dlgViewer->x();
+		VIEWERypos = dlgViewer->y();
+		VIEWERvisible = true;
 	}
-	
-	if (rigcontrol)
-		if (rigcontrol->visible()) {
-			rigShown = rigcontrol->visible();
-			rigX = rigcontrol->x();
-			rigY = rigcontrol->y();
-		}
-	if (scopeview) {
-		if (scopeview->visible())
-			scopeVisible = true;
-		else
-			scopeVisible = false;
+
+	rigShown = false;
+	if (rigcontrol && rigcontrol->visible()) {
+		rigX = rigcontrol->x();
+		rigY = rigcontrol->y();
+		rigShown = true;
+	}
+
+	scopeVisible = false;
+	if (scopeview && scopeview->visible()) {
+		scopeVisible = true;
 		scopeX = scopeview->x();
 		scopeY = scopeview->y();
 		scopeW = scopeview->w();
 		scopeH = scopeview->h();
 	}
-	
-	string str = PACKAGE_NAME;
-	str.append(" ");
-	str.append(PACKAGE_VERSION);
 
-	string deffname = HomeDir;
-	deffname.append("fldigi.status");
-	ofstream deffile(deffname.c_str(), ios::out);
+	Fl_Preferences spref(string(HomeDir).append(STATUS_FILENAME).c_str(), "w1hkj.com", 0);
 
-	deffile << str.c_str() << endl;	
-	deffile << lastmode << endl;
-	deffile << mainX << endl;
-	deffile << mainY << endl;
-	deffile << mainW << endl;
-	deffile << mainH << endl;
-	deffile << rigShown << endl;
-	deffile << rigX << endl;
-	deffile << rigY << endl;
-	deffile << RxTextHeight << endl;
-	deffile << carrier << endl;
-	deffile << mag << endl;
-	deffile << speed << endl;
-	deffile << reflevel << endl;
-	deffile << ampspan << endl;
-	deffile << VIEWERnchars << endl;
-	deffile << VIEWERxpos << endl;
-	deffile << VIEWERypos << endl;
-	deffile << VIEWERvisible << endl;
-	deffile << LOGenabled << endl;
-	deffile << sldrSquelchValue << endl;
-	deffile << afconoff << endl;
-	deffile << sqlonoff << endl;
-	deffile << RcvMixer << endl;
-	deffile << XmtMixer << endl;
-	deffile << scopeX << endl;
-	deffile << scopeY << endl;
-	deffile << scopeVisible << endl;
-	deffile << scopeW << endl;
-	deffile << scopeH << endl;
-	
-	deffile.close();
+	spref.set("version", PACKAGE_VERSION);
+
+	spref.set("mode", lastmode);
+	spref.set("squelch_enabled", sqlonoff);
+	spref.set("squelch_level", sldrSquelchValue);
+	spref.set("afc_enabled", afconoff);
+	spref.set("rx_mixer_level", RcvMixer);
+	spref.set("tx_mixer_level", XmtMixer);
+
+	spref.set("rx_text_height", RxTextHeight);
+	spref.set("log_enabled", LOGenabled);
+
+	spref.set("wf_carrier", carrier);
+	spref.set("wf_mag", mag);
+	spref.set("wf_speed", speed);
+	spref.set("wf_reflevel", reflevel);
+	spref.set("wf_ampspan", ampspan);
+
+	spref.set("main_x", mainX);
+	spref.set("main_y", mainY);
+	spref.set("main_w", mainW);
+	spref.set("main_h", mainH);
+
+	spref.set("rigctl_visible", rigShown);
+	spref.set("rigctl_x", rigX);
+	spref.set("rigctl_y", rigY);
+
+	spref.set("viewer_visible", VIEWERvisible);
+	spref.set("viewer_x", static_cast<int>(VIEWERxpos));
+	spref.set("viewer_y", static_cast<int>(VIEWERypos));
+	spref.set("viewer_nchars", static_cast<int>(VIEWERnchars));
+
+	spref.set("scope_visible", scopeVisible);
+	spref.set("scope_x", scopeX);
+	spref.set("scope_y", scopeY);
+	spref.set("scope_w", scopeW);
+	spref.set("scope_h", scopeH);
 }
 
 void status::loadLastState()
 {
-	char line[255];
-	string str = PACKAGE_NAME;
-	str.append(" ");
-	str.append(PACKAGE_VERSION);
-	
-	string deffname = HomeDir;
-	deffname.append("fldigi.status");
-	ifstream deffile(deffname.c_str(), ios::in);
-	if (deffile) {
-		deffile.getline(line, 255);
-		if (str == line) {
-			deffile >> lastmode;
-			deffile >> mainX;
-			deffile >> mainY;
-			deffile >> mainW;
-			deffile >> mainH;
-			deffile >> rigShown;
-			deffile >> rigX;
-			deffile >> rigY;
-			deffile >> RxTextHeight;
-			deffile >> carrier;
-			deffile >> mag;
-			deffile >> speed;
-			deffile >> reflevel;
-			deffile >> ampspan;
-			deffile >> VIEWERnchars;
-			deffile >> VIEWERxpos;
-			deffile >> VIEWERypos;
-			deffile >> VIEWERvisible;
-			deffile >> LOGenabled;
-			deffile >> sldrSquelchValue;
-			deffile >> afconoff;
-			deffile >> sqlonoff;
-			deffile >> RcvMixer;
-			deffile >> XmtMixer;
-			deffile >> scopeX;
-			deffile >> scopeY;
-			deffile >> scopeVisible;
-			deffile >> scopeW;
-			deffile >> scopeH;
-			deffile.close();
-			progdefaults.wfRefLevel = reflevel;
-			progdefaults.wfAmpSpan = ampspan;
-			bLastStateRead = true;
-		}
+	Fl_Preferences spref(string(HomeDir).append(STATUS_FILENAME).c_str(), "w1hkj.com", 0);
+
+	char version[64]; version[sizeof(version)-1] = '\0';
+	bLastStateRead = spref.get("version", version, "", sizeof(version)-1);
+	// Skip loading the rest of the status variables if we didn't read a
+	// version name/value pair; also clear everything to avoid creating
+	// entries out of existing file contents.
+	if (!bLastStateRead) {
+		while (spref.entries())
+			spref.deleteEntry(spref.entry(0));
+		return;
 	}
+
+	int i;
+
+	spref.get("mode", lastmode, lastmode);
+	spref.get("squelch_enabled", i, i); sqlonoff = i;
+	spref.get("squelch_level", sldrSquelchValue, sldrSquelchValue);
+	spref.get("afc_enabled", i, i); afconoff = i;
+	spref.get("rx_mixer_level", RcvMixer, RcvMixer);
+	spref.get("tx_mixer_level", XmtMixer, XmtMixer);
+
+	spref.get("rx_text_height", RxTextHeight, RxTextHeight);
+	spref.get("log_enabled", i, i); LOGenabled = i;
+
+	spref.get("wf_carrier", carrier, carrier);
+	spref.get("wf_mag", mag, mag);
+	spref.get("wf_speed", speed, speed);
+	spref.get("wf_reflevel", reflevel, reflevel);
+	progdefaults.wfRefLevel = reflevel;
+	spref.get("wf_ampspan", ampspan, ampspan);
+	progdefaults.wfAmpSpan = ampspan;
+
+	spref.get("main_x", mainX, mainX);
+	spref.get("main_y", mainY, mainY);
+	spref.get("main_w", mainW, mainW);
+	spref.get("main_h", mainH, mainH);
+
+	spref.get("rigctl_visible", i, i); rigShown = i;
+	spref.get("rigctl_x", rigX, rigX);
+	spref.get("rigctl_y", rigY, rigY);
+
+	spref.get("viewer_visible", i, i); VIEWERvisible = i;
+	spref.get("viewer_x", i, i); VIEWERxpos = i;
+	spref.get("viewer_y", i, i); VIEWERypos = i;
+	spref.get("viewer_nchars", i, i); VIEWERnchars = i;
+
+	spref.get("scope_visible", i, i); scopeVisible = i;
+	spref.get("scope_x", scopeX, scopeX);
+	spref.get("scope_y", scopeY, scopeY);
+	spref.get("scope_w", scopeW, scopeW);
+	spref.get("scope_h", scopeH, scopeH);
 }
 
 void status::initLastState()
@@ -214,7 +211,7 @@ void status::initLastState()
 	if (!bLastStateRead)
 		loadLastState();
 
-	init_modem((trx_mode)lastmode);
+	init_modem(lastmode);
 
 	while (!active_modem) MilliSleep(100);
 

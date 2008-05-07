@@ -1,16 +1,10 @@
 #ifndef _status_H
 #define _status_H
 
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <list>
-
-#include "main.h"
 #include "globals.h"
 
 struct status {
-	int		lastmode;
+	trx_mode	lastmode;
 	int		mainX;
 	int		mainY;
 	int		mainW;
@@ -39,17 +33,12 @@ struct status {
 	bool	scopeVisible;
 	int		scopeW;
 	int		scopeH;
-	
+
 	bool	bLastStateRead;
-	
-	
-public:
-	void saveModeState(trx_mode m);
+
 	void initLastState();
 	void saveLastState();
 	void loadLastState();
-	friend std::istream &operator>>(std::istream &stream, status &c);
-	friend std::ostream &operator<<(std::ostream &ostream, status c);
 };
 
 extern status progStatus;

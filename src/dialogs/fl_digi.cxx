@@ -472,7 +472,7 @@ void init_modem(trx_mode mode)
 	}
 
 	clear_StatusMessages();
-	progStatus.saveModeState(mode);
+	progStatus.lastmode = mode;
 }
 
 void init_modem_sync(trx_mode m)
