@@ -231,7 +231,7 @@ public:
 
 private:
         void		src_data_reset(int mode);
-        void		resample(int mode, float* inbuf, float* outbuf, size_t count, size_t max = 0);
+        static long	src_read_cb(void* arg, float** data);
         size_t          resample_write(float* buf, size_t count);
         void 		init_stream(unsigned dir);
         void 		start_stream(unsigned dir);
@@ -263,11 +263,14 @@ private:
 
                 unsigned frames_per_buffer;
                 double dev_sample_rate;
+                double src_ratio;
 
                 sem_t* rwsem;
                 sem_t* csem;
                 int state;
                 ringbuffer<float>* rb;
+		size_t blocksize;
+                size_t advance;
         } sd[2];
 };
 
@@ -292,15 +295,16 @@ public:
 
 private:
 	void	src_data_reset(int mode);
-	size_t	resample_write(const float* buf, size_t count);
-        void	resample(int mode, float *buf, size_t count, size_t max = 0);
+        static long	src_read_cb(void* arg, float** data);
+	size_t	resample_write(float* buf, size_t count);
 
 private:
 	struct stream_data {
-		double		dev_sample_rate;
 		pa_simple*	stream;
 		pa_sample_spec	stream_params;
 		pa_stream_direction_t dir;
+		double		src_ratio;
+		size_t		blocksize;
 	} sd[2];
 	float* fbuf;
 };

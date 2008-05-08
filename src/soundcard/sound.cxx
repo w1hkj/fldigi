@@ -713,6 +713,7 @@ SoundPort::SoundPort(const char *in_dev, const char *out_dev)
         sd[0].dev_sample_rate = sd[1].dev_sample_rate = 0;
         sd[0].state = sd[1].state = spa_continue;
         sd[0].rb = sd[1].rb = 0;
+        sd[0].advance = sd[1].advance = 0;
 
 	sem_t** sems[] = { &sd[0].rwsem, &sd[0].csem, &sd[1].rwsem, &sd[1].csem };
         for (size_t i = 0; i < sizeof(sems)/sizeof(*sems); i++) {
@@ -722,7 +723,6 @@ SoundPort::SoundPort(const char *in_dev, const char *out_dev)
 	}
 
         try {
-                rx_src_data = new SRC_DATA;
                 tx_src_data = new SRC_DATA;
         }
         catch (const std::bad_alloc& e) {
@@ -785,7 +785,7 @@ int SoundPort::Open(int mode, int freq)
 
 			start_stream(i);
 		}
-		else if (old_sample_rate != freq)
+		else
 			src_data_reset(m[i]);
 	}
 
@@ -884,7 +884,13 @@ size_t SoundPort::Read(double *buf, size_t count)
         }
 #endif
 
-        size_t maxframes = (size_t)floor((sd[0].rb->length() / CHANNELS) * rx_src_data->src_ratio);
+	if (rxppm != progdefaults.RX_corr) {
+		rxppm = progdefaults.RX_corr;
+		sd[0].src_ratio = req_sample_rate / (sd[0].dev_sample_rate * (1.0 + rxppm / 1e6));
+		src_set_ratio(rx_src_state, sd[0].src_ratio);
+	}
+
+	size_t maxframes = (size_t)floor((sd[0].rb->length() / CHANNELS) * sd[0].src_ratio);
         if (unlikely(count > maxframes)) {
                 size_t n = 0;
                 while (count > maxframes) {
@@ -897,38 +903,36 @@ size_t SoundPort::Read(double *buf, size_t count)
                 return n;
         }
 
-        // new sample count, taking into account the samplerate ratio
-        size_t ncount = (size_t)floor(count / rx_src_data->src_ratio);
-
-        // wait for data
-        bool timeout = false;
-        WAIT_FOR_COND( (sd[0].rb->read_space() >= CHANNELS * ncount), sd[0].rwsem,
-                       (MAX(1.0, 2 * CHANNELS * ncount / sd[0].dev_sample_rate)) );
-        if (timeout)
-                throw SndException(ETIMEDOUT);
-
-        // copy to fbuf if the data is not contiguous inside the ringbuffer
-        float* rbuf = 0;
-        bool rbadv = true;
-        ringbuffer<float>::vector_type vec[2];
-        sd[0].rb->get_rv(vec);
-        if (likely(vec[0].len >= CHANNELS * ncount))
-                rbuf = vec[0].buf;
-        else { // copy
-                sd[0].rb->read(fbuf, CHANNELS * ncount);
-                rbuf = fbuf;
-                rbadv = false;
-        }
-
-        // resample
-        if (req_sample_rate != sd[0].dev_sample_rate || progdefaults.RX_corr != 0) {
-                resample(1 << O_RDONLY, rbuf, snd_buffer, ncount, count);
-                rbuf = rx_src_data->data_out;
-                count = rx_src_data->output_frames_gen;
-        }
-        // if we did a no-copy read we must advance the read pointer
-        if (rbadv)
-                sd[0].rb->read_advance(CHANNELS * ncount);
+	float* rbuf = fbuf;
+	if (req_sample_rate != sd[0].dev_sample_rate || rxppm != 0) {
+		long r;
+		size_t n = 0;
+		sd[0].blocksize = SCBLOCKSIZE;
+		while (n < count) {
+			if  ((r = src_callback_read(rx_src_state, sd[0].src_ratio, count - n, rbuf + n*CHANNELS)) == 0)
+				return n;
+			n += r;
+		}
+	}
+	else {
+		bool timeout = false;
+		WAIT_FOR_COND( (sd[0].rb->read_space() >= count * CHANNELS / sd[0].src_ratio), sd[0].rwsem,
+				(MAX(1.0, 2 * CHANNELS * count / sd->dev_sample_rate)) );
+		if (timeout)
+			throw SndException(ETIMEDOUT);
+		ringbuffer<float>::vector_type vec[2];
+		sd[0].rb->get_rv(vec);
+		if (vec[0].len >= count * CHANNELS) {
+			rbuf = vec[0].buf;
+			sd[0].advance = vec[0].len;
+		}
+		else
+			sd[0].rb->read(fbuf, count * CHANNELS);
+	}
+	if (sd[0].advance) {
+		sd[0].rb->read_advance(sd[0].advance);
+		sd[0].advance = 0;
+	}
 
         // deinterleave first channel into buf
         for (size_t i = 0; i < count; i++)
@@ -1000,7 +1004,21 @@ size_t SoundPort::resample_write(float* buf, size_t count)
                         wbuf = vec[0].buf; // direct write in the rb
                 else
                         wbuf = src_buffer;
-                resample(1 << O_WRONLY, buf, wbuf, count);
+
+                if (txppm != progdefaults.TX_corr) {
+                        txppm = progdefaults.TX_corr;
+                        tx_src_data->src_ratio = sd[1].dev_sample_rate * (1.0 + txppm / 1e6) / req_sample_rate;
+                        src_set_ratio(tx_src_state, tx_src_data->src_ratio);
+                }
+                tx_src_data->data_in = buf;
+                tx_src_data->input_frames = count;
+                tx_src_data->data_out = wbuf;
+                tx_src_data->output_frames = (wbuf == vec[0].buf ? vec[0].len : SND_BUF_LEN);
+                tx_src_data->end_of_input = 0;
+		int r;
+                if ((r = src_process(tx_src_state, tx_src_data)) != 0)
+                       throw SndException(src_strerror(r));
+
                 count = tx_src_data->output_frames_gen;
                 if (wbuf == vec[0].buf) { // advance write pointer and return
                         sd[1].rb->write_advance(CHANNELS * count);
@@ -1049,10 +1067,11 @@ void SoundPort::src_data_reset(int mode)
         if (mode & 1 << O_RDONLY) {
                 if (rx_src_state)
                         src_delete(rx_src_state);
-                rx_src_state = src_new(progdefaults.sample_converter, CHANNELS, &err);
+                rx_src_state = src_callback_new(src_read_cb, progdefaults.sample_converter,
+                                                CHANNELS, &err, &sd[0]);
                 if (!rx_src_state)
                         throw SndException(src_strerror(err));
-                rx_src_data->src_ratio = req_sample_rate / (sd[0].dev_sample_rate * (1.0 + rxppm / 1e6));
+                sd[0].src_ratio = req_sample_rate / (sd[0].dev_sample_rate * (1.0 + rxppm / 1e6));
 
                 rbsize = ceil2((unsigned)(2 * CHANNELS * SCBLOCKSIZE *
                                           MAX(req_sample_rate, sd[0].dev_sample_rate) /
@@ -1090,42 +1109,30 @@ void SoundPort::src_data_reset(int mode)
         }
 }
 
-void SoundPort::resample(int mode, float* inbuf, float* outbuf, size_t count, size_t max)
+long SoundPort::src_read_cb(void* arg, float** data)
 {
-        int r;
+        struct stream_data* sd = reinterpret_cast<stream_data*>(arg);
 
-        if (mode & 1 << O_RDONLY) {
-                if (rxppm != progdefaults.RX_corr) {
-                        rxppm = progdefaults.RX_corr;
-                        rx_src_data->src_ratio = req_sample_rate / (sd[0].dev_sample_rate * (1.0 + rxppm / 1e6));
-                        src_set_ratio(rx_src_state, rx_src_data->src_ratio);
-                }
-
-                rx_src_data->data_in = inbuf;
-                rx_src_data->input_frames = count;
-                rx_src_data->data_out = outbuf;
-                rx_src_data->output_frames = max ? max : SND_BUF_LEN;
-                rx_src_data->end_of_input = 0;
-
-                if ((r = src_process(rx_src_state, rx_src_data)) != 0)
-			throw SndException(src_strerror(r));
+        // advance read pointer for previous read
+        if (sd->advance) {
+                sd->rb->read_advance(sd->advance);
+                sd->advance = 0;
         }
-        else if (mode & 1 << O_WRONLY) {
-                if (txppm != progdefaults.TX_corr) {
-                        txppm = progdefaults.TX_corr;
-                        tx_src_data->src_ratio = sd[1].dev_sample_rate * (1.0 + txppm / 1e6) / req_sample_rate;
-                        src_set_ratio(tx_src_state, tx_src_data->src_ratio);
-                }
 
-                tx_src_data->data_in = inbuf;
-                tx_src_data->input_frames = count;
-                tx_src_data->data_out = outbuf;
-                tx_src_data->output_frames = max ? max : SND_BUF_LEN;
-                tx_src_data->end_of_input = 0;
+        // wait for data
+        bool timeout = false;
+        WAIT_FOR_COND( (sd->rb->read_space() >= CHANNELS * SCBLOCKSIZE), sd->rwsem,
+                       (MAX(1.0, 2 * CHANNELS * SCBLOCKSIZE / sd->dev_sample_rate)) );
+        if (timeout)
+                return 0;
 
-                if ((r = src_process(tx_src_state, tx_src_data)) != 0)
-			throw SndException(src_strerror(r));
-        }
+        ringbuffer<float>::vector_type vec[2];
+        sd->rb->get_rv(vec);
+
+        *data = vec[0].buf;
+        sd->advance = vec[0].len;
+
+        return vec[0].len / CHANNELS;
 }
 
 void SoundPort::init_stream(unsigned dir)
@@ -1413,11 +1420,11 @@ SoundPulse::SoundPulse(const char *dev)
 	: fbuf(0)
 {
 	sd[0].stream = sd[1].stream = 0;
-	sd[0].dir = PA_STREAM_RECORD;
-	sd[1].dir = PA_STREAM_PLAYBACK;
+	sd[0].dir = PA_STREAM_RECORD; sd[1].dir = PA_STREAM_PLAYBACK;
+	sd[0].stream_params.format = sd[1].stream_params.format = PA_SAMPLE_FLOAT32LE;
+	sd[0].stream_params.channels = sd[1].stream_params.channels = CHANNELS;
 
         try {
-                rx_src_data = new SRC_DATA;
                 tx_src_data = new SRC_DATA;
         }
         catch (const std::bad_alloc& e) {
@@ -1457,8 +1464,6 @@ int SoundPulse::Open(int mode, int freq)
 		if (sd[i].stream)
 			continue;
 
-		sd[i].stream_params.format = PA_SAMPLE_FLOAT32LE;
-		sd[i].stream_params.channels = CHANNELS;
 		sd[i].stream_params.rate = freq;
 		snprintf(sname, sizeof(sname), "%s (%u)", (i ? "playback" : "capture"), getpid());
 		sd[i].stream = pa_simple_new(server, PACKAGE_TARNAME, sd[i].dir, NULL,
@@ -1555,32 +1560,51 @@ size_t SoundPulse::Write_stereo(double* bufleft, double* bufright, size_t count)
 	return resample_write(fbuf, count);
 }
 
-size_t SoundPulse::resample_write(const float* buf, size_t count)
+size_t SoundPulse::resample_write(float* buf, size_t count)
 {
+	int err;
         float *wbuf = buf;
-        if (progdefaults.TX_corr != 0) {
-                resample(1 << O_WRONLY, wbuf, count);
+
+	if (progdefaults.TX_corr != 0) {
+		if (txppm != progdefaults.TX_corr) {
+			txppm = progdefaults.TX_corr;
+			tx_src_data->src_ratio = 1.0 + txppm / 1e6;
+			src_set_ratio(tx_src_state, tx_src_data->src_ratio);
+		}
+                tx_src_data->data_in = wbuf;
+                tx_src_data->input_frames = count;
+                tx_src_data->data_out = src_buffer;
+                tx_src_data->output_frames = SND_BUF_LEN;
+                tx_src_data->end_of_input = 0;
+                if ((err = src_process(tx_src_state, tx_src_data)) != 0)
+			throw SndException(src_strerror(err));
+
                 wbuf = tx_src_data->data_out;
                 count = tx_src_data->output_frames_gen;
         }
 
-	int err;
 	if (pa_simple_write(sd[1].stream, wbuf, count * CHANNELS * sizeof(float), &err) == -1)
 		throw SndPulseException(err);
 
 	return count;
 }
 
-size_t SoundPulse::Read(double *buf, size_t count)
+long SoundPulse::src_read_cb(void* arg, float** data)
 {
-	size_t ncount = (size_t)MIN(SND_BUF_LEN, floor(count / rx_src_data->src_ratio));
-	if (count == 1 && ncount == 0)
-		ncount = 1;
+        SoundPulse* p = reinterpret_cast<SoundPulse*>(arg);
 
 	int err;
-	if (pa_simple_read(sd[0].stream, fbuf, sizeof(double) * ncount, &err) == -1)
-		throw SndPulseException(err);
+	if (pa_simple_read(p->sd[0].stream, p->snd_buffer, CHANNELS * sizeof(float) * p->sd[0].blocksize, &err) == -1) {
+		cerr << "SoundPulse::pa_simple_read error: " << pa_strerror(err) << '\n';
+		return 0;
+	}
 
+	*data = p->snd_buffer;
+	return p->sd[0].blocksize;
+}
+
+size_t SoundPulse::Read(double *buf, size_t count)
+{
 #if USE_SNDFILE
 	if (playback) {
 		read_file(ifPlayback, buf, count);
@@ -1593,15 +1617,29 @@ size_t SoundPulse::Read(double *buf, size_t count)
 	}
 #endif
 
-        float *rbuf = fbuf;
-        if (progdefaults.RX_corr != 0) {
-                resample(1 << O_RDONLY, rbuf, ncount, count);
-                rbuf = rx_src_data->data_out;
-                count = rx_src_data->output_frames_gen;
+	if (progdefaults.RX_corr != 0) {
+		if (rxppm != progdefaults.RX_corr) {
+			rxppm = progdefaults.RX_corr;
+			sd[0].src_ratio = 1.0 / (1.0 + rxppm / 1e6);
+			src_set_ratio(rx_src_state, sd[0].src_ratio);
+		}
+		long r;
+		size_t n = 0;
+		sd[0].blocksize = SCBLOCKSIZE;
+		while (n < count) {
+			if ((r = src_callback_read(rx_src_state, sd[0].src_ratio, count - n, fbuf + n*CHANNELS)) == 0)
+				return n;
+			n += r;
+		}
         }
+	else {
+		int err;
+		if (pa_simple_read(sd[0].stream, fbuf, CHANNELS * sizeof(float) * count, &err) == -1)
+			throw SndPulseException(err);
+	}
 
 	for (size_t i = 0; i < count; i++)
-                buf[i] = rbuf[CHANNELS * i];
+                buf[i] = fbuf[CHANNELS * i];
 
 #if USE_SNDFILE
 	if (capture)
@@ -1617,10 +1655,11 @@ void SoundPulse::src_data_reset(int mode)
         if (mode & 1 << O_RDONLY) {
                 if (rx_src_state)
                         src_delete(rx_src_state);
-                rx_src_state = src_new(progdefaults.sample_converter, sd[0].stream_params.channels, &err);
+                rx_src_state = src_callback_new(src_read_cb, progdefaults.sample_converter,
+						sd[0].stream_params.channels, &err, this);
                 if (!rx_src_state)
                         throw SndException(src_strerror(err));
-                rx_src_data->src_ratio = 1.0 / (1.0 + rxppm / 1e6);
+                sd[0].src_ratio = 1.0 / (1.0 + rxppm / 1e6);
         }
         if (mode & 1 << O_WRONLY) {
                 if (tx_src_state)
@@ -1629,44 +1668,6 @@ void SoundPulse::src_data_reset(int mode)
                 if (!tx_src_state)
                         throw SndException(src_strerror(err));
                 tx_src_data->src_ratio = 1.0 + txppm / 1e6;
-        }
-}
-
-void SoundPulse::resample(int mode, float *buf, size_t count, size_t max)
-{
-        int r;
-
-        if (mode & 1 << O_RDONLY) {
-                if (rxppm != progdefaults.RX_corr) {
-                        rxppm = progdefaults.RX_corr;
-                        rx_src_data->src_ratio = 1.0 / (1.0 + rxppm / 1e6);
-                        src_set_ratio(rx_src_state, rx_src_data->src_ratio);
-                }
-
-                rx_src_data->data_in = buf;
-                rx_src_data->input_frames = count;
-                rx_src_data->data_out = snd_buffer;
-                rx_src_data->output_frames = max ? max : SND_BUF_LEN;
-                rx_src_data->end_of_input = 0;
-
-                if ((r = src_process(rx_src_state, rx_src_data)) != 0)
-			throw SndException(src_strerror(r));
-        }
-        else if (mode & 1 << O_WRONLY) {
-                if (txppm != progdefaults.TX_corr) {
-                        txppm = progdefaults.TX_corr;
-                        tx_src_data->src_ratio = 1.0 + txppm / 1e6;
-                        src_set_ratio(tx_src_state, tx_src_data->src_ratio);
-                }
-
-                tx_src_data->data_in = buf;
-                tx_src_data->input_frames = count;
-                tx_src_data->data_out = src_buffer;
-                tx_src_data->output_frames = max ? max : SND_BUF_LEN;
-                tx_src_data->end_of_input = 0;
-
-                if ((r = src_process(tx_src_state, tx_src_data)) != 0)
-			throw SndException(src_strerror(r));
         }
 }
 
