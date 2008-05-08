@@ -1412,7 +1412,9 @@ void SoundPort::init_hostapi_ext(void)
 SoundPulse::SoundPulse(const char *dev)
 	: fbuf(0)
 {
-	stream[0] = stream[1] = 0;
+	sd[0].stream = sd[1].stream = 0;
+	sd[0].dir = PA_STREAM_RECORD;
+	sd[1].dir = PA_STREAM_PLAYBACK;
 
         try {
                 rx_src_data = new SRC_DATA;
@@ -1424,9 +1426,9 @@ SoundPulse::SoundPulse(const char *dev)
         }
 
         try {
-                snd_buffer = new float[2 * SND_BUF_LEN];
-                src_buffer = new float[2 * SND_BUF_LEN];
-                fbuf = new float[2 * SND_BUF_LEN];
+                snd_buffer = new float[CHANNELS * SND_BUF_LEN];
+                src_buffer = new float[CHANNELS * SND_BUF_LEN];
+                fbuf = new float[CHANNELS * SND_BUF_LEN];
         }
         catch (const std::bad_alloc& e) {
                 cerr << "Cannot allocate libsamplerate buffers\n";
@@ -1442,50 +1444,28 @@ SoundPulse::~SoundPulse()
 
 int SoundPulse::Open(int mode, int freq)
 {
-	int old_sample_rate = sample_frequency;
-
-	dev_sample_rate[0] = (progdefaults.in_sample_rate > 1 ?
-			      progdefaults.in_sample_rate : 48000);
-	dev_sample_rate[1] = (progdefaults.out_sample_rate > 1 ?
-			      progdefaults.out_sample_rate : 48000);
-
-	sample_frequency = freq;
-	if (stream[0] && stream[1]) {
-		if (sample_frequency != old_sample_rate) {
-			src_data_reset(1 << O_RDONLY | 1 << O_WRONLY);
-			return 0;
-		}
-	}
-        else
-		Close();
-
 	const char* server = (progdefaults.PulseServer.length() ?
 			      progdefaults.PulseServer.c_str() : NULL);
 	char sname[32];
 	int err;
 
-	stream_params.format = PA_SAMPLE_FLOAT32LE;
-	stream_params.channels = 2;
+	for (int i = 0; i < 2; i++) {
+		src_data_reset(1 << O_RDONLY | 1 << O_WRONLY);
 
-	stream_params.rate = dev_sample_rate[0];
-	snprintf(sname, sizeof(sname), "capture (%u)", getpid());
-	if (!stream[0]) {
-		stream[0] = pa_simple_new(server, PACKAGE_NAME, PA_STREAM_RECORD, NULL,
-					  sname, &stream_params, NULL, NULL, &err);
-		if (!stream[0])
+		if ((unsigned)freq != sd[i].stream_params.rate)
+			Close(i);
+		if (sd[i].stream)
+			continue;
+
+		sd[i].stream_params.format = PA_SAMPLE_FLOAT32LE;
+		sd[i].stream_params.channels = CHANNELS;
+		sd[i].stream_params.rate = freq;
+		snprintf(sname, sizeof(sname), "%s (%u)", (i ? "playback" : "capture"), getpid());
+		sd[i].stream = pa_simple_new(server, PACKAGE_TARNAME, sd[i].dir, NULL,
+					     sname, &sd[i].stream_params, NULL, NULL, &err);
+		if (!sd[i].stream)
 			throw SndPulseException(err);
 	}
-
-	stream_params.rate = dev_sample_rate[1];
-	snprintf(sname, sizeof(sname), "playback (%u)", getpid());
-	if (!stream[1]) {
-		stream[1] = pa_simple_new(server, PACKAGE_NAME, PA_STREAM_PLAYBACK, NULL,
-					   sname, &stream_params, NULL, NULL, &err);
-		if (!stream[1])
-			throw SndPulseException(err);
-	}
-
-	src_data_reset(1 << O_RDONLY | 1 << O_WRONLY);
 
 	return 0;
 }
@@ -1501,7 +1481,7 @@ void SoundPulse::Close(unsigned dir)
                 start = end = dir;
 
         for (unsigned i = start; i <= end; i++) {
-                if (stream[i]) {
+                if (sd[i].stream) {
                         flush(i);
                         Abort(i);
                 }
@@ -1519,9 +1499,9 @@ void SoundPulse::Abort(unsigned dir)
                 start = end = dir;
 
         for (unsigned i = start; i <= end; i++) {
-                if (stream[i]) {
-                        pa_simple_free(stream[i]);
-                        stream[i] = 0;
+                if (sd[i].stream) {
+                        pa_simple_free(sd[i].stream);
+                        sd[i].stream = 0;
                 }
         }
 
@@ -1539,9 +1519,9 @@ void SoundPulse::flush(unsigned dir)
 
 	int err = PA_OK;
         for (unsigned i = start; i <= end; i++) {
-                if (!stream[i])
+                if (!sd[i].stream)
                         continue;
-                pa_simple_drain(stream[i], &err);
+                pa_simple_drain(sd[i].stream, &err);
 		if (err != PA_OK)
 			cerr << pa_strerror(err) << '\n';
         }
@@ -1555,20 +1535,9 @@ size_t SoundPulse::Write(double* buf, size_t count)
 #endif
 
         for (size_t i = 0; i < count; i++)
-                fbuf[2*i] = fbuf[2*i + 1] = buf[i];
+                fbuf[CHANNELS * i] = fbuf[CHANNELS * i + 1] = buf[i];
 
-        float *wbuf = fbuf;
-        if (sample_frequency != dev_sample_rate[1] || progdefaults.TX_corr != 0) {
-                resample(1 << O_WRONLY, wbuf, count);
-                wbuf = tx_src_data->data_out;
-                count = tx_src_data->output_frames_gen;
-        }
-
-	int err;
-	if (pa_simple_write(stream[1], wbuf, count * sizeof(double), &err) == -1)
-		throw SndPulseException(err);
-
-	return count;
+	return resample_write(fbuf, count);
 }
 
 size_t SoundPulse::Write_stereo(double* bufleft, double* bufright, size_t count)
@@ -1579,19 +1548,24 @@ size_t SoundPulse::Write_stereo(double* bufleft, double* bufright, size_t count)
 #endif
 
 	for (size_t i = 0; i < count; i++) {
-		fbuf[2*i] = bufleft[i];
-		fbuf[2*i + 1] = bufright[i];
+		fbuf[CHANNELS * i] = bufleft[i];
+		fbuf[CHANNELS * i + 1] = bufright[i];
 	}
 
-        float *wbuf = fbuf;
-        if (sample_frequency != dev_sample_rate[1] || progdefaults.TX_corr != 0) {
+	return resample_write(fbuf, count);
+}
+
+size_t SoundPulse::resample_write(const float* buf, size_t count)
+{
+        float *wbuf = buf;
+        if (progdefaults.TX_corr != 0) {
                 resample(1 << O_WRONLY, wbuf, count);
                 wbuf = tx_src_data->data_out;
                 count = tx_src_data->output_frames_gen;
         }
 
 	int err;
-	if (pa_simple_write(stream[1], wbuf, count * sizeof(double), &err) == -1)
+	if (pa_simple_write(sd[1].stream, wbuf, count * CHANNELS * sizeof(float), &err) == -1)
 		throw SndPulseException(err);
 
 	return count;
@@ -1604,7 +1578,7 @@ size_t SoundPulse::Read(double *buf, size_t count)
 		ncount = 1;
 
 	int err;
-	if (pa_simple_read(stream[0], fbuf, sizeof(double) * ncount, &err) == -1)
+	if (pa_simple_read(sd[0].stream, fbuf, sizeof(double) * ncount, &err) == -1)
 		throw SndPulseException(err);
 
 #if USE_SNDFILE
@@ -1620,14 +1594,14 @@ size_t SoundPulse::Read(double *buf, size_t count)
 #endif
 
         float *rbuf = fbuf;
-        if (sample_frequency != dev_sample_rate[0] || progdefaults.RX_corr != 0) {
+        if (progdefaults.RX_corr != 0) {
                 resample(1 << O_RDONLY, rbuf, ncount, count);
                 rbuf = rx_src_data->data_out;
                 count = rx_src_data->output_frames_gen;
         }
 
 	for (size_t i = 0; i < count; i++)
-                buf[i] = rbuf[2*i];
+                buf[i] = rbuf[CHANNELS * i];
 
 #if USE_SNDFILE
 	if (capture)
@@ -1643,18 +1617,18 @@ void SoundPulse::src_data_reset(int mode)
         if (mode & 1 << O_RDONLY) {
                 if (rx_src_state)
                         src_delete(rx_src_state);
-                rx_src_state = src_new(progdefaults.sample_converter, stream_params.channels, &err);
+                rx_src_state = src_new(progdefaults.sample_converter, sd[0].stream_params.channels, &err);
                 if (!rx_src_state)
                         throw SndException(src_strerror(err));
-                rx_src_data->src_ratio = sample_frequency / (dev_sample_rate[0] * (1.0 + rxppm / 1e6));
+                rx_src_data->src_ratio = 1.0 / (1.0 + rxppm / 1e6);
         }
         if (mode & 1 << O_WRONLY) {
                 if (tx_src_state)
                         src_delete(tx_src_state);
-                tx_src_state = src_new(progdefaults.sample_converter, stream_params.channels, &err);
+                tx_src_state = src_new(progdefaults.sample_converter, sd[1].stream_params.channels, &err);
                 if (!tx_src_state)
                         throw SndException(src_strerror(err));
-                tx_src_data->src_ratio = dev_sample_rate[1] * (1.0 + txppm / 1e6) / sample_frequency;
+                tx_src_data->src_ratio = 1.0 + txppm / 1e6;
         }
 }
 
@@ -1665,7 +1639,7 @@ void SoundPulse::resample(int mode, float *buf, size_t count, size_t max)
         if (mode & 1 << O_RDONLY) {
                 if (rxppm != progdefaults.RX_corr) {
                         rxppm = progdefaults.RX_corr;
-                        rx_src_data->src_ratio = sample_frequency / (dev_sample_rate[0] * (1.0 + rxppm / 1e6));
+                        rx_src_data->src_ratio = 1.0 / (1.0 + rxppm / 1e6);
                         src_set_ratio(rx_src_state, rx_src_data->src_ratio);
                 }
 
@@ -1681,7 +1655,7 @@ void SoundPulse::resample(int mode, float *buf, size_t count, size_t max)
         else if (mode & 1 << O_WRONLY) {
                 if (txppm != progdefaults.TX_corr) {
                         txppm = progdefaults.TX_corr;
-                        tx_src_data->src_ratio = dev_sample_rate[1] * (1.0 + txppm / 1e6) / sample_frequency;
+                        tx_src_data->src_ratio = 1.0 + txppm / 1e6;
                         src_set_ratio(tx_src_state, tx_src_data->src_ratio);
                 }
 

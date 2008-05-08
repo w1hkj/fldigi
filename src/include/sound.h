@@ -292,13 +292,16 @@ public:
 
 private:
 	void	src_data_reset(int mode);
+	size_t	resample_write(const float* buf, size_t count);
         void	resample(int mode, float *buf, size_t count, size_t max = 0);
 
 private:
-	double		dev_sample_rate[2];
-	pa_simple*	stream[2];
-	pa_sample_spec	stream_params;
-
+	struct stream_data {
+		double		dev_sample_rate;
+		pa_simple*	stream;
+		pa_sample_spec	stream_params;
+		pa_stream_direction_t dir;
+	} sd[2];
 	float* fbuf;
 };
 
