@@ -101,20 +101,25 @@ void SoundBase::get_file_params(const char* def_fname, const char** fname, int* 
 	if (format_supported(SF_FORMAT_FLAC | SF_FORMAT_PCM_16))
 		filters += "Free Lossless Audio Codec\t*.flac";
 
+	int fsel;
 	if (strstr(def_fname, "playback"))
-		*fname = file_select("Audio file", filters.c_str(), def_fname);
+		*fname = file_select("Audio file", filters.c_str(), def_fname, &fsel);
 	else
-		*fname = file_saveas("Audio file", filters.c_str(), def_fname);
+		*fname = file_saveas("Audio file", filters.c_str(), def_fname, &fsel);
 	if (!*fname)
 		return;
 
-	char* suffix = strrchr(*fname, '.');
-	if (suffix && !strcasecmp(suffix, ".flac"))
-		*format = SF_FORMAT_FLAC | SF_FORMAT_PCM_16;
-	else if (suffix && !strcasecmp(suffix, ".au"))
-		*format = SF_FORMAT_AU | SF_FORMAT_FLOAT | SF_ENDIAN_CPU;
-	else
+	switch (fsel) {
+	case 0:
 		*format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
+		break;
+	case 1:
+		*format = SF_FORMAT_AU | SF_FORMAT_FLOAT | SF_ENDIAN_CPU;
+		break;
+	case 2:
+		*format = SF_FORMAT_FLAC | SF_FORMAT_PCM_16;
+		break;
+	}
 }
 
 int SoundBase::Capture(bool val)
@@ -132,7 +137,7 @@ int SoundBase::Capture(bool val)
 
 	const char* fname;
 	int format;
-	get_file_params("./capture.wav", &fname, &format);
+	get_file_params("capture.wav", &fname, &format);
 	if (!fname)
 		return 0;
 
@@ -164,7 +169,7 @@ int SoundBase::Playback(bool val)
 	}
 	const char* fname;
 	int format;
-	get_file_params("./playback.wav", &fname, &format);
+	get_file_params("playback.wav", &fname, &format);
 	if (!fname)
 		return 0;
 
@@ -193,7 +198,7 @@ int SoundBase::Generate(bool val)
 
 	const char* fname;
 	int format;
-	get_file_params("./generate.wav", &fname, &format);
+	get_file_params("generate.wav", &fname, &format);
 	if (!fname)
 		return 0;
 
