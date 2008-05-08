@@ -81,6 +81,10 @@ AC_FUNC_STRFTIME
 AC_FUNC_STRTOD
 AC_CHECK_FUNCS([getaddrinfo gethostbyname localtime_r memmove memset mkdir select snprintf socket strcasecmp strchr strdup strerror strncasecmp strcasestr strrchr strstr strtol uname vsnprintf])
 
+# Check for dlopen
+AC_SEARCH_LIBS([dlopen], [dl], [ac_cv_dlopen=1], [ac_cv_dlopen=0])
+AC_DEFINE_UNQUOTED(HAVE_DLOPEN, $ac_cv_dlopen, [Define to 1 if we have dlopen])
+
 
 AC_PRESERVE_HELP_ORDER
 

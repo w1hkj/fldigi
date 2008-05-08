@@ -47,10 +47,13 @@
 #endif
 #include <math.h>
 
+#if HAVE_DLOPEN
+#  include <dlfcn.h>
+#endif
+
 #include "sound.h"
 #include "configuration.h"
 #include "status.h"
-#include <FL/Fl.H>
 #include "fileselect.h"
 
 #include "timeops.h"
@@ -667,6 +670,8 @@ void SoundPort::initialize(void)
 {
         if (pa_init)
                 return;
+
+        init_hostapi_ext();
 
         int err;
 
@@ -1382,6 +1387,21 @@ void SoundPort::pa_perror(int err, const char* str)
                         cerr << Pa_GetHostApiInfo(i)->name << " error "
                              << hosterr->errorCode << ": " << hosterr->errorText << '\n';
         }
+}
+
+void SoundPort::init_hostapi_ext(void)
+{
+#if HAVE_DLOPEN
+	void* handle = dlopen(NULL, RTLD_LAZY);
+	if (!handle)
+		return;
+
+	PaError (*set_jack_client_name)(const char*);
+	char* err = dlerror();
+	set_jack_client_name = (PaError (*)(const char*))dlsym(handle, "PaJack_SetClientName");
+	if (!(err = dlerror()))
+		set_jack_client_name(PACKAGE_TARNAME);
+#endif
 }
 
 #endif // USE_PORTAUDIO

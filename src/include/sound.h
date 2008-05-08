@@ -239,6 +239,7 @@ private:
         bool		full_duplex_device(const PaDeviceInfo* dev);
         double		find_srate(unsigned dir);
         void		pa_perror(int err, const char* str = 0);
+        static void	init_hostapi_ext(void);
         static PaStreamCallback stream_process;
         static PaStreamFinishedCallback stream_stopped;
 
