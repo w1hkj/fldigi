@@ -83,6 +83,8 @@ struct history {
 	
 class mfsk : public modem {
 
+#define SCOPESIZE 64
+
 friend void updateTxPic(unsigned char data, mfsk *me);
 friend void cb_picRxClose( Fl_Widget *w, void *who);
 friend void cb_picRxAbort( Fl_Widget *w, void *who);
@@ -127,6 +129,7 @@ protected:
 	Cmovavg			*afcfilt;
 	Cmovavg			*met1filt;
 	Cmovavg			*met2filt;
+	Cmovavg			*vidfilter[SCOPESIZE];
 
 	viterbi		*dec1;
 	viterbi		*dec2;
@@ -202,7 +205,7 @@ protected:
 	void	synchronize();
 	void	afc();
 	void	reset_afc();
-	void	eval_s2n(complex, complex);
+	void	eval_s2n();
 	void 	sendsymbol(int sym);
 	void	sendbit(int bit);
 	void	sendchar(unsigned char c);

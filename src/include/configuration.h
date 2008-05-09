@@ -72,10 +72,17 @@ struct configuration {
 	int			oliviabw;
 	int			oliviasmargin;
 	int			oliviasinteg;
-	bool			olivia8bit;
+	bool		olivia8bit;
+// DEX
+	double		DEX_BW;
+	bool		DEX_FILTER;
+	string		DEXsecText;
+	int			DEX_PATHS;
 // DOMINOEX
 	double		DOMINOEX_BW;
 	bool		DOMINOEX_FILTER;
+	bool		DOMINOEX_FEC;
+	int			DOMINOEX_PATHS;
 // MT63
 	bool 		mt63_8bit;
 	int			mt63_interleave;

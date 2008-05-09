@@ -113,7 +113,7 @@ void status::saveLastState()
 
 	spref.set("version", PACKAGE_VERSION);
 
-	spref.set("mode", lastmode);
+	spref.set("mode", (int)lastmode);
 	spref.set("squelch_enabled", sqlonoff);
 	spref.set("squelch_level", sldrSquelchValue);
 	spref.set("afc_enabled", afconoff);
@@ -167,7 +167,7 @@ void status::loadLastState()
 
 	int i;
 
-	spref.get("mode", lastmode, lastmode);
+	spref.get("mode", i, i);  lastmode = (trx_mode) i;
 	spref.get("squelch_enabled", i, i); sqlonoff = i;
 	spref.get("squelch_level", sldrSquelchValue, sldrSquelchValue);
 	spref.get("afc_enabled", i, i); afconoff = i;

@@ -47,7 +47,15 @@ const char *state_names[] = {
 // first string (sname), so its length should be a multiple of 2.
 const struct mode_info_t mode_info[NUM_MODES] = {
     { MODE_CW, &cw_modem, "CW", "CW", "CW", "CW" }, 
-	{ MODE_DOMINOEX4, &dominoex4_modem, "DomEX4", "DominoEX 4", "DOMINOEX4", "DOMINO" }, // These aren't Domino FEC, right?
+
+	{ MODE_DEX4, &dex4_modem, "DEX4", "DEX 4", "DEX4", "DEX" },
+	{ MODE_DEX5, &dex5_modem, "DEX5", "DEX 5", "DEX5", "DEX" },
+	{ MODE_DEX8, &dex8_modem, "DEX8", "DEX 8", "DEX8", "DEX" },
+	{ MODE_DEX11, &dex11_modem, "DEX11", "DEX 11", "DEX11", "DEX" },
+	{ MODE_DEX16, &dex16_modem, "DEX16", "DEX 16", "DEX16", "DEX" },
+	{ MODE_DEX22, &dex22_modem, "DEX22", "DEX 22", "DEX22", "DEX" },
+
+	{ MODE_DOMINOEX4, &dominoex4_modem, "DomEX4", "DominoEX 4", "DOMINOEX4", "DOMINO" },
 	{ MODE_DOMINOEX5, &dominoex5_modem, "DomEX5", "DominoEX 5", "DOMINOEX5", "DOMINO" },
 	{ MODE_DOMINOEX8, &dominoex8_modem, "DomEX8", "DominoEX 8", "DOMINOEX8", "DOMINO" },
 	{ MODE_DOMINOEX11, &dominoex11_modem, "DomX11", "DominoEX 11", "DOMINOEX11", "DOMINO" },

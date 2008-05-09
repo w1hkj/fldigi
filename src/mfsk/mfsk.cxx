@@ -99,6 +99,9 @@ mfsk::~mfsk()
 	if (met1filt) delete met1filt;
 	if (met2filt) delete met2filt;
 	if (xmtimg) delete [] xmtimg;
+	for (int i = 0; i < SCOPESIZE; i++) {
+		if (vidfilter[i]) delete vidfilter[i];
+	}
 	deleteRxViewer();
 	deleteTxViewer();
 }
@@ -132,6 +135,9 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 	afcfilt		= new Cmovavg(AFC_COUNT);
 	met1filt	= new Cmovavg(32);
 	met2filt	= new Cmovavg(32);
+	
+	for (int i = 0; i < SCOPESIZE; i++)
+		vidfilter[i] = new Cmovavg(16);
 
 	pipe		= new rxpipe[ 2 * symlen ];
 
@@ -150,8 +156,8 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 	bw = (numtones - 1) * tonespacing;
 	cf = 1000.0 + bw / 2.0;
 
-	flo = (cf - bw/2 - tonespacing) / MFSKSampleRate;
-	fhi = (cf + bw/2 + tonespacing) / MFSKSampleRate;
+	flo = (cf - bw/2 - 2 * tonespacing) / MFSKSampleRate;
+	fhi = (cf + bw/2 + 2 * tonespacing) / MFSKSampleRate;
 
 	bpfilt = new C_FIR_filter();
 	bpfilt->init_bandpass (127, 1, flo, fhi);
@@ -344,7 +350,7 @@ void mfsk::decodesymbol(unsigned char symbol)
 		if (met1 < met2)
 			return;
 
-		metric = met1 / 2.5;
+		metric = met1 / 2.0;
 	} else {
 		if ((c = dec2->decode(symbolpair, &met)) == -1)
 			return;
@@ -354,7 +360,7 @@ void mfsk::decodesymbol(unsigned char symbol)
 		if (met2 < met1)
 			return;
 
-		metric = met2 / 2.5;
+		metric = met2 / 2.0;
 	}
 	display_metric(metric);
 	
@@ -448,14 +454,14 @@ void mfsk::update_syncscope()
 	if (max == 0.0) max = 1e10;
 	memset(scopedata, 0, 2 * symlen * sizeof(double));
 	if (!progStatus.sqlonoff || metric >= progStatus.sldrSquelchValue)
-		for (int i = 0; i < pipelen; i++) {
-			j = (pipeptr - i);
-			if (j < 0) j += pipelen;
-			scopedata[i] = (pipe[j].vector[prev1symbol]).mag() / max;
+		for (unsigned int i = 0; i < SCOPESIZE; i++) {
+			j = (pipeptr + i * pipelen / SCOPESIZE + 1) % (pipelen);
+			scopedata[i] = vidfilter[i]->run(pipe[j].vector[prev1symbol].mag());
 		}
-	set_scope(scopedata, pipelen, false);
+	set_scope(scopedata, SCOPESIZE);
+
 	scopedata.next(); // change buffers
-	snprintf(mfskmsg, sizeof(mfskmsg), "s/n %3.0f dB", 20.0 * log10(s2n) );
+	snprintf(mfskmsg, sizeof(mfskmsg), "s/n %3.0f dB", 20.0 * log10(s2n) - 9.0 );
 	put_Status1(mfskmsg);
 }
 
@@ -503,6 +509,9 @@ void mfsk::afc()
 		reset_afc();
 		sigsearch = 0;
 	}
+	if (prev1symbol != currsymbol)
+		return;
+		
 	if (pipeptr == 0) {
 		prevvector = pipe[2*symlen - 1].vector[currsymbol];
 	} else {
@@ -522,15 +531,17 @@ void mfsk::afc()
 	}
 }
 
-void mfsk::eval_s2n(complex c, complex n)
+void mfsk::eval_s2n()
 {
-	sig = c.mag(); // signal + noise energy
-	noise = n.mag() + 1e-20; // noise energy
-
-	if (metric > progStatus.sldrSquelchValue)
-		s2n = decayavg( s2n, fabs(sig / noise), 16 );
-	else
-		s2n = decayavg( s2n, 1.0, 16 );
+	sig = pipe[pipeptr].vector[currsymbol].mag();
+	noise = 0.0;
+	for (int i = 0; i < numtones; i++) {
+		if (i != currsymbol)
+			noise += pipe[pipeptr].vector[i].mag();
+	}	
+	noise /= (numtones - 1);
+	if (noise > 0)
+		s2n = decayavg ( s2n, sig / noise, 16 );
 }
 
 int mfsk::rx_process(const double *buf, int len)
@@ -604,7 +615,7 @@ int mfsk::rx_process(const double *buf, int len)
 // frequency tracking 
 			afc();
 			
-			eval_s2n(currvector, bins[(currsymbol + numtones/2) % numtones]);
+			eval_s2n();
 // decode symbol 
 			softdecode(bins);
 // symbol sync 

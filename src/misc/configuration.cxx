@@ -77,10 +77,17 @@ configuration progdefaults = {
 	2,				// int		oliviabw;
 	8,				// int		oliviasmargin
 	4,				// int		oliviasinteg
-	false,				// bool		olivia8bit
+	false,			// bool		olivia8bit
+// DEX
+	2.0,			// double	DEX_BW;
+	true,			// bool		DEX_FILTER;
+	"fldigi-dex ",	// string	DEXsecText;
+	5,				// int		DEX_PATHS;
 // DOMINOEX
 	2.0,			// double	DOMINOEX_BW;
-	false,			// bool		DOMINOEX_FILTER
+	true,			// bool		DOMINOEX_FILTER
+	false,			// bool		DOMINOEX_FEC
+	5,				// int		DOMINOEX_PATHS
 // MT63
 	false,			// bool 	mt63_8bit;
 	32,				// int		mt63_interleave;
@@ -243,7 +250,8 @@ enum TAG { \
 	CWTRACK, CWRISETIME, CWDASH2DOT,
 	XQSK, CWPRE, CWPOST, CWID, CWIDWPM,
 	OLIVIATONES, OLIVIABW, OLIVIASMARGIN, OLIVIASINTEG, OLIVIA8BIT,
-	DOMINOEXBW, DOMINOEXFILTER,
+	DEXBW, DEXFILTER, DEXSECTEXT, DEXPATHS,
+	DOMINOEXBW, DOMINOEXFILTER, DOMINOEXFEC, DOMINOEXPATHS,
 	FELDFONTNBR, FELDIDLE,
 	WFPREFILTER, LATENCY,
 	USECURSORLINES, USECURSORCENTERLINE, USEBWTRACKS,
@@ -382,8 +390,17 @@ void configuration::writeDefaultsXML()
 	writeXMLint(f, "OLIVIASMARGIN", oliviasmargin);
 	writeXMLint(f, "OLIVIASINTEG", oliviasinteg);
 	writeXMLbool(f, "OLIVIA8BIT", olivia8bit);
+	
+	writeXMLdbl(f,  "DEXBW", DEX_BW);
+	writeXMLbool(f, "DEXFILTER", DEX_FILTER);
+	writeXMLstr(f,  "DEXSECTEXT", DEXsecText);		
+	writeXMLint(f, "DEXPATHS", DEX_PATHS);
+	
 	writeXMLdbl(f, "DOMINOEXBW", DOMINOEX_BW);
 	writeXMLbool(f, "DOMINOEXFILTER", DOMINOEX_FILTER);
+	writeXMLbool(f, "DOMINOEXFEC", DOMINOEX_FEC);
+	writeXMLint(f, "DOMINOEXPATHS", DOMINOEX_PATHS);
+	
 	writeXMLint(f, "FELDFONTNBR", feldfontnbr);
 	writeXMLbool(f, "FELDIDLE", FELD_IDLE);
 
@@ -671,11 +688,29 @@ bool configuration::readDefaultsXML()
 					case OLIVIA8BIT :
 						olivia8bit = atoi(xml->getNodeData());
 						break;
+					case DEXBW :
+						DEX_BW = atof(xml->getNodeData());
+						break;
+					case DEXFILTER :
+						DEX_FILTER = atoi(xml->getNodeData());
+						break;
+					case DEXSECTEXT :
+						DEXsecText = xml->getNodeData();
+						break;
+					case DEXPATHS :
+						DEX_PATHS = atoi(xml->getNodeData());
+						break;
 					case DOMINOEXBW :
 						DOMINOEX_BW = atof(xml->getNodeData());
 						break;
 					case DOMINOEXFILTER :
 						DOMINOEX_FILTER = atoi(xml->getNodeData());
+						break;
+					case DOMINOEXFEC :
+						DOMINOEX_FEC = atoi(xml->getNodeData());
+						break;
+					case DOMINOEXPATHS :
+						DOMINOEX_PATHS = atoi(xml->getNodeData());
 						break;
 					case FELDFONTNBR :
 						feldfontnbr = atoi(xml->getNodeData());
@@ -1027,8 +1062,14 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("OLIVIASMARGIN", nodeName)) 	tag = OLIVIASMARGIN;
 				else if (!strcmp("OLIVIASINTEG", nodeName)) 	tag = OLIVIASINTEG;
 				else if (!strcmp("OLIVIA8BIT", nodeName)) 	tag = OLIVIA8BIT;
+				else if (!strcmp("DEXBW", nodeName)) 	tag = DEXBW;
+				else if (!strcmp("DEXFILTER", nodeName))	tag = DEXFILTER;
+				else if (!strcmp("DEXSECTEXT", nodeName))	tag = DEXSECTEXT;
+				else if (!strcmp("DEXPATHS", nodeName)) tag = DEXPATHS;
 				else if (!strcmp("DOMINOEXBW", nodeName)) 	tag = DOMINOEXBW;
 				else if (!strcmp("DOMINOEXFILTER", nodeName))	tag = DOMINOEXFILTER;
+				else if (!strcmp("DOMINOEXFEC", nodeName))	tag = DOMINOEXFEC;
+				else if (!strcmp("DOMINOEXPATHS", nodeName)) tag = DOMINOEXPATHS;
 				else if (!strcmp("FELDFONTNBR", nodeName)) 	tag = FELDFONTNBR;
 				else if (!strcmp("FELDIDLE", nodeName)) 	tag = FELDIDLE;
 				else if (!strcmp("WFPREFILTER", nodeName)) 	tag = WFPREFILTER;
@@ -1210,6 +1251,7 @@ void configuration::saveDefaults() {
 	myQth  = inpMyQth->value();
 	myLocator = inpMyLocator->value();
 	secText = txtSecondary->value();
+	DEXsecText = txtDEXSecondary->value();
 	PTTdev = inpTTYdev->value();
 
 	for (int i = 0; i < 9; i++) {
@@ -1237,9 +1279,17 @@ int configuration::setDefaults() {
 	ContestDigits = (int)nbrContestDigits->value();
 		
 	txtSecondary->value(secText.c_str());
+
+	txtDEXSecondary->value(DEXsecText.c_str());
+	valDEX_BW->value(DEX_BW);
+	valDEX_FILTER->value(DEX_FILTER);
+	valDEX_PATHS->value(DEX_PATHS);
+		
 	valDominoEX_BW->value(DOMINOEX_BW);
 	valDominoEX_FILTER->value(DOMINOEX_FILTER);
-			
+	chkDominoEX_FEC->value(DOMINOEX_FEC);
+	valDominoEX_PATHS->value(DOMINOEX_PATHS);
+				
 	for (int i = 0; i < 5; i++) {
 		btnPTT[i]->value(0);
 		btnPTT[i]->activate();
