@@ -137,11 +137,17 @@ extern Fl_Group *tabCWQSK;
 extern Fl_Check_Button *btnQSK;
 extern Fl_Counter *cntPreTiming;
 extern Fl_Counter *cntPostTiming;
+extern Fl_Group *tabDEX;
+extern Fl_Input *txtDEXSecondary;
+extern Fl_Counter *valDEX_BW;
+extern Fl_Check_Button *valDEX_FILTER;
+extern Fl_Counter *valDEX_PATHS;
 extern Fl_Group *tabDomEX;
 extern Fl_Input *txtSecondary;
-extern Fl_Button *btnRestartDomEX;
 extern Fl_Counter *valDominoEX_BW;
 extern Fl_Check_Button *valDominoEX_FILTER;
+extern Fl_Check_Button *chkDominoEX_FEC;
+extern Fl_Counter *valDominoEX_PATHS;
 extern Fl_Group *tabFeld;
 #include "fontdef.h"
 extern Fl_Choice *selHellFont;

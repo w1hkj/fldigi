@@ -884,6 +884,38 @@ static void cb_cntPostTiming(Fl_Counter* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Group *tabDEX=(Fl_Group *)0;
+
+Fl_Input *txtDEXSecondary=(Fl_Input *)0;
+
+static void cb_txtDEXSecondary(Fl_Input* o, void*) {
+  progdefaults.DEXsecText = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter *valDEX_BW=(Fl_Counter *)0;
+
+static void cb_valDEX_BW(Fl_Counter* o, void*) {
+  progdefaults.DEX_BW = o->value();
+resetDEX();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *valDEX_FILTER=(Fl_Check_Button *)0;
+
+static void cb_valDEX_FILTER(Fl_Check_Button* o, void*) {
+  progdefaults.DEX_FILTER = o->value();
+resetDEX();
+progdefaults.changed = true;
+}
+
+Fl_Counter *valDEX_PATHS=(Fl_Counter *)0;
+
+static void cb_valDEX_PATHS(Fl_Counter* o, void*) {
+  progdefaults.DEX_PATHS = (int)o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabDomEX=(Fl_Group *)0;
 
 Fl_Input *txtSecondary=(Fl_Input *)0;
@@ -891,13 +923,6 @@ Fl_Input *txtSecondary=(Fl_Input *)0;
 static void cb_txtSecondary(Fl_Input* o, void*) {
   progdefaults.secText = o->value();
 progdefaults.changed = true;
-}
-
-Fl_Button *btnRestartDomEX=(Fl_Button *)0;
-
-static void cb_btnRestartDomEX(Fl_Button*, void*) {
-  progdefaults.storeDefaults();
-resetDOMEX();
 }
 
 Fl_Counter *valDominoEX_BW=(Fl_Counter *)0;
@@ -913,6 +938,20 @@ Fl_Check_Button *valDominoEX_FILTER=(Fl_Check_Button *)0;
 static void cb_valDominoEX_FILTER(Fl_Check_Button* o, void*) {
   progdefaults.DOMINOEX_FILTER = o->value();
 resetDOMEX();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *chkDominoEX_FEC=(Fl_Check_Button *)0;
+
+static void cb_chkDominoEX_FEC(Fl_Check_Button* o, void*) {
+  progdefaults.DOMINOEX_FEC = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter *valDominoEX_PATHS=(Fl_Counter *)0;
+
+static void cb_valDominoEX_PATHS(Fl_Counter* o, void*) {
+  progdefaults.DOMINOEX_PATHS = (int)o->value();
 progdefaults.changed = true;
 }
 
@@ -2053,33 +2092,80 @@ l with your sound hardware.");
             } // Fl_Counter* cntPostTiming
             tabCWQSK->end();
           } // Fl_Group* tabCWQSK
-          { tabDomEX = new Fl_Group(0, 50, 400, 170, "DomEX");
+          { tabDEX = new Fl_Group(0, 44, 400, 170, "Dex");
+            tabDEX->color((Fl_Color)51);
+            tabDEX->selection_color((Fl_Color)51);
+            { txtDEXSecondary = new Fl_Input(20, 75, 360, 44, "Secondary Text");
+              txtDEXSecondary->type(4);
+              txtDEXSecondary->callback((Fl_Callback*)cb_txtDEXSecondary);
+              txtDEXSecondary->align(FL_ALIGN_TOP_LEFT);
+              txtDEXSecondary->when(FL_WHEN_CHANGED);
+            } // Fl_Input* txtDEXSecondary
+            { Fl_Counter* o = valDEX_BW = new Fl_Counter(20, 130, 63, 21, "BW factor:");
+              valDEX_BW->type(1);
+              valDEX_BW->minimum(1);
+              valDEX_BW->maximum(2);
+              valDEX_BW->step(0.1);
+              valDEX_BW->value(1.5);
+              valDEX_BW->callback((Fl_Callback*)cb_valDEX_BW);
+              o->value(progdefaults.DEX_BW);
+            } // Fl_Counter* valDEX_BW
+            { Fl_Check_Button* o = valDEX_FILTER = new Fl_Check_Button(110, 130, 83, 19, "Filter ON");
+              valDEX_FILTER->down_box(FL_DOWN_BOX);
+              valDEX_FILTER->value(1);
+              valDEX_FILTER->callback((Fl_Callback*)cb_valDEX_FILTER);
+              o->value(progdefaults.DEX_FILTER);
+            } // Fl_Check_Button* valDEX_FILTER
+            { Fl_Counter* o = valDEX_PATHS = new Fl_Counter(20, 174, 63, 21, "Paths");
+              valDEX_PATHS->type(1);
+              valDEX_PATHS->minimum(4);
+              valDEX_PATHS->maximum(8);
+              valDEX_PATHS->step(1);
+              valDEX_PATHS->value(5);
+              valDEX_PATHS->callback((Fl_Callback*)cb_valDEX_PATHS);
+              o->value(progdefaults.DEX_PATHS);
+            } // Fl_Counter* valDEX_PATHS
+            tabDEX->end();
+          } // Fl_Group* tabDEX
+          { tabDomEX = new Fl_Group(0, 50, 400, 170, "Dom");
             tabDomEX->color((Fl_Color)51);
             tabDomEX->selection_color((Fl_Color)51);
+            tabDomEX->hide();
             { txtSecondary = new Fl_Input(20, 75, 360, 44, "Secondary Text");
               txtSecondary->type(4);
               txtSecondary->callback((Fl_Callback*)cb_txtSecondary);
               txtSecondary->align(FL_ALIGN_TOP_LEFT);
               txtSecondary->when(FL_WHEN_CHANGED);
             } // Fl_Input* txtSecondary
-            { btnRestartDomEX = new Fl_Button(300, 172, 79, 28, "Restart");
-              btnRestartDomEX->callback((Fl_Callback*)cb_btnRestartDomEX);
-              btnRestartDomEX->hide();
-            } // Fl_Button* btnRestartDomEX
-            { Fl_Counter* o = valDominoEX_BW = new Fl_Counter(25, 134, 63, 21, "BW factor:");
+            { Fl_Counter* o = valDominoEX_BW = new Fl_Counter(20, 130, 63, 21, "BW factor:");
               valDominoEX_BW->type(1);
               valDominoEX_BW->minimum(1);
               valDominoEX_BW->maximum(2);
               valDominoEX_BW->step(0.1);
-              valDominoEX_BW->value(2);
+              valDominoEX_BW->value(1.5);
               valDominoEX_BW->callback((Fl_Callback*)cb_valDominoEX_BW);
               o->value(progdefaults.DOMINOEX_BW);
             } // Fl_Counter* valDominoEX_BW
-            { Fl_Check_Button* o = valDominoEX_FILTER = new Fl_Check_Button(107, 136, 83, 19, "Filter ON");
+            { Fl_Check_Button* o = valDominoEX_FILTER = new Fl_Check_Button(110, 130, 83, 19, "Filter ON");
               valDominoEX_FILTER->down_box(FL_DOWN_BOX);
+              valDominoEX_FILTER->value(1);
               valDominoEX_FILTER->callback((Fl_Callback*)cb_valDominoEX_FILTER);
               o->value(progdefaults.DOMINOEX_FILTER);
             } // Fl_Check_Button* valDominoEX_FILTER
+            { Fl_Check_Button* o = chkDominoEX_FEC = new Fl_Check_Button(220, 130, 70, 15, "FEC");
+              chkDominoEX_FEC->down_box(FL_DOWN_BOX);
+              chkDominoEX_FEC->callback((Fl_Callback*)cb_chkDominoEX_FEC);
+              o->value(progdefaults.DOMINOEX_FEC);
+            } // Fl_Check_Button* chkDominoEX_FEC
+            { Fl_Counter* o = valDominoEX_PATHS = new Fl_Counter(20, 174, 63, 21, "Paths");
+              valDominoEX_PATHS->type(1);
+              valDominoEX_PATHS->minimum(4);
+              valDominoEX_PATHS->maximum(8);
+              valDominoEX_PATHS->step(1);
+              valDominoEX_PATHS->value(5);
+              valDominoEX_PATHS->callback((Fl_Callback*)cb_valDominoEX_PATHS);
+              o->value(progdefaults.DOMINOEX_PATHS);
+            } // Fl_Counter* valDominoEX_PATHS
             tabDomEX->end();
           } // Fl_Group* tabDomEX
           { tabFeld = new Fl_Group(0, 50, 400, 170, "Feld");

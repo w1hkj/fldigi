@@ -65,6 +65,7 @@
 #include "mt63.h"
 #include "rtty.h"
 #include "olivia.h"
+#include "dex.h"
 #include "dominoex.h"
 #include "feld.h"
 #include "throb.h"
@@ -198,6 +199,16 @@ Fl_Menu_Item quick_change_mt63[] = {
 	{ mode_info[MODE_MT63_500].name, 0, cb_init_mode, (void *)MODE_MT63_500 },
 	{ mode_info[MODE_MT63_1000].name, 0, cb_init_mode, (void *)MODE_MT63_1000 },
 	{ mode_info[MODE_MT63_2000].name, 0, cb_init_mode, (void *)MODE_MT63_2000 },
+	{ 0 }
+};
+
+Fl_Menu_Item quick_change_dex[] = {
+	{ mode_info[MODE_DEX4].name, 0, cb_init_mode, (void *)MODE_DEX4 },
+	{ mode_info[MODE_DEX5].name, 0, cb_init_mode, (void *)MODE_DEX5 },
+	{ mode_info[MODE_DEX8].name, 0, cb_init_mode, (void *)MODE_DEX8 },
+	{ mode_info[MODE_DEX11].name, 0, cb_init_mode, (void *)MODE_DEX11 },
+	{ mode_info[MODE_DEX16].name, 0, cb_init_mode, (void *)MODE_DEX16 },
+	{ mode_info[MODE_DEX22].name, 0, cb_init_mode, (void *)MODE_DEX22 },
 	{ 0 }
 };
 
@@ -390,6 +401,14 @@ void init_modem(trx_mode mode)
 		modem_config_tab = tabCW;
 		break;
 
+	case MODE_DEX4: case MODE_DEX5: case MODE_DEX8:
+	case MODE_DEX11: case MODE_DEX16: case MODE_DEX22:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new dex(mode));
+		quick_change = quick_change_dex;
+		modem_config_tab = tabDEX;
+		break;
+
 	case MODE_DOMINOEX4: case MODE_DOMINOEX5: case MODE_DOMINOEX8:
 	case MODE_DOMINOEX11: case MODE_DOMINOEX16: case MODE_DOMINOEX22:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
@@ -472,7 +491,7 @@ void init_modem(trx_mode mode)
 	}
 
 	clear_StatusMessages();
-	progStatus.saveModeState(mode);
+	progStatus.lastmode = mode;
 }
 
 void init_modem_sync(trx_mode m)
@@ -1019,6 +1038,15 @@ Fl_Menu_Item menu_[] = {
 {"Op &Mode", 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 
 { mode_info[MODE_CW].name, 0, cb_init_mode, (void *)MODE_CW, 0, FL_NORMAL_LABEL, 0, 14, 0},
+
+{"DEX", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_DEX4].name, 0, cb_init_mode, (void *)MODE_DEX4, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_DEX5].name, 0, cb_init_mode, (void *)MODE_DEX5, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_DEX8].name, 0, cb_init_mode, (void *)MODE_DEX8, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_DEX11].name, 0, cb_init_mode, (void *)MODE_DEX11, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_DEX16].name, 0, cb_init_mode, (void *)MODE_DEX16, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_DEX22].name, 0, cb_init_mode, (void *)MODE_DEX22, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
 
 {"DominoEX", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DOMINOEX4].name, 0, cb_init_mode, (void *)MODE_DOMINOEX4, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -1749,7 +1777,7 @@ void clear_status_cb(void *)
 
 void put_status(const char *msg, double timeout)
 {
-	static char m[60];
+	static char m[50];
 	strncpy(m, msg, sizeof(m));
 	m[sizeof(m) - 1] = '\0';
 
@@ -1927,6 +1955,18 @@ void resetOLIVIA() {
 	active_modem->restart();
 }
 
+void resetDEX() {
+	trx_mode md = active_modem->get_mode();
+	if (md == MODE_DEX4 ||
+		md == MODE_DEX5 ||
+		md == MODE_DEX8 ||
+		md == MODE_DEX11 ||
+		md == MODE_DEX16 ||
+		md == MODE_DEX22 ) {
+		active_modem->restart();
+	}
+}
+
 void resetDOMEX() {
 	trx_mode md = active_modem->get_mode();
 	if (md == MODE_DOMINOEX4 ||
@@ -1935,8 +1975,6 @@ void resetDOMEX() {
 		md == MODE_DOMINOEX11 ||
 		md == MODE_DOMINOEX16 ||
 		md == MODE_DOMINOEX22 ) {
-
-//		trx_reset();
 		active_modem->restart();
 	}
 }

@@ -47,7 +47,7 @@ void pstack(int fd, unsigned skip)
 
 void pstack_maybe(void)
 {
-        static bool trace = getenv("TRACE_LOCKS");
+        static bool trace = getenv("FLDIGI_TRACE_LOCKS");
 
         if (trace)
                 pstack(STDERR_FILENO, 1);
@@ -55,14 +55,20 @@ void pstack_maybe(void)
 
 void diediedie(void)
 {
-        std::cerr << "\nAborting " PACKAGE
-                     " due to a fatal error.\nPlease report this to "
-                     PACKAGE_BUGREPORT << "\n\n";
-        pstack(STDERR_FILENO);
-        extern std::string version_text;
-        std::cerr << "\nVersion information:\n" << version_text;
-        if (signum != SIGABRT)
-                abort();
+	static bool print_trace = true;
+
+	if (print_trace) {
+		if (signum)
+			std::cerr << "\nCaught signal " << signum;
+		std::cerr << "\nAborting " PACKAGE_TARNAME
+			" due to a fatal error.\nPlease report this to "
+			PACKAGE_BUGREPORT << "\n\n*** Stack trace:\n";
+		pstack(STDERR_FILENO);
+		extern std::string version_text;
+		std::cerr << "\n*** Version information:\n" << version_text;
+		print_trace = false;
+	}
+	abort();
 }
 
 void handle_unexpected(void)
@@ -74,7 +80,6 @@ void handle_unexpected(void)
 // this may not give us anything useful, but we can try...
 void handle_signal(int s)
 {
-        std::cerr << "Caught signal " << s;
         signum = s;
         diediedie();
 }

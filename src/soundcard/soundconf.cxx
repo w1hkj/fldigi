@@ -317,8 +317,6 @@ void sound_update(unsigned idx)
 		break;
 	case SND_IDX_PULSE:
 		inpPulseServer->activate();
-		menuInSampleRate->activate();
-		menuOutSampleRate->activate();
 		scDevice[0] = scDevice[1] = inpPulseServer->value();
 		break;
 	case SND_IDX_NULL:

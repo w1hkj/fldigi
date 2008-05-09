@@ -1,11 +1,7 @@
 //
-//    dominoex.h  --  DominoEX modem
+//    dex.h  --  dex modem
 //
-//	Copyright (C) 2001, 2002, 2003
-//	Tomi Manninen (oh2bns@sral.fi)
-//	Copyright (C) 2006
-//	Hamish Moffatt (hamish@debian.org)
-//	Copyright (C) 2006
+//	Copyright (C) 2008
 //		David Freese (w1hkj@w1hkj.com)
 //
 // fldigi is free software; you can redistribute it and/or modify
@@ -23,8 +19,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ----------------------------------------------------------------------------
 
-#ifndef _DOMINOEX_H
-#define _DOMINOEX_H
+#ifndef _dex_H
+#define _dex_H
 
 #include <string>
 
@@ -37,9 +33,9 @@
 #include "mbuffer.h"
 
 // NASA coefficients for viterbi encode/decode algorithms
-#define	K	7
-#define	POLY1	0x6d
-#define	POLY2	0x4f
+#define	DEX_K	7
+#define	DEX_POLY1	0x6d
+#define	DEX_POLY2	0x4f
 
 //#include "mfskvaricode.h"
 #include "interleave.h"
@@ -48,22 +44,18 @@
 
 using namespace std;
 
-#define NUMTONES 18
-//#define MAXFFTS  4
-#define MAXFFTS  8
-//#define BASEFREQ 1000.0
-#define BASEFREQ 500.0
-#define FIRSTIF 1000.0
+#define DEXNUMMTONES 18
+#define DEXMAXFFTS  8
+#define DEXBASEFREQ 500.0
+#define DEXFIRSTIF 1000.0
 
-#define SCOPESIZE 64
-// NUMBER OF BINS IN VIRTUAL MFSK array
-#define VBINS 16
+#define DEXSCOPESIZE 64
 
-struct domrxpipe {
-	complex vector[MAXFFTS * NUMTONES * 6];
+struct DEXrxpipe {
+	complex vector[DEXMAXFFTS * DEXNUMMTONES * 6];
 };
 
-class dominoex : public modem {
+class dex : public modem {
 public:
 	enum {
 		TX_STATE_PREAMBLE,
@@ -74,7 +66,7 @@ public:
 	};
 protected:
 // common variables
-	double	phase[MAXFFTS + 1];
+	double	phase[DEXMAXFFTS + 1];
 	double	txphase;
 	int		symlen;
 	int		doublespaced;
@@ -85,12 +77,12 @@ protected:
 	
 // rx variables
 	C_FIR_filter	*hilbert;
-	sfft			*binsfft[MAXFFTS];
+	sfft			*binsfft[DEXMAXFFTS];
 	fftfilt			*fft;
-	Cmovavg			*vidfilter[SCOPESIZE];
+	Cmovavg			*vidfilter[DEXSCOPESIZE];
 	Cmovavg			*syncfilter;
 	
-	domrxpipe		*pipe;
+	DEXrxpipe		*pipe;
 	unsigned int	pipeptr;
 	unsigned int	datashreg;
 	mbuffer<double, 0, 2>	scopedata;
@@ -122,49 +114,43 @@ protected:
 	int txprevtone;
 	unsigned int bitshreg;
 	string strSecXmtText;
-
-	viterbi		*MuPskDec;
-	interleave	*MuPskRxinlv;
-	encoder		*MuPskEnc;
-	interleave	*MuPskTxinlv;
+	unsigned int cptr;
+	
+	viterbi		*Dec;
+	interleave	*Rxinlv;
+	encoder		*Enc;
+	interleave	*Txinlv;
 	int			bitstate;
-	int			vbins[VBINS];
 	unsigned char symbolpair[2];
 	
 private:
 	complex	mixer(int n, complex in);
+
+// Rx
 	void	recvchar(int c);
 	void	decodesymbol();
-	void	decodeDomino(int c);
 	int		harddecode();
 	void	update_syncscope();
 	void	synchronize();
-	void	afc();
 	void	reset_afc();
 	void	eval_s2n();
+	int		get_secondary_char();
+	void	reset_filters();
+	void	decodePairs(unsigned char symbol);
+	void	decodeEX(int c);
+
+// Tx
 	void	sendtone(int tone, int duration);
 	void	sendsymbol(int sym);
 	void	sendchar(unsigned char c, int secondary);
 	void	sendidle();
 	void	sendsecondary();
 	void	flushtx();
-	int		get_secondary_char();
-	void	reset_filters();
-// MultiPsk FEC scheme
-// Rx
-	unsigned int	MuPskPriSecChar(unsigned int c);
-	void	decodeMuPskSymbol(unsigned char symbol);
-	void	MuPskSoftdecode(complex *bins);
-	void	decodeMuPskEX(int c);
-// Tx
-	unsigned char MuPskSec2Pri(int c);
-	void	sendMuPskEX(unsigned char c, int secondary);
-	void	MuPskClearbits();
-	void	MuPskFlushTx();
+	void	Clearbits();
 			
 public:
-	dominoex (trx_mode md);
-	~dominoex ();
+	dex (trx_mode md);
+	~dex ();
 	void	init();
 	void	rx_init();
 	void	tx_init(SoundBase *sc);

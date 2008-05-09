@@ -1052,9 +1052,43 @@ progdefaults.changed = true;}
               code1 {o->maximum((int)(2400/progdefaults.CWspeed)/2.0);}
             }
           }
+          Fl_Group tabDEX {
+            label Dex open
+            xywh {0 44 400 170} color 51 selection_color 51
+          } {
+            Fl_Input txtDEXSecondary {
+              label {Secondary Text}
+              callback {progdefaults.DEXsecText = o->value();
+progdefaults.changed = true;}
+              xywh {20 75 360 44} type Multiline align 5 when 1
+            }
+            Fl_Counter valDEX_BW {
+              label {BW factor:}
+              callback {progdefaults.DEX_BW = o->value();
+resetDEX();
+progdefaults.changed = true;}
+              xywh {20 130 63 21} type Simple minimum 1 maximum 2 step 0.1 value 1.5
+              code0 {o->value(progdefaults.DEX_BW);}
+            }
+            Fl_Check_Button valDEX_FILTER {
+              label {Filter ON}
+              callback {progdefaults.DEX_FILTER = o->value();
+resetDEX();
+progdefaults.changed = true;}
+              xywh {110 130 83 19} down_box DOWN_BOX value 1
+              code0 {o->value(progdefaults.DEX_FILTER);}
+            }
+            Fl_Counter valDEX_PATHS {
+              label Paths
+              callback {progdefaults.DEX_PATHS = (int)o->value();
+progdefaults.changed = true;} selected
+              xywh {20 174 63 21} type Simple minimum 4 maximum 8 step 1 value 5
+              code0 {o->value(progdefaults.DEX_PATHS);}
+            }
+          }
           Fl_Group tabDomEX {
-            label DomEX open
-            xywh {0 50 400 170} color 51 selection_color 51
+            label Dom open
+            xywh {0 50 400 170} color 51 selection_color 51 hide
           } {
             Fl_Input txtSecondary {
               label {Secondary Text}
@@ -1062,27 +1096,35 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
               xywh {20 75 360 44} type Multiline align 5 when 1
             }
-            Fl_Button btnRestartDomEX {
-              label Restart
-              callback {progdefaults.storeDefaults();
-resetDOMEX();}
-              xywh {300 172 79 28} hide
-            }
             Fl_Counter valDominoEX_BW {
               label {BW factor:}
               callback {progdefaults.DOMINOEX_BW = o->value();
 resetDOMEX();
 progdefaults.changed = true;}
-              xywh {25 134 63 21} type Simple minimum 1 maximum 2 step 0.1 value 2
+              xywh {20 130 63 21} type Simple minimum 1 maximum 2 step 0.1 value 1.5
               code0 {o->value(progdefaults.DOMINOEX_BW);}
             }
             Fl_Check_Button valDominoEX_FILTER {
               label {Filter ON}
               callback {progdefaults.DOMINOEX_FILTER = o->value();
 resetDOMEX();
-progdefaults.changed = true;} selected
-              xywh {107 136 83 19} down_box DOWN_BOX
+progdefaults.changed = true;}
+              xywh {110 130 83 19} down_box DOWN_BOX value 1
               code0 {o->value(progdefaults.DOMINOEX_FILTER);}
+            }
+            Fl_Check_Button chkDominoEX_FEC {
+              label FEC
+              callback {progdefaults.DOMINOEX_FEC = o->value();
+progdefaults.changed = true;}
+              xywh {220 130 70 15} down_box DOWN_BOX
+              code0 {o->value(progdefaults.DOMINOEX_FEC);}
+            }
+            Fl_Counter valDominoEX_PATHS {
+              label Paths
+              callback {progdefaults.DOMINOEX_PATHS = (int)o->value();
+progdefaults.changed = true;}
+              xywh {20 174 63 21} type Simple minimum 4 maximum 8 step 1 value 5
+              code0 {o->value(progdefaults.DOMINOEX_PATHS);}
             }
           }
           Fl_Group tabFeld {

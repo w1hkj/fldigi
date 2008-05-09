@@ -49,6 +49,28 @@ Change Log:
          (waterfall drop).  A lower latency gives better resolution in time
          and less in frequency.  The waterfall accuracy is still related to the
          FFT size and that remains fixed for an accuracy of 1 Hz.
+     22) Added MultiPsk, DominoEX-FEC modes
+     23) Added new modem type DEX (Domino Extended), an FEC only Domino mode
+         that supports the full ASCII character set in the primary and the
+         printable ASCII English character set (less control codes) in the
+         secondary.
+     24) Use Fl_Preferences for the status
+         The new status filename is ~/.fldigi/status to avoid breaking older
+         versions.
+     25) Stacktrace updates - Some cosmetic changes to the output. Stack and 
+         version info no longer printed twice when a signal is caught.
+     26) Use PortAudio extensions - Probes for PortAudio extensions with 
+         dlopen. right now the only extension used is the one that changes the
+         JACK client name.
+     27) Updated PulseAudio code so that non-ppm resampling is performed by
+         PulseAudio when that sound i/o system is used.
+     28) Changed the capture resampling code for PortAudio and PulseAudio to
+         use libsamplerate's callback API.
+     29) Use fileselect filter values.  Made the audio format independent of 
+         the filename suffix in the generate/capture/playback code; 
+         uses the fileselector filter value instead.
+     30) Update fileselector - Fileselector now remembers previous directory.
+
       
 2.10.3)
       1) Corrected memory leak bug.

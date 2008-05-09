@@ -36,6 +36,7 @@
 #include "filters.h"
 #include "misc.h"
 #include "sound.h"
+#include "mfskvaricode.h"
 
 using namespace std;
 
@@ -46,6 +47,7 @@ void dominoex::tx_init(SoundBase *sc)
 	scard = sc;
 	txstate = TX_STATE_PREAMBLE;
 	txprevtone = 0;
+	bitstate = 0;
 	counter = 0;
 	txphase = 0;
 	videoText();
@@ -59,10 +61,13 @@ void dominoex::rx_init()
 	met2 = 0.0;
 	counter = 0;
 	phase[0] = 0.0;
-	for (int i = 0; i < NUMFFTS; i++)
+	for (int i = 0; i < MAXFFTS; i++)
 		phase[i+1] = 0.0;
 	put_MODEstatus(mode);
 	put_sec_char(0);
+	syncfilter->reset();
+	datashreg = 1;
+	for (int i = 0; i < VBINS; i++) vbins[i] = 0;
 }
 
 void dominoex::reset_filters()
@@ -100,16 +105,23 @@ dominoex::~dominoex()
 {
 	if (hilbert) delete hilbert;
 	
-	for (int i = 0; i < NUMFFTS; i++) {
+	for (int i = 0; i < MAXFFTS; i++) {
 		if (binsfft[i]) delete binsfft[i];
 	}
 
 	for (int i = 0; i < SCOPESIZE; i++) {
 		if (vidfilter[i]) delete vidfilter[i];
 	}
+	if (syncfilter) delete syncfilter;
 	
 	if (pipe) delete [] pipe;
 	if (fft) delete fft;
+	
+	if (MuPskRxinlv) delete MuPskRxinlv;
+	if (MuPskTxinlv) delete MuPskTxinlv;
+	if (MuPskDec) delete MuPskDec;
+	if (MuPskEnc) delete MuPskEnc;
+	
 }
 
 dominoex::dominoex(trx_mode md)
@@ -168,23 +180,26 @@ dominoex::dominoex(trx_mode md)
 	hilbert	= new C_FIR_filter();
 	hilbert->init_hilbert(37, 1);
 
-	for (int i = 0; i < NUMFFTS; i++) {
+	paths = progdefaults.DOMINOEX_PATHS;
+
+	for (int i = 0; i < MAXFFTS; i++)
 		binsfft[i] = new sfft (symlen, lotone, hitone);
-	}
 
 // fft filter at first if frequency
 	fft = new fftfilt( (FIRSTIF - 0.5 * progdefaults.DOMINOEX_BW * bandwidth) / samplerate,
 	                   (FIRSTIF + 0.5 * progdefaults.DOMINOEX_BW * bandwidth)/ samplerate,
 	                   1024 );
-
+	
 	for (int i = 0; i < SCOPESIZE; i++)
 		vidfilter[i] = new Cmovavg(16);
 		
+	syncfilter = new Cmovavg(8);
+	
 	twosym = 2 * symlen;
 	pipe = new domrxpipe[twosym];
 	
 	scopedata.alloc(SCOPESIZE);
-	videodata.alloc((NUMFFTS * NUMTONES * 2  * (doublespaced?2:1) ));
+	videodata.alloc((MAXFFTS * NUMTONES * 2  * (doublespaced?2:1) ));
 
 	pipeptr = 0;
 	
@@ -197,6 +212,16 @@ dominoex::dominoex(trx_mode md)
 
 	prev1symbol = prev2symbol = 0;
 
+	MuPskEnc	= new encoder (K, POLY1, POLY2);
+	MuPskDec	= new viterbi (K, POLY1, POLY2);
+	MuPskDec->settraceback (45);
+	MuPskDec->setchunksize (1);
+	MuPskTxinlv = new interleave (-1, INTERLEAVE_FWD);
+	MuPskRxinlv = new interleave (-1, INTERLEAVE_REV);
+	bitstate = 0;
+	symbolpair[0] = symbolpair[1] = 0;
+	datashreg = 1;
+
 	init();
 }
 
@@ -208,12 +233,12 @@ complex dominoex::mixer(int n, complex in)
 	complex z;
 	double f;
 // first IF mixer (n == 0) plus
-// NUMFFTS mixers are supported each separated by 1/NUMFFTS bin size
-// n == 1, 2, 3, 4 ... NUMFFTS
+// MAXFFTS mixers are supported each separated by 1/MAXFFTS bin size
+// n == 1, 2, 3, 4 ... MAXFFTS
 	if (n == 0)
 		f = frequency - FIRSTIF;
 	else
-		f = FIRSTIF - BASEFREQ - bandwidth/2 + (samplerate / symlen) * (1.0 * n / NUMFFTS);
+		f = FIRSTIF - BASEFREQ - bandwidth/2 + (samplerate / symlen) * (1.0 * n / paths );
 	z.re = cos(phase[n]);
 	z.im = sin(phase[n]);
 	z = z * in;
@@ -235,20 +260,9 @@ void dominoex::recvchar(int c)
 		put_rx_char(c & 0xFF);
 }
 
-void dominoex::decodesymbol()
+void dominoex::decodeDomino(int c)
 {
-	int c, sym, ch;
-	double fdiff;
-
-// Decode the IFK+ sequence, which results in a single nibble
-
-	fdiff = currsymbol - prev1symbol;
-	if (reverse) fdiff = -fdiff;
-	if (doublespaced) fdiff /= 2 * NUMFFTS;
-	else              fdiff /= NUMFFTS;
-	c = (int)floor(fdiff + .5) - 2;
-	if (c < 0) c += NUMTONES;
-	
+	int sym, ch;
 //	If the new symbol is the start of a new character (MSB is low), complete the previous character
 	if (!(c & 0x8)) {
 		if (symcounter <= MAX_VARICODE_LEN) {
@@ -271,14 +285,33 @@ void dominoex::decodesymbol()
 	symcounter++;
 	if (symcounter > MAX_VARICODE_LEN + 1)
 		symcounter = MAX_VARICODE_LEN + 1;
+}
 
+void dominoex::decodesymbol()
+{
+	int c;
+	double fdiff;
+
+// Decode the IFK+ sequence, which results in a single nibble
+
+	fdiff = currsymbol - prev1symbol;
+	if (reverse) fdiff = -fdiff;
+	if (doublespaced) fdiff /= 2 * paths;
+	else              fdiff /= paths;
+	c = (int)floor(fdiff + .5) - 2;
+	if (c < 0) c += NUMTONES;
+
+	if (progdefaults.DOMINOEX_FEC)
+		decodeMuPskEX(c);
+	else
+		decodeDomino(c);
 }
 
 int dominoex::harddecode()
 {
 	double x, max = 0.0;
 	int symbol = 0;
-	for (int i = 0; i <  (NUMFFTS * NUMTONES * 2  * (doublespaced?2:1) ); i++) {
+	for (int i = 0; i <  (paths * NUMTONES * 2  * (doublespaced ? 2 : 1) ); i++) {
 		x = pipe[pipeptr].vector[i].mag();
 		if (x > max) {
 			max = x;
@@ -294,16 +327,16 @@ void dominoex::update_syncscope()
 	double max = 0, min = 1e6, range, mag;
 
 // dom waterfall
-	memset(videodata, 0, (NUMFFTS * NUMTONES * 2  * (doublespaced?2:1) ) * sizeof(double));
+	memset(videodata, 0, (paths * NUMTONES * 2  * (doublespaced?2:1) ) * sizeof(double));
 
 	if (!progStatus.sqlonoff || metric >= progStatus.sldrSquelchValue) {
-		for (int i = 0; i < (NUMFFTS * NUMTONES * 2  * (doublespaced?2:1) ); i++ ) {
+		for (int i = 0; i < (paths * NUMTONES * 2  * (doublespaced?2:1) ); i++ ) {
 			mag = pipe[pipeptr].vector[i].mag();
 			if (max < mag) max = mag;
 			if (min > mag) min = mag;
 		}
 		range = max - min;
-		for (int i = 0; i < (NUMFFTS * NUMTONES * 2  * (doublespaced?2:1) ); i++ ) {
+		for (int i = 0; i < (paths * NUMTONES * 2  * (doublespaced?2:1) ); i++ ) {
 			if (range > 2) {
 				mag = (pipe[pipeptr].vector[i].mag() - min) / range + 0.0001;
 				mag = 1 + 2 * log10(mag);
@@ -313,7 +346,7 @@ void dominoex::update_syncscope()
 			videodata[i] = 255*mag;
 		}
 	}
-	set_video(videodata, (NUMFFTS * NUMTONES * 2  * (doublespaced?2:1) ), false);
+	set_video(videodata, (paths * NUMTONES * 2  * (doublespaced?2:1) ), false);
 	videodata.next();
 
 //	set_scope(scopedata, twosym);
@@ -324,7 +357,6 @@ void dominoex::update_syncscope()
 		for (unsigned int i = 0, j = 0; i < SCOPESIZE; i++) {
 			j = (pipeptr + i * twosym / SCOPESIZE + 1) % (twosym);
 			scopedata[i] = vidfilter[i]->run(pipe[j].vector[prev1symbol].mag());
-//			scopedata[i] = pipe[j].vector[prev1symbol].mag();
 		}
 	}
 	set_scope(scopedata, SCOPESIZE);
@@ -333,7 +365,8 @@ void dominoex::update_syncscope()
 
 void dominoex::synchronize()
 {
-	int syn = -1;
+//	int syn = -1;
+	double syn = -1;
 	double val, max = 0.0;
 
 	if (currsymbol == prev1symbol)
@@ -349,6 +382,8 @@ void dominoex::synchronize()
 		}
 		j = (j + 1) % twosym;
 	}
+	syn = syncfilter->run(syn);
+	
 	synccounter += (int) floor(1.0 * (syn - symlen) / NUMTONES + 0.5);
 }
 
@@ -358,11 +393,11 @@ void dominoex::eval_s2n()
 	if (currsymbol != prev1symbol && prev1symbol != prev2symbol) {
 		sig = pipe[pipeptr].vector[currsymbol].mag();
 		noise = 0.0;
-		for (int i = 0; i < NUMFFTS * NUMTONES * 2  * (doublespaced?2:1); i++) {
+		for (int i = 0; i < paths * NUMTONES * 2  * (doublespaced?2:1); i++) {
 			if (i != currsymbol)
 				noise += pipe[pipeptr].vector[i].mag();
 		}	
-		noise /= (NUMFFTS * NUMTONES * 2  * (doublespaced?2:1) - 1);
+		noise /= (paths * NUMTONES * 2  * (doublespaced?2:1) - 1);
 	
 		s2n = decayavg( s2n, sig / noise, 8);
 
@@ -370,17 +405,22 @@ void dominoex::eval_s2n()
 
 		display_metric(metric);
 
-		snprintf(dommsg, sizeof(dommsg), "s/n %3.0f dB", metric / 3.0);
+		snprintf(dommsg, sizeof(dommsg), "s/n %3.0f dB", metric / 3.0 - 2.0);
 		put_Status1(dommsg);
 	}
 }
 
 int dominoex::rx_process(const double *buf, int len)
 {
-	complex zref,  z, *zp, *bins;
+	complex zref,  z, *zp, *bins = 0;
 	int n;
 
 	if (filter_reset) reset_filters();
+
+	if (paths != progdefaults.DOMINOEX_PATHS) {
+		paths = progdefaults.DOMINOEX_PATHS;
+		reset_filters();
+	}
 	
 	while (len) {
 // create analytic signal at first IF
@@ -392,21 +432,22 @@ int dominoex::rx_process(const double *buf, int len)
 		
 		if (n) {
 			for (int i = 0; i < n; i++) {
-// process NUMFFTS sets of sliding FFTs spaced at 1/NUMFFTS bin intervals each of which
+// process MAXFFTS sets of sliding FFTs spaced at 1/MAXFFTS bin intervals each of which
 // is a matched filter for the current symbol length
-				for (int n = 0; n < NUMFFTS; n++) {
-// shift in frequency to base band for the sliding FFTs
+				for (int n = 0; n < paths; n++) {
+// shift in frequency to base band for the sliding DFTs
 					z = mixer(n + 1, zp[i]);
 					bins = binsfft[n]->run(z);
 // copy current vector to the pipe interleaving the FFT vectors
 					for (int i = 0; i < NUMTONES * 2 * (doublespaced ? 2 : 1); i++) {
-						pipe[pipeptr].vector[n + NUMFFTS * i] = bins[i];
+						pipe[pipeptr].vector[n + paths * i] = bins[i];
 					}
 				}
 				if (--synccounter <= 0) {
 					synccounter = symlen;
 					currsymbol = harddecode();
         		    decodesymbol();
+//        		    MuPskSoftdecode(bins);
 					synchronize();
 					update_syncscope();
 					eval_s2n();
@@ -437,47 +478,52 @@ int dominoex::get_secondary_char()
 	return chr;
 }
 
+void dominoex::sendtone(int tone, int duration)
+{
+	double f, phaseincr;
+	f = tone * tonespacing + get_txfreq_woffset() - bandwidth / 2;
+	phaseincr = twopi * f / samplerate;
+	for (int j = 0; j < duration; j++) {
+		for (int i = 0; i < symlen; i++) {
+			outbuf[i] = cos(txphase);
+			txphase -= phaseincr;
+			if (txphase > M_PI)
+				txphase -= twopi;
+			else if (txphase < M_PI)
+				txphase += twopi;
+		}
+		ModulateXmtr(outbuf, symlen);
+	}
+}
+
 void dominoex::sendsymbol(int sym)
 {
 //static int first = 0;
 	complex z;
     int tone;
-	double f, phaseincr;
 	
 	tone = (txprevtone + 2 + sym) % NUMTONES;
     txprevtone = tone;
 	if (reverse)
 		tone = (NUMTONES - 1) - tone;
-
-	f = tone * tonespacing + get_txfreq_woffset() - bandwidth / 2;
-	
-	phaseincr = twopi * f / samplerate;
-	
-	for (int i = 0; i < symlen; i++) {
-		outbuf[i] = cos(txphase);
-		txphase -= phaseincr;
-		if (txphase > M_PI)
-			txphase -= twopi;
-		else if (txphase < M_PI)
-			txphase += twopi;
-	}
-	ModulateXmtr(outbuf, symlen);
-
+	sendtone(tone, 1);
 }
-
 
 void dominoex::sendchar(unsigned char c, int secondary)
 {
-	unsigned char *code = dominoex_varienc(c, secondary);
-
-    sendsymbol(code[0]);
+	if (progdefaults.DOMINOEX_FEC) 
+		sendMuPskEX(c, secondary);
+	else {
+		unsigned char *code = dominoex_varienc(c, secondary);
+    	sendsymbol(code[0]);
 // Continuation nibbles all have the MSB set
-    for (int sym = 1; sym < 3; sym++) {
-        if (code[sym] & 0x8) 
-            sendsymbol(code[sym]);
-        else
-            break;
-    }
+	    for (int sym = 1; sym < 3; sym++) {
+    	    if (code[sym] & 0x8) 
+        	    sendsymbol(code[sym]);
+        	else
+            	break;
+    	}
+	}
 	if (!secondary)
 		put_echo_char(c);
 }
@@ -495,9 +541,13 @@ void dominoex::sendsecondary()
 
 void dominoex::flushtx()
 {
+//	if (progdefaults.DOMINOEX_FEC)
+//		MuPskFlushTx();
+//	else {
 // flush the varicode decoder at the receiver end
-    for (int i = 0; i < 4; i++)
-        sendidle();
+	    for (int i = 0; i < 4; i++)
+    	    sendidle();
+//	}
 }
 
 int dominoex::tx_process()
@@ -506,6 +556,8 @@ int dominoex::tx_process()
 
 	switch (txstate) {
 	case TX_STATE_PREAMBLE:
+		if (progdefaults.DOMINOEX_FEC)
+			MuPskClearbits();
         sendidle();
 		txstate = TX_STATE_START;
 		break;
@@ -538,4 +590,216 @@ int dominoex::tx_process()
 		return -1;
 	}
 	return 0;
+}
+
+//=============================================================================
+// MultiPsk compatible FEC methods
+//=============================================================================
+
+//=============================================================================
+// Varicode support methods
+// MultiPsk varicode is based on a modified MFSK varicode table in which
+// Character substition is used for secondary text.  The resulting table does
+// NOT contain the full ASCII character set as the primary.  Many of the
+// control codes and characters above 0x80 are lost.
+//=============================================================================
+
+// Convert from Secondary to Primary character
+
+unsigned char dominoex::MuPskSec2Pri(int c)
+{
+	if (c >= 'a' && c <= 'z') c -= 32;
+	if (c == 'À' || c == 'Á' || c == 'Â' || c == 'Ã' || c == 'Ä' || c == 'Å' ||
+   		c == 'à' || c == 'á' || c == 'â' || c == 'ã' || c == 'ä' || c == 'å')
+   		c = 'A';
+	if (c == 'ß') c = 'B';
+	if (c == 'Ç' || c == 'ç' || c == '©') c = 'C';
+	if (c == 'Ð' || c == '°') c = 'D';
+	if (c == 'Æ' || c == 'æ' || c == 'È' || c == 'É' || c == 'Ê' || c == 'Ë' ||
+		c == 'è' || c == 'é' || c == 'ê' || c == 'ë')
+		c = 'E';
+	if (c == 'ƒ') c = 'F';
+	if (c == 'Ì' || c == 'Í' || c == 'Î' || c == 'Ï' || c == 'ì' || c == 'í' ||
+		c == 'î' || c == 'ï' || c == '¡')
+		c = 'I';
+	if (c == '£') c = 'L';
+	if (c == 'Ñ' || c == 'ñ') c = 'N';
+	if (c == 'ô' || c == 'ö' || c == 'ò' || c == 'Ö' || c == 'ó' ||
+		c == 'Ó' || c == 'Ô' || c == 'Ò' || c == 'õ' || c == 'Õ')
+		c = 'O';
+	if (c == '®') c = 'R';
+	if (c == 'Ù' || c == 'Ú' || c == 'Û' || c == 'Ü' ||
+		c == 'ù' || c == 'ú' || c == 'û' || c == 252)
+	if (c == 'ü' || c == 'û' || c == 'ù' || c == 'Ü' ||
+		c == 'ú' || c == 'Ú' || c == 'Û' || c == 'Ù')
+		c = 'U';
+	if (c == '×') c = 'X';
+	if (c == 'ÿ' || c == 'ý' || c == 'Ý') c = 'Y';
+	if (c == 'Ø') c = '0';
+	if (c == '¹') c = '1';
+	if (c == '²') c = '2';
+	if (c == '³') c = '3';
+	if (c == '¿') c = '?';
+	if (c == '¡') c = '!';
+	if (c == '«') c = '<';
+	if (c == '»') c = '>';
+	if (c == '{') c = '(';
+	if (c == '}') c = ')';
+	if (c == '|') c = '\\';
+
+	if (c >= 'A' && c <= 'Z') c = c - 'A' + 127;
+	else if (c >= '0' && c <= '9') c = c - '0' + 14;
+	else if (c >= ' ' && c <= '"') c = c - ' ' + 1;
+	else if (c == '_') c = 4;
+	else if (c >= '$' && c <= '&') c = c - '$' + 5;
+	else if (c >= '\'' && c <= '*') c = c - '\'' + 9;
+	else if (c >= '+' && c <= '/') c = c - '+' + 24;
+	else if (c >= ':' && c <= '<') c = c - ':' + 29;
+	else if (c >= '=' && c <= '@') c = c - '=' + 153;
+	else if (c >= '[' && c <= ']') c = c - '[' + 157;
+	else c = '_';
+	
+	return c;
+}
+
+// Convert Primary to Split Primary / Secondary character
+
+unsigned int dominoex::MuPskPriSecChar(unsigned int c)
+{
+	if (c >= 127 && c < 153) c += ('A' - 127) + 0x100;
+	else if (c >=14 && c < 24) c += ('0' - 14) + 0x100;
+	else if (c >= 1 && c < 4) c += (' ' - 1) + 0x100;
+	else if (c == 4) c = '_' + 0x100;
+	else if (c >= 5 && c < 8) c += ('$' - 5) + 0x100;
+	else if (c >= 9 && c < 13) c += ('\'' - 9) + 0x100;
+	else if (c >= 24 && c < 29) c += ('+' - 24) + 0x100;
+	else if (c >= 29 && c < 32) c += (':' - 29) + 0x100;
+	else if (c >= 153 && c < 157) c += ('=' - 153) + 0x100;
+	else if (c >= 157 && c < 160) c += ('[' - 157) + 0x100;
+	return c;
+}
+
+//=============================================================================
+// Receive
+//=============================================================================
+
+void dominoex::decodeMuPskSymbol(unsigned char symbol)
+{
+	int c, ch, met;
+
+	symbolpair[0] = symbolpair[1];
+	symbolpair[1] = symbol;
+
+	symcounter = symcounter ? 0 : 1;
+	
+	if (symcounter) return;
+
+	c = MuPskDec->decode (symbolpair, &met);
+
+	if (c == -1)
+		return;
+
+	if (progStatus.sqlonoff && metric < progStatus.sldrSquelchValue)
+		return;
+
+	datashreg = (datashreg << 1) | !!c;
+	if ((datashreg & 7) == 1) {
+		ch = varidec(datashreg >> 1);
+		recvchar(MuPskPriSecChar(ch));
+		datashreg = 1;
+	}
+}
+
+void dominoex::MuPskSoftdecode(complex *bins)
+{
+}
+
+
+void dominoex::decodeMuPskEX(int ch)
+{
+	unsigned char symbols[4];
+	int c = ch;
+	
+	for (int i = 0; i < 4; i++) {
+		if (c & 1 == 1) symbols[3-i] = 255;
+		else symbols[3-i] = -255;
+		c = c / 2;
+	}
+
+	MuPskRxinlv->symbols(symbols);
+
+	for (int i = 0; i < 4; i++) decodeMuPskSymbol(symbols[i]);
+
+}
+
+//=============================================================================
+// Transmit
+//=============================================================================
+
+void dominoex::MuPskFlushTx()
+{
+// flush the varicode decoder at the other end
+// flush the convolutional encoder and interleaver
+	sendsymbol(1);
+	for (int i = 0; i < 107; i++)
+		sendsymbol(0);
+	bitstate = 0;
+}
+
+void dominoex::MuPskClearbits()
+{
+	int data = MuPskEnc->encode(0);
+	for (int k = 0; k < 100; k++) {
+		for (int i = 0; i < 2; i++) {
+			bitshreg = (bitshreg << 1) | ((data >> i) & 1);
+			bitstate++;
+
+			if (bitstate == 4) {
+				MuPskTxinlv->bits(&bitshreg);
+				bitstate = 0;
+				bitshreg = 0;
+			}
+		}
+	}
+}
+
+// Send MultiPsk FEC varicode with minimalist interleaver
+
+void dominoex::sendMuPskEX(unsigned char c, int secondary)
+{
+	const char *code;
+	if (secondary == 1) 
+		c = MuPskSec2Pri(c);
+	else {
+		if (c == 10) 
+			return;
+		if ( (c >= 1 && c <= 7) || (c >= 9 && c <= 12) || (c >= 14 && c <= 31) ||
+		     (c >= 127 && c <= 159))
+		   c = '_';
+	}
+	code = varienc(c);
+//if (secondary == 0)
+//std::cout << (int)c <<  " ==> " << code << " ==> ";
+	while (*code) {
+		int data = MuPskEnc->encode(*code++ - '0');
+//std::cout << (int)data << " ";
+		for (int i = 0; i < 2; i++) {
+			bitshreg = (bitshreg << 1) | ((data >> i) & 1);
+			bitstate++;
+			if (bitstate == 4) {
+
+				MuPskTxinlv->bits(&bitshreg);
+				
+//std::cout << "(" << bitshreg << ") ";
+				
+				sendsymbol(bitshreg);
+
+//decodeMuPskEX(bitshreg);
+
+				bitstate = 0;
+				bitshreg = 0;
+			}
+		}
+	}
+//std::cout << std::endl;
 }
