@@ -161,7 +161,7 @@ private:
 	void	sendMuPskEX(unsigned char c, int secondary);
 	void	MuPskClearbits();
 	void	MuPskFlushTx();
-			
+	void	MuPsk_sec2pri_init(void);
 public:
 	dominoex (trx_mode md);
 	~dominoex ();
