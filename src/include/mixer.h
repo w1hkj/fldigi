@@ -37,18 +37,19 @@
 #endif
 
 class MixerException {
-public:
 	char	szError[80];
 	int		error;
+public:
 	MixerException() { *szError = 0; error = 0; }
 	MixerException(int e) {
-		snprintf(szError, sizeof(szError), "Error: %d, %s", e, strerror(e));
+		snprintf(szError, sizeof(szError), "Mixer error %d: %s", e, strerror(e));
 		error = e;
 	}
 	MixerException(char *s) {
-		snprintf(szError, sizeof(szError), "Error: %s", s);
+		snprintf(szError, sizeof(szError), "Mixer error: %s", s);
 		error = 1;
 	}
+	const char* what(void) const { return szError; }
 };
 
 class MixerBase
