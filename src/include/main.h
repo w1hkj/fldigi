@@ -21,6 +21,7 @@
 	#include "rigclass.h"
 #endif
 
+extern string		appname;
 extern string		HomeDir;
 extern string		xmlfname;
 

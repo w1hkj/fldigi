@@ -671,7 +671,7 @@ o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");}
       }
       Fl_Group tabSoundCard {
         label SndCrd open
-        xywh {0 25 400 195} color 51 selection_color 51 hide
+        xywh {0 25 400 195} color 51 selection_color 51
       } {
         Fl_Tabs tabsSoundCard {open
           xywh {0 25 400 195} selection_color 10
@@ -802,15 +802,17 @@ progdefaults.changed = true;} open
                 tooltip {Force a specific sample rate. Select "Native" if "Auto" does not work well with your sound hardware.} xywh {8 91 85 25} down_box BORDER_BOX align 8
                 code0 {//extern Fl_Menu_Item sample_rate_menu[];}
                 code1 {//o->menu(sample_rate_menu);}
+                code2 {o->clear_changed();}
               } {}
               Fl_Choice menuInSampleRate {
                 label Capture
                 callback {progdefaults.in_sample_rate = o->value() > 1 ? strtol(o->mvalue()->text, 0, 10) : o->value();
 resetSoundCard();
-progdefaults.changed = true;} open
+progdefaults.changed = true;} open selected
                 tooltip {Force a specific sample rate. Select "Native" if "Auto" does not work well with your sound hardware.} xywh {8 62 85 25} down_box BORDER_BOX align 8
                 code0 {//extern Fl_Menu_Item sample_rate_menu[];}
                 code1 {//o->menu(sample_rate_menu);}
+                code2 {o->clear_changed();}
               } {}
               Fl_Choice menuSampleConverter {
                 label Converter
@@ -922,7 +924,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabModems {
         label Modem open
-        xywh {0 25 401 195} color 51 selection_color 51
+        xywh {0 25 401 195} color 51 selection_color 51 hide
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 401 195} color 51 selection_color 10 align 9
@@ -1081,7 +1083,7 @@ progdefaults.changed = true;}
             Fl_Counter valDEX_PATHS {
               label Paths
               callback {progdefaults.DEX_PATHS = (int)o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
               xywh {20 174 63 21} type Simple minimum 4 maximum 8 step 1 value 5
               code0 {o->value(progdefaults.DEX_PATHS);}
             }

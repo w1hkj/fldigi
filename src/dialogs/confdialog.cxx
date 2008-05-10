@@ -1739,7 +1739,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { tabSoundCard = new Fl_Group(0, 25, 400, 195, "SndCrd");
         tabSoundCard->color((Fl_Color)51);
         tabSoundCard->selection_color((Fl_Color)51);
-        tabSoundCard->hide();
         { tabsSoundCard = new Fl_Tabs(0, 25, 400, 195);
           tabsSoundCard->selection_color((Fl_Color)10);
           { tabAudio = new Fl_Group(0, 50, 400, 170, "Audio devices");
@@ -1840,6 +1839,7 @@ l with your sound hardware.");
                 menuOutSampleRate->align(FL_ALIGN_RIGHT);
                 //extern Fl_Menu_Item sample_rate_menu[];
                 //o->menu(sample_rate_menu);
+                o->clear_changed();
               } // Fl_Choice* menuOutSampleRate
               { Fl_Choice* o = menuInSampleRate = new Fl_Choice(8, 62, 85, 25, "Capture");
                 menuInSampleRate->tooltip("Force a specific sample rate. Select \"Native\" if \"Auto\" does not work wel\
@@ -1849,6 +1849,7 @@ l with your sound hardware.");
                 menuInSampleRate->align(FL_ALIGN_RIGHT);
                 //extern Fl_Menu_Item sample_rate_menu[];
                 //o->menu(sample_rate_menu);
+                o->clear_changed();
               } // Fl_Choice* menuInSampleRate
               { menuSampleConverter = new Fl_Choice(174, 91, 216, 25, "Converter");
                 menuSampleConverter->down_box(FL_BORDER_BOX);
@@ -1939,6 +1940,7 @@ l with your sound hardware.");
       { tabModems = new Fl_Group(0, 25, 401, 195, "Modem");
         tabModems->color((Fl_Color)51);
         tabModems->selection_color((Fl_Color)51);
+        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 401, 195);
           tabsModems->color((Fl_Color)51);
           tabsModems->selection_color((Fl_Color)10);

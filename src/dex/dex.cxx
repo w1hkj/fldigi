@@ -296,7 +296,7 @@ void dex::decodeEX(int ch)
 	int c = ch;
 	
 	for (int i = 0; i < 4; i++) {
-		if (c & 1 == 1) symbols[3-i] = 255;
+		if ((c & 1) == 1) symbols[3-i] = 255;
 		else symbols[3-i] = 1;
 		c = c / 2;
 	}

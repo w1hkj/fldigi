@@ -26,6 +26,7 @@
 #include <stdlib.h>
 
 #include <iostream>
+#include <map>
 
 #include "confdialog.h"
 #include "status.h"
@@ -41,6 +42,7 @@
 using namespace std;
 
 char dommsg[80];
+static map<int, unsigned char> mupsksec2pri;
 
 void dominoex::tx_init(SoundBase *sc)
 {
@@ -90,6 +92,9 @@ void dominoex::restart()
 
 void dominoex::init()
 {
+	if (mupsksec2pri.empty())
+		MuPsk_sec2pri_init();
+
 	modem::init();
 	reset_filters();
 	rx_init();
@@ -99,6 +104,49 @@ void dominoex::init()
 		strSecXmtText = "fldigi "PACKAGE_VERSION" ";
 
 	set_scope_mode(Digiscope::DOMDATA);
+}
+
+void dominoex::MuPsk_sec2pri_init(void)
+{
+	int chars[] = { 'A', 0xc0, 0xc1, 0xc2, 0xc3, 0xc4, 0xc5, // À, Á, Â, Ã, Ä, Å
+			0xe0, 0xe1, 0xe2, 0xe3, 0xe4, 0xe5, -1,  // à, á, â, ã, ä, å
+			'B', 0xdf, -1,                           // ß
+			'C', 0xc7, 0xe7, 0xa9, -1,               // Ç, ç, ©,
+			'D', 0xd0, 0xb0, -1,                     // Ð, °
+			'E', 0xc6, 0xe6, 0xc8, 0xc9, 0xca, 0xcb, // Æ, æ, È, É, Ê, Ë
+			0xe8, 0xe9, 0xea, 0xeb, -1,              // è, é, ê, ë
+			'F', 0x192, -1,                          // ƒ
+			'I', 0xcc, 0xcd, 0xce, 0xcf, 0xec, 0xed, // Ì, Í, Î, Ï, ì, í
+			0xee, 0xef, 0xa1, -1,                    // î, ï, ¡
+			'L', 0xa3, -1,                           // £
+			'N', 0xd1, 0xf1, -1,                     // Ñ, ñ
+			'O', 0xf4, 0xf6, 0xf2, 0xd6, 0xf3, 0xd3, // ô, ö, ò, Ö, ó, Ó
+			0xd4, 0xd2, 0xf5, 0xd5, -1,              // Ô, Ò, õ, Õ
+			'R', 0xae, -1,                           // ®
+			'U', 0xd9, 0xda, 0xdb, 0xdc, 0xf9, 0xfa, // Ù, Ú, Û, Ü, ù, ú
+			0xfb, 0xfc, -1,                          // û, ü
+			'X', 0xd7, -1,                           // ×
+			'Y', 0xff, 0xfd, 0xdd, -1,               // ÿ, ý, Ý
+			'0', 0xd8, -1,                           // Ø
+			'1', 0xb9, -1,                           // ¹
+			'2', 0xb2, -1,                           // ²
+			'3', 0xb3, -1,                           // ³
+			'?', 0xbf, -1,                           // ¿
+			'!', 0xa1, -1,                           // ¡
+			'<', 0xab, -1,                           // «
+			'>', 0xbb, -1,                           // »
+			'{', '(', -1,
+			'}', ')', -1,
+			'|', '\\'
+	};
+
+	int c = chars[0];
+	for (size_t i = 1; i < sizeof(chars)/sizeof(*chars); i++) {
+		if (chars[i] != -1)
+			mupsksec2pri[chars[i]] = c;
+		else
+			c = chars[++i];
+	}
 }
 
 dominoex::~dominoex()
@@ -609,43 +657,8 @@ int dominoex::tx_process()
 unsigned char dominoex::MuPskSec2Pri(int c)
 {
 	if (c >= 'a' && c <= 'z') c -= 32;
-	if (c == 'À' || c == 'Á' || c == 'Â' || c == 'Ã' || c == 'Ä' || c == 'Å' ||
-   		c == 'à' || c == 'á' || c == 'â' || c == 'ã' || c == 'ä' || c == 'å')
-   		c = 'A';
-	if (c == 'ß') c = 'B';
-	if (c == 'Ç' || c == 'ç' || c == '©') c = 'C';
-	if (c == 'Ð' || c == '°') c = 'D';
-	if (c == 'Æ' || c == 'æ' || c == 'È' || c == 'É' || c == 'Ê' || c == 'Ë' ||
-		c == 'è' || c == 'é' || c == 'ê' || c == 'ë')
-		c = 'E';
-	if (c == 'ƒ') c = 'F';
-	if (c == 'Ì' || c == 'Í' || c == 'Î' || c == 'Ï' || c == 'ì' || c == 'í' ||
-		c == 'î' || c == 'ï' || c == '¡')
-		c = 'I';
-	if (c == '£') c = 'L';
-	if (c == 'Ñ' || c == 'ñ') c = 'N';
-	if (c == 'ô' || c == 'ö' || c == 'ò' || c == 'Ö' || c == 'ó' ||
-		c == 'Ó' || c == 'Ô' || c == 'Ò' || c == 'õ' || c == 'Õ')
-		c = 'O';
-	if (c == '®') c = 'R';
-	if (c == 'Ù' || c == 'Ú' || c == 'Û' || c == 'Ü' ||
-		c == 'ù' || c == 'ú' || c == 'û' || c == 252)
-	if (c == 'ü' || c == 'û' || c == 'ù' || c == 'Ü' ||
-		c == 'ú' || c == 'Ú' || c == 'Û' || c == 'Ù')
-		c = 'U';
-	if (c == '×') c = 'X';
-	if (c == 'ÿ' || c == 'ý' || c == 'Ý') c = 'Y';
-	if (c == 'Ø') c = '0';
-	if (c == '¹') c = '1';
-	if (c == '²') c = '2';
-	if (c == '³') c = '3';
-	if (c == '¿') c = '?';
-	if (c == '¡') c = '!';
-	if (c == '«') c = '<';
-	if (c == '»') c = '>';
-	if (c == '{') c = '(';
-	if (c == '}') c = ')';
-	if (c == '|') c = '\\';
+
+	c = mupsksec2pri.find(c) != mupsksec2pri.end() ? mupsksec2pri[c] : c;
 
 	if (c >= 'A' && c <= 'Z') c = c - 'A' + 127;
 	else if (c >= '0' && c <= '9') c = c - '0' + 14;
@@ -710,19 +723,14 @@ void dominoex::decodeMuPskSymbol(unsigned char symbol)
 	}
 }
 
-void dominoex::MuPskSoftdecode(complex *bins)
-{
-}
-
-
 void dominoex::decodeMuPskEX(int ch)
 {
 	unsigned char symbols[4];
 	int c = ch;
 	
 	for (int i = 0; i < 4; i++) {
-		if (c & 1 == 1) symbols[3-i] = 255;
-		else symbols[3-i] = -255;
+		if ((c & 1) == 1) symbols[3-i] = 255;
+		else symbols[3-i] = 1;//-255;
 		c = c / 2;
 	}
 

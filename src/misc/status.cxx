@@ -109,7 +109,7 @@ void status::saveLastState()
 		scopeH = scopeview->h();
 	}
 
-	Fl_Preferences spref(string(HomeDir).append(STATUS_FILENAME).c_str(), "w1hkj.com", 0);
+	Fl_Preferences spref(HomeDir.c_str(), "w1hkj.com", PACKAGE_TARNAME);
 
 	spref.set("version", PACKAGE_VERSION);
 
@@ -152,8 +152,7 @@ void status::saveLastState()
 
 void status::loadLastState()
 {
-	Fl_Preferences spref(string(HomeDir).append(STATUS_FILENAME).c_str(), "w1hkj.com", 0);
-
+	Fl_Preferences spref(HomeDir.c_str(), "w1hkj.com", PACKAGE_TARNAME);
 	char version[64]; version[sizeof(version)-1] = '\0';
 	bLastStateRead = spref.get("version", version, "", sizeof(version)-1);
 	// Skip loading the rest of the status variables if we didn't read a

@@ -74,6 +74,8 @@
 
 using namespace std;
 
+string appname;
+
 string scDevice[2];
 
 char szHomedir[120] = "";
@@ -123,6 +125,7 @@ void restore_streams(void);
 
 int main(int argc, char ** argv)
 {
+	appname = argv[0];
 	debug_exec(argv);
 	CREATE_THREAD_ID(); // only call this once
 	SET_THREAD_ID(FLMAIN_TID);

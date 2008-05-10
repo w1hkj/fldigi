@@ -1993,7 +1993,13 @@ void enableMixer(bool on)
 #else
 		mixer = new MixerBase;
 #endif
-		mixer->openMixer(progdefaults.MXdevice.c_str());
+		try {
+			mixer->openMixer(progdefaults.MXdevice.c_str());
+		}
+		catch (const MixerException& e) {
+			put_status(e.what(), 5);
+			goto ret;
+		}
 
 		mixer->PCMVolume(progdefaults.PCMvolume);
 		mixer->setXmtLevel(progStatus.XmtMixer); //valXmtMixer->value());
@@ -2011,6 +2017,7 @@ void enableMixer(bool on)
 		delete mixer;
                 mixer = 0;
 	}
+ret:
         resetMixerControls();
 	FL_UNLOCK_D();
 }

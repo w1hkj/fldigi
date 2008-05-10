@@ -154,14 +154,13 @@ private:
 // Rx
 	unsigned int	MuPskPriSecChar(unsigned int c);
 	void	decodeMuPskSymbol(unsigned char symbol);
-	void	MuPskSoftdecode(complex *bins);
 	void	decodeMuPskEX(int c);
 // Tx
 	unsigned char MuPskSec2Pri(int c);
 	void	sendMuPskEX(unsigned char c, int secondary);
 	void	MuPskClearbits();
 	void	MuPskFlushTx();
-			
+	void	MuPsk_sec2pri_init(void);
 public:
 	dominoex (trx_mode md);
 	~dominoex ();

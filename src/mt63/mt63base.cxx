@@ -331,7 +331,7 @@ int MT63encoder::Process(char code) // encode an ASCII character "code"
 { int i,k;
   code&=CodeMask;
   for(i=0; i<DataCarriers; i++) WalshBuff[i]=0;
-  if(code<DataCarriers) WalshBuff[code]=1.0;
+  if(code<DataCarriers) WalshBuff[(int)code]=1.0;
 		   else WalshBuff[code-DataCarriers]=(-1.0);
   dspWalshInvTrans(WalshBuff,DataCarriers);
   if(IntlvLen)

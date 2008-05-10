@@ -175,6 +175,7 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 
 	startpic = false;
 	abortxmt = false;
+	stopflag = false;
 
 	bitshreg = 0;
 	bitstate = 0;
@@ -1019,6 +1020,8 @@ void load_file(const char *n) {
 	
 // load the picture widget with the rgb image
 	FL_LOCK_D();
+	picTx->clear();
+	picTxWin->redraw();
 	picTx->video(xmtimg, W * H * 3);
 	if (print_time_left(W * H * 3, txclr_tooltip, sizeof(txclr_tooltip), "Time needed: ") > 0)
 		btnpicTxSendColor->tooltip(txclr_tooltip);
