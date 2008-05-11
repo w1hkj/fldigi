@@ -67,6 +67,7 @@ struct configuration {
 	int			CWIDwpm;
 // FELD-HELL
 	bool		FELD_IDLE;
+	double		HELL_BW;
 // OLIVIA
 	int			oliviatones;
 	int			oliviabw;

@@ -77,6 +77,11 @@ void feld::init()
 	put_MODEstatus(mode);
 }
 
+void feld::restart()
+{
+	set_bandwidth(hell_bandwidth);
+}
+
 feld::~feld()
 {
 	if (hilbert) delete hilbert;
@@ -127,12 +132,15 @@ feld::feld(trx_mode m)
 	
 	hell_bandwidth = txpixrate;
 
-	set_bandwidth(hell_bandwidth);
+	if (hell_bandwidth != progdefaults.HELL_BW) {
+		progdefaults.HELL_BW = hell_bandwidth;
+		set_bandwidth(hell_bandwidth);
+	}
 	
 	hilbert = new C_FIR_filter();
 	hilbert->init_hilbert(37, 1);
 
-	lp = 1.5 * bandwidth / samplerate;
+	lp = 1.5 * hell_bandwidth / samplerate;
 	
 	bpfilt = new fftfilt(0, lp, 1024);
 	
@@ -266,24 +274,15 @@ int feld::rx_process(const double *buf, int len)
 	FL_LOCK_D();
 	halfwidth = btnHellRcvWidth->value();
 	blackboard = btnBlackboard->value();
-//	squelch = progdefaults.sldrSquelchValue;
-//	squelchon = progdefaults.sqlonoff;
 	FL_UNLOCK_D();
 	
-//	switch (mode) {
-//		default:
-			if (bandwidth != hell_bandwidth) {
-				double lp;
-				hell_bandwidth = bandwidth;
-				lp = 1.5 * bandwidth / 2.0 / samplerate;
-				bpfilt->create_filter(0, lp);
-			}
-//			break;
-//		case MODE_FSKHELL:
-//		case MODE_FSKH105:
-//		case MODE_HELL80:
-//			break;
-//	}
+	if (progdefaults.HELL_BW != hell_bandwidth) {
+		double lp;
+		hell_bandwidth = progdefaults.HELL_BW;
+		set_bandwidth(hell_bandwidth);
+		lp = 1.5 * hell_bandwidth / 2.0 / samplerate;
+		bpfilt->create_filter(0, lp);
+	}
 
 	while (len-- > 0) {
 		/* create analytic signal... */

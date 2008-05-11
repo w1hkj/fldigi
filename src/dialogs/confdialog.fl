@@ -671,7 +671,7 @@ o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");}
       }
       Fl_Group tabSoundCard {
         label SndCrd open
-        xywh {0 25 400 195} color 51 selection_color 51
+        xywh {0 25 400 195} color 51 selection_color 51 hide
       } {
         Fl_Tabs tabsSoundCard {open
           xywh {0 25 400 195} selection_color 10
@@ -808,7 +808,7 @@ progdefaults.changed = true;} open
                 label Capture
                 callback {progdefaults.in_sample_rate = o->value() > 1 ? strtol(o->mvalue()->text, 0, 10) : o->value();
 resetSoundCard();
-progdefaults.changed = true;} open selected
+progdefaults.changed = true;} open
                 tooltip {Force a specific sample rate. Select "Native" if "Auto" does not work well with your sound hardware.} xywh {8 62 85 25} down_box BORDER_BOX align 8
                 code0 {//extern Fl_Menu_Item sample_rate_menu[];}
                 code1 {//o->menu(sample_rate_menu);}
@@ -924,7 +924,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabModems {
         label Modem open
-        xywh {0 25 401 195} color 51 selection_color 51 hide
+        xywh {0 25 401 195} color 51 selection_color 51
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 401 195} color 51 selection_color 10 align 9
@@ -1056,7 +1056,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabDEX {
             label Dex open
-            xywh {0 44 400 170} color 51 selection_color 51
+            xywh {0 44 400 170} color 51 selection_color 51 hide
           } {
             Fl_Input txtDEXSecondary {
               label {Secondary Text}
@@ -1131,7 +1131,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabFeld {
             label Feld open
-            xywh {0 50 400 170} color 51 selection_color 51 hide
+            xywh {0 50 400 170} color 51 selection_color 51
           } {
             Fl_Choice selHellFont {
               label {Feld Hell Font:}
@@ -1144,9 +1144,9 @@ progdefaults.changed = true;} open
             } {}
             Fl_Value_Slider sldrHellBW {
               label {Filter BW}
-              callback {active_modem->set_bandwidth(sldrHellBW->value());
-progdefaults.changed = true;}
+              callback {progdefaults.HELL_BW = sldrHellBW->value();} selected
               xywh {30 190 345 20} type Horizontal color 215 align 5 minimum 10 maximum 2400 step 5 value 400 textsize 14
+              code0 {o->value(progdefaults.HELL_BW);}
             }
             Fl_Check_Button btnHellXmtWidth {
               label {2x Xmt Width}
