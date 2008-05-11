@@ -723,11 +723,6 @@ void dominoex::decodeMuPskSymbol(unsigned char symbol)
 	}
 }
 
-void dominoex::MuPskSoftdecode(complex *bins)
-{
-}
-
-
 void dominoex::decodeMuPskEX(int ch)
 {
 	unsigned char symbols[4];
@@ -735,7 +730,7 @@ void dominoex::decodeMuPskEX(int ch)
 	
 	for (int i = 0; i < 4; i++) {
 		if ((c & 1) == 1) symbols[3-i] = 255;
-		else symbols[3-i] = -255;
+		else symbols[3-i] = 1;//-255;
 		c = c / 2;
 	}
 

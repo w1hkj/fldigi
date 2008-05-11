@@ -72,6 +72,7 @@ configuration progdefaults = {
 
 // FELD-HELL
 	false,			// bool		FELD_IDLE;
+	150.0,			// double	HELL_BW;
 // OLIVIA
 	2,				// int		oliviatones;
 	2,				// int		oliviabw;

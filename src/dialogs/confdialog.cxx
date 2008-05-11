@@ -967,8 +967,7 @@ progdefaults.changed = true;
 Fl_Value_Slider *sldrHellBW=(Fl_Value_Slider *)0;
 
 static void cb_sldrHellBW(Fl_Value_Slider*, void*) {
-  active_modem->set_bandwidth(sldrHellBW->value());
-progdefaults.changed = true;
+  progdefaults.HELL_BW = sldrHellBW->value();
 }
 
 Fl_Check_Button *btnHellXmtWidth=(Fl_Check_Button *)0;
@@ -1840,6 +1839,7 @@ l with your sound hardware.");
                 menuOutSampleRate->align(FL_ALIGN_RIGHT);
                 //extern Fl_Menu_Item sample_rate_menu[];
                 //o->menu(sample_rate_menu);
+                o->clear_changed();
               } // Fl_Choice* menuOutSampleRate
               { Fl_Choice* o = menuInSampleRate = new Fl_Choice(8, 62, 85, 25, "Capture");
                 menuInSampleRate->tooltip("Force a specific sample rate. Select \"Native\" if \"Auto\" does not work wel\
@@ -1849,6 +1849,7 @@ l with your sound hardware.");
                 menuInSampleRate->align(FL_ALIGN_RIGHT);
                 //extern Fl_Menu_Item sample_rate_menu[];
                 //o->menu(sample_rate_menu);
+                o->clear_changed();
               } // Fl_Choice* menuInSampleRate
               { menuSampleConverter = new Fl_Choice(174, 91, 216, 25, "Converter");
                 menuSampleConverter->down_box(FL_BORDER_BOX);
@@ -2095,6 +2096,7 @@ l with your sound hardware.");
           { tabDEX = new Fl_Group(0, 44, 400, 170, "Dex");
             tabDEX->color((Fl_Color)51);
             tabDEX->selection_color((Fl_Color)51);
+            tabDEX->hide();
             { txtDEXSecondary = new Fl_Input(20, 75, 360, 44, "Secondary Text");
               txtDEXSecondary->type(4);
               txtDEXSecondary->callback((Fl_Callback*)cb_txtDEXSecondary);
@@ -2171,7 +2173,6 @@ l with your sound hardware.");
           { tabFeld = new Fl_Group(0, 50, 400, 170, "Feld");
             tabFeld->color((Fl_Color)51);
             tabFeld->selection_color((Fl_Color)51);
-            tabFeld->hide();
             { Fl_Choice* o = selHellFont = new Fl_Choice(175, 62, 122, 20, "Feld Hell Font:");
               selHellFont->down_box(FL_BORDER_BOX);
               selHellFont->labelfont(4);
@@ -2180,7 +2181,7 @@ l with your sound hardware.");
               o->add(szFeldFonts);
               o->value(progdefaults.feldfontnbr);
             } // Fl_Choice* selHellFont
-            { sldrHellBW = new Fl_Value_Slider(30, 190, 345, 20, "Filter BW");
+            { Fl_Value_Slider* o = sldrHellBW = new Fl_Value_Slider(30, 190, 345, 20, "Filter BW");
               sldrHellBW->type(1);
               sldrHellBW->color((Fl_Color)215);
               sldrHellBW->minimum(10);
@@ -2190,6 +2191,7 @@ l with your sound hardware.");
               sldrHellBW->textsize(14);
               sldrHellBW->callback((Fl_Callback*)cb_sldrHellBW);
               sldrHellBW->align(FL_ALIGN_TOP_LEFT);
+              o->value(progdefaults.HELL_BW);
             } // Fl_Value_Slider* sldrHellBW
             { btnHellXmtWidth = new Fl_Check_Button(40, 93, 113, 15, "2x Xmt Width");
               btnHellXmtWidth->down_box(FL_DOWN_BOX);

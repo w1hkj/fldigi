@@ -104,7 +104,7 @@ public:
 	void	init();
 	void	rx_init();
 	void	tx_init(SoundBase *sc);
-	void 	restart() {};
+	void 	restart();
 	int		rx_process(const double *buf, int len);
 	int		tx_process();
 	int		get_font_data(unsigned char c, int col);

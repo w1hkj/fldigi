@@ -70,8 +70,15 @@ Change Log:
          the filename suffix in the generate/capture/playback code; 
          uses the fileselector filter value instead.
      30) Update fileselector - Fileselector now remembers previous directory.
-
-      
+     31) MFSK bug fixes. The "broken image transmit" was due to stopflag not 
+         being initialised in the mfsk ctor. Image window processing changed
+         to clearing the widget before redrawing the window.
+     32) Fix crash with missing mixer device - Call OpenMixer in a try block 
+         and handle the exception.
+     33) Changed DominoEX-FEC secondary char lookup to a std::map type.
+     34) Corrected two coding errors which produced compile warnings in
+         dominoex.cxx and mt63base.cxx
+         
 2.10.3)
       1) Corrected memory leak bug.
 2.10.2

@@ -261,6 +261,7 @@ void startup_modem(modem *m)
 		ReceiveText->hide();
 		FHdisp->show();
 		sldrHellBW->value(m->get_bandwidth());
+		progdefaults.HELL_BW = m->get_bandwidth();
 	} else {
 		ReceiveText->show();
 		FHdisp->hide();
