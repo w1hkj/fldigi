@@ -142,7 +142,7 @@ extern Fl_Input *txtDEXSecondary;
 extern Fl_Counter *valDEX_BW;
 extern Fl_Check_Button *valDEX_FILTER;
 extern Fl_Counter *valDEX_PATHS;
-extern Fl_Check_Button *valDEXSoft;
+extern Fl_Check_Button *valDEX_SOFT;
 extern Fl_Group *tabDomEX;
 extern Fl_Input *txtSecondary;
 extern Fl_Counter *valDominoEX_BW;

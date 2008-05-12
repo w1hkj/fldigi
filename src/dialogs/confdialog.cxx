@@ -916,10 +916,10 @@ static void cb_valDEX_PATHS(Fl_Counter* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *valDEXSoft=(Fl_Check_Button *)0;
+Fl_Check_Button *valDEX_SOFT=(Fl_Check_Button *)0;
 
-static void cb_valDEXSoft(Fl_Check_Button* o, void*) {
-  progdefaults.DEXsoft = o->value();
+static void cb_valDEX_SOFT(Fl_Check_Button* o, void*) {
+  progdefaults.DEX_SOFT = o->value();
 progdefaults.changed = true;
 }
 
@@ -2133,11 +2133,11 @@ l with your sound hardware.");
               valDEX_PATHS->callback((Fl_Callback*)cb_valDEX_PATHS);
               o->value(progdefaults.DEX_PATHS);
             } // Fl_Counter* valDEX_PATHS
-            { Fl_Check_Button* o = valDEXSoft = new Fl_Check_Button(110, 177, 70, 15, "Soft decode");
-              valDEXSoft->down_box(FL_DOWN_BOX);
-              valDEXSoft->callback((Fl_Callback*)cb_valDEXSoft);
-              o->value(progdefaults.DEXsoft);
-            } // Fl_Check_Button* valDEXSoft
+            { Fl_Check_Button* o = valDEX_SOFT = new Fl_Check_Button(110, 177, 70, 15, "Soft decode");
+              valDEX_SOFT->down_box(FL_DOWN_BOX);
+              valDEX_SOFT->callback((Fl_Callback*)cb_valDEX_SOFT);
+              o->value(progdefaults.DEX_SOFT);
+            } // Fl_Check_Button* valDEX_SOFT
             tabDEX->end();
           } // Fl_Group* tabDEX
           { tabDomEX = new Fl_Group(0, 50, 400, 170, "Dom");

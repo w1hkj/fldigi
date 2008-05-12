@@ -1087,12 +1087,12 @@ progdefaults.changed = true;}
               xywh {20 174 63 21} type Simple minimum 4 maximum 8 step 1 value 5
               code0 {o->value(progdefaults.DEX_PATHS);}
             }
-            Fl_Check_Button valDEXSoft {
+            Fl_Check_Button valDEX_SOFT {
               label {Soft decode}
-              callback {progdefaults.DEXsoft = o->value();
+              callback {progdefaults.DEX_SOFT = o->value();
 progdefaults.changed = true;} selected
               xywh {110 177 70 15} down_box DOWN_BOX
-              code0 {o->value(progdefaults.DEXsoft);}
+              code0 {o->value(progdefaults.DEX_SOFT);}
             }
           }
           Fl_Group tabDomEX {

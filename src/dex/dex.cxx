@@ -158,14 +158,12 @@ dex::dex(trx_mode md)
 		symlen = 1024;
 		doublespaced = 1;
 		samplerate = 8000;
-
+		break;
 	case MODE_DEX16:
 	default:
 		symlen = 512;
 		doublespaced = 0;
 		samplerate = 8000;
-		break;
-
 	}
 
 
@@ -331,7 +329,7 @@ void dex::decodesymbol()
 		
 	for (int i = 0; i < 4; i++) {
 // hard symbol decode
-		if (progdefaults.DEXsoft == false) {
+		if (progdefaults.DEX_SOFT == false) {
 			if ((c & 1) == 1) symbols[3-i] = 255;
 			else symbols[3-i] = 1;
 // soft symbol decode
