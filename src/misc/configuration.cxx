@@ -84,6 +84,7 @@ configuration progdefaults = {
 	true,			// bool		DEX_FILTER;
 	"fldigi-dex ",	// string	DEXsecText;
 	5,				// int		DEX_PATHS;
+	false,			// bool		DEX_soft;
 // DOMINOEX
 	2.0,			// double	DOMINOEX_BW;
 	true,			// bool		DOMINOEX_FILTER

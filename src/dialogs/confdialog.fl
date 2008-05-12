@@ -1056,7 +1056,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabDEX {
             label Dex open
-            xywh {0 44 400 170} color 51 selection_color 51 hide
+            xywh {0 44 400 170} color 51 selection_color 51
           } {
             Fl_Input txtDEXSecondary {
               label {Secondary Text}
@@ -1086,6 +1086,13 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
               xywh {20 174 63 21} type Simple minimum 4 maximum 8 step 1 value 5
               code0 {o->value(progdefaults.DEX_PATHS);}
+            }
+            Fl_Check_Button valDEXSoft {
+              label {Soft decode}
+              callback {progdefaults.DEXsoft = o->value();
+progdefaults.changed = true;} selected
+              xywh {110 177 70 15} down_box DOWN_BOX
+              code0 {o->value(progdefaults.DEXsoft);}
             }
           }
           Fl_Group tabDomEX {
@@ -1131,7 +1138,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabFeld {
             label Feld open
-            xywh {0 50 400 170} color 51 selection_color 51
+            xywh {0 50 400 170} color 51 selection_color 51 hide
           } {
             Fl_Choice selHellFont {
               label {Feld Hell Font:}
@@ -1144,7 +1151,7 @@ progdefaults.changed = true;} open
             } {}
             Fl_Value_Slider sldrHellBW {
               label {Filter BW}
-              callback {progdefaults.HELL_BW = sldrHellBW->value();} selected
+              callback {progdefaults.HELL_BW = sldrHellBW->value();}
               xywh {30 190 345 20} type Horizontal color 215 align 5 minimum 10 maximum 2400 step 5 value 400 textsize 14
               code0 {o->value(progdefaults.HELL_BW);}
             }

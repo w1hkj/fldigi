@@ -11,7 +11,7 @@ m4_if([$3], [yes],
                       esac],
                  [ac_cv_want_[]$1=check])
     ])
-m4_if([$4], [yes], [ac_cv_want_[]$1=check], [ac_cv_want_[]$1=yes])
+m4_if([$4], [no], [ac_cv_want_[]$1=yes])
 
 if test "x$ac_cv_want_[]$1" = "xno"; then
     AC_DEFINE([USE_]PKG_NAME_UC, 0)

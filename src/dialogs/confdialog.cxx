@@ -916,6 +916,13 @@ static void cb_valDEX_PATHS(Fl_Counter* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *valDEXSoft=(Fl_Check_Button *)0;
+
+static void cb_valDEXSoft(Fl_Check_Button* o, void*) {
+  progdefaults.DEXsoft = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabDomEX=(Fl_Group *)0;
 
 Fl_Input *txtSecondary=(Fl_Input *)0;
@@ -2096,7 +2103,6 @@ l with your sound hardware.");
           { tabDEX = new Fl_Group(0, 44, 400, 170, "Dex");
             tabDEX->color((Fl_Color)51);
             tabDEX->selection_color((Fl_Color)51);
-            tabDEX->hide();
             { txtDEXSecondary = new Fl_Input(20, 75, 360, 44, "Secondary Text");
               txtDEXSecondary->type(4);
               txtDEXSecondary->callback((Fl_Callback*)cb_txtDEXSecondary);
@@ -2127,6 +2133,11 @@ l with your sound hardware.");
               valDEX_PATHS->callback((Fl_Callback*)cb_valDEX_PATHS);
               o->value(progdefaults.DEX_PATHS);
             } // Fl_Counter* valDEX_PATHS
+            { Fl_Check_Button* o = valDEXSoft = new Fl_Check_Button(110, 177, 70, 15, "Soft decode");
+              valDEXSoft->down_box(FL_DOWN_BOX);
+              valDEXSoft->callback((Fl_Callback*)cb_valDEXSoft);
+              o->value(progdefaults.DEXsoft);
+            } // Fl_Check_Button* valDEXSoft
             tabDEX->end();
           } // Fl_Group* tabDEX
           { tabDomEX = new Fl_Group(0, 50, 400, 170, "Dom");
@@ -2173,6 +2184,7 @@ l with your sound hardware.");
           { tabFeld = new Fl_Group(0, 50, 400, 170, "Feld");
             tabFeld->color((Fl_Color)51);
             tabFeld->selection_color((Fl_Color)51);
+            tabFeld->hide();
             { Fl_Choice* o = selHellFont = new Fl_Choice(175, 62, 122, 20, "Feld Hell Font:");
               selHellFont->down_box(FL_BORDER_BOX);
               selHellFont->labelfont(4);

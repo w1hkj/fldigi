@@ -187,7 +187,18 @@ void FTextBase::readFile(void)
 {
 	const char *fn = file_select("Append text", "Text\t*.txt");
 	if (fn) {
+#ifdef WIN32
+		string text;
+		ifstream tfile(fn);
+		char ch;
+		while (tfile) {
+			tfile.get(ch);
+			if (ch != '\r') text += ch;
+		}
+		tbuf->append(text.c_str());
+#else
 		tbuf->appendfile(fn);
+#endif
 		insert_position(tbuf->length());
 		show_insert_position();
 	}

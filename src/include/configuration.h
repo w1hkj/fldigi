@@ -79,6 +79,7 @@ struct configuration {
 	bool		DEX_FILTER;
 	string		DEXsecText;
 	int			DEX_PATHS;
+	bool		DEXsoft;
 // DOMINOEX
 	double		DOMINOEX_BW;
 	bool		DOMINOEX_FILTER;
