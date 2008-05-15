@@ -70,6 +70,7 @@ protected:
 	double txphacc;
 	double txcounter;
 	double hell_bandwidth;
+	double filter_bandwidth;
 	
 	int depth;
 	int dxmode;

@@ -114,7 +114,7 @@ feld::feld(trx_mode m)
 			feldcolumnrate = 17.5; 
 			break; 
 		case MODE_FSKH105: 
-			feldcolumnrate = 17.5; 
+			feldcolumnrate = 7.5;//17.5; 
 			break; 
 		case MODE_HELL80: 
 			feldcolumnrate = 35; 
@@ -132,15 +132,19 @@ feld::feld(trx_mode m)
 	
 	hell_bandwidth = txpixrate;
 
-	if (hell_bandwidth != progdefaults.HELL_BW) {
-		progdefaults.HELL_BW = hell_bandwidth;
-		set_bandwidth(hell_bandwidth);
-	}
+	set_bandwidth(hell_bandwidth);
 	
 	hilbert = new C_FIR_filter();
 	hilbert->init_hilbert(37, 1);
+	
+	filter_bandwidth = hell_bandwidth;
+	
+	if (filter_bandwidth != progdefaults.HELL_BW)
+		progdefaults.HELL_BW = filter_bandwidth;
+	
+std::cout << hell_bandwidth << ", " << progdefaults.HELL_BW << std::endl;
 
-	lp = 1.5 * hell_bandwidth / samplerate;
+	lp = 1.5 * filter_bandwidth / samplerate;
 	
 	bpfilt = new fftfilt(0, lp, 1024);
 	
@@ -276,11 +280,10 @@ int feld::rx_process(const double *buf, int len)
 	blackboard = btnBlackboard->value();
 	FL_UNLOCK_D();
 	
-	if (progdefaults.HELL_BW != hell_bandwidth) {
+	if (progdefaults.HELL_BW != filter_bandwidth) {
 		double lp;
-		hell_bandwidth = progdefaults.HELL_BW;
-		set_bandwidth(hell_bandwidth);
-		lp = 1.5 * hell_bandwidth / 2.0 / samplerate;
+		filter_bandwidth = progdefaults.HELL_BW;
+		lp = 1.5 * filter_bandwidth / 2.0 / samplerate;
 		bpfilt->create_filter(0, lp);
 	}
 
@@ -387,6 +390,8 @@ void feld::send_symbol(int currsymb, int nextsymb)
 		Amp = 1.0;
 		switch (mode) {
 			case MODE_FSKHELL :
+				tone = midtone + (reverse ? -1 : 1) * (currsymb ? -1 : 1) * txpixrate / 2.0;
+				break;
 			case MODE_FSKH105 :
 				tone = midtone + (reverse ? -1 : 1) * (currsymb ? -1 : 1) * txpixrate / 2.0;
 				break;

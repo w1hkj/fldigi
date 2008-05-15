@@ -37,7 +37,7 @@
 //=====================================================================
 
 class C_FIR_filter {
-#define FIRBufferLen 1024
+#define FIRBufferLen 4096
 private:
 	int length;
 	int decimateratio;

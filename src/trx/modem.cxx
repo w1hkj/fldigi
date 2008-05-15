@@ -3,6 +3,8 @@
 
 #include <config.h>
 
+#include "filters.h"
+
 #include "confdialog.h"
 #include "modem.h"
 #include "configuration.h"
@@ -279,18 +281,20 @@ void modem::videoText()
 //=====================================================================
 // transmit processing of waterfall video id
 //=====================================================================
-//#define progdefaults.videowidth			3
 #define MAXCHARS			4
+
 #define NUMCOLS				8
-#define MAXBITS				7
 #define NUMROWS				14
 #define CHARSPACE			2
 #define TONESPACING			8
-#define IDSYMLEN			4096
+
+#define IDSYMLEN			2048
 #define RISETIME			20
 
-struct mfntchr { char c; int byte[NUMROWS]; };
+struct mfntchr { char c; int byte[14];};//NUMROWS]; };
 extern mfntchr idch[];
+
+C_FIR_filter vidfilt;
 
 void modem::wfid_make_pulse()
 {
@@ -304,34 +308,47 @@ void modem::wfid_make_pulse()
 
 void modem::wfid_make_tones()
 {
-	double f;
-	f = frequency + TONESPACING * ( progdefaults.videowidth * ((NUMCOLS - 1)) / 2.0 + (progdefaults.videowidth - 1) * CHARSPACE);
+	double f, flo, fhi;
+	f = TONESPACING * ( progdefaults.videowidth * (NUMCOLS - 1) + (progdefaults.videowidth) * CHARSPACE) / 2.0;
+	f = 2.0 * floor((frequency + f)/2.0);
+	fhi = f + 2 * TONESPACING;
+	flo = f - (progdefaults.videowidth * (NUMCOLS + CHARSPACE) + 2) * TONESPACING; 
 	for (int i = 0; i < NUMCOLS * progdefaults.videowidth; i++) {
 		wfid_w[i] = f * 2.0 * M_PI / samplerate;
 		f -= TONESPACING;
 		if ( (i > 0) && (i % NUMCOLS == 0) )
 			f -= TONESPACING * CHARSPACE;
 	}
+	vidfilt.init_bandpass( 1024, 1, flo/samplerate, fhi/samplerate) ;	
 }
 
 void modem::wfid_send(long int symbol)
 {
 	int i, j;
 	int sym;
-	int msk = 0;
+	double val;
+
 	for (i = 0; i < IDSYMLEN; i++) {
 		wfid_outbuf[i] = 0.0;
+		val = 0.0;
 		sym = symbol;
 		for (j = 0; j < NUMCOLS * progdefaults.videowidth; j++) {
 			if ((sym & 1) == 1)
-				wfid_outbuf[i] += ((msk & 1) == 1 ? -1 : 1 ) * sin(wfid_w[j] * i)* wfid_txpulse[i];
+				val += sin(wfid_w[j] * i);
 			sym = sym >> 1;
-			msk = msk >> 1;
 		}
+// soft limit the signal
+		wfid_outbuf[i] = 0.707 * (1.0 - exp(fabs(val)/-3.0)) * (val >= 0.0 ? 1 : -1);
 	}
-	for (i = 0; i < IDSYMLEN; i++)
-		wfid_outbuf[i] = wfid_outbuf[i] / (MAXBITS * progdefaults.videowidth);
-		
+
+// band pass filter the hard limited signal
+
+	for (i = 0; i < IDSYMLEN; i++) {
+		val = wfid_outbuf[i];
+		vidfilt.Irun (val, val);
+		wfid_outbuf[i] = val * wfid_txpulse[i];
+	}
+	
 	ModulateXmtr(wfid_outbuf, IDSYMLEN);
 }
 
@@ -343,7 +360,7 @@ void modem::wfid_sendchar(char c)
 	if (c < ' ' || c > '~') return;
 	n = c - ' ';
 	for (int row = 0; row < NUMROWS; row++) {
-		symbol = (idch[n].byte[NUMROWS - 1 -row]) >> (16 - NUMCOLS);
+		symbol = (idch[n].byte[NUMROWS - 1 - row]) >> (16 - NUMCOLS);
 		wfid_send (symbol);
 		if (stopflag)
 			return;
@@ -353,25 +370,32 @@ void modem::wfid_sendchar(char c)
 void modem::wfid_sendchars(string s)
 {
 	long int symbol;
-	int  len = s.length();
+	int  len;
 	unsigned int  n[progdefaults.videowidth];
 	int  c;
-	while (len++ < progdefaults.videowidth) s.insert(0," ");
+	
+	while (s[0] == ' ') s.erase(0);
+	len = s.length();
 
-	for (int i = 0; i < progdefaults.videowidth; i++) {
+	for (int i = 0; i < len; i++) { //progdefaults.videowidth; i++) {
 		c = s[i];
 		if (c > '~' || c < ' ') c = ' ';
 		c -= ' ';
 		n[i] = c;
 	}
+	
 // send rows from bottom to top so they appear to scroll down the waterfall correctly
 	for (int row = 0; row < NUMROWS; row++) {
 		symbol = 0;
-		for (int i = 0; i < progdefaults.videowidth; i++) {
+		for (int i = 0; i < len; i++) {//progdefaults.videowidth; i++) {
 			symbol |= (idch[n[i]].byte[NUMROWS - 1 -row] >> (16 - NUMCOLS));
-			if (i != (progdefaults.videowidth - 1) )
+			if (i != (len - 1) )
 				symbol = symbol << NUMCOLS;
 		}
+
+		if (len < progdefaults.videowidth)
+			symbol = symbol << NUMCOLS * (progdefaults.videowidth - len) / 2;
+
 		wfid_send (symbol);
 		if (stopflag)
 			return;
@@ -431,7 +455,7 @@ mfntchr idch[] = {
 {'.', { 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0xC000, 0xC000, 0xC000, 0x0000, 0x0000 }, },
 {'/', { 0x0000, 0x0800, 0x0800, 0x1800, 0x1000, 0x3000, 0x2000, 0x6000, 0x4000, 0xC000, 0x8000, 0x8000, 0x0000, 0x0000 }, },
 {'0', { 0x0000, 0x0000, 0x7800, 0xFC00, 0x8C00, 0x9C00, 0xB400, 0xE400, 0xC400, 0x8400, 0xFC00, 0x7800, 0x0000, 0x0000 }, },
-{'1', { 0x0000, 0x0000, 0x2000, 0x6000, 0xE000, 0xA000, 0x2000, 0x2000, 0x2000, 0x2000, 0x2000, 0x2000, 0x0000, 0x0000 }, },
+{'1', { 0x0000, 0x0000, 0x1000, 0x3000, 0x7000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x0000, 0x0000 }, },
 {'2', { 0x0000, 0x0000, 0x7800, 0xFC00, 0x8400, 0x0C00, 0x1800, 0x3000, 0x6000, 0xC000, 0xFC00, 0xFC00, 0x0000, 0x0000 }, },
 {'3', { 0x0000, 0x0000, 0xFC00, 0xFC00, 0x0400, 0x0C00, 0x1800, 0x1C00, 0x0400, 0x8400, 0xFC00, 0x7800, 0x0000, 0x0000 }, },
 {'4', { 0x0000, 0x0000, 0x3800, 0x7800, 0x4800, 0xC800, 0x8800, 0xFC00, 0xFC00, 0x0800, 0x0800, 0x0800, 0x0000, 0x0000 }, },
