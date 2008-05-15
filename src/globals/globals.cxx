@@ -49,6 +49,7 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_DEX5, &dex5_modem, "DEX5", "DEX 5", "DEX5", "DEX" },
 	{ MODE_DEX8, &dex8_modem, "DEX8", "DEX 8", "DEX8", "DEX" },
 	{ MODE_DEX11, &dex11_modem, "DEX11", "DEX 11", "DEX11", "DEX" },
+	{ MODE_DSX11, &dsx11_modem, "DSX11", "DSX 11", "DSX11", "DEX" },
 	{ MODE_DEX16, &dex16_modem, "DEX16", "DEX 16", "DEX16", "DEX" },
 	{ MODE_DEX22, &dex22_modem, "DEX22", "DEX 22", "DEX22", "DEX" },
 

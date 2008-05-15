@@ -529,7 +529,7 @@ int dominoex::get_secondary_char()
 void dominoex::sendtone(int tone, int duration)
 {
 	double f, phaseincr;
-	f = tone * tonespacing + get_txfreq_woffset() - bandwidth / 2;
+	f = (tone + 0.5) * tonespacing + get_txfreq_woffset() - bandwidth / 2.0;
 	phaseincr = twopi * f / samplerate;
 	for (int j = 0; j < duration; j++) {
 		for (int i = 0; i < symlen; i++) {

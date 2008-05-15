@@ -39,6 +39,7 @@ modem *dex4_modem = 0;
 modem *dex5_modem = 0;
 modem *dex8_modem = 0;
 modem *dex11_modem = 0;
+modem *dsx11_modem = 0;
 modem *dex16_modem = 0;
 modem *dex22_modem = 0;
 modem *dominoex4_modem = 0;

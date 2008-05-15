@@ -142,6 +142,12 @@ dex::dex(trx_mode md)
 		samplerate = 11025;
 		break;
 
+	case MODE_DSX11:
+		symlen = 1024;
+		doublespaced = 1;
+		samplerate = 11025;
+		break;
+
 	case MODE_DEX22:
 		symlen = 512;
 		doublespaced = 0;
@@ -522,7 +528,7 @@ int dex::get_secondary_char()
 void dex::sendtone(int tone, int duration)
 {
 	double f, phaseincr;
-	f = tone * tonespacing + get_txfreq_woffset() - bandwidth / 2;
+	f = (tone + 0.5) * tonespacing + get_txfreq_woffset() - bandwidth / 2;
 	phaseincr = twopi * f / samplerate;
 	for (int j = 0; j < duration; j++) {
 		for (int i = 0; i < symlen; i++) {

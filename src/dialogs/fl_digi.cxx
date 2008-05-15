@@ -207,6 +207,7 @@ Fl_Menu_Item quick_change_dex[] = {
 	{ mode_info[MODE_DEX5].name, 0, cb_init_mode, (void *)MODE_DEX5 },
 	{ mode_info[MODE_DEX8].name, 0, cb_init_mode, (void *)MODE_DEX8 },
 	{ mode_info[MODE_DEX11].name, 0, cb_init_mode, (void *)MODE_DEX11 },
+	{ mode_info[MODE_DSX11].name, 0, cb_init_mode, (void *)MODE_DSX11 },
 	{ mode_info[MODE_DEX16].name, 0, cb_init_mode, (void *)MODE_DEX16 },
 	{ mode_info[MODE_DEX22].name, 0, cb_init_mode, (void *)MODE_DEX22 },
 	{ 0 }
@@ -403,7 +404,7 @@ void init_modem(trx_mode mode)
 		break;
 
 	case MODE_DEX4: case MODE_DEX5: case MODE_DEX8:
-	case MODE_DEX11: case MODE_DEX16: case MODE_DEX22:
+	case MODE_DEX11: case MODE_DSX11: case MODE_DEX16: case MODE_DEX22:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new dex(mode));
 		quick_change = quick_change_dex;
@@ -1045,6 +1046,7 @@ Fl_Menu_Item menu_[] = {
 { mode_info[MODE_DEX5].name, 0, cb_init_mode, (void *)MODE_DEX5, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DEX8].name, 0, cb_init_mode, (void *)MODE_DEX8, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DEX11].name, 0, cb_init_mode, (void *)MODE_DEX11, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_DSX11].name, 0, cb_init_mode, (void *)MODE_DSX11, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DEX16].name, 0, cb_init_mode, (void *)MODE_DEX16, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DEX22].name, 0, cb_init_mode, (void *)MODE_DEX22, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
@@ -1962,6 +1964,7 @@ void resetDEX() {
 		md == MODE_DEX5 ||
 		md == MODE_DEX8 ||
 		md == MODE_DEX11 ||
+		md == MODE_DSX11 ||
 		md == MODE_DEX16 ||
 		md == MODE_DEX22 ) {
 		active_modem->restart();
