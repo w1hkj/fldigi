@@ -290,7 +290,7 @@ void cb_mnuSaveMacro(Fl_Menu_*, void*) {
 
 bool clean_exit() {
 	if (progdefaults.changed == true) {
-		switch (fl_choice("Save changed configuration?", "Don't exit", "Save", "Don't save")) {
+		switch (fl_choice("Save changed configuration before exiting?", "Cancel", "Save", "Don't save")) {
 		case 0:
 			return false;
 		case 1:
@@ -301,7 +301,7 @@ bool clean_exit() {
 		}
 	}
 	if (macros.changed == true) {
-		switch (fl_choice("Save changed macros?", "Don't exit", "Save", "Don't save")) {
+		switch (fl_choice("Save changed macros before exiting?", "Cancel", "Save", "Don't save")) {
 		case 0:
 			return false;
 		case 1:
@@ -895,9 +895,9 @@ void clearQSO()
 
 void qsoClear_cb(Fl_Widget *b, void *)
 {
-	if (fl_choice ("Confirm Clear", "Cancel", "OK", NULL) == 1) {
+	if (fl_choice ("Clear log fields?", "Cancel", "OK", NULL) == 1) {
 		clearQSO();
-		FL_AWAKE();
+		FL_AWAKE_D();
 	}
 	restoreFocus();
 }
