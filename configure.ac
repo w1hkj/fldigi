@@ -157,6 +157,13 @@ AC_FLDIGI_FLTK
 # Substitute IMAGE_CFLAGS and IMAGE_LIBS in Makefile
 AC_FLDIGI_IMAGES
 
+### XML-RPC library
+# Set ac_cv_xmlrpc to yes/no
+# Substitute XMLRPC_CFLAGS and XMLRPC_LIBS in Makefile
+# Define USE_XMLRPC in config.h
+# Set ENABLE_XMLRPC Makefile conditional
+AC_FLDIGI_XMLRPC
+
 ### OSS
 # Set ac_cv_oss to yes/no
 # Define USE_OSS in config.h
@@ -233,4 +240,5 @@ Configuration summary:
   PortAudio ........................... $ac_cv_portaudio
   PulseAudio .......................... $ac_cv_pulseaudio
   hamlib .............................. $ac_cv_hamlib
+  xml-rpc ............................. $ac_cv_xmlrpc
 ])

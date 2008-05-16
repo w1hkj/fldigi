@@ -73,6 +73,10 @@
 #include "qrunner.h"
 #include "stacktrace.h"
 
+#if USE_XMLRPC
+	#include "xmlrpc.h"
+#endif
+
 using namespace std;
 
 string appname;
@@ -241,7 +245,17 @@ int main(int argc, char ** argv)
 	
 	Fl::add_timeout(1.0, pskmail_loop);
 
+#if USE_XMLRPC
+	if (progdefaults.xmlrpc_server)
+		XML_RPC_Server::start(progdefaults.xmlrpc_address.c_str(), progdefaults.xmlrpc_port.c_str());
+#endif
+
 	int ret = Fl::run();
+
+#if USE_XMLRPC
+	XML_RPC_Server::stop();
+#endif
+
 	for (int i = 0; i < NUM_QRUNNER_THREADS; i++) {
 		cbq[i]->detach();
 		delete cbq[i];
@@ -292,6 +306,15 @@ void generate_option_help(void) {
 
 	     << "  --resample CONVERTER  **DEPRECATED**\n"
 	     << "    This option has been deprecated and will be removed in a future release\n\n"
+
+	     << "  --xmlrpc-server\n"
+	     << "    Start the XML-RPC server\n\n"
+	     << "  --xmlrpc-server-address HOSTNAME\n"
+	     << "    Set the XML-RPC server address\n"
+	     << "    The default is: " << progdefaults.xmlrpc_address << "\n\n"
+	     << "  --xmlrpc-server-port PORT\n"
+	     << "    Set the XML-RPC server port\n"
+	     << "    The default is: " << progdefaults.xmlrpc_port << "\n\n"
 
 	     << "  --version\n"
 	     << "    Print version information\n\n"
@@ -376,6 +399,9 @@ int parse_args(int argc, char **argv, int& idx)
 	       OPT_RX_IPC_KEY, OPT_TX_IPC_KEY,
 #endif
 	       OPT_CONFIG_DIR,
+#if USE_XMLRPC
+	       OPT_CONFIG_XMLRPC, OPT_CONFIG_XMLRPC_ADDRESS, OPT_CONFIG_XMLRPC_PORT,
+#endif
                OPT_FONT, OPT_WFALL_WIDTH, OPT_WFALL_HEIGHT,
                OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT, 
                OPT_PROFILE,
@@ -395,6 +421,12 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "tx-ipc-key",	   1, 0, OPT_TX_IPC_KEY },
 #endif
 		{ "config-dir",	   1, 0, OPT_CONFIG_DIR },
+
+#if USE_XMLRPC
+		{ "xmlrpc-server",         0, 0, OPT_CONFIG_XMLRPC },
+		{ "xmlrpc-server-address", 1, 0, OPT_CONFIG_XMLRPC_ADDRESS },
+		{ "xmlrpc-server-port",    1, 0, OPT_CONFIG_XMLRPC_PORT },
+#endif
 		{ "font",	   1, 0, OPT_FONT },
 
 		{ "wfall-width",   1, 0, OPT_WFALL_WIDTH },
@@ -448,6 +480,18 @@ int parse_args(int argc, char **argv, int& idx)
 			if (*HomeDir.rbegin() != '/')
 				HomeDir += '/';
 			break;
+
+#if USE_XMLRPC
+		case OPT_CONFIG_XMLRPC:
+			progdefaults.xmlrpc_server = true;
+			break;
+		case OPT_CONFIG_XMLRPC_ADDRESS:
+			progdefaults.xmlrpc_address = optarg;
+			break;
+		case OPT_CONFIG_XMLRPC_PORT:
+			progdefaults.xmlrpc_port = optarg;
+			break;
+#endif
 
 		case OPT_FONT:
 		{

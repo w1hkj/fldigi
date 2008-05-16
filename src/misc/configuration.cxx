@@ -215,6 +215,9 @@ configuration progdefaults = {
 	20,				// int		VIEWERchannels
 	20.0,			// double	VIEWERsquelch
 	15,				// int  VIEWERtimeout
+	false,			// bool xmlrpc_server
+	"localhost",		// string xmlrpc_address
+	"7362",			// string xmlrpc_port
 };
 
 const char *szBaudRates[] = {

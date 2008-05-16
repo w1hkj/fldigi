@@ -203,6 +203,11 @@ struct configuration {
 	double	VIEWERsquelch;
 	int		VIEWERtimeout;
 
+// XMLRPC parameters
+	bool xmlrpc_server;
+	string xmlrpc_address;
+	string xmlrpc_port;
+
 public:
 	void writeDefaultsXML();
 	void storeDefaults();
