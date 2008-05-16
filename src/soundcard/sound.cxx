@@ -103,9 +103,9 @@ void SoundBase::get_file_params(const char* def_fname, const char** fname, int* 
 
 	int fsel;
 	if (strstr(def_fname, "playback"))
-		*fname = file_select("Audio file", filters.c_str(), def_fname, &fsel);
+		*fname = FSEL::select("Audio file", filters.c_str(), def_fname, &fsel);
 	else
-		*fname = file_saveas("Audio file", filters.c_str(), def_fname, &fsel);
+		*fname = FSEL::saveas("Audio file", filters.c_str(), def_fname, &fsel);
 	if (!*fname)
 		return;
 

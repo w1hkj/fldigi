@@ -185,7 +185,7 @@ void FTextBase::set_style(int attr, Fl_Font f, int s, Fl_Color c, int set)
 ///
 void FTextBase::readFile(void)
 {
-	const char *fn = file_select("Append text", "Text\t*.txt");
+	const char *fn = FSEL::select("Append text", "Text\t*.txt");
 	if (fn) {
 #ifdef WIN32
 		string text;
@@ -209,7 +209,7 @@ void FTextBase::readFile(void)
 ///
 void FTextBase::saveFile(void)
 {
-	const char *fn = file_saveas("Save text as", "Text\t*.txt");
+	const char *fn = FSEL::saveas("Save text as", "Text\t*.txt");
 	if (fn)
 		tbuf->outputfile(fn, 0, tbuf->length());
 }

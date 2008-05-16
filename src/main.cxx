@@ -61,6 +61,7 @@
 #include "configuration.h"
 #include "macros.h"
 #include "status.h"
+#include "fileselect.h"
 
 #if USE_HAMLIB
 	#include "rigclass.h"
@@ -209,6 +210,7 @@ int main(int argc, char ** argv)
 	progStatus.loadLastState();
 	
 	create_fl_digi_main();
+	FSEL::create();
 
 	createConfig();
 	inpTTYdev->tooltip(progdefaults.strCommPorts.c_str());
@@ -244,6 +246,7 @@ int main(int argc, char ** argv)
 		cbq[i]->detach();
 		delete cbq[i];
 	}
+	FSEL::destroy();
 
 	return ret;
 }
