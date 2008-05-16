@@ -84,6 +84,7 @@ configuration progdefaults = {
 	true,			// bool		DEX_FILTER;
 	"fldigi-dex ",	// string	DEXsecText;
 	5,				// int		DEX_PATHS;
+	false,			// bool		DEX_SOFT;
 // DOMINOEX
 	2.0,			// double	DOMINOEX_BW;
 	true,			// bool		DOMINOEX_FILTER
@@ -251,7 +252,7 @@ enum TAG { \
 	CWTRACK, CWRISETIME, CWDASH2DOT,
 	XQSK, CWPRE, CWPOST, CWID, CWIDWPM,
 	OLIVIATONES, OLIVIABW, OLIVIASMARGIN, OLIVIASINTEG, OLIVIA8BIT,
-	DEXBW, DEXFILTER, DEXSECTEXT, DEXPATHS,
+	DEXBW, DEXFILTER, DEXSECTEXT, DEXPATHS, DEXSOFT,
 	DOMINOEXBW, DOMINOEXFILTER, DOMINOEXFEC, DOMINOEXPATHS,
 	FELDFONTNBR, FELDIDLE,
 	WFPREFILTER, LATENCY,
@@ -396,6 +397,7 @@ void configuration::writeDefaultsXML()
 	writeXMLbool(f, "DEXFILTER", DEX_FILTER);
 	writeXMLstr(f,  "DEXSECTEXT", DEXsecText);		
 	writeXMLint(f, "DEXPATHS", DEX_PATHS);
+	writeXMLbool(f, "DEXSOFT", DEX_SOFT);
 	
 	writeXMLdbl(f, "DOMINOEXBW", DOMINOEX_BW);
 	writeXMLbool(f, "DOMINOEXFILTER", DOMINOEX_FILTER);
@@ -700,6 +702,9 @@ bool configuration::readDefaultsXML()
 						break;
 					case DEXPATHS :
 						DEX_PATHS = atoi(xml->getNodeData());
+						break;
+					case DEXSOFT :
+						DEX_SOFT = atoi(xml->getNodeData());
 						break;
 					case DOMINOEXBW :
 						DOMINOEX_BW = atof(xml->getNodeData());
@@ -1067,6 +1072,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("DEXFILTER", nodeName))	tag = DEXFILTER;
 				else if (!strcmp("DEXSECTEXT", nodeName))	tag = DEXSECTEXT;
 				else if (!strcmp("DEXPATHS", nodeName)) tag = DEXPATHS;
+				else if (!strcmp("DEXSOFT", nodeName)) tag = DEXSOFT;
 				else if (!strcmp("DOMINOEXBW", nodeName)) 	tag = DOMINOEXBW;
 				else if (!strcmp("DOMINOEXFILTER", nodeName))	tag = DOMINOEXFILTER;
 				else if (!strcmp("DOMINOEXFEC", nodeName))	tag = DOMINOEXFEC;
@@ -1285,6 +1291,7 @@ int configuration::setDefaults() {
 	valDEX_BW->value(DEX_BW);
 	valDEX_FILTER->value(DEX_FILTER);
 	valDEX_PATHS->value(DEX_PATHS);
+	valDEX_SOFT->value(DEX_SOFT);
 		
 	valDominoEX_BW->value(DOMINOEX_BW);
 	valDominoEX_FILTER->value(DOMINOEX_FILTER);

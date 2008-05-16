@@ -198,6 +198,7 @@ extern modem *dex4_modem;
 extern modem *dex5_modem;
 extern modem *dex8_modem;
 extern modem *dex11_modem;
+extern modem *dsx11_modem;
 extern modem *dex16_modem;
 extern modem *dex22_modem;
 extern modem *dominoex4_modem;

@@ -63,6 +63,7 @@ void dex::rx_init()
 	met2 = 0.0;
 	counter = 0;
 	phase[0] = 0.0;
+	currmag = prev1mag = prev2mag = 0.0;
 	for (int i = 0; i < DEXMAXFFTS; i++)
 		phase[i+1] = 0.0;
 	put_MODEstatus(mode);
@@ -141,6 +142,12 @@ dex::dex(trx_mode md)
 		samplerate = 11025;
 		break;
 
+	case MODE_DSX11:
+		symlen = 1024;
+		doublespaced = 1;
+		samplerate = 11025;
+		break;
+
 	case MODE_DEX22:
 		symlen = 512;
 		doublespaced = 0;
@@ -157,14 +164,12 @@ dex::dex(trx_mode md)
 		symlen = 1024;
 		doublespaced = 1;
 		samplerate = 8000;
-
+		break;
 	case MODE_DEX16:
 	default:
 		symlen = 512;
 		doublespaced = 0;
 		samplerate = 8000;
-		break;
-
 	}
 
 
@@ -321,7 +326,29 @@ void dex::decodesymbol()
 	c = (int)floor(fdiff + .5) - 2;
 	if (c < 0) c += DEXNUMMTONES;
 
-	decodeEX(c);
+//	decodeEX(c);
+
+	unsigned char symbols[4];
+	double avg = (currmag + prev1mag + prev2mag) / 3.0;
+	if (avg == 0.0) avg = 1e-20;
+	double softmag = currmag / avg;
+		
+	for (int i = 0; i < 4; i++) {
+// hard symbol decode
+		if (progdefaults.DEX_SOFT == false) {
+			if ((c & 1) == 1) symbols[3-i] = 255;
+			else symbols[3-i] = 1;
+// soft symbol decode
+		} else
+			symbols[3-i] = (unsigned char)clamp(256.0 * (c & 1) * softmag, 1, 255);
+		
+		c = c / 2;
+	}
+
+	Rxinlv->symbols(symbols);
+
+	for (int i = 0; i < 4; i++) decodePairs(symbols[i]);
+	
 }
 
 int dex::harddecode()
@@ -416,7 +443,8 @@ void dex::eval_s2n()
 		}	
 		noise /= (paths * DEXNUMMTONES * 2  * (doublespaced?2:1) - 1);
 	
-		s2n = decayavg( s2n, sig / noise, 8);
+		if (noise)
+			s2n = decayavg( s2n, sig / noise, 8);
 
 		metric = 3*(20*log10(s2n) - 9.0);
 
@@ -463,12 +491,15 @@ int dex::rx_process(const double *buf, int len)
 				if (--synccounter <= 0) {
 					synccounter = symlen;
 					currsymbol = harddecode();
+					currmag = pipe[pipeptr].vector[currsymbol].mag();
+					eval_s2n();
         		    decodesymbol();
 					synchronize();
 					update_syncscope();
-					eval_s2n();
 					prev2symbol = prev1symbol;
 					prev1symbol = currsymbol;
+					prev2mag = prev1mag;
+					prev1mag = currmag;
 				}
 				pipeptr++;
 				if (pipeptr >= twosym)
@@ -497,7 +528,7 @@ int dex::get_secondary_char()
 void dex::sendtone(int tone, int duration)
 {
 	double f, phaseincr;
-	f = tone * tonespacing + get_txfreq_woffset() - bandwidth / 2;
+	f = (tone + 0.5) * tonespacing + get_txfreq_woffset() - bandwidth / 2;
 	phaseincr = twopi * f / samplerate;
 	for (int j = 0; j < duration; j++) {
 		for (int i = 0; i < symlen; i++) {

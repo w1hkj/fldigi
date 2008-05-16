@@ -93,6 +93,10 @@ protected:
 	int currsymbol;
 	int prev1symbol;
 	int prev2symbol;
+	
+	double currmag;
+	double prev1mag;
+	double prev2mag;
 
 	double met1;
 	double met2;
