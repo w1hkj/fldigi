@@ -3,9 +3,11 @@ program that is used for both transmitting and receiving data in any of the
 following modes:
 
 CW                   speeds from 5 to 200 wpm
+DEX                  4, 5, 8, 11, 16 and 22
 DominoEX             4, 5, 8, 11, 16 and 22
-Hellschreiber        Feld-Hell, FSK-Hell and FSK-Hell 105
+Hellschreiber        Feld Hell, Slow Hell, Hell x5/x9, FSKHell(-105) and Hell 80
 MFSK                 8 and 16; images can be sent and received in MFSK-16 mode
+MT63                 500, 1000 and 2000
 BPSK and QPSK        31, 63, 125, and 250
 Throb and ThrobX     1, 2, and 4
 OLIVIA               various tones and bandwidths
@@ -19,7 +21,7 @@ or cdrom QRZ queries, and log QSOs with fl_logbook or xlog.
 
 The latest version can always be found at:
 
-  http://www.w1hkj.com/Fldigi-2.x.html
+  http://www.w1hkj.com/Fldigi.html
 
 Visit this page for extensive documentation and an archive of XML files for
 transceivers supported by RigCAT.
