@@ -284,6 +284,17 @@ static void cb_sldrVideowidth(Fl_Value_Slider* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *chkID_SMALL=(Fl_Check_Button *)0;
+
+static void cb_chkID_SMALL(Fl_Check_Button* o, void*) {
+  progdefaults.ID_SMALL=o->value();
+if (o->value() == 1)
+sldrVideowidth->deactivate();
+else
+sldrVideowidth->activate();
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *btnViewXmtSignal=(Fl_Check_Button *)0;
 
 static void cb_btnViewXmtSignal(Fl_Check_Button* o, void*) {
@@ -884,42 +895,42 @@ static void cb_cntPostTiming(Fl_Counter* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Group *tabDEX=(Fl_Group *)0;
+Fl_Group *tabTHOR=(Fl_Group *)0;
 
-Fl_Input *txtDEXSecondary=(Fl_Input *)0;
+Fl_Input *txtTHORSecondary=(Fl_Input *)0;
 
-static void cb_txtDEXSecondary(Fl_Input* o, void*) {
-  progdefaults.DEXsecText = o->value();
+static void cb_txtTHORSecondary(Fl_Input* o, void*) {
+  progdefaults.THORsecText = o->value();
 progdefaults.changed = true;
 }
 
-Fl_Counter *valDEX_BW=(Fl_Counter *)0;
+Fl_Counter *valTHOR_BW=(Fl_Counter *)0;
 
-static void cb_valDEX_BW(Fl_Counter* o, void*) {
-  progdefaults.DEX_BW = o->value();
-resetDEX();
+static void cb_valTHOR_BW(Fl_Counter* o, void*) {
+  progdefaults.THOR_BW = o->value();
+resetTHOR();
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *valDEX_FILTER=(Fl_Check_Button *)0;
+Fl_Check_Button *valTHOR_FILTER=(Fl_Check_Button *)0;
 
-static void cb_valDEX_FILTER(Fl_Check_Button* o, void*) {
-  progdefaults.DEX_FILTER = o->value();
-resetDEX();
+static void cb_valTHOR_FILTER(Fl_Check_Button* o, void*) {
+  progdefaults.THOR_FILTER = o->value();
+resetTHOR();
 progdefaults.changed = true;
 }
 
-Fl_Counter *valDEX_PATHS=(Fl_Counter *)0;
+Fl_Counter *valTHOR_PATHS=(Fl_Counter *)0;
 
-static void cb_valDEX_PATHS(Fl_Counter* o, void*) {
-  progdefaults.DEX_PATHS = (int)o->value();
+static void cb_valTHOR_PATHS(Fl_Counter* o, void*) {
+  progdefaults.THOR_PATHS = (int)o->value();
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *valDEX_SOFT=(Fl_Check_Button *)0;
+Fl_Check_Button *valTHOR_SOFT=(Fl_Check_Button *)0;
 
-static void cb_valDEX_SOFT(Fl_Check_Button* o, void*) {
-  progdefaults.DEX_SOFT = o->value();
+static void cb_valTHOR_SOFT(Fl_Check_Button* o, void*) {
+  progdefaults.THOR_SOFT = o->value();
 progdefaults.changed = true;
 }
 
@@ -979,46 +990,55 @@ static void cb_sldrHellBW(Fl_Value_Slider*, void*) {
 
 Fl_Check_Button *btnHellXmtWidth=(Fl_Check_Button *)0;
 
-static void cb_btnHellXmtWidth(Fl_Check_Button*, void*) {
-  progdefaults.changed = true;
+static void cb_btnHellXmtWidth(Fl_Check_Button* o, void*) {
+  progdefaults.HellXmtWidth=o->value();
+progdefaults.changed = true;
 }
 
 Fl_Check_Button *btnHellRcvWidth=(Fl_Check_Button *)0;
 
-static void cb_btnHellRcvWidth(Fl_Check_Button*, void*) {
-  progdefaults.changed = true;
+static void cb_btnHellRcvWidth(Fl_Check_Button* o, void*) {
+  progdefaults.HellRcvWidth=o->value();
+progdefaults.changed = true;
 }
 
 Fl_Check_Button *btnBlackboard=(Fl_Check_Button *)0;
 
-static void cb_btnBlackboard(Fl_Check_Button*, void*) {
-  progdefaults.changed = true;
+static void cb_btnBlackboard(Fl_Check_Button* o, void*) {
+  progdefaults.HellBlackboard=o->value();
+progdefaults.changed = true;
 }
 
 Fl_Check_Button *btnHellFastAttack=(Fl_Check_Button *)0;
 
 static void cb_btnHellFastAttack(Fl_Check_Button* o, void*) {
-  if (o->value() == 1)
+  if (o->value() == 1) {
 btnHellSlowAttack->value(0);
-else
+progdefaults.HellPulseFast = true;
+}else{
 btnHellSlowAttack->value(1);
+progdefaults.HellPulseFast = false;
+}
 progdefaults.changed = true;
 }
 
 Fl_Check_Button *btnHellSlowAttack=(Fl_Check_Button *)0;
 
 static void cb_btnHellSlowAttack(Fl_Check_Button* o, void*) {
-  if (o->value() == 1)
+  if (o->value() == 1) {
 btnHellFastAttack->value(0);
-else
+progdefaults.HellPulseFast = false;
+}else{
 btnHellFastAttack->value(1);
+progdefaults.HellPulseFast = true;
+}
 progdefaults.changed = true;
 }
 
 Fl_Check_Button *btnFeldHellIdle=(Fl_Check_Button *)0;
 
 static void cb_btnFeldHellIdle(Fl_Check_Button* o, void*) {
-  progdefaults.FELD_IDLE=o->value();
+  progdefaults.HellXmtIdle=o->value();
 progdefaults.changed = true;
 }
 
@@ -1514,26 +1534,25 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { tabVideo = new Fl_Group(0, 25, 400, 195, "Video");
         tabVideo->color((Fl_Color)51);
         tabVideo->selection_color((Fl_Color)51);
-        tabVideo->hide();
-        { Fl_Group* o = new Fl_Group(5, 40, 390, 67, "Video Preamble");
+        { Fl_Group* o = new Fl_Group(5, 40, 390, 77, "Video Preamble");
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
           { btnsendid = new Fl_Check_Button(11, 57, 115, 20, "Xmt Mode ID");
             btnsendid->down_box(FL_DOWN_BOX);
             btnsendid->callback((Fl_Callback*)cb_btnsendid);
           } // Fl_Check_Button* btnsendid
-          { Fl_Check_Button* o = btnsendvideotext = new Fl_Check_Button(11, 82, 115, 20, "Xmt Video Text");
+          { Fl_Check_Button* o = btnsendvideotext = new Fl_Check_Button(11, 89, 115, 20, "Xmt Video Text");
             btnsendvideotext->down_box(FL_DOWN_BOX);
             btnsendvideotext->callback((Fl_Callback*)cb_btnsendvideotext);
             o->value(progdefaults.sendtextid);
           } // Fl_Check_Button* btnsendvideotext
-          { Fl_Input* o = valVideotext = new Fl_Input(159, 82, 94, 20, "Video Text:");
+          { Fl_Input* o = valVideotext = new Fl_Input(159, 89, 120, 20, "Video Text:");
             valVideotext->tooltip("Limit to a few characters as in CQEM or IOTA etc.");
             valVideotext->callback((Fl_Callback*)cb_valVideotext);
             valVideotext->align(FL_ALIGN_TOP_LEFT);
             o->value(progdefaults.strTextid.c_str());
           } // Fl_Input* valVideotext
-          { Fl_Value_Slider* o = sldrVideowidth = new Fl_Value_Slider(286, 82, 101, 20, "Video Width:");
+          { Fl_Value_Slider* o = sldrVideowidth = new Fl_Value_Slider(290, 89, 95, 20, "Video Width:");
             sldrVideowidth->tooltip("Set the # of chars per row");
             sldrVideowidth->type(1);
             sldrVideowidth->color((Fl_Color)26);
@@ -1545,23 +1564,30 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             sldrVideowidth->callback((Fl_Callback*)cb_sldrVideowidth);
             sldrVideowidth->align(FL_ALIGN_TOP);
             o->value(progdefaults.videowidth);
+            if (progdefaults.ID_SMALL) o->deactivate();
           } // Fl_Value_Slider* sldrVideowidth
+          { Fl_Check_Button* o = chkID_SMALL = new Fl_Check_Button(290, 49, 100, 20, "small font");
+            chkID_SMALL->down_box(FL_DOWN_BOX);
+            chkID_SMALL->value(1);
+            chkID_SMALL->callback((Fl_Callback*)cb_chkID_SMALL);
+            o->value(progdefaults.ID_SMALL);
+          } // Fl_Check_Button* chkID_SMALL
           o->end();
         } // Fl_Group* o
-        { Fl_Check_Button* o = btnViewXmtSignal = new Fl_Check_Button(11, 115, 135, 20, "View Xmt Signal");
+        { Fl_Check_Button* o = btnViewXmtSignal = new Fl_Check_Button(11, 122, 135, 20, "View Xmt Signal");
           btnViewXmtSignal->down_box(FL_DOWN_BOX);
           btnViewXmtSignal->callback((Fl_Callback*)cb_btnViewXmtSignal);
           o->value(progdefaults.viewXmtSignal);
         } // Fl_Check_Button* btnViewXmtSignal
-        { sld = new Fl_Group(5, 143, 390, 70, "CW Postamble");
+        { sld = new Fl_Group(5, 150, 390, 63, "CW Postamble");
           sld->box(FL_ENGRAVED_FRAME);
           sld->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-          { Fl_Check_Button* o = btnCWID = new Fl_Check_Button(13, 179, 98, 15, "Xmt CWID");
+          { Fl_Check_Button* o = btnCWID = new Fl_Check_Button(13, 185, 98, 15, "Xmt CWID");
             btnCWID->down_box(FL_DOWN_BOX);
             btnCWID->callback((Fl_Callback*)cb_btnCWID);
             o->value(progdefaults.CWid);
           } // Fl_Check_Button* btnCWID
-          { Fl_Value_Slider* o = sldrCWIDwpm = new Fl_Value_Slider(124, 176, 233, 20, "CWID wpm:");
+          { Fl_Value_Slider* o = sldrCWIDwpm = new Fl_Value_Slider(124, 182, 233, 20, "CWID wpm:");
             sldrCWIDwpm->type(1);
             sldrCWIDwpm->color((Fl_Color)26);
             sldrCWIDwpm->minimum(15);
@@ -1947,6 +1973,7 @@ l with your sound hardware.");
       { tabModems = new Fl_Group(0, 25, 401, 195, "Modem");
         tabModems->color((Fl_Color)51);
         tabModems->selection_color((Fl_Color)51);
+        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 401, 195);
           tabsModems->color((Fl_Color)51);
           tabsModems->selection_color((Fl_Color)10);
@@ -2100,46 +2127,47 @@ l with your sound hardware.");
             } // Fl_Counter* cntPostTiming
             tabCWQSK->end();
           } // Fl_Group* tabCWQSK
-          { tabDEX = new Fl_Group(0, 44, 400, 170, "Dex");
-            tabDEX->color((Fl_Color)51);
-            tabDEX->selection_color((Fl_Color)51);
-            { txtDEXSecondary = new Fl_Input(20, 75, 360, 44, "Secondary Text");
-              txtDEXSecondary->type(4);
-              txtDEXSecondary->callback((Fl_Callback*)cb_txtDEXSecondary);
-              txtDEXSecondary->align(FL_ALIGN_TOP_LEFT);
-              txtDEXSecondary->when(FL_WHEN_CHANGED);
-            } // Fl_Input* txtDEXSecondary
-            { Fl_Counter* o = valDEX_BW = new Fl_Counter(20, 130, 63, 21, "BW factor:");
-              valDEX_BW->type(1);
-              valDEX_BW->minimum(1);
-              valDEX_BW->maximum(2);
-              valDEX_BW->step(0.1);
-              valDEX_BW->value(1.5);
-              valDEX_BW->callback((Fl_Callback*)cb_valDEX_BW);
-              o->value(progdefaults.DEX_BW);
-            } // Fl_Counter* valDEX_BW
-            { Fl_Check_Button* o = valDEX_FILTER = new Fl_Check_Button(110, 130, 83, 19, "Filter ON");
-              valDEX_FILTER->down_box(FL_DOWN_BOX);
-              valDEX_FILTER->value(1);
-              valDEX_FILTER->callback((Fl_Callback*)cb_valDEX_FILTER);
-              o->value(progdefaults.DEX_FILTER);
-            } // Fl_Check_Button* valDEX_FILTER
-            { Fl_Counter* o = valDEX_PATHS = new Fl_Counter(20, 174, 63, 21, "Paths");
-              valDEX_PATHS->type(1);
-              valDEX_PATHS->minimum(4);
-              valDEX_PATHS->maximum(8);
-              valDEX_PATHS->step(1);
-              valDEX_PATHS->value(5);
-              valDEX_PATHS->callback((Fl_Callback*)cb_valDEX_PATHS);
-              o->value(progdefaults.DEX_PATHS);
-            } // Fl_Counter* valDEX_PATHS
-            { Fl_Check_Button* o = valDEX_SOFT = new Fl_Check_Button(110, 177, 70, 15, "Soft decode");
-              valDEX_SOFT->down_box(FL_DOWN_BOX);
-              valDEX_SOFT->callback((Fl_Callback*)cb_valDEX_SOFT);
-              o->value(progdefaults.DEX_SOFT);
-            } // Fl_Check_Button* valDEX_SOFT
-            tabDEX->end();
-          } // Fl_Group* tabDEX
+          { tabTHOR = new Fl_Group(0, 44, 400, 170, "Thor");
+            tabTHOR->color((Fl_Color)51);
+            tabTHOR->selection_color((Fl_Color)51);
+            tabTHOR->hide();
+            { txtTHORSecondary = new Fl_Input(20, 75, 360, 44, "Secondary Text");
+              txtTHORSecondary->type(4);
+              txtTHORSecondary->callback((Fl_Callback*)cb_txtTHORSecondary);
+              txtTHORSecondary->align(FL_ALIGN_TOP_LEFT);
+              txtTHORSecondary->when(FL_WHEN_CHANGED);
+            } // Fl_Input* txtTHORSecondary
+            { Fl_Counter* o = valTHOR_BW = new Fl_Counter(20, 130, 63, 21, "BW factor:");
+              valTHOR_BW->type(1);
+              valTHOR_BW->minimum(1);
+              valTHOR_BW->maximum(2);
+              valTHOR_BW->step(0.1);
+              valTHOR_BW->value(1.5);
+              valTHOR_BW->callback((Fl_Callback*)cb_valTHOR_BW);
+              o->value(progdefaults.THOR_BW);
+            } // Fl_Counter* valTHOR_BW
+            { Fl_Check_Button* o = valTHOR_FILTER = new Fl_Check_Button(110, 130, 83, 19, "Filter ON");
+              valTHOR_FILTER->down_box(FL_DOWN_BOX);
+              valTHOR_FILTER->value(1);
+              valTHOR_FILTER->callback((Fl_Callback*)cb_valTHOR_FILTER);
+              o->value(progdefaults.THOR_FILTER);
+            } // Fl_Check_Button* valTHOR_FILTER
+            { Fl_Counter* o = valTHOR_PATHS = new Fl_Counter(20, 174, 63, 21, "Paths");
+              valTHOR_PATHS->type(1);
+              valTHOR_PATHS->minimum(4);
+              valTHOR_PATHS->maximum(8);
+              valTHOR_PATHS->step(1);
+              valTHOR_PATHS->value(5);
+              valTHOR_PATHS->callback((Fl_Callback*)cb_valTHOR_PATHS);
+              o->value(progdefaults.THOR_PATHS);
+            } // Fl_Counter* valTHOR_PATHS
+            { Fl_Check_Button* o = valTHOR_SOFT = new Fl_Check_Button(110, 177, 70, 15, "Soft decode");
+              valTHOR_SOFT->down_box(FL_DOWN_BOX);
+              valTHOR_SOFT->callback((Fl_Callback*)cb_valTHOR_SOFT);
+              o->value(progdefaults.THOR_SOFT);
+            } // Fl_Check_Button* valTHOR_SOFT
+            tabTHOR->end();
+          } // Fl_Group* tabTHOR
           { tabDomEX = new Fl_Group(0, 50, 400, 170, "Dom");
             tabDomEX->color((Fl_Color)51);
             tabDomEX->selection_color((Fl_Color)51);
@@ -2184,7 +2212,6 @@ l with your sound hardware.");
           { tabFeld = new Fl_Group(0, 50, 400, 170, "Feld");
             tabFeld->color((Fl_Color)51);
             tabFeld->selection_color((Fl_Color)51);
-            tabFeld->hide();
             { Fl_Choice* o = selHellFont = new Fl_Choice(175, 62, 122, 20, "Feld Hell Font:");
               selHellFont->down_box(FL_BORDER_BOX);
               selHellFont->labelfont(4);
@@ -2205,17 +2232,20 @@ l with your sound hardware.");
               sldrHellBW->align(FL_ALIGN_TOP_LEFT);
               o->value(progdefaults.HELL_BW);
             } // Fl_Value_Slider* sldrHellBW
-            { btnHellXmtWidth = new Fl_Check_Button(40, 93, 113, 15, "2x Xmt Width");
+            { Fl_Check_Button* o = btnHellXmtWidth = new Fl_Check_Button(40, 93, 113, 15, "2x Xmt Width");
               btnHellXmtWidth->down_box(FL_DOWN_BOX);
               btnHellXmtWidth->callback((Fl_Callback*)cb_btnHellXmtWidth);
+              o->value(progdefaults.HellXmtWidth);
             } // Fl_Check_Button* btnHellXmtWidth
-            { btnHellRcvWidth = new Fl_Check_Button(40, 113, 130, 15, "1/2 x Rcv Width");
+            { Fl_Check_Button* o = btnHellRcvWidth = new Fl_Check_Button(40, 113, 130, 15, "1/2 x Rcv Width");
               btnHellRcvWidth->down_box(FL_DOWN_BOX);
               btnHellRcvWidth->callback((Fl_Callback*)cb_btnHellRcvWidth);
+              o->value(progdefaults.HellRcvWidth);
             } // Fl_Check_Button* btnHellRcvWidth
-            { btnBlackboard = new Fl_Check_Button(40, 134, 100, 15, "blackboard");
+            { Fl_Check_Button* o = btnBlackboard = new Fl_Check_Button(40, 134, 100, 15, "blackboard");
               btnBlackboard->down_box(FL_DOWN_BOX);
               btnBlackboard->callback((Fl_Callback*)cb_btnBlackboard);
+              o->value(progdefaults.HellBlackboard);
             } // Fl_Check_Button* btnBlackboard
             { Fl_Group* o = new Fl_Group(175, 90, 195, 85, "Pulse Shape");
               o->box(FL_ENGRAVED_FRAME);
@@ -2223,13 +2253,13 @@ l with your sound hardware.");
               { Fl_Check_Button* o = btnHellFastAttack = new Fl_Check_Button(185, 110, 169, 15, "Fast Attack (2 msec)");
                 btnHellFastAttack->down_box(FL_DOWN_BOX);
                 btnHellFastAttack->callback((Fl_Callback*)cb_btnHellFastAttack);
-                o->value(0);
+                o->value(progdefaults.HellPulseFast);
               } // Fl_Check_Button* btnHellFastAttack
               { Fl_Check_Button* o = btnHellSlowAttack = new Fl_Check_Button(185, 131, 70, 15, "Slow Attack (4 msec)");
                 btnHellSlowAttack->down_box(FL_DOWN_BOX);
                 btnHellSlowAttack->value(1);
                 btnHellSlowAttack->callback((Fl_Callback*)cb_btnHellSlowAttack);
-                o->value(1);
+                o->value(!progdefaults.HellPulseFast);
               } // Fl_Check_Button* btnHellSlowAttack
               o->end();
             } // Fl_Group* o
@@ -2237,7 +2267,7 @@ l with your sound hardware.");
               btnFeldHellIdle->down_box(FL_DOWN_BOX);
               btnFeldHellIdle->value(1);
               btnFeldHellIdle->callback((Fl_Callback*)cb_btnFeldHellIdle);
-              o->value(progdefaults.FELD_IDLE);
+              o->value(progdefaults.HellXmtIdle);
             } // Fl_Check_Button* btnFeldHellIdle
             tabFeld->end();
           } // Fl_Group* tabFeld

@@ -168,6 +168,12 @@ void Digiscope::rtty(double flo, double fhi, double amp)
 
 void Digiscope::mode(scope_mode md)
 {
+	if (md == PHASE) {
+		if (phase_mode >= PHASE1 && phase_mode <= PHASE3)
+			md = phase_mode;
+		else
+			md = phase_mode = PHASE1;
+	}
 	int W = w() - 4;
 	int H = h() - 4;
 	FL_LOCK_D();
@@ -219,7 +225,7 @@ void Digiscope::draw_phase()
 	fl_end_line();
 
 	if (_highlight) {
-		if (_mode > PHASE) {
+		if (_mode > PHASE1) {
 			if (pszn == psz - 1)
 				memmove(pvecstack, pvecstack + 1, (psz - 1) * sizeof(*pvecstack));
 			else
@@ -407,7 +413,7 @@ void Digiscope::draw()
 	else {
 		switch (_mode) {
 			case SCOPE :	draw_scope(); break;
-			case PHASE: case PHASE2: case PHASE3:	draw_phase(); break;
+			case PHASE1: case PHASE2: case PHASE3:	draw_phase(); break;
 			case RTTY :		draw_rtty(); break;
 //			case XHAIRS :	draw_crosshairs(); break;
 			case XHAIRS :	draw_xy(); break;
@@ -433,11 +439,13 @@ int Digiscope::handle(int event)
 	switch (event) {
 	case FL_RELEASE:
 		switch (_mode) {
-		case PHASE: case PHASE2:
+		case PHASE1: case PHASE2:
 			_mode = (scope_mode)((int)_mode + 1);
+			phase_mode = _mode;
 			break;
 		case PHASE3:
-			_mode = PHASE;
+			_mode = PHASE1;
+			phase_mode = _mode;
 			break;
 		case RTTY:
 			_mode = XHAIRS;

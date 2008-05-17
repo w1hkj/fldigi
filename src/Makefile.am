@@ -8,21 +8,22 @@ AM_CPPFLAGS = -I$(srcdir) -I$(srcdir)/include -I$(srcdir)/irrxml -Ifileselector 
 
 AM_CXXFLAGS = @PORTAUDIO_CFLAGS@ @FLTK_CFLAGS@ @SNDFILE_CFLAGS@ \
 	@SAMPLERATE_CFLAGS@ @PULSEAUDIO_CFLAGS@ @HAMLIB_CFLAGS@ \
-	@IMAGE_CFLAGS@ @MAC_UNIVERSAL_CFLAGS@ \
+	@IMAGE_CFLAGS@ @XMLRPC_CFLAGS@ @MAC_UNIVERSAL_CFLAGS@ \
 	-pipe -Wall -fexceptions @OPT_CFLAGS@ @DEBUG_CFLAGS@
 AM_CFLAGS = $(AM_CXXFLAGS)
 
 AM_LDFLAGS = @MAC_UNIVERSAL_LDFLAGS@
 
 LDADD = @PORTAUDIO_LIBS@ @BOOST_LDFLAGS@ @FLTK_LIBS@ @SNDFILE_LIBS@ \
-	@SAMPLERATE_LIBS@ @PULSEAUDIO_LIBS@ @HAMLIB_LIBS@ @IMAGE_LIBS@ @RTLIB@
+	@SAMPLERATE_LIBS@ @PULSEAUDIO_LIBS@ @HAMLIB_LIBS@ @IMAGE_LIBS@ @XMLRPC_LIBS@ @RTLIB@
 
 
 HAMLIB_SRC = include/hamlib.h rigcontrol/hamlib.cxx include/rigclass.h rigcontrol/rigclass.cxx
+XMLRPC_SRC = include/xmlrpc.h misc/xmlrpc.cxx
 WIN32_RES_SRC = fldigirc.rc
 
 # We distribute these but do not always compile them
-EXTRA_fldigi_SOURCES = $(HAMLIB_SRC) $(WIN32_RES_SRC)
+EXTRA_fldigi_SOURCES = $(HAMLIB_SRC) $(XMLRPC_SRC) $(WIN32_RES_SRC)
 
 fldigi_SOURCES =
 
@@ -35,6 +36,10 @@ endif
 
 if ENABLE_HAMLIB
   fldigi_SOURCES += $(HAMLIB_SRC)
+endif
+
+if ENABLE_XMLRPC
+  fldigi_SOURCES += $(XMLRPC_SRC)
 endif
 
 FLDIGI_VERSION_MAJOR = @FLDIGI_VERSION_MAJOR@
@@ -115,8 +120,8 @@ fldigi_SOURCES += \
 	dialogs/fl_digi.cxx \
 	dialogs/font_browser.cxx \
 	dialogs/Viewer.cxx \
-	dex/dex.cxx \
-	dex/dexvaricode.cxx \
+	thor/thor.cxx \
+	thor/thorvaricode.cxx \
 	dominoex/dominoex.cxx \
 	dominoex/dominovar.cxx \
 	feld/feld.cxx \
@@ -148,8 +153,8 @@ fldigi_SOURCES += \
 	include/configuration.h \
 	include/cw.h \
 	include/digiscope.h \
-	include/dex.h \
-	include/dexvaricode.h \
+	include/thor.h \
+	include/thorvaricode.h \
 	include/dominoex.h \
 	include/dominovar.h \
 	include/feld.h \

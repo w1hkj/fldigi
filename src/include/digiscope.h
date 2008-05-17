@@ -51,6 +51,7 @@ public:
 	enum scope_mode {
 		SCOPE,
 		PHASE,
+		PHASE1,
 		PHASE2,
 		PHASE3,
 		RTTY,
@@ -75,6 +76,7 @@ private:
 	double _quality;
 	double _flo, _fhi, _amp;
 	bool _highlight;
+	scope_mode phase_mode;
 
 public:
 	Digiscope(int, int, int, int);

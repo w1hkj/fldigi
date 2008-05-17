@@ -44,6 +44,8 @@ status progStatus = {
 	false,				// bool rigShown;
 	50,					// int rigX;
 	50,					// int rigY;
+	560,					// int rigW
+	80,					// int rigH
 	1000,				// int carrier;
 	1,					// int mag;
 	NORMAL,				// WFdisp::WFspeed
@@ -97,6 +99,8 @@ void status::saveLastState()
 	if (rigcontrol && rigcontrol->visible()) {
 		rigX = rigcontrol->x();
 		rigY = rigcontrol->y();
+		rigW = rigcontrol->w();
+		rigH = rigcontrol->h();
 		rigShown = true;
 	}
 
@@ -137,6 +141,8 @@ void status::saveLastState()
 	spref.set("rigctl_visible", rigShown);
 	spref.set("rigctl_x", rigX);
 	spref.set("rigctl_y", rigY);
+	spref.set("rigctl_w", rigW);
+	spref.set("rigctl_h", rigH);
 
 	spref.set("viewer_visible", VIEWERvisible);
 	spref.set("viewer_x", static_cast<int>(VIEWERxpos));
@@ -192,6 +198,8 @@ void status::loadLastState()
 	spref.get("rigctl_visible", i, i); rigShown = i;
 	spref.get("rigctl_x", rigX, rigX);
 	spref.get("rigctl_y", rigY, rigY);
+	spref.get("rigctl_w", rigW, rigW);
+	spref.get("rigctl_h", rigH, rigH);
 
 	spref.get("viewer_visible", i, i); VIEWERvisible = i;
 	spref.get("viewer_x", i, i); VIEWERxpos = i;
@@ -255,9 +263,7 @@ void status::initLastState()
 	if (rigShown == true) {
 		if (!rigcontrol)
 			createRigDialog();
-		int rdW = rigcontrol->w();
-		int rdH = rigcontrol->h();
-		rigcontrol->resize(rigX, rigY, rdW, rdH);
+		rigcontrol->resize(rigX, rigY, rigW, rigH);
 		rigcontrol->show();
 	}
 	if (VIEWERvisible == true)

@@ -33,13 +33,19 @@
 
 #if HAVE_STD_BIND
 #   include <functional>
+namespace qrbind {
     using std::bind;
+};
 #elif HAVE_STD_TR1_BIND
 #   include <tr1/functional>
+namespace qrbind {
     using std::tr1::bind;
+};
 #else
 #   include <boost/bind.hpp>
+namespace qrbind {
     using boost::bind;
+};
 #endif
 
 #include "threads.h"
@@ -158,16 +164,16 @@ extern qrunner *cbq[NUM_QRUNNER_THREADS];
 #define REQ_ASYNC(...)							\
 	do {								\
 		if (GET_THREAD_ID() != FLMAIN_TID)			\
-			cbq[GET_THREAD_ID()]->request(bind(__VA_ARGS__)); \
+			cbq[GET_THREAD_ID()]->request(qrbind::bind(__VA_ARGS__)); \
 		else							\
-			bind(__VA_ARGS__)();				\
+			qrbind::bind(__VA_ARGS__)();			\
 	} while (0)
 #define REQ_SYNC(...)							\
 	do {								\
 		if (GET_THREAD_ID() != FLMAIN_TID)			\
-			cbq[GET_THREAD_ID()]->request_sync(bind(__VA_ARGS__)); \
+			cbq[GET_THREAD_ID()]->request_sync(qrbind::bind(__VA_ARGS__)); \
 		else							\
-			bind(__VA_ARGS__)();				\
+			qrbind::bind(__VA_ARGS__)();			\
 	} while (0)
 
 #define REQ_ASYNC_DROP(...)						\
@@ -175,20 +181,20 @@ extern qrunner *cbq[NUM_QRUNNER_THREADS];
                 if (GET_THREAD_ID() != FLMAIN_TID) {			\
 			if (unlikely(cbq[GET_THREAD_ID()]->drop_flag))	\
 				break;					\
-                        cbq[GET_THREAD_ID()]->request(bind(__VA_ARGS__)); \
+                        cbq[GET_THREAD_ID()]->request(qrbind::bind(__VA_ARGS__)); \
 		}							\
                 else                                                    \
-                        bind(__VA_ARGS__)();                            \
+                        qrbind::bind(__VA_ARGS__)();			\
         } while (0)
 #define REQ_SYNC_DROP(...)						\
         do {                                                            \
                 if (GET_THREAD_ID() != FLMAIN_TID) {			\
 			if (unlikely(cbq[GET_THREAD_ID()]->drop_flag))	\
 				break;					\
-                        cbq[GET_THREAD_ID()]->request_sync(bind(__VA_ARGS__)); \
+                        cbq[GET_THREAD_ID()]->request_sync(qrbind::bind(__VA_ARGS__)); \
 		}							\
                 else                                                    \
-                        bind(__VA_ARGS__)();                            \
+                        qrbind::bind(__VA_ARGS__)();			\
         } while (0)
 
 #define REQ_FLUSH()                                                     \

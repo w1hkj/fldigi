@@ -142,8 +142,6 @@ feld::feld(trx_mode m)
 	if (filter_bandwidth != progdefaults.HELL_BW)
 		progdefaults.HELL_BW = filter_bandwidth;
 	
-std::cout << hell_bandwidth << ", " << progdefaults.HELL_BW << std::endl;
-
 	lp = 1.5 * filter_bandwidth / samplerate;
 	
 	bpfilt = new fftfilt(0, lp, 1024);
@@ -275,10 +273,8 @@ int feld::rx_process(const double *buf, int len)
 	complex z, *zp;
 	int i, n;
 
-	FL_LOCK_D();
-	halfwidth = btnHellRcvWidth->value();
-	blackboard = btnBlackboard->value();
-	FL_UNLOCK_D();
+	halfwidth = progdefaults.HellRcvWidth;
+	blackboard = progdefaults.HellBlackboard;
 	
 	if (progdefaults.HELL_BW != filter_bandwidth) {
 		double lp;
@@ -414,7 +410,7 @@ void feld::send_symbol(int currsymb, int nextsymb)
 		outbuf[outlen++] = Amp * nco(tone);
 
 		if (outlen >= OUTBUFSIZE) {
-			std::cout << "feld reset\n"; std::cout.flush();
+			std::cout << "feld reset" << std::endl;
 			break;
 		}
 		txcounter += upsampleinc;
@@ -470,10 +466,9 @@ int feld::tx_process()
 	int c;
 	bool hdkey;
 
-	FL_LOCK_D();
-	dxmode = 1 + btnHellXmtWidth->value();
-	hdkey = btnHellFastAttack->value();
-	FL_UNLOCK_D();
+	dxmode = 1 + progdefaults.HellXmtWidth;
+	hdkey = progdefaults.HellPulseFast;
+
 	fntnbr = progdefaults.feldfontnbr;
 	if (hardkeying != hdkey) {
 		hardkeying = hdkey;

@@ -13,6 +13,8 @@ struct status {
 	bool	rigShown;
 	int		rigX;
 	int		rigY;
+	int		rigW;
+	int		rigH;
 	int		carrier;
 	int		mag;
 	int		speed;

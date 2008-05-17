@@ -1,5 +1,5 @@
 //
-// dexvaricode.h  --  DEX Varicode
+// thorvaricode.h  --  DEX Varicode
 //
 // Copyright (C) 2008
 //		Dave Freese, W1HKJ
@@ -24,7 +24,7 @@
 #ifndef _DEXVARICODE_H
 #define _DEXVARICODE_H
 
-extern const char *dexvarienc(int c, int secondary);
-extern int dexvaridec(unsigned int symbol);
+extern const char *thorvarienc(int c, int secondary);
+extern int thorvaridec(unsigned int symbol);
 
 #endif

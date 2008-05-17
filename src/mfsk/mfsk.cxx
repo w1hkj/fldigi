@@ -919,7 +919,7 @@ void cb_picRxSave( Fl_Widget *w, void *who)
 		;
 
 	int fsel;
-	const char *fn = file_saveas("Save image as:", ffilter, dfname, &fsel);
+	const char *fn = FSEL::saveas("Save image as:", ffilter, dfname, &fsel);
 	if (!fn) return;
         // selected filter determines format
 	switch (fsel) {
@@ -1054,7 +1054,7 @@ void updateTxPic(unsigned char data, mfsk *me)
 void cb_picTxLoad(Fl_Widget *,void *who) {
 //	mfsk *TxWho = (mfsk *)who;
 	const char *fn = 
-		file_select("Load image file", "Portable Network Graphics\t*.png\n"
+		FSEL::select("Load image file", "Portable Network Graphics\t*.png\n"
 			    "Independent JPEG Group\t*.{jpg,jif,jpeg,jpe}\n"
 			    "Graphics Interchange Format\t*.gif");
 	if (!fn) return;

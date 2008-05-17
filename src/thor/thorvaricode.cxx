@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 //
-//	dexvaricode.cxx  --  DEX Varicode
+//	thorvaricode.cxx  --  THOR Varicode
 //
 // Copyright (C) 2009
 //		Dave Freese, W1HKJ
@@ -25,9 +25,9 @@
 #include <config.h>
 
 #include "mfskvaricode.h"
-#include "dexvaricode.h"
+#include "thorvaricode.h"
 
-// DEX varicode is an extended set of the IZ8BLY MFSK varicode that uses the
+// THOR varicode is an extended set of the IZ8BLY MFSK varicode that uses the
 // unallocated remaining 12 bit codes for a secondary character set.
 
 // Primary character set (same as MFSK)
@@ -37,7 +37,7 @@
 
 // encoding table
 
-static const char *dex_varicode[] = {
+static const char *thor_varicode[] = {
 	"101110000000",		/* 032 - <SPC>	*/ 
 	"101110100000",		/* 033 - !	*/
 	"101110101000",		/* 034 - '"'	*/
@@ -152,7 +152,7 @@ static char *unused[] = {
 
 // decoding table
 
-static const unsigned int dex_varidecode[] = {
+static const unsigned int thor_varidecode[] = {
 	0xB80, 0xBA0, 0xBA8, 0xBAC, 0xBB0, 0xBB4, 0xBB8, 0xBBC,
 	0xBC0, 0xBD0, 0xBD4, 0xBD8, 0xBDC, 0xBE0, 0xBE8, 0xBEC,
 	0xBF0, 0xBF4, 0xBF8, 0xBFC, 0xC00, 0xD00, 0xD40, 0xD54,
@@ -167,18 +167,18 @@ static const unsigned int dex_varidecode[] = {
 	0xFA8, 0xFAC, 0xFB0
 };
 
-const char *dexvarienc(int c, int sec)
+const char *thorvarienc(int c, int sec)
 {
 	if (sec == 0)
 		return varienc(c);       // mfsk varicode
 	else
 		if (c >= ' ' && c <= 'z')
-			return dex_varicode[c - ' '];
+			return thor_varicode[c - ' '];
 		
 	return varienc(0);        // return code for NULL if not in tables
 }
 
-int dexvaridec(unsigned int symbol)
+int thorvaridec(unsigned int symbol)
 {
 	int i;
 
@@ -186,7 +186,7 @@ int dexvaridec(unsigned int symbol)
 		return varidec(symbol);  // find in the MFSK decode table	
 
 	for (i = 0; i < 92; i++)
-		if (symbol == dex_varidecode[i])
+		if (symbol == thor_varidecode[i])
 			return (' ' + i + 0x100);  // found in the extended decode table
 			
 	return -1;                   // not found

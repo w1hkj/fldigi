@@ -68,18 +68,23 @@ struct configuration {
 // FELD-HELL
 	bool		FELD_IDLE;
 	double		HELL_BW;
+	bool		HellRcvWidth;
+	bool		HellBlackboard;
+	bool		HellXmtWidth;
+	bool		HellXmtIdle;
+	bool		HellPulseFast;
 // OLIVIA
 	int			oliviatones;
 	int			oliviabw;
 	int			oliviasmargin;
 	int			oliviasinteg;
 	bool		olivia8bit;
-// DEX
-	double		DEX_BW;
-	bool		DEX_FILTER;
-	string		DEXsecText;
-	int			DEX_PATHS;
-	bool		DEX_SOFT;
+// THOR
+	double		THOR_BW;
+	bool		THOR_FILTER;
+	string		THORsecText;
+	int			THOR_PATHS;
+	bool		THOR_SOFT;
 // DOMINOEX
 	double		DOMINOEX_BW;
 	bool		DOMINOEX_FILTER;
@@ -110,6 +115,7 @@ struct configuration {
 	string	strTextid;
 	bool	macroCWid;
 	int		videowidth;
+	bool	ID_SMALL;
 	bool	macrotextid;
 	int		QRZ;
 	string	QRZusername;
@@ -202,6 +208,11 @@ struct configuration {
 	int		VIEWERchannels;
 	double	VIEWERsquelch;
 	int		VIEWERtimeout;
+
+// XMLRPC parameters
+	bool xmlrpc_server;
+	string xmlrpc_address;
+	string xmlrpc_port;
 
 public:
 	void writeDefaultsXML();

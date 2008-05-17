@@ -364,6 +364,13 @@ public:
 /*
 */
 	Fl_Button	*btnRev;
+	Fl_Counter	*wfcarrier;
+	Fl_Counter	*wfRefLevel;
+	Fl_Counter	*wfAmpSpan;
+	Fl_Light_Button	*xmtrcv;
+	Fl_Light_Button *xmtlock;
+	Fl_Button	*qsy;
+
 private:
 	Fl_Box		*bezel;
 	WFdisp		*wfdisp;
@@ -373,13 +380,7 @@ private:
 	Fl_Button	*left; 
 	Fl_Button	*center;
 	Fl_Button	*right;
-	Fl_Counter	*wfcarrier;
-	Fl_Counter	*wfRefLevel;
-	Fl_Counter	*wfAmpSpan;
-	Fl_Button	*qsy;
 	Fl_Button	*wfrate;
-	Fl_Light_Button	*xmtrcv;
-	Fl_Light_Button *xmtlock;
 	Fl_Button	*btnMem;
 	Fl_Menu_Button	*mbtnMem;
 	int			buttonrow;

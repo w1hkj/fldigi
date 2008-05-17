@@ -24,6 +24,7 @@
 
 #include <cstring>
 #include <cstdlib>
+#include <cstdio>
 
 #include "FTextView.h"
 #include "main.h"
@@ -185,17 +186,16 @@ void FTextBase::set_style(int attr, Fl_Font f, int s, Fl_Color c, int set)
 ///
 void FTextBase::readFile(void)
 {
-	const char *fn = file_select("Append text", "Text\t*.txt");
+	const char *fn = FSEL::select("Append text", "Text\t*.txt");
 	if (fn) {
-#ifdef WIN32
-		string text;
-		ifstream tfile(fn);
-		char ch;
-		while (tfile) {
-			tfile.get(ch);
-			if (ch != '\r') text += ch;
-		}
-		tbuf->append(text.c_str());
+#ifdef __CYGWIN__
+		FILE* tfile = fopen(fn, "rt");
+		if (!tfile)
+			return;
+		char buf[BUFSIZ+1];
+		while (fgets(buf, sizeof(buf), tfile))
+			tbuf->append(buf);
+		fclose(tfile);
 #else
 		tbuf->appendfile(fn);
 #endif
@@ -209,9 +209,31 @@ void FTextBase::readFile(void)
 ///
 void FTextBase::saveFile(void)
 {
-	const char *fn = file_saveas("Save text as", "Text\t*.txt");
-	if (fn)
+ 	const char *fn = FSEL::saveas("Save text as", "Text\t*.txt");
+	if (fn) {
+#ifdef __CYGWIN__
+		ofstream tfile(fn);
+		if (!tfile)
+			return;
+
+		char *p1, *p2, *text = tbuf->text();
+		for (p1 = p2 = text; *p1; p1 = p2) {
+			while (*p2 != '\0' && *p2 != '\n')
+				p2++;
+			if (*p2 == '\n') {
+				*p2 = '\0';
+				tfile << p1 << "\r\n";
+				p2++;
+
+			}
+			else
+				tfile << p1;
+		}
+		free(text);
+#else
 		tbuf->outputfile(fn, 0, tbuf->length());
+#endif
+	}
 }
 
 /// Returns a character string containing the selected text, if any,

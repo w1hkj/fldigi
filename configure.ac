@@ -9,7 +9,7 @@ dnl major and minor must be integers; patch may
 dnl contain other characters or be empty
 m4_define(FLDIGI_MAJOR, [2])
 m4_define(FLDIGI_MINOR, [11])
-m4_define(FLDIGI_PATCH, [AG])
+m4_define(FLDIGI_PATCH, [AH])
 
 AC_INIT([fldigi], FLDIGI_MAJOR.FLDIGI_MINOR[FLDIGI_PATCH], [w1hkj AT w1hkj DOT com])
 
@@ -157,6 +157,13 @@ AC_FLDIGI_FLTK
 # Substitute IMAGE_CFLAGS and IMAGE_LIBS in Makefile
 AC_FLDIGI_IMAGES
 
+### XML-RPC library
+# Set ac_cv_xmlrpc to yes/no
+# Substitute XMLRPC_CFLAGS and XMLRPC_LIBS in Makefile
+# Define USE_XMLRPC in config.h
+# Set ENABLE_XMLRPC Makefile conditional
+AC_FLDIGI_XMLRPC
+
 ### OSS
 # Set ac_cv_oss to yes/no
 # Define USE_OSS in config.h
@@ -233,4 +240,5 @@ Configuration summary:
   PortAudio ........................... $ac_cv_portaudio
   PulseAudio .......................... $ac_cv_pulseaudio
   hamlib .............................. $ac_cv_hamlib
+  xml-rpc ............................. $ac_cv_xmlrpc
 ])
