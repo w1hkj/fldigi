@@ -279,7 +279,7 @@ enum TAG { \
 	HAMRIGNAME, HAMRIGDEVICE, HAMRIGBAUDRATE,
 	PTTDEV,
 	SECONDARYTEXT, 
-	AUDIOIO, OSSDEVICE, PADEVICE, PORTINDEVICE, PORTININTHOR, PORTOUTDEVICE, PORTOUTINTHOR, PULSESERVER,
+	AUDIOIO, OSSDEVICE, PADEVICE, PORTINDEVICE, PORTININDEX, PORTOUTDEVICE, PORTOUTINDEX, PULSESERVER,
 	SAMPLERATE, INSAMPLERATE, OUTSAMPLERATE, SAMPLECONVERTER, RXCORR, TXCORR, TXOFFSET,
 	USELEADINGZEROS, CONTESTSTART, CONTESTDIGITS,
 	USETIMER, MACRONUMBER, TIMEOUT,
@@ -469,9 +469,9 @@ void configuration::writeDefaultsXML()
 	writeXMLstr(f, "OSSDEVICE", OSSdevice);
 	writeXMLstr(f, "PADEVICE", PAdevice);
 	writeXMLstr(f, "PORTINDEVICE", PortInDevice);
-	writeXMLint(f, "PORTININTHOR", PortInIndex);
+	writeXMLint(f, "PORTININDEX", PortInIndex);
 	writeXMLstr(f, "PORTOUTDEVICE", PortOutDevice);
-	writeXMLint(f, "PORTOUTINTHOR", PortOutIndex);
+	writeXMLint(f, "PORTOUTINDEX", PortOutIndex);
 	writeXMLstr(f, "PULSESERVER", PulseServer);
 	writeXMLint(f, "SAMPLERATE", sample_rate);
 	writeXMLint(f, "INSAMPLERATE", in_sample_rate);
@@ -872,13 +872,13 @@ bool configuration::readDefaultsXML()
 					case PORTINDEVICE :
 						PortInDevice = xml->getNodeData();
 						break;
-					case PORTININTHOR :
+					case PORTININDEX :
 						PortInIndex = atoi(xml->getNodeData());
 						break;
 					case PORTOUTDEVICE :
 						PortOutDevice = xml->getNodeData();
 						break;
-					case PORTOUTINTHOR :
+					case PORTOUTINDEX :
 						PortOutIndex = atoi(xml->getNodeData());
 						break;
 					case PULSESERVER :
@@ -1154,9 +1154,9 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("OSSDEVICE", nodeName)) 	tag = OSSDEVICE;
 				else if (!strcmp("PADEVICE", nodeName)) 	tag = PADEVICE;
 				else if (!strcmp("PORTINDEVICE", nodeName)) 	tag = PORTINDEVICE;
-				else if (!strcmp("PORTININTHOR", nodeName)) 	tag = PORTININTHOR;
+				else if (!strcmp("PORTININDEX", nodeName)) 	tag = PORTININDEX;
 				else if (!strcmp("PORTOUTDEVICE", nodeName)) 	tag = PORTOUTDEVICE;
-				else if (!strcmp("PORTOUTINTHOR", nodeName)) 	tag = PORTOUTINTHOR;
+				else if (!strcmp("PORTOUTINDEX", nodeName)) 	tag = PORTOUTINDEX;
 				else if (!strcmp("SAMPLERATE", nodeName)) 	tag = SAMPLERATE;
 				else if (!strcmp("INSAMPLERATE", nodeName)) 	tag = INSAMPLERATE;
 				else if (!strcmp("OUTSAMPLERATE", nodeName)) 	tag = OUTSAMPLERATE;
