@@ -1,5 +1,5 @@
 //
-//    dex.h  --  dex modem
+//    thor.h  --  thor modem
 //
 //	Copyright (C) 2008
 //		David Freese (w1hkj@w1hkj.com)
@@ -19,8 +19,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ----------------------------------------------------------------------------
 
-#ifndef _dex_H
-#define _dex_H
+#ifndef _thor_H
+#define _thor_H
 
 #include <string>
 
@@ -33,9 +33,9 @@
 #include "mbuffer.h"
 
 // NASA coefficients for viterbi encode/decode algorithms
-#define	DEX_K	7
-#define	DEX_POLY1	0x6d
-#define	DEX_POLY2	0x4f
+#define	THOR_K	7
+#define	THOR_POLY1	0x6d
+#define	THOR_POLY2	0x4f
 
 //#include "mfskvaricode.h"
 #include "interleave.h"
@@ -44,18 +44,18 @@
 
 using namespace std;
 
-#define DEXNUMMTONES 18
-#define DEXMAXFFTS  8
-#define DEXBASEFREQ 500.0
-#define DEXFIRSTIF 1000.0
+#define THORNUMMTONES 18
+#define THORMAXFFTS  8
+#define THORBASEFREQ 500.0
+#define THORFIRSTIF 1000.0
 
-#define DEXSCOPESIZE 64
+#define THORSCOPESIZE 64
 
-struct DEXrxpipe {
-	complex vector[DEXMAXFFTS * DEXNUMMTONES * 6];
+struct THORrxpipe {
+	complex vector[THORMAXFFTS * THORNUMMTONES * 6];
 };
 
-class dex : public modem {
+class thor : public modem {
 public:
 	enum {
 		TX_STATE_PREAMBLE,
@@ -66,7 +66,7 @@ public:
 	};
 protected:
 // common variables
-	double	phase[DEXMAXFFTS + 1];
+	double	phase[THORMAXFFTS + 1];
 	double	txphase;
 	int		symlen;
 	int		doublespaced;
@@ -77,12 +77,12 @@ protected:
 	
 // rx variables
 	C_FIR_filter	*hilbert;
-	sfft			*binsfft[DEXMAXFFTS];
+	sfft			*binsfft[THORMAXFFTS];
 	fftfilt			*fft;
-	Cmovavg			*vidfilter[DEXSCOPESIZE];
+	Cmovavg			*vidfilter[THORSCOPESIZE];
 	Cmovavg			*syncfilter;
 	
-	DEXrxpipe		*pipe;
+	THORrxpipe		*pipe;
 	unsigned int	pipeptr;
 	unsigned int	datashreg;
 	mbuffer<double, 0, 2>	scopedata;
@@ -153,8 +153,8 @@ private:
 	void	Clearbits();
 			
 public:
-	dex (trx_mode md);
-	~dex ();
+	thor (trx_mode md);
+	~thor ();
 	void	init();
 	void	rx_init();
 	void	tx_init(SoundBase *sc);

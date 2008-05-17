@@ -120,8 +120,8 @@ fldigi_SOURCES += \
 	dialogs/fl_digi.cxx \
 	dialogs/font_browser.cxx \
 	dialogs/Viewer.cxx \
-	dex/dex.cxx \
-	dex/dexvaricode.cxx \
+	thor/thor.cxx \
+	thor/thorvaricode.cxx \
 	dominoex/dominoex.cxx \
 	dominoex/dominovar.cxx \
 	feld/feld.cxx \
@@ -153,8 +153,8 @@ fldigi_SOURCES += \
 	include/configuration.h \
 	include/cw.h \
 	include/digiscope.h \
-	include/dex.h \
-	include/dexvaricode.h \
+	include/thor.h \
+	include/thorvaricode.h \
 	include/dominoex.h \
 	include/dominovar.h \
 	include/feld.h \

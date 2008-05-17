@@ -209,7 +209,7 @@ void FTextBase::readFile(void)
 ///
 void FTextBase::saveFile(void)
 {
-	const char *fn = FSEL::saveas("Save text as", "Text\t*.txt");
+ 	const char *fn = FSEL::saveas("Save text as", "Text\t*.txt");
 	if (fn) {
 #ifdef __CYGWIN__
 		ofstream tfile(fn);

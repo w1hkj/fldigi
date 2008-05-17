@@ -65,7 +65,7 @@
 #include "mt63.h"
 #include "rtty.h"
 #include "olivia.h"
-#include "dex.h"
+#include "thor.h"
 #include "dominoex.h"
 #include "feld.h"
 #include "throb.h"
@@ -202,14 +202,14 @@ Fl_Menu_Item quick_change_mt63[] = {
 	{ 0 }
 };
 
-Fl_Menu_Item quick_change_dex[] = {
-	{ mode_info[MODE_DEX4].name, 0, cb_init_mode, (void *)MODE_DEX4 },
-	{ mode_info[MODE_DEX5].name, 0, cb_init_mode, (void *)MODE_DEX5 },
-	{ mode_info[MODE_DEX8].name, 0, cb_init_mode, (void *)MODE_DEX8 },
-	{ mode_info[MODE_DEX11].name, 0, cb_init_mode, (void *)MODE_DEX11 },
-	{ mode_info[MODE_DSX11].name, 0, cb_init_mode, (void *)MODE_DSX11 },
-	{ mode_info[MODE_DEX16].name, 0, cb_init_mode, (void *)MODE_DEX16 },
-	{ mode_info[MODE_DEX22].name, 0, cb_init_mode, (void *)MODE_DEX22 },
+Fl_Menu_Item quick_change_thor[] = {
+	{ mode_info[MODE_THOR4].name, 0, cb_init_mode, (void *)MODE_THOR4 },
+	{ mode_info[MODE_THOR5].name, 0, cb_init_mode, (void *)MODE_THOR5 },
+	{ mode_info[MODE_THOR8].name, 0, cb_init_mode, (void *)MODE_THOR8 },
+	{ mode_info[MODE_THOR11].name, 0, cb_init_mode, (void *)MODE_THOR11 },
+	{ mode_info[MODE_TSOR11].name, 0, cb_init_mode, (void *)MODE_TSOR11 },
+	{ mode_info[MODE_THOR16].name, 0, cb_init_mode, (void *)MODE_THOR16 },
+	{ mode_info[MODE_THOR22].name, 0, cb_init_mode, (void *)MODE_THOR22 },
 	{ 0 }
 };
 
@@ -403,12 +403,12 @@ void init_modem(trx_mode mode)
 		modem_config_tab = tabCW;
 		break;
 
-	case MODE_DEX4: case MODE_DEX5: case MODE_DEX8:
-	case MODE_DEX11: case MODE_DSX11: case MODE_DEX16: case MODE_DEX22:
+	case MODE_THOR4: case MODE_THOR5: case MODE_THOR8:
+	case MODE_THOR11: case MODE_TSOR11: case MODE_THOR16: case MODE_THOR22:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new dex(mode));
-		quick_change = quick_change_dex;
-		modem_config_tab = tabDEX;
+			      *mode_info[mode].modem = new thor(mode));
+		quick_change = quick_change_thor;
+		modem_config_tab = tabTHOR;
 		break;
 
 	case MODE_DOMINOEX4: case MODE_DOMINOEX5: case MODE_DOMINOEX8:
@@ -1041,16 +1041,6 @@ Fl_Menu_Item menu_[] = {
 
 { mode_info[MODE_CW].name, 0, cb_init_mode, (void *)MODE_CW, 0, FL_NORMAL_LABEL, 0, 14, 0},
 
-{"DEX", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_DEX4].name, 0, cb_init_mode, (void *)MODE_DEX4, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_DEX5].name, 0, cb_init_mode, (void *)MODE_DEX5, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_DEX8].name, 0, cb_init_mode, (void *)MODE_DEX8, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_DEX11].name, 0, cb_init_mode, (void *)MODE_DEX11, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_DSX11].name, 0, cb_init_mode, (void *)MODE_DSX11, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_DEX16].name, 0, cb_init_mode, (void *)MODE_DEX16, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_DEX22].name, 0, cb_init_mode, (void *)MODE_DEX22, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{0,0,0,0,0,0,0,0,0},
-
 {"DominoEX", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DOMINOEX4].name, 0, cb_init_mode, (void *)MODE_DOMINOEX4, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DOMINOEX5].name, 0, cb_init_mode, (void *)MODE_DOMINOEX5, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -1095,6 +1085,16 @@ Fl_Menu_Item menu_[] = {
 { mode_info[MODE_OLIVIA].name, 0, cb_init_mode, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 
 { mode_info[MODE_RTTY].name, 0, cb_init_mode, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
+
+{"THOR", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_THOR4].name, 0, cb_init_mode, (void *)MODE_THOR4, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_THOR5].name, 0, cb_init_mode, (void *)MODE_THOR5, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_THOR8].name, 0, cb_init_mode, (void *)MODE_THOR8, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_THOR11].name, 0, cb_init_mode, (void *)MODE_THOR11, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_TSOR11].name, 0, cb_init_mode, (void *)MODE_TSOR11, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_THOR16].name, 0, cb_init_mode, (void *)MODE_THOR16, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_THOR22].name, 0, cb_init_mode, (void *)MODE_THOR22, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
 
 {"Throb", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_THROB1].name, 0, cb_init_mode, (void *)MODE_THROB1, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -1960,15 +1960,15 @@ void resetOLIVIA() {
 	active_modem->restart();
 }
 
-void resetDEX() {
+void resetTHOR() {
 	trx_mode md = active_modem->get_mode();
-	if (md == MODE_DEX4 ||
-		md == MODE_DEX5 ||
-		md == MODE_DEX8 ||
-		md == MODE_DEX11 ||
-		md == MODE_DSX11 ||
-		md == MODE_DEX16 ||
-		md == MODE_DEX22 ) {
+	if (md == MODE_THOR4 ||
+		md == MODE_THOR5 ||
+		md == MODE_THOR8 ||
+		md == MODE_THOR11 ||
+		md == MODE_TSOR11 ||
+		md == MODE_THOR16 ||
+		md == MODE_THOR22 ) {
 		active_modem->restart();
 	}
 }

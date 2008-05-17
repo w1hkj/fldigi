@@ -325,12 +325,12 @@ progdefaults.changed = true;
         }
       }
       Fl_Group tabVideo {
-        label Video
-        xywh {0 25 400 195} color 51 selection_color 51 hide
+        label Video open
+        xywh {0 25 400 195} color 51 selection_color 51
       } {
         Fl_Group {} {
           label {Video Preamble} open
-          xywh {5 40 390 67} box ENGRAVED_FRAME align 21
+          xywh {5 40 390 77} box ENGRAVED_FRAME align 21
         } {
           Fl_Check_Button btnsendid {
             label {Xmt Mode ID}
@@ -342,47 +342,59 @@ progdefaults.changed = true;}
             label {Xmt Video Text}
             callback {progdefaults.sendtextid=o->value();
 progdefaults.changed = true;}
-            xywh {11 82 115 20} down_box DOWN_BOX
+            xywh {11 89 115 20} down_box DOWN_BOX
             code0 {o->value(progdefaults.sendtextid);}
           }
           Fl_Input valVideotext {
             label {Video Text:}
             callback {progdefaults.strTextid = o->value();
 progdefaults.changed = true;}
-            tooltip {Limit to a few characters as in CQEM or IOTA etc.} xywh {159 82 94 20} align 5
+            tooltip {Limit to a few characters as in CQEM or IOTA etc.} xywh {159 89 120 20} align 5
             code0 {o->value(progdefaults.strTextid.c_str());}
           }
           Fl_Value_Slider sldrVideowidth {
             label {Video Width:}
             callback {progdefaults.videowidth = (int)o->value();
 progdefaults.changed = true;}
-            tooltip {Set the \# of chars per row} xywh {286 82 101 20} type Horizontal color 26 align 1 minimum 1 maximum 4 step 1 value 1 textsize 14
+            tooltip {Set the \# of chars per row} xywh {290 89 95 20} type Horizontal color 26 align 1 minimum 1 maximum 4 step 1 value 1 textsize 14
             code0 {o->value(progdefaults.videowidth);}
+            code1 {if (progdefaults.ID_SMALL) o->deactivate();}
+          }
+          Fl_Check_Button chkID_SMALL {
+            label {small font}
+            callback {progdefaults.ID_SMALL=o->value();
+if (o->value() == 1)
+sldrVideowidth->deactivate();
+else
+sldrVideowidth->activate();
+progdefaults.changed = true;} selected
+            xywh {290 49 100 20} down_box DOWN_BOX value 1
+            code0 {o->value(progdefaults.ID_SMALL);}
           }
         }
         Fl_Check_Button btnViewXmtSignal {
           label {View Xmt Signal}
           callback {progdefaults.viewXmtSignal=o->value();
 progdefaults.changed = true;}
-          xywh {11 115 135 20} down_box DOWN_BOX
+          xywh {11 122 135 20} down_box DOWN_BOX
           code0 {o->value(progdefaults.viewXmtSignal);}
         }
         Fl_Group sld {
           label {CW Postamble} open
-          xywh {5 143 390 70} box ENGRAVED_FRAME align 21
+          xywh {5 150 390 63} box ENGRAVED_FRAME align 21
         } {
           Fl_Check_Button btnCWID {
             label {Xmt CWID}
             callback {progdefaults.CWid = o->value();
 progdefaults.changed = true;}
-            xywh {13 179 98 15} down_box DOWN_BOX
+            xywh {13 185 98 15} down_box DOWN_BOX
             code0 {o->value(progdefaults.CWid);}
           }
           Fl_Value_Slider sldrCWIDwpm {
             label {CWID wpm:}
             callback {progdefaults.CWIDwpm = (int)o->value();
 progdefaults.changed = true;}
-            xywh {124 176 233 20} type Horizontal color 26 align 5 minimum 15 maximum 40 step 1 value 18 textsize 14
+            xywh {124 182 233 20} type Horizontal color 26 align 5 minimum 15 maximum 40 step 1 value 18 textsize 14
             code0 {o->value(progdefaults.CWIDwpm);}
           }
         }
@@ -1054,45 +1066,45 @@ progdefaults.changed = true;}
               code1 {o->maximum((int)(2400/progdefaults.CWspeed)/2.0);}
             }
           }
-          Fl_Group tabDEX {
-            label Dex open
-            xywh {0 44 400 170} color 51 selection_color 51
+          Fl_Group tabTHOR {
+            label Thor open
+            xywh {0 44 400 170} color 51 selection_color 51 hide
           } {
-            Fl_Input txtDEXSecondary {
+            Fl_Input txtTHORSecondary {
               label {Secondary Text}
-              callback {progdefaults.DEXsecText = o->value();
+              callback {progdefaults.THORsecText = o->value();
 progdefaults.changed = true;}
               xywh {20 75 360 44} type Multiline align 5 when 1
             }
-            Fl_Counter valDEX_BW {
+            Fl_Counter valTHOR_BW {
               label {BW factor:}
-              callback {progdefaults.DEX_BW = o->value();
-resetDEX();
+              callback {progdefaults.THOR_BW = o->value();
+resetTHOR();
 progdefaults.changed = true;}
               xywh {20 130 63 21} type Simple minimum 1 maximum 2 step 0.1 value 1.5
-              code0 {o->value(progdefaults.DEX_BW);}
+              code0 {o->value(progdefaults.THOR_BW);}
             }
-            Fl_Check_Button valDEX_FILTER {
+            Fl_Check_Button valTHOR_FILTER {
               label {Filter ON}
-              callback {progdefaults.DEX_FILTER = o->value();
-resetDEX();
+              callback {progdefaults.THOR_FILTER = o->value();
+resetTHOR();
 progdefaults.changed = true;}
               xywh {110 130 83 19} down_box DOWN_BOX value 1
-              code0 {o->value(progdefaults.DEX_FILTER);}
+              code0 {o->value(progdefaults.THOR_FILTER);}
             }
-            Fl_Counter valDEX_PATHS {
+            Fl_Counter valTHOR_PATHS {
               label Paths
-              callback {progdefaults.DEX_PATHS = (int)o->value();
+              callback {progdefaults.THOR_PATHS = (int)o->value();
 progdefaults.changed = true;}
               xywh {20 174 63 21} type Simple minimum 4 maximum 8 step 1 value 5
-              code0 {o->value(progdefaults.DEX_PATHS);}
+              code0 {o->value(progdefaults.THOR_PATHS);}
             }
-            Fl_Check_Button valDEX_SOFT {
+            Fl_Check_Button valTHOR_SOFT {
               label {Soft decode}
-              callback {progdefaults.DEX_SOFT = o->value();
-progdefaults.changed = true;} selected
+              callback {progdefaults.THOR_SOFT = o->value();
+progdefaults.changed = true;}
               xywh {110 177 70 15} down_box DOWN_BOX
-              code0 {o->value(progdefaults.DEX_SOFT);}
+              code0 {o->value(progdefaults.THOR_SOFT);}
             }
           }
           Fl_Group tabDomEX {
@@ -1138,7 +1150,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabFeld {
             label Feld open
-            xywh {0 50 400 170} color 51 selection_color 51 hide
+            xywh {0 50 400 170} color 51 selection_color 51
           } {
             Fl_Choice selHellFont {
               label {Feld Hell Font:}
@@ -1157,18 +1169,24 @@ progdefaults.changed = true;} open
             }
             Fl_Check_Button btnHellXmtWidth {
               label {2x Xmt Width}
-              callback {progdefaults.changed = true;}
+              callback {progdefaults.HellXmtWidth=o->value();
+progdefaults.changed = true;}
               xywh {40 93 113 15} down_box DOWN_BOX
+              code0 {o->value(progdefaults.HellXmtWidth);}
             }
             Fl_Check_Button btnHellRcvWidth {
               label {1/2 x Rcv Width}
-              callback {progdefaults.changed = true;}
+              callback {progdefaults.HellRcvWidth=o->value();
+progdefaults.changed = true;}
               xywh {40 113 130 15} down_box DOWN_BOX
+              code0 {o->value(progdefaults.HellRcvWidth);}
             }
             Fl_Check_Button btnBlackboard {
               label blackboard
-              callback {progdefaults.changed = true;}
+              callback {progdefaults.HellBlackboard=o->value();
+progdefaults.changed = true;}
               xywh {40 134 100 15} down_box DOWN_BOX
+              code0 {o->value(progdefaults.HellBlackboard);}
             }
             Fl_Group {} {
               label {Pulse Shape} open
@@ -1176,31 +1194,37 @@ progdefaults.changed = true;} open
             } {
               Fl_Check_Button btnHellFastAttack {
                 label {Fast Attack (2 msec)}
-                callback {if (o->value() == 1)
+                callback {if (o->value() == 1) {
 btnHellSlowAttack->value(0);
-else
+progdefaults.HellPulseFast = true;
+}else{
 btnHellSlowAttack->value(1);
+progdefaults.HellPulseFast = false;
+}
 progdefaults.changed = true;}
                 xywh {185 110 169 15} down_box DOWN_BOX
-                code0 {o->value(0);}
+                code0 {o->value(progdefaults.HellPulseFast);}
               }
               Fl_Check_Button btnHellSlowAttack {
                 label {Slow Attack (4 msec)}
-                callback {if (o->value() == 1)
+                callback {if (o->value() == 1) {
 btnHellFastAttack->value(0);
-else
+progdefaults.HellPulseFast = false;
+}else{
 btnHellFastAttack->value(1);
+progdefaults.HellPulseFast = true;
+}
 progdefaults.changed = true;}
                 xywh {185 131 70 15} down_box DOWN_BOX value 1
-                code0 {o->value(1);}
+                code0 {o->value(!progdefaults.HellPulseFast);}
               }
             }
             Fl_Check_Button btnFeldHellIdle {
               label {Xmt (.) Idle Char}
-              callback {progdefaults.FELD_IDLE=o->value();
+              callback {progdefaults.HellXmtIdle=o->value();
 progdefaults.changed = true;}
               xywh {40 155 70 15} down_box DOWN_BOX value 1
-              code0 {o->value(progdefaults.FELD_IDLE);}
+              code0 {o->value(progdefaults.HellXmtIdle);}
             }
           }
           Fl_Group tabOlivia {

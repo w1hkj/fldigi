@@ -2,16 +2,17 @@ Fldigi is a software modem for Amateur Radio use. It is a sound card based
 program that is used for both transmitting and receiving data in any of the
 following modes:
 
+BPSK and QPSK        31, 63, 125, and 250
 CW                   speeds from 5 to 200 wpm
 DEX                  4, 5, 8, 11, 16 and 22
 DominoEX             4, 5, 8, 11, 16 and 22
 Hellschreiber        Feld Hell, Slow Hell, Hell x5/x9, FSKHell(-105) and Hell 80
 MFSK                 8 and 16; images can be sent and received in MFSK-16 mode
 MT63                 500, 1000 and 2000
-BPSK and QPSK        31, 63, 125, and 250
-Throb and ThrobX     1, 2, and 4
 OLIVIA               various tones and bandwidths
 RTTY                 various baud rates, shifts, nbr. of data bits, etc.
+THOR                 4, 5, 8, 11, 16 and 22
+Throb and ThrobX     1, 2, and 4
 WWV                  receive only - calibrate your sound card to WWV
 Frequency Analysis   receive only - measure the frequency of a carrier
 

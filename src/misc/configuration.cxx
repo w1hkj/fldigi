@@ -73,18 +73,23 @@ configuration progdefaults = {
 // FELD-HELL
 	false,			// bool		FELD_IDLE;
 	150.0,			// double	HELL_BW;
+	false,			// bool		HellRcvWidth;
+	false,			// bool		HellBlackboard;
+	false,			// bool		HellXmtWidth;
+	true,			// bool		HellXmtIdle;
+	false,			// bool		HellPulseFast;
 // OLIVIA
 	2,				// int		oliviatones;
 	2,				// int		oliviabw;
 	8,				// int		oliviasmargin
 	4,				// int		oliviasinteg
 	false,			// bool		olivia8bit
-// DEX
-	2.0,			// double	DEX_BW;
-	true,			// bool		DEX_FILTER;
-	"fldigi-dex ",	// string	DEXsecText;
-	5,				// int		DEX_PATHS;
-	false,			// bool		DEX_SOFT;
+// THOR
+	2.0,			// double	THOR_BW;
+	true,			// bool		THOR_FILTER;
+	"fldigi-thor ",	// string	THORsecText;
+	5,				// int		THOR_PATHS;
+	false,			// bool		THOR_SOFT;
 // DOMINOEX
 	2.0,			// double	DOMINOEX_BW;
 	true,			// bool		DOMINOEX_FILTER
@@ -115,6 +120,7 @@ configuration progdefaults = {
 	"CQ",			// string	strTextid;
 	false,			// bool		macroCWid;
 	1,				// int		videowidth;
+	true,			// bool		ID_SMALL;
 	false,			// bool		macrotextid;
 	0,				// int		QRZ;
 	"",				// string	QRZusername;
@@ -255,15 +261,16 @@ enum TAG { \
 	CWTRACK, CWRISETIME, CWDASH2DOT,
 	XQSK, CWPRE, CWPOST, CWID, CWIDWPM,
 	OLIVIATONES, OLIVIABW, OLIVIASMARGIN, OLIVIASINTEG, OLIVIA8BIT,
-	DEXBW, DEXFILTER, DEXSECTEXT, DEXPATHS, DEXSOFT,
+	THORBW, THORFILTER, THORSECTEXT, THORPATHS, THORSOFT,
 	DOMINOEXBW, DOMINOEXFILTER, DOMINOEXFEC, DOMINOEXPATHS,
 	FELDFONTNBR, FELDIDLE,
+	HELLRCVWIDTH, HELLXMTWIDTH, HELLBLACKBOARD, HELLPULSEFAST, HELLXMTIDLE,
 	WFPREFILTER, LATENCY,
 	USECURSORLINES, USECURSORCENTERLINE, USEBWTRACKS,
 	CLCOLORS,
 	CCCOLORS,
 	BWTCOLORS,
-	VIEWXMTSIGNAL, SENDID, MACROID, SENDTEXTID, STRTEXTID, VIDEOWIDTH,
+	VIEWXMTSIGNAL, SENDID, MACROID, SENDTEXTID, STRTEXTID, VIDEOWIDTH, IDSMALL,
 	QRZTYPE, QRZUSER, QRZPASSWORD,
 	BTNUSB, BTNPTTIS,
 	RTSPTT, DTRPTT, RTSPLUS, DTRPLUS,
@@ -272,7 +279,7 @@ enum TAG { \
 	HAMRIGNAME, HAMRIGDEVICE, HAMRIGBAUDRATE,
 	PTTDEV,
 	SECONDARYTEXT, 
-	AUDIOIO, OSSDEVICE, PADEVICE, PORTINDEVICE, PORTININDEX, PORTOUTDEVICE, PORTOUTINDEX, PULSESERVER,
+	AUDIOIO, OSSDEVICE, PADEVICE, PORTINDEVICE, PORTININTHOR, PORTOUTDEVICE, PORTOUTINTHOR, PULSESERVER,
 	SAMPLERATE, INSAMPLERATE, OUTSAMPLERATE, SAMPLECONVERTER, RXCORR, TXCORR, TXOFFSET,
 	USELEADINGZEROS, CONTESTSTART, CONTESTDIGITS,
 	USETIMER, MACRONUMBER, TIMEOUT,
@@ -396,11 +403,11 @@ void configuration::writeDefaultsXML()
 	writeXMLint(f, "OLIVIASINTEG", oliviasinteg);
 	writeXMLbool(f, "OLIVIA8BIT", olivia8bit);
 	
-	writeXMLdbl(f,  "DEXBW", DEX_BW);
-	writeXMLbool(f, "DEXFILTER", DEX_FILTER);
-	writeXMLstr(f,  "DEXSECTEXT", DEXsecText);		
-	writeXMLint(f, "DEXPATHS", DEX_PATHS);
-	writeXMLbool(f, "DEXSOFT", DEX_SOFT);
+	writeXMLdbl(f,  "THORBW", THOR_BW);
+	writeXMLbool(f, "THORFILTER", THOR_FILTER);
+	writeXMLstr(f,  "THORSECTEXT", THORsecText);		
+	writeXMLint(f, "THORPATHS", THOR_PATHS);
+	writeXMLbool(f, "THORSOFT", THOR_SOFT);
 	
 	writeXMLdbl(f, "DOMINOEXBW", DOMINOEX_BW);
 	writeXMLbool(f, "DOMINOEXFILTER", DOMINOEX_FILTER);
@@ -409,6 +416,11 @@ void configuration::writeDefaultsXML()
 	
 	writeXMLint(f, "FELDFONTNBR", feldfontnbr);
 	writeXMLbool(f, "FELDIDLE", FELD_IDLE);
+	writeXMLbool(f, "HELLRCVWIDTH", HellRcvWidth);
+	writeXMLbool(f, "HELLXMTWIDTH", HellXmtWidth);
+	writeXMLbool(f, "HELLBLACKBOARD", HellBlackboard);
+	writeXMLbool(f, "HELLPULSEFAST", HellPulseFast);
+	writeXMLbool(f, "HELLXMTIDLE", HellXmtIdle);
 
 	writeXMLint(f, "WFPREFILTER", wfPreFilter);
 	writeXMLint(f, "LATENCY", latency);
@@ -433,6 +445,7 @@ void configuration::writeDefaultsXML()
 	writeXMLbool(f, "SENDTEXTID", sendtextid);
 	writeXMLstr(f, "STRTEXTID", strTextid);
 	writeXMLint(f, "VIDEOWIDTH", videowidth);
+	writeXMLbool(f, "IDSMALL", ID_SMALL);
 	writeXMLint(f, "QRZTYPE", QRZ);
 	writeXMLstr(f, "QRZUSER", QRZusername);
 	writeXMLstr(f, "QRZPASSWORD", QRZuserpassword);
@@ -456,9 +469,9 @@ void configuration::writeDefaultsXML()
 	writeXMLstr(f, "OSSDEVICE", OSSdevice);
 	writeXMLstr(f, "PADEVICE", PAdevice);
 	writeXMLstr(f, "PORTINDEVICE", PortInDevice);
-	writeXMLint(f, "PORTININDEX", PortInIndex);
+	writeXMLint(f, "PORTININTHOR", PortInIndex);
 	writeXMLstr(f, "PORTOUTDEVICE", PortOutDevice);
-	writeXMLint(f, "PORTOUTINDEX", PortOutIndex);
+	writeXMLint(f, "PORTOUTINTHOR", PortOutIndex);
 	writeXMLstr(f, "PULSESERVER", PulseServer);
 	writeXMLint(f, "SAMPLERATE", sample_rate);
 	writeXMLint(f, "INSAMPLERATE", in_sample_rate);
@@ -694,20 +707,20 @@ bool configuration::readDefaultsXML()
 					case OLIVIA8BIT :
 						olivia8bit = atoi(xml->getNodeData());
 						break;
-					case DEXBW :
-						DEX_BW = atof(xml->getNodeData());
+					case THORBW :
+						THOR_BW = atof(xml->getNodeData());
 						break;
-					case DEXFILTER :
-						DEX_FILTER = atoi(xml->getNodeData());
+					case THORFILTER :
+						THOR_FILTER = atoi(xml->getNodeData());
 						break;
-					case DEXSECTEXT :
-						DEXsecText = xml->getNodeData();
+					case THORSECTEXT :
+						THORsecText = xml->getNodeData();
 						break;
-					case DEXPATHS :
-						DEX_PATHS = atoi(xml->getNodeData());
+					case THORPATHS :
+						THOR_PATHS = atoi(xml->getNodeData());
 						break;
-					case DEXSOFT :
-						DEX_SOFT = atoi(xml->getNodeData());
+					case THORSOFT :
+						THOR_SOFT = atoi(xml->getNodeData());
 						break;
 					case DOMINOEXBW :
 						DOMINOEX_BW = atof(xml->getNodeData());
@@ -726,6 +739,21 @@ bool configuration::readDefaultsXML()
 						break;
 					case FELDIDLE :
 						FELD_IDLE = atoi(xml->getNodeData());
+						break;
+					case HELLRCVWIDTH :
+						HellRcvWidth = atoi(xml->getNodeData());
+						break;
+					case HELLXMTWIDTH :
+						HellXmtWidth = atoi(xml->getNodeData());
+						break;
+					case HELLBLACKBOARD :
+						HellBlackboard = atoi(xml->getNodeData());
+						break;
+					case HELLPULSEFAST :
+						HellPulseFast = atoi(xml->getNodeData());
+						break;
+					case HELLXMTIDLE :
+						HellXmtIdle = atoi(xml->getNodeData());
 						break;
 					case WFPREFILTER :
 						wfPreFilter = atoi(xml->getNodeData());
@@ -776,6 +804,8 @@ bool configuration::readDefaultsXML()
 						strTextid = xml->getNodeData();
 					case VIDEOWIDTH :
 						videowidth = atoi(xml->getNodeData());
+					case IDSMALL :
+						ID_SMALL = atoi(xml->getNodeData());
 					case QRZTYPE :
 						QRZ = atoi(xml->getNodeData());
 						break;
@@ -842,13 +872,13 @@ bool configuration::readDefaultsXML()
 					case PORTINDEVICE :
 						PortInDevice = xml->getNodeData();
 						break;
-					case PORTININDEX :
+					case PORTININTHOR :
 						PortInIndex = atoi(xml->getNodeData());
 						break;
 					case PORTOUTDEVICE :
 						PortOutDevice = xml->getNodeData();
 						break;
-					case PORTOUTINDEX :
+					case PORTOUTINTHOR :
 						PortOutIndex = atoi(xml->getNodeData());
 						break;
 					case PULSESERVER :
@@ -1071,17 +1101,22 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("OLIVIASMARGIN", nodeName)) 	tag = OLIVIASMARGIN;
 				else if (!strcmp("OLIVIASINTEG", nodeName)) 	tag = OLIVIASINTEG;
 				else if (!strcmp("OLIVIA8BIT", nodeName)) 	tag = OLIVIA8BIT;
-				else if (!strcmp("DEXBW", nodeName)) 	tag = DEXBW;
-				else if (!strcmp("DEXFILTER", nodeName))	tag = DEXFILTER;
-				else if (!strcmp("DEXSECTEXT", nodeName))	tag = DEXSECTEXT;
-				else if (!strcmp("DEXPATHS", nodeName)) tag = DEXPATHS;
-				else if (!strcmp("DEXSOFT", nodeName)) tag = DEXSOFT;
+				else if (!strcmp("THORBW", nodeName)) 	tag = THORBW;
+				else if (!strcmp("THORFILTER", nodeName))	tag = THORFILTER;
+				else if (!strcmp("THORSECTEXT", nodeName))	tag = THORSECTEXT;
+				else if (!strcmp("THORPATHS", nodeName)) tag = THORPATHS;
+				else if (!strcmp("THORSOFT", nodeName)) tag = THORSOFT;
 				else if (!strcmp("DOMINOEXBW", nodeName)) 	tag = DOMINOEXBW;
 				else if (!strcmp("DOMINOEXFILTER", nodeName))	tag = DOMINOEXFILTER;
 				else if (!strcmp("DOMINOEXFEC", nodeName))	tag = DOMINOEXFEC;
 				else if (!strcmp("DOMINOEXPATHS", nodeName)) tag = DOMINOEXPATHS;
 				else if (!strcmp("FELDFONTNBR", nodeName)) 	tag = FELDFONTNBR;
 				else if (!strcmp("FELDIDLE", nodeName)) 	tag = FELDIDLE;
+				else if (!strcmp("HELLRCVWIDTH", nodeName)) 	tag = HELLRCVWIDTH;
+				else if (!strcmp("HELLXMTWIDTH", nodeName)) 	tag = HELLXMTWIDTH;
+				else if (!strcmp("HELLBLACKBOARD", nodeName)) 	tag = HELLBLACKBOARD;
+				else if (!strcmp("HELLPULSEFAST", nodeName)) 	tag = HELLPULSEFAST;
+				else if (!strcmp("HELLXMTIDLE", nodeName)) 	tag = HELLXMTIDLE;
 				else if (!strcmp("WFPREFILTER", nodeName)) 	tag = WFPREFILTER;
 				else if (!strcmp("LATENCY", nodeName)) 	tag = LATENCY;
 				else if (!strcmp("USECURSORLINES", nodeName)) 	tag = USECURSORLINES;
@@ -1096,6 +1131,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("SENDTEXTID", nodeName))	tag = SENDTEXTID;
 				else if (!strcmp("STRTEXTID", nodeName))	tag = STRTEXTID;
 				else if (!strcmp("VIDEOWIDTH", nodeName))	tag = VIDEOWIDTH;
+				else if (!strcmp("IDSMALL", nodeName))	tag = IDSMALL;
 				else if (!strcmp("QRZUSER", nodeName)) 	tag = QRZUSER;
 				else if (!strcmp("QRZPASSWORD", nodeName)) 	tag = QRZPASSWORD;
 				else if (!strcmp("QRZTYPE", nodeName)) 	tag = QRZTYPE;
@@ -1118,9 +1154,9 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("OSSDEVICE", nodeName)) 	tag = OSSDEVICE;
 				else if (!strcmp("PADEVICE", nodeName)) 	tag = PADEVICE;
 				else if (!strcmp("PORTINDEVICE", nodeName)) 	tag = PORTINDEVICE;
-				else if (!strcmp("PORTININDEX", nodeName)) 	tag = PORTININDEX;
+				else if (!strcmp("PORTININTHOR", nodeName)) 	tag = PORTININTHOR;
 				else if (!strcmp("PORTOUTDEVICE", nodeName)) 	tag = PORTOUTDEVICE;
-				else if (!strcmp("PORTOUTINDEX", nodeName)) 	tag = PORTOUTINDEX;
+				else if (!strcmp("PORTOUTINTHOR", nodeName)) 	tag = PORTOUTINTHOR;
 				else if (!strcmp("SAMPLERATE", nodeName)) 	tag = SAMPLERATE;
 				else if (!strcmp("INSAMPLERATE", nodeName)) 	tag = INSAMPLERATE;
 				else if (!strcmp("OUTSAMPLERATE", nodeName)) 	tag = OUTSAMPLERATE;
@@ -1261,7 +1297,7 @@ void configuration::saveDefaults() {
 	myQth  = inpMyQth->value();
 	myLocator = inpMyLocator->value();
 	secText = txtSecondary->value();
-	DEXsecText = txtDEXSecondary->value();
+	THORsecText = txtTHORSecondary->value();
 	PTTdev = inpTTYdev->value();
 
 	for (int i = 0; i < 9; i++) {
@@ -1290,11 +1326,11 @@ int configuration::setDefaults() {
 		
 	txtSecondary->value(secText.c_str());
 
-	txtDEXSecondary->value(DEXsecText.c_str());
-	valDEX_BW->value(DEX_BW);
-	valDEX_FILTER->value(DEX_FILTER);
-	valDEX_PATHS->value(DEX_PATHS);
-	valDEX_SOFT->value(DEX_SOFT);
+	txtTHORSecondary->value(THORsecText.c_str());
+	valTHOR_BW->value(THOR_BW);
+	valTHOR_FILTER->value(THOR_FILTER);
+	valTHOR_PATHS->value(THOR_PATHS);
+	valTHOR_SOFT->value(THOR_SOFT);
 		
 	valDominoEX_BW->value(DOMINOEX_BW);
 	valDominoEX_FILTER->value(DOMINOEX_FILTER);
@@ -1429,7 +1465,8 @@ int configuration::setDefaults() {
 	btnRTTY_USB->value(RTTY_USB);
 	btnsendid->value(sendid);
 	btnsendvideotext->value(sendtextid);
-			
+	chkID_SMALL->value(ID_SMALL);
+				
 	FL_UNLOCK();
 
 	ReceiveText->setFont((Fl_Font)RxFontnbr);

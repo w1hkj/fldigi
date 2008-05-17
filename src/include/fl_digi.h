@@ -133,7 +133,7 @@ extern int  get_secondary_char();
 extern void put_echo_char(unsigned int data);
 extern void resetRTTY();
 extern void resetOLIVIA();
-extern void resetDEX();
+extern void resetTHOR();
 extern void resetDOMEX();
 extern void resetSoundCard();
 extern void restoreFocus();
