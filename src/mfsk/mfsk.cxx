@@ -933,6 +933,7 @@ void cb_picRxSave( Fl_Widget *w, void *who)
 #if USE_LIBJPEG
 		picRx->save_jpeg(fn);
 #endif
+		break;
 	}
 }
 
