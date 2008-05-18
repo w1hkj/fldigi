@@ -86,7 +86,6 @@ XML_RPC_Server::XML_RPC_Server(int sfd_)
 
 	server_thread = new Fl_Thread;
 	run = true;
-	fl_create_thread(*server_thread, thread_func, this);
 }
 XML_RPC_Server::~XML_RPC_Server()
 {
@@ -115,6 +114,7 @@ void XML_RPC_Server::start(const char* node, const char* service)
 	}
 
 	inst = new XML_RPC_Server(sfd);
+	fl_create_thread(*server_thread, thread_func, NULL);
 }
 void XML_RPC_Server::stop(void)
 {
@@ -208,7 +208,7 @@ int XML_RPC_Server::get_socket(const char* node, const char* service, int& fd)
 }
 
 
-void* XML_RPC_Server::thread_func(void* arg)
+void* XML_RPC_Server::thread_func(void*)
 {
 	SET_THREAD_ID(XMLRPC_TID);
 

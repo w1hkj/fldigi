@@ -14,7 +14,7 @@ private:
 	XML_RPC_Server operator=(const XML_RPC_Server&);
 	void add_methods(void);
 	static int get_socket(const char* node, const char* service, int& fd);
-	static void* thread_func(void* arg);
+	static void* thread_func(void*);
 
 private:
 	static XML_RPC_Server* inst;
