@@ -13,29 +13,26 @@ m4_if([$3], [yes],
     ])
 m4_if([$4], [no], [ac_cv_want_[]$1=yes])
 
-if test "x$ac_cv_want_[]$1" = "xno"; then
-    AC_DEFINE([USE_]PKG_NAME_UC, 0)
-    ac_cv_[]$1=no
+case "x$ac_cv_want_[]$1" in
+    "xno")
+            ac_cv_[]$1=no
+            ;;
+    "xcheck")
+            PKG_CHECK_MODULES(PKG_NAME_UC, [$2], [ac_cv_[]$1=yes], [ac_cv_[]$1=no])
+            ;;
+    "xyes")
+            PKG_CHECK_MODULES(PKG_NAME_UC, [$2])
+	    # if we get here the test has succeeded
+            ac_cv_[]$1=yes
+            ;;
+esac
+
+if test "x$ac_cv_[]$1" = "xyes"; then
+    AC_DEFINE([USE_]PKG_NAME_UC, 1, [Define to 1 if we are using $1])
 else
-    PKG_CHECK_EXISTS([$2], ac_cv_[]$1=yes, ac_cv_[]$1=no)
-    if test "x$ac_cv_want_[]$1" = "xcheck"; then
-        PKG_CHECK_MODULES(PKG_NAME_UC, [$2], [:], [:])
-        if test "x$ac_cv_[]$1" = "xyes"; then
-            AC_DEFINE([USE_]PKG_NAME_UC, 1, [Define to 1 if we are using $1])
-        else
-            AC_DEFINE([USE_]PKG_NAME_UC, 0, [Define to 1 if we are using $1])
-        fi
-    else # $ac_cv_want_[]$1 is yes
-        if test "x$ac_cv_[]$1" = "xno"; then
-            if test "x$3" = "xyes"; then
-                AC_MSG_NOTICE([--with-[]$1 was given, but test for $1 failed])
-            fi
-        else
-            AC_DEFINE([USE_]PKG_NAME_UC, 1, [Define to 1 if we are using $1])
-        fi
-        PKG_CHECK_MODULES(PKG_NAME_UC, $2) # for the error message
-    fi
+    AC_DEFINE([USE_]PKG_NAME_UC, 0, [Define to 1 if we are using $1])
 fi
+
 AC_SUBST(PKG_NAME_UC[_CFLAGS])
 AC_SUBST(PKG_NAME_UC[_LIBS])
 
