@@ -98,6 +98,7 @@
 #include "qrunner.h"
 
 #include "Viewer.h"
+#include "soundconf.h"
 
 Fl_Double_Window	*fl_digi_main=(Fl_Double_Window *)0;
 Fl_Help_Dialog 		*help_dialog = (Fl_Help_Dialog *)0;
@@ -807,6 +808,53 @@ void cb_mnuFun(Fl_Widget*, void*)
 }
 #endif
 
+void cb_mnuAudioInfo(Fl_Widget*, void*)
+{
+        if (progdefaults.btnAudioIOis != SND_IDX_PORT) {
+                fl_alert("Audio device information is only available for the PortAudio backend");
+                return;
+        }
+
+	size_t ndev;
+        string devtext[2], headers[2];
+	SoundPort::devices_info(devtext[0], devtext[1]);
+	if (devtext[0] != devtext[1]) {
+		headers[0] = "Capture device";
+		headers[1] = "Playback device";
+		ndev = 2;
+	}
+	else {
+		headers[0] = "Capture and playback devices";
+		ndev = 1;
+	}
+
+	string audio_info;
+	for (size_t i = 0; i < ndev; i++) {
+		audio_info.append("<center><h4>").append(headers[i]).append("</h4>\n<table border=\"1\">\n");
+
+		string::size_type j, n = -1;
+		while ((j = devtext[i].find(": ", n+1)) != string::npos) {
+			audio_info.append("<tr>")
+				  .append("<td align=\"center\">")
+				  .append(devtext[i].substr(n+1, j-n-1))
+				  .append("</td>");
+
+			if ((n = devtext[i].find('\n', j)) == string::npos) {
+				devtext[i] += '\n';
+				n = devtext[i].length() - 1;
+			}
+
+			audio_info.append("<td align=\"center\">")
+				  .append(devtext[i].substr(j+2, n-j-2))
+				  .append("</td>")
+				  .append("</tr>\n");
+		}
+		audio_info.append("</table></center><br>\n");
+	}
+
+	fldigi_help(audio_info);
+}
+
 void cbTune(Fl_Widget *w, void *) {
 	Fl_Button *b = (Fl_Button *)w;
 	if (active_modem == wwv_modem || active_modem == anal_modem) {
@@ -1142,6 +1190,7 @@ Fl_Menu_Item menu_[] = {
 {"Online documentation", 0, cb_mnuVisitURL, (void *)PACKAGE_DOCS, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"Home page", 0, cb_mnuVisitURL, (void *)PACKAGE_HOME, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 {"Command line options", 0, cb_mnuCmdLineHelp, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{"Audio device info", 0, cb_mnuAudioInfo, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"Build info", 0, cb_mnuBuildInfo, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 {"About", 0, cb_mnuAbout, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},

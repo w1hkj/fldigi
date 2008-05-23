@@ -216,6 +216,7 @@ public:
         static void	initialize(void);
         static void	terminate(void);
         static const std::vector<const PaDeviceInfo*>& devices(void);
+        static void devices_info(std::string& in, std::string& out);
 
 public:
         SoundPort(const char *in_dev, const char *out_dev);
