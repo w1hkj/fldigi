@@ -493,8 +493,8 @@ void modem::wfid_send(long int symbol)
 			sym = symbol;
 			msk = mask[symbol];
 			for (j = 0; j < NUMTONES * NUMCHARS; j++) {
-				if (sym & 1 == 1)
-					wfid_outbuf[i] += ((msk & 1 == 1 ? -1 : 1 ) * sin(wfid_w[j] * i) * wfid_txpulse[i]);
+				if (sym & 1)
+					wfid_outbuf[i] += (msk & 1 ? -1 : 1 ) * sin(wfid_w[j] * i) * wfid_txpulse[i];
 				sym = sym >> 1;
 				msk = msk >> 1;
 			}

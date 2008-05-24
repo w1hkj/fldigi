@@ -643,10 +643,7 @@ void MACROTEXT::execute(int n)
 	TransmitText->add( (expandMacro(n)).c_str() );
 	if ( TransmitON ) {
 		active_modem->set_stopflag(false);
-		fl_lock(&trx_mutex);
-		trx_state = STATE_TX;
-		fl_unlock(&trx_mutex);
-		wf->set_XmtRcvBtn(true);
+		start_tx();
 		TransmitON = false;
 	}
 }

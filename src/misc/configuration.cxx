@@ -16,6 +16,8 @@
 #include <fstream>
 
 configuration progdefaults = {
+	false,			// bool		rsid;
+	false,			// bool		TransmitRSid;
 	false,			// bool		changed;
 	0.0,			// double	wfRefLevel;
 	70.0,			// double	wfAmpSpan;
@@ -170,7 +172,7 @@ configuration progdefaults = {
 	SAMPLE_RATE_UNSET,		// int		sample_rate;
 	SAMPLE_RATE_UNSET,		// int		in_sample_rate;
 	SAMPLE_RATE_UNSET,		// int		out_sample_rate;
-	SRC_SINC_FASTEST,		// string	sample_converter;
+	SRC_SINC_MEDIUM_QUALITY,	// int		sample_converter;
 	0,				// int		RX_corr;
 	0,				// int		TX_corr;
 	0,				// int		TxOffset;
@@ -293,7 +295,8 @@ enum TAG { \
 	USEGROUPCOLORS, FKEYGROUP1, FKEYGROUP2, FKEYGROUP3,
 	FKEYTEXTCOLOR,
 	RXFONTNBR, RXFONTSIZE, TXFONTNBR, TXFONTSIZE,
-	RXFONTCOLOR, TXFONTCOLOR
+	RXFONTCOLOR, TXFONTCOLOR,
+	TRANSMITRSID
 };
 	
 void writeXMLint(ofstream &f, const char * tag,  int val)
@@ -516,6 +519,8 @@ void configuration::writeDefaultsXML()
 	writeXMLint(f, "TXFONTSIZE", TxFontsize);
 	writeXMLrgb(f, "RXFONTCOLOR", RxColor.R, RxColor.G, RxColor.B);
 	writeXMLrgb(f, "TXFONTCOLOR", TxColor.R, TxColor.G, TxColor.B);	
+	
+	writeXMLbool(f, "TRANSMITRSID", TransmitRSid);
 	
 	f << "</FLDIGI_DEFS>\n";
 	f.close();
@@ -1038,6 +1043,8 @@ bool configuration::readDefaultsXML()
 						sscanf( xml->getNodeData(), "%d %d %d",
 							&TxColor.R, &TxColor.G, &TxColor.B);
 						break;
+					case TRANSMITRSID :
+						TransmitRSid = atoi(xml->getNodeData());
 				}
 				break;
 				
@@ -1203,6 +1210,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("TXFONTSIZE", nodeName)) tag = TXFONTSIZE;
 				else if (!strcmp("RXFONTCOLOR", nodeName)) tag = RXFONTCOLOR;
 				else if (!strcmp("TXFONTCOLOR", nodeName)) tag = TXFONTCOLOR;
+				else if (!strcmp("TRANSMITRSID", nodeName)) tag = TRANSMITRSID;
 				else tag = IGNORE;
 				}
 				break;
@@ -1429,6 +1437,8 @@ int configuration::setDefaults() {
 	selHellFont->value(feldfontnbr);
 	btnFeldHellIdle->value(FELD_IDLE);
 			
+	chkTransmitRSid->value(TransmitRSid);
+	
 	string bandsfname = HomeDir;
 	bandsfname.append("frequencies.def");
 	ifstream bandsfile(bandsfname.c_str(), ios::in);

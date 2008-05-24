@@ -86,7 +86,6 @@ XML_RPC_Server::XML_RPC_Server(int sfd_)
 
 	server_thread = new Fl_Thread;
 	run = true;
-	fl_create_thread(*server_thread, thread_func, this);
 }
 XML_RPC_Server::~XML_RPC_Server()
 {
@@ -103,7 +102,7 @@ void XML_RPC_Server::start(const char* node, const char* service)
 		return;
 
 	int sfd = -1, err;
-	if ((err = get_socket(node, service, sfd)) == -1) {
+	if ((err = get_socket(node, service, sfd)) != 0) {
 #if HAVE_GETADDRINFO
 		if (err < 0)
 			cerr << gai_strerror(err) << '\n';
@@ -115,6 +114,7 @@ void XML_RPC_Server::start(const char* node, const char* service)
 	}
 
 	inst = new XML_RPC_Server(sfd);
+	fl_create_thread(*server_thread, thread_func, NULL);
 }
 void XML_RPC_Server::stop(void)
 {
@@ -198,15 +198,17 @@ int XML_RPC_Server::get_socket(const char* node, const char* service, int& fd)
 	res = 0;
 #endif // HAVE_GETADDRINFO
 
-	int v = 1;
-	if (setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &v, sizeof(v)) == -1)
-		perror("setsockopt TCP_NODELAY");
+	if (res == 0) {
+		int v = 1;
+		if (setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &v, sizeof(v)) == -1)
+			perror("setsockopt TCP_NODELAY");
+	}
 
 	return res;
 }
 
 
-void* XML_RPC_Server::thread_func(void* arg)
+void* XML_RPC_Server::thread_func(void*)
 {
 	SET_THREAD_ID(XMLRPC_TID);
 
@@ -267,20 +269,15 @@ ret:
 // =============================================================================
 // helper functions
 
-static void frob(Fl_Widget* widget)
-{
-	REQ(static_cast<void (Fl_Widget::*)(void)>(&Fl_Widget::do_callback), widget);
-}
-
 static void set_button(Fl_Button* button, bool value)
 {
-	REQ(static_cast<int (Fl_Button::*)(int)>(&Fl_Button::value), button, value);
-	frob(button);
+	button->value(value);
+	button->do_callback();
 }
 static void set_valuator(Fl_Valuator* valuator, double value)
 {
-	REQ(static_cast<int (Fl_Valuator::*)(double)>(&Fl_Valuator::value), valuator, value);
-	frob(valuator);
+	valuator->value(value);
+	valuator->do_callback();
 }
 
 // =============================================================================
@@ -380,11 +377,29 @@ public:
 	Modem_get_name()
 	{
 		_signature = "s:n";
-		_help = "Returns the name of the current modem";
+		_help = "Returns the name of the current modem.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		*retval = xmlrpc_c::value_string(mode_info[active_modem->get_mode()].sname);
+	}
+};
+
+class Modem_get_names : public xmlrpc_c::method
+{
+public:
+	Modem_get_names()
+	{
+		_signature = "A:n";
+		_help = "Returns all modem names.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		vector<xmlrpc_c::value> names;
+		names.reserve(NUM_MODES);
+		for (size_t i = 0; i < NUM_MODES; i++)
+			names.push_back(xmlrpc_c::value_string(mode_info[i].sname));
+		*retval = xmlrpc_c::value_array(names);
 	}
 };
 
@@ -394,7 +409,7 @@ public:
 	Modem_get_id()
 	{
 		_signature = "i:n";
-		_help = "Returns the ID of the current modem";
+		_help = "Returns the ID of the current modem.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
@@ -408,7 +423,7 @@ public:
 	Modem_get_max_id()
 	{
 		_signature = "i:n";
-		_help = "Returns the maximum modem ID number";
+		_help = "Returns the maximum modem ID number.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
@@ -431,7 +446,7 @@ public:
 		bool found = false;
 		string s = params.getString(0);
 		for (size_t i = 0; i < NUM_MODES; i++) {
-			if (!strcmp(mode_info[i].sname, s.c_str())) {
+			if (s == mode_info[i].sname) {
 				init_modem_sync(i);
 				found = true;
 				break;
@@ -541,7 +556,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		int v = cntSearchRange->value();
-		set_valuator(cntSearchRange, params.getInt(0, cntSearchRange->minimum(), cntSearchRange->maximum()));
+		REQ(set_valuator, cntSearchRange, params.getInt(0, cntSearchRange->minimum(), cntSearchRange->maximum()));
 		*retval = xmlrpc_c::value_int(v);
 	}
 };
@@ -557,7 +572,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		int v = cntSearchRange->value() + params.getInt(0);
-		set_valuator(cntSearchRange, v);
+		REQ(set_valuator, cntSearchRange, v);
 		*retval = xmlrpc_c::value_int(v);
 	}
 };
@@ -616,7 +631,7 @@ public:
 		}
 
 		int v = val->value();
-		set_valuator(val, params.getInt(0, val->minimum(), val->maximum()));
+		REQ(set_valuator, val, params.getInt(0, val->minimum(), val->maximum()));
 		*retval = xmlrpc_c::value_int(v);
 	}
 };
@@ -644,7 +659,7 @@ public:
 		}
 
 		int v = val->value() + params.getInt(0);
-		set_valuator(val, v);
+		REQ(set_valuator, val, v);
 		*retval = xmlrpc_c::value_int(v);
 	}
 };
@@ -759,7 +774,7 @@ public:
 	Main_set_freq()
 	{
 		_signature = "d:d";
-		_help = "Sets the RF carrier frequency. Returns the old value";
+		_help = "Sets the RF carrier frequency. Returns the old value.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
@@ -825,7 +840,7 @@ public:
         {
 		Fl_Button* b = useCheckButtons ? chk_afconoff : btn_afconoff;
 		bool v = b->value();
-		set_button(b, params.getBoolean(0));
+		REQ(set_button, b, params.getBoolean(0));
 		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
@@ -842,7 +857,7 @@ public:
         {
 		Fl_Button* b = useCheckButtons ? chk_afconoff : btn_afconoff;
 		bool v = b->value();
-		set_button(b, !v);
+		REQ(set_button, b, !v);
 		*retval = xmlrpc_c::value_boolean(!v);
 	}
 };
@@ -875,7 +890,7 @@ public:
         {
 		Fl_Button* b = useCheckButtons ? chk_sqlonoff : btn_sqlonoff;
 		bool v = b->value();
-		set_button(b, params.getBoolean(0));
+		REQ(set_button, b, params.getBoolean(0));
 		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
@@ -892,7 +907,7 @@ public:
         {
 		Fl_Button* b = useCheckButtons ? chk_sqlonoff : btn_sqlonoff;
 		bool v = b->value();
-		set_button(b, !v);
+		REQ(set_button, b, !v);
 		*retval = xmlrpc_c::value_boolean(!v);
 	}
 };
@@ -905,7 +920,7 @@ public:
 	Main_get_sql_level()
 	{
 		_signature = "d:n";
-		_help = "Returns the squelch level";
+		_help = "Returns the squelch level.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
@@ -926,9 +941,9 @@ public:
 		double v = sldrSquelch->value();
 		// Squelch slider min/max are reversed when !twoscopes. Argh.
 		if (twoscopes)
-			set_valuator(sldrSquelch, params.getDouble(0, sldrSquelch->minimum(), sldrSquelch->maximum()));
+			REQ(set_valuator, sldrSquelch, params.getDouble(0, sldrSquelch->minimum(), sldrSquelch->maximum()));
 		else
-			set_valuator(sldrSquelch, params.getDouble(0, sldrSquelch->maximum(), sldrSquelch->minimum()));
+			REQ(set_valuator, sldrSquelch, params.getDouble(0, sldrSquelch->maximum(), sldrSquelch->minimum()));
 		*retval = xmlrpc_c::value_double(v);
 	}
 };
@@ -944,7 +959,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		double v = sldrSquelch->value();
-		set_valuator(sldrSquelch, v + params.getDouble(0)); // FIXME: check range
+		REQ(set_valuator, sldrSquelch, v + params.getDouble(0)); // FIXME: check range
 		*retval = xmlrpc_c::value_double(sldrSquelch->value());
 	}
 };
@@ -976,7 +991,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		bool v = wf->btnRev->value();
-		set_button(wf->btnRev, params.getBoolean(0));
+		REQ(set_button, wf->btnRev, params.getBoolean(0));
 		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
@@ -992,7 +1007,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		bool v = wf->btnRev->value();
-		set_button(wf->btnRev, !v);
+		REQ(set_button, wf->btnRev, !v);
 		*retval = xmlrpc_c::value_boolean(!v);
 	}
 };
@@ -1024,7 +1039,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		bool v = wf->xmtlock->value();
-		set_button(wf->xmtlock, params.getBoolean(0));
+		REQ(set_button, wf->xmtlock, params.getBoolean(0));
 		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
@@ -1040,7 +1055,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		bool v = wf->xmtlock->value();
-		set_button(wf->xmtlock, !v);
+		REQ(set_button, wf->xmtlock, !v);
 		*retval = xmlrpc_c::value_boolean(!v);
 	}
 };
@@ -1055,7 +1070,7 @@ public:
 	Main_get_tx_status()
 	{
 		_signature = "s:n";
-		_help = "Returns transmit/tune/receive status";
+		_help = "Returns transmit/tune/receive status.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
@@ -1078,7 +1093,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		set_button(wf->xmtrcv, true);
+		REQ(set_button, wf->xmtrcv, true);
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -1093,7 +1108,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		set_button(btnTune, !btnTune->value());
+		REQ(set_button, btnTune, !btnTune->value());
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -1108,7 +1123,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		set_button(wf->xmtrcv, false);
+		REQ(set_button, wf->xmtrcv, false);
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -1409,6 +1424,7 @@ void XML_RPC_Server::add_methods(void)
 	methods->push_back(rpc_method(new Fldigi_name_version, "fldigi.name_version"));
 
 	methods->push_back(rpc_method(new Modem_get_name, "modem.get_name"));
+	methods->push_back(rpc_method(new Modem_get_names, "modem.get_names"));
 	methods->push_back(rpc_method(new Modem_get_id, "modem.get_id"));
 	methods->push_back(rpc_method(new Modem_get_max_id, "modem.get_max_id"));
 	methods->push_back(rpc_method(new Modem_set_by_name, "modem.set_by_name"));

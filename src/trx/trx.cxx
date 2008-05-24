@@ -66,7 +66,9 @@ bool		restartOK = false;
 bool		trx_wait = false;
 
 modem		*active_modem = 0;
+cRsId		*ReedSolomon = 0;
 SoundBase 		*scard;
+
 
 int			_trx_tune;
 
@@ -80,6 +82,9 @@ bool    bHistory = false;
 
 static int dummy = 0;
 static bool trxrunning = false;
+
+static bool rsid_detecting = false;
+
 #include "tune.cxx"
 
 /* ---------------------------------------------------------------------- */
@@ -96,6 +101,7 @@ void trx_trx_receive_loop()
 	if (active_modem) {
 		try {
 			scard->Open(O_RDONLY, active_modem->get_samplerate());
+			REQ(sound_update, progdefaults.btnAudioIOis);
 		}
 		catch (const SndException& e) {
 			put_status(e.what(), 5);
@@ -110,6 +116,40 @@ void trx_trx_receive_loop()
 		active_modem->rx_init();
 
 		while (1) {
+			if (progdefaults.rsid == true && rsid_detecting == false) {
+				rsid_detecting = true;
+				try {
+					scard->Open(O_RDONLY, ReedSolomon->samplerate());
+					}
+				catch (const SndException& e) {
+					put_status(e.what(), 5);
+					scard->Close();
+					if (e.error() == EBUSY && progdefaults.btnAudioIOis == SND_IDX_PORT) {
+						sound_close();
+						sound_init();
+					}
+					MilliSleep(1000);
+					return;
+				}
+			}
+			if (progdefaults.rsid == false && rsid_detecting == true) {
+				rsid_detecting = false;
+				try {
+					scard->Open(O_RDONLY, active_modem->get_samplerate());
+					}
+				catch (const SndException& e) {
+					put_status(e.what(), 5);
+					scard->Close();
+					if (e.error() == EBUSY && progdefaults.btnAudioIOis == SND_IDX_PORT) {
+						sound_close();
+						sound_init();
+					}
+					MilliSleep(1000);
+					return;
+				}
+				active_modem->rx_init();
+			}
+			
 			try {
 				if (trxrb.write_space() == 0) // discard some old data
 					trxrb.read_advance(SCBLOCKSIZE);
@@ -130,8 +170,12 @@ void trx_trx_receive_loop()
 			trxrb.write_advance(numread);
 			REQ(&waterfall::sig_data, wf, rbvec[0].buf, numread);
 
-			if (!bHistory)
-				active_modem->rx_process(rbvec[0].buf, numread);
+			if (!bHistory) {
+				if (rsid_detecting == true)
+					ReedSolomon->search(rbvec[0].buf, numread);
+				else
+					active_modem->rx_process(rbvec[0].buf, numread);
+			}
 			else {
 				bool afc = progStatus.afconoff;
 				progStatus.afconoff = false;
@@ -162,6 +206,7 @@ void trx_trx_transmit_loop()
 	if (active_modem) {
 		try {
 			scard->Open(O_WRONLY, active_modem->get_samplerate());
+			REQ(sound_update, progdefaults.btnAudioIOis);
 		}
 		catch (const SndException& e) {
 			put_status(e.what(), 1);
@@ -172,6 +217,9 @@ void trx_trx_transmit_loop()
 		push2talk->set(true);
 		active_modem->tx_init(scard);
 
+		if (progdefaults.TransmitRSid == true)
+			ReedSolomon->send();
+		
 		while (trx_state == STATE_TX) {
 			try {
 				if (active_modem->tx_process() < 0)
@@ -207,6 +255,7 @@ void trx_tune_loop()
 	if (active_modem) {
 		try {
 			scard->Open(O_WRONLY, active_modem->get_samplerate());
+			REQ(sound_update, progdefaults.btnAudioIOis);
 		}
 		catch (const SndException& e) {
 			put_status(e.what(), 1);
@@ -375,6 +424,8 @@ void trx_start(void)
 	}
 	
 	if (scard) delete scard;
+	if (ReedSolomon) delete ReedSolomon;
+
 
 	switch (progdefaults.btnAudioIOis) {
 #if USE_OSS
@@ -399,6 +450,8 @@ void trx_start(void)
 		abort();
 	}
 
+	ReedSolomon = new cRsId;
+	
 	trx_state = STATE_RX;
 	_trx_tune = 0;
 	active_modem = 0;

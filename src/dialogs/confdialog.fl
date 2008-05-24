@@ -37,7 +37,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {fldigi - config} open
-    xywh {523 186 400 250} type Double color 45 selection_color 51 align 80 visible
+    xywh {809 461 400 250} type Double color 45 selection_color 51 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 405 220} color 47 selection_color 9
@@ -326,7 +326,7 @@ progdefaults.changed = true;
       }
       Fl_Group tabVideo {
         label Video open
-        xywh {0 25 400 195} color 51 selection_color 51
+        xywh {0 25 400 195} color 51 selection_color 51 hide
       } {
         Fl_Group {} {
           label {Video Preamble} open
@@ -367,7 +367,7 @@ if (o->value() == 1)
 sldrVideowidth->deactivate();
 else
 sldrVideowidth->activate();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
             xywh {290 49 100 20} down_box DOWN_BOX value 1
             code0 {o->value(progdefaults.ID_SMALL);}
           }
@@ -683,19 +683,19 @@ o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");}
       }
       Fl_Group tabSoundCard {
         label SndCrd open
-        xywh {0 25 400 195} color 51 selection_color 51 hide
+        xywh {0 25 400 195} color 51 selection_color 51
       } {
         Fl_Tabs tabsSoundCard {open
           xywh {0 25 400 195} selection_color 10
         } {
           Fl_Group tabAudio {
             label {Audio devices} open
-            xywh {0 50 400 170} color 51 selection_color 51 hide
+            xywh {0 50 400 170} color 51 selection_color 51
           } {
             Fl_Group AudioOSS {open
               xywh {5 58 391 35} box ENGRAVED_FRAME
             } {
-              Fl_Round_Button {btnAudioIO[0]} {
+              Fl_Round_Button {btnAudioIO[1]} {
                 label OSS
                 callback {sound_update(SND_IDX_OSS);
 progdefaults.changed = true;
@@ -714,7 +714,7 @@ progdefaults.changed = true;} open
             Fl_Group AudioPort {open
               xywh {5 95 390 61} box ENGRAVED_FRAME
             } {
-              Fl_Round_Button {btnAudioIO[1]} {
+              Fl_Round_Button {btnAudioIO[0]} {
                 label PortAudio
                 callback {sound_update(SND_IDX_PORT);
 progdefaults.changed = true;
@@ -765,14 +765,14 @@ http://www.pulseaudio.org/wiki/ServerStrings} xywh {165 161 225 25}
                 label {File I/O only}
                 callback {sound_update(SND_IDX_NULL);
 progdefaults.changed = true;
-resetSoundCard();}
+resetSoundCard();} selected
                 xywh {5 192 100 25} down_box DIAMOND_DOWN_BOX selection_color 1
               }
             }
           }
           Fl_Group tabAudioOpt {
             label {Audio settings} open
-            xywh {0 50 400 170} color 51 selection_color 51
+            xywh {0 50 400 170} color 51 selection_color 51 hide
           } {
             Fl_Spinner cntRxRateCorr {
               label {RX ppm}
@@ -931,6 +931,18 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
             xywh {49 88 246 25} down_box DOWN_BOX value 1
             code0 {o->value(progdefaults.StartAtSweetSpot);}
+          }
+        }
+        Fl_Group {} {
+          label RSid open
+          xywh {5 125 390 50} box ENGRAVED_FRAME align 21
+        } {
+          Fl_Check_Button chkTransmitRSid {
+            label {Transmit RSid}
+            callback {progdefaults.TransmitRSid = o->value();
+progdefaults.changed = true;}
+            tooltip {Transmit Reed Solomon ID} xywh {50 143 70 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.TransmitRSid);}
           }
         }
       }

@@ -29,6 +29,8 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
+#include <sstream>
 
 #include <cstdio>
 #include <cstdlib>
@@ -41,6 +43,8 @@
 #include <sys/stat.h>
 #include <semaphore.h>
 #include <limits.h>
+
+#include <bits/stream_iterator.h>
 
 #if USE_OSS
 #    include <sys/soundcard.h>
@@ -671,6 +675,8 @@ size_t SoundOSS::Write_stereo(double *bufleft, double *bufright, size_t count)
 
 bool SoundPort::pa_init = false;
 std::vector<const PaDeviceInfo*> SoundPort::devs;
+static ostringstream device_text[2];
+vector<double> SoundPort::supported_rates[2];
 void SoundPort::initialize(void)
 {
         if (pa_init)
@@ -693,7 +699,6 @@ void SoundPort::initialize(void)
         devs.reserve(ndev);
         for (PaDeviceIndex i = 0; i < ndev; i++)
                 devs.push_back(Pa_GetDeviceInfo(i));
-
 }
 void SoundPort::terminate(void)
 {
@@ -707,6 +712,16 @@ const std::vector<const PaDeviceInfo*>& SoundPort::devices(void)
 {
         return devs;
 }
+void SoundPort::devices_info(string& in, string& out)
+{
+	in = device_text[0].str();
+	out = device_text[1].str();
+}
+const vector<double>& SoundPort::get_supported_rates(unsigned dir)
+{
+	return supported_rates[dir];
+}
+
 
 SoundPort::SoundPort(const char *in_dev, const char *out_dev)
         : req_sample_rate(0), fbuf(0)
@@ -1168,28 +1183,6 @@ void SoundPort::init_stream(unsigned dir)
 	else if (sd[dir].idev == devs.end()) // if we only found a near-match point the idev iterator to it
 		sd[dir].idev = devs.begin() + idx;
 
-#ifndef NDEBUG
-        cerr << "PA_debug: using " << dir_str[dir] << " device:"
-             << "\n index: " << idx
-             << "\n name: " << (*sd[dir].idev)->name
-             << "\n hostAPI: " << Pa_GetHostApiInfo((*sd[dir].idev)->hostApi)->name
-             << "\n maxInputChannels: " << (*sd[dir].idev)->maxInputChannels
-             << "\n maxOutputChannels: " << (*sd[dir].idev)->maxOutputChannels
-             << "\n defaultLowInputLatency: " << (*sd[dir].idev)->defaultLowInputLatency
-             << "\n defaultHighInputLatency: " << (*sd[dir].idev)->defaultHighInputLatency
-             << "\n defaultLowOutputLatency: " << (*sd[dir].idev)->defaultLowOutputLatency
-             << "\n defaultHighOutputLatency: " << (*sd[dir].idev)->defaultHighOutputLatency
-             << "\n defaultSampleRate: " << (*sd[dir].idev)->defaultSampleRate
-             << boolalpha
-             << "\n isInputOnlyDevice: " << ((*sd[dir].idev)->maxOutputChannels == 0)
-             << "\n isOutputOnlyDevice: " << ((*sd[dir].idev)->maxInputChannels == 0)
-             << "\n isFullDuplexDevice: " << full_duplex_device(*sd[dir].idev)
-             << "\n isSystemDefaultInputDevice: " << (idx == Pa_GetDefaultInputDevice())
-             << "\n isSystemDefaultOutputDevice: " << (idx == Pa_GetDefaultOutputDevice())
-             << "\n isHostApiDefaultInputDevice: " << (idx == Pa_GetHostApiInfo((*sd[dir].idev)->hostApi)->defaultInputDevice)
-             << "\n isHostApiDefaultOutputDevice: " << (idx == Pa_GetHostApiInfo((*sd[dir].idev)->hostApi)->defaultOutputDevice)
-             << "\n";
-#endif
 
 	if ((dir == 0 && (*sd[dir].idev)->maxInputChannels == 0) ||
 	    (dir == 1 && (*sd[dir].idev)->maxOutputChannels == 0))
@@ -1212,6 +1205,47 @@ void SoundPort::init_stream(unsigned dir)
                         sd[1].params.suggestedLatency = (*sd[dir].idev)->defaultHighOutputLatency;
 		sd[1].params.hostApiSpecificStreamInfo = NULL;
 	}
+
+
+	extern double std_sample_rates[];
+	supported_rates[dir].clear();
+	supported_rates[dir].push_back((*sd[dir].idev)->defaultSampleRate);
+	for (const double* i = std_sample_rates; *i > 0.0; i++)
+		if (Pa_IsFormatSupported((dir == 0 ? &sd[0].params : NULL),
+					 (dir == 1 ? &sd[1].params : NULL), *i) == paFormatIsSupported)
+			supported_rates[dir].push_back(*i);
+	ostringstream ss;
+	if (supported_rates[dir].size() > 1)
+		copy(supported_rates[dir].begin(), supported_rates[dir].end(), ostream_iterator<unsigned>(ss, " "));
+	else
+		ss << "Unknown";
+
+	device_text[dir].str("");
+        device_text[dir]
+		<< "index: " << idx
+		<< "\nname: " << (*sd[dir].idev)->name
+		<< "\nhost API: " << Pa_GetHostApiInfo((*sd[dir].idev)->hostApi)->name
+		<< "\nmax input channels: " << (*sd[dir].idev)->maxInputChannels
+		<< "\nmax output channels: " << (*sd[dir].idev)->maxOutputChannels
+		<< "\ndefault sample rate: " << (*sd[dir].idev)->defaultSampleRate
+		<< "\nsupported sample rates: " << ss.str()
+		<< boolalpha
+		<< "\ninput only: " << ((*sd[dir].idev)->maxOutputChannels == 0)
+		<< "\noutput only: " << ((*sd[dir].idev)->maxInputChannels == 0)
+		<< "\nfull duplex: " << full_duplex_device(*sd[dir].idev)
+		<< "\nsystem default input: " << (idx == Pa_GetDefaultInputDevice())
+		<< "\nsystem default output: " << (idx == Pa_GetDefaultOutputDevice())
+		<< "\nhost API default input: " << (idx == Pa_GetHostApiInfo((*sd[dir].idev)->hostApi)->defaultInputDevice)
+		<< "\nhost API default output: " << (idx == Pa_GetHostApiInfo((*sd[dir].idev)->hostApi)->defaultOutputDevice)
+		<< "\ndefault low input latency: " << (*sd[dir].idev)->defaultLowInputLatency
+		<< "\ndefault high input latency: " << (*sd[dir].idev)->defaultHighInputLatency
+		<< "\ndefault low output latency: " << (*sd[dir].idev)->defaultLowOutputLatency
+		<< "\ndefault high output latency: " << (*sd[dir].idev)->defaultHighOutputLatency
+		<< "\n";
+#ifndef NDEBUG
+        cerr << "PA_debug: using " << dir_str[dir] << " device:\n" << device_text[dir].str();
+#endif
+
 
         sd[dir].dev_sample_rate = find_srate(dir);
 #ifndef NDEBUG
@@ -1359,23 +1393,11 @@ double SoundPort::find_srate(unsigned dir)
                 return sr;
         }
 
-        double srates[] = { req_sample_rate, (*sd[dir].idev)->defaultSampleRate };
-        int err;
-        for (size_t i = 0; i < sizeof(srates)/sizeof(srates[0]); i++) {
-#ifndef NDEBUG
-                cerr << "PA_debug: trying " << srates[i] << " Hz" << endl;
-#endif
-                if ((err = Pa_IsFormatSupported((dir == 0 ? &sd[0].params : NULL),
-						(dir == 1 ? &sd[1].params : NULL),
-						srates[i])) == paFormatIsSupported)
-                        return srates[i];
-#ifndef NDEBUG
-                else
-                        pa_perror(err, "Pa_IsFormatSupported");
-#endif
-        }
+	for (vector<double>::const_iterator i = supported_rates[dir].begin(); i != supported_rates[dir].end(); i++)
+		if (req_sample_rate == *i || (*sd[dir].idev)->defaultSampleRate == *i)
+			return *i;
 
-        throw SndPortException(err);
+        throw SndException("No supported sample rate found");
 }
 
 void SoundPort::pa_perror(int err, const char* str)

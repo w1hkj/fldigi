@@ -288,7 +288,8 @@ public:
 
 class waterfall: public Fl_Group {
 	friend void x1_cb(Fl_Widget *w, void* v);
-	friend void bwclr_cb(Fl_Widget *w, void * v);
+	friend void bw_rsid_cb(Fl_Widget *w, void * v);
+	friend void bw_rsid_toggle(waterfall *);
 //	friend void slew_cb(Fl_Widget *w, void * v);
 	friend void slew_left(Fl_Widget *w, void * v);
 	friend void slew_right(Fl_Widget *w, void * v);
@@ -374,7 +375,7 @@ public:
 private:
 	Fl_Box		*bezel;
 	WFdisp		*wfdisp;
-	Fl_Button	*bwclr;
+	Fl_Button	*bw_rsid;
 	Fl_Button	*mode;
 	Fl_Button	*x1;
 	Fl_Button	*left; 

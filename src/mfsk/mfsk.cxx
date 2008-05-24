@@ -933,6 +933,7 @@ void cb_picRxSave( Fl_Widget *w, void *who)
 #if USE_LIBJPEG
 		picRx->save_jpeg(fn);
 #endif
+		break;
 	}
 }
 
@@ -1102,11 +1103,7 @@ void cb_picTxSendColor( Fl_Widget *w, void *who)
 	picTx->clear();
 	FL_UNLOCK_D();
 // start the transmission
-	fl_lock(&trx_mutex);
-	if (trx_state != STATE_TX)
-		trx_state = STATE_TX;
-	fl_unlock(&trx_mutex);
-	wf->set_XmtRcvBtn(true);
+	start_tx();
 	me->startpic = true;
 }
 
@@ -1137,11 +1134,7 @@ void cb_picTxSendGrey( Fl_Widget *w, void *who)
 	picTx->clear();
 	FL_UNLOCK_D();
 // start the transmission
-	fl_lock(&trx_mutex);
-	if (trx_state != STATE_TX)
-		trx_state = STATE_TX;
-	fl_unlock(&trx_mutex);
-	wf->set_XmtRcvBtn(true);
+	start_tx();
 	me->startpic = true;
 }
 

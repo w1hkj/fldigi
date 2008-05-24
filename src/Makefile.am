@@ -215,6 +215,7 @@ fldigi_SOURCES += \
 	include/rigsupport.h \
 	include/rigxml.h \
 	include/ringbuffer.h \
+	include/rsid.h \
 	include/rtty.h \
 	include/serial.h \
 	include/sound.h \
@@ -282,6 +283,7 @@ fldigi_SOURCES += \
 	rigcontrol/rigsupport.cxx \
 	rigcontrol/rigxml.cxx \
 	rigcontrol/serial.cxx \
+	rsid/rsid.cxx \
 	soundcard/mixer.cxx \
 	soundcard/sound.cxx \
 	soundcard/soundconf.cxx \
@@ -332,7 +334,9 @@ EXTRA_fldigi_SOURCES += \
 	mt63/symbol.dat \
 	mt63/alias_k5.dat \
 	mt63/mt63intl.dat \
-	trx/tune.cxx
+	trx/tune.cxx \
+	rsid/rsid_fft.cxx \
+	rsid/rsid_fft.h 
 
 # Additional non-source files that we distribute
 EXTRA_DIST = \

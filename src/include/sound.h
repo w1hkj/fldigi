@@ -216,6 +216,8 @@ public:
         static void	initialize(void);
         static void	terminate(void);
         static const std::vector<const PaDeviceInfo*>& devices(void);
+        static void devices_info(std::string& in, std::string& out);
+	static const std::vector<double>& get_supported_rates(unsigned dir);
 
 public:
         SoundPort(const char *in_dev, const char *out_dev);
@@ -247,6 +249,7 @@ private:
         enum { STREAM_IN, STREAM_OUT };
         static bool                             pa_init;
 	static std::vector<const PaDeviceInfo*> devs;
+	static std::vector<double>		supported_rates[2];
         double	 				req_sample_rate;
         float* 					fbuf;
 

@@ -105,6 +105,7 @@ public:
 	void		set_metric(double);
 	double		get_metric();
 	void		set_reverse(bool on);
+	bool		get_reverse() { return reverse; }
 	double		get_bandwidth();
 	void		set_bandwidth(double);
 	int			get_samplerate();

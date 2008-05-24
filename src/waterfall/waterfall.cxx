@@ -339,8 +339,10 @@ void WFdisp::update_fft_db()
 void WFdisp::processFFT() {
 	int		n;
 	double scale;
-
-	scale = (double)SC_SMPLRATE / active_modem->get_samplerate();
+	if (progdefaults.rsid == true)
+		scale = (double)SC_SMPLRATE / ReedSolomon->samplerate();
+	else
+		scale = (double)SC_SMPLRATE / active_modem->get_samplerate();
     scale *= FFT_LEN / 2000.0;
 
 	if (dispcnt == 0) {
@@ -509,6 +511,7 @@ void WFdisp::carrier(int cf) {
 	if (cf > bandwidth / 2 && cf < (IMAGE_WIDTH - bandwidth / 2)) {
 		carrierfreq = cf;
 		makeMarker();
+		redrawCursor();
 	}
 }
 
@@ -843,14 +846,34 @@ void x1_cb(Fl_Widget *w, void* v) {
 	restoreFocus();
 }
 
-void bwclr_cb(Fl_Widget *w, void * v) {
-	waterfall *wf = (waterfall *)w->parent();
-	wf->wfdisp->DispColor(!wf->wfdisp->DispColor());
-	if (wf->wfdisp->DispColor() == 0)
-		w->label("gry");
-	else
-		w->label("clr");
+void bw_rsid_toggle(waterfall *wf)
+{
+	if (trx_state == STATE_TX)
+		return;
+	if (progdefaults.rsid == true) {
+		progdefaults.rsid = false;
+		wf->bw_rsid->color(FL_BACKGROUND_COLOR);
+		wf->bw_rsid->redraw();
+		wf->xmtrcv->activate();
+	} else {
+		progdefaults.rsid = true;
+		wf->bw_rsid->color(FL_YELLOW);
+		wf->bw_rsid->redraw();
+		wf->xmtrcv->deactivate();
+	}
 	restoreFocus();
+}
+
+void bw_rsid_cb(Fl_Widget *w, void * v) {
+	waterfall *wf = (waterfall *)w->parent();
+//	wf->wfdisp->DispColor(!wf->wfdisp->DispColor());
+//	if (wf->wfdisp->DispColor() == 0) {
+//		w->label("gry");
+//	} else {
+//		w->label("clr");
+//	}
+//	restoreFocus();
+	bw_rsid_toggle(wf);
 }
 
 void slew_left(Fl_Widget *w, void * v) {
@@ -989,7 +1012,7 @@ void mode_cb(Fl_Widget *w, void *v) {
 		wf->wfdisp->Mode(SCOPE);
 		w->label("sig");
 		wf->x1->deactivate();
-		wf->bwclr->deactivate();
+		wf->bw_rsid->deactivate();
 		wf->wfcarrier->deactivate();
 		wf->wfRefLevel->deactivate();
 		wf->wfAmpSpan->deactivate();
@@ -1003,7 +1026,7 @@ void mode_cb(Fl_Widget *w, void *v) {
 		wf->wfdisp->Mode(WATERFALL);
 		w->label("Wtr");
 		wf->x1->activate();
-		wf->bwclr->activate();
+		wf->bw_rsid->activate();
 		wf->wfcarrier->activate();
 		wf->wfRefLevel->activate();
 		wf->wfAmpSpan->activate();
@@ -1262,9 +1285,9 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	// wfdisp->tooltip("Click to set tracking point");
 	
 	xpos = x() + wSpace;
-	bwclr = new Fl_Button(xpos, buttonrow, bwColor*(w0<600?w0/6:100)/100, BTN_HEIGHT, "clr");
-	bwclr->callback(bwclr_cb, 0);
-	bwclr->tooltip("Color / BW waterfall");
+	bw_rsid = new Fl_Button(xpos, buttonrow, bwColor*(w0<600?w0/6:100)/100, BTN_HEIGHT, "Id?");
+	bw_rsid->callback(bw_rsid_cb, 0);
+	bw_rsid->tooltip("Auto detect RSID");
 
 	xpos = xpos + bwColor*(w0<600?w0/6:100)/100 + wSpace;
 	mode = new Fl_Button(xpos, buttonrow, bwFFT*(w0<600?w0/6:100)/100, BTN_HEIGHT,"Wtr");
