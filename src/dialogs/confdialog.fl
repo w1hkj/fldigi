@@ -695,7 +695,7 @@ o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");}
             Fl_Group AudioOSS {open
               xywh {5 58 391 35} box ENGRAVED_FRAME
             } {
-              Fl_Round_Button {btnAudioIO[0]} {
+              Fl_Round_Button {btnAudioIO[1]} {
                 label OSS
                 callback {sound_update(SND_IDX_OSS);
 progdefaults.changed = true;
@@ -714,7 +714,7 @@ progdefaults.changed = true;} open
             Fl_Group AudioPort {open
               xywh {5 95 390 61} box ENGRAVED_FRAME
             } {
-              Fl_Round_Button {btnAudioIO[1]} {
+              Fl_Round_Button {btnAudioIO[0]} {
                 label PortAudio
                 callback {sound_update(SND_IDX_PORT);
 progdefaults.changed = true;
