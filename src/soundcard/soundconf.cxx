@@ -318,10 +318,14 @@ void sound_update(unsigned idx)
 
 	progdefaults.btnAudioIOis = idx;
 	switch (idx) {
+#if USE_OSS
 	case SND_IDX_OSS:
 		menuOSSDev->activate();
 		scDevice[0] = scDevice[1] = menuOSSDev->value();
 		break;
+#endif
+
+#if USE_PORTAUDIO
 	case SND_IDX_PORT:
 		menuPortInDev->activate();
 		menuPortOutDev->activate();
@@ -363,10 +367,15 @@ void sound_update(unsigned idx)
 			}
 		}
 		break;
+#endif
+
+#if USE_PULSEAUDIO
 	case SND_IDX_PULSE:
 		inpPulseServer->activate();
 		scDevice[0] = scDevice[1] = inpPulseServer->value();
 		break;
+#endif
+
 	case SND_IDX_NULL:
 		scDevice[0] = scDevice[1] = "";
 		break;

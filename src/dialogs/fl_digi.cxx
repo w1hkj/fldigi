@@ -815,6 +815,7 @@ void cb_mnuAudioInfo(Fl_Widget*, void*)
                 return;
         }
 
+#if USE_PORTAUDIO
 	size_t ndev;
         string devtext[2], headers[2];
 	SoundPort::devices_info(devtext[0], devtext[1]);
@@ -853,6 +854,7 @@ void cb_mnuAudioInfo(Fl_Widget*, void*)
 	}
 
 	fldigi_help(audio_info);
+#endif
 }
 
 void cbTune(Fl_Widget *w, void *) {
