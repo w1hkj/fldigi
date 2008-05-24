@@ -96,6 +96,7 @@ void trx_trx_receive_loop()
 	if (active_modem) {
 		try {
 			scard->Open(O_RDONLY, active_modem->get_samplerate());
+			REQ(sound_update, progdefaults.btnAudioIOis);
 		}
 		catch (const SndException& e) {
 			put_status(e.what(), 5);
@@ -162,6 +163,7 @@ void trx_trx_transmit_loop()
 	if (active_modem) {
 		try {
 			scard->Open(O_WRONLY, active_modem->get_samplerate());
+			REQ(sound_update, progdefaults.btnAudioIOis);
 		}
 		catch (const SndException& e) {
 			put_status(e.what(), 1);
@@ -207,6 +209,7 @@ void trx_tune_loop()
 	if (active_modem) {
 		try {
 			scard->Open(O_WRONLY, active_modem->get_samplerate());
+			REQ(sound_update, progdefaults.btnAudioIOis);
 		}
 		catch (const SndException& e) {
 			put_status(e.what(), 1);

@@ -5,6 +5,9 @@
 #  include <list>
 #endif
 
+#include <cstdlib>
+#include <cstring>
+
 #include "soundconf.h"
 #include "sound.h"
 #include "main.h"
@@ -13,6 +16,8 @@
 
 using namespace std;
 
+double std_sample_rates[] = { 8000.0, 9600.0, 11025.0, 12000.0, 16000.0, 22050.0, 24000.0,
+			      32000.0, 44100.0, 48000.0, 88200.0, 96000.0, 192000.0, -1.0 };
 
 static void init_oss(void)
 {
@@ -181,16 +186,28 @@ static void init_portaudio(void)
 #endif
 }
 
+static void build_srate_menu(Fl_Menu_* menu, const double* rates, size_t length, double defrate = -1.0)
+{
+	menu->clear();
+	menu->add("Auto");
+	menu->add("Native", 0, 0, 0, FL_MENU_DIVIDER);
+
+	char s[16];
+	for (size_t i = 0; i < length; i++) {
+		if (defrate != rates[i])
+			snprintf(s, sizeof(s), "%.0f", rates[i]);
+		else
+			snprintf(s, sizeof(s), "%.0f (native)", rates[i]);
+		menu->add(s);
+	}
+}
+
 static void sound_init_options(void)
 {
-	static const Fl_Menu_Item sample_rate_menu[] = {
-		{ "Auto" }, { "Native", 0, 0, 0, FL_MENU_DIVIDER },
-		{ "8000" }, { "9600" }, { "11025" }, { "12000" }, { "16000" },
-		{ "22050" }, { "24000" }, { "32000" }, { "44100" }, { "48000" },
-		{ "88200" }, { "96000" }, { "192000" }, { 0 }
-	};
-	menuInSampleRate->menu(sample_rate_menu);
-	menuOutSampleRate->menu(sample_rate_menu);
+	build_srate_menu(menuInSampleRate, std_sample_rates,
+			 sizeof(std_sample_rates)/sizeof(*std_sample_rates) - 1);
+	build_srate_menu(menuOutSampleRate, std_sample_rates,
+			 sizeof(std_sample_rates)/sizeof(*std_sample_rates) - 1);
 
 	const char* cname;
 	for (int i = 0; (cname = src_get_name(i)); i++) {
@@ -308,12 +325,43 @@ void sound_update(unsigned idx)
 	case SND_IDX_PORT:
 		menuPortInDev->activate();
 		menuPortOutDev->activate();
-		menuInSampleRate->activate();
-		menuOutSampleRate->activate();
 		if (menuPortInDev->text())
 			scDevice[0] = menuPortInDev->text();
 		if (menuPortOutDev->text())
 			scDevice[1] = menuPortOutDev->text();
+
+		{
+			Fl_Menu_* menus[2] = { menuInSampleRate, menuOutSampleRate };
+			for (size_t i = 0; i < 2; i++) {
+				char* label = strdup(menus[i]->text());
+				const vector<double>& srates = SoundPort::get_supported_rates(i);
+
+				switch (srates.size()) {
+				case 0: // startup; no devices initialised yet
+					build_srate_menu(menus[i], std_sample_rates,
+							 sizeof(std_sample_rates)/sizeof(*std_sample_rates) - 1);
+					break;
+				case 1: // default sample rate only, build menu with all std rates
+					build_srate_menu(menus[i], std_sample_rates,
+							 sizeof(std_sample_rates)/sizeof(*std_sample_rates) - 1, srates[0]);
+
+					break;
+				default: // first element is default sample rate, build menu with rest
+					build_srate_menu(menus[i], &srates[0] + 1, srates.size() - 1, srates[0]);
+					break;
+				}
+
+				for (const Fl_Menu_Item* item = menus[i]->menu(); item->text; item++) {
+					if (strstr(item->text, label)) {
+						menus[i]->value(item);
+						break;
+					}
+				}
+				free(label);
+
+				menus[i]->activate();
+			}
+		}
 		break;
 	case SND_IDX_PULSE:
 		inpPulseServer->activate();
