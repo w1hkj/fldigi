@@ -1232,14 +1232,16 @@ progdefaults.changed = true;
 
 Fl_Check_Button *btnCRCRLF=(Fl_Check_Button *)0;
 
-static void cb_btnCRCRLF(Fl_Check_Button*, void*) {
-  progdefaults.changed = true;
+static void cb_btnCRCRLF(Fl_Check_Button* o, void*) {
+  progdefaults.rtty_crcrlf = o->value();
+progdefaults.changed = true;
 }
 
 Fl_Check_Button *btnAUTOCRLF=(Fl_Check_Button *)0;
 
-static void cb_btnAUTOCRLF(Fl_Check_Button*, void*) {
-  progdefaults.changed = true;
+static void cb_btnAUTOCRLF(Fl_Check_Button* o, void*) {
+  progdefaults.rtty_autocrlf = o->value();
+progdefaults.changed = true;
 }
 
 Fl_Counter *cntrAUTOCRLF=(Fl_Counter *)0;
@@ -1779,6 +1781,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { tabSoundCard = new Fl_Group(0, 25, 400, 195, "SndCrd");
         tabSoundCard->color((Fl_Color)51);
         tabSoundCard->selection_color((Fl_Color)51);
+        tabSoundCard->hide();
         { tabsSoundCard = new Fl_Tabs(0, 25, 400, 195);
           tabsSoundCard->selection_color((Fl_Color)10);
           { tabAudio = new Fl_Group(0, 50, 400, 170, "Audio devices");
@@ -1991,7 +1994,6 @@ l with your sound hardware.");
       { tabModems = new Fl_Group(0, 25, 401, 195, "Modem");
         tabModems->color((Fl_Color)51);
         tabModems->selection_color((Fl_Color)51);
-        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 401, 195);
           tabsModems->color((Fl_Color)51);
           tabsModems->selection_color((Fl_Color)10);
@@ -2230,6 +2232,7 @@ l with your sound hardware.");
           { tabFeld = new Fl_Group(0, 50, 400, 170, "Feld");
             tabFeld->color((Fl_Color)51);
             tabFeld->selection_color((Fl_Color)51);
+            tabFeld->hide();
             { Fl_Choice* o = selHellFont = new Fl_Choice(175, 62, 122, 20, "Feld Hell Font:");
               selHellFont->down_box(FL_BORDER_BOX);
               selHellFont->labelfont(4);
@@ -2441,7 +2444,6 @@ l with your sound hardware.");
           { tabRTTY = new Fl_Group(0, 50, 400, 170, "RTTY");
             tabRTTY->color((Fl_Color)51);
             tabRTTY->selection_color((Fl_Color)51);
-            tabRTTY->hide();
             { Fl_Choice* o = selShift = new Fl_Choice(48, 60, 77, 22, "Shift");
               selShift->down_box(FL_BORDER_BOX);
               selShift->callback((Fl_Callback*)cb_selShift);
@@ -2478,16 +2480,18 @@ l with your sound hardware.");
               chkPseudoFSK->align(FL_ALIGN_LEFT);
               o->value(progdefaults.PseudoFSK);
             } // Fl_Check_Button* chkPseudoFSK
-            { btnCRCRLF = new Fl_Check_Button(364, 60, 22, 22, "CR-CR-LF");
+            { Fl_Check_Button* o = btnCRCRLF = new Fl_Check_Button(364, 60, 22, 22, "CR-CR-LF");
               btnCRCRLF->down_box(FL_DOWN_BOX);
               btnCRCRLF->callback((Fl_Callback*)cb_btnCRCRLF);
               btnCRCRLF->align(FL_ALIGN_LEFT);
               btnCRCRLF->when(FL_WHEN_RELEASE_ALWAYS);
+              o->value(progdefaults.rtty_crcrlf);
             } // Fl_Check_Button* btnCRCRLF
-            { btnAUTOCRLF = new Fl_Check_Button(364, 88, 22, 22, "AutoCRLF");
+            { Fl_Check_Button* o = btnAUTOCRLF = new Fl_Check_Button(364, 88, 22, 22, "AutoCRLF");
               btnAUTOCRLF->down_box(FL_DOWN_BOX);
               btnAUTOCRLF->callback((Fl_Callback*)cb_btnAUTOCRLF);
               btnAUTOCRLF->align(FL_ALIGN_LEFT);
+              o->value(progdefaults.rtty_autocrlf);
             } // Fl_Check_Button* btnAUTOCRLF
             { cntrAUTOCRLF = new Fl_Counter(321, 117, 65, 20, "after:");
               cntrAUTOCRLF->type(1);

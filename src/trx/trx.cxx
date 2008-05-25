@@ -329,14 +329,20 @@ modem *trx_m;
 
 void trx_start_modem_loop()
 {
-	if (active_modem)
-		active_modem->shutdown();
+	modem* old_modem = active_modem;
+	if (old_modem)
+		old_modem->shutdown();
 
 	active_modem = trx_m;
 	active_modem->init();
 	trx_state = STATE_RX;
 	signal_modem_ready();
 	REQ(&waterfall::opmode, wf);
+
+	if (old_modem) {
+		*mode_info[old_modem->get_mode()].modem = 0;
+		delete old_modem;
+	}
 }
 
 void trx_start_modem(modem *m)

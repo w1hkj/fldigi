@@ -165,6 +165,8 @@ void WFdisp::makeMarker() {
 		if (mode >= MODE_BPSK31 && mode <= MODE_QPSK250)
 			marker_width += mailserver ? progdefaults.ServerOffset :
 				progdefaults.SearchRange;
+		if (mode >= MODE_FELDHELL && mode <= MODE_HELL80)
+			marker_width = progdefaults.HELL_BW;
 	}
 	marker_width = (int)(marker_width / 2.0 + 1);
 

@@ -135,17 +135,23 @@ const int cRsId::indices[] = {
 
 cRsId :: cRsId()
 {
-	rsid_ids_size = 0;
-
+	memset (aInputSamples, 0, RSID_ARRAY_SIZE * sizeof(double));	
+	memset (aFFTReal, 0, RSID_ARRAY_SIZE * sizeof(double));	
+	memset (aFFTAmpl, 0, RSID_FFT_SIZE * sizeof(double));
+	memset (fftwindow, 0, RSID_ARRAY_SIZE * sizeof(double));
+	
+	memset (aHashTable1, 255, 256);
+	memset (aHashTable2, 255, 256);
+	
 // compute current size of rsid_ids
+	rsid_ids_size = 0;
 	while (rsid_ids[rsid_ids_size].rs) rsid_ids_size++;
+
+	pCodes = new uchar[rsid_ids_size * RSID_NSYMBOLS];
+	memset (pCodes, 0, rsid_ids_size * RSID_NSYMBOLS);
 
 // Initialization  of assigned mode/submode IDs.
 // HashTable is used for finding a code with lowest Hamming distance.
-	memset (aHashTable1, 255, 256);
-	memset (aHashTable2, 255, 256);
-
-	pCodes = new uchar[rsid_ids_size * RSID_NSYMBOLS];
 	
 	for (int i = 0; i < rsid_ids_size; i++) {
 		uchar *c = pCodes + i * RSID_NSYMBOLS;
@@ -158,21 +164,13 @@ cRsId :: cRsId()
 		aHashTable1[hash1] = i;
 		aHashTable2[hash2] = i;
 	}
-//	for (int is = 0; is < rsid_ids_size; is++) {
-//		std::cout << is << ", , ";
-//		for (int ic = 0; ic < RSID_NSYMBOLS; ic++)SHIFT
-//			std::cout << (int)(*(pCodes + ic + is * RSID_NSYMBOLS)) << ", ";
-//		std::cout << std::endl;
-//	}
-	
+
+	for (int i = 0; i < RSID_NTIMES; i++)
+		for (int j = 0; j < RSID_FFT_SIZE; j++)
+			aBuckets[i][j] = 0;
+
 	iPrevDistance = 99;
 	
-	memset(aInputSamples, 0, RSID_ARRAY_SIZE * sizeof(double));
-	memset(aFFTReal, 0, RSID_ARRAY_SIZE * sizeof(double));	
-
-//	rsid_fft = new Cfft(RSID_FFT_SIZE);
-//	rsid_fft->setWindow(FFT_BLACKMAN);
-
 	BlackmanWindow(fftwindow, RSID_ARRAY_SIZE);
 
 	nBinLow = 10;
@@ -185,7 +183,6 @@ cRsId :: cRsId()
 
 cRsId::~cRsId()
 {
-	delete rsid_fft;
 	delete [] pCodes;
 }
 
@@ -263,9 +260,6 @@ bool cRsId::search( const double *pSamples, int nSamples )
 	memcpy  (aInputSamples + ns, pSamples, ns * sizeof(double));
 	memcpy  (aFFTReal, aInputSamples, RSID_ARRAY_SIZE * sizeof(double));
 	
-//	for (int i = 0; i < RSID_ARRAY_SIZE; i++)
-//		aFFTReal[i] = aInputSamples[i] * fftwindow[i];
-
 	rsrfft( aFFTReal, 11);
 
 	memset(aFFTAmpl, 0, RSID_FFT_SIZE * sizeof(double));
@@ -476,7 +470,7 @@ bool cRsId::search_amp( int &SymbolOut,	int &BinOut)
 
 	for (i = nBinLow; i < iEnd; ++ i) {
 		j = aHashTable1[aBuckets[i1][i] | (aBuckets[i2][i] << 4)];
-		if (j != 255) {
+		if (j < rsid_ids_size)  { //!= 255) {
 			iDistance = HammingDistance(i, pCodes + j * RSID_NSYMBOLS);
 			if (iDistance < 2 && iDistance < iDistanceMin) {
 				iDistanceMin = iDistance;
@@ -485,7 +479,7 @@ bool cRsId::search_amp( int &SymbolOut,	int &BinOut)
 			}
 		}
 		j = aHashTable2[aBuckets[i3][i] | (aBuckets[iTime][i] << 4)];
-		if (j != 255) {
+		if (j < rsid_ids_size)  { //!= 255) {
 			iDistance = HammingDistance (i, pCodes + j * RSID_NSYMBOLS);
 			if (iDistance < 2 && iDistance < iDistanceMin) {
 				iDistanceMin = iDistance;

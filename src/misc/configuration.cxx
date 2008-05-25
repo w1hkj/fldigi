@@ -73,7 +73,6 @@ configuration progdefaults = {
 	18,				// int		CWIDwpm;
 
 // FELD-HELL
-	false,			// bool		FELD_IDLE;
 	150.0,			// double	HELL_BW;
 	false,			// bool		HellRcvWidth;
 	false,			// bool		HellBlackboard;
@@ -265,7 +264,7 @@ enum TAG { \
 	OLIVIATONES, OLIVIABW, OLIVIASMARGIN, OLIVIASINTEG, OLIVIA8BIT,
 	THORBW, THORFILTER, THORSECTEXT, THORPATHS, THORSOFT,
 	DOMINOEXBW, DOMINOEXFILTER, DOMINOEXFEC, DOMINOEXPATHS,
-	FELDFONTNBR, FELDIDLE,
+	FELDFONTNBR,
 	HELLRCVWIDTH, HELLXMTWIDTH, HELLBLACKBOARD, HELLPULSEFAST, HELLXMTIDLE,
 	WFPREFILTER, LATENCY,
 	USECURSORLINES, USECURSORCENTERLINE, USEBWTRACKS,
@@ -418,7 +417,6 @@ void configuration::writeDefaultsXML()
 	writeXMLint(f, "DOMINOEXPATHS", DOMINOEX_PATHS);
 	
 	writeXMLint(f, "FELDFONTNBR", feldfontnbr);
-	writeXMLbool(f, "FELDIDLE", FELD_IDLE);
 	writeXMLbool(f, "HELLRCVWIDTH", HellRcvWidth);
 	writeXMLbool(f, "HELLXMTWIDTH", HellXmtWidth);
 	writeXMLbool(f, "HELLBLACKBOARD", HellBlackboard);
@@ -741,9 +739,6 @@ bool configuration::readDefaultsXML()
 						break;
 					case FELDFONTNBR :
 						feldfontnbr = atoi(xml->getNodeData());
-						break;
-					case FELDIDLE :
-						FELD_IDLE = atoi(xml->getNodeData());
 						break;
 					case HELLRCVWIDTH :
 						HellRcvWidth = atoi(xml->getNodeData());
@@ -1118,7 +1113,6 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("DOMINOEXFEC", nodeName))	tag = DOMINOEXFEC;
 				else if (!strcmp("DOMINOEXPATHS", nodeName)) tag = DOMINOEXPATHS;
 				else if (!strcmp("FELDFONTNBR", nodeName)) 	tag = FELDFONTNBR;
-				else if (!strcmp("FELDIDLE", nodeName)) 	tag = FELDIDLE;
 				else if (!strcmp("HELLRCVWIDTH", nodeName)) 	tag = HELLRCVWIDTH;
 				else if (!strcmp("HELLXMTWIDTH", nodeName)) 	tag = HELLXMTWIDTH;
 				else if (!strcmp("HELLBLACKBOARD", nodeName)) 	tag = HELLBLACKBOARD;
@@ -1435,7 +1429,7 @@ int configuration::setDefaults() {
 	btnCWID->value(CWid);
 			
 	selHellFont->value(feldfontnbr);
-	btnFeldHellIdle->value(FELD_IDLE);
+	btnFeldHellIdle->value(HellXmtIdle);
 			
 	chkTransmitRSid->value(TransmitRSid);
 	

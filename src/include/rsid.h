@@ -83,8 +83,6 @@ private:
 	static const int Squares[];
 	static const int indices[];
 	
-// receive
-	Cfft	*rsid_fft;
 // Span of FFT bins, in which the RSID will be searched for
 	int		nBinLow;
 	int		nBinHigh;
