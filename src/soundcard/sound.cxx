@@ -46,6 +46,8 @@
 #include <semaphore.h>
 #include <limits.h>
 
+//#include <bits/stream_iterator.h>
+
 #if USE_OSS
 #    include <sys/soundcard.h>
 #endif

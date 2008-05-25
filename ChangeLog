@@ -81,6 +81,10 @@ Change Log:
      35) Bug fixes for the FM Hell modes
      36) Changed the way that the video text / id is generated.
      37) Added XML-RPC support.
+     38) Added Audio Device identification display (on Help menu)
+     39) Added transmit & receive Reed Solomon mode identifier.  Automatic
+         detection, mode change and frequency centering during receive.
+         ID sent at beginning of each transmission (toggled on Misc tab).
          
 2.10.3)
       1) Corrected memory leak bug.

@@ -151,6 +151,8 @@ extern void init_modem_sync(trx_mode mode);
 
 extern void change_modem_param(int state);
 
+extern void start_tx();
+
 extern void colorize_macro(int i);
 extern void colorize_macros();
 

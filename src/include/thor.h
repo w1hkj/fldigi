@@ -44,7 +44,7 @@
 
 using namespace std;
 
-#define THORNUMMTONES 18
+#define THORNUMTONES 18
 #define THORMAXFFTS  8
 #define THORBASEFREQ 500.0
 #define THORFIRSTIF 1000.0
@@ -52,7 +52,7 @@ using namespace std;
 #define THORSCOPESIZE 64
 
 struct THORrxpipe {
-	complex vector[THORMAXFFTS * THORNUMMTONES * 6];
+	complex vector[THORMAXFFTS * THORNUMTONES * 6];
 };
 
 class thor : public modem {
@@ -141,7 +141,7 @@ private:
 	int		get_secondary_char();
 	void	reset_filters();
 	void	decodePairs(unsigned char symbol);
-	void	decodeEX(int c);
+//	void	decodeEX(int c);
 
 // Tx
 	void	sendtone(int tone, int duration);

@@ -826,10 +826,7 @@ int FTextEdit::handle_key(int key)
 		// fall through to (un)pause for M-r or A-r
 	case FL_Pause:
 		if (trx_state != STATE_TX) {
-			fl_lock(&trx_mutex);
-			trx_state = STATE_TX;
-			fl_unlock(&trx_mutex);
-			wf->set_XmtRcvBtn(true);
+			start_tx();
 		}
 		else
 			PauseBreak = true;
@@ -990,10 +987,7 @@ void FTextEdit::menu_cb(int val)
 	switch (val) {
 	case TX_MENU_TX:
 		active_modem->set_stopflag(false);
-		fl_lock(&trx_mutex);
-		trx_state = STATE_TX;
-		fl_unlock(&trx_mutex);
-		wf->set_XmtRcvBtn(true);
+		start_tx();
 		break;
 	case TX_MENU_RX:
 		insert_position(tbuf->length());

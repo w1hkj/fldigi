@@ -208,7 +208,7 @@ Fl_Menu_Item quick_change_thor[] = {
 	{ mode_info[MODE_THOR5].name, 0, cb_init_mode, (void *)MODE_THOR5 },
 	{ mode_info[MODE_THOR8].name, 0, cb_init_mode, (void *)MODE_THOR8 },
 	{ mode_info[MODE_THOR11].name, 0, cb_init_mode, (void *)MODE_THOR11 },
-	{ mode_info[MODE_TSOR11].name, 0, cb_init_mode, (void *)MODE_TSOR11 },
+//	{ mode_info[MODE_TSOR11].name, 0, cb_init_mode, (void *)MODE_TSOR11 },
 	{ mode_info[MODE_THOR16].name, 0, cb_init_mode, (void *)MODE_THOR16 },
 	{ mode_info[MODE_THOR22].name, 0, cb_init_mode, (void *)MODE_THOR22 },
 	{ 0 }
@@ -405,7 +405,7 @@ void init_modem(trx_mode mode)
 		break;
 
 	case MODE_THOR4: case MODE_THOR5: case MODE_THOR8:
-	case MODE_THOR11: case MODE_TSOR11: case MODE_THOR16: case MODE_THOR22:
+	case MODE_THOR11:case MODE_THOR16: case MODE_THOR22: //case MODE_TSOR11: 
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new thor(mode));
 		quick_change = quick_change_thor;
@@ -1141,7 +1141,7 @@ Fl_Menu_Item menu_[] = {
 { mode_info[MODE_THOR5].name, 0, cb_init_mode, (void *)MODE_THOR5, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_THOR8].name, 0, cb_init_mode, (void *)MODE_THOR8, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_THOR11].name, 0, cb_init_mode, (void *)MODE_THOR11, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_TSOR11].name, 0, cb_init_mode, (void *)MODE_TSOR11, 0, FL_NORMAL_LABEL, 0, 14, 0},
+//{ mode_info[MODE_TSOR11].name, 0, cb_init_mode, (void *)MODE_TSOR11, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_THOR16].name, 0, cb_init_mode, (void *)MODE_THOR16, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_THOR22].name, 0, cb_init_mode, (void *)MODE_THOR22, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
@@ -2017,7 +2017,7 @@ void resetTHOR() {
 		md == MODE_THOR5 ||
 		md == MODE_THOR8 ||
 		md == MODE_THOR11 ||
-		md == MODE_TSOR11 ||
+//		md == MODE_TSOR11 ||
 		md == MODE_THOR16 ||
 		md == MODE_THOR22 ) {
 		active_modem->restart();
@@ -2151,36 +2151,6 @@ void setReverse(int rev) {
 	active_modem->set_reverse(rev);
 }
 
-/*
-void setAfcOnOff(bool b) {
-	FL_LOCK();
-	afconoff->value(b);
-	FL_UNLOCK();
-	FL_AWAKE();
-}	
-
-void setSqlOnOff(bool b) {
-	FL_LOCK();
-	sqlonoff->value(b);
-	FL_UNLOCK();
-	FL_AWAKE();
-}
-
-bool QueryAfcOnOff() {
-	FL_LOCK_E();
-	int v = afconoff->value();
-	FL_UNLOCK_E();
-	return v;
-}
-
-bool QuerySqlOnOff() {
-	FL_LOCK_E();
-	int v = sqlonoff->value();
-	FL_UNLOCK_E();
-	return v;
-}
-*/
-
 void change_modem_param(int state)
 {
 	int d;
@@ -2235,4 +2205,14 @@ void change_modem_param(int state)
 	else
 		snprintf(msg, sizeof(msg), "Squelch = %2.0f %%", val->value());
 	put_status(msg, 2);
+}
+
+void start_tx()
+{
+	if (progdefaults.rsid == true) return;
+	fl_lock(&trx_mutex);
+	if (trx_state != STATE_TX)
+		trx_state = STATE_TX;
+	fl_unlock(&trx_mutex);
+	wf->set_XmtRcvBtn(true);
 }

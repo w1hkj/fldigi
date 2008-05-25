@@ -131,10 +131,7 @@ void process_msgque()
 
 			active_modem->set_stopflag(false);
 
-			fl_lock(&trx_mutex);
-			trx_state = STATE_TX;
-			fl_unlock(&trx_mutex);
-			wf->set_XmtRcvBtn(true);
+			start_tx();
 		}
 	}
 }
@@ -212,11 +209,7 @@ void check_formail() {
 			pskmail_text_available = true;
 
 			active_modem->set_stopflag(false);
-
-			fl_lock(&trx_mutex);
-			trx_state = STATE_TX;
-			fl_unlock(&trx_mutex);
-			wf->set_XmtRcvBtn(true);
+			start_tx();
 		}
 	} 
 #else
@@ -240,10 +233,7 @@ void check_formail() {
 				pText = mailtext.begin();
 				pskmail_text_available = true;
 				active_modem->set_stopflag(false);
-				fl_lock(&trx_mutex);
-				trx_state = STATE_TX;
-				fl_unlock(&trx_mutex);
-				wf->set_XmtRcvBtn(true);
+				start_tx();
 				arqmode = true;
 			}
 		}

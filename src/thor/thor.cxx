@@ -142,11 +142,11 @@ thor::thor(trx_mode md)
 		samplerate = 11025;
 		break;
 
-	case MODE_TSOR11:
-		symlen = 1024;
-		doublespaced = 1;
-		samplerate = 11025;
-		break;
+//	case MODE_TSOR11:
+//		symlen = 1024;
+//		doublespaced = 1;
+//		samplerate = 11025;
+//		break;
 
 	case MODE_THOR22:
 		symlen = 512;
@@ -174,12 +174,12 @@ thor::thor(trx_mode md)
 
 
 	basetone = (int)floor(THORBASEFREQ * symlen / samplerate + 0.5);
-	lotone = basetone - (THORNUMMTONES/2) * (doublespaced ? 2 : 1);
-	hitone = basetone + 3 * (THORNUMMTONES/2) * (doublespaced ? 2 : 1);
+	lotone = basetone - (THORNUMTONES/2) * (doublespaced ? 2 : 1);
+	hitone = basetone + 3 * (THORNUMTONES/2) * (doublespaced ? 2 : 1);
 
 	tonespacing = (double) (samplerate * ((doublespaced) ? 2 : 1)) / symlen;
 
-	bandwidth = THORNUMMTONES * tonespacing;
+	bandwidth = THORNUMTONES * tonespacing;
 
 	hilbert	= new C_FIR_filter();
 	hilbert->init_hilbert(37, 1);
@@ -203,7 +203,7 @@ thor::thor(trx_mode md)
 	pipe = new THORrxpipe[twosym];
 	
 	scopedata.alloc(THORSCOPESIZE);
-	videodata.alloc((THORMAXFFTS * THORNUMMTONES * 2  * (doublespaced?2:1) ));
+	videodata.alloc((THORMAXFFTS * THORNUMTONES * 2  * (doublespaced?2:1) ));
 
 	pipeptr = 0;
 	
@@ -295,43 +295,24 @@ void thor::decodePairs(unsigned char symbol)
 	}
 }
 
-void thor::decodeEX(int ch)
-{
-	unsigned char symbols[4];
-	int c = ch;
-	
-	for (int i = 0; i < 4; i++) {
-		if ((c & 1) == 1) symbols[3-i] = 255;
-		else symbols[3-i] = 1;
-		c = c / 2;
-	}
-
-	Rxinlv->symbols(symbols);
-
-	for (int i = 0; i < 4; i++) decodePairs(symbols[i]);
-
-}
-
 void thor::decodesymbol()
 {
 	int c;
-	double fdiff;
+	double fdiff, avg, softmag;
+	unsigned char symbols[4];
 
 // Decode the IFK+ sequence, which results in a single nibble
 
 	fdiff = currsymbol - prev1symbol;
 	if (reverse) fdiff = -fdiff;
-	if (doublespaced) fdiff /= 2 * paths;
-	else              fdiff /= paths;
+	fdiff /= paths;
+	if (doublespaced) fdiff /= 2.0;
 	c = (int)floor(fdiff + .5) - 2;
-	if (c < 0) c += THORNUMMTONES;
+	if (c < 0) c += THORNUMTONES;
 
-//	decodeEX(c);
-
-	unsigned char symbols[4];
-	double avg = (currmag + prev1mag + prev2mag) / 3.0;
+	avg = (currmag + prev1mag + prev2mag) / 3.0;
 	if (avg == 0.0) avg = 1e-20;
-	double softmag = currmag / avg;
+	softmag = currmag / avg;
 		
 	for (int i = 0; i < 4; i++) {
 // hard symbol decode
@@ -355,7 +336,7 @@ int thor::harddecode()
 {
 	double x, max = 0.0;
 	int symbol = 0;
-	for (int i = 0; i <  (paths * THORNUMMTONES * 2  * (doublespaced ? 2 : 1) ); i++) {
+	for (int i = 0; i <  (paths * THORNUMTONES * 2  * (doublespaced ? 2 : 1) ); i++) {
 		x = pipe[pipeptr].vector[i].mag();
 		if (x > max) {
 			max = x;
@@ -371,16 +352,16 @@ void thor::update_syncscope()
 	double max = 0, min = 1e6, range, mag;
 
 // dom waterfall
-	memset(videodata, 0, (paths * THORNUMMTONES * 2  * (doublespaced?2:1) ) * sizeof(double));
+	memset(videodata, 0, (paths * THORNUMTONES * 2  * (doublespaced?2:1) ) * sizeof(double));
 
 	if (!progStatus.sqlonoff || metric >= progStatus.sldrSquelchValue) {
-		for (int i = 0; i < (paths * THORNUMMTONES * 2  * (doublespaced?2:1) ); i++ ) {
+		for (int i = 0; i < (paths * THORNUMTONES * 2  * (doublespaced?2:1) ); i++ ) {
 			mag = pipe[pipeptr].vector[i].mag();
 			if (max < mag) max = mag;
 			if (min > mag) min = mag;
 		}
 		range = max - min;
-		for (int i = 0; i < (paths * THORNUMMTONES * 2  * (doublespaced?2:1) ); i++ ) {
+		for (int i = 0; i < (paths * THORNUMTONES * 2  * (doublespaced?2:1) ); i++ ) {
 			if (range > 2) {
 				mag = (pipe[pipeptr].vector[i].mag() - min) / range + 0.0001;
 				mag = 1 + 2 * log10(mag);
@@ -390,7 +371,7 @@ void thor::update_syncscope()
 			videodata[i] = 255*mag;
 		}
 	}
-	set_video(videodata, (paths * THORNUMMTONES * 2  * (doublespaced?2:1) ), false);
+	set_video(videodata, (paths * THORNUMTONES * 2  * (doublespaced?2:1) ), false);
 	videodata.next();
 
 //	set_scope(scopedata, twosym);
@@ -428,7 +409,7 @@ void thor::synchronize()
 	}
 	syn = syncfilter->run(syn);
 	
-	synccounter += (int) floor(1.0 * (syn - symlen) / THORNUMMTONES + 0.5);
+	synccounter += (int) floor(1.0 * (syn - symlen) / THORNUMTONES + 0.5);
 }
 
 
@@ -437,11 +418,11 @@ void thor::eval_s2n()
 	if (currsymbol != prev1symbol && prev1symbol != prev2symbol) {
 		sig = pipe[pipeptr].vector[currsymbol].mag();
 		noise = 0.0;
-		for (int i = 0; i < paths * THORNUMMTONES * 2  * (doublespaced?2:1); i++) {
+		for (int i = 0; i < paths * THORNUMTONES * 2  * (doublespaced?2:1); i++) {
 			if (i != currsymbol)
 				noise += pipe[pipeptr].vector[i].mag();
 		}	
-		noise /= (paths * THORNUMMTONES * 2  * (doublespaced?2:1) - 1);
+		noise /= (paths * THORNUMTONES * 2  * (doublespaced?2:1) - 1);
 	
 		if (noise)
 			s2n = decayavg( s2n, sig / noise, 8);
@@ -484,7 +465,7 @@ int thor::rx_process(const double *buf, int len)
 					z = mixer(n + 1, zp[i]);
 					bins = binsfft[n]->run(z);
 // copy current vector to the pipe interleaving the FFT vectors
-					for (int i = 0; i < THORNUMMTONES * 2 * (doublespaced ? 2 : 1); i++) {
+					for (int i = 0; i < THORNUMTONES * 2 * (doublespaced ? 2 : 1); i++) {
 						pipe[pipeptr].vector[n + paths * i] = bins[i];
 					}
 				}
@@ -548,10 +529,10 @@ void thor::sendsymbol(int sym)
 	complex z;
     int tone;
 	
-	tone = (txprevtone + 2 + sym) % THORNUMMTONES;
+	tone = (txprevtone + 2 + sym) % THORNUMTONES;
     txprevtone = tone;
 	if (reverse)
-		tone = (THORNUMMTONES - 1) - tone;
+		tone = (THORNUMTONES - 1) - tone;
 	sendtone(tone, 1);
 }
 
@@ -624,12 +605,12 @@ int thor::tx_process()
 	case TX_STATE_PREAMBLE:
 		Clearbits();
 		for (int j = 0; j < 16; j++) sendsymbol(0);
-//		sendtone(THORNUMMTONES/2, 4);
+//		sendtone(THORNUMTONES/2, 4);
 //		for (int k = 0; k < 3; k++) {
-//			sendtone(THORNUMMTONES, 3);
+//			sendtone(THORNUMTONES, 3);
 //			sendtone(0, 3);
 //		}
-//		sendtone(THORNUMMTONES/2, 4);
+//		sendtone(THORNUMTONES/2, 4);
 
         sendidle();
 		txstate = TX_STATE_START;

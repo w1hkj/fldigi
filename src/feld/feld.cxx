@@ -505,7 +505,7 @@ int feld::tx_process()
 // if TX buffer empty
 // send idle character
 	if (c == -1) {
-		if (progdefaults.FELD_IDLE == true)
+		if (progdefaults.HellXmtIdle == true)
 			c = '.';
 		else {
 			send_null_column();

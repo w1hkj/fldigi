@@ -33,6 +33,7 @@
 #include "waterfall.h"
 #include "globals.h"
 #include "fl_digi.h"
+#include "rsid.h"
 
 // ----------------------------------------------------------------------------
 
@@ -50,6 +51,7 @@ extern Fl_Mutex		trx_mutex;
 extern Fl_Thread	trx_thread;
 extern state_t		trx_state;
 extern modem		*active_modem;
+extern cRsId		*ReedSolomon;
 
 extern	SoundBase 	*scard;
 

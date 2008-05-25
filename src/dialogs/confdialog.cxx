@@ -778,6 +778,13 @@ static void cb_btnStartAtSweetSpot(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *chkTransmitRSid=(Fl_Check_Button *)0;
+
+static void cb_chkTransmitRSid(Fl_Check_Button* o, void*) {
+  progdefaults.TransmitRSid = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabModems=(Fl_Group *)0;
 
 Fl_Tabs *tabsModems=(Fl_Tabs *)0;
@@ -1534,6 +1541,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { tabVideo = new Fl_Group(0, 25, 400, 195, "Video");
         tabVideo->color((Fl_Color)51);
         tabVideo->selection_color((Fl_Color)51);
+        tabVideo->hide();
         { Fl_Group* o = new Fl_Group(5, 40, 390, 77, "Video Preamble");
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -1771,13 +1779,11 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { tabSoundCard = new Fl_Group(0, 25, 400, 195, "SndCrd");
         tabSoundCard->color((Fl_Color)51);
         tabSoundCard->selection_color((Fl_Color)51);
-        tabSoundCard->hide();
         { tabsSoundCard = new Fl_Tabs(0, 25, 400, 195);
           tabsSoundCard->selection_color((Fl_Color)10);
           { tabAudio = new Fl_Group(0, 50, 400, 170, "Audio devices");
             tabAudio->color((Fl_Color)51);
             tabAudio->selection_color((Fl_Color)51);
-            tabAudio->hide();
             { AudioOSS = new Fl_Group(5, 58, 391, 35);
               AudioOSS->box(FL_ENGRAVED_FRAME);
               { btnAudioIO[0] = new Fl_Round_Button(5, 63, 100, 25, "OSS");
@@ -1836,6 +1842,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           { tabAudioOpt = new Fl_Group(0, 50, 400, 170, "Audio settings");
             tabAudioOpt->color((Fl_Color)51);
             tabAudioOpt->selection_color((Fl_Color)51);
+            tabAudioOpt->hide();
             { Fl_Spinner* o = cntRxRateCorr = new Fl_Spinner(5, 160, 85, 25, "RX ppm");
               cntRxRateCorr->value(1);
               cntRxRateCorr->callback((Fl_Callback*)cb_cntRxRateCorr);
@@ -1966,6 +1973,17 @@ l with your sound hardware.");
             btnStartAtSweetSpot->callback((Fl_Callback*)cb_btnStartAtSweetSpot);
             o->value(progdefaults.StartAtSweetSpot);
           } // Fl_Check_Button* btnStartAtSweetSpot
+          o->end();
+        } // Fl_Group* o
+        { Fl_Group* o = new Fl_Group(5, 125, 390, 50, "RSid");
+          o->box(FL_ENGRAVED_FRAME);
+          o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+          { Fl_Check_Button* o = chkTransmitRSid = new Fl_Check_Button(50, 143, 70, 15, "Transmit RSid");
+            chkTransmitRSid->tooltip("Transmit Reed Solomon ID");
+            chkTransmitRSid->down_box(FL_DOWN_BOX);
+            chkTransmitRSid->callback((Fl_Callback*)cb_chkTransmitRSid);
+            o->value(progdefaults.TransmitRSid);
+          } // Fl_Check_Button* chkTransmitRSid
           o->end();
         } // Fl_Group* o
         tabMisc->end();
