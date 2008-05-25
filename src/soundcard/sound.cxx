@@ -31,6 +31,8 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <algorithm>
+#include <iterator>
 
 #include <cstdio>
 #include <cstdlib>
@@ -44,7 +46,7 @@
 #include <semaphore.h>
 #include <limits.h>
 
-#include <bits/stream_iterator.h>
+//#include <bits/stream_iterator.h>
 
 #if USE_OSS
 #    include <sys/soundcard.h>
@@ -1216,7 +1218,7 @@ void SoundPort::init_stream(unsigned dir)
 			supported_rates[dir].push_back(*i);
 	ostringstream ss;
 	if (supported_rates[dir].size() > 1)
-		copy(supported_rates[dir].begin(), supported_rates[dir].end(), ostream_iterator<unsigned>(ss, " "));
+		copy(supported_rates[dir].begin(), supported_rates[dir].end(), ostream_iterator<double>(ss, " "));
 	else
 		ss << "Unknown";
 

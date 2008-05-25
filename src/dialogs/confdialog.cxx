@@ -1786,11 +1786,11 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             tabAudio->selection_color((Fl_Color)51);
             { AudioOSS = new Fl_Group(5, 58, 391, 35);
               AudioOSS->box(FL_ENGRAVED_FRAME);
-              { btnAudioIO[1] = new Fl_Round_Button(5, 63, 100, 25, "OSS");
-                btnAudioIO[1]->down_box(FL_DIAMOND_DOWN_BOX);
-                btnAudioIO[1]->selection_color((Fl_Color)1);
-                btnAudioIO[1]->callback((Fl_Callback*)cb_btnAudioIO);
-              } // Fl_Round_Button* btnAudioIO[1]
+              { btnAudioIO[0] = new Fl_Round_Button(5, 63, 100, 25, "OSS");
+                btnAudioIO[0]->down_box(FL_DIAMOND_DOWN_BOX);
+                btnAudioIO[0]->selection_color((Fl_Color)1);
+                btnAudioIO[0]->callback((Fl_Callback*)cb_btnAudioIO);
+              } // Fl_Round_Button* btnAudioIO[0]
               { Fl_Input_Choice* o = menuOSSDev = new Fl_Input_Choice(280, 63, 110, 25, "Device");
                 menuOSSDev->callback((Fl_Callback*)cb_menuOSSDev);
                 o->value(progdefaults.OSSdevice.c_str());
@@ -1799,11 +1799,11 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             } // Fl_Group* AudioOSS
             { AudioPort = new Fl_Group(5, 95, 390, 61);
               AudioPort->box(FL_ENGRAVED_FRAME);
-              { btnAudioIO[0] = new Fl_Round_Button(5, 115, 95, 25, "PortAudio");
-                btnAudioIO[0]->down_box(FL_DIAMOND_DOWN_BOX);
-                btnAudioIO[0]->selection_color((Fl_Color)1);
-                btnAudioIO[0]->callback((Fl_Callback*)cb_btnAudioIO1);
-              } // Fl_Round_Button* btnAudioIO[0]
+              { btnAudioIO[1] = new Fl_Round_Button(5, 115, 95, 25, "PortAudio");
+                btnAudioIO[1]->down_box(FL_DIAMOND_DOWN_BOX);
+                btnAudioIO[1]->selection_color((Fl_Color)1);
+                btnAudioIO[1]->callback((Fl_Callback*)cb_btnAudioIO1);
+              } // Fl_Round_Button* btnAudioIO[1]
               { menuPortInDev = new Fl_Choice(165, 99, 225, 25, "Capture");
                 menuPortInDev->down_box(FL_BORDER_BOX);
                 menuPortInDev->callback((Fl_Callback*)cb_menuPortInDev);
