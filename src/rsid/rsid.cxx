@@ -53,6 +53,7 @@ RSIDs cRsId::rsid_ids[] = {
 	{ 45, MODE_THROB4 }, // THROB-4
 	{ 46, MODE_THROBX1 }, // THROBX-1
 	{ 47, MODE_THROBX2 }, // THROBX-2
+	{ 146, MODE_THROBX4 }, // THROBX-4
 	{ 49, NUM_MODES }, // CONTESTIA-8-250
 	{ 50, NUM_MODES }, // CONTESTIA-16-500
 	{ 51, NUM_MODES }, // CONTESTIA-32-1000
@@ -93,12 +94,12 @@ RSIDs cRsId::rsid_ids[] = {
 	{ 87, MODE_DOMINOEX11 }, // DOMINOEX-11
 	{ 88, MODE_DOMINOEX16 }, // DOMINOEX-16
 	{ 90, MODE_DOMINOEX22 }, // DOMINOEX-22
-	{ 92, MODE_THOR4 }, // DOMINOEX-4-FEC
-	{ 93, MODE_THOR5 }, // DOMINOEX-5-FEC
-	{ 97, MODE_THOR8 }, // DOMINOEX-8-FEC
-	{ 98, MODE_THOR11 }, // DOMINOEX-11-FEC
-	{ 99, MODE_THOR16 }, // DOMINOEX-16-FEC
-	{ 101, MODE_THOR22 }, // DOMINOEX-22-FEC
+	{ 92, MODE_DOMINOEX4 }, // DOMINOEX-4-FEC
+	{ 93, MODE_DOMINOEX5 }, // DOMINOEX-5-FEC
+	{ 97, MODE_DOMINOEX8 }, // DOMINOEX-8-FEC
+	{ 98, MODE_DOMINOEX11 }, // DOMINOEX-11-FEC
+	{ 99, MODE_DOMINOEX16 }, // DOMINOEX-16-FEC
+	{ 101, MODE_DOMINOEX22 }, // DOMINOEX-22-FEC
 
 	{ 104, MODE_FELDHELL }, // FELD HELL
 	{ 105, NUM_MODES }, // PSK HELL
@@ -107,6 +108,14 @@ RSIDs cRsId::rsid_ids[] = {
 	{ 108, NUM_MODES }, // FM HELL-245
 
 	{ 110, MODE_QPSK31 },
+		
+	{ 136, MODE_THOR4 },
+	{ 137, MODE_THOR8 },
+	{ 138, MODE_THOR16 },
+	{ 139, MODE_THOR5 },
+	{ 143, MODE_THOR11 },
+	{ 145, MODE_THOR22 },
+		
 	{ 0,  NUM_MODES }
 };
 
@@ -352,6 +361,11 @@ void cRsId::apply(int iSymbol, int iBin)
 		progdefaults.rtty_shift = 9;
 	}
 		
+	if (iSymbol == 92 || iSymbol == 93 ||
+	    iSymbol == 97 || iSymbol == 98 ||
+	    iSymbol == 99 || iSymbol == 101 ) // special MultiPsk FEC modes
+		progdefaults.DOMINOEX_FEC = true;
+
 	Fl::add_timeout(0.10, changemodefrequency);	
 	
 	

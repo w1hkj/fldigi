@@ -500,7 +500,7 @@ int throb::rx_process(const double *buf, int len)
 
 		hilbert->run(z, z);
 		z = mixer(z);
-
+http://www.w1hkj.com/alphateam/fldigi-2.11AL.tar.gz
 		n = fftfilter->run(z, &zp);
 
 		/* DOWN_SAMPLE by 32 and push to the receiver */
