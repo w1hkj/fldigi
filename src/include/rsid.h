@@ -61,7 +61,7 @@
 #define RSID_NTIMES		(RSID_NSYMBOLS * 2)
 
 // each rsid symbol has a duration equal to 1024 samples at 11025 Hz smpl rate
-#define RSID_SYMLEN		0.09288 // duration of each rsid symbol
+#define RSID_SYMLEN		(1024.0 / 11025.0) // 0.09288 // duration of each rsid symbol
 
 enum {
 	RSID_BANDWIDTH_500 = 0,

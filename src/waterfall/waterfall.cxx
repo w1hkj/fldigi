@@ -166,7 +166,7 @@ void WFdisp::makeMarker() {
 			marker_width += mailserver ? progdefaults.ServerOffset :
 				progdefaults.SearchRange;
 		if (mode >= MODE_FELDHELL && mode <= MODE_HELL80)
-			marker_width = progdefaults.HELL_BW;
+			marker_width = (int)progdefaults.HELL_BW;
 	}
 	marker_width = (int)(marker_width / 2.0 + 1);
 
@@ -341,16 +341,11 @@ void WFdisp::update_fft_db()
 void WFdisp::processFFT() {
 	int		n;
 	double scale;
-	if (progdefaults.rsid == true)
-		scale = (double)SC_SMPLRATE / ReedSolomon->samplerate();
-	else
-		scale = (double)SC_SMPLRATE / active_modem->get_samplerate();
+	scale = (double)SC_SMPLRATE / srate;
     scale *= FFT_LEN / 2000.0;
 
 	if (dispcnt == 0) {
 		memset (fftout, 0, FFT_LEN*2*sizeof(double));
-//        for (int i = 0; i < FFT_LEN*2; i++)
-//            fftout[i] = fftwindow[i] * circbuff[i];
         for (int i = 0; i < FFT_LEN * 2 * progdefaults.latency / 8; i++)
             fftout[i] = fftwindow[i * 8 / progdefaults.latency] * circbuff[i];
 		wfft->rdft(fftout);
@@ -426,14 +421,14 @@ void WFdisp::redrawCursor()
 	cursormoved = true;
 }
 
-void WFdisp::sig_data( double *sig, int len ) {
+void WFdisp::sig_data( double *sig, int len, int sr ) {
 	int   movedbls = (FFT_LEN * 2) - len; //SCBLOCKSIZE;
 	int	  movesize = movedbls * sizeof(double);
 	double *pcircbuff1 = &circbuff[len];
-	
+
 //if sound card sampling rate changed reset the waterfall buffer
-	if (srate != active_modem->get_samplerate()) {
-		srate = active_modem->get_samplerate();
+	if (srate != sr) {
+		srate = sr;
 		memset (circbuff, 0, FFT_LEN * 2 * sizeof(double));
 	}
 	else

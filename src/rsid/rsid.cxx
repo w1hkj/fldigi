@@ -209,25 +209,26 @@ void cRsId::Encode(int code, uchar *rsid)
 	}
 }
 
+
 void cRsId::CalculateBuckets(const double *pSpectrum, int iBegin, int iEnd)
 {
 	double   Amp = 0.0, AmpMax = 0.0;
 	int   iBucketMax = iBegin - 2;
-	int   i, j, jEnd;
+	int   i, j;
+	bool  firstpass = true;
 
 	for (i = iBegin; i < iEnd; i += 2) {
-		if (iBucketMax == i - 2) {
-// The maximum amplitude is out of span. Sweep over all the 16 coefficients
+		if (firstpass) {
 			AmpMax		= pSpectrum[i];
 			iBucketMax	= i;
-			jEnd		= i + 32;
-			for (j = i + 2; j < jEnd; j += 2) {
+			for (j = i + 2; j < i + 32; j += 2) {
 				Amp = pSpectrum[j];
 				if (Amp > AmpMax) {
 					AmpMax    = Amp;
 					iBucketMax = j;
 				}
 			}
+			firstpass = false;
 		} else {
 			j    = i + 30;
 			Amp = pSpectrum[j];
@@ -240,6 +241,7 @@ void cRsId::CalculateBuckets(const double *pSpectrum, int iBegin, int iEnd)
 	}
 }
 
+
 bool cRsId::search( const double *pSamples, int nSamples )
 {
 	int i, ns;
@@ -251,7 +253,7 @@ bool cRsId::search( const double *pSamples, int nSamples )
  	
  	ns = nSamples;
  	if (ns > RSID_ARRAY_SIZE / 4) {
- 		std::cout << "ns = " << ns << std::endl;
+// 		std::cout << "ns = " << ns << std::endl;
  		ns = RSID_ARRAY_SIZE / 4;
  	}
 	
@@ -264,11 +266,13 @@ bool cRsId::search( const double *pSamples, int nSamples )
 		nBinHigh = RSID_FFT_SIZE - nBinLow;
 	}
 
-	memset  (aFFTReal, 0, RSID_ARRAY_SIZE * sizeof(double));	
 	memmove (aInputSamples, aInputSamples + ns, ns * sizeof(double));
 	memcpy  (aInputSamples + ns, pSamples, ns * sizeof(double));
-	memcpy  (aFFTReal, aInputSamples, RSID_ARRAY_SIZE * sizeof(double));
 	
+	memcpy  (aFFTReal, aInputSamples, RSID_ARRAY_SIZE * sizeof(double));
+//	for (int i = 0; i < RSID_ARRAY_SIZE; i++)
+//		aFFTReal[i] = aInputSamples[i] * fftwindow[i];
+		
 	rsrfft( aFFTReal, 11);
 
 	memset(aFFTAmpl, 0, RSID_FFT_SIZE * sizeof(double));
@@ -305,11 +309,9 @@ bool cRsId::search( const double *pSamples, int nSamples )
 }
 
 // change the current mode and frequency to the rsid detected values
-double newfreq;
 trx_mode newmode;
 
-void changemodefrequency(void*) {
-	active_modem->set_freq(newfreq);
+void changemode(void*) {
 	init_modem(newmode);
 }
 
@@ -332,7 +334,8 @@ void cRsId::apply(int iSymbol, int iBin)
 	
 	bw_rsid_toggle(wf);
 
-	newfreq = freq;
+	if (mbin == NUM_MODES) return;
+
 	newmode = mbin;
 	
 	if (iSymbol == 37) {
@@ -366,7 +369,8 @@ void cRsId::apply(int iSymbol, int iBin)
 	    iSymbol == 99 || iSymbol == 101 ) // special MultiPsk FEC modes
 		progdefaults.DOMINOEX_FEC = true;
 
-	Fl::add_timeout(0.10, changemodefrequency);	
+	active_modem->set_freq(freq);
+	Fl::add_timeout(0.05, changemode);	
 	
 	
 /*
@@ -541,7 +545,7 @@ void cRsId::send()
 	int symlen;
 	
 	sr = active_modem->get_samplerate();
-	symlen = (int)floor(RSID_SYMLEN * sr + 0.5);
+	symlen = (int)floor(RSID_SYMLEN * sr);
 	fr = 1.0 * active_modem->get_txfreq() - (11025.0 * 7 / 1024);
 	
 	trx_mode m = active_modem->get_mode();

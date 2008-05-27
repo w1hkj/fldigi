@@ -170,7 +170,7 @@ public:
 	void makeMarker();
 	void process_analog(double *sig, int len);
 	void processFFT();
-	void sig_data( double *sig, int len );
+	void sig_data( double *sig, int len, int sr );
 	void rfcarrier(long long f) { 
 		rfc = f;
 	}
@@ -305,8 +305,8 @@ public:
 	waterfall(int x, int y, int w, int h, char *lbl= 0);
 	~waterfall(){};
 	void opmode();
-	void sig_data(double *sig, int len){
-		wfdisp->sig_data(sig, len);
+	void sig_data(double *sig, int len, int sr){
+		wfdisp->sig_data(sig, len, sr);
 	}
 	void Overload(bool ovr) { 
 		wfdisp->Overload(ovr);
