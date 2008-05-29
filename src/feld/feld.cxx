@@ -245,7 +245,7 @@ void feld::rx(complex z)
 
 	agc = minmaxfilt->run(peakhold - minhold);
 	
-	metric = CLAMP(100*agc, 0.0, 100.0); 
+	metric = CLAMP(200*agc, 0.0, 100.0); 
 	display_metric(metric);
 	
 	if (blackboard)

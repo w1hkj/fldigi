@@ -1576,31 +1576,35 @@ void create_fl_digi_main() {
 			MODEstatus->callback(status_cb, (void *)0);
 			MODEstatus->when(FL_WHEN_CHANGED);
 			MODEstatus->tooltip("Left clk - change mode\nRight clk - Modem Tab");
-			Status1 = new Fl_Box(Wmode,Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Ws2n, Hstatus, "");
+
+			Status1 = new Fl_Box(rightof(MODEstatus), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Ws2n, Hstatus, "");
 			Status1->box(FL_DOWN_BOX);
 			Status1->color(FL_BACKGROUND2_COLOR);
 			Status1->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
-			Status2 = new Fl_Box(Wmode+Ws2n, Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Wimd, Hstatus, "");
+			
+			Status2 = new Fl_Box(rightof(Status1), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Wimd, Hstatus, "");
 			Status2->box(FL_DOWN_BOX);
 			Status2->color(FL_BACKGROUND2_COLOR);
 			Status2->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
+
 			StatusBar = new Fl_Box(
-                Wmode+Wimd+Ws2n, Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Wstatus, Hstatus, "");
+                rightof(Status2), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
+                WNOM - bwSqlOnOff - bwAfcOnOff - Wwarn - rightof(Status2), Hstatus, "");
 			StatusBar->box(FL_DOWN_BOX);
 			StatusBar->color(FL_BACKGROUND2_COLOR);
 			StatusBar->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 
 			WARNstatus = new Fl_Box(
-                Wmode+Wimd+Ws2n+Wstatus, Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
+                WNOM - bwSqlOnOff - bwAfcOnOff - Wwarn, Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
                 Wwarn, Hstatus, "");
 			WARNstatus->box(FL_DIAMOND_DOWN_BOX);
 			WARNstatus->color(FL_BACKGROUND_COLOR);
 			WARNstatus->labelcolor(FL_RED);
 			WARNstatus->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE);
-
+				
 			if (useCheckButtons) {
 				chk_afconoff = new Fl_Check_Button(
-								WNOM - bwAfcOnOff - bwSqlOnOff, 
+								WNOM - bwSqlOnOff - bwAfcOnOff, 
 								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
 								bwAfcOnOff, Hstatus, "Afc");
 				chk_afconoff->callback(afconoff_cb, 0);
@@ -1615,7 +1619,7 @@ void create_fl_digi_main() {
 				chk_sqlonoff->tooltip("SQL on/off");
 			} else {
 				btn_afconoff = new Fl_Light_Button(
-								WNOM - bwAfcOnOff - bwSqlOnOff, 
+								WNOM - bwSqlOnOff - bwAfcOnOff, 
 								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
 								bwAfcOnOff, Hstatus, "Afc");
 				btn_afconoff->callback(afconoff_cb, 0);
@@ -1629,7 +1633,7 @@ void create_fl_digi_main() {
 				btn_sqlonoff->value(1);
 				btn_sqlonoff->tooltip("SQL on/off");
 			}
-				
+
 			Fl_Group::current()->resizable(StatusBar);
 		hpack->end();
 
@@ -1813,12 +1817,20 @@ string strSecText = "";
 
 void put_sec_char( char chr )
 {
+	fl_font(FL_HELVETICA, FL_NORMAL_SIZE);
+	char s[2] = "W";
+	int lc = (int)ceil(fl_width(s));
+	int w = StatusBar->w();
+	int lw = (int)ceil(fl_width(StatusBar->label()));
+	int over = 2 * lc + lw - w;
+	
 	if (chr >= ' ' && chr <= 'z') {
+		if ( over > 0 )
+			strSecText.erase(0, (int)(1.0 * over / lc + 0.5));
 		strSecText.append(1, chr);
-		if (strSecText.length() > 50)
-			strSecText.erase(0,1);
 		FL_LOCK_D();
 		REQ(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), StatusBar, strSecText.c_str());
+		WARNstatus->damage();
 		FL_UNLOCK_D();
 		FL_AWAKE_D();
 	}

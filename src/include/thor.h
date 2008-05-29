@@ -74,13 +74,13 @@ protected:
 	int		counter;
 	unsigned int	twosym;
 	int		paths;
+	int		numbins;
 	
 // rx variables
 	C_FIR_filter	*hilbert;
 	sfft			*binsfft[THORMAXFFTS];
 	fftfilt			*fft;
 	Cmovavg			*vidfilter[THORSCOPESIZE];
-	Cmovavg			*syncfilter;
 	
 	THORrxpipe		*pipe;
 	unsigned int	pipeptr;

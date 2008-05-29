@@ -300,7 +300,7 @@ fldigi_SOURCES += \
 	widgets/picture.cxx \
 	widgets/progress.cxx \
 	wwv/analysis.cxx \
-	wwv/wwv.cxx
+	wwv/wwv.cxx 
 
 # Sources that are part of the distribution but are not compiled directly
 EXTRA_fldigi_SOURCES += \
@@ -336,7 +336,14 @@ EXTRA_fldigi_SOURCES += \
 	mt63/mt63intl.dat \
 	trx/tune.cxx \
 	rsid/rsid_fft.cxx \
-	rsid/rsid_fft.h 
+	rsid/rsid_fft.h \
+	include/Socket.h \
+	include/ServerSocket.h \
+	include/ClientSocket.h \
+	include/SocketException.h \
+	sockets/Socket.cxx \
+	sockets/ClientSocket.cxx \
+	sockets/ServerSocket.cxx
 
 # Additional non-source files that we distribute
 EXTRA_DIST = \
