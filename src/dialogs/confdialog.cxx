@@ -785,6 +785,13 @@ static void cb_chkTransmitRSid(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *chkSlowCpu=(Fl_Check_Button *)0;
+
+static void cb_chkSlowCpu(Fl_Check_Button* o, void*) {
+  progdefaults.slowcpu = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabModems=(Fl_Group *)0;
 
 Fl_Tabs *tabsModems=(Fl_Tabs *)0;
@@ -1942,7 +1949,6 @@ l with your sound hardware.");
       { tabMisc = new Fl_Group(0, 25, 400, 195, "Misc");
         tabMisc->color((Fl_Color)51);
         tabMisc->selection_color((Fl_Color)51);
-        tabMisc->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 390, 90, "Sweet Spot");
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -1978,10 +1984,10 @@ l with your sound hardware.");
           } // Fl_Check_Button* btnStartAtSweetSpot
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(5, 125, 390, 50, "RSid");
+        { Fl_Group* o = new Fl_Group(5, 125, 390, 45, "RSid");
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-          { Fl_Check_Button* o = chkTransmitRSid = new Fl_Check_Button(50, 143, 70, 15, "Transmit RSid");
+          { Fl_Check_Button* o = chkTransmitRSid = new Fl_Check_Button(110, 138, 70, 15, "Transmit RSid");
             chkTransmitRSid->tooltip("Transmit Reed Solomon ID");
             chkTransmitRSid->down_box(FL_DOWN_BOX);
             chkTransmitRSid->callback((Fl_Callback*)cb_chkTransmitRSid);
@@ -1989,11 +1995,22 @@ l with your sound hardware.");
           } // Fl_Check_Button* chkTransmitRSid
           o->end();
         } // Fl_Group* o
+        { Fl_Group* o = new Fl_Group(5, 172, 390, 43, "CPU speed");
+          o->box(FL_ENGRAVED_FRAME);
+          o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+          { Fl_Check_Button* o = chkSlowCpu = new Fl_Check_Button(110, 190, 89, 15, "Slow cpu");
+            chkSlowCpu->down_box(FL_DOWN_BOX);
+            chkSlowCpu->callback((Fl_Callback*)cb_chkSlowCpu);
+            o->value(progdefaults.slowcpu);
+          } // Fl_Check_Button* chkSlowCpu
+          o->end();
+        } // Fl_Group* o
         tabMisc->end();
       } // Fl_Group* tabMisc
       { tabModems = new Fl_Group(0, 25, 401, 195, "Modem");
         tabModems->color((Fl_Color)51);
         tabModems->selection_color((Fl_Color)51);
+        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 401, 195);
           tabsModems->color((Fl_Color)51);
           tabsModems->selection_color((Fl_Color)10);
@@ -2179,9 +2196,10 @@ l with your sound hardware.");
               valTHOR_PATHS->step(1);
               valTHOR_PATHS->value(5);
               valTHOR_PATHS->callback((Fl_Callback*)cb_valTHOR_PATHS);
+              valTHOR_PATHS->hide();
               o->value(progdefaults.THOR_PATHS);
             } // Fl_Counter* valTHOR_PATHS
-            { Fl_Check_Button* o = valTHOR_SOFT = new Fl_Check_Button(110, 177, 70, 15, "Soft decode");
+            { Fl_Check_Button* o = valTHOR_SOFT = new Fl_Check_Button(215, 130, 70, 15, "Soft decode");
               valTHOR_SOFT->down_box(FL_DOWN_BOX);
               valTHOR_SOFT->callback((Fl_Callback*)cb_valTHOR_SOFT);
               o->value(progdefaults.THOR_SOFT);
@@ -2191,7 +2209,6 @@ l with your sound hardware.");
           { tabDomEX = new Fl_Group(0, 50, 400, 170, "Dom");
             tabDomEX->color((Fl_Color)51);
             tabDomEX->selection_color((Fl_Color)51);
-            tabDomEX->hide();
             { txtSecondary = new Fl_Input(20, 75, 360, 44, "Secondary Text");
               txtSecondary->type(4);
               txtSecondary->callback((Fl_Callback*)cb_txtSecondary);
@@ -2225,6 +2242,7 @@ l with your sound hardware.");
               valDominoEX_PATHS->step(1);
               valDominoEX_PATHS->value(5);
               valDominoEX_PATHS->callback((Fl_Callback*)cb_valDominoEX_PATHS);
+              valDominoEX_PATHS->hide();
               o->value(progdefaults.DOMINOEX_PATHS);
             } // Fl_Counter* valDominoEX_PATHS
             tabDomEX->end();
@@ -2444,6 +2462,7 @@ l with your sound hardware.");
           { tabRTTY = new Fl_Group(0, 50, 400, 170, "RTTY");
             tabRTTY->color((Fl_Color)51);
             tabRTTY->selection_color((Fl_Color)51);
+            tabRTTY->hide();
             { Fl_Choice* o = selShift = new Fl_Choice(48, 60, 77, 22, "Shift");
               selShift->down_box(FL_BORDER_BOX);
               selShift->callback((Fl_Callback*)cb_selShift);

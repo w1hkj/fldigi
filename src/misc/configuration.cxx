@@ -18,6 +18,7 @@
 configuration progdefaults = {
 	false,			// bool		rsid;
 	false,			// bool		TransmitRSid;
+	true,			// bool		slowcpu;
 	false,			// bool		changed;
 	0.0,			// double	wfRefLevel;
 	70.0,			// double	wfAmpSpan;
@@ -295,7 +296,7 @@ enum TAG { \
 	FKEYTEXTCOLOR,
 	RXFONTNBR, RXFONTSIZE, TXFONTNBR, TXFONTSIZE,
 	RXFONTCOLOR, TXFONTCOLOR,
-	TRANSMITRSID
+	TRANSMITRSID, SLOWCPU
 };
 	
 void writeXMLint(ofstream &f, const char * tag,  int val)
@@ -519,6 +520,7 @@ void configuration::writeDefaultsXML()
 	writeXMLrgb(f, "TXFONTCOLOR", TxColor.R, TxColor.G, TxColor.B);	
 	
 	writeXMLbool(f, "TRANSMITRSID", TransmitRSid);
+	writeXMLbool(f, "SLOWCPU", slowcpu);
 	
 	f << "</FLDIGI_DEFS>\n";
 	f.close();
@@ -1040,6 +1042,8 @@ bool configuration::readDefaultsXML()
 						break;
 					case TRANSMITRSID :
 						TransmitRSid = atoi(xml->getNodeData());
+					case SLOWCPU :
+						slowcpu = atoi(xml->getNodeData());
 				}
 				break;
 				
@@ -1205,6 +1209,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("RXFONTCOLOR", nodeName)) tag = RXFONTCOLOR;
 				else if (!strcmp("TXFONTCOLOR", nodeName)) tag = TXFONTCOLOR;
 				else if (!strcmp("TRANSMITRSID", nodeName)) tag = TRANSMITRSID;
+				else if (!strcmp("SLOWCPU", nodeName)) tag = SLOWCPU;
 				else tag = IGNORE;
 				}
 				break;
@@ -1432,6 +1437,7 @@ int configuration::setDefaults() {
 	btnFeldHellIdle->value(HellXmtIdle);
 			
 	chkTransmitRSid->value(TransmitRSid);
+	chkSlowCpu->value(slowcpu);
 	
 	string bandsfname = HomeDir;
 	bandsfname.append("frequencies.def");

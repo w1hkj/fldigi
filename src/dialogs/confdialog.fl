@@ -898,7 +898,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabMisc {
         label Misc open
-        xywh {0 25 400 195} color 51 selection_color 51 hide
+        xywh {0 25 400 195} color 51 selection_color 51
       } {
         Fl_Group {} {
           label {Sweet Spot} open
@@ -935,20 +935,32 @@ progdefaults.changed = true;}
         }
         Fl_Group {} {
           label RSid open
-          xywh {5 125 390 50} box ENGRAVED_FRAME align 21
+          xywh {5 125 390 45} box ENGRAVED_FRAME align 21
         } {
           Fl_Check_Button chkTransmitRSid {
             label {Transmit RSid}
             callback {progdefaults.TransmitRSid = o->value();
 progdefaults.changed = true;}
-            tooltip {Transmit Reed Solomon ID} xywh {50 143 70 15} down_box DOWN_BOX
+            tooltip {Transmit Reed Solomon ID} xywh {110 138 70 15} down_box DOWN_BOX
             code0 {o->value(progdefaults.TransmitRSid);}
+          }
+        }
+        Fl_Group {} {
+          label {CPU speed} open
+          xywh {5 172 390 43} box ENGRAVED_FRAME align 21
+        } {
+          Fl_Check_Button chkSlowCpu {
+            label {Slow cpu}
+            callback {progdefaults.slowcpu = o->value();
+progdefaults.changed = true;} selected
+            xywh {110 190 89 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.slowcpu);}
           }
         }
       }
       Fl_Group tabModems {
         label Modem open
-        xywh {0 25 401 195} color 51 selection_color 51
+        xywh {0 25 401 195} color 51 selection_color 51 hide
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 401 195} color 51 selection_color 10 align 9
@@ -1108,20 +1120,20 @@ progdefaults.changed = true;}
               label Paths
               callback {progdefaults.THOR_PATHS = (int)o->value();
 progdefaults.changed = true;}
-              xywh {20 174 63 21} type Simple minimum 4 maximum 8 step 1 value 5
+              xywh {20 174 63 21} type Simple minimum 4 maximum 8 step 1 value 5 hide
               code0 {o->value(progdefaults.THOR_PATHS);}
             }
             Fl_Check_Button valTHOR_SOFT {
               label {Soft decode}
               callback {progdefaults.THOR_SOFT = o->value();
 progdefaults.changed = true;}
-              xywh {110 177 70 15} down_box DOWN_BOX
+              xywh {215 130 70 15} down_box DOWN_BOX
               code0 {o->value(progdefaults.THOR_SOFT);}
             }
           }
           Fl_Group tabDomEX {
             label Dom open
-            xywh {0 50 400 170} color 51 selection_color 51 hide
+            xywh {0 50 400 170} color 51 selection_color 51
           } {
             Fl_Input txtSecondary {
               label {Secondary Text}
@@ -1156,7 +1168,7 @@ progdefaults.changed = true;}
               label Paths
               callback {progdefaults.DOMINOEX_PATHS = (int)o->value();
 progdefaults.changed = true;}
-              xywh {20 174 63 21} type Simple minimum 4 maximum 8 step 1 value 5
+              xywh {20 174 63 21} type Simple minimum 4 maximum 8 step 1 value 5 hide
               code0 {o->value(progdefaults.DOMINOEX_PATHS);}
             }
           }
@@ -1403,7 +1415,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabRTTY {
             label RTTY open
-            xywh {0 50 400 170} color 51 selection_color 51
+            xywh {0 50 400 170} color 51 selection_color 51 hide
           } {
             Fl_Choice selShift {
               label Shift
@@ -1462,7 +1474,7 @@ progdefaults.changed = true;}
             Fl_Check_Button btnAUTOCRLF {
               label AutoCRLF
               callback {progdefaults.rtty_autocrlf = o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
               xywh {364 88 22 22} down_box DOWN_BOX align 4
               code0 {o->value(progdefaults.rtty_autocrlf);}
             }

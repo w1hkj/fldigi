@@ -67,6 +67,7 @@ void dominoex::rx_init()
 		phase[i+1] = 0.0;
 	put_MODEstatus(mode);
 	put_sec_char(0);
+	syncfilter->reset();
 	datashreg = 1;
 	for (int i = 0; i < VBINS; i++) vbins[i] = 0;
 }
@@ -81,6 +82,26 @@ void dominoex::reset_filters()
 		fft->create_filter( (FIRSTIF - 0.5 * progdefaults.DOMINOEX_BW * bandwidth) / samplerate,
  		                    (FIRSTIF + 0.5 * progdefaults.DOMINOEX_BW * bandwidth)/ samplerate );
 	}
+
+	for (int i = 0; i < paths; i++)//MAXFFTS; i++)
+		if (binsfft[i]) delete binsfft[i];
+		
+	if (slowcpu) {
+		extones = 4;
+		paths = 3;
+	} else {
+		extones = NUMTONES / 2;
+		paths = 5;
+	}
+	
+	lotone = basetone - extones * doublespaced;
+	hitone = basetone + NUMTONES * doublespaced + extones * doublespaced;
+
+	numbins = hitone - lotone;
+
+	for (int i = 0; i < paths; i++)//MAXFFTS; i++)
+		binsfft[i] = new sfft (symlen, lotone, hitone);
+
 	filter_reset = false;               
 }
 
@@ -95,7 +116,7 @@ void dominoex::init()
 		MuPsk_sec2pri_init();
 
 	modem::init();
-	reset_filters();
+//	reset_filters();
 	rx_init();
 
 	strSecXmtText = txtSecondary->value();
@@ -152,13 +173,14 @@ dominoex::~dominoex()
 {
 	if (hilbert) delete hilbert;
 	
-	for (int i = 0; i < MAXFFTS; i++) {
+	for (int i = 0; i < paths; i++) {//MAXFFTS; i++) {
 		if (binsfft[i]) delete binsfft[i];
 	}
 
 	for (int i = 0; i < SCOPESIZE; i++) {
 		if (vidfilter[i]) delete vidfilter[i];
 	}
+	if (syncfilter) delete syncfilter;
 	
 	if (pipe) delete [] pipe;
 	if (fft) delete fft;
@@ -172,8 +194,6 @@ dominoex::~dominoex()
 
 dominoex::dominoex(trx_mode md)
 {
-	int basetone, lotone, hitone;
-	
 	mode = md;
 
 	switch (mode) {
@@ -215,14 +235,6 @@ dominoex::dominoex(trx_mode md)
 		samplerate = 8000;
 	}
 
-	basetone = (int)floor(BASEFREQ * symlen / samplerate + 0.5);
-//	lotone = basetone - (NUMTONES/2) * doublespaced;
-//	hitone = basetone + 3 * (NUMTONES/2) * doublespaced;
-	lotone = basetone - 4;
-	hitone = basetone + NUMTONES * doublespaced + 4;
-
-	numbins = hitone - lotone;
-
 	tonespacing = (double) (samplerate * doublespaced / symlen);
 
 	bandwidth = NUMTONES * tonespacing;
@@ -230,19 +242,40 @@ dominoex::dominoex(trx_mode md)
 	hilbert	= new C_FIR_filter();
 	hilbert->init_hilbert(37, 1);
 
-	paths = progdefaults.DOMINOEX_PATHS;
-
-	for (int i = 0; i < MAXFFTS; i++)
-		binsfft[i] = new sfft (symlen, lotone, hitone);
-
 // fft filter at first if frequency
 	fft = new fftfilt( (FIRSTIF - 0.5 * progdefaults.DOMINOEX_BW * bandwidth) / samplerate,
 	                   (FIRSTIF + 0.5 * progdefaults.DOMINOEX_BW * bandwidth)/ samplerate,
 	                   1024 );
+
+	basetone = (int)floor(BASEFREQ * symlen / samplerate + 0.5);
+
+	slowcpu = progdefaults.slowcpu;
+	
+	reset_filters();
+/*
+	if (slowcpu) {
+		extones = 4;
+		paths = 4;
+	} else {
+		extones = NUMTONES / 2;
+		paths = 6;
+	}
+	
+	lotone = basetone - extones * doublespaced;
+	hitone = basetone + NUMTONES * doublespaced + extones * doublespaced;
+
+	numbins = hitone - lotone;
+
+	for (int i = 0; i < paths; i++)//MAXFFTS; i++)
+		binsfft[i] = new sfft (symlen, lotone, hitone);
+*/
+
 	
 	for (int i = 0; i < SCOPESIZE; i++)
-		vidfilter[i] = new Cmovavg(8);
+		vidfilter[i] = new Cmovavg(16);
 			
+	syncfilter = new Cmovavg(8);
+
 	twosym = 2 * symlen;
 	pipe = new domrxpipe[twosym];
 	
@@ -431,6 +464,8 @@ void dominoex::synchronize()
 		j = (j + 1) % twosym;
 	}
 	
+	syn = syncfilter->run(syn);
+
 	synccounter += (int) floor(1.0 * (syn - symlen) / NUMTONES + 0.5);
 }
 
@@ -464,8 +499,8 @@ int dominoex::rx_process(const double *buf, int len)
 
 	if (filter_reset) reset_filters();
 
-	if (paths != progdefaults.DOMINOEX_PATHS) {
-		paths = progdefaults.DOMINOEX_PATHS;
+	if (slowcpu != progdefaults.slowcpu) {
+		slowcpu = progdefaults.slowcpu;
 		reset_filters();
 	}
 	

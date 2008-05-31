@@ -83,12 +83,18 @@ protected:
 	unsigned int	twosym;
 	int		paths;
 	int		numbins;
+	bool	slowcpu;
+	int		basetone;
+	int		lotone;
+	int		hitone;
+	int		extones;
 	
 // rx variables
 	C_FIR_filter	*hilbert;
 	sfft			*binsfft[MAXFFTS];
 	fftfilt			*fft;
 	Cmovavg			*vidfilter[SCOPESIZE];
+	Cmovavg			*syncfilter;
 	
 	domrxpipe		*pipe;
 	unsigned int	pipeptr;

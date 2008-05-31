@@ -14,6 +14,8 @@ using namespace std;
 struct configuration {
 	bool	rsid;
 	bool	TransmitRSid;
+	bool	slowcpu;
+	
 	bool	changed;
 	double	wfRefLevel;
 	double	wfAmpSpan;

@@ -68,6 +68,7 @@ void thor::rx_init()
 		phase[i+1] = 0.0;
 	put_MODEstatus(mode);
 	put_sec_char(0);
+	syncfilter->reset();
 	datashreg = 1;
 }
 
@@ -81,6 +82,26 @@ void thor::reset_filters()
 		fft->create_filter( (THORFIRSTIF - 0.5 * progdefaults.THOR_BW * bandwidth) / samplerate,
  		                    (THORFIRSTIF + 0.5 * progdefaults.THOR_BW * bandwidth)/ samplerate );
 	}
+
+	for (int i = 0; i < THORMAXFFTS; i++)
+		delete binsfft[i];
+		
+	if (slowcpu) {
+		extones = 4;
+		paths = 3;
+	} else {
+		extones = THORNUMTONES / 2;
+		paths = 5;
+	}
+	
+	lotone = basetone - extones * doublespaced;
+	hitone = basetone + THORNUMTONES * doublespaced + extones * doublespaced;
+
+	numbins = hitone - lotone;
+
+	for (int i = 0; i < THORMAXFFTS; i++)
+		binsfft[i] = new sfft (symlen, lotone, hitone);
+
 	filter_reset = false;               
 }
 
@@ -92,7 +113,7 @@ void thor::restart()
 void thor::init()
 {
 	modem::init();
-	reset_filters();
+//	reset_filters();
 	rx_init();
 
 	set_scope_mode(Digiscope::DOMDATA);
@@ -109,6 +130,7 @@ thor::~thor()
 	for (int i = 0; i < THORSCOPESIZE; i++) {
 		if (vidfilter[i]) delete vidfilter[i];
 	}
+	if (syncfilter) delete syncfilter;
 	
 	if (pipe) delete [] pipe;
 	if (fft) delete fft;
@@ -122,8 +144,6 @@ thor::~thor()
 
 thor::thor(trx_mode md)
 {
-	int basetone, lotone, hitone;
-	
 	mode = md;
 
 	switch (mode) {
@@ -170,15 +190,6 @@ thor::thor(trx_mode md)
 		samplerate = 8000;
 	}
 
-
-	basetone = (int)floor(THORBASEFREQ * symlen / samplerate + 0.5);
-//	lotone = basetone - (THORNUMTONES/2) * doublespaced;
-//	hitone = basetone + 3 * (THORNUMTONES/2) * doublespaced;
-	lotone = basetone - 4;
-	hitone = basetone + THORNUMTONES * doublespaced + 4;
-
-	numbins = hitone - lotone;
-
 	tonespacing = (double) (samplerate * doublespaced / symlen);
 
 	bandwidth = THORNUMTONES * tonespacing;
@@ -186,19 +197,38 @@ thor::thor(trx_mode md)
 	hilbert	= new C_FIR_filter();
 	hilbert->init_hilbert(37, 1);
 
-	paths = progdefaults.THOR_PATHS;
-
-	for (int i = 0; i < THORMAXFFTS; i++)
-		binsfft[i] = new sfft (symlen, lotone, hitone);
-
 // fft filter at first if frequency
 	fft = new fftfilt( (THORFIRSTIF - 0.5 * progdefaults.THOR_BW * bandwidth) / samplerate,
 	                   (THORFIRSTIF + 0.5 * progdefaults.THOR_BW * bandwidth)/ samplerate,
 	                   1024 );
 	
+	basetone = (int)floor(THORBASEFREQ * symlen / samplerate + 0.5);
+
+	slowcpu = progdefaults.slowcpu;
+	
+	reset_filters();
+/*
+	if (slowcpu) {
+		extones = 4;
+		paths = 3;
+	} else {
+		extones = THORNUMTONES / 2;
+		paths = 6;
+	}
+	
+	lotone = basetone - extones * doublespaced;
+	hitone = basetone + THORNUMTONES * doublespaced + extones * doublespaced;
+
+	numbins = hitone - lotone;
+
+	for (int i = 0; i < THORMAXFFTS; i++)
+		binsfft[i] = new sfft (symlen, lotone, hitone);
+*/
 	for (int i = 0; i < THORSCOPESIZE; i++)
-		vidfilter[i] = new Cmovavg(8);
+		vidfilter[i] = new Cmovavg(16);
 		
+	syncfilter = new Cmovavg(8);
+
 	twosym = 2 * symlen;
 	pipe = new THORrxpipe[twosym];
 	
@@ -405,6 +435,8 @@ void thor::synchronize()
 		j = (j + 1) % twosym;
 	}
 	
+	syn = syncfilter->run(syn);
+
 	synccounter += (int) floor(1.0 * (syn - symlen) / THORNUMTONES + 0.5);
 
 	update_syncscope();
@@ -443,8 +475,8 @@ int thor::rx_process(const double *buf, int len)
 
 	if (filter_reset) reset_filters();
 
-	if (paths != progdefaults.THOR_PATHS) {
-		paths = progdefaults.THOR_PATHS;
+	if (slowcpu != progdefaults.slowcpu) {
+		slowcpu = progdefaults.slowcpu;
 		reset_filters();
 	}
 	
