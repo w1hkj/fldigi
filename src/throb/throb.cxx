@@ -500,7 +500,6 @@ int throb::rx_process(const double *buf, int len)
 
 		hilbert->run(z, z);
 		z = mixer(z);
-
 		n = fftfilter->run(z, &zp);
 
 		/* DOWN_SAMPLE by 32 and push to the receiver */

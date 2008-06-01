@@ -53,6 +53,7 @@ RSIDs cRsId::rsid_ids[] = {
 	{ 45, MODE_THROB4 }, // THROB-4
 	{ 46, MODE_THROBX1 }, // THROBX-1
 	{ 47, MODE_THROBX2 }, // THROBX-2
+	{ 146, MODE_THROBX4 }, // THROBX-4
 	{ 49, NUM_MODES }, // CONTESTIA-8-250
 	{ 50, NUM_MODES }, // CONTESTIA-16-500
 	{ 51, NUM_MODES }, // CONTESTIA-32-1000
@@ -93,12 +94,12 @@ RSIDs cRsId::rsid_ids[] = {
 	{ 87, MODE_DOMINOEX11 }, // DOMINOEX-11
 	{ 88, MODE_DOMINOEX16 }, // DOMINOEX-16
 	{ 90, MODE_DOMINOEX22 }, // DOMINOEX-22
-	{ 92, MODE_THOR4 }, // DOMINOEX-4-FEC
-	{ 93, MODE_THOR5 }, // DOMINOEX-5-FEC
-	{ 97, MODE_THOR8 }, // DOMINOEX-8-FEC
-	{ 98, MODE_THOR11 }, // DOMINOEX-11-FEC
-	{ 99, MODE_THOR16 }, // DOMINOEX-16-FEC
-	{ 101, MODE_THOR22 }, // DOMINOEX-22-FEC
+	{ 92, MODE_DOMINOEX4 }, // DOMINOEX-4-FEC
+	{ 93, MODE_DOMINOEX5 }, // DOMINOEX-5-FEC
+	{ 97, MODE_DOMINOEX8 }, // DOMINOEX-8-FEC
+	{ 98, MODE_DOMINOEX11 }, // DOMINOEX-11-FEC
+	{ 99, MODE_DOMINOEX16 }, // DOMINOEX-16-FEC
+	{ 101, MODE_DOMINOEX22 }, // DOMINOEX-22-FEC
 
 	{ 104, MODE_FELDHELL }, // FELD HELL
 	{ 105, NUM_MODES }, // PSK HELL
@@ -107,6 +108,14 @@ RSIDs cRsId::rsid_ids[] = {
 	{ 108, NUM_MODES }, // FM HELL-245
 
 	{ 110, MODE_QPSK31 },
+		
+	{ 136, MODE_THOR4 },
+	{ 137, MODE_THOR8 },
+	{ 138, MODE_THOR16 },
+	{ 139, MODE_THOR5 },
+	{ 143, MODE_THOR11 },
+	{ 145, MODE_THOR22 },
+		
 	{ 0,  NUM_MODES }
 };
 
@@ -135,17 +144,23 @@ const int cRsId::indices[] = {
 
 cRsId :: cRsId()
 {
-	rsid_ids_size = 0;
-
+	memset (aInputSamples, 0, RSID_ARRAY_SIZE * sizeof(double));	
+	memset (aFFTReal, 0, RSID_ARRAY_SIZE * sizeof(double));	
+	memset (aFFTAmpl, 0, RSID_FFT_SIZE * sizeof(double));
+	memset (fftwindow, 0, RSID_ARRAY_SIZE * sizeof(double));
+	
+	memset (aHashTable1, 255, 256);
+	memset (aHashTable2, 255, 256);
+	
 // compute current size of rsid_ids
+	rsid_ids_size = 0;
 	while (rsid_ids[rsid_ids_size].rs) rsid_ids_size++;
+
+	pCodes = new uchar[rsid_ids_size * RSID_NSYMBOLS];
+	memset (pCodes, 0, rsid_ids_size * RSID_NSYMBOLS);
 
 // Initialization  of assigned mode/submode IDs.
 // HashTable is used for finding a code with lowest Hamming distance.
-	memset (aHashTable1, 255, 256);
-	memset (aHashTable2, 255, 256);
-
-	pCodes = new uchar[rsid_ids_size * RSID_NSYMBOLS];
 	
 	for (int i = 0; i < rsid_ids_size; i++) {
 		uchar *c = pCodes + i * RSID_NSYMBOLS;
@@ -158,21 +173,13 @@ cRsId :: cRsId()
 		aHashTable1[hash1] = i;
 		aHashTable2[hash2] = i;
 	}
-//	for (int is = 0; is < rsid_ids_size; is++) {
-//		std::cout << is << ", , ";
-//		for (int ic = 0; ic < RSID_NSYMBOLS; ic++)SHIFT
-//			std::cout << (int)(*(pCodes + ic + is * RSID_NSYMBOLS)) << ", ";
-//		std::cout << std::endl;
-//	}
-	
+
+	for (int i = 0; i < RSID_NTIMES; i++)
+		for (int j = 0; j < RSID_FFT_SIZE; j++)
+			aBuckets[i][j] = 0;
+
 	iPrevDistance = 99;
 	
-	memset(aInputSamples, 0, RSID_ARRAY_SIZE * sizeof(double));
-	memset(aFFTReal, 0, RSID_ARRAY_SIZE * sizeof(double));	
-
-//	rsid_fft = new Cfft(RSID_FFT_SIZE);
-//	rsid_fft->setWindow(FFT_BLACKMAN);
-
 	BlackmanWindow(fftwindow, RSID_ARRAY_SIZE);
 
 	nBinLow = 10;
@@ -185,7 +192,6 @@ cRsId :: cRsId()
 
 cRsId::~cRsId()
 {
-	delete rsid_fft;
 	delete [] pCodes;
 }
 
@@ -203,25 +209,26 @@ void cRsId::Encode(int code, uchar *rsid)
 	}
 }
 
+
 void cRsId::CalculateBuckets(const double *pSpectrum, int iBegin, int iEnd)
 {
 	double   Amp = 0.0, AmpMax = 0.0;
 	int   iBucketMax = iBegin - 2;
-	int   i, j, jEnd;
+	int   i, j;
+	bool  firstpass = true;
 
 	for (i = iBegin; i < iEnd; i += 2) {
-		if (iBucketMax == i - 2) {
-// The maximum amplitude is out of span. Sweep over all the 16 coefficients
+		if (firstpass) {
 			AmpMax		= pSpectrum[i];
 			iBucketMax	= i;
-			jEnd		= i + 32;
-			for (j = i + 2; j < jEnd; j += 2) {
+			for (j = i + 2; j < i + 32; j += 2) {
 				Amp = pSpectrum[j];
 				if (Amp > AmpMax) {
 					AmpMax    = Amp;
 					iBucketMax = j;
 				}
 			}
+			firstpass = false;
 		} else {
 			j    = i + 30;
 			Amp = pSpectrum[j];
@@ -234,6 +241,7 @@ void cRsId::CalculateBuckets(const double *pSpectrum, int iBegin, int iEnd)
 	}
 }
 
+
 bool cRsId::search( const double *pSamples, int nSamples )
 {
 	int i, ns;
@@ -245,7 +253,7 @@ bool cRsId::search( const double *pSamples, int nSamples )
  	
  	ns = nSamples;
  	if (ns > RSID_ARRAY_SIZE / 4) {
- 		std::cout << "ns = " << ns << std::endl;
+// 		std::cout << "ns = " << ns << std::endl;
  		ns = RSID_ARRAY_SIZE / 4;
  	}
 	
@@ -258,14 +266,13 @@ bool cRsId::search( const double *pSamples, int nSamples )
 		nBinHigh = RSID_FFT_SIZE - nBinLow;
 	}
 
-	memset  (aFFTReal, 0, RSID_ARRAY_SIZE * sizeof(double));	
 	memmove (aInputSamples, aInputSamples + ns, ns * sizeof(double));
 	memcpy  (aInputSamples + ns, pSamples, ns * sizeof(double));
-	memcpy  (aFFTReal, aInputSamples, RSID_ARRAY_SIZE * sizeof(double));
 	
+	memcpy  (aFFTReal, aInputSamples, RSID_ARRAY_SIZE * sizeof(double));
 //	for (int i = 0; i < RSID_ARRAY_SIZE; i++)
 //		aFFTReal[i] = aInputSamples[i] * fftwindow[i];
-
+		
 	rsrfft( aFFTReal, 11);
 
 	memset(aFFTAmpl, 0, RSID_FFT_SIZE * sizeof(double));
@@ -302,11 +309,9 @@ bool cRsId::search( const double *pSamples, int nSamples )
 }
 
 // change the current mode and frequency to the rsid detected values
-double newfreq;
 trx_mode newmode;
 
-void changemodefrequency(void*) {
-	active_modem->set_freq(newfreq);
+void changemode(void*) {
 	init_modem(newmode);
 }
 
@@ -329,7 +334,8 @@ void cRsId::apply(int iSymbol, int iBin)
 	
 	bw_rsid_toggle(wf);
 
-	newfreq = freq;
+	if (mbin == NUM_MODES) return;
+
 	newmode = mbin;
 	
 	if (iSymbol == 37) {
@@ -358,7 +364,13 @@ void cRsId::apply(int iSymbol, int iBin)
 		progdefaults.rtty_shift = 9;
 	}
 		
-	Fl::add_timeout(0.10, changemodefrequency);	
+	if (iSymbol == 92 || iSymbol == 93 ||
+	    iSymbol == 97 || iSymbol == 98 ||
+	    iSymbol == 99 || iSymbol == 101 ) // special MultiPsk FEC modes
+		progdefaults.DOMINOEX_FEC = true;
+
+	active_modem->set_freq(freq);
+	Fl::add_timeout(0.05, changemode);	
 	
 	
 /*
@@ -476,7 +488,7 @@ bool cRsId::search_amp( int &SymbolOut,	int &BinOut)
 
 	for (i = nBinLow; i < iEnd; ++ i) {
 		j = aHashTable1[aBuckets[i1][i] | (aBuckets[i2][i] << 4)];
-		if (j != 255) {
+		if (j < rsid_ids_size)  { //!= 255) {
 			iDistance = HammingDistance(i, pCodes + j * RSID_NSYMBOLS);
 			if (iDistance < 2 && iDistance < iDistanceMin) {
 				iDistanceMin = iDistance;
@@ -485,7 +497,7 @@ bool cRsId::search_amp( int &SymbolOut,	int &BinOut)
 			}
 		}
 		j = aHashTable2[aBuckets[i3][i] | (aBuckets[iTime][i] << 4)];
-		if (j != 255) {
+		if (j < rsid_ids_size)  { //!= 255) {
 			iDistance = HammingDistance (i, pCodes + j * RSID_NSYMBOLS);
 			if (iDistance < 2 && iDistance < iDistanceMin) {
 				iDistanceMin = iDistance;
@@ -533,7 +545,7 @@ void cRsId::send()
 	int symlen;
 	
 	sr = active_modem->get_samplerate();
-	symlen = (int)floor(RSID_SYMLEN * sr + 0.5);
+	symlen = (int)floor(RSID_SYMLEN * sr);
 	fr = 1.0 * active_modem->get_txfreq() - (11025.0 * 7 / 1024);
 	
 	trx_mode m = active_modem->get_mode();

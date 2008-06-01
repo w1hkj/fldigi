@@ -18,6 +18,7 @@
 configuration progdefaults = {
 	false,			// bool		rsid;
 	false,			// bool		TransmitRSid;
+	true,			// bool		slowcpu;
 	false,			// bool		changed;
 	0.0,			// double	wfRefLevel;
 	70.0,			// double	wfAmpSpan;
@@ -73,7 +74,6 @@ configuration progdefaults = {
 	18,				// int		CWIDwpm;
 
 // FELD-HELL
-	false,			// bool		FELD_IDLE;
 	150.0,			// double	HELL_BW;
 	false,			// bool		HellRcvWidth;
 	false,			// bool		HellBlackboard;
@@ -265,7 +265,7 @@ enum TAG { \
 	OLIVIATONES, OLIVIABW, OLIVIASMARGIN, OLIVIASINTEG, OLIVIA8BIT,
 	THORBW, THORFILTER, THORSECTEXT, THORPATHS, THORSOFT,
 	DOMINOEXBW, DOMINOEXFILTER, DOMINOEXFEC, DOMINOEXPATHS,
-	FELDFONTNBR, FELDIDLE,
+	FELDFONTNBR,
 	HELLRCVWIDTH, HELLXMTWIDTH, HELLBLACKBOARD, HELLPULSEFAST, HELLXMTIDLE,
 	WFPREFILTER, LATENCY,
 	USECURSORLINES, USECURSORCENTERLINE, USEBWTRACKS,
@@ -296,7 +296,7 @@ enum TAG { \
 	FKEYTEXTCOLOR,
 	RXFONTNBR, RXFONTSIZE, TXFONTNBR, TXFONTSIZE,
 	RXFONTCOLOR, TXFONTCOLOR,
-	TRANSMITRSID
+	TRANSMITRSID, SLOWCPU
 };
 	
 void writeXMLint(ofstream &f, const char * tag,  int val)
@@ -418,7 +418,6 @@ void configuration::writeDefaultsXML()
 	writeXMLint(f, "DOMINOEXPATHS", DOMINOEX_PATHS);
 	
 	writeXMLint(f, "FELDFONTNBR", feldfontnbr);
-	writeXMLbool(f, "FELDIDLE", FELD_IDLE);
 	writeXMLbool(f, "HELLRCVWIDTH", HellRcvWidth);
 	writeXMLbool(f, "HELLXMTWIDTH", HellXmtWidth);
 	writeXMLbool(f, "HELLBLACKBOARD", HellBlackboard);
@@ -521,6 +520,7 @@ void configuration::writeDefaultsXML()
 	writeXMLrgb(f, "TXFONTCOLOR", TxColor.R, TxColor.G, TxColor.B);	
 	
 	writeXMLbool(f, "TRANSMITRSID", TransmitRSid);
+	writeXMLbool(f, "SLOWCPU", slowcpu);
 	
 	f << "</FLDIGI_DEFS>\n";
 	f.close();
@@ -741,9 +741,6 @@ bool configuration::readDefaultsXML()
 						break;
 					case FELDFONTNBR :
 						feldfontnbr = atoi(xml->getNodeData());
-						break;
-					case FELDIDLE :
-						FELD_IDLE = atoi(xml->getNodeData());
 						break;
 					case HELLRCVWIDTH :
 						HellRcvWidth = atoi(xml->getNodeData());
@@ -1045,6 +1042,8 @@ bool configuration::readDefaultsXML()
 						break;
 					case TRANSMITRSID :
 						TransmitRSid = atoi(xml->getNodeData());
+					case SLOWCPU :
+						slowcpu = atoi(xml->getNodeData());
 				}
 				break;
 				
@@ -1118,7 +1117,6 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("DOMINOEXFEC", nodeName))	tag = DOMINOEXFEC;
 				else if (!strcmp("DOMINOEXPATHS", nodeName)) tag = DOMINOEXPATHS;
 				else if (!strcmp("FELDFONTNBR", nodeName)) 	tag = FELDFONTNBR;
-				else if (!strcmp("FELDIDLE", nodeName)) 	tag = FELDIDLE;
 				else if (!strcmp("HELLRCVWIDTH", nodeName)) 	tag = HELLRCVWIDTH;
 				else if (!strcmp("HELLXMTWIDTH", nodeName)) 	tag = HELLXMTWIDTH;
 				else if (!strcmp("HELLBLACKBOARD", nodeName)) 	tag = HELLBLACKBOARD;
@@ -1211,6 +1209,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("RXFONTCOLOR", nodeName)) tag = RXFONTCOLOR;
 				else if (!strcmp("TXFONTCOLOR", nodeName)) tag = TXFONTCOLOR;
 				else if (!strcmp("TRANSMITRSID", nodeName)) tag = TRANSMITRSID;
+				else if (!strcmp("SLOWCPU", nodeName)) tag = SLOWCPU;
 				else tag = IGNORE;
 				}
 				break;
@@ -1435,9 +1434,10 @@ int configuration::setDefaults() {
 	btnCWID->value(CWid);
 			
 	selHellFont->value(feldfontnbr);
-	btnFeldHellIdle->value(FELD_IDLE);
+	btnFeldHellIdle->value(HellXmtIdle);
 			
 	chkTransmitRSid->value(TransmitRSid);
+	chkSlowCpu->value(slowcpu);
 	
 	string bandsfname = HomeDir;
 	bandsfname.append("frequencies.def");

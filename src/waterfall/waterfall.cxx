@@ -165,6 +165,8 @@ void WFdisp::makeMarker() {
 		if (mode >= MODE_BPSK31 && mode <= MODE_QPSK250)
 			marker_width += mailserver ? progdefaults.ServerOffset :
 				progdefaults.SearchRange;
+		if (mode >= MODE_FELDHELL && mode <= MODE_HELL80)
+			marker_width = (int)progdefaults.HELL_BW;
 	}
 	marker_width = (int)(marker_width / 2.0 + 1);
 
@@ -339,16 +341,11 @@ void WFdisp::update_fft_db()
 void WFdisp::processFFT() {
 	int		n;
 	double scale;
-	if (progdefaults.rsid == true)
-		scale = (double)SC_SMPLRATE / ReedSolomon->samplerate();
-	else
-		scale = (double)SC_SMPLRATE / active_modem->get_samplerate();
+	scale = (double)SC_SMPLRATE / srate;
     scale *= FFT_LEN / 2000.0;
 
 	if (dispcnt == 0) {
 		memset (fftout, 0, FFT_LEN*2*sizeof(double));
-//        for (int i = 0; i < FFT_LEN*2; i++)
-//            fftout[i] = fftwindow[i] * circbuff[i];
         for (int i = 0; i < FFT_LEN * 2 * progdefaults.latency / 8; i++)
             fftout[i] = fftwindow[i * 8 / progdefaults.latency] * circbuff[i];
 		wfft->rdft(fftout);
@@ -424,14 +421,14 @@ void WFdisp::redrawCursor()
 	cursormoved = true;
 }
 
-void WFdisp::sig_data( double *sig, int len ) {
+void WFdisp::sig_data( double *sig, int len, int sr ) {
 	int   movedbls = (FFT_LEN * 2) - len; //SCBLOCKSIZE;
 	int	  movesize = movedbls * sizeof(double);
 	double *pcircbuff1 = &circbuff[len];
-	
+
 //if sound card sampling rate changed reset the waterfall buffer
-	if (srate != active_modem->get_samplerate()) {
-		srate = active_modem->get_samplerate();
+	if (srate != sr) {
+		srate = sr;
 		memset (circbuff, 0, FFT_LEN * 2 * sizeof(double));
 	}
 	else
@@ -1270,6 +1267,7 @@ bool waterfall::USB() {
 waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	Fl_Group(x0,y0,w0,h0,lbl) {
 	int xpos;
+	float ratio = w0 < 600 ? w0 / 600.0 : 1.0;
 
 	buttonrow = h() + y() - BTN_HEIGHT - BEZEL;
 	bezel = new Fl_Box(
@@ -1285,42 +1283,42 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	// wfdisp->tooltip("Click to set tracking point");
 	
 	xpos = x() + wSpace;
-	bw_rsid = new Fl_Button(xpos, buttonrow, bwColor*(w0<600?w0/6:100)/100, BTN_HEIGHT, "Id?");
+	bw_rsid = new Fl_Button(xpos, buttonrow, (int)(bwColor*ratio), BTN_HEIGHT, "Id?");
 	bw_rsid->callback(bw_rsid_cb, 0);
 	bw_rsid->tooltip("Auto detect RSID");
 
-	xpos = xpos + bwColor*(w0<600?w0/6:100)/100 + wSpace;
-	mode = new Fl_Button(xpos, buttonrow, bwFFT*(w0<600?w0/6:100)/100, BTN_HEIGHT,"Wtr");
+	xpos = xpos + (int)(bwColor*ratio) + wSpace;
+	mode = new Fl_Button(xpos, buttonrow, (int)(bwFFT*ratio), BTN_HEIGHT,"Wtr");
 	mode->callback(mode_cb, 0);
 	mode->tooltip("Waterfall/FFT - Shift click for signal scope");
 
-	xpos = xpos + bwFFT*(w0<600?w0/6:100)/100 + wSpace;
-	x1 = new Fl_Button(xpos, buttonrow, bwX1*(w0<600?w0/6:100)/100, BTN_HEIGHT, "x1");
+	xpos = xpos + (int)(bwFFT*ratio) + wSpace;
+	x1 = new Fl_Button(xpos, buttonrow, (int)(bwX1*ratio), BTN_HEIGHT, "x1");
 	x1->callback(x1_cb, 0);
 	x1->tooltip("Change scale");
 
-	xpos = xpos + bwX1*(w0<600?w0/6:100)/100 + wSpace;
-	wfrate = new Fl_Button(xpos, buttonrow, bwRate*(w0<600?w0/6:100)/100, BTN_HEIGHT, "Norm");
+	xpos = xpos + (int)(bwX1*ratio) + wSpace;
+	wfrate = new Fl_Button(xpos, buttonrow, (int)(bwRate*ratio), BTN_HEIGHT, "Norm");
 	wfrate->callback(rate_cb, 0);
 	wfrate->tooltip("Waterfall drop speed");
 
-	xpos = xpos + bwRate*(w0<600?w0/6:100)/100 + wSpace;
-	left = new Fl_Repeat_Button(xpos, buttonrow, bwMov*(w0<600?w0/6:100)/100, BTN_HEIGHT, "@<");
+	xpos = xpos + (int)(bwRate*ratio) + wSpace;
+	left = new Fl_Repeat_Button(xpos, buttonrow, (int)(bwMov*ratio), BTN_HEIGHT, "@<");
 	left->callback(slew_left, 0);
 	left->tooltip("Slew display lower in freq");
 
-	xpos += bwMov*(w0<600?w0/6:100)/100;
-	center = new Fl_Button(xpos, buttonrow, bwMov*(w0<600?w0/6:100)/100, BTN_HEIGHT, "@||");
+	xpos += (int)(bwMov*ratio);
+	center = new Fl_Button(xpos, buttonrow, (int)(bwMov*ratio), BTN_HEIGHT, "@||");
 	center->callback(center_cb, 0);
 	center->tooltip("Center display on signal");
 
-	xpos += bwMov*(w0<600?w0/6:100)/100;
-	right = new Fl_Repeat_Button(xpos, buttonrow, bwMov*(w0<600?w0/6:100)/100, BTN_HEIGHT, "@>");
+	xpos += (int)(bwMov*ratio);
+	right = new Fl_Repeat_Button(xpos, buttonrow, (int)(bwMov*ratio), BTN_HEIGHT, "@>");
 	right->callback(slew_right, 0);
 	right->tooltip("Slew display higher in freq");
 
-	xpos = xpos + bwMov*(w0<600?w0/6:100)/100 + wSpace;
-	wfcarrier = new Fl_Counter(xpos, buttonrow, cwCnt*(w0<600?w0/6:100)/100, BTN_HEIGHT );
+	xpos = xpos + (int)(bwMov*ratio) + wSpace;
+	wfcarrier = new Fl_Counter(xpos, buttonrow, (int)(cwCnt*ratio), BTN_HEIGHT );
 	wfcarrier->callback(carrier_cb, 0);
 	wfcarrier->step(1.0);
 	wfcarrier->lstep(10.0);
@@ -1329,8 +1327,8 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	wfcarrier->value(wfdisp->carrier());
 	wfcarrier->tooltip("Adjust selected tracking freq");
 
-	xpos = xpos + cwCnt*(w0<600?w0/6:100)/100 + wSpace;
-	wfRefLevel = new Fl_Counter(xpos, buttonrow, cwRef*(w0<600?w0/6:100)/100, BTN_HEIGHT );
+	xpos = xpos + (int)(cwCnt*ratio) + wSpace;
+	wfRefLevel = new Fl_Counter(xpos, buttonrow, (int)(cwRef*ratio), BTN_HEIGHT );
 	wfRefLevel->callback(reflevel_cb, 0);
 	wfRefLevel->step(1.0);
 	wfRefLevel->precision(0);
@@ -1340,8 +1338,8 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	wfRefLevel->tooltip("Upper signal limit in dB");
 	wfRefLevel->type(FL_SIMPLE_COUNTER);
 
-	xpos = xpos + cwRef*(w0<600?w0/6:100)/100 + wSpace;
-	wfAmpSpan = new Fl_Counter(xpos, buttonrow, cwRef*(w0<600?w0/6:100)/100, BTN_HEIGHT );
+	xpos = xpos + (int)(cwRef*ratio) + wSpace;
+	wfAmpSpan = new Fl_Counter(xpos, buttonrow, (int)(cwRef*ratio), BTN_HEIGHT );
 	wfAmpSpan->callback(ampspan_cb, 0);
 	wfAmpSpan->step(1.0);
 	wfAmpSpan->precision(0);
@@ -1351,37 +1349,37 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	wfAmpSpan->tooltip("Signal range in dB");
 	wfAmpSpan->type(FL_SIMPLE_COUNTER);
 
-	xpos = xpos + cwRef*(w0<600?w0/6:100)/100 + wSpace;
-	qsy = new Fl_Button(xpos, buttonrow, bwQsy*(w0<600?w0/6:100)/100, BTN_HEIGHT, "QSY");
+	xpos = xpos + (int)(cwRef*ratio) + wSpace;
+	qsy = new Fl_Button(xpos, buttonrow, (int)(bwQsy*ratio), BTN_HEIGHT, "QSY");
 	qsy->callback(qsy_cb, 0);
 	qsy->tooltip("Cntr in Xcvr PB\nRight click to undo");
 	qsy->deactivate();
 
-	xpos = xpos + bwQsy*(w0<600?w0/6:100)/100 + wSpace;
-	btnMem = new Fl_Button(xpos, buttonrow, bwMem*(w0<600?w0/6:100)/100, BTN_HEIGHT, "M @-9UpArrow");
+	xpos = xpos + (int)(bwQsy*ratio) + wSpace;
+	btnMem = new Fl_Button(xpos, buttonrow, (int)(bwMem*ratio), BTN_HEIGHT, "M @-9UpArrow");
 	btnMem->callback(btnMem_cb, 0);
 	btnMem->tooltip("Store mode and frequency\nRight click for menu");
 	mbtnMem = new Fl_Menu_Button(btnMem->x(), btnMem->y(), btnMem->w(), btnMem->h(), 0);
 	mbtnMem->callback(btnMem->callback(), mbtnMem);
 	mbtnMem->type(Fl_Menu_Button::POPUP3);
 
-	xpos = xpos + bwMem*(w0<600?w0/6:100)/100 + wSpace;
-	xmtlock = new Fl_Light_Button(xpos, buttonrow, bwXmtLock*(w0<600?w0/6:100)/100, BTN_HEIGHT, "Lk");
+	xpos = xpos + (int)(bwMem*ratio) + wSpace;
+	xmtlock = new Fl_Light_Button(xpos, buttonrow, (int)(bwXmtLock*ratio), BTN_HEIGHT, "Lk");
 	xmtlock->callback(xmtlock_cb, 0);
 	xmtlock->value(0);
 	xmtlock->selection_color(FL_RED);
 	xmtlock->tooltip("Xmt freq locked");
 
-	xpos = xpos + bwXmtLock*(w0<600?w0/6:100)/100 + wSpace;
-	btnRev = new Fl_Light_Button(xpos, buttonrow, bwRev*(w0<600?w0/6:100)/100, BTN_HEIGHT, "Rv");
+	xpos = xpos + (int)(bwXmtLock*ratio) + wSpace;
+	btnRev = new Fl_Light_Button(xpos, buttonrow, (int)(bwRev*ratio), BTN_HEIGHT, "Rv");
 	btnRev->callback(btnRev_cb, 0);
 	btnRev->value(0);
 	btnRev->selection_color(FL_GREEN);
 	btnRev->tooltip("Reverse");
 	reverse = false;
 
-	xpos = w() - bwXmtRcv*(w0<600?w0/6:100)/100 - wSpace;
-	xmtrcv = new Fl_Light_Button(xpos, buttonrow, bwXmtRcv*(w0<600?w0/6:100)/100, BTN_HEIGHT, "T/R");
+	xpos = w() - (int)(bwRev*ratio) -wSpace - BEZEL;
+	xmtrcv = new Fl_Light_Button(xpos, buttonrow, (int)(bwXmtRcv*ratio) - BEZEL, BTN_HEIGHT, "T/R");
 	xmtrcv->callback(xmtrcv_cb, 0);
 	xmtrcv->selection_color(FL_RED);
 	xmtrcv->value(0);

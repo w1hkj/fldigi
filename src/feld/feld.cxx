@@ -245,7 +245,7 @@ void feld::rx(complex z)
 
 	agc = minmaxfilt->run(peakhold - minhold);
 	
-	metric = CLAMP(100*agc, 0.0, 100.0); 
+	metric = CLAMP(200*agc, 0.0, 100.0); 
 	display_metric(metric);
 	
 	if (blackboard)
@@ -281,6 +281,7 @@ int feld::rx_process(const double *buf, int len)
 		filter_bandwidth = progdefaults.HELL_BW;
 		lp = 1.5 * filter_bandwidth / 2.0 / samplerate;
 		bpfilt->create_filter(0, lp);
+		wf->redraw_marker();
 	}
 
 	while (len-- > 0) {

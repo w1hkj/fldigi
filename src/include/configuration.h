@@ -14,6 +14,8 @@ using namespace std;
 struct configuration {
 	bool	rsid;
 	bool	TransmitRSid;
+	bool	slowcpu;
+	
 	bool	changed;
 	double	wfRefLevel;
 	double	wfAmpSpan;
@@ -68,7 +70,6 @@ struct configuration {
 	bool		CWid;
 	int			CWIDwpm;
 // FELD-HELL
-	bool		FELD_IDLE;
 	double		HELL_BW;
 	bool		HellRcvWidth;
 	bool		HellBlackboard;

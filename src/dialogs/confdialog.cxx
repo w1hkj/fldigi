@@ -785,6 +785,13 @@ static void cb_chkTransmitRSid(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *chkSlowCpu=(Fl_Check_Button *)0;
+
+static void cb_chkSlowCpu(Fl_Check_Button* o, void*) {
+  progdefaults.slowcpu = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabModems=(Fl_Group *)0;
 
 Fl_Tabs *tabsModems=(Fl_Tabs *)0;
@@ -1232,14 +1239,16 @@ progdefaults.changed = true;
 
 Fl_Check_Button *btnCRCRLF=(Fl_Check_Button *)0;
 
-static void cb_btnCRCRLF(Fl_Check_Button*, void*) {
-  progdefaults.changed = true;
+static void cb_btnCRCRLF(Fl_Check_Button* o, void*) {
+  progdefaults.rtty_crcrlf = o->value();
+progdefaults.changed = true;
 }
 
 Fl_Check_Button *btnAUTOCRLF=(Fl_Check_Button *)0;
 
-static void cb_btnAUTOCRLF(Fl_Check_Button*, void*) {
-  progdefaults.changed = true;
+static void cb_btnAUTOCRLF(Fl_Check_Button* o, void*) {
+  progdefaults.rtty_autocrlf = o->value();
+progdefaults.changed = true;
 }
 
 Fl_Counter *cntrAUTOCRLF=(Fl_Counter *)0;
@@ -1779,6 +1788,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { tabSoundCard = new Fl_Group(0, 25, 400, 195, "SndCrd");
         tabSoundCard->color((Fl_Color)51);
         tabSoundCard->selection_color((Fl_Color)51);
+        tabSoundCard->hide();
         { tabsSoundCard = new Fl_Tabs(0, 25, 400, 195);
           tabsSoundCard->selection_color((Fl_Color)10);
           { tabAudio = new Fl_Group(0, 50, 400, 170, "Audio devices");
@@ -1939,7 +1949,6 @@ l with your sound hardware.");
       { tabMisc = new Fl_Group(0, 25, 400, 195, "Misc");
         tabMisc->color((Fl_Color)51);
         tabMisc->selection_color((Fl_Color)51);
-        tabMisc->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 390, 90, "Sweet Spot");
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -1975,15 +1984,25 @@ l with your sound hardware.");
           } // Fl_Check_Button* btnStartAtSweetSpot
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(5, 125, 390, 50, "RSid");
+        { Fl_Group* o = new Fl_Group(5, 125, 390, 45, "RSid");
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-          { Fl_Check_Button* o = chkTransmitRSid = new Fl_Check_Button(50, 143, 70, 15, "Transmit RSid");
+          { Fl_Check_Button* o = chkTransmitRSid = new Fl_Check_Button(110, 138, 70, 15, "Transmit RSid");
             chkTransmitRSid->tooltip("Transmit Reed Solomon ID");
             chkTransmitRSid->down_box(FL_DOWN_BOX);
             chkTransmitRSid->callback((Fl_Callback*)cb_chkTransmitRSid);
             o->value(progdefaults.TransmitRSid);
           } // Fl_Check_Button* chkTransmitRSid
+          o->end();
+        } // Fl_Group* o
+        { Fl_Group* o = new Fl_Group(5, 172, 390, 43, "CPU speed");
+          o->box(FL_ENGRAVED_FRAME);
+          o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+          { Fl_Check_Button* o = chkSlowCpu = new Fl_Check_Button(110, 190, 89, 15, "Slow cpu");
+            chkSlowCpu->down_box(FL_DOWN_BOX);
+            chkSlowCpu->callback((Fl_Callback*)cb_chkSlowCpu);
+            o->value(progdefaults.slowcpu);
+          } // Fl_Check_Button* chkSlowCpu
           o->end();
         } // Fl_Group* o
         tabMisc->end();
@@ -2177,9 +2196,10 @@ l with your sound hardware.");
               valTHOR_PATHS->step(1);
               valTHOR_PATHS->value(5);
               valTHOR_PATHS->callback((Fl_Callback*)cb_valTHOR_PATHS);
+              valTHOR_PATHS->hide();
               o->value(progdefaults.THOR_PATHS);
             } // Fl_Counter* valTHOR_PATHS
-            { Fl_Check_Button* o = valTHOR_SOFT = new Fl_Check_Button(110, 177, 70, 15, "Soft decode");
+            { Fl_Check_Button* o = valTHOR_SOFT = new Fl_Check_Button(215, 130, 70, 15, "Soft decode");
               valTHOR_SOFT->down_box(FL_DOWN_BOX);
               valTHOR_SOFT->callback((Fl_Callback*)cb_valTHOR_SOFT);
               o->value(progdefaults.THOR_SOFT);
@@ -2189,7 +2209,6 @@ l with your sound hardware.");
           { tabDomEX = new Fl_Group(0, 50, 400, 170, "Dom");
             tabDomEX->color((Fl_Color)51);
             tabDomEX->selection_color((Fl_Color)51);
-            tabDomEX->hide();
             { txtSecondary = new Fl_Input(20, 75, 360, 44, "Secondary Text");
               txtSecondary->type(4);
               txtSecondary->callback((Fl_Callback*)cb_txtSecondary);
@@ -2223,6 +2242,7 @@ l with your sound hardware.");
               valDominoEX_PATHS->step(1);
               valDominoEX_PATHS->value(5);
               valDominoEX_PATHS->callback((Fl_Callback*)cb_valDominoEX_PATHS);
+              valDominoEX_PATHS->hide();
               o->value(progdefaults.DOMINOEX_PATHS);
             } // Fl_Counter* valDominoEX_PATHS
             tabDomEX->end();
@@ -2230,6 +2250,7 @@ l with your sound hardware.");
           { tabFeld = new Fl_Group(0, 50, 400, 170, "Feld");
             tabFeld->color((Fl_Color)51);
             tabFeld->selection_color((Fl_Color)51);
+            tabFeld->hide();
             { Fl_Choice* o = selHellFont = new Fl_Choice(175, 62, 122, 20, "Feld Hell Font:");
               selHellFont->down_box(FL_BORDER_BOX);
               selHellFont->labelfont(4);
@@ -2478,16 +2499,18 @@ l with your sound hardware.");
               chkPseudoFSK->align(FL_ALIGN_LEFT);
               o->value(progdefaults.PseudoFSK);
             } // Fl_Check_Button* chkPseudoFSK
-            { btnCRCRLF = new Fl_Check_Button(364, 60, 22, 22, "CR-CR-LF");
+            { Fl_Check_Button* o = btnCRCRLF = new Fl_Check_Button(364, 60, 22, 22, "CR-CR-LF");
               btnCRCRLF->down_box(FL_DOWN_BOX);
               btnCRCRLF->callback((Fl_Callback*)cb_btnCRCRLF);
               btnCRCRLF->align(FL_ALIGN_LEFT);
               btnCRCRLF->when(FL_WHEN_RELEASE_ALWAYS);
+              o->value(progdefaults.rtty_crcrlf);
             } // Fl_Check_Button* btnCRCRLF
-            { btnAUTOCRLF = new Fl_Check_Button(364, 88, 22, 22, "AutoCRLF");
+            { Fl_Check_Button* o = btnAUTOCRLF = new Fl_Check_Button(364, 88, 22, 22, "AutoCRLF");
               btnAUTOCRLF->down_box(FL_DOWN_BOX);
               btnAUTOCRLF->callback((Fl_Callback*)cb_btnAUTOCRLF);
               btnAUTOCRLF->align(FL_ALIGN_LEFT);
+              o->value(progdefaults.rtty_autocrlf);
             } // Fl_Check_Button* btnAUTOCRLF
             { cntrAUTOCRLF = new Fl_Counter(321, 117, 65, 20, "after:");
               cntrAUTOCRLF->type(1);

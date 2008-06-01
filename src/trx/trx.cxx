@@ -68,8 +68,7 @@ bool		trx_wait = false;
 modem		*active_modem = 0;
 cRsId		*ReedSolomon = 0;
 SoundBase 		*scard;
-
-
+int			audioIOis = -1;
 int			_trx_tune;
 
 // Ringbuffer for the audio "history". A pointer into this buffer
@@ -92,6 +91,7 @@ static bool rsid_detecting = false;
 void trx_trx_receive_loop()
 {
 	int  numread;
+	int  current_samplerate;
 	assert(powerof2(SCBLOCKSIZE));
 
 	if (!scard) {
@@ -100,8 +100,12 @@ void trx_trx_receive_loop()
 	}
 	if (active_modem) {
 		try {
-			scard->Open(O_RDONLY, active_modem->get_samplerate());
-			REQ(sound_update, progdefaults.btnAudioIOis);
+			current_samplerate = active_modem->get_samplerate();
+			scard->Open(O_RDONLY, current_samplerate);
+			if (audioIOis != progdefaults.btnAudioIOis) {
+				audioIOis = progdefaults.btnAudioIOis;
+				REQ(sound_update, progdefaults.btnAudioIOis);
+			}
 		}
 		catch (const SndException& e) {
 			put_status(e.what(), 5);
@@ -119,8 +123,13 @@ void trx_trx_receive_loop()
 			if (progdefaults.rsid == true && rsid_detecting == false) {
 				rsid_detecting = true;
 				try {
-					scard->Open(O_RDONLY, ReedSolomon->samplerate());
+					current_samplerate = ReedSolomon->samplerate();
+					scard->Open(O_RDONLY, current_samplerate);
+					if (audioIOis != progdefaults.btnAudioIOis) {
+						audioIOis = progdefaults.btnAudioIOis;
+						REQ(sound_update, progdefaults.btnAudioIOis);
 					}
+				}
 				catch (const SndException& e) {
 					put_status(e.what(), 5);
 					scard->Close();
@@ -134,8 +143,10 @@ void trx_trx_receive_loop()
 			}
 			if (progdefaults.rsid == false && rsid_detecting == true) {
 				rsid_detecting = false;
+				active_modem->rx_init();
 				try {
-					scard->Open(O_RDONLY, active_modem->get_samplerate());
+					current_samplerate = active_modem->get_samplerate();
+					scard->Open(O_RDONLY, current_samplerate);
 					}
 				catch (const SndException& e) {
 					put_status(e.what(), 5);
@@ -147,7 +158,6 @@ void trx_trx_receive_loop()
 					MilliSleep(1000);
 					return;
 				}
-				active_modem->rx_init();
 			}
 			
 			try {
@@ -168,7 +178,7 @@ void trx_trx_receive_loop()
 				break;
 
 			trxrb.write_advance(numread);
-			REQ(&waterfall::sig_data, wf, rbvec[0].buf, numread);
+			REQ(&waterfall::sig_data, wf, rbvec[0].buf, numread, current_samplerate);
 
 			if (!bHistory) {
 				if (rsid_detecting == true)
@@ -206,7 +216,10 @@ void trx_trx_transmit_loop()
 	if (active_modem) {
 		try {
 			scard->Open(O_WRONLY, active_modem->get_samplerate());
-			REQ(sound_update, progdefaults.btnAudioIOis);
+			if (audioIOis != progdefaults.btnAudioIOis) {
+				audioIOis = progdefaults.btnAudioIOis;
+				REQ(sound_update, progdefaults.btnAudioIOis);
+			}
 		}
 		catch (const SndException& e) {
 			put_status(e.what(), 1);
@@ -255,7 +268,10 @@ void trx_tune_loop()
 	if (active_modem) {
 		try {
 			scard->Open(O_WRONLY, active_modem->get_samplerate());
-			REQ(sound_update, progdefaults.btnAudioIOis);
+			if (audioIOis != progdefaults.btnAudioIOis) {
+				audioIOis = progdefaults.btnAudioIOis;
+				REQ(sound_update, progdefaults.btnAudioIOis);
+			}
 		}
 		catch (const SndException& e) {
 			put_status(e.what(), 1);
@@ -330,6 +346,12 @@ modem *trx_m;
 void trx_start_modem_loop()
 {
 	modem* old_modem = active_modem;
+
+	if (old_modem == trx_m) {
+		trx_state = STATE_RX;
+		return;
+	}
+			
 	if (old_modem)
 		old_modem->shutdown();
 

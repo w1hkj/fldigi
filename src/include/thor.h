@@ -51,6 +51,9 @@ using namespace std;
 
 #define THORSCOPESIZE 64
 
+#define THORSLOWPATHS 3
+#define THORFASTPATHS 5
+
 struct THORrxpipe {
 	complex vector[THORMAXFFTS * THORNUMTONES * 6];
 };
@@ -74,6 +77,12 @@ protected:
 	int		counter;
 	unsigned int	twosym;
 	int		paths;
+	int		numbins;
+	bool	slowcpu;
+	int		basetone;
+	int		lotone;
+	int		hitone;
+	int		extones;
 	
 // rx variables
 	C_FIR_filter	*hilbert;

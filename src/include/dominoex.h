@@ -82,6 +82,12 @@ protected:
 	int		counter;
 	unsigned int	twosym;
 	int		paths;
+	int		numbins;
+	bool	slowcpu;
+	int		basetone;
+	int		lotone;
+	int		hitone;
+	int		extones;
 	
 // rx variables
 	C_FIR_filter	*hilbert;

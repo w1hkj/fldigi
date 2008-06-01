@@ -16,6 +16,18 @@
 #include "configuration.h"
 #include "fl_digi.h"
 
+#define _host "127.0.0.1"
+#define _port 3122
+
+#define _TX   "TX"
+#define _RX   "RX"
+#define _TX2RX "RX_AFTER_TX"
+#define _TXCH 25
+#define _RXCH 29
+#define _TXECHO 28
+#define _CMD  26
+#define _END  27
+
 #ifdef __CYGWIN__
 	string str_infile = "c:/NBEMS/ARQXFR/txfile";
 	string str_outfile = "c:/NBEMS/ARQXFR/rxfile";
@@ -296,3 +308,5 @@ char pskmail_get_char()
 	pskmail_text_available = false;
 	return 0x03; // tells psk modem to return to rx
 }
+
+
