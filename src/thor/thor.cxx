@@ -75,23 +75,18 @@ void thor::rx_init()
 void thor::reset_filters()
 {
 // fft filter at first IF frequency
-	if (progdefaults.THOR_FILTER == false) {
-		fft->create_filter( (THORFIRSTIF - 2.0 * bandwidth) / samplerate,
- 		                    (THORFIRSTIF + 2.0 * bandwidth)/ samplerate );
-	} else {
-		fft->create_filter( (THORFIRSTIF - 0.5 * progdefaults.THOR_BW * bandwidth) / samplerate,
- 		                    (THORFIRSTIF + 0.5 * progdefaults.THOR_BW * bandwidth)/ samplerate );
-	}
+	fft->create_filter( (THORFIRSTIF - 0.5 * progdefaults.THOR_BW * bandwidth) / samplerate,
+	                    (THORFIRSTIF + 0.5 * progdefaults.THOR_BW * bandwidth)/ samplerate );
 
 	for (int i = 0; i < THORMAXFFTS; i++)
-		delete binsfft[i];
+		if (binsfft[i]) delete binsfft[i];
 		
 	if (slowcpu) {
 		extones = 4;
-		paths = 3;
+		paths = THORSLOWPATHS;
 	} else {
 		extones = THORNUMTONES / 2;
-		paths = 5;
+		paths = THORFASTPATHS;
 	}
 	
 	lotone = basetone - extones * doublespaced;
@@ -99,7 +94,7 @@ void thor::reset_filters()
 
 	numbins = hitone - lotone;
 
-	for (int i = 0; i < THORMAXFFTS; i++)
+	for (int i = 0; i < paths; i++)
 		binsfft[i] = new sfft (symlen, lotone, hitone);
 
 	filter_reset = false;               
@@ -206,6 +201,9 @@ thor::thor(trx_mode md)
 
 	slowcpu = progdefaults.slowcpu;
 	
+	for (int i = 0; i < THORMAXFFTS; i++)
+		binsfft[i] = 0;
+		
 	reset_filters();
 /*
 	if (slowcpu) {

@@ -75,15 +75,10 @@ void dominoex::rx_init()
 void dominoex::reset_filters()
 {
 // fft filter at first IF frequency
-	if (progdefaults.DOMINOEX_FILTER == false) {
-		fft->create_filter( (FIRSTIF - 2.0 * bandwidth) / samplerate,
- 		                    (FIRSTIF + 2.0 * bandwidth)/ samplerate );
-	} else {
-		fft->create_filter( (FIRSTIF - 0.5 * progdefaults.DOMINOEX_BW * bandwidth) / samplerate,
- 		                    (FIRSTIF + 0.5 * progdefaults.DOMINOEX_BW * bandwidth)/ samplerate );
-	}
+	fft->create_filter( (FIRSTIF - 0.5 * progdefaults.DOMINOEX_BW * bandwidth) / samplerate,
+	                    (FIRSTIF + 0.5 * progdefaults.DOMINOEX_BW * bandwidth)/ samplerate );
 
-	for (int i = 0; i < paths; i++)//MAXFFTS; i++)
+	for (int i = 0; i < MAXFFTS; i++)
 		if (binsfft[i]) delete binsfft[i];
 		
 	if (slowcpu) {
@@ -251,9 +246,12 @@ dominoex::dominoex(trx_mode md)
 
 	slowcpu = progdefaults.slowcpu;
 	
+	for (int i = 0; i < MAXFFTS; i++)
+		binsfft[i] = 0;
+		
 	reset_filters();
 /*
-	if (slowcpu) {
+	if (slowcpu) {paths
 		extones = 4;
 		paths = 4;
 	} else {
@@ -495,6 +493,7 @@ void dominoex::eval_s2n()
 int dominoex::rx_process(const double *buf, int len)
 {
 	complex zref,  z, *zp, *bins = 0;
+	complex zarray[1];
 	int n;
 
 	if (filter_reset) reset_filters();
@@ -509,8 +508,15 @@ int dominoex::rx_process(const double *buf, int len)
 		zref.re = zref.im = *buf++;
 		hilbert->run(zref, zref);
 		zref = mixer(0, zref);
+		
+		if (progdefaults.DOMINOEX_FILTER) {
 // filter using fft convolution
-		n = fft->run(zref, &zp);
+			n = fft->run(zref, &zp);
+		} else {
+			zarray[0] = zref;
+			zp = zarray;
+			n = 1;
+		}
 		
 		if (n) {
 			for (int i = 0; i < n; i++) {
