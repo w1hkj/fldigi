@@ -217,7 +217,7 @@ public:
         static void	terminate(void);
         static const std::vector<const PaDeviceInfo*>& devices(void);
         static void devices_info(std::string& in, std::string& out);
-	static const std::vector<double>& get_supported_rates(unsigned dir);
+	static const std::vector<double>& get_supported_rates(const std::string& name, unsigned dir);
 
 public:
         SoundPort(const char *in_dev, const char *out_dev);
@@ -240,6 +240,7 @@ private:
         bool		stream_active(unsigned dir);
         bool		full_duplex_device(const PaDeviceInfo* dev);
         double		find_srate(unsigned dir);
+	static void	probe_supported_rates(const device_iterator& idev);
         void		pa_perror(int err, const char* str = 0);
         static void	init_hostapi_ext(void);
         static PaStreamCallback stream_process;
@@ -249,7 +250,6 @@ private:
         enum { STREAM_IN, STREAM_OUT };
         static bool                             pa_init;
 	static std::vector<const PaDeviceInfo*> devs;
-	static std::vector<double>		supported_rates[2];
         double	 				req_sample_rate;
         float* 					fbuf;
 

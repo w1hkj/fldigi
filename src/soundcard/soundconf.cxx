@@ -211,8 +211,8 @@ static void sound_init_options(void)
 
 	const char* cname;
 	for (int i = 0; (cname = src_get_name(i)); i++) {
-		if (i == SRC_ZERO_ORDER_HOLD || i == SRC_LINEAR)
-			continue;
+//		if (i == SRC_ZERO_ORDER_HOLD || i == SRC_LINEAR)
+//			continue;
 		menuSampleConverter->add(cname);
 	}
 	menuSampleConverter->value(progdefaults.sample_converter);
@@ -338,7 +338,7 @@ void sound_update(unsigned idx)
 			Fl_Menu_* menus[2] = { menuInSampleRate, menuOutSampleRate };
 			for (size_t i = 0; i < 2; i++) {
 				char* label = strdup(menus[i]->text());
-				const vector<double>& srates = SoundPort::get_supported_rates(i);
+				const vector<double>& srates = SoundPort::get_supported_rates(scDevice[0], i);
 
 				switch (srates.size()) {
 				case 0: // startup; no devices initialised yet

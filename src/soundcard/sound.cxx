@@ -30,6 +30,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 #include <sstream>
 #include <algorithm>
 #include <iterator>
@@ -678,7 +679,7 @@ size_t SoundOSS::Write_stereo(double *bufleft, double *bufright, size_t count)
 bool SoundPort::pa_init = false;
 std::vector<const PaDeviceInfo*> SoundPort::devs;
 static ostringstream device_text[2];
-vector<double> SoundPort::supported_rates[2];
+map<string, vector<double> > supported_rates[2];
 void SoundPort::initialize(void)
 {
         if (pa_init)
@@ -709,6 +710,8 @@ void SoundPort::terminate(void)
         static_cast<void>(Pa_Terminate());
         pa_init = false;
         devs.clear();
+	supported_rates[0].clear();
+	supported_rates[1].clear();
 }
 const std::vector<const PaDeviceInfo*>& SoundPort::devices(void)
 {
@@ -719,9 +722,9 @@ void SoundPort::devices_info(string& in, string& out)
 	in = device_text[0].str();
 	out = device_text[1].str();
 }
-const vector<double>& SoundPort::get_supported_rates(unsigned dir)
+const vector<double>& SoundPort::get_supported_rates(const string& name, unsigned dir)
 {
-	return supported_rates[dir];
+	return supported_rates[dir][name];
 }
 
 
@@ -1208,17 +1211,12 @@ void SoundPort::init_stream(unsigned dir)
 		sd[1].params.hostApiSpecificStreamInfo = NULL;
 	}
 
-
-	extern double std_sample_rates[];
-	supported_rates[dir].clear();
-	supported_rates[dir].push_back((*sd[dir].idev)->defaultSampleRate);
-	for (const double* i = std_sample_rates; *i > 0.0; i++)
-		if (Pa_IsFormatSupported((dir == 0 ? &sd[0].params : NULL),
-					 (dir == 1 ? &sd[1].params : NULL), *i) == paFormatIsSupported)
-			supported_rates[dir].push_back(*i);
+	const vector<double>& rates = supported_rates[dir][(*sd[dir].idev)->name];
+	if (rates.size() <= 1)
+		probe_supported_rates(sd[dir].idev);
 	ostringstream ss;
-	if (supported_rates[dir].size() > 1)
-		copy(supported_rates[dir].begin(), supported_rates[dir].end(), ostream_iterator<double>(ss, " "));
+	if (rates.size() > 1)
+		copy(rates.begin() + 1, rates.end(), ostream_iterator<double>(ss, " "));
 	else
 		ss << "Unknown";
 
@@ -1395,11 +1393,36 @@ double SoundPort::find_srate(unsigned dir)
                 return sr;
         }
 
-	for (vector<double>::const_iterator i = supported_rates[dir].begin(); i != supported_rates[dir].end(); i++)
+	const vector<double>& rates = supported_rates[dir][(*sd[dir].idev)->name];
+	for (vector<double>::const_iterator i = rates.begin(); i != rates.end(); i++)
 		if (req_sample_rate == *i || (*sd[dir].idev)->defaultSampleRate == *i)
 			return *i;
 
         throw SndException("No supported sample rate found");
+}
+
+void SoundPort::probe_supported_rates(const device_iterator& idev)
+{
+	PaStreamParameters params[2];
+	params[0].device = params[1].device = idev - devs.begin();
+	params[0].channelCount = (*idev)->maxInputChannels;
+	params[1].channelCount = (*idev)->maxOutputChannels;
+	params[0].sampleFormat = params[1].sampleFormat = paFloat32;
+	params[0].suggestedLatency = (*idev)->defaultHighInputLatency;
+	params[1].suggestedLatency = (*idev)->defaultHighOutputLatency;
+	params[0].hostApiSpecificStreamInfo = params[1].hostApiSpecificStreamInfo = NULL;
+
+	supported_rates[0][(*idev)->name].clear();
+	supported_rates[1][(*idev)->name].clear();
+	supported_rates[0][(*idev)->name].push_back((*idev)->defaultSampleRate);
+	supported_rates[1][(*idev)->name].push_back((*idev)->defaultSampleRate);
+	extern double std_sample_rates[];
+	for (const double* r = std_sample_rates; *r > 0.0; r++) {
+		if (Pa_IsFormatSupported(&params[0], NULL, *r) == paFormatIsSupported)
+			supported_rates[0][(*idev)->name].push_back(*r);
+		if (Pa_IsFormatSupported(NULL, &params[1], *r) == paFormatIsSupported)
+			supported_rates[1][(*idev)->name].push_back(*r);
+	}
 }
 
 void SoundPort::pa_perror(int err, const char* str)

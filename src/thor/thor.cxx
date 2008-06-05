@@ -79,7 +79,10 @@ void thor::reset_filters()
 	                    (THORFIRSTIF + 0.5 * progdefaults.THOR_BW * bandwidth)/ samplerate );
 
 	for (int i = 0; i < THORMAXFFTS; i++)
-		if (binsfft[i]) delete binsfft[i];
+		if (binsfft[i]) {
+			delete binsfft[i];
+			binsfft[i] = 0;
+		}
 		
 	if (slowcpu) {
 		extones = 4;
@@ -154,13 +157,11 @@ thor::thor(trx_mode md)
 		doublespaced = 1;
 		samplerate = 11025;
 		break;
-
 //	case MODE_TSOR11:
 //		symlen = 1024;
 //		doublespaced = 2;
 //		samplerate = 11025;
 //		break;
-
 	case MODE_THOR22:
 		symlen = 512;
 		doublespaced = 1;
@@ -185,7 +186,7 @@ thor::thor(trx_mode md)
 		samplerate = 8000;
 	}
 
-	tonespacing = (double) (samplerate * doublespaced / symlen);
+	tonespacing = 1.0 * samplerate * doublespaced / symlen;
 
 	bandwidth = THORNUMTONES * tonespacing;
 
@@ -205,23 +206,7 @@ thor::thor(trx_mode md)
 		binsfft[i] = 0;
 		
 	reset_filters();
-/*
-	if (slowcpu) {
-		extones = 4;
-		paths = 3;
-	} else {
-		extones = THORNUMTONES / 2;
-		paths = 6;
-	}
-	
-	lotone = basetone - extones * doublespaced;
-	hitone = basetone + THORNUMTONES * doublespaced + extones * doublespaced;
 
-	numbins = hitone - lotone;
-
-	for (int i = 0; i < THORMAXFFTS; i++)
-		binsfft[i] = new sfft (symlen, lotone, hitone);
-*/
 	for (int i = 0; i < THORSCOPESIZE; i++)
 		vidfilter[i] = new Cmovavg(16);
 		

@@ -72,7 +72,8 @@
 #define wSpace		2
 
 #define DEFAULT_SW 15
-#define DEFAULT_HWFALL 144
+//#define DEFAULT_HWFALL 144
+#define DEFAULT_HWFALL 124
 #define DEFAULT_HNOM 500
 #define Wwfall		(DEFAULT_HNOM + 2 * BEZEL)
 #define DEFAULT_WNOM (Wwfall + 2* DEFAULT_SW)

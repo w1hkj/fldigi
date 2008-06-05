@@ -207,7 +207,7 @@ dominoex::dominoex(trx_mode md)
 
 	case MODE_DOMINOEX22:
 		symlen = 512;
-		doublespaced = 2;
+		doublespaced = 1;
 		samplerate = 11025;
 		break;
 // 8kHz modes
@@ -216,21 +216,22 @@ dominoex::dominoex(trx_mode md)
 		doublespaced = 2;
 		samplerate = 8000;
 		break;
-
+	case MODE_DOMINOEX8:
+		symlen = 1024;
+		doublespaced = 2;
+		samplerate = 8000;
 	case MODE_DOMINOEX16:
 		symlen = 512;
 		doublespaced = 1;
 		samplerate = 8000;
 		break;
-
-	case MODE_DOMINOEX8:
-	default:
+	default: // EX8
 		symlen = 1024;
 		doublespaced = 2;
 		samplerate = 8000;
 	}
 
-	tonespacing = (double) (samplerate * doublespaced / symlen);
+	tonespacing = 1.0 * samplerate * doublespaced / symlen;
 
 	bandwidth = NUMTONES * tonespacing;
 
@@ -272,7 +273,7 @@ dominoex::dominoex(trx_mode md)
 	for (int i = 0; i < SCOPESIZE; i++)
 		vidfilter[i] = new Cmovavg(16);
 			
-	syncfilter = new Cmovavg(8);
+	syncfilter = new Cmovavg(16);
 
 	twosym = 2 * symlen;
 	pipe = new domrxpipe[twosym];
@@ -306,18 +307,18 @@ dominoex::dominoex(trx_mode md)
 
 //=====================================================================
 // rx modules
-
 complex dominoex::mixer(int n, complex in)
 {
 	complex z;
 	double f;
+
 // first IF mixer (n == 0) plus
-// MAXFFTS mixers are supported each separated by 1/MAXFFTS bin size
+// MAXFFTS mixers are supported each separated by tonespacing/paths
 // n == 1, 2, 3, 4 ... MAXFFTS
 	if (n == 0)
 		f = frequency - FIRSTIF;
 	else
-		f = FIRSTIF - BASEFREQ - bandwidth/2 + (samplerate / symlen) * (1.0 * n / paths );
+		f = FIRSTIF - BASEFREQ - bandwidth / 2.0 + tonespacing * (1.0 * (n - 1) / paths );
 	z.re = cos(phase[n]);
 	z.im = sin(phase[n]);
 	z = z * in;
@@ -522,13 +523,13 @@ int dominoex::rx_process(const double *buf, int len)
 			for (int i = 0; i < n; i++) {
 // process MAXFFTS sets of sliding FFTs spaced at 1/MAXFFTS bin intervals each of which
 // is a matched filter for the current symbol length
-				for (int n = 0; n < paths; n++) {
+				for (int j = 0; j < paths; j++) {
 // shift in frequency to base band for the sliding DFTs
-					z = mixer(n + 1, zp[i]);
-					bins = binsfft[n]->run(z);
+					z = mixer(j + 1, zp[i]);
+					bins = binsfft[j]->run(z);
 // copy current vector to the pipe interleaving the FFT vectors
-					for (int i = 0; i < numbins; i++) {
-						pipe[pipeptr].vector[n + paths * i] = bins[i];
+					for (int k = 0; k < numbins; k++) {
+						pipe[pipeptr].vector[j + paths * k] = bins[k];
 					}
 				}
 				if (--synccounter <= 0) {

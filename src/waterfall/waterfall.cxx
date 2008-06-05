@@ -130,6 +130,8 @@ WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 
 	oldcarrier = newcarrier = 0;
 	tmp_carrier = false;
+	ptrCB = 0;
+	ptrFFTbuff = 0;
 }
 
 WFdisp::~WFdisp() {
@@ -332,29 +334,23 @@ int WFdisp::log2disp(int v)
 	return (int)(255 - val);
 }
 
-void WFdisp::update_fft_db()
-{
-	FL_LOCK_D();
-	FL_UNLOCK_D();
-}
-
 void WFdisp::processFFT() {
 	int		n;
 	double scale;
+	int    ptrSample;
 	scale = (double)SC_SMPLRATE / srate;
     scale *= FFT_LEN / 2000.0;
 
 	if (dispcnt == 0) {
 		memset (fftout, 0, FFT_LEN*2*sizeof(double));
-        for (int i = 0; i < FFT_LEN * 2 * progdefaults.latency / 8; i++)
-            fftout[i] = fftwindow[i * 8 / progdefaults.latency] * circbuff[i];
+		ptrSample = ptrCB;
+        for (int i = 0; i < FFT_LEN * 2 * progdefaults.latency / 8; i++) {
+            fftout[i] = fftwindow[i * 8 / progdefaults.latency] * circbuff[ptrSample];
+            ptrSample = (ptrSample + 1) % (FFT_LEN *2);
+        }
+        
 		wfft->rdft(fftout);
 FL_LOCK_D();		
-		memmove(
-			(void*)(fft_db + IMAGE_WIDTH),
-			(void*)fft_db,
-			(IMAGE_WIDTH * (image_height - 1)) * sizeof(short int));
-
 		double pw;
 		int ffth;
 		for (int i = 0; i < IMAGE_WIDTH; i++) {
@@ -365,23 +361,27 @@ FL_LOCK_D();
 				pw = fftout[n]*fftout[n];
 			pwr[i] = pw;
 			ffth = (int)(10.0 * log10(pw + 1e-10) );
-			fft_db[i] = log2disp(ffth);
+			fft_db[ptrFFTbuff * IMAGE_WIDTH + i] = log2disp(ffth);
 		}
+		ptrFFTbuff--;
+		if (ptrFFTbuff < 0) ptrFFTbuff += image_height;
 FL_UNLOCK_D();
 	}
-	if (cursormoved || dispcnt == 0) {
+
+	if (dispcnt == 0) {
 FL_LOCK_D();
 		if (dispcnt == 0) {
-			memmove(
-				(void*)tmp_fft_db,
-				(void*)fft_db,
-				(IMAGE_WIDTH * image_height) * sizeof(short int));
+			for (int i = 0; i < image_height; i++) {
+				int j = (i + 1 + ptrFFTbuff) % image_height;
+				memmove( (void *)(tmp_fft_db + i * IMAGE_WIDTH),
+				         (void *)(fft_db + j * IMAGE_WIDTH),
+				         IMAGE_WIDTH * sizeof(short int));
+			}
 		}
 		redraw();
 FL_UNLOCK_D();
-//		FL_AWAKE();
-		cursormoved = false;
 	}
+
 	if (dispcnt == 0) {
 		if (srate == 8000)
 			dispcnt = wfspeed;
@@ -405,8 +405,10 @@ void WFdisp::process_analog (double *sig, int len) {
 FL_LOCK_D();
 	memset (sig_img, 0, sig_image_area);
 	memset (&sig_img[h2*IMAGE_WIDTH], 255, IMAGE_WIDTH);
+	int cbc = ptrCB;
 	for (int c = 0; c < IMAGE_WIDTH; c++) {
-		ynext = (int)(h2 * sig[c]);
+		ynext = (int)(h2 * sig[cbc]);
+		cbc = (cbc + 1) % (FFT_LEN *2);
 		for (; sigy < ynext; sigy++) sig_img[sigpixel -= IMAGE_WIDTH] = graylevel;
 		for (; sigy > ynext; sigy--) sig_img[sigpixel += IMAGE_WIDTH] = graylevel;
 		sig_img[sigpixel++] = graylevel;
@@ -422,24 +424,21 @@ void WFdisp::redrawCursor()
 }
 
 void WFdisp::sig_data( double *sig, int len, int sr ) {
-	int   movedbls = (FFT_LEN * 2) - len; //SCBLOCKSIZE;
-	int	  movesize = movedbls * sizeof(double);
-	double *pcircbuff1 = &circbuff[len];
-
 //if sound card sampling rate changed reset the waterfall buffer
 	if (srate != sr) {
 		srate = sr;
 		memset (circbuff, 0, FFT_LEN * 2 * sizeof(double));
+		ptrCB = 0;
 	}
-	else
-		memmove(circbuff, pcircbuff1, movesize);
+
 	overload = false;
-	int i, j;
     double overval, peak = 0.0;
-	for (i = movedbls, j = 0; j < len; i++, j++) {
-        overval = fabs(circbuff[i] = sig[j]);
-        if (overval > peak) peak = overval;
-    }
+	for (int i = 0; i < len; i++) {
+		overval = fabs(circbuff[ptrCB] = sig[i]);
+		ptrCB = (ptrCB + 1) % (FFT_LEN *2);	
+		if (overval > peak) peak = overval;
+	}
+
     peakaudio = 0.1 * peak + 0.9 * peakaudio;
 
 	if (mode == SCOPE)
@@ -635,32 +634,38 @@ void WFdisp::update_waterfall() {
 				for (int col = 0; col < disp_width; col++) {
 					*(p4++) = mag2RGBI[ (*p2+ *(p2+1)+ *(p2+2)+ *(p2+3))/4 ];
 					p2 += step;
+					if (p2 > tmp_fft_db + image_area - step + 1) break;
 				}
 			else if (step == 2)
 				for (int col = 0; col < disp_width; col++) {
 					*(p4++) = mag2RGBI[ (*p2  + *(p2+1))/2 ];
 					p2 += step;
+					if (p2 > tmp_fft_db + image_area - step + 1) break;
 				}
 			else 
 				for (int col = 0; col < disp_width; col++) {
 					*(p4++) = mag2RGBI[ *p2 ];
 					p2 += step;
+					if (p2 > tmp_fft_db + image_area - step + 1) break;
 				}
 		} else {
 			if (step == 4)
 				for (int col = 0; col < disp_width; col++) {
 					*(p4++) = mag2RGBI[ MAX( MAX ( MAX ( *p2, *(p2+1) ), *(p2+2) ), *(p2+3) ) ];
 					p2 += step;
+					if (p2 > tmp_fft_db + image_area - step + 1) break;
 				}
 			else if (step == 2)
 				for (int col = 0; col < disp_width; col++) {
 					*(p4++) = mag2RGBI[ MAX( *p2, *(p2+1) ) ];
 					p2 += step;
+					if (p2 > tmp_fft_db + image_area - step + 1) break;
 				}
 			else 
 				for (int col = 0; col < disp_width; col++) {
 					*(p4++) = mag2RGBI[ *p2 ];
 					p2 += step;
+					if (p2 > tmp_fft_db + image_area - step + 1) break;
 				}
 		}
 		p1 += IMAGE_WIDTH;
