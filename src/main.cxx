@@ -304,9 +304,6 @@ void generate_option_help(void) {
 	     << " or 0x" << hex << progdefaults.tx_msgid << dec << "\n\n"
 #endif
 
-	     << "  --resample CONVERTER  **DEPRECATED**\n"
-	     << "    This option has been deprecated and will be removed in a future release\n\n"
-
 	     << "  --xmlrpc-server\n"
 	     << "    Start the XML-RPC server\n\n"
 	     << "  --xmlrpc-server-address HOSTNAME\n"
@@ -373,8 +370,11 @@ void generate_option_help(void) {
 	     << "    The default is: " << Fl::get_font(FL_HELVETICA)
 	     << ':' << FL_NORMAL_SIZE << "\n\n"
 
-	     << "  --profile PROFILE  **DEPRECATED**\n"
-	     << "    This option has been deprecated and will be removed in a future release\n\n"
+	     << "  --wfall-width WIDTH\n"
+	     << "    WIDTH may be 2000 to 4000 in Hz, recommend 50 Hz increments.\n\n"
+
+	     << "  --wfall-height HEIGHT\n"
+	     << "    HEIGHT in pixels, ie 100 - 200, recommend 10 pixel increments.\n\n"
 
 	     << "  --twoscopes\n"
 	     << "    Dock a second digiscope adjacent to the waterfall\n\n"

@@ -56,7 +56,7 @@ status progStatus = {
 	50,					// uint	VIEWERypos
 	false,				// bool VIEWERvisible
 	false,				// bool LOGenabled
-	30.0,				// double sldrSquelchValue
+	5.0,				// double sldrSquelchValue
 	true,				// bool afconoff
 	true,				// bool sqlonoff
 	1.0,				// double	RcvMixer;

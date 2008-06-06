@@ -420,7 +420,8 @@ FL_UNLOCK_D();
 
 void WFdisp::redrawCursor()
 {
-	cursormoved = true;
+	redraw();
+//	cursormoved = true;
 }
 
 void WFdisp::sig_data( double *sig, int len, int sr ) {

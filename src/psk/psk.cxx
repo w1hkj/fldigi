@@ -470,13 +470,12 @@ void psk::update_syncscope()
 	snprintf(msg2, sizeof(msg2), "imd %3d dB", (int)(floor(imd))); 
 
 	if (imdValid) {
-		put_Status1(msg1);
-	    put_Status2(msg2);
-	} else {
+		put_Status1(msg1, 10.0);
+	    put_Status2(msg2, 10.0);
+	} else if (metric < progStatus.sldrSquelchValue) {
 		put_Status1("");
 		put_Status2("");
 	}
-
 }
 
 char bitstatus[100];

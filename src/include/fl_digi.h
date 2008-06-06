@@ -120,10 +120,12 @@ extern void put_sec_char( char chr );
 
 extern void put_status(const char *msg, double timeout = 0);
 extern void clear_status_cb(void *);
+extern void clear_status1_cb(void *);
+extern void clear_status2_cb(void *);
 extern void clear_StatusMessages();
 extern void put_MODEstatus(trx_mode mode);
-extern void put_Status1(const char *msg);
-extern void put_Status2(const char *msg);
+extern void put_Status1(const char *msg, double timeout = 0);
+extern void put_Status2(const char *msg, double timeout = 0);
 
 extern void put_WARNstatus(double);
 
