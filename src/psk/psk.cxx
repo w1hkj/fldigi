@@ -84,6 +84,8 @@ void psk::rx_init()
 	freqerr = 0.0;
 	if (mailserver && progdefaults.PSKmailSweetSpot) sigsearch = SIGSEARCH;
 	put_MODEstatus(mode);
+	resetSN_IMD();
+	imdValid = false;
 }
 
 void psk::restart()
@@ -99,6 +101,9 @@ void psk::init()
 	modem::init();
 	restart();
 	set_scope_mode(Digiscope::PHASE);
+	initSN_IMD();
+	snratio = 1.0;
+	imdratio = 0.001;
 	rx_init();
 }
 
@@ -109,6 +114,8 @@ psk::~psk()
 	if (dec) delete dec;
 	if (fir1) delete fir1;
 	if (fir2) delete fir2;
+	if (snfilt) delete snfilt;
+	if (imdfilt) delete imdfilt;
 }
 
 psk::psk(trx_mode pskmode) : modem()
@@ -194,7 +201,9 @@ psk::psk(trx_mode pskmode) : modem()
 
 	fir2 = new C_FIR_filter();
 	fir2->init(FIRLEN, 1, fir2c, fir2c);
-
+	
+	snfilt = new Cmovavg(16);
+	imdfilt = new Cmovavg(16);
 
 	if (_qpsk) {
 		enc = new encoder(K, POLY1, POLY2);
@@ -403,12 +412,14 @@ void psk::rx_symbol(complex symbol)
 		dcd = true;
 		acquire = 0;
 		quality = complex (1.0, 0.0);
+		imdValid = true;
 		break;
 
 	case 0:			/* DCD off by postamble */
 		dcd = false;
 		acquire = 0;
 		quality = complex (0.0, 0.0);
+		imdValid = false;
 		break;
 
 	default:
@@ -416,6 +427,7 @@ void psk::rx_symbol(complex symbol)
 			dcd = true;
 		else 
 			dcd = false;
+		imdValid = false;
 	}
 
 	set_phase(phase, quality.norm(), dcd);
@@ -430,33 +442,40 @@ void psk::rx_symbol(complex symbol)
 }
 
 void psk::signalquality()
-{
-	E1 = wf->powerDensity(frequency,  bandwidth);
-	E2 = wf->powerDensity(frequency - 2 * bandwidth, bandwidth/2) +
-		 wf->powerDensity(frequency + 2 * bandwidth, bandwidth/2);
-	E3 = wf->powerDensity(frequency - 3 * bandwidth, bandwidth/2) +
-		 wf->powerDensity(frequency + 3 * bandwidth, bandwidth/2);
-	snratio = decayavg( snratio, E1/(E2 + 1e-10), 8);
-	imdratio = decayavg( imdratio, E3/(E1 + 1e-10), 8);
+{ 
+
+	if (m_Energy[1])
+		snratio = snfilt->run(m_Energy[0]/m_Energy[1]);
+	else
+		snratio = snfilt->run(1.0);
+
+	if (m_Energy[0] && imdValid)
+		imdratio = imdfilt->run(m_Energy[2]/m_Energy[0]);
+	else
+		imdratio = imdfilt->run(0.001);
+
 }
 
 void psk::update_syncscope()
 {
 	static char msg1[15];
 	static char msg2[15];
-	s2n = 10.0*log10( snratio );
+
 	display_metric(metric);
 
+	s2n = 10.0*log10( snratio );
 	snprintf(msg1, sizeof(msg1), "s/n %2d dB", (int)(floor(s2n))); 
-    put_Status1(msg1);
-
-	if (imdratio < 1)
-		imd = 10.0*log10( imdratio );
-	else
-		imd = 0.0;
+	
+	imd = 10.0*log10( imdratio );
 	snprintf(msg2, sizeof(msg2), "imd %3d dB", (int)(floor(imd))); 
-    put_Status2(msg2);
 
+	if (imdValid) {
+		put_Status1(msg1, 10.0);
+	    put_Status2(msg2, 10.0);
+	} else if (metric < progStatus.sldrSquelchValue) {
+		put_Status1("");
+		put_Status2("");
+	}
 }
 
 char bitstatus[100];
@@ -464,22 +483,22 @@ char bitstatus[100];
 int psk::rx_process(const double *buf, int len)
 {
 	double delta;
-	complex z, z2;//, z3;
+	complex z, z2;
 
 	if (pskviewer && !bHistory) pskviewer->rx_process(buf, len);
 	if (evalpsk) evalpsk->sigdensity();
 		
 	delta = twopi * frequency / samplerate;
 	
-	signalquality();
-
 	while (len-- > 0) {
 // Mix with the internal NCO
 		z = complex ( *buf * cos(phaseacc), *buf * sin(phaseacc) );
+
 		buf++;
 		phaseacc += delta;
 		if (phaseacc > M_PI)
 			phaseacc -= twopi;
+
 // Filter and downsample 
 // by 16 (psk31, qpsk31) 
 // by  8 (psk63, qpsk63)
@@ -489,7 +508,8 @@ int psk::rx_process(const double *buf, int len)
 		if (fir1->run( z, z )) { // fir1 returns true every Nth sample
 // final filter
 			fir2->run( z, z2 ); // fir2 returns value on every sample
-
+			calcSN_IMD(z);
+			
 //			fir3->run( z, z3);
 //			coreafc(z3);
 						
@@ -517,6 +537,8 @@ int psk::rx_process(const double *buf, int len)
 			}
 		}
 	}
+	signalquality();
+	
 	if (sigsearch)
 		findsignal();
 	else if (mailserver) {
@@ -660,5 +682,62 @@ int psk::tx_process()
 	return 0;
 }
 
+//============================================================================
+// psk signal evaluation
+// using Goertzel IIR filter
+// derived from pskcore by Moe Wheatley, AE4JY
+//============================================================================
 
+void psk::initSN_IMD()
+{
+	for(int i = 0; i < NUM_FILTERS; i++)
+	{
+		I1[i] = I2[i] = Q1[i] = Q2[i] = 0.0;
+		m_Energy[i] = 0.0;
+	}
+	m_NCount = 0;
+	
+	COEF[0] = 2.0 * cos(twopi * 9 / GOERTZEL);
+	COEF[1] = 2.0 * cos(twopi * 18 / GOERTZEL);
+	COEF[2] = 2.0 * cos(twopi  * 27 / GOERTZEL);
+}
 
+void psk::resetSN_IMD()
+{
+	for(int i = 0; i < NUM_FILTERS; i++) {
+		I1[i] = I2[i] = Q1[i] = Q2[i] = 0.0;
+	}
+	m_NCount = 0;
+}
+
+//============================================================================
+//  This routine calculates the energy in the frequency bands of
+//   carrier=F0(15.625), noise=F1(31.25), and 
+//   3rd order product=F2(46.875)
+//  It is called with complex data samples at 500 Hz.
+//============================================================================
+
+void psk::calcSN_IMD(complex z)
+{
+	int i;
+	complex temp;
+
+	for(i = 0; i < NUM_FILTERS; i++) {
+		temp.re = I1[i]; temp.im = Q1[i];
+		I1[i] = I1[i] * COEF[i]- I2[i] + z.re;
+		Q1[i] = Q1[i] * COEF[i]- Q2[i] + z.im;
+		I2[i] = temp.re; Q2[i] = temp.im;
+	}
+
+	if( ++m_NCount >= GOERTZEL ) {
+		m_NCount = 0;
+		for(i = 0; i < NUM_FILTERS; i++) {
+			m_Energy[i] =   I1[i]*I1[i] + Q1[i]*Q1[i] 
+			              + I2[i]*I2[i] + Q2[i]*Q2[i] 
+						  - I1[i]*I2[i]*COEF[i]
+						  - Q1[i]*Q2[i]*COEF[i];
+			I1[i] = I2[i] = Q1[i] = Q2[i] = 0.0;
+		}
+		signalquality();
+	}
+}

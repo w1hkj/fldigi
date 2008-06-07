@@ -179,8 +179,8 @@ cRsId :: cRsId()
 			aBuckets[i][j] = 0;
 
 	iPrevDistance = 99;
-	
-	BlackmanWindow(fftwindow, RSID_ARRAY_SIZE);
+
+	BlackmanWindow(fftwindow, RSID_FFT_SIZE);
 
 	nBinLow = 10;
 	nBinHigh = RSID_FFT_SIZE - 32;
@@ -269,10 +269,12 @@ bool cRsId::search( const double *pSamples, int nSamples )
 	memmove (aInputSamples, aInputSamples + ns, ns * sizeof(double));
 	memcpy  (aInputSamples + ns, pSamples, ns * sizeof(double));
 	
-	memcpy  (aFFTReal, aInputSamples, RSID_ARRAY_SIZE * sizeof(double));
-//	for (int i = 0; i < RSID_ARRAY_SIZE; i++)
+	memset  (aFFTReal, 0, RSID_ARRAY_SIZE * sizeof(double));
+	memcpy  (aFFTReal, aInputSamples, RSID_FFT_SIZE * sizeof(double));
+// or 
+//	for (int i = 0; i < RSID_FFT_SIZE; i++)
 //		aFFTReal[i] = aInputSamples[i] * fftwindow[i];
-		
+
 	rsrfft( aFFTReal, 11);
 
 	memset(aFFTAmpl, 0, RSID_FFT_SIZE * sizeof(double));

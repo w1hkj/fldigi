@@ -1843,6 +1843,16 @@ void clear_status_cb(void *)
 	StatusBar->label("");
 }
 
+void clear_status1_cb(void *)
+{
+	Status1->label("");
+}
+
+void clear_status2_cb(void *)
+{
+	Status2->label("");
+}
+
 void put_status(const char *msg, double timeout)
 {
 	static char m[50];
@@ -1862,7 +1872,7 @@ void put_status(const char *msg, double timeout)
 	FL_AWAKE_D();
 }
 
-void put_Status2(const char *msg)
+void put_Status2(const char *msg, double timeout)
 {
 	static char m[60];
 	strncpy(m, msg, sizeof(m));
@@ -1870,11 +1880,15 @@ void put_Status2(const char *msg)
 
 	FL_LOCK_D();
 	REQ_DROP(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), Status2, m);
+	if (timeout > 0 && !Fl::has_timeout(clear_status2_cb)) { // clear after timeout
+		Fl::remove_timeout(clear_status2_cb);
+		REQ(&Fl::add_timeout, timeout, clear_status2_cb, (void*)0);
+	}
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }
 
-void put_Status1(const char *msg)
+void put_Status1(const char *msg, double timeout)
 {
 	static char m[60];
 	strncpy(m, msg, sizeof(m));
@@ -1882,6 +1896,10 @@ void put_Status1(const char *msg)
 
 	FL_LOCK_D();
 	REQ_DROP(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), Status1, m);
+	if (timeout > 0 && !Fl::has_timeout(clear_status1_cb)) { // clear after timeout
+		Fl::remove_timeout(clear_status1_cb);
+		REQ(&Fl::add_timeout, timeout, clear_status1_cb, (void*)0);
+	}
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }

@@ -221,7 +221,7 @@ configuration progdefaults = {
 	true,			// bool	VIEWERshowfreq
 	500,			// int		VIEWERstart
 	20,				// int		VIEWERchannels
-	20.0,			// double	VIEWERsquelch
+	10.0,			// double	VIEWERsquelch
 	15,				// int  VIEWERtimeout
 	false,			// bool xmlrpc_server
 	"localhost",		// string xmlrpc_address

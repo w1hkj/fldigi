@@ -59,6 +59,7 @@
 //                              height - 4 - 24 (bezel, text, scale & marker)
 
 #define FFT_LEN		4096
+
 #define SC_SMPLRATE	8000
  
 #define fftabs(a,b) sqrt((a)*(a) + (b)*(b))
@@ -123,14 +124,12 @@ public:
 	}
 	void Ampspan(double AmpSpn) {
 		ampspan = (int)AmpSpn;
-		update_fft_db();
 	}
 	double Ampspan() {
 		return ampspan;
 	}
 	void Reflevel(double RefLev) {
 		reflevel = (int)RefLev;
-		update_fft_db();
 	}
 	double Reflevel() {
 		return reflevel;
@@ -252,9 +251,11 @@ private:
 	uchar	*scline;
 	
 	short int	*fft_db;
+	int			ptrFFTbuff;
 	double	 	*circbuff;
-	double	*pwr;
-	Cfft	*wfft;
+	int			ptrCB;
+	double		*pwr;
+	Cfft		*wfft;
 
 
 	int checkMag();
@@ -265,7 +266,6 @@ private:
 	void drawMarker();
 
 	int	 log2disp(int v);
-	void update_fft_db();
 	void drawcolorWF();
 	void drawgrayWF();
 	void drawspectrum();

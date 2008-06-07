@@ -38,6 +38,10 @@
 
 #define SNTHRESHOLD 6.0
 #define AFCDECAYSLOW 8
+
+#define NUM_FILTERS 3
+#define GOERTZEL 288		//96 x 2 must be an integer value
+
 //=====================================================================
 
 class psk : public modem {
@@ -54,8 +58,19 @@ private:
 	C_FIR_filter	*fir1;
 	C_FIR_filter	*fir2;
 //	C_FIR_filter	*fir3;
-	double		*fir1c;
-	double		*fir2c;
+	double			*fir1c;
+	double			*fir2c;
+	Cmovavg			*snfilt;
+	Cmovavg			*imdfilt;
+
+	double			I1[NUM_FILTERS];
+	double			I2[NUM_FILTERS];
+	double			Q1[NUM_FILTERS];
+	double			Q2[NUM_FILTERS];
+	double			COEF[NUM_FILTERS];
+	double			m_Energy[NUM_FILTERS];
+	int				m_NCount;
+	bool			imdValid;
 
 	encoder 		*enc;
 	viterbi 		*dec;
@@ -97,6 +112,10 @@ private:
 	void			phaseafc();
 	void			afc();
 	void			coreafc();
+
+	void			initSN_IMD();
+	void			resetSN_IMD();
+	void			calcSN_IMD(complex z);
 	
 public:
 	psk(trx_mode mode);

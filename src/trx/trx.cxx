@@ -68,7 +68,6 @@ bool		trx_wait = false;
 modem		*active_modem = 0;
 cRsId		*ReedSolomon = 0;
 SoundBase 		*scard;
-int			audioIOis = -1;
 int			_trx_tune;
 
 // Ringbuffer for the audio "history". A pointer into this buffer
@@ -83,11 +82,11 @@ static int dummy = 0;
 static bool trxrunning = false;
 
 static bool rsid_detecting = false;
+static int	audioIOis = -1;
 
 #include "tune.cxx"
 
-/* ---------------------------------------------------------------------- */
-
+//=============================================================================
 void trx_trx_receive_loop()
 {
 	int  numread;
@@ -104,7 +103,7 @@ void trx_trx_receive_loop()
 			scard->Open(O_RDONLY, current_samplerate);
 			if (audioIOis != progdefaults.btnAudioIOis) {
 				audioIOis = progdefaults.btnAudioIOis;
-				REQ(sound_update, progdefaults.btnAudioIOis);
+				REQ_SYNC(sound_update, progdefaults.btnAudioIOis);
 			}
 		}
 		catch (const SndException& e) {
@@ -127,7 +126,7 @@ void trx_trx_receive_loop()
 					scard->Open(O_RDONLY, current_samplerate);
 					if (audioIOis != progdefaults.btnAudioIOis) {
 						audioIOis = progdefaults.btnAudioIOis;
-						REQ(sound_update, progdefaults.btnAudioIOis);
+						REQ_SYNC(sound_update, progdefaults.btnAudioIOis);
 					}
 				}
 				catch (const SndException& e) {
@@ -147,7 +146,11 @@ void trx_trx_receive_loop()
 				try {
 					current_samplerate = active_modem->get_samplerate();
 					scard->Open(O_RDONLY, current_samplerate);
+					if (audioIOis != progdefaults.btnAudioIOis) {
+						audioIOis = progdefaults.btnAudioIOis;
+						REQ_SYNC(sound_update, progdefaults.btnAudioIOis);
 					}
+				}
 				catch (const SndException& e) {
 					put_status(e.what(), 5);
 					scard->Close();
@@ -206,8 +209,11 @@ void trx_trx_receive_loop()
 		MilliSleep(10);
 }
 
+
+//=============================================================================
 void trx_trx_transmit_loop()
 {
+	int  current_samplerate;
 	if (!scard) {
 		MilliSleep(10);
 		return;
@@ -215,10 +221,11 @@ void trx_trx_transmit_loop()
 
 	if (active_modem) {
 		try {
-			scard->Open(O_WRONLY, active_modem->get_samplerate());
+			current_samplerate = active_modem->get_samplerate();
+			scard->Open(O_WRONLY, current_samplerate);
 			if (audioIOis != progdefaults.btnAudioIOis) {
 				audioIOis = progdefaults.btnAudioIOis;
-				REQ(sound_update, progdefaults.btnAudioIOis);
+				REQ_SYNC(sound_update, progdefaults.btnAudioIOis);
 			}
 		}
 		catch (const SndException& e) {
@@ -245,7 +252,7 @@ void trx_trx_transmit_loop()
 				return;
 			}
 		}
-                scard->flush();
+        scard->flush();
 		if (scard->must_close())
 			scard->Close();
 	} else
@@ -259,18 +266,21 @@ void trx_trx_transmit_loop()
 	}
 }
 
+//=============================================================================
 void trx_tune_loop()
 {
+	int  current_samplerate;
 	if (!scard) {
 		MilliSleep(10);
 		return;
 	}
 	if (active_modem) {
 		try {
-			scard->Open(O_WRONLY, active_modem->get_samplerate());
+			current_samplerate = active_modem->get_samplerate();
+			scard->Open(O_WRONLY, current_samplerate);
 			if (audioIOis != progdefaults.btnAudioIOis) {
 				audioIOis = progdefaults.btnAudioIOis;
-				REQ(sound_update, progdefaults.btnAudioIOis);
+				REQ_SYNC(sound_update, progdefaults.btnAudioIOis);
 			}
 		}
 		catch (const SndException& e) {
@@ -309,6 +319,7 @@ void trx_tune_loop()
 	REQ_SYNC(&waterfall::set_XmtRcvBtn, wf, false);
 }
 
+//=============================================================================
 void *trx_loop(void *args)
 {
 	SET_THREAD_ID(TRX_TID);
@@ -341,6 +352,7 @@ void *trx_loop(void *args)
 	return 0;
 }
 
+//=============================================================================
 modem *trx_m;
 
 void trx_start_modem_loop()
@@ -349,6 +361,7 @@ void trx_start_modem_loop()
 
 	if (old_modem == trx_m) {
 		trx_state = STATE_RX;
+        signal_modem_ready();
 		return;
 	}
 			
@@ -367,12 +380,14 @@ void trx_start_modem_loop()
 	}
 }
 
+//=============================================================================
 void trx_start_modem(modem *m)
 {
 	trx_m = m;
 	trx_state = STATE_NEW_MODEM;
 }
 
+//=============================================================================
 void trx_reset_loop()
 {
 	if (scard)  {
@@ -406,11 +421,13 @@ void trx_reset_loop()
 	trx_state = STATE_RX;	
 }
 
+//=============================================================================
 void trx_reset(void)
 {
 	trx_state = STATE_RESTART;
 }
 
+//=============================================================================
 static char timermsg[80];
 static void macro_timer(void *)
 {
@@ -433,6 +450,7 @@ static void macro_timer(void *)
 	}
 }
 
+//=============================================================================
 void trx_start_macro_timer()
 {
 	Fl::add_timeout(1.0, macro_timer);
@@ -444,6 +462,7 @@ void trx_start_macro_timer()
 	FL_UNLOCK();
 }
 
+//=============================================================================
 void trx_start(void)
 {
 	if (trxrunning) {
@@ -491,6 +510,7 @@ void trx_start(void)
 	trxrunning = true;
 }
 
+//=============================================================================
 void trx_close() {
 	trx_state = STATE_ABORT;
 	do {
@@ -502,8 +522,7 @@ void trx_close() {
 	}
 }
 
-//---------------------------------------------------------------------
-
+//=============================================================================
 void wait_modem_ready_prep(void)
 {
 #ifndef NDEBUG
@@ -514,6 +533,7 @@ void wait_modem_ready_prep(void)
         fl_lock(&trx_cond_mutex);
 }
 
+//=============================================================================
 void wait_modem_ready_cmpl(void)
 {
 #ifndef NDEBUG
@@ -525,7 +545,7 @@ void wait_modem_ready_cmpl(void)
         fl_unlock(&trx_cond_mutex);
 }
 
-
+//=============================================================================
 void signal_modem_ready(void)
 {
 #ifndef NDEBUG
@@ -538,3 +558,4 @@ void signal_modem_ready(void)
         fl_cond_bcast(&trx_cond);
         fl_unlock(&trx_cond_mutex);
 }
+
