@@ -1838,19 +1838,25 @@ void put_sec_char( char chr )
 	}
 }
 
-void clear_status_cb(void *)
+
+static void clear_status_cb(void* arg)
 {
-	StatusBar->label("");
+	reinterpret_cast<Fl_Box*>(arg)->label("");
 }
 
-void clear_status1_cb(void *)
+static inline void put_status_msg(Fl_Box* status, const char* msg, double timeout)
 {
-	Status1->label("");
-}
-
-void clear_status2_cb(void *)
-{
-	Status2->label("");
+	FL_LOCK_D();
+	REQ(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), status, msg);
+	// While it is safe to call Fl::add_timeout without qrunner regardless
+	// of our caller's context, queuing ensures that clear_status_cb really
+	// gets called at least ``timeout'' seconds after the label is set.
+	if (timeout > 0 && !Fl::has_timeout(clear_status_cb, status)) { // clear after timeout
+		Fl::remove_timeout(clear_status_cb, status);
+		REQ(&Fl::add_timeout, timeout, clear_status_cb, status);
+	}
+	FL_UNLOCK_D();
+	FL_AWAKE_D();
 }
 
 void put_status(const char *msg, double timeout)
@@ -1859,17 +1865,7 @@ void put_status(const char *msg, double timeout)
 	strncpy(m, msg, sizeof(m));
 	m[sizeof(m) - 1] = '\0';
 
-	FL_LOCK_D();
-	REQ(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), StatusBar, m);
-	// While it is safe to call to use Fl::add_timeout without qrunner
-	// regardless of our caller's context, queuing ensures that clear_status_cb
-	// really gets called at least ``timeout'' seconds after the label is set.
-	if (timeout > 0 && !Fl::has_timeout(clear_status_cb)) { // clear after timeout
-		Fl::remove_timeout(clear_status_cb);
-		REQ(&Fl::add_timeout, timeout, clear_status_cb, (void*)0);
-	}
-	FL_UNLOCK_D();
-	FL_AWAKE_D();
+	put_status_msg(StatusBar, m, timeout);
 }
 
 void put_Status2(const char *msg, double timeout)
@@ -1878,14 +1874,7 @@ void put_Status2(const char *msg, double timeout)
 	strncpy(m, msg, sizeof(m));
 	m[sizeof(m) - 1] = '\0';
 
-	FL_LOCK_D();
-	REQ_DROP(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), Status2, m);
-	if (timeout > 0 && !Fl::has_timeout(clear_status2_cb)) { // clear after timeout
-		Fl::remove_timeout(clear_status2_cb);
-		REQ(&Fl::add_timeout, timeout, clear_status2_cb, (void*)0);
-	}
-	FL_UNLOCK_D();
-	FL_AWAKE_D();
+	put_status_msg(Status2, m, timeout);
 }
 
 void put_Status1(const char *msg, double timeout)
@@ -1894,14 +1883,7 @@ void put_Status1(const char *msg, double timeout)
 	strncpy(m, msg, sizeof(m));
 	m[sizeof(m) - 1] = '\0';
 
-	FL_LOCK_D();
-	REQ_DROP(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), Status1, m);
-	if (timeout > 0 && !Fl::has_timeout(clear_status1_cb)) { // clear after timeout
-		Fl::remove_timeout(clear_status1_cb);
-		REQ(&Fl::add_timeout, timeout, clear_status1_cb, (void*)0);
-	}
-	FL_UNLOCK_D();
-	FL_AWAKE_D();
+	put_status_msg(Status1, m, timeout);
 }
 
 
