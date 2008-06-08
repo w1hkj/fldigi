@@ -885,6 +885,8 @@ void SoundPort::Abort(unsigned dir)
                                         timeout = true;                 \
                                         break;                          \
                                 }                                       \
+                                else if (errno == EINTR)                \
+                                        continue;                       \
                                 perror("sem_timedwait");                \
                                 throw SndException(errno);              \
                         }                                               \
@@ -1148,8 +1150,10 @@ long SoundPort::src_read_cb(void* arg, float** data)
         bool timeout = false;
         WAIT_FOR_COND( (sd->rb->read_space() >= CHANNELS * SCBLOCKSIZE), sd->rwsem,
                        (MAX(1.0, 2 * CHANNELS * SCBLOCKSIZE / sd->dev_sample_rate)) );
-        if (timeout)
+        if (timeout) {
+                *data = 0;
                 return 0;
+	}
 
         ringbuffer<float>::vector_type vec[2];
         sd->rb->get_rv(vec);
@@ -1648,6 +1652,7 @@ long SoundPulse::src_read_cb(void* arg, float** data)
 	int err;
 	if (pa_simple_read(p->sd[0].stream, p->snd_buffer, CHANNELS * sizeof(float) * p->sd[0].blocksize, &err) == -1) {
 		cerr << "SoundPulse::pa_simple_read error: " << pa_strerror(err) << '\n';
+		*data = 0;
 		return 0;
 	}
 
