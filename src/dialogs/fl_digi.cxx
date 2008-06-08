@@ -833,11 +833,11 @@ void cb_mnuAudioInfo(Fl_Widget*, void*)
 	for (size_t i = 0; i < ndev; i++) {
 		audio_info.append("<center><h4>").append(headers[i]).append("</h4>\n<table border=\"1\">\n");
 
-		string::size_type j, n = -1;
-		while ((j = devtext[i].find(": ", n+1)) != string::npos) {
+		string::size_type j, n = 0;
+		while ((j = devtext[i].find(": ", n)) != string::npos) {
 			audio_info.append("<tr>")
 				  .append("<td align=\"center\">")
-				  .append(devtext[i].substr(n+1, j-n-1))
+				  .append(devtext[i].substr(n, j-n))
 				  .append("</td>");
 
 			if ((n = devtext[i].find('\n', j)) == string::npos) {
