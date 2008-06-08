@@ -82,7 +82,6 @@ static int dummy = 0;
 static bool trxrunning = false;
 
 static bool rsid_detecting = false;
-static int	audioIOis = -1;
 
 #include "tune.cxx"
 
@@ -101,10 +100,7 @@ void trx_trx_receive_loop()
 		try {
 			current_samplerate = active_modem->get_samplerate();
 			scard->Open(O_RDONLY, current_samplerate);
-			if (audioIOis != progdefaults.btnAudioIOis) {
-				audioIOis = progdefaults.btnAudioIOis;
-				REQ_SYNC(sound_update, progdefaults.btnAudioIOis);
-			}
+			REQ_SYNC(sound_update, progdefaults.btnAudioIOis);
 		}
 		catch (const SndException& e) {
 			put_status(e.what(), 5);
@@ -124,10 +120,6 @@ void trx_trx_receive_loop()
 				try {
 					current_samplerate = ReedSolomon->samplerate();
 					scard->Open(O_RDONLY, current_samplerate);
-					if (audioIOis != progdefaults.btnAudioIOis) {
-						audioIOis = progdefaults.btnAudioIOis;
-						REQ_SYNC(sound_update, progdefaults.btnAudioIOis);
-					}
 				}
 				catch (const SndException& e) {
 					put_status(e.what(), 5);
@@ -146,10 +138,6 @@ void trx_trx_receive_loop()
 				try {
 					current_samplerate = active_modem->get_samplerate();
 					scard->Open(O_RDONLY, current_samplerate);
-					if (audioIOis != progdefaults.btnAudioIOis) {
-						audioIOis = progdefaults.btnAudioIOis;
-						REQ_SYNC(sound_update, progdefaults.btnAudioIOis);
-					}
 				}
 				catch (const SndException& e) {
 					put_status(e.what(), 5);
@@ -223,10 +211,6 @@ void trx_trx_transmit_loop()
 		try {
 			current_samplerate = active_modem->get_samplerate();
 			scard->Open(O_WRONLY, current_samplerate);
-			if (audioIOis != progdefaults.btnAudioIOis) {
-				audioIOis = progdefaults.btnAudioIOis;
-				REQ_SYNC(sound_update, progdefaults.btnAudioIOis);
-			}
 		}
 		catch (const SndException& e) {
 			put_status(e.what(), 1);
@@ -278,10 +262,6 @@ void trx_tune_loop()
 		try {
 			current_samplerate = active_modem->get_samplerate();
 			scard->Open(O_WRONLY, current_samplerate);
-			if (audioIOis != progdefaults.btnAudioIOis) {
-				audioIOis = progdefaults.btnAudioIOis;
-				REQ_SYNC(sound_update, progdefaults.btnAudioIOis);
-			}
 		}
 		catch (const SndException& e) {
 			put_status(e.what(), 1);
