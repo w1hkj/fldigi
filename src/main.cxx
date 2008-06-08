@@ -121,7 +121,6 @@ void generate_option_help(void);
 int parse_args(int argc, char **argv, int& idx);
 void generate_version_text(void);
 void debug_exec(char** argv);
-void string_wrap(std::string& s, unsigned c);
 
 #ifdef __CYGWIN__
 void redirect_streams(const std::string& dir);
@@ -164,7 +163,6 @@ int main(int argc, char ** argv)
 
 	generate_option_help();
 	generate_version_text();
-	string_wrap(version_text, 80);
 	int arg_idx;
 	if (Fl::args(argc, argv, arg_idx, parse_args) != argc) {
 	    cerr << PACKAGE_NAME << ": unrecognized option `" << argv[arg_idx]
@@ -386,7 +384,7 @@ void generate_option_help(void) {
 	option_help = help.str();
 }
 
-void exit_cb(void*) { exit(EXIT_SUCCESS); }
+void exit_cb(void*) { fl_digi_main->do_callback(); }
 
 int parse_args(int argc, char **argv, int& idx)
 {
@@ -568,7 +566,7 @@ int parse_args(int argc, char **argv, int& idx)
         if (c == 2) {
                 string arg = argv[idx];
                 string::size_type p;
-                if ((p = arg.rfind(optarg)) != string::npos && arg.substr(p) == optarg)
+                if ((p = arg.rfind(optarg)) != string::npos && arg[p-1] == '=')
                         c = 1;
         }
 	idx += c;
@@ -644,23 +642,6 @@ void debug_exec(char** argv)
         if (execvp(*argv, argv) == -1)
                 perror("execvp");
 #endif
-}
-
-void string_wrap(std::string& s, unsigned c)
-{
-	string::size_type spos = s.find(' '), prev = spos, line = 0;
-
-	while ((spos = s.find_first_of(" \n", spos+1)) != string::npos) {
-		if (spos - line > c) {
-			s[prev] = '\n';
-			line = prev + 1;
-		}
-		if (s[spos] == '\n')
-			line = spos + 1;
-		prev = spos;
-	}
-	if (s.length() - line > c)
-		s[prev] = '\n';
 }
 
 #ifdef __CYGWIN__
