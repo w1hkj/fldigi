@@ -1843,47 +1843,47 @@ static void clear_status_cb(void* arg)
 {
 	reinterpret_cast<Fl_Box*>(arg)->label("");
 }
-
-static inline void put_status_msg(Fl_Box* status, const char* msg, double timeout)
+static void dim_status_cb(void* arg)
 {
-	FL_LOCK_D();
-	REQ(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), status, msg);
-	// While it is safe to call Fl::add_timeout without qrunner regardless
-	// of our caller's context, queuing ensures that clear_status_cb really
-	// gets called at least ``timeout'' seconds after the label is set.
-	if (timeout > 0 && !Fl::has_timeout(clear_status_cb, status)) { // clear after timeout
-		Fl::remove_timeout(clear_status_cb, status);
-		REQ(&Fl::add_timeout, timeout, clear_status_cb, status);
+	reinterpret_cast<Fl_Box*>(arg)->deactivate();
+}
+static void (*const timeout_action[STATUS_NUM])(void*) = { clear_status_cb, dim_status_cb };
+
+static void put_status_msg(Fl_Box* status, const char* msg, double timeout, status_timeout action)
+{
+	status->activate();
+	status->label(msg);
+	if (timeout > 0.0) {
+		Fl::remove_timeout(timeout_action[action], status);
+		Fl::add_timeout(timeout, timeout_action[action], status);
 	}
-	FL_UNLOCK_D();
-	FL_AWAKE_D();
 }
 
-void put_status(const char *msg, double timeout)
+void put_status(const char *msg, double timeout, status_timeout action)
 {
 	static char m[50];
 	strncpy(m, msg, sizeof(m));
 	m[sizeof(m) - 1] = '\0';
 
-	put_status_msg(StatusBar, m, timeout);
+	REQ(put_status_msg, StatusBar, m, timeout, action);
 }
 
-void put_Status2(const char *msg, double timeout)
+void put_Status2(const char *msg, double timeout, status_timeout action)
 {
 	static char m[60];
 	strncpy(m, msg, sizeof(m));
 	m[sizeof(m) - 1] = '\0';
 
-	put_status_msg(Status2, m, timeout);
+	REQ(put_status_msg, Status2, m, timeout, action);
 }
 
-void put_Status1(const char *msg, double timeout)
+void put_Status1(const char *msg, double timeout, status_timeout action)
 {
 	static char m[60];
 	strncpy(m, msg, sizeof(m));
 	m[sizeof(m) - 1] = '\0';
 
-	put_status_msg(Status1, m, timeout);
+	REQ(put_status_msg, Status1, m, timeout, action);
 }
 
 
