@@ -425,8 +425,11 @@ void psk::rx_symbol(complex symbol)
 	default:
 		if (metric > progStatus.sldrSquelchValue || progStatus.sqlonoff == false)
 			dcd = true;
-		else 
+		else {
 			dcd = false;
+			put_Status1("");
+			put_Status2("");
+		}
 		imdValid = false;
 	}
 
@@ -470,8 +473,8 @@ void psk::update_syncscope()
 	snprintf(msg2, sizeof(msg2), "imd %3d dB", (int)(floor(imd))); 
 
 	if (imdValid) {
-		put_Status1(msg1, 2.0, STATUS_DIM);
-		put_Status2(msg2, 2.0, STATUS_DIM);
+		put_Status1(msg1, 5.0, STATUS_DIM);
+		put_Status2(msg2, 5.0, STATUS_DIM);
 	}
 }
 

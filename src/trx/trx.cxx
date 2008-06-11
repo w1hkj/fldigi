@@ -236,6 +236,10 @@ void trx_trx_transmit_loop()
 				return;
 			}
 		}
+
+		if (progdefaults.TransmitRSid == true)
+			ReedSolomon->send();
+		
         scard->flush();
 		if (scard->must_close())
 			scard->Close();

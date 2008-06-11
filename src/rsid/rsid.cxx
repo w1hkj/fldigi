@@ -10,10 +10,14 @@
 	
 RSIDs cRsId::rsid_ids[] = {
 	{ 1, MODE_BPSK31 },
+	{ 110, MODE_QPSK31 },
 	{ 2, MODE_PSK63 },
 	{ 3, MODE_QPSK63 },
 	{ 4, MODE_PSK125 },
 	{ 5, MODE_QPSK125 },
+	{ 126, MODE_PSK250 },
+	{ 127, MODE_QPSK250 },
+		
 	{ 7, NUM_MODES },
 	{ 8, NUM_MODES },
 	{ 9, MODE_MT63_500 }, // MT63-500-LG
@@ -182,7 +186,7 @@ cRsId :: cRsId()
 
 	BlackmanWindow(fftwindow, RSID_FFT_SIZE);
 
-	nBinLow = 10;
+	nBinLow = RSID_RESOL + 1;
 	nBinHigh = RSID_FFT_SIZE - 32;
 	iTime = 0;
 	bPrevTimeSliceValid = false;
@@ -193,6 +197,19 @@ cRsId :: cRsId()
 cRsId::~cRsId()
 {
 	delete [] pCodes;
+}
+
+void cRsId::reset()
+{
+	iPrevDistance = 99;
+	bPrevTimeSliceValid = false;
+	iTime = 0;
+	memset (aInputSamples, 0, RSID_ARRAY_SIZE * sizeof(double));	
+	memset (aFFTReal, 0, RSID_ARRAY_SIZE * sizeof(double));	
+	memset (aFFTAmpl, 0, RSID_FFT_SIZE * sizeof(double));
+	for (int i = 0; i < RSID_NTIMES; i++)
+		for (int j = 0; j < RSID_FFT_SIZE; j++)
+			aBuckets[i][j] = 0;
 }
 
 void cRsId::Encode(int code, uchar *rsid)
@@ -213,15 +230,15 @@ void cRsId::Encode(int code, uchar *rsid)
 void cRsId::CalculateBuckets(const double *pSpectrum, int iBegin, int iEnd)
 {
 	double   Amp = 0.0, AmpMax = 0.0;
-	int   iBucketMax = iBegin - 2;
+	int   iBucketMax = iBegin - RSID_RESOL;
 	int   i, j;
 	bool  firstpass = true;
 
-	for (i = iBegin; i < iEnd; i += 2) {
+	for (i = iBegin; i < iEnd; i += RSID_RESOL) {
 		if (firstpass) {
 			AmpMax		= pSpectrum[i];
 			iBucketMax	= i;
-			for (j = i + 2; j < i + 32; j += 2) {
+			for (j = i + RSID_RESOL; j < i + RSID_NTIMES + RSID_RESOL; j += RSID_RESOL) {
 				Amp = pSpectrum[j];
 				if (Amp > AmpMax) {
 					AmpMax    = Amp;
@@ -230,7 +247,7 @@ void cRsId::CalculateBuckets(const double *pSpectrum, int iBegin, int iEnd)
 			}
 			firstpass = false;
 		} else {
-			j    = i + 30;
+			j    = i + RSID_NTIMES;
 			Amp = pSpectrum[j];
 			if (Amp > AmpMax) {
 				AmpMax    = Amp;
@@ -242,25 +259,24 @@ void cRsId::CalculateBuckets(const double *pSpectrum, int iBegin, int iEnd)
 }
 
 
-bool cRsId::search( const double *pSamples, int nSamples )
+void cRsId::search( const double *pSamples, int nSamples )
 {
 	int i, ns;
 	bool bReverse = false;
 	double Real, Imag;
+	double centerfreq = active_modem->get_freq();
+
+	nBinLow = (int)((centerfreq  - 100.0 * RSID_RESOL) * 2048.0 / 11025.0);
+	nBinHigh = (int)((centerfreq  + 100.0 * RSID_RESOL) * 2048.0 / 11025.0);
  	
  	if (wf->Reverse() == true && wf->USB() == true) bReverse = true;
  	if (wf->Reverse() == false && wf->USB() == false) bReverse = true;
  	
  	ns = nSamples;
  	if (ns > RSID_ARRAY_SIZE / 4) {
-// 		std::cout << "ns = " << ns << std::endl;
  		ns = RSID_ARRAY_SIZE / 4;
  	}
 	
-	// make backup of search boundaries
-	int	nnBinLow  = nBinLow;
-	int	nnBinHigh = nBinHigh;
-
 	if (bReverse) {
 		nBinLow  = RSID_FFT_SIZE - nBinHigh;
 		nBinHigh = RSID_FFT_SIZE - nBinLow;
@@ -293,21 +309,10 @@ bool cRsId::search( const double *pSamples, int nSamples )
 	    BinOut = -1;
 	
 	if (search_amp ( SymbolOut, BinOut ) ){
-
-		if (bReverse) {
+		if (bReverse)
 			BinOut = 1024 - BinOut - 31;
-			nBinLow  = nnBinLow;
-			nBinHigh = nnBinHigh;
-		}
 		apply(SymbolOut, BinOut);
-		return true;
-	} 
-	else
-		if (bReverse) {
-			nBinLow = nnBinLow;
-			nBinHigh = nnBinHigh;
-		}
-	return false;
+	}
 }
 
 // change the current mode and frequency to the rsid detected values
@@ -320,7 +325,8 @@ void changemode(void*) {
 void cRsId::apply(int iSymbol, int iBin)
 {
 
-	double freq = (iBin + 14) * 11025.0 / 2048.0;
+//	double freq = (iBin + 14) * 11025.0 / 2048.0;
+	double freq = (iBin + (RSID_NSYMBOLS - 1) * RSID_RESOL / 2) * 11025.0 / 2048.0;
 
 	int mbin = 0;
 	for (int n = 0; n < rsid_ids_size; n++)
@@ -452,7 +458,7 @@ int cRsId::HammingDistance(int iBucket, uchar *p2)
 		if (aBuckets[j][iBucket] != p2[i])//*p2++)
 			if (++dist == 2)
 				return dist;
-		j += 2;
+		j += RSID_RESOL;//2;
 		if (j >= RSID_NTIMES)
 			j -= RSID_NTIMES;
 	}
@@ -466,15 +472,15 @@ bool cRsId::search_amp( int &SymbolOut,	int &BinOut)
 	int iDistance;
 	int iBin		 = -1;
 	int iSymbol		 = -1;
-	int iEnd		 = nBinHigh - 30;
+	int iEnd		 = nBinHigh - RSID_NTIMES;//30;
 	int i1, i2, i3;
 
 	if (++iTime == RSID_NTIMES)
 		iTime = 0;
 
-	i1 = iTime - 6;
-	i2 = i1 + 2;
-	i3 = i2 + 2;
+	i1 = iTime - 3 * RSID_RESOL;//6;
+	i2 = i1 + RSID_RESOL;//2;
+	i3 = i2 + RSID_RESOL;//2;
 
 	if (i1 < 0) {
 		i1 += RSID_NTIMES;
@@ -485,8 +491,8 @@ bool cRsId::search_amp( int &SymbolOut,	int &BinOut)
 		}
 	}
 
-	CalculateBuckets ( aFFTAmpl, nBinLow,     nBinHigh - 30);
-	CalculateBuckets ( aFFTAmpl, nBinLow + 1, nBinHigh - 30);
+	CalculateBuckets ( aFFTAmpl, nBinLow,     iEnd);//nBinHigh - 30);
+	CalculateBuckets ( aFFTAmpl, nBinLow + 1, iEnd);//nBinHigh - 30);
 
 	for (i = nBinLow; i < iEnd; ++ i) {
 		j = aHashTable1[aBuckets[i1][i] | (aBuckets[i2][i] << 4)];
