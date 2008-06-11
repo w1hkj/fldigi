@@ -833,11 +833,11 @@ void cb_mnuAudioInfo(Fl_Widget*, void*)
 	for (size_t i = 0; i < ndev; i++) {
 		audio_info.append("<center><h4>").append(headers[i]).append("</h4>\n<table border=\"1\">\n");
 
-		string::size_type j, n = -1;
-		while ((j = devtext[i].find(": ", n+1)) != string::npos) {
+		string::size_type j, n = 0;
+		while ((j = devtext[i].find(": ", n)) != string::npos) {
 			audio_info.append("<tr>")
 				  .append("<td align=\"center\">")
-				  .append(devtext[i].substr(n+1, j-n-1))
+				  .append(devtext[i].substr(n, j-n))
 				  .append("</td>");
 
 			if ((n = devtext[i].find('\n', j)) == string::npos) {
@@ -1836,70 +1836,52 @@ void put_sec_char( char chr )
 	}
 }
 
-void clear_status_cb(void *)
+
+static void clear_status_cb(void* arg)
 {
-	StatusBar->label("");
+	reinterpret_cast<Fl_Box*>(arg)->label("");
+}
+static void dim_status_cb(void* arg)
+{
+	reinterpret_cast<Fl_Box*>(arg)->deactivate();
+}
+static void (*const timeout_action[STATUS_NUM])(void*) = { clear_status_cb, dim_status_cb };
+
+static void put_status_msg(Fl_Box* status, const char* msg, double timeout, status_timeout action)
+{
+	status->activate();
+	status->label(msg);
+	if (timeout > 0.0) {
+		Fl::remove_timeout(timeout_action[action], status);
+		Fl::add_timeout(timeout, timeout_action[action], status);
+	}
 }
 
-void clear_status1_cb(void *)
-{
-	Status1->label("");
-}
-
-void clear_status2_cb(void *)
-{
-	Status2->label("");
-}
-
-void put_status(const char *msg, double timeout)
+void put_status(const char *msg, double timeout, status_timeout action)
 {
 	static char m[50];
 	strncpy(m, msg, sizeof(m));
 	m[sizeof(m) - 1] = '\0';
 
-	FL_LOCK_D();
-	REQ(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), StatusBar, m);
-	// While it is safe to call to use Fl::add_timeout without qrunner
-	// regardless of our caller's context, queuing ensures that clear_status_cb
-	// really gets called at least ``timeout'' seconds after the label is set.
-	if (timeout > 0 && !Fl::has_timeout(clear_status_cb)) { // clear after timeout
-		Fl::remove_timeout(clear_status_cb);
-		REQ(&Fl::add_timeout, timeout, clear_status_cb, (void*)0);
-	}
-	FL_UNLOCK_D();
-	FL_AWAKE_D();
+	REQ(put_status_msg, StatusBar, m, timeout, action);
 }
 
-void put_Status2(const char *msg, double timeout)
+void put_Status2(const char *msg, double timeout, status_timeout action)
 {
 	static char m[60];
 	strncpy(m, msg, sizeof(m));
 	m[sizeof(m) - 1] = '\0';
 
-	FL_LOCK_D();
-	REQ_DROP(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), Status2, m);
-	if (timeout > 0 && !Fl::has_timeout(clear_status2_cb)) { // clear after timeout
-		Fl::remove_timeout(clear_status2_cb);
-		REQ(&Fl::add_timeout, timeout, clear_status2_cb, (void*)0);
-	}
-	FL_UNLOCK_D();
-	FL_AWAKE_D();
+	REQ(put_status_msg, Status2, m, timeout, action);
 }
 
-void put_Status1(const char *msg, double timeout)
+void put_Status1(const char *msg, double timeout, status_timeout action)
 {
 	static char m[60];
 	strncpy(m, msg, sizeof(m));
 	m[sizeof(m) - 1] = '\0';
 
-	FL_LOCK_D();
-	REQ_DROP(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), Status1, m);
-	if (timeout > 0 && !Fl::has_timeout(clear_status1_cb)) { // clear after timeout
-		Fl::remove_timeout(clear_status1_cb);
-		REQ(&Fl::add_timeout, timeout, clear_status1_cb, (void*)0);
-	}
-	FL_UNLOCK_D();
-	FL_AWAKE_D();
+	REQ(put_status_msg, Status1, m, timeout, action);
 }
 
 

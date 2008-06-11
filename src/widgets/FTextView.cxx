@@ -270,14 +270,14 @@ void FTextBase::show_context_menu(void)
 	popy = ypos - y();
 	window()->cursor(FL_CURSOR_DEFAULT);
 	m = context_menu->popup(xpos, ypos, 0, 0, 0);
-	if (!m)
-		return;
-	for (int i = 0; i < context_menu->size(); ++i) {
-		if (m->text == context_menu[i].text) {
-			menu_cb(i);
-			break;
+	if (m)
+		for (int i = 0; i < context_menu->size(); ++i) {
+			if (m->text == context_menu[i].text) {
+				menu_cb(i);
+				break;
+			}	
 		}
-	}
+	restoreFocus();
 }
 
 /// Recalculates the wrap margin when the font is changed or the widget resized.

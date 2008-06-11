@@ -791,14 +791,13 @@ int SoundPort::Open(int mode, int freq)
 
 	// do we need to (re)initialise the streams?
 	int sr[2] = { progdefaults.in_sample_rate, progdefaults.out_sample_rate };
-	int m[2] = { 1 << O_RDONLY, 1 << O_WRONLY };
 	for (size_t i = 0; i < 2; i++) {
 		if ( !(stream_active(i) && (Pa_GetHostApiInfo((*sd[i].idev)->hostApi)->type == paJACK ||
 					    old_sample_rate == freq ||
 					    sr[i] != SAMPLE_RATE_AUTO)) ) {
 			Close(i);
 			init_stream(i);
-			src_data_reset(m[i]);
+			src_data_reset(i);
 
                         // reset the semaphores
                         sem_t* sems[] = { sd[i].rwsem, sd[i].csem };
@@ -810,8 +809,11 @@ int SoundPort::Open(int mode, int freq)
 
 			start_stream(i);
 		}
-		else
-			src_data_reset(m[i]);
+		else {
+                        pause_stream(i);
+			src_data_reset(i);
+                        sd[i].state = spa_continue;
+                }
 	}
 
 	return 0;
@@ -827,6 +829,17 @@ static int sem_timedwaitr(sem_t* sem, double rel_timeout)
 }
 
 
+void SoundPort::pause_stream(unsigned dir)
+{
+        if (sd[dir].stream == 0 || !stream_active(dir))
+                return;
+
+	while (sem_trywait(sd[dir].csem) == 0);
+        sd[dir].state = spa_pause;
+        if (sem_timedwaitr(sd[dir].csem, 2) == -1 && errno == ETIMEDOUT)
+                cerr << __func__ << ": stream " << dir << " wedged\n";
+}
+
 void SoundPort::Close(unsigned dir)
 {
         unsigned start, end;
@@ -840,6 +853,7 @@ void SoundPort::Close(unsigned dir)
         for (unsigned i = start; i <= end; i++) {
                 if (!stream_active(i))
                         continue;
+		while (sem_trywait(sd[i].csem) == 0);
                 sd[i].state = spa_complete;
                 // first wait for buffers to be drained and for the
                 // stop callback to signal us that the stream has
@@ -885,6 +899,8 @@ void SoundPort::Abort(unsigned dir)
                                         timeout = true;                 \
                                         break;                          \
                                 }                                       \
+                                else if (errno == EINTR)                \
+                                        continue;                       \
                                 perror("sem_timedwait");                \
                                 throw SndException(errno);              \
                         }                                               \
@@ -1078,18 +1094,19 @@ void SoundPort::flush(unsigned dir)
                 if (!stream_active(i))
                         continue;
                 sd[i].state = spa_drain;
+		while (sem_trywait(sd[i].csem) == 0);
                 if (sem_timedwaitr(sd[i].csem, 2) == -1 && errno == ETIMEDOUT)
                         cerr << "timeout while flushing stream " << i << endl;
                 sd[i].state = spa_continue;
         }
 }
 
-void SoundPort::src_data_reset(int mode)
+void SoundPort::src_data_reset(unsigned dir)
 {
         size_t rbsize;
 
         int err;
-        if (mode & 1 << O_RDONLY) {
+        if (dir == 0) {
                 if (rx_src_state)
                         src_delete(rx_src_state);
                 rx_src_state = src_callback_new(src_read_cb, progdefaults.sample_converter,
@@ -1097,40 +1114,36 @@ void SoundPort::src_data_reset(int mode)
                 if (!rx_src_state)
                         throw SndException(src_strerror(err));
                 sd[0].src_ratio = req_sample_rate / (sd[0].dev_sample_rate * (1.0 + rxppm / 1e6));
-
-                rbsize = ceil2((unsigned)(2 * CHANNELS * SCBLOCKSIZE *
-                                          MAX(req_sample_rate, sd[0].dev_sample_rate) /
-                                          MIN(req_sample_rate, sd[0].dev_sample_rate)));
-                rbsize = 2 * MAX(rbsize, 4096);
-#ifndef NDEBUG
-                cerr << "input rbsize=" << rbsize << endl;
-#endif
-                if (!sd[0].rb || sd[0].rb->length() != rbsize) {
-                        delete sd[0].rb;
-                        sd[0].rb = new ringbuffer<float>(rbsize);
-                }
         }
-        if (mode & 1 << O_WRONLY) {
+        else if (dir == 1) {
                 if (tx_src_state)
                         src_delete(tx_src_state);
                 tx_src_state = src_new(progdefaults.sample_converter, CHANNELS, &err);
                 if (!tx_src_state)
                         throw SndException(src_strerror(err));
                 tx_src_data->src_ratio = sd[1].dev_sample_rate * (1.0 + txppm / 1e6) / req_sample_rate;
+        }
 
-                rbsize = ceil2((unsigned)(CHANNELS * SCBLOCKSIZE *
-                                          MAX(req_sample_rate, sd[1].dev_sample_rate) /
-                                          MIN(req_sample_rate, sd[1].dev_sample_rate)));
+        rbsize = ceil2((unsigned)(2 * CHANNELS * SCBLOCKSIZE *
+                                  MAX(req_sample_rate, sd[dir].dev_sample_rate) /
+                                  MIN(req_sample_rate, sd[dir].dev_sample_rate)));
+        if (dir == 0) {
+                rbsize = 2 * MAX(rbsize, 4096);
+#ifndef NDEBUG
+                cerr << "input rbsize=" << rbsize << endl;
+#endif
+        }
+        else if (dir == 1) {
                 if (req_sample_rate > 8000)
                         rbsize *= 2;
                 rbsize = MAX(rbsize, 2048);
 #ifndef NDEBUG
                 cerr << "output rbsize=" << rbsize << endl;
 #endif
-                if (!sd[1].rb || sd[1].rb->length() != rbsize) {
-                        delete sd[1].rb;
-                        sd[1].rb = new ringbuffer<float>(rbsize);
-                }
+        }
+        if (!sd[dir].rb || sd[dir].rb->length() != rbsize) {
+                delete sd[dir].rb;
+                sd[dir].rb = new ringbuffer<float>(rbsize);
         }
 }
 
@@ -1148,8 +1161,10 @@ long SoundPort::src_read_cb(void* arg, float** data)
         bool timeout = false;
         WAIT_FOR_COND( (sd->rb->read_space() >= CHANNELS * SCBLOCKSIZE), sd->rwsem,
                        (MAX(1.0, 2 * CHANNELS * SCBLOCKSIZE / sd->dev_sample_rate)) );
-        if (timeout)
+        if (timeout) {
+                *data = 0;
                 return 0;
+	}
 
         ringbuffer<float>::vector_type vec[2];
         sd->rb->get_rv(vec);
@@ -1288,6 +1303,7 @@ int SoundPort::stream_process(const void* in, void* out, unsigned long nframes,
                              PaStreamCallbackFlags flags, void* data)
 {
         struct stream_data* sd = reinterpret_cast<struct stream_data*>(data);
+	int val;
 
 #ifndef NDEBUG
         struct {
@@ -1303,43 +1319,46 @@ int SoundPort::stream_process(const void* in, void* out, unsigned long nframes,
                         cerr << "stream_process: " << fa[i].s << '\n';
 #endif
 
-        // input
-        if (in && sd->state == spa_continue) {
-                sd->rb->write(reinterpret_cast<const float*>(in), CHANNELS * nframes);
-                sem_post(sd->rwsem);
-        }
-        if (!out) {
-                if (sd->state == spa_drain) {
-                        sem_post(sd->csem);
-                        return paContinue;
-                }
+        if (unlikely(sd->state == spa_abort || sd->state == spa_complete)) // finished
                 return sd->state;
+
+        if (in) {
+                switch (sd->state) {
+                case spa_continue: // write into the rb, post rwsem if we wrote anything
+                        if (sd->rb->write(reinterpret_cast<const float*>(in), CHANNELS * nframes))
+                                sem_post(sd->rwsem);
+                        break;
+                case spa_drain: case spa_pause: // post csem once
+			sem_getvalue(sd->csem, &val);
+			if (val == 0)
+				sem_post(sd->csem);
+			break;
+                }
+        }
+        else if (out) {
+                float* outf = reinterpret_cast<float*>(out);
+                // if we are paused just pretend that the rb was empty
+                size_t nread = (sd->state == spa_pause) ? 0 : sd->rb->read(outf, CHANNELS * nframes);
+                memset(outf + nread, 0, (CHANNELS * nframes - nread) * sizeof(float)); // fill rest with zeroes
+
+                switch (sd->state) {
+                case spa_continue: // post rwsem if we read anything
+                        if (nread > 0)
+                                sem_post(sd->rwsem);
+                        break;
+                case spa_drain: // post csem once, when we have emptied the buffer
+                        if (nread > 0)
+                                break;
+                        // else fall through
+                case spa_pause: // post csem once
+			sem_getvalue(sd->csem, &val);
+			if (val == 0)
+				sem_post(sd->csem);
+			break;
+                }
         }
 
-        // output
-        if (sd->state == spa_abort)
-                return paAbort;
-        size_t s;
-        if ((s = sd->rb->read(reinterpret_cast<float*>(out), CHANNELS * nframes)) < CHANNELS * nframes)
-                memset(reinterpret_cast<float*>(out) + s,  0,
-                       (CHANNELS * nframes - s) * sizeof(float)); // fill rest with zeroes
-        if (s)
-                sem_post(sd->rwsem);
-
-        // state is continue, or we still have data to send to PortAudio
-        if (sd->state == spa_continue || sd->rb->read_space() > 0)
-                return paContinue;
-
-        // if we get here, state is not continue and the buffer is empty
-
-        if (sd->state == spa_drain) { // resume
-                sd->state = spa_continue;
-                sem_post(sd->csem);
-                return paContinue;
-        }
-
-        // complete or abort; stream_stopped() will post sd->csem
-        return sd->state;
+        return paContinue;
 }
 
 void SoundPort::stream_stopped(void* data)
@@ -1648,6 +1667,7 @@ long SoundPulse::src_read_cb(void* arg, float** data)
 	int err;
 	if (pa_simple_read(p->sd[0].stream, p->snd_buffer, CHANNELS * sizeof(float) * p->sd[0].blocksize, &err) == -1) {
 		cerr << "SoundPulse::pa_simple_read error: " << pa_strerror(err) << '\n';
+		*data = 0;
 		return 0;
 	}
 

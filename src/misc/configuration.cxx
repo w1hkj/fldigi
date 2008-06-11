@@ -3,6 +3,7 @@
 #include "configuration.h"
 #include "confdialog.h"
 #include "xmlreader.h"
+#include "soundconf.h"
 
 #if USE_HAMLIB
 	#include "hamlib.h"
@@ -160,7 +161,7 @@ configuration progdefaults = {
 #endif
 	"fldigi ",		// secondary text
 // Sound card
-	-1,			// int		btnAudioIOis
+	SND_IDX_PORT,		// int		btnAudioIOis
 	"",		// string	OSSdevice;
 	"",		// string	PAdevice;
 	"",		// string	PortIndevice;

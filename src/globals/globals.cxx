@@ -45,14 +45,6 @@ const char *state_names[] = {
 const struct mode_info_t mode_info[NUM_MODES] = {
     { MODE_CW, &cw_modem, "CW", "CW", "CW", "CW" }, 
 
-	{ MODE_THOR4, &thor4_modem, "THOR4", "THOR 4", "THOR4", "THOR" },
-	{ MODE_THOR5, &thor5_modem, "THOR5", "THOR 5", "THOR5", "THOR" },
-	{ MODE_THOR8, &thor8_modem, "THOR8", "THOR 8", "THOR8", "THOR" },
-	{ MODE_THOR11, &thor11_modem, "THOR11", "THOR 11", "THOR11", "THOR" },
-	{ MODE_TSOR11, &tsor11_modem, "TSOR11", "TSOR 11", "TSOR11", "TSOR" },
-	{ MODE_THOR16, &thor16_modem, "THOR16", "THOR 16", "THOR16", "THOR" },
-	{ MODE_THOR22, &thor22_modem, "THOR22", "THOR 22", "THOR22", "THOR" },
-
 	{ MODE_DOMINOEX4, &dominoex4_modem, "DomEX4", "DominoEX 4", "DOMINOEX4", "DOMINO" },
 	{ MODE_DOMINOEX5, &dominoex5_modem, "DomEX5", "DominoEX 5", "DOMINOEX5", "DOMINO" },
 	{ MODE_DOMINOEX8, &dominoex8_modem, "DomEX8", "DominoEX 8", "DOMINOEX8", "DOMINO" },
@@ -87,6 +79,14 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_OLIVIA, &olivia_modem, "OLIVIA", "Olivia", "", "OLIVIA" },
 
 	{ MODE_RTTY, &rtty_modem, "RTTY", "RTTY", "RTTY", "RTTY" },
+
+	{ MODE_THOR4, &thor4_modem, "THOR4", "THOR 4", "THOR4", "THOR" },
+	{ MODE_THOR5, &thor5_modem, "THOR5", "THOR 5", "THOR5", "THOR" },
+	{ MODE_THOR8, &thor8_modem, "THOR8", "THOR 8", "THOR8", "THOR" },
+	{ MODE_THOR11, &thor11_modem, "THOR11", "THOR 11", "THOR11", "THOR" },
+//	{ MODE_TSOR11, &tsor11_modem, "TSOR11", "TSOR 11", "TSOR11", "TSOR" },
+	{ MODE_THOR16, &thor16_modem, "THOR16", "THOR 16", "THOR16", "THOR" },
+	{ MODE_THOR22, &thor22_modem, "THOR22", "THOR 22", "THOR22", "THOR" },
 
 	{ MODE_THROB1, &throb1_modem, "THROB1", "Throb 1", "", "THRB" },
 	{ MODE_THROB2, &throb2_modem, "THROB2", "Throb 2", "", "THRB" },

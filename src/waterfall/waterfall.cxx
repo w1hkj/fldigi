@@ -859,6 +859,7 @@ void bw_rsid_toggle(waterfall *wf)
 		wf->bw_rsid->redraw();
 		wf->xmtrcv->activate();
 	} else {
+		ReedSolomon->reset();
 		progdefaults.rsid = true;
 		wf->bw_rsid->color(FL_YELLOW);
 		wf->bw_rsid->redraw();

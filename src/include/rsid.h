@@ -54,11 +54,11 @@
 #include "misc.h"
 
 #define RSID_FFT_SIZE	1024
-//#define RSID_FFT_SIZE	512
-#define RSID_NSYMBOLS   15
-//#define RSID_ARRAY_SIZE	1024
 #define RSID_ARRAY_SIZE	(RSID_FFT_SIZE * 2)
-#define RSID_NTIMES		(RSID_NSYMBOLS * 2)
+
+#define RSID_NSYMBOLS   15
+#define RSID_RESOL		2
+#define RSID_NTIMES		(RSID_NSYMBOLS * RSID_RESOL)
 
 // each rsid symbol has a duration equal to 1024 samples at 11025 Hz smpl rate
 #define RSID_SYMLEN		(1024.0 / 11025.0) // 0.09288 // duration of each rsid symbol
@@ -118,8 +118,9 @@ private:
 public:
 	cRsId();
 	~cRsId();
+	void	reset();
 	bool	encode(trx_mode mode, int submode, uchar *rsid);
-	bool	search( const double *pSamples, int nSamples );
+	void	search( const double *pSamples, int nSamples );
 //	, bool bReverse, 
 //					int *pSymbolOut, int *pBinOut, int *pDistanceOut, 
 //					int *pMetricsOut);

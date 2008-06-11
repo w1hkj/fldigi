@@ -232,11 +232,12 @@ public:
 	void		flush(unsigned dir = UINT_MAX);
 
 private:
-        void		src_data_reset(int mode);
+        void		src_data_reset(unsigned dir);
         static long	src_read_cb(void* arg, float** data);
         size_t          resample_write(float* buf, size_t count);
         void 		init_stream(unsigned dir);
         void 		start_stream(unsigned dir);
+        void 		pause_stream(unsigned dir);
         bool		stream_active(unsigned dir);
         bool		full_duplex_device(const PaDeviceInfo* dev);
         double		find_srate(unsigned dir);
@@ -255,7 +256,7 @@ private:
 
         enum {
                 spa_continue = paContinue, spa_complete = paComplete,
-                spa_abort = paAbort, spa_drain
+                spa_abort = paAbort, spa_drain, spa_pause
         };
         struct stream_data {
                 std::string device;
