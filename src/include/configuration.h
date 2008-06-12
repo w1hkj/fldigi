@@ -73,7 +73,7 @@ struct configuration {
 	double		HELL_BW;
 	bool		HellRcvWidth;
 	bool		HellBlackboard;
-	bool		HellXmtWidth;
+	int			HellXmtWidth;
 	bool		HellXmtIdle;
 	bool		HellPulseFast;
 // OLIVIA

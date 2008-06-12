@@ -80,7 +80,6 @@ void rtty::init()
 rtty::~rtty()
 {
 	if (hilbert) delete hilbert;
-//	if (wfid) delete wfid;
 	if (bitfilt) delete bitfilt;
 	if (bpfilt) delete bpfilt;
 }

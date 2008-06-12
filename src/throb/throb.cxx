@@ -77,7 +77,6 @@ throb::~throb()
 	if (outbuf) delete[] outbuf;
 	for (int i = 0; i < num_tones; i++)
 		if (rxtone[i]) delete [] rxtone[i];
-//	if (wfid) delete wfid;
 }
 
 void throb::flip_syms() //call this whenever a space or idle is sent or received
@@ -231,7 +230,6 @@ throb::throb(trx_mode throb_mode) : modem()
 	syncpos = 0.5;
 
 	scope_data	= new double [SCOPE_DATA_LEN];
-//	wfid = new id(this);
 	
 	phaseacc = 0.0;
 	metric = 0.0;

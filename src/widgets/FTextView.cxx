@@ -649,6 +649,8 @@ FTextEdit::FTextEdit(int x, int y, int w, int h, const char *l)
 
 	context_menu = edit_menu;
 	change_keybindings();
+	ascii_cnt = 0;
+	ascii_chr = 0;
 }
 
 /// Handles fltk events for this widget.
@@ -915,12 +917,13 @@ int FTextEdit::handle_key(int key)
         if (key >= FL_F && key <= FL_F_Last && insert_position() >= txpos)
             return handle_key_macro(key);
 
-        // read A/M-ddd, where d is a digit, as ascii characters (in base 10)
-        // and insert verbatim; e.g. M-001 inserts a <soh>
-        if (Fl::event_state() & FL_CTRL && isdigit(key) &&
+        // read ctl-ddd, where d is a digit, as ascii characters (in base 10)
+        // and insert verbatim; e.g. ctl-001 inserts a <soh>
+        if (Fl::event_state() & FL_CTRL && (key >= FL_KP + '0') && (key <= FL_KP + '9') &&
             insert_position() >= txpos)
             return handle_key_ascii(key);
-
+		ascii_cnt = 0; // restart the numeric keypad entries.
+		ascii_chr = 0;
         // do not insert printable characters in the transmitted text
         if (insert_position() < txpos) {
             int d;
@@ -960,16 +963,13 @@ int FTextEdit::handle_key_macro(int key)
 ///
 int FTextEdit::handle_key_ascii(int key)
 {
-	static char ascii_cnt = 0;
-	static unsigned ascii_chr = 0;
-
-	key -= '0';
+	key -= (FL_KP + '0');
 	ascii_cnt++;
 	for (int i = 0; i < 3 - ascii_cnt; i++)
 		key *= 10;
 	ascii_chr += key;
 	if (ascii_cnt == 3) {
-		if (ascii_chr <= 0x7F)
+		if (ascii_chr < 0x100) //0x7F)
 			add(ascii_chr, (iscntrl(ascii_chr) ? CTRL : RECV));
 		ascii_cnt = ascii_chr = 0;
 	}

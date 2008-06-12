@@ -78,7 +78,7 @@ configuration progdefaults = {
 	150.0,			// double	HELL_BW;
 	false,			// bool		HellRcvWidth;
 	false,			// bool		HellBlackboard;
-	false,			// bool		HellXmtWidth;
+	1,				// bool		HellXmtWidth;
 	true,			// bool		HellXmtIdle;
 	false,			// bool		HellPulseFast;
 // OLIVIA
@@ -420,7 +420,7 @@ void configuration::writeDefaultsXML()
 	
 	writeXMLint(f, "FELDFONTNBR", feldfontnbr);
 	writeXMLbool(f, "HELLRCVWIDTH", HellRcvWidth);
-	writeXMLbool(f, "HELLXMTWIDTH", HellXmtWidth);
+	writeXMLint(f, "HELLXMTWIDTH", HellXmtWidth);
 	writeXMLbool(f, "HELLBLACKBOARD", HellBlackboard);
 	writeXMLbool(f, "HELLPULSEFAST", HellPulseFast);
 	writeXMLbool(f, "HELLXMTIDLE", HellXmtIdle);

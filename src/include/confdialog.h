@@ -162,6 +162,7 @@ extern Fl_Check_Button *btnBlackboard;
 extern Fl_Check_Button *btnHellFastAttack;
 extern Fl_Check_Button *btnHellSlowAttack;
 extern Fl_Check_Button *btnFeldHellIdle;
+extern Fl_Spinner *valHellXmtWidth;
 extern Fl_Group *tabOlivia;
 extern Fl_Choice *mnuOlivia_Tones;
 extern Fl_Choice *mnuOlivia_Bandwidth;
