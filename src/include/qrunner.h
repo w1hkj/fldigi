@@ -87,16 +87,16 @@ struct nop
 class qrunner
 {
 public:
-        qrunner(size_t npri_ = 1);
+        qrunner();
         ~qrunner();
 
         void attach(void);
         void detach(void);
 
         template <typename F>
-        bool request(const F &f, size_t pri = 0)
+        bool request(const F& f)
         {
-                if (fifo->push(f, pri)) {
+                if (fifo->push(f)) {
 #ifdef NDEBUG
                         if (unlikely(write(pfd[1], "", 1) != 1))
                                 throw qexception(errno);
@@ -113,13 +113,13 @@ public:
         }
 
         template <typename F>
-        bool request_sync(const F &f, size_t pri = 0)
+        bool request_sync(const F& f)
         {
                 if (!attached)
-                        return request(f, pri);
+                        return request(f);
 
                 for (;;) {
-                        if (request(f, pri))
+                        if (request(f))
                                 break;
                         sched_yield();
                 }
@@ -128,7 +128,7 @@ public:
                 fsignal s(&m, &c);
                 fl_lock(&m);
                 for (;;) {
-                        if (request(s, pri))
+                        if (request(s))
                                 break;
                         sched_yield();
                 }
@@ -141,14 +141,12 @@ public:
         static void execute(int fd, void *arg);
         void flush(void);
 
-        size_t nprio(void) { return fifo->queues(); }
-        void drop(size_t pri) { fifo->drop(pri); }
-        size_t size(size_t pri) { return fifo->size(pri); }
+        void drop(void) { fifo->drop(); }
+        size_t size(void) { return fifo->size(); }
 
 protected:
         fqueue *fifo;
         int pfd[2];
-        size_t npri;
         bool attached;
 public:
 	bool drop_flag;

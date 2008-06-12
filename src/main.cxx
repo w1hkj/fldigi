@@ -135,7 +135,7 @@ int main(int argc, char ** argv)
 	SET_THREAD_ID(FLMAIN_TID);
 
 	for (int i = 0; i < NUM_QRUNNER_THREADS; i++) {
-		cbq[i] = new qrunner(1);
+		cbq[i] = new qrunner;
 		cbq[i]->attach();
 	}
 
