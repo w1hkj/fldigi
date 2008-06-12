@@ -100,6 +100,8 @@
 #include "Viewer.h"
 #include "soundconf.h"
 
+#include "htmlstrings.h"
+
 Fl_Double_Window	*fl_digi_main=(Fl_Double_Window *)0;
 Fl_Help_Dialog 		*help_dialog = (Fl_Help_Dialog *)0;
 Fl_Double_Window	*scopeview = (Fl_Double_Window *)0;
@@ -753,6 +755,25 @@ void html_help( const string &Html)
 		help_dialog = new Fl_Help_Dialog;
 	help_dialog->value(Html.c_str());
 	help_dialog->show();
+	restoreFocus();
+}
+
+void cb_mnuBeginnersURL(Fl_Widget*, void*)
+{
+	if (!help_dialog)
+		help_dialog = new Fl_Help_Dialog;
+	help_dialog->value(szBeginner);
+	help_dialog->show();
+	restoreFocus();
+}
+
+void cb_mnuAboutURL(Fl_Widget*, void*)
+{
+	if (!help_dialog)
+		help_dialog = new Fl_Help_Dialog;
+	help_dialog->value(szAbout);
+	help_dialog->show();
+	restoreFocus();
 }
 
 void fldigi_help(const string& theHelp)
@@ -1189,12 +1210,13 @@ Fl_Menu_Item menu_[] = {
 // settle the gmfsk vs fldigi argument once and for all
 {"@-1circle  Create sunspots", 0, cb_mnuFun, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 #endif
+{"Beginners Help", 0, cb_mnuBeginnersURL, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"Online documentation", 0, cb_mnuVisitURL, (void *)PACKAGE_DOCS, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"Home page", 0, cb_mnuVisitURL, (void *)PACKAGE_HOME, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 {"Command line options", 0, cb_mnuCmdLineHelp, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"Audio device info", 0, cb_mnuAudioInfo, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"Build info", 0, cb_mnuBuildInfo, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
-{"About", 0, cb_mnuAbout, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{"About", 0, cb_mnuAboutURL, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 	
 {"  ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
@@ -1346,7 +1368,7 @@ void create_fl_digi_main() {
 
 	if (twoscopes) 	WNOM -= 2*DEFAULT_SW;
 	
-	fl_digi_main = new Fl_Double_Window(WNOM, HNOM, "fldigi");
+	fl_digi_main = new Fl_Double_Window(WNOM, HNOM, PACKAGE_NAME" "PACKAGE_VERSION);//"fldigi");
 			mnu = new Fl_Menu_Bar(0, 0, WNOM - 142, Hmenu);
 			// FL_NORMAL_SIZE may have changed; update the menu items
 			for (size_t i = 0; i < sizeof(menu_)/sizeof(menu_[0]); i++)
@@ -2225,3 +2247,4 @@ void start_tx()
 	fl_unlock(&trx_mutex);
 	wf->set_XmtRcvBtn(true);
 }
+

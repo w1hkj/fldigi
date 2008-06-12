@@ -330,6 +330,9 @@ protected:
 	int			txpos;
 	static int		*ptxpos;
 	int			bkspaces;
+	char		ascii_cnt;
+	unsigned	ascii_chr;
+	
 };
 
 

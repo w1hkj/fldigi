@@ -1056,6 +1056,13 @@ static void cb_btnFeldHellIdle(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Spinner *valHellXmtWidth=(Fl_Spinner *)0;
+
+static void cb_valHellXmtWidth(Fl_Spinner* o, void*) {
+  progdefaults.HellXmtWidth=(int)o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabOlivia=(Fl_Group *)0;
 
 Fl_Choice *mnuOlivia_Tones=(Fl_Choice *)0;
@@ -1949,6 +1956,7 @@ l with your sound hardware.");
       { tabMisc = new Fl_Group(0, 25, 400, 195, "Misc");
         tabMisc->color((Fl_Color)51);
         tabMisc->selection_color((Fl_Color)51);
+        tabMisc->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 390, 90, "Sweet Spot");
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2010,7 +2018,6 @@ l with your sound hardware.");
       { tabModems = new Fl_Group(0, 25, 401, 195, "Modem");
         tabModems->color((Fl_Color)51);
         tabModems->selection_color((Fl_Color)51);
-        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 401, 195);
           tabsModems->color((Fl_Color)51);
           tabsModems->selection_color((Fl_Color)10);
@@ -2209,6 +2216,7 @@ l with your sound hardware.");
           { tabDomEX = new Fl_Group(0, 50, 400, 170, "Dom");
             tabDomEX->color((Fl_Color)51);
             tabDomEX->selection_color((Fl_Color)51);
+            tabDomEX->hide();
             { txtSecondary = new Fl_Input(20, 75, 360, 44, "Secondary Text");
               txtSecondary->type(4);
               txtSecondary->callback((Fl_Callback*)cb_txtSecondary);
@@ -2250,8 +2258,7 @@ l with your sound hardware.");
           { tabFeld = new Fl_Group(0, 50, 400, 170, "Feld");
             tabFeld->color((Fl_Color)51);
             tabFeld->selection_color((Fl_Color)51);
-            tabFeld->hide();
-            { Fl_Choice* o = selHellFont = new Fl_Choice(175, 62, 122, 20, "Feld Hell Font:");
+            { Fl_Choice* o = selHellFont = new Fl_Choice(260, 62, 122, 20, "Feld Hell Font:");
               selHellFont->down_box(FL_BORDER_BOX);
               selHellFont->labelfont(4);
               selHellFont->textfont(4);
@@ -2271,9 +2278,10 @@ l with your sound hardware.");
               sldrHellBW->align(FL_ALIGN_TOP_LEFT);
               o->value(progdefaults.HELL_BW);
             } // Fl_Value_Slider* sldrHellBW
-            { Fl_Check_Button* o = btnHellXmtWidth = new Fl_Check_Button(40, 93, 113, 15, "2x Xmt Width");
+            { Fl_Check_Button* o = btnHellXmtWidth = new Fl_Check_Button(175, 175, 113, 15, "2x Xmt Width");
               btnHellXmtWidth->down_box(FL_DOWN_BOX);
               btnHellXmtWidth->callback((Fl_Callback*)cb_btnHellXmtWidth);
+              btnHellXmtWidth->hide();
               o->value(progdefaults.HellXmtWidth);
             } // Fl_Check_Button* btnHellXmtWidth
             { Fl_Check_Button* o = btnHellRcvWidth = new Fl_Check_Button(40, 113, 130, 15, "1/2 x Rcv Width");
@@ -2286,15 +2294,15 @@ l with your sound hardware.");
               btnBlackboard->callback((Fl_Callback*)cb_btnBlackboard);
               o->value(progdefaults.HellBlackboard);
             } // Fl_Check_Button* btnBlackboard
-            { Fl_Group* o = new Fl_Group(175, 90, 195, 85, "Pulse Shape");
+            { Fl_Group* o = new Fl_Group(189, 90, 195, 85, "Pulse Shape");
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = btnHellFastAttack = new Fl_Check_Button(185, 110, 169, 15, "Fast Attack (2 msec)");
+              { Fl_Check_Button* o = btnHellFastAttack = new Fl_Check_Button(199, 110, 169, 15, "Fast Attack (2 msec)");
                 btnHellFastAttack->down_box(FL_DOWN_BOX);
                 btnHellFastAttack->callback((Fl_Callback*)cb_btnHellFastAttack);
                 o->value(progdefaults.HellPulseFast);
               } // Fl_Check_Button* btnHellFastAttack
-              { Fl_Check_Button* o = btnHellSlowAttack = new Fl_Check_Button(185, 131, 70, 15, "Slow Attack (4 msec)");
+              { Fl_Check_Button* o = btnHellSlowAttack = new Fl_Check_Button(199, 131, 70, 15, "Slow Attack (4 msec)");
                 btnHellSlowAttack->down_box(FL_DOWN_BOX);
                 btnHellSlowAttack->value(1);
                 btnHellSlowAttack->callback((Fl_Callback*)cb_btnHellSlowAttack);
@@ -2308,6 +2316,13 @@ l with your sound hardware.");
               btnFeldHellIdle->callback((Fl_Callback*)cb_btnFeldHellIdle);
               o->value(progdefaults.HellXmtIdle);
             } // Fl_Check_Button* btnFeldHellIdle
+            { Fl_Spinner* o = valHellXmtWidth = new Fl_Spinner(40, 80, 40, 25, "Xmt Width");
+              valHellXmtWidth->maximum(3);
+              valHellXmtWidth->value(1);
+              valHellXmtWidth->callback((Fl_Callback*)cb_valHellXmtWidth);
+              valHellXmtWidth->align(FL_ALIGN_RIGHT);
+              o->value(progdefaults.HellXmtWidth);
+            } // Fl_Spinner* valHellXmtWidth
             tabFeld->end();
           } // Fl_Group* tabFeld
           { tabOlivia = new Fl_Group(0, 50, 400, 170, "Olivia");

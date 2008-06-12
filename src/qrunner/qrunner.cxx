@@ -34,10 +34,10 @@
 #include "fqueue.h"
 #include "qrunner.h"
 
-qrunner::qrunner(size_t npri_)
-        : npri(npri_), attached(false), drop_flag(false)
+qrunner::qrunner()
+        : attached(false), drop_flag(false)
 {
-        fifo = new fqueue(2048, npri);
+        fifo = new fqueue(2048);
 #ifndef __CYGWIN__
         if (pipe(pfd) == -1)
 #else

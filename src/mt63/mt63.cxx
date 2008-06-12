@@ -53,6 +53,8 @@ void mt63::rx_init()
 	escape = 0;
 }
 
+double peak = 0.0;
+
 int mt63::tx_process()
 {
 	int c;
@@ -69,6 +71,8 @@ int mt63::tx_process()
 	if (stopflag && flush-- == 0) {
 		stopflag = false;
 		Tx->SendJam();
+		for (int i = 0; i < Tx->Comb.Output.Len; i++)
+			Tx->Comb.Output.Data[i] /= 0.8;
 		ModulateXmtr((Tx->Comb.Output.Data), Tx->Comb.Output.Len);
 		cwid();
 		return -1;	/* we're done */
@@ -82,10 +86,14 @@ int mt63::tx_process()
 	if (c > 127) {
 		c &= 127;
 		Tx->SendChar(127);
+		for (int i = 0; i < Tx->Comb.Output.Len; i++)
+			Tx->Comb.Output.Data[i] /= 0.8;
 		ModulateXmtr((Tx->Comb.Output.Data), Tx->Comb.Output.Len);
 	}
 
 	Tx->SendChar(c);
+		for (int i = 0; i < Tx->Comb.Output.Len; i++)
+			Tx->Comb.Output.Data[i] /= 0.8;
 	ModulateXmtr((Tx->Comb.Output.Data), Tx->Comb.Output.Len);
 
 	return 0;

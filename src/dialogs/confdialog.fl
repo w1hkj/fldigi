@@ -898,7 +898,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabMisc {
         label Misc open
-        xywh {0 25 400 195} color 51 selection_color 51
+        xywh {0 25 400 195} color 51 selection_color 51 hide
       } {
         Fl_Group {} {
           label {Sweet Spot} open
@@ -952,7 +952,7 @@ progdefaults.changed = true;}
           Fl_Check_Button chkSlowCpu {
             label {Slow cpu}
             callback {progdefaults.slowcpu = o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
             xywh {110 190 89 15} down_box DOWN_BOX
             code0 {o->value(progdefaults.slowcpu);}
           }
@@ -960,7 +960,7 @@ progdefaults.changed = true;} selected
       }
       Fl_Group tabModems {
         label Modem open
-        xywh {0 25 401 195} color 51 selection_color 51 hide
+        xywh {0 25 401 195} color 51 selection_color 51
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 401 195} color 51 selection_color 10 align 9
@@ -1133,7 +1133,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabDomEX {
             label Dom open
-            xywh {0 50 400 170} color 51 selection_color 51
+            xywh {0 50 400 170} color 51 selection_color 51 hide
           } {
             Fl_Input txtSecondary {
               label {Secondary Text}
@@ -1174,13 +1174,13 @@ progdefaults.changed = true;}
           }
           Fl_Group tabFeld {
             label Feld open
-            xywh {0 50 400 170} color 51 selection_color 51 hide
+            xywh {0 50 400 170} color 51 selection_color 51
           } {
             Fl_Choice selHellFont {
               label {Feld Hell Font:}
               callback {progdefaults.feldfontnbr=o->value();
 progdefaults.changed = true;} open
-              xywh {175 62 122 20} down_box BORDER_BOX labelfont 4 textfont 4
+              xywh {260 62 122 20} down_box BORDER_BOX labelfont 4 textfont 4
               code0 {\#include "fontdef.h"}
               code1 {o->add(szFeldFonts);}
               code2 {o->value(progdefaults.feldfontnbr);}
@@ -1195,7 +1195,7 @@ progdefaults.changed = true;} open
               label {2x Xmt Width}
               callback {progdefaults.HellXmtWidth=o->value();
 progdefaults.changed = true;}
-              xywh {40 93 113 15} down_box DOWN_BOX
+              xywh {175 175 113 15} down_box DOWN_BOX hide
               code0 {o->value(progdefaults.HellXmtWidth);}
             }
             Fl_Check_Button btnHellRcvWidth {
@@ -1214,7 +1214,7 @@ progdefaults.changed = true;}
             }
             Fl_Group {} {
               label {Pulse Shape} open
-              xywh {175 90 195 85} box ENGRAVED_FRAME align 21
+              xywh {189 90 195 85} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnHellFastAttack {
                 label {Fast Attack (2 msec)}
@@ -1226,7 +1226,7 @@ btnHellSlowAttack->value(1);
 progdefaults.HellPulseFast = false;
 }
 progdefaults.changed = true;}
-                xywh {185 110 169 15} down_box DOWN_BOX
+                xywh {199 110 169 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.HellPulseFast);}
               }
               Fl_Check_Button btnHellSlowAttack {
@@ -1239,7 +1239,7 @@ btnHellFastAttack->value(1);
 progdefaults.HellPulseFast = true;
 }
 progdefaults.changed = true;}
-                xywh {185 131 70 15} down_box DOWN_BOX value 1
+                xywh {199 131 70 15} down_box DOWN_BOX value 1
                 code0 {o->value(!progdefaults.HellPulseFast);}
               }
             }
@@ -1249,6 +1249,13 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
               xywh {40 155 70 15} down_box DOWN_BOX value 1
               code0 {o->value(progdefaults.HellXmtIdle);}
+            }
+            Fl_Spinner valHellXmtWidth {
+              label {Xmt Width}
+              callback {progdefaults.HellXmtWidth=(int)o->value();
+progdefaults.changed = true;} selected
+              xywh {40 80 40 25} align 8 maximum 3 value 1
+              code0 {o->value(progdefaults.HellXmtWidth);}
             }
           }
           Fl_Group tabOlivia {

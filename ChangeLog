@@ -1,6 +1,6 @@
 Change Log:
 
-2.11  1) Added EXEC macro
+3.0   1) Added EXEC macro
       2) Added mousewheel over Macro buttons to move between macro button sets.
       3) Fixed bug in Olivia signal level display.
       4) Ported to Windows (win32) and OS-X
@@ -88,6 +88,9 @@ Change Log:
      40) Fixed bug in waterfall update method that could cause a seg fault 
          under certain conditions.
      41) Change to PortAudio samplerate probing.
+     42) Increased average power level in MT-63 mode.
+     43) Significantly decreased cpu usage with changes to qrunner and complex 
+         classes.
 
 2.10.3)
       1) Corrected memory leak bug.

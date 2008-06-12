@@ -245,7 +245,7 @@ thor::thor(trx_mode md)
 //=====================================================================
 // rx modules
 
-complex thor::mixer(int n, complex in)
+complex thor::mixer(int n, const complex& in)
 {
 	complex z;
 	double f;
@@ -258,7 +258,7 @@ complex thor::mixer(int n, complex in)
 		f = THORFIRSTIF - THORBASEFREQ - bandwidth/2 + (samplerate / symlen) * (1.0 * n / paths);
 	z.re = cos(phase[n]);
 	z.im = sin(phase[n]);
-	z = z * in;
+	z *= in;
 	phase[n] -= twopi * f / samplerate;
 	if (phase[n] > M_PI)
 		phase[n] -= twopi;

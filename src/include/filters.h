@@ -131,7 +131,7 @@ private:
 public:
 	sfft(int len, int first, int last);
 	~sfft();
-	complex *run(complex input);
+	complex *run(const complex& input);
 };
 
 

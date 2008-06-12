@@ -432,7 +432,7 @@ sfft::~sfft()
 // Values are not stable until more than "len" samples have been processed.
 // returns address of first component in array
 
-complex *sfft::run(complex input)
+complex *sfft::run(const complex& input)
 {
 	complex z;
 	complex y;

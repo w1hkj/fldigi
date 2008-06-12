@@ -58,113 +58,61 @@ class fqueue
         typedef ringbuffer<char> fqueue_ringbuffer_t;
 
 public:
-        fqueue(size_t count = 2048, size_t nqueues_ = 1, size_t blocksize_ = 128)
-                : nqueues(nqueues_), blocksize(blocksize_)
+        fqueue(size_t count = 2048, size_t blocksize_ = 128)
+                : blocksize(blocksize_)
         {
-                rb = new fqueue_ringbuffer_t*[nqueues];
-                for (size_t i = 0; i < nqueues; i++)
-                        rb[i] = new fqueue_ringbuffer_t(blocksize * count);
+		rb = new fqueue_ringbuffer_t(blocksize * count);
         }
         ~fqueue()
         {
-                for (size_t i = 0; i < nqueues; i++) {
-                        drop(i);
-                        delete rb[i];
-                }
-                delete [] rb;
+		drop();
+		delete rb;
         }
 
-        bool empty(size_t q)
-        {
-                if (q != nqueues)
-                        return rb[q]->read_space() == 0;
-
-                for (size_t i = 0; i < nqueues; i++)
-                        if (rb[i]->read_space() > 0)
-                                return false;
-                return true;
-        }
-        bool empty(void) { return empty(nqueues); }
-
-        bool full(size_t q)
-        {
-                if (q != nqueues)
-                        return rb[q]->write_space() == 0;
-
-                for (size_t i = 0; i < nqueues; i++)
-                        if (rb[i]->write_space() > 0)
-                                return false;
-                return true;
-        }
-
-        size_t size(size_t q)
-        {
-                if (q != nqueues)
-                        return rb[q]->read_space() / blocksize;
-
-                size_t n = 0;
-                for (size_t i = 0; i < nqueues; i++)
-                        n += rb[i]->read_space() / blocksize;
-                return n;
-        }
-        size_t size(void) { return size(nqueues); }
-
-        size_t queues(void) { return nqueues; }
+        bool empty(void) { return rb->read_space() == 0; }
+        bool full(void)  { return rb->write_space() == 0; }
+        size_t size(void) { return rb->read_space() / blocksize; }
 
         template <class T>
-        bool push(const T &t, size_t q)
+        bool push(const T& t)
         {
                 // If we have any space left at all, it will be at least
                 // a blocksize. It will not wrap around the end of the rb.
-                rb[q]->get_wv(wvec);
-                if (unlikely(wvec[0].len < blocksize))
+                if (unlikely(rb->get_wv(wvec, blocksize) < blocksize))
                         return false;
 
                 assert(blocksize >= sizeof(func_wrap<T>));
                 // we assume a no-throw ctor!
                 new (wvec[0].buf) func_wrap<T>(t);
-                rb[q]->write_advance(blocksize);
+                rb->write_advance(blocksize);
 
                 return true;
         }
 
-        bool pop(size_t q, bool exec = false)
+        bool pop(bool exec = false)
         {
-                size_t start, end;
-                if (q != nqueues) // pull from named queue
-                        start = end = q;
-                else { // pull first available element
-                        start = 0;
-                        end = nqueues - 1;
-                }
+		if (rb->get_rv(rvec, blocksize) < blocksize)
+			return false;
+		reinterpret_cast<func_base *>(rvec[0].buf)->destroy(exec);
+		rb->read_advance(blocksize);
 
-                for (size_t i = start; i <= end; i++) {
-                        rb[i]->get_rv(rvec);
-                        if (rvec[0].len < blocksize)
-                                continue;
-                        reinterpret_cast<func_base *>(rvec[0].buf)->destroy(exec);
-                        rb[i]->read_advance(blocksize);
-
-                        return true;
-                }
-
-                return false;
+		return true;
         }
 
-        bool execute(void) { return pop(nqueues, true); }
+        bool execute(void) { return pop(true); }
 
-        size_t drop(size_t q)
+        size_t drop(void)
         {
                 size_t n = 0;
-                while (pop(q, false))
+                while (pop(false))
                         ++n;
                 return n;
         }
 
 protected:
-        fqueue_ringbuffer_t **rb;
+        fqueue_ringbuffer_t* rb;
         fqueue_ringbuffer_t::vector_type rvec[2], wvec[2];
-        size_t nqueues, blocksize;
+        size_t blocksize;
 };
 
 #endif // FQUEUE_H_

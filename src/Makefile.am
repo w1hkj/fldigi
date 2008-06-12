@@ -120,6 +120,7 @@ fldigi_SOURCES += \
 	dialogs/fl_digi.cxx \
 	dialogs/font_browser.cxx \
 	dialogs/Viewer.cxx \
+	dialogs/htmlstrings.cxx \
 	thor/thor.cxx \
 	thor/thorvaricode.cxx \
 	dominoex/dominoex.cxx \
@@ -134,6 +135,7 @@ fldigi_SOURCES += \
 	filters/filters.cxx \
 	filters/viterbi.cxx \
 	globals/globals.cxx \
+	include/htmlstrings.h \
 	include/Combo_Box.h \
 	include/Combo_List.h \
 	include/confdialog.h \

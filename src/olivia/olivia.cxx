@@ -255,7 +255,7 @@ int olivia::rx_process(const double *buf, int len)
 	
 	double s2n = 20.0 * log10(snr < 0.1 ? 0.1 : snr);
 
-	snprintf(msg1, sizeof(msg1), "s/n %4.1f", s2n);//Rx->SignalToNoiseRatio()); 
+	snprintf(msg1, sizeof(msg1), "s/n %4.1f dB", s2n);
 	put_Status1(msg1);
 	snprintf(msg2, sizeof(msg2), "Freq: %+4.1f", Rx->FrequencyOffset());
 	put_Status2(msg2);
@@ -272,11 +272,10 @@ void olivia::restart()
 	tones	= progdefaults.oliviatones;
 	bw 		= progdefaults.oliviabw;
 	samplerate = 8000;
-//	samplerate = 11025;
 	
 	Tx->Tones = 2 * (1 << tones);
 	Tx->Bandwidth = 125 * (1 << bw);
-	Tx->SampleRate = samplerate; //8000.0; //samplerate;
+	Tx->SampleRate = samplerate;
 	Tx->OutputSampleRate = samplerate;
     txbasefreq = get_txfreq_woffset();
 
@@ -300,8 +299,8 @@ void olivia::restart()
 	if (txfbuffer) delete [] txfbuffer;
 	txfbuffer = new double[txbufferlen];
 
-	rxbufferlen = 0; //SCBLOCKSIZE;
-	rxbuffer = 0; //new short int[rxbufferlen];
+	rxbufferlen = 0;
+	rxbuffer = 0;
 	
 	Rx->Tones = Tx->Tones;
 	Rx->Bandwidth = Tx->Bandwidth;
@@ -309,7 +308,7 @@ void olivia::restart()
 	Rx->SyncIntegLen = sinteg;
 	Rx->SyncThreshold = progStatus.sqlonoff ? progStatus.sldrSquelchValue : 0.0;
 
-	Rx->SampleRate = samplerate; // 8000.0;//samplerate;
+	Rx->SampleRate = samplerate;
 	Rx->InputSampleRate = samplerate;
 
 	if (reverse) { 
@@ -326,8 +325,6 @@ void olivia::restart()
 	}
 	fragmentsize = 1024;
 	set_bandwidth(Tx->Bandwidth);
-	
-//	Rx->PrintParameters();
 
 	put_MODEstatus(mode);
 }
@@ -344,7 +341,6 @@ olivia::olivia()
 	txbuffer = 0;
 	txfbuffer = 0;
 	rxbuffer = 0;
-//	samplerate = 11025;
 	samplerate = 8000;
 
 	FL_LOCK();
@@ -353,7 +349,6 @@ olivia::olivia()
 	FL_UNLOCK();
 
 	mode = MODE_OLIVIA;
-//	wfid = new id(this);
 	smargin = progdefaults.oliviasmargin;
 	sinteg = progdefaults.oliviasinteg;
 	lastfreq = 0;
@@ -367,6 +362,5 @@ olivia::~olivia()
 	if (txbuffer) delete [] txbuffer;
 	if (txfbuffer) delete [] txfbuffer;
 	if (rxbuffer) delete [] rxbuffer;
-//	if (wfid) delete wfid;
 }
 

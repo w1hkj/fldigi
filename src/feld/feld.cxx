@@ -467,7 +467,7 @@ int feld::tx_process()
 	int c;
 	bool hdkey;
 
-	dxmode = 1 + progdefaults.HellXmtWidth;
+	dxmode = progdefaults.HellXmtWidth;
 	hdkey = progdefaults.HellPulseFast;
 
 	fntnbr = progdefaults.feldfontnbr;
