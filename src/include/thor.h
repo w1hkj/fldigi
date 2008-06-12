@@ -137,7 +137,7 @@ protected:
 	unsigned char symbolpair[2];
 	
 private:
-	complex	mixer(int n, complex in);
+	complex	mixer(int n, const complex& in);
 
 // Rx
 	void	recvchar(int c);

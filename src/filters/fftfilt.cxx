@@ -85,7 +85,7 @@ void fftfilt::create_filter(double f1, double f2)
 /*
  * Filter with fast convolution (overlap-add algorithm).
  */
-int fftfilt::run(complex in, complex **out)
+int fftfilt::run(const complex& in, complex **out)
 {
 // collect filterlen/2 input samples
 	filtdata[inptr++] = in;
@@ -103,7 +103,7 @@ int fftfilt::run(complex in, complex **out)
 
 // multiply with the filter shape
 	for (int i = 0; i < filterlen; i++)
-		filtdata[i] = filtdata[i] * filter[i];
+		filtdata[i] *= filter[i];
 
 // IFFT transpose back to the time domain
 	ift->icdft(filtdata);

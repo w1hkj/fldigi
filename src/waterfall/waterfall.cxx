@@ -626,7 +626,8 @@ void WFdisp::update_waterfall() {
 	RGBI *p3, *p4;
 	p1 = tmp_fft_db + offset;
 	p3 = fft_img;
-	
+	short* limit = tmp_fft_db + image_area - step + 1;
+
 	for (int row = 0; row < image_height; row++) {
 		p2 = p1;
 		p4 = p3;
@@ -635,38 +636,38 @@ void WFdisp::update_waterfall() {
 				for (int col = 0; col < disp_width; col++) {
 					*(p4++) = mag2RGBI[ (*p2+ *(p2+1)+ *(p2+2)+ *(p2+3))/4 ];
 					p2 += step;
-					if (p2 > tmp_fft_db + image_area - step + 1) break;
+					if (p2 > limit) break;
 				}
 			else if (step == 2)
 				for (int col = 0; col < disp_width; col++) {
 					*(p4++) = mag2RGBI[ (*p2  + *(p2+1))/2 ];
 					p2 += step;
-					if (p2 > tmp_fft_db + image_area - step + 1) break;
+					if (p2 > limit) break;
 				}
 			else 
 				for (int col = 0; col < disp_width; col++) {
 					*(p4++) = mag2RGBI[ *p2 ];
 					p2 += step;
-					if (p2 > tmp_fft_db + image_area - step + 1) break;
+					if (p2 > limit) break;
 				}
 		} else {
 			if (step == 4)
 				for (int col = 0; col < disp_width; col++) {
 					*(p4++) = mag2RGBI[ MAX( MAX ( MAX ( *p2, *(p2+1) ), *(p2+2) ), *(p2+3) ) ];
 					p2 += step;
-					if (p2 > tmp_fft_db + image_area - step + 1) break;
+					if (p2 > limit) break;
 				}
 			else if (step == 2)
 				for (int col = 0; col < disp_width; col++) {
 					*(p4++) = mag2RGBI[ MAX( *p2, *(p2+1) ) ];
 					p2 += step;
-					if (p2 > tmp_fft_db + image_area - step + 1) break;
+					if (p2 > limit) break;
 				}
 			else 
 				for (int col = 0; col < disp_width; col++) {
 					*(p4++) = mag2RGBI[ *p2 ];
 					p2 += step;
-					if (p2 > tmp_fft_db + image_area - step + 1) break;
+					if (p2 > limit) break;
 				}
 		}
 		p1 += IMAGE_WIDTH;

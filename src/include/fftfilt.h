@@ -25,7 +25,7 @@ public:
 	fftfilt(double f1, double f2, int len);
 	~fftfilt();
 	void create_filter(double f1, double f2);
-	int run(complex in, complex **out);
+	int run(const complex& in, complex **out);
 };
 
 #endif
