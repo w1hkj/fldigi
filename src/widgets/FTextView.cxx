@@ -919,7 +919,7 @@ int FTextEdit::handle_key(int key)
 
         // read ctl-ddd, where d is a digit, as ascii characters (in base 10)
         // and insert verbatim; e.g. ctl-001 inserts a <soh>
-        if (Fl::event_state() & FL_CTRL && (key >= FL_KP + '0') && (key <= FL_KP + '9') &&
+        if (Fl::event_state() & FL_CTRL && (isdigit(key) || isdigit(key - FL_KP)) &&
             insert_position() >= txpos)
             return handle_key_ascii(key);
 		ascii_cnt = 0; // restart the numeric keypad entries.
@@ -963,7 +963,9 @@ int FTextEdit::handle_key_macro(int key)
 ///
 int FTextEdit::handle_key_ascii(int key)
 {
-	key -= (FL_KP + '0');
+	key -= '0';
+	if (key  >= FL_KP)
+		key -= FL_KP;
 	ascii_cnt++;
 	for (int i = 0; i < 3 - ascii_cnt; i++)
 		key *= 10;
