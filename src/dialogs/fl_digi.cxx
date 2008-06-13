@@ -1210,7 +1210,7 @@ Fl_Menu_Item menu_[] = {
 // settle the gmfsk vs fldigi argument once and for all
 {"@-1circle  Create sunspots", 0, cb_mnuFun, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 #endif
-{"Beginners Help", 0, cb_mnuBeginnersURL, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{"Beginners' Help", 0, cb_mnuBeginnersURL, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"Online documentation", 0, cb_mnuVisitURL, (void *)PACKAGE_DOCS, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"Home page", 0, cb_mnuVisitURL, (void *)PACKAGE_HOME, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 {"Command line options", 0, cb_mnuCmdLineHelp, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
