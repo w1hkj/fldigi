@@ -760,11 +760,19 @@ void html_help( const string &Html)
 
 void cb_mnuBeginnersURL(Fl_Widget*, void*)
 {
-	if (!help_dialog)
-		help_dialog = new Fl_Help_Dialog;
-	help_dialog->value(szBeginner);
-	help_dialog->show();
-	restoreFocus();
+	string deffname = HomeDir;
+	deffname.append("beginners.html");
+	ifstream f_in(deffname.c_str(), ios::in);
+	if (!f_in) {
+		ofstream f_out(deffname.c_str(), ios::out);
+		f_out << szBeginner;
+		f_out.close();
+	} else
+		f_in.close();
+	string htmlfilename = "file://";
+	htmlfilename.append(HomeDir);
+	htmlfilename.append("beginners.html");
+	cb_mnuVisitURL( NULL, (void *)htmlfilename.c_str());
 }
 
 void cb_mnuAboutURL(Fl_Widget*, void*)

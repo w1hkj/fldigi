@@ -28,8 +28,8 @@ char szBeginner[] = "\
 <HEAD>\
 <TITLE>Beginners' Guide to FLDIGI</TITLE>\
 </HEAD>\
-<BODY BG=FFFFFF TEXT=404040 LINK=CC0088 VLINK=995544>\
-<font size=\"0\" face=\"Verdana, Arial, Helvetica\">\
+<BODY BGCOLOR=FFFFCC TEXT=404040 LINK=CC0088 VLINK=995544>\
+<font size=\"+0\" face=\"Verdana, Arial, Helvetica\">\
 <CENTER>\
 <H1>Beginners' Guide to FLDIGI</H1>\
 <P>\
@@ -54,7 +54,7 @@ FLDIGI is multi-mode, which means that it is able to operate many popular digita
 programs, so you only have one program to learn. FLDIGI includes all the popular modes, such as DominoEX, MFSK16, \
 PSK31, and RTTY.  \
 <P>\
-Unusually, FLDIGI is available for multiple computer operating systems; Linux, FreeBSD; OS X and Windows(XP).  \
+Unusually, FLDIGI is available for multiple computer operating systems; Linux&trade;, FreeBSD&trade;; OS X&trade; and Windows(XP)&trade;.  \
 </BLOCKQUOTE>\
 <H3><I>What is a Digital Mode?</I></H3>\
 <BLOCKQUOTE>\
@@ -121,12 +121,12 @@ details and learn how to make best use of the program by reading the <A HREF=\"h
 <BLOCKQUOTE>\
 <DL>\
 <DT><B>Computer</B></DT>\
-<DD>Pentium 3 or 4, Celeron, or equivalent, 750MHz or better, 256MB RAM or more.  Faster computers will give \
+<DD>Pentium&trade; 3 or 4, Celeron&trade;, or equivalent, 750MHz or better, 256MB RAM or more.  Faster computers will give \
 better performance.</DD> \
 <DT><B>Operating System</B></DT>\
-<DD>LINUX distributions such as Debian, Ubuntu, Kubuntu, Mandriva, Mandrake, \
-SuSE, Puppy Linux; FreeBSD; OS X; and Windows XP SP2 (Home or Pro). FLDIGI can be home compiled for other distributions. FLDIGI does not support \
-Windows 98 or older, and may not work with Windows VISTA.</DD> \
+<DD>LINUX distributions such as Debian&trade;, Ubuntu&trade;, Kubuntu&trade;, Mandriva&trade;, Mandrake&trade;, \
+SuSE&trade;, Puppy Linux&trade;; FreeBSD&trade;; OS X&trade;; and Windows&trade; XP SP2 (Home or Pro). FLDIGI can be home compiled for other distributions. FLDIGI does not support \
+Windows 98&trade; or older, and may not work with Windows VISTA&trade;.</DD> \
 <DT><B>Other Requirements</B></DT> \
 <DD><LI>Computer serial port (or USB serial port) for rig control \
 <LI>Optional serial CAT (Computer Aided Tuning) computer control \
@@ -173,7 +173,7 @@ You can ignore the other tabs for now.  \
 <LI>Use the menu <B>Configure/Defaults/Rig Ctrl</B> item to set how you will control the rig. Set 'Ptt' to 'TTY'.  \
 If you will control the rig via a serial port, select the COM port you will use, and select which line controls PTT.  \
 If in doubt, check both RTS and DTR. You MUST then press the <B>Initialize</B> button.  \
-<LI>If you plan to use CAT control of the rig via the COM port, check 'userigCAT'. If in addition you wish to use \
+<LI>If you plan to use CAT control of the rig via the COM port, check 'use rigCAT'. If in addition you wish to use \
 PTT control via CAT, also then check 'rigCAT PTT'. You MUST then press the <B>Initialize</B> button.  \
 <LI>Use the menu <B>Configure/Defaults/Misc</B> item to set whether you wish to transmit RSID data at the start of each \
 over (this is for the benefit of others, this setting does not affect RSID reception), and whether you have a slow computer (under 1000MHz) \
@@ -523,7 +523,8 @@ character following the last one transmitted. Morse operation is slightly differ
 <DT><B>SEND any ASCII character</B></DT>\
 <DD>Press &lt;<B>Ctl</B>&gt; and (at the same time) any three-digit number (on the numeric keypad) to \
 insert the ASCII character designated by that entry value into the transmit buffer. For example, \
-&lt;<B>Ctl</B>&gt;<B>177</B> is '±'(plus/minus) and &lt;<B>Ctl</B>&gt;<B>176</B> is '°' (degree).  If you press a key other than the numeric keypad's 0 - 9 the sequence will be discarded.  \
+&lt;<B>Ctl</B>&gt;<B>177</B> is &plusmn; (plus/minus) and &lt;<B>Ctl</B>&gt;<B>176</B> is &deg; (degree).  If you press a key other than the numeric keypad's 0 - 9 the sequence will be discarded.  \
+You can also use the <B>Ctl</B> with the normal numeric keys.\
 </DL>\
 <HR>\
 <SMALL><CENTER><b>Copyright © M. Greenman</a> 2008</b.</SMALL>\
