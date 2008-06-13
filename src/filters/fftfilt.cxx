@@ -103,6 +103,7 @@ int fftfilt::run(const complex& in, complex **out)
 
 // multiply with the filter shape
 	for (int i = 0; i < filterlen; i++)
+//		filtdata[i] = filtdata[i] * filter[i];
 		filtdata[i] *= filter[i];
 
 // IFFT transpose back to the time domain

@@ -302,6 +302,7 @@ void generate_option_help(void) {
 	     << " or 0x" << hex << progdefaults.tx_msgid << dec << "\n\n"
 #endif
 
+#if USE_XMLRPC
 	     << "  --xmlrpc-server\n"
 	     << "    Start the XML-RPC server\n\n"
 	     << "  --xmlrpc-server-address HOSTNAME\n"
@@ -310,6 +311,7 @@ void generate_option_help(void) {
 	     << "  --xmlrpc-server-port PORT\n"
 	     << "    Set the XML-RPC server port\n"
 	     << "    The default is: " << progdefaults.xmlrpc_port << "\n\n"
+#endif
 
 	     << "  --version\n"
 	     << "    Print version information\n\n"

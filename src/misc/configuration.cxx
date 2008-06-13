@@ -748,6 +748,7 @@ bool configuration::readDefaultsXML()
 						break;
 					case HELLXMTWIDTH :
 						HellXmtWidth = atoi(xml->getNodeData());
+						if (HellXmtWidth == 0) HellXmtWidth = 1;
 						break;
 					case HELLBLACKBOARD :
 						HellBlackboard = atoi(xml->getNodeData());
