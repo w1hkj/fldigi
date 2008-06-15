@@ -426,9 +426,24 @@ void rigCAT_setfreq(long long f)
 	if (modeCmd.str2.empty() == false)
 		strCmd.append(modeCmd.str2);
 
-	fl_lock(&rigCAT_mutex);
-		hexout(strCmd, 0);
-	fl_unlock(&rigCAT_mutex);
+	if (modeCmd.ok.size()) {
+		list<XMLIOS>::iterator preply = reply.begin();
+		while (preply != reply.end()) {
+			if (preply->SYMBOL == modeCmd.ok) {
+				XMLIOS  rTemp = *preply;
+// send the command
+				fl_lock(&rigCAT_mutex);
+					hexout(strCmd, rTemp.size);
+				fl_unlock(&rigCAT_mutex);
+				return;
+			}
+			preply++;
+		}
+	} else {
+		fl_lock(&rigCAT_mutex);
+			hexout(strCmd, 0);
+		fl_unlock(&rigCAT_mutex);
+	}
 }
 
 string rigCAT_getmode()
@@ -565,9 +580,24 @@ void rigCAT_setmode(string md)
 	if (modeCmd.str2.empty() == false)
 		strCmd.append(modeCmd.str2);
 
-	fl_lock(&rigCAT_mutex);
-		hexout(strCmd, 0);
-	fl_unlock(&rigCAT_mutex);
+	if (modeCmd.ok.size()) {
+		list<XMLIOS>::iterator preply = reply.begin();
+		while (preply != reply.end()) {
+			if (preply->SYMBOL == modeCmd.ok) {
+				XMLIOS  rTemp = *preply;
+// send the command
+				fl_lock(&rigCAT_mutex);
+					hexout(strCmd, rTemp.size);
+				fl_unlock(&rigCAT_mutex);
+				return;
+			}
+			preply++;
+		}
+	} else {
+		fl_lock(&rigCAT_mutex);
+			hexout(strCmd, 0);
+		fl_unlock(&rigCAT_mutex);
+	}
 }
 
 string rigCAT_getwidth()
@@ -704,9 +734,25 @@ void rigCAT_setwidth(string w)
 	}
 	if (modeCmd.str2.empty() == false)
 		strCmd.append(modeCmd.str2);
-	fl_lock(&rigCAT_mutex);
-		hexout(strCmd, 0);
-	fl_unlock(&rigCAT_mutex);
+		
+	if (modeCmd.ok.size()) {
+		list<XMLIOS>::iterator preply = reply.begin();
+		while (preply != reply.end()) {
+			if (preply->SYMBOL == modeCmd.ok) {
+				XMLIOS  rTemp = *preply;
+// send the command
+				fl_lock(&rigCAT_mutex);
+					hexout(strCmd, rTemp.size);
+				fl_unlock(&rigCAT_mutex);
+				return;
+			}
+			preply++;
+		}
+	} else {
+		fl_lock(&rigCAT_mutex);
+			hexout(strCmd, 0);
+		fl_unlock(&rigCAT_mutex);
+	}
 }
 
 void rigCAT_pttON()

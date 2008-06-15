@@ -1341,8 +1341,8 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	wfRefLevel->step(1.0);
 	wfRefLevel->precision(0);
 	wfRefLevel->range(-40.0, 0.0);
-	wfRefLevel->value(0.0);
-	wfdisp->Reflevel(0.0);
+	wfRefLevel->value(-20.0);
+	wfdisp->Reflevel(-20.0);
 	wfRefLevel->tooltip("Upper signal limit in dB");
 	wfRefLevel->type(FL_SIMPLE_COUNTER);
 
@@ -1352,8 +1352,8 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	wfAmpSpan->step(1.0);
 	wfAmpSpan->precision(0);
 	wfAmpSpan->range(6.0, 90.0);
-	wfAmpSpan->value(80.0);
-	wfdisp->Ampspan(80.0);
+	wfAmpSpan->value(70.0);
+	wfdisp->Ampspan(70.0);
 	wfAmpSpan->tooltip("Signal range in dB");
 	wfAmpSpan->type(FL_SIMPLE_COUNTER);
 
