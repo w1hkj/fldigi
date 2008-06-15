@@ -304,7 +304,13 @@ static void cb_Seek(Fl_Input *, void *)
 	for (size_t i = 0; i < tofind.length(); i++)
 		tofind[i] = toupper(tofind[i]);
 #else
+	static Fl_Color seek_color[2] = { FL_FOREGROUND_COLOR,
+					  adjust_color(FL_RED, FL_BACKGROUND2_COLOR) }; // invalid RE
 	re_comp(inpSeek->value());
+	if (inpSeek->textcolor() != seek_color[!seek_re]) {
+		inpSeek->textcolor(seek_color[!seek_re]);
+		inpSeek->redraw();
+	}
 #endif
 }
 
