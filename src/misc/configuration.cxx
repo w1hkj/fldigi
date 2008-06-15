@@ -21,7 +21,7 @@ configuration progdefaults = {
 	false,			// bool		TransmitRSid;
 	true,			// bool		slowcpu;
 	false,			// bool		changed;
-	0.0,			// double	wfRefLevel;
+	-20.0,			// double	wfRefLevel;
 	70.0,			// double	wfAmpSpan;
 	300,			// int		LowFreqCutoff;
 	1000,			// int		CWsweetspot;
@@ -748,6 +748,7 @@ bool configuration::readDefaultsXML()
 						break;
 					case HELLXMTWIDTH :
 						HellXmtWidth = atoi(xml->getNodeData());
+						if (HellXmtWidth == 0) HellXmtWidth = 1;
 						break;
 					case HELLBLACKBOARD :
 						HellBlackboard = atoi(xml->getNodeData());

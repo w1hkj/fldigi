@@ -44,13 +44,13 @@ status progStatus = {
 	false,				// bool rigShown;
 	50,					// int rigX;
 	50,					// int rigY;
-	560,					// int rigW
+	560,				// int rigW
 	80,					// int rigH
 	1000,				// int carrier;
 	1,					// int mag;
 	NORMAL,				// WFdisp::WFspeed
-	0,					// reflevel
-	-60,				// ampspan
+	-20,				// reflevel
+	-70,				// ampspan
 	40,					// uint	VIEWERnchars
 	50,					// uint	VIEWERxpos
 	50,					// uint	VIEWERypos

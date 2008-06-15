@@ -364,7 +364,6 @@ void thor::update_syncscope()
 
 	double max = 0, min = 1e6, range, mag;
 
-// dom waterfall
 	memset(videodata, 0, paths * numbins * sizeof(double));
 
 	if (!progStatus.sqlonoff || metric >= progStatus.sldrSquelchValue) {
@@ -400,7 +399,6 @@ void thor::update_syncscope()
 
 void thor::synchronize()
 {
-//	int syn = -1;
 	double syn = -1;
 	double val, max = 0.0;
 
@@ -498,7 +496,6 @@ int thor::rx_process(const double *buf, int len)
 					eval_s2n();
         		    decodesymbol();
 					synchronize();
-//					update_syncscope();
 					prev2symbol = prev1symbol;
 					prev1symbol = currsymbol;
 					prev2mag = prev1mag;

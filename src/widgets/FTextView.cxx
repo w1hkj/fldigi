@@ -963,9 +963,9 @@ int FTextEdit::handle_key_macro(int key)
 ///
 int FTextEdit::handle_key_ascii(int key)
 {
-	key -= '0';
 	if (key  >= FL_KP)
 		key -= FL_KP;
+	key -= '0';
 	ascii_cnt++;
 	for (int i = 0; i < 3 - ascii_cnt; i++)
 		key *= 10;

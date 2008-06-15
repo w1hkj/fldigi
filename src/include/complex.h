@@ -21,8 +21,9 @@ public:
 
 // Z = X * Y
 	complex& operator*=(const complex& y) {
-		re = re * y.re - im * y.im;
+		double temp = re * y.re - im * y.im;
 		im = re * y.im + im * y.re;
+		re = temp;
 		return *this;
 	}
 	complex operator*(const complex& y) const {
@@ -61,10 +62,11 @@ public:
 
 // Z = X / Y
 	complex& operator/=(const complex& y) {
-		double denom = y.re*y.re + y.im*y.im;
+		double temp, denom = y.re*y.re + y.im*y.im;
 		if (denom == 0.0) denom = 1e-10;
-		re = (re * y.re + im * y.im) / denom;
+		temp = (re * y.re + im * y.im) / denom;
 		im = (im * y.re - re * y.im) / denom;
+		re = temp;
 		return *this;
 	}
 	complex operator/(const complex& y) const {
@@ -79,8 +81,9 @@ public:
 // Z = (x1 - jy1) * (x2 + jy2)
 // or Z = |Z1|*|Z2| exp (j (P2 - P1))
 	complex& operator%=(const complex& y) {
-		re = re * y.re + im * y.im;
+		double temp = re * y.re + im * y.im;
 		im = re * y.im - im * y.re;
+		re = temp;
 		return *this;
 	}
 	complex operator%(const complex& y) const {

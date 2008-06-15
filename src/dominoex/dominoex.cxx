@@ -220,6 +220,7 @@ dominoex::dominoex(trx_mode md)
 		symlen = 1024;
 		doublespaced = 2;
 		samplerate = 8000;
+		break;
 	case MODE_DOMINOEX16:
 		symlen = 512;
 		doublespaced = 1;
