@@ -32,6 +32,7 @@ extern Fl_Button *btnSavePalette;
 #include <FL/Fl_Counter.H>
 extern Fl_Counter *cntLowFreqCutoff;
 extern Fl_Check_Button *btnWFaveraging;
+extern Fl_Button *btnWaterfallFont;
 extern Fl_Check_Button *btnBlackman;
 extern Fl_Check_Button *btnHamming;
 extern Fl_Check_Button *btnHanning;

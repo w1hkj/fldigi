@@ -19,6 +19,8 @@ decl {\#include "configuration.h"} {public
 
 decl {\#include "combo.h"} {} 
 
+decl {\#include "colorsfonts.h"} {} 
+
 decl {extern void initViewer();} {} 
 
 decl {Fl_Double_Window *dlgConfig;} {public
@@ -92,81 +94,81 @@ progdefaults.changed = true;}
       }
       Fl_Group tabWaterfall {
         label {W-fall} open
-        xywh {0 25 405 195} color 51 selection_color 51 hide
+        xywh {0 25 405 195} color 51 selection_color 51
       } {
         Fl_Tabs {} {open
           xywh {0 25 405 195}
         } {
           Fl_Group {} {
             label {Filters/Colors} open
-            xywh {0 50 400 170} hide
+            xywh {0 50 400 170}
           } {
             Fl_Group {} {open
-              xywh {10 100 385 110} box ENGRAVED_FRAME
+              xywh {10 84 385 96} box ENGRAVED_FRAME
             } {
               Fl_Button WF_Palette {
                 label {Palette:}
                 callback {progdefaults.changed = true;}
-                xywh {28 130 260 24} box DOWN_BOX color 0 align 5
+                xywh {28 107 260 24} box DOWN_BOX color 0 align 5
                 code0 {\#include "colorbox.h"}
                 class colorbox
               }
               Fl_Button {btnColor[0]} {
                 callback {selectColor(0);
 progdefaults.changed = true;}
-                xywh {20 162 20 24}
+                xywh {20 139 20 24}
               }
               Fl_Button {btnColor[1]} {
                 callback {selectColor(1);
 progdefaults.changed = true;}
-                xywh {52 162 20 24}
+                xywh {52 139 20 24}
               }
               Fl_Button {btnColor[2]} {
                 callback {selectColor(2);
 progdefaults.changed = true;}
-                xywh {84 162 20 24}
+                xywh {84 139 20 24}
               }
               Fl_Button {btnColor[3]} {
                 callback {selectColor(3);
 progdefaults.changed = true;}
-                xywh {116 162 20 24}
+                xywh {116 139 20 24}
               }
               Fl_Button {btnColor[4]} {
                 callback {selectColor(4);
 progdefaults.changed = true;}
-                xywh {148 162 20 24}
+                xywh {148 139 20 24}
               }
               Fl_Button {btnColor[5]} {
                 callback {selectColor(5);
 progdefaults.changed = true;}
-                xywh {180 162 20 24}
+                xywh {180 139 20 24}
               }
               Fl_Button {btnColor[6]} {
                 callback {selectColor(6);
 progdefaults.changed = true;}
-                xywh {212 162 20 24}
+                xywh {212 139 20 24}
               }
               Fl_Button {btnColor[7]} {
                 callback {selectColor(7);
 progdefaults.changed = true;}
-                xywh {244 162 20 24}
+                xywh {244 139 20 24}
               }
               Fl_Button {btnColor[8]} {
                 callback {selectColor(8);
 progdefaults.changed = true;}
-                xywh {276 162 20 24}
+                xywh {276 139 20 24}
               }
               Fl_Button btnLoadPalette {
                 label Load
                 callback {loadPalette();
 progdefaults.changed = true;}
-                xywh {314 130 70 24}
+                xywh {314 107 70 24}
                 code0 {\#include "colorbox.h"}
               }
               Fl_Button btnSavePalette {
                 label Save
                 callback {savePalette();}
-                xywh {314 162 70 24}
+                xywh {314 139 70 24}
                 code0 {\#include "colorbox.h"}
               }
             }
@@ -174,20 +176,36 @@ progdefaults.changed = true;}
               label {Low Freq Cutoff}
               callback {progdefaults.LowFreqCutoff=(int)(o->value());
 progdefaults.changed = true;}
-              xywh {120 63 70 20} type Simple align 4 minimum 0 maximum 500 step 50 value 300
+              xywh {125 55 70 20} type Simple align 4 minimum 0 maximum 500 step 50 value 300
               code0 {o->value(progdefaults.LowFreqCutoff);}
             }
             Fl_Check_Button btnWFaveraging {
               label {wf averaging}
               callback {progdefaults.WFaveraging = o->value();
 progdefaults.changed = true;}
-              xywh {226 65 114 15} down_box DOWN_BOX
+              xywh {231 57 114 15} down_box DOWN_BOX
               code0 {o->value(progdefaults.WFaveraging);}
+            }
+            Fl_Group {} {open
+              xywh {10 180 385 30} box ENGRAVED_FRAME
+            } {
+              Fl_Button btnWaterfallFont {
+                label {Waterfall Font}
+                callback {static Font_Browser *b = (Font_Browser *)0;
+if (!b) {
+b = new Font_Browser;
+b->fontNumber((Fl_Font)progdefaults.WaterfallFontnbr);
+b->fontSize(progdefaults.WaterfallFontsize);
+}
+b->callback((Fl_Callback*)cbWaterfallFontBrowser, (void*)(b));
+b->show();} selected
+                xywh {20 185 120 20}
+              }
             }
           }
           Fl_Group {} {
             label {FFT Processing} open
-            xywh {0 49 400 170}
+            xywh {0 49 400 170} hide
           } {
             Fl_Group {} {
               label {FFT Prefilter} open
@@ -960,7 +978,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabModems {
         label Modem open
-        xywh {0 25 401 195} color 51 selection_color 51
+        xywh {0 25 401 195} color 51 selection_color 51 hide
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 401 195} color 51 selection_color 10 align 9
@@ -1253,7 +1271,7 @@ progdefaults.changed = true;}
             Fl_Spinner valHellXmtWidth {
               label {Xmt Width}
               callback {progdefaults.HellXmtWidth=(int)o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
               xywh {40 80 40 25} align 8 maximum 3 value 1
               code0 {o->value(progdefaults.HellXmtWidth);}
             }

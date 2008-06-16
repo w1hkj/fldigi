@@ -300,6 +300,20 @@ static void cb_btnTxFont(Fl_Button*, void*)
 	b->show();
 }
 
+void cbWaterfallFontBrowser(Font_Browser*, void* v) 
+{
+	Font_Browser *ft= (Font_Browser*)v;
+	Fl_Font fnt = ft->fontNumber();
+	int size = ft->fontSize();
+
+	progdefaults.WaterfallFontnbr = (int)(fnt);
+	progdefaults.WaterfallFontsize = size;
+	progdefaults.changed = true;
+	
+	ft->hide();
+}
+
+
 static void cb_btnNoTextColor(Fl_Button*, void*) 
 {
 	uchar r, g, b;
@@ -476,7 +490,7 @@ void make_colorsfonts()
 
 			o->end();
 		}
-
+		
 		btnClrFntOK = new Fl_Button(295, 209, 72, 20, "OK");
 		btnClrFntOK->callback((Fl_Callback*)cb_btnClrFntOK);
 	    

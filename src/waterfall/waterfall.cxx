@@ -586,7 +586,7 @@ void WFdisp::drawScale() {
 	fl_rectf(x(), y(), disp_width, WFTEXT);
 	
 	fl_color(fl_rgb_color(228));
-	fl_font(FL_SCREEN, 12);
+	fl_font(progdefaults.WaterfallFontnbr, progdefaults.WaterfallFontsize);
 	for (int i = 1; i < 10; i++) {
 		if (rfc == 0)
 			fr = 500.0 * i;

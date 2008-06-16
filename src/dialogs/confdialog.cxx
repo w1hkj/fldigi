@@ -5,6 +5,7 @@
 #include "main.h"
 #include "soundconf.h"
 #include "combo.h"
+#include "colorsfonts.h"
 extern void initViewer();
 Fl_Double_Window *dlgConfig; 
 
@@ -137,6 +138,19 @@ Fl_Check_Button *btnWFaveraging=(Fl_Check_Button *)0;
 static void cb_btnWFaveraging(Fl_Check_Button* o, void*) {
   progdefaults.WFaveraging = o->value();
 progdefaults.changed = true;
+}
+
+Fl_Button *btnWaterfallFont=(Fl_Button *)0;
+
+static void cb_btnWaterfallFont(Fl_Button*, void*) {
+  static Font_Browser *b = (Font_Browser *)0;
+if (!b) {
+b = new Font_Browser;
+b->fontNumber((Fl_Font)progdefaults.WaterfallFontnbr);
+b->fontSize(progdefaults.WaterfallFontsize);
+}
+b->callback((Fl_Callback*)cbWaterfallFontBrowser, (void*)(b));
+b->show();
 }
 
 Fl_Check_Button *btnBlackman=(Fl_Check_Button *)0;
@@ -1394,13 +1408,11 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { tabWaterfall = new Fl_Group(0, 25, 405, 195, "W-fall");
         tabWaterfall->color((Fl_Color)51);
         tabWaterfall->selection_color((Fl_Color)51);
-        tabWaterfall->hide();
         { Fl_Tabs* o = new Fl_Tabs(0, 25, 405, 195);
           { Fl_Group* o = new Fl_Group(0, 50, 400, 170, "Filters/Colors");
-            o->hide();
-            { Fl_Group* o = new Fl_Group(10, 100, 385, 110);
+            { Fl_Group* o = new Fl_Group(10, 84, 385, 96);
               o->box(FL_ENGRAVED_FRAME);
-              { WF_Palette = new colorbox(28, 130, 260, 24, "Palette:");
+              { WF_Palette = new colorbox(28, 107, 260, 24, "Palette:");
                 WF_Palette->box(FL_DOWN_BOX);
                 WF_Palette->color(FL_FOREGROUND_COLOR);
                 WF_Palette->selection_color(FL_BACKGROUND_COLOR);
@@ -1412,42 +1424,42 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 WF_Palette->align(FL_ALIGN_TOP_LEFT);
                 WF_Palette->when(FL_WHEN_RELEASE);
               } // colorbox* WF_Palette
-              { btnColor[0] = new Fl_Button(20, 162, 20, 24);
+              { btnColor[0] = new Fl_Button(20, 139, 20, 24);
                 btnColor[0]->callback((Fl_Callback*)cb_btnColor);
               } // Fl_Button* btnColor[0]
-              { btnColor[1] = new Fl_Button(52, 162, 20, 24);
+              { btnColor[1] = new Fl_Button(52, 139, 20, 24);
                 btnColor[1]->callback((Fl_Callback*)cb_btnColor1);
               } // Fl_Button* btnColor[1]
-              { btnColor[2] = new Fl_Button(84, 162, 20, 24);
+              { btnColor[2] = new Fl_Button(84, 139, 20, 24);
                 btnColor[2]->callback((Fl_Callback*)cb_btnColor2);
               } // Fl_Button* btnColor[2]
-              { btnColor[3] = new Fl_Button(116, 162, 20, 24);
+              { btnColor[3] = new Fl_Button(116, 139, 20, 24);
                 btnColor[3]->callback((Fl_Callback*)cb_btnColor3);
               } // Fl_Button* btnColor[3]
-              { btnColor[4] = new Fl_Button(148, 162, 20, 24);
+              { btnColor[4] = new Fl_Button(148, 139, 20, 24);
                 btnColor[4]->callback((Fl_Callback*)cb_btnColor4);
               } // Fl_Button* btnColor[4]
-              { btnColor[5] = new Fl_Button(180, 162, 20, 24);
+              { btnColor[5] = new Fl_Button(180, 139, 20, 24);
                 btnColor[5]->callback((Fl_Callback*)cb_btnColor5);
               } // Fl_Button* btnColor[5]
-              { btnColor[6] = new Fl_Button(212, 162, 20, 24);
+              { btnColor[6] = new Fl_Button(212, 139, 20, 24);
                 btnColor[6]->callback((Fl_Callback*)cb_btnColor6);
               } // Fl_Button* btnColor[6]
-              { btnColor[7] = new Fl_Button(244, 162, 20, 24);
+              { btnColor[7] = new Fl_Button(244, 139, 20, 24);
                 btnColor[7]->callback((Fl_Callback*)cb_btnColor7);
               } // Fl_Button* btnColor[7]
-              { btnColor[8] = new Fl_Button(276, 162, 20, 24);
+              { btnColor[8] = new Fl_Button(276, 139, 20, 24);
                 btnColor[8]->callback((Fl_Callback*)cb_btnColor8);
               } // Fl_Button* btnColor[8]
-              { btnLoadPalette = new Fl_Button(314, 130, 70, 24, "Load");
+              { btnLoadPalette = new Fl_Button(314, 107, 70, 24, "Load");
                 btnLoadPalette->callback((Fl_Callback*)cb_btnLoadPalette);
               } // Fl_Button* btnLoadPalette
-              { btnSavePalette = new Fl_Button(314, 162, 70, 24, "Save");
+              { btnSavePalette = new Fl_Button(314, 139, 70, 24, "Save");
                 btnSavePalette->callback((Fl_Callback*)cb_btnSavePalette);
               } // Fl_Button* btnSavePalette
               o->end();
             } // Fl_Group* o
-            { Fl_Counter* o = cntLowFreqCutoff = new Fl_Counter(120, 63, 70, 20, "Low Freq Cutoff");
+            { Fl_Counter* o = cntLowFreqCutoff = new Fl_Counter(125, 55, 70, 20, "Low Freq Cutoff");
               cntLowFreqCutoff->type(1);
               cntLowFreqCutoff->minimum(0);
               cntLowFreqCutoff->maximum(500);
@@ -1457,14 +1469,22 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
               cntLowFreqCutoff->align(FL_ALIGN_LEFT);
               o->value(progdefaults.LowFreqCutoff);
             } // Fl_Counter* cntLowFreqCutoff
-            { Fl_Check_Button* o = btnWFaveraging = new Fl_Check_Button(226, 65, 114, 15, "wf averaging");
+            { Fl_Check_Button* o = btnWFaveraging = new Fl_Check_Button(231, 57, 114, 15, "wf averaging");
               btnWFaveraging->down_box(FL_DOWN_BOX);
               btnWFaveraging->callback((Fl_Callback*)cb_btnWFaveraging);
               o->value(progdefaults.WFaveraging);
             } // Fl_Check_Button* btnWFaveraging
+            { Fl_Group* o = new Fl_Group(10, 180, 385, 30);
+              o->box(FL_ENGRAVED_FRAME);
+              { btnWaterfallFont = new Fl_Button(20, 185, 120, 20, "Waterfall Font");
+                btnWaterfallFont->callback((Fl_Callback*)cb_btnWaterfallFont);
+              } // Fl_Button* btnWaterfallFont
+              o->end();
+            } // Fl_Group* o
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 49, 400, 170, "FFT Processing");
+            o->hide();
             { Fl_Group* o = new Fl_Group(5, 58, 390, 42, "FFT Prefilter");
               o->box(FL_ENGRAVED_BOX);
               o->color((Fl_Color)51);
@@ -2018,6 +2038,7 @@ l with your sound hardware.");
       { tabModems = new Fl_Group(0, 25, 401, 195, "Modem");
         tabModems->color((Fl_Color)51);
         tabModems->selection_color((Fl_Color)51);
+        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 401, 195);
           tabsModems->color((Fl_Color)51);
           tabsModems->selection_color((Fl_Color)10);

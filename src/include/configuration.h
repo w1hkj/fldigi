@@ -198,6 +198,8 @@ struct configuration {
 	int		TxFontcolor;
 	RGBint	RxColor;
 	RGBint	TxColor;
+	int		WaterfallFontnbr;
+	int		WaterfallFontsize;
 	
 	string strCommPorts;
 	

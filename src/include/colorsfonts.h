@@ -41,6 +41,7 @@ void selectColorsFonts();
 
 extern void cbRxFontBrowser(Font_Browser*, void* v);
 extern void cbTxFontBrowser(Font_Browser*, void* v);
+extern void cbWaterfallFontBrowser(Font_Browser*, void* v);
 extern void cb_ColorFontOK();
 extern void make_colorsfonts();
 
