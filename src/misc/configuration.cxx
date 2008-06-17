@@ -11,7 +11,7 @@
 #endif
 
 #include "rigMEM.h"
-#include "rigio.h"
+//#include "rigio.h"
 
 #include <iostream>
 #include <fstream>
@@ -1526,6 +1526,8 @@ void configuration::initOperator() {
 	FL_UNLOCK();
 }
 
+#include "rigio.h"
+
 void configuration::initInterface() {
 	initOperator();
 
@@ -1640,7 +1642,6 @@ FL_LOCK();
 FL_UNLOCK();
 }
 #endif
-
 
 void configuration::testCommPorts()
 {

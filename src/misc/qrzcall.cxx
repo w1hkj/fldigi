@@ -579,8 +579,7 @@ void QRZ_disp_result()
            b+=rotoroffset;
            if (b<0) b+=360;
            if (b>=360) b-=360;
-           int br = (b + 180) % 360;
-           snprintf(buf, sizeof(buf), "%03d / %03d", b, br);
+           snprintf(buf, sizeof(buf), "%03d", b);
        }
        inpAZ->value(buf);
    }

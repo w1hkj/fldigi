@@ -337,12 +337,16 @@ EXTRA_fldigi_SOURCES += \
 	mt63/alias_k5.dat \
 	mt63/mt63intl.dat \
 	trx/tune.cxx \
+	rigcontrol/linserial.cxx \
+	rigcontrol/winserial.cxx \
 	rsid/rsid_fft.cxx \
 	rsid/rsid_fft.h \
 	include/Socket.h \
 	include/ServerSocket.h \
 	include/ClientSocket.h \
 	include/SocketException.h \
+	include/linserial.h \
+	include/winserial.h \
 	sockets/Socket.cxx \
 	sockets/ClientSocket.cxx \
 	sockets/ServerSocket.cxx
