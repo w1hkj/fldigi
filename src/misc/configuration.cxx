@@ -11,7 +11,7 @@
 #endif
 
 #include "rigMEM.h"
-#include "rigio.h"
+//#include "rigio.h"
 
 #include <iostream>
 #include <fstream>
@@ -203,7 +203,7 @@ configuration progdefaults = {
 	{  80,  80, 144}, // RGBint btnGroup3;
 	{ 255, 255, 255}, // RGBint btnFkeyTextColor;
 
-// Rx / Tx Text Widgets
+// Rx / Tx / Waterfall Text Widgets
 
 	FL_SCREEN,		// int 		RxFontnbr
 	16,				// int 		RxFontsize
@@ -213,6 +213,8 @@ configuration progdefaults = {
 	0,				// int		TxFontcolor
 	{ 255, 242, 190}, // RGBint RxColor;
 	{ 200, 235, 255}, // RGBint TxColor;
+	FL_SCREEN,		// int		WaterfallFontnbr
+	12,				// int		WaterfallFontsize
 
 	"",				// string	strCommPorts
         9876,		// int		rx_msgid
@@ -297,6 +299,7 @@ enum TAG { \
 	FKEYTEXTCOLOR,
 	RXFONTNBR, RXFONTSIZE, TXFONTNBR, TXFONTSIZE,
 	RXFONTCOLOR, TXFONTCOLOR,
+	WATERFALLFONTNBR, WATERFALLFONTSIZE,
 	TRANSMITRSID, SLOWCPU
 };
 	
@@ -518,7 +521,9 @@ void configuration::writeDefaultsXML()
 	writeXMLint(f, "TXFONTNBR", TxFontnbr);
 	writeXMLint(f, "TXFONTSIZE", TxFontsize);
 	writeXMLrgb(f, "RXFONTCOLOR", RxColor.R, RxColor.G, RxColor.B);
-	writeXMLrgb(f, "TXFONTCOLOR", TxColor.R, TxColor.G, TxColor.B);	
+	writeXMLrgb(f, "TXFONTCOLOR", TxColor.R, TxColor.G, TxColor.B);
+	writeXMLint(f, "WATERFALLFONTNBR", WaterfallFontnbr);
+	writeXMLint(f, "WATERFALLFONTSIZE", WaterfallFontsize);
 	
 	writeXMLbool(f, "TRANSMITRSID", TransmitRSid);
 	writeXMLbool(f, "SLOWCPU", slowcpu);
@@ -1038,6 +1043,12 @@ bool configuration::readDefaultsXML()
 						sscanf( xml->getNodeData(), "%d %d %d",
 							&RxColor.R, &RxColor.G, &RxColor.B);
 						break;
+					case WATERFALLFONTNBR :
+						WaterfallFontnbr = atoi(xml->getNodeData());
+						break;
+					case WATERFALLFONTSIZE :
+						WaterfallFontsize = atoi(xml->getNodeData());
+						break;
 					case TXFONTCOLOR :
 						sscanf( xml->getNodeData(), "%d %d %d",
 							&TxColor.R, &TxColor.G, &TxColor.B);
@@ -1210,6 +1221,8 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("TXFONTSIZE", nodeName)) tag = TXFONTSIZE;
 				else if (!strcmp("RXFONTCOLOR", nodeName)) tag = RXFONTCOLOR;
 				else if (!strcmp("TXFONTCOLOR", nodeName)) tag = TXFONTCOLOR;
+				else if (!strcmp("WATERFALLFONTNBR", nodeName)) tag = WATERFALLFONTNBR;
+				else if (!strcmp("WATERFALLFONTSIZE", nodeName)) tag = WATERFALLFONTSIZE;
 				else if (!strcmp("TRANSMITRSID", nodeName)) tag = TRANSMITRSID;
 				else if (!strcmp("SLOWCPU", nodeName)) tag = SLOWCPU;
 				else tag = IGNORE;
@@ -1513,6 +1526,8 @@ void configuration::initOperator() {
 	FL_UNLOCK();
 }
 
+#include "rigio.h"
+
 void configuration::initInterface() {
 	initOperator();
 
@@ -1627,7 +1642,6 @@ FL_LOCK();
 FL_UNLOCK();
 }
 #endif
-
 
 void configuration::testCommPorts()
 {

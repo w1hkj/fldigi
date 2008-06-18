@@ -121,6 +121,7 @@ void generate_option_help(void);
 int parse_args(int argc, char **argv, int& idx);
 void generate_version_text(void);
 void debug_exec(char** argv);
+void set_platform_fonts(void);
 
 #ifdef __CYGWIN__
 void redirect_streams(const std::string& dir);
@@ -160,6 +161,8 @@ int main(int argc, char ** argv)
 	redirect_streams(HomeDir);
 	atexit(restore_streams);
 #endif
+
+       set_platform_fonts();
 
 	generate_option_help();
 	generate_version_text();
@@ -643,6 +646,18 @@ void debug_exec(char** argv)
         setenv("MALLOC_PERTURB_", "42", 0);
         if (execvp(*argv, argv) == -1)
                 perror("execvp");
+#endif
+}
+
+void set_platform_fonts(void)
+{
+#if defined (__linux__)
+       FL_NORMAL_SIZE = 12;
+#elif defined(__CYGWIN__)
+       Fl::set_font(FL_HELVETICA, "Tahoma");
+       FL_NORMAL_SIZE = 11;
+       progdefaults.WaterfallFontnbr = FL_HELVETICA;
+       progdefaults.WaterfallFontsize = 12;
 #endif
 }
 

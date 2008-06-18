@@ -26,6 +26,8 @@
 
 #include "threads.h"
 
+//#define RIGIO_DEBUG
+
 using namespace std;
 
 Cserial rigio;
@@ -58,7 +60,7 @@ void printhex(unsigned char *s, int len)
 {
 	for (int i = 0; i < len; i++)
 		std::cout << hex << (unsigned int)(s[i] & 0xFF) << " ";
-	std::cout << std::endl;
+	std::cout << dec << std::endl;
 }
 char * printtime()
 {
@@ -80,7 +82,9 @@ bool hexout( string s, int retnbr)
 // reset the readpending & return false if a timeout occurs
 
 // debug code
-//std::cout << printtime() << "Cmd: "; printhex(s);
+#ifdef RIGIO_DEBUG
+std::cout << printtime() << "Cmd: "; printhex(s);
+#endif
 
 	readtimeout = (rig.wait +rig.timeout) * rig.retries + 2000; // 2 second min timeout
 	while (readpending && readtimeout--)
@@ -92,7 +96,7 @@ bool hexout( string s, int retnbr)
 	}
 
 	readpending = true;
-
+	
 	for (int n = 0; n < rig.retries; n++) {	
 		int num = 0;
 		memset(sendbuff,0, 200);
@@ -101,8 +105,16 @@ bool hexout( string s, int retnbr)
 
 		rigio.FlushBuffer();
 		rigio.WriteBuffer(sendbuff, s.size());
-		if (rig.echo == true)
-			rigio.ReadBuffer (replybuff, s.size());
+		if (rig.echo == true) {
+//#ifdef __CYGWIN__
+			MilliSleep(10);
+//#endif
+			num = rigio.ReadBuffer (replybuff, s.size());
+#ifdef RIGIO_DEBUG
+			std::cout << "echoed: ";
+			printhex(replybuff, num);
+#endif
+		}
 
 		memset (replybuff, 0, 200);
 	
@@ -110,15 +122,20 @@ bool hexout( string s, int retnbr)
 		if ((readtimeout = rig.wait) > 0)
 			while (readtimeout--)
 				MilliSleep(1);
+#ifdef RIGIO_DEBUG
+			std::cout << "Reading " << retnbr << std::endl;
+#endif
 
 		if (retnbr > 0) {
 			num = rigio.ReadBuffer (replybuff, retnbr > 200 ? 200 : retnbr);
 // debug code
-//			if (num) {
-//				std::cout << printtime() << "Rsp (" << n << "): ";
-//				printhex(replybuff, num);
-//			} else
-//				std::cout << printtime() << "Rsp (" << n << "): no reply" << std::endl;
+#ifdef RIGIO_DEBUG
+			if (num) {
+				std::cout << printtime() << "Rsp (" << n << "): ";
+				printhex(replybuff, num);
+			} else
+				std::cout << printtime() << "Rsp (" << n << "): no reply" << std::endl;
+#endif
 // to here			
 		}
 
@@ -334,7 +351,10 @@ long long rigCAT_getfreq()
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
-	
+
+#ifdef RIGIO_DEBUG
+std::cout << "get frequency" << std::endl;
+#endif	
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
 		if ((*itrCmd).SYMBOL == "GETFREQ")
@@ -364,14 +384,16 @@ long long rigCAT_getfreq()
 				size_t len = rTemp.str1.size();
 				
 // send the command
-				if (hexout(strCmd, rTemp.size ) == false)
+				if (hexout(strCmd, rTemp.size ) == false) {
 					return -1;
+				}
 				
 // check the pre data string				
 				if (len) {
 					for (size_t i = 0; i < len; i++)
-						if ((char)rTemp.str1[i] != (char)replybuff[i])
+						if ((char)rTemp.str1[i] != (char)replybuff[i]) {
 							return 0;
+						}
 					p = len;
 				}
 				if (rTemp.fill1) p += rTemp.fill1;
@@ -386,15 +408,18 @@ long long rigCAT_getfreq()
 				if (rTemp.fill2) p += rTemp.fill2;
 				if (len) {
 					for (size_t i = 0; i < len; i++)
-						if ((char)rTemp.str2[i] != (char)replybuff[p + i])
+						if ((char)rTemp.str2[i] != (char)replybuff[p + i]) {
 							return 0;
+						}
 				}
 // convert the data field
 				long long f = fm_freqdata(rTemp.data, pData);
-				if ( f >= rTemp.data.min && f <= rTemp.data.max)
+				if ( f >= rTemp.data.min && f <= rTemp.data.max) {
 					return f;
-				else
+				}
+				else {
 					return 0;
+				}
 			}
 			preply++;
 		}
@@ -407,7 +432,10 @@ void rigCAT_setfreq(long long f)
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
-	
+
+#ifdef RIGIO_DEBUG
+std::cout << "set frequency" << std::endl;
+#endif	
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
 		if ((*itrCmd).SYMBOL == "SETFREQ")
@@ -452,6 +480,9 @@ string rigCAT_getmode()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
+#ifdef RIGIO_DEBUG
+std::cout << "get mode" << std::endl;
+#endif	
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
 		if ((*itrCmd).SYMBOL == "GETMODE")
@@ -546,6 +577,10 @@ void rigCAT_setmode(string md)
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
+#ifdef RIGIO_DEBUG
+std::cout << "set mode" << std::endl;
+#endif
+
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
 		if ((*itrCmd).SYMBOL == "SETMODE")
@@ -606,6 +641,10 @@ string rigCAT_getwidth()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
+#ifdef RIGIO_DEBUG
+std::cout << "get width" << std::endl;
+#endif
+
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
 		if ((*itrCmd).SYMBOL == "GETBW")
@@ -700,6 +739,10 @@ void rigCAT_setwidth(string w)
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
+#ifdef RIGIO_DEBUG
+std::cout << "set width" << std::endl;
+#endif
+
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
 		if ((*itrCmd).SYMBOL == "SETBW")
@@ -761,6 +804,10 @@ void rigCAT_pttON()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
+#ifdef RIGIO_DEBUG
+std::cout << "ptt ON" << std::endl;
+#endif
+
 	rigio.SetPTT(1); // always execute the h/w ptt if enabled
 
 	itrCmd = commands.begin();
@@ -777,7 +824,22 @@ void rigCAT_pttON()
 		strCmd.append(modeCmd.str1);
 	if (modeCmd.str2.empty() == false)
 		strCmd.append(modeCmd.str2);
-	hexout(strCmd, 0);
+
+	if (modeCmd.ok.size()) {
+		list<XMLIOS>::iterator preply = reply.begin();
+		while (preply != reply.end()) {
+			if (preply->SYMBOL == modeCmd.ok) {
+				XMLIOS  rTemp = *preply;
+// send the command
+				hexout(strCmd, rTemp.size);
+				return;
+			}
+			preply++;
+		}
+	} else {
+		hexout(strCmd, 0);
+	}
+	
 }
 
 void rigCAT_pttOFF()
@@ -786,6 +848,10 @@ void rigCAT_pttOFF()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
+#ifdef RIGIO_DEBUG
+std::cout << "ptt OFF" << std::endl;
+#endif
+
 	rigio.SetPTT(0); // always execute the h/w ptt if enabled
 
 	itrCmd = commands.begin();
@@ -802,7 +868,21 @@ void rigCAT_pttOFF()
 		strCmd.append(modeCmd.str1);
 	if (modeCmd.str2.empty() == false)
 		strCmd.append(modeCmd.str2);
-	hexout(strCmd, 0);
+
+	if (modeCmd.ok.size()) {
+		list<XMLIOS>::iterator preply = reply.begin();
+		while (preply != reply.end()) {
+			if (preply->SYMBOL == modeCmd.ok) {
+				XMLIOS  rTemp = *preply;
+// send the command
+				hexout(strCmd, rTemp.size);
+				return;
+			}
+			preply++;
+		}
+	} else {
+		hexout(strCmd, 0);
+	}
 }
 
 void rigCAT_sendINIT()
@@ -811,6 +891,10 @@ void rigCAT_sendINIT()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
+#ifdef RIGIO_DEBUG
+std::cout << "INIT rig" << std::endl;
+#endif
+
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
 		if ((*itrCmd).SYMBOL == "INIT")
@@ -825,10 +909,28 @@ void rigCAT_sendINIT()
 		strCmd.append(modeCmd.str1);
 	if (modeCmd.str2.empty() == false)
 		strCmd.append(modeCmd.str2);
-
-	fl_lock(&rigCAT_mutex);
-		hexout(strCmd, 0);
-	fl_unlock(&rigCAT_mutex);
+	
+	if (modeCmd.ok.size()) {
+		list<XMLIOS>::iterator preply = reply.begin();
+		while (preply != reply.end()) {
+			if (preply->SYMBOL == modeCmd.ok) {
+				XMLIOS  rTemp = *preply;
+// send the command
+				fl_lock(&rigCAT_mutex);
+					hexout(strCmd, rTemp.size);
+				fl_unlock(&rigCAT_mutex);
+				return;
+			}
+			preply++;
+		}
+	} else {
+		fl_lock(&rigCAT_mutex);
+			hexout(strCmd, 0);
+		fl_unlock(&rigCAT_mutex);
+	}
+//	fl_lock(&rigCAT_mutex);
+//		hexout(strCmd, 0);
+//	fl_unlock(&rigCAT_mutex);
 }
 
 unused__ static void show_error(const char * a, const char * b)
@@ -865,6 +967,8 @@ bool rigCAT_init()
 		return false;
 	}
 	
+	rigCAT_sendINIT();
+
 	if (fl_create_thread(rigCAT_thread, rigCAT_loop, &dummy) < 0) {
 		std::cout << "rig init: pthread_create failed" << std::endl;
 		rigio.ClosePort();
@@ -872,7 +976,7 @@ bool rigCAT_init()
 	} 
 
 	init_Xml_RigDialog();
-	rigCAT_sendINIT();
+//	rigCAT_sendINIT();
 	rigCAT_open = true;
 	rigCAT_exit = false;
 	return true;
@@ -957,12 +1061,13 @@ static void *rigCAT_loop(void *args)
 
 	long long freq = 0L;
 	string sWidth, sMode;
+	int cntr = 10;
 
 	for (;;) {
-		MilliSleep(70);
+		MilliSleep(10);
 
 		if (rigCAT_bypass == true)
-			goto loop3;
+			goto loop;
 
 		if (rigCAT_exit == true)
 			goto exitloop;
@@ -970,69 +1075,67 @@ static void *rigCAT_loop(void *args)
 		fl_lock(&rigCAT_mutex);
 			freq = rigCAT_getfreq();
 		fl_unlock(&rigCAT_mutex);
-		if (freq <= 0)
-			goto loop3;
-			
-		MilliSleep(10);
-		if (rigCAT_exit == true)
-			goto exitloop;
-		if (rigCAT_bypass == true)
-			goto loop2;
 
-		fl_lock(&rigCAT_mutex);
-			sWidth = rigCAT_getwidth();
-		fl_unlock(&rigCAT_mutex);
-		MilliSleep(10);
+		if (freq <= 0)
+			goto loop;
+		if (freq != llFreq) {
+			llFreq = freq;
+//			FL_LOCK_D();
+			FreqDisp->value(freq);
+//			FL_UNLOCK_D();
+			wf->rfcarrier(freq);
+		}
+
+		if (--cntr % 5)
+			goto loop;
+
+		if (cntr == 5) {
+			if (rigCAT_exit == true)
+				goto exitloop;
+			if (rigCAT_bypass == true)
+				goto loop;
+
+			fl_lock(&rigCAT_mutex);
+				sWidth = rigCAT_getwidth();
+			fl_unlock(&rigCAT_mutex);
+		
+			if (sWidth.size() && sWidth != sRigWidth) {
+				sRigWidth = sWidth;
+				FL_LOCK();
+					opBW->value(sWidth.c_str());
+				FL_UNLOCK();
+				FL_AWAKE();
+			}
+			goto loop;
+		}
+
+		cntr = 10;
+
 		if (rigCAT_exit == true)
 			goto exitloop;
 		if (rigCAT_bypass == true)
-			goto loop1;
+			goto loop;
 
 		fl_lock(&rigCAT_mutex);
 			sMode = rigCAT_getmode();
 		fl_unlock(&rigCAT_mutex);
-		MilliSleep(10);
+
 		if (rigCAT_exit == true)
 			goto exitloop;
 		if (rigCAT_bypass == true)
-			goto loop0;
-		
-		if (freq && freq != llFreq) {
-			llFreq = freq;
-			FL_LOCK_D();
-				FreqDisp->value(freq);
-			FL_UNLOCK_D();
-#ifndef RIGCATTEST
-			wf->rfcarrier(freq);
-#endif
-		}
-		if (sWidth.size() && sWidth != sRigWidth) {
-			sRigWidth = sWidth;
-			FL_LOCK();
-				opBW->value(sWidth.c_str());
-			FL_UNLOCK();
-		}
+			goto loop;
 		if (sMode.size() && sMode != sRigMode) {
 			sRigMode = sMode;
-#ifndef RIGCATTEST
 			if (ModeIsLSB(sMode))
 				wf->USB(false);
 			else
 				wf->USB(true);
-#endif
 			FL_LOCK();
 				opMODE->value(sMode.c_str());
 			FL_UNLOCK();
+			FL_AWAKE();
 		}
-//		FL_AWAKE();
-		goto loop0;
-loop3:
-		MilliSleep(10);
-loop2:
-		MilliSleep(10);
-loop1:
-		MilliSleep(10);
-loop0:
+loop:
 		continue;
 	}
 exitloop:

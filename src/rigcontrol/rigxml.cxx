@@ -496,6 +496,7 @@ void parseDevice(size_t &p1)
 {
 	string stemp = getElement(p1);
 	rig.port = stemp;
+
 }
 
 void parseEcho(size_t &p1)

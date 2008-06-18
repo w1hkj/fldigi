@@ -1441,10 +1441,10 @@ void create_fl_digi_main() {
 			qsoSave = new Fl_Button(WNOM - 40 - pad, Y + 1, 40, Hnotes - 2, "Save");
 			qsoSave->callback(qsoSave_cb, 0);
 
-			inpAZ = new Fl_Input(leftof(qsoSave) - 40 - pad, Y, 40, Hnotes, "AZ"); // WA5ZNU
+			inpAZ = new Fl_Input(leftof(qsoSave) - 40 - pad, Y, 40, Hnotes, "Az"); // WA5ZNU
 			inpAZ->align(FL_ALIGN_LEFT);
 
-			inpLoc = new Fl_Input(leftof(inpAZ) - pad - 70, Y, 70, Hnotes, "LOC");
+			inpLoc = new Fl_Input(leftof(inpAZ) - pad - pad - 70, Y, 70, Hnotes, "Loc");
 			inpLoc->align(FL_ALIGN_LEFT);
 
 			// align this vertically with the Call field
