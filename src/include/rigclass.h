@@ -20,9 +20,7 @@
 #include <list>
 
 #include <hamlib/rig.h>
-#ifndef BSD
- #include <values.h>
-#endif
+#include <limits.h>
 #include <assert.h>
 #include <errno.h>
 

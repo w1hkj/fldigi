@@ -1061,15 +1061,13 @@ static void *rigCAT_loop(void *args)
 
 	long long freq = 0L;
 	string sWidth, sMode;
+	int cntr = 10;
 
 	for (;;) {
-#ifdef __CYGWIN__
-		MilliSleep(70);
-#else
-		MilliSleep(70);
-#endif
+		MilliSleep(10);
+
 		if (rigCAT_bypass == true)
-			goto loop3;
+			goto loop;
 
 		if (rigCAT_exit == true)
 			goto exitloop;
@@ -1079,68 +1077,65 @@ static void *rigCAT_loop(void *args)
 		fl_unlock(&rigCAT_mutex);
 
 		if (freq <= 0)
-			goto loop3;
-			
-		MilliSleep(10);
-		if (rigCAT_exit == true)
-			goto exitloop;
-		if (rigCAT_bypass == true)
-			goto loop2;
+			goto loop;
+		if (freq != llFreq) {
+			llFreq = freq;
+//			FL_LOCK_D();
+			FreqDisp->value(freq);
+//			FL_UNLOCK_D();
+			wf->rfcarrier(freq);
+		}
 
-		fl_lock(&rigCAT_mutex);
-			sWidth = rigCAT_getwidth();
-		fl_unlock(&rigCAT_mutex);
-		MilliSleep(10);
+		if (--cntr % 5)
+			goto loop;
+
+		if (cntr == 5) {
+			if (rigCAT_exit == true)
+				goto exitloop;
+			if (rigCAT_bypass == true)
+				goto loop;
+
+			fl_lock(&rigCAT_mutex);
+				sWidth = rigCAT_getwidth();
+			fl_unlock(&rigCAT_mutex);
+		
+			if (sWidth.size() && sWidth != sRigWidth) {
+				sRigWidth = sWidth;
+				FL_LOCK();
+					opBW->value(sWidth.c_str());
+				FL_UNLOCK();
+				FL_AWAKE();
+			}
+			goto loop;
+		}
+
+		cntr = 10;
+
 		if (rigCAT_exit == true)
 			goto exitloop;
 		if (rigCAT_bypass == true)
-			goto loop1;
+			goto loop;
 
 		fl_lock(&rigCAT_mutex);
 			sMode = rigCAT_getmode();
 		fl_unlock(&rigCAT_mutex);
-		MilliSleep(10);
+
 		if (rigCAT_exit == true)
 			goto exitloop;
 		if (rigCAT_bypass == true)
-			goto loop0;
-		
-		if (freq && freq != llFreq) {
-			llFreq = freq;
-			FL_LOCK_D();
-				FreqDisp->value(freq);
-			FL_UNLOCK_D();
-#ifndef RIGCATTEST
-			wf->rfcarrier(freq);
-#endif
-		}
-		if (sWidth.size() && sWidth != sRigWidth) {
-			sRigWidth = sWidth;
-			FL_LOCK();
-				opBW->value(sWidth.c_str());
-			FL_UNLOCK();
-		}
+			goto loop;
 		if (sMode.size() && sMode != sRigMode) {
 			sRigMode = sMode;
-#ifndef RIGCATTEST
 			if (ModeIsLSB(sMode))
 				wf->USB(false);
 			else
 				wf->USB(true);
-#endif
 			FL_LOCK();
 				opMODE->value(sMode.c_str());
 			FL_UNLOCK();
+			FL_AWAKE();
 		}
-//		FL_AWAKE();
-		goto loop0;
-loop3:
-		MilliSleep(10);
-loop2:
-		MilliSleep(10);
-loop1:
-		MilliSleep(10);
-loop0:
+loop:
 		continue;
 	}
 exitloop:

@@ -13,6 +13,21 @@
 BOOL Cserial::OpenPort()
 {
 	string COMportname = "//./";
+
+	if (device == "/dev/ttyS0") device = "COM1";
+	else if (device == "/dev/ttyS1") device = "COM2";
+	else if (device == "/dev/ttyS2") device = "COM3";
+	else if (device == "/dev/ttyS3") device = "COM4";
+	else if (device == "/dev/ttyS4") device = "COM5";
+	else if (device == "/dev/ttyS5") device = "COM6";
+	else if (device == "/dev/ttyS6") device = "COM7";
+	else if (device == "/dev/ttyS7") device = "COM8";
+	else if (device == "/dev/ttyS8") device = "COM9";
+	else if (device == "/dev/ttyS9") device = "COM10";
+	else if (device == "/dev/ttyS10") device = "COM11";
+	else if (device == "/dev/ttyS11") device = "COM12";
+	else if (device == "/dev/ttyS12") device = "COM13";
+	else if (device == "/dev/ttyS13") device = "COM14";
 	COMportname += device;
 
 	hComm = CreateFile(COMportname.c_str(),
@@ -80,7 +95,7 @@ static	DWORD dwBytesTxD=0;
 	if (!hComm) return FALSE;
 	if (ReadFile (hComm, &byResByte[0], 1, &dwBytesTxD, 0))	{
 		if (dwBytesTxD == 1) {
-			by= (UCHAR)byResByte[0];
+			by = (UCHAR)byResByte[0];
 			return TRUE;
 		}
 	}
@@ -91,11 +106,13 @@ static	DWORD dwBytesTxD=0;
 int  Cserial::ReadData (unsigned char *buf, int nchars)
 {
 	DWORD dwRead = 0;
-	int retval;
-	busyflag = true;
-	retval = ReadFile(hComm, buf, nchars, &dwRead, NULL);
-	busyflag = false;
-	if (!retval) 
+//	int retval;
+//	busyflag = true;
+//	retval = ReadFile(hComm, buf, nchars, &dwRead, NULL);
+//	busyflag = false;
+//	if (retval == 0) 
+//		return 0;
+	if (!ReadFile(hComm, buf, nchars, &dwRead, NULL))
 		return 0;
 	return (int) dwRead;
 }
@@ -131,9 +148,9 @@ int Cserial::WriteBuffer(unsigned char *buff, int n)
 {
 	if (!hComm) 
 		return 0;
-	busyflag = true;
+//	busyflag = true;
 	WriteFile (hComm, buff, n, &nBytesWritten, NULL);
-	busyflag = false;
+//	busyflag = false;
 	return nBytesWritten;
 }
 
@@ -150,10 +167,10 @@ int Cserial::WriteBuffer(unsigned char *buff, int n)
 ///////////////////////////////////////////////////////
 BOOL Cserial::SetCommunicationTimeouts(
 	DWORD ReadIntervalTimeout,
-  DWORD ReadTotalTimeoutMultiplier,
-  DWORD ReadTotalTimeoutConstant,
-  DWORD WriteTotalTimeoutMultiplier,
-  DWORD WriteTotalTimeoutConstant
+	DWORD ReadTotalTimeoutMultiplier,
+	DWORD ReadTotalTimeoutConstant,
+	DWORD WriteTotalTimeoutMultiplier,
+	DWORD WriteTotalTimeoutConstant
 )
 {
 	if((bPortReady = GetCommTimeouts (hComm, &CommTimeoutsSaved))==0)	{
@@ -241,14 +258,10 @@ BOOL Cserial::ConfigurePort(DWORD	BaudRate,
 ///////////////////////////////////////////////////////
 void Cserial::SetPTT(bool b)
 {
-#ifdef WIN32
 	if(hComm == INVALID_HANDLE_VALUE)
 		return;
-#endif
 	if ( !(dtrptt || rtsptt) )
 		return;
-	
-#ifdef WIN32
 	if (b == true) {				// ptt enabled
 		if (dtrptt && dtr)
 			dcb.fDtrControl = DTR_CONTROL_DISABLE;
@@ -272,33 +285,5 @@ void Cserial::SetPTT(bool b)
 				dcb.fRtsControl = RTS_CONTROL_DISABLE;
 		}
 	}
-		
 	SetCommState(hComm, &dcb);
-#else
-	ioctl(fd, TIOCMGET, &status);
-	if (b == true) {				// ptt enabled
-		if (dtrptt && dtr)
-			status &= ~TIOCM_DTR;	// toggle low
-		if (dtrptt && !dtr)
-			status |= TIOCM_DTR;	// toggle high
-		if (rtscts == false) {
-			if (rtsptt && rts)
-				status &= ~TIOCM_RTS;	// toggle low
-			if (rtsptt && !rts)
-				status |= TIOCM_RTS;	// toggle high
-		}
-	} else {						// ptt disabled
-		if (dtrptt && dtr)
-			status |= TIOCM_DTR;	// toggle high
-		if (dtrptt && !dtr)
-			status &= ~TIOCM_DTR;	// toggle low
-		if (rtscts == false) {
-			if (rtsptt && rts)
-				status |= TIOCM_RTS;	// toggle high
-			if (rtsptt && !rts)
-				status &= ~TIOCM_RTS;	// toggle low
-		}
-	}
-	ioctl(fd, TIOCMSET, &status);
-#endif
 }
