@@ -97,7 +97,7 @@ enum WFmode {
 #define MAG_4 3
 
 //enum WFspeed {FAST = 1, NORMAL = 2, SLOW = 8};
-enum WFspeed {FAST = 1, NORMAL = 2, SLOW = 4};
+enum WFspeed {FAST = 1, NORMAL = 2, SLOW = 4, PAUSE = INT_MAX};
 
 class WFdisp : public Fl_Widget {
 public:

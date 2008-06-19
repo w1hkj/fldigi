@@ -429,6 +429,9 @@ void WFdisp::redrawCursor()
 }
 
 void WFdisp::sig_data( double *sig, int len, int sr ) {
+	if (wfspeed == PAUSE)
+		return;
+
 //if sound card sampling rate changed reset the waterfall buffer
 	if (srate != sr) {
 		srate = sr;
@@ -469,7 +472,6 @@ void WFdisp::sig_data( double *sig, int len, int sr ) {
 	}
 	FL_LOCK_D();
 	inpFreq->value(szFrequency);
-	inpFreq->redraw();
 	FL_UNLOCK_D();
 
 	return;
@@ -959,21 +961,25 @@ void qsy_cb(Fl_Widget *w, void *v)
 }
 
 void rate_cb(Fl_Widget *w, void *v) {
-	FL_LOCK_D();
-	waterfall *wf = (waterfall *)w->parent();
-	WFspeed spd = wf->wfdisp->Speed();
-	if (spd == SLOW) {
-		wf->wfrate->label("NORM");
-		wf->wfdisp->Speed(NORMAL);
+	waterfall* wf = static_cast<waterfall*>(w->parent());
+	WFspeed new_speed;
+
+	switch (wf->wfdisp->Speed()) {
+	case SLOW:
+		new_speed = NORMAL;
+		break;
+	case NORMAL: default:
+		new_speed = FAST;
+		break;
+	case FAST:
+		new_speed = PAUSE;
+		break;
+	case PAUSE:
+		new_speed = SLOW;
+		break;
 	}
-	else if (spd == NORMAL) {
-		wf->wfrate->label("FAST");
-		wf->wfdisp->Speed(FAST);
-	} else {
-		wf->wfrate->label("SLOW");
-		wf->wfdisp->Speed(SLOW);
-	}
-	FL_UNLOCK_D();
+
+	wf->Speed(new_speed);
 	restoreFocus();
 }
 
@@ -1198,21 +1204,29 @@ int waterfall::Speed() {
 	return (int)wfdisp->Speed();
 }
 
-void waterfall::Speed(int rate) { 
-	WFspeed spd = (WFspeed) rate;
-	FL_LOCK_D();
-	if (spd == SLOW) {
-		wfdisp->Speed(spd);
-		wfrate->label("SLOW");
-	} else if (rate == FAST) {
-		wfdisp->Speed(spd);
-		wfrate->label("FAST");
-	} else {
-		wfdisp->Speed(NORMAL);
-		wfrate->label("NORM");
+void waterfall::Speed(int rate)
+{
+	WFspeed speed = static_cast<WFspeed>(rate);
+	wfdisp->Speed(speed);
+
+	const char* label;
+	switch (speed) {
+	case SLOW:
+		label = "SLOW";
+		break;
+	case NORMAL: default:
+		label = "NORM";
+		break;
+	case FAST:
+		label = "FAST";
+		break;
+	case PAUSE:
+		label = "PAUSE";
+		break;
 	}
+
+	wfrate->label(label);
 	wfrate->redraw_label();
-	FL_UNLOCK_D();
 }
 
 int waterfall::Mag() {
