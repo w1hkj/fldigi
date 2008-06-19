@@ -394,8 +394,10 @@ FL_UNLOCK_D();
 }
 
 void WFdisp::process_analog (double *sig, int len) {
-	int h2, sigw, sigy, sigpixel, ynext, graylevel;
+	int h1, h2, h3, sigw, sigy, sigpixel, ynext, graylevel;
+	h1 = h()/8 - 1;
 	h2 = h()/2 - 1;
+	h3 = h()*7/8 + 1;
 	sigw = IMAGE_WIDTH;
 	graylevel = 220;
 // clear the signal display area
@@ -404,7 +406,9 @@ void WFdisp::process_analog (double *sig, int len) {
 //FL_LOCK();
 FL_LOCK_D();
 	memset (sig_img, 0, sig_image_area);
+	memset (&sig_img[h1*IMAGE_WIDTH], 64, IMAGE_WIDTH);
 	memset (&sig_img[h2*IMAGE_WIDTH], 255, IMAGE_WIDTH);
+	memset (&sig_img[h3*IMAGE_WIDTH], 64, IMAGE_WIDTH);
 	int cbc = ptrCB;
 	for (int c = 0; c < IMAGE_WIDTH; c++) {
 		ynext = (int)(h2 * sig[cbc]);
