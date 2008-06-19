@@ -6,50 +6,41 @@
 #ifndef _RIGCLASS_H
 #define _RIGCLASS_H 1
 
-#include <sys/ipc.h>
-#include <sys/msg.h>
-#include <sys/shm.h>
-#include <sys/time.h>
-// for FreeBSD compilation
-#if (defined(__unix__) || defined(unix)) && !defined(USG)
-#include <sys/param.h>
-#endif
-#include <iostream>
-#include <cstring>
-#include <cstdio>
+#include <exception>
+#include <string>
 #include <list>
 
 #include <hamlib/rig.h>
-#include <limits.h>
-#include <assert.h>
-#include <errno.h>
 
-#include <FL/Fl.H>
-#include <FL/fl_ask.H>
 
-using namespace std;
-
-class RigException {
+class RigException : public std::exception
+{
 public:
-char message[80];
-	RigException() { *message = 0;}
-	RigException (const char * msg) {
-		snprintf(message, sizeof(message), "Hamlib %s error", msg);
-	}
+	RigException(int e = 0)
+		: err(e), msg(rigerror(e)) { }
+	RigException(const char* m)
+		: err(0), msg(m) { }
+	RigException(const char* prefix, int e)
+		: err(e), msg(std::string(prefix).append(": ").append(rigerror(e))) { }
+	virtual ~RigException() throw() { }
+
+	const char* what(void) const throw() { return msg.c_str(); }
+	int error(void) const { return err; }
+
+protected:
+	int		err;
+	std::string	msg;
 };
 
-class Rig {
-#define NUMTRIES 5
 
-friend int riglist_make_list(const struct rig_caps *caps, void *data);
-friend class configuration;
+class Rig {
 public:
-	list< const struct rig_caps *> riglist;
-	list<string> rignames;
+	std::list< const struct rig_caps *> riglist;
+	std::list<std::string> rignames;
 protected:
 	RIG	*theRig;  // Global ref. to the rig
-	list< const struct rig_caps *>::iterator prig1;
-	list<string>::iterator pstr;
+	std::list<const struct rig_caps *>::iterator prig1;
+	std::list<std::string>::iterator pstr;
 public:
 	Rig();
 	Rig(rig_model_t rig_model);
