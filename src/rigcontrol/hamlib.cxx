@@ -25,6 +25,8 @@
 #include "rigsupport.h"
 #include "rigdialog.h"
 
+#include "stacktrace.h"
+
 using namespace std;
 
 static Fl_Mutex		hamlib_mutex = PTHREAD_MUTEX_INITIALIZER;

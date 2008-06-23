@@ -52,6 +52,11 @@ void dominoex::tx_init(SoundBase *sc)
 	bitstate = 0;
 	counter = 0;
 	txphase = 0;
+	
+	strSecXmtText = progdefaults.secText;
+	if (strSecXmtText.length() == 0)
+		strSecXmtText = "fldigi "PACKAGE_VERSION" ";
+
 	videoText();
 }
 
@@ -113,10 +118,6 @@ void dominoex::init()
 	modem::init();
 //	reset_filters();
 	rx_init();
-
-	strSecXmtText = txtSecondary->value();
-	if (strSecXmtText.length() == 0)
-		strSecXmtText = "fldigi "PACKAGE_VERSION" ";
 
 	set_scope_mode(Digiscope::DOMDATA);
 }

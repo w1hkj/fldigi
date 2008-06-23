@@ -60,6 +60,7 @@ void pMODEM(string &, size_t &);
 void pEXEC(string &, size_t &);
 void pSTOP(string &, size_t &);
 void pCONT(string &, size_t &);
+void pGET(string &, size_t &);
 
 MTAGS mtags[] = {
 {"<CALL>",		pCALL},
@@ -93,10 +94,12 @@ MTAGS mtags[] = {
 {"<EXEC>",		pEXEC},
 {"<STOP>",		pSTOP},
 {"<CONT>",		pCONT},
+{"<GET>",	pGET},
 {0, 0}
 };
 
 static bool expand;
+static bool GET = false;
 
 size_t mystrftime( char *s, size_t max, const char *fmt, const struct tm *tm) {
 	return strftime(s, max, fmt, tm);
@@ -106,6 +109,12 @@ size_t mystrftime( char *s, size_t max, const char *fmt, const struct tm *tm) {
 void pCALL(string &s, size_t &i)
 {
 	s.replace( i, 6, inpCall->value() );
+}
+
+void pGET(string &s, size_t &i)
+{
+	s.erase( i, 9 );
+	GET = true;
 }
 
 void pFREQ(string &s, size_t &i)
@@ -332,7 +341,7 @@ void set_env(void)
 
 	       FLDIGI_LOG_FREQUENCY, FLDIGI_LOG_TIME, FLDIGI_LOG_CALL, FLDIGI_LOG_NAME,
 	       FLDIGI_LOG_RST_IN, FLDIGI_LOG_RST_OUT, FLDIGI_LOG_QTH, FLDIGI_LOG_LOCATOR,
-	       FLDIGI_LOG_NOTES, FLDIGI_AZ1, FLDIGI_AZ2, ENV_SIZE
+	       FLDIGI_LOG_NOTES, FLDIGI_AZ, ENV_SIZE
 	};
 
 	struct {
@@ -366,8 +375,7 @@ void set_env(void)
 		{ "FLDIGI_LOG_QTH", inpQth->value() },
 		{ "FLDIGI_LOG_LOCATOR", inpLoc->value() },
 		{ "FLDIGI_LOG_NOTES", inpNotes->value() },
-		{ "FLDIGI_AZ1", "" },
-		{ "FLDIGI_AZ2", "" }
+		{ "FLDIGI_AZ", "" }
 	};
 
 	// PATH
@@ -409,15 +417,12 @@ void set_env(void)
 	env[FLDIGI_FREQUENCY].val = freq;
 
 	// azimuth
-	int az_int[2];
-	char az_str[2][4];
-	if (sscanf(inpAZ->value(), "%03d / %03d", &az_int[0], &az_int[1]) == 2) {
-		snprintf(az_str[0], sizeof(az_str[0]), "%d", az_int[0]);
-		env[FLDIGI_AZ1].val = az_str[0];
-		snprintf(az_str[1], sizeof(az_str[1]), "%d", az_int[1]);
-		env[FLDIGI_AZ2].val = az_str[1];
+	int az_int;
+	char az_str[4];
+	if (sscanf(inpAZ->value(), "%03d", &az_int) == 1) {
+		snprintf(az_str, sizeof(az_str), "%d", az_int);
+		env[FLDIGI_AZ].val = az_str;
 	}
-
 	// debugging vars
 #ifndef NDEBUG
 	unsetenv("FLDIGI_NO_EXEC");
@@ -606,6 +611,7 @@ void MACROTEXT::saveMacroFile()
 		saveMacros(p);
 }
 
+
 string MACROTEXT::expandMacro(int n)
 {
 	size_t idx = 0;
@@ -635,6 +641,21 @@ string MACROTEXT::expandMacro(int n)
 		if (pMtags->mTAG == 0)
 			idx++;
 	}
+	if (GET) {
+		size_t pos1 = expanded.find("$NAME");
+		size_t pos2 = expanded.find("$QTH");
+		if (pos1 != string::npos && pos2 != string::npos) {
+			pos1 += 5;
+			inpName->value(expanded.substr(pos1, pos2 - pos1).c_str());
+		}
+		if (pos2 != string::npos) {
+			pos2 += 4;
+			inpQth->value(expanded.substr(pos2).c_str());
+		}
+		GET = false;
+		return "";
+	}
+		
 	return expanded;
 }
 

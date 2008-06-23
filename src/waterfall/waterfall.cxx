@@ -406,9 +406,9 @@ void WFdisp::process_analog (double *sig, int len) {
 //FL_LOCK();
 FL_LOCK_D();
 	memset (sig_img, 0, sig_image_area);
-	memset (&sig_img[h1*IMAGE_WIDTH], 64, IMAGE_WIDTH);
+	memset (&sig_img[h1*IMAGE_WIDTH], 160, IMAGE_WIDTH);
 	memset (&sig_img[h2*IMAGE_WIDTH], 255, IMAGE_WIDTH);
-	memset (&sig_img[h3*IMAGE_WIDTH], 64, IMAGE_WIDTH);
+	memset (&sig_img[h3*IMAGE_WIDTH], 160, IMAGE_WIDTH);
 	int cbc = ptrCB;
 	for (int c = 0; c < IMAGE_WIDTH; c++) {
 		ynext = (int)(h2 * sig[cbc]);
