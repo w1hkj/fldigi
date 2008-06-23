@@ -157,31 +157,38 @@ static void init_portaudio(void)
 	// select the correct menu items
 	const Fl_Menu_Item* menu;
 	int size;
+	int idx;
 
+	idx = -1;
 	menu = menuPortInDev->menu();
 	size = menuPortInDev->size();
 	for (int i = 0; i < size - 1; i++, menu++) {
 		if (menu->label() && progdefaults.PortInDevice == menu->label()) {
-			if (progdefaults.PortInIndex != -1 &&
-			    reinterpret_cast<intptr_t>(menu->user_data()) != progdefaults.PortInIndex)
-				continue;
-			menuPortInDev->value(i);
-			menuPortInDev->set_changed();
-			break;
+			idx = i; // near match
+			if (reinterpret_cast<intptr_t>(menu->user_data()) == progdefaults.PortInIndex ||
+			    progdefaults.PortInIndex == -1) // exact match, or index was never saved
+				break;
 		}
 	}
+	if (idx >= 0) {
+		menuPortInDev->value(idx);
+		menuPortInDev->set_changed();
+	}
 
+	idx = -1;
 	menu = menuPortOutDev->menu();
 	size = menuPortOutDev->size();
 	for (int i = 0; i < size - 1; i++, menu++) {
 		if (menu->label() && progdefaults.PortOutDevice == menu->label()) {
-			if (progdefaults.PortOutIndex != -1 &&
-			    reinterpret_cast<intptr_t>(menu->user_data()) != progdefaults.PortOutIndex)
-				continue;
-			menuPortOutDev->value(i);
-			menuPortOutDev->set_changed();
-			break;
+			idx = i;
+			if (reinterpret_cast<intptr_t>(menu->user_data()) == progdefaults.PortOutIndex ||
+			    progdefaults.PortOutIndex == -1)
+				break;
 		}
+	}
+	if (idx >= 0) {
+		menuPortOutDev->value(idx);
+		menuPortOutDev->set_changed();
 	}
 #endif
 }
