@@ -25,6 +25,8 @@
 #include "rigsupport.h"
 #include "rigdialog.h"
 
+#include "stacktrace.h"
+
 using namespace std;
 
 static Fl_Mutex		hamlib_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -55,8 +57,8 @@ void show_error(const char * a, const char * b)
 	string msg = a;
 	msg.append(": ");
 	msg.append(b);
-	put_status((char*)msg.c_str());
-	std::cout << msg.c_str() << std::endl;
+	put_status(msg.c_str(), 10.0);
+	cerr << msg.c_str() << '\n';
 }
 
 bool hamlib_setRTSDTR()
@@ -97,18 +99,8 @@ bool hamlib_init(bool bPtt)
 	
 	hamlib_ptt = bPtt;
 	hamlib_closed = true;
-	
-	if (progdefaults.HamRigDevice == "COM1")
-		port = "/dev/ttyS0";
-	else if (progdefaults.HamRigDevice == "COM2")
-		port = "/dev/ttyS1";
-	else if (progdefaults.HamRigDevice == "COM3")
-		port = "/dev/ttyS2";
-	else if (progdefaults.HamRigDevice == "COM4")
-		port = "/dev/ttyS3";
-	else
-		port = progdefaults.HamRigDevice;
 
+	port = progdefaults.HamRigDevice;
 	spd = progdefaults.strBaudRate();
 
 	list<string>::iterator pstr = (xcvr->rignames).begin();
@@ -124,7 +116,7 @@ bool hamlib_init(bool bPtt)
 	}
 	if (pstr == (xcvr->rignames).end()) {
 		fl_message("Rig not in list");
-		return -1;
+		return false;
 	}
 
 //	if (hamlib_setRTSDTR() == false) {
@@ -142,9 +134,10 @@ bool hamlib_init(bool bPtt)
 			xcvr->setConf("dtr_state", "ON");
 		xcvr->open();
 	}
-	catch (RigException Ex) {
-		show_error("Init", Ex.message);
-		return -1;
+	catch (const RigException& Ex) {
+		show_error("Init", Ex.what());
+		xcvr->close();
+		return false;
 	}
 
 //	if (hamlib_setRTSDTR() == false)
@@ -153,7 +146,7 @@ bool hamlib_init(bool bPtt)
 	MilliSleep(200);
 //char temp[80];
 //xcvr->getConf("dtr_state", temp);
-//std::cout << "Hamlib DTR " << temp << std::endl; std::cout.flush();
+//cerr << "Hamlib DTR " << temp << '\n';
 
 	try {
 		need_freq = true;
@@ -161,27 +154,27 @@ bool hamlib_init(bool bPtt)
 		if (freq == 0) {
 			xcvr->close();
 			show_error("Transceiver not responding", "");
-			return -1;
+			return false;
 		}
 	}
-	catch (RigException Ex) {
-		show_error("Get Freq",Ex.message);
+	catch (const RigException& Ex) {
+		show_error("Get Freq", Ex.what());
 		need_freq = false;
 	}
 	try {
 		need_mode = true;
 		mode = xcvr->getMode(width);
 	}
-	catch (RigException Ex) {
-		show_error("Get Mode", Ex.message);
+	catch (const RigException& Ex) {
+		show_error("Get Mode", Ex.what());
 		need_mode = false;
 	}
 	try {
 		if (hamlib_ptt == true)
 		xcvr->setPTT(RIG_PTT_OFF);
 	}
-	catch (RigException Ex) {
-		show_error("Set Ptt", Ex.message);
+	catch (const RigException& Ex) {
+		show_error("Set Ptt", Ex.what());
 		hamlib_ptt = false;
 	}
 
@@ -194,7 +187,7 @@ bool hamlib_init(bool bPtt)
 	hamlib_rmode = RIG_MODE_NONE;//RIG_MODE_USB;
 
 	if (fl_create_thread(hamlib_thread, hamlib_loop, &dummy) < 0) {
-		std::cout << "Hamlib init:  pthread_create failed" << std::endl;
+		cerr << "Hamlib init:  pthread_create failed\n";
 		xcvr->close();
 		return false;
 	} 
@@ -208,23 +201,18 @@ bool hamlib_init(bool bPtt)
 
 void hamlib_close(void)
 {
-	int count = 20;
-	if (xcvr->isOnLine() == false)
+	if (hamlib_closed || !xcvr->isOnLine())
 		return;
 
-	if (hamlib_closed == true)
-		return;
-		
 	hamlib_exit = true;
-
-	while (hamlib_closed == false) {
-//		std::cout << "."; cout.flush();
+	int count = 20;
+	while (!hamlib_closed) {
+//		cerr << "." << flush;
 		MilliSleep(50);
-		count--;
-		if (!count) {
-			std::cout << "\nHamlib stuck" << std::endl;
+		if (!count--) {
+			cerr << "Hamlib stuck, transceiver on fire\n";
 			xcvr->close();
-			exit(0);
+			diediedie();
 		}
 	}
 }
@@ -245,8 +233,8 @@ void hamlib_set_ptt(int ptt)
 			xcvr->setPTT(ptt ? RIG_PTT_ON : RIG_PTT_OFF);
 			hamlib_bypass = ptt;
 		}
-		catch (RigException Ex) {
-			show_error("Rig Ptt", Ex.message);
+		catch (const RigException& Ex) {
+			show_error("Rig PTT", Ex.what());
 			hamlib_ptt = false;
 		}
 	fl_unlock(&hamlib_mutex);
@@ -270,8 +258,8 @@ void hamlib_set_qsy(long long f, long long fmid)
 		wf->rfcarrier(f);
 		wf->movetocenter();
 	}
-	catch (RigException Ex) {
-		show_error("QSY", Ex.message);
+	catch (const RigException& Ex) {
+		show_error("QSY", Ex.what());
 		hamlib_passes = 0;
 	}
 	fl_unlock(&hamlib_mutex);
@@ -286,8 +274,8 @@ int hamlib_setfreq(long f)
 			xcvr->setFreq(f);
 			wf->rfcarrier(f);//(hamlib_freq);
 		}
-		catch (RigException Ex) {
-		show_error("SetFreq", Ex.message);
+		catch (const RigException& Ex) {
+		show_error("SetFreq", Ex.what());
 			hamlib_passes = 0;
 		}
 	fl_unlock(&hamlib_mutex);
@@ -304,8 +292,8 @@ int hamlib_setmode(rmode_t m)
 			xcvr->setMode(m, hamlib_pbwidth);
 			hamlib_rmode = m;
 		}
-		catch (RigException Ex) {
-		show_error("Set Mode", Ex.message);
+		catch (const RigException& Ex) {
+		show_error("Set Mode", Ex.what());
 			hamlib_passes = 0;
 		}
 	fl_unlock(&hamlib_mutex);
@@ -322,8 +310,8 @@ int hamlib_setwidth(pbwidth_t w)
 			xcvr->setMode(hamlib_rmode, w);
 			hamlib_pbwidth = w;
 		}
-		catch (RigException Ex) {
-			show_error("Set Width", Ex.message);
+		catch (const RigException& Ex) {
+			show_error("Set Width", Ex.what());
 			hamlib_passes = 0;
 		}
 	fl_unlock(&hamlib_mutex);
@@ -349,7 +337,6 @@ static void *hamlib_loop(void *args)
 	bool freqok = false, modeok = false;
 	
 	for (;;) {
-loop:
 		MilliSleep(100);
 		if (hamlib_exit)
 			break;
@@ -366,11 +353,11 @@ loop:
 				freqok = true;
 				if (freq == 0) {
 					fl_unlock (&hamlib_mutex);
-					goto loop;
+					continue;
 //					hamlib_exit = true;
 				}
 			}
-			catch (RigException Ex) {
+			catch (const RigException& Ex) {
 				show_error("No transceiver comms", "");
 				freqok = false;
 				hamlib_exit = true;
@@ -384,7 +371,7 @@ loop:
 				numode = xcvr->getMode(hamlib_pbwidth);
 				modeok = true;
 			}
-			catch (RigException Ex) {
+			catch (const RigException& Ex) {
 				show_error("No transceiver comms", "");
 				modeok = false;
 				hamlib_exit = true;
