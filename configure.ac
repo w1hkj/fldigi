@@ -229,16 +229,20 @@ AC_OUTPUT
 AC_MSG_RESULT([
 Configuration summary:
 
-  Version ............................. $VERSION
+  Version ..................... $VERSION
 
-  Static linking ...................... $ac_cv_static
-  CPU optimizations ................... $ac_cv_opt
-  Debugging ........................... $ac_cv_debug
+  Static linking .............. $ac_cv_static
+  CPU optimizations ........... $ac_cv_opt
+  Debugging ................... $ac_cv_debug
 
-  sndfile ............................. $ac_cv_sndfile
-  OSS ................................. $ac_cv_oss
-  PortAudio ........................... $ac_cv_portaudio
-  PulseAudio .......................... $ac_cv_pulseaudio
-  hamlib .............................. $ac_cv_hamlib
-  xml-rpc ............................. $ac_cv_xmlrpc
+  png ......................... $ac_cv_libpng
+  jpeg ........................ $ac_cv_libjpeg
+
+  sndfile ..................... $ac_cv_sndfile
+  oss ......................... $ac_cv_oss
+  portaudio ................... $ac_cv_portaudio
+  pulseaudio .................. $ac_cv_pulseaudio
+
+  hamlib ...................... $ac_cv_hamlib
+  xmlrpc ...................... $ac_cv_xmlrpc
 ])
