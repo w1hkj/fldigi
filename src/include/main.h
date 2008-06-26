@@ -42,6 +42,7 @@ extern bool			mailserver;
 extern bool			pskmail_text_available;
 extern char			pskmail_get_char();
 extern void			pskmail_loop(void *);
+extern void		close_pskmail_loop();
 
 #ifdef __CYGWIN__
 extern void			writeToARQfile(unsigned int);

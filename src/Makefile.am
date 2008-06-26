@@ -349,9 +349,7 @@ EXTRA_fldigi_SOURCES += \
 	include/winserial.h \
 	sockets/Socket.cxx \
 	sockets/ClientSocket.cxx \
-	sockets/ServerSocket.cxx \
-	misc/parseUALR.cxx \
-	misc/parseQRZ.cxx
+	sockets/ServerSocket.cxx 
 
 # Additional non-source files that we distribute
 EXTRA_DIST = \
@@ -366,3 +364,4 @@ EXTRA_DIST = \
 	$(srcdir)/../data/win32/fldigi.ico \
 	dialogs/confdialog.fl \
 	rigcontrol/rigdialog.fl
+	

@@ -292,6 +292,8 @@ void cb_mnuSaveMacro(Fl_Menu_*, void*) {
 //}
 
 bool clean_exit() {
+	close_pskmail_loop();
+
 	if (progdefaults.changed == true) {
 		switch (fl_choice("Save changed configuration before exiting?", "Cancel", "Save", "Don't save")) {
 		case 0:
@@ -1671,7 +1673,9 @@ void create_fl_digi_main() {
 	fl_digi_main->end();
 	fl_digi_main->callback(cb_wMain);
 
-#ifdef __CYGWIN__
+#if defined(__APPLE__)
+        // FIXME: how do we set the window icon on OS X?
+#elif defined (__CYGWIN__)
 	fl_digi_main->icon((char*)LoadIcon(fl_display, MAKEINTRESOURCE(IDI_ICON)));
 #else
 	make_pixmap(&fldigi_icon_pixmap, fldigi_icon_48_xpm);
@@ -1685,6 +1689,7 @@ void create_fl_digi_main() {
 	scopeview->xclass(PACKAGE_NAME);
 	digiscope = new Digiscope (0, 0, 140, 140);
 	scopeview->resizable(digiscope);
+	scopeview->size_range(50, 50, 0, 0, 0, 0, 1);
 	scopeview->end();
 	scopeview->hide();	
 
@@ -1737,13 +1742,8 @@ void put_cwRcvWPM(double wpm)
 
 void set_scope_mode(Digiscope::scope_mode md)
 {
-	if (digiscope) {
+	if (digiscope)
 		digiscope->mode(md);
-		if (md == Digiscope::PHASE || md == Digiscope::XHAIRS) // try to maintain aspect ratio
-			scopeview->size_range(SCOPEWIN_MIN_WIDTH, SCOPEWIN_MIN_HEIGHT, 0, 0, 0, 0, 1);
-		else
-			scopeview->size_range(SCOPEWIN_MIN_WIDTH, SCOPEWIN_MIN_HEIGHT);
-	}
 	if (wfscope)
 		wfscope->mode(md);
 }
@@ -2228,8 +2228,7 @@ void change_modem_param(int state)
 	}
 	else if (state & FL_SHIFT) {
 		val = sldrSquelch;
-		if (!twoscopes)
-			d = -d;
+		d = -d;
 	}
 
 	val->value(val->clamp(val->increment(val->value(), -d)));

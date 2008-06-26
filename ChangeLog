@@ -91,6 +91,8 @@ Change Log:
      42) Increased average power level in MT-63 mode.
      43) Significantly decreased cpu usage with changes to qrunner and complex 
          classes.
+     44) Forced audio-in channel on PortAudio and PulseAudio to 1 channel (left)
+         to accommodate Vista MME interface.
 
 2.10.3)
       1) Corrected memory leak bug.

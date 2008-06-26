@@ -255,13 +255,39 @@ void check_formail() {
 }
 
 #ifdef __CYGWIN__
+string holdbuffer;
+
+void trywrite(void *)
+{
+	if (holdbuffer.empty()) return;
+	FILE *outfile;
+	outfile = fopen(str_outfile.c_str(), "ab");
+	if (outfile) {
+		for (size_t i = 0; i < holdbuffer.length(); i++)
+			putc(holdbuffer[i], outfile);
+		holdbuffer.clear();
+		fclose(outfile);
+		return;
+	}
+	Fl::repeat_timeout(0.1, trywrite);
+}
+
+
 void writeToARQfile(unsigned int data)
 {
 	FILE *outfile;
 	outfile = fopen(str_outfile.c_str(), "ab");
 	if (outfile) {
+		if (!holdbuffer.empty()) {
+			for (size_t i = 0; i < holdbuffer.length(); i++)
+				putc(holdbuffer[i], outfile);
+			holdbuffer.clear();
+		}
 		putc((unsigned char)data, outfile );
 		fclose(outfile);
+	} else {
+		holdbuffer += (unsigned char) data;
+		trywrite(NULL);
 	}
 }
 #endif
@@ -287,6 +313,7 @@ void send0x06()
 #endif
 }
 
+
 void pskmail_loop(void *)
 {
 #ifdef __CYGWIN__
@@ -309,4 +336,11 @@ char pskmail_get_char()
 	return 0x03; // tells psk modem to return to rx
 }
 
+
+void close_pskmail_loop()
+{
+#ifdef __CYGWIN__
+	remove(str_outfile.c_str());
+#endif
+}
 
