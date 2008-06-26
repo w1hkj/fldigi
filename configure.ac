@@ -9,7 +9,7 @@ dnl major and minor must be integers; patch may
 dnl contain other characters or be empty
 m4_define(FLDIGI_MAJOR, [3])
 m4_define(FLDIGI_MINOR, [0])
-m4_define(FLDIGI_PATCH, [preG])
+m4_define(FLDIGI_PATCH, [preH])
 
 AC_INIT([fldigi], FLDIGI_MAJOR.FLDIGI_MINOR[FLDIGI_PATCH], [w1hkj AT w1hkj DOT com])
 
@@ -229,16 +229,20 @@ AC_OUTPUT
 AC_MSG_RESULT([
 Configuration summary:
 
-  Version ............................. $VERSION
+  Version ..................... $VERSION
 
-  Static linking ...................... $ac_cv_static
-  CPU optimizations ................... $ac_cv_opt
-  Debugging ........................... $ac_cv_debug
+  Static linking .............. $ac_cv_static
+  CPU optimizations ........... $ac_cv_opt
+  Debugging ................... $ac_cv_debug
 
-  sndfile ............................. $ac_cv_sndfile
-  OSS ................................. $ac_cv_oss
-  PortAudio ........................... $ac_cv_portaudio
-  PulseAudio .......................... $ac_cv_pulseaudio
-  hamlib .............................. $ac_cv_hamlib
-  xml-rpc ............................. $ac_cv_xmlrpc
+  png ......................... $ac_cv_libpng
+  jpeg ........................ $ac_cv_libjpeg
+
+  sndfile ..................... $ac_cv_sndfile
+  oss ......................... $ac_cv_oss
+  portaudio ................... $ac_cv_portaudio
+  pulseaudio .................. $ac_cv_pulseaudio
+
+  hamlib ...................... $ac_cv_hamlib
+  xmlrpc ...................... $ac_cv_xmlrpc
 ])

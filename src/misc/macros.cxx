@@ -375,7 +375,7 @@ void set_env(void)
 		{ "FLDIGI_LOG_QTH", inpQth->value() },
 		{ "FLDIGI_LOG_LOCATOR", inpLoc->value() },
 		{ "FLDIGI_LOG_NOTES", inpNotes->value() },
-		{ "FLDIGI_AZ", "" }
+		{ "FLDIGI_AZ", inpAZ->value() }
 	};
 
 	// PATH
@@ -416,13 +416,6 @@ void set_env(void)
 								: -active_modem->get_freq()));
 	env[FLDIGI_FREQUENCY].val = freq;
 
-	// azimuth
-	int az_int;
-	char az_str[4];
-	if (sscanf(inpAZ->value(), "%03d", &az_int) == 1) {
-		snprintf(az_str, sizeof(az_str), "%d", az_int);
-		env[FLDIGI_AZ].val = az_str;
-	}
 	// debugging vars
 #ifndef NDEBUG
 	unsetenv("FLDIGI_NO_EXEC");
