@@ -275,9 +275,9 @@ static void *rigMEM_loop(void *args)
 					putc('X', IOout);
 				else
 					putc('R', IOout);
-			fclose(IOin);
+				fclose(IOin);
+				TogglePTT = false;
 			}
-			TogglePTT = false;
 		}
 		
 		IOin = fopen("c:/RIGCTL/rig", "r");

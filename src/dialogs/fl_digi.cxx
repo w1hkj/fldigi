@@ -292,6 +292,8 @@ void cb_mnuSaveMacro(Fl_Menu_*, void*) {
 //}
 
 bool clean_exit() {
+	close_pskmail_loop();
+
 	if (progdefaults.changed == true) {
 		switch (fl_choice("Save changed configuration before exiting?", "Cancel", "Save", "Don't save")) {
 		case 0:

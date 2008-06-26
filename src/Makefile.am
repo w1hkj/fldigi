@@ -363,7 +363,5 @@ EXTRA_DIST = \
 	$(srcdir)/../data/mac/Info.plist.in \
 	$(srcdir)/../data/win32/fldigi.ico \
 	dialogs/confdialog.fl \
-	rigcontrol/rigdialog.fl \
-	misc/parseUALR.cxx \
-	misc/parseQRZ.cxx \
-	misc/ualr-telnet.pl
+	rigcontrol/rigdialog.fl
+	
