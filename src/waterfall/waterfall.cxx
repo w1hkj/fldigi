@@ -1455,9 +1455,12 @@ int waterfall::handle(int event)
 	return 0;
 }
 
+static Fl_Cursor cursor = FL_CURSOR_DEFAULT;
+
 static void hide_cursor(void *w)
 {
-	reinterpret_cast<Fl_Widget *>(w)->window()->cursor(FL_CURSOR_NONE);
+	if (cursor != FL_CURSOR_NONE)
+		reinterpret_cast<Fl_Widget *>(w)->window()->cursor(cursor = FL_CURSOR_NONE);
 }
 
 int WFdisp::handle(int event)
@@ -1472,7 +1475,8 @@ int WFdisp::handle(int event)
 
 	switch (event) {
 	case FL_MOVE:
-		window()->cursor(FL_CURSOR_DEFAULT);
+		if (cursor != FL_CURSOR_DEFAULT)
+			window()->cursor(cursor = FL_CURSOR_DEFAULT);
 		if (!Fl::has_timeout(hide_cursor, this))
 			Fl::add_timeout(1, hide_cursor, this);
 		wantcursor = true;
@@ -1577,7 +1581,8 @@ int WFdisp::handle(int event)
 
 	case FL_LEAVE:
 		Fl::remove_timeout(hide_cursor, this);
-		window()->cursor(FL_CURSOR_DEFAULT);
+		if (cursor != FL_CURSOR_DEFAULT)
+			window()->cursor(cursor = FL_CURSOR_DEFAULT);
 		wantcursor = false;
 		makeMarker();
 		// restoreFocus();
