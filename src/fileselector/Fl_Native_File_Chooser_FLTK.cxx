@@ -338,7 +338,7 @@ void FNFC_CLASS::parse_filter() {
 		if ( wildcard[0] ) {
 		    // OUT: "name(wild)\tname(wild)"
 		    char comp[2048];
-		    sprintf(comp, "%s%.511s(%.511s)", ((_parsedfilt)?"\t":""),
+		    snprintf(comp, sizeof(comp), "%s%.511s(%.511s)", ((_parsedfilt)?"\t":""),
 		    				      name, wildcard);
 		    _parsedfilt = strapp(_parsedfilt, comp);
 		    _nfilters++;

@@ -19,6 +19,8 @@
 // USA.
 //
 
+#include <config.h>
+
 // Use Windows' chooser
 #if defined(_WIN32) || defined(__CYGWIN__)
 #include "Fl_Native_File_Chooser_WIN32.cxx"

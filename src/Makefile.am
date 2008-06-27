@@ -4,7 +4,7 @@
 bin_PROGRAMS = fldigi
 
 
-AM_CPPFLAGS = -I$(srcdir) -I$(srcdir)/include -I$(srcdir)/irrxml -Ifileselector @BOOST_CPPFLAGS@
+AM_CPPFLAGS = -I$(srcdir) -I$(srcdir)/include -I$(srcdir)/irrxml -I$(srcdir)/fileselector @BOOST_CPPFLAGS@
 
 AM_CXXFLAGS = @PORTAUDIO_CFLAGS@ @FLTK_CFLAGS@ @SNDFILE_CFLAGS@ \
 	@SAMPLERATE_CFLAGS@ @PULSEAUDIO_CFLAGS@ @HAMLIB_CFLAGS@ \
@@ -349,7 +349,7 @@ EXTRA_fldigi_SOURCES += \
 	include/winserial.h \
 	sockets/Socket.cxx \
 	sockets/ClientSocket.cxx \
-	sockets/ServerSocket.cxx 
+	sockets/ServerSocket.cxx
 
 # Additional non-source files that we distribute
 EXTRA_DIST = \
@@ -364,4 +364,3 @@ EXTRA_DIST = \
 	$(srcdir)/../data/win32/fldigi.ico \
 	dialogs/confdialog.fl \
 	rigcontrol/rigdialog.fl
-	
