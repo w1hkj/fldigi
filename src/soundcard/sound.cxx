@@ -104,8 +104,11 @@ SoundBase::~SoundBase()
 void SoundBase::get_file_params(const char* def_fname, const char** fname, int* format)
 {
 	std::string filters = "Waveform Audio Format\t*.wav\n" "AU\t*.{au,snd}\n";
+// FIXME: we shouldn't need this conditional
+# ifndef __CYGWIN__
 	if (format_supported(SF_FORMAT_FLAC | SF_FORMAT_PCM_16))
 		filters += "Free Lossless Audio Codec\t*.flac";
+# endif
 
 	int fsel;
 	if (strstr(def_fname, "playback"))

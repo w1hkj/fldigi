@@ -53,7 +53,7 @@ extern Fl_Double_Window *scopeview;
 extern FTextView		*ReceiveText;
 extern FTextEdit		*TransmitText;
 extern Raster			*FHdisp;
-extern Fl_Tile_check		*TiledGroup;
+extern Fl_Tile_check	*TiledGroup;
 extern Fl_Box			*StatusBar;
 extern Fl_Box			*Status2;
 extern Fl_Box			*Status1;
@@ -76,7 +76,6 @@ extern Fl_Input			*inpNotes;
 extern Fl_Input			*inpAZ;	// WA5ZNU
 extern Fl_Button		*qsoClear;
 extern Fl_Button		*qsoSave;
-extern Fl_Button		*btnMacroTimer;
 extern Fl_Slider		*valRcvMixer;
 extern Fl_Slider		*valXmtMixer;
 extern Fl_Light_Button	*btn_afconoff;
@@ -84,6 +83,8 @@ extern Fl_Light_Button	*btn_sqlonoff;
 extern Fl_Check_Button	*chk_afconoff;
 extern Fl_Check_Button	*chk_sqlonoff;
 extern Fl_Button		*btnAltMacros;
+extern Fl_Button		*btnMacroTimer;
+extern Fl_Button		*btnMacroDummy;
 
 
 extern bool				useCheckButtons;
@@ -93,6 +94,7 @@ extern int				altMacros;
 extern waterfall		*wf;
 extern Digiscope		*digiscope;
 
+extern void toggleRSID();
 
 extern void create_fl_digi_main();
 extern Fl_Menu_Item menu_[];

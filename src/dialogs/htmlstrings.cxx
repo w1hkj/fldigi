@@ -22,6 +22,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ----------------------------------------------------------------------------
 
+#include <config.h>
 
 char szBeginner[] = "\
 <HTML>\
@@ -147,7 +148,7 @@ be low (less than 1Hz). Tuning steps should be 100Hz or less. Most commercial sy
 <UL><LI>Locate and download the correct archive for your operating system from the <A HREF=\"http://www.w1hkj.com/Fldigi.html\"> \
 FLDIGI web site</A>.  \
 <LI>Create a suitable folder on your hard drive (for example Programs/FLDIGI) and unzip the archive into this folder.  \
-<LI>Right-click on the executable <B>fldigi.exe</B>, select 'Create Shortcut', and drag the resulting shortcut either to \
+<LI>Right-click on the executable <B>fldigi.exe</B> (Windows), <B>fldigi</B> (Linux), select 'Create Shortcut', and drag the resulting shortcut either to \
 the desktop or to a suitable place in the menu structure.  \
 <LI>Double-click on this new shortcut to start the program. You're in business!  \
 </UL>\

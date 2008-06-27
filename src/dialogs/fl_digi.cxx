@@ -112,8 +112,10 @@ bool	useCheckButtons = false;
 bool	twoscopes = false;
 
 
-Fl_Button			*btnTune = (Fl_Button *)0;
-Fl_Tile_check				*TiledGroup = 0;
+Fl_Light_Button		*btnTune = (Fl_Light_Button *)0;
+Fl_Light_Button		*btnRSID = (Fl_Light_Button *)0;
+
+Fl_Tile_check		*TiledGroup = 0;
 FTextView			*ReceiveText = 0;
 FTextEdit			*TransmitText = 0;
 Raster				*FHdisp;
@@ -144,6 +146,7 @@ Fl_Button			*qsoTime;
 Fl_Button			*qsoClear;
 Fl_Button			*qsoSave;
 Fl_Button			*btnMacroTimer;
+Fl_Button			*btnMacroDummy;
 Fl_Button			*btnQRZ;
 Fl_Group			*MixerFrame;
 Fl_Slider			*valRcvMixer;
@@ -908,6 +911,25 @@ void cbTune(Fl_Widget *w, void *) {
 	restoreFocus();
 }
 
+void cbRSID(Fl_Widget *w, void *) {
+	if (trx_state == STATE_TX)
+		return;
+	if (progdefaults.rsid == true) {
+		progdefaults.rsid = false;
+		wf->xmtrcv->activate();
+	} else {
+		ReedSolomon->reset();
+		progdefaults.rsid = true;
+		wf->xmtrcv->deactivate();
+	}
+	restoreFocus();
+}
+
+void toggleRSID()
+{
+	cbRSID(NULL, NULL);
+}
+
 void cb_mnuDigiscope(Fl_Menu_ *w, void *d) {
 	if (scopeview)
 		scopeview->show();
@@ -1059,7 +1081,8 @@ void cbMacroTimerButton(Fl_Widget *w, void *d)
 	Fl_Button *b = (Fl_Button *)w;
 	progdefaults.useTimer = false;
 	FL_LOCK_D();
-	b->hide();
+	btnMacroTimer->hide();
+	btnMacroDummy->show();
 	FL_UNLOCK_D();
 	restoreFocus();
 }
@@ -1379,24 +1402,29 @@ void create_fl_digi_main() {
 	if (twoscopes) 	WNOM -= 2*DEFAULT_SW;
 	
 	fl_digi_main = new Fl_Double_Window(WNOM, HNOM, PACKAGE_NAME" "PACKAGE_VERSION);//"fldigi");
-			mnu = new Fl_Menu_Bar(0, 0, WNOM - 142, Hmenu);
+			mnu = new Fl_Menu_Bar(0, 0, WNOM - 150 - pad, Hmenu);
 			// FL_NORMAL_SIZE may have changed; update the menu items
 			for (size_t i = 0; i < sizeof(menu_)/sizeof(menu_[0]); i++)
 				if (menu_[i].text)
 					menu_[i].labelsize_ = FL_NORMAL_SIZE;
 			mnu->menu(menu_);
 
-			btnTune = new Fl_Button(WNOM - 142, 0, 60, Hmenu, "TUNE");
-			btnTune->type(FL_TOGGLE_BUTTON);
+			btnRSID = new Fl_Light_Button(WNOM - 150 - pad, 0, 50, Hmenu, "RSID ?");
+			btnRSID->selection_color(FL_GREEN);
+			btnRSID->callback(cbRSID, 0);
+			
+			btnTune = new Fl_Light_Button(WNOM - 100 - pad, 0, 50, Hmenu, "TUNE");
+			btnTune->selection_color(FL_RED);
 			btnTune->callback(cbTune, 0);
 			
-			btnMacroTimer = new Fl_Button(WNOM - 80 - pad, 0, 80, Hmenu);
+			btnMacroTimer = new Fl_Button(WNOM - 50 - pad, 0, 50, Hmenu);
 			btnMacroTimer->color(fl_rgb_color(255, 255, 100));
 			btnMacroTimer->labelcolor(FL_RED);
 			btnMacroTimer->callback(cbMacroTimerButton, 0);
 			btnMacroTimer->hide();
-			Fl_Box *bx = new Fl_Box(WNOM - 80 - pad, 0, 80, Hmenu,"");
-			bx->box(FL_UP_BOX);
+			btnMacroDummy = new Fl_Button(WNOM - 50 - pad, 0, 50, Hmenu, "");
+//			Fl_Box *dbx = new Fl_Box(WNOM - 50 - pad, 0, 50, Hmenu,"");
+//			dbx->box(FL_BORDER_FRAME);
 			
 		
 		Y += Hmenu;
@@ -1515,6 +1543,7 @@ void create_fl_digi_main() {
 		Fl_Group::current()->resizable(TiledGroup);
 
 		
+		Fl_Box *bx;
 		Fl_Box *macroFrame = new Fl_Box(0, Y, WNOM, Hmacros);
 			macroFrame->box(FL_ENGRAVED_FRAME);
 			int Wbtn = (WNOM - 30 - 8 - 4)/NUMMACKEYS;
@@ -1528,6 +1557,7 @@ void create_fl_digi_main() {
 				}
 				btnMacro[i] = new Fl_Button(xpos, Y+2, Wbtn, Hmacros - 4, macros.name[i].c_str());
 				btnMacro[i]->callback(macro_cb, (void *)i);
+				btnMacro[i]->tooltip("Lft Clk - exec, Rt Clk - edit");
 				colorize_macro(i);
 				xpos += Wbtn;
 			}
@@ -1536,6 +1566,7 @@ void create_fl_digi_main() {
 			bx->color(FL_BLACK);
 			btnAltMacros = new Fl_Button(WNOM-32, Y+2, 30, Hmacros - 4, "1");
 			btnAltMacros->callback(altmacro_cb, 0);
+			btnAltMacros->tooltip("Change macro set");
 				
 		Y += Hmacros;
 

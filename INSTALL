@@ -8,7 +8,7 @@ To compile fldigi you will need:
     headers for the Boost C++ library.
 
   * Version 1.1.x of the Fast Light Tool Kit (FLTK), with its
-    development library and headers.  Version 1.1.7 and 1.1.8 are known
+    development library and headers.  Versions 1.1.7 to 1.1.9 are known
     to work.  FLTK's multi-threading support is required.
 
   * The samplerate (a.k.a. secret rabbit code) library.
@@ -33,7 +33,6 @@ present on your system:
   * The embedded XML-RPC web server is enabled if `configure' can find
     the C++ bindings for the libxmlrpc-c3 library.
 
-
 Once you have installed the required packages, the following commands
 should be sufficient to compile fldigi and install it under /usr/local:
 
@@ -42,13 +41,16 @@ should be sufficient to compile fldigi and install it under /usr/local:
   make install    (you may need superuser privileges for installation)
 
 The `install' target installs the executable, an icon, and a .desktop
-file. After installation, an fldigi launcher should appear somewhere in
+file.  After installation, an fldigi launcher should appear somewhere in
 your applications menu.
 
 
-To run fldigi on Mac OS X you will need to create an app bundle.  The
-Makefile has an `appbundle' target for this purpose that can be used
-instead of `install':
+Mac OS X installation notes
+***************************
+
+Mac OS X support was added in version 2.10.  To run fldigi on OS X, you
+will need to create an app bundle.  For this purpose, the Makefile has
+an `appbundle' target that can be used instead of `install':
 
   make appbundle
 
@@ -62,12 +64,57 @@ default src/):
     libraries (such as PortAudio and FLTK) that the binary links to
 
 The configure script has some support for building universal x86/ppc
-binaries. Pass the following additional arguments to enable it:
+binaries.  Pass the following additional arguments to enable it:
 
   --enable-mac-universal --disable-dependency-tracking
 
-OS X support is not yet well tested and any feedback/suggestions/patches
-will be very welcomed.
+Fldigi has not been well tested on OS X. Any feedback, suggestions, or
+patches will be very welcome.
+
+
+Windows installation notes
+**************************
+
+As of version 3.0, fldigi supports win32 systems via the Cygwin POSIX
+environment.  To install cygwin, use the following installer link:
+
+  http://www.cygwin.com/setup.exe
+
+Refer to the list of library requirements and install the corresponding
+cygwin packages.  You will need at least the following:
+
+  Base:     (all base packages)
+  Devel:    binutils boost-devel fltk-devel gcc-g++ make pkg-config
+  Graphics: libjpeg-devel libpng12-devel
+  Libs:     zlib
+
+Use the default "Curr" option for the package selection.
+
+PortAudio and libsamplerate are not available from Cygwin and must be
+compiled from source.  If you wish to build easily redistributable
+binaries, configure these libraries for static linking, e.g. with
+`--enable-static --disable-shared'.
+
+After you have installed them in the desired location, remember to tell
+`pkg-config' how to find them, e.g. with
+
+  export PKG_SEARCH_PATH=/usr/local/lib/pkgconfig
+
+To configure fldigi itself for static linking, use the following
+command:
+
+  ./configure --enable-static LDFLAGS=-static
+
+This will produce a binary that only depends on the cygwin library,
+which can be found in /bin/cygwin1.dll.
+
+At the time of writing, fldigi has been built with the latest release of
+Cygwin, version 1.5.25.  The binary runs on Windows 2000 and XP,
+however, a newer version of the cygwin1.dll library may be required for
+Vista.  Version 20080530 of the 1.7 pre-release snapshot has been tested
+and is known to work:
+
+  http://cygwin.com/snapshots/
 
 
 
