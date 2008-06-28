@@ -108,7 +108,7 @@ Fl_Double_Window	*scopeview = (Fl_Double_Window *)0;
 
 MixerBase* mixer = 0;
 
-bool	useCheckButtons = false;
+bool	useCheckButtons = true;
 bool	twoscopes = false;
 
 
@@ -927,6 +927,7 @@ void cbRSID(Fl_Widget *w, void *) {
 
 void toggleRSID()
 {
+	btnRSID->value(0);
 	cbRSID(NULL, NULL);
 }
 
@@ -1078,7 +1079,6 @@ void cb_btnSideband(Fl_Widget *w, void *d)
 
 void cbMacroTimerButton(Fl_Widget *w, void *d)
 {
-	Fl_Button *b = (Fl_Button *)w;
 	progdefaults.useTimer = false;
 	FL_LOCK_D();
 	btnMacroTimer->hide();
