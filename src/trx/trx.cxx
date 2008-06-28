@@ -423,6 +423,7 @@ static void macro_timer(void *)
 		macros.execute(progdefaults.macronumber);
 		FL_LOCK();
 		btnMacroTimer->hide();
+		btnMacroDummy->show();
 		FL_UNLOCK();
 	} else {
 		snprintf(timermsg, sizeof(timermsg), "Timer: %d", progdefaults.timeout);
@@ -442,6 +443,7 @@ void trx_start_macro_timer()
 	FL_LOCK();
 	btnMacroTimer->label(timermsg);
 	btnMacroTimer->redraw_label();
+	btnMacroDummy->hide();
 	btnMacroTimer->show();
 	FL_UNLOCK();
 }

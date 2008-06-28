@@ -856,27 +856,27 @@ void x1_cb(Fl_Widget *w, void* v) {
 	restoreFocus();
 }
 
-void bw_rsid_toggle(waterfall *wf)
-{
-	if (trx_state == STATE_TX)
-		return;
-	if (progdefaults.rsid == true) {
-		progdefaults.rsid = false;
-		wf->bw_rsid->color(FL_BACKGROUND_COLOR);
-		wf->bw_rsid->redraw();
-		wf->xmtrcv->activate();
-	} else {
-		ReedSolomon->reset();
-		progdefaults.rsid = true;
-		wf->bw_rsid->color(FL_YELLOW);
-		wf->bw_rsid->redraw();
-		wf->xmtrcv->deactivate();
-	}
-	restoreFocus();
-}
+//void bw_rsid_toggle(waterfall *wf)
+//{
+//	if (trx_state == STATE_TX)
+//		return;
+//	if (progdefaults.rsid == true) {
+//		progdefaults.rsid = false;
+//		wf->bw_rsid->color(FL_BACKGROUND_COLOR);
+//		wf->bw_rsid->redraw();
+//		wf->xmtrcv->activate();
+//	} else {
+//		ReedSolomon->reset();
+//		progdefaults.rsid = true;
+//		wf->bw_rsid->color(FL_YELLOW);
+//		wf->bw_rsid->redraw();
+//		wf->xmtrcv->deactivate();
+//	}
+//	restoreFocus();
+//}
 
-void bw_rsid_cb(Fl_Widget *w, void * v) {
-	waterfall *wf = (waterfall *)w->parent();
+//void bw_rsid_cb(Fl_Widget *w, void * v) {
+//	waterfall *wf = (waterfall *)w->parent();
 //	wf->wfdisp->DispColor(!wf->wfdisp->DispColor());
 //	if (wf->wfdisp->DispColor() == 0) {
 //		w->label("gry");
@@ -884,8 +884,8 @@ void bw_rsid_cb(Fl_Widget *w, void * v) {
 //		w->label("clr");
 //	}
 //	restoreFocus();
-	bw_rsid_toggle(wf);
-}
+//	bw_rsid_toggle(wf);
+//}
 
 void slew_left(Fl_Widget *w, void * v) {
 	waterfall *wf = (waterfall *)w->parent();
@@ -1027,7 +1027,7 @@ void mode_cb(Fl_Widget *w, void *v) {
 		wf->wfdisp->Mode(SCOPE);
 		w->label("sig");
 		wf->x1->deactivate();
-		wf->bw_rsid->deactivate();
+//		wf->bw_rsid->deactivate();
 		wf->wfcarrier->deactivate();
 		wf->wfRefLevel->deactivate();
 		wf->wfAmpSpan->deactivate();
@@ -1041,7 +1041,7 @@ void mode_cb(Fl_Widget *w, void *v) {
 		wf->wfdisp->Mode(WATERFALL);
 		w->label("Wtr");
 		wf->x1->activate();
-		wf->bw_rsid->activate();
+//		wf->bw_rsid->activate();
 		wf->wfcarrier->activate();
 		wf->wfRefLevel->activate();
 		wf->wfAmpSpan->activate();
@@ -1306,29 +1306,46 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 			y() + BEZEL, 
 			w() - 2 * BEZEL,
 			h() - BTN_HEIGHT - 4 * BEZEL);
-	// wfdisp->tooltip("Click to set tracking point");
 	
 	xpos = x() + wSpace;
-	bw_rsid = new Fl_Button(xpos, buttonrow, (int)(bwColor*ratio), BTN_HEIGHT, "Id?");
-	bw_rsid->callback(bw_rsid_cb, 0);
-	bw_rsid->tooltip("Auto detect RSID");
+//	bw_rsid = new Fl_Button(xpos, buttonrow, (int)(bwColor*ratio), BTN_HEIGHT, "Id?");
+//	bw_rsid->callback(bw_rsid_cb, 0);
+//	bw_rsid->tooltip("Auto detect RSID");
 
-	xpos = xpos + (int)(bwColor*ratio) + wSpace;
+//	xpos = xpos + (int)(bwColor*ratio) + wSpace;
+
 	mode = new Fl_Button(xpos, buttonrow, (int)(bwFFT*ratio), BTN_HEIGHT,"Wtr");
 	mode->callback(mode_cb, 0);
 	mode->tooltip("Waterfall/FFT - Shift click for signal scope");
 
 	xpos = xpos + (int)(bwFFT*ratio) + wSpace;
+	wfRefLevel = new Fl_Counter(xpos, buttonrow, (int)(cwRef*ratio), BTN_HEIGHT );
+	wfRefLevel->callback(reflevel_cb, 0);
+	wfRefLevel->step(1.0);
+	wfRefLevel->precision(0);
+	wfRefLevel->range(-40.0, 0.0);
+	wfRefLevel->value(-20.0);
+	wfdisp->Reflevel(-20.0);
+	wfRefLevel->tooltip("Upper signal level (dB)");
+	wfRefLevel->type(FL_SIMPLE_COUNTER);
+
+	xpos = xpos + (int)(cwRef*ratio) + wSpace;
+	wfAmpSpan = new Fl_Counter(xpos, buttonrow, (int)(cwRef*ratio), BTN_HEIGHT );
+	wfAmpSpan->callback(ampspan_cb, 0);
+	wfAmpSpan->step(1.0);
+	wfAmpSpan->precision(0);
+	wfAmpSpan->range(6.0, 90.0);
+	wfAmpSpan->value(70.0);
+	wfdisp->Ampspan(70.0);
+	wfAmpSpan->tooltip("Signal range (dB)");
+	wfAmpSpan->type(FL_SIMPLE_COUNTER);
+
+	xpos = xpos + (int)(cwRef*ratio) + wSpace;
 	x1 = new Fl_Button(xpos, buttonrow, (int)(bwX1*ratio), BTN_HEIGHT, "x1");
 	x1->callback(x1_cb, 0);
-	x1->tooltip("Change scale");
+	x1->tooltip("Change waterfall scale");
 
 	xpos = xpos + (int)(bwX1*ratio) + wSpace;
-	wfrate = new Fl_Button(xpos, buttonrow, (int)(bwRate*ratio), BTN_HEIGHT, "Norm");
-	wfrate->callback(rate_cb, 0);
-	wfrate->tooltip("Waterfall drop speed");
-
-	xpos = xpos + (int)(bwRate*ratio) + wSpace;
 	left = new Fl_Repeat_Button(xpos, buttonrow, (int)(bwMov*ratio), BTN_HEIGHT, "@<");
 	left->callback(slew_left, 0);
 	left->tooltip("Slew display lower in freq");
@@ -1344,6 +1361,11 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	right->tooltip("Slew display higher in freq");
 
 	xpos = xpos + (int)(bwMov*ratio) + wSpace;
+	wfrate = new Fl_Button(xpos, buttonrow, (int)(bwRate*ratio), BTN_HEIGHT, "Norm");
+	wfrate->callback(rate_cb, 0);
+	wfrate->tooltip("Waterfall drop speed");
+
+	xpos = xpos + (int)(bwRate*ratio) + 2*wSpace;
 	wfcarrier = new Fl_Counter(xpos, buttonrow, (int)(cwCnt*ratio), BTN_HEIGHT );
 	wfcarrier->callback(carrier_cb, 0);
 	wfcarrier->step(1.0);
@@ -1351,45 +1373,23 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	wfcarrier->precision(0);
 	wfcarrier->range(16.0, IMAGE_WIDTH - 16.0);
 	wfcarrier->value(wfdisp->carrier());
-	wfcarrier->tooltip("Adjust selected tracking freq");
+	wfcarrier->tooltip("Adjust cursor frequency");
 
-	xpos = xpos + (int)(cwCnt*ratio) + wSpace;
-	wfRefLevel = new Fl_Counter(xpos, buttonrow, (int)(cwRef*ratio), BTN_HEIGHT );
-	wfRefLevel->callback(reflevel_cb, 0);
-	wfRefLevel->step(1.0);
-	wfRefLevel->precision(0);
-	wfRefLevel->range(-40.0, 0.0);
-	wfRefLevel->value(-20.0);
-	wfdisp->Reflevel(-20.0);
-	wfRefLevel->tooltip("Upper signal limit in dB");
-	wfRefLevel->type(FL_SIMPLE_COUNTER);
-
-	xpos = xpos + (int)(cwRef*ratio) + wSpace;
-	wfAmpSpan = new Fl_Counter(xpos, buttonrow, (int)(cwRef*ratio), BTN_HEIGHT );
-	wfAmpSpan->callback(ampspan_cb, 0);
-	wfAmpSpan->step(1.0);
-	wfAmpSpan->precision(0);
-	wfAmpSpan->range(6.0, 90.0);
-	wfAmpSpan->value(70.0);
-	wfdisp->Ampspan(70.0);
-	wfAmpSpan->tooltip("Signal range in dB");
-	wfAmpSpan->type(FL_SIMPLE_COUNTER);
-
-	xpos = xpos + (int)(cwRef*ratio) + wSpace;
+	xpos = xpos + (int)(cwCnt*ratio) + 2*wSpace;
 	qsy = new Fl_Button(xpos, buttonrow, (int)(bwQsy*ratio), BTN_HEIGHT, "QSY");
 	qsy->callback(qsy_cb, 0);
 	qsy->tooltip("Cntr in Xcvr PB\nRight click to undo");
 	qsy->deactivate();
 
 	xpos = xpos + (int)(bwQsy*ratio) + wSpace;
-	btnMem = new Fl_Button(xpos, buttonrow, (int)(bwMem*ratio), BTN_HEIGHT, "M @-9UpArrow");
+	btnMem = new Fl_Button(xpos, buttonrow, (int)(bwMem*ratio), BTN_HEIGHT, "Store");
 	btnMem->callback(btnMem_cb, 0);
-	btnMem->tooltip("Store mode and frequency\nRight click for menu");
+	btnMem->tooltip("Store mode and frequency\nRight click for list");
 	mbtnMem = new Fl_Menu_Button(btnMem->x(), btnMem->y(), btnMem->w(), btnMem->h(), 0);
 	mbtnMem->callback(btnMem->callback(), mbtnMem);
 	mbtnMem->type(Fl_Menu_Button::POPUP3);
 
-	xpos = xpos + (int)(bwMem*ratio) + wSpace;
+	xpos = xpos + (int)(bwMem*ratio) + 2*wSpace;
 	xmtlock = new Fl_Light_Button(xpos, buttonrow, (int)(bwXmtLock*ratio), BTN_HEIGHT, "Lk");
 	xmtlock->callback(xmtlock_cb, 0);
 	xmtlock->value(0);
@@ -1404,7 +1404,7 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	btnRev->tooltip("Reverse");
 	reverse = false;
 
-	xpos = w() - (int)(bwRev*ratio) -wSpace - BEZEL;
+	xpos = w() - (int)(bwXmtRcv*ratio) - wSpace;
 	xmtrcv = new Fl_Light_Button(xpos, buttonrow, (int)(bwXmtRcv*ratio) - BEZEL, BTN_HEIGHT, "T/R");
 	xmtrcv->callback(xmtrcv_cb, 0);
 	xmtrcv->selection_color(FL_RED);

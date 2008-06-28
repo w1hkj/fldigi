@@ -342,7 +342,8 @@ void cRsId::apply(int iSymbol, int iBin)
 //	          << ", Frequency " << (int)(freq  + 0.5)
 //	          << std::endl;
 	
-	bw_rsid_toggle(wf);
+//	bw_rsid_toggle(wf);
+	toggleRSID();
 
 	if (mbin == NUM_MODES) return;
 

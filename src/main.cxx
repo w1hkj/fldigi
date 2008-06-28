@@ -382,8 +382,8 @@ void generate_option_help(void) {
 	     << "  --twoscopes\n"
 	     << "    Dock a second digiscope adjacent to the waterfall\n\n"
 
-	     << "  --usechkbtns\n"
-	     << "    Use check buttons for AFC / SQL.\n";
+	     << "  --uselgtdbtns\n"
+	     << "    Use lighted buttons for AFC / SQL.\n";
 
 
 	option_help = help.str();
@@ -438,7 +438,7 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "window-height", 1, 0, OPT_WINDOW_HEIGHT },
 		{ "profile",	   1, 0, OPT_PROFILE },
 		{ "twoscopes",     0, 0, OPT_TWO_SCOPES },
-		{ "usechkbtns",    0, 0, OPT_USE_CHECK },
+		{ "uselgtdbtns",    0, 0, OPT_USE_CHECK },
 
 		{ "resample",      1, 0, OPT_RESAMPLE },
 
@@ -533,7 +533,7 @@ int parse_args(int argc, char **argv, int& idx)
 			break;
 
 		case OPT_USE_CHECK:
-			useCheckButtons = true;
+			useCheckButtons = false;
 			break;
 
 		case OPT_RESAMPLE:

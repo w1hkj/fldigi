@@ -65,11 +65,11 @@
 #define cwMode		85
 #define bwQsy		35
 #define bwRate		45
-#define bwXmtLock	40
-#define bwRev		40
-#define bwMem		37
-#define bwXmtRcv	45
-#define wSpace		2
+#define bwXmtLock	30
+#define bwRev		30
+#define bwMem		40
+#define bwXmtRcv	40
+#define wSpace		3
 
 #define DEFAULT_SW 15
 //#define DEFAULT_HWFALL 144
