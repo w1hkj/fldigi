@@ -108,7 +108,7 @@ Fl_Double_Window	*scopeview = (Fl_Double_Window *)0;
 
 MixerBase* mixer = 0;
 
-bool	useCheckButtons = true;
+bool	useCheckButtons;
 bool	twoscopes = false;
 
 
@@ -126,10 +126,8 @@ Fl_Box				*WARNstatus = (Fl_Box *)0;
 Fl_Button			*MODEstatus = (Fl_Button *)0;
 Fl_Button 			*btnMacro[NUMMACKEYS];
 Fl_Button			*btnAltMacros;
-Fl_Light_Button		*btn_afconoff;
-Fl_Light_Button		*btn_sqlonoff;
-Fl_Check_Button		*chk_afconoff;
-Fl_Check_Button		*chk_sqlonoff;
+Fl_Button			*btn_afconoff;
+Fl_Button			*btn_sqlonoff;
 Fl_Input			*inpFreq;
 Fl_ComboBox			*cboBand;
 Fl_Button			*btnSideband;
@@ -1666,36 +1664,31 @@ void create_fl_digi_main() {
 			WARNstatus->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE);
 				
 			if (useCheckButtons) {
-				chk_afconoff = new Fl_Check_Button(
+				btn_afconoff = new Fl_Check_Button(
 								WNOM - bwSqlOnOff - bwAfcOnOff, 
 								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
-								bwAfcOnOff, Hstatus, "Afc");
-				chk_afconoff->callback(afconoff_cb, 0);
-				chk_afconoff->value(1);
-				chk_afconoff->tooltip("AFC on/off");
-				chk_sqlonoff = new Fl_Check_Button(
+								bwAfcOnOff, Hstatus, "AFC");
+				btn_sqlonoff = new Fl_Check_Button(
 								WNOM - bwSqlOnOff, 
 								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
-								bwSqlOnOff, Hstatus, "Sql");
-				chk_sqlonoff->callback(sqlonoff_cb, 0);
-				chk_sqlonoff->value(1);
-				chk_sqlonoff->tooltip("SQL on/off");
+								bwSqlOnOff, Hstatus, "SQL");
 			} else {
 				btn_afconoff = new Fl_Light_Button(
 								WNOM - bwSqlOnOff - bwAfcOnOff, 
 								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
-								bwAfcOnOff, Hstatus, "Afc");
-				btn_afconoff->callback(afconoff_cb, 0);
-				btn_afconoff->value(1);
-				btn_afconoff->tooltip("AFC on/off");
+								bwAfcOnOff, Hstatus, "AFC");
 				btn_sqlonoff = new Fl_Light_Button(
 								WNOM - bwSqlOnOff, 
 								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
-								bwSqlOnOff, Hstatus, "Sql");
-				btn_sqlonoff->callback(sqlonoff_cb, 0);
-				btn_sqlonoff->value(1);
-				btn_sqlonoff->tooltip("SQL on/off");
+								bwSqlOnOff, Hstatus, "SQL");
 			}
+			btn_afconoff->callback(afconoff_cb, 0);
+			btn_afconoff->value(1);
+			btn_afconoff->tooltip("AFC on/off");
+			btn_sqlonoff->callback(sqlonoff_cb, 0);
+			btn_sqlonoff->value(1);
+			btn_sqlonoff->tooltip("SQL on/off");
+
 
 			Fl_Group::current()->resizable(StatusBar);
 		hpack->end();
@@ -1740,15 +1733,14 @@ void put_Bandwidth(int bandwidth)
 static void set_metric(double metric)
 {
 	pgrsSquelch->value(metric);
-	static Fl_Button* sqlbtn = (useCheckButtons ? chk_sqlonoff : btn_sqlonoff);
-	static Fl_Color sqlcol = sqlbtn->selection_color();
+	static Fl_Color sqlcol = btn_sqlonoff->selection_color();
 	if (!progStatus.sqlonoff)
 		return;
 	if (metric < progStatus.sldrSquelchValue)
-		sqlbtn->selection_color(sqlcol);
+		btn_sqlonoff->selection_color(sqlcol);
 	else
-	        sqlbtn->selection_color(FL_GREEN);
-	sqlbtn->redraw_label();
+	        btn_sqlonoff->selection_color(FL_GREEN);
+	btn_sqlonoff->redraw_label();
 }
 
 void display_metric(double metric)

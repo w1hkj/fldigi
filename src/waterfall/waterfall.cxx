@@ -1516,9 +1516,8 @@ int WFdisp::handle(int event)
 			if (Fl::event_state() & FL_CTRL)
 				viewer_paste_freq(cursorFreq(xpos));
 			else {
-				Fl_Button *b = useCheckButtons ? chk_afconoff : btn_afconoff;
-				b->value(!b->value());
-				b->do_callback();
+				btn_afconoff->value(!btn_afconoff->value());
+				btn_afconoff->do_callback();
 			}
 		}
 		break;

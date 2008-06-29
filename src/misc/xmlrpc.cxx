@@ -824,7 +824,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		*retval = xmlrpc_c::value_boolean(useCheckButtons ? chk_afconoff->value() : btn_afconoff->value());
+		*retval = xmlrpc_c::value_boolean(btn_afconoff->value());
 	}
 };
 
@@ -838,9 +838,8 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		Fl_Button* b = useCheckButtons ? chk_afconoff : btn_afconoff;
-		bool v = b->value();
-		REQ(set_button, b, params.getBoolean(0));
+		bool v = btn_afconoff->value();
+		REQ(set_button, btn_afconoff, params.getBoolean(0));
 		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
@@ -855,9 +854,8 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		Fl_Button* b = useCheckButtons ? chk_afconoff : btn_afconoff;
-		bool v = b->value();
-		REQ(set_button, b, !v);
+		bool v = btn_afconoff->value();
+		REQ(set_button, btn_afconoff, !v);
 		*retval = xmlrpc_c::value_boolean(!v);
 	}
 };
@@ -874,7 +872,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		*retval = xmlrpc_c::value_boolean(useCheckButtons ? chk_sqlonoff->value() : btn_sqlonoff->value());
+		*retval = xmlrpc_c::value_boolean(btn_sqlonoff->value());
 	}
 };
 
@@ -888,9 +886,8 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		Fl_Button* b = useCheckButtons ? chk_sqlonoff : btn_sqlonoff;
-		bool v = b->value();
-		REQ(set_button, b, params.getBoolean(0));
+		bool v = btn_sqlonoff->value();
+		REQ(set_button, btn_sqlonoff, params.getBoolean(0));
 		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
@@ -905,9 +902,8 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		Fl_Button* b = useCheckButtons ? chk_sqlonoff : btn_sqlonoff;
-		bool v = b->value();
-		REQ(set_button, b, !v);
+		bool v = btn_sqlonoff->value();
+		REQ(set_button, btn_sqlonoff, !v);
 		*retval = xmlrpc_c::value_boolean(!v);
 	}
 };

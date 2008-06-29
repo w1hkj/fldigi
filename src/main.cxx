@@ -122,7 +122,7 @@ void generate_option_help(void);
 int parse_args(int argc, char **argv, int& idx);
 void generate_version_text(void);
 void debug_exec(char** argv);
-void set_platform_fonts(void);
+void set_platform_ui(void);
 double speed_test(int converter, unsigned repeat);
 
 #ifdef __CYGWIN__
@@ -164,7 +164,7 @@ int main(int argc, char ** argv)
 	atexit(restore_streams);
 #endif
 
-       set_platform_fonts();
+       set_platform_ui();
 
 	generate_option_help();
 	generate_version_text();
@@ -407,8 +407,8 @@ void generate_option_help(void) {
 	     << "  --twoscopes\n"
 	     << "    Dock a second digiscope adjacent to the waterfall\n\n"
 
-	     << "  --uselgtdbtns\n"
-	     << "    Use lighted buttons for AFC / SQL.\n";
+	     << "  --toggle-check-buttons\n"
+	     << "    Use lighted or check buttons for AFC / SQL.\n";
 
 
 	option_help = help.str();
@@ -433,7 +433,7 @@ int parse_args(int argc, char **argv, int& idx)
                OPT_FONT, OPT_WFALL_WIDTH, OPT_WFALL_HEIGHT,
                OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT, 
                OPT_PROFILE,
-               OPT_USE_CHECK,
+               OPT_TOGGLE_CHECK,
 	       	   OPT_RESAMPLE,
 #if USE_PORTAUDIO
                OPT_FRAMES_PER_BUFFER,
@@ -463,7 +463,7 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "window-height", 1, 0, OPT_WINDOW_HEIGHT },
 		{ "profile",	   1, 0, OPT_PROFILE },
 		{ "twoscopes",     0, 0, OPT_TWO_SCOPES },
-		{ "uselgtdbtns",    0, 0, OPT_USE_CHECK },
+		{ "toggle-check-buttons",    0, 0, OPT_TOGGLE_CHECK },
 
 		{ "resample",      1, 0, OPT_RESAMPLE },
 
@@ -557,8 +557,8 @@ int parse_args(int argc, char **argv, int& idx)
 			twoscopes = true;
 			break;
 
-		case OPT_USE_CHECK:
-			useCheckButtons = false;
+		case OPT_TOGGLE_CHECK:
+			useCheckButtons = !useCheckButtons;
 			break;
 
 		case OPT_RESAMPLE:
@@ -674,15 +674,19 @@ void debug_exec(char** argv)
 #endif
 }
 
-void set_platform_fonts(void)
+void set_platform_ui(void)
 {
 #if defined (__linux__)
        FL_NORMAL_SIZE = 12;
+       useCheckButtons = false;
+#elif defined(__APPLE__)
+       useCheckButtons = false;
 #elif defined(__CYGWIN__)
        Fl::set_font(FL_HELVETICA, "Tahoma");
        FL_NORMAL_SIZE = 11;
        progdefaults.WaterfallFontnbr = FL_HELVETICA;
        progdefaults.WaterfallFontsize = 12;
+       useCheckButtons = true;
 #endif
 }
 
