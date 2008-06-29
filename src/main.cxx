@@ -62,6 +62,7 @@
 #include "macros.h"
 #include "status.h"
 #include "fileselect.h"
+#include "timeops.h"
 
 #if USE_HAMLIB
 	#include "rigclass.h"
@@ -122,6 +123,7 @@ int parse_args(int argc, char **argv, int& idx);
 void generate_version_text(void);
 void debug_exec(char** argv);
 void set_platform_fonts(void);
+double speed_test(int converter, unsigned repeat);
 
 #ifdef __CYGWIN__
 void redirect_streams(const std::string& dir);
@@ -209,7 +211,30 @@ int main(int argc, char ** argv)
 	Fl::set_fonts(0);
 	
 	rigcontrol = createRigDialog();
-	progdefaults.readDefaultsXML();
+
+	if (!progdefaults.readDefaultsXML()) {
+		double speed = speed_test(SRC_SINC_FASTEST, 8);
+#ifndef NDEBUG
+		cerr << "speed factor=" << speed << '\n';
+#endif
+		if (speed > 150.0) {      // fast
+			progdefaults.slowcpu = false;
+			progdefaults.sample_converter = SRC_SINC_BEST_QUALITY;
+		}
+		else if (speed > 60.0) {  // ok
+			progdefaults.slowcpu = false;
+			progdefaults.sample_converter = SRC_SINC_MEDIUM_QUALITY;
+		}
+		else if (speed > 20.0) { // slow
+			progdefaults.slowcpu = true;
+			progdefaults.sample_converter = SRC_SINC_FASTEST;
+		}
+		else {                   // recycle me
+			progdefaults.slowcpu = true;
+			progdefaults.sample_converter = SRC_LINEAR;
+		}
+	}
+
 	progdefaults.testCommPorts();
 	
 	progStatus.loadLastState();
@@ -702,3 +727,39 @@ void restore_streams(void)
 	clog.rdbuf(streambufs[2]);
 }
 #endif // __CYGWIN__
+
+// Convert 1 second of 1-channel silence from IN_RATE Hz to OUT_RATE Hz,
+// Repeat test "repeat" times. Return (repeat / elapsed_time),
+// the faster-than-realtime factor averaged over "repeat" runs.
+// Some figures for SRC_SINC_FASTEST:
+// Pentium 4 2.8GHz:     70
+// Pentium 3 550MHz:     13
+// UltraSparc II 270MHz: 3.5
+#define IN_RATE 48000
+#define OUT_RATE 8000
+double speed_test(int converter, unsigned repeat)
+{
+	SRC_DATA src;
+	src.src_ratio = (double)OUT_RATE / IN_RATE;
+	src.input_frames = IN_RATE;
+	src.output_frames = OUT_RATE;
+	src.data_in = new float[src.input_frames];
+	src.data_out = new float[src.output_frames];
+
+	memset(src.data_in, 0, src.input_frames * sizeof(float));
+
+	// warm up
+	src_simple(&src, SRC_SINC_FASTEST, 1);
+
+	struct timespec t0, t1;
+	clock_gettime(CLOCK_REALTIME, &t0);
+	for (unsigned i = 0; i < repeat; i++)
+		src_simple(&src, SRC_SINC_FASTEST, 1);
+	clock_gettime(CLOCK_REALTIME, &t1);
+
+	delete [] src.data_in;
+	delete [] src.data_out;
+
+	t0 = t1 - t0;
+	return repeat / (t0.tv_sec + t0.tv_nsec/1e9);
+}

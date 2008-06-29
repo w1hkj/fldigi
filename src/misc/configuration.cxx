@@ -173,7 +173,7 @@ configuration progdefaults = {
 	SAMPLE_RATE_UNSET,		// int		sample_rate;
 	SAMPLE_RATE_UNSET,		// int		in_sample_rate;
 	SAMPLE_RATE_UNSET,		// int		out_sample_rate;
-	SRC_ZERO_ORDER_HOLD,	// int		sample_converter; bah humbug to crappy computers!
+	SRC_SINC_FASTEST,		// int		sample_converter;
 	0,				// int		RX_corr;
 	0,				// int		TX_corr;
 	0,				// int		TxOffset;
