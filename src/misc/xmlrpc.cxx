@@ -1059,6 +1059,7 @@ public:
 // =============================================================================
 
 extern Fl_Button* btnTune; // FIXME: export in fl_digi.h
+extern Fl_Button* btnRSID;
 
 class Main_get_tx_status : public xmlrpc_c::method
 {
@@ -1074,6 +1075,8 @@ public:
 			*retval = xmlrpc_c::value_string("tune");
 		else if (wf->xmtrcv->value())
 			*retval = xmlrpc_c::value_string("tx");
+		else if (btnRSID->value())
+			*retval = xmlrpc_c::value_string("rsid");
 		else
 			*retval = xmlrpc_c::value_string("rx");
 	}
@@ -1089,7 +1092,11 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		REQ(set_button, wf->xmtrcv, true);
+		if (!wf->xmtrcv->value()) {
+			if (btnRSID->value())
+				REQ(set_button, btnRSID, false);
+			REQ(set_button, wf->xmtrcv, true);
+		}
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -1104,7 +1111,11 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		REQ(set_button, btnTune, !btnTune->value());
+		if (!btnTune->value()) {
+			if (btnRSID->value())
+				REQ(set_button, btnRSID, false);
+			REQ(set_button, btnTune, !btnTune->value());
+		}
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -1119,7 +1130,26 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		REQ(set_button, wf->xmtrcv, false);
+		if (wf->xmtrcv->value())
+			REQ(set_button, wf->xmtrcv, false);
+		else if (btnRSID->value())
+			REQ(set_button, btnRSID, false);
+		*retval = xmlrpc_c::value_nil();
+	}
+};
+
+class Main_rsid : public xmlrpc_c::method
+{
+public:
+	Main_rsid()
+	{
+		_signature = "n:n";
+		_help = "Waits for RSID.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		if (!(wf->xmtrcv->value() || btnTune->value() || btnRSID->value()))
+			REQ(set_button, btnRSID, true);
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -1473,6 +1503,7 @@ void XML_RPC_Server::add_methods(void)
 	methods->push_back(rpc_method(new Main_get_tx_status, "main.get_tx_status"));
 	methods->push_back(rpc_method(new Main_tx, "main.tx"));
 	methods->push_back(rpc_method(new Main_tune, "main.tune"));
+	methods->push_back(rpc_method(new Main_rsid, "main.rsid"));
 	methods->push_back(rpc_method(new Main_rx, "main.rx"));
 
 	methods->push_back(rpc_method(new Log_get_freq, "log.get_frequency"));
