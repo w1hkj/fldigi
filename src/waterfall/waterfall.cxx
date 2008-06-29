@@ -995,10 +995,17 @@ void xmtrcv_cb(Fl_Widget *w, void *vi)
 		trx_state = STATE_TX;
 		fl_unlock(&trx_mutex);
 	} else {
-		active_modem->set_stopflag(true);
-		TransmitText->clear();
-		if (progdefaults.useTimer)
-			progdefaults.useTimer = false;
+		extern Fl_Button* btnTune;
+		if (btnTune->value()) {
+			btnTune->value(0);
+			btnTune->do_callback();
+		}
+		else {
+			active_modem->set_stopflag(true);
+			TransmitText->clear();
+			if (progdefaults.useTimer)
+				progdefaults.useTimer = false;
+		}
 	}
 	restoreFocus();
 }

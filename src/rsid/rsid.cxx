@@ -7,6 +7,7 @@
 #include "main.h"
 #include "trx.h"
 #include "configuration.h"
+#include "qrunner.h"
 
 #include "rsid_fft.cxx"
 	
@@ -317,13 +318,6 @@ void cRsId::search( const double *pSamples, int nSamples )
 	}
 }
 
-// change the current mode and frequency to the rsid detected values
-trx_mode newmode;
-
-void changemode(void*) {
-	init_modem(newmode);
-}
-
 void cRsId::apply(int iSymbol, int iBin)
 {
 
@@ -343,45 +337,46 @@ void cRsId::apply(int iSymbol, int iBin)
 //	          << std::endl;
 	
 //	bw_rsid_toggle(wf);
-	toggleRSID();
+	REQ(toggleRSID);
 
 	if (mbin == NUM_MODES) return;
 
-	newmode = mbin;
-	
-	if (iSymbol == 37) {
+	switch (iSymbol) {
+	case 37:
 		progdefaults.rtty_baud = 5;
 		progdefaults.rtty_bits = 1;
 		progdefaults.rtty_shift = 9;
-	}
-	if (iSymbol == 38) {
+		break;
+	case 38:
 		progdefaults.rtty_baud = 5;
 		progdefaults.rtty_bits = 2;
 		progdefaults.rtty_shift = 9;
-	}
-	if (iSymbol == 39) {
+		break;
+	case 39:
 		progdefaults.rtty_baud = 1;
 		progdefaults.rtty_bits = 0;
 		progdefaults.rtty_shift = 3;
-	}
-	if (iSymbol == 40) {
+		break;
+	case 40:
 		progdefaults.rtty_baud = 2;
 		progdefaults.rtty_bits = 0;
 		progdefaults.rtty_shift = 3;
-	}
-	if (iSymbol == 41) {
+		break;
+	case 41:
 		progdefaults.rtty_baud = 4;
 		progdefaults.rtty_bits = 0;
 		progdefaults.rtty_shift = 9;
-	}
-		
-	if (iSymbol == 92 || iSymbol == 93 ||
-	    iSymbol == 97 || iSymbol == 98 ||
-	    iSymbol == 99 || iSymbol == 101 ) // special MultiPsk FEC modes
+		break;
+	case 92: case 93: case 97:
+	case 98: case 99: case 101: // special MultiPsk FEC modes
 		progdefaults.DOMINOEX_FEC = true;
+		break;
+	default:
+		break;
+	}
 
 	active_modem->set_freq(freq);
-	Fl::add_timeout(0.05, changemode);	
+	REQ(init_modem, mbin);
 	
 	
 /*

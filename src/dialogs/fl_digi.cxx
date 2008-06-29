@@ -901,7 +901,7 @@ void cbTune(Fl_Widget *w, void *) {
 			trx_state = STATE_TUNE;
 		fl_unlock(&trx_mutex);
 	} else {
-		b->labelcolor(FL_BLACK);
+		b->labelcolor(FL_FOREGROUND_COLOR);
 		fl_lock(&trx_mutex);
 			trx_state = STATE_RX;
 		fl_unlock(&trx_mutex);
@@ -910,15 +910,19 @@ void cbTune(Fl_Widget *w, void *) {
 }
 
 void cbRSID(Fl_Widget *w, void *) {
-	if (trx_state == STATE_TX)
+	if (trx_state == STATE_TX || trx_state == STATE_TUNE) {
+		btnRSID->value(0);
 		return;
+	}
 	if (progdefaults.rsid == true) {
 		progdefaults.rsid = false;
 		wf->xmtrcv->activate();
+		btnTune->activate();
 	} else {
 		ReedSolomon->reset();
 		progdefaults.rsid = true;
 		wf->xmtrcv->deactivate();
+		btnTune->deactivate();
 	}
 	restoreFocus();
 }
