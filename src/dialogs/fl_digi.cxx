@@ -723,7 +723,7 @@ void cb_mnuVisitURL(Fl_Widget*, void* arg)
 {
 	const char* url = reinterpret_cast<const char *>(arg);
 #ifndef __CYGWIN__
-	const char* browsers[] = { getenv("BROWSER"), "xdg-open", "sensible-brower",
+	const char* browsers[] = { "xdg-open", getenv("BROWSER"), "sensible-brower",
 				   "firefox", "mozilla" };
 	switch (fork()) {
 	case 0:
@@ -887,6 +887,11 @@ void cb_mnuAudioInfo(Fl_Widget*, void*)
 
 	fldigi_help(audio_info);
 #endif
+}
+
+void cb_ShowConfig(Fl_Widget*, void*)
+{
+	cb_mnuVisitURL(0, (void*)HomeDir.c_str());
 }
 
 void cbTune(Fl_Widget *w, void *) {
@@ -1130,8 +1135,9 @@ static const char *cal_16[] = {
 
 Fl_Menu_Item menu_[] = {
 {"&Files", 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{"Open Macros", 0,  (Fl_Callback*)cb_mnuOpenMacro, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"Save Macros", 0,  (Fl_Callback*)cb_mnuSaveMacro, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{"Open macros...", 0,  (Fl_Callback*)cb_mnuOpenMacro, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{"Save macros...", 0,  (Fl_Callback*)cb_mnuSaveMacro, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{"Show config", 0, cb_ShowConfig, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 //{"Log File", 0, (Fl_Callback*)cb_mnuLogFile, 0, FL_MENU_DIVIDER | FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 {"Log File", 0, 0, 0, FL_MENU_DIVIDER | FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 #if USE_SNDFILE
