@@ -1559,7 +1559,7 @@ void create_fl_digi_main() {
 				}
 				btnMacro[i] = new Fl_Button(xpos, Y+2, Wbtn, Hmacros - 4, macros.name[i].c_str());
 				btnMacro[i]->callback(macro_cb, (void *)i);
-				btnMacro[i]->tooltip("Lft Clk - exec, Rt Clk - edit");
+				btnMacro[i]->tooltip("Left Click - execute\nRight Click - edit");
 				colorize_macro(i);
 				xpos += Wbtn;
 			}

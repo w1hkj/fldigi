@@ -686,6 +686,8 @@ void set_platform_ui(void)
        FL_NORMAL_SIZE = 11;
        progdefaults.WaterfallFontnbr = FL_HELVETICA;
        progdefaults.WaterfallFontsize = 12;
+       progdefaults.RxFontsize = 12;
+       progdefaults.TxFontsize = 12;
        useCheckButtons = true;
 #endif
 }
