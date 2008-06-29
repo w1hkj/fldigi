@@ -293,6 +293,7 @@ void trx_tune_loop()
 			MilliSleep(10);
 			return;
 		}
+		scard->flush();
 		if (scard->must_close())
 			scard->Close();
 		_trx_tune = 0;
