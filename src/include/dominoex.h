@@ -56,8 +56,6 @@ using namespace std;
 #define FIRSTIF 1000.0
 
 #define SCOPESIZE 64
-// NUMBER OF BINS IN VIRTUAL MFSK array
-#define VBINS 16
 
 struct domrxpipe {
 	complex vector[MAXFFTS * NUMTONES * 6];
@@ -98,7 +96,6 @@ protected:
 	
 	domrxpipe		*pipe;
 	unsigned int	pipeptr;
-	unsigned int	datashreg;
 	mbuffer<double, 0, 2>	scopedata;
 	mbuffer<double, 0, 2>	videodata;
 
@@ -128,14 +125,16 @@ protected:
 	int txprevtone;
 	unsigned int bitshreg;
 	string strSecXmtText;
-
+	
+// FEC variables
 	viterbi		*MuPskDec;
 	interleave	*MuPskRxinlv;
 	encoder		*MuPskEnc;
 	interleave	*MuPskTxinlv;
-	int			bitstate;
-	int			vbins[VBINS];
-	unsigned char symbolpair[2];
+	int			Mu_bitstate;
+	unsigned char Mu_symbolpair[2];
+	unsigned int	Mu_datashreg;
+	int			Mu_symcounter;
 	
 private:
 	complex	mixer(int n, complex in);

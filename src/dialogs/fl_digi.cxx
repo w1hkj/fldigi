@@ -108,7 +108,7 @@ Fl_Double_Window	*scopeview = (Fl_Double_Window *)0;
 
 MixerBase* mixer = 0;
 
-bool	useCheckButtons = true;
+bool	useCheckButtons;
 bool	twoscopes = false;
 
 
@@ -126,10 +126,8 @@ Fl_Box				*WARNstatus = (Fl_Box *)0;
 Fl_Button			*MODEstatus = (Fl_Button *)0;
 Fl_Button 			*btnMacro[NUMMACKEYS];
 Fl_Button			*btnAltMacros;
-Fl_Light_Button		*btn_afconoff;
-Fl_Light_Button		*btn_sqlonoff;
-Fl_Check_Button		*chk_afconoff;
-Fl_Check_Button		*chk_sqlonoff;
+Fl_Button			*btn_afconoff;
+Fl_Button			*btn_sqlonoff;
 Fl_Input			*inpFreq;
 Fl_ComboBox			*cboBand;
 Fl_Button			*btnSideband;
@@ -725,7 +723,7 @@ void cb_mnuVisitURL(Fl_Widget*, void* arg)
 {
 	const char* url = reinterpret_cast<const char *>(arg);
 #ifndef __CYGWIN__
-	const char* browsers[] = { getenv("BROWSER"), "xdg-open", "sensible-brower",
+	const char* browsers[] = { "xdg-open", getenv("BROWSER"), "sensible-brower",
 				   "firefox", "mozilla" };
 	switch (fork()) {
 	case 0:
@@ -891,6 +889,11 @@ void cb_mnuAudioInfo(Fl_Widget*, void*)
 #endif
 }
 
+void cb_ShowConfig(Fl_Widget*, void*)
+{
+	cb_mnuVisitURL(0, (void*)HomeDir.c_str());
+}
+
 void cbTune(Fl_Widget *w, void *) {
 	Fl_Button *b = (Fl_Button *)w;
 	if (active_modem == wwv_modem || active_modem == anal_modem) {
@@ -903,7 +906,7 @@ void cbTune(Fl_Widget *w, void *) {
 			trx_state = STATE_TUNE;
 		fl_unlock(&trx_mutex);
 	} else {
-		b->labelcolor(FL_BLACK);
+		b->labelcolor(FL_FOREGROUND_COLOR);
 		fl_lock(&trx_mutex);
 			trx_state = STATE_RX;
 		fl_unlock(&trx_mutex);
@@ -912,15 +915,19 @@ void cbTune(Fl_Widget *w, void *) {
 }
 
 void cbRSID(Fl_Widget *w, void *) {
-	if (trx_state == STATE_TX)
+	if (trx_state == STATE_TX || trx_state == STATE_TUNE) {
+		btnRSID->value(0);
 		return;
+	}
 	if (progdefaults.rsid == true) {
 		progdefaults.rsid = false;
 		wf->xmtrcv->activate();
+		btnTune->activate();
 	} else {
 		ReedSolomon->reset();
 		progdefaults.rsid = true;
 		wf->xmtrcv->deactivate();
+		btnTune->deactivate();
 	}
 	restoreFocus();
 }
@@ -1128,8 +1135,9 @@ static const char *cal_16[] = {
 
 Fl_Menu_Item menu_[] = {
 {"&Files", 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{"Open Macros", 0,  (Fl_Callback*)cb_mnuOpenMacro, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"Save Macros", 0,  (Fl_Callback*)cb_mnuSaveMacro, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{"Open macros...", 0,  (Fl_Callback*)cb_mnuOpenMacro, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{"Save macros...", 0,  (Fl_Callback*)cb_mnuSaveMacro, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{"Show config", 0, cb_ShowConfig, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 //{"Log File", 0, (Fl_Callback*)cb_mnuLogFile, 0, FL_MENU_DIVIDER | FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 {"Log File", 0, 0, 0, FL_MENU_DIVIDER | FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 #if USE_SNDFILE
@@ -1557,7 +1565,7 @@ void create_fl_digi_main() {
 				}
 				btnMacro[i] = new Fl_Button(xpos, Y+2, Wbtn, Hmacros - 4, macros.name[i].c_str());
 				btnMacro[i]->callback(macro_cb, (void *)i);
-				btnMacro[i]->tooltip("Lft Clk - exec, Rt Clk - edit");
+				btnMacro[i]->tooltip("Left Click - execute\nRight Click - edit");
 				colorize_macro(i);
 				xpos += Wbtn;
 			}
@@ -1666,36 +1674,31 @@ void create_fl_digi_main() {
 			WARNstatus->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE);
 				
 			if (useCheckButtons) {
-				chk_afconoff = new Fl_Check_Button(
+				btn_afconoff = new Fl_Check_Button(
 								WNOM - bwSqlOnOff - bwAfcOnOff, 
 								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
-								bwAfcOnOff, Hstatus, "Afc");
-				chk_afconoff->callback(afconoff_cb, 0);
-				chk_afconoff->value(1);
-				chk_afconoff->tooltip("AFC on/off");
-				chk_sqlonoff = new Fl_Check_Button(
+								bwAfcOnOff, Hstatus, "AFC");
+				btn_sqlonoff = new Fl_Check_Button(
 								WNOM - bwSqlOnOff, 
 								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
-								bwSqlOnOff, Hstatus, "Sql");
-				chk_sqlonoff->callback(sqlonoff_cb, 0);
-				chk_sqlonoff->value(1);
-				chk_sqlonoff->tooltip("SQL on/off");
+								bwSqlOnOff, Hstatus, "SQL");
 			} else {
 				btn_afconoff = new Fl_Light_Button(
 								WNOM - bwSqlOnOff - bwAfcOnOff, 
 								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
-								bwAfcOnOff, Hstatus, "Afc");
-				btn_afconoff->callback(afconoff_cb, 0);
-				btn_afconoff->value(1);
-				btn_afconoff->tooltip("AFC on/off");
+								bwAfcOnOff, Hstatus, "AFC");
 				btn_sqlonoff = new Fl_Light_Button(
 								WNOM - bwSqlOnOff, 
 								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
-								bwSqlOnOff, Hstatus, "Sql");
-				btn_sqlonoff->callback(sqlonoff_cb, 0);
-				btn_sqlonoff->value(1);
-				btn_sqlonoff->tooltip("SQL on/off");
+								bwSqlOnOff, Hstatus, "SQL");
 			}
+			btn_afconoff->callback(afconoff_cb, 0);
+			btn_afconoff->value(1);
+			btn_afconoff->tooltip("AFC on/off");
+			btn_sqlonoff->callback(sqlonoff_cb, 0);
+			btn_sqlonoff->value(1);
+			btn_sqlonoff->tooltip("SQL on/off");
+
 
 			Fl_Group::current()->resizable(StatusBar);
 		hpack->end();
@@ -1740,15 +1743,14 @@ void put_Bandwidth(int bandwidth)
 static void set_metric(double metric)
 {
 	pgrsSquelch->value(metric);
-	static Fl_Button* sqlbtn = (useCheckButtons ? chk_sqlonoff : btn_sqlonoff);
-	static Fl_Color sqlcol = sqlbtn->selection_color();
+	static Fl_Color sqlcol = btn_sqlonoff->selection_color();
 	if (!progStatus.sqlonoff)
 		return;
 	if (metric < progStatus.sldrSquelchValue)
-		sqlbtn->selection_color(sqlcol);
+		btn_sqlonoff->selection_color(sqlcol);
 	else
-	        sqlbtn->selection_color(FL_GREEN);
-	sqlbtn->redraw_label();
+	        btn_sqlonoff->selection_color(FL_GREEN);
+	btn_sqlonoff->redraw_label();
 }
 
 void display_metric(double metric)

@@ -119,6 +119,7 @@ extern Fl_Value_Input *valRTTYsweetspot;
 extern Fl_Value_Input *valPSKsweetspot;
 extern Fl_Check_Button *btnStartAtSweetSpot;
 extern Fl_Check_Button *chkTransmitRSid;
+extern Fl_Check_Button *chkRSidWideSearch;
 extern Fl_Check_Button *chkSlowCpu;
 extern Fl_Group *tabModems;
 extern Fl_Tabs *tabsModems;

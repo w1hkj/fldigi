@@ -995,10 +995,17 @@ void xmtrcv_cb(Fl_Widget *w, void *vi)
 		trx_state = STATE_TX;
 		fl_unlock(&trx_mutex);
 	} else {
-		active_modem->set_stopflag(true);
-		TransmitText->clear();
-		if (progdefaults.useTimer)
-			progdefaults.useTimer = false;
+		extern Fl_Button* btnTune;
+		if (btnTune->value()) {
+			btnTune->value(0);
+			btnTune->do_callback();
+		}
+		else {
+			active_modem->set_stopflag(true);
+			TransmitText->clear();
+			if (progdefaults.useTimer)
+				progdefaults.useTimer = false;
+		}
 	}
 	restoreFocus();
 }
@@ -1514,9 +1521,8 @@ int WFdisp::handle(int event)
 			if (Fl::event_state() & FL_CTRL)
 				viewer_paste_freq(cursorFreq(xpos));
 			else {
-				Fl_Button *b = useCheckButtons ? chk_afconoff : btn_afconoff;
-				b->value(!b->value());
-				b->do_callback();
+				btn_afconoff->value(!btn_afconoff->value());
+				btn_afconoff->do_callback();
 			}
 		}
 		break;

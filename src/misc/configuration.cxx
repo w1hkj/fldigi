@@ -18,6 +18,7 @@
 
 configuration progdefaults = {
 	false,			// bool		rsid;
+	false,			// bool		rsidWideSearch;
 	false,			// bool		TransmitRSid;
 	true,			// bool		slowcpu;
 	false,			// bool		changed;
@@ -173,7 +174,7 @@ configuration progdefaults = {
 	SAMPLE_RATE_UNSET,		// int		sample_rate;
 	SAMPLE_RATE_UNSET,		// int		in_sample_rate;
 	SAMPLE_RATE_UNSET,		// int		out_sample_rate;
-	SRC_ZERO_ORDER_HOLD,	// int		sample_converter; bah humbug to crappy computers!
+	SRC_SINC_FASTEST,		// int		sample_converter;
 	0,				// int		RX_corr;
 	0,				// int		TX_corr;
 	0,				// int		TxOffset;
@@ -300,7 +301,7 @@ enum TAG { \
 	RXFONTNBR, RXFONTSIZE, TXFONTNBR, TXFONTSIZE,
 	RXFONTCOLOR, TXFONTCOLOR,
 	WATERFALLFONTNBR, WATERFALLFONTSIZE,
-	TRANSMITRSID, SLOWCPU
+	RSIDWIDESEARCH, TRANSMITRSID, SLOWCPU
 };
 	
 void writeXMLint(ofstream &f, const char * tag,  int val)
@@ -525,6 +526,7 @@ void configuration::writeDefaultsXML()
 	writeXMLint(f, "WATERFALLFONTNBR", WaterfallFontnbr);
 	writeXMLint(f, "WATERFALLFONTSIZE", WaterfallFontsize);
 	
+	writeXMLbool(f, "RSIDWIDESEARCH", rsidWideSearch);
 	writeXMLbool(f, "TRANSMITRSID", TransmitRSid);
 	writeXMLbool(f, "SLOWCPU", slowcpu);
 	
@@ -1053,10 +1055,15 @@ bool configuration::readDefaultsXML()
 						sscanf( xml->getNodeData(), "%d %d %d",
 							&TxColor.R, &TxColor.G, &TxColor.B);
 						break;
+					case RSIDWIDESEARCH :
+						rsidWideSearch = atoi(xml->getNodeData());
+						break;
 					case TRANSMITRSID :
 						TransmitRSid = atoi(xml->getNodeData());
+						break;
 					case SLOWCPU :
 						slowcpu = atoi(xml->getNodeData());
+						break;
 				}
 				break;
 				
@@ -1223,6 +1230,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("TXFONTCOLOR", nodeName)) tag = TXFONTCOLOR;
 				else if (!strcmp("WATERFALLFONTNBR", nodeName)) tag = WATERFALLFONTNBR;
 				else if (!strcmp("WATERFALLFONTSIZE", nodeName)) tag = WATERFALLFONTSIZE;
+				else if (!strcmp("RSIDWIDESEARCH", nodeName)) tag = RSIDWIDESEARCH;
 				else if (!strcmp("TRANSMITRSID", nodeName)) tag = TRANSMITRSID;
 				else if (!strcmp("SLOWCPU", nodeName)) tag = SLOWCPU;
 				else tag = IGNORE;
@@ -1452,6 +1460,7 @@ int configuration::setDefaults() {
 	btnFeldHellIdle->value(HellXmtIdle);
 			
 	chkTransmitRSid->value(TransmitRSid);
+	chkRSidWideSearch->value(rsidWideSearch);
 	chkSlowCpu->value(slowcpu);
 	
 	string bandsfname = HomeDir;

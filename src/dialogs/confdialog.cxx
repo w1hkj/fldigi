@@ -799,6 +799,13 @@ static void cb_chkTransmitRSid(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *chkRSidWideSearch=(Fl_Check_Button *)0;
+
+static void cb_chkRSidWideSearch(Fl_Check_Button* o, void*) {
+  progdefaults.rsidWideSearch=o->value();
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *chkSlowCpu=(Fl_Check_Button *)0;
 
 static void cb_chkSlowCpu(Fl_Check_Button* o, void*) {
@@ -1365,7 +1372,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         tabOperator->selection_color((Fl_Color)51);
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { inpMyCallsign = new Fl_Input(78, 36, 85, 24, "Callsign:");
         } // Fl_Input* inpMyCallsign
         { inpMyName = new Fl_Input(78, 62, 120, 24, "Name:");
@@ -1380,7 +1386,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         { Fl_Group* o = new Fl_Group(5, 145, 390, 70, "Contest Setup");
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-          { btnUseLeadingZeros = new Fl_Check_Button(42, 175, 165, 15, "Use Leading Zeros");
+          { btnUseLeadingZeros = new Fl_Check_Button(42, 175, 154, 15, "Use Leading Zeros");
             btnUseLeadingZeros->down_box(FL_DOWN_BOX);
             btnUseLeadingZeros->value(1);
             btnUseLeadingZeros->callback((Fl_Callback*)cb_btnUseLeadingZeros);
@@ -1408,6 +1414,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { tabWaterfall = new Fl_Group(0, 25, 405, 195, "W-fall");
         tabWaterfall->color((Fl_Color)51);
         tabWaterfall->selection_color((Fl_Color)51);
+        tabWaterfall->hide();
         { Fl_Tabs* o = new Fl_Tabs(0, 25, 405, 195);
           { Fl_Group* o = new Fl_Group(0, 50, 400, 170, "Filters/Colors");
             { Fl_Group* o = new Fl_Group(10, 84, 385, 96);
@@ -1543,7 +1550,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 btnUseBWTracks->callback((Fl_Callback*)cb_btnUseBWTracks);
                 o->value(progdefaults.UseBWTracks);
               } // Fl_Check_Button* btnUseBWTracks
-              { Fl_Check_Button* o = btnUseCursorCenterLine = new Fl_Check_Button(170, 114, 137, 21, "Cursor Center");
+              { Fl_Check_Button* o = btnUseCursorCenterLine = new Fl_Check_Button(170, 114, 121, 21, "Cursor Center");
                 btnUseCursorCenterLine->down_box(FL_DOWN_BOX);
                 btnUseCursorCenterLine->callback((Fl_Callback*)cb_btnUseCursorCenterLine);
                 o->value(progdefaults.UseCursorCenterLine);
@@ -1585,7 +1592,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             btnsendid->down_box(FL_DOWN_BOX);
             btnsendid->callback((Fl_Callback*)cb_btnsendid);
           } // Fl_Check_Button* btnsendid
-          { Fl_Check_Button* o = btnsendvideotext = new Fl_Check_Button(11, 89, 115, 20, "Xmt Video Text");
+          { Fl_Check_Button* o = btnsendvideotext = new Fl_Check_Button(11, 89, 130, 20, "Xmt Video Text");
             btnsendvideotext->down_box(FL_DOWN_BOX);
             btnsendvideotext->callback((Fl_Callback*)cb_btnsendvideotext);
             o->value(progdefaults.sendtextid);
@@ -1776,19 +1783,19 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         tabQRZ->color((Fl_Color)51);
         tabQRZ->selection_color((Fl_Color)51);
         tabQRZ->hide();
-        { Fl_Check_Button* o = btnQRZnotavailable = new Fl_Check_Button(31, 45, 200, 20, "Not available");
+        { Fl_Check_Button* o = btnQRZnotavailable = new Fl_Check_Button(31, 45, 110, 20, "Not available");
           btnQRZnotavailable->down_box(FL_DOWN_BOX);
           btnQRZnotavailable->value(1);
           btnQRZnotavailable->callback((Fl_Callback*)cb_btnQRZnotavailable);
           if (progdefaults.QRZ == 0) o->value(1); else o->value(0);
         } // Fl_Check_Button* btnQRZnotavailable
-        { Fl_Check_Button* o = btnQRZsocket = new Fl_Check_Button(32, 74, 205, 20, "QRZ online subscription");
+        { Fl_Check_Button* o = btnQRZsocket = new Fl_Check_Button(32, 74, 190, 20, "QRZ online subscription");
           btnQRZsocket->tooltip("You need a QRZ on-line subscription to access QRZ.com");
           btnQRZsocket->down_box(FL_DOWN_BOX);
           btnQRZsocket->callback((Fl_Callback*)cb_btnQRZsocket);
           if (progdefaults.QRZ == 1) o->value(1); else o->value(0);
         } // Fl_Check_Button* btnQRZsocket
-        { Fl_Check_Button* o = btnQRZcdrom = new Fl_Check_Button(185, 45, 200, 20, "QRZ cdrom");
+        { Fl_Check_Button* o = btnQRZcdrom = new Fl_Check_Button(185, 45, 103, 20, "QRZ cdrom");
           btnQRZcdrom->down_box(FL_DOWN_BOX);
           btnQRZcdrom->callback((Fl_Callback*)cb_btnQRZcdrom);
           if (progdefaults.QRZ == 2) o->value(1); else o->value(0);
@@ -1823,7 +1830,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             tabAudio->selection_color((Fl_Color)51);
             { AudioOSS = new Fl_Group(5, 58, 391, 35);
               AudioOSS->box(FL_ENGRAVED_FRAME);
-              { btnAudioIO[0] = new Fl_Round_Button(5, 63, 100, 25, "OSS");
+              { btnAudioIO[0] = new Fl_Round_Button(5, 63, 53, 25, "OSS");
                 btnAudioIO[0]->down_box(FL_DIAMOND_DOWN_BOX);
                 btnAudioIO[0]->selection_color((Fl_Color)1);
                 btnAudioIO[0]->callback((Fl_Callback*)cb_btnAudioIO);
@@ -2015,18 +2022,23 @@ l with your sound hardware.");
         { Fl_Group* o = new Fl_Group(5, 125, 390, 45, "RSid");
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-          { Fl_Check_Button* o = chkTransmitRSid = new Fl_Check_Button(110, 138, 70, 15, "Transmit RSid");
+          { Fl_Check_Button* o = chkTransmitRSid = new Fl_Check_Button(49, 138, 119, 20, "Transmit RSid");
             chkTransmitRSid->tooltip("Transmit Reed Solomon ID");
             chkTransmitRSid->down_box(FL_DOWN_BOX);
             chkTransmitRSid->callback((Fl_Callback*)cb_chkTransmitRSid);
             o->value(progdefaults.TransmitRSid);
           } // Fl_Check_Button* chkTransmitRSid
+          { Fl_Check_Button* o = chkRSidWideSearch = new Fl_Check_Button(188, 140, 85, 15, "Wide Search Detector");
+            chkRSidWideSearch->down_box(FL_DOWN_BOX);
+            chkRSidWideSearch->callback((Fl_Callback*)cb_chkRSidWideSearch);
+            o->value(progdefaults.rsidWideSearch);
+          } // Fl_Check_Button* chkRSidWideSearch
           o->end();
         } // Fl_Group* o
         { Fl_Group* o = new Fl_Group(5, 172, 390, 43, "CPU speed");
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-          { Fl_Check_Button* o = chkSlowCpu = new Fl_Check_Button(110, 190, 89, 15, "Slow cpu");
+          { Fl_Check_Button* o = chkSlowCpu = new Fl_Check_Button(110, 182, 89, 20, "Slow cpu");
             chkSlowCpu->down_box(FL_DOWN_BOX);
             chkSlowCpu->callback((Fl_Callback*)cb_chkSlowCpu);
             o->value(progdefaults.slowcpu);
@@ -2211,7 +2223,7 @@ l with your sound hardware.");
               valTHOR_BW->callback((Fl_Callback*)cb_valTHOR_BW);
               o->value(progdefaults.THOR_BW);
             } // Fl_Counter* valTHOR_BW
-            { Fl_Check_Button* o = valTHOR_FILTER = new Fl_Check_Button(110, 130, 83, 19, "Filter ON");
+            { Fl_Check_Button* o = valTHOR_FILTER = new Fl_Check_Button(110, 130, 83, 20, "Filter ON");
               valTHOR_FILTER->down_box(FL_DOWN_BOX);
               valTHOR_FILTER->value(1);
               valTHOR_FILTER->callback((Fl_Callback*)cb_valTHOR_FILTER);
@@ -2227,7 +2239,7 @@ l with your sound hardware.");
               valTHOR_PATHS->hide();
               o->value(progdefaults.THOR_PATHS);
             } // Fl_Counter* valTHOR_PATHS
-            { Fl_Check_Button* o = valTHOR_SOFT = new Fl_Check_Button(215, 130, 70, 15, "Soft decode");
+            { Fl_Check_Button* o = valTHOR_SOFT = new Fl_Check_Button(215, 130, 108, 20, "Soft decode");
               valTHOR_SOFT->down_box(FL_DOWN_BOX);
               valTHOR_SOFT->callback((Fl_Callback*)cb_valTHOR_SOFT);
               o->value(progdefaults.THOR_SOFT);
@@ -2253,13 +2265,13 @@ l with your sound hardware.");
               valDominoEX_BW->callback((Fl_Callback*)cb_valDominoEX_BW);
               o->value(progdefaults.DOMINOEX_BW);
             } // Fl_Counter* valDominoEX_BW
-            { Fl_Check_Button* o = valDominoEX_FILTER = new Fl_Check_Button(110, 130, 83, 19, "Filter ON");
+            { Fl_Check_Button* o = valDominoEX_FILTER = new Fl_Check_Button(110, 130, 83, 20, "Filter ON");
               valDominoEX_FILTER->down_box(FL_DOWN_BOX);
               valDominoEX_FILTER->value(1);
               valDominoEX_FILTER->callback((Fl_Callback*)cb_valDominoEX_FILTER);
               o->value(progdefaults.DOMINOEX_FILTER);
             } // Fl_Check_Button* valDominoEX_FILTER
-            { Fl_Check_Button* o = chkDominoEX_FEC = new Fl_Check_Button(220, 130, 70, 15, "FEC");
+            { Fl_Check_Button* o = chkDominoEX_FEC = new Fl_Check_Button(220, 130, 51, 20, "FEC");
               chkDominoEX_FEC->down_box(FL_DOWN_BOX);
               chkDominoEX_FEC->callback((Fl_Callback*)cb_chkDominoEX_FEC);
               o->value(progdefaults.DOMINOEX_FEC);
@@ -2279,6 +2291,7 @@ l with your sound hardware.");
           { tabFeld = new Fl_Group(0, 50, 400, 170, "Feld");
             tabFeld->color((Fl_Color)51);
             tabFeld->selection_color((Fl_Color)51);
+            tabFeld->hide();
             { Fl_Choice* o = selHellFont = new Fl_Choice(260, 62, 122, 20, "Feld Hell Font:");
               selHellFont->down_box(FL_BORDER_BOX);
               selHellFont->labelfont(4);
@@ -2323,7 +2336,7 @@ l with your sound hardware.");
                 btnHellFastAttack->callback((Fl_Callback*)cb_btnHellFastAttack);
                 o->value(progdefaults.HellPulseFast);
               } // Fl_Check_Button* btnHellFastAttack
-              { Fl_Check_Button* o = btnHellSlowAttack = new Fl_Check_Button(199, 131, 70, 15, "Slow Attack (4 msec)");
+              { Fl_Check_Button* o = btnHellSlowAttack = new Fl_Check_Button(199, 131, 169, 15, "Slow Attack (4 msec)");
                 btnHellSlowAttack->down_box(FL_DOWN_BOX);
                 btnHellSlowAttack->value(1);
                 btnHellSlowAttack->callback((Fl_Callback*)cb_btnHellSlowAttack);
@@ -2331,7 +2344,7 @@ l with your sound hardware.");
               } // Fl_Check_Button* btnHellSlowAttack
               o->end();
             } // Fl_Group* o
-            { Fl_Check_Button* o = btnFeldHellIdle = new Fl_Check_Button(40, 155, 70, 15, "Xmt (.) Idle Char");
+            { Fl_Check_Button* o = btnFeldHellIdle = new Fl_Check_Button(40, 155, 135, 15, "Xmt (.) Idle Char");
               btnFeldHellIdle->down_box(FL_DOWN_BOX);
               btnFeldHellIdle->value(1);
               btnFeldHellIdle->callback((Fl_Callback*)cb_btnFeldHellIdle);
@@ -2390,7 +2403,6 @@ l with your sound hardware.");
             tabOlivia->end();
           } // Fl_Group* tabOlivia
           { tabPSK = new Fl_Group(0, 50, 400, 170, "Psk");
-            tabPSK->hide();
             { Fl_Counter* o = cntSearchRange = new Fl_Counter(11, 60, 80, 21, "Acq Srch Range");
               cntSearchRange->type(1);
               cntSearchRange->minimum(10);
@@ -2486,7 +2498,7 @@ l with your sound hardware.");
                 btnMT63_8bit->callback((Fl_Callback*)cb_btnMT63_8bit);
                 o->value(progdefaults.mt63_8bit);
               } // Fl_Check_Button* btnMT63_8bit
-              { Fl_Check_Button* o = btnmt63_interleave = new Fl_Check_Button(55, 120, 165, 15, "64 bit interleave");
+              { Fl_Check_Button* o = btnmt63_interleave = new Fl_Check_Button(55, 120, 134, 15, "64 bit interleave");
                 btnmt63_interleave->down_box(FL_DOWN_BOX);
                 btnmt63_interleave->callback((Fl_Callback*)cb_btnmt63_interleave);
                 o->value(0);if (progdefaults.mt63_interleave == 64) o->value(1);

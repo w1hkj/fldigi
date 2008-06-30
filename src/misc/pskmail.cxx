@@ -263,8 +263,7 @@ void trywrite(void *)
 	FILE *outfile;
 	outfile = fopen(str_outfile.c_str(), "ab");
 	if (outfile) {
-		for (size_t i = 0; i < holdbuffer.length(); i++)
-			putc(holdbuffer[i], outfile);
+		fputs(holdbuffer.c_str(), outfile);
 		holdbuffer.clear();
 		fclose(outfile);
 		return;
@@ -279,8 +278,7 @@ void writeToARQfile(unsigned int data)
 	outfile = fopen(str_outfile.c_str(), "ab");
 	if (outfile) {
 		if (!holdbuffer.empty()) {
-			for (size_t i = 0; i < holdbuffer.length(); i++)
-				putc(holdbuffer[i], outfile);
+			fputs(holdbuffer.c_str(), outfile);
 			holdbuffer.clear();
 		}
 		putc((unsigned char)data, outfile );

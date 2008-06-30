@@ -39,15 +39,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {fldigi - config} open
-    xywh {809 461 400 250} type Double color 45 selection_color 51 align 80 visible
+    xywh {875 516 400 250} type Double color 45 selection_color 51 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 405 220} color 47 selection_color 9
     } {
       Fl_Group tabOperator {
         label Oper
-        callback {progdefaults.changed = true;}
-        xywh {0 25 400 195} color 51 selection_color 51 when 1 hide
+        callback {progdefaults.changed = true;} selected
+        xywh {0 25 400 195} color 51 selection_color 51 when 1
       } {
         Fl_Input inpMyCallsign {
           label {Callsign:}
@@ -76,7 +76,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             label {Use Leading Zeros}
             callback {progdefaults.UseLeadingZeros = o->value();
 progdefaults.changed = true;}
-            xywh {42 175 165 15} down_box DOWN_BOX value 1
+            xywh {42 175 154 15} down_box DOWN_BOX value 1
           }
           Fl_Value_Input nbrContestStart {
             label {Starting \#:}
@@ -94,7 +94,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabWaterfall {
         label {W-fall} open
-        xywh {0 25 405 195} color 51 selection_color 51
+        xywh {0 25 405 195} color 51 selection_color 51 hide
       } {
         Fl_Tabs {} {open
           xywh {0 25 405 195}
@@ -198,7 +198,7 @@ b->fontNumber((Fl_Font)progdefaults.WaterfallFontnbr);
 b->fontSize(progdefaults.WaterfallFontsize);
 }
 b->callback((Fl_Callback*)cbWaterfallFontBrowser, (void*)(b));
-b->show();} selected
+b->show();}
                 xywh {20 185 120 20}
               }
             }
@@ -298,7 +298,7 @@ progdefaults.changed = true;}
                 label {Cursor Center}
                 callback {progdefaults.UseCursorCenterLine = o->value();
 progdefaults.changed = true;}
-                xywh {170 114 137 21} down_box DOWN_BOX
+                xywh {170 114 121 21} down_box DOWN_BOX
                 code0 {o->value(progdefaults.UseCursorCenterLine);}
               }
               Fl_Button btnCursorBWcolor {
@@ -360,7 +360,7 @@ progdefaults.changed = true;}
             label {Xmt Video Text}
             callback {progdefaults.sendtextid=o->value();
 progdefaults.changed = true;}
-            xywh {11 89 115 20} down_box DOWN_BOX
+            xywh {11 89 130 20} down_box DOWN_BOX
             code0 {o->value(progdefaults.sendtextid);}
           }
           Fl_Input valVideotext {
@@ -638,7 +638,7 @@ btnHAMCALLsocket->value(0);
 progdefaults.QRZ = 0;
 }
 progdefaults.changed = true;}
-          xywh {31 45 200 20} down_box DOWN_BOX value 1
+          xywh {31 45 110 20} down_box DOWN_BOX value 1
           code0 {if (progdefaults.QRZ == 0) o->value(1); else o->value(0);}
         }
         Fl_Check_Button btnQRZsocket {
@@ -650,7 +650,7 @@ btnHAMCALLsocket->value(0);
 progdefaults.QRZ = 1;
 }
 progdefaults.changed = true;}
-          tooltip {You need a QRZ on-line subscription to access QRZ.com} xywh {32 74 205 20} down_box DOWN_BOX
+          tooltip {You need a QRZ on-line subscription to access QRZ.com} xywh {32 74 190 20} down_box DOWN_BOX
           code0 {if (progdefaults.QRZ == 1) o->value(1); else o->value(0);}
         }
         Fl_Check_Button btnQRZcdrom {
@@ -662,7 +662,7 @@ btnHAMCALLsocket->value(0);
 progdefaults.QRZ = 2;
 }
 progdefaults.changed = true;}
-          xywh {185 45 200 20} down_box DOWN_BOX
+          xywh {185 45 103 20} down_box DOWN_BOX
           code0 {if (progdefaults.QRZ == 2) o->value(1); else o->value(0);}
         }
         Fl_Check_Button btnHAMCALLsocket {
@@ -718,7 +718,7 @@ o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");}
                 callback {sound_update(SND_IDX_OSS);
 progdefaults.changed = true;
 resetSoundCard();}
-                xywh {5 63 100 25} down_box DIAMOND_DOWN_BOX selection_color 1
+                xywh {5 63 53 25} down_box DIAMOND_DOWN_BOX selection_color 1
               }
               Fl_Input_Choice menuOSSDev {
                 label Device
@@ -959,8 +959,15 @@ progdefaults.changed = true;}
             label {Transmit RSid}
             callback {progdefaults.TransmitRSid = o->value();
 progdefaults.changed = true;}
-            tooltip {Transmit Reed Solomon ID} xywh {110 138 70 15} down_box DOWN_BOX
+            tooltip {Transmit Reed Solomon ID} xywh {49 138 119 20} down_box DOWN_BOX
             code0 {o->value(progdefaults.TransmitRSid);}
+          }
+          Fl_Check_Button chkRSidWideSearch {
+            label {Wide Search Detector}
+            callback {progdefaults.rsidWideSearch=o->value();
+progdefaults.changed = true;}
+            xywh {188 140 85 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.rsidWideSearch);}
           }
         }
         Fl_Group {} {
@@ -971,7 +978,7 @@ progdefaults.changed = true;}
             label {Slow cpu}
             callback {progdefaults.slowcpu = o->value();
 progdefaults.changed = true;}
-            xywh {110 190 89 15} down_box DOWN_BOX
+            xywh {110 182 89 20} down_box DOWN_BOX
             code0 {o->value(progdefaults.slowcpu);}
           }
         }
@@ -1131,7 +1138,7 @@ progdefaults.changed = true;}
               callback {progdefaults.THOR_FILTER = o->value();
 resetTHOR();
 progdefaults.changed = true;}
-              xywh {110 130 83 19} down_box DOWN_BOX value 1
+              xywh {110 130 83 20} down_box DOWN_BOX value 1
               code0 {o->value(progdefaults.THOR_FILTER);}
             }
             Fl_Counter valTHOR_PATHS {
@@ -1145,7 +1152,7 @@ progdefaults.changed = true;}
               label {Soft decode}
               callback {progdefaults.THOR_SOFT = o->value();
 progdefaults.changed = true;}
-              xywh {215 130 70 15} down_box DOWN_BOX
+              xywh {215 130 108 20} down_box DOWN_BOX
               code0 {o->value(progdefaults.THOR_SOFT);}
             }
           }
@@ -1172,14 +1179,14 @@ progdefaults.changed = true;}
               callback {progdefaults.DOMINOEX_FILTER = o->value();
 resetDOMEX();
 progdefaults.changed = true;}
-              xywh {110 130 83 19} down_box DOWN_BOX value 1
+              xywh {110 130 83 20} down_box DOWN_BOX value 1
               code0 {o->value(progdefaults.DOMINOEX_FILTER);}
             }
             Fl_Check_Button chkDominoEX_FEC {
               label FEC
               callback {progdefaults.DOMINOEX_FEC = o->value();
 progdefaults.changed = true;}
-              xywh {220 130 70 15} down_box DOWN_BOX
+              xywh {220 130 51 20} down_box DOWN_BOX
               code0 {o->value(progdefaults.DOMINOEX_FEC);}
             }
             Fl_Counter valDominoEX_PATHS {
@@ -1192,7 +1199,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabFeld {
             label Feld open
-            xywh {0 50 400 170} color 51 selection_color 51
+            xywh {0 50 400 170} color 51 selection_color 51 hide
           } {
             Fl_Choice selHellFont {
               label {Feld Hell Font:}
@@ -1257,7 +1264,7 @@ btnHellFastAttack->value(1);
 progdefaults.HellPulseFast = true;
 }
 progdefaults.changed = true;}
-                xywh {199 131 70 15} down_box DOWN_BOX value 1
+                xywh {199 131 169 15} down_box DOWN_BOX value 1
                 code0 {o->value(!progdefaults.HellPulseFast);}
               }
             }
@@ -1265,7 +1272,7 @@ progdefaults.changed = true;}
               label {Xmt (.) Idle Char}
               callback {progdefaults.HellXmtIdle=o->value();
 progdefaults.changed = true;}
-              xywh {40 155 70 15} down_box DOWN_BOX value 1
+              xywh {40 155 135 15} down_box DOWN_BOX value 1
               code0 {o->value(progdefaults.HellXmtIdle);}
             }
             Fl_Spinner valHellXmtWidth {
@@ -1322,7 +1329,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabPSK {
             label Psk open
-            xywh {0 50 400 170} hide
+            xywh {0 50 400 170}
           } {
             Fl_Counter cntSearchRange {
               label {Acq Srch Range}
@@ -1433,7 +1440,7 @@ progdefaults.mt63_interleave = 64;
 else
 progdefaults.mt63_interleave = 32;
 progdefaults.changed = true;}
-                xywh {55 120 165 15} down_box DOWN_BOX
+                xywh {55 120 134 15} down_box DOWN_BOX
                 code0 {o->value(0);if (progdefaults.mt63_interleave == 64) o->value(1);}
               }
             }

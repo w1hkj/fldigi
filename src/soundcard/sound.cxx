@@ -1391,11 +1391,6 @@ bool SoundPort::full_duplex_device(const PaDeviceInfo* dev)
 bool SoundPort::must_close(void)
 {
         return false;
-
-	if (!stream_active(1))
-		return false;
-	const PaHostApiInfo* api = Pa_GetHostApiInfo((*sd[1].idev)->hostApi);
-	return api && (api->type == paOSS || api->type == paMME);
 }
 
 // Determine the sample rate that we will use. We try the modem's rate

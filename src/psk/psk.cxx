@@ -425,11 +425,8 @@ void psk::rx_symbol(complex symbol)
 	default:
 		if (metric > progStatus.sldrSquelchValue || progStatus.sqlonoff == false)
 			dcd = true;
-		else {
+		else
 			dcd = false;
-			put_Status1("");
-			put_Status2("");
-		}
 		imdValid = false;
 	}
 

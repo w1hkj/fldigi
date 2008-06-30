@@ -12,6 +12,7 @@
 using namespace std;
 
 struct configuration {
+	bool	rsidWideSearch;
 	bool	rsid;
 	bool	TransmitRSid;
 	bool	slowcpu;

@@ -230,13 +230,8 @@ void status::initLastState()
 	wf->movetocenter();
 	
 	FL_LOCK_D();
-	if (useCheckButtons) {
-		chk_afconoff->value(afconoff);
-		chk_sqlonoff->value(sqlonoff);
-	} else {
-		btn_afconoff->value(afconoff);
-		btn_sqlonoff->value(sqlonoff);
-	}
+	btn_afconoff->value(afconoff);
+	btn_sqlonoff->value(sqlonoff);
 	sldrSquelch->value(sldrSquelchValue);
 	valRcvMixer->value(RcvMixer);
 	valXmtMixer->value(XmtMixer);
