@@ -1471,7 +1471,7 @@ void SoundPort::init_hostapi_ext(void)
 		return;
 
 	PaError (*set_jack_client_name)(const char*);
-	char* err = dlerror();
+	const char* err = dlerror();
 	set_jack_client_name = (PaError (*)(const char*))dlsym(handle, "PaJack_SetClientName");
 	if (!(err = dlerror()))
 		set_jack_client_name(PACKAGE_TARNAME);
