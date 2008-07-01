@@ -799,6 +799,13 @@ static void cb_chkTransmitRSid(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *chkRSidWideSearch=(Fl_Check_Button *)0;
+
+static void cb_chkRSidWideSearch(Fl_Check_Button* o, void*) {
+  progdefaults.rsidWideSearch=o->value();
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *chkSlowCpu=(Fl_Check_Button *)0;
 
 static void cb_chkSlowCpu(Fl_Check_Button* o, void*) {
@@ -2014,12 +2021,17 @@ l with your sound hardware.");
         { Fl_Group* o = new Fl_Group(5, 125, 390, 45, "RSid");
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-          { Fl_Check_Button* o = chkTransmitRSid = new Fl_Check_Button(110, 138, 119, 20, "Transmit RSid");
+          { Fl_Check_Button* o = chkTransmitRSid = new Fl_Check_Button(49, 138, 119, 20, "Transmit RSid");
             chkTransmitRSid->tooltip("Transmit Reed Solomon ID");
             chkTransmitRSid->down_box(FL_DOWN_BOX);
             chkTransmitRSid->callback((Fl_Callback*)cb_chkTransmitRSid);
             o->value(progdefaults.TransmitRSid);
           } // Fl_Check_Button* chkTransmitRSid
+          { Fl_Check_Button* o = chkRSidWideSearch = new Fl_Check_Button(188, 140, 85, 15, "Wide Search Detector");
+            chkRSidWideSearch->down_box(FL_DOWN_BOX);
+            chkRSidWideSearch->callback((Fl_Callback*)cb_chkRSidWideSearch);
+            o->value(progdefaults.rsidWideSearch);
+          } // Fl_Check_Button* chkRSidWideSearch
           o->end();
         } // Fl_Group* o
         { Fl_Group* o = new Fl_Group(5, 172, 390, 43, "CPU speed");

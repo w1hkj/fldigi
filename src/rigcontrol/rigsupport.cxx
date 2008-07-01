@@ -182,22 +182,29 @@ bool readFreqList()
 	}
 	sort(freqlist.begin(), freqlist.end());
 	updateSelect();
+	
+	freqfile.close();
 
 	return freqlist.size();
 }
 
 void saveFreqList()
 {
-	if (freqlist.empty())
-		return;
 
 	ofstream freqfile((HomeDir + "frequencies2.txt").c_str());
 	if (!freqfile)
 		return;
 	freqfile << "# rfcarrier rig_mode carrier mode\n";
 	freqfile << "# Post 2.09\n";
+
+	if (freqlist.empty()) {
+		freqfile.close();
+		return;
+	}
+
 	copy(freqlist.begin(), freqlist.end(),
 	     ostream_iterator<qrg_mode_t>(freqfile, "\n"));
+	freqfile.close();
 }
 
 void buildlist()

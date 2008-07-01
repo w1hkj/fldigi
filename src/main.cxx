@@ -463,7 +463,7 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "window-height", 1, 0, OPT_WINDOW_HEIGHT },
 		{ "profile",	   1, 0, OPT_PROFILE },
 		{ "twoscopes",     0, 0, OPT_TWO_SCOPES },
-		{ "toggle-check-buttons",    0, 0, OPT_TOGGLE_CHECK },
+ 		{ "toggle-check-buttons",    0, 0, OPT_TOGGLE_CHECK },
 
 		{ "resample",      1, 0, OPT_RESAMPLE },
 

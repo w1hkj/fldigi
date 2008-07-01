@@ -44,12 +44,14 @@ using namespace std;
 char dommsg[80];
 static map<int, unsigned char> mupsksec2pri;
 
+bool usingFEC = false;
+
 void dominoex::tx_init(SoundBase *sc)
 {
 	scard = sc;
 	txstate = TX_STATE_PREAMBLE;
 	txprevtone = 0;
-	bitstate = 0;
+	Mu_bitstate = 0;
 	counter = 0;
 	txphase = 0;
 	
@@ -64,6 +66,7 @@ void dominoex::rx_init()
 {
 	synccounter = 0;
 	symcounter = 0;
+	Mu_symcounter = 0;
 	met1 = 0.0;
 	met2 = 0.0;
 	counter = 0;
@@ -73,8 +76,8 @@ void dominoex::rx_init()
 	put_MODEstatus(mode);
 	put_sec_char(0);
 	syncfilter->reset();
-	datashreg = 1;
-	for (int i = 0; i < VBINS; i++) vbins[i] = 0;
+
+	Mu_datashreg = 1;
 }
 
 void dominoex::reset_filters()
@@ -286,6 +289,7 @@ dominoex::dominoex(trx_mode md)
 	pipeptr = 0;
 	
 	symcounter = 0;
+	Mu_symcounter = 0;
 	metric = 0.0;
 
 	fragmentsize = symlen;
@@ -300,10 +304,9 @@ dominoex::dominoex(trx_mode md)
 	MuPskDec->setchunksize (1);
 	MuPskTxinlv = new interleave (-1, INTERLEAVE_FWD);
 	MuPskRxinlv = new interleave (-1, INTERLEAVE_REV);
-	bitstate = 0;
-	symbolpair[0] = symbolpair[1] = 0;
-	datashreg = 1;
-
+	Mu_bitstate = 0;
+	Mu_symbolpair[0] = Mu_symbolpair[1] = 0;
+	Mu_datashreg = 1;
 	init();
 }
 
@@ -334,12 +337,15 @@ complex dominoex::mixer(int n, complex in)
 
 void dominoex::recvchar(int c)
 {
-	if (c == -1)
-		return;
-	if (c & 0x100)
-		put_sec_char(c & 0xFF);
-	else
-		put_rx_char(c & 0xFF);
+	if (!progStatus.sqlonoff || metric > progStatus.sldrSquelchValue) {
+
+		if (c == -1)
+			return;
+		if (c & 0x100)
+			put_sec_char(c & 0xFF);
+		else
+			put_rx_char(c & 0xFF);
+		}
 }
 
 void dominoex::decodeDomino(int c)
@@ -352,8 +358,10 @@ void dominoex::decodeDomino(int c)
 			for (int i = 0; i < symcounter; i++)
 				sym |= symbolbuf[i] << (4 * i);
 			ch = dominoex_varidec(sym);
-			if (!progStatus.sqlonoff || metric > progStatus.sldrSquelchValue)		
-				recvchar(ch);
+
+				if (!progdefaults.DOMINOEX_FEC)
+					
+					recvchar(ch);
 		}
 		symcounter = 0;
 	}
@@ -383,10 +391,8 @@ void dominoex::decodesymbol()
 	c = (int)floor(fdiff + .5) - 2;
 	if (c < 0) c += NUMTONES;
 
-	if (progdefaults.DOMINOEX_FEC)
-		decodeMuPskEX(c);
-	else
-		decodeDomino(c);
+	decodeDomino(c);
+	decodeMuPskEX(c);
 }
 
 int dominoex::harddecode()
@@ -742,14 +748,14 @@ void dominoex::decodeMuPskSymbol(unsigned char symbol)
 {
 	int c, ch, met;
 
-	symbolpair[0] = symbolpair[1];
-	symbolpair[1] = symbol;
+	Mu_symbolpair[0] = Mu_symbolpair[1];
+	Mu_symbolpair[1] = symbol;
 
-	symcounter = symcounter ? 0 : 1;
+	Mu_symcounter = Mu_symcounter ? 0 : 1;
 	
-	if (symcounter) return;
+	if (Mu_symcounter) return;
 
-	c = MuPskDec->decode (symbolpair, &met);
+	c = MuPskDec->decode (Mu_symbolpair, &met);
 
 	if (c == -1)
 		return;
@@ -757,11 +763,12 @@ void dominoex::decodeMuPskSymbol(unsigned char symbol)
 	if (progStatus.sqlonoff && metric < progStatus.sldrSquelchValue)
 		return;
 
-	datashreg = (datashreg << 1) | !!c;
-	if ((datashreg & 7) == 1) {
-		ch = varidec(datashreg >> 1);
-		recvchar(MuPskPriSecChar(ch));
-		datashreg = 1;
+	Mu_datashreg = (Mu_datashreg << 1) | !!c;
+	if ((Mu_datashreg & 7) == 1) {
+		ch = varidec(Mu_datashreg >> 1);
+		if (progdefaults.DOMINOEX_FEC)
+			recvchar(MuPskPriSecChar(ch));
+		Mu_datashreg = 1;
 	}
 }
 
@@ -793,7 +800,7 @@ void dominoex::MuPskFlushTx()
 	sendsymbol(1);
 	for (int i = 0; i < 107; i++)
 		sendsymbol(0);
-	bitstate = 0;
+	Mu_bitstate = 0;
 }
 
 void dominoex::MuPskClearbits()
@@ -802,11 +809,11 @@ void dominoex::MuPskClearbits()
 	for (int k = 0; k < 100; k++) {
 		for (int i = 0; i < 2; i++) {
 			bitshreg = (bitshreg << 1) | ((data >> i) & 1);
-			bitstate++;
+			Mu_bitstate++;
 
-			if (bitstate == 4) {
+			if (Mu_bitstate == 4) {
 				MuPskTxinlv->bits(&bitshreg);
-				bitstate = 0;
+				Mu_bitstate = 0;
 				bitshreg = 0;
 			}
 		}
@@ -835,8 +842,8 @@ void dominoex::sendMuPskEX(unsigned char c, int secondary)
 //std::cout << (int)data << " ";
 		for (int i = 0; i < 2; i++) {
 			bitshreg = (bitshreg << 1) | ((data >> i) & 1);
-			bitstate++;
-			if (bitstate == 4) {
+			Mu_bitstate++;
+			if (Mu_bitstate == 4) {
 
 				MuPskTxinlv->bits(&bitshreg);
 				
@@ -846,7 +853,7 @@ void dominoex::sendMuPskEX(unsigned char c, int secondary)
 
 //decodeMuPskEX(bitshreg);
 
-				bitstate = 0;
+				Mu_bitstate = 0;
 				bitshreg = 0;
 			}
 		}

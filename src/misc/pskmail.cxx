@@ -29,6 +29,7 @@
 #define _END  27
 
 #ifdef __CYGWIN__
+	string str_dirname = "c:/NBEMS/";
 	string str_infile = "c:/NBEMS/ARQXFR/txfile";
 	string str_outfile = "c:/NBEMS/ARQXFR/rxfile";
 #endif
@@ -256,6 +257,7 @@ void check_formail() {
 
 #ifdef __CYGWIN__
 string holdbuffer;
+bool	havedir = false;
 
 void trywrite(void *)
 {
@@ -263,8 +265,7 @@ void trywrite(void *)
 	FILE *outfile;
 	outfile = fopen(str_outfile.c_str(), "ab");
 	if (outfile) {
-		for (size_t i = 0; i < holdbuffer.length(); i++)
-			putc(holdbuffer[i], outfile);
+		fputs(holdbuffer.c_str(), outfile);
 		holdbuffer.clear();
 		fclose(outfile);
 		return;
@@ -276,11 +277,19 @@ void trywrite(void *)
 void writeToARQfile(unsigned int data)
 {
 	FILE *outfile;
+	if (!havedir) {
+		DIR *dir = opendir(str_dirname.c_str());
+		if (dir == 0)
+			return;
+		else {
+			closedir(dir);
+			havedir = true;
+		}
+			
 	outfile = fopen(str_outfile.c_str(), "ab");
 	if (outfile) {
 		if (!holdbuffer.empty()) {
-			for (size_t i = 0; i < holdbuffer.length(); i++)
-				putc(holdbuffer[i], outfile);
+			fputs(holdbuffer.c_str(), outfile);
 			holdbuffer.clear();
 		}
 		putc((unsigned char)data, outfile );

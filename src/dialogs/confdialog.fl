@@ -39,7 +39,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {fldigi - config} open
-    xywh {1017 516 400 250} type Double color 45 selection_color 51 align 80 visible
+    xywh {875 516 400 250} type Double color 45 selection_color 51 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 405 220} color 47 selection_color 9
@@ -959,8 +959,15 @@ progdefaults.changed = true;}
             label {Transmit RSid}
             callback {progdefaults.TransmitRSid = o->value();
 progdefaults.changed = true;}
-            tooltip {Transmit Reed Solomon ID} xywh {110 138 119 20} down_box DOWN_BOX
+            tooltip {Transmit Reed Solomon ID} xywh {49 138 119 20} down_box DOWN_BOX
             code0 {o->value(progdefaults.TransmitRSid);}
+          }
+          Fl_Check_Button chkRSidWideSearch {
+            label {Wide Search Detector}
+            callback {progdefaults.rsidWideSearch=o->value();
+progdefaults.changed = true;}
+            xywh {188 140 85 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.rsidWideSearch);}
           }
         }
         Fl_Group {} {

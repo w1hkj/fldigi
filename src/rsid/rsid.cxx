@@ -269,8 +269,13 @@ void cRsId::search( const double *pSamples, int nSamples )
 	double Real, Imag;
 	double centerfreq = active_modem->get_freq();
 
-	nBinLow = (int)((centerfreq  - 100.0 * RSID_RESOL) * 2048.0 / 11025.0);
-	nBinHigh = (int)((centerfreq  + 100.0 * RSID_RESOL) * 2048.0 / 11025.0);
+	if (progdefaults.rsidWideSearch) {
+		nBinLow = RSID_RESOL + 1;
+		nBinHigh = RSID_FFT_SIZE - 32;
+	} else {
+		nBinLow = (int)((centerfreq  - 100.0 * RSID_RESOL) * 2048.0 / 11025.0);
+		nBinHigh = (int)((centerfreq  + 100.0 * RSID_RESOL) * 2048.0 / 11025.0);
+	}
  	
  	if (wf->Reverse() == true && wf->USB() == true) bReverse = true;
  	if (wf->Reverse() == false && wf->USB() == false) bReverse = true;
