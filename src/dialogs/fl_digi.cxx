@@ -1834,7 +1834,7 @@ void put_rx_char(unsigned int data)
 	rxmsgid = -1;
 #endif
 
-	if (mailclient || mailserver || rxmsgid != -1)
+	if (mailclient || mailserver || rxmsgid != -1 || arqmode)
 		asc = ascii2;
 	if (active_modem->get_mode() == MODE_RTTY ||
 		active_modem->get_mode() == MODE_CW)

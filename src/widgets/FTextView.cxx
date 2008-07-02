@@ -997,13 +997,13 @@ void FTextEdit::menu_cb(int val)
 		clear();
 		break;
 	case TX_MENU_CUT:
-		kf_cut(Fl::event_text()[0], this);
+		kf_cut(0, this);
 		break;
 	case TX_MENU_COPY:
-		kf_copy(Fl::event_text()[0], this);
+		kf_copy(0, this);
 		break;
 	case TX_MENU_PASTE:
-		kf_paste(Fl::event_text()[0], this);
+		kf_paste(0, this);
 		break;
 
 	case TX_MENU_READ:

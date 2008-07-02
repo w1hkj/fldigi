@@ -32,6 +32,7 @@
 	string str_dirname = "c:/NBEMS/";
 	string str_infile = "c:/NBEMS/ARQXFR/txfile";
 	string str_outfile = "c:/NBEMS/ARQXFR/rxfile";
+	string str_flarqon = "c:/NBEMS/ARQXFR/flarqON";
 #endif
 
 using namespace std;
@@ -227,7 +228,14 @@ void check_formail() {
 	} 
 #else
 // Windows file handling for input strings
-	FILE *infile;
+	FILE *infile, *testarq;
+	testarq = fopen(str_flarqon.c_str(), "r");
+	arqmode = false;
+	if (!testarq)
+		return;
+	fclose(testarq);
+
+	arqmode = true;
 	infile = fopen(str_infile.c_str(), "rb");
 	if (infile) {
 		fseek(infile, 0, SEEK_END);
@@ -247,7 +255,6 @@ void check_formail() {
 				pskmail_text_available = true;
 				active_modem->set_stopflag(false);
 				start_tx();
-				arqmode = true;
 			}
 		}
 		fclose(infile);
@@ -285,6 +292,7 @@ void writeToARQfile(unsigned int data)
 			closedir(dir);
 			havedir = true;
 		}
+	}
 			
 	outfile = fopen(str_outfile.c_str(), "ab");
 	if (outfile) {
