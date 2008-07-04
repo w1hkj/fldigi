@@ -63,12 +63,12 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_FSKH105, &feld_FM105modem, "FSK-H105", "FSK Hell-105", "", "FMHELL" },
 	{ MODE_HELL80, &feld_80modem, "HELL80", "Hell 80", "", "HELL80" },
 
-	{ MODE_MFSK8, &mfsk8_modem, "MFSK-8", "MFSK-8", "MFSK8", "MFSK8" }, // !! These were swapped
+	{ MODE_MFSK8, &mfsk8_modem, "MFSK-8", "MFSK-8", "MFSK8", "MFSK8" },
 	{ MODE_MFSK16, &mfsk16_modem, "MFSK16", "MFSK-16", "MFSK16", "MFSK16" },
 
-	{ MODE_MT63_500, &mt63_500_modem, "MT63-500", "MT63-500", "", "MT63" },
-	{ MODE_MT63_1000, &mt63_1000_modem, "MT63-1XX", "MT63-1000", "", "MT63" },
-	{ MODE_MT63_2000, &mt63_2000_modem, "MT63-2XX", "MT63-2000", "", "MT63" },
+	{ MODE_MT63_500, &mt63_500_modem, "MT63-500", "MT63-500", "MT63-500", "MT63" },
+	{ MODE_MT63_1000, &mt63_1000_modem, "MT63-1XX", "MT63-1000", "MT63-1XX", "MT63" },
+	{ MODE_MT63_2000, &mt63_2000_modem, "MT63-2XX", "MT63-2000", "MT63-2XX", "MT63" },
 
 	{ MODE_BPSK31, &psk31_modem, "BPSK31", "BPSK-31", "PSK31", "PSK31" },
 	{ MODE_QPSK31, &qpsk31_modem, "QPSK31", "QPSK-31", "QPSK31", "QPSK31" },
@@ -76,8 +76,8 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_QPSK63, &qpsk63_modem, "QPSK63", "QPSK-63", "QPSK63", "QPSK63" },
 	{ MODE_PSK125, &psk125_modem, "PSK125", "BPSK-125", "PSK125", "PSK125" },
 	{ MODE_QPSK125, &qpsk125_modem, "QPSK-125", "QPSK-125", "QPSK125", "PSK125" },
-	{ MODE_PSK250, &psk250_modem, "PSK-250", "BPSK-250", "PSK250", "PSK250" }, // PSK250 not supported in 2.1.9
-	{ MODE_QPSK250, &qpsk250_modem, "QPSK-250", "QPSK-250", "QPSK250", "QPSK250" }, // PSK250 not supported in 2.1.9
+	{ MODE_PSK250, &psk250_modem, "PSK-250", "BPSK-250", "PSK250", "PSK250" },
+	{ MODE_QPSK250, &qpsk250_modem, "QPSK-250", "QPSK-250", "QPSK250", "QPSK250" },
 
 	{ MODE_OLIVIA, &olivia_modem, "OLIVIA", "Olivia", "", "OLIVIA" },
 

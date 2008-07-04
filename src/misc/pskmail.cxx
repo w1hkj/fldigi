@@ -32,6 +32,7 @@
 	string str_dirname = "c:/NBEMS/";
 	string str_infile = "c:/NBEMS/ARQXFR/txfile";
 	string str_outfile = "c:/NBEMS/ARQXFR/rxfile";
+	string str_flarqon = "c:/NBEMS/ARQXFR/flarqON";
 #endif
 
 using namespace std;
@@ -58,7 +59,7 @@ void ParseMode(string src)
 	}
 	for (size_t i = 0; i < NUM_MODES; ++i) {
 		if (strlen(mode_info[i].pskmail_name) > 0) 
-			if (src.find(mode_info[i].pskmail_name) != string::npos) {
+			if (src == mode_info[i].pskmail_name) {
 				init_modem(mode_info[i].mode);
 				break;
 			}
@@ -108,13 +109,12 @@ void parse_mailtext()
 				Maillogfile = 0;
 			}
 		} else {
-			while ((idxSubCmd = strCmdText.find("<mode>")) != string::npos) {
+			if ((idxSubCmd = strCmdText.find("<mode>")) != string::npos) {
 				idxSubCmdEnd = strCmdText.find("</mode>");
 				if (	idxSubCmdEnd != string::npos && 
 						idxSubCmdEnd > idxSubCmd ) {
 					strSubCmd = strCmdText.substr(idxSubCmd + 6, idxSubCmdEnd - idxSubCmd - 6);
 					ParseMode(strSubCmd);
-					strCmdText.erase(idxSubCmd, idxSubCmdEnd - idxSubCmd + 7);
 				}
 			}
 		}
@@ -227,7 +227,14 @@ void check_formail() {
 	} 
 #else
 // Windows file handling for input strings
-	FILE *infile;
+	FILE *infile, *testarq;
+	testarq = fopen(str_flarqon.c_str(), "r");
+	arqmode = false;
+	if (!testarq)
+		return;
+	fclose(testarq);
+
+	arqmode = true;
 	infile = fopen(str_infile.c_str(), "rb");
 	if (infile) {
 		fseek(infile, 0, SEEK_END);
@@ -243,11 +250,12 @@ void check_formail() {
 				}
 			if (mailtext.length() > 0) {
 				parse_mailtext();
-				pText = mailtext.begin();
-				pskmail_text_available = true;
-				active_modem->set_stopflag(false);
-				start_tx();
-				arqmode = true;
+				if (mailtext.length() > 0) {
+					pText = mailtext.begin();
+					pskmail_text_available = true;
+					active_modem->set_stopflag(false);
+					start_tx();
+				}
 			}
 		}
 		fclose(infile);
@@ -285,6 +293,7 @@ void writeToARQfile(unsigned int data)
 			closedir(dir);
 			havedir = true;
 		}
+	}
 			
 	outfile = fopen(str_outfile.c_str(), "ab");
 	if (outfile) {
