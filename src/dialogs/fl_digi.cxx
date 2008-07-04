@@ -1732,11 +1732,9 @@ void create_fl_digi_main() {
 	fl_digi_main->end();
 	fl_digi_main->callback(cb_wMain);
 
-#if defined(__APPLE__)
-        // FIXME: how do we set the window icon on OS X?
-#elif defined (__CYGWIN__)
+#if defined (__CYGWIN__)
 	fl_digi_main->icon((char*)LoadIcon(fl_display, MAKEINTRESOURCE(IDI_ICON)));
-#else
+#elif defined (__linux__)
 	make_pixmap(&fldigi_icon_pixmap, fldigi_icon_48_xpm);
 	fl_digi_main->icon((char *)fldigi_icon_pixmap);
 #endif
@@ -1748,7 +1746,7 @@ void create_fl_digi_main() {
 	scopeview->xclass(PACKAGE_NAME);
 	digiscope = new Digiscope (0, 0, 140, 140);
 	scopeview->resizable(digiscope);
-	scopeview->size_range(50, 50, 0, 0, 0, 0, 1);
+	scopeview->size_range(SCOPEWIN_MIN_WIDTH, SCOPEWIN_MIN_HEIGHT);
 	scopeview->end();
 	scopeview->hide();	
 
@@ -1800,8 +1798,11 @@ void put_cwRcvWPM(double wpm)
 
 void set_scope_mode(Digiscope::scope_mode md)
 {
-	if (digiscope)
+	if (digiscope) {
 		digiscope->mode(md);
+		REQ(&Fl_Window::size_range, scopeview, SCOPEWIN_MIN_WIDTH, SCOPEWIN_MIN_HEIGHT,
+		    0, 0, 0, 0, (md == Digiscope::PHASE || md == Digiscope::XHAIRS));
+	}
 	if (wfscope)
 		wfscope->mode(md);
 }
@@ -2286,7 +2287,8 @@ void change_modem_param(int state)
 	}
 	else if (state & FL_SHIFT) {
 		val = sldrSquelch;
-		d = -d;
+		if (!twoscopes)
+			d = -d;
 	}
 
 	val->value(val->clamp(val->increment(val->value(), -d)));
