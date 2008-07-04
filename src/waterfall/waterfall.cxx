@@ -1022,9 +1022,9 @@ void xmtlock_cb(Fl_Widget *w, void *vi)
 
 void waterfall::set_XmtRcvBtn(bool val)
 {
-	FL_LOCK();
+	FL_LOCK_D();
 	xmtrcv->value(val);
-	FL_UNLOCK();
+	FL_UNLOCK_D();
 }
 
 void mode_cb(Fl_Widget *w, void *v) {

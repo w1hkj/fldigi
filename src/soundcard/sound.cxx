@@ -374,7 +374,7 @@ int SoundOSS::Open(int md, int freq)
 	catch (...) {
 		throw;
 	}
-	return device_fd;
+	return 0;
 }
 
 void SoundOSS::Close(unsigned dir)
@@ -790,6 +790,7 @@ int SoundPort::Open(int mode, int freq)
         req_sample_rate = sample_frequency = freq;
 
 	// do we need to (re)initialise the streams?
+	int ret = 0;
 	int sr[2] = { progdefaults.in_sample_rate, progdefaults.out_sample_rate };
 	for (size_t i = 0; i < 2; i++) {
 		if ( !(stream_active(i) && (Pa_GetHostApiInfo((*sd[i].idev)->hostApi)->type == paJACK ||
@@ -808,6 +809,7 @@ int SoundPort::Open(int mode, int freq)
                         }
 
 			start_stream(i);
+			ret = 1;
 		}
 		else {
                         pause_stream(i);
@@ -816,7 +818,7 @@ int SoundPort::Open(int mode, int freq)
                 }
 	}
 
-	return 0;
+	return ret;
 }
 
 static int sem_timedwaitr(sem_t* sem, double rel_timeout)
