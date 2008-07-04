@@ -980,12 +980,15 @@ char *zuluTime()
 	return logtime;
 }
 
+bool oktoclear = false;
+
 void qsoTime_cb(Fl_Widget *b, void *)
 {
 	FL_LOCK_D();
 	inpTime->value(zuluTime());
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
+	oktoclear = false;
 	restoreFocus();
 }
 
@@ -1004,24 +1007,35 @@ void clearQSO()
 	FL_UNLOCK_D();
 }
 
+void cb_log(Fl_Widget *b, void *)
+{
+	oktoclear = false;
+}
+
 void qsoClear_cb(Fl_Widget *b, void *)
 {
-	if (fl_choice ("Clear log fields?", "Cancel", "OK", NULL) == 1) {
+	if (oktoclear) {
+		clearQSO();
+		FL_AWAKE_D();
+	} else if (fl_choice ("Clear log fields?", "Cancel", "OK", NULL) == 1) {
 		clearQSO();
 		FL_AWAKE_D();
 	}
+	oktoclear = false;
 	restoreFocus();
 }
 
 void qsoSave_cb(Fl_Widget *b, void *)
 {
 	submit_log();
+	oktoclear = true;
 	restoreFocus();
 }
 
 void cb_QRZ(Fl_Widget *b, void *)
 {
 	CALLSIGNquery();
+	oktoclear = false;
 }
 
 void status_cb(Fl_Widget *b, void *arg)
@@ -1047,6 +1061,7 @@ void cb_cboBand(Fl_Widget *w, void *d)
 {
 	Fl_ComboBox *cbBox = (Fl_ComboBox *) w;
 	wf->rfcarrier(atoi(cbBox->value())*1000L);
+	oktoclear = false;
 }
 
 void afconoff_cb(Fl_Widget *w, void *vi)
@@ -1440,9 +1455,11 @@ void create_fl_digi_main() {
 		Fl_Group *qsoFrame = new Fl_Group(0, Y, WNOM, Hqsoframe);
 			inpFreq = new Fl_Input(pad, Y + Hqsoframe/2 - pad, 85, Hqsoframe/2, "Frequency");
 			inpFreq->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+			inpFreq->callback(cb_log, 0);
 
 			inpTime = new Fl_Input(rightof(inpFreq) + pad, Y + Hqsoframe/2 - pad, 45, Hqsoframe/2, "Time");
 			inpTime->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+			inpTime->callback(cb_log, 0);
 
 			qsoTime = new Fl_Button(rightof(inpTime) + pad, Y + Hqsoframe/2 - pad, 24, Hqsoframe/2);
 			Fl_Image *pixmap = new Fl_Pixmap(cal_16);
@@ -1451,15 +1468,19 @@ void create_fl_digi_main() {
 
 			inpCall = new Fl_Input(rightof(qsoTime) + pad, Y + Hqsoframe/2 - pad, 80, Hqsoframe/2, "Call");
 			inpCall->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+			inpCall->callback(cb_log, 0);
 
 			inpName = new Fl_Input(rightof(inpCall) + pad, Y + Hqsoframe/2 - pad, 100, Hqsoframe/2, "Name");
 			inpName->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+			inpName->callback(cb_log, 0);
 
 			inpRstIn = new Fl_Input(rightof(inpName) + pad, Y + Hqsoframe/2 - pad, 35, Hqsoframe/2, "RST In ");
 			inpRstIn->align(FL_ALIGN_TOP | FL_ALIGN_RIGHT);
+			inpRstIn->callback(cb_log, 0);
 
 			inpRstOut = new Fl_Input(rightof(inpRstIn) + pad, Y + Hqsoframe/2 - pad, 35, Hqsoframe/2, "Out");
 			inpRstOut->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+			inpRstOut->callback(cb_log, 0);
 
 			btnQRZ = new Fl_Button(WNOM - 40 - pad, Y + 1, 40, Hqsoframe/2 - pad, "QRZ");
 			btnQRZ->callback(cb_QRZ, 0);
@@ -1467,6 +1488,7 @@ void create_fl_digi_main() {
 			inpQth = new Fl_Input(rightof(inpRstOut) + pad, Y + Hqsoframe/2 - pad,
 					      leftof(btnQRZ) - rightof(inpRstOut) - 2*pad, Hqsoframe/2, "QTH");
 			inpQth->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+			inpQth->callback(cb_log, 0);
 			qsoFrame->resizable(inpQth);
 
 			qsoClear = new Fl_Button(WNOM - 40 - pad, Y + Hqsoframe/2 + 1, 40, Hqsoframe/2 - pad, "Clear");
@@ -1481,14 +1503,17 @@ void create_fl_digi_main() {
 
 			inpAZ = new Fl_Input(leftof(qsoSave) - 40 - pad, Y, 40, Hnotes, "Az"); // WA5ZNU
 			inpAZ->align(FL_ALIGN_LEFT);
+			inpAZ->callback(cb_log, 0);
 
 			inpLoc = new Fl_Input(leftof(inpAZ) - pad - pad - 70, Y, 70, Hnotes, "Loc");
 			inpLoc->align(FL_ALIGN_LEFT);
+			inpLoc->callback(cb_log, 0);
 
 			// align this vertically with the Call field
 			inpNotes = new Fl_Input(leftof(inpLoc) - pad - (leftof(inpLoc) - leftof(inpCall)), Y, 
 			                        leftof(inpLoc) - leftof(inpCall) - 2*pad, Hnotes, "Notes");
 			inpNotes->align(FL_ALIGN_LEFT);
+			inpNotes->callback(cb_log, 0);			
 			qsoFrame2->resizable(inpNotes);
 
 			btnSideband = new Fl_Button(leftof(inpNotes) - 2*pad - (Hnotes-2), Y+1, Hnotes-2, Hnotes-2, "U");

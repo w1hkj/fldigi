@@ -25,6 +25,8 @@
 
 #include "configuration.h"
 
+#include "globals.h"
+
 using namespace std;
 
 Fl_Double_Window *rigcontrol = (Fl_Double_Window *)0;
@@ -140,6 +142,25 @@ void updateSelect()
                 FreqSelect->add(freqlist[i].str().c_str());
 }
 
+size_t updateList(long rf, int freq, string rmd, trx_mode md)
+{
+	qrg_mode_t m;
+	m.rmode = rmd;
+	m.mode = md;
+	m.rfcarrier = rf;
+	m.carrier = freq;
+
+	freqlist.push_back(m);
+	sort(freqlist.begin(), freqlist.end());
+
+	vector<qrg_mode_t>::const_iterator pos = find(freqlist.begin(), freqlist.end(), m);
+	if (pos != freqlist.end())
+		return pos - freqlist.begin();
+	else
+		return 0;
+	
+}
+
 size_t addtoList(long val)
 {
 	qrg_mode_t m;
@@ -151,14 +172,7 @@ size_t addtoList(long val)
 		m.carrier = active_modem->get_freq();
 		m.mode = active_modem->get_mode();
 	}
-	freqlist.push_back(m);
-	sort(freqlist.begin(), freqlist.end());
-
-	vector<qrg_mode_t>::const_iterator pos = find(freqlist.begin(), freqlist.end(), m);
-	if (pos != freqlist.end())
-		return pos - freqlist.begin();
-	else
-		return 0;
+	return updateList(val, m.carrier, m.rmode, m.mode);	 
 }
 
 bool readFreqList()
@@ -236,23 +250,22 @@ void buildlist()
 	if (readFreqList() == true)
 		return;
 	Fl::lock();
-	addtoList (1807000L);
-	addtoList (10135000L);
-	addtoList (21070000L);
-	addtoList (24920000);
-	addtoList (28120000);
-	addtoList (50290000);
-	addtoList (3580000L);
-	addtoList (14070000L);
-	addtoList (21000000L);
-	addtoList (7070000L);
-	addtoList (14000000L);
-	addtoList (28000000L);
-	addtoList (7000000L);
-	addtoList (3500000L);
-	addtoList (3662000L);
-	addtoList (7030000L);
-	addtoList (18100000L);
+	updateList (1807000L, 1000, "USB", MODE_BPSK31 );
+	updateList (3505000L, 800, "USB", MODE_CW);
+	updateList (3580000L, 1000, "USB", MODE_BPSK31 );
+	updateList (1000500L, 800, "USB", MODE_CW);
+	updateList (10135000L, 1000, "USB", MODE_BPSK31 );
+	updateList (7005000L, 800, "USB", MODE_CW);
+	updateList (7030000L, 1000, "USB", MODE_BPSK31 );
+	updateList (7070000L, 1000, "USB", MODE_BPSK31 );
+	updateList (14005000L, 800, "USB", MODE_CW);
+	updateList (14070000L, 1000, "USB", MODE_BPSK31 );
+	updateList (18100000L, 1000, "USB", MODE_BPSK31 );
+	updateList (21005000L, 800, "USB", MODE_CW);
+	updateList (21070000L, 1000, "USB", MODE_BPSK31 );
+	updateList (24920000L, 1000, "USB", MODE_BPSK31 );
+	updateList (28005000L, 800, "USB", MODE_CW);
+	updateList (28120000, 1000, "USB", MODE_BPSK31 );
 	updateSelect();
 	FreqDisp->value(freqlist[0].rfcarrier);
 	Fl::unlock();

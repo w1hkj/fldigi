@@ -59,7 +59,7 @@ void ParseMode(string src)
 	}
 	for (size_t i = 0; i < NUM_MODES; ++i) {
 		if (strlen(mode_info[i].pskmail_name) > 0) 
-			if (src.find(mode_info[i].pskmail_name) != string::npos) {
+			if (src == mode_info[i].pskmail_name) {
 				init_modem(mode_info[i].mode);
 				break;
 			}
@@ -109,13 +109,12 @@ void parse_mailtext()
 				Maillogfile = 0;
 			}
 		} else {
-			while ((idxSubCmd = strCmdText.find("<mode>")) != string::npos) {
+			if ((idxSubCmd = strCmdText.find("<mode>")) != string::npos) {
 				idxSubCmdEnd = strCmdText.find("</mode>");
 				if (	idxSubCmdEnd != string::npos && 
 						idxSubCmdEnd > idxSubCmd ) {
 					strSubCmd = strCmdText.substr(idxSubCmd + 6, idxSubCmdEnd - idxSubCmd - 6);
 					ParseMode(strSubCmd);
-					strCmdText.erase(idxSubCmd, idxSubCmdEnd - idxSubCmd + 7);
 				}
 			}
 		}
@@ -251,10 +250,12 @@ void check_formail() {
 				}
 			if (mailtext.length() > 0) {
 				parse_mailtext();
-				pText = mailtext.begin();
-				pskmail_text_available = true;
-				active_modem->set_stopflag(false);
-				start_tx();
+				if (mailtext.length() > 0) {
+					pText = mailtext.begin();
+					pskmail_text_available = true;
+					active_modem->set_stopflag(false);
+					start_tx();
+				}
 			}
 		}
 		fclose(infile);
