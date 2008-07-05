@@ -765,17 +765,12 @@ void cb_mnuBeginnersURL(Fl_Widget*, void*)
 {
 	string deffname = HomeDir;
 	deffname.append("beginners.html");
-	ifstream f_in(deffname.c_str(), ios::in);
-	if (!f_in) {
-		ofstream f_out(deffname.c_str(), ios::out);
-		f_out << szBeginner;
-		f_out.close();
-	} else
-		f_in.close();
-	string htmlfilename = "file://";
-	htmlfilename.append(HomeDir);
-	htmlfilename.append("beginners.html");
-	cb_mnuVisitURL( NULL, (void *)htmlfilename.c_str());
+	ofstream f(deffname.c_str());
+	if (!f)
+		return;
+	f << szBeginner;
+	f.close();
+	cb_mnuVisitURL(NULL, (void *)deffname.insert(0, "file://").c_str());
 }
 
 void cb_mnuAboutURL(Fl_Widget*, void*)
