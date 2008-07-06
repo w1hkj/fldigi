@@ -61,6 +61,7 @@ inline double clamp(double x, double min, double max)
 
 inline double decayavg(double average, double input, double weight)
 {
+	if (weight <= 1.0) return input;
 	return input * (1.0 / weight) + average * (1.0 - (1.0 / weight));
 }
 

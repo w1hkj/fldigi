@@ -98,7 +98,8 @@ private:
 	Cmovavg *bitfilt;
 	fftfilt *bpfilt;
 
-	mbuffer<double, MAXPIPE, 2> pipe;
+	double *pipe;
+	double *dsppipe;
 	int pipeptr;
 
 	double bbfilter[MAXPIPE];
