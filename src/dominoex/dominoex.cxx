@@ -78,6 +78,7 @@ void dominoex::rx_init()
 	syncfilter->reset();
 
 	Mu_datashreg = 1;
+	set_AFCind(0.0);
 }
 
 void dominoex::reset_filters()
@@ -488,7 +489,7 @@ void dominoex::eval_s2n()
 		}	
 		noise /= (paths * numbins - 1);
 	
-		s2n = decayavg( s2n, sig / noise, 8);
+		s2n = decayavg( s2n, sig / noise, 32);
 
 		metric = 3*(20*log10(s2n) - 9.0);
 

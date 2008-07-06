@@ -343,7 +343,7 @@ void sound_update(unsigned idx)
 			Fl_Menu_* menus[2] = { menuInSampleRate, menuOutSampleRate };
 			for (size_t i = 0; i < 2; i++) {
 				char* label = strdup(menus[i]->text());
-				const vector<double>& srates = SoundPort::get_supported_rates(scDevice[0], i);
+				const vector<double>& srates = SoundPort::get_supported_rates(scDevice[i], i);
 
 				switch (srates.size()) {
 				case 0: // startup; no devices initialised yet

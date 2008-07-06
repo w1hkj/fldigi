@@ -156,8 +156,11 @@ protected:
 	double s2n;
 	double sig;
 	double noise;
+	
+	double currfreq;
 
 	int synccounter;
+	int AFC_COUNT;
 
 	unsigned char symbolpair[2];
 	int symcounter;

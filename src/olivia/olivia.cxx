@@ -135,6 +135,7 @@ void olivia::rx_init()
 {
 	Rx->Reset();
 	escape = 0;
+	set_AFCind(0.0);
 }
 
 int olivia::unescape(int c)

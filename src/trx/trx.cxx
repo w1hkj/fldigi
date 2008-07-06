@@ -99,8 +99,8 @@ void trx_trx_receive_loop()
 	if (active_modem) {
 		try {
 			current_samplerate = active_modem->get_samplerate();
-			scard->Open(O_RDONLY, current_samplerate);
-			REQ_SYNC(sound_update, progdefaults.btnAudioIOis);
+			if (scard->Open(O_RDONLY, current_samplerate))
+				REQ(sound_update, progdefaults.btnAudioIOis);
 		}
 		catch (const SndException& e) {
 			put_status(e.what(), 5);
@@ -247,7 +247,7 @@ void trx_trx_transmit_loop()
 		MilliSleep(10);
 
 	push2talk->set(false);
-	REQ_SYNC(&waterfall::set_XmtRcvBtn, wf, false);
+	REQ(&waterfall::set_XmtRcvBtn, wf, false);
 
 	if (progdefaults.useTimer == true) {
 		trx_start_macro_timer();
@@ -279,7 +279,7 @@ void trx_tune_loop()
 		try {
 			while (trx_state == STATE_TUNE) {
 				if (_trx_tune == 0) {
-					REQ_SYNC(&waterfall::set_XmtRcvBtn, wf, true);
+					REQ(&waterfall::set_XmtRcvBtn, wf, true);
 					xmttune::keydown(active_modem->get_txfreq_woffset(), scard);
 					_trx_tune = 1;
 				} else
@@ -301,7 +301,7 @@ void trx_tune_loop()
 		MilliSleep(10);
 
 	push2talk->set(false);
-	REQ_SYNC(&waterfall::set_XmtRcvBtn, wf, false);
+	REQ(&waterfall::set_XmtRcvBtn, wf, false);
 }
 
 //=============================================================================

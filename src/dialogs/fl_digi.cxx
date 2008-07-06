@@ -50,6 +50,7 @@
 #include "waterfall.h"
 #include "raster.h"
 #include "progress.h"
+#include "afcind.h"
 
 #include "main.h"
 #include "threads.h"
@@ -149,6 +150,7 @@ Fl_Button			*btnQRZ;
 Fl_Group			*MixerFrame;
 Fl_Slider			*valRcvMixer;
 Fl_Slider			*valXmtMixer;
+AFCind				*AFCindicator;
 
 int					altMacros = 0;
 bool				bSaveFreqList = false;
@@ -195,7 +197,10 @@ Fl_Menu_Item quick_change_qpsk[] = {
 
 Fl_Menu_Item quick_change_mfsk[] = {
 	{ mode_info[MODE_MFSK8].name, 0, cb_init_mode, (void *)MODE_MFSK8 },
+	{ mode_info[MODE_MFSK11].name, 0, cb_init_mode, (void *)MODE_MFSK11 },
 	{ mode_info[MODE_MFSK16].name, 0, cb_init_mode, (void *)MODE_MFSK16 },
+	{ mode_info[MODE_MFSK22].name, 0, cb_init_mode, (void *)MODE_MFSK22 },
+	{ mode_info[MODE_MFSK32].name, 0, cb_init_mode, (void *)MODE_MFSK32 },
 	{ 0 }
 };
 
@@ -438,7 +443,11 @@ void init_modem(trx_mode mode)
 		modem_config_tab = tabFeld;
 		break;
 
-	case MODE_MFSK8: case MODE_MFSK16:
+	case MODE_MFSK8: 
+	case MODE_MFSK11: 
+	case MODE_MFSK16: 
+	case MODE_MFSK22: 
+	case MODE_MFSK32:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new mfsk(mode));
 		quick_change = quick_change_mfsk;
@@ -765,17 +774,12 @@ void cb_mnuBeginnersURL(Fl_Widget*, void*)
 {
 	string deffname = HomeDir;
 	deffname.append("beginners.html");
-	ifstream f_in(deffname.c_str(), ios::in);
-	if (!f_in) {
-		ofstream f_out(deffname.c_str(), ios::out);
-		f_out << szBeginner;
-		f_out.close();
-	} else
-		f_in.close();
-	string htmlfilename = "file://";
-	htmlfilename.append(HomeDir);
-	htmlfilename.append("beginners.html");
-	cb_mnuVisitURL( NULL, (void *)htmlfilename.c_str());
+	ofstream f(deffname.c_str());
+	if (!f)
+		return;
+	f << szBeginner;
+	f.close();
+	cb_mnuVisitURL(NULL, (void *)deffname.insert(0, "file://").c_str());
 }
 
 void cb_mnuAboutURL(Fl_Widget*, void*)
@@ -1189,7 +1193,10 @@ Fl_Menu_Item menu_[] = {
 
 {"MFSK", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_MFSK8].name, 0,  cb_init_mode, (void *)MODE_MFSK8, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK11].name, 0,  cb_init_mode, (void *)MODE_MFSK11, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_MFSK16].name, 0,  cb_init_mode, (void *)MODE_MFSK16, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK22].name, 0,  cb_init_mode, (void *)MODE_MFSK22, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK32].name, 0,  cb_init_mode, (void *)MODE_MFSK32, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"MT63", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
@@ -1685,19 +1692,25 @@ void create_fl_digi_main() {
 
 			StatusBar = new Fl_Box(
                 rightof(Status2), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
-                WNOM - bwSqlOnOff - bwAfcOnOff - Wwarn - rightof(Status2), Hstatus, "");
+                WNOM - bwSqlOnOff - bwAfcOnOff - Wwarn - rightof(Status2) - 60, 
+                Hstatus, "");
 			StatusBar->box(FL_DOWN_BOX);
 			StatusBar->color(FL_BACKGROUND2_COLOR);
 			StatusBar->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
-
+			
 			WARNstatus = new Fl_Box(
-                WNOM - bwSqlOnOff - bwAfcOnOff - Wwarn, Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
+				rightof(StatusBar), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
                 Wwarn, Hstatus, "");
 			WARNstatus->box(FL_DIAMOND_DOWN_BOX);
 			WARNstatus->color(FL_BACKGROUND_COLOR);
 			WARNstatus->labelcolor(FL_RED);
 			WARNstatus->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE);
 				
+			AFCindicator = new AFCind(
+				rightof(WARNstatus), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
+				60,
+				Hstatus, "");
+
 			if (useCheckButtons) {
 				btn_afconoff = new Fl_Check_Button(
 								WNOM - bwSqlOnOff - bwAfcOnOff, 
@@ -1732,11 +1745,9 @@ void create_fl_digi_main() {
 	fl_digi_main->end();
 	fl_digi_main->callback(cb_wMain);
 
-#if defined(__APPLE__)
-        // FIXME: how do we set the window icon on OS X?
-#elif defined (__CYGWIN__)
+#if defined (__CYGWIN__)
 	fl_digi_main->icon((char*)LoadIcon(fl_display, MAKEINTRESOURCE(IDI_ICON)));
-#else
+#elif defined (__linux__)
 	make_pixmap(&fldigi_icon_pixmap, fldigi_icon_48_xpm);
 	fl_digi_main->icon((char *)fldigi_icon_pixmap);
 #endif
@@ -1748,7 +1759,7 @@ void create_fl_digi_main() {
 	scopeview->xclass(PACKAGE_NAME);
 	digiscope = new Digiscope (0, 0, 140, 140);
 	scopeview->resizable(digiscope);
-	scopeview->size_range(50, 50, 0, 0, 0, 0, 1);
+	scopeview->size_range(SCOPEWIN_MIN_WIDTH, SCOPEWIN_MIN_HEIGHT);
 	scopeview->end();
 	scopeview->hide();	
 
@@ -1800,8 +1811,11 @@ void put_cwRcvWPM(double wpm)
 
 void set_scope_mode(Digiscope::scope_mode md)
 {
-	if (digiscope)
+	if (digiscope) {
 		digiscope->mode(md);
+		REQ(&Fl_Window::size_range, scopeview, SCOPEWIN_MIN_WIDTH, SCOPEWIN_MIN_HEIGHT,
+		    0, 0, 0, 0, (md == Digiscope::PHASE || md == Digiscope::XHAIRS));
+	}
 	if (wfscope)
 		wfscope->mode(md);
 }
@@ -2286,7 +2300,8 @@ void change_modem_param(int state)
 	}
 	else if (state & FL_SHIFT) {
 		val = sldrSquelch;
-		d = -d;
+		if (!twoscopes)
+			d = -d;
 	}
 
 	val->value(val->clamp(val->increment(val->value(), -d)));
@@ -2315,4 +2330,16 @@ void start_tx()
 	fl_unlock(&trx_mutex);
 	wf->set_XmtRcvBtn(true);
 }
+
+
+void set_AFCind(double val)
+{
+	REQ (&AFCind::value, AFCindicator, val );
+}
+
+void set_AFCrange(double val)
+{
+	AFCindicator->range(val);
+}
+
 

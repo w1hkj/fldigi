@@ -85,7 +85,7 @@ modulation systems, speeds and bandwidths suit different operating conditions.  
 <P>\
 Other factors such as available band space, operating speed and convenience, noise level, signal level and \
 available power also affect the choice of mode. While in many cases several different modes might be suitable, \
-having a choice adds to the operating pleasure. It is diffcult to advise which mode is best for each particular \
+having a choice adds to the operating pleasure. It is difficult to advise which mode is best for each particular \
 occasion, and experience plays an important role. \
 <P>\
 You might consider purchasing '<I>Digital Modes for All Occasions</I>' \
@@ -243,7 +243,7 @@ leave it in 'Waterfall' mode, as this is the easiest to tune with, and gives the
 is analysed and displayed with lower frequencies to the left, higher to the right. Weak signals and background noise \
 are dark while stronger signals show as brighter colours. As time passes (over a few seconds), the historic signals move downwards like a waterfall.  \
 <LI>'FFT' is a spectrum display, simply the mean signal strength versus frequency. Again frequency is displayed from left to right, \
-but now the vertical direction shows signal strength and there is no brightness or historic onformation.</UL> \
+but now the vertical direction shows signal strength and there is no brightness or historic information.</UL> \
 <P>\
 At the top of the pane is a scale of frequency in Hz, which corresponds to the frequency displayed immediately below it. This \
 scale can be moved around and zoomed using buttons in the CONTROL group.  \
@@ -263,7 +263,7 @@ it will be decoded; as soon as you release the mouse, decoding will revert to th
 <BLOCKQUOTE>\
 Using this group of entry boxes, you can keep a log of your QSOs. At the left are two '<B>Frequency</B>' boxes.  \
 If you use CAT control to operate your transceiver, the dial frequency is recorded automatically in the lower box; \
-otherwise you can type it manually or select (botton to the right) from a list of common frequencies. The audio frequency from the waterfall \
+otherwise you can type it manually or select (button to the right) from a list of common frequencies. The audio frequency from the waterfall \
 is added to this value and displayed in the upper box - assuming your rig is calibrated correctly, this is the true \
 centre frequency of the station you are in QSO with. You can't type in the upper box.  \
 <P>\
@@ -275,7 +275,7 @@ frequency is displayed and logged.  \
 The '<B>Time</B>' box can be typed in, or you can push the adjacent button to insert the current time. All times are in UTC, \
 and the computer knows how to calculate this from the PC local civil time, time zone and summer-time setting. Clever stuff!  \
 <P>\
-You can type the other station's callsign and name in the '<B>Call</B>' and '<B>Namel</B>' boxes, or right-click \
+You can type the other station's callsign and name in the '<B>Call</B>' and '<B>Name</B>' boxes, or right-click \
 on the appropriate word in the RECEIVE pane to insert them automatically. The same applies to the '<B>QTH</B>', \
 '<B>LOC</B>' (locator) and received signal report '<B>RST In</B>'. The other entries must be added manually.  \
 If you have access to an appropriate Callbook on-line subscription or CD, pressing the '<B>QRZ</B>' button will fetch \
@@ -293,7 +293,7 @@ Use &lt;<B>Esc</B>&gt; to quit from the menu with no change.  \
 These menu functions are: \
 </BLOCKQUOTE>\
 <DL><DT><B><U>F</U>iles</B></DT>\
-<DD>Allows you to open or save Macros (we won't get into that here), turn on/off logging to file, record/play audio samples, and exit the program. You can also exit the program by clicking on the 'X' in the tope right corner of the window, in the usual manner.</DD> \
+<DD>Allows you to open or save Macros (we won't get into that here), turn on/off logging to file, record/play audio samples, and exit the program. You can also exit the program by clicking on the 'X' in the top right corner of the window, in the usual manner.</DD> \
 <DT><B>Op <U>M</U>ode</B></DT>\
 <DD>This is where you select the operating modem used for transmission and reception. Some modes only have one option. Where more are \
 offered, drag the mouse down the list and sideways following the arrow to a secondary list, before releasing it. When you start the \
@@ -323,6 +323,15 @@ is a rather cool tool that allows you to monitor several PSK31 signals all at th
 <DD>Brings up the <A HREF=\"http://www.w1hkj.com/FldigiHelp/index.html\">Online Documentation</A>, the FLDIGI \
 <A HREF=\"http://www.w1hkj.com/Fldigi.html\">Home Page</A>, and various information about the program.</DD> \
 </DL>\
+The two non-menu functions are:\
+<DL><DT><B>RSID ?</B></DT>\
+<DD>This button turns on the receive RSID (automatic mode detection and tuning) feature. When in use, the button turns yellow and no text reception is possible until \
+a signal is identified, or the feature is turned off again. If you plan to use the RSID feature on receive, \
+you must leave the 'Start New Modem at Sweet Spot' item in the Menu Configure/Defaults/Mics tab unchecked.</DD>\
+<DT><B>TUNE</B></DT>\
+<DD>This button transmits a continuous tone at the current audio frequency. The tone level will be at the maximum signal level for any modem, \
+which makes this function useful for adjusting your transceiver's output power.</DD>\
+</DL>\
 <H3><I>FUNCTIONS</I></H3>\
 <BLOCKQUOTE>\
 This line of buttons provides user-editable QSO features. For example, the first button on the left sends CQ for you. Both the \
@@ -345,22 +354,21 @@ If you REALLY mess up the Macros and can't see how to fix them, just close the p
 The line of buttons under the waterfall is used to control the program (as opposed to the QSO). If you hover the mouse over \
 these buttons, you'll see a little yellow hint box appear which tells you what each button does.  \
 <P>\
-The <B>Id?</B> button turns on the receive \
-RSID (automatic mode detection and tuning) feature. When in use, the button turns yellow and no text reception is possible until \
-a signal is identified, or the feature is turned off again. If you plan to use the RSID feature on receive, \
-you must leave the 'Start New Modem at Sweet Spot' item in the Menu Configure/Defaults/Mics tab unchecked.  \
+The first button switches between Waterfall and FFT modes. The next two buttons adjust the signal level over which the waterfall works. \
+The default range is from 0dB downwards 70dB (i.e. to -70dB). Both of these values can be adjusted to suit your sound card and receiver audio level.\
 <P>\
-The next three buttons control waterfall behaviour. The first switches between Waterfall and FFT modes; the next sets the scale \
-zoom factor (visible display width, x1, x2 or x4); the third selects the waterfall speed. NORM or SLOW setting is best unless \
-you have a very fast computer.  \
+The next button sets the scale zoom factor (visible display width, x1, x2 or x4), and the next three buttons move the visible waterfall \
+area in relation to the bandwidth cursor.\
 <P>\
-The next three buttons move the waterfall left and right, followed by two (either side of a number, the audio frequency in Hz) \
-which control the receiving frequency (they move the red cursor lines).  \
+The next button selects the waterfall speed. NORM or SLOW setting is best unless you have a very fast computer.\
 <P>\
-You can also adjust the signal level over which the waterfall works. The default range is from 0dB downwards 70dB (i.e. to -70dB).  \
-Both of these values can be adjusted to suit your sound card and receiver audio level.  \
+The next four buttons (two on either side of a number, the audio frequency in Hz) control the receiving frequency (they move the red cursor lines).\
 <P>\
-The <B>M</B> button allows you to store or recall the current frequency (see the <A HREF=\"http://www.w1hkj.com/FldigiHelp/index.html\">Online Documentation</A> for details). The <B>Lk</B> button locks the transmit frequency (fixes the red cursors), and the <B>Rv</B> button turns \
+The <B>QSY</B> button moves the signal under the bandwidth cursor to a preset audio frequency (typically, the centre of the transceiver's passband). \
+The <B>Store</B> button allows you to store or recall the current frequency and mode. See the \
+<A HREF=\"http://www.w1hkj.com/FldigiHelp/OperatingControls.html\">Online Documentation</A> for details on these functions.\
+<P>\
+The <B>Lk</B> button locks the transmit frequency (fixes the red cursors), and the <B>Rv</B> button turns \
 the signal decoding upside down (some modes are sideband sensitive, and if they are the wrong way up, can't be received \
 correctly). Remember to turn this one off when you're done, or you won't receive anything! If every signal you hear is upside \
 down, check your transceiver sideband setting.  \
@@ -370,13 +378,13 @@ losing whatever is in the buffer (what you have typed in the Transmit pane), or 
 <P>\
 There are two further controls in the bottom right corner of the program, to the right of the Status line: \
 </BLOCKQUOTE>\
-<DL><DT><B>Afc</B> - The AFC control</DT>\
+<DL><DT><B>AFC</B> - The AFC control</DT>\
 <DD>When this button is pressed, an indicator on the button turns yellow, and the program will automatically retune to drifting signals.  \
 When the button is again pressed, AFC is off, and the tuning will stay where you leave it.</DD>  \
-<DT><B>Sql</B> - The Squelch control</DT>  \
+<DT><B>SQL</B> - The Squelch control</DT>  \
 <DD>When off (no coloured indicator on the button, the receiver displays all 'text' received, even if there is no signal present, \
 and the receiver is simply attempting to decode noise. When activated by pressing the button, the indicator turns yellow.  \
-If the incoming signal strength exceeds that set by the adjacent slider control (above the <B>Sql</B> button), the indicator \
+If the incoming signal strength exceeds that set by the adjacent slider control (above the <B>SQL</B> button), the indicator \
 turns green and the incoming signal is decoded and printed. The signal strength is indicated on the green bar beside the \
 Squelch level slider. If nothing seems to be printing, the first thing to do is check the Squelch!</DD>  \
 </DL>\

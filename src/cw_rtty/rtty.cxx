@@ -60,6 +60,7 @@ void rtty::rx_init()
 	}
 	bitfilt->reset();
 	poserr = negerr = 0.0;
+	set_AFCrange(shift/10.0);
 }
 
 void rtty::init()
@@ -519,7 +520,8 @@ int rtty::rx_process(const double *buf, int len)
 					if (progStatus.afconoff) {
 						if (metric > progStatus.sldrSquelchValue || !progStatus.sqlonoff || sigsearch) {
 							set_freq(frequency + freqerr);
-						}
+							set_AFCind(freqerr);
+						} else set_AFCind(0.0);
 					}
 				}
 			}

@@ -136,6 +136,7 @@ fldigi_SOURCES += \
 	filters/viterbi.cxx \
 	globals/globals.cxx \
 	include/htmlstrings.h \
+	include/afcind.h \
 	include/Combo_Box.h \
 	include/Combo_List.h \
 	include/confdialog.h \
@@ -296,6 +297,7 @@ fldigi_SOURCES += \
 	waterfall/digiscope.cxx \
 	waterfall/raster.cxx \
 	waterfall/waterfall.cxx \
+	widgets/afcind.cxx \
 	widgets/FTextView.cxx \
 	widgets/Fl_Text_Display_mod.cxx \
 	widgets/Fl_Text_Editor_mod.cxx \

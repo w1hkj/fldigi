@@ -15,7 +15,10 @@
 
 modem *cw_modem = 0;
 modem *mfsk8_modem = 0;
+modem *mfsk11_modem = 0;
 modem *mfsk16_modem = 0;
+modem *mfsk22_modem = 0;
+modem *mfsk32_modem = 0;
 modem *mt63_500_modem = 0;
 modem *mt63_1000_modem = 0;
 modem *mt63_2000_modem = 0;
@@ -99,7 +102,7 @@ void modem::init()
 void modem::set_freq(double freq)
 {
 	frequency = freq;
-	freqerr = 0.0;
+//	freqerr = 0.0;
 	if (freqlock == false)
 		tx_frequency = frequency;
 	REQ(put_freq, frequency);

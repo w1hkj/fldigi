@@ -31,6 +31,8 @@
 
 #include "mfsk.h"
 #include "modem.h"
+#include "afcind.h"
+
 #include "configuration.h"
 #include "status.h"
 #include "trx.h"
@@ -41,7 +43,7 @@
 
 #include "qrunner.h"
 
-#define AFC_COUNT	16
+//#define AFC_COUNT	16
 //32
 
 using namespace std;
@@ -76,6 +78,7 @@ void  mfsk::rx_init()
 	memset(picheader, ' ', PICHEADER - 1);
 	picheader[PICHEADER -1] = 0;
 	put_MODEstatus(mode);
+	set_AFCrange(tonespacing / 10.0);
 }
 
 void mfsk::init()
@@ -114,20 +117,46 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 	switch (mode) {
 
 	case MODE_MFSK8:
+		samplerate = 8000;
 		symlen =  1024;
 		symbits =    5;
-		basetone = 128;		/* 1000 Hz */
+		AFC_COUNT = 16;
 		break;
 	case MODE_MFSK16:
-	default:
+		samplerate = 8000;
 		symlen =  512;
 		symbits =   4;
-		basetone = 64;		/* 1000 Hz */
+		AFC_COUNT = 16;
+        break;
+	case MODE_MFSK32:
+		samplerate = 8000;
+		symlen =  256;
+		symbits =    4;
+		AFC_COUNT = 32;
+		break;
+	case MODE_MFSK11:
+		samplerate = 11025;
+		symlen =  1024;
+		symbits =   4;
+		AFC_COUNT = 16;
+        break;
+	case MODE_MFSK22:
+		samplerate = 11025;
+		symlen =  512;
+		symbits =    4;
+		AFC_COUNT = 32;
+		break;
+	default:
+		samplerate = 8000;
+		symlen =  512;
+		symbits =   4;
+		AFC_COUNT = 32;
         break;
 	}
 
 	numtones = 1 << symbits;
-	tonespacing = (double) MFSKSampleRate / symlen;
+	tonespacing = (double) samplerate / symlen;
+	basetone = (int)floor(1000.0 * symlen / samplerate + 0.5);
 
 	binsfft		= new sfft (symlen, basetone, basetone + numtones + 3);
 	hbfilt		= new C_FIR_filter();
@@ -156,15 +185,14 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 	bw = (numtones - 1) * tonespacing;
 	cf = 1000.0 + bw / 2.0;
 
-	flo = (cf - bw/2 - 2 * tonespacing) / MFSKSampleRate;
-	fhi = (cf + bw/2 + 2 * tonespacing) / MFSKSampleRate;
+	flo = (cf - bw/2 - 2 * tonespacing) / samplerate;
+	fhi = (cf + bw/2 + 2 * tonespacing) / samplerate;
 
 	bpfilt = new C_FIR_filter();
 	bpfilt->init_bandpass (127, 1, flo, fhi);
 
 	scopedata.alloc(symlen * 2);
 
-	samplerate = MFSKSampleRate;
 	fragmentsize = symlen;
 	bandwidth = (numtones - 1) * tonespacing;
 	
@@ -400,9 +428,9 @@ void mfsk::softdecode(complex *bins)
 		sum += tone;
 	}
 
-// shift to range 0...260 
+// shift to range 0...260 ??? symbols are unsigned char
 	for (i = 0; i < symbits; i++)
-		symbols[i] = (unsigned char)clamp(128.0 + (b[i] / sum * 128.0), 0, 260);
+		symbols[i] = (unsigned char)clamp(128.0 + (b[i] / sum * 128.0), 0, 255);// 260);
 
 	rxinlv->symbols(symbols);
 
@@ -462,7 +490,7 @@ void mfsk::update_syncscope()
 	set_scope(scopedata, SCOPESIZE);
 
 	scopedata.next(); // change buffers
-	snprintf(mfskmsg, sizeof(mfskmsg), "s/n %3.0f dB", 20.0 * log10(s2n) - 9.0 );
+	snprintf(mfskmsg, sizeof(mfskmsg), "s/n %3.0f dB", 20.0 * log10(s2n));
 	put_Status1(mfskmsg);
 }
 
@@ -504,32 +532,35 @@ void mfsk::afc()
 {
 	complex z;
 	complex prevvector;
-	double f;
+	double f, f1, f2;
+	double ts = tonespacing / 8;
 
 	if (sigsearch) {
 		reset_afc();
 		sigsearch = 0;
 	}
-	if (prev1symbol != currsymbol)
-		return;
-		
-	if (pipeptr == 0) {
-		prevvector = pipe[2*symlen - 1].vector[currsymbol];
-	} else {
-		prevvector = pipe[pipeptr - 1].vector[currsymbol];
-	}
-
-	z = prevvector % currvector;
-
-	f = z.arg() * samplerate / twopi;
-	f -= (1000 + tonespacing * currsymbol);
 
 	if (progStatus.afconoff && (metric > progStatus.sldrSquelchValue || progStatus.sqlonoff == false)) {
-		if (fabs(f) <= tonespacing / 2.0) {
-			freqerr = afcfilt->run(f / numtones);
-			set_freq(frequency + freqerr);
-		}
-	}
+		
+		if (pipeptr == 0)
+			prevvector = pipe[2*symlen - 1].vector[currsymbol];
+		else
+			prevvector = pipe[pipeptr - 1].vector[currsymbol];
+
+		z = prevvector % currvector;
+
+		f = z.arg() * samplerate / twopi;
+	
+		f1 = 1000 + tonespacing * currsymbol - f;	
+		f1 /= numtones;
+	
+		f2 = CLAMP ( f1, freqerr - ts, freqerr + ts);
+
+		freqerr = decayavg ( freqerr, f2, 64 );
+
+		set_freq(frequency - freqerr);
+		set_AFCind( freqerr );
+	} else set_AFCind(0.0);
 }
 
 void mfsk::eval_s2n()
@@ -540,9 +571,9 @@ void mfsk::eval_s2n()
 		if (i != currsymbol)
 			noise += pipe[pipeptr].vector[i].mag();
 	}	
-	noise /= (numtones - 1);
+//	noise /= (numtones - 1);
 	if (noise > 0)
-		s2n = decayavg ( s2n, sig / noise, 16 );
+		s2n = decayavg ( s2n, sig / noise, 64 );
 }
 
 int mfsk::rx_process(const double *buf, int len)
@@ -609,6 +640,7 @@ int mfsk::rx_process(const double *buf, int len)
 			pipe[pipeptr].vector[i] = bins[i];
 			
 		if (--synccounter <= 0) {
+			
 			synccounter = symlen;
 
 			currsymbol = harddecode(bins);

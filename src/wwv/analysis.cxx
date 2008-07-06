@@ -40,6 +40,7 @@ void anal::rx_init()
 {
 	phaseacc = 0;
 	put_MODEstatus(mode);
+	set_AFCrange(1.0);
 }
 
 void anal::init()
@@ -165,6 +166,7 @@ int anal::rx_process(const double *buf, int len)
 // reset the display counter & the pipe pointer
 				dspcnt = symbollen;
 				pipeptr = 0;
+				set_AFCind(fout_2);
 			}
 		}
 	}

@@ -30,6 +30,7 @@
 
 #include <sstream>
 #include <vector>
+#include <algorithm>
 #include "waterfall.h"
 #include "threads.h"
 #include "main.h"
@@ -1022,9 +1023,9 @@ void xmtlock_cb(Fl_Widget *w, void *vi)
 
 void waterfall::set_XmtRcvBtn(bool val)
 {
-	FL_LOCK();
+	FL_LOCK_D();
 	xmtrcv->value(val);
-	FL_UNLOCK();
+	FL_UNLOCK_D();
 }
 
 void mode_cb(Fl_Widget *w, void *v) {
@@ -1148,8 +1149,12 @@ void btnMem_cb(Fl_Widget *, void *menu_event)
                 m.rfcarrier = wf->rfcarrier();
                 m.carrier = active_modem->get_freq();
                 m.mode = active_modem->get_mode();
-                if (op == APPEND)
-                        qrg_list.push_back(m);
+                if (op == APPEND) {
+			if (find(qrg_list.begin(), qrg_list.end(), m) == qrg_list.end())
+				qrg_list.push_back(m);
+			else
+				break;
+		}
                 else
                         qrg_list[elem] = m;
 
@@ -1176,7 +1181,6 @@ void btnMem_cb(Fl_Widget *, void *menu_event)
                         wf->mbtnMem->add(o.str().c_str());
                 else
                         wf->mbtnMem->replace(elem, o.str().c_str());
-
         }
                 break;
         }
@@ -1501,7 +1505,9 @@ int WFdisp::handle(int event)
 			}
 			// fall through
 		case FL_LEFT_MOUSE:
-			if (event != FL_DRAG && Fl::event_state() & FL_CTRL) {
+			if (Fl::event_state() & FL_CTRL) {
+				if (event == FL_DRAG)
+					break;
 				bHistory = true;
 				if (eb == FL_LEFT_MOUSE) {
 				       restoreFocus();
