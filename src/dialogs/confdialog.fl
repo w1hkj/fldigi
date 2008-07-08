@@ -39,15 +39,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {fldigi - config} open
-    xywh {875 516 400 250} type Double color 45 selection_color 51 align 80 visible
+    xywh {849 557 400 250} type Double color 45 selection_color 51 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 405 220} color 47 selection_color 9
     } {
       Fl_Group tabOperator {
         label Oper
-        callback {progdefaults.changed = true;} selected
-        xywh {0 25 400 195} color 51 selection_color 51 when 1
+        callback {progdefaults.changed = true;}
+        xywh {0 25 400 195} color 51 selection_color 51 when 1 hide
       } {
         Fl_Input inpMyCallsign {
           label {Callsign:}
@@ -985,7 +985,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabModems {
         label Modem open
-        xywh {0 25 401 195} color 51 selection_color 51 hide
+        xywh {0 25 401 195} color 51 selection_color 51
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 401 195} color 51 selection_color 10 align 9
@@ -1155,10 +1155,17 @@ progdefaults.changed = true;}
               xywh {215 130 108 20} down_box DOWN_BOX
               code0 {o->value(progdefaults.THOR_SOFT);}
             }
+            Fl_Value_Slider valThorCWI {
+              label {CWI threshold:}
+              callback {progdefaults.ThorCWI = o->value();
+progdefaults.changed = true;}
+              xywh {120 174 260 21} type Horizontal align 4 step 0.01 textsize 14
+              code0 {o->value(progdefaults.ThorCWI);}
+            }
           }
           Fl_Group tabDomEX {
             label Dom open
-            xywh {0 50 400 170} color 51 selection_color 51 hide
+            xywh {0 50 400 170} color 51 selection_color 51
           } {
             Fl_Input txtSecondary {
               label {Secondary Text}
@@ -1195,6 +1202,13 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
               xywh {20 174 63 21} type Simple minimum 4 maximum 8 step 1 value 5 hide
               code0 {o->value(progdefaults.DOMINOEX_PATHS);}
+            }
+            Fl_Value_Slider valDomCWI {
+              label {CWI threshold:}
+              callback {progdefaults.DomCWI = o->value();
+progdefaults.changed = true;} selected
+              xywh {125 179 260 21} type Horizontal align 4 step 0.01 textsize 14
+              code0 {o->value(progdefaults.DomCWI);}
             }
           }
           Fl_Group tabFeld {
@@ -1329,7 +1343,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabPSK {
             label Psk open
-            xywh {0 50 400 170}
+            xywh {0 50 400 170} hide
           } {
             Fl_Counter cntSearchRange {
               label {Acq Srch Range}

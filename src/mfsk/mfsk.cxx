@@ -540,7 +540,7 @@ void mfsk::afc()
 		sigsearch = 0;
 	}
 
-	if (progStatus.afconoff && (metric > progStatus.sldrSquelchValue || progStatus.sqlonoff == false)) {
+	if ( progStatus.afconoff == true && metric > progStatus.sldrSquelchValue ) {
 		
 		if (pipeptr == 0)
 			prevvector = pipe[2*symlen - 1].vector[currsymbol];

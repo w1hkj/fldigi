@@ -969,6 +969,13 @@ static void cb_valTHOR_SOFT(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Value_Slider *valThorCWI=(Fl_Value_Slider *)0;
+
+static void cb_valThorCWI(Fl_Value_Slider* o, void*) {
+  progdefaults.ThorCWI = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabDomEX=(Fl_Group *)0;
 
 Fl_Input *txtSecondary=(Fl_Input *)0;
@@ -1005,6 +1012,13 @@ Fl_Counter *valDominoEX_PATHS=(Fl_Counter *)0;
 
 static void cb_valDominoEX_PATHS(Fl_Counter* o, void*) {
   progdefaults.DOMINOEX_PATHS = (int)o->value();
+progdefaults.changed = true;
+}
+
+Fl_Value_Slider *valDomCWI=(Fl_Value_Slider *)0;
+
+static void cb_valDomCWI(Fl_Value_Slider* o, void*) {
+  progdefaults.DomCWI = o->value();
 progdefaults.changed = true;
 }
 
@@ -1372,6 +1386,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         tabOperator->selection_color((Fl_Color)51);
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { inpMyCallsign = new Fl_Input(78, 36, 85, 24, "Callsign:");
         } // Fl_Input* inpMyCallsign
         { inpMyName = new Fl_Input(78, 62, 120, 24, "Name:");
@@ -2050,7 +2065,6 @@ l with your sound hardware.");
       { tabModems = new Fl_Group(0, 25, 401, 195, "Modem");
         tabModems->color((Fl_Color)51);
         tabModems->selection_color((Fl_Color)51);
-        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 401, 195);
           tabsModems->color((Fl_Color)51);
           tabsModems->selection_color((Fl_Color)10);
@@ -2244,12 +2258,19 @@ l with your sound hardware.");
               valTHOR_SOFT->callback((Fl_Callback*)cb_valTHOR_SOFT);
               o->value(progdefaults.THOR_SOFT);
             } // Fl_Check_Button* valTHOR_SOFT
+            { Fl_Value_Slider* o = valThorCWI = new Fl_Value_Slider(120, 174, 260, 21, "CWI threshold:");
+              valThorCWI->type(1);
+              valThorCWI->step(0.01);
+              valThorCWI->textsize(14);
+              valThorCWI->callback((Fl_Callback*)cb_valThorCWI);
+              valThorCWI->align(FL_ALIGN_LEFT);
+              o->value(progdefaults.ThorCWI);
+            } // Fl_Value_Slider* valThorCWI
             tabTHOR->end();
           } // Fl_Group* tabTHOR
           { tabDomEX = new Fl_Group(0, 50, 400, 170, "Dom");
             tabDomEX->color((Fl_Color)51);
             tabDomEX->selection_color((Fl_Color)51);
-            tabDomEX->hide();
             { txtSecondary = new Fl_Input(20, 75, 360, 44, "Secondary Text");
               txtSecondary->type(4);
               txtSecondary->callback((Fl_Callback*)cb_txtSecondary);
@@ -2286,6 +2307,14 @@ l with your sound hardware.");
               valDominoEX_PATHS->hide();
               o->value(progdefaults.DOMINOEX_PATHS);
             } // Fl_Counter* valDominoEX_PATHS
+            { Fl_Value_Slider* o = valDomCWI = new Fl_Value_Slider(125, 179, 260, 21, "CWI threshold:");
+              valDomCWI->type(1);
+              valDomCWI->step(0.01);
+              valDomCWI->textsize(14);
+              valDomCWI->callback((Fl_Callback*)cb_valDomCWI);
+              valDomCWI->align(FL_ALIGN_LEFT);
+              o->value(progdefaults.DomCWI);
+            } // Fl_Value_Slider* valDomCWI
             tabDomEX->end();
           } // Fl_Group* tabDomEX
           { tabFeld = new Fl_Group(0, 50, 400, 170, "Feld");
@@ -2403,6 +2432,7 @@ l with your sound hardware.");
             tabOlivia->end();
           } // Fl_Group* tabOlivia
           { tabPSK = new Fl_Group(0, 50, 400, 170, "Psk");
+            tabPSK->hide();
             { Fl_Counter* o = cntSearchRange = new Fl_Counter(11, 60, 80, 21, "Acq Srch Range");
               cntSearchRange->type(1);
               cntSearchRange->minimum(10);

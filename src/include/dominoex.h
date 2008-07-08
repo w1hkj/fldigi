@@ -119,6 +119,8 @@ protected:
 	int symbolbit;
 	
 	bool filter_reset;
+	bool staticburst;
+	bool outofrange;
 
 // tx variables
 	int txstate;

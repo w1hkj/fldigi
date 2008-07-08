@@ -148,12 +148,14 @@ extern Fl_Counter *valTHOR_BW;
 extern Fl_Check_Button *valTHOR_FILTER;
 extern Fl_Counter *valTHOR_PATHS;
 extern Fl_Check_Button *valTHOR_SOFT;
+extern Fl_Value_Slider *valThorCWI;
 extern Fl_Group *tabDomEX;
 extern Fl_Input *txtSecondary;
 extern Fl_Counter *valDominoEX_BW;
 extern Fl_Check_Button *valDominoEX_FILTER;
 extern Fl_Check_Button *chkDominoEX_FEC;
 extern Fl_Counter *valDominoEX_PATHS;
+extern Fl_Value_Slider *valDomCWI;
 extern Fl_Group *tabFeld;
 #include "fontdef.h"
 extern Fl_Choice *selHellFont;
