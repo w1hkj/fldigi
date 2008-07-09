@@ -216,15 +216,13 @@ void* XML_RPC_Server::thread_func(void*)
 	for (vector<rpc_method>::iterator i = methods->begin(); i != methods->end(); i++)
 		reg.addMethod(i->name, i->method);
 
-	string logfile =
-#ifndef NDEBUG
-		string(HomeDir).append("xmlrpc.log")
-#else
-	        ""
-#endif
-		;
 
-	xmlrpc_c::serverAbyss server(xmlrpc_c::serverAbyss::constrOpt().registryP(&reg).logFileName(logfile));
+	xmlrpc_c::serverAbyss server(xmlrpc_c::serverAbyss::constrOpt()
+				     .registryP(&reg)
+#ifndef NDEBUG
+				     .logFileName(HomeDir + "xmlrpc.log")
+#endif
+	    		      );
 
 	int v = 1;
 	if (setsockopt(inst->sfd, SOL_SOCKET, SO_REUSEADDR, &v, sizeof(v))== -1)
