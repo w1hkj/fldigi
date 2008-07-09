@@ -50,6 +50,7 @@
 #include "waterfall.h"
 #include "raster.h"
 #include "progress.h"
+#include "afcind.h"
 
 #include "main.h"
 #include "threads.h"
@@ -149,6 +150,7 @@ Fl_Button			*btnQRZ;
 Fl_Group			*MixerFrame;
 Fl_Slider			*valRcvMixer;
 Fl_Slider			*valXmtMixer;
+AFCind				*AFCindicator;
 
 int					altMacros = 0;
 bool				bSaveFreqList = false;
@@ -195,7 +197,14 @@ Fl_Menu_Item quick_change_qpsk[] = {
 
 Fl_Menu_Item quick_change_mfsk[] = {
 	{ mode_info[MODE_MFSK8].name, 0, cb_init_mode, (void *)MODE_MFSK8 },
+#ifdef EXPERIMENTAL
+	{ mode_info[MODE_MFSK11].name, 0, cb_init_mode, (void *)MODE_MFSK11 },
+#endif
 	{ mode_info[MODE_MFSK16].name, 0, cb_init_mode, (void *)MODE_MFSK16 },
+#ifdef EXPERIMENTAL
+	{ mode_info[MODE_MFSK22].name, 0, cb_init_mode, (void *)MODE_MFSK22 },
+#endif
+	{ mode_info[MODE_MFSK32].name, 0, cb_init_mode, (void *)MODE_MFSK32 },
 	{ 0 }
 };
 
@@ -438,7 +447,13 @@ void init_modem(trx_mode mode)
 		modem_config_tab = tabFeld;
 		break;
 
-	case MODE_MFSK8: case MODE_MFSK16:
+#ifdef EXPERIMENTAL
+	case MODE_MFSK11: 
+	case MODE_MFSK22:
+#endif
+	case MODE_MFSK8: 
+	case MODE_MFSK16: 
+	case MODE_MFSK32:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new mfsk(mode));
 		quick_change = quick_change_mfsk;
@@ -1184,7 +1199,14 @@ Fl_Menu_Item menu_[] = {
 
 {"MFSK", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_MFSK8].name, 0,  cb_init_mode, (void *)MODE_MFSK8, 0, FL_NORMAL_LABEL, 0, 14, 0},
+#ifdef EXPERIMENTAL
+{ mode_info[MODE_MFSK11].name, 0,  cb_init_mode, (void *)MODE_MFSK11, 0, FL_NORMAL_LABEL, 0, 14, 0},
+#endif
 { mode_info[MODE_MFSK16].name, 0,  cb_init_mode, (void *)MODE_MFSK16, 0, FL_NORMAL_LABEL, 0, 14, 0},
+#ifdef EXPERIMENTAL
+{ mode_info[MODE_MFSK22].name, 0,  cb_init_mode, (void *)MODE_MFSK22, 0, FL_NORMAL_LABEL, 0, 14, 0},
+#endif
+{ mode_info[MODE_MFSK32].name, 0,  cb_init_mode, (void *)MODE_MFSK32, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"MT63", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
@@ -1680,19 +1702,25 @@ void create_fl_digi_main() {
 
 			StatusBar = new Fl_Box(
                 rightof(Status2), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
-                WNOM - bwSqlOnOff - bwAfcOnOff - Wwarn - rightof(Status2), Hstatus, "");
+                WNOM - bwSqlOnOff - bwAfcOnOff - Wwarn - rightof(Status2) - 60, 
+                Hstatus, "");
 			StatusBar->box(FL_DOWN_BOX);
 			StatusBar->color(FL_BACKGROUND2_COLOR);
 			StatusBar->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
-
+			
 			WARNstatus = new Fl_Box(
-                WNOM - bwSqlOnOff - bwAfcOnOff - Wwarn, Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
+				rightof(StatusBar), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
                 Wwarn, Hstatus, "");
 			WARNstatus->box(FL_DIAMOND_DOWN_BOX);
 			WARNstatus->color(FL_BACKGROUND_COLOR);
 			WARNstatus->labelcolor(FL_RED);
 			WARNstatus->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE);
 				
+			AFCindicator = new AFCind(
+				rightof(WARNstatus), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
+				60,
+				Hstatus, "");
+
 			if (useCheckButtons) {
 				btn_afconoff = new Fl_Check_Button(
 								WNOM - bwSqlOnOff - bwAfcOnOff, 
@@ -2312,4 +2340,16 @@ void start_tx()
 	fl_unlock(&trx_mutex);
 	wf->set_XmtRcvBtn(true);
 }
+
+
+void set_AFCind(double val)
+{
+	REQ (&AFCind::value, AFCindicator, val );
+}
+
+void set_AFCrange(double val)
+{
+	AFCindicator->range(val);
+}
+
 

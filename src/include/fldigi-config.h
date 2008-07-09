@@ -48,6 +48,8 @@
 
 #define DEFAULT_IMAGE_WIDTH 3000
 //=============================================================================
+// enable the following line for experimental mode such as MFSK11 & MFSK22
+//#define EXPERIMENTAL
 
 // widget sizes internal to the waterfall widget
 #define BEZEL		 2
@@ -107,6 +109,6 @@ extern int WNOM;
 #define Wstatus (WNOM - Wmode - Ws2n - Wimd - bwAfcOnOff - bwSqlOnOff - Wwarn)
 
 #define SCOPEWIN_MIN_WIDTH 48
-#define SCOPEWIN_MIN_HEIGHT SCOPEWIN_MIN_WIDTH
+#define SCOPEWIN_MIN_HEIGHT 48
 
 #endif // FLDIGI_CONFIG_H

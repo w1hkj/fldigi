@@ -64,12 +64,15 @@ void thor::rx_init()
 	counter = 0;
 	phase[0] = 0.0;
 	currmag = prev1mag = prev2mag = 0.0;
+	avgsig = 1e-20;
 	for (int i = 0; i < THORMAXFFTS; i++)
 		phase[i+1] = 0.0;
 	put_MODEstatus(mode);
 	put_sec_char(0);
 	syncfilter->reset();
 	datashreg = 1;
+	set_AFCrange(0.1);
+	set_AFCind(0.0);
 }
 
 void thor::reset_filters()
@@ -311,32 +314,41 @@ void thor::decodePairs(unsigned char symbol)
 void thor::decodesymbol()
 {
 	int c;
-	double fdiff, avg, softmag;
+	double fdiff, softmag;
 	unsigned char symbols[4];
+	bool outofrange = false;
 
 // Decode the IFK+ sequence, which results in a single nibble
 
 	fdiff = currsymbol - prev1symbol;
+		
 	if (reverse) fdiff = -fdiff;
 	fdiff /= paths;
 	fdiff /= doublespaced;
+
+	if (fabs(fdiff) > 17) outofrange = true;
+
 	c = (int)floor(fdiff + .5) - 2;
 	if (c < 0) c += THORNUMTONES;
+	
+	if (avgsig < 1e-20) avgsig = 1e-20;
+	
+	avgsig = decayavg( avgsig, currmag, 16);
+	
+	softmag = clamp(255.0 * currmag / avgsig, 0.0, 255.0);
 
-	avg = (currmag + prev1mag + prev2mag) / 3.0;
-	if (avg == 0.0) avg = 1e-20;
-	softmag = currmag / avg;
-		
-	for (int i = 0; i < 4; i++) {
-// hard symbol decode
-		if (progdefaults.THOR_SOFT == false) {
-			if ((c & 1) == 1) symbols[3-i] = 255;
-			else symbols[3-i] = 1;
-// soft symbol decode
-		} else
-			symbols[3-i] = (unsigned char)clamp(256.0 * (c & 1) * softmag, 1, 255);
-		
-		c = c / 2;
+	if (staticburst == true || outofrange == true) // puncture the code
+		symbols[3] = symbols[2] = symbols[1] = symbols[0] = 0;	
+	else if (progdefaults.THOR_SOFT == false) {
+		symbols[3] = (c & 1) == 1 ? 255 : 0; c /= 2;
+		symbols[2] = (c & 1) == 1 ? 255 : 0; c /= 2;
+		symbols[1] = (c & 1) == 1 ? 255 : 0; c /= 2;
+		symbols[0] = (c & 1) == 1 ? 255 : 0; c /= 2;
+	} else {
+		symbols[3] = (int)((c & 1) == 1 ? softmag : 0); c /= 2;
+		symbols[2] = (int)((c & 1) == 1 ? softmag : 0); c /= 2;
+		symbols[1] = (int)((c & 1) == 1 ? softmag : 0); c /= 2;
+		symbols[0] = (int)((c & 1) == 1 ? softmag : 0); c /= 2;
 	}
 
 	Rxinlv->symbols(symbols);
@@ -349,13 +361,42 @@ int thor::harddecode()
 {
 	double x, max = 0.0;
 	int symbol = 0;
+	double avg = 0.0;
+	bool cwi[paths * numbins];
+	double cwmag;
+
+	for (int i = 0; i < paths * numbins; i++)
+		avg += pipe[pipeptr].vector[i].mag();
+	avg /= (paths * numbins);
+			
+	if (avg < 1e-10) avg = 1e-10;
+	
+	int numtests = 10;
+	int count = 0;
+	for (int i = 0; i < paths * numbins; i++) {
+		cwmag = 0.0;
+		count = 0;
+		for (int j = 1; j <= numtests; j++) {
+			int p = pipeptr - j;
+			if (p < 0) p += twosym;
+			cwmag = (pipe[j].vector[i].mag())/numtests;
+			if (cwmag >= 50.0 * (1.0 - progdefaults.ThorCWI) * avg) count++;
+		}
+		cwi[i] = (count == numtests); 
+	}
+					
 	for (int i = 0; i <  paths * numbins ; i++) {
-		x = pipe[pipeptr].vector[i].mag();
-		if (x > max) {
-			max = x;
-			symbol = i;
+		if (cwi[i] == false) {
+			x = pipe[pipeptr].vector[i].mag();
+			if (x > max) {
+				max = x;
+				symbol = i;
+			}
 		}
 	}
+
+	staticburst = (max / avg < 1.2);
+
 	return symbol;
 }
 
@@ -402,6 +443,8 @@ void thor::synchronize()
 	double syn = -1;
 	double val, max = 0.0;
 
+	if (staticburst == true) return;
+	
 	if (currsymbol == prev1symbol)
 		return;
 	if (prev1symbol == prev2symbol)
@@ -420,6 +463,8 @@ void thor::synchronize()
 
 	synccounter += (int) floor(1.0 * (syn - symlen) / THORNUMTONES + 0.5);
 
+	set_AFCind(1.0 * (synccounter - symlen) / symlen);
+
 	update_syncscope();
 
 }
@@ -437,13 +482,13 @@ void thor::eval_s2n()
 		noise /= (paths * numbins - 1);
 	
 		if (noise)
-			s2n = decayavg( s2n, sig / noise, 8);
+			s2n = decayavg( s2n, sig / noise, 32);
 
-		metric = 3*(20*log10(s2n) - 9.0);
+		metric = 3.0 * (20*log10(s2n) - 9.0);
 
 		display_metric(metric);
 
-		snprintf(thormsg, sizeof(thormsg), "s/n %3.0f dB", metric / 3.0 - 2.0);
+		snprintf(thormsg, sizeof(thormsg), "s/n %3.0f dB", metric / 3.0);
 		put_Status1(thormsg);
 	}
 }

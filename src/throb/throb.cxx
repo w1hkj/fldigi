@@ -57,6 +57,7 @@ void  throb::rx_init()
 	shift = 0;
 	lastchar = '\0';
 	put_MODEstatus(mode);
+	set_AFCind(0.0);
 }
 
 void throb::init()

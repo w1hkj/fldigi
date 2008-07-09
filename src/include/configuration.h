@@ -89,11 +89,13 @@ struct configuration {
 	string		THORsecText;
 	int			THOR_PATHS;
 	bool		THOR_SOFT;
+	double		ThorCWI;
 // DOMINOEX
 	double		DOMINOEX_BW;
 	bool		DOMINOEX_FILTER;
 	bool		DOMINOEX_FEC;
 	int			DOMINOEX_PATHS;
+	double		DomCWI;
 // MT63
 	bool 		mt63_8bit;
 	int			mt63_interleave;

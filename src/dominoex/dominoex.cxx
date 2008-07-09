@@ -78,6 +78,10 @@ void dominoex::rx_init()
 	syncfilter->reset();
 
 	Mu_datashreg = 1;
+	
+	staticburst = false;
+	set_AFCrange(0.1);
+	set_AFCind(0.0);
 }
 
 void dominoex::reset_filters()
@@ -360,8 +364,8 @@ void dominoex::decodeDomino(int c)
 			ch = dominoex_varidec(sym);
 
 				if (!progdefaults.DOMINOEX_FEC)
-					
-					recvchar(ch);
+					if (staticburst == false && outofrange == false)
+						recvchar(ch);
 		}
 		symcounter = 0;
 	}
@@ -388,6 +392,12 @@ void dominoex::decodesymbol()
 	if (reverse) fdiff = -fdiff;
 	fdiff /= doublespaced;
 	fdiff /= paths;
+	
+	if (fabs(fdiff) > 17) 
+		outofrange = true;
+	else
+		outofrange = false;
+	
 	c = (int)floor(fdiff + .5) - 2;
 	if (c < 0) c += NUMTONES;
 
@@ -399,13 +409,43 @@ int dominoex::harddecode()
 {
 	double x, max = 0.0;
 	int symbol = 0;
+	double avg = 0.0;
+	bool cwi[paths * numbins];
+	double cwmag;
+	
+	for (int i = 0; i < paths * numbins; i++)
+		avg += pipe[pipeptr].vector[i].mag();
+	avg /= (paths * numbins);
+			
+	if (avg < 1e-10) avg = 1e-10;
+	
+	int numtests = 10;
+	int count = 0;
+	for (int i = 0; i < paths * numbins; i++) {
+		cwmag = 0.0;
+		count = 0;
+		for (int j = 1; j <= numtests; j++) {
+			int p = pipeptr - j;
+			if (p < 0) p += twosym;
+			cwmag = (pipe[j].vector[i].mag())/numtests;
+			if (cwmag >= 50.0 * (1.0 - progdefaults.ThorCWI) * avg) count++;
+		}
+		cwi[i] = (count == numtests);
+	}
+					
 	for (int i = 0; i <  (paths * numbins); i++) {
-		x = pipe[pipeptr].vector[i].mag();
-		if (x > max) {
-			max = x;
-			symbol = i;
+		if (cwi[i] == false) {
+			x = pipe[pipeptr].vector[i].mag();
+			avg += x;
+			if (x > max) {
+				max = x;
+				symbol = i;
+			}
 		}
 	}
+
+	staticburst = (max / avg < 1.2);
+
 	return symbol;
 }
 
@@ -457,6 +497,8 @@ void dominoex::synchronize()
 	double syn = -1;
 	double val, max = 0.0;
 
+	if (staticburst == true) return;
+	
 	if (currsymbol == prev1symbol)
 		return;
 	if (prev1symbol == prev2symbol)
@@ -474,6 +516,10 @@ void dominoex::synchronize()
 	syn = syncfilter->run(syn);
 
 	synccounter += (int) floor(1.0 * (syn - symlen) / NUMTONES + 0.5);
+	
+	set_AFCind(1.0 * (synccounter - symlen) / symlen);
+
+	update_syncscope();
 }
 
 
@@ -488,7 +534,7 @@ void dominoex::eval_s2n()
 		}	
 		noise /= (paths * numbins - 1);
 	
-		s2n = decayavg( s2n, sig / noise, 8);
+		s2n = decayavg( s2n, sig / noise, 32);
 
 		metric = 3*(20*log10(s2n) - 9.0);
 
@@ -545,7 +591,7 @@ int dominoex::rx_process(const double *buf, int len)
 					currsymbol = harddecode();
         		    decodesymbol();
 					synchronize();
-					update_syncscope();
+//					update_syncscope();
 					eval_s2n();
 					prev2symbol = prev1symbol;
 					prev1symbol = currsymbol;
@@ -782,7 +828,9 @@ void dominoex::decodeMuPskEX(int ch)
 		else symbols[3-i] = 1;//-255;
 		c = c / 2;
 	}
-
+	if (staticburst == true || outofrange == true)
+		symbols[3] = symbols[2] = symbols[1] = symbols[0] = 0;
+		
 	MuPskRxinlv->symbols(symbols);
 
 	for (int i = 0; i < 4; i++) decodeMuPskSymbol(symbols[i]);

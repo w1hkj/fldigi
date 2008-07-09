@@ -33,6 +33,9 @@
 #include "status.h"
 
 //static char rttymsg[80];
+int dspcnt = 0;
+
+
 static char msg1[20];
 static char msg2[20];
 
@@ -60,6 +63,7 @@ void rtty::rx_init()
 	}
 	bitfilt->reset();
 	poserr = negerr = 0.0;
+	set_AFCrange(shift/10.0);
 }
 
 void rtty::init()
@@ -82,6 +86,8 @@ rtty::~rtty()
 	if (hilbert) delete hilbert;
 	if (bitfilt) delete bitfilt;
 	if (bpfilt) delete bpfilt;
+	if (pipe) delete [] pipe;
+	if (dsppipe) delete [] dsppipe;
 }
 
 void rtty::restart()
@@ -149,6 +155,8 @@ void rtty::restart()
 	sigpwr = 0.0;
 	noisepwr = 0.0;
 	freqerrlo = freqerrhi = 0.0;
+	sigsearch = 0;
+	dspcnt = 2*(nbits + 2);//nbits + 2; //2 * symbollen * (nbits + 2);
 }
 
 rtty::rtty(trx_mode tty_mode)
@@ -165,16 +173,21 @@ rtty::rtty(trx_mode tty_mode)
 	hilbert = new C_FIR_filter();
 	hilbert->init_hilbert(37, 1);
 
+	pipe = new double[MAXPIPE];
+	dsppipe = new double [MAXPIPE];
+		
 	restart();
 }
 
 void rtty::update_syncscope()
 {
-	double data[2*symbollen];
-	int i;
-	for (i = 0; i < 2*symbollen; i++)
-		data[i] = pipe[i];
-	set_scope(data, 2*symbollen, false);
+	int j;
+	for (int i = 0; i < 2 * symbollen; i++) {
+		j = pipeptr - i;
+		if (j < 0) j += (2*symbollen);
+		dsppipe[i] = pipe[j];
+	}
+	set_scope(dsppipe, 2*symbollen, false);
 }
 
 void rtty::clear_syncscope()
@@ -361,7 +374,7 @@ void rtty::searchDown()
 		if ((spwrlo / npwr > 10.0) && (spwrhi / npwr > 10.0)) {
 			frequency = srchfreq;
 			set_freq(frequency);
-			sigsearch = 10;
+			sigsearch = SIGSEARCH;
 			break;
 		}
 		srchfreq -= 5.0;
@@ -380,7 +393,7 @@ void rtty::searchUp()
 		if ((spwrlo / npwr > 10.0) && (spwrhi / npwr > 10.0)) {
 			frequency = srchfreq;
 			set_freq(frequency);
-			sigsearch = 10;
+			sigsearch = SIGSEARCH;
 			break;
 		}
 		srchfreq += 5.0;
@@ -395,9 +408,9 @@ int rtty::rx_process(const double *buf, int len)
 	static bool bit = false;
 	int n, rxflag;
 	double deadzone = shift/8;
-	static int dspcnt = symbollen * (nbits + 2);
 	double rotate;
 	double halfshift = rtty_shift/2.0;
+	double ferr = 0;
 
 	while (len-- > 0) {
 		
@@ -444,15 +457,11 @@ int rtty::rx_process(const double *buf, int len)
 					QI[i].im = zp[i].re;
 				}
 				
-//				double rotate = (freqerr - rtty_shift/2.0) * (M_PI/4.0) / (rtty_shift / 2.0);
-//				QI[i] = QI[i] * complex(cos(rotate), sin(rotate));
-
 				if (fin >= 0.0)
 					rotate = (halfshift - freqerrhi) * (M_PI/4.0) / halfshift;
 				else
 					rotate = -(halfshift + freqerrlo) * (M_PI/4.0) / halfshift;
 				QI[i] = QI[i] * complex(cos(rotate), sin(rotate));
-//				avgsig = decayavg(avgsig, QI[i].mag(), 32);
 				avgsig = decayavg(avgsig, zp[i].mag(), 32);
 				
 				if (avgsig > 0.025) {
@@ -468,7 +477,7 @@ int rtty::rx_process(const double *buf, int len)
 					bit = true;
 				}
 			
-				if (--dspcnt % (nbits + 2) == 0) {
+				if (dspcnt && (--dspcnt % (nbits + 2) == 0)) {
 					pipe[pipeptr] = f / shift; // display filtered signal		
 					pipeptr = (pipeptr + 1) % (2*symbollen);
 				}
@@ -478,48 +487,48 @@ int rtty::rx_process(const double *buf, int len)
 	
 				rxflag = rx (reverse ? bit : !bit);
 
-				if (rxflag == 2 || dspcnt == 0) {
+				if (rxflag == 2) {
 					if ((metric > progStatus.sldrSquelchValue && progStatus.sqlonoff) || !progStatus.sqlonoff) {
-						set_scope(pipe, symbollen, false);
-						pipe.next(); // change buffers
+						update_syncscope();
 					}
 					else
 						clear_syncscope();
-
-					dspcnt = symbollen * (nbits + 2);
-					pipeptr = 0;
+					dspcnt = symbollen * 2 * (nbits + 2);
 
 					if (poscnt && negcnt) {
 						poserr = posfreq/poscnt;
 						negerr = negfreq/negcnt;
-
+						
 						Metric();
 				
 // compute the frequency error as the median of + and - relative freq's
+						if (sigsearch) sigsearch--;
+
+						ferr = -(poserr + negerr)/(2*(SIGSEARCH - sigsearch + 1));
+
 						int fs = progdefaults.rtty_afcspeed;
-						if (sigsearch) {
-							freqerr = decayavg(freqerr, poserr + negerr, 4);
-							sigsearch--;
-						} else
-							freqerr = decayavg(freqerr, poserr + negerr, 
-											   fs == 0 ? 50 : fs = 1 ? 100 : 200 );
-											   
-						freqerrhi = decayavg(freqerrhi, poserr, 4);
-						freqerrlo = decayavg(freqerrlo, negerr, 4);
-					
+						int avging;
+						if (fs == 0) avging = 8;
+						else if (fs == 1) avging = 4;
+						else avging = 1;
+						freqerrhi = decayavg(freqerrhi, poserr, avging);
+						freqerrlo = decayavg(freqerrlo, negerr, avging);
+						freqerr   = decayavg(freqerr, ferr,  avging);
+
 // display the FSK +/- signals on the digiscope					
 						set_rtty( 
-							negerr/(rtty_shift/2.0), 
-							poserr/(rtty_shift/2.0), 
+							negerr/(halfshift), 
+							poserr/(halfshift), 
 							1.0 );
 					}
 					poscnt = 0; posfreq = 0.0;
 					negcnt = 0; negfreq = 0.0;
 
 					if (progStatus.afconoff) {
-						if (metric > progStatus.sldrSquelchValue || !progStatus.sqlonoff || sigsearch) {
-							set_freq(frequency + freqerr);
-						}
+						if (metric > progStatus.sldrSquelchValue || !progStatus.sqlonoff) {// || sigsearch) {
+							set_freq(frequency - ferr);
+							set_AFCind(freqerr); 
+						} else set_AFCind(0.0);
 					}
 				}
 			}

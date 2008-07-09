@@ -130,6 +130,7 @@ protected:
 	Cmovavg			*met1filt;
 	Cmovavg			*met2filt;
 	Cmovavg			*vidfilter[SCOPESIZE];
+	Cmovavg			*syncfilter;
 
 	viterbi		*dec1;
 	viterbi		*dec2;
@@ -156,8 +157,13 @@ protected:
 	double s2n;
 	double sig;
 	double noise;
+	double afcmetric;
+	bool	staticburst;
+	
+	double currfreq;
 
 	int synccounter;
+	int AFC_COUNT;
 
 	unsigned char symbolpair[2];
 	int symcounter;

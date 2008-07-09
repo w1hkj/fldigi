@@ -58,6 +58,7 @@ void cw::rx_init()
 	set_scope_mode(Digiscope::SCOPE);
 	put_MODEstatus(mode);
 	usedefaultWPM = false;
+	set_AFCind(0.0);
 }
 
 void cw::init()

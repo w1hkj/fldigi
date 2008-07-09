@@ -527,15 +527,15 @@ void FTextView::menu_cb(int val)
 		break;
 
 	case RX_MENU_DIV:
-	{
-		char s[64];
-		time_t t = time(NULL);
-		struct tm st;
-		localtime_r(&t, &st);
-		strftime(s, sizeof(s), "\n<<======= %Y-%m-%d %H:%M:%S %z ========>>\n", &st);
-		add(s, CTRL);
-	}
+        {
+                time_t t = time(NULL);
+                struct tm st;
+                localtime_r(&t, &st);
+                char s[64];
+                strftime(s, sizeof(s), "\n<<======= %Y-%m-%d %H:%M:%S %z ========>>\n", &st);
+                add(s, CTRL);
 		break;
+        }
 	case RX_MENU_CLEAR:
 		clear();
 		break;

@@ -128,6 +128,8 @@ extern void clear_StatusMessages();
 extern void put_MODEstatus(trx_mode mode);
 extern void put_Status1(const char *msg, double timeout = 0.0, status_timeout action = STATUS_CLEAR);
 extern void put_Status2(const char *msg, double timeout = 0.0, status_timeout action = STATUS_CLEAR);
+extern void set_AFCind( double val );
+extern void set_AFCrange(double val);
 
 extern void put_WARNstatus(double);
 

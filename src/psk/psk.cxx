@@ -86,6 +86,7 @@ void psk::rx_init()
 	put_MODEstatus(mode);
 	resetSN_IMD();
 	imdValid = false;
+	set_AFCrange(1.0);
 }
 
 void psk::restart()
@@ -371,7 +372,8 @@ void psk::phaseafc()
 		freqerr = decayavg( freqerr, error, AFCDECAYSLOW);
 		frequency -= freqerr;
 		set_freq (frequency);
-	}
+		set_AFCind(freqerr);
+	} else set_AFCind(0.0);
 	if (acquire) acquire--;
 }
 

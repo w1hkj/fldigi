@@ -21,6 +21,7 @@ configuration progdefaults = {
 	false,			// bool		rsidWideSearch;
 	false,			// bool		TransmitRSid;
 	true,			// bool		slowcpu;
+	
 	false,			// bool		changed;
 	-20.0,			// double	wfRefLevel;
 	70.0,			// double	wfAmpSpan;
@@ -94,11 +95,13 @@ configuration progdefaults = {
 	"fldigi-thor ",	// string	THORsecText;
 	5,				// int		THOR_PATHS;
 	false,			// bool		THOR_SOFT;
+	0.0,			// double	ThorCWI;
 // DOMINOEX
 	2.0,			// double	DOMINOEX_BW;
 	true,			// bool		DOMINOEX_FILTER
 	false,			// bool		DOMINOEX_FEC
 	5,				// int		DOMINOEX_PATHS
+	0.0,			// double	DomCWI;
 // MT63
 	false,			// bool 	mt63_8bit;
 	32,				// int		mt63_interleave;
@@ -267,8 +270,8 @@ enum TAG { \
 	CWTRACK, CWRISETIME, CWDASH2DOT,
 	XQSK, CWPRE, CWPOST, CWID, CWIDWPM,
 	OLIVIATONES, OLIVIABW, OLIVIASMARGIN, OLIVIASINTEG, OLIVIA8BIT,
-	THORBW, THORFILTER, THORSECTEXT, THORPATHS, THORSOFT,
-	DOMINOEXBW, DOMINOEXFILTER, DOMINOEXFEC, DOMINOEXPATHS,
+	THORBW, THORFILTER, THORSECTEXT, THORPATHS, THORSOFT, THORCWI,
+	DOMINOEXBW, DOMINOEXFILTER, DOMINOEXFEC, DOMINOEXPATHS, DOMCWI,
 	FELDFONTNBR,
 	HELLRCVWIDTH, HELLXMTWIDTH, HELLBLACKBOARD, HELLPULSEFAST, HELLXMTIDLE,
 	WFPREFILTER, LATENCY,
@@ -416,11 +419,13 @@ void configuration::writeDefaultsXML()
 	writeXMLstr(f,  "THORSECTEXT", THORsecText);		
 	writeXMLint(f, "THORPATHS", THOR_PATHS);
 	writeXMLbool(f, "THORSOFT", THOR_SOFT);
+	writeXMLdbl(f, "THORCWI", ThorCWI);
 	
 	writeXMLdbl(f, "DOMINOEXBW", DOMINOEX_BW);
 	writeXMLbool(f, "DOMINOEXFILTER", DOMINOEX_FILTER);
 	writeXMLbool(f, "DOMINOEXFEC", DOMINOEX_FEC);
 	writeXMLint(f, "DOMINOEXPATHS", DOMINOEX_PATHS);
+	writeXMLdbl(f, "DOMCWI", DomCWI);
 	
 	writeXMLint(f, "FELDFONTNBR", feldfontnbr);
 	writeXMLbool(f, "HELLRCVWIDTH", HellRcvWidth);
@@ -735,6 +740,9 @@ bool configuration::readDefaultsXML()
 					case THORSOFT :
 						THOR_SOFT = atoi(xml->getNodeData());
 						break;
+					case THORCWI :
+						ThorCWI = atof(xml->getNodeData());
+						break;
 					case DOMINOEXBW :
 						DOMINOEX_BW = atof(xml->getNodeData());
 						break;
@@ -746,6 +754,9 @@ bool configuration::readDefaultsXML()
 						break;
 					case DOMINOEXPATHS :
 						DOMINOEX_PATHS = atoi(xml->getNodeData());
+						break;
+					case DOMCWI :
+						DomCWI = atof(xml->getNodeData());
 						break;
 					case FELDFONTNBR :
 						feldfontnbr = atoi(xml->getNodeData());
@@ -1132,10 +1143,12 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("THORSECTEXT", nodeName))	tag = THORSECTEXT;
 				else if (!strcmp("THORPATHS", nodeName)) tag = THORPATHS;
 				else if (!strcmp("THORSOFT", nodeName)) tag = THORSOFT;
+				else if (!strcmp("THORCWI", nodeName)) tag = THORCWI;
 				else if (!strcmp("DOMINOEXBW", nodeName)) 	tag = DOMINOEXBW;
 				else if (!strcmp("DOMINOEXFILTER", nodeName))	tag = DOMINOEXFILTER;
 				else if (!strcmp("DOMINOEXFEC", nodeName))	tag = DOMINOEXFEC;
 				else if (!strcmp("DOMINOEXPATHS", nodeName)) tag = DOMINOEXPATHS;
+				else if (!strcmp("DOMCWI", nodeName)) tag = DOMCWI;
 				else if (!strcmp("FELDFONTNBR", nodeName)) 	tag = FELDFONTNBR;
 				else if (!strcmp("HELLRCVWIDTH", nodeName)) 	tag = HELLRCVWIDTH;
 				else if (!strcmp("HELLXMTWIDTH", nodeName)) 	tag = HELLXMTWIDTH;
@@ -1361,11 +1374,13 @@ int configuration::setDefaults() {
 	valTHOR_FILTER->value(THOR_FILTER);
 	valTHOR_PATHS->value(THOR_PATHS);
 	valTHOR_SOFT->value(THOR_SOFT);
+	valThorCWI->value(ThorCWI);
 		
 	valDominoEX_BW->value(DOMINOEX_BW);
 	valDominoEX_FILTER->value(DOMINOEX_FILTER);
 	chkDominoEX_FEC->value(DOMINOEX_FEC);
 	valDominoEX_PATHS->value(DOMINOEX_PATHS);
+	valDomCWI->value(DomCWI);
 				
 	for (int i = 0; i < 5; i++) {
 		btnPTT[i]->value(0);
