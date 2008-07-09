@@ -121,9 +121,9 @@ psk::~psk()
 
 psk::psk(trx_mode pskmode) : modem()
 {
+	cap = CAP_AFC;
+
 	mode = pskmode;
-	
-	twopi = 2.0 * M_PI;
 
 	switch (mode) {
 	case MODE_BPSK31:
@@ -364,10 +364,10 @@ void psk::phaseafc()
 	double error;
 	error = (phase - bits * M_PI / 2.0);
 	if (error < -M_PI/2.0)
-		error += twopi;
+		error += TWOPI;
 	if (error > M_PI/2.0)
-		error -= twopi;
-	error *= ((samplerate / twopi) / (16.0 * symbollen));
+		error -= TWOPI;
+	error *= ((samplerate / TWOPI) / (16.0 * symbollen));
 	if (fabs(error) < bandwidth) {
 		freqerr = decayavg( freqerr, error, AFCDECAYSLOW);
 		frequency -= freqerr;
@@ -393,7 +393,7 @@ void psk::rx_symbol(complex symbol)
 	prevsymbol = symbol;
 
 	if (phase < 0) 
-		phase += twopi;
+		phase += TWOPI;
 	if (_qpsk) {
 		bits = ((int) (phase / M_PI_2 + 0.5)) & 3;
 		n = 4;
@@ -487,7 +487,7 @@ int psk::rx_process(const double *buf, int len)
 	if (pskviewer && !bHistory) pskviewer->rx_process(buf, len);
 	if (evalpsk) evalpsk->sigdensity();
 		
-	delta = twopi * frequency / samplerate;
+	delta = TWOPI * frequency / samplerate;
 	
 	while (len-- > 0) {
 // Mix with the internal NCO
@@ -496,7 +496,7 @@ int psk::rx_process(const double *buf, int len)
 		buf++;
 		phaseacc += delta;
 		if (phaseacc > M_PI)
-			phaseacc -= twopi;
+			phaseacc -= TWOPI;
 
 // Filter and downsample 
 // by 16 (psk31, qpsk31) 
@@ -696,9 +696,9 @@ void psk::initSN_IMD()
 	}
 	m_NCount = 0;
 	
-	COEF[0] = 2.0 * cos(twopi * 9 / GOERTZEL);
-	COEF[1] = 2.0 * cos(twopi * 18 / GOERTZEL);
-	COEF[2] = 2.0 * cos(twopi  * 27 / GOERTZEL);
+	COEF[0] = 2.0 * cos(TWOPI * 9 / GOERTZEL);
+	COEF[1] = 2.0 * cos(TWOPI * 18 / GOERTZEL);
+	COEF[2] = 2.0 * cos(TWOPI  * 27 / GOERTZEL);
 }
 
 void psk::resetSN_IMD()

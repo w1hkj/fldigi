@@ -96,7 +96,6 @@ private:
 	double			I11, I12, I21, I22, I31, I32;
 	double			snratio, s2n, imdratio, imd;
 	double			E1, E2, E3;
-	double			twopi;
 	
 //	complex thirdorder;
 // tx variables & functions

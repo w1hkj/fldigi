@@ -170,7 +170,6 @@ extern Fl_Spinner *valHellXmtWidth;
 extern Fl_Group *tabOlivia;
 extern Fl_Choice *mnuOlivia_Tones;
 extern Fl_Choice *mnuOlivia_Bandwidth;
-extern Fl_Button *btnRestartOlivia;
 extern Fl_Counter *cntOlivia_smargin;
 extern Fl_Counter *cntOlivia_sinteg;
 extern Fl_Check_Button *btnOlivia_8bit;

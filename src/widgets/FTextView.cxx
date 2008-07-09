@@ -181,27 +181,57 @@ void FTextBase::set_style(int attr, Fl_Font f, int s, Fl_Color c, int set)
 	resize(x(), y(), w(), h()); // to redraw and recalculate the wrap column
 }
 
-/// Reads a file and appends its contents to the buffer.
+/// Reads a file and inserts its contents.
 ///
-///
-void FTextBase::readFile(void)
+/// @return 0 on success, -1 on error
+int FTextBase::readFile(const char* fn)
 {
-	const char *fn = FSEL::select("Append text", "Text\t*.txt");
-	if (fn) {
+	if ( !(fn || (fn = FSEL::select("Insert text", "Text\t*.txt"))) )
+		return -1;
+
+	int ret = 0, pos = insert_position();
+
 #ifdef __CYGWIN__
-		FILE* tfile = fopen(fn, "rt");
-		if (!tfile)
-			return;
-		char buf[BUFSIZ+1];
+	FILE* tfile = fopen(fn, "rt");
+	if (!tfile)
+		return -1;
+	char buf[BUFSIZ+1];
+	if (pos == tbuf->length()) { // optimise for append
 		while (fgets(buf, sizeof(buf), tfile))
 			tbuf->append(buf);
-		fclose(tfile);
-#else
-		tbuf->appendfile(fn);
-#endif
-		insert_position(tbuf->length());
-		show_insert_position();
+		if (ferror(tfile))
+			ret = -1;
+		pos = tbuf->length();
 	}
+	else {
+		while (fgets(buf, sizeof(buf), tfile)) {
+			tbuf->insert(pos, buf);
+			pos += strlen(buf);
+		}
+		if (ferror(tfile))
+			ret = -1;
+	}
+	fclose(tfile);
+#else
+	if (pos == tbuf->length()) { // optimise for append
+		if (tbuf->appendfile(fn) != 0)
+			ret = -1;
+		pos = tbuf->length();
+	}
+	else {
+		if (tbuf->insertfile(fn, pos) == 0) {
+			struct stat st;
+			if (stat(fn, &st) == 0)
+				pos += st.st_size;
+		}
+		else
+			ret = -1;
+	}
+#endif
+	insert_position(pos);
+	show_insert_position();
+
+	return ret;
 }
 
 /// Writes all buffer text out to a file.
@@ -628,7 +658,7 @@ Fl_Menu_Item FTextEdit::edit_menu[] = {
 	{"Cu&t",		0, 0, },
 	{"&Copy",		0, 0, },
 	{"&Paste",		0, 0, 0, FL_MENU_DIVIDER },
-	{"Append &file...",	0, 0, 0, FL_MENU_DIVIDER },
+	{"Insert &file...",	0, 0, 0, FL_MENU_DIVIDER },
 	{"Word &wrap",		0, 0, 0, FL_MENU_TOGGLE	 } ,
 	{ 0 }
 };
@@ -664,20 +694,38 @@ FTextEdit::FTextEdit(int x, int y, int w, int h, const char *l)
 ///
 int FTextEdit::handle(int event)
 {
-	if (event == FL_KEYBOARD)
+	if (!Fl::event_inside(this))
+		return FTextBase::handle(event);
+
+	static bool dnd_paste = false;
+
+	switch (event) {
+	case FL_KEYBOARD:
 		return handle_key(Fl::event_key()) ? 1 : FTextBase::handle(event);
-
-	if (!(Fl::event_inside(this) && event == FL_PUSH))
-		return FTextBase::handle(event);
-
-	// ignore mouse2 presses (text pastes) inside the transmitted text
-	if (Fl::event_button() == FL_MIDDLE_MOUSE &&
-	    xy_to_position(Fl::event_x(), Fl::event_y(),
-			   Fl_Text_Display_mod::CHARACTER_POS) < txpos)
+	case FL_DND_RELEASE:
+		dnd_paste = true;
+		// fall through
+	case FL_DND_ENTER: case FL_DND_LEAVE:
 		return 1;
-
-	if (Fl::event_button() != FL_RIGHT_MOUSE)
+	case FL_DND_DRAG:
+		return handle_dnd_drag();
+	case FL_PASTE:
+	{
+		int r = dnd_paste ? handle_dnd_drop() : FTextBase::handle(event);
+		dnd_paste = false;
+		return r;
+	}
+	case FL_PUSH:
+	{
+		int eb = Fl::event_button();
+		if (eb == FL_RIGHT_MOUSE)
+			break;
+		else if (eb == FL_MIDDLE_MOUSE && xy_to_position(Fl::event_x(), Fl::event_y(), CHARACTER_POS) < txpos)
+			return 1; // ignore mouse2 text pastes inside the transmitted text
+	}
+	default:
 		return FTextBase::handle(event);
+	}
 
 	// handle a right click
 	if (active_modem != mfsk16_modem)
@@ -696,6 +744,10 @@ int FTextEdit::handle(int event)
 		edit_menu[TX_MENU_CUT].flags |= FL_MENU_INACTIVE;
 		edit_menu[TX_MENU_COPY].flags |= FL_MENU_INACTIVE;
 	}
+	if (insert_position() < txpos)
+		edit_menu[TX_MENU_READ].flags |= FL_MENU_INACTIVE;
+	else
+		edit_menu[TX_MENU_READ].flags &= ~FL_MENU_INACTIVE;
 	if (wrap)
 		edit_menu[TX_MENU_WRAP].flags |= FL_MENU_VALUE;
 	else
@@ -979,6 +1031,53 @@ int FTextEdit::handle_key_ascii(int key)
 	return 1;
 }
 
+/// Handles FL_DND_DRAG events by scrolling and moving the cursor
+///
+/// @return 1 if a drop is permitted at the cursor position, 0 otherwise
+int FTextEdit::handle_dnd_drag(void)
+{
+	// scroll up or down if the event occured inside the
+	// upper or lower 20% of the text area
+	if (Fl::event_y() > y() + .8f * h())
+		scroll(mVScrollBar->value() + 1, mHorizOffset);
+	else if (Fl::event_y() < y() + .2f * h())
+		scroll(mVScrollBar->value() - 1, mHorizOffset);
+
+	int pos = xy_to_position(Fl::event_x(), Fl::event_y(), CHARACTER_POS);
+	if (pos >= txpos) {
+		if (Fl::focus() != this)
+			take_focus();
+		insert_position(pos);
+		return 1;
+	}
+	else // refuse drop inside received text
+		return 0;
+}
+
+/// Handles FL_PASTE events by inserting text
+///
+/// @return 1 or FTextBase::handle(FL_PASTE)
+int FTextEdit::handle_dnd_drop(void)
+{
+	string text = Fl::event_text();
+	string::size_type cr;
+#ifndef __CYGWIN__
+	if (text.find("file://") != string::npos) {
+		text.erase(0, 7);
+		if ((cr = text.find('\r')) != string::npos)
+			text.erase(cr);
+		readFile(text.c_str());
+		return 1;
+	}
+	else // insert verbatim
+		return FTextBase::handle(FL_PASTE);
+#else
+	if (readFile(text.c_str()) == -1) // paste as text
+		return FTextBase::handle(FL_PASTE);
+	else
+		return 1;
+#endif
+}
 
 /// The context menu handler
 ///

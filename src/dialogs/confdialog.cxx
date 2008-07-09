@@ -1102,20 +1102,16 @@ Fl_Group *tabOlivia=(Fl_Group *)0;
 
 Fl_Choice *mnuOlivia_Tones=(Fl_Choice *)0;
 
-static void cb_mnuOlivia_Tones(Fl_Choice*, void*) {
-  progdefaults.changed = true;
+static void cb_mnuOlivia_Tones(Fl_Choice* o, void*) {
+  progdefaults.oliviatones = o->value();
+resetOLIVIA();
+progdefaults.changed = true;
 }
 
 Fl_Choice *mnuOlivia_Bandwidth=(Fl_Choice *)0;
 
-static void cb_mnuOlivia_Bandwidth(Fl_Choice*, void*) {
-  progdefaults.changed = true;
-}
-
-Fl_Button *btnRestartOlivia=(Fl_Button *)0;
-
-static void cb_btnRestartOlivia(Fl_Button*, void*) {
-  progdefaults.storeDefaults();
+static void cb_mnuOlivia_Bandwidth(Fl_Choice* o, void*) {
+  progdefaults.oliviabw = o->value();
 resetOLIVIA();
 progdefaults.changed = true;
 }
@@ -1124,6 +1120,7 @@ Fl_Counter *cntOlivia_smargin=(Fl_Counter *)0;
 
 static void cb_cntOlivia_smargin(Fl_Counter* o, void*) {
   progdefaults.oliviasmargin = (int)(o->value());
+resetOLIVIA();
 progdefaults.changed = true;
 }
 
@@ -1131,6 +1128,7 @@ Fl_Counter *cntOlivia_sinteg=(Fl_Counter *)0;
 
 static void cb_cntOlivia_sinteg(Fl_Counter* o, void*) {
   progdefaults.oliviasinteg = (int)(o->value());
+resetOLIVIA();
 progdefaults.changed = true;
 }
 
@@ -1234,42 +1232,44 @@ Fl_Group *tabRTTY=(Fl_Group *)0;
 
 Fl_Choice *selShift=(Fl_Choice *)0;
 
-static void cb_selShift(Fl_Choice*, void*) {
-  progdefaults.changed = true;
-progdefaults.storeDefaults();
+static void cb_selShift(Fl_Choice* o, void*) {
+  progdefaults.rtty_shift = o->value();
 resetRTTY();
+progdefaults.changed = true;
 }
 
 Fl_Choice *selBaud=(Fl_Choice *)0;
 
-static void cb_selBaud(Fl_Choice*, void*) {
-  progdefaults.changed = true;
-progdefaults.storeDefaults();
+static void cb_selBaud(Fl_Choice* o, void*) {
+  progdefaults.rtty_baud = o->value();
 resetRTTY();
+progdefaults.changed = true;
 }
 
 Fl_Choice *selBits=(Fl_Choice *)0;
 
-static void cb_selBits(Fl_Choice*, void*) {
-  progdefaults.changed = true;
-progdefaults.storeDefaults();
-resetRTTY();
+static void cb_selBits(Fl_Choice* o, void*) {
+  progdefaults.rtty_bits = o->value();
+selParity->do_callback();
 }
 
 Fl_Choice *selParity=(Fl_Choice *)0;
 
-static void cb_selParity(Fl_Choice*, void*) {
-  progdefaults.changed = true;
-progdefaults.storeDefaults();
+static void cb_selParity(Fl_Choice* o, void*) {
+  if (progdefaults.rtty_bits == 0)
+  o->value(progdefaults.rtty_parity = RTTY_PARITY_NONE);
+else
+  progdefaults.rtty_parity = o->value();
 resetRTTY();
+progdefaults.changed = true;
 }
 
 Fl_Choice *selStopBits=(Fl_Choice *)0;
 
-static void cb_selStopBits(Fl_Choice*, void*) {
-  progdefaults.changed = true;
-progdefaults.storeDefaults();
+static void cb_selStopBits(Fl_Choice* o, void*) {
+  progdefaults.rtty_stop = o->value();
 resetRTTY();
+progdefaults.changed = true;
 }
 
 Fl_Check_Button *chkPseudoFSK=(Fl_Check_Button *)0;
@@ -1295,8 +1295,9 @@ progdefaults.changed = true;
 
 Fl_Counter *cntrAUTOCRLF=(Fl_Counter *)0;
 
-static void cb_cntrAUTOCRLF(Fl_Counter*, void*) {
-  progdefaults.changed = true;
+static void cb_cntrAUTOCRLF(Fl_Counter* o, void*) {
+  progdefaults.rtty_autocount = (int)o->value();
+progdefaults.changed = true;
 }
 
 Fl_Check_Button *btnRTTY_USB=(Fl_Check_Button *)0;
@@ -1386,7 +1387,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         tabOperator->selection_color((Fl_Color)51);
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { inpMyCallsign = new Fl_Input(78, 36, 85, 24, "Callsign:");
         } // Fl_Input* inpMyCallsign
         { inpMyName = new Fl_Input(78, 62, 120, 24, "Name:");
@@ -2065,6 +2065,7 @@ l with your sound hardware.");
       { tabModems = new Fl_Group(0, 25, 401, 195, "Modem");
         tabModems->color((Fl_Color)51);
         tabModems->selection_color((Fl_Color)51);
+        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 401, 195);
           tabsModems->color((Fl_Color)51);
           tabsModems->selection_color((Fl_Color)10);
@@ -2260,7 +2261,6 @@ l with your sound hardware.");
             } // Fl_Check_Button* valTHOR_SOFT
             { Fl_Value_Slider* o = valThorCWI = new Fl_Value_Slider(120, 174, 260, 21, "CWI threshold:");
               valThorCWI->type(1);
-              valThorCWI->step(0.01);
               valThorCWI->textsize(14);
               valThorCWI->callback((Fl_Callback*)cb_valThorCWI);
               valThorCWI->align(FL_ALIGN_LEFT);
@@ -2271,6 +2271,7 @@ l with your sound hardware.");
           { tabDomEX = new Fl_Group(0, 50, 400, 170, "Dom");
             tabDomEX->color((Fl_Color)51);
             tabDomEX->selection_color((Fl_Color)51);
+            tabDomEX->hide();
             { txtSecondary = new Fl_Input(20, 75, 360, 44, "Secondary Text");
               txtSecondary->type(4);
               txtSecondary->callback((Fl_Callback*)cb_txtSecondary);
@@ -2309,7 +2310,6 @@ l with your sound hardware.");
             } // Fl_Counter* valDominoEX_PATHS
             { Fl_Value_Slider* o = valDomCWI = new Fl_Value_Slider(125, 179, 260, 21, "CWI threshold:");
               valDomCWI->type(1);
-              valDomCWI->step(0.01);
               valDomCWI->textsize(14);
               valDomCWI->callback((Fl_Callback*)cb_valDomCWI);
               valDomCWI->align(FL_ALIGN_LEFT);
@@ -2404,9 +2404,6 @@ l with your sound hardware.");
               o->add(szOliviaBandwidth);
               o->value(2);
             } // Fl_Choice* mnuOlivia_Bandwidth
-            { btnRestartOlivia = new Fl_Button(300, 172, 79, 28, "Restart");
-              btnRestartOlivia->callback((Fl_Callback*)cb_btnRestartOlivia);
-            } // Fl_Button* btnRestartOlivia
             { cntOlivia_smargin = new Fl_Counter(90, 105, 85, 22, "RX sync tune margin");
               cntOlivia_smargin->type(1);
               cntOlivia_smargin->minimum(2);
@@ -2432,7 +2429,6 @@ l with your sound hardware.");
             tabOlivia->end();
           } // Fl_Group* tabOlivia
           { tabPSK = new Fl_Group(0, 50, 400, 170, "Psk");
-            tabPSK->hide();
             { Fl_Counter* o = cntSearchRange = new Fl_Counter(11, 60, 80, 21, "Acq Srch Range");
               cntSearchRange->type(1);
               cntSearchRange->minimum(10);

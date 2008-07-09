@@ -316,6 +316,9 @@ void generate_option_help(void) {
 	     << "    Look for configuration files in DIRECTORY\n"
 	     << "    The default is: " << HomeDir << "\n\n"
 
+	     << "  --experimental\n"
+	     << "    enable experimental modes\n\n"
+
 #ifndef __CYGWIN__
 	     << "  --rx-ipc-key KEY\n"
 	     << "    Set the receive message queue key\n"
@@ -426,7 +429,7 @@ int parse_args(int argc, char **argv, int& idx)
 #ifndef __CYGWIN__
 	       OPT_RX_IPC_KEY, OPT_TX_IPC_KEY,
 #endif
-	       OPT_CONFIG_DIR,
+	       OPT_CONFIG_DIR, OPT_EXPERIMENTAL,
 #if USE_XMLRPC
 	       OPT_CONFIG_XMLRPC, OPT_CONFIG_XMLRPC_ADDRESS, OPT_CONFIG_XMLRPC_PORT,
 #endif
@@ -449,6 +452,7 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "tx-ipc-key",	   1, 0, OPT_TX_IPC_KEY },
 #endif
 		{ "config-dir",	   1, 0, OPT_CONFIG_DIR },
+		{ "experimental",  0, 0, OPT_EXPERIMENTAL },
 
 #if USE_XMLRPC
 		{ "xmlrpc-server",         0, 0, OPT_CONFIG_XMLRPC },
@@ -507,6 +511,9 @@ int parse_args(int argc, char **argv, int& idx)
 			HomeDir = optarg;
 			if (*HomeDir.rbegin() != '/')
 				HomeDir += '/';
+			break;
+		case OPT_EXPERIMENTAL:
+			progdefaults.experimental = true;
 			break;
 
 #if USE_XMLRPC

@@ -339,6 +339,8 @@ void olivia::init()
 
 olivia::olivia()
 {
+	cap = CAP_REV;
+
 	txbuffer = 0;
 	txfbuffer = 0;
 	rxbuffer = 0;

@@ -197,6 +197,8 @@ dominoex::~dominoex()
 
 dominoex::dominoex(trx_mode md)
 {
+	cap = CAP_REV;
+
 	mode = md;
 
 	switch (mode) {
@@ -260,24 +262,6 @@ dominoex::dominoex(trx_mode md)
 		binsfft[i] = 0;
 		
 	reset_filters();
-/*
-	if (slowcpu) {paths
-		extones = 4;
-		paths = 4;
-	} else {
-		extones = NUMTONES / 2;
-		paths = 6;
-	}
-	
-	lotone = basetone - extones * doublespaced;
-	hitone = basetone + NUMTONES * doublespaced + extones * doublespaced;
-
-	numbins = hitone - lotone;
-
-	for (int i = 0; i < paths; i++)//MAXFFTS; i++)
-		binsfft[i] = new sfft (symlen, lotone, hitone);
-*/
-
 	
 	for (int i = 0; i < SCOPESIZE; i++)
 		vidfilter[i] = new Cmovavg(16);
@@ -331,11 +315,11 @@ complex dominoex::mixer(int n, complex in)
 	z.re = cos(phase[n]);
 	z.im = sin(phase[n]);
 	z = z * in;
-	phase[n] -= twopi * f / samplerate;
+	phase[n] -= TWOPI * f / samplerate;
 	if (phase[n] > M_PI)
-		phase[n] -= twopi;
+		phase[n] -= TWOPI;
 	else if (phase[n] < M_PI)
-		phase[n] += twopi;
+		phase[n] += TWOPI;
 	return z;
 }
 
@@ -364,7 +348,7 @@ void dominoex::decodeDomino(int c)
 			ch = dominoex_varidec(sym);
 
 				if (!progdefaults.DOMINOEX_FEC)
-					if (staticburst == false && outofrange == false)
+					if (!staticburst && !outofrange)
 						recvchar(ch);
 		}
 		symcounter = 0;
@@ -393,9 +377,9 @@ void dominoex::decodesymbol()
 	fdiff /= doublespaced;
 	fdiff /= paths;
 	
-	if (fabs(fdiff) > 17) 
-		outofrange = true;
-	else
+//	if (fabs(fdiff) > 17) 
+//		outofrange = true;
+//	else
 		outofrange = false;
 	
 	c = (int)floor(fdiff + .5) - 2;
@@ -443,7 +427,7 @@ int dominoex::harddecode()
 			}
 		}
 	}
-
+	avg /= (paths * numbins);
 	staticburst = (max / avg < 1.2);
 
 	return symbol;
@@ -624,15 +608,15 @@ void dominoex::sendtone(int tone, int duration)
 {
 	double f, phaseincr;
 	f = (tone + 0.5) * tonespacing + get_txfreq_woffset() - bandwidth / 2.0;
-	phaseincr = twopi * f / samplerate;
+	phaseincr = TWOPI * f / samplerate;
 	for (int j = 0; j < duration; j++) {
 		for (int i = 0; i < symlen; i++) {
 			outbuf[i] = cos(txphase);
 			txphase -= phaseincr;
 			if (txphase > M_PI)
-				txphase -= twopi;
+				txphase -= TWOPI;
 			else if (txphase < M_PI)
-				txphase += twopi;
+				txphase += TWOPI;
 		}
 		ModulateXmtr(outbuf, symlen);
 	}

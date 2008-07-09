@@ -197,14 +197,19 @@ Fl_Menu_Item quick_change_qpsk[] = {
 
 Fl_Menu_Item quick_change_mfsk[] = {
 	{ mode_info[MODE_MFSK8].name, 0, cb_init_mode, (void *)MODE_MFSK8 },
-#ifdef EXPERIMENTAL
-	{ mode_info[MODE_MFSK11].name, 0, cb_init_mode, (void *)MODE_MFSK11 },
-#endif
 	{ mode_info[MODE_MFSK16].name, 0, cb_init_mode, (void *)MODE_MFSK16 },
-#ifdef EXPERIMENTAL
-	{ mode_info[MODE_MFSK22].name, 0, cb_init_mode, (void *)MODE_MFSK22 },
-#endif
 	{ mode_info[MODE_MFSK32].name, 0, cb_init_mode, (void *)MODE_MFSK32 },
+	{ 0 }
+};
+
+Fl_Menu_Item quick_change_mfsk_exp[] = {
+	{ mode_info[MODE_MFSK8].name, 0, cb_init_mode, (void *)MODE_MFSK8 },
+	{ mode_info[MODE_MFSK16].name, 0, cb_init_mode, (void *)MODE_MFSK16 },
+	{ mode_info[MODE_MFSK32].name, 0, cb_init_mode, (void *)MODE_MFSK32 },
+	{ mode_info[MODE_MFSK4].name, 0, cb_init_mode, (void *)MODE_MFSK4 },
+	{ mode_info[MODE_MFSK11].name, 0, cb_init_mode, (void *)MODE_MFSK11 },
+	{ mode_info[MODE_MFSK22].name, 0, cb_init_mode, (void *)MODE_MFSK22 },
+	{ mode_info[MODE_MFSK64].name, 0, cb_init_mode, (void *)MODE_MFSK64 },
 	{ 0 }
 };
 
@@ -280,6 +285,26 @@ void startup_modem(modem *m)
 		ReceiveText->show();
 		FHdisp->hide();
 	}
+
+	if (m->getcap() & modem::CAP_AFC) {
+		btn_afconoff->value(progStatus.afconoff);
+		btn_afconoff->activate();
+	}
+	else {
+		btn_afconoff->value(0);
+		btn_afconoff->deactivate();
+	}
+
+	wf->btnRev->value(wf->Reverse());
+	if (m->getcap() & modem::CAP_REV) {
+		wf->btnRev->value(wf->Reverse());
+		wf->btnRev->activate();
+	}
+	else {
+		wf->btnRev->value(0);
+		wf->btnRev->deactivate();
+	}
+
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 
@@ -447,16 +472,19 @@ void init_modem(trx_mode mode)
 		modem_config_tab = tabFeld;
 		break;
 
-#ifdef EXPERIMENTAL
+	case MODE_MFSK4:
 	case MODE_MFSK11: 
 	case MODE_MFSK22:
-#endif
+	case MODE_MFSK64:
 	case MODE_MFSK8: 
 	case MODE_MFSK16: 
 	case MODE_MFSK32:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new mfsk(mode));
-		quick_change = quick_change_mfsk;
+		if (progdefaults.experimental)
+			quick_change = quick_change_mfsk_exp;
+		else
+			quick_change = quick_change_mfsk;
 		break;
 
 	case MODE_MT63_500: case MODE_MT63_1000: case MODE_MT63_2000 :
@@ -912,14 +940,10 @@ void cbTune(Fl_Widget *w, void *) {
 	}
 	if (b->value() == 1) {
 		b->labelcolor(FL_RED);
-		fl_lock(&trx_mutex);
-			trx_state = STATE_TUNE;
-		fl_unlock(&trx_mutex);
+		trx_tune();
 	} else {
 		b->labelcolor(FL_FOREGROUND_COLOR);
-		fl_lock(&trx_mutex);
-			trx_state = STATE_RX;
-		fl_unlock(&trx_mutex);
+		trx_receive();
 	}
 	restoreFocus();
 }
@@ -1199,14 +1223,14 @@ Fl_Menu_Item menu_[] = {
 
 {"MFSK", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_MFSK8].name, 0,  cb_init_mode, (void *)MODE_MFSK8, 0, FL_NORMAL_LABEL, 0, 14, 0},
-#ifdef EXPERIMENTAL
-{ mode_info[MODE_MFSK11].name, 0,  cb_init_mode, (void *)MODE_MFSK11, 0, FL_NORMAL_LABEL, 0, 14, 0},
-#endif
 { mode_info[MODE_MFSK16].name, 0,  cb_init_mode, (void *)MODE_MFSK16, 0, FL_NORMAL_LABEL, 0, 14, 0},
-#ifdef EXPERIMENTAL
-{ mode_info[MODE_MFSK22].name, 0,  cb_init_mode, (void *)MODE_MFSK22, 0, FL_NORMAL_LABEL, 0, 14, 0},
-#endif
 { mode_info[MODE_MFSK32].name, 0,  cb_init_mode, (void *)MODE_MFSK32, 0, FL_NORMAL_LABEL, 0, 14, 0},
+// experimental modes
+{ mode_info[MODE_MFSK4].name, 0,  cb_init_mode, (void *)MODE_MFSK4, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK11].name, 0,  cb_init_mode, (void *)MODE_MFSK11, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK22].name, 0,  cb_init_mode, (void *)MODE_MFSK22, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK64].name, 0,  cb_init_mode, (void *)MODE_MFSK64, 0, FL_NORMAL_LABEL, 0, 14, 0},
+
 {0,0,0,0,0,0,0,0,0},
 
 {"MT63", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
@@ -1310,6 +1334,30 @@ Fl_Menu_Item *getMenuItem(const char *caption)
 	if (!item)
 		cerr << "FIXME: could not find '" << caption << "' menu\n";
 	return item;
+}
+
+void activate_experimental()
+{
+	Fl_Menu_Item *m_exp = 0;
+	if (progdefaults.experimental) {
+		if ((m_exp = getMenuItem(mode_info[MODE_MFSK4].name)) != 0)
+			m_exp->show();
+		if ((m_exp = getMenuItem(mode_info[MODE_MFSK11].name)) != 0)
+			m_exp->show();
+		if ((m_exp = getMenuItem(mode_info[MODE_MFSK22].name)) != 0)
+			m_exp->show();
+		if ((m_exp = getMenuItem(mode_info[MODE_MFSK64].name)) != 0)
+			m_exp->show();
+	} else {
+		if ((m_exp = getMenuItem(mode_info[MODE_MFSK4].name)) != 0)
+			m_exp->hide();
+		if ((m_exp = getMenuItem(mode_info[MODE_MFSK11].name)) != 0)
+			m_exp->hide();
+		if ((m_exp = getMenuItem(mode_info[MODE_MFSK22].name)) != 0)
+			m_exp->hide();
+		if ((m_exp = getMenuItem(mode_info[MODE_MFSK64].name)) != 0)
+			m_exp->hide();
+	}
 }
 
 void activate_rig_menu_item(bool b)
@@ -1773,6 +1821,7 @@ void create_fl_digi_main() {
 	scopeview->end();
 	scopeview->hide();	
 
+	activate_experimental();
 }
 
 
@@ -2124,40 +2173,29 @@ void put_echo_char(unsigned int data)
 }
 
 void resetRTTY() {
-	if (active_modem->get_mode() != MODE_RTTY) return;
-	trx_reset();
-	active_modem->restart();
+	if (active_modem->get_mode() == MODE_RTTY)
+		trx_start_modem(active_modem);
 }
 
 void resetOLIVIA() {
-	if (active_modem->get_mode() != MODE_OLIVIA) return;
-	trx_reset();
-	active_modem->restart();
+	if (active_modem->get_mode() == MODE_OLIVIA)
+		trx_start_modem(active_modem);
 }
 
 void resetTHOR() {
 	trx_mode md = active_modem->get_mode();
-	if (md == MODE_THOR4 ||
-		md == MODE_THOR5 ||
-		md == MODE_THOR8 ||
-		md == MODE_THOR11 ||
-//		md == MODE_TSOR11 ||
-		md == MODE_THOR16 ||
-		md == MODE_THOR22 ) {
-		active_modem->restart();
-	}
+	if (md == MODE_THOR4 || md == MODE_THOR5 || md == MODE_THOR8 ||
+	    md == MODE_THOR11 || /* md == MODE_TSOR11 || */
+	    md == MODE_THOR16 || md == MODE_THOR22 )
+		trx_start_modem(active_modem);
 }
 
 void resetDOMEX() {
 	trx_mode md = active_modem->get_mode();
-	if (md == MODE_DOMINOEX4 ||
-		md == MODE_DOMINOEX5 ||
-		md == MODE_DOMINOEX8 ||
-		md == MODE_DOMINOEX11 ||
-		md == MODE_DOMINOEX16 ||
-		md == MODE_DOMINOEX22 ) {
-		active_modem->restart();
-	}
+	if (md == MODE_DOMINOEX4 || md == MODE_DOMINOEX5 ||
+	    md == MODE_DOMINOEX8 || md == MODE_DOMINOEX11 ||
+	    md == MODE_DOMINOEX16 || md == MODE_DOMINOEX22 )
+		trx_start_modem(active_modem);
 }
 
 void enableMixer(bool on)
@@ -2334,10 +2372,7 @@ void change_modem_param(int state)
 void start_tx()
 {
 	if (progdefaults.rsid == true) return;
-	fl_lock(&trx_mutex);
-	if (trx_state != STATE_TX)
-		trx_state = STATE_TX;
-	fl_unlock(&trx_mutex);
+	trx_transmit();
 	wf->set_XmtRcvBtn(true);
 }
 

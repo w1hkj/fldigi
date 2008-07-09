@@ -21,6 +21,7 @@
 // Constants for signal searching & s/n threshold
 #define SIGSEARCH 5
 
+#define TWOPI (2.0 * M_PI)
 
 class modem : public morse {
 protected:
@@ -40,8 +41,7 @@ protected:
 	double	rx_corr;
 	double	tx_corr;
 	double	tx_frequency;
-	double	twopi;
-	
+
 // for CW modem use only
 	bool	cwTrack;
 	bool	cwLock;
@@ -61,9 +61,9 @@ protected:
 	bool	historyON;
 	Digiscope::scope_mode scopemode;
 	
-	double scdata[512];
 	int scptr;
-	
+
+	unsigned cap;
 public:
 	modem();
 	virtual ~modem(){};
@@ -120,6 +120,9 @@ public:
 	
 	void		set_stopflag(bool b) { stopflag = b;};
 
+	unsigned	getcap(void) { return cap; }
+	enum { CAP_AFC = 1 << 0, CAP_REV = 1 << 1 };
+
 // for CW modem use only
 	bool		get_cwTrack();
 	void		set_cwTrack(bool);
@@ -133,8 +136,6 @@ public:
 	virtual void		toggleWPM() {};
 	
 // for waterfall id transmission
-public:
-
 private:
 	
 	static	int			wfid_mask[];
@@ -152,7 +153,7 @@ private:
 	void	wfid_sendchars(std::string s);
 
 public:
-	void	wfid_text(std::string s);
+	void	wfid_text(const std::string& s);
 
 // for CW ID transmission
 private:
@@ -166,20 +167,26 @@ public:
 	double	cwid_nco(double freq);
 	void	cwid_send_symbol(int bits);
 	void	cwid_send_ch(int ch);
-	void	cwid_sendtext (std::string s);
+	void	cwid_sendtext (const std::string& s);
 	void	cwid();
 
 };
 
 extern modem *cw_modem;
+
 extern modem *mfsk8_modem;
-extern modem *mfsk11_modem;
 extern modem *mfsk16_modem;
-extern modem *mfsk22_modem;
 extern modem *mfsk32_modem;
+// experimental modes
+extern modem *mfsk4_modem;
+extern modem *mfsk11_modem;
+extern modem *mfsk22_modem;
+extern modem *mfsk64_modem;
+
 extern modem *mt63_500_modem;
 extern modem *mt63_1000_modem;
 extern modem *mt63_2000_modem;
+
 extern modem *feld_modem;
 extern modem *feld_slowmodem;
 extern modem *feld_x5modem;
@@ -188,35 +195,43 @@ extern modem *feld_FMmodem;
 extern modem *feld_FM105modem;
 extern modem *feld_80modem;
 extern modem *feld_CMTmodem;
+
 extern modem *psk31_modem;
 extern modem *psk63_modem;
 extern modem *psk125_modem;
 extern modem *psk250_modem;
+
 extern modem *qpsk31_modem;
 extern modem *qpsk63_modem;
 extern modem *qpsk125_modem;
 extern modem *qpsk250_modem;
+
 extern modem *rtty_modem;
+
 extern modem *olivia_modem;
+
 extern modem *thor4_modem;
 extern modem *thor5_modem;
 extern modem *thor8_modem;
 extern modem *thor11_modem;
-extern modem *tsor11_modem;
+//extern modem *tsor11_modem;
 extern modem *thor16_modem;
 extern modem *thor22_modem;
+
 extern modem *dominoex4_modem;
 extern modem *dominoex5_modem;
 extern modem *dominoex8_modem;
 extern modem *dominoex11_modem;
 extern modem *dominoex16_modem;
 extern modem *dominoex22_modem;
+
 extern modem *throb1_modem;
 extern modem *throb2_modem;
 extern modem *throb4_modem;
 extern modem *throbx1_modem;
 extern modem *throbx2_modem;
 extern modem *throbx4_modem;
+
 extern modem *wwv_modem;
 extern modem *anal_modem;
 

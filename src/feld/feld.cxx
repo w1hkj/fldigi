@@ -113,12 +113,15 @@ feld::feld(trx_mode m)
 // Frequency modulation modes
 		case MODE_FSKHELL: 
 			feldcolumnrate = 17.5; 
+			cap = CAP_REV;
 			break; 
 		case MODE_FSKH105: 
 			feldcolumnrate = 7.5;//17.5; 
+			cap = CAP_REV;
 			break; 
 		case MODE_HELL80: 
 			feldcolumnrate = 35; 
+			cap = CAP_REV;
 			break;
  		default :
  			feldcolumnrate = 17.5;

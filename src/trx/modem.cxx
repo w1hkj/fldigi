@@ -14,14 +14,20 @@
 #include "status.h"
 
 modem *cw_modem = 0;
+
 modem *mfsk8_modem = 0;
-modem *mfsk11_modem = 0;
 modem *mfsk16_modem = 0;
-modem *mfsk22_modem = 0;
 modem *mfsk32_modem = 0;
+// experimental modes
+modem *mfsk4_modem = 0;
+modem *mfsk11_modem = 0;
+modem *mfsk22_modem = 0;
+modem *mfsk64_modem = 0;
+
 modem *mt63_500_modem = 0;
 modem *mt63_1000_modem = 0;
 modem *mt63_2000_modem = 0;
+
 modem *feld_modem = 0;
 modem *feld_slowmodem = 0;
 modem *feld_x5modem = 0;
@@ -30,35 +36,43 @@ modem *feld_FMmodem = 0;
 modem *feld_FM105modem = 0;
 modem *feld_80modem = 0;
 modem *feld_CMTmodem = 0;
+
 modem *psk31_modem = 0;
 modem *psk63_modem = 0;
 modem *psk125_modem = 0;
 modem *psk250_modem = 0;
+
 modem *qpsk31_modem = 0;
 modem *qpsk63_modem = 0;
 modem *qpsk125_modem = 0;
 modem *qpsk250_modem = 0;
+
 modem *olivia_modem = 0;
+
 modem *rtty_modem = 0;
+
 modem *thor4_modem = 0;
 modem *thor5_modem = 0;
 modem *thor8_modem = 0;
 modem *thor11_modem = 0;
-modem *tsor11_modem = 0;
+//modem *tsor11_modem = 0;
 modem *thor16_modem = 0;
 modem *thor22_modem = 0;
+
 modem *dominoex4_modem = 0;
 modem *dominoex5_modem = 0;
 modem *dominoex8_modem = 0;
 modem *dominoex11_modem = 0;
 modem *dominoex16_modem = 0;
 modem *dominoex22_modem = 0;
+
 modem *throb1_modem = 0;
 modem *throb2_modem = 0;
 modem *throb4_modem = 0;
 modem *throbx1_modem = 0;
 modem *throbx2_modem = 0;
 modem *throbx4_modem = 0;
+
 modem *wwv_modem = 0;
 modem *anal_modem = 0;
 
@@ -69,7 +83,6 @@ trx_mode modem::get_mode()
 
 modem::modem()
 {
-	twopi = 2.0 * M_PI;
 	scptr = 0;
 	freqlock = false;
 	sigsearch = 0;
@@ -77,6 +90,7 @@ modem::modem()
 	bool wfsb = wf->USB();
 	reverse = wfrev ^ !wfsb;
 	historyON = false;
+	cap = 0;
 }
 
 void modem::init()
@@ -398,7 +412,7 @@ void modem::cwid_send_ch(int ch)
 
 }
 
-void modem::cwid_sendtext (string s)
+void modem::cwid_sendtext (const string& s)
 {
 	cwid_symbollen = (int)(1.2 * samplerate / progdefaults.CWIDwpm);
 	RT = (int) (samplerate * 6 / 1000.0); // 6 msec risetime for CW pulse
@@ -614,7 +628,7 @@ void modem::wfid_sendchars(string s)
 	}
 }
 
-void modem::wfid_text(string s)
+void modem::wfid_text(const string& s)
 {
 	int len = s.length();
 	string video = "Video text: ";
