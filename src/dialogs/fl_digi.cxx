@@ -197,9 +197,13 @@ Fl_Menu_Item quick_change_qpsk[] = {
 
 Fl_Menu_Item quick_change_mfsk[] = {
 	{ mode_info[MODE_MFSK8].name, 0, cb_init_mode, (void *)MODE_MFSK8 },
+#ifdef EXPERIMENTAL
 	{ mode_info[MODE_MFSK11].name, 0, cb_init_mode, (void *)MODE_MFSK11 },
+#endif
 	{ mode_info[MODE_MFSK16].name, 0, cb_init_mode, (void *)MODE_MFSK16 },
+#ifdef EXPERIMENTAL
 	{ mode_info[MODE_MFSK22].name, 0, cb_init_mode, (void *)MODE_MFSK22 },
+#endif
 	{ mode_info[MODE_MFSK32].name, 0, cb_init_mode, (void *)MODE_MFSK32 },
 	{ 0 }
 };
@@ -443,10 +447,12 @@ void init_modem(trx_mode mode)
 		modem_config_tab = tabFeld;
 		break;
 
-	case MODE_MFSK8: 
+#ifdef EXPERIMENTAL
 	case MODE_MFSK11: 
+	case MODE_MFSK22:
+#endif
+	case MODE_MFSK8: 
 	case MODE_MFSK16: 
-	case MODE_MFSK22: 
 	case MODE_MFSK32:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new mfsk(mode));
@@ -1193,9 +1199,13 @@ Fl_Menu_Item menu_[] = {
 
 {"MFSK", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_MFSK8].name, 0,  cb_init_mode, (void *)MODE_MFSK8, 0, FL_NORMAL_LABEL, 0, 14, 0},
+#ifdef EXPERIMENTAL
 { mode_info[MODE_MFSK11].name, 0,  cb_init_mode, (void *)MODE_MFSK11, 0, FL_NORMAL_LABEL, 0, 14, 0},
+#endif
 { mode_info[MODE_MFSK16].name, 0,  cb_init_mode, (void *)MODE_MFSK16, 0, FL_NORMAL_LABEL, 0, 14, 0},
+#ifdef EXPERIMENTAL
 { mode_info[MODE_MFSK22].name, 0,  cb_init_mode, (void *)MODE_MFSK22, 0, FL_NORMAL_LABEL, 0, 14, 0},
+#endif
 { mode_info[MODE_MFSK32].name, 0,  cb_init_mode, (void *)MODE_MFSK32, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 

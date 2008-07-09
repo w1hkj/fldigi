@@ -73,9 +73,13 @@ RSIDs cRsId::rsid_ids[] = {
 	{ 60, MODE_MFSK8 }, // MFSK8
 	{ 57, MODE_MFSK16 }, // MFSK16
 	{ 147, MODE_MFSK32 }, // MFSK32
+#ifdef EXPERIMENTAL
 	{ 148, MODE_MFSK11 }, // MFSK11
 	{ 152, MODE_MFSK22 }, // MFSK22
-
+#else
+	{ 148, NUM_MODES }, // MFSK11
+	{ 152, NUM_MODES }, // MFSK22
+#endif
 	{ 61, NUM_MODES }, // RTTYM-8-250
 	{ 62, NUM_MODES }, // RTTYM-16-500
 	{ 63, NUM_MODES }, // RTTYM-32-1000
