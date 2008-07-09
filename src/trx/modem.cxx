@@ -76,6 +76,7 @@ modem::modem()
 	bool wfsb = wf->USB();
 	reverse = wfrev ^ !wfsb;
 	historyON = false;
+	cap = 0;
 }
 
 void modem::init()

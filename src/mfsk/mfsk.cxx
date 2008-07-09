@@ -114,6 +114,8 @@ mfsk::~mfsk()
 
 mfsk::mfsk(trx_mode mfsk_mode) : modem()
 {
+	cap = CAP_AFC | CAP_REV;
+
 	double bw, cf, flo, fhi;
 	mode = mfsk_mode;
 

@@ -280,6 +280,26 @@ void startup_modem(modem *m)
 		ReceiveText->show();
 		FHdisp->hide();
 	}
+
+	if (m->getcap() & modem::CAP_AFC) {
+		btn_afconoff->value(progStatus.afconoff);
+		btn_afconoff->activate();
+	}
+	else {
+		btn_afconoff->value(0);
+		btn_afconoff->deactivate();
+	}
+
+	wf->btnRev->value(wf->Reverse());
+	if (m->getcap() & modem::CAP_REV) {
+		wf->btnRev->value(wf->Reverse());
+		wf->btnRev->activate();
+	}
+	else {
+		wf->btnRev->value(0);
+		wf->btnRev->deactivate();
+	}
+
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 

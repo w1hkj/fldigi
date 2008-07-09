@@ -121,6 +121,8 @@ psk::~psk()
 
 psk::psk(trx_mode pskmode) : modem()
 {
+	cap = CAP_AFC;
+
 	mode = pskmode;
 
 	switch (mode) {

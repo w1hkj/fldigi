@@ -62,7 +62,8 @@ protected:
 	Digiscope::scope_mode scopemode;
 	
 	int scptr;
-	
+
+	unsigned cap;
 public:
 	modem();
 	virtual ~modem(){};
@@ -118,6 +119,9 @@ public:
 	void		videoText();
 	
 	void		set_stopflag(bool b) { stopflag = b;};
+
+	unsigned	getcap(void) { return cap; }
+	enum { CAP_AFC = 1 << 0, CAP_REV = 1 << 1 };
 
 // for CW modem use only
 	bool		get_cwTrack();

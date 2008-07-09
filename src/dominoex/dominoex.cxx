@@ -197,6 +197,8 @@ dominoex::~dominoex()
 
 dominoex::dominoex(trx_mode md)
 {
+	cap = CAP_REV;
+
 	mode = md;
 
 	switch (mode) {
