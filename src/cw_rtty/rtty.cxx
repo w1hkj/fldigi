@@ -202,11 +202,11 @@ complex rtty::mixer(complex in)
 	z.im = sin(phaseacc);
 	z = z * in;
 
-	phaseacc -= twopi * frequency / samplerate;
+	phaseacc -= TWOPI * frequency / samplerate;
 	if (phaseacc > M_PI) 
-		phaseacc -= twopi;
+		phaseacc -= TWOPI;
 	else if (phaseacc < M_PI) 
-		phaseacc += twopi;
+		phaseacc += TWOPI;
 
 	return z;
 }
@@ -435,7 +435,7 @@ int rtty::rx_process(const double *buf, int len)
 // the frequency of the baseband signal (+rtty_baud or -rtty_baud)
 // see class complex definiton for operator %
 			
-				fin = (prevsmpl % zp[i]).arg() * samplerate / twopi;
+				fin = (prevsmpl % zp[i]).arg() * samplerate / TWOPI;
 				prevsmpl = zp[i];
 
 // filter the result with a moving average filter
@@ -545,21 +545,21 @@ int rtty::rx_process(const double *buf, int len)
 
 double rtty::nco(double freq)
 {
-	phaseacc += twopi * freq / samplerate;
+	phaseacc += TWOPI * freq / samplerate;
 
 	if (phaseacc > M_PI)
-		phaseacc -= twopi;
+		phaseacc -= TWOPI;
 
 	return cos(phaseacc);
 }
 
 double rtty::FSKnco()
 {
-	FSKphaseacc += twopi * 1000 / samplerate;
+	FSKphaseacc += TWOPI * 1000 / samplerate;
 
 	if (FSKphaseacc > M_PI)
 
-		FSKphaseacc -= twopi;
+		FSKphaseacc -= TWOPI;
 
 	return sin(FSKphaseacc);
 

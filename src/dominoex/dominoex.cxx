@@ -331,11 +331,11 @@ complex dominoex::mixer(int n, complex in)
 	z.re = cos(phase[n]);
 	z.im = sin(phase[n]);
 	z = z * in;
-	phase[n] -= twopi * f / samplerate;
+	phase[n] -= TWOPI * f / samplerate;
 	if (phase[n] > M_PI)
-		phase[n] -= twopi;
+		phase[n] -= TWOPI;
 	else if (phase[n] < M_PI)
-		phase[n] += twopi;
+		phase[n] += TWOPI;
 	return z;
 }
 
@@ -624,15 +624,15 @@ void dominoex::sendtone(int tone, int duration)
 {
 	double f, phaseincr;
 	f = (tone + 0.5) * tonespacing + get_txfreq_woffset() - bandwidth / 2.0;
-	phaseincr = twopi * f / samplerate;
+	phaseincr = TWOPI * f / samplerate;
 	for (int j = 0; j < duration; j++) {
 		for (int i = 0; i < symlen; i++) {
 			outbuf[i] = cos(txphase);
 			txphase -= phaseincr;
 			if (txphase > M_PI)
-				txphase -= twopi;
+				txphase -= TWOPI;
 			else if (txphase < M_PI)
-				txphase += twopi;
+				txphase += TWOPI;
 		}
 		ModulateXmtr(outbuf, symlen);
 	}

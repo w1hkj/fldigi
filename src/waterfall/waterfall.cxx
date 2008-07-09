@@ -992,9 +992,7 @@ void xmtrcv_cb(Fl_Widget *w, void *vi)
 	FL_UNLOCK_D();
 	if (v == 1) {
 		active_modem->set_stopflag(false);
-		fl_lock(&trx_mutex);
-		trx_state = STATE_TX;
-		fl_unlock(&trx_mutex);
+		trx_transmit();
 	} else {
 		extern Fl_Button* btnTune;
 		if (btnTune->value()) {
@@ -1189,10 +1187,7 @@ void btnMem_cb(Fl_Widget *, void *menu_event)
 }
 
 void waterfall::opmode() {
-	int val;
-	fl_lock(&trx_mutex);
-		val = 	(int)active_modem->get_bandwidth();
-	fl_unlock(&trx_mutex);
+	int val = (int)active_modem->get_bandwidth();
 	if (wfdisp->carrier() < val/2)
 		wfdisp->carrier( val/2 );
 	if (wfdisp->carrier() > IMAGE_WIDTH - val/2)

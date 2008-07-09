@@ -114,9 +114,9 @@ complex BLANK::mixer(complex in, double f)
 // f may have to be modified
 	z = in * complex( cos(phaseacc), sin(phaseacc) );
 
-	phaseacc -= twopi * f / corrRxSampleRate();
-	if (phaseacc > twopi) phaseacc -= twopi;
-	if (phaseacc < -twopi) phaseacc += twopi;
+	phaseacc -= TWOPI * f / corrRxSampleRate();
+	if (phaseacc > TWOPI) phaseacc -= TWOPI;
+	if (phaseacc < -TWOPI) phaseacc += TWOPI;
 	
 	return z;
 }

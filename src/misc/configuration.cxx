@@ -1268,14 +1268,7 @@ void configuration::loadDefaults() {
 	selShift->value(rtty_shift);
 	selBaud->value(rtty_baud);
 	selBits->value(rtty_bits);
-	switch (rtty_parity) {
-		case RTTY_PARITY_NONE : selParity->value(0); break;
-		case RTTY_PARITY_EVEN : selParity->value(1); break;
-		case RTTY_PARITY_ODD :  selParity->value(2); break;
-		case RTTY_PARITY_ZERO : selParity->value(3); break;
-		case RTTY_PARITY_ONE :  selParity->value(4); break;
-		default :          selParity->value(0); break;
-	}
+	selParity->value(rtty_parity);
 //	chkMsbFirst->value(rtty_msbfirst);
 	selStopBits->value(rtty_stop);
 	btnCRCRLF->value(rtty_crcrlf);
@@ -1302,35 +1295,7 @@ void configuration::loadDefaults() {
 	FL_UNLOCK();
 }
 
-void configuration::storeDefaults() {
-	FL_LOCK();
-	
-// RTTY
-	rtty_shift = selShift->value();
-	rtty_baud = selBaud->value();
-	rtty_bits = selBits->value();
-	if (rtty_bits == 0)
-		rtty_parity = RTTY_PARITY_NONE;
-	else
-		switch (selParity->value()) {
-			case 0 : rtty_parity = RTTY_PARITY_NONE; break;
-			case 1 : rtty_parity = RTTY_PARITY_EVEN; break;
-			case 2 : rtty_parity = RTTY_PARITY_ODD; break;
-			case 3 : rtty_parity = RTTY_PARITY_ZERO; break;
-			case 4 : rtty_parity = RTTY_PARITY_ONE; break;
-			default : rtty_parity = RTTY_PARITY_NONE; break;
-		}
-//	rtty_msbfirst = chkMsbFirst->value();
-	rtty_stop = selStopBits->value();
-	rtty_crcrlf = btnCRCRLF->value();
-	rtty_autocrlf = btnAUTOCRLF->value();
-	rtty_autocount = (int)cntrAUTOCRLF->value();
-// OLIVIA
-	oliviatones = mnuOlivia_Tones->value();
-	oliviabw = mnuOlivia_Bandwidth->value();
-
-	FL_UNLOCK();
-}
+void configuration::storeDefaults() { }
 
 void configuration::saveDefaults() {
 	FL_LOCK();

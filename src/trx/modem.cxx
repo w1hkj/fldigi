@@ -69,7 +69,6 @@ trx_mode modem::get_mode()
 
 modem::modem()
 {
-	twopi = 2.0 * M_PI;
 	scptr = 0;
 	freqlock = false;
 	sigsearch = 0;
@@ -398,7 +397,7 @@ void modem::cwid_send_ch(int ch)
 
 }
 
-void modem::cwid_sendtext (string s)
+void modem::cwid_sendtext (const string& s)
 {
 	cwid_symbollen = (int)(1.2 * samplerate / progdefaults.CWIDwpm);
 	RT = (int) (samplerate * 6 / 1000.0); // 6 msec risetime for CW pulse
@@ -614,7 +613,7 @@ void modem::wfid_sendchars(string s)
 	}
 }
 
-void modem::wfid_text(string s)
+void modem::wfid_text(const string& s)
 {
 	int len = s.length();
 	string video = "Video text: ";

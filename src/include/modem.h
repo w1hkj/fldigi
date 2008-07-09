@@ -21,6 +21,7 @@
 // Constants for signal searching & s/n threshold
 #define SIGSEARCH 5
 
+#define TWOPI (2.0 * M_PI)
 
 class modem : public morse {
 protected:
@@ -40,8 +41,7 @@ protected:
 	double	rx_corr;
 	double	tx_corr;
 	double	tx_frequency;
-	double	twopi;
-	
+
 // for CW modem use only
 	bool	cwTrack;
 	bool	cwLock;
@@ -61,7 +61,6 @@ protected:
 	bool	historyON;
 	Digiscope::scope_mode scopemode;
 	
-	double scdata[512];
 	int scptr;
 	
 public:
@@ -133,8 +132,6 @@ public:
 	virtual void		toggleWPM() {};
 	
 // for waterfall id transmission
-public:
-
 private:
 	
 	static	int			wfid_mask[];
@@ -152,7 +149,7 @@ private:
 	void	wfid_sendchars(std::string s);
 
 public:
-	void	wfid_text(std::string s);
+	void	wfid_text(const std::string& s);
 
 // for CW ID transmission
 private:
@@ -166,7 +163,7 @@ public:
 	double	cwid_nco(double freq);
 	void	cwid_send_symbol(int bits);
 	void	cwid_send_ch(int ch);
-	void	cwid_sendtext (std::string s);
+	void	cwid_sendtext (const std::string& s);
 	void	cwid();
 
 };

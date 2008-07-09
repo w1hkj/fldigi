@@ -283,7 +283,7 @@ bool mfsk::check_picture_header(char c)
 void mfsk::recvpic(complex z)
 {
 	int byte;
-	picf += (prevz % z).arg() * samplerate / twopi;
+	picf += (prevz % z).arg() * samplerate / TWOPI;
 	prevz = z;
 
 	if ((counter % SAMPLES_PER_PIXEL) == 0) {
@@ -453,9 +453,9 @@ complex mfsk::mixer(complex in, double f)
 	f -= (1000.0 + bandwidth / 2);
 	z = in * complex( cos(phaseacc), sin(phaseacc) );
 
-	phaseacc -= twopi * f / samplerate;
-	if (phaseacc > twopi) phaseacc -= twopi;
-	if (phaseacc < -twopi) phaseacc += twopi;
+	phaseacc -= TWOPI * f / samplerate;
+	if (phaseacc > TWOPI) phaseacc -= TWOPI;
+	if (phaseacc < -TWOPI) phaseacc += TWOPI;
 	
 	return z;
 }
@@ -576,7 +576,7 @@ void mfsk::afc()
 		prevvector = pipe[pipeptr - 1].vector[currsymbol];
 	z = prevvector % currvector;
 
-	f = z.arg() * samplerate / twopi;
+	f = z.arg() * samplerate / TWOPI;
 	
 	f1 = tonespacing * (basetone + currsymbol);	
 	f1 -= f;
@@ -711,15 +711,15 @@ void mfsk::sendsymbol(int sym)
 	if (reverse)
 		sym = (numtones - 1) - sym;
 
-	phaseincr = twopi * (f + sym*tonespacing) / samplerate;
+	phaseincr = TWOPI * (f + sym*tonespacing) / samplerate;
 	
 	for (int i = 0; i < symlen; i++) {
 		outbuf[i] = cos(phaseacc);
 		phaseacc -= phaseincr;
 		if (phaseacc > M_PI)
-			phaseacc -= twopi;
+			phaseacc -= TWOPI;
 		else if (phaseacc < M_PI)
-			phaseacc += twopi;
+			phaseacc += TWOPI;
 	}
 	ModulateXmtr(outbuf, symlen);
 
@@ -792,7 +792,7 @@ void mfsk::sendpic(unsigned char *data, int len)
 		for (j = 0; j < SAMPLES_PER_PIXEL; j++) {
 			*ptr++ = cos(phaseacc);
 
-			phaseacc += twopi * f / samplerate;
+			phaseacc += TWOPI * f / samplerate;
 
 			if (phaseacc > M_PI)
 				phaseacc -= 2.0 * M_PI;

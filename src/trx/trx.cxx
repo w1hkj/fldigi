@@ -57,7 +57,6 @@ void	trx_tune_loop();
 /* ---------------------------------------------------------------------- */
 
 
-Fl_Mutex	trx_mutex = PTHREAD_MUTEX_INITIALIZER;
 Fl_Mutex	trx_cond_mutex = PTHREAD_MUTEX_INITIALIZER;
 Fl_Cond		trx_cond = PTHREAD_COND_INITIALIZER;
 Fl_Thread	trx_thread;
@@ -310,31 +309,32 @@ void *trx_loop(void *args)
 	SET_THREAD_ID(TRX_TID);
 
 	for (;;) {
-		if ( trx_state == STATE_ABORT) {
+		switch (trx_state) {
+		case STATE_ABORT:
 			delete scard;
 			scard = 0;
 			trx_state = STATE_ENDED;
 			return 0;
-		}
-		else if (trx_state == STATE_RESTART) {
+		case STATE_RESTART:
 			trx_reset_loop();
-			MilliSleep(10);
-		}
-		else if (trx_state == STATE_NEW_MODEM) {
+			break;
+		case STATE_NEW_MODEM:
 			trx_start_modem_loop();
-			MilliSleep(10);
-		} 
-		else if (trx_state == STATE_TX)
+			break;
+		case STATE_TX:
 			trx_trx_transmit_loop();
-		else if (trx_state == STATE_TUNE)
+			break;
+		case STATE_TUNE:
 			trx_tune_loop();
-		else if (trx_state == STATE_RX)
+			break;
+		case STATE_RX:
 			trx_trx_receive_loop();
-		else
+			break;
+		default:
+			cerr << "trx in bad state " << trx_state << '\n';
 			MilliSleep(100);
+		}
 	}
-	trx_state = STATE_ENDED;
-	return 0;
 }
 
 //=============================================================================
@@ -342,14 +342,21 @@ modem *trx_m;
 
 void trx_start_modem_loop()
 {
+	if (trx_m == active_modem) {
+		trx_state = STATE_RX;
+		active_modem->restart();
+		signal_modem_ready();
+		return;
+	}
+
 	modem* old_modem = active_modem;
 
 	if (old_modem == trx_m) {
 		trx_state = STATE_RX;
-        signal_modem_ready();
+		signal_modem_ready();
 		return;
 	}
-			
+
 	if (old_modem)
 		old_modem->shutdown();
 
@@ -510,6 +517,12 @@ void trx_close() {
 }
 
 //=============================================================================
+
+void trx_transmit(void) { trx_state = STATE_TX; }
+void trx_tune(void) { trx_state = STATE_TUNE; }
+void trx_receive(void) { trx_state = STATE_RX; }
+
+//=============================================================================
 void wait_modem_ready_prep(void)
 {
 #ifndef NDEBUG
@@ -520,7 +533,6 @@ void wait_modem_ready_prep(void)
         fl_lock(&trx_cond_mutex);
 }
 
-//=============================================================================
 void wait_modem_ready_cmpl(void)
 {
 #ifndef NDEBUG
@@ -532,7 +544,6 @@ void wait_modem_ready_cmpl(void)
         fl_unlock(&trx_cond_mutex);
 }
 
-//=============================================================================
 void signal_modem_ready(void)
 {
 #ifndef NDEBUG

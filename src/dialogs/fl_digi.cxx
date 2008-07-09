@@ -912,14 +912,10 @@ void cbTune(Fl_Widget *w, void *) {
 	}
 	if (b->value() == 1) {
 		b->labelcolor(FL_RED);
-		fl_lock(&trx_mutex);
-			trx_state = STATE_TUNE;
-		fl_unlock(&trx_mutex);
+		trx_tune();
 	} else {
 		b->labelcolor(FL_FOREGROUND_COLOR);
-		fl_lock(&trx_mutex);
-			trx_state = STATE_RX;
-		fl_unlock(&trx_mutex);
+		trx_receive();
 	}
 	restoreFocus();
 }
@@ -2124,40 +2120,29 @@ void put_echo_char(unsigned int data)
 }
 
 void resetRTTY() {
-	if (active_modem->get_mode() != MODE_RTTY) return;
-	trx_reset();
-	active_modem->restart();
+	if (active_modem->get_mode() == MODE_RTTY)
+		trx_start_modem(active_modem);
 }
 
 void resetOLIVIA() {
-	if (active_modem->get_mode() != MODE_OLIVIA) return;
-	trx_reset();
-	active_modem->restart();
+	if (active_modem->get_mode() == MODE_OLIVIA)
+		trx_start_modem(active_modem);
 }
 
 void resetTHOR() {
 	trx_mode md = active_modem->get_mode();
-	if (md == MODE_THOR4 ||
-		md == MODE_THOR5 ||
-		md == MODE_THOR8 ||
-		md == MODE_THOR11 ||
-//		md == MODE_TSOR11 ||
-		md == MODE_THOR16 ||
-		md == MODE_THOR22 ) {
-		active_modem->restart();
-	}
+	if (md == MODE_THOR4 || md == MODE_THOR5 || md == MODE_THOR8 ||
+	    md == MODE_THOR11 || /* md == MODE_TSOR11 || */
+	    md == MODE_THOR16 || md == MODE_THOR22 )
+		trx_start_modem(active_modem);
 }
 
 void resetDOMEX() {
 	trx_mode md = active_modem->get_mode();
-	if (md == MODE_DOMINOEX4 ||
-		md == MODE_DOMINOEX5 ||
-		md == MODE_DOMINOEX8 ||
-		md == MODE_DOMINOEX11 ||
-		md == MODE_DOMINOEX16 ||
-		md == MODE_DOMINOEX22 ) {
-		active_modem->restart();
-	}
+	if (md == MODE_DOMINOEX4 || md == MODE_DOMINOEX5 ||
+	    md == MODE_DOMINOEX8 || md == MODE_DOMINOEX11 ||
+	    md == MODE_DOMINOEX16 || md == MODE_DOMINOEX22 )
+		trx_start_modem(active_modem);
 }
 
 void enableMixer(bool on)
@@ -2334,10 +2319,7 @@ void change_modem_param(int state)
 void start_tx()
 {
 	if (progdefaults.rsid == true) return;
-	fl_lock(&trx_mutex);
-	if (trx_state != STATE_TX)
-		trx_state = STATE_TX;
-	fl_unlock(&trx_mutex);
+	trx_transmit();
 	wf->set_XmtRcvBtn(true);
 }
 

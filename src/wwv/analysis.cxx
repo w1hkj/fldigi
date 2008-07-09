@@ -109,11 +109,11 @@ complex anal::mixer(complex in)
 	z.im = sin(phaseacc);
 	z = z * in;
 
-	phaseacc -= twopi * frequency / samplerate;
+	phaseacc -= TWOPI * frequency / samplerate;
 	if (phaseacc > M_PI) 
-		phaseacc -= twopi;
+		phaseacc -= TWOPI;
 	else if (phaseacc < M_PI) 
-		phaseacc += twopi;
+		phaseacc += TWOPI;
 
 	return z;
 }
@@ -144,7 +144,7 @@ int anal::rx_process(const double *buf, int len)
 // measure phase difference between successive samples to determine
 // the frequency of the baseband signal (+anal_baud or -anal_baud)
 // see class complex definiton for operator %
-			fin = (prevsmpl % zp[i]).arg() * samplerate / twopi;
+			fin = (prevsmpl % zp[i]).arg() * samplerate / TWOPI;
 			prevsmpl = zp[i];
 // filter using moving average filter
 			fout_1 = ffilt->run(fin);

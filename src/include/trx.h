@@ -40,6 +40,11 @@
 extern	void	trx_start_modem(modem *);
 extern	void	trx_start(void);
 extern	void	trx_close();
+
+extern	void	trx_transmit();
+extern	void	trx_tune();
+extern	void	trx_receive();
+
 extern	void	trx_reset(void);
 extern	void	trx_start_macro_timer();
 
@@ -47,7 +52,6 @@ extern	void	wait_modem_ready_prep(void);
 extern	void	wait_modem_ready_cmpl(void);
 extern	void	signal_modem_ready(void);
 
-extern Fl_Mutex		trx_mutex;
 extern Fl_Thread	trx_thread;
 extern state_t		trx_state;
 extern modem		*active_modem;
