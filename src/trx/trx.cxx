@@ -149,7 +149,12 @@ void trx_trx_receive_loop()
 					return;
 				}
 			}
-			
+			// If we change to an 8000Hz modem while RSID is on we'll never detect anything.
+			// Toggle rsid_detecting so that the audio device is reopened with the ReedSolomon
+			// samplerate in the next loop iteration.
+			if (progdefaults.rsid && rsid_detecting && current_samplerate != ReedSolomon->samplerate())
+				rsid_detecting = false;
+
 			try {
 				if (trxrb.write_space() == 0) // discard some old data
 					trxrb.read_advance(SCBLOCKSIZE);

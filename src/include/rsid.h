@@ -119,7 +119,6 @@ public:
 	cRsId();
 	~cRsId();
 	void	reset();
-	bool	encode(trx_mode mode, int submode, uchar *rsid);
 	void	search( const double *pSamples, int nSamples );
 //	, bool bReverse, 
 //					int *pSymbolOut, int *pBinOut, int *pDistanceOut, 

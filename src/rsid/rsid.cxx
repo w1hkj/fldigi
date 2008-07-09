@@ -7,130 +7,201 @@
 #include "main.h"
 #include "trx.h"
 #include "configuration.h"
+#include "confdialog.h"
 #include "qrunner.h"
 
 #include "rsid_fft.cxx"
-	
+
+enum {
+	RSID_NONE = 0,
+
+	RSID_BPSK31 = 1, RSID_QPSK31 = 110, RSID_BPSK63 = 2, RSID_QPSK63 = 3,
+	RSID_BPSK125 = 4, RSID_QPSK125 = 5, RSID_BPSK250 = 126, RSID_QPSK250 = 127,
+
+	RSID_UNKNOWN_1 = 7, RSID_UNKNOWN_2 = 8,
+
+	RSID_MT63_500_LG = 9, RSID_MT63_500_ST = 10, RSID_MT63_500_VST = 11,
+	RSID_MT63_1000_LG = 12, RSID_MT63_1000_ST = 13, RSID_MT63_1000_VST = 14,
+	RSID_MT63_2000_LG = 15, RSID_MT63_2000_ST = 17, RSID_MT63_2000_VST = 18,
+
+	RSID_PSKAM10 = 19, RSID_PSKAM31 = 20, RSID_PSKAM50 = 21, RSID_PSK63F = 22,
+	RSID_PSK220F = 23, RSID_CHIP64 = 24, RSID_CHIP128 = 25,
+
+	RSID_CW = 26,
+
+	RSID_CCW_OOK_12 = 27, RSID_CCW_OOK_24 = 28, RSID_CCW_OOK_48 = 29,
+	RSID_CCW_FSK_12 = 30, RSID_CCW_FSK_24 = 31, RSID_CCW_FSK_48 = 33,
+
+	RSID_PACTOR1_FEC = 34, RSID_PACKET_300 = 35, RSID_PACKET_1200 = 36,
+
+	RSID_RTTY_ASCII_7 = 37, RSID_RTTY_ASCII_8 = 38, RSID_RTTY_45 = 39,
+	RSID_RTTY_50 = 40, RSID_RTTY_75 = 41,
+
+	RSID_AMTOR_FEC = 42,
+
+	RSID_THROB_1 = 43, RSID_THROB_2 = 44, RSID_THROB_4 = 45,
+	RSID_THROBX_1 = 46, RSID_THROBX_2 = 47, RSID_THROBX_4 = 146,
+
+	RSID_CONTESTIA_8_250 = 49, RSID_CONTESTIA_16_500 = 50, RSID_CONTESTIA_32_1000 = 51,
+	RSID_CONTESTIA_8_500 = 52, RSID_CONTESTIA_16_1000 = 53, RSID_CONTESTIA_4_500 = 54,
+	RSID_CONTESTIA_4_250 = 55,
+
+	RSID_VOICE = 56,
+
+	RSID_MFSK8 = 60, RSID_MFSK16 = 57, RSID_MFSK32 = 147,
+	RSID_MFSK11 = 148, RSID_MFSK22 = 152,
+
+	RSID_RTTYM_8_250 = 61, RSID_RTTYM_16_500 = 62, RSID_RTTYM_32_1000 = 63,
+	RSID_RTTYM_8_500 = 65, RSID_RTTYM_16_1000 = 66, RSID_RTTYM_4_500 = 67,
+	RSID_RTTYM_4_250 = 68,
+
+	RSID_OLIVIA_8_250 = 69, RSID_OLIVIA_16_500 = 70, RSID_OLIVIA_32_1000 = 71,
+	RSID_OLIVIA_8_500 = 72, RSID_OLIVIA_16_1000 = 73, RSID_OLIVIA_4_500 = 74,
+	RSID_OLIVIA_4_250 = 75,
+
+	RSID_PAX = 76, RSID_PAX2 = 77, RSID_DOMINOF = 78, RSID_FAX = 79, RSID_SSTV = 81,
+
+	RSID_DOMINOEX_4 = 84, RSID_DOMINOEX_5 = 85, RSID_DOMINOEX_8 = 86,
+	RSID_DOMINOEX_11 = 87, RSID_DOMINOEX_16 = 88, RSID_DOMINOEX_22 = 90,
+	RSID_DOMINOEX_4_FEC = 92, RSID_DOMINOEX_5_FEC = 93, RSID_DOMINOEX_8_FEC = 97,
+	RSID_DOMINOEX_11_FEC = 98, RSID_DOMINOEX_16_FEC = 99, RSID_DOMINOEX_22_FEC = 101,
+
+	RSID_FELD_HELL = 104, RSID_PSK_HELL = 105, RSID_HELL_80 = 106,
+	RSID_FM_HELL_105 = 107, RSID_FM_HELL_245 = 108,
+
+	RSID_THOR_4 = 136, RSID_THOR_5 = 139, RSID_THOR_8 = 137,
+	RSID_THOR_11 = 143, RSID_THOR_16 = 138, RSID_THOR_22 = 145,
+};
+
 RSIDs cRsId::rsid_ids[] = {
-	{ 1, MODE_BPSK31 },
-	{ 110, MODE_QPSK31 },
-	{ 2, MODE_PSK63 },
-	{ 3, MODE_QPSK63 },
-	{ 4, MODE_PSK125 },
-	{ 5, MODE_QPSK125 },
-	{ 126, MODE_PSK250 },
-	{ 127, MODE_QPSK250 },
-		
-	{ 7, NUM_MODES },
-	{ 8, NUM_MODES },
-	{ 9, MODE_MT63_500 }, // MT63-500-LG
-	{ 10, MODE_MT63_500 }, // MT63-500-ST
-	{ 11, MODE_MT63_500 }, // MT63-500-VST
-	{ 12, MODE_MT63_1000 }, // MT63-1000-LG
-	{ 13, MODE_MT63_1000 }, // MT63-1000-ST
-	{ 14, MODE_MT63_1000 }, // MT63-1000-VST
-	{ 15, MODE_MT63_2000 }, // MT63-2000-LG
-	{ 17, MODE_MT63_2000 }, // MT63-2000-ST
-	{ 18, MODE_MT63_2000 }, // MT63-2000-VST
-	{ 19,  NUM_MODES }, // PSKAM10
-	{ 20, NUM_MODES }, // PSKAM31
-	{ 21, NUM_MODES }, // PSKAM50
-	{ 22, NUM_MODES }, // PSK63F
-	{ 23, NUM_MODES }, // PSK220F
-	{ 24, NUM_MODES }, // CHIP-64
-	{ 25, NUM_MODES }, // CHIP-128
-	{ 26, MODE_CW }, // CW
-	{ 27, NUM_MODES }, // CCW-OOK-12
-	{ 28, NUM_MODES }, // CCW-OOK-24
-	{ 29, NUM_MODES }, // CCW-OOK-48
-	{ 30, NUM_MODES }, // CCW-FSK-12
-	{ 31, NUM_MODES }, // CCW-FSK-24
-	{ 33, NUM_MODES }, // CCW-FSK-48
-	{ 34, NUM_MODES }, // PACTOR1-FEC
-	{ 35, NUM_MODES }, // PACKET-300
-	{ 36, NUM_MODES }, // PACKET-1200
-	{ 37, MODE_RTTY }, // ASCII-7
-	{ 38, MODE_RTTY }, // ASCII-8
-	{ 39, MODE_RTTY }, // RTTY-45
-	{ 40, MODE_RTTY }, // RTTY-50
-	{ 41, MODE_RTTY }, // RTTY-75
-	{ 42, NUM_MODES }, // AMTOR FEC
-	{ 43, MODE_THROB1 }, // THROB-1
-	{ 44, MODE_THROB2 }, // THROB-2
-	{ 45, MODE_THROB4 }, // THROB-4
-	{ 46, MODE_THROBX1 }, // THROBX-1
-	{ 47, MODE_THROBX2 }, // THROBX-2
-	{ 146, MODE_THROBX4 }, // THROBX-4
-	{ 49, NUM_MODES }, // CONTESTIA-8-250
-	{ 50, NUM_MODES }, // CONTESTIA-16-500
-	{ 51, NUM_MODES }, // CONTESTIA-32-1000
-	{ 52, NUM_MODES }, // CONTESTIA-8-500
-	{ 53, NUM_MODES }, // CONTESTIA-16-1000
-	{ 54, NUM_MODES }, // CONTESTIA-4-500
-	{ 55, NUM_MODES }, // CONTESTIA-4-250
-	{ 56, NUM_MODES }, // VOICE
+	{ RSID_BPSK31, MODE_BPSK31 },
+	{ RSID_QPSK31, MODE_QPSK31 },
+	{ RSID_BPSK63, MODE_PSK63 },
+	{ RSID_QPSK63, MODE_QPSK63 },
+	{ RSID_BPSK125, MODE_PSK125 },
+	{ RSID_QPSK125, MODE_QPSK125 },
+	{ RSID_BPSK250, MODE_PSK250 },
+	{ RSID_QPSK250, MODE_QPSK250 },
 
-	{ 60, MODE_MFSK8 }, // MFSK8
-	{ 57, MODE_MFSK16 }, // MFSK16
-	{ 147, MODE_MFSK32 }, // MFSK32
+	{ RSID_UNKNOWN_1, NUM_MODES },
+	{ RSID_UNKNOWN_2, NUM_MODES },
+
+	{ RSID_MT63_500_LG, MODE_MT63_500 },
+	{ RSID_MT63_500_ST, MODE_MT63_500 },
+	{ RSID_MT63_500_VST, MODE_MT63_500 },
+	{ RSID_MT63_1000_LG, MODE_MT63_1000 },
+	{ RSID_MT63_1000_ST, MODE_MT63_1000 },
+	{ RSID_MT63_1000_VST, MODE_MT63_1000 },
+	{ RSID_MT63_2000_LG, MODE_MT63_2000 },
+	{ RSID_MT63_2000_ST, MODE_MT63_2000 },
+	{ RSID_MT63_2000_VST, MODE_MT63_2000 },
+
+	{ RSID_PSKAM10,  NUM_MODES },
+	{ RSID_PSKAM31, NUM_MODES },
+	{ RSID_PSKAM50, NUM_MODES },
+	{ RSID_PSK63F, NUM_MODES },
+	{ RSID_PSK220F, NUM_MODES },
+	{ RSID_CHIP64, NUM_MODES },
+	{ RSID_CHIP128, NUM_MODES },
+
+	{ RSID_CW, MODE_CW },
+
+	{ RSID_CCW_OOK_12, NUM_MODES },
+	{ RSID_CCW_OOK_24, NUM_MODES },
+	{ RSID_CCW_OOK_48, NUM_MODES },
+	{ RSID_CCW_FSK_12, NUM_MODES },
+	{ RSID_CCW_FSK_24, NUM_MODES },
+	{ RSID_CCW_FSK_48, NUM_MODES },
+
+	{ RSID_PACTOR1_FEC, NUM_MODES },
+	{ RSID_PACKET_300, NUM_MODES },
+	{ RSID_PACKET_1200, NUM_MODES },
+
+	{ RSID_RTTY_ASCII_7, MODE_RTTY },
+	{ RSID_RTTY_ASCII_8, MODE_RTTY },
+	{ RSID_RTTY_45, MODE_RTTY },
+	{ RSID_RTTY_50 , MODE_RTTY },
+	{ RSID_RTTY_75 , MODE_RTTY },
+
+	{ RSID_AMTOR_FEC, NUM_MODES },
+
+	{ RSID_THROB_1, MODE_THROB1 },
+	{ RSID_THROB_2, MODE_THROB2 },
+	{ RSID_THROB_4, MODE_THROB4 },
+	{ RSID_THROBX_1, MODE_THROBX1 },
+	{ RSID_THROBX_2, MODE_THROBX2 },
+	{ RSID_THROBX_4, MODE_THROBX4 },
+
+	{ RSID_CONTESTIA_8_250, NUM_MODES },
+	{ RSID_CONTESTIA_16_500, NUM_MODES },
+	{ RSID_CONTESTIA_32_1000, NUM_MODES },
+	{ RSID_CONTESTIA_8_500, NUM_MODES },
+	{ RSID_CONTESTIA_16_1000, NUM_MODES },
+	{ RSID_CONTESTIA_4_500, NUM_MODES },
+	{ RSID_CONTESTIA_4_250, NUM_MODES },
+
+	{ RSID_VOICE, NUM_MODES },
+
+	{ RSID_MFSK8, MODE_MFSK8 },
+	{ RSID_MFSK16, MODE_MFSK16 },
+	{ RSID_MFSK32, MODE_MFSK32 },
 #ifdef EXPERIMENTAL
-	{ 148, MODE_MFSK11 }, // MFSK11
-	{ 152, MODE_MFSK22 }, // MFSK22
+	{ RSID_MFSK11, MODE_MFSK11 },
+	{ RSID_MFSK22, MODE_MFSK22 },
 #else
-	{ 148, NUM_MODES }, // MFSK11
-	{ 152, NUM_MODES }, // MFSK22
+	{ RSID_MFSK11, NUM_MODES },
+	{ RSID_MFSK22, NUM_MODES },
 #endif
-	{ 61, NUM_MODES }, // RTTYM-8-250
-	{ 62, NUM_MODES }, // RTTYM-16-500
-	{ 63, NUM_MODES }, // RTTYM-32-1000
-	{ 65, NUM_MODES }, // RTTYM-8-500
-	{ 66, NUM_MODES }, // RTTYM-16-1000
-	{ 67, NUM_MODES }, // RTTYM-4-500
-	{ 68, NUM_MODES }, // RTTYM-4-250
-	
-	{ 69, MODE_OLIVIA }, // OLIVIA-8-250
-	{ 70, MODE_OLIVIA }, // OLIVIA-16-500
-	{ 71, MODE_OLIVIA }, // OLIVIA-32-1000
-	{ 72, MODE_OLIVIA }, // OLIVIA-8-500
-	{ 73, MODE_OLIVIA }, // OLIVIA-16-1000
-	{ 74, MODE_OLIVIA }, // OLIVIA-4-500
-	{ 75, MODE_OLIVIA }, // OLIVIA-4-250
 
-	{ 76, NUM_MODES }, // PAX
-	{ 77, NUM_MODES }, // PAX2
-	{ 78, NUM_MODES }, // DOMINOF
-	{ 79, NUM_MODES }, // FAX
-	{ 81, NUM_MODES }, // SSTV
+	{ RSID_RTTYM_8_250, NUM_MODES },
+	{ RSID_RTTYM_16_500, NUM_MODES },
+	{ RSID_RTTYM_32_1000, NUM_MODES },
+	{ RSID_RTTYM_8_500, NUM_MODES },
+	{ RSID_RTTYM_16_1000, NUM_MODES },
+	{ RSID_RTTYM_4_500, NUM_MODES },
+	{ RSID_RTTYM_4_250, NUM_MODES },
 
-	{ 84, MODE_DOMINOEX4 }, // DOMINOEX-4
-	{ 85, MODE_DOMINOEX5 }, // DOMINOEX-5
-	{ 86, MODE_DOMINOEX8 }, // DOMINOEX-8
-	{ 87, MODE_DOMINOEX11 }, // DOMINOEX-11
-	{ 88, MODE_DOMINOEX16 }, // DOMINOEX-16
-	{ 90, MODE_DOMINOEX22 }, // DOMINOEX-22
-	{ 92, MODE_DOMINOEX4 }, // DOMINOEX-4-FEC
-	{ 93, MODE_DOMINOEX5 }, // DOMINOEX-5-FEC
-	{ 97, MODE_DOMINOEX8 }, // DOMINOEX-8-FEC
-	{ 98, MODE_DOMINOEX11 }, // DOMINOEX-11-FEC
-	{ 99, MODE_DOMINOEX16 }, // DOMINOEX-16-FEC
-	{ 101, MODE_DOMINOEX22 }, // DOMINOEX-22-FEC
+	{ RSID_OLIVIA_8_250, MODE_OLIVIA },
+	{ RSID_OLIVIA_16_500, MODE_OLIVIA },
+	{ RSID_OLIVIA_32_1000, MODE_OLIVIA },
+	{ RSID_OLIVIA_8_500, MODE_OLIVIA },
+	{ RSID_OLIVIA_16_1000, MODE_OLIVIA },
+	{ RSID_OLIVIA_4_500, MODE_OLIVIA },
+	{ RSID_OLIVIA_4_250, MODE_OLIVIA },
 
-	{ 104, MODE_FELDHELL }, // FELD HELL
-	{ 105, NUM_MODES }, // PSK HELL
-	{ 106, MODE_HELL80 }, // HELL 80
-	{ 107, MODE_FSKH105 }, // FM HELL-105
-	{ 108, NUM_MODES }, // FM HELL-245
+	{ RSID_PAX, NUM_MODES },
+	{ RSID_PAX2, NUM_MODES },
+	{ RSID_DOMINOF, NUM_MODES },
+	{ RSID_FAX, NUM_MODES },
+	{ RSID_SSTV, NUM_MODES },
 
-	{ 110, MODE_QPSK31 },
-		
-	{ 136, MODE_THOR4 },
-	{ 137, MODE_THOR8 },
-	{ 138, MODE_THOR16 },
-	{ 139, MODE_THOR5 },
-	{ 143, MODE_THOR11 },
-	{ 145, MODE_THOR22 },
-		
-	{ 0,  NUM_MODES }
+	{ RSID_DOMINOEX_4, MODE_DOMINOEX4 },
+	{ RSID_DOMINOEX_5, MODE_DOMINOEX5 },
+	{ RSID_DOMINOEX_8, MODE_DOMINOEX8 },
+	{ RSID_DOMINOEX_11, MODE_DOMINOEX11 },
+	{ RSID_DOMINOEX_16, MODE_DOMINOEX16 },
+	{ RSID_DOMINOEX_22, MODE_DOMINOEX22 },
+	{ RSID_DOMINOEX_4_FEC, MODE_DOMINOEX4 },
+	{ RSID_DOMINOEX_5_FEC, MODE_DOMINOEX5 },
+	{ RSID_DOMINOEX_8_FEC, MODE_DOMINOEX8 },
+	{ RSID_DOMINOEX_11_FEC, MODE_DOMINOEX11 },
+	{ RSID_DOMINOEX_16_FEC, MODE_DOMINOEX16 },
+	{ RSID_DOMINOEX_22_FEC, MODE_DOMINOEX22 },
+
+	{ RSID_FELD_HELL, MODE_FELDHELL },
+	{ RSID_PSK_HELL, NUM_MODES },
+	{ RSID_HELL_80 , MODE_HELL80 },
+	{ RSID_FM_HELL_105, MODE_FSKH105 },
+	{ RSID_FM_HELL_245, NUM_MODES },
+
+	{ RSID_THOR_4, MODE_THOR4 },
+	{ RSID_THOR_8, MODE_THOR8 },
+	{ RSID_THOR_16, MODE_THOR16 },
+	{ RSID_THOR_5, MODE_THOR5 },
+	{ RSID_THOR_11, MODE_THOR11 },
+	{ RSID_THOR_22, MODE_THOR22 },
+
+	{ RSID_NONE, NUM_MODES }
 };
 
 const int cRsId::Squares[256] = {
@@ -354,38 +425,80 @@ void cRsId::apply(int iSymbol, int iBin)
 	if (mbin == NUM_MODES) return;
 
 	switch (iSymbol) {
-	case 37:
+	// rtty parameters
+	case RSID_RTTY_ASCII_7:
 		progdefaults.rtty_baud = 5;
 		progdefaults.rtty_bits = 1;
 		progdefaults.rtty_shift = 9;
 		break;
-	case 38:
+	case RSID_RTTY_ASCII_8:
 		progdefaults.rtty_baud = 5;
 		progdefaults.rtty_bits = 2;
 		progdefaults.rtty_shift = 9;
 		break;
-	case 39:
+	case RSID_RTTY_45:
 		progdefaults.rtty_baud = 1;
 		progdefaults.rtty_bits = 0;
 		progdefaults.rtty_shift = 3;
 		break;
-	case 40:
+	case RSID_RTTY_50:
 		progdefaults.rtty_baud = 2;
 		progdefaults.rtty_bits = 0;
 		progdefaults.rtty_shift = 3;
 		break;
-	case 41:
+	case RSID_RTTY_75:
 		progdefaults.rtty_baud = 4;
 		progdefaults.rtty_bits = 0;
 		progdefaults.rtty_shift = 9;
 		break;
-	case 92: case 93: case 97:
-	case 98: case 99: case 101: // special MultiPsk FEC modes
+	// special MultiPsk FEC modes
+	case RSID_DOMINOEX_4_FEC: case RSID_DOMINOEX_5_FEC: case RSID_DOMINOEX_8_FEC:
+	case RSID_DOMINOEX_11_FEC: case RSID_DOMINOEX_16_FEC: case RSID_DOMINOEX_22_FEC:
 		progdefaults.DOMINOEX_FEC = true;
 		break;
+	// olivia parameters
+	case RSID_OLIVIA_8_250:
+		progdefaults.oliviatones = 2;
+		progdefaults.oliviabw = 1;
+		break;
+	case RSID_OLIVIA_16_500:
+		progdefaults.oliviatones = 3;
+		progdefaults.oliviabw = 2;
+		break;
+	case RSID_OLIVIA_32_1000:
+		progdefaults.oliviatones = 4;
+		progdefaults.oliviabw = 3;
+		break;
+	case RSID_OLIVIA_8_500:
+		progdefaults.oliviatones = 2;
+		progdefaults.oliviabw = 2;
+		break;
+	case RSID_OLIVIA_16_1000:
+		progdefaults.oliviatones = 3;
+		progdefaults.oliviabw = 3;
+		break;
+	case RSID_OLIVIA_4_500:
+		progdefaults.oliviatones = 1;
+		progdefaults.oliviabw = 2;
+		break;
+	case RSID_OLIVIA_4_250:
+		progdefaults.oliviatones = 1;
+		progdefaults.oliviabw = 1;
+		break;
+	// mt63
+	case RSID_MT63_500_LG: case RSID_MT63_1000_LG: case RSID_MT63_2000_LG:
+		progdefaults.mt63_interleave = 64;
+		break;
+	case RSID_MT63_500_ST: case RSID_MT63_1000_ST: case RSID_MT63_2000_ST:
+	case RSID_MT63_500_VST: case RSID_MT63_1000_VST: case RSID_MT63_2000_VST:
+		progdefaults.mt63_interleave = 32;
+		break;
+
 	default:
 		break;
 	}
+
+	REQ(&configuration::loadDefaults, &progdefaults);
 
 	active_modem->set_freq(freq);
 	REQ(init_modem, mbin);
@@ -437,21 +550,6 @@ void cRsId::apply(int iSymbol, int iBin)
 	default: _ASSERT(false);
 	}
 */
-}
-
-bool cRsId::encode(trx_mode mode, int submode, uchar *rsid)
-{
-	int ptr = 0, code;
-	while ( (rsid_ids[ptr].mode != mode) && (rsid_ids[ptr].rs != 0) ) 
-		ptr++;
-	code = rsid_ids[ptr].rs;
-
-	if (code == 0)
-		return false;
-
-	Encode(code + submode, rsid);
-
-	return true;
 }
 
 //=============================================================================
@@ -566,34 +664,97 @@ void cRsId::send()
 	symlen = (int)floor(RSID_SYMLEN * sr);
 	fr = 1.0 * active_modem->get_txfreq() - (11025.0 * 7 / 1024);
 	
-	trx_mode m = active_modem->get_mode();
-	int submode = 0;
-	switch (m) {
-		case MODE_RTTY : 
-			if (progdefaults.rtty_baud == 5 && 
-			    progdefaults.rtty_bits == 1 &&
-			    progdefaults.rtty_shift == 9) submode = 0;
-			else if (progdefaults.rtty_baud == 5 &&
-			         progdefaults.rtty_bits == 1 &&
-			         progdefaults.rtty_shift == 9) submode = 1;
-			else if (progdefaults.rtty_baud == 1 &&
-			         progdefaults.rtty_bits == 0 &&
-			         progdefaults.rtty_shift == 3) submode = 2;
-			else if (progdefaults.rtty_baud == 2 &&
-			         progdefaults.rtty_bits == 0 &&
-			         progdefaults.rtty_shift == 3) submode = 3;
-			else if (progdefaults.rtty_baud == 4 &&
-			         progdefaults.rtty_bits == 0 &&
-			         progdefaults.rtty_shift == 9) submode = 4;
-			else submode = 2; // 45 baud Baudot, shift 170
-			break;
-		default:
-			submode = 0;
+	trx_mode mode = active_modem->get_mode();
+	uchar rmode = RSID_NONE;
+
+	switch (mode) {
+	case MODE_RTTY :
+		if (progdefaults.rtty_baud == 5 && progdefaults.rtty_bits == 1 && progdefaults.rtty_shift == 9)
+			rmode = RSID_RTTY_ASCII_7;
+		else if (progdefaults.rtty_baud == 5 && progdefaults.rtty_bits == 1 && progdefaults.rtty_shift == 9)
+			rmode = RSID_RTTY_ASCII_8;
+		else if (progdefaults.rtty_baud == 1 && progdefaults.rtty_bits == 0 && progdefaults.rtty_shift == 3)
+			rmode = RSID_RTTY_45;
+		else if (progdefaults.rtty_baud == 2 && progdefaults.rtty_bits == 0 && progdefaults.rtty_shift == 3)
+			rmode = RSID_RTTY_50;
+		else if (progdefaults.rtty_baud == 4 && progdefaults.rtty_bits == 0 && progdefaults.rtty_shift == 9)
+			rmode = RSID_RTTY_75;
+		else
+			rmode = RSID_RTTY_45;; // 45 baud Baudot, shift 170
+		break;
+
+	case MODE_OLIVIA:
+		if (progdefaults.oliviatones == 2 && progdefaults.oliviabw == 1)
+			rmode = RSID_OLIVIA_8_250;
+		else if (progdefaults.oliviatones == 3 && progdefaults.oliviabw == 2)
+			rmode = RSID_OLIVIA_16_500;
+		else if (progdefaults.oliviatones == 4 && progdefaults.oliviabw == 3)
+			rmode = RSID_OLIVIA_32_1000;
+		else if (progdefaults.oliviatones == 2 && progdefaults.oliviabw == 2)
+			rmode = RSID_OLIVIA_8_500;
+		else if (progdefaults.oliviatones == 3 && progdefaults.oliviabw == 3)
+			rmode = RSID_OLIVIA_16_1000;
+		else if (progdefaults.oliviatones == 1 && progdefaults.oliviabw == 2)
+			rmode = RSID_OLIVIA_4_500;
+		else if (progdefaults.oliviatones == 1 && progdefaults.oliviabw == 1)
+			rmode = RSID_OLIVIA_4_250;
+		else
+			rmode = RSID_OLIVIA_16_500;
+		break;
+
+	case MODE_DOMINOEX4:
+		if (progdefaults.DOMINOEX_FEC)
+			rmode = RSID_DOMINOEX_4_FEC;
+		break;
+	case MODE_DOMINOEX5:
+		if (progdefaults.DOMINOEX_FEC)
+			rmode = RSID_DOMINOEX_5_FEC;
+		break;
+	case MODE_DOMINOEX8:
+		if (progdefaults.DOMINOEX_FEC)
+			rmode = RSID_DOMINOEX_8_FEC;
+		break;
+	case MODE_DOMINOEX11:
+		if (progdefaults.DOMINOEX_FEC)
+			rmode = RSID_DOMINOEX_11_FEC;
+		break;
+	case MODE_DOMINOEX16:
+		if (progdefaults.DOMINOEX_FEC)
+			rmode = RSID_DOMINOEX_16_FEC;
+		break;
+	case MODE_DOMINOEX22:
+		if (progdefaults.DOMINOEX_FEC)
+			rmode = RSID_DOMINOEX_22_FEC;
+		break;
+
+	case MODE_MT63_500:
+		if (progdefaults.mt63_interleave == 32)
+			rmode = RSID_MT63_500_ST;
+		break;
+	case MODE_MT63_1000:
+		if (progdefaults.mt63_interleave == 32)
+			rmode = RSID_MT63_1000_ST;
+		break;
+	case MODE_MT63_2000:
+		if (progdefaults.mt63_interleave == 32)
+			rmode = RSID_MT63_2000_ST;
+		break;
 	}
-	
-	if (!encode (active_modem->get_mode(), submode, rsid))
+
+	// if rmode is still unset, look it up
+	if (rmode == RSID_NONE) {
+		for (size_t i = 0; i < sizeof(rsid_ids)/sizeof(*rsid_ids); i++) {
+			if (mode == rsid_ids[i].mode) {
+				rmode = rsid_ids[i].rs;
+				break;
+			}
+		}
+	}
+	if (rmode == RSID_NONE)
 		return;
-		
+	Encode(rmode, rsid);
+
+
 	outbuf = new double[symlen];
 		
 // transmit sequence of 15 symbols (tones)

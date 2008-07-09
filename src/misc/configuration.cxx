@@ -1262,7 +1262,7 @@ bool configuration::readDefaultsXML()
 }
 
 void configuration::loadDefaults() {
-	FL_LOCK();
+	FL_LOCK_D();
 	
 // RTTY
 	selShift->value(rtty_shift);
@@ -1292,7 +1292,11 @@ void configuration::loadDefaults() {
 	cntOlivia_sinteg->value(oliviasinteg);
 	btnOlivia_8bit->value(olivia8bit);
 
-	FL_UNLOCK();
+	chkDominoEX_FEC->value(DOMINOEX_FEC);
+
+	btnmt63_interleave->value(mt63_interleave == 64);
+
+	FL_UNLOCK_D();
 }
 
 void configuration::storeDefaults() { }
