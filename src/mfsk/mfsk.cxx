@@ -43,9 +43,6 @@
 
 #include "qrunner.h"
 
-//#define AFC_COUNT	16
-//32
-
 using namespace std;
 
 char mfskmsg[80];
@@ -120,7 +117,7 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 	mode = mfsk_mode;
 
 	switch (mode) {
-
+		
 	case MODE_MFSK8:
 		samplerate = 8000;
 		symlen =  1024;
@@ -139,7 +136,19 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		symbits =    4;
 		basetone = 32;
 		break;
-#ifdef EXPERIMENTAL
+// experimental modes
+	case MODE_MFSK4:
+		samplerate = 8000;
+		symlen = 2048;
+		symbits = 5;
+		basetone = 256;
+		break;
+	case MODE_MFSK64:
+		samplerate = 8000;
+		symlen =  128;
+		symbits =    4;
+		basetone = 16;
+		break;
 	case MODE_MFSK11:
 		samplerate = 11025;
 		symlen =  1024;
@@ -152,7 +161,7 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		symbits =    4;
 		basetone = 46;
 		break;
-#endif
+//
 	default:
 		samplerate = 8000;
 		symlen =  512;
@@ -168,7 +177,6 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 	binsfft		= new sfft (symlen, basetone, basetone + numtones );//+ 3); // ?
 	hbfilt		= new C_FIR_filter();
 	hbfilt->init_hilbert(37, 1);
-	afcfilt		= new Cmovavg(AFC_COUNT);
 	met1filt	= new Cmovavg(32);
 	met2filt	= new Cmovavg(32);
 	syncfilter = new Cmovavg(8);
@@ -374,8 +382,8 @@ void mfsk::decodesymbol(unsigned char symbol)
 
 	symcounter = symcounter ? 0 : 1;
 
-// only MFSK8 needs a vote
-	if (mode == MODE_MFSK8) {
+// only modes with 5 symbits need a vote
+	if (symbits == 5) {
 		if (symcounter) {
 			if ((c = dec1->decode(symbolpair, &met)) == -1)
 				return;
@@ -451,8 +459,9 @@ complex mfsk::mixer(complex in, double f)
 {
 	complex z;
 
-// Basetone is always 1000 Hz 
-	f -= (1000.0 + bandwidth / 2);
+// Basetone is a nominal 1000 Hz 
+	f -= tonespacing * basetone + bandwidth / 2;	
+	
 	z = in * complex( cos(phaseacc), sin(phaseacc) );
 
 	phaseacc -= TWOPI * f / samplerate;
@@ -501,8 +510,6 @@ void mfsk::update_syncscope()
 {
 	int j;
 	int pipelen = 2 * symlen;
-//	double max = prevmaxval;
-//	if (max == 0.0) max = 1e10;
 	memset(scopedata, 0, 2 * symlen * sizeof(double));
 	if (!progStatus.sqlonoff || metric >= progStatus.sldrSquelchValue)
 		for (unsigned int i = 0; i < SCOPESIZE; i++) {
@@ -549,7 +556,6 @@ void mfsk::synchronize()
 
 void mfsk::reset_afc() {
 	freqerr = 0.0;
-	afcfilt->reset();
 	return;
 }
 
@@ -601,7 +607,6 @@ void mfsk::eval_s2n()
 		if (i != currsymbol)
 			noise += pipe[pipeptr].vector[i].mag();
 	}	
-//	noise /= (numtones - 1);
 	if (noise > 0)
 		s2n = decayavg ( s2n, sig / noise, 64 );
 }
@@ -615,7 +620,7 @@ int mfsk::rx_process(const double *buf, int len)
 // create analytic signal...
 		z.re = z.im = *buf++;
 		hbfilt->run ( z, z );
-// shift in frequency to the base freq of 1000 hz
+// shift in frequency to the base freq
 		z = mixer(z, frequency);
 // bandpass filter around the shifted center frequency
 // with required bandwidth 
@@ -646,7 +651,6 @@ int mfsk::rx_process(const double *buf, int len)
 					FL_UNLOCK_E();
 				}
 				rxstate = RX_STATE_DATA;
-				// REQ_FLUSH();
 				put_status("");
 #if USE_LIBPNG
 				string autosave_dir = HomeDir + "mfsk_pics/";
@@ -709,7 +713,6 @@ void mfsk::sendsymbol(int sym)
 	f = get_txfreq_woffset() - bandwidth / 2;
 	
 	sym = grayencode(sym & (numtones - 1));
-//printf("%5d", sym);
 	if (reverse)
 		sym = (numtones - 1) - sym;
 

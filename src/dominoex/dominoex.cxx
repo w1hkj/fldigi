@@ -262,24 +262,6 @@ dominoex::dominoex(trx_mode md)
 		binsfft[i] = 0;
 		
 	reset_filters();
-/*
-	if (slowcpu) {paths
-		extones = 4;
-		paths = 4;
-	} else {
-		extones = NUMTONES / 2;
-		paths = 6;
-	}
-	
-	lotone = basetone - extones * doublespaced;
-	hitone = basetone + NUMTONES * doublespaced + extones * doublespaced;
-
-	numbins = hitone - lotone;
-
-	for (int i = 0; i < paths; i++)//MAXFFTS; i++)
-		binsfft[i] = new sfft (symlen, lotone, hitone);
-*/
-
 	
 	for (int i = 0; i < SCOPESIZE; i++)
 		vidfilter[i] = new Cmovavg(16);
@@ -366,7 +348,7 @@ void dominoex::decodeDomino(int c)
 			ch = dominoex_varidec(sym);
 
 				if (!progdefaults.DOMINOEX_FEC)
-					if (staticburst == false && outofrange == false)
+					if (!staticburst && !outofrange)
 						recvchar(ch);
 		}
 		symcounter = 0;
@@ -395,9 +377,9 @@ void dominoex::decodesymbol()
 	fdiff /= doublespaced;
 	fdiff /= paths;
 	
-	if (fabs(fdiff) > 17) 
-		outofrange = true;
-	else
+//	if (fabs(fdiff) > 17) 
+//		outofrange = true;
+//	else
 		outofrange = false;
 	
 	c = (int)floor(fdiff + .5) - 2;
@@ -445,7 +427,7 @@ int dominoex::harddecode()
 			}
 		}
 	}
-
+	avg /= (paths * numbins);
 	staticburst = (max / avg < 1.2);
 
 	return symbol;

@@ -48,8 +48,6 @@
 
 #define DEFAULT_IMAGE_WIDTH 3000
 //=============================================================================
-// enable the following line for experimental mode such as MFSK11 & MFSK22
-//#define EXPERIMENTAL
 
 // widget sizes internal to the waterfall widget
 #define BEZEL		 2

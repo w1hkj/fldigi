@@ -16,6 +16,7 @@ struct configuration {
 	bool	rsid;
 	bool	TransmitRSid;
 	bool	slowcpu;
+	bool	experimental;
 	
 	bool	changed;
 	double	wfRefLevel;

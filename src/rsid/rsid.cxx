@@ -404,7 +404,6 @@ void cRsId::search( const double *pSamples, int nSamples )
 void cRsId::apply(int iSymbol, int iBin)
 {
 
-//	double freq = (iBin + 14) * 11025.0 / 2048.0;
 	double freq = (iBin + (RSID_NSYMBOLS - 1) * RSID_RESOL / 2) * 11025.0 / 2048.0;
 
 	int mbin = 0;
@@ -414,12 +413,6 @@ void cRsId::apply(int iSymbol, int iBin)
 			break;
 		}
 		
-//	std::cout << iBin
-//	          << ", Mode: " << mode_info[mbin].sname 
-//	          << ", Frequency " << (int)(freq  + 0.5)
-//	          << std::endl;
-	
-//	bw_rsid_toggle(wf);
 	REQ(toggleRSID);
 
 	if (mbin == NUM_MODES) return;
@@ -503,53 +496,6 @@ void cRsId::apply(int iSymbol, int iBin)
 	active_modem->set_freq(freq);
 	REQ(init_modem, mbin);
 	
-	
-/*
-	int submode = 0;
-
-	switch (iSymbol) {
-//	37, // ASCII-7
-//	38, // ASCII-8
-
-	case 39: mode = MODE_RTTY; submode = ID_SUBMODE_RTTY_HAM_45_170; break;
-
-	case 43: mode = MODE_THROB; submode = ID_SUBMODE_TPS1;	break;
-	case 44: mode = MODE_THROB; submode = ID_SUBMODE_TPS2;	break;
-	case 45: mode = MODE_THROB; submode = ID_SUBMODE_TPS4;	break;
-
-	case 46: mode = MODE_THROBX; submode = ID_SUBMODE_TPS1;	break;
-	case 47: mode = MODE_THROBX; submode = ID_SUBMODE_TPS2;	break;
-
-	case 49: mode = MODE_CONTESTIA; submode = ID_SUBMODE_8_250;	break;
-	case 50: mode = MODE_CONTESTIA; submode = ID_SUBMODE_16_500; break;
-	case 51: mode = MODE_CONTESTIA; submode = ID_SUBMODE_32_1K;	break;
-	case 52: mode = MODE_CONTESTIA; submode = ID_SUBMODE_8_500;	break;
-	case 53: mode = MODE_CONTESTIA; submode = ID_SUBMODE_16_1K;	break;
-	case 54: mode = MODE_CONTESTIA; submode = ID_SUBMODE_4_500;	break;
-	case 55: mode = MODE_CONTESTIA; submode = ID_SUBMODE_4_250;	break;
-	case 57: mode = MODE_MFSK16; break;
-
-	case 61: mode = MODE_RTTYM; submode = ID_SUBMODE_8_250;		break;
-	case 62: mode = MODE_RTTYM; submode = ID_SUBMODE_16_500;	break;
-	case 63: mode = MODE_RTTYM; submode = ID_SUBMODE_32_1K;		break;
-	case 65: mode = MODE_RTTYM; submode = ID_SUBMODE_8_500;		break;
-	case 66: mode = MODE_RTTYM; submode = ID_SUBMODE_16_1K;		break;
-	case 67: mode = MODE_RTTYM; submode = ID_SUBMODE_4_500;		break;
-	case 68: mode = MODE_RTTYM; submode = ID_SUBMODE_4_250;		break;
-	
-	case 69: mode = MODE_OLIVIA; submode = ID_SUBMODE_8_250;	break;
-	case 70: mode = MODE_OLIVIA; submode = ID_SUBMODE_16_500;	break;
-	case 71: mode = MODE_OLIVIA; submode = ID_SUBMODE_32_1K;	break;
-	case 72: mode = MODE_OLIVIA; submode = ID_SUBMODE_8_500;	break;
-	case 73: mode = MODE_OLIVIA; submode = ID_SUBMODE_16_1K;	break;
-	case 74: mode = MODE_OLIVIA; submode = ID_SUBMODE_4_500;	break;
-	case 75: mode = MODE_OLIVIA; submode = ID_SUBMODE_4_250;	break;
-
-	case 110: mode = MODE_PSK; submode = ID_SUBMODE_PSK_QPSK31; break;
-
-	default: _ASSERT(false);
-	}
-*/
 }
 
 //=============================================================================

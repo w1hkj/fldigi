@@ -64,10 +64,14 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_HELL80, &feld_80modem, "HELL80", "Hell 80", "", "HELL80" },
 
 	{ MODE_MFSK8, &mfsk8_modem, "MFSK-8", "MFSK-8", "MFSK8", "MFSK8" },
-	{ MODE_MFSK11, &mfsk11_modem, "MFSK-11", "MFSK-11", "MFSK11", "MFSK11" },
 	{ MODE_MFSK16, &mfsk16_modem, "MFSK16", "MFSK-16", "MFSK16", "MFSK16" },
-	{ MODE_MFSK22, &mfsk22_modem, "MFSK-22", "MFSK-22", "MFSK22", "MFSK22" },
 	{ MODE_MFSK32, &mfsk32_modem, "MFSK-32", "MFSK-32", "MFSK32", "MFSK32" },
+
+// experimental modes
+	{ MODE_MFSK4, &mfsk4_modem, "MFSK-4", "MFSK-4", "MFSK4", "MFSK4" },
+	{ MODE_MFSK11, &mfsk11_modem, "MFSK-11", "MFSK-11", "MFSK11", "MFSK11" },
+	{ MODE_MFSK22, &mfsk22_modem, "MFSK-22", "MFSK-22", "MFSK22", "MFSK22" },
+	{ MODE_MFSK64, &mfsk64_modem, "MFSK-64", "MFSK-64", "MFSK64", "MFSK64" },
 
 	{ MODE_MT63_500, &mt63_500_modem, "MT63-500", "MT63-500", "MT63-500", "MT63" },
 	{ MODE_MT63_1000, &mt63_1000_modem, "MT63-1XX", "MT63-1000", "MT63-1XX", "MT63" },

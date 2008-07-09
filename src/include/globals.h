@@ -28,6 +28,7 @@
 
 #include <stdint.h>
 #include <string>
+#include "fldigi-config.h"
 
 enum state_t {
 	STATE_PAUSE = 0,
@@ -67,11 +68,15 @@ enum {
 	MODE_HELL80,
 
 	MODE_MFSK8,
-	MODE_MFSK11,
 	MODE_MFSK16,
-	MODE_MFSK22,
 	MODE_MFSK32,
-
+	
+// experimental modes
+	MODE_MFSK4,
+	MODE_MFSK11,
+	MODE_MFSK22,
+	MODE_MFSK64,
+	
 	MODE_MT63_500,
 	MODE_MT63_1000,
 	MODE_MT63_2000,

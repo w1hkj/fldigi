@@ -126,7 +126,6 @@ protected:
 	C_FIR_filter	*hbfilt;
 	sfft			*binsfft;
 	C_FIR_filter	*bpfilt;
-	Cmovavg			*afcfilt;
 	Cmovavg			*met1filt;
 	Cmovavg			*met2filt;
 	Cmovavg			*vidfilter[SCOPESIZE];
