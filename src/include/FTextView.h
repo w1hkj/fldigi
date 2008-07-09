@@ -64,7 +64,7 @@ public:
 protected:
 	void		set_style(int attr, Fl_Font f, int s, Fl_Color c,
 				  int set = SET_FONT | SET_SIZE | SET_COLOR);
-	void		readFile(void);
+	int		readFile(const char* fn = 0);
 	void		saveFile(void);
 	char		*get_word(int x, int y);
 	void		show_context_menu(void);
@@ -154,6 +154,8 @@ protected:
 	int		handle_key(int key);
 	int		handle_key_macro(int key);
 	int		handle_key_ascii(int key);
+	int		handle_dnd_drag(void);
+	int		handle_dnd_drop(void);
 	virtual void	menu_cb(int val);
 	static void	changed_cb(int pos, int nins, int ndel, int nsty,
 				   const char *dtext, void *arg);
