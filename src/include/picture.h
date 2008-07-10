@@ -1,8 +1,10 @@
 // ----------------------------------------------------------------------------
 // picture.h
 //
-// Copyright (C) 2006
+// Copyright (C) 2006-2008
 //		Dave Freese, W1HKJ
+// Copyright (C) 2008
+//		Stelios Bounanos, M0GLD
 //
 // This file is part of fldigi.
 //
@@ -33,7 +35,7 @@
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Widget.H>
 #include <FL/fl_draw.H>
-
+#include <FL/Fl_Box.H>
 
 #include "threads.h"
 
@@ -67,6 +69,14 @@ public:
 #if USE_LIBPNG
 	int	save_png(const char *);
 #endif
+};
+
+class picbox : public Fl_Box
+{
+public:
+	picbox(int x, int y, int w, int h, const char* l = 0)
+		: Fl_Box(x, y, w, h, l) { }
+	int handle(int event);
 };
 
 #endif

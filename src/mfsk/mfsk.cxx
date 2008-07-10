@@ -26,8 +26,9 @@
 
 #include <config.h>
 
-#include <stdlib.h>
-#include <iostream>
+#include <cstdlib>
+#include <cstring>
+#include <libgen.h>
 
 #include "mfsk.h"
 #include "modem.h"
@@ -100,7 +101,6 @@ mfsk::~mfsk()
 	if (binsfft) delete binsfft;
 	if (met1filt) delete met1filt;
 	if (met2filt) delete met2filt;
-	if (xmtimg) delete [] xmtimg;
 	for (int i = 0; i < SCOPESIZE; i++) {
 		if (vidfilter[i]) delete vidfilter[i];
 	}
@@ -934,6 +934,7 @@ Fl_Button	*btnpicRxClose = (Fl_Button *)0;
 
 Fl_Double_Window	*picTxWin = (Fl_Double_Window *)0;
 picture		*picTx = (picture *)0;
+picbox		*picTxBox = 0;
 Fl_Button	*btnpicTxSendColor = (Fl_Button *)0;
 Fl_Button	*btnpicTxSendGrey = (Fl_Button *)0;
 Fl_Button	*btnpicTxSendAbort = (Fl_Button *)0;
@@ -1007,6 +1008,8 @@ void createRxViewer(mfsk *who)
 	FL_LOCK_D();
 	picRxWin = new Fl_Double_Window(200, 140);
 	picRxWin->xclass(PACKAGE_NAME);
+	picRxWin->begin();
+
 	picRx = new picture(2, 2, 136, 104);
 	btnpicRxSave = new Fl_Button(5, 140 - 30, 60, 24,"Save...");
 	btnpicRxSave->callback(cb_picRxSave, who);
@@ -1019,6 +1022,8 @@ void createRxViewer(mfsk *who)
 	btnpicRxClose = new Fl_Button(135, 140 - 30, 60, 24, "Hide");
 	btnpicRxClose->callback(cb_picRxClose, who);
 	activate_mfsk_image_item(true);
+
+	picRxWin->end();
 	FL_UNLOCK_D();
 }
 
@@ -1046,13 +1051,13 @@ void showRxViewer(int W, int H, mfsk *who)
 	FL_UNLOCK_E();
 }
 
-void load_file(const char *n) {
+void load_image(const char *n) {
 	int W, H, D;
 	unsigned char *img_data;
 	
 	if (TxImg) {
 		TxImg->release();
-		TxImg = 0L;
+		TxImg = 0;
 	}
 	TxImg = Fl_Shared_Image::get(n);
 	if (!TxImg)
@@ -1083,7 +1088,10 @@ void load_file(const char *n) {
 		return;
 
 	TxViewerResize(W, H);
-	
+	char* label = strdup(n);
+	picTxWin->copy_label(basename(label));
+	free(label);
+	picTxBox->label(0);
 // load the picture widget with the rgb image
 	FL_LOCK_D();
 	picTx->clear();
@@ -1124,7 +1132,7 @@ void cb_picTxLoad(Fl_Widget *,void *who) {
 			    "Independent JPEG Group\t*.{jpg,jif,jpeg,jpe}\n"
 			    "Graphics Interchange Format\t*.gif");
 	if (!fn) return;
-	load_file(fn);
+	load_image(fn);
 }
 
 void cb_picTxClose( Fl_Widget *w, void *who)
@@ -1217,9 +1225,14 @@ void cb_picTxSendAbort( Fl_Widget *w, void *who)
 void createTxViewer(mfsk *who)
 {
 	FL_LOCK_D();
-	picTxWin = new Fl_Double_Window(250, 180);
+	picTxWin = new Fl_Double_Window(250, 180, "Send image");
 	picTxWin->xclass(PACKAGE_NAME);
+	picTxWin->begin();
+
 	picTx = new picture (2, 2, 246, 150);
+	picTxBox = new picbox(picTxWin->x(), picTxWin->y(), picTxWin->w(), picTxWin->h(),
+			      "Load or drop an image file\nSupported types: PNG, JPEG, BMP");
+	picTxBox->labelfont(FL_HELVETICA_ITALIC);
 	btnpicTxSendColor = new Fl_Button(250/2 - 123, 180 - 30, 60, 24, "XmtClr");
 	btnpicTxSendColor->callback(cb_picTxSendColor, who);
 	btnpicTxSendGrey = new Fl_Button(250/2 - 61, 180 - 30, 60, 24, "XmtGry");
@@ -1233,6 +1246,8 @@ void createTxViewer(mfsk *who)
 	btnpicTxSendAbort->hide();
 	btnpicTxSendColor->deactivate();
 	btnpicTxSendGrey->deactivate();
+
+	picTxWin->end();
 	FL_UNLOCK_D();
 }
 
@@ -1248,6 +1263,7 @@ void TxViewerResize(int W, int H)
 	picTxWin->size(winW, winH);
 	picTx->resize(picX, picY, W, H);
 	picTx->clear();
+	picTxBox->size(winW, winH);
 	btnpicTxSendColor->resize(winW/2 - 123, winH - 28, 60, 24);
 	btnpicTxSendGrey->resize(winW/2 - 61, winH - 28, 60, 24);
 	btnpicTxSendAbort->resize(winW/2 - 123, winH - 28, 122, 24);
@@ -1258,8 +1274,11 @@ void TxViewerResize(int W, int H)
 
 void showTxViewer(int W, int H, mfsk *who)
 {
-	if (picTxWin == 0) 
-		createTxViewer(who);
+	if (picTxWin) {
+		picTxWin->show();
+		return;
+	}
+	createTxViewer(who);
 	int winW, winH;
 	int picX, picY;
 	winW = W < 246 ? 250 : W + 4;
@@ -1285,14 +1304,16 @@ void showTxViewer(int W, int H, mfsk *who)
 
 void deleteTxViewer()
 {
-	if (picTxWin == 0) return
+	delete [] xmtimg;
+	xmtimg = 0;
+	delete [] xmtpicbuff;
+	xmtpicbuff = 0;
 	delete picTxWin;
-	picTxWin = 0;	
+	picTxWin = 0;
 }
 
 void deleteRxViewer()
 {
-	if (picRxWin == 0) return
 	delete picRxWin;
 	picRxWin = 0;
 }
