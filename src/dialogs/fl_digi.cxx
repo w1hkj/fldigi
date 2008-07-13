@@ -177,8 +177,20 @@ int WNOM = DEFAULT_WNOM;
 
 
 void cb_init_mode(Fl_Widget *, void *arg);
+
+void cb_oliviaA(Fl_Widget *w, void *arg);
+void cb_oliviaB(Fl_Widget *w, void *arg);
+void cb_oliviaC(Fl_Widget *w, void *arg);
+void cb_oliviaCustom(Fl_Widget *w, void *arg);
+
+void cb_rtty45(Fl_Widget *w, void *arg);
+void cb_rtty50(Fl_Widget *w, void *arg);
+void cb_rtty75(Fl_Widget *w, void *arg);
+void cb_rttyCustom(Fl_Widget *w, void *arg);
+
 Fl_Widget *modem_config_tab;
 Fl_Menu_Item *quick_change;
+
 Fl_Menu_Item quick_change_psk[] = {
 	{ mode_info[MODE_BPSK31].name, 0, cb_init_mode, (void *)MODE_BPSK31 },
 	{ mode_info[MODE_PSK63].name, 0, cb_init_mode, (void *)MODE_PSK63 },
@@ -262,6 +274,107 @@ Fl_Menu_Item quick_change_throb[] = {
 	{ 0 }
 };
 
+Fl_Menu_Item quick_change_olivia[] = {
+	{ "8/500", 0, cb_oliviaA, (void *)MODE_OLIVIA },
+	{ "16/500", 0, cb_oliviaB, (void *)MODE_OLIVIA },
+	{ "32/1000", 0, cb_oliviaC, (void *)MODE_OLIVIA },
+	{ "Custom", 0, cb_oliviaCustom, (void *)MODE_OLIVIA },
+	{ 0 }
+};
+
+Fl_Menu_Item quick_change_rtty[] = {
+	{ "RTTY-45", 0, cb_rtty45, (void *)MODE_RTTY },
+	{ "RTTY-50", 0, cb_rtty50, (void *)MODE_RTTY },
+	{ "RTTY-75", 0, cb_rtty75, (void *)MODE_RTTY },
+	{ "Custom", 0, cb_rttyCustom, (void *)MODE_RTTY },
+	{ 0 }
+};
+
+void set_olivia_tab_widgets()
+{
+	mnuOlivia_Bandwidth->value(progdefaults.oliviabw);
+	mnuOlivia_Tones->value(progdefaults.oliviatones);
+}
+
+void cb_oliviaA(Fl_Widget *w, void *arg)
+{
+	progdefaults.oliviatones = 2;
+	progdefaults.oliviabw = 2;
+	set_olivia_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
+void cb_oliviaB(Fl_Widget *w, void *arg)
+{
+	progdefaults.oliviatones = 3;
+	progdefaults.oliviabw = 2;
+	set_olivia_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
+void cb_oliviaC(Fl_Widget *w, void *arg)
+{
+	progdefaults.oliviatones = 4;
+	progdefaults.oliviabw = 3;
+	set_olivia_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
+void cb_oliviaCustom(Fl_Widget *w, void *arg)
+{
+	modem_config_tab = tabOlivia;
+	tabsConfigure->value(tabModems);
+	tabsModems->value(modem_config_tab);
+	dlgConfig->show();
+	cb_init_mode(w, arg);	
+}
+
+void set_rtty_tab_widgets()
+{
+	progdefaults.rtty_parity = 0;
+	progdefaults.rtty_stop = 1;
+	selShift->value(progdefaults.rtty_shift);
+	selBits->value(progdefaults.rtty_bits);
+	selBaud->value(progdefaults.rtty_baud);
+	selParity->value(progdefaults.rtty_parity);
+	selStopBits->value(progdefaults.rtty_stop);
+}
+
+void cb_rtty45(Fl_Widget *w, void *arg)
+{
+	progdefaults.rtty_baud = 1;
+	progdefaults.rtty_bits = 0;
+	progdefaults.rtty_shift = 3;
+	set_rtty_tab_widgets();
+	cb_init_mode(w, arg);	
+}
+
+void cb_rtty50(Fl_Widget *w, void *arg)
+{
+	progdefaults.rtty_baud = 2;
+	progdefaults.rtty_bits = 0;
+	progdefaults.rtty_shift = 3;
+	set_rtty_tab_widgets();
+	cb_init_mode(w, arg);	
+}
+
+void cb_rtty75(Fl_Widget *w, void *arg)
+{
+	progdefaults.rtty_baud = 4;
+	progdefaults.rtty_bits = 0;
+	progdefaults.rtty_shift = 9;
+	set_rtty_tab_widgets();
+	cb_init_mode(w, arg);	
+}
+
+void cb_rttyCustom(Fl_Widget *w, void *arg)
+{
+	modem_config_tab = tabRTTY;
+	tabsConfigure->value(tabModems);
+	tabsModems->value(modem_config_tab);
+	dlgConfig->show();
+	cb_init_mode(w, arg);
+}
 
 void startup_modem(modem *m)
 {
@@ -511,12 +624,14 @@ void init_modem(trx_mode mode)
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new olivia);
 		modem_config_tab = tabOlivia;
+		quick_change = quick_change_olivia;
 		break;
 
 	case MODE_RTTY:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new rtty(mode));
 		modem_config_tab = tabRTTY;
+		quick_change = quick_change_rtty;
 		break;
 
 	case MODE_THROB1: case MODE_THROB2: case MODE_THROB4:
@@ -1224,7 +1339,7 @@ Fl_Menu_Item menu_[] = {
 {"MFSK", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_MFSK8].name, 0,  cb_init_mode, (void *)MODE_MFSK8, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_MFSK16].name, 0,  cb_init_mode, (void *)MODE_MFSK16, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_MFSK32].name, 0,  cb_init_mode, (void *)MODE_MFSK32, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK32].name, 0,  cb_init_mode, (void *)MODE_MFSK32, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 // experimental modes
 { mode_info[MODE_MFSK4].name, 0,  cb_init_mode, (void *)MODE_MFSK4, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_MFSK11].name, 0,  cb_init_mode, (void *)MODE_MFSK11, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -1239,6 +1354,13 @@ Fl_Menu_Item menu_[] = {
 { mode_info[MODE_MT63_2000].name, 0,  cb_init_mode, (void *)MODE_MT63_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
+{"Olivia", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ "8/500", 0, cb_oliviaA, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "16/500", 0, cb_oliviaB, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "32/1000", 0, cb_oliviaC, (void *)MODE_OLIVIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ "Custom", 0, cb_oliviaCustom, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
 {"PSK", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_BPSK31].name, 0, cb_init_mode, (void *)MODE_BPSK31, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_QPSK31].name, 0, cb_init_mode, (void *)MODE_QPSK31, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -1250,9 +1372,12 @@ Fl_Menu_Item menu_[] = {
 { mode_info[MODE_QPSK250].name, 0, cb_init_mode, (void *)MODE_QPSK250, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
-{ mode_info[MODE_OLIVIA].name, 0, cb_init_mode, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
-
-{ mode_info[MODE_RTTY].name, 0, cb_init_mode, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{"RTTY", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ "RTTY-45", 0, cb_rtty45, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "RTTY-50", 0, cb_rtty50, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "RTTY-75", 0, cb_rtty75, (void *)MODE_RTTY, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ "Custom", 0, cb_rttyCustom, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
 
 {"THOR", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_THOR4].name, 0, cb_init_mode, (void *)MODE_THOR4, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -1380,19 +1505,13 @@ void activate_rig_menu_item(bool b)
 
 void activate_mfsk_image_item(bool b)
 {
-	Fl_Menu_Item *rig = getMenuItem("MFSK Image");
-	if (!rig)
+	Fl_Menu_Item *mfsk_item = getMenuItem("MFSK Image");
+	if (!mfsk_item)
 		return;
-
-	if (b) {
-		bSaveFreqList = true;
-		rig->activate();
-		
-	} else {
-		rig->deactivate();
-		if (rigcontrol)
-			rigcontrol->hide();
-	}
+	if (b)
+		mfsk_item->activate();
+	else
+		mfsk_item->deactivate();
 	mnu->redraw();
 }
 
@@ -2384,7 +2503,7 @@ void set_AFCind(double val)
 
 void set_AFCrange(double val)
 {
-	AFCindicator->range(val);
+	REQ (&AFCind::range, AFCindicator, val);
 }
 
 

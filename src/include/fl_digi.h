@@ -162,4 +162,7 @@ extern void start_tx();
 extern void colorize_macro(int i);
 extern void colorize_macros();
 
+extern void set_rtty_tab_widgets();
+extern void set_olivia_tab_widgets();
+
 #endif

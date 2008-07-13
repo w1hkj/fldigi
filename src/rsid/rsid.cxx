@@ -423,26 +423,31 @@ void cRsId::apply(int iSymbol, int iBin)
 		progdefaults.rtty_baud = 5;
 		progdefaults.rtty_bits = 1;
 		progdefaults.rtty_shift = 9;
+		REQ(&set_rtty_tab_widgets);
 		break;
 	case RSID_RTTY_ASCII_8:
 		progdefaults.rtty_baud = 5;
 		progdefaults.rtty_bits = 2;
 		progdefaults.rtty_shift = 9;
+		REQ(&set_rtty_tab_widgets);
 		break;
 	case RSID_RTTY_45:
 		progdefaults.rtty_baud = 1;
 		progdefaults.rtty_bits = 0;
 		progdefaults.rtty_shift = 3;
+		REQ(&set_rtty_tab_widgets);
 		break;
 	case RSID_RTTY_50:
 		progdefaults.rtty_baud = 2;
 		progdefaults.rtty_bits = 0;
 		progdefaults.rtty_shift = 3;
+		REQ(&set_rtty_tab_widgets);
 		break;
 	case RSID_RTTY_75:
 		progdefaults.rtty_baud = 4;
 		progdefaults.rtty_bits = 0;
 		progdefaults.rtty_shift = 9;
+		REQ(&set_rtty_tab_widgets);
 		break;
 	// special MultiPsk FEC modes
 	case RSID_DOMINOEX_4_FEC: case RSID_DOMINOEX_5_FEC: case RSID_DOMINOEX_8_FEC:
@@ -453,30 +458,37 @@ void cRsId::apply(int iSymbol, int iBin)
 	case RSID_OLIVIA_8_250:
 		progdefaults.oliviatones = 2;
 		progdefaults.oliviabw = 1;
+		REQ(&set_olivia_tab_widgets);
 		break;
 	case RSID_OLIVIA_16_500:
 		progdefaults.oliviatones = 3;
 		progdefaults.oliviabw = 2;
+		REQ(&set_olivia_tab_widgets);
 		break;
 	case RSID_OLIVIA_32_1000:
 		progdefaults.oliviatones = 4;
 		progdefaults.oliviabw = 3;
+		REQ(&set_olivia_tab_widgets);
 		break;
 	case RSID_OLIVIA_8_500:
 		progdefaults.oliviatones = 2;
 		progdefaults.oliviabw = 2;
+		REQ(&set_olivia_tab_widgets);
 		break;
 	case RSID_OLIVIA_16_1000:
 		progdefaults.oliviatones = 3;
 		progdefaults.oliviabw = 3;
+		REQ(&set_olivia_tab_widgets);
 		break;
 	case RSID_OLIVIA_4_500:
 		progdefaults.oliviatones = 1;
 		progdefaults.oliviabw = 2;
+		REQ(&set_olivia_tab_widgets);
 		break;
 	case RSID_OLIVIA_4_250:
 		progdefaults.oliviatones = 1;
 		progdefaults.oliviabw = 1;
+		REQ(&set_olivia_tab_widgets);
 		break;
 	// mt63
 	case RSID_MT63_500_LG: case RSID_MT63_1000_LG: case RSID_MT63_2000_LG:

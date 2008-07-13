@@ -33,24 +33,23 @@
 
 class	mfsk;
 
-extern 	int		print_time_left(size_t bytes, char *str, size_t len,
+extern 	int		print_time_left(float secs, char *str, size_t len,
 			  		const char *prefix = "", const char *suffix = "");
-extern	void	updateTxPic(unsigned char data, mfsk *me);
+extern	void	updateTxPic(unsigned char data);
 extern	void	updateRxPic(unsigned char data, int pos);
 extern	void	TxViewerResize(int W, int H);
-extern	void	showTxViewer(int W, int H, mfsk *who);
-extern	void	createTxViewer(mfsk *who);
-extern	void	createRxViewer(mfsk *who);
-extern	void	showRxViewer(int W, int H, mfsk *who);
+extern	void	showTxViewer(int W, int H);
+extern	void	createTxViewer();
+extern	void	createRxViewer();
+extern	void	showRxViewer(int W, int H);
 extern	void	deleteRxViewer();
 extern	void	deleteTxViewer();
 
-extern void cb_picRxClose( Fl_Widget *w, void *who);
-extern void cb_picRxAbort( Fl_Widget *w, void *who);
-extern void cb_picTxSendColor( Fl_Widget *w, void *who);
-extern void cb_picTxSendGrey( Fl_Widget *w, void *who);
-extern void cb_picTxSendAbort( Fl_Widget *w, void *who);
-
+extern void cb_picRxClose( Fl_Widget *w, void *);
+extern void cb_picRxAbort( Fl_Widget *w, void *);
+extern void cb_picTxSendColor( Fl_Widget *w, void *);
+extern void cb_picTxSendGrey( Fl_Widget *w, void *);
+extern void cb_picTxSendAbort( Fl_Widget *w, void *);
 
 extern	void	load_file(const char *n);
 
@@ -62,6 +61,7 @@ extern	Fl_Button	*btnpicRxClose;
 
 extern	Fl_Double_Window	*picTxWin;
 extern	picture		*picTx;
+extern  Fl_Button	*btnpicTxSPP;
 extern	Fl_Button	*btnpicTxSendColor;
 extern	Fl_Button	*btnpicTxSendGrey;
 extern	Fl_Button	*btnpicTxSendAbort;
@@ -85,12 +85,14 @@ class mfsk : public modem {
 
 #define SCOPESIZE 64
 
-friend void updateTxPic(unsigned char data, mfsk *me);
-friend void cb_picRxClose( Fl_Widget *w, void *who);
-friend void cb_picRxAbort( Fl_Widget *w, void *who);
-friend void cb_picTxSendColor( Fl_Widget *w, void *who);
-friend void cb_picTxSendGrey( Fl_Widget *w, void *who);
-friend void cb_picTxSendAbort( Fl_Widget *w, void *who);
+friend void updateTxPic(unsigned char data);
+friend void cb_picRxClose( Fl_Widget *w, void *);
+friend void cb_picRxAbort( Fl_Widget *w, void *);
+friend void cb_picTxSendColor( Fl_Widget *w, void *);
+friend void cb_picTxSendGrey( Fl_Widget *w, void *);
+friend void cb_picTxSendAbort( Fl_Widget *w, void *);
+friend void cb_picTxSPP( Fl_Widget *w, void *);
+friend void load_image(const char *n);
 
 public:
 enum {
@@ -107,8 +109,9 @@ enum {
 
 enum {
 	RX_STATE_DATA,
-	RX_STATE_PICTURE_START_1,
-	RX_STATE_PICTURE_START_2,
+	RX_STATE_PICTURE_START,
+//	RX_STATE_PICTURE_START_1,
+//	RX_STATE_PICTURE_START_2,
 	RX_STATE_PICTURE
 };
 
@@ -120,6 +123,7 @@ protected:
 	int numtones;
 	int basetone;
 	double tonespacing;
+	double basefreq;
 	int counter;
 // receive
 	int				rxstate;
@@ -166,7 +170,9 @@ protected:
 
 	unsigned char symbolpair[2];
 	int symcounter;
-
+	
+	int RXspp; // samples per pixel
+	int TXspp;
 
 	int symbolbit;
 

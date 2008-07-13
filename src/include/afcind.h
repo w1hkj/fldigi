@@ -51,7 +51,6 @@ public:
 	void	type(PTYPE direc) { direction = direc;}
 	
 	void	range(double v) { range_ = v; redraw(); }
-	double	range() const { return (range_); }
 
 	void	value(double v) { value_ = v; redraw(); }
 };

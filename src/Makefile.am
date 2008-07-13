@@ -332,6 +332,7 @@ EXTRA_fldigi_SOURCES += \
 	feld/FeldStyl-14.cxx \
 	feld/FeldVert-14.cxx \
 	feld/FeldWide-14.cxx \
+	mfsk/mfsk-pic.cxx \
 	mt63/alias_1k.dat \
 	mt63/alias_2k.dat \
 	mt63/morse.dat \

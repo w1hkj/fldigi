@@ -728,10 +728,15 @@ int FTextEdit::handle(int event)
 	}
 
 	// handle a right click
-	if (active_modem != mfsk16_modem)
+//	if (active_modem != mfsk16_modem)
+//		edit_menu[TX_MENU_MFSK16_IMG].flags |= FL_MENU_INACTIVE;
+//	else
+//		edit_menu[TX_MENU_MFSK16_IMG].flags &= ~FL_MENU_INACTIVE;
+	if (active_modem == mfsk8_modem || active_modem == mfsk4_modem)
 		edit_menu[TX_MENU_MFSK16_IMG].flags |= FL_MENU_INACTIVE;
 	else
 		edit_menu[TX_MENU_MFSK16_IMG].flags &= ~FL_MENU_INACTIVE;
+
 	if (tbuf->length())
 		edit_menu[TX_MENU_CLEAR].flags &= ~FL_MENU_INACTIVE;
 	else
@@ -1095,8 +1100,7 @@ void FTextEdit::menu_cb(int val)
 		add("^r", CTRL);
 		break;
 	case TX_MENU_MFSK16_IMG:
-		if (active_modem->get_mode() == MODE_MFSK16)
-			showTxViewer(0, 0, (mfsk *)active_modem);
+		showTxViewer(0, 0);
 		break;
 
 	case TX_MENU_CLEAR:
