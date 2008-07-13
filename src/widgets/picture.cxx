@@ -1,8 +1,10 @@
 // ----------------------------------------------------------------------------
 // picture.cxx rgb picture viewer
 //
-// Copyright (C) 2006
+// Copyright (C) 2006-2008
 //		Dave Freese, W1HKJ
+// Copyright (C) 2008
+//		Stelios Bounanos, M0GLD
 //
 // This file is part of fldigi.  
 
@@ -22,7 +24,6 @@
 // ----------------------------------------------------------------------------
 
 #include <config.h>
-#include <iostream>
 
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -30,6 +31,7 @@
 #include <FL/fl_ask.H>
 
 #if USE_LIBJPEG
+#  include <cstdio>
 #  include <jpeglib.h>
 #endif
 #if USE_LIBPNG
@@ -358,3 +360,36 @@ int picture::save_png(const char* filename)
 	return 0;
 }
 #endif // USE_LIBPNG
+
+
+int picbox::handle(int event)
+{
+	if (!Fl::event_inside(this))
+		return 0;
+
+	switch (event) {
+	case FL_DND_ENTER: case FL_DND_LEAVE:
+	case FL_DND_DRAG: case FL_DND_RELEASE:
+		return 1;
+	case FL_PASTE:
+		break;
+	default:
+		return Fl_Box::handle(event);
+	}
+
+	// handle FL_PASTE
+	const char* text = Fl::event_text();
+	if (strstr(text, "file://"))
+		text += strlen("file://");
+	char* p;
+	if ((p = strchr(text, '\r')))
+		*p = '\0';
+
+	struct stat st;
+	if (stat(text, &st) == -1 || !S_ISREG(st.st_mode))
+		return 0;
+	extern void load_image(const char*);
+	load_image(text);
+
+	return 1;
+}

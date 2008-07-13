@@ -563,7 +563,7 @@ char szAbout[] =
 &nbsp; &nbsp; &nbsp;OS X<br>\
 &nbsp; &nbsp; &nbsp;Windows (XP)<br>\
 <br>\
-<H4>Authors:</H4><br>\
+<H4>Programmers:</H4><br>\
 <P>\
 &nbsp; &nbsp; &nbsp;Dave Freese, W1HKJ<br>\
 &nbsp; &nbsp; &nbsp;Stelios Bounanos, M0GLD<br>\
@@ -571,7 +571,7 @@ char szAbout[] =
 <br>\
 <H4>Beginners' Guide:</H4><br>\
 <P>\
-&nbsp; &nbsp; &nbsp;M. Greenman, ZL1BPU<br>\
+&nbsp; &nbsp; &nbsp;Murray Greenman, ZL1BPU<br>\
 </big>\
 </body>\
 </html>\
