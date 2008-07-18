@@ -106,7 +106,6 @@ mfsk::~mfsk()
 	if (picRxWin)
 		picRxWin->hide();
 	activate_mfsk_image_item(false);
-	setpicture_link(0);
 
 	if (bpfilt) delete bpfilt;
 	if (rxinlv) delete rxinlv;
@@ -145,12 +144,14 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		symlen =  512;
 		symbits =   4;
 		basetone = 64;
-        break;
+		cap |= CAP_IMG;
+		break;
 	case MODE_MFSK32:
 		samplerate = 8000;
 		symlen =  256;
 		symbits =    4;
 		basetone = 32;
+		cap |= CAP_IMG;
 		break;
 // experimental modes
 	case MODE_MFSK4:
@@ -164,18 +165,21 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		symlen =  128;
 		symbits =    4;
 		basetone = 16;
+		cap |= CAP_IMG;
 		break;
 	case MODE_MFSK11:
 		samplerate = 11025;
 		symlen =  1024;
 		symbits =   4;
 		basetone = 93;
-        break;
+		cap |= CAP_IMG;
+		break;
 	case MODE_MFSK22:
 		samplerate = 11025;
 		symlen =  512;
 		symbits =    4;
 		basetone = 46;
+		cap |= CAP_IMG;
 		break;
 //
 	default:

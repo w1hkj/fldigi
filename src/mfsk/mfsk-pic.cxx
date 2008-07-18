@@ -169,6 +169,11 @@ void load_image(const char *n) {
 	TxImg = Fl_Shared_Image::get(n);
 	if (!TxImg)
 		return;
+	if (TxImg->count() > 1) { // we only handle rgb images
+		TxImg->release();
+		TxImg = 0;
+		return;
+	}
 	img_data = (unsigned char *)TxImg->data()[0];
 	W = TxImg->w();
 	H = TxImg->h();
@@ -201,6 +206,7 @@ void load_image(const char *n) {
 	picTxBox->label(0);
 // load the picture widget with the rgb image
 	FL_LOCK_D();
+	picTx->show();
 	picTx->clear();
 	picTxWin->redraw();
 	picTx->video(xmtimg, W * H * 3);
@@ -373,6 +379,7 @@ void createTxViewer()
 	picTxWin->begin();
 
 	picTx = new picture (2, 2, 286, 150);
+	picTx->hide();
 	picTxBox = new picbox(picTxWin->x(), picTxWin->y(), picTxWin->w(), picTxWin->h(),
 			      "Load or drop an image file\nSupported types: PNG, JPEG, BMP");
 	picTxBox->labelfont(FL_HELVETICA_ITALIC);

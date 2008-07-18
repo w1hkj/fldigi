@@ -120,8 +120,8 @@ public:
 	
 	void		set_stopflag(bool b) { stopflag = b;};
 
-	unsigned	getcap(void) { return cap; }
-	enum { CAP_AFC = 1 << 0, CAP_REV = 1 << 1 };
+	unsigned	get_cap(void) { return cap; }
+	enum { CAP_AFC = 1 << 0, CAP_REV = 1 << 1, CAP_IMG = 1 << 2 };
 
 // for CW modem use only
 	bool		get_cwTrack();
