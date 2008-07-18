@@ -694,7 +694,7 @@ FTextEdit::FTextEdit(int x, int y, int w, int h, const char *l)
 ///
 int FTextEdit::handle(int event)
 {
-	if (!Fl::event_inside(this))
+	if ( !(Fl::event_inside(this) || (event == FL_KEYBOARD && Fl::focus() == this)) )
 		return FTextBase::handle(event);
 
 	static bool dnd_paste = false;
