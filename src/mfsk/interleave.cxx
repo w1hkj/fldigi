@@ -38,9 +38,10 @@ interleave::interleave (int _size, int dir)
 	if (size == -1) { // dominoEX interleaver
 		size = 4;
 		depth = 4;
-	} else if (size == 4) 
+	} else if (size == 5)
+		depth = 5;
+	else
 		depth = 10;
-	else depth = 5;
 	direction = dir;
 	table = new unsigned char [depth * size * size];
 	memset(table, 0, depth * size * size);

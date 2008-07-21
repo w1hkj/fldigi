@@ -694,7 +694,7 @@ FTextEdit::FTextEdit(int x, int y, int w, int h, const char *l)
 ///
 int FTextEdit::handle(int event)
 {
-	if (!Fl::event_inside(this))
+	if ( !(Fl::event_inside(this) || (event == FL_KEYBOARD && Fl::focus() == this)) )
 		return FTextBase::handle(event);
 
 	static bool dnd_paste = false;
@@ -728,14 +728,10 @@ int FTextEdit::handle(int event)
 	}
 
 	// handle a right click
-//	if (active_modem != mfsk16_modem)
-//		edit_menu[TX_MENU_MFSK16_IMG].flags |= FL_MENU_INACTIVE;
-//	else
-//		edit_menu[TX_MENU_MFSK16_IMG].flags &= ~FL_MENU_INACTIVE;
-	if (active_modem == mfsk8_modem || active_modem == mfsk4_modem)
-		edit_menu[TX_MENU_MFSK16_IMG].flags |= FL_MENU_INACTIVE;
-	else
+	if (active_modem->get_cap() & modem::CAP_IMG)
 		edit_menu[TX_MENU_MFSK16_IMG].flags &= ~FL_MENU_INACTIVE;
+	else
+		edit_menu[TX_MENU_MFSK16_IMG].flags |= FL_MENU_INACTIVE;
 
 	if (tbuf->length())
 		edit_menu[TX_MENU_CLEAR].flags &= ~FL_MENU_INACTIVE;
@@ -970,23 +966,23 @@ int FTextEdit::handle_key(int key)
 		break;
 	}
 
-        // insert a macro
-        if (key >= FL_F && key <= FL_F_Last && insert_position() >= txpos)
-            return handle_key_macro(key);
+// insert a macro
+	if (key >= FL_F && key <= FL_F_Last && insert_position() >= txpos)
+		return handle_key_macro(key);
 
-        // read ctl-ddd, where d is a digit, as ascii characters (in base 10)
-        // and insert verbatim; e.g. ctl-001 inserts a <soh>
-        if (Fl::event_state() & FL_CTRL && (isdigit(key) || isdigit(key - FL_KP)) &&
-            insert_position() >= txpos)
-            return handle_key_ascii(key);
-		ascii_cnt = 0; // restart the numeric keypad entries.
-		ascii_chr = 0;
-        // do not insert printable characters in the transmitted text
-        if (insert_position() < txpos) {
-            int d;
-            if (Fl::compose(d))
-                return 1;
-        }
+// read ctl-ddd, where d is a digit, as ascii characters (in base 10)
+// and insert verbatim; e.g. ctl-001 inserts a <soh>
+	if (Fl::event_state() & FL_CTRL && (isdigit(key) || isdigit(key - FL_KP)) &&
+		insert_position() >= txpos)
+		return handle_key_ascii(key);
+	ascii_cnt = 0; // restart the numeric keypad entries.
+	ascii_chr = 0;
+// do not insert printable characters in the transmitted text
+	if (insert_position() < txpos) {
+		int d;
+		if (Fl::compose(d))
+			return 1;
+	}
 
 	return 0;
 }

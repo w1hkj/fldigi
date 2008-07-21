@@ -198,7 +198,7 @@ protected:
 	int		picH;
 	bool	color;
 	
-	unsigned char picprologue[44];
+	unsigned char picprologue[176];
 	int			xmtbytes;
 	bool		startpic;
 	bool		abortxmt;

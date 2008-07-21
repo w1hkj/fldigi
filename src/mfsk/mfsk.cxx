@@ -57,7 +57,7 @@ void  mfsk::tx_init(SoundBase *sc)
 	scard = sc;
 	txstate = TX_STATE_PREAMBLE;
 	bitstate = 0;
-	counter = 0;
+//	counter = 0;
 	videoText();
 }
 
@@ -106,7 +106,6 @@ mfsk::~mfsk()
 	if (picRxWin)
 		picRxWin->hide();
 	activate_mfsk_image_item(false);
-	setpicture_link(0);
 
 	if (bpfilt) delete bpfilt;
 	if (rxinlv) delete rxinlv;
@@ -139,18 +138,23 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		symlen =  1024;
 		symbits =    5;
 		basetone = 128;
+		numtones = 32;
 		break;
 	case MODE_MFSK16:
 		samplerate = 8000;
 		symlen =  512;
 		symbits =   4;
 		basetone = 64;
-        break;
+		numtones = 16;
+		cap |= CAP_IMG;
+		break;
 	case MODE_MFSK32:
 		samplerate = 8000;
 		symlen =  256;
-		symbits =    4;
+		symbits =   4;
 		basetone = 32;
+		numtones = 16;
+		cap |= CAP_IMG;
 		break;
 // experimental modes
 	case MODE_MFSK4:
@@ -158,24 +162,39 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		symlen = 2048;
 		symbits = 5;
 		basetone = 256;
+		numtones = 32;
+		break;
+	case MODE_MFSK31:
+		samplerate = 8000;
+		symlen =  256;
+		symbits =   3;
+		basetone = 32;
+		numtones = 8;
+		cap |= CAP_IMG;
 		break;
 	case MODE_MFSK64:
 		samplerate = 8000;
 		symlen =  128;
 		symbits =    4;
 		basetone = 16;
+		numtones = 16;
+		cap |= CAP_IMG;
 		break;
 	case MODE_MFSK11:
 		samplerate = 11025;
 		symlen =  1024;
 		symbits =   4;
 		basetone = 93;
-        break;
+		numtones = 16;
+		cap |= CAP_IMG;
+		break;
 	case MODE_MFSK22:
 		samplerate = 11025;
 		symlen =  512;
 		symbits =    4;
 		basetone = 46;
+		numtones = 16;
+		cap |= CAP_IMG;
 		break;
 //
 	default:
@@ -183,12 +202,11 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		symlen =  512;
 		symbits =   4;
 		basetone = 64;
+		numtones = 16;
         break;
 	}
 
-	numtones = 1 << symbits;
 	tonespacing = (double) samplerate / symlen;
-//	basetone = (int)floor(1000.0 * symlen / samplerate + 0.5);
 	basefreq = 1.0 * samplerate * basetone / symlen;
 
 	binsfft		= new sfft (symlen, basetone, basetone + numtones );//+ 3); // ?
@@ -319,8 +337,6 @@ void mfsk::recvpic(complex z)
 	picf += (prevz % z).arg() * samplerate / TWOPI;
 	prevz = z;
 
-//	if ((counter % SAMPLES_PER_PIXEL) == 0) {
-//		picf = 256 * (picf / SAMPLES_PER_PIXEL - 1000) / bandwidth;
 	if ((counter % RXspp) == 0) {
 		picf = 256 * (picf / RXspp - basefreq) / bandwidth;
 		byte = (int)CLAMP(picf, 0.0, 255.0);
@@ -362,7 +378,10 @@ void mfsk::recvchar(int c)
 		return;
 
 	if (check_picture_header(c) == true) {
-		counter = 44 * RXspp;
+// 44 nulls at 8 samples per pixel
+// 88 nulls at 4 samples per pixel
+// 176 nulls at 2 samples per pixel
+		counter = 352; 
 		if (symbolbit == 4) counter += symlen;
 		rxstate = RX_STATE_PICTURE_START;
 		picturesize = RXspp * picW * picH * (color ? 3 : 1);
@@ -885,8 +904,9 @@ int mfsk::tx_process()
 			return -1;
 
 		case TX_STATE_PICTURE_START:
-			memset(picprologue, 0, 44);
-			sendpic(picprologue, 44);
+// 176 samples
+			memset(picprologue, 0, 44 * 8 / TXspp);
+			sendpic(picprologue, 44 * 8 / TXspp);
 			txstate = TX_STATE_PICTURE;
 			break;
 	
@@ -921,7 +941,7 @@ int mfsk::tx_process()
 			btnpicTxClose->show();
 			abortxmt = false;
 			rxstate = RX_STATE_DATA;
-			counter = 0;
+//			counter = 0;
 			memset(picheader, ' ', PICHEADER - 1);
 			picheader[PICHEADER -1] = 0;
 			FL_UNLOCK_E();

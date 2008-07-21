@@ -221,6 +221,7 @@ Fl_Menu_Item quick_change_mfsk_exp[] = {
 	{ mode_info[MODE_MFSK4].name, 0, cb_init_mode, (void *)MODE_MFSK4 },
 	{ mode_info[MODE_MFSK11].name, 0, cb_init_mode, (void *)MODE_MFSK11 },
 	{ mode_info[MODE_MFSK22].name, 0, cb_init_mode, (void *)MODE_MFSK22 },
+	{ mode_info[MODE_MFSK31].name, 0, cb_init_mode, (void *)MODE_MFSK31 },
 	{ mode_info[MODE_MFSK64].name, 0, cb_init_mode, (void *)MODE_MFSK64 },
 	{ 0 }
 };
@@ -399,7 +400,7 @@ void startup_modem(modem *m)
 		FHdisp->hide();
 	}
 
-	if (m->getcap() & modem::CAP_AFC) {
+	if (m->get_cap() & modem::CAP_AFC) {
 		btn_afconoff->value(progStatus.afconoff);
 		btn_afconoff->activate();
 	}
@@ -409,7 +410,7 @@ void startup_modem(modem *m)
 	}
 
 	wf->btnRev->value(wf->Reverse());
-	if (m->getcap() & modem::CAP_REV) {
+	if (m->get_cap() & modem::CAP_REV) {
 		wf->btnRev->value(wf->Reverse());
 		wf->btnRev->activate();
 	}
@@ -588,6 +589,7 @@ void init_modem(trx_mode mode)
 	case MODE_MFSK4:
 	case MODE_MFSK11: 
 	case MODE_MFSK22:
+	case MODE_MFSK31:
 	case MODE_MFSK64:
 	case MODE_MFSK8: 
 	case MODE_MFSK16: 
@@ -1339,11 +1341,12 @@ Fl_Menu_Item menu_[] = {
 {"MFSK", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_MFSK8].name, 0,  cb_init_mode, (void *)MODE_MFSK8, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_MFSK16].name, 0,  cb_init_mode, (void *)MODE_MFSK16, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_MFSK32].name, 0,  cb_init_mode, (void *)MODE_MFSK32, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK32].name, 0,  cb_init_mode, (void *)MODE_MFSK32, 0, FL_NORMAL_LABEL, 0, 14, 0},
 // experimental modes
 { mode_info[MODE_MFSK4].name, 0,  cb_init_mode, (void *)MODE_MFSK4, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_MFSK11].name, 0,  cb_init_mode, (void *)MODE_MFSK11, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_MFSK22].name, 0,  cb_init_mode, (void *)MODE_MFSK22, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK31].name, 0,  cb_init_mode, (void *)MODE_MFSK31, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_MFSK64].name, 0,  cb_init_mode, (void *)MODE_MFSK64, 0, FL_NORMAL_LABEL, 0, 14, 0},
 
 {0,0,0,0,0,0,0,0,0},
@@ -1471,14 +1474,20 @@ void activate_experimental()
 			m_exp->show();
 		if ((m_exp = getMenuItem(mode_info[MODE_MFSK22].name)) != 0)
 			m_exp->show();
+		if ((m_exp = getMenuItem(mode_info[MODE_MFSK31].name)) != 0)
+			m_exp->show();
 		if ((m_exp = getMenuItem(mode_info[MODE_MFSK64].name)) != 0)
 			m_exp->show();
+		if ((m_exp = getMenuItem(mode_info[MODE_MFSK32].name)) != 0)
+			m_exp->flags |= FL_MENU_DIVIDER;
 	} else {
 		if ((m_exp = getMenuItem(mode_info[MODE_MFSK4].name)) != 0)
 			m_exp->hide();
 		if ((m_exp = getMenuItem(mode_info[MODE_MFSK11].name)) != 0)
 			m_exp->hide();
 		if ((m_exp = getMenuItem(mode_info[MODE_MFSK22].name)) != 0)
+			m_exp->hide();
+		if ((m_exp = getMenuItem(mode_info[MODE_MFSK31].name)) != 0)
 			m_exp->hide();
 		if ((m_exp = getMenuItem(mode_info[MODE_MFSK64].name)) != 0)
 			m_exp->hide();
