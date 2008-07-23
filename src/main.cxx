@@ -765,10 +765,18 @@ double speed_test(int converter, unsigned repeat)
 	src_simple(&src, SRC_SINC_FASTEST, 1);
 
 	struct timespec t0, t1;
+#ifdef _POSIX_MONOTONIC_CLOCK
+	clock_gettime(CLOCK_MONOTONIC, &t0);
+#else
 	clock_gettime(CLOCK_REALTIME, &t0);
+#endif
 	for (unsigned i = 0; i < repeat; i++)
 		src_simple(&src, SRC_SINC_FASTEST, 1);
+#ifdef _POSIX_MONOTONIC_CLOCK
+	clock_gettime(CLOCK_MONOTONIC, &t1);
+#else
 	clock_gettime(CLOCK_REALTIME, &t1);
+#endif
 
 	delete [] src.data_in;
 	delete [] src.data_out;

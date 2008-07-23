@@ -6,8 +6,4 @@ AC_DEFUN([AC_FLDIGI_STATIC], [
                     *)      AC_MSG_ERROR([bad value ${enableval} for --enable-static]) ;;
                  esac],
                  [ac_cv_static=no])
-  if test "x$ac_cv_static" = "xyes"; then
-      AC_CHECK_LIB([rt], [clock_gettime], [RTLIB=-lrt])
-  fi
-  AC_SUBST([RTLIB])
 ])
