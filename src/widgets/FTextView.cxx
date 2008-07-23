@@ -966,23 +966,23 @@ int FTextEdit::handle_key(int key)
 		break;
 	}
 
-        // insert a macro
-        if (key >= FL_F && key <= FL_F_Last && insert_position() >= txpos)
-            return handle_key_macro(key);
+// insert a macro
+	if (key >= FL_F && key <= FL_F_Last && insert_position() >= txpos)
+		return handle_key_macro(key);
 
-        // read ctl-ddd, where d is a digit, as ascii characters (in base 10)
-        // and insert verbatim; e.g. ctl-001 inserts a <soh>
-        if (Fl::event_state() & FL_CTRL && (isdigit(key) || isdigit(key - FL_KP)) &&
-            insert_position() >= txpos)
-            return handle_key_ascii(key);
-		ascii_cnt = 0; // restart the numeric keypad entries.
-		ascii_chr = 0;
-        // do not insert printable characters in the transmitted text
-        if (insert_position() < txpos) {
-            int d;
-            if (Fl::compose(d))
-                return 1;
-        }
+// read ctl-ddd, where d is a digit, as ascii characters (in base 10)
+// and insert verbatim; e.g. ctl-001 inserts a <soh>
+	if (Fl::event_state() & FL_CTRL && (isdigit(key) || isdigit(key - FL_KP)) &&
+		insert_position() >= txpos)
+		return handle_key_ascii(key);
+	ascii_cnt = 0; // restart the numeric keypad entries.
+	ascii_chr = 0;
+// do not insert printable characters in the transmitted text
+	if (insert_position() < txpos) {
+		int d;
+		if (Fl::compose(d))
+			return 1;
+	}
 
 	return 0;
 }

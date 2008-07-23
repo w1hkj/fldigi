@@ -181,6 +181,7 @@ extern modem *mfsk32_modem;
 extern modem *mfsk4_modem;
 extern modem *mfsk11_modem;
 extern modem *mfsk22_modem;
+extern modem *mfsk31_modem;
 extern modem *mfsk64_modem;
 
 extern modem *mt63_500_modem;

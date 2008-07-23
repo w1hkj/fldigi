@@ -57,7 +57,7 @@ void  mfsk::tx_init(SoundBase *sc)
 	scard = sc;
 	txstate = TX_STATE_PREAMBLE;
 	bitstate = 0;
-	counter = 0;
+	
 	videoText();
 }
 
@@ -116,8 +116,6 @@ mfsk::~mfsk()
 	if (pipe) delete [] pipe;
 	if (hbfilt) delete hbfilt;
 	if (binsfft) delete binsfft;
-	if (met1filt) delete met1filt;
-	if (met2filt) delete met2filt;
 	for (int i = 0; i < SCOPESIZE; i++) {
 		if (vidfilter[i]) delete vidfilter[i];
 	}
@@ -138,19 +136,22 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		symlen =  1024;
 		symbits =    5;
 		basetone = 128;
+		numtones = 32;
 		break;
 	case MODE_MFSK16:
 		samplerate = 8000;
 		symlen =  512;
 		symbits =   4;
 		basetone = 64;
+		numtones = 16;
 		cap |= CAP_IMG;
 		break;
 	case MODE_MFSK32:
 		samplerate = 8000;
 		symlen =  256;
-		symbits =    4;
+		symbits =   4;
 		basetone = 32;
+		numtones = 16;
 		cap |= CAP_IMG;
 		break;
 // experimental modes
@@ -159,12 +160,22 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		symlen = 2048;
 		symbits = 5;
 		basetone = 256;
+		numtones = 32;
+		break;
+	case MODE_MFSK31:
+		samplerate = 8000;
+		symlen =  256;
+		symbits =   3;
+		basetone = 32;
+		numtones = 8;
+		cap |= CAP_IMG;
 		break;
 	case MODE_MFSK64:
 		samplerate = 8000;
 		symlen =  128;
 		symbits =    4;
 		basetone = 16;
+		numtones = 16;
 		cap |= CAP_IMG;
 		break;
 	case MODE_MFSK11:
@@ -172,6 +183,7 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		symlen =  1024;
 		symbits =   4;
 		basetone = 93;
+		numtones = 16;
 		cap |= CAP_IMG;
 		break;
 	case MODE_MFSK22:
@@ -179,6 +191,7 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		symlen =  512;
 		symbits =    4;
 		basetone = 46;
+		numtones = 16;
 		cap |= CAP_IMG;
 		break;
 //
@@ -187,19 +200,17 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		symlen =  512;
 		symbits =   4;
 		basetone = 64;
+		numtones = 16;
         break;
 	}
 
-	numtones = 1 << symbits;
 	tonespacing = (double) samplerate / symlen;
-//	basetone = (int)floor(1000.0 * symlen / samplerate + 0.5);
 	basefreq = 1.0 * samplerate * basetone / symlen;
 
-	binsfft		= new sfft (symlen, basetone, basetone + numtones );//+ 3); // ?
+	binsfft		= new sfft (symlen, basetone, basetone + numtones );
 	hbfilt		= new C_FIR_filter();
 	hbfilt->init_hilbert(37, 1);
-	met1filt	= new Cmovavg(32);
-	met2filt	= new Cmovavg(32);
+
 	syncfilter = new Cmovavg(8);
 	
 	for (int i = 0; i < SCOPESIZE; i++)
@@ -323,8 +334,6 @@ void mfsk::recvpic(complex z)
 	picf += (prevz % z).arg() * samplerate / TWOPI;
 	prevz = z;
 
-//	if ((counter % SAMPLES_PER_PIXEL) == 0) {
-//		picf = 256 * (picf / SAMPLES_PER_PIXEL - 1000) / bandwidth;
 	if ((counter % RXspp) == 0) {
 		picf = 256 * (picf / RXspp - basefreq) / bandwidth;
 		byte = (int)CLAMP(picf, 0.0, 255.0);
@@ -366,8 +375,12 @@ void mfsk::recvchar(int c)
 		return;
 
 	if (check_picture_header(c) == true) {
-		counter = 44 * RXspp;
-		if (symbolbit == 4) counter += symlen;
+// 44 nulls at 8 samples per pixel
+// 88 nulls at 4 samples per pixel
+// 176 nulls at 2 samples per pixel
+		counter = 352; 
+//		if (symbolbit == 4) counter += symlen;
+		if (symbolbit == symbits) counter += symlen;
 		rxstate = RX_STATE_PICTURE_START;
 		picturesize = RXspp * picW * picH * (color ? 3 : 1);
 		pixelnbr = 0;
@@ -378,6 +391,7 @@ void mfsk::recvchar(int c)
 		picheader[PICHEADER -1] = 0;		
 	}
 	put_rx_char(c);
+	
 }
 
 void mfsk::recvbit(int bit)
@@ -402,19 +416,19 @@ void mfsk::decodesymbol(unsigned char symbol)
 
 	symcounter = symcounter ? 0 : 1;
 
-// only modes with 5 symbits need a vote
-	if (symbits == 5) {
+// only modes with 3 or 5 symbits need a vote
+	if (symbits == 5 || symbits == 3) {
 		if (symcounter) {
 			if ((c = dec1->decode(symbolpair, &met)) == -1)
 				return;
-			met1 = met1filt->run(met);
+			met1 = decayavg(met1, met, 32);
 			if (met1 < met2)
 				return;
 			metric = met1 / 2.0;
 		} else {
 			if ((c = dec2->decode(symbolpair, &met)) == -1)
 				return;
-			met2 = met2filt->run(met);
+			met2 = decayavg(met2, met, 32);
 			if (met2 < met1)
 				return;
 			metric = met2 / 2.0;
@@ -423,7 +437,8 @@ void mfsk::decodesymbol(unsigned char symbol)
 		if (symcounter) return;
 		if ((c = dec2->decode(symbolpair, &met)) == -1)
 			return;
-		metric = met2filt->run(met / 2.0);
+		met2 = decayavg(met2, met, 32);
+		metric = met2 / 2.0;
 	}
 	
 	display_metric(metric);
@@ -437,7 +452,7 @@ void mfsk::decodesymbol(unsigned char symbol)
 
 void mfsk::softdecode(complex *bins)
 {
-	double tone, sum, b[symbits];
+	double binmag, sum, b[symbits];
 	unsigned char symbols[symbits];
 	int i, j, k;
 
@@ -455,17 +470,20 @@ void mfsk::softdecode(complex *bins)
 		else
 			k = i;
 
-		tone = bins[k].mag();
+		binmag = bins[k].mag();
 
 		for (k = 0; k < symbits; k++)
-			b[k] += (j & (1 << (symbits - k - 1))) ? tone : -tone;
+			b[k] += (j & (1 << (symbits - k - 1))) ? binmag : -binmag;
 
-		sum += tone;
+		sum += binmag;
 	}
 
-// shift to range 0...260 ??? symbols are unsigned char
+// shift to range 0...255
 	for (i = 0; i < symbits; i++)
-		symbols[i] = (unsigned char)clamp(128.0 + (b[i] / sum * 128.0), 0, 255);// 260);
+		if (staticburst)
+			symbols[i] = 0;  // puncturing
+		else
+			symbols[i] = (unsigned char)clamp(128.0 + (b[i] / sum * 128.0), 0, 255);
 
 	rxinlv->symbols(symbols);
 
@@ -516,13 +534,13 @@ int mfsk::harddecode(complex *in)
 		if (x > 2.0 * avg) burstcount++;
 	}
 
-	staticburst = (burstcount > numtones / 2);
-	
+	staticburst = (burstcount == numtones);
+
 	if (!staticburst)
 		afcmetric = 0.95*afcmetric + 0.05 * (2 * max / avg);
 	else
 		afcmetric = 0.0;
-	
+
 	return symbol;
 }
 
@@ -576,6 +594,7 @@ void mfsk::synchronize()
 
 void mfsk::reset_afc() {
 	freqerr = 0.0;
+	syncfilter->reset();
 	return;
 }
 
@@ -583,8 +602,8 @@ void mfsk::afc()
 {
 	complex z;
 	complex prevvector;
-	double f, f1, f2;
-	double ts = tonespacing / 8;
+	double f, f1;
+	double ts = tonespacing / 4;
 
 	if (sigsearch) {
 		reset_afc();
@@ -595,8 +614,12 @@ void mfsk::afc()
 		return;
 	if (metric < progStatus.sldrSquelchValue)
 		return;
-	if (afcmetric < 6.0)
+	if (afcmetric < 3.0)
 		return;
+	if (currsymbol != prev1symbol)
+		return;
+//	if (prev1symbol != prev2symbol)
+//		return;
 	
 	if (pipeptr == 0)
 		prevvector = pipe[2*symlen - 1].vector[currsymbol];
@@ -607,16 +630,13 @@ void mfsk::afc()
 	f = z.arg() * samplerate / TWOPI;
 	
 	f1 = tonespacing * (basetone + currsymbol);	
-	f1 -= f;
 
-	f1 /= numtones;
-	
-	f2 = CLAMP ( f1, freqerr - ts, freqerr + ts);
+	if ( fabs(f1 - f) < ts) {
+		freqerr = decayavg(freqerr, (f1 - f), 32);
+		set_freq(frequency - freqerr);
+		set_AFCind( freqerr );
+	}
 
-	freqerr = decayavg ( freqerr, f2, 128 );
-
-	set_freq(frequency - freqerr);
-	set_AFCind( freqerr );
 }
 
 void mfsk::eval_s2n()
@@ -691,14 +711,20 @@ int mfsk::rx_process(const double *buf, int len)
 
 			currsymbol = harddecode(bins);
 			currvector = bins[currsymbol];			
-// frequency tracking 
-			afc();
-			
-			eval_s2n();
-// decode symbol 
 			softdecode(bins);
+
+// frequency tracking 
+//			afc();
+//			eval_s2n();
+// decode symbol 
+//			softdecode(bins);
+
 // symbol sync 
 			synchronize();
+
+// frequency tracking 
+			afc();
+			eval_s2n();
 
 			prev2symbol = prev1symbol;
 			prev2vector = prev1vector;
@@ -889,8 +915,9 @@ int mfsk::tx_process()
 			return -1;
 
 		case TX_STATE_PICTURE_START:
-			memset(picprologue, 0, 44);
-			sendpic(picprologue, 44);
+// 176 samples
+			memset(picprologue, 0, 44 * 8 / TXspp);
+			sendpic(picprologue, 44 * 8 / TXspp);
 			txstate = TX_STATE_PICTURE;
 			break;
 	
@@ -925,7 +952,6 @@ int mfsk::tx_process()
 			btnpicTxClose->show();
 			abortxmt = false;
 			rxstate = RX_STATE_DATA;
-			counter = 0;
 			memset(picheader, ' ', PICHEADER - 1);
 			picheader[PICHEADER -1] = 0;
 			FL_UNLOCK_E();

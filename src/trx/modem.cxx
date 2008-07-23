@@ -22,6 +22,7 @@ modem *mfsk32_modem = 0;
 modem *mfsk4_modem = 0;
 modem *mfsk11_modem = 0;
 modem *mfsk22_modem = 0;
+modem *mfsk31_modem = 0;
 modem *mfsk64_modem = 0;
 
 modem *mt63_500_modem = 0;

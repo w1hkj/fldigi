@@ -130,8 +130,6 @@ protected:
 	C_FIR_filter	*hbfilt;
 	sfft			*binsfft;
 	C_FIR_filter	*bpfilt;
-	Cmovavg			*met1filt;
-	Cmovavg			*met2filt;
 	Cmovavg			*vidfilter[SCOPESIZE];
 	Cmovavg			*syncfilter;
 
@@ -182,7 +180,7 @@ protected:
 	interleave	*txinlv;
 	unsigned int bitshreg;
 	int bitstate;
-
+	
 // Picutre data and methods
 	int picturesize;
 	char picheader[PICHEADER];
@@ -198,7 +196,7 @@ protected:
 	int		picH;
 	bool	color;
 	
-	unsigned char picprologue[44];
+	unsigned char picprologue[176];
 	int			xmtbytes;
 	bool		startpic;
 	bool		abortxmt;
