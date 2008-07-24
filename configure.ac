@@ -9,7 +9,7 @@ dnl major and minor must be integers; patch may
 dnl contain other characters or be empty
 m4_define(FLDIGI_MAJOR, [3])
 m4_define(FLDIGI_MINOR, [0])
-m4_define(FLDIGI_PATCH, [preW])
+m4_define(FLDIGI_PATCH, [preX])
 
 AC_INIT([fldigi], FLDIGI_MAJOR.FLDIGI_MINOR[FLDIGI_PATCH], [w1hkj AT w1hkj DOT com])
 
@@ -81,9 +81,18 @@ AC_FUNC_STRFTIME
 AC_FUNC_STRTOD
 AC_CHECK_FUNCS([getaddrinfo gethostbyname localtime_r memmove memset mkdir select snprintf socket strcasecmp strchr strdup strerror strncasecmp strcasestr strrchr strstr strtol uname vsnprintf])
 
+# Check for clock_gettime
+LIBS_save="$LIBS"; LIBS=""
+AC_SEARCH_LIBS([clock_gettime], [rt], [ac_cv_clock_gettime=1; EXTRA_LIBS="$EXTRA_LIBS $LIBS"],
+               [ac_cv_clock_gettime=0])
+AC_DEFINE_UNQUOTED(HAVE_CLOCK_GETTIME, $ac_cv_clock_gettime, [Define to 1 if we have clock_gettime])
+LIBS="$LIBS_save"
 # Check for dlopen
-AC_SEARCH_LIBS([dlopen], [dl], [ac_cv_dlopen=1], [ac_cv_dlopen=0])
+LIBS_save="$LIBS"; LIBS=""
+AC_SEARCH_LIBS([dlopen], [dl], [ac_cv_dlopen=1; EXTRA_LIBS="$EXTRA_LIBS $LIBS"], [ac_cv_dlopen=0])
 AC_DEFINE_UNQUOTED(HAVE_DLOPEN, $ac_cv_dlopen, [Define to 1 if we have dlopen])
+LIBS="$LIBS_save"
+AC_SUBST([EXTRA_LIBS])
 
 
 AC_PRESERVE_HELP_ORDER

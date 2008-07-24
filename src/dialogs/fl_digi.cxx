@@ -208,20 +208,13 @@ Fl_Menu_Item quick_change_qpsk[] = {
 };
 
 Fl_Menu_Item quick_change_mfsk[] = {
-	{ mode_info[MODE_MFSK8].name, 0, cb_init_mode, (void *)MODE_MFSK8 },
-	{ mode_info[MODE_MFSK16].name, 0, cb_init_mode, (void *)MODE_MFSK16 },
-	{ mode_info[MODE_MFSK32].name, 0, cb_init_mode, (void *)MODE_MFSK32 },
-	{ 0 }
-};
-
-Fl_Menu_Item quick_change_mfsk_exp[] = {
-	{ mode_info[MODE_MFSK8].name, 0, cb_init_mode, (void *)MODE_MFSK8 },
-	{ mode_info[MODE_MFSK16].name, 0, cb_init_mode, (void *)MODE_MFSK16 },
-	{ mode_info[MODE_MFSK32].name, 0, cb_init_mode, (void *)MODE_MFSK32 },
 	{ mode_info[MODE_MFSK4].name, 0, cb_init_mode, (void *)MODE_MFSK4 },
+	{ mode_info[MODE_MFSK8].name, 0, cb_init_mode, (void *)MODE_MFSK8 },
+	{ mode_info[MODE_MFSK16].name, 0, cb_init_mode, (void *)MODE_MFSK16 },
 	{ mode_info[MODE_MFSK11].name, 0, cb_init_mode, (void *)MODE_MFSK11 },
 	{ mode_info[MODE_MFSK22].name, 0, cb_init_mode, (void *)MODE_MFSK22 },
 	{ mode_info[MODE_MFSK31].name, 0, cb_init_mode, (void *)MODE_MFSK31 },
+	{ mode_info[MODE_MFSK32].name, 0, cb_init_mode, (void *)MODE_MFSK32 },
 	{ mode_info[MODE_MFSK64].name, 0, cb_init_mode, (void *)MODE_MFSK64 },
 	{ 0 }
 };
@@ -596,10 +589,7 @@ void init_modem(trx_mode mode)
 	case MODE_MFSK32:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new mfsk(mode));
-		if (progdefaults.experimental)
-			quick_change = quick_change_mfsk_exp;
-		else
-			quick_change = quick_change_mfsk;
+		quick_change = quick_change_mfsk;
 		break;
 
 	case MODE_MT63_500: case MODE_MT63_1000: case MODE_MT63_2000 :
@@ -1339,16 +1329,14 @@ Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 {"MFSK", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_MFSK8].name, 0,  cb_init_mode, (void *)MODE_MFSK8, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_MFSK16].name, 0,  cb_init_mode, (void *)MODE_MFSK16, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_MFSK32].name, 0,  cb_init_mode, (void *)MODE_MFSK32, 0, FL_NORMAL_LABEL, 0, 14, 0},
-// experimental modes
 { mode_info[MODE_MFSK4].name, 0,  cb_init_mode, (void *)MODE_MFSK4, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK8].name, 0,  cb_init_mode, (void *)MODE_MFSK8, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_MFSK11].name, 0,  cb_init_mode, (void *)MODE_MFSK11, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK16].name, 0,  cb_init_mode, (void *)MODE_MFSK16, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_MFSK22].name, 0,  cb_init_mode, (void *)MODE_MFSK22, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_MFSK31].name, 0,  cb_init_mode, (void *)MODE_MFSK31, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK32].name, 0,  cb_init_mode, (void *)MODE_MFSK32, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_MFSK64].name, 0,  cb_init_mode, (void *)MODE_MFSK64, 0, FL_NORMAL_LABEL, 0, 14, 0},
-
 {0,0,0,0,0,0,0,0,0},
 
 {"MT63", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
@@ -1462,36 +1450,6 @@ Fl_Menu_Item *getMenuItem(const char *caption)
 	if (!item)
 		cerr << "FIXME: could not find '" << caption << "' menu\n";
 	return item;
-}
-
-void activate_experimental()
-{
-	Fl_Menu_Item *m_exp = 0;
-	if (progdefaults.experimental) {
-		if ((m_exp = getMenuItem(mode_info[MODE_MFSK4].name)) != 0)
-			m_exp->show();
-		if ((m_exp = getMenuItem(mode_info[MODE_MFSK11].name)) != 0)
-			m_exp->show();
-		if ((m_exp = getMenuItem(mode_info[MODE_MFSK22].name)) != 0)
-			m_exp->show();
-		if ((m_exp = getMenuItem(mode_info[MODE_MFSK31].name)) != 0)
-			m_exp->show();
-		if ((m_exp = getMenuItem(mode_info[MODE_MFSK64].name)) != 0)
-			m_exp->show();
-		if ((m_exp = getMenuItem(mode_info[MODE_MFSK32].name)) != 0)
-			m_exp->flags |= FL_MENU_DIVIDER;
-	} else {
-		if ((m_exp = getMenuItem(mode_info[MODE_MFSK4].name)) != 0)
-			m_exp->hide();
-		if ((m_exp = getMenuItem(mode_info[MODE_MFSK11].name)) != 0)
-			m_exp->hide();
-		if ((m_exp = getMenuItem(mode_info[MODE_MFSK22].name)) != 0)
-			m_exp->hide();
-		if ((m_exp = getMenuItem(mode_info[MODE_MFSK31].name)) != 0)
-			m_exp->hide();
-		if ((m_exp = getMenuItem(mode_info[MODE_MFSK64].name)) != 0)
-			m_exp->hide();
-	}
 }
 
 void activate_rig_menu_item(bool b)
@@ -1949,7 +1907,6 @@ void create_fl_digi_main() {
 	scopeview->end();
 	scopeview->hide();	
 
-	activate_experimental();
 }
 
 

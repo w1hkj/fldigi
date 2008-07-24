@@ -56,7 +56,7 @@ void loadPalette()
 	FILE *clrfile = NULL;
 	if (palfilename.size() == 0) {
 		palfilename = HomeDir;
-		palfilename.append ("/fldigi.pal");
+		palfilename.append ("fldigi.pal");
 	}
     const char *p = FSEL::select("Open palette", "Fldigi palette\t*.pal", palfilename.c_str());
 	if (!p) return;
@@ -92,7 +92,7 @@ void savePalette()
 	FILE *clrfile = NULL;
 	if (palfilename.size() == 0) {
 		palfilename = HomeDir;
-		palfilename.append ("/fldigi.pal");
+		palfilename.append ("fldigi.pal");
 	}
 	const char *p = FSEL::saveas("Save palette", "Fldigi palette\t*.pal", palfilename.c_str());
 	if (!p) return;

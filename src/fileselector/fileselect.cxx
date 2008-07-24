@@ -103,8 +103,19 @@ const char* FSEL::select(const char* title, const char* filter, const char* def,
 {
 	inst->chooser->title(title);
 	inst->chooser->filter(filter);
-	if (def)
-		inst->chooser->preset_file(def);
+	if (def) {
+		string pathname = def;
+		string path = "";
+		string name = "";
+		size_t indx = pathname.rfind('/');
+		if (indx != string::npos) {
+			name = pathname.substr(indx + 1);
+			path = pathname.substr(0, indx);
+		} else
+			name = def;
+		inst->chooser->preset_file(name.c_str());
+		inst->chooser->directory(path.c_str());
+	}
 	inst->chooser->options(Fl_Native_File_Chooser::PREVIEW);
 	inst->chooser->type(Fl_Native_File_Chooser::BROWSE_FILE);
 
@@ -118,8 +129,19 @@ const char* FSEL::saveas(const char* title, const char* filter, const char* def,
 {
 	inst->chooser->title(title);
 	inst->chooser->filter(filter);
-	if (def)
-		inst->chooser->preset_file(def);
+	if (def) {
+		string pathname = def;
+		string path = "";
+		string name = "";
+		size_t indx = pathname.rfind('/');
+		if (indx != string::npos) {
+			name = pathname.substr(indx + 1);
+			path = pathname.substr(0, indx);
+		} else
+			name = def;
+		inst->chooser->preset_file(name.c_str());
+		inst->chooser->directory(path.c_str());
+	}
 	inst->chooser->options(Fl_Native_File_Chooser::SAVEAS_CONFIRM |
 			 Fl_Native_File_Chooser::NEW_FOLDER |
 			 Fl_Native_File_Chooser::PREVIEW);

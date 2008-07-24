@@ -152,19 +152,16 @@ int main(int argc, char ** argv)
 
 	setlocale(LC_TIME, "");
 
-#ifndef __CYGWIN__
-	fl_filename_expand(szHomedir, 119, "$HOME/.fldigi/");
+#ifdef __CYGWIN__
+	fl_filename_expand(szHomedir, 119, "$HOME/fldigi.files/");
+	redirect_streams(HomeDir);
+	atexit(restore_streams);
 #else
-	fl_filename_expand(szHomedir, 119, "$APPDATA/fldigi/");
+	fl_filename_expand(szHomedir, 119, "$HOME/.fldigi/");
 #endif
 	HomeDir = szHomedir;
 
-#ifdef __CYGWIN__
-	redirect_streams(HomeDir);
-	atexit(restore_streams);
-#endif
-
-       set_platform_ui();
+	set_platform_ui();
 
 	generate_option_help();
 	generate_version_text();
@@ -315,9 +312,6 @@ void generate_option_help(void) {
 	     << "  --config-dir DIRECTORY\n"
 	     << "    Look for configuration files in DIRECTORY\n"
 	     << "    The default is: " << HomeDir << "\n\n"
-
-	     << "  --experimental\n"
-	     << "    enable experimental modes\n\n"
 
 #ifndef __CYGWIN__
 	     << "  --rx-ipc-key KEY\n"
@@ -765,10 +759,18 @@ double speed_test(int converter, unsigned repeat)
 	src_simple(&src, SRC_SINC_FASTEST, 1);
 
 	struct timespec t0, t1;
+#ifdef _POSIX_MONOTONIC_CLOCK
+	clock_gettime(CLOCK_MONOTONIC, &t0);
+#else
 	clock_gettime(CLOCK_REALTIME, &t0);
+#endif
 	for (unsigned i = 0; i < repeat; i++)
 		src_simple(&src, SRC_SINC_FASTEST, 1);
+#ifdef _POSIX_MONOTONIC_CLOCK
+	clock_gettime(CLOCK_MONOTONIC, &t1);
+#else
 	clock_gettime(CLOCK_REALTIME, &t1);
+#endif
 
 	delete [] src.data_in;
 	delete [] src.data_out;

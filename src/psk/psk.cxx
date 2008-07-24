@@ -536,7 +536,6 @@ int psk::rx_process(const double *buf, int len)
 			}
 		}
 	}
-	signalquality();
 	
 	if (sigsearch)
 		findsignal();
