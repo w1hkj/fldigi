@@ -1,6 +1,8 @@
 #include <config.h>
 
 #include <string>
+#include <cstdlib>
+#include <libgen.h>
 
 #include "fileselect.h"
 
@@ -63,12 +65,15 @@ void* FSEL::thread_func(void* arg)
 
 const char* FSEL::get_file(void)
 {
+	// Calling directory() is apparently not enough on Linux
+#ifdef __linux__
 	const char* preset = chooser->preset_file();
 	if (preset && *preset != '/' && chooser->directory()) {
 		filename = chooser->directory();
 		filename.append("/").append(preset);
 		chooser->preset_file(filename.c_str());
 	}
+#endif
 
 #if FSEL_THREAD
 	if (fl_create_thread(fsel_thread, thread_func, this) != 0) {
@@ -81,7 +86,7 @@ const char* FSEL::get_file(void)
 		Fl::wait(0.1);
 	}
 #else
-		result = chooser->show();
+	result = chooser->show();
 #endif
 
 	switch (result) {
@@ -104,24 +109,20 @@ const char* FSEL::select(const char* title, const char* filter, const char* def,
 	inst->chooser->title(title);
 	inst->chooser->filter(filter);
 	if (def) {
-		string pathname = def;
-		string path = "";
-		string name = "";
-		size_t indx = pathname.rfind('/');
-		if (indx != string::npos) {
-			name = pathname.substr(indx + 1);
-			path = pathname.substr(0, indx);
-		} else
-			name = def;
-		inst->chooser->preset_file(name.c_str());
-		inst->chooser->directory(path.c_str());
+		char *s = strdup(def), *dir = dirname(s);
+		if (strcmp(".", dir))
+			inst->chooser->directory(dir);
+		free(s);
+		s = strdup(def);
+		inst->chooser->preset_file(basename(s));
+		free(s);
 	}
 	inst->chooser->options(Fl_Native_File_Chooser::PREVIEW);
 	inst->chooser->type(Fl_Native_File_Chooser::BROWSE_FILE);
 
 	const char* fn = inst->get_file();
 	if (fsel)
-	    *fsel = inst->chooser->filter_value();
+		*fsel = inst->chooser->filter_value();
 	return fn;
 }
 
@@ -130,26 +131,22 @@ const char* FSEL::saveas(const char* title, const char* filter, const char* def,
 	inst->chooser->title(title);
 	inst->chooser->filter(filter);
 	if (def) {
-		string pathname = def;
-		string path = "";
-		string name = "";
-		size_t indx = pathname.rfind('/');
-		if (indx != string::npos) {
-			name = pathname.substr(indx + 1);
-			path = pathname.substr(0, indx);
-		} else
-			name = def;
-		inst->chooser->preset_file(name.c_str());
-		inst->chooser->directory(path.c_str());
+		char *s = strdup(def), *dir = dirname(s);
+		if (strcmp(".", dir))
+			inst->chooser->directory(dir);
+		free(s);
+		s = strdup(def);
+		inst->chooser->preset_file(basename(s));
+		free(s);
 	}
 	inst->chooser->options(Fl_Native_File_Chooser::SAVEAS_CONFIRM |
-			 Fl_Native_File_Chooser::NEW_FOLDER |
-			 Fl_Native_File_Chooser::PREVIEW);
+			       Fl_Native_File_Chooser::NEW_FOLDER |
+			       Fl_Native_File_Chooser::PREVIEW);
 	inst->chooser->type(Fl_Native_File_Chooser::BROWSE_SAVE_FILE);
 
 	const char* fn = inst->get_file();
 	if (fsel)
-	    *fsel = inst->chooser->filter_value();
+		*fsel = inst->chooser->filter_value();
 	return fn;
 }
 
@@ -160,7 +157,7 @@ const char* FSEL::dir_select(const char* title, const char* filter, const char* 
 	if (def)
 		inst->chooser->directory(def);
 	inst->chooser->options(Fl_Native_File_Chooser::NEW_FOLDER |
-			 Fl_Native_File_Chooser::PREVIEW);
+			       Fl_Native_File_Chooser::PREVIEW);
 	inst->chooser->type(Fl_Native_File_Chooser::BROWSE_DIRECTORY);
 
 	return inst->get_file();

@@ -920,7 +920,11 @@ void cb_mnuBeginnersURL(Fl_Widget*, void*)
 		return;
 	f << szBeginner;
 	f.close();
+#ifndef __CYGWIN__
 	cb_mnuVisitURL(NULL, (void *)deffname.insert(0, "file://").c_str());
+#else
+	cb_mnuVisitURL(NULL, (void *)deffname.c_str());
+#endif
 }
 
 void cb_mnuAboutURL(Fl_Widget*, void*)
