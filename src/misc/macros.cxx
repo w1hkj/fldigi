@@ -589,7 +589,7 @@ void MACROTEXT::loadDefault()
 void MACROTEXT::openMacroFile()
 {
 	string deffilename = HomeDir;
-	deffilename.append("/macros.mdf");
+	deffilename.append("macros.mdf");
     const char *p = FSEL::select("Open macro file", "Fldigi macro definition file\t*.mdf", deffilename.c_str());
     if (p)
 		loadMacros(p);
@@ -598,7 +598,7 @@ void MACROTEXT::openMacroFile()
 void MACROTEXT::saveMacroFile()
 {
 	string deffilename = HomeDir;
-	deffilename.append("/macros.mdf");
+	deffilename.append("macros.mdf");
     const char *p = FSEL::saveas("Save macro file", "Fldigi macro definition file\t*.mdf", deffilename.c_str());
     if (p)
 		saveMacros(p);

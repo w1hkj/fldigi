@@ -135,6 +135,7 @@ psk::psk(trx_mode pskmode) : modem()
 		symbollen = 256;
 		_qpsk = true;
 		dcdbits = 32;
+		cap |= CAP_REV;
 		break;
 	case MODE_PSK63:
 		symbollen = 128;
@@ -145,6 +146,7 @@ psk::psk(trx_mode pskmode) : modem()
 		symbollen = 128;
 		_qpsk = true;
 		dcdbits = 64;
+		cap |= CAP_REV;
 		break;
 	case MODE_PSK125:
 		symbollen = 64;
@@ -155,6 +157,7 @@ psk::psk(trx_mode pskmode) : modem()
 		symbollen = 64;
 		_qpsk = true;
 		dcdbits = 128;
+		cap |= CAP_REV;
 		break;
 	case MODE_PSK250:
 		symbollen = 32;
@@ -165,6 +168,7 @@ psk::psk(trx_mode pskmode) : modem()
 		symbollen = 32;
 		_qpsk = true;
 		dcdbits = 256;
+		cap |= CAP_REV;
 		break;
 	default:
 		mode = MODE_BPSK31;
@@ -536,7 +540,6 @@ int psk::rx_process(const double *buf, int len)
 			}
 		}
 	}
-	signalquality();
 	
 	if (sigsearch)
 		findsignal();

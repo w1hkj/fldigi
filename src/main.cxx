@@ -152,19 +152,17 @@ int main(int argc, char ** argv)
 
 	setlocale(LC_TIME, "");
 
-#ifndef __CYGWIN__
-	fl_filename_expand(szHomedir, 119, "$HOME/.fldigi/");
-#else
-	fl_filename_expand(szHomedir, 119, "$APPDATA/fldigi/");
-#endif
-	HomeDir = szHomedir;
-
 #ifdef __CYGWIN__
+	fl_filename_expand(szHomedir, 119, "$USERPROFILE/fldigi.files/");
+	HomeDir = szHomedir;
 	redirect_streams(HomeDir);
 	atexit(restore_streams);
+#else
+	fl_filename_expand(szHomedir, 119, "$HOME/.fldigi/");
+	HomeDir = szHomedir;
 #endif
 
-       set_platform_ui();
+	set_platform_ui();
 
 	generate_option_help();
 	generate_version_text();
@@ -315,9 +313,6 @@ void generate_option_help(void) {
 	     << "  --config-dir DIRECTORY\n"
 	     << "    Look for configuration files in DIRECTORY\n"
 	     << "    The default is: " << HomeDir << "\n\n"
-
-	     << "  --experimental\n"
-	     << "    enable experimental modes\n\n"
 
 #ifndef __CYGWIN__
 	     << "  --rx-ipc-key KEY\n"

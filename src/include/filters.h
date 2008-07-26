@@ -135,4 +135,31 @@ public:
 };
 
 
+
+//=============================================================================
+// Goertzel DFT
+//=============================================================================
+
+class goertzel {
+private:
+	double SR;
+	int K;
+	int N;
+	int count;
+	double Q0;
+	double Q1;
+	double Q2;
+	double k1;
+	double k2;
+	double k3;
+public:
+	goertzel(double sr, int n, int k);
+	~goertzel();
+	void reset();
+	bool run(double v);
+	double real();
+	double imag();
+	double mag();
+};
+
 #endif				/* _FILTER_H */

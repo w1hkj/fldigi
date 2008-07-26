@@ -450,3 +450,83 @@ complex *sfft::run(const complex& input)
 	return &bins[first];
 }
 
+// ============================================================================
+// Goertzel filter
+// Optimized implementation of a DFT for a single frequency of interest
+// SR = sample rate
+// N = Block size (does not need to be a factor of 2!)
+//     bin size = SR / N
+// K = frequency bin of interest = (N * freq / SR)
+//     N should be selected to make K an integer if possible
+//
+// Q0 = current sample
+// Q1 = previous sample (1 delay)
+// Q2 = previous sample (2 delay)
+// w  = (2 * pi * K / N)
+// k1 = cos(w)
+// k2 = sin(w)
+// k3 = 2.0 * k1
+
+// Q0, Q1, Q2 are initialized to zero
+// Iterate N times:
+// Q0 = k3*Q1 - Q2 + sample
+// Q2 = Q1
+// Q1 = Q0
+//
+// After N interations:
+// real = (Q1 - Q2 * k1)
+// imag = Q2 * k2
+// or
+// mag = Q1*Q1 + Q2*Q2 - Q1*Q2*k1
+// ============================================================================
+
+goertzel::goertzel(double sr, int n, int k)
+{
+	double w;
+	SR = sr;
+	K = k;
+	N = n;
+	w = 4.0 * M_PI * K / N;
+	k1 = cos(w);
+	k2 = sin(w);
+	k3 = 2.0 * k1;
+	Q0 = Q1 = Q2 = 0.0;
+	count = N;
+}
+
+goertzel::~goertzel()
+{
+}
+
+void goertzel::reset()
+{
+	Q0 = Q1 = Q2 = 0.0;
+	count = N;
+}
+
+bool goertzel::run(double sample)
+{
+	Q0 = k1 * Q1 - Q2 + sample;
+	Q2 = Q1;
+	Q1 = Q0;
+	if (--count == 0) {
+		count = N;
+		return true;
+	}
+	return false;
+}
+
+double goertzel::real()
+{
+	return (Q1 - Q2 * k1);
+}
+
+double goertzel::imag()
+{
+	return (Q2 * k2);
+}
+
+double goertzel::mag()
+{
+	return (Q1*Q1 - Q2*Q2 - Q1*Q2*k1);
+}
