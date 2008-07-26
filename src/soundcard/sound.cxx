@@ -781,6 +781,9 @@ SoundPort::~SoundPort()
 		delete sems[i];
 	}
 
+	delete sd[0].rb;
+	delete sd[1].rb;
+
         delete [] fbuf;
 }
 

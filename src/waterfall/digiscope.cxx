@@ -44,6 +44,7 @@ Digiscope::Digiscope (int X, int Y, int W, int H) :
 	_highlight = false;
 	_len = MAX_LEN;
 	_zptr = 0;
+	phase_mode = PHASE1;
 }
 
 Digiscope::~Digiscope()

@@ -65,6 +65,7 @@ void wwv::init()
 
 wwv::~wwv() {
 	if (hilbert) delete hilbert;
+	if (lpfilter) delete lpfilter;
 	if (vidfilter) delete vidfilter;
 }
 

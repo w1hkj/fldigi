@@ -88,6 +88,7 @@ feld::~feld()
 	if (hilbert) delete hilbert;
 	if (bpfilt) delete bpfilt;
 	if (bbfilt) delete bbfilt;
+	if (minmaxfilt) delete minmaxfilt;
 }
 
 feld::feld(trx_mode m)
