@@ -153,7 +153,8 @@ int main(int argc, char ** argv)
 	setlocale(LC_TIME, "");
 
 #ifdef __CYGWIN__
-	HomeDir = "C:/fldigi.files/";
+	fl_filename_expand(szHomedir, 119, "$USERPROFILE/fldigi.files/");
+	HomeDir = szHomedir;
 	redirect_streams(HomeDir);
 	atexit(restore_streams);
 #else

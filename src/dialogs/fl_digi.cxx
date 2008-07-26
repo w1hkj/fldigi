@@ -231,7 +231,6 @@ Fl_Menu_Item quick_change_thor[] = {
 	{ mode_info[MODE_THOR5].name, 0, cb_init_mode, (void *)MODE_THOR5 },
 	{ mode_info[MODE_THOR8].name, 0, cb_init_mode, (void *)MODE_THOR8 },
 	{ mode_info[MODE_THOR11].name, 0, cb_init_mode, (void *)MODE_THOR11 },
-//	{ mode_info[MODE_TSOR11].name, 0, cb_init_mode, (void *)MODE_TSOR11 },
 	{ mode_info[MODE_THOR16].name, 0, cb_init_mode, (void *)MODE_THOR16 },
 	{ mode_info[MODE_THOR22].name, 0, cb_init_mode, (void *)MODE_THOR22 },
 	{ 0 }
@@ -551,7 +550,7 @@ void init_modem(trx_mode mode)
 		break;
 
 	case MODE_THOR4: case MODE_THOR5: case MODE_THOR8:
-	case MODE_THOR11:case MODE_THOR16: case MODE_THOR22: //case MODE_TSOR11: 
+	case MODE_THOR11:case MODE_THOR16: case MODE_THOR22: 
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new thor(mode));
 		quick_change = quick_change_thor;
@@ -1379,7 +1378,6 @@ Fl_Menu_Item menu_[] = {
 { mode_info[MODE_THOR5].name, 0, cb_init_mode, (void *)MODE_THOR5, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_THOR8].name, 0, cb_init_mode, (void *)MODE_THOR8, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_THOR11].name, 0, cb_init_mode, (void *)MODE_THOR11, 0, FL_NORMAL_LABEL, 0, 14, 0},
-//{ mode_info[MODE_TSOR11].name, 0, cb_init_mode, (void *)MODE_TSOR11, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_THOR16].name, 0, cb_init_mode, (void *)MODE_THOR16, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_THOR22].name, 0, cb_init_mode, (void *)MODE_THOR22, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
@@ -1391,6 +1389,15 @@ Fl_Menu_Item menu_[] = {
 { mode_info[MODE_THROBX1].name, 0, cb_init_mode, (void *)MODE_THROBX1, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_THROBX2].name, 0, cb_init_mode, (void *)MODE_THROBX2, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_THROBX4].name, 0, cb_init_mode, (void *)MODE_THROBX4, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+{"NBEMS modes", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_DOMINOEX11].name, 0, cb_init_mode, (void *)MODE_DOMINOEX11, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_DOMINOEX22].name, 0, cb_init_mode, (void *)MODE_DOMINOEX22, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK16].name, 0,  cb_init_mode, (void *)MODE_MFSK16, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK32].name, 0,  cb_init_mode, (void *)MODE_MFSK32, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_PSK125].name, 0, cb_init_mode, (void *)MODE_PSK125, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_PSK250].name, 0, cb_init_mode, (void *)MODE_PSK250, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 { mode_info[MODE_WWV].name, 0, cb_init_mode, (void *)MODE_WWV, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -2274,7 +2281,7 @@ void resetOLIVIA() {
 void resetTHOR() {
 	trx_mode md = active_modem->get_mode();
 	if (md == MODE_THOR4 || md == MODE_THOR5 || md == MODE_THOR8 ||
-	    md == MODE_THOR11 || /* md == MODE_TSOR11 || */
+	    md == MODE_THOR11 ||
 	    md == MODE_THOR16 || md == MODE_THOR22 )
 		trx_start_modem(active_modem);
 }
