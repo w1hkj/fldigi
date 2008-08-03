@@ -81,17 +81,10 @@ AC_FUNC_STRFTIME
 AC_FUNC_STRTOD
 AC_CHECK_FUNCS([getaddrinfo gethostbyname localtime_r memmove memset mkdir select snprintf socket strcasecmp strchr strdup strerror strncasecmp strcasestr strrchr strstr strtol uname vsnprintf])
 
-# Check for clock_gettime
-LIBS_save="$LIBS"; LIBS=""
-AC_SEARCH_LIBS([clock_gettime], [rt], [ac_cv_clock_gettime=1; EXTRA_LIBS="$EXTRA_LIBS $LIBS"],
-               [ac_cv_clock_gettime=0])
-AC_DEFINE_UNQUOTED(HAVE_CLOCK_GETTIME, $ac_cv_clock_gettime, [Define to 1 if we have clock_gettime])
-LIBS="$LIBS_save"
-# Check for dlopen
-LIBS_save="$LIBS"; LIBS=""
-AC_SEARCH_LIBS([dlopen], [dl], [ac_cv_dlopen=1; EXTRA_LIBS="$EXTRA_LIBS $LIBS"], [ac_cv_dlopen=0])
-AC_DEFINE_UNQUOTED(HAVE_DLOPEN, $ac_cv_dlopen, [Define to 1 if we have dlopen])
-LIBS="$LIBS_save"
+AC_FLDIGI_SEARCH_LIBS([dlopen], [dl])
+AC_FLDIGI_SEARCH_LIBS([clock_gettime], [rt])
+AC_FLDIGI_SEARCH_LIBS([sem_unlink], [rt])
+AC_FLDIGI_SEARCH_LIBS([sem_timedwait], [rt])
 AC_SUBST([EXTRA_LIBS])
 
 
