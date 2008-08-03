@@ -105,7 +105,6 @@ mfsk::~mfsk()
 		picTxWin->hide();
 	if (picRxWin)
 		picRxWin->hide();
-	activate_mfsk_image_item(false);
 
 	if (bpfilt) delete bpfilt;
 	if (rxinlv) delete rxinlv;
@@ -154,7 +153,7 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		numtones = 16;
 		cap |= CAP_IMG;
 		break;
-// experimental modes
+
 	case MODE_MFSK4:
 		samplerate = 8000;
 		symlen = 2048;
@@ -258,8 +257,10 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 	
 // picTxWin and picRxWin are created once to support all instances of mfsk
 	if (!picTxWin) createTxViewer();
-	if (!picRxWin) createRxViewer();
-
+	if (!picRxWin) {
+		createRxViewer();
+		activate_mfsk_image_item(true);
+	}
 	init();
 
 }
@@ -342,7 +343,6 @@ void mfsk::recvpic(complex z)
 		
 		if (color) {
 			pixelnbr = rgb + row + 3*col;
-//!			updateRxPic(byte, pixelnbr);
 			REQ(updateRxPic, byte, pixelnbr);
 			if (++col == picW) {
 				col = 0;
@@ -353,7 +353,6 @@ void mfsk::recvpic(complex z)
 			}
 		} else {
 			for (int i = 0; i < 3; i++)
-//!			updateRxPic(byte, pixelnbr++);
 				REQ(updateRxPic, byte, pixelnbr++);
 		}
 		picf = 0.0;
@@ -379,7 +378,6 @@ void mfsk::recvchar(int c)
 // 88 nulls at 4 samples per pixel
 // 176 nulls at 2 samples per pixel
 		counter = 352; 
-//		if (symbolbit == 4) counter += symlen;
 		if (symbolbit == symbits) counter += symlen;
 		rxstate = RX_STATE_PICTURE_START;
 		picturesize = RXspp * picW * picH * (color ? 3 : 1);
@@ -416,8 +414,8 @@ void mfsk::decodesymbol(unsigned char symbol)
 
 	symcounter = symcounter ? 0 : 1;
 
-// only modes with 3 or 5 symbits need a vote
-	if (symbits == 5 || symbits == 3) {
+// only modes with odd number of symbits need a vote
+	if (symbits == 5 || symbits == 3) { // could use symbits % 2 == 0
 		if (symcounter) {
 			if ((c = dec1->decode(symbolpair, &met)) == -1)
 				return;
@@ -670,7 +668,7 @@ int mfsk::rx_process(const double *buf, int len)
 			if (--counter == 0) {
 				counter = picturesize;
 				rxstate = RX_STATE_PICTURE;
-				showRxViewer (picW, picH);
+				REQ( showRxViewer, picW, picH );
 			}
 			continue;
 		}

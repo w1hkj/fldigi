@@ -149,9 +149,7 @@ void showRxViewer(int W, int H)
 	btnpicRxAbort->show();
 	btnpicRxClose->resize(winW/2 + 5, H + 6, 60, 24);
 	picRx->clear();
-#ifndef __CYGWIN__
 	picRxWin->show();
-#endif
 	FL_UNLOCK_E();
 }
 

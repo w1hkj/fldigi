@@ -61,7 +61,7 @@ extern int fl_join(Fl_Thread t);
 
 
 // we have 4 threads, only 3 of which will use qrunner
-enum { UNKNOWN_TID = -1, TRX_TID, QRZ_TID, RIGCTL_TID,
+enum { UNKNOWN_TID = -1, TRX_TID, QRZ_TID, RIGCTL_TID, ARQ_TID,
 #if USE_XMLRPC
        XMLRPC_TID,
 #endif

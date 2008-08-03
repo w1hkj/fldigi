@@ -14,14 +14,14 @@ static int numsocks = 0;
 
 Socket::Socket() : error(false), m_sock ( INVALID_SOCKET )
 {
-#ifdef WIN32
+//#ifdef WIN32
 // Start Winsock up
-    WSAData wsaData;
-    if (WSAStartup(MAKEWORD(1, 1), &wsaData) != 0) 
-		error = true;
-	else
-#endif
-		numsocks++;
+//    WSAData wsaData;
+ //   if (WSAStartup(MAKEWORD(1, 1), &wsaData) != 0) 
+//		error = true;
+//	else
+//#endif
+	numsocks++;
 	ssize = 0;
 	sptr = 0;
 }
@@ -37,11 +37,11 @@ void Socket::close()
 	if (m_sock != INVALID_SOCKET) {
 		::close ( m_sock );
 		numsocks--;
-#ifdef WIN32
+//#ifdef WIN32
 // Shut Winsock down to release DLL resources
-		if (numsocks == 0)
-			WSACleanup();
-#endif
+//		if (numsocks == 0)
+//			WSACleanup();
+//#endif
 	}
 }
 
@@ -50,14 +50,14 @@ bool Socket::create()
 	m_sock = socket ( AF_INET, SOCK_STREAM, IPPROTO_TCP	);
 	if (m_sock == INVALID_SOCKET) {
 		char szError[40];
-#ifdef WIN32
-		snprintf(szError, sizeof(szError), "Socket error, create(): %ld", WSAGetLastError() );
-		put_status(szError, 5);
-		WSACleanup();
-#else
+//#ifdef WIN32
+//		snprintf(szError, sizeof(szError), "Socket error, create(): %ld", WSAGetLastError() );
+//		put_status(szError, 5);
+//		WSACleanup();
+//#else
 		snprintf(szError, sizeof(szError), "Socket error, create()");
 		put_status(szError, 5);
-#endif
+//#endif
 		return 1;
 	}
 	ssize = 0;
@@ -100,11 +100,11 @@ bool Socket::listen() const
 bool Socket::accept ( Socket& new_socket ) const
 {
   int addr_length = sizeof ( m_addr );
-#ifdef WIN32
-  new_socket.m_sock = ::accept ( m_sock, ( sockaddr * ) &m_addr, &addr_length );
-#else
+//#ifdef WIN32
+//	new_socket.m_sock = ::accept ( m_sock, ( sockaddr * ) &m_addr, &addr_length );
+//#else
   new_socket.m_sock = ::accept ( m_sock, ( sockaddr * ) &m_addr, ( socklen_t * ) &addr_length );
-#endif
+//#endif
   if ( new_socket.m_sock <= 0 )
     return false;
   else
@@ -113,11 +113,11 @@ bool Socket::accept ( Socket& new_socket ) const
 
 bool Socket::putch(char c)
 {
-#ifdef WIN32
-  int status = ::send (m_sock, &c, 1, 0);
-#else
+//#ifdef WIN32
+//  int status = ::send (m_sock, &c, 1, 0);
+//#else
   int status = ::send (m_sock, &c, 1, MSG_NOSIGNAL );
-#endif
+//#endif
   if (status == -1)
     return false;
   return true;
@@ -143,15 +143,15 @@ unsigned char Socket::getbyte()
 	if (result == 0) { // timeout
 		return 0;
 	}
-#ifdef WIN32
-	if (result == SOCKET_ERROR) { // select error
+//#ifdef WIN32
+//	if (result == SOCKET_ERROR) { // select error
 //std::cout << WSAGetLastError() << std::endl; std::cout.flush();
-		return 0;
-	}
-#else
+//		return 0;
+//	}
+//#else
 	if (result == -1)  // select error
 		return 0;	
-#endif
+//#endif
 	if (FD_ISSET(m_sock, &testfds)) {
 		int status = ::recv ( m_sock, sbuff, 1024, 0 );
 		if (status > 0) {
@@ -176,14 +176,14 @@ bool Socket::send ( const string s) const
 {
 //printf("%s",s.c_str());
 //std::cout.flush();
-#ifdef WIN32
-  int status = ::send (m_sock, s.c_str(), s.size(), 0);
-#else
+//#ifdef WIN32
+//  int status = ::send (m_sock, s.c_str(), s.size(), 0);
+//#else
   int status = ::send ( m_sock, s.c_str(), s.size(), MSG_NOSIGNAL );
-#endif
-  if ( status == -1 )
-      return false;
-  return true;
+//#endif
+	if ( status == -1 )
+		return false;
+	return true;
 }
 
 size_t Socket::recv ( string & s)
@@ -218,16 +218,16 @@ bool Socket::connect ( string host, const int port )
 
 void Socket::set_non_blocking ( const bool b )
 {
-#ifndef WIN32
-  int opts;
-  opts = fcntl ( m_sock, F_GETFL );
-  if ( opts < 0 )
-      return;
-  if ( b )
-    opts = ( opts | O_NONBLOCK );
-  else
-    opts = ( opts & ~O_NONBLOCK );
-  fcntl ( m_sock,  F_SETFL,opts );
-#endif
-  return;
+//#ifndef WIN32
+	int opts;
+	opts = fcntl ( m_sock, F_GETFL );
+	if ( opts < 0 )
+		return;
+	if ( b )
+		opts = ( opts | O_NONBLOCK );
+	else
+		opts = ( opts & ~O_NONBLOCK );
+	fcntl ( m_sock,  F_SETFL,opts );
+//#endif
+	return;
 }

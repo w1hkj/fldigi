@@ -39,14 +39,13 @@ extern bool			arqmode;
 extern string		ArqFilename;
 extern bool			mailclient;
 extern bool			mailserver;
-extern bool			pskmail_text_available;
-extern char			pskmail_get_char();
-extern void			pskmail_loop(void *);
-extern void		close_pskmail_loop();
+extern bool			arq_text_available;
+extern char			arq_get_char();
 
-#ifdef __CYGWIN__
-extern void			writeToARQfile(unsigned int);
-#endif
+// ARQ mail implementation
+extern void			arq_init();
+extern void			arq_close();
+extern void			WriteARQ(unsigned int);
 
 struct RXMSGSTRUC {
 	long int msg_type;
