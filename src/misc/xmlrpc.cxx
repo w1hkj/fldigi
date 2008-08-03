@@ -31,16 +31,6 @@
 #include <exception>
 #include <cstdlib>
 
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <sys/select.h>
-
 #include <xmlrpc-c/base.hpp>
 #include <xmlrpc-c/registry.hpp>
 #include <xmlrpc-c/server_abyss.hpp>
@@ -48,6 +38,7 @@
 #include <FL/Fl_Value_Slider.H>
 
 #include "globals.h"
+#include "socket.h"
 #include "threads.h"
 #include "modem.h"
 #include "trx.h"
@@ -78,9 +69,9 @@ static Fl_Thread* server_thread;
 
 XML_RPC_Server* XML_RPC_Server::inst = 0;
 
-XML_RPC_Server::XML_RPC_Server(int sfd_)
+XML_RPC_Server::XML_RPC_Server()
 {
-	sfd = sfd_;
+	server_socket = new Socket;
 	methods = new vector<rpc_method>;
 	add_methods();
 
@@ -101,21 +92,19 @@ void XML_RPC_Server::start(const char* node, const char* service)
 	if (inst)
 		return;
 
-	int sfd = -1, err;
-	if ((err = get_socket(node, service, sfd)) != 0) {
-#if HAVE_GETADDRINFO
-		if (err < 0)
-			cerr << gai_strerror(err) << '\n';
-		else
-#endif
-			cerr << strerror(err) << '\n';
+	inst = new XML_RPC_Server;
 
+	try {
+		inst->server_socket->open(Address(node, service));
+	}
+	catch (const SocketException& e) {
+		cerr << "Could not start XML-RPC server (" << e.what() << ")\n";
 		return;
 	}
 
-	inst = new XML_RPC_Server(sfd);
 	fl_create_thread(*server_thread, thread_func, NULL);
 }
+
 void XML_RPC_Server::stop(void)
 {
 	if (!inst)
@@ -123,90 +112,6 @@ void XML_RPC_Server::stop(void)
 	delete inst;
 	inst = 0;
 }
-
-int XML_RPC_Server::get_socket(const char* node, const char* service, int& fd)
-{
-	int res = 0;
-
-#if HAVE_GETADDRINFO
-	struct addrinfo hints, *ai, *aip;
-
-	memset(&hints, 0, sizeof(hints));
-#  ifdef AI_ADDRCONFIG
-	hints.ai_flags = AI_ADDRCONFIG;
-#  endif
-	hints.ai_family = AF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
-
-	bool num_service = service;
-	if (num_service) { // check
-		const char* p = service;
-		while (*p)
-			if (!isdigit(*p++))
-				num_service = false;
-	}
-	if (num_service)
-		hints.ai_flags |= AI_NUMERICSERV;
-
-	if ((res = getaddrinfo(node, service, &hints, &ai)) < 0)
-		return res;
-	for (aip = ai; aip; aip = ai->ai_next) { // use the first one that works
-		if ((fd = socket(aip->ai_family, aip->ai_socktype, aip->ai_protocol)) == -1)
-			continue;
-		if (bind(fd, aip->ai_addr, aip->ai_addrlen) == 0)
-			break;
-	}
-	if (!aip) { // no usable address found
-		res = errno;
-		if (fd >= 0)
-			close(fd);
-	}
-
-	freeaddrinfo(ai);
-#else
-	struct sockaddr_in server_addr;
-	struct hostent* server_entry;
-	struct servent* service_entry;
-
-	memset(&server_addr, 0, sizeof(server_addr));
-	if ((service_entry = getservbyname(service, NULL)) == NULL) {
-		bool num_service = service;
-		if (num_service) { // check
-			const char* p = service;
-			while (*p)
-				if (!isdigit(*p++))
-					num_service = false;
-		}
-		if (!num_service)
-			return errno;
-		if ((service_entry = getservbyport(atoi(service), NULL)) == NULL)
-			server_addr.sin_port = htons(atoi(service));
-	}
-	else
-		server_addr.sin_port = service_entry->s_port;
-	if ((server_entry = gethostbyname(node)) == NULL)
-		return errno;
-
-	server_addr.sin_family = AF_INET;
-	server_addr.sin_addr = *((struct in_addr *)server_entry->h_addr_list[0]);
-
-	if ((fd = socket(server_addr.sin_family, SOCK_STREAM, 0)) == -1)
-		return errno;
-	if (bind(fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1)
-		return errno;
-
-	res = 0;
-#endif // HAVE_GETADDRINFO
-
-	if (res == 0) {
-		int v = 1;
-		if (setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &v, sizeof(v)) == -1)
-			perror("setsockopt TCP_NODELAY");
-	}
-
-	return res;
-}
-
 
 void* XML_RPC_Server::thread_func(void*)
 {
@@ -224,41 +129,32 @@ void* XML_RPC_Server::thread_func(void*)
 #endif
 	    		      );
 
-	int v = 1;
-	if (setsockopt(inst->sfd, SOL_SOCKET, SO_REUSEADDR, &v, sizeof(v))== -1)
-		perror("setsockopt SO_REUSEADDR");
-	listen(inst->sfd, SOMAXCONN);
-
-	int cfd = -1;
-	fd_set rset;
-	ssize_t r;
-	struct timeval timeout;
+	try {
+		inst->server_socket->bind();
+		struct timeval t = { 0, 200000 };
+		inst->server_socket->set_timeout(t);
+		inst->server_socket->set_nonblocking();
+	}
+	catch (const SocketException& e) {
+		cerr << "Could not start XML-RPC server (" << e.what() << ")\n";
+		goto ret;
+	}
 
 	while (inst->run) {
-		timeout.tv_sec = 0;
-		timeout.tv_usec = 200000;
-		FD_ZERO(&rset);
-		FD_SET(inst->sfd, &rset);
-		r = select(inst->sfd + 1, &rset, 0, 0, &timeout);
-		if (r == -1) {
-			perror("select");
-			goto ret;
+		Socket client;
+		try {
+			server.runConn(inst->server_socket->accept().fd());
 		}
-		else if (r == 0)
-			continue;
-
-		if ((cfd = accept(inst->sfd, NULL, 0)) == -1) {
-			perror("accept");
-			goto ret;
+		catch (const SocketException& e) {
+			if (e.error() != ETIMEDOUT) {
+				cerr << e.what() << '\n';
+				break;
+			}
 		}
-		server.runConn(cfd);
-		close(cfd);
 	}
 
 ret:
-	close(cfd);
-	close(inst->sfd);
-	inst->sfd = -1;
+	inst->server_socket->close();
 
 	return NULL;
 }

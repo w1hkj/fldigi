@@ -26,26 +26,15 @@
 
 #include <config.h>
 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
-#include <string>
-#include <sys/types.h>
 #include <sys/time.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
-#include <math.h>
-#include <ctype.h>
-#include <errno.h>
+#include <string>
+#include <cstring>
+#include <cmath>
+#include <cctype>
 
 #include <FL/fl_ask.H>
 
+#include "socket.h"
 #include "threads.h"
 
 #include "misc.h"
@@ -103,9 +92,7 @@ static void *CALLSIGNloop(void *args);
 bool parseSessionKey();
 bool parse_xml();
 
-int connect_to_server(const char* node, const char* service, int* fd);
-ssize_t read_from_server(int fd, const string& request, string& reply, struct timeval* timeout);
-const char* get_error_string(int err);
+bool request_reply(const string& node, const string& service, const string& request, string& reply);
 
 bool getSessionKey(string& sessionpage);
 bool QRZGetXML(string& xmlpage);
@@ -315,136 +302,34 @@ bool parse_xml(const string& xmlpage)
 	return true;
 }
 
-// Open a stream socket, connect it to "service" running on "node", and copy it
-// to *fd. Return 0 if successful, < 0 if getaddrinfo failed, or errno if there
-// was some other error.
-int connect_to_server(const char* node, const char* service, int* fd)
+bool request_reply(const string& node, const string& service, const string& request, string& reply)
 {
-	int res = 0;
+	try {
+		Socket s(Address(node, service));
+		s.connect();
+		s.set_nonblocking();
+		struct timeval timeout = { 5, 0 }; // timeout = 5 seconds
+		s.set_timeout(timeout);
 
-#if HAVE_GETADDRINFO
-	struct addrinfo hints, *ai, *aip;
-
-	memset(&hints, 0, sizeof(hints));
-#  ifdef AI_ADDRCONFIG
-	hints.ai_flags = AI_ADDRCONFIG;
-#  endif
-	hints.ai_family = AF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
-
-	if ((res = getaddrinfo(node, service, &hints, &ai)) < 0)
-		return res;
-	for (aip = ai; aip; aip = ai->ai_next) { // use the first one that works
-		if ((*fd = socket(aip->ai_family, aip->ai_socktype, aip->ai_protocol)) == -1)
-			continue;
-		if (connect(*fd, aip->ai_addr, aip->ai_addrlen) == 0)
-			break;
-	}
-	if (!aip) { // no usable address found
-		res = errno;
-		if (*fd >= 0)
-			close(*fd);
-	}
-
-	freeaddrinfo(ai);
-#else
-	struct sockaddr_in server_addr;
-	struct hostent* server_entry;
-	struct servent* service_entry;
-
-	if ((service_entry = getservbyname(service, NULL)) == NULL)
-		return errno;
-	if ((server_entry = gethostbyname(node)) == NULL)
-		return errno;
-
-	memset(&server_addr, 0, sizeof(server_addr));
-	server_addr.sin_family = AF_INET;
-	server_addr.sin_addr = *((struct in_addr *)server_entry->h_addr_list[0]);
-	server_addr.sin_port = service_entry->s_port;
-
-	if ((*fd = socket(server_addr.sin_family, SOCK_STREAM, 0)) == -1)
-		return errno;
-	if (connect(*fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1)
-		return errno;
-
-	res = 0;
-#endif // HAVE_GETADDRINFO
-
-	return res;
-}
-
-// Write "request" to socket fd, append reply to "reply". Wait a maximum of
-// "timeout" for each operation. Return the number of bytes read, or -ETIMEDOUT
-// if a read or write timed out, or -errno if there was some other error.
-ssize_t read_from_server(int fd, const string& request, string& reply, struct timeval* timeout)
-{
-	char rbuffer[32768];
-	fd_set rwset;
-	ssize_t res, n;
-
-	// write request
-	n = 0;
-	for (;;) {
-		FD_ZERO(&rwset);
-		FD_SET(fd, &rwset);
-		res = select(fd + 1, 0, &rwset, 0, timeout);
-		if (res == -1)
-			return -errno;
-		else if (res == 0)
-			return -ETIMEDOUT;
-
-		res = write(fd, request.c_str() + n, request.length() - n);
-		if (res > 0)
-			n += res;
-		else
-			return -errno;
-		if ((size_t)n == request.length())
-			break;
-	}
-
-	// read reply
-	n = 0;
-	for (;;) {
-		FD_ZERO(&rwset);
-		FD_SET(fd, &rwset);
-		res = select(fd + 1, &rwset, 0, 0, timeout);
-		if (res == -1)
-			return -errno;
-		else if (res == 0)
-			return -ETIMEDOUT;
-
-		res = read(fd, rbuffer, sizeof(rbuffer));
-		if (res > 0) {
-			reply.append(rbuffer, (unsigned)res);
-			n += res;
+		if (s.send(request) != request.length()) {
+			error_string = "Request timed out";
+			return false;
 		}
-		else {
-			if (res < 0)
-				return -errno;
-			break;
+		if (s.recv(reply) == 0) {
+			error_string = "Request timed out";
+			return false;
 		}
 	}
+	catch (const SocketException& e) {
+		error_string = e.what();
+		return false;
+	}
 
-	return n;
-}
-
-const char* get_error_string(int err)
-{
-#if HAVE_GETADDRINFO
-	if (err < 0)
-		return gai_strerror(err);
-	else
-#endif
-		return strerror(err);
+	return true;
 }
 
 bool getSessionKey(string& sessionpage)
 {
-	int r, sockfd;
-	if ((r = connect_to_server(host.c_str(), "http", &sockfd)) != 0) {
-		error_string = get_error_string(r);
-		return false;
-	}
 
 	string detail;
 	detail =  "GET /bin/xml?username=";
@@ -462,24 +347,11 @@ bool getSessionKey(string& sessionpage)
 	detail += "Connection: close\n";
 	detail += "\n";
 
-	struct timeval timeout = { 5, 0 }; // timeout = 5 seconds
-	ssize_t nread = read_from_server(sockfd, detail, sessionpage, &timeout);
-	close(sockfd);
-	if (nread < 0 && nread != -ETIMEDOUT)
-		error_string = strerror(-nread);
-
-	// for some strange reason we return successfully even if we time out
-	return nread == -ETIMEDOUT || nread > 0;
+	return request_reply(host, "http", detail, sessionpage);
 }
 
 bool QRZGetXML(string& xmlpage)
 {
-	int r, sockfd;
-	if ((r = connect_to_server(host.c_str(), "http", &sockfd)) != 0) {
-		error_string = get_error_string(r);
-		return false;
-	}
-
 	string detail;
 	detail = "GET /bin/xml?s=";
 	detail += qrzSessionKey;
@@ -492,13 +364,7 @@ bool QRZGetXML(string& xmlpage)
 	detail += "Connection: close\n";
 	detail += "\n";
 
-	struct timeval timeout = { 5, 0 }; // timeout = 5 seconds
-	ssize_t nread = read_from_server(sockfd, detail, xmlpage, &timeout);
-	close(sockfd);
-	if (nread < 0)
-		error_string = strerror(-nread);
-
-	return nread > 0;
+	return request_reply(host, "http", detail, xmlpage);
 }
 
 int bearing(const char *myqra, const char *dxqra) {
@@ -797,12 +663,6 @@ void parse_html(const string& htmlpage)
 
 bool HAMCALLget(string& htmlpage)
 {
-	int r, sockfd;
-	if ((r = connect_to_server(HAMCALL_HOST, "http", &sockfd)) != 0) {
-		error_string = get_error_string(r);
-		return false;
-	}
-
 	string url_detail;
 	url_detail =  "GET /call?username=";
 	url_detail += progdefaults.QRZusername;
@@ -814,13 +674,7 @@ bool HAMCALLget(string& htmlpage)
 	url_detail += VERSION;
 	url_detail += "\r\n";
 
-	struct timeval timeout = { 10, 0 }; // timeout = 10 seconds
-	ssize_t nread = read_from_server(sockfd, url_detail, htmlpage, &timeout);
-	close(sockfd);
-	if (nread < 0)
-		error_string = strerror(-nread);
-
-	return nread > 0;
+	return request_reply(host, "http", url_detail, htmlpage);
 }
 
 void HAMCALLquery()
