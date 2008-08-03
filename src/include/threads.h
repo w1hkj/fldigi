@@ -43,6 +43,8 @@
 #ifndef Threads_H
 #  define Threads_H
 
+#include <config.h>
+
 #include <pthread.h>
 
 typedef pthread_t			Fl_Thread;
@@ -59,6 +61,13 @@ extern int fl_lock(Fl_Mutex *m);
 extern int fl_unlock(Fl_Mutex *m);
 extern int fl_join(Fl_Thread t);
 
+#include <semaphore.h>
+#if !HAVE_SEM_TIMEDWAIT
+#  include <time.h>
+int sem_timedwait(sem_t* sem, const struct timespec* abs_timeout);
+#endif
+
+int sem_timedwait_rel(sem_t* sem, double rel_timeout);
 
 // we have 4 threads, only 3 of which will use qrunner
 enum { UNKNOWN_TID = -1, TRX_TID, QRZ_TID, RIGCTL_TID, ARQ_TID,

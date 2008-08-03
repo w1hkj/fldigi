@@ -77,3 +77,8 @@ bool operator>(const struct timespec &t0, const struct timespec &t1)
         else
                 return false;
 }
+
+bool operator==(const struct timespec &t0, const struct timespec &t1)
+{
+	return t0.tv_sec == t1.tv_sec && t0.tv_nsec == t1.tv_nsec;
+}
