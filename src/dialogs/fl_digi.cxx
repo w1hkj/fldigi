@@ -433,7 +433,7 @@ void cb_mnuSaveMacro(Fl_Menu_*, void*) {
 //}
 
 bool clean_exit() {
-	close_pskmail_loop();
+	arq_close();
 
 	if (progdefaults.changed == true) {
 		switch (fl_choice("Save changed configuration before exiting?", "Cancel", "Save", "Don't save")) {
@@ -2024,11 +2024,10 @@ void put_rx_char(unsigned int data)
 
 #ifndef __CYGWIN__
 	rxmsgid = msgget( (key_t) progdefaults.rx_msgid, 0666);
-#else
-	rxmsgid = -1;
-#endif
-
 	if (mailclient || mailserver || rxmsgid != -1 || arqmode)
+#else
+	if (mailclient || mailserver || arqmode)
+#endif
 		asc = ascii2;
 	if (active_modem->get_mode() == MODE_RTTY ||
 		active_modem->get_mode() == MODE_CW)
@@ -2052,16 +2051,8 @@ void put_rx_char(unsigned int data)
 	}
 	last = data;
 
-#ifndef __CYGWIN__
-	if ( rxmsgid != -1) {
-		rxmsgst.msg_type = 1;
-		rxmsgst.c = data;
-		msgsnd (rxmsgid, (void *)&rxmsgst, 1, IPC_NOWAIT);
-	}
-#else
-	writeToARQfile(data);
-#endif
-
+	WriteARQ(data);
+	
 	string s = iscntrl(data) ? ascii2[data & 0x7F] : string(1, data);
 	if (Maillogfile)
 		Maillogfile->log_to_file(cLogfile::LOG_RX, s);
@@ -2193,8 +2184,8 @@ void put_rx_data(int *data, int len)
 
 int get_tx_char(void)
 {
-	if (pskmail_text_available)
-		return pskmail_get_char();
+	if (arq_text_available)
+		return arq_get_char();
 
 	int c;
 	static int pending = -1;

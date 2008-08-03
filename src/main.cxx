@@ -105,7 +105,6 @@ cLogfile	*Maillogfile = (cLogfile *)0;
 FILE	*server;
 FILE	*client;
 bool	mailserver = false, mailclient = false, arqmode = false;
-extern	void start_pskmail();
 
 RXMSGSTRUC rxmsgst;
 int		rxmsgid = -1;
@@ -267,7 +266,7 @@ int main(int argc, char ** argv)
 	fl_digi_main->show(argc, argv);
 	progStatus.initLastState();
 	
-	Fl::add_timeout(1.0, pskmail_loop);
+	arq_init();
 
 #if USE_XMLRPC
 	if (progdefaults.xmlrpc_server)

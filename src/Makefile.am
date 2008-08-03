@@ -259,7 +259,7 @@ fldigi_SOURCES += \
 	misc/macros.cxx \
 	misc/misc.cxx \
 	misc/newinstall.cxx \
-	misc/pskmail.cxx \
+	misc/arq_io.cxx \
 	misc/qrzcall.cxx \
 	misc/qrzlib.cxx \
 	misc/stacktrace.cxx \
