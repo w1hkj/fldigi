@@ -215,6 +215,7 @@ fldigi_SOURCES += \
 	include/rsid.h \
 	include/rtty.h \
 	include/serial.h \
+	include/socket.h \
 	include/sound.h \
 	include/soundconf.h \
 	include/stacktrace.h \
@@ -256,6 +257,7 @@ fldigi_SOURCES += \
 	misc/arq_io.cxx \
 	misc/qrzcall.cxx \
 	misc/qrzlib.cxx \
+	misc/socket.cxx \
 	misc/stacktrace.cxx \
 	misc/status.cxx \
 	misc/threads.cxx \
@@ -338,15 +340,8 @@ EXTRA_fldigi_SOURCES += \
 	rigcontrol/winserial.cxx \
 	rsid/rsid_fft.cxx \
 	rsid/rsid_fft.h \
-	include/Socket.h \
-	include/ServerSocket.h \
-	include/ClientSocket.h \
-	include/SocketException.h \
 	include/linserial.h \
-	include/winserial.h \
-	sockets/Socket.cxx \
-	sockets/ClientSocket.cxx \
-	sockets/ServerSocket.cxx
+	include/winserial.h
 
 # Additional non-source files that we distribute
 EXTRA_DIST = \
