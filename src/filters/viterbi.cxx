@@ -63,7 +63,7 @@ viterbi::viterbi(int k, int poly1, int poly2)
 viterbi::~viterbi()
 {
 	if (output) delete [] output;
-	for (int i = 0; i < nstates; i++) {
+	for (int i = 0; i < PATHMEM; i++) {
 		if (metrics[i]) delete [] metrics[i];
 		if (history[i]) delete [] history[i];
 	}

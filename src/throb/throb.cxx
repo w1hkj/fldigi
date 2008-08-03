@@ -155,7 +155,6 @@ throb::throb(trx_mode throb_mode) : modem()
 	case MODE_THROB4:
 	default:
 		symlen = SYMLEN_4;
-		mk_full_pulse(symlen);
 		txpulse = mk_full_pulse(symlen);
 		fp = mk_full_pulse(symlen / DOWN_SAMPLE);
 		num_tones = 9;
@@ -195,7 +194,6 @@ throb::throb(trx_mode throb_mode) : modem()
 
         case MODE_THROBX4: //NONSTANDARD
                 symlen = SYMLEN_4;
-				mk_full_pulse(symlen);
                 txpulse = mk_full_pulse(symlen);
                 fp = mk_full_pulse(symlen / DOWN_SAMPLE);
                 num_tones = 11;
