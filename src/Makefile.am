@@ -100,12 +100,6 @@ appbundle:
 	sh $(srcdir)/../scripts/mkappbundle.sh "$(srcdir)/../data" .
 clean-local:
 	@rm -rf mac-bundle mac-libs-bundle
-else
-appbundle:
-	@echo >&2
-	@echo "*** This target only works on OSX ***" >&2
-	@echo >&2
-	@false
 endif
 
 TESTS = $(srcdir)/../scripts/tests/config-h.sh
