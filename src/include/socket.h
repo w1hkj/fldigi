@@ -27,6 +27,7 @@
 
 #include <sys/time.h>
 #include <netdb.h>
+#include <netinet/in.h>
 
 #include <string>
 #include <exception>

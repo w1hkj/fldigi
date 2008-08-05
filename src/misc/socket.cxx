@@ -164,18 +164,18 @@ static void free_charpp(char** pp)
 
 static void free_hostent(struct hostent* hp)
 {
-	free(hp->h_name);
+	free(const_cast<char*>(hp->h_name));
 	free_charpp(hp->h_aliases);
 	if (hp->h_addr_list) {
 		for (char** p = hp->h_addr_list; *p; p++)
-			free(*p);
+			delete [] *p;
 		delete [] hp->h_addr_list;
 	}
 }
 
 static void free_servent(struct servent* sp)
 {
-	free(sp->s_name);
+	free(const_cast<char*>(sp->s_name));
 	free_charpp(sp->s_aliases);
 	free(sp->s_proto);
 }
@@ -298,11 +298,8 @@ void Address::lookup(void)
 	if (node.empty())
 		node = "0.0.0.0";
 	struct hostent* hp;
-	if ((hp = gethostbyname(node.c_str())) == NULL) {
-		in_addr_t in_addr = inet_addr(node.c_str());
-		if ((hp = gethostbyaddr(&in_addr, sizeof(in_addr), AF_INET)) == NULL)
-			throw SocketException(hstrerror(HOST_NOT_FOUND));
-	}
+	if ((hp = gethostbyname(node.c_str())) == NULL)
+		throw SocketException(hstrerror(HOST_NOT_FOUND));
 	copy_hostent(&host_entry, hp);
 
 	int port;
@@ -350,14 +347,20 @@ size_t Address::size(void) const
 const addr_info_t* Address::get(size_t n) const
 {
 #if HAVE_GETADDRINFO
+	if (!info)
+		return NULL;
+
 	struct addrinfo* p = info;
 	for (size_t i = 0; i < n; i++)
 		p = p->ai_next;
-#ifndef NDEBUG
+#  ifndef NDEBUG
 	cerr << "found " << inet_ntoa(((struct sockaddr_in*)p->ai_addr)->sin_addr) << endl;
-#endif
+#  endif
 	return p;
 #else
+	if (!host_entry.h_addr_list)
+		return NULL;
+
 	memset(&saddr, 0, sizeof(saddr));
 	saddr.sin_family = AF_INET;
 	saddr.sin_addr = *(struct in_addr*)host_entry.h_addr_list[n];
@@ -369,9 +372,9 @@ const addr_info_t* Address::get(size_t n) const
 	addr.ai_protocol = IPPROTO_TCP;
 	addr.ai_addrlen = sizeof(saddr);
 	addr.ai_addr = (struct sockaddr*)&saddr;
-#ifndef NDEBUG
+#  ifndef NDEBUG
 	cerr << "found " << inet_ntoa(((struct sockaddr_in*)addr.ai_addr)->sin_addr) << endl;
-#endif
+#  endif
 	return &addr;
 #endif
 }
