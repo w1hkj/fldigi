@@ -6,5 +6,7 @@ SUBDIRS = src
 flgen:
 	(cd src && $(MAKE) $(AM_MAKEFLAGS) $@)
 
+if DARWIN
 appbundle:
 	(cd src && $(MAKE) $(AM_MAKEFLAGS) $@)
+endif

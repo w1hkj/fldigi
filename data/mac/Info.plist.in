@@ -32,10 +32,8 @@
 	<key>CFBundleLongVersionString</key>
 	<string>%%VERSION%%</string>
 
-<!--
 	<key>CFBundleIconFile</key>
 	<string>%%ICON%%</string>
--->
 
 	<key>NSAppleScriptEnabled</key>
 	<string>No</string>

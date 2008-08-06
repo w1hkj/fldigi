@@ -100,12 +100,6 @@ appbundle:
 	sh $(srcdir)/../scripts/mkappbundle.sh "$(srcdir)/../data" .
 clean-local:
 	@rm -rf mac-bundle mac-libs-bundle
-else
-appbundle:
-	@echo >&2
-	@echo "*** This target only works on OSX ***" >&2
-	@echo >&2
-	@false
 endif
 
 TESTS = $(srcdir)/../scripts/tests/config-h.sh
@@ -137,6 +131,7 @@ fldigi_SOURCES += \
 	globals/globals.cxx \
 	include/htmlstrings.h \
 	include/afcind.h \
+	include/arq_io.h \
 	include/Combo_Box.h \
 	include/Combo_List.h \
 	include/confdialog.h \
@@ -221,6 +216,7 @@ fldigi_SOURCES += \
 	include/rsid.h \
 	include/rtty.h \
 	include/serial.h \
+	include/socket.h \
 	include/sound.h \
 	include/soundconf.h \
 	include/stacktrace.h \
@@ -262,6 +258,7 @@ fldigi_SOURCES += \
 	misc/arq_io.cxx \
 	misc/qrzcall.cxx \
 	misc/qrzlib.cxx \
+	misc/socket.cxx \
 	misc/stacktrace.cxx \
 	misc/status.cxx \
 	misc/threads.cxx \
@@ -344,15 +341,8 @@ EXTRA_fldigi_SOURCES += \
 	rigcontrol/winserial.cxx \
 	rsid/rsid_fft.cxx \
 	rsid/rsid_fft.h \
-	include/Socket.h \
-	include/ServerSocket.h \
-	include/ClientSocket.h \
-	include/SocketException.h \
 	include/linserial.h \
-	include/winserial.h \
-	sockets/Socket.cxx \
-	sockets/ClientSocket.cxx \
-	sockets/ServerSocket.cxx
+	include/winserial.h
 
 # Additional non-source files that we distribute
 EXTRA_DIST = \

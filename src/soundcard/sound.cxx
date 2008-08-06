@@ -61,6 +61,7 @@
 #include "status.h"
 #include "fileselect.h"
 
+#include "threads.h" 
 #include "timeops.h"
 #include "ringbuffer.h"
 
@@ -73,6 +74,14 @@
 #define OUTPUT_CHANNELS 2
 // We never write duplicate/QSK/PseudoFSK data to the sound files
 #define SNDFILE_CHANNELS 1
+
+// Unnamed sempahores are not supported on OS X,
+// and named semaphores are broken on cygwin.
+#ifdef __APPLE__
+#  define USE_NAMED_SEMAPHORES 1
+#else
+#  define USE_NAMED_SEMAPHORES 0
+#endif
 
 SoundBase::SoundBase()
         : sample_frequency(0),
@@ -743,10 +752,23 @@ SoundPort::SoundPort(const char *in_dev, const char *out_dev)
         sd[0].advance = sd[1].advance = 0;
 
 	sem_t** sems[] = { &sd[0].rwsem, &sd[0].csem, &sd[1].rwsem, &sd[1].csem };
+#if USE_NAMED_SEMAPHORES
+	char sname[32];
+#endif
         for (size_t i = 0; i < sizeof(sems)/sizeof(*sems); i++) {
+#if USE_NAMED_SEMAPHORES
+		snprintf(sname, sizeof(sname), "%u-%u-%s", i, getpid(), PACKAGE_TARNAME);
+		if ((*sems[i] = sem_open(sname, O_CREAT | O_EXCL, 0600, 0)) == SEM_FAILED)
+			throw SndException(errno);
+#  if HAVE_SEM_UNLINK
+		if (sem_unlink(sname) == -1)
+			throw SndException(errno);
+#  endif
+#else
 		*sems[i] = new sem_t;
 		if (sem_init(*sems[i], 0, 0) == -1)
 			throw SndException(errno);
+#endif // USE_NAMED_SEMAPHORES
 	}
 
         try {
@@ -776,9 +798,14 @@ SoundPort::~SoundPort()
 
         sem_t* sems[] = { sd[0].rwsem, sd[0].csem, sd[1].rwsem, sd[1].csem };
         for (size_t i = 0; i < sizeof(sems)/sizeof(*sems); i++) {
+#if USE_NAMED_SEMAPHORES
+		if (sem_close(sems[i]) == -1)
+			perror("sem_close");
+#else
                 if (sem_destroy(sems[i]) == -1)
-                        perror("sem_close");
+                        perror("sem_destroy");
 		delete sems[i];
+#endif
 	}
 
 	delete sd[0].rb;
@@ -824,16 +851,6 @@ int SoundPort::Open(int mode, int freq)
 	return ret;
 }
 
-static int sem_timedwaitr(sem_t* sem, double rel_timeout)
-{
-        struct timespec t;
-        clock_gettime(CLOCK_REALTIME, &t);
-        t = t + rel_timeout;
-
-        return sem_timedwait(sem, &t);
-}
-
-
 void SoundPort::pause_stream(unsigned dir)
 {
         if (sd[dir].stream == 0 || !stream_active(dir))
@@ -841,7 +858,7 @@ void SoundPort::pause_stream(unsigned dir)
 
 	while (sem_trywait(sd[dir].csem) == 0);
         sd[dir].state = spa_pause;
-        if (sem_timedwaitr(sd[dir].csem, 5) == -1 && errno == ETIMEDOUT)
+        if (sem_timedwait_rel(sd[dir].csem, 5) == -1 && errno == ETIMEDOUT)
                 cerr << __func__ << ": stream " << dir << " wedged\n";
 }
 
@@ -863,7 +880,7 @@ void SoundPort::Close(unsigned dir)
                 // first wait for buffers to be drained and for the
                 // stop callback to signal us that the stream has
                 // been stopped
-                if (sem_timedwaitr(sd[i].csem, 5) == -1 && errno == ETIMEDOUT)
+                if (sem_timedwait_rel(sd[i].csem, 5) == -1 && errno == ETIMEDOUT)
                         cerr << __func__ << ": stream " << i << " wedged\n";
                 sd[i].state = spa_continue;
 
@@ -899,7 +916,7 @@ void SoundPort::Abort(unsigned dir)
 #define WAIT_FOR_COND(cond, s, t)                                       \
         do {                                                            \
                 while (!(cond)) {                                       \
-                        if (sem_timedwaitr(s, t) == -1) {               \
+                        if (sem_timedwait_rel(s, t) == -1) {               \
                                 if (errno == ETIMEDOUT) {               \
                                         timeout = true;                 \
                                         break;                          \
@@ -1100,7 +1117,7 @@ void SoundPort::flush(unsigned dir)
                         continue;
                 sd[i].state = spa_drain;
 		while (sem_trywait(sd[i].csem) == 0);
-                if (sem_timedwaitr(sd[i].csem, 5) == -1 && errno == ETIMEDOUT)
+                if (sem_timedwait_rel(sd[i].csem, 5) == -1 && errno == ETIMEDOUT)
                         cerr << "timeout while flushing stream " << i << endl;
                 sd[i].state = spa_continue;
         }

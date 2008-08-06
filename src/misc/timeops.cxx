@@ -24,6 +24,24 @@
 
 #include "timeops.h"
 
+#if !HAVE_CLOCK_GETTIME
+#  if TIME_WITH_SYS_TIME
+#    include <sys/time.h>
+#  endif
+#  include <errno.h>
+int clock_gettime(clockid_t clock_id, struct timespec* tp)
+{
+	struct timeval t;
+	if (gettimeofday(&t, NULL) != 0)
+		return -1;
+
+	tp->tv_sec = t.tv_sec;
+	tp->tv_nsec = t.tv_usec * 1000;
+
+	return 0;
+}
+#endif // !HAVE_CLOCK_GETTIME
+
 struct timespec operator+(const struct timespec &t0, const double &t)
 {
         struct timespec r;
@@ -58,4 +76,9 @@ bool operator>(const struct timespec &t0, const struct timespec &t1)
                 return true;
         else
                 return false;
+}
+
+bool operator==(const struct timespec &t0, const struct timespec &t1)
+{
+	return t0.tv_sec == t1.tv_sec && t0.tv_nsec == t1.tv_nsec;
 }

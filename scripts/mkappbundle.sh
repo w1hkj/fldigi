@@ -2,9 +2,15 @@
 
 ### Script to create the .app structure for osx
 ### 20080227  Stelios Bounanos M0GLD
+### Updated 20080727: enable the .icns support
 
 if [ $# -ne 2 ]; then
     echo "Syntax: $0 data-dir build-dir" >&2
+    exit 1
+fi
+
+if [ -z "$PACKAGE" ]; then
+    echo "E: \$PACKAGE undefined"
     exit 1
 fi
 
@@ -14,11 +20,11 @@ build="${PWD}/$2"
 # more sanity checks
 for d in "$data" "$build"; do
     test -d "$d" && continue
-    echo "%{d}: not a directory" >&2
+    echo "E: ${d}: not a directory" >&2
     exit 1
 done
 if ! test -w "$build"; then
-    echo "%{build} is not writeable" >&2
+    echo "E: ${build} is not writeable" >&2
     exit 1
 fi
 
@@ -26,7 +32,7 @@ plist="${data}/mac/Info.plist.in"
 icons="${data}/mac/fldigi.icns"
 for f in "$plist" "$icons"; do
     test -r "$f" && continue
-    echo "%{f}: not readable" >&2
+    echo "E: ${f}: not readable" >&2
     exit 1
 done
 
@@ -47,13 +53,13 @@ echo "Creating ${build}/mac-bundle/"$PACKAGE".app"
 $mkinstalldirs mac-bundle/"$PACKAGE".app/Contents/MacOS mac-bundle/"$PACKAGE".app/Contents/Resources
 cd mac-bundle
 $INSTALL_STRIP_PROGRAM "${build}/$binary" "$PACKAGE".app/Contents/MacOS
-# $INSTALL_DATA "$icons" "$PACKAGE".app/Contents/Resources
+$INSTALL_DATA "$icons" "$PACKAGE".app/Contents/Resources
 echo "APPL${signature}" > "$PACKAGE".app/Contents/PkgInfo
 sed -e "s!%%IDENTIFIER%%!${identifier}!g; s!%%NAME%%!${name}!g;\
         s!%%SIGNATURE%%!${signature}!g; s!%%BINARY%%!${binary}!g;\
         s!%%VERSION%%!${version}!g; s!%%ICON%%!${icon}!g;" < "$plist" > "$PACKAGE".app/Contents/Info.plist
 if grep '%%[A-Z]*%%' "$PACKAGE".app/Contents/Info.plist; then
-    echo "Unsubstituted variables in Info.plist!" >&2
+    echo "E: unsubstituted variables in Info.plist!" >&2
     exit 1
 fi
 
