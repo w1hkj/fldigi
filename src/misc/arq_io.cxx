@@ -166,6 +166,7 @@ bool SysV_arqRx()
    	}
 	return false;
 }
+#endif
 
 //-----------------------------------------------------------------------------
 // Gmfsk ARQ file i/o used only on Linux
@@ -221,7 +222,6 @@ bool Gmfsk_arqRx()
 	}
 	return true;
 }
-#endif
 
 //-----------------------------------------------------------------------------
 // Socket ARQ i/o used on all platforms
@@ -286,6 +286,7 @@ void ARQ_SOCKET_Server::start(const char* node, const char* service)
 		errstr.append(e.what());
 		errstr.append(")");
 		cerr << errstr << "\n";
+		fl_message(errstr.c_str());
 		return;
 	}
 
@@ -311,10 +312,11 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 		inst->server_socket->set_nonblocking();
 	}
 	catch (const SocketException& e) {
-		string errstr = "Could not initialize ARQ server (";
+		string errstr = "Could not start ARQ server (";
 		errstr.append(e.what());
 		errstr.append(")");
 		cerr << errstr << "\n";
+		fl_message(errstr.c_str());
 		goto ret;
 	}
 	while (inst->run) {
@@ -357,6 +359,11 @@ void WriteARQsocket(unsigned int data)
 	if (!isSocketConnected) return;
 	
 	string response;
+/*	
+	response += data;
+	arqclient.send(response);
+*/
+
 	if (data == 0x06) {
 		response = MPSK_ISCMD;
 		response.append("RX_AFTER_TX OK");
@@ -387,25 +394,23 @@ bool Socket_arqRx()
 	
 		for (size_t i = 0; i < n; i++) {
 			cs = instr[i];
-			if (cs == MPSK_BYTE) {
-				isTxChar = true;
-				continue;
-			}
-			if (cs == MPSK_CMD) {
-				isCmdChar = true;
-				continue;
-			}
-			if (cs == MPSK_END) {
-				isCmdChar = false;
-				processCmd = true;
-			}
 			if (isTxChar) {
 				txstring += cs;
 				isTxChar = false;
 				continue;
 			}
 			if (isCmdChar) {
+				if (cs == MPSK_END)
+					isCmdChar = false;
 				cmdstring += cs;
+				continue;
+			}
+			if (cs == MPSK_BYTE) {
+				isTxChar = true;
+				continue;
+			}
+			if (cs == MPSK_CMD) {
+				isCmdChar = true;
 				continue;
 			}
 		}
@@ -433,7 +438,6 @@ bool Socket_arqRx()
 // Send ARQ characters to ARQ client
 //-----------------------------------------------------------------------------
 #ifndef __CYGWIN__
-
 void WriteARQSysV(unsigned int data)
 {
 	rxmsgid = msgget( (key_t) progdefaults.rx_msgid, 0666);
@@ -443,21 +447,15 @@ void WriteARQSysV(unsigned int data)
 		msgsnd (rxmsgid, (void *)&rxmsgst, 1, IPC_NOWAIT);
 	}
 }
+#endif
 
 void WriteARQ( unsigned int data)
 {
 	WriteARQsocket(data);
+#ifndef __CYGWIN__
 	WriteARQSysV(data);
-}
-
-#else
-
-void WriteARQ( unsigned int data )
-{
-	WriteARQsocket(data);
-}
-
 #endif
+}
 
 //-----------------------------------------------------------------------------
 // Write End of Transmit character to ARQ client
@@ -506,15 +504,14 @@ static void *arq_loop(void *args)
 		if (bSend0x06)
 			send0x06();
 
-// order of precedence; Socket, SysV, GMFSKfile
 #ifdef __CYGWIN__
-		Socket_arqRx();
+	Socket_arqRx();
 #else
+// order of precedence; Socket, SysV, GMFSKfile
 		if (Socket_arqRx() == false)
 			if (SysV_arqRx() == false)
 				Gmfsk_arqRx();
 #endif
-
 // delay for 50 msec interval
 		MilliSleep(50);
 	}
