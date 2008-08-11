@@ -161,6 +161,12 @@ int olivia::tx_process()
 	int c, i, len;
 	unsigned char ch;
 
+	if (tones	!= progdefaults.oliviatones ||
+		bw 		!= progdefaults.oliviabw ||
+		smargin != progdefaults.oliviasmargin ||
+		sinteg	!= progdefaults.oliviasinteg )
+			restart();
+
 	if (preamblesent != 1) { 
 		send_preamble(); 
 		preamblesent = 1; 
@@ -223,6 +229,12 @@ int olivia::rx_process(const double *buf, int len)
 	static char msg2[20];
 //	static char msg3[60];
 
+	if (tones	!= progdefaults.oliviatones ||
+		bw 		!= progdefaults.oliviabw ||
+		smargin != progdefaults.oliviasmargin ||
+		sinteg	!= progdefaults.oliviasinteg )
+			restart();
+
 	if ((lastfreq != frequency || Rx->Reverse != 0) && !reverse) {
 		Rx->FirstCarrierMultiplier = (frequency - (Rx->Bandwidth / 2)) / 500; 
 		Rx->Reverse = 0;
@@ -245,14 +257,14 @@ int olivia::rx_process(const double *buf, int len)
 	for (i = 0; i < len; i++)
 		rxbuffer[i] = (short int) (buf[i] * 32767.0);
 
-	Rx->SyncThreshold = progStatus.sqlonoff ? progStatus.sldrSquelchValue : 0.0;
+	Rx->SyncThreshold = progStatus.sqlonoff ? progStatus.sldrSquelchValue / 2.0 : 0.0;
 
 	Rx->Process(rxbuffer, len);
 
 	snr = Rx->SignalToNoiseRatio();
 
 	set_metric(snr);
-	display_metric(snr > 100.0 ? 100.0 : snr);
+	display_metric(snr > 100.0 ? 100.0 : snr * 2.0);
 	
 	double s2n = 20.0 * log10(snr < 0.1 ? 0.1 : snr);
 
@@ -272,6 +284,9 @@ void olivia::restart()
 {
 	tones	= progdefaults.oliviatones;
 	bw 		= progdefaults.oliviabw;
+	smargin = progdefaults.oliviasmargin;
+	sinteg	= progdefaults.oliviasinteg;
+	
 	samplerate = 8000;
 	
 	Tx->Tones = 2 * (1 << tones);
@@ -352,8 +367,6 @@ olivia::olivia()
 	FL_UNLOCK();
 
 	mode = MODE_OLIVIA;
-	smargin = progdefaults.oliviasmargin;
-	sinteg = progdefaults.oliviasinteg;
 	lastfreq = 0;
 	init();
 }

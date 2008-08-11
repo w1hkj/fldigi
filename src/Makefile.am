@@ -131,6 +131,7 @@ fldigi_SOURCES += \
 	globals/globals.cxx \
 	include/htmlstrings.h \
 	include/afcind.h \
+	include/arq_io.h \
 	include/Combo_Box.h \
 	include/Combo_List.h \
 	include/confdialog.h \

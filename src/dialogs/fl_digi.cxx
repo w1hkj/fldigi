@@ -2024,7 +2024,7 @@ void put_rx_char(unsigned int data)
 
 #ifndef __CYGWIN__
 	rxmsgid = msgget( (key_t) progdefaults.rx_msgid, 0666);
-	if (mailclient || mailserver || rxmsgid != -1 || arqmode)
+	if (mailclient || mailserver || txmsgid != -1 || arqmode)
 #else
 	if (mailclient || mailserver || arqmode)
 #endif

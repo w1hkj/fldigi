@@ -69,12 +69,14 @@ int sem_timedwait(sem_t* sem, const struct timespec* abs_timeout);
 
 int sem_timedwait_rel(sem_t* sem, double rel_timeout);
 
-// we have 4 threads, only 3 of which will use qrunner
-enum { UNKNOWN_TID = -1, TRX_TID, QRZ_TID, RIGCTL_TID, ARQ_TID,
+// 3 threads use qrunner
+enum { UNKNOWN_TID = -1, TRX_TID, QRZ_TID, RIGCTL_TID, 
 #if USE_XMLRPC
        XMLRPC_TID,
 #endif
-       FLMAIN_TID, NUM_THREADS, NUM_QRUNNER_THREADS = NUM_THREADS - 1 };
+       ARQ_TID, ARQSOCKET_TID,
+       FLMAIN_TID, NUM_THREADS, 
+       NUM_QRUNNER_THREADS = NUM_THREADS - 1 };
 
 #if USE_TLS
 	extern __thread int thread_id_;
