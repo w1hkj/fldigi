@@ -47,6 +47,7 @@
 #include "arq_io.h"
 
 #include "threads.h"
+#include "socket.h"
 
 #include <FL/Fl.H>
 #include <FL/fl_ask.H>
@@ -227,9 +228,6 @@ bool Gmfsk_arqRx()
 // Socket ARQ i/o used on all platforms
 // Socket implementation emulates the MultiPsk socket i/o
 //-----------------------------------------------------------------------------
-#define _host "127.0.0.1"
-#define _port "3122"
-
 #define MPSK_TX   "TX"
 #define MPSK_RX   "RX"
 #define MPSK_TX2RX "RX_AFTER_TX"
@@ -523,7 +521,7 @@ void arq_init()
 {
 	arq_enabled = false;
 	
-	ARQ_SOCKET_Server::start( _host, _port );
+	ARQ_SOCKET_Server::start( progdefaults.arq_address.c_str(), progdefaults.arq_port.c_str() );
 
 	if (fl_create_thread(arq_thread, arq_loop, &arq_dummy) < 0) {
 		fl_message("arq init: pthread_create failed");

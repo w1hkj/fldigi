@@ -275,6 +275,8 @@ int main(int argc, char ** argv)
 
 	int ret = Fl::run();
 
+	arq_close();
+
 #if USE_XMLRPC
 	XML_RPC_Server::stop();
 #endif
@@ -326,6 +328,13 @@ void generate_option_help(void) {
 	     << "    The default is: " << progdefaults.tx_msgid
 	     << " or 0x" << hex << progdefaults.tx_msgid << dec << "\n\n"
 #endif
+
+	     << "  --arq-server-address HOSTNAME\n"
+	     << "    Set the ARQ TCP server address\n"
+	     << "    The default is: " << progdefaults.arq_address << "\n\n"
+	     << "  --arq-server-port PORT\n"
+	     << "    Set the ARQ TCP server port\n"
+	     << "    The default is: " << progdefaults.arq_port << "\n\n"
 
 #if USE_XMLRPC
 	     << "  --xmlrpc-server\n"
@@ -423,7 +432,7 @@ int parse_args(int argc, char **argv, int& idx)
 #ifndef __CYGWIN__
 	       OPT_RX_IPC_KEY, OPT_TX_IPC_KEY,
 #endif
-	       OPT_CONFIG_DIR, OPT_EXPERIMENTAL,
+	       OPT_CONFIG_DIR, OPT_EXPERIMENTAL, OPT_ARQ_ADDRESS, OPT_ARQ_PORT,
 #if USE_XMLRPC
 	       OPT_CONFIG_XMLRPC, OPT_CONFIG_XMLRPC_ADDRESS, OPT_CONFIG_XMLRPC_PORT,
 #endif
@@ -447,6 +456,9 @@ int parse_args(int argc, char **argv, int& idx)
 #endif
 		{ "config-dir",	   1, 0, OPT_CONFIG_DIR },
 		{ "experimental",  0, 0, OPT_EXPERIMENTAL },
+
+		{ "arq-server-address", 1, 0, OPT_ARQ_ADDRESS },
+		{ "arq-server-port",    1, 0, OPT_ARQ_PORT },
 
 #if USE_XMLRPC
 		{ "xmlrpc-server",         0, 0, OPT_CONFIG_XMLRPC },
@@ -508,6 +520,13 @@ int parse_args(int argc, char **argv, int& idx)
 			break;
 		case OPT_EXPERIMENTAL:
 			progdefaults.experimental = true;
+			break;
+
+		case OPT_ARQ_ADDRESS:
+			progdefaults.arq_address = optarg;
+			break;
+		case OPT_ARQ_PORT:
+			progdefaults.arq_port = optarg;
 			break;
 
 #if USE_XMLRPC

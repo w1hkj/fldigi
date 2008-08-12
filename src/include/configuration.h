@@ -209,6 +209,8 @@ struct configuration {
 	
 	int rx_msgid;
 	int tx_msgid;
+	string arq_address;
+	string arq_port;
 	
 // PSK viewer parameters
 	bool	VIEWERmarquee;
