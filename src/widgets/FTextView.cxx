@@ -425,6 +425,17 @@ int FTextView::handle(int event)
 		// stop mouse2 text paste events from reaching Fl_Text_Editor_mod
 		if (Fl::event_button() == FL_MIDDLE_MOUSE)
 			return 1;
+
+		if ((Fl::event_button() == FL_LEFT_MOUSE) && Fl::event_shift()) {
+			int xpos = Fl::event_x() - x();
+			int ypos = Fl::event_y() - y();
+			char *s;
+			s = get_word(xpos, ypos);
+			inpCall->value(s);
+			free(s);
+			return 1;
+		}
+		
 		if (Fl::event_button() != FL_RIGHT_MOUSE)
 			break;
 

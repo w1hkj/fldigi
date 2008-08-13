@@ -9,7 +9,7 @@ extern bool Socket_arqRx();
 class ARQ_SOCKET_Server
 {
 public:
-	static void start(const char* node, const char* service);
+	static bool start(const char* node, const char* service);
 	static void stop(void);
 private:
 	ARQ_SOCKET_Server();

@@ -19,6 +19,20 @@ static void cb_tabOperator(Fl_Group*, void*) {
 
 Fl_Input *inpMyCallsign=(Fl_Input *)0;
 
+static void cb_inpMyCallsign(Fl_Input* o, void*) {
+  if (progdefaults.THORsecText.empty()) {
+progdefaults.THORsecText = o->value();
+progdefaults.THORsecText.append(" ");
+txtTHORSecondary->value(progdefaults.THORsecText.c_str());
+}
+if (progdefaults.secText.empty()) {
+progdefaults.secText = o->value();
+progdefaults.secText.append(" ");
+txtSecondary->value(progdefaults.secText.c_str());
+}
+progdefaults.changed = true;
+}
+
 Fl_Input *inpMyName=(Fl_Input *)0;
 
 static void cb_inpMyName(Fl_Input*, void*) {
@@ -1388,6 +1402,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
         { inpMyCallsign = new Fl_Input(78, 36, 85, 24, "Callsign:");
+          inpMyCallsign->callback((Fl_Callback*)cb_inpMyCallsign);
         } // Fl_Input* inpMyCallsign
         { inpMyName = new Fl_Input(78, 62, 120, 24, "Name:");
           inpMyName->callback((Fl_Callback*)cb_inpMyName);
@@ -2261,6 +2276,7 @@ l with your sound hardware.");
             } // Fl_Check_Button* valTHOR_SOFT
             { Fl_Value_Slider* o = valThorCWI = new Fl_Value_Slider(120, 174, 260, 21, "CWI threshold:");
               valThorCWI->type(1);
+              valThorCWI->step(0.01);
               valThorCWI->textsize(14);
               valThorCWI->callback((Fl_Callback*)cb_valThorCWI);
               valThorCWI->align(FL_ALIGN_LEFT);
@@ -2271,7 +2287,6 @@ l with your sound hardware.");
           { tabDomEX = new Fl_Group(0, 50, 400, 170, "Dom");
             tabDomEX->color((Fl_Color)51);
             tabDomEX->selection_color((Fl_Color)51);
-            tabDomEX->hide();
             { txtSecondary = new Fl_Input(20, 75, 360, 44, "Secondary Text");
               txtSecondary->type(4);
               txtSecondary->callback((Fl_Callback*)cb_txtSecondary);
@@ -2310,6 +2325,7 @@ l with your sound hardware.");
             } // Fl_Counter* valDominoEX_PATHS
             { Fl_Value_Slider* o = valDomCWI = new Fl_Value_Slider(125, 179, 260, 21, "CWI threshold:");
               valDomCWI->type(1);
+              valDomCWI->step(0.01);
               valDomCWI->textsize(14);
               valDomCWI->callback((Fl_Callback*)cb_valDomCWI);
               valDomCWI->align(FL_ALIGN_LEFT);
@@ -2429,6 +2445,7 @@ l with your sound hardware.");
             tabOlivia->end();
           } // Fl_Group* tabOlivia
           { tabPSK = new Fl_Group(0, 50, 400, 170, "Psk");
+            tabPSK->hide();
             { Fl_Counter* o = cntSearchRange = new Fl_Counter(11, 60, 80, 21, "Acq Srch Range");
               cntSearchRange->type(1);
               cntSearchRange->minimum(10);

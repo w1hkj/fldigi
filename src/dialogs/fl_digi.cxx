@@ -1156,6 +1156,12 @@ void cb_log(Fl_Widget *b, void *)
 	oktoclear = false;
 }
 
+void cb_callsign(Fl_Widget *b, void *)
+{
+	oktoclear = false;
+	restoreFocus();
+}
+
 void qsoClear_cb(Fl_Widget *b, void *)
 {
 	if (oktoclear) {
@@ -1165,7 +1171,7 @@ void qsoClear_cb(Fl_Widget *b, void *)
 		clearQSO();
 		FL_AWAKE_D();
 	}
-	oktoclear = false;
+	oktoclear = true;
 	restoreFocus();
 }
 
@@ -1630,7 +1636,8 @@ void create_fl_digi_main() {
 
 			inpCall = new Fl_Input(rightof(qsoTime) + pad, Y + Hqsoframe/2 - pad, 80, Hqsoframe/2, "Call");
 			inpCall->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-			inpCall->callback(cb_log, 0);
+			inpCall->callback(cb_callsign, 0);
+			inpCall->when(FL_WHEN_ENTER_KEY|FL_WHEN_NOT_CHANGED);
 
 			inpName = new Fl_Input(rightof(inpCall) + pad, Y + Hqsoframe/2 - pad, 100, Hqsoframe/2, "Name");
 			inpName->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
