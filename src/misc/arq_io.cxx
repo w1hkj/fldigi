@@ -28,9 +28,6 @@
 
 #include <iostream>
 #include <string>
-#include <vector>
-#include <map>
-#include <exception>
 #include <cstdlib>
 #include <ctime>
 #include <errno.h>
@@ -58,6 +55,11 @@ static string arqtext;
 string::iterator pText;
 
 bool arq_text_available = false;
+
+static void popup_msg(void* msg)
+{
+	fl_message((const char*)msg);
+}
 
 void ParseMode(string src)
 {
@@ -242,14 +244,15 @@ bool Gmfsk_arqRx()
 extern void arq_run(Socket s);
 extern void arq_stop();
 
-string txstring = "";
-string cmdstring = "";
+string errstring;
+string txstring;
+string cmdstring;
 string response;
 bool isTxChar = false;
 bool isCmdChar = false;
 bool processCmd = false;
 
-static Fl_Thread* arq_socket_thread;
+static Fl_Thread* arq_socket_thread = 0;
 ARQ_SOCKET_Server* ARQ_SOCKET_Server::inst = 0;
 
 Socket arqclient;
@@ -265,8 +268,10 @@ ARQ_SOCKET_Server::ARQ_SOCKET_Server()
 ARQ_SOCKET_Server::~ARQ_SOCKET_Server()
 {
 	run = false;
+	if (arq_socket_thread) {
 	pthread_join(*arq_socket_thread, NULL);
 	delete arq_socket_thread;
+}
 }
 
 bool ARQ_SOCKET_Server::start(const char* node, const char* service)
@@ -278,31 +283,23 @@ bool ARQ_SOCKET_Server::start(const char* node, const char* service)
 
 	try {
 		inst->server_socket->open(Address(node, service));
-	}
-	catch (const SocketException& e) {
-		string errstr = "Could not start ARQ server (";
-		errstr.append(e.what());
-		errstr.append(")");
-		cerr << errstr << "\n";
-		fl_message(errstr.c_str());
-		delete inst;
-		inst = 0;
-		return false;
-	}
-
-	try {
 		inst->server_socket->bind();
 		struct timeval t = { 0, 200000 };
 		inst->server_socket->set_timeout(t);
 		inst->server_socket->set_nonblocking();
 	}
 	catch (const SocketException& e) {
-		string errstr = "Could not start ARQ server (";
-		errstr.append(e.what());
-		errstr.append(")");
-		errstr.append("\nMultiple instance of fldigi ??");
-		cerr << errstr << "\n";
-		fl_message(errstr.c_str());
+		errstring = "Could not start ARQ server (";
+		errstring.append(e.what()).append(")");
+		if (e.error() == EADDRINUSE)
+			errstring.append("\nMultiple instances of fldigi??");
+		cerr << errstring << "\n";
+		fl_message(errstring.c_str());
+
+		delete arq_socket_thread;
+		arq_socket_thread = 0;
+		delete inst;
+		inst = 0;
 		return false;
 	}
 
@@ -328,9 +325,9 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 		}
 		catch (const SocketException& e) {
 			if (e.error() != ETIMEDOUT) {
-				string errstr = e.what();
-				cerr << errstr << "\n";
-				fl_message(errstr.c_str());
+				errstring = e.what();
+				cerr << errstring << "\n";
+				Fl::add_timeout(0.0, popup_msg, (void*)errstring.c_str());
 				break;
 			}
 		}
