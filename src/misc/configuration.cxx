@@ -224,6 +224,8 @@ configuration progdefaults = {
 	"",				// string	strCommPorts
         9876,		// int		rx_msgid
         6789,		// int		tx_msgid
+	"localhost",	// string	arq_address
+	"3122",		// string	arq_port
 // PSK viewer parameters
 	true,			// bool	VIEWERmarquee
 	true,			// bool	VIEWERshowfreq

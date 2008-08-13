@@ -1,8 +1,6 @@
 #ifndef ARQIO_H
 #define ARQIO_H
 
-#include "socket.h"
-
 class Socket;
 
 extern void WriteARQsocket(unsigned int data);
