@@ -46,11 +46,22 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     } {
       Fl_Group tabOperator {
         label Oper
-        callback {progdefaults.changed = true;} selected
+        callback {progdefaults.changed = true;} open
         xywh {0 25 400 195} color 51 selection_color 51 when 1
       } {
         Fl_Input inpMyCallsign {
           label {Callsign:}
+          callback {if (progdefaults.THORsecText.empty()) {
+progdefaults.THORsecText = o->value();
+progdefaults.THORsecText.append(" ");
+txtTHORSecondary->value(progdefaults.THORsecText.c_str());
+}
+if (progdefaults.secText.empty()) {
+progdefaults.secText = o->value();
+progdefaults.secText.append(" ");
+txtSecondary->value(progdefaults.secText.c_str());
+}
+progdefaults.changed = true;} selected
           xywh {78 36 85 24}
         }
         Fl_Input inpMyName {
@@ -1159,13 +1170,13 @@ progdefaults.changed = true;}
               label {CWI threshold:}
               callback {progdefaults.ThorCWI = o->value();
 progdefaults.changed = true;}
-              xywh {120 174 260 21} type Horizontal align 4 textsize 14
+              xywh {120 174 260 21} type Horizontal align 4 step 0.01 textsize 14
               code0 {o->value(progdefaults.ThorCWI);}
             }
           }
           Fl_Group tabDomEX {
             label Dom open
-            xywh {0 50 400 170} color 51 selection_color 51 hide
+            xywh {0 50 400 170} color 51 selection_color 51
           } {
             Fl_Input txtSecondary {
               label {Secondary Text}
@@ -1207,7 +1218,7 @@ progdefaults.changed = true;}
               label {CWI threshold:}
               callback {progdefaults.DomCWI = o->value();
 progdefaults.changed = true;}
-              xywh {125 179 260 21} type Horizontal align 4 textsize 14
+              xywh {125 179 260 21} type Horizontal align 4 step 0.01 textsize 14
               code0 {o->value(progdefaults.DomCWI);}
             }
           }
@@ -1342,7 +1353,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabPSK {
             label Psk open
-            xywh {0 50 400 170}
+            xywh {0 50 400 170} hide
           } {
             Fl_Counter cntSearchRange {
               label {Acq Srch Range}

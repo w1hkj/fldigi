@@ -30,9 +30,9 @@ configuration progdefaults = {
 	1000,			// int		CWsweetspot;
 	1000,			// int		RTTYsweetspot;
 	1000,			// int		PSKsweetspot;
-	true,			// bool		StartAtSweetSpot;
+	false,			// bool		StartAtSweetSpot;
 //  for PSK mail interface	
-	true,			// bool		PSKmailSweetSpot;
+	false,			// bool		PSKmailSweetSpot;
 	200,			// int		SearchRange;
 	40,				// int		ServerOffset;
 	6.0,			// double	ACQsn;
@@ -93,7 +93,7 @@ configuration progdefaults = {
 // THOR
 	2.0,			// double	THOR_BW;
 	true,			// bool		THOR_FILTER;
-	"fldigi-thor ",	// string	THORsecText;
+	"",				// string	THORsecText;
 	5,				// int		THOR_PATHS;
 	false,			// bool		THOR_SOFT;
 	0.0,			// double	ThorCWI;
@@ -164,7 +164,7 @@ configuration progdefaults = {
 #else
 	"/dev/ttyS0",	// PTTdev
 #endif
-	"fldigi ",		// secondary text
+	"",				// secondary text
 // Sound card
 	SND_IDX_PORT,		// int		btnAudioIOis
 	"",		// string	OSSdevice;
@@ -1519,6 +1519,14 @@ void configuration::initOperator() {
 		UseLeadingZeros = btnUseLeadingZeros->value();
 		ContestStart = (int)nbrContestStart->value();
 		ContestDigits = (int)nbrContestDigits->value();
+		if (THORsecText.empty()) {
+			THORsecText = myCall;
+			txtTHORSecondary->value(THORsecText.c_str());
+		}
+		if (secText.empty()) {
+			secText = myCall;
+			txtSecondary->value(secText.c_str());
+		}
 	FL_UNLOCK();
 }
 

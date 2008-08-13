@@ -269,10 +269,10 @@ ARQ_SOCKET_Server::~ARQ_SOCKET_Server()
 	delete arq_socket_thread;
 }
 
-void ARQ_SOCKET_Server::start(const char* node, const char* service)
+bool ARQ_SOCKET_Server::start(const char* node, const char* service)
 {
 	if (inst)
-		return;
+		return false;
 
 	inst = new ARQ_SOCKET_Server;
 
@@ -285,10 +285,29 @@ void ARQ_SOCKET_Server::start(const char* node, const char* service)
 		errstr.append(")");
 		cerr << errstr << "\n";
 		fl_message(errstr.c_str());
-		return;
+		delete inst;
+		inst = 0;
+		return false;
+	}
+
+	try {
+		inst->server_socket->bind();
+		struct timeval t = { 0, 200000 };
+		inst->server_socket->set_timeout(t);
+		inst->server_socket->set_nonblocking();
+	}
+	catch (const SocketException& e) {
+		string errstr = "Could not start ARQ server (";
+		errstr.append(e.what());
+		errstr.append(")");
+		errstr.append("\nMultiple instance of fldigi ??");
+		cerr << errstr << "\n";
+		fl_message(errstr.c_str());
+		return false;
 	}
 
 	fl_create_thread(*arq_socket_thread, thread_func, NULL);
+	return true;
 }
 
 void ARQ_SOCKET_Server::stop(void)
@@ -303,20 +322,6 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 {
 	SET_THREAD_ID(ARQSOCKET_TID);
 
-	try {
-		inst->server_socket->bind();
-		struct timeval t = { 0, 200000 };
-		inst->server_socket->set_timeout(t);
-		inst->server_socket->set_nonblocking();
-	}
-	catch (const SocketException& e) {
-		string errstr = "Could not start ARQ server (";
-		errstr.append(e.what());
-		errstr.append(")");
-		cerr << errstr << "\n";
-		fl_message(errstr.c_str());
-		goto ret;
-	}
 	while (inst->run) {
 		try {
 			arq_run(inst->server_socket->accept());
@@ -330,7 +335,6 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 			}
 		}
 	}
-ret:
 	arq_stop();
 	inst->server_socket->close();
 	return NULL;
@@ -357,10 +361,6 @@ void WriteARQsocket(unsigned int data)
 	if (!isSocketConnected) return;
 	
 	string response;
-/*	
-	response += data;
-	arqclient.send(response);
-*/
 
 	if (data == 0x06) {
 		response = MPSK_ISCMD;
@@ -521,7 +521,8 @@ void arq_init()
 {
 	arq_enabled = false;
 	
-	ARQ_SOCKET_Server::start( progdefaults.arq_address.c_str(), progdefaults.arq_port.c_str() );
+	if (!ARQ_SOCKET_Server::start( progdefaults.arq_address.c_str(), progdefaults.arq_port.c_str() ))
+		return;
 
 	if (fl_create_thread(arq_thread, arq_loop, &arq_dummy) < 0) {
 		fl_message("arq init: pthread_create failed");
@@ -543,5 +544,6 @@ void arq_close(void)
 // and then wait for it to die
 	fl_join(arq_thread);
 	arq_enabled = false;
+
 	arq_exit = false;
 }
