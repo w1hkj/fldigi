@@ -26,22 +26,35 @@ AC_DEFUN([AC_FLDIGI_JPEG], [
   AC_ARG_VAR([LIBJPEG_CFLAGS], [C compiler flags for JPEG])
   AC_ARG_VAR([LIBJPEG_LIBS], [linker flags for JPEG])
 
-  AC_FLDIGI_JPEG_HDR([$LIBJPEG_CFLAGS])
-  if test "x$ac_cv_header_jpeglib_h" != "xyes"; then
+  AC_ARG_WITH([jpeg],
+              AC_HELP_STRING([--with-jpeg], [enable libjpeg support @<:@autodetect@:>@]),
+              [case "${withval}" in
+                yes|no) ac_cv_want_libjpeg="${withval}" ;;
+                *)      AC_MSG_ERROR([bad value "${withval}" for --with-jpeg]) ;;
+               esac],
+               [ac_cv_want_libjpeg=check])
+
+  if test "x$ac_cv_want_libjpeg" = "xno"; then
       ac_cv_libjpeg=no
   else
-      AC_MSG_CHECKING([for libjpeg])
-      if test "x$LIBJPEG_CFLAGS" != "x" || test "x$LIBJPEG_LIBS" != "x"; then
-          AC_FLDIGI_JPEG_LIB([$LIBJPEG_CFLAGS], [$LIBJPEG_LIBS])
+      AC_FLDIGI_JPEG_HDR([$LIBJPEG_CFLAGS])
+      if test "x$ac_cv_header_jpeglib_h" != "xyes"; then
+          ac_cv_libjpeg=no
       else
-          AC_FLDIGI_JPEG_LIB([$FLTK_CFLAGS], [$FLTK_LIBS])
-          if test "x$ac_cv_libjpeg" != "xyes"; then
-              LIBJPEG_LIBS="-ljpeg"
+          AC_MSG_CHECKING([for libjpeg])
+          if test "x$LIBJPEG_CFLAGS" != "x" || test "x$LIBJPEG_LIBS" != "x"; then
               AC_FLDIGI_JPEG_LIB([$LIBJPEG_CFLAGS], [$LIBJPEG_LIBS])
+          else
+              AC_FLDIGI_JPEG_LIB([$FLTK_CFLAGS], [$FLTK_LIBS])
+              if test "x$ac_cv_libjpeg" != "xyes"; then
+                  LIBJPEG_LIBS="-ljpeg"
+                  AC_FLDIGI_JPEG_LIB([$LIBJPEG_CFLAGS], [$LIBJPEG_LIBS])
+              fi
           fi
+          AC_MSG_RESULT([$ac_cv_libjpeg])
       fi
-      AC_MSG_RESULT([$ac_cv_libjpeg])
   fi
+
   if test "x$ac_cv_libjpeg" = "xyes"; then
       AC_DEFINE([USE_LIBJPEG], 1, [Define to 1 if we are using libjpeg])
   else
@@ -77,18 +90,30 @@ AC_DEFUN([AC_FLDIGI_PNG], [
   AC_ARG_VAR([LIBPNG_CFLAGS], [C compiler flags for PNG])
   AC_ARG_VAR([LIBPNG_LIBS], [linker flags for PNG])
 
-  if test "x$LIBPNG_CFLAGS" != "x" || test "x$LIBPNG_LIBS" != "x"; then
-      AC_FLDIGI_PKG_CHECK([libpng], [libpng >= 1.2.8], [no], [yes])
+  AC_ARG_WITH([png],
+              AC_HELP_STRING([--with-png], [enable libpng support @<:@autodetect@:>@]),
+              [case "${withval}" in
+                yes|no) ac_cv_want_libpng="${withval}" ;;
+                *)      AC_MSG_ERROR([bad value "${withval}" for --with-png]) ;;
+               esac],
+               [ac_cv_want_libpng=check])
+
+  if test "x$ac_cv_want_libpng" = "xno"; then
+      ac_cv_libpng=no
   else
-      AC_FLDIGI_PNG_HDR([$LIBPNG_CFLAGS])
-      if test "x$ac_cv_header_png_h" != "xyes"; then
+      if test "x$LIBPNG_CFLAGS" != "x" || test "x$LIBPNG_LIBS" != "x"; then
           AC_FLDIGI_PKG_CHECK([libpng], [libpng >= 1.2.8], [no], [yes])
       else
-          AC_MSG_CHECKING([for libpng in fltk libs])
-          AC_FLDIGI_PNG_LIB([$FLTK_CFLAGS], [$FLTK_LIBS])
-          AC_MSG_RESULT([$ac_cv_libpng])
-          if test "x$ac_cv_libpng" != "xyes"; then
+          AC_FLDIGI_PNG_HDR([$LIBPNG_CFLAGS])
+          if test "x$ac_cv_header_png_h" != "xyes"; then
               AC_FLDIGI_PKG_CHECK([libpng], [libpng >= 1.2.8], [no], [yes])
+          else
+              AC_MSG_CHECKING([for libpng in fltk libs])
+              AC_FLDIGI_PNG_LIB([$FLTK_CFLAGS], [$FLTK_LIBS])
+              AC_MSG_RESULT([$ac_cv_libpng])
+              if test "x$ac_cv_libpng" != "xyes"; then
+                  AC_FLDIGI_PKG_CHECK([libpng], [libpng >= 1.2.8], [no], [yes])
+              fi
           fi
       fi
   fi
