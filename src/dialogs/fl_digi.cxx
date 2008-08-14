@@ -2470,6 +2470,15 @@ void start_tx()
 	wf->set_XmtRcvBtn(true);
 }
 
+void abort_tx()
+{
+	if (trx_state == STATE_TUNE) {
+		btnTune->value(0);
+		btnTune->do_callback();
+	}
+	else if (trx_state == STATE_TX)
+		trx_start_modem(active_modem);
+}
 
 void set_AFCind(double val)
 {
