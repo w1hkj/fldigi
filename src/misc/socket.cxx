@@ -542,7 +542,11 @@ Socket Socket::accept(void)
 {
 	int r = 1;
 	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &r, sizeof(r)) == -1)
+#ifndef NDEBUG
 		perror("setsockopt SO_REUSEADDR");
+#else
+		;
+#endif
 
 	listen(sockfd, SOMAXCONN);
 

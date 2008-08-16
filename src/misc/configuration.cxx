@@ -1519,14 +1519,6 @@ void configuration::initOperator() {
 		UseLeadingZeros = btnUseLeadingZeros->value();
 		ContestStart = (int)nbrContestStart->value();
 		ContestDigits = (int)nbrContestDigits->value();
-		if (THORsecText.empty()) {
-			THORsecText = myCall;
-			txtTHORSecondary->value(THORsecText.c_str());
-		}
-		if (secText.empty()) {
-			secText = myCall;
-			txtSecondary->value(secText.c_str());
-		}
 	FL_UNLOCK();
 }
 

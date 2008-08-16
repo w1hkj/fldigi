@@ -158,11 +158,14 @@ extern void init_modem_sync(trx_mode mode);
 extern void change_modem_param(int state);
 
 extern void start_tx();
+extern void abort_tx();
 
 extern void colorize_macro(int i);
 extern void colorize_macros();
 
 extern void set_rtty_tab_widgets();
 extern void set_olivia_tab_widgets();
+
+extern void stopMacroTimer();
 
 #endif
