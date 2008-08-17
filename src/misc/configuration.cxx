@@ -224,7 +224,7 @@ configuration progdefaults = {
 	"",				// string	strCommPorts
         9876,		// int		rx_msgid
         6789,		// int		tx_msgid
-	"localhost",	// string	arq_address
+	"127.0.0.1",	// string	arq_address
 	"3122",		// string	arq_port
 // PSK viewer parameters
 	true,			// bool	VIEWERmarquee
@@ -234,7 +234,7 @@ configuration progdefaults = {
 	10.0,			// double	VIEWERsquelch
 	15,				// int  VIEWERtimeout
 	false,			// bool xmlrpc_server
-	"localhost",		// string xmlrpc_address
+	"127.0.0.1",		// string xmlrpc_address
 	"7362",			// string xmlrpc_port
 };
 
