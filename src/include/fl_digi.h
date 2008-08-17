@@ -166,4 +166,6 @@ extern void colorize_macros();
 extern void set_rtty_tab_widgets();
 extern void set_olivia_tab_widgets();
 
+extern void stopMacroTimer();
+
 #endif

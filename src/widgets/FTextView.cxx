@@ -422,27 +422,25 @@ int FTextView::handle(int event)
 	case FL_PUSH:
 		if (!Fl::event_inside(this))
 			break;
-
-		switch (Fl::event_button()) {
-		case FL_LEFT_MOUSE:
-		{
-			if (!Fl::event_shift())
-				goto out;
-			char* s = get_word(Fl::event_x() - x(), Fl::event_y() - y());
-			inpCall->value(s);
-			free(s);
-		}
-			// fall through
-		case FL_MIDDLE_MOUSE:
-			// stop mouse2 text paste events from reaching Fl_Text_Editor_mod
-			return 1;
-		case FL_RIGHT_MOUSE:
-			break;
-		default:
-			goto out;
-		}
-
-		// enable/disable menu items
+ 		switch (Fl::event_button()) {
+ 		case FL_LEFT_MOUSE: {
+ 			if (!Fl::event_shift())
+ 				goto out;
+ 			char* s = get_word(Fl::event_x() - x(), Fl::event_y() - y());
+  			inpCall->value(s);
+  			free(s);
+  			stopMacroTimer();
+  		}
+// fall through
+ 		case FL_MIDDLE_MOUSE:
+// stop mouse2 text paste events from reaching Fl_Text_Editor_mod
+ 			return 1;
+ 		case FL_RIGHT_MOUSE:
+  			break;
+ 		default:
+ 			goto out;
+ 		}
+// enable/disable menu items
 		if (tbuf->length())
 			view_menu[RX_MENU_CLEAR].flags &= ~FL_MENU_INACTIVE;
 		else
@@ -546,6 +544,7 @@ void FTextView::menu_cb(int val)
 		CALLSIGNquery();
 		break;
 	case RX_MENU_CALL:
+		stopMacroTimer();
 		s = get_word(popx, popy);
 		inpCall->value(s);
 		free(s);
@@ -891,6 +890,7 @@ int FTextEdit::handle_key(int key)
 	}
 		clear();
 		active_modem->set_stopflag(true);
+		stopMacroTimer();
 		return 1;
 	case 't': // transmit for C-t
 		if (trx_state == STATE_RX && Fl::event_state() & FL_CTRL) {
@@ -1113,27 +1113,26 @@ int FTextEdit::handle_dnd_drop(void)
 ///
 void FTextEdit::menu_cb(int val)
 {
-	switch (val) {
-	case TX_MENU_TX:
-		if (trx_state == STATE_RX) {
-			active_modem->set_stopflag(false);
-			start_tx();
-		}
-		else
-			abort_tx();
+  	switch (val) {
+  	case TX_MENU_TX:
+ 		if (trx_state == STATE_RX) {
+ 			active_modem->set_stopflag(false);
+ 			start_tx();
+ 		}
+ 		else
+ 			abort_tx();
+  		break;
+  	case TX_MENU_RX:
+ 		if (trx_state == STATE_TX) {
+ 			insert_position(tbuf->length());
+ 			add("^r", CTRL);
+ 		}
+ 		else
+ 			abort_tx();
+  		break;
+  	case TX_MENU_MFSK16_IMG:
+  		showTxViewer(0, 0);
 		break;
-	case TX_MENU_RX:
-		if (trx_state == STATE_TX) {
-			insert_position(tbuf->length());
-			add("^r", CTRL);
-		}
-		else
-			abort_tx();
-		break;
-	case TX_MENU_MFSK16_IMG:
-		showTxViewer(0, 0);
-		break;
-
 	case TX_MENU_CLEAR:
 		clear();
 		break;
@@ -1146,11 +1145,9 @@ void FTextEdit::menu_cb(int val)
 	case TX_MENU_PASTE:
 		kf_paste(0, this);
 		break;
-
 	case TX_MENU_READ:
 		readFile();
 		break;
-
 	case TX_MENU_WRAP:
 		edit_menu[TX_MENU_WRAP].flags ^= FL_MENU_VALUE;
 		wrap_mode((wrap = !wrap), wrap_col);

@@ -354,6 +354,7 @@ EXTRA_DIST = \
 	$(srcdir)/../data/fldigi.xpm \
 	$(srcdir)/../data/fldigi.desktop \
 	$(srcdir)/../data/mac/Info.plist.in \
+	$(srcdir)/../data/mac/fldigi.icns \
 	$(srcdir)/../data/win32/fldigi.ico \
 	dialogs/confdialog.fl \
 	rigcontrol/rigdialog.fl

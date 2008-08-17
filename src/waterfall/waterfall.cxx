@@ -991,6 +991,7 @@ void xmtrcv_cb(Fl_Widget *w, void *vi)
 	int v = b->value();
 	FL_UNLOCK_D();
 	if (v == 1) {
+		stopMacroTimer();
 		active_modem->set_stopflag(false);
 		trx_transmit();
 	} else {

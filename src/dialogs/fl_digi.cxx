@@ -683,6 +683,7 @@ void restoreFocus()
 
 void macro_cb(Fl_Widget *w, void *v)
 {
+	stopMacroTimer();
 	int b = (int)(reinterpret_cast<long> (v));
 	b += altMacros * NUMMACKEYS;
 	int mouse = Fl::event_button();
@@ -1249,14 +1250,21 @@ void cb_btnSideband(Fl_Widget *w, void *d)
 	FL_UNLOCK_D();
 }
 
-void cbMacroTimerButton(Fl_Widget *w, void *d)
+void stopMacroTimer()
 {
+	if (progdefaults.useTimer == false) return;
+	
 	progdefaults.useTimer = false;
 	FL_LOCK_D();
 	btnMacroTimer->hide();
 	btnMacroDummy->show();
 	FL_UNLOCK_D();
 	restoreFocus();
+}
+
+void cbMacroTimerButton(Fl_Widget *w, void *d)
+{
+	stopMacroTimer();
 }
 
 void cb_RcvMixer(Fl_Widget *w, void *d)

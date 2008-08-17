@@ -56,6 +56,8 @@ string::iterator pText;
 
 bool arq_text_available = false;
 
+extern void send0x06();
+
 static void popup_msg(void* msg)
 {
 	fl_message((const char*)msg);
@@ -410,6 +412,14 @@ bool Socket_arqRx()
 			}
 		}
 
+		if (progdefaults.rsid == true) {
+			send0x06();
+			arqtext.clear();
+			txstring.clear();
+			cmdstring.clear();
+			return true;
+		}
+		
 		if (arqtext.empty()) {
 			arqtext = txstring;
 			pText = arqtext.begin();
