@@ -1641,39 +1641,42 @@ FL_UNLOCK();
 
 void configuration::testCommPorts()
 {
-	char COM[] = "COMx";
-	char ttyS[] = "/dev/ttySx";
-	char ttyUSB[] = "/dev/ttyUSBx";
-	char devttyUSB[] = "/dev/usb/ttyUSBx";
 	int fd;
 
 	strCommPorts = "Ports:";
-	
-	for (int i = 0; i < 4; i++) {
-		ttyS[9] = '0' + i;
-		COM[3] = '1' + i;
-		if ((fd = open( ttyS, O_RDWR | O_NOCTTY | O_NDELAY)) < 0)
-			break;
+	char COM[7] = "COMxxx";
+	char sztty[20] = "/dev/usb/ttyUSBxxx";
+#ifdef __CYGWIN__
+	for (int i = 0; i < 255; i++) {
+#else
+	for (int i = 0; i < 8; i++) {
+#endif
+		snprintf(sztty, sizeof(sztty), "/dev/ttyS%-d", i);
+		snprintf(COM, sizeof(COM), "COM%-d", i+1);
+		if ((fd = open( sztty, O_RDWR | O_NOCTTY | O_NDELAY)) < 0)
+			continue;
 		strCommPorts += '\n';
-		strCommPorts.append(ttyS);
-		strCommPorts.append(" or ");
+#ifdef __CYGWIN__
 		strCommPorts.append(COM);
+#else
+		strCommPorts.append(sztty);
+#endif
 		close(fd);
     }
-	for (int i = 0; i < 4; i++) {
-		ttyUSB[11] = '0' + i;
-		if ((fd = open( ttyUSB, O_RDWR | O_NOCTTY | O_NDELAY)) < 0)
-			break;
+	for (int i = 0; i < 8; i++) {
+		snprintf(sztty, sizeof(sztty), "/dev/ttyUSB%-d", i);
+		if ((fd = open( sztty, O_RDWR | O_NOCTTY | O_NDELAY)) < 0)
+			continue;
 		strCommPorts += '\n';
-		strCommPorts.append(ttyUSB);
+		strCommPorts.append(sztty);
 		close(fd);
     }
-	for (int i = 0; i < 4; i++) {
-		devttyUSB[15] = '0' + i;
-		if ((fd = open( devttyUSB, O_RDWR | O_NOCTTY | O_NDELAY)) < 0)
-			break;
+	for (int i = 0; i < 8; i++) {
+		snprintf(sztty, sizeof(sztty), "/dev/usb/ttyUSB%-d", i);
+		if ((fd = open( sztty, O_RDWR | O_NOCTTY | O_NDELAY)) < 0)
+			continue;
 		strCommPorts += '\n';
-		strCommPorts.append(devttyUSB);
+		strCommPorts.append(sztty);
 		close(fd);
     }
 }
