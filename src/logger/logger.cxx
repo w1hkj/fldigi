@@ -88,40 +88,32 @@ const char *ADIFHEADER =
 <EOH>\n\n";
 
 
-int writeadif () {
+void writeadif () {
 // open the adif file
-#ifndef __CYGWIN__
-	string sfname = HomeDir;
-	sfname.append("fldigi.adif");
-#else
-	string sfname = "C:/FL_LOGBOOK/log.adif";
-#endif
 	FILE *adiFile;
 
-#ifndef __CYGWIN__
-	adiFile = fopen (sfname.c_str(), "r");
-	if (!adiFile) {
-		adiFile = fopen(sfname.c_str(),"w");
-		if (!adiFile)
-			return 1;
-		fprintf (adiFile, ADIFHEADER,
-			strlen(ADIF_VERS), ADIF_VERS,
-			strlen(PACKAGE_NAME), PACKAGE_NAME,
-			strlen(PACKAGE_VERSION), PACKAGE_VERSION);
-		fclose(adiFile);
-	} else
-		fclose(adiFile);
-#endif
+// Append to fldigi.adif on all platforms
+	string sfname = HomeDir;
+	sfname.append("fldigi.adif");
 	adiFile = fopen (sfname.c_str(), "a");
-	if (!adiFile)
-		return 1;
+	if (adiFile) {
 // write the current record to the file  
-	adif.append("<EOR>\n");
-	fprintf(adiFile,"%s", adif.c_str());
-//	printf("%s", adif.c_str());
-//    fflush(adiFile);
-	fclose (adiFile);
-	return 0;
+		adif.append("<EOR>\n");
+		fprintf(adiFile,"%s", adif.c_str());
+		fclose (adiFile);
+	}
+
+// Append to FL_LOGBOOK adif file on Windows if and only if C:\FL_LOGBOOK exists
+#ifdef __CYGWIN__
+	sfname = "C:/FL_LOGBOOK/log.adif";
+	adiFile = fopen (sfname.c_str(), "a");
+	if (adiFile) {
+// write the current record to the file  
+		adif.append("<EOR>\n");
+		fprintf(adiFile,"%s", adif.c_str());
+		fclose (adiFile);
+	}
+#endif
 }
 
 void putadif(int num, const char *s)

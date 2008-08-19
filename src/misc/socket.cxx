@@ -45,6 +45,11 @@
 
 #include "socket.h"
 
+#if HAVE_GETADDRINFO && !defined(AI_NUMERICSERV)
+#  define AI_NUMERICSERV 0
+#endif
+
+
 using namespace std;
 
 //
@@ -617,7 +622,7 @@ size_t Socket::send(const void* buf, size_t len)
 		if (!wait(1))
 			return 0;
 
-	ssize_t r = ::send(sockfd, buf, len, MSG_NOSIGNAL);
+	ssize_t r = ::send(sockfd, buf, len, 0);
 	if (r == 0)
 		shutdown(sockfd, SHUT_WR);
 	else if (r == -1) {
