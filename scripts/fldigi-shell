@@ -1,0 +1,446 @@
+#!/usr/bin/perl
+
+# ----------------------------------------------------------------------------
+#      fldigi-shell version 0.35
+#      A program to control fldigi over HTTP/XML-RPC.
+#
+#      To use, build fldigi with xml-rpc support (see INSTALL)
+#      and start it with --xmlrpc-server.
+#
+# Copyright (C) 2008
+#              Stelios Bounanos, M0GLD
+#
+# fldigi-shell is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# fldigi-shell is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# ----------------------------------------------------------------------------
+
+use strict;
+use warnings;
+
+use RPC::XML qw(:types);
+use RPC::XML::Client;
+use Term::ReadLine;
+use POSIX qw(:termios_h);
+use IO::Handle;
+use Getopt::Std;
+use Data::Dumper;
+
+################################################################################
+
+our $VERSION = "0.36";
+our $progname = (split(/\//, $0))[-1];
+our $histfile = $ENV{'HOME'} . "/.fldigi/shell-history";
+
+our $client;
+
+our $term;
+our $OUT = \*STDOUT;
+our $debug;
+
+our %methods;
+our %commands;
+our %encoders;
+
+################################################################################
+# terminal routines from perlfaq8
+
+our ($termios, $oterm, $echo, $noecho, $fd_stdin);
+
+sub term_get_attr
+{
+    $fd_stdin = fileno(STDIN);
+
+    $termios = POSIX::Termios->new();
+    $termios->getattr($fd_stdin);
+    $oterm = $termios->getlflag();
+
+    $echo = ECHO | ECHOK | ICANON;
+    $noecho = $oterm & ~$echo;
+}
+
+sub term_cbreak
+{
+    $termios->setlflag($noecho);
+    $termios->setcc(VTIME, 1);
+    $termios->setattr($fd_stdin, TCSANOW);
+}
+
+sub term_cooked
+{
+    $termios->setlflag($oterm);
+    $termios->setcc(VTIME, 0);
+    $termios->setattr($fd_stdin, TCSANOW);
+}
+
+sub term_getc
+{
+    my $key = '';
+    term_cbreak();
+    sysread(STDIN, $key, 1);
+    term_cooked();
+    return $key;
+}
+
+################################################################################
+# xml-rpc helper routines
+
+sub encode
+{
+    my $aref = $_[0];
+    return unless (exists( $methods{$aref->[0]} ));
+
+    my $sig = $methods{$aref->[0]}->[0]; $sig =~ s/.+://;
+    my @args = split(//, $sig);
+
+    # Try to find an encoder for each format string char.
+    # Use it to encode the corresponding method argument.
+    for (my $i = 0; $i <= $#args; $i++) {
+	if (exists($encoders{$args[$i]}) && exists($aref->[$i])) {
+	    print "Encoding arg " . ($i+1) . " as $args[$i]\n" if ($debug);
+	    $aref->[$i+1] = &{ $encoders{$args[$i]} }($aref->[$i+1]);
+	}
+    }
+}
+
+sub req
+{
+    encode(\@_);
+    my $r = $client->send_request(@_);
+    if (!ref($r)) {
+	print $OUT "Error: " . $r . "\n";
+	$r = undef;
+    }
+    elsif ($r->is_fault()) {
+	print $OUT "Error " . $r->value->{"faultCode"} . ": " .
+	           $r->value->{"faultString"} . "\n";
+	$r = undef;
+    }
+
+    return $r;
+}
+
+sub decode
+{
+    my $r;
+    return "" unless defined($r = req(@_));
+    return ref($r->value) ? Dumper($r->value) : $r->value;
+}
+
+sub execute($)
+{
+    my @line = split(/\s+/, $_[0]);
+    my $ret;
+
+    if (exists( $commands{$line[0]} )) {
+	my $cmd = shift(@line);
+	&{ $commands{$cmd}->[2] }(@line);
+    }
+    elsif (exists( $methods{$line[0]} )) {
+	# should we resplit the line?
+	my $sig = $methods{$line[0]}->[0]; $sig =~ s/.+://; $sig =~ s/n//;
+	print "Method " . $line[0] . " takes " . length($sig) . " args\n" if ($debug);
+	if (length($sig) != $#line) {
+	    @line = split(/ +/, $_[0], length($sig) + 1);
+	}
+	print Dumper(\@line) if ($debug);
+	print $OUT decode(@line), "\n";
+    }
+    else {
+	print $OUT $line[0] . ": command not found. Do you need ``help''?\n";
+    }
+}
+
+################################################################################
+# command routines
+
+sub help
+{
+    my @k = (@_ ? @_ : (sort keys %methods, sort keys %commands));
+
+    if (%methods) {
+	print $OUT "Server methods:", "\n" if (!@_);
+	foreach (@k) {
+	    next unless (exists($methods{$_}));
+	    printf($OUT "  %-32s%-8s%s\n", $_, $methods{$_}->[0], $methods{$_}->[1]);
+	}
+	print $OUT "\n";
+    }
+    print $OUT "Shell commands:", "\n" if (!@_);
+    foreach (@k) {
+	next unless (exists($commands{$_}));
+	printf("  %-32s%-8s%s\n", $_, $commands{$_}->[0], $commands{$_}->[1]);
+    }
+}
+
+sub recv_text
+{
+    my ($r, $len, $start, $cont) = (0, 0, 0, 1);
+    my ($delay) = (@_ ? @_ : 1);
+    my $sigint = $SIG{INT};
+    $SIG{INT} = sub { $cont = 0; };
+
+    while ($cont) {
+	sleep($delay);
+
+	next unless defined($r = req("text.get_rx_length"));
+	$start -= $len - $r->value if ($r->value < $len);
+	$len = $r->value;
+	next unless ($len - $start > 0 && defined($r = req("text.get_rx", $start, $len - $start)));
+	print STDOUT $r->value;
+	$start = $len;
+    }
+    print "\n";
+    $SIG{INT} = $sigint;
+}
+
+sub get_recv_text
+{
+    my ($r, $len);
+
+    return unless defined($r = req("text.get_rx_length"));
+    return unless defined($r = req("text.get_rx", 0, $r->value));
+
+    print STDOUT $r->value, "\n";
+}
+
+sub send_line
+{
+    if (@_) {
+	req("text.add_tx_bytes", join(" ", @_));
+	return;
+    }
+
+    my $r;
+    my $cont = 1;
+    my $sigint = $SIG{INT};
+    $SIG{INT} = sub { $cont = 0; };
+
+    print $OUT "Text will be sent line by line. EOF to end.\n";
+    print "> ";
+    while (<STDIN>) {
+	last unless ($cont);
+    	req("text.add_tx_bytes", $_);
+    	print "> ";
+    }
+    print"\n";
+    $SIG{INT} = $sigint;
+}
+
+sub send_file
+{
+    open(IN, '<', $_[0]) or warn("Could not read $_[0]: $!\n") and return;
+    while (<IN>) {
+        send_line($_);
+    }
+    close(IN);
+}
+
+sub send_char
+{
+    my ($c, $char);
+    my $cont = 1;
+    my $sigint = $SIG{INT};
+    $SIG{INT} = sub { $cont = 0; };
+
+    print $OUT "Text will be sent char by char. EOF to end.\n";
+    print "> ";
+    while (ord($c = term_getc()) != 0x04 && ord($c) != 0x03 && $cont) {
+	req("text.add_tx_bytes", ($char = $c));
+	print $c;
+    }
+    print "\n";
+    $SIG{INT} = $sigint;
+}
+
+sub print_history
+{
+    my $out = $_[0];
+
+    my @h = $term->GetHistory();
+    splice(@h, 0, $_[1]) if ($_[1] > 0);
+    print $out join("\n", @h), "\n" if (@h);
+}
+
+sub list_modem_names
+{
+    my $r = req("modem.get_names");
+    print join("\n", @{$r->value}), "\n" if (defined($r));
+}
+
+sub wait_for_state
+{
+    warn "not enough arguments\n" and return unless (@_);
+    my $r;
+    sleep(1) while (defined($r = req("main.get_tx_status")) && $r->value ne $_[0]);
+}
+
+
+################################################################################
+
+our %opts = ( "u" => "http://localhost:7362/RPC2", "d" => 0 );
+
+%commands = ( "help"      => [ "n:n", "Print this command help", \&help ],
+	      "poll"      => [ "s:i", "Poll for RX text every ``i'' seconds (def=1)", \&recv_text ],
+	      "send"      => [ "n:s", "Send text, one line at a time", \&send_line ],
+	      "sendchar"  => [ "n:s", "Send text, one character at a time", \&send_char ],
+	      "exit"      => [ "n:n", "Exit the shell", sub { exit(0) } ],
+	      "eval"      => [ "s:s", "Evaluate Perl code", sub { eval "@_"; } ],
+	      "history"   => [ "s:n", "Print command history", sub { print_history($OUT, 0); } ],
+	      "debug"     => [ "n:n", "Toggle debugging output", sub { $debug = (@_ ? $_[0] : !$debug); } ],
+	      "reinit"    => [ "n:n", "Rebuild command list", sub { build_cmds(); setup_compl(); } ],
+	      "modems"    => [ "s:n", "List all modem names", \&list_modem_names ],
+              "recvtext"  => [ "s:n", "Get all received text", \&get_recv_text ],
+              "sendfile"  => [ "n:s", "Send text from file ``s''", \&send_file ],
+              "sendstr"   => [ "n:s", "Send string ``s''", sub { send_line(@_); } ],
+	      "wait"      => [ "n:s", "Wait for trx state to become ``s''", \&wait_for_state ]
+	    );
+
+%encoders = ( "b" => \&RPC_BOOLEAN, "6" => \&RPC_BASE64,
+	      "d" => \&RPC_DOUBLE, "s" => \&RPC_STRING );
+
+# our %abbrev = ( "int" => "i", "boolean" => "b", "double" => "d", "string" => "s", "base64" => "6",
+# 		"nil" => "n", "aray" => "A", "struct" => "S"
+# 	      );
+
+################################################################################
+
+
+sub HELP_MESSAGE
+{
+print <<EOF
+
+Usage: $progname [-OPTIONS [-MORE_OPTIONS]] [--] [PROGRAM_ARG1 ...]
+
+The following single-character options are accepted:
+
+        -u URL  Use URL to access the server.
+                The default is $opts{"u"}
+
+        -d      Enable debugging output.
+
+Options may be merged together.  -- stops processing of options.
+Space is not required between options and their arguments.
+EOF
+;
+}
+
+sub handle_cmdline
+{
+    $Getopt::Std::STANDARD_HELP_VERSION = 1;
+
+    my $old_warn_handler = $SIG{__WARN__};
+    $SIG{__WARN__} = sub { die $_[0]; };
+    getopts('du:', \%opts);
+    $SIG{__WARN__} = $old_warn_handler;
+
+    $debug = $opts{"d"};
+}
+
+################################################################################
+
+sub build_cmds
+{
+    %methods = ();
+
+    # FIXME: This is quite slow. We should use a multicall request.
+    # if (defined(my $r = req("system.listMethods"))) {
+    # 	my @ma = @{$r->value};
+    # 	for my $m (@ma) {
+    # 	    $r = req("system.methodSignature", $m);
+    # 	    my @sa = @{$r->value->[0]};
+    # 	    $r = req("system.methodHelp", $m);
+    # 	    my $sig = join("", map { $abbrev{$_} } @sa); $sig =~ s/^(.)/$1:/;
+    # 	    $methods{$m} = [ $sig, $r->value ];
+    # 	}
+    # }
+
+# this uses fldigi.list to get all non-system methods with a single request
+    if (defined(my $r = req("fldigi.list"))) {
+	foreach (@{$r->value}) {
+	    $methods{ $_->{"name"} } = [ $_->{"signature"}, $_->{"help"} ];
+	}
+	# $methods{"system.listMethods"} = [ "i:n", "Return an array of all available XML-RPC methods on this server." ];
+	# $methods{"system.methodHelp"} = [ "i:s", "Given the name of a method, return a help string." ];
+	# $methods{"system.methodSignature"} = [ "A:s", "Given the name of a method, return an array of legal signatures." ];
+	# $methods{"system.multicall"} = [ "i:n", "Process an array of calls, and return an array of results." ];
+	# $methods{"system.shutdown"} = [ "i:i", "Shut down the server.  Return code is always zero." ];
+    }
+}
+
+sub setup_compl
+{
+# Use the hashes to set up simple completion for rpc methods and shell commands
+    if ($term->ReadLine eq "Term::ReadLine::Gnu") {
+	my $attribs = $term->Attribs();
+	$attribs->{"completion_entry_function"} = $attribs->{"list_completion_function"};
+	$attribs->{"completion_word"} = [keys %methods, keys %commands];
+    } elsif ($term->ReadLine eq "Term::ReadLine::Perl") {
+	readline::rl_basic_commands(keys %methods, keys %commands);
+    }
+}
+
+sub load_history
+{
+    open(HIST, '<', $histfile) or return 0;
+    while (<HIST>) {
+	chomp;
+	$term->addhistory($_);
+    }
+    my $r = $.;
+    close(HIST);
+    return $r;
+}
+
+sub save_history
+{
+    open(HIST, '>>', $histfile) or return;
+    print_history(\*HIST, $_[0]);
+    close(HIST);
+}
+
+################################################################################
+################################################################################
+
+# parse cmd line
+handle_cmdline();
+
+# create client
+$client = RPC::XML::Client->new($opts{"u"});
+
+# save terminal attributes; used by getc routine
+term_get_attr();
+
+# initialise termline
+$term = new Term::ReadLine "fldigi-shell";
+#$OUT = $term->OUT || \*STDOUT;
+STDOUT->autoflush(1);
+my $histskip = load_history();
+
+# build commands hashes
+build_cmds();
+
+if (@ARGV) { # execute arguments and exit
+    execute($_) foreach (@ARGV);
+    exit(0);
+}
+
+setup_compl();
+
+# ignore interrupts
+$SIG{INT} = 'IGNORE';
+
+# execute commands
+while (defined($_ = $term->readline("fldigi % "))) {
+    execute($_) if (/\w/);
+}
+save_history($histskip);

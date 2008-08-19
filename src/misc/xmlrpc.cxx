@@ -46,6 +46,7 @@
 #include "configuration.h"
 #include "main.h"
 #include "waterfall.h"
+#include "macros.h"
 #include "qrunner.h"
 
 #if USE_HAMLIB
@@ -955,10 +956,10 @@ public:
 extern Fl_Button* btnTune; // FIXME: export in fl_digi.h
 extern Fl_Button* btnRSID;
 
-class Main_get_tx_status : public xmlrpc_c::method
+class Main_get_trx_status : public xmlrpc_c::method
 {
 public:
-	Main_get_tx_status()
+	Main_get_trx_status()
 	{
 		_signature = "s:n";
 		_help = "Returns transmit/tune/receive status.";
@@ -1029,6 +1030,52 @@ public:
 		else if (btnRSID->value())
 			REQ(set_button, btnRSID, false);
 		*retval = xmlrpc_c::value_nil();
+	}
+};
+
+class Main_abort : public xmlrpc_c::method
+{
+public:
+	Main_abort()
+	{
+		_signature = "n:n";
+		_help = "Aborts a transmit or tune.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		if (trx_state == STATE_TX || trx_state == STATE_TUNE)
+			REQ(abort_tx);
+		*retval = xmlrpc_c::value_nil();
+	}
+};
+
+class Main_run_macro : public xmlrpc_c::method
+{
+public:
+	Main_run_macro()
+	{
+		_signature = "n:i";
+		_help = "Runs a macro.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		REQ(&Main_run_macro::run_macro, params.getInt(0, 0, MAXMACROS-1));
+		*retval = xmlrpc_c::value_nil();
+	}
+	static void run_macro(int i) { macros.execute(i); }
+};
+
+class Main_get_max_macro_id : public xmlrpc_c::method
+{
+public:
+	Main_get_max_macro_id()
+	{
+		_signature = "i:n";
+		_help = "Returns the maximum macro ID number.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		*retval = xmlrpc_c::value_int(MAXMACROS - 1);
 	}
 };
 
@@ -1394,11 +1441,15 @@ void XML_RPC_Server::add_methods(void)
 	methods->push_back(rpc_method(new Main_set_lock, "main.set_lock"));
 	methods->push_back(rpc_method(new Main_toggle_lock, "main.toggle_lock"));
 
-	methods->push_back(rpc_method(new Main_get_tx_status, "main.get_tx_status"));
+	methods->push_back(rpc_method(new Main_get_trx_status, "main.get_trx_status"));
 	methods->push_back(rpc_method(new Main_tx, "main.tx"));
 	methods->push_back(rpc_method(new Main_tune, "main.tune"));
 	methods->push_back(rpc_method(new Main_rsid, "main.rsid"));
 	methods->push_back(rpc_method(new Main_rx, "main.rx"));
+	methods->push_back(rpc_method(new Main_abort, "main.abort"));
+
+	methods->push_back(rpc_method(new Main_run_macro, "main.run_macro"));
+	methods->push_back(rpc_method(new Main_get_max_macro_id, "main.get_max_macro_id"));
 
 	methods->push_back(rpc_method(new Log_get_freq, "log.get_frequency"));
 	methods->push_back(rpc_method(new Log_get_time, "log.get_time"));

@@ -348,6 +348,7 @@ EXTRA_fldigi_SOURCES += \
 EXTRA_DIST = \
 	$(srcdir)/../scripts/mkversions.sh \
 	$(srcdir)/../scripts/mkappbundle.sh \
+	$(srcdir)/../scripts/fldigi-shell \
 	$(srcdir)/../scripts/tests/config-h.sh \
 	$(srcdir)/../data/fldigi-psk.png \
 	$(srcdir)/../data/fldigi-rtty.png \
