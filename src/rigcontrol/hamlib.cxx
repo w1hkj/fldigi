@@ -26,6 +26,7 @@
 #include "rigdialog.h"
 
 #include "stacktrace.h"
+#include "re.h"
 
 using namespace std;
 
@@ -46,7 +47,7 @@ static long int hamlib_freq;
 static rmode_t hamlib_rmode = RIG_MODE_USB;
 static pbwidth_t hamlib_pbwidth = 3000;
 
-static int ioctl_bits;
+// FIXME: remove static int ioctl_bits;
 
 static int dummy = 0;
 
@@ -61,6 +62,7 @@ void show_error(const char * a, const char * b)
 	cerr << msg.c_str() << '\n';
 }
 
+/* FIXME: remove this function
 bool hamlib_setRTSDTR()
 {
 	if (progdefaults.RTSplus == false && progdefaults.DTRplus == false)
@@ -87,6 +89,28 @@ bool hamlib_setRTSDTR()
 	close(hamlibfd);
 	return true;
 }
+*/
+
+#ifdef __CYGWIN__
+// convert COMx to /dev/ttySy with y = x - 1
+static void adjust_port(string& port)
+{
+	re_t re("com([0-9]+)", REG_EXTENDED | REG_ICASE);
+	const char* s;
+	if (!(re.match(port.c_str()) && (s = re.submatch(1))))
+		return;
+	stringstream ss;
+	int n;
+	ss << s;
+	ss >> n;
+	if (--n < 0)
+		n = 0;
+	ss.clear(); ss.str("");
+	ss << "/dev/ttyS" << n;
+	ss.seekp(0);
+	port = ss.str();
+}
+#endif
 
 bool hamlib_init(bool bPtt)
 {
@@ -102,6 +126,10 @@ bool hamlib_init(bool bPtt)
 
 	port = progdefaults.HamRigDevice;
 	spd = progdefaults.strBaudRate();
+
+#ifdef __CYGWIN__
+	adjust_port(port);
+#endif
 
 	list<string>::iterator pstr = (xcvr->rignames).begin();
 	list< const struct rig_caps *>::iterator prig = (xcvr->riglist).begin();
@@ -135,7 +163,7 @@ bool hamlib_init(bool bPtt)
 		xcvr->open();
 	}
 	catch (const RigException& Ex) {
-		show_error("Init", Ex.what());
+		show_error("hamlib_init", Ex.what());
 		xcvr->close();
 		return false;
 	}
