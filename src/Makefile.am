@@ -212,6 +212,7 @@ fldigi_SOURCES += \
 	include/qrzcall.h \
 	include/qrzlib.h \
 	include/raster.h \
+	include/re.h \
 	include/rigCAT.h \
 	include/rigMEM.h \
 	include/rigdialog.h \
@@ -264,6 +265,7 @@ fldigi_SOURCES += \
 	misc/arq_io.cxx \
 	misc/qrzcall.cxx \
 	misc/qrzlib.cxx \
+	misc/re.cxx \
 	misc/socket.cxx \
 	misc/stacktrace.cxx \
 	misc/status.cxx \
