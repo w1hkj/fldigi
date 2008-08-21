@@ -46,7 +46,7 @@ FLDIGI_VERSION_MAJOR = @FLDIGI_VERSION_MAJOR@
 FLDIGI_VERSION_MINOR = @FLDIGI_VERSION_MINOR@
 FLDIGI_VERSION_PATCH = @FLDIGI_VERSION_PATCH@
 
-.EXPORT_ALL_VARIABLES: versions.h appbundle
+.EXPORT_ALL_VARIABLES: versions.h appbundle hamlib-static
 
 versions.h: $(srcdir)/include/versions.h.in
 	sh $(srcdir)/../scripts/mkversions.sh $^ $@ || echo > $@
@@ -58,6 +58,7 @@ nodist_fldigi_SOURCES = $(BUILT_SOURCES)
 # and deleted by the clean targets
 CLEANFILES = $(BUILT_SOURCES)
 
+CLEAN_LOCAL_FILES =
 
 if WIN32
 if HAVE_WINDRES
@@ -86,21 +87,26 @@ flgen: $(srcdir)/dialogs/confdialog.fl $(srcdir)/rigcontrol/rigdialog.fl
 	(cd $(srcdir)/include; \
 	$(FLUID) -c -o ../dialogs/confdialog.cxx -h confdialog.h ../dialogs/confdialog.fl; \
 	$(FLUID) -c -o ../rigcontrol/rigdialog.cxx -h rigdialog.h ../rigcontrol/rigdialog.fl)
-else
-flgen:
-	@echo >&2
-	@echo "*** The code and headers cannot be generated from the .fl source" >&2
-	@echo "*** files because the fluid utility was not found on your system" >&2
-	@echo >&2
-	@false
 endif
 
 if DARWIN
 appbundle:
-	sh $(srcdir)/../scripts/mkappbundle.sh "$(srcdir)/../data" .
-clean-local:
-	@rm -rf mac-bundle mac-libs-bundle
+	sh $(srcdir)/../scripts/mkappbundle.sh "$(srcdir)/../data" . \
+	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-bundle-nolibs \
+	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-bundle
+CLEAN_LOCAL_FILES += $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-bundle-nolibs \
+	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-bundle \
+	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)*.dmg
 endif
+
+if ENABLE_HAMLIB
+hamlib-static:
+	sh $(srcdir)/../scripts/mkhamlibstatic.sh hls-tmp
+CLEAN_LOCAL_FILES += hls-tmp
+endif
+
+clean-local:
+	@rm -rf $(CLEAN_LOCAL_FILES)
 
 TESTS = $(srcdir)/../scripts/tests/config-h.sh
 
@@ -348,6 +354,7 @@ EXTRA_fldigi_SOURCES += \
 EXTRA_DIST = \
 	$(srcdir)/../scripts/mkversions.sh \
 	$(srcdir)/../scripts/mkappbundle.sh \
+	$(srcdir)/../scripts/mkhamlibstatic.sh \
 	$(srcdir)/../scripts/fldigi-shell \
 	$(srcdir)/../scripts/tests/config-h.sh \
 	$(srcdir)/../data/fldigi-psk.png \
