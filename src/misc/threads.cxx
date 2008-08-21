@@ -114,6 +114,14 @@ int sem_timedwait_rel(sem_t* sem, double rel_timeout)
         return sem_timedwait(sem, &t);
 }
 
+int pthread_cond_timedwait_rel(pthread_cond_t* cond, pthread_mutex_t* mutex, double rel_timeout)
+{
+	struct timespec t;
+	clock_gettime(CLOCK_REALTIME, &t);
+	t = t + rel_timeout;
+
+	return pthread_cond_timedwait(cond, mutex, &t);
+}
 
 #if USE_TLS
 	__thread  int thread_id_;

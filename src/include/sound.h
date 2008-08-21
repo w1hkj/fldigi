@@ -207,7 +207,7 @@ private:
 
 #if USE_PORTAUDIO
 
-class Cmovavg;
+#include <pthread.h>
 
 class SoundPort : public SoundBase
 {
@@ -270,7 +270,8 @@ private:
                 double src_ratio;
 
                 sem_t* rwsem;
-                sem_t* csem;
+		pthread_mutex_t* cmutex;
+		pthread_cond_t* ccond;
                 int state;
                 ringbuffer<float>* rb;
 		size_t blocksize;

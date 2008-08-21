@@ -13,7 +13,7 @@
 BOOL Cserial::OpenPort()
 {
 	string COMportname = "//./";
-
+/*
 	if (device == "/dev/ttyS0") device = "COM1";
 	else if (device == "/dev/ttyS1") device = "COM2";
 	else if (device == "/dev/ttyS2") device = "COM3";
@@ -28,6 +28,7 @@ BOOL Cserial::OpenPort()
 	else if (device == "/dev/ttyS11") device = "COM12";
 	else if (device == "/dev/ttyS12") device = "COM13";
 	else if (device == "/dev/ttyS13") device = "COM14";
+*/
 	COMportname += device;
 
 	hComm = CreateFile(COMportname.c_str(),
@@ -106,12 +107,6 @@ static	DWORD dwBytesTxD=0;
 int  Cserial::ReadData (unsigned char *buf, int nchars)
 {
 	DWORD dwRead = 0;
-//	int retval;
-//	busyflag = true;
-//	retval = ReadFile(hComm, buf, nchars, &dwRead, NULL);
-//	busyflag = false;
-//	if (retval == 0) 
-//		return 0;
 	if (!ReadFile(hComm, buf, nchars, &dwRead, NULL))
 		return 0;
 	return (int) dwRead;
@@ -166,7 +161,7 @@ int Cserial::WriteBuffer(unsigned char *buff, int n)
 // Argument         : DWORD WriteTotalTimeoutConstant
 ///////////////////////////////////////////////////////
 BOOL Cserial::SetCommunicationTimeouts(
-	DWORD ReadIntervalTimeout,
+	DWORD ReadIntervalTimeout, // msec
 	DWORD ReadTotalTimeoutMultiplier,
 	DWORD ReadTotalTimeoutConstant,
 	DWORD WriteTotalTimeoutMultiplier,
@@ -194,8 +189,8 @@ BOOL Cserial::SetCommunicationTimeouts(
 }
 
 BOOL Cserial::SetCommTimeout() {
-	return SetCommunicationTimeouts (0L, 0L, 0L, 0L, 0L);
-//  return SetCommunicationTimeouts ( MAXDWORD, MAXDWORD, 100L, MAXDWORD, 100L);
+//	return SetCommunicationTimeouts (500L, 0L, 0L, 0L, 0L);
+  return SetCommunicationTimeouts ( MAXDWORD, 0L, 0L, 100L, 0L);
   }
 
 ///////////////////////////////////////////////////////

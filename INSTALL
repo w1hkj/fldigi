@@ -31,7 +31,8 @@ present on your system:
     for libpulse-simple, the PulseAudio simple API library, are present.
 
   * The embedded XML-RPC web server is enabled if `configure' can find
-    the C++ bindings for the libxmlrpc-c3 library.
+    the C++ bindings for the libxmlrpc-c3 library.  An example client
+    can be found in scripts/fldigi-shell.
 
 Once you have installed the required packages, the following commands
 should be sufficient to compile fldigi and install it under /usr/local:

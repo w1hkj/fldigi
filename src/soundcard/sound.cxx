@@ -751,7 +751,7 @@ SoundPort::SoundPort(const char *in_dev, const char *out_dev)
         sd[0].rb = sd[1].rb = 0;
         sd[0].advance = sd[1].advance = 0;
 
-	sem_t** sems[] = { &sd[0].rwsem, &sd[0].csem, &sd[1].rwsem, &sd[1].csem };
+	sem_t** sems[] = { &sd[0].rwsem, &sd[1].rwsem };
 #if USE_NAMED_SEMAPHORES
 	char sname[32];
 #endif
@@ -769,6 +769,13 @@ SoundPort::SoundPort(const char *in_dev, const char *out_dev)
 		if (sem_init(*sems[i], 0, 0) == -1)
 			throw SndException(errno);
 #endif // USE_NAMED_SEMAPHORES
+	}
+
+	for (size_t i = 0; i < 2; i++) {
+		sd[i].cmutex = new pthread_mutex_t;
+		pthread_mutex_init(sd[i].cmutex, NULL);
+		sd[i].ccond = new pthread_cond_t;
+		pthread_cond_init(sd[i].ccond, NULL);
 	}
 
         try {
@@ -796,7 +803,7 @@ SoundPort::~SoundPort()
 {
         Close();
 
-        sem_t* sems[] = { sd[0].rwsem, sd[0].csem, sd[1].rwsem, sd[1].csem };
+        sem_t* sems[] = { sd[0].rwsem, sd[1].rwsem };
         for (size_t i = 0; i < sizeof(sems)/sizeof(*sems); i++) {
 #if USE_NAMED_SEMAPHORES
 		if (sem_close(sems[i]) == -1)
@@ -806,6 +813,15 @@ SoundPort::~SoundPort()
                         perror("sem_destroy");
 		delete sems[i];
 #endif
+	}
+
+	for (size_t i = 0; i < 2; i++) {
+		if (pthread_mutex_destroy(sd[i].cmutex) == -1)
+			throw SndException(errno);
+		delete sd[i].cmutex;
+		if (pthread_cond_destroy(sd[i].ccond) == -1)
+			throw SndException(errno);
+		delete sd[i].ccond;
 	}
 
 	delete sd[0].rb;
@@ -830,13 +846,10 @@ int SoundPort::Open(int mode, int freq)
 			init_stream(i);
 			src_data_reset(i);
 
-                        // reset the semaphores
-                        sem_t* sems[] = { sd[i].rwsem, sd[i].csem };
-                        for (size_t j = 0; j < sizeof(sems)/sizeof(*sems); j++) {
-                                while (sem_trywait(sems[i]) == 0);
-                                if (errno && errno != EAGAIN)
-                                        throw SndException(errno);
-                        }
+                        // reset the semaphore
+			while (sem_trywait(sd[i].rwsem) == 0);
+			if (errno && errno != EAGAIN)
+				throw SndException(errno);
 
 			start_stream(i);
 			ret = 1;
@@ -856,10 +869,11 @@ void SoundPort::pause_stream(unsigned dir)
         if (sd[dir].stream == 0 || !stream_active(dir))
                 return;
 
-	while (sem_trywait(sd[dir].csem) == 0);
+	pthread_mutex_lock(sd[dir].cmutex);
         sd[dir].state = spa_pause;
-        if (sem_timedwait_rel(sd[dir].csem, 5) == -1 && errno == ETIMEDOUT)
-                cerr << __func__ << ": stream " << dir << " wedged\n";
+	if (pthread_cond_timedwait_rel(sd[dir].ccond, sd[dir].cmutex, 5.0) == -1 && errno == ETIMEDOUT)
+		cerr << __func__ << ": stream " << dir << " wedged\n";
+	pthread_mutex_unlock(sd[dir].cmutex);
 }
 
 void SoundPort::Close(unsigned dir)
@@ -875,13 +889,16 @@ void SoundPort::Close(unsigned dir)
         for (unsigned i = start; i <= end; i++) {
                 if (!stream_active(i))
                         continue;
-		while (sem_trywait(sd[i].csem) == 0);
+
+		pthread_mutex_lock(sd[i].cmutex);
                 sd[i].state = spa_complete;
                 // first wait for buffers to be drained and for the
                 // stop callback to signal us that the stream has
                 // been stopped
-                if (sem_timedwait_rel(sd[i].csem, 5) == -1 && errno == ETIMEDOUT)
-                        cerr << __func__ << ": stream " << i << " wedged\n";
+		if (pthread_cond_timedwait_rel(sd[i].ccond, sd[i].cmutex, 5.0) == -1 &&
+		    errno == ETIMEDOUT)
+			cerr << __func__ << ": stream " << i << " wedged\n";
+		pthread_mutex_unlock(sd[i].cmutex);
                 sd[i].state = spa_continue;
 
                 int err;
@@ -1115,11 +1132,14 @@ void SoundPort::flush(unsigned dir)
         for (unsigned i = start; i <= end; i++) {
                 if (!stream_active(i))
                         continue;
+
+		pthread_mutex_lock(sd[i].cmutex);
                 sd[i].state = spa_drain;
-		while (sem_trywait(sd[i].csem) == 0);
-                if (sem_timedwait_rel(sd[i].csem, 5) == -1 && errno == ETIMEDOUT)
-                        cerr << "timeout while flushing stream " << i << endl;
-                sd[i].state = spa_continue;
+		if (pthread_cond_timedwait_rel(sd[i].ccond, sd[i].cmutex, 5.0) == -1
+		    && errno == ETIMEDOUT)
+			cerr << __func__ << ": stream " << dir << " wedged\n";
+		pthread_mutex_unlock(sd[i].cmutex);
+		sd[i].state = spa_continue;
         }
 }
 
@@ -1326,7 +1346,6 @@ int SoundPort::stream_process(const void* in, void* out, unsigned long nframes,
                              PaStreamCallbackFlags flags, void* data)
 {
         struct stream_data* sd = reinterpret_cast<struct stream_data*>(data);
-	int val;
 
 #ifndef NDEBUG
         struct {
@@ -1351,11 +1370,10 @@ int SoundPort::stream_process(const void* in, void* out, unsigned long nframes,
                         if (sd->rb->write(reinterpret_cast<const float*>(in), nframes))
                                 sem_post(sd->rwsem);
                         break;
-                case spa_drain: case spa_pause: // post csem once
-			sem_getvalue(sd->csem, &val);
-			if (val == 0)
-				sem_post(sd->csem);
-			break;
+                case spa_drain: case spa_pause: // signal the cv
+			pthread_mutex_lock(sd->cmutex);
+			pthread_cond_signal(sd->ccond);
+			pthread_mutex_unlock(sd->cmutex);
                 }
         }
         else if (out) {
@@ -1369,14 +1387,14 @@ int SoundPort::stream_process(const void* in, void* out, unsigned long nframes,
                         if (nread > 0)
                                 sem_post(sd->rwsem);
                         break;
-                case spa_drain: // post csem once, when we have emptied the buffer
+                case spa_drain: // signal the cv when we have emptied the buffer
                         if (nread > 0)
                                 break;
                         // else fall through
-                case spa_pause: // post csem once
-			sem_getvalue(sd->csem, &val);
-			if (val == 0)
-				sem_post(sd->csem);
+                case spa_pause:
+			pthread_mutex_lock(sd->cmutex);
+			pthread_cond_signal(sd->ccond);
+			pthread_mutex_unlock(sd->cmutex);
 			break;
                 }
         }
@@ -1390,7 +1408,9 @@ void SoundPort::stream_stopped(void* data)
 
         if (sd->rb)
                 sd->rb->reset();
-        sem_post(sd->csem);
+	pthread_mutex_lock(sd->cmutex);
+	pthread_cond_signal(sd->ccond);
+	pthread_mutex_unlock(sd->cmutex);
 }
 
 
