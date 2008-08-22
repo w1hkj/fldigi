@@ -873,8 +873,12 @@ void cb_mnuVisitURL(Fl_Widget*, void* arg)
 {
 	const char* url = reinterpret_cast<const char *>(arg);
 #ifndef __CYGWIN__
+#  ifdef __APPLE__
+	const char* browsers[] = { "open" };
+#  else
 	const char* browsers[] = { "xdg-open", getenv("BROWSER"), "sensible-brower",
 				   "firefox", "mozilla" };
+#  endif
 	switch (fork()) {
 	case 0:
 		for (size_t i = 0; i < sizeof(browsers)/sizeof(browsers[0]); i++)
@@ -1607,6 +1611,9 @@ void create_fl_digi_main() {
 				if (menu_[i].text)
 					menu_[i].labelsize_ = FL_NORMAL_SIZE;
 			mnu->menu(menu_);
+
+			// reset the message dialog font
+			fl_message_font(FL_HELVETICA, FL_NORMAL_SIZE);
 
 			btnRSID = new Fl_Light_Button(WNOM - 150 - pad, 0, 50, Hmenu, "RSID ?");
 			btnRSID->selection_color(FL_GREEN);

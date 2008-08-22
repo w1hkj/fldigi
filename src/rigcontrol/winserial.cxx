@@ -13,7 +13,7 @@
 BOOL Cserial::OpenPort()
 {
 	string COMportname = "//./";
-/*
+
 	if (device == "/dev/ttyS0") device = "COM1";
 	else if (device == "/dev/ttyS1") device = "COM2";
 	else if (device == "/dev/ttyS2") device = "COM3";
@@ -28,7 +28,7 @@ BOOL Cserial::OpenPort()
 	else if (device == "/dev/ttyS11") device = "COM12";
 	else if (device == "/dev/ttyS12") device = "COM13";
 	else if (device == "/dev/ttyS13") device = "COM14";
-*/
+
 	COMportname += device;
 
 	hComm = CreateFile(COMportname.c_str(),

@@ -4,19 +4,21 @@
 ### 20080227  Stelios Bounanos M0GLD
 ### Updated 20080727: enable the .icns support
 
-if [ $# -ne 2 ]; then
-    echo "Syntax: $0 data-dir build-dir" >&2
+if [ $# -ne 4 ]; then
+    echo "Syntax: $0 data-dir build-dir bundle-dir static-bundle-dir" >&2
     exit 1
 fi
 
-if [ -z "$PACKAGE" ]; then
-    echo "E: \$PACKAGE undefined"
+if [ -z "$PACKAGE_TARNAME" ]; then
+    echo "E: \$PACKAGE_TARNAME undefined"
     exit 1
 fi
 
 PWD=`pwd`
 data="${PWD}/$1"
 build="${PWD}/$2"
+bundle_dir="$3"
+static_bundle_dir="$4"
 # more sanity checks
 for d in "$data" "$build"; do
     test -d "$d" && continue
@@ -29,48 +31,60 @@ if ! test -w "$build"; then
 fi
 
 plist="${data}/mac/Info.plist.in"
-icons="${data}/mac/fldigi.icns"
-for f in "$plist" "$icons"; do
+icon="${data}/mac/fldigi.icns"
+for f in "$plist" "$icon"; do
     test -r "$f" && continue
     echo "E: ${f}: not readable" >&2
     exit 1
 done
 
+# aaaaaaaaaargh => Aaaaaaaaaargh
+upcase1()
+{
+    sed 'h; s/\(^.\).*/\1/; y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/; G; s/\n.//'
+}
 
-identifier="com.w1hkj.fldigi"
-name="Fldigi"
-signature="fldg"
-binary="fldigi"
+identifier="com.w1hkj.$PACKAGE_TARNAME"
+name=$(echo "$PACKAGE_TARNAME" | upcase1)
+# we'll use the first four consonants as the signature
+signature="$(echo $PACKAGE_TARNAME | sed 's/[aeiouAEIOU]//g; s/\(^....\).*/\1/')"
+binary="$PACKAGE_TARNAME"
 version="${FLDIGI_VERSION_MAJOR}.${FLDIGI_VERSION_MINOR}"
-icon="`basename $icons`"
 
 set -e
 
 cd "$build"
 
+if test "x$STRIP" = "x0"; then
+    INSTALL_PROGRAM_CMD="$INSTALL_STRIP_PROGRAM"
+else
+    INSTALL_PROGRAM_CMD="$INSTALL_PROGRAM"
+fi
+
 # bundle the binary
-echo "Creating ${build}/mac-bundle/"$PACKAGE".app"
-$mkinstalldirs mac-bundle/"$PACKAGE".app/Contents/MacOS mac-bundle/"$PACKAGE".app/Contents/Resources
-cd mac-bundle
-$INSTALL_STRIP_PROGRAM "${build}/$binary" "$PACKAGE".app/Contents/MacOS
-$INSTALL_DATA "$icons" "$PACKAGE".app/Contents/Resources
-echo "APPL${signature}" > "$PACKAGE".app/Contents/PkgInfo
+appname="${PACKAGE_TARNAME}-${PACKAGE_VERSION}.app"
+echo "Creating ${build}/$bundle_dir/$appname"
+$mkinstalldirs "$bundle_dir/$appname/Contents/MacOS" "$bundle_dir/$appname/Contents/Resources"
+cd "$bundle_dir"
+$INSTALL_PROGRAM_CMD "${build}/$binary" "$appname/Contents/MacOS"
+$INSTALL_DATA "$icon" "$appname/Contents/Resources"
+echo "APPL${signature}" > "$appname/Contents/PkgInfo"
 sed -e "s!%%IDENTIFIER%%!${identifier}!g; s!%%NAME%%!${name}!g;\
         s!%%SIGNATURE%%!${signature}!g; s!%%BINARY%%!${binary}!g;\
-        s!%%VERSION%%!${version}!g; s!%%ICON%%!${icon}!g;" < "$plist" > "$PACKAGE".app/Contents/Info.plist
-if grep '%%[A-Z]*%%' "$PACKAGE".app/Contents/Info.plist; then
-    echo "E: unsubstituted variables in Info.plist!" >&2
+        s!%%VERSION%%!${version}!g; s!%%ICON%%!${icon##*/}!g;" < "$plist" > "$appname/Contents/Info.plist"
+if grep '%%[A-Z]*%%' "$appname/Contents/Info.plist"; then
+    echo "E: unsubstituted variables in $appname/Contents/Info.plist" >&2
     exit 1
 fi
 
 
 # bundle the binary and its non-standard dependencies
-echo "Creating ${build}/mac-libs-bundle/"$PACKAGE".app"
+echo "Creating ${build}/$static_bundle_dir/$appname"
 cd ..
-$mkinstalldirs mac-libs-bundle
-cp -pR mac-bundle/"$PACKAGE".app mac-libs-bundle
-$mkinstalldirs mac-libs-bundle/"$PACKAGE".app/Contents/Frameworks
-cd mac-libs-bundle/"$PACKAGE".app/Contents
+$mkinstalldirs "$static_bundle_dir"
+cp -pR "$bundle_dir/$appname" "$static_bundle_dir"
+$mkinstalldirs "$static_bundle_dir/$appname/Contents/Frameworks"
+cd "$static_bundle_dir/$appname/Contents"
 
 list="MacOS/$binary"
 while test "x$list" != "x"; do
@@ -91,3 +105,7 @@ while test "x$list" != "x"; do
 	done
     done
 done
+
+cd "$build"
+hdiutil create -srcfolder "$bundle_dir" -format UDZO -tgtimagekey zlib-level=9 "$PACKAGE_TARNAME-$PACKAGE_VERSION-nolibs.dmg"
+hdiutil create -srcfolder "$static_bundle_dir" -format UDZO -tgtimagekey zlib-level=9 "$PACKAGE_TARNAME-$PACKAGE_VERSION.dmg"
