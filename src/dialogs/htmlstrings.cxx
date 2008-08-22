@@ -126,8 +126,8 @@ details and learn how to make best use of the program by reading the <A HREF=\"h
 better performance.</DD> \
 <DT><B>Operating System</B></DT>\
 <DD>LINUX distributions such as Debian&trade;, Ubuntu&trade;, Kubuntu&trade;, Mandriva&trade;, Mandrake&trade;, \
-SuSE&trade;, Puppy Linux&trade;; FreeBSD&trade;; OS X&trade;; and Windows&trade; XP SP2 (Home or Pro). FLDIGI can be home compiled for other distributions. FLDIGI does not support \
-Windows 98&trade; or older, and may not work with Windows VISTA&trade;.</DD> \
+SuSE&trade;, Puppy Linux&trade;; FreeBSD&trade;; OS X&trade;; and Windows&trade; XP SP2 (Home or Pro), Windows VISTA&trade;. FLDIGI can be home compiled for other distributions. FLDIGI does not support \
+Windows 98&trade;.</DD> \
 <DT><B>Other Requirements</B></DT> \
 <DD><LI>Computer serial port (or USB serial port) for rig control \
 <LI>Optional serial CAT (Computer Aided Tuning) computer control \

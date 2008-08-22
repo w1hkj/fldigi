@@ -7,8 +7,33 @@
 //-----------------------------------------------------------------------------
 
 #include <config.h>
+#include <string>
+#include <sstream>
 
 #include "serial.h"
+#include "re.h"
+
+#ifdef __CYGWIN__
+// convert COMx to /dev/ttySy with y = x - 1
+static void adjust_port(string& port)
+{
+	re_t re("com([0-9]+)", REG_EXTENDED | REG_ICASE);
+	const char* s;
+	if (!(re.match(port.c_str()) && (s = re.submatch(1))))
+		return;
+	stringstream ss;
+	int n;
+	ss << s;
+	ss >> n;
+	if (--n < 0)
+		n = 0;
+	ss.clear(); ss.str("");
+	ss << "/dev/ttyS" << n;
+	ss.seekp(0);
+	port = ss.str();
+}
+#endif
+
 
 Cserial::Cserial() {
 	device = "/dev/ttyS0";
@@ -33,6 +58,9 @@ Cserial::~Cserial() {
 // Argument         : c_string strPortName
 ///////////////////////////////////////////////////////
 bool Cserial::OpenPort()  {
+#ifdef __CYGWIN__
+	adjust_port(device);
+#endif
 	if ((fd = open( device.c_str(), O_RDWR | O_NOCTTY | O_NDELAY)) < 0)
 		return false;
 // save current port settings
