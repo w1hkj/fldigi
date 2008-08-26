@@ -7,9 +7,15 @@
 
 #include <config.h>
 
-#include <string>
-
 #include <ctime>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <sys/shm.h>
+#include <sys/time.h>
+#include <iostream>
+#include <list>
+#include <vector>
+#include <string>
 
 #ifdef RIGCATTEST
 	#include "rigCAT.h"
@@ -24,41 +30,11 @@
 #include "rigxml.h"
 #include "serial.h"
 #include "rigio.h"
-
+#include "debug.h"
 #include "threads.h"
 
-#include <main.h>
-#include <FL/Fl_Text_Buffer.H>
-#include <FL/Fl_Text_Display.H>
-
-#include "qrunner.h"
-
-Fl_Double_Window *wDebug = 0;
-FTextView        *txtDebug = 0;
-
-string sdebug;
-char   szDebug[200];
-
-void showDebug() {
-	if (wDebug == 0) {
-		wDebug = new Fl_Double_Window(0, 0, 400, 400,"Debug Window");		
-		txtDebug = new FTextView( 2, 2, 396, 396 );
-	}
-	wDebug->show();
-}	
-
-void printDebug(string s) {
-	if (RIGIO_DEBUG == true) {
-		if (wDebug == 0) showDebug();
-		if (!wDebug->visible())	wDebug->show();
-		int style = FTextBase::RECV;
-		for (size_t i = 0; i < s.length(); i++)
-			REQ(&FTextView::addchr, txtDebug, s[i], style);
-//		std::cout << s << flush;
-	}
-}
-
 using namespace std;
+
 
 Cserial rigio;
 static Fl_Mutex		rigCAT_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -78,63 +54,47 @@ static int dummy = 0;
 
 static void *rigCAT_loop(void *args);
 
-void printhex(string s)
-{
-	char szhex[4];
-	sdebug.clear();
-	for (size_t i = 0; i < s.length(); i++) {
-		snprintf(szhex, sizeof(szhex), "%02X ", s[i] & 0xFF);
-		sdebug.append(szhex);
-	}
-	sdebug.append("\n");
-	printDebug(sdebug);
-}
+static const char hexsym[] = "0123456789ABCDEF";
 
-void printhex(unsigned char *s, size_t len)
+const string& printhex(const unsigned char* s, size_t len)
 {
-	char szhex[4];
-	sdebug.clear();
-	for (size_t i = 0; i < len; i++) {
-		snprintf(szhex, sizeof(szhex), "%02X ", s[i] & 0xFF);
-		sdebug.append(szhex);
+	static string hex;
+	hex.clear();
+	hex.resize(len * 3 - 1);
+	string::iterator i = hex.begin();
+	size_t j;
+	for (j = 0; j < len-1; j++) {
+		*i++ = hexsym[s[j] >> 4];
+		*i++ = hexsym[s[j] & 0xF];
+	        *i++ = ' ';
 	}
-	sdebug.append("\n");
-	printDebug(sdebug);
-}
+        *i++ = hexsym[s[j] >> 4];
+	*i = hexsym[s[j] & 0xF];
 
-char * printtime()
+	return hex;
+}
+const string& printhex(const string& s)
 {
-	time_t t;
-	time(&t);
-	tm *now = gmtime(&t);
-	static char sztime[80];
-	strftime(sztime, 79, "[%H:%M:%S]\n", now);
-	return sztime;
+	return printhex((const unsigned char*)s.data(), s.length());
 }
 
 bool readpending = false;
 int  readtimeout;
 
-bool hexout( string s, int retnbr)
+bool hexout(const string& s, int retnbr)
 {
 // thread might call this function while a read from the rig is in process
 // wait here until that processing is finished or a timeout occurs
 // reset the readpending & return false if a timeout occurs
 
-// debug code
-	printDebug(printtime());
-	sdebug.clear();
-	sdebug.append("Cmd: ");
-	printDebug(sdebug);
-	printhex(s);
+	LOG_DEBUG("cmd = %s", printhex(s).c_str());
 
 	readtimeout = (rig.wait +rig.timeout) * rig.retries + 2000; // 2 second min timeout
 	while (readpending && readtimeout--)
 		MilliSleep(1);
 	if (readtimeout == 0) {
 		readpending = false;
-		strcpy(szDebug, "rigio timeout!\n");
-		printDebug(szDebug);
+		LOG_ERROR("rigio timeout!");
 		return false;
 	}
 
@@ -153,11 +113,7 @@ bool hexout( string s, int retnbr)
 			MilliSleep(10);
 //#endif
 			num = rigio.ReadBuffer (replybuff, s.size());
-
-			sdebug.clear();
-			sdebug.append("echoed: ");
-			printDebug(sdebug);
-			printhex(replybuff, num);
+			LOG_DEBUG("echoed = %s", printhex(replybuff, num).c_str());
 		}
 
 		memset (replybuff, 0, 200);
@@ -167,25 +123,16 @@ bool hexout( string s, int retnbr)
 			while (readtimeout--)
 				MilliSleep(1);
 
-			sdebug.clear();
-			snprintf(szDebug, sizeof(szDebug), "Reading  %d\n", retnbr);
-			printDebug(szDebug);
+		LOG_DEBUG("reading %d", retnbr);
 
 		if (retnbr > 0) {
 			num = rigio.ReadBuffer (replybuff, retnbr > 200 ? 200 : retnbr);
 
 // debug code
-			if (num) {
-				sdebug.clear();
-				snprintf(szDebug, sizeof(szDebug), "Resp (%d)", n);
-				std::cout << szDebug << flush;
-				printDebug(szDebug);
-				printhex(replybuff, num);
-			} else {
-				sdebug.clear();
-				snprintf(szDebug, sizeof(szDebug), "Resp (%d) noreply\n", n);
-				printDebug(szDebug);
-			}
+			if (num)
+				LOG_DEBUG("resp (%d) = %s", n, printhex(replybuff, num).c_str());
+			else
+				LOG_ERROR("resp (%d) no reply", n);
 		}
 
 		if (retnbr == 0 || num == retnbr) {
@@ -401,7 +348,7 @@ long long rigCAT_getfreq()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 
-printDebug("get frequency\n");
+	LOG_DEBUG("get frequency");
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -481,7 +428,7 @@ void rigCAT_setfreq(long long f)
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 
-printDebug("set frequency\n");
+	LOG_DEBUG("set frequency");
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -527,7 +474,7 @@ string rigCAT_getmode()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
-printDebug("get mode\n");
+	LOG_DEBUG("get mode");
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -617,13 +564,13 @@ printDebug("get mode\n");
 	return "";
 }
 
-void rigCAT_setmode(string md)
+void rigCAT_setmode(const string& md)
 {
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
-printDebug("set mode\n");
+	LOG_DEBUG("set mode");
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -685,7 +632,7 @@ string rigCAT_getwidth()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
-printDebug("get width\n");
+	LOG_DEBUG("get width");
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -775,13 +722,13 @@ printDebug("get width\n");
 	return "";
 }
 
-void rigCAT_setwidth(string w)
+void rigCAT_setwidth(const string& w)
 {
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
-printDebug("set width\n");
+	LOG_DEBUG("set width");
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -844,7 +791,7 @@ void rigCAT_pttON()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
-printDebug("ptt ON\n");
+	LOG_DEBUG("ptt ON");
 
 	rigio.SetPTT(1); // always execute the h/w ptt if enabled
 
@@ -886,7 +833,7 @@ void rigCAT_pttOFF()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
-printDebug("ptt OFF\n");
+	LOG_DEBUG("ptt OFF");
 
 	rigio.SetPTT(0); // always execute the h/w ptt if enabled
 
@@ -927,7 +874,7 @@ void rigCAT_sendINIT()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
-printDebug("INIT rig\n");
+	LOG_DEBUG("INIT rig");
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -967,30 +914,20 @@ printDebug("INIT rig\n");
 //	fl_unlock(&rigCAT_mutex);
 }
 
-unused__ static void show_error(const char * a, const char * b)
-{
-	string msg = a;
-	msg.append(": ");
-	msg.append(b);
-	std::cout << msg << std::endl;
-}
-
 bool rigCAT_init()
 {
 	if (rigCAT_open == true) {
-		printDebug("RigCAT already open file present\n");
+		LOG_ERROR("RigCAT already open file present");
 		return false;
 	}
 
 	if (readRigXML() == false) {
-		printDebug("No rig.xml file present\n");
+		LOG_ERROR("No rig.xml file present");
 		return false;
 	}
 
 	if (rigio.OpenPort() == false) {
-		printDebug("Cannot open serial port ");
-		printDebug(rigio.Device().c_str());
-		printDebug("\n");
+		LOG_ERROR("Cannot open serial port %s", rigio.Device().c_str());
 		return false;
 	}
 	llFreq = 0;
@@ -998,7 +935,7 @@ bool rigCAT_init()
 	sRigWidth = "";
 	
 	if (rigCAT_getfreq() <= 0) {
-		printDebug("Transceiver not responding\n");
+		LOG_ERROR("Transceiver not responding");
 		rigio.ClosePort();
 		return false;
 	}
@@ -1006,7 +943,7 @@ bool rigCAT_init()
 	rigCAT_sendINIT();
 
 	if (fl_create_thread(rigCAT_thread, rigCAT_loop, &dummy) < 0) {
-		printDebug("rig init: pthread_create failed");
+		LOG_ERROR("pthread_create failed");
 		rigio.ClosePort();
 		return false;
 	} 
@@ -1031,10 +968,10 @@ void rigCAT_close(void)
 		MilliSleep(50);
 		count--;
 		if (!count) {
-			printDebug("RigCAT stuck\n");
-		fl_lock(&rigCAT_mutex);
+			LOG_ERROR("RigCAT stuck");
+			fl_lock(&rigCAT_mutex);
 			rigio.ClosePort();
-		fl_unlock(&rigCAT_mutex);
+			fl_unlock(&rigCAT_mutex);
 			exit(0);
 		}
 	}
@@ -1079,7 +1016,7 @@ void rigCAT_set_qsy(long long f, long long fmid)
 }
 #endif
 
-bool ModeIsLSB(string s)
+bool ModeIsLSB(const string& s)
 {
 	list<string>::iterator pM = LSBmodes.begin();
 	while (pM != LSBmodes.end() ) {

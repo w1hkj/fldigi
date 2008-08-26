@@ -24,7 +24,7 @@
 #define QRUNNER_H_
 
 #ifndef NDEBUG
-#    include <iostream>
+#    include "debug.h"
 #endif
 
 #include <errno.h>
@@ -107,7 +107,7 @@ public:
                 }
 
 #ifndef NDEBUG
-                std::cerr << "fifo full\n";
+		LOG_ERROR("qrunner: thread %d fifo full!", GET_THREAD_ID());
 #endif
                 return false;
         }

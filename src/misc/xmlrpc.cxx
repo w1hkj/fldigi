@@ -24,7 +24,6 @@
 
 #include "xmlrpc.h"
 
-#include <iostream>
 #include <string>
 #include <vector>
 #include <map>
@@ -54,6 +53,7 @@
 #endif
 #include "rigMEM.h"
 #include "rigio.h"
+#include "debug.h"
 
 using namespace std;
 
@@ -99,7 +99,7 @@ void XML_RPC_Server::start(const char* node, const char* service)
 		inst->server_socket->open(Address(node, service));
 	}
 	catch (const SocketException& e) {
-		cerr << "Could not start XML-RPC server (" << e.what() << ")\n";
+		LOG_ERROR("Could not start XML-RPC server (%s)", e.what());
 		return;
 	}
 
@@ -137,7 +137,7 @@ void* XML_RPC_Server::thread_func(void*)
 		inst->server_socket->set_nonblocking();
 	}
 	catch (const SocketException& e) {
-		cerr << "Could not start XML-RPC server (" << e.what() << ")\n";
+		LOG_ERROR("Could not start XML-RPC server (%s)", e.what());
 		goto ret;
 	}
 
@@ -148,7 +148,7 @@ void* XML_RPC_Server::thread_func(void*)
 		}
 		catch (const SocketException& e) {
 			if (e.error() != ETIMEDOUT) {
-				cerr << e.what() << '\n';
+				LOG_ERROR("%s", e.what());
 				break;
 			}
 		}

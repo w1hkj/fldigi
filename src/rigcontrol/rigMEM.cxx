@@ -22,6 +22,7 @@
 #include "rigMEM.h"
 #include "fl_digi.h"
 #include "main.h"
+#include "debug.h"
 
 /* ---------------------------------------------------------------------- */
 
@@ -234,7 +235,7 @@ void rigMEM_close(void)
 
 // and then wait for it to die
 	fl_join(rigMEM_thread);
-//std::cout <<"rigMEM down\n"; fflush(stdout);
+	LOG_DEBUG("rigMEM down");
 	rigMEM_enabled = false;
 	rigMEM_exit = false;
 

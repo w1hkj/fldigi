@@ -480,7 +480,7 @@ bool clean_exit() {
 	if (trx_state == STATE_RX || trx_state == STATE_TX || trx_state == STATE_TUNE)
 		trx_state = STATE_ABORT;
 	else {
-		cerr << "trx in unexpected state " << trx_state << '\n';
+		LOG_ERROR("trx in unexpected state %d", trx_state);
 		exit(1);
 	}
 	while (trx_state != STATE_ENDED) {
@@ -644,7 +644,7 @@ void init_modem(trx_mode mode)
 		break;
 
 	default:
-		cerr << "Unknown mode: " << mode << '\n';
+		LOG_ERROR("Unknown mode: %d", mode);
 		return init_modem(MODE_BPSK31);
 	}
 
@@ -659,7 +659,7 @@ void init_modem_sync(trx_mode m)
 
 #ifndef NDEBUG
         if (GET_THREAD_ID() == TRX_TID)
-                cerr << "trx thread called init_modem_sync!\n";
+                LOG_ERROR("trx thread called init_modem_sync!");
 #endif
 
         wait_modem_ready_prep();
@@ -885,7 +885,7 @@ void cb_mnuVisitURL(Fl_Widget*, void* arg)
 		for (size_t i = 0; i < sizeof(browsers)/sizeof(browsers[0]); i++)
 			if (browsers[i])
 				execlp(browsers[i], browsers[i], url, (char*)0);
-		perror("Could not execute a web browser");
+		LOG_PERROR("Could not execute a web browser");
 		exit(EXIT_FAILURE);
 	case -1:
 		fl_alert("Could not run a web browser:\n%s\n\n"
@@ -1484,7 +1484,7 @@ Fl_Menu_Item *getMenuItem(const char *caption)
 		}
 	}
 	if (!item)
-		cerr << "FIXME: could not find '" << caption << "' menu\n";
+		LOG_ERROR("FIXME: could not find menu \"%s\"", caption);
 	return item;
 }
 

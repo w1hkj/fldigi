@@ -9,6 +9,7 @@
 using namespace std;
 
 #include "fileselect.h"
+#include "debug.h"
 
 void colorbox::draw() {
 	int ypos = y() + 2;
@@ -64,9 +65,9 @@ void loadPalette()
 		for (int i = 0; i < 9; i++) {
 			if (fscanf(clrfile, "%d;%d;%d\n", &r, &g, &b) == EOF) {
 				if (ferror(clrfile))
-					perror("fscanf");
+					LOG_PERROR("fscanf");
 				else
-					cerr << p << ": unexpected EOF\n";
+					LOG_ERROR("unexpected EOF");
 				fclose(clrfile);
 				return;
 			}

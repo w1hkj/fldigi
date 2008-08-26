@@ -25,7 +25,6 @@
 
 #include <stdlib.h>
 
-#include <iostream>
 #include <map>
 
 #include "confdialog.h"
@@ -38,6 +37,7 @@
 #include "misc.h"
 #include "sound.h"
 #include "mfskvaricode.h"
+#include "debug.h"
 
 using namespace std;
 
@@ -867,28 +867,27 @@ void dominoex::sendMuPskEX(unsigned char c, int secondary)
 		   c = '_';
 	}
 	code = varienc(c);
-//if (secondary == 0)
-//std::cout << (int)c <<  " ==> " << code << " ==> ";
+	// if (secondary == 0)
+	// 	LOG_DEBUG("char=%hhu, code=\"%s\"", c, code);
 	while (*code) {
 		int data = MuPskEnc->encode(*code++ - '0');
-//std::cout << (int)data << " ";
+		// LOG_DEBUG("data=%d", data;
 		for (int i = 0; i < 2; i++) {
 			bitshreg = (bitshreg << 1) | ((data >> i) & 1);
 			Mu_bitstate++;
 			if (Mu_bitstate == 4) {
 
 				MuPskTxinlv->bits(&bitshreg);
-				
-//std::cout << "(" << bitshreg << ") ";
-				
+
+				// LOG_DEBUG("bitshreg=%d", bitshreg);
+
 				sendsymbol(bitshreg);
 
-//decodeMuPskEX(bitshreg);
+				// decodeMuPskEX(bitshreg);
 
 				Mu_bitstate = 0;
 				bitshreg = 0;
 			}
 		}
 	}
-//std::cout << std::endl;
 }

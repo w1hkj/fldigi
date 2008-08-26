@@ -39,6 +39,7 @@
 #endif
 
 #include "picture.h"
+#include "debug.h"
 
 using namespace std;
 
@@ -209,7 +210,7 @@ int picture::handle(int event)
 				slant_corr(xpos, ypos);
 			else if (evb == 3)
 				slant_undo();
-//			std::cout << "#2 " << xpos << ", " << ypos << std::endl; fflush(stdout);
+			LOG_DEBUG("#2 %d, %d", xpos, ypos);
 			return 1;
 		}
 		return 1;

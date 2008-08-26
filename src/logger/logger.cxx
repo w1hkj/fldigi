@@ -36,6 +36,7 @@
 #include "logger.h"
 #include "main.h"
 #include "modem.h"
+#include "debug.h"
 
 #include <FL/fl_ask.H>
 
@@ -123,7 +124,7 @@ void putadif(int num, const char *s)
         if (slen > fields[num].size) slen = fields[num].size;
         int n = snprintf(tempstr, sizeof(tempstr), "<%s:%zu>", fields[num].name, slen);
         if (n == -1) {
-                perror("putadif snprintf");
+		LOG_PERROR("snprintf");
                 return;
         }
         memcpy(tempstr + n, s, slen);
@@ -204,6 +205,7 @@ int submit_log(void)
 	if ((msqid = msgget(LOG_MKEY, 0666 | IPC_CREAT)) == -1) {
 		errmsg = "msgget: ";
 		errmsg.append(strerror(errno));
+		LOG_ERROR("%s", errmsg.c_str());
 		fl_message(errmsg.c_str());
 		return -1;
 	}

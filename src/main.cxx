@@ -127,10 +127,6 @@ void debug_exec(char** argv);
 void set_platform_ui(void);
 double speed_test(int converter, unsigned repeat);
 
-#ifdef __CYGWIN__
-void redirect_streams(const std::string& dir);
-void restore_streams(void);
-#endif
 
 int main(int argc, char ** argv)
 {
@@ -157,8 +153,6 @@ int main(int argc, char ** argv)
 #ifdef __CYGWIN__
 	fl_filename_expand(szHomedir, 119, "$USERPROFILE/fldigi.files/");
 	HomeDir = szHomedir;
-	redirect_streams(HomeDir);
-	atexit(restore_streams);
 #else
 	fl_filename_expand(szHomedir, 119, "$HOME/.fldigi/");
 	HomeDir = szHomedir;
@@ -189,12 +183,9 @@ int main(int argc, char ** argv)
 	}
 
 	try {
-		debug::start(string(HomeDir).append("debug.log").c_str());
+		debug::start(string(HomeDir).append("status_log.txt").c_str());
 		time_t t = time(NULL);
-		debug::level_e cur = debug::level;
-		debug::level = debug::INFO;
-		LOG_INFO("%s log started on %s", PACKAGE_STRING, ctime(&t));
-		debug::level = cur;
+		LOG(debug::QUIET, "%s log started on %s", PACKAGE_STRING, ctime(&t));
 	}
 	catch (const char* error) {
 		cerr << error << '\n';
@@ -227,9 +218,7 @@ int main(int argc, char ** argv)
 
 	if (!progdefaults.readDefaultsXML()) {
 		double speed = speed_test(SRC_SINC_FASTEST, 8);
-#ifndef NDEBUG
-		cerr << "speed factor=" << speed << '\n';
-#endif
+
 		if (speed > 150.0) {      // fast
 			progdefaults.slowcpu = false;
 			progdefaults.sample_converter = SRC_SINC_BEST_QUALITY;
@@ -246,6 +235,9 @@ int main(int argc, char ** argv)
 			progdefaults.slowcpu = true;
 			progdefaults.sample_converter = SRC_LINEAR;
 		}
+
+		LOG_INFO("speed factor=%f, slowcpu=%d, sample_converter=\"%s\"", speed,
+			 progdefaults.slowcpu, src_get_name(progdefaults.sample_converter));
 	}
 
 	progdefaults.testCommPorts();
@@ -458,9 +450,7 @@ int parse_args(int argc, char **argv, int& idx)
 #endif
                OPT_FONT, OPT_WFALL_WIDTH, OPT_WFALL_HEIGHT,
                OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT, 
-               OPT_PROFILE,
                OPT_TOGGLE_CHECK,
-	       	   OPT_RESAMPLE,
 #if USE_PORTAUDIO
                OPT_FRAMES_PER_BUFFER,
 #endif
@@ -492,11 +482,8 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "wfall-height",  1, 0, OPT_WFALL_HEIGHT },
 		{ "window-width",  1, 0, OPT_WINDOW_WIDTH },
 		{ "window-height", 1, 0, OPT_WINDOW_HEIGHT },
-		{ "profile",	   1, 0, OPT_PROFILE },
 		{ "twoscopes",     0, 0, OPT_TWO_SCOPES },
  		{ "toggle-check-buttons",    0, 0, OPT_TOGGLE_CHECK },
-
-		{ "resample",      1, 0, OPT_RESAMPLE },
 
 #if USE_PORTAUDIO
 		{ "frames-per-buf",1, 0, OPT_FRAMES_PER_BUFFER },
@@ -591,22 +578,12 @@ int parse_args(int argc, char **argv, int& idx)
 			HNOM = strtol(optarg, NULL, 10);
 			break;
 
-		case OPT_PROFILE:
-			cerr << "The --" << longopts[longindex].name
-			     << " option has been deprecated and will be removed in a future release\n";
-			break;
-
 		case OPT_TWO_SCOPES:
 			twoscopes = true;
 			break;
 
 		case OPT_TOGGLE_CHECK:
 			useCheckButtons = !useCheckButtons;
-			break;
-
-		case OPT_RESAMPLE:
-			cerr << "The --" << longopts[longindex].name
-			     << " option has been deprecated and will be removed in a future release\n";
 			break;
 
 #if USE_PORTAUDIO
@@ -741,48 +718,6 @@ void set_platform_ui(void)
        useCheckButtons = true;
 #endif
 }
-
-#ifdef __CYGWIN__
-static ofstream outlogfile;
-static ostringstream outlogstring;
-static streambuf* streambufs[3];
-
-void redirect_streams(const std::string& dir)
-{
-	string log = dir;
-	if (*log.rbegin() != '/')
-		log += '/';
-	log += "status_log.txt";
-	outlogfile.open(log.c_str());
-
-	if (!isatty(STDOUT_FILENO)) {
-		streambufs[0] = cout.rdbuf();
-		if (outlogfile)
-			cout.rdbuf(outlogfile.rdbuf());
-		else
-			cout.rdbuf(outlogstring.rdbuf());
-	}
-	if (!isatty(STDERR_FILENO)) {
-		streambufs[1] = cerr.rdbuf();
-		streambufs[2] = clog.rdbuf();
-		if (outlogfile) {
-			cerr.rdbuf(outlogfile.rdbuf());
-			clog.rdbuf(outlogfile.rdbuf());
-		}
-		else {
-			cerr.rdbuf(outlogstring.rdbuf());
-			clog.rdbuf(outlogstring.rdbuf());
-		}
-	}
-}
-
-void restore_streams(void)
-{
-	cout.rdbuf(streambufs[0]);
-	cerr.rdbuf(streambufs[1]);
-	clog.rdbuf(streambufs[2]);
-}
-#endif // __CYGWIN__
 
 // Convert 1 second of 1-channel silence from IN_RATE Hz to OUT_RATE Hz,
 // Repeat test "repeat" times. Return (repeat / elapsed_time),

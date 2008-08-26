@@ -27,7 +27,6 @@
 
 #include <config.h>
 
-#include <iostream>
 #include <string>
 #include <vector>
 #include <map>
@@ -64,6 +63,7 @@
 #include "threads.h" 
 #include "timeops.h"
 #include "ringbuffer.h"
+#include "debug.h"
 
 // Define these constants here to avoid littering the code with magic numbers.
 // Audio input is mono in SoundPort and SoundPulse, stereo in SoundOSS
@@ -146,7 +146,7 @@ int SoundBase::Capture(bool val)
 		if (ofCapture) {
 			int err;
 			if ((err = sf_close(ofCapture)) != 0)
-				cerr << "sf_close error: " << sf_error_number(err) << '\n';
+				LOG_ERROR("sf_close error: %s", sf_error_number(err));
 			ofCapture = 0;
 		}
 		capture = false;
@@ -162,11 +162,11 @@ int SoundBase::Capture(bool val)
 	// frames (ignored), freq, channels, format, sections (ignored), seekable (ignored)
 	SF_INFO info = { 0, sample_frequency, SNDFILE_CHANNELS, format, 0, 0 };
 	if ((ofCapture = sf_open(fname, SFM_WRITE, &info)) == NULL) {
-		cerr << "Could not write " << fname << '\n';
+		LOG_ERROR("Could not write %s", fname);
 		return 0;
 	}
 	if (sf_command(ofCapture, SFC_SET_UPDATE_HEADER_AUTO, NULL, SF_TRUE) != SF_TRUE)
-		cerr << "ofCapture update header command failed: " << sf_strerror(ofCapture) << '\n';
+		LOG_ERROR("ofCapture update header command failed: %s", sf_strerror(ofCapture));
 	tag_file(ofCapture, "Captured audio");
 
 	capture = true;
@@ -179,7 +179,7 @@ int SoundBase::Playback(bool val)
 		if (ifPlayback) {
 			int err;
 			if ((err = sf_close(ifPlayback)) != 0)
-				cerr << "sf_close error: " << sf_error_number(err) << '\n';
+				LOG_ERROR("sf_close error: %s", sf_error_number(err));
 			ifPlayback = 0;
 		}
 		playback = false;
@@ -193,7 +193,7 @@ int SoundBase::Playback(bool val)
 
 	SF_INFO info = { 0, 0, 0, 0, 0, 0 };
 	if ((ifPlayback = sf_open(fname, SFM_READ, &info)) == NULL) {
-		cerr << "Could not read " << fname << '\n';
+		LOG_ERROR("Could not read %s", fname);
 		return 0;
 	}
 
@@ -207,7 +207,7 @@ int SoundBase::Generate(bool val)
 		if (ofGenerate) {
 			int err;
 			if ((err = sf_close(ofGenerate)) != 0)
-				cerr << "sf_close error: " << sf_error_number(err) << '\n';
+				LOG_ERROR("sf_close error: %s", sf_error_number(err));
 			ofGenerate = 0;
 		}
 		generate = false;
@@ -223,11 +223,11 @@ int SoundBase::Generate(bool val)
 	// frames (ignored), freq, channels, format, sections (ignored), seekable (ignored)
 	SF_INFO info = { 0, sample_frequency, SNDFILE_CHANNELS, format, 0, 0 };
 	if ((ofGenerate = sf_open(fname, SFM_WRITE, &info)) == NULL) {
-		cerr << "Could not write " << fname << '\n';
+		LOG_ERROR("Could not write %s", fname);
 		return 0;
 	}
 	if (sf_command(ofGenerate, SFC_SET_UPDATE_HEADER_AUTO, NULL, SF_TRUE) != SF_TRUE)
-		cerr << "ofGenerate update header command failed: " << sf_strerror(ofGenerate) << '\n';
+		LOG_ERROR("ofGenerate update header command failed: %s", sf_strerror(ofGenerate));
 	tag_file(ofGenerate, "Generated audio");
 
 	generate = true;
@@ -264,7 +264,7 @@ void SoundBase::tag_file(SNDFILE *sndfile, const char *title)
 {
 	int err;
 	if ((err = sf_set_string(sndfile, SF_STR_TITLE, title)) != 0) {
-		cerr << "sf_set_string STR_TITLE: " << sf_error_number(err) << '\n';
+		LOG_ERROR("sf_set_string STR_TITLE: %s", sf_error_number(err));
 		return;
 	}
 
@@ -297,10 +297,8 @@ SoundOSS::SoundOSS(const char *dev ) {
 		getFormats();
 		Close();
 	}
-	catch (SndException e) {
-		std::cout << e.what()
-			 << " <" << device.c_str()
-			 << ">" << std::endl;
+	catch (const SndException& e) {
+		LOG_ERROR("device %s error: %s", device.c_str(), e.what());
 	}
 
 	int err;
@@ -310,7 +308,7 @@ SoundOSS::SoundOSS(const char *dev ) {
 		cbuff		= new unsigned char [4 * SND_BUF_LEN];
 	}
 	catch (const std::bad_alloc& e) {
-		cerr << "Cannot allocate libsamplerate buffers\n";
+		LOG_ERROR("Cannot allocate libsamplerate buffers");
 		throw;
 	}
 	for (int i = 0; i < 2*SND_BUF_LEN; i++)
@@ -323,7 +321,7 @@ SoundOSS::SoundOSS(const char *dev ) {
 		rx_src_data = new SRC_DATA;
 	}
 	catch (const std::bad_alloc& e) {
-		cerr << "Cannot create libsamplerate data structures\n";
+		LOG_ERROR("Cannot create libsamplerate data structures");
 		throw;
 	}
 
@@ -782,7 +780,7 @@ SoundPort::SoundPort(const char *in_dev, const char *out_dev)
                 tx_src_data = new SRC_DATA;
         }
         catch (const std::bad_alloc& e) {
-                cerr << "Cannot create libsamplerate data structures\n";
+                LOG_ERROR("Cannot create libsamplerate data structures");
                 throw;
         }
 
@@ -791,7 +789,7 @@ SoundPort::SoundPort(const char *in_dev, const char *out_dev)
                 fbuf = new float[OUTPUT_CHANNELS * SND_BUF_LEN];
         }
         catch (const std::bad_alloc& e) {
-                cerr << "Cannot allocate libsamplerate buffers\n";
+                LOG_ERROR("Cannot allocate libsamplerate buffers");
                 throw;
         }
 
@@ -807,10 +805,10 @@ SoundPort::~SoundPort()
         for (size_t i = 0; i < sizeof(sems)/sizeof(*sems); i++) {
 #if USE_NAMED_SEMAPHORES
 		if (sem_close(sems[i]) == -1)
-			perror("sem_close");
+			LOG_PERROR("sem_close");
 #else
                 if (sem_destroy(sems[i]) == -1)
-                        perror("sem_destroy");
+			LOG_PERROR("sem_destroy");
 		delete sems[i];
 #endif
 	}
@@ -872,7 +870,7 @@ void SoundPort::pause_stream(unsigned dir)
 	pthread_mutex_lock(sd[dir].cmutex);
         sd[dir].state = spa_pause;
 	if (pthread_cond_timedwait_rel(sd[dir].ccond, sd[dir].cmutex, 5.0) == -1 && errno == ETIMEDOUT)
-		cerr << __func__ << ": stream " << dir << " wedged\n";
+		LOG_ERROR("stream %u wedged", dir);
 	pthread_mutex_unlock(sd[dir].cmutex);
 }
 
@@ -897,7 +895,7 @@ void SoundPort::Close(unsigned dir)
                 // been stopped
 		if (pthread_cond_timedwait_rel(sd[i].ccond, sd[i].cmutex, 5.0) == -1 &&
 		    errno == ETIMEDOUT)
-			cerr << __func__ << ": stream " << i << " wedged\n";
+			LOG_ERROR("stream %u wedged", i);
 		pthread_mutex_unlock(sd[i].cmutex);
                 sd[i].state = spa_continue;
 
@@ -940,7 +938,7 @@ void SoundPort::Abort(unsigned dir)
                                 }                                       \
                                 else if (errno == EINTR)                \
                                         continue;                       \
-                                perror("sem_timedwait");                \
+				LOG_PERROR("sem_timedwait");		\
                                 throw SndException(errno);              \
                         }                                               \
                 }                                                       \
@@ -1137,7 +1135,7 @@ void SoundPort::flush(unsigned dir)
                 sd[i].state = spa_drain;
 		if (pthread_cond_timedwait_rel(sd[i].ccond, sd[i].cmutex, 5.0) == -1
 		    && errno == ETIMEDOUT)
-			cerr << __func__ << ": stream " << dir << " wedged\n";
+			LOG_ERROR("stream %u wedged", i);
 		pthread_mutex_unlock(sd[i].cmutex);
 		sd[i].state = spa_continue;
         }
@@ -1172,17 +1170,13 @@ void SoundPort::src_data_reset(unsigned dir)
                                   MIN(req_sample_rate, sd[dir].dev_sample_rate)));
         if (dir == 0) {
                 rbsize = 2 * MAX(rbsize, 4096);
-#ifndef NDEBUG
-                cerr << "input rbsize=" << rbsize << endl;
-#endif
+		LOG_DEBUG("input rbsize=%zu", rbsize);
         }
         else if (dir == 1) {
                 if (req_sample_rate > 8000)
                         rbsize *= 2;
                 rbsize = MAX(rbsize, 2048);
-#ifndef NDEBUG
-                cerr << "output rbsize=" << rbsize << endl;
-#endif
+		LOG_DEBUG("output rbsize=%zu", rbsize);
         }
         if (!sd[dir].rb || sd[dir].rb->length() != rbsize) {
                 delete sd[dir].rb;
@@ -1224,9 +1218,8 @@ void SoundPort::init_stream(unsigned dir)
 	PaDeviceIndex conf_idx[2] = { progdefaults.PortInIndex, progdefaults.PortOutIndex };
 	PaDeviceIndex idx = paNoDevice;
 
-#ifndef NDEBUG
-        cerr << "PA_debug: looking for \"" << sd[dir].device << "\"\n";
-#endif
+	LOG_DEBUG("looking for device \"%s\"", sd[dir].device.c_str());
+
         for (sd[dir].idev = devs.begin(); sd[dir].idev != devs.end(); ++sd[dir].idev) {
                 if (sd[dir].device == (*sd[dir].idev)->name) {
 			idx = sd[dir].idev - devs.begin(); // save this device index
@@ -1235,8 +1228,8 @@ void SoundPort::init_stream(unsigned dir)
 		}
 	}
         if (idx == paNoDevice) { // no match
-                cerr << "PA_debug: could not find \"" << sd[dir].device
-		     << "\", using default " << dir_str[dir] << " device\n";
+		LOG_WARN("Could not find device \"%s\", using default device \"%s\"",
+			 sd[dir].device.c_str(), dir_str[dir]);
 		PaDeviceIndex def = (dir == 0 ? Pa_GetDefaultInputDevice() : Pa_GetDefaultOutputDevice());
 		if (def == paNoDevice)
 			throw SndPortException(paDeviceUnavailable);
@@ -1300,20 +1293,18 @@ void SoundPort::init_stream(unsigned dir)
 		<< "\ndefault low output latency: " << (*sd[dir].idev)->defaultLowOutputLatency
 		<< "\ndefault high output latency: " << (*sd[dir].idev)->defaultHighOutputLatency
 		<< "\n";
-#ifndef NDEBUG
-        cerr << "PA_debug: using " << dir_str[dir] << " device:\n" << device_text[dir].str();
-#endif
+
+	LOG_DEBUG("using device \"%s\":\n%s", dir_str[dir], device_text[dir].str().c_str());
 
 
         sd[dir].dev_sample_rate = find_srate(dir);
-#ifndef NDEBUG
         if (sd[dir].dev_sample_rate != req_sample_rate)
-                cerr << "PA_debug: " << dir_str[dir] << ": resampling "
-		     << sd[dir].dev_sample_rate << " <-> " << req_sample_rate << "\n\n";
-#endif
+		LOG_DEBUG("%s: resampling %f <=> %f", dir_str[dir],
+			  sd[dir].dev_sample_rate, req_sample_rate);
 
         if (progdefaults.PortFramesPerBuffer > 0)
                 sd[dir].frames_per_buffer = progdefaults.PortFramesPerBuffer;
+	LOG_DEBUG("%s: frames_per_buffer=%u", dir_str[dir], sd[dir].frames_per_buffer);
 }
 
 void SoundPort::start_stream(unsigned dir)
@@ -1358,7 +1349,7 @@ int SoundPort::stream_process(const void* in, void* out, unsigned long nframes,
         };
         for (size_t i = 0; i < sizeof(fa)/sizeof(*fa); i++)
                 if (flags & fa[i].f)
-                        cerr << "stream_process: " << fa[i].s << '\n';
+			LOG_DEBUG("%s", fa[i].s);
 #endif
 
         if (unlikely(sd->state == spa_abort || sd->state == spa_complete)) // finished
@@ -1485,23 +1476,22 @@ void SoundPort::probe_supported_rates(const device_iterator& idev)
 void SoundPort::pa_perror(int err, const char* str)
 {
         if (str)
-                cerr << str << ": " << Pa_GetErrorText(err) << '\n';
+		LOG_ERROR("%s: %s", str, Pa_GetErrorText(err));
 
         if (err == paUnanticipatedHostError) {
                 const PaHostErrorInfo* hosterr = Pa_GetLastHostErrorInfo();
                 PaHostApiIndex i = Pa_HostApiTypeIdToHostApiIndex(hosterr->hostApiType);
 
                 if (i < 0) { // PA failed without setting its "last host error" info. Sigh...
-                        cerr << "Host API error info not available\n";
+			LOG_ERROR("Host API error info not available");
                         if ( ((sd[0].stream && Pa_GetHostApiInfo((*sd[0].idev)->hostApi)->type == paOSS) ||
 			      (sd[1].stream && Pa_GetHostApiInfo((*sd[1].idev)->hostApi)->type == paOSS)) &&
 			     errno )
-                                cerr << "Possible OSS error " << errno << ": "
-                                     << strerror(errno) << '\n';
+				LOG_ERROR("Possible OSS error %d: %s", errno, strerror(errno));
                 }
                 else
-                        cerr << Pa_GetHostApiInfo(i)->name << " error "
-                             << hosterr->errorCode << ": " << hosterr->errorText << '\n';
+			LOG_ERROR("%s error %d: %s", Pa_GetHostApiInfo(i)->name,
+				  hosterr->errorCode, hosterr->errorText);
         }
 }
 
@@ -1519,7 +1509,7 @@ void SoundPort::init_hostapi_ext(void)
 		set_jack_client_name(PACKAGE_TARNAME);
 #  ifndef NDEBUG
         else
-                cerr << "dlsym(PaJack_SetClientName) error: " << err << '\n';
+		LOG_INFO("dlsym(PaJack_SetClientName) error: %s", err);
 #  endif
 #endif
 }
@@ -1542,7 +1532,7 @@ SoundPulse::SoundPulse(const char *dev)
                 tx_src_data = new SRC_DATA;
         }
         catch (const std::bad_alloc& e) {
-                cerr << "Cannot create libsamplerate data structures\n";
+                LOG_ERROR("Cannot create libsamplerate data structures");
                 throw;
         }
 
@@ -1552,7 +1542,7 @@ SoundPulse::SoundPulse(const char *dev)
                 fbuf = new float[MAX(INPUT_CHANNELS, OUTPUT_CHANNELS) * SND_BUF_LEN];
         }
         catch (const std::bad_alloc& e) {
-                cerr << "Cannot allocate libsamplerate buffers\n";
+                LOG_ERROR("Cannot allocate libsamplerate buffers");
                 throw;
         }
 }
@@ -1642,7 +1632,7 @@ void SoundPulse::flush(unsigned dir)
                         continue;
                 pa_simple_drain(sd[i].stream, &err);
 		if (err != PA_OK)
-			cerr << pa_strerror(err) << '\n';
+			LOG_ERROR("%s", pa_strerror(err));
         }
 }
 
@@ -1709,7 +1699,7 @@ long SoundPulse::src_read_cb(void* arg, float** data)
 
 	int err;
 	if (pa_simple_read(p->sd[0].stream, p->snd_buffer, sizeof(float) * p->sd[0].blocksize, &err) == -1) {
-		cerr << "SoundPulse::pa_simple_read error: " << pa_strerror(err) << '\n';
+		LOG_ERROR("%s", pa_strerror(err));
 		*data = 0;
 		return 0;
 	}

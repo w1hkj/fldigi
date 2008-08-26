@@ -26,7 +26,6 @@
 
 #include <config.h>
 
-#include <iostream>
 #include <string>
 #include <cstdlib>
 #include <ctime>
@@ -45,6 +44,7 @@
 
 #include "threads.h"
 #include "socket.h"
+#include "debug.h"
 
 #include <FL/Fl.H>
 #include <FL/fl_ask.H>
@@ -203,8 +203,7 @@ bool Gmfsk_arqRx()
             FL_AWAKE();
             time(&prog_time);
             if (prog_time - start_time > TIMEOUT) {
-                std::cout << "pskmail_out failure" << std::endl;
-                std::cout.flush();
+		LOG_ERROR("pskmail_out failure");
                 autofile.close();
                 std::remove (sAutoFile.c_str());
                 return false;
@@ -295,7 +294,7 @@ bool ARQ_SOCKET_Server::start(const char* node, const char* service)
 		errstring.append(e.what()).append(")");
 		if (e.error() == EADDRINUSE)
 			errstring.append("\nMultiple instances of fldigi??");
-		cerr << errstring << "\n";
+		LOG_ERROR("%s", errstring.c_str());
 		fl_message(errstring.c_str());
 
 		delete arq_socket_thread;
@@ -328,7 +327,7 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 		catch (const SocketException& e) {
 			if (e.error() != ETIMEDOUT) {
 				errstring = e.what();
-				cerr << errstring << "\n";
+				LOG_ERROR("%s", errstring.c_str());
 				Fl::add_timeout(0.0, popup_msg, (void*)errstring.c_str());
 				break;
 			}
