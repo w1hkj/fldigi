@@ -345,12 +345,8 @@ EXTRA_fldigi_SOURCES += \
 	mt63/alias_k5.dat \
 	mt63/mt63intl.dat \
 	trx/tune.cxx \
-	rigcontrol/linserial.cxx \
-	rigcontrol/winserial.cxx \
 	rsid/rsid_fft.cxx \
-	rsid/rsid_fft.h \
-	include/linserial.h \
-	include/winserial.h
+	rsid/rsid_fft.h 
 
 # Additional non-source files that we distribute
 EXTRA_DIST = \

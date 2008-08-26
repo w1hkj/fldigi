@@ -8,6 +8,7 @@
 #include <config.h>
 
 #include <string>
+
 #include <ctime>
 
 #ifdef RIGCATTEST
@@ -26,7 +27,36 @@
 
 #include "threads.h"
 
-//#define RIGIO_DEBUG
+#include <main.h>
+#include <FL/Fl_Text_Buffer.H>
+#include <FL/Fl_Text_Display.H>
+
+#include "qrunner.h"
+
+Fl_Double_Window *wDebug = 0;
+FTextView        *txtDebug = 0;
+
+string sdebug;
+char   szDebug[200];
+
+void showDebug() {
+	if (wDebug == 0) {
+		wDebug = new Fl_Double_Window(0, 0, 400, 400,"Debug Window");		
+		txtDebug = new FTextView( 2, 2, 396, 396 );
+	}
+	wDebug->show();
+}	
+
+void printDebug(string s) {
+	if (RIGIO_DEBUG == true) {
+		if (wDebug == 0) showDebug();
+		if (!wDebug->visible())	wDebug->show();
+		int style = FTextBase::RECV;
+		for (size_t i = 0; i < s.length(); i++)
+			REQ(&FTextView::addchr, txtDebug, s[i], style);
+//		std::cout << s << flush;
+	}
+}
 
 using namespace std;
 
@@ -50,25 +80,35 @@ static void *rigCAT_loop(void *args);
 
 void printhex(string s)
 {
-	for (unsigned int i = 0; i < s.length(); i++) {
-		std::cout << hex << (unsigned int)(s[i] & 0xFF) << " ";
+	char szhex[4];
+	sdebug.clear();
+	for (size_t i = 0; i < s.length(); i++) {
+		snprintf(szhex, sizeof(szhex), "%02X ", s[i] & 0xFF);
+		sdebug.append(szhex);
 	}
-	std::cout << std::endl;
+	sdebug.append("\n");
+	printDebug(sdebug);
 }
 
-void printhex(unsigned char *s, int len)
+void printhex(unsigned char *s, size_t len)
 {
-	for (int i = 0; i < len; i++)
-		std::cout << hex << (unsigned int)(s[i] & 0xFF) << " ";
-	std::cout << dec << std::endl;
+	char szhex[4];
+	sdebug.clear();
+	for (size_t i = 0; i < len; i++) {
+		snprintf(szhex, sizeof(szhex), "%02X ", s[i] & 0xFF);
+		sdebug.append(szhex);
+	}
+	sdebug.append("\n");
+	printDebug(sdebug);
 }
+
 char * printtime()
 {
 	time_t t;
 	time(&t);
 	tm *now = gmtime(&t);
 	static char sztime[80];
-	strftime(sztime, 79, "[%H:%M:%S]", now);
+	strftime(sztime, 79, "[%H:%M:%S]\n", now);
 	return sztime;
 }
 
@@ -82,16 +122,19 @@ bool hexout( string s, int retnbr)
 // reset the readpending & return false if a timeout occurs
 
 // debug code
-#ifdef RIGIO_DEBUG
-std::cout << printtime() << "Cmd: "; printhex(s);
-#endif
+	printDebug(printtime());
+	sdebug.clear();
+	sdebug.append("Cmd: ");
+	printDebug(sdebug);
+	printhex(s);
 
 	readtimeout = (rig.wait +rig.timeout) * rig.retries + 2000; // 2 second min timeout
 	while (readpending && readtimeout--)
 		MilliSleep(1);
 	if (readtimeout == 0) {
 		readpending = false;
-		std::cout << "rigio timeout!" << std::endl;
+		strcpy(szDebug, "rigio timeout!\n");
+		printDebug(szDebug);
 		return false;
 	}
 
@@ -110,10 +153,11 @@ std::cout << printtime() << "Cmd: "; printhex(s);
 			MilliSleep(10);
 //#endif
 			num = rigio.ReadBuffer (replybuff, s.size());
-#ifdef RIGIO_DEBUG
-			std::cout << "echoed: ";
+
+			sdebug.clear();
+			sdebug.append("echoed: ");
+			printDebug(sdebug);
 			printhex(replybuff, num);
-#endif
 		}
 
 		memset (replybuff, 0, 200);
@@ -122,21 +166,26 @@ std::cout << printtime() << "Cmd: "; printhex(s);
 		if ((readtimeout = rig.wait) > 0)
 			while (readtimeout--)
 				MilliSleep(1);
-#ifdef RIGIO_DEBUG
-			std::cout << "Reading " << retnbr << std::endl;
-#endif
+
+			sdebug.clear();
+			snprintf(szDebug, sizeof(szDebug), "Reading  %d\n", retnbr);
+			printDebug(szDebug);
 
 		if (retnbr > 0) {
 			num = rigio.ReadBuffer (replybuff, retnbr > 200 ? 200 : retnbr);
+
 // debug code
-#ifdef RIGIO_DEBUG
 			if (num) {
-				std::cout << printtime() << "Rsp (" << n << "): ";
+				sdebug.clear();
+				snprintf(szDebug, sizeof(szDebug), "Resp (%d)", n);
+				std::cout << szDebug << flush;
+				printDebug(szDebug);
 				printhex(replybuff, num);
-			} else
-				std::cout << printtime() << "Rsp (" << n << "): no reply" << std::endl;
-#endif
-// to here			
+			} else {
+				sdebug.clear();
+				snprintf(szDebug, sizeof(szDebug), "Resp (%d) noreply\n", n);
+				printDebug(szDebug);
+			}
 		}
 
 		if (retnbr == 0 || num == retnbr) {
@@ -352,9 +401,8 @@ long long rigCAT_getfreq()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 
-#ifdef RIGIO_DEBUG
-std::cout << "get frequency" << std::endl;
-#endif	
+printDebug("get frequency\n");
+
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
 		if ((*itrCmd).SYMBOL == "GETFREQ")
@@ -433,9 +481,8 @@ void rigCAT_setfreq(long long f)
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 
-#ifdef RIGIO_DEBUG
-std::cout << "set frequency" << std::endl;
-#endif	
+printDebug("set frequency\n");
+
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
 		if ((*itrCmd).SYMBOL == "SETFREQ")
@@ -480,9 +527,8 @@ string rigCAT_getmode()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
-#ifdef RIGIO_DEBUG
-std::cout << "get mode" << std::endl;
-#endif	
+printDebug("get mode\n");
+
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
 		if ((*itrCmd).SYMBOL == "GETMODE")
@@ -577,9 +623,7 @@ void rigCAT_setmode(string md)
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
-#ifdef RIGIO_DEBUG
-std::cout << "set mode" << std::endl;
-#endif
+printDebug("set mode\n");
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -641,9 +685,7 @@ string rigCAT_getwidth()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
-#ifdef RIGIO_DEBUG
-std::cout << "get width" << std::endl;
-#endif
+printDebug("get width\n");
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -739,9 +781,7 @@ void rigCAT_setwidth(string w)
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
-#ifdef RIGIO_DEBUG
-std::cout << "set width" << std::endl;
-#endif
+printDebug("set width\n");
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -804,9 +844,7 @@ void rigCAT_pttON()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
-#ifdef RIGIO_DEBUG
-std::cout << "ptt ON" << std::endl;
-#endif
+printDebug("ptt ON\n");
 
 	rigio.SetPTT(1); // always execute the h/w ptt if enabled
 
@@ -848,9 +886,7 @@ void rigCAT_pttOFF()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
-#ifdef RIGIO_DEBUG
-std::cout << "ptt OFF" << std::endl;
-#endif
+printDebug("ptt OFF\n");
 
 	rigio.SetPTT(0); // always execute the h/w ptt if enabled
 
@@ -891,9 +927,7 @@ void rigCAT_sendINIT()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
-#ifdef RIGIO_DEBUG
-std::cout << "INIT rig" << std::endl;
-#endif
+printDebug("INIT rig\n");
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -944,18 +978,19 @@ unused__ static void show_error(const char * a, const char * b)
 bool rigCAT_init()
 {
 	if (rigCAT_open == true) {
-		std::cout << "RigCAT already open file present" << std::endl;
+		printDebug("RigCAT already open file present\n");
 		return false;
 	}
 
 	if (readRigXML() == false) {
-		std::cout << "No rig.xml file present" << std::endl;
+		printDebug("No rig.xml file present\n");
 		return false;
 	}
 
 	if (rigio.OpenPort() == false) {
-		std::cout << "Cannot open serial port " << (char *)rigio.Device().c_str();
-		std::cout << std::endl;
+		printDebug("Cannot open serial port ");
+		printDebug(rigio.Device().c_str());
+		printDebug("\n");
 		return false;
 	}
 	llFreq = 0;
@@ -963,14 +998,15 @@ bool rigCAT_init()
 	sRigWidth = "";
 	
 	if (rigCAT_getfreq() <= 0) {
-		std::cout << "Transceiver not responding" << std::endl;
+		printDebug("Transceiver not responding\n");
+		rigio.ClosePort();
 		return false;
 	}
 	
 	rigCAT_sendINIT();
 
 	if (fl_create_thread(rigCAT_thread, rigCAT_loop, &dummy) < 0) {
-		std::cout << "rig init: pthread_create failed" << std::endl;
+		printDebug("rig init: pthread_create failed");
 		rigio.ClosePort();
 		return false;
 	} 
@@ -995,15 +1031,14 @@ void rigCAT_close(void)
 		MilliSleep(50);
 		count--;
 		if (!count) {
-			std::cout << "\nRigCAT stuck" << std::endl;
+			printDebug("RigCAT stuck\n");
 		fl_lock(&rigCAT_mutex);
 			rigio.ClosePort();
 		fl_unlock(&rigCAT_mutex);
 			exit(0);
 		}
 	}
-	
-//	std::cout << "\nExit OK" << std::endl; fflush(stdout);
+	rigio.ClosePort();
 }
 
 bool rigCAT_active(void)

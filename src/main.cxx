@@ -106,6 +106,8 @@ FILE	*server;
 FILE	*client;
 bool	mailserver = false, mailclient = false, arqmode = false;
 
+bool	RIGIO_DEBUG = false;
+
 RXMSGSTRUC rxmsgst;
 int		rxmsgid = -1;
 
@@ -445,6 +447,7 @@ int parse_args(int argc, char **argv, int& idx)
                OPT_FRAMES_PER_BUFFER,
 #endif
                OPT_TWO_SCOPES,
+               OPT_RIGIO_DEBUG,
                OPT_EXIT_AFTER,
                OPT_HELP, OPT_VERSION };
 
@@ -484,6 +487,7 @@ int parse_args(int argc, char **argv, int& idx)
 
 		{ "help",	   0, 0, OPT_HELP },
 		{ "version",	   0, 0, OPT_VERSION },
+		{ "rigio-debug", 0, 0, OPT_RIGIO_DEBUG },
 		{ 0 }
 	};
 
@@ -575,6 +579,9 @@ int parse_args(int argc, char **argv, int& idx)
 
 		case OPT_TWO_SCOPES:
 			twoscopes = true;
+			break;
+		case OPT_RIGIO_DEBUG:
+			RIGIO_DEBUG = true;
 			break;
 
 		case OPT_TOGGLE_CHECK:
