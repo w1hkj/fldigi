@@ -40,6 +40,7 @@
 //#include "modeIO.h"
 #include "configuration.h"
 #include "status.h"
+#include "debug.h"
 
 void cw::tx_init(SoundBase *sc)
 {
@@ -593,7 +594,7 @@ void cw::send_symbol(int bits)
 		if (symlen < knum) symlen = knum;
 	} else
 		symlen = symbollen;
-//	cout << (symbol & 1) << "-" << symlen << ", ";
+//	LOG_DEBUG("%d-%d", symbol & 1, symlen);
 
 	if (delta < -(symlen - knum)) delta = -(symlen - knum);
 	if (delta > (symlen - knum)) delta = symlen - knum;

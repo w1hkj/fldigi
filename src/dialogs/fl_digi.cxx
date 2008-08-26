@@ -102,6 +102,7 @@
 #include "soundconf.h"
 
 #include "htmlstrings.h"
+#include "debug.h"
 
 Fl_Double_Window	*fl_digi_main=(Fl_Double_Window *)0;
 Fl_Help_Dialog 		*help_dialog = (Fl_Help_Dialog *)0;
@@ -479,7 +480,7 @@ bool clean_exit() {
 	if (trx_state == STATE_RX || trx_state == STATE_TX || trx_state == STATE_TUNE)
 		trx_state = STATE_ABORT;
 	else {
-		cerr << "trx in unexpected state " << trx_state << '\n';
+		LOG_ERROR("trx in unexpected state %d", trx_state);
 		exit(1);
 	}
 	while (trx_state != STATE_ENDED) {
@@ -643,7 +644,7 @@ void init_modem(trx_mode mode)
 		break;
 
 	default:
-		cerr << "Unknown mode: " << mode << '\n';
+		LOG_ERROR("Unknown mode: %d", mode);
 		return init_modem(MODE_BPSK31);
 	}
 
@@ -658,7 +659,7 @@ void init_modem_sync(trx_mode m)
 
 #ifndef NDEBUG
         if (GET_THREAD_ID() == TRX_TID)
-                cerr << "trx thread called init_modem_sync!\n";
+                LOG_ERROR("trx thread called init_modem_sync!");
 #endif
 
         wait_modem_ready_prep();
@@ -884,7 +885,7 @@ void cb_mnuVisitURL(Fl_Widget*, void* arg)
 		for (size_t i = 0; i < sizeof(browsers)/sizeof(browsers[0]); i++)
 			if (browsers[i])
 				execlp(browsers[i], browsers[i], url, (char*)0);
-		perror("Could not execute a web browser");
+		LOG_PERROR("Could not execute a web browser");
 		exit(EXIT_FAILURE);
 	case -1:
 		fl_alert("Could not run a web browser:\n%s\n\n"
@@ -984,6 +985,11 @@ void cb_mnuBuildInfo(Fl_Widget*, void*)
 	extern string version_text;
 	fldigi_help(version_text);
 	restoreFocus();
+}
+
+void cb_mnuDebug(Fl_Widget*, void*)
+{
+	debug::show();
 }
 
 #ifndef NDEBUG
@@ -1442,7 +1448,7 @@ Fl_Menu_Item menu_[] = {
 {"Digiscope", 0, (Fl_Callback*)cb_mnuDigiscope, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"MFSK Image", 0, (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
 {"PSK Browser", 0, (Fl_Callback*)cb_mnuViewer, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"Rig", 0, (Fl_Callback*)cb_mnuRig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{"Rig Control", 0, (Fl_Callback*)cb_mnuRig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
@@ -1457,7 +1463,8 @@ Fl_Menu_Item menu_[] = {
 {"Home page", 0, cb_mnuVisitURL, (void *)PACKAGE_HOME, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 {"Command line options", 0, cb_mnuCmdLineHelp, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"Audio device info", 0, cb_mnuAudioInfo, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"Build info", 0, cb_mnuBuildInfo, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{"Build info", 0, cb_mnuBuildInfo, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{"Event log", 0, cb_mnuDebug, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 {"About", 0, cb_mnuAboutURL, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 	
@@ -1477,13 +1484,13 @@ Fl_Menu_Item *getMenuItem(const char *caption)
 		}
 	}
 	if (!item)
-		cerr << "FIXME: could not find '" << caption << "' menu\n";
+		LOG_ERROR("FIXME: could not find menu \"%s\"", caption);
 	return item;
 }
 
 void activate_rig_menu_item(bool b)
 {
-	Fl_Menu_Item *rig = getMenuItem("Rig");
+	Fl_Menu_Item *rig = getMenuItem("Rig Control");
 	if (!rig)
 		return;
 
@@ -1740,6 +1747,7 @@ void create_fl_digi_main() {
 					progdefaults.RxColor.R,
 					progdefaults.RxColor.G,
 					progdefaults.RxColor.B));		
+			TiledGroup->add_resize_check(FTextView::wheight_mult_tsize, ReceiveText);
 			FHdisp = new Raster(sw, Y, WNOM-sw, minRxHeight);
 			FHdisp->hide();
 

@@ -10,7 +10,6 @@
 
 #include <config.h>
 
-#include <iostream>
 #include <fstream>
 
 #include "rigio.h"
@@ -21,6 +20,7 @@
 #else
 	#include "main.h"
 #endif
+#include "debug.h"
 
 //#define DEBUGXML
 
@@ -170,10 +170,9 @@ TAGS datatags[] = {
 void print(size_t &p0, int indent)
 {
 #ifdef DEBUGXML
+	std::string istr(indent, '\t');
 	size_t tend = strXML.find(">", p0);
-	for (int i = 0; i < indent; i++)
-		std::cout << "\t";
-	std::cout << strXML.substr(p0, tend - p0 + 1).c_str() << std::endl;
+	LOG_DEBUG("%s%s", istr.c_str(), strXML.substr(p0, tend - p0 + 1).c_str());
 #endif
 }
 
@@ -590,15 +589,13 @@ void parsePORT(size_t &p0)
 	}
 	p0 = pend;
 #ifdef DEBUGXML
-	std::cout << "port: " << rig.port.c_str() << std::endl;
-	std::cout << "baud: " << rig.baud << std::endl;
-	std::cout << "retries: " << rig.retries << std::endl;
-	std::cout << "timeout: " << rig.timeout << std::endl;
-	std::cout << "initial rts: " << (rig.rts ? "+12" : "-12") << std::endl;
-	std::cout << "use rts ptt: " << (rig.rtsptt ? "T" : "F") << std::endl;
-	std::cout << "initial dts: " << (rig.dtr ? "+12" : "-12") << std::endl;
-	std::cout << "use dtr ptt: " << (rig.dtrptt ? "T" : "F") << std::endl;
-	std::cout << "use flowcontrol: " << (rig.rtscts ? "T" : "F") << std :: endl;
+	LOG_DEBUG("port: %s\n" "baud: %d\n" "retries: %d\n" "timeout: %d\n", "initial rts: %+d\n"
+		  "use rts ptt: %c\n" "initial dts: %+d\n" "use dtr ptt: %c\n"
+		  "use flowcontrol: %c",
+		  rig.port.c_str(), rig.baud, rig.retries, rig.timeout, (rig.rts ? +12 : -12),
+		  (rig.rtsptt ? 'T' : 'F'), (rig.dtr ? +12 : -12), (rig.dtrptt ? 'T' : 'F'),
+		  (rig.rtscts ? 'T' : 'F'));
+
 #endif	
 }
 

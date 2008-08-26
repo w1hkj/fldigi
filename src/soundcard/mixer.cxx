@@ -42,12 +42,12 @@
 #endif
 #include <math.h>
 
-#include <iostream>
 #include <string>
 #include <cstring>
 
 #include "mixer.h"
 #include "configuration.h"
+#include "debug.h"
 
 
 #if USE_OSS
@@ -109,17 +109,12 @@ void MixerOSS::initValues()
 	
 	pcmlevel0 = PCMVolume();
 	vollevel0 = OutVolume();
-/*
-	std::cout << "Sound card initial state:" << std::endl;
-	std::cout << "  Dev mask " << hex << devmask << std::endl;
-	std::cout << "  Rec mask " << hex << recmask << std::endl;
-	std::cout << "  Rec src  " << hex << recsrc << std::endl;
-	std::cout << "  Current input source # " << GetInputSourceName(inpsrc0) << std::endl;
-	std::cout << "  Line Level = " << linelevel0 << std::endl;
-	std::cout << "  Mic  Level = " << miclevel0  << std::endl;
-	std::cout << "  Pcm  Level = " << pcmlevel0  << std::endl;
-	std::cout << "  Vol  Level = " << vollevel0  << std::endl;
-*/
+
+	LOG_DEBUG("Sound mixer initial state:\n" "Dev mask: %02x\n"
+		  "Rec mask: %02x\n" "Rec src: %02x\n" "Current input source #: %s\n"
+		  "Line level: %d\n" "Mic level: %d\n" "Pcm level: %d\n" "Vol level: %d\n",
+		  devmask, recmask, recsrc, GetInputSourceName(inpsrc0),
+		  linelevel0, miclevel0, pcmlevel0, vollevel0);
 }
 
 void MixerOSS::restoreValues()

@@ -10,6 +10,7 @@
 #include "logger.h"
 #include "newinstall.h"
 #include "globals.h"
+#include "debug.h"
 
 #include <FL/Fl.H>
 #include "fileselect.h"
@@ -19,7 +20,6 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <string>
-#include <iostream>
 #include <fstream>
 
 MACROTEXT macros;
@@ -440,31 +440,31 @@ void pEXEC(string &s, size_t &i)
 
 	int pfd[2];
 	if (pipe(pfd) == -1) {
-		perror("pipe");
+		LOG_PERROR("pipe");
 		return;
 	}
 	pid_t pid;
 	switch (pid = fork()) {
 	case -1:
-		perror("fork");
+		LOG_PERROR("fork");
 		return;
 	case 0: // child
 		close(pfd[0]);
 		if (dup2(pfd[1], STDOUT_FILENO) != STDOUT_FILENO) {
-			perror("dup2");
+			LOG_PERROR("dup2");
 			exit(EXIT_FAILURE);
 		}
 		close(pfd[1]);
 		set_env();
 		execl("/bin/sh", "sh", "-c", s.substr(start, end-start).c_str(), (char *)NULL);
-		perror("execl");
+		LOG_PERROR("execl");
 		exit(EXIT_FAILURE);
 	}
 	// parent
 	close(pfd[1]);
 	FILE* fp = fdopen(pfd[0], "r");
 	if (!fp) {
-		perror("fdopen");
+		LOG_PERROR("fdopen");
 		close(pfd[0]);
 		return;
 	}
@@ -580,7 +580,7 @@ void MACROTEXT::loadDefault()
 	Filename.append("macros.mdf");
 	if ((erc = loadMacros(Filename)) != 0)
 #ifndef __CYGWIN__
-		printf("Error #%d loading %s\n", erc, Filename.c_str());
+		LOG_ERROR("Error #%d loading %s\n", erc, Filename.c_str());
 #else
 	;
 #endif

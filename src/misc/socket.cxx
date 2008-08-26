@@ -39,10 +39,7 @@
 #include <cstring>
 #include <cstdlib>
 
-#ifndef NDEBUG
-#  include <iostream>
-#endif
-
+#include "debug.h"
 #include "socket.h"
 
 #if HAVE_GETADDRINFO && !defined(AI_NUMERICSERV)
@@ -359,7 +356,7 @@ const addr_info_t* Address::get(size_t n) const
 	for (size_t i = 0; i < n; i++)
 		p = p->ai_next;
 #  ifndef NDEBUG
-	cerr << "found " << inet_ntoa(((struct sockaddr_in*)p->ai_addr)->sin_addr) << endl;
+	LOG_DEBUG("Found address %s", inet_ntoa(((struct sockaddr_in*)p->ai_addr)->sin_addr));
 #  endif
 	return p;
 #else
@@ -378,7 +375,7 @@ const addr_info_t* Address::get(size_t n) const
 	addr.ai_addrlen = sizeof(saddr);
 	addr.ai_addr = (struct sockaddr*)&saddr;
 #  ifndef NDEBUG
-	cerr << "found " << inet_ntoa(((struct sockaddr_in*)addr.ai_addr)->sin_addr) << endl;
+	LOG_DEBUG("Found address %s", inet_ntoa(((struct sockaddr_in*)addr.ai_addr)->sin_addr));
 #  endif
 	return &addr;
 #endif
@@ -480,7 +477,7 @@ void Socket::open(const Address& addr)
 	for (anum = 0; anum < n; anum++) {
 		ainfo = address.get(anum);
 #ifndef NDEBUG
-		cerr << "trying " << inet_ntoa(((struct sockaddr_in*)ainfo->ai_addr)->sin_addr) << endl;
+		LOG_DEBUG("trying %s", inet_ntoa(((struct sockaddr_in*)ainfo->ai_addr)->sin_addr));
 #endif
 
 		if ((sockfd = socket(ainfo->ai_family, ainfo->ai_socktype, ainfo->ai_protocol)) != -1)
@@ -587,7 +584,7 @@ Socket Socket::accept1(void)
 void Socket::connect(void)
 {
 #ifndef NDEBUG
-	cerr << "connecting to " << inet_ntoa(((struct sockaddr_in*)ainfo->ai_addr)->sin_addr) << endl;
+	LOG_DEBUG("connecting to %s", inet_ntoa(((struct sockaddr_in*)ainfo->ai_addr)->sin_addr));
 #endif
 	if (::connect(sockfd, ainfo->ai_addr, ainfo->ai_addrlen) == -1)
 		throw SocketException(errno, "connect");

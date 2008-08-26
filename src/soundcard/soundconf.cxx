@@ -13,6 +13,7 @@
 #include "main.h"
 #include "configuration.h"
 #include "confdialog.h"
+#include "debug.h"
 
 using namespace std;
 
@@ -77,7 +78,7 @@ static void init_portaudio(void)
 		SoundPort::initialize();
 	}
 	catch (const SndPortException& e) {
-		cerr << e.what() << endl;
+		LOG_ERROR("%s", e.what());
 	       	AudioPort->deactivate();
 		btnAudioIO[SND_IDX_PORT]->deactivate();
 		progdefaults.btnAudioIOis = SND_IDX_NULL;

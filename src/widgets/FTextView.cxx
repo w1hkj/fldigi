@@ -397,8 +397,6 @@ FTextView::FTextView(int x, int y, int w, int h, const char *l)
 	context_menu = view_menu;
 	// disable some keybindings that are not allowed in FTextView buffers
 	change_keybindings();
-
-	TiledGroup->add_resize_check(FTextView::wheight_mult_tsize, this);
 }
 
 FTextView::~FTextView()
@@ -1291,4 +1289,105 @@ int FTextEdit::kf_cut(int c, Fl_Text_Editor_mod* e)
 int FTextEdit::kf_paste(int c, Fl_Text_Editor_mod* e)
 {
 	return e->insert_position() < *ptxpos ? 1 : Fl_Text_Editor_mod::kf_paste(c, e);
+}
+
+// ----------------------------------------------------------------------------
+
+Fl_Menu_Item FTextLog::log_menu[] = {
+	{ "C&lear",				0, 0 },
+	{ "&Copy",				0, 0 },
+	{ "Save to &file...",			0, 0, 0, FL_MENU_DIVIDER },
+	{ "Word &wrap",				0, 0, 0, FL_MENU_TOGGLE	 },
+	{ 0 }
+};
+
+
+FTextLog::FTextLog(int x, int y, int w, int h, const char* l)
+	: FTextView(x, y, w, h, l)
+{
+	context_menu = log_menu;
+//	highlight_data(0, 0, 0, 0, 0, 0);
+//	delete sbuf;
+//	sbuf = 0;
+}
+
+FTextLog::~FTextLog() { }
+
+int FTextLog::handle(int event)
+{
+	switch (event) {
+	case FL_PUSH:
+		if (!Fl::event_inside(this))
+			break;
+		switch (Fl::event_button()) {
+		case FL_LEFT_MOUSE:
+			goto out;
+		case FL_MIDDLE_MOUSE:
+			return 1;
+		case FL_RIGHT_MOUSE:
+			break;
+		}
+
+		// handle a right mouse click
+		if (tbuf->length())
+			log_menu[LOG_MENU_CLEAR].flags &= ~FL_MENU_INACTIVE;
+		else
+			log_menu[LOG_MENU_CLEAR].flags |= FL_MENU_INACTIVE;
+
+		if (tbuf->selected())
+			log_menu[LOG_MENU_COPY].flags &= ~FL_MENU_INACTIVE;
+		else
+			log_menu[LOG_MENU_COPY].flags |= FL_MENU_INACTIVE;
+		if (wrap)
+			log_menu[LOG_MENU_WRAP].flags |= FL_MENU_VALUE;
+		else
+			log_menu[LOG_MENU_WRAP].flags &= ~FL_MENU_VALUE;
+
+		show_context_menu();
+		return 1;
+	case FL_KEYBOARD:
+		int k;
+		if (Fl::compose(k))
+			return 1;
+		k = Fl::event_key();
+		if (k == FL_BackSpace)
+			return 1;
+		else if (k == FL_Tab)
+		    return Fl_Widget::handle(event);
+	}
+
+out:
+	return FTextBase::handle(event);
+}
+
+void FTextLog::add(unsigned char c, int attr)
+{
+	const char s[] = { c, '\0' };
+	tbuf->append(s);
+}
+
+void FTextLog::add(const char* s, int attr)
+{
+	tbuf->append(s);
+}
+
+void FTextLog::menu_cb(int val)
+{
+	switch (val) {
+	case LOG_MENU_CLEAR:
+		clear();
+		break;
+	case LOG_MENU_COPY:
+		kf_copy(Fl::event_key(), this);
+		break;
+	case LOG_MENU_SAVE:
+		saveFile();
+		break;
+
+	case LOG_MENU_WRAP:
+		log_menu[RX_MENU_WRAP].flags ^= FL_MENU_VALUE;
+		wrap_mode((wrap = !wrap), wrap_col);
+		show_insert_position();
+		break;
+	}
 }

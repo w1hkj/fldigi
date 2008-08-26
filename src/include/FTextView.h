@@ -180,6 +180,29 @@ protected:
 	unsigned		ascii_chr;
 };
 
+// A FTextView subclass to display the event log
+class FTextLog : public FTextView
+{
+public:
+	FTextLog(int x, int y, int w, int h, const char *l = 0);
+        ~FTextLog();
+
+	virtual int	handle(int event);
+	virtual void	add(unsigned char c, int attr = RECV);
+	virtual	void	add(const char *s, int attr = RECV);
+
+protected:
+	enum { LOG_MENU_CLEAR, LOG_MENU_COPY, LOG_MENU_SAVE, LOG_MENU_WRAP };
+
+	virtual void	menu_cb(int val);
+private:
+	FTextLog();
+	FTextLog(const FTextLog &t);
+
+protected:
+	static Fl_Menu_Item log_menu[];
+};
+
 
 /// A version of Fl_Tile that runs check callbacks and moves the boundary
 /// between its child widgets only all resize checks return true.

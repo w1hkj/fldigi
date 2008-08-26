@@ -43,6 +43,7 @@
 #include "soundconf.h"
 #include "ringbuffer.h"
 #include "qrunner.h"
+#include "debug.h"
 
 using namespace std;
 
@@ -102,6 +103,7 @@ void trx_trx_receive_loop()
 				REQ(sound_update, progdefaults.btnAudioIOis);
 		}
 		catch (const SndException& e) {
+			LOG_ERROR("%s", e.what());
 			put_status(e.what(), 5);
 			scard->Close();
 			if (e.error() == EBUSY && progdefaults.btnAudioIOis == SND_IDX_PORT) {
@@ -121,6 +123,7 @@ void trx_trx_receive_loop()
 					scard->Open(O_RDONLY, current_samplerate);
 				}
 				catch (const SndException& e) {
+					LOG_ERROR("%s", e.what());
 					put_status(e.what(), 5);
 					scard->Close();
 					if (e.error() == EBUSY && progdefaults.btnAudioIOis == SND_IDX_PORT) {
@@ -139,6 +142,7 @@ void trx_trx_receive_loop()
 					scard->Open(O_RDONLY, current_samplerate);
 				}
 				catch (const SndException& e) {
+					LOG_ERROR("%s", e.what());
 					put_status(e.what(), 5);
 					scard->Close();
 					if (e.error() == EBUSY && progdefaults.btnAudioIOis == SND_IDX_PORT) {
@@ -165,6 +169,7 @@ void trx_trx_receive_loop()
 			}
 			catch (const SndException& e) {
 				scard->Close();
+				LOG_ERROR("%s", e.what());
 				put_status(e.what(), 5);
 				MilliSleep(10);
 				return;
@@ -217,6 +222,7 @@ void trx_trx_transmit_loop()
 			scard->Open(O_WRONLY, current_samplerate);
 		}
 		catch (const SndException& e) {
+			LOG_ERROR("%s", e.what());
 			put_status(e.what(), 1);
 			MilliSleep(10);
 			return;
@@ -235,6 +241,7 @@ void trx_trx_transmit_loop()
 			}
 			catch (const SndException& e) {
 				scard->Close();
+				LOG_ERROR("%s", e.what());
 				put_status(e.what(), 5);
 				MilliSleep(10);
 				return;
@@ -272,6 +279,7 @@ void trx_tune_loop()
 			scard->Open(O_WRONLY, current_samplerate);
 		}
 		catch (const SndException& e) {
+			LOG_ERROR("%s", e.what());
 			put_status(e.what(), 1);
 			MilliSleep(10);
 			return;
@@ -293,6 +301,7 @@ void trx_tune_loop()
 		}
 		catch (const SndException& e) {
 			scard->Close();
+			LOG_ERROR("%s", e.what());
 			put_status(e.what(), 5);
 			MilliSleep(10);
 			return;
@@ -336,7 +345,7 @@ void *trx_loop(void *args)
 			trx_trx_receive_loop();
 			break;
 		default:
-			cerr << "trx in bad state " << trx_state << '\n';
+			LOG_ERROR("trx in bad state %d\n", trx_state);
 			MilliSleep(100);
 		}
 	}
@@ -465,7 +474,7 @@ void trx_start_macro_timer()
 void trx_start(void)
 {
 	if (trxrunning) {
-		std::cout<< "trx already running!" << std::endl;
+		LOG_ERROR("trx already running!");
 		return;
 	}
 	
@@ -502,7 +511,7 @@ void trx_start(void)
 	_trx_tune = 0;
 	active_modem = 0;
 	if (fl_create_thread(trx_thread, trx_loop, &dummy) < 0) {
-		std::cout <<  "trx pthread_create:" << std::endl;
+		LOG_ERROR("pthread_create failed");
 		trxrunning = false;
 		exit(1);
 	} 
@@ -532,7 +541,7 @@ void wait_modem_ready_prep(void)
 {
 #ifndef NDEBUG
         if (GET_THREAD_ID() == TRX_TID)
-                cerr << "trx thread called wait_modem_ready_prep!\n";
+		LOG_ERROR("trx thread called wait_modem_ready_prep!");
 #endif
 
         fl_lock(&trx_cond_mutex);
@@ -542,7 +551,7 @@ void wait_modem_ready_cmpl(void)
 {
 #ifndef NDEBUG
         if (GET_THREAD_ID() == TRX_TID)
-                cerr << "trx thread called wait_modem_ready_cmpl!\n";
+                LOG_ERROR("trx thread called wait_modem_ready_cmpl!");
 #endif
 
         fl_cond_wait(&trx_cond, &trx_cond_mutex);
@@ -553,8 +562,7 @@ void signal_modem_ready(void)
 {
 #ifndef NDEBUG
         if (GET_THREAD_ID() != TRX_TID)
-                cerr << "thread " << GET_THREAD_ID()
-                     << " called signal_modem_ready!\n";
+		LOG_ERROR("thread %d called signal_modem_ready!", GET_THREAD_ID());
 #endif
 
         fl_lock(&trx_cond_mutex);

@@ -27,6 +27,7 @@
 
 #include "stacktrace.h"
 #include "re.h"
+#include "debug.h"
 
 using namespace std;
 
@@ -53,13 +54,13 @@ static int dummy = 0;
 
 static void *hamlib_loop(void *args);
 
-void show_error(const char * a, const char * b)
+void show_error(const char* msg1, const char* msg2 = 0)
 {
-	string msg = a;
-	msg.append(": ");
-	msg.append(b);
-	put_status(msg.c_str(), 10.0);
-	cerr << msg.c_str() << '\n';
+	string error = msg1;
+	if (msg2)
+		error.append(": ").append(msg2);
+	put_status(error.c_str(), 10.0);
+	LOG_ERROR("%s", error.c_str());
 }
 
 /* FIXME: remove this function
@@ -71,7 +72,7 @@ bool hamlib_setRTSDTR()
 	int hamlibfd =  open(progdefaults.HamRigDevice.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
 
 	if (hamlibfd < 0) {
-		show_error("Cannot open PTT device ", progdefaults.HamRigDevice.c_str());
+		show_error("Cannot open PTT device", progdefaults.HamRigDevice.c_str());
 		return false;
 	}
 
@@ -163,7 +164,7 @@ bool hamlib_init(bool bPtt)
 		xcvr->open();
 	}
 	catch (const RigException& Ex) {
-		show_error("hamlib_init", Ex.what());
+		show_error(__func__, Ex.what());
 		xcvr->close();
 		return false;
 	}
@@ -172,16 +173,17 @@ bool hamlib_init(bool bPtt)
 //		return -1;
 		
 	MilliSleep(200);
-//char temp[80];
-//xcvr->getConf("dtr_state", temp);
-//cerr << "Hamlib DTR " << temp << '\n';
+
+	// char temp[80];
+	// xcvr->getConf("dtr_state", temp);
+	// LOG_DEBUG("Hamlib DTR = %s", temp);
 
 	try {
 		need_freq = true;
 		freq = xcvr->getFreq();
 		if (freq == 0) {
 			xcvr->close();
-			show_error("Transceiver not responding", "");
+			show_error(__func__, "transceiver not responding");
 			return false;
 		}
 	}
@@ -215,7 +217,7 @@ bool hamlib_init(bool bPtt)
 	hamlib_rmode = RIG_MODE_NONE;//RIG_MODE_USB;
 
 	if (fl_create_thread(hamlib_thread, hamlib_loop, &dummy) < 0) {
-		cerr << "Hamlib init:  pthread_create failed\n";
+		show_error(__func__, "pthread_create failed");
 		xcvr->close();
 		return false;
 	} 
@@ -238,7 +240,7 @@ void hamlib_close(void)
 //		cerr << "." << flush;
 		MilliSleep(50);
 		if (!count--) {
-			cerr << "Hamlib stuck, transceiver on fire\n";
+			show_error(__func__, "Hamlib stuck, transceiver on fire");
 			xcvr->close();
 			diediedie();
 		}
@@ -303,7 +305,7 @@ int hamlib_setfreq(long f)
 			wf->rfcarrier(f);//(hamlib_freq);
 		}
 		catch (const RigException& Ex) {
-		show_error("SetFreq", Ex.what());
+			show_error("SetFreq", Ex.what());
 			hamlib_passes = 0;
 		}
 	fl_unlock(&hamlib_mutex);
@@ -321,7 +323,7 @@ int hamlib_setmode(rmode_t m)
 			hamlib_rmode = m;
 		}
 		catch (const RigException& Ex) {
-		show_error("Set Mode", Ex.what());
+			show_error("Set Mode", Ex.what());
 			hamlib_passes = 0;
 		}
 	fl_unlock(&hamlib_mutex);
@@ -386,7 +388,7 @@ static void *hamlib_loop(void *args)
 				}
 			}
 			catch (const RigException& Ex) {
-				show_error("No transceiver comms", "");
+				show_error(__func__, "No transceiver comms");
 				freqok = false;
 				hamlib_exit = true;
 			}
@@ -400,7 +402,7 @@ static void *hamlib_loop(void *args)
 				modeok = true;
 			}
 			catch (const RigException& Ex) {
-				show_error("No transceiver comms", "");
+				show_error(__func__, "No transceiver comms");
 				modeok = false;
 				hamlib_exit = true;
 			}

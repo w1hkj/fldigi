@@ -39,6 +39,7 @@
 #endif
 
 #include "picture.h"
+#include "debug.h"
 
 using namespace std;
 
@@ -75,7 +76,8 @@ void picture::pixel(unsigned char data, int pos)
 	if (pos < 0 || pos >= bufsize) return;
 	FL_LOCK_D();
 	vidbuf[pos] = data;
-	redraw();
+	if (pos % (width * 3) == 0)
+		redraw();
 	FL_UNLOCK_D();
 }
 
@@ -209,7 +211,7 @@ int picture::handle(int event)
 				slant_corr(xpos, ypos);
 			else if (evb == 3)
 				slant_undo();
-//			std::cout << "#2 " << xpos << ", " << ypos << std::endl; fflush(stdout);
+			LOG_DEBUG("#2 %d, %d", xpos, ypos);
 			return 1;
 		}
 		return 1;

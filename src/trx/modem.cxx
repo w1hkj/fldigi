@@ -12,6 +12,7 @@
 #include "qrunner.h"
 
 #include "status.h"
+#include "debug.h"
 
 modem *cw_modem = 0;
 
@@ -234,7 +235,7 @@ void modem::ModulateXmtr(double *buffer, int len)
 			throw SndException("Sound write failed");
 	}
 	catch (const SndException& e) {
-		cerr << e.what() << '\n';
+		LOG_ERROR("%s", e.what());
 		return;
 	}
 
@@ -260,7 +261,7 @@ void modem::ModulateStereo(double *left, double *right, int len)
 			throw SndException("Sound write failed");
 	}
 	catch (const SndException& e) {
-		cerr << e.what() << '\n';
+		LOG_ERROR("%s", e.what());
 		return;
 	}
 

@@ -39,6 +39,7 @@
 #include "confdialog.h"
 #include "qrunner.h"
 #include "status.h"
+#include "debug.h"
 
 #include <FL/Fl.H>
 #include <FL/Fl_Value_Slider.H>
@@ -416,7 +417,7 @@ void feld::send_symbol(int currsymb, int nextsymb)
 		outbuf[outlen++] = Amp * nco(tone);
 
 		if (outlen >= OUTBUFSIZE) {
-			std::cout << "feld reset" << std::endl;
+			LOG_DEBUG("feld reset");
 			break;
 		}
 		txcounter += upsampleinc;

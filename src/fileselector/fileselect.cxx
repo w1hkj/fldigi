@@ -5,6 +5,7 @@
 #include <libgen.h>
 
 #include "fileselect.h"
+#include "debug.h"
 
 #include <FL/fl_ask.H>
 #include <FL/Fl_Native_File_Chooser.H>
@@ -31,7 +32,7 @@ void FSEL::create(void)
 		return;
 #if FSEL_THREAD
 	if (sem_init(&fsel_sem, 0, 0) == -1) {
-		perror("sem_init");
+		LOG_PERROR("sem_init");
 		return;
 	}
 #endif

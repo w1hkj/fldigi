@@ -12,6 +12,7 @@
 
 #include "rigMEM.h"
 //#include "rigio.h"
+#include "debug.h"
 
 #include <iostream>
 #include <fstream>
@@ -354,7 +355,7 @@ void configuration::writeDefaultsXML()
 
 	ofstream f(deffname.c_str(), ios::out);
 	if (!f) {
-		cerr << "Could not write " << deffname << '\n';
+		LOG_ERROR("Could not write %s", deffname.c_str());
 		return;
 	}
 

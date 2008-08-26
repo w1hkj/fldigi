@@ -40,19 +40,20 @@
 #	include <stacktrace.h>
 
 #	ifndef NO_LOCKS
+#               include "debug.h"
 #		define FL_LOCK(x)                                       \
                 do {                                                    \
                         switch (GET_THREAD_ID()) {                      \
                         case TRX_TID:                                   \
-                                printf("E: trx lock in %s at %s:%d\n",  \
+                                LOG_ERROR("trx lock",			\
                                        __func__, __FILE__, __LINE__);   \
                                 break;                                  \
                         case FLMAIN_TID:                                \
-                                printf("W: flrun lock in %s at %s:%d\n",\
+                                LOG_WARN("flrun lock",			\
                                        __func__, __FILE__, __LINE__);   \
                                 break;                                  \
                         default:                                        \
-                                printf("I: lock in %s at %s:%d\n",      \
+                                LOG_INFO("lock",			\
                                        __func__, __FILE__, __LINE__);   \
                         }                                               \
                         pstack_maybe();                                 \
