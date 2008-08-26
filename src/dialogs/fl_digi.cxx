@@ -102,6 +102,7 @@
 #include "soundconf.h"
 
 #include "htmlstrings.h"
+#include "debug.h"
 
 Fl_Double_Window	*fl_digi_main=(Fl_Double_Window *)0;
 Fl_Help_Dialog 		*help_dialog = (Fl_Help_Dialog *)0;
@@ -986,6 +987,11 @@ void cb_mnuBuildInfo(Fl_Widget*, void*)
 	restoreFocus();
 }
 
+void cb_mnuDebug(Fl_Widget*, void*)
+{
+	debug::show();
+}
+
 #ifndef NDEBUG
 void cb_mnuFun(Fl_Widget*, void*)
 {
@@ -1442,7 +1448,7 @@ Fl_Menu_Item menu_[] = {
 {"Digiscope", 0, (Fl_Callback*)cb_mnuDigiscope, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"MFSK Image", 0, (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
 {"PSK Browser", 0, (Fl_Callback*)cb_mnuViewer, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"Rig", 0, (Fl_Callback*)cb_mnuRig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{"Rig Control", 0, (Fl_Callback*)cb_mnuRig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
@@ -1457,7 +1463,8 @@ Fl_Menu_Item menu_[] = {
 {"Home page", 0, cb_mnuVisitURL, (void *)PACKAGE_HOME, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 {"Command line options", 0, cb_mnuCmdLineHelp, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"Audio device info", 0, cb_mnuAudioInfo, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"Build info", 0, cb_mnuBuildInfo, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{"Build info", 0, cb_mnuBuildInfo, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{"Event log", 0, cb_mnuDebug, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 {"About", 0, cb_mnuAboutURL, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 	
@@ -1483,7 +1490,7 @@ Fl_Menu_Item *getMenuItem(const char *caption)
 
 void activate_rig_menu_item(bool b)
 {
-	Fl_Menu_Item *rig = getMenuItem("Rig");
+	Fl_Menu_Item *rig = getMenuItem("Rig Control");
 	if (!rig)
 		return;
 
@@ -1740,6 +1747,7 @@ void create_fl_digi_main() {
 					progdefaults.RxColor.R,
 					progdefaults.RxColor.G,
 					progdefaults.RxColor.B));		
+			TiledGroup->add_resize_check(FTextView::wheight_mult_tsize, ReceiveText);
 			FHdisp = new Raster(sw, Y, WNOM-sw, minRxHeight);
 			FHdisp->hide();
 

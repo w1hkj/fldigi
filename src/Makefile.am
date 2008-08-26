@@ -156,6 +156,7 @@ fldigi_SOURCES += \
 	include/complex.h \
 	include/configuration.h \
 	include/cw.h \
+	include/debug.h \
 	include/digiscope.h \
 	include/thor.h \
 	include/thorvaricode.h \
@@ -256,6 +257,7 @@ fldigi_SOURCES += \
 	misc/ascii.cxx \
 	misc/configuration.cxx \
 	misc/colorsfonts.cxx \
+	misc/debug.cxx \
 	misc/flstring.c \
 	misc/log.cxx \
 	misc/macroedit.cxx \

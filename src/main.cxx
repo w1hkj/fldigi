@@ -63,6 +63,7 @@
 #include "status.h"
 #include "fileselect.h"
 #include "timeops.h"
+#include "debug.h"
 
 #if USE_HAMLIB
 	#include "rigclass.h"
@@ -187,6 +188,19 @@ int main(int argc, char ** argv)
 			closedir(dir);
 	}
 
+	try {
+		debug::start(string(HomeDir).append("debug.log").c_str());
+		time_t t = time(NULL);
+		debug::level_e cur = debug::level;
+		debug::level = debug::INFO;
+		LOG_INFO("%s log started on %s", PACKAGE_STRING, ctime(&t));
+		debug::level = cur;
+	}
+	catch (const char* error) {
+		cerr << error << '\n';
+		debug::stop();
+	}
+
 	xmlfname = HomeDir; 
 	xmlfname.append("rig.xml");
 	
@@ -288,6 +302,7 @@ int main(int argc, char ** argv)
 		delete cbq[i];
 	}
 	FSEL::destroy();
+	debug::stop();
 
 	return ret;
 }
@@ -348,6 +363,9 @@ void generate_option_help(void) {
 	     << "    Set the XML-RPC server port\n"
 	     << "    The default is: " << progdefaults.xmlrpc_port << "\n\n"
 #endif
+
+	     << "  --debug-level LEVEL\n"
+	     << "    Set the event log verbosity\n\n"
 
 	     << "  --version\n"
 	     << "    Print version information\n\n"
@@ -447,7 +465,7 @@ int parse_args(int argc, char **argv, int& idx)
                OPT_FRAMES_PER_BUFFER,
 #endif
                OPT_TWO_SCOPES,
-               OPT_RIGIO_DEBUG,
+	       OPT_DEBUG_LEVEL,
                OPT_EXIT_AFTER,
                OPT_HELP, OPT_VERSION };
 
@@ -485,9 +503,10 @@ int parse_args(int argc, char **argv, int& idx)
 #endif
 		{ "exit-after",    1, 0, OPT_EXIT_AFTER },
 
+		{ "debug-level",   1, 0, OPT_DEBUG_LEVEL },
+
 		{ "help",	   0, 0, OPT_HELP },
 		{ "version",	   0, 0, OPT_VERSION },
-		{ "rigio-debug", 0, 0, OPT_RIGIO_DEBUG },
 		{ 0 }
 	};
 
@@ -580,9 +599,6 @@ int parse_args(int argc, char **argv, int& idx)
 		case OPT_TWO_SCOPES:
 			twoscopes = true;
 			break;
-		case OPT_RIGIO_DEBUG:
-			RIGIO_DEBUG = true;
-			break;
 
 		case OPT_TOGGLE_CHECK:
 			useCheckButtons = !useCheckButtons;
@@ -601,6 +617,13 @@ int parse_args(int argc, char **argv, int& idx)
 
 		case OPT_EXIT_AFTER:
 			Fl::add_timeout(strtod(optarg, 0), exit_cb);
+			break;
+
+		case OPT_DEBUG_LEVEL:
+		{
+			int v = strtol(optarg, 0, 10);
+			debug::level = (debug::level_e)CLAMP(v, 0, debug::NLEVELS-1);
+		}
 			break;
 
 		case OPT_HELP:
