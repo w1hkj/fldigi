@@ -335,6 +335,9 @@ void mfsk::recvpic(complex z)
 	picf += (prevz % z).arg() * samplerate / TWOPI;
 	prevz = z;
 
+	if (RXspp < 8 && progdefaults.slowcpu == true)
+		return;
+		
 	if ((counter % RXspp) == 0) {
 		picf = 256 * (picf / RXspp - basefreq) / bandwidth;
 		byte = (int)CLAMP(picf, 0.0, 255.0);
