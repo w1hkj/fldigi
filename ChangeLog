@@ -1,5 +1,17 @@
 Change Log:
 
+3.03
+      1) Changes to socket server to correct shutdown process
+      2) Added event logging and an event viewer
+      
+3.02
+      1) Added hamlib interface for rig control
+      2) Improved rigCAT serial communications on Windows
+
+3.01
+      1) Compile switch changes for OS-X
+      2) Corrected serial port discovery on Windows
+      
 3.0   1) Added EXEC macro
       2) Added mousewheel over Macro buttons to move between macro button sets.
       3) Fixed bug in Olivia signal level display.

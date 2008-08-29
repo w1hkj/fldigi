@@ -41,6 +41,13 @@ static char QRZdir[256] = "";
 
 static const char *QRZpath;
 static const char *QRZtry[] = { 
+#ifdef __CYGWIN__
+  "C:/CALLBK/", // look on C: drive first
+  "D:/CALLBK/", 
+  "E:/CALLBK/",
+  "F:/CALLBK/",
+  "G:/CALLBK/",
+#else
   "~/callbk/",
   "/cdrom/callbk/",
   "/mnt/cdrom/callbk/",  "/mnt/cdrom0/callbk/",  "/mnt/cdrom1/callbk/",
@@ -49,6 +56,7 @@ static const char *QRZtry[] = {
   "/cdrom/callbk/",
   "/mnt/cdrom/callbk/",  "/mnt/cdrom0/callbk/",  "/mnt/cdrom1/callbk/",
   "/media/cdrom/callbk/", "/media/cdrom0/callbk/", "/media/cdrom1/callbk/", 
+#endif
   0 };
 
 FILE *imagefile = NULL;
