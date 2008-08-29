@@ -528,7 +528,7 @@ bool Socket::wait(int dir)
 ///
 void Socket::bind(void)
 {
-	int r;
+	int r = 1;
 	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &r, sizeof(r)) == -1)
 #ifndef NDEBUG
 		perror("setsockopt SO_REUSEADDR");
@@ -549,15 +549,15 @@ void Socket::bind(void)
 ///
 Socket Socket::accept(void)
 {
-	int r = -1;
-
-	listen(sockfd, SOMAXCONN);
+	if (listen(sockfd, SOMAXCONN) == -1)
+		throw SocketException(errno, "listen");
 
 	// wait for fd to become readable
 	if (nonblocking && (timeout.tv_sec > 0 || timeout.tv_usec > 0))
 		if (!wait(0))
 			throw SocketException(ETIMEDOUT, "select");
 
+	int r;
 	if ((r = ::accept(sockfd, NULL, 0)) == -1)
 		throw SocketException(errno, "accept");
 
