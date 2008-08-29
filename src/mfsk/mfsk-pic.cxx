@@ -349,9 +349,13 @@ void cb_picTxSPP( Fl_Widget *w, void *)
 	if (serviceme != active_modem) return;
 
 	Fl_Button *b = (Fl_Button *)w;
-	if (serviceme->TXspp == 8) serviceme->TXspp = 4;
-	else if (serviceme->TXspp == 4) serviceme->TXspp = 2;
-	else serviceme->TXspp = 8;
+	if (progdefaults.slowcpu == true)
+		serviceme->TXspp == 8;
+	else {
+		if (serviceme->TXspp == 8) serviceme->TXspp = 4;
+		else if (serviceme->TXspp == 4) serviceme->TXspp = 2;
+		else serviceme->TXspp = 8;
+	}
 	if (serviceme->TXspp == 8) b->label("X1");
 	else if (serviceme->TXspp == 4) b->label("X2");
 	else b->label("X4");

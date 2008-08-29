@@ -60,19 +60,21 @@ const string& printhex(const unsigned char* s, size_t len)
 {
 	static string hex;
 	hex.clear();
-	hex.resize(len * 3 - 1);
-	string::iterator i = hex.begin();
-	size_t j;
-	for (j = 0; j < len-1; j++) {
-		*i++ = hexsym[s[j] >> 4];
-		*i++ = hexsym[s[j] & 0xF];
+	if (len > 0) {
+		hex.resize(len * 3 - 1);
+		string::iterator i = hex.begin();
+		size_t j;
+		for (j = 0; j < len-1; j++) {
+			*i++ = hexsym[s[j] >> 4];
+			*i++ = hexsym[s[j] & 0xF];
 	        *i++ = ' ';
-	}
+		}
         *i++ = hexsym[s[j] >> 4];
-	*i = hexsym[s[j] & 0xF];
-
+		*i = hexsym[s[j] & 0xF];
+	}
 	return hex;
 }
+
 const string& printhex(const string& s)
 {
 	return printhex((const unsigned char*)s.data(), s.length());
@@ -123,7 +125,7 @@ bool hexout(const string& s, int retnbr)
 			while (readtimeout--)
 				MilliSleep(1);
 
-		LOG_DEBUG("reading %d", retnbr);
+		LOG_DEBUG("waiting for %d bytes", retnbr);
 
 		if (retnbr > 0) {
 			num = rigio.ReadBuffer (replybuff, retnbr > 200 ? 200 : retnbr);

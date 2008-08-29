@@ -528,6 +528,13 @@ bool Socket::wait(int dir)
 ///
 void Socket::bind(void)
 {
+	int r;
+	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &r, sizeof(r)) == -1)
+#ifndef NDEBUG
+		perror("setsockopt SO_REUSEADDR");
+#else
+		;
+#endif
 	if (::bind(sockfd, ainfo->ai_addr, ainfo->ai_addrlen) == -1)
 		throw SocketException(errno, "bind");
 }
@@ -542,13 +549,7 @@ void Socket::bind(void)
 ///
 Socket Socket::accept(void)
 {
-	int r = 1;
-	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &r, sizeof(r)) == -1)
-#ifndef NDEBUG
-		perror("setsockopt SO_REUSEADDR");
-#else
-		;
-#endif
+	int r = -1;
 
 	listen(sockfd, SOMAXCONN);
 

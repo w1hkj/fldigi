@@ -335,6 +335,9 @@ void mfsk::recvpic(complex z)
 	picf += (prevz % z).arg() * samplerate / TWOPI;
 	prevz = z;
 
+	if (RXspp < 8 && progdefaults.slowcpu == true)
+		return;
+		
 	if ((counter % RXspp) == 0) {
 		picf = 256 * (picf / RXspp - basefreq) / bandwidth;
 		byte = (int)CLAMP(picf, 0.0, 255.0);
@@ -358,13 +361,15 @@ void mfsk::recvpic(complex z)
 		picf = 0.0;
 
 		int n = picW * picH * 3;
-		int s = snprintf(mfskmsg, sizeof(mfskmsg),
-				 "Recv picture: %04.1f%% done",
-				 (100.0f * pixelnbr) / n);
-		print_time_left( (n - pixelnbr ) * 0.000125 * RXspp , 
-				mfskmsg + s,
-				sizeof(mfskmsg) - s, ", ", " left");
-		put_status(mfskmsg);
+		if (pixelnbr % (picW * 3) == 0) {
+			int s = snprintf(mfskmsg, sizeof(mfskmsg),
+					 "Recv picture: %04.1f%% done",
+					 (100.0f * pixelnbr) / n);
+			print_time_left( (n - pixelnbr ) * 0.000125 * RXspp , 
+					mfskmsg + s,
+					sizeof(mfskmsg) - s, ", ", " left");
+			put_status(mfskmsg);
+		}
 	}
 }
 
@@ -929,13 +934,15 @@ int mfsk::tx_process()
 					sendpic( &xmtpicbuff[i], blocklen);
 				else
 					sendpic( &xmtpicbuff[i], xmtbytes - i);
+				if ( (100 * i / xmtbytes) % 2 == 0) {
+					int n = snprintf(mfskmsg, sizeof(mfskmsg),
+							 "Send picture: %04.1f%% done",
+							 (100.0f * i) / xmtbytes);
+					print_time_left((xmtbytes - i) * 0.000125 * TXspp, mfskmsg + n,
+							sizeof(mfskmsg) - n, ", ", " left");
+					put_status(mfskmsg);
+				}
 				i += blocklen;
-				int n = snprintf(mfskmsg, sizeof(mfskmsg),
-						 "Send picture: %04.1f%% done",
-						 (100.0f * i) / xmtbytes);
-				print_time_left((xmtbytes - i) * 0.000125 * TXspp, mfskmsg + n,
-						sizeof(mfskmsg) - n, ", ", " left");
-				put_status(mfskmsg);
 			}
 			REQ_FLUSH();
 

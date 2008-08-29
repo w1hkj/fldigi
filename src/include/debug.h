@@ -20,14 +20,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------------------------------------------------------------------
 
-#ifndef DEBUG_H_
-#define DEBUG_H_
+#ifndef _DEBUG_H_
+#define _DEBUG_H_
 
 
 class debug
 {
 public:
-	enum level_e { QUIET, ERROR, WARN, INFO, DEBUG, NLEVELS };
+	enum level_e { _QUIET, _ERROR, _WARN, _INFO, _DEBUG, _NLEVELS };
 	static void start(const char* filename);
 	static void stop(void);
 	static void log(level_e level, const char* func, const char* srcf, int line, const char* format, ...);
@@ -49,20 +49,20 @@ private:
 			debug::log(level__, __func__, __FILE__, __LINE__, __VA_ARGS__); \
 	} while (0)
 
-#define LOG_DEBUG(...) LOG(debug::DEBUG, __VA_ARGS__)
-#define LOG_INFO(...) LOG(debug::INFO, __VA_ARGS__)
-#define LOG_WARN(...) LOG(debug::WARN, __VA_ARGS__)
-#define LOG_ERROR(...) LOG(debug::ERROR, __VA_ARGS__)
+#define LOG_DEBUG(...) LOG(debug::_DEBUG, __VA_ARGS__)
+#define LOG_INFO(...) LOG(debug::_INFO, __VA_ARGS__)
+#define LOG_WARN(...) LOG(debug::_WARN, __VA_ARGS__)
+#define LOG_ERROR(...) LOG(debug::_ERROR, __VA_ARGS__)
 
 #define LOG_PERROR(msg__)						\
 	do {								\
-		if (debug::ERROR <= debug::level)			\
+		if (debug::_ERROR <= debug::level)			\
 			debug::elog(__func__, __FILE__, __LINE__, msg__); \
 	} while (0)
 
 
 
-#endif // DEBUG_H_
+#endif // _DEBUG_H_
 
 // Local Variables:
 // mode: c++

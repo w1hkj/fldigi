@@ -76,7 +76,8 @@ void picture::pixel(unsigned char data, int pos)
 	if (pos < 0 || pos >= bufsize) return;
 	FL_LOCK_D();
 	vidbuf[pos] = data;
-	redraw();
+	if (pos % (width * 3) == 0)
+		redraw();
 	FL_UNLOCK_D();
 }
 
