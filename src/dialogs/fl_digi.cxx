@@ -46,6 +46,7 @@
 #include <FL/x.H>
 #include <FL/Fl_Help_Dialog.H>
 #include <FL/Fl_Progress.H>
+#include <FL/Fl_Tooltip.H>
 
 #include "waterfall.h"
 #include "raster.h"
@@ -1621,6 +1622,10 @@ void create_fl_digi_main() {
 
 			// reset the message dialog font
 			fl_message_font(FL_HELVETICA, FL_NORMAL_SIZE);
+
+			// reset the tooltip font
+			Fl_Tooltip::font(FL_HELVETICA);
+			Fl_Tooltip::size(FL_NORMAL_SIZE);
 
 			btnRSID = new Fl_Light_Button(WNOM - 150 - pad, 0, 50, Hmenu, "RSID ?");
 			btnRSID->selection_color(FL_GREEN);

@@ -705,6 +705,10 @@ void set_platform_ui(void)
        FL_NORMAL_SIZE = 12;
        useCheckButtons = false;
 #elif defined(__APPLE__)
+       FL_NORMAL_SIZE = 12;
+       progdefaults.WaterfallFontsize = 12;
+       progdefaults.RxFontsize = 12;
+       progdefaults.TxFontsize = 12;
        useCheckButtons = false;
 #elif defined(__CYGWIN__)
        Fl::set_font(FL_HELVETICA, "Tahoma");
