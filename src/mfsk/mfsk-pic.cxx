@@ -350,7 +350,7 @@ void cb_picTxSPP( Fl_Widget *w, void *)
 
 	Fl_Button *b = (Fl_Button *)w;
 	if (progdefaults.slowcpu == true)
-		serviceme->TXspp == 8;
+		serviceme->TXspp = 8;
 	else {
 		if (serviceme->TXspp == 8) serviceme->TXspp = 4;
 		else if (serviceme->TXspp == 4) serviceme->TXspp = 2;
