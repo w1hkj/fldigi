@@ -27,7 +27,7 @@
 class debug
 {
 public:
-	enum level_e { _QUIET, _ERROR, _WARN, _INFO, _DEBUG, _NLEVELS };
+	enum level_e { QUIET_LEVEL, ERROR_LEVEL, WARN_LEVEL, INFO_LEVEL, DEBUG_LEVEL, LOG_NLEVELS };
 	static void start(const char* filename);
 	static void stop(void);
 	static void log(level_e level, const char* func, const char* srcf, int line, const char* format, ...);
@@ -49,17 +49,16 @@ private:
 			debug::log(level__, __func__, __FILE__, __LINE__, __VA_ARGS__); \
 	} while (0)
 
-#define LOG_DEBUG(...) LOG(debug::_DEBUG, __VA_ARGS__)
-#define LOG_INFO(...) LOG(debug::_INFO, __VA_ARGS__)
-#define LOG_WARN(...) LOG(debug::_WARN, __VA_ARGS__)
-#define LOG_ERROR(...) LOG(debug::_ERROR, __VA_ARGS__)
+#define LOG_DEBUG(...) LOG(debug::DEBUG_LEVEL, __VA_ARGS__)
+#define LOG_INFO(...) LOG(debug::INFO_LEVEL, __VA_ARGS__)
+#define LOG_WARN(...) LOG(debug::WARN_LEVEL, __VA_ARGS__)
+#define LOG_ERROR(...) LOG(debug::ERROR_LEVEL, __VA_ARGS__)
 
 #define LOG_PERROR(msg__)						\
 	do {								\
-		if (debug::_ERROR <= debug::level)			\
+		if (debug::ERROR_LEVEL <= debug::level)			\
 			debug::elog(__func__, __FILE__, __LINE__, msg__); \
 	} while (0)
-
 
 
 #endif // _DEBUG_H_

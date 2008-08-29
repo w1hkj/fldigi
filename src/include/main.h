@@ -31,8 +31,6 @@ extern PTT			*push2talk;
 extern Rig			*xcvr;
 #endif
 
-extern bool			RIGIO_DEBUG;
-
 extern cLogfile		*Maillogfile;
 extern cLogfile		*logfile;
 extern string		PskMailDir;

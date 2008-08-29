@@ -107,8 +107,6 @@ FILE	*server;
 FILE	*client;
 bool	mailserver = false, mailclient = false, arqmode = false;
 
-bool	RIGIO_DEBUG = false;
-
 RXMSGSTRUC rxmsgst;
 int		rxmsgid = -1;
 
@@ -185,7 +183,7 @@ int main(int argc, char ** argv)
 	try {
 		debug::start(string(HomeDir).append("status_log.txt").c_str());
 		time_t t = time(NULL);
-		LOG(debug::_QUIET, "%s log started on %s", PACKAGE_STRING, ctime(&t));
+		LOG(debug::QUIET_LEVEL, "%s log started on %s", PACKAGE_STRING, ctime(&t));
 	}
 	catch (const char* error) {
 		cerr << error << '\n';
@@ -599,7 +597,7 @@ int parse_args(int argc, char **argv, int& idx)
 		case OPT_DEBUG_LEVEL:
 		{
 			int v = strtol(optarg, 0, 10);
-			debug::level = (debug::level_e)CLAMP(v, 0, debug::_NLEVELS-1);
+			debug::level = (debug::level_e)CLAMP(v, 0, debug::LOG_NLEVELS-1);
 		}
 			break;
 
