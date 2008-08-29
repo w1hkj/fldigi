@@ -55,18 +55,15 @@ set -e
 
 cd "$build"
 
-if test "x$STRIP" = "x0"; then
-    INSTALL_PROGRAM_CMD="$INSTALL_STRIP_PROGRAM"
-else
-    INSTALL_PROGRAM_CMD="$INSTALL_PROGRAM"
-fi
-
 # bundle the binary
 appname="${PACKAGE_TARNAME}-${PACKAGE_VERSION}.app"
-echo "Creating ${build}/$bundle_dir/$appname"
+echo "creating ${build}/$bundle_dir/$appname"
 $mkinstalldirs "$bundle_dir/$appname/Contents/MacOS" "$bundle_dir/$appname/Contents/Resources"
 cd "$bundle_dir"
-$INSTALL_PROGRAM_CMD "${build}/$binary" "$appname/Contents/MacOS"
+$INSTALL_PROGRAM "${build}/$binary" "$appname/Contents/MacOS"
+if test "x$STRIP" != "x0"; then
+    strip -S "$appname/Contents/MacOS/$binary"
+fi
 $INSTALL_DATA "$icon" "$appname/Contents/Resources"
 echo "APPL${signature}" > "$appname/Contents/PkgInfo"
 sed -e "s!%%IDENTIFIER%%!${identifier}!g; s!%%NAME%%!${name}!g;\
@@ -79,7 +76,7 @@ fi
 
 
 # bundle the binary and its non-standard dependencies
-echo "Creating ${build}/$static_bundle_dir/$appname"
+echo "creating ${build}/$static_bundle_dir/$appname"
 cd ..
 $mkinstalldirs "$static_bundle_dir"
 cp -pR "$bundle_dir/$appname" "$static_bundle_dir"
@@ -107,5 +104,7 @@ while test "x$list" != "x"; do
 done
 
 cd "$build"
-hdiutil create -srcfolder "$bundle_dir" -format UDZO -tgtimagekey zlib-level=9 "$PACKAGE_TARNAME-$PACKAGE_VERSION-nolibs.dmg"
-hdiutil create -srcfolder "$static_bundle_dir" -format UDZO -tgtimagekey zlib-level=9 "$PACKAGE_TARNAME-$PACKAGE_VERSION.dmg"
+echo $ECHO_N "creating disk image"
+hdiutil create -ov -srcfolder "$bundle_dir" -format UDZO -tgtimagekey zlib-level=9 "$PACKAGE_TARNAME-$PACKAGE_VERSION-nolibs.dmg"
+echo $ECHO_N "creating disk image"
+hdiutil create -ov -srcfolder "$static_bundle_dir" -format UDZO -tgtimagekey zlib-level=9 "$PACKAGE_TARNAME-$PACKAGE_VERSION.dmg"

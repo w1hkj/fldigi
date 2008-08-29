@@ -90,7 +90,7 @@ flgen: $(srcdir)/dialogs/confdialog.fl $(srcdir)/rigcontrol/rigdialog.fl
 endif
 
 if DARWIN
-appbundle:
+appbundle: fldigi
 	sh $(srcdir)/../scripts/mkappbundle.sh "$(srcdir)/../data" . \
 	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-bundle-nolibs \
 	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-bundle
@@ -100,9 +100,8 @@ CLEAN_LOCAL_FILES += $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-bundle-nolibs \
 endif
 
 if ENABLE_HAMLIB
-hamlib-static:
-	sh $(srcdir)/../scripts/mkhamlibstatic.sh hls-tmp
-CLEAN_LOCAL_FILES += hls-tmp
+hamlib-static: $(fldigi_OBJECTS)
+	sh $(srcdir)/../scripts/mkhamlibstatic.sh fldigi
 endif
 
 clean-local:
