@@ -31,11 +31,14 @@
 #include <stdlib.h>
 # include <unistd.h>
 # include <pwd.h>
+#include <string>
 
 #include <iostream>
 using namespace std;
 
 #include "qrzlib.h"
+#include "configuration.h"
+#include "debug.h"
 
 static char QRZdir[256] = "";
 
@@ -48,10 +51,6 @@ static const char *QRZtry[] = {
   "F:/CALLBK/",
   "G:/CALLBK/",
 #else
-  "~/callbk/",
-  "/cdrom/callbk/",
-  "/mnt/cdrom/callbk/",  "/mnt/cdrom0/callbk/",  "/mnt/cdrom1/callbk/",
-  "/media/cdrom/callbk/", "/media/cdrom0/callbk/", "/media/cdrom1/callbk/", 
   "~/callbk/",
   "/cdrom/callbk/",
   "/mnt/cdrom/callbk/",  "/mnt/cdrom0/callbk/",  "/mnt/cdrom1/callbk/",
@@ -146,8 +145,38 @@ char *QRZImageFilename (char *call)
 
 int  checkPath( const char *filename )
 {
-  char fname[80];
+  char fname[120];
   FILE *f;
+  bool notfound = false;
+  if (!progdefaults.QRZpathname.empty()) {
+  	strcpy ( fname, progdefaults.QRZpathname.c_str());
+  	for (size_t i = 0; i < strlen(fname); i++)
+  		if (fname[i] == '\\') fname[i] = '/'; // fix for DOS path convention
+
+    strcat( fname, filename );
+    strcat( fname, ".dat" );
+	if (fname[0] == '~' || fname[0] == '$') {
+		char f2name[80];
+		filename_expand(f2name, 79, fname);
+		strcpy (fname, f2name);
+	}
+    f = fopen(fname, "r" );
+    if( f != NULL )  {
+      fclose( f );
+      char pathname[120];
+      strcpy( pathname, progdefaults.QRZpathname.c_str());
+      if (pathname[0] == '~' || pathname[0] == '$')
+        filename_expand(QRZdir, 79, pathname);
+      else
+        strcpy (QRZdir, pathname);
+      return 1;
+    }
+    string err = fname;
+    err.append(" not found, performing search");
+    LOG_WARN(err.c_str());
+    notfound = true;
+  }
+// not specified, perform a search
   const char **pQRZpath = QRZtry;
   while (*pQRZpath) {
     strcpy( fname, *pQRZpath );
@@ -166,11 +195,17 @@ int  checkPath( const char *filename )
         filename_expand(QRZdir, 79, QRZpath);
       else
         strcpy (QRZdir, QRZpath);
+      if (notfound) {
+      	string err = "Using ";
+      	err.append(fname);
+      	LOG_WARN(err.c_str());
+	  }
       return 1;
     }
     pQRZpath++;
   }
   QRZpath = QRZtry[0];
+  LOG_WARN("QRZ data base not found");
   return 0;
 }
 
@@ -300,6 +335,14 @@ QRZ::QRZ( const char *fname )
 QRZ::QRZ( const char *fname, char c )
 {
   criteria = c;
+  OpenQRZFiles( fname );
+}
+
+void QRZ::NewDBpath( const char *fname )
+{
+  int len = strlen(fname);
+  criteria = fname[ len - 1 ];
+  *QRZdir = 0;
   OpenQRZFiles( fname );
 }
 

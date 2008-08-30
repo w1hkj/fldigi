@@ -59,19 +59,20 @@ static const char hexsym[] = "0123456789ABCDEF";
 const string& printhex(const unsigned char* s, size_t len)
 {
 	static string hex;
-	hex.clear();
-	if (len > 0) {
-		hex.resize(len * 3 - 1);
-		string::iterator i = hex.begin();
-		size_t j;
-		for (j = 0; j < len-1; j++) {
-			*i++ = hexsym[s[j] >> 4];
-			*i++ = hexsym[s[j] & 0xF];
+	if (unlikely(len == 0))
+		return hex.erase();
+
+	hex.resize(len * 3 - 1);
+	string::iterator i = hex.begin();
+	size_t j;
+	for (j = 0; j < len-1; j++) {
+		*i++ = hexsym[s[j] >> 4];
+		*i++ = hexsym[s[j] & 0xF];
 	        *i++ = ' ';
-		}
-        *i++ = hexsym[s[j] >> 4];
-		*i = hexsym[s[j] & 0xF];
 	}
+        *i++ = hexsym[s[j] >> 4];
+	*i = hexsym[s[j] & 0xF];
+
 	return hex;
 }
 

@@ -750,6 +750,10 @@ void CALLSIGNquery()
 		case 2 :
 			if (!qCall)
 				qCall = new QRZ( "callbkc" );
+			if (progdefaults.QRZchanged == true) {
+				qCall->NewDBpath("callbkc");
+				progdefaults.QRZchanged = false;
+			}
 			if (qCall && qCall->getQRZvalid())
 				QRZ_CD_query();
 			DB_query = NONE;

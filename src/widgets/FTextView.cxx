@@ -77,10 +77,10 @@ int FTextBase::handle(int event)
         if (event == FL_MOUSEWHEEL && !Fl::event_inside(this))
                 return 1;
 
-        if (event == FL_SHOW) {
-                reset_styles(SET_COLOR);
-                adjust_colours();
-        }
+//        if (event == FL_SHOW) {
+//                reset_styles(SET_COLOR);
+//                adjust_colours();
+//        }
 
         return Fl_Text_Editor_mod::handle(event);
 }

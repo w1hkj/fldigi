@@ -33,7 +33,7 @@ if test "x$target_darwin" = "xyes" && test "x$ac_cv_mac_universal" = "xyes"; the
         ;;
     esac
     MAC_UNIVERSAL_CFLAGS="$mac_arches $mac_sysroot $mac_minversion"
-    MAC_UNIVERSAL_LDFLAGS="-dynamiclib"
+    MAC_UNIVERSAL_LDFLAGS="$mac_arches"
 fi
 AC_SUBST([MAC_UNIVERSAL_CFLAGS])
 AC_SUBST([MAC_UNIVERSAL_LDFLAGS])

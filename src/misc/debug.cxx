@@ -52,7 +52,7 @@ static Fl_Double_Window* window;
 static FTextLog* text;
 
 debug* debug::inst = 0;
-debug::level_e debug::level = debug::_WARN;
+debug::level_e debug::level = debug::WARN_LEVEL;
 
 const char* prefix[] = { "Quiet", "Error", "Warning", "Info", "Debug" };
 
@@ -72,7 +72,7 @@ void debug::start(const char* filename)
 	slider->tooltip("Change log level");
 	slider->align(FL_ALIGN_RIGHT);
 	slider->type(FL_HOR_NICE_SLIDER);
-	slider->range(0.0, _NLEVELS - 1);
+	slider->range(0.0, LOG_NLEVELS - 1);
 	slider->step(1.0);
 	slider->value(level);
 	slider->callback(slider_cb);
@@ -98,7 +98,7 @@ void debug::log(level_e level, const char* func, const char* srcf, int line, con
 	if (!inst)
 		return;
 
-	if (unlikely(debug::level == _DEBUG)) {
+	if (unlikely(debug::level == DEBUG_LEVEL)) {
 		time_t t = time(NULL);
 		struct tm stm;
 		(void)localtime_r(&t, &stm);
@@ -110,7 +110,7 @@ void debug::log(level_e level, const char* func, const char* srcf, int line, con
 	va_list args;
 	va_start(args, format);
 	vfprintf(wfile, fmt, args);
-	if (tty && level <= _DEBUG)
+	if (tty && level <= DEBUG_LEVEL && level > QUIET_LEVEL)
 		vfprintf(stderr, fmt, args);
 	va_end(args);
 
@@ -119,7 +119,7 @@ void debug::log(level_e level, const char* func, const char* srcf, int line, con
 
 void debug::elog(const char* func, const char* srcf, int line, const char* text)
 {
-	log(_ERROR, func, srcf, line, "%s: %s", strerror(errno));
+	log(ERROR_LEVEL, func, srcf, line, "%s: %s", strerror(errno));
 }
 
 void debug::show(void)

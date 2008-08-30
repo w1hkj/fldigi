@@ -46,6 +46,7 @@
 #include <FL/x.H>
 #include <FL/Fl_Help_Dialog.H>
 #include <FL/Fl_Progress.H>
+#include <FL/Fl_Tooltip.H>
 
 #include "waterfall.h"
 #include "raster.h"
@@ -1622,6 +1623,10 @@ void create_fl_digi_main() {
 			// reset the message dialog font
 			fl_message_font(FL_HELVETICA, FL_NORMAL_SIZE);
 
+			// reset the tooltip font
+			Fl_Tooltip::font(FL_HELVETICA);
+			Fl_Tooltip::size(FL_NORMAL_SIZE);
+
 			btnRSID = new Fl_Light_Button(WNOM - 150 - pad, 0, 50, Hmenu, "RSID ?");
 			btnRSID->selection_color(FL_GREEN);
 			btnRSID->callback(cbRSID, 0);
@@ -1747,6 +1752,15 @@ void create_fl_digi_main() {
 					progdefaults.RxColor.R,
 					progdefaults.RxColor.G,
 					progdefaults.RxColor.B));		
+
+			ReceiveText->setFont((Fl_Font)progdefaults.RxFontnbr);
+			ReceiveText->setFontSize(progdefaults.RxFontsize);
+			ReceiveText->setFontColor((Fl_Color)progdefaults.RxFontcolor);
+			ReceiveText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
+			ReceiveText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
+			ReceiveText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
+			ReceiveText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
+	
 			TiledGroup->add_resize_check(FTextView::wheight_mult_tsize, ReceiveText);
 			FHdisp = new Raster(sw, Y, WNOM-sw, minRxHeight);
 			FHdisp->hide();
@@ -1757,6 +1771,13 @@ void create_fl_digi_main() {
 					progdefaults.TxColor.R,
 					progdefaults.TxColor.G,
 					progdefaults.TxColor.B));		
+			TransmitText->setFont((Fl_Font)progdefaults.TxFontnbr);
+			TransmitText->setFontSize(progdefaults.TxFontsize);
+			TransmitText->setFontColor((Fl_Color)progdefaults.TxFontcolor);
+			TransmitText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
+			TransmitText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
+			TransmitText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
+			TransmitText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
 
 			Fl_Box *minbox = new Fl_Box(sw,Y + 66, WNOM-sw, Htext - 66 - 32);
 			minbox->hide();

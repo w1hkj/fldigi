@@ -755,8 +755,8 @@ SoundPort::SoundPort(const char *in_dev, const char *out_dev)
 #endif
         for (size_t i = 0; i < sizeof(sems)/sizeof(*sems); i++) {
 #if USE_NAMED_SEMAPHORES
-		snprintf(sname, sizeof(sname), "%u-%u-%s", i, getpid(), PACKAGE_TARNAME);
-		if ((*sems[i] = sem_open(sname, O_CREAT | O_EXCL, 0600, 0)) == SEM_FAILED)
+		snprintf(sname, sizeof(sname), "%zu-%u-%s", i, getpid(), PACKAGE_TARNAME);
+		if ((*sems[i] = sem_open(sname, O_CREAT | O_EXCL, 0600, 0)) == (sem_t*)SEM_FAILED)
 			throw SndException(errno);
 #  if HAVE_SEM_UNLINK
 		if (sem_unlink(sname) == -1)

@@ -132,8 +132,10 @@ configuration progdefaults = {
 	true,			// bool		ID_SMALL;
 	false,			// bool		macrotextid;
 	0,				// int		QRZ;
+	"",             // string   QRZpathname;
 	"",				// string	QRZusername;
 	"",				// string	QRZuserpassword;
+	false,			// bool     QRZchanged;
 //
 	true,			// bool		btnusb;
 	0, 				// int 		btnPTTis
@@ -219,6 +221,12 @@ configuration progdefaults = {
 	0,				// int		TxFontcolor
 	{ 255, 242, 190}, // RGBint RxColor;
 	{ 200, 235, 255}, // RGBint TxColor;
+	
+	FL_RED,			// int		XMITcolor;
+	FL_DARK_GREEN,	// int		CTRLcolor;
+	FL_BLUE,		// int		SKIPcolor;
+	FL_DARK_MAGENTA,// int		ALTRcolor;
+	
 	FL_SCREEN,		// int		WaterfallFontnbr
 	12,				// int		WaterfallFontsize
 
@@ -284,7 +292,7 @@ enum TAG { \
 	CCCOLORS,
 	BWTCOLORS,
 	VIEWXMTSIGNAL, SENDID, MACROID, SENDTEXTID, STRTEXTID, VIDEOWIDTH, IDSMALL,
-	QRZTYPE, QRZUSER, QRZPASSWORD,
+	QRZTYPE, QRZPATHNAME, QRZUSER, QRZPASSWORD,
 	BTNUSB, BTNPTTIS,
 	RTSPTT, DTRPTT, RTSPLUS, DTRPLUS,
 	CHOICEHAMLIBIS, CHKUSEMEMMAPIS,
@@ -305,8 +313,8 @@ enum TAG { \
 	VIEWERCHANNELS, VIEWERSQUELCH, VIEWERTIMEOUT, WFAVERAGING,
 	USEGROUPCOLORS, FKEYGROUP1, FKEYGROUP2, FKEYGROUP3,
 	FKEYTEXTCOLOR,
-	RXFONTNBR, RXFONTSIZE, TXFONTNBR, TXFONTSIZE,
-	RXFONTCOLOR, TXFONTCOLOR,
+	RXFONTNBR, RXFONTSIZE, RXFNTCOLOR, TXFONTNBR, TXFONTSIZE, TXFNTCOLOR,
+	RXFONTCOLOR, TXFONTCOLOR, XMITCOLOR, CTRLCOLOR, SKIPCOLOR, ALTRCOLOR,
 	WATERFALLFONTNBR, WATERFALLFONTSIZE,
 	RSIDWIDESEARCH, TRANSMITRSID, SLOWCPU
 };
@@ -463,6 +471,7 @@ void configuration::writeDefaultsXML()
 	writeXMLint(f, "VIDEOWIDTH", videowidth);
 	writeXMLbool(f, "IDSMALL", ID_SMALL);
 	writeXMLint(f, "QRZTYPE", QRZ);
+	writeXMLstr(f, "QRZPATHNAME", QRZpathname);
 	writeXMLstr(f, "QRZUSER", QRZusername);
 	writeXMLstr(f, "QRZPASSWORD", QRZuserpassword);
 	writeXMLbool(f, "BTNUSB", btnusb);
@@ -528,8 +537,15 @@ void configuration::writeDefaultsXML()
 	
 	writeXMLint(f, "RXFONTNBR", RxFontnbr);
 	writeXMLint(f, "RXFONTSIZE", RxFontsize);
+	writeXMLint(f, "RXFNTCOLOR", RxFontcolor);
 	writeXMLint(f, "TXFONTNBR", TxFontnbr);
 	writeXMLint(f, "TXFONTSIZE", TxFontsize);
+	writeXMLint(f, "TXFNTCOLOR", TxFontcolor);
+	writeXMLint(f, "XMITCOLOR", XMITcolor);
+	writeXMLint(f, "CTRLCOLOR", CTRLcolor);
+	writeXMLint(f, "SKIPCOLOR", SKIPcolor);
+	writeXMLint(f, "ALTRCOLOR", ALTRcolor);
+
 	writeXMLrgb(f, "RXFONTCOLOR", RxColor.R, RxColor.G, RxColor.B);
 	writeXMLrgb(f, "TXFONTCOLOR", TxColor.R, TxColor.G, TxColor.B);
 	writeXMLint(f, "WATERFALLFONTNBR", WaterfallFontnbr);
@@ -835,6 +851,9 @@ bool configuration::readDefaultsXML()
 					case QRZTYPE :
 						QRZ = atoi(xml->getNodeData());
 						break;
+					case QRZPATHNAME :
+						QRZpathname = xml->getNodeData();
+						break;
 					case QRZUSER :
 						QRZusername = xml->getNodeData();
 						break;
@@ -1050,15 +1069,33 @@ bool configuration::readDefaultsXML()
 					case RXFONTSIZE :
 						RxFontsize = atoi(xml->getNodeData());
 						break;
+					case RXFNTCOLOR :
+						RxFontcolor = atoi(xml->getNodeData());
+						break;
 					case TXFONTNBR :
 						TxFontnbr = atoi(xml->getNodeData());
 						break;
 					case TXFONTSIZE :
 						TxFontsize = atoi(xml->getNodeData());
 						break;
+					case TXFNTCOLOR :
+						TxFontcolor = atoi(xml->getNodeData());
+						break;
 					case RXFONTCOLOR :
 						sscanf( xml->getNodeData(), "%d %d %d",
 							&RxColor.R, &RxColor.G, &RxColor.B);
+						break;
+					case XMITCOLOR :
+						XMITcolor = atoi(xml->getNodeData());
+						break;
+					case CTRLCOLOR :
+						CTRLcolor = atoi(xml->getNodeData());
+						break;
+					case SKIPCOLOR :
+						SKIPcolor = atoi(xml->getNodeData());
+						break;
+					case ALTRCOLOR :
+						ALTRcolor = atoi(xml->getNodeData());
 						break;
 					case WATERFALLFONTNBR :
 						WaterfallFontnbr = atoi(xml->getNodeData());
@@ -1175,6 +1212,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("VIDEOWIDTH", nodeName))	tag = VIDEOWIDTH;
 				else if (!strcmp("IDSMALL", nodeName))	tag = IDSMALL;
 				else if (!strcmp("QRZUSER", nodeName)) 	tag = QRZUSER;
+				else if (!strcmp("QRZPATHNAME", nodeName)) tag = QRZPATHNAME;
 				else if (!strcmp("QRZPASSWORD", nodeName)) 	tag = QRZPASSWORD;
 				else if (!strcmp("QRZTYPE", nodeName)) 	tag = QRZTYPE;
 				else if (!strcmp("BTNUSB", nodeName)) 	tag = BTNUSB;
@@ -1241,10 +1279,16 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("FKEYTEXTCOLOR", nodeName)) tag = FKEYTEXTCOLOR;
 				else if (!strcmp("RXFONTNBR", nodeName)) tag = RXFONTNBR;
 				else if (!strcmp("RXFONTSIZE", nodeName)) tag = RXFONTSIZE;
+				else if (!strcmp("RXFNTCOLOR", nodeName)) tag = RXFNTCOLOR;
 				else if (!strcmp("TXFONTNBR", nodeName)) tag = TXFONTNBR;
 				else if (!strcmp("TXFONTSIZE", nodeName)) tag = TXFONTSIZE;
+				else if (!strcmp("TXFNTCOLOR", nodeName)) tag = TXFNTCOLOR;
 				else if (!strcmp("RXFONTCOLOR", nodeName)) tag = RXFONTCOLOR;
 				else if (!strcmp("TXFONTCOLOR", nodeName)) tag = TXFONTCOLOR;
+				else if (!strcmp("XMITCOLOR", nodeName)) tag = XMITCOLOR;
+				else if (!strcmp("CTRLCOLOR", nodeName)) tag = CTRLCOLOR;
+				else if (!strcmp("SKIPCOLOR", nodeName)) tag = SKIPCOLOR;
+				else if (!strcmp("ALTRCOLOR", nodeName)) tag = ALTRCOLOR;
 				else if (!strcmp("WATERFALLFONTNBR", nodeName)) tag = WATERFALLFONTNBR;
 				else if (!strcmp("WATERFALLFONTSIZE", nodeName)) tag = WATERFALLFONTSIZE;
 				else if (!strcmp("RSIDWIDESEARCH", nodeName)) tag = RSIDWIDESEARCH;
@@ -1483,6 +1527,7 @@ int configuration::setDefaults() {
 		btnQRZcdrom->value(1);
 	else if (QRZ == 3)
 		btnHAMCALLsocket->value(1);
+	txtQRZpathname->value(QRZpathname.c_str());
 			
 	btnRTTY_USB->value(RTTY_USB);
 	btnsendid->value(sendid);
@@ -1490,12 +1535,6 @@ int configuration::setDefaults() {
 	chkID_SMALL->value(ID_SMALL);
 				
 	FL_UNLOCK();
-
-	ReceiveText->setFont((Fl_Font)RxFontnbr);
-	ReceiveText->setFontSize(RxFontsize);
-	
-	TransmitText->setFont((Fl_Font)TxFontnbr);
-	TransmitText->setFontSize(TxFontsize);
 
 	wf->setPrefilter(wfPreFilter);
 	valLatency->value(latency);
