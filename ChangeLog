@@ -14,7 +14,7 @@ Change Log:
       8) Inhibit Tx / Rx of higher speed MFSKpic modes on slower computers
       9) Added color selection for Rx/Tx text panels
              Normal text
-             Transmited text
+             Transmitted text
              Control character text
              Skipped text
              Alternate (quick view) text

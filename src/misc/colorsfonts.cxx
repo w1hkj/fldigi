@@ -233,7 +233,11 @@ void cbRxFontBrowser(Font_Browser*, void* v)
 	
 	ReceiveText->setFont(fnt);
 	ReceiveText->setFontSize(size);
-	ReceiveText->setFontColor(color);
+	ReceiveText->setFontColor((Fl_Color)progdefaults.RxFontcolor, FTextBase::NATTR);
+	ReceiveText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
+	ReceiveText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
+	ReceiveText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
+	ReceiveText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
 	ReceiveText->redraw();
 	
 	ft->hide();
@@ -297,10 +301,13 @@ void cbTxFontBrowser(Font_Browser*, void* v)
 	
 	TransmitText->setFont(fnt);
 	TransmitText->setFontSize(size);
-	TransmitText->setFontColor(color);
-	TransmitText->setFontColor(FL_RED, FTextBase::XMIT);
+	TransmitText->setFontColor((Fl_Color)progdefaults.TxFontcolor, FTextBase::NATTR);
+	TransmitText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
+	TransmitText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
+	TransmitText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
+	TransmitText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
 	TransmitText->redraw();
-	
+
 	ft->hide();
 }
 
