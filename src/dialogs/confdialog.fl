@@ -39,14 +39,14 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {fldigi - config} open
-    xywh {529 209 400 250} type Double color 45 selection_color 51 align 80 visible
+    xywh {519 158 400 250} type Double color 45 selection_color 51 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 405 220} color 47 selection_color 9
     } {
       Fl_Group tabOperator {
         label Oper
-        callback {progdefaults.changed = true;} open
+        callback {progdefaults.changed = true;} open selected
         xywh {0 25 400 195} color 51 selection_color 51 when 1
       } {
         Fl_Input inpMyCallsign {
@@ -61,7 +61,7 @@ progdefaults.secText = o->value();
 progdefaults.secText.append(" ");
 txtSecondary->value(progdefaults.secText.c_str());
 }
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
           xywh {78 36 85 24}
         }
         Fl_Input inpMyName {
@@ -649,20 +649,8 @@ btnHAMCALLsocket->value(0);
 progdefaults.QRZ = 0;
 }
 progdefaults.changed = true;}
-          xywh {31 45 110 20} down_box DOWN_BOX value 1
+          xywh {12 45 110 20} down_box DOWN_BOX value 1
           code0 {if (progdefaults.QRZ == 0) o->value(1); else o->value(0);}
-        }
-        Fl_Check_Button btnQRZsocket {
-          label {QRZ online subscription}
-          callback {if (o->value() == 1) {
-btnQRZcdrom->value(0);
-btnQRZnotavailable->value(0);
-btnHAMCALLsocket->value(0);
-progdefaults.QRZ = 1;
-}
-progdefaults.changed = true;}
-          tooltip {You need a QRZ on-line subscription to access QRZ.com} xywh {32 74 190 20} down_box DOWN_BOX
-          code0 {if (progdefaults.QRZ == 1) o->value(1); else o->value(0);}
         }
         Fl_Check_Button btnQRZcdrom {
           label {QRZ cdrom}
@@ -673,8 +661,28 @@ btnHAMCALLsocket->value(0);
 progdefaults.QRZ = 2;
 }
 progdefaults.changed = true;}
-          xywh {185 45 103 20} down_box DOWN_BOX
+          xywh {12 70 103 20} down_box DOWN_BOX
           code0 {if (progdefaults.QRZ == 2) o->value(1); else o->value(0);}
+        }
+        Fl_Input txtQRZpathname {
+          label {at:}
+          callback {progdefaults.QRZpathname = o->value();
+progdefaults.QRZchanged = true;
+progdefaults.changed = true;}
+          tooltip {ie: /home/dave/CALLBK/ or C:/CALLBK/^jLeave blank to search for database} xywh {139 67 255 25}
+          code0 {o->value(progdefaults.QRZpathname.c_str());}
+        }
+        Fl_Check_Button btnQRZsocket {
+          label {QRZ online subscription}
+          callback {if (o->value() == 1) {
+btnQRZcdrom->value(0);
+btnQRZnotavailable->value(0);
+btnHAMCALLsocket->value(0);
+progdefaults.QRZ = 1;
+}
+progdefaults.changed = true;}
+          tooltip {You need a QRZ on-line subscription to access QRZ.com} xywh {12 96 190 20} down_box DOWN_BOX
+          code0 {if (progdefaults.QRZ == 1) o->value(1); else o->value(0);}
         }
         Fl_Check_Button btnHAMCALLsocket {
           label {Hamcall online subscription}
@@ -685,21 +693,21 @@ btnQRZsocket->value(0);
 progdefaults.QRZ = 3;
 }
 progdefaults.changed = true;}
-          tooltip {You need a QRZ on-line subscription to access QRZ.com} xywh {31 103 205 20} down_box DOWN_BOX
+          tooltip {You need a QRZ on-line subscription to access QRZ.com} xywh {12 119 205 20} down_box DOWN_BOX
           code0 {if (progdefaults.QRZ == 3) o->value(1); else o->value(0);}
         }
         Fl_Input inpQRZusername {
           label {User name:}
           callback {progdefaults.QRZusername = o->value();
 progdefaults.changed = true;}
-          xywh {150 129 90 25}
+          xywh {150 145 90 25}
           code0 {o->value(progdefaults.QRZusername.c_str());}
         }
         Fl_Input inpQRZuserpassword {
           label {User password:}
           callback {progdefaults.QRZuserpassword = o->value();
 progdefaults.changed = true;}
-          xywh {150 160 90 25}
+          xywh {150 176 90 25}
           code0 {o->value(progdefaults.QRZuserpassword.c_str()); o->type(FL_SECRET_INPUT);}
         }
         Fl_Button btnQRZpasswordShow {
@@ -707,7 +715,7 @@ progdefaults.changed = true;}
           callback {inpQRZuserpassword->type(inpQRZuserpassword->type() ^ FL_SECRET_INPUT);
 inpQRZuserpassword->redraw();
 o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");}
-          xywh {245 160 50 25}
+          xywh {245 176 50 25}
         }
       }
       Fl_Group tabSoundCard {
@@ -1003,7 +1011,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 400 170} color 51 selection_color 51 hide
+            xywh {0 50 400 170} color 51 selection_color 51
           } {
             Fl_Group {} {open
               xywh {1 60 398 155} box ENGRAVED_FRAME
@@ -1176,7 +1184,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabDomEX {
             label Dom open
-            xywh {0 50 400 170} color 51 selection_color 51
+            xywh {0 50 400 170} color 51 selection_color 51 hide
           } {
             Fl_Input txtSecondary {
               label {Secondary Text}

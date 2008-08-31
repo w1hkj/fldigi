@@ -161,7 +161,7 @@ Font_Browser::Font_Browser(const char *lbl ) :
     btn_Color->align(FL_ALIGN_TOP_LEFT);
     btn_Color->color(FL_BLACK);
     btn_Color->callback( (Fl_Callback*)cb_Color_Select, this );
-    btn_Color->hide(); // comment this out if you need color selection
+//    btn_Color->hide(); // comment this out if you need color selection
 
     box_Example = new Preview_Box(5, 145, 390, 75, "abcdefghijk ABCDEFGHIJK\n0 1 2 3 4 5 6 7 8 9");
     box_Example->box(FL_DOWN_BOX);

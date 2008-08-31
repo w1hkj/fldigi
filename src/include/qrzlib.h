@@ -207,6 +207,7 @@ class QRZ
     int  CompState( const char *, const char *, const char * );
 
     int  getQRZvalid();
+    void NewDBpath( const char * );
 
     int  FindRecord( char * );
     int  NextRecord();

@@ -125,8 +125,10 @@ struct configuration {
 	bool	ID_SMALL;
 	bool	macrotextid;
 	int		QRZ;
+	string  QRZpathname;
 	string	QRZusername;
 	string	QRZuserpassword;
+	bool	QRZchanged;
 // Rig Interface data
 	bool	btnusb;
 	int		btnPTTis;
@@ -202,6 +204,11 @@ struct configuration {
 	int		TxFontcolor;
 	RGBint	RxColor;
 	RGBint	TxColor;
+	int		XMITcolor;
+	int		CTRLcolor;
+	int		SKIPcolor;
+	int		ALTRcolor;
+	
 	int		WaterfallFontnbr;
 	int		WaterfallFontsize;
 	

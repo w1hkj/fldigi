@@ -1752,6 +1752,15 @@ void create_fl_digi_main() {
 					progdefaults.RxColor.R,
 					progdefaults.RxColor.G,
 					progdefaults.RxColor.B));		
+
+			ReceiveText->setFont((Fl_Font)progdefaults.RxFontnbr);
+			ReceiveText->setFontSize(progdefaults.RxFontsize);
+			ReceiveText->setFontColor((Fl_Color)progdefaults.RxFontcolor);
+			ReceiveText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
+			ReceiveText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
+			ReceiveText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
+			ReceiveText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
+	
 			TiledGroup->add_resize_check(FTextView::wheight_mult_tsize, ReceiveText);
 			FHdisp = new Raster(sw, Y, WNOM-sw, minRxHeight);
 			FHdisp->hide();
@@ -1762,6 +1771,13 @@ void create_fl_digi_main() {
 					progdefaults.TxColor.R,
 					progdefaults.TxColor.G,
 					progdefaults.TxColor.B));		
+			TransmitText->setFont((Fl_Font)progdefaults.TxFontnbr);
+			TransmitText->setFontSize(progdefaults.TxFontsize);
+			TransmitText->setFontColor((Fl_Color)progdefaults.TxFontcolor);
+			TransmitText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
+			TransmitText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
+			TransmitText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
+			TransmitText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
 
 			Fl_Box *minbox = new Fl_Box(sw,Y + 66, WNOM-sw, Htext - 66 - 32);
 			minbox->hide();

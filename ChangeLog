@@ -3,6 +3,22 @@ Change Log:
 3.03
       1) Changes to socket server to correct shutdown process
       2) Added event logging and an event viewer
+      3) Added QRZ cdrom / database location specifier with auto-search
+      4) Bug fix for sound on OS X 10.4
+      5) Bug fix for Socket Server. Added error checking for listen().
+      6) Update to build scripts.  Corrected compiler flags for building 
+         universal binary on OS X. Changed to a more reliable way of linking 
+         hamlib statically.  Updated app bundling script.
+      7) Set tooltip font - tooltip changed to use same font and size selected
+         with the command line switch --font.  Set default font sizes on OS X.
+      8) Inhibit Tx / Rx of higher speed MFSKpic modes on slower computers
+      9) Added color selection for Rx/Tx text panels
+             Normal text
+             Transmitted text
+             Control character text
+             Skipped text
+             Alternate (quick view) text
+             Background
       
 3.02
       1) Added hamlib interface for rig control

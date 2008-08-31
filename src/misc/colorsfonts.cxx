@@ -43,6 +43,12 @@ Fl_Button			*btnTextDefaults=(Fl_Button *)0;
 Fl_Button			*btnNoTextColor=(Fl_Button *)0;
 Fl_Button			*btnClrFntOK=(Fl_Button *)0;
 
+Fl_Button			*btnXMIT=(Fl_Button *)0;
+Fl_Button			*btnCTRL=(Fl_Button *)0;
+Fl_Button			*btnSKIP=(Fl_Button *)0;
+Fl_Button			*btnALTR=(Fl_Button *)0;
+
+
 void selectColorsFonts() 
 {
 	if (!dlgColorFont)
@@ -213,17 +219,25 @@ void cbRxFontBrowser(Font_Browser*, void* v)
 	Font_Browser *ft= (Font_Browser*)v;
 	Fl_Font fnt = ft->fontNumber();
 	int size = ft->fontSize();
+	Fl_Color color = ft->fontColor();
 
 	RxText->textfont(fnt);
 	RxText->textsize(size);
+	RxText->textcolor(color);
 	RxText->redraw();
 	
 	progdefaults.RxFontnbr = (int)(fnt);
 	progdefaults.RxFontsize = size;
+	progdefaults.RxFontcolor = color;
 	progdefaults.changed = true;
 	
 	ReceiveText->setFont(fnt);
 	ReceiveText->setFontSize(size);
+	ReceiveText->setFontColor((Fl_Color)progdefaults.RxFontcolor, FTextBase::NATTR);
+	ReceiveText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
+	ReceiveText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
+	ReceiveText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
+	ReceiveText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
 	ReceiveText->redraw();
 	
 	ft->hide();
@@ -236,6 +250,7 @@ static void cb_btnRxFont(Fl_Button*, void*)
 		b = new Font_Browser;
 		b->fontNumber((Fl_Font)progdefaults.RxFontnbr);
 		b->fontSize(progdefaults.RxFontsize);
+		b->fontColor((Fl_Color)progdefaults.RxFontcolor);
 	}
 	b->callback((Fl_Callback*)cbRxFontBrowser, (void*)(b));
 	b->show();
@@ -272,19 +287,27 @@ void cbTxFontBrowser(Font_Browser*, void* v)
 	Font_Browser *ft= (Font_Browser*)v;
 	Fl_Font fnt = ft->fontNumber();
 	int size = ft->fontSize();
+	Fl_Color color = ft->fontColor();
 
 	TxText->textfont(fnt);
 	TxText->textsize(size);
+	TxText->textcolor(color);
 	TxText->redraw();
 	
 	progdefaults.TxFontnbr = (int)(fnt);
 	progdefaults.TxFontsize = size;
+	progdefaults.TxFontcolor = color;
 	progdefaults.changed = true;
 	
 	TransmitText->setFont(fnt);
 	TransmitText->setFontSize(size);
+	TransmitText->setFontColor((Fl_Color)progdefaults.TxFontcolor, FTextBase::NATTR);
+	TransmitText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
+	TransmitText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
+	TransmitText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
+	TransmitText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
 	TransmitText->redraw();
-	
+
 	ft->hide();
 }
 
@@ -295,6 +318,7 @@ static void cb_btnTxFont(Fl_Button*, void*)
 		b = new Font_Browser;
 		b->fontNumber((Fl_Font)progdefaults.TxFontnbr);
 		b->fontSize(progdefaults.TxFontsize);
+		b->fontColor((Fl_Color)progdefaults.TxFontcolor);
 	}
 	b->callback((Fl_Callback*)cbTxFontBrowser, (void*)(b));
 	b->show();
@@ -320,23 +344,55 @@ static void cb_btnNoTextColor(Fl_Button*, void*)
 	Fl_Color clr = FL_BACKGROUND2_COLOR;
 
 	Fl::get_color(clr, r, g, b);
-	RxText->color(clr);
-	RxText->redraw();
-	ReceiveText->color(clr);
-	ReceiveText->redraw();
 
-	TxText->color(clr);
-	TxText->redraw();
-	TransmitText->color(clr);
-	TransmitText->redraw();
-	
+	progdefaults.TxFontcolor = FL_BLACK;
+	progdefaults.RxFontcolor = FL_BLACK;
+	progdefaults.XMITcolor = FL_RED;
+	progdefaults.CTRLcolor = FL_DARK_GREEN;
+	progdefaults.SKIPcolor = FL_BLUE;
+	progdefaults.ALTRcolor = FL_DARK_MAGENTA;
+	btnXMIT->color((Fl_Color)progdefaults.XMITcolor);
+	btnCTRL->color((Fl_Color)progdefaults.CTRLcolor);
+	btnSKIP->color((Fl_Color)progdefaults.SKIPcolor);
+	btnALTR->color((Fl_Color)progdefaults.ALTRcolor);
+	btnXMIT->redraw();
+	btnCTRL->redraw();
+	btnSKIP->redraw();
+	btnALTR->redraw();
+
 	progdefaults.RxColor.R = r;
 	progdefaults.RxColor.G = g;
 	progdefaults.RxColor.B = b;
+	
+	clr = fl_rgb_color(r,g,b);
+	RxText->color(clr);
+	RxText->textcolor((Fl_Color)progdefaults.RxFontcolor);
+	RxText->redraw();
+
+	ReceiveText->color(clr);
+	ReceiveText->setFontColor((Fl_Color)progdefaults.RxFontcolor, FTextBase::NATTR);
+	ReceiveText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
+	ReceiveText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
+	ReceiveText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
+	ReceiveText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
+	ReceiveText->redraw();
+	
 	progdefaults.TxColor.R = r;
 	progdefaults.TxColor.G = g;
 	progdefaults.TxColor.B = b;
 
+	TxText->color(clr);
+	TxText->textcolor((Fl_Color)progdefaults.TxFontcolor);
+	TxText->redraw();
+	
+	TransmitText->color(clr);
+	TransmitText->setFontColor((Fl_Color)progdefaults.TxFontcolor, FTextBase::NATTR);
+	TransmitText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
+	TransmitText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
+	TransmitText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
+	TransmitText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
+	TransmitText->redraw();
+		
 	progdefaults.changed = true;
 }
 
@@ -345,28 +401,96 @@ static void cb_btnTextDefaults(Fl_Button*, void*)
 	uchar r, g, b;
 	Fl_Color clr;
 
+	progdefaults.TxFontcolor = FL_BLACK;
+	progdefaults.RxFontcolor = FL_BLACK;
+	progdefaults.XMITcolor = FL_RED;
+	progdefaults.CTRLcolor = FL_DARK_GREEN;
+	progdefaults.SKIPcolor = FL_BLUE;
+	progdefaults.ALTRcolor = FL_DARK_MAGENTA;
+	btnXMIT->color((Fl_Color)progdefaults.XMITcolor);
+	btnCTRL->color((Fl_Color)progdefaults.CTRLcolor);
+	btnSKIP->color((Fl_Color)progdefaults.SKIPcolor);
+	btnALTR->color((Fl_Color)progdefaults.ALTRcolor);
+	btnXMIT->redraw();
+	btnCTRL->redraw();
+	btnSKIP->redraw();
+	btnALTR->redraw();
+
 	r = 255; g = 242; b = 190;
-	clr = fl_rgb_color(r,g,b);
-	RxText->color(clr);
-	RxText->redraw();
-	ReceiveText->color(clr);
-	ReceiveText->redraw();
 	progdefaults.RxColor.R = r;
 	progdefaults.RxColor.G = g;
 	progdefaults.RxColor.B = b;
 	
-	r = 200; g = 235; b = 255;
 	clr = fl_rgb_color(r,g,b);
-	TxText->color(clr);
-	TxText->redraw();
-	TransmitText->color(clr);
-	TransmitText->redraw();
+	RxText->color(clr);
+	RxText->textcolor((Fl_Color)progdefaults.RxFontcolor);
+	RxText->redraw();
+
+	ReceiveText->color(clr);
+	ReceiveText->setFontColor((Fl_Color)progdefaults.RxFontcolor, FTextBase::NATTR);
+	ReceiveText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
+	ReceiveText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
+	ReceiveText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
+	ReceiveText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
+	ReceiveText->redraw();
+	
+	r = 200; g = 235; b = 255;
 	progdefaults.TxColor.R = r;
 	progdefaults.TxColor.G = g;
 	progdefaults.TxColor.B = b;
+
+	clr = fl_rgb_color(r,g,b);
+	TxText->color(clr);
+	TxText->textcolor((Fl_Color)progdefaults.TxFontcolor);
+	TxText->redraw();
 	
+	TransmitText->color(clr);
+	TransmitText->setFontColor((Fl_Color)progdefaults.TxFontcolor, FTextBase::NATTR);
+	TransmitText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
+	TransmitText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
+	TransmitText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
+	TransmitText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
+	TransmitText->redraw();
+		
 	progdefaults.changed = true;
 }
+
+void cb_XMITcolor(Fl_Widget *, void *) 
+{
+    progdefaults.XMITcolor = fl_show_colormap( (Fl_Color)progdefaults.XMITcolor );
+    btnXMIT->color( progdefaults.XMITcolor );
+	TransmitText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
+	ReceiveText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
+	progdefaults.changed = true;
+}
+
+void cb_CTRLcolor(Fl_Widget *, void *) 
+{
+    progdefaults.CTRLcolor = fl_show_colormap( (Fl_Color)progdefaults.CTRLcolor );
+    btnCTRL->color( progdefaults.CTRLcolor );
+	TransmitText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
+	ReceiveText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
+	progdefaults.changed = true;
+}
+
+void cb_SKIPcolor(Fl_Widget *, void *) 
+{
+    progdefaults.SKIPcolor = fl_show_colormap( (Fl_Color)progdefaults.SKIPcolor );
+    btnSKIP->color( progdefaults.SKIPcolor );
+	TransmitText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
+	ReceiveText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
+	progdefaults.changed = true;
+}
+
+void cb_ALTRcolor(Fl_Widget *, void *) 
+{
+    progdefaults.ALTRcolor = fl_show_colormap( (Fl_Color)progdefaults.ALTRcolor );
+    btnALTR->color( progdefaults.ALTRcolor );
+	TransmitText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
+	ReceiveText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
+	progdefaults.changed = true;
+}
+
 
 static void cb_btnClrFntOK(Fl_Button*, void*) 
 {
@@ -376,9 +500,9 @@ static void cb_btnClrFntOK(Fl_Button*, void*)
 void make_colorsfonts() 
 {
 	Fl_Double_Window* w;
-	{ Fl_Double_Window* o = new Fl_Double_Window(370, 235, "Fldigi - Colors / Fonts");
+	{ Fl_Double_Window* o = new Fl_Double_Window(370, 275, "Fldigi - Colors / Fonts");
 		w = o;
-		{ Fl_Group* o = new Fl_Group(0, 5, 185, 200, "Function Keys");
+		{ Fl_Group* o = new Fl_Group(0, 5, 185, 240, "Function Keys");
 			o->box(FL_ENGRAVED_FRAME);
 			o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
 
@@ -446,7 +570,7 @@ void make_colorsfonts()
 			
 			o->end();
 		}
-		{ Fl_Group* o = new Fl_Group(185, 5, 185, 200, "Text Controls");
+		{ Fl_Group* o = new Fl_Group(185, 5, 185, 240, "Text Controls");
 			o->box(FL_ENGRAVED_FRAME);
 			o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
 			
@@ -459,6 +583,7 @@ void make_colorsfonts()
 					progdefaults.RxColor.B));
 			RxText->textfont(progdefaults.RxFontnbr);
 			RxText->textsize(progdefaults.RxFontsize);
+			RxText->textcolor((Fl_Color)progdefaults.RxFontcolor);
 			
 			TxText = new Fl_Multiline_Output(195, 103, 165, 37, "");
 			TxText->value("Transmit Text");
@@ -469,6 +594,7 @@ void make_colorsfonts()
 					progdefaults.TxColor.B));
 			TxText->textfont(progdefaults.TxFontnbr);
 			TxText->textsize(progdefaults.TxFontsize);
+			TxText->textcolor((Fl_Color)progdefaults.TxFontcolor);
 			
 			btnRxColor = new Fl_Button(200, 75, 70, 20, "Rx Bkgnd");
 			btnRxColor->callback((Fl_Callback*)cb_btnRxColor);
@@ -482,16 +608,37 @@ void make_colorsfonts()
 			btnTxFont = new Fl_Button(285, 145, 70, 20, "Tx Font");
 			btnTxFont->callback((Fl_Callback*)cb_btnTxFont);
 
-			btnNoTextColor  = new Fl_Button(200, 175, 70, 20, "No Color");
+			btnXMIT = new Fl_Button(190, 170, 40, 20, "");
+			btnXMIT->color((Fl_Color)progdefaults.XMITcolor);
+			btnXMIT->tooltip("Sent chars in Rx/Tx pane");				
+			btnXMIT->callback((Fl_Callback*)cb_XMITcolor);
+			new Fl_Box(190, 190, 40, 20, "XMIT");
+			btnCTRL = new Fl_Button(235, 170, 40, 20, "");
+			btnCTRL->color((Fl_Color)progdefaults.CTRLcolor);
+			btnCTRL->tooltip("Control chars in Rx/Tx pane");
+			btnCTRL->callback((Fl_Callback*)cb_CTRLcolor);
+			new Fl_Box(235, 190, 40, 20, "CTRL");
+			btnSKIP = new Fl_Button(280, 170, 40, 20, "");
+			btnSKIP->color((Fl_Color)progdefaults.SKIPcolor);
+			btnSKIP->tooltip("Skipped chars in Rx/Tx pane, ie: Tx on/off");				
+			btnSKIP->callback((Fl_Callback*)cb_SKIPcolor);
+			new Fl_Box(280, 190, 40, 20, "SKIP");
+			btnALTR = new Fl_Button(325, 170, 40, 20, "");
+			btnALTR->color((Fl_Color)progdefaults.ALTRcolor);
+			btnALTR->tooltip("Quick view chars in Rx pane");				
+			btnALTR->callback((Fl_Callback*)cb_ALTRcolor);
+			new Fl_Box(325, 190, 40, 20, "ALTR");
+
+			btnNoTextColor  = new Fl_Button(200, 212, 70, 20, "No Color");
 			btnNoTextColor->callback((Fl_Callback*)cb_btnNoTextColor);
 						
-			btnTextDefaults = new Fl_Button(285, 175, 70, 20, "Defaults");
+			btnTextDefaults = new Fl_Button(285, 212, 70, 20, "Defaults");
 			btnTextDefaults->callback((Fl_Callback*)cb_btnTextDefaults);
-
+			
 			o->end();
 		}
 		
-		btnClrFntOK = new Fl_Button(295, 209, 72, 20, "OK");
+		btnClrFntOK = new Fl_Button(295, 250, 72, 20, "OK");
 		btnClrFntOK->callback((Fl_Callback*)cb_btnClrFntOK);
 	    
     	o->end();
