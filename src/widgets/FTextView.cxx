@@ -1371,7 +1371,7 @@ void FTextLog::menu_cb(int val)
 		break;
 
 	case LOG_MENU_WRAP:
-		log_menu[RX_MENU_WRAP].flags ^= FL_MENU_VALUE;
+		log_menu[LOG_MENU_WRAP].flags ^= FL_MENU_VALUE;
 		wrap_mode((wrap = !wrap), wrap_col);
 		show_insert_position();
 		break;
