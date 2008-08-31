@@ -77,11 +77,6 @@ int FTextBase::handle(int event)
         if (event == FL_MOUSEWHEEL && !Fl::event_inside(this))
                 return 1;
 
-//        if (event == FL_SHOW) {
-//                reset_styles(SET_COLOR);
-//                adjust_colours();
-//        }
-
         return Fl_Text_Editor_mod::handle(event);
 }
 
@@ -97,7 +92,7 @@ void FTextBase::setFontSize(int s, int attr)
 
 void FTextBase::setFontColor(Fl_Color c, int attr)
 {
-	set_style(attr, textfont(), textsize(), c, SET_COLOR);
+	set_style(attr, textfont(), textsize(), c, SET_COLOR | SET_ADJ);
 }
 
 /// Resizes the text widget.
@@ -174,8 +169,16 @@ void FTextBase::set_style(int attr, Fl_Font f, int s, Fl_Color c, int set)
 			styles[i].font = f;
 		if (set & SET_SIZE)
 			styles[i].size = s;
-		if (set & SET_COLOR)
-			styles[i].color = c;
+		if (set & SET_COLOR) {
+			// Fl_Text_Display_mod::draw_string may mindlessly clobber our colours with
+			// FL_WHITE or FL_BLACK to satisfy contrast requirements. We adjust the
+			// luminosity here so that at least we get something resembling the
+			// requested hue.
+			if (set & SET_ADJ)
+				styles[i].color = adjust_color(c, color());
+			else
+				styles[i].color = c;
+		}
 	}
 
 	resize(x(), y(), w(), h()); // to redraw and recalculate the wrap column
@@ -330,30 +333,13 @@ int FTextBase::reset_wrap_col(void)
 	return old_wrap_col;
 }
 
-void FTextBase::adjust_colours(void)
-{
-        // Fl_Text_Display_mod::draw_string may mindlessly clobber our colours with
-        // FL_WHITE or FL_BLACK to satisfy contrast requirements. We adjust the
-        // luminosity here so that at least we get something resembling the
-        // requested hue.
-        for (int i = 0; i < NATTR; i++) {
-                Fl_Color adj;
-
-                while ((adj = fl_contrast(styles[i].color, color())) != styles[i].color) {
-                        styles[i].color = (adj == FL_WHITE) ?
-                                          fl_lighter(styles[i].color) :
-                                          fl_darker(styles[i].color);
-                }
-        }
-}
-
 void FTextBase::reset_styles(int set)
 {
-	set_style(NATTR, FL_SCREEN, 12, FL_FOREGROUND_COLOR, set);
-	set_style(XMIT, FL_SCREEN, 12, FL_RED, set);
-	set_style(CTRL, FL_SCREEN, 12, FL_DARK_GREEN, set);
-	set_style(SKIP, FL_SCREEN, 12, FL_BLUE, set);
-	set_style(ALTR, FL_SCREEN, 12, FL_DARK_MAGENTA, set);
+	set_style(NATTR, FL_SCREEN, FL_NORMAL_SIZE, FL_FOREGROUND_COLOR, set);
+	set_style(XMIT, FL_SCREEN, FL_NORMAL_SIZE, FL_RED, set);
+	set_style(CTRL, FL_SCREEN, FL_NORMAL_SIZE, FL_DARK_GREEN, set);
+	set_style(SKIP, FL_SCREEN, FL_NORMAL_SIZE, FL_BLUE, set);
+	set_style(ALTR, FL_SCREEN, FL_NORMAL_SIZE, FL_DARK_MAGENTA, set);
 }
 
 // ----------------------------------------------------------------------------

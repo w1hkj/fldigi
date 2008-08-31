@@ -211,7 +211,9 @@ struct configuration {
 	
 	int		WaterfallFontnbr;
 	int		WaterfallFontsize;
-	
+
+	string		ui_scheme;
+
 	string strCommPorts;
 	
 	int rx_msgid;

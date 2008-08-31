@@ -1753,12 +1753,13 @@ void create_fl_digi_main() {
 					progdefaults.RxColor.G,
 					progdefaults.RxColor.B));		
 
-			ReceiveText->setFont((Fl_Font)progdefaults.RxFontnbr);
-			ReceiveText->setFontSize(progdefaults.RxFontsize);
-			ReceiveText->setFontColor((Fl_Color)progdefaults.RxFontcolor);
-			ReceiveText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
-			ReceiveText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
-			ReceiveText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
+
+			ReceiveText->setFont((Fl_Font)progdefaults.RxFontnbr);
+			ReceiveText->setFontSize(progdefaults.RxFontsize);
+			ReceiveText->setFontColor((Fl_Color)progdefaults.RxFontcolor, FTextBase::RECV);
+			ReceiveText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
+			ReceiveText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
+			ReceiveText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
 			ReceiveText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
 	
 			TiledGroup->add_resize_check(FTextView::wheight_mult_tsize, ReceiveText);
@@ -1770,13 +1771,13 @@ void create_fl_digi_main() {
 				fl_rgb_color(
 					progdefaults.TxColor.R,
 					progdefaults.TxColor.G,
-					progdefaults.TxColor.B));		
-			TransmitText->setFont((Fl_Font)progdefaults.TxFontnbr);
-			TransmitText->setFontSize(progdefaults.TxFontsize);
-			TransmitText->setFontColor((Fl_Color)progdefaults.TxFontcolor);
-			TransmitText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
-			TransmitText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
-			TransmitText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
+					progdefaults.TxColor.B));		
+			TransmitText->setFont((Fl_Font)progdefaults.TxFontnbr);
+			TransmitText->setFontSize(progdefaults.TxFontsize);
+			TransmitText->setFontColor((Fl_Color)progdefaults.TxFontcolor, FTextBase::RECV);
+			TransmitText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
+			TransmitText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
+			TransmitText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
 			TransmitText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
 
 			Fl_Box *minbox = new Fl_Box(sw,Y + 66, WNOM-sw, Htext - 66 - 32);
@@ -2531,7 +2532,16 @@ void set_AFCind(double val)
 
 void set_AFCrange(double val)
 {
-	REQ (&AFCind::range, AFCindicator, val);
-}
-
-
+	REQ (&AFCind::range, AFCindicator, val);
+}
+
+// Adjust and return fg color to ensure good contrast with bg
+Fl_Color adjust_color(Fl_Color fg, Fl_Color bg)
+{
+	Fl_Color adj;
+	unsigned max = 24;
+	while ((adj = fl_contrast(fg, bg)) != fg  &&  max--)
+		fg = (adj == FL_WHITE) ? fl_color_average(fg, FL_WHITE, .9)
+				       : fl_color_average(fg, FL_BLACK, .9);
+	return fg;
+}

@@ -1,0 +1,527 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0109 
+header_name {} 
+code_name {.cxx}
+decl {\#include <config.h>} {global
+} 
+
+decl {\#include "fl_digi.h"} {global
+} 
+
+decl {\#include "configuration.h"} {global
+} 
+
+decl {\#include "font_browser.h"} {public global
+} 
+
+Function {selectColorsFonts()} {open return_type void
+} {
+  code {if (!dlgColorFont)
+    make_colorsfonts();
+dlgColorFont->show();} {}
+} 
+
+Function {choose_color(Fl_Color* c)} {open private return_type void
+} {
+  code {unsigned char r, g, b;
+Fl::get_color(*c, r, g, b);
+if (fl_color_chooser("Font color", r, g, b))
+    *c = fl_rgb_color(r, g, b);} {}
+} 
+
+Function {adjust_label(Fl_Widget* w)} {open private return_type void
+} {
+  code {w->labelcolor(fl_contrast(w->labelcolor(), w->color()));} {}
+} 
+
+Function {cbRxFontBrowser(Fl_Widget* w, void* arg)} {open private return_type void
+} {
+  code {Font_Browser *fb= (Font_Browser*)w;
+    Fl_Font font = fb->fontNumber();
+    int size = fb->fontSize();
+    Fl_Color color = fb->fontColor();
+
+    RxText->textfont(font);
+    RxText->textsize(size);
+    RxText->textcolor(color);
+    RxText->redraw();
+
+    progdefaults.RxFontnbr = (int)(font);
+    progdefaults.RxFontsize = size;
+    progdefaults.RxFontcolor = color;
+
+    ReceiveText->setFont(font);
+    ReceiveText->setFontSize(size);
+    ReceiveText->setFontColor((Fl_Color)progdefaults.RxFontcolor, FTextBase::RECV);
+
+    fb->hide();
+
+    progdefaults.changed = true;} {}
+} 
+
+Function {cbTxFontBrowser(Fl_Widget* w, void* arg)} {open private return_type void
+} {
+  code {Font_Browser *fb= (Font_Browser*)w;
+    Fl_Font font = fb->fontNumber();
+    int size = fb->fontSize();
+    Fl_Color color = fb->fontColor();
+
+    TxText->textfont(font);
+    TxText->textsize(size);
+    TxText->textcolor(color);
+    TxText->redraw();
+
+    progdefaults.TxFontnbr = (int)(font);
+    progdefaults.TxFontsize = size;
+    progdefaults.TxFontcolor = color;
+
+    TransmitText->setFont(font);
+    TransmitText->setFontSize(size);
+    TransmitText->setFontColor((Fl_Color)progdefaults.TxFontcolor, FTextBase::RECV);
+
+    fb->hide();
+
+    progdefaults.changed = true;} {}
+} 
+
+Function {cbWaterfallFontBrowser(Font_Browser*, void* v)} {open return_type void
+} {
+  code {Font_Browser *ft= (Font_Browser*)v;
+    Fl_Font fnt = ft->fontNumber();
+    int size = ft->fontSize();
+
+    progdefaults.WaterfallFontnbr = (int)(fnt);
+    progdefaults.WaterfallFontsize = size;
+    progdefaults.changed = true;
+
+    ft->hide();} {}
+} 
+
+Function {make_colorsfonts()} {open
+} {
+  Fl_Window dlgColorFont {
+    label {Colors and Fonts} open
+    xywh {1141 753 370 274} type Double
+    code0 {dlgColorFont->xclass(PACKAGE_TARNAME);} visible
+  } {
+    Fl_Group {} {
+      label {Function keys} open
+      xywh {0 5 185 155} box ENGRAVED_FRAME align 21
+    } {
+      Fl_Check_Button btnUseGroupColors {
+        label {Use colored buttons}
+        callback {progdefaults.useGroupColors = o->value();
+    colorize_macros();
+    progdefaults.changed = true;}
+        xywh {10 30 165 15} down_box DOWN_BOX
+        code0 {btnUseGroupColors->value(progdefaults.useGroupColors);}
+      }
+      Fl_Button btnGroup1 {
+        label {Group 1}
+        callback {uchar r, g, b;
+    r = progdefaults.btnGroup1.R;
+    g = progdefaults.btnGroup1.G;
+    b = progdefaults.btnGroup1.B;
+
+    if (fl_color_chooser("Group 1", r, g, b) == 0)
+        return;
+    progdefaults.btnGroup1.R = r;
+    progdefaults.btnGroup1.G = g;
+    progdefaults.btnGroup1.B = b;
+    o->color(fl_rgb_color(r,g,b));
+    colorize_macros();
+    
+    progdefaults.changed = true;}
+        tooltip {Background color for Function key group 1} xywh {10 55 75 20}
+        code0 {btnGroup1->color(fl_rgb_color(progdefaults.btnGroup1.R, progdefaults.btnGroup1.G,progdefaults.btnGroup1.B));}
+        code1 {btnGroup1->labelcolor(fl_rgb_color(progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R));}
+      }
+      Fl_Button btnGroup2 {
+        label {Group 2}
+        callback {uchar r, g, b;
+    r = progdefaults.btnGroup2.R;
+    g = progdefaults.btnGroup2.G;
+    b = progdefaults.btnGroup2.B;
+
+    if (fl_color_chooser("Group 2", r, g, b) == 0)
+        return;
+    progdefaults.btnGroup2.R = r;
+    progdefaults.btnGroup2.G = g;
+    progdefaults.btnGroup2.B = b;
+    o->color(fl_rgb_color(r,g,b));
+    colorize_macros();
+
+    progdefaults.changed = true;}
+        tooltip {Background color for Function key group 2} xywh {100 55 75 20}
+        code0 {btnGroup2->color(fl_rgb_color(progdefaults.btnGroup2.R, progdefaults.btnGroup2.G,progdefaults.btnGroup2.B));}
+        code1 {btnGroup2->labelcolor(fl_rgb_color(progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R));}
+      }
+      Fl_Button btnGroup3 {
+        label {Group 3}
+        callback {uchar r, g, b;
+    r = progdefaults.btnGroup3.R;
+    g = progdefaults.btnGroup3.G;
+    b = progdefaults.btnGroup3.B;
+
+    if (fl_color_chooser("Group 3", r, g, b) == 0)
+        return;
+    progdefaults.btnGroup3.R = r;
+    progdefaults.btnGroup3.G = g;
+    progdefaults.btnGroup3.B = b;
+    o->color(fl_rgb_color(r,g,b));
+
+    colorize_macros();
+    progdefaults.changed = true;} selected
+        tooltip {Background color for Function key group 3} xywh {10 85 75 20}
+        code0 {btnGroup3->color(fl_rgb_color(progdefaults.btnGroup3.R, progdefaults.btnGroup3.G,progdefaults.btnGroup3.B));}
+        code1 {btnGroup3->labelcolor(fl_rgb_color(progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R));}
+      }
+      Fl_Button btnFkeyTextColor {
+        label {Label text}
+        callback {uchar r, g, b;
+    r = progdefaults.btnFkeyTextColor.R;
+    g = progdefaults.btnFkeyTextColor.G;
+    b = progdefaults.btnFkeyTextColor.B;
+
+    if (fl_color_chooser("Fkey Text", r, g, b) == 0)
+        return;
+
+    progdefaults.btnFkeyTextColor.R = r;
+    progdefaults.btnFkeyTextColor.G = g;
+    progdefaults.btnFkeyTextColor.B = b;
+    o->color(fl_rgb_color(r,g,b));
+    adjust_label(o);
+    btnGroup1->labelcolor(fl_rgb_color(r,g,b));
+    btnGroup2->labelcolor(fl_rgb_color(r,g,b));
+    btnGroup3->labelcolor(fl_rgb_color(r,g,b));
+    btnGroup1->redraw_label();
+    btnGroup2->redraw_label();
+    btnGroup3->redraw_label();
+    progdefaults.changed = true;
+    colorize_macros();}
+        xywh {100 85 75 20}
+        code0 {btnFkeyTextColor->color(fl_rgb_color(progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.G, progdefaults.btnFkeyTextColor.B));}
+        code1 {adjust_label(btnFkeyTextColor);}
+      }
+      Fl_Button btnFkeyDEfaults {
+        label Defaults
+        callback {uchar r, g, b;
+    Fl_Color clr;
+
+    r = 80; g = 144; b = 144;
+    clr = fl_rgb_color(r,g,b);
+    btnGroup1->color(clr);
+    progdefaults.btnGroup1.R = r;
+    progdefaults.btnGroup1.G = g;
+    progdefaults.btnGroup1.B = b;
+
+    r = 144; g = 80; b = 80;
+    clr = fl_rgb_color(r,g,b);
+    btnGroup2->color(clr);
+    progdefaults.btnGroup2.R = r;
+    progdefaults.btnGroup2.G = g;
+    progdefaults.btnGroup2.B = b;
+
+    r = 80; g = 80; b = 144;
+    clr = fl_rgb_color(r,g,b);
+    btnGroup3->color(clr);
+    progdefaults.btnGroup3.R = r;
+    progdefaults.btnGroup3.G = g;
+    progdefaults.btnGroup3.B = b;
+
+    r = 255; g = 255; b = 255;
+    clr = fl_rgb_color(r,g,b);
+    btnFkeyTextColor->color(clr);
+    btnFkeyTextColor->redraw_label();
+    progdefaults.btnFkeyTextColor.R = r;
+    progdefaults.btnFkeyTextColor.G = g;
+    progdefaults.btnFkeyTextColor.B = b;
+
+    btnGroup1->labelcolor(clr);
+    btnGroup1->redraw_label();
+
+    btnGroup2->labelcolor(clr);
+    btnGroup2->redraw_label();
+
+    btnGroup3->labelcolor(clr);
+    btnGroup3->redraw_label();
+
+    colorize_macros();
+
+progdefaults.changed = true;}
+        xywh {100 122 75 20}
+      }
+    }
+    Fl_Group {} {
+      label {Text Controls} open
+      xywh {185 5 185 240} box ENGRAVED_FRAME align 21
+    } {
+      Fl_Input RxText {
+        xywh {195 30 165 35}
+        code0 {RxText->value("Receive Text");}
+        code1 {RxText->color(fl_rgb_color(progdefaults.RxColor.R, progdefaults.RxColor.G, progdefaults.RxColor.B));}
+        code2 {RxText->textfont(progdefaults.RxFontnbr); RxText->textsize(progdefaults.RxFontsize); RxText->textcolor((Fl_Color)progdefaults.RxFontcolor);}
+        code3 {RxText->type(FL_MULTILINE_INPUT_WRAP);}
+      }
+      Fl_Button btnRxColor {
+        label {Rx bkgnd}
+        callback {uchar r, g, b;
+    r = progdefaults.RxColor.R;
+    g = progdefaults.RxColor.G;
+    b = progdefaults.RxColor.B;
+
+    if (!fl_color_chooser("Rx Color", r, g, b))
+        return;
+
+    progdefaults.RxColor.R = r;
+    progdefaults.RxColor.G = g;
+    progdefaults.RxColor.B = b;
+    RxText->color(fl_rgb_color(r,g,b));
+    ReceiveText->color(RxText->color());
+    RxText->redraw();
+    ReceiveText->redraw();
+
+    progdefaults.changed = true;}
+        xywh {195 70 75 20}
+      }
+      Fl_Button btnTxColor {
+        label {Tx bkgnd}
+        callback {uchar r, g, b;
+    r = progdefaults.TxColor.R;
+    g = progdefaults.TxColor.G;
+    b = progdefaults.TxColor.B;
+
+    if (!fl_color_chooser("Tx Color", r, g, b))
+        return;
+
+    progdefaults.TxColor.R = r;
+    progdefaults.TxColor.G = g;
+    progdefaults.TxColor.B = b;
+    TxText->color(fl_rgb_color(r,g,b));
+    TransmitText->color(TxText->color());
+    TxText->redraw();
+    TransmitText->redraw();
+
+progdefaults.changed = true;}
+        xywh {195 140 75 20}
+      }
+      Fl_Input TxText {
+        xywh {195 100 165 35}
+        code0 {TxText->value("Transmit Text");}
+        code1 {TxText->color(fl_rgb_color(progdefaults.TxColor.R, progdefaults.TxColor.G, progdefaults.TxColor.B));}
+        code2 {TxText->textfont(progdefaults.TxFontnbr); TxText->textsize(progdefaults.TxFontsize); TxText->textcolor((Fl_Color)progdefaults.TxFontcolor);}
+        code3 {TxText->type(FL_MULTILINE_INPUT_WRAP);}
+      }
+      Fl_Button btnRxFont {
+        label {Rx font}
+        callback {static Font_Browser* b = 0;
+if (!b) {
+    b = new Font_Browser;
+    b->fontNumber((Fl_Font)progdefaults.RxFontnbr);
+    b->fontSize(progdefaults.RxFontsize);
+    b->fontColor((Fl_Color)progdefaults.RxFontcolor);
+    b->callback(cbRxFontBrowser);
+}
+b->show();}
+        xywh {285 70 75 20}
+      }
+      Fl_Button btnTxFont {
+        label {Tx font}
+        callback {static Font_Browser* b = 0;
+    if (!b) {
+        b = new Font_Browser;
+        b->fontNumber((Fl_Font)progdefaults.TxFontnbr);
+        b->fontSize(progdefaults.TxFontsize);
+        b->fontColor((Fl_Color)progdefaults.TxFontcolor);
+        b->callback(cbTxFontBrowser);
+    }
+    b->show();}
+        xywh {285 140 75 20}
+      }
+      Fl_Button btnXMIT {
+        label XMIT
+        callback {choose_color((Fl_Color*)&progdefaults.XMITcolor);
+    btnXMIT->color( progdefaults.XMITcolor );
+    TransmitText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
+    ReceiveText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
+
+    progdefaults.changed = true;}
+        tooltip {Sent chars in Rx/Tx pane} xywh {195 170 40 20} align 2
+        code0 {btnXMIT->color((Fl_Color)progdefaults.XMITcolor);}
+      }
+      Fl_Button btnCTRL {
+        label CTRL
+        callback {choose_color((Fl_Color*)&progdefaults.CTRLcolor);
+    btnCTRL->color( progdefaults.CTRLcolor );
+    TransmitText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
+    ReceiveText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
+
+    progdefaults.changed = true;}
+        tooltip {Control chars in Rx/Tx pane} xywh {236 170 40 20} align 2
+        code0 {btnCTRL->color((Fl_Color)progdefaults.CTRLcolor);}
+      }
+      Fl_Button btnSKIP {
+        label SKIP
+        callback {choose_color((Fl_Color*)&progdefaults.SKIPcolor);
+    btnSKIP->color( progdefaults.SKIPcolor );
+    TransmitText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
+    ReceiveText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
+
+    progdefaults.changed = true;}
+        tooltip {Skipped chars in Tx pane
+(Tx on/off in CW)} xywh {278 170 40 20} align 2
+        code0 {btnSKIP->color((Fl_Color)progdefaults.SKIPcolor);}
+      }
+      Fl_Button btnALTR {
+        label ALTR
+        callback {choose_color((Fl_Color*)&progdefaults.ALTRcolor);
+    btnALTR->color( progdefaults.ALTRcolor );
+    TransmitText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
+    ReceiveText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
+
+    progdefaults.changed = true;}
+        tooltip {Quick view chars in Rx pane} xywh {320 170 40 20} align 2
+        code0 {btnALTR->color((Fl_Color)progdefaults.ALTRcolor);}
+      }
+      Fl_Button btnNoTextColor {
+        label System
+        callback {uchar r, g, b;
+    Fl_Color clr = FL_BACKGROUND2_COLOR;
+
+    Fl::get_color(clr, r, g, b);
+
+    progdefaults.TxFontcolor = FL_BLACK;
+    progdefaults.RxFontcolor = FL_BLACK;
+    progdefaults.XMITcolor = FL_RED;
+    progdefaults.CTRLcolor = FL_DARK_GREEN;
+    progdefaults.SKIPcolor = FL_BLUE;
+    progdefaults.ALTRcolor = FL_DARK_MAGENTA;
+    btnXMIT->color((Fl_Color)progdefaults.XMITcolor);
+    btnCTRL->color((Fl_Color)progdefaults.CTRLcolor);
+    btnSKIP->color((Fl_Color)progdefaults.SKIPcolor);
+    btnALTR->color((Fl_Color)progdefaults.ALTRcolor);
+    btnXMIT->redraw();
+    btnCTRL->redraw();
+    btnSKIP->redraw();
+    btnALTR->redraw();
+
+    progdefaults.RxColor.R = r;
+    progdefaults.RxColor.G = g;
+    progdefaults.RxColor.B = b;
+
+    clr = fl_rgb_color(r,g,b);
+    RxText->color(clr);
+    RxText->textcolor((Fl_Color)progdefaults.RxFontcolor);
+    RxText->redraw();
+
+    ReceiveText->color(clr);
+    ReceiveText->setFontColor((Fl_Color)progdefaults.RxFontcolor, FTextBase::RECV);
+    ReceiveText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
+    ReceiveText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
+    ReceiveText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
+    ReceiveText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
+    ReceiveText->redraw();
+
+    progdefaults.TxColor.R = r;
+    progdefaults.TxColor.G = g;
+    progdefaults.TxColor.B = b;
+
+    TxText->color(clr);
+    TxText->textcolor((Fl_Color)progdefaults.TxFontcolor);
+    TxText->redraw();
+
+    TransmitText->color(clr);
+    TransmitText->setFontColor((Fl_Color)progdefaults.TxFontcolor, FTextBase::RECV);
+    TransmitText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
+    TransmitText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
+    TransmitText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
+    TransmitText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
+    TransmitText->redraw();
+
+    progdefaults.changed = true;}
+        xywh {195 217 70 20}
+      }
+      Fl_Button btnTextDefaults {
+        label Defaults
+        callback {uchar r, g, b;
+    Fl_Color clr;
+
+    progdefaults.TxFontcolor = FL_BLACK;
+    progdefaults.RxFontcolor = FL_BLACK;
+    progdefaults.XMITcolor = FL_RED;
+    progdefaults.CTRLcolor = FL_DARK_GREEN;
+    progdefaults.SKIPcolor = FL_BLUE;
+    progdefaults.ALTRcolor = FL_DARK_MAGENTA;
+    btnXMIT->color((Fl_Color)progdefaults.XMITcolor);
+    btnCTRL->color((Fl_Color)progdefaults.CTRLcolor);
+    btnSKIP->color((Fl_Color)progdefaults.SKIPcolor);
+    btnALTR->color((Fl_Color)progdefaults.ALTRcolor);
+    btnXMIT->redraw();
+    btnCTRL->redraw();
+    btnSKIP->redraw();
+    btnALTR->redraw();
+
+    r = 255; g = 242; b = 190;
+    progdefaults.RxColor.R = r;
+    progdefaults.RxColor.G = g;
+    progdefaults.RxColor.B = b;
+
+    clr = fl_rgb_color(r,g,b);
+    RxText->color(clr);
+    RxText->textcolor((Fl_Color)progdefaults.RxFontcolor);
+    RxText->redraw();
+
+    ReceiveText->color(clr);
+    ReceiveText->setFontColor((Fl_Color)progdefaults.RxFontcolor, FTextBase::RECV);
+    ReceiveText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
+    ReceiveText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
+    ReceiveText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
+    ReceiveText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
+    ReceiveText->redraw();
+
+    r = 200; g = 235; b = 255;
+    progdefaults.TxColor.R = r;
+    progdefaults.TxColor.G = g;
+    progdefaults.TxColor.B = b;
+
+    clr = fl_rgb_color(r,g,b);
+    TxText->color(clr);
+    TxText->textcolor((Fl_Color)progdefaults.TxFontcolor);
+    TxText->redraw();
+
+    TransmitText->color(clr);
+    TransmitText->setFontColor((Fl_Color)progdefaults.TxFontcolor, FTextBase::RECV);
+    TransmitText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
+    TransmitText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
+    TransmitText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
+    TransmitText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
+    TransmitText->redraw();
+
+    progdefaults.changed = true;}
+        xywh {290 217 70 20}
+      }
+    }
+    Fl_Group {} {
+      label Widgets open
+      xywh {0 160 185 85} box ENGRAVED_FRAME align 21
+    } {
+      Fl_Choice mnuScheme {
+        label {UI scheme}
+        callback {progdefaults.ui_scheme = o->text();
+    Fl::scheme(progdefaults.ui_scheme.c_str());
+
+    progdefaults.changed = true;} open
+        xywh {10 187 80 25} down_box BORDER_BOX align 8
+        code0 {mnuScheme->add("base");}
+        code1 {mnuScheme->add("gtk+");}
+        code2 {mnuScheme->add("plastic");}
+        code3 {mnuScheme->value(mnuScheme->find_item(progdefaults.ui_scheme.c_str()));}
+      } {}
+    }
+    Fl_Button btnClrFntClose {
+      label Close
+      callback {o->window()->hide();}
+      xywh {290 250 70 20}
+    }
+  }
+} 

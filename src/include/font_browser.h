@@ -42,6 +42,7 @@
 #include <FL/Fl_Check_Button.H>
 #include <FL/fl_draw.H>
 #include <FL/fl_show_colormap.H>
+#include <FL/Fl_Color_Chooser.H>
 #include <iostream>
 
 // Preview box for showing font

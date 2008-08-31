@@ -168,4 +168,6 @@ extern void set_olivia_tab_widgets();
 
 extern void stopMacroTimer();
 
+Fl_Color adjust_color(Fl_Color fg, Fl_Color bg);
+
 #endif

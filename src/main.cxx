@@ -241,7 +241,8 @@ int main(int argc, char ** argv)
 	progdefaults.testCommPorts();
 	
 	progStatus.loadLastState();
-	
+
+	Fl::scheme(progdefaults.ui_scheme.c_str());
 	create_fl_digi_main();
 	FSEL::create();
 
@@ -300,17 +301,17 @@ int main(int argc, char ** argv)
 
 void generate_option_help(void) {
 	// is there a better way of enumerating schemes?
-	string schemes = "none";
-	const char *possible_schemes[] = { "plastic", "gtk+", 0 };
-	const char *old = Fl::scheme();
-	const char **s = possible_schemes;
-	while (*s) {
-		Fl::scheme(*s);
-		if (strcasecmp(*s, Fl::scheme()) == 0)
-			schemes.append(" ").append(*s);
-		s++;
-	}
-	Fl::scheme(old ? old : "none");
+	// string schemes = "none";
+	// const char *possible_schemes[] = { "plastic", "gtk+", 0 };
+	// const char *old = Fl::scheme();
+	// const char **s = possible_schemes;
+	// while (*s) {
+	// 	Fl::scheme(*s);
+	// 	if (strcasecmp(*s, Fl::scheme()) == 0)
+	// 		schemes.append(" ").append(*s);
+	// 	s++;
+	// }
+	// Fl::scheme(old ? old : "none");
 
 
 	ostringstream help;
@@ -397,9 +398,9 @@ void generate_option_help(void) {
 	     << "   -na CLASSNAME, -name CLASSNAME\n"
 	     << "    Set the window class to CLASSNAME\n\n"
 
-	     << "   -s SCHEME, -scheme SCHEME\n"
-	     << "    Set the widget scheme\n"
-	     << "    SCHEME can be one of: " << schemes << "\n\n"
+	     // << "   -s SCHEME, -scheme SCHEME\n"
+	     // << "    Set the widget scheme\n"
+	     // << "    SCHEME can be one of: " << schemes << "\n\n"
 
 	     << "   -ti WINDOWTITLE, -title WINDOWTITLE\n"
 	     << "    Set the window title\n\n"
