@@ -908,10 +908,12 @@ progdefaults.changed = true;}
             }
             Fl_Value_Slider valPCMvolume {
               label PCM
-              callback {setPCMvolume(o->value());
+              callback {setPCMvolume(o->value() / 100.0);
 progdefaults.changed = true;}
               xywh {19 125 340 21} type {Horz Knob} color 26 selection_color 1 align 8 value 0.8 textsize 14
               code0 {extern void setPCMvolume(double);}
+              code1 {valPCMvolume->range(0.0, 100.0);}
+              code2 {valPCMvolume->step(1.0);}
             }
             Fl_Input_Choice menuMix {
               label Device

@@ -233,8 +233,8 @@ void status::initLastState()
 	btn_afconoff->value(afconoff);
 	btn_sqlonoff->value(sqlonoff);
 	sldrSquelch->value(sldrSquelchValue);
-	valRcvMixer->value(RcvMixer);
-	valXmtMixer->value(XmtMixer);
+	valRcvMixer->value(RcvMixer * 100.0);
+	valXmtMixer->value(XmtMixer * 100.0);
 
 	FL_UNLOCK_D();
 

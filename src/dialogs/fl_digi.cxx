@@ -150,8 +150,8 @@ Fl_Button			*btnMacroTimer;
 Fl_Button			*btnMacroDummy;
 Fl_Button			*btnQRZ;
 Fl_Group			*MixerFrame;
-Fl_Slider			*valRcvMixer;
-Fl_Slider			*valXmtMixer;
+Fl_Value_Slider			*valRcvMixer;
+Fl_Value_Slider			*valXmtMixer;
 AFCind				*AFCindicator;
 
 int					altMacros = 0;
@@ -1280,13 +1280,13 @@ void cbMacroTimerButton(Fl_Widget *w, void *d)
 
 void cb_RcvMixer(Fl_Widget *w, void *d)
 {
-	progStatus.RcvMixer = valRcvMixer->value();
+	progStatus.RcvMixer = valRcvMixer->value() / 100.0;
 	mixer->setRcvGain(progStatus.RcvMixer);
 }
 
 void cb_XmtMixer(Fl_Widget *w, void *d)
 {
-	progStatus.XmtMixer = valXmtMixer->value();
+	progStatus.XmtMixer = valXmtMixer->value() / 100.0;
 	mixer->setXmtLevel(progStatus.XmtMixer);
 }
 
@@ -1722,21 +1722,23 @@ void create_fl_digi_main() {
 		
 		int sw = DEFAULT_SW;
 		MixerFrame = new Fl_Group(0,Y,sw, Hrcvtxt + Hxmttxt);
-			valRcvMixer = new Fl_Slider(0, Y, sw, (Htext)/2, "");
+			valRcvMixer = new Fl_Value_Slider(0, Y, sw, (Htext)/2, "");
 			valRcvMixer->type(FL_VERT_NICE_SLIDER);
 			valRcvMixer->color(fl_rgb_color(0,110,30));
 			valRcvMixer->labeltype(FL_ENGRAVED_LABEL);
 			valRcvMixer->selection_color(fl_rgb_color(255,255,0));
-			valRcvMixer->range(1.0,0.0);
-			valRcvMixer->value(1.0);
+			valRcvMixer->range(100.0,0.0);
+			valRcvMixer->value(100.0);
+			valRcvMixer->step(1.0);
 			valRcvMixer->callback( (Fl_Callback *)cb_RcvMixer);
-			valXmtMixer = new Fl_Slider(0, Y + (Htext)/2, sw, (Htext)/2, "");
+			valXmtMixer = new Fl_Value_Slider(0, Y + (Htext)/2, sw, (Htext)/2, "");
 			valXmtMixer->type(FL_VERT_NICE_SLIDER);
 			valXmtMixer->color(fl_rgb_color(110,0,30));
 			valXmtMixer->labeltype(FL_ENGRAVED_LABEL);
 			valXmtMixer->selection_color(fl_rgb_color(255,255,0));
-			valXmtMixer->range(1.0,0.0);
-			valXmtMixer->value(1.0);
+			valXmtMixer->range(100.0,0.0);
+			valXmtMixer->value(100.0);
+			valXmtMixer->step(1.0);
 			valXmtMixer->callback( (Fl_Callback *)cb_XmtMixer);
 		MixerFrame->end();
 

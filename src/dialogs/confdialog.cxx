@@ -764,7 +764,7 @@ progdefaults.changed = true;
 Fl_Value_Slider *valPCMvolume=(Fl_Value_Slider *)0;
 
 static void cb_valPCMvolume(Fl_Value_Slider* o, void*) {
-  setPCMvolume(o->value());
+  setPCMvolume(o->value() / 100.0);
 progdefaults.changed = true;
 }
 
@@ -2006,6 +2006,8 @@ l with your sound hardware.");
               valPCMvolume->textsize(14);
               valPCMvolume->callback((Fl_Callback*)cb_valPCMvolume);
               valPCMvolume->align(FL_ALIGN_RIGHT);
+              valPCMvolume->range(0.0, 100.0);
+              valPCMvolume->step(1.0);
             } // Fl_Value_Slider* valPCMvolume
             { Fl_Input_Choice* o = menuMix = new Fl_Input_Choice(105, 90, 110, 25, "Device");
               menuMix->callback((Fl_Callback*)cb_menuMix);
