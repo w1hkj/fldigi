@@ -70,7 +70,6 @@ protected:
 	void		show_context_menu(void);
 	virtual void	menu_cb(int val) { }
 	int		reset_wrap_col(void);
-        void		adjust_colours(void);
         void		reset_styles(int set);
 private:
 	FTextBase();
@@ -78,7 +77,9 @@ private:
 
 protected:
 	enum { FTEXT_DEF = 'A' };
-	enum set_style_op_e { SET_FONT = 1 << 0, SET_SIZE = 1 << 1, SET_COLOR = 1 << 2 };
+	enum set_style_op_e { SET_FONT = 1 << 0, SET_SIZE = 1 << 1,
+			      SET_COLOR = 1 << 2, SET_ADJ = 1 << 3
+	};
 	Fl_Text_Buffer				*tbuf;	///< text buffer
 	Fl_Text_Buffer				*sbuf;	///< style buffer
 	Fl_Text_Display_mod::Style_Table_Entry	styles[NATTR];

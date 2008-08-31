@@ -8,6 +8,7 @@
 #include "configuration.h"
 #include "status.h"
 #include "waterfall.h"
+#include "fl_digi.h"
 #include <FL/Enumerations.H>
 #include <FL/Fl_Slider.H>
 #include <FL/fl_ask.H>
@@ -153,16 +154,6 @@ Fl_Input  *inpSeek = (Fl_Input *)0;
 Fl_Slider *sldrViewerSquelch = (Fl_Slider *)0;
 //Fl_Light_Button *chkBeep = 0;
 
-// Adjust and return fg color to ensure good contrast with bg
-static Fl_Color adjust_color(Fl_Color fg, Fl_Color bg)
-{
-	Fl_Color adj;
-	unsigned max = 24;
-	while ((adj = fl_contrast(fg, bg)) != fg  &&  max--)
-		fg = (adj == FL_WHITE) ? fl_color_average(fg, FL_WHITE, .9)
-				       : fl_color_average(fg, FL_BLACK, .9);
-	return fg;
-}
 static void make_colors()
 {
 	char tempstr[20];

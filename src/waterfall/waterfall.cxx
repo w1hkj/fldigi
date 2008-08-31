@@ -1428,10 +1428,10 @@ int waterfall::handle(int event)
 	if ( !((d = Fl::event_dy()) || (d = Fl::event_dx())) )
 		return 1;
 
-	Fl_Valuator* v[] = { sldrSquelch, wfcarrier, wfRefLevel, wfAmpSpan };
-	for (size_t i = 0; i < sizeof(v)/sizeof(v[0]); i++) {
-		if (Fl::event_inside(v[i])) {
-			if (v[i] == sldrSquelch)
+ 	Fl_Valuator* v[] = { sldrSquelch, wfcarrier, wfRefLevel, wfAmpSpan, valRcvMixer, valXmtMixer };
+  	for (size_t i = 0; i < sizeof(v)/sizeof(v[0]); i++) {
+  		if (Fl::event_inside(v[i])) {
+ 			if ((v[i] == sldrSquelch && !twoscopes) || v[i] == valRcvMixer || v[i] == valXmtMixer)
 				d = -d;
 			v[i]->value(v[i]->clamp(v[i]->increment(v[i]->value(), -d)));
 			v[i]->do_callback();

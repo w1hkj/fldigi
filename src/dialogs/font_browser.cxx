@@ -41,7 +41,11 @@ using namespace std;
 
 void Font_Browser::ColorSelect()
 {
-    fontcolor = fl_show_colormap( fontcolor );
+    unsigned char r, g, b;
+    Fl::get_color(fontcolor, r, g, b);
+    if (fl_color_chooser("Font color", r, g, b) == 0)
+	    return;
+    fontcolor = fl_rgb_color(r, g, b);
     btn_Color->color( fontcolor );
     box_Example->SetFont( fontnbr, fontsize, fontcolor );
 }

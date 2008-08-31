@@ -198,20 +198,22 @@ struct configuration {
 // Rx / Tx fonts & palettes
 	int 	RxFontnbr;
 	int 	RxFontsize;
-	int		RxFontcolor;
+	Fl_Color		RxFontcolor;
 	int 	TxFontnbr;
 	int 	TxFontsize;
-	int		TxFontcolor;
+	Fl_Color		TxFontcolor;
 	RGBint	RxColor;
 	RGBint	TxColor;
-	int		XMITcolor;
-	int		CTRLcolor;
-	int		SKIPcolor;
-	int		ALTRcolor;
+	Fl_Color		XMITcolor;
+	Fl_Color		CTRLcolor;
+	Fl_Color		SKIPcolor;
+	Fl_Color		ALTRcolor;
 	
 	int		WaterfallFontnbr;
 	int		WaterfallFontsize;
-	
+
+	string		ui_scheme;
+
 	string strCommPorts;
 	
 	int rx_msgid;

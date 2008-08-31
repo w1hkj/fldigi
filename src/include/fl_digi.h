@@ -32,7 +32,7 @@
 #include <FL/Fl_Pack.H>
 #include <FL/Fl_Text_Buffer.H>
 #include <FL/Fl_Browser.H>
-#include <FL/Fl_Slider.H>
+#include <FL/Fl_Value_Slider.H>
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Tile.H>
 #include <FL/Fl_Light_Button.H>
@@ -76,8 +76,8 @@ extern Fl_Input			*inpNotes;
 extern Fl_Input			*inpAZ;	// WA5ZNU
 extern Fl_Button		*qsoClear;
 extern Fl_Button		*qsoSave;
-extern Fl_Slider		*valRcvMixer;
-extern Fl_Slider		*valXmtMixer;
+extern Fl_Value_Slider		*valRcvMixer;
+extern Fl_Value_Slider		*valXmtMixer;
 extern Fl_Button		*btn_afconoff;
 extern Fl_Button		*btn_sqlonoff;
 extern Fl_Button		*btnAltMacros;
@@ -167,5 +167,7 @@ extern void set_rtty_tab_widgets();
 extern void set_olivia_tab_widgets();
 
 extern void stopMacroTimer();
+
+Fl_Color adjust_color(Fl_Color fg, Fl_Color bg);
 
 #endif

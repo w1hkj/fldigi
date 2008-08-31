@@ -83,9 +83,10 @@ uninstall-local:
 	rm -f $(DESTDIR)/$(datadir)/applications/fldigi.desktop
 
 if HAVE_FLUID
-flgen: $(srcdir)/dialogs/confdialog.fl $(srcdir)/rigcontrol/rigdialog.fl
+flgen: $(srcdir)/dialogs/confdialog.fl $(srcdir)/dialogs/colorsfonts.fl $(srcdir)/rigcontrol/rigdialog.fl
 	(cd $(srcdir)/include; \
 	$(FLUID) -c -o ../dialogs/confdialog.cxx -h confdialog.h ../dialogs/confdialog.fl; \
+	$(FLUID) -c -o ../dialogs/colorsfonts.cxx -h colorsfonts.h ../dialogs/colorsfonts.fl; \
 	$(FLUID) -c -o ../rigcontrol/rigdialog.cxx -h rigdialog.h ../rigcontrol/rigdialog.fl)
 endif
 
@@ -115,6 +116,7 @@ fldigi_SOURCES += \
 	cw_rtty/cw.cxx \
 	cw_rtty/morse.cxx \
 	cw_rtty/rtty.cxx \
+	dialogs/colorsfonts.cxx \
 	dialogs/confdialog.cxx \
 	dialogs/fl_digi.cxx \
 	dialogs/font_browser.cxx \
@@ -255,7 +257,6 @@ fldigi_SOURCES += \
 	mfsk/mfskvaricode.cxx \
 	misc/ascii.cxx \
 	misc/configuration.cxx \
-	misc/colorsfonts.cxx \
 	misc/debug.cxx \
 	misc/flstring.c \
 	misc/log.cxx \
@@ -364,4 +365,5 @@ EXTRA_DIST = \
 	$(srcdir)/../data/mac/fldigi.icns \
 	$(srcdir)/../data/win32/fldigi.ico \
 	dialogs/confdialog.fl \
+	dialogs/colorsfonts.fl \
 	rigcontrol/rigdialog.fl
