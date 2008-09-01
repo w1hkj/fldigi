@@ -286,7 +286,7 @@ enum TAG { \
 	OLIVIATONES, OLIVIABW, OLIVIASMARGIN, OLIVIASINTEG, OLIVIA8BIT,
 	THORBW, THORFILTER, THORSECTEXT, THORPATHS, THORSOFT, THORCWI,
 	DOMINOEXBW, DOMINOEXFILTER, DOMINOEXFEC, DOMINOEXPATHS, DOMCWI,
-	FELDFONTNBR,
+	MT638BIT, MT63INTERLEAVE, FELDFONTNBR,
 	HELLRCVWIDTH, HELLXMTWIDTH, HELLBLACKBOARD, HELLPULSEFAST, HELLXMTIDLE,
 	WFPREFILTER, LATENCY,
 	USECURSORLINES, USECURSORCENTERLINE, USEBWTRACKS,
@@ -440,6 +440,8 @@ void configuration::writeDefaultsXML()
 	writeXMLbool(f, "DOMINOEXFEC", DOMINOEX_FEC);
 	writeXMLint(f, "DOMINOEXPATHS", DOMINOEX_PATHS);
 	writeXMLdbl(f, "DOMCWI", DomCWI);
+	writeXMLbool(f, "MT638BIT", mt63_8bit);
+	writeXMLint(f, "MT63INTERLEAVE", mt63_interleave);
 	
 	writeXMLint(f, "FELDFONTNBR", feldfontnbr);
 	writeXMLbool(f, "HELLRCVWIDTH", HellRcvWidth);
@@ -781,6 +783,12 @@ bool configuration::readDefaultsXML()
 						break;
 					case DOMCWI :
 						DomCWI = atof(xml->getNodeData());
+						break;
+					case MT638BIT :
+						mt63_8bit = atoi(xml->getNodeData());
+						break;
+					case MT63INTERLEAVE :
+						mt63_interleave = atoi(xml->getNodeData());
 						break;
 					case FELDFONTNBR :
 						feldfontnbr = atoi(xml->getNodeData());
@@ -1197,6 +1205,8 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("DOMINOEXFEC", nodeName))	tag = DOMINOEXFEC;
 				else if (!strcmp("DOMINOEXPATHS", nodeName)) tag = DOMINOEXPATHS;
 				else if (!strcmp("DOMCWI", nodeName)) tag = DOMCWI;
+				else if (!strcmp("MT638BIT", nodeName)) tag = MT638BIT;
+				else if (!strcmp("MT63INTERLEAVE", nodeName)) tag = MT63INTERLEAVE;
 				else if (!strcmp("FELDFONTNBR", nodeName)) 	tag = FELDFONTNBR;
 				else if (!strcmp("HELLRCVWIDTH", nodeName)) 	tag = HELLRCVWIDTH;
 				else if (!strcmp("HELLXMTWIDTH", nodeName)) 	tag = HELLXMTWIDTH;
