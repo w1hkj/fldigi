@@ -51,6 +51,10 @@ static string 			sRigMode = "";
 static long long		llFreq = 0;
 
 static int dummy = 0;
+static bool nonCATrig = false;
+long long  noCATfreq = 0L;
+string noCATmode = "USB";
+string noCATwidth = "";
 
 static void *rigCAT_loop(void *args);
 
@@ -351,6 +355,10 @@ long long rigCAT_getfreq()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 
+	if (nonCATrig == true) {
+		return noCATfreq;
+	}
+	
 	LOG_DEBUG("get frequency");
 
 	itrCmd = commands.begin();
@@ -359,8 +367,13 @@ long long rigCAT_getfreq()
 			break;
 		++itrCmd;
 	}
-	if (itrCmd == commands.end())
-		return -1;
+	
+	if (itrCmd == commands.end()) {
+		LOG_DEBUG("Cmd not defined");
+		nonCATrig = true;
+		return -1; // get_freq command is not defined!
+	}
+
 	modeCmd = *itrCmd;
 	
 	if ( modeCmd.str1.empty() == false)
@@ -368,10 +381,6 @@ long long rigCAT_getfreq()
 
 	if (modeCmd.str2.empty() == false)
 		strCmd.append(modeCmd.str2);
-
-//	if (hexout(strCmd) == false) {
-//		return -1;
-//	}
 
 	if (modeCmd.info.size()) {
 		list<XMLIOS>::iterator preply = reply.begin();
@@ -439,8 +448,11 @@ void rigCAT_setfreq(long long f)
 			break;
 		++itrCmd;
 	}
-	if (itrCmd == commands.end())
+	if (itrCmd == commands.end()) {
+		noCATfreq = f;
 		return;
+	}
+	
 	modeCmd = *itrCmd;
 	
 	if ( modeCmd.str1.empty() == false)
@@ -477,6 +489,9 @@ string rigCAT_getmode()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
+	if (nonCATrig == true) 
+		return noCATmode;
+
 	LOG_DEBUG("get mode");
 
 	itrCmd = commands.begin();
@@ -581,8 +596,10 @@ void rigCAT_setmode(const string& md)
 			break;
 		++itrCmd;
 	}
-	if (itrCmd == commands.end())
+	if (itrCmd == commands.end()) {
+		noCATmode = md;
 		return;
+	}
 	modeCmd = *itrCmd;
 	
 	if ( modeCmd.str1.empty() == false)
@@ -634,6 +651,9 @@ string rigCAT_getwidth()
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
+
+	if (nonCATrig == true) 
+		return noCATwidth;
 	
 	LOG_DEBUG("get width");
 
@@ -739,8 +759,10 @@ void rigCAT_setwidth(const string& w)
 			break;
 		++itrCmd;
 	}
-	if (itrCmd == commands.end())
+	if (itrCmd == commands.end()) {
+		noCATwidth = w;
 		return;
+	}
 	modeCmd = *itrCmd;
 	
 	if ( modeCmd.str1.empty() == false)
@@ -919,6 +941,7 @@ void rigCAT_sendINIT()
 
 bool rigCAT_init()
 {
+	
 	if (rigCAT_open == true) {
 		LOG_ERROR("RigCAT already open file present");
 		return false;
@@ -937,10 +960,12 @@ bool rigCAT_init()
 	sRigMode = "";
 	sRigWidth = "";
 	
+	nonCATrig = false;
+	
 	if (rigCAT_getfreq() <= 0) {
-		LOG_ERROR("Transceiver not responding");
-		rigio.ClosePort();
-		return false;
+		LOG_ERROR("Xcvr Freq request not answered");
+//		rigio.ClosePort();
+//		return false;
 	}
 	
 	rigCAT_sendINIT();
@@ -952,7 +977,7 @@ bool rigCAT_init()
 	} 
 
 	init_Xml_RigDialog();
-//	rigCAT_sendINIT();
+
 	rigCAT_open = true;
 	rigCAT_exit = false;
 	return true;

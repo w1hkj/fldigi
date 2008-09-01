@@ -213,24 +213,24 @@ configuration progdefaults = {
 
 // Rx / Tx / Waterfall Text Widgets
 
-	FL_SCREEN,		// int 		RxFontnbr
+	FL_SCREEN,		// Fl_Font 		RxFontnbr
 	16,				// int 		RxFontsize
-	0,				// int		RxFontcolor
-	FL_SCREEN,		// int 		TxFontnbr
+	FL_BLACK,				// Fl_Color		RxFontcolor
+	FL_SCREEN,		// Fl_Font 		TxFontnbr
 	16,				// int 		TxFontsize
-	0,				// int		TxFontcolor
+	FL_BLACK,				// Fl_Color		TxFontcolor
 	{ 255, 242, 190}, // RGBint RxColor;
 	{ 200, 235, 255}, // RGBint TxColor;
 	
-	FL_RED,			// int		XMITcolor;
-	FL_DARK_GREEN,	// int		CTRLcolor;
-	FL_BLUE,		// int		SKIPcolor;
-	FL_DARK_MAGENTA,// int		ALTRcolor;
+	FL_RED,			// Fl_Color		XMITcolor;
+	FL_DARK_GREEN,	// Fl_Color		CTRLcolor;
+	FL_BLUE,		// Fl_Color		SKIPcolor;
+	FL_DARK_MAGENTA,// Fl_Color		ALTRcolor;
 	
-	FL_SCREEN,		// int		WaterfallFontnbr
+	FL_SCREEN,		// Fl_Font		WaterfallFontnbr
 	12,				// int		WaterfallFontsize
 
-	"base",				// string	ui_scheme
+	"gtk+",				// string	ui_scheme
 
 	"",				// string	strCommPorts
         9876,		// int		rx_msgid
@@ -537,20 +537,20 @@ void configuration::writeDefaultsXML()
 	writeXMLrgb(f, "FKEYTEXTCOLOR", 
 		btnFkeyTextColor.R, btnFkeyTextColor.G, btnFkeyTextColor.B);
 	
-	writeXMLint(f, "RXFONTNBR", RxFontnbr);
+	writeXMLint(f, "RXFONTNBR", (int)RxFontnbr);
 	writeXMLint(f, "RXFONTSIZE", RxFontsize);
-	writeXMLint(f, "RXFNTCOLOR", RxFontcolor);
-	writeXMLint(f, "TXFONTNBR", TxFontnbr);
+	writeXMLint(f, "RXFNTCOLOR", (int)RxFontcolor);
+	writeXMLint(f, "TXFONTNBR", (int)TxFontnbr);
 	writeXMLint(f, "TXFONTSIZE", TxFontsize);
-	writeXMLint(f, "TXFNTCOLOR", TxFontcolor);
-	writeXMLint(f, "XMITCOLOR", XMITcolor);
-	writeXMLint(f, "CTRLCOLOR", CTRLcolor);
-	writeXMLint(f, "SKIPCOLOR", SKIPcolor);
-	writeXMLint(f, "ALTRCOLOR", ALTRcolor);
+	writeXMLint(f, "TXFNTCOLOR", (int)TxFontcolor);
+	writeXMLint(f, "XMITCOLOR", (int)XMITcolor);
+	writeXMLint(f, "CTRLCOLOR", (int)CTRLcolor);
+	writeXMLint(f, "SKIPCOLOR", (int)SKIPcolor);
+	writeXMLint(f, "ALTRCOLOR", (int)ALTRcolor);
 
 	writeXMLrgb(f, "RXFONTCOLOR", RxColor.R, RxColor.G, RxColor.B);
 	writeXMLrgb(f, "TXFONTCOLOR", TxColor.R, TxColor.G, TxColor.B);
-	writeXMLint(f, "WATERFALLFONTNBR", WaterfallFontnbr);
+	writeXMLint(f, "WATERFALLFONTNBR", (int)WaterfallFontnbr);
 	writeXMLint(f, "WATERFALLFONTSIZE", WaterfallFontsize);
 
 	writeXMLstr(f, "UISCHEME", ui_scheme);
@@ -1068,41 +1068,41 @@ bool configuration::readDefaultsXML()
 							&btnFkeyTextColor.B);
 						break;
 					case RXFONTNBR :
-						RxFontnbr = atoi(xml->getNodeData());
+						RxFontnbr = (Fl_Font)atoi(xml->getNodeData());
 						break;
 					case RXFONTSIZE :
 						RxFontsize = atoi(xml->getNodeData());
 						break;
 					case RXFNTCOLOR :
-						RxFontcolor = atoi(xml->getNodeData());
+						RxFontcolor = (Fl_Color)atoi(xml->getNodeData());
 						break;
 					case TXFONTNBR :
-						TxFontnbr = atoi(xml->getNodeData());
+						TxFontnbr = (Fl_Font)atoi(xml->getNodeData());
 						break;
 					case TXFONTSIZE :
 						TxFontsize = atoi(xml->getNodeData());
 						break;
 					case TXFNTCOLOR :
-						TxFontcolor = atoi(xml->getNodeData());
+						TxFontcolor = (Fl_Color)atoi(xml->getNodeData());
 						break;
 					case RXFONTCOLOR :
 						sscanf( xml->getNodeData(), "%d %d %d",
 							&RxColor.R, &RxColor.G, &RxColor.B);
 						break;
 					case XMITCOLOR :
-						XMITcolor = atoi(xml->getNodeData());
+						XMITcolor = (Fl_Color)atoi(xml->getNodeData());
 						break;
 					case CTRLCOLOR :
-						CTRLcolor = atoi(xml->getNodeData());
+						CTRLcolor = (Fl_Color)atoi(xml->getNodeData());
 						break;
 					case SKIPCOLOR :
-						SKIPcolor = atoi(xml->getNodeData());
+						SKIPcolor = (Fl_Color)atoi(xml->getNodeData());
 						break;
 					case ALTRCOLOR :
-						ALTRcolor = atoi(xml->getNodeData());
+						ALTRcolor = (Fl_Color)atoi(xml->getNodeData());
 						break;
 					case WATERFALLFONTNBR :
-						WaterfallFontnbr = atoi(xml->getNodeData());
+						WaterfallFontnbr = (Fl_Font)atoi(xml->getNodeData());
 						break;
 					case WATERFALLFONTSIZE :
 						WaterfallFontsize = atoi(xml->getNodeData());

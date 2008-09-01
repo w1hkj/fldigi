@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0109 
+version 1.0108 
 header_name {} 
 code_name {.cxx}
 decl {\#include <config.h>} {global
@@ -21,12 +21,12 @@ Function {selectColorsFonts()} {open return_type void
 dlgColorFont->show();} {}
 } 
 
-Function {choose_color(Fl_Color* c)} {open private return_type void
+Function {choose_color(Fl_Color & c)} {open private return_type void
 } {
   code {unsigned char r, g, b;
-Fl::get_color(*c, r, g, b);
+Fl::get_color(c, r, g, b);
 if (fl_color_chooser("Font color", r, g, b))
-    *c = fl_rgb_color(r, g, b);} {}
+    c = fl_rgb_color(r, g, b);} {}
 } 
 
 Function {adjust_label(Fl_Widget* w)} {open private return_type void
@@ -46,13 +46,13 @@ Function {cbRxFontBrowser(Fl_Widget* w, void* arg)} {open private return_type vo
     RxText->textcolor(color);
     RxText->redraw();
 
-    progdefaults.RxFontnbr = (int)(font);
+    progdefaults.RxFontnbr = font;
     progdefaults.RxFontsize = size;
     progdefaults.RxFontcolor = color;
 
     ReceiveText->setFont(font);
     ReceiveText->setFontSize(size);
-    ReceiveText->setFontColor((Fl_Color)progdefaults.RxFontcolor, FTextBase::RECV);
+    ReceiveText->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
 
     fb->hide();
 
@@ -71,13 +71,13 @@ Function {cbTxFontBrowser(Fl_Widget* w, void* arg)} {open private return_type vo
     TxText->textcolor(color);
     TxText->redraw();
 
-    progdefaults.TxFontnbr = (int)(font);
+    progdefaults.TxFontnbr = font;
     progdefaults.TxFontsize = size;
     progdefaults.TxFontcolor = color;
 
     TransmitText->setFont(font);
     TransmitText->setFontSize(size);
-    TransmitText->setFontColor((Fl_Color)progdefaults.TxFontcolor, FTextBase::RECV);
+    TransmitText->setFontColor(progdefaults.TxFontcolor, FTextBase::RECV);
 
     fb->hide();
 
@@ -90,7 +90,7 @@ Function {cbWaterfallFontBrowser(Font_Browser*, void* v)} {open return_type void
     Fl_Font fnt = ft->fontNumber();
     int size = ft->fontSize();
 
-    progdefaults.WaterfallFontnbr = (int)(fnt);
+    progdefaults.WaterfallFontnbr = fnt;
     progdefaults.WaterfallFontsize = size;
     progdefaults.changed = true;
 
@@ -101,7 +101,7 @@ Function {make_colorsfonts()} {open
 } {
   Fl_Window dlgColorFont {
     label {Colors and Fonts} open
-    xywh {1141 753 370 274} type Double
+    xywh {505 705 370 270} type Double
     code0 {dlgColorFont->xclass(PACKAGE_TARNAME);} visible
   } {
     Fl_Group {} {
@@ -131,7 +131,7 @@ Function {make_colorsfonts()} {open
     o->color(fl_rgb_color(r,g,b));
     colorize_macros();
     
-    progdefaults.changed = true;}
+    progdefaults.changed = true;} selected
         tooltip {Background color for Function key group 1} xywh {10 55 75 20}
         code0 {btnGroup1->color(fl_rgb_color(progdefaults.btnGroup1.R, progdefaults.btnGroup1.G,progdefaults.btnGroup1.B));}
         code1 {btnGroup1->labelcolor(fl_rgb_color(progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R));}
@@ -171,7 +171,7 @@ Function {make_colorsfonts()} {open
     o->color(fl_rgb_color(r,g,b));
 
     colorize_macros();
-    progdefaults.changed = true;} selected
+    progdefaults.changed = true;}
         tooltip {Background color for Function key group 3} xywh {10 85 75 20}
         code0 {btnGroup3->color(fl_rgb_color(progdefaults.btnGroup3.R, progdefaults.btnGroup3.G,progdefaults.btnGroup3.B));}
         code1 {btnGroup3->labelcolor(fl_rgb_color(progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R));}
@@ -260,7 +260,7 @@ progdefaults.changed = true;}
         xywh {195 30 165 35}
         code0 {RxText->value("Receive Text");}
         code1 {RxText->color(fl_rgb_color(progdefaults.RxColor.R, progdefaults.RxColor.G, progdefaults.RxColor.B));}
-        code2 {RxText->textfont(progdefaults.RxFontnbr); RxText->textsize(progdefaults.RxFontsize); RxText->textcolor((Fl_Color)progdefaults.RxFontcolor);}
+        code2 {RxText->textfont(progdefaults.RxFontnbr); RxText->textsize(progdefaults.RxFontsize); RxText->textcolor(progdefaults.RxFontcolor);}
         code3 {RxText->type(FL_MULTILINE_INPUT_WRAP);}
       }
       Fl_Button btnRxColor {
@@ -309,7 +309,7 @@ progdefaults.changed = true;}
         xywh {195 100 165 35}
         code0 {TxText->value("Transmit Text");}
         code1 {TxText->color(fl_rgb_color(progdefaults.TxColor.R, progdefaults.TxColor.G, progdefaults.TxColor.B));}
-        code2 {TxText->textfont(progdefaults.TxFontnbr); TxText->textsize(progdefaults.TxFontsize); TxText->textcolor((Fl_Color)progdefaults.TxFontcolor);}
+        code2 {TxText->textfont(progdefaults.TxFontnbr); TxText->textsize(progdefaults.TxFontsize); TxText->textcolor(progdefaults.TxFontcolor);}
         code3 {TxText->type(FL_MULTILINE_INPUT_WRAP);}
       }
       Fl_Button btnRxFont {
@@ -317,9 +317,9 @@ progdefaults.changed = true;}
         callback {static Font_Browser* b = 0;
 if (!b) {
     b = new Font_Browser;
-    b->fontNumber((Fl_Font)progdefaults.RxFontnbr);
+    b->fontNumber(progdefaults.RxFontnbr);
     b->fontSize(progdefaults.RxFontsize);
-    b->fontColor((Fl_Color)progdefaults.RxFontcolor);
+    b->fontColor(progdefaults.RxFontcolor);
     b->callback(cbRxFontBrowser);
 }
 b->show();}
@@ -330,9 +330,9 @@ b->show();}
         callback {static Font_Browser* b = 0;
     if (!b) {
         b = new Font_Browser;
-        b->fontNumber((Fl_Font)progdefaults.TxFontnbr);
+        b->fontNumber(progdefaults.TxFontnbr);
         b->fontSize(progdefaults.TxFontsize);
-        b->fontColor((Fl_Color)progdefaults.TxFontcolor);
+        b->fontColor(progdefaults.TxFontcolor);
         b->callback(cbTxFontBrowser);
     }
     b->show();}
@@ -340,48 +340,48 @@ b->show();}
       }
       Fl_Button btnXMIT {
         label XMIT
-        callback {choose_color((Fl_Color*)&progdefaults.XMITcolor);
+        callback {choose_color(progdefaults.XMITcolor);
     btnXMIT->color( progdefaults.XMITcolor );
-    TransmitText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
-    ReceiveText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
+    TransmitText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
+    ReceiveText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
 
     progdefaults.changed = true;}
         tooltip {Sent chars in Rx/Tx pane} xywh {195 170 40 20} align 2
-        code0 {btnXMIT->color((Fl_Color)progdefaults.XMITcolor);}
+        code0 {btnXMIT->color(progdefaults.XMITcolor);}
       }
       Fl_Button btnCTRL {
         label CTRL
-        callback {choose_color((Fl_Color*)&progdefaults.CTRLcolor);
+        callback {choose_color(progdefaults.CTRLcolor);
     btnCTRL->color( progdefaults.CTRLcolor );
-    TransmitText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
-    ReceiveText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
+    TransmitText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
+    ReceiveText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
 
     progdefaults.changed = true;}
         tooltip {Control chars in Rx/Tx pane} xywh {236 170 40 20} align 2
-        code0 {btnCTRL->color((Fl_Color)progdefaults.CTRLcolor);}
+        code0 {btnCTRL->color(progdefaults.CTRLcolor);}
       }
       Fl_Button btnSKIP {
         label SKIP
-        callback {choose_color((Fl_Color*)&progdefaults.SKIPcolor);
+        callback {choose_color(progdefaults.SKIPcolor);
     btnSKIP->color( progdefaults.SKIPcolor );
-    TransmitText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
-    ReceiveText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
+    TransmitText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
+    ReceiveText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
 
     progdefaults.changed = true;}
         tooltip {Skipped chars in Tx pane
 (Tx on/off in CW)} xywh {278 170 40 20} align 2
-        code0 {btnSKIP->color((Fl_Color)progdefaults.SKIPcolor);}
+        code0 {btnSKIP->color(progdefaults.SKIPcolor);}
       }
       Fl_Button btnALTR {
         label ALTR
-        callback {choose_color((Fl_Color*)&progdefaults.ALTRcolor);
+        callback {choose_color(progdefaults.ALTRcolor);
     btnALTR->color( progdefaults.ALTRcolor );
-    TransmitText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
-    ReceiveText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
+    TransmitText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
+    ReceiveText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
 
     progdefaults.changed = true;}
         tooltip {Quick view chars in Rx pane} xywh {320 170 40 20} align 2
-        code0 {btnALTR->color((Fl_Color)progdefaults.ALTRcolor);}
+        code0 {btnALTR->color(progdefaults.ALTRcolor);}
       }
       Fl_Button btnNoTextColor {
         label System
@@ -396,10 +396,10 @@ b->show();}
     progdefaults.CTRLcolor = FL_DARK_GREEN;
     progdefaults.SKIPcolor = FL_BLUE;
     progdefaults.ALTRcolor = FL_DARK_MAGENTA;
-    btnXMIT->color((Fl_Color)progdefaults.XMITcolor);
-    btnCTRL->color((Fl_Color)progdefaults.CTRLcolor);
-    btnSKIP->color((Fl_Color)progdefaults.SKIPcolor);
-    btnALTR->color((Fl_Color)progdefaults.ALTRcolor);
+    btnXMIT->color(progdefaults.XMITcolor);
+    btnCTRL->color(progdefaults.CTRLcolor);
+    btnSKIP->color(progdefaults.SKIPcolor);
+    btnALTR->color(progdefaults.ALTRcolor);
     btnXMIT->redraw();
     btnCTRL->redraw();
     btnSKIP->redraw();
@@ -411,15 +411,15 @@ b->show();}
 
     clr = fl_rgb_color(r,g,b);
     RxText->color(clr);
-    RxText->textcolor((Fl_Color)progdefaults.RxFontcolor);
+    RxText->textcolor(progdefaults.RxFontcolor);
     RxText->redraw();
 
     ReceiveText->color(clr);
-    ReceiveText->setFontColor((Fl_Color)progdefaults.RxFontcolor, FTextBase::RECV);
-    ReceiveText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
-    ReceiveText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
-    ReceiveText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
-    ReceiveText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
+    ReceiveText->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
+    ReceiveText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
+    ReceiveText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
+    ReceiveText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
+    ReceiveText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
     ReceiveText->redraw();
 
     progdefaults.TxColor.R = r;
@@ -427,15 +427,15 @@ b->show();}
     progdefaults.TxColor.B = b;
 
     TxText->color(clr);
-    TxText->textcolor((Fl_Color)progdefaults.TxFontcolor);
+    TxText->textcolor(progdefaults.TxFontcolor);
     TxText->redraw();
 
     TransmitText->color(clr);
-    TransmitText->setFontColor((Fl_Color)progdefaults.TxFontcolor, FTextBase::RECV);
-    TransmitText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
-    TransmitText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
-    TransmitText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
-    TransmitText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
+    TransmitText->setFontColor(progdefaults.TxFontcolor, FTextBase::RECV);
+    TransmitText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
+    TransmitText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
+    TransmitText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
+    TransmitText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
     TransmitText->redraw();
 
     progdefaults.changed = true;}
@@ -452,10 +452,10 @@ b->show();}
     progdefaults.CTRLcolor = FL_DARK_GREEN;
     progdefaults.SKIPcolor = FL_BLUE;
     progdefaults.ALTRcolor = FL_DARK_MAGENTA;
-    btnXMIT->color((Fl_Color)progdefaults.XMITcolor);
-    btnCTRL->color((Fl_Color)progdefaults.CTRLcolor);
-    btnSKIP->color((Fl_Color)progdefaults.SKIPcolor);
-    btnALTR->color((Fl_Color)progdefaults.ALTRcolor);
+    btnXMIT->color(progdefaults.XMITcolor);
+    btnCTRL->color(progdefaults.CTRLcolor);
+    btnSKIP->color(progdefaults.SKIPcolor);
+    btnALTR->color(progdefaults.ALTRcolor);
     btnXMIT->redraw();
     btnCTRL->redraw();
     btnSKIP->redraw();
@@ -468,15 +468,15 @@ b->show();}
 
     clr = fl_rgb_color(r,g,b);
     RxText->color(clr);
-    RxText->textcolor((Fl_Color)progdefaults.RxFontcolor);
+    RxText->textcolor(progdefaults.RxFontcolor);
     RxText->redraw();
 
     ReceiveText->color(clr);
-    ReceiveText->setFontColor((Fl_Color)progdefaults.RxFontcolor, FTextBase::RECV);
-    ReceiveText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
-    ReceiveText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
-    ReceiveText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
-    ReceiveText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
+    ReceiveText->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
+    ReceiveText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
+    ReceiveText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
+    ReceiveText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
+    ReceiveText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
     ReceiveText->redraw();
 
     r = 200; g = 235; b = 255;
@@ -486,15 +486,15 @@ b->show();}
 
     clr = fl_rgb_color(r,g,b);
     TxText->color(clr);
-    TxText->textcolor((Fl_Color)progdefaults.TxFontcolor);
+    TxText->textcolor(progdefaults.TxFontcolor);
     TxText->redraw();
 
     TransmitText->color(clr);
-    TransmitText->setFontColor((Fl_Color)progdefaults.TxFontcolor, FTextBase::RECV);
-    TransmitText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
-    TransmitText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
-    TransmitText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
-    TransmitText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
+    TransmitText->setFontColor(progdefaults.TxFontcolor, FTextBase::RECV);
+    TransmitText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
+    TransmitText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
+    TransmitText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
+    TransmitText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
     TransmitText->redraw();
 
     progdefaults.changed = true;}
@@ -502,7 +502,7 @@ b->show();}
       }
     }
     Fl_Group {} {
-      label Widgets open
+      label {User Interface} open
       xywh {0 160 185 85} box ENGRAVED_FRAME align 21
     } {
       Fl_Choice mnuScheme {

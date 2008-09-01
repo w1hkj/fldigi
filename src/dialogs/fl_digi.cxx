@@ -489,20 +489,6 @@ bool clean_exit() {
 		MilliSleep(10);
 	}
 
-//	fl_lock (&trx_mutex);
-//	if (active_modem) {
-//		active_modem->shutdown();
-//		MilliSleep(100);
-//		delete active_modem;
-//	}
-//	active_modem = (modem *) 0;
-//	fl_unlock (&trx_mutex);
-
-//#if USE_HAMLIB	
-//	delete xcvr;
-//#endif
-//	delete push2talk;
-
 	return true;
 }
 
@@ -1727,6 +1713,7 @@ void create_fl_digi_main() {
 			valRcvMixer->color(fl_rgb_color(0,110,30));
 			valRcvMixer->labeltype(FL_ENGRAVED_LABEL);
 			valRcvMixer->selection_color(fl_rgb_color(255,255,0));
+			valRcvMixer->textcolor(FL_WHITE);
 			valRcvMixer->range(100.0,0.0);
 			valRcvMixer->value(100.0);
 			valRcvMixer->step(1.0);
@@ -1736,6 +1723,7 @@ void create_fl_digi_main() {
 			valXmtMixer->color(fl_rgb_color(110,0,30));
 			valXmtMixer->labeltype(FL_ENGRAVED_LABEL);
 			valXmtMixer->selection_color(fl_rgb_color(255,255,0));
+			valXmtMixer->textcolor(FL_WHITE);
 			valXmtMixer->range(100.0,0.0);
 			valXmtMixer->value(100.0);
 			valXmtMixer->step(1.0);
@@ -1755,14 +1743,15 @@ void create_fl_digi_main() {
 					progdefaults.RxColor.G,
 					progdefaults.RxColor.B));		
 
-
-			ReceiveText->setFont((Fl_Font)progdefaults.RxFontnbr);
-			ReceiveText->setFontSize(progdefaults.RxFontsize);
-			ReceiveText->setFontColor((Fl_Color)progdefaults.RxFontcolor, FTextBase::RECV);
-			ReceiveText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
-			ReceiveText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
-			ReceiveText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
-			ReceiveText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
+
+
+			ReceiveText->setFont(progdefaults.RxFontnbr);
+			ReceiveText->setFontSize(progdefaults.RxFontsize);
+			ReceiveText->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
+			ReceiveText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
+			ReceiveText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
+			ReceiveText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
+			ReceiveText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
 	
 			TiledGroup->add_resize_check(FTextView::wheight_mult_tsize, ReceiveText);
 			FHdisp = new Raster(sw, Y, WNOM-sw, minRxHeight);
@@ -1773,14 +1762,15 @@ void create_fl_digi_main() {
 				fl_rgb_color(
 					progdefaults.TxColor.R,
 					progdefaults.TxColor.G,
-					progdefaults.TxColor.B));		
-			TransmitText->setFont((Fl_Font)progdefaults.TxFontnbr);
-			TransmitText->setFontSize(progdefaults.TxFontsize);
-			TransmitText->setFontColor((Fl_Color)progdefaults.TxFontcolor, FTextBase::RECV);
-			TransmitText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
-			TransmitText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
-			TransmitText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
-			TransmitText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
+					progdefaults.TxColor.B));		
+
+			TransmitText->setFont(progdefaults.TxFontnbr);
+			TransmitText->setFontSize(progdefaults.TxFontsize);
+			TransmitText->setFontColor(progdefaults.TxFontcolor, FTextBase::RECV);
+			TransmitText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
+			TransmitText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
+			TransmitText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
+			TransmitText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
 
 			Fl_Box *minbox = new Fl_Box(sw,Y + 66, WNOM-sw, Htext - 66 - 32);
 			minbox->hide();
@@ -2534,16 +2524,29 @@ void set_AFCind(double val)
 
 void set_AFCrange(double val)
 {
-	REQ (&AFCind::range, AFCindicator, val);
-}
-
-// Adjust and return fg color to ensure good contrast with bg
-Fl_Color adjust_color(Fl_Color fg, Fl_Color bg)
-{
-	Fl_Color adj;
-	unsigned max = 24;
-	while ((adj = fl_contrast(fg, bg)) != fg  &&  max--)
-		fg = (adj == FL_WHITE) ? fl_color_average(fg, FL_WHITE, .9)
-				       : fl_color_average(fg, FL_BLACK, .9);
-	return fg;
-}
+	REQ (&AFCind::range, AFCindicator, val);
+
+}
+
+
+
+// Adjust and return fg color to ensure good contrast with bg
+
+Fl_Color adjust_color(Fl_Color fg, Fl_Color bg)
+
+{
+
+	Fl_Color adj;
+
+	unsigned max = 24;
+
+	while ((adj = fl_contrast(fg, bg)) != fg  &&  max--)
+
+		fg = (adj == FL_WHITE) ? fl_color_average(fg, FL_WHITE, .9)
+
+				       : fl_color_average(fg, FL_BLACK, .9);
+
+	return fg;
+
+}
+

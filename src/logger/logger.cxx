@@ -110,7 +110,6 @@ void writeadif () {
 	adiFile = fopen (sfname.c_str(), "a");
 	if (adiFile) {
 // write the current record to the file  
-		adif.append("<EOR>\n");
 		fprintf(adiFile,"%s", adif.c_str());
 		fclose (adiFile);
 	}
