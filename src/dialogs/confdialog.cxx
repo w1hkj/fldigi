@@ -160,7 +160,7 @@ static void cb_btnWaterfallFont(Fl_Button*, void*) {
   static Font_Browser *b = (Font_Browser *)0;
 if (!b) {
 b = new Font_Browser;
-b->fontNumber((Fl_Font)progdefaults.WaterfallFontnbr);
+b->fontNumber(progdefaults.WaterfallFontnbr);
 b->fontSize(progdefaults.WaterfallFontsize);
 }
 b->callback((Fl_Callback*)cbWaterfallFontBrowser, (void*)(b));

@@ -12,6 +12,7 @@
 
 #include "serial.h"
 #include "re.h"
+#include "debug.h"
 
 #ifdef __CYGWIN__
 // convert COMx to /dev/ttySy with y = x - 1
@@ -126,6 +127,7 @@ bool Cserial::OpenPort()  {
 	tcsetattr (fd, TCSANOW, &newtio);
 	
 	ioctl(fd, TIOCMGET, &status);
+	origstatus = status;
 
 	if (dtr)
 		status |= TIOCM_DTR; 		// set the DTR bit
@@ -149,12 +151,17 @@ bool Cserial::OpenPort()  {
 ///////////////////////////////////////////////////////
 void Cserial::SetPTT(bool b)
 {
-	if (fd < 0) 
+	if (fd < 0) {
+		LOG_DEBUG("ptt fd < 0");
 		return;
-	if ( !(dtrptt || rtsptt) )
+	}
+	if ( !(dtrptt || rtsptt) ) {
+		LOG_DEBUG("No h/w PTT");
 		return;
+	}
 
 	ioctl(fd, TIOCMGET, &status);
+	LOG_DEBUG("Status %X", status);
 	if (b == true) {				// ptt enabled
 		if (dtrptt && dtr)
 			status &= ~TIOCM_DTR;	// toggle low
@@ -178,6 +185,7 @@ void Cserial::SetPTT(bool b)
 				status &= ~TIOCM_RTS;	// toggle low
 		}
 	}
+	LOG_DEBUG("Status %X", status);
 	ioctl(fd, TIOCMSET, &status);
 }
 
@@ -189,6 +197,8 @@ void Cserial::SetPTT(bool b)
 void Cserial::ClosePort()
 {
 	if (fd < 0) return;
+	LOG_DEBUG("Serial port closed");
+	ioctl(fd, TIOCMSET, &origstatus);
 	tcsetattr (fd, TCSANOW, &oldtio);
 	close(fd);
 	return;

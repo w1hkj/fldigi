@@ -33,7 +33,7 @@ static void cbRxFontBrowser(Fl_Widget* w, void* arg) {
     RxText->textcolor(color);
     RxText->redraw();
 
-    progdefaults.RxFontnbr = (int)(font);
+    progdefaults.RxFontnbr = font;
     progdefaults.RxFontsize = size;
     progdefaults.RxFontcolor = color;
 
@@ -57,7 +57,7 @@ static void cbTxFontBrowser(Fl_Widget* w, void* arg) {
     TxText->textcolor(color);
     TxText->redraw();
 
-    progdefaults.TxFontnbr = (int)(font);
+    progdefaults.TxFontnbr = font;
     progdefaults.TxFontsize = size;
     progdefaults.TxFontcolor = color;
 
@@ -75,7 +75,7 @@ void cbWaterfallFontBrowser(Font_Browser*, void* v) {
     Fl_Font fnt = ft->fontNumber();
     int size = ft->fontSize();
 
-    progdefaults.WaterfallFontnbr = (int)(fnt);
+    progdefaults.WaterfallFontnbr = fnt;
     progdefaults.WaterfallFontsize = size;
     progdefaults.changed = true;
 
@@ -278,7 +278,7 @@ static void cb_btnRxFont(Fl_Button*, void*) {
   static Font_Browser* b = 0;
 if (!b) {
     b = new Font_Browser;
-    b->fontNumber((Fl_Font)progdefaults.RxFontnbr);
+    b->fontNumber(progdefaults.RxFontnbr);
     b->fontSize(progdefaults.RxFontsize);
     b->fontColor(progdefaults.RxFontcolor);
     b->callback(cbRxFontBrowser);
@@ -292,7 +292,7 @@ static void cb_btnTxFont(Fl_Button*, void*) {
   static Font_Browser* b = 0;
     if (!b) {
         b = new Font_Browser;
-        b->fontNumber((Fl_Font)progdefaults.TxFontnbr);
+        b->fontNumber(progdefaults.TxFontnbr);
         b->fontSize(progdefaults.TxFontsize);
         b->fontColor(progdefaults.TxFontcolor);
         b->callback(cbTxFontBrowser);

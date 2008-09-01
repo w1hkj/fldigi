@@ -213,10 +213,10 @@ configuration progdefaults = {
 
 // Rx / Tx / Waterfall Text Widgets
 
-	FL_SCREEN,		// int 		RxFontnbr
+	FL_SCREEN,		// Fl_Font 		RxFontnbr
 	16,				// int 		RxFontsize
 	FL_BLACK,				// Fl_Color		RxFontcolor
-	FL_SCREEN,		// int 		TxFontnbr
+	FL_SCREEN,		// Fl_Font 		TxFontnbr
 	16,				// int 		TxFontsize
 	FL_BLACK,				// Fl_Color		TxFontcolor
 	{ 255, 242, 190}, // RGBint RxColor;
@@ -227,7 +227,7 @@ configuration progdefaults = {
 	FL_BLUE,		// Fl_Color		SKIPcolor;
 	FL_DARK_MAGENTA,// Fl_Color		ALTRcolor;
 	
-	FL_SCREEN,		// int		WaterfallFontnbr
+	FL_SCREEN,		// Fl_Font		WaterfallFontnbr
 	12,				// int		WaterfallFontsize
 
 	"gtk+",				// string	ui_scheme
@@ -537,10 +537,10 @@ void configuration::writeDefaultsXML()
 	writeXMLrgb(f, "FKEYTEXTCOLOR", 
 		btnFkeyTextColor.R, btnFkeyTextColor.G, btnFkeyTextColor.B);
 	
-	writeXMLint(f, "RXFONTNBR", RxFontnbr);
+	writeXMLint(f, "RXFONTNBR", (int)RxFontnbr);
 	writeXMLint(f, "RXFONTSIZE", RxFontsize);
 	writeXMLint(f, "RXFNTCOLOR", (int)RxFontcolor);
-	writeXMLint(f, "TXFONTNBR", TxFontnbr);
+	writeXMLint(f, "TXFONTNBR", (int)TxFontnbr);
 	writeXMLint(f, "TXFONTSIZE", TxFontsize);
 	writeXMLint(f, "TXFNTCOLOR", (int)TxFontcolor);
 	writeXMLint(f, "XMITCOLOR", (int)XMITcolor);
@@ -550,7 +550,7 @@ void configuration::writeDefaultsXML()
 
 	writeXMLrgb(f, "RXFONTCOLOR", RxColor.R, RxColor.G, RxColor.B);
 	writeXMLrgb(f, "TXFONTCOLOR", TxColor.R, TxColor.G, TxColor.B);
-	writeXMLint(f, "WATERFALLFONTNBR", WaterfallFontnbr);
+	writeXMLint(f, "WATERFALLFONTNBR", (int)WaterfallFontnbr);
 	writeXMLint(f, "WATERFALLFONTSIZE", WaterfallFontsize);
 
 	writeXMLstr(f, "UISCHEME", ui_scheme);
@@ -1068,7 +1068,7 @@ bool configuration::readDefaultsXML()
 							&btnFkeyTextColor.B);
 						break;
 					case RXFONTNBR :
-						RxFontnbr = atoi(xml->getNodeData());
+						RxFontnbr = (Fl_Font)atoi(xml->getNodeData());
 						break;
 					case RXFONTSIZE :
 						RxFontsize = atoi(xml->getNodeData());
@@ -1077,7 +1077,7 @@ bool configuration::readDefaultsXML()
 						RxFontcolor = (Fl_Color)atoi(xml->getNodeData());
 						break;
 					case TXFONTNBR :
-						TxFontnbr = atoi(xml->getNodeData());
+						TxFontnbr = (Fl_Font)atoi(xml->getNodeData());
 						break;
 					case TXFONTSIZE :
 						TxFontsize = atoi(xml->getNodeData());
@@ -1102,7 +1102,7 @@ bool configuration::readDefaultsXML()
 						ALTRcolor = (Fl_Color)atoi(xml->getNodeData());
 						break;
 					case WATERFALLFONTNBR :
-						WaterfallFontnbr = atoi(xml->getNodeData());
+						WaterfallFontnbr = (Fl_Font)atoi(xml->getNodeData());
 						break;
 					case WATERFALLFONTSIZE :
 						WaterfallFontsize = atoi(xml->getNodeData());

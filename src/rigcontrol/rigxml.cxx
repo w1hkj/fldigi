@@ -588,15 +588,21 @@ void parsePORT(size_t &p0)
 		rigio.RTSCTS(rig.rtscts);
 	}
 	p0 = pend;
-#ifdef DEBUGXML
-	LOG_DEBUG("port: %s\n" "baud: %d\n" "retries: %d\n" "timeout: %d\n", "initial rts: %+d\n"
-		  "use rts ptt: %c\n" "initial dts: %+d\n" "use dtr ptt: %c\n"
-		  "use flowcontrol: %c",
+
+	LOG_DEBUG("\nSerial port parameters:\n\
+    port: %s\n\
+    baud: %d\n\
+    retries: %d\n\
+    timeout: %d\n\
+    initial rts: %+d\n\
+    use rts ptt: %c\n\
+    initial dts: %+d\n\
+    use dtr ptt: %c\n\
+    use flowcontrol: %c",
 		  rig.port.c_str(), rig.baud, rig.retries, rig.timeout, (rig.rts ? +12 : -12),
 		  (rig.rtsptt ? 'T' : 'F'), (rig.dtr ? +12 : -12), (rig.dtrptt ? 'T' : 'F'),
 		  (rig.rtscts ? 'T' : 'F'));
 
-#endif	
 }
 
 //---------------------------------------------------------------------

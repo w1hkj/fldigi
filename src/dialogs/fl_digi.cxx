@@ -489,20 +489,6 @@ bool clean_exit() {
 		MilliSleep(10);
 	}
 
-//	fl_lock (&trx_mutex);
-//	if (active_modem) {
-//		active_modem->shutdown();
-//		MilliSleep(100);
-//		delete active_modem;
-//	}
-//	active_modem = (modem *) 0;
-//	fl_unlock (&trx_mutex);
-
-//#if USE_HAMLIB	
-//	delete xcvr;
-//#endif
-//	delete push2talk;
-
 	return true;
 }
 
@@ -1759,19 +1745,13 @@ void create_fl_digi_main() {
 
 
 
-			ReceiveText->setFont((Fl_Font)progdefaults.RxFontnbr);
-
+			ReceiveText->setFont(progdefaults.RxFontnbr);
 			ReceiveText->setFontSize(progdefaults.RxFontsize);
-
-			ReceiveText->setFontColor((Fl_Color)progdefaults.RxFontcolor, FTextBase::RECV);
-
-			ReceiveText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
-
-			ReceiveText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
-
-			ReceiveText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
-
-			ReceiveText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
+			ReceiveText->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
+			ReceiveText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
+			ReceiveText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
+			ReceiveText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
+			ReceiveText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
 	
 			TiledGroup->add_resize_check(FTextView::wheight_mult_tsize, ReceiveText);
 			FHdisp = new Raster(sw, Y, WNOM-sw, minRxHeight);
@@ -1784,19 +1764,13 @@ void create_fl_digi_main() {
 					progdefaults.TxColor.G,
 					progdefaults.TxColor.B));		
 
-			TransmitText->setFont((Fl_Font)progdefaults.TxFontnbr);
-
+			TransmitText->setFont(progdefaults.TxFontnbr);
 			TransmitText->setFontSize(progdefaults.TxFontsize);
-
-			TransmitText->setFontColor((Fl_Color)progdefaults.TxFontcolor, FTextBase::RECV);
-
-			TransmitText->setFontColor((Fl_Color)progdefaults.XMITcolor, FTextBase::XMIT);
-
-			TransmitText->setFontColor((Fl_Color)progdefaults.CTRLcolor, FTextBase::CTRL);
-
-			TransmitText->setFontColor((Fl_Color)progdefaults.SKIPcolor, FTextBase::SKIP);
-
-			TransmitText->setFontColor((Fl_Color)progdefaults.ALTRcolor, FTextBase::ALTR);
+			TransmitText->setFontColor(progdefaults.TxFontcolor, FTextBase::RECV);
+			TransmitText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
+			TransmitText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
+			TransmitText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
+			TransmitText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
 
 			Fl_Box *minbox = new Fl_Box(sw,Y + 66, WNOM-sw, Htext - 66 - 32);
 			minbox->hide();

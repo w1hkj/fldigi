@@ -857,37 +857,6 @@ void x1_cb(Fl_Widget *w, void* v) {
 	restoreFocus();
 }
 
-//void bw_rsid_toggle(waterfall *wf)
-//{
-//	if (trx_state == STATE_TX)
-//		return;
-//	if (progdefaults.rsid == true) {
-//		progdefaults.rsid = false;
-//		wf->bw_rsid->color(FL_BACKGROUND_COLOR);
-//		wf->bw_rsid->redraw();
-//		wf->xmtrcv->activate();
-//	} else {
-//		ReedSolomon->reset();
-//		progdefaults.rsid = true;
-//		wf->bw_rsid->color(FL_YELLOW);
-//		wf->bw_rsid->redraw();
-//		wf->xmtrcv->deactivate();
-//	}
-//	restoreFocus();
-//}
-
-//void bw_rsid_cb(Fl_Widget *w, void * v) {
-//	waterfall *wf = (waterfall *)w->parent();
-//	wf->wfdisp->DispColor(!wf->wfdisp->DispColor());
-//	if (wf->wfdisp->DispColor() == 0) {
-//		w->label("gry");
-//	} else {
-//		w->label("clr");
-//	}
-//	restoreFocus();
-//	bw_rsid_toggle(wf);
-//}
-
 void slew_left(Fl_Widget *w, void * v) {
 	waterfall *wf = (waterfall *)w->parent();
 	wf->wfdisp->slew(-100);

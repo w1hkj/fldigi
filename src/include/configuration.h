@@ -196,10 +196,10 @@ struct configuration {
 	RGBint  btnFkeyTextColor;
 	
 // Rx / Tx fonts & palettes
-	int 	RxFontnbr;
+	Fl_Font 	RxFontnbr;
 	int 	RxFontsize;
 	Fl_Color		RxFontcolor;
-	int 	TxFontnbr;
+	Fl_Font 	TxFontnbr;
 	int 	TxFontsize;
 	Fl_Color		TxFontcolor;
 	RGBint	RxColor;
@@ -209,7 +209,7 @@ struct configuration {
 	Fl_Color		SKIPcolor;
 	Fl_Color		ALTRcolor;
 	
-	int		WaterfallFontnbr;
+	Fl_Font		WaterfallFontnbr;
 	int		WaterfallFontsize;
 
 	string		ui_scheme;
