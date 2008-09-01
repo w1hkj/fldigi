@@ -20,34 +20,35 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------------------------------------------------------------------
 
-#include <config.h>
-#if !defined(RE_H_) && HAVE_REGEX_H
+#ifndef RE_H_
 #define RE_H_
 
-#  include <regex.h>
-#  include <string>
-#  include <vector>
+#include <regex.h>
+#include <string>
+#include <vector>
 
 class re_t
 {
 public:
-	re_t(const char* pattern_, int cflags = 0);
+	re_t(const char* pattern_ = "", int cflags_ = 0);
 	re_t(const re_t& re);
 	~re_t();
 	re_t& operator=(const re_t& rhs);
+	re_t& operator=(const char* pattern_);
+	operator bool(void) { return !error; }
 
-	bool match(const char* str, int eflags = 0);
+	bool match(const char* str, int eflags_ = 0);
         const char* submatch(size_t n);
+	size_t nsub(void) { return substr.size(); }
 private:
 	void compile(void);
 
-	std::string pattern, str;
+	std::string pattern;
 	int cflags, eflags;
 	regex_t preg;
 	std::vector<regmatch_t> suboff;
 	std::vector<std::string> substr;
 	bool error;
 };
-
 
 #endif // RE_H_/
