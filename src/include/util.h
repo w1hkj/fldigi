@@ -100,12 +100,17 @@ extern "C" {
 const__ uint32_t ceil2(uint32_t n);
 const__ uint32_t floor2(uint32_t n);
 
+#if !HAVE_STRCASESTR
+char* strcasestr(const char* haystack, const char* needle);
+#endif
+
+int set_cloexec(int fd, unsigned char v);
 
 #ifdef __cplusplus
 } // extern "C"
 #endif
 
-#if !defined(NDEBUG) && defined(deprecated__)
+#if !defined(NDEBUG) && defined(deprecated__) && defined(__GNUC__)
 #include <stdio.h>
 #include <string.h>
 deprecated__ typeof(sprintf) sprintf;
@@ -113,10 +118,6 @@ deprecated__ typeof(sprintf) sprintf;
 deprecated__ typeof(strcpy) strcpy;
 deprecated__ typeof(strcat) strcat;
 */
-#endif
-
-#if !HAVE_STRCASESTR
-char* strcasestr(const char* haystack, const char* needle);
 #endif
 
 #ifdef __CYGWIN__

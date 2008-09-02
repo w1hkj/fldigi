@@ -318,7 +318,8 @@ enum TAG { \
 	RXFONTNBR, RXFONTSIZE, RXFNTCOLOR, TXFONTNBR, TXFONTSIZE, TXFNTCOLOR,
 	RXFONTCOLOR, TXFONTCOLOR, XMITCOLOR, CTRLCOLOR, SKIPCOLOR, ALTRCOLOR,
 	WATERFALLFONTNBR, WATERFALLFONTSIZE, UISCHEME,
-	RSIDWIDESEARCH, TRANSMITRSID, SLOWCPU
+	RSIDWIDESEARCH, TRANSMITRSID, SLOWCPU,
+	MT638BIT, MT63INTERLEAVE
 };
 	
 void writeXMLint(ofstream &f, const char * tag,  int val)
@@ -558,6 +559,9 @@ void configuration::writeDefaultsXML()
 	writeXMLbool(f, "RSIDWIDESEARCH", rsidWideSearch);
 	writeXMLbool(f, "TRANSMITRSID", TransmitRSid);
 	writeXMLbool(f, "SLOWCPU", slowcpu);
+	
+	writeXMLbool(f, "MT638BIT", mt63_8bit);
+	writeXMLint(f, "MT63INTERLEAVE", mt63_interleave);
 	
 	f << "</FLDIGI_DEFS>\n";
 	f.close();
@@ -1123,6 +1127,12 @@ bool configuration::readDefaultsXML()
 					case SLOWCPU :
 						slowcpu = atoi(xml->getNodeData());
 						break;
+					case MT638BIT :
+						mt63_8bit = atoi(xml->getNodeData());
+						break;
+					case MT63INTERLEAVE :
+						mt63_interleave = atoi(xml->getNodeData());
+						break;
 				}
 				break;
 				
@@ -1297,10 +1307,13 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("SKIPCOLOR", nodeName)) tag = SKIPCOLOR;
 				else if (!strcmp("ALTRCOLOR", nodeName)) tag = ALTRCOLOR;
 				else if (!strcmp("WATERFALLFONTNBR", nodeName)) tag = WATERFALLFONTNBR;
-				else if (!strcmp("WATERFALLFONTSIZE", nodeName)) tag = WATERFALLFONTSIZE;				else if (!strcmp("UISCHEME", nodeName)) tag = UISCHEME;
+				else if (!strcmp("WATERFALLFONTSIZE", nodeName)) tag = WATERFALLFONTSIZE;
+				else if (!strcmp("UISCHEME", nodeName)) tag = UISCHEME;
 				else if (!strcmp("RSIDWIDESEARCH", nodeName)) tag = RSIDWIDESEARCH;
 				else if (!strcmp("TRANSMITRSID", nodeName)) tag = TRANSMITRSID;
 				else if (!strcmp("SLOWCPU", nodeName)) tag = SLOWCPU;
+				else if (!strcmp("MT638BIT", nodeName)) tag = MT638BIT;
+				else if (!strcmp("MT63INTERLEAVE", nodeName)) tag = MT63INTERLEAVE;
 				else tag = IGNORE;
 				}
 				break;

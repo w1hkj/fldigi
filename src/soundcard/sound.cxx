@@ -1228,8 +1228,7 @@ void SoundPort::init_stream(unsigned dir)
 		}
 	}
         if (idx == paNoDevice) { // no match
-		LOG_WARN("Could not find device \"%s\", using default device \"%s\"",
-			 sd[dir].device.c_str(), dir_str[dir]);
+		LOG_ERROR("Could not find device \"%s\", using default device", sd[dir].device.c_str());
 		PaDeviceIndex def = (dir == 0 ? Pa_GetDefaultInputDevice() : Pa_GetDefaultOutputDevice());
 		if (def == paNoDevice)
 			throw SndPortException(paDeviceUnavailable);
@@ -1240,9 +1239,11 @@ void SoundPort::init_stream(unsigned dir)
 		sd[dir].idev = devs.begin() + idx;
 
 
+#ifdef __linux__
 	if ((dir == 0 && (*sd[dir].idev)->maxInputChannels == 0) ||
 	    (dir == 1 && (*sd[dir].idev)->maxOutputChannels == 0))
 		throw SndException(EBUSY);
+#endif
 
 	if (dir == 0) {
 		sd[0].params.device = idx;

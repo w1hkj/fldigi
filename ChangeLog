@@ -19,6 +19,8 @@ Change Log:
              Skipped text
              Alternate (quick view) text
              Background
+      10) Changed the way that RTS/DTR PTT is used with rig.xml files
+      11) Updated regular expression parser
       
 3.02
       1) Added hamlib interface for rig control

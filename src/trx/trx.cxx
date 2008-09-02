@@ -435,12 +435,13 @@ void trx_reset(void)
 
 //=============================================================================
 static char timermsg[80];
+static int  countdown = 1;
 static void macro_timer(void *)
 {
 	if (progdefaults.useTimer == false)
 		return;
-	progdefaults.timeout--;
-	if (progdefaults.timeout == 0) {
+	countdown--;
+	if (countdown == 0) {
 		progdefaults.useTimer = false;
 		macros.execute(progdefaults.macronumber);
 		FL_LOCK();
@@ -448,7 +449,7 @@ static void macro_timer(void *)
 		btnMacroDummy->show();
 		FL_UNLOCK();
 	} else {
-		snprintf(timermsg, sizeof(timermsg), "Timer: %d", progdefaults.timeout);
+		snprintf(timermsg, sizeof(timermsg), "Timer: %d", countdown);
 		FL_LOCK();
 		btnMacroTimer->label(timermsg);
 		btnMacroTimer->redraw_label();
@@ -460,8 +461,9 @@ static void macro_timer(void *)
 //=============================================================================
 void trx_start_macro_timer()
 {
+	countdown = progdefaults.timeout;
 	Fl::add_timeout(1.0, macro_timer);
-	snprintf(timermsg, sizeof(timermsg), "Timer: %d", progdefaults.timeout);
+	snprintf(timermsg, sizeof(timermsg), "Timer: %d", countdown);
 	FL_LOCK();
 	btnMacroTimer->label(timermsg);
 	btnMacroTimer->redraw_label();

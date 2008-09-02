@@ -1466,13 +1466,13 @@ progdefaults.changed = true;}
                 code0 {o->value(progdefaults.mt63_8bit);}
               }
               Fl_Check_Button btnmt63_interleave {
-                label {64 bit interleave}
+                label {64 bit interleave (long)}
                 callback {if (o->value() == 1)
 progdefaults.mt63_interleave = 64;
 else
 progdefaults.mt63_interleave = 32;
 progdefaults.changed = true;}
-                xywh {55 120 134 15} down_box DOWN_BOX
+                xywh {55 120 186 15} down_box DOWN_BOX
                 code0 {o->value(0);if (progdefaults.mt63_interleave == 64) o->value(1);}
               }
             }

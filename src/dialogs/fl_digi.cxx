@@ -707,7 +707,7 @@ void colorize_macro(int i)
 				progdefaults.btnFkeyTextColor.G,
 				progdefaults.btnFkeyTextColor.B ));
 	} else {
-		btnMacro[i]->color(FL_BACKGROUND2_COLOR);
+		btnMacro[i]->color(FL_BACKGROUND_COLOR);
 		btnMacro[i]->labelcolor(FL_FOREGROUND_COLOR);
 	}
 }

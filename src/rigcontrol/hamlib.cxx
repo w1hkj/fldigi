@@ -384,7 +384,6 @@ static void *hamlib_loop(void *args)
 				if (freq == 0) {
 					fl_unlock (&hamlib_mutex);
 					continue;
-//					hamlib_exit = true;
 				}
 			}
 			catch (const RigException& Ex) {
@@ -416,9 +415,7 @@ static void *hamlib_loop(void *args)
 
 		if (freqok && freq && (freq != hamlib_freq)) {
 			hamlib_freq = freq;
-			FL_LOCK_D();
-				FreqDisp->value(hamlib_freq);
-			FL_UNLOCK_D();
+			FreqDisp->value(hamlib_freq);
 			wf->rfcarrier(hamlib_freq);
 		}
 		

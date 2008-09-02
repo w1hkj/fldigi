@@ -436,7 +436,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		*retval = xmlrpc_c::value_int(cntSearchRange->value());
+		*retval = xmlrpc_c::value_int((int)cntSearchRange->value());
 	}
 };
 
@@ -450,8 +450,8 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		int v = cntSearchRange->value();
-		REQ(set_valuator, cntSearchRange, params.getInt(0, cntSearchRange->minimum(), cntSearchRange->maximum()));
+		int v = (int)(cntSearchRange->value());
+		REQ(set_valuator, cntSearchRange, params.getInt(0, (int)cntSearchRange->minimum(), (int)cntSearchRange->maximum()));
 		*retval = xmlrpc_c::value_int(v);
 	}
 };
@@ -466,7 +466,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		int v = cntSearchRange->value() + params.getInt(0);
+		int v = (int)(cntSearchRange->value() + params.getInt(0));
 		REQ(set_valuator, cntSearchRange, v);
 		*retval = xmlrpc_c::value_int(v);
 	}
@@ -499,7 +499,7 @@ public:
 			throw xmlrpc_c::fault("Operation not supported by modem", xmlrpc_c::fault::code_t(0));
 		}
 
-		*retval = xmlrpc_c::value_int(val->value());
+		*retval = xmlrpc_c::value_int((int)val->value());
 	}
 };
 
@@ -525,8 +525,8 @@ public:
 			throw xmlrpc_c::fault("Operation not supported by modem", xmlrpc_c::fault::code_t(0));
 		}
 
-		int v = val->value();
-		REQ(set_valuator, val, params.getInt(0, val->minimum(), val->maximum()));
+		int v = (int)(val->value());
+		REQ(set_valuator, val, params.getInt(0, (int)val->minimum(), (int)val->maximum()));
 		*retval = xmlrpc_c::value_int(v);
 	}
 };
@@ -553,7 +553,7 @@ public:
 			throw xmlrpc_c::fault("Operation not supported by modem", xmlrpc_c::fault::code_t(0));
 		}
 
-		int v = val->value() + params.getInt(0);
+		int v = (int)(val->value() + params.getInt(0));
 		REQ(set_valuator, val, v);
 		*retval = xmlrpc_c::value_int(v);
 	}
@@ -676,10 +676,10 @@ public:
 		double d = wf->rfcarrier();
 		double rfc = params.getDouble(0, 0.0);
 		int mc = active_modem->get_freq();
-		rigCAT_set_qsy(rfc, mc);
-		rigMEM_set_qsy(rfc, mc);
+		rigCAT_set_qsy((long long int)rfc, mc);
+		rigMEM_set_qsy((long long int)rfc, mc);
 #if USE_HAMLIB
-		hamlib_set_qsy(rfc, mc);
+		hamlib_set_qsy((long long int)rfc, mc);
 #endif
 		*retval = xmlrpc_c::value_double(d);
 	}
@@ -697,10 +697,10 @@ public:
         {
 		double rfc = wf->rfcarrier() + params.getDouble(0);
 		int mc = active_modem->get_freq();
-		rigCAT_set_qsy(rfc, mc);
-		rigMEM_set_qsy(rfc, mc);
+		rigCAT_set_qsy((long long int)rfc, mc);
+		rigMEM_set_qsy((long long int)rfc, mc);
 #if USE_HAMLIB
-		hamlib_set_qsy(rfc, mc);
+		hamlib_set_qsy((long long int)rfc, mc);
 #endif
 		*retval = xmlrpc_c::value_double(rfc);
 	}

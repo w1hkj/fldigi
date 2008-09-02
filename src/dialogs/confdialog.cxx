@@ -2554,7 +2554,7 @@ l with your sound hardware.");
                 btnMT63_8bit->callback((Fl_Callback*)cb_btnMT63_8bit);
                 o->value(progdefaults.mt63_8bit);
               } // Fl_Check_Button* btnMT63_8bit
-              { Fl_Check_Button* o = btnmt63_interleave = new Fl_Check_Button(55, 120, 134, 15, "64 bit interleave");
+              { Fl_Check_Button* o = btnmt63_interleave = new Fl_Check_Button(55, 120, 186, 15, "64 bit interleave (long)");
                 btnmt63_interleave->down_box(FL_DOWN_BOX);
                 btnmt63_interleave->callback((Fl_Callback*)cb_btnmt63_interleave);
                 o->value(0);if (progdefaults.mt63_interleave == 64) o->value(1);

@@ -9,31 +9,19 @@
 #include "status.h"
 #include "waterfall.h"
 #include "fl_digi.h"
+#include "re.h"
+
 #include <FL/Enumerations.H>
 #include <FL/Fl_Slider.H>
 #include <FL/fl_ask.H>
 
 #include <string>
 
-// To disable REGULAR EXPRESSION EVALUATION FOR THE FIND STRING
-// uncomment the following two lines
-// #undef HAVE_REGEX_H
-// #define HAVE_REGEX_H 0
-
-#if HAVE_REGEX_H
-#    if HAVE_SYS_TYPES_H
-#        include <sys/types.h>
-#    endif
-#    include <regex.h>
-#endif
+using namespace std;
 
 
 string bwsrfreq;
 string bwsrline[MAXCHANNELS];
-#if !HAVE_REGEX_H
-string ucaseline[MAXCHANNELS];
-string tofind;
-#endif
 
 static int  brwsFreq[MAXCHANNELS];
 static int  freq;
@@ -56,6 +44,9 @@ int rfwidth;
 int chwidth;
 int sbarwidth = 16;
 int border = 4;
+
+re_t seek_re("", REG_EXTENDED | REG_ICASE | REG_NOSUB);
+int re_eflags = REG_NOTBOL | REG_NOTEOL;
 
 //unsigned int nchars = 80;
 
@@ -90,26 +81,6 @@ string fline;
 	return fline;
 }
 
-#if HAVE_REGEX_H
-regex_t* seek_re = 0;
-void re_comp(const char* needle)
-{
-        if (seek_re)
-                regfree(seek_re);
-        else
-                seek_re = new regex_t;
-        if (!(needle && *needle && regcomp(seek_re, needle, REG_EXTENDED | REG_ICASE | REG_NOSUB) == 0)) {
-                delete seek_re;
-                seek_re = 0;
-        }
-}
-// match haystack against seek_re
-bool re_find(const char* haystack)
-{
-        return seek_re && !regexec(seek_re, haystack, 0, 0, REG_NOTBOL | REG_NOTEOL);
-}
-#endif // HAVE_REGEX_H
-
 void pskBrowser::resize(int x, int y, int w, int h) {
 	unsigned int nuchars = (w - cols[0] - (sbarwidth + border)) / cwidth;
 	string bline;
@@ -120,21 +91,11 @@ void pskBrowser::resize(int x, int y, int w, int h) {
 			if (len > nuchars)
 				bwsrline[i] = bwsrline[i].substr(len - nuchars);
 			bline = freqformat(i);
-#if !HAVE_REGEX_H
-			if (!tofind.empty()) {
-				if (ucaseline[i].find(tofind) != string::npos)
-					bline.append(dkred);
-			}
-			else if (!progdefaults.myCall.empty())
-				if (ucaseline[i].find(progdefaults.myCall) != string::npos)
-					bline.append(dkgreen);
-#else
-			if (re_find(bwsrline[i].c_str()))
+			if (seek_re.match(bwsrline[i].c_str(), re_eflags))
 				bline.append(dkred);
 			else if (!progdefaults.myCall.empty() &&
 					strcasestr(bwsrline[i].c_str(), progdefaults.myCall.c_str()))
 				bline.append(dkgreen);
-#endif
 			bline.append("@.").append(bwsrline[i]);
 			Fl_Hold_Browser::add(bline.c_str());
 		}
@@ -222,9 +183,6 @@ void ClearViewer() {
 
 		bline = freqformat(i);
   		bwsrline[i].clear();
-#if !HAVE_REGEX_H
-  		ucaseline[i].clear();
-#endif
   		brwsViewer->add(bline.c_str());
   	}
 	if (progdefaults.VIEWERshowfreq)
@@ -290,19 +248,13 @@ static void cb_brwsViewer(Fl_Hold_Browser*, void*) {
 
 static void cb_Seek(Fl_Input *, void *)
 {
-#if !HAVE_REGEX_H
-	tofind = inpSeek->value();
-	for (size_t i = 0; i < tofind.length(); i++)
-		tofind[i] = toupper(tofind[i]);
-#else
 	static Fl_Color seek_color[2] = { FL_FOREGROUND_COLOR,
 					  adjust_color(FL_RED, FL_BACKGROUND2_COLOR) }; // invalid RE
-	re_comp(inpSeek->value());
+	seek_re = *inpSeek->value() ? inpSeek->value() : "[invalid";
 	if (inpSeek->textcolor() != seek_color[!seek_re]) {
 		inpSeek->textcolor(seek_color[!seek_re]);
 		inpSeek->redraw();
 	}
-#endif
 }
 
 static void cb_Squelch(Fl_Slider *, void *)
@@ -409,47 +361,23 @@ void viewaddchr(int ch, int freq, char c) {
 	if (progdefaults.VIEWERmarquee) {
 		if (bwsrline[index].length() > progStatus.VIEWERnchars ) {
 			bwsrline[index].erase(0,1);
-#if !HAVE_REGEX_H
-			ucaseline[index].erase(0,1);
-#endif
 		}
 		if (c >= ' ' && c <= '~') {
 			bwsrline[index] += c;
-#if !HAVE_REGEX_H
-			ucaseline[index] += toupper(c);
-#endif
 		} else {
 			bwsrline[index] += ' ';
-#if !HAVE_REGEX_H
-			ucaseline[index] += ' ';
-#endif
 		}
 	} else {
 		if (c >= ' ' && c <= '~') {
 			bwsrline[index] += c;
-#if !HAVE_REGEX_H
-			ucaseline[index] += toupper(c);
-#endif
 		} else {
 			bwsrline[index] += ' ';
-#if !HAVE_REGEX_H
-			ucaseline[index] += ' ';
-#endif
 		}
 		if (bwsrline[index].length() > progStatus.VIEWERnchars)
 			bwsrline[index].clear();
 	}
 	nuline = freqformat(index);
-#if !HAVE_REGEX_H
-	if (!tofind.empty()) {
-		if (ucaseline[index].find(tofind) != string::npos)
-			nuline.append(dkred);
-	}
-	else if (!progdefaults.myCall.empty())
-		if (ucaseline[index].find(progdefaults.myCall) != string::npos)
-			nuline.append(dkgreen);
-#else
-	if (re_find(bwsrline[index].c_str())) {
+	if (seek_re.match(bwsrline[index].c_str(), re_eflags)) {
 		nuline.append(dkred);
 //		if (chkBeep->value())
 //			fl_beep();
@@ -460,7 +388,6 @@ void viewaddchr(int ch, int freq, char c) {
 //		if (chkBeep->value())
 //			fl_beep();
 	}
-#endif
 	nuline.append("@.").append(bwsrline[index]);
 	brwsViewer->text(1 + index, nuline.c_str());
 	brwsViewer->redraw();
@@ -471,9 +398,6 @@ void viewclearchannel(int ch)
 	int index = progdefaults.VIEWERchannels - 1 - ch;
 	string nuline = freqformat(index);
 	bwsrline[index] = "";
-#if !HAVE_REGEX_H
-	ucaseline[index] = "";
-#endif
 	brwsViewer->text( 1 + index, nuline.c_str());
 	brwsViewer->redraw();
 }

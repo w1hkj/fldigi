@@ -214,6 +214,11 @@ void Fl_ComboBox::value( const char *s )
 		Output->value(datalist[i]->s);
 }
 
+void Fl_ComboBox::put_value(const char *s)
+{
+	value(s);
+}
+
 void Fl_ComboBox::index(int i)
 {
 	if (i >= 0 && i < listsize)
