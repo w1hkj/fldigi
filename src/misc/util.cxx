@@ -1,10 +1,5 @@
 #include <config.h>
 
-#include <stdlib.h>
-#include <ctype.h>
-
-#include <string.h>
-
 #include "util.h"
 
 /* Return the smallest power of 2 not less than n */
@@ -33,6 +28,9 @@ uint32_t floor2(uint32_t n)
 }
 
 #if !HAVE_STRCASESTR
+#  include <stdlib.h>
+#  include <ctype.h>
+#  include <string.h>
 // a simple inefficient implementation of strcasestr
 char* strcasestr(const char* haystack, const char* needle)
 {
@@ -50,3 +48,14 @@ ret:
 	return p;
 }
 #endif // !HAVE_STRCASESTR
+
+#include <unistd.h>
+#include <fcntl.h>
+int set_cloexec(int fd, unsigned char v)
+{
+	int f;
+
+	if ((f = fcntl(fd, F_GETFD)) != -1)
+		f = fcntl(fd, F_SETFD, f | (v ? FD_CLOEXEC : 0));
+	return f;
+}

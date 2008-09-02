@@ -17,79 +17,66 @@
 
 using namespace std;
 
-static const char *lognames[] = {"RX", "TX"};
+static const char *lognames[] = { "RX", "TX", "", "" };
 
-cLogfile::cLogfile(const string& fname) {
-	logtype = LOG_RX;
-	retflag = true;
-	logfilename = fname;
+cLogfile::cLogfile(const string& fname)
+	: retflag(true), logtype(LOG_RX)
+{
+	if ((logfile = fopen(fname.c_str(), "a"))) {
+		setlinebuf(logfile);
+		set_cloexec(fileno(logfile), 1);
+	}
+}
+
+cLogfile::~cLogfile()
+{
+	if (logfile)
+		fclose(logfile);
 }
 
 void cLogfile::log_to_file(log_t type, const string& s)
 {
+	if (!logfile || ferror(logfile) || s.empty())
+		return;
+
 	char timestr[64];
-	struct tm *tm;
+	struct tm tm;
 	time_t t;
-	
-	if (_logfile.fail()) {
-		return;
+
+	if (type != logtype)
+		fprintf(logfile, "\n");
+	if (type <= LOG_TX) {
+		if (retflag || type != logtype) {
+			time(&t);
+			gmtime_r(&t, &tm);
+			strftime(timestr, sizeof(timestr), "%Y-%m-%d %H:%MZ", &tm);
+			fprintf(logfile, "%s (%s): ", lognames[type], timestr);
+		}
+		fprintf(logfile, "%s", s.c_str());
+		retflag = *s.rbegin() == '\n';
+		if (!retflag)
+			fflush(logfile);
 	}
-	if (s.length() == 0)
-		return;
-
-	/* add timestamp to logged data */
-	time(&t);
-	tm = gmtime(&t);
-	memset(timestr, 0, 64);
-	strftime(timestr, 63, "%Y-%m-%d %H:%M", tm);
-
-	if (retflag)
-		_logfile << lognames[type] << " (" << timestr << "Z): ";
-	else if (logtype != type)
-		_logfile << "\n" << lognames[type] << " (" << timestr << "Z): ";
-	
-	_logfile << s;
-	
-	_logfile.flush();
-
-	if (s[s.length() - 1] == '\n')
-		retflag = true;
-	else
-		retflag = false;
+	else {
+		time(&t);
+		gmtime_r(&t, &tm);
+		strftime(timestr, sizeof(timestr), "%a %b %e %H:%M:%S %Y UTC", &tm);
+		fprintf(logfile, "--- Logging %s at %s ---\n", s.c_str(), timestr);
+	}
 
 	logtype = type;
-
 }
+
+
 
 void cLogfile::log_to_file_start()
 {
-	time_t t;
-	char *str;
-
-	if (!_logfile.is_open())
-		_logfile.open(logfilename.c_str(), ios::app);
-	if (_logfile.fail())
-		return;
-	time(&t);
-	str = asctime(gmtime(&t));
-	str[strlen(str) - 1] = 0;
-	_logfile << "\n--- Logging started at " << str << " UTC ---\n";
-	_logfile.flush();
+	log_to_file(LOG_START, "started");
 }
 
 void cLogfile::log_to_file_stop()
 {
-	time_t t;
-	char *str;
-	
-	if (_logfile.fail())
-		return;
-
-	time(&t);
-	str = asctime(gmtime(&t));
-	str[strlen(str) - 1] = 0;
-	_logfile << "\n--- Logging stopped at " << str << " UTC ---\n";
-	_logfile.close();
+	log_to_file(LOG_STOP, "stopped");
 }
 
 

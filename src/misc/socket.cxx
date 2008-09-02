@@ -485,6 +485,7 @@ void Socket::open(const Address& addr)
 	}
 	if (sockfd == -1)
 		throw SocketException(errno, "socket");
+	set_close_on_exec(true);
 }
 
 ///
@@ -560,6 +561,7 @@ Socket Socket::accept(void)
 	int r;
 	if ((r = ::accept(sockfd, NULL, 0)) == -1)
 		throw SocketException(errno, "accept");
+	set_close_on_exec(true, r);
 
 	return Socket(r);
 }
@@ -575,6 +577,7 @@ Socket Socket::accept1(void)
 	bind();
 	Socket s = accept();
 	close();
+	s.set_close_on_exec(true);
 
 	return s;
 }
@@ -746,6 +749,17 @@ void Socket::set_timeout(const struct timeval& t)
 void Socket::set_autoclose(bool v) const
 {
 	autoclose = v;
+}
+
+///
+/// Sets the socket's close-on-exec flag
+///
+void Socket::set_close_on_exec(bool v, int fd)
+{
+	if (fd == -1)
+		fd = sockfd;
+	if (set_cloexec(fd, v) == -1)
+		throw SocketException(errno, "set_cloexec");
 }
 
 ///

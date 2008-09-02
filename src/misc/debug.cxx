@@ -147,15 +147,19 @@ debug::debug(const char* filename)
 	if ((wfile = fopen(filename, "w")) == NULL)
 		throw strerror(errno);
 	setlinebuf(wfile);
+	set_cloexec(fileno(wfile), 1);
+
 	if ((rfile = fopen(filename, "r")) == NULL)
 		throw strerror(errno);
-	tty = isatty(fileno(stderr));
 	rfd = fileno(rfile);
+	set_cloexec(rfd, 1);
 	int f;
 	if ((f = fcntl(rfd, F_GETFL)) == -1)
 		throw strerror(errno);
 	if (fcntl(rfd, F_SETFL, f | O_NONBLOCK) == -1)
 		throw strerror(errno);
+
+	tty = isatty(fileno(stderr));
 }
 
 debug::~debug()

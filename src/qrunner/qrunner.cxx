@@ -44,6 +44,8 @@ qrunner::qrunner()
 	if (socketpair(PF_UNIX, SOCK_DGRAM, 0, pfd) == -1)
 #endif
                 throw qexception(errno);
+	set_cloexec(pfd[0], 1);
+	set_cloexec(pfd[1], 1);
 }
 
 qrunner::~qrunner()
