@@ -17,20 +17,21 @@ else
 	hamlib_dir=/usr/lib
     fi
 fi
+hamlib_libs="$hamlib_dir/hamlib-*.a"
 
 case "$target_os" in
     *linux*)
-	AM_LDFLAGS="$AM_LDFLAGS -Wl,--whole-archive $hamlib_dir/hamlib-*.a -Wl,--no-whole-archive"
+	AM_LDFLAGS="$AM_LDFLAGS -Wl,--export-dynamic -Wl,--whole-archive $hamlib_libs -Wl,--no-whole-archive"
 	;;
     *darwin*)
         # Apple's ld isn't quite up to this task: there is no way to specify -all_load for
         # only a subset of the libraries that we must link with. For this reason we resort
         # to using the "dangerous" -m flag, which turns "multiply defined symbol" errors
         # into warnings. This will probably not work for ppc64 and x86_64 universal binaries.
-	AM_LDFLAGS="$AM_LDFLAGS -Wl,-all_load -Wl,-m $hamlib_dir/hamlib-*.a"
+	AM_LDFLAGS="$AM_LDFLAGS -Wl,-all_load -Wl,-m $hamlib_libs"
 	;;
     *cygwin*)
-	AM_LDFLAGS="$AM_LDFLAGS -Wl,--export-all-symbols -Wl,--whole-archive $hamlib_dir/hamlib-*.a -Wl,--no-whole-archive"
+	AM_LDFLAGS="$AM_LDFLAGS -Wl,--export-all-symbols -Wl,--whole-archive $hamlib_libs -Wl,--no-whole-archive"
 	;;
     *)
 	echo "E: This script does not support $target_os" >&2
