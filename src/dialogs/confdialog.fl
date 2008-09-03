@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0109 
+version 1.0108 
 header_name {.h} 
 code_name {.cxx}
 decl {\#include <config.h>} {} 
@@ -908,12 +908,10 @@ progdefaults.changed = true;}
             }
             Fl_Value_Slider valPCMvolume {
               label PCM
-              callback {setPCMvolume(o->value() / 100.0);
+              callback {setPCMvolume(o->value());
 progdefaults.changed = true;}
-              xywh {19 125 340 21} type {Horz Knob} color 26 selection_color 1 align 8 value 0.8 textsize 14
+              xywh {19 125 340 21} type {Horz Knob} color 26 selection_color 1 align 8 step 0.01 value 0.8 textsize 14
               code0 {extern void setPCMvolume(double);}
-              code1 {valPCMvolume->range(0.0, 100.0);}
-              code2 {valPCMvolume->step(1.0);}
             }
             Fl_Input_Choice menuMix {
               label Device
@@ -1089,14 +1087,14 @@ progdefaults.changed = true;}
                 label {Dash/Dot}
                 callback {progdefaults.CWdash2dot=o->value();
 progdefaults.changed = true;}
-                xywh {205 185 64 21} type Simple align 4 minimum 2.5 maximum 4 value 3
+                xywh {205 185 64 21} type Simple align 4 minimum 2.5 maximum 4 step 0.1 value 3
                 code0 {o->value(progdefaults.CWdash2dot);}
               }
               Fl_Counter cntCWrisetime {
                 label Edge
                 callback {progdefaults.CWrisetime=o->value();
 progdefaults.changed = true;}
-                xywh {325 185 65 21} type Simple align 4 minimum 0 maximum 15 value 4
+                xywh {325 185 65 21} type Simple align 4 minimum 0 maximum 15 step 0.1 value 4
                 code0 {o->value(progdefaults.CWrisetime);}
               }
               Fl_Counter cntCWdefWPM {
@@ -1151,7 +1149,7 @@ progdefaults.changed = true;}
               callback {progdefaults.THOR_BW = o->value();
 resetTHOR();
 progdefaults.changed = true;}
-              xywh {20 130 63 21} type Simple minimum 1 maximum 2 value 1.5
+              xywh {20 130 63 21} type Simple minimum 1 maximum 2 step 0.1 value 1.5
               code0 {o->value(progdefaults.THOR_BW);}
             }
             Fl_Check_Button valTHOR_FILTER {
@@ -1199,7 +1197,7 @@ progdefaults.changed = true;}
               callback {progdefaults.DOMINOEX_BW = o->value();
 resetDOMEX();
 progdefaults.changed = true;}
-              xywh {20 130 63 21} type Simple minimum 1 maximum 2 value 1.5
+              xywh {20 130 63 21} type Simple minimum 1 maximum 2 step 0.1 value 1.5
               code0 {o->value(progdefaults.DOMINOEX_BW);}
             }
             Fl_Check_Button valDominoEX_FILTER {
@@ -1468,13 +1466,13 @@ progdefaults.changed = true;}
                 code0 {o->value(progdefaults.mt63_8bit);}
               }
               Fl_Check_Button btnmt63_interleave {
-                label {64 bit interleave}
+                label {64 bit interleave (long)}
                 callback {if (o->value() == 1)
 progdefaults.mt63_interleave = 64;
 else
 progdefaults.mt63_interleave = 32;
 progdefaults.changed = true;}
-                xywh {55 120 134 15} down_box DOWN_BOX
+                xywh {55 120 186 15} down_box DOWN_BOX
                 code0 {o->value(0);if (progdefaults.mt63_interleave == 64) o->value(1);}
               }
             }

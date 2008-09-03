@@ -108,6 +108,7 @@ class Fl_ComboBox : public Fl_Group  {
 
     const char *value ();
     void value (const char *);
+    void put_value( const char *);
     void fl_popbrwsr(Fl_Widget *);
 
     void type (int = 0);

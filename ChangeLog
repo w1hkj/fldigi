@@ -19,6 +19,14 @@ Change Log:
              Skipped text
              Alternate (quick view) text
              Background
+      10) Changed the way that RTS/DTR PTT is used with rig.xml files
+      11) Updated regular expression parser
+      12) Modified <EXEC> passing of fd's to child processes
+      13) Changed "no color" buttons to background vice background2 (white).
+          Setting -bg <color> on command line switch now controls the "no color"
+          value for the macro buttons.
+      14) Fixed macro timer to properly reset if <TIMER> re-invoked during
+          timeout period.
       
 3.02
       1) Added hamlib interface for rig control

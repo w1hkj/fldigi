@@ -32,6 +32,7 @@
 #include "rigio.h"
 #include "debug.h"
 #include "threads.h"
+#include "qrunner.h"
 
 using namespace std;
 
@@ -371,7 +372,7 @@ long long rigCAT_getfreq()
 	if (itrCmd == commands.end()) {
 		LOG_DEBUG("Cmd not defined");
 		nonCATrig = true;
-		return -1; // get_freq command is not defined!
+		return -2; // get_freq command is not defined!
 	}
 
 	modeCmd = *itrCmd;
@@ -962,10 +963,10 @@ bool rigCAT_init()
 	
 	nonCATrig = false;
 	
-	if (rigCAT_getfreq() <= 0) {
+	if (rigCAT_getfreq() == -1) {
 		LOG_ERROR("Xcvr Freq request not answered");
-//		rigio.ClosePort();
-//		return false;
+		rigio.ClosePort();
+		return false;
 	}
 	
 	rigCAT_sendINIT();
@@ -1061,10 +1062,9 @@ static void *rigCAT_loop(void *args)
 
 	long long freq = 0L;
 	string sWidth, sMode;
-	int cntr = 10;
 
 	for (;;) {
-		MilliSleep(10);
+		MilliSleep(100);
 
 		if (rigCAT_bypass == true)
 			goto loop;
@@ -1076,40 +1076,25 @@ static void *rigCAT_loop(void *args)
 			freq = rigCAT_getfreq();
 		fl_unlock(&rigCAT_mutex);
 
-		if (freq <= 0)
-			goto loop;
 		if (freq != llFreq) {
 			llFreq = freq;
-//			FL_LOCK_D();
-			FreqDisp->value(freq);
-//			FL_UNLOCK_D();
+			FreqDisp->value(freq); // REQ is built in to the widget
 			wf->rfcarrier(freq);
 		}
 
-		if (--cntr % 5)
+		if (rigCAT_exit == true)
+			goto exitloop;
+		if (rigCAT_bypass == true)
 			goto loop;
 
-		if (cntr == 5) {
-			if (rigCAT_exit == true)
-				goto exitloop;
-			if (rigCAT_bypass == true)
-				goto loop;
-
-			fl_lock(&rigCAT_mutex);
-				sWidth = rigCAT_getwidth();
-			fl_unlock(&rigCAT_mutex);
+		fl_lock(&rigCAT_mutex);
+			sWidth = rigCAT_getwidth();
+		fl_unlock(&rigCAT_mutex);
 		
-			if (sWidth.size() && sWidth != sRigWidth) {
-				sRigWidth = sWidth;
-				FL_LOCK();
-					opBW->value(sWidth.c_str());
-				FL_UNLOCK();
-				FL_AWAKE();
-			}
-			goto loop;
+		if (sWidth.size() && sWidth != sRigWidth) {
+			sRigWidth = sWidth;
+			REQ(&Fl_ComboBox::put_value, opBW, sWidth.c_str());
 		}
-
-		cntr = 10;
 
 		if (rigCAT_exit == true)
 			goto exitloop;
@@ -1120,20 +1105,13 @@ static void *rigCAT_loop(void *args)
 			sMode = rigCAT_getmode();
 		fl_unlock(&rigCAT_mutex);
 
-		if (rigCAT_exit == true)
-			goto exitloop;
-		if (rigCAT_bypass == true)
-			goto loop;
 		if (sMode.size() && sMode != sRigMode) {
 			sRigMode = sMode;
 			if (ModeIsLSB(sMode))
 				wf->USB(false);
 			else
 				wf->USB(true);
-			FL_LOCK();
-				opMODE->value(sMode.c_str());
-			FL_UNLOCK();
-			FL_AWAKE();
+			REQ(&Fl_ComboBox::put_value, opMODE, sMode.c_str());
 		}
 loop:
 		continue;

@@ -637,6 +637,13 @@ void init_modem(trx_mode mode)
 
 	clear_StatusMessages();
 	progStatus.lastmode = mode;
+	
+	if (wf->xmtlock->value() == 1) {
+		wf->xmtlock->value(0);
+		wf->xmtlock->damage();
+		active_modem->set_freqlock(false);
+	}
+		
 }
 
 void init_modem_sync(trx_mode m)
@@ -707,7 +714,7 @@ void colorize_macro(int i)
 				progdefaults.btnFkeyTextColor.G,
 				progdefaults.btnFkeyTextColor.B ));
 	} else {
-		btnMacro[i]->color(FL_BACKGROUND2_COLOR);
+		btnMacro[i]->color(FL_BACKGROUND_COLOR);
 		btnMacro[i]->labelcolor(FL_FOREGROUND_COLOR);
 	}
 }
