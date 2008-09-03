@@ -87,6 +87,7 @@ void psk::rx_init()
 	resetSN_IMD();
 	imdValid = false;
 	set_AFCrange(1.0);
+	afcmetric = 0.0;
 }
 
 void psk::restart()
@@ -366,6 +367,8 @@ void psk::findsignal()
 void psk::phaseafc()
 {
 	double error;
+	if (afcmetric < 0.05) return;
+	
 	error = (phase - bits * M_PI / 2.0);
 	if (error < -M_PI/2.0)
 		error += TWOPI;
@@ -410,6 +413,7 @@ void psk::rx_symbol(complex symbol)
 	quality.im = decayavg(quality.im, sin(n*phase), SQLDECAY);
 	
 	metric = 100.0 * quality.norm();
+	afcmetric = decayavg(afcmetric, quality.norm(), 50);
 	
 	dcdshreg = (dcdshreg << 2) | bits;
 

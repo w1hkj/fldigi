@@ -637,6 +637,13 @@ void init_modem(trx_mode mode)
 
 	clear_StatusMessages();
 	progStatus.lastmode = mode;
+	
+	if (wf->xmtlock->value() == 1) {
+		wf->xmtlock->value(0);
+		wf->xmtlock->damage();
+		active_modem->set_freqlock(false);
+	}
+		
 }
 
 void init_modem_sync(trx_mode m)
