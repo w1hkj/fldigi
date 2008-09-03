@@ -2511,7 +2511,7 @@ void start_tx()
 {
 	if (progdefaults.rsid == true) return;
 	trx_transmit();
-	wf->set_XmtRcvBtn(true);
+	REQ(&waterfall::set_XmtRcvBtn, wf, true);
 }
 
 void abort_tx()
