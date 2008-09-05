@@ -144,7 +144,7 @@ bool bSend0x06 = false;
 
 void process_msgque()
 {
-	int nbytes = msgrcv (txmsgid, (void *)&txmsgst, BUFSIZ, 0, IPC_NOWAIT);
+	int nbytes = msgrcv (txmsgid, (void *)&txmsgst, ARQBUFSIZ, 0, IPC_NOWAIT);
 	if (nbytes > 0) { 
 		arqtext = txmsgst.buffer;
 		parse_arqtext();

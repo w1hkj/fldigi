@@ -77,7 +77,14 @@ int FTextBase::handle(int event)
         if (event == FL_MOUSEWHEEL && !Fl::event_inside(this))
                 return 1;
 
-        return Fl_Text_Editor_mod::handle(event);
+	// Fl_Text_Editor::handle() calls window()->cursor(FL_CURSOR_DONE) when
+	// it receives an FL_KEYBOARD event, which crashes some buggy X drivers
+	// (e.g. Intel on the Asus Eee PC).  Call handle_key directly to work
+	// around this problem.
+	if (event == FL_KEYBOARD)
+		return Fl_Text_Editor_mod::handle_key();
+	else
+		return Fl_Text_Editor_mod::handle(event);
 }
 
 void FTextBase::setFont(Fl_Font f, int attr)
@@ -1371,7 +1378,7 @@ void FTextLog::menu_cb(int val)
 		break;
 
 	case LOG_MENU_WRAP:
-		log_menu[RX_MENU_WRAP].flags ^= FL_MENU_VALUE;
+		log_menu[LOG_MENU_WRAP].flags ^= FL_MENU_VALUE;
 		wrap_mode((wrap = !wrap), wrap_col);
 		show_insert_position();
 		break;

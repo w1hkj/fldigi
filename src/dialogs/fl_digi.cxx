@@ -30,10 +30,6 @@
 #  include <sys/msg.h>
 #endif
 
-#ifdef __CYGWIN__
-#  include <w32api/windows.h>
-#endif
-
 #include <stdlib.h>
 #include <string>
 
@@ -498,12 +494,6 @@ void cb_E(Fl_Menu_*, void*) {
 
 void cb_wMain(Fl_Widget*, void*)
 {
-	if (Fl::event_key(FL_Escape)) {
-		TransmitText->clear();
-		active_modem->set_stopflag(true);
-		return;
-	}
-
 	if (!clean_exit())
 		return;
 	// hide all shown windows
@@ -866,38 +856,7 @@ void cb_mnuAbout(Fl_Widget*, void*)
 
 void cb_mnuVisitURL(Fl_Widget*, void* arg)
 {
-	const char* url = reinterpret_cast<const char *>(arg);
-#ifndef __CYGWIN__
-#  ifdef __APPLE__
-	const char* browsers[] = { "open" };
-#  else
-	const char* browsers[] = { "xdg-open", getenv("BROWSER"), "sensible-brower",
-				   "firefox", "mozilla" };
-#  endif
-	switch (fork()) {
-	case 0:
-		for (size_t i = 0; i < sizeof(browsers)/sizeof(browsers[0]); i++)
-			if (browsers[i])
-				execlp(browsers[i], browsers[i], url, (char*)0);
-		LOG_PERROR("Could not execute a web browser");
-		exit(EXIT_FAILURE);
-	case -1:
-		fl_alert("Could not run a web browser:\n%s\n\n"
-			 "Open this URL manually:\n%s",
-			 strerror(errno), url);
-	}
-#else
-	// gurgle... gurgle... HOWL
-	// "The return value is cast as an HINSTANCE for backward
-	// compatibility with 16-bit Windows applications. It is
-	// not a true HINSTANCE, however. The only thing that can
-	// be done with the returned HINSTANCE is to cast it to an
-	// int and compare it with the value 32 or one of the error
-	// codes below." (Error codes omitted to preserve sanity).
-	if ((int)ShellExecute(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL) <= 32)
-		fl_alert("Could not open url:\n%s\n", url);
-#endif
-
+	fl_open_uri(reinterpret_cast<const char *>(arg));
         restoreFocus();
 }
 
@@ -919,11 +878,8 @@ void cb_mnuBeginnersURL(Fl_Widget*, void*)
 		return;
 	f << szBeginner;
 	f.close();
-#ifndef __CYGWIN__
+
 	cb_mnuVisitURL(NULL, (void *)deffname.insert(0, "file://").c_str());
-#else
-	cb_mnuVisitURL(NULL, (void *)deffname.c_str());
-#endif
 }
 
 void cb_mnuAboutURL(Fl_Widget*, void*)
@@ -1044,7 +1000,7 @@ void cb_mnuAudioInfo(Fl_Widget*, void*)
 
 void cb_ShowConfig(Fl_Widget*, void*)
 {
-	cb_mnuVisitURL(0, (void*)HomeDir.c_str());
+	cb_mnuVisitURL(0, (void*)string("file://").append(HomeDir).c_str());
 }
 
 void cbTune(Fl_Widget *w, void *) {
@@ -1283,6 +1239,23 @@ void cb_XmtMixer(Fl_Widget *w, void *d)
 	mixer->setXmtLevel(progStatus.XmtMixer);
 }
 
+int default_handler(int event)
+{
+	if (event != FL_SHORTCUT)
+		return 0;
+
+	Fl_Widget* w = Fl::focus();
+	if (w == fl_digi_main || w->window() == fl_digi_main) {
+		int key = Fl::event_key();
+		if (key == FL_Escape || (key >= FL_F && key <= FL_F_Last)) {
+			TransmitText->take_focus();
+			TransmitText->handle(FL_KEYBOARD);
+			w->take_focus(); // remove this to leave tx text focused
+			return 1;
+		}
+	}
+	return 0;
+}
 
 // XPM Calendar Label
 static const char *cal_16[] = {
@@ -1788,7 +1761,8 @@ void create_fl_digi_main() {
 		TiledGroup->end();
 		Fl_Group::current()->resizable(TiledGroup);
 
-		
+		Fl::add_handler(default_handler);
+
 		Fl_Box *bx;
 		Fl_Box *macroFrame = new Fl_Box(0, Y, WNOM, Hmacros);
 			macroFrame->box(FL_ENGRAVED_FRAME);
@@ -2073,12 +2047,7 @@ void put_rx_char(unsigned int data)
 	static unsigned int last = 0;
 	const char **asc = ascii;
 
-#ifndef __CYGWIN__
-	rxmsgid = msgget( (key_t) progdefaults.rx_msgid, 0666);
-	if (mailclient || mailserver || txmsgid != -1 || arqmode)
-#else
 	if (mailclient || mailserver || arqmode)
-#endif
 		asc = ascii2;
 	if (active_modem->get_mode() == MODE_RTTY ||
 		active_modem->get_mode() == MODE_CW)
@@ -2511,7 +2480,7 @@ void start_tx()
 {
 	if (progdefaults.rsid == true) return;
 	trx_transmit();
-	wf->set_XmtRcvBtn(true);
+	REQ(&waterfall::set_XmtRcvBtn, wf, true);
 }
 
 void abort_tx()

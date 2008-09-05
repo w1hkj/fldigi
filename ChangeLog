@@ -27,6 +27,7 @@ Change Log:
           value for the macro buttons.
       14) Fixed macro timer to properly reset if <TIMER> re-invoked during
           timeout period.
+      15) Fixed broken access to on-line subscriber Hamlog data base
       
 3.02
       1) Added hamlib interface for rig control

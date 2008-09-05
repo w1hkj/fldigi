@@ -93,10 +93,10 @@ endif
 if DARWIN
 appbundle: fldigi
 	sh $(srcdir)/../scripts/mkappbundle.sh "$(srcdir)/../data" . \
-	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-bundle-nolibs \
-	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-bundle
-CLEAN_LOCAL_FILES += $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-bundle-nolibs \
-	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-bundle \
+	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-nolibs \
+	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)
+CLEAN_LOCAL_FILES += $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-nolibs \
+	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION) \
 	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)*.dmg
 endif
 
