@@ -30,10 +30,6 @@
 #  include <sys/msg.h>
 #endif
 
-#ifdef __CYGWIN__
-#  include <w32api/windows.h>
-#endif
-
 #include <stdlib.h>
 #include <string>
 
@@ -866,38 +862,7 @@ void cb_mnuAbout(Fl_Widget*, void*)
 
 void cb_mnuVisitURL(Fl_Widget*, void* arg)
 {
-	const char* url = reinterpret_cast<const char *>(arg);
-#ifndef __CYGWIN__
-#  ifdef __APPLE__
-	const char* browsers[] = { "open" };
-#  else
-	const char* browsers[] = { "xdg-open", getenv("BROWSER"), "sensible-brower",
-				   "firefox", "mozilla" };
-#  endif
-	switch (fork()) {
-	case 0:
-		for (size_t i = 0; i < sizeof(browsers)/sizeof(browsers[0]); i++)
-			if (browsers[i])
-				execlp(browsers[i], browsers[i], url, (char*)0);
-		LOG_PERROR("Could not execute a web browser");
-		exit(EXIT_FAILURE);
-	case -1:
-		fl_alert("Could not run a web browser:\n%s\n\n"
-			 "Open this URL manually:\n%s",
-			 strerror(errno), url);
-	}
-#else
-	// gurgle... gurgle... HOWL
-	// "The return value is cast as an HINSTANCE for backward
-	// compatibility with 16-bit Windows applications. It is
-	// not a true HINSTANCE, however. The only thing that can
-	// be done with the returned HINSTANCE is to cast it to an
-	// int and compare it with the value 32 or one of the error
-	// codes below." (Error codes omitted to preserve sanity).
-	if ((int)ShellExecute(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL) <= 32)
-		fl_alert("Could not open url:\n%s\n", url);
-#endif
-
+	fl_open_uri(reinterpret_cast<const char *>(arg));
         restoreFocus();
 }
 
@@ -919,11 +884,8 @@ void cb_mnuBeginnersURL(Fl_Widget*, void*)
 		return;
 	f << szBeginner;
 	f.close();
-#ifndef __CYGWIN__
+
 	cb_mnuVisitURL(NULL, (void *)deffname.insert(0, "file://").c_str());
-#else
-	cb_mnuVisitURL(NULL, (void *)deffname.c_str());
-#endif
 }
 
 void cb_mnuAboutURL(Fl_Widget*, void*)
@@ -1044,7 +1006,7 @@ void cb_mnuAudioInfo(Fl_Widget*, void*)
 
 void cb_ShowConfig(Fl_Widget*, void*)
 {
-	cb_mnuVisitURL(0, (void*)HomeDir.c_str());
+	cb_mnuVisitURL(0, (void*)string("file://").append(HomeDir).c_str());
 }
 
 void cbTune(Fl_Widget *w, void *) {
