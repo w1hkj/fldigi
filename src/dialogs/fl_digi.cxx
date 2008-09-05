@@ -494,12 +494,6 @@ void cb_E(Fl_Menu_*, void*) {
 
 void cb_wMain(Fl_Widget*, void*)
 {
-	if (Fl::event_key(FL_Escape)) {
-		TransmitText->clear();
-		active_modem->set_stopflag(true);
-		return;
-	}
-
 	if (!clean_exit())
 		return;
 	// hide all shown windows
@@ -1245,6 +1239,23 @@ void cb_XmtMixer(Fl_Widget *w, void *d)
 	mixer->setXmtLevel(progStatus.XmtMixer);
 }
 
+int default_handler(int event)
+{
+	if (event != FL_SHORTCUT)
+		return 0;
+
+	Fl_Widget* w = Fl::focus();
+	if (w == fl_digi_main || w->window() == fl_digi_main) {
+		int key = Fl::event_key();
+		if (key == FL_Escape || (key >= FL_F && key <= FL_F_Last)) {
+			TransmitText->take_focus();
+			TransmitText->handle(FL_KEYBOARD);
+			w->take_focus(); // remove this to leave tx text focused
+			return 1;
+		}
+	}
+	return 0;
+}
 
 // XPM Calendar Label
 static const char *cal_16[] = {
@@ -1750,7 +1761,8 @@ void create_fl_digi_main() {
 		TiledGroup->end();
 		Fl_Group::current()->resizable(TiledGroup);
 
-		
+		Fl::add_handler(default_handler);
+
 		Fl_Box *bx;
 		Fl_Box *macroFrame = new Fl_Box(0, Y, WNOM, Hmacros);
 			macroFrame->box(FL_ENGRAVED_FRAME);
