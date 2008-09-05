@@ -38,7 +38,7 @@ status progStatus = {
 	MODE_BPSK31,		// trx_mode	lastmode;
 	50,					// int mainX;
 	50,					// int mainY;
-	WNOM,				// int mainW;
+	(WNOM > 600 ? WNOM : 600),	// int mainW;
 	HNOM,				// int mainH;
 	Hrcvtxt,			// int RxTextHeight;
 	false,				// bool rigShown;
