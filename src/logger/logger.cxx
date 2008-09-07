@@ -161,7 +161,7 @@ int submit_log(void)
 
 	const char *mode = mode_info[active_modem->get_mode()].adif_name;
 	
-	snprintf(strFreqMhz, sizeof(strFreqMhz), "%-12f", wf->dFreq()/1.0e6);
+	snprintf(strFreqMhz, sizeof(strFreqMhz), "%-10f", wf->dFreq()/1.0e6);
 
 	adif.erase();
 	

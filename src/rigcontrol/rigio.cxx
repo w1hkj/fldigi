@@ -970,6 +970,9 @@ bool rigCAT_init()
 	}
 	
 	rigCAT_sendINIT();
+	
+	rigCAT_bypass = false;
+	rigCAT_exit = false;
 
 	if (fl_create_thread(rigCAT_thread, rigCAT_loop, &dummy) < 0) {
 		LOG_ERROR("pthread_create failed");
@@ -980,7 +983,6 @@ bool rigCAT_init()
 	init_Xml_RigDialog();
 
 	rigCAT_open = true;
-	rigCAT_exit = false;
 	return true;
 }
 
@@ -1017,11 +1019,13 @@ void rigCAT_set_ptt(int ptt)
 	if (rigCAT_open == false)
 		return;
 	fl_lock(&rigCAT_mutex);
-		if (ptt)
+		if (ptt) {
 			rigCAT_pttON();
-		else
+			rigCAT_bypass = true;
+		} else{
 			rigCAT_pttOFF();
-		rigCAT_bypass = ptt;
+			rigCAT_bypass = false;
+		}
 	fl_unlock(&rigCAT_mutex);
 }
 
@@ -1067,25 +1071,24 @@ static void *rigCAT_loop(void *args)
 		MilliSleep(100);
 
 		if (rigCAT_bypass == true)
-			goto loop;
-
+			continue;
 		if (rigCAT_exit == true)
-			goto exitloop;
+			break;
 
 		fl_lock(&rigCAT_mutex);
 			freq = rigCAT_getfreq();
 		fl_unlock(&rigCAT_mutex);
 
-		if (freq != llFreq) {
+		if ((freq > 0) && (freq != llFreq)) {
 			llFreq = freq;
 			FreqDisp->value(freq); // REQ is built in to the widget
 			wf->rfcarrier(freq);
 		}
 
-		if (rigCAT_exit == true)
-			goto exitloop;
 		if (rigCAT_bypass == true)
-			goto loop;
+			continue;
+		if (rigCAT_exit == true)
+			break;
 
 		fl_lock(&rigCAT_mutex);
 			sWidth = rigCAT_getwidth();
@@ -1096,10 +1099,10 @@ static void *rigCAT_loop(void *args)
 			REQ(&Fl_ComboBox::put_value, opBW, sWidth.c_str());
 		}
 
-		if (rigCAT_exit == true)
-			goto exitloop;
 		if (rigCAT_bypass == true)
-			goto loop;
+			continue;
+		if (rigCAT_exit == true)
+			break;
 
 		fl_lock(&rigCAT_mutex);
 			sMode = rigCAT_getmode();
@@ -1113,12 +1116,11 @@ static void *rigCAT_loop(void *args)
 				wf->USB(true);
 			REQ(&Fl_ComboBox::put_value, opMODE, sMode.c_str());
 		}
-loop:
-		continue;
 	}
-exitloop:
+
 	rigCAT_open = false;
 	rigCAT_exit = false;
+	rigCAT_bypass = false;
 	if (rigcontrol)
 		rigcontrol->hide();
 	wf->USB(true);
