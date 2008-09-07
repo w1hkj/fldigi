@@ -1467,18 +1467,23 @@ int WFdisp::handle(int event)
 			if (event == FL_PUSH) {
 				tmp_carrier = true;
 				oldcarrier = carrier();
+				if (progdefaults.WaterfallHistoryDefault)
+					bHistory = true;
 			}
 			// fall through
 		case FL_LEFT_MOUSE:
 			if (Fl::event_state() & FL_CTRL) {
 				if (event == FL_DRAG)
 					break;
-				bHistory = true;
+				if (!progdefaults.WaterfallHistoryDefault)
+					bHistory = true;
 				if (eb == FL_LEFT_MOUSE) {
 				       restoreFocus();
 				       break;
 				}
 			}
+			if (progdefaults.WaterfallHistoryDefault)
+				bHistory = true;
 			newcarrier = cursorFreq(xpos);
 			active_modem->set_freq(newcarrier);
 			if (!(Fl::event_state() & FL_SHIFT))

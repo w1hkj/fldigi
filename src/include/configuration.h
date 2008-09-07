@@ -26,6 +26,7 @@ struct configuration {
 	double	RTTYsweetspot;
 	double	PSKsweetspot;
 	bool	StartAtSweetSpot;
+        bool    WaterfallHistoryDefault;
 // for PSK  & PSK mail interface
 	bool	PSKmailSweetSpot;
 	int		SearchRange;

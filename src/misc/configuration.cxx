@@ -44,6 +44,7 @@ configuration progdefaults = {
 	1000,			// int		RTTYsweetspot;
 	1000,			// int		PSKsweetspot;
 	false,			// bool		StartAtSweetSpot;
+	false,			// bool		WaterfallHistoryDefault;
 //  for PSK mail interface	
 	false,			// bool		PSKmailSweetSpot;
 	200,			// int		SearchRange;
@@ -284,7 +285,7 @@ enum TAG { \
 	IGNORE,
 	MYCALL, MYNAME, MYQTH, MYLOC, 
 	SQUELCH, WFREFLEVEL, WFAMPSPAN, LOWFREQCUTOFF, 
-	STARTATSWEETSPOT, PSKMAILSWEETSPOT, 
+	WATERFALLHISTORYDEFAULT, STARTATSWEETSPOT, PSKMAILSWEETSPOT, 
 	PSKSEARCHRANGE, PSKSERVEROFFSET,
 	ACQSN,
 	CWSWEETSPOT, PSKSWEETSPOT, RTTYSWEETSPOT,
@@ -399,6 +400,7 @@ void configuration::writeDefaultsXML()
 	writeXMLdbl(f, "WFAMPSPAN", wfAmpSpan);
 	writeXMLint(f, "LOWFREQCUTOFF", LowFreqCutoff);
 
+	writeXMLbool(f, "WATERFALLHISTORYDEFAULT", WaterfallHistoryDefault);
 	writeXMLbool(f, "STARTATSWEETSPOT", StartAtSweetSpot);
 	writeXMLbool(f, "PSKMAILSWEETSPOT", PSKmailSweetSpot);
 	writeXMLint(f, "PSKSEARCHRANGE", SearchRange);
@@ -635,6 +637,9 @@ bool configuration::readDefaultsXML()
 						break;
 					case LOWFREQCUTOFF :
 						LowFreqCutoff = atoi(xml->getNodeData());
+						break;
+					case WATERFALLHISTORYDEFAULT :
+						WaterfallHistoryDefault = atoi(xml->getNodeData());
 						break;
 					case STARTATSWEETSPOT :
 						StartAtSweetSpot = atoi(xml->getNodeData());
@@ -1169,6 +1174,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("WFREFLEVEL", nodeName)) 	tag = WFREFLEVEL;
 				else if (!strcmp("WFAMPSPAN", nodeName)) 	tag = WFAMPSPAN;
 				else if (!strcmp("LOWFREQCUTOFF", nodeName)) 	tag = LOWFREQCUTOFF;
+				else if (!strcmp("WATERFALLHISTORYDEFAULT", nodeName)) 	tag = WATERFALLHISTORYDEFAULT;
 				else if (!strcmp("STARTATSWEETSPOT", nodeName)) 	tag = STARTATSWEETSPOT;
 				else if (!strcmp("PSKMAILSWEETSPOT", nodeName)) 	tag = PSKMAILSWEETSPOT;
 				else if (!strcmp("PSKSEARCHRANGE", nodeName)) 	tag = PSKSEARCHRANGE;
@@ -1492,6 +1498,7 @@ int configuration::setDefaults() {
 	valCWsweetspot->value(CWsweetspot);
 	valRTTYsweetspot->value(RTTYsweetspot);
 	valPSKsweetspot->value(PSKsweetspot);
+	btnWaterfallHistoryDefault->value(WaterfallHistoryDefault);
 	btnStartAtSweetSpot->value(StartAtSweetSpot);
 	btnPSKmailSweetSpot->value(PSKmailSweetSpot);
 	cntSearchRange->value(SearchRange);

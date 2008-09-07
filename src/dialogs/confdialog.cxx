@@ -282,6 +282,13 @@ progdefaults.changed = true;
 };
 }
 
+Fl_Check_Button *btnWaterfallHistoryDefault=(Fl_Check_Button *)0;
+
+static void cb_btnWaterfallHistoryDefault(Fl_Check_Button* o, void*) {
+  progdefaults.WaterfallHistoryDefault = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabVideo=(Fl_Group *)0;
 
 Fl_Check_Button *btnsendid=(Fl_Check_Button *)0;
@@ -1611,6 +1618,19 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 btnBwTracksColor->callback((Fl_Callback*)cb_btnBwTracksColor);
                 o->color(fl_rgb_color(progdefaults.bwTrackRGBI.R,progdefaults.bwTrackRGBI.G,progdefaults.bwTrackRGBI.B));
               } // Fl_Button* btnBwTracksColor
+              o->end();
+            } // Fl_Group* o
+            o->end();
+          } // Fl_Group* o
+          { Fl_Group* o = new Fl_Group(0, 50, 405, 166, "History");
+            o->hide();
+            { Fl_Group* o = new Fl_Group(5, 56, 390, 158);
+              o->box(FL_ENGRAVED_FRAME);
+              { Fl_Check_Button* o = btnWaterfallHistoryDefault = new Fl_Check_Button(15, 66, 170, 20, "Click Replays History");
+                btnWaterfallHistoryDefault->down_box(FL_DOWN_BOX);
+                btnWaterfallHistoryDefault->callback((Fl_Callback*)cb_btnWaterfallHistoryDefault);
+                o->value(progdefaults.WaterfallHistoryDefault);
+              } // Fl_Check_Button* btnWaterfallHistoryDefault
               o->end();
             } // Fl_Group* o
             o->end();
