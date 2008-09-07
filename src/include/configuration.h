@@ -140,16 +140,16 @@ struct configuration {
 	int		chkUSEMEMMAPis;
 	int		chkUSEHAMLIBis;
 	int		chkUSERIGCATis;
-	string  HamRigName;
-	string  HamRigDevice;
-	int		HamRigBaudrate;
+	string  PTTdev;
 	string	CWFSKport;
+	string  HamRigDevice;
+	string  HamRigName;
+	int	HamRigBaudrate;
 // Operator data
 	string	myCall;
 	string	myQth;
 	string	myName;
 	string	myLocator;
-	string  PTTdev;
 	string	secText;
 // Sound card
 	int	btnAudioIOis;
@@ -214,8 +214,6 @@ struct configuration {
 
 	string		ui_scheme;
 
-	string strCommPorts;
-	
 	int rx_msgid;
 	int tx_msgid;
 	string arq_address;
