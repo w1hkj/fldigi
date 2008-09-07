@@ -27,6 +27,9 @@ Change Log:
           value for the macro buttons.
       14) Fixed macro timer to properly reset if <TIMER> re-invoked during
           timeout period.
+      15) Fixed broken access to on-line subscriber Hamlog data base
+      16) Removed trailing spaces from frequency field in ADIF file
+      17) Changes to rigio thread loop to disable reads during transmit
       
 3.02
       1) Added hamlib interface for rig control

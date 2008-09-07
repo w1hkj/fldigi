@@ -48,11 +48,13 @@
 
 #include "xmlreader.h"
 
+#include "debug.h"
+
 using namespace std;
 
 int rotoroffset = 0;
 
-string host = "online.qrz.com";
+string qrzhost = "online.qrz.com";
 string qrzSessionKey;
 string qrzalert;
 string qrzerror;
@@ -342,12 +344,12 @@ bool getSessionKey(string& sessionpage)
 	detail += PACKAGE_VERSION;
 	detail += " HTTP/1.0\n";
 	detail += "Host: ";
-	detail += host;
+	detail += qrzhost;
 	detail += "\n";
 	detail += "Connection: close\n";
 	detail += "\n";
 
-	return request_reply(host, "http", detail, sessionpage);
+	return request_reply(qrzhost, "http", detail, sessionpage);
 }
 
 bool QRZGetXML(string& xmlpage)
@@ -359,12 +361,12 @@ bool QRZGetXML(string& xmlpage)
 	detail += callsign;
 	detail += " HTTP/1.0\n";
 	detail += "Host: ";
-	detail += host;
+	detail += qrzhost;
 	detail += "\n";
 	detail += "Connection: close\n";
 	detail += "\n";
 
-	return request_reply(host, "http", detail, xmlpage);
+	return request_reply(qrzhost, "http", detail, xmlpage);
 }
 
 int bearing(const char *myqra, const char *dxqra) {
@@ -613,7 +615,6 @@ void QRZquery()
 
 // Hamcall specific functions
 
-#define HAMCALL_HOST "www.hamcall.net"
 #define HAMCALL_CALL 181
 #define HAMCALL_FIRST 184
 #define HAMCALL_CITY 191
@@ -674,7 +675,7 @@ bool HAMCALLget(string& htmlpage)
 	url_detail += VERSION;
 	url_detail += "\r\n";
 
-	return request_reply(host, "http", url_detail, htmlpage);
+	return request_reply("www.hamcall.net", "http", url_detail, htmlpage);
 }
 
 void HAMCALLquery()
@@ -683,6 +684,7 @@ void HAMCALLquery()
 
 	if (HAMCALLget(htmlpage)) {
 		parse_html(htmlpage);
+//LOG_INFO(htmlpage.c_str());
 		QRZ_disp_result();
 	} else {
 		FL_LOCK();

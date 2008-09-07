@@ -216,6 +216,9 @@ bool hamlib_init(bool bPtt)
 	hamlib_freq = 0;
 	hamlib_rmode = RIG_MODE_NONE;//RIG_MODE_USB;
 
+	hamlib_exit = false;
+	hamlib_bypass = false;
+	
 	if (fl_create_thread(hamlib_thread, hamlib_loop, &dummy) < 0) {
 		show_error(__func__, "pthread_create failed");
 		xcvr->close();
@@ -225,7 +228,6 @@ bool hamlib_init(bool bPtt)
 	init_Hamlib_RigDialog();
 	
 	hamlib_closed = false;
-	hamlib_exit = false;
 	return true;
 }
 
@@ -261,7 +263,7 @@ void hamlib_set_ptt(int ptt)
 	fl_lock(&hamlib_mutex);
 		try {
 			xcvr->setPTT(ptt ? RIG_PTT_ON : RIG_PTT_OFF);
-			hamlib_bypass = ptt;
+			hamlib_bypass = ptt ? true : false;
 		}
 		catch (const RigException& Ex) {
 			show_error("Rig PTT", Ex.what());

@@ -47,6 +47,8 @@ extern void			arq_init();
 extern void			arq_close();
 extern void			WriteARQ(unsigned int);
 
+#define ARQBUFSIZ 8192
+
 struct RXMSGSTRUC {
 	long int msg_type;
 	char c;
@@ -54,7 +56,7 @@ struct RXMSGSTRUC {
 
 struct TXMSGSTRUC {
 	long int msg_type;
-	char buffer[BUFSIZ];
+	char buffer[ARQBUFSIZ];
 };
 
 extern RXMSGSTRUC rxmsgst;

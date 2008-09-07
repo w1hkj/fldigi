@@ -2047,12 +2047,7 @@ void put_rx_char(unsigned int data)
 	static unsigned int last = 0;
 	const char **asc = ascii;
 
-#ifndef __CYGWIN__
-	rxmsgid = msgget( (key_t) progdefaults.rx_msgid, 0666);
-	if (mailclient || mailserver || txmsgid != -1 || arqmode)
-#else
 	if (mailclient || mailserver || arqmode)
-#endif
 		asc = ascii2;
 	if (active_modem->get_mode() == MODE_RTTY ||
 		active_modem->get_mode() == MODE_CW)
