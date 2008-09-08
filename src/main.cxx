@@ -238,8 +238,6 @@ int main(int argc, char ** argv)
 			 progdefaults.slowcpu, src_get_name(progdefaults.sample_converter));
 	}
 
-	progdefaults.testCommPorts();
-	
 	progStatus.loadLastState();
 
 	Fl::scheme(progdefaults.ui_scheme.c_str());
@@ -247,9 +245,8 @@ int main(int argc, char ** argv)
 	FSEL::create();
 
 	createConfig();
-	inpTTYdev->tooltip(progdefaults.strCommPorts.c_str());
-	inpRIGdev->tooltip(progdefaults.strCommPorts.c_str());
-	
+	progdefaults.testCommPorts();
+
 	macros.loadDefault();
 
 #if USE_HAMLIB

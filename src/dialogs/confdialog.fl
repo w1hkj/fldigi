@@ -351,6 +351,22 @@ progdefaults.changed = true;
               }
             }
           }
+          Fl_Group {} {
+            label History open
+            xywh {0 50 405 166} hide
+          } {
+            Fl_Group {} {open
+              xywh {5 56 390 158} box ENGRAVED_FRAME
+            } {
+              Fl_Check_Button btnWaterfallHistoryDefault {
+                label {Click Replays History}
+                callback {progdefaults.WaterfallHistoryDefault = o->value();
+progdefaults.changed = true;}
+                xywh {15 66 170 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.WaterfallHistoryDefault);}
+              }
+            }
+          }
         }
       }
       Fl_Group tabVideo {
@@ -449,11 +465,6 @@ progdefaults.changed = true;}
           Fl_Group {} {open
             xywh {12 81 180 94} box ENGRAVED_FRAME align 21
           } {
-            Fl_Input inpTTYdev {
-              label {Port:}
-              callback {progdefaults.changed = true;}
-              tooltip {Enter /dev/ttyS0 for COM1} xywh {52 87 134 22}
-            }
             Fl_Round_Button btnRTSptt {
               label RTS
               callback {progdefaults.changed = true;}
@@ -478,6 +489,11 @@ progdefaults.changed = true;}
               label {Initial value}
               xywh {80 114 105 17}
             }
+            Fl_Input_Choice inpTTYdev {
+              label {Port:}
+              callback {progdefaults.changed = true;} open
+              xywh {56 87 125 22}
+            } {}
           }
           Fl_Round_Button {btnPTT[4]} {
             label TTY
@@ -568,11 +584,6 @@ progdefaults.changed = true;}
               code0 {o->readonly();}
               class Fl_ComboBox
             }
-            Fl_Input inpRIGdev {
-              label {Port:}
-              callback {progdefaults.changed = true;}
-              tooltip {Enter /dev/ttyS0 for COM1} xywh {256 129 134 22} deactivate
-            }
             Fl_Choice mnuBaudRate {
               label {Baud Rate:}
               callback {progdefaults.changed = true;} open
@@ -589,6 +600,11 @@ o->value(1);
 progdefaults.changed = true;}
               xywh {350 83 20 20} down_box DIAMOND_DOWN_BOX selection_color 1 align 4 deactivate
             }
+            Fl_Input_Choice inpRIGdev {
+              label {Port:}
+              callback {progdefaults.changed = true;} open selected
+              xywh {246 130 144 22} deactivate
+            } {}
           }
           Fl_Group {} {
             label Memmap open

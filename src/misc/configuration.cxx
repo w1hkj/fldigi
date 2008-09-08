@@ -17,6 +17,18 @@
 #include <iostream>
 #include <fstream>
 
+#ifdef __linux__
+#  include <dirent.h>
+#  include <limits.h>
+#  include <errno.h>
+#endif
+#ifdef __APPLE__
+#  include <glob.h>
+#endif
+#ifndef __CYGWIN__
+#  include <sys/stat.h>
+#endif
+
 configuration progdefaults = {
 	false,			// bool		rsid;
 	false,			// bool		rsidWideSearch;
@@ -32,6 +44,7 @@ configuration progdefaults = {
 	1000,			// int		RTTYsweetspot;
 	1000,			// int		PSKsweetspot;
 	false,			// bool		StartAtSweetSpot;
+	false,			// bool		WaterfallHistoryDefault;
 //  for PSK mail interface	
 	false,			// bool		PSKmailSweetSpot;
 	200,			// int		SearchRange;
@@ -147,25 +160,32 @@ configuration progdefaults = {
 	0,				// int 		chkUSEMEMMAPis
 	0,				// int 		chkUSEHAMLIBis
 	0,				// int		chkUSERIGCATis
-	"",				// string	HamRigName
-#ifdef __CYGWIN__
-	"COM1",			// string	HamRigDevice
-	1,				// int		HamRigBaudrate
+#if defined(__linux__)
+	"/dev/ttyS0",		// string	PTTdev
+	"/dev/ttyS1",		// string	CWFSKport
+	"/dev/ttyS0",		// string	HamRigDevice
+#elif defined(__CYGWIN__)
+	"COM1",			// string	PTTdev
 	"COM2",			// string	CWFSKport
-#else
-	"/dev/ttyS0",	// string	HamRigDevice
-	1,				// int		HamRigBaudrate
-	"/dev/ttyS1",	// string	CWFSKport
+	"COM1",			// string	HamRigDevice
+#else // not sure
+	"/dev/ptt",		// string	PTTdev
+	"/dev/fsk",		// string	CWFSKport
+	"/dev/rig",		// string	HamRigDevice
 #endif
+	"",			// string	HamRigName
+	1,			// int		HamRigBaudrate
 //
 	"",				// myCall
 	"",				// myName
 	"",				// myQth
 	"",				// myLoc
-#ifdef __CYGWIN__
-	"COM1",			// PTTdev
+#if defined(__linux__)
+
+#elif defined(__CYGWIN__)
+
 #else
-	"/dev/ttyS0",	// PTTdev
+
 #endif
 	"",				// secondary text
 // Sound card
@@ -232,7 +252,6 @@ configuration progdefaults = {
 
 	"gtk+",				// string	ui_scheme
 
-	"",				// string	strCommPorts
         9876,		// int		rx_msgid
         6789,		// int		tx_msgid
 	"127.0.0.1",	// string	arq_address
@@ -266,7 +285,7 @@ enum TAG { \
 	IGNORE,
 	MYCALL, MYNAME, MYQTH, MYLOC, 
 	SQUELCH, WFREFLEVEL, WFAMPSPAN, LOWFREQCUTOFF, 
-	STARTATSWEETSPOT, PSKMAILSWEETSPOT, 
+	WATERFALLHISTORYDEFAULT, STARTATSWEETSPOT, PSKMAILSWEETSPOT, 
 	PSKSEARCHRANGE, PSKSERVEROFFSET,
 	ACQSN,
 	CWSWEETSPOT, PSKSWEETSPOT, RTTYSWEETSPOT,
@@ -381,6 +400,7 @@ void configuration::writeDefaultsXML()
 	writeXMLdbl(f, "WFAMPSPAN", wfAmpSpan);
 	writeXMLint(f, "LOWFREQCUTOFF", LowFreqCutoff);
 
+	writeXMLbool(f, "WATERFALLHISTORYDEFAULT", WaterfallHistoryDefault);
 	writeXMLbool(f, "STARTATSWEETSPOT", StartAtSweetSpot);
 	writeXMLbool(f, "PSKMAILSWEETSPOT", PSKmailSweetSpot);
 	writeXMLint(f, "PSKSEARCHRANGE", SearchRange);
@@ -617,6 +637,9 @@ bool configuration::readDefaultsXML()
 						break;
 					case LOWFREQCUTOFF :
 						LowFreqCutoff = atoi(xml->getNodeData());
+						break;
+					case WATERFALLHISTORYDEFAULT :
+						WaterfallHistoryDefault = atoi(xml->getNodeData());
 						break;
 					case STARTATSWEETSPOT :
 						StartAtSweetSpot = atoi(xml->getNodeData());
@@ -1151,6 +1174,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("WFREFLEVEL", nodeName)) 	tag = WFREFLEVEL;
 				else if (!strcmp("WFAMPSPAN", nodeName)) 	tag = WFAMPSPAN;
 				else if (!strcmp("LOWFREQCUTOFF", nodeName)) 	tag = LOWFREQCUTOFF;
+				else if (!strcmp("WATERFALLHISTORYDEFAULT", nodeName)) 	tag = WATERFALLHISTORYDEFAULT;
 				else if (!strcmp("STARTATSWEETSPOT", nodeName)) 	tag = STARTATSWEETSPOT;
 				else if (!strcmp("PSKMAILSWEETSPOT", nodeName)) 	tag = PSKMAILSWEETSPOT;
 				else if (!strcmp("PSKSEARCHRANGE", nodeName)) 	tag = PSKSEARCHRANGE;
@@ -1474,6 +1498,7 @@ int configuration::setDefaults() {
 	valCWsweetspot->value(CWsweetspot);
 	valRTTYsweetspot->value(RTTYsweetspot);
 	valPSKsweetspot->value(PSKsweetspot);
+	btnWaterfallHistoryDefault->value(WaterfallHistoryDefault);
 	btnStartAtSweetSpot->value(StartAtSweetSpot);
 	btnPSKmailSweetSpot->value(PSKmailSweetSpot);
 	cntSearchRange->value(SearchRange);
@@ -1701,43 +1726,114 @@ FL_UNLOCK();
 
 void configuration::testCommPorts()
 {
+#ifndef PATH_MAX
+#  define PATH_MAX 1024
+#endif
+#ifndef __CYGWIN__
+	struct stat st;
+#endif
+#ifndef __APPLE__
+	char ttyname[PATH_MAX + 1];
+#endif
+
+#ifdef __linux__
+	bool ret = false;
+	DIR* sys = NULL;
+	char cwd[PATH_MAX] = { '.', '\0' };
+	if (getcwd(cwd, sizeof(cwd)) == NULL || chdir("/sys/class/tty") == -1 ||
+	    (sys = opendir(".")) == NULL)
+		goto out;
+
+	ssize_t len;
+	struct dirent* dp;
+	while ((dp = readdir(sys))) {
+#  ifdef _DIRENT_HAVE_D_TYPE
+		if (dp->d_type != DT_LNK)
+			continue;
+#  endif
+		if ((len = readlink(dp->d_name, ttyname, sizeof(ttyname)-1)) == -1)
+			continue;
+		ttyname[len] = '\0';
+		if (!strstr(ttyname, "/devices/virtual/")) {
+			snprintf(ttyname, sizeof(ttyname), "/dev/%s", dp->d_name);
+			if (stat(ttyname, &st) == -1 || !S_ISCHR(st.st_mode))
+				continue;
+			LOG_INFO("Found serial port %s", ttyname);
+			inpTTYdev->add(ttyname);
+#if USE_HAMLIB
+			inpRIGdev->add(ttyname);
+#endif
+		}
+	}
+	ret = true;
+
+out:
+	if (sys)
+		closedir(sys);
+	chdir(cwd);
+	if (ret) // do we need to fall back to the probe code below?
+		return;
+#endif // __linux__
+
+
+	const char* tty_fmt[] = {
+#if defined(__linux__)
+		"/dev/ttyS%u",
+		"/dev/ttyUSB%u",
+		"/dev/usb/ttyUSB%u"
+#elif defined(__FreeBSD__)
+		"/dev/ttyd%u"
+#elif defined(__CYGWIN__)
+		"/dev/ttyS%u"
+#elif defined(__APPLE__)
+		"/dev/cu.*",
+		"/dev/tty.*"
+#endif
+	};
+
+#if defined(__CYGWIN__)
 	int fd;
+#  define TTY_MAX 255
+#elif defined(__APPLE__)
+	glob_t gbuf;
+#else
+#  define TTY_MAX 8
+#endif
 
-	strCommPorts = "Ports:";
-	char COM[7] = "COMxxx";
-	char sztty[20] = "/dev/usb/ttyUSBxxx";
-#ifdef __CYGWIN__
-	for (int i = 0; i < 255; i++) {
-#else
-	for (int i = 0; i < 8; i++) {
-#endif
-		snprintf(sztty, sizeof(sztty), "/dev/ttyS%-d", i);
-		snprintf(COM, sizeof(COM), "COM%-d", i+1);
-		if ((fd = open( sztty, O_RDWR | O_NOCTTY | O_NDELAY)) < 0)
-			continue;
-		strCommPorts += '\n';
-#ifdef __CYGWIN__
-		strCommPorts.append(COM);
-#else
-		strCommPorts.append(sztty);
-#endif
-		close(fd);
-    }
-	for (int i = 0; i < 8; i++) {
-		snprintf(sztty, sizeof(sztty), "/dev/ttyUSB%-d", i);
-		if ((fd = open( sztty, O_RDWR | O_NOCTTY | O_NDELAY)) < 0)
-			continue;
-		strCommPorts += '\n';
-		strCommPorts.append(sztty);
-		close(fd);
-    }
-	for (int i = 0; i < 8; i++) {
-		snprintf(sztty, sizeof(sztty), "/dev/usb/ttyUSB%-d", i);
-		if ((fd = open( sztty, O_RDWR | O_NOCTTY | O_NDELAY)) < 0)
-			continue;
-		strCommPorts += '\n';
-		strCommPorts.append(sztty);
-		close(fd);
-    }
+	for (size_t i = 0; i < sizeof(tty_fmt)/sizeof(*tty_fmt); i++) {
+#ifndef __APPLE__
+		for (unsigned j = 0; j < TTY_MAX; j++) {
+			snprintf(ttyname, sizeof(ttyname), tty_fmt[i], j);
+#  ifndef __CYGWIN__
+			if ( !(stat(ttyname, &st) == 0 && S_ISCHR(st.st_mode)) )
+				continue;
+#  else // __CYGWIN__
+			if ((fd = open(ttyname, O_RDWR | O_NOCTTY | O_NDELAY)) == -1)
+				continue;
+			snprintf(ttyname, sizeof(ttyname), "COM%u", j+1);
+			close(fd);
+#  endif // __CYGWIN__
+
+			LOG_INFO("Found serial port %s", ttyname);
+			inpTTYdev->add(ttyname);
+#  if USE_HAMLIB
+			inpRIGdev->add(ttyname);
+#  endif
+		}
+#else // __APPLE__
+		glob(tty_fmt[i], 0, NULL, &gbuf);
+		for (size_t j = 0; j < gbuf.gl_pathc; j++) {
+			if ( !(stat(gbuf.gl_pathv[j], &st) == 0 && S_ISCHR(st.st_mode)) ||
+			     strstr(gbuf.gl_pathv[j], "modem") )
+				continue;
+			LOG_INFO("Found serial port %s", gbuf.gl_pathv[j]);
+			inpTTYdev->add(gbuf.gl_pathv[j]);
+#  if USE_HAMLIB
+			inpRIGdev->add(gbuf.gl_pathv[j]);
+#  endif
+
+		}
+		globfree(&gbuf);
+#endif // __APPLE__
+	}
 }
-

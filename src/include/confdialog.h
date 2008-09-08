@@ -45,6 +45,7 @@ extern Fl_Check_Button *btnUseCursorCenterLine;
 extern Fl_Button *btnCursorBWcolor;
 extern Fl_Button *btnCursorCenterLineColor;
 extern Fl_Button *btnBwTracksColor;
+extern Fl_Check_Button *btnWaterfallHistoryDefault;
 extern Fl_Group *tabVideo;
 extern Fl_Check_Button *btnsendid;
 extern Fl_Check_Button *btnsendvideotext;
@@ -58,19 +59,20 @@ extern Fl_Check_Button *btnCWID;
 extern Fl_Value_Slider *sldrCWIDwpm;
 extern Fl_Group *tabRig;
 #include <FL/Fl_Round_Button.H>
-extern Fl_Input *inpTTYdev;
 extern Fl_Round_Button *btnRTSptt;
 extern Fl_Round_Button *btnDTRptt;
 extern Fl_Round_Button *btnRTSplusV;
 extern Fl_Round_Button *btnDTRplusV;
 #include <FL/Fl_Box.H>
+#include <FL/Fl_Input_Choice.H>
+extern Fl_Input_Choice *inpTTYdev;
 extern Fl_Round_Button *btnPTT[5];
 extern Fl_Check_Button *chkUSERIGCAT;
 extern Fl_Check_Button *chkUSEHAMLIB;
 extern Fl_ComboBox *cboHamlibRig;
-extern Fl_Input *inpRIGdev;
 #include <FL/Fl_Choice.H>
 extern Fl_Choice *mnuBaudRate;
+extern Fl_Input_Choice *inpRIGdev;
 extern Fl_Check_Button *chkUSEMEMMAP;
 extern Fl_Button *btnInit_Interface;
 extern Fl_Group *tabQRZ;
@@ -86,7 +88,6 @@ extern Fl_Group *tabSoundCard;
 extern Fl_Tabs *tabsSoundCard;
 extern Fl_Group *tabAudio;
 extern Fl_Group *AudioOSS;
-#include <FL/Fl_Input_Choice.H>
 extern Fl_Input_Choice *menuOSSDev;
 extern Fl_Group *AudioPort;
 extern Fl_Choice *menuPortInDev;

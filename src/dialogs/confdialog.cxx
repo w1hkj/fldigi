@@ -282,6 +282,13 @@ progdefaults.changed = true;
 };
 }
 
+Fl_Check_Button *btnWaterfallHistoryDefault=(Fl_Check_Button *)0;
+
+static void cb_btnWaterfallHistoryDefault(Fl_Check_Button* o, void*) {
+  progdefaults.WaterfallHistoryDefault = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabVideo=(Fl_Group *)0;
 
 Fl_Check_Button *btnsendid=(Fl_Check_Button *)0;
@@ -357,12 +364,6 @@ o->value(1);
 progdefaults.changed = true;
 }
 
-Fl_Input *inpTTYdev=(Fl_Input *)0;
-
-static void cb_inpTTYdev(Fl_Input*, void*) {
-  progdefaults.changed = true;
-}
-
 Fl_Round_Button *btnRTSptt=(Fl_Round_Button *)0;
 
 static void cb_btnRTSptt(Fl_Round_Button*, void*) {
@@ -384,6 +385,12 @@ static void cb_btnRTSplusV(Fl_Round_Button*, void*) {
 Fl_Round_Button *btnDTRplusV=(Fl_Round_Button *)0;
 
 static void cb_btnDTRplusV(Fl_Round_Button*, void*) {
+  progdefaults.changed = true;
+}
+
+Fl_Input_Choice *inpTTYdev=(Fl_Input_Choice *)0;
+
+static void cb_inpTTYdev(Fl_Input_Choice*, void*) {
   progdefaults.changed = true;
 }
 
@@ -464,12 +471,6 @@ static void cb_cboHamlibRig(Fl_ComboBox*, void*) {
   progdefaults.changed = true;
 }
 
-Fl_Input *inpRIGdev=(Fl_Input *)0;
-
-static void cb_inpRIGdev(Fl_Input*, void*) {
-  progdefaults.changed = true;
-}
-
 Fl_Choice *mnuBaudRate=(Fl_Choice *)0;
 
 static void cb_mnuBaudRate(Fl_Choice*, void*) {
@@ -483,6 +484,12 @@ btnPTT[3]->value(0);
 btnPTT[4]->value(0);
 o->value(1);
 progdefaults.changed = true;
+}
+
+Fl_Input_Choice *inpRIGdev=(Fl_Input_Choice *)0;
+
+static void cb_inpRIGdev(Fl_Input_Choice*, void*) {
+  progdefaults.changed = true;
 }
 
 Fl_Check_Button *chkUSEMEMMAP=(Fl_Check_Button *)0;
@@ -1615,6 +1622,19 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             } // Fl_Group* o
             o->end();
           } // Fl_Group* o
+          { Fl_Group* o = new Fl_Group(0, 50, 405, 166, "History");
+            o->hide();
+            { Fl_Group* o = new Fl_Group(5, 56, 390, 158);
+              o->box(FL_ENGRAVED_FRAME);
+              { Fl_Check_Button* o = btnWaterfallHistoryDefault = new Fl_Check_Button(15, 66, 170, 20, "Click Replays History");
+                btnWaterfallHistoryDefault->down_box(FL_DOWN_BOX);
+                btnWaterfallHistoryDefault->callback((Fl_Callback*)cb_btnWaterfallHistoryDefault);
+                o->value(progdefaults.WaterfallHistoryDefault);
+              } // Fl_Check_Button* btnWaterfallHistoryDefault
+              o->end();
+            } // Fl_Group* o
+            o->end();
+          } // Fl_Group* o
           o->end();
         } // Fl_Tabs* o
         tabWaterfall->end();
@@ -1706,10 +1726,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           { Fl_Group* o = new Fl_Group(12, 81, 180, 94);
             o->box(FL_ENGRAVED_FRAME);
             o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-            { inpTTYdev = new Fl_Input(52, 87, 134, 22, "Port:");
-              inpTTYdev->tooltip("Enter /dev/ttyS0 for COM1");
-              inpTTYdev->callback((Fl_Callback*)cb_inpTTYdev);
-            } // Fl_Input* inpTTYdev
             { btnRTSptt = new Fl_Round_Button(20, 134, 54, 15, "RTS");
               btnRTSptt->down_box(FL_DOWN_BOX);
               btnRTSptt->callback((Fl_Callback*)cb_btnRTSptt);
@@ -1728,6 +1744,9 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             } // Fl_Round_Button* btnDTRplusV
             { new Fl_Box(80, 114, 105, 17, "Initial value");
             } // Fl_Box* o
+            { inpTTYdev = new Fl_Input_Choice(56, 87, 125, 22, "Port:");
+              inpTTYdev->callback((Fl_Callback*)cb_inpTTYdev);
+            } // Fl_Input_Choice* inpTTYdev
             o->end();
           } // Fl_Group* o
           { btnPTT[4] = new Fl_Round_Button(100, 56, 52, 14, "TTY");
@@ -1774,11 +1793,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
               cboHamlibRig->deactivate();
               o->readonly();
             } // Fl_ComboBox* cboHamlibRig
-            { inpRIGdev = new Fl_Input(256, 129, 134, 22, "Port:");
-              inpRIGdev->tooltip("Enter /dev/ttyS0 for COM1");
-              inpRIGdev->callback((Fl_Callback*)cb_inpRIGdev);
-              inpRIGdev->deactivate();
-            } // Fl_Input* inpRIGdev
             { Fl_Choice* o = mnuBaudRate = new Fl_Choice(291, 154, 99, 22, "Baud Rate:");
               mnuBaudRate->down_box(FL_BORDER_BOX);
               mnuBaudRate->callback((Fl_Callback*)cb_mnuBaudRate);
@@ -1792,6 +1806,10 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
               btnPTT[1]->align(FL_ALIGN_LEFT);
               btnPTT[1]->deactivate();
             } // Fl_Round_Button* btnPTT[1]
+            { inpRIGdev = new Fl_Input_Choice(246, 130, 144, 22, "Port:");
+              inpRIGdev->callback((Fl_Callback*)cb_inpRIGdev);
+              inpRIGdev->deactivate();
+            } // Fl_Input_Choice* inpRIGdev
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(200, 60, 200, 120, "Memmap");

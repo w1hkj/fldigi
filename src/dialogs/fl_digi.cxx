@@ -1929,6 +1929,10 @@ void create_fl_digi_main() {
 				60,
 				Hstatus, "");
 
+			int sql_width = bwSqlOnOff;
+#ifdef __APPLE__
+			sql_width -= 15; // leave room for resize handle
+#endif
 			if (useCheckButtons) {
 				btn_afconoff = new Fl_Check_Button(
 								WNOM - bwSqlOnOff - bwAfcOnOff, 
@@ -1937,7 +1941,7 @@ void create_fl_digi_main() {
 				btn_sqlonoff = new Fl_Check_Button(
 								WNOM - bwSqlOnOff, 
 								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
-								bwSqlOnOff, Hstatus, "SQL");
+								sql_width, Hstatus, "SQL");
 			} else {
 				btn_afconoff = new Fl_Light_Button(
 								WNOM - bwSqlOnOff - bwAfcOnOff, 
@@ -1946,7 +1950,7 @@ void create_fl_digi_main() {
 				btn_sqlonoff = new Fl_Light_Button(
 								WNOM - bwSqlOnOff, 
 								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
-								bwSqlOnOff, Hstatus, "SQL");
+								sql_width, Hstatus, "SQL");
 			}
 			btn_afconoff->callback(afconoff_cb, 0);
 			btn_afconoff->value(1);

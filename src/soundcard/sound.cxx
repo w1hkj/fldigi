@@ -1295,7 +1295,7 @@ void SoundPort::init_stream(unsigned dir)
 		<< "\ndefault high output latency: " << (*sd[dir].idev)->defaultHighOutputLatency
 		<< "\n";
 
-	LOG_DEBUG("using device \"%s\":\n%s", dir_str[dir], device_text[dir].str().c_str());
+	LOG_DEBUG("using %s device \"%s\":\n%s", dir_str[dir], sd[dir].device.c_str(), device_text[dir].str().c_str());
 
 
         sd[dir].dev_sample_rate = find_srate(dir);
