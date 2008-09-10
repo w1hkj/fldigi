@@ -67,13 +67,15 @@ extern Fl_Round_Button *btnDTRplusV;
 #include <FL/Fl_Input_Choice.H>
 extern Fl_Input_Choice *inpTTYdev;
 extern Fl_Round_Button *btnPTT[5];
-extern Fl_Check_Button *chkUSERIGCAT;
 extern Fl_Check_Button *chkUSEHAMLIB;
 extern Fl_ComboBox *cboHamlibRig;
 #include <FL/Fl_Choice.H>
 extern Fl_Choice *mnuBaudRate;
 extern Fl_Input_Choice *inpRIGdev;
+extern Fl_Check_Button *chkUSERIGCAT;
+#include <FL/Fl_Output.H>
 extern Fl_Check_Button *chkUSEMEMMAP;
+extern Fl_Check_Button *chkUSEXMLRPC;
 extern Fl_Button *btnInit_Interface;
 extern Fl_Group *tabQRZ;
 extern Fl_Check_Button *btnQRZnotavailable;

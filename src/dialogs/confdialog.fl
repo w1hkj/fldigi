@@ -46,8 +46,8 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     } {
       Fl_Group tabOperator {
         label Oper
-        callback {progdefaults.changed = true;} open selected
-        xywh {0 25 400 195} color 51 selection_color 51 when 1
+        callback {progdefaults.changed = true;} open
+        xywh {0 25 400 195} color 51 selection_color 51 when 1 hide
       } {
         Fl_Input inpMyCallsign {
           label {Callsign:}
@@ -61,6 +61,8 @@ progdefaults.secText = o->value();
 progdefaults.secText.append(" ");
 txtSecondary->value(progdefaults.secText.c_str());
 }
+progdefaults.myCall = o->value();
+update_main_title();
 progdefaults.changed = true;}
           xywh {78 36 85 24}
         }
@@ -359,10 +361,10 @@ progdefaults.changed = true;
               xywh {5 56 390 158} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnWaterfallHistoryDefault {
-                label {Click Replays History}
+                label {Lft/Rt Click Replays History always}
                 callback {progdefaults.WaterfallHistoryDefault = o->value();
 progdefaults.changed = true;}
-                xywh {15 66 170 20} down_box DOWN_BOX
+                tooltip {Disabled - Ctrl-Lft click plays history} xywh {15 66 266 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.WaterfallHistoryDefault);}
               }
             }
@@ -445,8 +447,8 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabRig {
-        label Rig
-        xywh {0 25 400 195} hide
+        label Rig open
+        xywh {0 25 400 195}
       } {
         Fl_Group {} {
           label Ptt open
@@ -507,55 +509,18 @@ progdefaults.changed = true;}
           }
         }
         Fl_Tabs {} {open
-          xywh {200 34 200 152}
+          xywh {200 34 200 150}
         } {
           Fl_Group {} {
-            label RigCAT open
+            label Ham open selected
             xywh {200 60 200 120}
-          } {
-            Fl_Check_Button chkUSERIGCAT {
-              label {use rigCAT}
-              callback {if (o->value() == 1) {
-  chkUSEHAMLIB->value(0);
-  chkUSEMEMMAP->value(0);
-  btnPTT[1]->value(0);
-  btnPTT[1]->deactivate();
-  btnPTT[2]->value(0);
-  btnPTT[2]->deactivate();
-  btnPTT[3]->activate();
-  cboHamlibRig->deactivate();
-  inpRIGdev->deactivate();
-  mnuBaudRate->deactivate();
-  } else {
-  if (btnPTT[3]->value() == 1)
-  	btnPTT[0]->value(1);
-  btnPTT[3]->value(0);
-  btnPTT[3]->deactivate();
-  }
-for (int i = 0; i < 4; btnPTT[i++]->redraw());
-progdefaults.changed = true;}
-              xywh {345 75 20 20} down_box DOWN_BOX align 4
-            }
-            Fl_Round_Button {btnPTT[3]} {
-              label {use RigCAT PTT}
-              callback {btnPTT[0]->value(0);
-btnPTT[1]->value(0);
-btnPTT[2]->value(0);
-btnPTT[4]->value(0);
-o->value(1);
-progdefaults.changed = true;}
-              xywh {345 105 20 19} down_box DIAMOND_DOWN_BOX selection_color 1 align 4 deactivate
-            }
-          }
-          Fl_Group {} {
-            label Hamlib open
-            xywh {200 60 200 120} hide
           } {
             Fl_Check_Button chkUSEHAMLIB {
               label {use Hamlib}
               callback {if (o->value() == 1) {
   chkUSEMEMMAP->value(0);
   chkUSERIGCAT->value(0);
+  chkUSEXMLRPC->value(0);
   btnPTT[3]->value(0);
   btnPTT[3]->deactivate();
   btnPTT[2]->value(0);
@@ -602,12 +567,55 @@ progdefaults.changed = true;}
             }
             Fl_Input_Choice inpRIGdev {
               label {Port:}
-              callback {progdefaults.changed = true;} open selected
+              callback {progdefaults.changed = true;} open
               xywh {246 130 144 22} deactivate
             } {}
           }
           Fl_Group {} {
-            label Memmap open
+            label RigCAT open
+            xywh {200 60 200 120} hide
+          } {
+            Fl_Check_Button chkUSERIGCAT {
+              label {use rigCAT}
+              callback {if (o->value() == 1) {
+  chkUSEHAMLIB->value(0);
+  chkUSEMEMMAP->value(0);
+  chkUSEXMLRPC->value(0);
+  btnPTT[1]->value(0);
+  btnPTT[1]->deactivate();
+  btnPTT[2]->value(0);
+  btnPTT[2]->deactivate();
+  btnPTT[3]->activate();
+  cboHamlibRig->deactivate();
+  inpRIGdev->deactivate();
+  mnuBaudRate->deactivate();
+  } else {
+  if (btnPTT[3]->value() == 1)
+  	btnPTT[0]->value(1);
+  btnPTT[3]->value(0);
+  btnPTT[3]->deactivate();
+  }
+for (int i = 0; i < 4; btnPTT[i++]->redraw());
+progdefaults.changed = true;}
+              xywh {350 121 20 20} down_box DOWN_BOX align 4
+            }
+            Fl_Round_Button {btnPTT[3]} {
+              label {use RigCAT PTT}
+              callback {btnPTT[0]->value(0);
+btnPTT[1]->value(0);
+btnPTT[2]->value(0);
+btnPTT[4]->value(0);
+o->value(1);
+progdefaults.changed = true;}
+              xywh {350 147 20 19} down_box DIAMOND_DOWN_BOX selection_color 1 align 4 deactivate
+            }
+            Fl_Output {} {
+              xywh {205 65 190 50} type Multiline box BORDER_BOX color 50
+              code0 {o->value("Control specified in rig.xml\\nfile");}
+            }
+          }
+          Fl_Group {} {
+            label Mem open
             xywh {200 60 200 120} hide
           } {
             Fl_Check_Button chkUSEMEMMAP {
@@ -615,6 +623,7 @@ progdefaults.changed = true;}
               callback {if(o->value() == 1){
   chkUSEHAMLIB->value(0);
   chkUSERIGCAT->value(0);
+  chkUSEXMLRPC->value(0);
   btnPTT[3]->value(0);
   btnPTT[3]->deactivate();
   btnPTT[1]->value(0);
@@ -631,7 +640,7 @@ progdefaults.changed = true;}
   }
 for (int i = 0; i < 4; btnPTT[i++]->redraw());  
 progdefaults.changed = true;}
-              xywh {345 75 20 20} down_box DOWN_BOX align 4
+              xywh {350 131 20 20} down_box DOWN_BOX align 4
             }
             Fl_Round_Button {btnPTT[2]} {
               label {use Memmap PTT}
@@ -641,7 +650,39 @@ btnPTT[3]->value(0);
 btnPTT[4]->value(0);
 o->value(1);
 progdefaults.changed = true;}
-              xywh {345 105 20 20} down_box DIAMOND_DOWN_BOX selection_color 1 align 4 deactivate
+              xywh {350 151 20 20} down_box DIAMOND_DOWN_BOX selection_color 1 align 4 deactivate
+            }
+            Fl_Output {} {
+              xywh {205 70 190 58} type Multiline box BORDER_BOX color 50
+              code0 {o->value("Control via Memory Mapped\\nshared variables\\nie: Kachina program");}
+            }
+          }
+          Fl_Group {} {
+            label Ext open
+            xywh {200 60 200 120} hide
+          } {
+            Fl_Check_Button chkUSEXMLRPC {
+              label {use xmlrpc program}
+              callback {if(o->value() == 1){
+  chkUSEHAMLIB->value(0);
+  chkUSERIGCAT->value(0);
+  chkUSEMEMMAP->value(0);
+  btnPTT[3]->value(0);
+  btnPTT[3]->deactivate();
+  btnPTT[1]->value(0);
+  btnPTT[1]->deactivate();
+  btnPTT[2]->activate();
+  cboHamlibRig->deactivate();
+  inpRIGdev->deactivate();
+  mnuBaudRate->deactivate();
+  }
+for (int i = 0; i < 4; btnPTT[i++]->redraw());  
+progdefaults.changed = true;}
+              xywh {366 142 20 20} down_box DOWN_BOX align 4
+            }
+            Fl_Output {} {
+              xywh {205 67 190 58} type Multiline box BORDER_BOX color 50
+              code0 {o->value("Rig control via external\\nprogram using xmlrpc\\nremote calls.");}
             }
           }
         }

@@ -30,6 +30,8 @@ progdefaults.secText = o->value();
 progdefaults.secText.append(" ");
 txtSecondary->value(progdefaults.secText.c_str());
 }
+progdefaults.myCall = o->value();
+update_main_title();
 progdefaults.changed = true;
 }
 
@@ -405,45 +407,13 @@ o->value(1);
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *chkUSERIGCAT=(Fl_Check_Button *)0;
-
-static void cb_chkUSERIGCAT(Fl_Check_Button* o, void*) {
-  if (o->value() == 1) {
-  chkUSEHAMLIB->value(0);
-  chkUSEMEMMAP->value(0);
-  btnPTT[1]->value(0);
-  btnPTT[1]->deactivate();
-  btnPTT[2]->value(0);
-  btnPTT[2]->deactivate();
-  btnPTT[3]->activate();
-  cboHamlibRig->deactivate();
-  inpRIGdev->deactivate();
-  mnuBaudRate->deactivate();
-  } else {
-  if (btnPTT[3]->value() == 1)
-  	btnPTT[0]->value(1);
-  btnPTT[3]->value(0);
-  btnPTT[3]->deactivate();
-  }
-for (int i = 0; i < 4; btnPTT[i++]->redraw());
-progdefaults.changed = true;
-}
-
-static void cb_btnPTT2(Fl_Round_Button* o, void*) {
-  btnPTT[0]->value(0);
-btnPTT[1]->value(0);
-btnPTT[2]->value(0);
-btnPTT[4]->value(0);
-o->value(1);
-progdefaults.changed = true;
-}
-
 Fl_Check_Button *chkUSEHAMLIB=(Fl_Check_Button *)0;
 
 static void cb_chkUSEHAMLIB(Fl_Check_Button* o, void*) {
   if (o->value() == 1) {
   chkUSEMEMMAP->value(0);
   chkUSERIGCAT->value(0);
+  chkUSEXMLRPC->value(0);
   btnPTT[3]->value(0);
   btnPTT[3]->deactivate();
   btnPTT[2]->value(0);
@@ -477,7 +447,7 @@ static void cb_mnuBaudRate(Fl_Choice*, void*) {
   progdefaults.changed = true;
 }
 
-static void cb_btnPTT3(Fl_Round_Button* o, void*) {
+static void cb_btnPTT2(Fl_Round_Button* o, void*) {
   btnPTT[0]->value(0);
 btnPTT[2]->value(0);
 btnPTT[3]->value(0);
@@ -492,12 +462,47 @@ static void cb_inpRIGdev(Fl_Input_Choice*, void*) {
   progdefaults.changed = true;
 }
 
+Fl_Check_Button *chkUSERIGCAT=(Fl_Check_Button *)0;
+
+static void cb_chkUSERIGCAT(Fl_Check_Button* o, void*) {
+  if (o->value() == 1) {
+  chkUSEHAMLIB->value(0);
+  chkUSEMEMMAP->value(0);
+  chkUSEXMLRPC->value(0);
+  btnPTT[1]->value(0);
+  btnPTT[1]->deactivate();
+  btnPTT[2]->value(0);
+  btnPTT[2]->deactivate();
+  btnPTT[3]->activate();
+  cboHamlibRig->deactivate();
+  inpRIGdev->deactivate();
+  mnuBaudRate->deactivate();
+  } else {
+  if (btnPTT[3]->value() == 1)
+  	btnPTT[0]->value(1);
+  btnPTT[3]->value(0);
+  btnPTT[3]->deactivate();
+  }
+for (int i = 0; i < 4; btnPTT[i++]->redraw());
+progdefaults.changed = true;
+}
+
+static void cb_btnPTT3(Fl_Round_Button* o, void*) {
+  btnPTT[0]->value(0);
+btnPTT[1]->value(0);
+btnPTT[2]->value(0);
+btnPTT[4]->value(0);
+o->value(1);
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *chkUSEMEMMAP=(Fl_Check_Button *)0;
 
 static void cb_chkUSEMEMMAP(Fl_Check_Button* o, void*) {
   if(o->value() == 1){
   chkUSEHAMLIB->value(0);
   chkUSERIGCAT->value(0);
+  chkUSEXMLRPC->value(0);
   btnPTT[3]->value(0);
   btnPTT[3]->deactivate();
   btnPTT[1]->value(0);
@@ -522,6 +527,26 @@ btnPTT[1]->value(0);
 btnPTT[3]->value(0);
 btnPTT[4]->value(0);
 o->value(1);
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *chkUSEXMLRPC=(Fl_Check_Button *)0;
+
+static void cb_chkUSEXMLRPC(Fl_Check_Button* o, void*) {
+  if(o->value() == 1){
+  chkUSEHAMLIB->value(0);
+  chkUSERIGCAT->value(0);
+  chkUSEMEMMAP->value(0);
+  btnPTT[3]->value(0);
+  btnPTT[3]->deactivate();
+  btnPTT[1]->value(0);
+  btnPTT[1]->deactivate();
+  btnPTT[2]->activate();
+  cboHamlibRig->deactivate();
+  inpRIGdev->deactivate();
+  mnuBaudRate->deactivate();
+  }
+for (int i = 0; i < 4; btnPTT[i++]->redraw());  
 progdefaults.changed = true;
 }
 
@@ -1416,6 +1441,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         tabOperator->selection_color((Fl_Color)51);
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { inpMyCallsign = new Fl_Input(78, 36, 85, 24, "Callsign:");
           inpMyCallsign->callback((Fl_Callback*)cb_inpMyCallsign);
         } // Fl_Input* inpMyCallsign
@@ -1626,7 +1652,8 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             o->hide();
             { Fl_Group* o = new Fl_Group(5, 56, 390, 158);
               o->box(FL_ENGRAVED_FRAME);
-              { Fl_Check_Button* o = btnWaterfallHistoryDefault = new Fl_Check_Button(15, 66, 170, 20, "Click Replays History");
+              { Fl_Check_Button* o = btnWaterfallHistoryDefault = new Fl_Check_Button(15, 66, 266, 20, "Lft/Rt Click Replays History always");
+                btnWaterfallHistoryDefault->tooltip("Disabled - Ctrl-Lft click plays history");
                 btnWaterfallHistoryDefault->down_box(FL_DOWN_BOX);
                 btnWaterfallHistoryDefault->callback((Fl_Callback*)cb_btnWaterfallHistoryDefault);
                 o->value(progdefaults.WaterfallHistoryDefault);
@@ -1713,7 +1740,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         tabVideo->end();
       } // Fl_Group* tabVideo
       { tabRig = new Fl_Group(0, 25, 400, 195, "Rig");
-        tabRig->hide();
         { Fl_Group* o = new Fl_Group(10, 36, 185, 150, "Ptt");
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -1756,24 +1782,8 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           } // Fl_Round_Button* btnPTT[4]
           o->end();
         } // Fl_Group* o
-        { Fl_Tabs* o = new Fl_Tabs(200, 34, 200, 152);
-          { Fl_Group* o = new Fl_Group(200, 60, 200, 120, "RigCAT");
-            { chkUSERIGCAT = new Fl_Check_Button(345, 75, 20, 20, "use rigCAT");
-              chkUSERIGCAT->down_box(FL_DOWN_BOX);
-              chkUSERIGCAT->callback((Fl_Callback*)cb_chkUSERIGCAT);
-              chkUSERIGCAT->align(FL_ALIGN_LEFT);
-            } // Fl_Check_Button* chkUSERIGCAT
-            { btnPTT[3] = new Fl_Round_Button(345, 105, 20, 19, "use RigCAT PTT");
-              btnPTT[3]->down_box(FL_DIAMOND_DOWN_BOX);
-              btnPTT[3]->selection_color((Fl_Color)1);
-              btnPTT[3]->callback((Fl_Callback*)cb_btnPTT2);
-              btnPTT[3]->align(FL_ALIGN_LEFT);
-              btnPTT[3]->deactivate();
-            } // Fl_Round_Button* btnPTT[3]
-            o->end();
-          } // Fl_Group* o
-          { Fl_Group* o = new Fl_Group(200, 60, 200, 120, "Hamlib");
-            o->hide();
+        { Fl_Tabs* o = new Fl_Tabs(200, 34, 200, 150);
+          { Fl_Group* o = new Fl_Group(200, 60, 200, 120, "Ham");
             { chkUSEHAMLIB = new Fl_Check_Button(350, 64, 20, 20, "use Hamlib");
               chkUSEHAMLIB->down_box(FL_DOWN_BOX);
               chkUSEHAMLIB->callback((Fl_Callback*)cb_chkUSEHAMLIB);
@@ -1802,7 +1812,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             { btnPTT[1] = new Fl_Round_Button(350, 83, 20, 20, "use Hamlib PTT");
               btnPTT[1]->down_box(FL_DIAMOND_DOWN_BOX);
               btnPTT[1]->selection_color((Fl_Color)1);
-              btnPTT[1]->callback((Fl_Callback*)cb_btnPTT3);
+              btnPTT[1]->callback((Fl_Callback*)cb_btnPTT2);
               btnPTT[1]->align(FL_ALIGN_LEFT);
               btnPTT[1]->deactivate();
             } // Fl_Round_Button* btnPTT[1]
@@ -1812,20 +1822,63 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             } // Fl_Input_Choice* inpRIGdev
             o->end();
           } // Fl_Group* o
-          { Fl_Group* o = new Fl_Group(200, 60, 200, 120, "Memmap");
+          { Fl_Group* o = new Fl_Group(200, 60, 200, 120, "RigCAT");
             o->hide();
-            { chkUSEMEMMAP = new Fl_Check_Button(345, 75, 20, 20, "use Memmap");
+            { chkUSERIGCAT = new Fl_Check_Button(350, 121, 20, 20, "use rigCAT");
+              chkUSERIGCAT->down_box(FL_DOWN_BOX);
+              chkUSERIGCAT->callback((Fl_Callback*)cb_chkUSERIGCAT);
+              chkUSERIGCAT->align(FL_ALIGN_LEFT);
+            } // Fl_Check_Button* chkUSERIGCAT
+            { btnPTT[3] = new Fl_Round_Button(350, 147, 20, 19, "use RigCAT PTT");
+              btnPTT[3]->down_box(FL_DIAMOND_DOWN_BOX);
+              btnPTT[3]->selection_color((Fl_Color)1);
+              btnPTT[3]->callback((Fl_Callback*)cb_btnPTT3);
+              btnPTT[3]->align(FL_ALIGN_LEFT);
+              btnPTT[3]->deactivate();
+            } // Fl_Round_Button* btnPTT[3]
+            { Fl_Output* o = new Fl_Output(205, 65, 190, 50);
+              o->type(12);
+              o->box(FL_BORDER_BOX);
+              o->color(FL_LIGHT1);
+              o->value("Control specified in rig.xml\nfile");
+            } // Fl_Output* o
+            o->end();
+          } // Fl_Group* o
+          { Fl_Group* o = new Fl_Group(200, 60, 200, 120, "Mem");
+            o->hide();
+            { chkUSEMEMMAP = new Fl_Check_Button(350, 131, 20, 20, "use Memmap");
               chkUSEMEMMAP->down_box(FL_DOWN_BOX);
               chkUSEMEMMAP->callback((Fl_Callback*)cb_chkUSEMEMMAP);
               chkUSEMEMMAP->align(FL_ALIGN_LEFT);
             } // Fl_Check_Button* chkUSEMEMMAP
-            { btnPTT[2] = new Fl_Round_Button(345, 105, 20, 20, "use Memmap PTT");
+            { btnPTT[2] = new Fl_Round_Button(350, 151, 20, 20, "use Memmap PTT");
               btnPTT[2]->down_box(FL_DIAMOND_DOWN_BOX);
               btnPTT[2]->selection_color((Fl_Color)1);
               btnPTT[2]->callback((Fl_Callback*)cb_btnPTT4);
               btnPTT[2]->align(FL_ALIGN_LEFT);
               btnPTT[2]->deactivate();
             } // Fl_Round_Button* btnPTT[2]
+            { Fl_Output* o = new Fl_Output(205, 70, 190, 58);
+              o->type(12);
+              o->box(FL_BORDER_BOX);
+              o->color(FL_LIGHT1);
+              o->value("Control via Memory Mapped\nshared variables\nie: Kachina program");
+            } // Fl_Output* o
+            o->end();
+          } // Fl_Group* o
+          { Fl_Group* o = new Fl_Group(200, 60, 200, 120, "Ext");
+            o->hide();
+            { chkUSEXMLRPC = new Fl_Check_Button(366, 142, 20, 20, "use xmlrpc program");
+              chkUSEXMLRPC->down_box(FL_DOWN_BOX);
+              chkUSEXMLRPC->callback((Fl_Callback*)cb_chkUSEXMLRPC);
+              chkUSEXMLRPC->align(FL_ALIGN_LEFT);
+            } // Fl_Check_Button* chkUSEXMLRPC
+            { Fl_Output* o = new Fl_Output(205, 67, 190, 58);
+              o->type(12);
+              o->box(FL_BORDER_BOX);
+              o->color(FL_LIGHT1);
+              o->value("Rig control via external\nprogram using xmlrpc\nremote calls.");
+            } // Fl_Output* o
             o->end();
           } // Fl_Group* o
           o->end();

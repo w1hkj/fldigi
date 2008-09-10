@@ -95,6 +95,7 @@ extern Digiscope		*digiscope;
 extern void toggleRSID();
 
 extern void create_fl_digi_main();
+extern void update_main_title();
 extern Fl_Menu_Item menu_[];
 extern Fl_Menu_Item *getMenuItem(const char *caption);
 extern void activate_rig_menu_item(bool b);

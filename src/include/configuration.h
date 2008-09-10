@@ -141,6 +141,7 @@ struct configuration {
 	int		chkUSEMEMMAPis;
 	int		chkUSEHAMLIBis;
 	int		chkUSERIGCATis;
+	int		chkUSEXMLRPCis;
 	string  PTTdev;
 	string	CWFSKport;
 	string  HamRigDevice;

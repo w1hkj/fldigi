@@ -80,12 +80,12 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 
 	{ MODE_BPSK31, &psk31_modem, "BPSK31", "BPSK-31", "PSK31", "PSK31" },
 	{ MODE_QPSK31, &qpsk31_modem, "QPSK31", "QPSK-31", "QPSK31", "QPSK31" },
-	{ MODE_PSK63, &psk63_modem, "PSK-63", "BPSK-63", "PSK63", "PSK63" },
+	{ MODE_PSK63, &psk63_modem, "BPSK63", "BPSK-63", "PSK63", "PSK63" },
 	{ MODE_QPSK63, &qpsk63_modem, "QPSK63", "QPSK-63", "QPSK63", "QPSK63" },
-	{ MODE_PSK125, &psk125_modem, "PSK125", "BPSK-125", "PSK125", "PSK125" },
-	{ MODE_QPSK125, &qpsk125_modem, "QPSK-125", "QPSK-125", "QPSK125", "PSK125" },
-	{ MODE_PSK250, &psk250_modem, "PSK-250", "BPSK-250", "PSK250", "PSK250" },
-	{ MODE_QPSK250, &qpsk250_modem, "QPSK-250", "QPSK-250", "QPSK250", "QPSK250" },
+	{ MODE_PSK125, &psk125_modem, "BPSK125", "BPSK-125", "PSK125", "PSK125" },
+	{ MODE_QPSK125, &qpsk125_modem, "QPSK125", "QPSK-125", "QPSK125", "PSK125" },
+	{ MODE_PSK250, &psk250_modem, "BPSK250", "BPSK-250", "PSK250", "PSK250" },
+	{ MODE_QPSK250, &qpsk250_modem, "QPSK250", "QPSK-250", "QPSK250", "QPSK250" },
 
 	{ MODE_OLIVIA, &olivia_modem, "OLIVIA", "Olivia", "", "OLIVIA" },
 
