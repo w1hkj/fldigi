@@ -242,7 +242,7 @@ void modem::ModulateXmtr(double *buffer, int len)
 	if (!progdefaults.viewXmtSignal)
 		return;
 	for (int i = 0; i < len; i++) {
-		_mdm_scdbl[scptr] = buffer[i] * 0.5;
+		_mdm_scdbl[scptr] = buffer[i] * 0.1;
 		scptr++;
 		if (scptr == 512) {
 			REQ(&waterfall::sig_data, wf, _mdm_scdbl.c_array(), 512, samplerate );
@@ -268,7 +268,7 @@ void modem::ModulateStereo(double *left, double *right, int len)
 	if (!progdefaults.viewXmtSignal)
 		return;
 	for (int i = 0; i < len; i++) {
-		_mdm_scdbl[scptr] = left[i] * 0.5;
+		_mdm_scdbl[scptr] = left[i] * 0.1;
 		scptr++;
 		if (scptr == 512) {
 			REQ(&waterfall::sig_data, wf, _mdm_scdbl.c_array(), 512, samplerate);

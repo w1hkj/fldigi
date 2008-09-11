@@ -130,7 +130,7 @@ void Digiscope::data(double *data, int len, bool scale)
 			min = MIN(min, _buf[i]);
 		}
 		for (int i = 0; i < _len; i++)
-			if (_buf[i] > 0.01) // threshold
+			if (_buf[i] > 0.001) // threshold
 				_buf[i] = (_buf[i] - min) / (max - min);
 			else
 				_buf[i] = 0.0;

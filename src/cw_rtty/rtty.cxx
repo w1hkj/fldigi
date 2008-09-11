@@ -466,7 +466,7 @@ int rtty::rx_process(const double *buf, int len)
 				QI[i] = QI[i] * complex(cos(rotate), sin(rotate));
 				avgsig = decayavg(avgsig, zp[i].mag(), 32);
 				
-				if (avgsig > 0.025) {
+				if (avgsig > 0.002) {
 					QI[i].re = (0.7 / avgsig) * QI[i].re;
 					QI[i].im = (0.7 / avgsig) * QI[i].im;
 				}

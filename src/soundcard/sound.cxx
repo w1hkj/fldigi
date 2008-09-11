@@ -98,6 +98,7 @@ SoundBase::~SoundBase()
 {
 	if (snd_buffer) delete [] snd_buffer;
 	if (src_buffer) delete [] src_buffer;
+	if (wrt_buffer) delete [] wrt_buffer;
 	if (tx_src_data) delete tx_src_data;
 	if (rx_src_data) delete rx_src_data;
 	if (rx_src_state) src_delete (rx_src_state);
@@ -250,7 +251,10 @@ sf_count_t SoundBase::read_file(SNDFILE* file, double* buf, size_t count)
 
 sf_count_t SoundBase::write_file(SNDFILE* file, double* buf, size_t count)
 {
-	return sf_writef_double(file, buf, count);
+	if (capture)
+		return sf_writef_double(file, buf, count);
+	for (size_t n = 0; n < count; n++) wrt_buffer[n] = buf[n] * 0.1;
+	return sf_write_double(file, wrt_buffer, count);
 }
 
 bool SoundBase::format_supported(int format)
@@ -305,6 +309,7 @@ SoundOSS::SoundOSS(const char *dev ) {
 	try {
 		snd_buffer	= new float [2*SND_BUF_LEN];
 		src_buffer	= new float [2*SND_BUF_LEN];
+		wrt_buffer  = new double [SND_BUF_LEN];
 		cbuff		= new unsigned char [4 * SND_BUF_LEN];
 	}
 	catch (const std::bad_alloc& e) {
@@ -313,6 +318,8 @@ SoundOSS::SoundOSS(const char *dev ) {
 	}
 	for (int i = 0; i < 2*SND_BUF_LEN; i++)
 		snd_buffer[i] = src_buffer[i] = 0.0;
+	for (int i = 0; i < SND_BUF_LEN; i++)
+		wrt_buffer[i] = 0.0;
 	for (int i = 0; i < 4 * SND_BUF_LEN; i++)
 		cbuff[i] = 0;
 
@@ -511,12 +518,12 @@ size_t SoundOSS::Read(double *buffer, size_t buffersize)
 	if (capture)
 		write_file(ofCapture, buffer, buffersize);
 	if (playback) {
+		double vol = 1.0;
 		read_file(ifPlayback, buffer, buffersize);
-		if (progdefaults.EnableMixer) {
-			double vol = progStatus.RcvMixer;
-			for (size_t i = 0; i < buffersize; i++)
-				buffer[i] *= vol;
-		}
+		if (progdefaults.EnableMixer)
+			vol = progStatus.RcvMixer;
+		for (size_t i = 0; i < buffersize; i++)
+			buffer[i] *= vol;
 		return buffersize;
 	}
 #endif
@@ -776,25 +783,34 @@ SoundPort::SoundPort(const char *in_dev, const char *out_dev)
 		pthread_cond_init(sd[i].ccond, NULL);
 	}
 
-        try {
-                tx_src_data = new SRC_DATA;
-        }
-        catch (const std::bad_alloc& e) {
-                LOG_ERROR("Cannot create libsamplerate data structures");
-                throw;
-        }
+	try {
+		tx_src_data = new SRC_DATA;
+	}
+	catch (const std::bad_alloc& e) {
+		LOG_ERROR("Cannot create libsamplerate data structures");
+		throw;
+	}
 
-        try {
-                src_buffer = new float[OUTPUT_CHANNELS * SND_BUF_LEN];
-                fbuf = new float[OUTPUT_CHANNELS * SND_BUF_LEN];
-        }
-        catch (const std::bad_alloc& e) {
-                LOG_ERROR("Cannot allocate libsamplerate buffers");
-                throw;
-        }
+	try {
+		src_buffer = new float[OUTPUT_CHANNELS * SND_BUF_LEN];
+		fbuf = new float[OUTPUT_CHANNELS * SND_BUF_LEN];
+	}
+	catch (const std::bad_alloc& e) {
+		LOG_ERROR("Cannot allocate libsamplerate buffers");
+		throw;
+	}
+	try {
+		wrt_buffer  = new double [SND_BUF_LEN];
+	}
+	catch (const std::bad_alloc& e) {
+		LOG_ERROR("Cannot allocate write buffer");
+		throw;
+	}
+	for (int i = 0; i < SND_BUF_LEN; i++)
+		wrt_buffer[i]= 0.0;
 
-        memset(src_buffer, 0, OUTPUT_CHANNELS * SND_BUF_LEN);
-        memset(fbuf, 0, OUTPUT_CHANNELS * SND_BUF_LEN);
+	memset(src_buffer, 0, OUTPUT_CHANNELS * SND_BUF_LEN);
+	memset(fbuf, 0, OUTPUT_CHANNELS * SND_BUF_LEN);
 }
 
 SoundPort::~SoundPort()
@@ -949,16 +965,16 @@ size_t SoundPort::Read(double *buf, size_t count)
 {
 #if USE_SNDFILE
         if (playback) {
-                read_file(ifPlayback, buf, count);
-                if (progdefaults.EnableMixer) {
-                        double vol = valRcvMixer->value();
-                        for (size_t i = 0; i < count; i++)
-                                buf[i] *= vol;
-                }
-                if (!capture) {
-			usleep((useconds_t)ceil((1e6 * count) / req_sample_rate));
-			return count;
-		}
+			double vol = 1.0;
+			read_file(ifPlayback, buf, count);
+			if (progdefaults.EnableMixer)
+				vol = progStatus.RcvMixer;
+			for (size_t i = 0; i < count; i++)
+				buf[i] *= vol;
+			if (!capture) {
+				usleep((useconds_t)ceil((1e6 * count) / req_sample_rate));
+				return count;
+			}
         }
 #endif
 
@@ -1028,7 +1044,7 @@ size_t SoundPort::Write(double *buf, size_t count)
 {
 #if USE_SNDFILE
 	if (generate)
-                write_file(ofGenerate, buf, count);
+		write_file(ofGenerate, buf, count);
 #endif
 
         // copy input to both channels
@@ -1042,7 +1058,7 @@ size_t SoundPort::Write_stereo(double *bufleft, double *bufright, size_t count)
 {
 #if USE_SNDFILE
 	if (generate)
-                write_file(ofCapture, bufleft, count);
+		write_file(ofCapture, bufleft, count);
 #endif
 
         // interleave into fbuf
@@ -1529,23 +1545,32 @@ SoundPulse::SoundPulse(const char *dev)
 	sd[0].stream_params.channels = INPUT_CHANNELS;
 	sd[1].stream_params.channels = OUTPUT_CHANNELS;
 
-        try {
-                tx_src_data = new SRC_DATA;
-        }
-        catch (const std::bad_alloc& e) {
-                LOG_ERROR("Cannot create libsamplerate data structures");
-                throw;
-        }
+	try {
+		tx_src_data = new SRC_DATA;
+	}
+	catch (const std::bad_alloc& e) {
+		LOG_ERROR("Cannot create libsamplerate data structures");
+		throw;
+	}
 
-        try {
-                snd_buffer = new float[INPUT_CHANNELS * SND_BUF_LEN];
-                src_buffer = new float[OUTPUT_CHANNELS * SND_BUF_LEN];
-                fbuf = new float[MAX(INPUT_CHANNELS, OUTPUT_CHANNELS) * SND_BUF_LEN];
-        }
-        catch (const std::bad_alloc& e) {
-                LOG_ERROR("Cannot allocate libsamplerate buffers");
-                throw;
-        }
+	try {
+		snd_buffer = new float[INPUT_CHANNELS * SND_BUF_LEN];
+		src_buffer = new float[OUTPUT_CHANNELS * SND_BUF_LEN];
+		fbuf = new float[MAX(INPUT_CHANNELS, OUTPUT_CHANNELS) * SND_BUF_LEN];
+	}
+	catch (const std::bad_alloc& e) {
+		LOG_ERROR("Cannot allocate libsamplerate buffers");
+		throw;
+	}
+	try {
+		wrt_buffer  = new double [SND_BUF_LEN];
+	}
+	catch (const std::bad_alloc& e) {
+		LOG_ERROR("Cannot allocate write buffer");
+		throw;
+	}
+	for (int i = 0; i < SND_BUF_LEN; i++)
+		wrt_buffer[i]= 0.0;
 }
 
 SoundPulse::~SoundPulse()
@@ -1713,12 +1738,12 @@ size_t SoundPulse::Read(double *buf, size_t count)
 {
 #if USE_SNDFILE
 	if (playback) {
+		double vol = 1.0;
 		read_file(ifPlayback, buf, count);
-		if (progdefaults.EnableMixer) {
-	                double vol = progStatus.RcvMixer;
-	                for (size_t i = 0; i < count; i++)
-        	                buf[i] *= vol;
-		}
+		if (progdefaults.EnableMixer)
+			vol = progStatus.RcvMixer;
+		for (size_t i = 0; i < count; i++)
+			buf[i] *= vol;
 		return count;
 	}
 #endif
@@ -1784,7 +1809,7 @@ size_t SoundNull::Write(double* buf, size_t count)
 {
 #if USE_SNDFILE
 	if (generate)
-                write_file(ofGenerate, buf, count);
+		write_file(ofGenerate, buf, count);
 #endif
 
 	usleep((useconds_t)ceil((1e6 * count) / sample_frequency));
@@ -1796,7 +1821,7 @@ size_t SoundNull::Write_stereo(double* bufleft, double* bufright, size_t count)
 {
 #if USE_SNDFILE
 	if (generate)
-                write_file(ofGenerate, bufleft, count);
+		write_file(ofGenerate, bufleft, count);
 #endif
 
 	usleep((useconds_t)ceil((1e6 * count) / sample_frequency));
@@ -1810,14 +1835,14 @@ size_t SoundNull::Read(double *buf, size_t count)
 
 #if USE_SNDFILE
 	if (capture)
-                write_file(ofCapture, buf, count);
+		write_file(ofCapture, buf, count);
 	if (playback) {
+		double vol = 1.0;
 		read_file(ifPlayback, buf, count);
-		if (progdefaults.EnableMixer) {
-	                double vol = progStatus.RcvMixer;
-	                for (size_t i = 0; i < count; i++)
-        	                buf[i] *= vol;
-		}
+		if (progdefaults.EnableMixer)
+			vol = progStatus.RcvMixer;
+		for (size_t i = 0; i < count; i++)
+			buf[i] *= vol;
 	}
 #endif
 
