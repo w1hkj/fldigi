@@ -55,8 +55,6 @@
 #include "rigio.h"
 #include "debug.h"
 
-string strOK = "OK";
-
 using namespace std;
 
 struct rpc_method
@@ -344,7 +342,7 @@ public:
 		string s = params.getString(0);
 		for (size_t i = 0; i < NUM_MODES; i++) {
 			if (s == mode_info[i].sname) {
-				init_modem_sync(i);
+				REQ_SYNC(init_modem_sync, i);
 				found = true;
 				break;
 			}
@@ -369,7 +367,7 @@ public:
 		int cur = active_modem->get_mode();
 
 		int i = params.getInt(0, 0, NUM_MODES-1);
-		init_modem_sync(i);
+		REQ_SYNC(init_modem_sync, i);
 
 		*retval = xmlrpc_c::value_int(cur);
 	}
@@ -588,8 +586,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		REQ(&modem::searchUp, active_modem);
-//		*retval = xmlrpc_c::value_nil();
-		*retval = xmlrpc_c::value_string(strOK);
+		*retval = xmlrpc_c::value_nil();
 	}
 };
 
@@ -604,8 +601,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		REQ(&modem::searchDown, active_modem);
-//		*retval = xmlrpc_c::value_nil();
-		*retval = xmlrpc_c::value_string(strOK);
+		*retval = xmlrpc_c::value_nil();
 	}
 };
 
@@ -690,17 +686,17 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-        double d = params.getDouble(0, 0.0);
+		double d = params.getDouble(0, 0.0);
 		long long int rfc = (long long int)d;
 		int mc = active_modem->get_freq();
 		if (progdefaults.chkUSEXMLRPCis)
 			xmlrpc_set_qsy(rfc, mc);
-		if (progdefaults.chkUSERIGCATis)
+		else if (progdefaults.chkUSERIGCATis)
 			rigCAT_set_qsy(rfc, mc);
-		if (progdefaults.chkUSEMEMMAPis)
+		else if (progdefaults.chkUSEMEMMAPis)
 			rigMEM_set_qsy(rfc, mc);
 #if USE_HAMLIB
-		if (progdefaults.chkUSEHAMLIBis)
+		else if (progdefaults.chkUSEHAMLIBis)
 			hamlib_set_qsy(rfc, mc);
 #endif
 		*retval = xmlrpc_c::value_double(d);
@@ -1019,8 +1015,7 @@ public:
 				REQ(set_button, btnRSID, false);
 			REQ(set_button, wf->xmtrcv, true);
 		}
-//		*retval = xmlrpc_c::value_nil();
-		*retval = xmlrpc_c::value_string(strOK);
+		*retval = xmlrpc_c::value_nil();
 	}
 };
 
@@ -1030,7 +1025,7 @@ public:
 	Main_tune()
 	{
 		_signature = "n:n";
-		_help = "Toggles tuning.";
+		_help = "Tunes.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
@@ -1039,8 +1034,7 @@ public:
 				REQ(set_button, btnRSID, false);
 			REQ(set_button, btnTune, !btnTune->value());
 		}
-//		*retval = xmlrpc_c::value_nil();
-		*retval = xmlrpc_c::value_string(strOK);
+		*retval = xmlrpc_c::value_nil();
 	}
 };
 
@@ -1058,8 +1052,7 @@ public:
 			REQ(set_button, wf->xmtrcv, false);
 		else if (btnRSID->value())
 			REQ(set_button, btnRSID, false);
-//		*retval = xmlrpc_c::value_nil();
-		*retval = xmlrpc_c::value_string(strOK);
+		*retval = xmlrpc_c::value_nil();
 	}
 };
 
@@ -1075,8 +1068,7 @@ public:
         {
 		if (trx_state == STATE_TX || trx_state == STATE_TUNE)
 			REQ(abort_tx);
-//		*retval = xmlrpc_c::value_nil();
-		*retval = xmlrpc_c::value_string(strOK);
+		*retval = xmlrpc_c::value_nil();
 	}
 };
 
@@ -1091,8 +1083,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		REQ(&Main_run_macro::run_macro, params.getInt(0, 0, MAXMACROS-1));
-//		*retval = xmlrpc_c::value_nil();
-		*retval = xmlrpc_c::value_string(strOK);
+		*retval = xmlrpc_c::value_nil();
 	}
 	static void run_macro(int i) { macros.execute(i); }
 };
@@ -1123,8 +1114,7 @@ public:
         {
 		if (!(wf->xmtrcv->value() || btnTune->value() || btnRSID->value()))
 			REQ(set_button, btnRSID, true);
-//		*retval = xmlrpc_c::value_nil();
-		*retval = xmlrpc_c::value_string(strOK);
+		*retval = xmlrpc_c::value_nil();
 	}
 };
 
@@ -1303,14 +1293,13 @@ class Log_clear : public xmlrpc_c::method
 public:
 	Log_clear()
 	{
-		_signature = "s:n";
+		_signature = "n:n";
 		_help = "Clears the contents of the log fields.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		REQ(clearQSO);
-//		*retval = xmlrpc_c::value_nil();
-		*retval = xmlrpc_c::value_string(strOK);
+		*retval = xmlrpc_c::value_nil();
 	}
 };
 
@@ -1327,8 +1316,6 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		*retval = xmlrpc_c::value_int(ReceiveText->buffer()->length());
-//		*retval = xmlrpc_c::value_nil();
-		*retval = xmlrpc_c::value_string(strOK);
 	}
 };
 
@@ -1370,8 +1357,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		REQ(&FTextBase::clear, ReceiveText);
-//		*retval = xmlrpc_c::value_nil();
-		*retval = xmlrpc_c::value_string(strOK);
+		*retval = xmlrpc_c::value_nil();
 	}
 };
 
@@ -1380,13 +1366,13 @@ class Text_add_tx : public xmlrpc_c::method
 public:
 	Text_add_tx()
 	{
-		_signature = "i:s";
+		_signature = "n:s";
 		_help = "Adds a string to the TX text widget.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		REQ_SYNC(&FTextBase::addstr, TransmitText, params.getString(0).c_str(), FTextBase::RECV);
-		*retval = xmlrpc_c::value_int(0);
+		*retval = xmlrpc_c::value_nil();
 	}
 };
 
@@ -1395,20 +1381,16 @@ class Text_add_tx_bytes : public xmlrpc_c::method
 public:
 	Text_add_tx_bytes()
 	{
-		_signature = "i:6";
+		_signature = "n:6";
 		_help = "Adds a byte string to the TX text widget.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		vector<unsigned char> bytes = params.getBytestring(0);
-		size_t len = bytes.size();
-		char* chars = new char[len + 1];
-		memcpy(chars, &bytes[0], len);
-		chars[len] = '\0';
-		REQ_SYNC(&FTextBase::addstr, TransmitText, chars, FTextBase::RECV);
-		delete [] chars;
+		bytes.push_back(0);
+		REQ_SYNC(&FTextBase::addstr, TransmitText, (const char*)&bytes[0], FTextBase::RECV);
 
-		*retval = xmlrpc_c::value_int(0);
+		*retval = xmlrpc_c::value_nil();
 	}
 };
 
@@ -1423,8 +1405,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		REQ(&FTextBase::clear, TransmitText);
-//		*retval = xmlrpc_c::value_nil();
-		*retval = xmlrpc_c::value_string(strOK);
+		*retval = xmlrpc_c::value_nil();
 	}
 };
 
@@ -1435,7 +1416,7 @@ public:
 void XML_RPC_Server::add_methods(void)
 {
 	methods->clear();
-	methods->reserve(64);
+	methods->reserve(72);
 
 	methods->push_back(rpc_method(new Fldigi_list, "fldigi.list"));
 	methods->push_back(rpc_method(new Fldigi_name, "fldigi.name"));

@@ -4,8 +4,7 @@
 #      fldigi-shell version 0.35
 #      A program to control fldigi over HTTP/XML-RPC.
 #
-#      To use, build fldigi with xml-rpc support (see INSTALL)
-#      and start it with --xmlrpc-server.
+#      Fldigi must have been built with xml-rpc support; see INSTALL.
 #
 # Copyright (C) 2008
 #              Stelios Bounanos, M0GLD
@@ -117,7 +116,7 @@ sub req
     encode(\@_);
     my $r = $client->send_request(@_);
     if (!ref($r)) {
-	print $OUT "Error: " . $r . "\n";
+	print $OUT "Error: " . $r . "\n" unless ($r =~ /Unknown tag.+nil$/);
 	$r = undef;
     }
     elsif ($r->is_fault()) {
@@ -153,7 +152,8 @@ sub execute($)
 	    @line = split(/ +/, $_[0], length($sig) + 1);
 	}
 	print Dumper(\@line) if ($debug);
-	print $OUT decode(@line), "\n";
+	my $r = decode(@line);
+	print $OUT $r, "\n" if ($r ne "");
     }
     else {
 	print $OUT $line[0] . ": command not found. Do you need ``help''?\n";

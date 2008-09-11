@@ -230,7 +230,6 @@ struct configuration {
 	int		VIEWERtimeout;
 
 // XMLRPC parameters
-	bool xmlrpc_server;
 	string xmlrpc_address;
 	string xmlrpc_port;
 
