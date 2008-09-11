@@ -720,7 +720,7 @@ double speed_test(int converter, unsigned repeat)
 	memset(src.data_in, 0, src.input_frames * sizeof(float));
 
 	// warm up
-	src_simple(&src, SRC_SINC_FASTEST, 1);
+	src_simple(&src, converter, 1);
 
 	struct timespec t0, t1;
 #ifdef _POSIX_MONOTONIC_CLOCK
@@ -729,7 +729,7 @@ double speed_test(int converter, unsigned repeat)
 	clock_gettime(CLOCK_REALTIME, &t0);
 #endif
 	for (unsigned i = 0; i < repeat; i++)
-		src_simple(&src, SRC_SINC_FASTEST, 1);
+		src_simple(&src, converter, 1);
 #ifdef _POSIX_MONOTONIC_CLOCK
 	clock_gettime(CLOCK_MONOTONIC, &t1);
 #else
