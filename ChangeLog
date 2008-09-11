@@ -41,6 +41,11 @@ Change Log:
           logbook fields.
       24) If compiled into the executable the xmlrpc server is always started.
           ARQ server is also started.  Both can be serviced concurrently.
+      24) Increased RTTY cross-hair scope sensitivity
+      25) Modified Generate/Playback file to be closer to Capture in signal
+          level.
+      26) Modified "view transmit" signal level to be closer in amplitude to
+          Rx signal level.
       
 3.02
       1) Added hamlib interface for rig control

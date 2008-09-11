@@ -118,6 +118,7 @@ protected:
 	SRC_DATA	*rx_src_data;
 	float		*snd_buffer;
 	float		*src_buffer;
+	double		*wrt_buffer;
 
 #if USE_SNDFILE
 	SNDFILE* ofCapture;

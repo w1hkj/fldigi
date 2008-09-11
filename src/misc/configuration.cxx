@@ -264,7 +264,6 @@ configuration progdefaults = {
 	20,				// int		VIEWERchannels
 	10.0,			// double	VIEWERsquelch
 	15,				// int  VIEWERtimeout
-	false,			// bool xmlrpc_server
 	"127.0.0.1",		// string xmlrpc_address
 	"7362",			// string xmlrpc_port
 };

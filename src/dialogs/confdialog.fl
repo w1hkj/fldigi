@@ -46,8 +46,8 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     } {
       Fl_Group tabOperator {
         label Oper
-        callback {progdefaults.changed = true;} open
-        xywh {0 25 400 195} color 51 selection_color 51 when 1 hide
+        callback {progdefaults.changed = true;} open selected
+        xywh {0 25 400 195} color 51 selection_color 51 when 1
       } {
         Fl_Input inpMyCallsign {
           label {Callsign:}
@@ -448,7 +448,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabRig {
         label Rig open
-        xywh {0 25 400 195}
+        xywh {0 25 400 195} hide
       } {
         Fl_Group {} {
           label Ptt open
@@ -512,7 +512,7 @@ progdefaults.changed = true;}
           xywh {200 34 200 150}
         } {
           Fl_Group {} {
-            label Ham open selected
+            label Ham open
             xywh {200 60 200 120}
           } {
             Fl_Check_Button chkUSEHAMLIB {
@@ -1648,7 +1648,7 @@ progdefaults.changed = true;}
               label {X-agc}
               callback {progdefaults.Xagc=o->value();
 progdefaults.changed = true;}
-              xywh {364 185 22 22} down_box DOWN_BOX align 4
+              xywh {364 185 22 22} down_box DOWN_BOX align 4 hide
               code0 {o->value(progdefaults.Xagc);}
             }
             Fl_Group {} {

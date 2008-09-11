@@ -1441,7 +1441,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         tabOperator->selection_color((Fl_Color)51);
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { inpMyCallsign = new Fl_Input(78, 36, 85, 24, "Callsign:");
           inpMyCallsign->callback((Fl_Callback*)cb_inpMyCallsign);
         } // Fl_Input* inpMyCallsign
@@ -1740,6 +1739,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         tabVideo->end();
       } // Fl_Group* tabVideo
       { tabRig = new Fl_Group(0, 25, 400, 195, "Rig");
+        tabRig->hide();
         { Fl_Group* o = new Fl_Group(10, 36, 185, 150, "Ptt");
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2737,6 +2737,7 @@ l with your sound hardware.");
               chkXagc->down_box(FL_DOWN_BOX);
               chkXagc->callback((Fl_Callback*)cb_chkXagc);
               chkXagc->align(FL_ALIGN_LEFT);
+              chkXagc->hide();
               o->value(progdefaults.Xagc);
             } // Fl_Check_Button* chkXagc
             { Fl_Group* o = new Fl_Group(135, 119, 130, 62, "Unshift On Space");

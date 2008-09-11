@@ -653,7 +653,6 @@ void init_modem_sync(trx_mode m)
         wait_modem_ready_prep();
         init_modem(m);
         wait_modem_ready_cmpl();
-        REQ_FLUSH();
 }
 
 void cb_init_mode(Fl_Widget *, void *mode)
