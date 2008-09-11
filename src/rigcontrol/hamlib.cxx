@@ -48,8 +48,6 @@ static long int hamlib_freq;
 static rmode_t hamlib_rmode = RIG_MODE_USB;
 static pbwidth_t hamlib_pbwidth = 3000;
 
-// FIXME: remove static int ioctl_bits;
-
 static int dummy = 0;
 
 static void *hamlib_loop(void *args);
@@ -62,35 +60,6 @@ void show_error(const char* msg1, const char* msg2 = 0)
 	put_status(error.c_str(), 10.0);
 	LOG_ERROR("%s", error.c_str());
 }
-
-/* FIXME: remove this function
-bool hamlib_setRTSDTR()
-{
-	if (progdefaults.RTSplus == false && progdefaults.DTRplus == false)
-		return true;
-		
-	int hamlibfd =  open(progdefaults.HamRigDevice.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
-
-	if (hamlibfd < 0) {
-		show_error("Cannot open PTT device", progdefaults.HamRigDevice.c_str());
-		return false;
-	}
-
-	ioctl(hamlibfd, TIOCMGET, &ioctl_bits);
-
-	if (progdefaults.RTSplus)
-		ioctl_bits |= TIOCM_RTS;		// set RTS bit
-	else
-		ioctl_bits &= ~TIOCM_RTS;		// clear RTS bit
-	if (progdefaults.DTRplus)
-		ioctl_bits |= TIOCM_DTR;		// set DTR bit
-	else
-		ioctl_bits &= ~TIOCM_DTR;		// clear DTR bit
-	ioctl(hamlibfd, TIOCMSET, &ioctl_bits);
-	close(hamlibfd);
-	return true;
-}
-*/
 
 #ifdef __CYGWIN__
 // convert COMx to /dev/ttySy with y = x - 1
@@ -148,10 +117,6 @@ bool hamlib_init(bool bPtt)
 		return false;
 	}
 
-//	if (hamlib_setRTSDTR() == false) {
-//		return -1;
-//	}
-	
 	try {
 		model = (*prig)->rig_model;
 		xcvr->init(model);
@@ -169,21 +134,14 @@ bool hamlib_init(bool bPtt)
 		return false;
 	}
 
-//	if (hamlib_setRTSDTR() == false)
-//		return -1;
-		
 	MilliSleep(200);
-
-	// char temp[80];
-	// xcvr->getConf("dtr_state", temp);
-	// LOG_DEBUG("Hamlib DTR = %s", temp);
 
 	try {
 		need_freq = true;
 		freq = xcvr->getFreq();
 		if (freq == 0) {
 			xcvr->close();
-			show_error(__func__, "transceiver not responding");
+			show_error(__func__, "Rig not responding");
 			return false;
 		}
 	}
@@ -239,7 +197,6 @@ void hamlib_close(void)
 	hamlib_exit = true;
 	int count = 20;
 	while (!hamlib_closed) {
-//		cerr << "." << flush;
 		MilliSleep(50);
 		if (!count--) {
 			show_error(__func__, "Hamlib stuck, transceiver on fire");
@@ -389,9 +346,8 @@ static void *hamlib_loop(void *args)
 				}
 			}
 			catch (const RigException& Ex) {
-				show_error(__func__, "No transceiver comms");
+				show_error(__func__, "Rig not responding: freq");
 				freqok = false;
-				hamlib_exit = true;
 			}
 		}
 		if (hamlib_exit)
@@ -403,9 +359,8 @@ static void *hamlib_loop(void *args)
 				modeok = true;
 			}
 			catch (const RigException& Ex) {
-				show_error(__func__, "No transceiver comms");
+				show_error(__func__, "Rig not responding: mode");
 				modeok = false;
-				hamlib_exit = true;
 			}
 		}
 		fl_unlock (&hamlib_mutex);

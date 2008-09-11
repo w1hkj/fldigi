@@ -1570,6 +1570,15 @@ int below(Fl_Widget* w)
 	return (a & FL_ALIGN_BOTTOM) ? w->y() + w->h() + FL_NORMAL_SIZE : w->y() + w->h();
 }
 
+char main_window_title[256];
+void update_main_title() {
+  snprintf(main_window_title, sizeof(main_window_title),
+       "%s %s -- %s",
+       PACKAGE_NAME, PACKAGE_VERSION,
+       progdefaults.myCall.empty() ? "NO CALLSIGN SET" : progdefaults.myCall.c_str());
+  if (fl_digi_main != NULL)
+    fl_digi_main->label(main_window_title);
+}
 
 
 void create_fl_digi_main() {
@@ -1578,7 +1587,8 @@ void create_fl_digi_main() {
 
 	if (twoscopes) 	WNOM -= 2*DEFAULT_SW;
 	
-	fl_digi_main = new Fl_Double_Window(WNOM, HNOM, PACKAGE_NAME" "PACKAGE_VERSION);//"fldigi");
+    update_main_title();
+    fl_digi_main = new Fl_Double_Window(WNOM, HNOM, main_window_title);
 			mnu = new Fl_Menu_Bar(0, 0, WNOM - 150 - pad, Hmenu);
 			// FL_NORMAL_SIZE may have changed; update the menu items
 			for (size_t i = 0; i < sizeof(menu_)/sizeof(menu_[0]); i++)

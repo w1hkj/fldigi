@@ -30,6 +30,17 @@ Change Log:
       15) Fixed broken access to on-line subscriber Hamlog data base
       16) Removed trailing spaces from frequency field in ADIF file
       17) Changes to rigio thread loop to disable reads during transmit
+      18) Improved serial port discovery
+      19) Added History replay option - when enabled; right click on waterfall
+          replays audio history buffer.
+      20) OS X resize handle / button overlay fixed
+      21) Modified sound port Event Log message.
+      22) Added Callsign to Title Bar "NO CALLSIGN SET" if the MyCallsign is
+          void.
+      23) Added "log.clear" to xmlrpc command set - clears the data in the
+          logbook fields.
+      24) If compiled into the executable the xmlrpc server is always started.
+          ARQ server is also started.  Both can be serviced concurrently.
       
 3.02
       1) Added hamlib interface for rig control

@@ -359,6 +359,9 @@ public:
 			qsy->deactivate();
 		wfdisp->useBands(!on);
 	}
+	void setXMLRPC(bool on) {
+		wfdisp->useBands(!on);
+	}
 	double Pwr(int i) { return wfdisp->Pwr(i); }	
 	
 	int handle(int event);

@@ -273,7 +273,7 @@ int main(int argc, char ** argv)
 	arq_init();
 
 #if USE_XMLRPC
-	if (progdefaults.xmlrpc_server)
+//	if (progdefaults.xmlrpc_server)
 		XML_RPC_Server::start(progdefaults.xmlrpc_address.c_str(), progdefaults.xmlrpc_port.c_str());
 #endif
 
@@ -442,7 +442,7 @@ int parse_args(int argc, char **argv, int& idx)
 #endif
 	       OPT_CONFIG_DIR, OPT_EXPERIMENTAL, OPT_ARQ_ADDRESS, OPT_ARQ_PORT,
 #if USE_XMLRPC
-	       OPT_CONFIG_XMLRPC, OPT_CONFIG_XMLRPC_ADDRESS, OPT_CONFIG_XMLRPC_PORT,
+	       OPT_CONFIG_XMLRPC_ADDRESS, OPT_CONFIG_XMLRPC_PORT,
 #endif
                OPT_FONT, OPT_WFALL_WIDTH, OPT_WFALL_HEIGHT,
                OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT, 
@@ -468,7 +468,6 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "arq-server-port",    1, 0, OPT_ARQ_PORT },
 
 #if USE_XMLRPC
-		{ "xmlrpc-server",         0, 0, OPT_CONFIG_XMLRPC },
 		{ "xmlrpc-server-address", 1, 0, OPT_CONFIG_XMLRPC_ADDRESS },
 		{ "xmlrpc-server-port",    1, 0, OPT_CONFIG_XMLRPC_PORT },
 #endif
@@ -536,9 +535,6 @@ int parse_args(int argc, char **argv, int& idx)
 			break;
 
 #if USE_XMLRPC
-		case OPT_CONFIG_XMLRPC:
-			progdefaults.xmlrpc_server = true;
-			break;
 		case OPT_CONFIG_XMLRPC_ADDRESS:
 			progdefaults.xmlrpc_address = optarg;
 			break;

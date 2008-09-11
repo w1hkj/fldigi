@@ -441,7 +441,7 @@ void rigCAT_setfreq(long long f)
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 
-	LOG_DEBUG("set frequency");
+	LOG_DEBUG("set frequency %ld", f);
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {

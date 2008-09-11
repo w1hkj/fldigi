@@ -160,6 +160,7 @@ configuration progdefaults = {
 	0,				// int 		chkUSEMEMMAPis
 	0,				// int 		chkUSEHAMLIBis
 	0,				// int		chkUSERIGCATis
+	0,				// int		chkUSEXMLRPCis
 #if defined(__linux__)
 	"/dev/ttyS0",		// string	PTTdev
 	"/dev/ttyS1",		// string	CWFSKport
@@ -317,7 +318,7 @@ enum TAG { \
 	BTNUSB, BTNPTTIS,
 	RTSPTT, DTRPTT, RTSPLUS, DTRPLUS,
 	CHOICEHAMLIBIS, CHKUSEMEMMAPIS,
-	CHKUSEHAMLIBIS, CHKUSERIGCATIS,
+	CHKUSEHAMLIBIS, CHKUSERIGCATIS, CHKUSEXMLRPCIS,
 	HAMRIGNAME, HAMRIGDEVICE, HAMRIGBAUDRATE,
 	PTTDEV,
 	SECONDARYTEXT, 
@@ -507,6 +508,7 @@ void configuration::writeDefaultsXML()
 	writeXMLint(f, "CHKUSEMEMMAPIS", chkUSEMEMMAPis);
 	writeXMLint(f, "CHKUSEHAMLIBIS", chkUSEHAMLIBis);
 	writeXMLint(f, "CHKUSERIGCATIS", chkUSERIGCATis);
+	writeXMLint(f, "CHKUSEXMLRPCIS", chkUSEXMLRPCis);	
 	writeXMLstr(f, "HAMRIGNAME", HamRigName);
 	writeXMLstr(f, "HAMRIGDEVICE", HamRigDevice);
 	writeXMLint(f, "HAMRIGBAUDRATE", HamRigBaudrate);
@@ -921,6 +923,9 @@ bool configuration::readDefaultsXML()
 					case CHKUSERIGCATIS :
 						chkUSERIGCATis = atoi(xml->getNodeData());
 						break;
+					case CHKUSEXMLRPCIS :
+						chkUSEXMLRPCis = atoi(xml->getNodeData());
+						break;
 					case HAMRIGNAME :
 						HamRigName = xml->getNodeData();
 						break;
@@ -1266,6 +1271,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("CHKUSEMEMMAPIS", nodeName)) 	tag = CHKUSEMEMMAPIS;
 				else if (!strcmp("CHKUSEHAMLIBIS", nodeName)) 	tag = CHKUSEHAMLIBIS;
 				else if (!strcmp("CHKUSERIGCATIS", nodeName)) 	tag = CHKUSERIGCATIS;
+				else if (!strcmp("CHKUSEXMLRPCIS", nodeName)) 	tag = CHKUSEXMLRPCIS;
 				else if (!strcmp("HAMRIGNAME", nodeName)) 	tag = HAMRIGNAME;
 				else if (!strcmp("HAMRIGDEVICE", nodeName)) 	tag = HAMRIGDEVICE;
 				else if (!strcmp("HAMRIGBAUDRATE", nodeName)) 	tag = HAMRIGBAUDRATE;
@@ -1470,25 +1476,36 @@ int configuration::setDefaults() {
 	inpTTYdev->value(PTTdev.c_str());
 
 	if(chkUSEMEMMAPis) {
-		chkUSEMEMMAP->value(1); chkUSEHAMLIB->value(0); chkUSERIGCAT->value(0);
+		chkUSEMEMMAP->value(1); 
+		chkUSEHAMLIB->value(0); chkUSERIGCAT->value(0); chkUSEXMLRPC->value(0);
 		cboHamlibRig->deactivate();
 		inpRIGdev->deactivate();
 		mnuBaudRate->deactivate();
 		btnPTT[1]->deactivate(); btnPTT[2]->activate(); btnPTT[3]->deactivate();
 	} else if (chkUSEHAMLIBis) {
-		chkUSEMEMMAP->value(0); chkUSERIGCAT->value(0); chkUSEHAMLIB->value(1);
+		chkUSEHAMLIB->value(1);
+		chkUSEMEMMAP->value(0); chkUSERIGCAT->value(0);  chkUSEXMLRPC->value(0);
 		cboHamlibRig->activate();
 		inpRIGdev->activate();
 		mnuBaudRate->activate();
 		btnPTT[1]->activate(); btnPTT[2]->deactivate(); btnPTT[3]->deactivate();
 	} else if (chkUSERIGCATis) {
-		chkUSEMEMMAP->value(0); chkUSEHAMLIB->value(0); chkUSERIGCAT->value(1);
+		chkUSERIGCAT->value(1);
+		chkUSEMEMMAP->value(0); chkUSEHAMLIB->value(0); chkUSEXMLRPC->value(0);
 		cboHamlibRig->deactivate();
 		inpRIGdev->deactivate();
 		mnuBaudRate->deactivate();
 		btnPTT[1]->deactivate(); btnPTT[2]->deactivate(); btnPTT[3]->activate();
-	} else {
+	} else if (chkUSEXMLRPCis) {
+		chkUSEXMLRPC->value(1);
 		chkUSEMEMMAP->value(0); chkUSEHAMLIB->value(0); chkUSERIGCAT->value(0);
+		cboHamlibRig->deactivate();
+		inpRIGdev->deactivate();
+		mnuBaudRate->deactivate();
+		btnPTT[1]->deactivate(); btnPTT[2]->deactivate(); btnPTT[3]->deactivate();
+	} else {
+		chkUSEMEMMAP->value(0); chkUSEHAMLIB->value(0); 
+		chkUSERIGCAT->value(0);	chkUSEHAMLIB->value(0); chkUSEXMLRPC->value(0);
 		btnPTT[1]->deactivate(); btnPTT[2]->deactivate(); btnPTT[3]->deactivate();
 	}
 
@@ -1689,6 +1706,12 @@ void configuration::initInterface() {
 			activate_rig_menu_item(true);
 		}
 #endif		
+	} else if (chkUSEXMLRPCis) {
+		cboBand->hide();
+		btnSideband->hide();
+		wf->USB(true);
+		wf->setXMLRPC(1);
+		activate_rig_menu_item(false);
 	} else {
 		wf->USB(true);
 		cboBand->show();

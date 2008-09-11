@@ -55,6 +55,8 @@
 #include "rigio.h"
 #include "debug.h"
 
+string strOK = "OK";
+
 using namespace std;
 
 struct rpc_method
@@ -586,7 +588,8 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		REQ(&modem::searchUp, active_modem);
-		*retval = xmlrpc_c::value_nil();
+//		*retval = xmlrpc_c::value_nil();
+		*retval = xmlrpc_c::value_string(strOK);
 	}
 };
 
@@ -601,7 +604,8 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		REQ(&modem::searchDown, active_modem);
-		*retval = xmlrpc_c::value_nil();
+//		*retval = xmlrpc_c::value_nil();
+		*retval = xmlrpc_c::value_string(strOK);
 	}
 };
 
@@ -663,6 +667,19 @@ public:
 	}
 };
 
+void xmlrpc_set_qsy(long long f, long long fmid)
+{
+	LOG_DEBUG("rfc = %ld, audio = %ld", f, fmid);
+	if (active_modem->freqlocked() == true) {
+		active_modem->set_freqlock(false);
+		active_modem->set_freq((int)fmid);
+		active_modem->set_freqlock(true);
+	} else
+		active_modem->set_freq((int)fmid);
+	wf->rfcarrier(f);
+	wf->movetocenter();
+}
+
 class Main_set_freq : public xmlrpc_c::method
 {
 public:
@@ -673,13 +690,18 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		double d = wf->rfcarrier();
-		double rfc = params.getDouble(0, 0.0);
+        double d = params.getDouble(0, 0.0);
+		long long int rfc = (long long int)d;
 		int mc = active_modem->get_freq();
-		rigCAT_set_qsy((long long int)rfc, mc);
-		rigMEM_set_qsy((long long int)rfc, mc);
+		if (progdefaults.chkUSEXMLRPCis)
+			xmlrpc_set_qsy(rfc, mc);
+		if (progdefaults.chkUSERIGCATis)
+			rigCAT_set_qsy(rfc, mc);
+		if (progdefaults.chkUSEMEMMAPis)
+			rigMEM_set_qsy(rfc, mc);
 #if USE_HAMLIB
-		hamlib_set_qsy((long long int)rfc, mc);
+		if (progdefaults.chkUSEHAMLIBis)
+			hamlib_set_qsy(rfc, mc);
 #endif
 		*retval = xmlrpc_c::value_double(d);
 	}
@@ -697,10 +719,15 @@ public:
         {
 		double rfc = wf->rfcarrier() + params.getDouble(0);
 		int mc = active_modem->get_freq();
-		rigCAT_set_qsy((long long int)rfc, mc);
-		rigMEM_set_qsy((long long int)rfc, mc);
+		if (progdefaults.chkUSEXMLRPCis)
+			xmlrpc_set_qsy((long long int)rfc, mc);
+		if (progdefaults.chkUSERIGCATis)
+			rigCAT_set_qsy((long long int)rfc, mc);
+		if (progdefaults.chkUSEMEMMAPis)
+			rigMEM_set_qsy((long long int)rfc, mc);
 #if USE_HAMLIB
-		hamlib_set_qsy((long long int)rfc, mc);
+		if (progdefaults.chkUSEHAMLIBis)
+			hamlib_set_qsy((long long int)rfc, mc);
 #endif
 		*retval = xmlrpc_c::value_double(rfc);
 	}
@@ -992,7 +1019,8 @@ public:
 				REQ(set_button, btnRSID, false);
 			REQ(set_button, wf->xmtrcv, true);
 		}
-		*retval = xmlrpc_c::value_nil();
+//		*retval = xmlrpc_c::value_nil();
+		*retval = xmlrpc_c::value_string(strOK);
 	}
 };
 
@@ -1011,7 +1039,8 @@ public:
 				REQ(set_button, btnRSID, false);
 			REQ(set_button, btnTune, !btnTune->value());
 		}
-		*retval = xmlrpc_c::value_nil();
+//		*retval = xmlrpc_c::value_nil();
+		*retval = xmlrpc_c::value_string(strOK);
 	}
 };
 
@@ -1029,7 +1058,8 @@ public:
 			REQ(set_button, wf->xmtrcv, false);
 		else if (btnRSID->value())
 			REQ(set_button, btnRSID, false);
-		*retval = xmlrpc_c::value_nil();
+//		*retval = xmlrpc_c::value_nil();
+		*retval = xmlrpc_c::value_string(strOK);
 	}
 };
 
@@ -1045,7 +1075,8 @@ public:
         {
 		if (trx_state == STATE_TX || trx_state == STATE_TUNE)
 			REQ(abort_tx);
-		*retval = xmlrpc_c::value_nil();
+//		*retval = xmlrpc_c::value_nil();
+		*retval = xmlrpc_c::value_string(strOK);
 	}
 };
 
@@ -1060,7 +1091,8 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		REQ(&Main_run_macro::run_macro, params.getInt(0, 0, MAXMACROS-1));
-		*retval = xmlrpc_c::value_nil();
+//		*retval = xmlrpc_c::value_nil();
+		*retval = xmlrpc_c::value_string(strOK);
 	}
 	static void run_macro(int i) { macros.execute(i); }
 };
@@ -1091,7 +1123,8 @@ public:
         {
 		if (!(wf->xmtrcv->value() || btnTune->value() || btnRSID->value()))
 			REQ(set_button, btnRSID, true);
-		*retval = xmlrpc_c::value_nil();
+//		*retval = xmlrpc_c::value_nil();
+		*retval = xmlrpc_c::value_string(strOK);
 	}
 };
 
@@ -1265,6 +1298,22 @@ public:
 	}
 };
 
+class Log_clear : public xmlrpc_c::method
+{
+public:
+	Log_clear()
+	{
+		_signature = "s:n";
+		_help = "Clears the contents of the log fields.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		REQ(clearQSO);
+//		*retval = xmlrpc_c::value_nil();
+		*retval = xmlrpc_c::value_string(strOK);
+	}
+};
+
 // =============================================================================
 
 class Text_get_rx_length : public xmlrpc_c::method
@@ -1278,6 +1327,8 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		*retval = xmlrpc_c::value_int(ReceiveText->buffer()->length());
+//		*retval = xmlrpc_c::value_nil();
+		*retval = xmlrpc_c::value_string(strOK);
 	}
 };
 
@@ -1319,7 +1370,8 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		REQ(&FTextBase::clear, ReceiveText);
-		*retval = xmlrpc_c::value_nil();
+//		*retval = xmlrpc_c::value_nil();
+		*retval = xmlrpc_c::value_string(strOK);
 	}
 };
 
@@ -1371,7 +1423,8 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		REQ(&FTextBase::clear, TransmitText);
-		*retval = xmlrpc_c::value_nil();
+//		*retval = xmlrpc_c::value_nil();
+		*retval = xmlrpc_c::value_string(strOK);
 	}
 };
 
@@ -1463,6 +1516,7 @@ void XML_RPC_Server::add_methods(void)
 	methods->push_back(rpc_method(new Log_get_notes, "log.get_notes"));
 	methods->push_back(rpc_method(new Log_get_locator, "log.get_locator"));
 	methods->push_back(rpc_method(new Log_get_az, "log.get_az"));
+	methods->push_back(rpc_method(new Log_clear, "log.clear"));
 
 	methods->push_back(rpc_method(new Text_get_rx_length, "text.get_rx_length"));
 	methods->push_back(rpc_method(new Text_get_rx, "text.get_rx"));
