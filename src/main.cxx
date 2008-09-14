@@ -93,15 +93,14 @@ string ArqFilename;
 string HomeDir;
 string xmlfname;
 
-bool gmfskmail = false;
 
 PTT		*push2talk = (PTT *)0;
 #if USE_HAMLIB
 Rig		*xcvr = (Rig *)0;
 #endif
 
+bool tlfio = false;
 cLogfile	*logfile = 0;;
-
 cLogfile	*Maillogfile = (cLogfile *)0;
 FILE	*server;
 FILE	*client;
@@ -203,8 +202,10 @@ int main(int argc, char ** argv)
 #else
 	txmsgid = -1;
 #endif
-	fl_filename_expand(szPskMailDir, 119, "$HOME/pskmail.files/");
+
+	fl_filename_expand(szPskMailDir, 119, "$HOME/");
 	PskMailDir = szPskMailDir;
+	checkTLF();
 
 	FL_LOCK_E();  // start the gui thread!!	
 	Fl::visual(FL_RGB); // insure 24 bit color operation
