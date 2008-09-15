@@ -47,8 +47,10 @@ Change Log:
       26) Modified "view transmit" signal level to be closer in amplitude to
           Rx signal level.
       27) Fixed XMLRPC bug in mode.set_by_id and mode.set_by_name calls
-      28) Added $LOC grid locator field to <EXEC>...</EXEC> calls for return
-          value ($NAME $QTH $LOC).
+      28) Added $LOC locator field to <EXEC>...</EXEC> calls for return
+          values ($NAME $QTH $LOC).
+      29) Added "tlf", The Left Foot, contest program support.  fldigi accepts
+          tx data and returns rx data to tlf. (Linux primarily).
       
 3.02
       1) Added hamlib interface for rig control
