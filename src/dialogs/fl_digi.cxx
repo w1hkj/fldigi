@@ -39,6 +39,7 @@
 
 #include "fl_digi.h"
 
+#include <FL/Fl.H>
 #include <FL/fl_ask.H>
 #include <FL/Fl_Pixmap.H>
 #include <FL/Fl_Image.H>
@@ -1252,6 +1253,7 @@ void stopMacroTimer()
 	if (progdefaults.useTimer == false) return;
 	
 	progdefaults.useTimer = false;
+	Fl::remove_timeout(macro_timer);
 	FL_LOCK_D();
 	btnMacroTimer->hide();
 	btnMacroDummy->show();

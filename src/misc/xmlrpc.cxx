@@ -649,6 +649,39 @@ public:
 	}
 };
 
+class Main_set_sb : public xmlrpc_c::method
+{
+public:
+	Main_set_sb()
+	{
+		_signature = "s:s";
+		_help = "Sets the Sideband to USB / LSB. Returns the new value.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		string s = params.getString(0);
+		if (progdefaults.chkUSERIGCATis)
+			rigCAT_setmode(s);
+		else if (progdefaults.chkUSEHAMLIBis) {
+			if (s == "LSB")
+				hamlib_setmode(RIG_MODE_LSB);
+			else
+				hamlib_setmode(RIG_MODE_USB);
+		}
+		else if (progdefaults.chkUSEXMLRPCis) {
+			if (s == "USB") {
+				wf->USB(true);
+			} else if (s == "LSB") {
+				wf->USB(false);
+			} else {
+				wf->USB(true);
+			}
+		}
+		*retval = xmlrpc_c::value_string(wf->USB() ? "USB" : "LSB");
+	}
+};
+
+
 class Main_get_freq : public xmlrpc_c::method
 {
 public:
@@ -1451,6 +1484,7 @@ void XML_RPC_Server::add_methods(void)
 	methods->push_back(rpc_method(new Main_get_status2, "main.get_status2"));
 
 	methods->push_back(rpc_method(new Main_get_sb, "main.get_sideband"));
+	methods->push_back(rpc_method(new Main_set_sb, "main.set_sideband"));
 	methods->push_back(rpc_method(new Main_get_freq, "main.get_frequency"));
 	methods->push_back(rpc_method(new Main_set_freq, "main.set_frequency"));
 	methods->push_back(rpc_method(new Main_inc_freq, "main.inc_frequency"));

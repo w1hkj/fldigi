@@ -1,5 +1,9 @@
 Change Log:
 
+3.04
+      1) Changes to irrxml functions; added main.set_sideband <USB/LSB>
+      2) Change to macro timer implementation - bug fix for Windows
+      
 3.03
       1) Changes to socket server to correct shutdown process
       2) Added event logging and an event viewer

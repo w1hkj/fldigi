@@ -422,6 +422,10 @@ static void cb_chkUSEHAMLIB(Fl_Check_Button* o, void*) {
   cboHamlibRig->activate();
   inpRIGdev->activate();
   mnuBaudRate->activate();
+  progdefaults.chkUSEMEMMAPis = false;
+  progdefaults.chkUSEHAMLIBis = true;
+  progdefaults.chkUSERIGCATis = false;
+  progdefaults.chkUSEXMLRPCis = false;
   } else {
   if (btnPTT[1]->value()==1)
  	btnPTT[0]->value(1);
@@ -430,6 +434,7 @@ static void cb_chkUSEHAMLIB(Fl_Check_Button* o, void*) {
   cboHamlibRig->deactivate();
   inpRIGdev->deactivate();
   mnuBaudRate->deactivate();
+  progdefaults.chkUSEHAMLIBis = false;
   }
 for (int i = 0; i < 4; btnPTT[i++]->redraw());
 progdefaults.changed = true;
@@ -477,11 +482,16 @@ static void cb_chkUSERIGCAT(Fl_Check_Button* o, void*) {
   cboHamlibRig->deactivate();
   inpRIGdev->deactivate();
   mnuBaudRate->deactivate();
+  progdefaults.chkUSEMEMMAPis = false;
+  progdefaults.chkUSEHAMLIBis = false;
+  progdefaults.chkUSERIGCATis = true;
+  progdefaults.chkUSEXMLRPCis = false;
   } else {
   if (btnPTT[3]->value() == 1)
   	btnPTT[0]->value(1);
   btnPTT[3]->value(0);
   btnPTT[3]->deactivate();
+  progdefaults.chkUSERIGCATis = false;
   }
 for (int i = 0; i < 4; btnPTT[i++]->redraw());
 progdefaults.changed = true;
@@ -511,11 +521,16 @@ static void cb_chkUSEMEMMAP(Fl_Check_Button* o, void*) {
   cboHamlibRig->deactivate();
   inpRIGdev->deactivate();
   mnuBaudRate->deactivate();
+  progdefaults.chkUSEMEMMAPis = true;
+  progdefaults.chkUSEHAMLIBis = false;
+  progdefaults.chkUSERIGCATis = false;
+  progdefaults.chkUSEXMLRPCis = false;
   } else {
   if (btnPTT[2]->value()==1)
   	btnPTT[0]->value(1);
   btnPTT[2]->value(0);
   btnPTT[2]->deactivate();
+  progdefaults.chkUSEMEMMAPis = false;
   }
 for (int i = 0; i < 4; btnPTT[i++]->redraw());  
 progdefaults.changed = true;
@@ -545,6 +560,12 @@ static void cb_chkUSEXMLRPC(Fl_Check_Button* o, void*) {
   cboHamlibRig->deactivate();
   inpRIGdev->deactivate();
   mnuBaudRate->deactivate();
+  progdefaults.chkUSEMEMMAPis = false;
+  progdefaults.chkUSEHAMLIBis = false;
+  progdefaults.chkUSERIGCATis = false;
+  progdefaults.chkUSEXMLRPCis = true;
+  } else {
+  progdefaults.chkUSEXMLRPCis = false;
   }
 for (int i = 0; i < 4; btnPTT[i++]->redraw());  
 progdefaults.changed = true;
