@@ -1,8 +1,11 @@
 Change Log:
 
 3.04
-      1) Changes to irrxml functions; added main.set_sideband <USB/LSB>
+      1) Changes to irrxml functions; 
+         added main.set_sideband <USB/LSB>
+         added log.set_call <CALL>
       2) Change to macro timer implementation - bug fix for Windows
+      3) Fixed bug in WFaveraging - save configuration
       
 3.03
       1) Changes to socket server to correct shutdown process
