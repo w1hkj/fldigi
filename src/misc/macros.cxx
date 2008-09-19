@@ -637,13 +637,18 @@ string MACROTEXT::expandMacro(int n)
 	if (GET) {
 		size_t pos1 = expanded.find("$NAME");
 		size_t pos2 = expanded.find("$QTH");
+		size_t pos3 = expanded.find("$LOC");
 		if (pos1 != string::npos && pos2 != string::npos) {
 			pos1 += 5;
 			inpName->value(expanded.substr(pos1, pos2 - pos1).c_str());
 		}
 		if (pos2 != string::npos) {
 			pos2 += 4;
-			inpQth->value(expanded.substr(pos2).c_str());
+			inpQth->value(expanded.substr(pos2, pos3 - pos2).c_str());
+		}
+		if (pos3 != string::npos) {
+			pos3 += 4;
+			inpLoc->value(expanded.substr(pos3).c_str());
 		}
 		GET = false;
 		return "";

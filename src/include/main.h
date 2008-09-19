@@ -39,6 +39,7 @@ extern bool			arqmode;
 extern string		ArqFilename;
 extern bool			mailclient;
 extern bool			mailserver;
+extern bool			tlfio;
 extern bool			arq_text_available;
 extern char			arq_get_char();
 
@@ -46,6 +47,7 @@ extern char			arq_get_char();
 extern void			arq_init();
 extern void			arq_close();
 extern void			WriteARQ(unsigned int);
+extern void			checkTLF();
 
 #define ARQBUFSIZ 8192
 

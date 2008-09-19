@@ -178,20 +178,40 @@ bool SysV_arqRx()
 //-----------------------------------------------------------------------------
 // Gmfsk ARQ file i/o used only on Linux
 //-----------------------------------------------------------------------------
+// checkTLF
+// look for files named
+//    TLFfldigi ==> tlfio is true and
+//              ==> mailclient is true
+// in $HOME
 
-bool Gmfsk_arqRx()
+void checkTLF() {
+	string TLFfile;
+	string TLFlogname;
+	ifstream testFile;
+
+	tlfio = mailserver = mailclient = false;
+	
+	TLFfile = PskMailDir;	
+	TLFfile += "TLFfldigi";
+	
+	testFile.open(TLFfile.c_str());
+	if (testFile.is_open()) {
+		testFile.close();
+		mailclient = true;
+		tlfio = true;
+		TLFlogname = PskMailDir;
+		TLFlogname += "gMFSK.log";
+		Maillogfile = new cLogfile(TLFlogname.c_str());
+		Maillogfile->log_to_file_start();
+	}
+}
+
+bool TLF_arqRx()
 {
     time_t start_time, prog_time;
-    string sAutoFile = PskMailDir;
 	static char mailline[1000];
-
-    if (! (mailserver || mailclient) )
-    	return false;
-    		 
-    if (gmfskmail == true)
-		sAutoFile += "gmfsk_autofile";
-	else
-	    sAutoFile += "pskmail_out";
+    string sAutoFile = PskMailDir;
+	sAutoFile += "gmfsk_autofile";
 
 	ifstream autofile(sAutoFile.c_str());
 	if(autofile) {
@@ -205,7 +225,7 @@ bool Gmfsk_arqRx()
             FL_AWAKE();
             time(&prog_time);
             if (prog_time - start_time > TIMEOUT) {
-		LOG_ERROR("pskmail_out failure");
+				LOG_ERROR("TLF file_i/o failure");
                 autofile.close();
                 std::remove (sAutoFile.c_str());
                 return false;
@@ -213,7 +233,7 @@ bool Gmfsk_arqRx()
 		}
 		autofile.close();
 		std::remove (sAutoFile.c_str());
-		
+
 		parse_arqtext();
 		if (arqtext.length() > 0) {
 			if (mailserver && progdefaults.PSKmailSweetSpot)
@@ -516,7 +536,8 @@ static void *arq_loop(void *args)
 // order of precedence; Socket, SysV, GMFSKfile
 		if (Socket_arqRx() == false)
 			if (SysV_arqRx() == false)
-				Gmfsk_arqRx();
+				if (tlfio == true)
+					TLF_arqRx();
 #endif
 // delay for 50 msec interval
 		MilliSleep(50);

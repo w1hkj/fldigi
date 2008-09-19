@@ -436,7 +436,7 @@ void trx_reset(void)
 //=============================================================================
 static char timermsg[80];
 static int  countdown = 1;
-static void macro_timer(void *)
+void macro_timer(void *)
 {
 	if (progdefaults.useTimer == false)
 		return;

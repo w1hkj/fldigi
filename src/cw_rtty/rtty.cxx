@@ -643,7 +643,8 @@ void rtty::send_char(int c)
 
 	if (nbits == 5)
 		c = baudot_dec(c);
-	put_echo_char(c);
+	if (c)
+		put_echo_char(c);
 }
 
 void rtty::send_idle()

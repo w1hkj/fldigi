@@ -490,10 +490,10 @@ string rigCAT_getmode()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
+	LOG_DEBUG("get mode");
+
 	if (nonCATrig == true) 
 		return noCATmode;
-
-	LOG_DEBUG("get mode");
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -589,7 +589,7 @@ void rigCAT_setmode(const string& md)
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
-	LOG_DEBUG("set mode");
+	LOG_DEBUG("set mode %s", md.c_str());
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -597,7 +597,7 @@ void rigCAT_setmode(const string& md)
 			break;
 		++itrCmd;
 	}
-	if (itrCmd == commands.end()) {
+	if (nonCATrig == true) {
 		noCATmode = md;
 		return;
 	}

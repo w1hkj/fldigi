@@ -550,7 +550,7 @@ void configuration::writeDefaultsXML()
 	writeXMLint(f, "VIEWERCHANNELS", VIEWERchannels);
 	writeXMLdbl(f, "VIEWERSQUELCH", VIEWERsquelch);
 	writeXMLint(f, "VIEWERTIMEOUT", VIEWERtimeout);
-	writeXMLbool(f,"WFAVERAGEING", WFaveraging);
+	writeXMLbool(f,"WFAVERAGING", WFaveraging);
 
 	writeXMLbool(f,"USEGROUPCOLORS", useGroupColors);
 	writeXMLrgb(f, "FKEYGROUP1", btnGroup1.R, btnGroup1.G, btnGroup1.B);
@@ -1599,7 +1599,8 @@ int configuration::setDefaults() {
 
 	wf->setPrefilter(wfPreFilter);
 	valLatency->value(latency);
-
+	btnWFaveraging->value(WFaveraging);
+	
 	for (int i = 0; i < 9; i++) {
 		palette[i].R = (uchar)cfgpal[i].R;
 		palette[i].G = (uchar)cfgpal[i].G;
