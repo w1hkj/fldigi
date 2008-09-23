@@ -174,6 +174,12 @@ static void set_valuator(Fl_Valuator* valuator, double value)
 	valuator->value(value);
 	valuator->do_callback();
 }
+static void set_text(Fl_Input* textw, string& value)
+{
+	textw->value(value.c_str());
+	textw->do_callback();
+}
+
 
 // =============================================================================
 
@@ -654,32 +660,25 @@ class Main_set_sb : public xmlrpc_c::method
 public:
 	Main_set_sb()
 	{
-		_signature = "s:s";
-		_help = "Sets the Sideband to USB / LSB. Returns the new value.";
+		_signature = "n:s";
+		_help = "Sets the sideband to USB or LSB.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		string s = params.getString(0);
+		if (s != "LSB" && s != "USB")
+			throw xmlrpc_c::fault("Invalid argument", xmlrpc_c::fault::code_t(0));
+
 		if (progdefaults.chkUSERIGCATis)
 			rigCAT_setmode(s);
 #if USE_HAMLIB
-		else if (progdefaults.chkUSEHAMLIBis) {
-			if (s == "LSB")
-				hamlib_setmode(RIG_MODE_LSB);
-			else
-				hamlib_setmode(RIG_MODE_USB);
-		}
+		else if (progdefaults.chkUSEHAMLIBis)
+			hamlib_setmode(s == "LSB" ? RIG_MODE_LSB : RIG_MODE_USB);
 #endif
-		else if (progdefaults.chkUSEXMLRPCis) {
-			if (s == "USB") {
-				wf->USB(true);
-			} else if (s == "LSB") {
-				wf->USB(false);
-			} else {
-				wf->USB(true);
-			}
-		}
-		*retval = xmlrpc_c::value_string(wf->USB() ? "USB" : "LSB");
+		else if (progdefaults.chkUSEXMLRPCis)
+			REQ(static_cast<void (waterfall::*)(bool)>(&waterfall::USB), wf, s == "USB");
+
+		*retval = xmlrpc_c::value_nil();
 	}
 };
 
@@ -1202,14 +1201,14 @@ class Log_set_call : public xmlrpc_c::method
 public:
 	Log_set_call()
 	{
-		_signature = "s:s";
+		_signature = "n:s";
 		_help = "Sets the Call field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		string s = params.getString(0);
-		inpCall->value(s.c_str());
-		*retval = xmlrpc_c::value_string(inpCall->value());
+		REQ(set_text, inpCall, params.getString(0));
+
+		*retval = xmlrpc_c::value_nil();
 	}
 };
 
