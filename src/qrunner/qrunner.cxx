@@ -28,16 +28,19 @@
 #  include <sys/types.h>
 #  include <sys/socket.h>
 #endif
+#include <fcntl.h>
 
 #include <FL/Fl.H>
 
 #include "fqueue.h"
 #include "qrunner.h"
 
+#define FIFO_SIZE 2048
+
 qrunner::qrunner()
         : attached(false), drop_flag(false)
 {
-        fifo = new fqueue(2048);
+        fifo = new fqueue(FIFO_SIZE);
 #ifndef __CYGWIN__
         if (pipe(pfd) == -1)
 #else
@@ -46,6 +49,11 @@ qrunner::qrunner()
                 throw qexception(errno);
 	set_cloexec(pfd[0], 1);
 	set_cloexec(pfd[1], 1);
+	int f = fcntl(pfd[0], F_GETFL);
+	if (f == -1)
+		throw qexception(errno);
+	if (fcntl(pfd[0], F_SETFL, f | O_NONBLOCK) == -1)
+		throw qexception(errno);
 }
 
 qrunner::~qrunner()
@@ -67,15 +75,22 @@ void qrunner::detach(void)
         Fl::remove_fd(pfd[0], FL_READ);
 }
 
+static unsigned char rbuf[FIFO_SIZE];
+
 void qrunner::execute(int fd, void *arg)
 {
         qrunner *qr = reinterpret_cast<qrunner *>(arg);
 
-        char c;
-        while (qr->fifo->execute()) {
-                if (unlikely(read(fd, &c, 1) == -1))
-                        throw qexception(errno);
-        }
+	switch (read(fd, rbuf, FIFO_SIZE)) {
+	case -1:
+		if (errno != EAGAIN)
+			throw qexception(errno);
+		// else fall through
+	case 0:
+		return;
+	default:
+		while (qr->fifo->execute());
+	}
 }
 
 void qrunner::flush(void)

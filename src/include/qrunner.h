@@ -195,13 +195,15 @@ extern qrunner *cbq[NUM_QRUNNER_THREADS];
                         qrbind::bind(__VA_ARGS__)();			\
         } while (0)
 
-#define REQ_FLUSH()                                                     \
+#define REQ_FLUSH(t_)                                                   \
         do {                                                            \
-                if (GET_THREAD_ID() != FLMAIN_TID)                      \
-                        cbq[GET_THREAD_ID()]->request_sync(nop());      \
-                else                                                    \
-                        for (int i = 0; i < NUM_QRUNNER_THREADS; i++)   \
-                                cbq[i]->flush();                        \
+		if (GET_THREAD_ID() != FLMAIN_TID)			\
+			cbq[GET_THREAD_ID()]->request_sync(nop());	\
+		else if (t_ < NUM_QRUNNER_THREADS)			\
+			cbq[t_]->flush();				\
+		else							\
+			for (int i = 0; i < NUM_QRUNNER_THREADS; i++)	\
+				cbq[i]->flush();			\
         } while (0)
 
 #define QRUNNER_DROP(v_)					\

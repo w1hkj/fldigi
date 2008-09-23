@@ -486,7 +486,7 @@ bool clean_exit() {
 		exit(1);
 	}
 	while (trx_state != STATE_ENDED) {
-		REQ_FLUSH();
+		REQ_FLUSH(GET_THREAD_ID());
 		MilliSleep(10);
 	}
 
@@ -654,6 +654,7 @@ void init_modem_sync(trx_mode m)
         wait_modem_ready_prep();
         init_modem(m);
         wait_modem_ready_cmpl();
+	REQ_FLUSH(TRX_TID);
 }
 
 void cb_init_mode(Fl_Widget *, void *mode)
