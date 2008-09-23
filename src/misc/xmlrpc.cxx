@@ -33,6 +33,8 @@
 #include <exception>
 #include <cstdlib>
 
+#include <signal.h>
+
 #include <xmlrpc-c/base.hpp>
 #include <xmlrpc-c/registry.hpp>
 #include <xmlrpc-c/server_abyss.hpp>
@@ -86,6 +88,7 @@ XML_RPC_Server::XML_RPC_Server()
 XML_RPC_Server::~XML_RPC_Server()
 {
 	run = false;
+	pthread_kill(*server_thread, SIGUSR2);
 	pthread_join(*server_thread, NULL);
 	delete server_thread;
 	delete methods;
@@ -102,6 +105,7 @@ void XML_RPC_Server::start(const char* node, const char* service)
 
 	try {
 		inst->server_socket->open(Address(node, service));
+		inst->server_socket->bind();
 	}
 	catch (const SocketException& e) {
 		LOG_ERROR("Could not start XML-RPC server (%s)", e.what());
@@ -134,33 +138,23 @@ void* XML_RPC_Server::thread_func(void*)
 #endif
 	    		      );
 
-	try {
-		inst->server_socket->bind();
-		struct timeval t = { 0, 200000 };
-		inst->server_socket->set_timeout(t);
-		inst->server_socket->set_nonblocking();
-	}
-	catch (const SocketException& e) {
-		LOG_ERROR("Could not start XML-RPC server (%s)", e.what());
-		goto ret;
-	}
+	setup_signal_handlers();
 
 	while (inst->run) {
-		Socket client;
 		try {
 			server.runConn(inst->server_socket->accept().fd());
 		}
 		catch (const SocketException& e) {
-			if (e.error() != ETIMEDOUT) {
+			if (e.error() != EINTR)
 				LOG_ERROR("%s", e.what());
-				break;
-			}
+			break;
+		}
+		catch (...) {
+			break;
 		}
 	}
 
-ret:
 	inst->server_socket->close();
-
 	return NULL;
 }
 

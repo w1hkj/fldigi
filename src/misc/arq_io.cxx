@@ -37,6 +37,8 @@
 #  include <sys/msg.h>
 #endif
 
+#include <signal.h>
+
 #include "main.h"
 #include "configuration.h"
 #include "fl_digi.h"
@@ -291,10 +293,9 @@ ARQ_SOCKET_Server::ARQ_SOCKET_Server()
 ARQ_SOCKET_Server::~ARQ_SOCKET_Server()
 {
 	run = false;
-	if (arq_socket_thread) {
+	pthread_kill(*arq_socket_thread, SIGUSR2);
 	pthread_join(*arq_socket_thread, NULL);
 	delete arq_socket_thread;
-}
 }
 
 bool ARQ_SOCKET_Server::start(const char* node, const char* service)
@@ -307,9 +308,6 @@ bool ARQ_SOCKET_Server::start(const char* node, const char* service)
 	try {
 		inst->server_socket->open(Address(node, service));
 		inst->server_socket->bind();
-		struct timeval t = { 0, 200000 };
-		inst->server_socket->set_timeout(t);
-		inst->server_socket->set_nonblocking();
 	}
 	catch (const SocketException& e) {
 		errstring = "Could not start ARQ server (";
@@ -342,17 +340,22 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 {
 	SET_THREAD_ID(ARQSOCKET_TID);
 
+	setup_signal_handlers();
+
 	while (inst->run) {
 		try {
 			arq_run(inst->server_socket->accept());
 		}
 		catch (const SocketException& e) {
-			if (e.error() != ETIMEDOUT) {
+			if (e.error() != EINTR) {
 				errstring = e.what();
 				LOG_ERROR("%s", errstring.c_str());
 				Fl::add_timeout(0.0, popup_msg, (void*)errstring.c_str());
 				break;
 			}
+		}
+		catch (...) {
+			break;
 		}
 	}
 	arq_stop();
@@ -362,10 +365,7 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 
 void arq_run(Socket s)
 {
-	struct timeval t = { 0, 20000 }; // 0.02 second timeout
 	arqclient = s;
-	arqclient.set_timeout(t);
-	arqclient.set_nonblocking();
 	isSocketConnected = true;
 	arqmode = true;
 }

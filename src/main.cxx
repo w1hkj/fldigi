@@ -124,7 +124,6 @@ void debug_exec(char** argv);
 void set_platform_ui(void);
 double speed_test(int converter, unsigned repeat);
 
-
 int main(int argc, char ** argv)
 {
 	appname = argv[0];
@@ -139,11 +138,7 @@ int main(int argc, char ** argv)
 
 	set_unexpected(handle_unexpected);
 	set_terminate(diediedie);
-	signal(SIGSEGV, handle_signal);
-	signal(SIGILL, handle_signal);
-	signal(SIGABRT, handle_signal);
-	signal(SIGCHLD, SIG_IGN);
-	signal(SIGPIPE, SIG_IGN);
+	setup_signal_handlers();
 
 	setlocale(LC_TIME, "");
 
@@ -767,4 +762,38 @@ double speed_test(int converter, unsigned repeat)
 
 	t0 = t1 - t0;
 	return repeat / (t0.tv_sec + t0.tv_nsec/1e9);
+}
+
+void setup_signal_handlers(void)
+{
+	struct sigaction action;
+	memset(&action, 0, sizeof(struct sigaction));
+
+	action.sa_handler = SIG_DFL;
+	// no child stopped notifications, no zombies
+	action.sa_flags = SA_NOCLDSTOP | SA_NOCLDWAIT;
+	sigaction(SIGCHLD, &action, NULL);
+	action.sa_flags = 0;
+
+	// undo xmlrpc-c's signal handling
+#if USE_XMLRPC
+	sigaction(SIGTERM, &action, NULL);
+	sigaction(SIGINT, &action, NULL);
+	sigaction(SIGHUP, &action, NULL);
+	sigaction(SIGUSR1, &action, NULL);
+#endif
+
+	action.sa_handler = handle_signal;
+	sigaction(SIGSEGV, &action, NULL);
+	sigaction(SIGILL, &action, NULL);
+	sigaction(SIGABRT, &action, NULL);
+	sigaction(SIGUSR2, &action, NULL);
+
+	action.sa_handler = SIG_IGN;
+	sigaction(SIGPIPE, &action, NULL);
+
+	sigemptyset(&action.sa_mask);
+	sigaddset(&action.sa_mask, SIGUSR2);
+	pthread_sigmask((GET_THREAD_ID() == FLMAIN_TID ? SIG_BLOCK : SIG_UNBLOCK),
+			&action.sa_mask, NULL);
 }
