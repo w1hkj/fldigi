@@ -48,8 +48,6 @@
 #include "Viewer.h"
 #include "macros.h"
 
-Fl_Mutex	wf_mutex = PTHREAD_MUTEX_INITIALIZER;
-
 extern modem *active_modem;
 
 static	RGB RGByellow	= {254,254,0};

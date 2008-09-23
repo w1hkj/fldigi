@@ -277,7 +277,7 @@ bool isTxChar = false;
 bool isCmdChar = false;
 bool processCmd = false;
 
-static Fl_Thread* arq_socket_thread = 0;
+static pthread_t* arq_socket_thread = 0;
 ARQ_SOCKET_Server* ARQ_SOCKET_Server::inst = 0;
 
 Socket arqclient;
@@ -286,16 +286,19 @@ bool isSocketConnected = false;
 ARQ_SOCKET_Server::ARQ_SOCKET_Server()
 {
 	server_socket = new Socket;
-	arq_socket_thread = new Fl_Thread;
+	arq_socket_thread = new pthread_t;
 	run = true;
 }
 
 ARQ_SOCKET_Server::~ARQ_SOCKET_Server()
 {
 	run = false;
-	pthread_kill(*arq_socket_thread, SIGUSR2);
-	pthread_join(*arq_socket_thread, NULL);
-	delete arq_socket_thread;
+	if (arq_socket_thread) {
+		pthread_kill(*arq_socket_thread, SIGUSR2);
+		pthread_join(*arq_socket_thread, NULL);
+		delete arq_socket_thread;
+		arq_socket_thread = 0;
+	}
 }
 
 bool ARQ_SOCKET_Server::start(const char* node, const char* service)
@@ -324,8 +327,7 @@ bool ARQ_SOCKET_Server::start(const char* node, const char* service)
 		return false;
 	}
 
-	fl_create_thread(*arq_socket_thread, thread_func, NULL);
-	return true;
+	return !pthread_create(arq_socket_thread, NULL, thread_func, NULL);
 }
 
 void ARQ_SOCKET_Server::stop(void)
@@ -510,13 +512,12 @@ char arq_get_char()
 // Implementation using thread vice the fldigi timeout facility
 // ============================================================================
 
-static Fl_Thread arq_thread;
+static pthread_t arq_thread;
 
 static void *arq_loop(void *args);
 
 static bool arq_exit = false;
 static bool arq_enabled;
-static int	arq_dummy;
 
 static void *arq_loop(void *args)
 {
@@ -553,7 +554,7 @@ void arq_init()
 	if (!ARQ_SOCKET_Server::start( progdefaults.arq_address.c_str(), progdefaults.arq_port.c_str() ))
 		return;
 
-	if (fl_create_thread(arq_thread, arq_loop, &arq_dummy) < 0) {
+	if (pthread_create(&arq_thread, NULL, arq_loop, NULL) < 0) {
 		fl_message("arq init: pthread_create failed");
 		return;
 	} 
@@ -571,7 +572,7 @@ void arq_close(void)
 	arq_exit = true;
 
 // and then wait for it to die
-	fl_join(arq_thread);
+	pthread_join(arq_thread, NULL);
 	arq_enabled = false;
 
 	arq_exit = false;

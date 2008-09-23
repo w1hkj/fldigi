@@ -38,8 +38,8 @@ using namespace std;
 
 
 Cserial rigio;
-static Fl_Mutex		rigCAT_mutex = PTHREAD_MUTEX_INITIALIZER;
-static Fl_Thread	rigCAT_thread;
+static pthread_mutex_t	rigCAT_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_t	rigCAT_thread;
 
 static bool				rigCAT_exit = false;
 static bool				rigCAT_open = false;
@@ -51,7 +51,6 @@ static string 			sRigWidth = "";
 static string 			sRigMode = "";
 static long long		llFreq = 0;
 
-static int dummy = 0;
 static bool nonCATrig = false;
 long long  noCATfreq = 0L;
 string noCATmode = "USB";
@@ -470,17 +469,17 @@ void rigCAT_setfreq(long long f)
 			if (preply->SYMBOL == modeCmd.ok) {
 				XMLIOS  rTemp = *preply;
 // send the command
-				fl_lock(&rigCAT_mutex);
+				pthread_mutex_lock(&rigCAT_mutex);
 					hexout(strCmd, rTemp.size);
-				fl_unlock(&rigCAT_mutex);
+				pthread_mutex_unlock(&rigCAT_mutex);
 				return;
 			}
 			preply++;
 		}
 	} else {
-		fl_lock(&rigCAT_mutex);
+		pthread_mutex_lock(&rigCAT_mutex);
 			hexout(strCmd, 0);
-		fl_unlock(&rigCAT_mutex);
+		pthread_mutex_unlock(&rigCAT_mutex);
 	}
 }
 
@@ -633,17 +632,17 @@ void rigCAT_setmode(const string& md)
 			if (preply->SYMBOL == modeCmd.ok) {
 				XMLIOS  rTemp = *preply;
 // send the command
-				fl_lock(&rigCAT_mutex);
+				pthread_mutex_lock(&rigCAT_mutex);
 					hexout(strCmd, rTemp.size);
-				fl_unlock(&rigCAT_mutex);
+				pthread_mutex_unlock(&rigCAT_mutex);
 				return;
 			}
 			preply++;
 		}
 	} else {
-		fl_lock(&rigCAT_mutex);
+		pthread_mutex_lock(&rigCAT_mutex);
 			hexout(strCmd, 0);
-		fl_unlock(&rigCAT_mutex);
+		pthread_mutex_unlock(&rigCAT_mutex);
 	}
 }
 
@@ -797,17 +796,17 @@ void rigCAT_setwidth(const string& w)
 			if (preply->SYMBOL == modeCmd.ok) {
 				XMLIOS  rTemp = *preply;
 // send the command
-				fl_lock(&rigCAT_mutex);
+				pthread_mutex_lock(&rigCAT_mutex);
 					hexout(strCmd, rTemp.size);
-				fl_unlock(&rigCAT_mutex);
+				pthread_mutex_unlock(&rigCAT_mutex);
 				return;
 			}
 			preply++;
 		}
 	} else {
-		fl_lock(&rigCAT_mutex);
+		pthread_mutex_lock(&rigCAT_mutex);
 			hexout(strCmd, 0);
-		fl_unlock(&rigCAT_mutex);
+		pthread_mutex_unlock(&rigCAT_mutex);
 	}
 }
 
@@ -923,21 +922,21 @@ void rigCAT_sendINIT()
 			if (preply->SYMBOL == modeCmd.ok) {
 				XMLIOS  rTemp = *preply;
 // send the command
-				fl_lock(&rigCAT_mutex);
+				pthread_mutex_lock(&rigCAT_mutex);
 					hexout(strCmd, rTemp.size);
-				fl_unlock(&rigCAT_mutex);
+				pthread_mutex_unlock(&rigCAT_mutex);
 				return;
 			}
 			preply++;
 		}
 	} else {
-		fl_lock(&rigCAT_mutex);
+		pthread_mutex_lock(&rigCAT_mutex);
 			hexout(strCmd, 0);
-		fl_unlock(&rigCAT_mutex);
+		pthread_mutex_unlock(&rigCAT_mutex);
 	}
-//	fl_lock(&rigCAT_mutex);
+//	pthread_mutex_lock(&rigCAT_mutex);
 //		hexout(strCmd, 0);
-//	fl_unlock(&rigCAT_mutex);
+//	pthread_mutex_unlock(&rigCAT_mutex);
 }
 
 bool rigCAT_init()
@@ -974,7 +973,7 @@ bool rigCAT_init()
 	rigCAT_bypass = false;
 	rigCAT_exit = false;
 
-	if (fl_create_thread(rigCAT_thread, rigCAT_loop, &dummy) < 0) {
+	if (pthread_create(&rigCAT_thread, NULL, rigCAT_loop, NULL) < 0) {
 		LOG_ERROR("pthread_create failed");
 		rigio.ClosePort();
 		return false;
@@ -1000,9 +999,9 @@ void rigCAT_close(void)
 		count--;
 		if (!count) {
 			LOG_ERROR("RigCAT stuck");
-			fl_lock(&rigCAT_mutex);
+			pthread_mutex_lock(&rigCAT_mutex);
 			rigio.ClosePort();
-			fl_unlock(&rigCAT_mutex);
+			pthread_mutex_unlock(&rigCAT_mutex);
 			exit(0);
 		}
 	}
@@ -1018,7 +1017,7 @@ void rigCAT_set_ptt(int ptt)
 {
 	if (rigCAT_open == false)
 		return;
-	fl_lock(&rigCAT_mutex);
+	pthread_mutex_lock(&rigCAT_mutex);
 		if (ptt) {
 			rigCAT_pttON();
 			rigCAT_bypass = true;
@@ -1026,7 +1025,7 @@ void rigCAT_set_ptt(int ptt)
 			rigCAT_pttOFF();
 			rigCAT_bypass = false;
 		}
-	fl_unlock(&rigCAT_mutex);
+	pthread_mutex_unlock(&rigCAT_mutex);
 }
 
 #ifndef RIGCATTEST
@@ -1075,9 +1074,9 @@ static void *rigCAT_loop(void *args)
 		if (rigCAT_exit == true)
 			break;
 
-		fl_lock(&rigCAT_mutex);
+		pthread_mutex_lock(&rigCAT_mutex);
 			freq = rigCAT_getfreq();
-		fl_unlock(&rigCAT_mutex);
+		pthread_mutex_unlock(&rigCAT_mutex);
 
 		if ((freq > 0) && (freq != llFreq)) {
 			llFreq = freq;
@@ -1090,9 +1089,9 @@ static void *rigCAT_loop(void *args)
 		if (rigCAT_exit == true)
 			break;
 
-		fl_lock(&rigCAT_mutex);
+		pthread_mutex_lock(&rigCAT_mutex);
 			sWidth = rigCAT_getwidth();
-		fl_unlock(&rigCAT_mutex);
+		pthread_mutex_unlock(&rigCAT_mutex);
 		
 		if (sWidth.size() && sWidth != sRigWidth) {
 			sRigWidth = sWidth;
@@ -1104,9 +1103,9 @@ static void *rigCAT_loop(void *args)
 		if (rigCAT_exit == true)
 			break;
 
-		fl_lock(&rigCAT_mutex);
+		pthread_mutex_lock(&rigCAT_mutex);
 			sMode = rigCAT_getmode();
-		fl_unlock(&rigCAT_mutex);
+		pthread_mutex_unlock(&rigCAT_mutex);
 
 		if (sMode.size() && sMode != sRigMode) {
 			sRigMode = sMode;
@@ -1132,9 +1131,9 @@ static void *rigCAT_loop(void *args)
 	activate_rig_menu_item(false);
 	FL_UNLOCK();
 
-	fl_lock(&rigCAT_mutex);
+	pthread_mutex_lock(&rigCAT_mutex);
 		rigio.ClosePort();
-	fl_unlock(&rigCAT_mutex);
+	pthread_mutex_unlock(&rigCAT_mutex);
 
 	return NULL;
 }

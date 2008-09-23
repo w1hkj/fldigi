@@ -73,7 +73,7 @@ struct rpc_method
 typedef list<rpc_method> methods_t;
 methods_t* methods = 0;
 
-static Fl_Thread* server_thread;
+static pthread_t* server_thread;
 
 XML_RPC_Server* XML_RPC_Server::inst = 0;
 
@@ -81,16 +81,18 @@ XML_RPC_Server::XML_RPC_Server()
 {
 	server_socket = new Socket;
 	add_methods();
-
-	server_thread = new Fl_Thread;
+	server_thread = new pthread_t;
 	run = true;
 }
 XML_RPC_Server::~XML_RPC_Server()
 {
 	run = false;
-	pthread_kill(*server_thread, SIGUSR2);
-	pthread_join(*server_thread, NULL);
-	delete server_thread;
+	if (server_thread) {
+		pthread_kill(*server_thread, SIGUSR2);
+		pthread_join(*server_thread, NULL);
+		delete server_thread;
+		server_thread = 0;
+	}
 	delete methods;
 	methods = 0;
 }
@@ -112,7 +114,7 @@ void XML_RPC_Server::start(const char* node, const char* service)
 		return;
 	}
 
-	fl_create_thread(*server_thread, thread_func, NULL);
+	pthread_create(server_thread, NULL, thread_func, NULL);
 }
 
 void XML_RPC_Server::stop(void)

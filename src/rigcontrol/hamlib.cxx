@@ -31,8 +31,8 @@
 
 using namespace std;
 
-static Fl_Mutex		hamlib_mutex = PTHREAD_MUTEX_INITIALIZER;
-static Fl_Thread	hamlib_thread;
+static pthread_mutex_t	hamlib_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_t	hamlib_thread;
 
 static bool hamlib_exit = false;
 
@@ -47,8 +47,6 @@ static 	int hamlib_passes = 20;
 static long int hamlib_freq;
 static rmode_t hamlib_rmode = RIG_MODE_USB;
 static pbwidth_t hamlib_pbwidth = 3000;
-
-static int dummy = 0;
 
 static void *hamlib_loop(void *args);
 
@@ -177,7 +175,7 @@ bool hamlib_init(bool bPtt)
 	hamlib_exit = false;
 	hamlib_bypass = false;
 	
-	if (fl_create_thread(hamlib_thread, hamlib_loop, &dummy) < 0) {
+	if (pthread_create(&hamlib_thread, NULL, hamlib_loop, NULL) < 0) {
 		show_error(__func__, "pthread_create failed");
 		xcvr->close();
 		return false;
@@ -217,7 +215,7 @@ void hamlib_set_ptt(int ptt)
 		return;
 	if (!hamlib_ptt)
 		return;
-	fl_lock(&hamlib_mutex);
+	pthread_mutex_lock(&hamlib_mutex);
 		try {
 			xcvr->setPTT(ptt ? RIG_PTT_ON : RIG_PTT_OFF);
 			hamlib_bypass = ptt ? true : false;
@@ -226,14 +224,14 @@ void hamlib_set_ptt(int ptt)
 			show_error("Rig PTT", Ex.what());
 			hamlib_ptt = false;
 		}
-	fl_unlock(&hamlib_mutex);
+	pthread_mutex_unlock(&hamlib_mutex);
 }
 
 void hamlib_set_qsy(long long f, long long fmid)
 {
 	if (xcvr->isOnLine() == false) 
 		return;
-	fl_lock(&hamlib_mutex);
+	pthread_mutex_lock(&hamlib_mutex);
 	double fdbl = f;
 	hamlib_qsy = false;
 	try {
@@ -251,14 +249,14 @@ void hamlib_set_qsy(long long f, long long fmid)
 		show_error("QSY", Ex.what());
 		hamlib_passes = 0;
 	}
-	fl_unlock(&hamlib_mutex);
+	pthread_mutex_unlock(&hamlib_mutex);
 }
 
 int hamlib_setfreq(long f)
 {
 	if (xcvr->isOnLine() == false)
 		return -1;
-	fl_lock(&hamlib_mutex);
+	pthread_mutex_lock(&hamlib_mutex);
 		try {
 			xcvr->setFreq(f);
 			wf->rfcarrier(f);//(hamlib_freq);
@@ -267,7 +265,7 @@ int hamlib_setfreq(long f)
 			show_error("SetFreq", Ex.what());
 			hamlib_passes = 0;
 		}
-	fl_unlock(&hamlib_mutex);
+	pthread_mutex_unlock(&hamlib_mutex);
 	return 1;
 }
 
@@ -275,7 +273,7 @@ int hamlib_setmode(rmode_t m)
 {
 	if (xcvr->isOnLine() == false)
 		return -1;
-	fl_lock(&hamlib_mutex);
+	pthread_mutex_lock(&hamlib_mutex);
 		try {
 			hamlib_rmode = xcvr->getMode(hamlib_pbwidth);
 			xcvr->setMode(m, hamlib_pbwidth);
@@ -285,7 +283,7 @@ int hamlib_setmode(rmode_t m)
 			show_error("Set Mode", Ex.what());
 			hamlib_passes = 0;
 		}
-	fl_unlock(&hamlib_mutex);
+	pthread_mutex_unlock(&hamlib_mutex);
 	return 1;
 }
 
@@ -293,7 +291,7 @@ int hamlib_setwidth(pbwidth_t w)
 {
 	if (xcvr->isOnLine() == false)
 		return -1;
-	fl_lock(&hamlib_mutex);
+	pthread_mutex_lock(&hamlib_mutex);
 		try {
 			hamlib_rmode = xcvr->getMode(hamlib_pbwidth);
 			xcvr->setMode(hamlib_rmode, w);
@@ -303,7 +301,7 @@ int hamlib_setwidth(pbwidth_t w)
 			show_error("Set Width", Ex.what());
 			hamlib_passes = 0;
 		}
-	fl_unlock(&hamlib_mutex);
+	pthread_mutex_unlock(&hamlib_mutex);
 	return 1;
 }
 
@@ -332,7 +330,7 @@ static void *hamlib_loop(void *args)
 		if (hamlib_bypass)
 			continue;
 // hamlib locked while accessing hamlib serial i/o
-		fl_lock (&hamlib_mutex);
+		pthread_mutex_lock(&hamlib_mutex);
 		
 		if (need_freq) {
 			freq_t f;
@@ -341,7 +339,7 @@ static void *hamlib_loop(void *args)
 				freq = (long int) f;
 				freqok = true;
 				if (freq == 0) {
-					fl_unlock (&hamlib_mutex);
+					pthread_mutex_unlock(&hamlib_mutex);
 					continue;
 				}
 			}
@@ -363,7 +361,7 @@ static void *hamlib_loop(void *args)
 				modeok = false;
 			}
 		}
-		fl_unlock (&hamlib_mutex);
+		pthread_mutex_unlock(&hamlib_mutex);
 
 		if (hamlib_exit)
 			break;

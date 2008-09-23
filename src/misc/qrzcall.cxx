@@ -84,8 +84,7 @@ enum TAG { \
 	ZIP,	COUNTRY,LATD,	LOND,	GRID, \
 	DOB };
 
-int qrzdummy;
-Fl_Thread QRZ_thread;
+pthread_t QRZ_thread;
 bool QRZ_exit = false;
 bool QRZ_enabled = false;
 
@@ -517,7 +516,7 @@ void QRZ_CD_query()
 void QRZinit(void)
 {
 	QRZ_enabled = false;
-	if (fl_create_thread(QRZ_thread, CALLSIGNloop, &qrzdummy) < 0) {
+	if (pthread_create(&QRZ_thread, NULL, CALLSIGNloop, NULL) < 0) {
 		fl_message("QRZ init: pthread_create failed");
 		return;
 	} 
@@ -530,7 +529,7 @@ void QRZclose(void)
 // tell the QRZ thread to kill it self
 	QRZ_exit = true;
 // and then wait for it to die
-	fl_join(QRZ_thread);
+	pthread_join(QRZ_thread, NULL);
 	QRZ_enabled = false;
 	QRZ_exit = false;
 }

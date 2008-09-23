@@ -22,7 +22,7 @@ using namespace std;
 FSEL* FSEL::inst = 0;
 static std::string filename;
 #if FSEL_THREAD
-static Fl_Thread fsel_thread;
+static pthread_t fsel_thread;
 sem_t fsel_sem;
 #endif
 
@@ -77,7 +77,7 @@ const char* FSEL::get_file(void)
 #endif
 
 #if FSEL_THREAD
-	if (fl_create_thread(fsel_thread, thread_func, this) != 0) {
+	if (pthread_create(&fsel_thread, NULL, thread_func, this) != 0) {
 		fl_alert("%s", "could not create file selector thread");
 		return NULL;
 	}
