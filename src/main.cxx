@@ -334,6 +334,12 @@ void generate_option_help(void) {
 	     << "  --xmlrpc-server-port PORT\n"
 	     << "    Set the XML-RPC server port\n"
 	     << "    The default is: " << progdefaults.xmlrpc_port << "\n\n"
+	     << "  --xmlrpc-allow REGEX\n"
+	     << "    Allow only the methods whose names match REGEX\n\n"
+	     << "  --xmlrpc-deny REGEX\n"
+	     << "    Allow only the methods whose names don't match REGEX\n\n"
+	     << "  --xmlrpc-list\n"
+	     << "    List all available methods\n\n"
 #endif
 
 	     << "  --debug-level LEVEL\n"
@@ -423,6 +429,7 @@ int parse_args(int argc, char **argv, int& idx)
 	       OPT_CONFIG_DIR, OPT_EXPERIMENTAL, OPT_ARQ_ADDRESS, OPT_ARQ_PORT,
 #if USE_XMLRPC
 	       OPT_CONFIG_XMLRPC, OPT_CONFIG_XMLRPC_ADDRESS, OPT_CONFIG_XMLRPC_PORT,
+	       OPT_CONFIG_XMLRPC_ALLOW, OPT_CONFIG_XMLRPC_DENY, OPT_CONFIG_XMLRPC_LIST,
 #endif
                OPT_FONT, OPT_WFALL_WIDTH, OPT_WFALL_HEIGHT,
                OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT, 
@@ -451,6 +458,9 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "xmlrpc-server",         0, 0, OPT_CONFIG_XMLRPC },
 		{ "xmlrpc-server-address", 1, 0, OPT_CONFIG_XMLRPC_ADDRESS },
 		{ "xmlrpc-server-port",    1, 0, OPT_CONFIG_XMLRPC_PORT },
+		{ "xmlrpc-allow",          1, 0, OPT_CONFIG_XMLRPC_ALLOW },
+		{ "xmlrpc-deny",           1, 0, OPT_CONFIG_XMLRPC_DENY },
+		{ "xmlrpc-list",           0, 0, OPT_CONFIG_XMLRPC_LIST },
 #endif
 		{ "font",	   1, 0, OPT_FONT },
 
@@ -526,6 +536,21 @@ int parse_args(int argc, char **argv, int& idx)
 		case OPT_CONFIG_XMLRPC_PORT:
 			progdefaults.xmlrpc_port = optarg;
 			break;
+		case OPT_CONFIG_XMLRPC_ALLOW:
+			progdefaults.xmlrpc_allow = optarg;
+			break;
+		case OPT_CONFIG_XMLRPC_DENY:
+			if (!progdefaults.xmlrpc_allow.empty())
+				cerr << "W: --" << longopts[longindex].name
+				     << " cannot be used together with --"
+				     << longopts[OPT_CONFIG_XMLRPC_ALLOW-1].name
+				     << " and will be ignored\n";
+			else
+				progdefaults.xmlrpc_deny = optarg;
+			break;
+		case OPT_CONFIG_XMLRPC_LIST:
+			XML_RPC_Server::list_methods(cout);
+			exit(EXIT_SUCCESS);
 #endif
 
 		case OPT_FONT:

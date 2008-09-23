@@ -232,6 +232,8 @@ struct configuration {
 // XMLRPC parameters
 	string xmlrpc_address;
 	string xmlrpc_port;
+	string xmlrpc_allow;
+	string xmlrpc_deny;
 
 public:
 	void writeDefaultsXML();

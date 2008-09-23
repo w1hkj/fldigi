@@ -24,8 +24,11 @@
 
 #include "xmlrpc.h"
 
+#include <iostream>
+#include <iomanip>
 #include <string>
 #include <vector>
+#include <list>
 #include <map>
 #include <exception>
 #include <cstdlib>
@@ -54,6 +57,7 @@
 #include "rigMEM.h"
 #include "rigio.h"
 #include "debug.h"
+#include "re.h"
 
 using namespace std;
 
@@ -64,7 +68,8 @@ struct rpc_method
 	xmlrpc_c::methodPtr method;
 	const char* name;
 };
-vector<rpc_method>* methods;
+typedef list<rpc_method> methods_t;
+methods_t* methods = 0;
 
 static Fl_Thread* server_thread;
 
@@ -73,7 +78,6 @@ XML_RPC_Server* XML_RPC_Server::inst = 0;
 XML_RPC_Server::XML_RPC_Server()
 {
 	server_socket = new Socket;
-	methods = new vector<rpc_method>;
 	add_methods();
 
 	server_thread = new Fl_Thread;
@@ -85,6 +89,7 @@ XML_RPC_Server::~XML_RPC_Server()
 	pthread_join(*server_thread, NULL);
 	delete server_thread;
 	delete methods;
+	methods = 0;
 }
 
 
@@ -119,9 +124,8 @@ void* XML_RPC_Server::thread_func(void*)
 	SET_THREAD_ID(XMLRPC_TID);
 
 	xmlrpc_c::registry reg;
-	for (vector<rpc_method>::iterator i = methods->begin(); i != methods->end(); i++)
+	for (methods_t::iterator i = methods->begin(); i != methods->end(); ++i)
 		reg.addMethod(i->name, i->method);
-
 
 	xmlrpc_c::serverAbyss server(xmlrpc_c::serverAbyss::constrOpt()
 				     .registryP(&reg)
@@ -160,6 +164,17 @@ ret:
 	return NULL;
 }
 
+ostream& XML_RPC_Server::list_methods(ostream& out)
+{
+	add_methods();
+
+	ios_base::fmtflags f = out.flags(ios::left);
+	for (methods_t::const_iterator i = methods->begin(); i != methods->end(); ++i)
+		out << setw(32) << i->name << setw(8) << i->method->signature()
+		    << i->method->help() << '\n';
+
+	return out << setiosflags(f);
+}
 
 // =============================================================================
 // helper functions
@@ -198,7 +213,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		vector<xmlrpc_c::value> help;
-		for (vector<rpc_method>::const_iterator i = methods->begin(); i != methods->end(); i++) {
+		for (methods_t::const_iterator i = methods->begin(); i != methods->end(); ++i) {
 			map<string, xmlrpc_c::value> item;
 			item["name"] = xmlrpc_c::value_string(i->name);
 			item["signature"] = xmlrpc_c::value_string(i->method->signature());
@@ -1449,10 +1464,23 @@ public:
 
 // End XML-RPC interface
 
+struct rm_pred
+{
+	re_t filter;
+	bool allow;
+	rm_pred(const char* re, bool allow_)
+		: filter(re, REG_EXTENDED | REG_NOSUB), allow(allow_) { }
+	bool operator()(const methods_t::value_type& v)
+	{
+		return filter.match(v.name) ^ allow && !strstr(v.name, "fldigi.");
+	}
+};
+
 void XML_RPC_Server::add_methods(void)
 {
-	methods->clear();
-	methods->reserve(72);
+	if (methods)
+		return;
+	methods = new methods_t;
 
 	methods->push_back(rpc_method(new Fldigi_list, "fldigi.list"));
 	methods->push_back(rpc_method(new Fldigi_name, "fldigi.name"));
@@ -1543,4 +1571,9 @@ void XML_RPC_Server::add_methods(void)
 	methods->push_back(rpc_method(new Text_add_tx, "text.add_tx"));
 	methods->push_back(rpc_method(new Text_add_tx_bytes, "text.add_tx_bytes"));
 	methods->push_back(rpc_method(new Text_clear_tx, "text.clear_tx"));
+
+	if (!progdefaults.xmlrpc_deny.empty())
+		methods->remove_if(rm_pred(progdefaults.xmlrpc_deny.c_str(), false));
+	else if (!progdefaults.xmlrpc_allow.empty())
+		methods->remove_if(rm_pred(progdefaults.xmlrpc_allow.c_str(), true));
 }
