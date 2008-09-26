@@ -97,7 +97,9 @@ feld::feld(trx_mode m)
 	double lp;
 	mode = m;
 	samplerate = FeldSampleRate;
-	
+
+	cap = CAP_BW;
+
  	switch (mode) {
 // Amplitude modulation modes
 		case MODE_FELDHELL:

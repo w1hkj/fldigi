@@ -29,9 +29,7 @@
 #define PTT_OFF false
 #define PTT_ON  true
 
-static int dummy;
-
-static Fl_Thread rigMEM_thread;
+static pthread_t rigMEM_thread;
 static bool rigMEM_exit = false;
 static bool rigMEM_enabled;
 
@@ -95,7 +93,7 @@ void rigMEM_init(void)
 	TogglePTT = false;
 	rigMEMisPTT = false;
 	
-	if (fl_create_thread(rigMEM_thread, rigMEM_loop, &dummy) < 0) {
+	if (pthread_create(&rigMEM_thread, NULL, rigMEM_loop, NULL) < 0) {
 		fl_message("rigMEM init: pthread_create failed");
 		return;
 	} 
@@ -111,7 +109,7 @@ void rigMEM_close(void)
 	rigMEM_exit = true;
 
 // and then wait for it to die
-	fl_join(rigMEM_thread);
+	pthread_join(rigMEM_thread, NULL);
 	rigMEM_enabled = false;
 	rigMEM_exit = false;
 
@@ -216,7 +214,7 @@ void rigMEM_init(void)
 	TogglePTT = false;
 	rigMEMisPTT = false;
 	
-	if (fl_create_thread(rigMEM_thread, rigMEM_loop, &dummy) < 0) {
+	if (pthread_create(&rigMEM_thread, NULL, rigMEM_loop, NULL) < 0) {
 		fl_message("rigMEM init: pthread_create failed");
 		return;
 	} 
@@ -234,7 +232,7 @@ void rigMEM_close(void)
 	rigMEM_exit = true;
 
 // and then wait for it to die
-	fl_join(rigMEM_thread);
+	pthread_join(rigMEM_thread, NULL);
 	LOG_DEBUG("rigMEM down");
 	rigMEM_enabled = false;
 	rigMEM_exit = false;

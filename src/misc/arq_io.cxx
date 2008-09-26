@@ -37,6 +37,8 @@
 #  include <sys/msg.h>
 #endif
 
+#include <signal.h>
+
 #include "main.h"
 #include "configuration.h"
 #include "fl_digi.h"
@@ -45,6 +47,7 @@
 #include "threads.h"
 #include "socket.h"
 #include "debug.h"
+#include "qrunner.h"
 
 #include <FL/Fl.H>
 #include <FL/fl_ask.H>
@@ -75,11 +78,12 @@ void ParseMode(string src)
 		return;
 	}
 	for (size_t i = 0; i < NUM_MODES; ++i) {
-		if (strlen(mode_info[i].pskmail_name) > 0) 
+		if (strlen(mode_info[i].pskmail_name) > 0) {
 			if (src == mode_info[i].pskmail_name) {
-				init_modem(mode_info[i].mode);
+				REQ_SYNC(init_modem_sync, mode_info[i].mode);
 				break;
 			}
+		}
 	}
 }
 
@@ -126,7 +130,7 @@ void parse_arqtext()
 				}
 			}
 		}
-		arqtext.erase(idxCmd, idxCmdEnd - idxCmd + 8);
+		arqtext.erase(idxCmd, idxCmdEnd - idxCmd + 6);
 		if (arqtext.length() == 1 && arqtext[0] == '\n')
 			arqtext = "";
 	}
@@ -264,6 +268,7 @@ bool TLF_arqRx()
 #define MPSK_ISCMD 30
 #define MPSK_CMDEND 31
 
+
 extern void arq_run(Socket s);
 extern void arq_stop();
 
@@ -273,9 +278,10 @@ string cmdstring;
 string response;
 bool isTxChar = false;
 bool isCmdChar = false;
-bool processCmd = false;
 
-static Fl_Thread* arq_socket_thread = 0;
+bool isPskMail = false;
+
+static pthread_t* arq_socket_thread = 0;
 ARQ_SOCKET_Server* ARQ_SOCKET_Server::inst = 0;
 
 Socket arqclient;
@@ -284,7 +290,7 @@ bool isSocketConnected = false;
 ARQ_SOCKET_Server::ARQ_SOCKET_Server()
 {
 	server_socket = new Socket;
-	arq_socket_thread = new Fl_Thread;
+	arq_socket_thread = new pthread_t;
 	run = true;
 }
 
@@ -292,9 +298,11 @@ ARQ_SOCKET_Server::~ARQ_SOCKET_Server()
 {
 	run = false;
 	if (arq_socket_thread) {
-	pthread_join(*arq_socket_thread, NULL);
-	delete arq_socket_thread;
-}
+		pthread_kill(*arq_socket_thread, SIGUSR2);
+		pthread_join(*arq_socket_thread, NULL);
+		delete arq_socket_thread;
+		arq_socket_thread = 0;
+	}
 }
 
 bool ARQ_SOCKET_Server::start(const char* node, const char* service)
@@ -307,9 +315,6 @@ bool ARQ_SOCKET_Server::start(const char* node, const char* service)
 	try {
 		inst->server_socket->open(Address(node, service));
 		inst->server_socket->bind();
-		struct timeval t = { 0, 200000 };
-		inst->server_socket->set_timeout(t);
-		inst->server_socket->set_nonblocking();
 	}
 	catch (const SocketException& e) {
 		errstring = "Could not start ARQ server (";
@@ -326,8 +331,7 @@ bool ARQ_SOCKET_Server::start(const char* node, const char* service)
 		return false;
 	}
 
-	fl_create_thread(*arq_socket_thread, thread_func, NULL);
-	return true;
+	return !pthread_create(arq_socket_thread, NULL, thread_func, NULL);
 }
 
 void ARQ_SOCKET_Server::stop(void)
@@ -342,17 +346,22 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 {
 	SET_THREAD_ID(ARQSOCKET_TID);
 
+	setup_signal_handlers();
+
 	while (inst->run) {
 		try {
 			arq_run(inst->server_socket->accept());
 		}
 		catch (const SocketException& e) {
-			if (e.error() != ETIMEDOUT) {
+			if (e.error() != EINTR) {
 				errstring = e.what();
 				LOG_ERROR("%s", errstring.c_str());
 				Fl::add_timeout(0.0, popup_msg, (void*)errstring.c_str());
 				break;
 			}
+		}
+		catch (...) {
+			break;
 		}
 	}
 	arq_stop();
@@ -362,7 +371,7 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 
 void arq_run(Socket s)
 {
-	struct timeval t = { 0, 20000 }; // 0.02 second timeout
+	struct timeval t = { 0, 20000 };
 	arqclient = s;
 	arqclient.set_timeout(t);
 	arqclient.set_nonblocking();
@@ -412,17 +421,6 @@ bool Socket_arqRx()
 	
 		for (size_t i = 0; i < n; i++) {
 			cs = instr[i];
-			if (isTxChar) {
-				txstring += cs;
-				isTxChar = false;
-				continue;
-			}
-			if (isCmdChar) {
-				if (cs == MPSK_END)
-					isCmdChar = false;
-				cmdstring += cs;
-				continue;
-			}
 			if (cs == MPSK_BYTE) {
 				isTxChar = true;
 				continue;
@@ -431,8 +429,35 @@ bool Socket_arqRx()
 				isCmdChar = true;
 				continue;
 			}
+			if (isCmdChar) {
+				if (cs == MPSK_END)
+					isCmdChar = false;
+				else
+					cmdstring += cs;
+				continue;
+			}
+			if (isPskMail) {
+				txstring += cs;
+				continue;
+			}
+			if (isTxChar) {
+				txstring += cs;
+				isTxChar = false;
+				continue;
+			}
 		}
 
+		if (cmdstring.find("PSKMAIL-ON") != string::npos) {
+			isPskMail = true;
+			txstring.clear();
+//LOG_INFO (cmdstring.c_str());
+		}
+		if (cmdstring.find("PSKMAIL-OFF") != string::npos) {
+			isPskMail = false;
+			txstring.clear();
+//LOG_INFO (cmdstring.c_str());
+		}
+			
 		if (progdefaults.rsid == true) {
 			send0x06();
 			arqtext.clear();
@@ -441,15 +466,21 @@ bool Socket_arqRx()
 			return true;
 		}
 		
-		if (arqtext.empty()) {
+		if (arqtext.empty() && !txstring.empty()) {
 			arqtext = txstring;
-			pText = arqtext.begin();
-			arq_text_available = true;
-			active_modem->set_stopflag(false);
-			start_tx();
-		} else {
+			parse_arqtext();
+			if (!arqtext.empty()) {
+				if (mailserver && progdefaults.PSKmailSweetSpot)
+					active_modem->set_freq(progdefaults.PSKsweetspot);
+				pText = arqtext.begin();
+				arq_text_available = true;
+				active_modem->set_stopflag(false);
+				start_tx();
+			}
+		} else if (!txstring.empty()) {
 			arqtext.append(txstring);
 		}
+		
 		txstring.clear();
 		cmdstring.clear();
 		return true;
@@ -483,6 +514,19 @@ void WriteARQ( unsigned int data)
 #endif
 }
 
+// following function used if the T/R button is pressed to stop a transmission
+// that is servicing the ARQ text buffer.  It allows the ARQ client to reset
+// itself properly
+
+void AbortARQ() {
+	if (arq_text_available) {
+		arqtext.clear();
+		pText = arqtext.begin();
+		arq_text_available = false;
+		WriteARQ(0x06);
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Write End of Transmit character to ARQ client
 //-----------------------------------------------------------------------------
@@ -510,13 +554,12 @@ char arq_get_char()
 // Implementation using thread vice the fldigi timeout facility
 // ============================================================================
 
-static Fl_Thread arq_thread;
+static pthread_t arq_thread;
 
 static void *arq_loop(void *args);
 
 static bool arq_exit = false;
 static bool arq_enabled;
-static int	arq_dummy;
 
 static void *arq_loop(void *args)
 {
@@ -553,7 +596,7 @@ void arq_init()
 	if (!ARQ_SOCKET_Server::start( progdefaults.arq_address.c_str(), progdefaults.arq_port.c_str() ))
 		return;
 
-	if (fl_create_thread(arq_thread, arq_loop, &arq_dummy) < 0) {
+	if (pthread_create(&arq_thread, NULL, arq_loop, NULL) < 0) {
 		fl_message("arq init: pthread_create failed");
 		return;
 	} 
@@ -571,7 +614,7 @@ void arq_close(void)
 	arq_exit = true;
 
 // and then wait for it to die
-	fl_join(arq_thread);
+	pthread_join(arq_thread, NULL);
 	arq_enabled = false;
 
 	arq_exit = false;

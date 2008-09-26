@@ -266,6 +266,8 @@ configuration progdefaults = {
 	15,				// int  VIEWERtimeout
 	"127.0.0.1",		// string xmlrpc_address
 	"7362",			// string xmlrpc_port
+	"",			// string xmlrpc_allow
+	""			// string xmlrpc_deny
 };
 
 const char *szBaudRates[] = {

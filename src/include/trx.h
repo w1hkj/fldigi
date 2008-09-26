@@ -54,7 +54,6 @@ extern	void	signal_modem_ready(void);
 
 extern	void	macro_timer(void *);
 
-extern Fl_Thread	trx_thread;
 extern state_t		trx_state;
 extern modem		*active_modem;
 extern cRsId		*ReedSolomon;

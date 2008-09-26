@@ -944,7 +944,7 @@ int mfsk::tx_process()
 				}
 				i += blocklen;
 			}
-			REQ_FLUSH();
+			REQ_FLUSH(GET_THREAD_ID());
 
 			txstate = TX_STATE_DATA;
 			put_status("Send picture: done");

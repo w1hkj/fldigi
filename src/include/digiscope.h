@@ -37,7 +37,6 @@
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Widget.H>
 #include <FL/fl_draw.H>
-#include "threads.h"
 #include "complex.h"
 
 class Digiscope : public Fl_Widget { 
@@ -61,7 +60,7 @@ public:
 		DOMWF,
 		BLANK
 	};
-	Fl_Mutex *mutex;
+
 private:
 	scope_mode _mode;
 	double _buf[MAX_LEN];

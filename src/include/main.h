@@ -48,6 +48,7 @@ extern void			arq_init();
 extern void			arq_close();
 extern void			WriteARQ(unsigned int);
 extern void			checkTLF();
+void 				setup_signal_handlers(void);
 
 #define ARQBUFSIZ 8192
 

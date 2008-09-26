@@ -80,6 +80,8 @@ void handle_unexpected(void)
 // this may not give us anything useful, but we can try...
 void handle_signal(int s)
 {
-        signum = s;
-        diediedie();
+	if (s != SIGUSR2) {
+		signum = s;
+		diediedie();
+	}
 }

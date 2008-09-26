@@ -47,8 +47,7 @@
 #include "configuration.h"
 #include "Viewer.h"
 #include "macros.h"
-
-Fl_Mutex	wf_mutex = PTHREAD_MUTEX_INITIALIZER;
+#include "arq_io.h"
 
 extern modem *active_modem;
 
@@ -972,6 +971,8 @@ void xmtrcv_cb(Fl_Widget *w, void *vi)
 		else {
 			active_modem->set_stopflag(true);
 			TransmitText->clear();
+			if (arq_text_available)
+				AbortARQ();
 			if (progdefaults.useTimer)
 				progdefaults.useTimer = false;
 		}

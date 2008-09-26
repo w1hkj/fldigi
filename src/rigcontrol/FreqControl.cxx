@@ -196,6 +196,12 @@ int cFreqControl::handle(int event)
 		case FL_Up:
 			d = 10;
 			break;
+		case FL_Page_Up:
+			d = 100;
+			break;
+		case FL_Page_Down:
+			d = -100;
+			break;
 		default:
 			return 1;
 		}
@@ -220,3 +226,4 @@ int cFreqControl::handle(int event)
 
 	return 1;
 }
+

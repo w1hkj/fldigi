@@ -124,7 +124,6 @@ void debug_exec(char** argv);
 void set_platform_ui(void);
 double speed_test(int converter, unsigned repeat);
 
-
 int main(int argc, char ** argv)
 {
 	appname = argv[0];
@@ -139,11 +138,7 @@ int main(int argc, char ** argv)
 
 	set_unexpected(handle_unexpected);
 	set_terminate(diediedie);
-	signal(SIGSEGV, handle_signal);
-	signal(SIGILL, handle_signal);
-	signal(SIGABRT, handle_signal);
-	signal(SIGCHLD, SIG_IGN);
-	signal(SIGPIPE, SIG_IGN);
+	setup_signal_handlers();
 
 	setlocale(LC_TIME, "");
 
@@ -334,6 +329,12 @@ void generate_option_help(void) {
 	     << "  --xmlrpc-server-port PORT\n"
 	     << "    Set the XML-RPC server port\n"
 	     << "    The default is: " << progdefaults.xmlrpc_port << "\n\n"
+	     << "  --xmlrpc-allow REGEX\n"
+	     << "    Allow only the methods whose names match REGEX\n\n"
+	     << "  --xmlrpc-deny REGEX\n"
+	     << "    Allow only the methods whose names don't match REGEX\n\n"
+	     << "  --xmlrpc-list\n"
+	     << "    List all available methods\n\n"
 #endif
 
 	     << "  --debug-level LEVEL\n"
@@ -423,6 +424,7 @@ int parse_args(int argc, char **argv, int& idx)
 	       OPT_CONFIG_DIR, OPT_EXPERIMENTAL, OPT_ARQ_ADDRESS, OPT_ARQ_PORT,
 #if USE_XMLRPC
 	       OPT_CONFIG_XMLRPC, OPT_CONFIG_XMLRPC_ADDRESS, OPT_CONFIG_XMLRPC_PORT,
+	       OPT_CONFIG_XMLRPC_ALLOW, OPT_CONFIG_XMLRPC_DENY, OPT_CONFIG_XMLRPC_LIST,
 #endif
                OPT_FONT, OPT_WFALL_WIDTH, OPT_WFALL_HEIGHT,
                OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT, 
@@ -451,6 +453,9 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "xmlrpc-server",         0, 0, OPT_CONFIG_XMLRPC },
 		{ "xmlrpc-server-address", 1, 0, OPT_CONFIG_XMLRPC_ADDRESS },
 		{ "xmlrpc-server-port",    1, 0, OPT_CONFIG_XMLRPC_PORT },
+		{ "xmlrpc-allow",          1, 0, OPT_CONFIG_XMLRPC_ALLOW },
+		{ "xmlrpc-deny",           1, 0, OPT_CONFIG_XMLRPC_DENY },
+		{ "xmlrpc-list",           0, 0, OPT_CONFIG_XMLRPC_LIST },
 #endif
 		{ "font",	   1, 0, OPT_FONT },
 
@@ -526,6 +531,21 @@ int parse_args(int argc, char **argv, int& idx)
 		case OPT_CONFIG_XMLRPC_PORT:
 			progdefaults.xmlrpc_port = optarg;
 			break;
+		case OPT_CONFIG_XMLRPC_ALLOW:
+			progdefaults.xmlrpc_allow = optarg;
+			break;
+		case OPT_CONFIG_XMLRPC_DENY:
+			if (!progdefaults.xmlrpc_allow.empty())
+				cerr << "W: --" << longopts[longindex].name
+				     << " cannot be used together with --"
+				     << longopts[OPT_CONFIG_XMLRPC_ALLOW-1].name
+				     << " and will be ignored\n";
+			else
+				progdefaults.xmlrpc_deny = optarg;
+			break;
+		case OPT_CONFIG_XMLRPC_LIST:
+			XML_RPC_Server::list_methods(cout);
+			exit(EXIT_SUCCESS);
 #endif
 
 		case OPT_FONT:
@@ -742,4 +762,42 @@ double speed_test(int converter, unsigned repeat)
 
 	t0 = t1 - t0;
 	return repeat / (t0.tv_sec + t0.tv_nsec/1e9);
+}
+
+void setup_signal_handlers(void)
+{
+	struct sigaction action;
+	memset(&action, 0, sizeof(struct sigaction));
+
+	action.sa_handler = SIG_DFL;
+	// no child stopped notifications, no zombies
+#ifdef __CYGWIN__
+	action.sa_flags = SA_NOCLDSTOP;
+#else
+	action.sa_flags = SA_NOCLDSTOP | SA_NOCLDWAIT;
+#endif
+	sigaction(SIGCHLD, &action, NULL);
+	action.sa_flags = 0;
+
+	// undo xmlrpc-c's signal handling
+#if USE_XMLRPC
+	sigaction(SIGTERM, &action, NULL);
+	sigaction(SIGINT, &action, NULL);
+	sigaction(SIGHUP, &action, NULL);
+	sigaction(SIGUSR1, &action, NULL);
+#endif
+
+	action.sa_handler = handle_signal;
+	sigaction(SIGSEGV, &action, NULL);
+	sigaction(SIGILL, &action, NULL);
+	sigaction(SIGABRT, &action, NULL);
+	sigaction(SIGUSR2, &action, NULL);
+
+	action.sa_handler = SIG_IGN;
+	sigaction(SIGPIPE, &action, NULL);
+
+	sigemptyset(&action.sa_mask);
+	sigaddset(&action.sa_mask, SIGUSR2);
+	pthread_sigmask((GET_THREAD_ID() == FLMAIN_TID ? SIG_BLOCK : SIG_UNBLOCK),
+			&action.sa_mask, NULL);
 }

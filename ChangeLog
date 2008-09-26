@@ -6,6 +6,21 @@ Change Log:
          added log.set_call <CALL>
       2) Change to macro timer implementation - bug fix for Windows
       3) Fixed bug in WFaveraging - save configuration
+      4) Fixed ARQ tcpip bugs when used with pskmail
+      5) Added end of transmit feedback to ARQ client when transmit is stopped
+         from within fldigi (T/R button pressed).
+      6) XML-RPC fixes & simplification of XML-RPC error handling.
+	  7) Added simple XML-RPC access control with three new switches
+  		     --xmlrpc-allow REGEX  only allow matching methods
+             --xmlrpc-deny REGEX   ignore matching methods
+             --xmlrpc-list         list methods
+         For example: fldigi --xmlrpc-deny 'main.tx|main.run_macro' or the
+         shorter 'main.(tx|run_macro)' will unregister those two methods.
+         Add --xmlrpc-list after an allow or deny switch to verify the results.
+      8) Added thread signal handling with SIGUSR2 to stop the xmlrpc and 
+         arq-socket threads and avoid the socket accept/timeout loop.
+      9) Removed fl_thread wrappers to direct pthread calls
+      10) Added various Qrunner updates
       
 3.03
       1) Changes to socket server to correct shutdown process

@@ -90,6 +90,8 @@ cw::cw() : modem()
 {
 	double lp;
 
+	cap |= CAP_BW;
+
 	mode = MODE_CW;
 	freqlock = false;
 	usedefaultWPM = false;

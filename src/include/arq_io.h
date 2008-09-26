@@ -5,6 +5,7 @@ class Socket;
 
 extern void WriteARQsocket(unsigned int data);
 extern bool Socket_arqRx();
+extern void AbortARQ();
 
 class ARQ_SOCKET_Server
 {

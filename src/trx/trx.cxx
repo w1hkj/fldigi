@@ -58,9 +58,9 @@ void	trx_tune_loop();
 /* ---------------------------------------------------------------------- */
 
 
-Fl_Mutex	trx_cond_mutex = PTHREAD_MUTEX_INITIALIZER;
-Fl_Cond		trx_cond = PTHREAD_COND_INITIALIZER;
-Fl_Thread	trx_thread;
+pthread_mutex_t	trx_cond_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t	trx_cond = PTHREAD_COND_INITIALIZER;
+pthread_t	trx_thread;
 state_t 	trx_state;
 bool		restartOK = false;
 bool		trx_wait = false;
@@ -78,7 +78,6 @@ ringbuffer<double> trxrb(ceil2(NUMMEMBUFS * SCBLOCKSIZE));
 ringbuffer<double>::vector_type rbvec[2];
 bool    bHistory = false;
 
-static int dummy = 0;
 static bool trxrunning = false;
 
 static bool rsid_detecting = false;
@@ -512,7 +511,7 @@ void trx_start(void)
 	trx_state = STATE_RX;
 	_trx_tune = 0;
 	active_modem = 0;
-	if (fl_create_thread(trx_thread, trx_loop, &dummy) < 0) {
+	if (pthread_create(&trx_thread, NULL, trx_loop, NULL) < 0) {
 		LOG_ERROR("pthread_create failed");
 		trxrunning = false;
 		exit(1);
@@ -546,7 +545,7 @@ void wait_modem_ready_prep(void)
 		LOG_ERROR("trx thread called wait_modem_ready_prep!");
 #endif
 
-        fl_lock(&trx_cond_mutex);
+        pthread_mutex_lock(&trx_cond_mutex);
 }
 
 void wait_modem_ready_cmpl(void)
@@ -556,8 +555,8 @@ void wait_modem_ready_cmpl(void)
                 LOG_ERROR("trx thread called wait_modem_ready_cmpl!");
 #endif
 
-        fl_cond_wait(&trx_cond, &trx_cond_mutex);
-        fl_unlock(&trx_cond_mutex);
+        pthread_cond_wait(&trx_cond, &trx_cond_mutex);
+        pthread_mutex_unlock(&trx_cond_mutex);
 }
 
 void signal_modem_ready(void)
@@ -567,8 +566,8 @@ void signal_modem_ready(void)
 		LOG_ERROR("thread %d called signal_modem_ready!", GET_THREAD_ID());
 #endif
 
-        fl_lock(&trx_cond_mutex);
-        fl_cond_bcast(&trx_cond);
-        fl_unlock(&trx_cond_mutex);
+        pthread_mutex_lock(&trx_cond_mutex);
+        pthread_cond_broadcast(&trx_cond);
+        pthread_mutex_unlock(&trx_cond_mutex);
 }
 

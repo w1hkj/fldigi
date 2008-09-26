@@ -66,15 +66,15 @@ private:
 struct fsignal
 {
         typedef void result_type;
-        Fl_Mutex *m;
-        Fl_Cond *c;
+        pthread_mutex_t* m;
+        pthread_cond_t* c;
 
-        fsignal(Fl_Mutex *m_, Fl_Cond *c_) : m(m_), c(c_) { }
+        fsignal(pthread_mutex_t* m_, pthread_cond_t* c_) : m(m_), c(c_) { }
         void operator()(void) const
         {
-                fl_lock(m);
-                fl_cond_signal(c);
-                fl_unlock(m);
+                pthread_mutex_lock(m);
+                pthread_cond_signal(c);
+                pthread_mutex_unlock(m);
         }
 };
 
@@ -123,17 +123,17 @@ public:
                                 break;
                         sched_yield();
                 }
-                Fl_Mutex m = PTHREAD_MUTEX_INITIALIZER;
-                Fl_Cond c = PTHREAD_COND_INITIALIZER;
+                pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
+                pthread_cond_t c = PTHREAD_COND_INITIALIZER;
                 fsignal s(&m, &c);
-                fl_lock(&m);
+                pthread_mutex_lock(&m);
                 for (;;) {
                         if (request(s))
                                 break;
                         sched_yield();
                 }
-                fl_cond_wait(&c, &m);
-                fl_unlock(&m);
+                pthread_cond_wait(&c, &m);
+                pthread_mutex_unlock(&m);
 
                 return true;
         }
@@ -195,13 +195,15 @@ extern qrunner *cbq[NUM_QRUNNER_THREADS];
                         qrbind::bind(__VA_ARGS__)();			\
         } while (0)
 
-#define REQ_FLUSH()                                                     \
+#define REQ_FLUSH(t_)                                                   \
         do {                                                            \
-                if (GET_THREAD_ID() != FLMAIN_TID)                      \
-                        cbq[GET_THREAD_ID()]->request_sync(nop());      \
-                else                                                    \
-                        for (int i = 0; i < NUM_QRUNNER_THREADS; i++)   \
-                                cbq[i]->flush();                        \
+		if (GET_THREAD_ID() != FLMAIN_TID)			\
+			cbq[GET_THREAD_ID()]->request_sync(nop());	\
+		else if (t_ < NUM_QRUNNER_THREADS)			\
+			cbq[t_]->flush();				\
+		else							\
+			for (int i = 0; i < NUM_QRUNNER_THREADS; i++)	\
+				cbq[i]->flush();			\
         } while (0)
 
 #define QRUNNER_DROP(v_)					\

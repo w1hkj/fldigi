@@ -24,11 +24,16 @@
 
 #include "xmlrpc.h"
 
+#include <iostream>
+#include <iomanip>
 #include <string>
 #include <vector>
+#include <list>
 #include <map>
 #include <exception>
 #include <cstdlib>
+
+#include <signal.h>
 
 #include <xmlrpc-c/base.hpp>
 #include <xmlrpc-c/registry.hpp>
@@ -54,6 +59,7 @@
 #include "rigMEM.h"
 #include "rigio.h"
 #include "debug.h"
+#include "re.h"
 
 using namespace std;
 
@@ -64,27 +70,31 @@ struct rpc_method
 	xmlrpc_c::methodPtr method;
 	const char* name;
 };
-vector<rpc_method>* methods;
+typedef list<rpc_method> methods_t;
+methods_t* methods = 0;
 
-static Fl_Thread* server_thread;
+static pthread_t* server_thread;
 
 XML_RPC_Server* XML_RPC_Server::inst = 0;
 
 XML_RPC_Server::XML_RPC_Server()
 {
 	server_socket = new Socket;
-	methods = new vector<rpc_method>;
 	add_methods();
-
-	server_thread = new Fl_Thread;
+	server_thread = new pthread_t;
 	run = true;
 }
 XML_RPC_Server::~XML_RPC_Server()
 {
 	run = false;
-	pthread_join(*server_thread, NULL);
-	delete server_thread;
+	if (server_thread) {
+		pthread_kill(*server_thread, SIGUSR2);
+		pthread_join(*server_thread, NULL);
+		delete server_thread;
+		server_thread = 0;
+	}
 	delete methods;
+	methods = 0;
 }
 
 
@@ -97,13 +107,14 @@ void XML_RPC_Server::start(const char* node, const char* service)
 
 	try {
 		inst->server_socket->open(Address(node, service));
+		inst->server_socket->bind();
 	}
 	catch (const SocketException& e) {
 		LOG_ERROR("Could not start XML-RPC server (%s)", e.what());
 		return;
 	}
 
-	fl_create_thread(*server_thread, thread_func, NULL);
+	pthread_create(server_thread, NULL, thread_func, NULL);
 }
 
 void XML_RPC_Server::stop(void)
@@ -119,9 +130,8 @@ void* XML_RPC_Server::thread_func(void*)
 	SET_THREAD_ID(XMLRPC_TID);
 
 	xmlrpc_c::registry reg;
-	for (vector<rpc_method>::iterator i = methods->begin(); i != methods->end(); i++)
+	for (methods_t::iterator i = methods->begin(); i != methods->end(); ++i)
 		reg.addMethod(i->name, i->method);
-
 
 	xmlrpc_c::serverAbyss server(xmlrpc_c::serverAbyss::constrOpt()
 				     .registryP(&reg)
@@ -130,36 +140,37 @@ void* XML_RPC_Server::thread_func(void*)
 #endif
 	    		      );
 
-	try {
-		inst->server_socket->bind();
-		struct timeval t = { 0, 200000 };
-		inst->server_socket->set_timeout(t);
-		inst->server_socket->set_nonblocking();
-	}
-	catch (const SocketException& e) {
-		LOG_ERROR("Could not start XML-RPC server (%s)", e.what());
-		goto ret;
-	}
+	setup_signal_handlers();
 
 	while (inst->run) {
-		Socket client;
 		try {
 			server.runConn(inst->server_socket->accept().fd());
 		}
 		catch (const SocketException& e) {
-			if (e.error() != ETIMEDOUT) {
+			if (e.error() != EINTR)
 				LOG_ERROR("%s", e.what());
-				break;
-			}
+			break;
+		}
+		catch (...) {
+			break;
 		}
 	}
 
-ret:
 	inst->server_socket->close();
-
 	return NULL;
 }
 
+ostream& XML_RPC_Server::list_methods(ostream& out)
+{
+	add_methods();
+
+	ios_base::fmtflags f = out.flags(ios::left);
+	for (methods_t::const_iterator i = methods->begin(); i != methods->end(); ++i)
+		out << setw(32) << i->name << setw(8) << i->method->signature()
+		    << i->method->help() << '\n';
+
+	return out << setiosflags(f);
+}
 
 // =============================================================================
 // helper functions
@@ -174,6 +185,12 @@ static void set_valuator(Fl_Valuator* valuator, double value)
 	valuator->value(value);
 	valuator->do_callback();
 }
+static void set_text(Fl_Input* textw, string& value)
+{
+	textw->value(value.c_str());
+	textw->do_callback();
+}
+
 
 // =============================================================================
 
@@ -192,7 +209,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		vector<xmlrpc_c::value> help;
-		for (vector<rpc_method>::const_iterator i = methods->begin(); i != methods->end(); i++) {
+		for (methods_t::const_iterator i = methods->begin(); i != methods->end(); ++i) {
 			map<string, xmlrpc_c::value> item;
 			item["name"] = xmlrpc_c::value_string(i->name);
 			item["signature"] = xmlrpc_c::value_string(i->method->signature());
@@ -338,19 +355,15 @@ public:
         {
 		const char* cur = mode_info[active_modem->get_mode()].sname;
 
-		bool found = false;
 		string s = params.getString(0);
 		for (size_t i = 0; i < NUM_MODES; i++) {
 			if (s == mode_info[i].sname) {
 				REQ_SYNC(init_modem_sync, i);
-				found = true;
-				break;
+				*retval = xmlrpc_c::value_string(cur);
+				return;
 			}
 		}
-		if (!found)
-			throw xmlrpc_c::fault("No such modem", xmlrpc_c::fault::code_t(0));
-
-		*retval = xmlrpc_c::value_string(cur);
+		throw xmlrpc_c::fault("No such modem");
 	}
 };
 
@@ -436,6 +449,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
+		if (!(active_modem->get_cap() & modem::CAP_AFC_SR))
+			throw xmlrpc_c::fault("Operation not supported by modem");
+
 		*retval = xmlrpc_c::value_int((int)cntSearchRange->value());
 	}
 };
@@ -450,6 +466,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
+		if (!(active_modem->get_cap() & modem::CAP_AFC_SR))
+			throw xmlrpc_c::fault("Operation not supported by modem");
+
 		int v = (int)(cntSearchRange->value());
 		REQ(set_valuator, cntSearchRange, params.getInt(0, (int)cntSearchRange->minimum(), (int)cntSearchRange->maximum()));
 		*retval = xmlrpc_c::value_int(v);
@@ -466,6 +485,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
+		if (!(active_modem->get_cap() & modem::CAP_AFC_SR))
+			throw xmlrpc_c::fault("Operation not supported by modem");
+
 		int v = (int)(cntSearchRange->value() + params.getInt(0));
 		REQ(set_valuator, cntSearchRange, v);
 		*retval = xmlrpc_c::value_int(v);
@@ -476,6 +498,21 @@ public:
 
 extern Fl_Value_Slider* sldrHellBW; // FIXME: export in header
 extern Fl_Value_Slider* sldrCWbandwidth; // FIXME: export in header
+static Fl_Valuator* get_bw_val(void)
+{
+	if (!(active_modem->get_cap() & modem::CAP_BW))
+		throw xmlrpc_c::fault("Operation not supported by modem");
+
+	switch (active_modem->get_mode()) {
+	case MODE_FELDHELL: case MODE_SLOWHELL: case MODE_HELLX5:
+	case MODE_HELLX9: case MODE_FSKHELL: case MODE_FSKH105: case MODE_HELL80:
+		return sldrHellBW;
+	case MODE_CW:
+		return sldrCWbandwidth;
+	default:
+		throw xmlrpc_c::fault("Unknown CAP_BW modem");
+	}
+}
 
 class Modem_get_bw : public xmlrpc_c::method
 {
@@ -487,19 +524,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		Fl_Valuator* val;
-		switch (active_modem->get_mode()) {
-		case MODE_FELDHELL:
-			val = sldrHellBW;
-			break;
-		case MODE_CW:
-			val = sldrCWbandwidth;
-			break;
-		default:
-			throw xmlrpc_c::fault("Operation not supported by modem", xmlrpc_c::fault::code_t(0));
-		}
-
-		*retval = xmlrpc_c::value_int((int)val->value());
+		*retval = xmlrpc_c::value_int((int)get_bw_val()->value());
 	}
 };
 
@@ -513,18 +538,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		Fl_Valuator* val;
-		switch (active_modem->get_mode()) {
-		case MODE_FELDHELL:
-			val = sldrHellBW;
-			break;
-		case MODE_CW:
-			val = sldrCWbandwidth;
-			break;
-		default:
-			throw xmlrpc_c::fault("Operation not supported by modem", xmlrpc_c::fault::code_t(0));
-		}
-
+		Fl_Valuator* val = get_bw_val();
 		int v = (int)(val->value());
 		REQ(set_valuator, val, params.getInt(0, (int)val->minimum(), (int)val->maximum()));
 		*retval = xmlrpc_c::value_int(v);
@@ -541,18 +555,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		Fl_Valuator* val;
-		switch (active_modem->get_mode()) {
-		case MODE_FELDHELL:
-			val = sldrHellBW;
-			break;
-		case MODE_CW:
-			val = sldrCWbandwidth;
-			break;
-		default:
-			throw xmlrpc_c::fault("Operation not supported by modem", xmlrpc_c::fault::code_t(0));
-		}
-
+		Fl_Valuator* val = get_bw_val();
 		int v = (int)(val->value() + params.getInt(0));
 		REQ(set_valuator, val, v);
 		*retval = xmlrpc_c::value_int(v);
@@ -654,32 +657,25 @@ class Main_set_sb : public xmlrpc_c::method
 public:
 	Main_set_sb()
 	{
-		_signature = "s:s";
-		_help = "Sets the Sideband to USB / LSB. Returns the new value.";
+		_signature = "n:s";
+		_help = "Sets the sideband to USB or LSB.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		string s = params.getString(0);
+		if (s != "LSB" && s != "USB")
+			throw xmlrpc_c::fault("Invalid argument");
+
 		if (progdefaults.chkUSERIGCATis)
 			rigCAT_setmode(s);
 #if USE_HAMLIB
-		else if (progdefaults.chkUSEHAMLIBis) {
-			if (s == "LSB")
-				hamlib_setmode(RIG_MODE_LSB);
-			else
-				hamlib_setmode(RIG_MODE_USB);
-		}
+		else if (progdefaults.chkUSEHAMLIBis)
+			hamlib_setmode(s == "LSB" ? RIG_MODE_LSB : RIG_MODE_USB);
 #endif
-		else if (progdefaults.chkUSEXMLRPCis) {
-			if (s == "USB") {
-				wf->USB(true);
-			} else if (s == "LSB") {
-				wf->USB(false);
-			} else {
-				wf->USB(true);
-			}
-		}
-		*retval = xmlrpc_c::value_string(wf->USB() ? "USB" : "LSB");
+		else if (progdefaults.chkUSEXMLRPCis)
+			REQ(static_cast<void (waterfall::*)(bool)>(&waterfall::USB), wf, s == "USB");
+
+		*retval = xmlrpc_c::value_nil();
 	}
 };
 
@@ -1202,14 +1198,14 @@ class Log_set_call : public xmlrpc_c::method
 public:
 	Log_set_call()
 	{
-		_signature = "s:s";
+		_signature = "n:s";
 		_help = "Sets the Call field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		string s = params.getString(0);
-		inpCall->value(s.c_str());
-		*retval = xmlrpc_c::value_string(inpCall->value());
+		REQ(set_text, inpCall, params.getString(0));
+
+		*retval = xmlrpc_c::value_nil();
 	}
 };
 
@@ -1464,10 +1460,23 @@ public:
 
 // End XML-RPC interface
 
+struct rm_pred
+{
+	re_t filter;
+	bool allow;
+	rm_pred(const char* re, bool allow_)
+		: filter(re, REG_EXTENDED | REG_NOSUB), allow(allow_) { }
+	bool operator()(const methods_t::value_type& v)
+	{
+		return filter.match(v.name) ^ allow && !strstr(v.name, "fldigi.");
+	}
+};
+
 void XML_RPC_Server::add_methods(void)
 {
-	methods->clear();
-	methods->reserve(72);
+	if (methods)
+		return;
+	methods = new methods_t;
 
 	methods->push_back(rpc_method(new Fldigi_list, "fldigi.list"));
 	methods->push_back(rpc_method(new Fldigi_name, "fldigi.name"));
@@ -1558,4 +1567,9 @@ void XML_RPC_Server::add_methods(void)
 	methods->push_back(rpc_method(new Text_add_tx, "text.add_tx"));
 	methods->push_back(rpc_method(new Text_add_tx_bytes, "text.add_tx_bytes"));
 	methods->push_back(rpc_method(new Text_clear_tx, "text.clear_tx"));
+
+	if (!progdefaults.xmlrpc_deny.empty())
+		methods->remove_if(rm_pred(progdefaults.xmlrpc_deny.c_str(), false));
+	else if (!progdefaults.xmlrpc_allow.empty())
+		methods->remove_if(rm_pred(progdefaults.xmlrpc_allow.c_str(), true));
 }
