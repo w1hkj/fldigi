@@ -171,4 +171,6 @@ extern void stopMacroTimer();
 
 Fl_Color adjust_color(Fl_Color fg, Fl_Color bg);
 
+void qsy(long long rfc, long long fmid);
+
 #endif

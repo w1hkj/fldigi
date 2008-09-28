@@ -919,13 +919,8 @@ void qsy_cb(Fl_Widget *w, void *v)
                 }
         }
 
-        if (m.carrier > 0) {
-                rigCAT_set_qsy(m.rfcarrier, m.carrier);
-                rigMEM_set_qsy(m.rfcarrier, m.carrier);
-#if USE_HAMLIB
-                hamlib_set_qsy(m.rfcarrier, m.carrier);
-#endif
-        }
+        if (m.carrier > 0)
+		qsy(m.rfcarrier, m.carrier);
 	restoreFocus();
 }
 
@@ -1096,13 +1091,8 @@ void btnMem_cb(Fl_Widget *, void *menu_event)
                 m = qrg_list[elem];
                 if (active_modem != *mode_info[m.mode].modem)
                         init_modem_sync(m.mode);
-                if (m.rfcarrier && m.rfcarrier != wf->rfcarrier()) {
-                        rigCAT_set_qsy(m.rfcarrier, m.carrier);
-                        rigMEM_set_qsy(m.rfcarrier, m.carrier);
-#if USE_HAMLIB
-                        hamlib_set_qsy(m.rfcarrier, m.carrier);
-#endif
-                }
+                if (m.rfcarrier && m.rfcarrier != wf->rfcarrier())
+			qsy(m.rfcarrier, m.carrier);
                 else
                         active_modem->set_freq(m.carrier);
                 break;
