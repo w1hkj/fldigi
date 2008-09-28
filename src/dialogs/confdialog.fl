@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0108 
+version 1.0109 
 header_name {.h} 
 code_name {.cxx}
 decl {\#include <config.h>} {} 
@@ -39,7 +39,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {fldigi - config} open
-    xywh {519 158 400 250} type Double color 45 selection_color 51 align 80 visible
+    xywh {611 467 400 250} type Double color 45 selection_color 51 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 405 220} color 47 selection_color 9
@@ -354,18 +354,30 @@ progdefaults.changed = true;
             }
           }
           Fl_Group {} {
-            label History open
+            label Mouse open
             xywh {0 50 405 166} hide
           } {
             Fl_Group {} {open
               xywh {5 56 390 158} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnWaterfallHistoryDefault {
-                label {Lft/Rt Click Replays History always}
+                label {Left/Right click always replays history}
                 callback {progdefaults.WaterfallHistoryDefault = o->value();
 progdefaults.changed = true;}
-                tooltip {Disabled - Ctrl-Lft click plays history} xywh {15 66 266 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.WaterfallHistoryDefault);}
+                tooltip {Disabled - Ctrl-Lft click plays history} xywh {15 66 276 20} down_box DOWN_BOX
+              }
+              Fl_Check_Button btnWaterfallQSY {
+                label {Dragging changes frequency}
+                callback {progdefaults.WaterfallQSY = o->value();
+progdefaults.changed = true;}
+                xywh {15 96 225 20} down_box DOWN_BOX
+              }
+              Fl_Input inpWaterfallClickText {
+                label {Insert text
+on left click}
+                callback {progdefaults.WaterfallClickText = o->value();
+progdefaults.changed = true;}
+                xywh {15 126 150 40} align 8
               }
             }
           }

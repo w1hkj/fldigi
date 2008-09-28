@@ -1432,16 +1432,31 @@ static void hide_cursor(void *w)
 
 int WFdisp::handle(int event)
 {
-	if (!(event == FL_LEAVE || Fl::event_inside(this)))
+	static int pxpos, push;
+	if (!(event == FL_LEAVE || Fl::event_inside(this))) {
+		if (event == FL_RELEASE)
+			push = 0;
 		return 0;
+	}
 
 	if (trx_state != STATE_RX)
 		return 1;
 	int xpos = Fl::event_x() - x();
+	int ypos = Fl::event_y() - y();
 	int eb;
 
 	switch (event) {
 	case FL_MOVE:
+		if (progdefaults.WaterfallQSY && ypos < WFTEXT + WFSCALE) {
+			Fl::remove_timeout(hide_cursor, this);
+			if (cursor != FL_CURSOR_WE)
+				window()->cursor(cursor = FL_CURSOR_WE);
+			if (wantcursor) {
+				wantcursor = false;
+				makeMarker();
+			}
+			break;
+		}
 		if (cursor != FL_CURSOR_DEFAULT)
 			window()->cursor(cursor = FL_CURSOR_DEFAULT);
 		if (!Fl::has_timeout(hide_cursor, this))
@@ -1461,8 +1476,34 @@ int WFdisp::handle(int event)
 				if (progdefaults.WaterfallHistoryDefault)
 					bHistory = true;
 			}
-			// fall through
+			goto lrclick;
 		case FL_LEFT_MOUSE:
+			if (event == FL_PUSH) {
+				push = ypos;
+				pxpos = xpos;
+				if (!progdefaults.WaterfallClickText.empty()) {
+					if (progdefaults.WaterfallClickText.find('%') != string::npos) {
+						time_t t = time(NULL);
+						struct tm tm;
+						localtime_r(&t, &tm);
+						char buf[256];
+						strftime(buf, sizeof(buf), progdefaults.WaterfallClickText.c_str(), &tm);
+						ReceiveText->add(buf, FTextBase::CTRL);
+					}
+					else
+						ReceiveText->add(progdefaults.WaterfallClickText.c_str(), FTextBase::CTRL);
+				}
+			}
+			if (progdefaults.WaterfallQSY && push < WFTEXT + WFSCALE) {
+				long long newrfc = (pxpos - xpos) * step;
+				if (!USB())
+					newrfc = -newrfc;
+				newrfc += rfcarrier();
+				qsy(newrfc, active_modem->get_freq());
+				pxpos = xpos;
+				return 1;
+			}
+		lrclick:
 			if (Fl::event_state() & FL_CTRL) {
 				if (event == FL_DRAG)
 					break;
@@ -1502,6 +1543,7 @@ int WFdisp::handle(int event)
 			restoreFocus();
 			// fall through
 		case FL_LEFT_MOUSE:
+			push = 0;
 			oldcarrier = newcarrier;
 			break;
 		}
