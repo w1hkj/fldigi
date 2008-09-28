@@ -771,7 +771,11 @@ void setup_signal_handlers(void)
 
 	action.sa_handler = SIG_DFL;
 	// no child stopped notifications, no zombies
+#ifdef __CYGWIN__
+	action.sa_flags = SA_NOCLDSTOP;
+#else
 	action.sa_flags = SA_NOCLDSTOP | SA_NOCLDWAIT;
+#endif
 	sigaction(SIGCHLD, &action, NULL);
 	action.sa_flags = 0;
 

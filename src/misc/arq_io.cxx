@@ -47,6 +47,7 @@
 #include "threads.h"
 #include "socket.h"
 #include "debug.h"
+#include "qrunner.h"
 
 #include <FL/Fl.H>
 #include <FL/fl_ask.H>
@@ -77,11 +78,12 @@ void ParseMode(string src)
 		return;
 	}
 	for (size_t i = 0; i < NUM_MODES; ++i) {
-		if (strlen(mode_info[i].pskmail_name) > 0) 
+		if (strlen(mode_info[i].pskmail_name) > 0) {
 			if (src == mode_info[i].pskmail_name) {
-				init_modem(mode_info[i].mode);
+				REQ_SYNC(init_modem_sync, mode_info[i].mode);
 				break;
 			}
+		}
 	}
 }
 
@@ -128,7 +130,7 @@ void parse_arqtext()
 				}
 			}
 		}
-		arqtext.erase(idxCmd, idxCmdEnd - idxCmd + 8);
+		arqtext.erase(idxCmd, idxCmdEnd - idxCmd + 6);
 		if (arqtext.length() == 1 && arqtext[0] == '\n')
 			arqtext = "";
 	}
@@ -266,6 +268,7 @@ bool TLF_arqRx()
 #define MPSK_ISCMD 30
 #define MPSK_CMDEND 31
 
+
 extern void arq_run(Socket s);
 extern void arq_stop();
 
@@ -275,7 +278,8 @@ string cmdstring;
 string response;
 bool isTxChar = false;
 bool isCmdChar = false;
-bool processCmd = false;
+
+bool isPskMail = false;
 
 static pthread_t* arq_socket_thread = 0;
 ARQ_SOCKET_Server* ARQ_SOCKET_Server::inst = 0;
@@ -367,7 +371,10 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 
 void arq_run(Socket s)
 {
+	struct timeval t = { 0, 20000 };
 	arqclient = s;
+	arqclient.set_timeout(t);
+	arqclient.set_nonblocking();
 	isSocketConnected = true;
 	arqmode = true;
 }
@@ -414,17 +421,6 @@ bool Socket_arqRx()
 	
 		for (size_t i = 0; i < n; i++) {
 			cs = instr[i];
-			if (isTxChar) {
-				txstring += cs;
-				isTxChar = false;
-				continue;
-			}
-			if (isCmdChar) {
-				if (cs == MPSK_END)
-					isCmdChar = false;
-				cmdstring += cs;
-				continue;
-			}
 			if (cs == MPSK_BYTE) {
 				isTxChar = true;
 				continue;
@@ -433,8 +429,35 @@ bool Socket_arqRx()
 				isCmdChar = true;
 				continue;
 			}
+			if (isCmdChar) {
+				if (cs == MPSK_END)
+					isCmdChar = false;
+				else
+					cmdstring += cs;
+				continue;
+			}
+			if (isPskMail) {
+				txstring += cs;
+				continue;
+			}
+			if (isTxChar) {
+				txstring += cs;
+				isTxChar = false;
+				continue;
+			}
 		}
 
+		if (cmdstring.find("PSKMAIL-ON") != string::npos) {
+			isPskMail = true;
+			txstring.clear();
+//LOG_INFO (cmdstring.c_str());
+		}
+		if (cmdstring.find("PSKMAIL-OFF") != string::npos) {
+			isPskMail = false;
+			txstring.clear();
+//LOG_INFO (cmdstring.c_str());
+		}
+			
 		if (progdefaults.rsid == true) {
 			send0x06();
 			arqtext.clear();
@@ -443,15 +466,21 @@ bool Socket_arqRx()
 			return true;
 		}
 		
-		if (arqtext.empty()) {
+		if (arqtext.empty() && !txstring.empty()) {
 			arqtext = txstring;
-			pText = arqtext.begin();
-			arq_text_available = true;
-			active_modem->set_stopflag(false);
-			start_tx();
-		} else {
+			parse_arqtext();
+			if (!arqtext.empty()) {
+				if (mailserver && progdefaults.PSKmailSweetSpot)
+					active_modem->set_freq(progdefaults.PSKsweetspot);
+				pText = arqtext.begin();
+				arq_text_available = true;
+				active_modem->set_stopflag(false);
+				start_tx();
+			}
+		} else if (!txstring.empty()) {
 			arqtext.append(txstring);
 		}
+		
 		txstring.clear();
 		cmdstring.clear();
 		return true;
@@ -483,6 +512,19 @@ void WriteARQ( unsigned int data)
 #ifndef __CYGWIN__
 	WriteARQSysV(data);
 #endif
+}
+
+// following function used if the T/R button is pressed to stop a transmission
+// that is servicing the ARQ text buffer.  It allows the ARQ client to reset
+// itself properly
+
+void AbortARQ() {
+	if (arq_text_available) {
+		arqtext.clear();
+		pText = arqtext.begin();
+		arq_text_available = false;
+		WriteARQ(0x06);
+	}
 }
 
 //-----------------------------------------------------------------------------
