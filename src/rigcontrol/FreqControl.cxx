@@ -24,6 +24,14 @@
 
 #include <config.h>
 
+#include <FL/Fl_Float_Input.H>
+#include <FL/fl_draw.H>
+#include <FL/Fl_Box.H>
+
+#include <cstdlib>
+#include <cmath>
+
+#include "fl_digi.h"
 #include "qrunner.h"
 
 #include "FreqControl.h"
@@ -69,7 +77,7 @@ cFreqControl::cFreqControl(int x, int y, int w, int h, const char *lbl):
 	OFFCOLOR = FL_BLACK;
 	SELCOLOR = fl_rgb_color(100, 100, 100);
 	ILLUMCOLOR = FL_GREEN;
-	val = 0;
+	oldval = val = 0;
 	nD = 9; // nD <= MAXDIGITS
 
 	int pw = 6; // decimal width
@@ -111,6 +119,14 @@ cFreqControl::cFreqControl(int x, int y, int w, int h, const char *lbl):
 	maxVal = max * 10 - 1;
 	minVal = 0;
 	end();
+
+	finp = new Fl_Float_Input(0, 0, 1, 1);
+	finp->callback(freq_input_cb, this);
+	finp->when(FL_WHEN_CHANGED);
+	finp->hide();
+	parent()->remove(finp);
+
+	tooltip("Enter frequency or change with\nLeft/Right/Up/Down/Pg_Up/Pg_Down");
 }
 
 cFreqControl::~cFreqControl()
@@ -118,16 +134,27 @@ cFreqControl::~cFreqControl()
 	for (int i = 0; i < nD; i++) {
 		delete Digit[i];
 	}
+	delete finp;
 }
 
 
 void cFreqControl::updatevalue()
 {
 	long v = val;
-	for (int n = 0; n < nD; n++) {
-		Digit[n]->label(v == 0 ? " " : Label[v % 10]);
-		v /= 10;
+	int i;
+	if (likely(v > 0L)) {
+		for (i = 0; i < nD; i++) {
+			Digit[i]->label(v == 0 ? "" : Label[v % 10]);
+			v /= 10;
+		}
 	}
+	else {
+		for (i = 0; i < 4; i++)
+			Digit[i]->label("0");
+		for (; i < nD; i++)
+			Digit[i]->label("");
+	}
+	decbx->label(".");
 	damage();
 }
 
@@ -169,10 +196,17 @@ void cFreqControl::SetOFFCOLOR (uchar r, uchar g, uchar b)
 	damage();
 }
 
+static void blink_point(Fl_Widget* w)
+{
+	w->label(*w->label() ? "" : ".");
+	Fl::add_timeout(0.2, (Fl_Timeout_Handler)blink_point, w);
+}
+
 void cFreqControl::value(long lv)
 {
-  val = lv;
-  REQ(&cFreqControl::updatevalue, this);
+	oldval = val = lv;
+	Fl::remove_timeout((Fl_Timeout_Handler)blink_point, decbx);
+	REQ(&cFreqControl::updatevalue, this);
 }
 
 int cFreqControl::handle(int event)
@@ -180,10 +214,10 @@ int cFreqControl::handle(int event)
 	if (!Fl::event_inside(this))
 		return Fl_Group::handle(event);
 
+	int d;
 	switch (event) {
-		int d;
 	case FL_KEYBOARD:
-		switch (Fl::event_key()) {
+		switch (d = Fl::event_key()) {
 		case FL_Left:
 			d = -1;
 			break;
@@ -203,7 +237,28 @@ int cFreqControl::handle(int event)
 			d = -100;
 			break;
 		default:
-			return 1;
+			if (Fl::has_timeout((Fl_Timeout_Handler)blink_point, decbx)) {
+				if (d == FL_Escape) {
+					Fl::remove_timeout((Fl_Timeout_Handler)blink_point, decbx);
+					val = oldval;
+					updatevalue();
+					return 1;
+				}
+				else if (d == FL_Enter || d == FL_KP_Enter) { // append
+					finp->position(finp->size());
+					finp->replace(finp->position(), finp->mark(), "\n", 1);
+				}
+			}
+			else {
+				if (d == FL_Escape) {
+					window()->do_callback();
+					return 1;
+				}
+				Fl::add_timeout(0.0, (Fl_Timeout_Handler)blink_point, decbx);
+				finp->static_value("");
+				oldval = val;
+			}
+			return finp->handle(event);
 		}
 		val += d;
 		updatevalue();
@@ -227,3 +282,17 @@ int cFreqControl::handle(int event)
 	return 1;
 }
 
+void cFreqControl::freq_input_cb(Fl_Widget*, void* arg)
+{
+	cFreqControl* fc = reinterpret_cast<cFreqControl*>(arg);
+	double val = strtod(fc->finp->value(), NULL);
+	if (val >= 0.0 && val < pow(10, MAX_DIGITS - 3)) {
+		val *= 1e3;
+		fc->val = (long)val;
+		fc->updatevalue();
+		if (fc->finp->index(fc->finp->size() - 1) == '\n' && val > 0.0) {
+			Fl::remove_timeout((Fl_Timeout_Handler)blink_point, fc->decbx);
+			fc->do_callback();
+		}
+	}
+}
