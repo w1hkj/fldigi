@@ -40,17 +40,18 @@
 #include <string.h>
 
 #include <FL/Fl.H>
-#include <FL/fl_draw.H>
 #include <FL/Fl_Widget.H>
 #include <FL/Fl_Repeat_Button.H>
 #include <FL/Fl_Group.H>
-#include <FL/Fl_Box.H>
 #include <FL/Enumerations.H>
 
 #ifdef MAX_DIGITS
 #undef MAX_DIGITS
 #endif
 #define MAX_DIGITS 9
+
+class Fl_Box;
+class Fl_Float_Input;
 
 class cFreqControl : public Fl_Group {
 friend void cbSelectDigit (Fl_Widget *btn, void * nbr);
@@ -74,6 +75,7 @@ public:
 	int handle(int event);
 private:
 	Fl_Repeat_Button      		*Digit[MAX_DIGITS];
+	Fl_Float_Input			*finp;
 	static const char	 	*Label[];
 	int					mult[MAX_DIGITS];
 	Fl_Box				*decbx;
@@ -88,8 +90,9 @@ private:
 	void DecFreq(int n);
 	void IncFreq(int n);
 	int (*cbFunc)();
+	static void freq_input_cb(Fl_Widget* input, void* arg);
 protected:
-  long val;
+	long val, oldval;
 };
 
 #endif 

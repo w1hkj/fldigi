@@ -21,7 +21,21 @@ Change Log:
          arq-socket threads and avoid the socket accept/timeout loop.
       9) Removed fl_thread wrappers to direct pthread calls
       10) Added various Qrunner updates
-      
+      11) Added rig control freq entry.  Click on Frequency Control widget for
+          focus.  Enter digits in kHz.kHz.  <Enter> to use new value, <Esc> to
+          cancel.
+      12) Added qsy function.  Moved the hamlib/rigcat/etc qsy if/else block 
+          into its own function and replaced all instances of that code.
+      13) Add waterfall mouse options
+            a) Added Mouse tab to the W-fall tab(s).
+            b) Added waterfall qsy option, which works well with rigcat and 
+               hamlib (direct and rpc.rigd).
+            c) Added text field whose contents are appended to the RX window 
+               when the frequency is changed via a waterfall left click.
+               The text will be printed by strftime if it contains any 
+               % characters, so it's possible to have specify something 
+               "<=== %x %H:%M ====" for RX divider line.
+
 3.03
       1) Changes to socket server to correct shutdown process
       2) Added event logging and an event viewer

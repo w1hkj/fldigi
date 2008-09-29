@@ -190,7 +190,7 @@ void pILDT(string &s, size_t &i)
 	tm sTime;
 	time (&tmptr);
 	localtime_r(&tmptr, &sTime);
-	mystrftime(szDt, 79, "%Y-%m-%d %H:%M:%S%z", &sTime);
+	mystrftime(szDt, 79, "%Y-%m-%d %H:%M%z", &sTime);
 	s.replace( i, 6, szDt);
 }
 
@@ -201,7 +201,7 @@ void pZDT(string &s, size_t &i)
 	tm sTime;
 	time (&tmptr);
 	gmtime_r(&tmptr, &sTime);
-	mystrftime(szDt, 79, "%x %H:%M %Z", &sTime);
+	mystrftime(szDt, 79, "%x %H:%MZ", &sTime);
 	s.replace( i, 5, szDt);
 }
 
@@ -212,7 +212,7 @@ void pIZDT(string &s, size_t &i)
 	tm sTime;
 	time (&tmptr);
 	gmtime_r(&tmptr, &sTime);
-	mystrftime(szDt, 79, "%Y-%m-%d %H:%M:%SZ", &sTime);
+	mystrftime(szDt, 79, "%Y-%m-%d %H:%M%z", &sTime);
 	s.replace( i, 6, szDt);
 }
 

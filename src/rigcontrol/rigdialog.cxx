@@ -2,6 +2,7 @@
 
 #include "rigdialog.h"
 #include <config.h>
+#include <FL/Fl_Box.H>
 #include "rigsupport.h"
 
 cFreqControl *FreqDisp=(cFreqControl *)0;

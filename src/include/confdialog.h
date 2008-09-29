@@ -46,6 +46,8 @@ extern Fl_Button *btnCursorBWcolor;
 extern Fl_Button *btnCursorCenterLineColor;
 extern Fl_Button *btnBwTracksColor;
 extern Fl_Check_Button *btnWaterfallHistoryDefault;
+extern Fl_Check_Button *btnWaterfallQSY;
+extern Fl_Input *inpWaterfallClickText;
 extern Fl_Group *tabVideo;
 extern Fl_Check_Button *btnsendid;
 extern Fl_Check_Button *btnsendvideotext;

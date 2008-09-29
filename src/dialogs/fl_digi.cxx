@@ -104,6 +104,9 @@
 #include "soundconf.h"
 
 #include "htmlstrings.h"
+#if USE_XMLRPC
+#	include "xmlrpc.h"
+#endif
 #include "debug.h"
 
 Fl_Double_Window	*fl_digi_main=(Fl_Double_Window *)0;
@@ -633,7 +636,7 @@ void init_modem(trx_mode mode)
 	clear_StatusMessages();
 	progStatus.lastmode = mode;
 	
-	if (wf->xmtlock->value() == 1) {
+	if (wf->xmtlock->value() == 1 && !mailserver) {
 		wf->xmtlock->value(0);
 		wf->xmtlock->damage();
 		active_modem->set_freqlock(false);
@@ -2580,3 +2583,18 @@ Fl_Color adjust_color(Fl_Color fg, Fl_Color bg)
 
 }
 
+void qsy(long long rfc, long long fmid)
+{
+	if (progdefaults.chkUSERIGCATis)
+		REQ(rigCAT_set_qsy, rfc, fmid);
+	else if (progdefaults.chkUSEMEMMAPis)
+		REQ(rigMEM_set_qsy, rfc, fmid);
+#if USE_HAMLIB
+	else if (progdefaults.chkUSEHAMLIBis)
+		REQ(hamlib_set_qsy, rfc, fmid);
+#endif
+#if USE_XMLRPC
+	else if (progdefaults.chkUSEXMLRPCis)
+		REQ(xmlrpc_set_qsy, rfc, fmid);
+#endif
+}

@@ -694,16 +694,16 @@ public:
 	}
 };
 
-void xmlrpc_set_qsy(long long f, long long fmid)
+void xmlrpc_set_qsy(long long rfc, long long fmid)
 {
-	LOG_DEBUG("rfc = %ld, audio = %ld", f, fmid);
-	if (active_modem->freqlocked() == true) {
+	if (active_modem->freqlocked()) {
 		active_modem->set_freqlock(false);
 		active_modem->set_freq((int)fmid);
 		active_modem->set_freqlock(true);
-	} else
+	}
+	else
 		active_modem->set_freq((int)fmid);
-	wf->rfcarrier(f);
+	wf->rfcarrier(rfc);
 	wf->movetocenter();
 }
 
@@ -717,20 +717,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		double d = params.getDouble(0, 0.0);
-		long long int rfc = (long long int)d;
-		int mc = active_modem->get_freq();
-		if (progdefaults.chkUSEXMLRPCis)
-			xmlrpc_set_qsy(rfc, mc);
-		else if (progdefaults.chkUSERIGCATis)
-			rigCAT_set_qsy(rfc, mc);
-		else if (progdefaults.chkUSEMEMMAPis)
-			rigMEM_set_qsy(rfc, mc);
-#if USE_HAMLIB
-		else if (progdefaults.chkUSEHAMLIBis)
-			hamlib_set_qsy(rfc, mc);
-#endif
-		*retval = xmlrpc_c::value_double(d);
+		double rfc = wf->rfcarrier();
+		qsy(params.getDouble(0, 0.0), active_modem->get_freq());
+		*retval = xmlrpc_c::value_double(rfc);
 	}
 };
 
@@ -745,21 +734,10 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		double rfc = wf->rfcarrier() + params.getDouble(0);
-		int mc = active_modem->get_freq();
-		if (progdefaults.chkUSEXMLRPCis)
-			xmlrpc_set_qsy((long long int)rfc, mc);
-		if (progdefaults.chkUSERIGCATis)
-			rigCAT_set_qsy((long long int)rfc, mc);
-		if (progdefaults.chkUSEMEMMAPis)
-			rigMEM_set_qsy((long long int)rfc, mc);
-#if USE_HAMLIB
-		if (progdefaults.chkUSEHAMLIBis)
-			hamlib_set_qsy((long long int)rfc, mc);
-#endif
+		qsy(rfc, active_modem->get_freq());
 		*retval = xmlrpc_c::value_double(rfc);
 	}
 };
-
 
 // =============================================================================
 

@@ -106,6 +106,11 @@ void parse_arqtext()
 			PskMailLogName += "gMFSK.log";
 			Maillogfile = new cLogfile(PskMailLogName.c_str());
 			Maillogfile->log_to_file_start();
+			wf->xmtlock->value(1);
+			wf->xmtlock->damage();
+			if (progdefaults.PSKmailSweetSpot)
+				active_modem->set_freq(progdefaults.PSKsweetspot);
+			active_modem->set_freqlock(true);
 		} else if (strCmdText == "client" && mailclient == false && mailserver == false) {
 			mailclient = true;
 			mailserver = false;
@@ -113,6 +118,9 @@ void parse_arqtext()
 			PskMailLogName += "gMFSK.log";
 			Maillogfile = new cLogfile(PskMailLogName.c_str());
 			Maillogfile->log_to_file_start();
+			wf->xmtlock->value(0);
+			wf->xmtlock->damage();
+			active_modem->set_freqlock(false);
 		} else if (strCmdText == "normal") {
 			mailserver = false;
 			mailclient = false;
@@ -120,6 +128,9 @@ void parse_arqtext()
 				delete Maillogfile;
 				Maillogfile = 0;
 			}
+			wf->xmtlock->value(0);
+			wf->xmtlock->damage();
+			active_modem->set_freqlock(false);
 		} else {
 			if ((idxSubCmd = strCmdText.find("<mode>")) != string::npos) {
 				idxSubCmdEnd = strCmdText.find("</mode>");

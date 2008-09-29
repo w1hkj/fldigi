@@ -139,11 +139,15 @@ bool modem::freqlocked()
 
 double modem::get_txfreq(void)
 {
+	if (mailserver && progdefaults.PSKmailSweetSpot)
+		return progdefaults.PSKsweetspot;
 	return tx_frequency;
 }
 
 double modem::get_txfreq_woffset(void)
 {
+	if (mailserver && progdefaults.PSKmailSweetSpot)
+		return (progdefaults.PSKsweetspot - progdefaults.TxOffset);
 	return (tx_frequency - progdefaults.TxOffset);
 }
 
