@@ -1392,8 +1392,8 @@ progdefaults.changed = true;
 Fl_Check_Button *btnRTTY_USB=(Fl_Check_Button *)0;
 
 static void cb_btnRTTY_USB(Fl_Check_Button* o, void*) {
-  progdefaults.RTTY_USB = o->value();
-progdefaults.changed = true;
+  //progdefaults.RTTY_USB = o->value();
+//progdefaults.changed = true;
 }
 
 static void cb_btnRTTYafc(Fl_Round_Button*, void*) {
@@ -2742,7 +2742,8 @@ l with your sound hardware.");
               btnRTTY_USB->down_box(FL_DOWN_BOX);
               btnRTTY_USB->callback((Fl_Callback*)cb_btnRTTY_USB);
               btnRTTY_USB->align(FL_ALIGN_LEFT);
-              o->value(progdefaults.RTTY_USB);
+              btnRTTY_USB->hide();
+              //o->value(progdefaults.RTTY_USB);
             } // Fl_Check_Button* btnRTTY_USB
             { Fl_Group* o = new Fl_Group(135, 60, 130, 60, "AFC");
               o->box(FL_ENGRAVED_FRAME);

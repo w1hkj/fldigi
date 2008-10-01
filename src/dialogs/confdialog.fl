@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0109 
+version 1.0108 
 header_name {.h} 
 code_name {.cxx}
 decl {\#include <config.h>} {} 
@@ -1642,10 +1642,10 @@ progdefaults.changed = true;}
             }
             Fl_Check_Button btnRTTY_USB {
               label {RTTY is USB}
-              callback {progdefaults.RTTY_USB = o->value();
-progdefaults.changed = true;}
-              xywh {235 185 22 22} down_box DOWN_BOX align 4
-              code0 {o->value(progdefaults.RTTY_USB);}
+              callback {//progdefaults.RTTY_USB = o->value();
+//progdefaults.changed = true;}
+              xywh {235 185 22 22} down_box DOWN_BOX align 4 hide
+              code0 {//o->value(progdefaults.RTTY_USB);}
             }
             Fl_Group {} {
               label AFC open

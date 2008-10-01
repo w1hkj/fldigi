@@ -33,8 +33,10 @@ Change Log:
             c) Added text field whose contents are appended to the RX window 
                when the frequency is changed via a waterfall left click.
                The text will be printed by strftime if it contains any 
-               % characters, so it's possible to have specify something 
-               "<=== %x %H:%M ====" for RX divider line.
+               % characters, so it's possible to specify something like
+               "<=== %x %H:%M ====>" for the RX divider line.
+      14) Deprecated the "rtty is USB" configuration item.  fldigi adjusts
+          all tone inversion sensitive modes for USB / LSB operation.
 
 3.03
       1) Changes to socket server to correct shutdown process

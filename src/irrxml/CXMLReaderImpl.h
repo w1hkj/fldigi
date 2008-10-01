@@ -257,7 +257,8 @@ private:
 	{
 		// check if text is more than 2 characters, and if not, check if there is 
 		// only white space, so that this text won't be reported
-		if (end - start < 3)
+/*
+ 		if (end - start < 3)
 		{
 			char_type* p = start;
 			for(; p != end; ++p)
@@ -267,7 +268,7 @@ private:
 			if (p == end)
 				return false;
 		}
-
+*/
 		// set current text to the parsed text, and replace xml special characters
 		core::string<char_type> s(start, (int)(end - start));
 		NodeName = replaceSpecialCharacters(s);
@@ -541,7 +542,7 @@ private:
 			pos = origstr.findNext(L'&', pos);		
 		}
 
-		if (oldPos < origstr.size()-1)
+		if (oldPos < origstr.size())
 			newstr.append(origstr.subString(oldPos, origstr.size()-oldPos));
 
 		return newstr;
