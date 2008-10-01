@@ -491,7 +491,7 @@ int rtty::rx_process(const double *buf, int len)
 //				if (!progdefaults.RTTY_USB)
 //					bit = !bit;
 	
-				rxflag = rx (reverse ? bit : !bit);
+				rxflag = rx (reverse ? !bit : bit);
 
 				if (rxflag == 2) {
 					if ((metric > progStatus.sldrSquelchValue && progStatus.sqlonoff) || !progStatus.sqlonoff) {
