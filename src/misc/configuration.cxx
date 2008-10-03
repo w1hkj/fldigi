@@ -217,6 +217,7 @@ configuration progdefaults = {
 	false,			// bool	useTimer;
 	0,				// int		macronumber;
 	0,				// int		timeout;
+	0,				// bool		UseLastMacro;
 	
 	"",			// string	MXdevice
 	false,			// bool		MicIn;
@@ -330,7 +331,7 @@ enum TAG { \
 	AUDIOIO, OSSDEVICE, PADEVICE, PORTINDEVICE, PORTININDEX, PORTOUTDEVICE, PORTOUTINDEX, PULSESERVER,
 	SAMPLERATE, INSAMPLERATE, OUTSAMPLERATE, SAMPLECONVERTER, RXCORR, TXCORR, TXOFFSET,
 	USELEADINGZEROS, CONTESTSTART, CONTESTDIGITS,
-	USETIMER, MACRONUMBER, TIMEOUT,
+	USETIMER, MACRONUMBER, TIMEOUT, USELASTMACRO,
 	MXDEVICE, 
 	PCMVOLUME,
 	MICIN, LINEIN, ENABLEMIXER, MUTEINPUT,
@@ -562,6 +563,7 @@ void configuration::writeDefaultsXML()
 	writeXMLbool(f, "USETIMER", useTimer);
 	writeXMLint(f, "MACRONUMBER", macronumber);
 	writeXMLint(f, "TIMEOUT", timeout);	
+	writeXMLbool(f, "USELASTMACRO", UseLastMacro);
 	writeXMLstr(f, "MXDEVICE", MXdevice);
 	writeXMLdbl(f, "PCMVOLUME", PCMvolume);
 	writeXMLbool(f, "MICIN", MicIn);
@@ -1036,6 +1038,9 @@ bool configuration::readDefaultsXML()
 					case TIMEOUT :
 						timeout = atoi(getstring(xml).c_str());
 						break;
+					case USELASTMACRO :
+						UseLastMacro = atoi(getstring(xml).c_str());
+						break;
 					case MXDEVICE :
 						MXdevice = getstring(xml);
 						break;
@@ -1331,6 +1336,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("USETIMER", nodeName)) 	tag = USETIMER;
 				else if (!strcmp("MACRONUMBER", nodeName)) 	tag = MACRONUMBER;
 				else if (!strcmp("TIMEOUT", nodeName)) 	tag = TIMEOUT;
+				else if (!strcmp("USELASTMACRO", nodeName)) 	tag = USELASTMACRO;
 				else if (!strcmp("MXDEVICE", nodeName)) 	tag = MXDEVICE;
 				else if (!strcmp("PCMVOLUME", nodeName)) 	tag = PCMVOLUME;
 				else if (!strcmp("MICIN", nodeName)) 	tag = MICIN;

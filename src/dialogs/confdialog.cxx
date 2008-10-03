@@ -853,6 +853,45 @@ progdefaults.changed = true;
 
 Fl_Group *tabMisc=(Fl_Group *)0;
 
+Fl_Tabs *tabsMisc=(Fl_Tabs *)0;
+
+Fl_Group *tabCPUspeed=(Fl_Group *)0;
+
+Fl_Check_Button *chkSlowCpu=(Fl_Check_Button *)0;
+
+static void cb_chkSlowCpu(Fl_Check_Button* o, void*) {
+  progdefaults.slowcpu = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Group *tabMacros=(Fl_Group *)0;
+
+Fl_Check_Button *btnUseLastMacro=(Fl_Check_Button *)0;
+
+static void cb_btnUseLastMacro(Fl_Check_Button* o, void*) {
+  progdefaults.UseLastMacro = o->value();
+update_main_title();
+progdefaults.changed = true;
+}
+
+Fl_Group *tabRSid=(Fl_Group *)0;
+
+Fl_Check_Button *chkTransmitRSid=(Fl_Check_Button *)0;
+
+static void cb_chkTransmitRSid(Fl_Check_Button* o, void*) {
+  progdefaults.TransmitRSid = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *chkRSidWideSearch=(Fl_Check_Button *)0;
+
+static void cb_chkRSidWideSearch(Fl_Check_Button* o, void*) {
+  progdefaults.rsidWideSearch=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Group *tabSweetSpot=(Fl_Group *)0;
+
 Fl_Value_Input *valCWsweetspot=(Fl_Value_Input *)0;
 
 static void cb_valCWsweetspot(Fl_Value_Input* o, void*) {
@@ -878,27 +917,6 @@ Fl_Check_Button *btnStartAtSweetSpot=(Fl_Check_Button *)0;
 
 static void cb_btnStartAtSweetSpot(Fl_Check_Button* o, void*) {
   progdefaults.StartAtSweetSpot = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *chkTransmitRSid=(Fl_Check_Button *)0;
-
-static void cb_chkTransmitRSid(Fl_Check_Button* o, void*) {
-  progdefaults.TransmitRSid = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *chkRSidWideSearch=(Fl_Check_Button *)0;
-
-static void cb_chkRSidWideSearch(Fl_Check_Button* o, void*) {
-  progdefaults.rsidWideSearch=o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *chkSlowCpu=(Fl_Check_Button *)0;
-
-static void cb_chkSlowCpu(Fl_Check_Button* o, void*) {
-  progdefaults.slowcpu = o->value();
 progdefaults.changed = true;
 }
 
@@ -1389,13 +1407,6 @@ static void cb_cntrAUTOCRLF(Fl_Counter* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *btnRTTY_USB=(Fl_Check_Button *)0;
-
-static void cb_btnRTTY_USB(Fl_Check_Button* o, void*) {
-  //progdefaults.RTTY_USB = o->value();
-//progdefaults.changed = true;
-}
-
 static void cb_btnRTTYafc(Fl_Round_Button*, void*) {
   progdefaults.rtty_afcspeed=0;
 progdefaults.changed = true;
@@ -1463,12 +1474,12 @@ static const char szStopBits[] = "1|1.5|2";
 static const char szOliviaTones[] = "2|4|8|16|32|64|128|256";
 static const char szOliviaBandwidth[] = "125|250|500|1000|2000";
 static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600|115200|230400|460800";
-  { Fl_Double_Window* o = new Fl_Double_Window(400, 250, "fldigi - config");
+  { Fl_Double_Window* o = new Fl_Double_Window(400, 255, "fldigi - config");
     w = o;
     o->color(FL_DARK2);
     o->selection_color((Fl_Color)51);
     o->align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE);
-    { tabsConfigure = new Fl_Tabs(0, 0, 405, 220);
+    { tabsConfigure = new Fl_Tabs(0, 0, 405, 225);
       tabsConfigure->color(FL_DARK1);
       tabsConfigure->selection_color((Fl_Color)9);
       { tabOperator = new Fl_Group(0, 25, 400, 195, "Oper");
@@ -2136,71 +2147,98 @@ l with your sound hardware.");
         } // Fl_Tabs* tabsSoundCard
         tabSoundCard->end();
       } // Fl_Group* tabSoundCard
-      { tabMisc = new Fl_Group(0, 25, 400, 195, "Misc");
+      { tabMisc = new Fl_Group(0, 25, 405, 200, "Misc");
         tabMisc->color((Fl_Color)51);
         tabMisc->selection_color((Fl_Color)51);
         tabMisc->hide();
-        { Fl_Group* o = new Fl_Group(5, 35, 390, 90, "Sweet Spot");
-          o->box(FL_ENGRAVED_FRAME);
-          o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-          { Fl_Value_Input* o = valCWsweetspot = new Fl_Value_Input(50, 59, 65, 20, "CW");
-            valCWsweetspot->minimum(200);
-            valCWsweetspot->maximum(4000);
-            valCWsweetspot->step(1);
-            valCWsweetspot->value(1000);
-            valCWsweetspot->callback((Fl_Callback*)cb_valCWsweetspot);
-            o->value(progdefaults.CWsweetspot);
-          } // Fl_Value_Input* valCWsweetspot
-          { Fl_Value_Input* o = valRTTYsweetspot = new Fl_Value_Input(182, 59, 65, 20, "RTTY");
-            valRTTYsweetspot->minimum(200);
-            valRTTYsweetspot->maximum(4000);
-            valRTTYsweetspot->step(1);
-            valRTTYsweetspot->value(1000);
-            valRTTYsweetspot->callback((Fl_Callback*)cb_valRTTYsweetspot);
-            o->value(progdefaults.RTTYsweetspot);
-          } // Fl_Value_Input* valRTTYsweetspot
-          { Fl_Value_Input* o = valPSKsweetspot = new Fl_Value_Input(315, 59, 65, 20, "PSK etal");
-            valPSKsweetspot->minimum(200);
-            valPSKsweetspot->maximum(4000);
-            valPSKsweetspot->step(1);
-            valPSKsweetspot->value(1000);
-            valPSKsweetspot->callback((Fl_Callback*)cb_valPSKsweetspot);
-            o->value(progdefaults.PSKsweetspot);
-          } // Fl_Value_Input* valPSKsweetspot
-          { Fl_Check_Button* o = btnStartAtSweetSpot = new Fl_Check_Button(49, 88, 246, 25, "Start New Modem at Sweet Spot");
-            btnStartAtSweetSpot->down_box(FL_DOWN_BOX);
-            btnStartAtSweetSpot->value(1);
-            btnStartAtSweetSpot->callback((Fl_Callback*)cb_btnStartAtSweetSpot);
-            o->value(progdefaults.StartAtSweetSpot);
-          } // Fl_Check_Button* btnStartAtSweetSpot
-          o->end();
-        } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(5, 125, 390, 45, "RSid");
-          o->box(FL_ENGRAVED_FRAME);
-          o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-          { Fl_Check_Button* o = chkTransmitRSid = new Fl_Check_Button(49, 138, 119, 20, "Transmit RSid");
-            chkTransmitRSid->tooltip("Transmit Reed Solomon ID");
-            chkTransmitRSid->down_box(FL_DOWN_BOX);
-            chkTransmitRSid->callback((Fl_Callback*)cb_chkTransmitRSid);
-            o->value(progdefaults.TransmitRSid);
-          } // Fl_Check_Button* chkTransmitRSid
-          { Fl_Check_Button* o = chkRSidWideSearch = new Fl_Check_Button(188, 140, 85, 15, "Wide Search Detector");
-            chkRSidWideSearch->down_box(FL_DOWN_BOX);
-            chkRSidWideSearch->callback((Fl_Callback*)cb_chkRSidWideSearch);
-            o->value(progdefaults.rsidWideSearch);
-          } // Fl_Check_Button* chkRSidWideSearch
-          o->end();
-        } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(5, 172, 390, 43, "CPU speed");
-          o->box(FL_ENGRAVED_FRAME);
-          o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-          { Fl_Check_Button* o = chkSlowCpu = new Fl_Check_Button(110, 182, 89, 20, "Slow cpu");
-            chkSlowCpu->down_box(FL_DOWN_BOX);
-            chkSlowCpu->callback((Fl_Callback*)cb_chkSlowCpu);
-            o->value(progdefaults.slowcpu);
-          } // Fl_Check_Button* chkSlowCpu
-          o->end();
-        } // Fl_Group* o
+        { tabsMisc = new Fl_Tabs(0, 25, 400, 195);
+          { tabCPUspeed = new Fl_Group(0, 50, 400, 170, "CPU speed");
+            tabCPUspeed->hide();
+            { Fl_Group* o = new Fl_Group(5, 62, 390, 43);
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { Fl_Check_Button* o = chkSlowCpu = new Fl_Check_Button(110, 72, 89, 20, "Slow cpu");
+                chkSlowCpu->down_box(FL_DOWN_BOX);
+                chkSlowCpu->callback((Fl_Callback*)cb_chkSlowCpu);
+                o->value(progdefaults.slowcpu);
+              } // Fl_Check_Button* chkSlowCpu
+              o->end();
+            } // Fl_Group* o
+            tabCPUspeed->end();
+          } // Fl_Group* tabCPUspeed
+          { tabMacros = new Fl_Group(0, 50, 400, 170, "Macros");
+            { Fl_Group* o = new Fl_Group(5, 55, 390, 49);
+              o->box(FL_ENGRAVED_FRAME);
+              { Fl_Check_Button* o = btnUseLastMacro = new Fl_Check_Button(30, 70, 274, 15, "load last used Macro set on startup");
+                btnUseLastMacro->down_box(FL_DOWN_BOX);
+                btnUseLastMacro->callback((Fl_Callback*)cb_btnUseLastMacro);
+                o->value(progdefaults.UseLastMacro);
+              } // Fl_Check_Button* btnUseLastMacro
+              o->end();
+            } // Fl_Group* o
+            tabMacros->end();
+          } // Fl_Group* tabMacros
+          { tabRSid = new Fl_Group(0, 50, 400, 170, "RSid");
+            tabRSid->hide();
+            { Fl_Group* o = new Fl_Group(5, 65, 390, 45);
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { Fl_Check_Button* o = chkTransmitRSid = new Fl_Check_Button(49, 78, 119, 20, "Transmit RSid");
+                chkTransmitRSid->tooltip("Transmit Reed Solomon ID");
+                chkTransmitRSid->down_box(FL_DOWN_BOX);
+                chkTransmitRSid->callback((Fl_Callback*)cb_chkTransmitRSid);
+                o->value(progdefaults.TransmitRSid);
+              } // Fl_Check_Button* chkTransmitRSid
+              { Fl_Check_Button* o = chkRSidWideSearch = new Fl_Check_Button(188, 80, 85, 15, "Wide Search Detector");
+                chkRSidWideSearch->down_box(FL_DOWN_BOX);
+                chkRSidWideSearch->callback((Fl_Callback*)cb_chkRSidWideSearch);
+                o->value(progdefaults.rsidWideSearch);
+              } // Fl_Check_Button* chkRSidWideSearch
+              o->end();
+            } // Fl_Group* o
+            tabRSid->end();
+          } // Fl_Group* tabRSid
+          { tabSweetSpot = new Fl_Group(0, 50, 400, 170, "Sweet Spot");
+            tabSweetSpot->hide();
+            { Fl_Group* o = new Fl_Group(5, 60, 390, 75);
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { Fl_Value_Input* o = valCWsweetspot = new Fl_Value_Input(50, 71, 65, 20, "CW");
+                valCWsweetspot->minimum(200);
+                valCWsweetspot->maximum(4000);
+                valCWsweetspot->step(1);
+                valCWsweetspot->value(1000);
+                valCWsweetspot->callback((Fl_Callback*)cb_valCWsweetspot);
+                o->value(progdefaults.CWsweetspot);
+              } // Fl_Value_Input* valCWsweetspot
+              { Fl_Value_Input* o = valRTTYsweetspot = new Fl_Value_Input(182, 71, 65, 20, "RTTY");
+                valRTTYsweetspot->minimum(200);
+                valRTTYsweetspot->maximum(4000);
+                valRTTYsweetspot->step(1);
+                valRTTYsweetspot->value(1000);
+                valRTTYsweetspot->callback((Fl_Callback*)cb_valRTTYsweetspot);
+                o->value(progdefaults.RTTYsweetspot);
+              } // Fl_Value_Input* valRTTYsweetspot
+              { Fl_Value_Input* o = valPSKsweetspot = new Fl_Value_Input(315, 71, 65, 20, "PSK etal");
+                valPSKsweetspot->minimum(200);
+                valPSKsweetspot->maximum(4000);
+                valPSKsweetspot->step(1);
+                valPSKsweetspot->value(1000);
+                valPSKsweetspot->callback((Fl_Callback*)cb_valPSKsweetspot);
+                o->value(progdefaults.PSKsweetspot);
+              } // Fl_Value_Input* valPSKsweetspot
+              { Fl_Check_Button* o = btnStartAtSweetSpot = new Fl_Check_Button(49, 100, 246, 25, "Start New Modem at Sweet Spot");
+                btnStartAtSweetSpot->down_box(FL_DOWN_BOX);
+                btnStartAtSweetSpot->value(1);
+                btnStartAtSweetSpot->callback((Fl_Callback*)cb_btnStartAtSweetSpot);
+                o->value(progdefaults.StartAtSweetSpot);
+              } // Fl_Check_Button* btnStartAtSweetSpot
+              o->end();
+            } // Fl_Group* o
+            tabSweetSpot->end();
+          } // Fl_Group* tabSweetSpot
+          tabsMisc->end();
+        } // Fl_Tabs* tabsMisc
         tabMisc->end();
       } // Fl_Group* tabMisc
       { tabModems = new Fl_Group(0, 25, 401, 195, "Modem");
@@ -2738,13 +2776,6 @@ l with your sound hardware.");
               cntrAUTOCRLF->callback((Fl_Callback*)cb_cntrAUTOCRLF);
               cntrAUTOCRLF->align(FL_ALIGN_LEFT);
             } // Fl_Counter* cntrAUTOCRLF
-            { Fl_Check_Button* o = btnRTTY_USB = new Fl_Check_Button(235, 185, 22, 22, "RTTY is USB");
-              btnRTTY_USB->down_box(FL_DOWN_BOX);
-              btnRTTY_USB->callback((Fl_Callback*)cb_btnRTTY_USB);
-              btnRTTY_USB->align(FL_ALIGN_LEFT);
-              btnRTTY_USB->hide();
-              //o->value(progdefaults.RTTY_USB);
-            } // Fl_Check_Button* btnRTTY_USB
             { Fl_Group* o = new Fl_Group(135, 60, 130, 60, "AFC");
               o->box(FL_ENGRAVED_FRAME);
               o->color((Fl_Color)51);
@@ -2808,10 +2839,10 @@ l with your sound hardware.");
       } // Fl_Group* tabModems
       tabsConfigure->end();
     } // Fl_Tabs* tabsConfigure
-    { btnCloseConfig = new Fl_Return_Button(285, 222, 100, 25, "Close");
+    { btnCloseConfig = new Fl_Return_Button(285, 228, 100, 25, "Close");
       btnCloseConfig->callback((Fl_Callback*)cb_btnCloseConfig);
     } // Fl_Return_Button* btnCloseConfig
-    { btnSaveConfig = new Fl_Button(15, 222, 100, 25, "Save Config");
+    { btnSaveConfig = new Fl_Button(15, 228, 100, 25, "Save Config");
       btnSaveConfig->callback((Fl_Callback*)cb_btnSaveConfig);
     } // Fl_Button* btnSaveConfig
     o->end();

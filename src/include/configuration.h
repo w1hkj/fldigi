@@ -180,6 +180,7 @@ struct configuration {
 	bool	useTimer;
 	int		macronumber;
 	int		timeout;
+	bool	UseLastMacro;
 	
 // Mixer configuration
 	string	MXdevice;
