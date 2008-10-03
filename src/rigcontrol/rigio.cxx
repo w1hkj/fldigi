@@ -52,7 +52,8 @@ static string 			sRigMode = "";
 static long long		llFreq = 0;
 
 static bool nonCATrig = false;
-long long  noCATfreq = 0L;
+static bool noXMLfile = false;
+long long  noCATfreq = 3580000L;
 string noCATmode = "USB";
 string noCATwidth = "";
 
@@ -355,7 +356,7 @@ long long rigCAT_getfreq()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 
-	if (nonCATrig == true) {
+	if (nonCATrig == true || noXMLfile) {
 		return noCATfreq;
 	}
 	
@@ -440,6 +441,11 @@ void rigCAT_setfreq(long long f)
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 
+	if (noXMLfile) {
+		noCATfreq = f;
+		return;
+	}
+	
 	LOG_DEBUG("set frequency %ld", f);
 
 	itrCmd = commands.begin();
@@ -489,10 +495,10 @@ string rigCAT_getmode()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
-	LOG_DEBUG("get mode");
-
-	if (nonCATrig == true) 
+	if (nonCATrig == true || noXMLfile) 
 		return noCATmode;
+
+	LOG_DEBUG("get mode");
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -588,6 +594,11 @@ void rigCAT_setmode(const string& md)
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
+	if (noXMLfile) {
+		noCATmode = md;
+		return;
+	}
+	
 	LOG_DEBUG("set mode %s", md.c_str());
 
 	itrCmd = commands.begin();
@@ -652,7 +663,7 @@ string rigCAT_getwidth()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 
-	if (nonCATrig == true) 
+	if (nonCATrig == true || noXMLfile) 
 		return noCATwidth;
 	
 	LOG_DEBUG("get width");
@@ -753,6 +764,11 @@ void rigCAT_setwidth(const string& w)
 	
 	LOG_DEBUG("set width");
 
+	if (noXMLfile) {
+		noCATwidth = w;
+		return;
+	}
+	
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
 		if ((*itrCmd).SYMBOL == "SETBW")
@@ -899,6 +915,9 @@ void rigCAT_sendINIT()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
+	if (noXMLfile)
+		return;
+		
 	LOG_DEBUG("INIT rig");
 
 	itrCmd = commands.begin();
@@ -941,34 +960,40 @@ void rigCAT_sendINIT()
 
 bool rigCAT_init()
 {
-	
 	if (rigCAT_open == true) {
 		LOG_ERROR("RigCAT already open file present");
 		return false;
 	}
-
+	
+	noXMLfile = false;
 	if (readRigXML() == false) {
-		LOG_ERROR("No rig.xml file present");
-		return false;
+		LOG_DEBUG("No rig.xml file present");
+		noXMLfile = true;
 	}
 
-	if (rigio.OpenPort() == false) {
-		LOG_ERROR("Cannot open serial port %s", rigio.Device().c_str());
-		return false;
+	if (!noXMLfile) {	
+		if (rigio.OpenPort() == false) {
+			LOG_ERROR("Cannot open serial port %s", rigio.Device().c_str());
+			return false;
+		}
+		llFreq = 0;
+		sRigMode = "";
+		sRigWidth = "";
+	
+		nonCATrig = false;
+	
+		if (rigCAT_getfreq() == -1) { // will set nonCATrig to true if getfreq not spec'd
+			LOG_ERROR("Xcvr Freq request not answered");
+			rigio.ClosePort();
+			return false;
+		}
+	
+		rigCAT_sendINIT();
+	} else {
+		llFreq = 0;
+		sRigMode = "";
+		sRigWidth = "";
 	}
-	llFreq = 0;
-	sRigMode = "";
-	sRigWidth = "";
-	
-	nonCATrig = false;
-	
-	if (rigCAT_getfreq() == -1) {
-		LOG_ERROR("Xcvr Freq request not answered");
-		rigio.ClosePort();
-		return false;
-	}
-	
-	rigCAT_sendINIT();
 	
 	rigCAT_bypass = false;
 	rigCAT_exit = false;
@@ -979,7 +1004,10 @@ bool rigCAT_init()
 		return false;
 	} 
 
-	init_Xml_RigDialog();
+	if (!noXMLfile)
+		init_Xml_RigDialog();
+	else
+		init_NoRig_RigDialog();
 
 	rigCAT_open = true;
 	return true;
@@ -1050,6 +1078,11 @@ void rigCAT_set_qsy(long long f, long long fmid)
 
 bool ModeIsLSB(const string& s)
 {
+	if (noXMLfile) {
+		if (s == "LSB")
+			return true;
+		return false;
+	}
 	list<string>::iterator pM = LSBmodes.begin();
 	while (pM != LSBmodes.end() ) {
 		if (*pM == s)

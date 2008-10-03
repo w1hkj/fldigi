@@ -27,6 +27,8 @@
 
 #include "globals.h"
 
+#include "debug.h"
+
 using namespace std;
 
 Fl_Double_Window *rigcontrol = (Fl_Double_Window *)0;
@@ -349,6 +351,18 @@ bool init_Xml_RigDialog()
 	buildlist();
 	if (windowTitle.length() > 0)
 		rigcontrol->label(windowTitle.c_str());
+	return true;
+}
+
+bool init_NoRig_RigDialog()
+{
+	opBW->hide();
+	opMODE->clear();
+	opMODE->add("LSB");
+	opMODE->add("USB");
+	clearList();
+	buildlist();
+	rigcontrol->label("No rig.xml");
 	return true;
 }
 

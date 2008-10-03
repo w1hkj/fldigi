@@ -60,7 +60,7 @@ public:
 	int  ReadBuffer (unsigned char *b, int nbr);
 	int  WriteBuffer(unsigned char *str, int nbr);
 	void FlushBuffer();
-
+	
 	
 private:
 //Members

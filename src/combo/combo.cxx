@@ -1,6 +1,7 @@
 #include <config.h>
 
 #include "combo.h"
+#include "debug.h"
 
 void popbrwsr_cb (Fl_Widget *v, long d);
 
@@ -8,7 +9,7 @@ Fl_PopBrowser::Fl_PopBrowser (int X, int Y, int W, int H, retvals R)
  : Fl_Window (X, Y, W, H, "")
 {
   Rvals = R;
-  hRow  = H-9;
+  hRow  = H;
   wRow  = W;
   clear_border();
   box(FL_BORDER_BOX);
@@ -50,7 +51,8 @@ void Fl_PopBrowser::sort()
 void Fl_PopBrowser::popshow (int x, int y)
 {
   int nRows = popbrwsr->size();
-  int height = (nRows > 10 ? 10 : nRows)*hRow + 4;
+  int height = (nRows > 10 ? 10 : nRows)*hRow;// + 4;
+
   if (nRows == 0) return;
   popbrwsr->resize (0, 0, wRow, height);
   resize (x, y, wRow, height);
@@ -166,12 +168,12 @@ void btnComboBox_cb (Fl_Widget *v, void *d)
 Fl_ComboBox::Fl_ComboBox (int X,int Y,int W,int H, const char *L)
  : Fl_Group (X, Y, W, H, L)
 {
-  width = W; height = H;
+  width = W; height = H - 4;
   Btn = new Fl_Button (X + W - 18, Y + 1, 18, H - 2);
   (new Fl_Pixmap (brws_12))->label (Btn);
   Btn->callback ((Fl_Callback *)btnComboBox_cb, 0);
-//  Output = new Fl_Output (X, Y, W-18, H);
   Output = new Fl_Input (X, Y, W-18, H);
+
   Brwsr = 0;
   datalist = new datambr *[FL_COMBO_LIST_INCR];
   maxsize = FL_COMBO_LIST_INCR;
