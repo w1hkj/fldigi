@@ -7,24 +7,34 @@
 //-----------------------------------------------------------------------------
 
 #include <config.h>
+
+#include <cstdio>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <sys/time.h>
+
+#include <memory>
 #include <string>
-#include <sstream>
 
 #include "serial.h"
-#include "re.h"
 #include "debug.h"
 
+using namespace std;
+
 #ifdef __CYGWIN__
+#include <sstream>
+#include "re.h"
 // convert COMx to /dev/ttySy with y = x - 1
-static void adjust_port(string& port)
+void adjust_port(string& port)
 {
 	re_t re("com([0-9]+)", REG_EXTENDED | REG_ICASE);
-	const char* s;
-	if (!(re.match(port.c_str()) && (s = re.submatch(1))))
+	if (!(re.match(port.c_str()) && re.nsub() == 2))
 		return;
 	stringstream ss;
 	int n;
-	ss << s;
+	ss << re.submatch(1);
 	ss >> n;
 	if (--n < 0)
 		n = 0;
