@@ -108,6 +108,8 @@
 #	include "xmlrpc.h"
 #endif
 #include "debug.h"
+#include "re.h"
+#include "network.h"
 
 Fl_Double_Window	*fl_digi_main=(Fl_Double_Window *)0;
 Fl_Help_Dialog 		*help_dialog = (Fl_Help_Dialog *)0;
@@ -855,13 +857,6 @@ void cb_mnuSaveConfig(Fl_Menu_ *, void *) {
 	restoreFocus();
 }
 
-void cb_mnuAbout(Fl_Widget*, void*)
-{
-	fl_message ("%s @@W1HKJ\n\n%s\n\n%s\n\nVersion %s", PACKAGE_NAME,
-		    PACKAGE_BUGREPORT, PACKAGE_HOME, PACKAGE_VERSION);
-	restoreFocus();
-}
-
 void cb_mnuVisitURL(Fl_Widget*, void* arg)
 {
 	const char* url = reinterpret_cast<const char *>(arg);
@@ -922,6 +917,57 @@ void cb_mnuBeginnersURL(Fl_Widget*, void*)
 #else
 	cb_mnuVisitURL(NULL, (void *)deffname.c_str());
 #endif
+}
+
+void cb_mnuCheckUpdate(Fl_Widget* w, void*)
+{
+	struct {
+		const char* url;
+		const char* re;
+		string version_str;
+		long version;
+	} sites[] = {
+		{ PACKAGE_HOME, "fldigi-distro/fldigi-([0-9.]+).tar.gz", "", 0 },
+		{ PACKAGE_PROJ, "fldigi/fldigi-([0-9.]+).tar.gz", "", 0 }
+	}, *latest;
+	string reply;
+
+	w->window()->cursor(FL_CURSOR_WAIT);
+	put_status("Checking for updates...");
+	for (size_t i = 0; i < sizeof(sites)/sizeof(*sites); i++) { // fetch .url, grep for .re
+		Fl::check();
+		reply.clear();
+		if (!fetch_http(sites[i].url, reply, 20.0))
+			continue;
+		re_t re(sites[i].re, REG_EXTENDED | REG_ICASE | REG_NEWLINE);
+		if (!re.match(reply.c_str()) || re.nsub() != 2)
+			continue;
+
+		sites[i].version = ver2int((sites[i].version_str = re.submatch(1)).c_str());
+	}
+	w->window()->cursor(FL_CURSOR_DEFAULT);
+	put_status("");
+
+	latest = sites[1].version > sites[0].version ? &sites[1] : &sites[0];
+	if (sites[0].version == 0 && sites[1].version == 0) {
+		fl_message("Could not check for updates:\n%s", reply.c_str());
+		return;
+	}
+	if (latest->version > ver2int(PACKAGE_VERSION)) {
+		switch (fl_choice("Version %s is available at\n\n%s\n\nWhat would you like to do?",
+				  "Close", "Visit URL", "Copy URL",
+				  latest->version_str.c_str(), latest->url)) {
+		case 1:
+			cb_mnuVisitURL(NULL, (void*)latest->url);
+			break;
+		case 2:
+			size_t n = strlen(latest->url);
+			Fl::copy(latest->url, n, 0);
+			Fl::copy(latest->url, n, 1);
+		}
+	}
+	else
+		fl_message("You are running the latest version");
 }
 
 void cb_mnuAboutURL(Fl_Widget*, void*)
@@ -1469,12 +1515,13 @@ Fl_Menu_Item menu_[] = {
 {"@-1circle  Create sunspots", 0, cb_mnuFun, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 #endif
 {"Beginners' Guide", 0, cb_mnuBeginnersURL, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"Online documentation", 0, cb_mnuVisitURL, (void *)PACKAGE_DOCS, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"Home page", 0, cb_mnuVisitURL, (void *)PACKAGE_HOME, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{"Online documentation...", 0, cb_mnuVisitURL, (void *)PACKAGE_DOCS, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{"Fldigi web site...", 0, cb_mnuVisitURL, (void *)PACKAGE_HOME, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 {"Command line options", 0, cb_mnuCmdLineHelp, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"Audio device info", 0, cb_mnuAudioInfo, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"Build info", 0, cb_mnuBuildInfo, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"Event log", 0, cb_mnuDebug, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{"Check for updates...", 0, cb_mnuCheckUpdate, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"About", 0, cb_mnuAboutURL, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 	

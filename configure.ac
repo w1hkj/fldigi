@@ -39,6 +39,7 @@ AC_CONFIG_MACRO_DIR([m4])
 
 
 AC_DEFINE([PACKAGE_HOME], ["http://www.w1hkj.com/Fldigi.html"], [Home page])
+AC_DEFINE([PACKAGE_PROJ], ["http://developer.berlios.de/project/showfiles.php?group_id=9149"], [BerliOS page])
 AC_DEFINE([PACKAGE_DOCS], ["http://www.w1hkj.com/FldigiHelp/index.html"], [Docs index])
 
 
