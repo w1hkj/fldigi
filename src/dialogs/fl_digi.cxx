@@ -2006,7 +2006,6 @@ void create_fl_digi_main() {
 			Fl_Group::current()->resizable(StatusBar);
 		hpack->end();
 
-		fl_digi_main->size_range(WNOM, HNOM);
 	fl_digi_main->end();
 	fl_digi_main->callback(cb_wMain);
 
@@ -2018,7 +2017,7 @@ void create_fl_digi_main() {
 #endif
 
 	fl_digi_main->xclass(PACKAGE_NAME);
-//	Fl::set_atclose(clean_exit);
+	fl_digi_main->size_range(WNOM, (HNOM < 400 ? HNOM : 400));
 
 	scopeview = new Fl_Double_Window(0,0,140,140, "Scope");
 	scopeview->xclass(PACKAGE_NAME);
