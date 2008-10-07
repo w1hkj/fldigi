@@ -136,6 +136,7 @@ public:
 	void set_nonblocking(bool v = true);
 	void set_nodelay(bool v = true);
 	void set_timeout(const struct timeval& t);
+	void set_timeout(double t);
 	void set_autoclose(bool v) const;
 	void set_close_on_exec(bool v, int fd = -1);
 
