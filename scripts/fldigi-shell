@@ -33,6 +33,7 @@ use POSIX qw(:termios_h);
 use IO::Handle;
 use Getopt::Std;
 use Data::Dumper;
+use Time::HiRes qw(gettimeofday tv_interval);
 
 ################################################################################
 
@@ -284,6 +285,13 @@ sub wait_for_state
     sleep(1) while (defined($r = req("main.get_tx_status")) && $r->value ne $_[0]);
 }
 
+sub time_cmd
+{
+    my $t0 = [gettimeofday()];
+    execute("@_");
+    print tv_interval($t0), " seconds\n";
+}
+
 
 ################################################################################
 
@@ -302,7 +310,8 @@ our %opts = ( "u" => "http://localhost:7362/RPC2", "d" => 0 );
               "recvtext"  => [ "s:n", "Get all received text", \&get_recv_text ],
               "sendfile"  => [ "n:s", "Send text from file ``s''", \&send_file ],
               "sendstr"   => [ "n:s", "Send string ``s''", sub { send_line(@_); } ],
-	      "wait"      => [ "n:s", "Wait for trx state to become ``s''", \&wait_for_state ]
+              "wait"      => [ "n:s", "Wait for trx state to become ``s''", \&wait_for_state ],
+              "time"      => [ "s:s", "Time a command", \&time_cmd ]
 	    );
 
 %encoders = ( "b" => \&RPC_BOOLEAN, "6" => \&RPC_BASE64,
