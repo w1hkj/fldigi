@@ -73,7 +73,7 @@ struct rpc_method
 typedef list<rpc_method> methods_t;
 methods_t* methods = 0;
 
-static pthread_t* server_thread;
+static pthread_t* server_thread = 0;
 
 XML_RPC_Server* XML_RPC_Server::inst = 0;
 
@@ -111,6 +111,10 @@ void XML_RPC_Server::start(const char* node, const char* service)
 	}
 	catch (const SocketException& e) {
 		LOG_ERROR("Could not start XML-RPC server (%s)", e.what());
+		delete server_thread;
+		server_thread = 0;
+		delete inst;
+		inst = 0;
 		return;
 	}
 
