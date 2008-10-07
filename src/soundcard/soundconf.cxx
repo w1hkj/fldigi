@@ -92,8 +92,8 @@ static void init_portaudio(void)
 #elif defined(__CYGWIN__)
 	pa_api_prio[paASIO] = 0;
 	pa_api_prio[paWASAPI] = 1;
-	pa_api_prio[paDirectSound] = 2;
-	pa_api_prio[paMME] = 3;
+	pa_api_prio[paMME] = 2;
+	pa_api_prio[paDirectSound] = 3;
 #else
 	pa_api_prio[paALSA] = 0;
 	pa_api_prio[paJACK] = 1;
