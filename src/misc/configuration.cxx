@@ -68,7 +68,7 @@ configuration progdefaults = {
 	false,			// bool		useFSKkeyline;
 	false,			// bool		useFSKkeylineDTR;	
 	true,			// bool		FSKisLSB;
-	false,			// bool		RTTY_USB;
+//	true,			// bool		RTTY_USB;
 	false,			// bool		useUART;
 	false,			// bool		PreferXhairScope;
 	false,			// bool		PseudoFSK;
@@ -217,6 +217,7 @@ configuration progdefaults = {
 	false,			// bool	useTimer;
 	0,				// int		macronumber;
 	0,				// int		timeout;
+	0,				// bool		UseLastMacro;
 	
 	"",			// string	MXdevice
 	false,			// bool		MicIn;
@@ -330,7 +331,7 @@ enum TAG { \
 	AUDIOIO, OSSDEVICE, PADEVICE, PORTINDEVICE, PORTININDEX, PORTOUTDEVICE, PORTOUTINDEX, PULSESERVER,
 	SAMPLERATE, INSAMPLERATE, OUTSAMPLERATE, SAMPLECONVERTER, RXCORR, TXCORR, TXOFFSET,
 	USELEADINGZEROS, CONTESTSTART, CONTESTDIGITS,
-	USETIMER, MACRONUMBER, TIMEOUT,
+	USETIMER, MACRONUMBER, TIMEOUT, USELASTMACRO,
 	MXDEVICE, 
 	PCMVOLUME,
 	MICIN, LINEIN, ENABLEMIXER, MUTEINPUT,
@@ -359,6 +360,19 @@ void writeXMLdbl(ofstream &f, const char * tag, double val)
 
 void writeXMLstr(ofstream &f, const char * tag, string val)
 {
+	size_t indx = val.find("&");
+	while (indx != string::npos) {
+		val.replace(indx, 1, "&amp;");
+		indx = val.find("&", indx + 1);
+	}
+	while ((indx = val.find("<")) != string::npos)
+		val.replace(indx, 1, "&lt;");
+	while ((indx = val.find(">")) != string::npos)
+		val.replace(indx, 1, "&gt;");
+	while ((indx = val.find('"')) != string::npos)
+		val.replace(indx, 1, "&quot;");
+	while ((indx = val.find("'")) != string::npos)
+		val.replace(indx, 1, "&apos;");
 	f << "<" << tag << ">" << val.c_str() << "</" << tag << ">\n";
 }
 
@@ -379,6 +393,12 @@ void writeXMLrgb(ofstream &f, const char *tag, int r, int g, int b)
 	f << "<" << tag << ">" << r << " " << g << " " << b ;
 	f << "</" << tag << ">\n";
 }
+
+string getstring(IrrXMLReader* xml)
+{
+	return (xml->getNodeData());
+}
+
 
 void configuration::writeDefaultsXML()
 {
@@ -428,7 +448,7 @@ void configuration::writeDefaultsXML()
 	writeXMLbool(f, "RTTYAUTOCRLF", rtty_autocrlf);
 	writeXMLint(f, "RTTYAUTOCOUNT", rtty_autocount);
 	writeXMLint(f, "RTTYAFCSPEED", rtty_afcspeed);
-	writeXMLbool(f, "RTTYUSB", RTTY_USB);
+//	writeXMLbool(f, "RTTYUSB", RTTY_USB);
 	writeXMLbool(f, "PREFERXHAIRSCOPE", PreferXhairScope);
 	writeXMLbool(f, "PSEUDOFSK", PseudoFSK);
 	writeXMLbool(f, "UOSRX", UOSrx);
@@ -543,6 +563,7 @@ void configuration::writeDefaultsXML()
 	writeXMLbool(f, "USETIMER", useTimer);
 	writeXMLint(f, "MACRONUMBER", macronumber);
 	writeXMLint(f, "TIMEOUT", timeout);	
+	writeXMLbool(f, "USELASTMACRO", UseLastMacro);
 	writeXMLstr(f, "MXDEVICE", MXdevice);
 	writeXMLdbl(f, "PCMVOLUME", PCMvolume);
 	writeXMLbool(f, "MICIN", MicIn);
@@ -627,552 +648,555 @@ bool configuration::readDefaultsXML()
 					case IGNORE:
 						break;
 					case MYCALL :
-						myCall = xml->getNodeData();
+						myCall = getstring(xml);
 						break;
 					case MYNAME:
-						myName = xml->getNodeData();
+						myName = getstring(xml);
 						break;
 					case MYQTH:
-						myQth = xml->getNodeData();
+						myQth = getstring(xml);
 						break;
 					case MYLOC:
-						myLocator = xml->getNodeData();
+						myLocator = getstring(xml);
 						break;
 					case WFREFLEVEL:
-						wfRefLevel = atof(xml->getNodeData());
+						wfRefLevel = atof(getstring(xml).c_str());
 						break;
 					case WFAMPSPAN :
-						wfAmpSpan = atof(xml->getNodeData());
+						wfAmpSpan = atof(getstring(xml).c_str());
 						break;
 					case LOWFREQCUTOFF :
-						LowFreqCutoff = atoi(xml->getNodeData());
+						LowFreqCutoff = atoi(getstring(xml).c_str());
 						break;
 					case WATERFALLHISTORYDEFAULT :
-						WaterfallHistoryDefault = atoi(xml->getNodeData());
+						WaterfallHistoryDefault = atoi(getstring(xml).c_str());
 						break;
 					case WATERFALLQSY :
-						WaterfallQSY = atoi(xml->getNodeData());
+						WaterfallQSY = atoi(getstring(xml).c_str());
 						break;
 					case WATERFALLCLICKTEXT :
-						WaterfallClickText = xml->getNodeData();
+						WaterfallClickText = getstring(xml);
 						break;
 					case STARTATSWEETSPOT :
-						StartAtSweetSpot = atoi(xml->getNodeData());
+						StartAtSweetSpot = atoi(getstring(xml).c_str());
 						break;
 					case PSKMAILSWEETSPOT :
-						PSKmailSweetSpot = atoi(xml->getNodeData());
+						PSKmailSweetSpot = atoi(getstring(xml).c_str());
 						break;
 					case PSKSEARCHRANGE :
-						SearchRange = atoi(xml->getNodeData());
+						SearchRange = atoi(getstring(xml).c_str());
 						break;
 					case PSKSERVEROFFSET :
-						ServerOffset = atoi(xml->getNodeData());
+						ServerOffset = atoi(getstring(xml).c_str());
 						break;
 					case ACQSN :
-						ACQsn = atof(xml->getNodeData());
+						ACQsn = atof(getstring(xml).c_str());
 						break;
 					case CWSWEETSPOT :
-						CWsweetspot = atof(xml->getNodeData());
+						CWsweetspot = atof(getstring(xml).c_str());
 						break;
 					case PSKSWEETSPOT :
-						PSKsweetspot = atof(xml->getNodeData());
+						PSKsweetspot = atof(getstring(xml).c_str());
 						break;
 					case RTTYSWEETSPOT :
-						RTTYsweetspot = atof(xml->getNodeData());
+						RTTYsweetspot = atof(getstring(xml).c_str());
 						break;
 					case RTTYSHIFT :
-						rtty_shift = atoi(xml->getNodeData());
+						rtty_shift = atoi(getstring(xml).c_str());
 						break;
 					case RTTYBAUD :
-						rtty_baud = atoi(xml->getNodeData());
+						rtty_baud = atoi(getstring(xml).c_str());
 						break;
 					case RTTYBITS :
-						rtty_bits = atoi(xml->getNodeData());
+						rtty_bits = atoi(getstring(xml).c_str());
 						break;
 					case RTTYPARITY :
-						rtty_parity = atoi(xml->getNodeData());
+						rtty_parity = atoi(getstring(xml).c_str());
 						break;
 					case RTTYSTOP :
-						rtty_stop = atoi(xml->getNodeData());
+						rtty_stop = atoi(getstring(xml).c_str());
 						break;
 					case RTTYREVERSE :
-						rtty_reverse = atoi(xml->getNodeData());
+						rtty_reverse = atoi(getstring(xml).c_str());
 						break;
 					case RTTYMSBFIRST :
-						rtty_msbfirst = atoi(xml->getNodeData());
+						rtty_msbfirst = atoi(getstring(xml).c_str());
 						break;
 					case RTTYCRCLF :
-						rtty_crcrlf = atoi(xml->getNodeData());
+						rtty_crcrlf = atoi(getstring(xml).c_str());
 						break;
 					case RTTYAUTOCRLF :
-						rtty_autocrlf = atoi(xml->getNodeData());
+						rtty_autocrlf = atoi(getstring(xml).c_str());
 						break;
 					case RTTYAUTOCOUNT :
-						rtty_autocount = atoi(xml->getNodeData());
+						rtty_autocount = atoi(getstring(xml).c_str());
 						break;
 					case RTTYAFCSPEED :
-						rtty_afcspeed = atoi(xml->getNodeData());
+						rtty_afcspeed = atoi(getstring(xml).c_str());
 						break;
-					case RTTYUSB :
-						RTTY_USB = atoi(xml->getNodeData());
-						break;
+//					case RTTYUSB :
+//						RTTY_USB = atoi(getstring(xml).c_str());
+//						break;
 					case PREFERXHAIRSCOPE :
-						PreferXhairScope = atoi(xml->getNodeData());
+						PreferXhairScope = atoi(getstring(xml).c_str());
 						break;
 					case PSEUDOFSK :
-						PseudoFSK = atoi(xml->getNodeData());
+						PseudoFSK = atoi(getstring(xml).c_str());
 						break;
 					case UOSRX :
-						UOSrx = atoi(xml->getNodeData());
+						UOSrx = atoi(getstring(xml).c_str());
 						break;
 					case UOSTX :
-						UOStx = atoi(xml->getNodeData());
+						UOStx = atoi(getstring(xml).c_str());
 						break;
 					case XAGC :
-						Xagc = atoi(xml->getNodeData());
+						Xagc = atoi(getstring(xml).c_str());
 						break;
 					case CWWEIGHT :
-						CWweight = atoi(xml->getNodeData());
+						CWweight = atoi(getstring(xml).c_str());
 						break;
 					case CWSPEED :
-						CWspeed = atoi(xml->getNodeData());
+						CWspeed = atoi(getstring(xml).c_str());
 						break;
 					case CWDEFSPEED :
-						defCWspeed = atoi(xml->getNodeData());
+						defCWspeed = atoi(getstring(xml).c_str());
 						break;
 					case CWBANDWIDTH :
-						CWbandwidth = atoi(xml->getNodeData());
+						CWbandwidth = atoi(getstring(xml).c_str());
 						break;
 					case CWRANGE :
-						CWrange = atoi(xml->getNodeData());
+						CWrange = atoi(getstring(xml).c_str());
 						break;
 					case CWLOWERLIMIT :
-						CWlowerlimit = atoi(xml->getNodeData());
+						CWlowerlimit = atoi(getstring(xml).c_str());
 						break;
 					case CWUPPERLIMIT :
-						CWupperlimit = atoi(xml->getNodeData());
+						CWupperlimit = atoi(getstring(xml).c_str());
 						break;
 					case CWTRACK :
-						CWtrack = atoi(xml->getNodeData());
+						CWtrack = atoi(getstring(xml).c_str());
 						break;
 					case CWRISETIME :
-						CWrisetime = atof(xml->getNodeData());
+						CWrisetime = atof(getstring(xml).c_str());
 						break;
 					case CWDASH2DOT :
-						CWdash2dot = atof(xml->getNodeData());
+						CWdash2dot = atof(getstring(xml).c_str());
 						break;
 					case XQSK :
-						QSK = atoi(xml->getNodeData());
+						QSK = atoi(getstring(xml).c_str());
 						break;
 					case CWPRE :
-						CWpre = atof(xml->getNodeData());
+						CWpre = atof(getstring(xml).c_str());
 						break;
 					case CWPOST :
-						CWpost = atof(xml->getNodeData());
+						CWpost = atof(getstring(xml).c_str());
 						break;
 					case CWID :
-						CWid = atoi(xml->getNodeData());
+						CWid = atoi(getstring(xml).c_str());
 						break;
 					case CWIDWPM :
-						CWIDwpm = atoi(xml->getNodeData());
+						CWIDwpm = atoi(getstring(xml).c_str());
 						break;
 					case OLIVIATONES :
-						oliviatones = atoi(xml->getNodeData());
+						oliviatones = atoi(getstring(xml).c_str());
 						break;
 					case OLIVIABW :
-						oliviabw = atoi(xml->getNodeData());
+						oliviabw = atoi(getstring(xml).c_str());
 						break;
 					case OLIVIASMARGIN :
-						oliviasmargin = atoi(xml->getNodeData());
+						oliviasmargin = atoi(getstring(xml).c_str());
 						break;
 					case OLIVIASINTEG :
-						oliviasinteg = atoi(xml->getNodeData());
+						oliviasinteg = atoi(getstring(xml).c_str());
 						break;
 					case OLIVIA8BIT :
-						olivia8bit = atoi(xml->getNodeData());
+						olivia8bit = atoi(getstring(xml).c_str());
 						break;
 					case THORBW :
-						THOR_BW = atof(xml->getNodeData());
+						THOR_BW = atof(getstring(xml).c_str());
 						break;
 					case THORFILTER :
-						THOR_FILTER = atoi(xml->getNodeData());
+						THOR_FILTER = atoi(getstring(xml).c_str());
 						break;
 					case THORSECTEXT :
-						THORsecText = xml->getNodeData();
+						THORsecText = getstring(xml);
 						break;
 					case THORPATHS :
-						THOR_PATHS = atoi(xml->getNodeData());
+						THOR_PATHS = atoi(getstring(xml).c_str());
 						break;
 					case THORSOFT :
-						THOR_SOFT = atoi(xml->getNodeData());
+						THOR_SOFT = atoi(getstring(xml).c_str());
 						break;
 					case THORCWI :
-						ThorCWI = atof(xml->getNodeData());
+						ThorCWI = atof(getstring(xml).c_str());
 						break;
 					case DOMINOEXBW :
-						DOMINOEX_BW = atof(xml->getNodeData());
+						DOMINOEX_BW = atof(getstring(xml).c_str());
 						break;
 					case DOMINOEXFILTER :
-						DOMINOEX_FILTER = atoi(xml->getNodeData());
+						DOMINOEX_FILTER = atoi(getstring(xml).c_str());
 						break;
 					case DOMINOEXFEC :
-						DOMINOEX_FEC = atoi(xml->getNodeData());
+						DOMINOEX_FEC = atoi(getstring(xml).c_str());
 						break;
 					case DOMINOEXPATHS :
-						DOMINOEX_PATHS = atoi(xml->getNodeData());
+						DOMINOEX_PATHS = atoi(getstring(xml).c_str());
 						break;
 					case DOMCWI :
-						DomCWI = atof(xml->getNodeData());
+						DomCWI = atof(getstring(xml).c_str());
 						break;
 					case FELDFONTNBR :
-						feldfontnbr = atoi(xml->getNodeData());
+						feldfontnbr = atoi(getstring(xml).c_str());
 						break;
 					case HELLRCVWIDTH :
-						HellRcvWidth = atoi(xml->getNodeData());
+						HellRcvWidth = atoi(getstring(xml).c_str());
 						break;
 					case HELLXMTWIDTH :
-						HellXmtWidth = atoi(xml->getNodeData());
+						HellXmtWidth = atoi(getstring(xml).c_str());
 						if (HellXmtWidth == 0) HellXmtWidth = 1;
 						break;
 					case HELLBLACKBOARD :
-						HellBlackboard = atoi(xml->getNodeData());
+						HellBlackboard = atoi(getstring(xml).c_str());
 						break;
 					case HELLPULSEFAST :
-						HellPulseFast = atoi(xml->getNodeData());
+						HellPulseFast = atoi(getstring(xml).c_str());
 						break;
 					case HELLXMTIDLE :
-						HellXmtIdle = atoi(xml->getNodeData());
+						HellXmtIdle = atoi(getstring(xml).c_str());
 						break;
 					case WFPREFILTER :
-						wfPreFilter = atoi(xml->getNodeData());
+						wfPreFilter = atoi(getstring(xml).c_str());
 						break;
 					case LATENCY :
-						latency = atoi(xml->getNodeData());
+						latency = atoi(getstring(xml).c_str());
 						break;
 					case USECURSORLINES :
-						UseCursorLines = atoi(xml->getNodeData());
+						UseCursorLines = atoi(getstring(xml).c_str());
 						break;
 					case USECURSORCENTERLINE :
-						UseCursorCenterLine = atoi(xml->getNodeData());
+						UseCursorCenterLine = atoi(getstring(xml).c_str());
 						break;
 					case USEBWTRACKS :
-						UseBWTracks = atoi(xml->getNodeData());
+						UseBWTracks = atoi(getstring(xml).c_str());
 						break;
 					case CLCOLORS :
-						sscanf( xml->getNodeData(), "%hhu %hhu %hhu",
+						sscanf( getstring(xml).c_str(), "%hhu %hhu %hhu",
 							&cursorLineRGBI.R,
 							&cursorLineRGBI.G,
 							&cursorLineRGBI.B );	
 						break;
 					case CCCOLORS :
-						sscanf( xml->getNodeData(), "%hhu %hhu %hhu",
+						sscanf( getstring(xml).c_str(), "%hhu %hhu %hhu",
 							&cursorCenterRGBI.R,
 							&cursorCenterRGBI.G,
 							&cursorCenterRGBI.B );	
 						break;
 					case BWTCOLORS :
-						sscanf( xml->getNodeData(), "%hhu %hhu %hhu",
+						sscanf( getstring(xml).c_str(), "%hhu %hhu %hhu",
 							&bwTrackRGBI.R,
 							&bwTrackRGBI.G,
 							&bwTrackRGBI.B );	
 						break;
 					case VIEWXMTSIGNAL :
-						viewXmtSignal = atoi(xml->getNodeData());
+						viewXmtSignal = atoi(getstring(xml).c_str());
 						break;
 					case SENDID :
-						sendid = atoi(xml->getNodeData());
+						sendid = atoi(getstring(xml).c_str());
 						break;
 					case MACROID :
-						macroid = atoi(xml->getNodeData());
+						macroid = atoi(getstring(xml).c_str());
 						break;
 					case SENDTEXTID :
-						sendtextid = atoi(xml->getNodeData());
+						sendtextid = atoi(getstring(xml).c_str());
 						break;
 					case STRTEXTID :
-						strTextid = xml->getNodeData();
+						strTextid = getstring(xml);
 					case VIDEOWIDTH :
-						videowidth = atoi(xml->getNodeData());
+						videowidth = atoi(getstring(xml).c_str());
 					case IDSMALL :
-						ID_SMALL = atoi(xml->getNodeData());
+						ID_SMALL = atoi(getstring(xml).c_str());
 					case QRZTYPE :
-						QRZ = atoi(xml->getNodeData());
+						QRZ = atoi(getstring(xml).c_str());
 						break;
 					case QRZPATHNAME :
-						QRZpathname = xml->getNodeData();
+						QRZpathname = getstring(xml);
 						break;
 					case QRZUSER :
-						QRZusername = xml->getNodeData();
+						QRZusername = getstring(xml);
 						break;
 					case QRZPASSWORD :
-						QRZuserpassword = xml->getNodeData();
+						QRZuserpassword = getstring(xml);
 						break;
 					case BTNUSB :
-						btnusb = atoi(xml->getNodeData());
+						btnusb = atoi(getstring(xml).c_str());
 						break;
 					case BTNPTTIS :
-						btnPTTis = atoi(xml->getNodeData());
+						btnPTTis = atoi(getstring(xml).c_str());
 						break;
 					case RTSPTT :
-						RTSptt = atoi(xml->getNodeData());
+						RTSptt = atoi(getstring(xml).c_str());
 						break;
 					case DTRPTT :
-						DTRptt = atoi(xml->getNodeData());
+						DTRptt = atoi(getstring(xml).c_str());
 						break;
 					case RTSPLUS :
-						RTSplus = atoi(xml->getNodeData());
+						RTSplus = atoi(getstring(xml).c_str());
 						break;
 					case DTRPLUS :
-						DTRplus = atoi(xml->getNodeData());
+						DTRplus = atoi(getstring(xml).c_str());
 						break;
 					case CHOICEHAMLIBIS :
-						choiceHAMLIBis = atoi(xml->getNodeData());
+						choiceHAMLIBis = atoi(getstring(xml).c_str());
 						break;
 					case CHKUSEMEMMAPIS :
-						chkUSEMEMMAPis = atoi(xml->getNodeData());
+						chkUSEMEMMAPis = atoi(getstring(xml).c_str());
 						break;
 					case CHKUSEHAMLIBIS :
-						chkUSEHAMLIBis = atoi(xml->getNodeData());
+						chkUSEHAMLIBis = atoi(getstring(xml).c_str());
 						break;
 					case CHKUSERIGCATIS :
-						chkUSERIGCATis = atoi(xml->getNodeData());
+						chkUSERIGCATis = atoi(getstring(xml).c_str());
 						break;
 					case CHKUSEXMLRPCIS :
-						chkUSEXMLRPCis = atoi(xml->getNodeData());
+						chkUSEXMLRPCis = atoi(getstring(xml).c_str());
 						break;
 					case HAMRIGNAME :
-						HamRigName = xml->getNodeData();
+						HamRigName = getstring(xml);
 						break;
 					case HAMRIGDEVICE :
-						HamRigDevice = xml->getNodeData();
+						HamRigDevice = getstring(xml);
 						break;
 					case HAMRIGBAUDRATE :
-						HamRigBaudrate = atoi(xml->getNodeData());
+						HamRigBaudrate = atoi(getstring(xml).c_str());
 						break;
 					case PTTDEV :
-						PTTdev = xml->getNodeData();
+						PTTdev = getstring(xml);
 						break;
 					case SECONDARYTEXT :
-						secText = xml->getNodeData();
+						secText = getstring(xml);
 						break;
 					case AUDIOIO :
-						btnAudioIOis = atoi(xml->getNodeData());
+						btnAudioIOis = atoi(getstring(xml).c_str());
 						break;
 					case OSSDEVICE :
-						OSSdevice = xml->getNodeData();
+						OSSdevice = getstring(xml);
 						break;
 					case PADEVICE :
-						PAdevice = xml->getNodeData();
+						PAdevice = getstring(xml);
 						break;
 					case PORTINDEVICE :
-						PortInDevice = xml->getNodeData();
+						PortInDevice = getstring(xml);
 						break;
 					case PORTININDEX :
-						PortInIndex = atoi(xml->getNodeData());
+						PortInIndex = atoi(getstring(xml).c_str());
 						break;
 					case PORTOUTDEVICE :
-						PortOutDevice = xml->getNodeData();
+						PortOutDevice = getstring(xml);
 						break;
 					case PORTOUTINDEX :
-						PortOutIndex = atoi(xml->getNodeData());
+						PortOutIndex = atoi(getstring(xml).c_str());
 						break;
 					case PULSESERVER :
-						PulseServer = xml->getNodeData();
+						PulseServer = getstring(xml);
 						break;
 					case SAMPLERATE :
-						sample_rate = atoi(xml->getNodeData());
+						sample_rate = atoi(getstring(xml).c_str());
 						break;
 					case INSAMPLERATE :
-						in_sample_rate = atoi(xml->getNodeData());
+						in_sample_rate = atoi(getstring(xml).c_str());
 						break;
 					case OUTSAMPLERATE :
-						out_sample_rate = atoi(xml->getNodeData());
+						out_sample_rate = atoi(getstring(xml).c_str());
 						break;
 					case SAMPLECONVERTER :
-						sample_converter = atoi(xml->getNodeData());
+						sample_converter = atoi(getstring(xml).c_str());
 						break;
 					case RXCORR :
-						RX_corr = atoi(xml->getNodeData());
+						RX_corr = atoi(getstring(xml).c_str());
 						break;
 					case TXCORR :
-						TX_corr = atoi(xml->getNodeData());
+						TX_corr = atoi(getstring(xml).c_str());
 						break;
 					case TXOFFSET :
-						TxOffset = atoi(xml->getNodeData());
+						TxOffset = atoi(getstring(xml).c_str());
 						break;
 					case USELEADINGZEROS :
-						UseLeadingZeros = atoi(xml->getNodeData());
+						UseLeadingZeros = atoi(getstring(xml).c_str());
 						break;
 					case CONTESTSTART :
-						ContestStart = atoi(xml->getNodeData());
+						ContestStart = atoi(getstring(xml).c_str());
 						break;
 					case CONTESTDIGITS :
-						ContestDigits = atoi(xml->getNodeData());
+						ContestDigits = atoi(getstring(xml).c_str());
 						break;
 					case USETIMER :
-						useTimer = atoi(xml->getNodeData());
+						useTimer = atoi(getstring(xml).c_str());
 						break;
 					case MACRONUMBER :
-						macronumber = atoi(xml->getNodeData());
+						macronumber = atoi(getstring(xml).c_str());
 						break;
 					case TIMEOUT :
-						timeout = atoi(xml->getNodeData());
+						timeout = atoi(getstring(xml).c_str());
+						break;
+					case USELASTMACRO :
+						UseLastMacro = atoi(getstring(xml).c_str());
 						break;
 					case MXDEVICE :
-						MXdevice = xml->getNodeData();
+						MXdevice = getstring(xml);
 						break;
 					case PCMVOLUME :
-						PCMvolume = atof(xml->getNodeData());
+						PCMvolume = atof(getstring(xml).c_str());
 						break;
 					case MICIN :
-						MicIn = atoi(xml->getNodeData());
+						MicIn = atoi(getstring(xml).c_str());
 						break;
 					case LINEIN :
-						LineIn = atoi(xml->getNodeData());
+						LineIn = atoi(getstring(xml).c_str());
 						break;
 					case ENABLEMIXER :
-						EnableMixer = atoi(xml->getNodeData());
+						EnableMixer = atoi(getstring(xml).c_str());
 						break;
 					case MUTEINPUT :
-						MuteInput = atoi(xml->getNodeData());
+						MuteInput = atoi(getstring(xml).c_str());
 						break;
 					case PALETTE0 :
-						sscanf( xml->getNodeData(), "%d %d %d",
+						sscanf( getstring(xml).c_str(), "%d %d %d",
 								&cfgpal[0].R, &cfgpal[0].G, &cfgpal[0].B );
 						break;
 					case PALETTE1 :
-						sscanf( xml->getNodeData(), "%d %d %d",
+						sscanf( getstring(xml).c_str(), "%d %d %d",
 								&cfgpal[1].R, &cfgpal[1].G, &cfgpal[1].B );
 						break;
 					case PALETTE2 :
-						sscanf( xml->getNodeData(), "%d %d %d",
+						sscanf( getstring(xml).c_str(), "%d %d %d",
 								&cfgpal[2].R, &cfgpal[2].G, &cfgpal[2].B );
 						break;
 					case PALETTE3 :
-						sscanf( xml->getNodeData(), "%d %d %d",
+						sscanf( getstring(xml).c_str(), "%d %d %d",
 								&cfgpal[3].R, &cfgpal[3].G, &cfgpal[3].B );
 						break;
 					case PALETTE4 :
-						sscanf( xml->getNodeData(), "%d %d %d",
+						sscanf( getstring(xml).c_str(), "%d %d %d",
 								&cfgpal[4].R, &cfgpal[4].G, &cfgpal[4].B );
 						break;
 					case PALETTE5 :
-						sscanf( xml->getNodeData(), "%d %d %d",
+						sscanf( getstring(xml).c_str(), "%d %d %d",
 								&cfgpal[5].R, &cfgpal[5].G, &cfgpal[5].B );
 						break;
 					case PALETTE6 :
-						sscanf( xml->getNodeData(), "%d %d %d",
+						sscanf( getstring(xml).c_str(), "%d %d %d",
 								&cfgpal[6].R, &cfgpal[6].G, &cfgpal[6].B );
 						break;
 					case PALETTE7 :
-						sscanf( xml->getNodeData(), "%d %d %d",
+						sscanf( getstring(xml).c_str(), "%d %d %d",
 								&cfgpal[7].R, &cfgpal[7].G, &cfgpal[7].B );
 						break;
 					case PALETTE8 :
-						sscanf( xml->getNodeData(), "%d %d %d",
+						sscanf( getstring(xml).c_str(), "%d %d %d",
 								&cfgpal[8].R, &cfgpal[8].G, &cfgpal[8].B );
 						break;
 					case VIEWERMARQUEE :
-						VIEWERmarquee = atoi(xml->getNodeData());
+						VIEWERmarquee = atoi(getstring(xml).c_str());
 						break;
 					case VIEWERSHOWFREQ :
-						VIEWERshowfreq = atoi(xml->getNodeData());
+						VIEWERshowfreq = atoi(getstring(xml).c_str());
 						break;
 					case VIEWERSTART :
-						VIEWERstart = atoi(xml->getNodeData());
+						VIEWERstart = atoi(getstring(xml).c_str());
 						break;
 					case VIEWERCHANNELS :
-						VIEWERchannels = atoi(xml->getNodeData());
+						VIEWERchannels = atoi(getstring(xml).c_str());
 						break;
 					case VIEWERSQUELCH :
-						VIEWERsquelch = atof(xml->getNodeData());
+						VIEWERsquelch = atof(getstring(xml).c_str());
 						break;
 					case VIEWERTIMEOUT :
-						VIEWERtimeout = atoi(xml->getNodeData());
+						VIEWERtimeout = atoi(getstring(xml).c_str());
 						break;
 					case WFAVERAGING :
-						WFaveraging = atoi(xml->getNodeData());
+						WFaveraging = atoi(getstring(xml).c_str());
 						break;
 					case USEGROUPCOLORS :
-						useGroupColors = atoi(xml->getNodeData());
+						useGroupColors = atoi(getstring(xml).c_str());
 					case FKEYGROUP1 :
-						sscanf( xml->getNodeData(), "%d %d %d",
+						sscanf( getstring(xml).c_str(), "%d %d %d",
 							&btnGroup1.R, &btnGroup1.G, &btnGroup1.B);
 						break;
 					case FKEYGROUP2 :
-						sscanf( xml->getNodeData(), "%d %d %d",
+						sscanf( getstring(xml).c_str(), "%d %d %d",
 							&btnGroup2.R, &btnGroup2.G, &btnGroup2.B);
 						break;
 					case FKEYGROUP3 :
-						sscanf( xml->getNodeData(), "%d %d %d",
+						sscanf( getstring(xml).c_str(), "%d %d %d",
 							&btnGroup3.R, &btnGroup3.G, &btnGroup3.B);
 						break;
 					case FKEYTEXTCOLOR : 
-						sscanf( xml->getNodeData(), "%d %d %d",
+						sscanf( getstring(xml).c_str(), "%d %d %d",
 							&btnFkeyTextColor.R, 
 							&btnFkeyTextColor.G, 
 							&btnFkeyTextColor.B);
 						break;
 					case RXFONTNBR :
-						RxFontnbr = (Fl_Font)atoi(xml->getNodeData());
+						RxFontnbr = (Fl_Font)atoi(getstring(xml).c_str());
 						break;
 					case RXFONTSIZE :
-						RxFontsize = atoi(xml->getNodeData());
+						RxFontsize = atoi(getstring(xml).c_str());
 						break;
 					case RXFNTCOLOR :
-						RxFontcolor = (Fl_Color)atoi(xml->getNodeData());
+						RxFontcolor = (Fl_Color)atoi(getstring(xml).c_str());
 						break;
 					case TXFONTNBR :
-						TxFontnbr = (Fl_Font)atoi(xml->getNodeData());
+						TxFontnbr = (Fl_Font)atoi(getstring(xml).c_str());
 						break;
 					case TXFONTSIZE :
-						TxFontsize = atoi(xml->getNodeData());
+						TxFontsize = atoi(getstring(xml).c_str());
 						break;
 					case TXFNTCOLOR :
-						TxFontcolor = (Fl_Color)atoi(xml->getNodeData());
+						TxFontcolor = (Fl_Color)atoi(getstring(xml).c_str());
 						break;
 					case RXFONTCOLOR :
-						sscanf( xml->getNodeData(), "%d %d %d",
+						sscanf( getstring(xml).c_str(), "%d %d %d",
 							&RxColor.R, &RxColor.G, &RxColor.B);
 						break;
 					case XMITCOLOR :
-						XMITcolor = (Fl_Color)atoi(xml->getNodeData());
+						XMITcolor = (Fl_Color)atoi(getstring(xml).c_str());
 						break;
 					case CTRLCOLOR :
-						CTRLcolor = (Fl_Color)atoi(xml->getNodeData());
+						CTRLcolor = (Fl_Color)atoi(getstring(xml).c_str());
 						break;
 					case SKIPCOLOR :
-						SKIPcolor = (Fl_Color)atoi(xml->getNodeData());
+						SKIPcolor = (Fl_Color)atoi(getstring(xml).c_str());
 						break;
 					case ALTRCOLOR :
-						ALTRcolor = (Fl_Color)atoi(xml->getNodeData());
+						ALTRcolor = (Fl_Color)atoi(getstring(xml).c_str());
 						break;
 					case WATERFALLFONTNBR :
-						WaterfallFontnbr = (Fl_Font)atoi(xml->getNodeData());
+						WaterfallFontnbr = (Fl_Font)atoi(getstring(xml).c_str());
 						break;
 					case WATERFALLFONTSIZE :
-						WaterfallFontsize = atoi(xml->getNodeData());
+						WaterfallFontsize = atoi(getstring(xml).c_str());
 						break;
 					case UISCHEME :
-						ui_scheme = xml->getNodeData();
+						ui_scheme = getstring(xml);
 						break;
 					case TXFONTCOLOR :
-						sscanf( xml->getNodeData(), "%d %d %d",
+						sscanf( getstring(xml).c_str(), "%d %d %d",
 							&TxColor.R, &TxColor.G, &TxColor.B);
 						break;
 					case RSIDWIDESEARCH :
-						rsidWideSearch = atoi(xml->getNodeData());
+						rsidWideSearch = atoi(getstring(xml).c_str());
 						break;
 					case TRANSMITRSID :
-						TransmitRSid = atoi(xml->getNodeData());
+						TransmitRSid = atoi(getstring(xml).c_str());
 						break;
 					case SLOWCPU :
-						slowcpu = atoi(xml->getNodeData());
+						slowcpu = atoi(getstring(xml).c_str());
 						break;
 					case MT638BIT :
-						mt63_8bit = atoi(xml->getNodeData());
+						mt63_8bit = atoi(getstring(xml).c_str());
 						break;
 					case MT63INTERLEAVE :
-						mt63_interleave = atoi(xml->getNodeData());
+						mt63_interleave = atoi(getstring(xml).c_str());
 						break;
 				}
 				break;
@@ -1312,6 +1336,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("USETIMER", nodeName)) 	tag = USETIMER;
 				else if (!strcmp("MACRONUMBER", nodeName)) 	tag = MACRONUMBER;
 				else if (!strcmp("TIMEOUT", nodeName)) 	tag = TIMEOUT;
+				else if (!strcmp("USELASTMACRO", nodeName)) 	tag = USELASTMACRO;
 				else if (!strcmp("MXDEVICE", nodeName)) 	tag = MXDEVICE;
 				else if (!strcmp("PCMVOLUME", nodeName)) 	tag = PCMVOLUME;
 				else if (!strcmp("MICIN", nodeName)) 	tag = MICIN;
@@ -1426,9 +1451,9 @@ void configuration::saveDefaults() {
 	PTTdev = inpTTYdev->value();
 
 	for (int i = 0; i < 9; i++) {
-		progdefaults.cfgpal[i].R =  palette[i].R;
-		progdefaults.cfgpal[i].G =  palette[i].G;
-		progdefaults.cfgpal[i].B =  palette[i].B;
+		cfgpal[i].R =  palette[i].R;
+		cfgpal[i].G =  palette[i].G;
+		cfgpal[i].B =  palette[i].B;
 	}
 	FL_UNLOCK();
 	
@@ -1531,9 +1556,9 @@ int configuration::setDefaults() {
 	valRTTYsweetspot->value(RTTYsweetspot);
 	valPSKsweetspot->value(PSKsweetspot);
 	btnWaterfallHistoryDefault->value(WaterfallHistoryDefault);
-	btnWaterfallQSY->value(progdefaults.WaterfallQSY);
+	btnWaterfallQSY->value(WaterfallQSY);
 	inpWaterfallClickText->input_type(FL_MULTILINE_INPUT);
-	inpWaterfallClickText->value(progdefaults.WaterfallClickText.c_str());
+	inpWaterfallClickText->value(WaterfallClickText.c_str());
 	btnStartAtSweetSpot->value(StartAtSweetSpot);
 	btnPSKmailSweetSpot->value(PSKmailSweetSpot);
 	cntSearchRange->value(SearchRange);
@@ -1609,7 +1634,7 @@ int configuration::setDefaults() {
 		btnHAMCALLsocket->value(1);
 	txtQRZpathname->value(QRZpathname.c_str());
 			
-	btnRTTY_USB->value(RTTY_USB);
+//	btnRTTY_USB->value(RTTY_USB);
 	btnsendid->value(sendid);
 	btnsendvideotext->value(sendtextid);
 	chkID_SMALL->value(ID_SMALL);

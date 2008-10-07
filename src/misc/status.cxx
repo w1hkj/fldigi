@@ -66,6 +66,7 @@ status progStatus = {
 	false,				// bool	scopeVisible;
 	50,					// int	scopeW;
 	50,					// int	scopeH;
+	"macros.mdf",		// string LastMacroFile;
 
 	false				// bool bLastStateRead;
 };
@@ -154,6 +155,8 @@ void status::saveLastState()
 	spref.set("scope_y", scopeY);
 	spref.set("scope_w", scopeW);
 	spref.set("scope_h", scopeH);
+	
+	spref.set("last_macro_file", LastMacroFile.c_str());
 }
 
 void status::loadLastState()
@@ -211,6 +214,11 @@ void status::loadLastState()
 	spref.get("scope_y", scopeY, scopeY);
 	spref.get("scope_w", scopeW, scopeW);
 	spref.get("scope_h", scopeH, scopeH);
+	
+	char *defbuffer;
+	spref.get("last_macro_file", defbuffer, "macros.mdf");
+	LastMacroFile = defbuffer;
+	if (defbuffer) free(defbuffer);
 }
 
 void status::initLastState()

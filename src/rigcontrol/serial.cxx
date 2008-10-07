@@ -59,6 +59,7 @@ Cserial::~Cserial() {
 // Argument         : c_string strPortName
 ///////////////////////////////////////////////////////
 bool Cserial::OpenPort()  {
+	
 #ifdef __CYGWIN__
 	adjust_port(device);
 #endif
@@ -253,8 +254,6 @@ int  Cserial::ReadBuffer (unsigned char *buf, int nchars)
 ///////////////////////////////////////////////////////
 int Cserial::WriteBuffer(unsigned char *buff, int n)
 {
-	if (fd < 0) 
-		return 0;
 	int ret = write (fd, buff, n);
 	return ret;
 }

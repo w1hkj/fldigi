@@ -377,16 +377,11 @@ static void *hamlib_loop(void *args)
 		if (modeok && (hamlib_rmode != numode)) {
 			hamlib_rmode = numode;
 			selMode(hamlib_rmode);
-			if (progdefaults.RTTY_USB == true && 
-				hamlib_rmode == RIG_MODE_RTTYR)
-				wf->USB(false);
-			else if (progdefaults.RTTY_USB == false && 
-				hamlib_rmode == RIG_MODE_RTTY)
-				wf->USB(false);
-			else if (hamlib_rmode == RIG_MODE_LSB ||
+			if (hamlib_rmode == RIG_MODE_LSB ||
 					hamlib_rmode == RIG_MODE_CWR ||	
 					hamlib_rmode == RIG_MODE_PKTLSB ||
-					hamlib_rmode == RIG_MODE_ECSSLSB)
+					hamlib_rmode == RIG_MODE_ECSSLSB ||
+					hamlib_rmode == RIG_MODE_RTTYR)
 				wf->USB(false);
 			else
 				wf->USB(true);

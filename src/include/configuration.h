@@ -49,7 +49,7 @@ struct configuration {
 	bool		useFSKkeyline;		// use RTS for FSK
 	bool		useFSKkeylineDTR;	// use DTR for FSK
 	bool		FSKisLSB;
-	bool		RTTY_USB;
+//	bool		RTTY_USB;
 	bool		useUART;
 	bool		PreferXhairScope;
 	bool		PseudoFSK;
@@ -180,6 +180,7 @@ struct configuration {
 	bool	useTimer;
 	int		macronumber;
 	int		timeout;
+	bool	UseLastMacro;
 	
 // Mixer configuration
 	string	MXdevice;

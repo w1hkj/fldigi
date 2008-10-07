@@ -61,6 +61,12 @@ bool arq_text_available = false;
 
 extern void send0x06();
 
+static void set_button(Fl_Button* button, bool value)
+{
+	button->value(value);
+	button->do_callback();
+}
+
 static void popup_msg(void* msg)
 {
 	fl_message((const char*)msg);
@@ -75,12 +81,14 @@ void ParseMode(string src)
 		push2talk->set(true);
 		MilliSleep(msecs);
 		push2talk->set(false);
+LOG_DEBUG("ARQ ptt toggled");
 		return;
 	}
 	for (size_t i = 0; i < NUM_MODES; ++i) {
 		if (strlen(mode_info[i].pskmail_name) > 0) {
 			if (src == mode_info[i].pskmail_name) {
 				REQ_SYNC(init_modem_sync, mode_info[i].mode);
+LOG_DEBUG("ARQ new modem set to %s", mode_info[i].pskmail_name);
 				break;
 			}
 		}
@@ -97,7 +105,7 @@ void parse_arqtext()
 	idxCmdEnd = arqtext.find("</cmd>");
 	
 	if ( idxCmd != string::npos && idxCmdEnd != string::npos && idxCmdEnd > idxCmd ) {
-
+LOG_DEBUG("Command string: %s", arqtext.substr(idxCmd, idxCmdEnd + 6).c_str());
 		strCmdText = arqtext.substr(idxCmd + 5, idxCmdEnd - idxCmd - 5);
 		if (strCmdText == "server" && mailserver == false && mailclient == false) {
 			mailserver = true;
@@ -106,6 +114,11 @@ void parse_arqtext()
 			PskMailLogName += "gMFSK.log";
 			Maillogfile = new cLogfile(PskMailLogName.c_str());
 			Maillogfile->log_to_file_start();
+			REQ(set_button, wf->xmtlock, 1);
+			if (progdefaults.PSKmailSweetSpot)
+				active_modem->set_freq(progdefaults.PSKsweetspot);
+			active_modem->set_freqlock(true);
+LOG_DEBUG("ARQ is set to pskmail server");
 		} else if (strCmdText == "client" && mailclient == false && mailserver == false) {
 			mailclient = true;
 			mailserver = false;
@@ -113,6 +126,9 @@ void parse_arqtext()
 			PskMailLogName += "gMFSK.log";
 			Maillogfile = new cLogfile(PskMailLogName.c_str());
 			Maillogfile->log_to_file_start();
+			REQ(set_button, wf->xmtlock, 0);
+			active_modem->set_freqlock(false);
+LOG_DEBUG("ARQ is set to pskmail client");
 		} else if (strCmdText == "normal") {
 			mailserver = false;
 			mailclient = false;
@@ -120,6 +136,9 @@ void parse_arqtext()
 				delete Maillogfile;
 				Maillogfile = 0;
 			}
+			REQ(set_button, wf->xmtlock, 0);
+			active_modem->set_freqlock(false);
+LOG_DEBUG("ARQ is reset to normal ops");
 		} else {
 			if ((idxSubCmd = strCmdText.find("<mode>")) != string::npos) {
 				idxSubCmdEnd = strCmdText.find("</mode>");
@@ -450,12 +469,12 @@ bool Socket_arqRx()
 		if (cmdstring.find("PSKMAIL-ON") != string::npos) {
 			isPskMail = true;
 			txstring.clear();
-//LOG_INFO (cmdstring.c_str());
+LOG_DEBUG (cmdstring.c_str());
 		}
 		if (cmdstring.find("PSKMAIL-OFF") != string::npos) {
 			isPskMail = false;
 			txstring.clear();
-//LOG_INFO (cmdstring.c_str());
+LOG_DEBUG (cmdstring.c_str());
 		}
 			
 		if (progdefaults.rsid == true) {
@@ -477,8 +496,10 @@ bool Socket_arqRx()
 				active_modem->set_stopflag(false);
 				start_tx();
 			}
+LOG_DEBUG("ARQ string: %s", txstring.c_str());
 		} else if (!txstring.empty()) {
 			arqtext.append(txstring);
+LOG_DEBUG("ARQ string: %s", txstring.c_str());
 		}
 		
 		txstring.clear();

@@ -11,6 +11,7 @@
 #include "newinstall.h"
 #include "globals.h"
 #include "debug.h"
+#include "status.h"
 
 #include <FL/Fl.H>
 #include "fileselect.h"
@@ -190,7 +191,7 @@ void pILDT(string &s, size_t &i)
 	tm sTime;
 	time (&tmptr);
 	localtime_r(&tmptr, &sTime);
-	mystrftime(szDt, 79, "%Y-%m-%d %H:%M:%S%z", &sTime);
+	mystrftime(szDt, 79, "%Y-%m-%d %H:%M%z", &sTime);
 	s.replace( i, 6, szDt);
 }
 
@@ -201,7 +202,7 @@ void pZDT(string &s, size_t &i)
 	tm sTime;
 	time (&tmptr);
 	gmtime_r(&tmptr, &sTime);
-	mystrftime(szDt, 79, "%x %H:%M %Z", &sTime);
+	mystrftime(szDt, 79, "%x %H:%MZ", &sTime);
 	s.replace( i, 5, szDt);
 }
 
@@ -212,7 +213,7 @@ void pIZDT(string &s, size_t &i)
 	tm sTime;
 	time (&tmptr);
 	gmtime_r(&tmptr, &sTime);
-	mystrftime(szDt, 79, "%Y-%m-%d %H:%M:%SZ", &sTime);
+	mystrftime(szDt, 79, "%Y-%m-%d %H:%M%z", &sTime);
 	s.replace( i, 6, szDt);
 }
 
@@ -577,7 +578,12 @@ void MACROTEXT::loadDefault()
 {
 	int erc;
 	string Filename = HomeDir;
-	Filename.append("macros.mdf");
+	if (progdefaults.UseLastMacro == true)
+		Filename.append(progStatus.LastMacroFile);
+	else {
+		Filename.append("macros.mdf");
+		progStatus.LastMacroFile = "macros.mdf";
+	}
 	if ((erc = loadMacros(Filename)) != 0)
 #ifndef __CYGWIN__
 		LOG_ERROR("Error #%d loading %s\n", erc, Filename.c_str());
@@ -589,19 +595,25 @@ void MACROTEXT::loadDefault()
 void MACROTEXT::openMacroFile()
 {
 	string deffilename = HomeDir;
-	deffilename.append("macros.mdf");
+	deffilename.append(progStatus.LastMacroFile);
     const char *p = FSEL::select("Open macro file", "Fldigi macro definition file\t*.mdf", deffilename.c_str());
-    if (p)
+    if (p) {
 		loadMacros(p);
+		progStatus.LastMacroFile = fl_filename_name(p);
+		update_main_title();
+	}
 }
 
 void MACROTEXT::saveMacroFile()
 {
 	string deffilename = HomeDir;
-	deffilename.append("macros.mdf");
+	deffilename.append(progStatus.LastMacroFile);
     const char *p = FSEL::saveas("Save macro file", "Fldigi macro definition file\t*.mdf", deffilename.c_str());
-    if (p)
+    if (p) {
 		saveMacros(p);
+		progStatus.LastMacroFile = fl_filename_name(p);
+		update_main_title();
+	}
 }
 
 

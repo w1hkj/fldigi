@@ -596,10 +596,7 @@ void psk::tx_symbol(int sym)
 	}
 	symbol = prevsymbol * symbol;	// complex multiplication
 
-	if (mailserver && progdefaults.PSKmailSweetSpot)
-		delta = 2.0 * M_PI * (progdefaults.PSKsweetspot  - progdefaults.TxOffset) / samplerate;
-	else
-		delta = 2.0 * M_PI * get_txfreq_woffset() / samplerate;
+	delta = 2.0 * M_PI * get_txfreq_woffset() / samplerate;
 
 	for (int i = 0; i < symbollen; i++) {
 		

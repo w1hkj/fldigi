@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0109 
+version 1.0108 
 header_name {.h} 
 code_name {.cxx}
 decl {\#include <config.h>} {} 
@@ -39,10 +39,10 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {fldigi - config} open
-    xywh {611 467 400 250} type Double color 45 selection_color 51 align 80 visible
+    xywh {555 456 400 255} type Double color 45 selection_color 51 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
-      xywh {0 0 405 220} color 47 selection_color 9
+      xywh {0 0 405 225} color 47 selection_color 9
     } {
       Fl_Group tabOperator {
         label Oper
@@ -809,14 +809,14 @@ o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");}
         }
       }
       Fl_Group tabSoundCard {
-        label SndCrd open
+        label SndCrd
         xywh {0 25 400 195} color 51 selection_color 51 hide
       } {
         Fl_Tabs tabsSoundCard {open
           xywh {0 25 400 195} selection_color 10
         } {
           Fl_Group tabAudio {
-            label {Audio devices} open
+            label {Audio devices}
             xywh {0 50 400 170} color 51 selection_color 51
           } {
             Fl_Group AudioOSS {open
@@ -898,7 +898,7 @@ resetSoundCard();}
             }
           }
           Fl_Group tabAudioOpt {
-            label {Audio settings} open
+            label {Audio settings}
             xywh {0 50 400 170} color 51 selection_color 51 hide
           } {
             Fl_Spinner cntRxRateCorr {
@@ -1025,70 +1025,103 @@ progdefaults.changed = true;}
       }
       Fl_Group tabMisc {
         label Misc open
-        xywh {0 25 400 195} color 51 selection_color 51 hide
+        xywh {0 25 405 200} color 51 selection_color 51 hide
       } {
-        Fl_Group {} {
-          label {Sweet Spot} open
-          xywh {5 35 390 90} box ENGRAVED_FRAME align 21
+        Fl_Tabs tabsMisc {open
+          xywh {0 25 400 195}
         } {
-          Fl_Value_Input valCWsweetspot {
-            label CW
-            callback {progdefaults.CWsweetspot=o->value();
+          Fl_Group tabCPUspeed {
+            label {CPU speed} open
+            xywh {0 50 400 170} hide
+          } {
+            Fl_Group {} {open
+              xywh {5 62 390 43} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Check_Button chkSlowCpu {
+                label {Slow cpu}
+                callback {progdefaults.slowcpu = o->value();
 progdefaults.changed = true;}
-            xywh {50 59 65 20} minimum 200 maximum 4000 step 1 value 1000
-            code0 {o->value(progdefaults.CWsweetspot);}
+                xywh {110 72 89 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.slowcpu);}
+              }
+            }
           }
-          Fl_Value_Input valRTTYsweetspot {
-            label RTTY
-            callback {progdefaults.RTTYsweetspot=o->value();
+          Fl_Group tabMacros {
+            label Macros open
+            xywh {0 50 400 170}
+          } {
+            Fl_Group {} {open
+              xywh {5 55 390 49} box ENGRAVED_FRAME
+            } {
+              Fl_Check_Button btnUseLastMacro {
+                label {load last used Macro set on startup}
+                callback {progdefaults.UseLastMacro = o->value();
+update_main_title();
 progdefaults.changed = true;}
-            xywh {182 59 65 20} minimum 200 maximum 4000 step 1 value 1000
-            code0 {o->value(progdefaults.RTTYsweetspot);}
+                xywh {30 70 274 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.UseLastMacro);}
+              }
+            }
           }
-          Fl_Value_Input valPSKsweetspot {
-            label {PSK etal}
-            callback {progdefaults.PSKsweetspot=o->value();
+          Fl_Group tabRSid {
+            label RSid open
+            xywh {0 50 400 170} hide
+          } {
+            Fl_Group {} {open
+              xywh {5 65 390 45} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Check_Button chkTransmitRSid {
+                label {Transmit RSid}
+                callback {progdefaults.TransmitRSid = o->value();
 progdefaults.changed = true;}
-            xywh {315 59 65 20} minimum 200 maximum 4000 step 1 value 1000
-            code0 {o->value(progdefaults.PSKsweetspot);}
+                tooltip {Transmit Reed Solomon ID} xywh {49 78 119 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.TransmitRSid);}
+              }
+              Fl_Check_Button chkRSidWideSearch {
+                label {Wide Search Detector}
+                callback {progdefaults.rsidWideSearch=o->value();
+progdefaults.changed = true;}
+                xywh {188 80 85 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.rsidWideSearch);}
+              }
+            }
           }
-          Fl_Check_Button btnStartAtSweetSpot {
-            label {Start New Modem at Sweet Spot}
-            callback {progdefaults.StartAtSweetSpot = o->value();
+          Fl_Group tabSweetSpot {
+            label {Sweet Spot} open
+            xywh {0 50 400 170} hide
+          } {
+            Fl_Group {} {open
+              xywh {5 60 390 75} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Value_Input valCWsweetspot {
+                label CW
+                callback {progdefaults.CWsweetspot=o->value();
 progdefaults.changed = true;}
-            xywh {49 88 246 25} down_box DOWN_BOX value 1
-            code0 {o->value(progdefaults.StartAtSweetSpot);}
-          }
-        }
-        Fl_Group {} {
-          label RSid open
-          xywh {5 125 390 45} box ENGRAVED_FRAME align 21
-        } {
-          Fl_Check_Button chkTransmitRSid {
-            label {Transmit RSid}
-            callback {progdefaults.TransmitRSid = o->value();
+                xywh {50 71 65 20} minimum 200 maximum 4000 step 1 value 1000
+                code0 {o->value(progdefaults.CWsweetspot);}
+              }
+              Fl_Value_Input valRTTYsweetspot {
+                label RTTY
+                callback {progdefaults.RTTYsweetspot=o->value();
 progdefaults.changed = true;}
-            tooltip {Transmit Reed Solomon ID} xywh {49 138 119 20} down_box DOWN_BOX
-            code0 {o->value(progdefaults.TransmitRSid);}
-          }
-          Fl_Check_Button chkRSidWideSearch {
-            label {Wide Search Detector}
-            callback {progdefaults.rsidWideSearch=o->value();
+                xywh {182 71 65 20} minimum 200 maximum 4000 step 1 value 1000
+                code0 {o->value(progdefaults.RTTYsweetspot);}
+              }
+              Fl_Value_Input valPSKsweetspot {
+                label {PSK etal}
+                callback {progdefaults.PSKsweetspot=o->value();
 progdefaults.changed = true;}
-            xywh {188 140 85 15} down_box DOWN_BOX
-            code0 {o->value(progdefaults.rsidWideSearch);}
-          }
-        }
-        Fl_Group {} {
-          label {CPU speed} open
-          xywh {5 172 390 43} box ENGRAVED_FRAME align 21
-        } {
-          Fl_Check_Button chkSlowCpu {
-            label {Slow cpu}
-            callback {progdefaults.slowcpu = o->value();
+                xywh {315 71 65 20} minimum 200 maximum 4000 step 1 value 1000
+                code0 {o->value(progdefaults.PSKsweetspot);}
+              }
+              Fl_Check_Button btnStartAtSweetSpot {
+                label {Start New Modem at Sweet Spot}
+                callback {progdefaults.StartAtSweetSpot = o->value();
 progdefaults.changed = true;}
-            xywh {110 182 89 20} down_box DOWN_BOX
-            code0 {o->value(progdefaults.slowcpu);}
+                xywh {49 100 246 25} down_box DOWN_BOX value 1
+                code0 {o->value(progdefaults.StartAtSweetSpot);}
+              }
+            }
           }
         }
       }
@@ -1640,13 +1673,6 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
               xywh {321 117 65 20} type Simple align 4 minimum 68 maximum 80 step 1 value 72
             }
-            Fl_Check_Button btnRTTY_USB {
-              label {RTTY is USB}
-              callback {progdefaults.RTTY_USB = o->value();
-progdefaults.changed = true;}
-              xywh {235 185 22 22} down_box DOWN_BOX align 4
-              code0 {o->value(progdefaults.RTTY_USB);}
-            }
             Fl_Group {} {
               label AFC open
               xywh {135 60 130 60} box ENGRAVED_FRAME color 51 align 21
@@ -1710,12 +1736,12 @@ progdefaults.changed = true;}
     Fl_Return_Button btnCloseConfig {
       label Close
       callback {closeDialog();}
-      xywh {285 222 100 25}
+      xywh {285 228 100 25}
     }
     Fl_Button btnSaveConfig {
       label {Save Config}
       callback {progdefaults.saveDefaults();}
-      xywh {15 222 100 25}
+      xywh {15 228 100 25}
     }
   }
 } 

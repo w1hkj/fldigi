@@ -636,7 +636,7 @@ void init_modem(trx_mode mode)
 	clear_StatusMessages();
 	progStatus.lastmode = mode;
 	
-	if (wf->xmtlock->value() == 1) {
+	if (wf->xmtlock->value() == 1 && !mailserver) {
 		wf->xmtlock->value(0);
 		wf->xmtlock->damage();
 		active_modem->set_freqlock(false);
@@ -1615,12 +1615,16 @@ int below(Fl_Widget* w)
 
 char main_window_title[256];
 void update_main_title() {
-  snprintf(main_window_title, sizeof(main_window_title),
-       "%s %s -- %s",
-       PACKAGE_NAME, PACKAGE_VERSION,
-       progdefaults.myCall.empty() ? "NO CALLSIGN SET" : progdefaults.myCall.c_str());
-  if (fl_digi_main != NULL)
-    fl_digi_main->label(main_window_title);
+	string macrotitle = " -- ";
+	macrotitle.append(progStatus.LastMacroFile);
+
+	snprintf(main_window_title, sizeof(main_window_title),
+		"%s %s -- %s %s",
+		PACKAGE_NAME, PACKAGE_VERSION,
+		progdefaults.myCall.empty() ? "NO CALLSIGN SET" : progdefaults.myCall.c_str(),
+		macrotitle.c_str());
+	if (fl_digi_main != NULL)
+		fl_digi_main->label(main_window_title);
 }
 
 

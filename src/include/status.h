@@ -1,6 +1,10 @@
 #ifndef _status_H
 #define _status_H
 
+#include <iostream>
+#include <fstream>
+#include <string>
+
 #include "globals.h"
 
 struct status {
@@ -35,12 +39,14 @@ struct status {
 	bool	scopeVisible;
 	int		scopeW;
 	int		scopeH;
+	string	LastMacroFile;
 
 	bool	bLastStateRead;
 
 	void initLastState();
 	void saveLastState();
 	void loadLastState();
+	
 };
 
 extern status progStatus;

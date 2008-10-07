@@ -27,15 +27,15 @@
 
 #include <config.h>
 
-#include <string>
 #include <FL/Fl.H>
 #include <FL/fl_ask.H>
 
 #include "olivia.h"
 #include "sound.h"
-#include "status.h"
 
 #include "confdialog.h"
+
+#include "status.h"
 
 using namespace std;
 
