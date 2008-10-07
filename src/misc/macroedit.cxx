@@ -9,6 +9,7 @@
 #include "macros.h"
 #include "macroedit.h"
 #include "globals.h"
+#include "status.h"
 
 #include <string>
 
@@ -138,10 +139,13 @@ void cbInsertMacro(Fl_Widget *, void *)
 	macrotext->take_focus();
 }
 
-Fl_Double_Window* make_macroeditor() {
-	Fl_Double_Window* w;
-	{ Fl_Double_Window* o = new Fl_Double_Window(700, 230, "Edit User Macro");
-		w = o;
+static string editor_label;
+
+Fl_Double_Window* make_macroeditor(void)
+{
+	editor_label.append("Macro editor - ").append(progStatus.LastMacroFile);
+
+	Fl_Double_Window* w = new Fl_Double_Window(700, 230, editor_label.c_str());
 		labeltext = new Fl_Input(114, 15, 95, 25, "Label:");
 		
 		btnMacroEditOK = new Fl_Button(500, 15, 75, 25, "OK");
@@ -160,8 +164,7 @@ Fl_Double_Window* make_macroeditor() {
 		macroDefs = new Fl_Hold_Browser(490, 60, 200, 165);
 		macroDefs->column_widths(widths);
 		loadBrowser(macroDefs);
-		o->end();
-	}
+	w->end();
 	return w;
 }
 

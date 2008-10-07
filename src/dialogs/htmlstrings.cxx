@@ -553,7 +553,7 @@ char szAbout[] =
 <BODY BGCOLOR=FFFFCO TEXT=101010>\
 <font size=\"0\" face=\"Verdana, Arial, Helvetica\">\
 <CENTER>\
-<H1><I>Fldigi</I></H1>\
+<H1><I>Fldigi " PACKAGE_VERSION "</I></H1>\
 <br>\
 </CENTER>\
 <H4>Digital modem program for</H4><br>\
@@ -561,7 +561,7 @@ char szAbout[] =
 &nbsp; &nbsp; &nbsp;Linux<br>\
 &nbsp; &nbsp; &nbsp;FreeBSD<br>\
 &nbsp; &nbsp; &nbsp;OS X<br>\
-&nbsp; &nbsp; &nbsp;Windows (XP)<br>\
+&nbsp; &nbsp; &nbsp;Windows<br>\
 <br>\
 <H4>Programmers:</H4><br>\
 <P>\
