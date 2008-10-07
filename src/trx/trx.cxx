@@ -52,6 +52,7 @@ void	trx_start_modem_loop();
 void	trx_receive_loop();
 void	trx_transmit_loop();
 void	trx_tune_loop();
+static void signal_trx_state(void);
 
 //#define DEBUG
 
@@ -321,7 +322,13 @@ void *trx_loop(void *args)
 {
 	SET_THREAD_ID(TRX_TID);
 
+	state_t old_state = STATE_NOOP;
+
 	for (;;) {
+		if (unlikely(old_state != trx_state)) {
+			old_state = trx_state;
+			signal_trx_state();
+		}
 		switch (trx_state) {
 		case STATE_ABORT:
 			delete scard;
@@ -351,32 +358,21 @@ void *trx_loop(void *args)
 }
 
 //=============================================================================
-modem *trx_m;
+modem* new_modem;
 
 void trx_start_modem_loop()
 {
-	if (trx_m == active_modem) {
-		trx_state = STATE_RX;
+	if (new_modem == active_modem) {
 		active_modem->restart();
-		signal_modem_ready();
+		trx_state = STATE_RX;
 		return;
 	}
 
 	modem* old_modem = active_modem;
 
-	if (old_modem == trx_m) {
-		trx_state = STATE_RX;
-		signal_modem_ready();
-		return;
-	}
-
-	if (old_modem)
-		old_modem->shutdown();
-
-	active_modem = trx_m;
-	active_modem->init();
+	new_modem->init();
+	active_modem = new_modem;
 	trx_state = STATE_RX;
-	signal_modem_ready();
 	REQ(&waterfall::opmode, wf);
 
 	if (old_modem) {
@@ -388,7 +384,7 @@ void trx_start_modem_loop()
 //=============================================================================
 void trx_start_modem(modem *m)
 {
-	trx_m = m;
+	new_modem = m;
 	trx_state = STATE_NEW_MODEM;
 }
 
@@ -538,36 +534,24 @@ void trx_tune(void) { trx_state = STATE_TUNE; }
 void trx_receive(void) { trx_state = STATE_RX; }
 
 //=============================================================================
-void wait_modem_ready_prep(void)
-{
-#ifndef NDEBUG
-        if (GET_THREAD_ID() == TRX_TID)
-		LOG_ERROR("trx thread called wait_modem_ready_prep!");
-#endif
 
+void wait_trx_state_prep(void)
+{
         pthread_mutex_lock(&trx_cond_mutex);
 }
-
-void wait_modem_ready_cmpl(void)
+void wait_trx_state_wait(void)
 {
-#ifndef NDEBUG
-        if (GET_THREAD_ID() == TRX_TID)
-                LOG_ERROR("trx thread called wait_modem_ready_cmpl!");
-#endif
-
         pthread_cond_wait(&trx_cond, &trx_cond_mutex);
+}
+void wait_trx_state_cmpl(void)
+{
         pthread_mutex_unlock(&trx_cond_mutex);
 }
 
-void signal_modem_ready(void)
+static void signal_trx_state(void)
 {
-#ifndef NDEBUG
-        if (GET_THREAD_ID() != TRX_TID)
-		LOG_ERROR("thread %d called signal_modem_ready!", GET_THREAD_ID());
-#endif
-
+	ENSURE_THREAD(TRX_TID);
         pthread_mutex_lock(&trx_cond_mutex);
         pthread_cond_broadcast(&trx_cond);
         pthread_mutex_unlock(&trx_cond_mutex);
 }
-

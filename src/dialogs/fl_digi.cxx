@@ -585,17 +585,12 @@ void init_modem(trx_mode mode)
 
 void init_modem_sync(trx_mode m)
 {
+	ENSURE_THREAD(FLMAIN_TID);
+
 	if (trx_state != STATE_RX)
-		return;
+		TRX_WAIT(STATE_RX, abort_tx());
 
-#ifndef NDEBUG
-        if (GET_THREAD_ID() == TRX_TID)
-                LOG_ERROR("trx thread called init_modem_sync!");
-#endif
-
-        wait_modem_ready_prep();
-        init_modem(m);
-        wait_modem_ready_cmpl();
+	TRX_WAIT(STATE_RX, init_modem(m));
 	REQ_FLUSH(TRX_TID);
 }
 

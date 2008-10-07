@@ -48,9 +48,9 @@ extern	void	trx_receive();
 extern	void	trx_reset(void);
 extern	void	trx_start_macro_timer();
 
-extern	void	wait_modem_ready_prep(void);
-extern	void	wait_modem_ready_cmpl(void);
-extern	void	signal_modem_ready(void);
+extern void	wait_trx_state_prep(void);
+extern void	wait_trx_state_wait(void);
+extern void	wait_trx_state_cmpl(void);
 
 extern	void	macro_timer(void *);
 
@@ -61,5 +61,15 @@ extern cRsId		*ReedSolomon;
 extern	SoundBase 	*scard;
 
 extern  bool bHistory;
+
+#define TRX_WAIT(s_, code_)			\
+	do {					\
+		ENSURE_NOT_THREAD(TRX_TID);	\
+		wait_trx_state_prep();		\
+		code_;				\
+		while (trx_state != s_)		\
+			wait_trx_state_wait();	\
+		wait_trx_state_cmpl();		\
+	} while (0)
 
 #endif
