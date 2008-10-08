@@ -5,18 +5,10 @@
 #ifndef SERIALCOMMH
 #define SERIALCOMMH
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
 #include <termios.h>
-#include <stdio.h>
-#include <sys/time.h>
-
-#include <memory>
 #include <string>
 
-using namespace std;
+void adjust_port(std::string& port);
 
 class Cserial  {
 public:
@@ -29,8 +21,8 @@ public:
 	bool IsOpen() { return fd < 0 ? 0 : 1; };
 	void ClosePort();
 
-	void Device (string dev) { device = dev;};
-	string Device() { return device;};
+	void Device (std::string dev) { device = dev;};
+	std::string Device() { return device;};
 	
 	void Baud(int b) { baud = b;};
 	int  Baud() { return baud;};
@@ -64,7 +56,7 @@ public:
 	
 private:
 //Members
-	string	device;
+	std::string	device;
 	int		fd;
 	int		baud;
 	int		speed;

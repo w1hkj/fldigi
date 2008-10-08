@@ -26,7 +26,9 @@
 #include "rigdialog.h"
 
 #include "stacktrace.h"
-#include "re.h"
+#ifdef CYGWIN
+#  include "serial.h"
+#endif
 #include "debug.h"
 
 using namespace std;
@@ -58,27 +60,6 @@ void show_error(const char* msg1, const char* msg2 = 0)
 	put_status(error.c_str(), 10.0);
 	LOG_ERROR("%s", error.c_str());
 }
-
-#ifdef __CYGWIN__
-// convert COMx to /dev/ttySy with y = x - 1
-static void adjust_port(string& port)
-{
-	re_t re("com([0-9]+)", REG_EXTENDED | REG_ICASE);
-	const char* s;
-	if (!(re.match(port.c_str()) && (s = re.submatch(1))))
-		return;
-	stringstream ss;
-	int n;
-	ss << s;
-	ss >> n;
-	if (--n < 0)
-		n = 0;
-	ss.clear(); ss.str("");
-	ss << "/dev/ttyS" << n;
-	ss.seekp(0);
-	port = ss.str();
-}
-#endif
 
 bool hamlib_init(bool bPtt)
 {

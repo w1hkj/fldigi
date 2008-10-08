@@ -108,6 +108,8 @@
 #	include "xmlrpc.h"
 #endif
 #include "debug.h"
+#include "re.h"
+#include "network.h"
 
 Fl_Double_Window	*fl_digi_main=(Fl_Double_Window *)0;
 Fl_Help_Dialog 		*help_dialog = (Fl_Help_Dialog *)0;
@@ -181,6 +183,7 @@ int Hwfall = DEFAULT_HWFALL;
 int HNOM = DEFAULT_HNOM;
 int WNOM = DEFAULT_WNOM;
 
+bool clean_exit(void);
 
 void cb_init_mode(Fl_Widget *, void *arg);
 
@@ -432,70 +435,6 @@ void cb_mnuSaveMacro(Fl_Menu_*, void*) {
 	restoreFocus();
 }
 
-//bool logging = false;
-//void cb_mnuLogFile(Fl_Menu_ *, void *) {
-//	logging = !logging;
-//	restoreFocus();
-//}
-
-bool clean_exit() {
-	arq_close();
-
-	if (progdefaults.changed == true) {
-		switch (fl_choice("Save changed configuration before exiting?", "Cancel", "Save", "Don't save")) {
-		case 0:
-			return false;
-		case 1:
-			progdefaults.saveDefaults();
-			// fall through
-		case 2:
-			break;
-		}
-	}
-	if (macros.changed == true) {
-		switch (fl_choice("Save changed macros before exiting?", "Cancel", "Save", "Don't save")) {
-		case 0:
-			return false;
-		case 1:
-			macros.saveMacroFile();
-			// fall through
-		case 2:
-			break;
-		}
-	}
-	if (Maillogfile)
-		Maillogfile->log_to_file_stop();
-	if (logfile)
-		logfile->log_to_file_stop();
-	
-	if (bSaveFreqList)
-		saveFreqList();
-		
-	progStatus.saveLastState();
-
-#if USE_HAMLIB
-	hamlib_close();
-#endif
-	rigCAT_close();
-	rigMEM_close();
-
-	if (mixer)
-		mixer->closeMixer();
-
-	if (trx_state == STATE_RX || trx_state == STATE_TX || trx_state == STATE_TUNE)
-		trx_state = STATE_ABORT;
-	else {
-		LOG_ERROR("trx in unexpected state %d", trx_state);
-		exit(1);
-	}
-	while (trx_state != STATE_ENDED) {
-		REQ_FLUSH(GET_THREAD_ID());
-		MilliSleep(10);
-	}
-
-	return true;
-}
-
 void cb_E(Fl_Menu_*, void*) {
 	fl_digi_main->do_callback();
 }
@@ -646,17 +585,12 @@ void init_modem(trx_mode mode)
 
 void init_modem_sync(trx_mode m)
 {
+	ENSURE_THREAD(FLMAIN_TID);
+
 	if (trx_state != STATE_RX)
-		return;
+		TRX_WAIT(STATE_RX, abort_tx());
 
-#ifndef NDEBUG
-        if (GET_THREAD_ID() == TRX_TID)
-                LOG_ERROR("trx thread called init_modem_sync!");
-#endif
-
-        wait_modem_ready_prep();
-        init_modem(m);
-        wait_modem_ready_cmpl();
+	TRX_WAIT(STATE_RX, init_modem(m));
 	REQ_FLUSH(TRX_TID);
 }
 
@@ -855,13 +789,6 @@ void cb_mnuSaveConfig(Fl_Menu_ *, void *) {
 	restoreFocus();
 }
 
-void cb_mnuAbout(Fl_Widget*, void*)
-{
-	fl_message ("%s @@W1HKJ\n\n%s\n\n%s\n\nVersion %s", PACKAGE_NAME,
-		    PACKAGE_BUGREPORT, PACKAGE_HOME, PACKAGE_VERSION);
-	restoreFocus();
-}
-
 void cb_mnuVisitURL(Fl_Widget*, void* arg)
 {
 	const char* url = reinterpret_cast<const char *>(arg);
@@ -922,6 +849,57 @@ void cb_mnuBeginnersURL(Fl_Widget*, void*)
 #else
 	cb_mnuVisitURL(NULL, (void *)deffname.c_str());
 #endif
+}
+
+void cb_mnuCheckUpdate(Fl_Widget* w, void*)
+{
+	struct {
+		const char* url;
+		const char* re;
+		string version_str;
+		long version;
+	} sites[] = {
+		{ PACKAGE_HOME, "fldigi-distro/fldigi-([0-9.]+).tar.gz", "", 0 },
+		{ PACKAGE_PROJ, "fldigi/fldigi-([0-9.]+).tar.gz", "", 0 }
+	}, *latest;
+	string reply;
+
+	w->window()->cursor(FL_CURSOR_WAIT);
+	put_status("Checking for updates...");
+	for (size_t i = 0; i < sizeof(sites)/sizeof(*sites); i++) { // fetch .url, grep for .re
+		Fl::check();
+		reply.clear();
+		if (!fetch_http(sites[i].url, reply, 20.0))
+			continue;
+		re_t re(sites[i].re, REG_EXTENDED | REG_ICASE | REG_NEWLINE);
+		if (!re.match(reply.c_str()) || re.nsub() != 2)
+			continue;
+
+		sites[i].version = ver2int((sites[i].version_str = re.submatch(1)).c_str());
+	}
+	w->window()->cursor(FL_CURSOR_DEFAULT);
+	put_status("");
+
+	latest = sites[1].version > sites[0].version ? &sites[1] : &sites[0];
+	if (sites[0].version == 0 && sites[1].version == 0) {
+		fl_message("Could not check for updates:\n%s", reply.c_str());
+		return;
+	}
+	if (latest->version > ver2int(PACKAGE_VERSION)) {
+		switch (fl_choice("Version %s is available at\n\n%s\n\nWhat would you like to do?",
+				  "Close", "Visit URL", "Copy URL",
+				  latest->version_str.c_str(), latest->url)) {
+		case 1:
+			cb_mnuVisitURL(NULL, (void*)latest->url);
+			break;
+		case 2:
+			size_t n = strlen(latest->url);
+			Fl::copy(latest->url, n, 0);
+			Fl::copy(latest->url, n, 1);
+		}
+	}
+	else
+		fl_message("You are running the latest version");
 }
 
 void cb_mnuAboutURL(Fl_Widget*, void*)
@@ -1116,65 +1094,47 @@ void cb_sldrSquelch(Fl_Slider* o, void*) {
 	restoreFocus();
 }
 
-char *zuluTime()
+const char *zuluTime()
 {
-	struct tm *tm;
 	time_t t;
-	static char logtime[10];
-	time(&t);
-    tm = gmtime(&t);
-	strftime(logtime, sizeof(logtime), "%H%M", tm);
+	struct tm tm;
+	static char logtime[5];
+	if ((t = time(NULL)) != (time_t)-1 && gmtime_r(&t, &tm) &&
+	    strftime(logtime, sizeof(logtime), "%H%M", &tm))
 	return logtime;
+	else
+		return NULL;
 }
 
-bool oktoclear = false;
+bool oktoclear = true;
 
 void qsoTime_cb(Fl_Widget *b, void *)
 {
-	FL_LOCK_D();
 	inpTime->value(zuluTime());
-	FL_UNLOCK_D();
-	FL_AWAKE_D();
 	oktoclear = false;
 	restoreFocus();
 }
 
 void clearQSO()
 {
-	FL_LOCK_D();
+	Fl_Input* in[] = { inpCall, inpName, inpRstIn, inpRstOut,
+			   inpQth, inpNotes, inpLoc, inpAZ };
+	for (size_t i = 0; i < sizeof(in)/sizeof(*in); i++)
+		in[i]->value("");
 		inpTime->value(zuluTime());
-		inpCall->value("");
-		inpName->value("");
-		inpRstIn->value("");
-		inpRstOut->value("");
-		inpQth->value("");
-		inpLoc->value("");
-		inpAZ->value(""); // WA5ZNU
-		inpNotes->value("");
-	FL_UNLOCK_D();
 }
 
-void cb_log(Fl_Widget *b, void *)
+void cb_log(Fl_Widget*, void*)
 {
 	oktoclear = false;
-}
-
-void cb_callsign(Fl_Widget *b, void *)
-{
-	oktoclear = false;
-	restoreFocus();
 }
 
 void qsoClear_cb(Fl_Widget *b, void *)
 {
-	if (oktoclear) {
+	if (oktoclear || fl_choice("Clear log fields?", "Cancel", "OK", NULL) == 1) {
 		clearQSO();
-		FL_AWAKE_D();
-	} else if (fl_choice ("Clear log fields?", "Cancel", "OK", NULL) == 1) {
-		clearQSO();
-		FL_AWAKE_D();
-	}
 	oktoclear = true;
+	}
 	restoreFocus();
 }
 
@@ -1298,6 +1258,75 @@ int default_handler(int event)
 		}
 	}
 	return 0;
+}
+
+bool clean_exit(void) {
+	arq_close();
+
+	if (progdefaults.changed) {
+		switch (fl_choice("Save changed configuration before exiting?", "Cancel", "Save", "Don't save")) {
+		case 0:
+			return false;
+		case 1:
+			progdefaults.saveDefaults();
+			// fall through
+		case 2:
+			break;
+		}
+	}
+	if (!oktoclear) {
+		switch (fl_choice("Save log before exiting?", "Cancel", "Save", "Don't save")) {
+		case 0:
+			return false;
+		case 1:
+			qsoSave_cb(0, 0);
+			// fall through
+		case 2:
+			break;
+		}
+	}
+	if (macros.changed) {
+		switch (fl_choice("Save changed macros before exiting?", "Cancel", "Save", "Don't save")) {
+		case 0:
+			return false;
+		case 1:
+			macros.saveMacroFile();
+			// fall through
+		case 2:
+			break;
+		}
+	}
+	if (Maillogfile)
+		Maillogfile->log_to_file_stop();
+	if (logfile)
+		logfile->log_to_file_stop();
+
+	if (bSaveFreqList)
+		saveFreqList();
+
+	progStatus.saveLastState();
+
+#if USE_HAMLIB
+	hamlib_close();
+#endif
+	rigCAT_close();
+	rigMEM_close();
+
+	if (mixer)
+		mixer->closeMixer();
+
+	if (trx_state == STATE_RX || trx_state == STATE_TX || trx_state == STATE_TUNE)
+		trx_state = STATE_ABORT;
+	else {
+		LOG_ERROR("trx in unexpected state %d", trx_state);
+		exit(1);
+	}
+	while (trx_state != STATE_ENDED) {
+		REQ_FLUSH(GET_THREAD_ID());
+		MilliSleep(10);
+	}
+
+	return true;
 }
 
 // XPM Calendar Label
@@ -1469,12 +1498,13 @@ Fl_Menu_Item menu_[] = {
 {"@-1circle  Create sunspots", 0, cb_mnuFun, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 #endif
 {"Beginners' Guide", 0, cb_mnuBeginnersURL, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"Online documentation", 0, cb_mnuVisitURL, (void *)PACKAGE_DOCS, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"Home page", 0, cb_mnuVisitURL, (void *)PACKAGE_HOME, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{"Online documentation...", 0, cb_mnuVisitURL, (void *)PACKAGE_DOCS, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{"Fldigi web site...", 0, cb_mnuVisitURL, (void *)PACKAGE_HOME, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 {"Command line options", 0, cb_mnuCmdLineHelp, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"Audio device info", 0, cb_mnuAudioInfo, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"Build info", 0, cb_mnuBuildInfo, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"Event log", 0, cb_mnuDebug, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{"Check for updates...", 0, cb_mnuCheckUpdate, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"About", 0, cb_mnuAboutURL, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 	
@@ -1613,18 +1643,13 @@ int below(Fl_Widget* w)
 	return (a & FL_ALIGN_BOTTOM) ? w->y() + w->h() + FL_NORMAL_SIZE : w->y() + w->h();
 }
 
-char main_window_title[256];
-void update_main_title() {
-	string macrotitle = " -- ";
-	macrotitle.append(progStatus.LastMacroFile);
-
-	snprintf(main_window_title, sizeof(main_window_title),
-		"%s %s -- %s %s",
-		PACKAGE_NAME, PACKAGE_VERSION,
-		progdefaults.myCall.empty() ? "NO CALLSIGN SET" : progdefaults.myCall.c_str(),
-		macrotitle.c_str());
+string main_window_title;
+void update_main_title()
+{
+	main_window_title = PACKAGE_TARNAME " - ";
+	main_window_title += (progdefaults.myCall.empty() ? "NO CALLSIGN SET" : progdefaults.myCall.c_str());
 	if (fl_digi_main != NULL)
-		fl_digi_main->label(main_window_title);
+		fl_digi_main->label(main_window_title.c_str());
 }
 
 
@@ -1635,7 +1660,7 @@ void create_fl_digi_main() {
 	if (twoscopes) 	WNOM -= 2*DEFAULT_SW;
 	
     update_main_title();
-    fl_digi_main = new Fl_Double_Window(WNOM, HNOM, main_window_title);
+    fl_digi_main = new Fl_Double_Window(WNOM, HNOM, main_window_title.c_str());
 			mnu = new Fl_Menu_Bar(0, 0, WNOM - 150 - pad, Hmenu);
 			// FL_NORMAL_SIZE may have changed; update the menu items
 			for (size_t i = 0; i < sizeof(menu_)/sizeof(menu_[0]); i++)
@@ -1650,7 +1675,7 @@ void create_fl_digi_main() {
 			Fl_Tooltip::font(FL_HELVETICA);
 			Fl_Tooltip::size(FL_NORMAL_SIZE);
 
-			btnRSID = new Fl_Light_Button(WNOM - 150 - pad, 0, 50, Hmenu, "RSID ?");
+			btnRSID = new Fl_Light_Button(WNOM - 150 - pad, 0, 50, Hmenu, "RSID");
 			btnRSID->selection_color(FL_GREEN);
 			btnRSID->callback(cbRSID, 0);
 			
@@ -1673,11 +1698,9 @@ void create_fl_digi_main() {
 		Fl_Group *qsoFrame = new Fl_Group(0, Y, WNOM, Hqsoframe);
 			inpFreq = new Fl_Input(pad, Y + Hqsoframe/2 - pad, 85, Hqsoframe/2, "Frequency");
 			inpFreq->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-			inpFreq->callback(cb_log, 0);
 
 			inpTime = new Fl_Input(rightof(inpFreq) + pad, Y + Hqsoframe/2 - pad, 45, Hqsoframe/2, "Time");
 			inpTime->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-			inpTime->callback(cb_log, 0);
 
 			qsoTime = new Fl_Button(rightof(inpTime) + pad, Y + Hqsoframe/2 - pad, 24, Hqsoframe/2);
 			Fl_Image *pixmap = new Fl_Pixmap(cal_16);
@@ -1686,20 +1709,15 @@ void create_fl_digi_main() {
 
 			inpCall = new Fl_Input(rightof(qsoTime) + pad, Y + Hqsoframe/2 - pad, 80, Hqsoframe/2, "Call");
 			inpCall->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-			inpCall->callback(cb_callsign, 0);
-			inpCall->when(FL_WHEN_ENTER_KEY|FL_WHEN_NOT_CHANGED);
 
 			inpName = new Fl_Input(rightof(inpCall) + pad, Y + Hqsoframe/2 - pad, 100, Hqsoframe/2, "Name");
 			inpName->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-			inpName->callback(cb_log, 0);
 
 			inpRstIn = new Fl_Input(rightof(inpName) + pad, Y + Hqsoframe/2 - pad, 35, Hqsoframe/2, "RST In ");
 			inpRstIn->align(FL_ALIGN_TOP | FL_ALIGN_RIGHT);
-			inpRstIn->callback(cb_log, 0);
 
 			inpRstOut = new Fl_Input(rightof(inpRstIn) + pad, Y + Hqsoframe/2 - pad, 35, Hqsoframe/2, "Out");
 			inpRstOut->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-			inpRstOut->callback(cb_log, 0);
 
 			btnQRZ = new Fl_Button(WNOM - 40 - pad, Y + 1, 40, Hqsoframe/2 - pad, "QRZ");
 			btnQRZ->callback(cb_QRZ, 0);
@@ -1707,7 +1725,6 @@ void create_fl_digi_main() {
 			inpQth = new Fl_Input(rightof(inpRstOut) + pad, Y + Hqsoframe/2 - pad,
 					      leftof(btnQRZ) - rightof(inpRstOut) - 2*pad, Hqsoframe/2, "QTH");
 			inpQth->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-			inpQth->callback(cb_log, 0);
 			qsoFrame->resizable(inpQth);
 
 			qsoClear = new Fl_Button(WNOM - 40 - pad, Y + Hqsoframe/2 + 1, 40, Hqsoframe/2 - pad, "Clear");
@@ -1722,17 +1739,14 @@ void create_fl_digi_main() {
 
 			inpAZ = new Fl_Input(leftof(qsoSave) - 40 - pad, Y, 40, Hnotes, "Az"); // WA5ZNU
 			inpAZ->align(FL_ALIGN_LEFT);
-			inpAZ->callback(cb_log, 0);
 
 			inpLoc = new Fl_Input(leftof(inpAZ) - pad - pad - 70, Y, 70, Hnotes, "Loc");
 			inpLoc->align(FL_ALIGN_LEFT);
-			inpLoc->callback(cb_log, 0);
 
 			// align this vertically with the Call field
 			inpNotes = new Fl_Input(leftof(inpLoc) - pad - (leftof(inpLoc) - leftof(inpCall)), Y, 
 			                        leftof(inpLoc) - leftof(inpCall) - 2*pad, Hnotes, "Notes");
 			inpNotes->align(FL_ALIGN_LEFT);
-			inpNotes->callback(cb_log, 0);			
 			qsoFrame2->resizable(inpNotes);
 
 			btnSideband = new Fl_Button(leftof(inpNotes) - 2*pad - (Hnotes-2), Y+1, Hnotes-2, Hnotes-2, "U");
@@ -1743,6 +1757,11 @@ void create_fl_digi_main() {
 		qsoFrame2->end();
 		Y += Hnotes;
 		
+		Fl_Widget* logfields[] = { inpFreq, inpTime, inpCall, inpName, inpRstIn,
+					   inpRstOut, inpQth, inpAZ, inpLoc, inpNotes };
+		for (size_t i = 0; i < sizeof(logfields)/sizeof(*logfields); i++)
+			logfields[i]->callback(cb_log);
+
 		int sw = DEFAULT_SW;
 		MixerFrame = new Fl_Group(0,Y,sw, Hrcvtxt + Hxmttxt);
 			valRcvMixer = new Fl_Value_Slider(0, Y, sw, (Htext)/2, "");
@@ -1789,6 +1808,10 @@ void create_fl_digi_main() {
 			ReceiveText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
 			ReceiveText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
 			ReceiveText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
+			string Macroset = "<<<===== Macro File ";
+			Macroset.append(progStatus.LastMacroFile);
+			Macroset.append(" Loaded =====>>>\n\n");
+			ReceiveText->add(Macroset.c_str());
 	
 			TiledGroup->add_resize_check(FTextView::wheight_mult_tsize, ReceiveText);
 			FHdisp = new Raster(sw, Y, WNOM-sw, minRxHeight);
@@ -1982,7 +2005,6 @@ void create_fl_digi_main() {
 			Fl_Group::current()->resizable(StatusBar);
 		hpack->end();
 
-		fl_digi_main->size_range(WNOM, HNOM);
 	fl_digi_main->end();
 	fl_digi_main->callback(cb_wMain);
 
@@ -1994,7 +2016,7 @@ void create_fl_digi_main() {
 #endif
 
 	fl_digi_main->xclass(PACKAGE_NAME);
-//	Fl::set_atclose(clean_exit);
+	fl_digi_main->size_range(WNOM, (HNOM < 400 ? HNOM : 400));
 
 	scopeview = new Fl_Double_Window(0,0,140,140, "Scope");
 	scopeview->xclass(PACKAGE_NAME);

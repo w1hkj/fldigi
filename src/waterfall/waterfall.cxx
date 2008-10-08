@@ -1516,7 +1516,8 @@ int WFdisp::handle(int event)
 			}
 			if (progdefaults.WaterfallHistoryDefault)
 				bHistory = true;
-			newcarrier = cursorFreq(xpos);
+			if ((newcarrier = cursorFreq(xpos)) > wf->wfcarrier->maximum())
+				break;
 			active_modem->set_freq(newcarrier);
 			if (!(Fl::event_state() & FL_SHIFT))
 				active_modem->set_sigsearch(SIGSEARCH);

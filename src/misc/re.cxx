@@ -97,7 +97,7 @@ bool re_t::match(const char* str, int eflags_)
 	if (found && !nosub) {
 		for (vector<regmatch_t>::iterator i = suboff.begin(); i != suboff.end(); i++)
 			if (i->rm_so != -1)
-				substr.push_back(string(str + i->rm_so, i->rm_eo));
+				substr.push_back(string(str + i->rm_so, i->rm_eo - i->rm_so));
 	}
 
 	return found;
@@ -105,5 +105,5 @@ bool re_t::match(const char* str, int eflags_)
 
 const char* re_t::submatch(size_t n)
 {
-	return n < substr.size() ? substr[n].c_str() : 0;
+	return n < nsub() ? substr[n].c_str() : 0;
 }

@@ -27,8 +27,26 @@ uint32_t floor2(uint32_t n)
         return n - (n >> 1);
 }
 
-#if !HAVE_STRCASESTR
 #  include <stdlib.h>
+#include "re.h"
+long ver2int(const char* version)
+{
+	const char version_re[] = "([0-9])\\.([0-9]+)\\.?([0-9]+)?";
+	re_t re(version_re, REG_EXTENDED);
+	long v = 0;
+
+	if (!re.match(version))
+		return 0;
+
+	if (re.nsub() == 4)
+		v += strtol(re.submatch(3), NULL, 10);
+	v += strtol(re.submatch(2), NULL, 10) * 1000L;
+	v += strtol(re.submatch(1), NULL, 10) * 1000000L;
+
+	return v;
+}
+
+#if !HAVE_STRCASESTR
 #  include <ctype.h>
 #  include <string.h>
 // a simple inefficient implementation of strcasestr

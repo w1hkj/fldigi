@@ -199,6 +199,7 @@ fldigi_SOURCES += \
 	include/morse.h \
 	include/mt63base.h \
 	include/mt63.h \
+	include/network.h \
 	include/dsp.h \
 	include/newinstall.h \
 	include/olivia.h \
@@ -263,6 +264,7 @@ fldigi_SOURCES += \
 	misc/macroedit.cxx \
 	misc/macros.cxx \
 	misc/misc.cxx \
+	misc/network.cxx \
 	misc/newinstall.cxx \
 	misc/arq_io.cxx \
 	misc/qrzcall.cxx \

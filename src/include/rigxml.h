@@ -9,21 +9,21 @@
 #include <ctype.h>
 
 struct MODE {
-	string SYMBOL;
-	string BYTES;
-	MODE(string nm, string b) { SYMBOL = nm; BYTES = b;}
-	MODE(string nm, char c) { SYMBOL = nm; BYTES += c;}
+	std::string SYMBOL;
+	std::string BYTES;
+	MODE(std::string nm, std::string b) { SYMBOL = nm; BYTES = b;}
+	MODE(std::string nm, char c) { SYMBOL = nm; BYTES += c;}
 };
 
 struct BW {
-	string SYMBOL;
-	string BYTES;
-	BW(string nm, string b) { SYMBOL = nm; BYTES = b;}
-	BW(string nm, char c) { SYMBOL = nm; BYTES += c;}
+	std::string SYMBOL;
+	std::string BYTES;
+	BW(std::string nm, std::string b) { SYMBOL = nm; BYTES = b;}
+	BW(std::string nm, char c) { SYMBOL = nm; BYTES += c;}
 };
 
 struct DATA {
-	string dtype;
+	std::string dtype;
 	int size;
 	int max;
 	int min;
@@ -44,16 +44,16 @@ struct DATA {
 };
 
 struct XMLIOS {
-	string	SYMBOL;
+	std::string	SYMBOL;
 	int 	size;
-	string	str1;
-	string	str2;
+	std::string	str1;
+	std::string	str2;
 	DATA	data;
 	int		fill1;
 	int		fill2;
-	string	info;
-	string	ok;
-	string	bad;
+	std::string	info;
+	std::string	ok;
+	std::string	bad;
 	void clear() { 
 		SYMBOL = str1 = str2 = info = ok = bad = ""; 
 		size = fill1 = fill2 = 0;
@@ -64,8 +64,8 @@ struct XMLIOS {
 struct TAGS { const char *tag; void (*fp)(size_t &);};
 
 struct XMLRIG {
-	string	SYMBOL;
-	string	port;
+	std::string	SYMBOL;
+	std::string	port;
 	int		baud;
 	bool	echo;
 	int		timeout;
@@ -92,15 +92,15 @@ struct XMLRIG {
 	}
 };
 	
-extern list<XMLIOS> commands;
-extern list<XMLIOS> reply;
-extern list<MODE> lmodes;
-extern list<MODE> lmodeCMD;
-extern list<MODE> lmodeREPLY;
-extern list<BW> lbws;
-extern list<BW> lbwCMD;
-extern list<BW> lbwREPLY;
-extern list<string> LSBmodes;
+extern std::list<XMLIOS> commands;
+extern std::list<XMLIOS> reply;
+extern std::list<MODE> lmodes;
+extern std::list<MODE> lmodeCMD;
+extern std::list<MODE> lmodeREPLY;
+extern std::list<BW> lbws;
+extern std::list<BW> lbwCMD;
+extern std::list<BW> lbwREPLY;
+extern std::list<std::string> LSBmodes;
 extern XMLRIG rig;
 
 extern bool readRigXML();

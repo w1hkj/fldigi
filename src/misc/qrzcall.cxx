@@ -49,6 +49,7 @@
 #include "xmlreader.h"
 
 #include "debug.h"
+#include "network.h"
 
 using namespace std;
 
@@ -73,8 +74,6 @@ string qrzlatd;
 string qrzlond;
 string qrznotes;
 
-const char* error_string;
-
 enum QUERYTYPE { NONE, QRZCD, QRZNET, HAMCALLNET };
 QUERYTYPE DB_query = NONE;
 
@@ -92,8 +91,6 @@ static void *CALLSIGNloop(void *args);
 
 bool parseSessionKey();
 bool parse_xml();
-
-bool request_reply(const string& node, const string& service, const string& request, string& reply);
 
 bool getSessionKey(string& sessionpage);
 bool QRZGetXML(string& xmlpage);
@@ -303,32 +300,6 @@ bool parse_xml(const string& xmlpage)
 	return true;
 }
 
-bool request_reply(const string& node, const string& service, const string& request, string& reply)
-{
-	try {
-		Socket s(Address(node, service));
-		s.connect();
-		s.set_nonblocking();
-		struct timeval timeout = { 5, 0 }; // timeout = 5 seconds
-		s.set_timeout(timeout);
-
-		if (s.send(request) != request.length()) {
-			error_string = "Request timed out";
-			return false;
-		}
-		if (s.recv(reply) == 0) {
-			error_string = "Request timed out";
-			return false;
-		}
-	}
-	catch (const SocketException& e) {
-		error_string = e.what();
-		return false;
-	}
-
-	return true;
-}
-
 bool getSessionKey(string& sessionpage)
 {
 
@@ -348,7 +319,7 @@ bool getSessionKey(string& sessionpage)
 	detail += "Connection: close\n";
 	detail += "\n";
 
-	return request_reply(qrzhost, "http", detail, sessionpage);
+	return request_reply(qrzhost, "http", detail, sessionpage, 5.0);
 }
 
 bool QRZGetXML(string& xmlpage)
@@ -365,7 +336,7 @@ bool QRZGetXML(string& xmlpage)
 	detail += "Connection: close\n";
 	detail += "\n";
 
-	return request_reply(qrzhost, "http", detail, xmlpage);
+	return request_reply(qrzhost, "http", detail, xmlpage, 5.0);
 }
 
 int bearing(const char *myqra, const char *dxqra) {
@@ -607,7 +578,7 @@ void QRZquery()
 	} 
 	if (!ok) {
 		FL_LOCK();
-		inpNotes->value(error_string);
+		inpNotes->value(qrzpage.c_str());
 		FL_UNLOCK();
 	}
 }
@@ -674,7 +645,7 @@ bool HAMCALLget(string& htmlpage)
 	url_detail += VERSION;
 	url_detail += "\r\n";
 
-	return request_reply("www.hamcall.net", "http", url_detail, htmlpage);
+	return request_reply("www.hamcall.net", "http", url_detail, htmlpage, 5.0);
 }
 
 void HAMCALLquery()
@@ -687,7 +658,7 @@ void HAMCALLquery()
 		QRZ_disp_result();
 	} else {
 		FL_LOCK();
-		inpNotes->value(error_string);
+		inpNotes->value(htmlpage.c_str());
 		FL_UNLOCK();
 	}
 }

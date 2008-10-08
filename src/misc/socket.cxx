@@ -38,6 +38,7 @@
 #include <cerrno>
 #include <cstring>
 #include <cstdlib>
+#include <cmath>
 
 #include "debug.h"
 #include "socket.h"
@@ -583,7 +584,7 @@ Socket Socket::accept1(void)
 }
 
 ///
-/// Connects the socket to the address that associated with the object
+/// Connects the socket to the address that is associated with the object
 ///
 void Socket::connect(void)
 {
@@ -736,6 +737,11 @@ void Socket::set_timeout(const struct timeval& t)
 {
 	timeout.tv_sec = t.tv_sec;
 	timeout.tv_usec = t.tv_usec;
+}
+void Socket::set_timeout(double t)
+{
+	timeout.tv_sec = (time_t)floor(t);
+	timeout.tv_usec = (suseconds_t)((t - timeout.tv_sec) * 1e6);
 }
 
 ///

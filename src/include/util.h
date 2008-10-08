@@ -106,6 +106,8 @@ char* strcasestr(const char* haystack, const char* needle);
 
 int set_cloexec(int fd, unsigned char v);
 
+long ver2int(const char* version);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

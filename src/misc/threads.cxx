@@ -54,3 +54,13 @@ int pthread_cond_timedwait_rel(pthread_cond_t* cond, pthread_mutex_t* mutex, dou
 
 	return pthread_cond_timedwait(cond, mutex, &t);
 }
+
+#ifndef NDEBUG
+bool thread_in_list(int id, const int* list)
+{
+	while (*list != INVALID_TID)
+		if (id == *list++)
+			return true;
+	return false;
+}
+#endif

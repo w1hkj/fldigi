@@ -44,7 +44,6 @@ enum state_t {
 	STATE_IDLE,
 	STATE_NEW_MODEM
 };
-extern const char *state_names[];
 
 enum {
 	MODE_PREV = -2,

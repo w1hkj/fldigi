@@ -37,6 +37,17 @@ Change Log:
                "<=== %x %H:%M ====>" for the RX divider line.
       14) Deprecated the "rtty is USB" configuration item.  fldigi adjusts
           all tone inversion sensitive modes for USB / LSB operation.
+      15) Changes to command parsing used by the ARQ interface(s); TLF, SysV
+          and ARQ socket.
+      16) Reduced the minimum main window height.
+      17) Added fldigi-shell time command
+            Try this "stress test":
+            time eval for (1..50) 
+            { execute("modem.set_by_name BPSK31"); \
+              execute("modem.set_by_name RTTY"); }
+      18) Added brief message to the opening Rx text area indicating which
+          macro file was loaded on start up.  Also added name of the working
+          macro file to the title bar of the macro editor.
 
 3.03
       1) Changes to socket server to correct shutdown process

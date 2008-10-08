@@ -34,15 +34,6 @@
 
 using namespace std;
 
-const char *state_names[] = {
-	"PAUSED",
-	"RECEIVE",
-	"TRANSMIT",
-	"TUNING",
-	"ABORTED",
-	"FLUSHING"
-};
-
 // Elements are in enum trx_mode order. Mode name video-id uses the
 // first string (sname), so its length should be a multiple of 2.
 const struct mode_info_t mode_info[NUM_MODES] = {

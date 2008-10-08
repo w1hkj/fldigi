@@ -4,9 +4,13 @@ header_name {.h}
 code_name {.cxx}
 decl {\#include <config.h>} {} 
 
+decl {\#include <string>} {} 
+
 decl {\#include <FL/Fl_Box.H>} {} 
 
 decl {\#include "rigsupport.h"} {} 
+
+decl {using namespace std;} {} 
 
 Function {rig_dialog()} {open
 } {
