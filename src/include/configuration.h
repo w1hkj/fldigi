@@ -181,6 +181,7 @@ struct configuration {
 	int		macronumber;
 	int		timeout;
 	bool	UseLastMacro;
+	bool	DisplayMacroFilename;
 	
 // Mixer configuration
 	string	MXdevice;

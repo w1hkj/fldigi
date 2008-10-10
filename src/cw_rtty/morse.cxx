@@ -85,8 +85,8 @@ static CW_TABLE cw_table[] = {
 	{"\"",		".-..-.",	CW_ENTRY_NORMAL},
 	{"'",		".----.",	CW_ENTRY_NORMAL},
 	{"$",		"...-..-",	CW_ENTRY_NORMAL},
-//	{"(",		"-.--.",	CW_ENTRY_NORMAL},
-//	{")",		"-.--.-",	CW_ENTRY_NORMAL},
+	{"(",		"-.--.",	CW_ENTRY_NORMAL},
+	{")",		"-.--.-",	CW_ENTRY_NORMAL},
 //	{"+",		".-.-.",	CW_ENTRY_NORMAL},
 	{",",		"--..--",	CW_ENTRY_NORMAL},
 	{"-",		"-....-",	CW_ENTRY_NORMAL},
@@ -99,23 +99,19 @@ static CW_TABLE cw_table[] = {
 	{"_",		"..--.-",	CW_ENTRY_NORMAL},
 	{"@",		".--.-.",	CW_ENTRY_NORMAL},
 	{"!",		"-.-.--",	CW_ENTRY_NORMAL},
-	/* ISO 8859-1 accented characters */
-	{"\334\374",	"..--",	CW_ENTRY_NORMAL},  /* U diaeresis */
-	{"\304\344",	".-.-",	CW_ENTRY_NORMAL},  /* A diaeresis */
-	{"\307\347",	"-.-..",CW_ENTRY_NORMAL},  /* C cedilla */
-	{"\326\366",	"---.",	CW_ENTRY_NORMAL},  /* O diaeresis */
-	{"\311\351",	"..-..",CW_ENTRY_NORMAL},  /* E acute */
-	{"\310\350",	".-..-",CW_ENTRY_NORMAL},  /* E grave */
-	{"\305\345",	".--.-",CW_ENTRY_NORMAL},  /* A ring */
-	{"\321\361",	"--.--",CW_ENTRY_NORMAL},  /* N tilde */
-	/* ISO 8859-2 accented characters */
-	{"\252",	"----", 	CW_ENTRY_NORMAL},  /* S cedilla */
-	{"\256",	"--..-",	CW_ENTRY_NORMAL},  /* Z dot above */
 	/* special characters */
+	{"~",     ".-.-",       CW_ENTRY_NORMAL},
+	{"<AA>",  ".-.-",       CW_ENTRY_EXTENDED},
+	{"%",     ".-...",      CW_ENTRY_NORMAL},
+	{"<AS>",  ".-...",      CW_ENTRY_EXTENDED},
+	{"^",     "....--",     CW_ENTRY_NORMAL},
+	{"<HM>",  "....--",     CW_ENTRY_EXTENDED},
+	{"&",     "..-.-",      CW_ENTRY_NORMAL},
+	{"<INT>", "..-.-",      CW_ENTRY_EXTENDED},
 	{">",     "...-.-", 	CW_ENTRY_NORMAL},
-	{"<SK>",	"...-.-",	CW_ENTRY_EXTENDED},
-	{"<",     "-.--.",  	CW_ENTRY_NORMAL},
-	{"<KN>",	"-.--.",	CW_ENTRY_EXTENDED},
+	{"<SK>",  "...-.-",     CW_ENTRY_EXTENDED},
+//	{"<",     "-.--.",  	CW_ENTRY_NORMAL},
+//	{"<KN>",	"-.--.",	CW_ENTRY_EXTENDED},
 	{"}",     ".-.-.",  	CW_ENTRY_NORMAL},
 	{"<AR>",	".-.-.",	CW_ENTRY_EXTENDED},
 	{"{",     "...-.",  	CW_ENTRY_NORMAL},
@@ -123,6 +119,18 @@ static CW_TABLE cw_table[] = {
 	/* Sentinel end of table value */
 	{NULL, NULL, 0}
 };
+	/* ISO 8859-1 accented characters */
+//	{"\334\374",	"..--",	CW_ENTRY_NORMAL},  /* U diaeresis */
+//	{"\304\344",	".-.-",	CW_ENTRY_NORMAL},  /* A diaeresis */
+//	{"\307\347",	"-.-..",CW_ENTRY_NORMAL},  /* C cedilla */
+//	{"\326\366",	"---.",	CW_ENTRY_NORMAL},  /* O diaeresis */
+//	{"\311\351",	"..-..",CW_ENTRY_NORMAL},  /* E acute */
+//	{"\310\350",	".-..-",CW_ENTRY_NORMAL},  /* E grave */
+//	{"\305\345",	".--.-",CW_ENTRY_NORMAL},  /* A ring */
+//	{"\321\361",	"--.--",CW_ENTRY_NORMAL},  /* N tilde */
+	/* ISO 8859-2 accented characters */
+//	{"\252",	"----", 	CW_ENTRY_NORMAL},  /* S cedilla */
+//	{"\256",	"--..-",	CW_ENTRY_NORMAL},  /* Z dot above */
 
 
 /**

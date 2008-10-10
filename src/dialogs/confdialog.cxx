@@ -874,6 +874,13 @@ update_main_title();
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnDisplayMacroFilename=(Fl_Check_Button *)0;
+
+static void cb_btnDisplayMacroFilename(Fl_Check_Button* o, void*) {
+  progdefaults.DisplayMacroFilename = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabRSid=(Fl_Group *)0;
 
 Fl_Check_Button *chkTransmitRSid=(Fl_Check_Button *)0;
@@ -1487,6 +1494,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         tabOperator->selection_color((Fl_Color)51);
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { inpMyCallsign = new Fl_Input(78, 36, 85, 24, "Callsign:");
           inpMyCallsign->callback((Fl_Callback*)cb_inpMyCallsign);
         } // Fl_Input* inpMyCallsign
@@ -2149,7 +2157,6 @@ l with your sound hardware.");
       { tabMisc = new Fl_Group(0, 25, 405, 200, "Misc");
         tabMisc->color((Fl_Color)51);
         tabMisc->selection_color((Fl_Color)51);
-        tabMisc->hide();
         { tabsMisc = new Fl_Tabs(0, 25, 400, 195);
           { tabCPUspeed = new Fl_Group(0, 50, 400, 170, "CPU speed");
             tabCPUspeed->hide();
@@ -2166,13 +2173,19 @@ l with your sound hardware.");
             tabCPUspeed->end();
           } // Fl_Group* tabCPUspeed
           { tabMacros = new Fl_Group(0, 50, 400, 170, "Macros");
-            { Fl_Group* o = new Fl_Group(5, 55, 390, 49);
+            { Fl_Group* o = new Fl_Group(5, 55, 390, 69);
               o->box(FL_ENGRAVED_FRAME);
-              { Fl_Check_Button* o = btnUseLastMacro = new Fl_Check_Button(30, 70, 274, 15, "load last used Macro set on startup");
+              { Fl_Check_Button* o = btnUseLastMacro = new Fl_Check_Button(30, 70, 274, 15, "load last used Macro file on startup");
                 btnUseLastMacro->down_box(FL_DOWN_BOX);
                 btnUseLastMacro->callback((Fl_Callback*)cb_btnUseLastMacro);
                 o->value(progdefaults.UseLastMacro);
               } // Fl_Check_Button* btnUseLastMacro
+              { Fl_Check_Button* o = btnDisplayMacroFilename = new Fl_Check_Button(30, 91, 274, 15, "display Macro Filename on startup");
+                btnDisplayMacroFilename->tooltip("filename is written to the Rx text area");
+                btnDisplayMacroFilename->down_box(FL_DOWN_BOX);
+                btnDisplayMacroFilename->callback((Fl_Callback*)cb_btnDisplayMacroFilename);
+                o->value(progdefaults.DisplayMacroFilename);
+              } // Fl_Check_Button* btnDisplayMacroFilename
               o->end();
             } // Fl_Group* o
             tabMacros->end();

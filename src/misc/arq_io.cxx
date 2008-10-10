@@ -55,11 +55,14 @@
 using namespace std;
 
 static string arqtext;
-string::iterator pText;
+//string::iterator pText;
+size_t pText;
 
 bool arq_text_available = false;
+string txstring;
 
 extern void send0x06();
+extern void parse_arqtext(string &toparse);
 
 static void set_button(Fl_Button* button, bool value)
 {
@@ -78,15 +81,16 @@ void ParseMode(string src)
 		int msecs = 100;
 		if (src.length() > 7)
 			sscanf( src.substr(7, src.length() - 7).c_str(), "%d", &msecs);
-		push2talk->set(true);
+		REQ_SYNC(&PTT::set, push2talk, true);//push2talk->set(true);
 		MilliSleep(msecs);
-		push2talk->set(false);
+		REQ_SYNC(&PTT::set, push2talk, false);//push2talk->set(false);
 LOG_DEBUG("ARQ ptt toggled");
 		return;
 	}
 	for (size_t i = 0; i < NUM_MODES; ++i) {
 		if (strlen(mode_info[i].pskmail_name) > 0) {
 			if (src == mode_info[i].pskmail_name) {
+				while (trx_state != STATE_RX) MilliSleep(50);
 				REQ_SYNC(init_modem_sync, mode_info[i].mode);
 LOG_DEBUG("ARQ new modem set to %s", mode_info[i].pskmail_name);
 				break;
@@ -95,18 +99,19 @@ LOG_DEBUG("ARQ new modem set to %s", mode_info[i].pskmail_name);
 	}
 }
 
-void parse_arqtext()
+void parse_arqtext(string &toparse)
 {
 	string strCmdText;
 	string strSubCmd;
 	unsigned long int idxCmd, idxCmdEnd, idxSubCmd, idxSubCmdEnd;
 
-	idxCmd = arqtext.find("<cmd>");
-	idxCmdEnd = arqtext.find("</cmd>");
+	idxCmd = toparse.find("<cmd>");
+	idxCmdEnd = toparse.find("</cmd>");
 	
 	if ( idxCmd != string::npos && idxCmdEnd != string::npos && idxCmdEnd > idxCmd ) {
-LOG_DEBUG("Command string: %s", arqtext.substr(idxCmd, idxCmdEnd + 6).c_str());
-		strCmdText = arqtext.substr(idxCmd + 5, idxCmdEnd - idxCmd - 5);
+		
+LOG_DEBUG("Command string: %s", toparse.substr(idxCmd, idxCmdEnd + 6).c_str());
+		strCmdText = toparse.substr(idxCmd + 5, idxCmdEnd - idxCmd - 5);
 		if (strCmdText == "server" && mailserver == false && mailclient == false) {
 			mailserver = true;
 			mailclient = false;
@@ -149,9 +154,9 @@ LOG_DEBUG("ARQ is reset to normal ops");
 				}
 			}
 		}
-		arqtext.erase(idxCmd, idxCmdEnd - idxCmd + 6);
-		if (arqtext.length() == 1 && arqtext[0] == '\n')
-			arqtext = "";
+		toparse.erase(idxCmd, idxCmdEnd - idxCmd + 6);
+		if (toparse.length() == 1 && toparse[0] == '\n')
+			toparse = "";
 	}
 }
 
@@ -170,19 +175,19 @@ void process_msgque()
 	memset(txmsgst.buffer, ARQBUFSIZ, 0);
 	int nbytes = msgrcv (txmsgid, (void *)&txmsgst, ARQBUFSIZ, 0, IPC_NOWAIT);
 	if (nbytes > 0) { 
-		arqtext.clear();
-		arqtext = txmsgst.buffer;
-		parse_arqtext();
-		if (arqtext.length() > 0) {
+		txstring.append(txmsgst.buffer);
+		parse_arqtext(txstring);
+
+		if (arqtext.empty() && !txstring.empty()) {
+			arqtext = txstring;
 			if (mailserver && progdefaults.PSKmailSweetSpot)
 				active_modem->set_freq(progdefaults.PSKsweetspot);
-
-			pText = arqtext.begin();
+			pText = 0;
 			arq_text_available = true;
-
 			active_modem->set_stopflag(false);
-
 			start_tx();
+LOG_DEBUG("SYSV ARQ string: %s", txstring.c_str());
+			txstring.clear();
 		}
 	}
 }
@@ -243,9 +248,8 @@ bool TLF_arqRx()
 		while (!autofile.eof()) {
 			memset(mailline,0,1000);
 			autofile.getline(mailline, 998); // leave space for "\n" and null byte
-			arqtext.append(mailline);
-			arqtext.append("\n");
-            FL_AWAKE();
+			txstring.append(mailline);
+			txstring.append("\n");
             time(&prog_time);
             if (prog_time - start_time > TIMEOUT) {
 				LOG_ERROR("TLF file_i/o failure");
@@ -257,17 +261,19 @@ bool TLF_arqRx()
 		autofile.close();
 		std::remove (sAutoFile.c_str());
 
-		parse_arqtext();
-		if (arqtext.length() > 0) {
+		parse_arqtext(txstring);
+		if (arqtext.empty() && !txstring.empty()) {
+			arqtext = txstring;
 			if (mailserver && progdefaults.PSKmailSweetSpot)
 				active_modem->set_freq(progdefaults.PSKsweetspot);
-
-			pText = arqtext.begin();
+			pText = 0;
 			arq_text_available = true;
-
 			active_modem->set_stopflag(false);
 			start_tx();
+LOG_DEBUG("TLF string: %s", txstring.c_str());
+			txstring.clear();
 		}
+
 	}
 	return true;
 }
@@ -292,13 +298,12 @@ extern void arq_run(Socket s);
 extern void arq_stop();
 
 string errstring;
-string txstring;
 string cmdstring;
 string response;
 bool isTxChar = false;
 bool isCmdChar = false;
 
-bool isPskMail = false;
+bool isNotMULTIPSK = false;
 
 static pthread_t* arq_socket_thread = 0;
 ARQ_SOCKET_Server* ARQ_SOCKET_Server::inst = 0;
@@ -410,13 +415,18 @@ void WriteARQsocket(unsigned int data)
 	
 	string response;
 
-	if (data == 0x06) {
+	if (isNotMULTIPSK) {
+		response = "";
+		response += data;
+	} else {
+		if (data == 0x06) {
 		response = MPSK_ISCMD;
 		response.append("RX_AFTER_TX OK");
 		response += MPSK_CMDEND;
-	} else {
-		response = MPSK_ISRX;
-		response += data;
+		} else {
+			response = MPSK_ISRX;
+			response += data;
+		}
 	}
 	try {
 		arqclient.send(response);
@@ -436,45 +446,46 @@ bool Socket_arqRx()
 	try {
 		size_t n = arqclient.recv(instr);
 
-		if ( n == 0) return false;
-	
-		for (size_t i = 0; i < n; i++) {
-			cs = instr[i];
-			if (cs == MPSK_BYTE) {
-				isTxChar = true;
-				continue;
-			}
-			if (cs == MPSK_CMD) {
-				isCmdChar = true;
-				continue;
-			}
-			if (isCmdChar) {
-				if (cs == MPSK_END)
-					isCmdChar = false;
-				else
-					cmdstring += cs;
-				continue;
-			}
-			if (isPskMail) {
-				txstring += cs;
-				continue;
-			}
-			if (isTxChar) {
-				txstring += cs;
-				isTxChar = false;
-				continue;
+		if ( n > 0) {
+			for (size_t i = 0; i < n; i++) {
+				cs = instr[i];
+				if (cs == MPSK_BYTE) {
+					isTxChar = true;
+					continue;
+				}
+				if (cs == MPSK_CMD) {
+					isCmdChar = true;
+					continue;
+				}
+				if (isCmdChar) {
+					if (cs == MPSK_END)
+						isCmdChar = false;
+					else
+						cmdstring += cs;
+					continue;
+				}
+				if (isNotMULTIPSK) {
+					txstring += cs;
+					continue;
+				}
+				if (isTxChar) {
+					txstring += cs;
+					isTxChar = false;
+					continue;
+				}
 			}
 		}
-
-		if (cmdstring.find("PSKMAIL-ON") != string::npos) {
-			isPskMail = true;
+		if (cmdstring.find("MULTIPSK-OFF") != string::npos) {
+			isNotMULTIPSK = true;
 			txstring.clear();
 LOG_DEBUG (cmdstring.c_str());
+			cmdstring.clear();
 		}
-		if (cmdstring.find("PSKMAIL-OFF") != string::npos) {
-			isPskMail = false;
+		if (cmdstring.find("MULTIPSK-ON") != string::npos) {
+			isNotMULTIPSK = false;
 			txstring.clear();
 LOG_DEBUG (cmdstring.c_str());
+			cmdstring.clear();
 		}
 			
 		if (progdefaults.rsid == true) {
@@ -487,22 +498,18 @@ LOG_DEBUG (cmdstring.c_str());
 		
 		if (arqtext.empty() && !txstring.empty()) {
 			arqtext = txstring;
-			parse_arqtext();
+			parse_arqtext(arqtext);
 			if (!arqtext.empty()) {
 				if (mailserver && progdefaults.PSKmailSweetSpot)
 					active_modem->set_freq(progdefaults.PSKsweetspot);
-				pText = arqtext.begin();
+				pText = 0;//arqtext.begin();
 				arq_text_available = true;
 				active_modem->set_stopflag(false);
 				start_tx();
+LOG_DEBUG("ARQ string: %s", txstring.c_str());
 			}
-LOG_DEBUG("ARQ string: %s", txstring.c_str());
-		} else if (!txstring.empty()) {
-			arqtext.append(txstring);
-LOG_DEBUG("ARQ string: %s", txstring.c_str());
+			txstring.clear();
 		}
-		
-		txstring.clear();
 		cmdstring.clear();
 		return true;
 	}
@@ -542,7 +549,7 @@ void WriteARQ( unsigned int data)
 void AbortARQ() {
 	if (arq_text_available) {
 		arqtext.clear();
-		pText = arqtext.begin();
+		pText = 0;//arqtext.begin();
 		arq_text_available = false;
 		WriteARQ(0x06);
 	}
@@ -556,18 +563,21 @@ void send0x06()
 {
 	if (trx_state == STATE_RX) {
 		bSend0x06 = false;
+		arq_text_available = false;
 		WriteARQ(0x06);
 	}
 }
 
 char arq_get_char()
 {
-	if (pText != arqtext.end())
-		return *pText++;
+	if (pText != arqtext.length()-1) //arqtext.end())
+		return arqtext[pText++];
+//		return *pText++;
 
 	arqtext.clear();
+	pText = 0;
 	bSend0x06 = true;
-	arq_text_available = false;
+//	arq_text_available = false;
 	return 0x03; // tells psk modem to return to rx
 }
 
@@ -613,6 +623,9 @@ static void *arq_loop(void *args)
 void arq_init()
 {
 	arq_enabled = false;
+	
+	txstring.clear();
+	cmdstring.clear();
 	
 	if (!ARQ_SOCKET_Server::start( progdefaults.arq_address.c_str(), progdefaults.arq_port.c_str() ))
 		return;

@@ -15,6 +15,8 @@
 	#include "hamlib.h"
 #endif
 
+using namespace std;
+
 extern Fl_Double_Window *rigcontrol;
 extern string windowTitle;
 extern Cserial rigio;
