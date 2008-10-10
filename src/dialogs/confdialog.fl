@@ -46,8 +46,8 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     } {
       Fl_Group tabOperator {
         label Oper
-        callback {progdefaults.changed = true;} open selected
-        xywh {0 25 400 195} color 51 selection_color 51 when 1
+        callback {progdefaults.changed = true;} open
+        xywh {0 25 400 195} color 51 selection_color 51 when 1 hide
       } {
         Fl_Input inpMyCallsign {
           label {Callsign:}
@@ -1025,7 +1025,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabMisc {
         label Misc open
-        xywh {0 25 405 200} color 51 selection_color 51 hide
+        xywh {0 25 405 200} color 51 selection_color 51
       } {
         Fl_Tabs tabsMisc {open
           xywh {0 25 400 195}
@@ -1051,15 +1051,22 @@ progdefaults.changed = true;}
             xywh {0 50 400 170}
           } {
             Fl_Group {} {open
-              xywh {5 55 390 49} box ENGRAVED_FRAME
+              xywh {5 55 390 69} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnUseLastMacro {
-                label {load last used Macro set on startup}
+                label {load last used Macro file on startup}
                 callback {progdefaults.UseLastMacro = o->value();
 update_main_title();
-progdefaults.changed = true;}
+progdefaults.changed = true;} selected
                 xywh {30 70 274 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.UseLastMacro);}
+              }
+              Fl_Check_Button btnDisplayMacroFilename {
+                label {display Macro Filename on startup}
+                callback {progdefaults.DisplayMacroFilename = o->value();
+progdefaults.changed = true;}
+                tooltip {filename is written to the Rx text area} xywh {30 91 274 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.DisplayMacroFilename);}
               }
             }
           }

@@ -48,6 +48,7 @@ Change Log:
       18) Added brief message to the opening Rx text area indicating which
           macro file was loaded on start up.  Also added name of the working
           macro file to the title bar of the macro editor.
+      19) Addition of Navy MARS prosigns to the CW Morse encoder / decoder.
 
 3.03
       1) Changes to socket server to correct shutdown process

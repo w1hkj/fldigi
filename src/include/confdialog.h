@@ -125,6 +125,7 @@ extern Fl_Group *tabCPUspeed;
 extern Fl_Check_Button *chkSlowCpu;
 extern Fl_Group *tabMacros;
 extern Fl_Check_Button *btnUseLastMacro;
+extern Fl_Check_Button *btnDisplayMacroFilename;
 extern Fl_Group *tabRSid;
 extern Fl_Check_Button *chkTransmitRSid;
 extern Fl_Check_Button *chkRSidWideSearch;
