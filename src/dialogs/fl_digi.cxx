@@ -2522,22 +2522,17 @@ void change_modem_param(int state)
 	if (!(state & (FL_CTRL | FL_SHIFT)))
 		return; // suggestions?
 
-	Fl_Valuator *val = 0;
+	Fl_Valuator *val;
 	if (state & FL_CTRL) {
-		switch (active_modem->get_mode()) {
-		case MODE_BPSK31: case MODE_QPSK31: case MODE_PSK63: case MODE_QPSK63:
-		case MODE_PSK125: case MODE_QPSK125: case MODE_PSK250: case MODE_QPSK250:
+		trx_mode m = active_modem->get_mode();
+		if (m >= MODE_PSK_FIRST && m <= MODE_PSK_LAST)
 			val = mailserver ? cntServerOffset : cntSearchRange;
-			break;
-		case MODE_FELDHELL:
+		else if (m >= MODE_HELL_FIRST && m <= MODE_HELL_LAST)
 			val = sldrHellBW;
-			break;
-		case MODE_CW:
+		else if (m == MODE_CW)
 			val = sldrCWbandwidth;
-			break;
-		default:
+		else
 			return;
-		}
 	}
 	else if (state & FL_SHIFT) {
 		val = sldrSquelch;

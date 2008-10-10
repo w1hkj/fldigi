@@ -507,15 +507,13 @@ static Fl_Valuator* get_bw_val(void)
 	if (!(active_modem->get_cap() & modem::CAP_BW))
 		throw xmlrpc_c::fault("Operation not supported by modem");
 
-	switch (active_modem->get_mode()) {
-	case MODE_FELDHELL: case MODE_SLOWHELL: case MODE_HELLX5:
-	case MODE_HELLX9: case MODE_FSKHELL: case MODE_FSKH105: case MODE_HELL80:
+	trx_mode m = active_modem->get_mode();
+	if (m >= MODE_HELL_FIRST && m <= MODE_HELL_LAST)
 		return sldrHellBW;
-	case MODE_CW:
+	else if (m == MODE_CW)
 		return sldrCWbandwidth;
-	default:
-		throw xmlrpc_c::fault("Unknown CAP_BW modem");
-	}
+
+	throw xmlrpc_c::fault("Unknown CAP_BW modem");
 }
 
 class Modem_get_bw : public xmlrpc_c::method
