@@ -1392,7 +1392,8 @@ int waterfall::handle(int event)
  	Fl_Valuator* v[] = { sldrSquelch, wfcarrier, wfRefLevel, wfAmpSpan, valRcvMixer, valXmtMixer };
   	for (size_t i = 0; i < sizeof(v)/sizeof(v[0]); i++) {
   		if (Fl::event_inside(v[i])) {
- 			if ((v[i] == sldrSquelch && !twoscopes) || v[i] == valRcvMixer || v[i] == valXmtMixer)
+ 			if ((v[i] == sldrSquelch && !progdefaults.docked_scope) ||
+			    v[i] == valRcvMixer || v[i] == valXmtMixer)
 				d = -d;
 			v[i]->value(v[i]->clamp(v[i]->increment(v[i]->value(), -d)));
 			v[i]->do_callback();
@@ -1655,7 +1656,7 @@ void waterfall::handle_mouse_wheel(int what, int d)
 		return;
 	case WF_SQUELCH:
 		val = sldrSquelch;
-		if (!twoscopes)
+		if (!progdefaults.docked_scope)
 			d = -d;
 		msg_fmt = "%s = %2.0f %%";
 		msg_label = "Squelch";

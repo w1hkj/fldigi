@@ -118,7 +118,6 @@ Fl_Double_Window	*scopeview = (Fl_Double_Window *)0;
 MixerBase* mixer = 0;
 
 bool	useCheckButtons;
-bool	twoscopes = false;
 
 
 Fl_Light_Button		*btnTune = (Fl_Light_Button *)0;
@@ -1657,7 +1656,8 @@ void create_fl_digi_main() {
 
 	int pad = wSpace, Y = 0;
 
-	if (twoscopes) 	WNOM -= 2*DEFAULT_SW;
+	if (progdefaults.docked_scope)
+		WNOM -= 2*DEFAULT_SW;
 	
     update_main_title();
     fl_digi_main = new Fl_Double_Window(WNOM, HNOM, main_window_title.c_str());
@@ -1873,7 +1873,7 @@ void create_fl_digi_main() {
 				
 		Y += Hmacros;
 
-		if (twoscopes) {
+		if (progdefaults.docked_scope) {
 			Fl_Pack *wfpack = new Fl_Pack(0, Y, WNOM, Hwfall);
 				wfpack->type(1);
 				wf = new waterfall(0, Y, Wwfall - Hwfall + 24, Hwfall);

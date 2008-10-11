@@ -871,8 +871,8 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		double v = sldrSquelch->value();
-		// Squelch slider min/max are reversed when !twoscopes. Argh.
-		if (twoscopes)
+		// Squelch slider min/max are reversed when !docked_scope. Argh.
+		if (progdefaults.docked_scope)
 			REQ(set_valuator, sldrSquelch, params.getDouble(0, sldrSquelch->minimum(), sldrSquelch->maximum()));
 		else
 			REQ(set_valuator, sldrSquelch, params.getDouble(0, sldrSquelch->maximum(), sldrSquelch->minimum()));

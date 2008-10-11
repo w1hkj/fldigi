@@ -239,6 +239,7 @@ struct configuration {
 	string xmlrpc_allow;
 	string xmlrpc_deny;
 
+	bool docked_scope;
 public:
 	void writeDefaultsXML();
 	void storeDefaults();

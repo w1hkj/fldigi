@@ -86,7 +86,6 @@ extern Fl_Button		*btnMacroDummy;
 
 
 extern bool				useCheckButtons;
-extern bool				twoscopes;
 extern int				altMacros;
 
 extern waterfall		*wf;

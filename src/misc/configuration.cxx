@@ -273,7 +273,9 @@ configuration progdefaults = {
 	"127.0.0.1",		// string xmlrpc_address
 	"7362",			// string xmlrpc_port
 	"",			// string xmlrpc_allow
-	""			// string xmlrpc_deny
+	"",			// string xmlrpc_deny
+
+	false			// bool docked_scope
 };
 
 const char *szBaudRates[] = {
@@ -347,7 +349,8 @@ enum TAG { \
 	RXFONTCOLOR, TXFONTCOLOR, XMITCOLOR, CTRLCOLOR, SKIPCOLOR, ALTRCOLOR,
 	WATERFALLFONTNBR, WATERFALLFONTSIZE, UISCHEME,
 	RSIDWIDESEARCH, TRANSMITRSID, SLOWCPU,
-	MT638BIT, MT63INTERLEAVE
+	MT638BIT, MT63INTERLEAVE,
+	DOCKEDSCOPE
 };
 	
 void writeXMLint(ofstream &f, const char * tag,  int val)
@@ -616,7 +619,9 @@ void configuration::writeDefaultsXML()
 	
 	writeXMLbool(f, "MT638BIT", mt63_8bit);
 	writeXMLint(f, "MT63INTERLEAVE", mt63_interleave);
-	
+
+	writeXMLbool(f, "DOCKEDSCOPE", docked_scope);
+
 	f << "</FLDIGI_DEFS>\n";
 	f.close();
 }
@@ -1208,6 +1213,9 @@ bool configuration::readDefaultsXML()
 					case MT63INTERLEAVE :
 						mt63_interleave = atoi(getstring(xml).c_str());
 						break;
+					case DOCKEDSCOPE :
+						docked_scope = atoi(getstring(xml).c_str());
+						break;
 				}
 				break;
 				
@@ -1396,6 +1404,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("SLOWCPU", nodeName)) tag = SLOWCPU;
 				else if (!strcmp("MT638BIT", nodeName)) tag = MT638BIT;
 				else if (!strcmp("MT63INTERLEAVE", nodeName)) tag = MT63INTERLEAVE;
+				else if (!strcmp("DOCKEDSCOPE", nodeName)) tag = DOCKEDSCOPE;
 				else tag = IGNORE;
 				}
 				break;

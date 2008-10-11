@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0108 
+version 1.0109 
 header_name {.h} 
 code_name {.cxx}
 decl {\#include <config.h>} {} 
@@ -48,8 +48,8 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     } {
       Fl_Group tabOperator {
         label Oper
-        callback {progdefaults.changed = true;} open
-        xywh {0 25 400 195} color 51 selection_color 51 when 1 hide
+        callback {progdefaults.changed = true;} open selected
+        xywh {0 25 400 195} color 51 selection_color 51 when 1
       } {
         Fl_Input inpMyCallsign {
           label {Callsign:}
@@ -1033,14 +1033,14 @@ progdefaults.changed = true;}
       }
       Fl_Group tabMisc {
         label Misc open
-        xywh {0 25 405 200} color 51 selection_color 51
+        xywh {0 25 405 200} color 51 selection_color 51 hide
       } {
         Fl_Tabs tabsMisc {open
           xywh {0 25 400 195}
         } {
           Fl_Group tabCPUspeed {
             label {CPU speed} open
-            xywh {0 50 400 170} hide
+            xywh {0 50 400 170}
           } {
             Fl_Group {} {open
               xywh {5 62 390 43} box ENGRAVED_FRAME align 21
@@ -1056,7 +1056,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabMacros {
             label Macros open
-            xywh {0 50 400 170}
+            xywh {0 50 400 170} hide
           } {
             Fl_Group {} {open
               xywh {5 55 390 69} box ENGRAVED_FRAME
@@ -1065,7 +1065,7 @@ progdefaults.changed = true;}
                 label {load last used Macro file on startup}
                 callback {progdefaults.UseLastMacro = o->value();
 update_main_title();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
                 xywh {30 70 274 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.UseLastMacro);}
               }
@@ -1135,6 +1135,22 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 xywh {49 100 246 25} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.StartAtSweetSpot);}
+              }
+            }
+          }
+          Fl_Group tabMainWindow {
+            label {Main window} open
+            xywh {0 50 400 170} hide
+          } {
+            Fl_Group {} {open
+              xywh {5 60 390 75} box ENGRAVED_FRAME
+            } {
+              Fl_Check_Button btnDockedScope {
+                label {Docked scope}
+                callback {progdefaults.docked_scope = o->value();
+progdefaults.changed = true;}
+                tooltip {Restart fldigi for this option to take effect} xywh {30 84 125 20} down_box DOWN_BOX
+                code0 {btnDockedScope->value(progdefaults.docked_scope);}
               }
             }
           }

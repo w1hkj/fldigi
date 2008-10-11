@@ -935,6 +935,15 @@ static void cb_btnStartAtSweetSpot(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Group *tabMainWindow=(Fl_Group *)0;
+
+Fl_Check_Button *btnDockedScope=(Fl_Check_Button *)0;
+
+static void cb_btnDockedScope(Fl_Check_Button* o, void*) {
+  progdefaults.docked_scope = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabModems=(Fl_Group *)0;
 
 Fl_Tabs *tabsModems=(Fl_Tabs *)0;
@@ -1502,7 +1511,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         tabOperator->selection_color((Fl_Color)51);
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { inpMyCallsign = new Fl_Input(78, 36, 85, 24, "Callsign:");
           inpMyCallsign->callback((Fl_Callback*)cb_inpMyCallsign);
         } // Fl_Input* inpMyCallsign
@@ -2170,9 +2178,9 @@ l with your sound hardware.");
       { tabMisc = new Fl_Group(0, 25, 405, 200, "Misc");
         tabMisc->color((Fl_Color)51);
         tabMisc->selection_color((Fl_Color)51);
+        tabMisc->hide();
         { tabsMisc = new Fl_Tabs(0, 25, 400, 195);
           { tabCPUspeed = new Fl_Group(0, 50, 400, 170, "CPU speed");
-            tabCPUspeed->hide();
             { Fl_Group* o = new Fl_Group(5, 62, 390, 43);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2186,6 +2194,7 @@ l with your sound hardware.");
             tabCPUspeed->end();
           } // Fl_Group* tabCPUspeed
           { tabMacros = new Fl_Group(0, 50, 400, 170, "Macros");
+            tabMacros->hide();
             { Fl_Group* o = new Fl_Group(5, 55, 390, 69);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnUseLastMacro = new Fl_Check_Button(30, 70, 274, 15, "load last used Macro file on startup");
@@ -2262,6 +2271,20 @@ l with your sound hardware.");
             } // Fl_Group* o
             tabSweetSpot->end();
           } // Fl_Group* tabSweetSpot
+          { tabMainWindow = new Fl_Group(0, 50, 400, 170, "Main window");
+            tabMainWindow->hide();
+            { Fl_Group* o = new Fl_Group(5, 60, 390, 75);
+              o->box(FL_ENGRAVED_FRAME);
+              { btnDockedScope = new Fl_Check_Button(30, 84, 125, 20, "Docked scope");
+                btnDockedScope->tooltip("Restart fldigi for this option to take effect");
+                btnDockedScope->down_box(FL_DOWN_BOX);
+                btnDockedScope->callback((Fl_Callback*)cb_btnDockedScope);
+                btnDockedScope->value(progdefaults.docked_scope);
+              } // Fl_Check_Button* btnDockedScope
+              o->end();
+            } // Fl_Group* o
+            tabMainWindow->end();
+          } // Fl_Group* tabMainWindow
           tabsMisc->end();
         } // Fl_Tabs* tabsMisc
         tabMisc->end();

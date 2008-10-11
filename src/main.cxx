@@ -400,9 +400,6 @@ void generate_option_help(void) {
 	     << "  --wfall-height HEIGHT\n"
 	     << "    HEIGHT in pixels, ie 100 - 200, recommend 10 pixel increments.\n\n"
 
-	     << "  --twoscopes\n"
-	     << "    Dock a second digiscope adjacent to the waterfall\n\n"
-
 	     << "  --toggle-check-buttons\n"
 	     << "    Use lighted or check buttons for AFC / SQL.\n";
 
@@ -434,7 +431,6 @@ int parse_args(int argc, char **argv, int& idx)
 #if USE_PORTAUDIO
                OPT_FRAMES_PER_BUFFER,
 #endif
-               OPT_TWO_SCOPES,
 	       OPT_DEBUG_LEVEL,
                OPT_EXIT_AFTER,
                OPT_DEPRECATED, OPT_HELP, OPT_VERSION };
@@ -465,7 +461,7 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "wfall-height",  1, 0, OPT_WFALL_HEIGHT },
 		{ "window-width",  1, 0, OPT_WINDOW_WIDTH },
 		{ "window-height", 1, 0, OPT_WINDOW_HEIGHT },
-		{ "twoscopes",     0, 0, OPT_TWO_SCOPES },
+		{ "twoscopes",     0, 0, OPT_DEPRECATED },
  		{ "toggle-check-buttons",    0, 0, OPT_TOGGLE_CHECK },
 
 #if USE_PORTAUDIO
@@ -568,10 +564,6 @@ int parse_args(int argc, char **argv, int& idx)
 
 		case OPT_WINDOW_HEIGHT:
 			HNOM = strtol(optarg, NULL, 10);
-			break;
-
-		case OPT_TWO_SCOPES:
-			twoscopes = true;
 			break;
 
 		case OPT_TOGGLE_CHECK:
