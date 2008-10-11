@@ -446,7 +446,7 @@ void rigCAT_setfreq(long long f)
 		return;
 	}
 	
-	LOG_DEBUG("set frequency %ld", f);
+	LOG_DEBUG("set frequency %lld", f);
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {

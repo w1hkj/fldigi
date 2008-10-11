@@ -30,7 +30,8 @@ public:
 	enum level_e { QUIET_LEVEL, ERROR_LEVEL, WARN_LEVEL, INFO_LEVEL, DEBUG_LEVEL, LOG_NLEVELS };
 	static void start(const char* filename);
 	static void stop(void);
-	static void log(level_e level, const char* func, const char* srcf, int line, const char* format, ...);
+	static void log(level_e level, const char* func, const char* srcf, int line,
+			const char* format, ...) format__(printf, 5, 6);
 	static void elog(const char* func, const char* srcf, int line, const char* text);
 	static void show(void);
 	static level_e level;

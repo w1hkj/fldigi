@@ -567,7 +567,7 @@ void init_modem(trx_mode mode)
 		break;
 
 	default:
-		LOG_ERROR("Unknown mode: %d", mode);
+		LOG_ERROR("Unknown mode: %" PRIdPTR, mode);
 		return init_modem(MODE_BPSK31);
 	}
 

@@ -7,7 +7,10 @@
 extern "C" {
 #endif
 
-#include <stdint.h>
+#ifndef __STDC_FORMAT_MACROS
+#    define __STDC_FORMAT_MACROS 1
+#endif
+#include <inttypes.h>
 
 #ifndef powerof2
 #    define powerof2(n) ((((n) - 1) & (n)) == 0)
@@ -71,6 +74,7 @@ extern "C" {
 #    define inline__     inline __attribute__ ((__always_inline__))
 #    define noinline__   __attribute__ ((__noinline__))
 #    define nonnull__(x) __attribute__ ((__nonnull__(x)))
+#    define format__(type_, index_, first_) __attribute__ ((format(type_, index_, first_)))
 #else
 #    define likely(x)    (x)
 #    define unlikely(x)  (x)
@@ -86,6 +90,7 @@ extern "C" {
 #    define inline__
 #    define noinline__
 #    define nonnull__(x)
+#    define format__(type_, index_, first_)
 #endif
 
 #if defined(__GNUC__) && ((__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3))

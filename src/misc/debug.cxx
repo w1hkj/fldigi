@@ -119,7 +119,7 @@ void debug::log(level_e level, const char* func, const char* srcf, int line, con
 
 void debug::elog(const char* func, const char* srcf, int line, const char* text)
 {
-	log(ERROR_LEVEL, func, srcf, line, "%s: %s", strerror(errno));
+	log(ERROR_LEVEL, func, srcf, line, "%s: %s", text, strerror(errno));
 }
 
 void debug::show(void)
