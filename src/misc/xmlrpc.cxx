@@ -720,7 +720,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		double rfc = wf->rfcarrier();
-		qsy((long long int)params.getDouble(0, 0.0), active_modem->get_freq());
+		qsy((long long int)params.getDouble(0, 0.0));
 		*retval = xmlrpc_c::value_double(rfc);
 	}
 };
@@ -736,7 +736,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		double rfc = wf->rfcarrier() + params.getDouble(0);
-		qsy((long long int)rfc, active_modem->get_freq());
+		qsy((long long int)rfc);
 		*retval = xmlrpc_c::value_double(rfc);
 	}
 };

@@ -2609,6 +2609,9 @@ Fl_Color adjust_color(Fl_Color fg, Fl_Color bg)
 
 void qsy(long long rfc, long long fmid)
 {
+	if (fmid < 0LL)
+		fmid = (long long)active_modem->get_freq();
+
 	if (progdefaults.chkUSERIGCATis)
 		REQ(rigCAT_set_qsy, rfc, fmid);
 	else if (progdefaults.chkUSEMEMMAPis)
