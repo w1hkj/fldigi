@@ -548,31 +548,30 @@ char szAbout[] =
 "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\
 <html>\
 <head>\
-  <title>about</title>\
+  <title>About</title>\
 </head>\
 <BODY BGCOLOR=FFFFCO TEXT=101010>\
 <font size=\"0\" face=\"Verdana, Arial, Helvetica\">\
 <CENTER>\
 <H1><I>Fldigi " PACKAGE_VERSION "</I></H1>\
-<br>\
 </CENTER>\
-<H4>Digital modem program for</H4><br>\
 <P>\
+<H4>Digital modem program for:</H4>\
 &nbsp; &nbsp; &nbsp;Linux<br>\
 &nbsp; &nbsp; &nbsp;FreeBSD<br>\
 &nbsp; &nbsp; &nbsp;OS X<br>\
 &nbsp; &nbsp; &nbsp;Windows<br>\
-<br>\
-<H4>Programmers:</H4><br>\
-<P>\
+<H4>Programmers:</H4>\
 &nbsp; &nbsp; &nbsp;Dave Freese, W1HKJ<br>\
 &nbsp; &nbsp; &nbsp;Stelios Bounanos, M0GLD<br>\
 &nbsp; &nbsp; &nbsp;Leigh Klotz, WA5ZNU<br>\
-<br>\
-<H4>Beginners' Guide:</H4><br>\
-<P>\
+<H4>Beginners' Guide:</H4>\
 &nbsp; &nbsp; &nbsp;Murray Greenman, ZL1BPU<br>\
-</big>\
+<br>\
+<P>\
+Distributed under the GNU General Public License version 2 or later.<br>\
+This is free software: you are free to change and redistribute it.<br>\
+There is NO WARRANTY, to the extent permitted by law.\
 </body>\
 </html>\
 ";

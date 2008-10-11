@@ -630,7 +630,13 @@ int parse_args(int argc, char **argv, int& idx)
 void generate_version_text(void)
 {
 	ostringstream s;
-	s << PACKAGE_NAME << ' ' << PACKAGE_VERSION << "\n\nSystem: ";
+	s << PACKAGE_STRING << '\n'
+	  << "Copyright (c) 2008 " << PACKAGE_AUTHORS << '\n'
+	  << "License GPLv2+: GNU GPL version 2 or later <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>\n"
+	  << "This is free software: you are free to change and redistribute it.\n"
+	  << "There is NO WARRANTY, to the extent permitted by law.\n";
+
+	s << "\nSystem: ";
         struct utsname u;
         if (uname(&u) != -1) {
 		s << u.sysname << ' ' << u.nodename
