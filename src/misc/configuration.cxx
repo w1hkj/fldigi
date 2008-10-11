@@ -35,8 +35,7 @@ configuration progdefaults = {
 	false,			// bool		rsidWideSearch;
 	false,			// bool		TransmitRSid;
 	true,			// bool		slowcpu;
-	false,			// bool		experimental;
-	
+
 	false,			// bool		changed;
 	-20.0,			// double	wfRefLevel;
 	70.0,			// double	wfAmpSpan;

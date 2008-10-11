@@ -422,9 +422,10 @@ int parse_args(int argc, char **argv, int& idx)
 #ifndef __CYGWIN__
 	       OPT_RX_IPC_KEY, OPT_TX_IPC_KEY,
 #endif
-	       OPT_CONFIG_DIR, OPT_EXPERIMENTAL, OPT_ARQ_ADDRESS, OPT_ARQ_PORT,
+	       OPT_CONFIG_DIR,
+	       OPT_ARQ_ADDRESS, OPT_ARQ_PORT,
 #if USE_XMLRPC
-	       OPT_CONFIG_XMLRPC, OPT_CONFIG_XMLRPC_ADDRESS, OPT_CONFIG_XMLRPC_PORT,
+	       OPT_CONFIG_XMLRPC_ADDRESS, OPT_CONFIG_XMLRPC_PORT,
 	       OPT_CONFIG_XMLRPC_ALLOW, OPT_CONFIG_XMLRPC_DENY, OPT_CONFIG_XMLRPC_LIST,
 #endif
                OPT_FONT, OPT_WFALL_WIDTH, OPT_WFALL_HEIGHT,
@@ -436,7 +437,7 @@ int parse_args(int argc, char **argv, int& idx)
                OPT_TWO_SCOPES,
 	       OPT_DEBUG_LEVEL,
                OPT_EXIT_AFTER,
-               OPT_HELP, OPT_VERSION };
+               OPT_DEPRECATED, OPT_HELP, OPT_VERSION };
 
 	const char shortopts[] = "+";
 	static struct option longopts[] = {
@@ -445,13 +446,13 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "tx-ipc-key",	   1, 0, OPT_TX_IPC_KEY },
 #endif
 		{ "config-dir",	   1, 0, OPT_CONFIG_DIR },
-		{ "experimental",  0, 0, OPT_EXPERIMENTAL },
+		{ "experimental",  0, 0, OPT_DEPRECATED },
 
 		{ "arq-server-address", 1, 0, OPT_ARQ_ADDRESS },
 		{ "arq-server-port",    1, 0, OPT_ARQ_PORT },
 
 #if USE_XMLRPC
-		{ "xmlrpc-server",         0, 0, OPT_CONFIG_XMLRPC },
+		{ "xmlrpc-server",         0, 0, OPT_DEPRECATED },
 		{ "xmlrpc-server-address", 1, 0, OPT_CONFIG_XMLRPC_ADDRESS },
 		{ "xmlrpc-server-port",    1, 0, OPT_CONFIG_XMLRPC_PORT },
 		{ "xmlrpc-allow",          1, 0, OPT_CONFIG_XMLRPC_ALLOW },
@@ -510,9 +511,6 @@ int parse_args(int argc, char **argv, int& idx)
 			if (*HomeDir.rbegin() != '/')
 				HomeDir += '/';
 			break;
-		case OPT_EXPERIMENTAL:
-			progdefaults.experimental = true;
-			break;
 
 		case OPT_ARQ_ADDRESS:
 			progdefaults.arq_address = optarg;
@@ -522,10 +520,6 @@ int parse_args(int argc, char **argv, int& idx)
 			break;
 
 #if USE_XMLRPC
-		case OPT_CONFIG_XMLRPC:
-			cerr << "W: the --" << longopts[longindex].name
-			     << " option will be removed in the next version\n";
-			break;
 		case OPT_CONFIG_XMLRPC_ADDRESS:
 			progdefaults.xmlrpc_address = optarg;
 			break;
@@ -599,6 +593,11 @@ int parse_args(int argc, char **argv, int& idx)
 			int v = strtol(optarg, 0, 10);
 			debug::level = (debug::level_e)CLAMP(v, 0, debug::LOG_NLEVELS-1);
 		}
+			break;
+
+		case OPT_DEPRECATED:
+			cerr << "W: the --" << longopts[longindex].name
+			     << " option has been deprecated and will be removed in a future version\n";
 			break;
 
 		case OPT_HELP:
