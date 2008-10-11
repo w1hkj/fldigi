@@ -1043,7 +1043,7 @@ Fl_Group *tabCWQSK=(Fl_Group *)0;
 Fl_Check_Button *btnQSK=(Fl_Check_Button *)0;
 
 static void cb_btnQSK(Fl_Check_Button* o, void*) {
-  progdefaults.QSK=o->value();
+  progdefaults.QSKv=o->value();
 progdefaults.changed = true;
 }
 
@@ -2419,7 +2419,7 @@ l with your sound hardware.");
             { Fl_Check_Button* o = btnQSK = new Fl_Check_Button(35, 75, 175, 15, "QSK on right channel");
               btnQSK->down_box(FL_DOWN_BOX);
               btnQSK->callback((Fl_Callback*)cb_btnQSK);
-              o->value(progdefaults.QSK);
+              o->value(progdefaults.QSKv);
             } // Fl_Check_Button* btnQSK
             { Fl_Counter* o = cntPreTiming = new Fl_Counter(25, 109, 64, 21, "Pre Timing");
               cntPreTiming->type(1);

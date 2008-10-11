@@ -69,7 +69,7 @@ struct configuration {
 	int			CWupperlimit;
 	double		CWrisetime;
 	double		CWdash2dot;
-	bool		QSK;
+	bool		QSKv;
 	double		CWpre;
 	double		CWpost;
 	bool		CWid;
@@ -192,14 +192,14 @@ struct configuration {
 	bool	MuteInput;
 	
 // waterfall palette
-	RGBint	cfgpal[9];
+	RGB	cfgpal[9];
 
 // Button key color palette
 	bool	useGroupColors;
-	RGBint	btnGroup1;
-	RGBint	btnGroup2;
-	RGBint	btnGroup3;
-	RGBint  btnFkeyTextColor;
+	RGB	btnGroup1;
+	RGB	btnGroup2;
+	RGB	btnGroup3;
+	RGB  btnFkeyTextColor;
 	
 // Rx / Tx fonts & palettes
 	Fl_Font 	RxFontnbr;
@@ -208,8 +208,8 @@ struct configuration {
 	Fl_Font 	TxFontnbr;
 	int 	TxFontsize;
 	Fl_Color		TxFontcolor;
-	RGBint	RxColor;
-	RGBint	TxColor;
+	RGB	RxColor;
+	RGB	TxColor;
 	Fl_Color		XMITcolor;
 	Fl_Color		CTRLcolor;
 	Fl_Color		SKIPcolor;

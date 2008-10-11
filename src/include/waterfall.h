@@ -70,12 +70,6 @@ struct RGB {
 	uchar B;
 };
 
-struct RGBint {
-	int R;
-	int G;
-	int B;
-};
-
 struct RGBI {
 	uchar R;
 	uchar G;

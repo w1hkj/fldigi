@@ -18,6 +18,8 @@
 #include <iostream>
 #include <fstream>
 
+#include <map>
+
 #ifdef __linux__
 #  include <dirent.h>
 #  include <limits.h>
@@ -89,7 +91,7 @@ configuration progdefaults = {
 	50,				// int		CWupperlimit;
 	4.0,			// double	CWrisetime;
 	3.0,			// double	CWdash2dot;
-	false,			// bool		QSK;
+	false,			// bool		QSKv;
 	4.0,			// double	CWpre;
 	4.0,			// double	CWpost;
 	false,			// bool		CWid;
@@ -233,10 +235,10 @@ configuration progdefaults = {
 	 	
 // Button key color palette
 	true,			  // bool useGroupColors;
-	{  80, 144, 144}, // RGBint btnGroup1;
-	{ 144,  80,  80}, // RGBint btnGroup2;
-	{  80,  80, 144}, // RGBint btnGroup3;
-	{ 255, 255, 255}, // RGBint btnFkeyTextColor;
+	{  80, 144, 144}, // RGB btnGroup1;
+	{ 144,  80,  80}, // RGB btnGroup2;
+	{  80,  80, 144}, // RGB btnGroup3;
+	{ 255, 255, 255}, // RGB btnFkeyTextColor;
 
 // Rx / Tx / Waterfall Text Widgets
 
@@ -246,8 +248,8 @@ configuration progdefaults = {
 	FL_SCREEN,		// Fl_Font 		TxFontnbr
 	16,				// int 		TxFontsize
 	FL_BLACK,				// Fl_Color		TxFontcolor
-	{ 255, 242, 190}, // RGBint RxColor;
-	{ 200, 235, 255}, // RGBint TxColor;
+	{ 255, 242, 190}, // RGB RxColor;
+	{ 200, 235, 255}, // RGB TxColor;
 	
 	FL_RED,			// Fl_Color		XMITcolor;
 	FL_DARK_GREEN,	// Fl_Color		CTRLcolor;
@@ -290,119 +292,244 @@ const char *szBands[] = {
 	"14070", "18100", "21070", "21080", "24920", "28070", "28120", 0};
 
 
-// XML config file support
-enum TAG { \
-	IGNORE,
-	MYCALL, MYNAME, MYQTH, MYLOC, 
-	SQUELCH, WFREFLEVEL, WFAMPSPAN, LOWFREQCUTOFF, 
-	WATERFALLHISTORYDEFAULT, WATERFALLQSY, WATERFALLCLICKTEXT, WATERFALLWHEELACTION,
-	STARTATSWEETSPOT, PSKMAILSWEETSPOT, 
-	PSKSEARCHRANGE, PSKSERVEROFFSET,
-	ACQSN,
-	CWSWEETSPOT, PSKSWEETSPOT, RTTYSWEETSPOT,
-	RTTYSHIFT, RTTYBAUD,
-	RTTYBITS, RTTYPARITY, RTTYSTOP, RTTYREVERSE,
-	RTTYMSBFIRST, RTTYCRCLF, RTTYAUTOCRLF,
-	RTTYAUTOCOUNT, RTTYAFCSPEED,
-	RTTYUSB,
-	PREFERXHAIRSCOPE, 
-	PSEUDOFSK,
-	UOSRX, UOSTX,
-	XAGC,
-	CWWEIGHT, CWSPEED, CWDEFSPEED,
-	CWBANDWIDTH, CWRANGE, CWLOWERLIMIT, CWUPPERLIMIT,
-	CWTRACK, CWRISETIME, CWDASH2DOT,
-	XQSK, CWPRE, CWPOST, CWID, CWIDWPM,
-	OLIVIATONES, OLIVIABW, OLIVIASMARGIN, OLIVIASINTEG, OLIVIA8BIT,
-	THORBW, THORFILTER, THORSECTEXT, THORPATHS, THORSOFT, THORCWI,
-	DOMINOEXBW, DOMINOEXFILTER, DOMINOEXFEC, DOMINOEXPATHS, DOMCWI,
-	FELDFONTNBR,
-	HELLRCVWIDTH, HELLXMTWIDTH, HELLBLACKBOARD, HELLPULSEFAST, HELLXMTIDLE,
-	WFPREFILTER, LATENCY,
-	USECURSORLINES, USECURSORCENTERLINE, USEBWTRACKS,
-	CLCOLORS,
-	CCCOLORS,
-	BWTCOLORS,
-	VIEWXMTSIGNAL, SENDID, MACROID, SENDTEXTID, STRTEXTID, VIDEOWIDTH, IDSMALL,
-	QRZTYPE, QRZPATHNAME, QRZUSER, QRZPASSWORD,
-	BTNUSB, BTNPTTIS,
-	RTSPTT, DTRPTT, RTSPLUS, DTRPLUS,
-	CHOICEHAMLIBIS, CHKUSEMEMMAPIS,
-	CHKUSEHAMLIBIS, CHKUSERIGCATIS, CHKUSEXMLRPCIS,
-	HAMRIGNAME, HAMRIGDEVICE, HAMRIGBAUDRATE,
-	PTTDEV,
-	SECONDARYTEXT, 
-	AUDIOIO, OSSDEVICE, PADEVICE, PORTINDEVICE, PORTININDEX, PORTOUTDEVICE, PORTOUTINDEX, PULSESERVER,
-	SAMPLERATE, INSAMPLERATE, OUTSAMPLERATE, SAMPLECONVERTER, RXCORR, TXCORR, TXOFFSET,
-	USELEADINGZEROS, CONTESTSTART, CONTESTDIGITS,
-	USETIMER, MACRONUMBER, TIMEOUT, USELASTMACRO, DISPLAYMACROFILENAME,
-	MXDEVICE, 
-	PCMVOLUME,
-	MICIN, LINEIN, ENABLEMIXER, MUTEINPUT,
-	PALETTE0, PALETTE1, PALETTE2, PALETTE3, PALETTE4, 
-	PALETTE5, PALETTE6, PALETTE7, PALETTE8,
-	VIEWERMARQUEE, VIEWERSHOWFREQ, VIEWERSTART, 
-	VIEWERCHANNELS, VIEWERSQUELCH, VIEWERTIMEOUT, WFAVERAGING,
-	USEGROUPCOLORS, FKEYGROUP1, FKEYGROUP2, FKEYGROUP3,
-	FKEYTEXTCOLOR,
-	RXFONTNBR, RXFONTSIZE, RXFNTCOLOR, TXFONTNBR, TXFONTSIZE, TXFNTCOLOR,
-	RXFONTCOLOR, TXFONTCOLOR, XMITCOLOR, CTRLCOLOR, SKIPCOLOR, ALTRCOLOR,
-	WATERFALLFONTNBR, WATERFALLFONTSIZE, UISCHEME,
-	RSIDWIDESEARCH, TRANSMITRSID, SLOWCPU,
-	MT638BIT, MT63INTERLEAVE,
-	DOCKEDSCOPE
-};
-	
-void writeXMLint(ofstream &f, const char * tag,  int val)
+#define TAG_LIST                                                                          \
+        NOP_(IGNORE),                                                                     \
+                                                                                          \
+        STR_(MYCALL, myCall),  STR_(MYNAME, myName),                                      \
+        STR_(MYQTH, myQth),  STR_(MYLOC, myLocator),                                      \
+                                                                                          \
+        DBL_(WFREFLEVEL, wfRefLevel),  DBL_(WFAMPSPAN, wfAmpSpan),                        \
+        INT_(LOWFREQCUTOFF, LowFreqCutoff),                                               \
+                                                                                          \
+        BOOL_(WATERFALLHISTORYDEFAULT, WaterfallHistoryDefault),                          \
+        BOOL_(WATERFALLQSY, WaterfallQSY),  STR_(WATERFALLCLICKTEXT, WaterfallClickText), \
+        INT_(WATERFALLWHEELACTION, WaterfallWheelAction),                                 \
+                                                                                          \
+        BOOL_(STARTATSWEETSPOT, StartAtSweetSpot),                                        \
+        BOOL_(PSKMAILSWEETSPOT, PSKmailSweetSpot),  INT_(PSKSEARCHRANGE, SearchRange),    \
+        INT_(PSKSERVEROFFSET, ServerOffset),  DBL_(CWSWEETSPOT, CWsweetspot),             \
+        DBL_(PSKSWEETSPOT, PSKsweetspot), DBL_(ACQSN, ACQsn),                             \
+        DBL_(RTTYSWEETSPOT, RTTYsweetspot),                                               \
+                                                                                          \
+        INT_(RTTYSHIFT, rtty_shift),  INT_(RTTYBAUD, rtty_baud),                          \
+        INT_(RTTYBITS, rtty_bits),  INT_(RTTYPARITY, rtty_parity),                        \
+        INT_(RTTYSTOP, rtty_stop),  BOOL_(RTTYREVERSE, rtty_reverse),                     \
+        BOOL_(RTTYMSBFIRST, rtty_msbfirst),  BOOL_(RTTYCRCLF, rtty_crcrlf),               \
+        BOOL_(RTTYAUTOCRLF, rtty_autocrlf),  INT_(RTTYAUTOCOUNT, rtty_autocount),         \
+        INT_(RTTYAFCSPEED, rtty_afcspeed),  NOP_(RTTYUSB),                                \
+                                                                                          \
+        BOOL_(PREFERXHAIRSCOPE, PreferXhairScope),                                        \
+                                                                                          \
+        BOOL_(PSEUDOFSK, PseudoFSK),                                                      \
+                                                                                          \
+        BOOL_(UOSRX, UOSrx),  BOOL_(UOSTX, UOStx),                                        \
+                                                                                          \
+        BOOL_(XAGC, Xagc),                                                                \
+                                                                                          \
+        INT_(CWWEIGHT, CWweight),  INT_(CWSPEED, CWspeed),  INT_(CWDEFSPEED, defCWspeed), \
+        INT_(CWBANDWIDTH, CWbandwidth),  INT_(CWRANGE, CWrange),                          \
+        INT_(CWLOWERLIMIT, CWlowerlimit),  INT_(CWUPPERLIMIT, CWupperlimit),              \
+        BOOL_(CWTRACK, CWtrack),  DBL_(CWRISETIME, CWrisetime),                           \
+        DBL_(CWDASH2DOT, CWdash2dot),  BOOL_(QSK, QSKv),  DBL_(CWPRE, CWpre),             \
+        DBL_(CWPOST, CWpost),  BOOL_(CWID, CWid),  INT_(IDWPM, CWIDwpm),                  \
+                                                                                          \
+        INT_(OLIVIATONES, oliviatones),  INT_(OLIVIABW, oliviabw),                        \
+        INT_(OLIVIASMARGIN, oliviasmargin),  INT_(OLIVIASINTEG, oliviasinteg),            \
+        BOOL_(OLIVIA8BIT, olivia8bit),                                                    \
+                                                                                          \
+        DBL_(THORBW, THOR_BW),  BOOL_(THORFILTER, THOR_FILTER),                           \
+        STR_(THORSECTEXT, THORsecText),  INT_(THORPATHS, THOR_PATHS),                     \
+        BOOL_(THORSOFT, THOR_SOFT),  DBL_(THORCWI, ThorCWI),                              \
+                                                                                          \
+        DBL_(DOMINOEXBW, DOMINOEX_BW),  BOOL_(DOMINOEXFILTER, DOMINOEX_FILTER),           \
+        BOOL_(DOMINOEXFEC, DOMINOEX_FEC),  INT_(DOMINOEXPATHS, DOMINOEX_PATHS),           \
+        DBL_(DOMCWI, DomCWI),                                                             \
+                                                                                          \
+        INT_(FELDFONTNBR, feldfontnbr),  BOOL_(HELLRCVWIDTH, HellRcvWidth),               \
+        INT_(HELLXMTWIDTH, HellXmtWidth),                                                 \
+        BOOL_(HELLBLACKBOARD, HellBlackboard),  BOOL_(HELLPULSEFAST, HellPulseFast),      \
+        BOOL_(HELLXMTIDLE, HellXmtIdle),                                                  \
+                                                                                          \
+        INT_(WFPREFILTER, wfPreFilter),  INT_(LATENCY, latency),                          \
+        BOOL_(USECURSORLINES, UseCursorLines),                                            \
+        BOOL_(USECURSORCENTERLINE, UseCursorCenterLine),                                  \
+        BOOL_(USEBWTRACKS, UseBWTracks),  RGB_(CLCOLORS, cursorLineRGBI),                 \
+        RGB_(CCCOLORS, cursorCenterRGBI),  RGB_(BWTCOLORS, bwTrackRGBI),                  \
+                                                                                          \
+        BOOL_(VIEWXMTSIGNAL, viewXmtSignal),  BOOL_(SENDID, sendid),                      \
+        BOOL_(MACROID, macroid),  BOOL_(SENDTEXTID, sendtextid),                          \
+        STR_(STRTEXTID, strTextid),  INT_(VIDEOWIDTH, videowidth),                        \
+        BOOL_(IDSMALL, ID_SMALL),                                                         \
+                                                                                          \
+        INT_(QRZTYPE, QRZ),  STR_(QRZPATHNAME, QRZpathname),                              \
+        STR_(QRZUSER, QRZusername),  STR_(QRZPASSWORD, QRZuserpassword),                  \
+                                                                                          \
+        BOOL_(BTNUSB, btnusb),  INT_(BTNPTTIS, btnPTTis),  BOOL_(RTSPTT, RTSptt),         \
+        BOOL_(DTRPTT, DTRptt),  BOOL_(RTSPLUS, RTSplus),  BOOL_(DTRPLUS, DTRplus),        \
+                                                                                          \
+        INT_(CHOICEHAMLIBIS, choiceHAMLIBis),  INT_(CHKUSEMEMMAPIS, chkUSEMEMMAPis),      \
+        INT_(CHKUSEHAMLIBIS, chkUSEHAMLIBis),  INT_(CHKUSERIGCATIS, chkUSERIGCATis),      \
+        INT_(CHKUSEXMLRPCIS, chkUSEXMLRPCis),                                             \
+                                                                                          \
+        STR_(HAMRIGNAME, HamRigName),  STR_(HAMRIGDEVICE, HamRigDevice),                  \
+        INT_(HAMRIGBAUDRATE, HamRigBaudrate),  STR_(PTTDEV, PTTdev),                      \
+                                                                                          \
+        STR_(SECONDARYTEXT, secText),                                                     \
+                                                                                          \
+        INT_(AUDIOIO, btnAudioIOis),  STR_(OSSDEVICE, OSSdevice),                         \
+        STR_(PADEVICE, PAdevice),  STR_(PORTINDEVICE, PortInDevice),                      \
+        INT_(PORTININDEX, PortInIndex),  STR_(PORTOUTDEVICE, PortOutDevice),              \
+        INT_(PORTOUTINDEX, PortOutIndex),  STR_(PULSESERVER, PulseServer),                \
+                                                                                          \
+        INT_(SAMPLERATE, sample_rate),  INT_(INSAMPLERATE, in_sample_rate),               \
+        INT_(OUTSAMPLERATE, out_sample_rate),  INT_(SAMPLECONVERTER, sample_converter),   \
+        INT_(RXCORR, RX_corr),  INT_(TXCORR, TX_corr),  INT_(TXOFFSET, TxOffset),         \
+                                                                                          \
+        BOOL_(USELEADINGZEROS, UseLeadingZeros),  INT_(CONTESTSTART, ContestStart),       \
+        INT_(CONTESTDIGITS, ContestDigits),  BOOL_(USETIMER, useTimer),                   \
+        INT_(MACRONUMBER, macronumber),  INT_(TIMEOUT, timeout),                          \
+                                                                                          \
+        BOOL_(USELASTMACRO, UseLastMacro),                                                \
+        BOOL_(DISPLAYMACROFILENAME, DisplayMacroFilename),                                \
+                                                                                          \
+        STR_(MXDEVICE, MXdevice),  DBL_(PCMVOLUME, PCMvolume),  BOOL_(MICIN, MicIn),      \
+        BOOL_(LINEIN, LineIn),  BOOL_(ENABLEMIXER, EnableMixer),                          \
+        BOOL_(MUTEINPUT, MuteInput),                                                      \
+                                                                                          \
+        RGB_(PALETTE0, cfgpal[0]), RGB_(PALETTE1, cfgpal[1]), RGB_(PALETTE2, cfgpal[2]),  \
+        RGB_(PALETTE3, cfgpal[3]), RGB_(PALETTE4, cfgpal[4]), RGB_(PALETTE5, cfgpal[5]),  \
+        RGB_(PALETTE6, cfgpal[6]), RGB_(PALETTE7, cfgpal[7]), RGB_(PALETTE8, cfgpal[8]),  \
+                                                                                          \
+        BOOL_(VIEWERMARQUEE, VIEWERmarquee),  BOOL_(VIEWERSHOWFREQ, VIEWERshowfreq),      \
+        INT_(VIEWERSTART, VIEWERstart),  INT_(VIEWERCHANNELS, VIEWERchannels),            \
+        DBL_(VIEWERSQUELCH, VIEWERsquelch),  INT_(VIEWERTIMEOUT, VIEWERtimeout),          \
+                                                                                          \
+        BOOL_(WFAVERAGING, WFaveraging),                                                  \
+                                                                                          \
+        BOOL_(USEGROUPCOLORS, useGroupColors),  RGB_(FKEYGROUP1, btnGroup1),              \
+        RGB_(FKEYGROUP2, btnGroup2),  RGB_(FKEYGROUP3, btnGroup3),                        \
+        RGB_(FKEYTEXTCOLOR, btnFkeyTextColor),                                            \
+                                                                                          \
+        INT_(RXFONTNBR, RxFontnbr),  INT_(RXFONTSIZE, RxFontsize),                        \
+        INT_(RXFNTCOLOR, RxFontcolor),  INT_(TXFONTNBR, TxFontnbr),                       \
+        INT_(TXFONTSIZE, TxFontsize),  INT_(TXFNTCOLOR, TxFontcolor),                     \
+                                                                                          \
+        INT_(XMITCOLOR, XMITcolor),  INT_(CTRLCOLOR, CTRLcolor),                          \
+        INT_(SKIPCOLOR, SKIPcolor),  INT_(ALTRCOLOR, ALTRcolor),                          \
+        RGB_(RXFONTCOLOR, RxColor),  RGB_(TXFONTCOLOR, TxColor),                          \
+                                                                                          \
+        INT_(WATERFALLFONTNBR, WaterfallFontnbr),                                         \
+        INT_(WATERFALLFONTSIZE, WaterfallFontsize),                                       \
+                                                                                          \
+        STR_(UISCHEME, ui_scheme),                                                        \
+                                                                                          \
+        BOOL_(RSIDWIDESEARCH, rsidWideSearch),  BOOL_(TRANSMITRSID, TransmitRSid),        \
+                                                                                          \
+        BOOL_(SLOWCPU, slowcpu),                                                          \
+                                                                                          \
+        BOOL_(MT638BIT, mt63_8bit),  INT_(MT63INTERLEAVE, mt63_interleave),               \
+                                                                                          \
+        BOOL_(DOCKEDSCOPE, docked_scope)
+
+
+void read_xml_int(IrrXMLReader* xml, void* var)
 {
-	f << "<" << tag << ">" << val << "</" << tag << ">\n";
+	*((int*)var) = atoi(xml->getNodeData());
+}
+void read_xml_bool(IrrXMLReader* xml, void* var)
+{
+	*((bool*)var) = atoi(xml->getNodeData());
+}
+void read_xml_dbl(IrrXMLReader* xml, void* var)
+{
+	*((double*)var) = atof(xml->getNodeData());
+}
+void read_xml_str(IrrXMLReader* xml, void* var)
+{
+	*((string*)var) = xml->getNodeData();
+}
+void read_xml_rgb(IrrXMLReader* xml, void* var)
+{
+	RGBI* rgb = (RGBI*)var;
+	sscanf(xml->getNodeData(), "%hhu %hhu %hhu", &rgb->R, &rgb->G, &rgb->B);
 }
 
-void writeXMLdbl(ofstream &f, const char * tag, double val)
+void write_xml_int(ofstream& out, const char* tag, void* var)
 {
-	f << "<" << tag << ">" << val << "</" << tag << ">\n";
+	out << '<' << tag << '>' << (*(int*)var) << "</" << tag << ">\n";
 }
-
-void writeXMLstr(ofstream &f, const char * tag, string val)
+void write_xml_bool(ofstream& out, const char* tag, void* var)
 {
-	size_t indx = val.find("&");
-	while (indx != string::npos) {
-		val.replace(indx, 1, "&amp;");
-		indx = val.find("&", indx + 1);
+	out << '<' << tag << '>' << (*(bool*)var) << "</" << tag << ">\n";
+}
+void write_xml_dbl(ofstream& out, const char* tag, void* var)
+{
+	out << '<' << tag << '>' << (*(double*)var) << "</" << tag << ">\n";
+}
+void write_xml_str(ofstream& out, const char* tag, void* var)
+{
+	string& s = *((string*)var);
+	string::size_type i = s.find('&');
+
+	while (i != string::npos) {
+		s.replace(i, 1, "&amp;");
+		i = s.find('&', i + 1);
 	}
-	while ((indx = val.find("<")) != string::npos)
-		val.replace(indx, 1, "&lt;");
-	while ((indx = val.find(">")) != string::npos)
-		val.replace(indx, 1, "&gt;");
-	while ((indx = val.find('"')) != string::npos)
-		val.replace(indx, 1, "&quot;");
-	while ((indx = val.find("'")) != string::npos)
-		val.replace(indx, 1, "&apos;");
-	f << "<" << tag << ">" << val.c_str() << "</" << tag << ">\n";
+	while ((i = s.find('<')) != string::npos)
+		s.replace(i, 1, "&lt;");
+	while ((i = s.find('>')) != string::npos)
+		s.replace(i, 1, "&gt;");
+	while ((i = s.find('"')) != string::npos)
+		s.replace(i, 1, "&quot;");
+	while ((i = s.find('\'')) != string::npos)
+		s.replace(i, 1, "&apos;");
+
+	out << '<' << tag << '>' << s << "</" << tag << ">\n";
+}
+void write_xml_rgb(ofstream& out, const char* tag, void* var)
+{
+	RGBI* rgb = (RGBI*)var;
+	out << '<' << tag << '>' << (int)rgb->R << ' ' << (int)rgb->G
+	    << ' ' << (int)rgb->B << "</" << tag << ">\n";
 }
 
-void writeXMLbool(ofstream &f, const char * tag, bool val)
-{
-	f << "<" << tag << ">" << val << "</" << tag << ">\n";
-}
+#undef INT_
+#undef BOOL_
+#undef DBL_
+#undef STR_
+#undef RGB_
+#undef NOP_
+#define INT_(elem_, var_)  elem_
+#define BOOL_(elem_, var_) elem_
+#define DBL_(elem_, var_)  elem_
+#define STR_(elem_, var_)  elem_
+#define RGB_(elem_, var_)  elem_
+#define NOP_(elem_)        elem_
+enum TAG {
+	TAG_LIST
+};
 
-void writeXMLPalette(ofstream &f, int n, int r, int g, int b)
-{
-	f << "<PALETTE" << n << ">";
-	f << r << " " << g << " " << b;
-	f << "</PALETTE" << n << ">\n";
-}
-
-void writeXMLrgb(ofstream &f, const char *tag, int r, int g, int b)
-{
-	f << "<" << tag << ">" << r << " " << g << " " << b ;
-	f << "</" << tag << ">\n";
-}
-
-string getstring(IrrXMLReader* xml)
-{
-	return (xml->getNodeData());
-}
+struct tag_elem_t {
+	const char* tag;
+	void* ptr;
+	void (*rfunc)(IrrXMLReader*, void*);
+	void (*wfunc)(ofstream&, const char*, void*);
+};
+#undef INT_
+#undef BOOL_
+#undef DBL_
+#undef STR_
+#undef RGB_
+#undef NOP_
+#define INT_(elem_, var_)  { #elem_, &progdefaults.var_, &read_xml_int, &write_xml_int }
+#define BOOL_(elem_, var_) { #elem_, &progdefaults.var_, &read_xml_bool, &write_xml_bool }
+#define DBL_(elem_, var_)  { #elem_, &progdefaults.var_, &read_xml_dbl, &write_xml_dbl }
+#define STR_(elem_, var_)  { #elem_, &progdefaults.var_, &read_xml_str, &write_xml_str }
+#define RGB_(elem_, var_)  { #elem_, &progdefaults.var_, &read_xml_rgb, &write_xml_rgb }
+#define NOP_(elem_)        { #elem_, NULL, NULL, NULL }
+struct tag_elem_t tag_list[] = {
+	TAG_LIST
+};
 
 
 void configuration::writeDefaultsXML()
@@ -414,1008 +541,72 @@ void configuration::writeDefaultsXML()
 	deffname_backup.append("-old");
 	rename(deffname.c_str(), deffname_backup.c_str());
 
-	ofstream f(deffname.c_str(), ios::out);
+	ofstream f(deffname.c_str());
 	if (!f) {
 		LOG_ERROR("Could not write %s", deffname.c_str());
 		return;
 	}
 
 	f << "<FLDIGI_DEFS>\n";
-
-	writeXMLstr(f, "MYCALL", myCall);
-	writeXMLstr(f, "MYNAME", myName);
-	writeXMLstr(f, "MYQTH", myQth);
-	writeXMLstr(f, "MYLOC", myLocator);
-
-	writeXMLdbl(f, "WFREFLEVEL", wfRefLevel);
-	writeXMLdbl(f, "WFAMPSPAN", wfAmpSpan);
-	writeXMLint(f, "LOWFREQCUTOFF", LowFreqCutoff);
-
-	writeXMLbool(f, "WATERFALLHISTORYDEFAULT", WaterfallHistoryDefault);
-	writeXMLbool(f, "WATERFALLQSY", WaterfallQSY);
-	writeXMLstr(f, "WATERFALLCLICKTEXT", WaterfallClickText);
-	writeXMLint(f, "WATERFALLWHEELACTION", WaterfallWheelAction);
-	writeXMLbool(f, "STARTATSWEETSPOT", StartAtSweetSpot);
-	writeXMLbool(f, "PSKMAILSWEETSPOT", PSKmailSweetSpot);
-	writeXMLint(f, "PSKSEARCHRANGE", SearchRange);
-	writeXMLint(f, "PSKSERVEROFFSET", ServerOffset);
-	writeXMLdbl(f, "CWSWEETSPOT", CWsweetspot);
-	writeXMLdbl(f, "PSKSWEETSPOT", PSKsweetspot);
-	writeXMLdbl(f, "ACQSN", ACQsn);
-	writeXMLdbl(f, "RTTYSWEETSPOT", RTTYsweetspot);
-	writeXMLint(f, "RTTYSHIFT", rtty_shift);
-	writeXMLint(f, "RTTYBAUD", rtty_baud);
-	writeXMLint(f, "RTTYBITS", rtty_bits);
-	writeXMLint(f, "RTTYPARITY", rtty_parity);
-	writeXMLint(f, "RTTYSTOP", rtty_stop);
-	writeXMLbool(f, "RTTYREVERSE", rtty_reverse);
-	writeXMLbool(f, "RTTYMSBFIRST", rtty_msbfirst);
-	writeXMLbool(f, "RTTYCRCLF", rtty_crcrlf);
-	writeXMLbool(f, "RTTYAUTOCRLF", rtty_autocrlf);
-	writeXMLint(f, "RTTYAUTOCOUNT", rtty_autocount);
-	writeXMLint(f, "RTTYAFCSPEED", rtty_afcspeed);
-//	writeXMLbool(f, "RTTYUSB", RTTY_USB);
-	writeXMLbool(f, "PREFERXHAIRSCOPE", PreferXhairScope);
-	writeXMLbool(f, "PSEUDOFSK", PseudoFSK);
-	writeXMLbool(f, "UOSRX", UOSrx);
-	writeXMLbool(f, "UOSTX", UOStx);
-	writeXMLbool(f, "XAGC", Xagc);
-
-	writeXMLint(f, "CWWEIGHT", CWweight);	
-	writeXMLint(f, "CWSPEED", CWspeed);
-	writeXMLint(f, "CWDEFSPEED", defCWspeed);
-	writeXMLint(f, "CWBANDWIDTH", CWbandwidth);
-	writeXMLint(f, "CWRANGE", CWrange);
-	writeXMLint(f, "CWLOWERLIMIT", CWlowerlimit);
-	writeXMLint(f, "CWUPPERLIMIT", CWupperlimit);
-	writeXMLbool(f, "CWTRACK", CWtrack);
-	writeXMLdbl(f, "CWRISETIME", CWrisetime);
-	writeXMLdbl(f, "CWDASH2DOT", CWdash2dot);
-	writeXMLbool(f, "QSK", QSK);
-	writeXMLdbl(f, "CWPRE", CWpre);
-	writeXMLdbl(f, "CWPOST", CWpost);
-	writeXMLbool(f, "CWID", CWid);
-	writeXMLint(f, "IDWPM", CWIDwpm);
-	
-	writeXMLint(f, "OLIVIATONES", oliviatones);
-	writeXMLint(f, "OLIVIABW", oliviabw);
-	writeXMLint(f, "OLIVIASMARGIN", oliviasmargin);
-	writeXMLint(f, "OLIVIASINTEG", oliviasinteg);
-	writeXMLbool(f, "OLIVIA8BIT", olivia8bit);
-	
-	writeXMLdbl(f,  "THORBW", THOR_BW);
-	writeXMLbool(f, "THORFILTER", THOR_FILTER);
-	writeXMLstr(f,  "THORSECTEXT", THORsecText);		
-	writeXMLint(f, "THORPATHS", THOR_PATHS);
-	writeXMLbool(f, "THORSOFT", THOR_SOFT);
-	writeXMLdbl(f, "THORCWI", ThorCWI);
-	
-	writeXMLdbl(f, "DOMINOEXBW", DOMINOEX_BW);
-	writeXMLbool(f, "DOMINOEXFILTER", DOMINOEX_FILTER);
-	writeXMLbool(f, "DOMINOEXFEC", DOMINOEX_FEC);
-	writeXMLint(f, "DOMINOEXPATHS", DOMINOEX_PATHS);
-	writeXMLdbl(f, "DOMCWI", DomCWI);
-	
-	writeXMLint(f, "FELDFONTNBR", feldfontnbr);
-	writeXMLbool(f, "HELLRCVWIDTH", HellRcvWidth);
-	writeXMLint(f, "HELLXMTWIDTH", HellXmtWidth);
-	writeXMLbool(f, "HELLBLACKBOARD", HellBlackboard);
-	writeXMLbool(f, "HELLPULSEFAST", HellPulseFast);
-	writeXMLbool(f, "HELLXMTIDLE", HellXmtIdle);
-
-	writeXMLint(f, "WFPREFILTER", wfPreFilter);
-	writeXMLint(f, "LATENCY", latency);
-	writeXMLbool(f, "USECURSORLINES", UseCursorLines);
-	writeXMLbool(f, "USECURSORCENTERLINE", UseCursorCenterLine);
-	writeXMLbool(f, "USEBWTRACKS", UseBWTracks);
-	writeXMLrgb(f, "CLCOLORS", 
-		cursorLineRGBI.R,
-		cursorLineRGBI.G,
-		cursorLineRGBI.B);	
-	writeXMLrgb(f, "CCCOLORS", 
-		cursorCenterRGBI.R,
-		cursorCenterRGBI.G,
-		cursorCenterRGBI.B);
-	writeXMLrgb(f, "BWTCOLORS",
-		bwTrackRGBI.R,
-		bwTrackRGBI.G,
-		bwTrackRGBI.B);	
-	writeXMLbool(f, "VIEWXMTSIGNAL", viewXmtSignal);
-	writeXMLbool(f, "SENDID", sendid);
-	writeXMLbool(f, "MACROID", macroid);
-	writeXMLbool(f, "SENDTEXTID", sendtextid);
-	writeXMLstr(f, "STRTEXTID", strTextid);
-	writeXMLint(f, "VIDEOWIDTH", videowidth);
-	writeXMLbool(f, "IDSMALL", ID_SMALL);
-	writeXMLint(f, "QRZTYPE", QRZ);
-	writeXMLstr(f, "QRZPATHNAME", QRZpathname);
-	writeXMLstr(f, "QRZUSER", QRZusername);
-	writeXMLstr(f, "QRZPASSWORD", QRZuserpassword);
-	writeXMLbool(f, "BTNUSB", btnusb);
-	writeXMLint(f, "BTNPTTIS", btnPTTis);
-	writeXMLbool(f, "RTSPTT", RTSptt);
-	writeXMLbool(f, "DTRPTT", DTRptt);
-	writeXMLbool(f, "RTSPLUS", RTSplus);
-	writeXMLbool(f, "DTRPLUS", DTRplus);
-	writeXMLint(f, "CHOICEHAMLIBIS", choiceHAMLIBis);	
-	writeXMLint(f, "CHKUSEMEMMAPIS", chkUSEMEMMAPis);
-	writeXMLint(f, "CHKUSEHAMLIBIS", chkUSEHAMLIBis);
-	writeXMLint(f, "CHKUSERIGCATIS", chkUSERIGCATis);
-	writeXMLint(f, "CHKUSEXMLRPCIS", chkUSEXMLRPCis);	
-	writeXMLstr(f, "HAMRIGNAME", HamRigName);
-	writeXMLstr(f, "HAMRIGDEVICE", HamRigDevice);
-	writeXMLint(f, "HAMRIGBAUDRATE", HamRigBaudrate);
-
-	writeXMLstr(f, "PTTDEV", PTTdev);
-	writeXMLstr(f, "SECONDARYTEXT", secText);		
-	writeXMLint(f, "AUDIOIO", btnAudioIOis);
-	writeXMLstr(f, "OSSDEVICE", OSSdevice);
-	writeXMLstr(f, "PADEVICE", PAdevice);
-	writeXMLstr(f, "PORTINDEVICE", PortInDevice);
-	writeXMLint(f, "PORTININDEX", PortInIndex);
-	writeXMLstr(f, "PORTOUTDEVICE", PortOutDevice);
-	writeXMLint(f, "PORTOUTINDEX", PortOutIndex);
-	writeXMLstr(f, "PULSESERVER", PulseServer);
-	writeXMLint(f, "SAMPLERATE", sample_rate);
-	writeXMLint(f, "INSAMPLERATE", in_sample_rate);
-	writeXMLint(f, "OUTSAMPLERATE", out_sample_rate);
-	writeXMLint(f, "SAMPLECONVERTER", sample_converter);
-	writeXMLint(f, "RXCORR", RX_corr);		
-	writeXMLint(f, "TXCORR", TX_corr);
-	writeXMLint(f, "TXOFFSET", TxOffset);
-	writeXMLbool(f, "USELEADINGZEROS", UseLeadingZeros);
-	writeXMLint(f, "CONTESTSTART", ContestStart);
-	writeXMLint(f, "CONTESTDIGITS", ContestDigits);
-	writeXMLbool(f, "USETIMER", useTimer);
-	writeXMLint(f, "MACRONUMBER", macronumber);
-	writeXMLint(f, "TIMEOUT", timeout);	
-	writeXMLbool(f, "USELASTMACRO", UseLastMacro);
-	writeXMLbool(f, "DISPLAYMACROFILENAME", DisplayMacroFilename);
-	writeXMLstr(f, "MXDEVICE", MXdevice);
-	writeXMLdbl(f, "PCMVOLUME", PCMvolume);
-	writeXMLbool(f, "MICIN", MicIn);
-	writeXMLbool(f, "LINEIN", LineIn);
-	writeXMLbool(f, "ENABLEMIXER", EnableMixer);
-	writeXMLbool(f, "MUTEINPUT", MuteInput);
-	for (int i = 0; i < 9; i++)
-		writeXMLPalette(f, i, cfgpal[i].R, cfgpal[i].G, cfgpal[i].B);
-
-	writeXMLbool(f, "VIEWERMARQUEE", VIEWERmarquee);
-	writeXMLbool(f, "VIEWERSHOWFREQ", VIEWERshowfreq);
-	writeXMLint(f, "VIEWERSTART", VIEWERstart);
-	writeXMLint(f, "VIEWERCHANNELS", VIEWERchannels);
-	writeXMLdbl(f, "VIEWERSQUELCH", VIEWERsquelch);
-	writeXMLint(f, "VIEWERTIMEOUT", VIEWERtimeout);
-	writeXMLbool(f,"WFAVERAGING", WFaveraging);
-
-	writeXMLbool(f,"USEGROUPCOLORS", useGroupColors);
-	writeXMLrgb(f, "FKEYGROUP1", btnGroup1.R, btnGroup1.G, btnGroup1.B);
-	writeXMLrgb(f, "FKEYGROUP2", btnGroup2.R, btnGroup2.G, btnGroup2.B);
-	writeXMLrgb(f, "FKEYGROUP3", btnGroup3.R, btnGroup3.G, btnGroup3.B);
-	writeXMLrgb(f, "FKEYTEXTCOLOR", 
-		btnFkeyTextColor.R, btnFkeyTextColor.G, btnFkeyTextColor.B);
-	
-	writeXMLint(f, "RXFONTNBR", (int)RxFontnbr);
-	writeXMLint(f, "RXFONTSIZE", RxFontsize);
-	writeXMLint(f, "RXFNTCOLOR", (int)RxFontcolor);
-	writeXMLint(f, "TXFONTNBR", (int)TxFontnbr);
-	writeXMLint(f, "TXFONTSIZE", TxFontsize);
-	writeXMLint(f, "TXFNTCOLOR", (int)TxFontcolor);
-	writeXMLint(f, "XMITCOLOR", (int)XMITcolor);
-	writeXMLint(f, "CTRLCOLOR", (int)CTRLcolor);
-	writeXMLint(f, "SKIPCOLOR", (int)SKIPcolor);
-	writeXMLint(f, "ALTRCOLOR", (int)ALTRcolor);
-
-	writeXMLrgb(f, "RXFONTCOLOR", RxColor.R, RxColor.G, RxColor.B);
-	writeXMLrgb(f, "TXFONTCOLOR", TxColor.R, TxColor.G, TxColor.B);
-	writeXMLint(f, "WATERFALLFONTNBR", (int)WaterfallFontnbr);
-	writeXMLint(f, "WATERFALLFONTSIZE", WaterfallFontsize);
-
-	writeXMLstr(f, "UISCHEME", ui_scheme);
-
-	writeXMLbool(f, "RSIDWIDESEARCH", rsidWideSearch);
-	writeXMLbool(f, "TRANSMITRSID", TransmitRSid);
-	writeXMLbool(f, "SLOWCPU", slowcpu);
-	
-	writeXMLbool(f, "MT638BIT", mt63_8bit);
-	writeXMLint(f, "MT63INTERLEAVE", mt63_interleave);
-
-	writeXMLbool(f, "DOCKEDSCOPE", docked_scope);
-
+	struct tag_elem_t* e;
+	for (size_t i = 0; i < sizeof(tag_list)/sizeof(*tag_list); i++)
+		if (likely((e = &tag_list[i])->ptr))
+			(*e->wfunc)(f, e->tag, e->ptr);
 	f << "</FLDIGI_DEFS>\n";
 	f.close();
 }
-	
+
 bool configuration::readDefaultsXML()
 {
 	string deffname = HomeDir;
 	deffname.append("fldigi_def.xml");
-	ifstream f_in(deffname.c_str(), ios::in);
+	ifstream f(deffname.c_str());
+	if (!f)
+		return false;
 
-	if (!f_in) return false;
-	string xmlpage;
-	char str[255];
-	while (f_in) {
-		f_in.getline(str, 255);
-		xmlpage += str;
-		xmlpage += '\n';
-	}
-	f_in.close();
-		
-	IrrXMLReader* xml = createIrrXMLReader(new IIrrXMLStringReader(xmlpage));
+	string xmlbuf;
+	f.seekg(0, ios::end);
+	xmlbuf.reserve(f.tellg());
+	f.seekg(0, ios::beg);
 
-// strings for storing the data we want to get out of the file
+	char line[BUFSIZ];
+	while (f.getline(line, sizeof(line)))
+		xmlbuf.append(line).append("\n");
+	f.close();
+
+	IrrXMLReader* xml = createIrrXMLReader(new IIrrXMLStringReader(xmlbuf));
+	if (!xml)
+		return false;
+
+	map<string, enum TAG> tag_map;
+	for (size_t i = 0; i < sizeof(tag_list)/sizeof(*tag_list); i++)
+		tag_map[tag_list[i].tag] = (enum TAG)i;
+	map<string, enum TAG>::const_iterator itag;
+
 	TAG tag = IGNORE;
-	
-// parse the file until end reached
-	while(xml && xml->read()) {
+
+	// parse the file until end reached
+	while(xml->read()) {
 		switch(xml->getNodeType()) {
-			case EXN_TEXT:
-			case EXN_CDATA:
-				switch (tag) {
-					default:
-					case IGNORE:
-						break;
-					case MYCALL :
-						myCall = getstring(xml);
-						break;
-					case MYNAME:
-						myName = getstring(xml);
-						break;
-					case MYQTH:
-						myQth = getstring(xml);
-						break;
-					case MYLOC:
-						myLocator = getstring(xml);
-						break;
-					case WFREFLEVEL:
-						wfRefLevel = atof(getstring(xml).c_str());
-						break;
-					case WFAMPSPAN :
-						wfAmpSpan = atof(getstring(xml).c_str());
-						break;
-					case LOWFREQCUTOFF :
-						LowFreqCutoff = atoi(getstring(xml).c_str());
-						break;
-					case WATERFALLHISTORYDEFAULT :
-						WaterfallHistoryDefault = atoi(getstring(xml).c_str());
-						break;
-					case WATERFALLQSY :
-						WaterfallQSY = atoi(getstring(xml).c_str());
-						break;
-					case WATERFALLCLICKTEXT :
-						WaterfallClickText = getstring(xml);
-						break;
-					case WATERFALLWHEELACTION :
-						WaterfallWheelAction = atoi(getstring(xml).c_str());
-						break;
-					case STARTATSWEETSPOT :
-						StartAtSweetSpot = atoi(getstring(xml).c_str());
-						break;
-					case PSKMAILSWEETSPOT :
-						PSKmailSweetSpot = atoi(getstring(xml).c_str());
-						break;
-					case PSKSEARCHRANGE :
-						SearchRange = atoi(getstring(xml).c_str());
-						break;
-					case PSKSERVEROFFSET :
-						ServerOffset = atoi(getstring(xml).c_str());
-						break;
-					case ACQSN :
-						ACQsn = atof(getstring(xml).c_str());
-						break;
-					case CWSWEETSPOT :
-						CWsweetspot = atof(getstring(xml).c_str());
-						break;
-					case PSKSWEETSPOT :
-						PSKsweetspot = atof(getstring(xml).c_str());
-						break;
-					case RTTYSWEETSPOT :
-						RTTYsweetspot = atof(getstring(xml).c_str());
-						break;
-					case RTTYSHIFT :
-						rtty_shift = atoi(getstring(xml).c_str());
-						break;
-					case RTTYBAUD :
-						rtty_baud = atoi(getstring(xml).c_str());
-						break;
-					case RTTYBITS :
-						rtty_bits = atoi(getstring(xml).c_str());
-						break;
-					case RTTYPARITY :
-						rtty_parity = atoi(getstring(xml).c_str());
-						break;
-					case RTTYSTOP :
-						rtty_stop = atoi(getstring(xml).c_str());
-						break;
-					case RTTYREVERSE :
-						rtty_reverse = atoi(getstring(xml).c_str());
-						break;
-					case RTTYMSBFIRST :
-						rtty_msbfirst = atoi(getstring(xml).c_str());
-						break;
-					case RTTYCRCLF :
-						rtty_crcrlf = atoi(getstring(xml).c_str());
-						break;
-					case RTTYAUTOCRLF :
-						rtty_autocrlf = atoi(getstring(xml).c_str());
-						break;
-					case RTTYAUTOCOUNT :
-						rtty_autocount = atoi(getstring(xml).c_str());
-						break;
-					case RTTYAFCSPEED :
-						rtty_afcspeed = atoi(getstring(xml).c_str());
-						break;
-//					case RTTYUSB :
-//						RTTY_USB = atoi(getstring(xml).c_str());
-//						break;
-					case PREFERXHAIRSCOPE :
-						PreferXhairScope = atoi(getstring(xml).c_str());
-						break;
-					case PSEUDOFSK :
-						PseudoFSK = atoi(getstring(xml).c_str());
-						break;
-					case UOSRX :
-						UOSrx = atoi(getstring(xml).c_str());
-						break;
-					case UOSTX :
-						UOStx = atoi(getstring(xml).c_str());
-						break;
-					case XAGC :
-						Xagc = atoi(getstring(xml).c_str());
-						break;
-					case CWWEIGHT :
-						CWweight = atoi(getstring(xml).c_str());
-						break;
-					case CWSPEED :
-						CWspeed = atoi(getstring(xml).c_str());
-						break;
-					case CWDEFSPEED :
-						defCWspeed = atoi(getstring(xml).c_str());
-						break;
-					case CWBANDWIDTH :
-						CWbandwidth = atoi(getstring(xml).c_str());
-						break;
-					case CWRANGE :
-						CWrange = atoi(getstring(xml).c_str());
-						break;
-					case CWLOWERLIMIT :
-						CWlowerlimit = atoi(getstring(xml).c_str());
-						break;
-					case CWUPPERLIMIT :
-						CWupperlimit = atoi(getstring(xml).c_str());
-						break;
-					case CWTRACK :
-						CWtrack = atoi(getstring(xml).c_str());
-						break;
-					case CWRISETIME :
-						CWrisetime = atof(getstring(xml).c_str());
-						break;
-					case CWDASH2DOT :
-						CWdash2dot = atof(getstring(xml).c_str());
-						break;
-					case XQSK :
-						QSK = atoi(getstring(xml).c_str());
-						break;
-					case CWPRE :
-						CWpre = atof(getstring(xml).c_str());
-						break;
-					case CWPOST :
-						CWpost = atof(getstring(xml).c_str());
-						break;
-					case CWID :
-						CWid = atoi(getstring(xml).c_str());
-						break;
-					case CWIDWPM :
-						CWIDwpm = atoi(getstring(xml).c_str());
-						break;
-					case OLIVIATONES :
-						oliviatones = atoi(getstring(xml).c_str());
-						break;
-					case OLIVIABW :
-						oliviabw = atoi(getstring(xml).c_str());
-						break;
-					case OLIVIASMARGIN :
-						oliviasmargin = atoi(getstring(xml).c_str());
-						break;
-					case OLIVIASINTEG :
-						oliviasinteg = atoi(getstring(xml).c_str());
-						break;
-					case OLIVIA8BIT :
-						olivia8bit = atoi(getstring(xml).c_str());
-						break;
-					case THORBW :
-						THOR_BW = atof(getstring(xml).c_str());
-						break;
-					case THORFILTER :
-						THOR_FILTER = atoi(getstring(xml).c_str());
-						break;
-					case THORSECTEXT :
-						THORsecText = getstring(xml);
-						break;
-					case THORPATHS :
-						THOR_PATHS = atoi(getstring(xml).c_str());
-						break;
-					case THORSOFT :
-						THOR_SOFT = atoi(getstring(xml).c_str());
-						break;
-					case THORCWI :
-						ThorCWI = atof(getstring(xml).c_str());
-						break;
-					case DOMINOEXBW :
-						DOMINOEX_BW = atof(getstring(xml).c_str());
-						break;
-					case DOMINOEXFILTER :
-						DOMINOEX_FILTER = atoi(getstring(xml).c_str());
-						break;
-					case DOMINOEXFEC :
-						DOMINOEX_FEC = atoi(getstring(xml).c_str());
-						break;
-					case DOMINOEXPATHS :
-						DOMINOEX_PATHS = atoi(getstring(xml).c_str());
-						break;
-					case DOMCWI :
-						DomCWI = atof(getstring(xml).c_str());
-						break;
-					case FELDFONTNBR :
-						feldfontnbr = atoi(getstring(xml).c_str());
-						break;
-					case HELLRCVWIDTH :
-						HellRcvWidth = atoi(getstring(xml).c_str());
-						break;
-					case HELLXMTWIDTH :
-						HellXmtWidth = atoi(getstring(xml).c_str());
-						if (HellXmtWidth == 0) HellXmtWidth = 1;
-						break;
-					case HELLBLACKBOARD :
-						HellBlackboard = atoi(getstring(xml).c_str());
-						break;
-					case HELLPULSEFAST :
-						HellPulseFast = atoi(getstring(xml).c_str());
-						break;
-					case HELLXMTIDLE :
-						HellXmtIdle = atoi(getstring(xml).c_str());
-						break;
-					case WFPREFILTER :
-						wfPreFilter = atoi(getstring(xml).c_str());
-						break;
-					case LATENCY :
-						latency = atoi(getstring(xml).c_str());
-						break;
-					case USECURSORLINES :
-						UseCursorLines = atoi(getstring(xml).c_str());
-						break;
-					case USECURSORCENTERLINE :
-						UseCursorCenterLine = atoi(getstring(xml).c_str());
-						break;
-					case USEBWTRACKS :
-						UseBWTracks = atoi(getstring(xml).c_str());
-						break;
-					case CLCOLORS :
-						sscanf( getstring(xml).c_str(), "%hhu %hhu %hhu",
-							&cursorLineRGBI.R,
-							&cursorLineRGBI.G,
-							&cursorLineRGBI.B );	
-						break;
-					case CCCOLORS :
-						sscanf( getstring(xml).c_str(), "%hhu %hhu %hhu",
-							&cursorCenterRGBI.R,
-							&cursorCenterRGBI.G,
-							&cursorCenterRGBI.B );	
-						break;
-					case BWTCOLORS :
-						sscanf( getstring(xml).c_str(), "%hhu %hhu %hhu",
-							&bwTrackRGBI.R,
-							&bwTrackRGBI.G,
-							&bwTrackRGBI.B );	
-						break;
-					case VIEWXMTSIGNAL :
-						viewXmtSignal = atoi(getstring(xml).c_str());
-						break;
-					case SENDID :
-						sendid = atoi(getstring(xml).c_str());
-						break;
-					case MACROID :
-						macroid = atoi(getstring(xml).c_str());
-						break;
-					case SENDTEXTID :
-						sendtextid = atoi(getstring(xml).c_str());
-						break;
-					case STRTEXTID :
-						strTextid = getstring(xml);
-					case VIDEOWIDTH :
-						videowidth = atoi(getstring(xml).c_str());
-					case IDSMALL :
-						ID_SMALL = atoi(getstring(xml).c_str());
-					case QRZTYPE :
-						QRZ = atoi(getstring(xml).c_str());
-						break;
-					case QRZPATHNAME :
-						QRZpathname = getstring(xml);
-						break;
-					case QRZUSER :
-						QRZusername = getstring(xml);
-						break;
-					case QRZPASSWORD :
-						QRZuserpassword = getstring(xml);
-						break;
-					case BTNUSB :
-						btnusb = atoi(getstring(xml).c_str());
-						break;
-					case BTNPTTIS :
-						btnPTTis = atoi(getstring(xml).c_str());
-						break;
-					case RTSPTT :
-						RTSptt = atoi(getstring(xml).c_str());
-						break;
-					case DTRPTT :
-						DTRptt = atoi(getstring(xml).c_str());
-						break;
-					case RTSPLUS :
-						RTSplus = atoi(getstring(xml).c_str());
-						break;
-					case DTRPLUS :
-						DTRplus = atoi(getstring(xml).c_str());
-						break;
-					case CHOICEHAMLIBIS :
-						choiceHAMLIBis = atoi(getstring(xml).c_str());
-						break;
-					case CHKUSEMEMMAPIS :
-						chkUSEMEMMAPis = atoi(getstring(xml).c_str());
-						break;
-					case CHKUSEHAMLIBIS :
-						chkUSEHAMLIBis = atoi(getstring(xml).c_str());
-						break;
-					case CHKUSERIGCATIS :
-						chkUSERIGCATis = atoi(getstring(xml).c_str());
-						break;
-					case CHKUSEXMLRPCIS :
-						chkUSEXMLRPCis = atoi(getstring(xml).c_str());
-						break;
-					case HAMRIGNAME :
-						HamRigName = getstring(xml);
-						break;
-					case HAMRIGDEVICE :
-						HamRigDevice = getstring(xml);
-						break;
-					case HAMRIGBAUDRATE :
-						HamRigBaudrate = atoi(getstring(xml).c_str());
-						break;
-					case PTTDEV :
-						PTTdev = getstring(xml);
-						break;
-					case SECONDARYTEXT :
-						secText = getstring(xml);
-						break;
-					case AUDIOIO :
-						btnAudioIOis = atoi(getstring(xml).c_str());
-						break;
-					case OSSDEVICE :
-						OSSdevice = getstring(xml);
-						break;
-					case PADEVICE :
-						PAdevice = getstring(xml);
-						break;
-					case PORTINDEVICE :
-						PortInDevice = getstring(xml);
-						break;
-					case PORTININDEX :
-						PortInIndex = atoi(getstring(xml).c_str());
-						break;
-					case PORTOUTDEVICE :
-						PortOutDevice = getstring(xml);
-						break;
-					case PORTOUTINDEX :
-						PortOutIndex = atoi(getstring(xml).c_str());
-						break;
-					case PULSESERVER :
-						PulseServer = getstring(xml);
-						break;
-					case SAMPLERATE :
-						sample_rate = atoi(getstring(xml).c_str());
-						break;
-					case INSAMPLERATE :
-						in_sample_rate = atoi(getstring(xml).c_str());
-						break;
-					case OUTSAMPLERATE :
-						out_sample_rate = atoi(getstring(xml).c_str());
-						break;
-					case SAMPLECONVERTER :
-						sample_converter = atoi(getstring(xml).c_str());
-						break;
-					case RXCORR :
-						RX_corr = atoi(getstring(xml).c_str());
-						break;
-					case TXCORR :
-						TX_corr = atoi(getstring(xml).c_str());
-						break;
-					case TXOFFSET :
-						TxOffset = atoi(getstring(xml).c_str());
-						break;
-					case USELEADINGZEROS :
-						UseLeadingZeros = atoi(getstring(xml).c_str());
-						break;
-					case CONTESTSTART :
-						ContestStart = atoi(getstring(xml).c_str());
-						break;
-					case CONTESTDIGITS :
-						ContestDigits = atoi(getstring(xml).c_str());
-						break;
-					case USETIMER :
-						useTimer = atoi(getstring(xml).c_str());
-						break;
-					case MACRONUMBER :
-						macronumber = atoi(getstring(xml).c_str());
-						break;
-					case TIMEOUT :
-						timeout = atoi(getstring(xml).c_str());
-						break;
-					case USELASTMACRO :
-						UseLastMacro = atoi(getstring(xml).c_str());
-						break;
-					case DISPLAYMACROFILENAME :
-						DisplayMacroFilename = atoi(getstring(xml).c_str());
-						break;
-					case MXDEVICE :
-						MXdevice = getstring(xml);
-						break;
-					case PCMVOLUME :
-						PCMvolume = atof(getstring(xml).c_str());
-						break;
-					case MICIN :
-						MicIn = atoi(getstring(xml).c_str());
-						break;
-					case LINEIN :
-						LineIn = atoi(getstring(xml).c_str());
-						break;
-					case ENABLEMIXER :
-						EnableMixer = atoi(getstring(xml).c_str());
-						break;
-					case MUTEINPUT :
-						MuteInput = atoi(getstring(xml).c_str());
-						break;
-					case PALETTE0 :
-						sscanf( getstring(xml).c_str(), "%d %d %d",
-								&cfgpal[0].R, &cfgpal[0].G, &cfgpal[0].B );
-						break;
-					case PALETTE1 :
-						sscanf( getstring(xml).c_str(), "%d %d %d",
-								&cfgpal[1].R, &cfgpal[1].G, &cfgpal[1].B );
-						break;
-					case PALETTE2 :
-						sscanf( getstring(xml).c_str(), "%d %d %d",
-								&cfgpal[2].R, &cfgpal[2].G, &cfgpal[2].B );
-						break;
-					case PALETTE3 :
-						sscanf( getstring(xml).c_str(), "%d %d %d",
-								&cfgpal[3].R, &cfgpal[3].G, &cfgpal[3].B );
-						break;
-					case PALETTE4 :
-						sscanf( getstring(xml).c_str(), "%d %d %d",
-								&cfgpal[4].R, &cfgpal[4].G, &cfgpal[4].B );
-						break;
-					case PALETTE5 :
-						sscanf( getstring(xml).c_str(), "%d %d %d",
-								&cfgpal[5].R, &cfgpal[5].G, &cfgpal[5].B );
-						break;
-					case PALETTE6 :
-						sscanf( getstring(xml).c_str(), "%d %d %d",
-								&cfgpal[6].R, &cfgpal[6].G, &cfgpal[6].B );
-						break;
-					case PALETTE7 :
-						sscanf( getstring(xml).c_str(), "%d %d %d",
-								&cfgpal[7].R, &cfgpal[7].G, &cfgpal[7].B );
-						break;
-					case PALETTE8 :
-						sscanf( getstring(xml).c_str(), "%d %d %d",
-								&cfgpal[8].R, &cfgpal[8].G, &cfgpal[8].B );
-						break;
-					case VIEWERMARQUEE :
-						VIEWERmarquee = atoi(getstring(xml).c_str());
-						break;
-					case VIEWERSHOWFREQ :
-						VIEWERshowfreq = atoi(getstring(xml).c_str());
-						break;
-					case VIEWERSTART :
-						VIEWERstart = atoi(getstring(xml).c_str());
-						break;
-					case VIEWERCHANNELS :
-						VIEWERchannels = atoi(getstring(xml).c_str());
-						break;
-					case VIEWERSQUELCH :
-						VIEWERsquelch = atof(getstring(xml).c_str());
-						break;
-					case VIEWERTIMEOUT :
-						VIEWERtimeout = atoi(getstring(xml).c_str());
-						break;
-					case WFAVERAGING :
-						WFaveraging = atoi(getstring(xml).c_str());
-						break;
-					case USEGROUPCOLORS :
-						useGroupColors = atoi(getstring(xml).c_str());
-					case FKEYGROUP1 :
-						sscanf( getstring(xml).c_str(), "%d %d %d",
-							&btnGroup1.R, &btnGroup1.G, &btnGroup1.B);
-						break;
-					case FKEYGROUP2 :
-						sscanf( getstring(xml).c_str(), "%d %d %d",
-							&btnGroup2.R, &btnGroup2.G, &btnGroup2.B);
-						break;
-					case FKEYGROUP3 :
-						sscanf( getstring(xml).c_str(), "%d %d %d",
-							&btnGroup3.R, &btnGroup3.G, &btnGroup3.B);
-						break;
-					case FKEYTEXTCOLOR : 
-						sscanf( getstring(xml).c_str(), "%d %d %d",
-							&btnFkeyTextColor.R, 
-							&btnFkeyTextColor.G, 
-							&btnFkeyTextColor.B);
-						break;
-					case RXFONTNBR :
-						RxFontnbr = (Fl_Font)atoi(getstring(xml).c_str());
-						break;
-					case RXFONTSIZE :
-						RxFontsize = atoi(getstring(xml).c_str());
-						break;
-					case RXFNTCOLOR :
-						RxFontcolor = (Fl_Color)atoi(getstring(xml).c_str());
-						break;
-					case TXFONTNBR :
-						TxFontnbr = (Fl_Font)atoi(getstring(xml).c_str());
-						break;
-					case TXFONTSIZE :
-						TxFontsize = atoi(getstring(xml).c_str());
-						break;
-					case TXFNTCOLOR :
-						TxFontcolor = (Fl_Color)atoi(getstring(xml).c_str());
-						break;
-					case RXFONTCOLOR :
-						sscanf( getstring(xml).c_str(), "%d %d %d",
-							&RxColor.R, &RxColor.G, &RxColor.B);
-						break;
-					case XMITCOLOR :
-						XMITcolor = (Fl_Color)atoi(getstring(xml).c_str());
-						break;
-					case CTRLCOLOR :
-						CTRLcolor = (Fl_Color)atoi(getstring(xml).c_str());
-						break;
-					case SKIPCOLOR :
-						SKIPcolor = (Fl_Color)atoi(getstring(xml).c_str());
-						break;
-					case ALTRCOLOR :
-						ALTRcolor = (Fl_Color)atoi(getstring(xml).c_str());
-						break;
-					case WATERFALLFONTNBR :
-						WaterfallFontnbr = (Fl_Font)atoi(getstring(xml).c_str());
-						break;
-					case WATERFALLFONTSIZE :
-						WaterfallFontsize = atoi(getstring(xml).c_str());
-						break;
-					case UISCHEME :
-						ui_scheme = getstring(xml);
-						break;
-					case TXFONTCOLOR :
-						sscanf( getstring(xml).c_str(), "%d %d %d",
-							&TxColor.R, &TxColor.G, &TxColor.B);
-						break;
-					case RSIDWIDESEARCH :
-						rsidWideSearch = atoi(getstring(xml).c_str());
-						break;
-					case TRANSMITRSID :
-						TransmitRSid = atoi(getstring(xml).c_str());
-						break;
-					case SLOWCPU :
-						slowcpu = atoi(getstring(xml).c_str());
-						break;
-					case MT638BIT :
-						mt63_8bit = atoi(getstring(xml).c_str());
-						break;
-					case MT63INTERLEAVE :
-						mt63_interleave = atoi(getstring(xml).c_str());
-						break;
-					case DOCKEDSCOPE :
-						docked_scope = atoi(getstring(xml).c_str());
-						break;
-				}
-				break;
-				
-			case EXN_ELEMENT_END:
-				tag=IGNORE;
-				break;
-
-			case EXN_ELEMENT: 
-				{
-				const char *nodeName = xml->getNodeName();
-				if (!strcmp("MYCALL", nodeName)) 		tag = MYCALL;
-				else if (!strcmp("MYNAME", nodeName)) 	tag = MYNAME;
-				else if (!strcmp("MYQTH", nodeName)) 	tag = MYQTH;
-				else if (!strcmp("MYLOC", nodeName)) 	tag = MYLOC;
-				else if (!strcmp("SQUELCH", nodeName)) 	tag = SQUELCH;
-				else if (!strcmp("WFREFLEVEL", nodeName)) 	tag = WFREFLEVEL;
-				else if (!strcmp("WFAMPSPAN", nodeName)) 	tag = WFAMPSPAN;
-				else if (!strcmp("LOWFREQCUTOFF", nodeName)) 	tag = LOWFREQCUTOFF;
-				else if (!strcmp("WATERFALLHISTORYDEFAULT", nodeName)) 	tag = WATERFALLHISTORYDEFAULT;
-				else if (!strcmp("WATERFALLQSY", nodeName)) 	tag = WATERFALLQSY;
-				else if (!strcmp("WATERFALLCLICKTEXT", nodeName)) 	tag = WATERFALLCLICKTEXT;
-				else if (!strcmp("WATERFALLWHEELACTION", nodeName)) 	tag = WATERFALLWHEELACTION;
-				else if (!strcmp("STARTATSWEETSPOT", nodeName)) 	tag = STARTATSWEETSPOT;
-				else if (!strcmp("PSKMAILSWEETSPOT", nodeName)) 	tag = PSKMAILSWEETSPOT;
-				else if (!strcmp("PSKSEARCHRANGE", nodeName)) 	tag = PSKSEARCHRANGE;
-				else if (!strcmp("PSKSERVEROFFSET", nodeName)) 	tag = PSKSERVEROFFSET;
-				else if (!strcmp("ACQSN", nodeName)) tag = ACQSN;
-				else if (!strcmp("CWSWEETSPOT", nodeName)) 	tag = CWSWEETSPOT;
-				else if (!strcmp("PSKSWEETSPOT", nodeName)) 	tag = PSKSWEETSPOT;
-				else if (!strcmp("RTTYSWEETSPOT", nodeName)) 	tag = RTTYSWEETSPOT;
-				else if (!strcmp("RTTYSHIFT", nodeName)) 	tag = RTTYSHIFT;
-				else if (!strcmp("RTTYBAUD", nodeName)) 	tag = RTTYBAUD;
-				else if (!strcmp("RTTYBITS", nodeName)) 	tag = RTTYBITS;
-				else if (!strcmp("RTTYPARITY", nodeName)) 	tag = RTTYPARITY;
-				else if (!strcmp("RTTYSTOP", nodeName)) 	tag = RTTYSTOP;
-				else if (!strcmp("RTTYREVERSE", nodeName)) 	tag = RTTYREVERSE;
-				else if (!strcmp("RTTYMSBFIRST", nodeName)) 	tag = RTTYMSBFIRST;
-				else if (!strcmp("RTTYCRCLF", nodeName)) 	tag = RTTYCRCLF;
-				else if (!strcmp("RTTYAUTOCRLF", nodeName)) 	tag = RTTYAUTOCRLF;
-				else if (!strcmp("RTTYAUTOCOUNT", nodeName)) 	tag = RTTYAUTOCOUNT;
-				else if (!strcmp("RTTYAFCSPEED", nodeName)) 	tag = RTTYAFCSPEED;
-				else if (!strcmp("RTTYUSB", nodeName))		tag = RTTYUSB;
-				else if (!strcmp("PREFERXHAIRSCOPE", nodeName)) 	tag = PREFERXHAIRSCOPE;
-				else if (!strcmp("PSEUDOFSK", nodeName)) 	tag = PSEUDOFSK;
-				else if (!strcmp("UOSRX", nodeName)) 	tag = UOSRX;
-				else if (!strcmp("UOSTX", nodeName)) 	tag = UOSTX;
-				else if (!strcmp("XAGC", nodeName)) 	tag = XAGC;
-				else if (!strcmp("CWWEIGHT", nodeName)) 	tag = CWWEIGHT;
-				else if (!strcmp("CWSPEED", nodeName)) 	tag = CWSPEED;
-				else if (!strcmp("CWDEFSPEED", nodeName)) 	tag = CWDEFSPEED;
-				else if (!strcmp("CWBANDWIDTH", nodeName)) 	tag = CWBANDWIDTH;
-				else if (!strcmp("CWRANGE", nodeName)) 	tag = CWRANGE;
-				else if (!strcmp("CWLOWERLIMIT", nodeName)) 	tag = CWLOWERLIMIT;
-				else if (!strcmp("CWUPPERLIMIT", nodeName)) 	tag = CWUPPERLIMIT;
-				else if (!strcmp("CWTRACK", nodeName)) 	tag = CWTRACK;
-				else if (!strcmp("CWRISETIME", nodeName)) 	tag = CWRISETIME;
-				else if (!strcmp("CWDASH2DOT", nodeName)) 	tag = CWDASH2DOT;
-				else if (!strcmp("QSK", nodeName)) 	tag = XQSK;
-				else if (!strcmp("CWPRE", nodeName)) 	tag = CWPRE;
-				else if (!strcmp("CWPOST", nodeName)) 	tag = CWPOST;
-				else if (!strcmp("CWID", nodeName))	tag = CWID;
-				else if (!strcmp("IDWPM", nodeName)) tag = CWIDWPM;
-				else if (!strcmp("OLIVIATONES", nodeName)) 	tag = OLIVIATONES;
-				else if (!strcmp("OLIVIABW", nodeName)) 	tag = OLIVIABW;
-				else if (!strcmp("OLIVIASMARGIN", nodeName)) 	tag = OLIVIASMARGIN;
-				else if (!strcmp("OLIVIASINTEG", nodeName)) 	tag = OLIVIASINTEG;
-				else if (!strcmp("OLIVIA8BIT", nodeName)) 	tag = OLIVIA8BIT;
-				else if (!strcmp("THORBW", nodeName)) 	tag = THORBW;
-				else if (!strcmp("THORFILTER", nodeName))	tag = THORFILTER;
-				else if (!strcmp("THORSECTEXT", nodeName))	tag = THORSECTEXT;
-				else if (!strcmp("THORPATHS", nodeName)) tag = THORPATHS;
-				else if (!strcmp("THORSOFT", nodeName)) tag = THORSOFT;
-				else if (!strcmp("THORCWI", nodeName)) tag = THORCWI;
-				else if (!strcmp("DOMINOEXBW", nodeName)) 	tag = DOMINOEXBW;
-				else if (!strcmp("DOMINOEXFILTER", nodeName))	tag = DOMINOEXFILTER;
-				else if (!strcmp("DOMINOEXFEC", nodeName))	tag = DOMINOEXFEC;
-				else if (!strcmp("DOMINOEXPATHS", nodeName)) tag = DOMINOEXPATHS;
-				else if (!strcmp("DOMCWI", nodeName)) tag = DOMCWI;
-				else if (!strcmp("FELDFONTNBR", nodeName)) 	tag = FELDFONTNBR;
-				else if (!strcmp("HELLRCVWIDTH", nodeName)) 	tag = HELLRCVWIDTH;
-				else if (!strcmp("HELLXMTWIDTH", nodeName)) 	tag = HELLXMTWIDTH;
-				else if (!strcmp("HELLBLACKBOARD", nodeName)) 	tag = HELLBLACKBOARD;
-				else if (!strcmp("HELLPULSEFAST", nodeName)) 	tag = HELLPULSEFAST;
-				else if (!strcmp("HELLXMTIDLE", nodeName)) 	tag = HELLXMTIDLE;
-				else if (!strcmp("WFPREFILTER", nodeName)) 	tag = WFPREFILTER;
-				else if (!strcmp("LATENCY", nodeName)) 	tag = LATENCY;
-				else if (!strcmp("USECURSORLINES", nodeName)) 	tag = USECURSORLINES;
-				else if (!strcmp("USECURSORCENTERLINE", nodeName)) 	tag = USECURSORCENTERLINE;
-				else if (!strcmp("USEBWTRACKS", nodeName)) 	tag = USEBWTRACKS;
-				else if (!strcmp("CLCOLORS", nodeName)) 	tag = CLCOLORS;
-				else if (!strcmp("CCCOLORS", nodeName)) 	tag = CCCOLORS;
-				else if (!strcmp("BWTCOLORS", nodeName)) 	tag = BWTCOLORS;
-				else if (!strcmp("VIEWXMTSIGNAL", nodeName)) 	tag = VIEWXMTSIGNAL;
-				else if (!strcmp("SENDID", nodeName)) 	tag = SENDID;
-				else if (!strcmp("MACROID", nodeName)) 	tag = MACROID;
-				else if (!strcmp("SENDTEXTID", nodeName))	tag = SENDTEXTID;
-				else if (!strcmp("STRTEXTID", nodeName))	tag = STRTEXTID;
-				else if (!strcmp("VIDEOWIDTH", nodeName))	tag = VIDEOWIDTH;
-				else if (!strcmp("IDSMALL", nodeName))	tag = IDSMALL;
-				else if (!strcmp("QRZUSER", nodeName)) 	tag = QRZUSER;
-				else if (!strcmp("QRZPATHNAME", nodeName)) tag = QRZPATHNAME;
-				else if (!strcmp("QRZPASSWORD", nodeName)) 	tag = QRZPASSWORD;
-				else if (!strcmp("QRZTYPE", nodeName)) 	tag = QRZTYPE;
-				else if (!strcmp("BTNUSB", nodeName)) 	tag = BTNUSB;
-				else if (!strcmp("BTNPTTIS", nodeName)) 	tag = BTNPTTIS;
-				else if (!strcmp("RTSPTT", nodeName)) 	tag = RTSPTT;
-				else if (!strcmp("DTRPTT", nodeName)) 	tag = DTRPTT;
-				else if (!strcmp("RTSPLUS", nodeName)) 	tag = RTSPLUS;
-				else if (!strcmp("DTRPLUS", nodeName)) 	tag = DTRPLUS;
-				else if (!strcmp("CHOICEHAMLIBIS", nodeName)) 	tag = CHOICEHAMLIBIS;
-				else if (!strcmp("CHKUSEMEMMAPIS", nodeName)) 	tag = CHKUSEMEMMAPIS;
-				else if (!strcmp("CHKUSEHAMLIBIS", nodeName)) 	tag = CHKUSEHAMLIBIS;
-				else if (!strcmp("CHKUSERIGCATIS", nodeName)) 	tag = CHKUSERIGCATIS;
-				else if (!strcmp("CHKUSEXMLRPCIS", nodeName)) 	tag = CHKUSEXMLRPCIS;
-				else if (!strcmp("HAMRIGNAME", nodeName)) 	tag = HAMRIGNAME;
-				else if (!strcmp("HAMRIGDEVICE", nodeName)) 	tag = HAMRIGDEVICE;
-				else if (!strcmp("HAMRIGBAUDRATE", nodeName)) 	tag = HAMRIGBAUDRATE;
-				else if (!strcmp("PTTDEV", nodeName)) 	tag = PTTDEV;
-				else if (!strcmp("SECONDARYTEXT", nodeName)) 	tag = SECONDARYTEXT;
-				else if (!strcmp("AUDIOIO", nodeName)) 	tag = AUDIOIO;
-				else if (!strcmp("OSSDEVICE", nodeName)) 	tag = OSSDEVICE;
-				else if (!strcmp("PADEVICE", nodeName)) 	tag = PADEVICE;
-				else if (!strcmp("PORTINDEVICE", nodeName)) 	tag = PORTINDEVICE;
-				else if (!strcmp("PORTININDEX", nodeName)) 	tag = PORTININDEX;
-				else if (!strcmp("PORTOUTDEVICE", nodeName)) 	tag = PORTOUTDEVICE;
-				else if (!strcmp("PORTOUTINDEX", nodeName)) 	tag = PORTOUTINDEX;
-				else if (!strcmp("SAMPLERATE", nodeName)) 	tag = SAMPLERATE;
-				else if (!strcmp("INSAMPLERATE", nodeName)) 	tag = INSAMPLERATE;
-				else if (!strcmp("OUTSAMPLERATE", nodeName)) 	tag = OUTSAMPLERATE;
-				else if (!strcmp("SAMPLECONVERTER", nodeName)) 	tag = SAMPLECONVERTER;
-				else if (!strcmp("RXCORR", nodeName)) 	tag = RXCORR;
-				else if (!strcmp("TXCORR", nodeName)) 	tag = TXCORR;
-				else if (!strcmp("TXOFFSET", nodeName)) 	tag = TXOFFSET;
-				else if (!strcmp("USELEADINGZEROS", nodeName)) 	tag = USELEADINGZEROS;
-				else if (!strcmp("CONTESTSTART", nodeName)) 	tag = CONTESTSTART;
-				else if (!strcmp("CONTESTDIGITS", nodeName)) 	tag = CONTESTDIGITS;
-				else if (!strcmp("USETIMER", nodeName)) 	tag = USETIMER;
-				else if (!strcmp("MACRONUMBER", nodeName)) 	tag = MACRONUMBER;
-				else if (!strcmp("TIMEOUT", nodeName)) 	tag = TIMEOUT;
-				else if (!strcmp("USELASTMACRO", nodeName)) 	tag = USELASTMACRO;
-				else if (!strcmp("DISPLAYMACROFILENAME", nodeName)) 	tag = DISPLAYMACROFILENAME;
-				else if (!strcmp("MXDEVICE", nodeName)) 	tag = MXDEVICE;
-				else if (!strcmp("PCMVOLUME", nodeName)) 	tag = PCMVOLUME;
-				else if (!strcmp("MICIN", nodeName)) 	tag = MICIN;
-				else if (!strcmp("LINEIN", nodeName)) 	tag = LINEIN;
-				else if (!strcmp("ENABLEMIXER", nodeName)) 	tag = ENABLEMIXER;
-				else if (!strcmp("MUTEINPUT", nodeName)) 	tag = MUTEINPUT;
-				else if (!strcmp("PALETTE0", nodeName)) 	tag = PALETTE0;
-				else if (!strcmp("PALETTE1", nodeName)) 	tag = PALETTE1;
-				else if (!strcmp("PALETTE2", nodeName)) 	tag = PALETTE2;
-				else if (!strcmp("PALETTE3", nodeName)) 	tag = PALETTE3;
-				else if (!strcmp("PALETTE4", nodeName)) 	tag = PALETTE4;
-				else if (!strcmp("PALETTE5", nodeName)) 	tag = PALETTE5;
-				else if (!strcmp("PALETTE6", nodeName)) 	tag = PALETTE6;
-				else if (!strcmp("PALETTE7", nodeName)) 	tag = PALETTE7;
-				else if (!strcmp("PALETTE8", nodeName)) 	tag = PALETTE8;
-				else if (!strcmp("VIEWERMARQUEE", nodeName))	tag = VIEWERMARQUEE;
-				else if (!strcmp("VIEWERSHOWFREQ", nodeName))	tag = VIEWERSHOWFREQ;
-				else if (!strcmp("VIEWERSTART", nodeName))		tag = VIEWERSTART;
-				else if (!strcmp("VIEWERCHANNELS", nodeName))	tag = VIEWERCHANNELS;
-				else if (!strcmp("VIEWERSQUELCH", nodeName))	tag = VIEWERSQUELCH;
-				else if (!strcmp("VIEWERTIMEOUT", nodeName))	tag = VIEWERTIMEOUT;
-				else if (!strcmp("WFAVERAGING", nodeName))	tag = WFAVERAGING;
-				else if (!strcmp("USEGROUPCOLORS", nodeName)) tag = USEGROUPCOLORS;
-				else if (!strcmp("FKEYGROUP1", nodeName)) tag = FKEYGROUP1;
-				else if (!strcmp("FKEYGROUP2", nodeName)) tag = FKEYGROUP2;
-				else if (!strcmp("FKEYGROUP3", nodeName)) tag = FKEYGROUP3;
-				else if (!strcmp("FKEYTEXTCOLOR", nodeName)) tag = FKEYTEXTCOLOR;
-				else if (!strcmp("RXFONTNBR", nodeName)) tag = RXFONTNBR;
-				else if (!strcmp("RXFONTSIZE", nodeName)) tag = RXFONTSIZE;
-				else if (!strcmp("RXFNTCOLOR", nodeName)) tag = RXFNTCOLOR;
-				else if (!strcmp("TXFONTNBR", nodeName)) tag = TXFONTNBR;
-				else if (!strcmp("TXFONTSIZE", nodeName)) tag = TXFONTSIZE;
-				else if (!strcmp("TXFNTCOLOR", nodeName)) tag = TXFNTCOLOR;
-				else if (!strcmp("RXFONTCOLOR", nodeName)) tag = RXFONTCOLOR;
-				else if (!strcmp("TXFONTCOLOR", nodeName)) tag = TXFONTCOLOR;
-				else if (!strcmp("XMITCOLOR", nodeName)) tag = XMITCOLOR;
-				else if (!strcmp("CTRLCOLOR", nodeName)) tag = CTRLCOLOR;
-				else if (!strcmp("SKIPCOLOR", nodeName)) tag = SKIPCOLOR;
-				else if (!strcmp("ALTRCOLOR", nodeName)) tag = ALTRCOLOR;
-				else if (!strcmp("WATERFALLFONTNBR", nodeName)) tag = WATERFALLFONTNBR;
-				else if (!strcmp("WATERFALLFONTSIZE", nodeName)) tag = WATERFALLFONTSIZE;
-				else if (!strcmp("UISCHEME", nodeName)) tag = UISCHEME;
-				else if (!strcmp("RSIDWIDESEARCH", nodeName)) tag = RSIDWIDESEARCH;
-				else if (!strcmp("TRANSMITRSID", nodeName)) tag = TRANSMITRSID;
-				else if (!strcmp("SLOWCPU", nodeName)) tag = SLOWCPU;
-				else if (!strcmp("MT638BIT", nodeName)) tag = MT638BIT;
-				else if (!strcmp("MT63INTERLEAVE", nodeName)) tag = MT63INTERLEAVE;
-				else if (!strcmp("DOCKEDSCOPE", nodeName)) tag = DOCKEDSCOPE;
-				else tag = IGNORE;
-				}
-				break;
-
-			case EXN_NONE:
-			case EXN_COMMENT:
-			case EXN_UNKNOWN:
-				break;
+		case EXN_TEXT:
+		case EXN_CDATA:
+			if (likely(tag != IGNORE))
+			    (*tag_list[tag].rfunc)(xml, tag_list[tag].ptr);
+			break;
+		case EXN_ELEMENT_END:
+			tag = IGNORE;
+			break;
+		case EXN_ELEMENT:
+			if ((itag = tag_map.find(xml->getNodeName())) != tag_map.end())
+				tag = itag->second;
+			else
+				tag = IGNORE;
+			break;
+		case EXN_NONE: case EXN_COMMENT: case EXN_UNKNOWN:
+			break;
 		}
 	}
-// delete the xml parser after usage
+
 	delete xml;
 	return true;
 }
@@ -1611,7 +802,7 @@ int configuration::setDefaults() {
 	cntCWdash2dot->value(CWdash2dot);
 	sldrCWxmtWPM->minimum(CWlowerlimit);
 	sldrCWxmtWPM->maximum(CWupperlimit);
-	btnQSK->value(QSK);
+	btnQSK->value(QSKv);
 	cntPreTiming->maximum((int)(2400/CWspeed)/2.0); 
 	cntPreTiming->value(CWpre);
 	cntPostTiming->maximum((int)(2400/CWspeed)/2.0);
