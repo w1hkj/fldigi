@@ -2506,57 +2506,6 @@ void setReverse(int rev) {
 	active_modem->set_reverse(rev);
 }
 
-void change_modem_param(int state)
-{
-	int d;
-	if ( !((d = Fl::event_dy()) || (d = Fl::event_dx())) )
-		return;
-
-	if (state & (FL_META | FL_ALT)) {
-		if (d > 0)
-			active_modem->searchUp();
-		else if (d < 0)
-			active_modem->searchDown();
-		return;
-	}
-	if (!(state & (FL_CTRL | FL_SHIFT)))
-		return; // suggestions?
-
-	Fl_Valuator *val;
-	if (state & FL_CTRL) {
-		trx_mode m = active_modem->get_mode();
-		if (m >= MODE_PSK_FIRST && m <= MODE_PSK_LAST)
-			val = mailserver ? cntServerOffset : cntSearchRange;
-		else if (m >= MODE_HELL_FIRST && m <= MODE_HELL_LAST)
-			val = sldrHellBW;
-		else if (m == MODE_CW)
-			val = sldrCWbandwidth;
-		else
-			return;
-	}
-	else if (state & FL_SHIFT) {
-		val = sldrSquelch;
-		if (!twoscopes)
-			d = -d;
-	}
-
-	val->value(val->clamp(val->increment(val->value(), -d)));
-	bool changed_save = progdefaults.changed;
-	val->do_callback();
-	progdefaults.changed = changed_save;
-	if (val == cntServerOffset || val == cntSearchRange)
-		active_modem->set_sigsearch(SIGSEARCH);
-	else if (val == sldrSquelch) // sldrSquelch gives focus to TextWidget
-		wf->take_focus();
-
-	char msg[60];
-	if (val != sldrSquelch)
-		snprintf(msg, sizeof(msg), "%s = %2.0f Hz", val->label(), val->value());
-	else
-		snprintf(msg, sizeof(msg), "Squelch = %2.0f %%", val->value());
-	put_status(msg, 2);
-}
-
 void start_tx()
 {
 	if (progdefaults.rsid == true) return;

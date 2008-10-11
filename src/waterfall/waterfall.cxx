@@ -48,6 +48,7 @@
 #include "Viewer.h"
 #include "macros.h"
 #include "arq_io.h"
+#include "confdialog.h"
 
 extern modem *active_modem;
 
@@ -1551,10 +1552,25 @@ int WFdisp::handle(int event)
 		break;
 
 	case FL_MOUSEWHEEL:
-		change_modem_param(Fl::event_state());
+	{
+		int d;
+		if ( !((d = Fl::event_dy()) || (d = Fl::event_dx())) )
+			break;
+		int state = Fl::event_state();
+		if (state & FL_CTRL)
+			wf->handle_mouse_wheel(waterfall::WF_AFC_BW, d);
+		else if (state & (FL_META | FL_ALT))
+			wf->handle_mouse_wheel(waterfall::WF_SIGNAL_SEARCH, d);
+		else if (state & FL_SHIFT)
+			wf->handle_mouse_wheel(waterfall::WF_SQUELCH, d);
+		else {
+			if (progdefaults.WaterfallQSY && Fl::event_inside(x(), y(), w(), WFTEXT+WFSCALE+WFMARKER))
+				qsy(wf->rfcarrier() - 500*d);
+			else
+				wf->handle_mouse_wheel(progdefaults.WaterfallWheelAction, d);
+		}
 		return handle(FL_MOVE);
-		break;
-
+	}
 	case FL_SHORTCUT:
 		if (Fl::event_inside(this))
 			take_focus();
@@ -1606,3 +1622,71 @@ int WFdisp::handle(int event)
 
 	return 1;
 }
+
+void waterfall::handle_mouse_wheel(int what, int d)
+{
+	if (d == 0)
+		return;
+
+	Fl_Valuator *val = 0;
+	const char* msg_fmt = 0, *msg_label = 0;
+
+	switch (what) {
+	case WF_NOP:
+		return;
+	case WF_AFC_BW:
+	{
+		trx_mode m = active_modem->get_mode();
+		if (m >= MODE_PSK_FIRST && m <= MODE_PSK_LAST)
+			val = mailserver ? cntServerOffset : cntSearchRange;
+		else if (m >= MODE_HELL_FIRST && m <= MODE_HELL_LAST)
+			val = sldrHellBW;
+		else if (m == MODE_CW)
+			val = sldrCWbandwidth;
+		msg_fmt = "%s = %2.0f Hz";
+		msg_label = val->label();
+		break;
+	}
+	case WF_SIGNAL_SEARCH:
+		if (d > 0)
+			active_modem->searchDown();
+		else
+			active_modem->searchUp();
+		return;
+	case WF_SQUELCH:
+		val = sldrSquelch;
+		if (!twoscopes)
+			d = -d;
+		msg_fmt = "%s = %2.0f %%";
+		msg_label = "Squelch";
+		break;
+	case WF_CARRIER:
+		val = wfcarrier;
+		break;
+	case WF_MODEM:
+		init_modem(d > 0 ? MODE_NEXT : MODE_PREV);
+		return;
+	case WF_SCROLL:
+		(d > 0 ? right : left)->do_callback();
+		return;
+	}
+
+	val->value(val->clamp(val->increment(val->value(), -d)));
+	bool changed_save = progdefaults.changed;
+	val->do_callback();
+	progdefaults.changed = changed_save;
+	if (val == cntServerOffset || val == cntSearchRange)
+		active_modem->set_sigsearch(SIGSEARCH);
+	else if (val == sldrSquelch) // sldrSquelch gives focus to TransmitText
+		take_focus();
+
+	if (msg_fmt) {
+		char msg[60];
+		snprintf(msg, sizeof(msg), msg_fmt, msg_label, val->value());
+		put_status(msg, 2.0);
+	}
+}
+
+const char waterfall::wf_wheel_action[] = "None|AFC range or BW|"
+	                                  "Signal search|Squelch level|"
+	                                  "Modem carrier|Modem|Scroll";

@@ -29,6 +29,7 @@ struct configuration {
         bool    WaterfallHistoryDefault;
 	bool	WaterfallQSY;
 	string	WaterfallClickText;
+	int	WaterfallWheelAction;
 // for PSK  & PSK mail interface
 	bool	PSKmailSweetSpot;
 	int		SearchRange;

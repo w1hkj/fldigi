@@ -4,6 +4,7 @@
 #include "confdialog.h"
 #include "xmlreader.h"
 #include "soundconf.h"
+#include "waterfall.h"
 
 #if USE_HAMLIB
 	#include "hamlib.h"
@@ -47,6 +48,7 @@ configuration progdefaults = {
 	false,			// bool		WaterfallHistoryDefault;
 	false,			// bool		WaterfallQSY;
 	"",			// string	WaterfallClickText;
+	waterfall::WF_CARRIER,	// int		WaterfallWheelAction;
 
 //  for PSK mail interface	
 	false,			// bool		PSKmailSweetSpot;
@@ -292,7 +294,7 @@ enum TAG { \
 	IGNORE,
 	MYCALL, MYNAME, MYQTH, MYLOC, 
 	SQUELCH, WFREFLEVEL, WFAMPSPAN, LOWFREQCUTOFF, 
-	WATERFALLHISTORYDEFAULT, WATERFALLQSY, WATERFALLCLICKTEXT,
+	WATERFALLHISTORYDEFAULT, WATERFALLQSY, WATERFALLCLICKTEXT, WATERFALLWHEELACTION,
 	STARTATSWEETSPOT, PSKMAILSWEETSPOT, 
 	PSKSEARCHRANGE, PSKSERVEROFFSET,
 	ACQSN,
@@ -430,6 +432,7 @@ void configuration::writeDefaultsXML()
 	writeXMLbool(f, "WATERFALLHISTORYDEFAULT", WaterfallHistoryDefault);
 	writeXMLbool(f, "WATERFALLQSY", WaterfallQSY);
 	writeXMLstr(f, "WATERFALLCLICKTEXT", WaterfallClickText);
+	writeXMLint(f, "WATERFALLWHEELACTION", WaterfallWheelAction);
 	writeXMLbool(f, "STARTATSWEETSPOT", StartAtSweetSpot);
 	writeXMLbool(f, "PSKMAILSWEETSPOT", PSKmailSweetSpot);
 	writeXMLint(f, "PSKSEARCHRANGE", SearchRange);
@@ -678,6 +681,9 @@ bool configuration::readDefaultsXML()
 						break;
 					case WATERFALLCLICKTEXT :
 						WaterfallClickText = getstring(xml);
+						break;
+					case WATERFALLWHEELACTION :
+						WaterfallWheelAction = atoi(getstring(xml).c_str());
 						break;
 					case STARTATSWEETSPOT :
 						StartAtSweetSpot = atoi(getstring(xml).c_str());
@@ -1224,6 +1230,7 @@ bool configuration::readDefaultsXML()
 				else if (!strcmp("WATERFALLHISTORYDEFAULT", nodeName)) 	tag = WATERFALLHISTORYDEFAULT;
 				else if (!strcmp("WATERFALLQSY", nodeName)) 	tag = WATERFALLQSY;
 				else if (!strcmp("WATERFALLCLICKTEXT", nodeName)) 	tag = WATERFALLCLICKTEXT;
+				else if (!strcmp("WATERFALLWHEELACTION", nodeName)) 	tag = WATERFALLWHEELACTION;
 				else if (!strcmp("STARTATSWEETSPOT", nodeName)) 	tag = STARTATSWEETSPOT;
 				else if (!strcmp("PSKMAILSWEETSPOT", nodeName)) 	tag = PSKMAILSWEETSPOT;
 				else if (!strcmp("PSKSEARCHRANGE", nodeName)) 	tag = PSKSEARCHRANGE;
@@ -1565,6 +1572,10 @@ int configuration::setDefaults() {
 	btnWaterfallQSY->value(WaterfallQSY);
 	inpWaterfallClickText->input_type(FL_MULTILINE_INPUT);
 	inpWaterfallClickText->value(WaterfallClickText.c_str());
+
+	mnuWaterfallWheelAction->add(waterfall::wf_wheel_action);
+	mnuWaterfallWheelAction->value(WaterfallWheelAction);
+
 	btnStartAtSweetSpot->value(StartAtSweetSpot);
 	btnPSKmailSweetSpot->value(PSKmailSweetSpot);
 	cntSearchRange->value(SearchRange);

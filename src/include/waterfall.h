@@ -158,7 +158,6 @@ public:
 	void draw();
 //	void resize (int, int, int, int);
 	int handle(int event);
-	void handle_mouse_wheel(int event);
 	void update_sigmap();
 	void update_waterfall();
 	void checkoffset();
@@ -365,8 +364,12 @@ public:
 	double Pwr(int i) { return wfdisp->Pwr(i); }	
 	
 	int handle(int event);
-/*
-*/
+
+	enum { WF_NOP, WF_AFC_BW, WF_SIGNAL_SEARCH, WF_SQUELCH,
+	       WF_CARRIER, WF_MODEM, WF_SCROLL };
+	static const char wf_wheel_action[];
+	void handle_mouse_wheel(int what, int d);
+
 	Fl_Button	*btnRev;
 	Fl_Counter	*wfcarrier;
 	Fl_Counter	*wfRefLevel;

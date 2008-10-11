@@ -6,6 +6,7 @@
 #include "soundconf.h"
 #include "combo.h"
 #include "colorsfonts.h"
+#include "waterfall.h"
 extern void initViewer();
 Fl_Double_Window *dlgConfig; 
 
@@ -302,6 +303,13 @@ Fl_Input *inpWaterfallClickText=(Fl_Input *)0;
 
 static void cb_inpWaterfallClickText(Fl_Input* o, void*) {
   progdefaults.WaterfallClickText = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Choice *mnuWaterfallWheelAction=(Fl_Choice *)0;
+
+static void cb_mnuWaterfallWheelAction(Fl_Choice* o, void*) {
+  progdefaults.WaterfallWheelAction = o->value();
 progdefaults.changed = true;
 }
 
@@ -1720,6 +1728,11 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
               } // Fl_Input* inpWaterfallClickText
               o->end();
             } // Fl_Group* o
+            { mnuWaterfallWheelAction = new Fl_Choice(15, 176, 150, 22, "Wheel action");
+              mnuWaterfallWheelAction->down_box(FL_BORDER_BOX);
+              mnuWaterfallWheelAction->callback((Fl_Callback*)cb_mnuWaterfallWheelAction);
+              mnuWaterfallWheelAction->align(FL_ALIGN_RIGHT);
+            } // Fl_Choice* mnuWaterfallWheelAction
             o->end();
           } // Fl_Group* o
           o->end();

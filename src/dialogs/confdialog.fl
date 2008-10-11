@@ -21,6 +21,8 @@ decl {\#include "combo.h"} {}
 
 decl {\#include "colorsfonts.h"} {} 
 
+decl {\#include "waterfall.h"} {} 
+
 decl {extern void initViewer();} {} 
 
 decl {Fl_Double_Window *dlgConfig;} {public
@@ -380,6 +382,12 @@ progdefaults.changed = true;}
                 xywh {15 126 150 40} align 8
               }
             }
+            Fl_Choice mnuWaterfallWheelAction {
+              label {Wheel action}
+              callback {progdefaults.WaterfallWheelAction = o->value();
+progdefaults.changed = true;} open
+              xywh {15 176 150 22} down_box BORDER_BOX align 8
+            } {}
           }
         }
       }
