@@ -123,6 +123,7 @@ void generate_version_text(void);
 void debug_exec(char** argv);
 void set_platform_ui(void);
 double speed_test(int converter, unsigned repeat);
+static void setup_signal_handlers(void);
 
 int main(int argc, char ** argv)
 {
@@ -770,28 +771,20 @@ double speed_test(int converter, unsigned repeat)
 	return repeat / (t0.tv_sec + t0.tv_nsec/1e9);
 }
 
-void setup_signal_handlers(void)
+static void setup_signal_handlers(void)
 {
 	struct sigaction action;
 	memset(&action, 0, sizeof(struct sigaction));
 
-	action.sa_handler = SIG_DFL;
 	// no child stopped notifications, no zombies
 #ifdef __CYGWIN__
-	action.sa_flags = SA_NOCLDSTOP;
+	action.sa_handler = SIG_IGN;
 #else
+	action.sa_handler = SIG_DFL;
 	action.sa_flags = SA_NOCLDSTOP | SA_NOCLDWAIT;
 #endif
 	sigaction(SIGCHLD, &action, NULL);
 	action.sa_flags = 0;
-
-	// undo xmlrpc-c's signal handling
-#if USE_XMLRPC
-	sigaction(SIGTERM, &action, NULL);
-	sigaction(SIGINT, &action, NULL);
-	sigaction(SIGHUP, &action, NULL);
-	sigaction(SIGUSR1, &action, NULL);
-#endif
 
 	action.sa_handler = handle_signal;
 	sigaction(SIGSEGV, &action, NULL);
@@ -804,6 +797,5 @@ void setup_signal_handlers(void)
 
 	sigemptyset(&action.sa_mask);
 	sigaddset(&action.sa_mask, SIGUSR2);
-	pthread_sigmask((GET_THREAD_ID() == FLMAIN_TID ? SIG_BLOCK : SIG_UNBLOCK),
-			&action.sa_mask, NULL);
+	pthread_sigmask(SIG_BLOCK, &action.sa_mask, NULL);
 }

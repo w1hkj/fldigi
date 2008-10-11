@@ -137,14 +137,21 @@ void* XML_RPC_Server::thread_func(void*)
 	for (methods_t::iterator i = methods->begin(); i != methods->end(); ++i)
 		reg.addMethod(i->name, i->method);
 
+	save_signals();
 	xmlrpc_c::serverAbyss server(xmlrpc_c::serverAbyss::constrOpt()
 				     .registryP(&reg)
 #ifndef NDEBUG
 				     .logFileName(HomeDir + "xmlrpc.log")
 #endif
 	    		      );
+	restore_signals();
 
-	setup_signal_handlers();
+	{
+		sigset_t usr2;
+		sigemptyset(&usr2);
+		sigaddset(&usr2, SIGUSR2);
+		pthread_sigmask(SIG_UNBLOCK, &usr2, NULL);
+	}
 
 	while (inst->run) {
 		try {
