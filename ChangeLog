@@ -49,6 +49,9 @@ Change Log:
           macro file was loaded on start up.  Also added name of the working
           macro file to the title bar of the macro editor.
       19) Addition of Navy MARS prosigns to the CW Morse encoder / decoder.
+      20) Add new option to dock a digiscope and deprecate command line switch
+      21) Add option to change waterfall mouse wheel handling. Adapt patch
+          by Stephane F8CFE to change rig frequency via the mouse wheel.
 
 3.03
       1) Changes to socket server to correct shutdown process
