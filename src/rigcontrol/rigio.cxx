@@ -39,7 +39,7 @@ using namespace std;
 
 Cserial rigio;
 static pthread_mutex_t	rigCAT_mutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_t	rigCAT_thread;
+static pthread_t		*rigCAT_thread = 0;
 
 static bool				rigCAT_exit = false;
 static bool				rigCAT_open = false;
@@ -446,7 +446,7 @@ void rigCAT_setfreq(long long f)
 		return;
 	}
 	
-	LOG_DEBUG("set frequency %ld", f);
+	LOG_DEBUG("set frequency %lld", f);
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -997,8 +997,10 @@ bool rigCAT_init()
 	
 	rigCAT_bypass = false;
 	rigCAT_exit = false;
+	
+	rigCAT_thread = new pthread_t;
 
-	if (pthread_create(&rigCAT_thread, NULL, rigCAT_loop, NULL) < 0) {
+	if (pthread_create(rigCAT_thread, NULL, rigCAT_loop, NULL) < 0) {
 		LOG_ERROR("pthread_create failed");
 		rigio.ClosePort();
 		return false;
@@ -1034,6 +1036,8 @@ void rigCAT_close(void)
 		}
 	}
 	rigio.ClosePort();
+	delete rigCAT_thread;
+	rigCAT_thread = 0;
 }
 
 bool rigCAT_active(void)

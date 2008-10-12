@@ -77,3 +77,35 @@ int set_cloexec(int fd, unsigned char v)
 		f = fcntl(fd, F_SETFD, f | (v ? FD_CLOEXEC : 0));
 	return f;
 }
+
+#include <pthread.h>
+#include <signal.h>
+#ifndef NSIG
+#  define NSIG 64
+#endif
+static size_t nsig = 0;
+static struct sigaction* sigact = 0;
+static pthread_mutex_t sigmutex = PTHREAD_MUTEX_INITIALIZER;
+
+void save_signals(void)
+{
+	pthread_mutex_lock(&sigmutex);
+	if (!sigact)
+		sigact = new struct sigaction[NSIG];
+	for (nsig = 1; nsig <= NSIG; nsig++)
+		if (sigaction(nsig, NULL, &sigact[nsig-1]) == -1)
+			break;
+	pthread_mutex_unlock(&sigmutex);
+}
+
+void restore_signals(void)
+{
+	pthread_mutex_lock(&sigmutex);
+	for (size_t i = 1; i <= nsig; i++)
+		if (sigaction(i, &sigact[i-1], NULL) == -1)
+			break;
+	delete [] sigact;
+	sigact = 0;
+	nsig = 0;
+	pthread_mutex_unlock(&sigmutex);
+}

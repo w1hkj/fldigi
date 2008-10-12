@@ -118,7 +118,6 @@ Fl_Double_Window	*scopeview = (Fl_Double_Window *)0;
 MixerBase* mixer = 0;
 
 bool	useCheckButtons;
-bool	twoscopes = false;
 
 
 Fl_Light_Button		*btnTune = (Fl_Light_Button *)0;
@@ -568,7 +567,7 @@ void init_modem(trx_mode mode)
 		break;
 
 	default:
-		LOG_ERROR("Unknown mode: %d", mode);
+		LOG_ERROR("Unknown mode: %" PRIdPTR, mode);
 		return init_modem(MODE_BPSK31);
 	}
 
@@ -1326,6 +1325,19 @@ bool clean_exit(void) {
 		MilliSleep(10);
 	}
 
+	if (dlgConfig) {
+		dlgConfig->hide();
+		delete cboHamlibRig;
+		delete dlgConfig;
+	}
+	
+#if USE_HAMLIB
+	if (xcvr) delete xcvr;
+#endif
+#if USE_XMLRPC
+	XML_RPC_Server::stop();
+#endif
+
 	return true;
 }
 
@@ -1657,7 +1669,8 @@ void create_fl_digi_main() {
 
 	int pad = wSpace, Y = 0;
 
-	if (twoscopes) 	WNOM -= 2*DEFAULT_SW;
+	if (progdefaults.docked_scope)
+		WNOM -= 2*DEFAULT_SW;
 	
     update_main_title();
     fl_digi_main = new Fl_Double_Window(WNOM, HNOM, main_window_title.c_str());
@@ -1873,7 +1886,7 @@ void create_fl_digi_main() {
 				
 		Y += Hmacros;
 
-		if (twoscopes) {
+		if (progdefaults.docked_scope) {
 			Fl_Pack *wfpack = new Fl_Pack(0, Y, WNOM, Hwfall);
 				wfpack->type(1);
 				wf = new waterfall(0, Y, Wwfall - Hwfall + 24, Hwfall);
@@ -2506,62 +2519,6 @@ void setReverse(int rev) {
 	active_modem->set_reverse(rev);
 }
 
-void change_modem_param(int state)
-{
-	int d;
-	if ( !((d = Fl::event_dy()) || (d = Fl::event_dx())) )
-		return;
-
-	if (state & (FL_META | FL_ALT)) {
-		if (d > 0)
-			active_modem->searchUp();
-		else if (d < 0)
-			active_modem->searchDown();
-		return;
-	}
-	if (!(state & (FL_CTRL | FL_SHIFT)))
-		return; // suggestions?
-
-	Fl_Valuator *val = 0;
-	if (state & FL_CTRL) {
-		switch (active_modem->get_mode()) {
-		case MODE_BPSK31: case MODE_QPSK31: case MODE_PSK63: case MODE_QPSK63:
-		case MODE_PSK125: case MODE_QPSK125: case MODE_PSK250: case MODE_QPSK250:
-			val = mailserver ? cntServerOffset : cntSearchRange;
-			break;
-		case MODE_FELDHELL:
-			val = sldrHellBW;
-			break;
-		case MODE_CW:
-			val = sldrCWbandwidth;
-			break;
-		default:
-			return;
-		}
-	}
-	else if (state & FL_SHIFT) {
-		val = sldrSquelch;
-		if (!twoscopes)
-			d = -d;
-	}
-
-	val->value(val->clamp(val->increment(val->value(), -d)));
-	bool changed_save = progdefaults.changed;
-	val->do_callback();
-	progdefaults.changed = changed_save;
-	if (val == cntServerOffset || val == cntSearchRange)
-		active_modem->set_sigsearch(SIGSEARCH);
-	else if (val == sldrSquelch) // sldrSquelch gives focus to TextWidget
-		wf->take_focus();
-
-	char msg[60];
-	if (val != sldrSquelch)
-		snprintf(msg, sizeof(msg), "%s = %2.0f Hz", val->label(), val->value());
-	else
-		snprintf(msg, sizeof(msg), "Squelch = %2.0f %%", val->value());
-	put_status(msg, 2);
-}
-
 void start_tx()
 {
 	if (progdefaults.rsid == true) return;
@@ -2614,6 +2571,9 @@ Fl_Color adjust_color(Fl_Color fg, Fl_Color bg)
 
 void qsy(long long rfc, long long fmid)
 {
+	if (fmid < 0LL)
+		fmid = (long long)active_modem->get_freq();
+
 	if (progdefaults.chkUSERIGCATis)
 		REQ(rigCAT_set_qsy, rfc, fmid);
 	else if (progdefaults.chkUSEMEMMAPis)

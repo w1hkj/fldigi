@@ -48,6 +48,7 @@
 #include "Viewer.h"
 #include "macros.h"
 #include "arq_io.h"
+#include "confdialog.h"
 
 extern modem *active_modem;
 
@@ -132,6 +133,9 @@ WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 	tmp_carrier = false;
 	ptrCB = 0;
 	ptrFFTbuff = 0;
+
+	for (int i = 0; i < 256; i++)
+		mag2RGBI[i].I = mag2RGBI[i].R = mag2RGBI[i].G = mag2RGBI[i].B = 0;
 }
 
 WFdisp::~WFdisp() {
@@ -279,7 +283,7 @@ void WFdisp::setcolors() {
 
 
 void WFdisp::initmaps() {
-	for (int i = 0; i < image_area; i++) fft_db[i] = log2disp(-1000);
+	for (int i = 0; i < image_area; i++) fft_db[i] = tmp_fft_db[i] = log2disp(-1000);
 
 	memset (fft_img, 0, image_area * sizeof(RGBI) );
 	memset (scaleimage, 0, scale_width * WFSCALE);
@@ -631,7 +635,10 @@ void WFdisp::update_waterfall() {
 	short int *p1, *p2;
 	RGBI *p3, *p4;
 	p1 = tmp_fft_db + offset;
+	p2 = p1;
 	p3 = fft_img;
+	p4 = p3;
+	
 	short* limit = tmp_fft_db + image_area - step + 1;
 
 	for (int row = 0; row < image_height; row++) {
@@ -1391,7 +1398,8 @@ int waterfall::handle(int event)
  	Fl_Valuator* v[] = { sldrSquelch, wfcarrier, wfRefLevel, wfAmpSpan, valRcvMixer, valXmtMixer };
   	for (size_t i = 0; i < sizeof(v)/sizeof(v[0]); i++) {
   		if (Fl::event_inside(v[i])) {
- 			if ((v[i] == sldrSquelch && !twoscopes) || v[i] == valRcvMixer || v[i] == valXmtMixer)
+ 			if ((v[i] == sldrSquelch && !progdefaults.docked_scope) ||
+			    v[i] == valRcvMixer || v[i] == valXmtMixer)
 				d = -d;
 			v[i]->value(v[i]->clamp(v[i]->increment(v[i]->value(), -d)));
 			v[i]->do_callback();
@@ -1551,10 +1559,25 @@ int WFdisp::handle(int event)
 		break;
 
 	case FL_MOUSEWHEEL:
-		change_modem_param(Fl::event_state());
+	{
+		int d;
+		if ( !((d = Fl::event_dy()) || (d = Fl::event_dx())) )
+			break;
+		int state = Fl::event_state();
+		if (state & FL_CTRL)
+			wf->handle_mouse_wheel(waterfall::WF_AFC_BW, d);
+		else if (state & (FL_META | FL_ALT))
+			wf->handle_mouse_wheel(waterfall::WF_SIGNAL_SEARCH, d);
+		else if (state & FL_SHIFT)
+			wf->handle_mouse_wheel(waterfall::WF_SQUELCH, d);
+		else {
+			if (progdefaults.WaterfallQSY && Fl::event_inside(x(), y(), w(), WFTEXT+WFSCALE+WFMARKER))
+				qsy(wf->rfcarrier() - 500*d);
+			else
+				wf->handle_mouse_wheel(progdefaults.WaterfallWheelAction, d);
+		}
 		return handle(FL_MOVE);
-		break;
-
+	}
 	case FL_SHORTCUT:
 		if (Fl::event_inside(this))
 			take_focus();
@@ -1606,3 +1629,71 @@ int WFdisp::handle(int event)
 
 	return 1;
 }
+
+void waterfall::handle_mouse_wheel(int what, int d)
+{
+	if (d == 0)
+		return;
+
+	Fl_Valuator *val = 0;
+	const char* msg_fmt = 0, *msg_label = 0;
+
+	switch (what) {
+	case WF_NOP:
+		return;
+	case WF_AFC_BW:
+	{
+		trx_mode m = active_modem->get_mode();
+		if (m >= MODE_PSK_FIRST && m <= MODE_PSK_LAST)
+			val = mailserver ? cntServerOffset : cntSearchRange;
+		else if (m >= MODE_HELL_FIRST && m <= MODE_HELL_LAST)
+			val = sldrHellBW;
+		else if (m == MODE_CW)
+			val = sldrCWbandwidth;
+		msg_fmt = "%s = %2.0f Hz";
+		msg_label = val->label();
+		break;
+	}
+	case WF_SIGNAL_SEARCH:
+		if (d > 0)
+			active_modem->searchDown();
+		else
+			active_modem->searchUp();
+		return;
+	case WF_SQUELCH:
+		val = sldrSquelch;
+		if (!progdefaults.docked_scope)
+			d = -d;
+		msg_fmt = "%s = %2.0f %%";
+		msg_label = "Squelch";
+		break;
+	case WF_CARRIER:
+		val = wfcarrier;
+		break;
+	case WF_MODEM:
+		init_modem(d > 0 ? MODE_NEXT : MODE_PREV);
+		return;
+	case WF_SCROLL:
+		(d > 0 ? right : left)->do_callback();
+		return;
+	}
+
+	val->value(val->clamp(val->increment(val->value(), -d)));
+	bool changed_save = progdefaults.changed;
+	val->do_callback();
+	progdefaults.changed = changed_save;
+	if (val == cntServerOffset || val == cntSearchRange)
+		active_modem->set_sigsearch(SIGSEARCH);
+	else if (val == sldrSquelch) // sldrSquelch gives focus to TransmitText
+		take_focus();
+
+	if (msg_fmt) {
+		char msg[60];
+		snprintf(msg, sizeof(msg), msg_fmt, msg_label, val->value());
+		put_status(msg, 2.0);
+	}
+}
+
+const char waterfall::wf_wheel_action[] = "None|AFC range or BW|"
+	                                  "Signal search|Squelch level|"
+	                                  "Modem carrier|Modem|Scroll";

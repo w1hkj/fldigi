@@ -9,7 +9,7 @@ dnl major and minor must be integers; patch may
 dnl contain other characters or be empty
 m4_define(FLDIGI_MAJOR, [3])
 m4_define(FLDIGI_MINOR, [0])
-m4_define(FLDIGI_PATCH, [4AK])
+m4_define(FLDIGI_PATCH, [4AL])
 
 AC_INIT([fldigi], FLDIGI_MAJOR.FLDIGI_MINOR[FLDIGI_PATCH], [w1hkj AT w1hkj DOT com])
 
@@ -38,6 +38,7 @@ AC_CONFIG_HEADER([src/config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 
+AC_DEFINE([PACKAGE_AUTHORS], ["Dave Freese, Stelios Bounanos, Leigh Klotz, and others"], [Authors])
 AC_DEFINE([PACKAGE_HOME], ["http://www.w1hkj.com/Fldigi.html"], [Home page])
 AC_DEFINE([PACKAGE_PROJ], ["http://developer.berlios.de/project/showfiles.php?group_id=9149"], [BerliOS page])
 AC_DEFINE([PACKAGE_DOCS], ["http://www.w1hkj.com/FldigiHelp/index.html"], [Docs index])

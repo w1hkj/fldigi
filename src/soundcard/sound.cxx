@@ -1501,7 +1501,7 @@ void SoundPort::pa_perror(int err, const char* str)
 				LOG_ERROR("Possible OSS error %d: %s", errno, strerror(errno));
                 }
                 else
-			LOG_ERROR("%s error %d: %s", Pa_GetHostApiInfo(i)->name,
+			LOG_ERROR("%s error %ld: %s", Pa_GetHostApiInfo(i)->name,
 				  hosterr->errorCode, hosterr->errorText);
         }
 }

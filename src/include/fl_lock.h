@@ -45,16 +45,13 @@
                 do {                                                    \
                         switch (GET_THREAD_ID()) {                      \
                         case TRX_TID:                                   \
-                                LOG_ERROR("trx lock",			\
-                                       __func__, __FILE__, __LINE__);   \
+                                LOG_ERROR("trx lock");			\
                                 break;                                  \
                         case FLMAIN_TID:                                \
-                                LOG_WARN("flrun lock",			\
-                                       __func__, __FILE__, __LINE__);   \
+                                LOG_WARN("flrun lock");			\
                                 break;                                  \
                         default:                                        \
-                                LOG_INFO("lock",			\
-                                       __func__, __FILE__, __LINE__);   \
+                                LOG_INFO("lock");			\
                         }                                               \
                         pstack_maybe();                                 \
                         Fl::lock(x);                                    \

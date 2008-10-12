@@ -90,6 +90,7 @@ class Fl_ComboBox : public Fl_Group  {
 //    Fl_Output     *Output;
     Fl_Input      *Output;
     Fl_PopBrowser *Brwsr;
+    Fl_Pixmap	  *btnmap;
     datambr       **datalist;
     int           listsize;
     int           maxsize;
@@ -105,7 +106,8 @@ class Fl_ComboBox : public Fl_Group  {
   public:
 
     Fl_ComboBox (int x, int y, int w, int h, const char * = 0);
-
+	~Fl_ComboBox();
+	
     const char *value ();
     void value (const char *);
     void put_value( const char *);

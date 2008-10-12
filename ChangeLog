@@ -46,9 +46,12 @@ Change Log:
             { execute("modem.set_by_name BPSK31"); \
               execute("modem.set_by_name RTTY"); }
       18) Added brief message to the opening Rx text area indicating which
-          macro file was loaded on start up.  Also added name of the working
-          macro file to the title bar of the macro editor.
+          macro file was loaded on start up.  This is a configurable item on
+          the Misc/Macro tab
       19) Addition of Navy MARS prosigns to the CW Morse encoder / decoder.
+      20) Add new option to dock a digiscope and deprecate command line switch
+      21) Add option to change waterfall mouse wheel handling. Adapt patch
+          by Stephane F8CFE to change rig frequency via the mouse wheel.
 
 3.03
       1) Changes to socket server to correct shutdown process

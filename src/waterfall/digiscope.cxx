@@ -472,7 +472,8 @@ int Digiscope::handle(int event)
 		}
 		return 1;
 	case FL_MOUSEWHEEL:
-		change_modem_param(FL_CTRL);
+		if ((event = Fl::event_dy()) || (event = Fl::event_dx()))
+			wf->handle_mouse_wheel(waterfall::WF_AFC_BW, event);
 		break;
 	default:
 		break;

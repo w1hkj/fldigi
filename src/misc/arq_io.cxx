@@ -327,6 +327,7 @@ ARQ_SOCKET_Server::~ARQ_SOCKET_Server()
 		delete arq_socket_thread;
 		arq_socket_thread = 0;
 	}
+	delete server_socket;
 }
 
 bool ARQ_SOCKET_Server::start(const char* node, const char* service)
@@ -370,7 +371,12 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 {
 	SET_THREAD_ID(ARQSOCKET_TID);
 
-	setup_signal_handlers();
+	{
+		sigset_t usr2;
+		sigemptyset(&usr2);
+		sigaddset(&usr2, SIGUSR2);
+		pthread_sigmask(SIG_UNBLOCK, &usr2, NULL);
+	}
 
 	while (inst->run) {
 		try {

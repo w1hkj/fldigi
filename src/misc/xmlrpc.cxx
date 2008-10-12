@@ -84,6 +84,7 @@ XML_RPC_Server::XML_RPC_Server()
 	server_thread = new pthread_t;
 	run = true;
 }
+
 XML_RPC_Server::~XML_RPC_Server()
 {
 	run = false;
@@ -94,6 +95,7 @@ XML_RPC_Server::~XML_RPC_Server()
 		server_thread = 0;
 	}
 	delete methods;
+	delete server_socket;
 	methods = 0;
 }
 
@@ -137,14 +139,21 @@ void* XML_RPC_Server::thread_func(void*)
 	for (methods_t::iterator i = methods->begin(); i != methods->end(); ++i)
 		reg.addMethod(i->name, i->method);
 
+	save_signals();
 	xmlrpc_c::serverAbyss server(xmlrpc_c::serverAbyss::constrOpt()
 				     .registryP(&reg)
 #ifndef NDEBUG
 				     .logFileName(HomeDir + "xmlrpc.log")
 #endif
 	    		      );
+	restore_signals();
 
-	setup_signal_handlers();
+	{
+		sigset_t usr2;
+		sigemptyset(&usr2);
+		sigaddset(&usr2, SIGUSR2);
+		pthread_sigmask(SIG_UNBLOCK, &usr2, NULL);
+	}
 
 	while (inst->run) {
 		try {
@@ -507,15 +516,13 @@ static Fl_Valuator* get_bw_val(void)
 	if (!(active_modem->get_cap() & modem::CAP_BW))
 		throw xmlrpc_c::fault("Operation not supported by modem");
 
-	switch (active_modem->get_mode()) {
-	case MODE_FELDHELL: case MODE_SLOWHELL: case MODE_HELLX5:
-	case MODE_HELLX9: case MODE_FSKHELL: case MODE_FSKH105: case MODE_HELL80:
+	trx_mode m = active_modem->get_mode();
+	if (m >= MODE_HELL_FIRST && m <= MODE_HELL_LAST)
 		return sldrHellBW;
-	case MODE_CW:
+	else if (m == MODE_CW)
 		return sldrCWbandwidth;
-	default:
-		throw xmlrpc_c::fault("Unknown CAP_BW modem");
-	}
+
+	throw xmlrpc_c::fault("Unknown CAP_BW modem");
 }
 
 class Modem_get_bw : public xmlrpc_c::method
@@ -722,7 +729,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		double rfc = wf->rfcarrier();
-		qsy((long long int)params.getDouble(0, 0.0), active_modem->get_freq());
+		qsy((long long int)params.getDouble(0, 0.0));
 		*retval = xmlrpc_c::value_double(rfc);
 	}
 };
@@ -738,7 +745,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		double rfc = wf->rfcarrier() + params.getDouble(0);
-		qsy((long long int)rfc, active_modem->get_freq());
+		qsy((long long int)rfc);
 		*retval = xmlrpc_c::value_double(rfc);
 	}
 };
@@ -866,8 +873,8 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		double v = sldrSquelch->value();
-		// Squelch slider min/max are reversed when !twoscopes. Argh.
-		if (twoscopes)
+		// Squelch slider min/max are reversed when !docked_scope. Argh.
+		if (progdefaults.docked_scope)
 			REQ(set_valuator, sldrSquelch, params.getDouble(0, sldrSquelch->minimum(), sldrSquelch->maximum()));
 		else
 			REQ(set_valuator, sldrSquelch, params.getDouble(0, sldrSquelch->maximum(), sldrSquelch->minimum()));

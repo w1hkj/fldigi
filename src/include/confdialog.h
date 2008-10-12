@@ -48,6 +48,8 @@ extern Fl_Button *btnBwTracksColor;
 extern Fl_Check_Button *btnWaterfallHistoryDefault;
 extern Fl_Check_Button *btnWaterfallQSY;
 extern Fl_Input *inpWaterfallClickText;
+#include <FL/Fl_Choice.H>
+extern Fl_Choice *mnuWaterfallWheelAction;
 extern Fl_Group *tabVideo;
 extern Fl_Check_Button *btnsendid;
 extern Fl_Check_Button *btnsendvideotext;
@@ -71,7 +73,6 @@ extern Fl_Input_Choice *inpTTYdev;
 extern Fl_Round_Button *btnPTT[5];
 extern Fl_Check_Button *chkUSEHAMLIB;
 extern Fl_ComboBox *cboHamlibRig;
-#include <FL/Fl_Choice.H>
 extern Fl_Choice *mnuBaudRate;
 extern Fl_Input_Choice *inpRIGdev;
 extern Fl_Check_Button *chkUSERIGCAT;
@@ -134,6 +135,8 @@ extern Fl_Value_Input *valCWsweetspot;
 extern Fl_Value_Input *valRTTYsweetspot;
 extern Fl_Value_Input *valPSKsweetspot;
 extern Fl_Check_Button *btnStartAtSweetSpot;
+extern Fl_Group *tabMainWindow;
+extern Fl_Check_Button *btnDockedScope;
 extern Fl_Group *tabModems;
 extern Fl_Tabs *tabsModems;
 extern Fl_Group *tabCW;

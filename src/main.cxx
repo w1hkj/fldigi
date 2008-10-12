@@ -123,6 +123,7 @@ void generate_version_text(void);
 void debug_exec(char** argv);
 void set_platform_ui(void);
 double speed_test(int converter, unsigned repeat);
+static void setup_signal_handlers(void);
 
 int main(int argc, char ** argv)
 {
@@ -399,9 +400,6 @@ void generate_option_help(void) {
 	     << "  --wfall-height HEIGHT\n"
 	     << "    HEIGHT in pixels, ie 100 - 200, recommend 10 pixel increments.\n\n"
 
-	     << "  --twoscopes\n"
-	     << "    Dock a second digiscope adjacent to the waterfall\n\n"
-
 	     << "  --toggle-check-buttons\n"
 	     << "    Use lighted or check buttons for AFC / SQL.\n";
 
@@ -421,9 +419,10 @@ int parse_args(int argc, char **argv, int& idx)
 #ifndef __CYGWIN__
 	       OPT_RX_IPC_KEY, OPT_TX_IPC_KEY,
 #endif
-	       OPT_CONFIG_DIR, OPT_EXPERIMENTAL, OPT_ARQ_ADDRESS, OPT_ARQ_PORT,
+	       OPT_CONFIG_DIR,
+	       OPT_ARQ_ADDRESS, OPT_ARQ_PORT,
 #if USE_XMLRPC
-	       OPT_CONFIG_XMLRPC, OPT_CONFIG_XMLRPC_ADDRESS, OPT_CONFIG_XMLRPC_PORT,
+	       OPT_CONFIG_XMLRPC_ADDRESS, OPT_CONFIG_XMLRPC_PORT,
 	       OPT_CONFIG_XMLRPC_ALLOW, OPT_CONFIG_XMLRPC_DENY, OPT_CONFIG_XMLRPC_LIST,
 #endif
                OPT_FONT, OPT_WFALL_WIDTH, OPT_WFALL_HEIGHT,
@@ -432,10 +431,9 @@ int parse_args(int argc, char **argv, int& idx)
 #if USE_PORTAUDIO
                OPT_FRAMES_PER_BUFFER,
 #endif
-               OPT_TWO_SCOPES,
 	       OPT_DEBUG_LEVEL,
                OPT_EXIT_AFTER,
-               OPT_HELP, OPT_VERSION };
+               OPT_DEPRECATED, OPT_HELP, OPT_VERSION };
 
 	const char shortopts[] = "+";
 	static struct option longopts[] = {
@@ -444,13 +442,13 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "tx-ipc-key",	   1, 0, OPT_TX_IPC_KEY },
 #endif
 		{ "config-dir",	   1, 0, OPT_CONFIG_DIR },
-		{ "experimental",  0, 0, OPT_EXPERIMENTAL },
+		{ "experimental",  0, 0, OPT_DEPRECATED },
 
 		{ "arq-server-address", 1, 0, OPT_ARQ_ADDRESS },
 		{ "arq-server-port",    1, 0, OPT_ARQ_PORT },
 
 #if USE_XMLRPC
-		{ "xmlrpc-server",         0, 0, OPT_CONFIG_XMLRPC },
+		{ "xmlrpc-server",         0, 0, OPT_DEPRECATED },
 		{ "xmlrpc-server-address", 1, 0, OPT_CONFIG_XMLRPC_ADDRESS },
 		{ "xmlrpc-server-port",    1, 0, OPT_CONFIG_XMLRPC_PORT },
 		{ "xmlrpc-allow",          1, 0, OPT_CONFIG_XMLRPC_ALLOW },
@@ -463,7 +461,7 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "wfall-height",  1, 0, OPT_WFALL_HEIGHT },
 		{ "window-width",  1, 0, OPT_WINDOW_WIDTH },
 		{ "window-height", 1, 0, OPT_WINDOW_HEIGHT },
-		{ "twoscopes",     0, 0, OPT_TWO_SCOPES },
+		{ "twoscopes",     0, 0, OPT_DEPRECATED },
  		{ "toggle-check-buttons",    0, 0, OPT_TOGGLE_CHECK },
 
 #if USE_PORTAUDIO
@@ -509,9 +507,6 @@ int parse_args(int argc, char **argv, int& idx)
 			if (*HomeDir.rbegin() != '/')
 				HomeDir += '/';
 			break;
-		case OPT_EXPERIMENTAL:
-			progdefaults.experimental = true;
-			break;
 
 		case OPT_ARQ_ADDRESS:
 			progdefaults.arq_address = optarg;
@@ -521,10 +516,6 @@ int parse_args(int argc, char **argv, int& idx)
 			break;
 
 #if USE_XMLRPC
-		case OPT_CONFIG_XMLRPC:
-			cerr << "W: the --" << longopts[longindex].name
-			     << " option will be removed in the next version\n";
-			break;
 		case OPT_CONFIG_XMLRPC_ADDRESS:
 			progdefaults.xmlrpc_address = optarg;
 			break;
@@ -575,10 +566,6 @@ int parse_args(int argc, char **argv, int& idx)
 			HNOM = strtol(optarg, NULL, 10);
 			break;
 
-		case OPT_TWO_SCOPES:
-			twoscopes = true;
-			break;
-
 		case OPT_TOGGLE_CHECK:
 			useCheckButtons = !useCheckButtons;
 			break;
@@ -598,6 +585,11 @@ int parse_args(int argc, char **argv, int& idx)
 			int v = strtol(optarg, 0, 10);
 			debug::level = (debug::level_e)CLAMP(v, 0, debug::LOG_NLEVELS-1);
 		}
+			break;
+
+		case OPT_DEPRECATED:
+			cerr << "W: the --" << longopts[longindex].name
+			     << " option has been deprecated and will be removed in a future version\n";
 			break;
 
 		case OPT_HELP:
@@ -630,7 +622,13 @@ int parse_args(int argc, char **argv, int& idx)
 void generate_version_text(void)
 {
 	ostringstream s;
-	s << PACKAGE_NAME << ' ' << PACKAGE_VERSION << "\n\nSystem: ";
+	s << PACKAGE_STRING << '\n'
+	  << "Copyright (c) 2008 " << PACKAGE_AUTHORS << '\n'
+	  << "License GPLv2+: GNU GPL version 2 or later <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>\n"
+	  << "This is free software: you are free to change and redistribute it.\n"
+	  << "There is NO WARRANTY, to the extent permitted by law.\n";
+
+	s << "\nSystem: ";
         struct utsname u;
         if (uname(&u) != -1) {
 		s << u.sysname << ' ' << u.nodename
@@ -764,28 +762,20 @@ double speed_test(int converter, unsigned repeat)
 	return repeat / (t0.tv_sec + t0.tv_nsec/1e9);
 }
 
-void setup_signal_handlers(void)
+static void setup_signal_handlers(void)
 {
 	struct sigaction action;
 	memset(&action, 0, sizeof(struct sigaction));
 
-	action.sa_handler = SIG_DFL;
 	// no child stopped notifications, no zombies
 #ifdef __CYGWIN__
-	action.sa_flags = SA_NOCLDSTOP;
+	action.sa_handler = SIG_IGN;
 #else
+	action.sa_handler = SIG_DFL;
 	action.sa_flags = SA_NOCLDSTOP | SA_NOCLDWAIT;
 #endif
 	sigaction(SIGCHLD, &action, NULL);
 	action.sa_flags = 0;
-
-	// undo xmlrpc-c's signal handling
-#if USE_XMLRPC
-	sigaction(SIGTERM, &action, NULL);
-	sigaction(SIGINT, &action, NULL);
-	sigaction(SIGHUP, &action, NULL);
-	sigaction(SIGUSR1, &action, NULL);
-#endif
 
 	action.sa_handler = handle_signal;
 	sigaction(SIGSEGV, &action, NULL);
@@ -798,6 +788,5 @@ void setup_signal_handlers(void)
 
 	sigemptyset(&action.sa_mask);
 	sigaddset(&action.sa_mask, SIGUSR2);
-	pthread_sigmask((GET_THREAD_ID() == FLMAIN_TID ? SIG_BLOCK : SIG_UNBLOCK),
-			&action.sa_mask, NULL);
+	pthread_sigmask(SIG_BLOCK, &action.sa_mask, NULL);
 }

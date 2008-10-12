@@ -50,6 +50,8 @@ Rig::Rig(rig_model_t rig_model) {
 }
 
 Rig::~Rig() {
+	riglist.clear();
+	rignames.clear();
 	if (theRig)
 		rig_cleanup(theRig);
 }

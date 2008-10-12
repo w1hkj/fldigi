@@ -112,7 +112,7 @@ void MixerOSS::initValues()
 
 	LOG_DEBUG("Sound mixer initial state:\n" "Dev mask: %02x\n"
 		  "Rec mask: %02x\n" "Rec src: %02x\n" "Current input source #: %s\n"
-		  "Line level: %d\n" "Mic level: %d\n" "Pcm level: %d\n" "Vol level: %d\n",
+		  "Line level: %f\n" "Mic level: %f\n" "Pcm level: %f\n" "Vol level: %f\n",
 		  devmask, recmask, recsrc, GetInputSourceName(inpsrc0),
 		  linelevel0, miclevel0, pcmlevel0, vollevel0);
 }
