@@ -26,6 +26,7 @@
 
 #include <config.h>
 
+#include <fstream>
 #include <string>
 #include <cstdlib>
 #include <ctime>

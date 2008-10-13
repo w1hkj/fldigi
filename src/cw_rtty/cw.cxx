@@ -668,7 +668,7 @@ void cw::send_symbol(int bits)
 		duration = knum + keyup;
 	}
 
-	if (progdefaults.QSKv)
+	if (progdefaults.QSK)
 		ModulateStereo(outbuf, qrqbuf, duration);
 	else
 		ModulateXmtr(outbuf, duration);

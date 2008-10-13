@@ -1266,10 +1266,10 @@ progdefaults.changed = true;}
           } {
             Fl_Check_Button btnQSK {
               label {QSK on right channel}
-              callback {progdefaults.QSKv=o->value();
+              callback {progdefaults.QSK=o->value();
 progdefaults.changed = true;}
               xywh {35 75 175 15} down_box DOWN_BOX
-              code0 {o->value(progdefaults.QSKv);}
+              code0 {o->value(progdefaults.QSK);}
             }
             Fl_Counter cntPreTiming {
               label {Pre Timing}
