@@ -21,7 +21,6 @@ Fl_PopBrowser::Fl_PopBrowser (int X, int Y, int W, int H, retvals R)
 
 Fl_PopBrowser::~Fl_PopBrowser ()
 {
-	if (popbrwsr) delete popbrwsr;
 }
 
 int Fl_PopBrowser::handle(int event)
@@ -170,7 +169,8 @@ Fl_ComboBox::Fl_ComboBox (int X,int Y,int W,int H, const char *L)
 {
   width = W; height = H - 4;
   Btn = new Fl_Button (X + W - 18, Y + 1, 18, H - 2);
-  (new Fl_Pixmap (brws_12))->label (Btn);
+  btnmap = new Fl_Pixmap(brws_12);
+  btnmap->label(Btn);
   Btn->callback ((Fl_Callback *)btnComboBox_cb, 0);
   Output = new Fl_Input (X, Y, W-18, H);
 
@@ -184,6 +184,19 @@ Fl_ComboBox::Fl_ComboBox (int X,int Y,int W,int H, const char *L)
   R.Inp = Output;
   R.retval = retdata;
   R.idx = &idx;
+}
+
+Fl_ComboBox::~Fl_ComboBox()
+{
+	if (Brwsr) delete Brwsr;
+	for (int i = 0; i < listsize; i++) {
+		if (datalist[i]) {
+			if (datalist[i]->s) delete [] datalist[i]->s;
+			delete datalist[i];
+		}
+	}
+	delete [] datalist;
+	delete btnmap;
 }
 
 void Fl_ComboBox::type (int t)
@@ -271,8 +284,8 @@ void Fl_ComboBox::add( const char *s, void * d)
   if (listsize == maxsize) {
     int nusize = maxsize + FL_COMBO_LIST_INCR;
     datambr **temparray = new datambr *[nusize];
-    for (int i = 0; i < listsize; i++) temparray[i] = datalist[i];
-    delete [] datalist;
+    for (int i = 0; i < listsize; i++)	temparray[i] = datalist[i];
+	delete [] datalist;
     datalist = temparray;
     maxsize = nusize;
   }

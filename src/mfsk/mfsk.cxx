@@ -261,6 +261,9 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		createRxViewer();
 		activate_mfsk_image_item(true);
 	}
+	afcmetric = 0.0;
+	datashreg = 1;
+
 	init();
 
 }

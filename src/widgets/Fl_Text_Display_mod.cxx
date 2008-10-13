@@ -381,8 +381,8 @@ void Fl_Text_Display_mod::resize(int X, int Y, int W, int H) {
   text_area.y = Y+BOTTOM_MARGIN;
   text_area.w = W-LEFT_MARGIN-RIGHT_MARGIN;
   text_area.h = H-TOP_MARGIN-BOTTOM_MARGIN;
-  int i;
-
+  int i = 0;
+  
   /* Find the new maximum font height for this text display */
   for (i = 0, mMaxsize = fl_height(textfont(), textsize()); i < mNStyles; i++)
     mMaxsize = max(mMaxsize, fl_height(mStyleTable[i].font, mStyleTable[i].size));

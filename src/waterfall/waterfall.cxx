@@ -133,6 +133,9 @@ WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 	tmp_carrier = false;
 	ptrCB = 0;
 	ptrFFTbuff = 0;
+
+	for (int i = 0; i < 256; i++)
+		mag2RGBI[i].I = mag2RGBI[i].R = mag2RGBI[i].G = mag2RGBI[i].B = 0;
 }
 
 WFdisp::~WFdisp() {
@@ -280,7 +283,7 @@ void WFdisp::setcolors() {
 
 
 void WFdisp::initmaps() {
-	for (int i = 0; i < image_area; i++) fft_db[i] = log2disp(-1000);
+	for (int i = 0; i < image_area; i++) fft_db[i] = tmp_fft_db[i] = log2disp(-1000);
 
 	memset (fft_img, 0, image_area * sizeof(RGBI) );
 	memset (scaleimage, 0, scale_width * WFSCALE);
@@ -632,7 +635,10 @@ void WFdisp::update_waterfall() {
 	short int *p1, *p2;
 	RGBI *p3, *p4;
 	p1 = tmp_fft_db + offset;
+	p2 = p1;
 	p3 = fft_img;
+	p4 = p3;
+	
 	short* limit = tmp_fft_db + image_area - step + 1;
 
 	for (int row = 0; row < image_height; row++) {

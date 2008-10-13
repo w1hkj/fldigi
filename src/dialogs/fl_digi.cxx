@@ -1325,6 +1325,19 @@ bool clean_exit(void) {
 		MilliSleep(10);
 	}
 
+	if (dlgConfig) {
+		dlgConfig->hide();
+		delete cboHamlibRig;
+		delete dlgConfig;
+	}
+	
+#if USE_HAMLIB
+	if (xcvr) delete xcvr;
+#endif
+#if USE_XMLRPC
+	XML_RPC_Server::stop();
+#endif
+
 	return true;
 }
 

@@ -84,6 +84,7 @@ XML_RPC_Server::XML_RPC_Server()
 	server_thread = new pthread_t;
 	run = true;
 }
+
 XML_RPC_Server::~XML_RPC_Server()
 {
 	run = false;
@@ -94,6 +95,7 @@ XML_RPC_Server::~XML_RPC_Server()
 		server_thread = 0;
 	}
 	delete methods;
+	delete server_socket;
 	methods = 0;
 }
 
