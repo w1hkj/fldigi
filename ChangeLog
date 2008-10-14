@@ -52,6 +52,14 @@ Change Log:
       20) Add new option to dock a digiscope and deprecate command line switch
       21) Add option to change waterfall mouse wheel handling. Adapt patch
           by Stephane F8CFE to change rig frequency via the mouse wheel.
+      22) Added <IDLE>NNN macro tag; causes signal to idle for NNN seconds
+          before sending macro text.  Use:
+          
+          <TX><IDLE>05
+          Now is the time for all good men
+          <RX><TIMER>20
+          
+          will generate 5 seconds of idle, the text, and repeat after 20 sec's.
 
 3.03
       1) Changes to socket server to correct shutdown process

@@ -75,6 +75,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add("<LOG>\tsave QSO data");
 	w->add("<VER>\tFldigi + version");
 	w->add("<TIMER>\trepeat every NNN sec");
+	w->add("<IDLE>\tidle signal for NNN sec");
 
 	w->add(LINE_SEP);
 	char s[256];
