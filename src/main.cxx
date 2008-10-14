@@ -264,9 +264,18 @@ int main(int argc, char ** argv)
 	fl_digi_main->icon((char*)LoadIcon(fl_display, MAKEINTRESOURCE(IDI_ICON)));
 #endif
 
+// OS X will prevent the main window from being resized if we change its
+// size *after* it has been shown. With some X11 window managers, OTOH,
+// the main window will not be restored at its exact saved position if
+// we move it *after* it has been shown.
+#ifndef __APPLE__
 	fl_digi_main->show(argc, argv);
 	progStatus.initLastState();
-	
+#else
+	progStatus.initLastState();
+	fl_digi_main->show(argc, argv);
+#endif
+
 	arq_init();
 
 #if USE_XMLRPC
