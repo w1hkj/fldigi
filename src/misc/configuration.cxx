@@ -98,7 +98,7 @@ istream& operator>>(istream& in, RGBI& rgbi)
 	return 	in;
 }
 
-// This allows to put tag elements into containers
+// This allows us to put tag elements into containers
 class tag_base
 {
 public:
@@ -173,7 +173,9 @@ public:
 //    to read progdefaults.  We'll define that map right here:
 typedef map<string, tag_base*> tag_map_t;
 tag_map_t tag_map;
-#define ELEM_TAG_MAP(type_, var_, tag_, ...) tag_map[tag_] = new tag_elem<type_>(tag_, progdefaults.var_);
+#define ELEM_TAG_MAP(type_, var_, tag_, ...)						  \
+	if (tag_map.find(tag_) == tag_map.end())					  \
+		tag_map[tag_] = new tag_elem<type_>(tag_, progdefaults.var_);
 
 
 // First define the default config
