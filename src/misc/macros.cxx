@@ -57,6 +57,7 @@ void pDECR(string &, size_t &);
 void pINCR(string &, size_t &);
 void pLOG(string &, size_t &);
 void pTIMER(string &, size_t &);
+void pIDLE(string &, size_t &);
 void pMODEM(string &, size_t &);
 void pEXEC(string &, size_t &);
 void pSTOP(string &, size_t &);
@@ -91,6 +92,7 @@ MTAGS mtags[] = {
 {"<INCR>",		pINCR},
 {"<LOG>",		pLOG},
 {"<TIMER>",		pTIMER},
+{"<IDLE>",		pIDLE},
 {"<MODEM>",		pMODEM},
 {"<EXEC>",		pEXEC},
 {"<STOP>",		pSTOP},
@@ -304,6 +306,22 @@ void pTIMER(string &s, size_t &i)
 	progdefaults.timeout = number;
 	progdefaults.macronumber = mNbr;
 	progdefaults.useTimer = true;
+}
+
+bool useIdle = false;
+int  idleTime = 0;
+
+void pIDLE(string &s, size_t &i)
+{
+	int number;
+	sscanf(s.substr(i+6).c_str(), "%d", &number);
+	size_t i2;
+	i2 = s.find(" ", i);
+	if (i2 == string::npos)
+		i2 = s.find("\n", i);
+	s.replace (i, i2 - i + 1, "");
+	useIdle = true;
+	idleTime = number;
 }
 
 void pMODEM(string &s, size_t &i)
@@ -669,14 +687,30 @@ string MACROTEXT::expandMacro(int n)
 	return expanded;
 }
 
+string text2send = "";
+
+void insertTextAfter(void *)
+{
+	TransmitText->add( text2send.c_str() );
+	text2send.clear();
+}
+
 void MACROTEXT::execute(int n) 
 {
-	TransmitText->add( (expandMacro(n)).c_str() );
+	text2send = expandMacro(n);
 	if ( TransmitON ) {
 		active_modem->set_stopflag(false);
 		start_tx();
 		TransmitON = false;
 	}
+	if (useIdle && idleTime > 0) {
+		Fl::add_timeout(idleTime , insertTextAfter);
+	}
+	else {
+		TransmitText->add( text2send.c_str() );
+		text2send.clear();
+	}
+	useIdle = false;
 }
 
 string mtext = 

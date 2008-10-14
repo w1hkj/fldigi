@@ -10,6 +10,7 @@
 
 #include <config.h>
 
+#include <fstream>
 #include <vector>
 #include <map>
 #include <algorithm>

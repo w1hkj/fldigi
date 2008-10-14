@@ -19,6 +19,7 @@
 #include <fstream>
 
 #include <map>
+#include <sstream>
 
 #ifdef __linux__
 #  include <dirent.h>
@@ -32,253 +33,8 @@
 #  include <sys/stat.h>
 #endif
 
-configuration progdefaults = {
-	false,			// bool		rsid;
-	false,			// bool		rsidWideSearch;
-	false,			// bool		TransmitRSid;
-	true,			// bool		slowcpu;
+using namespace std;
 
-	false,			// bool		changed;
-	-20.0,			// double	wfRefLevel;
-	70.0,			// double	wfAmpSpan;
-	300,			// int		LowFreqCutoff;
-	1000,			// int		CWsweetspot;
-	1000,			// int		RTTYsweetspot;
-	1000,			// int		PSKsweetspot;
-	false,			// bool		StartAtSweetSpot;
-	false,			// bool		WaterfallHistoryDefault;
-	false,			// bool		WaterfallQSY;
-	"",			// string	WaterfallClickText;
-	waterfall::WF_CARRIER,	// int		WaterfallWheelAction;
-
-//  for PSK mail interface	
-	false,			// bool		PSKmailSweetSpot;
-	200,			// int		SearchRange;
-	40,				// int		ServerOffset;
-	6.0,			// double	ACQsn;
-// RTTY
-	3,				// int			rtty_shift; = 170
-	0,				// int			rtty_baud; = 45
-	0,				// int 			rtty_bits; = 5
-	RTTY_PARITY_NONE,	// RTTY_PARITY	rtty_parity;
-	1,				// int			rtty_stop;
-	false,			// bool 		rtty_reverse;
-	false,			// bool		rtty_msbfirst;
-	false,  		// bool		rtty_crcrlf;
-	true,			// bool		rtty_autocrlf;
-	72,				// int		rtty_autocount;
-	1,				// int		rtty_afcspeed;
-	false,			// bool		useFSKkeyline;
-	false,			// bool		useFSKkeylineDTR;	
-	true,			// bool		FSKisLSB;
-//	true,			// bool		RTTY_USB;
-	false,			// bool		useUART;
-	false,			// bool		PreferXhairScope;
-	false,			// bool		PseudoFSK;
-	true,			// bool		UOSrx; // unshift on space - receive
-	true,			// bool		UOStx; // unshift on space - transmit
-	false,			// bool		Xagc; // use agc for X-scope
-// CW
-	false,			// bool		useCWkeylineRTS;
-	false,			// bool		useCWkeylineDTR;
-	50,				// int		CWweight;
-	18,				// int		CWspeed;
-	24,				// int		defCWspeed;
-	150,			// int		CWbandwidth;
-	true,			// int		CWtrack;
-	10,				// int		CWrange;
-	5,				// int		CWlowerlimit;
-	50,				// int		CWupperlimit;
-	4.0,			// double	CWrisetime;
-	3.0,			// double	CWdash2dot;
-	false,			// bool		QSKv;
-	4.0,			// double	CWpre;
-	4.0,			// double	CWpost;
-	false,			// bool		CWid;
-	18,				// int		CWIDwpm;
-
-// FELD-HELL
-	150.0,			// double	HELL_BW;
-	false,			// bool		HellRcvWidth;
-	false,			// bool		HellBlackboard;
-	1,				// bool		HellXmtWidth;
-	true,			// bool		HellXmtIdle;
-	false,			// bool		HellPulseFast;
-// OLIVIA
-	2,				// int		oliviatones;
-	2,				// int		oliviabw;
-	8,				// int		oliviasmargin
-	4,				// int		oliviasinteg
-	false,			// bool		olivia8bit
-// THOR
-	2.0,			// double	THOR_BW;
-	true,			// bool		THOR_FILTER;
-	"",				// string	THORsecText;
-	5,				// int		THOR_PATHS;
-	false,			// bool		THOR_SOFT;
-	0.0,			// double	ThorCWI;
-// DOMINOEX
-	2.0,			// double	DOMINOEX_BW;
-	true,			// bool		DOMINOEX_FILTER
-	false,			// bool		DOMINOEX_FEC
-	5,				// int		DOMINOEX_PATHS
-	0.0,			// double	DomCWI;
-// MT63
-	false,			// bool 	mt63_8bit;
-	32,				// int		mt63_interleave;
-//
-	0,				// uchar 	red
-	255,			// uchar 	green
-	255,			// uchar 	blue
-	0,				// bool 	MultiColorWF;
-	1,				// int  	wfPreFilter == Blackman
-	false,			// bool		WFaveraging
-	4,				// int		latency;
-	true,			// bool 	UseCursorLines;
-	true,			// bool 	UseCursorCenterLine;
-	true,			// bool 	UseBWTracks;
-	{255,255,0,255},		// RGBI	cursorLineRGBI;
-	{255, 255, 255, 255},	// RGBI	cursorCenterRGBI;
-	{255,0,0,255},			// RGBI	bwTrackRGBI;
-	4,				// int		feldfontnbr;
-	false,			// bool		viewXmtSignal;
-	false,			// bool		sendid;
-	false,			// bool		macroid;
-	false,			// bool		sendtextid;
-	"CQ",			// string	strTextid;
-	false,			// bool		macroCWid;
-	1,				// int		videowidth;
-	true,			// bool		ID_SMALL;
-	false,			// bool		macrotextid;
-	0,				// int		QRZ;
-	"",             // string   QRZpathname;
-	"",				// string	QRZusername;
-	"",				// string	QRZuserpassword;
-	false,			// bool     QRZchanged;
-//
-	true,			// bool		btnusb;
-	0, 				// int 		btnPTTis
-	false,			// bool		RTSptt;
-	false,			// bool		DTRptt;
-	false,			// bool		RTSplus;
-	false,			// bool		DTRplus;
-	0,				// int 		choiceHAMLIBis
-	0,				// int 		chkUSEMEMMAPis
-	0,				// int 		chkUSEHAMLIBis
-	0,				// int		chkUSERIGCATis
-	0,				// int		chkUSEXMLRPCis
-#if defined(__linux__)
-	"/dev/ttyS0",		// string	PTTdev
-	"/dev/ttyS1",		// string	CWFSKport
-	"/dev/ttyS0",		// string	HamRigDevice
-#elif defined(__CYGWIN__)
-	"COM1",			// string	PTTdev
-	"COM2",			// string	CWFSKport
-	"COM1",			// string	HamRigDevice
-#else // not sure
-	"/dev/ptt",		// string	PTTdev
-	"/dev/fsk",		// string	CWFSKport
-	"/dev/rig",		// string	HamRigDevice
-#endif
-	"",			// string	HamRigName
-	1,			// int		HamRigBaudrate
-//
-	"",				// myCall
-	"",				// myName
-	"",				// myQth
-	"",				// myLoc
-#if defined(__linux__)
-
-#elif defined(__CYGWIN__)
-
-#else
-
-#endif
-	"",				// secondary text
-// Sound card
-	SND_IDX_PORT,		// int		btnAudioIOis
-	"",		// string	OSSdevice;
-	"",		// string	PAdevice;
-	"",		// string	PortIndevice;
-	-1,		// int		PortInIndex;
-	"",		// string	PortOutDevice;
-	-1,		// int		PortOutIndex;
-	0,		// int		PortFramesPerBuffer
-	"",		// string	PulseServer
-	SAMPLE_RATE_UNSET,		// int		sample_rate;
-	SAMPLE_RATE_UNSET,		// int		in_sample_rate;
-	SAMPLE_RATE_UNSET,		// int		out_sample_rate;
-	SRC_SINC_FASTEST,		// int		sample_converter;
-	0,				// int		RX_corr;
-	0,				// int		TX_corr;
-	0,				// int		TxOffset;
-// Contest controls
-	true,			// bool	UseLeadingZeros;
-	0,				// int		ContestStart;
-	4,				// int		ContestDigits;
-// Macro timer constants and controls
-	false,			// bool	useTimer;
-	0,				// int		macronumber;
-	0,				// int		timeout;
-	0,				// bool		UseLastMacro;
-	0,				// bool		DisplayMacroFilename;
-	
-	"",			// string	MXdevice
-	false,			// bool		MicIn;
-	true,			// bool		LineIn;
-	false,			// bool		EnableMixer;
-	true,			// bool 	MuteInput;
-	80.0,			// double	PCMvolume
-	{{  0,  0,  0},{  0,  0,  62},{  0,  0,126}, // default palette
-	 {  0,  0,214},{145,142,  96},{181,184, 48},
-	 {223,226,105},{254,254,   4},{255, 58,  0} },
-	 	
-// Button key color palette
-	true,			  // bool useGroupColors;
-	{  80, 144, 144}, // RGB btnGroup1;
-	{ 144,  80,  80}, // RGB btnGroup2;
-	{  80,  80, 144}, // RGB btnGroup3;
-	{ 255, 255, 255}, // RGB btnFkeyTextColor;
-
-// Rx / Tx / Waterfall Text Widgets
-
-	FL_SCREEN,		// Fl_Font 		RxFontnbr
-	16,				// int 		RxFontsize
-	FL_BLACK,				// Fl_Color		RxFontcolor
-	FL_SCREEN,		// Fl_Font 		TxFontnbr
-	16,				// int 		TxFontsize
-	FL_BLACK,				// Fl_Color		TxFontcolor
-	{ 255, 242, 190}, // RGB RxColor;
-	{ 200, 235, 255}, // RGB TxColor;
-	
-	FL_RED,			// Fl_Color		XMITcolor;
-	FL_DARK_GREEN,	// Fl_Color		CTRLcolor;
-	FL_BLUE,		// Fl_Color		SKIPcolor;
-	FL_DARK_MAGENTA,// Fl_Color		ALTRcolor;
-	
-	FL_SCREEN,		// Fl_Font		WaterfallFontnbr
-	12,				// int		WaterfallFontsize
-
-	"gtk+",				// string	ui_scheme
-
-        9876,		// int		rx_msgid
-        6789,		// int		tx_msgid
-	"127.0.0.1",	// string	arq_address
-	"3122",		// string	arq_port
-// PSK viewer parameters
-	true,			// bool	VIEWERmarquee
-	true,			// bool	VIEWERshowfreq
-	500,			// int		VIEWERstart
-	20,				// int		VIEWERchannels
-	10.0,			// double	VIEWERsquelch
-	15,				// int  VIEWERtimeout
-	"127.0.0.1",		// string xmlrpc_address
-	"7362",			// string xmlrpc_port
-	"",			// string xmlrpc_allow
-	"",			// string xmlrpc_deny
-
-	false			// bool docked_scope
-};
 
 const char *szBaudRates[] = {
 	"", 
@@ -292,244 +48,138 @@ const char *szBands[] = {
 	"14070", "18100", "21070", "21080", "24920", "28070", "28120", 0};
 
 
-#define TAG_LIST                                                                          \
-        NOP_(IGNORE),                                                                     \
-                                                                                          \
-        STR_(MYCALL, myCall),  STR_(MYNAME, myName),                                      \
-        STR_(MYQTH, myQth),  STR_(MYLOC, myLocator),                                      \
-                                                                                          \
-        DBL_(WFREFLEVEL, wfRefLevel),  DBL_(WFAMPSPAN, wfAmpSpan),                        \
-        INT_(LOWFREQCUTOFF, LowFreqCutoff),                                               \
-                                                                                          \
-        BOOL_(WATERFALLHISTORYDEFAULT, WaterfallHistoryDefault),                          \
-        BOOL_(WATERFALLQSY, WaterfallQSY),  STR_(WATERFALLCLICKTEXT, WaterfallClickText), \
-        INT_(WATERFALLWHEELACTION, WaterfallWheelAction),                                 \
-                                                                                          \
-        BOOL_(STARTATSWEETSPOT, StartAtSweetSpot),                                        \
-        BOOL_(PSKMAILSWEETSPOT, PSKmailSweetSpot),  INT_(PSKSEARCHRANGE, SearchRange),    \
-        INT_(PSKSERVEROFFSET, ServerOffset),  DBL_(CWSWEETSPOT, CWsweetspot),             \
-        DBL_(PSKSWEETSPOT, PSKsweetspot), DBL_(ACQSN, ACQsn),                             \
-        DBL_(RTTYSWEETSPOT, RTTYsweetspot),                                               \
-                                                                                          \
-        INT_(RTTYSHIFT, rtty_shift),  INT_(RTTYBAUD, rtty_baud),                          \
-        INT_(RTTYBITS, rtty_bits),  INT_(RTTYPARITY, rtty_parity),                        \
-        INT_(RTTYSTOP, rtty_stop),  BOOL_(RTTYREVERSE, rtty_reverse),                     \
-        BOOL_(RTTYMSBFIRST, rtty_msbfirst),  BOOL_(RTTYCRCLF, rtty_crcrlf),               \
-        BOOL_(RTTYAUTOCRLF, rtty_autocrlf),  INT_(RTTYAUTOCOUNT, rtty_autocount),         \
-        INT_(RTTYAFCSPEED, rtty_afcspeed),  NOP_(RTTYUSB),                                \
-                                                                                          \
-        BOOL_(PREFERXHAIRSCOPE, PreferXhairScope),                                        \
-                                                                                          \
-        BOOL_(PSEUDOFSK, PseudoFSK),                                                      \
-                                                                                          \
-        BOOL_(UOSRX, UOSrx),  BOOL_(UOSTX, UOStx),                                        \
-                                                                                          \
-        BOOL_(XAGC, Xagc),                                                                \
-                                                                                          \
-        INT_(CWWEIGHT, CWweight),  INT_(CWSPEED, CWspeed),  INT_(CWDEFSPEED, defCWspeed), \
-        INT_(CWBANDWIDTH, CWbandwidth),  INT_(CWRANGE, CWrange),                          \
-        INT_(CWLOWERLIMIT, CWlowerlimit),  INT_(CWUPPERLIMIT, CWupperlimit),              \
-        BOOL_(CWTRACK, CWtrack),  DBL_(CWRISETIME, CWrisetime),                           \
-        DBL_(CWDASH2DOT, CWdash2dot),  BOOL_(QSK, QSKv),  DBL_(CWPRE, CWpre),             \
-        DBL_(CWPOST, CWpost),  BOOL_(CWID, CWid),  INT_(IDWPM, CWIDwpm),                  \
-                                                                                          \
-        INT_(OLIVIATONES, oliviatones),  INT_(OLIVIABW, oliviabw),                        \
-        INT_(OLIVIASMARGIN, oliviasmargin),  INT_(OLIVIASINTEG, oliviasinteg),            \
-        BOOL_(OLIVIA8BIT, olivia8bit),                                                    \
-                                                                                          \
-        DBL_(THORBW, THOR_BW),  BOOL_(THORFILTER, THOR_FILTER),                           \
-        STR_(THORSECTEXT, THORsecText),  INT_(THORPATHS, THOR_PATHS),                     \
-        BOOL_(THORSOFT, THOR_SOFT),  DBL_(THORCWI, ThorCWI),                              \
-                                                                                          \
-        DBL_(DOMINOEXBW, DOMINOEX_BW),  BOOL_(DOMINOEXFILTER, DOMINOEX_FILTER),           \
-        BOOL_(DOMINOEXFEC, DOMINOEX_FEC),  INT_(DOMINOEXPATHS, DOMINOEX_PATHS),           \
-        DBL_(DOMCWI, DomCWI),                                                             \
-                                                                                          \
-        INT_(FELDFONTNBR, feldfontnbr),  BOOL_(HELLRCVWIDTH, HellRcvWidth),               \
-        INT_(HELLXMTWIDTH, HellXmtWidth),                                                 \
-        BOOL_(HELLBLACKBOARD, HellBlackboard),  BOOL_(HELLPULSEFAST, HellPulseFast),      \
-        BOOL_(HELLXMTIDLE, HellXmtIdle),                                                  \
-                                                                                          \
-        INT_(WFPREFILTER, wfPreFilter),  INT_(LATENCY, latency),                          \
-        BOOL_(USECURSORLINES, UseCursorLines),                                            \
-        BOOL_(USECURSORCENTERLINE, UseCursorCenterLine),                                  \
-        BOOL_(USEBWTRACKS, UseBWTracks),  RGB_(CLCOLORS, cursorLineRGBI),                 \
-        RGB_(CCCOLORS, cursorCenterRGBI),  RGB_(BWTCOLORS, bwTrackRGBI),                  \
-                                                                                          \
-        BOOL_(VIEWXMTSIGNAL, viewXmtSignal),  BOOL_(SENDID, sendid),                      \
-        BOOL_(MACROID, macroid),  BOOL_(SENDTEXTID, sendtextid),                          \
-        STR_(STRTEXTID, strTextid),  INT_(VIDEOWIDTH, videowidth),                        \
-        BOOL_(IDSMALL, ID_SMALL),                                                         \
-                                                                                          \
-        INT_(QRZTYPE, QRZ),  STR_(QRZPATHNAME, QRZpathname),                              \
-        STR_(QRZUSER, QRZusername),  STR_(QRZPASSWORD, QRZuserpassword),                  \
-                                                                                          \
-        BOOL_(BTNUSB, btnusb),  INT_(BTNPTTIS, btnPTTis),  BOOL_(RTSPTT, RTSptt),         \
-        BOOL_(DTRPTT, DTRptt),  BOOL_(RTSPLUS, RTSplus),  BOOL_(DTRPLUS, DTRplus),        \
-                                                                                          \
-        INT_(CHOICEHAMLIBIS, choiceHAMLIBis),  INT_(CHKUSEMEMMAPIS, chkUSEMEMMAPis),      \
-        INT_(CHKUSEHAMLIBIS, chkUSEHAMLIBis),  INT_(CHKUSERIGCATIS, chkUSERIGCATis),      \
-        INT_(CHKUSEXMLRPCIS, chkUSEXMLRPCis),                                             \
-                                                                                          \
-        STR_(HAMRIGNAME, HamRigName),  STR_(HAMRIGDEVICE, HamRigDevice),                  \
-        INT_(HAMRIGBAUDRATE, HamRigBaudrate),  STR_(PTTDEV, PTTdev),                      \
-                                                                                          \
-        STR_(SECONDARYTEXT, secText),                                                     \
-                                                                                          \
-        INT_(AUDIOIO, btnAudioIOis),  STR_(OSSDEVICE, OSSdevice),                         \
-        STR_(PADEVICE, PAdevice),  STR_(PORTINDEVICE, PortInDevice),                      \
-        INT_(PORTININDEX, PortInIndex),  STR_(PORTOUTDEVICE, PortOutDevice),              \
-        INT_(PORTOUTINDEX, PortOutIndex),  STR_(PULSESERVER, PulseServer),                \
-                                                                                          \
-        INT_(SAMPLERATE, sample_rate),  INT_(INSAMPLERATE, in_sample_rate),               \
-        INT_(OUTSAMPLERATE, out_sample_rate),  INT_(SAMPLECONVERTER, sample_converter),   \
-        INT_(RXCORR, RX_corr),  INT_(TXCORR, TX_corr),  INT_(TXOFFSET, TxOffset),         \
-                                                                                          \
-        BOOL_(USELEADINGZEROS, UseLeadingZeros),  INT_(CONTESTSTART, ContestStart),       \
-        INT_(CONTESTDIGITS, ContestDigits),  BOOL_(USETIMER, useTimer),                   \
-        INT_(MACRONUMBER, macronumber),  INT_(TIMEOUT, timeout),                          \
-                                                                                          \
-        BOOL_(USELASTMACRO, UseLastMacro),                                                \
-        BOOL_(DISPLAYMACROFILENAME, DisplayMacroFilename),                                \
-                                                                                          \
-        STR_(MXDEVICE, MXdevice),  DBL_(PCMVOLUME, PCMvolume),  BOOL_(MICIN, MicIn),      \
-        BOOL_(LINEIN, LineIn),  BOOL_(ENABLEMIXER, EnableMixer),                          \
-        BOOL_(MUTEINPUT, MuteInput),                                                      \
-                                                                                          \
-        RGB_(PALETTE0, cfgpal[0]), RGB_(PALETTE1, cfgpal[1]), RGB_(PALETTE2, cfgpal[2]),  \
-        RGB_(PALETTE3, cfgpal[3]), RGB_(PALETTE4, cfgpal[4]), RGB_(PALETTE5, cfgpal[5]),  \
-        RGB_(PALETTE6, cfgpal[6]), RGB_(PALETTE7, cfgpal[7]), RGB_(PALETTE8, cfgpal[8]),  \
-                                                                                          \
-        BOOL_(VIEWERMARQUEE, VIEWERmarquee),  BOOL_(VIEWERSHOWFREQ, VIEWERshowfreq),      \
-        INT_(VIEWERSTART, VIEWERstart),  INT_(VIEWERCHANNELS, VIEWERchannels),            \
-        DBL_(VIEWERSQUELCH, VIEWERsquelch),  INT_(VIEWERTIMEOUT, VIEWERtimeout),          \
-                                                                                          \
-        BOOL_(WFAVERAGING, WFaveraging),                                                  \
-                                                                                          \
-        BOOL_(USEGROUPCOLORS, useGroupColors),  RGB_(FKEYGROUP1, btnGroup1),              \
-        RGB_(FKEYGROUP2, btnGroup2),  RGB_(FKEYGROUP3, btnGroup3),                        \
-        RGB_(FKEYTEXTCOLOR, btnFkeyTextColor),                                            \
-                                                                                          \
-        INT_(RXFONTNBR, RxFontnbr),  INT_(RXFONTSIZE, RxFontsize),                        \
-        INT_(RXFNTCOLOR, RxFontcolor),  INT_(TXFONTNBR, TxFontnbr),                       \
-        INT_(TXFONTSIZE, TxFontsize),  INT_(TXFNTCOLOR, TxFontcolor),                     \
-                                                                                          \
-        INT_(XMITCOLOR, XMITcolor),  INT_(CTRLCOLOR, CTRLcolor),                          \
-        INT_(SKIPCOLOR, SKIPcolor),  INT_(ALTRCOLOR, ALTRcolor),                          \
-        RGB_(RXFONTCOLOR, RxColor),  RGB_(TXFONTCOLOR, TxColor),                          \
-                                                                                          \
-        INT_(WATERFALLFONTNBR, WaterfallFontnbr),                                         \
-        INT_(WATERFALLFONTSIZE, WaterfallFontsize),                                       \
-                                                                                          \
-        STR_(UISCHEME, ui_scheme),                                                        \
-                                                                                          \
-        BOOL_(RSIDWIDESEARCH, rsidWideSearch),  BOOL_(TRANSMITRSID, TransmitRSid),        \
-                                                                                          \
-        BOOL_(SLOWCPU, slowcpu),                                                          \
-                                                                                          \
-        BOOL_(MT638BIT, mt63_8bit),  INT_(MT63INTERLEAVE, mt63_interleave),               \
-                                                                                          \
-        BOOL_(DOCKEDSCOPE, docked_scope)
+// Define stream I/O operators for non-builtin types.
+// Right now we have: Fl_Color, Fl_Font, RGB, and RGBI
+ostream& operator<<(ostream& out, const Fl_Color& c)
+{
+	return out << static_cast<int>(c);
+}
+istream& operator>>(istream& in, Fl_Color& c)
+{
+	int i;
+	in >> i;
+	c = static_cast<Fl_Color>(i);
+	return in;
+}
+ostream& operator<<(ostream& out, const Fl_Font& f)
+{
+	return out << static_cast<int>(f);
+}
+istream& operator>>(istream& in, Fl_Font& f)
+{
+	int i;
+	in >> i;
+	f = static_cast<Fl_Font>(i);
+	return in;
+}
+ostream& operator<<(ostream& out, const RGB& rgb)
+{
+	return out << (int)rgb.R << ' ' << (int)rgb.G << ' ' << (int)rgb.B;
+}
+istream& operator>>(istream& in, RGB& rgb)
+{
+	int i;
+	in >> i; rgb.R = i;
+	in >> i; rgb.G = i;
+	in >> i; rgb.B = i;
+	return 	in;
 
-
-void read_xml_int(IrrXMLReader* xml, void* var)
-{
-	*((int*)var) = atoi(xml->getNodeData());
 }
-void read_xml_bool(IrrXMLReader* xml, void* var)
+ostream& operator<<(ostream& out, const RGBI& rgbi)
 {
-	*((bool*)var) = atoi(xml->getNodeData());
+	return out << (int)rgbi.R << ' ' << (int)rgbi.G << ' ' << (int)rgbi.B;
 }
-void read_xml_dbl(IrrXMLReader* xml, void* var)
+istream& operator>>(istream& in, RGBI& rgbi)
 {
-	*((double*)var) = atof(xml->getNodeData());
-}
-void read_xml_str(IrrXMLReader* xml, void* var)
-{
-	*((string*)var) = xml->getNodeData();
-}
-void read_xml_rgb(IrrXMLReader* xml, void* var)
-{
-	RGBI* rgb = (RGBI*)var;
-	sscanf(xml->getNodeData(), "%hhu %hhu %hhu", &rgb->R, &rgb->G, &rgb->B);
+	int i;
+	in >> i; rgbi.R = i;
+	in >> i; rgbi.G = i;
+	in >> i; rgbi.B = i;
+	return 	in;
 }
 
-void write_xml_int(ofstream& out, const char* tag, void* var)
+// This allows to put tag elements into containers
+class tag_base
 {
-	out << '<' << tag << '>' << (*(int*)var) << "</" << tag << ">\n";
-}
-void write_xml_bool(ofstream& out, const char* tag, void* var)
-{
-	out << '<' << tag << '>' << (*(bool*)var) << "</" << tag << ">\n";
-}
-void write_xml_dbl(ofstream& out, const char* tag, void* var)
-{
-	out << '<' << tag << '>' << (*(double*)var) << "</" << tag << ">\n";
-}
-void write_xml_str(ofstream& out, const char* tag, void* var)
-{
-	string& s = *((string*)var);
-	string::size_type i = s.find('&');
-
-	while (i != string::npos) {
-		s.replace(i, 1, "&amp;");
-		i = s.find('&', i + 1);
-	}
-	while ((i = s.find('<')) != string::npos)
-		s.replace(i, 1, "&lt;");
-	while ((i = s.find('>')) != string::npos)
-		s.replace(i, 1, "&gt;");
-	while ((i = s.find('"')) != string::npos)
-		s.replace(i, 1, "&quot;");
-	while ((i = s.find('\'')) != string::npos)
-		s.replace(i, 1, "&apos;");
-
-	out << '<' << tag << '>' << s << "</" << tag << ">\n";
-}
-void write_xml_rgb(ofstream& out, const char* tag, void* var)
-{
-	RGBI* rgb = (RGBI*)var;
-	out << '<' << tag << '>' << (int)rgb->R << ' ' << (int)rgb->G
-	    << ' ' << (int)rgb->B << "</" << tag << ">\n";
-}
-
-#undef INT_
-#undef BOOL_
-#undef DBL_
-#undef STR_
-#undef RGB_
-#undef NOP_
-#define INT_(elem_, var_)  elem_
-#define BOOL_(elem_, var_) elem_
-#define DBL_(elem_, var_)  elem_
-#define STR_(elem_, var_)  elem_
-#define RGB_(elem_, var_)  elem_
-#define NOP_(elem_)        elem_
-enum TAG {
-	TAG_LIST
-};
-
-struct tag_elem_t {
+public:
+	tag_base(const char* t) : tag(t) { }
+	virtual void write(ostream& out) const = 0;
+	virtual void read(const char* data) = 0;
+	virtual ~tag_base() { }
 	const char* tag;
-	void* ptr;
-	void (*rfunc)(IrrXMLReader*, void*);
-	void (*wfunc)(ofstream&, const char*, void*);
 };
-#undef INT_
-#undef BOOL_
-#undef DBL_
-#undef STR_
-#undef RGB_
-#undef NOP_
-#define INT_(elem_, var_)  { #elem_, &progdefaults.var_, &read_xml_int, &write_xml_int }
-#define BOOL_(elem_, var_) { #elem_, &progdefaults.var_, &read_xml_bool, &write_xml_bool }
-#define DBL_(elem_, var_)  { #elem_, &progdefaults.var_, &read_xml_dbl, &write_xml_dbl }
-#define STR_(elem_, var_)  { #elem_, &progdefaults.var_, &read_xml_str, &write_xml_str }
-#define RGB_(elem_, var_)  { #elem_, &progdefaults.var_, &read_xml_rgb, &write_xml_rgb }
-#define NOP_(elem_)        { #elem_, NULL, NULL, NULL }
-struct tag_elem_t tag_list[] = {
-	TAG_LIST
+
+// This will handle every type that has << and >> stream operators
+template <typename T>
+class tag_elem : public tag_base
+{
+public:
+	tag_elem(const char* t, T& v) : tag_base(t), var(v) { }
+	void write(ostream& out) const
+        {
+		out << '<' << tag << '>' << var << "</" << tag << ">\n";
+	}
+	void read(const char* data)
+	{
+		istringstream iss(data);
+		iss >> var;
+	}
+	T& var;
 };
+
+// Instantiate an explicit tag_elem<T> for types that require unusual handling.
+
+// Special handling for strings
+template <>
+class tag_elem<string> : public tag_base
+{
+public:
+	tag_elem(const char* t, string& s) : tag_base(t), str(s) { }
+	void write(ostream& out) const
+        {
+		string s = str;
+		string::size_type i = s.find('&');
+
+		while (i != string::npos) {
+			s.replace(i, 1, "&amp;");
+			i = s.find('&', i + 1);
+		}
+		while ((i = s.find('<')) != string::npos)
+			s.replace(i, 1, "&lt;");
+		while ((i = s.find('>')) != string::npos)
+			s.replace(i, 1, "&gt;");
+		while ((i = s.find('"')) != string::npos)
+			s.replace(i, 1, "&quot;");
+		while ((i = s.find('\'')) != string::npos)
+			s.replace(i, 1, "&apos;");
+
+		out << '<' << tag << '>' << s << "</" << tag << ">\n";
+	}
+	void read(const char* data) { str = data; }
+	string& str;
+};
+
+
+// By redefining the ELEM_ macro, we can control what the CONFIG_LIST macro
+// will expand to, and accomplish several things:
+// 1) Declare "struct configuration". See ELEM_DECLARE_CONFIGURATION
+//    in configuration.h.
+// 2) Define progdefaults, the configuration struct that is initialised with
+//    fldigi's default options
+#define ELEM_PROGDEFAULTS(type_, var_, tag_, ...) __VA_ARGS__,
+// 3) Define an array of tag element pointers, used to write progdefaults
+#define ELEM_TAG_ARRAY(type_, var_, tag_, ...) new tag_elem<type_>(tag_, progdefaults.var_),
+// 4) Populate a map with TAG-NAME -> TAG-ELEMENT-POINTER pairs, used
+//    to read progdefaults.  We'll define that map right here:
+typedef map<string, tag_base*> tag_map_t;
+tag_map_t tag_map;
+#define ELEM_TAG_MAP(type_, var_, tag_, ...) tag_map[tag_] = new tag_elem<type_>(tag_, progdefaults.var_);
+
+
+// First define the default config
+#undef ELEM_
+#define ELEM_ ELEM_PROGDEFAULTS
+configuration progdefaults = { CONFIG_LIST };
 
 
 void configuration::writeDefaultsXML()
@@ -547,11 +197,18 @@ void configuration::writeDefaultsXML()
 		return;
 	}
 
+	// create an array
+#undef ELEM_
+#define ELEM_ ELEM_TAG_ARRAY
+	tag_base* tag_list[] = { CONFIG_LIST };
+
+	// write all variables with non-empty tags to f
 	f << "<FLDIGI_DEFS>\n";
-	struct tag_elem_t* e;
-	for (size_t i = 0; i < sizeof(tag_list)/sizeof(*tag_list); i++)
-		if (likely((e = &tag_list[i])->ptr))
-			(*e->wfunc)(f, e->tag, e->ptr);
+	for (size_t i = 0; i < sizeof(tag_list)/sizeof(*tag_list); i++) {
+		if (likely(*tag_list[i]->tag))
+			tag_list[i]->write(f);
+		delete tag_list[i];
+	}
 	f << "</FLDIGI_DEFS>\n";
 	f.close();
 }
@@ -566,7 +223,7 @@ bool configuration::readDefaultsXML()
 
 	string xmlbuf;
 	f.seekg(0, ios::end);
-	xmlbuf.reserve(f.tellg());
+	xmlbuf.reserve(f.tellg()); // reserve some space to avoid reallocations
 	f.seekg(0, ios::beg);
 
 	char line[BUFSIZ];
@@ -578,29 +235,25 @@ bool configuration::readDefaultsXML()
 	if (!xml)
 		return false;
 
-	map<string, enum TAG> tag_map;
-	for (size_t i = 0; i < sizeof(tag_list)/sizeof(*tag_list); i++)
-		tag_map[tag_list[i].tag] = (enum TAG)i;
-	map<string, enum TAG>::const_iterator itag;
-
-	TAG tag = IGNORE;
+	// populate the map
+#undef ELEM_
+#define ELEM_ ELEM_TAG_MAP
+	CONFIG_LIST
 
 	// parse the file until end reached
+	tag_map_t::const_iterator i;
 	while(xml->read()) {
 		switch(xml->getNodeType()) {
 		case EXN_TEXT:
 		case EXN_CDATA:
-			if (likely(tag != IGNORE))
-			    (*tag_list[tag].rfunc)(xml, tag_list[tag].ptr);
+			if (i != tag_map.end()) // do we know about this tag?
+				i->second->read(xml->getNodeData());
 			break;
 		case EXN_ELEMENT_END:
-			tag = IGNORE;
+			i = tag_map.end(); // ignore the next EXN_CDATA
 			break;
 		case EXN_ELEMENT:
-			if ((itag = tag_map.find(xml->getNodeName())) != tag_map.end())
-				tag = itag->second;
-			else
-				tag = IGNORE;
+			i = tag_map.find(xml->getNodeName());
 			break;
 		case EXN_NONE: case EXN_COMMENT: case EXN_UNKNOWN:
 			break;
@@ -608,6 +261,11 @@ bool configuration::readDefaultsXML()
 	}
 
 	delete xml;
+	// delete the tag objects and empty the map
+	for (i = tag_map.begin(); i != tag_map.end(); ++i)
+		delete i->second;
+	tag_map.clear();
+
 	return true;
 }
 
@@ -662,13 +320,18 @@ void configuration::saveDefaults() {
 	THORsecText = txtTHORSecondary->value();
 	PTTdev = inpTTYdev->value();
 
-	for (int i = 0; i < 9; i++) {
-		cfgpal[i].R =  palette[i].R;
-		cfgpal[i].G =  palette[i].G;
-		cfgpal[i].B =  palette[i].B;
-	}
+	memcpy(&cfgpal0, &palette[0], sizeof(cfgpal0));
+	memcpy(&cfgpal1, &palette[1], sizeof(cfgpal1));
+	memcpy(&cfgpal2, &palette[2], sizeof(cfgpal2));
+	memcpy(&cfgpal3, &palette[3], sizeof(cfgpal3));
+	memcpy(&cfgpal4, &palette[4], sizeof(cfgpal4));
+	memcpy(&cfgpal5, &palette[5], sizeof(cfgpal5));
+	memcpy(&cfgpal6, &palette[6], sizeof(cfgpal6));
+	memcpy(&cfgpal7, &palette[7], sizeof(cfgpal7));
+	memcpy(&cfgpal8, &palette[8], sizeof(cfgpal8));
+
 	FL_UNLOCK();
-	
+
 	writeDefaultsXML();
 	changed = false;
 }
@@ -802,7 +465,7 @@ int configuration::setDefaults() {
 	cntCWdash2dot->value(CWdash2dot);
 	sldrCWxmtWPM->minimum(CWlowerlimit);
 	sldrCWxmtWPM->maximum(CWupperlimit);
-	btnQSK->value(QSKv);
+	btnQSK->value(QSK);
 	cntPreTiming->maximum((int)(2400/CWspeed)/2.0); 
 	cntPreTiming->value(CWpre);
 	cntPostTiming->maximum((int)(2400/CWspeed)/2.0);
@@ -860,12 +523,17 @@ int configuration::setDefaults() {
 	wf->setPrefilter(wfPreFilter);
 	valLatency->value(latency);
 	btnWFaveraging->value(WFaveraging);
-	
-	for (int i = 0; i < 9; i++) {
-		palette[i].R = (uchar)cfgpal[i].R;
-		palette[i].G = (uchar)cfgpal[i].G;
-		palette[i].B = (uchar)cfgpal[i].B;
-	}
+
+	memcpy(&palette[0], &cfgpal0, sizeof(palette[0]));
+	memcpy(&palette[1], &cfgpal1, sizeof(palette[1]));
+	memcpy(&palette[2], &cfgpal2, sizeof(palette[2]));
+	memcpy(&palette[3], &cfgpal3, sizeof(palette[3]));
+	memcpy(&palette[4], &cfgpal4, sizeof(palette[4]));
+	memcpy(&palette[5], &cfgpal5, sizeof(palette[5]));
+	memcpy(&palette[6], &cfgpal6, sizeof(palette[6]));
+	memcpy(&palette[7], &cfgpal7, sizeof(palette[7]));
+	memcpy(&palette[8], &cfgpal8, sizeof(palette[8]));
+
 	wf->setcolors();
 	setColorButtons();
 
