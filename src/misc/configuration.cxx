@@ -167,14 +167,8 @@ public:
 // 2) Define progdefaults, the configuration struct that is initialised with
 //    fldigi's default options
 #define ELEM_PROGDEFAULTS(type_, var_, tag_, ...) __VA_ARGS__,
-// 3) Define an array of tag element pointers, used to write progdefaults
-#define ELEM_TAG_ARRAY(type_, var_, tag_, ...) new tag_elem<type_>(tag_, progdefaults.var_),
-// 4) Populate a map with TAG-NAME -> TAG-ELEMENT-POINTER pairs, used
-//    to read progdefaults.  We'll define that map right here:
-typedef map<string, tag_base*> tag_map_t;
-tag_map_t tag_map;
-#define ELEM_TAG_MAP(type_, var_, tag_, ...) tag_map[tag_] = new tag_elem<type_>(tag_, progdefaults.var_);
-
+// 3) Define an array of tag element pointers
+#define ELEM_TAG_ARRAY(type_, var_, tag_, ...) (*tag_ ? new tag_elem<type_>(tag_, progdefaults.var_) : 0),
 
 // First define the default config
 #undef ELEM_
@@ -205,9 +199,10 @@ void configuration::writeDefaultsXML()
 	// write all variables with non-empty tags to f
 	f << "<FLDIGI_DEFS>\n";
 	for (size_t i = 0; i < sizeof(tag_list)/sizeof(*tag_list); i++) {
-		if (likely(*tag_list[i]->tag))
+		if (tag_list[i]) {
 			tag_list[i]->write(f);
-		delete tag_list[i];
+			delete tag_list[i];
+		}
 	}
 	f << "</FLDIGI_DEFS>\n";
 	f.close();
@@ -235,12 +230,16 @@ bool configuration::readDefaultsXML()
 	if (!xml)
 		return false;
 
-	// populate the map
-#undef ELEM_
-#define ELEM_ ELEM_TAG_MAP
-	CONFIG_LIST
+	// create a TAG_NAME -> ELEMENT map
+	typedef map<string, tag_base*> tag_map_t;
+	tag_map_t tag_map;
 
-	// parse the file until end reached
+	tag_base* tag_list[] = { CONFIG_LIST };
+	for (size_t i = 0; i < sizeof(tag_list)/sizeof(*tag_list); i++)
+		if (tag_list[i])
+			tag_map[tag_list[i]->tag] = tag_list[i];
+
+	// parse the xml buffer
 	tag_map_t::const_iterator i;
 	while(xml->read()) {
 		switch(xml->getNodeType()) {
@@ -261,10 +260,9 @@ bool configuration::readDefaultsXML()
 	}
 
 	delete xml;
-	// delete the tag objects and empty the map
-	for (i = tag_map.begin(); i != tag_map.end(); ++i)
-		delete i->second;
-	tag_map.clear();
+	// delete the tag objects
+	for (size_t i = 0; i < sizeof(tag_list)/sizeof(*tag_list); i++)
+		delete tag_list[i];
 
 	return true;
 }

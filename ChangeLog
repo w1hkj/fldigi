@@ -60,6 +60,9 @@ Change Log:
           <RX><TIMER>20
           
           will generate 5 seconds of idle, the text, and repeat after 20 sec's.
+      23) Added new configuration options to set the waterfall width and height
+          These and the docked digiscope configuration option require a program
+          restart to take effect.
 
 3.03
       1) Changes to socket server to correct shutdown process

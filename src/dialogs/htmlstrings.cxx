@@ -176,7 +176,9 @@ If you will control the rig via a serial port, select the COM port you will use,
 If in doubt, check both RTS and DTR. You MUST then press the <B>Initialize</B> button.  \
 <LI>If you plan to use CAT control of the rig via the COM port, check 'use rigCAT'. If in addition you wish to use \
 PTT control via CAT, also then check 'rigCAT PTT'. You MUST then press the <B>Initialize</B> button.  \
-<LI>Use the menu <B>Configure/Defaults/Misc</B> item to set whether you wish to transmit RSID data at the start of each \
+<LI>Use the menu <B>Configure/Defaults/Misc - Main Window tab</B> item to set the aspect ratio of the waterfall display and whether or not you want \
+to dock a second digiscope to the main window.\
+<LI>Use the menu <B>Configure/Defaults/Misc - RSID tab</B> item to set whether you wish to transmit RSID data at the start of each \
 over (this is for the benefit of others, this setting does not affect RSID reception), and whether you have a slow computer (under 1000MHz) \
 or not. The receiver decoding strategy uses less processor power in 'Slow cpu' mode. If you plan to regularly \
 use the RSID feature on receive, you must leave the 'Start New Modem at Sweet Spot' item unchecked.  \
@@ -324,7 +326,7 @@ is a rather cool tool that allows you to monitor several PSK31 signals all at th
 <A HREF=\"http://www.w1hkj.com/Fldigi.html\">Home Page</A>, and various information about the program.</DD> \
 </DL>\
 The two non-menu functions are:\
-<DL><DT><B>RSID ?</B></DT>\
+<DL><DT><B>RSID</B></DT>\
 <DD>This button turns on the receive RSID (automatic mode detection and tuning) feature. When in use, the button turns yellow and no text reception is possible until \
 a signal is identified, or the feature is turned off again. If you plan to use the RSID feature on receive, \
 you must leave the 'Start New Modem at Sweet Spot' item in the Menu Configure/Defaults/Mics tab unchecked.</DD>\

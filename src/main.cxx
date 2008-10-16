@@ -394,15 +394,15 @@ void generate_option_help(void) {
 	     << "    The default is: " << Fl::get_font(FL_HELVETICA)
 	     << ':' << FL_NORMAL_SIZE << "\n\n"
 
-	     << "  --wfall-width WIDTH\n"
-	     << "    WIDTH may be 2000 to 4000 in Hz, recommend 50 Hz increments.\n\n"
+//	     << "  --wfall-width WIDTH\n"
+//	     << "    WIDTH may be 2000 to 4000 in Hz, recommend 50 Hz increments.\n\n"
 
-	     << "  --wfall-height HEIGHT\n"
-	     << "    HEIGHT in pixels, ie 100 - 200, recommend 10 pixel increments.\n\n"
+//	     << "  --wfall-height HEIGHT\n"
+//	     << "    HEIGHT in pixels, ie 100 - 200, recommend 10 pixel increments.\n\n"
 
-	     << "  --toggle-check-buttons\n"
-	     << "    Use lighted or check buttons for AFC / SQL.\n";
-
+//	     << "  --toggle-check-buttons\n"
+//	     << "    Use lighted or check buttons for AFC / SQL.\n"
+		;
 
 	option_help = help.str();
 }
@@ -425,7 +425,7 @@ int parse_args(int argc, char **argv, int& idx)
 	       OPT_CONFIG_XMLRPC_ADDRESS, OPT_CONFIG_XMLRPC_PORT,
 	       OPT_CONFIG_XMLRPC_ALLOW, OPT_CONFIG_XMLRPC_DENY, OPT_CONFIG_XMLRPC_LIST,
 #endif
-               OPT_FONT, OPT_WFALL_WIDTH, OPT_WFALL_HEIGHT,
+               OPT_FONT, OPT_WFALL_HEIGHT, OPT_WFALL_WIDTH, 
                OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT, 
                OPT_TOGGLE_CHECK,
 #if USE_PORTAUDIO
@@ -551,11 +551,13 @@ int parse_args(int argc, char **argv, int& idx)
 			break;
 
 		case OPT_WFALL_WIDTH:
-			IMAGE_WIDTH = strtol(optarg, NULL, 10);
+			progdefaults.wfwidth = strtol(optarg, NULL, 10);
+//			IMAGE_WIDTH = strtol(optarg, NULL, 10);
 			break;
 
 		case OPT_WFALL_HEIGHT:
-			Hwfall = strtol(optarg, NULL, 10);
+			progdefaults.wfheight = strtol(optarg, NULL, 10);
+//			Hwfall = strtol(optarg, NULL, 10);
 			break;
 
 		case OPT_WINDOW_WIDTH:

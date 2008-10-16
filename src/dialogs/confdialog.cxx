@@ -889,6 +889,29 @@ static void cb_btnDisplayMacroFilename(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Group *tabMainWindow=(Fl_Group *)0;
+
+Fl_Counter *cntrWfwidth=(Fl_Counter *)0;
+
+static void cb_cntrWfwidth(Fl_Counter* o, void*) {
+  progdefaults.wfwidth = (int)(o->value());
+progdefaults.changed = true;
+}
+
+Fl_Counter *cntrWfheight=(Fl_Counter *)0;
+
+static void cb_cntrWfheight(Fl_Counter* o, void*) {
+  progdefaults.wfheight = (int)o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnDockedScope=(Fl_Check_Button *)0;
+
+static void cb_btnDockedScope(Fl_Check_Button* o, void*) {
+  progdefaults.docked_scope = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabRSid=(Fl_Group *)0;
 
 Fl_Check_Button *chkTransmitRSid=(Fl_Check_Button *)0;
@@ -932,15 +955,6 @@ Fl_Check_Button *btnStartAtSweetSpot=(Fl_Check_Button *)0;
 
 static void cb_btnStartAtSweetSpot(Fl_Check_Button* o, void*) {
   progdefaults.StartAtSweetSpot = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Group *tabMainWindow=(Fl_Group *)0;
-
-Fl_Check_Button *btnDockedScope=(Fl_Check_Button *)0;
-
-static void cb_btnDockedScope(Fl_Check_Button* o, void*) {
-  progdefaults.docked_scope = o->value();
 progdefaults.changed = true;
 }
 
@@ -2213,6 +2227,43 @@ l with your sound hardware.");
             } // Fl_Group* o
             tabMacros->end();
           } // Fl_Group* tabMacros
+          { tabMainWindow = new Fl_Group(0, 50, 400, 170, "Main window");
+            tabMainWindow->hide();
+            { Fl_Group* o = new Fl_Group(5, 60, 390, 125, "Changes take effect on startup");
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP|FL_ALIGN_INSIDE);
+              { Fl_Counter* o = cntrWfwidth = new Fl_Counter(30, 92, 95, 21, "Waterfall width in Hz");
+                cntrWfwidth->tooltip("Wider ==> higher cpu usage");
+                cntrWfwidth->type(1);
+                cntrWfwidth->minimum(2400);
+                cntrWfwidth->maximum(4000);
+                cntrWfwidth->step(100);
+                cntrWfwidth->value(3000);
+                cntrWfwidth->callback((Fl_Callback*)cb_cntrWfwidth);
+                cntrWfwidth->align(FL_ALIGN_RIGHT);
+                o->value(progdefaults.wfwidth);
+              } // Fl_Counter* cntrWfwidth
+              { Fl_Counter* o = cntrWfheight = new Fl_Counter(30, 121, 95, 21, "Waterfall height in pixels");
+                cntrWfheight->tooltip("Taller ==> higher cpu usage");
+                cntrWfheight->type(1);
+                cntrWfheight->minimum(100);
+                cntrWfheight->maximum(160);
+                cntrWfheight->step(5);
+                cntrWfheight->value(120);
+                cntrWfheight->callback((Fl_Callback*)cb_cntrWfheight);
+                cntrWfheight->align(FL_ALIGN_RIGHT);
+                o->value(progdefaults.wfheight);
+              } // Fl_Counter* cntrWfheight
+              { btnDockedScope = new Fl_Check_Button(30, 150, 125, 20, "Docked scope");
+                btnDockedScope->tooltip("Restart fldigi for this option to take effect");
+                btnDockedScope->down_box(FL_DOWN_BOX);
+                btnDockedScope->callback((Fl_Callback*)cb_btnDockedScope);
+                btnDockedScope->value(progdefaults.docked_scope);
+              } // Fl_Check_Button* btnDockedScope
+              o->end();
+            } // Fl_Group* o
+            tabMainWindow->end();
+          } // Fl_Group* tabMainWindow
           { tabRSid = new Fl_Group(0, 50, 400, 170, "RSid");
             tabRSid->hide();
             { Fl_Group* o = new Fl_Group(5, 65, 390, 45);
@@ -2272,20 +2323,6 @@ l with your sound hardware.");
             } // Fl_Group* o
             tabSweetSpot->end();
           } // Fl_Group* tabSweetSpot
-          { tabMainWindow = new Fl_Group(0, 50, 400, 170, "Main window");
-            tabMainWindow->hide();
-            { Fl_Group* o = new Fl_Group(5, 60, 390, 75);
-              o->box(FL_ENGRAVED_FRAME);
-              { btnDockedScope = new Fl_Check_Button(30, 84, 125, 20, "Docked scope");
-                btnDockedScope->tooltip("Restart fldigi for this option to take effect");
-                btnDockedScope->down_box(FL_DOWN_BOX);
-                btnDockedScope->callback((Fl_Callback*)cb_btnDockedScope);
-                btnDockedScope->value(progdefaults.docked_scope);
-              } // Fl_Check_Button* btnDockedScope
-              o->end();
-            } // Fl_Group* o
-            tabMainWindow->end();
-          } // Fl_Group* tabMainWindow
           tabsMisc->end();
         } // Fl_Tabs* tabsMisc
         tabMisc->end();

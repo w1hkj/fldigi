@@ -48,7 +48,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     } {
       Fl_Group tabOperator {
         label Oper
-        callback {progdefaults.changed = true;} open selected
+        callback {progdefaults.changed = true;} open
         xywh {0 25 400 195} color 51 selection_color 51 when 1
       } {
         Fl_Input inpMyCallsign {
@@ -1078,6 +1078,37 @@ progdefaults.changed = true;}
               }
             }
           }
+          Fl_Group tabMainWindow {
+            label {Main window} open
+            xywh {0 50 400 170} hide
+          } {
+            Fl_Group {} {
+              label {Changes take effect on startup} open
+              xywh {5 60 390 125} box ENGRAVED_FRAME align 17
+            } {
+              Fl_Counter cntrWfwidth {
+                label {Waterfall width in Hz}
+                callback {progdefaults.wfwidth = (int)(o->value());
+progdefaults.changed = true;}
+                tooltip {Wider ==> higher cpu usage} xywh {30 92 95 21} type Simple align 8 minimum 2400 maximum 4000 step 100 value 3000
+                code0 {o->value(progdefaults.wfwidth);}
+              }
+              Fl_Counter cntrWfheight {
+                label {Waterfall height in pixels}
+                callback {progdefaults.wfheight = (int)o->value();
+progdefaults.changed = true;} selected
+                tooltip {Taller ==> higher cpu usage} xywh {30 121 95 21} type Simple align 8 minimum 100 maximum 160 step 5 value 120
+                code0 {o->value(progdefaults.wfheight);}
+              }
+              Fl_Check_Button btnDockedScope {
+                label {Docked scope}
+                callback {progdefaults.docked_scope = o->value();
+progdefaults.changed = true;}
+                tooltip {Restart fldigi for this option to take effect} xywh {30 150 125 20} down_box DOWN_BOX
+                code0 {btnDockedScope->value(progdefaults.docked_scope);}
+              }
+            }
+          }
           Fl_Group tabRSid {
             label RSid open
             xywh {0 50 400 170} hide
@@ -1135,22 +1166,6 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 xywh {49 100 246 25} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.StartAtSweetSpot);}
-              }
-            }
-          }
-          Fl_Group tabMainWindow {
-            label {Main window} open
-            xywh {0 50 400 170} hide
-          } {
-            Fl_Group {} {open
-              xywh {5 60 390 75} box ENGRAVED_FRAME
-            } {
-              Fl_Check_Button btnDockedScope {
-                label {Docked scope}
-                callback {progdefaults.docked_scope = o->value();
-progdefaults.changed = true;}
-                tooltip {Restart fldigi for this option to take effect} xywh {30 84 125 20} down_box DOWN_BOX
-                code0 {btnDockedScope->value(progdefaults.docked_scope);}
               }
             }
           }

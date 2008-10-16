@@ -177,10 +177,11 @@ Fl_RGB_Image		*feld_image = 0;
 Pixmap				fldigi_icon_pixmap;
 #endif
 
-int IMAGE_WIDTH = DEFAULT_IMAGE_WIDTH;
-int Hwfall = DEFAULT_HWFALL;
-int HNOM = DEFAULT_HNOM;
-int WNOM = DEFAULT_WNOM;
+int IMAGE_WIDTH;
+int Hwfall;
+int HNOM;
+int WNOM;
+int Wwfall;
 
 bool clean_exit(void);
 
@@ -1669,6 +1670,12 @@ void create_fl_digi_main() {
 
 	int pad = wSpace, Y = 0;
 
+	IMAGE_WIDTH = progdefaults.wfwidth;
+	Hwfall = progdefaults.wfheight;
+	Wwfall = DEFAULT_HNOM + 2 * BEZEL;
+	WNOM = Wwfall + 2 * DEFAULT_SW;
+	HNOM = DEFAULT_HNOM;
+	
 	if (progdefaults.docked_scope)
 		WNOM -= 2*DEFAULT_SW;
 	
