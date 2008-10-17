@@ -63,6 +63,7 @@ Change Log:
       23) Added new configuration options to set the waterfall width and height
           These and the docked digiscope configuration option require a program
           restart to take effect.
+      24) Added rig control widgets to the main dialog qso panel.
 
 3.03
       1) Changes to socket server to correct shutdown process

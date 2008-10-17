@@ -90,7 +90,7 @@ extern int Wwfall;
 
 #define Hmenu		22
 #define Hqsoframe	48
-#define Hnotes		22
+#define Hnotes		24
 #define Hstatus		22
 #define Hmacros		22
 

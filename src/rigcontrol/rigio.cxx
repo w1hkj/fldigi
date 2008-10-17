@@ -1118,6 +1118,7 @@ static void *rigCAT_loop(void *args)
 		if ((freq > 0) && (freq != llFreq)) {
 			llFreq = freq;
 			FreqDisp->value(freq); // REQ is built in to the widget
+			qsoFreqDisp->value(freq);
 			wf->rfcarrier(freq);
 		}
 
@@ -1133,6 +1134,7 @@ static void *rigCAT_loop(void *args)
 		if (sWidth.size() && sWidth != sRigWidth) {
 			sRigWidth = sWidth;
 			REQ(&Fl_ComboBox::put_value, opBW, sWidth.c_str());
+			REQ(&Fl_ComboBox::put_value, qso_opBW, sWidth.c_str());
 		}
 
 		if (rigCAT_bypass == true)
@@ -1151,6 +1153,7 @@ static void *rigCAT_loop(void *args)
 			else
 				wf->USB(true);
 			REQ(&Fl_ComboBox::put_value, opMODE, sMode.c_str());
+			REQ(&Fl_ComboBox::put_value, qso_opMODE, sMode.c_str());
 		}
 	}
 
@@ -1160,12 +1163,12 @@ static void *rigCAT_loop(void *args)
 	if (rigcontrol)
 		rigcontrol->hide();
 	wf->USB(true);
-	wf->rfcarrier(atoi(cboBand->value())*1000L);
+//	wf->rfcarrier(atoi(cboBand->value())*1000L);
 	wf->setQSY(0);
 	FL_LOCK();
-	cboBand->show();
-	btnSideband->show();
-	activate_rig_menu_item(false);
+//	cboBand->show();
+//	btnSideband->show();
+//	activate_rig_menu_item(false);
 	FL_UNLOCK();
 
 	pthread_mutex_lock(&rigCAT_mutex);

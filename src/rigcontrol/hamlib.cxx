@@ -352,6 +352,7 @@ static void *hamlib_loop(void *args)
 		if (freqok && freq && (freq != hamlib_freq)) {
 			hamlib_freq = freq;
 			FreqDisp->value(hamlib_freq);
+			qsoFreqDisp->value(hamlib_freq);
 			wf->rfcarrier(hamlib_freq);
 		}
 		
@@ -378,12 +379,12 @@ static void *hamlib_loop(void *args)
 	if (rigcontrol)
 		rigcontrol->hide();
 	wf->USB(true);
-	wf->rfcarrier(atoi(cboBand->value())*1000L);
+//	wf->rfcarrier(atoi(cboBand->value())*1000L);
 	FL_LOCK();
 	wf->setQSY(0);
-	cboBand->show();
-	btnSideband->show();
-	activate_rig_menu_item(false);
+//	cboBand->show();
+//	btnSideband->show();
+//	activate_rig_menu_item(false);
 	FL_UNLOCK();
 
 	return NULL;

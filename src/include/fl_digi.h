@@ -46,9 +46,11 @@
 #include "globals.h"
 #include "mixer.h"
 #include "progress.h"
+#include "FreqControl.h"
 
 extern Fl_Double_Window *fl_digi_main;
 extern Fl_Double_Window *scopeview;
+extern Fl_Double_Window *opBrowserView;
 
 extern FTextView		*ReceiveText;
 extern FTextEdit		*TransmitText;
@@ -63,8 +65,8 @@ extern Fl_Slider		*sldrSquelch;
 extern Progress			*pgrsSquelch;
 extern Fl_Button 		*btnMacro[];
 extern Fl_Input			*inpFreq;
-extern Fl_ComboBox		*cboBand;
-extern Fl_Button		*btnSideband;
+//extern Fl_ComboBox		*cboBand;
+//extern Fl_Button		*btnSideband;
 extern Fl_Input			*inpTime;
 extern Fl_Input			*inpCall;
 extern Fl_Input			*inpName;
@@ -76,6 +78,17 @@ extern Fl_Input			*inpNotes;
 extern Fl_Input			*inpAZ;	// WA5ZNU
 extern Fl_Button		*qsoClear;
 extern Fl_Button		*qsoSave;
+extern cFreqControl		*qsoFreqDisp;
+extern Fl_ComboBox		*qso_opMODE;
+extern Fl_ComboBox		*qso_opBW;
+extern Fl_Button		*qso_opPICK;
+extern Fl_Browser		*qso_opBrowser;
+extern Fl_Button		*qso_btnAddFreq;
+extern Fl_Button		*qso_btnSelFreq;
+extern Fl_Button		*qso_btnDelFreq;
+extern Fl_Button		*qso_btnClearList;
+
+
 extern Fl_Value_Slider		*valRcvMixer;
 extern Fl_Value_Slider		*valXmtMixer;
 extern Fl_Button		*btn_afconoff;

@@ -123,7 +123,7 @@ WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 	dispcnt = 4;
 	wantcursor = false;
 	cursormoved = false;
-	usebands = false;
+//	usebands = false;
 	for (int i = 0; i < IMAGE_WIDTH; i++)
 		pwr[i] = 0.0;
 
@@ -462,8 +462,8 @@ void WFdisp::sig_data( double *sig, int len, int sr ) {
 
 	static char szFrequency[14];
 	
-	if (usebands)
-		rfc = (long long)(atof(cboBand->value()) * 1000.0);
+//	if (usebands)
+//		rfc = (long long)(atof(cboBand->value()) * 1000.0);
 	if (rfc != 0) {
 		if (usb)
 			dfreq = rfc + active_modem->get_txfreq();

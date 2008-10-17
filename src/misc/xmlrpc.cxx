@@ -1264,7 +1264,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		*retval = xmlrpc_c::value_string(cboBand->value());
+		*retval = xmlrpc_c::value_int((int)wf->rfcarrier());
 	}
 };
 
@@ -1278,7 +1278,11 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		*retval = xmlrpc_c::value_string(btnSideband->label());
+//		*retval = xmlrpc_c::value_string(btnSideband->label());
+		if (wf->USB())
+			*retval = xmlrpc_c::value_string("USB");
+		else
+			*retval = xmlrpc_c::value_string("LSB");
 	}
 };
 

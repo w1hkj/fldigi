@@ -477,26 +477,26 @@ int configuration::setDefaults() {
 	chkRSidWideSearch->value(rsidWideSearch);
 	chkSlowCpu->value(slowcpu);
 	
-	string bandsfname = HomeDir;
-	bandsfname.append("frequencies.def");
-	ifstream bandsfile(bandsfname.c_str(), ios::in);
-	if (bandsfile) {
-		string sBand;
-		cboBand->add(" ");
-		while (!bandsfile.eof()) {
-			sBand = "";
-			bandsfile >> sBand; bandsfile.ignore();
-			if (sBand.length() > 0)
-				cboBand->add(sBand.c_str());
-		}
-		bandsfile.close();
-	} else {
-		int i = 0;
-		while (szBands[i]) {
-			cboBand->add((char *)szBands[i]);
-			i++;
-		}
-	}
+//	string bandsfname = HomeDir;
+//	bandsfname.append("frequencies.def");
+//	ifstream bandsfile(bandsfname.c_str(), ios::in);
+//	if (bandsfile) {
+//		string sBand;
+//		cboBand->add(" ");
+//		while (!bandsfile.eof()) {
+//			sBand = "";
+//			bandsfile >> sBand; bandsfile.ignore();
+//			if (sBand.length() > 0)
+//				cboBand->add(sBand.c_str());
+//		}
+//		bandsfile.close();
+//	} else {
+//		int i = 0;
+//		while (szBands[i]) {
+//			cboBand->add((char *)szBands[i]);
+//			i++;
+//		}
+//	}
 	btnQRZnotavailable->value(0);
 	btnQRZsocket->value(0);
 	btnQRZcdrom->value(0);
@@ -602,49 +602,42 @@ void configuration::initInterface() {
 		rigMEM_init();
 		wf->setQSY(1);
 		activate_rig_menu_item(false);
+		qsoFreqDisp->deactivate();
 	} else if (chkUSERIGCATis) { // start the rigCAT thread
 		if (rigCAT_init() == false) {
 			wf->USB(true);
-			cboBand->show();
-			btnSideband->show();
-			wf->rfcarrier(atoi(cboBand->value())*1000L);
 			wf->setQSY(0);
-			activate_rig_menu_item(false);
+			activate_rig_menu_item(true);
+			qsoFreqDisp->activate();
 		} else {
-			cboBand->hide();
-			btnSideband->hide();
 			wf->setQSY(1);
 			activate_rig_menu_item(true);
+			qsoFreqDisp->activate();
 		}
 #if USE_HAMLIB
 	} else if (chkUSEHAMLIBis) { // start the hamlib thread
 		if (hamlib_init(btnPTTis == 1 ? true : false) == false) {
 			wf->USB(true);
-			cboBand->show();
-			btnSideband->show();
-			wf->rfcarrier(atoi(cboBand->value())*1000L);
 			wf->setQSY(0);
-			activate_rig_menu_item(false);
+			activate_rig_menu_item(true);
+			qsoFreqDisp->activate();
 		} else {
-			cboBand->hide();
-			btnSideband->hide();
 			wf->setQSY(1);
 			activate_rig_menu_item(true);
+			qsoFreqDisp->activate();
 		}
 #endif		
 	} else if (chkUSEXMLRPCis) {
-		cboBand->hide();
-		btnSideband->hide();
 		wf->USB(true);
 		wf->setXMLRPC(1);
 		activate_rig_menu_item(false);
+		qsoFreqDisp->deactivate();
 	} else {
+		rigCAT_init();  // initialize rigCAT without a rig.xml file
 		wf->USB(true);
-		cboBand->show();
-		btnSideband->show();
-		wf->rfcarrier(atoi(cboBand->value())*1000L);
 		wf->setQSY(0);
-		activate_rig_menu_item(false);
+		activate_rig_menu_item(true);
+		qsoFreqDisp->activate();
 	}
 	
 	push2talk->reset(btnPTTis);

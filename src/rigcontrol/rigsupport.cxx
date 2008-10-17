@@ -90,6 +90,7 @@ void selFreq(long int f)
 void initOptionMenus()
 {
 	opMODE->clear();
+	qso_opMODE->clear();
 	list<MODE>::iterator MD;
 	list<MODE> *pMD = 0;
 	if (lmodes.empty() == false)
@@ -101,15 +102,21 @@ void initOptionMenus()
 		MD = pMD->begin();
 		while (MD != pMD->end()) {
 			opMODE->add( (*MD).SYMBOL.c_str());
+			qso_opMODE->add( (*MD).SYMBOL.c_str());
 			MD++;
 		}
-		opMODE->show();
+		opMODE->activate();
 		opMODE->index(0);
+		qso_opMODE->activate();
+		qso_opMODE->index(0);
 	}
-	else
-		opMODE->hide();
-
+	else {
+		opMODE->deactivate();
+		qso_opMODE->deactivate();
+	}
+	
 	opBW->clear();
+	qso_opBW->clear();
 	list<BW>::iterator bw;
 	list<BW> *pBW = 0;
 	if (lbws.empty() == false)
@@ -121,19 +128,30 @@ void initOptionMenus()
 		bw = pBW->begin();
 		while (bw != pBW->end()) {
 			opBW->add( (*bw).SYMBOL.c_str());
+			qso_opBW->add( (*bw).SYMBOL.c_str());
 			bw++;
 		}
-		opBW->show();
+		opBW->activate();
 		opBW->index(0);
+		qso_opBW->activate();
+		qso_opBW->index(0);
 	}
-	else
-		opBW->hide();
+	else {
+		opBW->deactivate();
+		qso_opBW->deactivate();
+	}
 }
 
 void clearList()
 {
 	freqlist.clear();
 	FreqSelect->clear();
+	qso_opBrowser->clear();
+}
+
+void qso_clearList()
+{
+	clearList();
 }
 
 void updateSelect()
@@ -141,8 +159,10 @@ void updateSelect()
 	FreqSelect->clear();
 	if (freqlist.empty())
 		return;
-        for (size_t i = 0; i < freqlist.size(); i++)
-                FreqSelect->add(freqlist[i].str().c_str());
+	for (size_t i = 0; i < freqlist.size(); i++) {
+		FreqSelect->add(freqlist[i].str().c_str());
+		qso_opBrowser->add(freqlist[i].str().c_str());
+	}
 }
 
 size_t updateList(long rf, int freq, string rmd, trx_mode md)
@@ -232,9 +252,9 @@ void buildlist()
 	fwidths[max_rmode] = fwidths[max_mode] = 10;
 	fl_font(FreqSelect->textfont(), FreqSelect->textsize());
 
-	fwidths[max_rfcarrier] += (int)ceil(fl_width("99999999.999"));
+	fwidths[max_rfcarrier] += (int)ceil(fl_width("999999.999"));
 
-        fwidths[max_rmode] += (int)ceil(fl_width("XXXX"));
+    fwidths[max_rmode] += (int)ceil(fl_width("XXXX"));
 
 	// find mode with longest shortname
 	size_t s, smax = 0, mmax = 0;
@@ -284,9 +304,26 @@ void setMode()
 		rigCAT_setmode(opMODE->value());
 }
 
+int cb_qso_opMODE()
+{
+#if USE_HAMLIB
+	if (progdefaults.chkUSEHAMLIBis)
+		hamlib_setmode(mode_nums[qso_opMODE->value()]);
+	else
+#endif
+		rigCAT_setmode(qso_opMODE->value());
+	return 0;
+}
+
 void setBW()
 {
 	rigCAT_setwidth (opBW->value());
+}
+
+int cb_qso_opBW()
+{
+	rigCAT_setwidth (qso_opBW->value());
+	return 0;
 }
 
 int movFreq()
@@ -302,6 +339,19 @@ int movFreq()
 	return 0;
 }
 
+int qso_movFreq()
+{
+	long int f;
+	f = qsoFreqDisp->value();
+#if USE_HAMLIB
+	if (progdefaults.chkUSEHAMLIBis)
+		hamlib_setfreq(f);
+	else
+#endif
+	rigCAT_setfreq(f);
+	return 0;
+}
+
 void selectFreq()
 {
 	int n = FreqSelect->value() - 1;
@@ -309,12 +359,35 @@ void selectFreq()
 	if (freqlist[n].rmode != "NONE") {
 		opMODE->value(freqlist[n].rmode.c_str());
 		setMode();
-		MilliSleep(100);
+//		MilliSleep(100);
 	}
 
 	if (freqlist[n].rfcarrier > 0) {
 		FreqDisp->value(freqlist[n].rfcarrier);
 		movFreq();
+	}
+
+	if (freqlist[n].mode != NUM_MODES) {
+		if (freqlist[n].mode != active_modem->get_mode())
+			init_modem_sync(freqlist[n].mode);
+		if (freqlist[n].carrier > 0)
+			active_modem->set_freq(freqlist[n].carrier);
+	}
+}
+
+void qso_selectFreq()
+{
+	int n = qso_opBrowser->value() - 1;
+
+	if (freqlist[n].rmode != "NONE") {
+		qso_opMODE->value(freqlist[n].rmode.c_str());
+		cb_qso_opMODE();
+//		MilliSleep(100);
+	}
+
+	if (freqlist[n].rfcarrier > 0) {
+		qsoFreqDisp->value(freqlist[n].rfcarrier);
+		qso_movFreq();
 	}
 
 	if (freqlist[n].mode != NUM_MODES) {
@@ -335,15 +408,36 @@ void delFreq()
 	}
 }
 
+void qso_delFreq()
+{
+	int v = qso_opBrowser->value() - 1;
+
+	if (v >= 0) {
+		freqlist.erase(freqlist.begin() + v);
+		FreqSelect->remove(v + 1);
+		qso_opBrowser->remove(v + 1);
+	}
+}
+
 void addFreq()
 {
 	long freq = FreqDisp->value();
 	if (freq) {
 		size_t pos = addtoList(freq);
 		FreqSelect->insert(pos+1, freqlist[pos].str().c_str());
+		qso_opBrowser->insert(pos+1, freqlist[pos].str().c_str());
 	}
 }
 
+void qso_addFreq()
+{
+	long freq = qsoFreqDisp->value();
+	if (freq) {
+		size_t pos = addtoList(freq);
+		FreqSelect->insert(pos+1, freqlist[pos].str().c_str());
+		qso_opBrowser->insert(pos+1, freqlist[pos].str().c_str());
+	}
+}
 
 bool init_Xml_RigDialog()
 {
@@ -357,20 +451,26 @@ bool init_Xml_RigDialog()
 
 bool init_NoRig_RigDialog()
 {
-	opBW->hide();
+	opBW->deactivate();
 	opMODE->clear();
 	opMODE->add("LSB");
 	opMODE->add("USB");
+
+	qso_opBW->deactivate();
+	qso_opMODE->clear();
+	qso_opMODE->add("LSB");
+	qso_opMODE->add("USB");
+
 	clearList();
 	buildlist();
-	rigcontrol->label("No rig.xml");
+	rigcontrol->label("");
 	return true;
 }
 
 #if USE_HAMLIB
 bool init_Hamlib_RigDialog()
 {
-	opBW->hide();
+	opBW->deactivate();
 	opMODE->clear();
 	for (size_t i = 0; i < sizeof(modes)/sizeof(modes[0]); i++) {
 		mode_nums[modes[i].name] = modes[i].mode;
