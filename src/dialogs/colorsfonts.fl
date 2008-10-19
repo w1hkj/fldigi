@@ -101,24 +101,132 @@ Function {make_colorsfonts()} {open
 } {
   Fl_Window dlgColorFont {
     label {Colors and Fonts} open
-    xywh {505 705 370 270} type Double
+    xywh {26 742 375 220} type Double
     code0 {dlgColorFont->xclass(PACKAGE_TARNAME);} visible
   } {
-    Fl_Group {} {
-      label {Function keys} open
-      xywh {0 5 185 155} box ENGRAVED_FRAME align 21
+    Fl_Button btnClrFntClose {
+      label Close
+      callback {o->window()->hide();}
+      xywh {296 190 75 25}
+    }
+    Fl_Tabs {} {open
+      xywh {0 5 375 179}
     } {
-      Fl_Check_Button btnUseGroupColors {
-        label {Use colored buttons}
-        callback {progdefaults.useGroupColors = o->value();
+      Fl_Group {} {
+        label {Freq Display} open
+        xywh {5 30 365 150}
+      } {
+        Fl_Box FDdisplay {
+          label 8
+          xywh {100 45 45 67} box DOWN_BOX color 55 labelfont 4 labelsize 48
+          code0 {o->color(fl_rgb_color(progdefaults.FDbackground.R,progdefaults.FDbackground.G,progdefaults.FDbackground.B));}
+          code1 {o->labelcolor(fl_rgb_color(progdefaults.FDforeground.R,progdefaults.FDforeground.G,progdefaults.FDforeground.B));}
+        }
+        Fl_Button btnBackgroundColor {
+          label Background
+          callback {uchar r, g, b;
+    r = progdefaults.FDbackground.R;
+    g = progdefaults.FDbackground.G;
+    b = progdefaults.FDbackground.B;
+
+    if (!fl_color_chooser("Background", r, g, b))
+        return;
+
+    progdefaults.FDbackground.R = r;
+    progdefaults.FDbackground.G = g;
+    progdefaults.FDbackground.B = b;
+    
+    FDdisplay->color(fl_rgb_color(r,g,b));
+    FDdisplay->redraw();
+    
+    qsoFreqDisp->SetONOFFCOLOR(
+          fl_rgb_color(	progdefaults.FDforeground.R,
+                        progdefaults.FDforeground.G,
+                        progdefaults.FDforeground.B),
+          fl_rgb_color(	progdefaults.FDbackground.R,
+                        progdefaults.FDbackground.G,
+                        progdefaults.FDbackground.B));
+    qsoFreqDisp->redraw();
+
+    progdefaults.changed = true;}
+          xywh {165 45 100 30}
+        }
+        Fl_Button btnForegroundColor {
+          label Foreground
+          callback {uchar r, g, b;
+    r = progdefaults.FDforeground.R;
+    g = progdefaults.FDforeground.G;
+    b = progdefaults.FDforeground.B;
+
+    if (!fl_color_chooser("Foreground", r, g, b))
+        return;
+
+    progdefaults.FDforeground.R = r;
+    progdefaults.FDforeground.G = g;
+    progdefaults.FDforeground.B = b;
+    
+    FDdisplay->labelcolor(fl_rgb_color(r,g,b));
+    FDdisplay->redraw();
+    
+    qsoFreqDisp->SetONOFFCOLOR(
+          fl_rgb_color(	progdefaults.FDforeground.R,
+                        progdefaults.FDforeground.G,
+                        progdefaults.FDforeground.B),
+          fl_rgb_color(	progdefaults.FDbackground.R,
+                        progdefaults.FDbackground.G,
+                        progdefaults.FDbackground.B));
+    qsoFreqDisp->redraw();
+
+    progdefaults.changed = true;} selected
+          xywh {165 85 100 30}
+        }
+        Fl_Button btnFD_SystemColor {
+          label System
+          callback {uchar r, g, b;
+    Fl_Color clr = FL_BACKGROUND2_COLOR;
+
+    Fl::get_color(clr, r, g, b);
+
+    progdefaults.FDbackground.R = r;
+    progdefaults.FDbackground.G = g;
+    progdefaults.FDbackground.B = b;
+   
+    FDdisplay->color(clr);
+    
+    clr = FL_FOREGROUND_COLOR;
+    Fl::get_color(clr, r, g, b);
+    
+    progdefaults.FDforeground.R = r;
+    progdefaults.FDforeground.G = g;
+    progdefaults.FDforeground.B = b;
+
+    qsoFreqDisp->SetONOFFCOLOR(
+          fl_rgb_color(	progdefaults.FDforeground.R,
+                        progdefaults.FDforeground.G,
+                        progdefaults.FDforeground.B),
+          fl_rgb_color(	progdefaults.FDbackground.R,
+                        progdefaults.FDbackground.G,
+                        progdefaults.FDbackground.B));
+     
+    progdefaults.changed = true;}
+          xywh {165 125 100 30}
+        }
+      }
+      Fl_Group {} {
+        label {Func keys} open
+        xywh {5 30 365 150} hide
+      } {
+        Fl_Check_Button btnUseGroupColors {
+          label {Use colored buttons}
+          callback {progdefaults.useGroupColors = o->value();
     colorize_macros();
     progdefaults.changed = true;}
-        xywh {10 30 165 15} down_box DOWN_BOX
-        code0 {btnUseGroupColors->value(progdefaults.useGroupColors);}
-      }
-      Fl_Button btnGroup1 {
-        label {Group 1}
-        callback {uchar r, g, b;
+          xywh {10 40 165 20} down_box DOWN_BOX
+          code0 {btnUseGroupColors->value(progdefaults.useGroupColors);}
+        }
+        Fl_Button btnGroup1 {
+          label {Group 1}
+          callback {uchar r, g, b;
     r = progdefaults.btnGroup1.R;
     g = progdefaults.btnGroup1.G;
     b = progdefaults.btnGroup1.B;
@@ -131,14 +239,14 @@ Function {make_colorsfonts()} {open
     o->color(fl_rgb_color(r,g,b));
     colorize_macros();
     
-    progdefaults.changed = true;} selected
-        tooltip {Background color for Function key group 1} xywh {10 55 75 20}
-        code0 {btnGroup1->color(fl_rgb_color(progdefaults.btnGroup1.R, progdefaults.btnGroup1.G,progdefaults.btnGroup1.B));}
-        code1 {btnGroup1->labelcolor(fl_rgb_color(progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R));}
-      }
-      Fl_Button btnGroup2 {
-        label {Group 2}
-        callback {uchar r, g, b;
+    progdefaults.changed = true;}
+          tooltip {Background color for Function key group 1} xywh {10 70 75 20}
+          code0 {btnGroup1->color(fl_rgb_color(progdefaults.btnGroup1.R, progdefaults.btnGroup1.G,progdefaults.btnGroup1.B));}
+          code1 {btnGroup1->labelcolor(fl_rgb_color(progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R));}
+        }
+        Fl_Button btnGroup2 {
+          label {Group 2}
+          callback {uchar r, g, b;
     r = progdefaults.btnGroup2.R;
     g = progdefaults.btnGroup2.G;
     b = progdefaults.btnGroup2.B;
@@ -152,13 +260,13 @@ Function {make_colorsfonts()} {open
     colorize_macros();
 
     progdefaults.changed = true;}
-        tooltip {Background color for Function key group 2} xywh {100 55 75 20}
-        code0 {btnGroup2->color(fl_rgb_color(progdefaults.btnGroup2.R, progdefaults.btnGroup2.G,progdefaults.btnGroup2.B));}
-        code1 {btnGroup2->labelcolor(fl_rgb_color(progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R));}
-      }
-      Fl_Button btnGroup3 {
-        label {Group 3}
-        callback {uchar r, g, b;
+          tooltip {Background color for Function key group 2} xywh {101 70 75 20}
+          code0 {btnGroup2->color(fl_rgb_color(progdefaults.btnGroup2.R, progdefaults.btnGroup2.G,progdefaults.btnGroup2.B));}
+          code1 {btnGroup2->labelcolor(fl_rgb_color(progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R));}
+        }
+        Fl_Button btnGroup3 {
+          label {Group 3}
+          callback {uchar r, g, b;
     r = progdefaults.btnGroup3.R;
     g = progdefaults.btnGroup3.G;
     b = progdefaults.btnGroup3.B;
@@ -172,13 +280,13 @@ Function {make_colorsfonts()} {open
 
     colorize_macros();
     progdefaults.changed = true;}
-        tooltip {Background color for Function key group 3} xywh {10 85 75 20}
-        code0 {btnGroup3->color(fl_rgb_color(progdefaults.btnGroup3.R, progdefaults.btnGroup3.G,progdefaults.btnGroup3.B));}
-        code1 {btnGroup3->labelcolor(fl_rgb_color(progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R));}
-      }
-      Fl_Button btnFkeyTextColor {
-        label {Label text}
-        callback {uchar r, g, b;
+          tooltip {Background color for Function key group 3} xywh {193 70 75 20}
+          code0 {btnGroup3->color(fl_rgb_color(progdefaults.btnGroup3.R, progdefaults.btnGroup3.G,progdefaults.btnGroup3.B));}
+          code1 {btnGroup3->labelcolor(fl_rgb_color(progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R));}
+        }
+        Fl_Button btnFkeyTextColor {
+          label {Label text}
+          callback {uchar r, g, b;
     r = progdefaults.btnFkeyTextColor.R;
     g = progdefaults.btnFkeyTextColor.G;
     b = progdefaults.btnFkeyTextColor.B;
@@ -199,13 +307,13 @@ Function {make_colorsfonts()} {open
     btnGroup3->redraw_label();
     progdefaults.changed = true;
     colorize_macros();}
-        xywh {100 85 75 20}
-        code0 {btnFkeyTextColor->color(fl_rgb_color(progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.G, progdefaults.btnFkeyTextColor.B));}
-        code1 {adjust_label(btnFkeyTextColor);}
-      }
-      Fl_Button btnFkeyDEfaults {
-        label Defaults
-        callback {uchar r, g, b;
+          xywh {193 40 75 20}
+          code0 {btnFkeyTextColor->color(fl_rgb_color(progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.G, progdefaults.btnFkeyTextColor.B));}
+          code1 {adjust_label(btnFkeyTextColor);}
+        }
+        Fl_Button btnFkeyDEfaults {
+          label Defaults
+          callback {uchar r, g, b;
     Fl_Color clr;
 
     r = 80; g = 144; b = 144;
@@ -249,23 +357,23 @@ Function {make_colorsfonts()} {open
     colorize_macros();
 
 progdefaults.changed = true;}
-        xywh {100 122 75 20}
+          xywh {285 70 75 20}
+        }
       }
-    }
-    Fl_Group {} {
-      label {Text Controls} open
-      xywh {185 5 185 240} box ENGRAVED_FRAME align 21
-    } {
-      Fl_Input RxText {
-        xywh {195 30 165 35}
-        code0 {RxText->value("Receive Text");}
-        code1 {RxText->color(fl_rgb_color(progdefaults.RxColor.R, progdefaults.RxColor.G, progdefaults.RxColor.B));}
-        code2 {RxText->textfont(progdefaults.RxFontnbr); RxText->textsize(progdefaults.RxFontsize); RxText->textcolor(progdefaults.RxFontcolor);}
-        code3 {RxText->type(FL_MULTILINE_INPUT_WRAP);}
-      }
-      Fl_Button btnRxColor {
-        label {Rx bkgnd}
-        callback {uchar r, g, b;
+      Fl_Group {} {
+        label {Text Ctrls} open
+        xywh {5 30 365 150} hide
+      } {
+        Fl_Input RxText {
+          xywh {15 43 165 35}
+          code0 {RxText->value("Receive Text");}
+          code1 {RxText->color(fl_rgb_color(progdefaults.RxColor.R, progdefaults.RxColor.G, progdefaults.RxColor.B));}
+          code2 {RxText->textfont(progdefaults.RxFontnbr); RxText->textsize(progdefaults.RxFontsize); RxText->textcolor(progdefaults.RxFontcolor);}
+          code3 {RxText->type(FL_MULTILINE_INPUT_WRAP);}
+        }
+        Fl_Button btnRxColor {
+          label {Rx bkgnd}
+          callback {uchar r, g, b;
     r = progdefaults.RxColor.R;
     g = progdefaults.RxColor.G;
     b = progdefaults.RxColor.B;
@@ -282,11 +390,11 @@ progdefaults.changed = true;}
     ReceiveText->redraw();
 
     progdefaults.changed = true;}
-        xywh {195 70 75 20}
-      }
-      Fl_Button btnTxColor {
-        label {Tx bkgnd}
-        callback {uchar r, g, b;
+          xywh {190 50 75 20}
+        }
+        Fl_Button btnTxColor {
+          label {Tx bkgnd}
+          callback {uchar r, g, b;
     r = progdefaults.TxColor.R;
     g = progdefaults.TxColor.G;
     b = progdefaults.TxColor.B;
@@ -303,18 +411,18 @@ progdefaults.changed = true;}
     TransmitText->redraw();
 
 progdefaults.changed = true;}
-        xywh {195 140 75 20}
-      }
-      Fl_Input TxText {
-        xywh {195 100 165 35}
-        code0 {TxText->value("Transmit Text");}
-        code1 {TxText->color(fl_rgb_color(progdefaults.TxColor.R, progdefaults.TxColor.G, progdefaults.TxColor.B));}
-        code2 {TxText->textfont(progdefaults.TxFontnbr); TxText->textsize(progdefaults.TxFontsize); TxText->textcolor(progdefaults.TxFontcolor);}
-        code3 {TxText->type(FL_MULTILINE_INPUT_WRAP);}
-      }
-      Fl_Button btnRxFont {
-        label {Rx font}
-        callback {static Font_Browser* b = 0;
+          xywh {190 90 75 20}
+        }
+        Fl_Input TxText {
+          xywh {15 85 165 35}
+          code0 {TxText->value("Transmit Text");}
+          code1 {TxText->color(fl_rgb_color(progdefaults.TxColor.R, progdefaults.TxColor.G, progdefaults.TxColor.B));}
+          code2 {TxText->textfont(progdefaults.TxFontnbr); TxText->textsize(progdefaults.TxFontsize); TxText->textcolor(progdefaults.TxFontcolor);}
+          code3 {TxText->type(FL_MULTILINE_INPUT_WRAP);}
+        }
+        Fl_Button btnRxFont {
+          label {Rx font}
+          callback {static Font_Browser* b = 0;
 if (!b) {
     b = new Font_Browser;
     b->fontNumber(progdefaults.RxFontnbr);
@@ -323,11 +431,11 @@ if (!b) {
     b->callback(cbRxFontBrowser);
 }
 b->show();}
-        xywh {285 70 75 20}
-      }
-      Fl_Button btnTxFont {
-        label {Tx font}
-        callback {static Font_Browser* b = 0;
+          xywh {275 50 75 20}
+        }
+        Fl_Button btnTxFont {
+          label {Tx font}
+          callback {static Font_Browser* b = 0;
     if (!b) {
         b = new Font_Browser;
         b->fontNumber(progdefaults.TxFontnbr);
@@ -336,56 +444,56 @@ b->show();}
         b->callback(cbTxFontBrowser);
     }
     b->show();}
-        xywh {285 140 75 20}
-      }
-      Fl_Button btnXMIT {
-        label XMIT
-        callback {choose_color(progdefaults.XMITcolor);
+          xywh {275 90 75 20}
+        }
+        Fl_Button btnXMIT {
+          label XMIT
+          callback {choose_color(progdefaults.XMITcolor);
     btnXMIT->color( progdefaults.XMITcolor );
     TransmitText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
     ReceiveText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
 
     progdefaults.changed = true;}
-        tooltip {Sent chars in Rx/Tx pane} xywh {195 170 40 20} align 2
-        code0 {btnXMIT->color(progdefaults.XMITcolor);}
-      }
-      Fl_Button btnCTRL {
-        label CTRL
-        callback {choose_color(progdefaults.CTRLcolor);
+          tooltip {Sent chars in Rx/Tx pane} xywh {15 130 40 20} align 2
+          code0 {btnXMIT->color(progdefaults.XMITcolor);}
+        }
+        Fl_Button btnCTRL {
+          label CTRL
+          callback {choose_color(progdefaults.CTRLcolor);
     btnCTRL->color( progdefaults.CTRLcolor );
     TransmitText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
     ReceiveText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
 
     progdefaults.changed = true;}
-        tooltip {Control chars in Rx/Tx pane} xywh {236 170 40 20} align 2
-        code0 {btnCTRL->color(progdefaults.CTRLcolor);}
-      }
-      Fl_Button btnSKIP {
-        label SKIP
-        callback {choose_color(progdefaults.SKIPcolor);
+          tooltip {Control chars in Rx/Tx pane} xywh {66 130 40 20} align 2
+          code0 {btnCTRL->color(progdefaults.CTRLcolor);}
+        }
+        Fl_Button btnSKIP {
+          label SKIP
+          callback {choose_color(progdefaults.SKIPcolor);
     btnSKIP->color( progdefaults.SKIPcolor );
     TransmitText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
     ReceiveText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
 
     progdefaults.changed = true;}
-        tooltip {Skipped chars in Tx pane
-(Tx on/off in CW)} xywh {278 170 40 20} align 2
-        code0 {btnSKIP->color(progdefaults.SKIPcolor);}
-      }
-      Fl_Button btnALTR {
-        label ALTR
-        callback {choose_color(progdefaults.ALTRcolor);
+          tooltip {Skipped chars in Tx pane
+(Tx on/off in CW)} xywh {118 130 40 20} align 2
+          code0 {btnSKIP->color(progdefaults.SKIPcolor);}
+        }
+        Fl_Button btnALTR {
+          label ALTR
+          callback {choose_color(progdefaults.ALTRcolor);
     btnALTR->color( progdefaults.ALTRcolor );
     TransmitText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
     ReceiveText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
 
     progdefaults.changed = true;}
-        tooltip {Quick view chars in Rx pane} xywh {320 170 40 20} align 2
-        code0 {btnALTR->color(progdefaults.ALTRcolor);}
-      }
-      Fl_Button btnNoTextColor {
-        label System
-        callback {uchar r, g, b;
+          tooltip {Quick view chars in Rx pane} xywh {170 130 40 20} align 2
+          code0 {btnALTR->color(progdefaults.ALTRcolor);}
+        }
+        Fl_Button btnNoTextColor {
+          label System
+          callback {uchar r, g, b;
     Fl_Color clr = FL_BACKGROUND2_COLOR;
 
     Fl::get_color(clr, r, g, b);
@@ -439,11 +547,11 @@ b->show();}
     TransmitText->redraw();
 
     progdefaults.changed = true;}
-        xywh {195 217 70 20}
-      }
-      Fl_Button btnTextDefaults {
-        label Defaults
-        callback {uchar r, g, b;
+          xywh {219 130 70 20}
+        }
+        Fl_Button btnTextDefaults {
+          label Defaults
+          callback {uchar r, g, b;
     Fl_Color clr;
 
     progdefaults.TxFontcolor = FL_BLACK;
@@ -498,30 +606,26 @@ b->show();}
     TransmitText->redraw();
 
     progdefaults.changed = true;}
-        xywh {290 217 70 20}
+          xywh {296 130 70 20}
+        }
       }
-    }
-    Fl_Group {} {
-      label {User Interface} open
-      xywh {0 160 185 85} box ENGRAVED_FRAME align 21
-    } {
-      Fl_Choice mnuScheme {
-        label {UI scheme}
-        callback {progdefaults.ui_scheme = o->text();
+      Fl_Group {} {
+        label {User Interface} open
+        xywh {5 30 365 150} hide
+      } {
+        Fl_Choice mnuScheme {
+          label {UI scheme}
+          callback {progdefaults.ui_scheme = o->text();
     Fl::scheme(progdefaults.ui_scheme.c_str());
 
     progdefaults.changed = true;} open
-        xywh {10 187 80 25} down_box BORDER_BOX align 8
-        code0 {mnuScheme->add("base");}
-        code1 {mnuScheme->add("gtk+");}
-        code2 {mnuScheme->add("plastic");}
-        code3 {mnuScheme->value(mnuScheme->find_item(progdefaults.ui_scheme.c_str()));}
-      } {}
-    }
-    Fl_Button btnClrFntClose {
-      label Close
-      callback {o->window()->hide();}
-      xywh {290 250 70 20}
+          xywh {120 50 80 25} down_box BORDER_BOX align 8
+          code0 {mnuScheme->add("base");}
+          code1 {mnuScheme->add("gtk+");}
+          code2 {mnuScheme->add("plastic");}
+          code3 {mnuScheme->value(mnuScheme->find_item(progdefaults.ui_scheme.c_str()));}
+        } {}
+      }
     }
   }
 } 

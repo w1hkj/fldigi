@@ -8,10 +8,17 @@ void selectColorsFonts();
 void cbWaterfallFontBrowser(Font_Browser*, void* v);
 #include <FL/Fl_Double_Window.H>
 extern Fl_Double_Window *dlgColorFont;
+#include <FL/Fl_Button.H>
+extern Fl_Button *btnClrFntClose;
+#include <FL/Fl_Tabs.H>
 #include <FL/Fl_Group.H>
+#include <FL/Fl_Box.H>
+extern Fl_Box *FDdisplay;
+extern Fl_Button *btnBackgroundColor;
+extern Fl_Button *btnForegroundColor;
+extern Fl_Button *btnFD_SystemColor;
 #include <FL/Fl_Check_Button.H>
 extern Fl_Check_Button *btnUseGroupColors;
-#include <FL/Fl_Button.H>
 extern Fl_Button *btnGroup1;
 extern Fl_Button *btnGroup2;
 extern Fl_Button *btnGroup3;
@@ -32,6 +39,5 @@ extern Fl_Button *btnNoTextColor;
 extern Fl_Button *btnTextDefaults;
 #include <FL/Fl_Choice.H>
 extern Fl_Choice *mnuScheme;
-extern Fl_Button *btnClrFntClose;
 Fl_Double_Window* make_colorsfonts();
 #endif

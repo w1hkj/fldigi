@@ -371,7 +371,6 @@ long long rigCAT_getfreq()
 	
 	if (itrCmd == commands.end()) {
 		LOG_DEBUG("Cmd not defined");
-		nonCATrig = true;
 		return -2; // get_freq command is not defined!
 	}
 
@@ -594,11 +593,11 @@ void rigCAT_setmode(const string& md)
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
-	if (noXMLfile) {
+	if (nonCATrig == true || noXMLfile) {
 		noCATmode = md;
 		return;
 	}
-	
+
 	LOG_DEBUG("set mode %s", md.c_str());
 
 	itrCmd = commands.begin();
@@ -606,10 +605,6 @@ void rigCAT_setmode(const string& md)
 		if ((*itrCmd).SYMBOL == "SETMODE")
 			break;
 		++itrCmd;
-	}
-	if (nonCATrig == true) {
-		noCATmode = md;
-		return;
 	}
 	modeCmd = *itrCmd;
 	
@@ -958,41 +953,49 @@ void rigCAT_sendINIT()
 //	pthread_mutex_unlock(&rigCAT_mutex);
 }
 
-bool rigCAT_init()
+bool rigCAT_init(bool useXML)
 {
 	if (rigCAT_open == true) {
 		LOG_ERROR("RigCAT already open file present");
 		return false;
 	}
 	
-	noXMLfile = false;
-	if (readRigXML() == false) {
-		LOG_DEBUG("No rig.xml file present");
-		noXMLfile = true;
-	}
+	if (useXML == true) {
+		
+		noXMLfile = false;
+		if (readRigXML() == false) {
+			LOG_DEBUG("No rig.xml file present");
+			noXMLfile = true;
+			llFreq = 0;
+			sRigMode = "";
+			sRigWidth = "";
+			nonCATrig = true;
+		}
 
-	if (!noXMLfile) {	
-		if (rigio.OpenPort() == false) {
-			LOG_ERROR("Cannot open serial port %s", rigio.Device().c_str());
-			return false;
+		if (noXMLfile == false) {	
+			if (rigio.OpenPort() == false) {
+				LOG_ERROR("Cannot open serial port %s", rigio.Device().c_str());
+				return false;
+			}
+			llFreq = 0;
+			sRigMode = "";
+			sRigWidth = "";
+	
+			nonCATrig = false;
+	
+			if (rigCAT_getfreq() == -1) { // will set nonCATrig to true if getfreq not spec'd
+				LOG_ERROR("Xcvr Freq request not answered");
+				rigio.ClosePort();
+				return false;
+			}
+	
+			rigCAT_sendINIT();
 		}
-		llFreq = 0;
-		sRigMode = "";
-		sRigWidth = "";
-	
-		nonCATrig = false;
-	
-		if (rigCAT_getfreq() == -1) { // will set nonCATrig to true if getfreq not spec'd
-			LOG_ERROR("Xcvr Freq request not answered");
-			rigio.ClosePort();
-			return false;
-		}
-	
-		rigCAT_sendINIT();
 	} else {
 		llFreq = 0;
 		sRigMode = "";
 		sRigWidth = "";
+		nonCATrig = true;
 	}
 	
 	rigCAT_bypass = false;
@@ -1006,7 +1009,7 @@ bool rigCAT_init()
 		return false;
 	} 
 
-	if (!noXMLfile)
+	if (noXMLfile == false)
 		init_Xml_RigDialog();
 	else
 		init_NoRig_RigDialog();

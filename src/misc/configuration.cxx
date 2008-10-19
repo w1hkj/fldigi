@@ -604,7 +604,7 @@ void configuration::initInterface() {
 		activate_rig_menu_item(false);
 		qsoFreqDisp->deactivate();
 	} else if (chkUSERIGCATis) { // start the rigCAT thread
-		if (rigCAT_init() == false) {
+		if (rigCAT_init(true) == false) {
 			wf->USB(true);
 			wf->setQSY(0);
 			activate_rig_menu_item(true);
@@ -633,7 +633,7 @@ void configuration::initInterface() {
 		activate_rig_menu_item(false);
 		qsoFreqDisp->deactivate();
 	} else {
-		rigCAT_init();  // initialize rigCAT without a rig.xml file
+		rigCAT_init(false);  // initialize rigCAT without a rig.xml file
 		wf->USB(true);
 		wf->setQSY(0);
 		activate_rig_menu_item(true);

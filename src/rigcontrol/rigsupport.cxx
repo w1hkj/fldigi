@@ -359,7 +359,6 @@ void selectFreq()
 	if (freqlist[n].rmode != "NONE") {
 		opMODE->value(freqlist[n].rmode.c_str());
 		setMode();
-//		MilliSleep(100);
 	}
 
 	if (freqlist[n].rfcarrier > 0) {
@@ -377,12 +376,14 @@ void selectFreq()
 
 void qso_selectFreq()
 {
-	int n = qso_opBrowser->value() - 1;
+	int n = qso_opBrowser->value();
+	if (!n) return;
+	
+	n -= 1;
 
 	if (freqlist[n].rmode != "NONE") {
 		qso_opMODE->value(freqlist[n].rmode.c_str());
 		cb_qso_opMODE();
-//		MilliSleep(100);
 	}
 
 	if (freqlist[n].rfcarrier > 0) {
@@ -396,6 +397,7 @@ void qso_selectFreq()
 		if (freqlist[n].carrier > 0)
 			active_modem->set_freq(freqlist[n].carrier);
 	}
+	opBrowserView->hide();	
 }
 
 void delFreq()

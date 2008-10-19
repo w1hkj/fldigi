@@ -1715,14 +1715,37 @@ void cb_qso_btnClearList(Fl_Widget *, void *)
 	qso_clearList();
 }
 
+void cb_qso_opBrowser(Fl_Browser*, void*) 
+{
+	if (qso_opBrowser->value()) {
+		if (Fl::event_clicks()) // double click
+			qso_selectFreq();
+/*		else
+			switch (Fl::event_button()) {
+				case FL_MIDDLE_MOUSE:
+					qso_delFreq();
+					qso_addFreq();
+					break;
+				case FL_LEFT_MOUSE: 
+				default:
+					if (Fl::event_state() & FL_SHIFT)
+						qso_delFreq();
+				break;
+			}
+		}
+*/
+	}
+}
 
 void create_fl_digi_main() {
 
-	int pad = wSpace, Y = 0;
+	int pad = 2; //wSpace;
+	int Y = 0;
 
 	IMAGE_WIDTH = progdefaults.wfwidth;
 	Hwfall = progdefaults.wfheight;
-	Wwfall = IMAGE_WIDTH / 4 + 2 * BEZEL + 4;//DEFAULT_HNOM + 2 * BEZEL;
+//	Wwfall = IMAGE_WIDTH / 4 + 2 * BEZEL + 4;
+	Wwfall = DEFAULT_HNOM + 2 * BEZEL;
 	WNOM = Wwfall + 2 * DEFAULT_SW;
 	HNOM = DEFAULT_HNOM;
 	
@@ -1760,51 +1783,115 @@ void create_fl_digi_main() {
 			btnMacroTimer->hide();
 			btnMacroDummy = new Fl_Button(WNOM - 50 - pad, 0, 50, Hmenu, "");
 		
-		Y += Hmenu;
+		Y = Hmenu;
 
 		int qh = Hqsoframe / 2;
 		int qfy = Y + qh - pad;
-#define FREQDISP_WIDTH 238
 		
-		Fl_Group *qsoFrame = new Fl_Group(0, Y, WNOM, Hqsoframe);
-			inpFreq = new Fl_Input(pad, qfy, 85, qh, "Frequency");
-			inpFreq->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+#define FREQWIDTH 172  // FREQWIDTH should be a multiple of 9 + 10
+#define FREQHEIGHT 30
+#define BTNWIDTH 30
+#define FREQDISP_WIDTH (FREQWIDTH + BTNWIDTH + 6) // button + 3 spacers
 
-			inpTime = new Fl_Input(rightof(inpFreq) + pad, qfy, 45, qh, "Time");
-			inpTime->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+		int leftwidth = WNOM - FREQDISP_WIDTH;
+		int w_leftdata = leftwidth - 24 - 7 * pad;
+		int w_inpFreq = 80;
+		int w_inpTime = 35;
+		int w_inpCall = 70;
+		int w_inpRstIn = 28;
+		int w_inpRstOut = 28;
+		int w_inpQth =  (w_leftdata - w_inpFreq - w_inpTime - w_inpCall -
+						 w_inpRstIn - w_inpRstOut);
+//		int w_inpName = (w_leftdata - w_inpFreq - w_inpTime - w_inpCall -
+//						 w_inpRstIn - w_inpRstOut);
+		
+		
+		Fl_Group *qsoFrame = new Fl_Group(0, Y, WNOM, Hqsoframe + Hnotes);
+		
+			Fl_Group *qsoFrameLeft = new Fl_Group(0, Y, WNOM - FREQDISP_WIDTH, Hqsoframe + Hnotes);
+		
+			Fl_Group *qsoFrame1 = new Fl_Group(0, Y, WNOM - FREQDISP_WIDTH, Hqsoframe);
+				inpFreq = new Fl_Input(pad, qfy, w_inpFreq, qh, "Freq");
+				inpFreq->align(FL_ALIGN_TOP | FL_ALIGN_CENTER);
 
-			qsoTime = new Fl_Button(rightof(inpTime) + pad, qfy, 24, qh);
-			Fl_Image *pixmap = new Fl_Pixmap(cal_16);
-			qsoTime->image(pixmap);
-			qsoTime->callback(qsoTime_cb, 0);
+				inpTime = new Fl_Input(rightof(inpFreq) + pad, qfy, w_inpTime, qh, "Time");
+				inpTime->align(FL_ALIGN_TOP | FL_ALIGN_CENTER);
 
-			inpCall = new Fl_Input(rightof(qsoTime) + pad, qfy, 60, qh, "Call");
-			inpCall->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+				qsoTime = new Fl_Button(rightof(inpTime), qfy, 24, qh);
+				Fl_Image *pixmap = new Fl_Pixmap(cal_16);
+				qsoTime->image(pixmap);
+				qsoTime->callback(qsoTime_cb, 0);
 
-			inpName = new Fl_Input(rightof(inpCall) + pad, qfy, 80, qh, "Name");
-			inpName->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+				inpCall = new Fl_Input(rightof(qsoTime) + pad, qfy, 
+								w_inpCall, qh, "Call");
+				inpCall->align(FL_ALIGN_TOP | FL_ALIGN_CENTER);
 
-			inpRstIn = new Fl_Input(rightof(inpName) + pad, qfy, 35, qh, "RST In ");
-			inpRstIn->align(FL_ALIGN_TOP | FL_ALIGN_RIGHT);
+//				inpName = new Fl_Input(rightof(inpCall) + pad, qfy, 
+//								w_inpName, qh, "Name");
+//				inpName->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
-			inpRstOut = new Fl_Input(rightof(inpRstIn) + pad, qfy, 35, qh, "Out");
-			inpRstOut->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+				inpQth = new Fl_Input(rightof(inpCall) + pad, qfy, w_inpQth, Hnotes, "Qth");
+				inpQth->align(FL_ALIGN_TOP | FL_ALIGN_CENTER);
 
-			inpQth = new Fl_Input(rightof(inpRstOut) + pad, qfy,
-			              WNOM - rightof(inpRstOut) - 40 - 4 * pad - FREQDISP_WIDTH, qh,
-			              "QTH");
-			inpQth->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+				inpRstOut = new Fl_Input(leftwidth - w_inpRstOut - pad, qfy,
+								w_inpRstOut, qh, "Out");
+				inpRstOut->align(FL_ALIGN_TOP | FL_ALIGN_CENTER);
 
-			btnQRZ = new Fl_Button(rightof(inpQth) + pad, Y + 1,
-			              40, qh - pad, "QRZ");
+				inpRstIn = new Fl_Input(leftof(inpRstOut) -w_inpRstIn - pad, 
+								qfy, w_inpRstIn, qh, "In");
+				inpRstIn->align(FL_ALIGN_TOP | FL_ALIGN_CENTER);
+
+//				qsoFrame1->resizable(inpName);
+				qsoFrame1->resizable(inpQth);
+			qsoFrame1->end();
+						
+			Y = Hmenu + Hqsoframe;
+		
+			Fl_Group *qsoFrame2 = new Fl_Group(0,Y, WNOM - FREQDISP_WIDTH, Hnotes);
+
+//				Fl_Box *boxA = new Fl_Box(0, Y, 25, Hnotes, "Qth");
+//				inpQth = new Fl_Input(rightof(boxA), Y, 100, Hnotes, "");
+//				inpQth->align(FL_ALIGN_INSIDE);
+			
+				Fl_Box *boxA = new Fl_Box(0, Y, 35, Hnotes, "Name");
+				inpName = new Fl_Input(rightof(boxA), Y, 90, Hnotes, "");
+				inpName->align(FL_ALIGN_INSIDE);
+			
+//				Fl_Box *boxB = new Fl_Box(rightof(inpQth), Y, 25, Hnotes, "Loc");
+				Fl_Box *boxB = new Fl_Box(rightof(inpName), Y, 25, Hnotes, "Loc");
+				inpLoc = new Fl_Input(rightof(boxB), Y, 55, Hnotes, "");
+				inpLoc->align(FL_ALIGN_INSIDE);
+
+				Fl_Box *boxC = new Fl_Box(rightof(inpLoc), Y, 20, Hnotes, "Az");
+				inpAZ = new Fl_Input(rightof(boxC) + pad, Y, 30, Hnotes, "");
+				inpAZ->align(FL_ALIGN_INSIDE);
+
+				inpNotes = new Fl_Input(rightof(inpAZ) + pad, Y, 
+								WNOM - FREQDISP_WIDTH - rightof(inpAZ) - pad, Hnotes, "");
+				inpNotes->value("Notes");
+				inpNotes->align(FL_ALIGN_INSIDE);
+				qsoFrame2->resizable(inpNotes);
+			qsoFrame2->end();
+	
+		qsoFrameLeft->end();
+
+		Y = Hmenu;
+		Fl_Group *qsoFrameRight = new Fl_Group(WNOM - FREQDISP_WIDTH, Y,
+									FREQDISP_WIDTH, Hqsoframe + Hnotes);
+
+			btnQRZ = new Fl_Button(WNOM - FREQDISP_WIDTH + 2, Y + 1,
+							BTNWIDTH, qh - pad, "QRZ");
 			btnQRZ->callback(cb_QRZ, 0);
-
-			qsoClear = new Fl_Button(rightof(inpQth) + pad, Y + qh + 1, 
-			              40, qh - pad, "Clear");
+			qsoClear = new Fl_Button(WNOM - FREQDISP_WIDTH + 2, Y + qh + 1, 
+							BTNWIDTH, qh - pad, "Clr");
 			qsoClear->callback(qsoClear_cb, 0);
 
-			qsoFreqDisp = new cFreqControl(rightof(btnQRZ) + pad, Y + pad, 
-			              FREQDISP_WIDTH - pad, Hqsoframe - 2 * pad, "9");
+			qsoSave = new Fl_Button(WNOM - FREQDISP_WIDTH + 2, Y + Hqsoframe + 1, 
+							BTNWIDTH, Hnotes - 2, "Sav");
+			qsoSave->callback(qsoSave_cb, 0);
+
+			qsoFreqDisp = new cFreqControl(rightof(btnQRZ) + 2, Y + 8, 
+								FREQWIDTH, FREQHEIGHT, "");
 			qsoFreqDisp->box(FL_DOWN_BOX);
 			qsoFreqDisp->color(FL_BACKGROUND_COLOR);
 			qsoFreqDisp->selection_color(FL_BACKGROUND_COLOR);
@@ -1815,35 +1902,25 @@ void create_fl_digi_main() {
 			qsoFreqDisp->align(FL_ALIGN_CENTER);
 			qsoFreqDisp->when(FL_WHEN_RELEASE);
 			qsoFreqDisp->setCallBack(qso_movFreq);
-			qsoFreqDisp->SetONOFFCOLOR( FL_RED, FL_BLACK);
+			qsoFreqDisp->SetONOFFCOLOR(
+					fl_rgb_color(	progdefaults.FDforeground.R, 
+									progdefaults.FDforeground.G, 
+									progdefaults.FDforeground.B),
+					fl_rgb_color(	progdefaults.FDbackground.R, 
+									progdefaults.FDbackground.G, 
+									progdefaults.FDbackground.B));	
 			qsoFreqDisp->value(145580000);
 
-			qsoFrame->resizable(inpQth);
+			Y = Hmenu + Hqsoframe + 1;
 
-		qsoFrame->end();
-		Y += Hqsoframe;
-
-		Fl_Group *qsoFrame2 = new Fl_Group(0,Y, WNOM, Hnotes);
-			qsoSave = new Fl_Button(rightof(inpQth) + pad, Y + 1, 40, Hnotes - 2, "Save");
-			qsoSave->callback(qsoSave_cb, 0);
-
-			inpAZ = new Fl_Input(leftof(qsoSave) - 35 - pad, Y, 35, Hnotes); // WA5ZNU
-			inpAZ->align(FL_ALIGN_LEFT);
-			Fl_Box *txtAZ = new Fl_Box(leftof(inpAZ) - pad - 12, Y, 12, Hnotes, "Az");
-
-			inpLoc = new Fl_Input(leftof(txtAZ) - pad - 50, Y, 50, Hnotes);
-			inpLoc->align(FL_ALIGN_LEFT);
-			Fl_Box *txtLOC = new Fl_Box(leftof(inpLoc) - pad - 25, Y, 25, Hnotes, "Loc");
-
-			inpNotes = new Fl_Input(pad + 38, Y, leftof(txtLOC) - pad - 38, Hnotes, "Notes");
-			inpNotes->align(FL_ALIGN_LEFT);
-
-			int y_opPICK = Y + 1;
-			qso_opPICK = new Fl_Button(rightof(btnQRZ) + pad, y_opPICK,
-			                 FREQDISP_WIDTH - 80 - 80 - 3 * pad, Hnotes - 2, "Manage");
+			int w_mng = 40;
+			int w_pmb = (FREQWIDTH - w_mng) / 2;
+			
+			qso_opPICK = new Fl_Button(rightof(btnQRZ) + 2, Y,
+			                 w_mng, Hnotes - 2, "List");
 			qso_opPICK->callback(showOpBrowserView, 0);
 			
-			qso_opMODE = new Fl_ComboBox(rightof(qso_opPICK) + pad, y_opPICK, 80, Hnotes - 2);
+			qso_opMODE = new Fl_ComboBox(rightof(qso_opPICK), Y, w_pmb, Hnotes - 2);
 			qso_opMODE->box(FL_DOWN_BOX);
 			qso_opMODE->color(FL_BACKGROUND2_COLOR);
 			qso_opMODE->selection_color(FL_BACKGROUND_COLOR);
@@ -1856,7 +1933,7 @@ void create_fl_digi_main() {
 			qso_opMODE->when(FL_WHEN_RELEASE);
 			qso_opMODE->end();
 
-			qso_opBW = new Fl_ComboBox(rightof(qso_opMODE) + pad, y_opPICK, 80, Hnotes - 2);
+			qso_opBW = new Fl_ComboBox(rightof(qso_opMODE), Y, w_pmb, Hnotes - 2);
 			qso_opBW->box(FL_DOWN_BOX);
 			qso_opBW->color(FL_BACKGROUND2_COLOR);
 			qso_opBW->selection_color(FL_BACKGROUND_COLOR);
@@ -1869,12 +1946,13 @@ void create_fl_digi_main() {
 			qso_opBW->when(FL_WHEN_RELEASE);
 			qso_opBW->end();
 
-			qsoFrame2->resizable(inpNotes);
+		qsoFrameRight->end();
+		qsoFrame->resizable(qsoFrameLeft);
 
-		qsoFrame2->end();
+		qsoFrame->end();
 
-		Y += (Hnotes + pad);
-		
+		Y = Hmenu + Hqsoframe + Hnotes + pad;
+
 		Fl_Widget* logfields[] = { inpFreq, inpTime, inpCall, inpName, inpRstIn,
 					   inpRstOut, inpQth, inpAZ, inpLoc, inpNotes };
 		for (size_t i = 0; i < sizeof(logfields)/sizeof(*logfields); i++)
@@ -2159,6 +2237,7 @@ void create_fl_digi_main() {
 		qso_opBrowser = new Fl_Browser(
 							1, 1, 290, BV_h - 1 );
 	    qso_opBrowser->tooltip("Select operating parameters");
+	    qso_opBrowser->callback((Fl_Callback*)cb_qso_opBrowser);
 		qso_opBrowser->type(2);
 		qso_opBrowser->box(FL_DOWN_BOX);
 		qso_opBrowser->labelfont(4);
