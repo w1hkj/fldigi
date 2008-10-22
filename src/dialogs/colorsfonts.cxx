@@ -169,6 +169,9 @@ static void cb_btnFD_SystemColor(Fl_Button*, void*) {
     clr = FL_FOREGROUND_COLOR;
     Fl::get_color(clr, r, g, b);
     
+    FDdisplay->labelcolor(clr);
+    FDdisplay->redraw();
+    
     progdefaults.FDforeground.R = r;
     progdefaults.FDforeground.G = g;
     progdefaults.FDforeground.B = b;
@@ -180,7 +183,8 @@ static void cb_btnFD_SystemColor(Fl_Button*, void*) {
           fl_rgb_color(	progdefaults.FDbackground.R,
                         progdefaults.FDbackground.G,
                         progdefaults.FDbackground.B));
-     
+    qsoFreqDisp->redraw();
+         
     progdefaults.changed = true;
 }
 

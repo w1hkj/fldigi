@@ -45,6 +45,7 @@ extern Fl_Check_Button *btnUseCursorCenterLine;
 extern Fl_Button *btnCursorBWcolor;
 extern Fl_Button *btnCursorCenterLineColor;
 extern Fl_Button *btnBwTracksColor;
+extern Fl_Check_Button *chkShowAudioScale;
 extern Fl_Check_Button *btnWaterfallHistoryDefault;
 extern Fl_Check_Button *btnWaterfallQSY;
 extern Fl_Input *inpWaterfallClickText;

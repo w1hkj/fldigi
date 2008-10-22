@@ -589,7 +589,7 @@ void parsePORT(size_t &p0)
 	}
 	p0 = pend;
 
-	LOG_DEBUG("\nSerial port parameters:\n\
+	LOG_INFO("\nSerial port parameters:\n\
     port: %s\n\
     baud: %d\n\
     retries: %d\n\

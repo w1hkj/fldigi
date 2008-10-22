@@ -559,12 +559,12 @@ void configuration::initInterface() {
 // close down any possible rig interface threads
 #if USE_HAMLIB
 		hamlib_close();
-		MilliSleep(100);
+//		MilliSleep(100);
 #endif
 		rigMEM_close();
-		MilliSleep(100);
+//		MilliSleep(100);
 		rigCAT_close();
-		MilliSleep(100);
+//		MilliSleep(100);
 
 	FL_LOCK();
 		btnPTTis = (btnPTT[0]->value() ? 0 :
@@ -596,47 +596,44 @@ void configuration::initInterface() {
 		mnuBaudRate->hide();
 #endif		
 	FL_UNLOCK();
+
+bool riginitOK = false;
 		
 	if (chkUSEMEMMAPis) {// start the memory mapped i/o thread
-		btnPTT[2]->activate();
-		rigMEM_init();
-		wf->setQSY(1);
-		activate_rig_menu_item(false);
-		qsoFreqDisp->deactivate();
+		if (rigMEM_init()) {
+			btnPTT[2]->activate();
+			wf->setQSY(1);
+//			activate_rig_menu_item(true);
+			qsoFreqDisp->activate();
+			riginitOK = true;
+		}
 	} else if (chkUSERIGCATis) { // start the rigCAT thread
-		if (rigCAT_init(true) == false) {
+		if (rigCAT_init(true)) {
 			wf->USB(true);
 			wf->setQSY(0);
-			activate_rig_menu_item(true);
+//			activate_rig_menu_item(true);
 			qsoFreqDisp->activate();
-		} else {
-			wf->setQSY(1);
-			activate_rig_menu_item(true);
-			qsoFreqDisp->activate();
+			riginitOK = true;
 		}
 #if USE_HAMLIB
 	} else if (chkUSEHAMLIBis) { // start the hamlib thread
 		if (hamlib_init(btnPTTis == 1 ? true : false) == false) {
 			wf->USB(true);
 			wf->setQSY(0);
-			activate_rig_menu_item(true);
+//			activate_rig_menu_item(true);
 			qsoFreqDisp->activate();
-		} else {
-			wf->setQSY(1);
-			activate_rig_menu_item(true);
-			qsoFreqDisp->activate();
+			riginitOK = true;
 		}
 #endif		
 	} else if (chkUSEXMLRPCis) {
-		wf->USB(true);
 		wf->setXMLRPC(1);
-		activate_rig_menu_item(false);
-		qsoFreqDisp->deactivate();
-	} else {
-		rigCAT_init(false);  // initialize rigCAT without a rig.xml file
+	}
+
+	if (riginitOK == false) {
+		rigCAT_init(false);
 		wf->USB(true);
 		wf->setQSY(0);
-		activate_rig_menu_item(true);
+//		activate_rig_menu_item(true);
 		qsoFreqDisp->activate();
 	}
 	

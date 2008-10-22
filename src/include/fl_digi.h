@@ -50,7 +50,7 @@
 
 extern Fl_Double_Window *fl_digi_main;
 extern Fl_Double_Window *scopeview;
-extern Fl_Double_Window *opBrowserView;
+//extern Fl_Double_Window *opBrowserView;
 
 extern FTextView		*ReceiveText;
 extern FTextEdit		*TransmitText;
@@ -65,8 +65,6 @@ extern Fl_Slider		*sldrSquelch;
 extern Progress			*pgrsSquelch;
 extern Fl_Button 		*btnMacro[];
 extern Fl_Input			*inpFreq;
-//extern Fl_ComboBox		*cboBand;
-//extern Fl_Button		*btnSideband;
 extern Fl_Input			*inpTime;
 extern Fl_Input			*inpCall;
 extern Fl_Input			*inpName;
@@ -78,6 +76,9 @@ extern Fl_Input			*inpNotes;
 extern Fl_Input			*inpAZ;	// WA5ZNU
 extern Fl_Button		*qsoClear;
 extern Fl_Button		*qsoSave;
+extern Fl_Box			*txtRigName;
+
+extern Fl_Group			*qsoFrameView;
 extern cFreqControl		*qsoFreqDisp;
 extern Fl_ComboBox		*qso_opMODE;
 extern Fl_ComboBox		*qso_opBW;
@@ -159,6 +160,7 @@ extern void restoreFocus();
 extern void setReverse(int);
 extern void clearQSO();
 extern void closeRigDialog();
+extern void CloseQsoView();
 
 extern void setAfcOnOff(bool b);
 extern void setSqlOnOff(bool b);

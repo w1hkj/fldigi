@@ -39,7 +39,7 @@ status progStatus = {
 	50,					// int mainX;
 	50,					// int mainY;
 	(WNOM > 600 ? WNOM : 600),	// int mainW;
-	HNOM,				// int mainH;
+	DEFAULT_HNOM,		// int mainH;
 	Hrcvtxt,			// int RxTextHeight;
 	false,				// bool rigShown;
 	50,					// int rigX;
@@ -162,7 +162,9 @@ void status::saveLastState()
 void status::loadLastState()
 {
 	Fl_Preferences spref(HomeDir.c_str(), "w1hkj.com", PACKAGE_TARNAME);
+	
 	char version[64]; version[sizeof(version)-1] = '\0';
+	
 	bLastStateRead = spref.get("version", version, "", sizeof(version)-1);
 	// Skip loading the rest of the status variables if we didn't read a
 	// version name/value pair; also clear everything to avoid creating

@@ -20,7 +20,9 @@
 #include "rigdialog.h"
 #include "rigsupport.h"
 #include "rigxml.h"
+#include "rigMEM.h"
 #include "rigio.h"
+
 #include "threads.h"
 #include "main.h"
 
@@ -299,9 +301,11 @@ void setMode()
 #if USE_HAMLIB
 	if (progdefaults.chkUSEHAMLIBis)
 		hamlib_setmode(mode_nums[opMODE->value()]);
-	else
 #endif
-		rigCAT_setmode(opMODE->value());
+	if (progdefaults.chkUSERIGCATis)
+		rigCAT_setmode(qso_opMODE->value());
+	if (progdefaults.chkUSEMEMMAPis)
+		rigMEM_setmode(qso_opMODE->value());
 }
 
 int cb_qso_opMODE()
@@ -309,9 +313,11 @@ int cb_qso_opMODE()
 #if USE_HAMLIB
 	if (progdefaults.chkUSEHAMLIBis)
 		hamlib_setmode(mode_nums[qso_opMODE->value()]);
-	else
 #endif
+	if (progdefaults.chkUSERIGCATis)
 		rigCAT_setmode(qso_opMODE->value());
+	if (progdefaults.chkUSEMEMMAPis)
+		rigMEM_setmode(qso_opMODE->value());
 	return 0;
 }
 
@@ -335,6 +341,11 @@ int movFreq()
 		hamlib_setfreq(f);
 	else
 #endif
+	if (progdefaults.chkUSEMEMMAPis)
+		rigMEM_set_freq(f);
+	else if (progdefaults.chkUSERIGCATis)
+		rigCAT_setfreq(f);
+	else
 		rigCAT_setfreq(f);
 	return 0;
 }
@@ -348,7 +359,12 @@ int qso_movFreq()
 		hamlib_setfreq(f);
 	else
 #endif
-	rigCAT_setfreq(f);
+	if (progdefaults.chkUSEMEMMAPis)
+		rigMEM_set_freq(f);
+	else if (progdefaults.chkUSERIGCATis)
+		rigCAT_setfreq(f);
+	else
+		rigCAT_setfreq(f);
 	return 0;
 }
 
@@ -380,24 +396,36 @@ void qso_selectFreq()
 	if (!n) return;
 	
 	n -= 1;
-
+// transceiver mode
 	if (freqlist[n].rmode != "NONE") {
 		qso_opMODE->value(freqlist[n].rmode.c_str());
 		cb_qso_opMODE();
 	}
-
+// transceiver frequency
 	if (freqlist[n].rfcarrier > 0) {
 		qsoFreqDisp->value(freqlist[n].rfcarrier);
 		qso_movFreq();
 	}
-
+// modem type & audio sub carrier
 	if (freqlist[n].mode != NUM_MODES) {
 		if (freqlist[n].mode != active_modem->get_mode())
 			init_modem_sync(freqlist[n].mode);
 		if (freqlist[n].carrier > 0)
 			active_modem->set_freq(freqlist[n].carrier);
 	}
-	opBrowserView->hide();	
+}
+
+void qso_setFreq()
+{
+	int n = qso_opBrowser->value();
+	if (!n) return;
+	
+	n -= 1;
+// transceiver frequency
+	if (freqlist[n].rfcarrier > 0) {
+		qsoFreqDisp->value(freqlist[n].rfcarrier);
+		qso_movFreq();
+	}
 }
 
 void delFreq()
@@ -441,47 +469,96 @@ void qso_addFreq()
 	}
 }
 
+void setTitle()
+{
+	if (windowTitle.length() > 0) {
+		rigcontrol->label(windowTitle.c_str());
+		txtRigName->label(windowTitle.c_str());
+	} else {
+		rigcontrol->label("");
+		txtRigName->label("Non CAT mode");
+	}
+}
+
 bool init_Xml_RigDialog()
 {
+LOG_DEBUG("xml rig");
 	initOptionMenus();
 	clearList();
 	buildlist();
-	if (windowTitle.length() > 0)
-		rigcontrol->label(windowTitle.c_str());
+	setTitle();
 	return true;
 }
 
 bool init_NoRig_RigDialog()
 {
+LOG_DEBUG("no rig");
+	clearList();
+	buildlist();
+
 	opBW->deactivate();
 	opMODE->clear();
 	opMODE->add("LSB");
 	opMODE->add("USB");
+	opMODE->index(0);
+	opMODE->activate();
 
 	qso_opBW->deactivate();
 	qso_opMODE->clear();
 	qso_opMODE->add("LSB");
 	qso_opMODE->add("USB");
+	qso_opMODE->index(0);
+	qso_opMODE->activate();
 
+	windowTitle = "Rig Not Specified";
+	setTitle();
+		
+	return true;
+}
+
+bool init_rigMEM_RigDialog()
+{
+LOG_DEBUG("Mem Mapped rig");
 	clearList();
 	buildlist();
-	rigcontrol->label("");
+
+	opBW->deactivate();
+	opMODE->clear();
+	opMODE->add("LSB");
+	opMODE->add("USB");
+	opMODE->index(0);
+	opMODE->activate();
+
+	qso_opBW->deactivate();
+	qso_opMODE->clear();
+	qso_opMODE->add("LSB");
+	qso_opMODE->add("USB");
+	qso_opMODE->index(0);
+	qso_opMODE->activate();
+
+	windowTitle = "Memory Mapped Rig";
+	setTitle();
+		
 	return true;
 }
 
 #if USE_HAMLIB
 bool init_Hamlib_RigDialog()
 {
+LOG_DEBUG("hamlib");
 	opBW->deactivate();
 	opMODE->clear();
 	for (size_t i = 0; i < sizeof(modes)/sizeof(modes[0]); i++) {
 		mode_nums[modes[i].name] = modes[i].mode;
 		mode_names[modes[i].mode] = modes[i].name;
 		opMODE->add(modes[i].name);
+		qso_opMODE->add(modes[i].name);
 	}
 	clearList();
 	buildlist();
-	rigcontrol->label("Hamlib Controller");
+	
+	setTitle();
+
 	return true;
 }
 #endif

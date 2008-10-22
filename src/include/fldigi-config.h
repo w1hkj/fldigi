@@ -94,7 +94,7 @@ extern int Wwfall;
 #define Hstatus		22
 #define Hmacros		22
 
-#define Htext		(HNOM - 4 - Hwfall - Hmenu - Hstatus - Hmacros - Hqsoframe - Hnotes)
+#define Htext		(DEFAULT_HNOM - 4 - Hwfall - Hmenu - Hstatus - Hmacros - Hqsoframe - Hnotes)
 #define Hrcvtxt		(Htext) / 2
 #define Hxmttxt		(Htext - (Hrcvtxt))
 

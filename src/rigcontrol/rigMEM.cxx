@@ -16,12 +16,17 @@
 #include <FL/fl_ask.H>
 
 #include "threads.h"
+#include "qrunner.h"
 #include "misc.h"
 #include "configuration.h"
 
 #include "rigMEM.h"
 #include "fl_digi.h"
 #include "main.h"
+#include "rigsupport.h"
+#include "rigdialog.h"
+
+
 #include "debug.h"
 
 /* ---------------------------------------------------------------------- */
@@ -67,7 +72,7 @@ key_t hash (char *str)
 	return key;
 }
 
-void rigMEM_init(void)
+bool rigMEM_init(void)
 {
 	rigMEM_enabled = false;
 	noshare.freq = 7070000L;
@@ -78,13 +83,13 @@ void rigMEM_init(void)
 	shmid = shmget ((key_t)1234, sizeof(sharedmem), 0666 | IPC_CREAT);
 
 	if (shmid < 0) {
-		  fl_message("shmget failed");
-		  return;
-		 }
+		LOG_ERROR("shmget failed");
+		 return false;
+	}
  	shared_memory = shmat (shmid, (void *)0, 0);
  	if (shared_memory == (void *)-1) {
- 	  fl_message("shmat failed");
- 	  return;
+		LOG_ERROR("shmat failed");
+		return false;
  	}
 	freqflag = (struct ST_SHMEM *) shared_memory;
 
@@ -94,11 +99,15 @@ void rigMEM_init(void)
 	rigMEMisPTT = false;
 	
 	if (pthread_create(&rigMEM_thread, NULL, rigMEM_loop, NULL) < 0) {
-		fl_message("rigMEM init: pthread_create failed");
-		return;
+		LOG_ERROR("rigMEM init: pthread_create failed");
+		return false;
 	} 
 
 	rigMEM_enabled = true;
+	
+	init_rigMEM_RigDialog();
+		
+	return true;
 }
 
 void rigMEM_close(void)
@@ -138,15 +147,18 @@ static void *rigMEM_loop(void *args)
 			freqflag->freq = qsy_f;
 			freqflag->flag = -2; // set frequency
 			MilliSleep(20);
-			if (active_modem->freqlocked() == true) {
-				active_modem->set_freqlock(false);
-				active_modem->set_freq((int)qsy_fmid);
-				active_modem->set_freqlock(true);
+			if (qsy_fmid > 0) {
+				if (active_modem->freqlocked() == true) {
+					active_modem->set_freqlock(false);
+					active_modem->set_freq((int)qsy_fmid);
+					active_modem->set_freqlock(true);
+				} else
+					active_modem->set_freq((int)qsy_fmid);
+				wf->carrier((int)qsy_fmid);
+				wf->rfcarrier(freqflag->freq);
+				wf->movetocenter();
 			} else
-				active_modem->set_freq((int)qsy_fmid);
-			wf->carrier((int)qsy_fmid);
-			wf->rfcarrier(freqflag->freq);
-			wf->movetocenter();
+				wf->rfcarrier(freqflag->freq);
 			rig_qsy = false;
 		} else if (TogglePTT) {
 			if (rigMEM_PTT == PTT_ON)
@@ -174,11 +186,22 @@ static void *rigMEM_loop(void *args)
 			else
 				sb = true;
 			
-			if (wf->rfcarrier() != freqflag->freq) {
+			if (wf->rfcarrier() != freqflag->freq)
 				wf->rfcarrier(freqflag->freq);
-			}
-			if (wf->USB() != sb) {
+			if (FreqDisp->value() != freqflag->freq)
+				FreqDisp->value(freqflag->freq);
+			if (qsoFreqDisp->value() != freqflag->freq)
+				qsoFreqDisp->value(freqflag->freq);
+
+			if (wf->USB() != sb)
 				wf->USB(sb);
+			if (sb && (strcmp(opMODE->value(), "USB") || strcmp(qso_opMODE->value(),"USB"))) {
+				REQ(&Fl_ComboBox::put_value, opMODE, "USB");
+				REQ(&Fl_ComboBox::put_value, qso_opMODE, "USB");
+			}
+			if (!sb && (strcmp(opMODE->value(), "LSB") || strcmp(qso_opMODE->value(),"LSB"))) {
+				REQ(&Fl_ComboBox::put_value, opMODE, "LSB");
+				REQ(&Fl_ComboBox::put_value, qso_opMODE, "LSB");
 			}
 		}
 	}
@@ -205,7 +228,7 @@ long IOfreq = 7070000L;
 long IOmidfreq = 1000L;
 char szmode[80];
 
-void rigMEM_init(void) 
+bool rigMEM_init(void) 
 { 
 	rigMEM_enabled = false;
 
@@ -216,9 +239,10 @@ void rigMEM_init(void)
 	
 	if (pthread_create(&rigMEM_thread, NULL, rigMEM_loop, NULL) < 0) {
 		fl_message("rigMEM init: pthread_create failed");
-		return;
+		return false;
 	} 
 	rigMEM_enabled = true;
+	return true;
 }
 
 void rigMEM_close(void)
@@ -288,10 +312,21 @@ static void *rigMEM_loop(void *args)
 		if (strcmp(szmode,"LSB") == 0)
 			sb = false;
 			
-		if (wf->rfcarrier() != IOfreq)
+		if (wf->rfcarrier() != IOfreq) {
 			wf->rfcarrier(IOfreq);
-		if (wf->USB() != sb)
+			FreqDisp->value(IOfreq);
+			qsoFreqDisp->value(IOfreq);
+		}
+		if (wf->USB() != sb) {
 			wf->USB(sb);
+			if (sb) {
+				REQ(&Fl_ComboBox::put_value, opMODE, "USB");
+				REQ(&Fl_ComboBox::put_value, qso_opMODE, "USB");
+			} else  {
+				REQ(&Fl_ComboBox::put_value, opMODE, "LSB");
+				REQ(&Fl_ComboBox::put_value, qso_opMODE, "LSB");
+			}
+		}
 
 // delay for 50 msec interval
 		MilliSleep(50);
@@ -330,6 +365,21 @@ void rigMEM_set_qsy(long long f, long long fmid)
 	rig_qsy = true;
 }
 
+void rigMEM_set_freq(long long f)
+{
+	if (!rigMEM_enabled)
+		return;
+
+	qsy_f = f;
+	qsy_fmid = 0;
+	rig_qsy = true;
+
+}
+
+void rigMEM_setmode(const string& s)
+{
+	return; // not implemented for memMAP
+}
 
 /* ---------------------------------------------------------------------- */
 

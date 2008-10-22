@@ -285,6 +285,13 @@ progdefaults.changed = true;
 };
 }
 
+Fl_Check_Button *chkShowAudioScale=(Fl_Check_Button *)0;
+
+static void cb_chkShowAudioScale(Fl_Check_Button* o, void*) {
+  progdefaults.wf_audioscale = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *btnWaterfallHistoryDefault=(Fl_Check_Button *)0;
 
 static void cb_btnWaterfallHistoryDefault(Fl_Check_Button* o, void*) {
@@ -1517,7 +1524,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     o->color(FL_DARK2);
     o->selection_color((Fl_Color)51);
     o->align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE);
-    { tabsConfigure = new Fl_Tabs(0, 0, 405, 225);
+    { tabsConfigure = new Fl_Tabs(0, 0, 410, 225);
       tabsConfigure->color(FL_DARK1);
       tabsConfigure->selection_color((Fl_Color)9);
       { tabOperator = new Fl_Group(0, 25, 400, 195, "Oper");
@@ -1525,6 +1532,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         tabOperator->selection_color((Fl_Color)51);
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { inpMyCallsign = new Fl_Input(78, 36, 85, 24, "Callsign:");
           inpMyCallsign->callback((Fl_Callback*)cb_inpMyCallsign);
         } // Fl_Input* inpMyCallsign
@@ -1565,11 +1573,11 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         } // Fl_Group* o
         tabOperator->end();
       } // Fl_Group* tabOperator
-      { tabWaterfall = new Fl_Group(0, 25, 405, 195, "W-fall");
+      { tabWaterfall = new Fl_Group(0, 25, 410, 195, "W-fall");
         tabWaterfall->color((Fl_Color)51);
         tabWaterfall->selection_color((Fl_Color)51);
         tabWaterfall->hide();
-        { Fl_Tabs* o = new Fl_Tabs(0, 25, 405, 195);
+        { Fl_Tabs* o = new Fl_Tabs(0, 25, 410, 195);
           { Fl_Group* o = new Fl_Group(0, 50, 400, 170, "Filters/Colors");
             { Fl_Group* o = new Fl_Group(10, 84, 385, 96);
               o->box(FL_ENGRAVED_FRAME);
@@ -1690,43 +1698,48 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             } // Fl_Group* o
             o->end();
           } // Fl_Group* o
-          { Fl_Group* o = new Fl_Group(0, 50, 405, 166, "Cursors");
+          { Fl_Group* o = new Fl_Group(5, 54, 393, 166, "Misc");
             o->hide();
-            { Fl_Group* o = new Fl_Group(5, 56, 390, 158);
+            { Fl_Group* o = new Fl_Group(8, 60, 390, 158);
               o->box(FL_ENGRAVED_FRAME);
-              { Fl_Check_Button* o = btnUseCursorLines = new Fl_Check_Button(170, 75, 100, 20, "Cursor BW");
+              { Fl_Check_Button* o = btnUseCursorLines = new Fl_Check_Button(58, 79, 100, 20, "Cursor BW");
                 btnUseCursorLines->down_box(FL_DOWN_BOX);
                 btnUseCursorLines->callback((Fl_Callback*)cb_btnUseCursorLines);
                 o->value(progdefaults.UseCursorLines);
               } // Fl_Check_Button* btnUseCursorLines
-              { Fl_Check_Button* o = btnUseBWTracks = new Fl_Check_Button(170, 155, 100, 20, "BW Tracks");
+              { Fl_Check_Button* o = btnUseBWTracks = new Fl_Check_Button(58, 159, 100, 20, "BW Tracks");
                 btnUseBWTracks->down_box(FL_DOWN_BOX);
                 btnUseBWTracks->callback((Fl_Callback*)cb_btnUseBWTracks);
                 o->value(progdefaults.UseBWTracks);
               } // Fl_Check_Button* btnUseBWTracks
-              { Fl_Check_Button* o = btnUseCursorCenterLine = new Fl_Check_Button(170, 114, 121, 21, "Cursor Center");
+              { Fl_Check_Button* o = btnUseCursorCenterLine = new Fl_Check_Button(58, 118, 121, 21, "Cursor Center");
                 btnUseCursorCenterLine->down_box(FL_DOWN_BOX);
                 btnUseCursorCenterLine->callback((Fl_Callback*)cb_btnUseCursorCenterLine);
                 o->value(progdefaults.UseCursorCenterLine);
               } // Fl_Check_Button* btnUseCursorCenterLine
-              { Fl_Button* o = btnCursorBWcolor = new Fl_Button(137, 75, 19, 20);
+              { Fl_Button* o = btnCursorBWcolor = new Fl_Button(25, 79, 19, 20);
                 btnCursorBWcolor->tooltip("Select Cursor BW color");
                 btnCursorBWcolor->color((Fl_Color)3);
                 btnCursorBWcolor->callback((Fl_Callback*)cb_btnCursorBWcolor);
                 o->color(fl_rgb_color(progdefaults.cursorLineRGBI.R,progdefaults.cursorLineRGBI.G,progdefaults.cursorLineRGBI.B));
               } // Fl_Button* btnCursorBWcolor
-              { Fl_Button* o = btnCursorCenterLineColor = new Fl_Button(137, 114, 19, 20);
+              { Fl_Button* o = btnCursorCenterLineColor = new Fl_Button(25, 118, 19, 20);
                 btnCursorCenterLineColor->tooltip("Select Center Line color");
                 btnCursorCenterLineColor->color(FL_BACKGROUND2_COLOR);
                 btnCursorCenterLineColor->callback((Fl_Callback*)cb_btnCursorCenterLineColor);
                 o->color(fl_rgb_color(progdefaults.cursorCenterRGBI.R,progdefaults.cursorCenterRGBI.G,progdefaults.cursorCenterRGBI.B));
               } // Fl_Button* btnCursorCenterLineColor
-              { Fl_Button* o = btnBwTracksColor = new Fl_Button(137, 155, 19, 20);
+              { Fl_Button* o = btnBwTracksColor = new Fl_Button(25, 159, 19, 20);
                 btnBwTracksColor->tooltip("Select BW tracks color");
                 btnBwTracksColor->color((Fl_Color)1);
                 btnBwTracksColor->callback((Fl_Callback*)cb_btnBwTracksColor);
                 o->color(fl_rgb_color(progdefaults.bwTrackRGBI.R,progdefaults.bwTrackRGBI.G,progdefaults.bwTrackRGBI.B));
               } // Fl_Button* btnBwTracksColor
+              { Fl_Check_Button* o = chkShowAudioScale = new Fl_Check_Button(195, 79, 185, 20, "show Audio Scale");
+                chkShowAudioScale->down_box(FL_DOWN_BOX);
+                chkShowAudioScale->callback((Fl_Callback*)cb_chkShowAudioScale);
+                o->value(progdefaults.wf_audioscale);
+              } // Fl_Check_Button* chkShowAudioScale
               o->end();
             } // Fl_Group* o
             o->end();
@@ -1987,7 +2000,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { tabQRZ = new Fl_Group(0, 25, 400, 195, "qrz");
         tabQRZ->color((Fl_Color)51);
         tabQRZ->selection_color((Fl_Color)51);
-        tabQRZ->hide();
         { Fl_Check_Button* o = btnQRZnotavailable = new Fl_Check_Button(12, 45, 110, 20, "Not available");
           btnQRZnotavailable->down_box(FL_DOWN_BOX);
           btnQRZnotavailable->value(1);
@@ -2005,13 +2017,13 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           o->value(progdefaults.QRZpathname.c_str());
         } // Fl_Input* txtQRZpathname
         { Fl_Check_Button* o = btnQRZsocket = new Fl_Check_Button(12, 96, 190, 20, "QRZ online subscription");
-          btnQRZsocket->tooltip("You need a QRZ on-line subscription to access QRZ.com");
+          btnQRZsocket->tooltip("You need a paid QRZ on-line subscription for access");
           btnQRZsocket->down_box(FL_DOWN_BOX);
           btnQRZsocket->callback((Fl_Callback*)cb_btnQRZsocket);
           if (progdefaults.QRZ == 1) o->value(1); else o->value(0);
         } // Fl_Check_Button* btnQRZsocket
         { Fl_Check_Button* o = btnHAMCALLsocket = new Fl_Check_Button(12, 119, 205, 20, "Hamcall online subscription");
-          btnHAMCALLsocket->tooltip("You need a QRZ on-line subscription to access QRZ.com");
+          btnHAMCALLsocket->tooltip("You need a paid Hamcall on-line subscription to access");
           btnHAMCALLsocket->down_box(FL_DOWN_BOX);
           btnHAMCALLsocket->callback((Fl_Callback*)cb_btnHAMCALLsocket);
           if (progdefaults.QRZ == 3) o->value(1); else o->value(0);

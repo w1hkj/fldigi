@@ -131,17 +131,18 @@ bool hexout(const string& s, int retnbr)
 			while (readtimeout--)
 				MilliSleep(1);
 
-		LOG_DEBUG("waiting for %d bytes", retnbr);
-
 		if (retnbr > 0) {
+			LOG_DEBUG("waiting for %d bytes", retnbr);
+
 			num = rigio.ReadBuffer (replybuff, retnbr > 200 ? 200 : retnbr);
 
 // debug code
 			if (num)
 				LOG_DEBUG("resp (%d) = %s", n, printhex(replybuff, num).c_str());
 			else
-				LOG_ERROR("resp (%d) no reply", n);
-		}
+				LOG_DEBUG("resp (%d) no reply", n);
+		} else
+			LOG_DEBUG("No response needed");		
 
 		if (retnbr == 0 || num == retnbr) {
 			readpending = false;
@@ -515,10 +516,6 @@ string rigCAT_getmode()
 	if (modeCmd.str2.empty() == false)
 		strCmd.append(modeCmd.str2);
 
-//	if (hexout(strCmd) == false) {
-//		return "";
-//	}
-
 	if (modeCmd.info.size()) {
 		list<XMLIOS>::iterator preply = reply.begin();
 		while (preply != reply.end()) {
@@ -678,10 +675,6 @@ string rigCAT_getwidth()
 
 	if (modeCmd.str2.empty() == false)
 		strCmd.append(modeCmd.str2);
-
-//	if (hexout(strCmd) == false) {
-//		return "";
-//	}
 
 	if (modeCmd.info.size()) {
 		list<XMLIOS>::iterator preply = reply.begin();
@@ -948,15 +941,12 @@ void rigCAT_sendINIT()
 			hexout(strCmd, 0);
 		pthread_mutex_unlock(&rigCAT_mutex);
 	}
-//	pthread_mutex_lock(&rigCAT_mutex);
-//		hexout(strCmd, 0);
-//	pthread_mutex_unlock(&rigCAT_mutex);
 }
 
 bool rigCAT_init(bool useXML)
 {
 	if (rigCAT_open == true) {
-		LOG_ERROR("RigCAT already open file present");
+		LOG_ERROR("RigCAT already open");
 		return false;
 	}
 	
@@ -964,9 +954,8 @@ bool rigCAT_init(bool useXML)
 		
 		noXMLfile = false;
 		if (readRigXML() == false) {
-			LOG_DEBUG("No rig.xml file present");
+			LOG_ERROR("No rig.xml file present");
 			noXMLfile = true;
-			llFreq = 0;
 			sRigMode = "";
 			sRigWidth = "";
 			nonCATrig = true;
@@ -977,7 +966,6 @@ bool rigCAT_init(bool useXML)
 				LOG_ERROR("Cannot open serial port %s", rigio.Device().c_str());
 				return false;
 			}
-			llFreq = 0;
 			sRigMode = "";
 			sRigWidth = "";
 	
@@ -988,16 +976,17 @@ bool rigCAT_init(bool useXML)
 				rigio.ClosePort();
 				return false;
 			}
-	
 			rigCAT_sendINIT();
+			init_Xml_RigDialog();
 		}
 	} else {
-		llFreq = 0;
 		sRigMode = "";
 		sRigWidth = "";
 		nonCATrig = true;
+		init_NoRig_RigDialog();
 	}
 	
+	llFreq = 0;
 	rigCAT_bypass = false;
 	rigCAT_exit = false;
 	
@@ -1008,11 +997,6 @@ bool rigCAT_init(bool useXML)
 		rigio.ClosePort();
 		return false;
 	} 
-
-	if (noXMLfile == false)
-		init_Xml_RigDialog();
-	else
-		init_NoRig_RigDialog();
 
 	rigCAT_open = true;
 	return true;
@@ -1025,9 +1009,7 @@ void rigCAT_close(void)
 		return;
 	rigCAT_exit = true;
 	
-//	std::cout << "Waiting for RigCAT to exit "; fflush(stdout);
 	while (rigCAT_open == true) {
-//		std::cout << "."; fflush(stdout);
 		MilliSleep(50);
 		count--;
 		if (!count) {
@@ -1038,9 +1020,9 @@ void rigCAT_close(void)
 			exit(0);
 		}
 	}
-	rigio.ClosePort();
 	delete rigCAT_thread;
 	rigCAT_thread = 0;
+	LOG_DEBUG("RigCAT closed, count = %d", count);
 }
 
 bool rigCAT_active(void)
@@ -1116,6 +1098,8 @@ static void *rigCAT_loop(void *args)
 
 		pthread_mutex_lock(&rigCAT_mutex);
 			freq = rigCAT_getfreq();
+			sWidth = rigCAT_getwidth();
+			sMode = rigCAT_getmode();
 		pthread_mutex_unlock(&rigCAT_mutex);
 
 		if ((freq > 0) && (freq != llFreq)) {
@@ -1124,30 +1108,12 @@ static void *rigCAT_loop(void *args)
 			qsoFreqDisp->value(freq);
 			wf->rfcarrier(freq);
 		}
-
-		if (rigCAT_bypass == true)
-			continue;
-		if (rigCAT_exit == true)
-			break;
-
-		pthread_mutex_lock(&rigCAT_mutex);
-			sWidth = rigCAT_getwidth();
-		pthread_mutex_unlock(&rigCAT_mutex);
-		
+	
 		if (sWidth.size() && sWidth != sRigWidth) {
 			sRigWidth = sWidth;
 			REQ(&Fl_ComboBox::put_value, opBW, sWidth.c_str());
 			REQ(&Fl_ComboBox::put_value, qso_opBW, sWidth.c_str());
 		}
-
-		if (rigCAT_bypass == true)
-			continue;
-		if (rigCAT_exit == true)
-			break;
-
-		pthread_mutex_lock(&rigCAT_mutex);
-			sMode = rigCAT_getmode();
-		pthread_mutex_unlock(&rigCAT_mutex);
 
 		if (sMode.size() && sMode != sRigMode) {
 			sRigMode = sMode;
@@ -1160,23 +1126,19 @@ static void *rigCAT_loop(void *args)
 		}
 	}
 
-	rigCAT_open = false;
-	rigCAT_exit = false;
-	rigCAT_bypass = false;
 	if (rigcontrol)
 		rigcontrol->hide();
 	wf->USB(true);
-//	wf->rfcarrier(atoi(cboBand->value())*1000L);
 	wf->setQSY(0);
-	FL_LOCK();
-//	cboBand->show();
-//	btnSideband->show();
-//	activate_rig_menu_item(false);
-	FL_UNLOCK();
 
 	pthread_mutex_lock(&rigCAT_mutex);
+		LOG_DEBUG("Exiting rigCAT loop, closing serial port");
 		rigio.ClosePort();
 	pthread_mutex_unlock(&rigCAT_mutex);
+
+	rigCAT_open = false;
+	rigCAT_exit = false;
+	rigCAT_bypass = false;
 
 	return NULL;
 }

@@ -167,12 +167,11 @@ void Cserial::SetPTT(bool b)
 		return;
 	}
 	if ( !(dtrptt || rtsptt) ) {
-		LOG_DEBUG("No h/w PTT");
 		return;
 	}
 
 	ioctl(fd, TIOCMGET, &status);
-	LOG_DEBUG("Status %X", status);
+	LOG_INFO("h/w ptt %d, Status %X", b, status);
 	if (b == true) {				// ptt enabled
 		if (dtrptt && dtr)
 			status &= ~TIOCM_DTR;	// toggle low
@@ -208,10 +207,11 @@ void Cserial::SetPTT(bool b)
 void Cserial::ClosePort()
 {
 	if (fd < 0) return;
-	LOG_DEBUG("Serial port closed");
+	LOG_INFO("Serial port closed, fd = %d", fd);
 	ioctl(fd, TIOCMSET, &origstatus);
 	tcsetattr (fd, TCSANOW, &oldtio);
 	close(fd);
+	fd = -1;
 	return;
 }
 
@@ -240,6 +240,7 @@ bool  Cserial::IOselect ()
 ///////////////////////////////////////////////////////
 int  Cserial::ReadBuffer (unsigned char *buf, int nchars)
 {
+	if (fd < 0) return 0;
 	int retnum, nread = 0;
 	while (nchars > 0) {
 		if (!IOselect()) {
@@ -264,6 +265,7 @@ int  Cserial::ReadBuffer (unsigned char *buf, int nchars)
 ///////////////////////////////////////////////////////
 int Cserial::WriteBuffer(unsigned char *buff, int n)
 {
+	if (fd < 0) return 0;
 	int ret = write (fd, buff, n);
 	return ret;
 }

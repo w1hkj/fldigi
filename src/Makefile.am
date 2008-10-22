@@ -170,7 +170,6 @@ fldigi_SOURCES += \
 	include/fl_digi.h \
 	include/fl_lock.h \
 	include/fldigi-config.h \
-	include/fldigi-icon-48.xpm \
 	include/flstring.h \
 	include/font_browser.h \
 	include/fontdef.h \
@@ -204,6 +203,18 @@ fldigi_SOURCES += \
 	include/newinstall.h \
 	include/olivia.h \
 	include/picture.h \
+	include/pixmaps/address-book-icon.xpm \
+	include/pixmaps/clear-icon.xpm \
+	include/pixmaps/close-icon.xpm \
+	include/pixmaps/fldigi-icon.xpm \
+	include/pixmaps/left-arrow-icon.xpm \
+	include/pixmaps/minus-icon.xpm \
+	include/pixmaps/plus-icon.xpm \
+	include/pixmaps/net-icon.xpm \
+	include/pixmaps/right-arrow-icon.xpm \
+	include/pixmaps/save-icon.xpm \
+	include/pixmaps/time-icon.xpm \
+	include/pixmaps/trash-icon.xpm \
 	include/progress.h \
 	include/psk.h \
 	include/viewpsk.h \

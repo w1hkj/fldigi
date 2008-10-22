@@ -244,9 +244,10 @@
         ELEM_(Fl_Font, WaterfallFontnbr, "WATERFALLFONTNBR", FL_SCREEN)                 \
         ELEM_(int, WaterfallFontsize, "WATERFALLFONTSIZE", 12)                          \
         ELEM_(std::string, ui_scheme, "UISCHEME", "gtk+")                               \
+        ELEM_(bool, wf_audioscale, "WFAUDIOSCALE", false)								\
 /* Freq Display colors */                                                               \
-        ELEM_(RGB, FDbackground, "FDBACKGROUND", { 0, 0, 0 })                     \
-        ELEM_(RGB, FDforeground, "FDFOREGROUND", { 0, 200, 0 })                     \
+        ELEM_(RGB, FDbackground, "FDBACKGROUND", { 0, 0, 0 })                     		\
+        ELEM_(RGB, FDforeground, "FDFOREGROUND", { 0, 200, 0 })                     	\
 /* PSK Viewer */                                                                        \
         ELEM_(bool, VIEWERmarquee, "VIEWERMARQUEE", true)                               \
         ELEM_(bool, VIEWERshowfreq, "VIEWERSHOWFREQ", true)                             \

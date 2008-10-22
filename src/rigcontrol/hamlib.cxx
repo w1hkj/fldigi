@@ -379,12 +379,8 @@ static void *hamlib_loop(void *args)
 	if (rigcontrol)
 		rigcontrol->hide();
 	wf->USB(true);
-//	wf->rfcarrier(atoi(cboBand->value())*1000L);
 	FL_LOCK();
 	wf->setQSY(0);
-//	cboBand->show();
-//	btnSideband->show();
-//	activate_rig_menu_item(false);
 	FL_UNLOCK();
 
 	return NULL;

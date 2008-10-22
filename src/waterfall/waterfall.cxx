@@ -464,7 +464,7 @@ void WFdisp::sig_data( double *sig, int len, int sr ) {
 	
 //	if (usebands)
 //		rfc = (long long)(atof(cboBand->value()) * 1000.0);
-	if (rfc != 0) {
+	if (rfc != 0) { // use a boolean for the waterfall
 		if (usb)
 			dfreq = rfc + active_modem->get_txfreq();
 		else	
@@ -598,7 +598,7 @@ void WFdisp::drawScale() {
 	fl_color(fl_rgb_color(228));
 	fl_font(progdefaults.WaterfallFontnbr, progdefaults.WaterfallFontsize);
 	for (int i = 1; i < 10; i++) {
-		if (rfc == 0)
+		if (progdefaults.wf_audioscale)
 			fr = 500.0 * i;
 		else {
 			if (usb)
@@ -606,9 +606,12 @@ void WFdisp::drawScale() {
 			else
 				fr = (rfc - (rfc %500))/1000.0 + 0.5 - 0.5*i;
 		}
-		snprintf(szFreq, sizeof(szFreq), "%7.1f", fr);
+		if (progdefaults.wf_audioscale)
+			snprintf(szFreq, sizeof(szFreq), "%7.0f", fr);
+		else
+			snprintf(szFreq, sizeof(szFreq), "%7.1f", fr);
 		fw = (int)fl_width(szFreq);
-		if (usb)
+		if (usb || progdefaults.wf_audioscale)
 			xchar = (int) ( ( (1000.0/step) * i - fw) / 2.0 - 
 							(offset + rfc % 500) /step );
 		else
