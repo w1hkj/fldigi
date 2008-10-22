@@ -102,7 +102,7 @@
 #include "include/pixmaps/minus-icon.xpm"
 #include "include/pixmaps/plus-icon.xpm"
 #include "include/pixmaps/net-icon.xpm"
-#include "include/pixmaps/right-arrow-icon.xpm"
+//#include "include/pixmaps/right-arrow-icon.xpm"
 #include "include/pixmaps/save-icon.xpm"
 #include "include/pixmaps/time-icon.xpm"
 #include "include/pixmaps/trash-icon.xpm"
@@ -1726,9 +1726,18 @@ void create_fl_digi_main() {
 
 	IMAGE_WIDTH = progdefaults.wfwidth;
 	Hwfall = progdefaults.wfheight;
-	Wwfall = DEFAULT_HNOM + 2 * BEZEL;
-	WNOM = Wwfall;
+//	Wwfall = DEFAULT_HNOM + 2 * BEZEL;
 	HNOM = DEFAULT_HNOM;
+
+	WNOM = DEFAULT_HNOM;
+	if (progdefaults.docked_scope)	
+		Wwfall = WNOM - 2 * BEZEL - Hwfall + 24;
+	else
+		Wwfall = WNOM - 2 * BEZEL - 2 * DEFAULT_SW;
+//	if (progdefaults.docked_scope) 
+//		WNOM = Wwfall;
+//	else
+//		WNOM = Wwfall + 2 * DEFAULT_SW;
 	
     update_main_title();
     fl_digi_main = new Fl_Double_Window(WNOM, HNOM, main_window_title.c_str());
@@ -1761,21 +1770,19 @@ void create_fl_digi_main() {
 			btnMacroTimer->hide();
 			btnMacroDummy = new Fl_Button(WNOM - 50 - pad, 0, 50, Hmenu, "");
 		
-		int qh = Hqsoframe / 2;
-		int qfy = Hmenu + qh - pad;
-		
 #define FREQWIDTH 172  // FREQWIDTH should be a multiple of 9 + 10
 #define FREQHEIGHT 30
 #define BTNWIDTH 30
 
-#define FREQDISP_WIDTH (FREQWIDTH + 4)
-#define QSO_INFO_WIDTH (WNOM - FREQDISP_WIDTH - BTNWIDTH)
+		int qh = Hqsoframe / 2;
+		int qfy = Hmenu + qh - pad;
+		int rig_control_width = FREQWIDTH + 4;
 
 		Fl_Group *TopFrame = new Fl_Group(0, Hmenu, WNOM, Hqsoframe + Hnotes);
 
 // leftmost frame		
 			RigControlFrame = new Fl_Group(0, Hmenu,
-									FREQDISP_WIDTH, Hqsoframe + Hnotes);
+									rig_control_width, Hqsoframe + Hnotes);
 
 				txtRigName = new Fl_Box(2, Hmenu, FREQWIDTH, Hqsoframe - FREQHEIGHT);
 				txtRigName->align(FL_ALIGN_CENTER);
@@ -1963,18 +1970,12 @@ void create_fl_digi_main() {
 				QsoInfoFrame2 = new Fl_Group(rightof(QsoButtonFrame), Y, 
 							WNOM - rightof(QsoButtonFrame), Hnotes);
 
-//					Fl_Box *boxA = new Fl_Box(rightof(QsoButtonFrame), Y, 40, Hnotes, "Name");
-//					boxA->align(FL_ALIGN_INSIDE | FL_ALIGN_LEFT);
 					inpName = new Fl_Input(rightof(QsoButtonFrame)+40, Y, 90, Hnotes, "Name");
 					inpName->align(FL_ALIGN_LEFT);
 			
-//					Fl_Box *boxB = new Fl_Box(rightof(inpName), Y, 25, Hnotes, "Loc");
-//					boxB->align(FL_ALIGN_INSIDE | FL_ALIGN_LEFT);
 					inpLoc = new Fl_Input(rightof(inpName) - 8, Y, 58, Hnotes, "Loc");
 					inpLoc->align(FL_ALIGN_LEFT);
 
-//					Fl_Box *boxC = new Fl_Box(rightof(inpLoc), Y, 20, Hnotes, "Az");
-//					boxC->align(FL_ALIGN_INSIDE | FL_ALIGN_LEFT);
 					inpAZ = new Fl_Input(leftof(inpRstOut), Y, 28, Hnotes, "Az");
 					inpAZ->align(FL_ALIGN_LEFT);
 					
@@ -2113,21 +2114,25 @@ void create_fl_digi_main() {
 		if (progdefaults.docked_scope) {
 			Fl_Pack *wfpack = new Fl_Pack(0, Y, WNOM, Hwfall);
 				wfpack->type(1);
-				wf = new waterfall(0, Y, Wwfall - Hwfall + 24, Hwfall);
+				wf = new waterfall(0, Y, Wwfall, Hwfall);
 				wf->end();
-				Fl_Pack *ypack = new Fl_Pack(Wwfall - Hwfall + 24, Y, Hwfall - 24, Hwfall);
+				Fl_Pack *ypack = new Fl_Pack(
+					rightof(wf), Y,
+					Hwfall - 24, Hwfall);
+
 					ypack->type(0);
 
-					wfscope = new Digiscope (Wwfall - Hwfall, Y, Hwfall - 24, Hwfall - 24);
+					wfscope = new Digiscope (
+						rightof(wf), Y,
+						Hwfall - 24, Hwfall - 24);
 		
 					pgrsSquelch = new Progress(
-						Wwfall - Hwfall + 24, Y + Hwfall - 24,
-						Hwfall - 24, 12, "");
+						rightof(wf), Y + Hwfall - 24,
+						Hwfall - 24, 12,
+						"");
 					pgrsSquelch->color(FL_BACKGROUND2_COLOR, FL_DARK_GREEN);
-					sldrSquelch = new Fl_Slider(
-						FL_HOR_NICE_SLIDER, 
-						Wwfall - Hwfall + 24, Y + Hwfall - 12, 
-						Hwfall - 24, 12, "");
+					sldrSquelch = new Fl_Slider( FL_HOR_NICE_SLIDER, 
+						rightof(wf), Y + Hwfall - 12, Hwfall - 24, 12, "");
 							
 					sldrSquelch->minimum(0);
 					sldrSquelch->maximum(100);
@@ -2146,17 +2151,18 @@ void create_fl_digi_main() {
 				wf = new waterfall(0, Y, Wwfall, Hwfall);
 				wf->end();
 
-				pgrsSquelch = new Progress(
-					WNOM - 2*DEFAULT_SW, Y + 4,
-					DEFAULT_SW, Hwfall - 8, "");
+				pgrsSquelch = new Progress( 
+					rightof(wf), Y + 4, 
+					DEFAULT_SW, Hwfall - 8, 
+					"");
 				pgrsSquelch->color(FL_BACKGROUND2_COLOR, FL_DARK_GREEN);
 				pgrsSquelch->type(Progress::VERTICAL);
 				pgrsSquelch->tooltip("Detected signal level");
 
-				sldrSquelch = new Fl_Slider(
-					FL_VERT_NICE_SLIDER, 
-					WNOM - DEFAULT_SW, Y + 4, 
-					DEFAULT_SW, Hwfall - 8, "");
+				sldrSquelch = new Fl_Slider( 
+					rightof(pgrsSquelch), Y + 4, 
+					DEFAULT_SW, Hwfall - 8, 
+					"");
 				sldrSquelch->minimum(100);
 				sldrSquelch->maximum(0);
 				sldrSquelch->step(1);

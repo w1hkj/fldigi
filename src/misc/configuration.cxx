@@ -610,7 +610,7 @@ bool riginitOK = false;
 	} else if (chkUSERIGCATis) { // start the rigCAT thread
 		if (rigCAT_init(true)) {
 			wf->USB(true);
-			wf->setQSY(0);
+			wf->setQSY(1);
 //			activate_rig_menu_item(true);
 			qsoFreqDisp->activate();
 			riginitOK = true;
@@ -619,7 +619,7 @@ bool riginitOK = false;
 	} else if (chkUSEHAMLIBis) { // start the hamlib thread
 		if (hamlib_init(btnPTTis == 1 ? true : false) == false) {
 			wf->USB(true);
-			wf->setQSY(0);
+			wf->setQSY(1);
 //			activate_rig_menu_item(true);
 			qsoFreqDisp->activate();
 			riginitOK = true;
