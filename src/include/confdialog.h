@@ -132,6 +132,7 @@ extern Fl_Group *tabMainWindow;
 extern Fl_Counter *cntrWfwidth;
 extern Fl_Counter *cntrWfheight;
 extern Fl_Check_Button *btnDockedScope;
+extern Fl_Check_Button *btnDockedRigControl;
 extern Fl_Group *tabRSid;
 extern Fl_Check_Button *chkTransmitRSid;
 extern Fl_Check_Button *chkRSidWideSearch;

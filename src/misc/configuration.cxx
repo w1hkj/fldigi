@@ -603,16 +603,16 @@ bool riginitOK = false;
 		if (rigMEM_init()) {
 			btnPTT[2]->activate();
 			wf->setQSY(1);
-//			activate_rig_menu_item(true);
-			qsoFreqDisp->activate();
+			if (docked_rig_control)
+				qsoFreqDisp->activate();
 			riginitOK = true;
 		}
 	} else if (chkUSERIGCATis) { // start the rigCAT thread
 		if (rigCAT_init(true)) {
 			wf->USB(true);
 			wf->setQSY(1);
-//			activate_rig_menu_item(true);
-			qsoFreqDisp->activate();
+			if (docked_rig_control)
+				qsoFreqDisp->activate();
 			riginitOK = true;
 		}
 #if USE_HAMLIB
@@ -620,8 +620,8 @@ bool riginitOK = false;
 		if (hamlib_init(btnPTTis == 1 ? true : false) == false) {
 			wf->USB(true);
 			wf->setQSY(1);
-//			activate_rig_menu_item(true);
-			qsoFreqDisp->activate();
+			if (docked_rig_control)
+				qsoFreqDisp->activate();
 			riginitOK = true;
 		}
 #endif		
@@ -633,8 +633,8 @@ bool riginitOK = false;
 		rigCAT_init(false);
 		wf->USB(true);
 		wf->setQSY(0);
-//		activate_rig_menu_item(true);
-		qsoFreqDisp->activate();
+		if (docked_rig_control)
+			qsoFreqDisp->activate();
 	}
 	
 	push2talk->reset(btnPTTis);

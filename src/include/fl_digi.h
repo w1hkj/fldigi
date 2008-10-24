@@ -26,6 +26,8 @@
 
 #define fl_digi_h
 
+#include <string.h>
+
 #include <FL/Fl.H>
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Menu_Bar.H>
@@ -47,6 +49,8 @@
 #include "mixer.h"
 #include "progress.h"
 #include "FreqControl.h"
+
+using namespace std;
 
 extern Fl_Double_Window *fl_digi_main;
 extern Fl_Double_Window *scopeview;
@@ -79,6 +83,8 @@ extern Fl_Button		*qsoSave;
 extern Fl_Box			*txtRigName;
 
 extern Fl_Group			*qsoFrameView;
+extern Fl_Group			*QsoButtonFrame;
+extern Fl_Group			*QsoInfoFrame;
 extern cFreqControl		*qsoFreqDisp;
 extern Fl_ComboBox		*qso_opMODE;
 extern Fl_ComboBox		*qso_opBW;
@@ -144,6 +150,10 @@ extern void put_Status1(const char *msg, double timeout = 0.0, status_timeout ac
 extern void put_Status2(const char *msg, double timeout = 0.0, status_timeout action = STATUS_CLEAR);
 extern void set_AFCind( double val );
 extern void set_AFCrange(double val);
+
+extern void show_frequency(long long);
+extern void show_mode(string);
+extern void show_bw(string sWidth);
 
 extern void put_WARNstatus(double);
 

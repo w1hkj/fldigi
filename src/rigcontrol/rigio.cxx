@@ -1104,15 +1104,13 @@ static void *rigCAT_loop(void *args)
 
 		if ((freq > 0) && (freq != llFreq)) {
 			llFreq = freq;
-			FreqDisp->value(freq); // REQ is built in to the widget
-			qsoFreqDisp->value(freq);
+			show_frequency(freq);
 			wf->rfcarrier(freq);
 		}
 	
 		if (sWidth.size() && sWidth != sRigWidth) {
 			sRigWidth = sWidth;
-			REQ(&Fl_ComboBox::put_value, opBW, sWidth.c_str());
-			REQ(&Fl_ComboBox::put_value, qso_opBW, sWidth.c_str());
+			show_bw(sWidth);
 		}
 
 		if (sMode.size() && sMode != sRigMode) {
@@ -1121,8 +1119,7 @@ static void *rigCAT_loop(void *args)
 				wf->USB(false);
 			else
 				wf->USB(true);
-			REQ(&Fl_ComboBox::put_value, opMODE, sMode.c_str());
-			REQ(&Fl_ComboBox::put_value, qso_opMODE, sMode.c_str());
+			show_mode(sMode);
 		}
 	}
 

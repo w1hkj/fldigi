@@ -98,6 +98,9 @@ bool hamlib_init(bool bPtt)
 
 	try {
 		model = (*prig)->rig_model;
+LOG_DEBUG("model %d", model);
+LOG_DEBUG("port %s", port.c_str());
+LOG_DEBUG("speed %s", spd.c_str());
 		xcvr->init(model);
 		xcvr->setConf("rig_pathname", port.c_str());
 		xcvr->setConf("serial_speed", spd.c_str());
@@ -351,8 +354,7 @@ static void *hamlib_loop(void *args)
 
 		if (freqok && freq && (freq != hamlib_freq)) {
 			hamlib_freq = freq;
-			FreqDisp->value(hamlib_freq);
-			qsoFreqDisp->value(hamlib_freq);
+			show_frequency(hamlib_freq);
 			wf->rfcarrier(hamlib_freq);
 		}
 		
@@ -363,10 +365,13 @@ static void *hamlib_loop(void *args)
 					hamlib_rmode == RIG_MODE_CWR ||	
 					hamlib_rmode == RIG_MODE_PKTLSB ||
 					hamlib_rmode == RIG_MODE_ECSSLSB ||
-					hamlib_rmode == RIG_MODE_RTTYR)
+					hamlib_rmode == RIG_MODE_RTTYR) {
 				wf->USB(false);
-			else
+				show_mode("LSB");
+			} else {
 				wf->USB(true);
+				show_mode("USB");
+			}
 		}
 		
 		if (hamlib_exit)

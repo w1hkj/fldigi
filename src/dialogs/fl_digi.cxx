@@ -54,6 +54,7 @@
 #include "raster.h"
 #include "progress.h"
 #include "afcind.h"
+#include "rigdialog.h"
 
 #include "main.h"
 #include "threads.h"
@@ -1487,7 +1488,7 @@ Fl_Menu_Item menu_[] = {
 {"Digiscope", 0, (Fl_Callback*)cb_mnuDigiscope, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {"MFSK Image", 0, (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
 {"PSK Browser", 0, (Fl_Callback*)cb_mnuViewer, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-//{"Rig Control", 0, (Fl_Callback*)cb_mnuRig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{"Rig Control", 0, (Fl_Callback*)cb_mnuRig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
@@ -1528,23 +1529,24 @@ Fl_Menu_Item *getMenuItem(const char *caption)
 	return item;
 }
 
-//void activate_rig_menu_item(bool b)
-//{
-//	Fl_Menu_Item *rig = getMenuItem("Rig Control");
-//	if (!rig)
-//		return;
-
-//	if (b) {
-//		bSaveFreqList = true;
+void activate_rig_menu_item(bool b)
+{
+	Fl_Menu_Item *rig = getMenuItem("Rig Control");
+	if (!rig)
+		return;
+	if (b) {
+		bSaveFreqList = true;
+		rig->show();
 //		rig->activate();
 		
-//	} else {
+	} else {
+		rig->hide();
 //		rig->deactivate();
-//		if (rigcontrol)
-//			rigcontrol->hide();
-//	}
-//	mnu->redraw();
-//}
+		if (rigcontrol)
+			rigcontrol->hide();
+	}
+	mnu->redraw();
+}
 
 void activate_mfsk_image_item(bool b)
 {
@@ -1719,6 +1721,27 @@ void cb_qso_opBrowser(Fl_Browser*, void*)
 	}
 }
 
+void show_frequency(long long freq)
+{
+	FreqDisp->value(freq); // REQ is built in to the widget
+	if (progdefaults.docked_rig_control)
+		qsoFreqDisp->value(freq);
+}
+
+void show_mode(string sMode)
+{
+	REQ(&Fl_ComboBox::put_value, opMODE, sMode.c_str());
+	if (progdefaults.docked_rig_control)
+		REQ(&Fl_ComboBox::put_value, qso_opMODE, sMode.c_str());
+}
+
+void show_bw(string sWidth)
+{
+	REQ(&Fl_ComboBox::put_value, opBW, sWidth.c_str());
+	if (progdefaults.docked_rig_control)
+		REQ(&Fl_ComboBox::put_value, qso_opBW, sWidth.c_str());
+}
+
 void create_fl_digi_main() {
 
 	int pad = 1; //wSpace;
@@ -1726,7 +1749,6 @@ void create_fl_digi_main() {
 
 	IMAGE_WIDTH = progdefaults.wfwidth;
 	Hwfall = progdefaults.wfheight;
-//	Wwfall = DEFAULT_HNOM + 2 * BEZEL;
 	HNOM = DEFAULT_HNOM;
 
 	WNOM = DEFAULT_HNOM;
@@ -1734,10 +1756,6 @@ void create_fl_digi_main() {
 		Wwfall = WNOM - 2 * BEZEL - Hwfall + 24;
 	else
 		Wwfall = WNOM - 2 * BEZEL - 2 * DEFAULT_SW;
-//	if (progdefaults.docked_scope) 
-//		WNOM = Wwfall;
-//	else
-//		WNOM = Wwfall + 2 * DEFAULT_SW;
 	
     update_main_title();
     fl_digi_main = new Fl_Double_Window(WNOM, HNOM, main_window_title.c_str());
@@ -1774,13 +1792,14 @@ void create_fl_digi_main() {
 #define FREQHEIGHT 30
 #define BTNWIDTH 30
 
-		int qh = Hqsoframe / 2;
-		int qfy = Hmenu + qh - pad;
-		int rig_control_width = FREQWIDTH + 4;
-
 		Fl_Group *TopFrame = new Fl_Group(0, Hmenu, WNOM, Hqsoframe + Hnotes);
 
-// leftmost frame		
+			int qh = Hqsoframe / 2;
+			int qfy = Hmenu + qh - pad;
+			int rig_control_width = FREQWIDTH + 4;
+
+		if (progdefaults.docked_rig_control) {
+
 			RigControlFrame = new Fl_Group(0, Hmenu,
 									rig_control_width, Hqsoframe + Hnotes);
 
@@ -1910,6 +1929,8 @@ void create_fl_digi_main() {
 			QsoButtonFrame = new Fl_Group(rightof(RigControlFrame), Hmenu, BTNWIDTH, Hqsoframe + Hnotes);
 				btnQRZ = new Fl_Button(rightof(RigControlFrame) + pad, Hmenu + 1,
 							BTNWIDTH - 2*pad, qh - pad);
+				btnQRZ = new Fl_Button(rightof(RigControlFrame) + pad, Hmenu + 1,
+							BTNWIDTH - 2*pad, qh - pad);
 	 			btnQRZ->image(new Fl_Pixmap(net_icon));
 				btnQRZ->callback(cb_QRZ, 0);
 				btnQRZ->tooltip("QRZ");
@@ -1926,6 +1947,29 @@ void create_fl_digi_main() {
 				qsoSave->callback(qsoSave_cb, 0);
 				qsoSave->tooltip("Save");
 			QsoButtonFrame->end();
+
+		} else {
+
+			QsoButtonFrame = new Fl_Group(0, Hmenu, BTNWIDTH, Hqsoframe + Hnotes);
+				btnQRZ = new Fl_Button(pad, Hmenu + 1,
+							BTNWIDTH - 2*pad, qh - pad);
+	 			btnQRZ->image(new Fl_Pixmap(net_icon));
+				btnQRZ->callback(cb_QRZ, 0);
+				btnQRZ->tooltip("QRZ");
+
+				qsoClear = new Fl_Button(pad, Hmenu + qh + 1, 
+							BTNWIDTH - 2*pad, qh - pad);
+	 			qsoClear->image(new Fl_Pixmap(clear_icon));
+				qsoClear->callback(qsoClear_cb, 0);
+				qsoClear->tooltip("Clear");
+ 
+				qsoSave = new Fl_Button(pad, Hmenu + Hqsoframe + 1, 
+							BTNWIDTH - 2*pad, qh - pad);
+	 			qsoSave->image(new Fl_Pixmap(save_icon));
+				qsoSave->callback(qsoSave_cb, 0);
+				qsoSave->tooltip("Save");
+			QsoButtonFrame->end();
+		}
 				
 			int w_inpFreq = 80;
 			int w_inpTime = 38;
@@ -1959,7 +2003,8 @@ void create_fl_digi_main() {
 					inpRstOut = new Fl_Input(rightof(inpRstIn) + pad, qfy, w_inpRstOut, qh, "Out");
 					inpRstOut->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
-					inpQth = new Fl_Input(rightof(inpRstOut) + pad, qfy, 20, Hnotes, "Qth");
+					inpQth = new Fl_Input(rightof(inpRstOut) + pad, qfy, 
+								WNOM - rightof(inpRstOut) - pad, Hnotes, "Qth");
 					inpQth->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
 					QsoInfoFrame1->resizable(inpQth);
@@ -1979,13 +2024,16 @@ void create_fl_digi_main() {
 					inpAZ = new Fl_Input(leftof(inpRstOut), Y, 28, Hnotes, "Az");
 					inpAZ->align(FL_ALIGN_LEFT);
 					
-					inpNotes = new Fl_Input(leftof(inpQth), Y, 20, Hnotes, "");
+					inpNotes = new Fl_Input(leftof(inpQth), Y, 
+								inpQth->w(), Hnotes, "");
 					inpNotes->value("Notes");
 					inpNotes->align(FL_ALIGN_INSIDE);
 					
 					QsoInfoFrame2->resizable(inpNotes);
 
 				QsoInfoFrame2->end();
+				
+				QsoInfoFrame->resizable(QsoInfoFrame2);
 		
 			QsoInfoFrame->end();
 			
@@ -2271,6 +2319,9 @@ void create_fl_digi_main() {
 	scopeview->size_range(SCOPEWIN_MIN_WIDTH, SCOPEWIN_MIN_HEIGHT);
 	scopeview->end();
 	scopeview->hide();	
+
+	if (progdefaults.docked_rig_control)
+		activate_rig_menu_item(false);
 
 }
 

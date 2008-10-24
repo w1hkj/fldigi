@@ -120,12 +120,12 @@ void Rig::setFreq(freq_t freq, vfo_t vfo)
 
 freq_t Rig::getFreq(vfo_t vfo)
 {
-	freq_t freq;
-	for (int i = 0; i < NUMTRIES; i++) {
+	freq_t freq = 0;
+	int i;
+	for (i = 0; i < NUMTRIES; i++)
 		if (rig_get_freq(theRig, vfo, &freq) == RIG_OK)
-			return freq;
-	}
-	return 0;
+			break;
+	return freq;
 }
 
 void Rig::setMode(rmode_t mode, pbwidth_t width, vfo_t vfo) 

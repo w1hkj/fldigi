@@ -92,7 +92,8 @@ void selFreq(long int f)
 void initOptionMenus()
 {
 	opMODE->clear();
-	qso_opMODE->clear();
+	if (progdefaults.docked_rig_control)
+		qso_opMODE->clear();
 	list<MODE>::iterator MD;
 	list<MODE> *pMD = 0;
 	if (lmodes.empty() == false)
@@ -104,21 +105,26 @@ void initOptionMenus()
 		MD = pMD->begin();
 		while (MD != pMD->end()) {
 			opMODE->add( (*MD).SYMBOL.c_str());
-			qso_opMODE->add( (*MD).SYMBOL.c_str());
+			if (progdefaults.docked_rig_control)
+				qso_opMODE->add( (*MD).SYMBOL.c_str());
 			MD++;
 		}
 		opMODE->activate();
 		opMODE->index(0);
-		qso_opMODE->activate();
-		qso_opMODE->index(0);
+		if (progdefaults.docked_rig_control) {
+			qso_opMODE->activate();
+			qso_opMODE->index(0);
+		}
 	}
 	else {
 		opMODE->deactivate();
-		qso_opMODE->deactivate();
+		if (progdefaults.docked_rig_control)
+			qso_opMODE->deactivate();
 	}
 	
 	opBW->clear();
-	qso_opBW->clear();
+	if (progdefaults.docked_rig_control)
+		qso_opBW->clear();
 	list<BW>::iterator bw;
 	list<BW> *pBW = 0;
 	if (lbws.empty() == false)
@@ -130,17 +136,21 @@ void initOptionMenus()
 		bw = pBW->begin();
 		while (bw != pBW->end()) {
 			opBW->add( (*bw).SYMBOL.c_str());
-			qso_opBW->add( (*bw).SYMBOL.c_str());
+			if (progdefaults.docked_rig_control)
+				qso_opBW->add( (*bw).SYMBOL.c_str());
 			bw++;
 		}
 		opBW->activate();
 		opBW->index(0);
-		qso_opBW->activate();
-		qso_opBW->index(0);
+		if (progdefaults.docked_rig_control) {
+			qso_opBW->activate();
+			qso_opBW->index(0);
+		}
 	}
 	else {
 		opBW->deactivate();
-		qso_opBW->deactivate();
+		if (progdefaults.docked_rig_control)
+			qso_opBW->deactivate();
 	}
 }
 
@@ -148,7 +158,8 @@ void clearList()
 {
 	freqlist.clear();
 	FreqSelect->clear();
-	qso_opBrowser->clear();
+	if (progdefaults.docked_rig_control)
+		qso_opBrowser->clear();
 }
 
 void qso_clearList()
@@ -163,7 +174,8 @@ void updateSelect()
 		return;
 	for (size_t i = 0; i < freqlist.size(); i++) {
 		FreqSelect->add(freqlist[i].str().c_str());
-		qso_opBrowser->add(freqlist[i].str().c_str());
+		if (progdefaults.docked_rig_control)
+			qso_opBrowser->add(freqlist[i].str().c_str());
 	}
 }
 
@@ -303,13 +315,15 @@ void setMode()
 		hamlib_setmode(mode_nums[opMODE->value()]);
 #endif
 	if (progdefaults.chkUSERIGCATis)
-		rigCAT_setmode(qso_opMODE->value());
+		rigCAT_setmode(opMODE->value());
 	if (progdefaults.chkUSEMEMMAPis)
-		rigMEM_setmode(qso_opMODE->value());
+		rigMEM_setmode(opMODE->value());
 }
 
 int cb_qso_opMODE()
 {
+	if (!progdefaults.docked_rig_control) return 0;
+	
 #if USE_HAMLIB
 	if (progdefaults.chkUSEHAMLIBis)
 		hamlib_setmode(mode_nums[qso_opMODE->value()]);
@@ -328,6 +342,7 @@ void setBW()
 
 int cb_qso_opBW()
 {
+	if (!progdefaults.docked_rig_control) return 0;
 	rigCAT_setwidth (qso_opBW->value());
 	return 0;
 }
@@ -352,6 +367,7 @@ int movFreq()
 
 int qso_movFreq()
 {
+	if (!progdefaults.docked_rig_control) return 0;
 	long int f;
 	f = qsoFreqDisp->value();
 #if USE_HAMLIB
@@ -392,6 +408,8 @@ void selectFreq()
 
 void qso_selectFreq()
 {
+	if (!progdefaults.docked_rig_control) return;
+	
 	int n = qso_opBrowser->value();
 	if (!n) return;
 	
@@ -417,6 +435,8 @@ void qso_selectFreq()
 
 void qso_setFreq()
 {
+	if (!progdefaults.docked_rig_control) return;
+
 	int n = qso_opBrowser->value();
 	if (!n) return;
 	
@@ -440,6 +460,8 @@ void delFreq()
 
 void qso_delFreq()
 {
+	if (!progdefaults.docked_rig_control) return;
+	
 	int v = qso_opBrowser->value() - 1;
 
 	if (v >= 0) {
@@ -461,6 +483,8 @@ void addFreq()
 
 void qso_addFreq()
 {
+	if (!progdefaults.docked_rig_control) return;
+
 	long freq = qsoFreqDisp->value();
 	if (freq) {
 		size_t pos = addtoList(freq);
@@ -473,10 +497,12 @@ void setTitle()
 {
 	if (windowTitle.length() > 0) {
 		rigcontrol->label(windowTitle.c_str());
-		txtRigName->label(windowTitle.c_str());
+		if (progdefaults.docked_rig_control)
+			txtRigName->label(windowTitle.c_str());
 	} else {
 		rigcontrol->label("");
-		txtRigName->label("Non CAT mode");
+		if (progdefaults.docked_rig_control)
+			txtRigName->label("Non CAT mode");
 	}
 }
 
@@ -503,12 +529,14 @@ LOG_DEBUG("no rig");
 	opMODE->index(0);
 	opMODE->activate();
 
-	qso_opBW->deactivate();
-	qso_opMODE->clear();
-	qso_opMODE->add("LSB");
-	qso_opMODE->add("USB");
-	qso_opMODE->index(0);
-	qso_opMODE->activate();
+	if (progdefaults.docked_rig_control) {
+		qso_opBW->deactivate();
+		qso_opMODE->clear();
+		qso_opMODE->add("LSB");
+		qso_opMODE->add("USB");
+		qso_opMODE->index(0);
+		qso_opMODE->activate();
+	}
 
 	windowTitle = "Rig Not Specified";
 	setTitle();
@@ -529,12 +557,14 @@ LOG_DEBUG("Mem Mapped rig");
 	opMODE->index(0);
 	opMODE->activate();
 
-	qso_opBW->deactivate();
-	qso_opMODE->clear();
-	qso_opMODE->add("LSB");
-	qso_opMODE->add("USB");
-	qso_opMODE->index(0);
-	qso_opMODE->activate();
+	if (progdefaults.docked_rig_control) {
+		qso_opBW->deactivate();
+		qso_opMODE->clear();
+		qso_opMODE->add("LSB");
+		qso_opMODE->add("USB");
+		qso_opMODE->index(0);
+		qso_opMODE->activate();
+	}
 
 	windowTitle = "Memory Mapped Rig";
 	setTitle();

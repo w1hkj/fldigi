@@ -147,8 +147,9 @@
         ELEM_(bool, ID_SMALL, "IDSMALL", true)                                          \
         ELEM_(bool, macrotextid, "", false)                                             \
         ELEM_(bool, docked_scope, "DOCKEDSCOPE", false)                                 \
+        ELEM_(bool, docked_rig_control, "DOCKEDRIGCONTROL", true)                       \
         ELEM_(int,  wfwidth, "WFWIDTH", 3000)                                           \
-        ELEM_(int,  wfheight, "WFHEIGHT", 125)                                           \
+        ELEM_(int,  wfheight, "WFHEIGHT", 125)                                          \
 /* QRZ */                                                                               \
         ELEM_(int, QRZ, "QRZTYPE", 0) /* Not available */                               \
         ELEM_(std::string, QRZpathname, "QRZPATHNAME", "")                              \

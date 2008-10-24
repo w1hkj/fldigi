@@ -919,6 +919,13 @@ static void cb_btnDockedScope(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnDockedRigControl=(Fl_Check_Button *)0;
+
+static void cb_btnDockedRigControl(Fl_Check_Button* o, void*) {
+  progdefaults.docked_rig_control = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabRSid=(Fl_Group *)0;
 
 Fl_Check_Button *chkTransmitRSid=(Fl_Check_Button *)0;
@@ -1579,6 +1586,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         tabWaterfall->hide();
         { Fl_Tabs* o = new Fl_Tabs(0, 25, 410, 195);
           { Fl_Group* o = new Fl_Group(0, 50, 400, 170, "Filters/Colors");
+            o->hide();
             { Fl_Group* o = new Fl_Group(10, 84, 385, 96);
               o->box(FL_ENGRAVED_FRAME);
               { WF_Palette = new colorbox(28, 107, 260, 24, "Palette:");
@@ -1699,7 +1707,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(5, 54, 393, 166, "Misc");
-            o->hide();
             { Fl_Group* o = new Fl_Group(8, 60, 390, 158);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnUseCursorLines = new Fl_Check_Button(58, 79, 100, 20, "Cursor BW");
@@ -2000,6 +2007,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { tabQRZ = new Fl_Group(0, 25, 400, 195, "qrz");
         tabQRZ->color((Fl_Color)51);
         tabQRZ->selection_color((Fl_Color)51);
+        tabQRZ->hide();
         { Fl_Check_Button* o = btnQRZnotavailable = new Fl_Check_Button(12, 45, 110, 20, "Not available");
           btnQRZnotavailable->down_box(FL_DOWN_BOX);
           btnQRZnotavailable->value(1);
@@ -2205,9 +2213,9 @@ l with your sound hardware.");
       { tabMisc = new Fl_Group(0, 25, 405, 200, "Misc");
         tabMisc->color((Fl_Color)51);
         tabMisc->selection_color((Fl_Color)51);
-        tabMisc->hide();
         { tabsMisc = new Fl_Tabs(0, 25, 400, 195);
           { tabCPUspeed = new Fl_Group(0, 50, 400, 170, "CPU speed");
+            tabCPUspeed->hide();
             { Fl_Group* o = new Fl_Group(5, 62, 390, 43);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2240,7 +2248,6 @@ l with your sound hardware.");
             tabMacros->end();
           } // Fl_Group* tabMacros
           { tabMainWindow = new Fl_Group(0, 50, 400, 170, "Main window");
-            tabMainWindow->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 390, 125, "Changes take effect on startup");
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP|FL_ALIGN_INSIDE);
@@ -2272,6 +2279,12 @@ l with your sound hardware.");
                 btnDockedScope->callback((Fl_Callback*)cb_btnDockedScope);
                 btnDockedScope->value(progdefaults.docked_scope);
               } // Fl_Check_Button* btnDockedScope
+              { Fl_Check_Button* o = btnDockedRigControl = new Fl_Check_Button(200, 150, 160, 20, "Docked Rig Control");
+                btnDockedRigControl->down_box(FL_DOWN_BOX);
+                btnDockedRigControl->value(1);
+                btnDockedRigControl->callback((Fl_Callback*)cb_btnDockedRigControl);
+                o->value(progdefaults.docked_rig_control);
+              } // Fl_Check_Button* btnDockedRigControl
               o->end();
             } // Fl_Group* o
             tabMainWindow->end();

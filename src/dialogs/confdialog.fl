@@ -116,7 +116,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label {Filters/Colors} open
-            xywh {0 50 400 170}
+            xywh {0 50 400 170} hide
           } {
             Fl_Group {} {open
               xywh {10 84 385 96} box ENGRAVED_FRAME
@@ -290,7 +290,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label Misc open
-            xywh {5 54 393 166} hide
+            xywh {5 54 393 166}
           } {
             Fl_Group {} {open
               xywh {8 60 390 158} box ENGRAVED_FRAME
@@ -743,7 +743,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabQRZ {
         label qrz open
-        xywh {0 25 400 195} color 51 selection_color 51
+        xywh {0 25 400 195} color 51 selection_color 51 hide
       } {
         Fl_Check_Button btnQRZnotavailable {
           label {Not available}
@@ -797,7 +797,7 @@ btnQRZnotavailable->value(0);
 btnQRZsocket->value(0);
 progdefaults.QRZ = 3;
 }
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
           tooltip {You need a paid Hamcall on-line subscription to access} xywh {12 119 205 20} down_box DOWN_BOX
           code0 {if (progdefaults.QRZ == 3) o->value(1); else o->value(0);}
         }
@@ -1040,14 +1040,14 @@ progdefaults.changed = true;}
       }
       Fl_Group tabMisc {
         label Misc open
-        xywh {0 25 405 200} color 51 selection_color 51 hide
+        xywh {0 25 405 200} color 51 selection_color 51
       } {
         Fl_Tabs tabsMisc {open
           xywh {0 25 400 195}
         } {
           Fl_Group tabCPUspeed {
             label {CPU speed} open
-            xywh {0 50 400 170}
+            xywh {0 50 400 170} hide
           } {
             Fl_Group {} {open
               xywh {5 62 390 43} box ENGRAVED_FRAME align 21
@@ -1087,7 +1087,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabMainWindow {
             label {Main window} open
-            xywh {0 50 400 170} hide
+            xywh {0 50 400 170}
           } {
             Fl_Group {} {
               label {Changes take effect on startup} open
@@ -1113,6 +1113,13 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {Restart fldigi for this option to take effect} xywh {30 150 125 20} down_box DOWN_BOX
                 code0 {btnDockedScope->value(progdefaults.docked_scope);}
+              }
+              Fl_Check_Button btnDockedRigControl {
+                label {Docked Rig Control}
+                callback {progdefaults.docked_rig_control = o->value();
+progdefaults.changed = true;} selected
+                xywh {200 150 160 20} down_box DOWN_BOX value 1
+                code0 {o->value(progdefaults.docked_rig_control);}
               }
             }
           }
