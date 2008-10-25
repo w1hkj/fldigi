@@ -2015,10 +2015,10 @@ void create_fl_digi_main() {
 				QsoInfoFrame2 = new Fl_Group(rightof(QsoButtonFrame), Y, 
 							WNOM - rightof(QsoButtonFrame), Hnotes);
 
-					inpName = new Fl_Input(rightof(QsoButtonFrame)+40, Y, 90, Hnotes, "Name");
+					inpName = new Fl_Input(rightof(QsoButtonFrame) + 38, Y, 90, Hnotes, "Name");
 					inpName->align(FL_ALIGN_LEFT);
 			
-					inpLoc = new Fl_Input(rightof(inpName) - 8, Y, 58, Hnotes, "Loc");
+					inpLoc = new Fl_Input(rightof(inpCall) - 58, Y, 58, Hnotes, "Loc");
 					inpLoc->align(FL_ALIGN_LEFT);
 
 					inpAZ = new Fl_Input(leftof(inpRstOut), Y, 28, Hnotes, "Az");

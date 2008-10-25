@@ -945,6 +945,7 @@ void rigCAT_sendINIT()
 
 bool rigCAT_init(bool useXML)
 {
+	
 	if (rigCAT_open == true) {
 		LOG_ERROR("RigCAT already open");
 		return false;
@@ -962,6 +963,9 @@ bool rigCAT_init(bool useXML)
 		}
 
 		if (noXMLfile == false) {	
+			rigio.Baud(progdefaults.BaudRate(progdefaults.XmlRigBaudrate));
+			rigio.Device(progdefaults.XmlRigDevice);
+
 			if (rigio.OpenPort() == false) {
 				LOG_ERROR("Cannot open serial port %s", rigio.Device().c_str());
 				return false;

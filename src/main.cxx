@@ -234,6 +234,8 @@ int main(int argc, char ** argv)
 		LOG_INFO("speed factor=%f, slowcpu=%d, sample_converter=\"%s\"", speed,
 			 progdefaults.slowcpu, src_get_name(progdefaults.sample_converter));
 	}
+	if (progdefaults.XmlRigFilename.empty())
+		progdefaults.XmlRigFilename = xmlfname;
 
 	progStatus.loadLastState();
 

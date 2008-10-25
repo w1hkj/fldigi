@@ -22,6 +22,10 @@
 #endif
 #include "debug.h"
 
+#include "configuration.h"
+#include "fileselect.h"
+#include "confdialog.h"
+
 //#define DEBUGXML
 
 void parseRIGDEF(size_t &);
@@ -590,8 +594,6 @@ void parsePORT(size_t &p0)
 	p0 = pend;
 
 	LOG_INFO("\nSerial port parameters:\n\
-    port: %s\n\
-    baud: %d\n\
     retries: %d\n\
     timeout: %d\n\
     initial rts: %+d\n\
@@ -599,7 +601,7 @@ void parsePORT(size_t &p0)
     initial dts: %+d\n\
     use dtr ptt: %c\n\
     use flowcontrol: %c",
-		  rig.port.c_str(), rig.baud, rig.retries, rig.timeout, (rig.rts ? +12 : -12),
+		  rig.retries, rig.timeout, (rig.rts ? +12 : -12),
 		  (rig.rtsptt ? 'T' : 'F'), (rig.dtr ? +12 : -12), (rig.dtrptt ? 'T' : 'F'),
 		  (rig.rtscts ? 'T' : 'F'));
 
@@ -850,7 +852,7 @@ bool readRigXML()
 	LSBmodes.clear();
 	strXML = "";
 
-	ifstream xmlfile(xmlfname.c_str(), ios::in);
+	ifstream xmlfile(progdefaults.XmlRigFilename.c_str(), ios::in);
 	if (xmlfile) {
 		while (!xmlfile.eof()) {
 			lines++;
@@ -865,3 +867,13 @@ bool readRigXML()
 	return false;
 }
 
+void selectRigXmlFilename()
+{
+	string deffilename;
+	deffilename = progdefaults.XmlRigFilename;
+    const char *p = FSEL::select("Open rig xml file", "Fldigi rig xml definition file\t*.xml", deffilename.c_str());
+    if (p) {
+   		progdefaults.XmlRigFilename = p;
+   		txtXmlRigFilename->value(fl_filename_name(p));
+	}
+}

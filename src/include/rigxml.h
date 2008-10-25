@@ -104,6 +104,7 @@ extern std::list<std::string> LSBmodes;
 extern XMLRIG rig;
 
 extern bool readRigXML();
+extern void	selectRigXmlFilename();
 
 #endif
 

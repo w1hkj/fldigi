@@ -26,10 +26,10 @@ bool riglist_compare_func(const void *a, const void *b)
 	const struct rig_caps *rig2 = (const struct rig_caps *)b;
 	int ret;
 
-	ret = strcmp(rig1->mfg_name, rig2->mfg_name);
+	ret = strcasecmp(rig1->mfg_name, rig2->mfg_name);
 	if (ret > 0) return false;
 	if (ret < 0) return true;
-	ret = strcmp(rig1->model_name, rig2->model_name);
+	ret = strcasecmp(rig1->model_name, rig2->model_name);
 	if (ret > 0) return false;
 	if (ret <= 0) return true;
 	if (rig1->rig_model > rig2->rig_model)
@@ -77,11 +77,38 @@ void Rig::get_rignames()
 	prig1 = riglist.begin();
 	
 	while (prig1 != riglist.end()) {
-		rig_name_model = (*prig1)->mfg_name;
-		rig_name_model.append( (*prig1)->model_name );
-		rignames.push_back(rig_name_model);
+		rig_name_model.clear();
+		switch ((*prig1)->status) {
+			case RIG_STATUS_ALPHA :
+				rig_name_model.append((*prig1)->model_name);
+				rig_name_model.append(" - Alpha");
+				rignames.push_back(rig_name_model);
+				break;
+			case RIG_STATUS_UNTESTED :
+				rig_name_model.append((*prig1)->model_name);
+				rig_name_model.append(" - Untested");
+				rignames.push_back(rig_name_model);
+				break;
+			case RIG_STATUS_BETA :
+				rig_name_model.append((*prig1)->model_name);
+				rig_name_model.append(" - Beta");
+				rignames.push_back(rig_name_model);
+				break;
+			case RIG_STATUS_BUGGY : 
+				break;
+			case RIG_STATUS_NEW :
+				rig_name_model.append((*prig1)->model_name);
+				rig_name_model.append(" - New");
+				rignames.push_back(rig_name_model);
+				break;
+			case RIG_STATUS_STABLE :
+			default :
+				rig_name_model.append((*prig1)->model_name);
+				rig_name_model.append(" - Stable");
+				rignames.push_back(rig_name_model);
+		}
 		prig1++;
-		}		
+	}		
 }
 
 void Rig::get_riglist()

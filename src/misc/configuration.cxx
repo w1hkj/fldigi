@@ -391,30 +391,30 @@ int configuration::setDefaults() {
 	if(chkUSEMEMMAPis) {
 		chkUSEMEMMAP->value(1); 
 		chkUSEHAMLIB->value(0); chkUSERIGCAT->value(0); chkUSEXMLRPC->value(0);
-		cboHamlibRig->deactivate();
-		inpRIGdev->deactivate();
-		mnuBaudRate->deactivate();
+//		cboHamlibRig->deactivate();
+//		inpRIGdev->deactivate();
+//		mnuBaudRate->deactivate();
 		btnPTT[1]->deactivate(); btnPTT[2]->activate(); btnPTT[3]->deactivate();
 	} else if (chkUSEHAMLIBis) {
 		chkUSEHAMLIB->value(1);
 		chkUSEMEMMAP->value(0); chkUSERIGCAT->value(0);  chkUSEXMLRPC->value(0);
-		cboHamlibRig->activate();
-		inpRIGdev->activate();
-		mnuBaudRate->activate();
+//		cboHamlibRig->activate();
+//		inpRIGdev->activate();
+//		mnuBaudRate->activate();
 		btnPTT[1]->activate(); btnPTT[2]->deactivate(); btnPTT[3]->deactivate();
 	} else if (chkUSERIGCATis) {
 		chkUSERIGCAT->value(1);
 		chkUSEMEMMAP->value(0); chkUSEHAMLIB->value(0); chkUSEXMLRPC->value(0);
-		cboHamlibRig->deactivate();
-		inpRIGdev->deactivate();
-		mnuBaudRate->deactivate();
+//		cboHamlibRig->deactivate();
+//		inpRIGdev->deactivate();
+//		mnuBaudRate->deactivate();
 		btnPTT[1]->deactivate(); btnPTT[2]->deactivate(); btnPTT[3]->activate();
 	} else if (chkUSEXMLRPCis) {
 		chkUSEXMLRPC->value(1);
 		chkUSEMEMMAP->value(0); chkUSEHAMLIB->value(0); chkUSERIGCAT->value(0);
-		cboHamlibRig->deactivate();
-		inpRIGdev->deactivate();
-		mnuBaudRate->deactivate();
+//		cboHamlibRig->deactivate();
+//		inpRIGdev->deactivate();
+//		mnuBaudRate->deactivate();
 		btnPTT[1]->deactivate(); btnPTT[2]->deactivate(); btnPTT[3]->deactivate();
 	} else {
 		chkUSEMEMMAP->value(0); chkUSEHAMLIB->value(0); 
@@ -424,6 +424,9 @@ int configuration::setDefaults() {
 
 	inpRIGdev->value(HamRigDevice.c_str());
 	mnuBaudRate->value(HamRigBaudrate);
+	
+	inpXmlRigDevice->value(XmlRigDevice.c_str());
+	mnuXmlRigBaudrate->value(XmlRigBaudrate);
 
 	valCWsweetspot->value(CWsweetspot);
 	valRTTYsweetspot->value(RTTYsweetspot);
@@ -649,6 +652,12 @@ string configuration::strBaudRate()
 	return (szBaudRates[HamRigBaudrate + 1]);
 }
 
+int configuration::BaudRate(size_t n)
+{
+	if (n > sizeof(szBaudRates) + 1) return 1200;
+	return (atoi(szBaudRates[n + 1]));
+}
+
 #if USE_HAMLIB
 void configuration::getRigs() {
 list<string>::iterator pstr;
@@ -702,6 +711,7 @@ void configuration::testCommPorts()
 #if USE_HAMLIB
 			inpRIGdev->add(ttyname);
 #endif
+			inpXmlRigDevice->add(ttyname);
 		}
 	}
 	ret = true;

@@ -173,6 +173,9 @@
         ELEM_(std::string, HamRigDevice, "HAMRIGDEVICE", DEFAULT_HAMRIGDEVICE)          \
         ELEM_(std::string, HamRigName, "HAMRIGNAME", "")                                \
         ELEM_(int, HamRigBaudrate, "HAMRIGBAUDRATE", 1) /* 600 baud */                  \
+        ELEM_(std::string, XmlRigFilename, "XMLRIGFILENAME", "")                        \
+        ELEM_(std::string, XmlRigDevice, "XMLRIGDEVICE", DEFAULT_HAMRIGDEVICE)          \
+        ELEM_(int, XmlRigBaudrate, "XMLRIGBAUDRATE", 1)                                 \
 /* Operator */                                                                          \
         ELEM_(std::string, myCall, "MYCALL", "")                                        \
         ELEM_(std::string, myQth, "MYQTH", "")                                          \
@@ -287,6 +290,7 @@ struct configuration
 	void testCommPorts();
 	void getRigs();
 	std::string strBaudRate();
+	int  BaudRate(size_t);
 };
 
 extern configuration progdefaults;
