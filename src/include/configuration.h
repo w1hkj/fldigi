@@ -150,6 +150,7 @@
         ELEM_(bool, docked_rig_control, "DOCKEDRIGCONTROL", true)                       \
         ELEM_(int,  wfwidth, "WFWIDTH", 3000)                                           \
         ELEM_(int,  wfheight, "WFHEIGHT", 125)                                          \
+        ELEM_(bool, tooltips, "TOOLTIPS", true)                                         \
 /* QRZ */                                                                               \
         ELEM_(int, QRZ, "QRZTYPE", 0) /* Not available */                               \
         ELEM_(std::string, QRZpathname, "QRZPATHNAME", "")                              \
@@ -176,6 +177,23 @@
         ELEM_(std::string, XmlRigFilename, "XMLRIGFILENAME", "")                        \
         ELEM_(std::string, XmlRigDevice, "XMLRIGDEVICE", DEFAULT_HAMRIGDEVICE)          \
         ELEM_(int, XmlRigBaudrate, "XMLRIGBAUDRATE", 1)                                 \
+/* RigCAT parameters */                                                                 \
+        ELEM_(bool, RigCatRTSplus, "RIGCATRTSPLUS", 0)                                  \
+        ELEM_(bool, RigCatDTRplus, "RIGCATDTRPLUS", 0)                                  \
+        ELEM_(bool, RigCatRTSptt, "RIGCATRTSPTT", 0)                                    \
+        ELEM_(bool, RigCatDTRptt, "RIGCATDTRPTT", 0)                                    \
+        ELEM_(bool, RigCatRTSCTSflow, "RIGCATRTSCTSFLOW", 0)                            \
+        ELEM_(int, RigCatRetries, "RIGCATRETRIES", 2)                                   \
+        ELEM_(int, RigCatTimeout, "RIGCATTIMEOUT", 10)                                  \
+        ELEM_(int, RigCatWait, "RIGCATWAIT", 50)                                        \
+/* Hamlib parameters */                                                                 \
+        ELEM_(bool, HamlibRTSplus, "HAMLIBRTSPLUS", 0)                                  \
+        ELEM_(bool, HamlibDTRplus, "HAMLIBDTRPLUS", 0)                                  \
+        ELEM_(bool, HamlibRTSCTSflow, "HAMLIBRTSCTSFLOW", 0)                            \
+        ELEM_(bool, HamlibXONXOFFflow, "HAMLIBXONXOFFFLOW", 0)                          \
+        ELEM_(int, HamlibRetries, "HAMLIBRETRIES", 2)                                   \
+        ELEM_(int, HamlibTimeout, "HAMLIBTIMEOUT", 10)                                  \
+        ELEM_(int, HamlibWait, "HAMLIBWAIT", 50)                                        \
 /* Operator */                                                                          \
         ELEM_(std::string, myCall, "MYCALL", "")                                        \
         ELEM_(std::string, myQth, "MYQTH", "")                                          \

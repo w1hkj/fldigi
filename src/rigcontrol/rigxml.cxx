@@ -580,17 +580,17 @@ void parsePORT(size_t &p0)
 		p1 = tagEnd(p1);
 		p1 = nextTag(p1);
 	}
-	if (rig.port.size()) {
-		rigio.Baud( rig.baud );
-		rigio.Device( rig.port );
-		rigio.Retries(rig.retries);
-		rigio.Timeout(rig.timeout);
-		rigio.RTS(rig.rts);
-		rigio.RTSptt(rig.rtsptt);
-		rigio.DTR(rig.dtr);
-		rigio.DTRptt(rig.dtrptt);
-		rigio.RTSCTS(rig.rtscts);
-	}
+//	if (rig.port.size()) {
+//		rigio.Baud( rig.baud );
+//		rigio.Device( rig.port );
+//		rigio.Retries(rig.retries);
+//		rigio.Timeout(rig.timeout);
+//		rigio.RTS(rig.rts);
+//		rigio.RTSptt(rig.rtsptt);
+//		rigio.DTR(rig.dtr);
+//		rigio.DTRptt(rig.dtrptt);
+//		rigio.RTSCTS(rig.rtscts);
+//	}
 	p0 = pend;
 
 }

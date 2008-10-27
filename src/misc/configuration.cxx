@@ -15,6 +15,8 @@
 //#include "rigio.h"
 #include "debug.h"
 
+#include <FL/Fl_Tooltip.H>
+
 #include <iostream>
 #include <fstream>
 
@@ -301,6 +303,8 @@ void configuration::loadDefaults() {
 	chkDominoEX_FEC->value(DOMINOEX_FEC);
 
 	btnmt63_interleave->value(mt63_interleave == 64);
+	
+	Fl_Tooltip::enable(tooltips);
 
 	FL_UNLOCK_D();
 }
@@ -391,30 +395,18 @@ int configuration::setDefaults() {
 	if(chkUSEMEMMAPis) {
 		chkUSEMEMMAP->value(1); 
 		chkUSEHAMLIB->value(0); chkUSERIGCAT->value(0); chkUSEXMLRPC->value(0);
-//		cboHamlibRig->deactivate();
-//		inpRIGdev->deactivate();
-//		mnuBaudRate->deactivate();
 		btnPTT[1]->deactivate(); btnPTT[2]->activate(); btnPTT[3]->deactivate();
 	} else if (chkUSEHAMLIBis) {
 		chkUSEHAMLIB->value(1);
 		chkUSEMEMMAP->value(0); chkUSERIGCAT->value(0);  chkUSEXMLRPC->value(0);
-//		cboHamlibRig->activate();
-//		inpRIGdev->activate();
-//		mnuBaudRate->activate();
 		btnPTT[1]->activate(); btnPTT[2]->deactivate(); btnPTT[3]->deactivate();
 	} else if (chkUSERIGCATis) {
 		chkUSERIGCAT->value(1);
 		chkUSEMEMMAP->value(0); chkUSEHAMLIB->value(0); chkUSEXMLRPC->value(0);
-//		cboHamlibRig->deactivate();
-//		inpRIGdev->deactivate();
-//		mnuBaudRate->deactivate();
 		btnPTT[1]->deactivate(); btnPTT[2]->deactivate(); btnPTT[3]->activate();
 	} else if (chkUSEXMLRPCis) {
 		chkUSEXMLRPC->value(1);
 		chkUSEMEMMAP->value(0); chkUSEHAMLIB->value(0); chkUSERIGCAT->value(0);
-//		cboHamlibRig->deactivate();
-//		inpRIGdev->deactivate();
-//		mnuBaudRate->deactivate();
 		btnPTT[1]->deactivate(); btnPTT[2]->deactivate(); btnPTT[3]->deactivate();
 	} else {
 		chkUSEMEMMAP->value(0); chkUSEHAMLIB->value(0); 

@@ -97,17 +97,53 @@ bool hamlib_init(bool bPtt)
 	}
 
 	try {
+		char szParam[20];
 		model = (*prig)->rig_model;
-LOG_DEBUG("model %d", model);
-LOG_DEBUG("port %s", port.c_str());
-LOG_DEBUG("speed %s", spd.c_str());
+
 		xcvr->init(model);
+LOG_INFO("model %s = %d", sel.c_str(), model);
+
 		xcvr->setConf("rig_pathname", port.c_str());
+LOG_INFO("port %s", port.c_str());
+
 		xcvr->setConf("serial_speed", spd.c_str());
-		if (progdefaults.RTSplus)
+LOG_INFO("speed %s", spd.c_str());
+		
+		snprintf(szParam, sizeof(szParam), "%d", progdefaults.HamlibWait);
+		xcvr->setConf("post_write_delay", szParam);
+LOG_INFO("post_write delay %s", szParam);
+
+		snprintf(szParam, sizeof(szParam), "%d", progdefaults.HamlibTimeout);
+		xcvr->setConf("timeout", szParam);
+LOG_INFO("timeout %s", szParam);
+
+		snprintf(szParam, sizeof(szParam), "%d", progdefaults.HamlibRetries);
+		xcvr->setConf("retry", szParam);
+LOG_INFO("retry %s", szParam);
+
+		if (progdefaults.HamlibRTSplus) {
 			xcvr->setConf("rts_state", "ON");
-		if (progdefaults.DTRplus)
+LOG_INFO("rts state ON");
+		} else
+LOG_INFO("rts state OFF");
+
+		if (progdefaults.HamlibDTRplus) {
 			xcvr->setConf("dtr_state", "ON");
+LOG_INFO("dtr state ON");
+		} else
+LOG_INFO("dtr state OFF");
+
+		if (progdefaults.HamlibRTSCTSflow) {
+			xcvr->setConf("serial_handshake", "Hardware");
+LOG_INFO("serial handshake RTS/CTS");
+		} else if (progdefaults.HamlibXONXOFFflow) {
+			xcvr->setConf("serial_handshake", "XONXOFF");
+LOG_INFO("serial handshake XON/XOFF");
+		} else {
+			xcvr->setConf("serial_handshake", "None");
+LOG_INFO("serial handshake None");
+		}
+
 		xcvr->open();
 	}
 	catch (const RigException& Ex) {

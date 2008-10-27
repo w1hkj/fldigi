@@ -820,7 +820,7 @@ void rigCAT_pttON()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
-	LOG_DEBUG("ptt ON");
+	LOG_INFO("ptt ON");
 
 	rigio.SetPTT(1); // always execute the h/w ptt if enabled
 
@@ -862,7 +862,7 @@ void rigCAT_pttOFF()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	
-	LOG_DEBUG("ptt OFF");
+	LOG_INFO("ptt OFF");
 
 	rigio.SetPTT(0); // always execute the h/w ptt if enabled
 
@@ -965,21 +965,30 @@ bool rigCAT_init(bool useXML)
 		if (noXMLfile == false) {	
 			rigio.Baud(progdefaults.BaudRate(progdefaults.XmlRigBaudrate));
 			rigio.Device(progdefaults.XmlRigDevice);
-
+			rigio.Retries(progdefaults.RigCatRetries);
+			rigio.Timeout(progdefaults.RigCatTimeout);
+			rigio.RTS(progdefaults.RigCatRTSplus);
+			rigio.DTR(progdefaults.RigCatDTRplus);
+			rigio.RTSptt(progdefaults.RigCatRTSptt);
+			rigio.RTSptt(progdefaults.RigCatDTRptt);
+			rigio.RTSCTS(progdefaults.RigCatRTSCTSflow);
+			rig.wait = progdefaults.RigCatWait;
+			
 	LOG_INFO("\n\
 Serial port parameters:\n\
 device     : %s\n\
 baudrate   : %d\n\
 retries    : %d\n\
 timeout    : %d\n\
+wait       : %d\n\
 initial rts: %+d\n\
 use rts ptt: %c\n\
-initial dts: %+d\n\
+initial dtr: %+d\n\
 use dtr ptt: %c\n\
 flowcontrol: %c",
           rigio.Device().c_str(),
           rigio.Baud(),
-		  rigio.Retries(), rigio.Timeout(), 
+		  rigio.Retries(), rigio.Timeout(), rig.wait,
 		  (rigio.RTS() ? +12 : -12), (rigio.RTSptt() ? 'T' : 'F'), 
 		  (rigio.DTR() ? +12 : -12), (rigio.DTRptt() ? 'T' : 'F'),
 		  (rigio.RTSCTS() ? 'T' : 'F'));
