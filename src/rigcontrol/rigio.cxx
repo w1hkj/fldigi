@@ -966,6 +966,24 @@ bool rigCAT_init(bool useXML)
 			rigio.Baud(progdefaults.BaudRate(progdefaults.XmlRigBaudrate));
 			rigio.Device(progdefaults.XmlRigDevice);
 
+	LOG_INFO("\n\
+Serial port parameters:\n\
+device     : %s\n\
+baudrate   : %d\n\
+retries    : %d\n\
+timeout    : %d\n\
+initial rts: %+d\n\
+use rts ptt: %c\n\
+initial dts: %+d\n\
+use dtr ptt: %c\n\
+flowcontrol: %c",
+          rigio.Device().c_str(),
+          rigio.Baud(),
+		  rigio.Retries(), rigio.Timeout(), 
+		  (rigio.RTS() ? +12 : -12), (rigio.RTSptt() ? 'T' : 'F'), 
+		  (rigio.DTR() ? +12 : -12), (rigio.DTRptt() ? 'T' : 'F'),
+		  (rigio.RTSCTS() ? 'T' : 'F'));
+
 			if (rigio.OpenPort() == false) {
 				LOG_ERROR("Cannot open serial port %s", rigio.Device().c_str());
 				return false;

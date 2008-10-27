@@ -593,18 +593,6 @@ void parsePORT(size_t &p0)
 	}
 	p0 = pend;
 
-	LOG_INFO("\nSerial port parameters:\n\
-    retries: %d\n\
-    timeout: %d\n\
-    initial rts: %+d\n\
-    use rts ptt: %c\n\
-    initial dts: %+d\n\
-    use dtr ptt: %c\n\
-    use flowcontrol: %c",
-		  rig.retries, rig.timeout, (rig.rts ? +12 : -12),
-		  (rig.rtsptt ? 'T' : 'F'), (rig.dtr ? +12 : -12), (rig.dtrptt ? 'T' : 'F'),
-		  (rig.rtscts ? 'T' : 'F'));
-
 }
 
 //---------------------------------------------------------------------

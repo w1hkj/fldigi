@@ -1314,7 +1314,7 @@ bool clean_exit(void) {
 	if (logfile)
 		logfile->log_to_file_stop();
 
-	if (bSaveFreqList)
+//	if (bSaveFreqList)
 		saveFreqList();
 
 	progStatus.saveLastState();

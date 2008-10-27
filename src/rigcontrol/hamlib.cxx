@@ -242,8 +242,9 @@ int hamlib_setfreq(long f)
 		return -1;
 	pthread_mutex_lock(&hamlib_mutex);
 		try {
+LOG_DEBUG("%ld", f);
 			xcvr->setFreq(f);
-			wf->rfcarrier(f);//(hamlib_freq);
+//			wf->rfcarrier(f);//(hamlib_freq);
 		}
 		catch (const RigException& Ex) {
 			show_error("SetFreq", Ex.what());
@@ -255,6 +256,8 @@ int hamlib_setfreq(long f)
 
 int hamlib_setmode(rmode_t m)
 {
+	if (need_mode == false)
+		return -1;
 	if (xcvr->isOnLine() == false)
 		return -1;
 	pthread_mutex_lock(&hamlib_mutex);
@@ -360,17 +363,17 @@ static void *hamlib_loop(void *args)
 		
 		if (modeok && (hamlib_rmode != numode)) {
 			hamlib_rmode = numode;
-			selMode(hamlib_rmode);
+//			selMode(hamlib_rmode);
+//			qso_selMode(hamlib_rmode);
+			show_mode(modeString(hamlib_rmode));
 			if (hamlib_rmode == RIG_MODE_LSB ||
 					hamlib_rmode == RIG_MODE_CWR ||	
 					hamlib_rmode == RIG_MODE_PKTLSB ||
 					hamlib_rmode == RIG_MODE_ECSSLSB ||
 					hamlib_rmode == RIG_MODE_RTTYR) {
 				wf->USB(false);
-				show_mode("LSB");
 			} else {
 				wf->USB(true);
-				show_mode("USB");
 			}
 		}
 		

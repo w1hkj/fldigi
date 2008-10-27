@@ -34,6 +34,8 @@ extern int  movFreq();
 extern int  qso_movFreq();
 extern int	cb_qso_opMODE();
 extern int  cb_qso_opBW();
+extern void qso_setMode();
+extern string modeString(rmode_t m);
 
 extern void selectFreq();
 extern void delFreq();

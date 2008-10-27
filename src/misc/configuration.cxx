@@ -620,7 +620,7 @@ bool riginitOK = false;
 		}
 #if USE_HAMLIB
 	} else if (chkUSEHAMLIBis) { // start the hamlib thread
-		if (hamlib_init(btnPTTis == 1 ? true : false) == false) {
+		if (hamlib_init(btnPTTis == 1 ? true : false)) {
 			wf->USB(true);
 			wf->setQSY(1);
 			if (docked_rig_control)
@@ -674,6 +674,10 @@ FL_UNLOCK();
 
 void configuration::testCommPorts()
 {
+	inpTTYdev->clear();
+	inpRIGdev->clear();
+	inpXmlRigDevice->clear();
+	
 #ifndef PATH_MAX
 #  define PATH_MAX 1024
 #endif
@@ -768,6 +772,7 @@ out:
 #  if USE_HAMLIB
 			inpRIGdev->add(ttyname);
 #  endif
+			inpXmlRigDevice->add(ttyname);
 		}
 #else // __APPLE__
 		glob(tty_fmt[i], 0, NULL, &gbuf);
@@ -780,6 +785,7 @@ out:
 #  if USE_HAMLIB
 			inpRIGdev->add(gbuf.gl_pathv[j]);
 #  endif
+			inpXmlRigDevice->add(ttyname);
 
 		}
 		globfree(&gbuf);

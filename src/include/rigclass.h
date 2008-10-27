@@ -76,6 +76,8 @@ public:
 	void setConf(const char *name, const char *val);
 	void getConf(token_t token, char *val);
 	void getConf(const char *name, char *val);
+	const char *getName();
+	
 	token_t tokenLookup(const char *name);
 	pbwidth_t passbandNormal (rmode_t mode);
 	pbwidth_t passbandNarrow (rmode_t mode);

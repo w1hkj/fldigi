@@ -64,6 +64,12 @@ void Rig::init(rig_model_t rig_model) {
 	caps = theRig->caps;
 }
 
+const char *Rig::getName()
+{
+	if (theRig == NULL) return "";
+	return (caps->model_name);
+}
+
 void Rig::get_rignames()
 {
 	string rig_name_model;
@@ -78,35 +84,10 @@ void Rig::get_rignames()
 	
 	while (prig1 != riglist.end()) {
 		rig_name_model.clear();
-		switch ((*prig1)->status) {
-			case RIG_STATUS_ALPHA :
-				rig_name_model.append((*prig1)->model_name);
-				rig_name_model.append(" - Alpha");
-				rignames.push_back(rig_name_model);
-				break;
-			case RIG_STATUS_UNTESTED :
-				rig_name_model.append((*prig1)->model_name);
-				rig_name_model.append(" - Untested");
-				rignames.push_back(rig_name_model);
-				break;
-			case RIG_STATUS_BETA :
-				rig_name_model.append((*prig1)->model_name);
-				rig_name_model.append(" - Beta");
-				rignames.push_back(rig_name_model);
-				break;
-			case RIG_STATUS_BUGGY : 
-				break;
-			case RIG_STATUS_NEW :
-				rig_name_model.append((*prig1)->model_name);
-				rig_name_model.append(" - New");
-				rignames.push_back(rig_name_model);
-				break;
-			case RIG_STATUS_STABLE :
-			default :
-				rig_name_model.append((*prig1)->model_name);
-				rig_name_model.append(" - Stable");
-				rignames.push_back(rig_name_model);
-		}
+		rig_name_model.append((*prig1)->model_name);
+		rig_name_model.append(" - ");
+		rig_name_model.append(rig_strstatus((*prig1)->status));
+		rignames.push_back(rig_name_model);
 		prig1++;
 	}		
 }
