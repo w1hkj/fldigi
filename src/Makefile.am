@@ -174,6 +174,7 @@ fldigi_SOURCES += \
 	include/font_browser.h \
 	include/fontdef.h \
 	include/globals.h \
+	include/icons.h \
 	include/id.h \
 	include/interleave.h \
 	include/jalocha/pj_cmpx.h \
@@ -203,18 +204,6 @@ fldigi_SOURCES += \
 	include/newinstall.h \
 	include/olivia.h \
 	include/picture.h \
-	include/pixmaps/address-book-icon.xpm \
-	include/pixmaps/clear-icon.xpm \
-	include/pixmaps/close-icon.xpm \
-	include/pixmaps/fldigi-icon.xpm \
-	include/pixmaps/left-arrow-icon.xpm \
-	include/pixmaps/minus-icon.xpm \
-	include/pixmaps/plus-icon.xpm \
-	include/pixmaps/net-icon.xpm \
-	include/pixmaps/right-arrow-icon.xpm \
-	include/pixmaps/save-icon.xpm \
-	include/pixmaps/time-icon.xpm \
-	include/pixmaps/trash-icon.xpm \
 	include/progress.h \
 	include/psk.h \
 	include/viewpsk.h \
@@ -222,6 +211,7 @@ fldigi_SOURCES += \
 	include/pskvaricode.h \
 	include/pskeval.h \
 	include/ptt.h \
+	include/pixmaps.h \
 	include/qrunner.h \
 	include/lookupcall.h \
 	include/qrzlib.h \
@@ -271,6 +261,7 @@ fldigi_SOURCES += \
 	misc/configuration.cxx \
 	misc/debug.cxx \
 	misc/flstring.c \
+	misc/icons.cxx \
 	misc/log.cxx \
 	misc/macroedit.cxx \
 	misc/macros.cxx \
@@ -279,6 +270,7 @@ fldigi_SOURCES += \
 	misc/newinstall.cxx \
 	misc/arq_io.cxx \
 	misc/lookupcall.cxx \
+	misc/pixmaps.cxx \
 	misc/qrzlib.cxx \
 	misc/re.cxx \
 	misc/socket.cxx \

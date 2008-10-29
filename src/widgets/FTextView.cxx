@@ -41,6 +41,7 @@
 #include "qrunner.h"
 
 #include "mfsk.h"
+#include "icons.h"
 
 
 using namespace std;
@@ -351,24 +352,32 @@ void FTextBase::reset_styles(int set)
 
 // ----------------------------------------------------------------------------
 
+#if !USE_IMAGE_LABELS
+#  define LOOKUP_SYMBOL "@-4>> "
+#  define ENTER_SYMBOL  "@-9-> "
+#else
+#  define LOOKUP_SYMBOL
+#  define ENTER_SYMBOL
+#endif
 
 Fl_Menu_Item FTextView::view_menu[] = {
-	{ "@-4>> &Look up call",		0, 0 },
-	{ "@-9-> &Call",			0, 0 },
-	{ "@-9-> &Name",			0, 0 },
-	{ "@-9-> QT&H",				0, 0 },
-	{ "@-9-> &Locator",			0, 0 },
-	{ "@-9-> &RST(r)",			0, 0, 0, FL_MENU_DIVIDER },
-	{ "Insert divider",			0, 0 },
-	{ "C&lear",				0, 0 },
-	{ "&Copy",				0, 0, 0, FL_MENU_DIVIDER },
+	{ make_icon_label(LOOKUP_SYMBOL "&Look up call", net_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL "&Call", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL "&Name", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL "QT&H", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL "&Locator", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL "&RST(r)", enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ make_icon_label("Insert divider"), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label("C&lear", edit_clear_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label("&Copy", edit_copy_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 #if 0 //#ifndef NDEBUG
-        { "(debug) &Append file...",		0, 0, 0, FL_MENU_DIVIDER },
+        { "(debug) &Append file...", 0, 0, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL },
 #endif
-	{ "Save to &file...",			0, 0, 0, FL_MENU_DIVIDER },
-	{ "Word &wrap",				0, 0, 0, FL_MENU_TOGGLE	 },
+	{ make_icon_label("Save &as...", save_as_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ "Word &wrap",       0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL },
 	{ 0 }
 };
+static bool view_init = false;
 
 /// FTextView constructor.
 /// We remove \c Fl_Text_Display_mod::buffer_modified_cb from the list of callbacks
@@ -390,6 +399,12 @@ FTextView::FTextView(int x, int y, int w, int h, const char *l)
 	context_menu = view_menu;
 	// disable some keybindings that are not allowed in FTextView buffers
 	change_keybindings();
+
+	if (!view_init)
+		for (int i = 0; i < view_menu->size() - 1; i++)
+			if (*view_menu[i].label() && view_menu[i].labeltype() == _FL_MULTI_LABEL)
+				set_icon_label(&view_menu[i]);
+	view_init = true;
 }
 
 FTextView::~FTextView()
@@ -432,21 +447,15 @@ int FTextView::handle(int event)
  			goto out;
  		}
 // enable/disable menu items
-		if (tbuf->length())
-			view_menu[RX_MENU_CLEAR].flags &= ~FL_MENU_INACTIVE;
-		else
-			view_menu[RX_MENU_CLEAR].flags |= FL_MENU_INACTIVE;
-
-		if (tbuf->selected())
-			view_menu[RX_MENU_COPY].flags &= ~FL_MENU_INACTIVE;
-		else
-			view_menu[RX_MENU_COPY].flags |= FL_MENU_INACTIVE;
+		set_active(&view_menu[RX_MENU_CLEAR], tbuf->length());
+		set_active(&view_menu[RX_MENU_COPY], tbuf->selected());
+		set_active(&view_menu[RX_MENU_SAVE], tbuf->length());
 		if (wrap)
 			view_menu[RX_MENU_WRAP].flags |= FL_MENU_VALUE;
 		else
 			view_menu[RX_MENU_WRAP].flags &= ~FL_MENU_VALUE;
-		context_menu = progdefaults.QRZ ? view_menu : view_menu + 1;
 
+		context_menu = progdefaults.QRZ ? view_menu : view_menu + 1;
 		show_context_menu();
 		return 1;
 		break;
@@ -656,17 +665,23 @@ loop:
 
 
 Fl_Menu_Item FTextEdit::edit_menu[] = {
-	{"&Transmit",		0, 0  },
-	{"&Receive",		0, 0  },
-	{"Send &image...",	0, 0, 0, FL_MENU_DIVIDER },
-	{"C&lear",		0, 0, },
-	{"Cu&t",		0, 0, },
-	{"&Copy",		0, 0, },
-	{"&Paste",		0, 0, 0, FL_MENU_DIVIDER },
-	{"Insert &file...",	0, 0, 0, FL_MENU_DIVIDER },
-	{"Word &wrap",		0, 0, 0, FL_MENU_TOGGLE	 } ,
+	{ "txabort" },
+	{ make_icon_label("&Receive", rx_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label("Send &image...", image_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ make_icon_label("C&lear", edit_clear_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label("Cu&t", edit_cut_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label("&Copy", edit_copy_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label("&Paste", edit_paste_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label("Insert &file...", file_open_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ "Word &wrap",		0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL } ,
 	{ 0 }
 };
+Fl_Menu_Item edit_txabort[] = {
+	{ make_icon_label("&Transmit", tx_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label("&Abort", process_stop_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ 0 }
+};
+static bool edit_init = false;
 
 // needed by our static kf functions, which may restrict editing depending on
 // the transmit cursor position
@@ -686,6 +701,16 @@ FTextEdit::FTextEdit(int x, int y, int w, int h, const char *l)
 	change_keybindings();
 	ascii_cnt = 0;
 	ascii_chr = 0;
+
+	if (!edit_init) {
+		for (int i = 0; i < edit_menu->size() - 1; i++)
+			if (*edit_menu[i].label() && edit_menu[i].labeltype() == _FL_MULTI_LABEL)
+				set_icon_label(&edit_menu[i]);
+		for (int i = 0; i < edit_txabort->size() - 1; i++)
+			if (*edit_txabort[i].label() && edit_txabort[i].labeltype() == _FL_MULTI_LABEL)
+				set_icon_label(&edit_txabort[i]);
+	}
+	edit_init = true;
 }
 
 /// Handles fltk events for this widget.
@@ -734,38 +759,22 @@ int FTextEdit::handle(int event)
 
 	// handle a right click
 	if (trx_state == STATE_RX)
-		edit_menu[TX_MENU_TX].label("Transmit");
+		memcpy(&edit_menu[TX_MENU_TX], &edit_txabort[0], sizeof(edit_menu[TX_MENU_TX]));
 	else
-		edit_menu[TX_MENU_TX].label("Abort");
-	if (wf->xmtrcv->active())
-		edit_menu[TX_MENU_TX].flags &= ~FL_MENU_INACTIVE;
-	else
-		edit_menu[TX_MENU_TX].flags |= FL_MENU_INACTIVE;
-	if (trx_state == STATE_RX)
-		edit_menu[TX_MENU_RX].flags |= FL_MENU_INACTIVE;
-	else
-		edit_menu[TX_MENU_RX].flags &= ~FL_MENU_INACTIVE;
-	if (active_modem->get_cap() & modem::CAP_IMG)
-		edit_menu[TX_MENU_MFSK16_IMG].flags &= ~FL_MENU_INACTIVE;
-	else
-		edit_menu[TX_MENU_MFSK16_IMG].flags |= FL_MENU_INACTIVE;
+		memcpy(&edit_menu[TX_MENU_TX], &edit_txabort[1], sizeof(edit_menu[TX_MENU_TX]));
+	set_active(&edit_menu[TX_MENU_TX], wf->xmtrcv->active());
 
-	if (tbuf->length())
-		edit_menu[TX_MENU_CLEAR].flags &= ~FL_MENU_INACTIVE;
-	else
-		edit_menu[TX_MENU_CLEAR].flags |= FL_MENU_INACTIVE;
-	if (tbuf->selected()) {
-		edit_menu[TX_MENU_CUT].flags &= ~FL_MENU_INACTIVE;
-		edit_menu[TX_MENU_COPY].flags &= ~FL_MENU_INACTIVE;
-	}
-	else {
-		edit_menu[TX_MENU_CUT].flags |= FL_MENU_INACTIVE;
-		edit_menu[TX_MENU_COPY].flags |= FL_MENU_INACTIVE;
-	}
-	if (insert_position() < txpos)
-		edit_menu[TX_MENU_READ].flags |= FL_MENU_INACTIVE;
-	else
-		edit_menu[TX_MENU_READ].flags &= ~FL_MENU_INACTIVE;
+	set_active(&edit_menu[TX_MENU_RX], trx_state != STATE_RX);
+
+	bool modify_text_ok = insert_position() >= txpos;
+	bool selected = tbuf->selected();
+	set_active(&edit_menu[TX_MENU_MFSK16_IMG], active_modem->get_cap() & modem::CAP_IMG);
+	set_active(&edit_menu[TX_MENU_CLEAR], tbuf->length());
+	set_active(&edit_menu[TX_MENU_CUT], selected && modify_text_ok);
+	set_active(&edit_menu[TX_MENU_COPY], selected);
+	set_active(&edit_menu[TX_MENU_PASTE], modify_text_ok);
+	set_active(&edit_menu[TX_MENU_READ], modify_text_ok);
+
 	if (wrap)
 		edit_menu[TX_MENU_WRAP].flags |= FL_MENU_VALUE;
 	else
@@ -1110,8 +1119,12 @@ void FTextEdit::menu_cb(int val)
  			active_modem->set_stopflag(false);
  			start_tx();
  		}
- 		else
+ 		else {
+#ifndef NDEBUG
+			put_status("Don't panic!", 1.0);
+#endif
  			abort_tx();
+		}
   		break;
   	case TX_MENU_RX:
  		if (trx_state == STATE_TX) {
@@ -1287,21 +1300,23 @@ int FTextEdit::kf_paste(int c, Fl_Text_Editor_mod* e)
 // ----------------------------------------------------------------------------
 
 Fl_Menu_Item FTextLog::log_menu[] = {
-	{ "C&lear",				0, 0 },
-	{ "&Copy",				0, 0 },
-	{ "Save to &file...",			0, 0, 0, FL_MENU_DIVIDER },
-	{ "Word &wrap",				0, 0, 0, FL_MENU_TOGGLE	 },
+	{ make_icon_label("C&lear", edit_clear_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label("&Copy", edit_copy_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label("Save to &file...", save_as_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ "Word &wrap",	0, 0, 0, FL_MENU_TOGGLE },
 	{ 0 }
 };
-
+static bool log_init = false;
 
 FTextLog::FTextLog(int x, int y, int w, int h, const char* l)
 	: FTextView(x, y, w, h, l)
 {
 	context_menu = log_menu;
-//	highlight_data(0, 0, 0, 0, 0, 0);
-//	delete sbuf;
-//	sbuf = 0;
+	if (!log_init)
+		for (int i = 0; i < log_menu->size() - 1; i++)
+			if (*log_menu[i].label() && log_menu[i].labeltype() == _FL_MULTI_LABEL)
+				set_icon_label(&log_menu[i]);
+	log_init = true;
 }
 
 FTextLog::~FTextLog() { }
@@ -1322,15 +1337,8 @@ int FTextLog::handle(int event)
 		}
 
 		// handle a right mouse click
-		if (tbuf->length())
-			log_menu[LOG_MENU_CLEAR].flags &= ~FL_MENU_INACTIVE;
-		else
-			log_menu[LOG_MENU_CLEAR].flags |= FL_MENU_INACTIVE;
-
-		if (tbuf->selected())
-			log_menu[LOG_MENU_COPY].flags &= ~FL_MENU_INACTIVE;
-		else
-			log_menu[LOG_MENU_COPY].flags |= FL_MENU_INACTIVE;
+		set_active(&log_menu[LOG_MENU_CLEAR], tbuf->length());
+		set_active(&log_menu[LOG_MENU_COPY], tbuf->selected());
 		if (wrap)
 			log_menu[LOG_MENU_WRAP].flags |= FL_MENU_VALUE;
 		else
