@@ -26,10 +26,10 @@ bool riglist_compare_func(const void *a, const void *b)
 	const struct rig_caps *rig2 = (const struct rig_caps *)b;
 	int ret;
 
-	ret = strcmp(rig1->mfg_name, rig2->mfg_name);
+	ret = strcasecmp(rig1->mfg_name, rig2->mfg_name);
 	if (ret > 0) return false;
 	if (ret < 0) return true;
-	ret = strcmp(rig1->model_name, rig2->model_name);
+	ret = strcasecmp(rig1->model_name, rig2->model_name);
 	if (ret > 0) return false;
 	if (ret <= 0) return true;
 	if (rig1->rig_model > rig2->rig_model)
@@ -64,6 +64,12 @@ void Rig::init(rig_model_t rig_model) {
 	caps = theRig->caps;
 }
 
+const char *Rig::getName()
+{
+	if (theRig == NULL) return "";
+	return (caps->model_name);
+}
+
 void Rig::get_rignames()
 {
 	string rig_name_model;
@@ -77,11 +83,13 @@ void Rig::get_rignames()
 	prig1 = riglist.begin();
 	
 	while (prig1 != riglist.end()) {
-		rig_name_model = (*prig1)->mfg_name;
-		rig_name_model.append( (*prig1)->model_name );
+		rig_name_model.clear();
+		rig_name_model.append((*prig1)->model_name);
+		rig_name_model.append(" - ");
+		rig_name_model.append(rig_strstatus((*prig1)->status));
 		rignames.push_back(rig_name_model);
 		prig1++;
-		}		
+	}		
 }
 
 void Rig::get_riglist()
@@ -120,12 +128,12 @@ void Rig::setFreq(freq_t freq, vfo_t vfo)
 
 freq_t Rig::getFreq(vfo_t vfo)
 {
-	freq_t freq;
-	for (int i = 0; i < NUMTRIES; i++) {
+	freq_t freq = 0;
+	int i;
+	for (i = 0; i < NUMTRIES; i++)
 		if (rig_get_freq(theRig, vfo, &freq) == RIG_OK)
-			return freq;
-	}
-	return 0;
+			break;
+	return freq;
 }
 
 void Rig::setMode(rmode_t mode, pbwidth_t width, vfo_t vfo) 

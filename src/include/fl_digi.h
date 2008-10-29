@@ -26,6 +26,8 @@
 
 #define fl_digi_h
 
+#include <string.h>
+
 #include <FL/Fl.H>
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Menu_Bar.H>
@@ -46,9 +48,13 @@
 #include "globals.h"
 #include "mixer.h"
 #include "progress.h"
+#include "FreqControl.h"
+
+using namespace std;
 
 extern Fl_Double_Window *fl_digi_main;
 extern Fl_Double_Window *scopeview;
+//extern Fl_Double_Window *opBrowserView;
 
 extern FTextView		*ReceiveText;
 extern FTextEdit		*TransmitText;
@@ -63,8 +69,6 @@ extern Fl_Slider		*sldrSquelch;
 extern Progress			*pgrsSquelch;
 extern Fl_Button 		*btnMacro[];
 extern Fl_Input			*inpFreq;
-extern Fl_ComboBox		*cboBand;
-extern Fl_Button		*btnSideband;
 extern Fl_Input			*inpTime;
 extern Fl_Input			*inpCall;
 extern Fl_Input			*inpName;
@@ -76,6 +80,22 @@ extern Fl_Input			*inpNotes;
 extern Fl_Input			*inpAZ;	// WA5ZNU
 extern Fl_Button		*qsoClear;
 extern Fl_Button		*qsoSave;
+extern Fl_Box			*txtRigName;
+
+extern Fl_Group			*qsoFrameView;
+extern Fl_Group			*QsoButtonFrame;
+extern Fl_Group			*QsoInfoFrame;
+extern cFreqControl		*qsoFreqDisp;
+extern Fl_ComboBox		*qso_opMODE;
+extern Fl_ComboBox		*qso_opBW;
+extern Fl_Button		*qso_opPICK;
+extern Fl_Browser		*qso_opBrowser;
+extern Fl_Button		*qso_btnAddFreq;
+extern Fl_Button		*qso_btnSelFreq;
+extern Fl_Button		*qso_btnDelFreq;
+extern Fl_Button		*qso_btnClearList;
+
+
 extern Fl_Value_Slider		*valRcvMixer;
 extern Fl_Value_Slider		*valXmtMixer;
 extern Fl_Button		*btn_afconoff;
@@ -131,6 +151,10 @@ extern void put_Status2(const char *msg, double timeout = 0.0, status_timeout ac
 extern void set_AFCind( double val );
 extern void set_AFCrange(double val);
 
+extern void show_frequency(long long);
+extern void show_mode(string);
+extern void show_bw(string sWidth);
+
 extern void put_WARNstatus(double);
 
 extern void put_rx_data(int *data, int len);
@@ -146,6 +170,7 @@ extern void restoreFocus();
 extern void setReverse(int);
 extern void clearQSO();
 extern void closeRigDialog();
+extern void CloseQsoView();
 
 extern void setAfcOnOff(bool b);
 extern void setSqlOnOff(bool b);

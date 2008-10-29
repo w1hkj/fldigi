@@ -286,7 +286,7 @@ void cFreqControl::freq_input_cb(Fl_Widget*, void* arg)
 {
 	cFreqControl* fc = reinterpret_cast<cFreqControl*>(arg);
 	double val = strtod(fc->finp->value(), NULL);
-	if (val >= 0.0 && val < pow(10, MAX_DIGITS - 3)) {
+	if (val >= 0.0 && val < pow(10.0, MAX_DIGITS - 3)) {
 		val *= 1e3;
 		val += 0.5;
 		fc->val = (long)val;

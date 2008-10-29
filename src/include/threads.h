@@ -15,7 +15,7 @@ int sem_timedwait_rel(sem_t* sem, double rel_timeout);
 int pthread_cond_timedwait_rel(pthread_cond_t* cond, pthread_mutex_t* mutex, double rel_timeout);
 
 // 3 threads use qrunner
-enum { INVALID_TID = -1, TRX_TID, QRZ_TID, RIGCTL_TID,
+enum { INVALID_TID = -1, TRX_TID, QRZ_TID, RIGCTL_TID, NORIGCTL_TID,
 #if USE_XMLRPC
        XMLRPC_TID,
 #endif

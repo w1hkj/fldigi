@@ -31,14 +31,27 @@ extern void updateSelect();
 extern size_t addtoList(long val);
 extern void buildlist();
 extern int  movFreq();
+extern int  qso_movFreq();
+extern int	cb_qso_opMODE();
+extern int  cb_qso_opBW();
+extern void qso_setMode();
+extern string modeString(rmode_t m);
+
 extern void selectFreq();
 extern void delFreq();
 extern void addFreq();
 extern void saveFreqList();
 
+extern void qso_addFreq();
+extern void qso_delFreq();
+extern void qso_selectFreq();
+extern void qso_setFreq();
+extern void qso_clearList();
+
 extern bool readRigXML();
 extern bool init_Xml_RigDialog();
 extern bool init_NoRig_RigDialog();
+extern bool init_rigMEM_RigDialog();
 
 #if USE_HAMLIB
 extern bool init_Hamlib_RigDialog();

@@ -22,6 +22,8 @@ static const char *lognames[] = { "RX", "TX", "", "" };
 cLogfile::cLogfile(const string& fname)
 	: retflag(true), logtype(LOG_RX)
 {
+	if (logfile = fopen(fname.c_str(), "w"))
+		fclose(logfile);
 	if ((logfile = fopen(fname.c_str(), "a"))) {
 		setlinebuf(logfile);
 		set_cloexec(fileno(logfile), 1);
@@ -43,16 +45,16 @@ void cLogfile::log_to_file(log_t type, const string& s)
 	struct tm tm;
 	time_t t;
 
-	if (type != logtype)
-		fprintf(logfile, "\n");
-	if (type <= LOG_TX) {
+	if (type == LOG_RX || type == LOG_TX) {
 		if (retflag || type != logtype) {
+			if (type != logtype) fprintf(logfile, "\n");
 			time(&t);
 			gmtime_r(&t, &tm);
 			strftime(timestr, sizeof(timestr), "%Y-%m-%d %H:%MZ", &tm);
 			fprintf(logfile, "%s (%s): ", lognames[type], timestr);
 		}
-		fprintf(logfile, "%s", s.c_str());
+		for (size_t i = 0; i < s.length(); i++)
+			if (s[i] == '\n' || s[i] >= ' ') fprintf(logfile, "%c", s[i]);
 		retflag = *s.rbegin() == '\n';
 		if (!retflag)
 			fflush(logfile);
@@ -61,7 +63,7 @@ void cLogfile::log_to_file(log_t type, const string& s)
 		time(&t);
 		gmtime_r(&t, &tm);
 		strftime(timestr, sizeof(timestr), "%a %b %e %H:%M:%S %Y UTC", &tm);
-		fprintf(logfile, "--- Logging %s at %s ---\n", s.c_str(), timestr);
+		fprintf(logfile, "\n--- Logging %s at %s ---\n", s.c_str(), timestr);
 	}
 
 	logtype = type;

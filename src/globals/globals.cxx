@@ -129,10 +129,12 @@ std::istream& operator>>(std::istream& s, qrg_mode_t& m)
 std::string qrg_mode_t::str(void)
 {
 	ostringstream s;
-	s << setiosflags(ios::fixed) << setprecision(3) << rfcarrier/1000.0 << '\t'
+//	s << setw(11) << setiosflags(ios::right) << setiosflags(ios::fixed) << setprecision(3)
+//	  << rfcarrier/1000.0 << '\t'
+	s << setiosflags(ios::fixed) << setw(10) << setprecision(3) << rfcarrier/1000.0 << '\t'
           << rmode << '\t'
           << (mode < NUM_MODES ? mode_info[mode].sname : "NONE") << '\t'
-          << carrier;
+          << setw(4) << carrier;
 	return s.str();
 
 

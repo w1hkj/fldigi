@@ -225,7 +225,7 @@ static void sound_init_options(void)
 	menuSampleConverter->tooltip(src_get_description(progdefaults.sample_converter));
 
 
-	valPCMvolume->value(progdefaults.PCMvolume * 100.0);
+	valPCMvolume->value(progdefaults.PCMvolume);
 	btnMicIn->value(progdefaults.MicIn);
 	btnLineIn->value(progdefaults.LineIn);
 

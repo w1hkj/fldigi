@@ -172,7 +172,7 @@ public:
 	bool USB() {return usb;};
 	long long rfcarrier() { return rfc;};
 	
-	void useBands(bool b) { usebands = b;};
+//	void useBands(bool b) { usebands = b;};
 	
 	void updateMarker() { 
 		drawMarker();};
@@ -214,7 +214,7 @@ private:
 	bool	overload;
 	bool	usb;
 	long long	rfc;
-	bool	usebands;
+//	bool	usebands;
 	int		offset;
 	int		sigoffset;
 	int		step;
@@ -350,10 +350,10 @@ public:
 			qsy->activate();
 		else
 			qsy->deactivate();
-		wfdisp->useBands(!on);
+//		wfdisp->useBands(!on);
 	}
 	void setXMLRPC(bool on) {
-		wfdisp->useBands(!on);
+//		wfdisp->useBands(!on);
 	}
 	double Pwr(int i) { return wfdisp->Pwr(i); }	
 	

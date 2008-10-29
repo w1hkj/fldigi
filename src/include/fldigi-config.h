@@ -75,7 +75,7 @@
 //#define DEFAULT_HWFALL 144
 #define DEFAULT_HWFALL 124
 #define DEFAULT_HNOM 500
-#define Wwfall		(DEFAULT_HNOM + 2 * BEZEL)
+//#define Wwfall		(DEFAULT_HNOM + 2 * BEZEL)
 #define DEFAULT_WNOM (Wwfall + 2* DEFAULT_SW)
 
 //#define EMC_HWFALL 144
@@ -86,14 +86,15 @@ extern int IMAGE_WIDTH;
 extern int Hwfall;
 extern int HNOM;
 extern int WNOM;
+extern int Wwfall;
 
 #define Hmenu		22
 #define Hqsoframe	48
-#define Hnotes		22
+#define Hnotes		24
 #define Hstatus		22
 #define Hmacros		22
 
-#define Htext		(HNOM - 4 - Hwfall - Hmenu - Hstatus - Hmacros - Hqsoframe - Hnotes)
+#define Htext		(DEFAULT_HNOM - 4 - Hwfall - Hmenu - Hstatus - Hmacros - Hqsoframe - Hnotes)
 #define Hrcvtxt		(Htext) / 2
 #define Hxmttxt		(Htext - (Hrcvtxt))
 

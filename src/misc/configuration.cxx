@@ -15,6 +15,8 @@
 //#include "rigio.h"
 #include "debug.h"
 
+#include <FL/Fl_Tooltip.H>
+
 #include <iostream>
 #include <fstream>
 
@@ -98,7 +100,7 @@ istream& operator>>(istream& in, RGBI& rgbi)
 	return 	in;
 }
 
-// This allows us to put tag elements into containers
+// This allows to put tag elements into containers
 class tag_base
 {
 public:
@@ -169,7 +171,6 @@ public:
 #define ELEM_PROGDEFAULTS(type_, var_, tag_, ...) __VA_ARGS__,
 // 3) Define an array of tag element pointers
 #define ELEM_TAG_ARRAY(type_, var_, tag_, ...) (*tag_ ? new tag_elem<type_>(tag_, progdefaults.var_) : 0),
-
 
 // First define the default config
 #undef ELEM_
@@ -302,6 +303,8 @@ void configuration::loadDefaults() {
 	chkDominoEX_FEC->value(DOMINOEX_FEC);
 
 	btnmt63_interleave->value(mt63_interleave == 64);
+	
+	Fl_Tooltip::enable(tooltips);
 
 	FL_UNLOCK_D();
 }
@@ -392,30 +395,18 @@ int configuration::setDefaults() {
 	if(chkUSEMEMMAPis) {
 		chkUSEMEMMAP->value(1); 
 		chkUSEHAMLIB->value(0); chkUSERIGCAT->value(0); chkUSEXMLRPC->value(0);
-		cboHamlibRig->deactivate();
-		inpRIGdev->deactivate();
-		mnuBaudRate->deactivate();
 		btnPTT[1]->deactivate(); btnPTT[2]->activate(); btnPTT[3]->deactivate();
 	} else if (chkUSEHAMLIBis) {
 		chkUSEHAMLIB->value(1);
 		chkUSEMEMMAP->value(0); chkUSERIGCAT->value(0);  chkUSEXMLRPC->value(0);
-		cboHamlibRig->activate();
-		inpRIGdev->activate();
-		mnuBaudRate->activate();
 		btnPTT[1]->activate(); btnPTT[2]->deactivate(); btnPTT[3]->deactivate();
 	} else if (chkUSERIGCATis) {
 		chkUSERIGCAT->value(1);
 		chkUSEMEMMAP->value(0); chkUSEHAMLIB->value(0); chkUSEXMLRPC->value(0);
-		cboHamlibRig->deactivate();
-		inpRIGdev->deactivate();
-		mnuBaudRate->deactivate();
 		btnPTT[1]->deactivate(); btnPTT[2]->deactivate(); btnPTT[3]->activate();
 	} else if (chkUSEXMLRPCis) {
 		chkUSEXMLRPC->value(1);
 		chkUSEMEMMAP->value(0); chkUSEHAMLIB->value(0); chkUSERIGCAT->value(0);
-		cboHamlibRig->deactivate();
-		inpRIGdev->deactivate();
-		mnuBaudRate->deactivate();
 		btnPTT[1]->deactivate(); btnPTT[2]->deactivate(); btnPTT[3]->deactivate();
 	} else {
 		chkUSEMEMMAP->value(0); chkUSEHAMLIB->value(0); 
@@ -425,6 +416,9 @@ int configuration::setDefaults() {
 
 	inpRIGdev->value(HamRigDevice.c_str());
 	mnuBaudRate->value(HamRigBaudrate);
+	
+	inpXmlRigDevice->value(XmlRigDevice.c_str());
+	mnuXmlRigBaudrate->value(XmlRigBaudrate);
 
 	valCWsweetspot->value(CWsweetspot);
 	valRTTYsweetspot->value(RTTYsweetspot);
@@ -478,26 +472,26 @@ int configuration::setDefaults() {
 	chkRSidWideSearch->value(rsidWideSearch);
 	chkSlowCpu->value(slowcpu);
 	
-	string bandsfname = HomeDir;
-	bandsfname.append("frequencies.def");
-	ifstream bandsfile(bandsfname.c_str(), ios::in);
-	if (bandsfile) {
-		string sBand;
-		cboBand->add(" ");
-		while (!bandsfile.eof()) {
-			sBand = "";
-			bandsfile >> sBand; bandsfile.ignore();
-			if (sBand.length() > 0)
-				cboBand->add(sBand.c_str());
-		}
-		bandsfile.close();
-	} else {
-		int i = 0;
-		while (szBands[i]) {
-			cboBand->add((char *)szBands[i]);
-			i++;
-		}
-	}
+//	string bandsfname = HomeDir;
+//	bandsfname.append("frequencies.def");
+//	ifstream bandsfile(bandsfname.c_str(), ios::in);
+//	if (bandsfile) {
+//		string sBand;
+//		cboBand->add(" ");
+//		while (!bandsfile.eof()) {
+//			sBand = "";
+//			bandsfile >> sBand; bandsfile.ignore();
+//			if (sBand.length() > 0)
+//				cboBand->add(sBand.c_str());
+//		}
+//		bandsfile.close();
+//	} else {
+//		int i = 0;
+//		while (szBands[i]) {
+//			cboBand->add((char *)szBands[i]);
+//			i++;
+//		}
+//	}
 	btnQRZnotavailable->value(0);
 	btnQRZsocket->value(0);
 	btnQRZcdrom->value(0);
@@ -560,12 +554,12 @@ void configuration::initInterface() {
 // close down any possible rig interface threads
 #if USE_HAMLIB
 		hamlib_close();
-		MilliSleep(100);
+//		MilliSleep(100);
 #endif
 		rigMEM_close();
-		MilliSleep(100);
+//		MilliSleep(100);
 		rigCAT_close();
-		MilliSleep(100);
+//		MilliSleep(100);
 
 	FL_LOCK();
 		btnPTTis = (btnPTT[0]->value() ? 0 :
@@ -597,55 +591,45 @@ void configuration::initInterface() {
 		mnuBaudRate->hide();
 #endif		
 	FL_UNLOCK();
+
+bool riginitOK = false;
 		
 	if (chkUSEMEMMAPis) {// start the memory mapped i/o thread
-		btnPTT[2]->activate();
-		rigMEM_init();
-		wf->setQSY(1);
-		activate_rig_menu_item(false);
-	} else if (chkUSERIGCATis) { // start the rigCAT thread
-		if (rigCAT_init() == false) {
-			wf->USB(true);
-			cboBand->show();
-			btnSideband->show();
-			wf->rfcarrier(atoi(cboBand->value())*1000L);
-			wf->setQSY(0);
-			activate_rig_menu_item(false);
-		} else {
-			cboBand->hide();
-			btnSideband->hide();
+		if (rigMEM_init()) {
+			btnPTT[2]->activate();
 			wf->setQSY(1);
-			activate_rig_menu_item(true);
+			if (docked_rig_control)
+				qsoFreqDisp->activate();
+			riginitOK = true;
+		}
+	} else if (chkUSERIGCATis) { // start the rigCAT thread
+		if (rigCAT_init(true)) {
+			wf->USB(true);
+			wf->setQSY(1);
+			if (docked_rig_control)
+				qsoFreqDisp->activate();
+			riginitOK = true;
 		}
 #if USE_HAMLIB
 	} else if (chkUSEHAMLIBis) { // start the hamlib thread
-		if (hamlib_init(btnPTTis == 1 ? true : false) == false) {
+		if (hamlib_init(btnPTTis == 1 ? true : false)) {
 			wf->USB(true);
-			cboBand->show();
-			btnSideband->show();
-			wf->rfcarrier(atoi(cboBand->value())*1000L);
-			wf->setQSY(0);
-			activate_rig_menu_item(false);
-		} else {
-			cboBand->hide();
-			btnSideband->hide();
 			wf->setQSY(1);
-			activate_rig_menu_item(true);
+			if (docked_rig_control)
+				qsoFreqDisp->activate();
+			riginitOK = true;
 		}
 #endif		
 	} else if (chkUSEXMLRPCis) {
-		cboBand->hide();
-		btnSideband->hide();
-		wf->USB(true);
 		wf->setXMLRPC(1);
-		activate_rig_menu_item(false);
-	} else {
+	}
+
+	if (riginitOK == false) {
+		rigCAT_init(false);
 		wf->USB(true);
-		cboBand->show();
-		btnSideband->show();
-		wf->rfcarrier(atoi(cboBand->value())*1000L);
 		wf->setQSY(0);
-		activate_rig_menu_item(false);
+		if (docked_rig_control)
+			qsoFreqDisp->activate();
 	}
 	
 	push2talk->reset(btnPTTis);
@@ -658,6 +642,12 @@ void configuration::initInterface() {
 string configuration::strBaudRate()
 {
 	return (szBaudRates[HamRigBaudrate + 1]);
+}
+
+int configuration::BaudRate(size_t n)
+{
+	if (n > sizeof(szBaudRates) + 1) return 1200;
+	return (atoi(szBaudRates[n + 1]));
 }
 
 #if USE_HAMLIB
@@ -676,6 +666,10 @@ FL_UNLOCK();
 
 void configuration::testCommPorts()
 {
+	inpTTYdev->clear();
+	inpRIGdev->clear();
+	inpXmlRigDevice->clear();
+	
 #ifndef PATH_MAX
 #  define PATH_MAX 1024
 #endif
@@ -713,6 +707,7 @@ void configuration::testCommPorts()
 #if USE_HAMLIB
 			inpRIGdev->add(ttyname);
 #endif
+			inpXmlRigDevice->add(ttyname);
 		}
 	}
 	ret = true;
@@ -769,6 +764,7 @@ out:
 #  if USE_HAMLIB
 			inpRIGdev->add(ttyname);
 #  endif
+			inpXmlRigDevice->add(ttyname);
 		}
 #else // __APPLE__
 		glob(tty_fmt[i], 0, NULL, &gbuf);
@@ -781,6 +777,7 @@ out:
 #  if USE_HAMLIB
 			inpRIGdev->add(gbuf.gl_pathv[j]);
 #  endif
+			inpXmlRigDevice->add(ttyname);
 
 		}
 		globfree(&gbuf);

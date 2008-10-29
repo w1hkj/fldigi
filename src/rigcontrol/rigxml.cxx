@@ -22,6 +22,10 @@
 #endif
 #include "debug.h"
 
+#include "configuration.h"
+#include "fileselect.h"
+#include "confdialog.h"
+
 //#define DEBUGXML
 
 void parseRIGDEF(size_t &);
@@ -172,7 +176,7 @@ void print(size_t &p0, int indent)
 #ifdef DEBUGXML
 	std::string istr(indent, '\t');
 	size_t tend = strXML.find(">", p0);
-	LOG_DEBUG("%s%s", istr.c_str(), strXML.substr(p0, tend - p0 + 1).c_str());
+	LOG_INFO("%s%s", istr.c_str(), strXML.substr(p0, tend - p0 + 1).c_str());
 #endif
 }
 
@@ -576,32 +580,18 @@ void parsePORT(size_t &p0)
 		p1 = tagEnd(p1);
 		p1 = nextTag(p1);
 	}
-	if (rig.port.size()) {
-		rigio.Baud( rig.baud );
-		rigio.Device( rig.port );
-		rigio.Retries(rig.retries);
-		rigio.Timeout(rig.timeout);
-		rigio.RTS(rig.rts);
-		rigio.RTSptt(rig.rtsptt);
-		rigio.DTR(rig.dtr);
-		rigio.DTRptt(rig.dtrptt);
-		rigio.RTSCTS(rig.rtscts);
-	}
+//	if (rig.port.size()) {
+//		rigio.Baud( rig.baud );
+//		rigio.Device( rig.port );
+//		rigio.Retries(rig.retries);
+//		rigio.Timeout(rig.timeout);
+//		rigio.RTS(rig.rts);
+//		rigio.RTSptt(rig.rtsptt);
+//		rigio.DTR(rig.dtr);
+//		rigio.DTRptt(rig.dtrptt);
+//		rigio.RTSCTS(rig.rtscts);
+//	}
 	p0 = pend;
-
-	LOG_DEBUG("\nSerial port parameters:\n\
-    port: %s\n\
-    baud: %d\n\
-    retries: %d\n\
-    timeout: %d\n\
-    initial rts: %+d\n\
-    use rts ptt: %c\n\
-    initial dts: %+d\n\
-    use dtr ptt: %c\n\
-    use flowcontrol: %c",
-		  rig.port.c_str(), rig.baud, rig.retries, rig.timeout, (rig.rts ? +12 : -12),
-		  (rig.rtsptt ? 'T' : 'F'), (rig.dtr ? +12 : -12), (rig.dtrptt ? 'T' : 'F'),
-		  (rig.rtscts ? 'T' : 'F'));
 
 }
 
@@ -850,7 +840,7 @@ bool readRigXML()
 	LSBmodes.clear();
 	strXML = "";
 
-	ifstream xmlfile(xmlfname.c_str(), ios::in);
+	ifstream xmlfile(progdefaults.XmlRigFilename.c_str(), ios::in);
 	if (xmlfile) {
 		while (!xmlfile.eof()) {
 			lines++;
@@ -865,3 +855,13 @@ bool readRigXML()
 	return false;
 }
 
+void selectRigXmlFilename()
+{
+	string deffilename;
+	deffilename = progdefaults.XmlRigFilename;
+    const char *p = FSEL::select("Open rig xml file", "Fldigi rig xml definition file\t*.xml", deffilename.c_str());
+    if (p) {
+   		progdefaults.XmlRigFilename = p;
+   		txtXmlRigFilename->value(fl_filename_name(p));
+	}
+}

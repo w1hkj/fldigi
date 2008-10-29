@@ -19,7 +19,7 @@ extern std::string rigCAT_getwidth();
 extern void rigCAT_setwidth(const std::string&);
 
 extern void rigCAT_close();
-extern bool rigCAT_init();
+extern bool rigCAT_init(bool);
 
 extern void rigCAT_set_ptt(int);
 extern void rigCAT_set_qsy(long long f, long long fmid);

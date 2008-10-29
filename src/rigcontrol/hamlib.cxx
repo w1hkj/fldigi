@@ -97,14 +97,53 @@ bool hamlib_init(bool bPtt)
 	}
 
 	try {
+		char szParam[20];
 		model = (*prig)->rig_model;
+
 		xcvr->init(model);
+LOG_INFO("model %s = %d", sel.c_str(), model);
+
 		xcvr->setConf("rig_pathname", port.c_str());
+LOG_INFO("port %s", port.c_str());
+
 		xcvr->setConf("serial_speed", spd.c_str());
-		if (progdefaults.RTSplus)
+LOG_INFO("speed %s", spd.c_str());
+		
+		snprintf(szParam, sizeof(szParam), "%d", progdefaults.HamlibWait);
+		xcvr->setConf("post_write_delay", szParam);
+LOG_INFO("post_write delay %s", szParam);
+
+		snprintf(szParam, sizeof(szParam), "%d", progdefaults.HamlibTimeout);
+		xcvr->setConf("timeout", szParam);
+LOG_INFO("timeout %s", szParam);
+
+		snprintf(szParam, sizeof(szParam), "%d", progdefaults.HamlibRetries);
+		xcvr->setConf("retry", szParam);
+LOG_INFO("retry %s", szParam);
+
+		if (progdefaults.HamlibRTSplus) {
 			xcvr->setConf("rts_state", "ON");
-		if (progdefaults.DTRplus)
+LOG_INFO("rts state ON");
+		} else
+LOG_INFO("rts state OFF");
+
+		if (progdefaults.HamlibDTRplus) {
 			xcvr->setConf("dtr_state", "ON");
+LOG_INFO("dtr state ON");
+		} else
+LOG_INFO("dtr state OFF");
+
+		if (progdefaults.HamlibRTSCTSflow) {
+			xcvr->setConf("serial_handshake", "Hardware");
+LOG_INFO("serial handshake RTS/CTS");
+		} else if (progdefaults.HamlibXONXOFFflow) {
+			xcvr->setConf("serial_handshake", "XONXOFF");
+LOG_INFO("serial handshake XON/XOFF");
+		} else {
+			xcvr->setConf("serial_handshake", "None");
+LOG_INFO("serial handshake None");
+		}
+
 		xcvr->open();
 	}
 	catch (const RigException& Ex) {
@@ -239,8 +278,9 @@ int hamlib_setfreq(long f)
 		return -1;
 	pthread_mutex_lock(&hamlib_mutex);
 		try {
+LOG_DEBUG("%ld", f);
 			xcvr->setFreq(f);
-			wf->rfcarrier(f);//(hamlib_freq);
+//			wf->rfcarrier(f);//(hamlib_freq);
 		}
 		catch (const RigException& Ex) {
 			show_error("SetFreq", Ex.what());
@@ -252,6 +292,8 @@ int hamlib_setfreq(long f)
 
 int hamlib_setmode(rmode_t m)
 {
+	if (need_mode == false)
+		return -1;
 	if (xcvr->isOnLine() == false)
 		return -1;
 	pthread_mutex_lock(&hamlib_mutex);
@@ -351,21 +393,24 @@ static void *hamlib_loop(void *args)
 
 		if (freqok && freq && (freq != hamlib_freq)) {
 			hamlib_freq = freq;
-			FreqDisp->value(hamlib_freq);
+			show_frequency(hamlib_freq);
 			wf->rfcarrier(hamlib_freq);
 		}
 		
 		if (modeok && (hamlib_rmode != numode)) {
 			hamlib_rmode = numode;
-			selMode(hamlib_rmode);
+//			selMode(hamlib_rmode);
+//			qso_selMode(hamlib_rmode);
+			show_mode(modeString(hamlib_rmode));
 			if (hamlib_rmode == RIG_MODE_LSB ||
 					hamlib_rmode == RIG_MODE_CWR ||	
 					hamlib_rmode == RIG_MODE_PKTLSB ||
 					hamlib_rmode == RIG_MODE_ECSSLSB ||
-					hamlib_rmode == RIG_MODE_RTTYR)
+					hamlib_rmode == RIG_MODE_RTTYR) {
 				wf->USB(false);
-			else
+			} else {
 				wf->USB(true);
+			}
 		}
 		
 		if (hamlib_exit)
@@ -378,12 +423,8 @@ static void *hamlib_loop(void *args)
 	if (rigcontrol)
 		rigcontrol->hide();
 	wf->USB(true);
-	wf->rfcarrier(atoi(cboBand->value())*1000L);
 	FL_LOCK();
 	wf->setQSY(0);
-	cboBand->show();
-	btnSideband->show();
-	activate_rig_menu_item(false);
 	FL_UNLOCK();
 
 	return NULL;

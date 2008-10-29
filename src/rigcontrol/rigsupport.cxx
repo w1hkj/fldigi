@@ -20,7 +20,9 @@
 #include "rigdialog.h"
 #include "rigsupport.h"
 #include "rigxml.h"
+#include "rigMEM.h"
 #include "rigio.h"
+
 #include "threads.h"
 #include "main.h"
 
@@ -59,16 +61,17 @@ struct rmode_name_t {
 	{ RIG_MODE_AMS, "AMS" },
 	{ RIG_MODE_PKTLSB, "PKTLSB" },
 	{ RIG_MODE_PKTUSB, "PKTUSB" },
-	{ RIG_MODE_PKTFM, "PKTFM" },
-	{ RIG_MODE_ECSSUSB, "ECSSUSB" },
-	{ RIG_MODE_ECSSLSB, "ECSSLSB" },
-	{ RIG_MODE_FAX, "FAX" }
+	{ RIG_MODE_PKTFM, "PKTFM" }
+//, // C99 trailing commas in enumerations not yet in the C++ standard
+//	{ RIG_MODE_ECSSUSB, "ECSSUSB" },
+//	{ RIG_MODE_ECSSLSB, "ECSSLSB" },
+//	{ RIG_MODE_FAX, "FAX" }
 // the above are covered by our requirement that hamlib be >= 1.2.4
 #if (defined(RIG_MODE_SAM) && defined(RIG_MODE_SAL) && defined(RIG_MODE_SAH))
 	, // C99 trailing commas in enumerations not yet in the C++ standard
 	{ RIG_MODE_SAM, "SAM" },
 	{ RIG_MODE_SAL, "SAL" },
-	{ RIG_MODE_SAH, "SAH" }
+	{ RIG_MODE_SAH, "SAH" },
 #endif
 };
 
@@ -78,6 +81,16 @@ map<rmode_t, string> mode_names;
 void selMode(rmode_t m)
 {
 	opMODE->value(mode_names[m].c_str());
+}
+
+void qso_selMode(rmode_t m)
+{
+	qso_opMODE->value(mode_names[m].c_str());
+}
+
+string modeString(rmode_t m)
+{
+	return mode_names[m].c_str();
 }
 
 void selFreq(long int f)
@@ -90,6 +103,8 @@ void selFreq(long int f)
 void initOptionMenus()
 {
 	opMODE->clear();
+	if (progdefaults.docked_rig_control)
+		qso_opMODE->clear();
 	list<MODE>::iterator MD;
 	list<MODE> *pMD = 0;
 	if (lmodes.empty() == false)
@@ -101,15 +116,26 @@ void initOptionMenus()
 		MD = pMD->begin();
 		while (MD != pMD->end()) {
 			opMODE->add( (*MD).SYMBOL.c_str());
+			if (progdefaults.docked_rig_control)
+				qso_opMODE->add( (*MD).SYMBOL.c_str());
 			MD++;
 		}
-		opMODE->show();
+		opMODE->activate();
 		opMODE->index(0);
+		if (progdefaults.docked_rig_control) {
+			qso_opMODE->activate();
+			qso_opMODE->index(0);
+		}
 	}
-	else
-		opMODE->hide();
-
+	else {
+		opMODE->deactivate();
+		if (progdefaults.docked_rig_control)
+			qso_opMODE->deactivate();
+	}
+	
 	opBW->clear();
+	if (progdefaults.docked_rig_control)
+		qso_opBW->clear();
 	list<BW>::iterator bw;
 	list<BW> *pBW = 0;
 	if (lbws.empty() == false)
@@ -121,19 +147,35 @@ void initOptionMenus()
 		bw = pBW->begin();
 		while (bw != pBW->end()) {
 			opBW->add( (*bw).SYMBOL.c_str());
+			if (progdefaults.docked_rig_control)
+				qso_opBW->add( (*bw).SYMBOL.c_str());
 			bw++;
 		}
-		opBW->show();
+		opBW->activate();
 		opBW->index(0);
+		if (progdefaults.docked_rig_control) {
+			qso_opBW->activate();
+			qso_opBW->index(0);
+		}
 	}
-	else
-		opBW->hide();
+	else {
+		opBW->deactivate();
+		if (progdefaults.docked_rig_control)
+			qso_opBW->deactivate();
+	}
 }
 
 void clearList()
 {
 	freqlist.clear();
 	FreqSelect->clear();
+	if (progdefaults.docked_rig_control)
+		qso_opBrowser->clear();
+}
+
+void qso_clearList()
+{
+	clearList();
 }
 
 void updateSelect()
@@ -141,8 +183,11 @@ void updateSelect()
 	FreqSelect->clear();
 	if (freqlist.empty())
 		return;
-        for (size_t i = 0; i < freqlist.size(); i++)
-                FreqSelect->add(freqlist[i].str().c_str());
+	for (size_t i = 0; i < freqlist.size(); i++) {
+		FreqSelect->add(freqlist[i].str().c_str());
+		if (progdefaults.docked_rig_control)
+			qso_opBrowser->add(freqlist[i].str().c_str());
+	}
 }
 
 size_t updateList(long rf, int freq, string rmd, trx_mode md)
@@ -232,9 +277,9 @@ void buildlist()
 	fwidths[max_rmode] = fwidths[max_mode] = 10;
 	fl_font(FreqSelect->textfont(), FreqSelect->textsize());
 
-	fwidths[max_rfcarrier] += (int)ceil(fl_width("99999999.999"));
+	fwidths[max_rfcarrier] += (int)ceil(fl_width("999999.999"));
 
-        fwidths[max_rmode] += (int)ceil(fl_width("XXXX"));
+    fwidths[max_rmode] += (int)ceil(fl_width("XXXX"));
 
 	// find mode with longest shortname
 	size_t s, smax = 0, mmax = 0;
@@ -279,9 +324,26 @@ void setMode()
 #if USE_HAMLIB
 	if (progdefaults.chkUSEHAMLIBis)
 		hamlib_setmode(mode_nums[opMODE->value()]);
-	else
 #endif
+	if (progdefaults.chkUSERIGCATis)
 		rigCAT_setmode(opMODE->value());
+	if (progdefaults.chkUSEMEMMAPis)
+		rigMEM_setmode(opMODE->value());
+}
+
+int cb_qso_opMODE()
+{
+	if (!progdefaults.docked_rig_control) return 0;
+	
+#if USE_HAMLIB
+	if (progdefaults.chkUSEHAMLIBis)
+		hamlib_setmode(mode_nums[qso_opMODE->value()]);
+#endif
+	if (progdefaults.chkUSERIGCATis)
+		rigCAT_setmode(qso_opMODE->value());
+	if (progdefaults.chkUSEMEMMAPis)
+		rigMEM_setmode(qso_opMODE->value());
+	return 0;
 }
 
 void setBW()
@@ -289,16 +351,42 @@ void setBW()
 	rigCAT_setwidth (opBW->value());
 }
 
-int movFreq()
+int cb_qso_opBW()
 {
-	long int f;
-	f = FreqDisp->value();
+	if (!progdefaults.docked_rig_control) return 0;
+	rigCAT_setwidth (qso_opBW->value());
+	return 0;
+}
+
+void sendFreq(long int f)
+{
 #if USE_HAMLIB
 	if (progdefaults.chkUSEHAMLIBis)
 		hamlib_setfreq(f);
 	else
 #endif
+	if (progdefaults.chkUSEMEMMAPis)
+		rigMEM_set_freq(f);
+	else if (progdefaults.chkUSERIGCATis)
 		rigCAT_setfreq(f);
+	else
+		rigCAT_setfreq(f);
+}
+
+int movFreq()
+{
+	long int f;
+	f = FreqDisp->value();
+	sendFreq(f);
+	return 0;
+}
+
+int qso_movFreq()
+{
+	if (!progdefaults.docked_rig_control) return 0;
+	long int f;
+	f = qsoFreqDisp->value();
+	sendFreq(f);
 	return 0;
 }
 
@@ -309,12 +397,11 @@ void selectFreq()
 	if (freqlist[n].rmode != "NONE") {
 		opMODE->value(freqlist[n].rmode.c_str());
 		setMode();
-		MilliSleep(100);
 	}
 
 	if (freqlist[n].rfcarrier > 0) {
 		FreqDisp->value(freqlist[n].rfcarrier);
-		movFreq();
+		sendFreq(freqlist[n].rfcarrier);
 	}
 
 	if (freqlist[n].mode != NUM_MODES) {
@@ -322,6 +409,48 @@ void selectFreq()
 			init_modem_sync(freqlist[n].mode);
 		if (freqlist[n].carrier > 0)
 			active_modem->set_freq(freqlist[n].carrier);
+	}
+}
+
+void qso_selectFreq()
+{
+	if (!progdefaults.docked_rig_control) return;
+	
+	int n = qso_opBrowser->value();
+	if (!n) return;
+	
+	n -= 1;
+// transceiver mode
+	if (freqlist[n].rmode != "NONE") {
+		qso_opMODE->value(freqlist[n].rmode.c_str());
+		cb_qso_opMODE();
+	}
+// transceiver frequency
+	if (freqlist[n].rfcarrier > 0) {
+		qsoFreqDisp->value(freqlist[n].rfcarrier);
+		sendFreq(freqlist[n].rfcarrier);
+	}
+// modem type & audio sub carrier
+	if (freqlist[n].mode != NUM_MODES) {
+		if (freqlist[n].mode != active_modem->get_mode())
+			init_modem_sync(freqlist[n].mode);
+		if (freqlist[n].carrier > 0)
+			active_modem->set_freq(freqlist[n].carrier);
+	}
+}
+
+void qso_setFreq()
+{
+	if (!progdefaults.docked_rig_control) return;
+
+	int n = qso_opBrowser->value();
+	if (!n) return;
+	
+	n -= 1;
+// transceiver frequency
+	if (freqlist[n].rfcarrier > 0) {
+		qsoFreqDisp->value(freqlist[n].rfcarrier);
+		sendFreq(freqlist[n].rfcarrier);
 	}
 }
 
@@ -335,51 +464,149 @@ void delFreq()
 	}
 }
 
+void qso_delFreq()
+{
+	if (!progdefaults.docked_rig_control) return;
+	
+	int v = qso_opBrowser->value() - 1;
+
+	if (v >= 0) {
+		freqlist.erase(freqlist.begin() + v);
+		FreqSelect->remove(v + 1);
+		qso_opBrowser->remove(v + 1);
+	}
+}
+
 void addFreq()
 {
 	long freq = FreqDisp->value();
 	if (freq) {
 		size_t pos = addtoList(freq);
 		FreqSelect->insert(pos+1, freqlist[pos].str().c_str());
+		qso_opBrowser->insert(pos+1, freqlist[pos].str().c_str());
 	}
 }
 
+void qso_addFreq()
+{
+	if (!progdefaults.docked_rig_control) return;
+
+	long freq = qsoFreqDisp->value();
+	if (freq) {
+		size_t pos = addtoList(freq);
+		FreqSelect->insert(pos+1, freqlist[pos].str().c_str());
+		qso_opBrowser->insert(pos+1, freqlist[pos].str().c_str());
+	}
+}
+
+void setTitle()
+{
+	if (windowTitle.length() > 0) {
+//std::cout << windowTitle.c_str() << std::endl;
+		if (rigcontrol) {
+			rigcontrol->label(windowTitle.c_str());
+		}
+		if (progdefaults.docked_rig_control) {
+			txtRigName->label(windowTitle.c_str());
+			txtRigName->redraw_label();
+		}
+	} else {
+		if (rigcontrol) {
+			rigcontrol->label("");
+		}
+		if (progdefaults.docked_rig_control) {
+			txtRigName->label("Non CAT mode");
+			txtRigName->redraw_label();
+		}
+	}
+}
 
 bool init_Xml_RigDialog()
 {
+LOG_DEBUG("xml rig");
 	initOptionMenus();
 	clearList();
 	buildlist();
-	if (windowTitle.length() > 0)
-		rigcontrol->label(windowTitle.c_str());
+	setTitle();
 	return true;
 }
 
 bool init_NoRig_RigDialog()
 {
-	opBW->hide();
+LOG_DEBUG("no rig");
+	clearList();
+	buildlist();
+
+	opBW->deactivate();
 	opMODE->clear();
 	opMODE->add("LSB");
 	opMODE->add("USB");
+	opMODE->index(0);
+	opMODE->activate();
+
+	if (progdefaults.docked_rig_control) {
+		qso_opBW->deactivate();
+		qso_opMODE->clear();
+		qso_opMODE->add("LSB");
+		qso_opMODE->add("USB");
+		qso_opMODE->index(0);
+		qso_opMODE->activate();
+	}
+
+	windowTitle = "Rig Not Specified";
+	setTitle();
+		
+	return true;
+}
+
+bool init_rigMEM_RigDialog()
+{
+LOG_DEBUG("Mem Mapped rig");
 	clearList();
 	buildlist();
-	rigcontrol->label("No rig.xml");
+
+	opBW->deactivate();
+	opMODE->clear();
+	opMODE->add("LSB");
+	opMODE->add("USB");
+	opMODE->index(0);
+	opMODE->activate();
+
+	if (progdefaults.docked_rig_control) {
+		qso_opBW->deactivate();
+		qso_opMODE->clear();
+		qso_opMODE->add("LSB");
+		qso_opMODE->add("USB");
+		qso_opMODE->index(0);
+		qso_opMODE->activate();
+	}
+
+	windowTitle = "Memory Mapped Rig";
+	setTitle();
+		
 	return true;
 }
 
 #if USE_HAMLIB
 bool init_Hamlib_RigDialog()
 {
-	opBW->hide();
+LOG_DEBUG("hamlib");
+	opBW->deactivate();
 	opMODE->clear();
 	for (size_t i = 0; i < sizeof(modes)/sizeof(modes[0]); i++) {
 		mode_nums[modes[i].name] = modes[i].mode;
 		mode_names[modes[i].mode] = modes[i].name;
 		opMODE->add(modes[i].name);
+		qso_opMODE->add(modes[i].name);
 	}
 	clearList();
 	buildlist();
-	rigcontrol->label("Hamlib Controller");
+
+	windowTitle = "Hamlib ";
+	windowTitle.append(xcvr->getName());
+	
+	setTitle();
+
 	return true;
 }
 #endif

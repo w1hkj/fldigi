@@ -147,6 +147,11 @@
         ELEM_(bool, ID_SMALL, "IDSMALL", true)                                          \
         ELEM_(bool, macrotextid, "", false)                                             \
         ELEM_(bool, docked_scope, "DOCKEDSCOPE", false)                                 \
+        ELEM_(bool, docked_rig_control, "DOCKEDRIGCONTROL", true)                       \
+        ELEM_(int,  wfwidth, "WFWIDTH", 3000)                                           \
+        ELEM_(int,  wfheight, "WFHEIGHT", 125)                                          \
+        ELEM_(bool, tooltips, "TOOLTIPS", true)                                         \
+        ELEM_(bool, useCheckButtons, "USECHECKBUTTONS", false)							\
 /* QRZ */                                                                               \
         ELEM_(int, QRZ, "QRZTYPE", 0) /* Not available */                               \
         ELEM_(std::string, QRZpathname, "QRZPATHNAME", "")                              \
@@ -170,6 +175,26 @@
         ELEM_(std::string, HamRigDevice, "HAMRIGDEVICE", DEFAULT_HAMRIGDEVICE)          \
         ELEM_(std::string, HamRigName, "HAMRIGNAME", "")                                \
         ELEM_(int, HamRigBaudrate, "HAMRIGBAUDRATE", 1) /* 600 baud */                  \
+        ELEM_(std::string, XmlRigFilename, "XMLRIGFILENAME", "")                        \
+        ELEM_(std::string, XmlRigDevice, "XMLRIGDEVICE", DEFAULT_HAMRIGDEVICE)          \
+        ELEM_(int, XmlRigBaudrate, "XMLRIGBAUDRATE", 1)                                 \
+/* RigCAT parameters */                                                                 \
+        ELEM_(bool, RigCatRTSplus, "RIGCATRTSPLUS", 0)                                  \
+        ELEM_(bool, RigCatDTRplus, "RIGCATDTRPLUS", 0)                                  \
+        ELEM_(bool, RigCatRTSptt, "RIGCATRTSPTT", 0)                                    \
+        ELEM_(bool, RigCatDTRptt, "RIGCATDTRPTT", 0)                                    \
+        ELEM_(bool, RigCatRTSCTSflow, "RIGCATRTSCTSFLOW", 0)                            \
+        ELEM_(int, RigCatRetries, "RIGCATRETRIES", 2)                                   \
+        ELEM_(int, RigCatTimeout, "RIGCATTIMEOUT", 10)                                  \
+        ELEM_(int, RigCatWait, "RIGCATWAIT", 50)                                        \
+/* Hamlib parameters */                                                                 \
+        ELEM_(bool, HamlibRTSplus, "HAMLIBRTSPLUS", 0)                                  \
+        ELEM_(bool, HamlibDTRplus, "HAMLIBDTRPLUS", 0)                                  \
+        ELEM_(bool, HamlibRTSCTSflow, "HAMLIBRTSCTSFLOW", 0)                            \
+        ELEM_(bool, HamlibXONXOFFflow, "HAMLIBXONXOFFFLOW", 0)                          \
+        ELEM_(int, HamlibRetries, "HAMLIBRETRIES", 2)                                   \
+        ELEM_(int, HamlibTimeout, "HAMLIBTIMEOUT", 10)                                  \
+        ELEM_(int, HamlibWait, "HAMLIBWAIT", 50)                                        \
 /* Operator */                                                                          \
         ELEM_(std::string, myCall, "MYCALL", "")                                        \
         ELEM_(std::string, myQth, "MYQTH", "")                                          \
@@ -242,6 +267,10 @@
         ELEM_(Fl_Font, WaterfallFontnbr, "WATERFALLFONTNBR", FL_SCREEN)                 \
         ELEM_(int, WaterfallFontsize, "WATERFALLFONTSIZE", 12)                          \
         ELEM_(std::string, ui_scheme, "UISCHEME", "gtk+")                               \
+        ELEM_(bool, wf_audioscale, "WFAUDIOSCALE", false)								\
+/* Freq Display colors */                                                               \
+        ELEM_(RGB, FDbackground, "FDBACKGROUND", { 0, 0, 0 })                     		\
+        ELEM_(RGB, FDforeground, "FDFOREGROUND", { 0, 200, 0 })                     	\
 /* PSK Viewer */                                                                        \
         ELEM_(bool, VIEWERmarquee, "VIEWERMARQUEE", true)                               \
         ELEM_(bool, VIEWERshowfreq, "VIEWERSHOWFREQ", true)                             \
@@ -280,6 +309,7 @@ struct configuration
 	void testCommPorts();
 	void getRigs();
 	std::string strBaudRate();
+	int  BaudRate(size_t);
 };
 
 extern configuration progdefaults;
