@@ -104,29 +104,6 @@ void popbrwsr_cb (Fl_Widget *v, long d)
   return;
 }
 
-/* XPM Select_Browser Label */
-static const char *brws_12[] = {
-/* width height num_colors chars_per_pixel */
-"    12    12        3            1",
-/* colors */
-". c #000000",
-"d c none",
-"e c #ffffff",
-/* pixels */
-"dddddddddddd",
-"dddddddddddd",
-"dddddddddddd",
-"............",
-"d..........d",
-"dd........dd",
-"ddd......ddd",
-"dddd....dddd",
-"ddddd..ddddd",
-"dddddddddddd",
-"dddddddddddd",
-"dddddddddddd",
-};
-
 
 void Fl_ComboBox::fl_popbrwsr(Fl_Widget *p)
 {
@@ -168,9 +145,7 @@ Fl_ComboBox::Fl_ComboBox (int X,int Y,int W,int H, const char *L)
  : Fl_Group (X, Y, W, H, L)
 {
   width = W; height = H - 4;
-  Btn = new Fl_Button (X + W - 18, Y + 1, 18, H - 2);
-  btnmap = new Fl_Pixmap(brws_12);
-  btnmap->label(Btn);
+  Btn = new Fl_Button (X + W - 18, Y + 1, 18, H - 2, "@-12>");
   Btn->callback ((Fl_Callback *)btnComboBox_cb, 0);
   Output = new Fl_Input (X, Y, W-18, H);
 
@@ -196,7 +171,6 @@ Fl_ComboBox::~Fl_ComboBox()
 		}
 	}
 	delete [] datalist;
-	delete btnmap;
 }
 
 void Fl_ComboBox::type (int t)
