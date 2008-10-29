@@ -223,7 +223,7 @@ fldigi_SOURCES += \
 	include/pskeval.h \
 	include/ptt.h \
 	include/qrunner.h \
-	include/qrzcall.h \
+	include/lookupcall.h \
 	include/qrzlib.h \
 	include/raster.h \
 	include/re.h \
@@ -278,7 +278,7 @@ fldigi_SOURCES += \
 	misc/network.cxx \
 	misc/newinstall.cxx \
 	misc/arq_io.cxx \
-	misc/qrzcall.cxx \
+	misc/lookupcall.cxx \
 	misc/qrzlib.cxx \
 	misc/re.cxx \
 	misc/socket.cxx \

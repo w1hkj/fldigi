@@ -963,8 +963,8 @@ bool rigCAT_init(bool useXML)
 		}
 
 		if (noXMLfile == false) {	
-			rigio.Baud(progdefaults.BaudRate(progdefaults.XmlRigBaudrate));
 			rigio.Device(progdefaults.XmlRigDevice);
+			rigio.Baud(progdefaults.BaudRate(progdefaults.XmlRigBaudrate));
 			rigio.Retries(progdefaults.RigCatRetries);
 			rigio.Timeout(progdefaults.RigCatTimeout);
 			rigio.RTS(progdefaults.RigCatRTSplus);
@@ -1120,8 +1120,10 @@ static void *rigCAT_loop(void *args)
 	string sWidth, sMode;
 
 	for (;;) {
+//		if (2*rig.wait < 100)
+//			MilliSleep(100 - 2 * rig.wait);
 		MilliSleep(100);
-
+		
 		if (rigCAT_bypass == true)
 			continue;
 		if (rigCAT_exit == true)
@@ -1129,7 +1131,17 @@ static void *rigCAT_loop(void *args)
 
 		pthread_mutex_lock(&rigCAT_mutex);
 			freq = rigCAT_getfreq();
+		pthread_mutex_unlock(&rigCAT_mutex);
+
+//		MilliSleep(rig.wait);
+					
+		pthread_mutex_lock(&rigCAT_mutex);
 			sWidth = rigCAT_getwidth();
+		pthread_mutex_unlock(&rigCAT_mutex);
+
+//		MilliSleep(rig.wait);
+		
+		pthread_mutex_lock(&rigCAT_mutex);
 			sMode = rigCAT_getmode();
 		pthread_mutex_unlock(&rigCAT_mutex);
 

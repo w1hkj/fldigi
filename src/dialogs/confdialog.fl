@@ -45,7 +45,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {fldigi - config} open
-    xywh {512 670 400 255} type Double color 45 selection_color 51 align 80 visible
+    xywh {487 115 400 255} type Double color 45 selection_color 51 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 410 255} color 47 selection_color 9
@@ -627,6 +627,7 @@ progdefaults.changed = true;} open
   progdefaults.RigCatRTSptt = false;
 progdefaults.changed = true;}
               tooltip {toggle RTS for ptt} xywh {242 90 70 15} down_box ROUND_DOWN_BOX
+              code0 {o->value(progdefaults.RigCatRTSptt);}
             }
             Fl_Round_Button btnRigCatDTRptt {
               label {dtr PTT}
@@ -642,18 +643,21 @@ progdefaults.changed = true;}
   progdefaults.RigCatDTRptt = false;
 progdefaults.changed = true;}
               tooltip {toggle DTR for ptt} xywh {320 90 70 15} down_box ROUND_DOWN_BOX
+              code0 {o->value(progdefaults.RigCatDTRptt);}
             }
             Fl_Check_Button btnRigCatRTSplus {
               label {set RTS +12 v}
               callback {progdefaults.RigCatRTSplus = o->value();
 progdefaults.changed = true;}
               tooltip {initial state of RTS} xywh {242 110 35 15} down_box DOWN_BOX
+              code0 {o->value(progdefaults.RigCatRTSplus);}
             }
             Fl_Check_Button btnRigCatDTRplus {
               label {set DTR +12 v}
               callback {progdefaults.RigCatDTRplus = o->value();
 progdefaults.changed = true;}
               tooltip {initial state of DTR} xywh {242 130 35 15} down_box DOWN_BOX
+              code0 {o->value(progdefaults.RigCatDTRplus);}
             }
             Fl_Counter cntRigCatRetries {
               label Retries
@@ -924,6 +928,7 @@ progdefaults.changed = true;}
 btnQRZcdrom->value(0);
 btnQRZsocket->value(0);
 btnHAMCALLsocket->value(0);
+btnQRZonline->value(0);
 progdefaults.QRZ = 0;
 }
 progdefaults.changed = true;}
@@ -936,10 +941,11 @@ progdefaults.changed = true;}
 btnQRZsocket->value(0);
 btnQRZnotavailable->value(0);
 btnHAMCALLsocket->value(0);
+btnQRZonline->value(0);
 progdefaults.QRZ = 2;
 }
 progdefaults.changed = true;}
-          xywh {12 70 103 20} down_box DOWN_BOX
+          xywh {12 72 103 20} down_box DOWN_BOX
           code0 {if (progdefaults.QRZ == 2) o->value(1); else o->value(0);}
         }
         Fl_Input txtQRZpathname {
@@ -947,53 +953,65 @@ progdefaults.changed = true;}
           callback {progdefaults.QRZpathname = o->value();
 progdefaults.QRZchanged = true;
 progdefaults.changed = true;}
-          tooltip {ie: /home/dave/CALLBK/ or C:/CALLBK/^jLeave blank to search for database} xywh {139 67 255 25}
+          tooltip {ie: /home/dave/CALLBK/ or C:/CALLBK/^jLeave blank to search for database} xywh {140 69 255 25}
           code0 {o->value(progdefaults.QRZpathname.c_str());}
         }
-        Fl_Check_Button btnQRZsocket {
-          label {QRZ online subscription}
-          callback {if (o->value() == 1) {
+        Fl_Group {} {open
+          xywh {5 135 390 85} box ENGRAVED_FRAME
+        } {
+          Fl_Check_Button btnQRZsocket {
+            label {QRZ subscriber}
+            callback {if (o->value() == 1) {
 btnQRZcdrom->value(0);
 btnQRZnotavailable->value(0);
 btnHAMCALLsocket->value(0);
+btnQRZonline->value(0);
 progdefaults.QRZ = 1;
 }
 progdefaults.changed = true;}
-          tooltip {You need a paid QRZ on-line subscription for access} xywh {12 96 190 20} down_box DOWN_BOX
-          code0 {if (progdefaults.QRZ == 1) o->value(1); else o->value(0);}
-        }
-        Fl_Check_Button btnHAMCALLsocket {
-          label {Hamcall online subscription}
-          callback {if (o->value() == 1) {
+            tooltip {You need a paid QRZ on-line subscription for access} xywh {12 148 190 20} down_box DOWN_BOX
+            code0 {if (progdefaults.QRZ == 1) o->value(1); else o->value(0);}
+          }
+          Fl_Check_Button btnHAMCALLsocket {
+            label {Hamcall subscriber}
+            callback {if (o->value() == 1) {
 btnQRZcdrom->value(0);
 btnQRZnotavailable->value(0);
 btnQRZsocket->value(0);
+btnQRZonline->value(0);
 progdefaults.QRZ = 3;
 }
 progdefaults.changed = true;}
-          tooltip {You need a paid Hamcall on-line subscription to access} xywh {12 119 205 20} down_box DOWN_BOX
-          code0 {if (progdefaults.QRZ == 3) o->value(1); else o->value(0);}
-        }
-        Fl_Input inpQRZusername {
-          label {User name:}
-          callback {progdefaults.QRZusername = o->value();
+            tooltip {You need a paid Hamcall on-line subscription to access} xywh {12 183 205 20} down_box DOWN_BOX
+            code0 {if (progdefaults.QRZ == 3) o->value(1); else o->value(0);}
+          }
+          Fl_Input inpQRZusername {
+            label {User name}
+            callback {progdefaults.QRZusername = o->value();
 progdefaults.changed = true;}
-          xywh {150 145 90 25}
-          code0 {o->value(progdefaults.QRZusername.c_str());}
-        }
-        Fl_Input inpQRZuserpassword {
-          label {User password:}
-          callback {progdefaults.QRZuserpassword = o->value();
+            xywh {205 145 90 25} align 8
+            code0 {o->value(progdefaults.QRZusername.c_str());}
+          }
+          Fl_Input inpQRZuserpassword {
+            label Password
+            callback {progdefaults.QRZuserpassword = o->value();
 progdefaults.changed = true;}
-          xywh {150 176 90 25}
-          code0 {o->value(progdefaults.QRZuserpassword.c_str()); o->type(FL_SECRET_INPUT);}
+            xywh {205 178 90 25} align 8
+            code0 {o->value(progdefaults.QRZuserpassword.c_str());}
+          }
         }
-        Fl_Button btnQRZpasswordShow {
-          label Show
-          callback {inpQRZuserpassword->type(inpQRZuserpassword->type() ^ FL_SECRET_INPUT);
-inpQRZuserpassword->redraw();
-o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");}
-          xywh {245 176 50 25}
+        Fl_Check_Button btnQRZonline {
+          label {QRZ on line}
+          callback {if (o->value() == 1) {
+btnQRZnotavailable->value(0);
+btnQRZcdrom->value(0);
+btnQRZsocket->value(0);
+btnHAMCALLsocket->value(0);
+progdefaults.QRZ = 4;
+}
+progdefaults.changed = true;}
+          tooltip {This service may not be available} xywh {12 105 70 20} down_box DOWN_BOX
+          code0 {if (progdefaults.QRZ == 4) o->value(1); else o->value(0);}
         }
       }
       Fl_Group tabSoundCard {
@@ -1264,46 +1282,53 @@ progdefaults.changed = true;}
           } {
             Fl_Group {} {
               label {These changes take effect on next program startup} open
-              xywh {5 110 390 105} box ENGRAVED_FRAME align 17
+              xywh {5 95 390 120} box ENGRAVED_FRAME align 17
             } {
               Fl_Counter cntrWfwidth {
                 label {Waterfall width in Hz}
                 callback {progdefaults.wfwidth = (int)(o->value());
 progdefaults.changed = true;}
-                tooltip {Wider ==> higher cpu usage} xywh {30 135 95 21} type Simple align 8 minimum 2400 maximum 4000 step 100 value 3000
+                tooltip {Wider ==> higher cpu usage} xywh {30 115 95 21} type Simple align 8 minimum 2400 maximum 4000 step 100 value 3000
                 code0 {o->value(progdefaults.wfwidth);}
               }
               Fl_Counter cntrWfheight {
                 label {Waterfall height in pixels}
                 callback {progdefaults.wfheight = (int)o->value();
 progdefaults.changed = true;}
-                tooltip {Taller ==> higher cpu usage} xywh {30 162 95 21} type Simple align 8 minimum 100 maximum 160 step 5 value 120
+                tooltip {Taller ==> higher cpu usage} xywh {30 140 95 21} type Simple align 8 minimum 100 maximum 160 step 5 value 120
                 code0 {o->value(progdefaults.wfheight);}
               }
               Fl_Check_Button btnDockedScope {
                 label {Docked scope}
                 callback {progdefaults.docked_scope = o->value();
 progdefaults.changed = true;}
-                tooltip {Restart fldigi for this option to take effect} xywh {30 190 125 20} down_box DOWN_BOX
-                code0 {btnDockedScope->value(progdefaults.docked_scope);}
+                tooltip {Restart fldigi for this option to take effect} xywh {30 167 125 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.docked_scope);}
               }
               Fl_Check_Button btnDockedRigControl {
                 label {Docked Rig Control}
                 callback {progdefaults.docked_rig_control = o->value();
 progdefaults.changed = true;}
-                xywh {200 190 160 20} down_box DOWN_BOX value 1
+                xywh {200 167 160 20} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.docked_rig_control);}
+              }
+              Fl_Check_Button btnCheckButtons {
+                label {Check button toggle for Sql && AFC}
+                callback {progdefaults.useCheckButtons = o->value();
+progdefaults.changed = true;}
+                tooltip {Restart fldigi for this option to take effect} xywh {30 189 125 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.useCheckButtons);}
               }
             }
             Fl_Group {} {open
-              xywh {5 55 390 55} box ENGRAVED_FRAME
+              xywh {5 55 390 40} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnShowTooltips {
                 label {Show Tooltips}
                 callback {progdefaults.tooltips = o->value();
 Fl_Tooltip::enable(progdefaults.tooltips);
 progdefaults.changed = true;}
-                xywh {20 75 70 15} down_box DOWN_BOX value 1
+                xywh {20 68 70 15} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.tooltips);}
               }
             }

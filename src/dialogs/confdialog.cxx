@@ -803,6 +803,7 @@ static void cb_btnQRZnotavailable(Fl_Check_Button* o, void*) {
 btnQRZcdrom->value(0);
 btnQRZsocket->value(0);
 btnHAMCALLsocket->value(0);
+btnQRZonline->value(0);
 progdefaults.QRZ = 0;
 }
 progdefaults.changed = true;
@@ -815,6 +816,7 @@ static void cb_btnQRZcdrom(Fl_Check_Button* o, void*) {
 btnQRZsocket->value(0);
 btnQRZnotavailable->value(0);
 btnHAMCALLsocket->value(0);
+btnQRZonline->value(0);
 progdefaults.QRZ = 2;
 }
 progdefaults.changed = true;
@@ -835,6 +837,7 @@ static void cb_btnQRZsocket(Fl_Check_Button* o, void*) {
 btnQRZcdrom->value(0);
 btnQRZnotavailable->value(0);
 btnHAMCALLsocket->value(0);
+btnQRZonline->value(0);
 progdefaults.QRZ = 1;
 }
 progdefaults.changed = true;
@@ -847,6 +850,7 @@ static void cb_btnHAMCALLsocket(Fl_Check_Button* o, void*) {
 btnQRZcdrom->value(0);
 btnQRZnotavailable->value(0);
 btnQRZsocket->value(0);
+btnQRZonline->value(0);
 progdefaults.QRZ = 3;
 }
 progdefaults.changed = true;
@@ -866,12 +870,17 @@ static void cb_inpQRZuserpassword(Fl_Input* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Button *btnQRZpasswordShow=(Fl_Button *)0;
+Fl_Check_Button *btnQRZonline=(Fl_Check_Button *)0;
 
-static void cb_btnQRZpasswordShow(Fl_Button* o, void*) {
-  inpQRZuserpassword->type(inpQRZuserpassword->type() ^ FL_SECRET_INPUT);
-inpQRZuserpassword->redraw();
-o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");
+static void cb_btnQRZonline(Fl_Check_Button* o, void*) {
+  if (o->value() == 1) {
+btnQRZnotavailable->value(0);
+btnQRZcdrom->value(0);
+btnQRZsocket->value(0);
+btnHAMCALLsocket->value(0);
+progdefaults.QRZ = 4;
+}
+progdefaults.changed = true;
 }
 
 Fl_Group *tabSoundCard=(Fl_Group *)0;
@@ -1110,6 +1119,13 @@ Fl_Check_Button *btnDockedRigControl=(Fl_Check_Button *)0;
 
 static void cb_btnDockedRigControl(Fl_Check_Button* o, void*) {
   progdefaults.docked_rig_control = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnCheckButtons=(Fl_Check_Button *)0;
+
+static void cb_btnCheckButtons(Fl_Check_Button* o, void*) {
+  progdefaults.useCheckButtons = o->value();
 progdefaults.changed = true;
 }
 
@@ -2131,25 +2147,29 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
               o->add(szBaudRates);
               o->value(progdefaults.XmlRigBaudrate);
             } // Fl_Choice* mnuXmlRigBaudrate
-            { btnRigCatRTSptt = new Fl_Round_Button(242, 90, 70, 15, "rts PTT");
+            { Fl_Round_Button* o = btnRigCatRTSptt = new Fl_Round_Button(242, 90, 70, 15, "rts PTT");
               btnRigCatRTSptt->tooltip("toggle RTS for ptt");
               btnRigCatRTSptt->down_box(FL_ROUND_DOWN_BOX);
               btnRigCatRTSptt->callback((Fl_Callback*)cb_btnRigCatRTSptt);
+              o->value(progdefaults.RigCatRTSptt);
             } // Fl_Round_Button* btnRigCatRTSptt
-            { btnRigCatDTRptt = new Fl_Round_Button(320, 90, 70, 15, "dtr PTT");
+            { Fl_Round_Button* o = btnRigCatDTRptt = new Fl_Round_Button(320, 90, 70, 15, "dtr PTT");
               btnRigCatDTRptt->tooltip("toggle DTR for ptt");
               btnRigCatDTRptt->down_box(FL_ROUND_DOWN_BOX);
               btnRigCatDTRptt->callback((Fl_Callback*)cb_btnRigCatDTRptt);
+              o->value(progdefaults.RigCatDTRptt);
             } // Fl_Round_Button* btnRigCatDTRptt
-            { btnRigCatRTSplus = new Fl_Check_Button(242, 110, 35, 15, "set RTS +12 v");
+            { Fl_Check_Button* o = btnRigCatRTSplus = new Fl_Check_Button(242, 110, 35, 15, "set RTS +12 v");
               btnRigCatRTSplus->tooltip("initial state of RTS");
               btnRigCatRTSplus->down_box(FL_DOWN_BOX);
               btnRigCatRTSplus->callback((Fl_Callback*)cb_btnRigCatRTSplus);
+              o->value(progdefaults.RigCatRTSplus);
             } // Fl_Check_Button* btnRigCatRTSplus
-            { btnRigCatDTRplus = new Fl_Check_Button(242, 130, 35, 15, "set DTR +12 v");
+            { Fl_Check_Button* o = btnRigCatDTRplus = new Fl_Check_Button(242, 130, 35, 15, "set DTR +12 v");
               btnRigCatDTRplus->tooltip("initial state of DTR");
               btnRigCatDTRplus->down_box(FL_DOWN_BOX);
               btnRigCatDTRplus->callback((Fl_Callback*)cb_btnRigCatDTRplus);
+              o->value(progdefaults.RigCatDTRplus);
             } // Fl_Check_Button* btnRigCatDTRplus
             { Fl_Counter* o = cntRigCatRetries = new Fl_Counter(15, 188, 75, 21, "Retries");
               cntRigCatRetries->tooltip("# times to resend command before FAIL");
@@ -2358,39 +2378,48 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           btnQRZnotavailable->callback((Fl_Callback*)cb_btnQRZnotavailable);
           if (progdefaults.QRZ == 0) o->value(1); else o->value(0);
         } // Fl_Check_Button* btnQRZnotavailable
-        { Fl_Check_Button* o = btnQRZcdrom = new Fl_Check_Button(12, 70, 103, 20, "QRZ cdrom");
+        { Fl_Check_Button* o = btnQRZcdrom = new Fl_Check_Button(12, 72, 103, 20, "QRZ cdrom");
           btnQRZcdrom->down_box(FL_DOWN_BOX);
           btnQRZcdrom->callback((Fl_Callback*)cb_btnQRZcdrom);
           if (progdefaults.QRZ == 2) o->value(1); else o->value(0);
         } // Fl_Check_Button* btnQRZcdrom
-        { Fl_Input* o = txtQRZpathname = new Fl_Input(139, 67, 255, 25, "at:");
+        { Fl_Input* o = txtQRZpathname = new Fl_Input(140, 69, 255, 25, "at:");
           txtQRZpathname->tooltip("ie: /home/dave/CALLBK/ or C:/CALLBK/^jLeave blank to search for database");
           txtQRZpathname->callback((Fl_Callback*)cb_txtQRZpathname);
           o->value(progdefaults.QRZpathname.c_str());
         } // Fl_Input* txtQRZpathname
-        { Fl_Check_Button* o = btnQRZsocket = new Fl_Check_Button(12, 96, 190, 20, "QRZ online subscription");
-          btnQRZsocket->tooltip("You need a paid QRZ on-line subscription for access");
-          btnQRZsocket->down_box(FL_DOWN_BOX);
-          btnQRZsocket->callback((Fl_Callback*)cb_btnQRZsocket);
-          if (progdefaults.QRZ == 1) o->value(1); else o->value(0);
-        } // Fl_Check_Button* btnQRZsocket
-        { Fl_Check_Button* o = btnHAMCALLsocket = new Fl_Check_Button(12, 119, 205, 20, "Hamcall online subscription");
-          btnHAMCALLsocket->tooltip("You need a paid Hamcall on-line subscription to access");
-          btnHAMCALLsocket->down_box(FL_DOWN_BOX);
-          btnHAMCALLsocket->callback((Fl_Callback*)cb_btnHAMCALLsocket);
-          if (progdefaults.QRZ == 3) o->value(1); else o->value(0);
-        } // Fl_Check_Button* btnHAMCALLsocket
-        { Fl_Input* o = inpQRZusername = new Fl_Input(150, 145, 90, 25, "User name:");
-          inpQRZusername->callback((Fl_Callback*)cb_inpQRZusername);
-          o->value(progdefaults.QRZusername.c_str());
-        } // Fl_Input* inpQRZusername
-        { Fl_Input* o = inpQRZuserpassword = new Fl_Input(150, 176, 90, 25, "User password:");
-          inpQRZuserpassword->callback((Fl_Callback*)cb_inpQRZuserpassword);
-          o->value(progdefaults.QRZuserpassword.c_str()); o->type(FL_SECRET_INPUT);
-        } // Fl_Input* inpQRZuserpassword
-        { btnQRZpasswordShow = new Fl_Button(245, 176, 50, 25, "Show");
-          btnQRZpasswordShow->callback((Fl_Callback*)cb_btnQRZpasswordShow);
-        } // Fl_Button* btnQRZpasswordShow
+        { Fl_Group* o = new Fl_Group(5, 135, 390, 85);
+          o->box(FL_ENGRAVED_FRAME);
+          { Fl_Check_Button* o = btnQRZsocket = new Fl_Check_Button(12, 148, 190, 20, "QRZ subscriber");
+            btnQRZsocket->tooltip("You need a paid QRZ on-line subscription for access");
+            btnQRZsocket->down_box(FL_DOWN_BOX);
+            btnQRZsocket->callback((Fl_Callback*)cb_btnQRZsocket);
+            if (progdefaults.QRZ == 1) o->value(1); else o->value(0);
+          } // Fl_Check_Button* btnQRZsocket
+          { Fl_Check_Button* o = btnHAMCALLsocket = new Fl_Check_Button(12, 183, 205, 20, "Hamcall subscriber");
+            btnHAMCALLsocket->tooltip("You need a paid Hamcall on-line subscription to access");
+            btnHAMCALLsocket->down_box(FL_DOWN_BOX);
+            btnHAMCALLsocket->callback((Fl_Callback*)cb_btnHAMCALLsocket);
+            if (progdefaults.QRZ == 3) o->value(1); else o->value(0);
+          } // Fl_Check_Button* btnHAMCALLsocket
+          { Fl_Input* o = inpQRZusername = new Fl_Input(205, 145, 90, 25, "User name");
+            inpQRZusername->callback((Fl_Callback*)cb_inpQRZusername);
+            inpQRZusername->align(FL_ALIGN_RIGHT);
+            o->value(progdefaults.QRZusername.c_str());
+          } // Fl_Input* inpQRZusername
+          { Fl_Input* o = inpQRZuserpassword = new Fl_Input(205, 178, 90, 25, "Password");
+            inpQRZuserpassword->callback((Fl_Callback*)cb_inpQRZuserpassword);
+            inpQRZuserpassword->align(FL_ALIGN_RIGHT);
+            o->value(progdefaults.QRZuserpassword.c_str());
+          } // Fl_Input* inpQRZuserpassword
+          o->end();
+        } // Fl_Group* o
+        { Fl_Check_Button* o = btnQRZonline = new Fl_Check_Button(12, 105, 70, 20, "QRZ on line");
+          btnQRZonline->tooltip("This service may not be available");
+          btnQRZonline->down_box(FL_DOWN_BOX);
+          btnQRZonline->callback((Fl_Callback*)cb_btnQRZonline);
+          if (progdefaults.QRZ == 4) o->value(1); else o->value(0);
+        } // Fl_Check_Button* btnQRZonline
         tabQRZ->end();
       } // Fl_Group* tabQRZ
       { tabSoundCard = new Fl_Group(0, 25, 400, 195, "SndCrd");
@@ -2593,10 +2622,10 @@ l with your sound hardware.");
             tabMacros->end();
           } // Fl_Group* tabMacros
           { tabMainWindow = new Fl_Group(0, 50, 400, 170, "Main window");
-            { Fl_Group* o = new Fl_Group(5, 110, 390, 105, "These changes take effect on next program startup");
+            { Fl_Group* o = new Fl_Group(5, 95, 390, 120, "These changes take effect on next program startup");
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP|FL_ALIGN_INSIDE);
-              { Fl_Counter* o = cntrWfwidth = new Fl_Counter(30, 135, 95, 21, "Waterfall width in Hz");
+              { Fl_Counter* o = cntrWfwidth = new Fl_Counter(30, 115, 95, 21, "Waterfall width in Hz");
                 cntrWfwidth->tooltip("Wider ==> higher cpu usage");
                 cntrWfwidth->type(1);
                 cntrWfwidth->minimum(2400);
@@ -2607,7 +2636,7 @@ l with your sound hardware.");
                 cntrWfwidth->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.wfwidth);
               } // Fl_Counter* cntrWfwidth
-              { Fl_Counter* o = cntrWfheight = new Fl_Counter(30, 162, 95, 21, "Waterfall height in pixels");
+              { Fl_Counter* o = cntrWfheight = new Fl_Counter(30, 140, 95, 21, "Waterfall height in pixels");
                 cntrWfheight->tooltip("Taller ==> higher cpu usage");
                 cntrWfheight->type(1);
                 cntrWfheight->minimum(100);
@@ -2618,23 +2647,29 @@ l with your sound hardware.");
                 cntrWfheight->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.wfheight);
               } // Fl_Counter* cntrWfheight
-              { btnDockedScope = new Fl_Check_Button(30, 190, 125, 20, "Docked scope");
+              { Fl_Check_Button* o = btnDockedScope = new Fl_Check_Button(30, 167, 125, 20, "Docked scope");
                 btnDockedScope->tooltip("Restart fldigi for this option to take effect");
                 btnDockedScope->down_box(FL_DOWN_BOX);
                 btnDockedScope->callback((Fl_Callback*)cb_btnDockedScope);
-                btnDockedScope->value(progdefaults.docked_scope);
+                o->value(progdefaults.docked_scope);
               } // Fl_Check_Button* btnDockedScope
-              { Fl_Check_Button* o = btnDockedRigControl = new Fl_Check_Button(200, 190, 160, 20, "Docked Rig Control");
+              { Fl_Check_Button* o = btnDockedRigControl = new Fl_Check_Button(200, 167, 160, 20, "Docked Rig Control");
                 btnDockedRigControl->down_box(FL_DOWN_BOX);
                 btnDockedRigControl->value(1);
                 btnDockedRigControl->callback((Fl_Callback*)cb_btnDockedRigControl);
                 o->value(progdefaults.docked_rig_control);
               } // Fl_Check_Button* btnDockedRigControl
+              { Fl_Check_Button* o = btnCheckButtons = new Fl_Check_Button(30, 189, 125, 20, "Check button toggle for Sql && AFC");
+                btnCheckButtons->tooltip("Restart fldigi for this option to take effect");
+                btnCheckButtons->down_box(FL_DOWN_BOX);
+                btnCheckButtons->callback((Fl_Callback*)cb_btnCheckButtons);
+                o->value(progdefaults.useCheckButtons);
+              } // Fl_Check_Button* btnCheckButtons
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(5, 55, 390, 55);
+            { Fl_Group* o = new Fl_Group(5, 55, 390, 40);
               o->box(FL_ENGRAVED_FRAME);
-              { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(20, 75, 70, 15, "Show Tooltips");
+              { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(20, 68, 70, 15, "Show Tooltips");
                 btnShowTooltips->down_box(FL_DOWN_BOX);
                 btnShowTooltips->value(1);
                 btnShowTooltips->callback((Fl_Callback*)cb_btnShowTooltips);

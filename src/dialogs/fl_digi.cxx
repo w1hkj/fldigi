@@ -89,7 +89,7 @@
 #include "macros.h"
 #include "macroedit.h"
 #include "logger.h"
-#include "qrzcall.h"
+#include "lookupcall.h"
 
 #include "font_browser.h"
 
@@ -131,7 +131,7 @@ Fl_Double_Window	*scopeview = (Fl_Double_Window *)0;
 
 MixerBase* mixer = 0;
 
-bool	useCheckButtons;
+//bool	useCheckButtons;
 
 
 Fl_Light_Button		*btnTune = (Fl_Light_Button *)0;
@@ -2269,7 +2269,7 @@ void create_fl_digi_main() {
 #ifdef __APPLE__
 			sql_width -= 15; // leave room for resize handle
 #endif
-			if (useCheckButtons) {
+			if (progdefaults.useCheckButtons) {
 				btn_afconoff = new Fl_Check_Button(
 								WNOM - bwSqlOnOff - bwAfcOnOff, 
 								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
