@@ -1569,7 +1569,7 @@ int WFdisp::handle(int event)
 					return 1;
 			}
 			if (progdefaults.WaterfallQSY && push < WFTEXT + WFSCALE) {
-				long long newrfc = (pxpos - xpos) * (step==4?10:step==2?5:1);
+				long long newrfc = (pxpos - xpos) * step;
 				if (!USB())
 					newrfc = -newrfc;
 				newrfc += rfcarrier();
