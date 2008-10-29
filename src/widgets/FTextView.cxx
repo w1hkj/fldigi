@@ -442,24 +442,26 @@ int FTextView::handle(int event)
 		if (!Fl::event_inside(this))
 			break;
  		switch (Fl::event_button()) {
- 		case FL_LEFT_MOUSE: {
- 			if (!Fl::event_shift())
- 				goto out;
- 			char* s = get_word(Fl::event_x() - x(), Fl::event_y() - y());
-  			inpCall->value(s);
-  			free(s);
-  			stopMacroTimer();
-  		}
-// fall through
- 		case FL_MIDDLE_MOUSE:
-// stop mouse2 text paste events from reaching Fl_Text_Editor_mod
- 			return 1;
+		case FL_LEFT_MOUSE:
+			if (Fl::event_shift()) { // TODO: can we get rid of this binding?
+				char* s = get_word(Fl::event_x() - x(), Fl::event_y() - y());
+				inpCall->value(s);
+				free(s);
+				stopMacroTimer();
+				return 1;
+			}
+			goto out;
+		case FL_MIDDLE_MOUSE:
+			if (cursor != FL_CURSOR_HAND)
+				handle_qso_data(Fl::event_x() - x(), Fl::event_y() - y());
+			return 1;
  		case FL_RIGHT_MOUSE:
   			break;
  		default:
  			goto out;
  		}
-// enable/disable menu items
+
+		// mouse-3 handling: enable/disable menu items and display popup
 		set_active(&view_menu[RX_MENU_CLEAR], tbuf->length());
 		set_active(&view_menu[RX_MENU_COPY], tbuf->selected());
 		set_active(&view_menu[RX_MENU_SAVE], tbuf->length());
@@ -614,6 +616,33 @@ void FTextView::handle_qsy(int start, int end)
 	free(text);
 }
 
+void FTextView::handle_qso_data(int start, int end)
+{
+	static re_t rst("^[0-9]{3}$", REG_EXTENDED | REG_NOSUB);
+	static re_t loc("^[A-R]{2}[0-9]{2}([A-X]{2})+$", REG_EXTENDED | REG_ICASE | REG_NOSUB);
+
+	char* s = get_word(start, end);
+	if (rst.match(s))
+		inpRstIn->value(s);
+	else {
+		Fl_Input* fields[] = { inpCall, inpLoc, inpQth, inpName };
+		for (size_t i = 0; i < sizeof(fields)/sizeof(*fields); i++) {
+			if (*fields[i]->value() == '\0') {
+				if (fields[i] == inpLoc && !loc.match(s))
+					continue;
+				fields[i]->value(s);
+				fields[i]->do_callback();
+				if (fields[i] == inpCall)
+					stopMacroTimer();
+				break;
+			}
+		}
+	}
+
+	free(s);
+}
+
+
 /// The context menu handler
 ///
 /// @param val 
@@ -623,38 +652,27 @@ void FTextView::menu_cb(int val)
 	if (progdefaults.QRZ == 0)
 		++val;
 
+	Fl_Input* input = 0;
 	switch (val) {
-		char *s;
 	case RX_MENU_QRZ_THIS:
 		menu_cb(RX_MENU_CALL);
 		extern void CALLSIGNquery();
 		CALLSIGNquery();
 		break;
 	case RX_MENU_CALL:
-		stopMacroTimer();
-		s = get_word(popx, popy);
-		inpCall->value(s);
-		free(s);
+		input = inpCall;
 		break;
 	case RX_MENU_NAME:
-		s = get_word(popx, popy);
-		inpName->value(s);
-		free(s);
+		input = inpName;
 		break;
 	case RX_MENU_QTH:
-		s = get_word(popx, popy);
-		inpQth->value(s);
-		free(s);
+		input = inpQth;
 		break;
 	case RX_MENU_LOC:
-		s = get_word(popx, popy);
-		inpLoc->value(s);
-		free(s);
+		input = inpLoc;
 		break;
 	case RX_MENU_RST_IN:
-		s = get_word(popx, popy);
-		inpRstIn->value(s);
-		free(s);
+		input = inpRstIn;
 		break;
 
 	case RX_MENU_DIV:
@@ -696,6 +714,15 @@ void FTextView::menu_cb(int val)
 		wrap_mode((wrap = !wrap), wrap_col);
 		show_insert_position();
 		break;
+	}
+
+	if (input) {
+		char* s = get_word(popx, popy);
+		input->value(s);
+		input->do_callback();
+		free(s);
+		if (input == inpCall)
+			stopMacroTimer();
 	}
 }
 

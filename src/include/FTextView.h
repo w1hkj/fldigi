@@ -124,6 +124,7 @@ protected:
 
 	void		handle_clickable(int x, int y);
 	void		handle_qsy(int start, int end);
+	void		handle_qso_data(int start, int end);
 	virtual void	menu_cb(int val);
 	static void	changed_cb(int pos, int nins, int ndel, int nsty,
 				   const char *dtext, void *arg);
