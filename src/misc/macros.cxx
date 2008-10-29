@@ -215,7 +215,7 @@ void pIZDT(string &s, size_t &i)
 	tm sTime;
 	time (&tmptr);
 	gmtime_r(&tmptr, &sTime);
-	mystrftime(szDt, 79, "%Y-%m-%d %H:%M%z", &sTime);
+	mystrftime(szDt, 79, "%Y-%m-%d %H:%MZ", &sTime);
 	s.replace( i, 6, szDt);
 }
 
