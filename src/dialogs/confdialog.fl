@@ -386,11 +386,20 @@ progdefaults.changed = true;}
                 xywh {15 96 225 20} down_box DOWN_BOX
               }
               Fl_Input inpWaterfallClickText {
-                label {Insert text
-on left click}
                 callback {progdefaults.WaterfallClickText = o->value();
 progdefaults.changed = true;}
-                xywh {15 126 150 40} align 8
+                xywh {206 120 150 50} align 8
+              }
+              Fl_Check_Button btnWaterfallClickInsert {
+                label {Insert text on left click}
+                callback {progdefaults.WaterfallClickInsert = o->value();
+if (progdefaults.WaterfallClickInsert)
+    inpWaterfallClickText->show();
+else
+    inpWaterfallClickText->hide();
+progdefaults.changed = true;}
+                xywh {15 134 172 20} down_box DOWN_BOX
+                code0 {btnWaterfallClickInsert->value(progdefaults.WaterfallClickInsert);}
               }
             }
             Fl_Choice mnuWaterfallWheelAction {

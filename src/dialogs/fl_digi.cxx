@@ -2840,6 +2840,10 @@ void qsy(long long rfc, long long fmid)
 {
 	if (fmid < 0LL)
 		fmid = (long long)active_modem->get_freq();
+	if (rfc == 0LL || rfc == wf->rfcarrier()) {
+		active_modem->set_freq(fmid);
+		return;
+	}
 
 	if (progdefaults.chkUSERIGCATis)
 		REQ(rigCAT_set_qsy, rfc, fmid);
@@ -2853,4 +2857,6 @@ void qsy(long long rfc, long long fmid)
 	else if (progdefaults.chkUSEXMLRPCis)
 		REQ(xmlrpc_set_qsy, rfc, fmid);
 #endif
+	else
+		active_modem->set_freq(fmid);
 }

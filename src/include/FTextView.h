@@ -39,7 +39,11 @@
 class FTextBase : public Fl_Text_Editor_mod
 {
 public:
-	enum TEXT_ATTR { RECV, XMIT, CTRL, SKIP, ALTR, NATTR };
+	// CLICK_START: same as first clickable style
+	// NATTR: number of styles (last style + 1)
+	enum TEXT_ATTR { RECV, XMIT, CTRL, SKIP, ALTR,
+			 CLICK_START, QSY = CLICK_START, /* FOO, BAR, ..., */
+			 NATTR };
 
 	FTextBase(int x, int y, int w, int h, const char *l = 0);
 	virtual ~FTextBase() { delete tbuf; delete sbuf; }
@@ -107,6 +111,7 @@ public:
                 while (*s)
                         add(*s++, attr);
         }
+	void		clear(void);
 
 protected:
 	enum { RX_MENU_QRZ_THIS, RX_MENU_CALL, RX_MENU_NAME, RX_MENU_QTH,
@@ -117,6 +122,8 @@ protected:
 #endif
                RX_MENU_SAVE, RX_MENU_WRAP };
 
+	void		handle_clickable(int x, int y);
+	void		handle_qsy(int start, int end);
 	virtual void	menu_cb(int val);
 	static void	changed_cb(int pos, int nins, int ndel, int nsty,
 				   const char *dtext, void *arg);

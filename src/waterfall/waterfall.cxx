@@ -31,6 +31,8 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
+#include <map>
+
 #include "waterfall.h"
 #include "threads.h"
 #include "main.h"
@@ -1441,6 +1443,77 @@ static void hide_cursor(void *w)
 		reinterpret_cast<Fl_Widget *>(w)->window()->cursor(cursor = FL_CURSOR_NONE);
 }
 
+map<string, qrg_mode_t> qsy_map;
+
+static void note_qsy(char c1 = ' ', char c2 = ' ')
+{
+	char buf[64];
+
+	time_t t = time(NULL);
+	struct tm tm;
+	gmtime_r(&t, &tm);
+	size_t r1;
+	if ((r1 = strftime(buf, sizeof(buf), "<<%FT%H:%MZ: ", &tm)) == 0)
+		return;
+
+	qrg_mode_t m;
+	m.rfcarrier = wf->rfcarrier();
+	m.carrier = active_modem->get_freq();
+	m.mode = active_modem->get_mode();
+	cerr << m << endl;
+
+	size_t r2;
+	if (m.rfcarrier)
+		r2 = snprintf(buf+r1, sizeof(buf)-r1, "%s @ %lld%c%04d>>",
+			     mode_info[active_modem->get_mode()].name, wf->rfcarrier(),
+			     (wf->USB() ? '+' : '-'), active_modem->get_freq());
+	else
+		r2 = snprintf(buf+r1, sizeof(buf)-r1, "%s @ %04d>>",
+			     mode_info[active_modem->get_mode()].name, active_modem->get_freq());
+	if (r2 >= sizeof(buf)-r1)
+		return;
+
+	qsy_map[buf] = m;
+	ReceiveText->add(c1);
+	ReceiveText->add(buf, FTextBase::QSY);
+	ReceiveText->add(c2);
+}
+
+static void insert_text(void)
+{
+	string::size_type i;
+	if ((i = progdefaults.WaterfallClickText.find("<FREQ>")) != string::npos) {
+		string s = progdefaults.WaterfallClickText;
+		s[i] = '\0';
+		ReceiveText->add(s.c_str());
+		note_qsy();
+		ReceiveText->add(s.c_str() + i + strlen("<FREQ>"));
+	}
+	else
+		ReceiveText->add(progdefaults.WaterfallClickText.c_str(), FTextView::SKIP);
+}
+
+static void find_signal_text(void)
+{
+	int freq = active_modem->get_freq();
+	trx_mode mode = active_modem->get_mode();
+
+	map<string, qrg_mode_t>::const_iterator i;
+	for (i = qsy_map.begin(); i != qsy_map.end(); ++i)
+		if (i->second.mode == mode && abs(i->second.carrier - freq) <= 20)
+			break;
+	if (i != qsy_map.end()) {
+		// Search backward from the current text cursor position, then
+		// try the other direction
+		int pos = ReceiveText->insert_position();
+		if (ReceiveText->buffer()->search_backward(pos, i->first.c_str(), &pos, 1) ||
+		    ReceiveText->buffer()->search_forward(pos, i->first.c_str(), &pos, 1)) {
+			ReceiveText->insert_position(pos);
+			ReceiveText->show_insert_position();
+		}
+	}
+}
+
 int WFdisp::handle(int event)
 {
 	static int pxpos, push;
@@ -1492,18 +1565,8 @@ int WFdisp::handle(int event)
 			if (event == FL_PUSH) {
 				push = ypos;
 				pxpos = xpos;
-				if (!progdefaults.WaterfallClickText.empty()) {
-					if (progdefaults.WaterfallClickText.find('%') != string::npos) {
-						time_t t = time(NULL);
-						struct tm tm;
-						localtime_r(&t, &tm);
-						char buf[256];
-						strftime(buf, sizeof(buf), progdefaults.WaterfallClickText.c_str(), &tm);
-						ReceiveText->add(buf, FTextBase::CTRL);
-					}
-					else
-						ReceiveText->add(progdefaults.WaterfallClickText.c_str(), FTextBase::CTRL);
-				}
+				if (Fl::event_clicks())
+					return 1;
 			}
 			if (progdefaults.WaterfallQSY && push < WFTEXT + WFSCALE) {
 				long long newrfc = (pxpos - xpos) * (step==4?10:step==2?5:1);
@@ -1547,7 +1610,7 @@ int WFdisp::handle(int event)
 		}
 		break;
 	case FL_RELEASE:
-		switch (Fl::event_button()) {
+		switch (eb = Fl::event_button()) {
 		case FL_RIGHT_MOUSE:
 			tmp_carrier = false;
 			active_modem->set_freq(oldcarrier);
@@ -1557,6 +1620,19 @@ int WFdisp::handle(int event)
 		case FL_LEFT_MOUSE:
 			push = 0;
 			oldcarrier = newcarrier;
+			if (eb != FL_LEFT_MOUSE)
+				break;
+			if (Fl::event_state() == 0) {
+				if (Fl::event_clicks()) {
+					if (!progdefaults.WaterfallClickInsert)
+						note_qsy('\n', '\n');
+				}
+				else
+					if (progdefaults.WaterfallClickInsert)
+						insert_text();
+			}
+			else if (Fl::event_state() & (FL_META | FL_ALT))
+				find_signal_text();
 			break;
 		}
 		break;

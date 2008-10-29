@@ -25,6 +25,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>
+#include <map>
 
 #include "FTextView.h"
 #include "main.h"
@@ -42,6 +43,8 @@
 
 #include "mfsk.h"
 #include "icons.h"
+#include "globals.h"
+#include "re.h"
 
 
 using namespace std;
@@ -187,6 +190,9 @@ void FTextBase::set_style(int attr, Fl_Font f, int s, Fl_Color c, int set)
 			else
 				styles[i].color = c;
 		}
+		if (i == SKIP) // clickable styles always same as SKIP for now
+			for (int j = CLICK_START; j < NATTR; j++)
+				memcpy(&styles[j], &styles[i], sizeof(styles[j]));
 	}
 
 	resize(x(), y(), w(), h()); // to redraw and recalculate the wrap column
@@ -287,13 +293,17 @@ void FTextBase::saveFile(void)
 ///
 char *FTextBase::get_word(int x, int y)
 {
-	if (!tbuf->selected()) {
-		int p = xy_to_position(x + this->x(), y + this->y(),
-				       Fl_Text_Display_mod::CURSOR_POS);
+	int p = xy_to_position(x + this->x(), y + this->y(),
+			       Fl_Text_Display_mod::CURSOR_POS);
+
+	char* s;
+	if (!tbuf->selected())
+		s = tbuf->text_range(word_start(p), word_end(p));
+	else {
 		tbuf->select(word_start(p), word_end(p));
+		s = tbuf->selection_text();
+		tbuf->unselect();
 	}
-	char *s = tbuf->selection_text();
-	tbuf->unselect();
 
 	return s;
 }
@@ -393,6 +403,7 @@ FTextView::FTextView(int x, int y, int w, int h, const char *l)
 {
 	tbuf->remove_modify_callback(buffer_modified_cb, this);
 	tbuf->add_modify_callback(changed_cb, this);
+	tbuf->canUndo(0);
 
 	cursor_style(Fl_Text_Display_mod::NORMAL_CURSOR);
 
@@ -424,6 +435,8 @@ FTextView::~FTextView()
 ///
 int FTextView::handle(int event)
 {
+	static Fl_Cursor cursor;
+
 	switch (event) {
 	case FL_PUSH:
 		if (!Fl::event_inside(this))
@@ -459,7 +472,29 @@ int FTextView::handle(int event)
 		show_context_menu();
 		return 1;
 		break;
-		// catch some text-modifying events that are not handled by kf_* functions
+	case FL_DRAG:
+		if (Fl::event_button() != FL_LEFT_MOUSE)
+			return 1;
+		break;
+	case FL_RELEASE:
+		if (cursor == FL_CURSOR_HAND && Fl::event_button() == FL_LEFT_MOUSE &&
+		    Fl::event_is_click() && !Fl::event_clicks()) {
+			handle_clickable(Fl::event_x() - x(), Fl::event_y() - y());
+			return 1;
+		}
+		break;
+	case FL_MOVE: {
+		int p = xy_to_position(Fl::event_x(), Fl::event_y(), Fl_Text_Display_mod::CURSOR_POS);
+		if (sbuf->character(p) >= CLICK_START + FTEXT_DEF) {
+			if (cursor != FL_CURSOR_HAND)
+				window()->cursor(cursor = FL_CURSOR_HAND);
+			return 1;
+		}
+		else
+			cursor = FL_CURSOR_INSERT;
+		break;
+	}
+	// catch some text-modifying events that are not handled by kf_* functions
 	case FL_KEYBOARD:
 		int k;
 		if (Fl::compose(k))
@@ -525,6 +560,58 @@ void FTextView::add(unsigned char c, int attr)
 
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
+}
+
+void FTextView::clear(void)
+{
+	FTextBase::clear();
+	extern map<string, qrg_mode_t> qsy_map;
+	qsy_map.clear();
+}
+
+void FTextView::handle_clickable(int x, int y)
+{
+	int pos, style;
+
+	pos = xy_to_position(x + this->x(), y + this->y(), Fl_Text_Display_mod::CURSOR_POS);
+	// return unless clickable style
+	if ((style = sbuf->character(pos)) < CLICK_START + FTEXT_DEF)
+		return;
+
+	int start, end;
+	for (start = pos-1; start >= 0; start--)
+		if (sbuf->character(start) != style)
+			break;
+	start++;
+	int len = sbuf->length();
+	for (end = pos+1; end < len; end++)
+		if (sbuf->character(end) != style)
+			break;
+
+	switch (style - FTEXT_DEF) {
+	case QSY:
+		handle_qsy(start, end);
+		break;
+	// ...
+	default:
+		break;
+	}
+}
+
+void FTextView::handle_qsy(int start, int end)
+{
+	char* text = tbuf->text_range(start, end);
+
+	extern map<string, qrg_mode_t> qsy_map;
+	map<string, qrg_mode_t>::const_iterator i;
+	if ((i = qsy_map.find(text)) != qsy_map.end()) {
+		const qrg_mode_t& m = i->second;
+		if (active_modem->get_mode() != m.mode)
+			init_modem_sync(m.mode);
+		qsy(m.rfcarrier, m.carrier);
+	}
+
+	free(text);
 }
 
 /// The context menu handler

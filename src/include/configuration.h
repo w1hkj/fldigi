@@ -47,7 +47,8 @@
         ELEM_(bool, StartAtSweetSpot, "STARTATSWEETSPOT", false)                        \
         ELEM_(bool, WaterfallHistoryDefault, "WATERFALLHISTORYDEFAULT", false)          \
         ELEM_(bool, WaterfallQSY, "WATERFALLQSY", false)                                \
-        ELEM_(std::string, WaterfallClickText, "WATERFALLCLICKTEXT", "")                \
+        ELEM_(bool, WaterfallClickInsert, "WATERFALLCLICKINSERT", false)                \
+        ELEM_(std::string, WaterfallClickText, "WATERFALLCLICKTEXT", "\n<FREQ>\n")      \
         ELEM_(int, WaterfallWheelAction, "WATERFALLWHEELACTION", waterfall::WF_CARRIER) \
 /* PSK mail interface */                                                                \
         ELEM_(bool, PSKmailSweetSpot, "PSKMAILSWEETSPOT", false)                        \
