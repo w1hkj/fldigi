@@ -25,6 +25,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>
+#include <map>
 
 #include "FTextView.h"
 #include "main.h"
@@ -41,6 +42,9 @@
 #include "qrunner.h"
 
 #include "mfsk.h"
+#include "icons.h"
+#include "globals.h"
+#include "re.h"
 
 
 using namespace std;
@@ -186,6 +190,9 @@ void FTextBase::set_style(int attr, Fl_Font f, int s, Fl_Color c, int set)
 			else
 				styles[i].color = c;
 		}
+		if (i == SKIP) // clickable styles always same as SKIP for now
+			for (int j = CLICK_START; j < NATTR; j++)
+				memcpy(&styles[j], &styles[i], sizeof(styles[j]));
 	}
 
 	resize(x(), y(), w(), h()); // to redraw and recalculate the wrap column
@@ -286,13 +293,17 @@ void FTextBase::saveFile(void)
 ///
 char *FTextBase::get_word(int x, int y)
 {
-	if (!tbuf->selected()) {
-		int p = xy_to_position(x + this->x(), y + this->y(),
-				       Fl_Text_Display_mod::CURSOR_POS);
+	int p = xy_to_position(x + this->x(), y + this->y(),
+			       Fl_Text_Display_mod::CURSOR_POS);
+
+	char* s;
+	if (!tbuf->selected())
+		s = tbuf->text_range(word_start(p), word_end(p));
+	else {
 		tbuf->select(word_start(p), word_end(p));
+		s = tbuf->selection_text();
+		tbuf->unselect();
 	}
-	char *s = tbuf->selection_text();
-	tbuf->unselect();
 
 	return s;
 }
@@ -351,24 +362,32 @@ void FTextBase::reset_styles(int set)
 
 // ----------------------------------------------------------------------------
 
+#if !USE_IMAGE_LABELS
+#  define LOOKUP_SYMBOL "@-4>> "
+#  define ENTER_SYMBOL  "@-9-> "
+#else
+#  define LOOKUP_SYMBOL
+#  define ENTER_SYMBOL
+#endif
 
 Fl_Menu_Item FTextView::view_menu[] = {
-	{ "@-4>> &Look up call",		0, 0 },
-	{ "@-9-> &Call",			0, 0 },
-	{ "@-9-> &Name",			0, 0 },
-	{ "@-9-> QT&H",				0, 0 },
-	{ "@-9-> &Locator",			0, 0 },
-	{ "@-9-> &RST(r)",			0, 0, 0, FL_MENU_DIVIDER },
-	{ "Insert divider",			0, 0 },
-	{ "C&lear",				0, 0 },
-	{ "&Copy",				0, 0, 0, FL_MENU_DIVIDER },
+	{ make_icon_label(LOOKUP_SYMBOL "&Look up call", net_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL "&Call", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL "&Name", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL "QT&H", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL "&Locator", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL "&RST(r)", enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ make_icon_label("Insert divider", insert_link_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label("C&lear", edit_clear_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label("&Copy", edit_copy_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 #if 0 //#ifndef NDEBUG
-        { "(debug) &Append file...",		0, 0, 0, FL_MENU_DIVIDER },
+        { "(debug) &Append file...", 0, 0, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL },
 #endif
-	{ "Save to &file...",			0, 0, 0, FL_MENU_DIVIDER },
-	{ "Word &wrap",				0, 0, 0, FL_MENU_TOGGLE	 },
+	{ make_icon_label("Save &as...", save_as_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ "Word &wrap",       0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL },
 	{ 0 }
 };
+static bool view_init = false;
 
 /// FTextView constructor.
 /// We remove \c Fl_Text_Display_mod::buffer_modified_cb from the list of callbacks
@@ -384,12 +403,19 @@ FTextView::FTextView(int x, int y, int w, int h, const char *l)
 {
 	tbuf->remove_modify_callback(buffer_modified_cb, this);
 	tbuf->add_modify_callback(changed_cb, this);
+	tbuf->canUndo(0);
 
 	cursor_style(Fl_Text_Display_mod::NORMAL_CURSOR);
 
 	context_menu = view_menu;
 	// disable some keybindings that are not allowed in FTextView buffers
 	change_keybindings();
+
+	if (!view_init)
+		for (int i = 0; i < view_menu->size() - 1; i++)
+			if (*view_menu[i].label() && view_menu[i].labeltype() == _FL_MULTI_LABEL)
+				set_icon_label(&view_menu[i]);
+	view_init = true;
 }
 
 FTextView::~FTextView()
@@ -409,48 +435,68 @@ FTextView::~FTextView()
 ///
 int FTextView::handle(int event)
 {
+	static Fl_Cursor cursor;
+
 	switch (event) {
 	case FL_PUSH:
 		if (!Fl::event_inside(this))
 			break;
  		switch (Fl::event_button()) {
- 		case FL_LEFT_MOUSE: {
- 			if (!Fl::event_shift())
- 				goto out;
- 			char* s = get_word(Fl::event_x() - x(), Fl::event_y() - y());
-  			inpCall->value(s);
-  			free(s);
-  			stopMacroTimer();
-  		}
-// fall through
- 		case FL_MIDDLE_MOUSE:
-// stop mouse2 text paste events from reaching Fl_Text_Editor_mod
- 			return 1;
+		case FL_LEFT_MOUSE:
+			if (Fl::event_shift()) { // TODO: can we get rid of this binding?
+				char* s = get_word(Fl::event_x() - x(), Fl::event_y() - y());
+				inpCall->value(s);
+				free(s);
+				stopMacroTimer();
+				return 1;
+			}
+			goto out;
+		case FL_MIDDLE_MOUSE:
+			if (cursor != FL_CURSOR_HAND)
+				handle_qso_data(Fl::event_x() - x(), Fl::event_y() - y());
+			return 1;
  		case FL_RIGHT_MOUSE:
   			break;
  		default:
  			goto out;
  		}
-// enable/disable menu items
-		if (tbuf->length())
-			view_menu[RX_MENU_CLEAR].flags &= ~FL_MENU_INACTIVE;
-		else
-			view_menu[RX_MENU_CLEAR].flags |= FL_MENU_INACTIVE;
 
-		if (tbuf->selected())
-			view_menu[RX_MENU_COPY].flags &= ~FL_MENU_INACTIVE;
-		else
-			view_menu[RX_MENU_COPY].flags |= FL_MENU_INACTIVE;
+		// mouse-3 handling: enable/disable menu items and display popup
+		set_active(&view_menu[RX_MENU_CLEAR], tbuf->length());
+		set_active(&view_menu[RX_MENU_COPY], tbuf->selected());
+		set_active(&view_menu[RX_MENU_SAVE], tbuf->length());
 		if (wrap)
 			view_menu[RX_MENU_WRAP].flags |= FL_MENU_VALUE;
 		else
 			view_menu[RX_MENU_WRAP].flags &= ~FL_MENU_VALUE;
-		context_menu = progdefaults.QRZ ? view_menu : view_menu + 1;
 
+		context_menu = progdefaults.QRZ ? view_menu : view_menu + 1;
 		show_context_menu();
 		return 1;
 		break;
-		// catch some text-modifying events that are not handled by kf_* functions
+	case FL_DRAG:
+		if (Fl::event_button() != FL_LEFT_MOUSE)
+			return 1;
+		break;
+	case FL_RELEASE:
+		if (cursor == FL_CURSOR_HAND && Fl::event_button() == FL_LEFT_MOUSE &&
+		    Fl::event_is_click() && !Fl::event_clicks()) {
+			handle_clickable(Fl::event_x() - x(), Fl::event_y() - y());
+			return 1;
+		}
+		break;
+	case FL_MOVE: {
+		int p = xy_to_position(Fl::event_x(), Fl::event_y(), Fl_Text_Display_mod::CURSOR_POS);
+		if (sbuf->character(p) >= CLICK_START + FTEXT_DEF) {
+			if (cursor != FL_CURSOR_HAND)
+				window()->cursor(cursor = FL_CURSOR_HAND);
+			return 1;
+		}
+		else
+			cursor = FL_CURSOR_INSERT;
+		break;
+	}
+	// catch some text-modifying events that are not handled by kf_* functions
 	case FL_KEYBOARD:
 		int k;
 		if (Fl::compose(k))
@@ -518,6 +564,85 @@ void FTextView::add(unsigned char c, int attr)
 	FL_AWAKE_D();
 }
 
+void FTextView::clear(void)
+{
+	FTextBase::clear();
+	extern map<string, qrg_mode_t> qsy_map;
+	qsy_map.clear();
+}
+
+void FTextView::handle_clickable(int x, int y)
+{
+	int pos, style;
+
+	pos = xy_to_position(x + this->x(), y + this->y(), Fl_Text_Display_mod::CURSOR_POS);
+	// return unless clickable style
+	if ((style = sbuf->character(pos)) < CLICK_START + FTEXT_DEF)
+		return;
+
+	int start, end;
+	for (start = pos-1; start >= 0; start--)
+		if (sbuf->character(start) != style)
+			break;
+	start++;
+	int len = sbuf->length();
+	for (end = pos+1; end < len; end++)
+		if (sbuf->character(end) != style)
+			break;
+
+	switch (style - FTEXT_DEF) {
+	case QSY:
+		handle_qsy(start, end);
+		break;
+	// ...
+	default:
+		break;
+	}
+}
+
+void FTextView::handle_qsy(int start, int end)
+{
+	char* text = tbuf->text_range(start, end);
+
+	extern map<string, qrg_mode_t> qsy_map;
+	map<string, qrg_mode_t>::const_iterator i;
+	if ((i = qsy_map.find(text)) != qsy_map.end()) {
+		const qrg_mode_t& m = i->second;
+		if (active_modem->get_mode() != m.mode)
+			init_modem_sync(m.mode);
+		qsy(m.rfcarrier, m.carrier);
+	}
+
+	free(text);
+}
+
+void FTextView::handle_qso_data(int start, int end)
+{
+	static re_t rst("^[0-9]{3}$", REG_EXTENDED | REG_NOSUB);
+	static re_t loc("^[A-R]{2}[0-9]{2}([A-X]{2})+$", REG_EXTENDED | REG_ICASE | REG_NOSUB);
+
+	char* s = get_word(start, end);
+	if (rst.match(s))
+		inpRstIn->value(s);
+	else {
+		Fl_Input* fields[] = { inpCall, inpLoc, inpQth, inpName };
+		for (size_t i = 0; i < sizeof(fields)/sizeof(*fields); i++) {
+			if (*fields[i]->value() == '\0') {
+				if (fields[i] == inpLoc && !loc.match(s))
+					continue;
+				fields[i]->value(s);
+				fields[i]->do_callback();
+				if (fields[i] == inpCall)
+					stopMacroTimer();
+				break;
+			}
+		}
+	}
+
+	free(s);
+}
+
+
 /// The context menu handler
 ///
 /// @param val 
@@ -527,50 +652,32 @@ void FTextView::menu_cb(int val)
 	if (progdefaults.QRZ == 0)
 		++val;
 
+	Fl_Input* input = 0;
 	switch (val) {
-		char *s;
 	case RX_MENU_QRZ_THIS:
 		menu_cb(RX_MENU_CALL);
 		extern void CALLSIGNquery();
 		CALLSIGNquery();
 		break;
 	case RX_MENU_CALL:
-		stopMacroTimer();
-		s = get_word(popx, popy);
-		inpCall->value(s);
-		free(s);
+		input = inpCall;
 		break;
 	case RX_MENU_NAME:
-		s = get_word(popx, popy);
-		inpName->value(s);
-		free(s);
+		input = inpName;
 		break;
 	case RX_MENU_QTH:
-		s = get_word(popx, popy);
-		inpQth->value(s);
-		free(s);
+		input = inpQth;
 		break;
 	case RX_MENU_LOC:
-		s = get_word(popx, popy);
-		inpLoc->value(s);
-		free(s);
+		input = inpLoc;
 		break;
 	case RX_MENU_RST_IN:
-		s = get_word(popx, popy);
-		inpRstIn->value(s);
-		free(s);
+		input = inpRstIn;
 		break;
 
 	case RX_MENU_DIV:
-        {
-                time_t t = time(NULL);
-                struct tm st;
-                localtime_r(&t, &st);
-                char s[64];
-                strftime(s, sizeof(s), "\n<<======= %Y-%m-%d %H:%M:%S %z ========>>\n", &st);
-                add(s, CTRL);
+		note_qrg(false, '\n', '\n');
 		break;
-        }
 	case RX_MENU_CLEAR:
 		clear();
 		break;
@@ -600,6 +707,15 @@ void FTextView::menu_cb(int val)
 		wrap_mode((wrap = !wrap), wrap_col);
 		show_insert_position();
 		break;
+	}
+
+	if (input) {
+		char* s = get_word(popx, popy);
+		input->value(s);
+		input->do_callback();
+		free(s);
+		if (input == inpCall)
+			stopMacroTimer();
 	}
 }
 
@@ -656,17 +772,23 @@ loop:
 
 
 Fl_Menu_Item FTextEdit::edit_menu[] = {
-	{"&Transmit",		0, 0  },
-	{"&Receive",		0, 0  },
-	{"Send &image...",	0, 0, 0, FL_MENU_DIVIDER },
-	{"C&lear",		0, 0, },
-	{"Cu&t",		0, 0, },
-	{"&Copy",		0, 0, },
-	{"&Paste",		0, 0, 0, FL_MENU_DIVIDER },
-	{"Insert &file...",	0, 0, 0, FL_MENU_DIVIDER },
-	{"Word &wrap",		0, 0, 0, FL_MENU_TOGGLE	 } ,
+	{ "txabort" },
+	{ make_icon_label("&Receive", rx_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label("Send &image...", image_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ make_icon_label("C&lear", edit_clear_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label("Cu&t", edit_cut_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label("&Copy", edit_copy_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label("&Paste", edit_paste_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label("Insert &file...", file_open_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ "Word &wrap",		0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL } ,
 	{ 0 }
 };
+Fl_Menu_Item edit_txabort[] = {
+	{ make_icon_label("&Transmit", tx_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label("&Abort", process_stop_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ 0 }
+};
+static bool edit_init = false;
 
 // needed by our static kf functions, which may restrict editing depending on
 // the transmit cursor position
@@ -686,6 +808,16 @@ FTextEdit::FTextEdit(int x, int y, int w, int h, const char *l)
 	change_keybindings();
 	ascii_cnt = 0;
 	ascii_chr = 0;
+
+	if (!edit_init) {
+		for (int i = 0; i < edit_menu->size() - 1; i++)
+			if (*edit_menu[i].label() && edit_menu[i].labeltype() == _FL_MULTI_LABEL)
+				set_icon_label(&edit_menu[i]);
+		for (int i = 0; i < edit_txabort->size() - 1; i++)
+			if (*edit_txabort[i].label() && edit_txabort[i].labeltype() == _FL_MULTI_LABEL)
+				set_icon_label(&edit_txabort[i]);
+	}
+	edit_init = true;
 }
 
 /// Handles fltk events for this widget.
@@ -734,38 +866,22 @@ int FTextEdit::handle(int event)
 
 	// handle a right click
 	if (trx_state == STATE_RX)
-		edit_menu[TX_MENU_TX].label("Transmit");
+		memcpy(&edit_menu[TX_MENU_TX], &edit_txabort[0], sizeof(edit_menu[TX_MENU_TX]));
 	else
-		edit_menu[TX_MENU_TX].label("Abort");
-	if (wf->xmtrcv->active())
-		edit_menu[TX_MENU_TX].flags &= ~FL_MENU_INACTIVE;
-	else
-		edit_menu[TX_MENU_TX].flags |= FL_MENU_INACTIVE;
-	if (trx_state == STATE_RX)
-		edit_menu[TX_MENU_RX].flags |= FL_MENU_INACTIVE;
-	else
-		edit_menu[TX_MENU_RX].flags &= ~FL_MENU_INACTIVE;
-	if (active_modem->get_cap() & modem::CAP_IMG)
-		edit_menu[TX_MENU_MFSK16_IMG].flags &= ~FL_MENU_INACTIVE;
-	else
-		edit_menu[TX_MENU_MFSK16_IMG].flags |= FL_MENU_INACTIVE;
+		memcpy(&edit_menu[TX_MENU_TX], &edit_txabort[1], sizeof(edit_menu[TX_MENU_TX]));
+	set_active(&edit_menu[TX_MENU_TX], wf->xmtrcv->active());
 
-	if (tbuf->length())
-		edit_menu[TX_MENU_CLEAR].flags &= ~FL_MENU_INACTIVE;
-	else
-		edit_menu[TX_MENU_CLEAR].flags |= FL_MENU_INACTIVE;
-	if (tbuf->selected()) {
-		edit_menu[TX_MENU_CUT].flags &= ~FL_MENU_INACTIVE;
-		edit_menu[TX_MENU_COPY].flags &= ~FL_MENU_INACTIVE;
-	}
-	else {
-		edit_menu[TX_MENU_CUT].flags |= FL_MENU_INACTIVE;
-		edit_menu[TX_MENU_COPY].flags |= FL_MENU_INACTIVE;
-	}
-	if (insert_position() < txpos)
-		edit_menu[TX_MENU_READ].flags |= FL_MENU_INACTIVE;
-	else
-		edit_menu[TX_MENU_READ].flags &= ~FL_MENU_INACTIVE;
+	set_active(&edit_menu[TX_MENU_RX], trx_state != STATE_RX);
+
+	bool modify_text_ok = insert_position() >= txpos;
+	bool selected = tbuf->selected();
+	set_active(&edit_menu[TX_MENU_MFSK16_IMG], active_modem->get_cap() & modem::CAP_IMG);
+	set_active(&edit_menu[TX_MENU_CLEAR], tbuf->length());
+	set_active(&edit_menu[TX_MENU_CUT], selected && modify_text_ok);
+	set_active(&edit_menu[TX_MENU_COPY], selected);
+	set_active(&edit_menu[TX_MENU_PASTE], modify_text_ok);
+	set_active(&edit_menu[TX_MENU_READ], modify_text_ok);
+
 	if (wrap)
 		edit_menu[TX_MENU_WRAP].flags |= FL_MENU_VALUE;
 	else
@@ -1110,8 +1226,12 @@ void FTextEdit::menu_cb(int val)
  			active_modem->set_stopflag(false);
  			start_tx();
  		}
- 		else
+ 		else {
+#ifndef NDEBUG
+			put_status("Don't panic!", 1.0);
+#endif
  			abort_tx();
+		}
   		break;
   	case TX_MENU_RX:
  		if (trx_state == STATE_TX) {
@@ -1287,21 +1407,23 @@ int FTextEdit::kf_paste(int c, Fl_Text_Editor_mod* e)
 // ----------------------------------------------------------------------------
 
 Fl_Menu_Item FTextLog::log_menu[] = {
-	{ "C&lear",				0, 0 },
-	{ "&Copy",				0, 0 },
-	{ "Save to &file...",			0, 0, 0, FL_MENU_DIVIDER },
-	{ "Word &wrap",				0, 0, 0, FL_MENU_TOGGLE	 },
+	{ make_icon_label("C&lear", edit_clear_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label("&Copy", edit_copy_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label("Save to &file...", save_as_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ "Word &wrap",	0, 0, 0, FL_MENU_TOGGLE },
 	{ 0 }
 };
-
+static bool log_init = false;
 
 FTextLog::FTextLog(int x, int y, int w, int h, const char* l)
 	: FTextView(x, y, w, h, l)
 {
 	context_menu = log_menu;
-//	highlight_data(0, 0, 0, 0, 0, 0);
-//	delete sbuf;
-//	sbuf = 0;
+	if (!log_init)
+		for (int i = 0; i < log_menu->size() - 1; i++)
+			if (*log_menu[i].label() && log_menu[i].labeltype() == _FL_MULTI_LABEL)
+				set_icon_label(&log_menu[i]);
+	log_init = true;
 }
 
 FTextLog::~FTextLog() { }
@@ -1322,15 +1444,8 @@ int FTextLog::handle(int event)
 		}
 
 		// handle a right mouse click
-		if (tbuf->length())
-			log_menu[LOG_MENU_CLEAR].flags &= ~FL_MENU_INACTIVE;
-		else
-			log_menu[LOG_MENU_CLEAR].flags |= FL_MENU_INACTIVE;
-
-		if (tbuf->selected())
-			log_menu[LOG_MENU_COPY].flags &= ~FL_MENU_INACTIVE;
-		else
-			log_menu[LOG_MENU_COPY].flags |= FL_MENU_INACTIVE;
+		set_active(&log_menu[LOG_MENU_CLEAR], tbuf->length());
+		set_active(&log_menu[LOG_MENU_COPY], tbuf->selected());
 		if (wrap)
 			log_menu[LOG_MENU_WRAP].flags |= FL_MENU_VALUE;
 		else

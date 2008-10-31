@@ -4,6 +4,7 @@ following modes:
 
 BPSK and QPSK        31, 63, 125, and 250
 CW                   speeds from 5 to 200 wpm
+DEX                  4, 5, 8, 11, 16 and 22
 DominoEX             4, 5, 8, 11, 16 and 22
 Hellschreiber        Feld Hell, Slow Hell, Hell x5/x9, FSKHell(-105) and Hell 80
 MFSK                 8 and 16; images can be sent and received in MFSK-16 mode

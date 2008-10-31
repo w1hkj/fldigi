@@ -49,6 +49,7 @@ extern Fl_Check_Button *chkShowAudioScale;
 extern Fl_Check_Button *btnWaterfallHistoryDefault;
 extern Fl_Check_Button *btnWaterfallQSY;
 extern Fl_Input *inpWaterfallClickText;
+extern Fl_Check_Button *btnWaterfallClickInsert;
 #include <FL/Fl_Choice.H>
 extern Fl_Choice *mnuWaterfallWheelAction;
 extern Fl_Group *tabVideo;
@@ -157,6 +158,7 @@ extern Fl_Check_Button *btnDockedScope;
 extern Fl_Check_Button *btnDockedRigControl;
 extern Fl_Check_Button *btnCheckButtons;
 extern Fl_Check_Button *btnShowTooltips;
+extern Fl_Check_Button *btnNagMe;
 extern Fl_Group *tabRSid;
 extern Fl_Check_Button *chkTransmitRSid;
 extern Fl_Check_Button *chkRSidWideSearch;

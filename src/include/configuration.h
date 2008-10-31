@@ -47,7 +47,8 @@
         ELEM_(bool, StartAtSweetSpot, "STARTATSWEETSPOT", false)                        \
         ELEM_(bool, WaterfallHistoryDefault, "WATERFALLHISTORYDEFAULT", false)          \
         ELEM_(bool, WaterfallQSY, "WATERFALLQSY", false)                                \
-        ELEM_(std::string, WaterfallClickText, "WATERFALLCLICKTEXT", "")                \
+        ELEM_(bool, WaterfallClickInsert, "WATERFALLCLICKINSERT", false)                \
+        ELEM_(std::string, WaterfallClickText, "WATERFALLCLICKTEXT", "\n<FREQ>\n")      \
         ELEM_(int, WaterfallWheelAction, "WATERFALLWHEELACTION", waterfall::WF_CARRIER) \
 /* PSK mail interface */                                                                \
         ELEM_(bool, PSKmailSweetSpot, "PSKMAILSWEETSPOT", false)                        \
@@ -152,6 +153,7 @@
         ELEM_(int,  wfheight, "WFHEIGHT", 125)                                          \
         ELEM_(bool, tooltips, "TOOLTIPS", true)                                         \
         ELEM_(bool, useCheckButtons, "USECHECKBUTTONS", false)							\
+        ELEM_(bool, NagMe, "NAGME", false)                                              \
 /* QRZ */                                                                               \
         ELEM_(int, QRZ, "QRZTYPE", 0) /* Not available */                               \
         ELEM_(std::string, QRZpathname, "QRZPATHNAME", "")                              \

@@ -425,8 +425,11 @@ int configuration::setDefaults() {
 	valPSKsweetspot->value(PSKsweetspot);
 	btnWaterfallHistoryDefault->value(WaterfallHistoryDefault);
 	btnWaterfallQSY->value(WaterfallQSY);
+
 	inpWaterfallClickText->input_type(FL_MULTILINE_INPUT);
 	inpWaterfallClickText->value(WaterfallClickText.c_str());
+	if (!WaterfallClickInsert)
+		inpWaterfallClickText->deactivate();
 
 	mnuWaterfallWheelAction->add(waterfall::wf_wheel_action);
 	mnuWaterfallWheelAction->value(WaterfallWheelAction);

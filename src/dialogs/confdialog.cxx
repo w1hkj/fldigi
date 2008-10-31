@@ -315,6 +315,17 @@ static void cb_inpWaterfallClickText(Fl_Input* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnWaterfallClickInsert=(Fl_Check_Button *)0;
+
+static void cb_btnWaterfallClickInsert(Fl_Check_Button* o, void*) {
+  progdefaults.WaterfallClickInsert = o->value();
+if (progdefaults.WaterfallClickInsert)
+    inpWaterfallClickText->activate();
+else
+    inpWaterfallClickText->deactivate();
+progdefaults.changed = true;
+}
+
 Fl_Choice *mnuWaterfallWheelAction=(Fl_Choice *)0;
 
 static void cb_mnuWaterfallWheelAction(Fl_Choice* o, void*) {
@@ -1134,6 +1145,13 @@ Fl_Check_Button *btnShowTooltips=(Fl_Check_Button *)0;
 static void cb_btnShowTooltips(Fl_Check_Button* o, void*) {
   progdefaults.tooltips = o->value();
 Fl_Tooltip::enable(progdefaults.tooltips);
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnNagMe=(Fl_Check_Button *)0;
+
+static void cb_btnNagMe(Fl_Check_Button* o, void*) {
+  progdefaults.NagMe=o->value();
 progdefaults.changed = true;
 }
 
@@ -1965,19 +1983,26 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             o->hide();
             { Fl_Group* o = new Fl_Group(5, 56, 390, 158);
               o->box(FL_ENGRAVED_FRAME);
-              { btnWaterfallHistoryDefault = new Fl_Check_Button(15, 66, 276, 20, "Left/Right click always replays history");
+              { Fl_Check_Button* o = btnWaterfallHistoryDefault = new Fl_Check_Button(15, 66, 276, 20, "Left/Right click always replays history");
                 btnWaterfallHistoryDefault->tooltip("Disabled - Ctrl-Lft click plays history");
                 btnWaterfallHistoryDefault->down_box(FL_DOWN_BOX);
                 btnWaterfallHistoryDefault->callback((Fl_Callback*)cb_btnWaterfallHistoryDefault);
+                o->value(progdefaults.WaterfallHistoryDefault);
               } // Fl_Check_Button* btnWaterfallHistoryDefault
-              { btnWaterfallQSY = new Fl_Check_Button(15, 96, 225, 20, "Dragging changes frequency");
+              { Fl_Check_Button* o = btnWaterfallQSY = new Fl_Check_Button(15, 96, 225, 20, "Dragging changes frequency");
                 btnWaterfallQSY->down_box(FL_DOWN_BOX);
                 btnWaterfallQSY->callback((Fl_Callback*)cb_btnWaterfallQSY);
+                o->value(progdefaults.WaterfallQSY);
               } // Fl_Check_Button* btnWaterfallQSY
-              { inpWaterfallClickText = new Fl_Input(15, 126, 150, 40, "Insert text\non left click");
+              { inpWaterfallClickText = new Fl_Input(206, 120, 150, 50);
                 inpWaterfallClickText->callback((Fl_Callback*)cb_inpWaterfallClickText);
                 inpWaterfallClickText->align(FL_ALIGN_RIGHT);
               } // Fl_Input* inpWaterfallClickText
+              { Fl_Check_Button* o = btnWaterfallClickInsert = new Fl_Check_Button(15, 134, 172, 20, "Insert text on left click");
+                btnWaterfallClickInsert->down_box(FL_DOWN_BOX);
+                btnWaterfallClickInsert->callback((Fl_Callback*)cb_btnWaterfallClickInsert);
+                o->value(progdefaults.WaterfallClickInsert);
+              } // Fl_Check_Button* btnWaterfallClickInsert
               o->end();
             } // Fl_Group* o
             { mnuWaterfallWheelAction = new Fl_Choice(15, 176, 150, 22, "Wheel action");
@@ -2675,6 +2700,11 @@ l with your sound hardware.");
                 btnShowTooltips->callback((Fl_Callback*)cb_btnShowTooltips);
                 o->value(progdefaults.tooltips);
               } // Fl_Check_Button* btnShowTooltips
+              { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(160, 68, 70, 15, "Nag me about log entries");
+                btnNagMe->down_box(FL_DOWN_BOX);
+                btnNagMe->callback((Fl_Callback*)cb_btnNagMe);
+                o->value(progdefaults.NagMe);
+              } // Fl_Check_Button* btnNagMe
               o->end();
             } // Fl_Group* o
             tabMainWindow->end();

@@ -37,7 +37,6 @@
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Output.H>
 #include <FL/Fl_Select_Browser.H>
-#include <FL/Fl_Pixmap.H>
 
 #define FL_COMBO_UNIQUE 1
 #define FL_COMBO_UNIQUE_NOCASE 2
@@ -90,7 +89,6 @@ class Fl_ComboBox : public Fl_Group  {
 //    Fl_Output     *Output;
     Fl_Input      *Output;
     Fl_PopBrowser *Brwsr;
-    Fl_Pixmap	  *btnmap;
     datambr       **datalist;
     int           listsize;
     int           maxsize;

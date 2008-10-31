@@ -93,20 +93,7 @@
 
 #include "font_browser.h"
 
-#include "include/pixmaps/address-book-icon.xpm"
-#include "include/pixmaps/clear-icon.xpm"
-#include "include/pixmaps/close-icon.xpm"
-#if !defined(__APPLE__) && !defined(__CYGWIN__)
-#        include "pixmaps/fldigi-icon.xpm"
-#endif
-#include "include/pixmaps/left-arrow-icon.xpm"
-#include "include/pixmaps/minus-icon.xpm"
-#include "include/pixmaps/plus-icon.xpm"
-#include "include/pixmaps/net-icon.xpm"
-//#include "include/pixmaps/right-arrow-icon.xpm"
-#include "include/pixmaps/save-icon.xpm"
-#include "include/pixmaps/time-icon.xpm"
-#include "include/pixmaps/trash-icon.xpm"
+#include "icons.h"
 
 #include "status.h"
 
@@ -1167,9 +1154,14 @@ void cb_log(Fl_Widget*, void*)
 
 void qsoClear_cb(Fl_Widget *b, void *)
 {
-	if (oktoclear || fl_choice("Clear log fields?", "Cancel", "OK", NULL) == 1) {
+	if (progdefaults.NagMe) {
+		if (oktoclear || fl_choice("Clear log fields?", "Cancel", "OK", NULL) == 1) {
+			clearQSO();
+			oktoclear = true;
+		}
+	} else {
 		clearQSO();
-	oktoclear = true;
+		oktoclear = true;
 	}
 	restoreFocus();
 }
@@ -1287,7 +1279,7 @@ bool clean_exit(void) {
 			break;
 		}
 	}
-	if (!oktoclear) {
+	if (!oktoclear && progdefaults.NagMe) {
 		switch (fl_choice("Save log before exiting?", "Cancel", "Save", "Don't save")) {
 		case 0:
 			return false;
@@ -1358,19 +1350,19 @@ bool clean_exit(void) {
 
 Fl_Menu_Item menu_[] = {
 {"&Files", 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{"Open macros...", 0,  (Fl_Callback*)cb_mnuOpenMacro, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"Save macros...", 0,  (Fl_Callback*)cb_mnuSaveMacro, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
-{"Show config", 0, cb_ShowConfig, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ make_icon_label("Open macros...", file_open_icon), 0,  (Fl_Callback*)cb_mnuOpenMacro, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Save macros...", save_as_icon), 0,  (Fl_Callback*)cb_mnuSaveMacro, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Show config", folder_open_icon), 0, cb_ShowConfig, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 //{"Log File", 0, (Fl_Callback*)cb_mnuLogFile, 0, FL_MENU_DIVIDER | FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 {"Log File", 0, 0, 0, FL_MENU_DIVIDER | FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 #if USE_SNDFILE
-{"Audio", 0, 0, 0, FL_MENU_DIVIDER | FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ make_icon_label("Audio"), 0, 0, 0, FL_MENU_DIVIDER | FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
 {"Rx capture",  0, (Fl_Callback*)cb_mnuCapture,  0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//70
 {"Tx generate", 0, (Fl_Callback*)cb_mnuGenerate, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//71
 {"Playback",    0, (Fl_Callback*)cb_mnuPlayback, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//72
 {0,0,0,0,0,0,0,0,0},
 #endif
-{"E&xit", 0,  (Fl_Callback*)cb_E, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ make_icon_label("E&xit", log_out_icon), 0,  (Fl_Callback*)cb_E, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 {"Op &Mode", 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 
@@ -1470,43 +1462,42 @@ Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 {"Configure", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{"Defaults",  0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{"Colors-Fonts", 0, (Fl_Callback*)cb_mnuConfigFonts, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"Operator", 0, (Fl_Callback*)cb_mnuConfigOperator, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"Waterfall", 0,  (Fl_Callback*)cb_mnuConfigWaterfall, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"Video", 0,  (Fl_Callback*)cb_mnuConfigVideo, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"Rig Ctrl", 0, (Fl_Callback*)cb_mnuConfigRigCtrl, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"QRZ", 0,  (Fl_Callback*)cb_mnuConfigQRZ, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"Sound Card", 0, (Fl_Callback*)cb_mnuConfigSoundCard, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"Misc", 0,  (Fl_Callback*)cb_mnuConfigMisc, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ make_icon_label("Defaults", preferences_system_icon),  0, 0, 0, FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Colors && Fonts", preferences_desktop_font_icon), 0, (Fl_Callback*)cb_mnuConfigFonts, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Operator", system_users_icon), 0, (Fl_Callback*)cb_mnuConfigOperator, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Waterfall", waterfall_icon), 0,  (Fl_Callback*)cb_mnuConfigWaterfall, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Video"), 0,  (Fl_Callback*)cb_mnuConfigVideo, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Rig Control", multimedia_player_icon), 0, (Fl_Callback*)cb_mnuConfigRigCtrl, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("QRZ", net_icon), 0,  (Fl_Callback*)cb_mnuConfigQRZ, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Sound Card", audio_card_icon), 0, (Fl_Callback*)cb_mnuConfigSoundCard, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Misc"), 0,  (Fl_Callback*)cb_mnuConfigMisc, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
-{"Modems", 0, (Fl_Callback*)cb_mnuConfigModems, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"Save Config", 0, (Fl_Callback*)cb_mnuSaveConfig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ make_icon_label("Modems", emblems_system_icon), 0, (Fl_Callback*)cb_mnuConfigModems, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Save Config", save_icon), 0, (Fl_Callback*)cb_mnuSaveConfig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"View", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{"Digiscope", 0, (Fl_Callback*)cb_mnuDigiscope, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"MFSK Image", 0, (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
-{"PSK Browser", 0, (Fl_Callback*)cb_mnuViewer, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"Rig Control", 0, (Fl_Callback*)cb_mnuRig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ make_icon_label("Digiscope", utilities_system_monitor_icon), 0, (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("MFSK Image", image_icon), 0, (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("PSK Browser"), 0, (Fl_Callback*)cb_mnuViewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Rig Control", multimedia_player_icon), 0, (Fl_Callback*)cb_mnuRig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
-
 {"Help", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 #ifndef NDEBUG
 // settle the gmfsk vs fldigi argument once and for all
-{"@-1circle  Create sunspots", 0, cb_mnuFun, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ make_icon_label("Create sunspots", weather_clear_icon), 0, cb_mnuFun, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 #endif
-{"Beginners' Guide", 0, cb_mnuBeginnersURL, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"Online documentation...", 0, cb_mnuVisitURL, (void *)PACKAGE_DOCS, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"Fldigi web site...", 0, cb_mnuVisitURL, (void *)PACKAGE_HOME, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
-{"Command line options", 0, cb_mnuCmdLineHelp, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"Audio device info", 0, cb_mnuAudioInfo, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"Build info", 0, cb_mnuBuildInfo, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"Event log", 0, cb_mnuDebug, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
-{"Check for updates...", 0, cb_mnuCheckUpdate, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{"About", 0, cb_mnuAboutURL, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ make_icon_label("Beginners' Guide", start_here_icon), 0, cb_mnuBeginnersURL, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Online documentation...", help_browser_icon), 0, cb_mnuVisitURL, (void *)PACKAGE_DOCS, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Fldigi web site...", net_icon), 0, cb_mnuVisitURL, (void *)PACKAGE_HOME, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Command line options", utilities_terminal_icon), 0, cb_mnuCmdLineHelp, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Audio device info", audio_card_icon), 0, cb_mnuAudioInfo, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Build info", executable_icon), 0, cb_mnuBuildInfo, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Event log", dialog_information_icon), 0, cb_mnuDebug, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Check for updates...", system_software_update_icon), 0, cb_mnuCheckUpdate, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("About", help_about_icon), 0, cb_mnuAboutURL, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 	
 {"  ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
@@ -1515,12 +1506,19 @@ Fl_Menu_Item menu_[] = {
 
 Fl_Menu_Bar *mnu;
 
-Fl_Menu_Item *getMenuItem(const char *caption)
+Fl_Menu_Item *getMenuItem(const char *caption, Fl_Menu_Item* submenu)
 {
+	if (submenu == 0 || !(submenu->flags & FL_SUBMENU))
+		submenu = menu_;
+
+	int size = submenu->size() - 1;
 	Fl_Menu_Item *item = 0;
-	for (size_t i = 0; i < sizeof(menu_)/sizeof(menu_[0]); i++) {
-		if (menu_[i].text && !strcmp(menu_[i].text, caption)) {
-			item = menu_ + i;
+	const char* label;
+	for (int i = 0; i < size; i++) {
+		label = (submenu[i].labeltype() == _FL_MULTI_LABEL) ?
+			get_icon_label_text(&submenu[i]) : submenu[i].text;
+		if (label && !strcmp(label, caption)) {
+			item = submenu + i;
 			break;
 		}
 	}
@@ -1531,7 +1529,7 @@ Fl_Menu_Item *getMenuItem(const char *caption)
 
 void activate_rig_menu_item(bool b)
 {
-	Fl_Menu_Item *rig = getMenuItem("Rig Control");
+	Fl_Menu_Item *rig = getMenuItem("Rig Control", getMenuItem("View"));
 	if (!rig)
 		return;
 	if (b) {
@@ -1760,10 +1758,15 @@ void create_fl_digi_main() {
     update_main_title();
     fl_digi_main = new Fl_Double_Window(WNOM, HNOM, main_window_title.c_str());
 			mnu = new Fl_Menu_Bar(0, 0, WNOM - 150 - pad, Hmenu);
-			// FL_NORMAL_SIZE may have changed; update the menu items
-			for (size_t i = 0; i < sizeof(menu_)/sizeof(menu_[0]); i++)
+			// do some more work on the menu
+			for (size_t i = 0; i < sizeof(menu_)/sizeof(menu_[0]); i++) {
+				// FL_NORMAL_SIZE may have changed; update the menu items
 				if (menu_[i].text)
 					menu_[i].labelsize_ = FL_NORMAL_SIZE;
+				// set the icon label for items with the multi label type
+				if (menu_[i].labeltype() == _FL_MULTI_LABEL)
+					set_icon_label(&menu_[i]);
+			}
 			mnu->menu(menu_);
 
 			// reset the message dialog font
@@ -1937,7 +1940,7 @@ void create_fl_digi_main() {
 
 				qsoClear = new Fl_Button(rightof(RigControlFrame) + pad, Hmenu + qh + 1, 
 							BTNWIDTH - 2*pad, qh - pad);
-	 			qsoClear->image(new Fl_Pixmap(clear_icon));
+	 			qsoClear->image(new Fl_Pixmap(edit_clear_icon));
 				qsoClear->callback(qsoClear_cb, 0);
 				qsoClear->tooltip("Clear");
  
@@ -1959,7 +1962,7 @@ void create_fl_digi_main() {
 
 				qsoClear = new Fl_Button(pad, Hmenu + qh + 1, 
 							BTNWIDTH - 2*pad, qh - pad);
-	 			qsoClear->image(new Fl_Pixmap(clear_icon));
+	 			qsoClear->image(new Fl_Pixmap(edit_clear_icon));
 				qsoClear->callback(qsoClear_cb, 0);
 				qsoClear->tooltip("Clear");
  
@@ -2827,32 +2830,25 @@ void set_AFCrange(double val)
 
 }
 
-
-
 // Adjust and return fg color to ensure good contrast with bg
-
 Fl_Color adjust_color(Fl_Color fg, Fl_Color bg)
-
 {
-
 	Fl_Color adj;
-
 	unsigned max = 24;
-
 	while ((adj = fl_contrast(fg, bg)) != fg  &&  max--)
-
 		fg = (adj == FL_WHITE) ? fl_color_average(fg, FL_WHITE, .9)
-
 				       : fl_color_average(fg, FL_BLACK, .9);
-
 	return fg;
-
 }
 
 void qsy(long long rfc, long long fmid)
 {
 	if (fmid < 0LL)
 		fmid = (long long)active_modem->get_freq();
+	if (rfc == 0LL || rfc == wf->rfcarrier()) {
+		active_modem->set_freq(fmid);
+		return;
+	}
 
 	if (progdefaults.chkUSERIGCATis)
 		REQ(rigCAT_set_qsy, rfc, fmid);
@@ -2866,4 +2862,6 @@ void qsy(long long rfc, long long fmid)
 	else if (progdefaults.chkUSEXMLRPCis)
 		REQ(xmlrpc_set_qsy, rfc, fmid);
 #endif
+	else
+		active_modem->set_freq(fmid);
 }
