@@ -1,11 +1,11 @@
 #ifndef ICONS_H_
 #define ICONS_H_
 
-#ifdef __CYGWIN__
-#  define USE_IMAGE_LABELS 0
-#else
+//#ifdef __CYGWIN__
+//#  define USE_IMAGE_LABELS 0
+//#else
 #  define USE_IMAGE_LABELS 1
-#endif
+//#endif
 
 #include <FL/Fl_Widget.H>
 #include <FL/Fl_Menu_Item.H>

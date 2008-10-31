@@ -158,6 +158,7 @@ extern Fl_Check_Button *btnDockedScope;
 extern Fl_Check_Button *btnDockedRigControl;
 extern Fl_Check_Button *btnCheckButtons;
 extern Fl_Check_Button *btnShowTooltips;
+extern Fl_Check_Button *btnNagMe;
 extern Fl_Group *tabRSid;
 extern Fl_Check_Button *chkTransmitRSid;
 extern Fl_Check_Button *chkRSidWideSearch;

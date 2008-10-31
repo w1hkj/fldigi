@@ -153,6 +153,7 @@
         ELEM_(int,  wfheight, "WFHEIGHT", 125)                                          \
         ELEM_(bool, tooltips, "TOOLTIPS", true)                                         \
         ELEM_(bool, useCheckButtons, "USECHECKBUTTONS", false)							\
+        ELEM_(bool, NagMe, "NAGME", false)                                              \
 /* QRZ */                                                                               \
         ELEM_(int, QRZ, "QRZTYPE", 0) /* Not available */                               \
         ELEM_(std::string, QRZpathname, "QRZPATHNAME", "")                              \

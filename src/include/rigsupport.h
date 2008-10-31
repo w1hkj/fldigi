@@ -35,7 +35,6 @@ extern int  qso_movFreq();
 extern int	cb_qso_opMODE();
 extern int  cb_qso_opBW();
 extern void qso_setMode();
-extern string modeString(rmode_t m);
 
 extern void selectFreq();
 extern void delFreq();
@@ -56,6 +55,7 @@ extern bool init_rigMEM_RigDialog();
 #if USE_HAMLIB
 extern bool init_Hamlib_RigDialog();
 extern void selMode(rmode_t m);
+extern string modeString(rmode_t m);
 #endif
 
 extern Fl_Double_Window * createRigDialog();

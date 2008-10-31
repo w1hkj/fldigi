@@ -1154,9 +1154,14 @@ void cb_log(Fl_Widget*, void*)
 
 void qsoClear_cb(Fl_Widget *b, void *)
 {
-	if (oktoclear || fl_choice("Clear log fields?", "Cancel", "OK", NULL) == 1) {
+	if (progdefaults.NagMe) {
+		if (oktoclear || fl_choice("Clear log fields?", "Cancel", "OK", NULL) == 1) {
+			clearQSO();
+			oktoclear = true;
+		}
+	} else {
 		clearQSO();
-	oktoclear = true;
+		oktoclear = true;
 	}
 	restoreFocus();
 }
@@ -1274,7 +1279,7 @@ bool clean_exit(void) {
 			break;
 		}
 	}
-	if (!oktoclear) {
+	if (!oktoclear && progdefaults.NagMe) {
 		switch (fl_choice("Save log before exiting?", "Cancel", "Save", "Don't save")) {
 		case 0:
 			return false;
@@ -1460,10 +1465,10 @@ Fl_Menu_Item menu_[] = {
 { make_icon_label("Defaults", preferences_system_icon),  0, 0, 0, FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label("Colors && Fonts", preferences_desktop_font_icon), 0, (Fl_Callback*)cb_mnuConfigFonts, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label("Operator", system_users_icon), 0, (Fl_Callback*)cb_mnuConfigOperator, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Waterfall"), 0,  (Fl_Callback*)cb_mnuConfigWaterfall, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Waterfall", waterfall_icon), 0,  (Fl_Callback*)cb_mnuConfigWaterfall, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label("Video"), 0,  (Fl_Callback*)cb_mnuConfigVideo, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label("Rig Control", multimedia_player_icon), 0, (Fl_Callback*)cb_mnuConfigRigCtrl, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("QRZ", system_search_icon), 0,  (Fl_Callback*)cb_mnuConfigQRZ, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("QRZ", net_icon), 0,  (Fl_Callback*)cb_mnuConfigQRZ, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label("Sound Card", audio_card_icon), 0, (Fl_Callback*)cb_mnuConfigSoundCard, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label("Misc"), 0,  (Fl_Callback*)cb_mnuConfigMisc, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},

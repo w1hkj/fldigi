@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0109 
+version 1.0108 
 header_name {.h} 
 code_name {.cxx}
 decl {\#include <config.h>} {} 
@@ -378,12 +378,14 @@ progdefaults.changed = true;}
                 callback {progdefaults.WaterfallHistoryDefault = o->value();
 progdefaults.changed = true;}
                 tooltip {Disabled - Ctrl-Lft click plays history} xywh {15 66 276 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.WaterfallHistoryDefault);}
               }
               Fl_Check_Button btnWaterfallQSY {
                 label {Dragging changes frequency}
                 callback {progdefaults.WaterfallQSY = o->value();
 progdefaults.changed = true;}
                 xywh {15 96 225 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.WaterfallQSY);}
               }
               Fl_Input inpWaterfallClickText {
                 callback {progdefaults.WaterfallClickText = o->value();
@@ -394,12 +396,12 @@ progdefaults.changed = true;}
                 label {Insert text on left click}
                 callback {progdefaults.WaterfallClickInsert = o->value();
 if (progdefaults.WaterfallClickInsert)
-    inpWaterfallClickText->show();
+    inpWaterfallClickText->activate();
 else
-    inpWaterfallClickText->hide();
+    inpWaterfallClickText->deactivate();
 progdefaults.changed = true;}
                 xywh {15 134 172 20} down_box DOWN_BOX
-                code0 {btnWaterfallClickInsert->value(progdefaults.WaterfallClickInsert);}
+                code0 {o->value(progdefaults.WaterfallClickInsert);}
               }
             }
             Fl_Choice mnuWaterfallWheelAction {
@@ -1339,6 +1341,13 @@ Fl_Tooltip::enable(progdefaults.tooltips);
 progdefaults.changed = true;}
                 xywh {20 68 70 15} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.tooltips);}
+              }
+              Fl_Check_Button btnNagMe {
+                label {Nag me about log entries}
+                callback {progdefaults.NagMe=o->value();
+progdefaults.changed = true;}
+                xywh {160 68 70 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.NagMe);}
               }
             }
           }
