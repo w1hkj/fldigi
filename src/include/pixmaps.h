@@ -39,6 +39,7 @@ extern const char *utilities_system_monitor_icon[];
 extern const char *multimedia_player_icon[];
 extern const char *audio_card_icon[];
 extern const char *help_about_icon[];
+extern const char *insert_link_icon[];
 extern const char *close_icon[];
 extern const char *enter_key_icon[];
 extern const char *clear_sq_icon[];
