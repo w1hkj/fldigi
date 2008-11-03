@@ -413,7 +413,7 @@ FTextView::FTextView(int x, int y, int w, int h, const char *l)
 
 	if (!view_init)
 		for (int i = 0; i < view_menu->size() - 1; i++)
-			if (*view_menu[i].label() && view_menu[i].labeltype() == _FL_MULTI_LABEL)
+			if (view_menu[i].labeltype() == _FL_MULTI_LABEL)
 				set_icon_label(&view_menu[i]);
 	view_init = true;
 }
@@ -811,10 +811,10 @@ FTextEdit::FTextEdit(int x, int y, int w, int h, const char *l)
 
 	if (!edit_init) {
 		for (int i = 0; i < edit_menu->size() - 1; i++)
-			if (*edit_menu[i].label() && edit_menu[i].labeltype() == _FL_MULTI_LABEL)
+			if (edit_menu[i].labeltype() == _FL_MULTI_LABEL)
 				set_icon_label(&edit_menu[i]);
 		for (int i = 0; i < edit_txabort->size() - 1; i++)
-			if (*edit_txabort[i].label() && edit_txabort[i].labeltype() == _FL_MULTI_LABEL)
+			if (edit_txabort[i].labeltype() == _FL_MULTI_LABEL)
 				set_icon_label(&edit_txabort[i]);
 	}
 	edit_init = true;
@@ -1421,7 +1421,7 @@ FTextLog::FTextLog(int x, int y, int w, int h, const char* l)
 	context_menu = log_menu;
 	if (!log_init)
 		for (int i = 0; i < log_menu->size() - 1; i++)
-			if (*log_menu[i].label() && log_menu[i].labeltype() == _FL_MULTI_LABEL)
+			if (log_menu[i].labeltype() == _FL_MULTI_LABEL)
 				set_icon_label(&log_menu[i]);
 	log_init = true;
 }

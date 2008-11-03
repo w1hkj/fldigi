@@ -1549,13 +1549,8 @@ void activate_rig_menu_item(bool b)
 void activate_mfsk_image_item(bool b)
 {
 	Fl_Menu_Item *mfsk_item = getMenuItem("MFSK Image");
-	if (!mfsk_item)
-		return;
-	if (b)
-		mfsk_item->activate();
-	else
-		mfsk_item->deactivate();
-	mnu->redraw();
+	if (mfsk_item)
+		set_active(mfsk_item, b);
 }
 
 #if !defined(__APPLE__) && !defined(__CYGWIN__)

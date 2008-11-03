@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0108 
+version 1.0109 
 header_name {} 
 code_name {.cxx}
 decl {\#include <config.h>} {global
@@ -101,7 +101,7 @@ Function {make_colorsfonts()} {open
 } {
   Fl_Window dlgColorFont {
     label {Colors and Fonts} open
-    xywh {26 742 375 220} type Double
+    xywh {559 794 374 220} type Double
     code0 {dlgColorFont->xclass(PACKAGE_TARNAME);} visible
   } {
     Fl_Button btnClrFntClose {
@@ -114,7 +114,7 @@ Function {make_colorsfonts()} {open
     } {
       Fl_Group {} {
         label {Freq Display} open
-        xywh {5 30 365 150}
+        xywh {5 30 365 150} hide
       } {
         Fl_Box FDdisplay {
           label 8
@@ -212,7 +212,7 @@ Function {make_colorsfonts()} {open
                         progdefaults.FDbackground.B));
     qsoFreqDisp->redraw();
          
-    progdefaults.changed = true;} selected
+    progdefaults.changed = true;}
           xywh {165 125 100 30}
         }
       }
@@ -615,7 +615,7 @@ b->show();}
       }
       Fl_Group {} {
         label {User Interface} open
-        xywh {5 30 365 150} hide
+        xywh {5 30 365 150}
       } {
         Fl_Choice mnuScheme {
           label {UI scheme}
@@ -629,6 +629,13 @@ b->show();}
           code2 {mnuScheme->add("plastic");}
           code3 {mnuScheme->value(mnuScheme->find_item(progdefaults.ui_scheme.c_str()));}
         } {}
+        Fl_Check_Button btnMenuIcons {
+          label {Show menu icons}
+          callback {progdefaults.menu_icons = o->value();
+progdefaults.changed = true;} selected
+          tooltip {This option takes effect at the next program start-up} xywh {120 95 144 25} down_box DOWN_BOX
+          code0 {btnMenuIcons->value(progdefaults.menu_icons);}
+        }
       }
     }
   }

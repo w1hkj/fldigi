@@ -33,6 +33,8 @@
 #  include <FL/Fl_Multi_Label.H>
 #  include <FL/Fl_Image.H>
 #  include <FL/Fl_Pixmap.H>
+
+#include "configuration.h"
 #endif
 
 
@@ -94,6 +96,20 @@ const char* make_icon_label(const char* text, const char** pixmap)
 template <typename T>
 void set_icon_label_(T* item)
 {
+	if (!progdefaults.menu_icons && item->labeltype() == _FL_MULTI_LABEL) {
+		const char* text = get_icon_label_text(item);
+		if (!text)
+			return;
+		size_t n = strlen(text) + 1;
+		char* new_label = new char[n];
+		memcpy(new_label, text, n);
+
+		free_icon_label(item);
+		item->label(new_label);
+		item->labeltype(FL_NORMAL_LABEL);
+		return;
+	}
+
 	imap_t::iterator j = imap->find((Fl_Multi_Label*)(item->label()));
 	if (j == imap->end())
 		return;
@@ -139,11 +155,13 @@ template <typename T>
 const char* get_icon_label_text_(T* item)
 {
 #if USE_IMAGE_LABELS
-	imap_t::iterator i = imap->find((Fl_Multi_Label*)(item->label()));
-	return (i != imap->end()) ? (*i->first->labelb ? i->first->labelb + 1 : "") : 0;
-#else
-	return item->label();
+	if (item->labeltype() == _FL_MULTI_LABEL) {
+		imap_t::iterator i = imap->find((Fl_Multi_Label*)(item->label()));
+		return (i != imap->end()) ? (*i->first->labelb ? i->first->labelb + 1 : "") : 0;
+	}
+	else
 #endif
+		return item->label();
 }
 
 const char* get_icon_label_text(Fl_Menu_Item* item)
@@ -159,6 +177,12 @@ template <typename T>
 void free_icon_label_(T* item)
 {
 #if USE_IMAGE_LABELS
+	if (item->labeltype() == FL_NORMAL_LABEL) {
+		delete [] item->label();
+		item->label(0);
+		return;
+	}
+
 	imap_t::iterator i = imap->find((Fl_Multi_Label*)item->label());
 	if (i == imap->end())
 		return;
@@ -178,3 +202,16 @@ void free_icon_label_(T* item)
 
 void free_icon_label(Fl_Menu_Item* item) { free_icon_label_(item); }
 void free_icon_label(Fl_Widget* w) { free_icon_label_(w); }
+
+template <typename T>
+void set_active_(T* t, bool v) {
+	if (v)
+		t->activate();
+	else
+		t->deactivate();
+	if (t->labeltype() == _FL_MULTI_LABEL)
+		set_icon_label(t);
+}
+
+void set_active(Fl_Menu_Item* item, bool v) { set_active_(item, v); }
+void set_active(Fl_Widget* w, bool v) { set_active_(w, v); }

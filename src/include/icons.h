@@ -1,11 +1,7 @@
 #ifndef ICONS_H_
 #define ICONS_H_
 
-//#ifdef __CYGWIN__
-//#  define USE_IMAGE_LABELS 0
-//#else
-#  define USE_IMAGE_LABELS 1
-//#endif
+#define USE_IMAGE_LABELS 1
 
 #include <FL/Fl_Widget.H>
 #include <FL/Fl_Menu_Item.H>
@@ -22,7 +18,7 @@ const char* get_icon_label_text(Fl_Widget* w);
 void free_icon_label(Fl_Menu_Item* item);
 void free_icon_label(Fl_Widget* w);
 
-template <typename T>
-void set_active(T* t, bool v) { if (v) t->activate(); else t->deactivate(); set_icon_label(t); }
+void set_active(Fl_Menu_Item* item, bool v);
+void set_active(Fl_Widget* w, bool v);
 
 #endif // ICONS_H_
