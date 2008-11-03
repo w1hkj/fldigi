@@ -1251,6 +1251,12 @@ int default_handler(int event)
 	if (event != FL_SHORTCUT)
 		return 0;
 
+	if (Fl::event_key() == FL_Escape &&
+	    Fl::event_inside(RigViewerFrame) && RigViewerFrame->visible()) {
+		CloseQsoView();
+		return 1;
+	}
+
 	Fl_Widget* w = Fl::focus();
 
 	if (w == fl_digi_main || w->window() == fl_digi_main) {
@@ -1649,6 +1655,8 @@ void update_main_title()
 
 void showOpBrowserView(Fl_Widget *, void *)
 {
+	if (RigViewerFrame->visible())
+		return CloseQsoView();
 	QsoInfoFrame1->hide();
 	QsoInfoFrame2->hide();
 	QsoButtonFrame->hide();
@@ -1688,51 +1696,52 @@ void cb_qso_btnClearList(Fl_Widget *, void *)
 	qso_clearList();
 }
 
-void cb_qso_opBrowser(Fl_Browser*, void*) 
+void cb_qso_opBrowser(Fl_Browser*, void*)
 {
-	if (qso_opBrowser->value()) {
+	if (!qso_opBrowser->value())
+		return;
+
+	switch (Fl::event_button()) {
+	case FL_LEFT_MOUSE:
 		if (Fl::event_clicks()) { // double click
 			qso_selectFreq();
 			CloseQsoView();
-			return;
 		}
-		switch (Fl::event_button()) {
-			case FL_RIGHT_MOUSE:
-				qso_setFreq();
-				break;
-			case FL_MIDDLE_MOUSE:
-				qso_delFreq();
-				qso_addFreq();
-				break;
-			case FL_LEFT_MOUSE: 
-				if (Fl::event_state() & FL_SHIFT)
-					qso_delFreq();
-				break;
-			default:
-				break;
-		}
+		break;
+	case FL_RIGHT_MOUSE:
+		qso_setFreq();
+		break;
+	case FL_MIDDLE_MOUSE:
+		qso_delFreq();
+		qso_addFreq();
+		break;
+	default:
+		break;
 	}
 }
 
 void show_frequency(long long freq)
 {
-	FreqDisp->value(freq); // REQ is built in to the widget
 	if (progdefaults.docked_rig_control)
 		qsoFreqDisp->value(freq);
+	else
+		FreqDisp->value(freq); // REQ is built in to the widget
 }
 
-void show_mode(string sMode)
+void show_mode(const string& sMode)
 {
-	REQ(&Fl_ComboBox::put_value, opMODE, sMode.c_str());
 	if (progdefaults.docked_rig_control)
-		REQ(&Fl_ComboBox::put_value, qso_opMODE, sMode.c_str());
+		REQ_SYNC(&Fl_ComboBox::put_value, qso_opMODE, sMode.c_str());
+	else
+		REQ_SYNC(&Fl_ComboBox::put_value, opMODE, sMode.c_str());
 }
 
-void show_bw(string sWidth)
+void show_bw(const string& sWidth)
 {
-	REQ(&Fl_ComboBox::put_value, opBW, sWidth.c_str());
 	if (progdefaults.docked_rig_control)
-		REQ(&Fl_ComboBox::put_value, qso_opBW, sWidth.c_str());
+		REQ_SYNC(&Fl_ComboBox::put_value, qso_opBW, sWidth.c_str());
+	else
+		REQ_SYNC(&Fl_ComboBox::put_value, opBW, sWidth.c_str());
 }
 
 void create_fl_digi_main() {
