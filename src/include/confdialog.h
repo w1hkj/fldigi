@@ -7,6 +7,7 @@
 #include "modem.h"
 #include "configuration.h"
 extern Fl_Double_Window *dlgConfig; 
+void set_qrz_buttons(Fl_Button* b);
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Tabs.H>
 extern Fl_Tabs *tabsConfigure;
@@ -105,14 +106,14 @@ extern Fl_Button *btnInitMEMMAP;
 extern Fl_Check_Button *chkUSEXMLRPC;
 extern Fl_Button *btnInitXMLRPC;
 extern Fl_Group *tabQRZ;
-extern Fl_Check_Button *btnQRZnotavailable;
-extern Fl_Check_Button *btnQRZcdrom;
+extern Fl_Round_Button *btnQRZnotavailable;
+extern Fl_Round_Button *btnQRZcdrom;
 extern Fl_Input *txtQRZpathname;
-extern Fl_Check_Button *btnQRZsocket;
-extern Fl_Check_Button *btnHAMCALLsocket;
+extern Fl_Round_Button *btnQRZsub;
+extern Fl_Round_Button *btnHamcall;
 extern Fl_Input *inpQRZusername;
 extern Fl_Input *inpQRZuserpassword;
-extern Fl_Check_Button *btnQRZonline;
+extern Fl_Round_Button *btnQRZonline;
 extern Fl_Group *tabSoundCard;
 extern Fl_Tabs *tabsSoundCard;
 extern Fl_Group *tabAudio;

@@ -474,41 +474,28 @@ int configuration::setDefaults() {
 	chkTransmitRSid->value(TransmitRSid);
 	chkRSidWideSearch->value(rsidWideSearch);
 	chkSlowCpu->value(slowcpu);
-	
-//	string bandsfname = HomeDir;
-//	bandsfname.append("frequencies.def");
-//	ifstream bandsfile(bandsfname.c_str(), ios::in);
-//	if (bandsfile) {
-//		string sBand;
-//		cboBand->add(" ");
-//		while (!bandsfile.eof()) {
-//			sBand = "";
-//			bandsfile >> sBand; bandsfile.ignore();
-//			if (sBand.length() > 0)
-//				cboBand->add(sBand.c_str());
-//		}
-//		bandsfile.close();
-//	} else {
-//		int i = 0;
-//		while (szBands[i]) {
-//			cboBand->add((char *)szBands[i]);
-//			i++;
-//		}
-//	}
-	btnQRZnotavailable->value(0);
-	btnQRZsocket->value(0);
-	btnQRZcdrom->value(0);
-	btnHAMCALLsocket->value(0);
-	if (QRZ == 0)
-		btnQRZnotavailable->value(1);
-	else if (QRZ == 1)
-		btnQRZsocket->value(1);
-	else if (QRZ == 2)
-		btnQRZcdrom->value(1);
-	else if (QRZ == 3)
-		btnHAMCALLsocket->value(1);
+
+	Fl_Button* qrzb;
+	switch (QRZ) {
+	case QRZ_NONE:
+		qrzb = btnQRZnotavailable;
+		break;
+	case QRZ_CD:
+		qrzb = btnQRZcdrom;
+		break;
+	case QRZ_NET_HTML:
+		qrzb = btnQRZonline;
+		break;
+	case QRZ_NET_SUB:
+		qrzb = btnQRZsub;
+		break;
+	case QRZ_HAMCALL:
+		qrzb = btnHamcall;
+		break;
+	}
+	set_qrz_buttons(qrzb);
 	txtQRZpathname->value(QRZpathname.c_str());
-			
+
 //	btnRTTY_USB->value(RTTY_USB);
 	btnsendid->value(sendid);
 	btnsendvideotext->value(sendtextid);

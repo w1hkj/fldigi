@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0108 
+version 1.0109 
 header_name {.h} 
 code_name {.cxx}
 decl {\#include <config.h>} {} 
@@ -27,9 +27,20 @@ decl {\#include "waterfall.h"} {}
 
 decl {\#include "rigxml.h"} {} 
 
+decl {\#include "lookupcall.h"} {} 
+
 decl {extern void initViewer();} {} 
 
 decl {Fl_Double_Window *dlgConfig;} {public
+} 
+
+Function {set_qrz_buttons(Fl_Button* b)} {open selected return_type void
+} {
+  code {Fl_Button* qrzb[] = { btnQRZnotavailable, btnQRZcdrom, btnQRZonline,
+                              btnQRZsub, btnHamcall};
+
+for (size_t i = 0; i < sizeof(qrzb)/sizeof(*qrzb); i++)
+	qrzb[i]->value(b == qrzb[i]);} {}
 } 
 
 Function {ConfigureDialog()} {open
@@ -45,14 +56,14 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {fldigi - config} open
-    xywh {487 115 400 255} type Double color 45 selection_color 51 align 80 visible
+    xywh {572 624 400 254} type Double color 45 selection_color 51 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 410 255} color 47 selection_color 9
     } {
       Fl_Group tabOperator {
         label Oper
-        callback {progdefaults.changed = true;} open selected
+        callback {progdefaults.changed = true;} open
         xywh {0 25 400 195} color 51 selection_color 51 when 1
       } {
         Fl_Input inpMyCallsign {
@@ -933,31 +944,21 @@ progdefaults.changed = true;}
         label qrz open
         xywh {0 25 400 195} color 51 selection_color 51 hide
       } {
-        Fl_Check_Button btnQRZnotavailable {
+        Fl_Round_Button btnQRZnotavailable {
           label {Not available}
-          callback {if (o->value() == 1) {
-btnQRZcdrom->value(0);
-btnQRZsocket->value(0);
-btnHAMCALLsocket->value(0);
-btnQRZonline->value(0);
-progdefaults.QRZ = 0;
-}
+          callback {set_qrz_buttons(o);
+progdefaults.QRZ = QRZ_NONE;
 progdefaults.changed = true;}
-          xywh {12 45 110 20} down_box DOWN_BOX value 1
-          code0 {if (progdefaults.QRZ == 0) o->value(1); else o->value(0);}
+          xywh {12 45 110 20} down_box ROUND_DOWN_BOX value 1
+          code0 {btnQRZnotavailable->value(progdefaults.QRZ == QRZ_NONE);}
         }
-        Fl_Check_Button btnQRZcdrom {
+        Fl_Round_Button btnQRZcdrom {
           label {QRZ cdrom}
-          callback {if (o->value() == 1) {
-btnQRZsocket->value(0);
-btnQRZnotavailable->value(0);
-btnHAMCALLsocket->value(0);
-btnQRZonline->value(0);
-progdefaults.QRZ = 2;
-}
+          callback {set_qrz_buttons(o);
+progdefaults.QRZ = QRZ_CD;
 progdefaults.changed = true;}
-          xywh {12 72 103 20} down_box DOWN_BOX
-          code0 {if (progdefaults.QRZ == 2) o->value(1); else o->value(0);}
+          xywh {12 72 103 20} down_box ROUND_DOWN_BOX
+          code0 {btnQRZcdrom->value(progdefaults.QRZ == QRZ_CD);}
         }
         Fl_Input txtQRZpathname {
           label {at:}
@@ -970,31 +971,21 @@ progdefaults.changed = true;}
         Fl_Group {} {open
           xywh {5 135 390 85} box ENGRAVED_FRAME
         } {
-          Fl_Check_Button btnQRZsocket {
+          Fl_Round_Button btnQRZsub {
             label {QRZ subscriber}
-            callback {if (o->value() == 1) {
-btnQRZcdrom->value(0);
-btnQRZnotavailable->value(0);
-btnHAMCALLsocket->value(0);
-btnQRZonline->value(0);
-progdefaults.QRZ = 1;
-}
+            callback {set_qrz_buttons(o);
+progdefaults.QRZ = QRZ_NET_SUB;
 progdefaults.changed = true;}
-            tooltip {You need a paid QRZ on-line subscription for access} xywh {12 148 190 20} down_box DOWN_BOX
-            code0 {if (progdefaults.QRZ == 1) o->value(1); else o->value(0);}
+            tooltip {You need a paid QRZ on-line subscription for access} xywh {12 148 130 20} down_box ROUND_DOWN_BOX
+            code0 {btnQRZsub->value(progdefaults.QRZ == QRZ_NET_SUB);}
           }
-          Fl_Check_Button btnHAMCALLsocket {
+          Fl_Round_Button btnHamcall {
             label {Hamcall subscriber}
-            callback {if (o->value() == 1) {
-btnQRZcdrom->value(0);
-btnQRZnotavailable->value(0);
-btnQRZsocket->value(0);
-btnQRZonline->value(0);
-progdefaults.QRZ = 3;
-}
+            callback {set_qrz_buttons(o);
+progdefaults.QRZ = QRZ_HAMCALL;
 progdefaults.changed = true;}
-            tooltip {You need a paid Hamcall on-line subscription to access} xywh {12 183 205 20} down_box DOWN_BOX
-            code0 {if (progdefaults.QRZ == 3) o->value(1); else o->value(0);}
+            tooltip {You need a paid Hamcall on-line subscription to access} xywh {12 183 155 20} down_box ROUND_DOWN_BOX
+            code0 {btnHamcall->value(progdefaults.QRZ == QRZ_HAMCALL);}
           }
           Fl_Input inpQRZusername {
             label {User name}
@@ -1011,18 +1002,13 @@ progdefaults.changed = true;}
             code0 {o->value(progdefaults.QRZuserpassword.c_str());}
           }
         }
-        Fl_Check_Button btnQRZonline {
-          label {QRZ on line}
-          callback {if (o->value() == 1) {
-btnQRZnotavailable->value(0);
-btnQRZcdrom->value(0);
-btnQRZsocket->value(0);
-btnHAMCALLsocket->value(0);
-progdefaults.QRZ = 4;
-}
+        Fl_Round_Button btnQRZonline {
+          label {QRZ online}
+          callback {set_qrz_buttons(o);
+progdefaults.QRZ = QRZ_NET_HTML;
 progdefaults.changed = true;}
-          tooltip {This service may not be available} xywh {12 105 70 20} down_box DOWN_BOX
-          code0 {if (progdefaults.QRZ == 4) o->value(1); else o->value(0);}
+          tooltip {This service may not be available} xywh {12 105 100 20} down_box ROUND_DOWN_BOX
+          code0 {btnQRZonline->value(progdefaults.QRZ == QRZ_NET_HTML);}
         }
       }
       Fl_Group tabSoundCard {

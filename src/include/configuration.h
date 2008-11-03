@@ -5,6 +5,7 @@
 
 #include "main.h"
 #include "rtty.h"
+#include "lookupcall.h"
 
 #if defined(__linux__)
 #  define DEFAULT_PTTDEV "/dev/ttyS0"
@@ -156,7 +157,7 @@
         ELEM_(bool, NagMe, "NAGME", false)                                              \
 	ELEM_(bool, menu_icons, "MENUICONS", true)                                      \
 /* QRZ */                                                                               \
-        ELEM_(int, QRZ, "QRZTYPE", 0) /* Not available */                               \
+        ELEM_(int, QRZ, "QRZTYPE", QRZ_NONE)                                            \
         ELEM_(std::string, QRZpathname, "QRZPATHNAME", "")                              \
         ELEM_(std::string, QRZusername, "QRZUSER", "")                                  \
         ELEM_(std::string, QRZuserpassword, "QRZPASSWORD", "")                          \
