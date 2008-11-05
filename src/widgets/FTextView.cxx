@@ -300,7 +300,6 @@ char *FTextBase::get_word(int x, int y)
 	if (!tbuf->selected())
 		s = tbuf->text_range(word_start(p), word_end(p));
 	else {
-		tbuf->select(word_start(p), word_end(p));
 		s = tbuf->selection_text();
 		tbuf->unselect();
 	}
