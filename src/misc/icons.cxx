@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-//      debug.cxx
+//      icons.cxx
 //
 // Copyright (C) 2008
 //              Stelios Bounanos, M0GLD
@@ -45,6 +45,10 @@ typedef map<Fl_Multi_Label*, Fl_Image**> imap_t;
 static imap_t* imap = 0;
 #endif
 
+#define FL_EMPTY_LABEL FL_FREE_LABELTYPE
+static void draw_empty(const Fl_Label*, int, int, int, int, Fl_Align) { }
+static void measure_empty(const Fl_Label*, int& w, int& h) { w = h = 0; }
+
 // The following functions create image+text menu item labels.
 // You've had too much FLTK if you already know how to do that.
 
@@ -60,8 +64,10 @@ const char* make_icon_label(const char* text, const char** pixmap)
 {
 #if USE_IMAGE_LABELS
 	static imap_t* imap_ = 0;
-	if (unlikely(!imap_))
+	if (unlikely(!imap_)) {
 		imap = imap_ = new imap_t;
+		Fl::set_labeltype(FL_EMPTY_LABEL, draw_empty, measure_empty);
+	}
 
 	// Create a multi label and associate it with an Fl_Image* array
 	Fl_Multi_Label* mlabel = new Fl_Multi_Label;
@@ -71,15 +77,13 @@ const char* make_icon_label(const char* text, const char** pixmap)
 	// set_icon_label_ will set mlabel->labela later
 	mlabel->typea = _FL_IMAGE_LABEL;
 
-	if (text && *text) { // copy
-		size_t len = strlen(text);
-		char* s = new char[len + 2];
-		s[0] = ' ';
-		memcpy(s + 1, text, len + 1);
-		mlabel->labelb = s;
-	}
-	else
-		mlabel->labelb = "";
+	if (!text)
+		text = "";
+	size_t len = strlen(text);
+	char* s = new char[len + 2];
+	s[0] = ' ';
+	memcpy(s + 1, text, len + 1);
+	mlabel->labelb = s;
 	mlabel->typeb = FL_NORMAL_LABEL;
 
 	(*imap)[mlabel] = images;
@@ -96,20 +100,6 @@ const char* make_icon_label(const char* text, const char** pixmap)
 template <typename T>
 void set_icon_label_(T* item)
 {
-	if (!progdefaults.menu_icons && item->labeltype() == _FL_MULTI_LABEL) {
-		const char* text = get_icon_label_text(item);
-		if (!text)
-			return;
-		size_t n = strlen(text) + 1;
-		char* new_label = new char[n];
-		memcpy(new_label, text, n);
-
-		free_icon_label(item);
-		item->label(new_label);
-		item->labeltype(FL_NORMAL_LABEL);
-		return;
-	}
-
 	imap_t::iterator j = imap->find((Fl_Multi_Label*)(item->label()));
 	if (j == imap->end())
 		return;
@@ -122,7 +112,10 @@ void set_icon_label_(T* item)
 		images[i] = images[!i]->copy();
 		images[i]->inactive();
 	}
-	mlabel->labela = (const char*)images[i];
+	if (mlabel->typea == _FL_IMAGE_LABEL)
+		mlabel->labela = (const char*)images[i];
+	else
+		mlabel->labelb = (const char*)images[i];
 	item->image(images[i]);
 	mlabel->label(item);
 	item->labeltype(_FL_MULTI_LABEL);
@@ -151,13 +144,41 @@ void set_icon_label(Fl_Widget* w)
 #endif
 }
 
+void toggle_icon_labels(void)
+{
+#if USE_IMAGE_LABELS
+	for (imap_t::iterator i = imap->begin(); i != imap->end(); ++i) {
+		// swap sublabels
+		const char* l = i->first->labela;
+		i->first->labela = i->first->labelb;
+		i->first->labelb = l;
+		if (i->first->typea == _FL_IMAGE_LABEL) {
+			i->first->typea = FL_NORMAL_LABEL;
+			i->first->typeb = FL_EMPTY_LABEL;
+			i->first->labela++;
+		}
+		else {
+			i->first->typea = _FL_IMAGE_LABEL;
+			i->first->typeb = FL_NORMAL_LABEL;
+			i->first->labelb--;
+		}
+	}
+
+#endif
+}
+
 template <typename T>
 const char* get_icon_label_text_(T* item)
 {
 #if USE_IMAGE_LABELS
 	if (item->labeltype() == _FL_MULTI_LABEL) {
 		imap_t::iterator i = imap->find((Fl_Multi_Label*)(item->label()));
-		return (i != imap->end()) ? (*i->first->labelb ? i->first->labelb + 1 : "") : 0;
+		if (i == imap->end())
+			return 0;
+		if (i->first->typeb == FL_NORMAL_LABEL)
+			return i->first->labelb + 1;
+		else // disabled icons
+			return i->first->labela;
 	}
 	else
 #endif
@@ -188,14 +209,16 @@ void free_icon_label_(T* item)
 		return;
 
 	item->label(0);
+
 	// delete the images
 	delete i->second[0];
 	delete i->second[1];
 	delete [] i->second;
+
 	// delete the multi label
-	if (*i->first->labelb) // it's a copy
-		delete [] i->first->labelb;
+	delete [] ((i->first->typeb == FL_NORMAL_LABEL) ? i->first->labelb : i->first->labela-1);
 	delete i->first;
+
 	imap->erase(i);
 #endif
 }

@@ -12,6 +12,8 @@ const char* make_icon_label(const char* text, const char** pixmap = 0);
 void set_icon_label(Fl_Menu_Item* item);
 void set_icon_label(Fl_Widget* w);
 
+void toggle_icon_labels(void);
+
 const char* get_icon_label_text(Fl_Menu_Item* item);
 const char* get_icon_label_text(Fl_Widget* w);
 

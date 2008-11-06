@@ -2330,6 +2330,8 @@ void create_fl_digi_main() {
 	if (progdefaults.docked_rig_control)
 		activate_rig_menu_item(false);
 
+	if (!progdefaults.menu_icons)
+		toggle_icon_labels();
 }
 
 void put_freq(double frequency)
