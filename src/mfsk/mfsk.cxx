@@ -105,6 +105,7 @@ mfsk::~mfsk()
 		picTxWin->hide();
 	if (picRxWin)
 		picRxWin->hide();
+	activate_mfsk_image_item(false);
 
 	if (bpfilt) delete bpfilt;
 	if (rxinlv) delete rxinlv;
@@ -257,10 +258,9 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 	
 // picTxWin and picRxWin are created once to support all instances of mfsk
 	if (!picTxWin) createTxViewer();
-	if (!picRxWin) {
+	if (!picRxWin)
 		createRxViewer();
-		activate_mfsk_image_item(true);
-	}
+	activate_mfsk_image_item(true);
 	afcmetric = 0.0;
 	datashreg = 1;
 
