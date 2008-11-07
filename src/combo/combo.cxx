@@ -50,20 +50,22 @@ void Fl_PopBrowser::sort()
 void Fl_PopBrowser::popshow (int x, int y)
 {
   int nRows = popbrwsr->size();
-  int height = (nRows > 10 ? 10 : nRows)*hRow;// + 4;
+  int height = (nRows > 12 ? 12 : nRows)*hRow;// + 4;
 
   if (nRows == 0) return;
   popbrwsr->resize (0, 0, wRow, height);
   resize (x, y, wRow, height);
 // locate first occurance of Output string value in the list
 // and display that if found
-  int i = 0;
-  while (	i < parent->listsize && 
-			strcasecmp (
-				parent->Output->value(),
-				parent->datalist[i]->s ) != 0 
-		) i++;
-  if (i > parent->listsize) i = 0;
+  int i = parent->index();
+  if (!(i >= 0 && i < parent->listsize)) {
+	  for (i = 0; i < parent->listsize; i++)
+		  if (!strcmp(parent->Output->value(), parent->datalist[i]->s))
+			  break;
+	  if (i == parent->listsize)
+		  i = 0;
+  }
+
   show ();
   popbrwsr->topline (i+1);
 
@@ -82,13 +84,14 @@ void Fl_PopBrowser::popbrwsr_cb_i (Fl_Widget *v, long d)
 //  Fl_Output *tgt = me->Rvals.Inp;
   Fl_Input *tgt = me->Rvals.Inp;
 // update the return values
+  int row = (me->popbrwsr)->value();
+  if (row == 0) return;
+  me->popbrwsr->deselect();
+
   if (tgt) {
-    int row = (me->popbrwsr)->value();
-    if (row > 0) {
-      tgt->value ((me->popbrwsr)->text (row));
-      me->Rvals.retval = (me->popbrwsr)->data (row);
-      *(me->Rvals.idx) = row;
-    }
+    tgt->value ((me->popbrwsr)->text (row));
+    me->Rvals.retval = (me->popbrwsr)->data (row);
+    *(me->Rvals.idx) = row - 1;
   }
   me->pophide();
 // user selected an item from the browser list, so execute the
@@ -211,7 +214,7 @@ void Fl_ComboBox::put_value(const char *s)
 void Fl_ComboBox::index(int i)
 {
 	if (i >= 0 && i < listsize)
-		Output->value( datalist[i]->s);
+		Output->value( datalist[idx = i]->s);
 }
 
 
