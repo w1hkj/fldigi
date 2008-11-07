@@ -5,20 +5,13 @@
 #ifndef _HAMLIB_H
 #define _HAMLIB_H
 
-#include <sys/ipc.h>
-#include <sys/msg.h>
-#include <sys/shm.h>
-#include <sys/time.h>
-#include <iostream>
-#include <string>
-#include <list>
-
 #include <hamlib/rig.h>
 
-using namespace std;
-
-extern void get_rignames();
-extern void get_riglist();
+extern void hamlib_get_rigs(void);
+extern size_t hamlib_get_index(rig_model_t model);
+extern rig_model_t hamlib_get_rig_model(size_t i);
+extern rig_model_t hamlib_get_rig_model_compat(const char* name);
+extern void hamlib_get_rig_str(int (*func)(const char*));
 
 extern void hamlib_close();
 extern bool hamlib_init(bool bPtt);
@@ -29,8 +22,6 @@ extern int	hamlib_setmode(rmode_t);
 extern rmode_t hamlib_getmode();
 extern int	hamlib_setwidth(pbwidth_t);
 extern pbwidth_t hamlib_getwidth();
-
-extern list<string> rignames;
 
 #endif
 

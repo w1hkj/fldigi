@@ -49,20 +49,23 @@ progdefaults.changed = true;
 
 Fl_Input *inpMyName=(Fl_Input *)0;
 
-static void cb_inpMyName(Fl_Input*, void*) {
-  progdefaults.changed = true;
+static void cb_inpMyName(Fl_Input* o, void*) {
+  progdefaults.myName = o->value();
+progdefaults.changed = true;
 }
 
 Fl_Input *inpMyQth=(Fl_Input *)0;
 
-static void cb_inpMyQth(Fl_Input*, void*) {
-  progdefaults.changed = true;
+static void cb_inpMyQth(Fl_Input* o, void*) {
+  progdefaults.myQth = o->value();
+progdefaults.changed = true;
 }
 
 Fl_Input *inpMyLocator=(Fl_Input *)0;
 
-static void cb_inpMyLocator(Fl_Input*, void*) {
-  progdefaults.changed = true;
+static void cb_inpMyLocator(Fl_Input* o, void*) {
+  progdefaults.myLocator = o->value();
+progdefaults.changed = true;
 }
 
 Fl_Check_Button *btnUseLeadingZeros=(Fl_Check_Button *)0;
@@ -457,8 +460,9 @@ static void cb_btnDTRplusV(Fl_Round_Button*, void*) {
 
 Fl_Input_Choice *inpTTYdev=(Fl_Input_Choice *)0;
 
-static void cb_inpTTYdev(Fl_Input_Choice*, void*) {
-  progdefaults.changed = true;
+static void cb_inpTTYdev(Fl_Input_Choice* o, void*) {
+  progdefaults.PTTdev = o->value();
+progdefaults.changed = true;
 }
 
 Fl_Button *btnInitHWPTT=(Fl_Button *)0;
@@ -735,6 +739,13 @@ if (o->value() == 1) {
   chkHamlibRTSCTSflow->value(0);
   progdefaults.HamlibRTSCTSflow = false;
 }
+progdefaults.changed = true;
+}
+
+Fl_Input *inpHamlibConfig=(Fl_Input *)0;
+
+static void cb_inpHamlibConfig(Fl_Input* o, void*) {
+  progdefaults.HamConfig = o->value();
 progdefaults.changed = true;
 }
 
@@ -1758,7 +1769,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         { inpMyName = new Fl_Input(78, 62, 120, 24, "Name:");
           inpMyName->callback((Fl_Callback*)cb_inpMyName);
         } // Fl_Input* inpMyName
-        { inpMyQth = new Fl_Input(78, 89, 312, 24, "Qth:");
+        { inpMyQth = new Fl_Input(78, 89, 312, 24, "QTH:");
           inpMyQth->callback((Fl_Callback*)cb_inpMyQth);
         } // Fl_Input* inpMyQth
         { inpMyLocator = new Fl_Input(78, 116, 85, 24, "Locator:");
@@ -2225,7 +2236,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             } // Fl_Check_Button* chkRigCatRTSCTSflow
             o->end();
           } // Fl_Group* o
-          { Fl_Group* o = new Fl_Group(10, 60, 385, 155, "Hamlib");
+          { Fl_Group* o = new Fl_Group(10, 60, 390, 155, "Hamlib");
             o->hide();
             { chkUSEHAMLIB = new Fl_Check_Button(155, 65, 20, 20, "use Hamlib");
               chkUSEHAMLIB->tooltip("Select hamlib for rig control");
@@ -2303,29 +2314,34 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
               cntHamlibWait->align(FL_ALIGN_TOP);
               o->value(progdefaults.HamlibWait);
             } // Fl_Counter* cntHamlibWait
-            { Fl_Check_Button* o = btnHamlibDTRplus = new Fl_Check_Button(225, 93, 35, 15, "DTR +12");
+            { Fl_Check_Button* o = btnHamlibDTRplus = new Fl_Check_Button(212, 90, 85, 15, "DTR +12");
               btnHamlibDTRplus->tooltip("initial state of DTR");
               btnHamlibDTRplus->down_box(FL_DOWN_BOX);
               btnHamlibDTRplus->callback((Fl_Callback*)cb_btnHamlibDTRplus);
               o->value(progdefaults.HamlibDTRplus);
             } // Fl_Check_Button* btnHamlibDTRplus
-            { chkHamlibRTSplus = new Fl_Check_Button(225, 112, 35, 15, "RTS +12");
+            { chkHamlibRTSplus = new Fl_Check_Button(302, 90, 85, 15, "RTS +12");
               chkHamlibRTSplus->tooltip("initial state of RTS");
               chkHamlibRTSplus->down_box(FL_DOWN_BOX);
               chkHamlibRTSplus->callback((Fl_Callback*)cb_chkHamlibRTSplus);
             } // Fl_Check_Button* chkHamlibRTSplus
-            { Fl_Check_Button* o = chkHamlibRTSCTSflow = new Fl_Check_Button(225, 131, 70, 15, "RTS/CTS flow ctl.");
+            { Fl_Check_Button* o = chkHamlibRTSCTSflow = new Fl_Check_Button(212, 119, 85, 15, "RTS/CTS");
               chkHamlibRTSCTSflow->tooltip("RTS/CTS hardware flow control");
               chkHamlibRTSCTSflow->down_box(FL_DOWN_BOX);
               chkHamlibRTSCTSflow->callback((Fl_Callback*)cb_chkHamlibRTSCTSflow);
               o->value(progdefaults.HamlibRTSCTSflow);
             } // Fl_Check_Button* chkHamlibRTSCTSflow
-            { Fl_Check_Button* o = chkHamlibXONXOFFflow = new Fl_Check_Button(225, 151, 70, 15, "XON/XOFF flow ctl.");
+            { Fl_Check_Button* o = chkHamlibXONXOFFflow = new Fl_Check_Button(302, 119, 90, 15, "XON/XOFF");
               chkHamlibXONXOFFflow->tooltip("XON/XOFF hardware flow control");
               chkHamlibXONXOFFflow->down_box(FL_DOWN_BOX);
               chkHamlibXONXOFFflow->callback((Fl_Callback*)cb_chkHamlibXONXOFFflow);
               o->value(progdefaults.HamlibXONXOFFflow);
             } // Fl_Check_Button* chkHamlibXONXOFFflow
+            { inpHamlibConfig = new Fl_Input(212, 144, 176, 22);
+              inpHamlibConfig->tooltip("Additional configuration\nof format: param=val ...");
+              inpHamlibConfig->callback((Fl_Callback*)cb_inpHamlibConfig);
+              inpHamlibConfig->value(progdefaults.HamConfig.c_str());
+            } // Fl_Input* inpHamlibConfig
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(10, 60, 385, 155, "MemMap");
@@ -2766,6 +2782,7 @@ l with your sound hardware.");
           { tabCW = new Fl_Group(0, 50, 400, 170, "CW");
             tabCW->color((Fl_Color)51);
             tabCW->selection_color((Fl_Color)51);
+            tabCW->hide();
             { Fl_Group* o = new Fl_Group(1, 60, 398, 155);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Value_Slider* o = sldrCWbandwidth = new Fl_Value_Slider(65, 65, 325, 20, "BW");
@@ -2960,7 +2977,6 @@ l with your sound hardware.");
           { tabDomEX = new Fl_Group(0, 50, 400, 170, "Dom");
             tabDomEX->color((Fl_Color)51);
             tabDomEX->selection_color((Fl_Color)51);
-            tabDomEX->hide();
             { txtSecondary = new Fl_Input(20, 75, 360, 44, "Secondary Text");
               txtSecondary->type(4);
               txtSecondary->callback((Fl_Callback*)cb_txtSecondary);

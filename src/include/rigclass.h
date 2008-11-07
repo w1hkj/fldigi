@@ -4,11 +4,10 @@
 //
 
 #ifndef _RIGCLASS_H
-#define _RIGCLASS_H 1
+#define _RIGCLASS_H
 
 #include <exception>
 #include <string>
-#include <list>
 
 #include <hamlib/rig.h>
 
@@ -34,25 +33,16 @@ protected:
 
 
 class Rig {
-public:
-	std::list< const struct rig_caps *> riglist;
-	std::list<std::string> rignames;
 protected:
-	RIG	*theRig;  // Global ref. to the rig
-	std::list<const struct rig_caps *>::iterator prig1;
-	std::list<std::string>::iterator pstr;
+	RIG	*rig;  // Global ref. to the rig
 public:
 	Rig();
 	Rig(rig_model_t rig_model);
 	virtual ~Rig();
 
-	const struct rig_caps *caps;
-
 	void	init(rig_model_t rig_model);
-	
-	bool	isOnLine() { return (theRig != NULL);}
-	void	get_rignames();
-	void	get_riglist();
+
+	bool	isOnLine() { return rig; }
 
 // This method open the communication port to the rig
 	void open(void);
@@ -62,13 +52,13 @@ public:
 
 	void setFreq(freq_t freq, vfo_t vfo = RIG_VFO_CURR);
 	freq_t getFreq(vfo_t vfo = RIG_VFO_CURR);
-	
+
 	void setMode(rmode_t, pbwidth_t width = RIG_PASSBAND_NORMAL, vfo_t vfo = RIG_VFO_CURR);
 	rmode_t getMode(pbwidth_t&, vfo_t vfo = RIG_VFO_CURR);
-	
+
 	void setPTT (ptt_t ptt, vfo_t vfo = RIG_VFO_CURR);
 	ptt_t getPTT (vfo_t vfo = RIG_VFO_CURR);
-	
+
 	void setVFO(vfo_t);
 	vfo_t getVFO();
 
@@ -77,7 +67,8 @@ public:
 	void getConf(token_t token, char *val);
 	void getConf(const char *name, char *val);
 	const char *getName();
-	
+	const struct rig_caps* getCaps(void);
+
 	token_t tokenLookup(const char *name);
 	pbwidth_t passbandNormal (rmode_t mode);
 	pbwidth_t passbandNarrow (rmode_t mode);

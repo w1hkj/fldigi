@@ -204,7 +204,7 @@ int main(int argc, char ** argv)
 	PskMailDir = szPskMailDir;
 	checkTLF();
 
-	FL_LOCK_E();  // start the gui thread!!	
+	Fl::lock();  // start the gui thread!!	
 	Fl::visual(FL_RGB); // insure 24 bit color operation
 	
 	fl_register_images();

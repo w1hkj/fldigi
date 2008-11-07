@@ -101,6 +101,7 @@ extern Fl_Check_Button *btnHamlibDTRplus;
 extern Fl_Check_Button *chkHamlibRTSplus;
 extern Fl_Check_Button *chkHamlibRTSCTSflow;
 extern Fl_Check_Button *chkHamlibXONXOFFflow;
+extern Fl_Input *inpHamlibConfig;
 extern Fl_Check_Button *chkUSEMEMMAP;
 extern Fl_Button *btnInitMEMMAP;
 extern Fl_Check_Button *chkUSEXMLRPC;

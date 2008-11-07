@@ -475,6 +475,8 @@ void cb_wMain(Fl_Widget*, void*)
 
 void init_modem(trx_mode mode)
 {
+	ENSURE_THREAD(FLMAIN_TID);
+
 	quick_change = 0;
 	modem_config_tab = tabsModems->child(0);
 
@@ -594,13 +596,12 @@ void init_modem(trx_mode mode)
 
 	clear_StatusMessages();
 	progStatus.lastmode = mode;
-	
+
 	if (wf->xmtlock->value() == 1 && !mailserver) {
 		wf->xmtlock->value(0);
 		wf->xmtlock->damage();
 		active_modem->set_freqlock(false);
 	}
-		
 }
 
 void init_modem_sync(trx_mode m)
@@ -2568,15 +2569,11 @@ void set_CWwpm()
 
 void clear_StatusMessages()
 {
-	FL_LOCK_E();
 	StatusBar->label("");
 	Status1->label("");
 	Status2->label("");
-	FL_UNLOCK_E();
-	FL_AWAKE_E();
 }
 
-	
 void put_MODEstatus(trx_mode mode)
 {
 	FL_LOCK_D();
