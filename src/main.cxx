@@ -175,6 +175,7 @@ int main(int argc, char ** argv)
 			closedir(dir);
 	}
 
+	bool have_config = progdefaults.readDefaultsXML();
 	try {
 		debug::start(string(HomeDir).append("status_log.txt").c_str());
 		time_t t = time(NULL);
@@ -203,7 +204,7 @@ int main(int argc, char ** argv)
 	PskMailDir = szPskMailDir;
 	checkTLF();
 
-	FL_LOCK_E();  // start the gui thread!!	
+	FL_LOCK_E();  // start the gui thread!!
 	Fl::visual(FL_RGB); // insure 24 bit color operation
 	
 	fl_register_images();
@@ -211,7 +212,7 @@ int main(int argc, char ** argv)
 	
 	rigcontrol = createRigDialog();
 
-	if (!progdefaults.readDefaultsXML()) {
+	if (!have_config) {
 		double speed = speed_test(SRC_SINC_FASTEST, 8);
 
 		if (speed > 150.0) {      // fast

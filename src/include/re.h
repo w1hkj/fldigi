@@ -39,15 +39,16 @@ public:
 
 	bool match(const char* str, int eflags_ = 0);
         const char* submatch(size_t n);
-	size_t nsub(void) { return substr.size(); }
+	void suboff(size_t n, int* start, int* end);
+	size_t nsub(void) { return substrings.size(); }
 private:
 	void compile(void);
 
 	std::string pattern;
 	int cflags, eflags;
 	regex_t preg;
-	std::vector<regmatch_t> suboff;
-	std::vector<std::string> substr;
+	std::vector<regmatch_t> suboffsets;
+	std::vector<std::string> substrings;
 	bool error;
 };
 

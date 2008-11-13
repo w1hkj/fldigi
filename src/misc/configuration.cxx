@@ -269,9 +269,8 @@ bool configuration::readDefaultsXML()
 	return true;
 }
 
-void configuration::loadDefaults() {
-	FL_LOCK_D();
-	
+void configuration::loadDefaults()
+{
 // RTTY
 	selShift->value(rtty_shift);
 	selBaud->value(rtty_baud);
@@ -286,9 +285,9 @@ void configuration::loadDefaults() {
 	chkUOSrx->value(UOSrx);
 	chkUOStx->value(UOStx);
 	chkXagc->value(Xagc);
-	
-	for (int i = 0; i < 3; i++)
-		if (rtty_afcspeed == i)
+
+	for (size_t i = 0; i < sizeof(btnRTTYafc)/sizeof(*btnRTTYafc); i++)
+		if (rtty_afcspeed == (int)i)
 			btnRTTYafc[i]->value(1);
 		else
 			btnRTTYafc[i]->value(0);
@@ -303,24 +302,13 @@ void configuration::loadDefaults() {
 	chkDominoEX_FEC->value(DOMINOEX_FEC);
 
 	btnmt63_interleave->value(mt63_interleave == 64);
-	
-	Fl_Tooltip::enable(tooltips);
 
-	FL_UNLOCK_D();
+	Fl_Tooltip::enable(tooltips);
 }
 
-void configuration::storeDefaults() { }
-
-void configuration::saveDefaults() {
-	FL_LOCK();
-// strings
-	myCall = inpMyCallsign->value();
-	myName = inpMyName->value();
-	myQth  = inpMyQth->value();
-	myLocator = inpMyLocator->value();
-	secText = txtSecondary->value();
-	THORsecText = txtTHORSecondary->value();
-	PTTdev = inpTTYdev->value();
+void configuration::saveDefaults()
+{
+	ENSURE_THREAD(FLMAIN_TID);
 
 	memcpy(&cfgpal0, &palette[0], sizeof(cfgpal0));
 	memcpy(&cfgpal1, &palette[1], sizeof(cfgpal1));
@@ -332,17 +320,31 @@ void configuration::saveDefaults() {
 	memcpy(&cfgpal7, &palette[7], sizeof(cfgpal7));
 	memcpy(&cfgpal8, &palette[8], sizeof(cfgpal8));
 
-	FL_UNLOCK();
-
 	writeDefaultsXML();
 	changed = false;
 }
 
-int configuration::setDefaults() {
-#if USE_HAMLIB	
-	getRigs();
-#endif	
-	FL_LOCK();
+#if USE_HAMLIB
+static int fill_hamlib_menu(const char* rigname)
+{
+	cboHamlibRig->add(rigname);
+	return 1;
+}
+#endif
+
+int configuration::setDefaults()
+{
+	ENSURE_THREAD(FLMAIN_TID);
+
+#if USE_HAMLIB
+	hamlib_get_rigs();
+	hamlib_get_rig_str(fill_hamlib_menu);
+	if (HamRigModel == 0 && !HamRigName.empty()) { // compatibility with < 3.04
+		HamRigModel = hamlib_get_rig_model_compat(HamRigName.c_str());
+		LOG_INFO("Found rig model %d for \"%s\"", HamRigModel, HamRigName.c_str());
+	}
+#endif
+
 	inpMyCallsign->value(myCall.c_str());
 	inpMyName->value(myName.c_str());
 	inpMyQth->value(myQth.c_str());
@@ -350,7 +352,7 @@ int configuration::setDefaults() {
 	UseLeadingZeros = btnUseLeadingZeros->value();
 	ContestStart = (int)nbrContestStart->value();
 	ContestDigits = (int)nbrContestDigits->value();
-		
+
 	txtSecondary->value(secText.c_str());
 
 	txtTHORSecondary->value(THORsecText.c_str());
@@ -359,14 +361,14 @@ int configuration::setDefaults() {
 	valTHOR_PATHS->value(THOR_PATHS);
 	valTHOR_SOFT->value(THOR_SOFT);
 	valThorCWI->value(ThorCWI);
-		
+
 	valDominoEX_BW->value(DOMINOEX_BW);
 	valDominoEX_FILTER->value(DOMINOEX_FILTER);
 	chkDominoEX_FEC->value(DOMINOEX_FEC);
 	valDominoEX_PATHS->value(DOMINOEX_PATHS);
 	valDomCWI->value(DomCWI);
-				
-	for (int i = 0; i < 5; i++) {
+
+	for (size_t i = 0; i < sizeof(btnPTT)/sizeof(*btnPTT); i++) {
 		btnPTT[i]->value(0);
 		btnPTT[i]->activate();
 	}
@@ -374,15 +376,15 @@ int configuration::setDefaults() {
 #if !USE_HAMLIB
 	btnPTT[1]->deactivate();
 	chkUSEHAMLIB->deactivate();
-    inpRIGdev->hide();
-    mnuBaudRate->hide();
-    cboHamlibRig->hide();
+	inpRIGdev->hide();
+	mnuBaudRate->hide();
+	cboHamlibRig->hide();
 #else
-    btnPTT[1]->activate();
+	btnPTT[1]->activate();
 	chkUSEHAMLIB->activate();
 	inpRIGdev->show();
 	mnuBaudRate->show();
-    cboHamlibRig->show();
+	cboHamlibRig->show();
 	cboHamlibRig->value(HamRigName.c_str());
 #endif
 	btnRTSptt->value(RTSptt);
@@ -475,46 +477,32 @@ int configuration::setDefaults() {
 	chkRSidWideSearch->value(rsidWideSearch);
 	chkSlowCpu->value(slowcpu);
 	
-//	string bandsfname = HomeDir;
-//	bandsfname.append("frequencies.def");
-//	ifstream bandsfile(bandsfname.c_str(), ios::in);
-//	if (bandsfile) {
-//		string sBand;
-//		cboBand->add(" ");
-//		while (!bandsfile.eof()) {
-//			sBand = "";
-//			bandsfile >> sBand; bandsfile.ignore();
-//			if (sBand.length() > 0)
-//				cboBand->add(sBand.c_str());
-//		}
-//		bandsfile.close();
-//	} else {
-//		int i = 0;
-//		while (szBands[i]) {
-//			cboBand->add((char *)szBands[i]);
-//			i++;
-//		}
-//	}
-	btnQRZnotavailable->value(0);
-	btnQRZsocket->value(0);
-	btnQRZcdrom->value(0);
-	btnHAMCALLsocket->value(0);
-	if (QRZ == 0)
-		btnQRZnotavailable->value(1);
-	else if (QRZ == 1)
-		btnQRZsocket->value(1);
-	else if (QRZ == 2)
-		btnQRZcdrom->value(1);
-	else if (QRZ == 3)
-		btnHAMCALLsocket->value(1);
+	Fl_Button* qrzb = btnQRZnotavailable;
+	switch (QRZ) {
+	case QRZ_NONE:
+		qrzb = btnQRZnotavailable;
+		break;
+	case QRZ_CD:
+		qrzb = btnQRZcdrom;
+		break;
+	case QRZ_NET_HTML:
+		qrzb = btnQRZonline;
+		break;
+	case QRZ_NET_SUB:
+		qrzb = btnQRZsub;
+		break;
+	case QRZ_HAMCALL:
+		qrzb = btnHamcall;
+		break;
+	default :
+		break;
+	}
+	set_qrz_buttons(qrzb);
 	txtQRZpathname->value(QRZpathname.c_str());
-			
-//	btnRTTY_USB->value(RTTY_USB);
+
 	btnsendid->value(sendid);
 	btnsendvideotext->value(sendtextid);
 	chkID_SMALL->value(ID_SMALL);
-				
-	FL_UNLOCK();
 
 	wf->setPrefilter(wfPreFilter);
 	valLatency->value(latency);
@@ -536,67 +524,56 @@ int configuration::setDefaults() {
 	return 1;
 }
 
-void configuration::initOperator() {
-	FL_LOCK();
-		myCall = inpMyCallsign->value();
-		myName = inpMyName->value();
-		myQth  = inpMyQth->value();
-		myLocator = inpMyLocator->value();
-		UseLeadingZeros = btnUseLeadingZeros->value();
-		ContestStart = (int)nbrContestStart->value();
-		ContestDigits = (int)nbrContestDigits->value();
-	FL_UNLOCK();
-}
-
 #include "rigio.h"
 
-void configuration::initInterface() {
-	initOperator();
-
+void configuration::initInterface()
+{
+	ENSURE_THREAD(FLMAIN_TID);
 
 // close down any possible rig interface threads
 #if USE_HAMLIB
-		hamlib_close();
+	hamlib_close();
 //		MilliSleep(100);
 #endif
-		rigMEM_close();
+	rigMEM_close();
 //		MilliSleep(100);
-		rigCAT_close();
+	rigCAT_close();
 //		MilliSleep(100);
 
-	FL_LOCK();
-		btnPTTis = (btnPTT[0]->value() ? 0 :
-					btnPTT[1]->value() ? 1 :
-					btnPTT[2]->value() ? 2 :
-					btnPTT[3]->value() ? 3 :
-					btnPTT[4]->value() ? 4 : 0); // default is None
-					
-		RTSptt = btnRTSptt->value();
-		DTRptt = btnDTRptt->value();
-		RTSplus = btnRTSplusV->value();
-		DTRplus = btnDTRplusV->value();
-		
-		PTTdev = inpTTYdev->value();
+	btnPTTis = (btnPTT[0]->value() ? 0 :
+		    btnPTT[1]->value() ? 1 :
+		    btnPTT[2]->value() ? 2 :
+		    btnPTT[3]->value() ? 3 :
+		    btnPTT[4]->value() ? 4 : 0); // default is None
+
+	RTSptt = btnRTSptt->value();
+	DTRptt = btnDTRptt->value();
+	RTSplus = btnRTSplusV->value();
+	DTRplus = btnDTRplusV->value();
+
+	PTTdev = inpTTYdev->value();
 
 #if USE_HAMLIB
-		chkUSEHAMLIBis = chkUSEHAMLIB->value();
-#endif		
-		chkUSEMEMMAPis = chkUSEMEMMAP->value();
-		chkUSERIGCATis = chkUSERIGCAT->value();
+	chkUSEHAMLIBis = chkUSEHAMLIB->value();
+#endif
+	chkUSEMEMMAPis = chkUSEMEMMAP->value();
+	chkUSERIGCATis = chkUSERIGCAT->value();
 
 #if USE_HAMLIB
-		HamRigName = cboHamlibRig->value();
-		HamRigDevice = inpRIGdev->value();
-		HamRigBaudrate = mnuBaudRate->value();
+	if (*cboHamlibRig->value() == '\0') // no selection at start up
+		cboHamlibRig->index(hamlib_get_index(HamRigModel));
+	else
+		HamRigModel = hamlib_get_rig_model(cboHamlibRig->index());
+	HamRigDevice = inpRIGdev->value();
+	HamRigBaudrate = mnuBaudRate->value();
 #else
-		cboHamlibRig->hide();
-		inpRIGdev->hide();
-		mnuBaudRate->hide();
-#endif		
-	FL_UNLOCK();
+	cboHamlibRig->hide();
+	inpRIGdev->hide();
+	mnuBaudRate->hide();
+#endif
 
-bool riginitOK = false;
-		
+	bool riginitOK = false;
+
 	if (chkUSEMEMMAPis) {// start the memory mapped i/o thread
 		if (rigMEM_init()) {
 			btnPTT[2]->activate();
@@ -622,7 +599,7 @@ bool riginitOK = false;
 				qsoFreqDisp->activate();
 			riginitOK = true;
 		}
-#endif		
+#endif
 	} else if (chkUSEXMLRPCis) {
 		wf->setXMLRPC(1);
 	}
@@ -634,15 +611,15 @@ bool riginitOK = false;
 		if (docked_rig_control)
 			qsoFreqDisp->activate();
 	}
-	
+
 	push2talk->reset(btnPTTis);
 	wf->setRefLevel();
 	wf->setAmpSpan();
 	cntLowFreqCutoff->value(LowFreqCutoff);
-		
+
 }
 
-string configuration::strBaudRate()
+const char* configuration::strBaudRate()
 {
 	return (szBaudRates[HamRigBaudrate + 1]);
 }
@@ -652,20 +629,6 @@ int configuration::BaudRate(size_t n)
 	if (n > sizeof(szBaudRates) + 1) return 1200;
 	return (atoi(szBaudRates[n + 1]));
 }
-
-#if USE_HAMLIB
-void configuration::getRigs() {
-list<string>::iterator pstr;
-	xcvr->get_rignames();
-	pstr = (xcvr->rignames).begin();
-FL_LOCK();
-	while (pstr != (xcvr->rignames).end()) {
-		cboHamlibRig->add((*pstr).c_str());
-		++pstr;
-	}
-FL_UNLOCK();
-}
-#endif
 
 void configuration::testCommPorts()
 {

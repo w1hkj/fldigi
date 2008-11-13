@@ -37,7 +37,5 @@ extern Fl_Button *btnSKIP;
 extern Fl_Button *btnALTR;
 extern Fl_Button *btnNoTextColor;
 extern Fl_Button *btnTextDefaults;
-#include <FL/Fl_Choice.H>
-extern Fl_Choice *mnuScheme;
 Fl_Double_Window* make_colorsfonts();
 #endif

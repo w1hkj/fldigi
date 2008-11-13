@@ -4337,6 +4337,54 @@ const char *close_icon[] = {
 "TTTTTTTTTTTTTTTT"
 };
 
+#ifdef __CYGWIN__
+/* XPM */
+const char *enter_key_icon[] = {
+/* columns rows colors chars-per-pixel */
+"16 16 26 1",
+" 	c None",
+".	c #BABAB9",
+"+	c #888A85",
+"@	c #FFFFFF",
+"#	c #FCFCFC",
+"$	c #F7F7F7",
+"%	c #F3F3F3",
+"&	c #F9F9F9",
+"*	c #F8F8F8",
+"=	c #000000",
+"-	c #F5F5F5",
+";	c #F0F0F0",
+">	c #E3E3E3",
+",	c #ECECEC",
+"'	c #DFDFDF",
+")	c #E8E8E8",
+"!	c #DCDCDC",
+"~	c #DDDDDD",
+"{	c #DEDEDE",
+"]	c #D8D8D8",
+"^	c #D9D9D9",
+"/	c #BBBBBB",
+"(	c #D5D5D5",
+"_	c #D4D4D4",
+":	c #D3D3D3",
+"<	c #D0D0D0",
+"                ",
+"      ........+ ",
+"      .@#####@+ ",
+"      .@$%&*@@+ ",
+"      .@%%=*@@+ ",
+"      .@%%=&@@+ ",
+"      .@%%=*@@+ ",
+"      .@%%=-@@+ ",
+" ......%%%=;>@+ ",
+" .%%%%=%%%=,'@+ ",
+" .%%%==%%%=)!~+ ",
+" .%%======={]]+ ",
+" .%%^==///((_(+ ",
+" .%%%:=/(((<<<+ ",
+" ++++++++++++++ ",
+"                "};
+#else
 // enter key icon from KDE's crystal theme
 
 /* XPM */
@@ -4452,6 +4500,7 @@ const char *enter_key_icon[] = {
 "}u5>,,,,,,,,,:-}",
 "}}}}}}}}}}}}}}}}"
 };
+#endif
 
 /* XPM */
 const char *clear_sq_icon[] = {

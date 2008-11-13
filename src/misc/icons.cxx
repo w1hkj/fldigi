@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-//      debug.cxx
+//      icons.cxx
 //
 // Copyright (C) 2008
 //              Stelios Bounanos, M0GLD
@@ -22,18 +22,19 @@
 
 #include <config.h>
 #include "icons.h"
-#include "configuration.h"
 
 #include <FL/Fl_Menu_Item.H>
 
 #if USE_IMAGE_LABELS
-#	include <map>
-#	include <cassert>
-#	include <cstring>
+#  include <map>
+#  include <cassert>
+#  include <cstring>
 
-#	include <FL/Fl_Multi_Label.H>
-#	include <FL/Fl_Image.H>
-#	include <FL/Fl_Pixmap.H>
+#  include <FL/Fl_Multi_Label.H>
+#  include <FL/Fl_Image.H>
+#  include <FL/Fl_Pixmap.H>
+
+#include "configuration.h"
 #endif
 
 
@@ -43,6 +44,10 @@ using namespace std;
 typedef map<Fl_Multi_Label*, Fl_Image**> imap_t;
 static imap_t* imap = 0;
 #endif
+
+#define FL_EMPTY_LABEL FL_FREE_LABELTYPE
+static void draw_empty(const Fl_Label*, int, int, int, int, Fl_Align) { }
+static void measure_empty(const Fl_Label*, int& w, int& h) { w = h = 0; }
 
 // The following functions create image+text menu item labels.
 // You've had too much FLTK if you already know how to do that.
@@ -59,8 +64,10 @@ const char* make_icon_label(const char* text, const char** pixmap)
 {
 #if USE_IMAGE_LABELS
 	static imap_t* imap_ = 0;
-	if (unlikely(!imap_))
+	if (unlikely(!imap_)) {
 		imap = imap_ = new imap_t;
+		Fl::set_labeltype(FL_EMPTY_LABEL, draw_empty, measure_empty);
+	}
 
 	// Create a multi label and associate it with an Fl_Image* array
 	Fl_Multi_Label* mlabel = new Fl_Multi_Label;
@@ -70,15 +77,13 @@ const char* make_icon_label(const char* text, const char** pixmap)
 	// set_icon_label_ will set mlabel->labela later
 	mlabel->typea = _FL_IMAGE_LABEL;
 
-	if (text && *text) { // copy
-		size_t len = strlen(text);
-		char* s = new char[len + 2];
-		s[0] = ' ';
-		memcpy(s + 1, text, len + 1);
-		mlabel->labelb = s;
-	}
-	else
-		mlabel->labelb = "";
+	if (!text)
+		text = "";
+	size_t len = strlen(text);
+	char* s = new char[len + 2];
+	s[0] = ' ';
+	memcpy(s + 1, text, len + 1);
+	mlabel->labelb = s;
 	mlabel->typeb = FL_NORMAL_LABEL;
 
 	(*imap)[mlabel] = images;
@@ -107,7 +112,10 @@ void set_icon_label_(T* item)
 		images[i] = images[!i]->copy();
 		images[i]->inactive();
 	}
-	mlabel->labela = (const char*)images[i];
+	if (mlabel->typea == _FL_IMAGE_LABEL)
+		mlabel->labela = (const char*)images[i];
+	else
+		mlabel->labelb = (const char*)images[i];
 	item->image(images[i]);
 	mlabel->label(item);
 	item->labeltype(_FL_MULTI_LABEL);
@@ -136,15 +144,45 @@ void set_icon_label(Fl_Widget* w)
 #endif
 }
 
+void toggle_icon_labels(void)
+{
+#if USE_IMAGE_LABELS
+	for (imap_t::iterator i = imap->begin(); i != imap->end(); ++i) {
+		// swap sublabels
+		const char* l = i->first->labela;
+		i->first->labela = i->first->labelb;
+		i->first->labelb = l;
+		if (i->first->typea == _FL_IMAGE_LABEL) {
+			i->first->typea = FL_NORMAL_LABEL;
+			i->first->typeb = FL_EMPTY_LABEL;
+			i->first->labela++;
+		}
+		else {
+			i->first->typea = _FL_IMAGE_LABEL;
+			i->first->typeb = FL_NORMAL_LABEL;
+			i->first->labelb--;
+		}
+	}
+
+#endif
+}
+
 template <typename T>
 const char* get_icon_label_text_(T* item)
 {
 #if USE_IMAGE_LABELS
-	imap_t::iterator i = imap->find((Fl_Multi_Label*)(item->label()));
-	return (i != imap->end()) ? (*i->first->labelb ? i->first->labelb + 1 : "") : 0;
-#else
-	return item->label();
+	if (item->labeltype() == _FL_MULTI_LABEL) {
+		imap_t::iterator i = imap->find((Fl_Multi_Label*)(item->label()));
+		if (i == imap->end())
+			return 0;
+		if (i->first->typeb == FL_NORMAL_LABEL)
+			return i->first->labelb + 1;
+		else // disabled icons
+			return i->first->labela;
+	}
+	else
 #endif
+		return item->label();
 }
 
 const char* get_icon_label_text(Fl_Menu_Item* item)
@@ -160,24 +198,43 @@ template <typename T>
 void free_icon_label_(T* item)
 {
 #if USE_IMAGE_LABELS
-if (progdefaults.menuicons) {
+	if (item->labeltype() == FL_NORMAL_LABEL) {
+		delete [] item->label();
+		item->label(0);
+		return;
+	}
+
 	imap_t::iterator i = imap->find((Fl_Multi_Label*)item->label());
 	if (i == imap->end())
 		return;
 
 	item->label(0);
+
 	// delete the images
 	delete i->second[0];
 	delete i->second[1];
 	delete [] i->second;
+
 	// delete the multi label
-	if (*i->first->labelb) // it's a copy
-		delete [] i->first->labelb;
+	delete [] ((i->first->typeb == FL_NORMAL_LABEL) ? i->first->labelb : i->first->labela-1);
 	delete i->first;
+
 	imap->erase(i);
-}
 #endif
 }
 
 void free_icon_label(Fl_Menu_Item* item) { free_icon_label_(item); }
 void free_icon_label(Fl_Widget* w) { free_icon_label_(w); }
+
+template <typename T>
+void set_active_(T* t, bool v) {
+	if (v)
+		t->activate();
+	else
+		t->deactivate();
+	if (t->labeltype() == _FL_MULTI_LABEL)
+		set_icon_label(t);
+}
+
+void set_active(Fl_Menu_Item* item, bool v) { set_active_(item, v); }
+void set_active(Fl_Widget* w, bool v) { set_active_(w, v); }

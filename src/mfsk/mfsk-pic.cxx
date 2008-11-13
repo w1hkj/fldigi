@@ -125,7 +125,6 @@ void createRxViewer()
 	btnpicRxAbort->callback(cb_picRxAbort, 0);
 	btnpicRxClose = new Fl_Button(135, 140 - 30, 60, 24, "Hide");
 	btnpicRxClose->callback(cb_picRxClose, 0);
-	activate_mfsk_image_item(true);
 
 	picRxWin->end();
 	FL_UNLOCK_D();

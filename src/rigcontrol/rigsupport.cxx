@@ -599,7 +599,8 @@ LOG_DEBUG("hamlib");
 		mode_nums[modes[i].name] = modes[i].mode;
 		mode_names[modes[i].mode] = modes[i].name;
 		opMODE->add(modes[i].name);
-		qso_opMODE->add(modes[i].name);
+		if (progdefaults.docked_rig_control)
+			qso_opMODE->add(modes[i].name);
 	}
 	clearList();
 	buildlist();
@@ -617,6 +618,14 @@ Fl_Double_Window *createRigDialog()
 {
 	Fl_Double_Window *w;
 	w = rig_dialog();
+	if (!w) return NULL;
+	FreqDisp->SetONOFFCOLOR(
+		fl_rgb_color(	progdefaults.FDforeground.R, 
+						progdefaults.FDforeground.G, 
+						progdefaults.FDforeground.B),
+		fl_rgb_color(	progdefaults.FDbackground.R, 
+						progdefaults.FDbackground.G, 
+						progdefaults.FDbackground.B));	
 	w->xclass(PACKAGE_NAME);
 	return w;
 }

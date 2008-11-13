@@ -39,7 +39,7 @@ re_t::re_t(const char* pattern_, int cflags_)
 
 re_t::re_t(const re_t& re)
 	: pattern(re.pattern), cflags(re.cflags), eflags(re.eflags),
-	  suboff(re.suboff), substr(re.substr)
+	  suboffsets(re.suboffsets), substrings(re.substrings)
 {
 	compile();
 }
@@ -58,8 +58,8 @@ re_t& re_t::operator=(const re_t& rhs)
 	pattern = rhs.pattern;
 	cflags = rhs.cflags;
 	eflags = rhs.eflags;
-	suboff = rhs.suboff;
-	substr = rhs.substr;
+	suboffsets = rhs.suboffsets;
+	substrings = rhs.substrings;
 	if (!error)
 		regfree(&preg);
 	compile();
@@ -81,7 +81,7 @@ void re_t::compile(void)
 {
 	error = regcomp(&preg, pattern.c_str(), cflags);
 	if (!error && !(cflags & REG_NOSUB) && preg.re_nsub > 0)
-		suboff.resize(preg.re_nsub + 1);
+		suboffsets.resize(preg.re_nsub + 1);
 }
 
 bool re_t::match(const char* str, int eflags_)
@@ -90,14 +90,14 @@ bool re_t::match(const char* str, int eflags_)
 		return false;
 
 	eflags = eflags_;
-	bool nosub = cflags & REG_NOSUB;
+	bool nosub = cflags & REG_NOSUB || preg.re_nsub == 0;
 	bool found = !regexec(&preg, str, (nosub ? 0 : preg.re_nsub+1),
-			      (nosub ? NULL : &suboff[0]), eflags_);
-	substr.clear();
+			      (nosub ? NULL : &suboffsets[0]), eflags_);
+	substrings.clear();
 	if (found && !nosub) {
-		for (vector<regmatch_t>::iterator i = suboff.begin(); i != suboff.end(); i++)
+		for (vector<regmatch_t>::iterator i = suboffsets.begin(); i != suboffsets.end(); i++)
 			if (i->rm_so != -1)
-				substr.push_back(string(str + i->rm_so, i->rm_eo - i->rm_so));
+				substrings.push_back(string(str + i->rm_so, i->rm_eo - i->rm_so));
 	}
 
 	return found;
@@ -105,5 +105,17 @@ bool re_t::match(const char* str, int eflags_)
 
 const char* re_t::submatch(size_t n)
 {
-	return n < nsub() ? substr[n].c_str() : 0;
+	return n < nsub() ? substrings[n].c_str() : 0;
+}
+
+void re_t::suboff(size_t n, int* start, int* end)
+{
+	if (n < nsub()) {
+		if (start) *start = suboffsets[n].rm_so;
+		if (end) *end = suboffsets[n].rm_eo;
+	}
+	else {
+		if (start) *start = -1;
+		if (end) *end = -1;
+	}
 }

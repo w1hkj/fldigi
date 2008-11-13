@@ -153,8 +153,8 @@ extern void set_AFCind( double val );
 extern void set_AFCrange(double val);
 
 extern void show_frequency(long long);
-extern void show_mode(string);
-extern void show_bw(string sWidth);
+extern void show_mode(const string& mode);
+extern void show_bw(const string& sWidth);
 
 extern void put_WARNstatus(double);
 

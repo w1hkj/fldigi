@@ -441,7 +441,7 @@ void rigCAT_setfreq(long long f)
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 
-	if (noXMLfile) {
+	if (noXMLfile || nonCATrig) {
 		noCATfreq = f;
 		return;
 	}
@@ -1006,9 +1006,10 @@ flowcontrol: %c",
 				LOG_ERROR("Xcvr Freq request not answered");
 				rigio.ClosePort();
 				return false;
+			} else {
+				rigCAT_sendINIT();
+				init_Xml_RigDialog();
 			}
-			rigCAT_sendINIT();
-			init_Xml_RigDialog();
 		}
 	} else {
 		sRigMode = "";

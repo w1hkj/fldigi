@@ -5,6 +5,7 @@
 
 #include "main.h"
 #include "rtty.h"
+#include "lookupcall.h"
 
 #if defined(__linux__)
 #  define DEFAULT_PTTDEV "/dev/ttyS0"
@@ -177,6 +178,8 @@
         ELEM_(std::string, CWFSKport, "", DEFAULT_CWFSKPORT)                            \
         ELEM_(std::string, HamRigDevice, "HAMRIGDEVICE", DEFAULT_HAMRIGDEVICE)          \
         ELEM_(std::string, HamRigName, "HAMRIGNAME", "")                                \
+        ELEM_(int, HamRigModel, "HAMRIGMODEL", 0)                                       \
+        ELEM_(std::string, HamConfig, "HAMCONFIG", "")                                  \
         ELEM_(int, HamRigBaudrate, "HAMRIGBAUDRATE", 1) /* 600 baud */                  \
         ELEM_(std::string, XmlRigFilename, "XMLRIGFILENAME", "")                        \
         ELEM_(std::string, XmlRigDevice, "XMLRIGDEVICE", DEFAULT_HAMRIGDEVICE)          \
@@ -310,8 +313,7 @@ struct configuration
 	void initInterface();
 	void initMixerDevices();
 	void testCommPorts();
-	void getRigs();
-	std::string strBaudRate();
+	const char* strBaudRate();
 	int  BaudRate(size_t);
 };
 

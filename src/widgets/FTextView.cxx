@@ -6,6 +6,14 @@
 //
 // This file is part of fldigi.
 //
+// ----------------------------------------------------------------------------
+//      FTextView.cxx
+//
+// Copyright (C) 2007
+//              Stelios Bounanos, M0GLD
+//
+// This file is part of fldigi.
+//
 // fldigi is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 3 of the License, or
@@ -295,16 +303,25 @@ char *FTextBase::get_word(int x, int y)
 {
 	int p = xy_to_position(x + this->x(), y + this->y(),
 			       Fl_Text_Display_mod::CURSOR_POS);
-
 	char* s;
-	if (!tbuf->selected())
+	if (!tbuf->selected()) {
 		s = tbuf->text_range(word_start(p), word_end(p));
-	else {
-		tbuf->select(word_start(p), word_end(p));
-		s = tbuf->selection_text();
-		tbuf->unselect();
+	} else {
+		int start = 0, end = 0;
+		if (tbuf->findchars_backward(p," \n", &start) == 0)
+			start = word_start(p);
+		else
+			start++;
+		if (tbuf->findchars_forward(p, " ,;\t\n", &end) == 1) {
+			s = tbuf->text_range(start, end);
+		} else if (tbuf->length() - start < 12) {
+			s = tbuf->text_range(start, tbuf->length()); 
+		} else {
+			tbuf->select(start, word_end(p));
+			s = tbuf->selection_text();
+		}
 	}
-
+	tbuf->unselect();
 	return s;
 }
 
@@ -387,25 +404,6 @@ Fl_Menu_Item FTextView::view_menu[] = {
 	{ "Word &wrap",       0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL },
 	{ 0 }
 };
-
-Fl_Menu_Item FTextView::view_menu_noicons[] = {
-	{ "&Look up call", 0, 0, 0, 0, FL_NORMAL_LABEL },
-	{ "&Call", 0, 0, 0, 0, FL_NORMAL_LABEL },
-	{ "&Name", 0, 0, 0, 0, FL_NORMAL_LABEL },
-	{ "QT&H", 0, 0, 0, 0, FL_NORMAL_LABEL },
-	{ "&Locator", 0, 0, 0, 0, FL_NORMAL_LABEL },
-	{ "&RST(r)", 0, 0, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL },
-	{ "Insert divider", 0, 0, 0, 0, FL_NORMAL_LABEL },
-	{ "C&lear", 0, 0, 0, 0, FL_NORMAL_LABEL },
-	{ "&Copy", 0, 0, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL },
-#if 0 //#ifndef NDEBUG
-        { "(debug) &Append file...", 0, 0, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL },
-#endif
-	{ "Save &as...", 0, 0, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL },
-	{ "Word &wrap",  0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL },
-	{ 0 }
-};
-
 static bool view_init = false;
 
 /// FTextView constructor.
@@ -426,16 +424,13 @@ FTextView::FTextView(int x, int y, int w, int h, const char *l)
 
 	cursor_style(Fl_Text_Display_mod::NORMAL_CURSOR);
 
-	if (progdefaults.menuicons)
-		context_menu = view_menu;
-	else
-		context_menu = view_menu_noicons;
+	context_menu = view_menu;
 	// disable some keybindings that are not allowed in FTextView buffers
 	change_keybindings();
 
 	if (!view_init)
 		for (int i = 0; i < view_menu->size() - 1; i++)
-			if (*view_menu[i].label() && view_menu[i].labeltype() == _FL_MULTI_LABEL)
+			if (view_menu[i].labeltype() == _FL_MULTI_LABEL)
 				set_icon_label(&view_menu[i]);
 	view_init = true;
 }
@@ -492,11 +487,7 @@ int FTextView::handle(int event)
 		else
 			view_menu[RX_MENU_WRAP].flags &= ~FL_MENU_VALUE;
 
-		if (progdefaults.menuicons)
-			context_menu = progdefaults.QRZ ? view_menu : view_menu + 1;
-		else
-			context_menu = progdefaults.QRZ ? view_menu_noicons : view_menu_noicons + 1;
-		
+		context_menu = progdefaults.QRZ ? view_menu : view_menu + 1;
 		show_context_menu();
 		return 1;
 		break;
@@ -505,12 +496,21 @@ int FTextView::handle(int event)
 			return 1;
 		break;
 	case FL_RELEASE:
-		if (cursor == FL_CURSOR_HAND && Fl::event_button() == FL_LEFT_MOUSE &&
-		    Fl::event_is_click() && !Fl::event_clicks()) {
-			handle_clickable(Fl::event_x() - x(), Fl::event_y() - y());
-			return 1;
+		{	int eb = Fl::event_button();
+			if (cursor == FL_CURSOR_HAND && eb == FL_LEFT_MOUSE &&
+		    	Fl::event_is_click() && !Fl::event_clicks()) {
+				handle_clickable(Fl::event_x() - x(), Fl::event_y() - y());
+				return 1;
+			}
+			if (eb == FL_LEFT_MOUSE) {
+				if (Fl::event_clicks() == 1)
+					if (handle_doubleclick(Fl::event_x() - x(), Fl::event_y() - y()))
+						return 1;
+					else
+						break;
+			}
+			break;
 		}
-		break;
 	case FL_MOVE: {
 		int p = xy_to_position(Fl::event_x(), Fl::event_y(), Fl_Text_Display_mod::CURSOR_POS);
 		if (sbuf->character(p) >= CLICK_START + FTEXT_DEF) {
@@ -642,11 +642,11 @@ void FTextView::handle_qsy(int start, int end)
 	free(text);
 }
 
+static re_t rst("^[0-9]{3}$", REG_EXTENDED | REG_NOSUB);
+static re_t loc("^[A-R]{2}[0-9]{2}([A-X]{2})+$", REG_EXTENDED | REG_ICASE | REG_NOSUB);
+
 void FTextView::handle_qso_data(int start, int end)
 {
-	static re_t rst("^[0-9]{3}$", REG_EXTENDED | REG_NOSUB);
-	static re_t loc("^[A-R]{2}[0-9]{2}([A-X]{2})+$", REG_EXTENDED | REG_ICASE | REG_NOSUB);
-
 	char* s = get_word(start, end);
 	if (rst.match(s))
 		inpRstIn->value(s);
@@ -666,6 +666,35 @@ void FTextView::handle_qso_data(int start, int end)
 	}
 
 	free(s);
+}
+
+bool FTextView::handle_doubleclick(int start, int end)
+{
+	bool ret = false;
+	char *s = get_word(start, end);
+	if (rst.match(s)) {
+		inpRstIn->value(s);
+		ret = true;
+	} else if (loc.match(s)) {
+		inpLoc->value(s);
+		ret = true;
+	} else {
+		int digits = 0;
+		int chars  = 0;
+		for (size_t i = 0; i < strlen(s); i++) {
+			if (isdigit(s[i])) digits++;
+			if (isalpha(s[i])) chars++;
+		}
+		if (digits > 0 && digits < 4 && chars > 0) {
+			inpCall->value(s);
+			ret = true;
+		} else if (chars > 0 && digits == 0) {
+			inpName->value(s);
+			ret = true;
+		}
+	}
+	free(s);
+	return ret;
 }
 
 
@@ -809,30 +838,11 @@ Fl_Menu_Item FTextEdit::edit_menu[] = {
 	{ "Word &wrap",		0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL } ,
 	{ 0 }
 };
-Fl_Menu_Item FTextEdit::edit_menu_noicons[] = {
-	{ "txabort" },
-	{ "&Receive", 0, 0, 0, 0, FL_NORMAL_LABEL },
-	{ "Send &image...", 0, 0, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL },
-	{ "C&lear", 0, 0, 0, 0, FL_NORMAL_LABEL },
-	{ "Cu&t", 0, 0, 0, 0, FL_NORMAL_LABEL },
-	{ "&Copy", 0, 0, 0, 0, FL_NORMAL_LABEL },
-	{ "&Paste", 0, 0, 0, 0, FL_NORMAL_LABEL },
-	{ "Insert &file...", 0, 0, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL },
-	{ "Word &wrap",	0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL } ,
-	{ 0 }
-};
-
 Fl_Menu_Item edit_txabort[] = {
 	{ make_icon_label("&Transmit", tx_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label("&Abort", process_stop_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ 0 }
 };
-Fl_Menu_Item edit_txabort_noicons[] = {
-	{ "&Transmit", 0, 0, 0, 0, FL_NORMAL_LABEL },
-	{ "&Abort", 0, 0, 0, 0, FL_NORMAL_LABEL },
-	{ 0 }
-};
-
 static bool edit_init = false;
 
 // needed by our static kf functions, which may restrict editing depending on
@@ -849,21 +859,17 @@ FTextEdit::FTextEdit(int x, int y, int w, int h, const char *l)
 
 	tbuf->add_modify_callback(changed_cb, this);
 
-	if (progdefaults.menuicons)
-		context_menu = edit_menu;
-	else
-		context_menu = edit_menu_noicons;
-		
+	context_menu = edit_menu;
 	change_keybindings();
 	ascii_cnt = 0;
 	ascii_chr = 0;
 
 	if (!edit_init) {
 		for (int i = 0; i < edit_menu->size() - 1; i++)
-			if (*edit_menu[i].label() && edit_menu[i].labeltype() == _FL_MULTI_LABEL)
+			if (edit_menu[i].labeltype() == _FL_MULTI_LABEL)
 				set_icon_label(&edit_menu[i]);
 		for (int i = 0; i < edit_txabort->size() - 1; i++)
-			if (*edit_txabort[i].label() && edit_txabort[i].labeltype() == _FL_MULTI_LABEL)
+			if (edit_txabort[i].labeltype() == _FL_MULTI_LABEL)
 				set_icon_label(&edit_txabort[i]);
 	}
 	edit_init = true;
@@ -914,7 +920,6 @@ int FTextEdit::handle(int event)
 	}
 
 	// handle a right click
-// context menu with icons
 	if (trx_state == STATE_RX)
 		memcpy(&edit_menu[TX_MENU_TX], &edit_txabort[0], sizeof(edit_menu[TX_MENU_TX]));
 	else
@@ -937,32 +942,6 @@ int FTextEdit::handle(int event)
 	else
 		edit_menu[TX_MENU_WRAP].flags &= ~FL_MENU_VALUE;
 
-// context menu without icons
-	if (trx_state == STATE_RX)
-		memcpy(&edit_menu_noicons[TX_MENU_TX], &edit_txabort_noicons[0], sizeof(edit_menu_noicons[TX_MENU_TX]));
-	else
-		memcpy(&edit_menu_noicons[TX_MENU_TX], &edit_txabort_noicons[1], sizeof(edit_menu_noicons[TX_MENU_TX]));
-	set_active(&edit_menu_noicons[TX_MENU_TX], wf->xmtrcv->active());
-
-	set_active(&edit_menu_noicons[TX_MENU_RX], trx_state != STATE_RX);
-
-	set_active(&edit_menu_noicons[TX_MENU_MFSK16_IMG], active_modem->get_cap() & modem::CAP_IMG);
-	set_active(&edit_menu_noicons[TX_MENU_CLEAR], tbuf->length());
-	set_active(&edit_menu_noicons[TX_MENU_CUT], selected && modify_text_ok);
-	set_active(&edit_menu_noicons[TX_MENU_COPY], selected);
-	set_active(&edit_menu_noicons[TX_MENU_PASTE], modify_text_ok);
-	set_active(&edit_menu_noicons[TX_MENU_READ], modify_text_ok);
-
-	if (wrap)
-		edit_menu_noicons[TX_MENU_WRAP].flags |= FL_MENU_VALUE;
-	else
-		edit_menu_noicons[TX_MENU_WRAP].flags &= ~FL_MENU_VALUE;
-
-	if (progdefaults.menuicons)
-		context_menu = edit_menu;
-	else
-		context_menu = edit_menu_noicons;
-		
 	show_context_menu();
 	return 1;
 }
@@ -1489,26 +1468,15 @@ Fl_Menu_Item FTextLog::log_menu[] = {
 	{ "Word &wrap",	0, 0, 0, FL_MENU_TOGGLE },
 	{ 0 }
 };
-Fl_Menu_Item FTextLog::log_menu_noicons[] = {
-	{ "C&lear", 0, 0, 0, 0, FL_NORMAL_LABEL },
-	{ "&Copy", 0, 0, 0, 0, FL_NORMAL_LABEL },
-	{ "Save to &file...", 0, 0, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL },
-	{ "Word &wrap",	0, 0, 0, FL_MENU_TOGGLE },
-	{ 0 }
-};
-
 static bool log_init = false;
 
 FTextLog::FTextLog(int x, int y, int w, int h, const char* l)
 	: FTextView(x, y, w, h, l)
 {
-	if (progdefaults.menuicons)
-		context_menu = log_menu;
-	else
-		context_menu = log_menu_noicons;
+	context_menu = log_menu;
 	if (!log_init)
 		for (int i = 0; i < log_menu->size() - 1; i++)
-			if (*log_menu[i].label() && log_menu[i].labeltype() == _FL_MULTI_LABEL)
+			if (log_menu[i].labeltype() == _FL_MULTI_LABEL)
 				set_icon_label(&log_menu[i]);
 	log_init = true;
 }
@@ -1538,18 +1506,6 @@ int FTextLog::handle(int event)
 		else
 			log_menu[LOG_MENU_WRAP].flags &= ~FL_MENU_VALUE;
 
-		set_active(&log_menu_noicons[LOG_MENU_CLEAR], tbuf->length());
-		set_active(&log_menu_noicons[LOG_MENU_COPY], tbuf->selected());
-		if (wrap)
-			log_menu_noicons[LOG_MENU_WRAP].flags |= FL_MENU_VALUE;
-		else
-			log_menu_noicons[LOG_MENU_WRAP].flags &= ~FL_MENU_VALUE;
-
-		if (progdefaults.menuicons)
-			context_menu = log_menu;
-		else
-			context_menu = log_menu_noicons;
-			
 		show_context_menu();
 		return 1;
 	case FL_KEYBOARD:
@@ -1593,7 +1549,6 @@ void FTextLog::menu_cb(int val)
 
 	case LOG_MENU_WRAP:
 		log_menu[LOG_MENU_WRAP].flags ^= FL_MENU_VALUE;
-		log_menu_noicons[LOG_MENU_WRAP].flags ^= FL_MENU_VALUE;
 		wrap_mode((wrap = !wrap), wrap_col);
 		show_insert_position();
 		break;

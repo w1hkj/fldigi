@@ -90,6 +90,14 @@ Change Log:
       29) Fixed IZDT time format. The timezone only makes sense in ILDT. With 
           IZDT, it is always +0000, so we should be using "Z". This applies to 
           macros which use the <ZDT> and <IZDT> tags.
+      30) Added double click in the Rx text window.  Program parses the word to
+          target CALL, NAME, QTH and RSTin.
+      31) Added addition macro tag to insert the text in the two status fields
+          such as PSK s/n and PSK imd readings.
+      32) Menu icons can be toggled on/off via configuration check box.
+      33) Improved hamlib support code.
+      34) Color changes for Frequency Control now applied to both docked and
+          floating rig control.
 
 3.03
       1) Changes to socket server to correct shutdown process

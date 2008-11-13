@@ -8,6 +8,7 @@
 #include <sys/ioctl.h>
 #include <termios.h>
 #include <string>
+#include <vector>
 
 #include "configuration.h"
 #include "confdialog.h"
@@ -30,6 +31,7 @@
 #  include "serial.h"
 #endif
 #include "debug.h"
+#include "re.h"
 
 using namespace std;
 
@@ -50,6 +52,9 @@ static long int hamlib_freq;
 static rmode_t hamlib_rmode = RIG_MODE_USB;
 static pbwidth_t hamlib_pbwidth = 3000;
 
+typedef std::vector<const struct rig_caps *> rig_list_t;
+rig_list_t hamlib_rigs;
+
 static void *hamlib_loop(void *args);
 
 void show_error(const char* msg1, const char* msg2 = 0)
@@ -63,85 +68,71 @@ void show_error(const char* msg1, const char* msg2 = 0)
 
 bool hamlib_init(bool bPtt)
 {
-	rig_model_t model;
 	freq_t freq;
 	rmode_t mode;
 	pbwidth_t width;
 
-	string	port, spd;
-	
 	hamlib_ptt = bPtt;
 	hamlib_closed = true;
 
-	port = progdefaults.HamRigDevice;
-	spd = progdefaults.strBaudRate();
-
 #ifdef __CYGWIN__
+	string port = progdefaults.HamRigDevice;
 	adjust_port(port);
 #endif
 
-	list<string>::iterator pstr = (xcvr->rignames).begin();
-	list< const struct rig_caps *>::iterator prig = (xcvr->riglist).begin();
-
-	string sel = cboHamlibRig->value();
-
-	while (pstr != (xcvr->rignames).end()) {
-		if ( sel == *pstr )
-			break;
-		++pstr;
-		++prig;
-	}
-	if (pstr == (xcvr->rignames).end()) {
-		fl_message("Rig not in list");
+	if (progdefaults.HamRigModel == 0) {
+		LOG_ERROR("No such hamlib rig model");
 		return false;
 	}
 
 	try {
 		char szParam[20];
-		model = (*prig)->rig_model;
 
-		xcvr->init(model);
-LOG_INFO("model %s = %d", sel.c_str(), model);
+		xcvr->init(progdefaults.HamRigModel);
 
+#ifdef __CYGWIN__
 		xcvr->setConf("rig_pathname", port.c_str());
-LOG_INFO("port %s", port.c_str());
-
-		xcvr->setConf("serial_speed", spd.c_str());
-LOG_INFO("speed %s", spd.c_str());
-		
+#else
+		xcvr->setConf("rig_pathname", progdefaults.HamRigDevice.c_str());
+#endif
 		snprintf(szParam, sizeof(szParam), "%d", progdefaults.HamlibWait);
 		xcvr->setConf("post_write_delay", szParam);
-LOG_INFO("post_write delay %s", szParam);
 
 		snprintf(szParam, sizeof(szParam), "%d", progdefaults.HamlibTimeout);
 		xcvr->setConf("timeout", szParam);
-LOG_INFO("timeout %s", szParam);
 
 		snprintf(szParam, sizeof(szParam), "%d", progdefaults.HamlibRetries);
 		xcvr->setConf("retry", szParam);
-LOG_INFO("retry %s", szParam);
 
-		if (progdefaults.HamlibRTSplus) {
-			xcvr->setConf("rts_state", "ON");
-LOG_INFO("rts state ON");
-		} else
-LOG_INFO("rts state OFF");
+		if (xcvr->getCaps()->port_type == RIG_PORT_SERIAL) {
+			xcvr->setConf("serial_speed", progdefaults.strBaudRate());
 
-		if (progdefaults.HamlibDTRplus) {
-			xcvr->setConf("dtr_state", "ON");
-LOG_INFO("dtr state ON");
-		} else
-LOG_INFO("dtr state OFF");
+			if (progdefaults.HamlibRTSplus)
+				xcvr->setConf("rts_state", "ON");
 
-		if (progdefaults.HamlibRTSCTSflow) {
-			xcvr->setConf("serial_handshake", "Hardware");
-LOG_INFO("serial handshake RTS/CTS");
-		} else if (progdefaults.HamlibXONXOFFflow) {
-			xcvr->setConf("serial_handshake", "XONXOFF");
-LOG_INFO("serial handshake XON/XOFF");
-		} else {
-			xcvr->setConf("serial_handshake", "None");
-LOG_INFO("serial handshake None");
+			if (progdefaults.HamlibDTRplus)
+				xcvr->setConf("dtr_state", "ON");
+
+			if (progdefaults.HamlibRTSCTSflow)
+				xcvr->setConf("serial_handshake", "Hardware");
+			else if (progdefaults.HamlibXONXOFFflow)
+				xcvr->setConf("serial_handshake", "XONXOFF");
+			else
+				xcvr->setConf("serial_handshake", "None");
+		}
+
+		string::size_type c = progdefaults.HamConfig.find('#');
+		if (c != string::npos)
+			progdefaults.HamConfig.erase(c);
+		if (!progdefaults.HamConfig.empty()) {
+			re_t re("([^, =]+) *= *([^, =]+)", REG_EXTENDED);
+			const char* conf = progdefaults.HamConfig.c_str();
+			int end;
+			while (re.match(conf)) {
+				xcvr->setConf(re.submatch(1), re.submatch(2));
+				re.suboff(0, NULL, &end);
+				conf += end;
+			}
 		}
 
 		xcvr->open();
@@ -278,7 +269,7 @@ int hamlib_setfreq(long f)
 		return -1;
 	pthread_mutex_lock(&hamlib_mutex);
 		try {
-LOG_DEBUG("%ld", f);
+			LOG_DEBUG("%ld", f);
 			xcvr->setFreq(f);
 //			wf->rfcarrier(f);//(hamlib_freq);
 		}
@@ -430,4 +421,79 @@ static void *hamlib_loop(void *args)
 	return NULL;
 }
 
+static int add_to_list(const struct rig_caps* rc, void*)
+{
+	hamlib_rigs.push_back(rc);
+	return 1;
+}
 
+//static bool rig_cmp(const struct rig_caps* rig1, const struct rig_caps* rig2)
+//{
+bool rig_cmp(const void *a, const void *b)
+{
+	const struct rig_caps *rig1 = (const struct rig_caps *)a;
+	const struct rig_caps *rig2 = (const struct rig_caps *)b;
+	int ret;
+
+	ret = strcasecmp(rig1->mfg_name, rig2->mfg_name);
+	if (ret > 0) return false;
+	if (ret < 0) return true;
+	ret = strcasecmp(rig1->model_name, rig2->model_name);
+	if (ret > 0) return false;
+	if (ret <= 0) return true;
+	if (rig1->rig_model > rig2->rig_model)
+		return false;
+	return true;
+}
+
+void hamlib_get_rigs(void)
+{
+//	if (!hamlib_rigs.empty())
+//		return;
+	hamlib_rigs.clear();
+#ifdef NDEBUG
+	rig_set_debug(RIG_DEBUG_NONE);
+#endif
+	rig_load_all_backends();
+	rig_list_foreach(add_to_list, 0);
+	sort(hamlib_rigs.begin(), hamlib_rigs.end(), rig_cmp);
+//	hamlib_rigs.sort(rig_cmp);
+}
+
+rig_model_t hamlib_get_rig_model_compat(const char* name)
+{
+	for (rig_list_t::const_iterator i = hamlib_rigs.begin(); i != hamlib_rigs.end(); ++i)
+		if (strstr(name, (*i)->mfg_name) && strstr(name, (*i)->model_name))
+			return (*i)->rig_model;
+	return 0;
+}
+
+size_t hamlib_get_index(rig_model_t model)
+{
+	for (rig_list_t::const_iterator i = hamlib_rigs.begin(); i != hamlib_rigs.end(); ++i)
+		if ((*i)->rig_model == model)
+			return i - hamlib_rigs.begin();
+	return hamlib_rigs.size();
+}
+
+rig_model_t hamlib_get_rig_model(size_t i)
+{
+	try {
+		return hamlib_rigs.at(i)->rig_model;
+	}
+	catch (...) {
+		return 0;
+	}
+}
+
+void hamlib_get_rig_str(int (*func)(const char*))
+{
+	string rigstr;
+	for (rig_list_t::const_iterator i = hamlib_rigs.begin(); i != hamlib_rigs.end(); ++i) {
+		rigstr.clear();
+		rigstr.append((*i)->mfg_name).append(" ").append((*i)->model_name);
+		rigstr.append("  (").append(rig_strstatus((*i)->status)).append(")");
+		if (!(*func)(rigstr.c_str()))
+			break;
+	}
+}

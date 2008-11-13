@@ -14,6 +14,9 @@ decl {\#include "configuration.h"} {global
 decl {\#include "font_browser.h"} {public global
 } 
 
+decl {\#include "rigdialog.h"} {selected
+} 
+
 Function {selectColorsFonts()} {open return_type void
 } {
   code {if (!dlgColorFont)
@@ -139,14 +142,26 @@ Function {make_colorsfonts()} {open
     FDdisplay->color(fl_rgb_color(r,g,b));
     FDdisplay->redraw();
     
-    qsoFreqDisp->SetONOFFCOLOR(
+    if (FreqDisp) {
+        FreqDisp->SetONOFFCOLOR(
           fl_rgb_color(	progdefaults.FDforeground.R,
                         progdefaults.FDforeground.G,
                         progdefaults.FDforeground.B),
           fl_rgb_color(	progdefaults.FDbackground.R,
                         progdefaults.FDbackground.G,
                         progdefaults.FDbackground.B));
-    qsoFreqDisp->redraw();
+        FreqDisp->redraw();
+    }
+    if (qsoFreqDisp) {
+        qsoFreqDisp->SetONOFFCOLOR(
+          fl_rgb_color(	progdefaults.FDforeground.R,
+                        progdefaults.FDforeground.G,
+                        progdefaults.FDforeground.B),
+          fl_rgb_color(	progdefaults.FDbackground.R,
+                        progdefaults.FDbackground.G,
+                        progdefaults.FDbackground.B));
+        qsoFreqDisp->redraw();
+    }
 
     progdefaults.changed = true;}
           xywh {165 45 100 30}
@@ -168,14 +183,26 @@ Function {make_colorsfonts()} {open
     FDdisplay->labelcolor(fl_rgb_color(r,g,b));
     FDdisplay->redraw();
     
-    qsoFreqDisp->SetONOFFCOLOR(
+    if (FreqDisp) {
+        FreqDisp->SetONOFFCOLOR(
           fl_rgb_color(	progdefaults.FDforeground.R,
                         progdefaults.FDforeground.G,
                         progdefaults.FDforeground.B),
           fl_rgb_color(	progdefaults.FDbackground.R,
                         progdefaults.FDbackground.G,
                         progdefaults.FDbackground.B));
-    qsoFreqDisp->redraw();
+        FreqDisp->redraw();
+    }
+    if (qsoFreqDisp) {
+        qsoFreqDisp->SetONOFFCOLOR(
+          fl_rgb_color(	progdefaults.FDforeground.R,
+                        progdefaults.FDforeground.G,
+                        progdefaults.FDforeground.B),
+          fl_rgb_color(	progdefaults.FDbackground.R,
+                        progdefaults.FDbackground.G,
+                        progdefaults.FDbackground.B));
+        qsoFreqDisp->redraw();
+    }
 
     progdefaults.changed = true;}
           xywh {165 85 100 30}
@@ -203,16 +230,28 @@ Function {make_colorsfonts()} {open
     progdefaults.FDforeground.G = g;
     progdefaults.FDforeground.B = b;
 
-    qsoFreqDisp->SetONOFFCOLOR(
+    if (FreqDisp) {
+        FreqDisp->SetONOFFCOLOR(
           fl_rgb_color(	progdefaults.FDforeground.R,
                         progdefaults.FDforeground.G,
                         progdefaults.FDforeground.B),
           fl_rgb_color(	progdefaults.FDbackground.R,
                         progdefaults.FDbackground.G,
                         progdefaults.FDbackground.B));
-    qsoFreqDisp->redraw();
+        FreqDisp->redraw();
+    }
+    if (qsoFreqDisp) {
+        qsoFreqDisp->SetONOFFCOLOR(
+          fl_rgb_color(	progdefaults.FDforeground.R,
+                        progdefaults.FDforeground.G,
+                        progdefaults.FDforeground.B),
+          fl_rgb_color(	progdefaults.FDbackground.R,
+                        progdefaults.FDbackground.G,
+                        progdefaults.FDbackground.B));
+        qsoFreqDisp->redraw();
+    }
          
-    progdefaults.changed = true;} selected
+    progdefaults.changed = true;}
           xywh {165 125 100 30}
         }
       }
@@ -612,23 +651,6 @@ b->show();}
     progdefaults.changed = true;}
           xywh {296 130 70 20}
         }
-      }
-      Fl_Group {} {
-        label {User Interface} open
-        xywh {5 30 365 150} hide
-      } {
-        Fl_Choice mnuScheme {
-          label {UI scheme}
-          callback {progdefaults.ui_scheme = o->text();
-    Fl::scheme(progdefaults.ui_scheme.c_str());
-
-    progdefaults.changed = true;} open
-          xywh {120 50 80 25} down_box BORDER_BOX align 8
-          code0 {mnuScheme->add("base");}
-          code1 {mnuScheme->add("gtk+");}
-          code2 {mnuScheme->add("plastic");}
-          code3 {mnuScheme->value(mnuScheme->find_item(progdefaults.ui_scheme.c_str()));}
-        } {}
       }
     }
   }

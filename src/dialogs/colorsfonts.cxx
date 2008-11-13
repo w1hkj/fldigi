@@ -4,6 +4,7 @@
 #include <config.h>
 #include "fl_digi.h"
 #include "configuration.h"
+#include "rigdialog.h"
 
 void selectColorsFonts() {
   if (!dlgColorFont)
@@ -110,14 +111,26 @@ static void cb_btnBackgroundColor(Fl_Button*, void*) {
     FDdisplay->color(fl_rgb_color(r,g,b));
     FDdisplay->redraw();
     
-    qsoFreqDisp->SetONOFFCOLOR(
+    if (FreqDisp) {
+        FreqDisp->SetONOFFCOLOR(
           fl_rgb_color(	progdefaults.FDforeground.R,
                         progdefaults.FDforeground.G,
                         progdefaults.FDforeground.B),
           fl_rgb_color(	progdefaults.FDbackground.R,
                         progdefaults.FDbackground.G,
                         progdefaults.FDbackground.B));
-    qsoFreqDisp->redraw();
+        FreqDisp->redraw();
+    }
+    if (qsoFreqDisp) {
+        qsoFreqDisp->SetONOFFCOLOR(
+          fl_rgb_color(	progdefaults.FDforeground.R,
+                        progdefaults.FDforeground.G,
+                        progdefaults.FDforeground.B),
+          fl_rgb_color(	progdefaults.FDbackground.R,
+                        progdefaults.FDbackground.G,
+                        progdefaults.FDbackground.B));
+        qsoFreqDisp->redraw();
+    }
 
     progdefaults.changed = true;
 }
@@ -140,14 +153,26 @@ static void cb_btnForegroundColor(Fl_Button*, void*) {
     FDdisplay->labelcolor(fl_rgb_color(r,g,b));
     FDdisplay->redraw();
     
-    qsoFreqDisp->SetONOFFCOLOR(
+    if (FreqDisp) {
+        FreqDisp->SetONOFFCOLOR(
           fl_rgb_color(	progdefaults.FDforeground.R,
                         progdefaults.FDforeground.G,
                         progdefaults.FDforeground.B),
           fl_rgb_color(	progdefaults.FDbackground.R,
                         progdefaults.FDbackground.G,
                         progdefaults.FDbackground.B));
-    qsoFreqDisp->redraw();
+        FreqDisp->redraw();
+    }
+    if (qsoFreqDisp) {
+        qsoFreqDisp->SetONOFFCOLOR(
+          fl_rgb_color(	progdefaults.FDforeground.R,
+                        progdefaults.FDforeground.G,
+                        progdefaults.FDforeground.B),
+          fl_rgb_color(	progdefaults.FDbackground.R,
+                        progdefaults.FDbackground.G,
+                        progdefaults.FDbackground.B));
+        qsoFreqDisp->redraw();
+    }
 
     progdefaults.changed = true;
 }
@@ -176,14 +201,26 @@ static void cb_btnFD_SystemColor(Fl_Button*, void*) {
     progdefaults.FDforeground.G = g;
     progdefaults.FDforeground.B = b;
 
-    qsoFreqDisp->SetONOFFCOLOR(
+    if (FreqDisp) {
+        FreqDisp->SetONOFFCOLOR(
           fl_rgb_color(	progdefaults.FDforeground.R,
                         progdefaults.FDforeground.G,
                         progdefaults.FDforeground.B),
           fl_rgb_color(	progdefaults.FDbackground.R,
                         progdefaults.FDbackground.G,
                         progdefaults.FDbackground.B));
-    qsoFreqDisp->redraw();
+        FreqDisp->redraw();
+    }
+    if (qsoFreqDisp) {
+        qsoFreqDisp->SetONOFFCOLOR(
+          fl_rgb_color(	progdefaults.FDforeground.R,
+                        progdefaults.FDforeground.G,
+                        progdefaults.FDforeground.B),
+          fl_rgb_color(	progdefaults.FDbackground.R,
+                        progdefaults.FDbackground.G,
+                        progdefaults.FDbackground.B));
+        qsoFreqDisp->redraw();
+    }
          
     progdefaults.changed = true;
 }
@@ -567,15 +604,6 @@ static void cb_btnTextDefaults(Fl_Button*, void*) {
     progdefaults.changed = true;
 }
 
-Fl_Choice *mnuScheme=(Fl_Choice *)0;
-
-static void cb_mnuScheme(Fl_Choice* o, void*) {
-  progdefaults.ui_scheme = o->text();
-    Fl::scheme(progdefaults.ui_scheme.c_str());
-
-    progdefaults.changed = true;
-}
-
 Fl_Double_Window* make_colorsfonts() {
   { dlgColorFont = new Fl_Double_Window(375, 220, "Colors and Fonts");
     { btnClrFntClose = new Fl_Button(296, 190, 75, 25, "Close");
@@ -693,19 +721,6 @@ Fl_Double_Window* make_colorsfonts() {
         { btnTextDefaults = new Fl_Button(296, 130, 70, 20, "Defaults");
           btnTextDefaults->callback((Fl_Callback*)cb_btnTextDefaults);
         } // Fl_Button* btnTextDefaults
-        o->end();
-      } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(5, 30, 365, 150, "User Interface");
-        o->hide();
-        { mnuScheme = new Fl_Choice(120, 50, 80, 25, "UI scheme");
-          mnuScheme->down_box(FL_BORDER_BOX);
-          mnuScheme->callback((Fl_Callback*)cb_mnuScheme);
-          mnuScheme->align(FL_ALIGN_RIGHT);
-          mnuScheme->add("base");
-          mnuScheme->add("gtk+");
-          mnuScheme->add("plastic");
-          mnuScheme->value(mnuScheme->find_item(progdefaults.ui_scheme.c_str()));
-        } // Fl_Choice* mnuScheme
         o->end();
       } // Fl_Group* o
       o->end();
