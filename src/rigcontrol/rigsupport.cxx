@@ -225,7 +225,6 @@ size_t addtoList(long val)
 
 bool readFreqList()
 {
-	bool newstyle = false;
 	ifstream freqfile((HomeDir + "frequencies2.txt").c_str());
 	if (!freqfile)
 		return false;
@@ -233,13 +232,10 @@ bool readFreqList()
 	string line;
 	qrg_mode_t m;
 	while (!getline(freqfile, line).eof()) {
-		if (line[0] == '#') {
-			if (strstr(line.c_str(),"Post 2.09")) newstyle = true;
+		if (line[0] == '#')
 			continue;
-		}
 		istringstream is(line);
 		is >> m;
-		if (!newstyle && m.mode >= MODE_HELL80) m.mode++;
 		freqlist.push_back(m);
 	}
 	sort(freqlist.begin(), freqlist.end());
@@ -324,11 +320,14 @@ void setMode()
 #if USE_HAMLIB
 	if (progdefaults.chkUSEHAMLIBis)
 		hamlib_setmode(mode_nums[opMODE->value()]);
+	else
 #endif
 	if (progdefaults.chkUSERIGCATis)
 		rigCAT_setmode(opMODE->value());
-	if (progdefaults.chkUSEMEMMAPis)
+	else if (progdefaults.chkUSEMEMMAPis)
 		rigMEM_setmode(opMODE->value());
+	else
+		rigCAT_setmode(opMODE->value());
 }
 
 int cb_qso_opMODE()
@@ -338,11 +337,14 @@ int cb_qso_opMODE()
 #if USE_HAMLIB
 	if (progdefaults.chkUSEHAMLIBis)
 		hamlib_setmode(mode_nums[qso_opMODE->value()]);
+	else
 #endif
 	if (progdefaults.chkUSERIGCATis)
 		rigCAT_setmode(qso_opMODE->value());
-	if (progdefaults.chkUSEMEMMAPis)
+	else if (progdefaults.chkUSEMEMMAPis)
 		rigMEM_setmode(qso_opMODE->value());
+	else
+		rigCAT_setmode(qso_opMODE->value());
 	return 0;
 }
 

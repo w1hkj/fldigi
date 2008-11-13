@@ -136,6 +136,7 @@ private:
 
 protected:
 	static Fl_Menu_Item view_menu[];
+	static Fl_Menu_Item view_menu_noicons[];
 };
 
 
@@ -181,6 +182,7 @@ private:
 
 protected:
 	static Fl_Menu_Item	edit_menu[];
+	static Fl_Menu_Item	edit_menu_noicons[];
 	bool			PauseBreak;
 	int			txpos;
 	static int		*ptxpos;
@@ -210,6 +212,7 @@ private:
 
 protected:
 	static Fl_Menu_Item log_menu[];
+	static Fl_Menu_Item log_menu_noicons[];
 };
 
 

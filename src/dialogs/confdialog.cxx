@@ -294,6 +294,13 @@ static void cb_chkShowAudioScale(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnViewXmtSignal=(Fl_Check_Button *)0;
+
+static void cb_btnViewXmtSignal(Fl_Check_Button* o, void*) {
+  progdefaults.viewXmtSignal=o->value();
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *btnWaterfallHistoryDefault=(Fl_Check_Button *)0;
 
 static void cb_btnWaterfallHistoryDefault(Fl_Check_Button* o, void*) {
@@ -333,7 +340,7 @@ static void cb_mnuWaterfallWheelAction(Fl_Choice* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Group *tabVideo=(Fl_Group *)0;
+Fl_Group *tabID=(Fl_Group *)0;
 
 Fl_Check_Button *btnsendid=(Fl_Check_Button *)0;
 
@@ -374,13 +381,6 @@ sldrVideowidth->activate();
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *btnViewXmtSignal=(Fl_Check_Button *)0;
-
-static void cb_btnViewXmtSignal(Fl_Check_Button* o, void*) {
-  progdefaults.viewXmtSignal=o->value();
-progdefaults.changed = true;
-}
-
 Fl_Group *sld=(Fl_Group *)0;
 
 Fl_Check_Button *btnCWID=(Fl_Check_Button *)0;
@@ -394,6 +394,20 @@ Fl_Value_Slider *sldrCWIDwpm=(Fl_Value_Slider *)0;
 
 static void cb_sldrCWIDwpm(Fl_Value_Slider* o, void*) {
   progdefaults.CWIDwpm = (int)o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *chkTransmitRSid=(Fl_Check_Button *)0;
+
+static void cb_chkTransmitRSid(Fl_Check_Button* o, void*) {
+  progdefaults.TransmitRSid = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *chkRSidWideSearch=(Fl_Check_Button *)0;
+
+static void cb_chkRSidWideSearch(Fl_Check_Button* o, void*) {
+  progdefaults.rsidWideSearch=o->value();
 progdefaults.changed = true;
 }
 
@@ -1155,19 +1169,11 @@ static void cb_btnNagMe(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Group *tabRSid=(Fl_Group *)0;
+Fl_Check_Button *chkMenuIcons=(Fl_Check_Button *)0;
 
-Fl_Check_Button *chkTransmitRSid=(Fl_Check_Button *)0;
-
-static void cb_chkTransmitRSid(Fl_Check_Button* o, void*) {
-  progdefaults.TransmitRSid = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *chkRSidWideSearch=(Fl_Check_Button *)0;
-
-static void cb_chkRSidWideSearch(Fl_Check_Button* o, void*) {
-  progdefaults.rsidWideSearch=o->value();
+static void cb_chkMenuIcons(Fl_Check_Button* o, void*) {
+  progdefaults.menuicons = o->value();
+set_menus();
 progdefaults.changed = true;
 }
 
@@ -1814,6 +1820,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         tabWaterfall->hide();
         { Fl_Tabs* o = new Fl_Tabs(0, 25, 410, 195);
           { Fl_Group* o = new Fl_Group(0, 50, 400, 170, "Filters/Colors");
+            o->hide();
             { Fl_Group* o = new Fl_Group(10, 84, 385, 96);
               o->box(FL_ENGRAVED_FRAME);
               { WF_Palette = new colorbox(28, 107, 260, 24, "Palette:");
@@ -1934,7 +1941,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(5, 54, 393, 166, "Misc");
-            o->hide();
             { Fl_Group* o = new Fl_Group(8, 60, 390, 158);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnUseCursorLines = new Fl_Check_Button(58, 79, 100, 20, "Cursor BW");
@@ -1975,6 +1981,11 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 chkShowAudioScale->callback((Fl_Callback*)cb_chkShowAudioScale);
                 o->value(progdefaults.wf_audioscale);
               } // Fl_Check_Button* chkShowAudioScale
+              { Fl_Check_Button* o = btnViewXmtSignal = new Fl_Check_Button(195, 118, 135, 20, "View Xmt Signal");
+                btnViewXmtSignal->down_box(FL_DOWN_BOX);
+                btnViewXmtSignal->callback((Fl_Callback*)cb_btnViewXmtSignal);
+                o->value(progdefaults.viewXmtSignal);
+              } // Fl_Check_Button* btnViewXmtSignal
               o->end();
             } // Fl_Group* o
             o->end();
@@ -2016,11 +2027,11 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         } // Fl_Tabs* o
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
-      { tabVideo = new Fl_Group(0, 25, 400, 195, "Video");
-        tabVideo->color((Fl_Color)51);
-        tabVideo->selection_color((Fl_Color)51);
-        tabVideo->hide();
-        { Fl_Group* o = new Fl_Group(5, 40, 390, 77, "Video Preamble");
+      { tabID = new Fl_Group(0, 25, 400, 195, "Id\'s");
+        tabID->color((Fl_Color)51);
+        tabID->selection_color((Fl_Color)51);
+        tabID->hide();
+        { Fl_Group* o = new Fl_Group(5, 40, 390, 77, "Video Preamble ID");
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
           { btnsendid = new Fl_Check_Button(11, 57, 115, 20, "Xmt Mode ID");
@@ -2060,20 +2071,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           } // Fl_Check_Button* chkID_SMALL
           o->end();
         } // Fl_Group* o
-        { Fl_Check_Button* o = btnViewXmtSignal = new Fl_Check_Button(11, 122, 135, 20, "View Xmt Signal");
-          btnViewXmtSignal->down_box(FL_DOWN_BOX);
-          btnViewXmtSignal->callback((Fl_Callback*)cb_btnViewXmtSignal);
-          o->value(progdefaults.viewXmtSignal);
-        } // Fl_Check_Button* btnViewXmtSignal
-        { sld = new Fl_Group(5, 150, 390, 63, "CW Postamble");
+        { sld = new Fl_Group(5, 117, 390, 54, "CW Postamble ID");
           sld->box(FL_ENGRAVED_FRAME);
           sld->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-          { Fl_Check_Button* o = btnCWID = new Fl_Check_Button(13, 185, 98, 15, "Xmt CWID");
+          { Fl_Check_Button* o = btnCWID = new Fl_Check_Button(13, 142, 98, 15, "Xmt CWID");
             btnCWID->down_box(FL_DOWN_BOX);
             btnCWID->callback((Fl_Callback*)cb_btnCWID);
             o->value(progdefaults.CWid);
           } // Fl_Check_Button* btnCWID
-          { Fl_Value_Slider* o = sldrCWIDwpm = new Fl_Value_Slider(124, 182, 233, 20, "CWID wpm:");
+          { Fl_Value_Slider* o = sldrCWIDwpm = new Fl_Value_Slider(150, 139, 233, 20, "CWID wpm:");
             sldrCWIDwpm->type(1);
             sldrCWIDwpm->color((Fl_Color)26);
             sldrCWIDwpm->minimum(15);
@@ -2087,8 +2093,24 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           } // Fl_Value_Slider* sldrCWIDwpm
           sld->end();
         } // Fl_Group* sld
-        tabVideo->end();
-      } // Fl_Group* tabVideo
+        { Fl_Group* o = new Fl_Group(5, 170, 390, 45, "Reed Solomon ID");
+          o->box(FL_ENGRAVED_FRAME);
+          o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+          { Fl_Check_Button* o = chkTransmitRSid = new Fl_Check_Button(70, 190, 119, 20, "Transmit RSid");
+            chkTransmitRSid->tooltip("Transmit Reed Solomon ID");
+            chkTransmitRSid->down_box(FL_DOWN_BOX);
+            chkTransmitRSid->callback((Fl_Callback*)cb_chkTransmitRSid);
+            o->value(progdefaults.TransmitRSid);
+          } // Fl_Check_Button* chkTransmitRSid
+          { Fl_Check_Button* o = chkRSidWideSearch = new Fl_Check_Button(209, 192, 85, 15, "Wide Search Detector");
+            chkRSidWideSearch->down_box(FL_DOWN_BOX);
+            chkRSidWideSearch->callback((Fl_Callback*)cb_chkRSidWideSearch);
+            o->value(progdefaults.rsidWideSearch);
+          } // Fl_Check_Button* chkRSidWideSearch
+          o->end();
+        } // Fl_Group* o
+        tabID->end();
+      } // Fl_Group* tabID
       { tabRig = new Fl_Group(0, 25, 400, 230, "Rig");
         tabRig->hide();
         { Fl_Tabs* o = new Fl_Tabs(5, 34, 395, 185);
@@ -2700,35 +2722,20 @@ l with your sound hardware.");
                 btnShowTooltips->callback((Fl_Callback*)cb_btnShowTooltips);
                 o->value(progdefaults.tooltips);
               } // Fl_Check_Button* btnShowTooltips
-              { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(160, 68, 70, 15, "Nag me about log entries");
+              { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(308, 68, 70, 15, "Nag me");
                 btnNagMe->down_box(FL_DOWN_BOX);
                 btnNagMe->callback((Fl_Callback*)cb_btnNagMe);
                 o->value(progdefaults.NagMe);
               } // Fl_Check_Button* btnNagMe
+              { Fl_Check_Button* o = chkMenuIcons = new Fl_Check_Button(155, 68, 70, 15, "icons on menus");
+                chkMenuIcons->down_box(FL_DOWN_BOX);
+                chkMenuIcons->callback((Fl_Callback*)cb_chkMenuIcons);
+                o->value(progdefaults.menuicons);
+              } // Fl_Check_Button* chkMenuIcons
               o->end();
             } // Fl_Group* o
             tabMainWindow->end();
           } // Fl_Group* tabMainWindow
-          { tabRSid = new Fl_Group(0, 50, 400, 170, "RSid");
-            tabRSid->hide();
-            { Fl_Group* o = new Fl_Group(5, 65, 390, 45);
-              o->box(FL_ENGRAVED_FRAME);
-              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = chkTransmitRSid = new Fl_Check_Button(49, 78, 119, 20, "Transmit RSid");
-                chkTransmitRSid->tooltip("Transmit Reed Solomon ID");
-                chkTransmitRSid->down_box(FL_DOWN_BOX);
-                chkTransmitRSid->callback((Fl_Callback*)cb_chkTransmitRSid);
-                o->value(progdefaults.TransmitRSid);
-              } // Fl_Check_Button* chkTransmitRSid
-              { Fl_Check_Button* o = chkRSidWideSearch = new Fl_Check_Button(188, 80, 85, 15, "Wide Search Detector");
-                chkRSidWideSearch->down_box(FL_DOWN_BOX);
-                chkRSidWideSearch->callback((Fl_Callback*)cb_chkRSidWideSearch);
-                o->value(progdefaults.rsidWideSearch);
-              } // Fl_Check_Button* chkRSidWideSearch
-              o->end();
-            } // Fl_Group* o
-            tabRSid->end();
-          } // Fl_Group* tabRSid
           { tabSweetSpot = new Fl_Group(0, 50, 400, 170, "Sweet Spot");
             tabSweetSpot->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 390, 75);

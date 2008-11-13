@@ -1098,7 +1098,7 @@ void rigCAT_set_qsy(long long f, long long fmid)
 
 bool ModeIsLSB(const string& s)
 {
-	if (noXMLfile) {
+	if (noXMLfile || nonCATrig) {
 		if (s == "LSB")
 			return true;
 		return false;

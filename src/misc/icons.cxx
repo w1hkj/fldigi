@@ -22,17 +22,18 @@
 
 #include <config.h>
 #include "icons.h"
+#include "configuration.h"
 
 #include <FL/Fl_Menu_Item.H>
 
 #if USE_IMAGE_LABELS
-#  include <map>
-#  include <cassert>
-#  include <cstring>
+#	include <map>
+#	include <cassert>
+#	include <cstring>
 
-#  include <FL/Fl_Multi_Label.H>
-#  include <FL/Fl_Image.H>
-#  include <FL/Fl_Pixmap.H>
+#	include <FL/Fl_Multi_Label.H>
+#	include <FL/Fl_Image.H>
+#	include <FL/Fl_Pixmap.H>
 #endif
 
 
@@ -159,6 +160,7 @@ template <typename T>
 void free_icon_label_(T* item)
 {
 #if USE_IMAGE_LABELS
+if (progdefaults.menuicons) {
 	imap_t::iterator i = imap->find((Fl_Multi_Label*)item->label());
 	if (i == imap->end())
 		return;
@@ -173,6 +175,7 @@ void free_icon_label_(T* item)
 		delete [] i->first->labelb;
 	delete i->first;
 	imap->erase(i);
+}
 #endif
 }
 

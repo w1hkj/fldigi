@@ -322,6 +322,7 @@ fldigi_SOURCES += \
 EXTRA_fldigi_SOURCES += \
 	blank/blank.cxx \
 	blank/blank.h \
+	dialogs/main_menus.cxx \
 	fileselector/FL/Fl_Native_File_Chooser_FLTK.H \
 	fileselector/FL/Fl_Native_File_Chooser_MAC.H \
 	fileselector/FL/Fl_Native_File_Chooser_WIN32.H \

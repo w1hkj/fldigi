@@ -46,23 +46,25 @@ extern Fl_Button *btnCursorBWcolor;
 extern Fl_Button *btnCursorCenterLineColor;
 extern Fl_Button *btnBwTracksColor;
 extern Fl_Check_Button *chkShowAudioScale;
+extern Fl_Check_Button *btnViewXmtSignal;
 extern Fl_Check_Button *btnWaterfallHistoryDefault;
 extern Fl_Check_Button *btnWaterfallQSY;
 extern Fl_Input *inpWaterfallClickText;
 extern Fl_Check_Button *btnWaterfallClickInsert;
 #include <FL/Fl_Choice.H>
 extern Fl_Choice *mnuWaterfallWheelAction;
-extern Fl_Group *tabVideo;
+extern Fl_Group *tabID;
 extern Fl_Check_Button *btnsendid;
 extern Fl_Check_Button *btnsendvideotext;
 extern Fl_Input *valVideotext;
 #include <FL/Fl_Value_Slider.H>
 extern Fl_Value_Slider *sldrVideowidth;
 extern Fl_Check_Button *chkID_SMALL;
-extern Fl_Check_Button *btnViewXmtSignal;
 extern Fl_Group *sld;
 extern Fl_Check_Button *btnCWID;
 extern Fl_Value_Slider *sldrCWIDwpm;
+extern Fl_Check_Button *chkTransmitRSid;
+extern Fl_Check_Button *chkRSidWideSearch;
 extern Fl_Group *tabRig;
 #include <FL/Fl_Round_Button.H>
 extern Fl_Round_Button *btnPTT[5];
@@ -159,9 +161,7 @@ extern Fl_Check_Button *btnDockedRigControl;
 extern Fl_Check_Button *btnCheckButtons;
 extern Fl_Check_Button *btnShowTooltips;
 extern Fl_Check_Button *btnNagMe;
-extern Fl_Group *tabRSid;
-extern Fl_Check_Button *chkTransmitRSid;
-extern Fl_Check_Button *chkRSidWideSearch;
+extern Fl_Check_Button *chkMenuIcons;
 extern Fl_Group *tabSweetSpot;
 extern Fl_Value_Input *valCWsweetspot;
 extern Fl_Value_Input *valRTTYsweetspot;

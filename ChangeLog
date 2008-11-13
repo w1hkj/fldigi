@@ -64,6 +64,32 @@ Change Log:
           These and the docked digiscope configuration option require a program
           restart to take effect.
       24) Added rig control widgets to the main dialog qso panel.
+      25) Added icons for many of the menu items.  The menus now have both an 
+          icon and a text where appropriate.
+      26) Added a check box for "Nag me about log entries".
+      27) Added a double click on waterfall functionality.  This will write a 
+          special string to the Rx text window such as:
+
+          <<2008-10-30T23:25Z BPSK-31 @ 3580000+1474>>
+
+          This record is then accessible using the mouse in the Rx text window.  
+          You can then left click on the string and fldigi will change mode, 
+          rf frequency (if CAT), and audio frequency to the saved record.
+
+          The text field associated with "Insert on left click" (W-fall/Mouse 
+          tab) allows you to modify this behavior.  You enter the following for
+          the left click insertion text: <FREQ> and the double click changes 
+          to a single left click.
+      28) Added QSO data mouse binding.  Binds Rx text mouse-2 (right mouse 
+          button) to a handler that enters QSO data into the log fields. A 
+          limited amount of pattern matching is done to recognize RST reports 
+          and IARU locator strings. The text is meant to be middle-clicked 
+          roughly in the order in which it tends to appear in QSOs: 
+          callsign RST name QTH locator.  The other shortcuts (menu items and 
+          Shift-click work as before).
+      29) Fixed IZDT time format. The timezone only makes sense in ILDT. With 
+          IZDT, it is always +0000, so we should be using "Z". This applies to 
+          macros which use the <ZDT> and <IZDT> tags.
 
 3.03
       1) Changes to socket server to correct shutdown process

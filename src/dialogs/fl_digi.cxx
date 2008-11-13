@@ -169,7 +169,6 @@ Fl_Button			*qso_btnAddFreq = (Fl_Button *)0;
 Fl_Button			*qso_btnSelFreq = (Fl_Button *)0;
 Fl_Button			*qso_btnDelFreq = (Fl_Button *)0;
 Fl_Button			*qso_btnClearList = (Fl_Button *)0;
-Fl_Button			*qso_btnCloseView = (Fl_Button *)0;
 
 Fl_Button			*btnMacroTimer;
 Fl_Button			*btnMacroDummy;
@@ -192,6 +191,8 @@ Fl_Slider			*sldrSquelch = (Fl_Slider *)0;
 Progress			*pgrsSquelch = (Progress *)0;
 
 Fl_RGB_Image		*feld_image = 0;
+Fl_Pixmap 			*addrbookpixmap = 0;
+Fl_Pixmap 			*closepixmap = 0;
 
 #if !defined(__APPLE__) && !defined(__CYGWIN__)
 Pixmap				fldigi_icon_pixmap;
@@ -714,9 +715,9 @@ void cb_mnuConfigWaterfall(Fl_Menu_*, void*) {
 	dlgConfig->show();
 }
 
-void cb_mnuConfigVideo(Fl_Menu_*, void*) {
+void cb_mnuConfigID(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
-	tabsConfigure->value(tabVideo);
+	tabsConfigure->value(tabID);
 	dlgConfig->show();
 }
 
@@ -1251,6 +1252,12 @@ int default_handler(int event)
 	if (event != FL_SHORTCUT)
 		return 0;
 
+	if (Fl::event_key() == FL_Escape &&
+	    Fl::event_inside(RigViewerFrame) && RigViewerFrame->visible()) {
+		CloseQsoView();
+		return 1;
+	}
+
 	Fl_Widget* w = Fl::focus();
 
 	if (w == fl_digi_main || w->window() == fl_digi_main) {
@@ -1346,163 +1353,8 @@ bool clean_exit(void) {
 
 	return true;
 }
-
-
-Fl_Menu_Item menu_[] = {
-{"&Files", 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ make_icon_label("Open macros...", file_open_icon), 0,  (Fl_Callback*)cb_mnuOpenMacro, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Save macros...", save_as_icon), 0,  (Fl_Callback*)cb_mnuSaveMacro, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Show config", folder_open_icon), 0, cb_ShowConfig, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
-//{"Log File", 0, (Fl_Callback*)cb_mnuLogFile, 0, FL_MENU_DIVIDER | FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
-{"Log File", 0, 0, 0, FL_MENU_DIVIDER | FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
-#if USE_SNDFILE
-{ make_icon_label("Audio"), 0, 0, 0, FL_MENU_DIVIDER | FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
-{"Rx capture",  0, (Fl_Callback*)cb_mnuCapture,  0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//70
-{"Tx generate", 0, (Fl_Callback*)cb_mnuGenerate, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//71
-{"Playback",    0, (Fl_Callback*)cb_mnuPlayback, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//72
-{0,0,0,0,0,0,0,0,0},
-#endif
-{ make_icon_label("E&xit", log_out_icon), 0,  (Fl_Callback*)cb_E, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{0,0,0,0,0,0,0,0,0},
-{"Op &Mode", 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-
-{ mode_info[MODE_CW].name, 0, cb_init_mode, (void *)MODE_CW, 0, FL_NORMAL_LABEL, 0, 14, 0},
-
-{"DominoEX", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_DOMINOEX4].name, 0, cb_init_mode, (void *)MODE_DOMINOEX4, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_DOMINOEX5].name, 0, cb_init_mode, (void *)MODE_DOMINOEX5, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_DOMINOEX8].name, 0, cb_init_mode, (void *)MODE_DOMINOEX8, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_DOMINOEX11].name, 0, cb_init_mode, (void *)MODE_DOMINOEX11, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_DOMINOEX16].name, 0, cb_init_mode, (void *)MODE_DOMINOEX16, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_DOMINOEX22].name, 0, cb_init_mode, (void *)MODE_DOMINOEX22, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{0,0,0,0,0,0,0,0,0},
-
-{"Hell", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_FELDHELL].name, 0, cb_init_mode, (void *)MODE_FELDHELL, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_SLOWHELL].name, 0,  cb_init_mode, (void *)MODE_SLOWHELL, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_HELLX5].name, 0,  cb_init_mode, (void *)MODE_HELLX5, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_HELLX9].name, 0,  cb_init_mode, (void *)MODE_HELLX9, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_FSKHELL].name, 0, cb_init_mode, (void *)MODE_FSKHELL, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_FSKH105].name, 0, cb_init_mode, (void *)MODE_FSKH105, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_HELL80].name, 0, cb_init_mode, (void *)MODE_HELL80, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{0,0,0,0,0,0,0,0,0},
-
-{"MFSK", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_MFSK4].name, 0,  cb_init_mode, (void *)MODE_MFSK4, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_MFSK8].name, 0,  cb_init_mode, (void *)MODE_MFSK8, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_MFSK11].name, 0,  cb_init_mode, (void *)MODE_MFSK11, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_MFSK16].name, 0,  cb_init_mode, (void *)MODE_MFSK16, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_MFSK22].name, 0,  cb_init_mode, (void *)MODE_MFSK22, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_MFSK31].name, 0,  cb_init_mode, (void *)MODE_MFSK31, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_MFSK32].name, 0,  cb_init_mode, (void *)MODE_MFSK32, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_MFSK64].name, 0,  cb_init_mode, (void *)MODE_MFSK64, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{0,0,0,0,0,0,0,0,0},
-
-{"MT63", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_MT63_500].name, 0,  cb_init_mode, (void *)MODE_MT63_500, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_MT63_1000].name, 0,  cb_init_mode, (void *)MODE_MT63_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_MT63_2000].name, 0,  cb_init_mode, (void *)MODE_MT63_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{0,0,0,0,0,0,0,0,0},
-
-{"Olivia", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ "8/500", 0, cb_oliviaA, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ "16/500", 0, cb_oliviaB, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ "32/1000", 0, cb_oliviaC, (void *)MODE_OLIVIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
-{ "Custom", 0, cb_oliviaCustom, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{0,0,0,0,0,0,0,0,0},
-
-{"PSK", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_BPSK31].name, 0, cb_init_mode, (void *)MODE_BPSK31, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_QPSK31].name, 0, cb_init_mode, (void *)MODE_QPSK31, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_PSK63].name, 0, cb_init_mode, (void *)MODE_PSK63, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_QPSK63].name, 0, cb_init_mode, (void *)MODE_QPSK63, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_PSK125].name, 0, cb_init_mode, (void *)MODE_PSK125, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_QPSK125].name, 0, cb_init_mode, (void *)MODE_QPSK125, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_PSK250].name, 0, cb_init_mode, (void *)MODE_PSK250, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_QPSK250].name, 0, cb_init_mode, (void *)MODE_QPSK250, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{0,0,0,0,0,0,0,0,0},
-
-{"RTTY", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ "RTTY-45", 0, cb_rtty45, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ "RTTY-50", 0, cb_rtty50, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ "RTTY-75", 0, cb_rtty75, (void *)MODE_RTTY, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
-{ "Custom", 0, cb_rttyCustom, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{0,0,0,0,0,0,0,0,0},
-
-{"THOR", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_THOR4].name, 0, cb_init_mode, (void *)MODE_THOR4, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_THOR5].name, 0, cb_init_mode, (void *)MODE_THOR5, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_THOR8].name, 0, cb_init_mode, (void *)MODE_THOR8, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_THOR11].name, 0, cb_init_mode, (void *)MODE_THOR11, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_THOR16].name, 0, cb_init_mode, (void *)MODE_THOR16, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_THOR22].name, 0, cb_init_mode, (void *)MODE_THOR22, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{0,0,0,0,0,0,0,0,0},
-
-{"Throb", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_THROB1].name, 0, cb_init_mode, (void *)MODE_THROB1, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_THROB2].name, 0, cb_init_mode, (void *)MODE_THROB2, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_THROB4].name, 0, cb_init_mode, (void *)MODE_THROB4, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_THROBX1].name, 0, cb_init_mode, (void *)MODE_THROBX1, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_THROBX2].name, 0, cb_init_mode, (void *)MODE_THROBX2, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_THROBX4].name, 0, cb_init_mode, (void *)MODE_THROBX4, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{0,0,0,0,0,0,0,0,0},
-
-{"NBEMS modes", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_DOMINOEX11].name, 0, cb_init_mode, (void *)MODE_DOMINOEX11, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_DOMINOEX22].name, 0, cb_init_mode, (void *)MODE_DOMINOEX22, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_MFSK16].name, 0,  cb_init_mode, (void *)MODE_MFSK16, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_MFSK32].name, 0,  cb_init_mode, (void *)MODE_MFSK32, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_PSK125].name, 0, cb_init_mode, (void *)MODE_PSK125, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_PSK250].name, 0, cb_init_mode, (void *)MODE_PSK250, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{0,0,0,0,0,0,0,0,0},
-
-{ mode_info[MODE_WWV].name, 0, cb_init_mode, (void *)MODE_WWV, 0, FL_NORMAL_LABEL, 0, 14, 0},
-
-{ mode_info[MODE_ANALYSIS].name, 0, cb_init_mode, (void *)MODE_ANALYSIS, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{0,0,0,0,0,0,0,0,0},
-
-{"Configure", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ make_icon_label("Defaults", preferences_system_icon),  0, 0, 0, FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Colors && Fonts", preferences_desktop_font_icon), 0, (Fl_Callback*)cb_mnuConfigFonts, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Operator", system_users_icon), 0, (Fl_Callback*)cb_mnuConfigOperator, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Waterfall", waterfall_icon), 0,  (Fl_Callback*)cb_mnuConfigWaterfall, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Video"), 0,  (Fl_Callback*)cb_mnuConfigVideo, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Rig Control", multimedia_player_icon), 0, (Fl_Callback*)cb_mnuConfigRigCtrl, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("QRZ", net_icon), 0,  (Fl_Callback*)cb_mnuConfigQRZ, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Sound Card", audio_card_icon), 0, (Fl_Callback*)cb_mnuConfigSoundCard, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Misc"), 0,  (Fl_Callback*)cb_mnuConfigMisc, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{0,0,0,0,0,0,0,0,0},
-{ make_icon_label("Modems", emblems_system_icon), 0, (Fl_Callback*)cb_mnuConfigModems, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Save Config", save_icon), 0, (Fl_Callback*)cb_mnuSaveConfig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{0,0,0,0,0,0,0,0,0},
-
-{"View", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ make_icon_label("Digiscope", utilities_system_monitor_icon), 0, (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("MFSK Image", image_icon), 0, (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("PSK Browser"), 0, (Fl_Callback*)cb_mnuViewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Rig Control", multimedia_player_icon), 0, (Fl_Callback*)cb_mnuRig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{0,0,0,0,0,0,0,0,0},
-
-{"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
-{"Help", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-#ifndef NDEBUG
-// settle the gmfsk vs fldigi argument once and for all
-{ make_icon_label("Create sunspots", weather_clear_icon), 0, cb_mnuFun, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
-#endif
-{ make_icon_label("Beginners' Guide", start_here_icon), 0, cb_mnuBeginnersURL, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Online documentation...", help_browser_icon), 0, cb_mnuVisitURL, (void *)PACKAGE_DOCS, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Fldigi web site...", net_icon), 0, cb_mnuVisitURL, (void *)PACKAGE_HOME, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Command line options", utilities_terminal_icon), 0, cb_mnuCmdLineHelp, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Audio device info", audio_card_icon), 0, cb_mnuAudioInfo, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Build info", executable_icon), 0, cb_mnuBuildInfo, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Event log", dialog_information_icon), 0, cb_mnuDebug, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Check for updates...", system_software_update_icon), 0, cb_mnuCheckUpdate, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("About", help_about_icon), 0, cb_mnuAboutURL, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{0,0,0,0,0,0,0,0,0},
 	
-{"  ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
-{0,0,0,0,0,0,0,0,0},
-};
+#include "main_menus.cxx"
 
 Fl_Menu_Bar *mnu;
 
@@ -1654,10 +1506,16 @@ void update_main_title()
 
 void showOpBrowserView(Fl_Widget *, void *)
 {
+	if (RigViewerFrame->visible()) {
+		return CloseQsoView();
+	}
 	QsoInfoFrame1->hide();
 	QsoInfoFrame2->hide();
 	QsoButtonFrame->hide();
 	RigViewerFrame->show();
+	qso_opPICK->image(closepixmap);
+	qso_opPICK->redraw_label();
+	qso_opPICK->tooltip("Close List");
 }
 
 void CloseQsoView()
@@ -1666,11 +1524,9 @@ void CloseQsoView()
 	QsoInfoFrame1->show();
 	QsoInfoFrame2->show();
 	QsoButtonFrame->show();
-}
-
-void cb_qso_btnCloseView(Fl_Widget *, void *)
-{
-	CloseQsoView();
+	qso_opPICK->image(addrbookpixmap);
+	qso_opPICK->redraw_label();
+	qso_opPICK->tooltip("Open List");
 }
 
 void cb_qso_btnSelFreq(Fl_Widget *, void *)
@@ -1721,23 +1577,34 @@ void cb_qso_opBrowser(Fl_Browser*, void*)
 
 void show_frequency(long long freq)
 {
-	FreqDisp->value(freq); // REQ is built in to the widget
 	if (progdefaults.docked_rig_control)
 		qsoFreqDisp->value(freq);
+	else
+		FreqDisp->value(freq); // REQ is built in to the widget
 }
 
 void show_mode(string sMode)
 {
-	REQ(&Fl_ComboBox::put_value, opMODE, sMode.c_str());
 	if (progdefaults.docked_rig_control)
-		REQ(&Fl_ComboBox::put_value, qso_opMODE, sMode.c_str());
+		REQ_SYNC(&Fl_ComboBox::put_value, qso_opMODE, sMode.c_str());
+	else
+		REQ_SYNC(&Fl_ComboBox::put_value, opMODE, sMode.c_str());
 }
 
 void show_bw(string sWidth)
 {
-	REQ(&Fl_ComboBox::put_value, opBW, sWidth.c_str());
 	if (progdefaults.docked_rig_control)
-		REQ(&Fl_ComboBox::put_value, qso_opBW, sWidth.c_str());
+		REQ_SYNC(&Fl_ComboBox::put_value, qso_opBW, sWidth.c_str());
+	else
+		REQ_SYNC(&Fl_ComboBox::put_value, opBW, sWidth.c_str());
+}
+
+void set_menus()
+{
+	if (progdefaults.menuicons)
+		mnu->menu(menu_);
+	else
+		mnu->menu(menu_noicons);
 }
 
 void create_fl_digi_main() {
@@ -1761,13 +1628,15 @@ void create_fl_digi_main() {
 			// do some more work on the menu
 			for (size_t i = 0; i < sizeof(menu_)/sizeof(menu_[0]); i++) {
 				// FL_NORMAL_SIZE may have changed; update the menu items
-				if (menu_[i].text)
+				if (menu_[i].text) {
 					menu_[i].labelsize_ = FL_NORMAL_SIZE;
+					menu_noicons[i].labelsize_ = FL_NORMAL_SIZE;
+				}
 				// set the icon label for items with the multi label type
 				if (menu_[i].labeltype() == _FL_MULTI_LABEL)
 					set_icon_label(&menu_[i]);
 			}
-			mnu->menu(menu_);
+			set_menus();
 
 			// reset the message dialog font
 			fl_message_font(FL_HELVETICA, FL_NORMAL_SIZE);
@@ -1775,6 +1644,7 @@ void create_fl_digi_main() {
 			// reset the tooltip font
 			Fl_Tooltip::font(FL_HELVETICA);
 			Fl_Tooltip::size(FL_NORMAL_SIZE);
+			Fl_Tooltip::enable(progdefaults.tooltips);
 
 			btnRSID = new Fl_Light_Button(WNOM - 150 - pad, 0, 50, Hmenu, "RSID");
 			btnRSID->selection_color(FL_GREEN);
@@ -1866,10 +1736,11 @@ void create_fl_digi_main() {
 
 				qso_opPICK = new Fl_Button(rightof(qso_opBW), Hmenu + Hqsoframe + 1,
 				                 w_mng, Hnotes - 2);
-	 			qso_opPICK->image(new Fl_Pixmap(address_book_icon));
+				addrbookpixmap = new Fl_Pixmap(address_book_icon);
+				closepixmap = new Fl_Pixmap(close_icon);
+	 			qso_opPICK->image(addrbookpixmap);
 				qso_opPICK->callback(showOpBrowserView, 0);
-				qso_opPICK->tooltip("List");
-
+				qso_opPICK->tooltip("Open List");
 			RigControlFrame->resizable(NULL);
 			
 			RigControlFrame->end();
@@ -1908,14 +1779,7 @@ void create_fl_digi_main() {
 				qso_btnDelFreq->tooltip("Delete from list");
 				qso_btnDelFreq->callback((Fl_Callback*)cb_qso_btnDelFreq);
 
-				qso_btnCloseView = new Fl_Button(
-										rightof(RigControlFrame), Hmenu + Hqsoframe + 1, 
-										40 + pad, Hnotes - 2);
-				qso_btnCloseView->image(new Fl_Pixmap(close_icon));
-				qso_btnCloseView->callback((Fl_Callback*)cb_qso_btnCloseView);
-				qso_btnCloseView->tooltip("Dismiss");
-			
-				qso_opBrowser = new Fl_Browser(rightof(qso_btnCloseView) + pad,  Hmenu + 1, opB_w, BV_h - 1 );
+				qso_opBrowser = new Fl_Browser(rightof(qso_btnDelFreq) + pad,  Hmenu + 1, opB_w, BV_h - 1 );
 			    qso_opBrowser->tooltip("Select operating parameters");
 			    qso_opBrowser->callback((Fl_Callback*)cb_qso_opBrowser);
 				qso_opBrowser->type(2);
@@ -1923,7 +1787,6 @@ void create_fl_digi_main() {
 				qso_opBrowser->labelfont(4);
 				qso_opBrowser->labelsize(12);
 				qso_opBrowser->textfont(4);
-
 				RigViewerFrame->resizable(NULL);
 			
 			RigViewerFrame->end();

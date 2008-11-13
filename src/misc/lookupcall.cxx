@@ -27,6 +27,7 @@
 #include <config.h>
 
 #include <sys/time.h>
+#include "signal.h"
 #include <string>
 #include <cstring>
 #include <cmath>
@@ -34,7 +35,6 @@
 
 #include <FL/fl_ask.H>
 
-#include "socket.h"
 #include "threads.h"
 
 #include "misc.h"
@@ -48,19 +48,18 @@
 
 #include "xmlreader.h"
 
+#include "qrunner.h"
 #include "debug.h"
 #include "network.h"
 
 using namespace std;
-
-int rotoroffset = 0;
 
 string qrzhost = "online.qrz.com";
 string qrzSessionKey;
 string qrzalert;
 string qrzerror;
 
-string callsign = "";
+string callsign;
 
 string lookup_name;
 string lookup_addr1;
@@ -70,24 +69,24 @@ string lookup_zip;
 string lookup_country;
 string lookup_born;
 string lookup_fname;
-string lookup_gth;
+string lookup_qth;
 string lookup_grid;
 string lookup_latd;
 string lookup_lond;
 string lookup_notes;
 
-enum QUERYTYPE { NONE, QRZCD, QRZNET, QRZDETAILS, HAMCALLNET };
-QUERYTYPE DB_query = NONE;
+qrz_query_t DB_query = QRZ_NONE;
 
-enum TAG { \
-	IGNORE,	KEY,	ALERT,	ERROR,	CALL, \
-	FNAME,	NAME,	ADDR1,	ADDR2,	STATE, \
-	ZIP,	COUNTRY,LATD,	LOND,	GRID, \
-	DOB };
+enum TAG {
+	IGNORE,	KEY,	ALERT,	ERROR,	CALL,
+	FNAME,	NAME,	ADDR1,	ADDR2,	STATE,
+	ZIP,	COUNTRY,LATD,	LOND,	GRID,
+	DOB
+};
 
-pthread_t QRZ_thread;
-bool QRZ_exit = false;
-bool QRZ_enabled = false;
+pthread_t* QRZ_thread = 0;
+pthread_mutex_t qrz_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t qrz_cond = PTHREAD_COND_INITIALIZER;
 
 static void *LOOKUP_loop(void *args);
 
@@ -99,8 +98,6 @@ bool QRZGetXML(string& xmlpage);
 int  bearing(const char *, const char *);
 void qra(const char *, double &, double &);
 void QRZ_disp_result();
-void QRZ_subscription_query();
-void HAMCALL_COM_query();
 void QRZ_CD_query();
 void Lookup_init(void);
 void QRZclose(void);
@@ -113,11 +110,11 @@ bool HAMCALLget(string& htmlpage);
 void HAMCALLquery();
 
 bool parseQRZdetails(string &htmlpage);
-int  getQRZdetails(string& htmlpage);
+bool getQRZdetails(string& htmlpage);
 void QRZ_DETAILS_query();
 
 
-QRZ *qCall;
+QRZ *qCall = 0;
 
 int bearing(const char *myqra, const char *dxqra) {
 	double	lat1, lat1r, lon1;
@@ -162,19 +159,19 @@ void qra(const char *szqra, double &lat, double &lon) {
 
 void clear_Lookup()
 {
-	lookup_name="";
-	lookup_addr1="";
-	lookup_addr2="";
-	lookup_state="";
-	lookup_zip="";
-	lookup_country="";
-	lookup_born="";
-	lookup_fname="";
-	lookup_gth="";
-	lookup_grid="";
-	lookup_latd="";
-	lookup_lond="";
-	lookup_notes="";
+	lookup_name.clear();
+	lookup_addr1.clear();
+	lookup_addr2.clear();
+	lookup_state.clear();
+	lookup_zip.clear();
+	lookup_country.clear();
+	lookup_born.clear();
+	lookup_fname.clear();
+	lookup_qth.clear();
+	lookup_grid.clear();
+	lookup_latd.clear();
+	lookup_lond.clear();
+	lookup_notes.clear();
 }
 
 // ----------------------------------------------------------------------------
@@ -239,9 +236,9 @@ bool parse_xml(const string& xmlpage)
 // refreshed by this response, or if not present, will be removed and we'll
 // know to log in next time.
 	if (xml) {
-		qrzSessionKey="";
-		qrzalert="";
-		qrzerror="";
+		qrzSessionKey.clear();
+		qrzalert.clear();
+		qrzerror.clear();
 		clear_Lookup();
 	}
 // strings for storing the data we want to get out of the file
@@ -397,82 +394,54 @@ bool QRZGetXML(string& xmlpage)
 
 void QRZ_disp_result()
 {
-   FL_LOCK();
-   {
-       if (lookup_fname.length() > 0) {
-           string::size_type spacePos = lookup_fname.find(" ");
-//    if fname is "ABC" then display "ABC"
-// or if fname is "X Y" then display "X Y"
-           if (spacePos == string::npos || (spacePos == 1)) {
-               inpName->value(lookup_fname.c_str());
-           }
-// if fname is "ABC Y" then display "ABC"
-           else if (spacePos == lookup_fname.length() - 2) {
-               string fname="";
-               fname.assign(lookup_fname, 0, spacePos);
-               inpName->value(fname.c_str());
-           }
-// fname must be "ABC DEF" so display "ABC DEF"
-           else {
-               inpName->value(lookup_fname.c_str());
-           }
-       } else if (lookup_name.length() > 0) {
-// only name is set; don't know first/last, so just show all
-           inpName->value(lookup_name.c_str());
-       }
-   }
+	ENSURE_THREAD(FLMAIN_TID);
 
-   inpQth->value(lookup_gth.c_str());
-   inpLoc->value(lookup_grid.c_str());
-   if (!progdefaults.myLocator.empty()) {
-       char buf[10];
-       buf[0] = '\0';
-       if (!lookup_grid.empty()) {
-           int b = bearing( progdefaults.myLocator.c_str(), lookup_grid.c_str() );
-           b+=rotoroffset;
-           if (b<0) b+=360;
-           if (b>=360) b-=360;
-           snprintf(buf, sizeof(buf), "%03d", b);
-       }
-       inpAZ->value(buf);
-   }
-   inpNotes->value(lookup_notes.c_str());
-   FL_UNLOCK();
-}
-
-void QRZ_subscription_query()
-{
-	if (!QRZ_enabled) {
-		Lookup_init();
-		if (!QRZ_enabled)
-			return;
+	if (lookup_fname.length() > 0) {
+		string::size_type spacePos = lookup_fname.find(" ");
+		//    if fname is "ABC" then display "ABC"
+		// or if fname is "X Y" then display "X Y"
+		if (spacePos == string::npos || (spacePos == 1)) {
+			inpName->value(lookup_fname.c_str());
+		}
+		// if fname is "ABC Y" then display "ABC"
+		else if (spacePos == lookup_fname.length() - 2) {
+			string fname;
+			fname.assign(lookup_fname, 0, spacePos);
+			inpName->value(fname.c_str());
+		}
+		// fname must be "ABC DEF" so display "ABC DEF"
+		else {
+			inpName->value(lookup_fname.c_str());
+		}
+	} else if (lookup_name.length() > 0) {
+		// only name is set; don't know first/last, so just show all
+		inpName->value(lookup_name.c_str());
 	}
 
-	DB_query = QRZNET;
-	FL_LOCK();
-	inpNotes->value(" *** Request sent to qrz.com ***");
-	FL_UNLOCK();
-}
-
-void HAMCALL_COM_query()
-{
-	if (!QRZ_enabled) {
-		Lookup_init();
-		if (!QRZ_enabled)
-			return;
+	inpQth->value(lookup_qth.c_str());
+	inpLoc->value(lookup_grid.c_str());
+	if (!progdefaults.myLocator.empty()) {
+		char buf[10];
+		buf[0] = '\0';
+		if (!lookup_grid.empty()) {
+			int b = bearing( progdefaults.myLocator.c_str(), lookup_grid.c_str() );
+			if (b<0) b+=360;
+			if (b>=360) b-=360;
+			snprintf(buf, sizeof(buf), "%03d", b);
+		}
+		inpAZ->value(buf);
 	}
-	DB_query = HAMCALLNET;
-	FL_LOCK();
-	inpNotes->value(" *** Request sent to www.hamcall.net ***");
-	FL_UNLOCK();	
+	inpNotes->value(lookup_notes.c_str());
 }
 
 void QRZ_CD_query()
 {
+	ENSURE_THREAD(QRZ_TID);
+
 	char srch[20];
 	size_t snip;
 	
-	memset( srch, 0, 20 );
+	memset( srch, 0, sizeof(srch) );
 	strncpy( srch, callsign.c_str(), 6 );
 	for (size_t i = 0; i < strlen(srch); i ++ )
 		srch[i] = toupper(srch[i]);
@@ -482,42 +451,52 @@ void QRZ_CD_query()
 		snip = lookup_fname.find(' ');
 		if (snip != string::npos)
 			lookup_fname.erase(snip, lookup_fname.length() - snip);
-		lookup_gth = qCall->GetCity();
-		lookup_gth.append(" ");
-		lookup_gth.append(qCall->GetState());
-		lookup_gth.append(" ");
-		lookup_gth.append(qCall->GetZIP());
-		lookup_grid = "";
-		lookup_notes = "";
+		lookup_qth = qCall->GetCity();
+		lookup_qth.append(" ");
+		lookup_qth.append(qCall->GetState());
+		lookup_qth.append(" ");
+		lookup_qth.append(qCall->GetZIP());
+		lookup_grid.clear();
+		lookup_notes.clear();
 	} else {
-		lookup_fname = "";
-		lookup_gth = "";
-		lookup_grid = "";
-		lookup_born = "";
-		lookup_notes = "Not found in CD database!";
+		lookup_fname.clear();
+		lookup_qth.clear();
+		lookup_grid.clear();
+		lookup_born.clear();
+		lookup_notes = "Not found in CD database";
 	}
-	QRZ_disp_result();
+	REQ(QRZ_disp_result);
 }
 
 void Lookup_init(void)
 {
-	QRZ_enabled = false;
-	if (pthread_create(&QRZ_thread, NULL, LOOKUP_loop, NULL) < 0) {
-		fl_message("QRZ init: pthread_create failed");
+	ENSURE_THREAD(FLMAIN_TID);
+
+	if (QRZ_thread)
 		return;
-	} 
-	QRZ_enabled = true;
+	QRZ_thread = new pthread_t;
+	if (pthread_create(QRZ_thread, NULL, LOOKUP_loop, NULL) != 0) {
+		LOG_PERROR("pthread_create");
+		return;
+	}
 }
 
 void QRZclose(void)
 {
-	if (!QRZ_enabled) return;
-// tell the QRZ thread to kill it self
-	QRZ_exit = true;
-// and then wait for it to die
-	pthread_join(QRZ_thread, NULL);
-	QRZ_enabled = false;
-	QRZ_exit = false;
+	ENSURE_THREAD(FLMAIN_TID);
+
+	if (!QRZ_thread)
+		return;
+
+	pthread_kill(*QRZ_thread, SIGUSR2);
+	DB_query = QRZ_EXIT;
+	pthread_mutex_lock(&qrz_mutex);
+	pthread_cond_signal(&qrz_cond);
+	pthread_mutex_unlock(&qrz_mutex);
+
+	pthread_join(*QRZ_thread, NULL);
+	delete QRZ_thread;
+	QRZ_thread = 0;
 }
 
 void qthappend(string &qth, string &datum) {
@@ -528,34 +507,36 @@ void qthappend(string &qth, string &datum) {
 
 void QRZAlert()
 {
-// test alert first as QRZ.com requires it be shown
+	ENSURE_THREAD(FLMAIN_TID);
+
+	// test alert first as QRZ.com requires it be shown
 	if (!qrzalert.empty()) {
-		FL_LOCK();
 		inpNotes->value(qrzalert.c_str());
-		qrzalert="";
-		FL_UNLOCK();
-	} else if (!qrzerror.empty()) {
-		FL_LOCK();
+		qrzalert.clear();
+	}
+	else if (!qrzerror.empty()) {
 		inpNotes->value(qrzerror.c_str());
-		qrzerror="";
-		FL_UNLOCK();
+		qrzerror.clear();
 	}
 }
 
-bool QRZLogin(string& sessionpage) {
+bool QRZLogin(string& sessionpage)
+{
 	bool ok = true;
 	if (qrzSessionKey.empty()) {
 		ok = getSessionKey(sessionpage);
 		if (ok) ok = parseSessionKey(sessionpage);
 	}
-	if (!ok) {
-		QRZAlert();
-	}
+	if (!ok)
+		REQ(QRZAlert);
+
 	return ok;
 }
 
 void QRZquery()
 {
+	ENSURE_THREAD(QRZ_TID);
+
 	bool ok = true;
 
 	string qrzpage;
@@ -572,29 +553,20 @@ void QRZquery()
 	}
 	if (ok) {
 		parse_xml(qrzpage);
-		if (!qrzalert.empty()) {
-			FL_LOCK();
-			inpNotes->value(qrzalert.c_str());
-			qrzalert="";
-			FL_UNLOCK();
-		} else if (!qrzerror.empty()) {
-			FL_LOCK();
-			inpNotes->value(qrzerror.c_str());
-			qrzerror="";
-			FL_UNLOCK();
-		} else {
-			lookup_gth = "";
-			qthappend(lookup_gth, lookup_addr1);
-			qthappend(lookup_gth, lookup_addr2);
-			qthappend(lookup_gth, lookup_state);
-			qthappend(lookup_gth, lookup_country);
-			QRZ_disp_result();
+		if (!qrzalert.empty() || !qrzerror.empty())
+			REQ(QRZAlert);
+		else {
+			lookup_qth.clear();
+			qthappend(lookup_qth, lookup_addr1);
+			qthappend(lookup_qth, lookup_addr2);
+			qthappend(lookup_qth, lookup_state);
+			qthappend(lookup_qth, lookup_country);
+			REQ(QRZ_disp_result);
 		}
-	} 
-	if (!ok) {
-		FL_LOCK();
-		inpNotes->value(qrzpage.c_str());
-		FL_UNLOCK();
+	}
+	else {
+		qrzerror = qrzpage;
+		REQ(QRZAlert);
 	}
 }
 
@@ -623,13 +595,13 @@ void parse_html(const string& htmlpage)
 	if ((p = htmlpage.find(HAMCALL_CITY)) != string::npos) { 
 		p++;
 		while ((uchar)htmlpage[p] < 128 && p < htmlpage.length())
-			lookup_gth += htmlpage[p++];
-		lookup_gth += ", ";
+			lookup_qth += htmlpage[p++];
+		lookup_qth += ", ";
 	}
 	if ((p = htmlpage.find(HAMCALL_STATE)) != string::npos) { 
 		p++;
 		while ((uchar)htmlpage[p] < 128 && p < htmlpage.length())
-			lookup_gth += htmlpage[p++];
+			lookup_qth += htmlpage[p++];
 	}
 	if ((p = htmlpage.find(HAMCALL_GRID)) != string::npos) { 
 		p++;
@@ -662,16 +634,15 @@ bool HAMCALLget(string& htmlpage)
 
 void HAMCALLquery()
 {
+	ENSURE_THREAD(QRZ_TID);
+
 	string htmlpage;
 
-	if (HAMCALLget(htmlpage)) {
+	if (HAMCALLget(htmlpage))
 		parse_html(htmlpage);
-		QRZ_disp_result();
-	} else {
-		FL_LOCK();
-		inpNotes->value(htmlpage.c_str());
-		FL_UNLOCK();
-	}
+	else
+		lookup_notes = htmlpage;
+	REQ(QRZ_disp_result);
 }
 
 // ----------------------------------------------------------------------------
@@ -699,7 +670,7 @@ bool parseQRZdetails(string &htmlpage)
 	clear_Lookup();
 	
 	if (htmlpage.find(NOT_FOUND) != string::npos) {
-		lookup_gth = "NOT FOUND";
+		lookup_qth = "NOT FOUND";
 		return false;
 	}
 
@@ -730,18 +701,18 @@ bool parseQRZdetails(string &htmlpage)
 		snip += strlen(BEGIN_ADDR2);
 		snip_end  = htmlpage.find(snip_end_RECORD, snip);
 		lookup_addr2 = htmlpage.substr(snip, snip_end - snip);
-		lookup_gth += lookup_addr2;
+		lookup_qth += lookup_addr2;
 	}	
 
 	snip = htmlpage.find(BEGIN_COUNTRY);
 	if (snip != string::npos) {
-		while (lookup_gth[lookup_gth.length() -1] == ' ' || lookup_gth[lookup_gth.length() -1] == ',')
-			lookup_gth.erase(lookup_gth.length() -1, 1);
-		lookup_gth.append(", ");
+		while (lookup_qth[lookup_qth.length() -1] == ' ' || lookup_qth[lookup_qth.length() -1] == ',')
+			lookup_qth.erase(lookup_qth.length() -1, 1);
+		lookup_qth.append(", ");
 		snip += strlen(BEGIN_COUNTRY);
 		snip_end  = htmlpage.find(snip_end_RECORD, snip);
 		lookup_country = htmlpage.substr(snip, snip_end - snip);
-		lookup_gth += lookup_country;
+		lookup_qth += lookup_country;
 	}	
 
 	snip = htmlpage.find(BEGIN_GRID);
@@ -757,7 +728,7 @@ bool parseQRZdetails(string &htmlpage)
 } 
 
 
-int getQRZdetails(string& htmlpage)
+bool getQRZdetails(string& htmlpage)
 {
 	string url_detail;
 	url_detail =  "GET /detail/";
@@ -769,16 +740,15 @@ int getQRZdetails(string& htmlpage)
 
 void QRZ_DETAILS_query()
 {
+	ENSURE_THREAD(QRZ_TID);
+
 	string htmlpage;
 
-	if (getQRZdetails(htmlpage)) {
+	if (getQRZdetails(htmlpage))
 		parseQRZdetails(htmlpage);
-		QRZ_disp_result();
-	} else {
-		FL_LOCK();
-		inpNotes->value(htmlpage.c_str());
-		FL_UNLOCK();
-	}
+	else
+		lookup_notes = htmlpage;
+	REQ(QRZ_disp_result);
 }
 
 // ----------------------------------------------------------------------------
@@ -787,82 +757,85 @@ static void *LOOKUP_loop(void *args)
 {
 	SET_THREAD_ID(QRZ_TID);
 
-	for (;;) {
-// see if this thread has been canceled
-		if (QRZ_exit)
-			break;
-		switch (DB_query) {
-			case QRZCD :
-				DB_query = NONE;
-				break;
-			case QRZNET :
-				QRZquery();
-				DB_query = NONE;
-				break;
-			case HAMCALLNET :
-				HAMCALLquery();
-				DB_query = NONE;
-				break;
-			case QRZDETAILS :
-				QRZ_DETAILS_query();
-				DB_query = NONE;
-				break;
-			case NONE:
-			default :
-				break;
-		}
-		MilliSleep(100);
+	{
+		sigset_t usr2;
+		sigemptyset(&usr2);
+		sigaddset(&usr2, SIGUSR2);
+		pthread_sigmask(SIG_UNBLOCK, &usr2, NULL);
 	}
+
+	for (;;) {
+		pthread_mutex_lock(&qrz_mutex);
+		pthread_cond_wait(&qrz_cond, &qrz_mutex);
+		pthread_mutex_unlock(&qrz_mutex);
+
+		switch (DB_query) {
+		case QRZ_CD :
+			QRZ_CD_query();
+			break;
+		case QRZ_NET_SUB :
+			QRZquery();
+			break;
+		case QRZ_HAMCALL :
+			HAMCALLquery();
+			break;
+		case QRZ_NET_HTML :
+			QRZ_DETAILS_query();
+			break;
+		case QRZ_EXIT:
+			return NULL;
+		default:
+			LOG_ERROR("Bad query type %d", DB_query);
+			break;
+		}
+	}
+
 	return NULL;
 }
 
 void CALLSIGNquery()
 {
-	{
-		FL_LOCK();
-		callsign = inpCall->value();
-// Filter callsign for nonesense characters (remove all but [A-Z0-9/])
-		string ncall = "";
-		for (unsigned int i = 0; i < callsign.length(); i++) {
-			const char ch = callsign.at(i);
-			if ((ch >= 'A' && ch <= 'Z') ||
-			    (ch >= 'a' && ch <= 'z') ||
-			    (ch >= '0' && ch <= '9') ||
-			    (ch == '/')) {
-				ncall += (ch);
-			}
-		}
-		inpCall->value(ncall.c_str());
-		callsign = inpCall->value();
-		FL_UNLOCK();
-	}
-	
-	if (callsign.length() == 0)
-		return;
-	switch (progdefaults.QRZ) {
-		case 1 :
-			QRZ_subscription_query();
-			break;
-		case 2 :
-			if (!qCall)
-				qCall = new QRZ( "callbkc" );
-			if (progdefaults.QRZchanged == true) {
-				qCall->NewDBpath("callbkc");
-				progdefaults.QRZchanged = false;
-			}
-			if (qCall && qCall->getQRZvalid())
-				QRZ_CD_query();
-			DB_query = NONE;
-			break;
-		case 3:
-			HAMCALL_COM_query();
-			break;
-		case 4:
-			QRZ_DETAILS_query();
-		case 0:
-		default :
-			break;
-	}			
-}	
+	ENSURE_THREAD(FLMAIN_TID);
 
-// ----------------------------------------------------------------------------
+	if (!QRZ_thread)
+		Lookup_init();
+
+	// Filter callsign for nonsense characters (remove all but [A-Za-z0-9/])
+	callsign.clear();
+	for (const char* p = inpCall->value(); *p; p++)
+		if (isalnum(*p) || *p == '/')
+			callsign += *p;
+	if (callsign.empty())
+		return;
+	if (callsign != inpCall->value())
+		inpCall->value(callsign.c_str());
+
+	switch (DB_query = static_cast<qrz_query_t>(progdefaults.QRZ)) {
+	case QRZ_NET_SUB: case QRZ_NET_HTML:
+		inpNotes->value("Request sent to qrz.com...");
+		break;
+	case QRZ_HAMCALL:
+		inpNotes->value("Request sent to www.hamcall.net...");
+		break;
+	case QRZ_CD:
+		if (!qCall)
+			qCall = new QRZ( "callbkc" );
+		if (progdefaults.QRZchanged) {
+			qCall->NewDBpath("callbkc");
+			progdefaults.QRZchanged = false;
+		}
+		if (!qCall->getQRZvalid()) {
+			inpNotes->value("QRZ DB error");
+			DB_query = QRZ_NONE;
+			return;
+		}
+		break;
+	default:
+		LOG_ERROR("Bad query type %d", DB_query);
+		return;
+	}
+
+	pthread_mutex_lock(&qrz_mutex);
+	pthread_cond_signal(&qrz_cond);
+	pthread_mutex_unlock(&qrz_mutex);
+}

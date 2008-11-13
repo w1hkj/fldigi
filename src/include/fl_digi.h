@@ -113,6 +113,7 @@ extern Digiscope		*digiscope;
 
 extern void toggleRSID();
 
+extern void set_menus();
 extern void create_fl_digi_main();
 extern void update_main_title();
 extern Fl_Menu_Item menu_[];

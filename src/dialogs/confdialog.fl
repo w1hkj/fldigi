@@ -45,7 +45,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {fldigi - config} open
-    xywh {487 115 400 255} type Double color 45 selection_color 51 align 80 visible
+    xywh {510 618 400 255} type Double color 45 selection_color 51 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 410 255} color 47 selection_color 9
@@ -120,7 +120,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label {Filters/Colors} open
-            xywh {0 50 400 170}
+            xywh {0 50 400 170} hide
           } {
             Fl_Group {} {open
               xywh {10 84 385 96} box ENGRAVED_FRAME
@@ -294,7 +294,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label Misc open
-            xywh {5 54 393 166} hide
+            xywh {5 54 393 166}
           } {
             Fl_Group {} {open
               xywh {8 60 390 158} box ENGRAVED_FRAME
@@ -364,6 +364,13 @@ progdefaults.changed = true;}
                 xywh {195 79 185 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.wf_audioscale);}
               }
+              Fl_Check_Button btnViewXmtSignal {
+                label {View Xmt Signal}
+                callback {progdefaults.viewXmtSignal=o->value();
+progdefaults.changed = true;}
+                xywh {195 118 135 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.viewXmtSignal);}
+              }
             }
           }
           Fl_Group {} {
@@ -413,12 +420,12 @@ progdefaults.changed = true;} open
           }
         }
       }
-      Fl_Group tabVideo {
-        label Video open
+      Fl_Group tabID {
+        label {Id's} open
         xywh {0 25 400 195} color 51 selection_color 51 hide
       } {
         Fl_Group {} {
-          label {Video Preamble} open
+          label {Video Preamble ID} open
           xywh {5 40 390 77} box ENGRAVED_FRAME align 21
         } {
           Fl_Check_Button btnsendid {
@@ -461,30 +468,42 @@ progdefaults.changed = true;}
             code0 {o->value(progdefaults.ID_SMALL);}
           }
         }
-        Fl_Check_Button btnViewXmtSignal {
-          label {View Xmt Signal}
-          callback {progdefaults.viewXmtSignal=o->value();
-progdefaults.changed = true;}
-          xywh {11 122 135 20} down_box DOWN_BOX
-          code0 {o->value(progdefaults.viewXmtSignal);}
-        }
         Fl_Group sld {
-          label {CW Postamble} open
-          xywh {5 150 390 63} box ENGRAVED_FRAME align 21
+          label {CW Postamble ID} open
+          xywh {5 117 390 54} box ENGRAVED_FRAME align 21
         } {
           Fl_Check_Button btnCWID {
             label {Xmt CWID}
             callback {progdefaults.CWid = o->value();
 progdefaults.changed = true;}
-            xywh {13 185 98 15} down_box DOWN_BOX
+            xywh {13 142 98 15} down_box DOWN_BOX
             code0 {o->value(progdefaults.CWid);}
           }
           Fl_Value_Slider sldrCWIDwpm {
             label {CWID wpm:}
             callback {progdefaults.CWIDwpm = (int)o->value();
 progdefaults.changed = true;}
-            xywh {124 182 233 20} type Horizontal color 26 align 5 minimum 15 maximum 40 step 1 value 18 textsize 14
+            xywh {150 139 233 20} type Horizontal color 26 align 5 minimum 15 maximum 40 step 1 value 18 textsize 14
             code0 {o->value(progdefaults.CWIDwpm);}
+          }
+        }
+        Fl_Group {} {
+          label {Reed Solomon ID} open
+          xywh {5 170 390 45} box ENGRAVED_FRAME align 21
+        } {
+          Fl_Check_Button chkTransmitRSid {
+            label {Transmit RSid}
+            callback {progdefaults.TransmitRSid = o->value();
+progdefaults.changed = true;}
+            tooltip {Transmit Reed Solomon ID} xywh {70 190 119 20} down_box DOWN_BOX
+            code0 {o->value(progdefaults.TransmitRSid);}
+          }
+          Fl_Check_Button chkRSidWideSearch {
+            label {Wide Search Detector}
+            callback {progdefaults.rsidWideSearch=o->value();
+progdefaults.changed = true;}
+            xywh {209 192 85 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.rsidWideSearch);}
           }
         }
       }
@@ -1343,34 +1362,19 @@ progdefaults.changed = true;}
                 code0 {o->value(progdefaults.tooltips);}
               }
               Fl_Check_Button btnNagMe {
-                label {Nag me about log entries}
+                label {Nag me}
                 callback {progdefaults.NagMe=o->value();
 progdefaults.changed = true;}
-                xywh {160 68 70 15} down_box DOWN_BOX
+                xywh {308 68 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.NagMe);}
               }
-            }
-          }
-          Fl_Group tabRSid {
-            label RSid open
-            xywh {0 50 400 170} hide
-          } {
-            Fl_Group {} {open
-              xywh {5 65 390 45} box ENGRAVED_FRAME align 21
-            } {
-              Fl_Check_Button chkTransmitRSid {
-                label {Transmit RSid}
-                callback {progdefaults.TransmitRSid = o->value();
+              Fl_Check_Button chkMenuIcons {
+                label {icons on menus}
+                callback {progdefaults.menuicons = o->value();
+set_menus();
 progdefaults.changed = true;}
-                tooltip {Transmit Reed Solomon ID} xywh {49 78 119 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.TransmitRSid);}
-              }
-              Fl_Check_Button chkRSidWideSearch {
-                label {Wide Search Detector}
-                callback {progdefaults.rsidWideSearch=o->value();
-progdefaults.changed = true;}
-                xywh {188 80 85 15} down_box DOWN_BOX
-                code0 {o->value(progdefaults.rsidWideSearch);}
+                xywh {155 68 70 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.menuicons);}
               }
             }
           }
