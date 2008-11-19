@@ -51,11 +51,13 @@
         ELEM_(bool, WaterfallClickInsert, "WATERFALLCLICKINSERT", false)                \
         ELEM_(std::string, WaterfallClickText, "WATERFALLCLICKTEXT", "\n<FREQ>\n")      \
         ELEM_(int, WaterfallWheelAction, "WATERFALLWHEELACTION", waterfall::WF_CARRIER) \
-/* PSK mail interface */                                                                \
-        ELEM_(bool, PSKmailSweetSpot, "PSKMAILSWEETSPOT", false)                        \
+/* PSK / PSKmail interface */                                                           \
         ELEM_(int, SearchRange, "PSKSEARCHRANGE", 200)                                  \
-        ELEM_(int, ServerOffset, "PSKSERVEROFFSET", 40)                                 \
         ELEM_(double, ACQsn, "ACQSN", 6.0)                                              \
+        ELEM_(bool, StatusDim, "STATUSDIM", true)                                       \
+        ELEM_(double, StatusTimeout, "STATUSTIMEOUT", 15.0)                             \
+        ELEM_(bool, PSKmailSweetSpot, "PSKMAILSWEETSPOT", false)                        \
+        ELEM_(int, ServerOffset, "PSKSERVEROFFSET", 40)                                 \
 /* RTTY */                                                                              \
         ELEM_(int, rtty_shift, "RTTYSHIFT", 3) /* 170 */                                \
         ELEM_(int, rtty_baud, "RTTYBAUD", 0)   /* 45 */                                 \
@@ -155,12 +157,14 @@
         ELEM_(bool, tooltips, "TOOLTIPS", true)                                         \
         ELEM_(bool, useCheckButtons, "USECHECKBUTTONS", false)							\
         ELEM_(bool, NagMe, "NAGME", false)                                              \
+        ELEM_(bool, ClearOnSave, "CLEARONSAVE", false)                                  \
         ELEM_(bool, menuicons, "MENUICONS", true)                                       \
 /* QRZ */                                                                               \
         ELEM_(int, QRZ, "QRZTYPE", 0) /* Not available */                               \
         ELEM_(std::string, QRZpathname, "QRZPATHNAME", "")                              \
         ELEM_(std::string, QRZusername, "QRZUSER", "")                                  \
         ELEM_(std::string, QRZuserpassword, "QRZPASSWORD", "")                          \
+        ELEM_(int, SHOWPASSWORD, "QRZshowpassword", FL_NORMAL_INPUT & FL_SECRET_INPUT)  \
         ELEM_(bool, QRZchanged, "", false)                                              \
 /* Rig control */                                                                       \
         ELEM_(bool, btnusb, "BTNUSB", true)                                             \
@@ -239,9 +243,11 @@
         ELEM_(bool, MicIn, "MICIN", false)                                              \
         ELEM_(bool, LineIn, "LINEIN", true)                                             \
         ELEM_(bool, EnableMixer, "ENABLEMIXER", false)                                  \
-        ELEM_(double, PCMvolume, "PCMVOLUME", 80.0)                                     \
+        ELEM_(double, PCMvolume, "PCMVOLUME", 0.8)                                     \
         ELEM_(bool, MuteInput, "MUTEINPUT", true)                                       \
+        ELEM_(double, TxMonitorLevel, "TXMONITORLEVEL", 0.5)                           \
 /* Waterfall palette */                                                                 \
+		ELEM_(std::string, PaletteName, "PALETTENAME", "")                              \
         ELEM_(RGB, cfgpal0, "PALETTE0", { 0, 0, 0 })                                    \
         ELEM_(RGB, cfgpal1, "PALETTE1", { 0, 0, 62 })                                   \
         ELEM_(RGB, cfgpal2, "PALETTE2", { 0, 0, 126 })                                  \

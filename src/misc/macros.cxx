@@ -307,7 +307,8 @@ void pLOG(string &s, size_t &i)
 {
 	submit_log();
 	s.replace(i, 5, "");
-	clearQSO();
+	if (progdefaults.ClearOnSave)
+		clearQSO();
 }
 
 void pTIMER(string &s, size_t &i)

@@ -463,6 +463,23 @@ wf->redraw_marker();
 progdefaults.changed = true;
 }
 
+Fl_Counter *cntACQsn=(Fl_Counter *)0;
+
+static void cb_cntACQsn(Fl_Counter* o, void*) {
+  progdefaults.ACQsn = (int)o->value();
+progdefaults.changed = true;
+}
+
+static void cb_Dim(Fl_Check_Button* o, void*) {
+  progdefaults.StatusDim = o->value();
+progdefaults.changed = true;
+}
+
+static void cb_Seconds(Fl_Counter* o, void*) {
+  progdefaults.StatusTimeout = (int)(o->value());
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *btnPSKmailSweetSpot=(Fl_Check_Button *)0;
 
 static void cb_btnPSKmailSweetSpot(Fl_Check_Button* o, void*) {
@@ -513,13 +530,6 @@ Fl_Spinner *cntTimeout=(Fl_Spinner *)0;
 
 static void cb_cntTimeout(Fl_Spinner* o, void*) {
   progdefaults.VIEWERtimeout = (int)(o->value());
-progdefaults.changed = true;
-}
-
-Fl_Counter *cntACQsn=(Fl_Counter *)0;
-
-static void cb_cntACQsn(Fl_Counter* o, void*) {
-  progdefaults.ACQsn = (int)o->value();
 progdefaults.changed = true;
 }
 
@@ -712,20 +722,23 @@ progdefaults.changed = true;
 
 Fl_Input *inpMyName=(Fl_Input *)0;
 
-static void cb_inpMyName(Fl_Input*, void*) {
-  progdefaults.changed = true;
+static void cb_inpMyName(Fl_Input* o, void*) {
+  progdefaults.myName = o->value();
+progdefaults.changed = true;
 }
 
 Fl_Input *inpMyQth=(Fl_Input *)0;
 
-static void cb_inpMyQth(Fl_Input*, void*) {
-  progdefaults.changed = true;
+static void cb_inpMyQth(Fl_Input* o, void*) {
+  progdefaults.myQth = o->value();
+progdefaults.changed = true;
 }
 
 Fl_Input *inpMyLocator=(Fl_Input *)0;
 
-static void cb_inpMyLocator(Fl_Input*, void*) {
-  progdefaults.changed = true;
+static void cb_inpMyLocator(Fl_Input* o, void*) {
+  progdefaults.myLocator = o->value();
+progdefaults.changed = true;
 }
 
 Fl_Check_Button *btnUseLeadingZeros=(Fl_Check_Button *)0;
@@ -810,6 +823,16 @@ Fl_Round_Button *btnHamcall=(Fl_Round_Button *)0;
 static void cb_btnHamcall(Fl_Round_Button* o, void*) {
   set_qrz_buttons(o);
 progdefaults.QRZ = QRZ_HAMCALL;
+progdefaults.changed = true;
+}
+
+Fl_Button *btnQRZpasswordShow=(Fl_Button *)0;
+
+static void cb_btnQRZpasswordShow(Fl_Button* o, void*) {
+  progdefaults.SHOWPASSWORD ^= FL_SECRET_INPUT;
+inpQRZuserpassword->type(progdefaults.SHOWPASSWORD);
+inpQRZuserpassword->redraw();
+o->label((progdefaults.SHOWPASSWORD & FL_SECRET_INPUT) ? "Show" : "Hide");
 progdefaults.changed = true;
 }
 
@@ -1419,13 +1442,6 @@ Fl_Tooltip::enable(progdefaults.tooltips);
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *btnNagMe=(Fl_Check_Button *)0;
-
-static void cb_btnNagMe(Fl_Check_Button* o, void*) {
-  progdefaults.NagMe=o->value();
-progdefaults.changed = true;
-}
-
 Fl_Check_Button *chkMenuIcons=(Fl_Check_Button *)0;
 
 static void cb_chkMenuIcons(Fl_Check_Button* o, void*) {
@@ -1441,6 +1457,20 @@ static void cb_mnuScheme(Fl_Choice* o, void*) {
     Fl::scheme(progdefaults.ui_scheme.c_str());
 
     progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnNagMe=(Fl_Check_Button *)0;
+
+static void cb_btnNagMe(Fl_Check_Button* o, void*) {
+  progdefaults.NagMe=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnClearOnSave=(Fl_Check_Button *)0;
+
+static void cb_btnClearOnSave(Fl_Check_Button* o, void*) {
+  progdefaults.ClearOnSave=o->value();
+progdefaults.changed = true;
 }
 
 Fl_Group *tabWfallRestart=(Fl_Group *)0;
@@ -1704,6 +1734,13 @@ static void cb_btnViewXmtSignal(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Value_Slider *valTxMonitorLevel=(Fl_Value_Slider *)0;
+
+static void cb_valTxMonitorLevel(Fl_Value_Slider* o, void*) {
+  progdefaults.TxMonitorLevel = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *btnWaterfallHistoryDefault=(Fl_Check_Button *)0;
 
 static void cb_btnWaterfallHistoryDefault(Fl_Check_Button* o, void*) {
@@ -1823,11 +1860,13 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           sld->box(FL_ENGRAVED_FRAME);
           sld->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
           { Fl_Check_Button* o = btnCWID = new Fl_Check_Button(13, 142, 98, 15, "Xmt CWID");
+            btnCWID->tooltip("send CW callsign at end of transmission");
             btnCWID->down_box(FL_DOWN_BOX);
             btnCWID->callback((Fl_Callback*)cb_btnCWID);
             o->value(progdefaults.CWid);
           } // Fl_Check_Button* btnCWID
           { Fl_Value_Slider* o = sldrCWIDwpm = new Fl_Value_Slider(150, 139, 233, 20, "CWID wpm:");
+            sldrCWIDwpm->tooltip("speed in WPM");
             sldrCWIDwpm->type(1);
             sldrCWIDwpm->color((Fl_Color)26);
             sldrCWIDwpm->minimum(15);
@@ -1851,6 +1890,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             o->value(progdefaults.TransmitRSid);
           } // Fl_Check_Button* chkTransmitRSid
           { Fl_Check_Button* o = chkRSidWideSearch = new Fl_Check_Button(209, 192, 85, 15, "Wide Search Detector");
+            chkRSidWideSearch->tooltip("Search over entire waterfall");
             chkRSidWideSearch->down_box(FL_DOWN_BOX);
             chkRSidWideSearch->callback((Fl_Callback*)cb_chkRSidWideSearch);
             o->value(progdefaults.rsidWideSearch);
@@ -1950,7 +1990,9 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           tabsModems->selection_color((Fl_Color)10);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
           { tabCW = new Fl_Group(0, 50, 400, 170, "CW");
+            tabCW->hide();
             { Fl_Tabs* o = new Fl_Tabs(0, 55, 400, 165);
+              o->selection_color((Fl_Color)215);
               { Fl_Group* o = new Fl_Group(0, 85, 400, 135, "CW Ops");
                 o->align(FL_ALIGN_TOP_LEFT);
                 { Fl_Group* o = new Fl_Group(4, 85, 392, 130);
@@ -2108,7 +2150,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 { Fl_Counter* o = cntPostTiming = new Fl_Counter(315, 172, 64, 21, "Post Timing");
                 cntPostTiming->tooltip("Msec post-keydown");
                 cntPostTiming->type(1);
-                cntPostTiming->minimum(0);
+                cntPostTiming->minimum(-20);
                 cntPostTiming->maximum(50);
                 cntPostTiming->step(0.5);
                 cntPostTiming->value(4);
@@ -2310,27 +2352,66 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             tabOlivia->end();
           } // Fl_Group* tabOlivia
           { tabPSK = new Fl_Group(0, 50, 400, 170, "Psk");
-            tabPSK->hide();
-            { Fl_Counter* o = cntSearchRange = new Fl_Counter(11, 60, 80, 21, "Acq Srch Range");
-              cntSearchRange->type(1);
-              cntSearchRange->minimum(10);
-              cntSearchRange->maximum(500);
-              cntSearchRange->step(10);
-              cntSearchRange->value(200);
-              cntSearchRange->callback((Fl_Callback*)cb_cntSearchRange);
-              cntSearchRange->align(FL_ALIGN_RIGHT);
-              o->value(progdefaults.SearchRange);
-            } // Fl_Counter* cntSearchRange
-            { Fl_Group* o = new Fl_Group(3, 175, 395, 43, "PskMail Server");
-              o->box(FL_ENGRAVED_FRAME);
-              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = btnPSKmailSweetSpot = new Fl_Check_Button(25, 190, 130, 20, "use sweetspot");
+            { Fl_Tabs* o = new Fl_Tabs(0, 50, 400, 170);
+              o->selection_color((Fl_Color)215);
+              { Fl_Group* o = new Fl_Group(0, 80, 400, 136, "General");
+                o->align(FL_ALIGN_TOP_LEFT);
+                { Fl_Counter* o = cntSearchRange = new Fl_Counter(30, 94, 75, 21, "Acq Srch Range");
+                cntSearchRange->tooltip("Capture signals within this frequency range");
+                cntSearchRange->type(1);
+                cntSearchRange->minimum(10);
+                cntSearchRange->maximum(500);
+                cntSearchRange->step(10);
+                cntSearchRange->value(200);
+                cntSearchRange->callback((Fl_Callback*)cb_cntSearchRange);
+                cntSearchRange->align(FL_ALIGN_RIGHT);
+                o->value(progdefaults.SearchRange);
+                } // Fl_Counter* cntSearchRange
+                { Fl_Counter* o = cntACQsn = new Fl_Counter(225, 94, 75, 21, "Acq s/n (db)");
+                cntACQsn->tooltip("Capture signals over this threshold");
+                cntACQsn->type(1);
+                cntACQsn->minimum(3);
+                cntACQsn->maximum(20);
+                cntACQsn->step(1);
+                cntACQsn->value(6);
+                cntACQsn->callback((Fl_Callback*)cb_cntACQsn);
+                cntACQsn->align(FL_ALIGN_RIGHT);
+                o->value(progdefaults.ACQsn);
+                } // Fl_Counter* cntACQsn
+                { Fl_Group* o = new Fl_Group(5, 143, 390, 73, "S/N, Imd Behavior");
+                o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+                { Fl_Check_Button* o = new Fl_Check_Button(190, 172, 70, 15, "Dim");
+                o->tooltip("Check for dimming / uncheck for clear");
+                o->down_box(FL_DOWN_BOX);
+                o->callback((Fl_Callback*)cb_Dim);
+                o->value(progdefaults.StatusDim);
+                } // Fl_Check_Button* o
+                { Fl_Counter* o = new Fl_Counter(30, 169, 75, 21, "Seconds to ");
+                o->tooltip("Time delay in seconds to dim / clear (0 disables)");
+                o->type(1);
+                o->minimum(0);
+                o->maximum(30);
+                o->step(1);
+                o->callback((Fl_Callback*)cb_Seconds);
+                o->align(FL_ALIGN_RIGHT);
+                o->value(progdefaults.StatusTimeout);
+                } // Fl_Counter* o
+                o->end();
+                } // Fl_Group* o
+                o->end();
+              } // Fl_Group* o
+              { Fl_Group* o = new Fl_Group(0, 75, 400, 140, "Mail");
+                o->align(FL_ALIGN_TOP_LEFT);
+                o->hide();
+                { Fl_Check_Button* o = btnPSKmailSweetSpot = new Fl_Check_Button(55, 100, 130, 20, "use sweetspot");
+                btnPSKmailSweetSpot->tooltip("Return Tx frequency to sweetspot");
                 btnPSKmailSweetSpot->down_box(FL_DOWN_BOX);
                 btnPSKmailSweetSpot->value(1);
                 btnPSKmailSweetSpot->callback((Fl_Callback*)cb_btnPSKmailSweetSpot);
                 o->value(progdefaults.PSKmailSweetSpot);
-              } // Fl_Check_Button* btnPSKmailSweetSpot
-              { Fl_Counter* o = cntServerOffset = new Fl_Counter(165, 189, 80, 21, "Server Search Range");
+                } // Fl_Check_Button* btnPSKmailSweetSpot
+                { Fl_Counter* o = cntServerOffset = new Fl_Counter(55, 129, 80, 21, "Server Search Range");
+                cntServerOffset->tooltip("Listen for signals within this range");
                 cntServerOffset->type(1);
                 cntServerOffset->minimum(10);
                 cntServerOffset->maximum(500);
@@ -2339,23 +2420,26 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 cntServerOffset->callback((Fl_Callback*)cb_cntServerOffset);
                 cntServerOffset->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.SearchRange);
-              } // Fl_Counter* cntServerOffset
-              o->end();
-            } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(3, 85, 395, 90, "Psk Viewer");
-              o->box(FL_ENGRAVED_FRAME);
-              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = btnMarquee = new Fl_Check_Button(11, 110, 120, 15, "Marquee style");
+                } // Fl_Counter* cntServerOffset
+                o->end();
+              } // Fl_Group* o
+              { Fl_Group* o = new Fl_Group(0, 80, 400, 140, "Viewer");
+                o->align(FL_ALIGN_TOP_LEFT);
+                o->hide();
+                { Fl_Check_Button* o = btnMarquee = new Fl_Check_Button(10, 110, 120, 15, "Marquee style");
+                btnMarquee->tooltip("Continuous horizontal scroll of Rx data");
                 btnMarquee->down_box(FL_DOWN_BOX);
                 btnMarquee->callback((Fl_Callback*)cb_btnMarquee);
                 o->value(progdefaults.VIEWERmarquee);
-              } // Fl_Check_Button* btnMarquee
-              { Fl_Check_Button* o = btnShowFrequencies = new Fl_Check_Button(11, 144, 109, 15, "Show Freq\'s");
+                } // Fl_Check_Button* btnMarquee
+                { Fl_Check_Button* o = btnShowFrequencies = new Fl_Check_Button(10, 154, 109, 15, "Show Freq\'s");
+                btnShowFrequencies->tooltip("Show frequencies on left");
                 btnShowFrequencies->down_box(FL_DOWN_BOX);
                 btnShowFrequencies->callback((Fl_Callback*)cb_btnShowFrequencies);
                 o->value(progdefaults.VIEWERshowfreq);
-              } // Fl_Check_Button* btnShowFrequencies
-              { Fl_Spinner* o = cntChannels = new Fl_Spinner(135, 140, 39, 25, "# Channels");
+                } // Fl_Check_Button* btnShowFrequencies
+                { Fl_Spinner* o = cntChannels = new Fl_Spinner(265, 150, 39, 25, "# Channels");
+                cntChannels->tooltip("Number of channels to monitor");
                 cntChannels->value(1);
                 cntChannels->callback((Fl_Callback*)cb_cntChannels);
                 cntChannels->align(FL_ALIGN_RIGHT);
@@ -2363,8 +2447,8 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 o->maximum(30);
                 o->step(1);
                 o->value(progdefaults.VIEWERchannels);
-              } // Fl_Spinner* cntChannels
-              { Fl_Spinner* o = cntStartFrequency = new Fl_Spinner(135, 105, 50, 25, "Start Freq");
+                } // Fl_Spinner* cntChannels
+                { Fl_Spinner* o = cntStartFrequency = new Fl_Spinner(134, 150, 50, 25, "Start Freq");
                 cntStartFrequency->value(1);
                 cntStartFrequency->callback((Fl_Callback*)cb_cntStartFrequency);
                 cntStartFrequency->align(FL_ALIGN_RIGHT);
@@ -2372,8 +2456,9 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 o->maximum(1000);
                 o->step(100);
                 o->value(progdefaults.VIEWERstart);
-              } // Fl_Spinner* cntStartFrequency
-              { Fl_Spinner* o = cntTimeout = new Fl_Spinner(261, 105, 50, 25, "Aging (sec)");
+                } // Fl_Spinner* cntStartFrequency
+                { Fl_Spinner* o = cntTimeout = new Fl_Spinner(135, 105, 50, 25, "Aging (sec)");
+                cntTimeout->tooltip("Clear channel after # seconds inactivity");
                 cntTimeout->value(1);
                 cntTimeout->callback((Fl_Callback*)cb_cntTimeout);
                 cntTimeout->align(FL_ALIGN_RIGHT);
@@ -2381,19 +2466,11 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 o->maximum(180);
                 o->step(1);
                 o->value(progdefaults.VIEWERtimeout);
-              } // Fl_Spinner* cntTimeout
+                } // Fl_Spinner* cntTimeout
+                o->end();
+              } // Fl_Group* o
               o->end();
-            } // Fl_Group* o
-            { Fl_Counter* o = cntACQsn = new Fl_Counter(220, 60, 80, 21, "Acq s/n (db)");
-              cntACQsn->type(1);
-              cntACQsn->minimum(3);
-              cntACQsn->maximum(20);
-              cntACQsn->step(1);
-              cntACQsn->value(6);
-              cntACQsn->callback((Fl_Callback*)cb_cntACQsn);
-              cntACQsn->align(FL_ALIGN_RIGHT);
-              o->value(progdefaults.ACQsn);
-            } // Fl_Counter* cntACQsn
+            } // Fl_Tabs* o
             tabPSK->end();
           } // Fl_Group* tabPSK
           { tabRTTY = new Fl_Group(0, 50, 400, 170, "RTTY");
@@ -2629,12 +2706,12 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           btnQRZnotavailable->callback((Fl_Callback*)cb_btnQRZnotavailable);
           btnQRZnotavailable->value(progdefaults.QRZ == QRZ_NONE);
         } // Fl_Round_Button* btnQRZnotavailable
-        { btnQRZcdrom = new Fl_Round_Button(17, 72, 103, 20, "QRZ cdrom");
+        { btnQRZcdrom = new Fl_Round_Button(17, 71, 103, 20, "QRZ cdrom");
           btnQRZcdrom->down_box(FL_ROUND_DOWN_BOX);
           btnQRZcdrom->callback((Fl_Callback*)cb_btnQRZcdrom);
           btnQRZcdrom->value(progdefaults.QRZ == QRZ_CD);
         } // Fl_Round_Button* btnQRZcdrom
-        { btnQRZonline = new Fl_Round_Button(17, 105, 100, 20, "QRZ online");
+        { btnQRZonline = new Fl_Round_Button(17, 98, 100, 20, "QRZ online");
           btnQRZonline->tooltip("This service may not be available");
           btnQRZonline->down_box(FL_ROUND_DOWN_BOX);
           btnQRZonline->callback((Fl_Callback*)cb_btnQRZonline);
@@ -2645,30 +2722,39 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           txtQRZpathname->callback((Fl_Callback*)cb_txtQRZpathname);
           o->value(progdefaults.QRZpathname.c_str());
         } // Fl_Input* txtQRZpathname
-        { Fl_Group* o = new Fl_Group(5, 135, 390, 85);
+        { Fl_Group* o = new Fl_Group(5, 125, 390, 90, "Paid Online Subscription");
           o->box(FL_ENGRAVED_FRAME);
-          { Fl_Input* o = inpQRZusername = new Fl_Input(205, 145, 90, 25, "User name");
+          o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+          { Fl_Input* o = inpQRZusername = new Fl_Input(125, 150, 90, 25, "User name");
+            inpQRZusername->tooltip("subscription user name");
             inpQRZusername->callback((Fl_Callback*)cb_inpQRZusername);
             inpQRZusername->align(FL_ALIGN_RIGHT);
             o->value(progdefaults.QRZusername.c_str());
           } // Fl_Input* inpQRZusername
-          { Fl_Input* o = inpQRZuserpassword = new Fl_Input(205, 178, 90, 25, "Password");
+          { Fl_Input* o = inpQRZuserpassword = new Fl_Input(125, 180, 90, 25, "Password");
+            inpQRZuserpassword->tooltip("subscription password");
             inpQRZuserpassword->callback((Fl_Callback*)cb_inpQRZuserpassword);
             inpQRZuserpassword->align(FL_ALIGN_RIGHT);
             o->value(progdefaults.QRZuserpassword.c_str());
+            o->type(progdefaults.SHOWPASSWORD);
           } // Fl_Input* inpQRZuserpassword
-          { btnQRZsub = new Fl_Round_Button(17, 147, 130, 20, "QRZ subscriber");
+          { btnQRZsub = new Fl_Round_Button(17, 152, 90, 20, "QRZ");
             btnQRZsub->tooltip("You need a paid QRZ on-line subscription for access");
             btnQRZsub->down_box(FL_ROUND_DOWN_BOX);
             btnQRZsub->callback((Fl_Callback*)cb_btnQRZsub);
             btnQRZsub->value(progdefaults.QRZ == QRZ_NET_SUB);
           } // Fl_Round_Button* btnQRZsub
-          { btnHamcall = new Fl_Round_Button(17, 180, 155, 20, "Hamcall subscriber");
+          { btnHamcall = new Fl_Round_Button(17, 182, 90, 20, "Hamcall");
             btnHamcall->tooltip("You need a paid Hamcall on-line subscription to access");
             btnHamcall->down_box(FL_ROUND_DOWN_BOX);
             btnHamcall->callback((Fl_Callback*)cb_btnHamcall);
             btnHamcall->value(progdefaults.QRZ == QRZ_HAMCALL);
           } // Fl_Round_Button* btnHamcall
+          { Fl_Button* o = btnQRZpasswordShow = new Fl_Button(305, 180, 50, 25, "Show");
+            btnQRZpasswordShow->tooltip("Show / Hide user password");
+            btnQRZpasswordShow->callback((Fl_Callback*)cb_btnQRZpasswordShow);
+            o->label((progdefaults.SHOWPASSWORD & FL_SECRET_INPUT) ? "Show" : "Hide");
+          } // Fl_Button* btnQRZpasswordShow
           o->end();
         } // Fl_Group* o
         tabQRZ->end();
@@ -2992,6 +3078,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           { tabAudio = new Fl_Group(0, 50, 400, 170, "Audio devices");
             tabAudio->color((Fl_Color)51);
             tabAudio->selection_color((Fl_Color)51);
+            tabAudio->hide();
             { AudioOSS = new Fl_Group(5, 58, 391, 35);
               AudioOSS->box(FL_ENGRAVED_FRAME);
               { btnAudioIO[0] = new Fl_Round_Button(5, 63, 53, 25, "OSS");
@@ -3111,7 +3198,6 @@ l with your sound hardware.");
           { tabMixer = new Fl_Group(0, 50, 400, 170, "Mixer");
             tabMixer->color((Fl_Color)51);
             tabMixer->selection_color((Fl_Color)51);
-            tabMixer->hide();
             { btnLineIn = new Fl_Light_Button(295, 64, 74, 22, "Line In");
               btnLineIn->selection_color((Fl_Color)3);
               btnLineIn->callback((Fl_Callback*)cb_btnLineIn);
@@ -3148,8 +3234,8 @@ l with your sound hardware.");
         tabUI->hide();
         { Fl_Tabs* o = new Fl_Tabs(0, 25, 400, 195);
           o->selection_color((Fl_Color)10);
-          { tabUserInterface = new Fl_Group(0, 50, 400, 160, "General");
-            { Fl_Group* o = new Fl_Group(5, 55, 385, 155);
+          { tabUserInterface = new Fl_Group(0, 50, 400, 170, "General");
+            { Fl_Group* o = new Fl_Group(5, 55, 390, 160);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(25, 80, 70, 15, "Show Tooltips");
                 btnShowTooltips->tooltip("toggle tooltips on buttons, etc.");
@@ -3158,12 +3244,6 @@ l with your sound hardware.");
                 btnShowTooltips->callback((Fl_Callback*)cb_btnShowTooltips);
                 o->value(progdefaults.tooltips);
               } // Fl_Check_Button* btnShowTooltips
-              { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(25, 130, 70, 15, "Nag me");
-                btnNagMe->tooltip("exit nag for unsaved log entries");
-                btnNagMe->down_box(FL_DOWN_BOX);
-                btnNagMe->callback((Fl_Callback*)cb_btnNagMe);
-                o->value(progdefaults.NagMe);
-              } // Fl_Check_Button* btnNagMe
               { Fl_Check_Button* o = chkMenuIcons = new Fl_Check_Button(25, 105, 70, 15, "icons on menus");
                 chkMenuIcons->tooltip("toggle menu icons on/off");
                 chkMenuIcons->down_box(FL_DOWN_BOX);
@@ -3180,6 +3260,23 @@ l with your sound hardware.");
                 mnuScheme->add("plastic");
                 mnuScheme->value(mnuScheme->find_item(progdefaults.ui_scheme.c_str()));
               } // Fl_Choice* mnuScheme
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(15, 125, 145, 80, "QSO logging");
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(25, 150, 80, 15, "Nag me");
+                btnNagMe->tooltip("exit nag for unsaved log entries");
+                btnNagMe->down_box(FL_DOWN_BOX);
+                btnNagMe->callback((Fl_Callback*)cb_btnNagMe);
+                o->value(progdefaults.NagMe);
+              } // Fl_Check_Button* btnNagMe
+              { Fl_Check_Button* o = btnClearOnSave = new Fl_Check_Button(25, 176, 125, 15, "Clear on Save");
+                btnClearOnSave->tooltip("Clear log entries after saving or using macro <LOG>");
+                btnClearOnSave->down_box(FL_DOWN_BOX);
+                btnClearOnSave->callback((Fl_Callback*)cb_btnClearOnSave);
+                o->value(progdefaults.ClearOnSave);
+              } // Fl_Check_Button* btnClearOnSave
               o->end();
             } // Fl_Group* o
             tabUserInterface->end();
@@ -3246,7 +3343,7 @@ l with your sound hardware.");
           { Fl_Group* o = new Fl_Group(0, 50, 400, 170, "Filters/Colors");
             { Fl_Group* o = new Fl_Group(10, 84, 385, 96);
               o->box(FL_ENGRAVED_FRAME);
-              { WF_Palette = new colorbox(28, 107, 260, 24, "Palette:");
+              { colorbox* o = WF_Palette = new colorbox(28, 107, 260, 24, "Palette:");
                 WF_Palette->box(FL_DOWN_BOX);
                 WF_Palette->color(FL_FOREGROUND_COLOR);
                 WF_Palette->selection_color(FL_BACKGROUND_COLOR);
@@ -3257,6 +3354,7 @@ l with your sound hardware.");
                 WF_Palette->callback((Fl_Callback*)cb_WF_Palette);
                 WF_Palette->align(FL_ALIGN_TOP_LEFT);
                 WF_Palette->when(FL_WHEN_RELEASE);
+                o->label(progdefaults.PaletteName.c_str());
               } // colorbox* WF_Palette
               { btnColor[0] = new Fl_Button(20, 139, 20, 24);
                 btnColor[0]->callback((Fl_Callback*)cb_btnColor);
@@ -3367,49 +3465,60 @@ l with your sound hardware.");
             o->hide();
             { Fl_Group* o = new Fl_Group(8, 60, 390, 158);
               o->box(FL_ENGRAVED_FRAME);
-              { Fl_Check_Button* o = btnUseCursorLines = new Fl_Check_Button(58, 79, 100, 20, "Cursor BW");
+              { Fl_Check_Button* o = btnUseCursorLines = new Fl_Check_Button(58, 70, 100, 20, "Cursor BW");
                 btnUseCursorLines->down_box(FL_DOWN_BOX);
                 btnUseCursorLines->callback((Fl_Callback*)cb_btnUseCursorLines);
                 o->value(progdefaults.UseCursorLines);
               } // Fl_Check_Button* btnUseCursorLines
-              { Fl_Check_Button* o = btnUseBWTracks = new Fl_Check_Button(58, 159, 100, 20, "BW Tracks");
+              { Fl_Check_Button* o = btnUseBWTracks = new Fl_Check_Button(58, 123, 100, 20, "BW Tracks");
                 btnUseBWTracks->down_box(FL_DOWN_BOX);
                 btnUseBWTracks->callback((Fl_Callback*)cb_btnUseBWTracks);
                 o->value(progdefaults.UseBWTracks);
               } // Fl_Check_Button* btnUseBWTracks
-              { Fl_Check_Button* o = btnUseCursorCenterLine = new Fl_Check_Button(58, 118, 121, 21, "Cursor Center");
+              { Fl_Check_Button* o = btnUseCursorCenterLine = new Fl_Check_Button(58, 96, 121, 21, "Cursor Center");
                 btnUseCursorCenterLine->down_box(FL_DOWN_BOX);
                 btnUseCursorCenterLine->callback((Fl_Callback*)cb_btnUseCursorCenterLine);
                 o->value(progdefaults.UseCursorCenterLine);
               } // Fl_Check_Button* btnUseCursorCenterLine
-              { Fl_Button* o = btnCursorBWcolor = new Fl_Button(25, 79, 19, 20);
+              { Fl_Button* o = btnCursorBWcolor = new Fl_Button(25, 70, 19, 20);
                 btnCursorBWcolor->tooltip("Select Cursor BW color");
                 btnCursorBWcolor->color((Fl_Color)3);
                 btnCursorBWcolor->callback((Fl_Callback*)cb_btnCursorBWcolor);
                 o->color(fl_rgb_color(progdefaults.cursorLineRGBI.R,progdefaults.cursorLineRGBI.G,progdefaults.cursorLineRGBI.B));
               } // Fl_Button* btnCursorBWcolor
-              { Fl_Button* o = btnCursorCenterLineColor = new Fl_Button(25, 118, 19, 20);
+              { Fl_Button* o = btnCursorCenterLineColor = new Fl_Button(25, 97, 19, 20);
                 btnCursorCenterLineColor->tooltip("Select Center Line color");
                 btnCursorCenterLineColor->color(FL_BACKGROUND2_COLOR);
                 btnCursorCenterLineColor->callback((Fl_Callback*)cb_btnCursorCenterLineColor);
                 o->color(fl_rgb_color(progdefaults.cursorCenterRGBI.R,progdefaults.cursorCenterRGBI.G,progdefaults.cursorCenterRGBI.B));
               } // Fl_Button* btnCursorCenterLineColor
-              { Fl_Button* o = btnBwTracksColor = new Fl_Button(25, 159, 19, 20);
+              { Fl_Button* o = btnBwTracksColor = new Fl_Button(25, 124, 19, 20);
                 btnBwTracksColor->tooltip("Select BW tracks color");
                 btnBwTracksColor->color((Fl_Color)1);
                 btnBwTracksColor->callback((Fl_Callback*)cb_btnBwTracksColor);
                 o->color(fl_rgb_color(progdefaults.bwTrackRGBI.R,progdefaults.bwTrackRGBI.G,progdefaults.bwTrackRGBI.B));
               } // Fl_Button* btnBwTracksColor
-              { Fl_Check_Button* o = chkShowAudioScale = new Fl_Check_Button(195, 79, 185, 20, "show Audio Scale");
+              { Fl_Check_Button* o = chkShowAudioScale = new Fl_Check_Button(195, 70, 185, 20, "show Audio Scale");
                 chkShowAudioScale->down_box(FL_DOWN_BOX);
                 chkShowAudioScale->callback((Fl_Callback*)cb_chkShowAudioScale);
                 o->value(progdefaults.wf_audioscale);
               } // Fl_Check_Button* chkShowAudioScale
-              { Fl_Check_Button* o = btnViewXmtSignal = new Fl_Check_Button(195, 118, 135, 20, "View Xmt Signal");
+              { Fl_Check_Button* o = btnViewXmtSignal = new Fl_Check_Button(26, 150, 135, 20, "View Tx Signal");
                 btnViewXmtSignal->down_box(FL_DOWN_BOX);
                 btnViewXmtSignal->callback((Fl_Callback*)cb_btnViewXmtSignal);
                 o->value(progdefaults.viewXmtSignal);
               } // Fl_Check_Button* btnViewXmtSignal
+              { Fl_Value_Slider* o = valTxMonitorLevel = new Fl_Value_Slider(25, 189, 340, 21, "Tx Audio Monitor Level");
+                valTxMonitorLevel->type(5);
+                valTxMonitorLevel->color((Fl_Color)26);
+                valTxMonitorLevel->selection_color((Fl_Color)1);
+                valTxMonitorLevel->step(0.05);
+                valTxMonitorLevel->value(0.5);
+                valTxMonitorLevel->textsize(14);
+                valTxMonitorLevel->callback((Fl_Callback*)cb_valTxMonitorLevel);
+                valTxMonitorLevel->align(FL_ALIGN_TOP_LEFT);
+                o->value(progdefaults.TxMonitorLevel);
+              } // Fl_Value_Slider* valTxMonitorLevel
               o->end();
             } // Fl_Group* o
             o->end();
@@ -3425,6 +3534,7 @@ l with your sound hardware.");
                 o->value(progdefaults.WaterfallHistoryDefault);
               } // Fl_Check_Button* btnWaterfallHistoryDefault
               { Fl_Check_Button* o = btnWaterfallQSY = new Fl_Check_Button(15, 96, 225, 20, "Dragging changes frequency");
+                btnWaterfallQSY->tooltip("Drag mouse on waterfall scale to change frequency");
                 btnWaterfallQSY->down_box(FL_DOWN_BOX);
                 btnWaterfallQSY->callback((Fl_Callback*)cb_btnWaterfallQSY);
                 o->value(progdefaults.WaterfallQSY);
@@ -3434,6 +3544,7 @@ l with your sound hardware.");
                 inpWaterfallClickText->align(FL_ALIGN_RIGHT);
               } // Fl_Input* inpWaterfallClickText
               { Fl_Check_Button* o = btnWaterfallClickInsert = new Fl_Check_Button(15, 134, 172, 20, "Insert text on left click");
+                btnWaterfallClickInsert->tooltip("Default - double click on waterfall inserts text");
                 btnWaterfallClickInsert->down_box(FL_DOWN_BOX);
                 btnWaterfallClickInsert->callback((Fl_Callback*)cb_btnWaterfallClickInsert);
                 o->value(progdefaults.WaterfallClickInsert);
@@ -3441,6 +3552,7 @@ l with your sound hardware.");
               o->end();
             } // Fl_Group* o
             { mnuWaterfallWheelAction = new Fl_Choice(15, 176, 150, 22, "Wheel action");
+              mnuWaterfallWheelAction->tooltip("Select how Mouse wheel behaves on waterfall");
               mnuWaterfallWheelAction->down_box(FL_BORDER_BOX);
               mnuWaterfallWheelAction->callback((Fl_Callback*)cb_mnuWaterfallWheelAction);
               mnuWaterfallWheelAction->align(FL_ALIGN_RIGHT);

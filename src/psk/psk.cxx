@@ -480,8 +480,8 @@ void psk::update_syncscope()
 	snprintf(msg2, sizeof(msg2), "imd %3d dB", (int)(floor(imd))); 
 
 	if (imdValid) {
-		put_Status1(msg1, 5.0, STATUS_DIM);
-		put_Status2(msg2, 5.0, STATUS_DIM);
+		put_Status1(msg1, progdefaults.StatusTimeout, progdefaults.StatusDim ? STATUS_DIM : STATUS_CLEAR);
+		put_Status2(msg2, progdefaults.StatusTimeout, progdefaults.StatusDim ? STATUS_DIM : STATUS_CLEAR);
 	}
 }
 

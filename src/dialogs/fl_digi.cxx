@@ -1177,6 +1177,8 @@ void qsoClear_cb(Fl_Widget *b, void *)
 void qsoSave_cb(Fl_Widget *b, void *)
 {
 	submit_log();
+	if (progdefaults.ClearOnSave)
+		clearQSO();
 	oktoclear = true;
 	restoreFocus();
 }
@@ -2051,7 +2053,8 @@ void create_fl_digi_main() {
 		
 		Y = Hmenu + Hqsoframe + Hnotes + pad;
 
-		Fl_Widget* logfields[] = { inpFreq, inpTime, inpCall, inpName, inpRstIn,
+//		Fl_Widget* logfields[] = { inpFreq, inpTime, inpCall, inpName, inpRstIn,
+		Fl_Widget* logfields[] = { inpCall, inpName, inpRstIn,
 					   inpRstOut, inpQth, inpAZ, inpLoc, inpNotes };
 		for (size_t i = 0; i < sizeof(logfields)/sizeof(*logfields); i++)
 			logfields[i]->callback(cb_log);

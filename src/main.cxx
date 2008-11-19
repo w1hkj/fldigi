@@ -382,7 +382,7 @@ void generate_option_help(void) {
 	     << "   -g GEOMETRY, -geometry GEOMETRY\n"
 	     << "    Set the initial window size and position\n"
 	     << "    GEOMETRY format is ``WxH+X+Y''\n"
-	     << "    ** " << PACKAGE_NAME << " may override this settting **\n\n"
+	     << "    ** " << PACKAGE_NAME << " may override this setting **\n\n"
 
 	     << "   -i, -iconic\n"
 	     << "    Start " << PACKAGE_NAME << " in iconified state\n\n"
@@ -394,10 +394,7 @@ void generate_option_help(void) {
 	     << "    Set the window class to CLASSNAME\n\n"
 
 	     << "   -ti WINDOWTITLE, -title WINDOWTITLE\n"
-	     << "    Set the window title\n\n"
-
-	     << "   -to, -tooltips or -not, -notooltips\n"
-	     << "    Enable or disable tooltips\n\n";
+	     << "    Set the window title\n\n";
 
 	help << "Additional UI options:\n\n"
 

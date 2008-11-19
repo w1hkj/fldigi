@@ -698,9 +698,11 @@ bool FTextView::handle_doubleclick(int start, int end)
 	if (!s) return s;
 	if (rst.match(s)) {
 		inpRstIn->value(s);
+		inpRstIn->do_callback();
 		ret = true;
 	} else if (loc.match(s)) {
 		inpLoc->value(s);
+		inpLoc->do_callback();
 		ret = true;
 	} else {
 		int digits = 0;
@@ -717,10 +719,12 @@ bool FTextView::handle_doubleclick(int start, int end)
 			for (size_t i = 0; i < strlen(s); i++)
 				if (islower(s[i])) s[i] += 'A' - 'a';
 			inpCall->value(s);
+			inpCall->do_callback();
 			stopMacroTimer();
 			ret = true;
 		} else if (chars > 0 && digits == 0) {
 			inpName->value(s);
+			inpName->do_callback();
 			ret = true;
 		}
 	}

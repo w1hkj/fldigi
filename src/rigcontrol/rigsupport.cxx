@@ -71,7 +71,7 @@ struct rmode_name_t {
 	, // C99 trailing commas in enumerations not yet in the C++ standard
 	{ RIG_MODE_SAM, "SAM" },
 	{ RIG_MODE_SAL, "SAL" },
-	{ RIG_MODE_SAH, "SAH" },
+	{ RIG_MODE_SAH, "SAH" }
 #endif
 };
 
@@ -214,8 +214,15 @@ size_t addtoList(long val)
 	qrg_mode_t m;
 
 	m.rfcarrier = val;
+
+	if (progdefaults.docked_rig_control) {
+	if (strlen(qso_opMODE->value()))
+		m.rmode = qso_opMODE->value();
+	} else {
 	if (strlen(opMODE->value()))
 		m.rmode = opMODE->value();
+	}
+	
 	if (active_modem) {
 		m.carrier = active_modem->get_freq();
 		m.mode = active_modem->get_mode();
@@ -539,24 +546,35 @@ LOG_DEBUG("xml rig");
 bool init_NoRig_RigDialog()
 {
 LOG_DEBUG("no rig");
-	clearList();
-	buildlist();
-
 	opBW->deactivate();
 	opMODE->clear();
-	opMODE->add("LSB");
-	opMODE->add("USB");
-	opMODE->index(0);
-	opMODE->activate();
 
 	if (progdefaults.docked_rig_control) {
 		qso_opBW->deactivate();
 		qso_opMODE->clear();
-		qso_opMODE->add("LSB");
-		qso_opMODE->add("USB");
+	}		
+
+	for (size_t i = 0; i < sizeof(modes)/sizeof(modes[0]); i++) {
+		opMODE->add(modes[i].name);
+		if (progdefaults.docked_rig_control)
+			qso_opMODE->add(modes[i].name);
+	}
+	LSBmodes.clear();
+	LSBmodes.push_back("LSB");
+	LSBmodes.push_back("CWR");
+	LSBmodes.push_back("RTTY");
+	LSBmodes.push_back("PKTLSB");
+
+	opMODE->index(0);
+	opMODE->activate();
+
+	if (progdefaults.docked_rig_control) {
 		qso_opMODE->index(0);
 		qso_opMODE->activate();
 	}
+
+	clearList();
+	buildlist();
 
 	windowTitle = "Rig Not Specified";
 	setTitle();
@@ -567,11 +585,14 @@ LOG_DEBUG("no rig");
 bool init_rigMEM_RigDialog()
 {
 LOG_DEBUG("Mem Mapped rig");
-	clearList();
-	buildlist();
-
 	opBW->deactivate();
 	opMODE->clear();
+
+	if (progdefaults.docked_rig_control) {
+		qso_opBW->deactivate();
+		qso_opMODE->clear();
+	}		
+
 	opMODE->add("LSB");
 	opMODE->add("USB");
 	opMODE->index(0);
@@ -585,6 +606,9 @@ LOG_DEBUG("Mem Mapped rig");
 		qso_opMODE->index(0);
 		qso_opMODE->activate();
 	}
+
+	clearList();
+	buildlist();
 
 	windowTitle = "Memory Mapped Rig";
 	setTitle();
@@ -598,6 +622,12 @@ bool init_Hamlib_RigDialog()
 LOG_DEBUG("hamlib");
 	opBW->deactivate();
 	opMODE->clear();
+
+	if (progdefaults.docked_rig_control) {
+		qso_opBW->deactivate();
+		qso_opMODE->clear();
+	}		
+	
 	for (size_t i = 0; i < sizeof(modes)/sizeof(modes[0]); i++) {
 		mode_nums[modes[i].name] = modes[i].mode;
 		mode_names[modes[i].mode] = modes[i].name;
