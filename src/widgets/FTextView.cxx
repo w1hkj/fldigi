@@ -54,6 +54,8 @@
 #include "globals.h"
 #include "re.h"
 
+#include "debug.h"
+
 
 using namespace std;
 
@@ -299,31 +301,54 @@ void FTextBase::saveFile(void)
 ///
 /// @return The selection, or the word text at (x,y). <b>Must be freed by the caller</b>.
 ///
+char *FTextBase::get_bound_text(int x, int y)
+{
+	int p = xy_to_position(x + this->x(), y + this->y(),
+			       Fl_Text_Display_mod::CURSOR_POS);
+	char* s = 0;
+	if (!tbuf->selected())
+		s = tbuf->text_range(word_start(p), word_end(p));
+	else
+		s = tbuf->selection_text();
+	tbuf->unselect();
+	return s;
+}
+
+/// Returns a character string containing the selected word, if any,
+/// or the word at (\a x, \a y) relative to the widget's \c x() and \c y().
+///
+/// @param x 
+/// @param y 
+///
+/// @return The selection, or the word text at (x,y). <b>Must be freed by the caller</b>.
+///
 char *FTextBase::get_word(int x, int y)
 {
 	int p = xy_to_position(x + this->x(), y + this->y(),
 			       Fl_Text_Display_mod::CURSOR_POS);
-	char* s;
-	if (!tbuf->selected()) {
-		s = tbuf->text_range(word_start(p), word_end(p));
+	char* s = 0;
+	int ws = word_start(p);
+	int we = word_end(p);
+	if (we == ws || we < ws) return s;
+	
+	ws = 0, we = 0;
+	if (tbuf->findchars_backward(p," \n", &ws) == 0) {
+		ws = word_start(p);
+	}
+	else
+		ws++;
+	if (tbuf->findchars_forward(p, " \t\n", &we) == 1) {
+		s = tbuf->text_range(ws, we);
+	} else if (tbuf->length() - ws < 12) {
+		s = tbuf->text_range(ws, tbuf->length()); 
 	} else {
-		int start = 0, end = 0;
-		if (tbuf->findchars_backward(p," \n", &start) == 0)
-			start = word_start(p);
-		else
-			start++;
-		if (tbuf->findchars_forward(p, " ,;\t\n", &end) == 1) {
-			s = tbuf->text_range(start, end);
-		} else if (tbuf->length() - start < 12) {
-			s = tbuf->text_range(start, tbuf->length()); 
-		} else {
-			tbuf->select(start, word_end(p));
-			s = tbuf->selection_text();
-		}
+		tbuf->select(ws, word_end(p));
+		s = tbuf->selection_text();
 	}
 	tbuf->unselect();
 	return s;
 }
+
 
 /// Displays the menu pointed to by \c context_menu and calls the menu function;
 /// @see call_cb.
@@ -460,11 +485,8 @@ int FTextView::handle(int event)
 			break;
  		switch (Fl::event_button()) {
 		case FL_LEFT_MOUSE:
-			if (Fl::event_shift()) { // TODO: can we get rid of this binding?
-				char* s = get_word(Fl::event_x() - x(), Fl::event_y() - y());
-				inpCall->value(s);
-				free(s);
-				stopMacroTimer();
+			if (Fl::event_shift()) {
+				handle_doubleclick(Fl::event_x() - x(), Fl::event_y() - y());
 				return 1;
 			}
 			goto out;
@@ -643,11 +665,12 @@ void FTextView::handle_qsy(int start, int end)
 }
 
 static re_t rst("^[0-9]{3}$", REG_EXTENDED | REG_NOSUB);
-static re_t loc("^[A-R]{2}[0-9]{2}([A-X]{2})+$", REG_EXTENDED | REG_ICASE | REG_NOSUB);
+static re_t loc("^[A-R,a-r]{2}[0-9]{2}([A-X,a-x]{2})+$", REG_EXTENDED | REG_ICASE | REG_NOSUB);
 
 void FTextView::handle_qso_data(int start, int end)
 {
 	char* s = get_word(start, end);
+	if (!s) return;
 	if (rst.match(s))
 		inpRstIn->value(s);
 	else {
@@ -672,6 +695,7 @@ bool FTextView::handle_doubleclick(int start, int end)
 {
 	bool ret = false;
 	char *s = get_word(start, end);
+	if (!s) return s;
 	if (rst.match(s)) {
 		inpRstIn->value(s);
 		ret = true;
@@ -685,8 +709,15 @@ bool FTextView::handle_doubleclick(int start, int end)
 			if (isdigit(s[i])) digits++;
 			if (isalpha(s[i])) chars++;
 		}
+		// remove leading and trailing non alphas
+		while (s[0] && !isalnum(s[0])) memcpy(s, s+1, strlen(s));
+		size_t i = strlen(s) - 1;
+		while (i && !isalnum(s[i])) s[i--] = 0;
 		if (digits > 0 && digits < 4 && chars > 0) {
+			for (size_t i = 0; i < strlen(s); i++)
+				if (islower(s[i])) s[i] += 'A' - 'a';
 			inpCall->value(s);
+			stopMacroTimer();
 			ret = true;
 		} else if (chars > 0 && digits == 0) {
 			inpName->value(s);
@@ -765,10 +796,15 @@ void FTextView::menu_cb(int val)
 	}
 
 	if (input) {
-		char* s = get_word(popx, popy);
-		input->value(s);
-		input->do_callback();
-		free(s);
+		char* s = get_bound_text(popx, popy);
+		if (s) {
+			if (input == inpCall)
+				for (size_t i = 0; i < strlen(s); i++)
+					if (islower(s[i])) s[i] += 'A' - 'a';			
+			input->value(s);
+			input->do_callback();
+			free(s);
+		}
 		if (input == inpCall)
 			stopMacroTimer();
 	}

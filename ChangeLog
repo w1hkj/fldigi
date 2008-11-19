@@ -91,7 +91,7 @@ Change Log:
           IZDT, it is always +0000, so we should be using "Z". This applies to 
           macros which use the <ZDT> and <IZDT> tags.
       30) Added double click in the Rx text window.  Program parses the word to
-          target CALL, NAME, QTH and RSTin.
+          target CALL, NAME, LOC and RSTin.
       31) Added addition macro tag to insert the text in the two status fields
           such as PSK s/n and PSK imd readings.
       32) Menu icons can be toggled on/off via configuration check box.

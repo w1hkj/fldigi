@@ -70,6 +70,7 @@ protected:
 				  int set = SET_FONT | SET_SIZE | SET_COLOR);
 	int		readFile(const char* fn = 0);
 	void		saveFile(void);
+	char		*get_bound_text(int x, int y);
 	char		*get_word(int x, int y);
 	void		show_context_menu(void);
 	virtual void	menu_cb(int val) { }

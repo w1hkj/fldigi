@@ -463,6 +463,8 @@ void delFreq()
 	if (v >= 0) {
 		freqlist.erase(freqlist.begin() + v);
 		FreqSelect->remove(v + 1);
+		if (qso_opBrowser)
+			qso_opBrowser->remove(v + 1);
 	}
 }
 
@@ -485,7 +487,8 @@ void addFreq()
 	if (freq) {
 		size_t pos = addtoList(freq);
 		FreqSelect->insert(pos+1, freqlist[pos].str().c_str());
-		qso_opBrowser->insert(pos+1, freqlist[pos].str().c_str());
+		if (qso_opBrowser)
+				qso_opBrowser->insert(pos+1, freqlist[pos].str().c_str());
 	}
 }
 

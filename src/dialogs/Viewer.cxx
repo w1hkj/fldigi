@@ -50,8 +50,6 @@ int re_eflags = REG_NOTBOL | REG_NOTEOL;
 
 //unsigned int nchars = 80;
 
-extern viewpsk *pskviewer;
-
 string freqformat(int i)
 {
 static char szLine[80];

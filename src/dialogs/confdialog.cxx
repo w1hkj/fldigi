@@ -11,6 +11,7 @@
 #include "rigxml.h"
 #include "lookupcall.h"
 #include "icons.h"
+#include "Viewer.h"
 extern void initViewer();
 Fl_Double_Window *dlgConfig; 
 
@@ -221,6 +222,13 @@ sldrCWxmtWPM->redraw();
 cntCWlowerlimit->maximum(o->value()-20);
 }
 
+Fl_Counter *cntCWdefWPM=(Fl_Counter *)0;
+
+static void cb_cntCWdefWPM(Fl_Counter* o, void*) {
+  progdefaults.defCWspeed = (int)o->value();
+progdefaults.changed = true;
+}
+
 Fl_Counter *cntCWweight=(Fl_Counter *)0;
 
 static void cb_cntCWweight(Fl_Counter* o, void*) {
@@ -242,15 +250,6 @@ static void cb_cntCWrisetime(Fl_Counter* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Counter *cntCWdefWPM=(Fl_Counter *)0;
-
-static void cb_cntCWdefWPM(Fl_Counter* o, void*) {
-  progdefaults.defCWspeed = (int)o->value();
-progdefaults.changed = true;
-}
-
-Fl_Group *tabCWQSK=(Fl_Group *)0;
-
 Fl_Check_Button *btnQSK=(Fl_Check_Button *)0;
 
 static void cb_btnQSK(Fl_Check_Button* o, void*) {
@@ -269,52 +268,6 @@ Fl_Counter *cntPostTiming=(Fl_Counter *)0;
 
 static void cb_cntPostTiming(Fl_Counter* o, void*) {
   progdefaults.CWpost=o->value();
-progdefaults.changed = true;
-}
-
-Fl_Group *tabTHOR=(Fl_Group *)0;
-
-Fl_Input *txtTHORSecondary=(Fl_Input *)0;
-
-static void cb_txtTHORSecondary(Fl_Input* o, void*) {
-  progdefaults.THORsecText = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Counter *valTHOR_BW=(Fl_Counter *)0;
-
-static void cb_valTHOR_BW(Fl_Counter* o, void*) {
-  progdefaults.THOR_BW = o->value();
-resetTHOR();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *valTHOR_FILTER=(Fl_Check_Button *)0;
-
-static void cb_valTHOR_FILTER(Fl_Check_Button* o, void*) {
-  progdefaults.THOR_FILTER = o->value();
-resetTHOR();
-progdefaults.changed = true;
-}
-
-Fl_Counter *valTHOR_PATHS=(Fl_Counter *)0;
-
-static void cb_valTHOR_PATHS(Fl_Counter* o, void*) {
-  progdefaults.THOR_PATHS = (int)o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *valTHOR_SOFT=(Fl_Check_Button *)0;
-
-static void cb_valTHOR_SOFT(Fl_Check_Button* o, void*) {
-  progdefaults.THOR_SOFT = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Value_Slider *valThorCWI=(Fl_Value_Slider *)0;
-
-static void cb_valThorCWI(Fl_Value_Slider* o, void*) {
-  progdefaults.ThorCWI = o->value();
 progdefaults.changed = true;
 }
 
@@ -440,6 +393,25 @@ static void cb_valHellXmtWidth(Fl_Spinner* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Group *tabMT63=(Fl_Group *)0;
+
+Fl_Check_Button *btnMT63_8bit=(Fl_Check_Button *)0;
+
+static void cb_btnMT63_8bit(Fl_Check_Button* o, void*) {
+  progdefaults.mt63_8bit = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnmt63_interleave=(Fl_Check_Button *)0;
+
+static void cb_btnmt63_interleave(Fl_Check_Button* o, void*) {
+  if (o->value() == 1)
+progdefaults.mt63_interleave = 64;
+else
+progdefaults.mt63_interleave = 32;
+progdefaults.changed = true;
+}
+
 Fl_Group *tabOlivia=(Fl_Group *)0;
 
 Fl_Choice *mnuOlivia_Tones=(Fl_Choice *)0;
@@ -548,25 +520,6 @@ Fl_Counter *cntACQsn=(Fl_Counter *)0;
 
 static void cb_cntACQsn(Fl_Counter* o, void*) {
   progdefaults.ACQsn = (int)o->value();
-progdefaults.changed = true;
-}
-
-Fl_Group *tabMT63=(Fl_Group *)0;
-
-Fl_Check_Button *btnMT63_8bit=(Fl_Check_Button *)0;
-
-static void cb_btnMT63_8bit(Fl_Check_Button* o, void*) {
-  progdefaults.mt63_8bit = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnmt63_interleave=(Fl_Check_Button *)0;
-
-static void cb_btnmt63_interleave(Fl_Check_Button* o, void*) {
-  if (o->value() == 1)
-progdefaults.mt63_interleave = 64;
-else
-progdefaults.mt63_interleave = 32;
 progdefaults.changed = true;
 }
 
@@ -684,6 +637,52 @@ Fl_Check_Button *chkUOStx=(Fl_Check_Button *)0;
 
 static void cb_chkUOStx(Fl_Check_Button* o, void*) {
   progdefaults.UOStx=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Group *tabTHOR=(Fl_Group *)0;
+
+Fl_Input *txtTHORSecondary=(Fl_Input *)0;
+
+static void cb_txtTHORSecondary(Fl_Input* o, void*) {
+  progdefaults.THORsecText = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter *valTHOR_BW=(Fl_Counter *)0;
+
+static void cb_valTHOR_BW(Fl_Counter* o, void*) {
+  progdefaults.THOR_BW = o->value();
+resetTHOR();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *valTHOR_FILTER=(Fl_Check_Button *)0;
+
+static void cb_valTHOR_FILTER(Fl_Check_Button* o, void*) {
+  progdefaults.THOR_FILTER = o->value();
+resetTHOR();
+progdefaults.changed = true;
+}
+
+Fl_Counter *valTHOR_PATHS=(Fl_Counter *)0;
+
+static void cb_valTHOR_PATHS(Fl_Counter* o, void*) {
+  progdefaults.THOR_PATHS = (int)o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *valTHOR_SOFT=(Fl_Check_Button *)0;
+
+static void cb_valTHOR_SOFT(Fl_Check_Button* o, void*) {
+  progdefaults.THOR_SOFT = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Value_Slider *valThorCWI=(Fl_Value_Slider *)0;
+
+static void cb_valThorCWI(Fl_Value_Slider* o, void*) {
+  progdefaults.ThorCWI = o->value();
 progdefaults.changed = true;
 }
 
@@ -1768,11 +1767,12 @@ static const char szOliviaBandwidth[] = "125|250|500|1000|2000";
 static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600|115200|230400|460800";
   { Fl_Double_Window* o = new Fl_Double_Window(400, 255, "fldigi - config");
     w = o;
+    o->tooltip("Leading/Trailing Risetimes (msec)");
     o->color(FL_DARK2);
     o->selection_color((Fl_Color)51);
     o->labelsize(18);
     o->align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE);
-    { tabsConfigure = new Fl_Tabs(0, 0, 400, 220);
+    { tabsConfigure = new Fl_Tabs(0, 0, 405, 221);
       tabsConfigure->color(FL_DARK1);
       tabsConfigure->selection_color((Fl_Color)9);
       { tabID = new Fl_Group(0, 25, 400, 195, "Id\'s");
@@ -1950,11 +1950,13 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           tabsModems->selection_color((Fl_Color)10);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
           { tabCW = new Fl_Group(0, 50, 400, 170, "CW");
-            tabCW->color((Fl_Color)51);
-            tabCW->selection_color((Fl_Color)51);
-            { Fl_Group* o = new Fl_Group(1, 60, 398, 155);
-              o->box(FL_ENGRAVED_FRAME);
-              { Fl_Value_Slider* o = sldrCWbandwidth = new Fl_Value_Slider(65, 65, 325, 20, "BW");
+            { Fl_Tabs* o = new Fl_Tabs(0, 55, 400, 165);
+              { Fl_Group* o = new Fl_Group(0, 85, 400, 135, "CW Ops");
+                o->align(FL_ALIGN_TOP_LEFT);
+                { Fl_Group* o = new Fl_Group(4, 85, 392, 130);
+                o->box(FL_ENGRAVED_FRAME);
+                { Fl_Value_Slider* o = sldrCWbandwidth = new Fl_Value_Slider(64, 94, 325, 20, "BW");
+                sldrCWbandwidth->tooltip("DSP filter bandwidth");
                 sldrCWbandwidth->type(5);
                 sldrCWbandwidth->color(FL_BACKGROUND2_COLOR);
                 sldrCWbandwidth->minimum(10);
@@ -1965,8 +1967,9 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 sldrCWbandwidth->callback((Fl_Callback*)cb_sldrCWbandwidth);
                 sldrCWbandwidth->align(FL_ALIGN_LEFT);
                 o->value(progdefaults.CWbandwidth);
-              } // Fl_Value_Slider* sldrCWbandwidth
-              { Fl_Counter* o = cntCWrange = new Fl_Counter(140, 89, 65, 20, "Rx Trkg Rng");
+                } // Fl_Value_Slider* sldrCWbandwidth
+                { Fl_Counter* o = cntCWrange = new Fl_Counter(139, 118, 65, 20, "Rx Trkg Rng");
+                cntCWrange->tooltip("WPM tracking range");
                 cntCWrange->type(1);
                 cntCWrange->minimum(5);
                 cntCWrange->maximum(25);
@@ -1975,24 +1978,24 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 cntCWrange->callback((Fl_Callback*)cb_cntCWrange);
                 cntCWrange->align(FL_ALIGN_LEFT);
                 o->value(progdefaults.CWrange);
-              } // Fl_Counter* cntCWrange
-              { Fl_Check_Button* o = btnCWrcvTrack = new Fl_Check_Button(215, 89, 20, 20, "Enable Rx Trkg");
+                } // Fl_Counter* cntCWrange
+                { Fl_Check_Button* o = btnCWrcvTrack = new Fl_Check_Button(214, 118, 20, 20, "Enable Rx Trkg");
                 btnCWrcvTrack->down_box(FL_DOWN_BOX);
                 btnCWrcvTrack->value(1);
                 btnCWrcvTrack->callback((Fl_Callback*)cb_btnCWrcvTrack);
                 btnCWrcvTrack->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.CWtrack);
-              } // Fl_Check_Button* btnCWrcvTrack
-              { valCWrcvWPM = new Fl_Value_Output(65, 113, 35, 20, "RxWPM");
+                } // Fl_Check_Button* btnCWrcvTrack
+                { valCWrcvWPM = new Fl_Value_Output(64, 142, 35, 20, "RxWPM");
                 valCWrcvWPM->color(FL_BACKGROUND2_COLOR);
                 valCWrcvWPM->callback((Fl_Callback*)cb_valCWrcvWPM);
-              } // Fl_Value_Output* valCWrcvWPM
-              { prgsCWrcvWPM = new Fl_Progress(100, 113, 290, 20);
+                } // Fl_Value_Output* valCWrcvWPM
+                { prgsCWrcvWPM = new Fl_Progress(99, 142, 290, 20);
                 prgsCWrcvWPM->color(FL_INACTIVE_COLOR);
                 prgsCWrcvWPM->selection_color((Fl_Color)110);
                 prgsCWrcvWPM->align(FL_ALIGN_CENTER);
-              } // Fl_Progress* prgsCWrcvWPM
-              { Fl_Value_Slider* o = sldrCWxmtWPM = new Fl_Value_Slider(65, 135, 325, 20, "TxWPM");
+                } // Fl_Progress* prgsCWrcvWPM
+                { Fl_Value_Slider* o = sldrCWxmtWPM = new Fl_Value_Slider(64, 164, 325, 20, "TxWPM");
                 sldrCWxmtWPM->type(5);
                 sldrCWxmtWPM->color((Fl_Color)215);
                 sldrCWxmtWPM->minimum(5);
@@ -2003,8 +2006,9 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 sldrCWxmtWPM->callback((Fl_Callback*)cb_sldrCWxmtWPM);
                 sldrCWxmtWPM->align(FL_ALIGN_LEFT);
                 o->value(progdefaults.CWspeed);
-              } // Fl_Value_Slider* sldrCWxmtWPM
-              { Fl_Counter* o = cntCWlowerlimit = new Fl_Counter(203, 160, 65, 20, "Lower");
+                } // Fl_Value_Slider* sldrCWxmtWPM
+                { Fl_Counter* o = cntCWlowerlimit = new Fl_Counter(202, 189, 65, 20, "Lower");
+                cntCWlowerlimit->tooltip("Lower WPM limit");
                 cntCWlowerlimit->type(1);
                 cntCWlowerlimit->minimum(5);
                 cntCWlowerlimit->maximum(20);
@@ -2013,8 +2017,9 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 cntCWlowerlimit->callback((Fl_Callback*)cb_cntCWlowerlimit);
                 cntCWlowerlimit->align(FL_ALIGN_LEFT);
                 o->value(progdefaults.CWlowerlimit);
-              } // Fl_Counter* cntCWlowerlimit
-              { Fl_Counter* o = cntCWupperlimit = new Fl_Counter(325, 160, 65, 20, "Upper");
+                } // Fl_Counter* cntCWlowerlimit
+                { Fl_Counter* o = cntCWupperlimit = new Fl_Counter(324, 189, 65, 20, "Upper");
+                cntCWupperlimit->tooltip("Upper WPM limit");
                 cntCWupperlimit->type(1);
                 cntCWupperlimit->minimum(25);
                 cntCWupperlimit->maximum(200);
@@ -2023,38 +2028,9 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 cntCWupperlimit->callback((Fl_Callback*)cb_cntCWupperlimit);
                 cntCWupperlimit->align(FL_ALIGN_LEFT);
                 o->value(progdefaults.CWupperlimit);
-              } // Fl_Counter* cntCWupperlimit
-              { Fl_Counter* o = cntCWweight = new Fl_Counter(64, 185, 65, 20, "Wt. %");
-                cntCWweight->type(1);
-                cntCWweight->minimum(20);
-                cntCWweight->maximum(80);
-                cntCWweight->step(1);
-                cntCWweight->value(50);
-                cntCWweight->callback((Fl_Callback*)cb_cntCWweight);
-                cntCWweight->align(FL_ALIGN_LEFT);
-                o->value(progdefaults.CWweight);
-              } // Fl_Counter* cntCWweight
-              { Fl_Counter* o = cntCWdash2dot = new Fl_Counter(205, 185, 64, 21, "Dash/Dot");
-                cntCWdash2dot->type(1);
-                cntCWdash2dot->minimum(2.5);
-                cntCWdash2dot->maximum(4);
-                cntCWdash2dot->step(0.1);
-                cntCWdash2dot->value(3);
-                cntCWdash2dot->callback((Fl_Callback*)cb_cntCWdash2dot);
-                cntCWdash2dot->align(FL_ALIGN_LEFT);
-                o->value(progdefaults.CWdash2dot);
-              } // Fl_Counter* cntCWdash2dot
-              { Fl_Counter* o = cntCWrisetime = new Fl_Counter(325, 185, 65, 21, "Edge");
-                cntCWrisetime->type(1);
-                cntCWrisetime->minimum(0);
-                cntCWrisetime->maximum(15);
-                cntCWrisetime->step(0.1);
-                cntCWrisetime->value(4);
-                cntCWrisetime->callback((Fl_Callback*)cb_cntCWrisetime);
-                cntCWrisetime->align(FL_ALIGN_LEFT);
-                o->value(progdefaults.CWrisetime);
-              } // Fl_Counter* cntCWrisetime
-              { Fl_Counter* o = cntCWdefWPM = new Fl_Counter(65, 160, 64, 21, "Default");
+                } // Fl_Counter* cntCWupperlimit
+                { Fl_Counter* o = cntCWdefWPM = new Fl_Counter(64, 189, 64, 21, "Default");
+                cntCWdefWPM->tooltip("Default WPM");
                 cntCWdefWPM->type(1);
                 cntCWdefWPM->minimum(5);
                 cntCWdefWPM->maximum(200);
@@ -2063,101 +2039,104 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 cntCWdefWPM->callback((Fl_Callback*)cb_cntCWdefWPM);
                 cntCWdefWPM->align(FL_ALIGN_LEFT);
                 o->value(progdefaults.defCWspeed);
-              } // Fl_Counter* cntCWdefWPM
+                } // Fl_Counter* cntCWdefWPM
+                o->end();
+                } // Fl_Group* o
+                o->end();
+              } // Fl_Group* o
+              { Fl_Group* o = new Fl_Group(0, 80, 400, 140, "Timing / QSK");
+                o->align(FL_ALIGN_TOP_LEFT);
+                o->hide();
+                { Fl_Group* o = new Fl_Group(5, 85, 390, 65, "Timing");
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+                { Fl_Counter* o = cntCWweight = new Fl_Counter(60, 114, 65, 20, "Wt. %");
+                cntCWweight->tooltip("Dot to Dot-Space Ratio");
+                cntCWweight->type(1);
+                cntCWweight->minimum(20);
+                cntCWweight->maximum(80);
+                cntCWweight->step(1);
+                cntCWweight->value(50);
+                cntCWweight->callback((Fl_Callback*)cb_cntCWweight);
+                cntCWweight->align(FL_ALIGN_LEFT);
+                o->value(progdefaults.CWweight);
+                } // Fl_Counter* cntCWweight
+                { Fl_Counter* o = cntCWdash2dot = new Fl_Counter(201, 114, 64, 21, "Dash/Dot");
+                cntCWdash2dot->tooltip("Dash to Dot Ratio");
+                cntCWdash2dot->type(1);
+                cntCWdash2dot->minimum(2.5);
+                cntCWdash2dot->maximum(4);
+                cntCWdash2dot->step(0.1);
+                cntCWdash2dot->value(3);
+                cntCWdash2dot->callback((Fl_Callback*)cb_cntCWdash2dot);
+                cntCWdash2dot->align(FL_ALIGN_LEFT);
+                o->value(progdefaults.CWdash2dot);
+                } // Fl_Counter* cntCWdash2dot
+                { Fl_Counter* o = cntCWrisetime = new Fl_Counter(321, 114, 65, 21, "Edge");
+                cntCWrisetime->type(1);
+                cntCWrisetime->minimum(0);
+                cntCWrisetime->maximum(15);
+                cntCWrisetime->step(0.1);
+                cntCWrisetime->value(4);
+                cntCWrisetime->callback((Fl_Callback*)cb_cntCWrisetime);
+                cntCWrisetime->align(FL_ALIGN_LEFT);
+                o->value(progdefaults.CWrisetime);
+                } // Fl_Counter* cntCWrisetime
+                o->end();
+                } // Fl_Group* o
+                { Fl_Group* o = new Fl_Group(5, 150, 390, 65, "QSK");
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+                { Fl_Check_Button* o = btnQSK = new Fl_Check_Button(175, 175, 25, 15, "QSK on right channel");
+                btnQSK->tooltip("Enable QSK on right Channel");
+                btnQSK->down_box(FL_DOWN_BOX);
+                btnQSK->callback((Fl_Callback*)cb_btnQSK);
+                btnQSK->align(FL_ALIGN_LEFT);
+                o->value(progdefaults.QSK);
+                } // Fl_Check_Button* btnQSK
+                { Fl_Counter* o = cntPreTiming = new Fl_Counter(215, 172, 64, 21, "Pre Timing");
+                cntPreTiming->tooltip("Msec pre-keydown");
+                cntPreTiming->type(1);
+                cntPreTiming->minimum(0);
+                cntPreTiming->maximum(50);
+                cntPreTiming->step(0.5);
+                cntPreTiming->value(4);
+                cntPreTiming->callback((Fl_Callback*)cb_cntPreTiming);
+                o->value(progdefaults.CWpre);
+                o->maximum((int)(2400/progdefaults.CWspeed)/2.0);
+                } // Fl_Counter* cntPreTiming
+                { Fl_Counter* o = cntPostTiming = new Fl_Counter(315, 172, 64, 21, "Post Timing");
+                cntPostTiming->tooltip("Msec post-keydown");
+                cntPostTiming->type(1);
+                cntPostTiming->minimum(0);
+                cntPostTiming->maximum(50);
+                cntPostTiming->step(0.5);
+                cntPostTiming->value(4);
+                cntPostTiming->callback((Fl_Callback*)cb_cntPostTiming);
+                o->value(progdefaults.CWpre);
+                o->maximum((int)(2400/progdefaults.CWspeed)/2.0);
+                } // Fl_Counter* cntPostTiming
+                o->end();
+                } // Fl_Group* o
+                o->end();
+              } // Fl_Group* o
               o->end();
-            } // Fl_Group* o
+            } // Fl_Tabs* o
             tabCW->end();
           } // Fl_Group* tabCW
-          { tabCWQSK = new Fl_Group(0, 50, 400, 170, "QSK");
-            tabCWQSK->hide();
-            { Fl_Check_Button* o = btnQSK = new Fl_Check_Button(35, 75, 175, 15, "QSK on right channel");
-              btnQSK->down_box(FL_DOWN_BOX);
-              btnQSK->callback((Fl_Callback*)cb_btnQSK);
-              o->value(progdefaults.QSK);
-            } // Fl_Check_Button* btnQSK
-            { Fl_Counter* o = cntPreTiming = new Fl_Counter(25, 109, 64, 21, "Pre Timing");
-              cntPreTiming->type(1);
-              cntPreTiming->minimum(0);
-              cntPreTiming->maximum(50);
-              cntPreTiming->step(0.5);
-              cntPreTiming->value(4);
-              cntPreTiming->callback((Fl_Callback*)cb_cntPreTiming);
-              o->value(progdefaults.CWpre);
-              o->maximum((int)(2400/progdefaults.CWspeed)/2.0);
-            } // Fl_Counter* cntPreTiming
-            { Fl_Counter* o = cntPostTiming = new Fl_Counter(125, 109, 64, 21, "Post Timing");
-              cntPostTiming->type(1);
-              cntPostTiming->minimum(0);
-              cntPostTiming->maximum(50);
-              cntPostTiming->step(0.5);
-              cntPostTiming->value(4);
-              cntPostTiming->callback((Fl_Callback*)cb_cntPostTiming);
-              o->value(progdefaults.CWpre);
-              o->maximum((int)(2400/progdefaults.CWspeed)/2.0);
-            } // Fl_Counter* cntPostTiming
-            tabCWQSK->end();
-          } // Fl_Group* tabCWQSK
-          { tabTHOR = new Fl_Group(0, 50, 400, 170, "Thor");
-            tabTHOR->color((Fl_Color)51);
-            tabTHOR->selection_color((Fl_Color)51);
-            tabTHOR->hide();
-            { txtTHORSecondary = new Fl_Input(20, 75, 360, 44, "Secondary Text");
-              txtTHORSecondary->type(4);
-              txtTHORSecondary->callback((Fl_Callback*)cb_txtTHORSecondary);
-              txtTHORSecondary->align(FL_ALIGN_TOP_LEFT);
-              txtTHORSecondary->when(FL_WHEN_CHANGED);
-            } // Fl_Input* txtTHORSecondary
-            { Fl_Counter* o = valTHOR_BW = new Fl_Counter(20, 130, 63, 21, "BW factor:");
-              valTHOR_BW->type(1);
-              valTHOR_BW->minimum(1);
-              valTHOR_BW->maximum(2);
-              valTHOR_BW->step(0.1);
-              valTHOR_BW->value(1.5);
-              valTHOR_BW->callback((Fl_Callback*)cb_valTHOR_BW);
-              o->value(progdefaults.THOR_BW);
-            } // Fl_Counter* valTHOR_BW
-            { Fl_Check_Button* o = valTHOR_FILTER = new Fl_Check_Button(110, 130, 83, 20, "Filter ON");
-              valTHOR_FILTER->down_box(FL_DOWN_BOX);
-              valTHOR_FILTER->value(1);
-              valTHOR_FILTER->callback((Fl_Callback*)cb_valTHOR_FILTER);
-              o->value(progdefaults.THOR_FILTER);
-            } // Fl_Check_Button* valTHOR_FILTER
-            { Fl_Counter* o = valTHOR_PATHS = new Fl_Counter(20, 174, 63, 21, "Paths");
-              valTHOR_PATHS->type(1);
-              valTHOR_PATHS->minimum(4);
-              valTHOR_PATHS->maximum(8);
-              valTHOR_PATHS->step(1);
-              valTHOR_PATHS->value(5);
-              valTHOR_PATHS->callback((Fl_Callback*)cb_valTHOR_PATHS);
-              valTHOR_PATHS->hide();
-              o->value(progdefaults.THOR_PATHS);
-            } // Fl_Counter* valTHOR_PATHS
-            { Fl_Check_Button* o = valTHOR_SOFT = new Fl_Check_Button(215, 130, 108, 20, "Soft decode");
-              valTHOR_SOFT->down_box(FL_DOWN_BOX);
-              valTHOR_SOFT->callback((Fl_Callback*)cb_valTHOR_SOFT);
-              o->value(progdefaults.THOR_SOFT);
-            } // Fl_Check_Button* valTHOR_SOFT
-            { Fl_Value_Slider* o = valThorCWI = new Fl_Value_Slider(120, 174, 260, 21, "CWI threshold:");
-              valThorCWI->type(1);
-              valThorCWI->step(0.01);
-              valThorCWI->textsize(14);
-              valThorCWI->callback((Fl_Callback*)cb_valThorCWI);
-              valThorCWI->align(FL_ALIGN_LEFT);
-              o->value(progdefaults.ThorCWI);
-            } // Fl_Value_Slider* valThorCWI
-            tabTHOR->end();
-          } // Fl_Group* tabTHOR
           { tabDomEX = new Fl_Group(0, 50, 400, 170, "Dom");
             tabDomEX->color((Fl_Color)51);
             tabDomEX->selection_color((Fl_Color)51);
             tabDomEX->hide();
             { txtSecondary = new Fl_Input(20, 75, 360, 44, "Secondary Text");
+              txtSecondary->tooltip("Text to send during keyboard idle times");
               txtSecondary->type(4);
               txtSecondary->callback((Fl_Callback*)cb_txtSecondary);
               txtSecondary->align(FL_ALIGN_TOP_LEFT);
               txtSecondary->when(FL_WHEN_CHANGED);
             } // Fl_Input* txtSecondary
             { Fl_Counter* o = valDominoEX_BW = new Fl_Counter(20, 130, 63, 21, "BW factor:");
+              valDominoEX_BW->tooltip("DSP filter BW relative to signal width");
               valDominoEX_BW->type(1);
               valDominoEX_BW->minimum(1);
               valDominoEX_BW->maximum(2);
@@ -2167,12 +2146,14 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
               o->value(progdefaults.DOMINOEX_BW);
             } // Fl_Counter* valDominoEX_BW
             { Fl_Check_Button* o = valDominoEX_FILTER = new Fl_Check_Button(110, 130, 83, 20, "Filter ON");
+              valDominoEX_FILTER->tooltip("Enable DSP filtering");
               valDominoEX_FILTER->down_box(FL_DOWN_BOX);
               valDominoEX_FILTER->value(1);
               valDominoEX_FILTER->callback((Fl_Callback*)cb_valDominoEX_FILTER);
               o->value(progdefaults.DOMINOEX_FILTER);
             } // Fl_Check_Button* valDominoEX_FILTER
             { Fl_Check_Button* o = chkDominoEX_FEC = new Fl_Check_Button(220, 130, 51, 20, "FEC");
+              chkDominoEX_FEC->tooltip("Add MultiPSK compatible FEC");
               chkDominoEX_FEC->down_box(FL_DOWN_BOX);
               chkDominoEX_FEC->callback((Fl_Callback*)cb_chkDominoEX_FEC);
               o->value(progdefaults.DOMINOEX_FEC);
@@ -2188,6 +2169,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
               o->value(progdefaults.DOMINOEX_PATHS);
             } // Fl_Counter* valDominoEX_PATHS
             { Fl_Value_Slider* o = valDomCWI = new Fl_Value_Slider(125, 179, 260, 21, "CWI threshold:");
+              valDomCWI->tooltip("CWI detection and suppression");
               valDomCWI->type(1);
               valDomCWI->step(0.01);
               valDomCWI->textsize(14);
@@ -2268,6 +2250,25 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             } // Fl_Spinner* valHellXmtWidth
             tabFeld->end();
           } // Fl_Group* tabFeld
+          { tabMT63 = new Fl_Group(0, 50, 400, 170, "MT-63");
+            tabMT63->hide();
+            { Fl_Group* o = new Fl_Group(5, 60, 390, 155);
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { Fl_Check_Button* o = btnMT63_8bit = new Fl_Check_Button(55, 90, 163, 15, "8 bit extended chars");
+                btnMT63_8bit->down_box(FL_DOWN_BOX);
+                btnMT63_8bit->callback((Fl_Callback*)cb_btnMT63_8bit);
+                o->value(progdefaults.mt63_8bit);
+              } // Fl_Check_Button* btnMT63_8bit
+              { Fl_Check_Button* o = btnmt63_interleave = new Fl_Check_Button(55, 120, 186, 15, "64 bit interleave (long)");
+                btnmt63_interleave->down_box(FL_DOWN_BOX);
+                btnmt63_interleave->callback((Fl_Callback*)cb_btnmt63_interleave);
+                o->value(0);if (progdefaults.mt63_interleave == 64) o->value(1);
+              } // Fl_Check_Button* btnmt63_interleave
+              o->end();
+            } // Fl_Group* o
+            tabMT63->end();
+          } // Fl_Group* tabMT63
           { tabOlivia = new Fl_Group(0, 50, 400, 170, "Olivia");
             tabOlivia->color((Fl_Color)51);
             tabOlivia->selection_color((Fl_Color)51);
@@ -2395,25 +2396,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             } // Fl_Counter* cntACQsn
             tabPSK->end();
           } // Fl_Group* tabPSK
-          { tabMT63 = new Fl_Group(0, 50, 400, 170, "MT-63");
-            tabMT63->hide();
-            { Fl_Group* o = new Fl_Group(5, 60, 390, 155);
-              o->box(FL_ENGRAVED_FRAME);
-              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = btnMT63_8bit = new Fl_Check_Button(55, 90, 163, 15, "8 bit extended chars");
-                btnMT63_8bit->down_box(FL_DOWN_BOX);
-                btnMT63_8bit->callback((Fl_Callback*)cb_btnMT63_8bit);
-                o->value(progdefaults.mt63_8bit);
-              } // Fl_Check_Button* btnMT63_8bit
-              { Fl_Check_Button* o = btnmt63_interleave = new Fl_Check_Button(55, 120, 186, 15, "64 bit interleave (long)");
-                btnmt63_interleave->down_box(FL_DOWN_BOX);
-                btnmt63_interleave->callback((Fl_Callback*)cb_btnmt63_interleave);
-                o->value(0);if (progdefaults.mt63_interleave == 64) o->value(1);
-              } // Fl_Check_Button* btnmt63_interleave
-              o->end();
-            } // Fl_Group* o
-            tabMT63->end();
-          } // Fl_Group* tabMT63
           { tabRTTY = new Fl_Group(0, 50, 400, 170, "RTTY");
             tabRTTY->color((Fl_Color)51);
             tabRTTY->selection_color((Fl_Color)51);
@@ -2533,6 +2515,61 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             } // Fl_Group* o
             tabRTTY->end();
           } // Fl_Group* tabRTTY
+          { tabTHOR = new Fl_Group(0, 50, 400, 170, "Thor");
+            tabTHOR->color((Fl_Color)51);
+            tabTHOR->selection_color((Fl_Color)51);
+            tabTHOR->hide();
+            { txtTHORSecondary = new Fl_Input(20, 75, 360, 44, "Secondary Text");
+              txtTHORSecondary->tooltip("Text to send during keyboard idle times");
+              txtTHORSecondary->type(4);
+              txtTHORSecondary->callback((Fl_Callback*)cb_txtTHORSecondary);
+              txtTHORSecondary->align(FL_ALIGN_TOP_LEFT);
+              txtTHORSecondary->when(FL_WHEN_CHANGED);
+            } // Fl_Input* txtTHORSecondary
+            { Fl_Counter* o = valTHOR_BW = new Fl_Counter(20, 130, 63, 21, "BW factor:");
+              valTHOR_BW->tooltip("DSP filter BW relative to signal width");
+              valTHOR_BW->type(1);
+              valTHOR_BW->minimum(1);
+              valTHOR_BW->maximum(2);
+              valTHOR_BW->step(0.1);
+              valTHOR_BW->value(1.5);
+              valTHOR_BW->callback((Fl_Callback*)cb_valTHOR_BW);
+              o->value(progdefaults.THOR_BW);
+            } // Fl_Counter* valTHOR_BW
+            { Fl_Check_Button* o = valTHOR_FILTER = new Fl_Check_Button(110, 130, 83, 20, "Filter ON");
+              valTHOR_FILTER->tooltip("Enable DSP filtering");
+              valTHOR_FILTER->down_box(FL_DOWN_BOX);
+              valTHOR_FILTER->value(1);
+              valTHOR_FILTER->callback((Fl_Callback*)cb_valTHOR_FILTER);
+              o->value(progdefaults.THOR_FILTER);
+            } // Fl_Check_Button* valTHOR_FILTER
+            { Fl_Counter* o = valTHOR_PATHS = new Fl_Counter(20, 174, 63, 21, "Paths");
+              valTHOR_PATHS->type(1);
+              valTHOR_PATHS->minimum(4);
+              valTHOR_PATHS->maximum(8);
+              valTHOR_PATHS->step(1);
+              valTHOR_PATHS->value(5);
+              valTHOR_PATHS->callback((Fl_Callback*)cb_valTHOR_PATHS);
+              valTHOR_PATHS->hide();
+              o->value(progdefaults.THOR_PATHS);
+            } // Fl_Counter* valTHOR_PATHS
+            { Fl_Check_Button* o = valTHOR_SOFT = new Fl_Check_Button(215, 130, 108, 20, "Soft decode");
+              valTHOR_SOFT->tooltip("Detector thresholds track s/n");
+              valTHOR_SOFT->down_box(FL_DOWN_BOX);
+              valTHOR_SOFT->callback((Fl_Callback*)cb_valTHOR_SOFT);
+              o->value(progdefaults.THOR_SOFT);
+            } // Fl_Check_Button* valTHOR_SOFT
+            { Fl_Value_Slider* o = valThorCWI = new Fl_Value_Slider(120, 174, 260, 21, "CWI threshold:");
+              valThorCWI->tooltip("CWI detection and suppression");
+              valThorCWI->type(1);
+              valThorCWI->step(0.01);
+              valThorCWI->textsize(14);
+              valThorCWI->callback((Fl_Callback*)cb_valThorCWI);
+              valThorCWI->align(FL_ALIGN_LEFT);
+              o->value(progdefaults.ThorCWI);
+            } // Fl_Value_Slider* valThorCWI
+            tabTHOR->end();
+          } // Fl_Group* tabTHOR
           tabsModems->end();
         } // Fl_Tabs* tabsModems
         tabModems->end();
@@ -2636,9 +2673,9 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         } // Fl_Group* o
         tabQRZ->end();
       } // Fl_Group* tabQRZ
-      { tabRig = new Fl_Group(0, 25, 400, 195, "Rig");
+      { tabRig = new Fl_Group(0, 25, 401, 196, "Rig");
         tabRig->hide();
-        { Fl_Tabs* o = new Fl_Tabs(0, 25, 400, 195);
+        { Fl_Tabs* o = new Fl_Tabs(0, 25, 401, 196);
           o->selection_color((Fl_Color)10);
           { Fl_Group* o = new Fl_Group(0, 50, 400, 170, "H/W ptt");
             o->tooltip("Tottle DTR for ptt");
@@ -3200,7 +3237,7 @@ l with your sound hardware.");
         } // Fl_Tabs* o
         tabUI->end();
       } // Fl_Group* tabUI
-      { tabWaterfall = new Fl_Group(0, 25, 400, 195, "Wfall");
+      { tabWaterfall = new Fl_Group(0, 25, 405, 195, "Wfall");
         tabWaterfall->color((Fl_Color)51);
         tabWaterfall->selection_color((Fl_Color)51);
         tabWaterfall->hide();

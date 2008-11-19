@@ -284,6 +284,8 @@
         ELEM_(int, VIEWERchannels, "VIEWERCHANNELS", 20)                                \
         ELEM_(double, VIEWERsquelch, "VIEWERSQUELCH", 10.0)                             \
         ELEM_(int, VIEWERtimeout, "VIEWERTIMEOUT", 15)                                  \
+        ELEM_(Fl_Font, ViewerFontnbr, "VIEWERFONTNBR", FL_COURIER)                      \
+        ELEM_(int, ViewerFontsize, "VIEWERFONTSIZE", FL_NORMAL_SIZE)                    \
 /* XML-RPC/ARQ servers */                                                               \
         ELEM_(std::string, xmlrpc_address, "", "127.0.0.1")                             \
         ELEM_(std::string, xmlrpc_port, "", "7362")                                     \
