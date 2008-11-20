@@ -212,6 +212,7 @@ fldigi_SOURCES += \
 	include/pskeval.h \
 	include/ptt.h \
 	include/pixmaps.h \
+	include/pskrep.h \
 	include/qrunner.h \
 	include/lookupcall.h \
 	include/qrzlib.h \
@@ -230,6 +231,7 @@ fldigi_SOURCES += \
 	include/socket.h \
 	include/sound.h \
 	include/soundconf.h \
+	include/spot.h \
 	include/stacktrace.h \
 	include/status.h \
 	include/testmodem.h \
@@ -302,6 +304,8 @@ fldigi_SOURCES += \
 	soundcard/mixer.cxx \
 	soundcard/sound.cxx \
 	soundcard/soundconf.cxx \
+	spot/pskrep.cxx \
+	spot/spot.cxx \
 	throb/throb.cxx \
 	trx/modem.cxx \
 	trx/trx.cxx \

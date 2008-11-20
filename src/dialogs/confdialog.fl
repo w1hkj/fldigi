@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0108 
+version 1.0109 
 header_name {.h} 
 code_name {.cxx}
 decl {\#include <config.h>} {} 
@@ -35,6 +35,9 @@ decl {\#include "Viewer.h"} {}
 
 decl {extern void initViewer();} {} 
 
+decl {\#include "pskrep.h"} {global
+} 
+
 decl {Fl_Double_Window *dlgConfig;} {public
 } 
 
@@ -59,8 +62,8 @@ static const char szOliviaBandwidth[] = "125|250|500|1000|2000";
 static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600|115200|230400|460800";} {}
   code {} {}
   Fl_Window {} {
-    label {fldigi - config} open
-    tooltip {Leading/Trailing Risetimes (msec)} xywh {606 597 400 255} type Double color 45 selection_color 51 labelsize 18 align 80 visible
+    label {fldigi - config} open selected
+    tooltip {Leading/Trailing Risetimes (msec)} xywh {951 749 400 254} type Double color 45 selection_color 51 labelsize 18 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 405 221} color 47 selection_color 9
@@ -154,7 +157,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabMisc {
         label Misc open
-        xywh {0 25 400 195} color 51 selection_color 51 hide
+        xywh {0 25 400 195} color 51 selection_color 51
       } {
         Fl_Tabs tabsMisc {open
           xywh {0 25 400 195} selection_color 10
@@ -201,7 +204,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabSweetSpot {
             label {Sweet Spot} open
-            xywh {0 50 400 170}
+            xywh {0 50 400 170} hide
           } {
             Fl_Group {} {open
               xywh {5 60 390 75} box ENGRAVED_FRAME align 21
@@ -233,6 +236,75 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 xywh {49 100 246 25} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.StartAtSweetSpot);}
+              }
+            }
+          }
+          Fl_Group tabSpot {
+            label Spotting open
+            xywh {0 50 400 170}
+          } {
+            Fl_Group {} {
+              label {PSK Reporter} open
+              xywh {2 57 395 160} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Check_Button btnPSKRepAuto {
+                label {Automatically spot callsigns in decoded text}
+                callback {progdefaults.pskrep_auto = o->value();
+btnPSKRepInit->labelcolor(FL_RED);
+btnPSKRepInit->redraw_label();
+progdefaults.changed = true;}
+                xywh {15 80 324 20} down_box DOWN_BOX
+                code0 {btnPSKRepAuto->value(progdefaults.pskrep_auto);}
+              }
+              Fl_Check_Button btnPSKRepLog {
+                label {Send reception report when logging a QSO}
+                callback {progdefaults.pskrep_log = o->value();
+btnPSKRepInit->labelcolor(FL_RED);
+btnPSKRepInit->redraw_label();
+progdefaults.changed = true;}
+                xywh {15 104 327 20} down_box DOWN_BOX
+                code0 {btnPSKRepLog->value(progdefaults.pskrep_log);}
+              }
+              Fl_Input inpPSKRepHost {
+                label {Host:}
+                callback {progdefaults.pskrep_host = o->value();
+btnPSKRepInit->labelcolor(FL_RED);
+btnPSKRepInit->redraw_label();
+progdefaults.changed = true;}
+                xywh {56 156 220 20} when 1
+                code0 {inpPSKRepHost->value(progdefaults.pskrep_host.c_str());}
+              }
+              Fl_Input inpPSKRepPort {
+                label {Port:}
+                callback {progdefaults.pskrep_port = o->value();
+btnPSKRepInit->labelcolor(FL_RED);
+btnPSKRepInit->redraw_label();
+progdefaults.changed = true;}
+                xywh {323 156 60 20} when 1
+                code0 {inpPSKRepPort->value(progdefaults.pskrep_port.c_str());}
+              }
+              Fl_Button btnPSKRepInit {
+                label Initialize
+                callback {pskrep_stop();
+if (!pskrep_start())
+    boxPSKRepMsg->copy_label(pskrep_error());
+else {
+    boxPSKRepMsg->label(0);
+    o->labelcolor(FL_FOREGROUND_COLOR);
+}}
+                xywh {303 186 80 24}
+              }
+              Fl_Box boxPSKRepMsg {
+                label {<PSK Reporter error message>}
+                xywh {56 186 220 24} labelfont 2
+                code0 {boxPSKRepMsg->label(0);}
+              }
+              Fl_Check_Button btnPSKRepQRG {
+                label {Report QRG (enable only if you have rig control!)}
+                callback {progdefaults.pskrep_qrg = o->value();
+progdefaults.changed = true;}
+                xywh {15 128 357 20} down_box DOWN_BOX
+                code0 {btnPSKRepQRG->value(progdefaults.pskrep_qrg);}
               }
             }
           }
@@ -894,8 +966,8 @@ progdefaults.changed = true;}
       }
       Fl_Group tabOperator {
         label Oper
-        callback {progdefaults.changed = true;} open selected
-        xywh {0 25 400 195} color 51 selection_color 51 when 1
+        callback {progdefaults.changed = true;} open
+        xywh {0 25 400 195} color 51 selection_color 51 when 1 hide
       } {
         Fl_Input inpMyCallsign {
           label {Callsign:}
@@ -912,17 +984,23 @@ txtSecondary->value(progdefaults.secText.c_str());
 progdefaults.myCall = o->value();
 update_main_title();
 progdefaults.changed = true;}
-          xywh {78 36 85 24}
+          xywh {78 36 100 24}
         }
         Fl_Input inpMyName {
           label {Name:}
           callback {progdefaults.myName = o->value();
 progdefaults.changed = true;}
-          xywh {78 62 120 24}
+          xywh {270 36 120 24}
         }
         Fl_Input inpMyQth {
           label {Qth:}
           callback {progdefaults.myQth = o->value();
+progdefaults.changed = true;}
+          xywh {78 62 312 24}
+        }
+        Fl_Input inpMyAntenna {
+          label {Antenna:}
+          callback {progdefaults.myAntenna = o->value();
 progdefaults.changed = true;}
           xywh {78 89 312 24}
         }
@@ -957,7 +1035,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabQRZ {
-        label Qrz open
+        label QRZ open
         xywh {0 25 400 195} color 51 selection_color 51 hide
       } {
         Fl_Round_Button btnQRZnotavailable {

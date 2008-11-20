@@ -155,6 +155,7 @@ extern void set_AFCrange(double val);
 extern void show_frequency(long long);
 extern void show_mode(const string& mode);
 extern void show_bw(const string& sWidth);
+extern void show_spot(bool v);
 
 extern void put_WARNstatus(double);
 
@@ -195,5 +196,7 @@ extern void stopMacroTimer();
 Fl_Color adjust_color(Fl_Color fg, Fl_Color bg);
 
 void qsy(long long rfc, long long fmid = -1LL);
+
+bool quick_choice(const char* title = 0, bool sel = true);
 
 #endif

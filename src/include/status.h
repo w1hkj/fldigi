@@ -1,8 +1,6 @@
 #ifndef _status_H
 #define _status_H
 
-#include <iostream>
-#include <fstream>
 #include <string>
 
 #include "globals.h"
@@ -40,6 +38,8 @@ struct status {
 	int		scopeW;
 	int		scopeH;
 	string	LastMacroFile;
+	bool	spot_recv;
+	bool	spot_log;
 
 	bool	bLastStateRead;
 

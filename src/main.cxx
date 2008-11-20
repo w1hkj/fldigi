@@ -64,6 +64,7 @@
 #include "fileselect.h"
 #include "timeops.h"
 #include "debug.h"
+#include "pskrep.h"
 
 #if USE_HAMLIB
 	#include "rigclass.h"
@@ -285,6 +286,9 @@ int main(int argc, char ** argv)
 	XML_RPC_Server::start(progdefaults.xmlrpc_address.c_str(), progdefaults.xmlrpc_port.c_str());
 #endif
 
+	if (!pskrep_start())
+		LOG_ERROR("Could not start PSK reporter: %s", pskrep_error());
+
 	int ret = Fl::run();
 
 	arq_close();
@@ -292,6 +296,8 @@ int main(int argc, char ** argv)
 #if USE_XMLRPC
 	XML_RPC_Server::stop();
 #endif
+
+	pskrep_stop();
 
 	for (int i = 0; i < NUM_QRUNNER_THREADS; i++) {
 		cbq[i]->detach();

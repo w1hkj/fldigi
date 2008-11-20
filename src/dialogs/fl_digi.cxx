@@ -111,6 +111,7 @@
 #include "debug.h"
 #include "re.h"
 #include "network.h"
+#include "spot.h"
 
 Fl_Double_Window	*fl_digi_main=(Fl_Double_Window *)0;
 Fl_Help_Dialog 		*help_dialog = (Fl_Help_Dialog *)0;
@@ -120,9 +121,9 @@ MixerBase* mixer = 0;
 
 //bool	useCheckButtons;
 
-
-Fl_Light_Button		*btnTune = (Fl_Light_Button *)0;
+Fl_Light_Button		*btnAutoSpot = (Fl_Light_Button *)0;
 Fl_Light_Button		*btnRSID = (Fl_Light_Button *)0;
+Fl_Light_Button		*btnTune = (Fl_Light_Button *)0;
 
 Fl_Tile_check		*TiledGroup = 0;
 FTextView			*ReceiveText = 0;
@@ -805,6 +806,11 @@ void cb_mnuPlayback(Fl_Widget *w, void *d)
 		m->flags &= ~FL_MENU_VALUE;
 		playval = false;
 	}
+	else if (btnAutoSpot->value()) {
+		put_status("Spotting disabled", 3.0);
+		btnAutoSpot->value(0);
+		btnAutoSpot->do_callback();
+	}
 }
 #endif // USE_SNDFILE
 
@@ -852,6 +858,11 @@ void cb_mnuVisitURL(Fl_Widget*, void* arg)
 #endif
 
         restoreFocus();
+}
+
+void cb_mnuVisitPSKRep(Fl_Widget*, void*)
+{
+	cb_mnuVisitURL(0, (void*)string("http://pskreporter.info/pskmap?").append(progdefaults.myCall).c_str());
 }
 
 void html_help( const string &Html)
@@ -1085,6 +1096,11 @@ void cbRSID(Fl_Widget *w, void *) {
 	restoreFocus();
 }
 
+void cbAutoSpot(Fl_Widget* w, void*)
+{
+	progStatus.spot_recv = static_cast<Fl_Light_Button*>(w)->value();
+}
+
 void toggleRSID()
 {
 	btnRSID->value(0);
@@ -1185,8 +1201,21 @@ void qsoSave_cb(Fl_Widget *b, void *)
 
 void cb_QRZ(Fl_Widget *b, void *)
 {
-	CALLSIGNquery();
-	oktoclear = false;
+	if (!*inpCall->value())
+		return;
+
+	switch (Fl::event_button()) {
+	case FL_LEFT_MOUSE:
+		CALLSIGNquery();
+		oktoclear = false;
+		break;
+	case FL_RIGHT_MOUSE:
+		if (quick_choice(string("Spot \"").append(inpCall->value()).append("\"?").c_str(), false))
+			spot_manual(inpCall->value(), inpLoc->value());
+		break;
+	default:
+		break;
+	}
 }
 
 void status_cb(Fl_Widget *b, void *arg)
@@ -1497,7 +1526,7 @@ Fl_Menu_Item menu_[] = {
 { make_icon_label("Rig Control", multimedia_player_icon), 0, (Fl_Callback*)cb_mnuRig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
-{"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
+{" ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
 {"Help", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 #ifndef NDEBUG
 // settle the gmfsk vs fldigi argument once and for all
@@ -1505,7 +1534,8 @@ Fl_Menu_Item menu_[] = {
 #endif
 { make_icon_label("Beginners' Guide", start_here_icon), 0, cb_mnuBeginnersURL, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label("Online documentation...", help_browser_icon), 0, cb_mnuVisitURL, (void *)PACKAGE_DOCS, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Fldigi web site...", net_icon), 0, cb_mnuVisitURL, (void *)PACKAGE_HOME, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Fldigi web site...", net_icon), 0, cb_mnuVisitURL, (void *)PACKAGE_HOME, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Reception reports...", pskr_icon), 0, cb_mnuVisitPSKRep, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label("Command line options", utilities_terminal_icon), 0, cb_mnuCmdLineHelp, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label("Audio device info", audio_card_icon), 0, cb_mnuAudioInfo, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label("Build info", executable_icon), 0, cb_mnuBuildInfo, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
@@ -1752,6 +1782,22 @@ void show_bw(const string& sWidth)
 		REQ_SYNC(&Fl_ComboBox::put_value, opBW, sWidth.c_str());
 }
 
+void show_spot(bool v)
+{
+	if (v) {
+		mnu->size(btnAutoSpot->x(), mnu->h());
+		btnAutoSpot->value(progStatus.spot_recv);
+		btnAutoSpot->show();
+	}
+	else {
+		btnAutoSpot->hide();
+		btnAutoSpot->value(v);
+		btnAutoSpot->do_callback();
+		mnu->size(btnRSID->x(), mnu->h());
+	}
+	mnu->redraw();
+}
+
 void create_fl_digi_main() {
 
 	int pad = 1; //wSpace;
@@ -1789,6 +1835,11 @@ void create_fl_digi_main() {
 			Fl_Tooltip::font(FL_HELVETICA);
 			Fl_Tooltip::size(FL_NORMAL_SIZE);
 			Fl_Tooltip::enable(progdefaults.tooltips);
+
+			btnAutoSpot = new Fl_Light_Button(WNOM - 200 - pad, 0, 50, Hmenu, "Spot");
+			btnAutoSpot->selection_color(FL_GREEN);
+			btnAutoSpot->callback(cbAutoSpot, 0);
+			btnAutoSpot->hide();
 
 			btnRSID = new Fl_Light_Button(WNOM - 150 - pad, 0, 50, Hmenu, "RSID");
 			btnRSID->selection_color(FL_GREEN);
@@ -2438,11 +2489,11 @@ void put_rx_char(unsigned int data)
 {
 	static unsigned int last = 0;
 	const char **asc = ascii;
+	trx_mode mode = active_modem->get_mode();
 
 	if (mailclient || mailserver || arqmode)
 		asc = ascii2;
-	if (active_modem->get_mode() == MODE_RTTY ||
-		active_modem->get_mode() == MODE_CW)
+	if (mode == MODE_RTTY || mode == MODE_CW)
 		asc = ascii;
 
 	int style = FTextBase::RECV;
@@ -2465,7 +2516,15 @@ void put_rx_char(unsigned int data)
 
 	WriteARQ(data);
 	
-	string s = iscntrl(data) ? ascii2[data & 0x7F] : string(1, data);
+	string s;
+	if (iscntrl(data))
+		s = ascii2[data & 0x7F];
+	else {
+		s += data;
+		bool viewer = (mode >= MODE_PSK_FIRST && mode <= MODE_PSK_LAST && dlgViewer && dlgViewer->visible());
+		if (progStatus.spot_recv && !viewer)
+			spot_recv(data);
+	}
 	if (Maillogfile)
 		Maillogfile->log_to_file(cLogfile::LOG_RX, s);
 
@@ -2878,4 +2937,10 @@ void qsy(long long rfc, long long fmid)
 #endif
 	else
 		active_modem->set_freq(fmid);
+}
+
+bool quick_choice(const char* title, bool sel)
+{
+	Fl_Menu_Item m[] = { { "Confirm" }, { "Cancel" }, { 0 } };
+	return m->popup(Fl::event_x(), Fl::event_y(), title, m + !sel) == m;
 }

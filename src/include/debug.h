@@ -23,6 +23,7 @@
 #ifndef _DEBUG_H_
 #define _DEBUG_H_
 
+#include "util.h"
 
 class debug
 {

@@ -37,6 +37,9 @@
 #include "main.h"
 #include "modem.h"
 #include "debug.h"
+#include "configuration.h"
+#include "status.h"
+#include "spot.h"
 
 #include <FL/fl_ask.H>
 
@@ -146,6 +149,9 @@ char   LOG_MSEPARATOR[2] = {1,0};
 
 int submit_log(void)
 {
+	if (progStatus.spot_log)
+		spot_log(inpCall->value(), inpLoc->value());
+
 	char logdate[32], logtime[32], adifdate[32];
 #ifndef __CYGWIN__
 	int msqid, len;

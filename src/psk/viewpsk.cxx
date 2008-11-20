@@ -157,8 +157,8 @@ void viewpsk::rx_bit(int ch, int bit)
 	if ((shreg[ch] & 3) == 0) {
 		c = psk_varicode_decode(shreg[ch] >> 2);
 		shreg[ch] = 0;
-		if (c == '\n') c = ' ';
-		if (c >= ' ' && c <= 'z') {
+		if (c == '\n' || c == '\r') c = ' ';
+		if (isprint(c)) {
 			REQ(&viewaddchr, ch, (int)frequency[ch], c);
 			timeout[ch] = now + progdefaults.VIEWERtimeout;
 		}
