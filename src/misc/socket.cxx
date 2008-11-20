@@ -40,7 +40,10 @@
 #include <cstdlib>
 #include <cmath>
 
-#include "debug.h"
+#ifndef NDEBUG
+  #include "debug.h"
+#endif
+
 #include "socket.h"
 
 #if HAVE_GETADDRINFO && !defined(AI_NUMERICSERV)
@@ -189,7 +192,7 @@ static void free_servent(struct servent* sp)
 // Address class
 //
 
-Address::Address(const string& host, int port)
+Address::Address(const char* host, int port, const char* proto_name)
 	: node(host), copied(false)
 {
 #if HAVE_GETADDRINFO
@@ -206,10 +209,10 @@ Address::Address(const string& host, int port)
 	s << port;
 	service = s.str();
 
-	lookup();
+	lookup(proto_name);
 }
 
-Address::Address(const string& host, const string& port_name)
+Address::Address(const char* host, const char* port_name, const char* proto_name)
 	: node(host), service(port_name), copied(false)
 {
 #if HAVE_GETADDRINFO
@@ -219,7 +222,7 @@ Address::Address(const string& host, const string& port_name)
 	memset(&service_entry, 0, sizeof(service_entry));
 #endif
 
-	lookup();
+	lookup(proto_name);
 }
 
 Address::Address(const Address& addr)
@@ -270,14 +273,25 @@ Address& Address::operator=(const Address& rhs)
 	free_servent(&service_entry);
 	copy_hostent(&host_entry, &rhs.host_entry);
 	copy_servent(&service_entry, &rhs.service_entry);
+
+	addr.ai_protocol = rhs.addr.ai_protocol;
+	addr.ai_socktype = rhs.addr.ai_socktype;
 #endif
 
 	copied = true;
 	return *this;
 }
 
-void Address::lookup(void)
+void Address::lookup(const char* proto_name)
 {
+	int proto;
+	if (!strcasecmp(proto_name, "tcp"))
+		proto = IPPROTO_TCP;
+	else if (!strcasecmp(proto_name, "udp"))
+		proto = IPPROTO_UDP;
+	else
+		throw SocketException("Bad protocol name");
+
 #if HAVE_GETADDRINFO
 	struct addrinfo hints;
 	memset(&hints, 0, sizeof(hints));
@@ -285,7 +299,7 @@ void Address::lookup(void)
 	hints.ai_flags = AI_ADDRCONFIG;
 #  endif
 	hints.ai_family = AF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_socktype = (proto == IPPROTO_TCP ? SOCK_STREAM : SOCK_DGRAM);
 
 	if (service.find_first_not_of("0123456789") == string::npos)
 		hints.ai_flags |= AI_NUMERICSERV;
@@ -319,6 +333,9 @@ void Address::lookup(void)
 	else
 		copy_servent(&service_entry, sp);
 
+	memset(&addr, 0, sizeof(addr));
+	addr.ai_protocol = proto;
+	addr.ai_socktype = (proto == IPPROTO_TCP ? SOCK_STREAM : SOCK_DGRAM);
 #endif
 }
 
@@ -369,10 +386,7 @@ const addr_info_t* Address::get(size_t n) const
 	saddr.sin_addr = *(struct in_addr*)host_entry.h_addr_list[n];
 	saddr.sin_port = service_entry.s_port;
 
-	memset(&addr, 0, sizeof(addr));
 	addr.ai_family = saddr.sin_family;
-	addr.ai_socktype = SOCK_STREAM;
-	addr.ai_protocol = IPPROTO_TCP;
 	addr.ai_addrlen = sizeof(saddr);
 	addr.ai_addr = (struct sockaddr*)&saddr;
 #  ifndef NDEBUG

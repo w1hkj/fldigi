@@ -76,8 +76,8 @@ class Address
 {
 
 public:
-	Address(const std::string& host = "", int port = 0);
-	Address(const std::string& host, const std::string& port_name);
+	Address(const char* host = "", int port = 0, const char* proto_name = "tcp");
+	Address(const char* host, const char* port_name, const char* proto_name = "tcp");
 	Address(const Address& addr);
 	~Address();
 	Address& operator=(const Address& rhs);
@@ -86,7 +86,7 @@ public:
 	const addr_info_t* get(size_t n = 0) const;
 
 private:
-	void lookup(void);
+	void lookup(const char* proto_name);
 
 	std::string node;
 	std::string service;
