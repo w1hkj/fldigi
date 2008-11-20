@@ -103,9 +103,9 @@ bool re_t::match(const char* str, int eflags_)
 	return found;
 }
 
-const char* re_t::submatch(size_t n)
+const string& re_t::submatch(size_t n)
 {
-	return n < nsub() ? substrings[n].c_str() : 0;
+	return substrings[n];
 }
 
 void re_t::suboff(size_t n, int* start, int* end)
@@ -118,4 +118,18 @@ void re_t::suboff(size_t n, int* start, int* end)
 		if (start) *start = -1;
 		if (end) *end = -1;
 	}
+}
+
+// ------------------------------------------------------------------------
+
+fre_t::fre_t(const char* pattern_, int cflags_) : re_t(pattern_, cflags_) { }
+
+bool fre_t::match(const char* str, int eflags_)
+{
+	if (error)
+		return false;
+
+	bool nosub = cflags & REG_NOSUB || preg.re_nsub == 0;
+	return !regexec(&preg, str, (nosub ? 0 : preg.re_nsub+1),
+			(nosub ? NULL : &suboffsets[0]), eflags_);
 }

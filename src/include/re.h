@@ -38,10 +38,10 @@ public:
 	operator bool(void) { return !error; }
 
 	bool match(const char* str, int eflags_ = 0);
-        const char* submatch(size_t n);
+	const std::string& submatch(size_t n);
 	void suboff(size_t n, int* start, int* end);
 	size_t nsub(void) { return substrings.size(); }
-private:
+protected:
 	void compile(void);
 
 	std::string pattern;
@@ -52,4 +52,18 @@ private:
 	bool error;
 };
 
-#endif // RE_H_/
+class fre_t : private re_t
+{
+public:
+	fre_t(const char* pattern_, int cflags_ = 0);
+	operator bool(void) { return !error; }
+
+	bool match(const char* str, int eflags_ = 0);
+	const std::vector<regmatch_t>& suboff(void) { return suboffsets; }
+
+private:
+	fre_t(const fre_t& re);
+	fre_t& operator=(const fre_t& rhs);
+};
+
+#endif // RE_H_

@@ -39,9 +39,9 @@ long ver2int(const char* version)
 		return 0;
 
 	if (re.nsub() == 4)
-		v += strtol(re.submatch(3), NULL, 10);
-	v += strtol(re.submatch(2), NULL, 10) * 1000L;
-	v += strtol(re.submatch(1), NULL, 10) * 1000000L;
+		v += strtol(re.submatch(3).c_str(), NULL, 10);
+	v += strtol(re.submatch(2).c_str(), NULL, 10) * 1000L;
+	v += strtol(re.submatch(1).c_str(), NULL, 10) * 1000000L;
 
 	return v;
 }
