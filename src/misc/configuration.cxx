@@ -476,8 +476,8 @@ int configuration::setDefaults()
 	chkTransmitRSid->value(TransmitRSid);
 	chkRSidWideSearch->value(rsidWideSearch);
 	chkSlowCpu->value(slowcpu);
-
-	Fl_Button* qrzb;
+	
+	Fl_Button* qrzb = btnQRZnotavailable;
 	switch (QRZ) {
 	case QRZ_NONE:
 		qrzb = btnQRZnotavailable;
@@ -494,16 +494,15 @@ int configuration::setDefaults()
 	case QRZ_HAMCALL:
 		qrzb = btnHamcall;
 		break;
+	default :
+		break;
 	}
 	set_qrz_buttons(qrzb);
 	txtQRZpathname->value(QRZpathname.c_str());
 
-//	btnRTTY_USB->value(RTTY_USB);
 	btnsendid->value(sendid);
 	btnsendvideotext->value(sendtextid);
 	chkID_SMALL->value(ID_SMALL);
-				
-	FL_UNLOCK();
 
 	wf->setPrefilter(wfPreFilter);
 	valLatency->value(latency);
@@ -540,7 +539,6 @@ void configuration::initInterface()
 //		MilliSleep(100);
 	rigCAT_close();
 //		MilliSleep(100);
-
 
 	btnPTTis = (btnPTT[0]->value() ? 0 :
 		    btnPTT[1]->value() ? 1 :

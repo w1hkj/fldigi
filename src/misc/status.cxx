@@ -265,7 +265,7 @@ void status::initLastState()
 		TiledGroup->position( X, Y + H, X, Y + RxTextHeight);
 	}
 
-	if (rigShown == true) {
+	if (!progdefaults.docked_rig_control && rigShown == true) {
 		if (!rigcontrol)
 			createRigDialog();
 		rigcontrol->resize(rigX, rigY, rigW, rigH);

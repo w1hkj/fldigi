@@ -85,6 +85,7 @@ void loadPalette()
 		palLabelStr = "Palette: " + palLabelStr;
 		WF_Palette->label(palLabelStr.c_str());
 		WF_Palette->redraw();
+		progdefaults.PaletteName = palLabelStr;
 	}
 }
 
@@ -108,5 +109,7 @@ void savePalette()
 		if (pos != string::npos) palLabelStr.erase(0, pos+1);
 		palLabelStr = "Palette: " + palLabelStr;
 		WF_Palette->label(palLabelStr.c_str());
+		WF_Palette->redraw();
+		progdefaults.PaletteName = palLabelStr;
    	}
 }

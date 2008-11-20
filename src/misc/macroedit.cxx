@@ -45,6 +45,8 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add("<NAME>\tremote name");
 	w->add("<QTH>\tother qth");
 	w->add("<RST>\tother RST");
+	w->add("<INFO1>\ts/n etc.");
+	w->add("<INFO2>\timd etc.");
 	
 	w->add(LINE_SEP);
 	w->add("<GET>\ttext to NAME/QTH");

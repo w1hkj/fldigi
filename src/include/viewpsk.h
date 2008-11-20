@@ -95,4 +95,6 @@ public:
 	void set_freq(int n, double f) { frequency[n] = f; nomfreq[n] = (int)f; }
 };
 
+extern viewpsk *pskviewer;
+
 #endif

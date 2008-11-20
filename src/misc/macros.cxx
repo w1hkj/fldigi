@@ -63,6 +63,8 @@ void pEXEC(string &, size_t &);
 void pSTOP(string &, size_t &);
 void pCONT(string &, size_t &);
 void pGET(string &, size_t &);
+void pINFO1(string &, size_t &);
+void pINFO2(string &, size_t &);
 
 MTAGS mtags[] = {
 {"<CALL>",		pCALL},
@@ -77,6 +79,8 @@ MTAGS mtags[] = {
 {"<MYNAME>",	pMYNAME},
 {"<MYQTH>",		pMYQTH},
 {"<MYRST>",		pMYRST},
+{"<INFO1>",		pINFO1},
+{"<INFO2>",		pINFO2},
 {"<LDT>",		pLDT},
 {"<ILDT>",		pILDT},
 {"<ZDT>",		pZDT},
@@ -97,17 +101,29 @@ MTAGS mtags[] = {
 {"<EXEC>",		pEXEC},
 {"<STOP>",		pSTOP},
 {"<CONT>",		pCONT},
-{"<GET>",	pGET},
+{"<GET>",		pGET},
 {0, 0}
 };
 
 static bool expand;
 static bool GET = false;
 
+string info1msg = "";
+string info2msg = "";
+
 size_t mystrftime( char *s, size_t max, const char *fmt, const struct tm *tm) {
 	return strftime(s, max, fmt, tm);
 }
 
+void pINFO1(string &s, size_t &i)
+{
+	s.replace( i, 7, info1msg );
+}
+
+void pINFO2(string &s, size_t &i)
+{
+	s.replace( i, 7, info2msg );
+}
 
 void pCALL(string &s, size_t &i)
 {
@@ -291,7 +307,8 @@ void pLOG(string &s, size_t &i)
 {
 	submit_log();
 	s.replace(i, 5, "");
-	clearQSO();
+	if (progdefaults.ClearOnSave)
+		clearQSO();
 }
 
 void pTIMER(string &s, size_t &i)

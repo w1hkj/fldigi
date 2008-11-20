@@ -76,6 +76,7 @@ bool hamlib_init(bool bPtt)
 	hamlib_closed = true;
 
 #ifdef __CYGWIN__
+	string port = progdefaults.HamRigDevice;
 	adjust_port(port);
 #endif
 
@@ -89,8 +90,11 @@ bool hamlib_init(bool bPtt)
 
 		xcvr->init(progdefaults.HamRigModel);
 
+#ifdef __CYGWIN__
+		xcvr->setConf("rig_pathname", port.c_str());
+#else
 		xcvr->setConf("rig_pathname", progdefaults.HamRigDevice.c_str());
-
+#endif
 		snprintf(szParam, sizeof(szParam), "%d", progdefaults.HamlibWait);
 		xcvr->setConf("post_write_delay", szParam);
 
@@ -423,8 +427,12 @@ static int add_to_list(const struct rig_caps* rc, void*)
 	return 1;
 }
 
-static bool rig_cmp(const struct rig_caps* rig1, const struct rig_caps* rig2)
+//static bool rig_cmp(const struct rig_caps* rig1, const struct rig_caps* rig2)
+//{
+bool rig_cmp(const void *a, const void *b)
 {
+	const struct rig_caps *rig1 = (const struct rig_caps *)a;
+	const struct rig_caps *rig2 = (const struct rig_caps *)b;
 	int ret;
 
 	ret = strcasecmp(rig1->mfg_name, rig2->mfg_name);
@@ -438,19 +446,18 @@ static bool rig_cmp(const struct rig_caps* rig1, const struct rig_caps* rig2)
 	return true;
 }
 
-
 void hamlib_get_rigs(void)
 {
-	if (!hamlib_rigs.empty())
-		return;
-
-#ifndef NDEBUG
+//	if (!hamlib_rigs.empty())
+//		return;
+	hamlib_rigs.clear();
+#ifdef NDEBUG
 	rig_set_debug(RIG_DEBUG_NONE);
 #endif
 	rig_load_all_backends();
 	rig_list_foreach(add_to_list, 0);
 	sort(hamlib_rigs.begin(), hamlib_rigs.end(), rig_cmp);
-//	riglist.sort(rig_cmp);
+//	hamlib_rigs.sort(rig_cmp);
 }
 
 rig_model_t hamlib_get_rig_model_compat(const char* name)

@@ -70,6 +70,7 @@ protected:
 				  int set = SET_FONT | SET_SIZE | SET_COLOR);
 	int		readFile(const char* fn = 0);
 	void		saveFile(void);
+	char		*get_bound_text(int x, int y);
 	char		*get_word(int x, int y);
 	void		show_context_menu(void);
 	virtual void	menu_cb(int val) { }
@@ -125,6 +126,7 @@ protected:
 	void		handle_clickable(int x, int y);
 	void		handle_qsy(int start, int end);
 	void		handle_qso_data(int start, int end);
+	bool		handle_doubleclick(int start, int end);
 	virtual void	menu_cb(int val);
 	static void	changed_cb(int pos, int nins, int ndel, int nsty,
 				   const char *dtext, void *arg);
@@ -136,6 +138,7 @@ private:
 
 protected:
 	static Fl_Menu_Item view_menu[];
+	static Fl_Menu_Item view_menu_noicons[];
 };
 
 
@@ -181,6 +184,7 @@ private:
 
 protected:
 	static Fl_Menu_Item	edit_menu[];
+	static Fl_Menu_Item	edit_menu_noicons[];
 	bool			PauseBreak;
 	int			txpos;
 	static int		*ptxpos;
@@ -210,6 +214,7 @@ private:
 
 protected:
 	static Fl_Menu_Item log_menu[];
+	static Fl_Menu_Item log_menu_noicons[];
 };
 
 

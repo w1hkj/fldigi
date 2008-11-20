@@ -61,4 +61,7 @@ private:
 extern MACROTEXT macros;
 extern CONTESTCNTR contest_count;
 
+extern string info1msg;
+extern string info2msg;
+
 #endif

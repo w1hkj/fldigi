@@ -169,7 +169,6 @@ Fl_Button			*qso_btnAddFreq = (Fl_Button *)0;
 Fl_Button			*qso_btnSelFreq = (Fl_Button *)0;
 Fl_Button			*qso_btnDelFreq = (Fl_Button *)0;
 Fl_Button			*qso_btnClearList = (Fl_Button *)0;
-Fl_Button			*qso_btnCloseView = (Fl_Button *)0;
 
 Fl_Button			*btnMacroTimer;
 Fl_Button			*btnMacroDummy;
@@ -192,6 +191,8 @@ Fl_Slider			*sldrSquelch = (Fl_Slider *)0;
 Progress			*pgrsSquelch = (Progress *)0;
 
 Fl_RGB_Image		*feld_image = 0;
+Fl_Pixmap 			*addrbookpixmap = 0;
+Fl_Pixmap 			*closepixmap = 0;
 
 #if !defined(__APPLE__) && !defined(__CYGWIN__)
 Pixmap				fldigi_icon_pixmap;
@@ -596,12 +597,12 @@ void init_modem(trx_mode mode)
 
 	clear_StatusMessages();
 	progStatus.lastmode = mode;
-
+	
 	if (wf->xmtlock->value() == 1 && !mailserver) {
 		wf->xmtlock->value(0);
 		wf->xmtlock->damage();
 		active_modem->set_freqlock(false);
-	}
+	}		
 }
 
 void init_modem_sync(trx_mode m)
@@ -715,9 +716,9 @@ void cb_mnuConfigWaterfall(Fl_Menu_*, void*) {
 	dlgConfig->show();
 }
 
-void cb_mnuConfigVideo(Fl_Menu_*, void*) {
+void cb_mnuConfigID(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
-	tabsConfigure->value(tabVideo);
+	tabsConfigure->value(tabID);
 	dlgConfig->show();
 }
 
@@ -730,6 +731,12 @@ void cb_mnuConfigQRZ(Fl_Menu_*, void*) {
 void cb_mnuConfigMisc(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabMisc);
+	dlgConfig->show();
+}
+
+void cb_mnuUI(Fl_Menu_*, void *) {
+	progdefaults.loadDefaults();
+	tabsConfigure->value(tabUI);
 	dlgConfig->show();
 }
 
@@ -1170,6 +1177,8 @@ void qsoClear_cb(Fl_Widget *b, void *)
 void qsoSave_cb(Fl_Widget *b, void *)
 {
 	submit_log();
+	if (progdefaults.ClearOnSave)
+		clearQSO();
 	oktoclear = true;
 	restoreFocus();
 }
@@ -1353,8 +1362,7 @@ bool clean_exit(void) {
 
 	return true;
 }
-
-
+	
 Fl_Menu_Item menu_[] = {
 {"&Files", 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { make_icon_label("Open macros...", file_open_icon), 0,  (Fl_Callback*)cb_mnuOpenMacro, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
@@ -1364,9 +1372,9 @@ Fl_Menu_Item menu_[] = {
 {"Log File", 0, 0, 0, FL_MENU_DIVIDER | FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 #if USE_SNDFILE
 { make_icon_label("Audio"), 0, 0, 0, FL_MENU_DIVIDER | FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
-{"Rx capture",  0, (Fl_Callback*)cb_mnuCapture,  0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//70
-{"Tx generate", 0, (Fl_Callback*)cb_mnuGenerate, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//71
-{"Playback",    0, (Fl_Callback*)cb_mnuPlayback, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},//72
+{"Rx capture",  0, (Fl_Callback*)cb_mnuCapture,  0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
+{"Tx generate", 0, (Fl_Callback*)cb_mnuGenerate, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
+{"Playback",    0, (Fl_Callback*)cb_mnuPlayback, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 #endif
 { make_icon_label("E&xit", log_out_icon), 0,  (Fl_Callback*)cb_E, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
@@ -1469,17 +1477,16 @@ Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 {"Configure", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ make_icon_label("Defaults", preferences_system_icon),  0, 0, 0, FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Colors && Fonts", preferences_desktop_font_icon), 0, (Fl_Callback*)cb_mnuConfigFonts, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label("Operator", system_users_icon), 0, (Fl_Callback*)cb_mnuConfigOperator, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Waterfall", waterfall_icon), 0,  (Fl_Callback*)cb_mnuConfigWaterfall, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Video"), 0,  (Fl_Callback*)cb_mnuConfigVideo, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Rig Control", multimedia_player_icon), 0, (Fl_Callback*)cb_mnuConfigRigCtrl, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("QRZ", net_icon), 0,  (Fl_Callback*)cb_mnuConfigQRZ, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Sound Card", audio_card_icon), 0, (Fl_Callback*)cb_mnuConfigSoundCard, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Misc"), 0,  (Fl_Callback*)cb_mnuConfigMisc, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{0,0,0,0,0,0,0,0,0},
+{ make_icon_label("Colors && Fonts", preferences_desktop_font_icon), 0, (Fl_Callback*)cb_mnuConfigFonts, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("User Interface"), 0,  (Fl_Callback*)cb_mnuUI, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Waterfall", waterfall_icon), 0,  (Fl_Callback*)cb_mnuConfigWaterfall, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label("Modems", emblems_system_icon), 0, (Fl_Callback*)cb_mnuConfigModems, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Rig Control", multimedia_player_icon), 0, (Fl_Callback*)cb_mnuConfigRigCtrl, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Sound Card", audio_card_icon), 0, (Fl_Callback*)cb_mnuConfigSoundCard, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("IDs"), 0,  (Fl_Callback*)cb_mnuConfigID, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Misc"), 0,  (Fl_Callback*)cb_mnuConfigMisc, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("QRZ", net_icon), 0,  (Fl_Callback*)cb_mnuConfigQRZ, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label("Save Config", save_icon), 0, (Fl_Callback*)cb_mnuSaveConfig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
@@ -1510,6 +1517,7 @@ Fl_Menu_Item menu_[] = {
 {"  ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 };
+
 
 Fl_Menu_Bar *mnu;
 
@@ -1542,11 +1550,9 @@ void activate_rig_menu_item(bool b)
 	if (b) {
 		bSaveFreqList = true;
 		rig->show();
-//		rig->activate();
 		
 	} else {
 		rig->hide();
-//		rig->deactivate();
 		if (rigcontrol)
 			rigcontrol->hide();
 	}
@@ -1662,6 +1668,9 @@ void showOpBrowserView(Fl_Widget *, void *)
 	QsoInfoFrame2->hide();
 	QsoButtonFrame->hide();
 	RigViewerFrame->show();
+	qso_opPICK->image(closepixmap);
+	qso_opPICK->redraw_label();
+	qso_opPICK->tooltip("Close List");
 }
 
 void CloseQsoView()
@@ -1670,11 +1679,9 @@ void CloseQsoView()
 	QsoInfoFrame1->show();
 	QsoInfoFrame2->show();
 	QsoButtonFrame->show();
-}
-
-void cb_qso_btnCloseView(Fl_Widget *, void *)
-{
-	CloseQsoView();
+	qso_opPICK->image(addrbookpixmap);
+	qso_opPICK->redraw_label();
+	qso_opPICK->tooltip("Open List");
 }
 
 void cb_qso_btnSelFreq(Fl_Widget *, void *)
@@ -1766,8 +1773,9 @@ void create_fl_digi_main() {
 			// do some more work on the menu
 			for (size_t i = 0; i < sizeof(menu_)/sizeof(menu_[0]); i++) {
 				// FL_NORMAL_SIZE may have changed; update the menu items
-				if (menu_[i].text)
+				if (menu_[i].text) {
 					menu_[i].labelsize_ = FL_NORMAL_SIZE;
+				}
 				// set the icon label for items with the multi label type
 				if (menu_[i].labeltype() == _FL_MULTI_LABEL)
 					set_icon_label(&menu_[i]);
@@ -1780,6 +1788,7 @@ void create_fl_digi_main() {
 			// reset the tooltip font
 			Fl_Tooltip::font(FL_HELVETICA);
 			Fl_Tooltip::size(FL_NORMAL_SIZE);
+			Fl_Tooltip::enable(progdefaults.tooltips);
 
 			btnRSID = new Fl_Light_Button(WNOM - 150 - pad, 0, 50, Hmenu, "RSID");
 			btnRSID->selection_color(FL_GREEN);
@@ -1871,10 +1880,11 @@ void create_fl_digi_main() {
 
 				qso_opPICK = new Fl_Button(rightof(qso_opBW), Hmenu + Hqsoframe + 1,
 				                 w_mng, Hnotes - 2);
-	 			qso_opPICK->image(new Fl_Pixmap(address_book_icon));
+				addrbookpixmap = new Fl_Pixmap(address_book_icon);
+				closepixmap = new Fl_Pixmap(close_icon);
+	 			qso_opPICK->image(addrbookpixmap);
 				qso_opPICK->callback(showOpBrowserView, 0);
-				qso_opPICK->tooltip("List");
-
+				qso_opPICK->tooltip("Open List");
 			RigControlFrame->resizable(NULL);
 			
 			RigControlFrame->end();
@@ -1913,14 +1923,7 @@ void create_fl_digi_main() {
 				qso_btnDelFreq->tooltip("Delete from list");
 				qso_btnDelFreq->callback((Fl_Callback*)cb_qso_btnDelFreq);
 
-				qso_btnCloseView = new Fl_Button(
-										rightof(RigControlFrame), Hmenu + Hqsoframe + 1, 
-										40 + pad, Hnotes - 2);
-				qso_btnCloseView->image(new Fl_Pixmap(close_icon));
-				qso_btnCloseView->callback((Fl_Callback*)cb_qso_btnCloseView);
-				qso_btnCloseView->tooltip("Dismiss");
-			
-				qso_opBrowser = new Fl_Browser(rightof(qso_btnCloseView) + pad,  Hmenu + 1, opB_w, BV_h - 1 );
+				qso_opBrowser = new Fl_Browser(rightof(qso_btnDelFreq) + pad,  Hmenu + 1, opB_w, BV_h - 1 );
 			    qso_opBrowser->tooltip("Select operating parameters");
 			    qso_opBrowser->callback((Fl_Callback*)cb_qso_opBrowser);
 				qso_opBrowser->type(2);
@@ -1928,7 +1931,6 @@ void create_fl_digi_main() {
 				qso_opBrowser->labelfont(4);
 				qso_opBrowser->labelsize(12);
 				qso_opBrowser->textfont(4);
-
 				RigViewerFrame->resizable(NULL);
 			
 			RigViewerFrame->end();
@@ -2051,7 +2053,8 @@ void create_fl_digi_main() {
 		
 		Y = Hmenu + Hqsoframe + Hnotes + pad;
 
-		Fl_Widget* logfields[] = { inpFreq, inpTime, inpCall, inpName, inpRstIn,
+//		Fl_Widget* logfields[] = { inpFreq, inpTime, inpCall, inpName, inpRstIn,
+		Fl_Widget* logfields[] = { inpCall, inpName, inpRstIn,
 					   inpRstOut, inpQth, inpAZ, inpLoc, inpNotes };
 		for (size_t i = 0; i < sizeof(logfields)/sizeof(*logfields); i++)
 			logfields[i]->callback(cb_log);
@@ -2331,7 +2334,7 @@ void create_fl_digi_main() {
 	if (progdefaults.docked_rig_control)
 		activate_rig_menu_item(false);
 
-	if (!progdefaults.menu_icons)
+	if (!progdefaults.menuicons)
 		toggle_icon_labels();
 }
 
@@ -2531,6 +2534,8 @@ void put_Status2(const char *msg, double timeout, status_timeout action)
 	strncpy(m, msg, sizeof(m));
 	m[sizeof(m) - 1] = '\0';
 
+	info2msg = msg;
+	
 	REQ(put_status_msg, Status2, m, timeout, action);
 }
 
@@ -2540,6 +2545,8 @@ void put_Status1(const char *msg, double timeout, status_timeout action)
 	strncpy(m, msg, sizeof(m));
 	m[sizeof(m) - 1] = '\0';
 
+	info1msg = msg;
+	
 	REQ(put_status_msg, Status1, m, timeout, action);
 }
 
@@ -2569,11 +2576,15 @@ void set_CWwpm()
 
 void clear_StatusMessages()
 {
+	FL_LOCK_E();
 	StatusBar->label("");
 	Status1->label("");
 	Status2->label("");
+	FL_UNLOCK_E();
+	FL_AWAKE_E();
 }
 
+	
 void put_MODEstatus(trx_mode mode)
 {
 	FL_LOCK_D();

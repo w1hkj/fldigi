@@ -1739,6 +1739,8 @@ void waterfall::handle_mouse_wheel(int what, int d)
 			val = sldrHellBW;
 		else if (m == MODE_CW)
 			val = sldrCWbandwidth;
+		else
+			return;
 		msg_fmt = "%s = %2.0f Hz";
 		msg_label = val->label();
 		break;

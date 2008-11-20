@@ -71,7 +71,7 @@ struct rmode_name_t {
 	, // C99 trailing commas in enumerations not yet in the C++ standard
 	{ RIG_MODE_SAM, "SAM" },
 	{ RIG_MODE_SAL, "SAL" },
-	{ RIG_MODE_SAH, "SAH" },
+	{ RIG_MODE_SAH, "SAH" }
 #endif
 };
 
@@ -214,8 +214,15 @@ size_t addtoList(long val)
 	qrg_mode_t m;
 
 	m.rfcarrier = val;
+
+	if (progdefaults.docked_rig_control) {
+	if (strlen(qso_opMODE->value()))
+		m.rmode = qso_opMODE->value();
+	} else {
 	if (strlen(opMODE->value()))
 		m.rmode = opMODE->value();
+	}
+	
 	if (active_modem) {
 		m.carrier = active_modem->get_freq();
 		m.mode = active_modem->get_mode();
@@ -319,11 +326,14 @@ void setMode()
 #if USE_HAMLIB
 	if (progdefaults.chkUSEHAMLIBis)
 		hamlib_setmode(mode_nums[opMODE->value()]);
+	else
 #endif
 	if (progdefaults.chkUSERIGCATis)
 		rigCAT_setmode(opMODE->value());
-	if (progdefaults.chkUSEMEMMAPis)
+	else if (progdefaults.chkUSEMEMMAPis)
 		rigMEM_setmode(opMODE->value());
+	else
+		rigCAT_setmode(opMODE->value());
 }
 
 int cb_qso_opMODE()
@@ -333,11 +343,14 @@ int cb_qso_opMODE()
 #if USE_HAMLIB
 	if (progdefaults.chkUSEHAMLIBis)
 		hamlib_setmode(mode_nums[qso_opMODE->value()]);
+	else
 #endif
 	if (progdefaults.chkUSERIGCATis)
 		rigCAT_setmode(qso_opMODE->value());
-	if (progdefaults.chkUSEMEMMAPis)
+	else if (progdefaults.chkUSEMEMMAPis)
 		rigMEM_setmode(qso_opMODE->value());
+	else
+		rigCAT_setmode(qso_opMODE->value());
 	return 0;
 }
 
@@ -456,6 +469,8 @@ void delFreq()
 	if (v >= 0) {
 		freqlist.erase(freqlist.begin() + v);
 		FreqSelect->remove(v + 1);
+		if (qso_opBrowser)
+			qso_opBrowser->remove(v + 1);
 	}
 }
 
@@ -478,7 +493,8 @@ void addFreq()
 	if (freq) {
 		size_t pos = addtoList(freq);
 		FreqSelect->insert(pos+1, freqlist[pos].str().c_str());
-		qso_opBrowser->insert(pos+1, freqlist[pos].str().c_str());
+		if (qso_opBrowser)
+				qso_opBrowser->insert(pos+1, freqlist[pos].str().c_str());
 	}
 }
 
@@ -529,24 +545,35 @@ LOG_DEBUG("xml rig");
 bool init_NoRig_RigDialog()
 {
 LOG_DEBUG("no rig");
-	clearList();
-	buildlist();
-
 	opBW->deactivate();
 	opMODE->clear();
-	opMODE->add("LSB");
-	opMODE->add("USB");
-	opMODE->index(0);
-	opMODE->activate();
 
 	if (progdefaults.docked_rig_control) {
 		qso_opBW->deactivate();
 		qso_opMODE->clear();
-		qso_opMODE->add("LSB");
-		qso_opMODE->add("USB");
+	}		
+
+	for (size_t i = 0; i < sizeof(modes)/sizeof(modes[0]); i++) {
+		opMODE->add(modes[i].name);
+		if (progdefaults.docked_rig_control)
+			qso_opMODE->add(modes[i].name);
+	}
+	LSBmodes.clear();
+	LSBmodes.push_back("LSB");
+	LSBmodes.push_back("CWR");
+	LSBmodes.push_back("RTTY");
+	LSBmodes.push_back("PKTLSB");
+
+	opMODE->index(0);
+	opMODE->activate();
+
+	if (progdefaults.docked_rig_control) {
 		qso_opMODE->index(0);
 		qso_opMODE->activate();
 	}
+
+	clearList();
+	buildlist();
 
 	windowTitle = "Rig Not Specified";
 	setTitle();
@@ -557,11 +584,14 @@ LOG_DEBUG("no rig");
 bool init_rigMEM_RigDialog()
 {
 LOG_DEBUG("Mem Mapped rig");
-	clearList();
-	buildlist();
-
 	opBW->deactivate();
 	opMODE->clear();
+
+	if (progdefaults.docked_rig_control) {
+		qso_opBW->deactivate();
+		qso_opMODE->clear();
+	}		
+
 	opMODE->add("LSB");
 	opMODE->add("USB");
 	opMODE->index(0);
@@ -575,6 +605,9 @@ LOG_DEBUG("Mem Mapped rig");
 		qso_opMODE->index(0);
 		qso_opMODE->activate();
 	}
+
+	clearList();
+	buildlist();
 
 	windowTitle = "Memory Mapped Rig";
 	setTitle();
@@ -588,11 +621,18 @@ bool init_Hamlib_RigDialog()
 LOG_DEBUG("hamlib");
 	opBW->deactivate();
 	opMODE->clear();
+
+	if (progdefaults.docked_rig_control) {
+		qso_opBW->deactivate();
+		qso_opMODE->clear();
+	}		
+	
 	for (size_t i = 0; i < sizeof(modes)/sizeof(modes[0]); i++) {
 		mode_nums[modes[i].name] = modes[i].mode;
 		mode_names[modes[i].mode] = modes[i].name;
 		opMODE->add(modes[i].name);
-		qso_opMODE->add(modes[i].name);
+		if (progdefaults.docked_rig_control)
+			qso_opMODE->add(modes[i].name);
 	}
 	clearList();
 	buildlist();
@@ -610,6 +650,14 @@ Fl_Double_Window *createRigDialog()
 {
 	Fl_Double_Window *w;
 	w = rig_dialog();
+	if (!w) return NULL;
+	FreqDisp->SetONOFFCOLOR(
+		fl_rgb_color(	progdefaults.FDforeground.R, 
+						progdefaults.FDforeground.G, 
+						progdefaults.FDforeground.B),
+		fl_rgb_color(	progdefaults.FDbackground.R, 
+						progdefaults.FDbackground.G, 
+						progdefaults.FDbackground.B));	
 	w->xclass(PACKAGE_NAME);
 	return w;
 }
