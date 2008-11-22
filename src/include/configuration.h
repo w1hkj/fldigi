@@ -211,6 +211,7 @@
         ELEM_(std::string, myName, "MYNAME", "")                                        \
         ELEM_(std::string, myLocator, "MYLOC", "")                                      \
         ELEM_(std::string, secText, "SECONDARYTEXT", "")                                \
+        ELEM_(std::string, myAntenna, "MYANTENNA", "")                                  \
 /* Sound card */                                                                        \
         ELEM_(int, btnAudioIOis, "AUDIOIO", SND_IDX_PORT)                               \
         ELEM_(std::string, OSSdevice, "OSSDEVICE", "")                                  \
@@ -300,7 +301,13 @@
         ELEM_(int, rx_msgid, "", 9876)                                                  \
         ELEM_(int, tx_msgid, "", 6789)                                                  \
         ELEM_(std::string, arq_address, "", "127.0.0.1")                                \
-        ELEM_(std::string, arq_port, "", "3122")
+        ELEM_(std::string, arq_port, "", "3122")                                        \
+/* PSK reporter */                                                                      \
+        ELEM_(bool, pskrep_auto, "PSKREPAUTO", false)                                   \
+        ELEM_(bool, pskrep_log, "PSKREPLOG", false)                                     \
+        ELEM_(bool, pskrep_qrg, "PSKREPQRG", false)                                     \
+        ELEM_(std::string, pskrep_host, "PSKREPHOST", "report.psk.gladstonefamily.net") \
+        ELEM_(std::string, pskrep_port, "PSKREPPORT", "4739")
 
 // declare the struct
 #define ELEM_DECLARE_CONFIGURATION(type_, var_, tag_, ...) type_ var_;

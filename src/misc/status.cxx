@@ -38,8 +38,8 @@ status progStatus = {
 	MODE_BPSK31,		// trx_mode	lastmode;
 	50,					// int mainX;
 	50,					// int mainY;
-	(WNOM > 600 ? WNOM : 600),	// int mainW;
-	DEFAULT_HNOM,		// int mainH;
+	WMIN,				// int mainW;
+	HMIN,				// int mainH;
 	Hrcvtxt,			// int RxTextHeight;
 	false,				// bool rigShown;
 	50,					// int rigX;
@@ -67,6 +67,8 @@ status progStatus = {
 	50,					// int	scopeW;
 	50,					// int	scopeH;
 	"macros.mdf",		// string LastMacroFile;
+	false,			// bool spot_recv
+	false,			// bool spot_log
 
 	false				// bool bLastStateRead;
 };
@@ -157,6 +159,9 @@ void status::saveLastState()
 	spref.set("scope_h", scopeH);
 	
 	spref.set("last_macro_file", LastMacroFile.c_str());
+
+	spref.set("spot_recv", spot_recv);
+	spref.set("spot_log", spot_recv);
 }
 
 void status::loadLastState()
@@ -221,6 +226,9 @@ void status::loadLastState()
 	spref.get("last_macro_file", defbuffer, "macros.mdf");
 	LastMacroFile = defbuffer;
 	if (defbuffer) free(defbuffer);
+
+	spref.get("spot_recv", i, i); spot_recv = i;
+	spref.get("spot_log", i, i); spot_log = i;
 }
 
 void status::initLastState()

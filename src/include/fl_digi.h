@@ -39,6 +39,7 @@
 #include <FL/Fl_Tile.H>
 #include <FL/Fl_Light_Button.H>
 #include <FL/Fl_Check_Button.H>
+#include <FL/Fl_Multiline_Input.H>
 
 #include "combo.h"
 #include "FTextView.h"
@@ -75,8 +76,11 @@ extern Fl_Input			*inpName;
 extern Fl_Input			*inpRstIn;
 extern Fl_Input			*inpRstOut;
 extern Fl_Input			*inpQth;
+extern Fl_Input			*inpCnty;
+extern Fl_Input			*inpSerNo;
+extern Fl_Input			*inpVEprov;
 extern Fl_Input			*inpLoc;
-extern Fl_Input			*inpNotes;
+extern Fl_Multiline_Input			*inpNotes;
 extern Fl_Input			*inpAZ;	// WA5ZNU
 extern Fl_Button		*qsoClear;
 extern Fl_Button		*qsoSave;
@@ -155,6 +159,7 @@ extern void set_AFCrange(double val);
 extern void show_frequency(long long);
 extern void show_mode(const string& mode);
 extern void show_bw(const string& sWidth);
+extern void show_spot(bool v);
 
 extern void put_WARNstatus(double);
 
@@ -195,5 +200,7 @@ extern void stopMacroTimer();
 Fl_Color adjust_color(Fl_Color fg, Fl_Color bg);
 
 void qsy(long long rfc, long long fmid = -1LL);
+
+bool quick_choice(const char* title = 0, bool sel = true);
 
 #endif

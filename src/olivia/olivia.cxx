@@ -361,10 +361,8 @@ olivia::olivia()
 	rxbuffer = 0;
 	samplerate = 8000;
 
-	FL_LOCK();
-		Tx = new MFSK_Transmitter< float >;
-		Rx = new MFSK_Receiver< float >;
-	FL_UNLOCK();
+	Tx = new MFSK_Transmitter< float >;
+	Rx = new MFSK_Receiver< float >;
 
 	mode = MODE_OLIVIA;
 	lastfreq = 0;

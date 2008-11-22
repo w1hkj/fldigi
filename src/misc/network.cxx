@@ -11,7 +11,7 @@ using namespace std;
 bool request_reply(const string& node, const string& service, const string& request, string& reply, double timeout)
 {
 	try {
-		Socket s(Address(node, service));
+		Socket s(Address(node.c_str(), service.c_str()));
 		s.connect();
 		s.set_nonblocking();
 		s.set_timeout(timeout);

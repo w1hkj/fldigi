@@ -43,7 +43,34 @@ const unsigned char nfields = 4;
 int fwidths[nfields];
 enum { max_rfcarrier, max_rmode, max_mode };
 
-#if USE_HAMLIB
+#if !USE_HAMLIB
+
+typedef enum {
+	RIG_MODE_NONE =  	0,	/*!< '' -- None */
+	RIG_MODE_AM =    	(1<<0),	/*!< \c AM -- Amplitude Modulation */
+	RIG_MODE_CW =    	(1<<1),	/*!< \c CW -- CW "normal" sideband */
+	RIG_MODE_USB =		(1<<2),	/*!< \c USB -- Upper Side Band */
+	RIG_MODE_LSB =		(1<<3),	/*!< \c LSB -- Lower Side Band */
+	RIG_MODE_RTTY =		(1<<4),	/*!< \c RTTY -- Radio Teletype */
+	RIG_MODE_FM =    	(1<<5),	/*!< \c FM -- "narrow" band FM */
+	RIG_MODE_WFM =   	(1<<6),	/*!< \c WFM -- broadcast wide FM */
+	RIG_MODE_CWR =   	(1<<7),	/*!< \c CWR -- CW "reverse" sideband */
+	RIG_MODE_RTTYR =	(1<<8),	/*!< \c RTTYR -- RTTY "reverse" sideband */
+	RIG_MODE_AMS =    	(1<<9),	/*!< \c AMS -- Amplitude Modulation Synchronous */
+	RIG_MODE_PKTLSB =       (1<<10),/*!< \c PKTLSB -- Packet/Digital LSB mode (dedicated port) */
+	RIG_MODE_PKTUSB =       (1<<11),/*!< \c PKTUSB -- Packet/Digital USB mode (dedicated port) */
+	RIG_MODE_PKTFM =        (1<<12),/*!< \c PKTFM -- Packet/Digital FM mode (dedicated port) */
+	RIG_MODE_ECSSUSB =      (1<<13),/*!< \c ECSSUSB -- Exalted Carrier Single Sideband USB */
+	RIG_MODE_ECSSLSB =      (1<<14),/*!< \c ECSSLSB -- Exalted Carrier Single Sideband LSB */
+	RIG_MODE_FAX =          (1<<15),/*!< \c FAX -- Facsimile Mode */
+	RIG_MODE_SAM =          (1<<16),/*!< \c SAM -- Synchronous AM double sideband */
+	RIG_MODE_SAL =          (1<<17),/*!< \c SAL -- Synchronous AM lower sideband */
+	RIG_MODE_SAH =          (1<<18),/*!< \c SAH -- Synchronous AM upper (higher) sideband */
+	RIG_MODE_DSB =			(1<<19), /*!< \c DSB -- Double sideband suppressed carrier */
+} rmode_t;
+    
+#endif
+
 struct rmode_name_t {
 	rmode_t mode;
 	const char *name;
@@ -98,7 +125,6 @@ void selFreq(long int f)
 	if (FreqDisp)
 		FreqDisp->value(f);
 }
-#endif // USE_HAMLIB
 
 void initOptionMenus()
 {

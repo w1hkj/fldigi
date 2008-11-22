@@ -39,6 +39,16 @@ extern Fl_Value_Input *valCWsweetspot;
 extern Fl_Value_Input *valRTTYsweetspot;
 extern Fl_Value_Input *valPSKsweetspot;
 extern Fl_Check_Button *btnStartAtSweetSpot;
+extern Fl_Group *tabSpot;
+extern Fl_Check_Button *btnPSKRepAuto;
+extern Fl_Check_Button *btnPSKRepLog;
+extern Fl_Input *inpPSKRepHost;
+extern Fl_Input *inpPSKRepPort;
+#include <FL/Fl_Button.H>
+extern Fl_Button *btnPSKRepInit;
+#include <FL/Fl_Box.H>
+extern Fl_Box *boxPSKRepMsg;
+extern Fl_Check_Button *btnPSKRepQRG;
 extern Fl_Group *tabModems;
 extern Fl_Tabs *tabsModems;
 extern Fl_Group *tabCW;
@@ -130,6 +140,7 @@ extern Fl_Input *inpMyLocator;
 extern Fl_Check_Button *btnUseLeadingZeros;
 extern Fl_Value_Input *nbrContestStart;
 extern Fl_Value_Input *nbrContestDigits;
+extern Fl_Input *inpMyAntenna;
 extern Fl_Group *tabQRZ;
 extern Fl_Round_Button *btnQRZnotavailable;
 extern Fl_Round_Button *btnQRZcdrom;
@@ -139,7 +150,6 @@ extern Fl_Input *inpQRZusername;
 extern Fl_Input *inpQRZuserpassword;
 extern Fl_Round_Button *btnQRZsub;
 extern Fl_Round_Button *btnHamcall;
-#include <FL/Fl_Button.H>
 extern Fl_Button *btnQRZpasswordShow;
 extern Fl_Group *tabRig;
 extern Fl_Round_Button *btnPTT[5];

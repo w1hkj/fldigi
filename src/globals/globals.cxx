@@ -129,34 +129,10 @@ std::istream& operator>>(std::istream& s, qrg_mode_t& m)
 std::string qrg_mode_t::str(void)
 {
 	ostringstream s;
-//	s << setw(11) << setiosflags(ios::right) << setiosflags(ios::fixed) << setprecision(3)
-//	  << rfcarrier/1000.0 << '\t'
-	s << setiosflags(ios::fixed) << setw(10) << setprecision(3) << rfcarrier/1000.0 << '\t'
-          << rmode << '\t'
-          << (mode < NUM_MODES ? mode_info[mode].sname : "NONE") << '\t'
-          << setw(4) << carrier;
+	s << setiosflags(ios::left | ios::fixed)
+	  << setw(12) << setprecision(3) << rfcarrier/1000.0
+	  << setw(8) << rmode
+	  << setw(10) << (mode < NUM_MODES ? mode_info[mode].sname : "NONE")
+	  << carrier;
 	return s.str();
-
-
-	// This an example of how we would do things if we were not using
-	// Fl_Browser and had to format the fields manually and add the string
-	// to a menu
-
-	// static unsigned max_mode_sname = 0;
-
-	// if (max_mode_sname == 0)
-	//	   for (size_t i = 0; i < NUM_MODES; i++)
-	//		   if (max_mode_sname < strlen(mode_info[i].sname))
-	//			   max_mode_sname = strlen(mode_info[i].sname);
-
-	// ostringstream s;
-
-	// s << setw(11) << setiosflags(ios::right) << setiosflags(ios::fixed) << setprecision(3)
-	//   << rfcarrier/1000.0 << ' '
-	//   << setw(max_mode_sname) << resetiosflags(ios::right) << setiosflags(ios::left)
-	//   << (mode < NUM_MODES ? mode_info[mode].sname : "NONE") << ' '
-	//   << setw(4) << resetiosflags(ios::left) << setiosflags(ios::right)
-	//   << carrier << ' ' << rmode;
-
-	// return s.str();
 }

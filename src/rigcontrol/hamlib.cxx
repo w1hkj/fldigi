@@ -129,7 +129,7 @@ bool hamlib_init(bool bPtt)
 			const char* conf = progdefaults.HamConfig.c_str();
 			int end;
 			while (re.match(conf)) {
-				xcvr->setConf(re.submatch(1), re.submatch(2));
+				xcvr->setConf(re.submatch(1).c_str(), re.submatch(2).c_str());
 				re.suboff(0, NULL, &end);
 				conf += end;
 			}

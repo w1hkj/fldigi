@@ -444,7 +444,7 @@ void macro_timer(void *)
 		btnMacroDummy->show();
 		FL_UNLOCK();
 	} else {
-		snprintf(timermsg, sizeof(timermsg), "Timer: %d", countdown);
+		snprintf(timermsg, sizeof(timermsg), "%d", countdown);
 		FL_LOCK();
 		btnMacroTimer->label(timermsg);
 		btnMacroTimer->redraw_label();
@@ -458,7 +458,7 @@ void trx_start_macro_timer()
 {
 	countdown = progdefaults.timeout;
 	Fl::add_timeout(1.0, macro_timer);
-	snprintf(timermsg, sizeof(timermsg), "Timer: %d", countdown);
+	snprintf(timermsg, sizeof(timermsg), "%d", countdown);
 	FL_LOCK();
 	btnMacroTimer->label(timermsg);
 	btnMacroTimer->redraw_label();

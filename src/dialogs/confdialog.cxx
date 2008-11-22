@@ -12,6 +12,7 @@
 #include "lookupcall.h"
 #include "icons.h"
 #include "Viewer.h"
+#include "pskrep.h"
 extern void initViewer();
 Fl_Double_Window *dlgConfig; 
 
@@ -153,6 +154,65 @@ Fl_Check_Button *btnStartAtSweetSpot=(Fl_Check_Button *)0;
 
 static void cb_btnStartAtSweetSpot(Fl_Check_Button* o, void*) {
   progdefaults.StartAtSweetSpot = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Group *tabSpot=(Fl_Group *)0;
+
+Fl_Check_Button *btnPSKRepAuto=(Fl_Check_Button *)0;
+
+static void cb_btnPSKRepAuto(Fl_Check_Button* o, void*) {
+  progdefaults.pskrep_auto = o->value();
+btnPSKRepInit->labelcolor(FL_RED);
+btnPSKRepInit->redraw_label();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnPSKRepLog=(Fl_Check_Button *)0;
+
+static void cb_btnPSKRepLog(Fl_Check_Button* o, void*) {
+  progdefaults.pskrep_log = o->value();
+btnPSKRepInit->labelcolor(FL_RED);
+btnPSKRepInit->redraw_label();
+progdefaults.changed = true;
+}
+
+Fl_Input *inpPSKRepHost=(Fl_Input *)0;
+
+static void cb_inpPSKRepHost(Fl_Input* o, void*) {
+  progdefaults.pskrep_host = o->value();
+btnPSKRepInit->labelcolor(FL_RED);
+btnPSKRepInit->redraw_label();
+progdefaults.changed = true;
+}
+
+Fl_Input *inpPSKRepPort=(Fl_Input *)0;
+
+static void cb_inpPSKRepPort(Fl_Input* o, void*) {
+  progdefaults.pskrep_port = o->value();
+btnPSKRepInit->labelcolor(FL_RED);
+btnPSKRepInit->redraw_label();
+progdefaults.changed = true;
+}
+
+Fl_Button *btnPSKRepInit=(Fl_Button *)0;
+
+static void cb_btnPSKRepInit(Fl_Button* o, void*) {
+  pskrep_stop();
+if (!pskrep_start())
+    boxPSKRepMsg->copy_label(pskrep_error());
+else {
+    boxPSKRepMsg->label(0);
+    o->labelcolor(FL_FOREGROUND_COLOR);
+};
+}
+
+Fl_Box *boxPSKRepMsg=(Fl_Box *)0;
+
+Fl_Check_Button *btnPSKRepQRG=(Fl_Check_Button *)0;
+
+static void cb_btnPSKRepQRG(Fl_Check_Button* o, void*) {
+  progdefaults.pskrep_qrg = o->value();
 progdefaults.changed = true;
 }
 
@@ -762,6 +822,13 @@ static void cb_nbrContestDigits(Fl_Value_Input* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Input *inpMyAntenna=(Fl_Input *)0;
+
+static void cb_inpMyAntenna(Fl_Input* o, void*) {
+  progdefaults.myAntenna = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabQRZ=(Fl_Group *)0;
 
 Fl_Round_Button *btnQRZnotavailable=(Fl_Round_Button *)0;
@@ -858,43 +925,56 @@ static void cb_btnPTT1(Fl_Round_Button* o, void*) {
   btnRigCatRTSptt->value(0);
   btnRigCatDTRptt->value(0);
 }
+btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
 progdefaults.changed = true;
 }
 
 Fl_Round_Button *btnRTSptt=(Fl_Round_Button *)0;
 
 static void cb_btnRTSptt(Fl_Round_Button*, void*) {
-  progdefaults.changed = true;
+  btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;
 }
 
 Fl_Round_Button *btnDTRptt=(Fl_Round_Button *)0;
 
 static void cb_btnDTRptt(Fl_Round_Button*, void*) {
-  progdefaults.changed = true;
+  btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;
 }
 
 Fl_Round_Button *btnRTSplusV=(Fl_Round_Button *)0;
 
 static void cb_btnRTSplusV(Fl_Round_Button*, void*) {
-  progdefaults.changed = true;
+  btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;
 }
 
 Fl_Round_Button *btnDTRplusV=(Fl_Round_Button *)0;
 
 static void cb_btnDTRplusV(Fl_Round_Button*, void*) {
-  progdefaults.changed = true;
+  btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;
 }
 
 Fl_Input_Choice *inpTTYdev=(Fl_Input_Choice *)0;
 
 static void cb_inpTTYdev(Fl_Input_Choice*, void*) {
-  progdefaults.changed = true;
+  btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;
 }
 
 Fl_Button *btnInitHWPTT=(Fl_Button *)0;
 
-static void cb_btnInitHWPTT(Fl_Button*, void*) {
+static void cb_btnInitHWPTT(Fl_Button* o, void*) {
   progdefaults.initInterface();
+o->labelcolor(FL_FOREGROUND_COLOR);
 progdefaults.changed = true;
 }
 
@@ -924,6 +1004,8 @@ static void cb_chkUSERIGCAT(Fl_Check_Button* o, void*) {
   progdefaults.chkUSERIGCATis = false;
   }
 for (int i = 0; i < 4; btnPTT[i++]->redraw());
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
 progdefaults.changed = true;
 }
 
@@ -936,6 +1018,8 @@ static void cb_btnPTT2(Fl_Round_Button* o, void*) {
   btnPTT[2]->value(0);
   btnPTT[4]->value(0);
   }
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
 progdefaults.changed = true;
 }
 
@@ -944,13 +1028,17 @@ Fl_Output *txtXmlRigFilename=(Fl_Output *)0;
 Fl_Button *btnSelectRigXmlFile=(Fl_Button *)0;
 
 static void cb_btnSelectRigXmlFile(Fl_Button*, void*) {
-  selectRigXmlFilename();
+  btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
+selectRigXmlFilename();
 }
 
 Fl_Input_Choice *inpXmlRigDevice=(Fl_Input_Choice *)0;
 
 static void cb_inpXmlRigDevice(Fl_Input_Choice* o, void*) {
   progdefaults.XmlRigDevice = o->value();
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
 progdefaults.changed = true;
 }
 
@@ -958,6 +1046,8 @@ Fl_Choice *mnuXmlRigBaudrate=(Fl_Choice *)0;
 
 static void cb_mnuXmlRigBaudrate(Fl_Choice* o, void*) {
   progdefaults.XmlRigBaudrate = o->value();
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
 progdefaults.changed = true;
 }
 
@@ -974,6 +1064,8 @@ static void cb_btnRigCatRTSptt(Fl_Round_Button* o, void*) {
   progdefaults.RigCatRTSptt = true;
 } else
   progdefaults.RigCatRTSptt = false;
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
 progdefaults.changed = true;
 }
 
@@ -990,6 +1082,8 @@ static void cb_btnRigCatDTRptt(Fl_Round_Button* o, void*) {
   progdefaults.RigCatDTRptt = true;
 } else
   progdefaults.RigCatDTRptt = false;
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
 progdefaults.changed = true;
 }
 
@@ -997,6 +1091,8 @@ Fl_Check_Button *btnRigCatRTSplus=(Fl_Check_Button *)0;
 
 static void cb_btnRigCatRTSplus(Fl_Check_Button* o, void*) {
   progdefaults.RigCatRTSplus = o->value();
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
 progdefaults.changed = true;
 }
 
@@ -1004,6 +1100,8 @@ Fl_Check_Button *btnRigCatDTRplus=(Fl_Check_Button *)0;
 
 static void cb_btnRigCatDTRplus(Fl_Check_Button* o, void*) {
   progdefaults.RigCatDTRplus = o->value();
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
 progdefaults.changed = true;
 }
 
@@ -1011,6 +1109,8 @@ Fl_Counter *cntRigCatRetries=(Fl_Counter *)0;
 
 static void cb_cntRigCatRetries(Fl_Counter* o, void*) {
   progdefaults.RigCatRetries = (int)o->value();
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
 progdefaults.changed = true;
 }
 
@@ -1018,18 +1118,25 @@ Fl_Counter *cntRigCatTimeout=(Fl_Counter *)0;
 
 static void cb_cntRigCatTimeout(Fl_Counter* o, void*) {
   progdefaults.RigCatTimeout = (int)o->value();
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
+progdefaults.changed = true;
 }
 
 Fl_Counter *cntRigCatWait=(Fl_Counter *)0;
 
 static void cb_cntRigCatWait(Fl_Counter* o, void*) {
   progdefaults.RigCatWait = (int)o->value();
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
+progdefaults.changed = true;
 }
 
 Fl_Button *btnInitRIGCAT=(Fl_Button *)0;
 
-static void cb_btnInitRIGCAT(Fl_Button*, void*) {
+static void cb_btnInitRIGCAT(Fl_Button* o, void*) {
   progdefaults.initInterface();
+o->labelcolor(FL_FOREGROUND_COLOR);
 progdefaults.changed = true;
 }
 
@@ -1037,6 +1144,8 @@ Fl_Check_Button *chkRigCatRTSCTSflow=(Fl_Check_Button *)0;
 
 static void cb_chkRigCatRTSCTSflow(Fl_Check_Button* o, void*) {
   progdefaults.RigCatRTSCTSflow = o->value();
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
 progdefaults.changed = true;
 }
 
@@ -1066,6 +1175,8 @@ static void cb_chkUSEHAMLIB(Fl_Check_Button* o, void*) {
   progdefaults.chkUSEHAMLIBis = false;
   }
 for (int i = 0; i < 4; btnPTT[i++]->redraw());
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw();
 progdefaults.changed = true;
 }
 
@@ -1078,19 +1189,25 @@ static void cb_btnPTT3(Fl_Round_Button* o, void*) {
   btnRigCatRTSptt->value(0);
   btnRigCatDTRptt->value(0);
 }
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw();
 progdefaults.changed = true;
 }
 
 Fl_ComboBox *cboHamlibRig=(Fl_ComboBox *)0;
 
 static void cb_cboHamlibRig(Fl_ComboBox*, void*) {
-  progdefaults.changed = true;
+  btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw();
+progdefaults.changed = true;
 }
 
 Fl_Input_Choice *inpRIGdev=(Fl_Input_Choice *)0;
 
 static void cb_inpRIGdev(Fl_Input_Choice* o, void*) {
   progdefaults.HamRigDevice = o->value();
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw();
 progdefaults.changed = true;
 }
 
@@ -1098,13 +1215,16 @@ Fl_Choice *mnuBaudRate=(Fl_Choice *)0;
 
 static void cb_mnuBaudRate(Fl_Choice* o, void*) {
   progdefaults.HamRigBaudrate = o->value();
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw();
 progdefaults.changed = true;
 }
 
 Fl_Button *btnInitHAMLIB=(Fl_Button *)0;
 
-static void cb_btnInitHAMLIB(Fl_Button*, void*) {
+static void cb_btnInitHAMLIB(Fl_Button* o, void*) {
   progdefaults.initInterface();
+o->labelcolor(FL_FOREGROUND_COLOR);
 progdefaults.changed = true;
 }
 
@@ -1112,6 +1232,8 @@ Fl_Counter *cntHamlibtRetries=(Fl_Counter *)0;
 
 static void cb_cntHamlibtRetries(Fl_Counter* o, void*) {
   progdefaults.HamlibRetries = (int)o->value();
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw();
 progdefaults.changed = true;
 }
 
@@ -1119,18 +1241,26 @@ Fl_Counter *cntHamlibTimeout=(Fl_Counter *)0;
 
 static void cb_cntHamlibTimeout(Fl_Counter* o, void*) {
   progdefaults.HamlibTimeout = (int)o->value();
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw();
+progdefaults.changed = true;
 }
 
 Fl_Counter *cntHamlibWait=(Fl_Counter *)0;
 
 static void cb_cntHamlibWait(Fl_Counter* o, void*) {
   progdefaults.HamlibWait = (int)o->value();
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw();
+progdefaults.changed = true;
 }
 
 Fl_Check_Button *btnHamlibDTRplus=(Fl_Check_Button *)0;
 
 static void cb_btnHamlibDTRplus(Fl_Check_Button* o, void*) {
   progdefaults.HamlibDTRplus = o->value();
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw();
 progdefaults.changed = true;
 }
 
@@ -1142,6 +1272,8 @@ if (o->value() == 1) {
 chkHamlibRTSCTSflow->value(0);
 progdefaults.HamlibRTSCTSflow = false;
 }
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw();
 progdefaults.changed = true;
 }
 
@@ -1154,6 +1286,8 @@ if (o->value() == 1) {
   chkHamlibXONXOFFflow->value(0);
   progdefaults.HamlibXONXOFFflow = false;
 }
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw();
 progdefaults.changed = true;
 }
 
@@ -1165,6 +1299,8 @@ if (o->value() == 1) {
   chkHamlibRTSCTSflow->value(0);
   progdefaults.HamlibRTSCTSflow = false;
 }
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw();
 progdefaults.changed = true;
 }
 
@@ -1172,6 +1308,8 @@ Fl_Input *inpHamlibConfig=(Fl_Input *)0;
 
 static void cb_inpHamlibConfig(Fl_Input* o, void*) {
   progdefaults.HamConfig = o->value();
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw();
 progdefaults.changed = true;
 }
 
@@ -1199,6 +1337,8 @@ static void cb_chkUSEMEMMAP(Fl_Check_Button* o, void*) {
   progdefaults.chkUSEMEMMAPis = false;
   }
 for (int i = 0; i < 4; btnPTT[i++]->redraw());  
+btnInitMEMMAP->labelcolor(FL_RED);
+btnInitMEMMAP->redraw();
 progdefaults.changed = true;
 }
 
@@ -1211,13 +1351,16 @@ static void cb_btnPTT4(Fl_Round_Button* o, void*) {
   btnRigCatRTSptt->value(0);
   btnRigCatDTRptt->value(0);
 }
+btnInitMEMMAP->labelcolor(FL_RED);
+btnInitMEMMAP->redraw();
 progdefaults.changed = true;
 }
 
 Fl_Button *btnInitMEMMAP=(Fl_Button *)0;
 
-static void cb_btnInitMEMMAP(Fl_Button*, void*) {
+static void cb_btnInitMEMMAP(Fl_Button* o, void*) {
   progdefaults.initInterface();
+o->labelcolor(FL_FOREGROUND_COLOR);
 progdefaults.changed = true;
 }
 
@@ -1241,13 +1384,16 @@ static void cb_chkUSEXMLRPC(Fl_Check_Button* o, void*) {
   progdefaults.chkUSEXMLRPCis = false;
   }
 for (int i = 0; i < 4; btnPTT[i++]->redraw());  
+btnInitXMLRPC->labelcolor(FL_RED);
+btnInitXMLRPC->redraw();
 progdefaults.changed = true;
 }
 
 Fl_Button *btnInitXMLRPC=(Fl_Button *)0;
 
-static void cb_btnInitXMLRPC(Fl_Button*, void*) {
+static void cb_btnInitXMLRPC(Fl_Button* o, void*) {
   progdefaults.initInterface();
+o->labelcolor(FL_FOREGROUND_COLOR);
 progdefaults.changed = true;
 }
 
@@ -1809,7 +1955,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     o->selection_color((Fl_Color)51);
     o->labelsize(18);
     o->align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE);
-    { tabsConfigure = new Fl_Tabs(0, 0, 405, 221);
+    { tabsConfigure = new Fl_Tabs(0, 0, 405, 225);
       tabsConfigure->color(FL_DARK1);
       tabsConfigure->selection_color((Fl_Color)9);
       { tabID = new Fl_Group(0, 25, 400, 195, "Id\'s");
@@ -1899,11 +2045,11 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         } // Fl_Group* o
         tabID->end();
       } // Fl_Group* tabID
-      { tabMisc = new Fl_Group(0, 25, 400, 195, "Misc");
+      { tabMisc = new Fl_Group(0, 25, 405, 200, "Misc");
         tabMisc->color((Fl_Color)51);
         tabMisc->selection_color((Fl_Color)51);
         tabMisc->hide();
-        { tabsMisc = new Fl_Tabs(0, 25, 400, 195);
+        { tabsMisc = new Fl_Tabs(0, 25, 405, 200);
           tabsMisc->selection_color((Fl_Color)10);
           { tabCPUspeed = new Fl_Group(0, 50, 400, 170, "CPU");
             tabCPUspeed->hide();
@@ -1940,6 +2086,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             tabMacros->end();
           } // Fl_Group* tabMacros
           { tabSweetSpot = new Fl_Group(0, 50, 400, 170, "Sweet Spot");
+            tabSweetSpot->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 390, 75);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -1977,6 +2124,46 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             } // Fl_Group* o
             tabSweetSpot->end();
           } // Fl_Group* tabSweetSpot
+          { tabSpot = new Fl_Group(2, 55, 403, 170, "Spotting");
+            { Fl_Group* o = new Fl_Group(2, 57, 395, 160, "PSK Reporter");
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { btnPSKRepAuto = new Fl_Check_Button(15, 80, 324, 20, "Automatically spot callsigns in decoded text");
+                btnPSKRepAuto->down_box(FL_DOWN_BOX);
+                btnPSKRepAuto->callback((Fl_Callback*)cb_btnPSKRepAuto);
+                btnPSKRepAuto->value(progdefaults.pskrep_auto);
+              } // Fl_Check_Button* btnPSKRepAuto
+              { btnPSKRepLog = new Fl_Check_Button(15, 104, 327, 20, "Send reception report when logging a QSO");
+                btnPSKRepLog->down_box(FL_DOWN_BOX);
+                btnPSKRepLog->callback((Fl_Callback*)cb_btnPSKRepLog);
+                btnPSKRepLog->value(progdefaults.pskrep_log);
+              } // Fl_Check_Button* btnPSKRepLog
+              { inpPSKRepHost = new Fl_Input(55, 155, 220, 24, "Host:");
+                inpPSKRepHost->callback((Fl_Callback*)cb_inpPSKRepHost);
+                inpPSKRepHost->when(FL_WHEN_CHANGED);
+                inpPSKRepHost->value(progdefaults.pskrep_host.c_str());
+              } // Fl_Input* inpPSKRepHost
+              { inpPSKRepPort = new Fl_Input(322, 155, 60, 24, "Port:");
+                inpPSKRepPort->callback((Fl_Callback*)cb_inpPSKRepPort);
+                inpPSKRepPort->when(FL_WHEN_CHANGED);
+                inpPSKRepPort->value(progdefaults.pskrep_port.c_str());
+              } // Fl_Input* inpPSKRepPort
+              { btnPSKRepInit = new Fl_Button(303, 186, 80, 24, "Initialize");
+                btnPSKRepInit->callback((Fl_Callback*)cb_btnPSKRepInit);
+              } // Fl_Button* btnPSKRepInit
+              { boxPSKRepMsg = new Fl_Box(56, 186, 220, 24, "<PSK Reporter error message>");
+                boxPSKRepMsg->labelfont(2);
+                boxPSKRepMsg->label(0);
+              } // Fl_Box* boxPSKRepMsg
+              { btnPSKRepQRG = new Fl_Check_Button(15, 128, 357, 20, "Report QRG (enable only if you have rig control!)");
+                btnPSKRepQRG->down_box(FL_DOWN_BOX);
+                btnPSKRepQRG->callback((Fl_Callback*)cb_btnPSKRepQRG);
+                btnPSKRepQRG->value(progdefaults.pskrep_qrg);
+              } // Fl_Check_Button* btnPSKRepQRG
+              o->end();
+            } // Fl_Group* o
+            tabSpot->end();
+          } // Fl_Group* tabSpot
           tabsMisc->end();
         } // Fl_Tabs* tabsMisc
         tabMisc->end();
@@ -2659,10 +2846,10 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         { inpMyCallsign = new Fl_Input(78, 36, 85, 24, "Callsign:");
           inpMyCallsign->callback((Fl_Callback*)cb_inpMyCallsign);
         } // Fl_Input* inpMyCallsign
-        { inpMyName = new Fl_Input(78, 62, 120, 24, "Name:");
+        { inpMyName = new Fl_Input(271, 36, 120, 24, "Name:");
           inpMyName->callback((Fl_Callback*)cb_inpMyName);
         } // Fl_Input* inpMyName
-        { inpMyQth = new Fl_Input(78, 89, 312, 24, "Qth:");
+        { inpMyQth = new Fl_Input(79, 63, 312, 24, "Qth:");
           inpMyQth->callback((Fl_Callback*)cb_inpMyQth);
         } // Fl_Input* inpMyQth
         { inpMyLocator = new Fl_Input(78, 116, 85, 24, "Locator:");
@@ -2694,6 +2881,9 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           } // Fl_Value_Input* nbrContestDigits
           o->end();
         } // Fl_Group* o
+        { inpMyAntenna = new Fl_Input(78, 89, 312, 24, "Antenna:");
+          inpMyAntenna->callback((Fl_Callback*)cb_inpMyAntenna);
+        } // Fl_Input* inpMyAntenna
         tabOperator->end();
       } // Fl_Group* tabOperator
       { tabQRZ = new Fl_Group(0, 25, 400, 195, "Qrz");
@@ -2765,6 +2955,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           o->selection_color((Fl_Color)10);
           { Fl_Group* o = new Fl_Group(0, 50, 400, 170, "H/W ptt");
             o->tooltip("Tottle DTR for ptt");
+            o->hide();
             { btnPTT[0] = new Fl_Round_Button(15, 70, 74, 17, "none");
               btnPTT[0]->down_box(FL_DIAMOND_DOWN_BOX);
               btnPTT[0]->value(1);
@@ -3021,7 +3212,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 400, 170, "MemMap");
-            o->hide();
             { chkUSEMEMMAP = new Fl_Check_Button(255, 135, 20, 20, "use Memmap");
               chkUSEMEMMAP->tooltip("Select Memory Mapping rig control (Kachina)");
               chkUSEMEMMAP->down_box(FL_DOWN_BOX);

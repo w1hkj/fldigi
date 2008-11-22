@@ -33,6 +33,9 @@ decl {\#include "icons.h"} {}
 
 decl {\#include "Viewer.h"} {} 
 
+decl {\#include "pskrep.h"} {global
+} 
+
 decl {extern void initViewer();} {} 
 
 decl {Fl_Double_Window *dlgConfig;} {public
@@ -60,10 +63,10 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {fldigi - config} open
-    tooltip {Leading/Trailing Risetimes (msec)} xywh {606 597 400 255} type Double color 45 selection_color 51 labelsize 18 align 80 visible
+    tooltip {Leading/Trailing Risetimes (msec)} xywh {546 58 400 255} type Double color 45 selection_color 51 labelsize 18 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
-      xywh {0 0 405 221} color 47 selection_color 9
+      xywh {0 0 405 225} color 47 selection_color 9
     } {
       Fl_Group tabID {
         label {Id's} open
@@ -154,10 +157,10 @@ progdefaults.changed = true;}
       }
       Fl_Group tabMisc {
         label Misc open
-        xywh {0 25 400 195} color 51 selection_color 51 hide
+        xywh {0 25 405 200} color 51 selection_color 51 hide
       } {
         Fl_Tabs tabsMisc {open
-          xywh {0 25 400 195} selection_color 10
+          xywh {0 25 405 200} selection_color 10
         } {
           Fl_Group tabCPUspeed {
             label CPU open
@@ -201,7 +204,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabSweetSpot {
             label {Sweet Spot} open
-            xywh {0 50 400 170}
+            xywh {0 50 400 170} hide
           } {
             Fl_Group {} {open
               xywh {5 60 390 75} box ENGRAVED_FRAME align 21
@@ -233,6 +236,75 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 xywh {49 100 246 25} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.StartAtSweetSpot);}
+              }
+            }
+          }
+          Fl_Group tabSpot {
+            label Spotting open
+            xywh {2 55 403 170}
+          } {
+            Fl_Group {} {
+              label {PSK Reporter} open
+              xywh {2 57 395 160} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Check_Button btnPSKRepAuto {
+                label {Automatically spot callsigns in decoded text}
+                callback {progdefaults.pskrep_auto = o->value();
+btnPSKRepInit->labelcolor(FL_RED);
+btnPSKRepInit->redraw_label();
+progdefaults.changed = true;}
+                xywh {15 80 324 20} down_box DOWN_BOX
+                code0 {btnPSKRepAuto->value(progdefaults.pskrep_auto);}
+              }
+              Fl_Check_Button btnPSKRepLog {
+                label {Send reception report when logging a QSO}
+                callback {progdefaults.pskrep_log = o->value();
+btnPSKRepInit->labelcolor(FL_RED);
+btnPSKRepInit->redraw_label();
+progdefaults.changed = true;}
+                xywh {15 104 327 20} down_box DOWN_BOX
+                code0 {btnPSKRepLog->value(progdefaults.pskrep_log);}
+              }
+              Fl_Input inpPSKRepHost {
+                label {Host:}
+                callback {progdefaults.pskrep_host = o->value();
+btnPSKRepInit->labelcolor(FL_RED);
+btnPSKRepInit->redraw_label();
+progdefaults.changed = true;}
+                xywh {55 155 220 24} when 1
+                code0 {inpPSKRepHost->value(progdefaults.pskrep_host.c_str());}
+              }
+              Fl_Input inpPSKRepPort {
+                label {Port:}
+                callback {progdefaults.pskrep_port = o->value();
+btnPSKRepInit->labelcolor(FL_RED);
+btnPSKRepInit->redraw_label();
+progdefaults.changed = true;}
+                xywh {322 155 60 24} when 1
+                code0 {inpPSKRepPort->value(progdefaults.pskrep_port.c_str());}
+              }
+              Fl_Button btnPSKRepInit {
+                label Initialize
+                callback {pskrep_stop();
+if (!pskrep_start())
+    boxPSKRepMsg->copy_label(pskrep_error());
+else {
+    boxPSKRepMsg->label(0);
+    o->labelcolor(FL_FOREGROUND_COLOR);
+}}
+                xywh {303 186 80 24}
+              }
+              Fl_Box boxPSKRepMsg {
+                label {<PSK Reporter error message>}
+                xywh {56 186 220 24} labelfont 2
+                code0 {boxPSKRepMsg->label(0);}
+              }
+              Fl_Check_Button btnPSKRepQRG {
+                label {Report QRG (enable only if you have rig control!)}
+                callback {progdefaults.pskrep_qrg = o->value();
+progdefaults.changed = true;}
+                xywh {15 128 357 20} down_box DOWN_BOX
+                code0 {btnPSKRepQRG->value(progdefaults.pskrep_qrg);}
               }
             }
           }
@@ -918,13 +990,13 @@ progdefaults.changed = true;}
           label {Name:}
           callback {progdefaults.myName = o->value();
 progdefaults.changed = true;}
-          xywh {78 62 120 24}
+          xywh {271 36 120 24}
         }
         Fl_Input inpMyQth {
           label {Qth:}
           callback {progdefaults.myQth = o->value();
 progdefaults.changed = true;}
-          xywh {78 89 312 24}
+          xywh {79 63 312 24}
         }
         Fl_Input inpMyLocator {
           label {Locator:}
@@ -954,6 +1026,12 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
             xywh {298 170 45 24} align 1 minimum 1 maximum 5 step 1 value 3
           }
+        }
+        Fl_Input inpMyAntenna {
+          label {Antenna:}
+          callback {progdefaults.myAntenna = o->value();
+progdefaults.changed = true;}
+          xywh {78 89 312 24}
         }
       }
       Fl_Group tabQRZ {
@@ -1048,7 +1126,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label {H/W ptt} open
-            tooltip {Tottle DTR for ptt} xywh {0 50 400 170}
+            tooltip {Tottle DTR for ptt} xywh {0 50 400 170} hide
           } {
             Fl_Round_Button {btnPTT[0]} {
               label none
@@ -1070,37 +1148,50 @@ progdefaults.changed = true;}
   btnRigCatRTSptt->value(0);
   btnRigCatDTRptt->value(0);
 }
+btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
 progdefaults.changed = true;}
               tooltip {PTT controlled via serial port} xywh {245 75 20 19} down_box DIAMOND_DOWN_BOX selection_color 1 align 4
             }
             Fl_Round_Button btnRTSptt {
               label RTS
-              callback {progdefaults.changed = true;}
+              callback {btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;}
               tooltip {Toggle RTS for ptt} xywh {100 160 54 15} down_box DOWN_BOX
             }
             Fl_Round_Button btnDTRptt {
               label DTR
-              callback {progdefaults.changed = true;}
+              callback {btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;}
               xywh {100 180 59 15} down_box DOWN_BOX
             }
             Fl_Round_Button btnRTSplusV {
               label {RTS = +V}
-              callback {progdefaults.changed = true;}
+              callback {btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;}
               tooltip {initial voltage on RTS} xywh {172 160 87 15} down_box DOWN_BOX
             }
             Fl_Round_Button btnDTRplusV {
               label {DTR = +V}
-              callback {progdefaults.changed = true;}
+              callback {btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;}
               tooltip {Initial voltage on DTR} xywh {172 180 87 15} down_box DOWN_BOX
             }
             Fl_Input_Choice inpTTYdev {
               label {Port:}
-              callback {progdefaults.changed = true;} open
+              callback {btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;} open
               tooltip {Select serial port} xywh {136 113 125 22}
             } {}
             Fl_Button btnInitHWPTT {
               label Initialize
               callback {progdefaults.initInterface();
+o->labelcolor(FL_FOREGROUND_COLOR);
 progdefaults.changed = true;}
               xywh {275 186 113 24}
             }
@@ -1134,6 +1225,8 @@ progdefaults.changed = true;}
   progdefaults.chkUSERIGCATis = false;
   }
 for (int i = 0; i < 4; btnPTT[i++]->redraw());
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
 progdefaults.changed = true;}
               tooltip {Select rigCAT for rig control} xywh {110 67 20 20} down_box DOWN_BOX
             }
@@ -1147,6 +1240,8 @@ progdefaults.changed = true;}
   btnPTT[2]->value(0);
   btnPTT[4]->value(0);
   }
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
 progdefaults.changed = true;}
               tooltip {use PTT data command} xywh {242 67 128 19} down_box DIAMOND_DOWN_BOX selection_color 1 deactivate
             }
@@ -1157,12 +1252,16 @@ progdefaults.changed = true;}
             }
             Fl_Button btnSelectRigXmlFile {
               label Select
-              callback {selectRigXmlFilename();}
+              callback {btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
+selectRigXmlFilename();}
               tooltip {Select xml file for your rig} xywh {166 93 54 24}
             }
             Fl_Input_Choice inpXmlRigDevice {
               label Port
               callback {progdefaults.XmlRigDevice = o->value();
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
 progdefaults.changed = true;} open
               tooltip {Select the serial port} xywh {77 122 144 22}
               code0 {o->value(progdefaults.XmlRigDevice.c_str());}
@@ -1170,6 +1269,8 @@ progdefaults.changed = true;} open
             Fl_Choice mnuXmlRigBaudrate {
               label {Baud Rate}
               callback {progdefaults.XmlRigBaudrate = o->value();
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
 progdefaults.changed = true;} open
               tooltip {Select the baud rate} xywh {122 147 99 22} down_box BORDER_BOX
               code0 {o->add(szBaudRates);}
@@ -1187,6 +1288,8 @@ progdefaults.changed = true;} open
   progdefaults.RigCatRTSptt = true;
 } else
   progdefaults.RigCatRTSptt = false;
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
 progdefaults.changed = true;}
               tooltip {toggle RTS for ptt} xywh {242 90 70 15} down_box ROUND_DOWN_BOX
               code0 {o->value(progdefaults.RigCatRTSptt);}
@@ -1203,6 +1306,8 @@ progdefaults.changed = true;}
   progdefaults.RigCatDTRptt = true;
 } else
   progdefaults.RigCatDTRptt = false;
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
 progdefaults.changed = true;}
               tooltip {toggle DTR for ptt} xywh {320 90 70 15} down_box ROUND_DOWN_BOX
               code0 {o->value(progdefaults.RigCatDTRptt);}
@@ -1210,6 +1315,8 @@ progdefaults.changed = true;}
             Fl_Check_Button btnRigCatRTSplus {
               label {set RTS +12 v}
               callback {progdefaults.RigCatRTSplus = o->value();
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
 progdefaults.changed = true;}
               tooltip {initial state of RTS} xywh {242 110 35 15} down_box DOWN_BOX
               code0 {o->value(progdefaults.RigCatRTSplus);}
@@ -1217,6 +1324,8 @@ progdefaults.changed = true;}
             Fl_Check_Button btnRigCatDTRplus {
               label {set DTR +12 v}
               callback {progdefaults.RigCatDTRplus = o->value();
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
 progdefaults.changed = true;}
               tooltip {initial state of DTR} xywh {242 130 35 15} down_box DOWN_BOX
               code0 {o->value(progdefaults.RigCatDTRplus);}
@@ -1224,31 +1333,42 @@ progdefaults.changed = true;}
             Fl_Counter cntRigCatRetries {
               label Retries
               callback {progdefaults.RigCatRetries = (int)o->value();
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
 progdefaults.changed = true;}
               tooltip {\# times to resend command before FAIL} xywh {15 188 75 21} type Simple align 1 minimum 1 maximum 10 step 1 value 5
               code0 {o->value(progdefaults.RigCatRetries);}
             }
             Fl_Counter cntRigCatTimeout {
               label Timeout
-              callback {progdefaults.RigCatTimeout = (int)o->value();}
+              callback {progdefaults.RigCatTimeout = (int)o->value();
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
+progdefaults.changed = true;}
               tooltip {milliseconds between retries} xywh {102 188 75 21} type Simple align 1 minimum 2 maximum 200 step 1 value 10
               code0 {o->value(progdefaults.RigCatTimeout);}
             }
             Fl_Counter cntRigCatWait {
               label Wait
-              callback {progdefaults.RigCatWait = (int)o->value();}
+              callback {progdefaults.RigCatWait = (int)o->value();
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
+progdefaults.changed = true;}
               tooltip {Wait interval (msec) between commands} xywh {190 188 75 21} type Simple align 1 minimum 0 maximum 100 step 1 value 5
               code0 {o->value(progdefaults.RigCatWait);}
             }
             Fl_Button btnInitRIGCAT {
               label Initialize
               callback {progdefaults.initInterface();
+o->labelcolor(FL_FOREGROUND_COLOR);
 progdefaults.changed = true;}
               tooltip {Initialize RigCAT interface} xywh {275 186 113 24}
             }
             Fl_Check_Button chkRigCatRTSCTSflow {
               label {RTS/CTS flow ctl.}
               callback {progdefaults.RigCatRTSCTSflow = o->value();
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
 progdefaults.changed = true;}
               tooltip {RTS/CTS hardware flow control} xywh {242 150 70 15} down_box DOWN_BOX
               code0 {o->value(progdefaults.RigCatRTSCTSflow);}
@@ -1283,6 +1403,8 @@ progdefaults.changed = true;}
   progdefaults.chkUSEHAMLIBis = false;
   }
 for (int i = 0; i < 4; btnPTT[i++]->redraw());
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw();
 progdefaults.changed = true;}
               tooltip {Select hamlib for rig control} xywh {155 65 20 20} down_box DOWN_BOX align 4
             }
@@ -1296,12 +1418,16 @@ progdefaults.changed = true;}
   btnRigCatRTSptt->value(0);
   btnRigCatDTRptt->value(0);
 }
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw();
 progdefaults.changed = true;}
               tooltip {use PTT data command} xywh {210 65 135 20} down_box DIAMOND_DOWN_BOX selection_color 1 deactivate
             }
             Fl_Box cboHamlibRig {
               label {Rig:}
-              callback {progdefaults.changed = true;}
+              callback {btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw();
+progdefaults.changed = true;}
               tooltip {Select hamlib rig} xywh {43 90 160 22} box DOWN_BOX color 7 align 4
               code0 {o->readonly();}
               class Fl_ComboBox
@@ -1309,6 +1435,8 @@ progdefaults.changed = true;}
             Fl_Input_Choice inpRIGdev {
               label {Port:}
               callback {progdefaults.HamRigDevice = o->value();
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw();
 progdefaults.changed = true;} open
               tooltip {Select serial port} xywh {59 117 144 22}
               code0 {o->value(progdefaults.HamRigDevice.c_str());}
@@ -1316,6 +1444,8 @@ progdefaults.changed = true;} open
             Fl_Choice mnuBaudRate {
               label {Baud Rate:}
               callback {progdefaults.HamRigBaudrate = o->value();
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw();
 progdefaults.changed = true;} open
               tooltip {Select baud rate} xywh {104 144 99 22} down_box BORDER_BOX
               code0 {o->add(szBaudRates);}
@@ -1324,31 +1454,42 @@ progdefaults.changed = true;} open
             Fl_Button btnInitHAMLIB {
               label Initialize
               callback {progdefaults.initInterface();
+o->labelcolor(FL_FOREGROUND_COLOR);
 progdefaults.changed = true;}
               tooltip {Initialize Hamlib rig control} xywh {275 186 113 24}
             }
             Fl_Counter cntHamlibtRetries {
               label Retries
               callback {progdefaults.HamlibRetries = (int)o->value();
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw();
 progdefaults.changed = true;}
               tooltip {\# times to resend command before FAIL} xywh {15 189 75 21} type Simple align 1 minimum 1 maximum 10 step 1 value 5
               code0 {o->value(progdefaults.HamlibRetries);}
             }
             Fl_Counter cntHamlibTimeout {
               label Timeout
-              callback {progdefaults.HamlibTimeout = (int)o->value();}
+              callback {progdefaults.HamlibTimeout = (int)o->value();
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw();
+progdefaults.changed = true;}
               tooltip {milliseconds between retries} xywh {102 189 75 21} type Simple align 1 minimum 2 maximum 200 step 1 value 10
               code0 {o->value(progdefaults.HamlibTimeout);}
             }
             Fl_Counter cntHamlibWait {
               label Wait
-              callback {progdefaults.HamlibWait = (int)o->value();}
+              callback {progdefaults.HamlibWait = (int)o->value();
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw();
+progdefaults.changed = true;}
               tooltip {Wait interval (msec) between commands} xywh {190 189 75 21} type Simple align 1 minimum 0 maximum 100 step 1 value 5
               code0 {o->value(progdefaults.HamlibWait);}
             }
             Fl_Check_Button btnHamlibDTRplus {
               label {DTR +12}
               callback {progdefaults.HamlibDTRplus = o->value();
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw();
 progdefaults.changed = true;}
               tooltip {initial state of DTR} xywh {210 93 35 15} down_box DOWN_BOX
               code0 {o->value(progdefaults.HamlibDTRplus);}
@@ -1360,6 +1501,8 @@ if (o->value() == 1) {
 chkHamlibRTSCTSflow->value(0);
 progdefaults.HamlibRTSCTSflow = false;
 }
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw();
 progdefaults.changed = true;}
               tooltip {initial state of RTS} xywh {300 93 35 15} down_box DOWN_BOX
             }
@@ -1371,6 +1514,8 @@ if (o->value() == 1) {
   chkHamlibXONXOFFflow->value(0);
   progdefaults.HamlibXONXOFFflow = false;
 }
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw();
 progdefaults.changed = true;}
               tooltip {RTS/CTS hardware flow control} xywh {210 120 70 15} down_box DOWN_BOX
               code0 {o->value(progdefaults.HamlibRTSCTSflow);}
@@ -1382,12 +1527,16 @@ if (o->value() == 1) {
   chkHamlibRTSCTSflow->value(0);
   progdefaults.HamlibRTSCTSflow = false;
 }
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw();
 progdefaults.changed = true;}
               tooltip {XON/XOFF hardware flow control} xywh {300 119 70 16} down_box DOWN_BOX
               code0 {o->value(progdefaults.HamlibXONXOFFflow);}
             }
             Fl_Input inpHamlibConfig {
               callback {progdefaults.HamConfig = o->value();
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw();
 progdefaults.changed = true;}
               tooltip {Additional configuration
 of format: param=val ...} xywh {210 144 176 22}
@@ -1396,7 +1545,7 @@ of format: param=val ...} xywh {210 144 176 22}
           }
           Fl_Group {} {
             label MemMap open
-            xywh {0 50 400 170} hide
+            xywh {0 50 400 170}
           } {
             Fl_Check_Button chkUSEMEMMAP {
               label {use Memmap}
@@ -1421,6 +1570,8 @@ of format: param=val ...} xywh {210 144 176 22}
   progdefaults.chkUSEMEMMAPis = false;
   }
 for (int i = 0; i < 4; btnPTT[i++]->redraw());  
+btnInitMEMMAP->labelcolor(FL_RED);
+btnInitMEMMAP->redraw();
 progdefaults.changed = true;}
               tooltip {Select Memory Mapping rig control (Kachina)} xywh {255 135 20 20} down_box DOWN_BOX align 4
             }
@@ -1434,6 +1585,8 @@ progdefaults.changed = true;}
   btnRigCatRTSptt->value(0);
   btnRigCatDTRptt->value(0);
 }
+btnInitMEMMAP->labelcolor(FL_RED);
+btnInitMEMMAP->redraw();
 progdefaults.changed = true;}
               xywh {255 155 20 20} down_box DIAMOND_DOWN_BOX selection_color 1 align 4 deactivate
             }
@@ -1444,6 +1597,7 @@ progdefaults.changed = true;}
             Fl_Button btnInitMEMMAP {
               label Initialize
               callback {progdefaults.initInterface();
+o->labelcolor(FL_FOREGROUND_COLOR);
 progdefaults.changed = true;}
               xywh {275 186 113 24}
             }
@@ -1471,6 +1625,8 @@ progdefaults.changed = true;}
   progdefaults.chkUSEXMLRPCis = false;
   }
 for (int i = 0; i < 4; btnPTT[i++]->redraw());  
+btnInitXMLRPC->labelcolor(FL_RED);
+btnInitXMLRPC->redraw();
 progdefaults.changed = true;}
               tooltip experimental xywh {281 155 20 20} down_box DOWN_BOX align 4
             }
@@ -1481,6 +1637,7 @@ progdefaults.changed = true;}
             Fl_Button btnInitXMLRPC {
               label Initialize
               callback {progdefaults.initInterface();
+o->labelcolor(FL_FOREGROUND_COLOR);
 progdefaults.changed = true;}
               xywh {275 186 113 24}
             }

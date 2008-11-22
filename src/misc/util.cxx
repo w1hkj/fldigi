@@ -39,9 +39,9 @@ long ver2int(const char* version)
 		return 0;
 
 	if (re.nsub() == 4)
-		v += strtol(re.submatch(3), NULL, 10);
-	v += strtol(re.submatch(2), NULL, 10) * 1000L;
-	v += strtol(re.submatch(1), NULL, 10) * 1000000L;
+		v += strtol(re.submatch(3).c_str(), NULL, 10);
+	v += strtol(re.submatch(2).c_str(), NULL, 10) * 1000L;
+	v += strtol(re.submatch(1).c_str(), NULL, 10) * 1000000L;
 
 	return v;
 }
@@ -108,4 +108,18 @@ void restore_signals(void)
 	sigact = 0;
 	nsig = 0;
 	pthread_mutex_unlock(&sigmutex);
+}
+
+uint32_t simple_hash_data(const unsigned char* buf, size_t len, uint32_t code)
+{
+	for (size_t i = 0; i < len; i++)
+		code = ((code << 4) | (code >> (32 - 4))) ^ (uint32_t)buf[i];
+
+	return code;
+}
+uint32_t simple_hash_str(const unsigned char* str, uint32_t code)
+{
+	while (*str)
+		code = ((code << 4) | (code >> (32 - 4))) ^ (uint32_t)*str++;
+	return code;
 }

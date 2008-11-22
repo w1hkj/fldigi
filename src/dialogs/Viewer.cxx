@@ -10,6 +10,7 @@
 #include "waterfall.h"
 #include "fl_digi.h"
 #include "re.h"
+#include "spot.h"
 
 #include <FL/Enumerations.H>
 #include <FL/Fl_Slider.H>
@@ -349,6 +350,9 @@ void viewer_redraw()
 
 void viewaddchr(int ch, int freq, char c) {
 	if (!dlgViewer) return;
+
+	if (progStatus.spot_recv)
+		spot_recv(c, ch, freq);
 
 	if (rfc != wf->rfcarrier() || usb != wf->USB()) viewer_redraw();
 		

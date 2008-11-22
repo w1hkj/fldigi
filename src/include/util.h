@@ -120,6 +120,11 @@ void restore_signals(void);
 } // extern "C"
 #endif
 
+#ifdef __cplusplus
+uint32_t simple_hash_data(const unsigned char* buf, unsigned len, uint32_t code = 0);
+uint32_t simple_hash_str(const unsigned char* str, uint32_t code = 0);
+#endif
+
 #if !defined(NDEBUG) && defined(deprecated__) && defined(__GNUC__)
 #include <stdio.h>
 #include <string.h>
