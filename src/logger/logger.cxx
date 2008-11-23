@@ -38,6 +38,8 @@
 #include "modem.h"
 #include "debug.h"
 #include "macros.h"
+#include "status.h"
+#include "spot.h"
 
 #include <FL/fl_ask.H>
 
@@ -102,7 +104,7 @@ FIELD fields[] = {
     {AGE,           "AGE",           3},    // 1 - contacted operators age in years
     {ARRL_SECT,     "ARRL_SECT",    12},    // 2 - contacted stations ARRL section
     {BAND,          "BAND",          6},    // 3 - QSO band
-    {CALL,          "CALL",         10},    // 4 - contacted stations CALLSIGN
+    {CALL,          "CALL",         14},    // 4 - contacted stations CALLSIGN
     {CNTY,          "CNTY",         20},    // 5 - secondary political subdivision, ie: STATE
     {COMMENT,       "COMMENT",      80},    // 6 - comment field for QSO
     {CONT,          "CONT",         10},    // 7 - contacted stations continent
@@ -212,6 +214,9 @@ char   LOG_MSEPARATOR[2] = {1,0};
 
 int submit_log(void)
 {
+	if (progStatus.spot_log)
+		spot_log(inpCall->value(), inpLoc->value());
+
 	char logdate[32], logtime[32], adifdate[32];
 #ifndef __CYGWIN__
 	int msqid, len;
@@ -254,7 +259,7 @@ int submit_log(void)
 	putadif(NAME, inpName->value());
 	log_msg = log_msg + "qth:"		+ inpQth->value()		+ LOG_MSEPARATOR;
 	putadif(QTH, inpQth->value());
-	log_msg = log_msg + "state:"    + inpCnty->value()      + LOG_MSEPARATOR;
+	log_msg = log_msg + "cnty:"    + inpCnty->value()      + LOG_MSEPARATOR;
 	putadif(CNTY, inpCnty->value());
 	log_msg = log_msg + "province:"    + inpVEprov->value() + LOG_MSEPARATOR;
 	putadif(VE_PROV, inpVEprov->value());

@@ -196,14 +196,14 @@ AFCind				*AFCindicator;
 int pad = 1; //wSpace;
 int x_qsoframe = BTNWIDTH;	
 			
-int w_inpFreq =   80;
-int w_inpTime =   38;
-int w_qsoTime =   24;
-int w_inpCall =   80;
+int w_inpFreq	= 80;
+int w_inpTime	= 38;
+int w_qsoTime	= 24;
+int w_inpCall	= 120;
 int w_inpName  	= 60;
-int w_inpRstIn =  30;
+int w_inpRstIn	= 30;
 int w_inpRstOut = 30;
-int w_inpSerNo =  40;
+int w_inpSerNo	= 40;
 int wf1 = pad + w_inpFreq + pad + w_inpTime + w_qsoTime + pad + w_inpCall + 
           pad + w_inpName + pad + w_inpRstIn + pad + w_inpRstOut + 
           pad + w_inpSerNo;
@@ -213,11 +213,12 @@ int w_fm2 		= 20;
 int w_fm3 		= 20;
 int w_fm4 		= 25;
 int w_fm5 		= 20;
-int w_inpCnty 	= 24;
+int w_inpCnty 	= 90;
+int w_inpProv	= 30;
 int w_inpLOC   	= 65;
 int w_inpAZ    	= 30;
 int w_inpQth 	= wf1 - w_fm1 - w_fm2 - w_fm3 - w_fm4 - w_fm5 -
-                  2*w_inpCnty - w_inpLOC - w_inpAZ;
+                  w_inpCnty - w_inpProv - w_inpLOC - w_inpAZ;
 
 int qh = Hqsoframe / 2;
 int rig_control_width = FREQWIDTH + 4;
@@ -2126,11 +2127,13 @@ void create_fl_digi_main() {
 				Fl_Box *fm2box = new Fl_Box(rightof(inpQth), y3, w_fm2, qh - pad, "St");
 				fm2box->align(FL_ALIGN_INSIDE);
 				inpCnty = new Fl_Input(rightof(fm2box), y3, w_inpCnty, qh - pad, "");
+				inpCnty->tooltip("US State or Country");
 				inpCnty->align(FL_ALIGN_INSIDE);
 
-				Fl_Box *fm3box = new Fl_Box(rightof(inpCnty), y3, w_fm3, qh - pad, "Pv");
+				Fl_Box *fm3box = new Fl_Box(rightof(inpCnty), y3, w_fm3, qh - pad, "Pr");
 				fm3box->align(FL_ALIGN_INSIDE);
-				inpVEprov = new Fl_Input(rightof(fm3box), y3, w_inpCnty, qh - pad, "");
+				inpVEprov = new Fl_Input(rightof(fm3box), y3, w_inpProv, qh - pad, "");
+				inpVEprov->tooltip("Can. Province");
 				inpVEprov->align(FL_ALIGN_INSIDE);
 
 				Fl_Box *fm4box = new Fl_Box(rightof(inpVEprov), y3, w_fm4, qh - pad, "Loc");

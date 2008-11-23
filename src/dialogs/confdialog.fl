@@ -286,12 +286,15 @@ progdefaults.changed = true;}
               Fl_Button btnPSKRepInit {
                 label Initialize
                 callback {pskrep_stop();
-if (!pskrep_start())
+if (!pskrep_start()) {
     boxPSKRepMsg->copy_label(pskrep_error());
-else {
+    progdefaults.usepskrep = false;
+} else {
     boxPSKRepMsg->label(0);
     o->labelcolor(FL_FOREGROUND_COLOR);
-}}
+    progdefaults.usepskrep = true;
+}
+progdefaults.changed = true;}
                 xywh {303 186 80 24}
               }
               Fl_Box boxPSKRepMsg {

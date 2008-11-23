@@ -29,6 +29,7 @@
 #include <sys/time.h>
 #include "signal.h"
 #include <string>
+#include <iostream>
 #include <cstring>
 #include <cmath>
 #include <cctype>
@@ -423,6 +424,8 @@ void QRZ_disp_result()
 	inpQth->value(lookup_qth.c_str());
 	
 	inpCnty->value(lookup_state.c_str());
+    inpCnty->position(0);
+
 	inpVEprov->value(lookup_province.c_str());
 		
 	inpLoc->value(lookup_grid.c_str());
@@ -559,7 +562,8 @@ void QRZquery()
 		if (!qrzalert.empty() || !qrzerror.empty())
 			REQ(QRZAlert);
 		else {
-			lookup_qth.clear();
+//			lookup_qth.clear();
+			lookup_qth = lookup_addr2;
 			REQ(QRZ_disp_result);
 		}
 	}
@@ -687,19 +691,20 @@ bool parseQRZdetails(string &htmlpage)
 			lookup_fname.erase(snip, 1);
 	}	
 	
-	snip = htmlpage.find(BEGIN_ADDR1);
-	if (snip != string::npos) {
-		snip += strlen(BEGIN_ADDR1);
-		snip_end  = htmlpage.find(snip_end_RECORD, snip);
-		lookup_addr1 = htmlpage.substr(snip, snip_end - snip);
-	}	
+//	snip = htmlpage.find(BEGIN_ADDR1);
+//	if (snip != string::npos) {
+//		snip += strlen(BEGIN_ADDR1);
+//		snip_end  = htmlpage.find(snip_end_RECORD, snip);
+//		lookup_addr1 = htmlpage.substr(snip, snip_end - snip);
+//	}	
 
 	snip = htmlpage.find(BEGIN_ADDR2);
 	if (snip != string::npos) {
 		snip += strlen(BEGIN_ADDR2);
 		snip_end  = htmlpage.find(snip_end_RECORD, snip);
 		lookup_addr2 = htmlpage.substr(snip, snip_end - snip);
-		lookup_qth += lookup_addr2;
+//		lookup_qth += lookup_addr2;
+		lookup_qth = lookup_addr2;
 	}
 	
 	string isUS = "aAkKnNwW";
@@ -729,11 +734,17 @@ bool parseQRZdetails(string &htmlpage)
 				lookup_province = lookup_province.substr(0,pos);
 		}
 	} else {
+		size_t pos = lookup_qth.find(',');
+		if (pos != string::npos)
+			lookup_qth = lookup_qth.substr(0, pos);
 		snip = htmlpage.find(BEGIN_COUNTRY);
 		if (snip != string::npos) {
 			snip += strlen(BEGIN_COUNTRY);
 			snip_end  = htmlpage.find(snip_end_RECORD, snip);
 			lookup_state = htmlpage.substr(snip, snip_end - snip);
+			pos = lookup_state.find(',');
+			if (pos != string::npos)
+				lookup_state = lookup_state.substr(0, pos);
 		}
 	}	
 
@@ -744,7 +755,7 @@ bool parseQRZdetails(string &htmlpage)
 		lookup_grid = htmlpage.substr(snip, snip_end - snip);
 	}	
 	
-	lookup_notes = "Courtesy of WWW.QRZ.COM";
+	lookup_notes = "Courtesy of\nWWW.QRZ.COM";
 
 	return true;
 } 
@@ -834,10 +845,10 @@ void CALLSIGNquery()
 
 	switch (DB_query = static_cast<qrz_query_t>(progdefaults.QRZ)) {
 	case QRZ_NET_SUB: case QRZ_NET_HTML:
-		inpNotes->value("Request sent to qrz.com...");
+		inpNotes->value("Request sent to\nqrz.com...");
 		break;
 	case QRZ_HAMCALL:
-		inpNotes->value("Request sent to www.hamcall.net...");
+		inpNotes->value("Request sent to\nwww.hamcall.net...");
 		break;
 	case QRZ_CD:
 		if (!qCall)

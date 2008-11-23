@@ -303,6 +303,7 @@
         ELEM_(std::string, arq_address, "", "127.0.0.1")                                \
         ELEM_(std::string, arq_port, "", "3122")                                        \
 /* PSK reporter */                                                                      \
+        ELEM_(bool, usepskrep, "USEPSKREP", false)                                      \
         ELEM_(bool, pskrep_auto, "PSKREPAUTO", false)                                   \
         ELEM_(bool, pskrep_log, "PSKREPLOG", false)                                     \
         ELEM_(bool, pskrep_qrg, "PSKREPQRG", false)                                     \

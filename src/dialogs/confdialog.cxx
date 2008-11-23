@@ -199,12 +199,15 @@ Fl_Button *btnPSKRepInit=(Fl_Button *)0;
 
 static void cb_btnPSKRepInit(Fl_Button* o, void*) {
   pskrep_stop();
-if (!pskrep_start())
+if (!pskrep_start()) {
     boxPSKRepMsg->copy_label(pskrep_error());
-else {
+    progdefaults.usepskrep = false;
+} else {
     boxPSKRepMsg->label(0);
     o->labelcolor(FL_FOREGROUND_COLOR);
-};
+    progdefaults.usepskrep = true;
+}
+progdefaults.changed = true;
 }
 
 Fl_Box *boxPSKRepMsg=(Fl_Box *)0;
