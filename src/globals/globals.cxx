@@ -136,3 +136,63 @@ std::string qrg_mode_t::str(void)
 	  << carrier;
 	return s.str();
 }
+
+
+band_t band(long long freq_hz)
+{
+	switch (freq_hz / 1000000LL) {
+		case 0: return BAND_LMW;
+		case 1: return BAND_160M;
+		case 3: return BAND_80M;
+		case 4: return BAND_75M;
+		case 5: return BAND_60M;
+		case 7: return BAND_40M;
+		case 10: return BAND_30M;
+		case 14: return BAND_20M;
+		case 18: return BAND_17M;
+		case 21: return BAND_15M;
+		case 24: return BAND_12M;
+		case 28 ... 29: return BAND_10M;
+		case 50 ... 54: return BAND_6M;
+		case 70 ... 71: return BAND_4M;
+		case 144 ... 148: return BAND_2M;
+		case 222 ... 225: return BAND_125CM;
+		case 420 ... 450: return BAND_70CM;
+		case 902 ... 928: return BAND_33CM;
+		case 1240 ... 1325: return BAND_23CM;
+		case 2300 ... 2450: return BAND_13CM;
+		case 3300 ... 3500: return BAND_9CM;
+	}
+
+	return BAND_OTHER;
+}
+
+static const char* band_names[NUM_BANDS] = {
+	"LMW",
+	"160m",
+	"80m",
+	"75m",
+	"60m",
+	"40m",
+	"30m",
+	"20m",
+	"17m",
+	"15m",
+	"12m",
+	"10m",
+	"6m",
+	"4m",
+	"2m",
+	"125cm",
+	"70cm",
+	"33cm",
+	"23cm",
+	"13cm",
+	"9cm",
+	"other"
+};
+
+const char* band_name(band_t b)
+{
+	return band_names[CLAMP(b, 0, NUM_BANDS-1)];
+}

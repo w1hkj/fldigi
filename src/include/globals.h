@@ -165,4 +165,14 @@ public:
 std::ostream& operator<<(std::ostream& s, const qrg_mode_t& m);
 std::istream& operator>>(std::istream& s, qrg_mode_t& m);
 
+
+enum band_t {
+	BAND_LMW, BAND_160M, BAND_80M, BAND_75M, BAND_60M, BAND_40M, BAND_30M, BAND_20M,
+	BAND_17M, BAND_15M, BAND_12M, BAND_10M, BAND_6M, BAND_4M, BAND_2M, BAND_125CM,
+	BAND_70CM, BAND_33CM, BAND_23CM, BAND_13CM, BAND_9CM, BAND_OTHER, NUM_BANDS
+};
+
+band_t band(long long freq_hz);
+const char* band_name(band_t b);
+
 #endif

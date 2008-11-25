@@ -51,7 +51,7 @@
 #include "trx.h"
 #include "waterfall.h"
 #include "configuration.h"
-#include "rigsupport.h"
+#include "globals.h"
 #include "spot.h"
 
 #include "pskrep.h"
@@ -108,18 +108,13 @@ struct rcpt_report_t
 	string locator;
 };
 
-enum band_t {
-	BAND_LMW, BAND_160M, BAND_80M, BAND_75M, BAND_60M, BAND_40M, BAND_30M, BAND_20M,
-	BAND_17M, BAND_15M, BAND_12M, BAND_10M, BAND_6M, BAND_4M, BAND_2M, BAND_125CM,
-	BAND_70CM, BAND_33CM, BAND_23CM, BAND_13CM, BAND_9CM, BAND_OTHER
-};
-
 // A band_map_t holds a list of reception reports (for a particular callsign and band)
 typedef deque<rcpt_report_t> band_map_t;
 // A call_map_t holds reception reports for a particular callsign
 typedef map<band_t, band_map_t> call_map_t;
 // A container of this type holds all reception reports, sorted by callsign and band
 typedef map<string, call_map_t> queue_t;
+
 
 class pskrep_sender
 {
@@ -181,8 +176,8 @@ public:
 	static void log(const char* call, const char* loc, long long freq, trx_mode mode, time_t rtime, void* obj);
 	static void manual(const char* call, const char* loc, long long freq, trx_mode mode, time_t rtime, void* obj);
 	bool progress(void);
+	unsigned count(void) { return new_count; }
 
-	static band_t band(long long freq_hz);
 	static fre_t locator_re;
 private:
 
@@ -199,6 +194,7 @@ private:
 
 	queue_t queue;
 	pskrep_sender sender;
+	unsigned new_count;
 };
 
 fre_t pskrep::locator_re("[a-r]{2}[0-9]{2}[a-x]{2}", REG_EXTENDED | REG_NOSUB | REG_ICASE);
@@ -312,13 +308,18 @@ void pskrep_stop(void)
 	pskr = 0;
 }
 
+unsigned pskrep_count(void)
+{
+	return pskr ? pskr->count() : 0;
+}
+
 // -------------------------------------------------------------------------------------------------
 
 pskrep::pskrep(const string& call, const string& loc, const string& ant,
 	       const string& host, const string& port,
 	       const string& long_id, const string& short_id,
 	       bool reg_auto, bool reg_log, bool reg_manual)
-	: sender(call, loc, ant, host, port, long_id, short_id)
+	: sender(call, loc, ant, host, port, long_id, short_id), new_count(0)
 {
 	if (reg_auto)
 		spot_register_recv(pskrep::recv, this, PSKREP_RE, REG_EXTENDED | REG_ICASE);
@@ -383,6 +384,7 @@ void pskrep::append(string call, const char* loc, long long freq, trx_mode mode,
 		bandq.push_back(rcpt_report_t(mode, freq, rtime, rtype, loc));
 		LOG_INFO("Added (call=\"%s\", loc=\"%s\", mode=\"%s\", freq=%lld, time=%ld, type=%u)",
 			 call.c_str(), loc, mode_info[mode].adif_name, freq, rtime, rtype);
+		new_count++;
 		save_queue();
 	}
 	else if (!bandq.empty()) {
@@ -505,35 +507,6 @@ void pskrep::load_queue(void)
 			for (band_map_t::iterator k = j->second.begin(); k != j->second.end(); ++k)
 				if (k->status == STATUS_PENDING)
 					k->status = STATUS_NEW;
-}
-
-band_t pskrep::band(long long freq_hz)
-{
-	switch (freq_hz / 1000000LL) {
-		case 0: return BAND_LMW;
-		case 1: return BAND_160M;
-		case 3: return BAND_80M;
-		case 4: return BAND_75M;
-		case 5: return BAND_60M;
-		case 7: return BAND_40M;
-		case 10: return BAND_30M;
-		case 14: return BAND_20M;
-		case 18: return BAND_17M;
-		case 21: return BAND_15M;
-		case 24: return BAND_12M;
-		case 28 ... 29: return BAND_10M;
-		case 50 ... 54: return BAND_6M;
-		case 70 ... 71: return BAND_4M;
-		case 144 ... 148: return BAND_2M;
-		case 222 ... 225: return BAND_125CM;
-		case 420 ... 450: return BAND_70CM;
-		case 902 ... 928: return BAND_33CM;
-		case 1240 ... 1325: return BAND_23CM;
-		case 2300 ... 2450: return BAND_13CM;
-		case 3300 ... 3500: return BAND_9CM;
-	}
-
-	return BAND_OTHER;
 }
 
 // -------------------------------------------------------------------------------------------------

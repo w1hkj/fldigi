@@ -4,6 +4,10 @@
 // Copyright (C) 2008
 //              Stelios Bounanos, M0GLD
 //
+// See EOF for a list of method names. Run "fldigi --xmlrpc-list"
+// to see a list of method names, signatures and descriptions.
+//
+//
 // This file is part of fldigi.
 //
 // fldigi is free software; you can redistribute it and/or modify
@@ -60,6 +64,7 @@
 #include "rigio.h"
 #include "debug.h"
 #include "re.h"
+#include "pskrep.h"
 
 using namespace std;
 
@@ -291,6 +296,20 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		*retval = xmlrpc_c::value_string(PACKAGE_STRING);
+	}
+};
+
+class Fldigi_config_dir : public xmlrpc_c::method
+{
+public:
+	Fldigi_config_dir()
+	{
+		_signature = "s:n";
+		_help = "Returns the name of theconfiguration directory.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		*retval = xmlrpc_c::value_string(HomeDir);
 	}
 };
 
@@ -792,9 +811,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		bool v = btn_afconoff->value();
-		REQ(set_button, btn_afconoff, !v);
-		*retval = xmlrpc_c::value_boolean(!v);
+		bool v = !btn_afconoff->value();
+		REQ(set_button, btn_afconoff, v);
+		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
 
@@ -840,9 +859,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		bool v = btn_sqlonoff->value();
-		REQ(set_button, btn_sqlonoff, !v);
-		*retval = xmlrpc_c::value_boolean(!v);
+		bool v = !btn_sqlonoff->value();
+		REQ(set_button, btn_sqlonoff, v);
+		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
 
@@ -940,9 +959,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		bool v = wf->btnRev->value();
-		REQ(set_button, wf->btnRev, !v);
-		*retval = xmlrpc_c::value_boolean(!v);
+		bool v = !wf->btnRev->value();
+		REQ(set_button, wf->btnRev, v);
+		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
 
@@ -988,9 +1007,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		bool v = wf->xmtlock->value();
-		REQ(set_button, wf->xmtlock, !v);
-		*retval = xmlrpc_c::value_boolean(!v);
+		bool v = !wf->xmtlock->value();
+		REQ(set_button, wf->xmtlock, v);
+		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
 
@@ -1240,6 +1259,48 @@ public:
 	}
 };
 
+class Log_get_serial_number : public xmlrpc_c::method
+{
+public:
+	Log_get_serial_number()
+	{
+		_signature = "s:n";
+		_help = "Returns the serial number field contents.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		*retval = xmlrpc_c::value_string(inpSerNo->value());
+	}
+};
+
+class Log_get_country : public xmlrpc_c::method
+{
+public:
+	Log_get_country()
+	{
+		_signature = "s:n";
+		_help = "Returns the Country/State field contents.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		*retval = xmlrpc_c::value_string(inpCnty->value());
+	}
+};
+
+class Log_get_province : public xmlrpc_c::method
+{
+public:
+	Log_get_province()
+	{
+		_signature = "s:n";
+		_help = "Returns the Province field contents.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		*retval = xmlrpc_c::value_string(inpVEprov->value());
+	}
+};
+
 class Log_get_qth : public xmlrpc_c::method
 {
 public:
@@ -1260,11 +1321,11 @@ public:
 	Log_get_band()
 	{
 		_signature = "s:n";
-		_help = "Returns the Band selection.";
+		_help = "Returns the current band name.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		*retval = xmlrpc_c::value_int((int)wf->rfcarrier());
+		*retval = xmlrpc_c::value_string(band_name(band(wf->rfcarrier())));
 	}
 };
 
@@ -1274,15 +1335,11 @@ public:
 	Log_get_sb()
 	{
 		_signature = "s:n";
-		_help = "Returns the sideband button label.";
+		_help = "Returns the current sideband.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-//		*retval = xmlrpc_c::value_string(btnSideband->label());
-		if (wf->USB())
-			*retval = xmlrpc_c::value_string("USB");
-		else
-			*retval = xmlrpc_c::value_string("LSB");
+		*retval = xmlrpc_c::value_string(wf->USB() ? "USB" : "LSB");
 	}
 };
 
@@ -1451,7 +1508,174 @@ public:
 
 // =============================================================================
 
+extern Fl_Button* btnAutoSpot; // FIXME: export in fl_digi.h
+
+class Spot_get_auto : public xmlrpc_c::method
+{
+public:
+	Spot_get_auto()
+	{
+		_signature = "b:n";
+		_help = "Returns the autospotter state.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		*retval = xmlrpc_c::value_boolean(btnAutoSpot->value());
+	}
+};
+
+class Spot_set_auto : public xmlrpc_c::method
+{
+public:
+	Spot_set_auto()
+	{
+		_signature = "n:b";
+		_help = "Sets the autospotter state. Returns the old state.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		bool v = btnAutoSpot->value();
+		REQ(set_button, btnAutoSpot, params.getBoolean(0));
+		*retval = xmlrpc_c::value_boolean(v);
+	}
+};
+
+class Spot_toggle_auto : public xmlrpc_c::method
+{
+public:
+	Spot_toggle_auto()
+	{
+		_signature = "n:b";
+		_help = "Toggles the autospotter state. Returns the new state.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		bool v = !btnAutoSpot->value();
+		REQ(set_button, btnAutoSpot, v);
+		*retval = xmlrpc_c::value_boolean(v);
+	}
+};
+
+class Spot_pskrep_get_count : public xmlrpc_c::method
+{
+public:
+	Spot_pskrep_get_count()
+	{
+		_signature = "i:n";
+		_help = "Returns the number of callsigns spotted in the current session.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		*retval = xmlrpc_c::value_int(static_cast<unsigned>(pskrep_count()));
+	}
+};
+
+// =============================================================================
+
 // End XML-RPC interface
+
+// method list: ELEM_(class_name, "method_name")
+#undef ELEM_
+#define METHOD_LIST							\
+	ELEM_(Fldigi_list, "fldigi.list")				\
+	ELEM_(Fldigi_name, "fldigi.name")				\
+	ELEM_(Fldigi_version_struct, "fldigi.version_struct")		\
+	ELEM_(Fldigi_version_string, "fldigi.version")			\
+	ELEM_(Fldigi_name_version, "fldigi.name_version")		\
+	ELEM_(Fldigi_config_dir, "fldigi.config_dir")			\
+									\
+	ELEM_(Modem_get_name, "modem.get_name")				\
+	ELEM_(Modem_get_names, "modem.get_names")			\
+	ELEM_(Modem_get_id, "modem.get_id")				\
+	ELEM_(Modem_get_max_id, "modem.get_max_id")			\
+	ELEM_(Modem_set_by_name, "modem.set_by_name")			\
+	ELEM_(Modem_set_by_id, "modem.set_by_id")			\
+									\
+	ELEM_(Modem_set_carrier, "modem.set_carrier")			\
+	ELEM_(Modem_inc_carrier, "modem.inc_carrier")			\
+	ELEM_(Modem_get_carrier, "modem.get_carrier")			\
+									\
+	ELEM_(Modem_get_afc_sr, "modem.get_afc_search_range")		\
+	ELEM_(Modem_set_afc_sr, "modem.set_afc_search_range")		\
+	ELEM_(Modem_inc_afc_sr, "modem.inc_afc_search_range")		\
+									\
+	ELEM_(Modem_get_bw, "modem.get_bandwidth")			\
+	ELEM_(Modem_set_bw, "modem.set_bandwidth")			\
+	ELEM_(Modem_inc_bw, "modem.inc_bandwidth")			\
+									\
+	ELEM_(Modem_get_quality, "modem.get_quality")			\
+	ELEM_(Modem_search_up, "modem.search_up")			\
+	ELEM_(Modem_search_down, "modem.search_down")			\
+									\
+	ELEM_(Main_get_status1, "main.get_status1")			\
+	ELEM_(Main_get_status2, "main.get_status2")			\
+									\
+	ELEM_(Main_get_sb, "main.get_sideband")				\
+	ELEM_(Main_set_sb, "main.set_sideband")				\
+	ELEM_(Main_get_freq, "main.get_frequency")			\
+	ELEM_(Main_set_freq, "main.set_frequency")			\
+	ELEM_(Main_inc_freq, "main.inc_frequency")			\
+									\
+	ELEM_(Main_get_afc, "main.get_afc")				\
+	ELEM_(Main_set_afc, "main.set_afc")				\
+	ELEM_(Main_toggle_afc, "main.toggle_afc")			\
+									\
+	ELEM_(Main_get_sql, "main.get_squelch")				\
+	ELEM_(Main_set_sql, "main.set_squelch")				\
+	ELEM_(Main_toggle_sql, "main.toggle_squelch")			\
+									\
+	ELEM_(Main_get_sql_level, "main.get_squelch_level")		\
+	ELEM_(Main_set_sql_level, "main.set_squelch_level")		\
+	ELEM_(Main_inc_sql_level, "main.inc_squelch_level")		\
+									\
+	ELEM_(Main_get_rev, "main.get_reverse")				\
+	ELEM_(Main_set_rev, "main.set_reverse")				\
+	ELEM_(Main_toggle_rev, "main.toggle_reverse")			\
+									\
+	ELEM_(Main_get_lock, "main.get_lock")				\
+	ELEM_(Main_set_lock, "main.set_lock")				\
+	ELEM_(Main_toggle_lock, "main.toggle_lock")			\
+									\
+	ELEM_(Main_get_trx_status, "main.get_trx_status")		\
+	ELEM_(Main_tx, "main.tx")					\
+	ELEM_(Main_tune, "main.tune")					\
+	ELEM_(Main_rsid, "main.rsid")					\
+	ELEM_(Main_rx, "main.rx")					\
+	ELEM_(Main_abort, "main.abort")					\
+									\
+	ELEM_(Main_run_macro, "main.run_macro")				\
+	ELEM_(Main_get_max_macro_id, "main.get_max_macro_id")		\
+									\
+	ELEM_(Log_get_freq, "log.get_frequency")			\
+	ELEM_(Log_get_time, "log.get_time")				\
+	ELEM_(Log_get_call, "log.get_call")				\
+	ELEM_(Log_get_name, "log.get_name")				\
+	ELEM_(Log_get_rst_in, "log.get_rst_in")				\
+	ELEM_(Log_get_rst_out, "log.get_rst_out")			\
+	ELEM_(Log_get_serial_number, "log.get_serial_number")		\
+	ELEM_(Log_get_country, "log.get_country")			\
+	ELEM_(Log_get_province, "log.get_province")			\
+	ELEM_(Log_get_qth, "log.get_qth")				\
+	ELEM_(Log_get_band, "log.get_band")				\
+	ELEM_(Log_get_sb, "log.get_sideband")				\
+	ELEM_(Log_get_notes, "log.get_notes")				\
+	ELEM_(Log_get_locator, "log.get_locator")			\
+	ELEM_(Log_get_az, "log.get_az")					\
+	ELEM_(Log_clear, "log.clear")					\
+	ELEM_(Log_set_call, "log.set_call")				\
+									\
+	ELEM_(Text_get_rx_length, "text.get_rx_length")			\
+	ELEM_(Text_get_rx, "text.get_rx")				\
+	ELEM_(Text_clear_rx, "text.clear_rx")				\
+	ELEM_(Text_add_tx, "text.add_tx")				\
+	ELEM_(Text_add_tx_bytes, "text.add_tx_bytes")			\
+	ELEM_(Text_clear_tx, "text.clear_tx")				\
+									\
+	ELEM_(Spot_get_auto, "spot.get_auto")				\
+	ELEM_(Spot_set_auto, "spot.set_auto")				\
+	ELEM_(Spot_toggle_auto, "spot.toggle_auto")			\
+	ELEM_(Spot_pskrep_get_count, "spot.pskrep.get_count")
+
 
 struct rm_pred
 {
@@ -1469,97 +1693,10 @@ void XML_RPC_Server::add_methods(void)
 {
 	if (methods)
 		return;
-	methods = new methods_t;
-
-	methods->push_back(rpc_method(new Fldigi_list, "fldigi.list"));
-	methods->push_back(rpc_method(new Fldigi_name, "fldigi.name"));
-	methods->push_back(rpc_method(new Fldigi_version_struct, "fldigi.version_struct"));
-	methods->push_back(rpc_method(new Fldigi_version_string, "fldigi.version"));
-	methods->push_back(rpc_method(new Fldigi_name_version, "fldigi.name_version"));
-
-	methods->push_back(rpc_method(new Modem_get_name, "modem.get_name"));
-	methods->push_back(rpc_method(new Modem_get_names, "modem.get_names"));
-	methods->push_back(rpc_method(new Modem_get_id, "modem.get_id"));
-	methods->push_back(rpc_method(new Modem_get_max_id, "modem.get_max_id"));
-	methods->push_back(rpc_method(new Modem_set_by_name, "modem.set_by_name"));
-	methods->push_back(rpc_method(new Modem_set_by_id, "modem.set_by_id"));
-
-	methods->push_back(rpc_method(new Modem_set_carrier, "modem.set_carrier"));
-	methods->push_back(rpc_method(new Modem_inc_carrier, "modem.inc_carrier"));
-	methods->push_back(rpc_method(new Modem_get_carrier, "modem.get_carrier"));
-
-	methods->push_back(rpc_method(new Modem_get_afc_sr, "modem.get_afc_search_range"));
-	methods->push_back(rpc_method(new Modem_set_afc_sr, "modem.set_afc_search_range"));
-	methods->push_back(rpc_method(new Modem_inc_afc_sr, "modem.inc_afc_search_range"));
-
-	methods->push_back(rpc_method(new Modem_get_bw, "modem.get_bandwidth"));
-	methods->push_back(rpc_method(new Modem_set_bw, "modem.set_bandwidth"));
-	methods->push_back(rpc_method(new Modem_inc_bw, "modem.inc_bandwidth"));
-
-	methods->push_back(rpc_method(new Modem_get_quality, "modem.get_quality"));
-	methods->push_back(rpc_method(new Modem_search_up, "modem.search_up"));
-	methods->push_back(rpc_method(new Modem_search_down, "modem.search_down"));
-
-	methods->push_back(rpc_method(new Main_get_status1, "main.get_status1"));
-	methods->push_back(rpc_method(new Main_get_status2, "main.get_status2"));
-
-	methods->push_back(rpc_method(new Main_get_sb, "main.get_sideband"));
-	methods->push_back(rpc_method(new Main_set_sb, "main.set_sideband"));
-	methods->push_back(rpc_method(new Main_get_freq, "main.get_frequency"));
-	methods->push_back(rpc_method(new Main_set_freq, "main.set_frequency"));
-	methods->push_back(rpc_method(new Main_inc_freq, "main.inc_frequency"));
-
-	methods->push_back(rpc_method(new Main_get_afc, "main.get_afc"));
-	methods->push_back(rpc_method(new Main_set_afc, "main.set_afc"));
-	methods->push_back(rpc_method(new Main_toggle_afc, "main.toggle_afc"));
-
-	methods->push_back(rpc_method(new Main_get_sql, "main.get_squelch"));
-	methods->push_back(rpc_method(new Main_set_sql, "main.set_squelch"));
-	methods->push_back(rpc_method(new Main_toggle_sql, "main.toggle_squelch"));
-
-	methods->push_back(rpc_method(new Main_get_sql_level, "main.get_squelch_level"));
-	methods->push_back(rpc_method(new Main_set_sql_level, "main.set_squelch_level"));
-	methods->push_back(rpc_method(new Main_inc_sql_level, "main.inc_squelch_level"));
-
-	methods->push_back(rpc_method(new Main_get_rev, "main.get_reverse"));
-	methods->push_back(rpc_method(new Main_set_rev, "main.set_reverse"));
-	methods->push_back(rpc_method(new Main_toggle_rev, "main.toggle_reverse"));
-
-	methods->push_back(rpc_method(new Main_get_lock, "main.get_lock"));
-	methods->push_back(rpc_method(new Main_set_lock, "main.set_lock"));
-	methods->push_back(rpc_method(new Main_toggle_lock, "main.toggle_lock"));
-
-	methods->push_back(rpc_method(new Main_get_trx_status, "main.get_trx_status"));
-	methods->push_back(rpc_method(new Main_tx, "main.tx"));
-	methods->push_back(rpc_method(new Main_tune, "main.tune"));
-	methods->push_back(rpc_method(new Main_rsid, "main.rsid"));
-	methods->push_back(rpc_method(new Main_rx, "main.rx"));
-	methods->push_back(rpc_method(new Main_abort, "main.abort"));
-
-	methods->push_back(rpc_method(new Main_run_macro, "main.run_macro"));
-	methods->push_back(rpc_method(new Main_get_max_macro_id, "main.get_max_macro_id"));
-
-	methods->push_back(rpc_method(new Log_get_freq, "log.get_frequency"));
-	methods->push_back(rpc_method(new Log_get_time, "log.get_time"));
-	methods->push_back(rpc_method(new Log_get_call, "log.get_call"));
-	methods->push_back(rpc_method(new Log_get_name, "log.get_name"));
-	methods->push_back(rpc_method(new Log_get_rst_in, "log.get_rst_in"));
-	methods->push_back(rpc_method(new Log_get_rst_out, "log.get_rst_out"));
-	methods->push_back(rpc_method(new Log_get_qth, "log.get_qth"));
-	methods->push_back(rpc_method(new Log_get_band, "log.get_band"));
-	methods->push_back(rpc_method(new Log_get_sb, "log.get_sideband"));
-	methods->push_back(rpc_method(new Log_get_notes, "log.get_notes"));
-	methods->push_back(rpc_method(new Log_get_locator, "log.get_locator"));
-	methods->push_back(rpc_method(new Log_get_az, "log.get_az"));
-	methods->push_back(rpc_method(new Log_clear, "log.clear"));
-	methods->push_back(rpc_method(new Log_set_call, "log.set_call"));
-
-	methods->push_back(rpc_method(new Text_get_rx_length, "text.get_rx_length"));
-	methods->push_back(rpc_method(new Text_get_rx, "text.get_rx"));
-	methods->push_back(rpc_method(new Text_clear_rx, "text.clear_rx"));
-	methods->push_back(rpc_method(new Text_add_tx, "text.add_tx"));
-	methods->push_back(rpc_method(new Text_add_tx_bytes, "text.add_tx_bytes"));
-	methods->push_back(rpc_method(new Text_clear_tx, "text.clear_tx"));
+#undef ELEM_
+#define ELEM_(class_, name_) rpc_method(new class_, name_),
+	rpc_method m[] = { METHOD_LIST };
+	methods = new methods_t(m, m + sizeof(m)/sizeof(*m));
 
 	if (!progdefaults.xmlrpc_deny.empty())
 		methods->remove_if(rm_pred(progdefaults.xmlrpc_deny.c_str(), false));
