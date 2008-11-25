@@ -2,6 +2,8 @@
 #define PIXMAPS_H_
 
 extern const char *address_book_icon[];
+extern const char *edit_undo_icon[];
+extern const char *edit_select_all_icon[];
 extern const char *edit_clear_icon[];
 extern const char *edit_copy_icon[];
 extern const char *edit_cut_icon[];

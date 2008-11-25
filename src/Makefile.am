@@ -172,6 +172,7 @@ fldigi_SOURCES += \
 	include/fl_digi.h \
 	include/fl_lock.h \
 	include/fldigi-config.h \
+	include/flinput2.h \
 	include/flstring.h \
 	include/font_browser.h \
 	include/fontdef.h \
@@ -320,6 +321,7 @@ fldigi_SOURCES += \
 	widgets/FTextView.cxx \
 	widgets/Fl_Text_Display_mod.cxx \
 	widgets/Fl_Text_Editor_mod.cxx \
+	widgets/flinput2.cxx \
 	widgets/picture.cxx \
 	widgets/progress.cxx \
 	wwv/analysis.cxx \

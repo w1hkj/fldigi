@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fldigi 3.04BE\n"
 "Report-Msgid-Bugs-To: w1hkj AT w1hkj DOT com\n"
-"POT-Creation-Date: 2008-11-24 00:37+0000\n"
+"POT-Creation-Date: 2008-11-25 10:25+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,16 +16,16 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/main.cxx:178
+#: src/main.cxx:174
 msgid "Could not make directory "
 msgstr ""
 
-#: src/main.cxx:190
+#: src/main.cxx:186
 #, c-format
 msgid "%s log started on %s"
 msgstr ""
 
-#: src/main.cxx:638
+#: src/main.cxx:634
 msgid ""
 "License GPLv2+: GNU GPL version 2 or later <http://www.gnu.org/licenses/old-"
 "licenses/gpl-2.0.html>\n"
@@ -33,7 +33,7 @@ msgid ""
 "There is NO WARRANTY, to the extent permitted by law.\n"
 msgstr ""
 
-#: src/main.cxx:642
+#: src/main.cxx:638
 msgid ""
 "\n"
 "System: "
@@ -77,7 +77,7 @@ msgid ""
 "What would you like to do?"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:974 src/dialogs/Viewer.cxx:308
+#: src/dialogs/fl_digi.cxx:974 src/dialogs/Viewer.cxx:309
 #: src/mfsk/mfsk-pic.cxx:406 src/dialogs/colorsfonts.cxx:610
 #: src/dialogs/confdialog.cxx:3758 src/rigcontrol/rigdialog.cxx:137
 msgid "Close"
@@ -121,8 +121,8 @@ msgid "Save changed configuration before exiting?"
 msgstr ""
 
 #: src/dialogs/fl_digi.cxx:1373 src/dialogs/fl_digi.cxx:1384
-#: src/dialogs/fl_digi.cxx:1395 src/dialogs/fl_digi.cxx:2063
-#: src/dialogs/fl_digi.cxx:2085 src/dialogs/confdialog.cxx:3576
+#: src/dialogs/fl_digi.cxx:1395 src/dialogs/fl_digi.cxx:2065
+#: src/dialogs/fl_digi.cxx:2087 src/dialogs/confdialog.cxx:3576
 msgid "Save"
 msgstr ""
 
@@ -155,8 +155,8 @@ msgstr ""
 msgid "Show config"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1457 src/dialogs/fl_digi.cxx:2597
-#: src/dialogs/fl_digi.cxx:2797 src/misc/status.cxx:91 src/misc/status.cxx:293
+#: src/dialogs/fl_digi.cxx:1457 src/dialogs/fl_digi.cxx:2601
+#: src/dialogs/fl_digi.cxx:2801 src/misc/status.cxx:91 src/misc/status.cxx:293
 msgid "Log File"
 msgstr ""
 
@@ -227,8 +227,8 @@ msgstr ""
 msgid "Misc"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1574 src/dialogs/fl_digi.cxx:2051
-#: src/dialogs/fl_digi.cxx:2073 src/dialogs/confdialog.cxx:2929
+#: src/dialogs/fl_digi.cxx:1574 src/dialogs/fl_digi.cxx:2053
+#: src/dialogs/fl_digi.cxx:2075 src/dialogs/confdialog.cxx:2929
 msgid "QRZ"
 msgstr ""
 
@@ -300,118 +300,118 @@ msgstr ""
 msgid "About"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1742
+#: src/dialogs/fl_digi.cxx:1744
 msgid "NO CALLSIGN SET"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1757
+#: src/dialogs/fl_digi.cxx:1759
 msgid "Close List"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1768 src/dialogs/fl_digi.cxx:1992
+#: src/dialogs/fl_digi.cxx:1770 src/dialogs/fl_digi.cxx:1994
 msgid "Open List"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1931
+#: src/dialogs/fl_digi.cxx:1933
 msgid "No rig specified"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2007 src/dialogs/confdialog.cxx:3019
+#: src/dialogs/fl_digi.cxx:2009 src/dialogs/confdialog.cxx:3019
 msgid "Select"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2014
+#: src/dialogs/fl_digi.cxx:2016
 msgid "Add current frequency"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2021 src/rigcontrol/rigdialog.cxx:133
+#: src/dialogs/fl_digi.cxx:2023 src/rigcontrol/rigdialog.cxx:133
 msgid "Clear list"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2028 src/rigcontrol/rigdialog.cxx:128
+#: src/dialogs/fl_digi.cxx:2030 src/rigcontrol/rigdialog.cxx:128
 msgid "Delete from list"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2032
+#: src/dialogs/fl_digi.cxx:2034
 msgid "Select operating parameters"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2057 src/dialogs/fl_digi.cxx:2079
-#: src/dialogs/Viewer.cxx:304
+#: src/dialogs/fl_digi.cxx:2059 src/dialogs/fl_digi.cxx:2081
+#: src/dialogs/Viewer.cxx:305 src/widgets/flinput2.cxx:23
 msgid "Clear"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2098
+#: src/dialogs/fl_digi.cxx:2100
 msgid "QSO Freq"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2101
+#: src/dialogs/fl_digi.cxx:2104
 msgid "Time"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2108
+#: src/dialogs/fl_digi.cxx:2111
 msgid "Call"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2111
+#: src/dialogs/fl_digi.cxx:2114
 msgid "Name"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2158
+#: src/dialogs/fl_digi.cxx:2161
 msgid "Notes"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2277
+#: src/dialogs/fl_digi.cxx:2281
 msgid ""
 "Left Click - execute\n"
 "Right Click - edit"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2286
+#: src/dialogs/fl_digi.cxx:2290
 msgid "Change macro set"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2336
+#: src/dialogs/fl_digi.cxx:2340
 msgid "Detected signal level"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2348
+#: src/dialogs/fl_digi.cxx:2352
 msgid "Squelch level"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2363
+#: src/dialogs/fl_digi.cxx:2367
 msgid ""
 "Left clk - change mode\n"
 "Right clk - Modem Tab"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2421
+#: src/dialogs/fl_digi.cxx:2425
 msgid "AFC on/off"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2424
+#: src/dialogs/fl_digi.cxx:2428
 msgid "SQL on/off"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2443
+#: src/dialogs/fl_digi.cxx:2447
 msgid "Scope"
 msgstr ""
 
-#: src/dialogs/Viewer.cxx:280
+#: src/dialogs/Viewer.cxx:281
 msgid "Psk Viewer"
 msgstr ""
 
-#: src/dialogs/Viewer.cxx:286
+#: src/dialogs/Viewer.cxx:287
 msgid "Find: "
 msgstr ""
 
-#: src/dialogs/Viewer.cxx:306
+#: src/dialogs/Viewer.cxx:307
 msgid ""
 "Left click to clear text\n"
 "Right click to reset frequencies"
 msgstr ""
 
-#: src/dialogs/Viewer.cxx:312
+#: src/dialogs/Viewer.cxx:313
 msgid "Set Viewer Squelch"
 msgstr ""
 
@@ -558,6 +558,30 @@ msgstr ""
 
 #: src/rigcontrol/rigsupport.cxx:640
 msgid "Memory Mapped Rig"
+msgstr ""
+
+#: src/widgets/flinput2.cxx:18
+msgid "Undo"
+msgstr ""
+
+#: src/widgets/flinput2.cxx:19
+msgid "Cut"
+msgstr ""
+
+#: src/widgets/flinput2.cxx:20
+msgid "Copy"
+msgstr ""
+
+#: src/widgets/flinput2.cxx:21
+msgid "Paste"
+msgstr ""
+
+#: src/widgets/flinput2.cxx:22
+msgid "Delete"
+msgstr ""
+
+#: src/widgets/flinput2.cxx:24
+msgid "Select All"
 msgstr ""
 
 #: src/dialogs/colorsfonts.cxx:609

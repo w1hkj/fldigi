@@ -11,6 +11,7 @@
 #include "fl_digi.h"
 #include "re.h"
 #include "gettext.h"
+#include "flinput2.h"
 #include "spot.h"
 
 #include <FL/Enumerations.H>
@@ -111,7 +112,7 @@ Fl_Double_Window *dlgViewer = (Fl_Double_Window *)0;
 Fl_Button *btnCloseViewer=(Fl_Button *)0;
 Fl_Button *btnClearViewer=(Fl_Button *)0;
 pskBrowser *brwsViewer=(pskBrowser *)0;
-Fl_Input  *inpSeek = (Fl_Input *)0;
+Fl_Input2  *inpSeek = (Fl_Input2 *)0;
 Fl_Slider *sldrViewerSquelch = (Fl_Slider *)0;
 //Fl_Light_Button *chkBeep = 0;
 
@@ -283,7 +284,7 @@ Fl_Double_Window* createViewer() {
 		Fl_Pack *p1 = new Fl_Pack(0, 0, viewerwidth, 25);
 			p1->type(1);
 			Fl_Box *bx = new Fl_Box(0,0,50, 25);
-	    	inpSeek = new Fl_Input(50, 5, 200, 25, _("Find: ")); 
+	    	inpSeek = new Fl_Input2(50, 5, 200, 25, _("Find: ")); 
     		inpSeek->callback((Fl_Callback*)cb_Seek);
     		inpSeek->when(FL_WHEN_CHANGED);
 			inpSeek->textfont(FL_SCREEN);

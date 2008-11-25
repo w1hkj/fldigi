@@ -39,7 +39,6 @@
 #include <FL/Fl_Tile.H>
 #include <FL/Fl_Light_Button.H>
 #include <FL/Fl_Check_Button.H>
-#include <FL/Fl_Multiline_Input.H>
 
 #include "combo.h"
 #include "FTextView.h"
@@ -50,6 +49,7 @@
 #include "mixer.h"
 #include "progress.h"
 #include "FreqControl.h"
+#include <flinput2.h>
 
 using namespace std;
 
@@ -69,19 +69,19 @@ extern Fl_Button		*MODEstatus;
 extern Fl_Slider		*sldrSquelch;
 extern Progress			*pgrsSquelch;
 extern Fl_Button 		*btnMacro[];
-extern Fl_Input			*inpFreq;
-extern Fl_Input			*inpTime;
-extern Fl_Input			*inpCall;
-extern Fl_Input			*inpName;
-extern Fl_Input			*inpRstIn;
-extern Fl_Input			*inpRstOut;
-extern Fl_Input			*inpQth;
-extern Fl_Input			*inpCnty;
-extern Fl_Input			*inpSerNo;
-extern Fl_Input			*inpVEprov;
-extern Fl_Input			*inpLoc;
-extern Fl_Multiline_Input			*inpNotes;
-extern Fl_Input			*inpAZ;	// WA5ZNU
+extern Fl_Input2		*inpFreq;
+extern Fl_Input2		*inpTime;
+extern Fl_Input2		*inpCall;
+extern Fl_Input2		*inpName;
+extern Fl_Input2		*inpRstIn;
+extern Fl_Input2		*inpRstOut;
+extern Fl_Input2		*inpQth;
+extern Fl_Input2		*inpCnty;
+extern Fl_Input2		*inpSerNo;
+extern Fl_Input2		*inpVEprov;
+extern Fl_Input2		*inpLoc;
+extern Fl_Input2		*inpNotes;
+extern Fl_Input2		*inpAZ;	// WA5ZNU
 extern Fl_Button		*qsoClear;
 extern Fl_Button		*qsoSave;
 extern Fl_Box			*txtRigName;

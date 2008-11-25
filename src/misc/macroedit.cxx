@@ -20,8 +20,8 @@ Fl_Double_Window *MacroEditDialog = (Fl_Double_Window *)0;
 Fl_Button	*btnMacroEditOK = (Fl_Button *)0;
 Fl_Button	*btnMacroEditCancel = (Fl_Button *)0;
 Fl_Button	*btnInsertMacro = (Fl_Button *)0;
-Fl_Input	*macrotext = (Fl_Input *)0;
-Fl_Input	*labeltext = (Fl_Input *)0;
+Fl_Input2	*macrotext = (Fl_Input2 *)0;
+Fl_Input2	*labeltext = (Fl_Input2 *)0;
 static int widths[] = {90, 0};
 
 Fl_Hold_Browser *macroDefs=(Fl_Hold_Browser *)0;
@@ -149,7 +149,7 @@ Fl_Double_Window* make_macroeditor(void)
 	editor_label.append("Macro editor - ").append(progStatus.LastMacroFile);
 
 	Fl_Double_Window* w = new Fl_Double_Window(700, 230, editor_label.c_str());
-		labeltext = new Fl_Input(114, 15, 95, 25, "Label:");
+		labeltext = new Fl_Input2(114, 15, 95, 25, "Label:");
 		
 		btnMacroEditOK = new Fl_Button(500, 15, 75, 25, "OK");
 		btnMacroEditOK->callback(cbMacroEditOK);
@@ -157,7 +157,7 @@ Fl_Double_Window* make_macroeditor(void)
 		btnMacroEditCancel = new Fl_Button(600, 15, 75, 25, "Cancel");
 		btnMacroEditCancel->callback(cbMacroEditCancel);
 		
-		macrotext = new Fl_Input(5, 60, 450, 165, "Text");
+		macrotext = new Fl_Input2(5, 60, 450, 165, "Text");
 		macrotext->type(4);
 		macrotext->align(FL_ALIGN_TOP_LEFT);
 		

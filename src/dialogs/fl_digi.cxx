@@ -146,19 +146,19 @@ Fl_Button 			*btnMacro[NUMMACKEYS];
 Fl_Button			*btnAltMacros;
 Fl_Button			*btn_afconoff;
 Fl_Button			*btn_sqlonoff;
-Fl_Input			*inpFreq;
-Fl_Input			*inpTime;
-Fl_Input			*inpCall;
-Fl_Input			*inpName;
-Fl_Input			*inpRstIn;
-Fl_Input			*inpRstOut;
-Fl_Input			*inpQth;
-Fl_Input			*inpLoc;
-Fl_Input			*inpCnty;
-Fl_Input			*inpSerNo;
-Fl_Input			*inpVEprov;
-Fl_Multiline_Input	*inpNotes;
-Fl_Input			*inpAZ;	// WA5ZNU
+Fl_Input2			*inpFreq;
+Fl_Input2			*inpTime;
+Fl_Input2			*inpCall;
+Fl_Input2			*inpName;
+Fl_Input2			*inpRstIn;
+Fl_Input2			*inpRstOut;
+Fl_Input2			*inpQth;
+Fl_Input2			*inpLoc;
+Fl_Input2			*inpCnty;
+Fl_Input2			*inpSerNo;
+Fl_Input2			*inpVEprov;
+Fl_Input2			*inpNotes;
+Fl_Input2			*inpAZ;	// WA5ZNU
 Fl_Button			*qsoTime;
 Fl_Button			*qsoClear;
 Fl_Button			*qsoSave;
@@ -2097,56 +2097,57 @@ void create_fl_digi_main() {
 			QsoInfoFrame1 = new Fl_Group(x_qsoframe, Hmenu, wf1, Hqsoframe + Hnotes);
 //				QsoInfoFrame1->box(FL_BORDER_BOX);
 				
-				inpFreq = new Fl_Input(x_qsoframe + pad, y2, w_inpFreq, qh - pad, _("QSO Freq"));
+				inpFreq = new Fl_Input2(x_qsoframe + pad, y2, w_inpFreq, qh - pad, _("QSO Freq"));
+				inpFreq->type(FL_NORMAL_OUTPUT);
 				inpFreq->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
-				inpTime = new Fl_Input(rightof(inpFreq) + pad, y2, w_inpTime, qh - pad, _("Time"));
+				inpTime = new Fl_Input2(rightof(inpFreq) + pad, y2, w_inpTime, qh - pad, _("Time"));
 				inpTime->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
 				qsoTime = new Fl_Button(rightof(inpTime), y2, w_qsoTime, qh - pad);
 				qsoTime->image(new Fl_Pixmap(time_icon));
 				qsoTime->callback(qsoTime_cb, 0);
 
-				inpCall = new Fl_Input(rightof(qsoTime) + pad, y2, w_inpCall, qh - pad, _("Call"));
+				inpCall = new Fl_Input2(rightof(qsoTime) + pad, y2, w_inpCall, qh - pad, _("Call"));
 				inpCall->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
-				inpName = new Fl_Input(rightof(inpCall) + pad, y2, w_inpName, qh - pad, _("Name"));
+				inpName = new Fl_Input2(rightof(inpCall) + pad, y2, w_inpName, qh - pad, _("Name"));
 				inpName->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 			
-				inpRstIn = new Fl_Input(rightof(inpName) + pad, y2, w_inpRstIn, qh - pad, "In");
+				inpRstIn = new Fl_Input2(rightof(inpName) + pad, y2, w_inpRstIn, qh - pad, "In");
 				inpRstIn->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
-				inpRstOut = new Fl_Input(rightof(inpRstIn) + pad, y2, w_inpRstOut, qh - pad, "Out");
+				inpRstOut = new Fl_Input2(rightof(inpRstIn) + pad, y2, w_inpRstOut, qh - pad, "Out");
 				inpRstOut->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 						
-				inpSerNo = new Fl_Input(rightof(inpRstOut) + pad, y2, w_inpSerNo, qh - pad, "##");
+				inpSerNo = new Fl_Input2(rightof(inpRstOut) + pad, y2, w_inpSerNo, qh - pad, "##");
 				inpSerNo->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 	
 				Fl_Box *fm1box = new Fl_Box(x_qsoframe, y3, w_fm1, qh - pad, "Qth");
 				fm1box->align(FL_ALIGN_INSIDE);
-				inpQth = new Fl_Input( rightof(fm1box), y3, w_inpQth, qh - pad, "");
+				inpQth = new Fl_Input2( rightof(fm1box), y3, w_inpQth, qh - pad, "");
 				inpQth->align(FL_ALIGN_INSIDE);
 					
 				Fl_Box *fm2box = new Fl_Box(rightof(inpQth), y3, w_fm2, qh - pad, "St");
 				fm2box->align(FL_ALIGN_INSIDE);
-				inpCnty = new Fl_Input(rightof(fm2box), y3, w_inpCnty, qh - pad, "");
+				inpCnty = new Fl_Input2(rightof(fm2box), y3, w_inpCnty, qh - pad, "");
 				inpCnty->tooltip("US State or Country");
 				inpCnty->align(FL_ALIGN_INSIDE);
 
 				Fl_Box *fm3box = new Fl_Box(rightof(inpCnty), y3, w_fm3, qh - pad, "Pr");
 				fm3box->align(FL_ALIGN_INSIDE);
-				inpVEprov = new Fl_Input(rightof(fm3box), y3, w_inpProv, qh - pad, "");
+				inpVEprov = new Fl_Input2(rightof(fm3box), y3, w_inpProv, qh - pad, "");
 				inpVEprov->tooltip("Can. Province");
 				inpVEprov->align(FL_ALIGN_INSIDE);
 
 				Fl_Box *fm4box = new Fl_Box(rightof(inpVEprov), y3, w_fm4, qh - pad, "Loc");
 				fm4box->align(FL_ALIGN_INSIDE);
-				inpLoc = new Fl_Input(rightof(fm4box), y3, w_inpLOC, qh - pad, "");
+				inpLoc = new Fl_Input2(rightof(fm4box), y3, w_inpLOC, qh - pad, "");
 				inpLoc->align(FL_ALIGN_INSIDE);
 
 				Fl_Box *fm5box = new Fl_Box(rightof(inpLoc), y3, w_fm5, qh - pad, "Az");
 				fm5box->align(FL_ALIGN_INSIDE);
-				inpAZ = new Fl_Input(rightof(fm5box), y3, w_inpAZ, qh - pad, "");
+				inpAZ = new Fl_Input2(rightof(fm5box), y3, w_inpAZ, qh - pad, "");
 				inpAZ->align(FL_ALIGN_INSIDE);
 				
 				QsoInfoFrame1->resizable(NULL);
@@ -2156,8 +2157,9 @@ void create_fl_digi_main() {
 				WNOM - rightof(QsoInfoFrame1) - 2*pad, Hqsoframe + Hnotes); 
 //		    	QsoInfoFrame2->box(FL_BORDER_BOX);
 					
-				inpNotes = new Fl_Multiline_Input(x_qsoframe + wf1 + pad, y2, 
+				inpNotes = new Fl_Input2(x_qsoframe + wf1 + pad, y2, 
 					WNOM - rightof(QsoInfoFrame1) - 2*pad, qh + Hnotes - pad, _("Notes"));
+				inpNotes->type(FL_MULTILINE_INPUT);
 				inpNotes->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
 					Fl_Group::current()->resizable(inpNotes);
