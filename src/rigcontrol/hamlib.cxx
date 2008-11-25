@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <termios.h>
+#include <cstdlib>
 #include <string>
 #include <vector>
 
@@ -200,6 +201,8 @@ bool hamlib_init(bool bPtt)
 
 void hamlib_close(void)
 {
+	ENSURE_THREAD(FLMAIN_TID);
+
 	if (hamlib_closed || !xcvr->isOnLine())
 		return;
 
@@ -213,6 +216,12 @@ void hamlib_close(void)
 			diediedie();
 		}
 	}
+
+	xcvr->close();
+	if (rigcontrol)
+		rigcontrol->hide();
+	wf->USB(true);
+	wf->setQSY(0);
 }
 
 bool hamlib_active(void)
@@ -408,15 +417,7 @@ static void *hamlib_loop(void *args)
 			break;
 	}
 
-	xcvr->close();
 	hamlib_closed = true;
-
-	if (rigcontrol)
-		rigcontrol->hide();
-	wf->USB(true);
-	FL_LOCK();
-	wf->setQSY(0);
-	FL_UNLOCK();
 
 	return NULL;
 }
@@ -427,12 +428,8 @@ static int add_to_list(const struct rig_caps* rc, void*)
 	return 1;
 }
 
-//static bool rig_cmp(const struct rig_caps* rig1, const struct rig_caps* rig2)
-//{
-bool rig_cmp(const void *a, const void *b)
+static bool rig_cmp(const struct rig_caps* rig1, const struct rig_caps* rig2)
 {
-	const struct rig_caps *rig1 = (const struct rig_caps *)a;
-	const struct rig_caps *rig2 = (const struct rig_caps *)b;
 	int ret;
 
 	ret = strcasecmp(rig1->mfg_name, rig2->mfg_name);
@@ -448,16 +445,22 @@ bool rig_cmp(const void *a, const void *b)
 
 void hamlib_get_rigs(void)
 {
-//	if (!hamlib_rigs.empty())
-//		return;
-	hamlib_rigs.clear();
-#ifdef NDEBUG
-	rig_set_debug(RIG_DEBUG_NONE);
+	if (!hamlib_rigs.empty())
+		return;
+
+	enum rig_debug_level_e dblv = RIG_DEBUG_NONE;
+#ifndef NDEBUG
+	const char* hd = getenv("FLDIGI_HAMLIB_DEBUG");
+	if (hd) {
+		dblv = static_cast<enum rig_debug_level_e>(strtol(hd, NULL, 10));
+		dblv = CLAMP(dblv, RIG_DEBUG_NONE, RIG_DEBUG_TRACE);
+	}
 #endif
+	rig_set_debug(dblv);
+
 	rig_load_all_backends();
 	rig_list_foreach(add_to_list, 0);
 	sort(hamlib_rigs.begin(), hamlib_rigs.end(), rig_cmp);
-//	hamlib_rigs.sort(rig_cmp);
 }
 
 rig_model_t hamlib_get_rig_model_compat(const char* name)
