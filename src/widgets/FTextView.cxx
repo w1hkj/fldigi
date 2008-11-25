@@ -417,6 +417,9 @@ Fl_Menu_Item FTextView::view_menu[] = {
 	{ make_icon_label(ENTER_SYMBOL "&Call", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(ENTER_SYMBOL "&Name", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(ENTER_SYMBOL "QT&H", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL "&State", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL "&Province", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL "Serial Nr", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(ENTER_SYMBOL "&Locator", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(ENTER_SYMBOL "&RST(r)", enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ make_icon_label("Insert divider", insert_link_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
@@ -757,6 +760,15 @@ void FTextView::menu_cb(int val)
 		break;
 	case RX_MENU_QTH:
 		input = inpQth;
+		break;
+	case RX_MENU_STATE:
+		input = inpCnty;
+		break;
+	case RX_MENU_PROVINCE:
+		input = inpVEprov;
+		break;
+	case RX_MENU_SERIAL:
+		input = inpSerNo;
 		break;
 	case RX_MENU_LOC:
 		input = inpLoc;

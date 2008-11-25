@@ -29,6 +29,7 @@
 #include <sys/time.h>
 #include "signal.h"
 #include <string>
+#include <iostream>
 #include <cstring>
 #include <cmath>
 #include <cctype>
@@ -65,6 +66,7 @@ string lookup_name;
 string lookup_addr1;
 string lookup_addr2;
 string lookup_state;
+string lookup_province;
 string lookup_zip;
 string lookup_country;
 string lookup_born;
@@ -163,6 +165,7 @@ void clear_Lookup()
 	lookup_addr1.clear();
 	lookup_addr2.clear();
 	lookup_state.clear();
+	lookup_province.clear();
 	lookup_zip.clear();
 	lookup_country.clear();
 	lookup_born.clear();
@@ -419,6 +422,12 @@ void QRZ_disp_result()
 	}
 
 	inpQth->value(lookup_qth.c_str());
+	
+	inpCnty->value(lookup_state.c_str());
+    inpCnty->position(0);
+
+	inpVEprov->value(lookup_province.c_str());
+		
 	inpLoc->value(lookup_grid.c_str());
 	if (!progdefaults.myLocator.empty()) {
 		char buf[10];
@@ -452,10 +461,7 @@ void QRZ_CD_query()
 		if (snip != string::npos)
 			lookup_fname.erase(snip, lookup_fname.length() - snip);
 		lookup_qth = qCall->GetCity();
-		lookup_qth.append(" ");
-		lookup_qth.append(qCall->GetState());
-		lookup_qth.append(" ");
-		lookup_qth.append(qCall->GetZIP());
+		lookup_state = qCall->GetState();
 		lookup_grid.clear();
 		lookup_notes.clear();
 	} else {
@@ -556,11 +562,8 @@ void QRZquery()
 		if (!qrzalert.empty() || !qrzerror.empty())
 			REQ(QRZAlert);
 		else {
-			lookup_qth.clear();
-			qthappend(lookup_qth, lookup_addr1);
-			qthappend(lookup_qth, lookup_addr2);
-			qthappend(lookup_qth, lookup_state);
-			qthappend(lookup_qth, lookup_country);
+//			lookup_qth.clear();
+			lookup_qth = lookup_addr2;
 			REQ(QRZ_disp_result);
 		}
 	}
@@ -596,12 +599,11 @@ void parse_html(const string& htmlpage)
 		p++;
 		while ((uchar)htmlpage[p] < 128 && p < htmlpage.length())
 			lookup_qth += htmlpage[p++];
-		lookup_qth += ", ";
 	}
 	if ((p = htmlpage.find(HAMCALL_STATE)) != string::npos) { 
 		p++;
 		while ((uchar)htmlpage[p] < 128 && p < htmlpage.length())
-			lookup_qth += htmlpage[p++];
+			lookup_state += htmlpage[p++];
 	}
 	if ((p = htmlpage.find(HAMCALL_GRID)) != string::npos) { 
 		p++;
@@ -689,30 +691,61 @@ bool parseQRZdetails(string &htmlpage)
 			lookup_fname.erase(snip, 1);
 	}	
 	
-	snip = htmlpage.find(BEGIN_ADDR1);
-	if (snip != string::npos) {
-		snip += strlen(BEGIN_ADDR1);
-		snip_end  = htmlpage.find(snip_end_RECORD, snip);
-		lookup_addr1 = htmlpage.substr(snip, snip_end - snip);
-	}	
+//	snip = htmlpage.find(BEGIN_ADDR1);
+//	if (snip != string::npos) {
+//		snip += strlen(BEGIN_ADDR1);
+//		snip_end  = htmlpage.find(snip_end_RECORD, snip);
+//		lookup_addr1 = htmlpage.substr(snip, snip_end - snip);
+//	}	
 
 	snip = htmlpage.find(BEGIN_ADDR2);
 	if (snip != string::npos) {
 		snip += strlen(BEGIN_ADDR2);
 		snip_end  = htmlpage.find(snip_end_RECORD, snip);
 		lookup_addr2 = htmlpage.substr(snip, snip_end - snip);
-		lookup_qth += lookup_addr2;
-	}	
-
-	snip = htmlpage.find(BEGIN_COUNTRY);
-	if (snip != string::npos) {
-		while (lookup_qth[lookup_qth.length() -1] == ' ' || lookup_qth[lookup_qth.length() -1] == ',')
-			lookup_qth.erase(lookup_qth.length() -1, 1);
-		lookup_qth.append(", ");
-		snip += strlen(BEGIN_COUNTRY);
-		snip_end  = htmlpage.find(snip_end_RECORD, snip);
-		lookup_country = htmlpage.substr(snip, snip_end - snip);
-		lookup_qth += lookup_country;
+//		lookup_qth += lookup_addr2;
+		lookup_qth = lookup_addr2;
+	}
+	
+	string isUS = "aAkKnNwW";
+	string isCAN = "vV";
+	if (isUS.find(callsign[0]) != string::npos) { // a US callsign
+		size_t pos = lookup_qth.find(',');
+		if (pos != string::npos) {
+			lookup_state = lookup_qth.substr(pos);
+			lookup_qth = lookup_qth.substr(0, pos);
+			pos = lookup_state.find_first_not_of(", ");
+			if (pos != string::npos)
+				lookup_state = lookup_state.substr(pos);
+			pos = lookup_state.find(' ');
+			if (pos != string::npos)
+				lookup_state = lookup_state.substr(0,pos);
+		}
+	} else if (isCAN.find(callsign[0]) != string::npos) { // a Canadian callsign
+		size_t pos = lookup_qth.find(',');
+		if (pos != string::npos) {
+			lookup_province = lookup_qth.substr(pos);
+			lookup_qth = lookup_qth.substr(0, pos);
+			pos = lookup_province.find_first_not_of(", ");
+			if (pos != string::npos)
+				lookup_province = lookup_province.substr(pos);
+			pos = lookup_province.find(' ');
+			if (pos != string::npos)
+				lookup_province = lookup_province.substr(0,pos);
+		}
+	} else {
+		size_t pos = lookup_qth.find(',');
+		if (pos != string::npos)
+			lookup_qth = lookup_qth.substr(0, pos);
+		snip = htmlpage.find(BEGIN_COUNTRY);
+		if (snip != string::npos) {
+			snip += strlen(BEGIN_COUNTRY);
+			snip_end  = htmlpage.find(snip_end_RECORD, snip);
+			lookup_state = htmlpage.substr(snip, snip_end - snip);
+			pos = lookup_state.find(',');
+			if (pos != string::npos)
+				lookup_state = lookup_state.substr(0, pos);
+		}
 	}	
 
 	snip = htmlpage.find(BEGIN_GRID);
@@ -722,7 +755,7 @@ bool parseQRZdetails(string &htmlpage)
 		lookup_grid = htmlpage.substr(snip, snip_end - snip);
 	}	
 	
-	lookup_notes = "*** Data Courtesy of WWW.QRZ.COM ***";
+	lookup_notes = "Courtesy of\nWWW.QRZ.COM";
 
 	return true;
 } 
@@ -812,10 +845,10 @@ void CALLSIGNquery()
 
 	switch (DB_query = static_cast<qrz_query_t>(progdefaults.QRZ)) {
 	case QRZ_NET_SUB: case QRZ_NET_HTML:
-		inpNotes->value("Request sent to qrz.com...");
+		inpNotes->value("Request sent to\nqrz.com...");
 		break;
 	case QRZ_HAMCALL:
-		inpNotes->value("Request sent to www.hamcall.net...");
+		inpNotes->value("Request sent to\nwww.hamcall.net...");
 		break;
 	case QRZ_CD:
 		if (!qCall)

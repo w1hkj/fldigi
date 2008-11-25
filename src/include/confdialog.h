@@ -141,6 +141,7 @@ extern Fl_Input *inpMyLocator;
 extern Fl_Check_Button *btnUseLeadingZeros;
 extern Fl_Value_Input *nbrContestStart;
 extern Fl_Value_Input *nbrContestDigits;
+extern Fl_Input *inpMyAntenna;
 extern Fl_Group *tabQRZ;
 extern Fl_Round_Button *btnQRZnotavailable;
 extern Fl_Round_Button *btnQRZcdrom;

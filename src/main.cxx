@@ -286,8 +286,9 @@ int main(int argc, char ** argv)
 	XML_RPC_Server::start(progdefaults.xmlrpc_address.c_str(), progdefaults.xmlrpc_port.c_str());
 #endif
 
-	if (!pskrep_start())
-		LOG_ERROR("Could not start PSK reporter: %s", pskrep_error());
+	if (progdefaults.usepskrep)
+		if (!pskrep_start())
+			LOG_ERROR("Could not start PSK reporter: %s", pskrep_error());
 
 	int ret = Fl::run();
 
@@ -297,7 +298,8 @@ int main(int argc, char ** argv)
 	XML_RPC_Server::stop();
 #endif
 
-	pskrep_stop();
+	if (progdefaults.usepskrep)
+		pskrep_stop();
 
 	for (int i = 0; i < NUM_QRUNNER_THREADS; i++) {
 		cbq[i]->detach();
