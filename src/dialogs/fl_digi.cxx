@@ -1656,12 +1656,14 @@ void make_pixmap(Pixmap *xpm, const char **data)
 	// We need a displayed window to provide a GC for X_CreatePixmap
 	Fl_Window w(0, 0, PACKAGE_NAME);
 	w.xclass(PACKAGE_NAME);
+	w.border(0);
 	w.show();
-	w.make_current();
 
 	Fl_Pixmap icon(data);
 	int maxd = MAX(icon.w(), icon.h());
+	w.make_current();
 	*xpm = fl_create_offscreen(maxd, maxd);
+	w.hide();
 
 	fl_begin_offscreen(*xpm);
 	fl_color(FL_BACKGROUND_COLOR);
