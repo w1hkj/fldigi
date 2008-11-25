@@ -4,18 +4,20 @@
 bin_PROGRAMS = fldigi
 
 
-AM_CPPFLAGS = -I$(srcdir) -I$(srcdir)/include -I$(srcdir)/irrxml -I$(srcdir)/fileselector @BOOST_CPPFLAGS@
+AM_CPPFLAGS = -DLOCALEDIR=\"$(localedir)\" -I$(srcdir) -I$(srcdir)/include \
+	      -I$(srcdir)/irrxml -I$(srcdir)/fileselector @BOOST_CPPFLAGS@
 
 AM_CXXFLAGS = @PORTAUDIO_CFLAGS@ @FLTK_CFLAGS@ @SNDFILE_CFLAGS@ \
 	@SAMPLERATE_CFLAGS@ @PULSEAUDIO_CFLAGS@ @HAMLIB_CFLAGS@ \
-	@IMAGE_CFLAGS@ @XMLRPC_CFLAGS@ @MAC_UNIVERSAL_CFLAGS@ \
+	@IMAGE_CFLAGS@ @XMLRPC_CFLAGS@ @MAC_UNIVERSAL_CFLAGS@ @INTL_CFLAGS@ \
 	-pipe -Wall -fexceptions @OPT_CFLAGS@ @DEBUG_CFLAGS@
 AM_CFLAGS = $(AM_CXXFLAGS)
 
 AM_LDFLAGS = @MAC_UNIVERSAL_LDFLAGS@
 
 LDADD = @PORTAUDIO_LIBS@ @BOOST_LDFLAGS@ @FLTK_LIBS@ @SNDFILE_LIBS@ \
-	@SAMPLERATE_LIBS@ @PULSEAUDIO_LIBS@ @HAMLIB_LIBS@ @IMAGE_LIBS@ @XMLRPC_LIBS@ @EXTRA_LIBS@
+	@SAMPLERATE_LIBS@ @PULSEAUDIO_LIBS@ @HAMLIB_LIBS@ @IMAGE_LIBS@ \
+	@XMLRPC_LIBS@ @INTL_LIBS@ @EXTRA_LIBS@
 
 
 HAMLIB_SRC = include/hamlib.h rigcontrol/hamlib.cxx include/rigclass.h rigcontrol/rigclass.cxx
@@ -173,6 +175,7 @@ fldigi_SOURCES += \
 	include/flstring.h \
 	include/font_browser.h \
 	include/fontdef.h \
+	include/gettext.h \
 	include/globals.h \
 	include/icons.h \
 	include/id.h \
@@ -320,7 +323,7 @@ fldigi_SOURCES += \
 	widgets/picture.cxx \
 	widgets/progress.cxx \
 	wwv/analysis.cxx \
-	wwv/wwv.cxx 
+	wwv/wwv.cxx
 
 # Sources that are part of the distribution but are not compiled directly
 EXTRA_fldigi_SOURCES += \
@@ -357,7 +360,7 @@ EXTRA_fldigi_SOURCES += \
 	mt63/mt63intl.dat \
 	trx/tune.cxx \
 	rsid/rsid_fft.cxx \
-	rsid/rsid_fft.h 
+	rsid/rsid_fft.h
 
 # Additional non-source files that we distribute
 EXTRA_DIST = \

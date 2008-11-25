@@ -1,7 +1,7 @@
-ACLOCAL_AMFLAGS = -I m4
+ACLOCAL_AMFLAGS = -I m4 -I m4/intl
 # AC_CONFIG_MACRO_DIR([m4])
 
-SUBDIRS = src
+SUBDIRS = po src
 
 if HAVE_FLUID
 flgen:
@@ -17,3 +17,5 @@ if ENABLE_HAMLIB
 hamlib-static:
 	(cd src && $(MAKE) $(AM_MAKEFLAGS) $@)
 endif
+
+EXTRA_DIST = build-aux/config.rpath

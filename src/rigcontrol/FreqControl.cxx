@@ -36,6 +36,7 @@
 
 #include "FreqControl.h"
 #include "rigdialog.h"
+#include "gettext.h"
 
 const char *cFreqControl::Label[10] = {
 	"0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
@@ -126,7 +127,7 @@ cFreqControl::cFreqControl(int x, int y, int w, int h, const char *lbl):
 	finp->hide();
 	parent()->remove(finp);
 
-	tooltip("Enter frequency or change with\nLeft/Right/Up/Down/Pg_Up/Pg_Down");
+	tooltip(_("Enter frequency or change with\nLeft/Right/Up/Down/Pg_Up/Pg_Down"));
 }
 
 cFreqControl::~cFreqControl()

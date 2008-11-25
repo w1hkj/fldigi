@@ -31,7 +31,7 @@ AC_CANONICAL_HOST
 # define target, target_cpu, target_vendor, target_os
 AC_CANONICAL_TARGET
 
-AM_INIT_AUTOMAKE([-Wall foreign std-options 1.9.6])
+AM_INIT_AUTOMAKE([-Wall foreign std-options dist-bzip2 1.9.6])
 AM_MAINTAINER_MODE
 AC_CONFIG_SRCDIR([src/main.cxx])
 AC_CONFIG_HEADER([src/config.h])
@@ -47,6 +47,7 @@ AC_DEFINE([PACKAGE_DOCS], ["http://www.w1hkj.com/FldigiHelp/index.html"], [Docs 
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
+AC_USE_SYSTEM_EXTENSIONS
 
 # Checks for header files.
 AC_HEADER_STDC
@@ -92,9 +93,8 @@ AC_SUBST([EXTRA_LIBS])
 
 AC_PRESERVE_HELP_ORDER
 
-dnl blank line before our options in configure's help text
-AC_ARG_WITH([], [], [], [])
-
+### Internationalization
+AM_GNU_GETTEXT([external])
 
 ###### OS support
 ### OSX
@@ -215,6 +215,12 @@ AC_FLDIGI_PKG_CHECK([hamlib], [hamlib >= 1.2.4], [yes], [yes],
                     [use hamradio control libraries @<:@autodetect@:>@],
                     [ENABLE_HAMLIB])
 
+### libintl
+# Substitute INTL_CFLAGS in Makefile
+# Substitute INTL_LIBS in Makefile
+# (default to LIBINTL)
+AC_FLDIGI_INTL
+
 
 ### output
 AH_TOP([
@@ -225,7 +231,7 @@ AH_BOTTOM([
 #include "util.h"
 #endif /* CONFIG_H_ */
 ])
-AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile po/Makefile.in])
 AC_OUTPUT
 
 
@@ -249,4 +255,6 @@ Configuration summary:
 
   hamlib ...................... $ac_cv_hamlib
   xmlrpc ...................... $ac_cv_xmlrpc
+
+  i18n ........................ $USE_NLS
 ])

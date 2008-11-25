@@ -6,6 +6,7 @@
 
 #include <FL/Fl_Preferences.H>
 
+#include "gettext.h"
 #include "main.h"
 #include "globals.h"
 
@@ -87,7 +88,7 @@ void status::saveLastState()
 	ampspan = progdefaults.wfAmpSpan;
 
 	LOGenabled = false;
-	Fl_Menu_Item *mnulogging = getMenuItem("Log File");
+	Fl_Menu_Item *mnulogging = getMenuItem(_("Log File"));
 	if (mnulogging)
 		LOGenabled = mnulogging->value();
 
@@ -289,7 +290,7 @@ void status::initLastState()
 	}
 	
 	if (LOGenabled) {
-		Fl_Menu_Item *mnulogging = getMenuItem("Log File");
+		Fl_Menu_Item *mnulogging = getMenuItem(_("Log File"));
 		if (!mnulogging)
 			return;
 		mnulogging->set();

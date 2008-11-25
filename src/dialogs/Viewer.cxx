@@ -10,6 +10,7 @@
 #include "waterfall.h"
 #include "fl_digi.h"
 #include "re.h"
+#include "gettext.h"
 #include "spot.h"
 
 #include <FL/Enumerations.H>
@@ -276,13 +277,13 @@ Fl_Double_Window* createViewer() {
 	static int viewerwidth = (progStatus.VIEWERnchars * cwidth) + cols[0] + sbarwidth + border;
 	static int viewerheight = 50 + cheight * progdefaults.VIEWERchannels + border;
 
-	w = new Fl_Double_Window(progStatus.VIEWERxpos, progStatus.VIEWERypos, viewerwidth, viewerheight, "Psk Viewer");
+	w = new Fl_Double_Window(progStatus.VIEWERxpos, progStatus.VIEWERypos, viewerwidth, viewerheight, _("Psk Viewer"));
 	w->xclass(PACKAGE_NAME);
 	p = new Fl_Pack(0,0,viewerwidth, viewerheight);
 		Fl_Pack *p1 = new Fl_Pack(0, 0, viewerwidth, 25);
 			p1->type(1);
 			Fl_Box *bx = new Fl_Box(0,0,50, 25);
-	    	inpSeek = new Fl_Input(50, 5, 200, 25, "Find: "); 
+	    	inpSeek = new Fl_Input(50, 5, 200, 25, _("Find: ")); 
     		inpSeek->callback((Fl_Callback*)cb_Seek);
     		inpSeek->when(FL_WHEN_CHANGED);
 			inpSeek->textfont(FL_SCREEN);
@@ -300,15 +301,15 @@ Fl_Double_Window* createViewer() {
 		Fl_Pack *p2 = new Fl_Pack(0, viewerheight - 25, viewerwidth, 25);
 			p2->type(1);
 			bx = new Fl_Box(0,viewerheight - 25, 10, 25);
-    		btnClearViewer = new Fl_Button(10, viewerheight - 25, 65, 25, "Clear");
+    		btnClearViewer = new Fl_Button(10, viewerheight - 25, 65, 25, _("Clear"));
     		btnClearViewer->callback((Fl_Callback*)cb_btnClearViewer);
-		btnClearViewer->tooltip("Left click to clear text\nRight click to reset frequencies");
+		btnClearViewer->tooltip(_("Left click to clear text\nRight click to reset frequencies"));
     		bx = new Fl_Box(75, viewerheight - 25, 10, 25);
-	    	btnCloseViewer = new Fl_Button(85, viewerheight - 25, 65, 25, "Close");
+	    	btnCloseViewer = new Fl_Button(85, viewerheight - 25, 65, 25, _("Close"));
     		btnCloseViewer->callback((Fl_Callback*)cb_btnCloseViewer);
     		bx = new Fl_Box(140, viewerheight - 25, 5, 25);
     		sldrViewerSquelch = new Fl_Slider(145, viewerheight - 25, 200, 25);
-    		sldrViewerSquelch->tooltip("Set Viewer Squelch");
+    		sldrViewerSquelch->tooltip(_("Set Viewer Squelch"));
     		sldrViewerSquelch->type(FL_HOR_NICE_SLIDER);
     		sldrViewerSquelch->range(0.0, 100.0);
     		sldrViewerSquelch->value(progdefaults.VIEWERsquelch);

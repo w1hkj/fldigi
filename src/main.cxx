@@ -46,6 +46,7 @@
 #include <FL/Fl_Shared_Image.H>
 #include <FL/x.H>
 
+#include "gettext.h"
 #include "main.h"
 #include "waterfall.h"
 #include "fft.h"
@@ -142,7 +143,9 @@ int main(int argc, char ** argv)
 	set_terminate(diediedie);
 	setup_signal_handlers();
 
+#ifndef ENABLE_NLS
 	setlocale(LC_TIME, "");
+#endif
 
 #ifdef __CYGWIN__
 	fl_filename_expand(szHomedir, 119, "$USERPROFILE/fldigi.files/");
@@ -168,7 +171,7 @@ int main(int argc, char ** argv)
 		DIR *dir = opendir(HomeDir.c_str());
 		if (dir == 0) {
 			if ( mkdir(HomeDir.c_str(), 0777) == -1) {
-				cerr << "Could not make directory " << HomeDir << ": "
+				cerr << _("Could not make directory ") << HomeDir << ": "
 				     << strerror(errno) << endl;
 				exit(EXIT_FAILURE);
 			}
@@ -180,7 +183,7 @@ int main(int argc, char ** argv)
 	try {
 		debug::start(string(HomeDir).append("status_log.txt").c_str());
 		time_t t = time(NULL);
-		LOG(debug::QUIET_LEVEL, "%s log started on %s", PACKAGE_STRING, ctime(&t));
+		LOG(debug::QUIET_LEVEL, _("%s log started on %s"), PACKAGE_STRING, ctime(&t));
 	}
 	catch (const char* error) {
 		cerr << error << '\n';
@@ -627,12 +630,12 @@ void generate_version_text(void)
 {
 	ostringstream s;
 	s << PACKAGE_STRING << '\n'
-	  << "Copyright (c) 2008 " << PACKAGE_AUTHORS << '\n'
-	  << "License GPLv2+: GNU GPL version 2 or later <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>\n"
-	  << "This is free software: you are free to change and redistribute it.\n"
-	  << "There is NO WARRANTY, to the extent permitted by law.\n";
+	  << "Copyright (c) 2008 " PACKAGE_AUTHORS "\n" <<
+	   _("License GPLv2+: GNU GPL version 2 or later <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>\n"
+	     "This is free software: you are free to change and redistribute it.\n"
+	     "There is NO WARRANTY, to the extent permitted by law.\n");
 
-	s << "\nSystem: ";
+	s << _("\nSystem: ");
         struct utsname u;
         if (uname(&u) != -1) {
 		s << u.sysname << ' ' << u.nodename
@@ -791,3 +794,37 @@ static void setup_signal_handlers(void)
 	sigaddset(&action.sa_mask, SIGUSR2);
 	pthread_sigmask(SIG_BLOCK, &action.sa_mask, NULL);
 }
+
+#ifdef ENABLE_NLS
+int setup_nls(void)
+{
+	static int nls_set_up = 0;
+	if (nls_set_up)
+		return nls_set_up;
+
+	setlocale (LC_MESSAGES, "");
+	setlocale (LC_CTYPE, "");
+	setlocale (LC_TIME, "");
+	// setting LC_NUMERIC might break the config read/write routines
+
+	const char* ldir;
+	char buf[4096];
+	if (!(ldir = getenv("FLDIGI_LOCALE_DIR"))) {
+		if (getcwd(buf, sizeof(buf) - strlen("/locale") - 1)) {
+			strcpy(buf + strlen(buf), "/locale");
+			struct stat s;
+			if (stat(buf, &s) != -1 && S_ISDIR(s.st_mode))
+				ldir = buf;
+			else
+				ldir = LOCALEDIR;
+		}
+	}
+
+	bindtextdomain(PACKAGE, ldir);
+	/* fltk-1.1.x only knows about Latin-1 */
+	bind_textdomain_codeset(PACKAGE, "ISO-8859-1");
+	textdomain(PACKAGE);
+
+	return nls_set_up = 1;
+}
+#endif

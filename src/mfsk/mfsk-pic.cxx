@@ -24,6 +24,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ----------------------------------------------------------------------------
 
+#include "gettext.h"
+
 Fl_Double_Window	*picRxWin = (Fl_Double_Window *)0;
 
 picture		*picRx = (picture *)0;
@@ -89,7 +91,7 @@ void cb_picRxSave( Fl_Widget *w, void *)
 		;
 
 	int fsel;
-	const char *fn = FSEL::saveas("Save image as:", ffilter, dfname, &fsel);
+	const char *fn = FSEL::saveas(_("Save image as:"), ffilter, dfname, &fsel);
 	if (!fn) return;
         // selected filter determines format
 	switch (fsel) {
@@ -115,15 +117,15 @@ void createRxViewer()
 	picRxWin->begin();
 
 	picRx = new picture(2, 2, 136, 104);
-	btnpicRxSave = new Fl_Button(5, 140 - 30, 60, 24,"Save...");
+	btnpicRxSave = new Fl_Button(5, 140 - 30, 60, 24,_("Save..."));
 	btnpicRxSave->callback(cb_picRxSave, 0);
 	btnpicRxSave->hide();
 #if !(USE_LIBPNG || USE_LIBJPEG)
 	btnpicRxSave->deactivate();
 #endif
-	btnpicRxAbort = new Fl_Button(70, 140 - 30, 60, 24, "Abort");
+	btnpicRxAbort = new Fl_Button(70, 140 - 30, 60, 24, _("Abort"));
 	btnpicRxAbort->callback(cb_picRxAbort, 0);
-	btnpicRxClose = new Fl_Button(135, 140 - 30, 60, 24, "Hide");
+	btnpicRxClose = new Fl_Button(135, 140 - 30, 60, 24, _("Hide"));
 	btnpicRxClose->callback(cb_picRxClose, 0);
 
 	picRxWin->end();
@@ -208,11 +210,11 @@ void load_image(const char *n) {
 	picTxWin->redraw();
 	picTx->video(xmtimg, W * H * 3);
 	if (print_time_left( (W * H * 3) * 0.000125 * serviceme->TXspp, 
-		txclr_tooltip, sizeof(txclr_tooltip), "Time needed: ") > 0)
+		txclr_tooltip, sizeof(txclr_tooltip), _("Time needed: ")) > 0)
 		btnpicTxSendColor->tooltip(txclr_tooltip);
 	btnpicTxSendColor->activate();
 	if (print_time_left( (W * H) * 0.000125 * serviceme->TXspp, 
-		txgry_tooltip, sizeof(txgry_tooltip), "Time needed: ") > 0)
+		txgry_tooltip, sizeof(txgry_tooltip), _("Time needed: ")) > 0)
 		btnpicTxSendGrey->tooltip(txgry_tooltip);
 	btnpicTxSendGrey->activate();
 	FL_UNLOCK_D();
@@ -241,7 +243,7 @@ void updateTxPic(unsigned char data)
 void cb_picTxLoad(Fl_Widget *, void *) 
 {
 	const char *fn = 
-		FSEL::select("Load image file", "Portable Network Graphics\t*.png\n"
+		FSEL::select(_("Load image file"), "Portable Network Graphics\t*.png\n"
 			    "Independent JPEG Group\t*.{jpg,jif,jpeg,jpe}\n"
 			    "Graphics Interchange Format\t*.gif");
 	if (!fn) return;
@@ -364,10 +366,10 @@ void cb_picTxSPP( Fl_Widget *w, void *)
 	if (TxImg == 0) return;
 	if (TxImg->w() > 0 && TxImg->h() > 0) {
 		if (print_time_left( (TxImg->w() * TxImg->h() * 3) * 0.000125 * serviceme->TXspp, 
-			txclr_tooltip, sizeof(txclr_tooltip), "Time needed: ") > 0)
+			txclr_tooltip, sizeof(txclr_tooltip), _("Time needed: ")) > 0)
 			btnpicTxSendColor->tooltip(txclr_tooltip);
 		if (print_time_left( (TxImg->w() * TxImg->h()) * 0.000125 * serviceme->TXspp, 
-			txgry_tooltip, sizeof(txgry_tooltip), "Time needed: ") > 0)
+			txgry_tooltip, sizeof(txgry_tooltip), _("Time needed: ")) > 0)
 			btnpicTxSendGrey->tooltip(txgry_tooltip);
 	}
 }
@@ -375,18 +377,18 @@ void cb_picTxSPP( Fl_Widget *w, void *)
 void createTxViewer()
 {
 	FL_LOCK_D();
-	picTxWin = new Fl_Double_Window(290, 180, "Send image");
+	picTxWin = new Fl_Double_Window(290, 180, _("Send image"));
 	picTxWin->xclass(PACKAGE_NAME);
 	picTxWin->begin();
 
 	picTx = new picture (2, 2, 286, 150);
 	picTx->hide();
 	picTxBox = new picbox(picTxWin->x(), picTxWin->y(), picTxWin->w(), picTxWin->h(),
-			      "Load or drop an image file\nSupported types: PNG, JPEG, BMP");
+			      _("Load or drop an image file\nSupported types: PNG, JPEG, BMP"));
 	picTxBox->labelfont(FL_HELVETICA_ITALIC);
 	
 	btnpicTxSPP = new Fl_Button(5, 180 - 30, 40, 24, "X1");
-	btnpicTxSPP->tooltip("Transfer speed, X1-normal");
+	btnpicTxSPP->tooltip(_("Transfer speed, X1-normal"));
 	btnpicTxSPP->callback( cb_picTxSPP, 0);
 		
 	btnpicTxSendColor = new Fl_Button(45, 180 - 30, 60, 24, "XmtClr");
@@ -398,10 +400,10 @@ void createTxViewer()
 	btnpicTxSendAbort = new Fl_Button(84, 180 - 30, 122, 24, "Abort Xmt");
 	btnpicTxSendAbort->callback(cb_picTxSendAbort, 0);
 
-	btnpicTxLoad = new Fl_Button(165, 180 - 30, 60, 24, "Load");
+	btnpicTxLoad = new Fl_Button(165, 180 - 30, 60, 24, _("Load"));
 	btnpicTxLoad->callback(cb_picTxLoad, 0);
 
-	btnpicTxClose = new Fl_Button(225, 180 - 30, 60, 24, "Close");
+	btnpicTxClose = new Fl_Button(225, 180 - 30, 60, 24, _("Close"));
 	btnpicTxClose->callback(cb_picTxClose, 0);
 
 	btnpicTxSendAbort->hide();

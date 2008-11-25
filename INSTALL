@@ -91,6 +91,11 @@ cygwin packages.  You will need at least the following:
 
 Use the default "Curr" option for the package selection.
 
+To build an internationalized version of fldigi, install these
+additional packages:
+
+  gettext gettext-devel libiconv libiconv2
+
 PortAudio and libsamplerate are not available from Cygwin and must be
 compiled from source.  If you wish to build easily redistributable
 binaries, configure these libraries for static linking, e.g. with

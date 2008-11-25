@@ -37,6 +37,7 @@
 #include "FTextView.h"
 
 #include "debug.h"
+#include "gettext.h"
 
 using namespace std;
 
@@ -54,7 +55,7 @@ static FTextLog* text;
 debug* debug::inst = 0;
 debug::level_e debug::level = debug::WARN_LEVEL;
 
-const char* prefix[] = { "Quiet", "Error", "Warning", "Info", "Debug" };
+const char* prefix[] = { _("Quiet"), _("Error"), _("Warning"), _("Info"), _("Debug") };
 
 static void slider_cb(Fl_Widget* w, void*);
 
@@ -64,12 +65,12 @@ void debug::start(const char* filename)
 		return;
 	inst = new debug(filename);
 
-	window = new Fl_Double_Window(512, 256, "Event log");
+	window = new Fl_Double_Window(512, 256, _("Event log"));
 	window->xclass(PACKAGE_TARNAME);
 
 	int pad = 2;
 	Fl_Slider* slider = new Fl_Slider(pad, pad, 128, 20, prefix[level]);
-	slider->tooltip("Change log level");
+	slider->tooltip(_("Change log level"));
 	slider->align(FL_ALIGN_RIGHT);
 	slider->type(FL_HOR_NICE_SLIDER);
 	slider->range(0.0, LOG_NLEVELS - 1);

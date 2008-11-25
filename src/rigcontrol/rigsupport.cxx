@@ -32,6 +32,8 @@
 
 #include "debug.h"
 
+#include "gettext.h"
+
 using namespace std;
 
 Fl_Double_Window *rigcontrol = (Fl_Double_Window *)0;
@@ -552,7 +554,7 @@ void setTitle()
 			rigcontrol->label("");
 		}
 		if (progdefaults.docked_rig_control) {
-			txtRigName->label("Non CAT mode");
+			txtRigName->label(_("Non CAT mode"));
 			txtRigName->redraw_label();
 		}
 	}
@@ -601,7 +603,7 @@ LOG_DEBUG("no rig");
 	clearList();
 	buildlist();
 
-	windowTitle = "Rig Not Specified";
+	windowTitle = _("Rig Not Specified");
 	setTitle();
 		
 	return true;
@@ -635,7 +637,7 @@ LOG_DEBUG("Mem Mapped rig");
 	clearList();
 	buildlist();
 
-	windowTitle = "Memory Mapped Rig";
+	windowTitle = _("Memory Mapped Rig");
 	setTitle();
 		
 	return true;

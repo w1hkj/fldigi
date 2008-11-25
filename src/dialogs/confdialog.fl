@@ -1,5 +1,8 @@
 # data file for the Fltk User Interface Designer (fluid)
 version 1.0108 
+i18n_type 1
+i18n_include "gettext.h"
+i18n_function _
 header_name {.h} 
 code_name {.cxx}
 decl {\#include <config.h>} {} 
@@ -2293,7 +2296,7 @@ progdefaults.changed = true;} open
     Fl_Button btnSaveConfig {
       label {Save Config}
       callback {progdefaults.saveDefaults();}
-      xywh {145 226 113 24}
+      xywh {145 226 123 24}
     }
     Fl_Return_Button btnCloseConfig {
       label Close

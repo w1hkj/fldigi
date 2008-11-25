@@ -13,7 +13,7 @@ COMPILE_DATE=`date`
 COMPILE_USER=`whoami`
 COMPILE_HOST=`hostname`
 COMPILER=`$CXX -v 2>&1 | tail -n 1 | tr -d \'\"`
-CFLAGS="$AM_CPPFLAGS $AM_CXXFLAGS $CXXFLAGS"
+CFLAGS=`echo "$AM_CPPFLAGS $AM_CXXFLAGS $CXXFLAGS" | sed -e 's!"!\\\\"!g'`
 LDFLAGS="$LDADD"
 
 sed -e "s!%%COMMENT%%!${COMMENT}!g; s!%%COMPILE_CFG%%!${COMPILE_CFG}!g;\
