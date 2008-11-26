@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 # ----------------------------------------------------------------------------
-#      fldigi-shell version 0.35
+#      fldigi-shell version 0.36
 #      A program to control fldigi over HTTP/XML-RPC.
 #
 #      Fldigi must have been built with xml-rpc support; see INSTALL.
@@ -33,7 +33,7 @@ use POSIX qw(:termios_h);
 use IO::Handle;
 use Getopt::Std;
 use Data::Dumper;
-use Time::HiRes qw(gettimeofday tv_interval);
+use Time::HiRes qw(gettimeofday tv_interval usleep);
 
 ################################################################################
 
@@ -50,6 +50,8 @@ our $debug;
 our %methods;
 our %commands;
 our %encoders;
+
+our %opts;
 
 ################################################################################
 # terminal routines from perlfaq8
@@ -174,7 +176,7 @@ sub help
 	    next unless (exists($methods{$_}));
 	    printf($OUT "  %-32s%-8s%s\n", $_, $methods{$_}->[0], $methods{$_}->[1]);
 	}
-	print $OUT "\n";
+	print $OUT "\n" if (!@_);
     }
     print $OUT "Shell commands:", "\n" if (!@_);
     foreach (@k) {
@@ -282,7 +284,7 @@ sub wait_for_state
 {
     warn "not enough arguments\n" and return unless (@_);
     my $r;
-    sleep(1) while (defined($r = req("main.get_tx_status")) && $r->value ne $_[0]);
+    sleep(1) while (defined($r = req("main.get_trx_status")) && $r->value ne $_[0]);
 }
 
 sub time_cmd
@@ -292,17 +294,28 @@ sub time_cmd
     print tv_interval($t0), " seconds\n";
 }
 
+sub evaluate(@)
+{
+    warn "$@" unless (defined(eval "@_"));
+}
+
+sub source
+{
+    open(IN, '<', $_[0]) or warn "Could not read input file: $!\n" and return;
+    evaluate(<IN>);
+    close(IN);
+}
 
 ################################################################################
 
-our %opts = ( "u" => "http://localhost:7362/RPC2", "d" => 0 );
+%opts = ( "c" => "", "d" => 0, "u" => "http://localhost:7362/RPC2" );
 
 %commands = ( "help"      => [ "n:n", "Print this command help", \&help ],
 	      "poll"      => [ "s:i", "Poll for RX text every ``i'' seconds (def=1)", \&recv_text ],
 	      "send"      => [ "n:s", "Send text, one line at a time", \&send_line ],
 	      "sendchar"  => [ "n:s", "Send text, one character at a time", \&send_char ],
 	      "exit"      => [ "n:n", "Exit the shell", sub { exit(0) } ],
-	      "eval"      => [ "s:s", "Evaluate Perl code", sub { eval "@_"; } ],
+	      "eval"      => [ "s:s", "Evaluate Perl code", sub { evaluate "@_"; } ],
 	      "history"   => [ "s:n", "Print command history", sub { print_history($OUT, 0); } ],
 	      "debug"     => [ "n:n", "Toggle debugging output", sub { $debug = (@_ ? $_[0] : !$debug); } ],
 	      "reinit"    => [ "n:n", "Rebuild command list", sub { build_cmds(); setup_compl(); } ],
@@ -310,6 +323,7 @@ our %opts = ( "u" => "http://localhost:7362/RPC2", "d" => 0 );
               "recvtext"  => [ "s:n", "Get all received text", \&get_recv_text ],
               "sendfile"  => [ "n:s", "Send text from file ``s''", \&send_file ],
               "sendstr"   => [ "n:s", "Send string ``s''", sub { send_line(@_); } ],
+	      "source"    => [ "n:s", "Read commands from file ``s''", sub { source(@_) } ],
               "wait"      => [ "n:s", "Wait for trx state to become ``s''", \&wait_for_state ],
               "time"      => [ "s:s", "Time a command", \&time_cmd ]
 	    );
@@ -328,14 +342,20 @@ sub HELP_MESSAGE
 {
 print <<EOF
 
-Usage: $progname [-OPTIONS [-MORE_OPTIONS]] [--] [PROGRAM_ARG1 ...]
+Usage: $progname [-OPTIONS [-MORE_OPTIONS]] [--] [FILE ...]
 
 The following single-character options are accepted:
+
+        -c CMD  Execute command CMD and exit.
+
+        -d      Enable debugging output.
 
         -u URL  Use URL to access the server.
                 The default is $opts{"u"}
 
-        -d      Enable debugging output.
+Files are evaluated as Perl code and may contain
+execute("COMMAND [ARG ...]") statements, where COMMAND
+is an fldigi-shell command.
 
 Options may be merged together.  -- stops processing of options.
 Space is not required between options and their arguments.
@@ -347,10 +367,24 @@ sub handle_cmdline
 {
     $Getopt::Std::STANDARD_HELP_VERSION = 1;
 
+    my $optstr = 'c:du:';
     my $old_warn_handler = $SIG{__WARN__};
     $SIG{__WARN__} = sub { die $_[0]; };
-    getopts('du:', \%opts);
+    getopts($optstr, \%opts);
     $SIG{__WARN__} = $old_warn_handler;
+
+    my @argopts;
+    my $last = 0;
+    foreach (split(//, $optstr)) {
+	push(@argopts, $last) if ($_ eq ":");
+	$last = $_;
+    }
+    foreach (@argopts) {
+	if (exists($opts{$_}) && !defined($opts{$_})) {
+	    die "$0: option `-$_' requires an argument\n";
+	    exit(1);
+	}
+    }
 
     $debug = $opts{"d"};
 }
@@ -360,18 +394,6 @@ sub handle_cmdline
 sub build_cmds
 {
     %methods = ();
-
-    # FIXME: This is quite slow. We should use a multicall request.
-    # if (defined(my $r = req("system.listMethods"))) {
-    # 	my @ma = @{$r->value};
-    # 	for my $m (@ma) {
-    # 	    $r = req("system.methodSignature", $m);
-    # 	    my @sa = @{$r->value->[0]};
-    # 	    $r = req("system.methodHelp", $m);
-    # 	    my $sig = join("", map { $abbrev{$_} } @sa); $sig =~ s/^(.)/$1:/;
-    # 	    $methods{$m} = [ $sig, $r->value ];
-    # 	}
-    # }
 
 # this uses fldigi.list to get all non-system methods with a single request
     if (defined(my $r = req("fldigi.list"))) {
@@ -438,8 +460,12 @@ my $histskip = load_history();
 # build commands hashes
 build_cmds();
 
-if (@ARGV) { # execute arguments and exit
-    execute($_) foreach (@ARGV);
+if ($opts{'c'} ne "") { # execute argument and exit
+    execute($opts{'c'});
+    exit(0);
+}
+elsif (@ARGV) {
+    source($_) foreach(@ARGV);
     exit(0);
 }
 
