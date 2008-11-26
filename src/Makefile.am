@@ -111,7 +111,7 @@ endif
 clean-local:
 	@rm -rf $(CLEAN_LOCAL_FILES)
 
-TESTS = $(srcdir)/../scripts/tests/config-h.sh
+TESTS = $(srcdir)/../scripts/tests/config-h.sh $(srcdir)/../scripts/tests/cr.sh
 
 # Sources that we build. It is OK to have headers here.
 fldigi_SOURCES += \
