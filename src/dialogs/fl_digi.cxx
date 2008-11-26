@@ -116,6 +116,8 @@
 #include "network.h"
 #include "spot.h"
 
+#include "logbook.h"
+
 Fl_Double_Window	*fl_digi_main=(Fl_Double_Window *)0;
 Fl_Help_Dialog 		*help_dialog = (Fl_Help_Dialog *)0;
 Fl_Double_Window	*scopeview = (Fl_Double_Window *)0;
@@ -1216,9 +1218,11 @@ void clearQSO()
 	inpTime->value(zuluTime());
 }
 
-void cb_log(Fl_Widget*, void*)
+void cb_log(Fl_Widget* w, void*)
 {
 	oktoclear = false;
+	if (w == inpCall)
+		SearchLastQSO(inpCall->value());
 }
 
 void showsizes()
@@ -1445,6 +1449,8 @@ bool clean_exit(void) {
 	XML_RPC_Server::stop();
 #endif
 
+	close_logbook();
+
 	return true;
 }
 	
@@ -1580,6 +1586,15 @@ Fl_Menu_Item menu_[] = {
 { make_icon_label(_("MFSK Image"), image_icon), 0, (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("PSK Browser")), 0, (Fl_Callback*)cb_mnuViewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Rig Control"), multimedia_player_icon), 0, (Fl_Callback*)cb_mnuRig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+{"Logbook", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ make_icon_label("View"), 0, (Fl_Callback*)cb_mnuShowLogbook, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("New logbook"), 0, (Fl_Callback*)cb_mnuNewLogbook, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Open logbook"), 0, (Fl_Callback*)cb_mnuOpenLogbook, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Save logbook"), 0, (Fl_Callback*)cb_mnuSaveLogbook, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Export adif"), 0, (Fl_Callback*)cb_mnuExportADIF_log, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label("Merge adif"), 0, (Fl_Callback*)cb_mnuMergeADIF_log, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},

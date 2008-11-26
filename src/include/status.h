@@ -40,6 +40,10 @@ struct status {
 	string	LastMacroFile;
 	bool	spot_recv;
 	bool	spot_log;
+	
+	int		logbook_x;
+	int		logbook_y;
+	bool	logbook_reverse;
 
 	bool	bLastStateRead;
 

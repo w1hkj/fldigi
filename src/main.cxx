@@ -66,6 +66,7 @@
 #include "timeops.h"
 #include "debug.h"
 #include "pskrep.h"
+#include "logbook.h"
 
 #if USE_HAMLIB
 	#include "rigclass.h"
@@ -102,7 +103,7 @@ Rig		*xcvr = (Rig *)0;
 #endif
 
 bool tlfio = false;
-cLogfile	*logfile = 0;;
+cLogfile	*logfile = 0;
 cLogfile	*Maillogfile = (cLogfile *)0;
 FILE	*server;
 FILE	*client;
@@ -245,10 +246,14 @@ int main(int argc, char ** argv)
 	progStatus.loadLastState();
 
 	Fl::scheme(progdefaults.ui_scheme.c_str());
+	
 	create_fl_digi_main();
 	FSEL::create();
 
 	createConfig();
+
+	start_logbook();
+
 	progdefaults.testCommPorts();
 
 	macros.loadDefault();

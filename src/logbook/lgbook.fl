@@ -1,0 +1,215 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0109 
+header_name {.h} 
+code_name {.cxx}
+decl {\#include <config.h>} {} 
+decl {\#include "logsupport.h"} {} 
+
+Function {create_logbook_dialogs()} {open return_type void
+} {
+  Fl_Window wExport {
+    label {Select Records to Export} open
+    xywh {577 521 380 290} type Double hide modal
+  } {
+    Fl_Check_Browser chkExportBrowser {
+      xywh {5 5 370 245}
+    }
+    Fl_Button btnClearAll {
+      label {Clear All}
+      callback {chkExportBrowser->check_none();}
+      xywh {5 260 70 20}
+    }
+    Fl_Button btnCheckAll {
+      label {Check All}
+      callback {chkExportBrowser->check_all();}
+      xywh {85 260 70 20}
+    }
+    Fl_Return_Button btnOK {
+      label OK
+      callback {wExport->hide();
+Export_log();}
+      xywh {290 260 84 20}
+    }
+    Fl_Button btnCancel {
+      label Cancel
+      callback {wExport->hide();}
+      xywh {205 260 70 20}
+    }
+  }
+  Fl_Window dlgLogbook {
+    label Logbook open
+    xywh {549 108 570 325} type Double color 47 resizable visible
+  } {
+    Fl_Group editGroup {open
+      xywh {0 5 570 192} box ENGRAVED_FRAME color 52 labelsize 12
+    } {
+      Fl_Input inpDate_log {
+        label Date
+        xywh {3 22 100 22} labelsize 12 align 5 textfont 13 textsize 12
+        code0 {\#include "calendar.h"}
+        code1 {inpDate_log->format(2);}
+        class Fl_DateInput
+      }
+      Fl_Input inpTime_log {
+        label Time
+        xywh {105 22 40 22} labelsize 12 align 5 textfont 13 textsize 12
+      }
+      Fl_Input inpCall_log {
+        label Call
+        xywh {147 22 105 22} labelsize 12 align 5 textfont 13 textsize 12
+      }
+      Fl_Input inpName_log {
+        label Name
+        xywh {254 22 60 22} labelsize 12 align 5 textfont 13 textsize 12
+      }
+      Fl_Input inpFreq_log {
+        label {Freq.}
+        xywh {315 22 80 22} labelsize 12 align 5 textfont 13 textsize 12
+      }
+      Fl_Input inpMode_log {
+        label Mode
+        xywh {396 22 80 22} labelsize 12 align 5 textfont 13 textsize 12
+      }
+      Fl_Input inpRstR_log {
+        label {Rst-R}
+        xywh {477 22 40 22} labelsize 12 align 5 textfont 13 textsize 12
+      }
+      Fl_Input inpRstS_log {
+        label {Rst-S}
+        xywh {518 22 40 22} labelsize 12 align 5 textfont 13 textsize 12
+      }
+      Fl_Input inpQth_log {
+        label Qth
+        xywh {3 58 135 22} labelsize 12 align 5 textfont 13 textsize 12
+      }
+      Fl_Input inpLoc_log {
+        label Loc
+        tooltip {Stations grid square} xywh {281 58 75 22} labelsize 12 align 5 textsize 12
+      }
+      Fl_Input inpComment_log {
+        label Comment
+        xywh {3 129 440 40} type Multiline labelsize 12 align 5 textfont 13 textsize 12
+      }
+      Fl_Input inpQSLrcvddate_log {
+        label {QSL-rcvd}
+        xywh {357 58 100 22} labelsize 12 align 5 textfont 13 textsize 12
+        code1 {o->format(2);}
+        class Fl_DateInput
+      }
+      Fl_Input inpQSLsentdate_log {
+        label {QSL-sent}
+        xywh {458 58 100 22} color 55 selection_color 1 labelsize 12 align 5 textfont 13 textsize 12
+        code1 {o->format(2);}
+        class Fl_DateInput
+      }
+      Fl_Button bFirst {
+        label {@|<}
+        callback {wBrowser->FirstRow ();}
+        xywh {108 171 24 22} color 50 selection_color 48 labelsize 12
+      }
+      Fl_Repeat_Button bPrev {
+        label {@<}
+        callback {wBrowser->PrevRow ();}
+        xywh {142 171 24 22} color 50 selection_color 48 labelsize 12
+      }
+      Fl_Repeat_Button bNext {
+        label {@>}
+        callback {wBrowser->NextRow ();}
+        xywh {176 171 24 22} color 50 selection_color 48 labelsize 12
+      }
+      Fl_Button bLast {
+        label {@>|}
+        callback {wBrowser->LastRow ();}
+        xywh {210 171 24 22} color 50 selection_color 48 labelsize 12
+      }
+      Fl_Button bNewSave {
+        label New
+        callback cb_btnNewSave
+        xywh {247 171 55 22} shortcut 0x8004e color 50 selection_color 48 labelsize 12
+      }
+      Fl_Button bUpdateCancel {
+        label Update
+        callback cb_btnUpdateCancel
+        xywh {317 171 55 22} shortcut 0x80055 color 50 selection_color 48 labelsize 12
+      }
+      Fl_Button bDelete {
+        label Delete
+        callback cb_btnDelete
+        xywh {388 171 55 22} shortcut 0x80044 color 50 selection_color 48 labelsize 12
+      }
+      Fl_Input txtNbrRecs_log {
+        label Recs
+        xywh {35 171 65 22} color 53 labelsize 12 textsize 12 textcolor 4
+      }
+      Fl_Input inpSerNoOut_log {
+        label {Ser\# Sent}
+        tooltip {Contest seral \# sent} xywh {3 93 75 22} labelsize 12 align 5 textsize 12
+      }
+      Fl_Input inpSerNoIn_log {
+        label {Ser\# Rcvd}
+        tooltip {Contest serial \# received} xywh {82 93 75 22} labelsize 12 align 5 textsize 12
+      }
+      Fl_Input inpCnty_log {
+        label {St. / Ctry.}
+        xywh {140 58 110 22} labelsize 12 align 5 textfont 13 textsize 12
+      }
+      Fl_Input inpVE_Prov_log {
+        label {Pr..}
+        xywh {251 58 30 22} labelsize 12 align 5 textfont 13 textsize 12
+      }
+      Fl_Group {} {open
+        xywh {445 91 116 78} box ENGRAVED_FRAME
+      } {
+        Fl_Input inpSearchString {
+          label {Call Search}
+          xywh {450 114 105 22} labelsize 12 align 5 textfont 13 textsize 12
+        }
+        Fl_Button bSearchFirst {
+          label {@|<}
+          callback cb_btnSearchFirst
+          tooltip {Find first} xywh {450 139 24 22} color 50 selection_color 48 labelsize 12
+        }
+        Fl_Button bSearchNext {
+          label {@>}
+          callback cb_btnSearchNext
+          tooltip {Find Next} xywh {490 139 24 22} color 50 selection_color 48 labelfont 1 labelsize 12
+        }
+        Fl_Button bSearchLast {
+          label {@>|}
+          callback cb_btnSearchLast
+          tooltip {Find Last} xywh {531 139 24 22} color 50 selection_color 48 labelfont 1 labelsize 12
+        }
+      }
+      Fl_Button bDismiss {
+        label Dismiss
+        callback {dlgLogbook->hide();}
+        xywh {480 171 62 22} shortcut 0x80044 color 50 selection_color 48 labelsize 12
+      }
+    }
+    Fl_Group wBrowser {
+      xywh {2 200 565 120} box DOWN_FRAME color 7 selection_color 15 labelsize 12 resizable
+      code0 {\#include "table.h"}
+      class Table
+    } {}
+  }
+  code {wBrowser->align (FL_ALIGN_TOP | FL_ALIGN_LEFT);
+wBrowser->addColumn ("Date",85);
+wBrowser->colcallback (0,cb_SortByDate);
+wBrowser->addColumn ("Time",50);
+wBrowser->addColumn ("Call",100);
+wBrowser->colcallback (2,cb_SortByCall);
+wBrowser->addColumn ("Name",110);
+wBrowser->addColumn ("Freq",120);
+wBrowser->colcallback (4,cb_SortByFreq);
+wBrowser->addColumn ("Mode",90);
+wBrowser->colcallback (5,cb_SortByMode);
+wBrowser->addHiddenColumn ("rn");
+wBrowser->allowSort(true);
+wBrowser->callback(cb_browser);
+wBrowser->when(FL_WHEN_CHANGED);
+wBrowser->rowSize (19);
+wBrowser->headerSize (18);
+wBrowser->allowResize (1);
+wBrowser->gridEnabled (1);} {selected
+  }
+} 

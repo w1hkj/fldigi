@@ -98,6 +98,7 @@ Change Log:
       33) Improved hamlib support code.
       34) Color changes for Frequency Control now applied to both docked and
           floating rig control.
+      35) Added fl_logbook functionality as a built-in feature
 
 3.03
       1) Changes to socket server to correct shutdown process

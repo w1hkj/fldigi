@@ -44,4 +44,9 @@ typedef struct {
 
 extern int submit_log();
 
+extern	char logdate[];
+extern  char logtime[];
+extern  char adifdate[];
+extern	const char *logmode;
+
 #endif

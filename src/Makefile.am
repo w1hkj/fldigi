@@ -89,7 +89,8 @@ flgen: $(srcdir)/dialogs/confdialog.fl $(srcdir)/dialogs/colorsfonts.fl $(srcdir
 	(cd $(srcdir)/include; \
 	$(FLUID) -c -o ../dialogs/confdialog.cxx -h confdialog.h ../dialogs/confdialog.fl; \
 	$(FLUID) -c -o ../dialogs/colorsfonts.cxx -h colorsfonts.h ../dialogs/colorsfonts.fl; \
-	$(FLUID) -c -o ../rigcontrol/rigdialog.cxx -h rigdialog.h ../rigcontrol/rigdialog.fl)
+	$(FLUID) -c -o ../rigcontrol/rigdialog.cxx -h rigdialog.h ../rigcontrol/rigdialog.fl; \
+	$(FLUID) -c -o ../logbook/lgbook.cxx -h lgbook.h ../logbook/lgbook.fl)
 endif
 
 if DARWIN
@@ -250,6 +251,17 @@ fldigi_SOURCES += \
 	include/waterfall.h \
 	include/wwv.h \
 	include/xmlreader.h \
+	include/adif_def.h \
+	include/adif_io.h \
+	include/calendar.h \
+	include/date.h \
+	include/field_def.h \
+	include/logbook.h \
+	include/lgbook.h \
+	include/logsupport.h \
+	include/qso_db.h \
+	include/table.h \
+	include/textio.h \
 	irrxml/CXMLReaderImpl.h \
 	irrxml/fast_atof.h \
 	irrxml/heapsort.h \
@@ -258,6 +270,15 @@ fldigi_SOURCES += \
 	irrxml/irrTypes.h \
 	irrxml/irrXML.cpp \
 	irrxml/irrXML.h \
+	logbook/adif_io.cxx \
+	logbook/calendar.cxx \
+	logbook/date.cxx \
+	logbook/lgbook.cxx \
+	logbook/logbook.cxx \
+	logbook/logsupport.cxx \
+	logbook/qso_db.cxx \
+	logbook/table.cxx \
+	logbook/textio.cxx \
 	logger/logger.cxx \
 	main.cxx \
 	mfsk/interleave.cxx \
@@ -353,6 +374,7 @@ EXTRA_fldigi_SOURCES += \
 	feld/FeldStyl-14.cxx \
 	feld/FeldVert-14.cxx \
 	feld/FeldWide-14.cxx \
+	logbook/cabrillo.cxx \
 	mfsk/mfsk-pic.cxx \
 	mt63/alias_1k.dat \
 	mt63/alias_2k.dat \
@@ -380,4 +402,5 @@ EXTRA_DIST = \
 	$(srcdir)/../data/win32/fldigi.ico \
 	dialogs/confdialog.fl \
 	dialogs/colorsfonts.fl \
-	rigcontrol/rigdialog.fl
+	rigcontrol/rigdialog.fl \
+	logbook/lgbook.fl

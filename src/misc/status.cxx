@@ -33,6 +33,10 @@
 
 #include "Viewer.h"
 
+#include "lgbook.h"
+#include "logsupport.h"
+#include "qso_db.h"
+
 #define STATUS_FILENAME "status"
 
 status progStatus = {
@@ -70,6 +74,10 @@ status progStatus = {
 	"macros.mdf",		// string LastMacroFile;
 	false,			// bool spot_recv
 	false,			// bool spot_log
+	
+	50,					// int logbook_x;
+	50,					// int logbook_y;
+	false,				// bool logbook_reverse;
 
 	false				// bool bLastStateRead;
 };
@@ -86,6 +94,10 @@ void status::saveLastState()
 	speed = wf->Speed();
 	reflevel = progdefaults.wfRefLevel;
 	ampspan = progdefaults.wfAmpSpan;
+
+	logbook_x = dlgLogbook->x();
+	logbook_y = dlgLogbook->y();
+	logbook_reverse = cQsoDb::reverse;
 
 	LOGenabled = false;
 	Fl_Menu_Item *mnulogging = getMenuItem(_("Log File"));
@@ -163,6 +175,10 @@ void status::saveLastState()
 
 	spref.set("spot_recv", spot_recv);
 	spref.set("spot_log", spot_recv);
+	
+	spref.set("logbook_x", logbook_x);
+	spref.set("logbook_y", logbook_y);
+	spref.set("logbook_reverse", logbook_reverse);
 }
 
 void status::loadLastState()
@@ -230,6 +246,10 @@ void status::loadLastState()
 
 	spref.get("spot_recv", i, i); spot_recv = i;
 	spref.get("spot_log", i, i); spot_log = i;
+	
+	spref.get("logbook_x", logbook_x, logbook_x);
+	spref.get("logbook_y", logbook_y, logbook_y);
+	spref.get("logbook_reverse", i, i); logbook_reverse = i;
 }
 
 void status::initLastState()
@@ -294,5 +314,14 @@ void status::initLastState()
 		if (!mnulogging)
 			return;
 		mnulogging->set();
-	}		
+	}	
+	
+	cQsoDb::reverse = logbook_reverse;
+	if (cQsoDb::reverse) {
+		qsodb.SortByDate();
+		loadBrowser();
+	}
+	
+	dlgLogbook->resize(logbook_x, logbook_y, dlgLogbook->w(), dlgLogbook->h());
+		
 }

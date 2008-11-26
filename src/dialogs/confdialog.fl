@@ -972,8 +972,8 @@ progdefaults.changed = true;}
       }
       Fl_Group tabOperator {
         label Oper
-        callback {progdefaults.changed = true;} open selected
-        xywh {0 25 400 195} color 51 selection_color 51 when 1
+        callback {progdefaults.changed = true;} open
+        xywh {0 25 400 195} color 51 selection_color 51 when 1 hide
       } {
         Fl_Input inpMyCallsign {
           label {Callsign:}
@@ -1867,14 +1867,14 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        xywh {0 25 400 195} hide
+        xywh {0 25 400 195}
       } {
         Fl_Tabs {} {open
           xywh {0 25 400 195} selection_color 10
         } {
           Fl_Group tabUserInterface {
             label General open
-            xywh {0 50 400 170}
+            xywh {0 50 400 170} hide
           } {
             Fl_Group {} {open
               xywh {5 55 390 160} box ENGRAVED_FRAME
@@ -1970,6 +1970,61 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 xywh {25 187 125 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.useCheckButtons);}
+              }
+            }
+          }
+          Fl_Group tabUserInterface {
+            label Contest open
+            xywh {0 50 400 170}
+          } {
+            Fl_Group {} {open selected
+              xywh {5 55 390 160} box ENGRAVED_FRAME
+            } {
+              Fl_Input inpXch1 {
+                label Labels
+                xywh {60 85 70 25}
+              }
+              Fl_Box {} {
+                label {Exchg 1}
+                xywh {60 63 70 17}
+              }
+              Fl_Input inpXch2 {
+                xywh {135 85 70 25} align 20
+              }
+              Fl_Box {} {
+                label {Exchg 2}
+                xywh {135 63 70 17}
+              }
+              Fl_Input inpXch3 {
+                xywh {210 85 70 25} align 20
+              }
+              Fl_Box {} {
+                label {Exchg 3}
+                xywh {210 63 70 17}
+              }
+              Fl_Input inpXch4 {
+                xywh {285 85 70 25} align 20
+              }
+              Fl_Box {} {
+                label {Exchg 4}
+                xywh {285 63 70 17}
+              }
+              Fl_Input inpSend1 {
+                label {Send:}
+                xywh {60 120 70 25}
+              }
+              Fl_Input inpSend2 {
+                xywh {135 120 70 25} align 20
+              }
+              Fl_Input inpSend3 {
+                xywh {210 120 70 25} align 20
+              }
+              Fl_Input inpSend4 {
+                xywh {285 120 70 25} align 20
+              }
+              Fl_Check_Button chk599 {
+                label {RST always 599}
+                xywh {60 165 70 15} down_box DOWN_BOX
               }
             }
           }
