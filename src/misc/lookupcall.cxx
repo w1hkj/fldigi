@@ -402,12 +402,12 @@ void QRZ_disp_result()
 	if (lookup_fname.length() > 0) {
 		string::size_type spacePos = lookup_fname.find(" ");
 		//    if fname is "ABC" then display "ABC"
-		// or if fname is "X Y" then display "X Y"
+		// or if fname is "A BCD" then display "A BCD"
 		if (spacePos == string::npos || (spacePos == 1)) {
 			inpName->value(lookup_fname.c_str());
 		}
 		// if fname is "ABC Y" then display "ABC"
-		else if (spacePos == lookup_fname.length() - 2) {
+		else if (spacePos > 2) {
 			string fname;
 			fname.assign(lookup_fname, 0, spacePos);
 			inpName->value(fname.c_str());
@@ -562,8 +562,25 @@ void QRZquery()
 		if (!qrzalert.empty() || !qrzerror.empty())
 			REQ(QRZAlert);
 		else {
-//			lookup_qth.clear();
 			lookup_qth = lookup_addr2;
+			string isUS = "aAkKnNwW";
+			string isCAN = "vV";
+			if (isUS.find(callsign[0]) != string::npos) ;
+			else if (isCAN.find(callsign[0]) != string::npos) { // Can callsign
+				size_t pos = lookup_qth.find(',');
+				if (pos != string::npos) {
+					lookup_province = lookup_qth.substr(pos);
+					lookup_qth = lookup_qth.substr(0, pos);
+					pos = lookup_province.find_first_not_of(", ");
+					if (pos != string::npos)
+						lookup_province = lookup_province.substr(pos);
+					pos = lookup_province.find(' ');
+					if (pos != string::npos)
+						lookup_province = lookup_province.substr(0,pos);
+				}
+			} else {
+				lookup_state = lookup_country;
+			}
 			REQ(QRZ_disp_result);
 		}
 	}
