@@ -1884,6 +1884,22 @@ void show_spot(bool v)
 	mnu->redraw();
 }
 
+void setTabColors()
+{
+	tabsColors->selection_color(progdefaults.TabsColor);
+	tabsConfigure->selection_color(progdefaults.TabsColor);
+	tabsUI->selection_color(progdefaults.TabsColor);
+	tabsWaterfall->selection_color(progdefaults.TabsColor);
+	tabsModems->selection_color(progdefaults.TabsColor);
+	tabsCW->selection_color(progdefaults.TabsColor);
+	tabsPSK->selection_color(progdefaults.TabsColor);
+	tabsRig->selection_color(progdefaults.TabsColor);
+	tabsSoundCard->selection_color(progdefaults.TabsColor);
+	tabsMisc->selection_color(progdefaults.TabsColor);
+	if (dlgConfig->visible()) dlgConfig->redraw();
+	if (dlgColorFont->visible()) dlgColorFont->redraw();
+}
+
 void create_fl_digi_main() {
 
 	int Y = 0;

@@ -102,6 +102,8 @@ progdefaults.changed = true;
 
 Fl_Group *tabUI=(Fl_Group *)0;
 
+Fl_Tabs *tabsUI=(Fl_Tabs *)0;
+
 Fl_Group *tabUserInterface=(Fl_Group *)0;
 
 Fl_Check_Button *btnShowTooltips=(Fl_Check_Button *)0;
@@ -212,6 +214,8 @@ Fl_Input2 *inpSend4=(Fl_Input2 *)0;
 Fl_Check_Button *chk599=(Fl_Check_Button *)0;
 
 Fl_Group *tabWaterfall=(Fl_Group *)0;
+
+Fl_Tabs *tabsWaterfall=(Fl_Tabs *)0;
 
 colorbox *WF_Palette=(colorbox *)0;
 
@@ -449,6 +453,8 @@ Fl_Group *tabModems=(Fl_Group *)0;
 Fl_Tabs *tabsModems=(Fl_Tabs *)0;
 
 Fl_Group *tabCW=(Fl_Group *)0;
+
+Fl_Tabs *tabsCW=(Fl_Tabs *)0;
 
 Fl_Value_Slider *sldrCWbandwidth=(Fl_Value_Slider *)0;
 
@@ -724,6 +730,8 @@ progdefaults.changed = true;
 
 Fl_Group *tabPSK=(Fl_Group *)0;
 
+Fl_Tabs *tabsPSK=(Fl_Tabs *)0;
+
 Fl_Counter *cntSearchRange=(Fl_Counter *)0;
 
 static void cb_cntSearchRange(Fl_Counter* o, void*) {
@@ -958,6 +966,8 @@ progdefaults.changed = true;
 }
 
 Fl_Group *tabRig=(Fl_Group *)0;
+
+Fl_Tabs *tabsRig=(Fl_Tabs *)0;
 
 static void cb_btnPTT(Fl_Round_Button* o, void*) {
   btnPTT[1]->value(0);
@@ -1938,8 +1948,8 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     o->labelsize(18);
     o->align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE);
     { tabsConfigure = new Fl_Tabs(0, 0, 500, 372);
-      tabsConfigure->color(FL_DARK1);
-      tabsConfigure->selection_color((Fl_Color)51);
+      tabsConfigure->color(FL_LIGHT1);
+      tabsConfigure->selection_color(FL_LIGHT1);
       { tabOperator = new Fl_Group(0, 25, 500, 345, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
@@ -2038,8 +2048,8 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 500, 345, _("UI"));
         tabUI->hide();
-        { Fl_Tabs* o = new Fl_Tabs(0, 25, 500, 345);
-          o->selection_color((Fl_Color)51);
+        { tabsUI = new Fl_Tabs(0, 25, 500, 345);
+          tabsUI->selection_color(FL_LIGHT1);
           { tabUserInterface = new Fl_Group(0, 50, 500, 320, _("General"));
             { Fl_Group* o = new Fl_Group(5, 60, 490, 195);
               o->box(FL_ENGRAVED_FRAME);
@@ -2242,62 +2252,63 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             } // Fl_Group* o
             tabContest->end();
           } // Fl_Group* tabContest
-          o->end();
-        } // Fl_Tabs* o
+          tabsUI->end();
+        } // Fl_Tabs* tabsUI
         tabUI->end();
       } // Fl_Group* tabUI
       { tabWaterfall = new Fl_Group(0, 25, 500, 347, _("Waterfall"));
         tabWaterfall->hide();
-        { Fl_Tabs* o = new Fl_Tabs(0, 25, 500, 347);
-          o->selection_color((Fl_Color)51);
+        { tabsWaterfall = new Fl_Tabs(0, 25, 500, 347);
+          tabsWaterfall->color(FL_LIGHT1);
+          tabsWaterfall->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Display"));
             { Fl_Group* o = new Fl_Group(5, 60, 490, 162, _("Colors and cursors"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { colorbox* o = WF_Palette = new colorbox(15, 89, 260, 24);
+              { colorbox* o = WF_Palette = new colorbox(15, 98, 260, 24);
                 WF_Palette->box(FL_DOWN_BOX);
                 WF_Palette->color(FL_FOREGROUND_COLOR);
                 WF_Palette->selection_color(FL_BACKGROUND_COLOR);
                 WF_Palette->labeltype(FL_NORMAL_LABEL);
                 WF_Palette->labelfont(0);
-                WF_Palette->labelsize(14);
+                WF_Palette->labelsize(12);
                 WF_Palette->labelcolor(FL_FOREGROUND_COLOR);
                 WF_Palette->callback((Fl_Callback*)cb_WF_Palette);
                 WF_Palette->align(FL_ALIGN_TOP_LEFT);
                 WF_Palette->when(FL_WHEN_RELEASE);
                 o->label(progdefaults.PaletteName.c_str());
               } // colorbox* WF_Palette
-              { btnColor[0] = new Fl_Button(15, 119, 20, 24);
+              { btnColor[0] = new Fl_Button(15, 128, 20, 24);
                 btnColor[0]->callback((Fl_Callback*)cb_btnColor);
               } // Fl_Button* btnColor[0]
-              { btnColor[1] = new Fl_Button(45, 119, 20, 24);
+              { btnColor[1] = new Fl_Button(45, 128, 20, 24);
                 btnColor[1]->callback((Fl_Callback*)cb_btnColor1);
               } // Fl_Button* btnColor[1]
-              { btnColor[2] = new Fl_Button(75, 119, 20, 24);
+              { btnColor[2] = new Fl_Button(75, 128, 20, 24);
                 btnColor[2]->callback((Fl_Callback*)cb_btnColor2);
               } // Fl_Button* btnColor[2]
-              { btnColor[3] = new Fl_Button(105, 119, 20, 24);
+              { btnColor[3] = new Fl_Button(105, 128, 20, 24);
                 btnColor[3]->callback((Fl_Callback*)cb_btnColor3);
               } // Fl_Button* btnColor[3]
-              { btnColor[4] = new Fl_Button(135, 119, 20, 24);
+              { btnColor[4] = new Fl_Button(135, 128, 20, 24);
                 btnColor[4]->callback((Fl_Callback*)cb_btnColor4);
               } // Fl_Button* btnColor[4]
-              { btnColor[5] = new Fl_Button(165, 119, 20, 24);
+              { btnColor[5] = new Fl_Button(165, 128, 20, 24);
                 btnColor[5]->callback((Fl_Callback*)cb_btnColor5);
               } // Fl_Button* btnColor[5]
-              { btnColor[6] = new Fl_Button(195, 119, 20, 24);
+              { btnColor[6] = new Fl_Button(195, 128, 20, 24);
                 btnColor[6]->callback((Fl_Callback*)cb_btnColor6);
               } // Fl_Button* btnColor[6]
-              { btnColor[7] = new Fl_Button(225, 119, 20, 24);
+              { btnColor[7] = new Fl_Button(225, 128, 20, 24);
                 btnColor[7]->callback((Fl_Callback*)cb_btnColor7);
               } // Fl_Button* btnColor[7]
-              { btnColor[8] = new Fl_Button(256, 119, 20, 24);
+              { btnColor[8] = new Fl_Button(256, 128, 20, 24);
                 btnColor[8]->callback((Fl_Callback*)cb_btnColor8);
               } // Fl_Button* btnColor[8]
-              { btnLoadPalette = new Fl_Button(314, 87, 70, 24, _("Load..."));
+              { btnLoadPalette = new Fl_Button(314, 96, 70, 24, _("Load..."));
                 btnLoadPalette->callback((Fl_Callback*)cb_btnLoadPalette);
               } // Fl_Button* btnLoadPalette
-              { btnSavePalette = new Fl_Button(314, 119, 70, 24, _("Save..."));
+              { btnSavePalette = new Fl_Button(314, 128, 70, 24, _("Save..."));
                 btnSavePalette->callback((Fl_Callback*)cb_btnSavePalette);
               } // Fl_Button* btnSavePalette
               { Fl_Check_Button* o = btnUseCursorLines = new Fl_Check_Button(15, 161, 150, 20, _("Bandwidth cursor"));
@@ -2456,19 +2467,19 @@ an merging"));
             } // Fl_Choice* mnuWaterfallWheelAction
             o->end();
           } // Fl_Group* o
-          o->end();
-        } // Fl_Tabs* o
+          tabsWaterfall->end();
+        } // Fl_Tabs* tabsWaterfall
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 500, 345, _("Modems"));
         tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 500, 345);
-          tabsModems->selection_color((Fl_Color)51);
+          tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
           { tabCW = new Fl_Group(0, 50, 500, 320, _("CW"));
             tabCW->hide();
-            { Fl_Tabs* o = new Fl_Tabs(0, 50, 500, 320);
-              o->selection_color((Fl_Color)51);
+            { tabsCW = new Fl_Tabs(0, 50, 500, 320);
+              tabsCW->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
                 o->align(FL_ALIGN_TOP_LEFT);
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 130, _("Receive"));
@@ -2585,6 +2596,7 @@ an merging"));
                 cntCWdash2dot->type(1);
                 cntCWdash2dot->minimum(2.5);
                 cntCWdash2dot->maximum(4);
+                cntCWdash2dot->step(0.1);
                 cntCWdash2dot->value(3);
                 cntCWdash2dot->callback((Fl_Callback*)cb_cntCWdash2dot);
                 cntCWdash2dot->align(FL_ALIGN_RIGHT);
@@ -2595,6 +2607,7 @@ an merging"));
                 cntCWrisetime->type(1);
                 cntCWrisetime->minimum(0);
                 cntCWrisetime->maximum(15);
+                cntCWrisetime->step(0.1);
                 cntCWrisetime->value(4);
                 cntCWrisetime->callback((Fl_Callback*)cb_cntCWrisetime);
                 cntCWrisetime->align(FL_ALIGN_RIGHT);
@@ -2638,8 +2651,8 @@ an merging"));
                 } // Fl_Group* o
                 o->end();
               } // Fl_Group* o
-              o->end();
-            } // Fl_Tabs* o
+              tabsCW->end();
+            } // Fl_Tabs* tabsCW
             tabCW->end();
           } // Fl_Group* tabCW
           { tabDomEX = new Fl_Group(0, 50, 500, 320, _("DominoEX"));
@@ -2671,6 +2684,7 @@ an merging"));
                 valDominoEX_BW->type(1);
                 valDominoEX_BW->minimum(1);
                 valDominoEX_BW->maximum(2);
+                valDominoEX_BW->step(0.1);
                 valDominoEX_BW->value(1.5);
                 valDominoEX_BW->callback((Fl_Callback*)cb_valDominoEX_BW);
                 valDominoEX_BW->align(FL_ALIGN_RIGHT);
@@ -2686,6 +2700,7 @@ an merging"));
                 valDomCWI->tooltip(_("CWI detection and suppression"));
                 valDomCWI->type(5);
                 valDomCWI->selection_color(FL_SELECTION_COLOR);
+                valDomCWI->step(0.01);
                 valDomCWI->textsize(14);
                 valDomCWI->callback((Fl_Callback*)cb_valDomCWI);
                 valDomCWI->align(FL_ALIGN_TOP);
@@ -2840,8 +2855,9 @@ an merging"));
             tabOlivia->end();
           } // Fl_Group* tabOlivia
           { tabPSK = new Fl_Group(0, 50, 500, 320, _("PSK"));
-            { Fl_Tabs* o = new Fl_Tabs(0, 50, 500, 320);
-              o->selection_color((Fl_Color)51);
+            tabPSK->hide();
+            { tabsPSK = new Fl_Tabs(0, 50, 500, 320);
+              tabsPSK->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
                 o->align(FL_ALIGN_TOP_LEFT);
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 98, _("AFC behavior"));
@@ -2972,8 +2988,8 @@ an merging"));
                 } // Fl_Group* o
                 o->end();
               } // Fl_Group* o
-              o->end();
-            } // Fl_Tabs* o
+              tabsPSK->end();
+            } // Fl_Tabs* tabsPSK
             tabPSK->end();
           } // Fl_Group* tabPSK
           { tabRTTY = new Fl_Group(0, 50, 500, 320, _("RTTY"));
@@ -3085,7 +3101,6 @@ an merging"));
             tabRTTY->end();
           } // Fl_Group* tabRTTY
           { tabTHOR = new Fl_Group(0, 50, 500, 320, _("Thor"));
-            tabTHOR->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 190);
               o->box(FL_ENGRAVED_FRAME);
               { txtTHORSecondary = new Fl_Input2(15, 87, 360, 40, _("Secondary Text"));
@@ -3113,6 +3128,7 @@ an merging"));
                 valTHOR_BW->type(1);
                 valTHOR_BW->minimum(1);
                 valTHOR_BW->maximum(2);
+                valTHOR_BW->step(0.1);
                 valTHOR_BW->value(1.5);
                 valTHOR_BW->callback((Fl_Callback*)cb_valTHOR_BW);
                 valTHOR_BW->align(FL_ALIGN_RIGHT);
@@ -3128,6 +3144,7 @@ an merging"));
                 valThorCWI->tooltip(_("CWI detection and suppression"));
                 valThorCWI->type(5);
                 valThorCWI->selection_color(FL_SELECTION_COLOR);
+                valThorCWI->step(0.01);
                 valThorCWI->textsize(14);
                 valThorCWI->callback((Fl_Callback*)cb_valThorCWI);
                 valThorCWI->align(FL_ALIGN_TOP);
@@ -3154,8 +3171,8 @@ an merging"));
       } // Fl_Group* tabModems
       { tabRig = new Fl_Group(0, 25, 500, 345, _("Rig"));
         tabRig->hide();
-        { Fl_Tabs* o = new Fl_Tabs(0, 25, 500, 345);
-          o->selection_color((Fl_Color)51);
+        { tabsRig = new Fl_Tabs(0, 25, 500, 345);
+          tabsRig->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hardware PTT"));
             o->tooltip(_("Tottle DTR for ptt"));
             o->hide();
@@ -3306,6 +3323,7 @@ an merging"));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hamlib"));
+            o->hide();
             { chkUSEHAMLIB = new Fl_Check_Button(195, 60, 100, 20, _("Use Hamlib"));
               chkUSEHAMLIB->down_box(FL_DOWN_BOX);
               chkUSEHAMLIB->callback((Fl_Callback*)cb_chkUSEHAMLIB);
@@ -3446,7 +3464,6 @@ an merging"));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("XML-RPC"));
-            o->hide();
             { grpXMLRPC = new Fl_Group(5, 60, 490, 160);
               grpXMLRPC->box(FL_ENGRAVED_FRAME);
               { Fl_Output* o = new Fl_Output(160, 79, 190, 58);
@@ -3467,14 +3484,14 @@ an merging"));
             } // Fl_Group* grpXMLRPC
             o->end();
           } // Fl_Group* o
-          o->end();
-        } // Fl_Tabs* o
+          tabsRig->end();
+        } // Fl_Tabs* tabsRig
         tabRig->end();
       } // Fl_Group* tabRig
       { tabSoundCard = new Fl_Group(0, 25, 500, 345, _("Audio"));
         tabSoundCard->hide();
         { tabsSoundCard = new Fl_Tabs(0, 25, 500, 345);
-          tabsSoundCard->selection_color((Fl_Color)51);
+          tabsSoundCard->selection_color(FL_LIGHT1);
           { tabAudio = new Fl_Group(0, 50, 500, 320, _("Devices"));
             { AudioOSS = new Fl_Group(5, 60, 490, 45);
               AudioOSS->box(FL_ENGRAVED_FRAME);
@@ -3628,6 +3645,7 @@ l with your sound hardware."));
               { valPCMvolume = new Fl_Value_Slider(15, 167, 340, 21, _("PCM"));
                 valPCMvolume->type(5);
                 valPCMvolume->selection_color(FL_SELECTION_COLOR);
+                valPCMvolume->step(0.01);
                 valPCMvolume->value(0.8);
                 valPCMvolume->textsize(14);
                 valPCMvolume->callback((Fl_Callback*)cb_valPCMvolume);
@@ -3732,8 +3750,9 @@ l with your sound hardware."));
       { tabMisc = new Fl_Group(0, 25, 500, 345, _("Misc"));
         tabMisc->hide();
         { tabsMisc = new Fl_Tabs(0, 25, 500, 345);
-          tabsMisc->selection_color((Fl_Color)51);
+          tabsMisc->selection_color(FL_LIGHT1);
           { tabSweetSpot = new Fl_Group(0, 50, 500, 320, _("Sweet Spot"));
+            tabSweetSpot->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 75);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -3848,7 +3867,6 @@ l with your sound hardware."));
             tabMacros->end();
           } // Fl_Group* tabMacros
           { tabCPUspeed = new Fl_Group(0, 50, 500, 320, _("CPU"));
-            tabCPUspeed->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 50);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);

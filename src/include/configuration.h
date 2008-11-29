@@ -285,6 +285,8 @@
 /* Freq Display colors */                                                               \
         ELEM_(RGB, FDbackground, "FDBACKGROUND", { 0, 0, 0 })                  		\
         ELEM_(RGB, FDforeground, "FDFOREGROUND", { 0, 200, 0 })                     	\
+/* Tab selection color */                                                               \
+        ELEM_(Fl_Color, TabsColor, "TABSCOLOR", FL_BACKGROUND2_COLOR)                   \
 /* PSK Viewer */                                                                        \
         ELEM_(bool, VIEWERmarquee, "VIEWERMARQUEE", true)                               \
         ELEM_(int, VIEWERlabeltype, "VIEWERSHOWFREQ", VIEWER_LABEL_RF)                  \

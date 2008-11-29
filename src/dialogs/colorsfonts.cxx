@@ -92,6 +92,8 @@ static void cb_btnClrFntClose(Fl_Button* o, void*) {
   o->window()->hide();
 }
 
+Fl_Tabs *tabsColors=(Fl_Tabs *)0;
+
 Fl_Box *FDdisplay=(Fl_Box *)0;
 
 Fl_Button *btnBackgroundColor=(Fl_Button *)0;
@@ -605,13 +607,30 @@ static void cb_btnTextDefaults(Fl_Button*, void*) {
     progdefaults.changed = true;
 }
 
+Fl_Button *btnTabColor=(Fl_Button *)0;
+
+static void cb_btnTabColor(Fl_Button*, void*) {
+  progdefaults.TabsColor = fl_show_colormap(progdefaults.TabsColor);
+setTabColors();
+progdefaults.changed = true;
+}
+
+Fl_Button *btnTabDefaultColor=(Fl_Button *)0;
+
+static void cb_btnTabDefaultColor(Fl_Button*, void*) {
+  progdefaults.TabsColor = FL_BACKGROUND2_COLOR;
+setTabColors();    
+progdefaults.changed = true;
+}
+
 Fl_Double_Window* make_colorsfonts() {
   { dlgColorFont = new Fl_Double_Window(375, 220, _("Colors and Fonts"));
     { btnClrFntClose = new Fl_Button(296, 190, 75, 25, _("Close"));
       btnClrFntClose->callback((Fl_Callback*)cb_btnClrFntClose);
     } // Fl_Button* btnClrFntClose
-    { Fl_Tabs* o = new Fl_Tabs(0, 5, 375, 179);
+    { tabsColors = new Fl_Tabs(0, 5, 375, 179);
       { Fl_Group* o = new Fl_Group(5, 30, 365, 150, _("Freq Display"));
+        o->hide();
         { Fl_Box* o = FDdisplay = new Fl_Box(100, 45, 45, 67, _("8"));
           FDdisplay->box(FL_DOWN_BOX);
           FDdisplay->color((Fl_Color)55);
@@ -724,8 +743,17 @@ Fl_Double_Window* make_colorsfonts() {
         } // Fl_Button* btnTextDefaults
         o->end();
       } // Fl_Group* o
-      o->end();
-    } // Fl_Tabs* o
+      { Fl_Group* o = new Fl_Group(0, 30, 365, 150, _("Tab Colors"));
+        { btnTabColor = new Fl_Button(85, 75, 75, 20, _("Tab Color"));
+          btnTabColor->callback((Fl_Callback*)cb_btnTabColor);
+        } // Fl_Button* btnTabColor
+        { btnTabDefaultColor = new Fl_Button(215, 75, 75, 20, _("System"));
+          btnTabDefaultColor->callback((Fl_Callback*)cb_btnTabDefaultColor);
+        } // Fl_Button* btnTabDefaultColor
+        o->end();
+      } // Fl_Group* o
+      tabsColors->end();
+    } // Fl_Tabs* tabsColors
     dlgColorFont->xclass(PACKAGE_TARNAME);
     dlgColorFont->end();
   } // Fl_Double_Window* dlgColorFont

@@ -59,6 +59,7 @@
 #include "cw.h"
 #include "mfsk.h"
 #include "confdialog.h"
+#include "colorsfonts.h"
 #include "configuration.h"
 #include "macros.h"
 #include "status.h"
@@ -251,6 +252,8 @@ int main(int argc, char ** argv)
 	FSEL::create();
 
 	createConfig();
+	make_colorsfonts();
+	setTabColors();
 
 	start_logbook();
 

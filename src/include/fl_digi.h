@@ -197,6 +197,8 @@ extern void stopMacroTimer();
 
 Fl_Color adjust_color(Fl_Color fg, Fl_Color bg);
 
+extern void setTabColors();
+
 void qsy(long long rfc, long long fmid = -1LL);
 
 bool quick_choice(const char* title = 0, bool sel = true);

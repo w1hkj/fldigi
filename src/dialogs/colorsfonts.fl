@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0108 
+version 1.0109 
 i18n_type 1 
 i18n_include "gettext.h" 
 i18n_function _ 
@@ -17,8 +17,7 @@ decl {\#include "configuration.h"} {global
 decl {\#include "font_browser.h"} {public global
 } 
 
-decl {\#include "rigdialog.h"} {selected
-} 
+decl {\#include "rigdialog.h"} {} 
 
 Function {selectColorsFonts()} {open return_type void
 } {
@@ -107,7 +106,7 @@ Function {make_colorsfonts()} {open
 } {
   Fl_Window dlgColorFont {
     label {Colors and Fonts} open
-    xywh {26 742 375 220} type Double
+    xywh {577 755 375 220} type Double
     code0 {dlgColorFont->xclass(PACKAGE_TARNAME);} visible
   } {
     Fl_Button btnClrFntClose {
@@ -115,12 +114,12 @@ Function {make_colorsfonts()} {open
       callback {o->window()->hide();}
       xywh {296 190 75 25}
     }
-    Fl_Tabs {} {open
+    Fl_Tabs tabsColors {open
       xywh {0 5 375 179}
     } {
       Fl_Group {} {
         label {Freq Display} open
-        xywh {5 30 365 150}
+        xywh {5 30 365 150} hide
       } {
         Fl_Box FDdisplay {
           label 8
@@ -653,6 +652,25 @@ b->show();}
 
     progdefaults.changed = true;}
           xywh {296 130 70 20}
+        }
+      }
+      Fl_Group {} {
+        label {Tab Colors} open
+        xywh {0 30 365 150}
+      } {
+        Fl_Button btnTabColor {
+          label {Tab Color}
+          callback {progdefaults.TabsColor = fl_show_colormap(progdefaults.TabsColor);
+setTabColors();
+progdefaults.changed = true;}
+          xywh {85 75 75 20}
+        }
+        Fl_Button btnTabDefaultColor {
+          label System
+          callback {progdefaults.TabsColor = FL_BACKGROUND2_COLOR;
+setTabColors();    
+progdefaults.changed = true;} selected
+          xywh {215 75 75 20}
         }
       }
     }
