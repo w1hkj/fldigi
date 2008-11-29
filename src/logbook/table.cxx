@@ -70,7 +70,7 @@ void Table::drawHeader(int x, int y) {
     else
       fl_draw_box(FL_THIN_DOWN_BOX, x, y, w = col.width, headerHeight, FL_GRAY);
 
-    fl_color(FL_BLACK);
+    fl_color(FL_FOREGROUND_COLOR);
 
     // Draw labels
     if (col.title != NULL)
@@ -104,28 +104,33 @@ void Table::drawRow(int row, char *rowData[], int x, int y) {
   int w;
   ColumnInfo col;
 
-  int fh = rowHeight - 5;
-  fh = fh - (fh % 2);
-  fl_font(FL_HELVETICA, fh);
+  fl_font(FL_HELVETICA, rowHeight - 4);
 
   // Draw background box.
   if (row != selected) {
-    fl_rectf(iX, y, tableWidth - hScroll->value(), rowHeight, color());
-    fl_color(FL_BLACK);
+    Fl_Color bg;
+    if (!withGrid && row % 2 == 0) { // different bg for consecutive rows
+      bg = fl_color_average(color(), FL_BLACK, .9);
+      if (fl_contrast(bg, FL_BLACK) == FL_WHITE) // widget has very dark text bg
+        bg = fl_color_average(color(), FL_WHITE, .9);
+    }
+    else
+      bg = color();
+    fl_rectf(iX, y, tableWidth - hScroll->value(), rowHeight, bg);
   }
   else if (Fl::focus() == this) {
     fl_rectf(iX, y, tableWidth - hScroll->value(), rowHeight, selection_color());
-    fl_color(FL_WHITE);
+    fl_color(FL_FOREGROUND_COLOR);
 
     // Draw focus
     fl_line_style(FL_DOT);
     fl_rect(iX, y, tableWidth - hScroll->value(), rowHeight);
     fl_line_style(FL_SOLID);
   }
-  else {
+  else
     fl_rectf(iX, y, tableWidth - hScroll->value(), rowHeight, selection_color());
-    fl_color(FL_WHITE);
-  }
+
+  fl_color(FL_FOREGROUND_COLOR);
 
   // Get color from highlighter.
   Fl_Color color;
@@ -141,14 +146,11 @@ void Table::drawRow(int row, char *rowData[], int x, int y) {
       continue;
 
     if (withGrid == true) {
-      fl_color(FL_GRAY);
+      fl_color(FL_FOREGROUND_COLOR);
       fl_line_style(FL_SOLID);
       fl_rect(x,y,w,rowHeight);
 
-      if (row == selected)
-        fl_color(FL_WHITE);
-      else
-        fl_color(FL_BLACK);
+      fl_color(FL_FOREGROUND_COLOR);
     }
 
     if ((str = rowData[i]) != NULL)
@@ -331,7 +333,7 @@ int Table::headerSize() const {
 }
 
 void Table::headerSize(int height) {
-  headerHeight = height;
+  headerHeight = height + 4;
   dimensionsChanged = true;
   redraw();
 }
@@ -351,6 +353,7 @@ int Table::rowSize() const {
 }
 
 void Table::rowSize(int height) {
+  height += 4;
   rowHeight = height;
   vScroll->linesize(3 * height);
   dimensionsChanged = true;
@@ -1236,8 +1239,8 @@ if (this->header[pushed].comparator != NULL) {
   case FL_KEYDOWN:
     switch(Fl::event_key())  {
     case FL_Enter:
-      if ((selected > -1) &&  (when() & TABLE_WHEN_DCLICK) ||
-          (when() & FL_WHEN_ENTER_KEY))
+      if ((selected > -1) && ((when() & TABLE_WHEN_DCLICK) ||
+          (when() & FL_WHEN_ENTER_KEY)))
         do_callback();
       ret = 1;
       break;
@@ -1739,4 +1742,64 @@ void Table::scrollCallback(Fl_Widget *widget, void *data) {
     me->damage(DAMAGE_ROWS);
   else
     me->damage(DAMAGE_ROWS | DAMAGE_HEADER);
+}
+
+#include "re.h"
+
+inline static
+bool search_row(const std::vector<char**>& data, int row, int col, int ncols, fre_t& re, bool allcols)
+{
+  if (unlikely(allcols)) {
+    for (col = 0; col < ncols; col++)
+      if (re.match(data[row][col]))
+	return true;
+  }
+  else if (re.match(data[row][col]))
+    return true;
+  return false;
+}
+
+/*
+ * ==================================================================
+ *  void Table.search(int& row, int& col, bool rev, const char* re);
+ * ==================================================================
+ *
+ * Searches Table data starting at `row', in direction indicated by `rev',
+ * for column data matching regexp `re'.  Looks in all row columns if `col'
+ * is equal to nCols, or just the specified column if 0 <= col < nCols.
+ * Returns true if found, in which case the `row' and `col' arguments will
+ * point to the matching data.  If false is returned, the contents of
+ * `row' and `col' are undefined.
+ */
+
+bool Table::search(int& row, int& col, bool rev, const char* re)
+{
+  if (unlikely(col < 0 || col > nCols || row < 0 || row >= nRows))
+    return false;
+
+  bool allcols = col == nCols;
+  fre_t sre(re, REG_EXTENDED | REG_ICASE | REG_NOSUB);
+  if (!sre)
+    return false;
+
+
+  int r = row;
+  if (rev) {
+    for (; row >= 0; row--)
+      if (search_row(data, row, col, nCols, sre, allcols))
+	return true;
+    for (row = nRows - 1; row > r; row--)
+      if (search_row(data, row, col, nCols, sre, allcols))
+	return true;
+  }
+  else {
+    for (; row < nRows; row++)
+      if (search_row(data, row, col, nCols, sre, allcols))
+	return true;
+    for (row = 0; row < r; row++)
+      if (search_row(data, row, col, nCols, sre, allcols))
+	return true;
+  }
+
+  return false;
 }

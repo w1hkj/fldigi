@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "pixmaps.h"
 #include "calendar.h"
 
 void popcal_cb (Fl_Widget *v, long d);
@@ -23,7 +24,7 @@ static void fl_calendar_button_cb (Fl_Button *a, void *b)
 	    j = i;
       sb->color (sb->selection_color());
       if (c->target) {
-        ((Fl_Input *)(c->target))->value(c->szDate(c->calfmt));
+        ((Fl_Input2 *)(c->target))->value(c->szDate(c->calfmt));
         (c->target)->redraw();
       }
     }
@@ -367,7 +368,7 @@ Fl_Calendar::handle (int event)
 
 // Popup Calendar class
 
-Fl_PopCal::Fl_PopCal (int X, int Y, int W, int H, Fl_Input * tgt)
+Fl_PopCal::Fl_PopCal (int X, int Y, int W, int H, Fl_Input2 * tgt)
  : Fl_Window (X, Y, W, H, "")
 {
   target = tgt;
@@ -436,7 +437,7 @@ void Fl_PopCal::popcal_cb_i (Fl_Widget *v, long d)
 {
   int ey = Fl::event_y_root();
   Fl_PopCal *me = (Fl_PopCal *)(v->parent());
-  Fl_Input *tgt = me->target;
+  Fl_Input2 *tgt = me->target;
   if (ey > me->y() + 40) {
     if (d && tgt) 
       tgt->value (((Fl_Calendar *)v)->szDate (me->popcalfmt_));
@@ -450,31 +451,6 @@ void popcal_cb (Fl_Widget *v, long d)
   ((Fl_PopCal *)(v))->popcal_cb_i (v, d);
   return;
 }
-
-/* XPM Calendar Label */
-static const char *cal_16[] = {
-/* width height num_colors chars_per_pixel */
-"    14    14        3            1",
-/* colors */
-". c #000000",
-"d c none",
-"e c #ffffff",
-/* pixels */
-"dddddddddddddd",
-".............d",
-".eeeeeeeeeee.d",
-".............d",
-".e.e.e.e.e.e.d",
-".............d",
-".e.e.e.e.e.e.d",
-".............d",
-".e.e.e.e.e.e.d",
-".............d",
-".e.e.e.e.e.e.d",
-".............d",
-".e.e.e.e.e.e.d",
-"dddddddddddddd",
-};
 
 void
 Fl_DateInput::fl_popcal()
@@ -535,9 +511,9 @@ Fl_DateInput::Fl_DateInput (int X,int Y,int W,int H, const char *L)
  : Fl_Group (X, Y, W, H, 0)
 {
   Btn = new Fl_Button (X + W - H + 1, Y + 1, H - 2, H - 2);
-  (new Fl_Pixmap (cal_16))->label (Btn);
+  (new Fl_Pixmap (time_icon))->label (Btn);
   Btn->callback ((Fl_Callback *)btnDateInput_cb, 0);
-  Input = new Fl_Input (X, Y, W-H, H, L);
+  Input = new Fl_Input2 (X, Y, W-H, H, L);
 
   popcalfmt_ = 0;
   Cal = 0;

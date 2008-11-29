@@ -99,11 +99,6 @@ void status::saveLastState()
 	logbook_y = dlgLogbook->y();
 	logbook_reverse = cQsoDb::reverse;
 
-	LOGenabled = false;
-	Fl_Menu_Item *mnulogging = getMenuItem(_("Log File"));
-	if (mnulogging)
-		LOGenabled = mnulogging->value();
-
 	VIEWERvisible = false;
 	if (dlgViewer && dlgViewer->visible()) {
 		VIEWERxpos = dlgViewer->x();
@@ -308,14 +303,7 @@ void status::initLastState()
 		if (scopeVisible == true)
 			scopeview->show();
 	}
-	
-	if (LOGenabled) {
-		Fl_Menu_Item *mnulogging = getMenuItem(_("Log File"));
-		if (!mnulogging)
-			return;
-		mnulogging->set();
-	}	
-	
+
 	cQsoDb::reverse = logbook_reverse;
 	if (cQsoDb::reverse) {
 		qsodb.SortByDate();

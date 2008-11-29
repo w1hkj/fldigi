@@ -1023,33 +1023,22 @@ void waterfall::set_XmtRcvBtn(bool val)
 	FL_UNLOCK_D();
 }
 
-void mode_cb(Fl_Widget *w, void *v) {
-	FL_LOCK_D();
-	waterfall *wf = (waterfall *)w->parent();
-	if (Fl::event_shift()) {
-		wf->wfdisp->Mode(SCOPE);
-		w->label("sig");
-		wf->x1->deactivate();
-//		wf->bw_rsid->deactivate();
-		wf->wfcarrier->deactivate();
-		wf->wfRefLevel->deactivate();
-		wf->wfAmpSpan->deactivate();
-	} else if (wf->wfdisp->Mode() == WATERFALL) {
-		wf->wfdisp->Mode(SPECTRUM);
-		w->label("fft");
-	} else if (wf->wfdisp->Mode() == SPECTRUM) {
-		wf->wfdisp->Mode(WATERFALL);
-		w->label("Wtr");
-	} else {
-		wf->wfdisp->Mode(WATERFALL);
-		w->label("Wtr");
-		wf->x1->activate();
-//		wf->bw_rsid->activate();
-		wf->wfcarrier->activate();
-		wf->wfRefLevel->activate();
-		wf->wfAmpSpan->activate();
+void mode_cb(Fl_Widget* w, void*)
+{
+	static const char* names[NUM_WF_MODES] = { "WF", "FFT", "SIG" };
+	int m = wf->wfdisp->Mode() + (Fl::event_button() == FL_LEFT_MOUSE ? 1 : -1);
+	m = WCLAMP(m, WATERFALL, NUM_WF_MODES-1);
+
+	Fl_Widget* b[] = { wf->x1, wf->wfcarrier, wf->wfRefLevel, wf->wfAmpSpan };
+	for (size_t i = 0; i < sizeof(b)/sizeof(*b); i++) {
+		if (m == SCOPE)
+			b[i]->deactivate();
+		else
+			b[i]->activate();
 	}
-	FL_UNLOCK_D();
+
+	wf->wfdisp->Mode(static_cast<WFmode>(m));
+	w->label(names[m]);
 	restoreFocus();
 }
 
@@ -1308,9 +1297,9 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	
 	xpos = x() + wSpace;
 
-	mode = new Fl_Button(xpos, buttonrow, (int)(bwFFT*ratio), BTN_HEIGHT,"Wtr");
+	mode = new Fl_Button(xpos, buttonrow, (int)(bwFFT*ratio), BTN_HEIGHT, "WF");
 	mode->callback(mode_cb, 0);
-	mode->tooltip(_("Waterfall/FFT - Shift click for signal scope"));
+	mode->tooltip(_("Waterfall / FFT / Scope"));
 
 	xpos = xpos + (int)(bwFFT*ratio) + wSpace;
 	wfRefLevel = new Fl_Counter(xpos, buttonrow, (int)(cwRef*ratio), BTN_HEIGHT );
@@ -1342,7 +1331,7 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	xpos = xpos + (int)(bwX1*ratio) + wSpace;
 	left = new Fl_Repeat_Button(xpos, buttonrow, (int)(bwMov*ratio), BTN_HEIGHT, "@<");
 	left->callback(slew_left, 0);
-	left->tooltip(_("Slew display lower in freq"));
+	left->tooltip(_("Slew display lower in frequency"));
 
 	xpos = xpos + (int)(bwMov*ratio);
 	center = new Fl_Button(xpos, buttonrow, (int)(bwMov*ratio), BTN_HEIGHT, "@||");
@@ -1352,7 +1341,7 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	xpos = xpos + (int)(bwMov*ratio);
 	right = new Fl_Repeat_Button(xpos, buttonrow, (int)(bwMov*ratio), BTN_HEIGHT, "@>");
 	right->callback(slew_right, 0);
-	right->tooltip(_("Slew display higher in freq"));
+	right->tooltip(_("Slew display higher in frequency"));
 
 	xpos = xpos + (int)(bwMov*ratio) + wSpace;
 	wfrate = new Fl_Button(xpos, buttonrow, (int)(bwRate*ratio), BTN_HEIGHT, "Norm");
@@ -1372,7 +1361,7 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	xpos = xpos + (int)(cwCnt*ratio) + wSpace;
 	qsy = new Fl_Button(xpos, buttonrow, (int)(bwQsy*ratio), BTN_HEIGHT, "QSY");
 	qsy->callback(qsy_cb, 0);
-	qsy->tooltip(_("Cntr in Xcvr PB\nRight click to undo"));
+	qsy->tooltip(_("Center in passband\nRight click to undo"));
 	qsy->deactivate();
 
 	xpos = xpos + (int)(bwQsy*ratio) + wSpace;
@@ -1388,7 +1377,7 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	xmtlock->callback(xmtlock_cb, 0);
 	xmtlock->value(0);
 	xmtlock->selection_color(FL_RED);
-	xmtlock->tooltip(_("Xmt freq locked"));
+	xmtlock->tooltip(_("Lock transmit frequency"));
 
 	xpos = xpos + (int)(bwXmtLock*ratio) + wSpace;
 	btnRev = new Fl_Light_Button(xpos, buttonrow, (int)(bwRev*ratio), BTN_HEIGHT, "Rv");

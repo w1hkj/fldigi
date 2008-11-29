@@ -7,6 +7,8 @@
 #include <Fl/Fl_Group.H>
 #include <Fl/Fl_Pack.H>
 
+enum { VIEWER_LABEL_AF, VIEWER_LABEL_RF, VIEWER_LABEL_CH, VIEWER_LABEL_NTYPES };
+
 class pskBrowser : public Fl_Hold_Browser{
 public:
 	pskBrowser(int x, int y, int w, int h, const char *l = "")

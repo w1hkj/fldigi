@@ -17,7 +17,7 @@ private:
 public:
   cTextFile () {makeHeader();}
   ~cTextFile () {};
-  int writeFile (char *, cQsoDb *);
+  int writeFile (const char *, cQsoDb *);
 };
 
 #endif

@@ -7,11 +7,15 @@
 #include "adif_io.h"
 #include "date.h"
 
-using namespace std;
+#ifdef __CYGWIN__
+#  define ADIF_SUFFIX "adi"
+#else
+#  define ADIF_SUFFIX "adif"
+#endif
 
 extern cQsoDb        qsodb;
 extern cAdifIO       adifFile;
-extern string logbook_filename;
+extern std::string logbook_filename;
 
 extern void loadBrowser();
 
@@ -37,6 +41,8 @@ extern void updateRecord ();
 extern void deleteRecord ();
 extern void AddRecord ();
 extern void SearchLastQSO (const char *);
+extern void cb_search(Fl_Widget* w, void*);
+extern int log_search_handler(int);
 
 extern void cb_doExport();
 

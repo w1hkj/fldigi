@@ -286,12 +286,9 @@ void configuration::loadDefaults()
 	chkUOStx->value(UOStx);
 	chkXagc->value(Xagc);
 
-	for (size_t i = 0; i < sizeof(btnRTTYafc)/sizeof(*btnRTTYafc); i++)
-		if (rtty_afcspeed == (int)i)
-			btnRTTYafc[i]->value(1);
-		else
-			btnRTTYafc[i]->value(0);
+	mnuRTTYAFCSpeed->value(rtty_afcspeed);
 	btnPreferXhairScope->value(PreferXhairScope);
+
 // OLIVIA
 	mnuOlivia_Tones->value(oliviatones);
 	mnuOlivia_Bandwidth->value(oliviabw);

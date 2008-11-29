@@ -213,6 +213,8 @@ public:
 	void PrevPage ();
 	void NextPage ();
 	void GotoRow (int);
+
+	bool search(int& row, int& col, bool rev, const char* re);
 };
 
 #endif

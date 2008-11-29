@@ -28,7 +28,6 @@ string bwsrline[MAXCHANNELS];
 
 static int  brwsFreq[MAXCHANNELS];
 static int  freq;
-static double dfreq;
 
 static long long rfc;
 static bool usb;
@@ -43,8 +42,7 @@ string bkgnd[2];
 int cols[] = {100, 0};
 int cwidth;
 int cheight;
-int rfwidth;
-int chwidth;
+int labelwidth[VIEWER_LABEL_NTYPES];
 int sbarwidth = 16;
 int border = 4;
 
@@ -55,25 +53,32 @@ int re_eflags = REG_NOTBOL | REG_NOTEOL;
 
 string freqformat(int i)
 {
-static char szLine[80];
-string fline;
-	if (pskviewer) freq = pskviewer->get_freq(progdefaults.VIEWERchannels - 1 - i);
-	else 		   freq = progdefaults.VIEWERstart + 100 * (progdefaults.VIEWERchannels - 1 - i);
+	static char szLine[32];
+	string fline;
+
+	if (pskviewer)
+		freq = pskviewer->get_freq(progdefaults.VIEWERchannels - 1 - i);
+	else
+		freq = progdefaults.VIEWERstart + 100 * (progdefaults.VIEWERchannels - 1 - i);
 	brwsFreq[i] = freq;
 
-	if (rfc != 0) {
-		if (usb) dfreq = rfc + freq;
-		else     dfreq = rfc - freq;
- 	} else 
- 		dfreq = freq;
-  	if (progdefaults.VIEWERshowfreq)
- 		snprintf(szLine, sizeof(szLine), "%10.3f", dfreq / 1000.0);
-  	else
- 		snprintf(szLine, sizeof(szLine), "%3d", progdefaults.VIEWERchannels - i);	
+	switch (progdefaults.VIEWERlabeltype) {
+	case VIEWER_LABEL_AF:
+		snprintf(szLine, sizeof(szLine), "% 5d", freq);
+		break;
+	case VIEWER_LABEL_RF:
+		snprintf(szLine, sizeof(szLine), "%10.3f", (rfc + (usb ? freq : -freq)) / 1000.0f);
+		break;
+	case VIEWER_LABEL_CH:
+		snprintf(szLine, sizeof(szLine), "%3d", progdefaults.VIEWERchannels - i);
+		break;
+	default:
+		break;
+	}
 
 	fline = "@f";
-	fline += bkselect.c_str();
-	fline += white.c_str();
+	fline += bkselect;
+	fline += white;
 	fline += szLine;
   	fline += '\t';
 	fline += bkgnd[i % 2];
@@ -145,7 +150,7 @@ static void make_colors()
 	white = tempstr;
 
 	snprintf(tempstr, sizeof(tempstr), "@B%d",
-		 adjust_color(FL_SELECTION_COLOR, FL_FOREGROUND_COLOR)); // default selection color bkgnd
+		 adjust_color(FL_BACKGROUND2_COLOR, FL_FOREGROUND_COLOR)); // default selection color bkgnd
 	bkselect = tempstr;
 
 	snprintf(tempstr, sizeof(tempstr), "@B%d", FL_BACKGROUND2_COLOR); // background for odd rows
@@ -163,8 +168,9 @@ static void evalcwidth()
 	fl_font(FL_COURIER, FL_NORMAL_SIZE);
 	cwidth = (int)fl_width("W");
 	cheight = fl_height();
-	rfwidth = 11 * cwidth;
-	chwidth = 4 * cwidth;
+	labelwidth[VIEWER_LABEL_AF] = 6 * cwidth;
+	labelwidth[VIEWER_LABEL_RF] = 11 * cwidth;
+	labelwidth[VIEWER_LABEL_CH] = 4 * cwidth;
 }
 
 static void cb_btnCloseViewer(Fl_Button*, void*) {
@@ -186,10 +192,7 @@ void ClearViewer() {
   		bwsrline[i].clear();
   		brwsViewer->add(bline.c_str());
   	}
-	if (progdefaults.VIEWERshowfreq)
-		cols[0] = rfwidth;
-	else
-		cols[0] = chwidth;
+	cols[0] = labelwidth[progdefaults.VIEWERlabeltype];
   	brwsViewer->column_widths(cols);
 }
 
@@ -270,11 +273,8 @@ Fl_Double_Window* createViewer() {
 
 	make_colors();
 	evalcwidth();
-	if (progdefaults.VIEWERshowfreq)
-		cols[0] = rfwidth;
-	else
-		cols[0] = chwidth;
-	
+	cols[0] = labelwidth[progdefaults.VIEWERlabeltype];
+
 	static int viewerwidth = (progStatus.VIEWERnchars * cwidth) + cols[0] + sbarwidth + border;
 	static int viewerheight = 50 + cheight * progdefaults.VIEWERchannels + border;
 
@@ -340,14 +340,11 @@ void viewer_redraw()
 	if (!dlgViewer) return;
   	usb = wf->USB();
   	rfc = wf->rfcarrier();
-		  	
+
   	for (int i = 0; i < progdefaults.VIEWERchannels; i++)
   		brwsViewer->text(i + 1, freqformat(i).c_str() );
-	if (progdefaults.VIEWERshowfreq)
-		cols[0] = rfwidth;
-	else
-		cols[0] = chwidth;
-    brwsViewer->column_widths(cols);
+	cols[0] = labelwidth[progdefaults.VIEWERlabeltype];
+	brwsViewer->column_widths(cols);
 }
 
 void viewaddchr(int ch, int freq, char c) {

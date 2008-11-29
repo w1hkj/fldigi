@@ -120,8 +120,6 @@ extern void toggleRSID();
 extern void set_menus();
 extern void create_fl_digi_main();
 extern void update_main_title();
-extern Fl_Menu_Item menu_[];
-extern Fl_Menu_Item *getMenuItem(const char *caption, Fl_Menu_Item* submenu = 0);
 extern void activate_rig_menu_item(bool b);
 extern void activate_test_menu_item(bool b);
 extern void activate_mfsk_image_item(bool b);

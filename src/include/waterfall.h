@@ -45,6 +45,11 @@
 #include <FL/Fl_Choice.H>
 #include <FL/Enumerations.H>
 
+enum {
+	WF_FFT_RECTANGULAR, WF_FFT_BLACKMAN, WF_FFT_HAMMING,
+	WF_FFT_HANNING, WF_FFT_TRIANGULAR
+};
+
 /*
 #ifdef HAVE_DFFTW_H
 #  include <dfftw.h>
@@ -79,7 +84,8 @@ extern	RGB		palette[9];
 enum WFmode {
 	WATERFALL,
 	SPECTRUM,
-	SCOPE
+	SCOPE,
+	NUM_WF_MODES
 };
 
 #define MAG_1 1
@@ -176,11 +182,11 @@ public:
 	double powerDensity(double f0, double bw);
 	void setPrefilter(int v) {
 		switch (v) {
-			case 0: RectWindow(fftwindow, FFT_LEN*2); break;
-			case 1: BlackmanWindow(fftwindow, FFT_LEN*2); break;
-			case 2: HammingWindow(fftwindow, FFT_LEN*2); break;
-			case 3: HanningWindow(fftwindow, FFT_LEN*2); break;
-			case 4: TriangularWindow(fftwindow, FFT_LEN*2); break;
+			case WF_FFT_RECTANGULAR: RectWindow(fftwindow, FFT_LEN*2); break;
+			case WF_FFT_BLACKMAN: BlackmanWindow(fftwindow, FFT_LEN*2); break;
+			case WF_FFT_HAMMING: HammingWindow(fftwindow, FFT_LEN*2); break;
+			case WF_FFT_HANNING: HanningWindow(fftwindow, FFT_LEN*2); break;
+			case WF_FFT_TRIANGULAR: TriangularWindow(fftwindow, FFT_LEN*2); break;
 		}
 //		switch (v) {
 //			case 0: wfft->setWindow(FFT_NONE); break;

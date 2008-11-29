@@ -14,7 +14,7 @@ extern void setColorButtons();
 class colorbox : public Fl_Button  {
 	void draw();
 public:
-	colorbox(int x, int y, int w, int h, const char *label) : Fl_Button(x,y,w,h,label) {
+	colorbox(int x, int y, int w, int h, const char *label = 0) : Fl_Button(x,y,w,h,label) {
 		Fl_Button::box(FL_DOWN_BOX);
 	};
 	void end(){};

@@ -252,6 +252,7 @@ int HNOM;
 int WNOM;
 int Wwfall;
 
+Fl_Menu_Item *getMenuItem(const char *caption, Fl_Menu_Item* submenu = 0);
 bool clean_exit(void);
 
 void cb_init_mode(Fl_Widget *, void *arg);
@@ -806,51 +807,56 @@ void cb_mnuConfigModems(Fl_Menu_*, void*) {
 	dlgConfig->show();
 }
 
+void cb_logfile(Fl_Widget* w, void*)
+{
+	progStatus.LOGenabled = reinterpret_cast<Fl_Menu_*>(w)->mvalue()->value();
+}
+
 #if USE_SNDFILE
 bool capval = false;
 bool genval = false;
 bool playval = false;
 void cb_mnuCapture(Fl_Widget *w, void *d)
 {
-	Fl_Menu_Item *m = (Fl_Menu_Item *)(((Fl_Menu_*)w)->mvalue());
 	if (!scard) return;
+	Fl_Menu_Item *m = getMenuItem(((Fl_Menu_*)w)->mvalue()->label()); //eek
 	if (playval || genval) {
-		m->flags &= ~FL_MENU_VALUE;
+		m->clear();
 		return;
 	}
 	capval = m->value();
 	if(!scard->Capture(capval)) {
-		m->flags &= ~FL_MENU_VALUE;
+		m->clear();
 		capval = false;
 	}
 }
 
 void cb_mnuGenerate(Fl_Widget *w, void *d)
 {
-	Fl_Menu_Item *m = (Fl_Menu_Item *)(((Fl_Menu_*)w)->mvalue());
 	if (!scard) return;
+	Fl_Menu_Item *m = getMenuItem(((Fl_Menu_*)w)->mvalue()->label());
 	if (capval || playval) {
-		m->flags &= ~FL_MENU_VALUE;
+		m->clear();
 		return;
 	}
 	genval = m->value();
 	if (!scard->Generate(genval)) {
-		m->flags &= ~FL_MENU_VALUE;
+		m->clear();
 		genval = false;
 	}
 }
 
 void cb_mnuPlayback(Fl_Widget *w, void *d)
 {
-	Fl_Menu_Item *m = (Fl_Menu_Item *)(((Fl_Menu_*)w)->mvalue());
 	if (!scard) return;
+	Fl_Menu_Item *m = getMenuItem(((Fl_Menu_*)w)->mvalue()->label());
 	if (capval || genval) {
-		m->flags &= ~FL_MENU_VALUE;
+		m->clear();
 		return;
 	}
 	playval = m->value();
 	if(!scard->Playback(playval)) {
-		m->flags &= ~FL_MENU_VALUE;
+		m->clear();
 		playval = false;
 	}
 	else if (btnAutoSpot->value()) {
@@ -1367,6 +1373,9 @@ int default_handler(int event)
 			return 1;
 		}
 	}
+	else if (w == dlgLogbook || w->window() == dlgLogbook)
+		return log_search_handler(event);
+
 	return 0;
 }
 
@@ -1453,14 +1462,27 @@ bool clean_exit(void) {
 
 	return true;
 }
-	
+
+#define LOG_TO_FILE_MLABEL _("Log all RX/TX text")
+#define RIGCONTROL_MLABEL _("Rig Control")
+#define VIEW_MLABEL _("View")
+#define MFSK_IMAGE_MLABEL _("MFSK Image")
+
 Fl_Menu_Item menu_[] = {
 {_("&Files"), 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { make_icon_label(_("Open macros..."), file_open_icon), 0,  (Fl_Callback*)cb_mnuOpenMacro, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Save macros..."), save_as_icon), 0,  (Fl_Callback*)cb_mnuSaveMacro, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Show config"), folder_open_icon), 0, cb_ShowConfig, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
-//{"Log File", 0, (Fl_Callback*)cb_mnuLogFile, 0, FL_MENU_DIVIDER | FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
-{_("Log File"), 0, 0, 0, FL_MENU_DIVIDER | FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
+
+{ make_icon_label(_("Logs")), 0, 0, 0, FL_MENU_DIVIDER | FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("New logbook")), 0, (Fl_Callback*)cb_mnuNewLogbook, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("Open logbook...")), 0, (Fl_Callback*)cb_mnuOpenLogbook, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("Save logbook")), 0, (Fl_Callback*)cb_mnuSaveLogbook, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("Export to ADIF")), 0, (Fl_Callback*)cb_mnuExportADIF_log, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("Merge ADIF...")), 0, (Fl_Callback*)cb_mnuMergeADIF_log, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ LOG_TO_FILE_MLABEL, 0, cb_logfile, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
 #if USE_SNDFILE
 { make_icon_label(_("Audio")), 0, 0, 0, FL_MENU_DIVIDER | FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
 {_("Rx capture"),  0, (Fl_Callback*)cb_mnuCapture,  0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
@@ -1573,7 +1595,7 @@ Fl_Menu_Item menu_[] = {
 { make_icon_label(_("User Interface")), 0,  (Fl_Callback*)cb_mnuUI, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Waterfall"), waterfall_icon), 0,  (Fl_Callback*)cb_mnuConfigWaterfall, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Modems"), emblems_system_icon), 0, (Fl_Callback*)cb_mnuConfigModems, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(_("Rig Control"), multimedia_player_icon), 0, (Fl_Callback*)cb_mnuConfigRigCtrl, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(RIGCONTROL_MLABEL, multimedia_player_icon), 0, (Fl_Callback*)cb_mnuConfigRigCtrl, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Sound Card"), audio_card_icon), 0, (Fl_Callback*)cb_mnuConfigSoundCard, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("IDs")), 0,  (Fl_Callback*)cb_mnuConfigID, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Misc")), 0,  (Fl_Callback*)cb_mnuConfigMisc, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
@@ -1581,20 +1603,12 @@ Fl_Menu_Item menu_[] = {
 { make_icon_label(_("Save Config"), save_icon), 0, (Fl_Callback*)cb_mnuSaveConfig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
-{_("View"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ VIEW_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { make_icon_label(_("Digiscope"), utilities_system_monitor_icon), 0, (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(_("MFSK Image"), image_icon), 0, (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 0, (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("PSK Browser")), 0, (Fl_Callback*)cb_mnuViewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(_("Rig Control"), multimedia_player_icon), 0, (Fl_Callback*)cb_mnuRig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{0,0,0,0,0,0,0,0,0},
-
-{"Logbook", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ make_icon_label("View"), 0, (Fl_Callback*)cb_mnuShowLogbook, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("New logbook"), 0, (Fl_Callback*)cb_mnuNewLogbook, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Open logbook"), 0, (Fl_Callback*)cb_mnuOpenLogbook, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Save logbook"), 0, (Fl_Callback*)cb_mnuSaveLogbook, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Export adif"), 0, (Fl_Callback*)cb_mnuExportADIF_log, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label("Merge adif"), 0, (Fl_Callback*)cb_mnuMergeADIF_log, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(RIGCONTROL_MLABEL, multimedia_player_icon), 0, (Fl_Callback*)cb_mnuRig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("Logbook")), 0, (Fl_Callback*)cb_mnuShowLogbook, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
@@ -1614,7 +1628,7 @@ Fl_Menu_Item menu_[] = {
 { make_icon_label(_("Check for updates..."), system_software_update_icon), 0, cb_mnuCheckUpdate, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("About"), help_about_icon), 0, cb_mnuAboutURL, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
-	
+
 {"  ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 };
@@ -1643,7 +1657,7 @@ Fl_Menu_Item *getMenuItem(const char *caption, Fl_Menu_Item* submenu)
 
 void activate_rig_menu_item(bool b)
 {
-	Fl_Menu_Item *rig = getMenuItem(_("Rig Control"), getMenuItem(_("View")));
+	Fl_Menu_Item *rig = getMenuItem(RIGCONTROL_MLABEL, getMenuItem(VIEW_MLABEL));
 	if (!rig)
 		return;
 	if (b) {
@@ -1660,7 +1674,7 @@ void activate_rig_menu_item(bool b)
 
 void activate_mfsk_image_item(bool b)
 {
-	Fl_Menu_Item *mfsk_item = getMenuItem(_("MFSK Image"));
+	Fl_Menu_Item *mfsk_item = getMenuItem(MFSK_IMAGE_MLABEL);
 	if (mfsk_item)
 		set_active(mfsk_item, b);
 }
@@ -1904,6 +1918,11 @@ void create_fl_digi_main() {
 			}
 			mnu->menu(menu_);
 
+			if (progStatus.LOGenabled) {
+				Fl_Menu_Item* m = getMenuItem(LOG_TO_FILE_MLABEL);
+				if (m) m->set();
+			}
+
 			// reset the message dialog font
 			fl_message_font(FL_HELVETICA, FL_NORMAL_SIZE);
 
@@ -2138,7 +2157,7 @@ void create_fl_digi_main() {
 				inpSerNo = new Fl_Input2(rightof(inpRstOut) + pad, y2, w_inpSerNo, qh - pad, "##");
 				inpSerNo->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 	
-				Fl_Box *fm1box = new Fl_Box(x_qsoframe, y3, w_fm1, qh - pad, "Qth");
+				Fl_Box *fm1box = new Fl_Box(x_qsoframe, y3, w_fm1, qh - pad, "QTH");
 				fm1box->align(FL_ALIGN_INSIDE);
 				inpQth = new Fl_Input2( rightof(fm1box), y3, w_inpQth, qh - pad, "");
 				inpQth->align(FL_ALIGN_INSIDE);
@@ -2568,8 +2587,6 @@ void set_zdata(complex *zarray, int len)
 		wfscope->zdata(zarray, len);
 }
 
-Fl_Menu_Item *mnuLogging = (Fl_Menu_Item *)0;
-
 void put_rx_char(unsigned int data)
 {
 	static unsigned int last = 0;
@@ -2613,10 +2630,8 @@ void put_rx_char(unsigned int data)
 	if (Maillogfile)
 		Maillogfile->log_to_file(cLogfile::LOG_RX, s);
 
-	if (!mnuLogging) mnuLogging = getMenuItem(_("Log File"));
-	if (mnuLogging)
-		if (mnuLogging->value())
-			logfile->log_to_file(cLogfile::LOG_RX, s);
+	if (progStatus.LOGenabled)
+		logfile->log_to_file(cLogfile::LOG_RX, s);
 }
 
 string strSecText = "";
@@ -2720,12 +2735,12 @@ void set_CWwpm()
 
 void clear_StatusMessages()
 {
-	FL_LOCK_E();
+	FL_LOCK_D();
 	StatusBar->label("");
 	Status1->label("");
 	Status2->label("");
-	FL_UNLOCK_E();
-	FL_AWAKE_E();
+	FL_UNLOCK_D();
+	FL_AWAKE_D();
 }
 
 	
@@ -2813,10 +2828,8 @@ void put_echo_char(unsigned int data)
 	if (Maillogfile)
 		Maillogfile->log_to_file(cLogfile::LOG_TX, s);
 
-	if (!mnuLogging) mnuLogging = getMenuItem(_("Log File")); // should only be called once
-	if (mnuLogging)
-		if (mnuLogging->value())
-			logfile->log_to_file(cLogfile::LOG_TX, s);
+	if (progStatus.LOGenabled)
+		logfile->log_to_file(cLogfile::LOG_TX, s);
 }
 
 void resetRTTY() {

@@ -6,6 +6,7 @@
 #include "main.h"
 #include "rtty.h"
 #include "lookupcall.h"
+#include "Viewer.h"
 
 #if defined(__linux__)
 #  define DEFAULT_PTTDEV "/dev/ttyS0"
@@ -155,7 +156,7 @@
         ELEM_(int,  wfwidth, "WFWIDTH", 3000)                                           \
         ELEM_(int,  wfheight, "WFHEIGHT", 125)                                          \
         ELEM_(bool, tooltips, "TOOLTIPS", true)                                         \
-        ELEM_(bool, useCheckButtons, "USECHECKBUTTONS", false)							\
+        ELEM_(bool, useCheckButtons, "USECHECKBUTTONS", false)				\
         ELEM_(bool, NagMe, "NAGME", false)                                              \
         ELEM_(bool, ClearOnSave, "CLEARONSAVE", false)                                  \
         ELEM_(bool, menuicons, "MENUICONS", true)                                       \
@@ -164,7 +165,6 @@
         ELEM_(std::string, QRZpathname, "QRZPATHNAME", "")                              \
         ELEM_(std::string, QRZusername, "QRZUSER", "")                                  \
         ELEM_(std::string, QRZuserpassword, "QRZPASSWORD", "")                          \
-        ELEM_(int, SHOWPASSWORD, "QRZshowpassword", FL_NORMAL_INPUT & FL_SECRET_INPUT)  \
         ELEM_(bool, QRZchanged, "", false)                                              \
 /* Rig control */                                                                       \
         ELEM_(bool, btnusb, "BTNUSB", true)                                             \
@@ -244,11 +244,11 @@
         ELEM_(bool, MicIn, "MICIN", false)                                              \
         ELEM_(bool, LineIn, "LINEIN", true)                                             \
         ELEM_(bool, EnableMixer, "ENABLEMIXER", false)                                  \
-        ELEM_(double, PCMvolume, "PCMVOLUME", 0.8)                                     \
+        ELEM_(double, PCMvolume, "PCMVOLUME", 0.8)                                      \
         ELEM_(bool, MuteInput, "MUTEINPUT", true)                                       \
-        ELEM_(double, TxMonitorLevel, "TXMONITORLEVEL", 0.5)                           \
+        ELEM_(double, TxMonitorLevel, "TXMONITORLEVEL", 0.5)                            \
 /* Waterfall palette */                                                                 \
-		ELEM_(std::string, PaletteName, "PALETTENAME", "")                              \
+		ELEM_(std::string, PaletteName, "PALETTENAME", "")                      \
         ELEM_(RGB, cfgpal0, "PALETTE0", { 0, 0, 0 })                                    \
         ELEM_(RGB, cfgpal1, "PALETTE1", { 0, 0, 62 })                                   \
         ELEM_(RGB, cfgpal2, "PALETTE2", { 0, 0, 126 })                                  \
@@ -280,13 +280,13 @@
         ELEM_(Fl_Font, WaterfallFontnbr, "WATERFALLFONTNBR", FL_SCREEN)                 \
         ELEM_(int, WaterfallFontsize, "WATERFALLFONTSIZE", 12)                          \
         ELEM_(std::string, ui_scheme, "UISCHEME", "gtk+")                               \
-        ELEM_(bool, wf_audioscale, "WFAUDIOSCALE", false)								\
+        ELEM_(bool, wf_audioscale, "WFAUDIOSCALE", false)				\
 /* Freq Display colors */                                                               \
-        ELEM_(RGB, FDbackground, "FDBACKGROUND", { 0, 0, 0 })                     		\
+        ELEM_(RGB, FDbackground, "FDBACKGROUND", { 0, 0, 0 })                  		\
         ELEM_(RGB, FDforeground, "FDFOREGROUND", { 0, 200, 0 })                     	\
 /* PSK Viewer */                                                                        \
         ELEM_(bool, VIEWERmarquee, "VIEWERMARQUEE", true)                               \
-        ELEM_(bool, VIEWERshowfreq, "VIEWERSHOWFREQ", true)                             \
+        ELEM_(int, VIEWERlabeltype, "VIEWERSHOWFREQ", VIEWER_LABEL_RF)                  \
         ELEM_(int, VIEWERstart, "VIEWERSTART", 500)                                     \
         ELEM_(int, VIEWERchannels, "VIEWERCHANNELS", 20)                                \
         ELEM_(double, VIEWERsquelch, "VIEWERSQUELCH", 10.0)                             \
@@ -307,7 +307,7 @@
         ELEM_(bool, pskrep_auto, "PSKREPAUTO", false)                                   \
         ELEM_(bool, pskrep_log, "PSKREPLOG", false)                                     \
         ELEM_(bool, pskrep_qrg, "PSKREPQRG", false)                                     \
-        ELEM_(std::string, pskrep_host, "PSKREPHOST", "report.psk.gladstonefamily.net") \
+        ELEM_(std::string, pskrep_host, "PSKREPHOST", "report.pskreporter.info")        \
         ELEM_(std::string, pskrep_port, "PSKREPPORT", "4739")
 
 // declare the struct

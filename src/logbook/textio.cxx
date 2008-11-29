@@ -33,7 +33,7 @@ void cTextFile::makeHeader()
 } 
 
 
-int cTextFile::writeFile (char *fname, cQsoDb *db) {
+int cTextFile::writeFile (const char *fname, cQsoDb *db) {
 	cQsoRec *pRec = (cQsoRec *)0;
 	FILE *txtFile = fopen (fname, "w");
 	if (!txtFile) return 1;

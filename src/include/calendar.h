@@ -30,8 +30,8 @@
 #include <FL/Fl_Group.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Box.H>
-#include <FL/Fl_Input.H>
 #include <FL/Fl_Pixmap.H>
+#include "flinput2.h"
 
 #include "date.h"
 
@@ -104,9 +104,9 @@ class Fl_PopCal : public Fl_Window {
     int popcalfmt_;
 //    Fl_Window popcal_form;
     Fl_Calendar *popcal;
-    Fl_Input *target;
+    Fl_Input2 *target;
   public: 
-    Fl_PopCal (int x, int y, int w, int h, Fl_Input *inp = 0);
+    Fl_PopCal (int x, int y, int w, int h, Fl_Input2 *inp = 0);
     ~Fl_PopCal ();
     void popposition (int, int);
     void popshow ();
@@ -122,7 +122,7 @@ class Fl_DateInput : public Fl_Group  {
   
   protected:
     Fl_Button  *Btn;
-    Fl_Input   *Input;
+    Fl_Input2   *Input;
     Fl_PopCal  *Cal;
     
     Fl_Window *popcal_form;

@@ -1,7 +1,5 @@
 #include <config.h>
 
-#include <FL/fl_file_chooser.H>
-
 #include <stdlib.h>
 #include <string>
 
@@ -20,6 +18,9 @@
 #include "logger.h"
 #include "lgbook.h"
 #include "fl_digi.h"
+#include "fileselect.h"
+
+#include <FL/fl_ask.H>
 
 // remove after testing
 extern string HomeDir;
@@ -32,49 +33,45 @@ cTextFile	txtFile;
 
 string		logbook_filename;
 
-enum savetype {TEXT, LO, ADIF};
-savetype saveas = ADIF;
+enum savetype {ADIF, TEXT, LO};
 
 void Export_log()
 {
-    if (chkExportBrowser->nchecked() == 0) return;
-    cQsoRec *rec;
-	char *p = 0;
-    switch (saveas) {
-        case TEXT :
-            p = fl_file_chooser("Export to text file", "*.txt", "export.txt");
-            break;
-        case ADIF :
-        	p = fl_file_chooser("Export to ADI file", "*.adi", "export.adi");
-        	break;
-        default:
-            break;
-    }
-	if (p) {
-	    for (int i = 0; i < chkExportBrowser->nitems(); i++) {
-	        if (chkExportBrowser->checked(i + 1)) {
-	            rec = qsodb.getRec(i);
-	            rec->putField(EXPORT, "E");
-	            qsodb.qsoUpdRec (i, rec);
-            }
-        }
-        switch (saveas) {
-            case TEXT :
-            	txtFile.writeFile(p, &qsodb);
-        		break;
-            case ADIF :
-    		    adifFile.writeFile (p, &qsodb);
-    		    break;
-            default:
-        		break;
-    	}
+	if (chkExportBrowser->nchecked() == 0) return;
+
+	cQsoRec *rec;
+
+	string filters = "ADIF\t*." ADIF_SUFFIX "\n" "Text\t*.txt";
+	int saveas;
+	const char* p = FSEL::saveas("Export to file", filters.c_str(),
+					 "export." ADIF_SUFFIX, &saveas);
+	if (!p)
+		return;
+
+	for (int i = 0; i < chkExportBrowser->nitems(); i++) {
+		if (chkExportBrowser->checked(i + 1)) {
+			rec = qsodb.getRec(i);
+			rec->putField(EXPORT, "E");
+			qsodb.qsoUpdRec (i, rec);
+		}
+	}
+
+	switch (saveas) {
+	case TEXT :
+		txtFile.writeFile(p, &qsodb);
+		break;
+	case ADIF :
+		adifFile.writeFile (p, &qsodb);
+		break;
+	default:
+		break;
 	}
 }
 
 void saveLogbook()
 {
 	if (qsodb.isdirty()) {
-		if (fl_choice("Logbook Database changed, Save?", "No", "Yes", NULL))
+		if (fl_choice("Save changed Logbook?", "No", "Yes", NULL))
 			if (adifFile.writeLog (logbook_filename.c_str(), &qsodb))
 				fl_message ("Could not update file %s", logbook_filename.c_str());
 		qsodb.isdirty(0);
@@ -85,14 +82,14 @@ void cb_mnuNewLogbook(Fl_Menu_* m, void* d){
 	saveLogbook();
 
 	logbook_filename = HomeDir;
-	logbook_filename.append("newlog.adi");
+	logbook_filename.append("newlog." ADIF_SUFFIX);
 	qsodb.deleteRecs();
 	wBrowser->clear();
 }
 
 void cb_mnuOpenLogbook(Fl_Menu_* m, void* d)
 {
-	char *p = fl_file_chooser("Open logbook file", "*.adi", "");
+	const char* p = FSEL::select("Open logbook file", "ADIF\t*." ADIF_SUFFIX);
 	if (p) {
 		saveLogbook();
 		qsodb.deleteRecs();
@@ -106,7 +103,8 @@ void cb_mnuOpenLogbook(Fl_Menu_* m, void* d)
 
 void cb_mnuSaveLogbook(Fl_Menu_*m, void* d) {
 	if (qsodb.nbrRecs() == 0) return;
-	char *p = fl_file_chooser("SaveAs to logbook file", "*.adi", logbook_filename.c_str());
+	const char* p = FSEL::saveas("Save logbook file", "ADIF\t*." ADIF_SUFFIX,
+				     logbook_filename.c_str());
 	if (p) {
 		if (adifFile.writeLog (p, &qsodb))
 			fl_message ("Could not write to %s", p);
@@ -115,7 +113,7 @@ void cb_mnuSaveLogbook(Fl_Menu_*m, void* d) {
 }
 
 void cb_mnuMergeADIF_log(Fl_Menu_* m, void* d) {
-	char *p = fl_file_chooser("Select ADI merge file", "*.adi", "");
+	const char* p = FSEL::select("Merge ADIF file", "ADIF\t*." ADIF_SUFFIX);
 	if (p) {
 		adifFile.readFile (p, &qsodb);
 		loadBrowser();
@@ -157,16 +155,16 @@ void activateButtons() {
 		bNewSave->label ("Save");
 		bUpdateCancel->label ("Cancel");
 		bDelete->deactivate ();
-		bSearchFirst->deactivate ();
 		bSearchNext->deactivate ();
+		bSearchPrev->deactivate ();
 		inpDate_log->take_focus();
 		return;
 	}
 	bNewSave->label("New");
 	bUpdateCancel->label("Update");
 	bDelete->activate();
-	bSearchFirst->activate ();
 	bSearchNext->activate ();
+	bSearchPrev->activate ();
 }
 
 void cb_btnNewSave(Fl_Button* b, void* d) {
@@ -242,100 +240,53 @@ void cb_SortByFreq (void) {
 	loadBrowser();
 }
 
-static int lastfind = -1;
+void SearchLastQSO(const char *callsign)
+{
+	size_t len = strlen(callsign);
+	char* re = new char[len + 3];
+	snprintf(re, len + 3, "^%s$", callsign);
 
-void cb_btnSearchFirst (Fl_Button* b, void* d) {
-	char *srchstr = new char[strlen(inpSearchString->value())+ 1];
-	int i;
-	strcpy(srchstr, inpSearchString->value());
-	char *p = srchstr + strlen(srchstr) - 1;
-	while (p > srchstr && *p == ' ') *p-- = 0;
-	while (srchstr[0] == ' ') strcpy(srchstr, &srchstr[1]);
-	p = srchstr;
-	while (*p) {*p = toupper(*p); p++;}
-	lastfind = -1;
-	size_t len = strlen(srchstr);
-	for (i = 0; i < wBrowser->rows(); i++) {
-		if (strncmp(srchstr, wBrowser->valueAt(i, 2), len ) == 0) {
-			lastfind = i;
-			wBrowser->GotoRow(i);
-			return;
-		}
+	int row = 0, col = 2;
+	if (wBrowser->search(row, col, cQsoDb::reverse, re)) {
+		wBrowser->GotoRow(row);
+		inpName->value(inpName_log->value());
 	}
+
+	delete [] re;
 }
 
-void cb_btnSearchNext (Fl_Button *b, void *d) {
-	if (lastfind == -1)
+void cb_search(Fl_Widget* w, void*)
+{
+	const char* str = inpSearchString->value();
+	if (!*str)
 		return;
-	char *srchstr = new char[strlen(inpSearchString->value())+ 1];
-	int i;
-	strcpy(srchstr, inpSearchString->value());
-	char *p = srchstr + strlen(srchstr) - 1;
-	while (p > srchstr && *p == ' ') *p-- = 0;
-	while (srchstr[0] == ' ') strcpy(srchstr, &srchstr[1]);
-	p = srchstr;
-	size_t len = strlen(srchstr);
-	while (*p) {*p = toupper(*p); p++;}
-	for (i = lastfind + 1; i < wBrowser->rows(); i++) {
-		if (strncmp(srchstr, wBrowser->valueAt(i, 2), len) == 0) {
-			lastfind = i;
-			wBrowser->GotoRow(i);
-			return;
-		}
-	}
+
+	bool rev = w == bSearchPrev;
+	int col = 2, row = wBrowser->value() + (rev ? -1 : 1);
+	row = WCLAMP(row, 0, wBrowser->rows() - 1);
+
+	if (wBrowser->search(row, col, rev, str))
+		wBrowser->GotoRow(row);
 }
 
-void SearchLastQSO (const char *callsign) {
-	char *srchstr = new char[strlen(callsign) + 1];
-	int i;
-	strcpy(srchstr, callsign);
-	char *p = srchstr + strlen(srchstr) - 1;
-	while (p > srchstr && *p == ' ') *p-- = 0;
-	while (srchstr[0] == ' ') strcpy(srchstr, &srchstr[1]);
-	p = srchstr;
-	size_t len = strlen(srchstr);
-	lastfind = -1;
-	while (*p) {*p = toupper(*p); p++;}
-	if (cQsoDb::reverse)
-		for (i = 0; i < wBrowser->rows(); i++) {
-			if (strncmp(srchstr, wBrowser->valueAt(i, 2), len ) == 0) {
-				lastfind = i;
-				break;
-			}
-		}
-	else
-		for (i = wBrowser->rows() - 1; i >= 0; i--) {
-			if (strncmp(srchstr, wBrowser->valueAt(i, 2), len) == 0) {
-				lastfind = i;
-				break;
-			}
-		}
-	if (lastfind != -1) {
-    	wBrowser->GotoRow(lastfind);
-    	inpName->value(inpName_log->value());
-	}
-	return;
-}
+int log_search_handler(int)
+{
+	if (!(Fl::event_state() & FL_CTRL))
+		return 0;
 
-void cb_btnSearchLast (Fl_Button *b, void *d) {
-	char *srchstr = new char[strlen(inpSearchString->value())+ 1];
-	int i;
-	strcpy(srchstr, inpSearchString->value());
-	char *p = srchstr + strlen(srchstr) - 1;
-	while (p > srchstr && *p == ' ') *p-- = 0;
-	while (srchstr[0] == ' ') strcpy(srchstr, &srchstr[1]);
-	p = srchstr;
-	size_t len = strlen(srchstr);
-	lastfind = -1;
-	while (*p) {*p = toupper(*p); p++;}
-	for (i = wBrowser->rows() - 1; i >= 0; i--)
-		if (strncmp(srchstr, wBrowser->valueAt(i, 2), len) == 0) {
-			lastfind = i;
-			break;
-		}
-	if (lastfind != -1)
-    	wBrowser->GotoRow(lastfind);
-	return;
+	switch (Fl::event_key()) {
+	case 's':
+		bSearchNext->do_callback();
+		break;
+	case 'r':
+		bSearchPrev->do_callback();
+		break;
+	default:
+		return 0;
+	}
+
+	inpSearchString->take_focus();
+	return 1;
 }
 
 int editNbr = 0;
@@ -412,14 +363,15 @@ cQsoRec rec;
 }
 
 void deleteRecord () {
-	if (qsodb.nbrRecs() == 0) return;
-	if (fl_choice("Confirm Delete", "No", "Yes", NULL)) {
-		qsodb.qsoDelRec(editNbr);
-		loadBrowser();
-		qsodb.isdirty(1);
-//		qsodb.qsoWriteFile(logbook_filename.c_str());
-//		qsodb.isdirty(0);
-	}
+	if (qsodb.nbrRecs() == 0 || fl_choice("Really delete record for \"%s\"?\n",
+					      "Yes", "No", NULL, wBrowser->valueAt(-1, 2)))
+		return;
+
+	qsodb.qsoDelRec(editNbr);
+	loadBrowser();
+	qsodb.isdirty(1);
+//	qsodb.qsoWriteFile(logbook_filename.c_str());
+//	qsodb.isdirty(0);
 }
 
 void EditRecord( int i )

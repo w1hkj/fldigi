@@ -23,7 +23,7 @@ void start_logbook ()
 	create_logbook_dialogs();
 
 	logbook_filename = HomeDir;
-	logbook_filename.append("logbook.adi");
+	logbook_filename.append("logbook." ADIF_SUFFIX);
 
 	adifFile.readFile (logbook_filename.c_str(), &qsodb);
 	loadBrowser();

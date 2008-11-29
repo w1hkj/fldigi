@@ -713,10 +713,9 @@ int rtty::tx_process()
 		++line_char_count;
 	}
 
-	if ( (c != '\n' && c != '\r'))
-		if (progdefaults.rtty_autocrlf == true) 
-			if ( line_char_count == progdefaults.rtty_autocount ||
-			     ((line_char_count > progdefaults.rtty_autocount - 5) && c == ' ') ) {
+	if (progdefaults.rtty_autocrlf && (c != '\n' && c != '\r') &&
+	    (line_char_count == progdefaults.rtty_autocount ||
+	     (line_char_count > progdefaults.rtty_autocount - 5 && c == ' '))) {
 		line_char_count = 0;
 		if (progdefaults.rtty_crcrlf)
 			send_char(0x08); // CR-CR-LF triplet

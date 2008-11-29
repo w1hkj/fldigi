@@ -3,6 +3,7 @@
 #ifndef lgbook_h
 #define lgbook_h
 #include <FL/Fl.H>
+#include "flinput2.h"
 #include <FL/Fl_Double_Window.H>
 extern Fl_Double_Window *wExport;
 #include <FL/Fl_Check_Browser.H>
@@ -18,43 +19,33 @@ extern Fl_Double_Window *dlgLogbook;
 extern Fl_Group *editGroup;
 #include "calendar.h"
 extern Fl_DateInput *inpDate_log;
-#include <FL/Fl_Input.H>
-extern Fl_Input *inpTime_log;
-extern Fl_Input *inpCall_log;
-extern Fl_Input *inpName_log;
-extern Fl_Input *inpFreq_log;
-extern Fl_Input *inpMode_log;
-extern Fl_Input *inpRstR_log;
-extern Fl_Input *inpRstS_log;
-extern Fl_Input *inpQth_log;
-extern Fl_Input *inpLoc_log;
-extern Fl_Input *inpComment_log;
+extern Fl_Input2 *inpTime_log;
+extern Fl_Input2 *inpCall_log;
+extern Fl_Input2 *inpName_log;
+extern Fl_Input2 *inpFreq_log;
+extern Fl_Input2 *inpMode_log;
+extern Fl_Input2 *inpRstR_log;
+extern Fl_Input2 *inpRstS_log;
+extern Fl_Input2 *inpQth_log;
+extern Fl_Input2 *inpLoc_log;
+extern Fl_Input2 *inpComment_log;
 extern Fl_DateInput *inpQSLrcvddate_log;
 extern Fl_DateInput *inpQSLsentdate_log;
-extern Fl_Button *bFirst;
-#include <FL/Fl_Repeat_Button.H>
-extern Fl_Repeat_Button *bPrev;
-extern Fl_Repeat_Button *bNext;
-extern Fl_Button *bLast;
 extern void cb_btnNewSave(Fl_Button*, void*);
 extern Fl_Button *bNewSave;
 extern void cb_btnUpdateCancel(Fl_Button*, void*);
 extern Fl_Button *bUpdateCancel;
 extern void cb_btnDelete(Fl_Button*, void*);
 extern Fl_Button *bDelete;
-extern Fl_Input *txtNbrRecs_log;
-extern Fl_Input *inpSerNoOut_log;
-extern Fl_Input *inpSerNoIn_log;
-extern Fl_Input *inpCnty_log;
-extern Fl_Input *inpVE_Prov_log;
-extern Fl_Input *inpSearchString;
-extern void cb_btnSearchFirst(Fl_Button*, void*);
-extern Fl_Button *bSearchFirst;
-extern void cb_btnSearchNext(Fl_Button*, void*);
+extern Fl_Input2 *txtNbrRecs_log;
+extern Fl_Input2 *inpSerNoOut_log;
+extern Fl_Input2 *inpSerNoIn_log;
+extern Fl_Input2 *inpCnty_log;
+extern Fl_Input2 *inpVE_Prov_log;
+extern Fl_Input2 *inpSearchString;
+extern void cb_search(Fl_Button*, void*);
+extern Fl_Button *bSearchPrev;
 extern Fl_Button *bSearchNext;
-extern void cb_btnSearchLast(Fl_Button*, void*);
-extern Fl_Button *bSearchLast;
-extern Fl_Button *bDismiss;
 #include "table.h"
 extern Table *wBrowser;
 void create_logbook_dialogs();

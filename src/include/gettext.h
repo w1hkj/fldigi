@@ -280,7 +280,7 @@ dcnpgettext_expr (const char *domain,
 
 #if ENABLE_NLS
 int setup_nls(void);
-static const int nls_init_ = setup_nls();
+unused__ static const int nls_init_ = setup_nls();
 #endif
 
 #endif /* _LIBGETTEXT_H */
