@@ -53,6 +53,24 @@
 #include "confdialog.h"
 #include "gettext.h"
 
+#define bwFFT		30
+#define cwRef		50
+#define bwX1		25
+#define bwMov		18
+#define bwRate		45
+#define cwCnt		92
+#define bwQsy		32
+#define bwXmtLock	32
+#define bwRev		32
+#define bwMem		40
+#define bwXmtRcv	40
+#define wSpace		1
+
+#define bwdths	(wSpace + bwFFT + wSpace + cwRef + wSpace + cwRef + wSpace + bwX1 + \
+				wSpace + 3*bwMov + wSpace + bwRate + wSpace + \
+				cwCnt + wSpace + bwQsy + wSpace + bwMem + wSpace + \
+				bwXmtLock + wSpace + bwRev + wSpace + bwXmtRcv + wSpace)
+
 extern modem *active_modem;
 
 static	RGB RGByellow	= {254,254,0};
@@ -1273,7 +1291,8 @@ bool waterfall::USB() {
 waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	Fl_Group(x0,y0,w0,h0,lbl) {
 	int xpos;
-	float ratio = w0 < 600 ? w0 / 600.0 : 1.0;
+	float ratio;// = w0 < 600 ? w0 / 600.0 : 1.0;
+	ratio = w0 * 1.0 / bwdths;
 
 	buttonrow = h() + y() - BTN_HEIGHT - BEZEL;
 	bezel = new Fl_Box(
@@ -1288,11 +1307,6 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 			h() - BTN_HEIGHT - 4 * BEZEL);
 	
 	xpos = x() + wSpace;
-//	bw_rsid = new Fl_Button(xpos, buttonrow, (int)(bwColor*ratio), BTN_HEIGHT, "Id?");
-//	bw_rsid->callback(bw_rsid_cb, 0);
-//	bw_rsid->tooltip(_("Auto detect RSID"));
-
-//	xpos = xpos + (int)(bwColor*ratio) + wSpace;
 
 	mode = new Fl_Button(xpos, buttonrow, (int)(bwFFT*ratio), BTN_HEIGHT,"Wtr");
 	mode->callback(mode_cb, 0);
@@ -1330,12 +1344,12 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	left->callback(slew_left, 0);
 	left->tooltip(_("Slew display lower in freq"));
 
-	xpos += (int)(bwMov*ratio);
+	xpos = xpos + (int)(bwMov*ratio);
 	center = new Fl_Button(xpos, buttonrow, (int)(bwMov*ratio), BTN_HEIGHT, "@||");
 	center->callback(center_cb, 0);
 	center->tooltip(_("Center display on signal"));
 
-	xpos += (int)(bwMov*ratio);
+	xpos = xpos + (int)(bwMov*ratio);
 	right = new Fl_Repeat_Button(xpos, buttonrow, (int)(bwMov*ratio), BTN_HEIGHT, "@>");
 	right->callback(slew_right, 0);
 	right->tooltip(_("Slew display higher in freq"));
@@ -1345,7 +1359,7 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	wfrate->callback(rate_cb, 0);
 	wfrate->tooltip(_("Waterfall drop speed"));
 
-	xpos = xpos + (int)(bwRate*ratio) + 2*wSpace;
+	xpos = xpos + (int)(bwRate*ratio) + wSpace;
 	wfcarrier = new Fl_Counter(xpos, buttonrow, (int)(cwCnt*ratio), BTN_HEIGHT );
 	wfcarrier->callback(carrier_cb, 0);
 	wfcarrier->step(1.0);
@@ -1355,7 +1369,7 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	wfcarrier->value(wfdisp->carrier());
 	wfcarrier->tooltip(_("Adjust cursor frequency"));
 
-	xpos = xpos + (int)(cwCnt*ratio) + 2*wSpace;
+	xpos = xpos + (int)(cwCnt*ratio) + wSpace;
 	qsy = new Fl_Button(xpos, buttonrow, (int)(bwQsy*ratio), BTN_HEIGHT, "QSY");
 	qsy->callback(qsy_cb, 0);
 	qsy->tooltip(_("Cntr in Xcvr PB\nRight click to undo"));
@@ -1369,7 +1383,7 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	mbtnMem->callback(btnMem->callback(), mbtnMem);
 	mbtnMem->type(Fl_Menu_Button::POPUP3);
 
-	xpos = xpos + (int)(bwMem*ratio) + 2*wSpace;
+	xpos = xpos + (int)(bwMem*ratio) + wSpace;
 	xmtlock = new Fl_Light_Button(xpos, buttonrow, (int)(bwXmtLock*ratio), BTN_HEIGHT, "Lk");
 	xmtlock->callback(xmtlock_cb, 0);
 	xmtlock->value(0);
@@ -1390,6 +1404,8 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	xmtrcv->selection_color(FL_RED);
 	xmtrcv->value(0);
 	xmtrcv->tooltip(_("Transmit/Receive"));
+	
+	end();
 }
 
 int waterfall::handle(int event)

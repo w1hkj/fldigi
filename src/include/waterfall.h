@@ -54,10 +54,6 @@
 #endif
 */
 
-// recommended minimum size for the control is width = 504, height = 104;
-// the actual waterfall will be width -4 (bezel size) and
-//                              height - 4 - 24 (bezel, text, scale & marker)
-
 #define FFT_LEN		4096
 
 #define SC_SMPLRATE	8000

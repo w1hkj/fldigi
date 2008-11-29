@@ -56,21 +56,6 @@
 #define WFMARKER     6
 #define BTN_HEIGHT	20
 
-#define bwColor		25
-#define bwFFT		30
-#define bwX1		20
-#define bwMov		20
-#define cwCnt		100
-#define cwRef		50
-#define cwMode		85
-#define bwQsy		35
-#define bwRate		45
-#define bwXmtLock	30
-#define bwRev		30
-#define bwMem		40
-#define bwXmtRcv	40
-#define wSpace		3
-
 #define DEFAULT_SW 15
 //#define DEFAULT_HWFALL 144
 #define DEFAULT_HWFALL 124
