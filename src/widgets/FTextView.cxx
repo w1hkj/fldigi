@@ -1,16 +1,11 @@
 // ----------------------------------------------------------------------------
 //      FTextView.cxx
 //
-// Copyright (C) 2007
+// Copyright (C) 2007-2008
 //              Stelios Bounanos, M0GLD
 //
-// This file is part of fldigi.
-//
-// ----------------------------------------------------------------------------
-//      FTextView.cxx
-//
-// Copyright (C) 2007
-//              Stelios Bounanos, M0GLD
+// Copyright (C) 2008
+//              Dave Freese, W1HKJ
 //
 // This file is part of fldigi.
 //
@@ -34,6 +29,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <map>
+#include <algorithm>
 
 #include "FTextView.h"
 #include "main.h"
@@ -293,27 +289,6 @@ void FTextBase::saveFile(void)
 	}
 }
 
-/// Returns a character string containing the selected text, if any,
-/// or the word at (\a x, \a y) relative to the widget's \c x() and \c y().
-///
-/// @param x 
-/// @param y 
-///
-/// @return The selection, or the word text at (x,y). <b>Must be freed by the caller</b>.
-///
-char *FTextBase::get_bound_text(int x, int y)
-{
-	int p = xy_to_position(x + this->x(), y + this->y(),
-			       Fl_Text_Display_mod::CURSOR_POS);
-	char* s = 0;
-	if (!tbuf->selected())
-		s = tbuf->text_range(word_start(p), word_end(p));
-	else
-		s = tbuf->selection_text();
-	tbuf->unselect();
-	return s;
-}
-
 /// Returns a character string containing the selected word, if any,
 /// or the word at (\a x, \a y) relative to the widget's \c x() and \c y().
 ///
@@ -322,31 +297,24 @@ char *FTextBase::get_bound_text(int x, int y)
 ///
 /// @return The selection, or the word text at (x,y). <b>Must be freed by the caller</b>.
 ///
-char *FTextBase::get_word(int x, int y)
+char* FTextBase::get_word(int x, int y)
 {
-	int p = xy_to_position(x + this->x(), y + this->y(),
-			       Fl_Text_Display_mod::CURSOR_POS);
-	char* s = 0;
-	int ws = word_start(p);
-	int we = word_end(p);
-	if (we == ws || we < ws) return s;
-	
-	ws = 0, we = 0;
-	if (tbuf->findchars_backward(p," \n", &ws) == 0) {
-		ws = word_start(p);
+	if (tbuf->selected()) {
+		char* s = tbuf->selection_text();
+		tbuf->unselect();
+		return s;
 	}
+
+	int p = xy_to_position(x + this->x(), y + this->y(), Fl_Text_Display_mod::CURSOR_POS);
+	int start, end;
+	if (!tbuf->findchars_backward(p, " \t\n", &start))
+		start = 0;
 	else
-		ws++;
-	if (tbuf->findchars_forward(p, " \t\n", &we) == 1) {
-		s = tbuf->text_range(ws, we);
-	} else if (tbuf->length() - ws < 12) {
-		s = tbuf->text_range(ws, tbuf->length()); 
-	} else {
-		tbuf->select(ws, word_end(p));
-		s = tbuf->selection_text();
-	}
-	tbuf->unselect();
-	return s;
+		start++;
+	if (!tbuf->findchars_forward(p, " \t\n", &end))
+		end = tbuf->length();
+
+	return tbuf->text_range(start, end);
 }
 
 
@@ -363,13 +331,14 @@ void FTextBase::show_context_menu(void)
 	popy = ypos - y();
 	window()->cursor(FL_CURSOR_DEFAULT);
 	m = context_menu->popup(xpos, ypos, 0, 0, 0);
-	if (m)
+	if (m) {
 		for (int i = 0; i < context_menu->size(); ++i) {
-			if (m->text == context_menu[i].text) {
+			if (m == &context_menu[i]) {
 				menu_cb(i);
 				break;
-			}	
+			}
 		}
+	}
 	restoreFocus();
 }
 
@@ -423,8 +392,9 @@ Fl_Menu_Item FTextView::view_menu[] = {
 	{ make_icon_label(ENTER_SYMBOL "&Locator", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(ENTER_SYMBOL "&RST(r)", enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ make_icon_label("Insert divider", insert_link_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label("&Copy", edit_copy_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label("C&lear", edit_clear_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label("&Copy", edit_copy_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ make_icon_label("Select All", edit_select_all_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 #if 0 //#ifndef NDEBUG
         { "(debug) &Append file...", 0, 0, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL },
 #endif
@@ -488,8 +458,8 @@ int FTextView::handle(int event)
 			break;
  		switch (Fl::event_button()) {
 		case FL_LEFT_MOUSE:
-			if (Fl::event_shift()) {
-				handle_doubleclick(Fl::event_x() - x(), Fl::event_y() - y());
+			if (Fl::event_shift() || (unlikely(Fl::event_clicks()) && progdefaults.rxtext_clicks_qso_data)) {
+				handle_qso_data(Fl::event_x() - x(), Fl::event_y() - y());
 				return 1;
 			}
 			goto out;
@@ -504,8 +474,9 @@ int FTextView::handle(int event)
  		}
 
 		// mouse-3 handling: enable/disable menu items and display popup
-		set_active(&view_menu[RX_MENU_CLEAR], tbuf->length());
 		set_active(&view_menu[RX_MENU_COPY], tbuf->selected());
+		set_active(&view_menu[RX_MENU_CLEAR], tbuf->length());
+		set_active(&view_menu[RX_MENU_SELECT_ALL], tbuf->length());
 		set_active(&view_menu[RX_MENU_SAVE], tbuf->length());
 		if (wrap)
 			view_menu[RX_MENU_WRAP].flags |= FL_MENU_VALUE;
@@ -523,16 +494,9 @@ int FTextView::handle(int event)
 	case FL_RELEASE:
 		{	int eb = Fl::event_button();
 			if (cursor == FL_CURSOR_HAND && eb == FL_LEFT_MOUSE &&
-		    	Fl::event_is_click() && !Fl::event_clicks()) {
+			    Fl::event_is_click() && !Fl::event_clicks()) {
 				handle_clickable(Fl::event_x() - x(), Fl::event_y() - y());
 				return 1;
-			}
-			if (eb == FL_LEFT_MOUSE) {
-				if (Fl::event_clicks() == 1)
-					if (handle_doubleclick(Fl::event_x() - x(), Fl::event_y() - y()))
-						return 1;
-					else
-						break;
 			}
 			break;
 		}
@@ -667,74 +631,38 @@ void FTextView::handle_qsy(int start, int end)
 	free(text);
 }
 
-static re_t rst("^[0-9]{3}$", REG_EXTENDED | REG_NOSUB);
-static re_t loc("^[A-R,a-r]{2}[0-9]{2}([A-X,a-x]{2})+$", REG_EXTENDED | REG_ICASE | REG_NOSUB);
+static fre_t rst("^[1-5][1-9]{2}$", REG_EXTENDED | REG_NOSUB);
+static fre_t loc("^[a-r]{2}[[:digit:]]{2}([a-x]{2})?", REG_EXTENDED | REG_ICASE | REG_NOSUB);
+static fre_t call("([[:alnum:]]?[[:alpha:]/]+[[:digit:]]+[[:alnum:]/]+)", REG_EXTENDED);
 
 void FTextView::handle_qso_data(int start, int end)
 {
 	char* s = get_word(start, end);
-	if (!s) return;
+	if (!s)
+		return;
+	char* p = s;
+
+	Fl_Input* target = 0;
+
 	if (rst.match(s))
-		inpRstIn->value(s);
-	else {
-		Fl_Input* fields[] = { inpCall, inpLoc, inpQth, inpName };
-		for (size_t i = 0; i < sizeof(fields)/sizeof(*fields); i++) {
-			if (*fields[i]->value() == '\0') {
-				if (fields[i] == inpLoc && !loc.match(s))
-					continue;
-				fields[i]->value(s);
-				fields[i]->do_callback();
-				if (fields[i] == inpCall)
-					stopMacroTimer();
-				break;
-			}
-		}
+		target = inpRstIn;
+	else if (loc.match(s))
+		target = inpLoc;
+	else if (call.match(s)) { // point p to substring
+		const regmatch_t& offsets = call.suboff()[1];
+		p = s + offsets.rm_so;
+		*(s + offsets.rm_eo) = '\0';
+		target = inpCall;
 	}
+	else if (count_if(s, s + strlen(s), static_cast<int(*)(int)>(isdigit)))
+		target = inpQth;
+	else
+		target = *inpName->value() ? inpQth : inpName;
 
+	target->value(p);
+	target->do_callback();
 	free(s);
 }
-
-bool FTextView::handle_doubleclick(int start, int end)
-{
-	bool ret = false;
-	char *s = get_word(start, end);
-	if (!s) return s;
-	if (rst.match(s)) {
-		inpRstIn->value(s);
-		inpRstIn->do_callback();
-		ret = true;
-	} else if (loc.match(s)) {
-		inpLoc->value(s);
-		inpLoc->do_callback();
-		ret = true;
-	} else {
-		int digits = 0;
-		int chars  = 0;
-		for (size_t i = 0; i < strlen(s); i++) {
-			if (isdigit(s[i])) digits++;
-			if (isalpha(s[i])) chars++;
-		}
-		// remove leading and trailing non alphas
-		while (s[0] && !isalnum(s[0])) memcpy(s, s+1, strlen(s));
-		size_t i = strlen(s) - 1;
-		while (i && !isalnum(s[i])) s[i--] = 0;
-		if (digits > 0 && digits < 4 && chars > 0) {
-			for (size_t i = 0; i < strlen(s); i++)
-				if (islower(s[i])) s[i] += 'A' - 'a';
-			inpCall->value(s);
-			inpCall->do_callback();
-			stopMacroTimer();
-			ret = true;
-		} else if (chars > 0 && digits == 0) {
-			inpName->value(s);
-			inpName->do_callback();
-			ret = true;
-		}
-	}
-	free(s);
-	return ret;
-}
-
 
 /// The context menu handler
 ///
@@ -780,11 +708,14 @@ void FTextView::menu_cb(int val)
 	case RX_MENU_DIV:
 		note_qrg(false, '\n', '\n');
 		break;
+	case RX_MENU_COPY:
+		kf_copy(Fl::event_key(), this);
+		break;
 	case RX_MENU_CLEAR:
 		clear();
 		break;
-	case RX_MENU_COPY:
-		kf_copy(Fl::event_key(), this);
+	case RX_MENU_SELECT_ALL:
+		tbuf->select(0, tbuf->length());
 		break;
 
 #if 0 //#ifndef NDEBUG
@@ -812,17 +743,14 @@ void FTextView::menu_cb(int val)
 	}
 
 	if (input) {
-		char* s = get_bound_text(popx, popy);
+		char* s = get_word(popx, popy);
 		if (s) {
-			if (input == inpCall)
-				for (size_t i = 0; i < strlen(s); i++)
-					if (islower(s[i])) s[i] += 'A' - 'a';			
 			input->value(s);
 			input->do_callback();
 			free(s);
+			if (input == inpCall)
+				stopMacroTimer();
 		}
-		if (input == inpCall)
-			stopMacroTimer();
 	}
 }
 

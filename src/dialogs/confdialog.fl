@@ -67,7 +67,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {Fldigi configuration} open selected
-    xywh {400 140 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
+    xywh {400 148 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 500 372} color 47 selection_color 51
@@ -164,7 +164,7 @@ progdefaults.changed = true;}
             xywh {0 50 500 320}
           } {
             Fl_Group {} {open
-              xywh {5 60 490 165} box ENGRAVED_FRAME
+              xywh {5 60 490 195} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnShowTooltips {
                 label {Show tooltips}
@@ -194,6 +194,13 @@ progdefaults.changed = true;}
                 code2 {mnuScheme->add("plastic");}
                 code3 {mnuScheme->value(mnuScheme->find_item(progdefaults.ui_scheme.c_str()));}
               } {}
+              Fl_Check_Button btnRXClicks {
+                label {Double-click on RX text enters QSO data}
+                callback {progdefaults.rxtext_clicks_qso_data = o->value();
+progdefaults.changed = true;}
+                xywh {15 220 305 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.rxtext_clicks_qso_data);}
+              }
             }
             Fl_Group {} {
               label {QSO logging} open

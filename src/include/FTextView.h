@@ -70,8 +70,7 @@ protected:
 				  int set = SET_FONT | SET_SIZE | SET_COLOR);
 	int		readFile(const char* fn = 0);
 	void		saveFile(void);
-	char		*get_bound_text(int x, int y);
-	char		*get_word(int x, int y);
+	char*		get_word(int x, int y);
 	void		show_context_menu(void);
 	virtual void	menu_cb(int val) { }
 	int		reset_wrap_col(void);
@@ -116,9 +115,9 @@ public:
 
 protected:
 	enum { RX_MENU_QRZ_THIS, RX_MENU_CALL, RX_MENU_NAME, RX_MENU_QTH,
-		   RX_MENU_STATE, RX_MENU_PROVINCE, RX_MENU_SERIAL,
-	       RX_MENU_LOC, RX_MENU_RST_IN, RX_MENU_DIV, RX_MENU_CLEAR,
-	       RX_MENU_COPY,
+	       RX_MENU_STATE, RX_MENU_PROVINCE, RX_MENU_SERIAL,
+	       RX_MENU_LOC, RX_MENU_RST_IN, RX_MENU_DIV, RX_MENU_COPY,
+	       RX_MENU_CLEAR, RX_MENU_SELECT_ALL,
 #if 0 //#ifndef NDEBUG
                RX_MENU_READ,
 #endif
@@ -127,7 +126,6 @@ protected:
 	void		handle_clickable(int x, int y);
 	void		handle_qsy(int start, int end);
 	void		handle_qso_data(int start, int end);
-	bool		handle_doubleclick(int start, int end);
 	virtual void	menu_cb(int val);
 	static void	changed_cb(int pos, int nins, int ndel, int nsty,
 				   const char *dtext, void *arg);

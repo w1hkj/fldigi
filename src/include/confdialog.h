@@ -29,6 +29,7 @@ extern Fl_Check_Button *btnShowTooltips;
 extern Fl_Check_Button *chkMenuIcons;
 #include <FL/Fl_Choice.H>
 extern Fl_Choice *mnuScheme;
+extern Fl_Check_Button *btnRXClicks;
 extern Fl_Check_Button *btnNagMe;
 extern Fl_Check_Button *btnClearOnSave;
 extern Fl_Group *tabWfallRestart;

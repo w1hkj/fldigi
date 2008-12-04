@@ -160,6 +160,7 @@
         ELEM_(bool, NagMe, "NAGME", false)                                              \
         ELEM_(bool, ClearOnSave, "CLEARONSAVE", false)                                  \
         ELEM_(bool, menuicons, "MENUICONS", true)                                       \
+        ELEM_(bool, rxtext_clicks_qso_data, "RXTEXTCLICKS", false)                      \
 /* QRZ */                                                                               \
         ELEM_(int, QRZ, "QRZTYPE", 0) /* Not available */                               \
         ELEM_(std::string, QRZpathname, "QRZPATHNAME", "")                              \

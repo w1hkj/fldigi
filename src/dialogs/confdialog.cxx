@@ -129,6 +129,13 @@ static void cb_mnuScheme(Fl_Choice* o, void*) {
     progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnRXClicks=(Fl_Check_Button *)0;
+
+static void cb_btnRXClicks(Fl_Check_Button* o, void*) {
+  progdefaults.rxtext_clicks_qso_data = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *btnNagMe=(Fl_Check_Button *)0;
 
 static void cb_btnNagMe(Fl_Check_Button* o, void*) {
@@ -2034,7 +2041,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         { Fl_Tabs* o = new Fl_Tabs(0, 25, 500, 345);
           o->selection_color((Fl_Color)51);
           { tabUserInterface = new Fl_Group(0, 50, 500, 320, _("General"));
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 165);
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 195);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(15, 70, 120, 20, _("Show tooltips"));
                 btnShowTooltips->down_box(FL_DOWN_BOX);
@@ -2057,6 +2064,11 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 mnuScheme->add("plastic");
                 mnuScheme->value(mnuScheme->find_item(progdefaults.ui_scheme.c_str()));
               } // Fl_Choice* mnuScheme
+              { Fl_Check_Button* o = btnRXClicks = new Fl_Check_Button(15, 220, 305, 20, _("Double-click on RX text enters QSO data"));
+                btnRXClicks->down_box(FL_DOWN_BOX);
+                btnRXClicks->callback((Fl_Callback*)cb_btnRXClicks);
+                o->value(progdefaults.rxtext_clicks_qso_data);
+              } // Fl_Check_Button* btnRXClicks
               o->end();
             } // Fl_Group* o
             { Fl_Group* o = new Fl_Group(15, 130, 212, 80, _("QSO logging"));
