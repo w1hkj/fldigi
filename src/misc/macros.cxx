@@ -42,6 +42,7 @@ void pMYLOC(string &, size_t &);
 void pMYNAME(string &, size_t &);
 void pMYQTH(string &, size_t &);
 void pMYRST(string &, size_t &);
+void pQSOTIME(string &, size_t &);
 void pLDT(string &, size_t &);
 void pILDT(string &, size_t &);
 void pZDT(string &, size_t &);
@@ -55,6 +56,9 @@ void pVER(string &, size_t &);
 void pCNTR(string &, size_t &);
 void pDECR(string &, size_t &);
 void pINCR(string &, size_t &);
+void pX1(string &, size_t &);
+void pX2(string &, size_t &);
+void pX3(string &, size_t &);
 void pLOG(string &, size_t &);
 void pTIMER(string &, size_t &);
 void pIDLE(string &, size_t &);
@@ -79,6 +83,7 @@ MTAGS mtags[] = {
 {"<MYNAME>",	pMYNAME},
 {"<MYQTH>",		pMYQTH},
 {"<MYRST>",		pMYRST},
+{"<QSOTIME>",	pQSOTIME},
 {"<INFO1>",		pINFO1},
 {"<INFO2>",		pINFO2},
 {"<LDT>",		pLDT},
@@ -94,6 +99,9 @@ MTAGS mtags[] = {
 {"<CNTR>",		pCNTR},
 {"<DECR>",		pDECR},
 {"<INCR>",		pINCR},
+{"<X1>",		pX1},
+{"<X2>",		pX2},
+{"<X3>",		pX3},
 {"<LOG>",		pLOG},
 {"<TIMER>",		pTIMER},
 {"<IDLE>",		pIDLE},
@@ -159,6 +167,11 @@ void pNAME(string &s, size_t &i)
 void pQTH(string &s, size_t &i)
 {
 	s.replace( i,5, inpQth->value() );
+}
+
+void pQSOTIME(string &s, size_t &i)
+{
+	s.replace( i, 9, inpTime->value() );
 }
 
 void pRST(string &s, size_t &i)
@@ -275,32 +288,47 @@ void pVER(string &s, size_t &i)
 void pCNTR(string &s, size_t &i)
 {
 	int  contestval;
-	contestval = contest_count.count + progdefaults.ContestStart;
-	contest_count.Format(progdefaults.ContestDigits, progdefaults.UseLeadingZeros);
-	snprintf(contest_count.szCount, sizeof(contest_count.szCount), contest_count.fmt.c_str(), contestval);
-	s.replace (i, 6, contest_count.szCount);
+	contestval = contest_count.count;
+	if (contestval) {
+		contest_count.Format(progdefaults.ContestDigits, progdefaults.UseLeadingZeros);
+		snprintf(contest_count.szCount, sizeof(contest_count.szCount), contest_count.fmt.c_str(), contestval);
+		s.replace (i, 6, contest_count.szCount);
+	} else
+		s.replace (i, 6, "");
 }
 
 void pDECR(string &s, size_t &i)
 {
 	int  contestval;
 	contest_count.count--;
-	contestval = contest_count.count + progdefaults.ContestStart;
+	if (contest_count.count < 0) contest_count.count = 0;
+	contestval = contest_count.count;
 	s.replace (i, 6, "");
-	snprintf(contest_count.szCount, sizeof(contest_count.szCount), contest_count.fmt.c_str(), contestval);
-	snprintf(contest_count.szDisp, sizeof(contest_count.szDisp), "Next Nbr: %s", contest_count.szCount);
-	put_status(contest_count.szDisp);
+	updateOutSerNo();
 }
 
 void pINCR(string &s, size_t &i)
 {
 	int  contestval;
 	contest_count.count++;
-	contestval = contest_count.count + progdefaults.ContestStart;
+	contestval = contest_count.count;
 	s.replace (i, 6, "");
-	snprintf(contest_count.szCount, sizeof(contest_count.szCount), contest_count.fmt.c_str(), contestval);
-	snprintf(contest_count.szDisp, sizeof(contest_count.szDisp), "Next Nbr: %s", contest_count.szCount);
-	put_status(contest_count.szDisp);
+	updateOutSerNo();
+}
+
+void pX1(string &s, size_t &i)
+{
+	s.replace (i, 4, progdefaults.Xchg1);
+}
+
+void pX2(string &s, size_t &i)
+{
+	s.replace (i, 4, progdefaults.Xchg2);
+}
+
+void pX3(string &s, size_t &i)
+{
+	s.replace (i, 4, progdefaults.Xchg3);
 }
 
 void pLOG(string &s, size_t &i)

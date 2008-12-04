@@ -149,7 +149,7 @@ Fl_Button			*btnAltMacros;
 Fl_Button			*btn_afconoff;
 Fl_Button			*btn_sqlonoff;
 Fl_Input2			*inpFreq;
-Fl_Input2			*inpTime;
+Fl_Output			*inpTime;
 Fl_Input2			*inpCall;
 Fl_Input2			*inpName;
 Fl_Input2			*inpRstIn;
@@ -158,6 +158,11 @@ Fl_Input2			*inpQth;
 Fl_Input2			*inpLoc;
 Fl_Input2			*inpCnty;
 Fl_Input2			*inpSerNo;
+Fl_Output			*outSerNo;
+Fl_Input2			*inpXchg1;
+Fl_Input2			*inpXchg2;
+Fl_Input2			*inpXchg3;
+Fl_Box				*lblDup;
 Fl_Input2			*inpVEprov;
 Fl_Input2			*inpNotes;
 Fl_Input2			*inpAZ;	// WA5ZNU
@@ -175,6 +180,8 @@ Fl_Group			*RigControlFrame = (Fl_Group *)0;
 Fl_Group			*RigViewerFrame = (Fl_Group *)0;
 Fl_Group			*QsoInfoFrame = (Fl_Group *)0;
 Fl_Group			*QsoInfoFrame1 = (Fl_Group *)0;
+Fl_Group			*QsoInfoFrame1A = (Fl_Group *)0;
+Fl_Group			*QsoInfoFrame1B = (Fl_Group *)0;
 Fl_Group			*QsoInfoFrameLeft = (Fl_Group *)0;
 Fl_Group			*QsoInfoFrameCenter = (Fl_Group *)0;
 Fl_Group			*QsoInfoFrameRight = (Fl_Group *)0;
@@ -196,20 +203,18 @@ AFCind				*AFCindicator;
 #define FREQWIDTH 172  // FREQWIDTH should be a multiple of 9 + 10
 #define FREQHEIGHT 30
 #define BTNWIDTH 30
-int pad = 1; //wSpace;
+int pad = 1;
 int x_qsoframe = BTNWIDTH;	
 			
 int w_inpFreq	= 80;
-int w_inpTime	= 38;
-int w_qsoTime	= 24;
+int w_inpTime	= 40;
 int w_inpCall	= 120;
-int w_inpName  	= 60;
+int w_inpName  	= 120;
 int w_inpRstIn	= 30;
 int w_inpRstOut = 30;
-int w_inpSerNo	= 40;
-int wf1 = pad + w_inpFreq + pad + w_inpTime + w_qsoTime + pad + w_inpCall + 
-          pad + w_inpName + pad + w_inpRstIn + pad + w_inpRstOut + 
-          pad + w_inpSerNo;
+int w_SerNo	= 40;
+int wf1 = pad + w_inpFreq + pad + w_inpTime +  pad + w_inpCall + 
+          pad + w_inpName + pad + w_inpRstIn + pad + w_inpRstOut;
 
 int w_fm1 		= 25;
 int w_fm2 		= 20;
@@ -222,6 +227,8 @@ int w_inpLOC   	= 65;
 int w_inpAZ    	= 30;
 int w_inpQth 	= wf1 - w_fm1 - w_fm2 - w_fm3 - w_fm4 - w_fm5 -
                   w_inpCnty - w_inpProv - w_inpLOC - w_inpAZ;
+int w_fm6		= 30;
+int w_Xchg	= (wf1 - 5*w_fm6 - 4*pad - 2 * w_SerNo) / 3;
 
 int qh = Hqsoframe / 2;
 int rig_control_width = FREQWIDTH + 4;
@@ -789,6 +796,13 @@ void cb_mnuUI(Fl_Menu_*, void *) {
 	dlgConfig->show();
 }
 
+void cb_mnuConfigContest(Fl_Menu_*, void*) {
+	progdefaults.loadDefaults();
+	tabsConfigure->value(tabUI);
+	tabsUI->value(tabContest);
+	dlgConfig->show();
+}
+
 void cb_mnuConfigRigCtrl(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabRig);
@@ -1175,6 +1189,16 @@ void cb_mnuViewer(Fl_Menu_ *, void *) {
 	openViewer();
 }
 
+void cb_mnuContest(Fl_Menu_ *, void *) {
+	if (QsoInfoFrame1A->visible()) {
+		QsoInfoFrame1A->hide();
+		QsoInfoFrame1B->show();
+	} else {
+		QsoInfoFrame1B->hide();
+		QsoInfoFrame1A->show();
+	}
+}
+
 void cb_mnuPicViewer(Fl_Menu_ *, void *) {
 	if (picRxWin) {
 		picRx->redraw();
@@ -1191,37 +1215,56 @@ void cb_sldrSquelch(Fl_Slider* o, void*) {
 	restoreFocus();
 }
 
-const char *zuluTime()
+char zuluLogTime[5];
+char zuluLogDate[9];
+
+void zuluDateTime()
 {
 	time_t t;
 	struct tm tm;
-	static char logtime[5];
-	if ((t = time(NULL)) != (time_t)-1 && gmtime_r(&t, &tm) &&
-	    strftime(logtime, sizeof(logtime), "%H%M", &tm))
-	return logtime;
-	else
-		return NULL;
+	zuluLogTime[0] = 0;
+	zuluLogDate[0] = 0;
+	if ((t = time(NULL)) != (time_t)-1 && gmtime_r(&t, &tm)) {
+		snprintf(zuluLogTime, sizeof(zuluLogTime), "%02d%02d", 
+		         tm.tm_hour, tm.tm_min);
+        snprintf (zuluLogDate, sizeof(zuluLogDate), "%4d%02d%02d", 
+                  1900 + tm.tm_year, tm.tm_mon + 1, tm.tm_mday);
+	}
 }
 
 bool oktoclear = true;
 
-void qsoTime_cb(Fl_Widget *b, void *)
+void updateOutSerNo()
 {
-	string qsotime = zuluTime();
-LOG_INFO(qsotime.c_str());
-	inpTime->value(qsotime.c_str());
-//	inpTime->value(zuluTime());
-//	oktoclear = false;
-	restoreFocus();
+	if (contest_count.count) {
+		char szcnt[10] = "";
+		contest_count.Format(progdefaults.ContestDigits, progdefaults.UseLeadingZeros);
+		snprintf(szcnt, sizeof(szcnt), contest_count.fmt.c_str(), contest_count.count);
+		outSerNo->value(szcnt);
+	} else
+		outSerNo->value("");
 }
 
 void clearQSO()
 {
-	Fl_Input* in[] = { inpCall, inpName, inpRstIn, inpRstOut,
-			   inpQth, inpNotes, inpLoc, inpAZ, inpSerNo, inpVEprov, inpCnty };
+	Fl_Input* in[] = { 
+		inpCall, inpName, inpRstIn, inpRstOut,
+		inpQth, inpLoc, inpAZ, inpCnty, inpVEprov,
+		inpSerNo, outSerNo, inpXchg1, inpXchg2, inpXchg3, inpNotes };
 	for (size_t i = 0; i < sizeof(in)/sizeof(*in); i++)
 		in[i]->value("");
-	inpTime->value(zuluTime());
+	if (progdefaults.fixed599) {
+		inpRstIn->value("599");
+		inpRstOut->value("599");
+	}
+	updateOutSerNo();
+	lblDup->hide();
+}
+
+void cb_ResetSerNbr()
+{
+	contest_count.count = progdefaults.ContestStart;
+	updateOutSerNo();
 }
 
 void cb_log(Fl_Widget* w, void*)
@@ -1231,19 +1274,8 @@ void cb_log(Fl_Widget* w, void*)
 		SearchLastQSO(inpCall->value());
 }
 
-void showsizes()
-{
-std::cout << fl_digi_main->w() << std::endl;
-std::cout << fl_digi_main->h() << std::endl;
-std::cout << wf1 << std::endl;
-std::cout << QsoInfoFrame->x() << ", " << QsoInfoFrame->w() << std::endl;			
-std::cout << QsoInfoFrame1->x() << ", " << QsoInfoFrame1->w() << std::endl;
-std::cout << QsoInfoFrame2->x() << ", " << QsoInfoFrame2->w() << std::endl;
-}
-
 void qsoClear_cb(Fl_Widget *b, void *)
 {
-//	showsizes();
 	if (progdefaults.NagMe) {
 		if (oktoclear || fl_choice(_("Clear log fields?"), _("Cancel"), _("OK"), NULL) == 1) {
 			clearQSO();
@@ -1467,6 +1499,7 @@ bool clean_exit(void) {
 #define RIGCONTROL_MLABEL _("Rig Control")
 #define VIEW_MLABEL _("View")
 #define MFSK_IMAGE_MLABEL _("MFSK Image")
+#define CONTEST_MLABEL _("Contest")
 
 Fl_Menu_Item menu_[] = {
 {_("&Files"), 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
@@ -1609,6 +1642,13 @@ Fl_Menu_Item menu_[] = {
 { make_icon_label(_("PSK Browser")), 0, (Fl_Callback*)cb_mnuViewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(RIGCONTROL_MLABEL, multimedia_player_icon), 0, (Fl_Callback*)cb_mnuRig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Logbook")), 0, (Fl_Callback*)cb_mnuShowLogbook, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+
+{0,0,0,0,0,0,0,0,0},
+
+{ CONTEST_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ _("On/Off"), 0, (Fl_Callback*)cb_mnuContest, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ _("Config"), 0,  (Fl_Callback*)cb_mnuConfigContest, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+
 {0,0,0,0,0,0,0,0,0},
 
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
@@ -2145,67 +2185,98 @@ void create_fl_digi_main() {
 						WNOM - rightof(QsoButtonFrame) - pad, Hqsoframe + Hnotes);
 
 			QsoInfoFrame1 = new Fl_Group(x_qsoframe, Hmenu, wf1, Hqsoframe + Hnotes);
-//				QsoInfoFrame1->box(FL_BORDER_BOX);
 				
 				inpFreq = new Fl_Input2(x_qsoframe + pad, y2, w_inpFreq, qh - pad, _("QSO Freq"));
 				inpFreq->type(FL_NORMAL_OUTPUT);
 				inpFreq->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
-				inpTime = new Fl_Input2(rightof(inpFreq) + pad, y2, w_inpTime, qh - pad, _("Time"));
+				inpTime = new Fl_Output(rightof(inpFreq) + pad, y2, w_inpTime, qh - pad, _("Time"));
 				inpTime->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
-				qsoTime = new Fl_Button(rightof(inpTime), y2, w_qsoTime, qh - pad);
-				qsoTime->image(new Fl_Pixmap(time_icon));
-				qsoTime->callback(qsoTime_cb, 0);
-
-				inpCall = new Fl_Input2(rightof(qsoTime) + pad, y2, w_inpCall, qh - pad, _("Call"));
+				inpCall = new Fl_Input2(rightof(inpTime) + pad, y2, w_inpCall, qh - pad, _("Call"));
 				inpCall->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
 				inpName = new Fl_Input2(rightof(inpCall) + pad, y2, w_inpName, qh - pad, _("Name"));
 				inpName->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 			
-				inpRstIn = new Fl_Input2(rightof(inpName) + pad, y2, w_inpRstIn, qh - pad, "In");
+				inpRstIn = new Fl_Input2(rightof(inpName) + pad, y2, w_inpRstIn, qh - pad, _("In"));
 				inpRstIn->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
-				inpRstOut = new Fl_Input2(rightof(inpRstIn) + pad, y2, w_inpRstOut, qh - pad, "Out");
+				inpRstOut = new Fl_Input2(rightof(inpRstIn) + pad, y2, w_inpRstOut, qh - pad, _("Out"));
 				inpRstOut->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+				
+				lblDup = new Fl_Box(rightof(inpCall) - w_inpCall/2 - 40, Hmenu + 1, 80, qh - pad, _("*** DUP ***"));
+				lblDup->labelcolor(FL_RED);
+				lblDup->hide();
 						
-				inpSerNo = new Fl_Input2(rightof(inpRstOut) + pad, y2, w_inpSerNo, qh - pad, "##");
-				inpSerNo->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-	
-				Fl_Box *fm1box = new Fl_Box(x_qsoframe, y3, w_fm1, qh - pad, "QTH");
-				fm1box->align(FL_ALIGN_INSIDE);
-				inpQth = new Fl_Input2( rightof(fm1box), y3, w_inpQth, qh - pad, "");
-				inpQth->align(FL_ALIGN_INSIDE);
+				QsoInfoFrame1A = new Fl_Group (x_qsoframe, y3 - 1, wf1, Hnotes); 
+					Fl_Box *fm1box = new Fl_Box(x_qsoframe, y3, w_fm1, qh - pad, _("QTH"));
+					fm1box->align(FL_ALIGN_INSIDE);
+					inpQth = new Fl_Input2( rightof(fm1box), y3, w_inpQth, qh - pad, "");
+					inpQth->align(FL_ALIGN_INSIDE);
 					
-				Fl_Box *fm2box = new Fl_Box(rightof(inpQth), y3, w_fm2, qh - pad, "St");
-				fm2box->align(FL_ALIGN_INSIDE);
-				inpCnty = new Fl_Input2(rightof(fm2box), y3, w_inpCnty, qh - pad, "");
-				inpCnty->tooltip("US State or Country");
-				inpCnty->align(FL_ALIGN_INSIDE);
+					Fl_Box *fm2box = new Fl_Box(rightof(inpQth), y3, w_fm2, qh - pad, _("St"));
+					fm2box->align(FL_ALIGN_INSIDE);
+					inpCnty = new Fl_Input2(rightof(fm2box), y3, w_inpCnty, qh - pad, "");
+					inpCnty->tooltip(_("US State or Country"));
+					inpCnty->align(FL_ALIGN_INSIDE);
 
-				Fl_Box *fm3box = new Fl_Box(rightof(inpCnty), y3, w_fm3, qh - pad, "Pr");
-				fm3box->align(FL_ALIGN_INSIDE);
-				inpVEprov = new Fl_Input2(rightof(fm3box), y3, w_inpProv, qh - pad, "");
-				inpVEprov->tooltip("Can. Province");
-				inpVEprov->align(FL_ALIGN_INSIDE);
+					Fl_Box *fm3box = new Fl_Box(rightof(inpCnty), y3, w_fm3, qh - pad, _("Pr"));
+					fm3box->align(FL_ALIGN_INSIDE);
+					inpVEprov = new Fl_Input2(rightof(fm3box), y3, w_inpProv, qh - pad, "");
+					inpVEprov->tooltip(_("Can. Province"));
+					inpVEprov->align(FL_ALIGN_INSIDE);
 
-				Fl_Box *fm4box = new Fl_Box(rightof(inpVEprov), y3, w_fm4, qh - pad, "Loc");
-				fm4box->align(FL_ALIGN_INSIDE);
-				inpLoc = new Fl_Input2(rightof(fm4box), y3, w_inpLOC, qh - pad, "");
-				inpLoc->align(FL_ALIGN_INSIDE);
+					Fl_Box *fm4box = new Fl_Box(rightof(inpVEprov), y3, w_fm4, qh - pad, _("Loc"));
+					fm4box->align(FL_ALIGN_INSIDE);
+					inpLoc = new Fl_Input2(rightof(fm4box), y3, w_inpLOC, qh - pad, "");
+					inpLoc->align(FL_ALIGN_INSIDE);
 
-				Fl_Box *fm5box = new Fl_Box(rightof(inpLoc), y3, w_fm5, qh - pad, "Az");
-				fm5box->align(FL_ALIGN_INSIDE);
-				inpAZ = new Fl_Input2(rightof(fm5box), y3, w_inpAZ, qh - pad, "");
-				inpAZ->align(FL_ALIGN_INSIDE);
+					Fl_Box *fm5box = new Fl_Box(rightof(inpLoc), y3, w_fm5, qh - pad, _("Az"));
+					fm5box->align(FL_ALIGN_INSIDE);
+					inpAZ = new Fl_Input2(rightof(fm5box), y3, w_inpAZ, qh - pad, "");
+					inpAZ->align(FL_ALIGN_INSIDE);
+				QsoInfoFrame1A->end();
+				
+				QsoInfoFrame1B = new Fl_Group (x_qsoframe, y3 - 1, wf1, Hnotes); 
+					Fl_Box *fm6box = new Fl_Box(x_qsoframe, y3, w_fm6, qh - pad, _("#In"));
+					fm6box->align(FL_ALIGN_INSIDE);
+					inpSerNo = new Fl_Input2(rightof(fm6box), y3, w_SerNo, qh - pad, "");
+					inpSerNo->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+					inpSerNo->tooltip(_("Received serial number"));
+
+					Fl_Box *fm7box = new Fl_Box(rightof(inpSerNo) + pad, y3, w_fm6, qh - pad, _("#Out"));
+					fm7box->align(FL_ALIGN_INSIDE);
+					outSerNo = new Fl_Output(rightof(fm7box), y3, w_SerNo, qh - pad, "");
+					outSerNo->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+					outSerNo->tooltip(_("Sent serial number (read only)"));
+					
+					Fl_Box *fm8box = new Fl_Box(rightof(outSerNo) + pad, y3, w_fm6, qh - pad, _("X_1"));
+					fm7box->align(FL_ALIGN_INSIDE);
+					inpXchg1 = new Fl_Input2(rightof(fm8box), y3, w_Xchg, qh - pad, "");
+					inpXchg1->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+					inpXchg1->tooltip(_("Contest exchange #1"));
+					
+					Fl_Box *fm9box = new Fl_Box(rightof(inpXchg1) + pad, y3, w_fm6, qh - pad, _("X_2"));
+					fm9box->align(FL_ALIGN_INSIDE);
+					inpXchg2 = new Fl_Input2(rightof(fm9box), y3, w_Xchg, qh - pad, "");
+					inpXchg2->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+					inpXchg2->tooltip(_("Contest exchange #2"));
+					
+					Fl_Box *fm10box = new Fl_Box(rightof(inpXchg2) + pad, y3, w_fm6, qh - pad, _("X_3"));
+					fm10box->align(FL_ALIGN_INSIDE);
+					inpXchg3 = new Fl_Input2(rightof(fm10box), y3, w_Xchg, qh - pad, "");
+					inpXchg3->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+					inpXchg3->tooltip(_("Contest exchange #3"));
+					
+				QsoInfoFrame1B->end();
+				QsoInfoFrame1B->hide();
 				
 				QsoInfoFrame1->resizable(NULL);
 			QsoInfoFrame1->end();
 
 			QsoInfoFrame2 = new Fl_Group(x_qsoframe + wf1 + pad, Hmenu, 
 				WNOM - rightof(QsoInfoFrame1) - 2*pad, Hqsoframe + Hnotes); 
-//		    	QsoInfoFrame2->box(FL_BORDER_BOX);
 					
 				inpNotes = new Fl_Input2(x_qsoframe + wf1 + pad, y2, 
 					WNOM - rightof(QsoInfoFrame1) - 2*pad, qh + Hnotes - pad, _("Notes"));
@@ -2224,7 +2295,6 @@ void create_fl_digi_main() {
 	
 		Y = Hmenu + Hqsoframe + Hnotes + pad;
 
-//		Fl_Widget* logfields[] = { inpFreq, inpTime, inpCall, inpName, inpRstIn,
 		Fl_Widget* logfields[] = { inpCall, inpName, inpRstIn,
 					   inpRstOut, inpQth, inpAZ, inpLoc, inpNotes };
 		for (size_t i = 0; i < sizeof(logfields)/sizeof(*logfields); i++)

@@ -52,6 +52,10 @@ FIELD fields[] = {
     {SRX,			"SRX",        	 5},    // 33 - received serial number for a contest QSO
     {TEN_TEN, 		"TEN_TEN",     	10},    // 36 - ten ten # of other station
     {VE_PROV,		"VE_PROV",       2},    // 40 - 2 letter abbreviation for Canadian Province
+// fldigi specific fields
+	{XCHG1,			"XCHG1",        20},    // 41 - contest exchange #1
+	{XCHG2,			"XCHG2",        20},    // 41 - contest exchange #2
+	{XCHG3,			"XCHG3",        20},    // 41 - contest exchange #3
     {EXPORT,		"EXPORT",        1}     // 41 - used to indicate record is to be exported
 };
 

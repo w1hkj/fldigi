@@ -70,7 +70,7 @@ extern Fl_Slider		*sldrSquelch;
 extern Progress			*pgrsSquelch;
 extern Fl_Button 		*btnMacro[];
 extern Fl_Input2		*inpFreq;
-extern Fl_Input2		*inpTime;
+extern Fl_Output		*inpTime;
 extern Fl_Input2		*inpCall;
 extern Fl_Input2		*inpName;
 extern Fl_Input2		*inpRstIn;
@@ -78,6 +78,11 @@ extern Fl_Input2		*inpRstOut;
 extern Fl_Input2		*inpQth;
 extern Fl_Input2		*inpCnty;
 extern Fl_Input2		*inpSerNo;
+extern Fl_Output		*outSerNo;
+extern Fl_Input2		*inpXchg1;
+extern Fl_Input2		*inpXchg2;
+extern Fl_Input2		*inpXchg3;
+extern Fl_Box			*lblDup;
 extern Fl_Input2		*inpVEprov;
 extern Fl_Input2		*inpLoc;
 extern Fl_Input2		*inpNotes;
@@ -194,6 +199,12 @@ extern void set_rtty_tab_widgets();
 extern void set_olivia_tab_widgets();
 
 extern void stopMacroTimer();
+extern void cb_ResetSerNbr();
+extern void updateOutSerNo();
+
+extern void zuluDateTime();
+extern char zuluLogTime[];
+extern char zuluLogDate[];
 
 Fl_Color adjust_color(Fl_Color fg, Fl_Color bg);
 

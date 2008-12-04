@@ -17,6 +17,8 @@ extern cQsoDb        qsodb;
 extern cAdifIO       adifFile;
 extern std::string logbook_filename;
 
+extern bool EnableDupCheck;
+
 extern void loadBrowser();
 
 extern void Export_log();

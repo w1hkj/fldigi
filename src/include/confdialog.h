@@ -17,15 +17,11 @@ extern Fl_Input2 *inpMyCallsign;
 extern Fl_Input2 *inpMyName;
 extern Fl_Input2 *inpMyQth;
 extern Fl_Input2 *inpMyLocator;
-#include <FL/Fl_Check_Button.H>
-extern Fl_Check_Button *btnUseLeadingZeros;
-#include <FL/Fl_Value_Input.H>
-extern Fl_Value_Input *nbrContestStart;
-extern Fl_Value_Input *nbrContestDigits;
 extern Fl_Input2 *inpMyAntenna;
 extern Fl_Group *tabUI;
 extern Fl_Tabs *tabsUI;
 extern Fl_Group *tabUserInterface;
+#include <FL/Fl_Check_Button.H>
 extern Fl_Check_Button *btnShowTooltips;
 extern Fl_Check_Button *chkMenuIcons;
 #include <FL/Fl_Choice.H>
@@ -42,22 +38,29 @@ extern Fl_Check_Button *btnDockedRigControl;
 extern Fl_Check_Button *btnCheckButtons;
 extern Fl_Group *tabContest;
 #include <FL/Fl_Box.H>
-extern Fl_Box *lblLabels;
-extern Fl_Input2 *inpXch1;
-extern Fl_Input2 *inpXch2;
-extern Fl_Input2 *inpXch3;
-extern Fl_Input2 *inpXch4;
 extern Fl_Box *lblSend;
 extern Fl_Input2 *inpSend1;
 extern Fl_Input2 *inpSend2;
 extern Fl_Input2 *inpSend3;
-extern Fl_Input2 *inpSend4;
-extern Fl_Check_Button *chk599;
+extern Fl_Check_Button *btn599;
+extern Fl_Check_Button *btnCutNbrs;
+extern Fl_Check_Button *btnUseLeadingZeros;
+#include <FL/Fl_Value_Input.H>
+extern Fl_Value_Input *nbrContestStart;
+extern Fl_Value_Input *nbrContestDigits;
+#include <FL/Fl_Button.H>
+extern Fl_Button *btnResetSerNbr;
+extern Fl_Check_Button *btnDupBand;
+extern Fl_Check_Button *btnDupState;
+extern Fl_Check_Button *btnDupXchg1;
+extern Fl_Check_Button *btnDupXchg2;
+extern Fl_Check_Button *btnDupXchg3;
+extern Fl_Check_Button *btnDupMode;
+extern Fl_Check_Button *btnDupCheckOn;
 extern Fl_Group *tabWaterfall;
 extern Fl_Tabs *tabsWaterfall;
 #include "colorbox.h"
 extern colorbox *WF_Palette;
-#include <FL/Fl_Button.H>
 extern Fl_Button *btnColor[9];
 extern Fl_Button *btnLoadPalette;
 extern Fl_Button *btnSavePalette;

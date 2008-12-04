@@ -388,9 +388,12 @@ Fl_Menu_Item FTextView::view_menu[] = {
 	{ make_icon_label(ENTER_SYMBOL "QT&H", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(ENTER_SYMBOL "&State", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(ENTER_SYMBOL "&Province", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(ENTER_SYMBOL "Serial Nr", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(ENTER_SYMBOL "&Locator", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(ENTER_SYMBOL "&RST(r)", enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL "&RST(r)", enter_key_icon), 0, 0, 0,  FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL "Serial Nr", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL "Xchg &1", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL "Xchg &2", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL "Xchg &3", enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ make_icon_label("Insert divider", insert_link_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label("&Copy", edit_copy_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label("C&lear", edit_clear_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
@@ -701,8 +704,18 @@ void FTextView::menu_cb(int val)
 	case RX_MENU_LOC:
 		input = inpLoc;
 		break;
+		
 	case RX_MENU_RST_IN:
 		input = inpRstIn;
+		break;
+	case RX_MENU_X1:
+		input = inpXchg1;
+		break;
+	case RX_MENU_X2:
+		input = inpXchg2;
+		break;
+	case RX_MENU_X3:
+		input = inpXchg3;
 		break;
 
 	case RX_MENU_DIV:

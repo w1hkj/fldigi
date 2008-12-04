@@ -23,7 +23,6 @@
 
 #include <FL/fl_ask.H>
 
-// remove after testing
 extern string HomeDir;
 
 using namespace std;
@@ -33,6 +32,8 @@ cAdifIO		adifFile;
 cTextFile	txtFile;
 
 string		logbook_filename;
+
+bool EnableDupCheck = false;
 
 enum savetype {ADIF, TEXT, LO};
 
@@ -85,8 +86,12 @@ void cb_mnuNewLogbook(Fl_Menu_* m, void* d){
 
 	logbook_filename = HomeDir;
 	logbook_filename.append("newlog." ADIF_SUFFIX);
+	progdefaults.logbookfilename = logbook_filename;
+	dlgLogbook->label(fl_filename_name(logbook_filename.c_str()));
+	progdefaults.changed = true;
 	qsodb.deleteRecs();
 	wBrowser->clear();
+	clearRecord();
 }
 
 void cb_mnuOpenLogbook(Fl_Menu_* m, void* d)
@@ -97,9 +102,12 @@ void cb_mnuOpenLogbook(Fl_Menu_* m, void* d)
 		qsodb.deleteRecs();
 		
 		logbook_filename = p;
+		progdefaults.logbookfilename = logbook_filename;
+		progdefaults.changed = true;
 		adifFile.readFile (logbook_filename.c_str(), &qsodb);
 		loadBrowser();
 		qsodb.isdirty(0);
+		dlgLogbook->label(fl_filename_name(logbook_filename.c_str()));
 	}
 }
 
@@ -242,6 +250,20 @@ void cb_SortByFreq (void) {
 	loadBrowser();
 }
 
+void DupCheck(const char *callsign)
+{
+	if (qsodb.duplicate(
+			callsign,
+			inpFreq->value(), progdefaults.dupband,
+			inpCnty->value(), progdefaults.dupstate,
+			mode_info[active_modem->get_mode()].adif_name, progdefaults.dupmode,
+			inpXchg1->value(), progdefaults.dupxchg1,
+			inpXchg2->value(), progdefaults.dupxchg2,
+			inpXchg3->value(), progdefaults.dupxchg3 ) )
+		lblDup->show();
+}
+
+
 void SearchLastQSO(const char *callsign)
 {
 	size_t len = strlen(callsign);
@@ -252,6 +274,8 @@ void SearchLastQSO(const char *callsign)
 	if (wBrowser->search(row, col, !cQsoDb::reverse, re)) {
 		wBrowser->GotoRow(row);
 		inpName->value(inpName_log->value());
+		if (EnableDupCheck)
+			DupCheck(callsign);
 	}
 
 	delete [] re;
@@ -305,12 +329,15 @@ void clearRecord() {
 	inpMode_log->value ("");
 	inpQth_log->value ("");
 	inpCnty_log->value ("");
-	inpSerNoOut_log->value ("");
-	inpSerNoIn_log->value ("");
 	inpVE_Prov_log->value ("");
 	inpLoc_log->value ("");
 	inpQSLrcvddate_log->value ("");
 	inpQSLsentdate_log->value ("");
+	inpSerNoOut_log->value ("");
+	inpSerNoIn_log->value ("");
+	inpXchg1_log->value("");
+	inpXchg2_log->value("");
+	inpXchg3_log->value("");
 	inpComment_log->value ("");
 	editGroup->show();
 }
@@ -325,8 +352,6 @@ cQsoRec rec;
 	rec.putField(MODE, inpMode_log->value());
 	rec.putField(QTH, inpQth_log->value());
 	rec.putField(CNTY, inpCnty_log->value());
-	rec.putField(SRX, inpSerNoIn_log->value());
-	rec.putField(STX, inpSerNoOut_log->value());
 	rec.putField(VE_PROV, inpVE_Prov_log->value());
 	rec.putField(GRIDSQUARE, inpLoc_log->value());
 	rec.putField(COMMENT, inpComment_log->value());
@@ -334,6 +359,11 @@ cQsoRec rec;
 	rec.putField(QSLSDATE, inpQSLsentdate_log->value());
 	rec.putField(RST_RCVD, inpRstR_log->value ());
 	rec.putField(RST_SENT, inpRstS_log->value ());
+	rec.putField(SRX, inpSerNoIn_log->value());
+	rec.putField(STX, inpSerNoOut_log->value());
+	rec.putField(XCHG1, inpXchg1_log->value());
+	rec.putField(XCHG2, inpXchg2_log->value());
+	rec.putField(XCHG3, inpXchg3_log->value());	
 	
 	qsodb.qsoNewRec (&rec);
 }
@@ -349,8 +379,6 @@ cQsoRec rec;
 	rec.putField(MODE, inpMode_log->value());
 	rec.putField(QTH, inpQth_log->value());
 	rec.putField(CNTY, inpCnty_log->value());
-	rec.putField(SRX, inpSerNoIn_log->value());
-	rec.putField(STX, inpSerNoOut_log->value());
 	rec.putField(VE_PROV, inpVE_Prov_log->value());
 	rec.putField(GRIDSQUARE, inpLoc_log->value());
 	rec.putField(COMMENT, inpComment_log->value());
@@ -358,10 +386,13 @@ cQsoRec rec;
 	rec.putField(QSLSDATE, inpQSLsentdate_log->value());
 	rec.putField(RST_RCVD, inpRstR_log->value ());
 	rec.putField(RST_SENT, inpRstS_log->value ());
+	rec.putField(SRX, inpSerNoIn_log->value());
+	rec.putField(STX, inpSerNoOut_log->value());
+	rec.putField(XCHG1, inpXchg1_log->value());
+	rec.putField(XCHG2, inpXchg2_log->value());
+	rec.putField(XCHG3, inpXchg3_log->value());	
 	qsodb.qsoUpdRec (editNbr, &rec);
 	qsodb.isdirty(1);
-//	qsodb.qsoWriteFile(logbook_filename.c_str());
-//	qsodb.isdirty(0);
 }
 
 void deleteRecord () {
@@ -372,8 +403,6 @@ void deleteRecord () {
 	qsodb.qsoDelRec(editNbr);
 	loadBrowser();
 	qsodb.isdirty(1);
-//	qsodb.qsoWriteFile(logbook_filename.c_str());
-//	qsodb.isdirty(0);
 }
 
 void EditRecord( int i )
@@ -392,33 +421,39 @@ void EditRecord( int i )
 	inpMode_log->value (editQSO->getField(MODE));
 	inpCnty_log->value (editQSO->getField(CNTY));
 	inpVE_Prov_log->value (editQSO->getField(VE_PROV));
-	inpSerNoIn_log->value(editQSO->getField(SRX));
-	inpSerNoOut_log->value(editQSO->getField(STX));
 	inpQth_log->value (editQSO->getField(QTH));
 	inpLoc_log->value (editQSO->getField(GRIDSQUARE));
 	inpQSLrcvddate_log->value (editQSO->getField(QSLRDATE));
 	inpQSLsentdate_log->value (editQSO->getField(QSLSDATE));
 	inpComment_log->value (editQSO->getField(COMMENT));
+	inpSerNoIn_log->value(editQSO->getField(SRX));
+	inpSerNoOut_log->value(editQSO->getField(STX));
+	inpXchg1_log->value(editQSO->getField(XCHG1));
+	inpXchg2_log->value(editQSO->getField(XCHG2));
+	inpXchg3_log->value(editQSO->getField(XCHG3));
 	editGroup->show();
 }
 
 void AddRecord ()
 {
+//	zuluDateTime();
 	inpCall_log->value(inpCall->value());
 	inpName_log->value (inpName->value());
-	inpDate_log->value (logdate);
-	inpTime_log->value (logtime);
+	inpDate_log->value (zuluLogDate);
+	inpTime_log->value (zuluLogTime);
 	inpRstR_log->value (inpRstIn->value());
 	inpRstS_log->value (inpRstOut->value());
 	inpFreq_log->value (inpFreq->value());
 	inpMode_log->value (logmode);
 	inpCnty_log->value (inpCnty->value());
 	inpVE_Prov_log->value (inpVEprov->value());
+
 	inpSerNoIn_log->value(inpSerNo->value());
-	char szcnt[5] = "";
-	if (contest_count.count)
-		snprintf(szcnt, sizeof(szcnt), "%04d", contest_count.count);
-	inpSerNoOut_log->value(szcnt);
+	inpSerNoOut_log->value(outSerNo->value());
+	inpXchg1_log->value(inpXchg1->value());
+	inpXchg2_log->value(inpXchg2->value());
+	inpXchg3_log->value(inpXchg3->value());
+
 	inpQth_log->value (inpQth->value());
 	inpLoc_log->value (inpLoc->value());
 	inpQSLrcvddate_log->value ("");

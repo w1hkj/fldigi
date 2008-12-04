@@ -133,12 +133,12 @@ int submit_log(void)
 	log_msg = "";
 	log_msg = log_msg + "program:"	+ PACKAGE_NAME + " v " + PACKAGE_VERSION + LOG_MSEPARATOR;
 	log_msg = log_msg + "version:"	+ LOG_MVERSION			+ LOG_MSEPARATOR;
-	log_msg = log_msg + "date:"		+ logdate				+ LOG_MSEPARATOR;
-	putadif(QSO_DATE, adifdate); 
-	log_msg = log_msg + "time:"		+ inpTime->value()		+ LOG_MSEPARATOR;
-	putadif(TIME_ON, inpTime->value());
-	log_msg = log_msg + "endtime:"	+ logtime				+ LOG_MSEPARATOR;
-	putadif(TIME_OFF, logtime);
+	log_msg = log_msg + "date:"		+ zuluLogDate				+ LOG_MSEPARATOR;
+	putadif(QSO_DATE, zuluLogDate); 
+//	log_msg = log_msg + "time:"		+ zuluLogTime		+ LOG_MSEPARATOR;
+//	putadif(TIME_ON, zuluLogTime);
+	log_msg = log_msg + "endtime:"	+ zuluLogTime			+ LOG_MSEPARATOR;
+	putadif(TIME_OFF, zuluLogTime);
 	log_msg = log_msg + "call:"		+ inpCall->value()		+ LOG_MSEPARATOR;
 	putadif(CALL, inpCall->value());
 	log_msg = log_msg + "mhz:"		+ strFreqMhz			+ LOG_MSEPARATOR;
@@ -159,13 +159,34 @@ int submit_log(void)
 	putadif(VE_PROV, inpVEprov->value());
 	log_msg = log_msg + "locator:"	+ inpLoc->value()		+ LOG_MSEPARATOR;
 	putadif(GRIDSQUARE, inpLoc->value());
-	char szcnt[5] = "";
-	if (contest_count.count)
-		snprintf(szcnt, sizeof(szcnt), "%04d", contest_count.count);
-	log_msg = log_msg + "serialout:"		+ szcnt  		+ LOG_MSEPARATOR;
-	putadif(STX, szcnt);
-	log_msg = log_msg + "serialin:"	+ inpSerNo->value()		+ LOG_MSEPARATOR;
-	putadif(SRX, inpSerNo->value());
+		
+	string fieldstr;
+	fieldstr = outSerNo->value();
+	if (!fieldstr.empty()) {
+		log_msg = log_msg + "serialout:"		+ fieldstr.c_str()	+ LOG_MSEPARATOR;
+		putadif(STX, fieldstr.c_str());
+	}
+	fieldstr = inpSerNo->value();
+	if (!fieldstr.empty()) {	
+		log_msg = log_msg + "serialin:"	+ fieldstr.c_str()		+ LOG_MSEPARATOR;
+		putadif(SRX, fieldstr.c_str());
+	}
+	fieldstr = inpXchg1->value();
+	if (!fieldstr.empty()) {	
+		log_msg = log_msg + "xchg1:"	+ fieldstr.c_str()		+ LOG_MSEPARATOR;
+		putadif(XCHG1, fieldstr.c_str());
+	}
+	fieldstr = inpXchg2->value();
+	if (!fieldstr.empty()) {	
+		log_msg = log_msg + "xchg2:"	+ fieldstr.c_str()		+ LOG_MSEPARATOR;
+		putadif(XCHG2, fieldstr.c_str());
+	}
+	fieldstr = inpXchg3->value();
+	if (!fieldstr.empty()) {	
+		log_msg = log_msg + "xchg3:"	+ fieldstr.c_str()		+ LOG_MSEPARATOR;
+		putadif(XCHG2, fieldstr.c_str());
+	}
+	
 	log_msg = log_msg + "notes:"	+ inpNotes->value()		+ LOG_MSEPARATOR;
 	putadif(NOTES, inpNotes->value());
 

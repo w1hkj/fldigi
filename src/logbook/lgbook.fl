@@ -47,142 +47,161 @@ Export_log();}
   }
   Fl_Window dlgLogbook {
     label Logbook open
-    xywh {440 119 570 324} type Double color 47 resizable visible
+    xywh {541 111 570 320} type Double color 47 resizable visible
   } {
-    Fl_Group editGroup {open selected
-      xywh {2 4 565 193} box ENGRAVED_FRAME color 52 labelsize 12
+    Fl_Group editGroup {open
+      xywh {2 2 565 200} box ENGRAVED_FRAME color 52 labelsize 12
     } {
       Fl_Input inpDate_log {
         label Date
-        xywh {5 22 100 22} labelsize 12 align 5 textfont 13 textsize 12
+        xywh {5 20 100 22} labelsize 12 align 5 textsize 12
         code0 {\#include "calendar.h"}
         code1 {inpDate_log->format(2);}
         class Fl_DateInput
       }
       Fl_Input inpTime_log {
         label Time
-        xywh {107 22 40 22} labelsize 12 align 5 textfont 13 textsize 12
+        xywh {107 20 40 22} labelsize 12 align 5 textsize 12
         class Fl_Input2
       }
       Fl_Input inpCall_log {
         label Call
-        xywh {149 22 105 22} labelsize 12 align 5 textfont 13 textsize 12
+        xywh {149 20 105 22} labelsize 12 align 5 textsize 12
         class Fl_Input2
       }
       Fl_Input inpName_log {
         label Name
-        xywh {256 22 60 22} labelsize 12 align 5 textfont 13 textsize 12
+        xywh {256 20 60 22} labelsize 12 align 5 textsize 12
         class Fl_Input2
       }
       Fl_Input inpFreq_log {
         label {Freq.}
-        xywh {317 22 80 22} labelsize 12 align 5 textfont 13 textsize 12
+        xywh {317 20 80 22} labelsize 12 align 5 textsize 12
         class Fl_Input2
       }
       Fl_Input inpMode_log {
         label Mode
-        xywh {398 22 80 22} labelsize 12 align 5 textfont 13 textsize 12
+        xywh {398 20 80 22} labelsize 12 align 5 textsize 12
         class Fl_Input2
       }
       Fl_Input inpRstR_log {
         label {Rst-R}
-        xywh {479 22 40 22} labelsize 12 align 5 textfont 13 textsize 12
+        xywh {479 20 40 22} labelsize 12 align 5 textsize 12
         class Fl_Input2
       }
       Fl_Input inpRstS_log {
         label {Rst-S}
-        xywh {521 22 40 22} labelsize 12 align 5 textfont 13 textsize 12
+        xywh {521 20 40 22} labelsize 12 align 5 textsize 12
         class Fl_Input2
       }
       Fl_Input inpQth_log {
         label Qth
-        xywh {5 58 135 22} labelsize 12 align 5 textfont 13 textsize 12
+        xywh {5 56 135 22} labelsize 12 align 5 textsize 12
         class Fl_Input2
       }
       Fl_Input inpLoc_log {
         label Loc
-        tooltip {Stations grid square} xywh {283 58 75 22} labelsize 12 align 5 textsize 12
+        tooltip {Stations grid square} xywh {283 56 75 22} labelsize 12 align 5 textsize 12
         class Fl_Input2
       }
       Fl_Input inpComment_log {
         label Comment
-        xywh {5 129 438 40} type Multiline labelsize 12 align 5 textfont 13 textsize 12
+        xywh {5 94 438 30} type Multiline labelsize 12 align 5 textfont 13 textsize 12
         class Fl_Input2
       }
       Fl_Input inpQSLrcvddate_log {
         label {QSL-rcvd}
-        xywh {359 58 100 22} labelsize 12 align 5 textfont 13 textsize 12
+        xywh {359 56 100 22} labelsize 12 align 5 textsize 12
         code1 {o->format(2);}
         class Fl_DateInput
       }
       Fl_Input inpQSLsentdate_log {
         label {QSL-sent}
-        xywh {461 58 100 22} labelsize 12 align 5 textfont 13 textsize 12
+        xywh {461 56 100 22} labelsize 12 align 5 textsize 12
         code1 {o->format(2);}
         class Fl_DateInput
       }
       Fl_Button bNewSave {
         label New
         callback cb_btnNewSave
-        xywh {120 171 55 22} shortcut 0x8004e color 50 selection_color 48 labelsize 12
+        xywh {120 175 55 22} shortcut 0x8004e color 50 selection_color 48 labelsize 12
       }
       Fl_Button bUpdateCancel {
         label Update
         callback cb_btnUpdateCancel
-        xywh {192 171 55 22} shortcut 0x80055 color 50 selection_color 48 labelsize 12
+        xywh {192 175 55 22} shortcut 0x80055 color 50 selection_color 48 labelsize 12
       }
       Fl_Button bDelete {
         label Delete
         callback cb_btnDelete
-        xywh {264 171 55 22} shortcut 0x80044 color 50 selection_color 48 labelsize 12
+        xywh {264 175 55 22} shortcut 0x80044 color 50 selection_color 48 labelsize 12
       }
       Fl_Input txtNbrRecs_log {
         label Recs
-        xywh {38 171 65 22} labelsize 12 textsize 12
-        class Fl_Input2
-      }
-      Fl_Input inpSerNoOut_log {
-        label {Ser\# Sent}
-        tooltip {Contest seral \# sent} xywh {5 93 75 22} labelsize 12 align 5 textsize 12
-        class Fl_Input2
-      }
-      Fl_Input inpSerNoIn_log {
-        label {Ser\# Rcvd}
-        tooltip {Contest serial \# received} xywh {84 93 75 22} labelsize 12 align 5 textsize 12
+        xywh {38 175 65 22} labelsize 12 textsize 12
         class Fl_Input2
       }
       Fl_Input inpCnty_log {
         label {St. / Ctry.}
-        xywh {142 58 110 22} labelsize 12 align 5 textfont 13 textsize 12
+        xywh {142 56 110 22} labelsize 12 align 5 textsize 12
         class Fl_Input2
       }
       Fl_Input inpVE_Prov_log {
         label {Pr..}
-        xywh {253 58 30 22} labelsize 12 align 5 textfont 13 textsize 12
+        xywh {253 56 30 22} labelsize 12 align 5 textsize 12
         class Fl_Input2
       }
       Fl_Group {} {open
-        xywh {445 91 116 78} box ENGRAVED_FRAME
+        xywh {5 128 440 44} box ENGRAVED_FRAME
+      } {
+        Fl_Input inpSerNoOut_log {
+          label {Ser\# out}
+          tooltip {Contest seral \# sent} xywh {8 145 60 22} labelsize 12 align 5 textsize 12
+          class Fl_Input2
+        }
+        Fl_Input inpSerNoIn_log {
+          label {Ser\# in}
+          tooltip {Contest serial \# received} xywh {71 145 60 22} labelsize 12 align 5 textsize 12
+          class Fl_Input2
+        }
+        Fl_Input inpXchg1_log {
+          label {Xchg \#1}
+          tooltip {Exchange \#1} xywh {135 145 100 22} labelsize 12 align 5 textsize 12
+          class Fl_Input2
+        }
+        Fl_Input inpXchg2_log {
+          label {Xchg \#2}
+          tooltip {Exchange \#2} xywh {239 145 100 22} labelsize 12 align 5 textsize 12
+          class Fl_Input2
+        }
+        Fl_Input inpXchg3_log {
+          label {Xchg \#3} selected
+          tooltip {Exchange \#3} xywh {343 145 100 22} labelsize 12 align 5 textsize 12
+          class Fl_Input2
+        }
+      }
+      Fl_Group {} {open
+        xywh {445 94 116 78} box ENGRAVED_FRAME
       } {
         Fl_Input inpSearchString {
           label {Call Search}
-          xywh {450 114 105 22} labelsize 12 align 5 textfont 13 textsize 12
+          xywh {450 118 105 22} labelsize 12 align 5 textsize 12
           class Fl_Input2
         }
         Fl_Button bSearchPrev {
           callback cb_search
-          tooltip {Find previous} xywh {450 139 24 22} color 50 selection_color 48 labelsize 12 align 16
+          tooltip {Find previous} xywh {450 143 24 22} color 50 selection_color 48 labelsize 12 align 16
           code0 {bSearchPrev->image(new Fl_Pixmap(left_arrow_icon));}
         }
         Fl_Button bSearchNext {
           callback cb_search
-          tooltip {Find next} xywh {531 139 24 22} color 50 selection_color 48 labelsize 12 align 16
+          tooltip {Find next} xywh {531 143 24 22} color 50 selection_color 48 labelsize 12 align 16
           code0 {bSearchNext->image(new Fl_Pixmap(right_arrow_icon));}
         }
       }
     }
     Fl_Group wBrowser {
-      xywh {2 200 565 120} box DOWN_FRAME color 7 selection_color 15 labelsize 12 resizable
+      xywh {2 205 565 115} box DOWN_FRAME color 7 selection_color 15 labelsize 12 resizable
       code0 {\#include "table.h"}
       class Table
     } {}

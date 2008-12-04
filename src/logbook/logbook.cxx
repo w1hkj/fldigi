@@ -17,13 +17,19 @@
 
 #include "main.h"
 #include "logbook.h"
+#include "configuration.h"
 
 void start_logbook ()
 {
 	create_logbook_dialogs();
 
-	logbook_filename = HomeDir;
-	logbook_filename.append("logbook." ADIF_SUFFIX);
+	if (progdefaults.logbookfilename.empty()) {
+		logbook_filename = HomeDir;
+		logbook_filename.append("logbook." ADIF_SUFFIX);
+		progdefaults.logbookfilename = logbook_filename;
+		progdefaults.changed = true;
+	} else
+		logbook_filename = progdefaults.logbookfilename;
 
 	adifFile.readFile (logbook_filename.c_str(), &qsodb);
 	dlgLogbook->copy_label(fl_filename_name(logbook_filename.c_str()));

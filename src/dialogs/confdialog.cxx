@@ -15,6 +15,7 @@
 #include "Viewer.h"
 #include "pskrep.h"
 #include "flinput2.h"
+#include "logsupport.h"
 Fl_Double_Window *dlgConfig; 
 
 void set_qrz_buttons(Fl_Button* b) {
@@ -69,27 +70,6 @@ Fl_Input2 *inpMyLocator=(Fl_Input2 *)0;
 
 static void cb_inpMyLocator(Fl_Input2* o, void*) {
   progdefaults.myLocator = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnUseLeadingZeros=(Fl_Check_Button *)0;
-
-static void cb_btnUseLeadingZeros(Fl_Check_Button* o, void*) {
-  progdefaults.UseLeadingZeros = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Value_Input *nbrContestStart=(Fl_Value_Input *)0;
-
-static void cb_nbrContestStart(Fl_Value_Input* o, void*) {
-  progdefaults.ContestStart = (int)o->value();
-progdefaults.changed = true;
-}
-
-Fl_Value_Input *nbrContestDigits=(Fl_Value_Input *)0;
-
-static void cb_nbrContestDigits(Fl_Value_Input* o, void*) {
-  progdefaults.ContestDigits = (int)o->value();
 progdefaults.changed = true;
 }
 
@@ -191,27 +171,117 @@ progdefaults.changed = true;
 
 Fl_Group *tabContest=(Fl_Group *)0;
 
-Fl_Box *lblLabels=(Fl_Box *)0;
-
-Fl_Input2 *inpXch1=(Fl_Input2 *)0;
-
-Fl_Input2 *inpXch2=(Fl_Input2 *)0;
-
-Fl_Input2 *inpXch3=(Fl_Input2 *)0;
-
-Fl_Input2 *inpXch4=(Fl_Input2 *)0;
-
 Fl_Box *lblSend=(Fl_Box *)0;
 
 Fl_Input2 *inpSend1=(Fl_Input2 *)0;
 
+static void cb_inpSend1(Fl_Input2* o, void*) {
+  progdefaults.Xchg1=o->value();
+progdefaults.changed = true;
+}
+
 Fl_Input2 *inpSend2=(Fl_Input2 *)0;
+
+static void cb_inpSend2(Fl_Input2* o, void*) {
+  progdefaults.Xchg2=o->value();
+progdefaults.changed = true;
+}
 
 Fl_Input2 *inpSend3=(Fl_Input2 *)0;
 
-Fl_Input2 *inpSend4=(Fl_Input2 *)0;
+static void cb_inpSend3(Fl_Input2* o, void*) {
+  progdefaults.Xchg3=o->value();
+progdefaults.changed = true;
+}
 
-Fl_Check_Button *chk599=(Fl_Check_Button *)0;
+Fl_Check_Button *btn599=(Fl_Check_Button *)0;
+
+static void cb_btn599(Fl_Check_Button* o, void*) {
+  progdefaults.fixed599 = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnCutNbrs=(Fl_Check_Button *)0;
+
+static void cb_btnCutNbrs(Fl_Check_Button* o, void*) {
+  progdefaults.cutnbrs=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnUseLeadingZeros=(Fl_Check_Button *)0;
+
+static void cb_btnUseLeadingZeros(Fl_Check_Button* o, void*) {
+  progdefaults.UseLeadingZeros = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Value_Input *nbrContestStart=(Fl_Value_Input *)0;
+
+static void cb_nbrContestStart(Fl_Value_Input* o, void*) {
+  progdefaults.ContestStart = (int)o->value();
+progdefaults.changed = true;
+}
+
+Fl_Value_Input *nbrContestDigits=(Fl_Value_Input *)0;
+
+static void cb_nbrContestDigits(Fl_Value_Input* o, void*) {
+  progdefaults.ContestDigits = (int)o->value();
+progdefaults.changed = true;
+}
+
+Fl_Button *btnResetSerNbr=(Fl_Button *)0;
+
+static void cb_btnResetSerNbr(Fl_Button*, void*) {
+  cb_ResetSerNbr();
+}
+
+Fl_Check_Button *btnDupBand=(Fl_Check_Button *)0;
+
+static void cb_btnDupBand(Fl_Check_Button* o, void*) {
+  progdefaults.dupband = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnDupState=(Fl_Check_Button *)0;
+
+static void cb_btnDupState(Fl_Check_Button* o, void*) {
+  progdefaults.dupstate = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnDupXchg1=(Fl_Check_Button *)0;
+
+static void cb_btnDupXchg1(Fl_Check_Button* o, void*) {
+  progdefaults.dupxchg1 = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnDupXchg2=(Fl_Check_Button *)0;
+
+static void cb_btnDupXchg2(Fl_Check_Button* o, void*) {
+  progdefaults.dupxchg2 = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnDupXchg3=(Fl_Check_Button *)0;
+
+static void cb_btnDupXchg3(Fl_Check_Button* o, void*) {
+  progdefaults.dupxchg3 = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnDupMode=(Fl_Check_Button *)0;
+
+static void cb_btnDupMode(Fl_Check_Button* o, void*) {
+  progdefaults.dupmode = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnDupCheckOn=(Fl_Check_Button *)0;
+
+static void cb_btnDupCheckOn(Fl_Check_Button* o, void*) {
+  EnableDupCheck = o->value();
+}
 
 Fl_Group *tabWaterfall=(Fl_Group *)0;
 
@@ -1953,6 +2023,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { tabOperator = new Fl_Group(0, 25, 500, 345, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2006,32 +2077,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           } // Fl_Input2* inpMyLocator
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(5, 200, 490, 70, _("Contest Setup"));
-          o->box(FL_ENGRAVED_FRAME);
-          o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-          { btnUseLeadingZeros = new Fl_Check_Button(42, 232, 154, 20, _("Use leading zeros"));
-            btnUseLeadingZeros->down_box(FL_DOWN_BOX);
-            btnUseLeadingZeros->value(1);
-            btnUseLeadingZeros->callback((Fl_Callback*)cb_btnUseLeadingZeros);
-          } // Fl_Check_Button* btnUseLeadingZeros
-          { nbrContestStart = new Fl_Value_Input(221, 232, 45, 20, _("Starting #:"));
-            nbrContestStart->minimum(1);
-            nbrContestStart->maximum(10000);
-            nbrContestStart->step(1);
-            nbrContestStart->value(1);
-            nbrContestStart->callback((Fl_Callback*)cb_nbrContestStart);
-            nbrContestStart->align(FL_ALIGN_TOP);
-          } // Fl_Value_Input* nbrContestStart
-          { nbrContestDigits = new Fl_Value_Input(303, 232, 45, 20, _("# of digits:"));
-            nbrContestDigits->minimum(1);
-            nbrContestDigits->maximum(5);
-            nbrContestDigits->step(1);
-            nbrContestDigits->value(3);
-            nbrContestDigits->callback((Fl_Callback*)cb_nbrContestDigits);
-            nbrContestDigits->align(FL_ALIGN_TOP);
-          } // Fl_Value_Input* nbrContestDigits
-          o->end();
-        } // Fl_Group* o
         { inpMyAntenna = new Fl_Input2(110, 132, 320, 24, _("Antenna:"));
           inpMyAntenna->box(FL_DOWN_BOX);
           inpMyAntenna->color(FL_BACKGROUND2_COLOR);
@@ -2047,10 +2092,10 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         tabOperator->end();
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 500, 345, _("UI"));
-        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 500, 345);
           tabsUI->selection_color(FL_LIGHT1);
           { tabUserInterface = new Fl_Group(0, 50, 500, 320, _("General"));
+            tabUserInterface->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 195);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(15, 70, 120, 20, _("Show tooltips"));
@@ -2149,59 +2194,12 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             tabWfallRestart->end();
           } // Fl_Group* tabWfallRestart
           { tabContest = new Fl_Group(0, 50, 500, 320, _("Contest"));
-            tabContest->hide();
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 160, _("Exchanges"));
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 80, _("Exchanges"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { lblLabels = new Fl_Box(15, 103, 55, 25, _("Labels:"));
-              } // Fl_Box* lblLabels
-              { inpXch1 = new Fl_Input2(80, 103, 70, 25, _("1"));
-                inpXch1->box(FL_DOWN_BOX);
-                inpXch1->color(FL_BACKGROUND2_COLOR);
-                inpXch1->selection_color(FL_SELECTION_COLOR);
-                inpXch1->labeltype(FL_NORMAL_LABEL);
-                inpXch1->labelfont(0);
-                inpXch1->labelsize(14);
-                inpXch1->labelcolor(FL_FOREGROUND_COLOR);
-                inpXch1->align(FL_ALIGN_TOP);
-                inpXch1->when(FL_WHEN_RELEASE);
-              } // Fl_Input2* inpXch1
-              { inpXch2 = new Fl_Input2(158, 103, 70, 25, _("2"));
-                inpXch2->box(FL_DOWN_BOX);
-                inpXch2->color(FL_BACKGROUND2_COLOR);
-                inpXch2->selection_color(FL_SELECTION_COLOR);
-                inpXch2->labeltype(FL_NORMAL_LABEL);
-                inpXch2->labelfont(0);
-                inpXch2->labelsize(14);
-                inpXch2->labelcolor(FL_FOREGROUND_COLOR);
-                inpXch2->align(FL_ALIGN_TOP);
-                inpXch2->when(FL_WHEN_RELEASE);
-              } // Fl_Input2* inpXch2
-              { inpXch3 = new Fl_Input2(238, 103, 70, 25, _("3"));
-                inpXch3->box(FL_DOWN_BOX);
-                inpXch3->color(FL_BACKGROUND2_COLOR);
-                inpXch3->selection_color(FL_SELECTION_COLOR);
-                inpXch3->labeltype(FL_NORMAL_LABEL);
-                inpXch3->labelfont(0);
-                inpXch3->labelsize(14);
-                inpXch3->labelcolor(FL_FOREGROUND_COLOR);
-                inpXch3->align(FL_ALIGN_TOP);
-                inpXch3->when(FL_WHEN_RELEASE);
-              } // Fl_Input2* inpXch3
-              { inpXch4 = new Fl_Input2(315, 103, 70, 25, _("4"));
-                inpXch4->box(FL_DOWN_BOX);
-                inpXch4->color(FL_BACKGROUND2_COLOR);
-                inpXch4->selection_color(FL_SELECTION_COLOR);
-                inpXch4->labeltype(FL_NORMAL_LABEL);
-                inpXch4->labelfont(0);
-                inpXch4->labelsize(14);
-                inpXch4->labelcolor(FL_FOREGROUND_COLOR);
-                inpXch4->align(FL_ALIGN_TOP);
-                inpXch4->when(FL_WHEN_RELEASE);
-              } // Fl_Input2* inpXch4
-              { lblSend = new Fl_Box(13, 149, 55, 25, _("Send:"));
+              { lblSend = new Fl_Box(26, 95, 55, 25, _("Send:"));
               } // Fl_Box* lblSend
-              { inpSend1 = new Fl_Input2(80, 149, 70, 25);
+              { Fl_Input2* o = inpSend1 = new Fl_Input2(81, 95, 70, 25, _("Xchg 1"));
                 inpSend1->box(FL_DOWN_BOX);
                 inpSend1->color(FL_BACKGROUND2_COLOR);
                 inpSend1->selection_color(FL_SELECTION_COLOR);
@@ -2209,10 +2207,12 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 inpSend1->labelfont(0);
                 inpSend1->labelsize(14);
                 inpSend1->labelcolor(FL_FOREGROUND_COLOR);
-                inpSend1->align(FL_ALIGN_LEFT);
+                inpSend1->callback((Fl_Callback*)cb_inpSend1);
+                inpSend1->align(FL_ALIGN_TOP);
                 inpSend1->when(FL_WHEN_RELEASE);
+                o->value(progdefaults.Xchg1.c_str());
               } // Fl_Input2* inpSend1
-              { inpSend2 = new Fl_Input2(158, 150, 70, 25);
+              { Fl_Input2* o = inpSend2 = new Fl_Input2(159, 95, 70, 25, _("Xchg 2"));
                 inpSend2->box(FL_DOWN_BOX);
                 inpSend2->color(FL_BACKGROUND2_COLOR);
                 inpSend2->selection_color(FL_SELECTION_COLOR);
@@ -2220,10 +2220,12 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 inpSend2->labelfont(0);
                 inpSend2->labelsize(14);
                 inpSend2->labelcolor(FL_FOREGROUND_COLOR);
-                inpSend2->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
+                inpSend2->callback((Fl_Callback*)cb_inpSend2);
+                inpSend2->align(FL_ALIGN_TOP);
                 inpSend2->when(FL_WHEN_RELEASE);
+                o->value(progdefaults.Xchg2.c_str());
               } // Fl_Input2* inpSend2
-              { inpSend3 = new Fl_Input2(238, 150, 70, 25);
+              { Fl_Input2* o = inpSend3 = new Fl_Input2(239, 95, 70, 25, _("Xchg 3"));
                 inpSend3->box(FL_DOWN_BOX);
                 inpSend3->color(FL_BACKGROUND2_COLOR);
                 inpSend3->selection_color(FL_SELECTION_COLOR);
@@ -2231,23 +2233,91 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 inpSend3->labelfont(0);
                 inpSend3->labelsize(14);
                 inpSend3->labelcolor(FL_FOREGROUND_COLOR);
-                inpSend3->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
+                inpSend3->callback((Fl_Callback*)cb_inpSend3);
+                inpSend3->align(FL_ALIGN_TOP);
                 inpSend3->when(FL_WHEN_RELEASE);
+                o->value(progdefaults.Xchg3.c_str());
               } // Fl_Input2* inpSend3
-              { inpSend4 = new Fl_Input2(315, 149, 70, 25);
-                inpSend4->box(FL_DOWN_BOX);
-                inpSend4->color(FL_BACKGROUND2_COLOR);
-                inpSend4->selection_color(FL_SELECTION_COLOR);
-                inpSend4->labeltype(FL_NORMAL_LABEL);
-                inpSend4->labelfont(0);
-                inpSend4->labelsize(14);
-                inpSend4->labelcolor(FL_FOREGROUND_COLOR);
-                inpSend4->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
-                inpSend4->when(FL_WHEN_RELEASE);
-              } // Fl_Input2* inpSend4
-              { chk599 = new Fl_Check_Button(80, 190, 130, 20, _("RST always 599"));
-                chk599->down_box(FL_DOWN_BOX);
-              } // Fl_Check_Button* chk599
+              { Fl_Check_Button* o = btn599 = new Fl_Check_Button(326, 75, 130, 20, _("RST always 599"));
+                btn599->down_box(FL_DOWN_BOX);
+                btn599->callback((Fl_Callback*)cb_btn599);
+                o->value(progdefaults.fixed599);
+              } // Fl_Check_Button* btn599
+              { Fl_Check_Button* o = btnCutNbrs = new Fl_Check_Button(326, 110, 70, 15, _("Send CW cut #\'s"));
+                btnCutNbrs->down_box(FL_DOWN_BOX);
+                btnCutNbrs->callback((Fl_Callback*)cb_btnCutNbrs);
+                o->value(progdefaults.cutnbrs);
+              } // Fl_Check_Button* btnCutNbrs
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(5, 150, 490, 65, _("Serial Number"));
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { btnUseLeadingZeros = new Fl_Check_Button(26, 176, 154, 20, _("Use leading zeros"));
+                btnUseLeadingZeros->down_box(FL_DOWN_BOX);
+                btnUseLeadingZeros->value(1);
+                btnUseLeadingZeros->callback((Fl_Callback*)cb_btnUseLeadingZeros);
+              } // Fl_Check_Button* btnUseLeadingZeros
+              { Fl_Value_Input* o = nbrContestStart = new Fl_Value_Input(221, 176, 45, 20, _("Starting #"));
+                nbrContestStart->maximum(10000);
+                nbrContestStart->step(1);
+                nbrContestStart->callback((Fl_Callback*)cb_nbrContestStart);
+                nbrContestStart->align(FL_ALIGN_TOP);
+                o->value(progdefaults.ContestStart);
+              } // Fl_Value_Input* nbrContestStart
+              { nbrContestDigits = new Fl_Value_Input(303, 175, 45, 20, _("# of digits"));
+                nbrContestDigits->minimum(1);
+                nbrContestDigits->maximum(5);
+                nbrContestDigits->step(1);
+                nbrContestDigits->value(3);
+                nbrContestDigits->callback((Fl_Callback*)cb_nbrContestDigits);
+                nbrContestDigits->align(FL_ALIGN_TOP);
+              } // Fl_Value_Input* nbrContestDigits
+              { btnResetSerNbr = new Fl_Button(395, 176, 70, 20, _("Reset"));
+                btnResetSerNbr->callback((Fl_Callback*)cb_btnResetSerNbr);
+              } // Fl_Button* btnResetSerNbr
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(5, 225, 490, 85, _("Dup Check"));
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { Fl_Check_Button* o = btnDupBand = new Fl_Check_Button(135, 252, 70, 15, _("Band"));
+                btnDupBand->down_box(FL_DOWN_BOX);
+                btnDupBand->callback((Fl_Callback*)cb_btnDupBand);
+                o->value(progdefaults.dupband);
+              } // Fl_Check_Button* btnDupBand
+              { Fl_Check_Button* o = btnDupState = new Fl_Check_Button(215, 252, 70, 15, _("State"));
+                btnDupState->down_box(FL_DOWN_BOX);
+                btnDupState->callback((Fl_Callback*)cb_btnDupState);
+                o->value(progdefaults.dupstate);
+              } // Fl_Check_Button* btnDupState
+              { Fl_Check_Button* o = btnDupXchg1 = new Fl_Check_Button(55, 280, 70, 15, _("Xchg 1"));
+                btnDupXchg1->down_box(FL_DOWN_BOX);
+                btnDupXchg1->callback((Fl_Callback*)cb_btnDupXchg1);
+                o->value(progdefaults.dupxchg1);
+              } // Fl_Check_Button* btnDupXchg1
+              { Fl_Check_Button* o = btnDupXchg2 = new Fl_Check_Button(135, 280, 70, 15, _("Xchg 2"));
+                btnDupXchg2->down_box(FL_DOWN_BOX);
+                btnDupXchg2->callback((Fl_Callback*)cb_btnDupXchg2);
+                o->value(progdefaults.dupxchg2);
+              } // Fl_Check_Button* btnDupXchg2
+              { Fl_Check_Button* o = btnDupXchg3 = new Fl_Check_Button(215, 280, 70, 15, _("Xchg 3"));
+                btnDupXchg3->down_box(FL_DOWN_BOX);
+                btnDupXchg3->callback((Fl_Callback*)cb_btnDupXchg3);
+                o->value(progdefaults.dupxchg3);
+              } // Fl_Check_Button* btnDupXchg3
+              { Fl_Check_Button* o = btnDupMode = new Fl_Check_Button(295, 252, 70, 15, _("Mode"));
+                btnDupMode->down_box(FL_DOWN_BOX);
+                btnDupMode->callback((Fl_Callback*)cb_btnDupMode);
+                o->value(progdefaults.dupmode);
+              } // Fl_Check_Button* btnDupMode
+              { Fl_Check_Button* o = btnDupCheckOn = new Fl_Check_Button(365, 279, 90, 15, _("Dup Check On"));
+                btnDupCheckOn->down_box(FL_DOWN_BOX);
+                btnDupCheckOn->callback((Fl_Callback*)cb_btnDupCheckOn);
+                o->value(0);
+              } // Fl_Check_Button* btnDupCheckOn
+              { new Fl_Box(51, 248, 59, 22, _("Call +"));
+              } // Fl_Box* o
               o->end();
             } // Fl_Group* o
             tabContest->end();
@@ -2855,7 +2925,6 @@ an merging"));
             tabOlivia->end();
           } // Fl_Group* tabOlivia
           { tabPSK = new Fl_Group(0, 50, 500, 320, _("PSK"));
-            tabPSK->hide();
             { tabsPSK = new Fl_Tabs(0, 50, 500, 320);
               tabsPSK->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
@@ -3101,6 +3170,7 @@ an merging"));
             tabRTTY->end();
           } // Fl_Group* tabRTTY
           { tabTHOR = new Fl_Group(0, 50, 500, 320, _("Thor"));
+            tabTHOR->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 190);
               o->box(FL_ENGRAVED_FRAME);
               { txtTHORSecondary = new Fl_Input2(15, 87, 360, 40, _("Secondary Text"));

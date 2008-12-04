@@ -591,6 +591,8 @@ char arq_get_char()
 // ============================================================================
 // Implementation using thread vice the fldigi timeout facility
 // ============================================================================
+static string timestr = "";
+static string clocktime = "";
 
 static pthread_t arq_thread;
 
@@ -621,6 +623,14 @@ static void *arq_loop(void *args)
 					TLF_arqRx();
 #endif
 // delay for 50 msec interval
+// check for updating the time display on fldigi main dialog
+		zuluDateTime();
+		clocktime = zuluLogTime;
+		if (timestr.empty() || timestr != clocktime) {
+			timestr = clocktime;
+			inpTime->value(timestr.c_str());
+		}
+		
 		MilliSleep(50);
 	}
 // exit the arq thread

@@ -341,4 +341,49 @@ int cQsoDb::qsoWriteFile (const char *fname) {
   return 0;
 }
 
+bool cQsoDb::duplicate(
+		const char *callsign, 
+		const char *freq, bool chkfreq,
+		const char *state, bool chkstate,
+		const char *mode, bool chkmode,
+		const char *xchg1, bool chkxchg1,
+		const char *xchg2, bool chkxchg2,
+		const char *xchg3, bool chkxchg3 )
+{
+	int f1, f2;
+	f1 = (int)atof(freq);
+	bool b_freq = false, b_state = false, b_mode = false,
+		 b_xchg1 = false, b_xchg2 = false, b_xchg3 = false;
+	
+	for (int i = 0; i < nbrrecs; i++) {
+		if (strcasecmp(qsorec[i].getField(CALL), callsign) == 0) {
+// found callsign duplicate
+// check frequency field
+			if (!chkfreq) b_freq = true;
+			else {
+				f2 = (int)atof(qsorec[i].getField(FREQ));
+				if (f1 == f2) b_freq = true;
+			}
+// check state
+			if (!chkstate) b_state = true;
+			else
+				if (strcasecmp(qsorec[i].getField(STATE), state) == 0) b_state = true;
+			if (!chkmode) b_mode = true;
+				if (strcasecmp(qsorec[i].getField(MODE), mode) == 0) b_mode = true;
+			if (!chkxchg1) b_xchg1 = true;
+			else
+				if (strcasecmp(qsorec[i].getField(XCHG1), xchg1) == 0) b_xchg1 = true;
+			if (!chkxchg2) b_xchg2 = true;
+			else
+				if (strcasecmp(qsorec[i].getField(XCHG2), xchg2) == 0) b_xchg2 = true;
+			if (!chkxchg3) b_xchg3 = true;
+			else
+				if (strcasecmp(qsorec[i].getField(XCHG3), xchg3) == 0) b_xchg3 = true;
+// all must be true for a dup.
+			if (b_freq && b_state && b_mode && b_xchg1 && b_xchg2 && b_xchg3)
+				return true;
+		}
+	}
+	return false;
+}
 

@@ -38,6 +38,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add("<MYNAME>\tmy name");
 	w->add("<MYQTH>\tmy qth");
 	w->add("<MYRST>\tmy RST");
+	w->add("<QSOTIME>\tqso HHMM");
 
 	w->add(LINE_SEP);
 	w->add("<CALL>\tother call");
@@ -65,6 +66,9 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add("<CNTR>\tcontest cnt");
 	w->add("<DECR>\tdecr cnt");
 	w->add("<INCR>\tincr cnt");
+	w->add("<X1>\teXchange 1");
+	w->add("<X2>\teXchange 2");
+	w->add("<X3>\teXchange 3");
 
 	w->add(LINE_SEP);
 	w->add("<ID>\tMode ID'r");

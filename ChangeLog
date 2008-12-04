@@ -99,6 +99,13 @@ Change Log:
       34) Color changes for Frequency Control now applied to both docked and
           floating rig control.
       35) Added fl_logbook functionality as a built-in feature
+      36) Added rudimentary contest functionality
+          a. additional log fields for various contest exchanges
+          b. duplicate checking
+          c. cut number transmit for CW
+          d. additional macro tags for sending contest specific exchanges
+          e. additional macro tag to send current qso-log-time
+          f. changed qso-log-time to an automated clock
 
 3.03
       1) Changes to socket server to correct shutdown process
