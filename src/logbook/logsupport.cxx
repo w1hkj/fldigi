@@ -19,6 +19,7 @@
 #include "lgbook.h"
 #include "fl_digi.h"
 #include "fileselect.h"
+#include "configuration.h"
 
 #include <FL/fl_ask.H>
 
@@ -70,12 +71,13 @@ void Export_log()
 
 void saveLogbook()
 {
-	if (qsodb.isdirty()) {
-		if (fl_choice("Save changed Logbook?", "No", "Yes", NULL))
-			if (adifFile.writeLog (logbook_filename.c_str(), &qsodb))
-				fl_message ("Could not update file %s", logbook_filename.c_str());
-		qsodb.isdirty(0);
-	}
+	if (!qsodb.isdirty()) return;
+	if (progdefaults.NagMe)
+		if (!fl_choice("Save changed Logbook?", "No", "Yes", NULL)) 
+			return;
+	if (adifFile.writeLog (logbook_filename.c_str(), &qsodb))
+		fl_message ("Could not update file %s", logbook_filename.c_str());
+	qsodb.isdirty(0);
 }
 
 void cb_mnuNewLogbook(Fl_Menu_* m, void* d){
@@ -98,7 +100,6 @@ void cb_mnuOpenLogbook(Fl_Menu_* m, void* d)
 		adifFile.readFile (logbook_filename.c_str(), &qsodb);
 		loadBrowser();
 		qsodb.isdirty(0);
-		dlgLogbook->copy_label(fl_filename_name(logbook_filename.c_str()));
 	}
 }
 
@@ -107,10 +108,8 @@ void cb_mnuSaveLogbook(Fl_Menu_*m, void* d) {
 	const char* p = FSEL::saveas("Save logbook file", "ADIF\t*." ADIF_SUFFIX,
 				     logbook_filename.c_str());
 	if (p) {
-		if (adifFile.writeLog (p, &qsodb)) {
+		if (adifFile.writeLog (p, &qsodb))
 			fl_message ("Could not write to %s", p);
-			return;
-		}
 		qsodb.isdirty(0);
 	}
 }
