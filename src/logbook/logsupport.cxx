@@ -98,6 +98,7 @@ void cb_mnuOpenLogbook(Fl_Menu_* m, void* d)
 		adifFile.readFile (logbook_filename.c_str(), &qsodb);
 		loadBrowser();
 		qsodb.isdirty(0);
+		dlgLogbook->copy_label(fl_filename_name(logbook_filename.c_str()));
 	}
 }
 
@@ -106,8 +107,10 @@ void cb_mnuSaveLogbook(Fl_Menu_*m, void* d) {
 	const char* p = FSEL::saveas("Save logbook file", "ADIF\t*." ADIF_SUFFIX,
 				     logbook_filename.c_str());
 	if (p) {
-		if (adifFile.writeLog (p, &qsodb))
+		if (adifFile.writeLog (p, &qsodb)) {
 			fl_message ("Could not write to %s", p);
+			return;
+		}
 		qsodb.isdirty(0);
 	}
 }

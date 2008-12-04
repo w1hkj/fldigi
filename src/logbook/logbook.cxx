@@ -26,6 +26,7 @@ void start_logbook ()
 	logbook_filename.append("logbook." ADIF_SUFFIX);
 
 	adifFile.readFile (logbook_filename.c_str(), &qsodb);
+	dlgLogbook->copy_label(fl_filename_name(logbook_filename.c_str()));
 	loadBrowser();
 	qsodb.isdirty(0);
 
