@@ -43,7 +43,15 @@ struct status {
 	
 	int		logbook_x;
 	int		logbook_y;
+	int		logbook_w;
+	int		logbook_h;
 	bool	logbook_reverse;
+	int		logbook_col_0;
+	int		logbook_col_1;
+	int		logbook_col_2;
+	int		logbook_col_3;
+	int		logbook_col_4;
+	int		logbook_col_5;
 
 	bool	bLastStateRead;
 

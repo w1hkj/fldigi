@@ -77,7 +77,15 @@ status progStatus = {
 	
 	50,					// int logbook_x;
 	50,					// int logbook_y;
+	380,				// int logbook_w;
+	290,				// int logbook_h;
 	false,				// bool logbook_reverse;
+	85,					// int		logbook_browser_col_0;
+	50,					// int		logbook_browser_col_1;
+	100,				// int		logbook_browser_col_2;
+	110,				// int		logbook_browser_col_3;
+	120,				// int		logbook_browser_col_4;
+	90,					// int		logbook_browser_col_5;
 
 	false				// bool bLastStateRead;
 };
@@ -97,8 +105,16 @@ void status::saveLastState()
 
 	logbook_x = dlgLogbook->x();
 	logbook_y = dlgLogbook->y();
+	logbook_w = dlgLogbook->w();
+	logbook_h = dlgLogbook->h();
 	logbook_reverse = cQsoDb::reverse;
-
+	logbook_col_0 = wBrowser->columnWidth(0);
+	logbook_col_1 = wBrowser->columnWidth(1);
+	logbook_col_2 = wBrowser->columnWidth(2);
+	logbook_col_3 = wBrowser->columnWidth(3);
+	logbook_col_4 = wBrowser->columnWidth(4);
+	logbook_col_5 = wBrowser->columnWidth(5);
+	
 	VIEWERvisible = false;
 	if (dlgViewer && dlgViewer->visible()) {
 		VIEWERxpos = dlgViewer->x();
@@ -173,7 +189,16 @@ void status::saveLastState()
 	
 	spref.set("logbook_x", logbook_x);
 	spref.set("logbook_y", logbook_y);
+	spref.set("logbook_w", logbook_w);
+	spref.set("logbook_h", logbook_h);
 	spref.set("logbook_reverse", logbook_reverse);
+	spref.set("logbook_col_0", logbook_col_0);
+	spref.set("logbook_col_1", logbook_col_1);
+	spref.set("logbook_col_2", logbook_col_2);
+	spref.set("logbook_col_3", logbook_col_3);
+	spref.set("logbook_col_4", logbook_col_4);
+	spref.set("logbook_col_5", logbook_col_5);
+
 }
 
 void status::loadLastState()
@@ -244,7 +269,16 @@ void status::loadLastState()
 	
 	spref.get("logbook_x", logbook_x, logbook_x);
 	spref.get("logbook_y", logbook_y, logbook_y);
+	spref.get("logbook_w", logbook_w, logbook_w);
+	spref.get("logbook_h", logbook_h, logbook_h);
 	spref.get("logbook_reverse", i, i); logbook_reverse = i;
+	spref.get("logbook_col_0", logbook_col_0, logbook_col_0);
+	spref.get("logbook_col_1", logbook_col_1, logbook_col_1);
+	spref.get("logbook_col_2", logbook_col_2, logbook_col_2);
+	spref.get("logbook_col_3", logbook_col_3, logbook_col_3);
+	spref.get("logbook_col_4", logbook_col_4, logbook_col_4);
+	spref.get("logbook_col_5", logbook_col_5, logbook_col_5);
+
 }
 
 void status::initLastState()
@@ -310,6 +344,12 @@ void status::initLastState()
 		loadBrowser();
 	}
 	
-	dlgLogbook->resize(logbook_x, logbook_y, dlgLogbook->w(), dlgLogbook->h());
+	dlgLogbook->resize(logbook_x, logbook_y, logbook_w, logbook_h);
+	wBrowser->columnWidth(0, logbook_col_0);
+	wBrowser->columnWidth(1, logbook_col_1);
+	wBrowser->columnWidth(2, logbook_col_2);
+	wBrowser->columnWidth(3, logbook_col_3);
+	wBrowser->columnWidth(4, logbook_col_4);
+	wBrowser->columnWidth(5, logbook_col_5);
 		
 }
