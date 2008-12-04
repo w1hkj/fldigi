@@ -247,7 +247,7 @@ void SearchLastQSO(const char *callsign)
 	snprintf(re, len + 3, "^%s$", callsign);
 
 	int row = 0, col = 2;
-	if (wBrowser->search(row, col, cQsoDb::reverse, re)) {
+	if (wBrowser->search(row, col, !cQsoDb::reverse, re)) {
 		wBrowser->GotoRow(row);
 		inpName->value(inpName_log->value());
 	}
