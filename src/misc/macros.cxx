@@ -69,6 +69,7 @@ void pCONT(string &, size_t &);
 void pGET(string &, size_t &);
 void pINFO1(string &, size_t &);
 void pINFO2(string &, size_t &);
+void pCLRRX(string &, size_t &);
 
 MTAGS mtags[] = {
 {"<CALL>",		pCALL},
@@ -110,6 +111,7 @@ MTAGS mtags[] = {
 {"<STOP>",		pSTOP},
 {"<CONT>",		pCONT},
 {"<GET>",		pGET},
+{"<CLRRX>",		pCLRRX},
 {0, 0}
 };
 
@@ -131,6 +133,12 @@ void pINFO1(string &s, size_t &i)
 void pINFO2(string &s, size_t &i)
 {
 	s.replace( i, 7, info2msg );
+}
+
+void pCLRRX(string &s, size_t &i)
+{
+	s.replace( i, 7, "" );
+	ReceiveText->clear();
 }
 
 void pCALL(string &s, size_t &i)
@@ -360,10 +368,13 @@ void pIDLE(string &s, size_t &i)
 {
 	int number;
 	sscanf(s.substr(i+6).c_str(), "%d", &number);
-	size_t i2;
+	size_t i2, i3;
 	i2 = s.find(" ", i);
+	i3 = s.find("\n", i);
 	if (i2 == string::npos)
-		i2 = s.find("\n", i);
+		i2 = i3;
+	if (i3 < i2)
+		i2 = i3;
 	s.replace (i, i2 - i + 1, "");
 	useIdle = true;
 	idleTime = number;

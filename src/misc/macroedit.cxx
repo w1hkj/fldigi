@@ -38,7 +38,6 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add("<MYNAME>\tmy name");
 	w->add("<MYQTH>\tmy qth");
 	w->add("<MYRST>\tmy RST");
-	w->add("<QSOTIME>\tqso HHMM");
 
 	w->add(LINE_SEP);
 	w->add("<CALL>\tother call");
@@ -50,6 +49,9 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add("<INFO2>\timd etc.");
 	
 	w->add(LINE_SEP);
+	w->add("<CLRRX>\tclear Rx pane");
+	
+	w->add(LINE_SEP);
 	w->add("<GET>\ttext to NAME/QTH");
 
 	w->add(LINE_SEP);
@@ -57,6 +59,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add("<MODE>\tmode");
 
 	w->add(LINE_SEP);
+	w->add("<QSOTIME>\tqso time HHMM");
 	w->add("<LDT>\tLocal datetime");
 	w->add("<ILDT>\tLDT in iso-8601 format");
 	w->add("<ZDT>\tZulu datetime");
