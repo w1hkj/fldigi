@@ -149,7 +149,8 @@ Fl_Button			*btnAltMacros;
 Fl_Button			*btn_afconoff;
 Fl_Button			*btn_sqlonoff;
 Fl_Input2			*inpFreq;
-Fl_Output			*inpTime;
+Fl_Output			*inpTimeOff;
+Fl_Input2			*inpTimeOn;
 Fl_Input2			*inpCall;
 Fl_Input2			*inpName;
 Fl_Input2			*inpRstIn;
@@ -210,11 +211,11 @@ int x_qsoframe = BTNWIDTH;
 int w_inpFreq	= 80;
 int w_inpTime	= 40;
 int w_inpCall	= 120;
-int w_inpName  	= 120;
+int w_inpName  	= 90;
 int w_inpRstIn	= 30;
 int w_inpRstOut = 30;
 int w_SerNo	= 40;
-int wf1 = pad + w_inpFreq + pad + w_inpTime +  pad + w_inpCall + 
+int wf1 = pad + w_inpFreq + pad + 2*w_inpTime +  pad + w_inpCall + 
           pad + w_inpName + pad + w_inpRstIn + pad + w_inpRstOut;
 
 int w_fm1 		= 25;
@@ -1250,7 +1251,7 @@ void updateOutSerNo()
 void clearQSO()
 {
 	Fl_Input* in[] = { 
-		inpCall, inpName, inpRstIn, inpRstOut,
+		inpCall, inpName, inpTimeOn, inpRstIn, inpRstOut,
 		inpQth, inpLoc, inpAZ, inpState, inpVEprov, inpCountry,
 		inpSerNo, outSerNo, inpXchg1, inpXchg2, inpXchg3, inpNotes };
 	for (size_t i = 0; i < sizeof(in)/sizeof(*in); i++)
@@ -1277,9 +1278,10 @@ void cb_log(Fl_Widget* w, void*)
 		for (size_t i = 0; i < temp.length(); i++)
 			temp[i] = toupper(temp[i]);
 		inpCall->value(temp.c_str());
+		inpTimeOn->value(inpTimeOff->value());
 		SearchLastQSO(temp.c_str());
-		restoreFocus();	
 	}
+	restoreFocus();	
 }
 
 void qsoClear_cb(Fl_Widget *b, void *)
@@ -2199,11 +2201,15 @@ void create_fl_digi_main() {
 				inpFreq->tooltip(_(""));
 				inpFreq->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
-				inpTime = new Fl_Output(rightof(inpFreq) + pad, y2, w_inpTime, qh - pad, _("Time"));
-				inpTime->tooltip(_(""));
-				inpTime->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+				inpTimeOn = new Fl_Input2(rightof(inpFreq) + pad, y2, w_inpTime, qh - pad, _("On"));
+				inpTimeOn->tooltip(_(""));
+				inpTimeOn->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
-				inpCall = new Fl_Input2(rightof(inpTime) + pad, y2, w_inpCall, qh - pad, _("Call"));
+				inpTimeOff = new Fl_Output(rightof(inpTimeOn) + pad, y2, w_inpTime, qh - pad, _("Off"));
+				inpTimeOff->tooltip(_(""));
+				inpTimeOff->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+
+				inpCall = new Fl_Input2(rightof(inpTimeOff) + pad, y2, w_inpCall, qh - pad, _("Call"));
 				inpCall->tooltip(_(""));
 				inpCall->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
@@ -2319,7 +2325,7 @@ void create_fl_digi_main() {
 	
 		Y = Hmenu + Hqsoframe + Hnotes + pad;
 
-		Fl_Widget* logfields[] = { inpCall, inpName, inpRstIn, inpRstOut, 
+		Fl_Widget* logfields[] = { inpCall, inpName, inpTimeOn, inpRstIn, inpRstOut, 
 				inpQth, inpVEprov, inpCountry, inpAZ, inpLoc, inpNotes,
 				inpSerNo, inpXchg1, inpXchg1, inpXchg1 };
 		for (size_t i = 0; i < sizeof(logfields)/sizeof(*logfields); i++)

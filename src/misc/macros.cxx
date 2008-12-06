@@ -179,7 +179,7 @@ void pQTH(string &s, size_t &i)
 
 void pQSOTIME(string &s, size_t &i)
 {
-	s.replace( i, 9, inpTime->value() );
+	s.replace( i, 9, inpTimeOff->value() );
 }
 
 void pRST(string &s, size_t &i)
@@ -414,7 +414,7 @@ void set_env(void)
 	       FLDIGI_MODEM, FLDIGI_MODEM_LONG_NAME, FLDIGI_DIAL_FREQUENCY,
 	       FLDIGI_AUDIO_FREQUENCY, FLDIGI_FREQUENCY,
 
-	       FLDIGI_LOG_FREQUENCY, FLDIGI_LOG_TIME, FLDIGI_LOG_CALL, FLDIGI_LOG_NAME,
+	       FLDIGI_LOG_FREQUENCY, FLDIGI_LOG_TIME_ON, FLDIGI_LOG_TIME_OFF, FLDIGI_LOG_CALL, FLDIGI_LOG_NAME,
 	       FLDIGI_LOG_RST_IN, FLDIGI_LOG_RST_OUT, FLDIGI_LOG_QTH, FLDIGI_LOG_LOCATOR,
 	       FLDIGI_LOG_NOTES, FLDIGI_AZ, ENV_SIZE
 	};
@@ -442,7 +442,8 @@ void set_env(void)
 
 		// logging frame
 		{ "FLDIGI_LOG_FREQUENCY", inpFreq->value() },
-		{ "FLDIGI_LOG_TIME", inpTime->value() },
+		{ "FLDIGI_LOG_TIME_ON", inpTimeOn->value() },
+		{ "FLDIGI_LOG_TIME_OFF", inpTimeOff->value() },
 		{ "FLDIGI_LOG_CALL", inpCall->value() },
 		{ "FLDIGI_LOG_NAME", inpName->value() },
 		{ "FLDIGI_LOG_RST_IN", inpRstIn->value() },

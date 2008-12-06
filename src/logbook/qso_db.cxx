@@ -81,7 +81,7 @@ const cQsoRec &cQsoRec::operator=(const cQsoRec &right) {
 }
 
 int compareTimes (const cQsoRec &r1, const cQsoRec &r2) {
-  return  strcmp (r1.qsofield[TIME_ON], r2.qsofield[TIME_ON]);
+  return  strcmp (r1.qsofield[TIME_OFF], r2.qsofield[TIME_OFF]);
 }
 
 int compareDates (const cQsoRec &r1, const cQsoRec &r2) {
@@ -431,7 +431,7 @@ bool cQsoDb::duplicate(
 			if (chkdatetime) {
 				qsodatetime = epoch_minutes (
 								qsorec[i].getField(QSO_DATE),
-								qsorec[i].getField(TIME_ON));
+								qsorec[i].getField(TIME_OFF));
 				if ((datetime - qsodatetime) >= interval) b_dtimeOK = false;
 			}
 // all must be true for a dup.

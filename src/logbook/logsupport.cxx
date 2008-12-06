@@ -143,7 +143,7 @@ void cb_mnuExportADIF_log(Fl_Menu_* m, void* d) {
 		memset(line, sizeof(line), 0);
 		snprintf(line,sizeof(line),"%-10s%-6s%-12s%-12s%-s",
 			rec->getField(QSO_DATE),
-			rec->getField(TIME_ON),
+			rec->getField(TIME_OFF),
 			rec->getField(CALL),
 			rec->getField(FREQ),
 			rec->getField(MODE) );
@@ -326,7 +326,8 @@ void clearRecord() {
 	inpCall_log->value ("");
 	inpName_log->value ("");
 	inpDate_log->value (tdy.szDate(2));
-	inpTime_log->value ("0000");
+	inpTimeOn_log->value ("0000");
+	inpTimeOff_log->value ("0000");
 	inpRstR_log->value ("599");
 	inpRstS_log->value ("599");
 	inpFreq_log->value ("");
@@ -352,7 +353,8 @@ cQsoRec rec;
 	rec.putField(CALL, inpCall_log->value());
 	rec.putField(NAME, inpName_log->value());
 	rec.putField(QSO_DATE, inpDate_log->value());
-	rec.putField(TIME_ON, inpTime_log->value());
+	rec.putField(TIME_ON, inpTimeOn_log->value());
+	rec.putField(TIME_OFF, inpTimeOff_log->value());
 	rec.putField(FREQ, inpFreq_log->value());
 	rec.putField(MODE, inpMode_log->value());
 	rec.putField(QTH, inpQth_log->value());
@@ -380,7 +382,8 @@ cQsoRec rec;
 	rec.putField(CALL, inpCall_log->value());
 	rec.putField(NAME, inpName_log->value());
 	rec.putField(QSO_DATE, inpDate_log->value());
-	rec.putField(TIME_ON, inpTime_log->value());
+	rec.putField(TIME_ON, inpTimeOn_log->value());
+	rec.putField(TIME_OFF, inpTimeOff_log->value());
 	rec.putField(FREQ, inpFreq_log->value());
 	rec.putField(MODE, inpMode_log->value());
 	rec.putField(QTH, inpQth_log->value());
@@ -421,7 +424,8 @@ void EditRecord( int i )
 	inpCall_log->value (editQSO->getField(CALL));
 	inpName_log->value (editQSO->getField(NAME));
 	inpDate_log->value (editQSO->getField(QSO_DATE));
-	inpTime_log->value (editQSO->getField(TIME_ON));
+	inpTimeOn_log->value (editQSO->getField(TIME_ON));
+	inpTimeOff_log->value (editQSO->getField(TIME_OFF));
 	inpRstR_log->value (editQSO->getField(RST_RCVD));
 	inpRstS_log->value (editQSO->getField(RST_SENT));
 	inpFreq_log->value (editQSO->getField(FREQ));
@@ -448,7 +452,8 @@ void AddRecord ()
 	inpCall_log->value(inpCall->value());
 	inpName_log->value (inpName->value());
 	inpDate_log->value (zuluLogDate);
-	inpTime_log->value (zuluLogTime);
+	inpTimeOn_log->value (inpTimeOn->value());
+	inpTimeOff_log->value (zuluLogTime);
 	inpRstR_log->value (inpRstIn->value());
 	inpRstS_log->value (inpRstOut->value());
 	inpFreq_log->value (inpFreq->value());
@@ -495,7 +500,7 @@ void loadBrowser()
 		snprintf(sNbr,sizeof(sNbr),"%d",i);
 		wBrowser->addRow (7,
 			rec->getField(QSO_DATE),
-			rec->getField(TIME_ON),
+			rec->getField(TIME_OFF),
 			rec->getField(CALL),
 			rec->getField(NAME),
 			rec->getField(FREQ),

@@ -136,6 +136,11 @@ void cAdifIO::readFile (const char *fname, cQsoDb *db) {
         if (found > -1)
             fillfield (found, p2+1);
         else if (found == -1) { // <eor> reached; add this record to db
+//update fields for older db
+        	if (adifqso.getField(TIME_OFF)[0] == 0)
+        		adifqso.putField(TIME_OFF, adifqso.getField(TIME_ON));
+        	if (adifqso.getField(TIME_ON)[0] == 0)
+        		adifqso.putField(TIME_ON, adifqso.getField(TIME_OFF));
             db->qsoNewRec (&adifqso);
             adifqso.clearRec();
         }

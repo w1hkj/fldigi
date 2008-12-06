@@ -628,7 +628,7 @@ static void *arq_loop(void *args)
 		clocktime = zuluLogTime;
 		if (timestr.empty() || timestr != clocktime) {
 			timestr = clocktime;
-			inpTime->value(timestr.c_str());
+			inpTimeOff->value(timestr.c_str());
 		}
 		
 		MilliSleep(50);

@@ -19,7 +19,8 @@ extern Fl_Double_Window *dlgLogbook;
 extern Fl_Group *editGroup;
 #include "calendar.h"
 extern Fl_DateInput *inpDate_log;
-extern Fl_Input2 *inpTime_log;
+extern Fl_Input2 *inpTimeOn_log;
+extern Fl_Input2 *inpTimeOff_log;
 extern Fl_Input2 *inpCall_log;
 extern Fl_Input2 *inpName_log;
 extern Fl_Input2 *inpFreq_log;

@@ -1173,17 +1173,31 @@ public:
 	}
 };
 
-class Log_get_time : public xmlrpc_c::method
+class Log_get_time_on : public xmlrpc_c::method
 {
 public:
-	Log_get_time()
+	Log_get_time_on()
 	{
 		_signature = "s:n";
-		_help = "Returns the Time field contents.";
+		_help = "Returns the Time-On field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		*retval = xmlrpc_c::value_string(inpTime->value());
+		*retval = xmlrpc_c::value_string(inpTimeOn->value());
+	}
+};
+
+class Log_get_time_off : public xmlrpc_c::method
+{
+public:
+	Log_get_time_off()
+	{
+		_signature = "s:n";
+		_help = "Returns the Time-Off field contents.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		*retval = xmlrpc_c::value_string(inpTimeOff->value());
 	}
 };
 
@@ -1661,7 +1675,8 @@ public:
 	ELEM_(Main_get_max_macro_id, "main.get_max_macro_id")		\
 									\
 	ELEM_(Log_get_freq, "log.get_frequency")			\
-	ELEM_(Log_get_time, "log.get_time")				\
+	ELEM_(Log_get_time_on, "log.get_time_on")				\
+	ELEM_(Log_get_time_off, "log.get_time_off")				\
 	ELEM_(Log_get_call, "log.get_call")				\
 	ELEM_(Log_get_name, "log.get_name")				\
 	ELEM_(Log_get_rst_in, "log.get_rst_in")				\
