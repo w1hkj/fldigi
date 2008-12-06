@@ -264,14 +264,14 @@ int olivia::rx_process(const double *buf, int len)
 	snr = Rx->SignalToNoiseRatio();
 
 	set_metric(snr);
-	display_metric(snr > 100.0 ? 100.0 : snr * 2.0);
+	display_metric(snr > 50.0 ? 100.0 : snr * 2.0);
 	
 	double s2n = 20.0 * log10(snr < 0.1 ? 0.1 : snr);
 
 	snprintf(msg1, sizeof(msg1), "s/n %4.1f dB", s2n);
 	put_Status1(msg1);
-	snprintf(msg2, sizeof(msg2), "Freq: %+4.1f", Rx->FrequencyOffset());
-	put_Status2(msg2);
+//	snprintf(msg2, sizeof(msg2), "Freq: %+4.1f", Rx->FrequencyOffset());
+//	put_Status2(msg2);
 
 	while (Rx->GetChar(ch) > 0)
 		if ((c = unescape(ch)) != -1 && c > 7)
@@ -343,6 +343,9 @@ void olivia::restart()
 	set_bandwidth(Tx->Bandwidth);
 
 	put_MODEstatus(mode);
+	char szmsg[20];
+	snprintf(szmsg, sizeof(szmsg), "%d / %d", Tx->Tones, Tx->Bandwidth);
+	put_Status2(szmsg);
 }
 
 void olivia::init()

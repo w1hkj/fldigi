@@ -271,16 +271,25 @@ void SearchLastQSO(const char *callsign)
 	size_t len = strlen(callsign);
 	char* re = new char[len + 3];
 	snprintf(re, len + 3, "^%s$", callsign);
+	bool call_found = false;
 
 	int row = 0, col = 2;
-	if (wBrowser->search(row, col, !cQsoDb::reverse, re)) {
-		wBrowser->GotoRow(row);
-		inpName->value(inpName_log->value());
-		if (EnableDupCheck)
-			DupCheck(callsign);
+	if (cQsoDb::reverse) {
+		if (wBrowser->search(row, col, false, re)) {
+			wBrowser->GotoRow(row);
+			inpName->value(inpName_log->value());
+			call_found = true;
+		}
+	} else {
+		if (wBrowser->search(row, col, true, re)) {
+			wBrowser->GotoRow(row);
+			inpName->value(inpName_log->value());
+			call_found = true;
+		}
 	}
-
 	delete [] re;
+	
+	if (EnableDupCheck && call_found) DupCheck(callsign);
 }
 
 void cb_search(Fl_Widget* w, void*)
