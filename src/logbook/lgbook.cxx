@@ -57,6 +57,12 @@ Fl_Input2 *inpRstS_log=(Fl_Input2 *)0;
 
 Fl_Input2 *inpQth_log=(Fl_Input2 *)0;
 
+Fl_Input2 *inpState_log=(Fl_Input2 *)0;
+
+Fl_Input2 *inpVE_Prov_log=(Fl_Input2 *)0;
+
+Fl_Input2 *inpCountry_log=(Fl_Input2 *)0;
+
 Fl_Input2 *inpLoc_log=(Fl_Input2 *)0;
 
 Fl_Input2 *inpComment_log=(Fl_Input2 *)0;
@@ -72,10 +78,6 @@ Fl_Button *bUpdateCancel=(Fl_Button *)0;
 Fl_Button *bDelete=(Fl_Button *)0;
 
 Fl_Input2 *txtNbrRecs_log=(Fl_Input2 *)0;
-
-Fl_Input2 *inpCnty_log=(Fl_Input2 *)0;
-
-Fl_Input2 *inpVE_Prov_log=(Fl_Input2 *)0;
 
 Fl_Input2 *inpSerNoOut_log=(Fl_Input2 *)0;
 
@@ -217,7 +219,7 @@ void create_logbook_dialogs() {
         inpRstS_log->align(FL_ALIGN_TOP_LEFT);
         inpRstS_log->when(FL_WHEN_RELEASE);
       } // Fl_Input2* inpRstS_log
-      { inpQth_log = new Fl_Input2(5, 56, 135, 22, _("Qth"));
+      { inpQth_log = new Fl_Input2(5, 56, 115, 22, _("Qth"));
         inpQth_log->box(FL_DOWN_BOX);
         inpQth_log->color(FL_BACKGROUND2_COLOR);
         inpQth_log->selection_color(FL_SELECTION_COLOR);
@@ -229,6 +231,42 @@ void create_logbook_dialogs() {
         inpQth_log->align(FL_ALIGN_TOP_LEFT);
         inpQth_log->when(FL_WHEN_RELEASE);
       } // Fl_Input2* inpQth_log
+      { inpState_log = new Fl_Input2(123, 56, 30, 22, _("St"));
+        inpState_log->box(FL_DOWN_BOX);
+        inpState_log->color(FL_BACKGROUND2_COLOR);
+        inpState_log->selection_color(FL_SELECTION_COLOR);
+        inpState_log->labeltype(FL_NORMAL_LABEL);
+        inpState_log->labelfont(0);
+        inpState_log->labelsize(12);
+        inpState_log->labelcolor(FL_FOREGROUND_COLOR);
+        inpState_log->textsize(12);
+        inpState_log->align(FL_ALIGN_TOP_LEFT);
+        inpState_log->when(FL_WHEN_RELEASE);
+      } // Fl_Input2* inpState_log
+      { inpVE_Prov_log = new Fl_Input2(156, 56, 30, 22, _("Pr"));
+        inpVE_Prov_log->box(FL_DOWN_BOX);
+        inpVE_Prov_log->color(FL_BACKGROUND2_COLOR);
+        inpVE_Prov_log->selection_color(FL_SELECTION_COLOR);
+        inpVE_Prov_log->labeltype(FL_NORMAL_LABEL);
+        inpVE_Prov_log->labelfont(0);
+        inpVE_Prov_log->labelsize(12);
+        inpVE_Prov_log->labelcolor(FL_FOREGROUND_COLOR);
+        inpVE_Prov_log->textsize(12);
+        inpVE_Prov_log->align(FL_ALIGN_TOP_LEFT);
+        inpVE_Prov_log->when(FL_WHEN_RELEASE);
+      } // Fl_Input2* inpVE_Prov_log
+      { inpCountry_log = new Fl_Input2(190, 56, 90, 22, _("Country"));
+        inpCountry_log->box(FL_DOWN_BOX);
+        inpCountry_log->color(FL_BACKGROUND2_COLOR);
+        inpCountry_log->selection_color(FL_SELECTION_COLOR);
+        inpCountry_log->labeltype(FL_NORMAL_LABEL);
+        inpCountry_log->labelfont(0);
+        inpCountry_log->labelsize(12);
+        inpCountry_log->labelcolor(FL_FOREGROUND_COLOR);
+        inpCountry_log->textsize(12);
+        inpCountry_log->align(FL_ALIGN_TOP_LEFT);
+        inpCountry_log->when(FL_WHEN_RELEASE);
+      } // Fl_Input2* inpCountry_log
       { inpLoc_log = new Fl_Input2(283, 56, 75, 22, _("Loc"));
         inpLoc_log->tooltip(_("Stations grid square"));
         inpLoc_log->box(FL_DOWN_BOX);
@@ -251,7 +289,6 @@ void create_logbook_dialogs() {
         inpComment_log->labelfont(0);
         inpComment_log->labelsize(12);
         inpComment_log->labelcolor(FL_FOREGROUND_COLOR);
-        inpComment_log->textfont(13);
         inpComment_log->textsize(12);
         inpComment_log->align(FL_ALIGN_TOP_LEFT);
         inpComment_log->when(FL_WHEN_RELEASE);
@@ -315,30 +352,6 @@ void create_logbook_dialogs() {
         txtNbrRecs_log->align(FL_ALIGN_LEFT);
         txtNbrRecs_log->when(FL_WHEN_RELEASE);
       } // Fl_Input2* txtNbrRecs_log
-      { inpCnty_log = new Fl_Input2(142, 56, 110, 22, _("St. / Ctry."));
-        inpCnty_log->box(FL_DOWN_BOX);
-        inpCnty_log->color(FL_BACKGROUND2_COLOR);
-        inpCnty_log->selection_color(FL_SELECTION_COLOR);
-        inpCnty_log->labeltype(FL_NORMAL_LABEL);
-        inpCnty_log->labelfont(0);
-        inpCnty_log->labelsize(12);
-        inpCnty_log->labelcolor(FL_FOREGROUND_COLOR);
-        inpCnty_log->textsize(12);
-        inpCnty_log->align(FL_ALIGN_TOP_LEFT);
-        inpCnty_log->when(FL_WHEN_RELEASE);
-      } // Fl_Input2* inpCnty_log
-      { inpVE_Prov_log = new Fl_Input2(253, 56, 30, 22, _("Pr.."));
-        inpVE_Prov_log->box(FL_DOWN_BOX);
-        inpVE_Prov_log->color(FL_BACKGROUND2_COLOR);
-        inpVE_Prov_log->selection_color(FL_SELECTION_COLOR);
-        inpVE_Prov_log->labeltype(FL_NORMAL_LABEL);
-        inpVE_Prov_log->labelfont(0);
-        inpVE_Prov_log->labelsize(12);
-        inpVE_Prov_log->labelcolor(FL_FOREGROUND_COLOR);
-        inpVE_Prov_log->textsize(12);
-        inpVE_Prov_log->align(FL_ALIGN_TOP_LEFT);
-        inpVE_Prov_log->when(FL_WHEN_RELEASE);
-      } // Fl_Input2* inpVE_Prov_log
       { Fl_Group* o = new Fl_Group(5, 128, 440, 44);
         o->box(FL_ENGRAVED_FRAME);
         { inpSerNoOut_log = new Fl_Input2(8, 145, 60, 22, _("Ser# out"));

@@ -153,10 +153,13 @@ int submit_log(void)
 	putadif(NAME, inpName->value());
 	log_msg = log_msg + "qth:"		+ inpQth->value()		+ LOG_MSEPARATOR;
 	putadif(QTH, inpQth->value());
-	log_msg = log_msg + "cnty:"    + inpCnty->value()      + LOG_MSEPARATOR;
-	putadif(CNTY, inpCnty->value());
+	log_msg = log_msg + "state:"    + inpState->value()      + LOG_MSEPARATOR;
+	putadif(STATE, inpState->value());
 	log_msg = log_msg + "province:"    + inpVEprov->value() + LOG_MSEPARATOR;
 	putadif(VE_PROV, inpVEprov->value());
+	log_msg = log_msg + "country:"    + inpCountry->value() + LOG_MSEPARATOR;
+	putadif(COUNTRY, inpCountry->value());
+	
 	log_msg = log_msg + "locator:"	+ inpLoc->value()		+ LOG_MSEPARATOR;
 	putadif(GRIDSQUARE, inpLoc->value());
 		

@@ -388,6 +388,7 @@ Fl_Menu_Item FTextView::view_menu[] = {
 	{ make_icon_label(ENTER_SYMBOL "QT&H", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(ENTER_SYMBOL "&State", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(ENTER_SYMBOL "&Province", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL "Countr&y", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(ENTER_SYMBOL "&Locator", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(ENTER_SYMBOL "&RST(r)", enter_key_icon), 0, 0, 0,  FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ make_icon_label(ENTER_SYMBOL "Serial Nr", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
@@ -693,7 +694,7 @@ void FTextView::menu_cb(int val)
 		input = inpQth;
 		break;
 	case RX_MENU_STATE:
-		input = inpCnty;
+		input = inpState;
 		break;
 	case RX_MENU_PROVINCE:
 		input = inpVEprov;
@@ -703,6 +704,9 @@ void FTextView::menu_cb(int val)
 		break;
 	case RX_MENU_LOC:
 		input = inpLoc;
+		break;
+	case RX_MENU_COUNTRY:
+		input = inpCountry;
 		break;
 		
 	case RX_MENU_RST_IN:

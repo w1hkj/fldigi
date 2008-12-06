@@ -257,7 +257,7 @@ void DupCheck(const char *callsign)
 			callsign,
 			zuluLogDate, zuluLogTime, progdefaults.timespan, progdefaults.duptimespan, 
 			inpFreq->value(), progdefaults.dupband,
-			inpCnty->value(), progdefaults.dupstate,
+			inpState->value(), progdefaults.dupstate,
 			mode_info[active_modem->get_mode()].adif_name, progdefaults.dupmode,
 			inpXchg1->value(), progdefaults.dupxchg1,
 			inpXchg2->value(), progdefaults.dupxchg2,
@@ -271,25 +271,18 @@ void SearchLastQSO(const char *callsign)
 	size_t len = strlen(callsign);
 	char* re = new char[len + 3];
 	snprintf(re, len + 3, "^%s$", callsign);
-	bool call_found = false;
 
 	int row = 0, col = 2;
-	if (cQsoDb::reverse) {
-		if (wBrowser->search(row, col, false, re)) {
-			wBrowser->GotoRow(row);
-			inpName->value(inpName_log->value());
-			call_found = true;
-		}
-	} else {
-		if (wBrowser->search(row, col, true, re)) {
-			wBrowser->GotoRow(row);
-			inpName->value(inpName_log->value());
-			call_found = true;
-		}
-	}
+	if (wBrowser->search(row, col, !cQsoDb::reverse, re)) {
+		wBrowser->GotoRow(row);
+		inpName->value(inpName_log->value());
+		inpSearchString->value(callsign);
+		if (EnableDupCheck)
+			DupCheck(callsign);
+	} else
+		inpSearchString->value("");
+
 	delete [] re;
-	
-	if (EnableDupCheck && call_found) DupCheck(callsign);
 }
 
 void cb_search(Fl_Widget* w, void*)
@@ -339,8 +332,9 @@ void clearRecord() {
 	inpFreq_log->value ("");
 	inpMode_log->value ("");
 	inpQth_log->value ("");
-	inpCnty_log->value ("");
+	inpState_log->value ("");
 	inpVE_Prov_log->value ("");
+	inpCountry_log->value ("");
 	inpLoc_log->value ("");
 	inpQSLrcvddate_log->value ("");
 	inpQSLsentdate_log->value ("");
@@ -362,8 +356,9 @@ cQsoRec rec;
 	rec.putField(FREQ, inpFreq_log->value());
 	rec.putField(MODE, inpMode_log->value());
 	rec.putField(QTH, inpQth_log->value());
-	rec.putField(CNTY, inpCnty_log->value());
+	rec.putField(STATE, inpState_log->value());
 	rec.putField(VE_PROV, inpVE_Prov_log->value());
+	rec.putField(COUNTRY, inpCountry_log->value());
 	rec.putField(GRIDSQUARE, inpLoc_log->value());
 	rec.putField(COMMENT, inpComment_log->value());
 	rec.putField(QSLRDATE, inpQSLrcvddate_log->value());
@@ -389,8 +384,9 @@ cQsoRec rec;
 	rec.putField(FREQ, inpFreq_log->value());
 	rec.putField(MODE, inpMode_log->value());
 	rec.putField(QTH, inpQth_log->value());
-	rec.putField(CNTY, inpCnty_log->value());
+	rec.putField(STATE, inpState_log->value());
 	rec.putField(VE_PROV, inpVE_Prov_log->value());
+	rec.putField(COUNTRY, inpCountry_log->value());
 	rec.putField(GRIDSQUARE, inpLoc_log->value());
 	rec.putField(COMMENT, inpComment_log->value());
 	rec.putField(QSLRDATE, inpQSLrcvddate_log->value());
@@ -430,8 +426,9 @@ void EditRecord( int i )
 	inpRstS_log->value (editQSO->getField(RST_SENT));
 	inpFreq_log->value (editQSO->getField(FREQ));
 	inpMode_log->value (editQSO->getField(MODE));
-	inpCnty_log->value (editQSO->getField(CNTY));
+	inpState_log->value (editQSO->getField(STATE));
 	inpVE_Prov_log->value (editQSO->getField(VE_PROV));
+	inpCountry_log->value (editQSO->getField(COUNTRY));
 	inpQth_log->value (editQSO->getField(QTH));
 	inpLoc_log->value (editQSO->getField(GRIDSQUARE));
 	inpQSLrcvddate_log->value (editQSO->getField(QSLRDATE));
@@ -456,8 +453,9 @@ void AddRecord ()
 	inpRstS_log->value (inpRstOut->value());
 	inpFreq_log->value (inpFreq->value());
 	inpMode_log->value (logmode);
-	inpCnty_log->value (inpCnty->value());
+	inpState_log->value (inpState->value());
 	inpVE_Prov_log->value (inpVEprov->value());
+	inpCountry_log->value (inpCountry->value());
 
 	inpSerNoIn_log->value(inpSerNo->value());
 	inpSerNoOut_log->value(outSerNo->value());

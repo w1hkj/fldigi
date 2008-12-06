@@ -47,7 +47,7 @@ Export_log();}
   }
   Fl_Window dlgLogbook {
     label Logbook open
-    xywh {541 111 570 320} type Double color 47 resizable visible
+    xywh {562 71 570 320} type Double color 47 resizable visible
   } {
     Fl_Group editGroup {open
       xywh {2 2 565 200} box ENGRAVED_FRAME color 52 labelsize 12
@@ -96,7 +96,22 @@ Export_log();}
       }
       Fl_Input inpQth_log {
         label Qth
-        xywh {5 56 135 22} labelsize 12 align 5 textsize 12
+        xywh {5 56 115 22} labelsize 12 align 5 textsize 12
+        class Fl_Input2
+      }
+      Fl_Input inpState_log {
+        label St selected
+        xywh {123 56 30 22} labelsize 12 align 5 textsize 12
+        class Fl_Input2
+      }
+      Fl_Input inpVE_Prov_log {
+        label Pr
+        xywh {156 56 30 22} labelsize 12 align 5 textsize 12
+        class Fl_Input2
+      }
+      Fl_Input inpCountry_log {
+        label Country
+        xywh {190 56 90 22} labelsize 12 align 5 textsize 12
         class Fl_Input2
       }
       Fl_Input inpLoc_log {
@@ -106,7 +121,7 @@ Export_log();}
       }
       Fl_Input inpComment_log {
         label Comment
-        xywh {5 94 438 30} type Multiline labelsize 12 align 5 textfont 13 textsize 12
+        xywh {5 94 438 30} type Multiline labelsize 12 align 5 textsize 12
         class Fl_Input2
       }
       Fl_Input inpQSLrcvddate_log {
@@ -141,16 +156,6 @@ Export_log();}
         xywh {38 175 65 22} labelsize 12 textsize 12
         class Fl_Input2
       }
-      Fl_Input inpCnty_log {
-        label {St. / Ctry.}
-        xywh {142 56 110 22} labelsize 12 align 5 textsize 12
-        class Fl_Input2
-      }
-      Fl_Input inpVE_Prov_log {
-        label {Pr..}
-        xywh {253 56 30 22} labelsize 12 align 5 textsize 12
-        class Fl_Input2
-      }
       Fl_Group {} {open
         xywh {5 128 440 44} box ENGRAVED_FRAME
       } {
@@ -175,7 +180,7 @@ Export_log();}
           class Fl_Input2
         }
         Fl_Input inpXchg3_log {
-          label {Xchg \#3} selected
+          label {Xchg \#3}
           tooltip {Exchange \#3} xywh {343 145 100 22} labelsize 12 align 5 textsize 12
           class Fl_Input2
         }

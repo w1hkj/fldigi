@@ -226,7 +226,7 @@ int olivia::rx_process(const double *buf, int len)
 	unsigned char ch = 0;
 	double snr;
 	static char msg1[20];
-	static char msg2[20];
+//	static char msg2[20];
 //	static char msg3[60];
 
 	if (tones	!= progdefaults.oliviatones ||

@@ -423,8 +423,7 @@ void QRZ_disp_result()
 
 	inpQth->value(lookup_qth.c_str());
 	
-	inpCnty->value(lookup_state.c_str());
-    inpCnty->position(0);
+	inpState->value(lookup_state.c_str());
 
 	inpVEprov->value(lookup_province.c_str());
 		
@@ -563,10 +562,8 @@ void QRZquery()
 			REQ(QRZAlert);
 		else {
 			lookup_qth = lookup_addr2;
-			string isUS = "aAkKnNwW";
 			string isCAN = "vV";
-			if (isUS.find(callsign[0]) != string::npos) ;
-			else if (isCAN.find(callsign[0]) != string::npos) { // Can callsign
+			if (isCAN.find(callsign[0]) != string::npos) { // Can callsign
 				size_t pos = lookup_qth.find(',');
 				if (pos != string::npos) {
 					lookup_province = lookup_qth.substr(pos);
@@ -578,8 +575,6 @@ void QRZquery()
 					if (pos != string::npos)
 						lookup_province = lookup_province.substr(0,pos);
 				}
-			} else {
-				lookup_state = lookup_country;
 			}
 			REQ(QRZ_disp_result);
 		}

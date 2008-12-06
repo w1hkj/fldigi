@@ -156,7 +156,8 @@ Fl_Input2			*inpRstIn;
 Fl_Input2			*inpRstOut;
 Fl_Input2			*inpQth;
 Fl_Input2			*inpLoc;
-Fl_Input2			*inpCnty;
+Fl_Input2			*inpState;
+Fl_Input2			*inpCountry;
 Fl_Input2			*inpSerNo;
 Fl_Output			*outSerNo;
 Fl_Input2			*inpXchg1;
@@ -217,18 +218,19 @@ int wf1 = pad + w_inpFreq + pad + w_inpTime +  pad + w_inpCall +
           pad + w_inpName + pad + w_inpRstIn + pad + w_inpRstOut;
 
 int w_fm1 		= 25;
-int w_fm2 		= 20;
-int w_fm3 		= 20;
+int w_fm2 		= 15;
+int w_fm3 		= 15;
 int w_fm4 		= 25;
 int w_fm5 		= 20;
-int w_inpCnty 	= 90;
-int w_inpProv	= 30;
-int w_inpLOC   	= 65;
-int w_inpAZ    	= 30;
-int w_inpQth 	= wf1 - w_fm1 - w_fm2 - w_fm3 - w_fm4 - w_fm5 -
-                  w_inpCnty - w_inpProv - w_inpLOC - w_inpAZ;
 int w_fm6		= 30;
-int w_Xchg	= (wf1 - 5*w_fm6 - 4*pad - 2 * w_SerNo) / 3;
+int w_inpState 	= 25;
+int w_inpProv	= 25;
+int w_inpCountry = 60;
+int w_inpLOC   	= 55;
+int w_inpAZ    	= 30;
+int w_inpQth 	= wf1 - w_fm1 - w_fm2 - w_fm3 - w_fm4 - w_fm5 - w_fm6 -
+                  w_inpState - w_inpProv - w_inpLOC - w_inpAZ - w_inpCountry;
+int w_Xchg	= (wf1 - w_fm6 - 4*w_fm5 - 4*pad - 2 * w_SerNo) / 3;
 
 int qh = Hqsoframe / 2;
 int rig_control_width = FREQWIDTH + 4;
@@ -1249,7 +1251,7 @@ void clearQSO()
 {
 	Fl_Input* in[] = { 
 		inpCall, inpName, inpRstIn, inpRstOut,
-		inpQth, inpLoc, inpAZ, inpCnty, inpVEprov,
+		inpQth, inpLoc, inpAZ, inpState, inpVEprov, inpCountry,
 		inpSerNo, outSerNo, inpXchg1, inpXchg2, inpXchg3, inpNotes };
 	for (size_t i = 0; i < sizeof(in)/sizeof(*in); i++)
 		in[i]->value("");
@@ -1270,8 +1272,14 @@ void cb_ResetSerNbr()
 void cb_log(Fl_Widget* w, void*)
 {
 	oktoclear = false;
-	if (w == inpCall)
-		SearchLastQSO(inpCall->value());
+	if (w == inpCall) {
+		string temp = inpCall->value();
+		for (size_t i = 0; i < temp.length(); i++)
+			temp[i] = toupper(temp[i]);
+		inpCall->value(temp.c_str());
+		SearchLastQSO(temp.c_str());
+		restoreFocus();	
+	}
 }
 
 void qsoClear_cb(Fl_Widget *b, void *)
@@ -2188,21 +2196,27 @@ void create_fl_digi_main() {
 				
 				inpFreq = new Fl_Input2(x_qsoframe + pad, y2, w_inpFreq, qh - pad, _("QSO Freq"));
 				inpFreq->type(FL_NORMAL_OUTPUT);
+				inpFreq->tooltip(_(""));
 				inpFreq->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
 				inpTime = new Fl_Output(rightof(inpFreq) + pad, y2, w_inpTime, qh - pad, _("Time"));
+				inpTime->tooltip(_(""));
 				inpTime->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
 				inpCall = new Fl_Input2(rightof(inpTime) + pad, y2, w_inpCall, qh - pad, _("Call"));
+				inpCall->tooltip(_(""));
 				inpCall->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
 				inpName = new Fl_Input2(rightof(inpCall) + pad, y2, w_inpName, qh - pad, _("Name"));
+				inpName->tooltip(_(""));
 				inpName->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 			
 				inpRstIn = new Fl_Input2(rightof(inpName) + pad, y2, w_inpRstIn, qh - pad, _("In"));
+				inpRstIn->tooltip(_(""));
 				inpRstIn->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
 				inpRstOut = new Fl_Input2(rightof(inpRstIn) + pad, y2, w_inpRstOut, qh - pad, _("Out"));
+				inpRstOut->tooltip(_(""));
 				inpRstOut->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 				
 				lblDup = new Fl_Box(rightof(inpCall) - w_inpCall/2 - 40, Hmenu + 1, 80, qh - pad, _("*** DUP ***"));
@@ -2213,33 +2227,43 @@ void create_fl_digi_main() {
 					Fl_Box *fm1box = new Fl_Box(x_qsoframe, y3, w_fm1, qh - pad, _("QTH"));
 					fm1box->align(FL_ALIGN_INSIDE);
 					inpQth = new Fl_Input2( rightof(fm1box), y3, w_inpQth, qh - pad, "");
+					inpQth->tooltip(_("City"));
 					inpQth->align(FL_ALIGN_INSIDE);
 					
 					Fl_Box *fm2box = new Fl_Box(rightof(inpQth), y3, w_fm2, qh - pad, _("St"));
 					fm2box->align(FL_ALIGN_INSIDE);
-					inpCnty = new Fl_Input2(rightof(fm2box), y3, w_inpCnty, qh - pad, "");
-					inpCnty->tooltip(_("US State or Country"));
-					inpCnty->align(FL_ALIGN_INSIDE);
+					inpState = new Fl_Input2(rightof(fm2box), y3, w_inpState, qh - pad, "");
+					inpState->tooltip(_("US State"));
+					inpState->align(FL_ALIGN_INSIDE);
 
-					Fl_Box *fm3box = new Fl_Box(rightof(inpCnty), y3, w_fm3, qh - pad, _("Pr"));
+					Fl_Box *fm3box = new Fl_Box(rightof(inpState), y3, w_fm3, qh - pad, _("Pr"));
 					fm3box->align(FL_ALIGN_INSIDE);
 					inpVEprov = new Fl_Input2(rightof(fm3box), y3, w_inpProv, qh - pad, "");
 					inpVEprov->tooltip(_("Can. Province"));
 					inpVEprov->align(FL_ALIGN_INSIDE);
 
-					Fl_Box *fm4box = new Fl_Box(rightof(inpVEprov), y3, w_fm4, qh - pad, _("Loc"));
+					Fl_Box *fm11box = new Fl_Box(rightof(inpVEprov), y3, w_fm6, qh - pad, _("Ctny"));
+					fm11box->align(FL_ALIGN_INSIDE);
+					inpCountry = new Fl_Input2(rightof(fm11box), y3, w_inpCountry, qh - pad, "");
+					inpCountry->tooltip(_("Country"));
+					inpCountry->align(FL_ALIGN_INSIDE);
+					
+					Fl_Box *fm4box = new Fl_Box(rightof(inpCountry), y3, w_fm4, qh - pad, _("Loc"));
 					fm4box->align(FL_ALIGN_INSIDE);
 					inpLoc = new Fl_Input2(rightof(fm4box), y3, w_inpLOC, qh - pad, "");
+					inpLoc->tooltip(_(""));
 					inpLoc->align(FL_ALIGN_INSIDE);
 
 					Fl_Box *fm5box = new Fl_Box(rightof(inpLoc), y3, w_fm5, qh - pad, _("Az"));
 					fm5box->align(FL_ALIGN_INSIDE);
 					inpAZ = new Fl_Input2(rightof(fm5box), y3, w_inpAZ, qh - pad, "");
+					inpAZ->tooltip(_(""));
 					inpAZ->align(FL_ALIGN_INSIDE);
+					
 				QsoInfoFrame1A->end();
 				
 				QsoInfoFrame1B = new Fl_Group (x_qsoframe, y3 - 1, wf1, Hnotes); 
-					Fl_Box *fm6box = new Fl_Box(x_qsoframe, y3, w_fm6, qh - pad, _("#In"));
+					Fl_Box *fm6box = new Fl_Box(x_qsoframe, y3, w_fm5, qh - pad, _("#In"));
 					fm6box->align(FL_ALIGN_INSIDE);
 					inpSerNo = new Fl_Input2(rightof(fm6box), y3, w_SerNo, qh - pad, "");
 					inpSerNo->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
@@ -2251,19 +2275,19 @@ void create_fl_digi_main() {
 					outSerNo->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 					outSerNo->tooltip(_("Sent serial number (read only)"));
 					
-					Fl_Box *fm8box = new Fl_Box(rightof(outSerNo) + pad, y3, w_fm6, qh - pad, _("X_1"));
+					Fl_Box *fm8box = new Fl_Box(rightof(outSerNo) + pad, y3, w_fm5, qh - pad, _("X1"));
 					fm7box->align(FL_ALIGN_INSIDE);
 					inpXchg1 = new Fl_Input2(rightof(fm8box), y3, w_Xchg, qh - pad, "");
 					inpXchg1->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 					inpXchg1->tooltip(_("Contest exchange #1"));
 					
-					Fl_Box *fm9box = new Fl_Box(rightof(inpXchg1) + pad, y3, w_fm6, qh - pad, _("X_2"));
+					Fl_Box *fm9box = new Fl_Box(rightof(inpXchg1) + pad, y3, w_fm5, qh - pad, _("X2"));
 					fm9box->align(FL_ALIGN_INSIDE);
 					inpXchg2 = new Fl_Input2(rightof(fm9box), y3, w_Xchg, qh - pad, "");
 					inpXchg2->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 					inpXchg2->tooltip(_("Contest exchange #2"));
 					
-					Fl_Box *fm10box = new Fl_Box(rightof(inpXchg2) + pad, y3, w_fm6, qh - pad, _("X_3"));
+					Fl_Box *fm10box = new Fl_Box(rightof(inpXchg2) + pad, y3, w_fm5, qh - pad, _("X3"));
 					fm10box->align(FL_ALIGN_INSIDE);
 					inpXchg3 = new Fl_Input2(rightof(fm10box), y3, w_Xchg, qh - pad, "");
 					inpXchg3->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
@@ -2295,8 +2319,9 @@ void create_fl_digi_main() {
 	
 		Y = Hmenu + Hqsoframe + Hnotes + pad;
 
-		Fl_Widget* logfields[] = { inpCall, inpName, inpRstIn,
-					   inpRstOut, inpQth, inpAZ, inpLoc, inpNotes };
+		Fl_Widget* logfields[] = { inpCall, inpName, inpRstIn, inpRstOut, 
+				inpQth, inpVEprov, inpCountry, inpAZ, inpLoc, inpNotes,
+				inpSerNo, inpXchg1, inpXchg1, inpXchg1 };
 		for (size_t i = 0; i < sizeof(logfields)/sizeof(*logfields); i++)
 			logfields[i]->callback(cb_log);
 

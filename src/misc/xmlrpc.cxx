@@ -1273,17 +1273,17 @@ public:
 	}
 };
 
-class Log_get_country : public xmlrpc_c::method
+class Log_get_state : public xmlrpc_c::method
 {
 public:
-	Log_get_country()
+	Log_get_state()
 	{
 		_signature = "s:n";
-		_help = "Returns the Country/State field contents.";
+		_help = "Returns the State field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		*retval = xmlrpc_c::value_string(inpCnty->value());
+		*retval = xmlrpc_c::value_string(inpState->value());
 	}
 };
 
@@ -1298,6 +1298,20 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		*retval = xmlrpc_c::value_string(inpVEprov->value());
+	}
+};
+
+class Log_get_country : public xmlrpc_c::method
+{
+public:
+	Log_get_country()
+	{
+		_signature = "s:n";
+		_help = "Returns the Country field contents.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		*retval = xmlrpc_c::value_string(inpCountry->value());
 	}
 };
 
@@ -1653,8 +1667,9 @@ public:
 	ELEM_(Log_get_rst_in, "log.get_rst_in")				\
 	ELEM_(Log_get_rst_out, "log.get_rst_out")			\
 	ELEM_(Log_get_serial_number, "log.get_serial_number")		\
-	ELEM_(Log_get_country, "log.get_country")			\
+	ELEM_(Log_get_state, "log.get_state")			\
 	ELEM_(Log_get_province, "log.get_province")			\
+	ELEM_(Log_get_country, "log.get_country")			\
 	ELEM_(Log_get_qth, "log.get_qth")				\
 	ELEM_(Log_get_band, "log.get_band")				\
 	ELEM_(Log_get_sb, "log.get_sideband")				\
