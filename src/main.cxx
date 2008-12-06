@@ -195,8 +195,11 @@ int main(int argc, char ** argv)
 	xmlfname = HomeDir; 
 	xmlfname.append("rig.xml");
 	
+	Date tdy;
 	string lfname = HomeDir;
-	lfname.append("fldigi.log");
+	lfname.append("fldigi");
+	lfname.append(tdy.szDate(2));
+	lfname.append(".log");
 	logfile = new cLogfile(lfname);
 	logfile->log_to_file_start();
 

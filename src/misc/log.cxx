@@ -22,8 +22,6 @@ static const char *lognames[] = { "RX", "TX", "", "" };
 cLogfile::cLogfile(const string& fname)
 	: retflag(true), logtype(LOG_RX)
 {
-	if (logfile = fopen(fname.c_str(), "w"))
-		fclose(logfile);
 	if ((logfile = fopen(fname.c_str(), "a"))) {
 		setlinebuf(logfile);
 		set_cloexec(fileno(logfile), 1);
