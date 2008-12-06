@@ -106,6 +106,17 @@ Change Log:
           d. additional macro tags for sending contest specific exchanges
           e. additional macro tag to send current qso-log-time
           f. changed qso-log-time to an automated clock
+      37) Added dup field, time-span in minutes
+      38) Added <CLRRX> macro tag - clear Rx pane
+      39) Change fldigi.log to fldigiYYYYMMDD.log, always append to file, 
+          YYYYMMDD in GMT
+      40) Added Olivia Tones/BW display in status bar
+      41) Split st/cnty into state county fields, added country field
+      42) Added time_on to the logbook
+      43) Change logbook text export to tab delimited format
+      44) Added ability to export selected records to ADIF / CSV with 
+          fields specified
+      45) Fixed bug in transfering frequency to logbook in Khz vice Mhz format.
 
 3.03
       1) Changes to socket server to correct shutdown process
