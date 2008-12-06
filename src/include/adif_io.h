@@ -11,18 +11,18 @@
 
 class cAdifIO {
 private:
-  cQsoRec adifqso;
-  FILE *adiFile;
-  void fillfield(int, char *);
+	bool write_all;
+	cQsoRec adifqso;
+	FILE *adiFile;
+	void fillfield(int, char *);
 public:
-  cAdifIO () {};
-  ~cAdifIO () {};
-  int readAdifRec () {return 0;};
-  int writeAdifRec () {return 0;};
-  void readFile (const char *, cQsoDb *);
-  int writeFile (const char *, cQsoDb *);
-  int writeLog (const char *, cQsoDb *);
-  
+	cAdifIO () {};
+	~cAdifIO () {};
+	int readAdifRec () {return 0;};
+	int writeAdifRec () {return 0;};
+	void readFile (const char *, cQsoDb *);
+	int writeFile (const char *, cQsoDb *);
+	int writeLog (const char *, cQsoDb *);
 };
 
 #endif

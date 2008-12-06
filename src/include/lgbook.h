@@ -6,6 +6,7 @@
 #include "flinput2.h"
 #include <FL/Fl_Double_Window.H>
 extern Fl_Double_Window *wExport;
+#include <FL/Fl_Group.H>
 #include <FL/Fl_Check_Browser.H>
 extern Fl_Check_Browser *chkExportBrowser;
 #include <FL/Fl_Button.H>
@@ -14,8 +15,34 @@ extern Fl_Button *btnCheckAll;
 #include <FL/Fl_Return_Button.H>
 extern Fl_Return_Button *btnOK;
 extern Fl_Button *btnCancel;
+extern Fl_Button *btnClearAllFields;
+extern Fl_Button *btnCheckAllFields;
+#include <FL/Fl_Check_Button.H>
+extern Fl_Check_Button *btnSelectCall;
+extern Fl_Check_Button *btnSelectName;
+extern Fl_Check_Button *btnSelectFreq;
+extern Fl_Check_Button *btnSelectBand;
+extern Fl_Check_Button *btnSelectMode;
+extern Fl_Check_Button *btnSelectQSOdate;
+extern Fl_Check_Button *btnSelectTimeON;
+extern Fl_Check_Button *btnSelectTimeOFF;
+extern Fl_Check_Button *btnSelectRSTsent;
+extern Fl_Check_Button *btnSelectRSTrcvd;
+extern Fl_Check_Button *btnSelectQth;
+extern Fl_Check_Button *btnSelectLOC;
+extern Fl_Check_Button *btnSelectState;
+extern Fl_Check_Button *btnSelectProvince;
+extern Fl_Check_Button *btnSelectCountry;
+extern Fl_Check_Button *btnSelectComment;
+extern Fl_Check_Button *btnSelectQSLrcvd;
+extern Fl_Check_Button *btnSelectQSLsent;
+extern Fl_Check_Button *btnSelectSerialIN;
+extern Fl_Check_Button *btnSelectSerialOUT;
+extern Fl_Check_Button *btnSelectXchg1;
+extern Fl_Check_Button *btnSelectXchg2;
+extern Fl_Check_Button *btnSelectXchg3;
+extern Fl_Button *btnSetFieldDefaults;
 extern Fl_Double_Window *dlgLogbook;
-#include <FL/Fl_Group.H>
 extern Fl_Group *editGroup;
 #include "calendar.h"
 extern Fl_DateInput *inpDate_log;

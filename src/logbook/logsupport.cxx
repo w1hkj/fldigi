@@ -35,18 +35,37 @@ string		logbook_filename;
 
 bool EnableDupCheck = false;
 
-enum savetype {ADIF, TEXT, LO};
-
-void Export_log()
+void Export_CSV()
 {
 	if (chkExportBrowser->nchecked() == 0) return;
 
 	cQsoRec *rec;
 
-	string filters = "ADIF\t*." ADIF_SUFFIX "\n" "Text\t*.txt";
-	int saveas;
-	const char* p = FSEL::saveas("Export to file", filters.c_str(),
-					 "export." ADIF_SUFFIX, &saveas);
+	string filters = "CSV\t*." "csv";
+	const char* p = FSEL::saveas("Export to CSV file", filters.c_str(),
+					 "export." "csv");
+	if (!p)
+		return;
+
+	for (int i = 0; i < chkExportBrowser->nitems(); i++) {
+		if (chkExportBrowser->checked(i + 1)) {
+			rec = qsodb.getRec(i);
+			rec->putField(EXPORT, "E");
+			qsodb.qsoUpdRec (i, rec);
+		}
+	}
+	txtFile.writeFile(p, &qsodb);
+}
+
+void Export_ADIF()
+{
+	if (chkExportBrowser->nchecked() == 0) return;
+
+	cQsoRec *rec;
+
+	string filters = "ADIF\t*." ADIF_SUFFIX;
+	const char* p = FSEL::saveas("Export to ADIF file", filters.c_str(),
+					 "export." ADIF_SUFFIX);
 	if (!p)
 		return;
 
@@ -58,16 +77,15 @@ void Export_log()
 		}
 	}
 
-	switch (saveas) {
-	case TEXT :
-		txtFile.writeFile(p, &qsodb);
-		break;
-	case ADIF :
-		adifFile.writeFile (p, &qsodb);
-		break;
-	default:
-		break;
-	}
+	adifFile.writeFile (p, &qsodb);
+}
+
+savetype export_to = ADIF;
+
+void Export_log()
+{
+	if (export_to == ADIF) Export_ADIF();
+	else if (export_to == CSV) Export_CSV();
 }
 
 void saveLogbook()
@@ -131,7 +149,7 @@ void cb_mnuMergeADIF_log(Fl_Menu_* m, void* d) {
 	}
 }
 
-void cb_mnuExportADIF_log(Fl_Menu_* m, void* d) {
+void cb_Export_log() {
 	if (qsodb.nbrRecs() == 0) return;
 	cQsoRec *rec;
 	char line[80];
@@ -150,6 +168,16 @@ void cb_mnuExportADIF_log(Fl_Menu_* m, void* d) {
         chkExportBrowser->add(line);
 	}
 	wExport->show();
+}
+
+void cb_mnuExportADIF_log(Fl_Menu_* m, void* d) {
+	export_to = ADIF;
+	cb_Export_log();
+}
+
+void cb_mnuExportCSV_log(Fl_Menu_* m, void* d) {
+	export_to = CSV;
+	cb_Export_log();
 }
 
 void cb_mnuShowLogbook(Fl_Menu_* m, void* d)
@@ -456,7 +484,11 @@ void AddRecord ()
 	inpTimeOff_log->value (zuluLogTime);
 	inpRstR_log->value (inpRstIn->value());
 	inpRstS_log->value (inpRstOut->value());
-	inpFreq_log->value (inpFreq->value());
+	{
+		char Mhz[30];
+		snprintf(Mhz, sizeof(Mhz), "%10f", atof(inpFreq->value()) / 1000.0);
+		inpFreq_log->value(Mhz);
+	}		
 	inpMode_log->value (logmode);
 	inpState_log->value (inpState->value());
 	inpVE_Prov_log->value (inpVEprov->value());

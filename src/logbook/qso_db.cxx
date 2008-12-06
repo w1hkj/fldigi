@@ -1,5 +1,4 @@
 #include <config.h>
-
 #include <fstream>
 #include <stdlib.h>
 #include <ctype.h>
@@ -35,6 +34,45 @@ void cQsoRec::clearRec () {
 
 int cQsoRec::validRec() {
   return 0;
+}
+
+void cQsoRec::checkBand() {
+	if (strlen(qsofield[FREQ]) == 0 && strlen(qsofield[BAND]) == 0) return;
+	if (strlen(qsofield[FREQ]) > 0 && strlen(qsofield[BAND]) > 0) return;
+	if (strlen(qsofield[FREQ]) == 0) {
+		if (strcmp(qsofield[BAND],"160m")==0) strcpy(qsofield[FREQ],"1.8");
+		else if (strcasecmp(qsofield[BAND],"80m")==0) strcpy(qsofield[FREQ],"3.5");
+		else if (strcasecmp(qsofield[BAND],"60m")==0) strcpy(qsofield[FREQ],"5.3");
+		else if (strcasecmp(qsofield[BAND],"40m")==0) strcpy(qsofield[FREQ],"7.0");
+		else if (strcasecmp(qsofield[BAND],"30m")==0) strcpy(qsofield[FREQ],"10.0");
+		else if (strcasecmp(qsofield[BAND],"20m")==0) strcpy(qsofield[FREQ],"14.0");
+		else if (strcasecmp(qsofield[BAND],"17m")==0) strcpy(qsofield[FREQ],"18.0");
+		else if (strcasecmp(qsofield[BAND],"15m")==0) strcpy(qsofield[FREQ],"21.0");
+		else if (strcasecmp(qsofield[BAND],"12m")==0) strcpy(qsofield[FREQ],"24.0");
+		else if (strcasecmp(qsofield[BAND],"10m")==0) strcpy(qsofield[FREQ],"28.0");
+		else if (strcasecmp(qsofield[BAND],"6m")==0) strcpy(qsofield[FREQ],"50.0");
+		else if (strcasecmp(qsofield[BAND],"2m")==0) strcpy(qsofield[FREQ],"144.0");
+		else if (strcasecmp(qsofield[BAND],"1.25m")==0) strcpy(qsofield[FREQ],"222.0");
+		else if (strcasecmp(qsofield[BAND],"70cm")==0) strcpy(qsofield[FREQ],"420.0");
+		return;
+	} else if (strlen(qsofield[BAND]) == 0) {
+		double mhz = atof(qsofield[FREQ]);
+		if (mhz < 3.5) strcpy(qsofield[BAND],"160m");
+		else if (mhz < 5.3) strcpy(qsofield[BAND],"80m");
+		else if (mhz < 7.0) strcpy(qsofield[BAND],"60m");
+		else if (mhz < 10.0) strcpy(qsofield[BAND],"40m");
+		else if (mhz < 14.0) strcpy(qsofield[BAND],"30m");
+		else if (mhz < 18.0) strcpy(qsofield[BAND],"20m");
+		else if (mhz < 21.0) strcpy(qsofield[BAND],"17m");
+		else if (mhz < 24.0) strcpy(qsofield[BAND],"15m");
+		else if (mhz < 28.0) strcpy(qsofield[BAND],"12m");
+		else if (mhz < 50.0) strcpy(qsofield[BAND],"10m");
+		else if (mhz < 144.0) strcpy(qsofield[BAND],"6m");
+		else if (mhz < 222.0) strcpy(qsofield[BAND],"2m");
+		else if (mhz < 420.0) strcpy(qsofield[BAND],"1.25m");
+		else if (mhz < 900.0) strcpy(qsofield[BAND],"70cm");
+		return;
+	}
 }
 
 void cQsoRec::putField (int n, const char *s){
@@ -249,6 +287,7 @@ void cQsoDb::qsoNewRec (cQsoRec *nurec) {
     qsorec = atemp;
   }
   qsorec[nbrrecs] = *nurec;
+  qsorec[nbrrecs].checkBand();
   nbrrecs++;
   dirty = 1;
 }
@@ -266,6 +305,7 @@ void cQsoDb::qsoUpdRec (int rnbr, cQsoRec *updrec) {
   if (rnbr < 0 || rnbr > (nbrrecs - 1))
     return;
   qsorec[rnbr] = *updrec;
+  qsorec[rnbr].checkBand();
   return;
 }
 
@@ -341,25 +381,24 @@ int cQsoDb::qsoWriteFile (const char *fname) {
   return 0;
 }
 
-static const int jdays[2][13] = {
+const int cQsoDb::jdays[2][13] = {
   { 0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 },
   { 0, 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335 }
 };
 
-static bool isleapyear( int y )
+bool cQsoDb::isleapyear( int y )
 {
   if( y % 400 == 0 || ( y % 100 != 0 && y % 4 == 0 ) )
     return true;
   return false;
 }
 
-
-static int dayofyear (int year, int mon, int mday)
+int cQsoDb::dayofyear (int year, int mon, int mday)
 {
   return mday + jdays[isleapyear (year) ? 1 : 0][mon];
 }
 
-static unsigned int epoch_minutes (const char *szdate, const char *sztime)
+unsigned int cQsoDb::epoch_minutes (const char *szdate, const char *sztime)
 {
   unsigned int  doe;
   int  era, cent, quad, rest;

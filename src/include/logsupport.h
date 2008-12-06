@@ -13,6 +13,8 @@
 #  define ADIF_SUFFIX "adif"
 #endif
 
+enum savetype {ADIF, CSV, LO};
+
 extern cQsoDb        qsodb;
 extern cAdifIO       adifFile;
 extern std::string logbook_filename;
@@ -33,6 +35,7 @@ extern void cb_mnuOpenLogbook(Fl_Menu_* m, void* d);
 extern void cb_mnuSaveLogbook(Fl_Menu_*m, void* d);
 extern void cb_mnuMergeADIF_log(Fl_Menu_* m, void* d);
 extern void cb_mnuExportADIF_log(Fl_Menu_* m, void* d);
+extern void cb_mnuExportCSV_log(Fl_Menu_* m, void* d);
 extern void saveLogbook();
 extern void cb_mnuShowLogbook(Fl_Menu_ *m, void* d);
 

@@ -21,32 +21,33 @@ friend std::ostream &operator<<( std::ostream &, const cQsoRec &);
 friend std::istream &operator>>( std::istream &, cQsoRec & );
 
 private:
-  char *qsofield[NUMFIELDS];
-  bool normal; // sort ordering
+	char *qsofield[NUMFIELDS];
+	bool normal; // sort ordering
 public:
-  cQsoRec ();
-  ~cQsoRec ();
-  void putField (int, const char *);
-  void addtoField (int, const char *);
-  char *getField (int);
-  void trimFields();
-  void clearRec ();
-  int  validRec();
+	cQsoRec ();
+	~cQsoRec ();
+	void putField (int, const char *);
+	void addtoField (int, const char *);
+	char *getField (int);
+	void trimFields();
+	void clearRec ();
+	int  validRec();
+	void checkBand();
 // operator overloads
-  const cQsoRec &operator=(const cQsoRec &);
-  bool operator==(const cQsoRec &) const;
-  bool operator<(const cQsoRec &) const;
-  bool operator!=(const cQsoRec &right) const {
-    return !( *this == right);
-  }
-  bool operator<=(const cQsoRec &right) const {
-    if (*this < right || *this == right)
-      return true;
-    return false;
-  }
-  bool operator>(const cQsoRec &right) const {
-    return !(*this <= right);
-  }  
+	const cQsoRec &operator=(const cQsoRec &);
+	bool operator==(const cQsoRec &) const;
+	bool operator<(const cQsoRec &) const;
+	bool operator!=(const cQsoRec &right) const {
+		return !( *this == right);
+	}
+	bool operator<=(const cQsoRec &right) const {
+		if (*this < right || *this == right)
+			return true;
+		return false;
+	}
+	bool operator>(const cQsoRec &right) const {
+		return !(*this <= right);
+	}  
 };
 
 class cQsoDb {
@@ -55,6 +56,11 @@ private:
 	int maxrecs;
 	int nbrrecs;
 	int dirty;
+	
+	static const int jdays[][13];
+	bool isleapyear( int y );
+	int dayofyear (int year, int mon, int mday);
+	unsigned int epoch_minutes (const char *szdate, const char *sztime);	
 public:
 	cQsoDb ();
 	~cQsoDb ();

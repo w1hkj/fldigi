@@ -1,8 +1,9 @@
-#include "adif_io.h"
-#include "config.h"
-
 #include <FL/Fl.H>
 #include <FL/filename.H>
+
+#include "adif_io.h"
+#include "config.h"
+#include "lgbook.h"
 
 // These ADIF fields are a part of the QSO database
     
@@ -152,18 +153,20 @@ void cAdifIO::readFile (const char *fname, cQsoDb *db) {
 
 }
 
-const char *ADIFHEADER = "\
+static const char *ADIFHEADER = "\
 File: %s\n\
 <ADIF_VERS:%d>%s\n\
 <PROGRAMID:%d>%s\n\
 <PROGRAMVERSION:%d>%s\n\
 <EOH>\n";
 
+static const char *adifmt = "<%s:%d>%s";
+
 // write ALL or SELECTED records to the designated file
+
 
 int cAdifIO::writeFile (const char *fname, cQsoDb *db) {
 // open the adif file
-    char *szFld;
     cQsoRec *rec;
     adiFile = fopen (fname, "w");
     if (!adiFile)
@@ -177,12 +180,73 @@ int cAdifIO::writeFile (const char *fname, cQsoDb *db) {
     for (int i = 0; i < db->nbrRecs(); i++) {
         rec = db->getRec(i);
         if (rec->getField(EXPORT)[0] == 'E') {
-            for (int j = 0; j < EXPORT; j++) {
-                szFld = rec->getField(j);
-                if (strlen(szFld))
-                    fprintf(adiFile,
-                        "<%s:%d>%s", fields[j].name, strlen(szFld), szFld);
-            }
+			if (btnSelectQSOdate->value())
+				fprintf (adiFile, adifmt, fields[QSO_DATE].name, 
+						 strlen(rec->getField(QSO_DATE)), rec->getField(QSO_DATE));
+			if (btnSelectTimeON->value())
+				fprintf (adiFile, adifmt, fields[TIME_ON].name, 
+						 strlen(rec->getField(TIME_ON)), rec->getField(TIME_ON));
+			if (btnSelectTimeOFF->value())
+				fprintf (adiFile, adifmt, fields[TIME_OFF].name, 
+						 strlen(rec->getField(TIME_OFF)), rec->getField(TIME_OFF));
+			if (btnSelectCall->value())
+				fprintf (adiFile, adifmt, fields[CALL].name, 
+						 strlen(rec->getField(CALL)), rec->getField(CALL));
+			if (btnSelectName->value())
+				fprintf (adiFile, adifmt, fields[NAME].name, 
+						 strlen(rec->getField(NAME)), rec->getField(NAME));
+			if (btnSelectBand->value())
+				fprintf (adiFile, adifmt, fields[BAND].name, 
+						 strlen(rec->getField(BAND)), rec->getField(BAND));
+			if (btnSelectFreq->value())
+				fprintf (adiFile, adifmt, fields[FREQ].name, 
+						 strlen(rec->getField(FREQ)), rec->getField(FREQ));
+			if (btnSelectMode->value())
+				fprintf (adiFile, adifmt, fields[MODE].name, 
+						 strlen(rec->getField(MODE)), rec->getField(MODE));
+			if (btnSelectRSTsent->value())
+				fprintf (adiFile, adifmt, fields[RST_SENT].name, 
+						 strlen(rec->getField(RST_SENT)), rec->getField(RST_SENT));
+			if (btnSelectRSTrcvd->value())
+				fprintf (adiFile, adifmt, fields[RST_RCVD].name, 
+						 strlen(rec->getField(RST_RCVD)), rec->getField(RST_RCVD));
+			if (btnSelectQth->value())
+				fprintf (adiFile, adifmt, fields[QTH].name, 
+						 strlen(rec->getField(QTH)), rec->getField(QTH));
+			if (btnSelectState->value())
+				fprintf (adiFile, adifmt, fields[STATE].name, 
+						 strlen(rec->getField(STATE)), rec->getField(STATE));
+			if (btnSelectProvince->value())
+				fprintf (adiFile, adifmt, fields[VE_PROV].name, 
+						 strlen(rec->getField(VE_PROV)), rec->getField(VE_PROV));
+			if (btnSelectCountry->value())
+				fprintf (adiFile, adifmt, fields[COUNTRY].name, 
+						 strlen(rec->getField(COUNTRY)), rec->getField(COUNTRY));
+			if (btnSelectQSLrcvd->value())
+				fprintf (adiFile, adifmt, fields[QSL_RCVD].name, 
+						 strlen(rec->getField(QSL_RCVD)), rec->getField(QSL_RCVD));
+			if (btnSelectQSLsent->value())
+				fprintf (adiFile, adifmt, fields[QSL_SENT].name, 
+						 strlen(rec->getField(QSL_SENT)), rec->getField(QSL_SENT));
+			if (btnSelectComment->value())
+				fprintf (adiFile, adifmt, fields[COMMENT].name, 
+						 strlen(rec->getField(COMMENT)), rec->getField(COMMENT));
+			if (btnSelectSerialIN->value())
+				fprintf (adiFile, adifmt, fields[SRX].name, 
+						 strlen(rec->getField(SRX)), rec->getField(SRX));
+			if (btnSelectSerialOUT->value())
+				fprintf (adiFile, adifmt, fields[STX].name, 
+						 strlen(rec->getField(STX)), rec->getField(STX));
+			if (btnSelectXchg1->value())
+				fprintf (adiFile, adifmt, fields[XCHG1].name, 
+						 strlen(rec->getField(XCHG1)), rec->getField(XCHG1));
+			if (btnSelectXchg2->value())
+				fprintf (adiFile, adifmt, fields[XCHG2].name, 
+						 strlen(rec->getField(XCHG2)), rec->getField(XCHG2));
+			if (btnSelectXchg3->value())
+				fprintf (adiFile, adifmt, fields[XCHG3].name, 
+						 strlen(rec->getField(XCHG3)), rec->getField(XCHG3));
+        	
             rec->putField(EXPORT,"");
             db->qsoUpdRec(i, rec);
             fprintf(adiFile, "<EOR>\n");
@@ -212,8 +276,8 @@ int cAdifIO::writeLog (const char *fname, cQsoDb *db) {
         for (int j = 0; j < EXPORT; j++) {
             szFld = rec->getField(j);
             if (strlen(szFld))
-                fprintf(adiFile,
-                    "<%s:%d>%s", fields[j].name, strlen(szFld), szFld);
+                fprintf(adiFile, adifmt,
+                    fields[j].name, strlen(szFld), szFld);
         }
         db->qsoUpdRec(i, rec);
         fprintf(adiFile, "<EOR>\n");
