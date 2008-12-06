@@ -80,6 +80,7 @@ public:
   
 	bool duplicate(
 		const char *callsign, 
+		const char *date, const char *time, unsigned int interval, bool chkdatetime,
 		const char *freq, bool chkfreq,
 		const char *state, bool chkstate,
 		const char *mode, bool chkmode,

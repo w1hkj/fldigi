@@ -50,13 +50,15 @@ extern Fl_Value_Input *nbrContestStart;
 extern Fl_Value_Input *nbrContestDigits;
 #include <FL/Fl_Button.H>
 extern Fl_Button *btnResetSerNbr;
+extern Fl_Check_Button *btnDupCheckOn;
 extern Fl_Check_Button *btnDupBand;
+extern Fl_Check_Button *btnDupMode;
 extern Fl_Check_Button *btnDupState;
 extern Fl_Check_Button *btnDupXchg1;
 extern Fl_Check_Button *btnDupXchg2;
 extern Fl_Check_Button *btnDupXchg3;
-extern Fl_Check_Button *btnDupMode;
-extern Fl_Check_Button *btnDupCheckOn;
+extern Fl_Check_Button *btnDupTimeSpan;
+extern Fl_Value_Input *nbrTimeSpan;
 extern Fl_Group *tabWaterfall;
 extern Fl_Tabs *tabsWaterfall;
 #include "colorbox.h"

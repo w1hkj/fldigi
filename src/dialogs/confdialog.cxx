@@ -235,10 +235,23 @@ static void cb_btnResetSerNbr(Fl_Button*, void*) {
   cb_ResetSerNbr();
 }
 
+Fl_Check_Button *btnDupCheckOn=(Fl_Check_Button *)0;
+
+static void cb_btnDupCheckOn(Fl_Check_Button* o, void*) {
+  EnableDupCheck = o->value();
+}
+
 Fl_Check_Button *btnDupBand=(Fl_Check_Button *)0;
 
 static void cb_btnDupBand(Fl_Check_Button* o, void*) {
   progdefaults.dupband = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnDupMode=(Fl_Check_Button *)0;
+
+static void cb_btnDupMode(Fl_Check_Button* o, void*) {
+  progdefaults.dupmode = o->value();
 progdefaults.changed = true;
 }
 
@@ -270,17 +283,18 @@ static void cb_btnDupXchg3(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *btnDupMode=(Fl_Check_Button *)0;
+Fl_Check_Button *btnDupTimeSpan=(Fl_Check_Button *)0;
 
-static void cb_btnDupMode(Fl_Check_Button* o, void*) {
-  progdefaults.dupmode = o->value();
+static void cb_btnDupTimeSpan(Fl_Check_Button* o, void*) {
+  progdefaults.duptimespan=o->value();
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *btnDupCheckOn=(Fl_Check_Button *)0;
+Fl_Value_Input *nbrTimeSpan=(Fl_Value_Input *)0;
 
-static void cb_btnDupCheckOn(Fl_Check_Button* o, void*) {
-  EnableDupCheck = o->value();
+static void cb_nbrTimeSpan(Fl_Value_Input* o, void*) {
+  progdefaults.timespan = o->value();
+progdefaults.changed = true;
 }
 
 Fl_Group *tabWaterfall=(Fl_Group *)0;
@@ -2278,46 +2292,57 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
               } // Fl_Button* btnResetSerNbr
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(5, 225, 490, 85, _("Dup Check"));
+            { Fl_Group* o = new Fl_Group(5, 225, 490, 130, _("Dup Check"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = btnDupBand = new Fl_Check_Button(135, 252, 70, 15, _("Band"));
-                btnDupBand->down_box(FL_DOWN_BOX);
-                btnDupBand->callback((Fl_Callback*)cb_btnDupBand);
-                o->value(progdefaults.dupband);
-              } // Fl_Check_Button* btnDupBand
-              { Fl_Check_Button* o = btnDupState = new Fl_Check_Button(215, 252, 70, 15, _("State"));
-                btnDupState->down_box(FL_DOWN_BOX);
-                btnDupState->callback((Fl_Callback*)cb_btnDupState);
-                o->value(progdefaults.dupstate);
-              } // Fl_Check_Button* btnDupState
-              { Fl_Check_Button* o = btnDupXchg1 = new Fl_Check_Button(55, 280, 70, 15, _("Xchg 1"));
-                btnDupXchg1->down_box(FL_DOWN_BOX);
-                btnDupXchg1->callback((Fl_Callback*)cb_btnDupXchg1);
-                o->value(progdefaults.dupxchg1);
-              } // Fl_Check_Button* btnDupXchg1
-              { Fl_Check_Button* o = btnDupXchg2 = new Fl_Check_Button(135, 280, 70, 15, _("Xchg 2"));
-                btnDupXchg2->down_box(FL_DOWN_BOX);
-                btnDupXchg2->callback((Fl_Callback*)cb_btnDupXchg2);
-                o->value(progdefaults.dupxchg2);
-              } // Fl_Check_Button* btnDupXchg2
-              { Fl_Check_Button* o = btnDupXchg3 = new Fl_Check_Button(215, 280, 70, 15, _("Xchg 3"));
-                btnDupXchg3->down_box(FL_DOWN_BOX);
-                btnDupXchg3->callback((Fl_Callback*)cb_btnDupXchg3);
-                o->value(progdefaults.dupxchg3);
-              } // Fl_Check_Button* btnDupXchg3
-              { Fl_Check_Button* o = btnDupMode = new Fl_Check_Button(295, 252, 70, 15, _("Mode"));
-                btnDupMode->down_box(FL_DOWN_BOX);
-                btnDupMode->callback((Fl_Callback*)cb_btnDupMode);
-                o->value(progdefaults.dupmode);
-              } // Fl_Check_Button* btnDupMode
-              { Fl_Check_Button* o = btnDupCheckOn = new Fl_Check_Button(365, 279, 90, 15, _("Dup Check On"));
+              { Fl_Check_Button* o = btnDupCheckOn = new Fl_Check_Button(172, 250, 90, 15, _("Dup Check On CALL +"));
                 btnDupCheckOn->down_box(FL_DOWN_BOX);
                 btnDupCheckOn->callback((Fl_Callback*)cb_btnDupCheckOn);
                 o->value(0);
               } // Fl_Check_Button* btnDupCheckOn
-              { new Fl_Box(51, 248, 59, 22, _("Call +"));
-              } // Fl_Box* o
+              { Fl_Check_Button* o = btnDupBand = new Fl_Check_Button(15, 283, 70, 15, _("Band"));
+                btnDupBand->down_box(FL_DOWN_BOX);
+                btnDupBand->callback((Fl_Callback*)cb_btnDupBand);
+                o->value(progdefaults.dupband);
+              } // Fl_Check_Button* btnDupBand
+              { Fl_Check_Button* o = btnDupMode = new Fl_Check_Button(94, 283, 70, 15, _("Mode"));
+                btnDupMode->down_box(FL_DOWN_BOX);
+                btnDupMode->callback((Fl_Callback*)cb_btnDupMode);
+                o->value(progdefaults.dupmode);
+              } // Fl_Check_Button* btnDupMode
+              { Fl_Check_Button* o = btnDupState = new Fl_Check_Button(172, 283, 70, 15, _("State"));
+                btnDupState->down_box(FL_DOWN_BOX);
+                btnDupState->callback((Fl_Callback*)cb_btnDupState);
+                o->value(progdefaults.dupstate);
+              } // Fl_Check_Button* btnDupState
+              { Fl_Check_Button* o = btnDupXchg1 = new Fl_Check_Button(252, 283, 70, 15, _("Xchg 1"));
+                btnDupXchg1->down_box(FL_DOWN_BOX);
+                btnDupXchg1->callback((Fl_Callback*)cb_btnDupXchg1);
+                o->value(progdefaults.dupxchg1);
+              } // Fl_Check_Button* btnDupXchg1
+              { Fl_Check_Button* o = btnDupXchg2 = new Fl_Check_Button(331, 283, 70, 15, _("Xchg 2"));
+                btnDupXchg2->down_box(FL_DOWN_BOX);
+                btnDupXchg2->callback((Fl_Callback*)cb_btnDupXchg2);
+                o->value(progdefaults.dupxchg2);
+              } // Fl_Check_Button* btnDupXchg2
+              { Fl_Check_Button* o = btnDupXchg3 = new Fl_Check_Button(410, 283, 70, 15, _("Xchg 3"));
+                btnDupXchg3->down_box(FL_DOWN_BOX);
+                btnDupXchg3->callback((Fl_Callback*)cb_btnDupXchg3);
+                o->value(progdefaults.dupxchg3);
+              } // Fl_Check_Button* btnDupXchg3
+              { Fl_Check_Button* o = btnDupTimeSpan = new Fl_Check_Button(94, 317, 70, 15, _("Time span over"));
+                btnDupTimeSpan->down_box(FL_DOWN_BOX);
+                btnDupTimeSpan->callback((Fl_Callback*)cb_btnDupTimeSpan);
+                o->value(progdefaults.duptimespan);
+              } // Fl_Check_Button* btnDupTimeSpan
+              { Fl_Value_Input* o = nbrTimeSpan = new Fl_Value_Input(230, 313, 53, 22, _("minutes"));
+                nbrTimeSpan->maximum(1440);
+                nbrTimeSpan->step(1);
+                nbrTimeSpan->value(120);
+                nbrTimeSpan->callback((Fl_Callback*)cb_nbrTimeSpan);
+                nbrTimeSpan->align(FL_ALIGN_RIGHT);
+                o->value(progdefaults.timespan);
+              } // Fl_Value_Input* nbrTimeSpan
               o->end();
             } // Fl_Group* o
             tabContest->end();

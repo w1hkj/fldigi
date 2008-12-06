@@ -327,60 +327,70 @@ progdefaults.changed = true;}
               }
             }
             Fl_Group {} {
-              label {Dup Check} open selected
-              xywh {5 225 490 85} box ENGRAVED_FRAME align 21
+              label {Dup Check} open
+              xywh {5 225 490 130} box ENGRAVED_FRAME align 21
             } {
+              Fl_Check_Button btnDupCheckOn {
+                label {Dup Check On CALL +}
+                callback {EnableDupCheck = o->value();}
+                xywh {172 250 90 15} down_box DOWN_BOX
+                code0 {o->value(0);}
+              }
               Fl_Check_Button btnDupBand {
                 label Band
                 callback {progdefaults.dupband = o->value();
 progdefaults.changed = true;}
-                xywh {135 252 70 15} down_box DOWN_BOX
+                xywh {15 283 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.dupband);}
+              }
+              Fl_Check_Button btnDupMode {
+                label Mode
+                callback {progdefaults.dupmode = o->value();
+progdefaults.changed = true;}
+                xywh {94 283 70 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.dupmode);}
               }
               Fl_Check_Button btnDupState {
                 label State
                 callback {progdefaults.dupstate = o->value();
 progdefaults.changed = true;}
-                xywh {215 252 70 15} down_box DOWN_BOX
+                xywh {172 283 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.dupstate);}
               }
               Fl_Check_Button btnDupXchg1 {
                 label {Xchg 1}
                 callback {progdefaults.dupxchg1 = o->value();
 progdefaults.changed = true;}
-                xywh {55 280 70 15} down_box DOWN_BOX
+                xywh {252 283 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.dupxchg1);}
               }
               Fl_Check_Button btnDupXchg2 {
                 label {Xchg 2}
                 callback {progdefaults.dupxchg2 = o->value();
 progdefaults.changed = true;}
-                xywh {135 280 70 15} down_box DOWN_BOX
+                xywh {331 283 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.dupxchg2);}
               }
               Fl_Check_Button btnDupXchg3 {
                 label {Xchg 3}
                 callback {progdefaults.dupxchg3 = o->value();
 progdefaults.changed = true;}
-                xywh {215 280 70 15} down_box DOWN_BOX
+                xywh {410 283 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.dupxchg3);}
               }
-              Fl_Check_Button btnDupMode {
-                label Mode
-                callback {progdefaults.dupmode = o->value();
+              Fl_Check_Button btnDupTimeSpan {
+                label {Time span over}
+                callback {progdefaults.duptimespan=o->value();
 progdefaults.changed = true;}
-                xywh {295 252 70 15} down_box DOWN_BOX
-                code0 {o->value(progdefaults.dupmode);}
+                xywh {94 317 70 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.duptimespan);}
               }
-              Fl_Check_Button btnDupCheckOn {
-                label {Dup Check On}
-                callback {EnableDupCheck = o->value();}
-                xywh {365 279 90 15} down_box DOWN_BOX
-                code0 {o->value(0);}
-              }
-              Fl_Box {} {
-                label {Call +}
-                xywh {51 248 59 22}
+              Fl_Value_Input nbrTimeSpan {
+                label minutes
+                callback {progdefaults.timespan = o->value();
+progdefaults.changed = true;} selected
+                xywh {230 313 53 22} align 8 maximum 1440 step 1 value 120
+                code0 {o->value(progdefaults.timespan);}
               }
             }
           }

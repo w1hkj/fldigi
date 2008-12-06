@@ -252,8 +252,10 @@ void cb_SortByFreq (void) {
 
 void DupCheck(const char *callsign)
 {
+	zuluDateTime();
 	if (qsodb.duplicate(
 			callsign,
+			zuluLogDate, zuluLogTime, progdefaults.timespan, progdefaults.duptimespan, 
 			inpFreq->value(), progdefaults.dupband,
 			inpCnty->value(), progdefaults.dupstate,
 			mode_info[active_modem->get_mode()].adif_name, progdefaults.dupmode,

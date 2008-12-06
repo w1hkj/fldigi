@@ -341,8 +341,56 @@ int cQsoDb::qsoWriteFile (const char *fname) {
   return 0;
 }
 
+static const int jdays[2][13] = {
+  { 0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 },
+  { 0, 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335 }
+};
+
+static bool isleapyear( int y )
+{
+  if( y % 400 == 0 || ( y % 100 != 0 && y % 4 == 0 ) )
+    return true;
+  return false;
+}
+
+
+static int dayofyear (int year, int mon, int mday)
+{
+  return mday + jdays[isleapyear (year) ? 1 : 0][mon];
+}
+
+static unsigned int epoch_minutes (const char *szdate, const char *sztime)
+{
+  unsigned int  doe;
+  int  era, cent, quad, rest;
+  int year, mon, mday;
+  int mins;
+  
+  year = ((szdate[0]*10 + szdate[1])*10 + szdate[2])*10 + szdate[3];
+  mon  = szdate[4]*10 + szdate[5];
+  mday = szdate[6]*10 + szdate[7];
+  
+  mins = (sztime[0]*10 + sztime[1])*60 + sztime[2]*10 + sztime[3];
+  
+  /* break down the year into 400, 100, 4, and 1 year multiples */
+  rest = year - 1;
+  quad = rest / 4;        rest %= 4;
+  cent = quad / 25;       quad %= 25;
+  era = cent / 4;         cent %= 4;
+  
+  /* set up doe */
+  doe = dayofyear (year, mon, mday);
+  doe += era * (400 * 365 + 97);
+  doe += cent * (100 * 365 + 24);
+  doe += quad * (4 * 365 + 1);
+  doe += rest * 365;
+  
+  return doe*60*24 + mins;
+}
+
 bool cQsoDb::duplicate(
 		const char *callsign, 
+		const char *szdate, const char *sztime, unsigned int interval, bool chkdatetime,
 		const char *freq, bool chkfreq,
 		const char *state, bool chkstate,
 		const char *mode, bool chkmode,
@@ -351,36 +399,45 @@ bool cQsoDb::duplicate(
 		const char *xchg3, bool chkxchg3 )
 {
 	int f1, f2;
-	f1 = (int)atof(freq);
-	bool b_freq = false, b_state = false, b_mode = false,
-		 b_xchg1 = false, b_xchg2 = false, b_xchg3 = false;
+	f1 = (int)(atof(freq)/1000.0);
+	bool b_freqOK = true, b_stateOK = true, b_modeOK = true,
+		 b_xchg1OK = true, b_xchg2OK = true, b_xchg3OK = true,
+		 b_dtimeOK = true;
+	unsigned int datetime = epoch_minutes(szdate, sztime);
+	unsigned int qsodatetime;
 	
 	for (int i = 0; i < nbrrecs; i++) {
 		if (strcasecmp(qsorec[i].getField(CALL), callsign) == 0) {
 // found callsign duplicate
-// check frequency field
-			if (!chkfreq) b_freq = true;
-			else {
-				f2 = (int)atof(qsorec[i].getField(FREQ));
-				if (f1 == f2) b_freq = true;
+			if (chkfreq) { // test integer part of frequency
+				f2 = (int)(atof(qsorec[i].getField(FREQ))/1000.0);
+				b_freqOK = (f1 == f2);
 			}
-// check state
-			if (!chkstate) b_state = true;
-			else
-				if (strcasecmp(qsorec[i].getField(STATE), state) == 0) b_state = true;
-			if (!chkmode) b_mode = true;
-				if (strcasecmp(qsorec[i].getField(MODE), mode) == 0) b_mode = true;
-			if (!chkxchg1) b_xchg1 = true;
-			else
-				if (strcasecmp(qsorec[i].getField(XCHG1), xchg1) == 0) b_xchg1 = true;
-			if (!chkxchg2) b_xchg2 = true;
-			else
-				if (strcasecmp(qsorec[i].getField(XCHG2), xchg2) == 0) b_xchg2 = true;
-			if (!chkxchg3) b_xchg3 = true;
-			else
-				if (strcasecmp(qsorec[i].getField(XCHG3), xchg3) == 0) b_xchg3 = true;
+			if (chkstate)
+				b_stateOK = (strcasecmp(qsorec[i].getField(STATE), state) == 0);
+
+			if (chkmode)
+				b_modeOK = (strcasecmp(qsorec[i].getField(MODE), mode) == 0);
+
+			if (chkxchg1)
+				b_xchg1OK = (strcasecmp(qsorec[i].getField(XCHG1), xchg1) == 0);
+
+			if (chkxchg2)
+				b_xchg2OK = (strcasecmp(qsorec[i].getField(XCHG2), xchg2) == 0);
+
+			if (chkxchg3)
+				b_xchg3OK = (strcasecmp(qsorec[i].getField(XCHG3), xchg3) == 0);
+
+			if (chkdatetime) {
+				qsodatetime = epoch_minutes (
+								qsorec[i].getField(QSO_DATE),
+								qsorec[i].getField(TIME_ON));
+				if ((datetime - qsodatetime) >= interval) b_dtimeOK = false;
+			}
 // all must be true for a dup.
-			if (b_freq && b_state && b_mode && b_xchg1 && b_xchg2 && b_xchg3)
+			if (b_freqOK && b_stateOK && b_modeOK && 
+			    b_xchg1OK && b_xchg2OK && b_xchg3OK && 
+			    b_dtimeOK)
 				return true;
 		}
 	}
