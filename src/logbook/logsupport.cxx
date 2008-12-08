@@ -305,6 +305,11 @@ void SearchLastQSO(const char *callsign)
 	if (wBrowser->search(row, col, !cQsoDb::reverse, re)) {
 		wBrowser->GotoRow(row);
 		inpName->value(inpName_log->value());
+		inpQth->value(inpQth_log->value());
+		inpLoc->value(inpLoc_log->value());
+		inpState->value(inpState_log->value());
+		inpVEprov->value(inpVE_Prov_log->value ());
+		inpCountry->value(inpCountry_log->value ());
 		inpSearchString->value(callsign);
 		if (EnableDupCheck)
 			DupCheck(callsign);
