@@ -30,7 +30,7 @@ static char time[6];
 	return time;
 }
 
-void cTextFile::writeHeader(FILE *txtFile)
+void cTextFile::writeCSVHeader(FILE *txtFile)
 {
 	if (btnSelectQSOdate->value())   fprintf (txtFile, "DATE\t");
 	if (btnSelectTimeON->value())    fprintf (txtFile, "ON\t");
@@ -57,13 +57,13 @@ void cTextFile::writeHeader(FILE *txtFile)
 	fprintf (txtFile, "\n");
 }
 
-int cTextFile::writeFile (const char *fname, cQsoDb *db) {
+int cTextFile::writeCSVFile (const char *fname, cQsoDb *db) {
 	cQsoRec *pRec = (cQsoRec *)0;
 	FILE *txtFile = fopen (fname, "w");
 	if (!txtFile) return 1;
   
 	if (txtFile) {
-		writeHeader(txtFile);
+		writeCSVHeader(txtFile);
 		for (int i = 0; i < db->nbrRecs(); i++) {
 			pRec = db->getRec(i);
 			if (pRec->getField(EXPORT)[0] == 'E') {
@@ -115,6 +115,102 @@ int cTextFile::writeFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, "%s\t", pRec->getField(XCHG2));
 				if (btnSelectXchg3->value())
 					fprintf (txtFile, "%s", pRec->getField(XCHG3));
+				fprintf (txtFile, "\n");
+				pRec->putField(EXPORT,"");
+				db->qsoUpdRec(i, pRec);
+			}
+		}
+		fclose (txtFile);
+	}
+	return 0;
+}
+
+// text file in fixed fields
+void cTextFile::writeTXTHeader(FILE *txtFile)
+{
+	if (btnSelectQSOdate->value())   fprintf (txtFile, "%-10s", "DATE");
+	if (btnSelectTimeON->value())    fprintf (txtFile, "%-6s", "ON");
+	if (btnSelectTimeOFF->value())   fprintf (txtFile, "%-6s", "OFF");
+	if (btnSelectCall->value())      fprintf (txtFile, "%-10s", "CALL");
+	if (btnSelectName->value())      fprintf (txtFile, "%-15s", "NAME");
+	if (btnSelectBand->value())      fprintf (txtFile, "%-7s", "BAND");
+	if (btnSelectFreq->value())      fprintf (txtFile, "%-12s", "FREQ");
+	if (btnSelectMode->value())      fprintf (txtFile, "%-8s", "MODE");
+	if (btnSelectRSTsent->value())   fprintf (txtFile, "%-6s", "RSTX");
+	if (btnSelectRSTrcvd->value())   fprintf (txtFile, "%-6s", "RSTR");
+	if (btnSelectQth->value())       fprintf (txtFile, "%-20s", "QTH");
+	if (btnSelectState->value())     fprintf (txtFile, "%-5s", "ST");
+	if (btnSelectProvince->value())  fprintf (txtFile, "%-5s", "PR");
+	if (btnSelectCountry->value())   fprintf (txtFile, "%-15s", "CNTRY");
+	if (btnSelectQSLrcvd->value())   fprintf (txtFile, "%-10s", "QSLR");
+	if (btnSelectQSLsent->value())   fprintf (txtFile, "%-10s", "QSLS");
+	if (btnSelectComment->value())   fprintf (txtFile, "%-30s", "COMMENT");
+	if (btnSelectSerialIN->value())  fprintf (txtFile, "%-7s", "SRX");
+	if (btnSelectSerialOUT->value()) fprintf (txtFile, "%-7s", "STX");
+	if (btnSelectXchg1->value())     fprintf (txtFile, "%-15s", "XCHG1");
+	if (btnSelectXchg2->value())     fprintf (txtFile, "%-15s", "XCHG2");
+	if (btnSelectXchg3->value())     fprintf (txtFile, "%-15s", "XCHG3");
+	fprintf (txtFile, "\n");
+}
+
+int cTextFile::writeTXTFile (const char *fname, cQsoDb *db) {
+	cQsoRec *pRec = (cQsoRec *)0;
+	FILE *txtFile = fopen (fname, "w");
+	if (!txtFile) return 1;
+  
+	if (txtFile) {
+		writeTXTHeader(txtFile);
+		for (int i = 0; i < db->nbrRecs(); i++) {
+			pRec = db->getRec(i);
+			if (pRec->getField(EXPORT)[0] == 'E') {
+				if (btnSelectQSOdate->value())
+					fprintf (txtFile, "%-10s", pRec->getField(QSO_DATE));
+				if (btnSelectTimeON->value())
+					fprintf (txtFile, "%-6s", pRec->getField(TIME_ON));
+				if (btnSelectTimeOFF->value())
+					fprintf (txtFile, "%-6s", pRec->getField(TIME_OFF));
+				if (btnSelectCall->value())
+					fprintf (txtFile, "%-10s", pRec->getField(CALL));
+				if (btnSelectName->value())
+					fprintf (txtFile, "%-15s", pRec->getField(NAME));
+				if (btnSelectBand->value())
+					fprintf (txtFile, "%-7s", pRec->getField(BAND));
+				if (btnSelectFreq->value())
+					fprintf (txtFile, "%-12s", pRec->getField(FREQ));
+				if (btnSelectMode->value())
+					fprintf (txtFile, "%-8s", pRec->getField(MODE));
+				if (btnSelectRSTsent->value())
+					fprintf (txtFile, "%-6s", pRec->getField(RST_SENT));
+				if (btnSelectRSTrcvd->value())
+					fprintf (txtFile, "%-6s", pRec->getField(RST_RCVD));
+				if (btnSelectQth->value())
+					fprintf (txtFile, "%-20s", pRec->getField(QTH));
+				if (btnSelectState->value())
+					fprintf (txtFile, "%-5s", pRec->getField(STATE));
+				if (btnSelectProvince->value())
+					fprintf (txtFile, "%-5s", pRec->getField(VE_PROV));
+				if (btnSelectCountry->value())
+					fprintf (txtFile, "%-15s", pRec->getField(COUNTRY));
+				if (btnSelectQSLrcvd->value())
+					fprintf (txtFile, "%-10s", pRec->getField(QSL_RCVD));
+				if (btnSelectQSLsent->value())
+					fprintf (txtFile, "%-10s", pRec->getField(QSL_SENT));
+				if (btnSelectComment->value()) {
+					string temp = pRec->getField(COMMENT);
+				for (size_t n = 0; n < temp.length(); n++)
+					if (temp[n] == '\n') temp[n] = ';';
+					fprintf (txtFile, "-30%s", temp.c_str());
+				}
+				if (btnSelectSerialIN->value())
+					fprintf (txtFile, "%-7s", pRec->getField(SRX));
+				if (btnSelectSerialOUT->value())
+					fprintf (txtFile, "%-7s", pRec->getField(STX));
+				if (btnSelectXchg1->value())
+					fprintf (txtFile, "%-15s", pRec->getField(XCHG1));
+				if (btnSelectXchg2->value())
+					fprintf (txtFile, "%-15s", pRec->getField(XCHG2));
+				if (btnSelectXchg3->value())
+					fprintf (txtFile, "%-15s", pRec->getField(XCHG3));
 				fprintf (txtFile, "\n");
 				pRec->putField(EXPORT,"");
 				db->qsoUpdRec(i, pRec);

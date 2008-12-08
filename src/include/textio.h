@@ -16,8 +16,10 @@ private:
 public:
   cTextFile () {};
   ~cTextFile () {};
-  void writeHeader(FILE *);
-  int writeFile (const char *, cQsoDb *);
+  void writeCSVHeader(FILE *);
+  int writeCSVFile (const char *, cQsoDb *);
+  void writeTXTHeader(FILE *);
+  int writeTXTFile (const char *, cQsoDb *);
 };
 
 #endif

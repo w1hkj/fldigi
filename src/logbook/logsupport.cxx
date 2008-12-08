@@ -54,7 +54,29 @@ void Export_CSV()
 			qsodb.qsoUpdRec (i, rec);
 		}
 	}
-	txtFile.writeFile(p, &qsodb);
+	txtFile.writeCSVFile(p, &qsodb);
+}
+
+void Export_TXT()
+{
+	if (chkExportBrowser->nchecked() == 0) return;
+
+	cQsoRec *rec;
+
+	string filters = "TEXT\t*." "txt";
+	const char* p = FSEL::saveas("Export to fixed field text file", filters.c_str(),
+					 "export." "txt");
+	if (!p)
+		return;
+
+	for (int i = 0; i < chkExportBrowser->nitems(); i++) {
+		if (chkExportBrowser->checked(i + 1)) {
+			rec = qsodb.getRec(i);
+			rec->putField(EXPORT, "E");
+			qsodb.qsoUpdRec (i, rec);
+		}
+	}
+	txtFile.writeTXTFile(p, &qsodb);
 }
 
 void Export_ADIF()
@@ -86,6 +108,7 @@ void Export_log()
 {
 	if (export_to == ADIF) Export_ADIF();
 	else if (export_to == CSV) Export_CSV();
+	else Export_TXT();
 }
 
 void saveLogbook()
@@ -180,6 +203,12 @@ void cb_mnuExportCSV_log(Fl_Menu_* m, void* d) {
 	export_to = CSV;
 	cb_Export_log();
 }
+
+void cb_mnuExportTEXT_log(Fl_Menu_* m, void *d) {
+	export_to = TEXT;
+	cb_Export_log();
+}
+
 
 void cb_mnuShowLogbook(Fl_Menu_* m, void* d)
 {
