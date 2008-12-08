@@ -311,7 +311,7 @@ char* FTextBase::get_word(int x, int y)
 		start = 0;
 	else
 		start++;
-	if (!tbuf->findchars_forward(p, " \t\n", &end))
+	if (!tbuf->findchars_forward(p, " .,;|\t\n", &end))
 		end = tbuf->length();
 
 	return tbuf->text_range(start, end);
