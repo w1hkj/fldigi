@@ -56,6 +56,7 @@ struct MACROTEXT {
 	}
 private:
 	string expanded;
+	void loadnewMACROS(string &s, size_t &i);
 };
 
 extern MACROTEXT macros;

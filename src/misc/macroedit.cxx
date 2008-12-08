@@ -10,6 +10,7 @@
 #include "macroedit.h"
 #include "globals.h"
 #include "status.h"
+#include "fileselect.h"
 
 #include <string>
 
@@ -85,6 +86,10 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add("<VER>\tFldigi + version");
 	w->add("<TIMER>\trepeat every NNN sec");
 	w->add("<IDLE>\tidle signal for NNN sec");
+	
+	w->add(LINE_SEP);
+	w->add("<FILE:>\tinsert text file");
+	w->add("<MACROS:>\tchange macro defs file");
 
 	w->add(LINE_SEP);
 	char s[256];
@@ -145,6 +150,23 @@ void cbInsertMacro(Fl_Widget *, void *)
 		text.erase(tab);
 	if (text == LINE_SEP)
 		return;
+	if (text == "<FILE:>") {
+		string filters = "Text\t*." "txt";
+		const char* p = FSEL::select("Text file to insert", filters.c_str(),
+					 "text." "txt");
+		if (p) {
+			text.insert(6, p);
+		} else
+			text = "";
+	} else if (text == "<MACROS:>") {
+		string filters = "Macrost\t*." "mdf";
+		const char* p = FSEL::select("Change to Macro file", filters.c_str(),
+					 "macros." "mdf");
+		if (p) {
+			text.insert(8, p);
+		} else
+			text = "";
+	} 
 	macrotext->insert(text.c_str());
 	macrotext->take_focus();
 }
@@ -181,6 +203,11 @@ Fl_Double_Window* make_macroeditor(void)
 void editMacro(int n)
 {
 	if (!MacroEditDialog) MacroEditDialog = make_macroeditor();
+	else {
+		editor_label = "";
+		editor_label.append("Macro editor - ").append(progStatus.LastMacroFile);
+		MacroEditDialog->label(editor_label.c_str());
+	}
 	macrotext->value(macros.text[n].c_str());
 	labeltext->value(macros.name[n].c_str());
 	iMacro = n;

@@ -70,6 +70,8 @@ void pGET(string &, size_t &);
 void pINFO1(string &, size_t &);
 void pINFO2(string &, size_t &);
 void pCLRRX(string &, size_t &);
+void pFILE(string &, size_t &);
+//void pMACROS(string &, size_t &);
 
 MTAGS mtags[] = {
 {"<CALL>",		pCALL},
@@ -112,6 +114,8 @@ MTAGS mtags[] = {
 {"<CONT>",		pCONT},
 {"<GET>",		pGET},
 {"<CLRRX>",		pCLRRX},
+{"<FILE:",		pFILE},
+//{"<MACROS:",	pMACROS},
 {0, 0}
 };
 
@@ -123,6 +127,24 @@ string info2msg = "";
 
 size_t mystrftime( char *s, size_t max, const char *fmt, const struct tm *tm) {
 	return strftime(s, max, fmt, tm);
+}
+
+void pFILE(string &s, size_t &i)
+{
+	size_t endbracket = s.find('>',i);
+	string fname = s.substr(i+6, endbracket - i - 6);
+	if (fname.length() > 0) {
+		FILE *toadd = fopen(fname.c_str(), "r");
+		string buffer;
+		char c = getc(toadd);
+		while (c && !feof(toadd)) {
+			if (c != '\r') buffer += c; // damn MSDOS txt files
+			c = getc(toadd);
+			}
+		s.replace(i, endbracket - i + 1, buffer);
+		fclose(toadd);
+	} else
+		s.replace(i, endbracket - i + 1, "");
 }
 
 void pINFO1(string &s, size_t &i)
@@ -646,6 +668,9 @@ int MACROTEXT::loadMacros(string filename)
 		text[mNumber] = text[mNumber] + mLine;
 	}
 	mFile.close();
+	altMacros = 0;
+	btnAltMacros->label("1");
+	btnAltMacros->redraw_label();
 	return 0;
 }
 
@@ -675,7 +700,6 @@ void MACROTEXT::openMacroFile()
     if (p) {
 		loadMacros(p);
 		progStatus.LastMacroFile = fl_filename_name(p);
-		update_main_title();
 	}
 }
 
@@ -687,10 +711,19 @@ void MACROTEXT::saveMacroFile()
     if (p) {
 		saveMacros(p);
 		progStatus.LastMacroFile = fl_filename_name(p);
-		update_main_title();
 	}
 }
 
+void MACROTEXT::loadnewMACROS(string &s, size_t &i)
+{
+	size_t endbracket = s.find('>',i);
+	string fname = s.substr(i+8, endbracket - i - 8);
+	if (fname.length() > 0) {
+		loadMacros(fname);
+		progStatus.LastMacroFile = fl_filename_name(fname.c_str());
+	}
+	s.replace(i, endbracket - i + 1, "");
+}
 
 string MACROTEXT::expandMacro(int n)
 {
@@ -702,6 +735,11 @@ string MACROTEXT::expandMacro(int n)
 	MTAGS *pMtags;
 
 	while ((idx = expanded.find('<', idx)) != string::npos) {
+		if (expanded.find("<MACROS:",idx) == idx) {
+			loadnewMACROS(expanded, idx);
+			idx++;
+			continue;
+		}
 		// we must handle this specially
 		if (expanded.find("<CONT>", idx) == idx)
 			pCONT(expanded, idx);
