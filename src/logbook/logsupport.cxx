@@ -130,10 +130,11 @@ void cb_mnuOpenLogbook(Fl_Menu_* m, void* d)
 }
 
 void cb_mnuSaveLogbook(Fl_Menu_*m, void* d) {
-	if (qsodb.nbrRecs() == 0) return;
 	const char* p = FSEL::saveas("Save logbook file", "ADIF\t*." ADIF_SUFFIX,
 				     logbook_filename.c_str());
 	if (p) {
+		logbook_filename = p;
+		dlgLogbook->label(fl_filename_name(logbook_filename.c_str()));
 		if (adifFile.writeLog (p, &qsodb))
 			fl_message ("Could not write to %s", p);
 		qsodb.isdirty(0);

@@ -1,5 +1,7 @@
 #include <FL/Fl.H>
 #include <FL/filename.H>
+#include <FL/fl_ask.H>
+
 
 #include "adif_io.h"
 #include "config.h"
@@ -118,7 +120,12 @@ void cAdifIO::readFile (const char *fname, cQsoDb *db) {
     fread (buff, filesize, 1, adiFile);
     fclose (adiFile);
     
-    char *p1 = buff, *p2;
+    if (filesize == 0 || (strstr( buff, "<ADIF_VERS:")) == 0) {
+    	fl_message("Not an ADIF log file");
+    	return;
+	}
+
+	char *p1 = buff, *p2;
 // is there a header?
     if (*p1 != '<') { // yes find the start of the records
         p1 = strchr(buff, '<');
