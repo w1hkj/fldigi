@@ -477,20 +477,23 @@ int configuration::setDefaults()
 	
 	Fl_Button* qrzb = btnQRZnotavailable;
 	switch (QRZ) {
-	case QRZ_NONE:
+	case QRZNONE:
 		qrzb = btnQRZnotavailable;
 		break;
-	case QRZ_CD:
+	case QRZCD:
 		qrzb = btnQRZcdrom;
 		break;
-	case QRZ_NET_HTML:
+	case QRZHTML:
 		qrzb = btnQRZonline;
 		break;
-	case QRZ_NET_SUB:
+	case QRZNET:
 		qrzb = btnQRZsub;
 		break;
-	case QRZ_HAMCALL:
+	case HAMCALLNET:
 		qrzb = btnHamcall;
+		break;
+	case HAMCALLHTML:
+		qrzb = btnHAMCALLonline;
 		break;
 	default :
 		break;

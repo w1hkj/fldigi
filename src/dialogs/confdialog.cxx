@@ -20,7 +20,7 @@ Fl_Double_Window *dlgConfig;
 
 void set_qrz_buttons(Fl_Button* b) {
   Fl_Button* qrzb[] = { btnQRZnotavailable, btnQRZcdrom, btnQRZonline,
-                              btnQRZsub, btnHamcall};
+                              btnQRZsub, btnHamcall, btnHAMCALLonline};
 
 for (size_t i = 0; i < sizeof(qrzb)/sizeof(*qrzb); i++)
 	qrzb[i]->value(b == qrzb[i]);
@@ -1933,19 +1933,11 @@ progdefaults.changed = true;
 
 Fl_Group *tabQRZ=(Fl_Group *)0;
 
-Fl_Round_Button *btnQRZnotavailable=(Fl_Round_Button *)0;
-
-static void cb_btnQRZnotavailable(Fl_Round_Button* o, void*) {
-  set_qrz_buttons(o);
-progdefaults.QRZ = QRZ_NONE;
-progdefaults.changed = true;
-}
-
 Fl_Round_Button *btnQRZcdrom=(Fl_Round_Button *)0;
 
 static void cb_btnQRZcdrom(Fl_Round_Button* o, void*) {
   set_qrz_buttons(o);
-progdefaults.QRZ = QRZ_CD;
+progdefaults.QRZ = QRZCD;
 progdefaults.changed = true;
 }
 
@@ -1957,19 +1949,11 @@ progdefaults.QRZchanged = true;
 progdefaults.changed = true;
 }
 
-Fl_Round_Button *btnQRZonline=(Fl_Round_Button *)0;
-
-static void cb_btnQRZonline(Fl_Round_Button* o, void*) {
-  set_qrz_buttons(o);
-progdefaults.QRZ = QRZ_NET_HTML;
-progdefaults.changed = true;
-}
-
 Fl_Round_Button *btnQRZsub=(Fl_Round_Button *)0;
 
 static void cb_btnQRZsub(Fl_Round_Button* o, void*) {
   set_qrz_buttons(o);
-progdefaults.QRZ = QRZ_NET_SUB;
+progdefaults.QRZ = QRZNET;
 progdefaults.changed = true;
 }
 
@@ -1977,7 +1961,7 @@ Fl_Round_Button *btnHamcall=(Fl_Round_Button *)0;
 
 static void cb_btnHamcall(Fl_Round_Button* o, void*) {
   set_qrz_buttons(o);
-progdefaults.QRZ = QRZ_HAMCALL;
+progdefaults.QRZ = HAMCALLNET;
 progdefaults.changed = true;
 }
 
@@ -2001,6 +1985,30 @@ static void cb_btnQRZpasswordShow(Fl_Button* o, void*) {
   inpQRZuserpassword->type(inpQRZuserpassword->type() ^ FL_SECRET_INPUT);
 inpQRZuserpassword->redraw();
 o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");
+}
+
+Fl_Round_Button *btnQRZonline=(Fl_Round_Button *)0;
+
+static void cb_btnQRZonline(Fl_Round_Button* o, void*) {
+  set_qrz_buttons(o);
+progdefaults.QRZ = QRZHTML;
+progdefaults.changed = true;
+}
+
+Fl_Round_Button *btnQRZnotavailable=(Fl_Round_Button *)0;
+
+static void cb_btnQRZnotavailable(Fl_Round_Button* o, void*) {
+  set_qrz_buttons(o);
+progdefaults.QRZ = QRZNONE;
+progdefaults.changed = true;
+}
+
+Fl_Round_Button *btnHAMCALLonline=(Fl_Round_Button *)0;
+
+static void cb_btnHAMCALLonline(Fl_Round_Button* o, void*) {
+  set_qrz_buttons(o);
+progdefaults.QRZ = HAMCALLHTML;
+progdefaults.changed = true;
 }
 
 Fl_Button *btnSaveConfig=(Fl_Button *)0;
@@ -2106,6 +2114,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         tabOperator->end();
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 500, 345, _("UI"));
+        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 500, 345);
           tabsUI->selection_color(FL_LIGHT1);
           { tabUserInterface = new Fl_Group(0, 50, 500, 320, _("General"));
@@ -3979,22 +3988,15 @@ l with your sound hardware."));
         tabMisc->end();
       } // Fl_Group* tabMisc
       { tabQRZ = new Fl_Group(0, 25, 500, 345, _("Callsign DB"));
-        tabQRZ->hide();
-        { Fl_Group* o = new Fl_Group(5, 35, 490, 120, _("Database"));
+        { Fl_Group* o = new Fl_Group(5, 180, 490, 75, _("CDROM"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-          { btnQRZnotavailable = new Fl_Round_Button(15, 65, 110, 20, _("Not available"));
-            btnQRZnotavailable->down_box(FL_ROUND_DOWN_BOX);
-            btnQRZnotavailable->value(1);
-            btnQRZnotavailable->callback((Fl_Callback*)cb_btnQRZnotavailable);
-            btnQRZnotavailable->value(progdefaults.QRZ == QRZ_NONE);
-          } // Fl_Round_Button* btnQRZnotavailable
-          { btnQRZcdrom = new Fl_Round_Button(15, 95, 105, 20, _("QRZ cdrom"));
+          { Fl_Round_Button* o = btnQRZcdrom = new Fl_Round_Button(25, 215, 70, 20, _("QRZ"));
             btnQRZcdrom->down_box(FL_ROUND_DOWN_BOX);
             btnQRZcdrom->callback((Fl_Callback*)cb_btnQRZcdrom);
-            btnQRZcdrom->value(progdefaults.QRZ == QRZ_CD);
+            o->value(progdefaults.QRZ == QRZCD);
           } // Fl_Round_Button* btnQRZcdrom
-          { Fl_Input2* o = txtQRZpathname = new Fl_Input2(150, 95, 300, 20, _("at:"));
+          { Fl_Input2* o = txtQRZpathname = new Fl_Input2(104, 215, 300, 20, _("at:"));
             txtQRZpathname->tooltip(_("ie: /home/dave/CALLBK/ or C:/CALLBK/^jLeave blank to search for database"));
             txtQRZpathname->box(FL_DOWN_BOX);
             txtQRZpathname->color(FL_BACKGROUND2_COLOR);
@@ -4008,29 +4010,24 @@ l with your sound hardware."));
             txtQRZpathname->when(FL_WHEN_RELEASE);
             o->value(progdefaults.QRZpathname.c_str());
           } // Fl_Input2* txtQRZpathname
-          { btnQRZonline = new Fl_Round_Button(15, 125, 255, 20, _("QRZ online (may not be available)"));
-            btnQRZonline->down_box(FL_ROUND_DOWN_BOX);
-            btnQRZonline->callback((Fl_Callback*)cb_btnQRZonline);
-            btnQRZonline->value(progdefaults.QRZ == QRZ_NET_HTML);
-          } // Fl_Round_Button* btnQRZonline
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(5, 155, 490, 95, _("Paid online subscription"));
+        { Fl_Group* o = new Fl_Group(5, 260, 490, 95, _("Paid online subscription"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-          { btnQRZsub = new Fl_Round_Button(15, 186, 90, 20, _("QRZ.com"));
+          { Fl_Round_Button* o = btnQRZsub = new Fl_Round_Button(25, 291, 90, 20, _("QRZ.com"));
             btnQRZsub->tooltip(_("You need a paid QRZ online subscription to access"));
             btnQRZsub->down_box(FL_ROUND_DOWN_BOX);
             btnQRZsub->callback((Fl_Callback*)cb_btnQRZsub);
-            btnQRZsub->value(progdefaults.QRZ == QRZ_NET_SUB);
+            o->value(progdefaults.QRZ == QRZNET);
           } // Fl_Round_Button* btnQRZsub
-          { btnHamcall = new Fl_Round_Button(15, 216, 105, 20, _("Hamcall.net"));
+          { Fl_Round_Button* o = btnHamcall = new Fl_Round_Button(25, 321, 105, 20, _("Hamcall.net"));
             btnHamcall->tooltip(_("You need a paid Hamcall online subscription to access"));
             btnHamcall->down_box(FL_ROUND_DOWN_BOX);
             btnHamcall->callback((Fl_Callback*)cb_btnHamcall);
-            btnHamcall->value(progdefaults.QRZ == QRZ_HAMCALL);
+            o->value(progdefaults.QRZ == HAMCALLNET);
           } // Fl_Round_Button* btnHamcall
-          { Fl_Input2* o = inpQRZusername = new Fl_Input2(235, 186, 90, 20, _("User name"));
+          { Fl_Input2* o = inpQRZusername = new Fl_Input2(235, 291, 90, 20, _("User name"));
             inpQRZusername->box(FL_DOWN_BOX);
             inpQRZusername->color(FL_BACKGROUND2_COLOR);
             inpQRZusername->selection_color(FL_SELECTION_COLOR);
@@ -4043,7 +4040,7 @@ l with your sound hardware."));
             inpQRZusername->when(FL_WHEN_RELEASE);
             o->value(progdefaults.QRZusername.c_str());
           } // Fl_Input2* inpQRZusername
-          { Fl_Input2* o = inpQRZuserpassword = new Fl_Input2(236, 216, 90, 20, _("Password"));
+          { Fl_Input2* o = inpQRZuserpassword = new Fl_Input2(236, 321, 90, 20, _("Password"));
             inpQRZuserpassword->box(FL_DOWN_BOX);
             inpQRZuserpassword->color(FL_BACKGROUND2_COLOR);
             inpQRZuserpassword->selection_color(FL_SELECTION_COLOR);
@@ -4057,9 +4054,30 @@ l with your sound hardware."));
             o->value(progdefaults.QRZuserpassword.c_str());
             o->type(FL_SECRET_INPUT);
           } // Fl_Input2* inpQRZuserpassword
-          { btnQRZpasswordShow = new Fl_Button(336, 216, 70, 20, _("Show"));
+          { btnQRZpasswordShow = new Fl_Button(336, 321, 70, 20, _("Show"));
             btnQRZpasswordShow->callback((Fl_Callback*)cb_btnQRZpasswordShow);
           } // Fl_Button* btnQRZpasswordShow
+          o->end();
+        } // Fl_Group* o
+        { Fl_Group* o = new Fl_Group(5, 35, 490, 140);
+          o->box(FL_ENGRAVED_FRAME);
+          o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+          { Fl_Round_Button* o = btnQRZonline = new Fl_Round_Button(25, 75, 300, 20, _("QRZ online via default Internet Browser"));
+            btnQRZonline->down_box(FL_ROUND_DOWN_BOX);
+            btnQRZonline->callback((Fl_Callback*)cb_btnQRZonline);
+            o->value(progdefaults.QRZ == QRZHTML);
+          } // Fl_Round_Button* btnQRZonline
+          { Fl_Round_Button* o = btnQRZnotavailable = new Fl_Round_Button(25, 45, 110, 20, _("Not available"));
+            btnQRZnotavailable->down_box(FL_ROUND_DOWN_BOX);
+            btnQRZnotavailable->value(1);
+            btnQRZnotavailable->callback((Fl_Callback*)cb_btnQRZnotavailable);
+            o->value(progdefaults.QRZ == QRZNONE);
+          } // Fl_Round_Button* btnQRZnotavailable
+          { Fl_Round_Button* o = btnHAMCALLonline = new Fl_Round_Button(25, 105, 300, 20, _("HamCall online via default Internet Browser"));
+            btnHAMCALLonline->down_box(FL_ROUND_DOWN_BOX);
+            btnHAMCALLonline->callback((Fl_Callback*)cb_btnHAMCALLonline);
+            o->value(progdefaults.QRZ == HAMCALLHTML);
+          } // Fl_Round_Button* btnHAMCALLonline
           o->end();
         } // Fl_Group* o
         tabQRZ->end();

@@ -77,7 +77,7 @@ string lookup_latd;
 string lookup_lond;
 string lookup_notes;
 
-qrz_query_t DB_query = QRZ_NONE;
+qrz_query_t DB_query = QRZNONE;
 
 enum TAG {
 	IGNORE,	KEY,	ALERT,	ERROR,	CALL,
@@ -111,8 +111,6 @@ void parse_html(const string& htmlpage);
 bool HAMCALLget(string& htmlpage);
 void HAMCALLquery();
 
-bool parseQRZdetails(string &htmlpage);
-bool getQRZdetails(string& htmlpage);
 void QRZ_DETAILS_query();
 
 
@@ -659,141 +657,20 @@ void HAMCALLquery()
 	REQ(QRZ_disp_result);
 }
 
-// ----------------------------------------------------------------------------
-//
-// These routines allow data extraction (commonly known as page scraping)
-// from a www.qrz.com/detail/<callsign> query
-//
-// They are entirely dependent on the format of the details response page
-// which may and probably will change as the business requirements of QRZ.com
-// dictate.
-// ----------------------------------------------------------------------------
-
-#define BEGIN_NAME		"Name</td><td class=\"q2\"><b>"
-#define BEGIN_ADDR1		"Addr1</td><td class=\"q2\"><b>"
-#define BEGIN_ADDR2		"Addr2</td><td class=\"q2\"><b>"
-#define BEGIN_COUNTRY	"Country</td><td class=\"q2\"><b>"
-#define BEGIN_GRID		"Grid</td><td class=\"q2\"><b>"
-#define NOT_FOUND		"callsign <b class=\"red\">"
-#define snip_end_RECORD	"</b>"
-
-bool parseQRZdetails(string &htmlpage)
-{
-	size_t snip, snip_end;
-
-	clear_Lookup();
-	
-	if (htmlpage.find(NOT_FOUND) != string::npos) {
-		lookup_qth = "NOT FOUND";
-		return false;
-	}
-
-
-	snip = htmlpage.find(BEGIN_NAME);
-	if (snip != string::npos) {
-		snip += strlen(BEGIN_NAME);
-		snip_end  = htmlpage.find(snip_end_RECORD, snip);
-		lookup_name = htmlpage.substr(snip, snip_end - snip);
-		snip = lookup_name.find(' ');
-		lookup_fname = lookup_name.substr(0, snip);
-		for (size_t i = 0; i < lookup_fname.length(); i++)
-			if (lookup_fname[i] < ' ' || lookup_fname[i] > 'z')
-				lookup_fname[i] = ' ';
-		while ((snip = lookup_fname.find(' ')) != string::npos)
-			lookup_fname.erase(snip, 1);
-	}	
-	
-//	snip = htmlpage.find(BEGIN_ADDR1);
-//	if (snip != string::npos) {
-//		snip += strlen(BEGIN_ADDR1);
-//		snip_end  = htmlpage.find(snip_end_RECORD, snip);
-//		lookup_addr1 = htmlpage.substr(snip, snip_end - snip);
-//	}	
-
-	snip = htmlpage.find(BEGIN_ADDR2);
-	if (snip != string::npos) {
-		snip += strlen(BEGIN_ADDR2);
-		snip_end  = htmlpage.find(snip_end_RECORD, snip);
-		lookup_addr2 = htmlpage.substr(snip, snip_end - snip);
-//		lookup_qth += lookup_addr2;
-		lookup_qth = lookup_addr2;
-	}
-	
-	string isUS = "aAkKnNwW";
-	string isCAN = "vV";
-	if (isUS.find(callsign[0]) != string::npos) { // a US callsign
-		size_t pos = lookup_qth.find(',');
-		if (pos != string::npos) {
-			lookup_state = lookup_qth.substr(pos);
-			lookup_qth = lookup_qth.substr(0, pos);
-			pos = lookup_state.find_first_not_of(", ");
-			if (pos != string::npos)
-				lookup_state = lookup_state.substr(pos);
-			pos = lookup_state.find(' ');
-			if (pos != string::npos)
-				lookup_state = lookup_state.substr(0,pos);
-		}
-	} else if (isCAN.find(callsign[0]) != string::npos) { // a Canadian callsign
-		size_t pos = lookup_qth.find(',');
-		if (pos != string::npos) {
-			lookup_province = lookup_qth.substr(pos);
-			lookup_qth = lookup_qth.substr(0, pos);
-			pos = lookup_province.find_first_not_of(", ");
-			if (pos != string::npos)
-				lookup_province = lookup_province.substr(pos);
-			pos = lookup_province.find(' ');
-			if (pos != string::npos)
-				lookup_province = lookup_province.substr(0,pos);
-		}
-	} else {
-		size_t pos = lookup_qth.find(',');
-		if (pos != string::npos)
-			lookup_qth = lookup_qth.substr(0, pos);
-		snip = htmlpage.find(BEGIN_COUNTRY);
-		if (snip != string::npos) {
-			snip += strlen(BEGIN_COUNTRY);
-			snip_end  = htmlpage.find(snip_end_RECORD, snip);
-			lookup_state = htmlpage.substr(snip, snip_end - snip);
-			pos = lookup_state.find(',');
-			if (pos != string::npos)
-				lookup_state = lookup_state.substr(0, pos);
-		}
-	}	
-
-	snip = htmlpage.find(BEGIN_GRID);
-	if (snip != string::npos) {
-		snip += strlen(BEGIN_GRID);
-		snip_end  = htmlpage.find(snip_end_RECORD, snip);
-		lookup_grid = htmlpage.substr(snip, snip_end - snip);
-	}	
-	
-	lookup_notes = "Courtesy of\nWWW.QRZ.COM";
-
-	return true;
-} 
-
-
-bool getQRZdetails(string& htmlpage)
-{
-	string url_detail;
-	url_detail =  "GET /detail/";
-	url_detail += callsign;
-	url_detail += "\r\n";
-
-	return request_reply("www.qrz.com", "http", url_detail, htmlpage, 10.0);
-}
-
 void QRZ_DETAILS_query()
 {
-	ENSURE_THREAD(QRZ_TID);
+	string qrzurl = "http://www.qrz.com/callsign.html?callsign=";
+	qrzurl.append(callsign);
+	
+	cb_mnuVisitURL(0, (void*)qrzurl.c_str());
+}
 
-	string htmlpage;
-
-	if (getQRZdetails(htmlpage))
-		parseQRZdetails(htmlpage);
-	else
-		lookup_notes = htmlpage;
-	REQ(QRZ_disp_result);
+void HAMCALL_DETAILS_query()
+{
+	string hamcallurl = "http://www.hamcall.net/call?callsign=";
+	hamcallurl.append(callsign);
+	
+	cb_mnuVisitURL(0, (void*)hamcallurl.c_str());
 }
 
 // ----------------------------------------------------------------------------
@@ -815,17 +692,20 @@ static void *LOOKUP_loop(void *args)
 		pthread_mutex_unlock(&qrz_mutex);
 
 		switch (DB_query) {
-		case QRZ_CD :
+		case QRZCD :
 			QRZ_CD_query();
 			break;
-		case QRZ_NET_SUB :
+		case QRZNET :
 			QRZquery();
 			break;
-		case QRZ_HAMCALL :
+		case HAMCALLNET :
 			HAMCALLquery();
 			break;
-		case QRZ_NET_HTML :
+		case QRZHTML :
 			QRZ_DETAILS_query();
+			break;
+		case HAMCALLHTML :
+			HAMCALL_DETAILS_query();
 			break;
 		case QRZ_EXIT:
 			return NULL;
@@ -856,13 +736,15 @@ void CALLSIGNquery()
 		inpCall->value(callsign.c_str());
 
 	switch (DB_query = static_cast<qrz_query_t>(progdefaults.QRZ)) {
-	case QRZ_NET_SUB: case QRZ_NET_HTML:
+	case QRZNET:
 		inpNotes->value("Request sent to\nqrz.com...");
 		break;
-	case QRZ_HAMCALL:
+	case QRZHTML: case HAMCALLHTML:
+		break;
+	case HAMCALLNET:
 		inpNotes->value("Request sent to\nwww.hamcall.net...");
 		break;
-	case QRZ_CD:
+	case QRZCD:
 		if (!qCall)
 			qCall = new QRZ( "callbkc" );
 		if (progdefaults.QRZchanged) {
@@ -871,7 +753,7 @@ void CALLSIGNquery()
 		}
 		if (!qCall->getQRZvalid()) {
 			inpNotes->value("QRZ DB error");
-			DB_query = QRZ_NONE;
+			DB_query = QRZNONE;
 			return;
 		}
 		break;

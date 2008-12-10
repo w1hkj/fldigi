@@ -50,10 +50,11 @@ decl {Fl_Double_Window *dlgConfig;} {public
 Function {set_qrz_buttons(Fl_Button* b)} {open return_type void
 } {
   code {Fl_Button* qrzb[] = { btnQRZnotavailable, btnQRZcdrom, btnQRZonline,
-                              btnQRZsub, btnHamcall};
+                              btnQRZsub, btnHamcall, btnHAMCALLonline};
 
 for (size_t i = 0; i < sizeof(qrzb)/sizeof(*qrzb); i++)
-	qrzb[i]->value(b == qrzb[i]);} {}
+	qrzb[i]->value(b == qrzb[i]);} {selected
+  }
 } 
 
 Function {ConfigureDialog()} {open
@@ -133,7 +134,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        xywh {0 25 500 345}
+        xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsUI {open
           xywh {0 25 500 345} selection_color 50
@@ -388,7 +389,7 @@ progdefaults.changed = true;}
               Fl_Value_Input nbrTimeSpan {
                 label minutes
                 callback {progdefaults.timespan = o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
                 xywh {230 313 53 22} align 8 maximum 1440 step 1 value 120
                 code0 {o->value(progdefaults.timespan);}
               }
@@ -2393,71 +2394,55 @@ progdefaults.changed = true;}
       }
       Fl_Group tabQRZ {
         label {Callsign DB} open
-        xywh {0 25 500 345} hide
+        xywh {0 25 500 345}
       } {
         Fl_Group {} {
-          label Database open
-          xywh {5 35 490 120} box ENGRAVED_FRAME align 21
+          label CDROM open
+          xywh {5 180 490 75} box ENGRAVED_FRAME align 21
         } {
-          Fl_Round_Button btnQRZnotavailable {
-            label {Not available}
-            callback {set_qrz_buttons(o);
-progdefaults.QRZ = QRZ_NONE;
-progdefaults.changed = true;}
-            xywh {15 65 110 20} down_box ROUND_DOWN_BOX value 1
-            code0 {btnQRZnotavailable->value(progdefaults.QRZ == QRZ_NONE);}
-          }
           Fl_Round_Button btnQRZcdrom {
-            label {QRZ cdrom}
+            label QRZ
             callback {set_qrz_buttons(o);
-progdefaults.QRZ = QRZ_CD;
+progdefaults.QRZ = QRZCD;
 progdefaults.changed = true;}
-            xywh {15 95 105 20} down_box ROUND_DOWN_BOX
-            code0 {btnQRZcdrom->value(progdefaults.QRZ == QRZ_CD);}
+            xywh {25 215 70 20} down_box ROUND_DOWN_BOX
+            code0 {o->value(progdefaults.QRZ == QRZCD);}
           }
           Fl_Input txtQRZpathname {
             label {at:}
             callback {progdefaults.QRZpathname = o->value();
 progdefaults.QRZchanged = true;
 progdefaults.changed = true;}
-            tooltip {ie: /home/dave/CALLBK/ or C:/CALLBK/^jLeave blank to search for database} xywh {150 95 300 20}
+            tooltip {ie: /home/dave/CALLBK/ or C:/CALLBK/^jLeave blank to search for database} xywh {104 215 300 20}
             code0 {o->value(progdefaults.QRZpathname.c_str());}
             class Fl_Input2
-          }
-          Fl_Round_Button btnQRZonline {
-            label {QRZ online (may not be available)}
-            callback {set_qrz_buttons(o);
-progdefaults.QRZ = QRZ_NET_HTML;
-progdefaults.changed = true;}
-            xywh {15 125 255 20} down_box ROUND_DOWN_BOX
-            code0 {btnQRZonline->value(progdefaults.QRZ == QRZ_NET_HTML);}
           }
         }
         Fl_Group {} {
           label {Paid online subscription} open
-          xywh {5 155 490 95} box ENGRAVED_FRAME align 21
+          xywh {5 260 490 95} box ENGRAVED_FRAME align 21
         } {
           Fl_Round_Button btnQRZsub {
             label {QRZ.com}
             callback {set_qrz_buttons(o);
-progdefaults.QRZ = QRZ_NET_SUB;
+progdefaults.QRZ = QRZNET;
 progdefaults.changed = true;}
-            tooltip {You need a paid QRZ online subscription to access} xywh {15 186 90 20} down_box ROUND_DOWN_BOX
-            code0 {btnQRZsub->value(progdefaults.QRZ == QRZ_NET_SUB);}
+            tooltip {You need a paid QRZ online subscription to access} xywh {25 291 90 20} down_box ROUND_DOWN_BOX
+            code0 {o->value(progdefaults.QRZ == QRZNET);}
           }
           Fl_Round_Button btnHamcall {
             label {Hamcall.net}
             callback {set_qrz_buttons(o);
-progdefaults.QRZ = QRZ_HAMCALL;
+progdefaults.QRZ = HAMCALLNET;
 progdefaults.changed = true;}
-            tooltip {You need a paid Hamcall online subscription to access} xywh {15 216 105 20} down_box ROUND_DOWN_BOX
-            code0 {btnHamcall->value(progdefaults.QRZ == QRZ_HAMCALL);}
+            tooltip {You need a paid Hamcall online subscription to access} xywh {25 321 105 20} down_box ROUND_DOWN_BOX
+            code0 {o->value(progdefaults.QRZ == HAMCALLNET);}
           }
           Fl_Input inpQRZusername {
             label {User name}
             callback {progdefaults.QRZusername = o->value();
 progdefaults.changed = true;}
-            xywh {235 186 90 20}
+            xywh {235 291 90 20}
             code0 {o->value(progdefaults.QRZusername.c_str());}
             class Fl_Input2
           }
@@ -2465,7 +2450,7 @@ progdefaults.changed = true;}
             label Password
             callback {progdefaults.QRZuserpassword = o->value();
 progdefaults.changed = true;}
-            xywh {236 216 90 20}
+            xywh {236 321 90 20}
             code0 {o->value(progdefaults.QRZuserpassword.c_str());}
             code1 {o->type(FL_SECRET_INPUT);}
             class Fl_Input2
@@ -2475,7 +2460,35 @@ progdefaults.changed = true;}
             callback {inpQRZuserpassword->type(inpQRZuserpassword->type() ^ FL_SECRET_INPUT);
 inpQRZuserpassword->redraw();
 o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");}
-            xywh {336 216 70 20}
+            xywh {336 321 70 20}
+          }
+        }
+        Fl_Group {} {open
+          xywh {5 35 490 140} box ENGRAVED_FRAME align 21
+        } {
+          Fl_Round_Button btnQRZonline {
+            label {QRZ online via default Internet Browser}
+            callback {set_qrz_buttons(o);
+progdefaults.QRZ = QRZHTML;
+progdefaults.changed = true;}
+            xywh {25 75 300 20} down_box ROUND_DOWN_BOX
+            code0 {o->value(progdefaults.QRZ == QRZHTML);}
+          }
+          Fl_Round_Button btnQRZnotavailable {
+            label {Not available}
+            callback {set_qrz_buttons(o);
+progdefaults.QRZ = QRZNONE;
+progdefaults.changed = true;}
+            xywh {25 45 110 20} down_box ROUND_DOWN_BOX value 1
+            code0 {o->value(progdefaults.QRZ == QRZNONE);}
+          }
+          Fl_Round_Button btnHAMCALLonline {
+            label {HamCall online via default Internet Browser}
+            callback {set_qrz_buttons(o);
+progdefaults.QRZ = HAMCALLHTML;
+progdefaults.changed = true;}
+            xywh {25 105 300 20} down_box ROUND_DOWN_BOX
+            code0 {o->value(progdefaults.QRZ == HAMCALLHTML);}
           }
         }
       }

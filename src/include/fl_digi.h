@@ -131,6 +131,7 @@ extern void activate_rig_menu_item(bool b);
 extern void activate_test_menu_item(bool b);
 extern void activate_mfsk_image_item(bool b);
 
+extern void cb_mnuVisitURL(Fl_Widget*, void* arg);
 
 extern void put_freq(double frequency);
 extern void put_Bandwidth(int bandwidth);
