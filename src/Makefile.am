@@ -162,6 +162,7 @@ fldigi_SOURCES += \
 	include/cw.h \
 	include/debug.h \
 	include/digiscope.h \
+	include/dxcc.h \
 	include/thor.h \
 	include/thorvaricode.h \
 	include/dominoex.h \
@@ -287,6 +288,7 @@ fldigi_SOURCES += \
 	misc/ascii.cxx \
 	misc/configuration.cxx \
 	misc/debug.cxx \
+	misc/dxcc.cxx \
 	misc/flstring.c \
 	misc/icons.cxx \
 	misc/log.cxx \
