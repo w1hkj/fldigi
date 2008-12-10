@@ -1,5 +1,7 @@
 #include <config.h>
 
+#include <cctype>
+
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Widget.H>
@@ -41,13 +43,55 @@ Fl_Input2::Fl_Input2(int x, int y, int w, int h, const char* l)
 int Fl_Input2::handle(int event)
 {
 	switch (event) {
-	case FL_KEYBOARD: { // stop the move-to-next-field madness, we have Tab for that!
+	case FL_KEYBOARD: {
 		int b = Fl::event_key();
 		int p = position();
+		// stop the move-to-next-field madness, we have Tab for that!
 		if (unlikely((b == FL_Left && p == 0) || (b == FL_Right && p == size()) ||
 			     (b == FL_Up && line_start(p) == 0) ||
 			     (b == FL_Down && line_end(p) == size())))
 			return 1;
+		else if (unlikely(Fl::event_state() & (FL_ALT | FL_META))) {
+			switch (b) {
+			case 'c': { // capitalise
+				if (readonly() || p == size())
+					return 1;
+
+				while (p < size() && isspace(*(value() + p)))
+					p++;
+				if (p == size())
+					return 1;
+				char c = toupper(*(value() + p));
+				replace(p, p + 1, &c, 1);
+				position(word_end(p));
+			}
+				return 1;
+			case 'u': case 'l': { // upper/lower case
+				if (readonly() || p == size())
+					return 1;
+				while (p < size() && isspace(*(value() + p)))
+					p++;
+				int n = word_end(p) - p;
+				if (n == 0)
+					return 1;
+
+				char* s = new char[n];
+				memcpy(s, value() + p, n);
+				if (b == 'u')
+					for (int i = 0; i < n; i++)
+						s[i] = toupper(s[i]);
+				else
+					for (int i = 0; i < n; i++)
+						s[i] = tolower(s[i]);
+				replace(p, p + n, s, n);
+				position(p + n);
+				delete [] s;
+				return 1;
+			}
+			default:
+				break;
+			}
+		}
 	}
 		return Fl_Input::handle(event);
 	case FL_PUSH:
