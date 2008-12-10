@@ -310,10 +310,9 @@ void cb_SortByFreq (void) {
 
 void DupCheck(const char *callsign)
 {
-	zuluDateTime();
 	if (qsodb.duplicate(
 			callsign,
-			zuluLogDate, zuluLogTime, progdefaults.timespan, progdefaults.duptimespan, 
+			zdate(), ztime(), progdefaults.timespan, progdefaults.duptimespan, 
 			inpFreq->value(), progdefaults.dupband,
 			inpState->value(), progdefaults.dupstate,
 			mode_info[active_modem->get_mode()].adif_name, progdefaults.dupmode,
@@ -511,12 +510,11 @@ void EditRecord( int i )
 
 void AddRecord ()
 {
-//	zuluDateTime();
 	inpCall_log->value(inpCall->value());
 	inpName_log->value (inpName->value());
-	inpDate_log->value (zuluLogDate);
+	inpDate_log->value (zdate());
 	inpTimeOn_log->value (inpTimeOn->value());
-	inpTimeOff_log->value (zuluLogTime);
+	inpTimeOff_log->value (ztime());
 	inpRstR_log->value (inpRstIn->value());
 	inpRstS_log->value (inpRstOut->value());
 	{

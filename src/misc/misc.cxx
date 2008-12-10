@@ -25,6 +25,7 @@
 #include <config.h>
 
 #include "misc.h"
+#include <time.h>
 
 // ----------------------------------------------------------------------------
 
@@ -146,18 +147,10 @@ unsigned char graydecode(unsigned char data)
 
 // ----------------------------------------------------------------------------
 
-void MilliSleep(long msecs) {
-#ifdef WIN32
-	struct timespec tv;
-	tv.tv_sec = 0;
-	tv.tv_nsec = msecs * 1000000L;
+void MilliSleep(long msecs)
+{
+	struct timespec tv = {0, msecs * 1000000L};
 	nanosleep(&tv, NULL);
-#else
-	struct timeval tv;
-	tv.tv_sec = 0;
-	tv.tv_usec = msecs * 1000L;
-	select (0, (fd_set *)0, (fd_set *)0, (fd_set *)0, &tv);
-#endif
 }
 
 // Rectangular - no pre filtering of data array

@@ -149,7 +149,7 @@ Fl_Button			*btnAltMacros;
 Fl_Button			*btn_afconoff;
 Fl_Button			*btn_sqlonoff;
 Fl_Input2			*inpFreq;
-Fl_Output			*inpTimeOff;
+Fl_Input2			*inpTimeOff;
 Fl_Input2			*inpTimeOn;
 Fl_Input2			*inpCall;
 Fl_Input2			*inpName;
@@ -1218,22 +1218,35 @@ void cb_sldrSquelch(Fl_Slider* o, void*) {
 	restoreFocus();
 }
 
-char zuluLogTime[5];
-char zuluLogDate[9];
 
-void zuluDateTime()
+static char ztbuf[14];
+
+const char* zdate(void) { return ztbuf; }
+const char* ztime(void) { return ztbuf + 9; }
+
+void ztimer(void* first_call)
 {
-	time_t t;
-	struct tm tm;
-	zuluLogTime[0] = 0;
-	zuluLogDate[0] = 0;
-	if ((t = time(NULL)) != (time_t)-1 && gmtime_r(&t, &tm)) {
-		snprintf(zuluLogTime, sizeof(zuluLogTime), "%02d%02d", 
-		         tm.tm_hour, tm.tm_min);
-        snprintf (zuluLogDate, sizeof(zuluLogDate), "%4d%02d%02d", 
-                  1900 + tm.tm_year, tm.tm_mon + 1, tm.tm_mday);
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+
+	double st = 60.0 - tv.tv_sec % 60 - tv.tv_usec / 1e6;
+	if (!first_call) {
+		tv.tv_sec = 60.0 * round(tv.tv_sec / 60.0);
+		if (st < 1.0)
+			st += 60.0;
 	}
+	Fl::repeat_timeout(st, ztimer);
+
+	struct tm tm;
+	gmtime_r(&tv.tv_sec, &tm);
+	if (!strftime(ztbuf, sizeof(ztbuf), "%Y%m%d %H%M", &tm))
+		memset(ztbuf, 0, sizeof(ztbuf));
+	else
+		ztbuf[8] = '\0';
+
+	inpTimeOff->value(ztbuf + 9);
 }
+
 
 bool oktoclear = true;
 
@@ -2207,9 +2220,10 @@ void create_fl_digi_main() {
 				inpTimeOn->tooltip(_(""));
 				inpTimeOn->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
-				inpTimeOff = new Fl_Output(rightof(inpTimeOn) + pad, y2, w_inpTime, qh - pad, _("Off"));
+				inpTimeOff = new Fl_Input2(rightof(inpTimeOn) + pad, y2, w_inpTime, qh - pad, _("Off"));
 				inpTimeOff->tooltip(_(""));
 				inpTimeOff->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+				inpTimeOff->type(FL_NORMAL_OUTPUT);
 
 				inpCall = new Fl_Input2(rightof(inpTimeOff) + pad, y2, w_inpCall, qh - pad, _("Call"));
 				inpCall->tooltip(_(""));
@@ -2610,6 +2624,9 @@ void create_fl_digi_main() {
 
 	if (!progdefaults.menuicons)
 		toggle_icon_labels();
+
+	// ztimer must be run by FLTK's timeout handler
+	Fl::add_timeout(0.0, ztimer, (void*)true);
 }
 
 void put_freq(double frequency)

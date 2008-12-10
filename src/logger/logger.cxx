@@ -133,12 +133,12 @@ int submit_log(void)
 	log_msg = "";
 	log_msg = log_msg + "program:"	+ PACKAGE_NAME + " v " + PACKAGE_VERSION + LOG_MSEPARATOR;
 	log_msg = log_msg + "version:"	+ LOG_MVERSION			+ LOG_MSEPARATOR;
-	log_msg = log_msg + "date:"		+ zuluLogDate				+ LOG_MSEPARATOR;
-	putadif(QSO_DATE, zuluLogDate); 
-//	log_msg = log_msg + "time:"		+ zuluLogTime		+ LOG_MSEPARATOR;
-//	putadif(TIME_ON, zuluLogTime);
-	log_msg = log_msg + "endtime:"	+ zuluLogTime			+ LOG_MSEPARATOR;
-	putadif(TIME_OFF, zuluLogTime);
+	log_msg = log_msg + "date:"		+ zdate()				+ LOG_MSEPARATOR;
+	putadif(QSO_DATE, zdate()); 
+//	log_msg = log_msg + "time:"		+ ztime()		+ LOG_MSEPARATOR;
+//	putadif(TIME_ON, ztime());
+	log_msg = log_msg + "endtime:"	+ ztime()			+ LOG_MSEPARATOR;
+	putadif(TIME_OFF, ztime());
 	log_msg = log_msg + "call:"		+ inpCall->value()		+ LOG_MSEPARATOR;
 	putadif(CALL, inpCall->value());
 	log_msg = log_msg + "mhz:"		+ strFreqMhz			+ LOG_MSEPARATOR;

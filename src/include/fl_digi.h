@@ -70,7 +70,7 @@ extern Fl_Slider		*sldrSquelch;
 extern Progress			*pgrsSquelch;
 extern Fl_Button 		*btnMacro[];
 extern Fl_Input2		*inpFreq;
-extern Fl_Output		*inpTimeOff;
+extern Fl_Input2		*inpTimeOff;
 extern Fl_Input2		*inpTimeOn;
 extern Fl_Input2		*inpCall;
 extern Fl_Input2		*inpName;
@@ -205,9 +205,8 @@ extern void stopMacroTimer();
 extern void cb_ResetSerNbr();
 extern void updateOutSerNo();
 
-extern void zuluDateTime();
-extern char zuluLogTime[];
-extern char zuluLogDate[];
+const char* zdate(void);
+const char* ztime(void);
 
 Fl_Color adjust_color(Fl_Color fg, Fl_Color bg);
 

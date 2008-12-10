@@ -26,7 +26,6 @@
 #define _MISC_H
 
 #include <math.h>
-#include <sys/time.h>
 
 extern unsigned long hweight32(unsigned long w);
 extern unsigned short int hweight16(unsigned short int w);
