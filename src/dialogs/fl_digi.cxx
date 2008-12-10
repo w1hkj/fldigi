@@ -270,6 +270,7 @@ void cb_init_mode(Fl_Widget *, void *arg);
 void cb_oliviaA(Fl_Widget *w, void *arg);
 void cb_oliviaB(Fl_Widget *w, void *arg);
 void cb_oliviaC(Fl_Widget *w, void *arg);
+void cb_oliviaD(Fl_Widget *w, void *arg);
 void cb_oliviaCustom(Fl_Widget *w, void *arg);
 
 void cb_rtty45(Fl_Widget *w, void *arg);
@@ -357,6 +358,7 @@ Fl_Menu_Item quick_change_throb[] = {
 };
 
 Fl_Menu_Item quick_change_olivia[] = {
+	{ "8/250", 0, cb_oliviaD, (void *)MODE_OLIVIA },
 	{ "8/500", 0, cb_oliviaA, (void *)MODE_OLIVIA },
 	{ "16/500", 0, cb_oliviaB, (void *)MODE_OLIVIA },
 	{ "32/1000", 0, cb_oliviaC, (void *)MODE_OLIVIA },
@@ -398,6 +400,14 @@ void cb_oliviaC(Fl_Widget *w, void *arg)
 {
 	progdefaults.oliviatones = 4;
 	progdefaults.oliviabw = 3;
+	set_olivia_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
+void cb_oliviaD(Fl_Widget *w, void *arg)
+{
+	progdefaults.oliviatones = 2;
+	progdefaults.oliviabw = 1;
 	set_olivia_tab_widgets();
 	cb_init_mode(w, arg);
 }
@@ -1591,6 +1601,7 @@ Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 {"Olivia", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ "8/250", 0, cb_oliviaD, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "8/500", 0, cb_oliviaA, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "16/500", 0, cb_oliviaB, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "32/1000", 0, cb_oliviaC, (void *)MODE_OLIVIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
@@ -2525,13 +2536,13 @@ void create_fl_digi_main() {
 
 		Fl_Pack *hpack = new Fl_Pack(0, Y, WNOM, Hstatus);
 			hpack->type(1);
-			MODEstatus = new Fl_Button(0,Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Wmode, Hstatus, "");
+			MODEstatus = new Fl_Button(0,Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Wmode+30, Hstatus, "");
 			MODEstatus->box(FL_DOWN_BOX);
 			MODEstatus->color(FL_BACKGROUND2_COLOR);
 			MODEstatus->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 			MODEstatus->callback(status_cb, (void *)0);
 			MODEstatus->when(FL_WHEN_CHANGED);
-			MODEstatus->tooltip(_("Left clk - change mode\nRight clk - Modem Tab"));
+			MODEstatus->tooltip(_("Left click: change mode\nRight click: configure"));
 
 			Status1 = new Fl_Box(rightof(MODEstatus), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Ws2n, Hstatus, "");
 			Status1->box(FL_DOWN_BOX);
@@ -2879,14 +2890,21 @@ void clear_StatusMessages()
 	FL_AWAKE_D();
 }
 
-	
+void put_MODEstatus(const char* fmt, ...)
+{
+	static char s[32];
+	va_list args;
+	va_start(args, fmt);
+	vsnprintf(s, sizeof(s), fmt, args);
+
+	REQ(static_cast<void (Fl_Button::*)(const char *)>(&Fl_Button::label), MODEstatus, s);
+}
+
 void put_MODEstatus(trx_mode mode)
 {
-	FL_LOCK_D();
-	REQ(static_cast<void (Fl_Button::*)(const char *)>(&Fl_Button::label), MODEstatus, mode_info[mode].sname);
-	FL_UNLOCK_D();
-	FL_AWAKE_D();
+	put_MODEstatus("%s", mode_info[mode].sname);
 }
+
 
 void put_rx_data(int *data, int len)
 {

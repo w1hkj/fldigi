@@ -226,7 +226,7 @@ int olivia::rx_process(const double *buf, int len)
 	unsigned char ch = 0;
 	double snr;
 	static char msg1[20];
-//	static char msg2[20];
+	static char msg2[20];
 //	static char msg3[60];
 
 	if (tones	!= progdefaults.oliviatones ||
@@ -270,8 +270,8 @@ int olivia::rx_process(const double *buf, int len)
 
 	snprintf(msg1, sizeof(msg1), "s/n %4.1f dB", s2n);
 	put_Status1(msg1);
-//	snprintf(msg2, sizeof(msg2), "Freq: %+4.1f", Rx->FrequencyOffset());
-//	put_Status2(msg2);
+	snprintf(msg2, sizeof(msg2), "f/o %+4.1f Hz", Rx->FrequencyOffset());
+	put_Status2(msg2);
 
 	while (Rx->GetChar(ch) > 0)
 		if ((c = unescape(ch)) != -1 && c > 7)
@@ -342,10 +342,7 @@ void olivia::restart()
 	fragmentsize = 1024;
 	set_bandwidth(Tx->Bandwidth);
 
-	put_MODEstatus(mode);
-	char szmsg[20];
-	snprintf(szmsg, sizeof(szmsg), "%d / %d", Tx->Tones, Tx->Bandwidth);
-	put_Status2(szmsg);
+	put_MODEstatus("%s %d/%d", get_mode_name(), Tx->Tones, Tx->Bandwidth);
 }
 
 void olivia::init()
