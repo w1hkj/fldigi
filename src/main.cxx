@@ -68,6 +68,7 @@
 #include "debug.h"
 #include "pskrep.h"
 #include "logbook.h"
+#include "dxcc.h"
 
 #if USE_HAMLIB
 	#include "rigclass.h"
@@ -303,6 +304,8 @@ int main(int argc, char ** argv)
 	if (progdefaults.usepskrep)
 		if (!pskrep_start())
 			LOG_ERROR("Could not start PSK reporter: %s", pskrep_error());
+
+	dxcc_open(string(HomeDir).append("cty.dat").c_str());
 
 	int ret = Fl::run();
 

@@ -132,6 +132,8 @@ protected:
 	static void	changed_cb(int pos, int nins, int ndel, int nsty,
 				   const char *dtext, void *arg);
 	void		change_keybindings(void);
+	const char*	dxcc_lookup_call(int x, int y);
+	static void	dxcc_tooltip(void* obj);
 
 private:
 	FTextView();
@@ -140,6 +142,10 @@ private:
 protected:
 	static Fl_Menu_Item view_menu[];
 	static Fl_Menu_Item view_menu_noicons[];
+	struct {
+		bool enabled;
+		float delay;
+	} tooltips;
 };
 
 

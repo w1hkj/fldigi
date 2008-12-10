@@ -31,6 +31,8 @@
 #include <map>
 #include <algorithm>
 
+#include <FL/Fl_Tooltip.H>
+
 #include "FTextView.h"
 #include "main.h"
 
@@ -49,6 +51,7 @@
 #include "icons.h"
 #include "globals.h"
 #include "re.h"
+#include "dxcc.h"
 
 #include "debug.h"
 
@@ -525,6 +528,18 @@ int FTextView::handle(int event)
 			return 1;
 		else if (k == FL_Tab)
 		    return Fl_Widget::handle(event);
+	case FL_ENTER:
+		tooltips.enabled = Fl_Tooltip::enabled();
+		tooltips.delay = Fl_Tooltip::delay();
+		Fl_Tooltip::enable(1);
+		Fl_Tooltip::delay(0.0f);
+		Fl::add_timeout(tooltips.delay / 2.0, dxcc_tooltip, this);
+		break;
+	case FL_LEAVE:
+		Fl_Tooltip::enable(tooltips.enabled);
+		Fl_Tooltip::delay(tooltips.delay);
+		Fl::remove_timeout(dxcc_tooltip, this);
+		break;
 	}
 
 out:
@@ -819,6 +834,54 @@ loop:
 		}
 	}
 }
+
+const char* FTextView::dxcc_lookup_call(int x, int y)
+{
+	char* s = get_word(x - this->x(), y - this->y());
+	const char* ret = 0;
+
+	if (call.match(s)) {
+		const dxcc* e = dxcc_lookup(s);
+		if (!e)
+			goto ret;
+
+		static char tip[80];
+		char lat = e->latitude >= 0.0f ? 'N' : 'S', lon = e->longitude >= 0.0f ? 'W' : 'E';
+		snprintf(tip, sizeof(tip), "%s  %s  (GMT %+0.1f)\nCQ %d  ITU %d  %2.2f%c %2.2f%c",
+			 e->country, e->continent, -e->gmt_offset, e->cq_zone, e->itu_zone,
+			 fabs(e->latitude), lat, fabs(e->longitude), lon);
+		ret = tip;
+	}
+
+ret:
+	free(s);
+	return ret;
+}
+
+void FTextView::dxcc_tooltip(void* obj)
+{
+	struct point {
+		int x, y;
+		bool operator==(const point& p) { return x == p.x && y == p.y; }
+		bool operator!=(const point& p) { return !(*this == p); }
+	};
+	static point p[3] = { {0, 0}, {0, 0}, {0, 0} };
+
+	memmove(p, p+1, 2 * sizeof(point));
+	p[2].x = Fl::event_x(); p[2].y = Fl::event_y();
+
+	static const char* tip = 0;
+	FTextView* v = reinterpret_cast<FTextView*>(obj);
+	// look up word under cursor if we have been called twice with the cursor
+	// at the same position, and if the cursor was previously somewhere else
+	if (p[2] == p[1] && p[2] != p[0]  &&  ((tip = v->dxcc_lookup_call(p[2].x, p[2].y))))
+		Fl_Tooltip::enter_area(v, p[2].x, p[2].y, 100, 100, tip);
+	else if (p[2] != p[1])
+		Fl_Tooltip::exit(v);
+
+	Fl::repeat_timeout(tip ? Fl_Tooltip::hoverdelay() : v->tooltips.delay / 2.0, dxcc_tooltip, obj);
+}
+
 
 // ----------------------------------------------------------------------------
 
