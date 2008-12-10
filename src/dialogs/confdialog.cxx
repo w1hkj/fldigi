@@ -4069,6 +4069,7 @@ l with your sound hardware."));
           } // Fl_Round_Button* btnQRZonline
           { Fl_Round_Button* o = btnQRZnotavailable = new Fl_Round_Button(25, 45, 110, 20, _("Not available"));
             btnQRZnotavailable->down_box(FL_ROUND_DOWN_BOX);
+            btnQRZnotavailable->value(1);
             btnQRZnotavailable->callback((Fl_Callback*)cb_btnQRZnotavailable);
             o->value(progdefaults.QRZ == QRZNONE);
           } // Fl_Round_Button* btnQRZnotavailable
