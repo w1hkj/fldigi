@@ -1352,7 +1352,7 @@ void cb_QRZ(Fl_Widget *b, void *)
 void status_cb(Fl_Widget *b, void *arg)
 {
         if (Fl::event_button() == FL_RIGHT_MOUSE) {
-				progdefaults.loadDefaults();
+		progdefaults.loadDefaults();
                 tabsConfigure->value(tabModems);
                 tabsModems->value(modem_config_tab);
                 dlgConfig->show();
@@ -1360,12 +1360,13 @@ void status_cb(Fl_Widget *b, void *arg)
         else {
                 if (!quick_change)
                         return;
-                const Fl_Menu_Item *m;
-                m = quick_change->popup(Fl::event_x(),
-                                        Fl::event_y(), 0, 0, 0);
+                const Fl_Menu_Item *m = quick_change->popup(Fl::event_x(), Fl::event_y());
                 if (m && m->callback_)
                         m->do_callback(0);
         }
+
+	static_cast<Fl_Button*>(b)->clear();
+	restoreFocus();
 }
 
 void afconoff_cb(Fl_Widget *w, void *vi)
@@ -2224,32 +2225,32 @@ void create_fl_digi_main() {
 				
 				inpFreq = new Fl_Input2(x_qsoframe + pad, y2, w_inpFreq, qh - pad, _("QSO Freq"));
 				inpFreq->type(FL_NORMAL_OUTPUT);
-				inpFreq->tooltip(_(""));
+				inpFreq->tooltip("");
 				inpFreq->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
 				inpTimeOn = new Fl_Input2(rightof(inpFreq) + pad, y2, w_inpTime, qh - pad, _("On"));
-				inpTimeOn->tooltip(_(""));
+				inpTimeOn->tooltip("");
 				inpTimeOn->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
 				inpTimeOff = new Fl_Input2(rightof(inpTimeOn) + pad, y2, w_inpTime, qh - pad, _("Off"));
-				inpTimeOff->tooltip(_(""));
+				inpTimeOff->tooltip("");
 				inpTimeOff->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 				inpTimeOff->type(FL_NORMAL_OUTPUT);
 
 				inpCall = new Fl_Input2(rightof(inpTimeOff) + pad, y2, w_inpCall, qh - pad, _("Call"));
-				inpCall->tooltip(_(""));
+				inpCall->tooltip("");
 				inpCall->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
 				inpName = new Fl_Input2(rightof(inpCall) + pad, y2, w_inpName, qh - pad, _("Name"));
-				inpName->tooltip(_(""));
+				inpName->tooltip("");
 				inpName->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 			
 				inpRstIn = new Fl_Input2(rightof(inpName) + pad, y2, w_inpRstIn, qh - pad, _("In"));
-				inpRstIn->tooltip(_(""));
+				inpRstIn->tooltip("");
 				inpRstIn->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
 				inpRstOut = new Fl_Input2(rightof(inpRstIn) + pad, y2, w_inpRstOut, qh - pad, _("Out"));
-				inpRstOut->tooltip(_(""));
+				inpRstOut->tooltip("");
 				inpRstOut->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 				
 				lblDup = new Fl_Box(rightof(inpCall) - w_inpCall/2 - 40, Hmenu + 1, 80, qh - pad, _("*** DUP ***"));
@@ -2284,13 +2285,13 @@ void create_fl_digi_main() {
 					Fl_Box *fm4box = new Fl_Box(rightof(inpCountry), y3, w_fm4, qh - pad, _("Loc"));
 					fm4box->align(FL_ALIGN_INSIDE);
 					inpLoc = new Fl_Input2(rightof(fm4box), y3, w_inpLOC, qh - pad, "");
-					inpLoc->tooltip(_(""));
+					inpLoc->tooltip("");
 					inpLoc->align(FL_ALIGN_INSIDE);
 
 					Fl_Box *fm5box = new Fl_Box(rightof(inpLoc), y3, w_fm5, qh - pad, _("Az"));
 					fm5box->align(FL_ALIGN_INSIDE);
 					inpAZ = new Fl_Input2(rightof(fm5box), y3, w_inpAZ, qh - pad, "");
-					inpAZ->tooltip(_(""));
+					inpAZ->tooltip("");
 					inpAZ->align(FL_ALIGN_INSIDE);
 					
 				QsoInfoFrame1A->end();
@@ -2600,10 +2601,10 @@ void create_fl_digi_main() {
 			}
 			btn_afconoff->callback(afconoff_cb, 0);
 			btn_afconoff->value(1);
-			btn_afconoff->tooltip(_("AFC on/off"));
+			btn_afconoff->tooltip(_("Automatic Frequency Control"));
 			btn_sqlonoff->callback(sqlonoff_cb, 0);
 			btn_sqlonoff->value(1);
-			btn_sqlonoff->tooltip(_("SQL on/off"));
+			btn_sqlonoff->tooltip(_("Squelch"));
 
 
 			Fl_Group::current()->resizable(StatusBar);
