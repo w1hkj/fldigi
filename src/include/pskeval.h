@@ -37,6 +37,7 @@
 class pskeval {
 private:
 	double	sigpwr[FFT_LEN];
+	double	integral[FFT_LEN];
 	double	sigavg;
 	double	bw;
 public:

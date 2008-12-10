@@ -2963,6 +2963,7 @@ an merging"));
               tabsPSK->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
                 o->align(FL_ALIGN_TOP_LEFT);
+                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 98, _("AFC behavior"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -3042,7 +3043,6 @@ an merging"));
               } // Fl_Group* o
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("Viewer"));
                 o->align(FL_ALIGN_TOP_LEFT);
-                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 110);
                 o->box(FL_ENGRAVED_FRAME);
                 { Fl_Check_Button* o = btnMarquee = new Fl_Check_Button(212, 125, 165, 20, _("Continuous scrolling"));
@@ -3073,7 +3073,7 @@ an merging"));
                 cntTimeout->value(1);
                 cntTimeout->callback((Fl_Callback*)cb_cntTimeout);
                 cntTimeout->align(FL_ALIGN_RIGHT);
-                o->minimum(10);
+                o->minimum(1);
                 o->maximum(180);
                 o->step(1);
                 o->value(progdefaults.VIEWERtimeout);
@@ -4069,7 +4069,6 @@ l with your sound hardware."));
           } // Fl_Round_Button* btnQRZonline
           { Fl_Round_Button* o = btnQRZnotavailable = new Fl_Round_Button(25, 45, 110, 20, _("Not available"));
             btnQRZnotavailable->down_box(FL_ROUND_DOWN_BOX);
-            btnQRZnotavailable->value(1);
             btnQRZnotavailable->callback((Fl_Callback*)cb_btnQRZnotavailable);
             o->value(progdefaults.QRZ == QRZNONE);
           } // Fl_Round_Button* btnQRZnotavailable

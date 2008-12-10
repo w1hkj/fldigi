@@ -1045,7 +1045,7 @@ progdefaults.changed = true;}
             } {
               Fl_Group {} {
                 label General open
-                xywh {0 75 500 295} align 5
+                xywh {0 75 500 295} align 5 hide
               } {
                 Fl_Group {} {
                   label {AFC behavior} open
@@ -1114,7 +1114,7 @@ progdefaults.changed = true;}
               }
               Fl_Group {} {
                 label Viewer open
-                xywh {0 75 500 295} align 5 hide
+                xywh {0 75 500 295} align 5
               } {
                 Fl_Group {} {open
                   xywh {5 85 490 110} box ENGRAVED_FRAME
@@ -1154,7 +1154,7 @@ initViewer();}
 progdefaults.changed = true;}
                     tooltip {Clear channel text after
 \# seconds of inactivity} xywh {212 95 50 20} align 8 value 1
-                    code0 {o->minimum(10);}
+                    code0 {o->minimum(1);}
                     code1 {o->maximum(180);}
                     code2 {o->step(1);}
                     code3 {o->value(progdefaults.VIEWERtimeout);}

@@ -55,13 +55,7 @@ viewpsk::viewpsk(trx_mode pskmode)
 	for (int i = 0; i < MAXCHANNELS; i++) {
 		fir1[i] = (C_FIR_filter *)0;
 		fir2[i] = (C_FIR_filter *)0;
-		power[i] = (Cmovavg *)0;
 	}
-
-	for (int i = 0; i < 4000; i++)
-		sigpwr[i] = 0.0;
-	sigavg = 0.0;
-	sigmin = 1e6;
 	
 	viewmode = MODE_PREV;	
 	restart(pskmode);
@@ -72,7 +66,6 @@ viewpsk::~viewpsk()
 	for (int i = 0; i < MAXCHANNELS; i++) {
 		if (fir1[i]) delete fir1[i];
 		if (fir2[i]) delete fir2[i];
-		if (power[i]) delete power[i];
 	}
 }
 
@@ -83,7 +76,7 @@ void viewpsk::init()
 		prevsymbol[i]	= complex (1.0, 0.0);
 		shreg[i] = 0;
 		dcdshreg[i] = 0;
-		dcd[i] = 0;
+		dcd[i] = false;
 		bitclk[i] = 0;
 		freqerr[i] = 0.0;
 		waitcount[i] = VWAITCOUNT;
@@ -91,7 +84,7 @@ void viewpsk::init()
 		frequency[i] = nomfreq[i];
 		for (int j = 0; j < 16; j++)
 			syncbuf[i * 16 + j] = 0.0;
-		timeout[i] = -1;
+		timeout[i] = 0;
 	}
 }
 
@@ -136,9 +129,6 @@ void viewpsk::restart(trx_mode pskmode)
 		if (fir2[i]) delete fir2[i];
 		fir2[i] = new C_FIR_filter();
 		fir2[i]->init(FIRLEN, 1, fir2c, fir2c);
-		
-		if (power[i]) delete power[i];
-		power[i] = new Cmovavg(8);
 	}
 	
 	bandwidth = VPSKSAMPLERATE / symbollen;
@@ -173,14 +163,27 @@ void viewpsk::findsignal(int ch)
 	}
 		
 	int ftest;
-	int f1 = (int)(nomfreq[ch] - VSEARCHWIDTH);
-	int f2 = (int)(nomfreq[ch] + VSEARCHWIDTH);
-	if (evalpsk->sigpeak(ftest, f1, f2) > pow(10, progdefaults.ACQsn / 10.0) ) {
-		frequency[ch] = ftest;
-		sigsearch[ch] =  0;
-	}
-	else {
-		frequency[ch] = nomfreq[ch];
+	int f1, f2;
+	if (ch == 0)
+		f1 = (int)nomfreq[ch];
+	else if (dcd[ch-1])
+		f1 = (int)(frequency[ch-1] + 2 * bandwidth);
+	else
+		f1 = (int)(nomfreq[ch] - bandwidth);
+		
+	if (ch == progdefaults.VIEWERchannels - 1)
+		f2 = (int)(nomfreq[ch] + 100);
+	else
+		f2 = (int)(nomfreq[ch+1]);
+
+	frequency[ch] = nomfreq[ch];
+	if (evalpsk) {
+		if (evalpsk->sigpeak(ftest, f1, f2) > pow(10, progdefaults.VIEWERsquelch / 10.0) ) {
+			if (ftest < (nomfreq[ch+1]- bandwidth)) {
+				frequency[ch] = ftest;
+				timeout[ch] = now + progdefaults.VIEWERtimeout;
+			}
+		}
 	}
 	freqerr[ch] = 0.0;
 }
@@ -216,6 +219,7 @@ void viewpsk::rx_symbol(int ch, complex symbol)
 	n = 2;
 
 // simple low pass filter for quality of signal
+	
 	quality[ch].re = SQLCOEFF * cos(n * phase[ch]) + (1.0 - SQLCOEFF) * quality[ch].re;
 	quality[ch].im = SQLCOEFF * sin(n * phase[ch]) + (1.0 - SQLCOEFF) * quality[ch].im;
 
@@ -243,10 +247,6 @@ void viewpsk::rx_symbol(int ch, complex symbol)
 
 	if (dcd[ch] == true)
 		rx_bit(ch, !bits[ch]);
-	else {
-		sigsearch[ch] = 1;
-		waitcount[ch] = VWAITCOUNT;
-	}
 }
 
 int viewpsk::rx_process(const double *buf, int len)
@@ -258,9 +258,6 @@ int viewpsk::rx_process(const double *buf, int len)
 	double ampsum;
 	int idx;
 	complex z[MAXCHANNELS];
-
-	now = time(NULL);
-//	sigdensity();
 
 	while (len-- > 0) {
 // process all CHANNELS (25)
@@ -301,16 +298,17 @@ int viewpsk::rx_process(const double *buf, int len)
 		}
 		buf++;
 	}
-	for (int channel = 0; channel < progdefaults.VIEWERchannels; channel++) {		
-		if (timeout[channel] != -1 && timeout[channel] < now) {
+
+	now = time(NULL);
+	for (int channel = 0; channel < progdefaults.VIEWERchannels; channel++) {
+		if (!dcd[channel])
+			findsignal(channel);
+		if (timeout[channel] > 0 && timeout[channel] < now) {
 			frequency[channel] = nomfreq[channel];
 			REQ( &viewclearchannel, channel);
-			timeout[channel] = -1;
+			timeout[channel] = 0;
+			dcd[channel] = false;
 		}
-		if (sigpwr[(int)(frequency[channel])] / sigavg < VSNTHRESHOLD)
-			sigsearch[channel] = 1;
-		if (sigsearch[channel])
-			findsignal(channel);
 	}
 	return 0;
 }

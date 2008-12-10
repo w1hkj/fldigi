@@ -183,7 +183,8 @@ void ClearViewer() {
   	brwsViewer->clear();
   	usb = wf->USB();
   	rfc = wf->rfcarrier();
-	string bline;  	
+	string bline; 
+	pskviewer->init(); 	
   	for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
   		if (pskviewer) freq = pskviewer->get_freq(progdefaults.VIEWERchannels - 1 - i);
   		else 		   freq = progdefaults.VIEWERstart + 100 * (progdefaults.VIEWERchannels - 1 - i);

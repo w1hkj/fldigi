@@ -32,10 +32,9 @@
 
 //=====================================================================
 #define	VPSKSAMPLERATE	(8000)
-#define VSNTHRESHOLD 2.0 // 3 db s/n
 #define VAFCDECAY 8
 #define MAXCHANNELS 30
-#define VSEARCHWIDTH 50
+#define VSEARCHWIDTH 70
 #define VSIGSEARCH 5
 #define VWAITCOUNT 4
 //=====================================================================
@@ -60,18 +59,12 @@ private:
 	C_FIR_filter	*fir1[MAXCHANNELS];
 	C_FIR_filter	*fir2[MAXCHANNELS];
 	
-	double			sigpwr[4000];
-	double			sigavg;
-	double			sigmin;
-	Cmovavg			*power[MAXCHANNELS];
-
 	int				bits[MAXCHANNELS];
 	double 			bitclk[MAXCHANNELS];
 	double 			syncbuf[MAXCHANNELS * 16];
 	unsigned int	dcdshreg[MAXCHANNELS];
 	int 			dcd[MAXCHANNELS];
 	int				dcdbits;
-	int				sigsearch[MAXCHANNELS];
 	int				waitcount[MAXCHANNELS];
 	time_t			now;
 	time_t			timeout[MAXCHANNELS];
