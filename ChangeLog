@@ -117,6 +117,27 @@ Change Log:
       44) Added ability to export selected records to ADIF / CSV with 
           fields specified
       45) Fixed bug in transfering frequency to logbook in Khz vice Mhz format.
+      46) Modified the viewpsk search algorithm
+      47) Delete QRZ.com page parser.  Substituted calls to default internet
+          explorer with url set to either
+          http://www.qrz.com/callsign.html?callsign=<CALL> or
+          http://www.hamcall.net/call?callsign=<CALL>
+      48) Fixed log timer
+      50) Changed Olivia status fields:
+             Added 8/250 to quick change menu and Op Mode submenu
+             Widened mode status field so that the BW/tones string will fit 
+             next to the modem name using update function put_MODEstatus() 
+             with variable arguments
+             Restored frequency offset status field
+      51) Fixed mode status button; Clear button state when the popup is 
+          dismissed. Restore focus to the TX text. Change AFC,SQL button labels
+          Removed all empty labels
+      52) Added Fl_Input2 up/downcase key bindings.  Added shell/emacs 
+          keybindings: M-u uppecase, M-l lowercase, M-c capitalise
+      53) Added preliminary contest country file support
+      54) Added FText country information tooltip.  Tooltip is displayed when
+          a mouse over occurs in the Rx pane on a word that qualifies as a
+          call sign.
 
 3.03
       1) Changes to socket server to correct shutdown process
