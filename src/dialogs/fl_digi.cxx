@@ -34,7 +34,8 @@
 #  include <w32api/windows.h>
 #endif
 
-#include <stdlib.h>
+#include <cstdlib>
+#include <cstdarg>
 #include <string>
 
 #include "gettext.h"
@@ -2897,6 +2898,7 @@ void put_MODEstatus(const char* fmt, ...)
 	va_list args;
 	va_start(args, fmt);
 	vsnprintf(s, sizeof(s), fmt, args);
+	va_end(args);
 
 	REQ(static_cast<void (Fl_Button::*)(const char *)>(&Fl_Button::label), MODEstatus, s);
 }
