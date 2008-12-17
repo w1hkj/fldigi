@@ -52,6 +52,8 @@
 #include "globals.h"
 #include "re.h"
 #include "dxcc.h"
+#include "locator.h"
+#include "logsupport.h"
 
 #include "debug.h"
 
@@ -294,22 +296,26 @@ void FTextBase::saveFile(void)
 
 /// Returns a character string containing the selected word, if any,
 /// or the word at (\a x, \a y) relative to the widget's \c x() and \c y().
+/// If \a ontext is true, this function will return text only if the
+/// mouse cursor position is inside the text range.
 ///
 /// @param x 
 /// @param y 
 ///
 /// @return The selection, or the word text at (x,y). <b>Must be freed by the caller</b>.
 ///
-char* FTextBase::get_word(int x, int y)
+char* FTextBase::get_word(int x, int y, bool ontext)
 {
-	if (tbuf->selected()) {
-		char* s = tbuf->selection_text();
-		tbuf->unselect();
-		return s;
-	}
-
 	int p = xy_to_position(x + this->x(), y + this->y(), Fl_Text_Display_mod::CURSOR_POS);
 	int start, end;
+
+	if (tbuf->selected()) {
+		if (ontext && tbuf->selection_position(&start, &end) && (p < start || p >= end))
+			return 0;
+		else
+			return tbuf->selection_text();
+	}
+
 	if (!tbuf->findchars_backward(p, " \t\n", &start))
 		start = 0;
 	else
@@ -317,7 +323,10 @@ char* FTextBase::get_word(int x, int y)
 	if (!tbuf->findchars_forward(p, " .,;|\t\n", &end))
 		end = tbuf->length();
 
-	return tbuf->text_range(start, end);
+	if (ontext && (p < start || p >= end))
+		return 0;
+	else
+		return tbuf->text_range(start, end);
 }
 
 
@@ -529,6 +538,8 @@ int FTextView::handle(int event)
 		else if (k == FL_Tab)
 		    return Fl_Widget::handle(event);
 	case FL_ENTER:
+		if (!progdefaults.rxtext_tooltips || Fl_Tooltip::delay() == 0.0f)
+			break;
 		tooltips.enabled = Fl_Tooltip::enabled();
 		tooltips.delay = Fl_Tooltip::delay();
 		Fl_Tooltip::enable(1);
@@ -536,6 +547,8 @@ int FTextView::handle(int event)
 		Fl::add_timeout(tooltips.delay / 2.0, dxcc_tooltip, this);
 		break;
 	case FL_LEAVE:
+		if (!progdefaults.rxtext_tooltips || Fl_Tooltip::delay() != 0.0f)
+			break;
 		Fl_Tooltip::enable(tooltips.enabled);
 		Fl_Tooltip::delay(tooltips.delay);
 		Fl::remove_timeout(dxcc_tooltip, this);
@@ -840,16 +853,28 @@ const char* FTextView::dxcc_lookup_call(int x, int y)
 	char* s = get_word(x - this->x(), y - this->y());
 	const char* ret = 0;
 
-	if (call.match(s)) {
+	if (s && *s && call.match(s)) {
 		const dxcc* e = dxcc_lookup(s);
 		if (!e)
 			goto ret;
 
-		static char tip[80];
-		char lat = e->latitude >= 0.0f ? 'N' : 'S', lon = e->longitude >= 0.0f ? 'W' : 'E';
-		snprintf(tip, sizeof(tip), "%s  %s  (GMT %+0.1f)\nCQ %d  ITU %d  %2.2f%c %2.2f%c",
-			 e->country, e->continent, -e->gmt_offset, e->cq_zone, e->itu_zone,
-			 fabs(e->latitude), lat, fabs(e->longitude), lon);
+		static char tip[128];
+		size_t len = snprintf(tip, sizeof(tip), "%s (%s GMT%+0.1f) CQ-%d ITU-%d",
+				   e->country, e->continent, -e->gmt_offset, e->cq_zone, e->itu_zone);
+		if (len < sizeof(tip) && !progdefaults.myLocator.empty()) {
+			double lon, lat, distance, azimuth;
+			if (locator2longlat(&lon, &lat, progdefaults.myLocator.c_str()) == RIG_OK &&
+			    qrb(lon, lat, -e->longitude, e->latitude, &distance, &azimuth) == RIG_OK)
+				len += snprintf(tip + len, sizeof(tip) - len,
+						"\nQTE %.0f\260 (%.0f\260)  QRB %.0fkm (%.0fkm)",
+						azimuth, azimuth_long_path(azimuth), distance, distance_long_path(distance));
+		}
+		if (len < sizeof(tip)) {
+			const char** data;
+			if (SearchLog(s, &data) > 0)
+				snprintf(tip + len, sizeof(tip) - len, "\n%s (%s)", "* worked before", data[0]);
+		}
+
 		ret = tip;
 	}
 

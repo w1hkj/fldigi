@@ -47,6 +47,8 @@ extern void updateRecord ();
 extern void deleteRecord ();
 extern void AddRecord ();
 extern void SearchLastQSO (const char *);
+extern int  SearchLog(const char *callsign, const char*** data);
+extern void DupCheck(const char *);
 extern void cb_search(Fl_Widget* w, void*);
 extern int log_search_handler(int);
 

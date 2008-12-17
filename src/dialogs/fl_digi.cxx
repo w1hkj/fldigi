@@ -1304,6 +1304,9 @@ void cb_log(Fl_Widget* w, void*)
 		inpCall->value(temp.c_str());
 		inpTimeOn->value(inpTimeOff->value());
 		SearchLastQSO(temp.c_str());
+		if (EnableDupCheck)
+			DupCheck(temp.c_str());
+
 	}
 	restoreFocus();	
 }

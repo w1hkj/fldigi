@@ -118,6 +118,13 @@ static void cb_btnRXClicks(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnRXTooltips=(Fl_Check_Button *)0;
+
+static void cb_btnRXTooltips(Fl_Check_Button* o, void*) {
+  progdefaults.rxtext_tooltips = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *btnNagMe=(Fl_Check_Button *)0;
 
 static void cb_btnNagMe(Fl_Check_Button* o, void*) {
@@ -2114,12 +2121,10 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         tabOperator->end();
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 500, 345, _("UI"));
-        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 500, 345);
           tabsUI->selection_color(FL_LIGHT1);
           { tabUserInterface = new Fl_Group(0, 50, 500, 320, _("General"));
-            tabUserInterface->hide();
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 195);
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 223);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(15, 70, 120, 20, _("Show tooltips"));
                 btnShowTooltips->down_box(FL_DOWN_BOX);
@@ -2147,6 +2152,11 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 btnRXClicks->callback((Fl_Callback*)cb_btnRXClicks);
                 o->value(progdefaults.rxtext_clicks_qso_data);
               } // Fl_Check_Button* btnRXClicks
+              { Fl_Check_Button* o = btnRXTooltips = new Fl_Check_Button(15, 250, 282, 20, _("Show callsign tooltips in received text"));
+                btnRXTooltips->down_box(FL_DOWN_BOX);
+                btnRXTooltips->callback((Fl_Callback*)cb_btnRXTooltips);
+                o->value(progdefaults.rxtext_tooltips);
+              } // Fl_Check_Button* btnRXTooltips
               o->end();
             } // Fl_Group* o
             { Fl_Group* o = new Fl_Group(15, 130, 212, 80, _("QSO logging"));
@@ -2217,6 +2227,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             tabWfallRestart->end();
           } // Fl_Group* tabWfallRestart
           { tabContest = new Fl_Group(0, 50, 500, 320, _("Contest"));
+            tabContest->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 80, _("Exchanges"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2700,7 +2711,6 @@ an merging"));
                 cntCWdash2dot->type(1);
                 cntCWdash2dot->minimum(2.5);
                 cntCWdash2dot->maximum(4);
-                cntCWdash2dot->step(0.1);
                 cntCWdash2dot->value(3);
                 cntCWdash2dot->callback((Fl_Callback*)cb_cntCWdash2dot);
                 cntCWdash2dot->align(FL_ALIGN_RIGHT);
@@ -2711,7 +2721,6 @@ an merging"));
                 cntCWrisetime->type(1);
                 cntCWrisetime->minimum(0);
                 cntCWrisetime->maximum(15);
-                cntCWrisetime->step(0.1);
                 cntCWrisetime->value(4);
                 cntCWrisetime->callback((Fl_Callback*)cb_cntCWrisetime);
                 cntCWrisetime->align(FL_ALIGN_RIGHT);
@@ -2788,7 +2797,6 @@ an merging"));
                 valDominoEX_BW->type(1);
                 valDominoEX_BW->minimum(1);
                 valDominoEX_BW->maximum(2);
-                valDominoEX_BW->step(0.1);
                 valDominoEX_BW->value(1.5);
                 valDominoEX_BW->callback((Fl_Callback*)cb_valDominoEX_BW);
                 valDominoEX_BW->align(FL_ALIGN_RIGHT);
@@ -2804,7 +2812,6 @@ an merging"));
                 valDomCWI->tooltip(_("CWI detection and suppression"));
                 valDomCWI->type(5);
                 valDomCWI->selection_color(FL_SELECTION_COLOR);
-                valDomCWI->step(0.01);
                 valDomCWI->textsize(14);
                 valDomCWI->callback((Fl_Callback*)cb_valDomCWI);
                 valDomCWI->align(FL_ALIGN_TOP);
@@ -3232,7 +3239,6 @@ an merging"));
                 valTHOR_BW->type(1);
                 valTHOR_BW->minimum(1);
                 valTHOR_BW->maximum(2);
-                valTHOR_BW->step(0.1);
                 valTHOR_BW->value(1.5);
                 valTHOR_BW->callback((Fl_Callback*)cb_valTHOR_BW);
                 valTHOR_BW->align(FL_ALIGN_RIGHT);
@@ -3248,7 +3254,6 @@ an merging"));
                 valThorCWI->tooltip(_("CWI detection and suppression"));
                 valThorCWI->type(5);
                 valThorCWI->selection_color(FL_SELECTION_COLOR);
-                valThorCWI->step(0.01);
                 valThorCWI->textsize(14);
                 valThorCWI->callback((Fl_Callback*)cb_valThorCWI);
                 valThorCWI->align(FL_ALIGN_TOP);
@@ -3749,7 +3754,6 @@ l with your sound hardware."));
               { valPCMvolume = new Fl_Value_Slider(15, 167, 340, 21, _("PCM"));
                 valPCMvolume->type(5);
                 valPCMvolume->selection_color(FL_SELECTION_COLOR);
-                valPCMvolume->step(0.01);
                 valPCMvolume->value(0.8);
                 valPCMvolume->textsize(14);
                 valPCMvolume->callback((Fl_Callback*)cb_valPCMvolume);
@@ -3856,7 +3860,6 @@ l with your sound hardware."));
         { tabsMisc = new Fl_Tabs(0, 25, 500, 345);
           tabsMisc->selection_color(FL_LIGHT1);
           { tabSweetSpot = new Fl_Group(0, 50, 500, 320, _("Sweet Spot"));
-            tabSweetSpot->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 75);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -3971,6 +3974,7 @@ l with your sound hardware."));
             tabMacros->end();
           } // Fl_Group* tabMacros
           { tabCPUspeed = new Fl_Group(0, 50, 500, 320, _("CPU"));
+            tabCPUspeed->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 50);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -3988,6 +3992,7 @@ l with your sound hardware."));
         tabMisc->end();
       } // Fl_Group* tabMisc
       { tabQRZ = new Fl_Group(0, 25, 500, 345, _("Callsign DB"));
+        tabQRZ->hide();
         { Fl_Group* o = new Fl_Group(5, 180, 490, 75, _("CDROM"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);

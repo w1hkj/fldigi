@@ -322,6 +322,20 @@ void DupCheck(const char *callsign)
 		lblDup->show();
 }
 
+int SearchLog(const char *callsign, const char*** data)
+{
+	size_t len = strlen(callsign);
+	char* re = new char[len + 3];
+	snprintf(re, len + 3, "^%s$", callsign);
+
+	int row = 0, col = 2;
+
+	if (wBrowser->search(row, col, true, re)) {
+		*data = wBrowser->getRow(row);
+		return wBrowser->columns();
+	}
+	return 0;
+}
 
 void SearchLastQSO(const char *callsign)
 {
@@ -339,8 +353,6 @@ void SearchLastQSO(const char *callsign)
 		inpVEprov->value(inpVE_Prov_log->value ());
 		inpCountry->value(inpCountry_log->value ());
 		inpSearchString->value(callsign);
-		if (EnableDupCheck)
-			DupCheck(callsign);
 	} else
 		inpSearchString->value("");
 
