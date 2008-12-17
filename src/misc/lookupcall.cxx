@@ -52,8 +52,10 @@
 #include "qrunner.h"
 #include "debug.h"
 #include "network.h"
+#include "locator.h"
 
 using namespace std;
+
 
 string qrzhost = "online.qrz.com";
 string qrzSessionKey;
@@ -113,49 +115,7 @@ void HAMCALLquery();
 
 void QRZ_DETAILS_query();
 
-
 QRZ *qCall = 0;
-
-int bearing(const char *myqra, const char *dxqra) {
-	double	lat1, lat1r, lon1;
-	double	lat2, lat2r, lon2;
-	double	dlong, arg1, arg2a, arg2b, arg2, bearingr, bearing;
-	double	k=180.0/M_PI;
-
-	qra(dxqra, lat2, lon2);
-	qra(myqra, lat1, lon1);
-
-	lat1r=lat1/k;
-	lat2r=lat2/k;
-
-	dlong = lon2/k - lon1/k;
-
-	arg1 = sin(dlong) * cos(lat2r);
-	arg2a = cos(lat1r) * sin(lat2r);
-	arg2b = sin(lat1r) * cos(lat2r) * cos(dlong);
-	arg2 =  arg2a -  arg2b;
-	bearingr = atan2(arg1, arg2);
-
-	bearing = floor(0.5+fmod(360.0 + (bearingr * k), 360.0));
-	return (int)bearing;
-}
-
-void qra(const char *szqra, double &lat, double &lon) {
-	int c1 = toupper(szqra[0])-'A';
-	int c2 = toupper(szqra[1])-'A';
-	int c3 = szqra[2]-'0';
-	int c4 = szqra[3]-'0';
-	int c5, c6;
-	if (strlen(szqra) > 4) {
-    	c5 = toupper(szqra[4])-'A';
-    	c6 = toupper(szqra[5])-'A';
-		lat = (((c2 * 10.0) + c4 + ((c6 + 0.5)/24.0)) - 90.0);
-		lon = (((c1 * 20.0) + (c3 * 2.0) + ((c5 + 0.5) / 12.0)) - 180.0);
-	} else {
-		lat = (((c2 * 10.0) + c4 ) - 90.0);
-		lon = (((c1 * 20.0) + (c3 * 2.0)) - 180.0);
-	}
-}
 
 void clear_Lookup()
 {
@@ -426,17 +386,18 @@ void QRZ_disp_result()
 	inpVEprov->value(lookup_province.c_str());
 		
 	inpLoc->value(lookup_grid.c_str());
-	if (!progdefaults.myLocator.empty()) {
-		char buf[10];
-		buf[0] = '\0';
-		if (!lookup_grid.empty()) {
-			int b = bearing( progdefaults.myLocator.c_str(), lookup_grid.c_str() );
-			if (b<0) b+=360;
-			if (b>=360) b-=360;
-			snprintf(buf, sizeof(buf), "%03d", b);
-		}
-		inpAZ->value(buf);
+
+	char buf[10];
+	buf[0] = '\0';
+	if (!progdefaults.myLocator.empty() && !lookup_grid.empty()) {
+		double distance, azimuth, lon[2], lat[2];
+		if (locator2longlat(&lon[0], &lat[0], progdefaults.myLocator.c_str()) == RIG_OK &&
+		    locator2longlat(&lon[1], &lat[1], lookup_grid.c_str()) == RIG_OK &&
+		    qrb(lon[0], lat[0], lon[1], lat[1], &distance, &azimuth) == RIG_OK)
+			snprintf(buf, sizeof(buf), "%03.0f", round(azimuth));
 	}
+	inpAZ->value(buf);
+
 	inpNotes->value(lookup_notes.c_str());
 }
 

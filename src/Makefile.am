@@ -23,9 +23,10 @@ LDADD = @PORTAUDIO_LIBS@ @BOOST_LDFLAGS@ @FLTK_LIBS@ @SNDFILE_LIBS@ \
 HAMLIB_SRC = include/hamlib.h rigcontrol/hamlib.cxx include/rigclass.h rigcontrol/rigclass.cxx
 XMLRPC_SRC = include/xmlrpc.h misc/xmlrpc.cxx
 WIN32_RES_SRC = fldigirc.rc
+LOCATOR_SRC = misc/locator.c
 
 # We distribute these but do not always compile them
-EXTRA_fldigi_SOURCES = $(HAMLIB_SRC) $(XMLRPC_SRC) $(WIN32_RES_SRC)
+EXTRA_fldigi_SOURCES = $(HAMLIB_SRC) $(XMLRPC_SRC) $(WIN32_RES_SRC) $(LOCATOR_SRC)
 
 fldigi_SOURCES =
 
@@ -38,6 +39,8 @@ endif
 
 if ENABLE_HAMLIB
   fldigi_SOURCES += $(HAMLIB_SRC)
+else
+  fldigi_SOURCES += $(LOCATOR_SRC)
 endif
 
 if ENABLE_XMLRPC
@@ -191,6 +194,7 @@ fldigi_SOURCES += \
 	include/jalocha/pj_lowpass3.h \
 	include/jalocha/pj_mfsk.h \
 	include/jalocha/pj_struc.h \
+	include/locator.h \
 	include/log.h \
 	include/logger.h \
 	include/macroedit.h \
