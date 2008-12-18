@@ -116,6 +116,8 @@
 #include "re.h"
 #include "network.h"
 #include "spot.h"
+#include "dxcc.h"
+#include "locator.h"
 
 #include "logbook.h"
 
@@ -1294,21 +1296,57 @@ void cb_ResetSerNbr()
 	updateOutSerNo();
 }
 
+void cb_loc(Fl_Widget* w, void*)
+{
+	oktoclear = false;
+
+	if (!inpLoc->size() || !progdefaults.autofill_qso_fields)
+		return;
+
+	double lon[2], lat[2], distance, azimuth;
+	if (locator2longlat(&lon[0], &lat[0], progdefaults.myLocator.c_str()) == RIG_OK &&
+	    locator2longlat(&lon[1], &lat[1], inpLoc->value()) == RIG_OK &&
+	    qrb(lon[0], lat[0], lon[1], lat[1], &distance, &azimuth) == RIG_OK) {
+		char az[4];
+		snprintf(az, sizeof(az), "%3.0f", azimuth);
+		inpAZ->value(az);
+	}
+}
+
+void cb_call(Fl_Widget* w, void*)
+{
+	oktoclear = false;
+
+	inpTimeOn->value(inpTimeOff->value());
+	if (inpCall->size()) {
+		SearchLastQSO(inpCall->value());
+		if (EnableDupCheck)
+			DupCheck(inpCall->value());
+	}
+
+	if (!progdefaults.autofill_qso_fields)
+		return;
+	const struct dxcc* e = dxcc_lookup(inpCall->value());
+	if (!e)
+		return;
+
+	double lon, lat, distance, azimuth;
+	if (locator2longlat(&lon, &lat, progdefaults.myLocator.c_str()) == RIG_OK &&
+	    qrb(lon, lat, -e->longitude, e->latitude, &distance, &azimuth) == RIG_OK) {
+		char az[4];
+		snprintf(az, sizeof(az), "%3.0f", azimuth);
+		inpAZ->value(az);
+	}
+
+	inpCountry->value(e->country);
+	inpCountry->position(0);
+}
+
 void cb_log(Fl_Widget* w, void*)
 {
 	oktoclear = false;
-	if (w == inpCall) {
-		string temp = inpCall->value();
-		for (size_t i = 0; i < temp.length(); i++)
-			temp[i] = toupper(temp[i]);
-		inpCall->value(temp.c_str());
-		inpTimeOn->value(inpTimeOff->value());
-		SearchLastQSO(temp.c_str());
-		if (EnableDupCheck)
-			DupCheck(temp.c_str());
-
-	}
-	restoreFocus();	
+	if (w == btnQRZ)
+		restoreFocus();
 }
 
 void qsoClear_cb(Fl_Widget *b, void *)
@@ -2244,6 +2282,7 @@ void create_fl_digi_main() {
 				inpCall = new Fl_Input2(rightof(inpTimeOff) + pad, y2, w_inpCall, qh - pad, _("Call"));
 				inpCall->tooltip("");
 				inpCall->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+				inpCall->when(FL_WHEN_CHANGED | FL_WHEN_ENTER_KEY);
 
 				inpName = new Fl_Input2(rightof(inpCall) + pad, y2, w_inpName, qh - pad, _("Name"));
 				inpName->tooltip("");
@@ -2291,6 +2330,7 @@ void create_fl_digi_main() {
 					inpLoc = new Fl_Input2(rightof(fm4box), y3, w_inpLOC, qh - pad, "");
 					inpLoc->tooltip("");
 					inpLoc->align(FL_ALIGN_INSIDE);
+					inpLoc->when(FL_WHEN_CHANGED | FL_WHEN_ENTER_KEY);
 
 					Fl_Box *fm5box = new Fl_Box(rightof(inpLoc), y3, w_fm5, qh - pad, _("Az"));
 					fm5box->align(FL_ALIGN_INSIDE);
@@ -2357,11 +2397,13 @@ void create_fl_digi_main() {
 	
 		Y = Hmenu + Hqsoframe + Hnotes + pad;
 
-		Fl_Widget* logfields[] = { inpCall, inpName, inpTimeOn, inpRstIn, inpRstOut, 
-				inpQth, inpVEprov, inpCountry, inpAZ, inpLoc, inpNotes,
+		Fl_Widget* logfields[] = { inpName, inpTimeOn, inpRstIn, inpRstOut, 
+				inpQth, inpVEprov, inpCountry, inpAZ, inpNotes,
 				inpSerNo, inpXchg1, inpXchg1, inpXchg1 };
 		for (size_t i = 0; i < sizeof(logfields)/sizeof(*logfields); i++)
 			logfields[i]->callback(cb_log);
+		inpCall->callback(cb_call);
+		inpLoc->callback(cb_loc);
 
 		int sw = DEFAULT_SW;
 		MixerFrame = new Fl_Group(0,Y,sw, Hrcvtxt + Hxmttxt);

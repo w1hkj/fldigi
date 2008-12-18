@@ -162,6 +162,7 @@
         ELEM_(bool, menuicons, "MENUICONS", true)                                       \
         ELEM_(bool, rxtext_clicks_qso_data, "RXTEXTCLICKS", false)                      \
         ELEM_(bool, rxtext_tooltips, "RXTEXTTOOLTIPS", false)                           \
+        ELEM_(bool, autofill_qso_fields, "AUTOFILLQSO", false)                          \
 /* QRZ */                                                                               \
         ELEM_(int, QRZ, "QRZTYPE", 0) /* Not available */                               \
         ELEM_(std::string, QRZpathname, "QRZPATHNAME", "")                              \

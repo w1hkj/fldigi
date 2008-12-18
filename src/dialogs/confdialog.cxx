@@ -139,6 +139,13 @@ static void cb_btnClearOnSave(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnAutoFillQSO=(Fl_Check_Button *)0;
+
+static void cb_btnAutoFillQSO(Fl_Check_Button* o, void*) {
+  progdefaults.autofill_qso_fields = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabWfallRestart=(Fl_Group *)0;
 
 Fl_Counter *cntrWfwidth=(Fl_Counter *)0;
@@ -2124,7 +2131,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         { tabsUI = new Fl_Tabs(0, 25, 500, 345);
           tabsUI->selection_color(FL_LIGHT1);
           { tabUserInterface = new Fl_Group(0, 50, 500, 320, _("General"));
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 223);
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 256);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(15, 70, 120, 20, _("Show tooltips"));
                 btnShowTooltips->down_box(FL_DOWN_BOX);
@@ -2147,19 +2154,19 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 mnuScheme->add("plastic");
                 mnuScheme->value(mnuScheme->find_item(progdefaults.ui_scheme.c_str()));
               } // Fl_Choice* mnuScheme
-              { Fl_Check_Button* o = btnRXClicks = new Fl_Check_Button(15, 220, 305, 20, _("Double-click on RX text enters QSO data"));
+              { Fl_Check_Button* o = btnRXClicks = new Fl_Check_Button(15, 247, 305, 20, _("Double-click on RX text enters QSO data"));
                 btnRXClicks->down_box(FL_DOWN_BOX);
                 btnRXClicks->callback((Fl_Callback*)cb_btnRXClicks);
                 o->value(progdefaults.rxtext_clicks_qso_data);
               } // Fl_Check_Button* btnRXClicks
-              { Fl_Check_Button* o = btnRXTooltips = new Fl_Check_Button(15, 250, 282, 20, _("Show callsign tooltips in received text"));
+              { Fl_Check_Button* o = btnRXTooltips = new Fl_Check_Button(15, 277, 282, 20, _("Show callsign tooltips in received text"));
                 btnRXTooltips->down_box(FL_DOWN_BOX);
                 btnRXTooltips->callback((Fl_Callback*)cb_btnRXTooltips);
                 o->value(progdefaults.rxtext_tooltips);
               } // Fl_Check_Button* btnRXTooltips
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(15, 130, 212, 80, _("QSO logging"));
+            { Fl_Group* o = new Fl_Group(15, 130, 258, 107, _("QSO logging"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
               { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(25, 155, 155, 20, _("Prompt to save log"));
@@ -2173,6 +2180,11 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 btnClearOnSave->callback((Fl_Callback*)cb_btnClearOnSave);
                 o->value(progdefaults.ClearOnSave);
               } // Fl_Check_Button* btnClearOnSave
+              { Fl_Check_Button* o = btnAutoFillQSO = new Fl_Check_Button(25, 207, 225, 20, _("Auto-fill Country and Azimuth"));
+                btnAutoFillQSO->down_box(FL_DOWN_BOX);
+                btnAutoFillQSO->callback((Fl_Callback*)cb_btnAutoFillQSO);
+                o->value(progdefaults.autofill_qso_fields);
+              } // Fl_Check_Button* btnAutoFillQSO
               o->end();
             } // Fl_Group* o
             tabUserInterface->end();

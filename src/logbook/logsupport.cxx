@@ -340,6 +340,8 @@ int SearchLog(const char *callsign, const char*** data)
 void SearchLastQSO(const char *callsign)
 {
 	size_t len = strlen(callsign);
+	if (!len)
+		return;
 	char* re = new char[len + 3];
 	snprintf(re, len + 3, "^%s$", callsign);
 

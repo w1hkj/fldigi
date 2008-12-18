@@ -305,7 +305,8 @@ int main(int argc, char ** argv)
 		if (!pskrep_start())
 			LOG_ERROR("Could not start PSK reporter: %s", pskrep_error());
 
-	dxcc_open(string(HomeDir).append("cty.dat").c_str());
+	if (progdefaults.rxtext_tooltips || progdefaults.autofill_qso_fields)
+		dxcc_open(string(HomeDir).append("cty.dat").c_str());
 
 	int ret = Fl::run();
 

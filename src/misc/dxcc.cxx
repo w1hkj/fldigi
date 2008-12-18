@@ -105,7 +105,7 @@ void dxcc_close(void)
 
 const dxcc* dxcc_lookup(const char* callsign)
 {
-	if (!cmap)
+	if (!cmap || !callsign || !*callsign)
 		return NULL;
 
 	string sstr;
