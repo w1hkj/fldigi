@@ -120,7 +120,7 @@ void cAdifIO::readFile (const char *fname, cQsoDb *db) {
     fread (buff, filesize, 1, adiFile);
     fclose (adiFile);
     
-    if (filesize == 0 || (strstr( buff, "<ADIF_VERS:")) == 0) {
+    if (filesize == 0 || (strstr( buff, "<ADIF_VER")) == 0) {
     	fl_message("Not an ADIF log file");
     	return;
 	}
@@ -162,7 +162,7 @@ void cAdifIO::readFile (const char *fname, cQsoDb *db) {
 
 static const char *ADIFHEADER = "\
 File: %s\n\
-<ADIF_VERS:%d>%s\n\
+<ADIF_VER:%d>%s\n\
 <PROGRAMID:%d>%s\n\
 <PROGRAMVERSION:%d>%s\n\
 <EOH>\n";
