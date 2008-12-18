@@ -209,7 +209,7 @@ void WFdisp::makeMarker() {
 	if (bw_upper + static_cast<int>(carrierfreq+0.5) > IMAGE_WIDTH)
             bw_upper -= bw_upper + static_cast<int>(carrierfreq+0.5) - IMAGE_WIDTH;
 	for (int y = 0; y < WFMARKER - 2; y++) {
-		for (int i = bw_lower; i <= bw_upper ; i++) {
+		for (int i = bw_lower; i < bw_upper; i++) {
 			clrPos = clrM + i + y * IMAGE_WIDTH;
 			if (clrPos > clrMin && clrPos < clrMax)
 				*clrPos = RGBmarker;
@@ -536,7 +536,7 @@ void WFdisp::movetocenter() {
 }
 
 void WFdisp::carrier(int cf) {
-	if (cf > bandwidth / 2 && cf < (IMAGE_WIDTH - bandwidth / 2)) {
+	if (cf >= bandwidth / 2 && cf < (IMAGE_WIDTH - bandwidth / 2)) {
 		carrierfreq = cf;
 		makeMarker();
 		redrawCursor();
@@ -1175,7 +1175,7 @@ void waterfall::opmode() {
 		wfdisp->carrier( IMAGE_WIDTH - val/2);
 	wfdisp->Bandwidth( val );
 	FL_LOCK_D();	
-	wfcarrier->range(val/2-1, IMAGE_WIDTH - val/2-1);
+	wfcarrier->range(val/2, IMAGE_WIDTH - val/2-1);
 	FL_UNLOCK_D();
 }
 
@@ -1608,8 +1608,8 @@ int WFdisp::handle(int event)
 			}
 			if (progdefaults.WaterfallHistoryDefault)
 				bHistory = true;
-			if ((newcarrier = cursorFreq(xpos)) > wf->wfcarrier->maximum())
-				break;
+			newcarrier = cursorFreq(xpos);
+			newcarrier = (int)CLAMP(newcarrier, wf->wfcarrier->minimum(), wf->wfcarrier->maximum());
 			active_modem->set_freq(newcarrier);
 			if (!(Fl::event_state() & FL_SHIFT))
 				active_modem->set_sigsearch(SIGSEARCH);
@@ -1680,18 +1680,14 @@ int WFdisp::handle(int event)
 	case FL_KEYBOARD:
 	{
 		int d = (Fl::event_state() & FL_CTRL) ? 10 : 1;
-		switch (Fl::event_key()) {
-		case FL_Left:
-			if (xpos > 0) {
-				active_modem->set_freq(oldcarrier = newcarrier = carrier() - d);
-				redrawCursor();
-			}
-			break;
-		case FL_Right:
-			if (xpos < w()) {
-				active_modem->set_freq(oldcarrier = newcarrier = carrier() + d);
-				redrawCursor();
-			}
+		int k = Fl::event_key();
+		switch (k) {
+		case FL_Left: case FL_Right:
+			if (k == FL_Left)
+				d = -d;
+			oldcarrier = newcarrier = (int)CLAMP(carrier() + d, wf->wfcarrier->minimum(), wf->wfcarrier->maximum());
+			active_modem->set_freq(newcarrier);
+			redrawCursor();
 			break;
 		case FL_Tab:
 			restoreFocus();
