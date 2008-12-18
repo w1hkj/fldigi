@@ -69,15 +69,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {557 96 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
+    xywh {386 274 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 500 372} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open
-        xywh {0 25 500 345} when 1 hide
+        callback {progdefaults.changed = true;} open selected
+        xywh {0 25 500 345} when 1
       } {
         Fl_Group {} {
           label Station open
@@ -133,7 +133,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        xywh {0 25 500 345}
+        xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsUI {open
           xywh {0 25 500 345} selection_color 50
@@ -209,7 +209,7 @@ progdefaults.changed = true;}
               Fl_Check_Button btnAutoFillQSO {
                 label {Auto-fill Country and Azimuth}
                 callback {progdefaults.autofill_qso_fields = o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
                 xywh {25 207 225 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.autofill_qso_fields);}
               }
@@ -270,29 +270,29 @@ progdefaults.changed = true;}
             } {
               Fl_Box lblSend {
                 label {Send:}
-                xywh {26 95 55 25}
+                xywh {15 95 55 20}
               }
               Fl_Input inpSend1 {
-                label {Xchg 1}
+                label 1
                 callback {progdefaults.Xchg1=o->value();
 progdefaults.changed = true;}
-                xywh {81 95 70 25} align 1
+                xywh {70 95 70 20} align 1
                 code0 {o->value(progdefaults.Xchg1.c_str());}
                 class Fl_Input2
               }
               Fl_Input inpSend2 {
-                label {Xchg 2}
+                label 2
                 callback {progdefaults.Xchg2=o->value();
 progdefaults.changed = true;}
-                xywh {159 95 70 25} align 1
+                xywh {150 95 70 20} align 1
                 code0 {o->value(progdefaults.Xchg2.c_str());}
                 class Fl_Input2
               }
               Fl_Input inpSend3 {
-                label {Xchg 3}
+                label 3
                 callback {progdefaults.Xchg3=o->value();
 progdefaults.changed = true;}
-                xywh {239 95 70 25} align 1
+                xywh {230 95 70 20} align 1
                 code0 {o->value(progdefaults.Xchg3.c_str());}
                 class Fl_Input2
               }
@@ -300,19 +300,19 @@ progdefaults.changed = true;}
                 label {RST always 599}
                 callback {progdefaults.fixed599 = o->value();
 progdefaults.changed = true;}
-                xywh {326 75 130 20} down_box DOWN_BOX
+                xywh {310 80 130 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.fixed599);}
               }
               Fl_Check_Button btnCutNbrs {
-                label {Send CW cut \#'s}
+                label {Send CW cut numbers}
                 callback {progdefaults.cutnbrs=o->value();
 progdefaults.changed = true;}
-                xywh {326 110 70 15} down_box DOWN_BOX
+                xywh {310 110 180 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.cutnbrs);}
               }
             }
             Fl_Group {} {
-              label {Serial Number} open
+              label {Serial number} open
               xywh {5 150 490 65} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnUseLeadingZeros {
@@ -322,14 +322,14 @@ progdefaults.changed = true;}
                 xywh {26 176 154 20} down_box DOWN_BOX value 1
               }
               Fl_Value_Input nbrContestStart {
-                label {Starting \#}
+                label Start
                 callback {progdefaults.ContestStart = (int)o->value();
 progdefaults.changed = true;}
                 xywh {221 176 45 20} align 1 maximum 10000 step 1
                 code0 {o->value(progdefaults.ContestStart);}
               }
               Fl_Value_Input nbrContestDigits {
-                label {\# of digits}
+                label Digits
                 callback {progdefaults.ContestDigits = (int)o->value();
 progdefaults.changed = true;}
                 xywh {303 175 45 20} align 1 minimum 1 maximum 5 step 1 value 3
@@ -341,69 +341,69 @@ progdefaults.changed = true;}
               }
             }
             Fl_Group {} {
-              label {Dup Check} open
+              label {Duplicates check} open
               xywh {5 225 490 130} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnDupCheckOn {
-                label {Dup Check On CALL +}
+                label Callsign
                 callback {EnableDupCheck = o->value();}
-                xywh {172 250 90 15} down_box DOWN_BOX
+                xywh {15 253 80 20} down_box DOWN_BOX
                 code0 {o->value(0);}
               }
               Fl_Check_Button btnDupBand {
                 label Band
                 callback {progdefaults.dupband = o->value();
 progdefaults.changed = true;}
-                xywh {15 283 70 15} down_box DOWN_BOX
+                xywh {156 253 70 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.dupband);}
               }
               Fl_Check_Button btnDupMode {
                 label Mode
                 callback {progdefaults.dupmode = o->value();
 progdefaults.changed = true;}
-                xywh {94 283 70 15} down_box DOWN_BOX
+                xywh {276 253 70 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.dupmode);}
               }
               Fl_Check_Button btnDupState {
                 label State
                 callback {progdefaults.dupstate = o->value();
 progdefaults.changed = true;}
-                xywh {172 283 70 15} down_box DOWN_BOX
+                xywh {395 253 70 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.dupstate);}
               }
               Fl_Check_Button btnDupXchg1 {
-                label {Xchg 1}
+                label {Exchange 1}
                 callback {progdefaults.dupxchg1 = o->value();
 progdefaults.changed = true;}
-                xywh {252 283 70 15} down_box DOWN_BOX
+                xywh {15 283 105 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.dupxchg1);}
               }
               Fl_Check_Button btnDupXchg2 {
-                label {Xchg 2}
+                label {Exchange 2}
                 callback {progdefaults.dupxchg2 = o->value();
 progdefaults.changed = true;}
-                xywh {331 283 70 15} down_box DOWN_BOX
+                xywh {156 283 105 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.dupxchg2);}
               }
               Fl_Check_Button btnDupXchg3 {
-                label {Xchg 3}
+                label {Exchange 3}
                 callback {progdefaults.dupxchg3 = o->value();
 progdefaults.changed = true;}
-                xywh {410 283 70 15} down_box DOWN_BOX
+                xywh {276 283 105 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.dupxchg3);}
               }
               Fl_Check_Button btnDupTimeSpan {
                 label {Time span over}
                 callback {progdefaults.duptimespan=o->value();
 progdefaults.changed = true;}
-                xywh {94 317 70 15} down_box DOWN_BOX
+                xywh {15 313 129 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.duptimespan);}
               }
               Fl_Value_Input nbrTimeSpan {
                 label minutes
                 callback {progdefaults.timespan = o->value();
 progdefaults.changed = true;}
-                xywh {230 313 53 22} align 8 maximum 1440 step 1 value 120
+                xywh {158 313 53 20} align 8 maximum 1440 step 1 value 120
                 code0 {o->value(progdefaults.timespan);}
               }
             }
@@ -595,7 +595,7 @@ progdefaults.changed = true;}
                 label {Signal level}
                 callback {progdefaults.TxMonitorLevel = o->value();
 progdefaults.changed = true;}
-                xywh {270 315 200 20} type {Horz Knob} selection_color 15 align 1 step 0.05 value 0.5 textsize 14
+                xywh {270 315 200 20} type Horizontal selection_color 15 align 1 step 0.05 value 0.5 textsize 14
                 code0 {o->value(progdefaults.TxMonitorLevel);}
               }
             }
@@ -717,30 +717,33 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
                     label {Filter bandwidth}
                     callback {progdefaults.CWbandwidth = (int)o->value();
 progdefaults.changed = true;}
-                    xywh {70 117 240 20} type {Horz Knob} color 7 selection_color 15 align 8 minimum 10 maximum 500 step 10 value 150 textsize 14
+                    xywh {40 115 290 20} type Horizontal selection_color 15 align 8 minimum 10 maximum 500 step 10 value 150 textsize 14
                     code0 {o->value(progdefaults.CWbandwidth);}
                   }
                   Fl_Check_Button btnCWrcvTrack {
                     label Tracking
                     callback {progdefaults.CWtrack = o->value();
 progdefaults.changed = true;}
-                    xywh {70 150 80 20} down_box DOWN_BOX value 1
+                    xywh {40 150 80 20} down_box DOWN_BOX value 1
                     code0 {o->value(progdefaults.CWtrack);}
                   }
                   Fl_Counter cntCWrange {
                     label {Tracking range (WPM)}
                     callback {progdefaults.CWrange = (int)o->value();
 progdefaults.changed = true;}
-                    xywh {220 150 65 20} type Simple align 8 minimum 5 maximum 25 step 1 value 10
+                    xywh {225 150 65 20} type Simple align 8 minimum 5 maximum 25 step 1 value 10
                     code0 {o->value(progdefaults.CWrange);}
                   }
                   Fl_Value_Output valCWrcvWPM {
-                    label {RX WPM}
                     callback {progdefaults.changed = true;}
-                    xywh {130 188 35 20} color 7
+                    xywh {40 188 35 20} color 7
                   }
                   Fl_Progress prgsCWrcvWPM {
-                    xywh {165 188 275 20} color 49 selection_color 15 align 0
+                    xywh {75 188 255 20} color 49 selection_color 15 align 0
+                  }
+                  Fl_Box {} {
+                    label {RX WPM}
+                    xywh {330 188 70 20} align 20
                   }
                 }
                 Fl_Group {} {
@@ -753,14 +756,14 @@ progdefaults.changed = true;}
 cntPreTiming->maximum((int)(2400/o->value())/2.0);
 cntPostTiming->maximum((int)(2400/o->value())/2.0);
 progdefaults.changed = true;}
-                    xywh {130 248 310 20} type {Horz Knob} color 7 selection_color 15 align 4 minimum 5 maximum 100 step 1 value 20 textsize 14
+                    xywh {40 248 290 20} type Horizontal selection_color 15 align 8 minimum 5 maximum 100 step 1 value 20 textsize 14
                     code0 {o->value(progdefaults.CWspeed);}
                   }
                   Fl_Counter cntCWdefWPM {
                     label Default
                     callback {progdefaults.defCWspeed = (int)o->value();
 progdefaults.changed = true;}
-                    xywh {130 294 64 20} type Simple align 1 minimum 5 maximum 200 step 1 value 18
+                    xywh {40 294 64 20} type Simple align 1 minimum 5 maximum 200 step 1 value 18
                     code0 {o->value(progdefaults.defCWspeed);}
                   }
                   Fl_Counter cntCWlowerlimit {
@@ -771,7 +774,7 @@ sldrCWxmtWPM->minimum(o->value());
 sldrCWxmtWPM->value(progdefaults.CWspeed);
 sldrCWxmtWPM->redraw();
 cntCWupperlimit->minimum(o->value()+20);}
-                    xywh {250 294 65 20} type Simple align 1 minimum 5 maximum 20 step 5 value 10
+                    xywh {152 294 65 20} type Simple align 1 minimum 5 maximum 20 step 5 value 10
                     code0 {o->value(progdefaults.CWlowerlimit);}
                   }
                   Fl_Counter cntCWupperlimit {
@@ -782,7 +785,7 @@ sldrCWxmtWPM->maximum(o->value());
 sldrCWxmtWPM->value(progdefaults.CWspeed);
 sldrCWxmtWPM->redraw();
 cntCWlowerlimit->maximum(o->value()-20);}
-                    xywh {375 294 65 20} type Simple align 1 minimum 25 maximum 200 step 5 value 100
+                    xywh {265 294 65 20} type Simple align 1 minimum 25 maximum 200 step 5 value 100
                     code0 {o->value(progdefaults.CWupperlimit);}
                   }
                 }
@@ -806,14 +809,14 @@ progdefaults.changed = true;}
                     label {Dash to dot ratio}
                     callback {progdefaults.CWdash2dot=o->value();
 progdefaults.changed = true;}
-                    xywh {211 114 64 20} type Simple align 8 minimum 2.5 maximum 4 step 0.1 value 3
+                    xywh {211 114 64 20} type Simple align 8 minimum 2.5 maximum 4 value 3
                     code0 {o->value(progdefaults.CWdash2dot);}
                   }
                   Fl_Counter cntCWrisetime {
                     label Edge
                     callback {progdefaults.CWrisetime=o->value();
 progdefaults.changed = true;}
-                    tooltip {Leading and trailing edge risetimes (ms)} xywh {15 144 65 21} type Simple align 8 minimum 0 maximum 15 step 0.1 value 4
+                    tooltip {Leading and trailing edge risetimes (ms)} xywh {15 144 65 21} type Simple align 8 minimum 0 maximum 15 value 4
                     code0 {o->value(progdefaults.CWrisetime);}
                   }
                 }
@@ -875,7 +878,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.DOMINOEX_BW = o->value();
 resetDOMEX();
 progdefaults.changed = true;}
-                tooltip {Filter bandwidth relative to signal width} xywh {156 141 63 20} type Simple align 8 minimum 1 maximum 2 step 0.1 value 1.5
+                tooltip {Filter bandwidth relative to signal width} xywh {156 141 63 20} type Simple align 8 minimum 1 maximum 2 value 1.5
                 code0 {o->value(progdefaults.DOMINOEX_BW);}
               }
               Fl_Check_Button chkDominoEX_FEC {
@@ -889,7 +892,7 @@ progdefaults.changed = true;}
                 label {CWI threshold}
                 callback {progdefaults.DomCWI = o->value();
 progdefaults.changed = true;}
-                tooltip {CWI detection and suppression} xywh {15 207 260 20} type {Horz Knob} selection_color 15 align 1 step 0.01 textsize 14
+                tooltip {CWI detection and suppression} xywh {15 207 260 20} type Horizontal selection_color 15 align 1 textsize 14
                 code0 {o->value(progdefaults.DomCWI);}
               }
               Fl_Counter valDominoEX_PATHS {
@@ -951,7 +954,7 @@ progdefaults.changed = true;} open
               Fl_Value_Slider sldrHellBW {
                 label {Receive filter bandwidth}
                 callback {progdefaults.HELL_BW = sldrHellBW->value();}
-                xywh {206 147 246 20} type {Horz Knob} selection_color 15 align 5 minimum 10 maximum 2400 step 5 value 400 textsize 14
+                xywh {206 147 246 20} type Horizontal selection_color 15 align 5 minimum 10 maximum 2400 step 5 value 400 textsize 14
                 code0 {o->value(progdefaults.HELL_BW);}
               }
               Fl_Check_Button btnFeldHellIdle {
@@ -1058,7 +1061,7 @@ progdefaults.changed = true;}
             } {
               Fl_Group {} {
                 label General open
-                xywh {0 75 500 295} align 5 hide
+                xywh {0 75 500 295} align 5
               } {
                 Fl_Group {} {
                   label {AFC behavior} open
@@ -1127,7 +1130,7 @@ progdefaults.changed = true;}
               }
               Fl_Group {} {
                 label Viewer open
-                xywh {0 75 500 295} align 5
+                xywh {0 75 500 295} align 5 hide
               } {
                 Fl_Group {} {open
                   xywh {5 85 490 110} box ENGRAVED_FRAME
@@ -1342,7 +1345,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.THOR_BW = o->value();
 resetTHOR();
 progdefaults.changed = true;}
-                tooltip {Filter bandwidth relative to signal width} xywh {156 141 63 20} type Simple align 8 minimum 1 maximum 2 step 0.1 value 1.5
+                tooltip {Filter bandwidth relative to signal width} xywh {156 141 63 20} type Simple align 8 minimum 1 maximum 2 value 1.5
                 code0 {o->value(progdefaults.THOR_BW);}
               }
               Fl_Check_Button valTHOR_SOFT {
@@ -1356,7 +1359,7 @@ progdefaults.changed = true;}
                 label {CWI threshold}
                 callback {progdefaults.ThorCWI = o->value();
 progdefaults.changed = true;}
-                tooltip {CWI detection and suppression} xywh {15 218 260 20} type {Horz Knob} selection_color 15 align 1 step 0.01 textsize 14
+                tooltip {CWI detection and suppression} xywh {15 218 260 20} type Horizontal selection_color 15 align 1 textsize 14
                 code0 {o->value(progdefaults.ThorCWI);}
               }
               Fl_Counter valTHOR_PATHS {
@@ -1643,7 +1646,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label Hamlib open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Check_Button chkUSEHAMLIB {
               label {Use Hamlib}
@@ -1886,7 +1889,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label {XML-RPC} open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group grpXMLRPC {open
               xywh {5 60 490 160} box ENGRAVED_FRAME
@@ -2149,7 +2152,7 @@ progdefaults.changed = true;}
                 label PCM
                 callback {setPCMvolume(o->value());
 progdefaults.changed = true;}
-                xywh {15 167 340 21} type {Horz Knob} selection_color 15 align 8 step 0.01 value 0.8 textsize 14
+                xywh {15 167 340 21} type Horizontal selection_color 15 align 8 value 0.8 textsize 14
                 code0 {extern void setPCMvolume(double);}
               }
             }
@@ -2221,7 +2224,7 @@ progdefaults.changed = true;}
             label {Speed (WPM):}
             callback {progdefaults.CWIDwpm = (int)o->value();
 progdefaults.changed = true;}
-            xywh {285 185 200 20} type {Horz Knob} selection_color 15 align 1 minimum 15 maximum 40 step 1 value 18 textsize 14
+            xywh {285 185 200 20} type Horizontal selection_color 15 align 1 minimum 15 maximum 40 step 1 value 18 textsize 14
             code0 {o->value(progdefaults.CWIDwpm);}
           }
         }

@@ -365,7 +365,7 @@ Fl_Menu_Item quick_change_olivia[] = {
 	{ "8/500", 0, cb_oliviaA, (void *)MODE_OLIVIA },
 	{ "16/500", 0, cb_oliviaB, (void *)MODE_OLIVIA },
 	{ "32/1000", 0, cb_oliviaC, (void *)MODE_OLIVIA },
-	{ "Custom", 0, cb_oliviaCustom, (void *)MODE_OLIVIA },
+	{ _("Custom..."), 0, cb_oliviaCustom, (void *)MODE_OLIVIA },
 	{ 0 }
 };
 
@@ -373,7 +373,7 @@ Fl_Menu_Item quick_change_rtty[] = {
 	{ "RTTY-45", 0, cb_rtty45, (void *)MODE_RTTY },
 	{ "RTTY-50", 0, cb_rtty50, (void *)MODE_RTTY },
 	{ "RTTY-75", 0, cb_rtty75, (void *)MODE_RTTY },
-	{ "Custom", 0, cb_rttyCustom, (void *)MODE_RTTY },
+	{ _("Custom..."), 0, cb_rttyCustom, (void *)MODE_RTTY },
 	{ 0 }
 };
 
@@ -890,7 +890,7 @@ void cb_mnuPlayback(Fl_Widget *w, void *d)
 		playval = false;
 	}
 	else if (btnAutoSpot->value()) {
-		put_status("Spotting disabled", 3.0);
+		put_status(_("Spotting disabled"), 3.0);
 		btnAutoSpot->value(0);
 		btnAutoSpot->do_callback();
 	}
@@ -1103,12 +1103,12 @@ void cb_mnuAudioInfo(Fl_Widget*, void*)
         string devtext[2], headers[2];
 	SoundPort::devices_info(devtext[0], devtext[1]);
 	if (devtext[0] != devtext[1]) {
-		headers[0] = "Capture device";
-		headers[1] = "Playback device";
+		headers[0] = _("Capture device");
+		headers[1] = _("Playback device");
 		ndev = 2;
 	}
 	else {
-		headers[0] = "Capture and playback devices";
+		headers[0] = _("Capture and playback devices");
 		ndev = 1;
 	}
 
@@ -1580,7 +1580,7 @@ bool clean_exit(void) {
 #define CONTEST_FIELDS_MLABEL _("Contest fields")
 
 Fl_Menu_Item menu_[] = {
-{_("&Files"), 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{_("&File"), 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { make_icon_label(_("Open macros..."), file_open_icon), 0,  (Fl_Callback*)cb_mnuOpenMacro, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Save macros..."), save_as_icon), 0,  (Fl_Callback*)cb_mnuSaveMacro, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Show config"), folder_open_icon), 0, cb_ShowConfig, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
@@ -1598,8 +1598,8 @@ Fl_Menu_Item menu_[] = {
 
 #if USE_SNDFILE
 { make_icon_label(_("Audio")), 0, 0, 0, FL_MENU_DIVIDER | FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
-{_("Rx capture"),  0, (Fl_Callback*)cb_mnuCapture,  0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
-{_("Tx generate"), 0, (Fl_Callback*)cb_mnuGenerate, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
+{_("RX capture"),  0, (Fl_Callback*)cb_mnuCapture,  0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
+{_("TX generate"), 0, (Fl_Callback*)cb_mnuGenerate, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 {_("Playback"),    0, (Fl_Callback*)cb_mnuPlayback, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 #endif
@@ -1650,7 +1650,7 @@ Fl_Menu_Item menu_[] = {
 { "8/500", 0, cb_oliviaA, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "16/500", 0, cb_oliviaB, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "32/1000", 0, cb_oliviaC, (void *)MODE_OLIVIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
-{ "Custom", 0, cb_oliviaCustom, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ _("Custom..."), 0, cb_oliviaCustom, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"PSK", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
@@ -1668,7 +1668,7 @@ Fl_Menu_Item menu_[] = {
 { "RTTY-45", 0, cb_rtty45, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "RTTY-50", 0, cb_rtty50, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "RTTY-75", 0, cb_rtty75, (void *)MODE_RTTY, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
-{ "Custom", 0, cb_rttyCustom, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ _("Custom..."), 0, cb_rttyCustom, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"THOR", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
@@ -2311,7 +2311,7 @@ void create_fl_digi_main() {
 					inpVEprov->tooltip(_("Can. Province"));
 					inpVEprov->align(FL_ALIGN_INSIDE);
 
-					Fl_Box *fm11box = new Fl_Box(rightof(inpVEprov), y3, w_fm6, qh - pad, _("Ctny"));
+					Fl_Box *fm11box = new Fl_Box(rightof(inpVEprov), y3, w_fm6, qh - pad, _("Cnty"));
 					fm11box->align(FL_ALIGN_INSIDE);
 					inpCountry = new Fl_Input2(rightof(fm11box), y3, w_inpCountry, qh - pad, "");
 					inpCountry->tooltip(_("Country"));
@@ -3252,6 +3252,6 @@ void qsy(long long rfc, long long fmid)
 
 bool quick_choice(const char* title, bool sel)
 {
-	Fl_Menu_Item m[] = { { "Confirm" }, { "Cancel" }, { 0 } };
+	Fl_Menu_Item m[] = { { _("Confirm") }, { _("Cancel") }, { 0 } };
 	return m->popup(Fl::event_x(), Fl::event_y(), title, m + !sel) == m;
 }

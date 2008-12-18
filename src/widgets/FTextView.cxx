@@ -55,6 +55,7 @@
 #include "locator.h"
 #include "logsupport.h"
 #include "status.h"
+#include "gettext.h"
 
 #include "debug.h"
 
@@ -215,7 +216,7 @@ void FTextBase::set_style(int attr, Fl_Font f, int s, Fl_Color c, int set)
 /// @return 0 on success, -1 on error
 int FTextBase::readFile(const char* fn)
 {
-	if ( !(fn || (fn = FSEL::select("Insert text", "Text\t*.txt"))) )
+	if ( !(fn || (fn = FSEL::select(_("Insert text"), "Text\t*.txt"))) )
 		return -1;
 
 	int ret = 0, pos = insert_position();
@@ -268,7 +269,7 @@ int FTextBase::readFile(const char* fn)
 ///
 void FTextBase::saveFile(void)
 {
- 	const char *fn = FSEL::saveas("Save text as", "Text\t*.txt");
+ 	const char *fn = FSEL::saveas(_("Save text as"), "Text\t*.txt");
 	if (fn) {
 #ifdef __CYGWIN__
 		ofstream tfile(fn);
@@ -395,29 +396,29 @@ void FTextBase::reset_styles(int set)
 #endif
 
 Fl_Menu_Item FTextView::view_menu[] = {
-	{ make_icon_label(LOOKUP_SYMBOL "&Look up call", net_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
-	{ make_icon_label(ENTER_SYMBOL "&Call", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(LOOKUP_SYMBOL _("&Look up call"), net_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL _("&Call"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(ENTER_SYMBOL "&Name", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(ENTER_SYMBOL "QT&H", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(ENTER_SYMBOL "&State", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(ENTER_SYMBOL "&Province", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(ENTER_SYMBOL "Countr&y", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(ENTER_SYMBOL "&Locator", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(ENTER_SYMBOL "&RST(r)", enter_key_icon), 0, 0, 0,  FL_MENU_DIVIDER, _FL_MULTI_LABEL },
-	{ make_icon_label(ENTER_SYMBOL "Serial Nr", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(ENTER_SYMBOL "Xchg &1", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(ENTER_SYMBOL "Xchg &2", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(ENTER_SYMBOL "Xchg &3", enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
-	{ make_icon_label("Insert divider", insert_link_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label("&Copy", edit_copy_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label("C&lear", edit_clear_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label("Select All", edit_select_all_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL _("QT&H"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL _("&State"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL _("&Province"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL _("Countr&y"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL _("&Locator"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL _("&RST(r)"), enter_key_icon), 0, 0, 0,  FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL _("Serial number"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL _("Exchange &1"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL _("Exchange &2"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL _("Exchange &3"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ make_icon_label(_("Insert divider"), insert_link_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("&Copy"), edit_copy_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("C&lear"), edit_clear_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("Select All"), edit_select_all_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 #if 0 //#ifndef NDEBUG
         { "(debug) &Append file...", 0, 0, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL },
 #endif
-	{ make_icon_label("Save &as...", save_as_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
-	{ "Quick entry",      0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL },
-	{ "Word &wrap",       0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL },
+	{ make_icon_label(_("Save &as..."), save_as_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ _("Quick entry"),      0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL },
+	{ _("Word &wrap"),       0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL },
 	{ 0 }
 };
 static bool view_init = false;
@@ -895,7 +896,7 @@ const char* FTextView::dxcc_lookup_call(int x, int y)
 		if (len < sizeof(tip)) {
 			const char** data;
 			if (SearchLog(s, &data) > 0)
-				snprintf(tip + len, sizeof(tip) - len, "\n%s (%s)", "* worked before", data[0]);
+				snprintf(tip + len, sizeof(tip) - len, "\n* %s (%s)", _("worked before"), data[0]);
 		}
 
 		ret = tip;
@@ -935,16 +936,16 @@ void FTextView::dxcc_tooltip(void* obj)
 
 
 Fl_Menu_Item FTextEdit::edit_menu[] = {
-	{ make_icon_label("&Transmit", tx_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label("&Abort", process_stop_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label("&Receive", rx_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label("Send &image...", image_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
-	{ make_icon_label("C&lear", edit_clear_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label("Cu&t", edit_cut_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label("&Copy", edit_copy_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label("&Paste", edit_paste_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label("Insert &file...", file_open_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
-	{ "Word &wrap",		0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL } ,
+	{ make_icon_label(_("&Transmit"), tx_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("&Abort"), process_stop_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("&Receive"), rx_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("Send &image..."), image_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ make_icon_label(_("C&lear"), edit_clear_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("Cu&t"), edit_cut_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("&Copy"), edit_copy_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("&Paste"), edit_paste_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("Insert &file..."), file_open_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ _("Word &wrap"), 0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL } ,
 	{ 0 }
 };
 static bool edit_init = false;
@@ -1576,10 +1577,10 @@ int FTextEdit::kf_paste(int c, Fl_Text_Editor_mod* e)
 // ----------------------------------------------------------------------------
 
 Fl_Menu_Item FTextLog::log_menu[] = {
-	{ make_icon_label("C&lear", edit_clear_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label("&Copy", edit_copy_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label("Save to &file...", save_as_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
-	{ "Word &wrap",	0, 0, 0, FL_MENU_TOGGLE },
+	{ make_icon_label(_("C&lear"), edit_clear_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("&Copy"), edit_copy_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("Save to &file..."), save_as_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ _("Word &wrap"),	0, 0, 0, FL_MENU_TOGGLE },
 	{ 0 }
 };
 static bool log_init = false;

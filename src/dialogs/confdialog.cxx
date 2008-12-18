@@ -2059,7 +2059,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { tabOperator = new Fl_Group(0, 25, 500, 345, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2128,6 +2127,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         tabOperator->end();
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 500, 345, _("UI"));
+        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 500, 345);
           tabsUI->selection_color(FL_LIGHT1);
           { tabUserInterface = new Fl_Group(0, 50, 500, 320, _("General"));
@@ -2243,9 +2243,9 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             { Fl_Group* o = new Fl_Group(5, 60, 490, 80, _("Exchanges"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { lblSend = new Fl_Box(26, 95, 55, 25, _("Send:"));
+              { lblSend = new Fl_Box(15, 95, 55, 20, _("Send:"));
               } // Fl_Box* lblSend
-              { Fl_Input2* o = inpSend1 = new Fl_Input2(81, 95, 70, 25, _("Xchg 1"));
+              { Fl_Input2* o = inpSend1 = new Fl_Input2(70, 95, 70, 20, _("1"));
                 inpSend1->box(FL_DOWN_BOX);
                 inpSend1->color(FL_BACKGROUND2_COLOR);
                 inpSend1->selection_color(FL_SELECTION_COLOR);
@@ -2258,7 +2258,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 inpSend1->when(FL_WHEN_RELEASE);
                 o->value(progdefaults.Xchg1.c_str());
               } // Fl_Input2* inpSend1
-              { Fl_Input2* o = inpSend2 = new Fl_Input2(159, 95, 70, 25, _("Xchg 2"));
+              { Fl_Input2* o = inpSend2 = new Fl_Input2(150, 95, 70, 20, _("2"));
                 inpSend2->box(FL_DOWN_BOX);
                 inpSend2->color(FL_BACKGROUND2_COLOR);
                 inpSend2->selection_color(FL_SELECTION_COLOR);
@@ -2271,7 +2271,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 inpSend2->when(FL_WHEN_RELEASE);
                 o->value(progdefaults.Xchg2.c_str());
               } // Fl_Input2* inpSend2
-              { Fl_Input2* o = inpSend3 = new Fl_Input2(239, 95, 70, 25, _("Xchg 3"));
+              { Fl_Input2* o = inpSend3 = new Fl_Input2(230, 95, 70, 20, _("3"));
                 inpSend3->box(FL_DOWN_BOX);
                 inpSend3->color(FL_BACKGROUND2_COLOR);
                 inpSend3->selection_color(FL_SELECTION_COLOR);
@@ -2284,19 +2284,19 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 inpSend3->when(FL_WHEN_RELEASE);
                 o->value(progdefaults.Xchg3.c_str());
               } // Fl_Input2* inpSend3
-              { Fl_Check_Button* o = btn599 = new Fl_Check_Button(326, 75, 130, 20, _("RST always 599"));
+              { Fl_Check_Button* o = btn599 = new Fl_Check_Button(310, 80, 130, 20, _("RST always 599"));
                 btn599->down_box(FL_DOWN_BOX);
                 btn599->callback((Fl_Callback*)cb_btn599);
                 o->value(progdefaults.fixed599);
               } // Fl_Check_Button* btn599
-              { Fl_Check_Button* o = btnCutNbrs = new Fl_Check_Button(326, 110, 70, 15, _("Send CW cut #\'s"));
+              { Fl_Check_Button* o = btnCutNbrs = new Fl_Check_Button(310, 110, 180, 20, _("Send CW cut numbers"));
                 btnCutNbrs->down_box(FL_DOWN_BOX);
                 btnCutNbrs->callback((Fl_Callback*)cb_btnCutNbrs);
                 o->value(progdefaults.cutnbrs);
               } // Fl_Check_Button* btnCutNbrs
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(5, 150, 490, 65, _("Serial Number"));
+            { Fl_Group* o = new Fl_Group(5, 150, 490, 65, _("Serial number"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
               { btnUseLeadingZeros = new Fl_Check_Button(26, 176, 154, 20, _("Use leading zeros"));
@@ -2304,14 +2304,14 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 btnUseLeadingZeros->value(1);
                 btnUseLeadingZeros->callback((Fl_Callback*)cb_btnUseLeadingZeros);
               } // Fl_Check_Button* btnUseLeadingZeros
-              { Fl_Value_Input* o = nbrContestStart = new Fl_Value_Input(221, 176, 45, 20, _("Starting #"));
+              { Fl_Value_Input* o = nbrContestStart = new Fl_Value_Input(221, 176, 45, 20, _("Start"));
                 nbrContestStart->maximum(10000);
                 nbrContestStart->step(1);
                 nbrContestStart->callback((Fl_Callback*)cb_nbrContestStart);
                 nbrContestStart->align(FL_ALIGN_TOP);
                 o->value(progdefaults.ContestStart);
               } // Fl_Value_Input* nbrContestStart
-              { nbrContestDigits = new Fl_Value_Input(303, 175, 45, 20, _("# of digits"));
+              { nbrContestDigits = new Fl_Value_Input(303, 175, 45, 20, _("Digits"));
                 nbrContestDigits->minimum(1);
                 nbrContestDigits->maximum(5);
                 nbrContestDigits->step(1);
@@ -2324,50 +2324,50 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
               } // Fl_Button* btnResetSerNbr
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(5, 225, 490, 130, _("Dup Check"));
+            { Fl_Group* o = new Fl_Group(5, 225, 490, 130, _("Duplicates check"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = btnDupCheckOn = new Fl_Check_Button(172, 250, 90, 15, _("Dup Check On CALL +"));
+              { Fl_Check_Button* o = btnDupCheckOn = new Fl_Check_Button(15, 253, 80, 20, _("Callsign"));
                 btnDupCheckOn->down_box(FL_DOWN_BOX);
                 btnDupCheckOn->callback((Fl_Callback*)cb_btnDupCheckOn);
                 o->value(0);
               } // Fl_Check_Button* btnDupCheckOn
-              { Fl_Check_Button* o = btnDupBand = new Fl_Check_Button(15, 283, 70, 15, _("Band"));
+              { Fl_Check_Button* o = btnDupBand = new Fl_Check_Button(156, 253, 70, 20, _("Band"));
                 btnDupBand->down_box(FL_DOWN_BOX);
                 btnDupBand->callback((Fl_Callback*)cb_btnDupBand);
                 o->value(progdefaults.dupband);
               } // Fl_Check_Button* btnDupBand
-              { Fl_Check_Button* o = btnDupMode = new Fl_Check_Button(94, 283, 70, 15, _("Mode"));
+              { Fl_Check_Button* o = btnDupMode = new Fl_Check_Button(276, 253, 70, 20, _("Mode"));
                 btnDupMode->down_box(FL_DOWN_BOX);
                 btnDupMode->callback((Fl_Callback*)cb_btnDupMode);
                 o->value(progdefaults.dupmode);
               } // Fl_Check_Button* btnDupMode
-              { Fl_Check_Button* o = btnDupState = new Fl_Check_Button(172, 283, 70, 15, _("State"));
+              { Fl_Check_Button* o = btnDupState = new Fl_Check_Button(395, 253, 70, 20, _("State"));
                 btnDupState->down_box(FL_DOWN_BOX);
                 btnDupState->callback((Fl_Callback*)cb_btnDupState);
                 o->value(progdefaults.dupstate);
               } // Fl_Check_Button* btnDupState
-              { Fl_Check_Button* o = btnDupXchg1 = new Fl_Check_Button(252, 283, 70, 15, _("Xchg 1"));
+              { Fl_Check_Button* o = btnDupXchg1 = new Fl_Check_Button(15, 283, 105, 20, _("Exchange 1"));
                 btnDupXchg1->down_box(FL_DOWN_BOX);
                 btnDupXchg1->callback((Fl_Callback*)cb_btnDupXchg1);
                 o->value(progdefaults.dupxchg1);
               } // Fl_Check_Button* btnDupXchg1
-              { Fl_Check_Button* o = btnDupXchg2 = new Fl_Check_Button(331, 283, 70, 15, _("Xchg 2"));
+              { Fl_Check_Button* o = btnDupXchg2 = new Fl_Check_Button(156, 283, 105, 20, _("Exchange 2"));
                 btnDupXchg2->down_box(FL_DOWN_BOX);
                 btnDupXchg2->callback((Fl_Callback*)cb_btnDupXchg2);
                 o->value(progdefaults.dupxchg2);
               } // Fl_Check_Button* btnDupXchg2
-              { Fl_Check_Button* o = btnDupXchg3 = new Fl_Check_Button(410, 283, 70, 15, _("Xchg 3"));
+              { Fl_Check_Button* o = btnDupXchg3 = new Fl_Check_Button(276, 283, 105, 20, _("Exchange 3"));
                 btnDupXchg3->down_box(FL_DOWN_BOX);
                 btnDupXchg3->callback((Fl_Callback*)cb_btnDupXchg3);
                 o->value(progdefaults.dupxchg3);
               } // Fl_Check_Button* btnDupXchg3
-              { Fl_Check_Button* o = btnDupTimeSpan = new Fl_Check_Button(94, 317, 70, 15, _("Time span over"));
+              { Fl_Check_Button* o = btnDupTimeSpan = new Fl_Check_Button(15, 313, 129, 20, _("Time span over"));
                 btnDupTimeSpan->down_box(FL_DOWN_BOX);
                 btnDupTimeSpan->callback((Fl_Callback*)cb_btnDupTimeSpan);
                 o->value(progdefaults.duptimespan);
               } // Fl_Check_Button* btnDupTimeSpan
-              { Fl_Value_Input* o = nbrTimeSpan = new Fl_Value_Input(230, 313, 53, 22, _("minutes"));
+              { Fl_Value_Input* o = nbrTimeSpan = new Fl_Value_Input(158, 313, 53, 20, _("minutes"));
                 nbrTimeSpan->maximum(1440);
                 nbrTimeSpan->step(1);
                 nbrTimeSpan->value(120);
@@ -2495,7 +2495,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 o->value(progdefaults.viewXmtSignal);
               } // Fl_Check_Button* btnViewXmtSignal
               { Fl_Value_Slider* o = valTxMonitorLevel = new Fl_Value_Slider(270, 315, 200, 20, _("Signal level"));
-                valTxMonitorLevel->type(5);
+                valTxMonitorLevel->type(1);
                 valTxMonitorLevel->selection_color(FL_SELECTION_COLOR);
                 valTxMonitorLevel->step(0.05);
                 valTxMonitorLevel->value(0.5);
@@ -2612,9 +2612,8 @@ an merging"));
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 130, _("Receive"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-                { Fl_Value_Slider* o = sldrCWbandwidth = new Fl_Value_Slider(70, 117, 240, 20, _("Filter bandwidth"));
-                sldrCWbandwidth->type(5);
-                sldrCWbandwidth->color(FL_BACKGROUND2_COLOR);
+                { Fl_Value_Slider* o = sldrCWbandwidth = new Fl_Value_Slider(40, 115, 290, 20, _("Filter bandwidth"));
+                sldrCWbandwidth->type(1);
                 sldrCWbandwidth->selection_color(FL_SELECTION_COLOR);
                 sldrCWbandwidth->minimum(10);
                 sldrCWbandwidth->maximum(500);
@@ -2625,13 +2624,13 @@ an merging"));
                 sldrCWbandwidth->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.CWbandwidth);
                 } // Fl_Value_Slider* sldrCWbandwidth
-                { Fl_Check_Button* o = btnCWrcvTrack = new Fl_Check_Button(70, 150, 80, 20, _("Tracking"));
+                { Fl_Check_Button* o = btnCWrcvTrack = new Fl_Check_Button(40, 150, 80, 20, _("Tracking"));
                 btnCWrcvTrack->down_box(FL_DOWN_BOX);
                 btnCWrcvTrack->value(1);
                 btnCWrcvTrack->callback((Fl_Callback*)cb_btnCWrcvTrack);
                 o->value(progdefaults.CWtrack);
                 } // Fl_Check_Button* btnCWrcvTrack
-                { Fl_Counter* o = cntCWrange = new Fl_Counter(220, 150, 65, 20, _("Tracking range (WPM)"));
+                { Fl_Counter* o = cntCWrange = new Fl_Counter(225, 150, 65, 20, _("Tracking range (WPM)"));
                 cntCWrange->type(1);
                 cntCWrange->minimum(5);
                 cntCWrange->maximum(25);
@@ -2641,23 +2640,25 @@ an merging"));
                 cntCWrange->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.CWrange);
                 } // Fl_Counter* cntCWrange
-                { valCWrcvWPM = new Fl_Value_Output(130, 188, 35, 20, _("RX WPM"));
+                { valCWrcvWPM = new Fl_Value_Output(40, 188, 35, 20);
                 valCWrcvWPM->color(FL_BACKGROUND2_COLOR);
                 valCWrcvWPM->callback((Fl_Callback*)cb_valCWrcvWPM);
                 } // Fl_Value_Output* valCWrcvWPM
-                { prgsCWrcvWPM = new Fl_Progress(165, 188, 275, 20);
+                { prgsCWrcvWPM = new Fl_Progress(75, 188, 255, 20);
                 prgsCWrcvWPM->color(FL_BACKGROUND_COLOR);
                 prgsCWrcvWPM->selection_color(FL_SELECTION_COLOR);
                 prgsCWrcvWPM->align(FL_ALIGN_CENTER);
                 } // Fl_Progress* prgsCWrcvWPM
+                { Fl_Box* o = new Fl_Box(330, 188, 70, 20, _("RX WPM"));
+                o->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
+                } // Fl_Box* o
                 o->end();
                 } // Fl_Group* o
                 { Fl_Group* o = new Fl_Group(5, 215, 490, 110, _("Transmit"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-                { Fl_Value_Slider* o = sldrCWxmtWPM = new Fl_Value_Slider(130, 248, 310, 20, _("TX WPM"));
-                sldrCWxmtWPM->type(5);
-                sldrCWxmtWPM->color(FL_BACKGROUND2_COLOR);
+                { Fl_Value_Slider* o = sldrCWxmtWPM = new Fl_Value_Slider(40, 248, 290, 20, _("TX WPM"));
+                sldrCWxmtWPM->type(1);
                 sldrCWxmtWPM->selection_color(FL_SELECTION_COLOR);
                 sldrCWxmtWPM->minimum(5);
                 sldrCWxmtWPM->maximum(100);
@@ -2665,10 +2666,10 @@ an merging"));
                 sldrCWxmtWPM->value(20);
                 sldrCWxmtWPM->textsize(14);
                 sldrCWxmtWPM->callback((Fl_Callback*)cb_sldrCWxmtWPM);
-                sldrCWxmtWPM->align(FL_ALIGN_LEFT);
+                sldrCWxmtWPM->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.CWspeed);
                 } // Fl_Value_Slider* sldrCWxmtWPM
-                { Fl_Counter* o = cntCWdefWPM = new Fl_Counter(130, 294, 64, 20, _("Default"));
+                { Fl_Counter* o = cntCWdefWPM = new Fl_Counter(40, 294, 64, 20, _("Default"));
                 cntCWdefWPM->type(1);
                 cntCWdefWPM->minimum(5);
                 cntCWdefWPM->maximum(200);
@@ -2678,7 +2679,7 @@ an merging"));
                 cntCWdefWPM->align(FL_ALIGN_TOP);
                 o->value(progdefaults.defCWspeed);
                 } // Fl_Counter* cntCWdefWPM
-                { Fl_Counter* o = cntCWlowerlimit = new Fl_Counter(250, 294, 65, 20, _("Lower limit"));
+                { Fl_Counter* o = cntCWlowerlimit = new Fl_Counter(152, 294, 65, 20, _("Lower limit"));
                 cntCWlowerlimit->type(1);
                 cntCWlowerlimit->minimum(5);
                 cntCWlowerlimit->maximum(20);
@@ -2688,7 +2689,7 @@ an merging"));
                 cntCWlowerlimit->align(FL_ALIGN_TOP);
                 o->value(progdefaults.CWlowerlimit);
                 } // Fl_Counter* cntCWlowerlimit
-                { Fl_Counter* o = cntCWupperlimit = new Fl_Counter(375, 294, 65, 20, _("Upper limit"));
+                { Fl_Counter* o = cntCWupperlimit = new Fl_Counter(265, 294, 65, 20, _("Upper limit"));
                 cntCWupperlimit->type(1);
                 cntCWupperlimit->minimum(25);
                 cntCWupperlimit->maximum(200);
@@ -2822,7 +2823,7 @@ an merging"));
               } // Fl_Check_Button* chkDominoEX_FEC
               { Fl_Value_Slider* o = valDomCWI = new Fl_Value_Slider(15, 207, 260, 20, _("CWI threshold"));
                 valDomCWI->tooltip(_("CWI detection and suppression"));
-                valDomCWI->type(5);
+                valDomCWI->type(1);
                 valDomCWI->selection_color(FL_SELECTION_COLOR);
                 valDomCWI->textsize(14);
                 valDomCWI->callback((Fl_Callback*)cb_valDomCWI);
@@ -2880,7 +2881,7 @@ an merging"));
                 o->value(progdefaults.HellPulseFast);
               } // Fl_Choice* mnuHellPulse
               { Fl_Value_Slider* o = sldrHellBW = new Fl_Value_Slider(206, 147, 246, 20, _("Receive filter bandwidth"));
-                sldrHellBW->type(5);
+                sldrHellBW->type(1);
                 sldrHellBW->selection_color(FL_SELECTION_COLOR);
                 sldrHellBW->minimum(10);
                 sldrHellBW->maximum(2400);
@@ -2982,7 +2983,6 @@ an merging"));
               tabsPSK->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
                 o->align(FL_ALIGN_TOP_LEFT);
-                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 98, _("AFC behavior"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -3062,6 +3062,7 @@ an merging"));
               } // Fl_Group* o
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("Viewer"));
                 o->align(FL_ALIGN_TOP_LEFT);
+                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 110);
                 o->box(FL_ENGRAVED_FRAME);
                 { Fl_Check_Button* o = btnMarquee = new Fl_Check_Button(212, 125, 165, 20, _("Continuous scrolling"));
@@ -3264,7 +3265,7 @@ an merging"));
               } // Fl_Check_Button* valTHOR_SOFT
               { Fl_Value_Slider* o = valThorCWI = new Fl_Value_Slider(15, 218, 260, 20, _("CWI threshold"));
                 valThorCWI->tooltip(_("CWI detection and suppression"));
-                valThorCWI->type(5);
+                valThorCWI->type(1);
                 valThorCWI->selection_color(FL_SELECTION_COLOR);
                 valThorCWI->textsize(14);
                 valThorCWI->callback((Fl_Callback*)cb_valThorCWI);
@@ -3444,7 +3445,6 @@ an merging"));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hamlib"));
-            o->hide();
             { chkUSEHAMLIB = new Fl_Check_Button(195, 60, 100, 20, _("Use Hamlib"));
               chkUSEHAMLIB->down_box(FL_DOWN_BOX);
               chkUSEHAMLIB->callback((Fl_Callback*)cb_chkUSEHAMLIB);
@@ -3585,6 +3585,7 @@ an merging"));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("XML-RPC"));
+            o->hide();
             { grpXMLRPC = new Fl_Group(5, 60, 490, 160);
               grpXMLRPC->box(FL_ENGRAVED_FRAME);
               { Fl_Output* o = new Fl_Output(160, 79, 190, 58);
@@ -3764,7 +3765,7 @@ l with your sound hardware."));
                 btnLineIn->callback((Fl_Callback*)cb_btnLineIn);
               } // Fl_Light_Button* btnLineIn
               { valPCMvolume = new Fl_Value_Slider(15, 167, 340, 21, _("PCM"));
-                valPCMvolume->type(5);
+                valPCMvolume->type(1);
                 valPCMvolume->selection_color(FL_SELECTION_COLOR);
                 valPCMvolume->value(0.8);
                 valPCMvolume->textsize(14);
@@ -3837,7 +3838,7 @@ l with your sound hardware."));
             o->value(progdefaults.CWid);
           } // Fl_Check_Button* btnCWID
           { Fl_Value_Slider* o = sldrCWIDwpm = new Fl_Value_Slider(285, 185, 200, 20, _("Speed (WPM):"));
-            sldrCWIDwpm->type(5);
+            sldrCWIDwpm->type(1);
             sldrCWIDwpm->selection_color(FL_SELECTION_COLOR);
             sldrCWIDwpm->minimum(15);
             sldrCWIDwpm->maximum(40);
