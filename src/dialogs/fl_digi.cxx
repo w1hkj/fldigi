@@ -913,8 +913,8 @@ void cb_mnuVisitURL(Fl_Widget*, void* arg)
 #  ifdef __APPLE__
 	const char* browsers[] = { "open" };
 #  else
-	const char* browsers[] = { "xdg-open", getenv("BROWSER"), "sensible-brower",
-				   "firefox", "mozilla" };
+	const char* browsers[] = { getenv("FLDIGI_BROWSER"), "xdg-open", getenv("BROWSER"),
+				   "sensible-brower", "firefox", "mozilla" };
 #  endif
 	switch (fork()) {
 	case 0:
