@@ -479,6 +479,7 @@ cQsoRec rec;
 	rec.putField(XCHG3, inpXchg3_log->value());	
 	qsodb.qsoUpdRec (editNbr, &rec);
 	qsodb.isdirty(1);
+	loadBrowser();
 }
 
 void deleteRecord () {
