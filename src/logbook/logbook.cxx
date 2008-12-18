@@ -32,7 +32,9 @@ void start_logbook ()
 		logbook_filename = progdefaults.logbookfilename;
 
 	adifFile.readFile (logbook_filename.c_str(), &qsodb);
-	dlgLogbook->copy_label(fl_filename_name(logbook_filename.c_str()));
+	string label = "Logbook - ";
+	label.append(fl_filename_name(logbook_filename.c_str()));
+	dlgLogbook->copy_label(label.c_str());
 	loadBrowser();
 	qsodb.isdirty(0);
 

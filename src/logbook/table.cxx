@@ -109,28 +109,34 @@ void Table::drawRow(int row, char *rowData[], int x, int y) {
   // Draw background box.
   if (row != selected) {
     Fl_Color bg;
-    if (!withGrid && row % 2 == 0) { // different bg for consecutive rows
+    if (!withGrid && row % 2 == 0) // different bg for consecutive rows
+      bg = color();
+    else {
       bg = fl_color_average(color(), FL_BLACK, .9);
       if (fl_contrast(bg, FL_BLACK) == FL_WHITE) // widget has very dark text bg
         bg = fl_color_average(color(), FL_WHITE, .9);
     }
-    else
-      bg = color();
+
     fl_rectf(iX, y, tableWidth - hScroll->value(), rowHeight, bg);
-  }
-  else if (Fl::focus() == this) {
-    fl_rectf(iX, y, tableWidth - hScroll->value(), rowHeight, selection_color());
+
     fl_color(FL_FOREGROUND_COLOR);
-
-    // Draw focus
-    fl_line_style(FL_DOT);
-    fl_rect(iX, y, tableWidth - hScroll->value(), rowHeight);
-    fl_line_style(FL_SOLID);
   }
-  else
-    fl_rectf(iX, y, tableWidth - hScroll->value(), rowHeight, selection_color());
+  else {
+    if (Fl::focus() == this) {
+      fl_rectf(iX, y, tableWidth - hScroll->value(), rowHeight, selection_color());
+      fl_color(FL_FOREGROUND_COLOR);
 
-  fl_color(FL_FOREGROUND_COLOR);
+      // Draw focus
+      fl_line_style(FL_DOT);
+      fl_rect(iX, y, tableWidth - hScroll->value(), rowHeight);
+      fl_line_style(FL_SOLID);
+    }
+    else
+      fl_rectf(iX, y, tableWidth - hScroll->value(), rowHeight, selection_color());
+
+    fl_color(fl_contrast(FL_FOREGROUND_COLOR, selection_color()));
+  }
+
 
   // Get color from highlighter.
   Fl_Color color;
