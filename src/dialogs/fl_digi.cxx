@@ -163,7 +163,7 @@ Fl_Input2			*inpLoc;
 Fl_Input2			*inpState;
 Fl_Input2			*inpCountry;
 Fl_Input2			*inpSerNo;
-Fl_Output			*outSerNo;
+Fl_Input2			*outSerNo;
 Fl_Input2			*inpXchg1;
 Fl_Input2			*inpXchg2;
 Fl_Input2			*inpXchg3;
@@ -1205,7 +1205,7 @@ void cb_mnuViewer(Fl_Menu_ *, void *) {
 	openViewer();
 }
 
-void cb_mnuContest(Fl_Menu_ *, void *) {
+void cb_mnuContest(Fl_Menu_ *m, void *) {
 	if (QsoInfoFrame1A->visible()) {
 		QsoInfoFrame1A->hide();
 		QsoInfoFrame1B->show();
@@ -1213,6 +1213,7 @@ void cb_mnuContest(Fl_Menu_ *, void *) {
 		QsoInfoFrame1B->hide();
 		QsoInfoFrame1A->show();
 	}
+	progStatus.contest = m->mvalue()->value();
 }
 
 void cb_mnuPicViewer(Fl_Menu_ *, void *) {
@@ -1403,7 +1404,7 @@ void status_cb(Fl_Widget *b, void *arg)
                 if (!quick_change)
                         return;
                 const Fl_Menu_Item *m = quick_change->popup(Fl::event_x(), Fl::event_y());
-                if (m && m->callback_)
+                if (m && m->callback())
                         m->do_callback(0);
         }
 
@@ -1576,6 +1577,7 @@ bool clean_exit(void) {
 #define VIEW_MLABEL _("View")
 #define MFSK_IMAGE_MLABEL _("MFSK Image")
 #define CONTEST_MLABEL _("Contest")
+#define CONTEST_FIELDS_MLABEL _("Contest fields")
 
 Fl_Menu_Item menu_[] = {
 {_("&Files"), 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
@@ -1711,6 +1713,7 @@ Fl_Menu_Item menu_[] = {
 { make_icon_label(_("Sound Card"), audio_card_icon), 0, (Fl_Callback*)cb_mnuConfigSoundCard, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("IDs")), 0,  (Fl_Callback*)cb_mnuConfigID, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Misc")), 0,  (Fl_Callback*)cb_mnuConfigMisc, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(CONTEST_MLABEL), 0,  (Fl_Callback*)cb_mnuConfigContest, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("QRZ"), net_icon), 0,  (Fl_Callback*)cb_mnuConfigQRZ, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Save Config"), save_icon), 0, (Fl_Callback*)cb_mnuSaveConfig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
@@ -1721,13 +1724,7 @@ Fl_Menu_Item menu_[] = {
 { make_icon_label(_("PSK Browser")), 0, (Fl_Callback*)cb_mnuViewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(RIGCONTROL_MLABEL, multimedia_player_icon), 0, (Fl_Callback*)cb_mnuRig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Logbook")), 0, (Fl_Callback*)cb_mnuShowLogbook, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-
-{0,0,0,0,0,0,0,0,0},
-
-{ CONTEST_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ _("On/Off"), 0, (Fl_Callback*)cb_mnuContest, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ _("Config"), 0,  (Fl_Callback*)cb_mnuConfigContest, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-
+{ CONTEST_FIELDS_MLABEL, 0, (Fl_Callback*)cb_mnuContest, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
@@ -2053,11 +2050,6 @@ void create_fl_digi_main() {
 			}
 			mnu->menu(menu_);
 
-			if (progStatus.LOGenabled) {
-				Fl_Menu_Item* m = getMenuItem(LOG_TO_FILE_MLABEL);
-				if (m) m->set();
-			}
-
 			// reset the message dialog font
 			fl_message_font(FL_HELVETICA, FL_NORMAL_SIZE);
 
@@ -2349,10 +2341,11 @@ void create_fl_digi_main() {
 
 					Fl_Box *fm7box = new Fl_Box(rightof(inpSerNo) + pad, y3, w_fm6, qh - pad, _("#Out"));
 					fm7box->align(FL_ALIGN_INSIDE);
-					outSerNo = new Fl_Output(rightof(fm7box), y3, w_SerNo, qh - pad, "");
+					outSerNo = new Fl_Input2(rightof(fm7box), y3, w_SerNo, qh - pad, "");
 					outSerNo->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 					outSerNo->tooltip(_("Sent serial number (read only)"));
-					
+					outSerNo->type(FL_NORMAL_OUTPUT);
+
 					Fl_Box *fm8box = new Fl_Box(rightof(outSerNo) + pad, y3, w_fm5, qh - pad, _("X1"));
 					fm7box->align(FL_ALIGN_INSIDE);
 					inpXchg1 = new Fl_Input2(rightof(fm8box), y3, w_Xchg, qh - pad, "");
@@ -2685,6 +2678,24 @@ void create_fl_digi_main() {
 
 	// ztimer must be run by FLTK's timeout handler
 	Fl::add_timeout(0.0, ztimer, (void*)true);
+
+	// Set the state of toggle menu items
+	struct {
+		bool var; const char* label;
+	} toggles[] = {
+		{ progStatus.LOGenabled, LOG_TO_FILE_MLABEL },
+		{ progStatus.contest, CONTEST_FIELDS_MLABEL }
+	};
+	Fl_Menu_Item* toggle;
+	for (size_t i = 0; i < sizeof(toggles)/sizeof(*toggles); i++) {
+		if (toggles[i].var && (toggle = getMenuItem(toggles[i].label))) {
+			toggle->set();
+			if (toggle->callback()) {
+				mnu->value(toggle);
+				toggle->do_callback(reinterpret_cast<Fl_Widget*>(mnu));
+			}
+		}
+	}
 }
 
 void put_freq(double frequency)

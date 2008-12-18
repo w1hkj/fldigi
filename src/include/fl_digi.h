@@ -80,7 +80,7 @@ extern Fl_Input2		*inpQth;
 extern Fl_Input2		*inpState;
 extern Fl_Input2		*inpCountry;
 extern Fl_Input2		*inpSerNo;
-extern Fl_Output		*outSerNo;
+extern Fl_Input2		*outSerNo;
 extern Fl_Input2		*inpXchg1;
 extern Fl_Input2		*inpXchg2;
 extern Fl_Input2		*inpXchg3;

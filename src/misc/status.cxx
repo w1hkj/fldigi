@@ -74,7 +74,8 @@ status progStatus = {
 	"macros.mdf",		// string LastMacroFile;
 	false,			// bool spot_recv
 	false,			// bool spot_log
-	
+	false,			// bool contest
+
 	50,					// int logbook_x;
 	50,					// int logbook_y;
 	380,				// int logbook_w;
@@ -186,7 +187,9 @@ void status::saveLastState()
 
 	spref.set("spot_recv", spot_recv);
 	spref.set("spot_log", spot_recv);
-	
+
+	spref.set("contest", contest);
+
 	spref.set("logbook_x", logbook_x);
 	spref.set("logbook_y", logbook_y);
 	spref.set("logbook_w", logbook_w);
@@ -266,7 +269,9 @@ void status::loadLastState()
 
 	spref.get("spot_recv", i, i); spot_recv = i;
 	spref.get("spot_log", i, i); spot_log = i;
-	
+
+	spref.get("contest", i, i); contest = i;
+
 	spref.get("logbook_x", logbook_x, logbook_x);
 	spref.get("logbook_y", logbook_y, logbook_y);
 	spref.get("logbook_w", logbook_w, logbook_w);

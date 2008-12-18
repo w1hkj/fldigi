@@ -40,7 +40,8 @@ struct status {
 	string	LastMacroFile;
 	bool	spot_recv;
 	bool	spot_log;
-	
+	bool	contest;
+
 	int		logbook_x;
 	int		logbook_y;
 	int		logbook_w;
