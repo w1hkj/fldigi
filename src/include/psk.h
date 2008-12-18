@@ -31,6 +31,8 @@
 #include "filters.h"
 #include "pskcoeff.h"
 #include "pskvaricode.h"
+#include "viewpsk.h"
+#include "pskeval.h"
 
 //=====================================================================
 #define	PskSampleRate	(8000)
@@ -86,6 +88,9 @@ private:
 	int				dcdbits;
 	complex			quality;
 	int				acquire;
+
+	viewpsk*		pskviewer;
+	pskeval*		evalpsk;
 
 	void			rx_symbol(complex symbol);
 	void 			rx_bit(int bit);

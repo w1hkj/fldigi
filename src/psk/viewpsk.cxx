@@ -43,20 +43,20 @@
 #include "qrunner.h"
 
 extern waterfall *wf;
-extern pskeval *evalpsk;
 
 //=====================================================================
 // Change the following for DCD low pass filter adjustment
 #define SQLCOEFF 0.01
 //=====================================================================
 
-viewpsk::viewpsk(trx_mode pskmode)
+viewpsk::viewpsk(pskeval* eval, trx_mode pskmode)
 {
 	for (int i = 0; i < MAXCHANNELS; i++) {
 		fir1[i] = (C_FIR_filter *)0;
 		fir2[i] = (C_FIR_filter *)0;
 	}
-	
+
+	evalpsk = eval;
 	viewmode = MODE_PREV;	
 	restart(pskmode);
 }

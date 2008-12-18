@@ -29,6 +29,7 @@
 #include "trx.h"
 #include "filters.h"
 #include "fldigi-config.h"
+#include "pskeval.h"
 
 //=====================================================================
 #define	VPSKSAMPLERATE	(8000)
@@ -69,6 +70,8 @@ private:
 	time_t			now;
 	time_t			timeout[MAXCHANNELS];
 
+	pskeval*		evalpsk;
+
 	void			rx_symbol(int ch, complex symbol);
 	void 			rx_bit(int ch, int bit);
 
@@ -76,7 +79,7 @@ private:
 	void			afc(int);
 	
 public:
-	viewpsk(trx_mode mode);
+	viewpsk(pskeval* eval, trx_mode mode);
 	~viewpsk();
 	void init();
 	void restart(trx_mode mode);

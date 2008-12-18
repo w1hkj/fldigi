@@ -60,7 +60,6 @@ extern waterfall *wf;
 
 char pskmsg[80];
 viewpsk *pskviewer = (viewpsk *)0;
-pskeval *evalpsk = (pskeval *)0;
 
 void psk::tx_init(SoundBase *sc)
 {
@@ -92,9 +91,7 @@ void psk::rx_init()
 
 void psk::restart()
 {
-	if (!pskviewer) pskviewer = new viewpsk(mode);
-	else		    pskviewer->restart(mode);
-	if (!evalpsk) evalpsk = new pskeval;
+	pskviewer->restart(mode);
 	evalpsk->setbw(bandwidth);
 }
 
@@ -118,6 +115,10 @@ psk::~psk()
 	if (fir2) delete fir2;
 	if (snfilt) delete snfilt;
 	if (imdfilt) delete imdfilt;
+	if (::pskviewer == pskviewer)
+		::pskviewer = 0;
+	delete pskviewer;
+	delete evalpsk;
 }
 
 psk::psk(trx_mode pskmode) : modem()
@@ -235,7 +236,10 @@ psk::psk(trx_mode pskmode) : modem()
 		syncbuf[i] = 0.0;
 	E1 = E2 = E3 = 0.0;
 	acquire = 0;
-	
+
+	evalpsk = new pskeval;
+	::pskviewer = pskviewer = new viewpsk(evalpsk, mode);
+
 	init();
 }
 
