@@ -115,19 +115,18 @@ public:
 
 protected:
 	enum { RX_MENU_QRZ_THIS, RX_MENU_CALL, RX_MENU_NAME, RX_MENU_QTH,
-	       RX_MENU_STATE, RX_MENU_PROVINCE, 
-	       RX_MENU_COUNTRY, RX_MENU_LOC, RX_MENU_RST_IN, 
-	       RX_MENU_SERIAL, RX_MENU_X1, RX_MENU_X2, RX_MENU_X3,
-	       RX_MENU_DIV, RX_MENU_COPY,
-	       RX_MENU_CLEAR, RX_MENU_SELECT_ALL,
+	       RX_MENU_STATE, RX_MENU_PROVINCE,RX_MENU_COUNTRY, RX_MENU_LOC,
+	       RX_MENU_RST_IN, RX_MENU_SERIAL, RX_MENU_X1, RX_MENU_X2, RX_MENU_X3,
+	       RX_MENU_DIV, RX_MENU_COPY, RX_MENU_CLEAR, RX_MENU_SELECT_ALL,
 #if 0 //#ifndef NDEBUG
                RX_MENU_READ,
 #endif
-               RX_MENU_SAVE, RX_MENU_WRAP };
+               RX_MENU_SAVE, RX_MENU_QUICK_ENTRY, RX_MENU_WRAP };
 
 	void		handle_clickable(int x, int y);
 	void		handle_qsy(int start, int end);
 	void		handle_qso_data(int start, int end);
+	void		handle_context_menu(void);
 	virtual void	menu_cb(int val);
 	static void	changed_cb(int pos, int nins, int ndel, int nsty,
 				   const char *dtext, void *arg);
@@ -166,8 +165,8 @@ public:
 	int		nextChar(void);
 
 protected:
-	enum { TX_MENU_TX, TX_MENU_RX, TX_MENU_MFSK16_IMG, TX_MENU_CLEAR,
-	       TX_MENU_CUT, TX_MENU_COPY, TX_MENU_PASTE, TX_MENU_READ,
+	enum { TX_MENU_TX, TX_MENU_ABORT, TX_MENU_RX, TX_MENU_MFSK16_IMG,
+	       TX_MENU_CLEAR, TX_MENU_CUT, TX_MENU_COPY, TX_MENU_PASTE, TX_MENU_READ,
 	       TX_MENU_WRAP
 	};
 	int		handle_key(int key);
@@ -175,6 +174,7 @@ protected:
 	int		handle_key_ascii(int key);
 	int		handle_dnd_drag(void);
 	int		handle_dnd_drop(void);
+	void		handle_context_menu(void);
 	virtual void	menu_cb(int val);
 	static void	changed_cb(int pos, int nins, int ndel, int nsty,
 				   const char *dtext, void *arg);

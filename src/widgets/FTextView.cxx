@@ -54,6 +54,7 @@
 #include "dxcc.h"
 #include "locator.h"
 #include "logsupport.h"
+#include "status.h"
 
 #include "debug.h"
 
@@ -394,7 +395,7 @@ void FTextBase::reset_styles(int set)
 #endif
 
 Fl_Menu_Item FTextView::view_menu[] = {
-	{ make_icon_label(LOOKUP_SYMBOL "&Look up call", net_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(LOOKUP_SYMBOL "&Look up call", net_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ make_icon_label(ENTER_SYMBOL "&Call", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(ENTER_SYMBOL "&Name", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(ENTER_SYMBOL "QT&H", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
@@ -415,6 +416,7 @@ Fl_Menu_Item FTextView::view_menu[] = {
         { "(debug) &Append file...", 0, 0, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL },
 #endif
 	{ make_icon_label("Save &as...", save_as_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ "Quick entry",      0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL },
 	{ "Word &wrap",       0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL },
 	{ 0 }
 };
@@ -442,10 +444,12 @@ FTextView::FTextView(int x, int y, int w, int h, const char *l)
 	// disable some keybindings that are not allowed in FTextView buffers
 	change_keybindings();
 
-	if (!view_init)
+	if (!view_init) {
 		for (int i = 0; i < view_menu->size() - 1; i++)
 			if (view_menu[i].labeltype() == _FL_MULTI_LABEL)
 				set_icon_label(&view_menu[i]);
+		view_menu[RX_MENU_QUICK_ENTRY].clear();
+	}
 	view_init = true;
 }
 
@@ -484,24 +488,11 @@ int FTextView::handle(int event)
 				handle_qso_data(Fl::event_x() - x(), Fl::event_y() - y());
 			return 1;
  		case FL_RIGHT_MOUSE:
-  			break;
+			handle_context_menu();
+			return 1;
  		default:
  			goto out;
  		}
-
-		// mouse-3 handling: enable/disable menu items and display popup
-		set_active(&view_menu[RX_MENU_COPY], tbuf->selected());
-		set_active(&view_menu[RX_MENU_CLEAR], tbuf->length());
-		set_active(&view_menu[RX_MENU_SELECT_ALL], tbuf->length());
-		set_active(&view_menu[RX_MENU_SAVE], tbuf->length());
-		if (wrap)
-			view_menu[RX_MENU_WRAP].flags |= FL_MENU_VALUE;
-		else
-			view_menu[RX_MENU_WRAP].flags &= ~FL_MENU_VALUE;
-
-		context_menu = progdefaults.QRZ ? view_menu : view_menu + 1;
-		show_context_menu();
-		return 1;
 		break;
 	case FL_DRAG:
 		if (Fl::event_button() != FL_LEFT_MOUSE)
@@ -696,15 +687,43 @@ void FTextView::handle_qso_data(int start, int end)
 	free(s);
 }
 
+void FTextView::handle_context_menu(void)
+{
+	// toggle visibility of quick entry items
+	bool v;
+	v = view_menu[RX_MENU_QUICK_ENTRY].value();
+	for (size_t i = RX_MENU_CALL; i <= RX_MENU_RST_IN; i++)
+		v ? view_menu[i].show() : view_menu[i].hide();
+
+	set_active(&view_menu[RX_MENU_COPY], tbuf->selected());
+	set_active(&view_menu[RX_MENU_CLEAR], tbuf->length());
+	set_active(&view_menu[RX_MENU_SELECT_ALL], tbuf->length());
+	set_active(&view_menu[RX_MENU_SAVE], tbuf->length());
+	if (wrap)
+		view_menu[RX_MENU_WRAP].set();
+	else
+		view_menu[RX_MENU_WRAP].clear();
+
+	// toggle visibility of contest items
+	for (size_t i = RX_MENU_SERIAL; i <= RX_MENU_X3; i++)
+		if (progStatus.contest)
+			view_menu[i].show();
+		else
+			view_menu[i].hide();
+
+	if (progdefaults.QRZ != QRZNONE)
+		view_menu[RX_MENU_QRZ_THIS].show();
+	else
+		view_menu[RX_MENU_QRZ_THIS].hide();
+	show_context_menu();
+}
+
 /// The context menu handler
 ///
 /// @param val 
 ///
 void FTextView::menu_cb(int val)
 {
-	if (progdefaults.QRZ == 0)
-		++val;
-
 	Fl_Input* input = 0;
 	switch (val) {
 	case RX_MENU_QRZ_THIS:
@@ -727,18 +746,18 @@ void FTextView::menu_cb(int val)
 	case RX_MENU_PROVINCE:
 		input = inpVEprov;
 		break;
-	case RX_MENU_SERIAL:
-		input = inpSerNo;
+	case RX_MENU_COUNTRY:
+		input = inpCountry;
 		break;
 	case RX_MENU_LOC:
 		input = inpLoc;
 		break;
-	case RX_MENU_COUNTRY:
-		input = inpCountry;
-		break;
-		
 	case RX_MENU_RST_IN:
 		input = inpRstIn;
+		break;
+
+	case RX_MENU_SERIAL:
+		input = inpSerNo;
 		break;
 	case RX_MENU_X1:
 		input = inpXchg1;
@@ -780,8 +799,12 @@ void FTextView::menu_cb(int val)
 		saveFile();
 		break;
 
+	case RX_MENU_QUICK_ENTRY:
+		view_menu[val].flags ^= FL_MENU_VALUE;
+		break;
+
 	case RX_MENU_WRAP:
-		view_menu[RX_MENU_WRAP].flags ^= FL_MENU_VALUE;
+		view_menu[val].flags ^= FL_MENU_VALUE;
 		wrap_mode((wrap = !wrap), wrap_col);
 		show_insert_position();
 		break;
@@ -912,7 +935,8 @@ void FTextView::dxcc_tooltip(void* obj)
 
 
 Fl_Menu_Item FTextEdit::edit_menu[] = {
-	{ "txabort" },
+	{ make_icon_label("&Transmit", tx_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label("&Abort", process_stop_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label("&Receive", rx_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label("Send &image...", image_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ make_icon_label("C&lear", edit_clear_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
@@ -921,11 +945,6 @@ Fl_Menu_Item FTextEdit::edit_menu[] = {
 	{ make_icon_label("&Paste", edit_paste_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label("Insert &file...", file_open_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ "Word &wrap",		0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL } ,
-	{ 0 }
-};
-Fl_Menu_Item edit_txabort[] = {
-	{ make_icon_label("&Transmit", tx_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label("&Abort", process_stop_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ 0 }
 };
 static bool edit_init = false;
@@ -953,9 +972,6 @@ FTextEdit::FTextEdit(int x, int y, int w, int h, const char *l)
 		for (int i = 0; i < edit_menu->size() - 1; i++)
 			if (edit_menu[i].labeltype() == _FL_MULTI_LABEL)
 				set_icon_label(&edit_menu[i]);
-		for (int i = 0; i < edit_txabort->size() - 1; i++)
-			if (edit_txabort[i].labeltype() == _FL_MULTI_LABEL)
-				set_icon_label(&edit_txabort[i]);
 	}
 	edit_init = true;
 }
@@ -995,40 +1011,18 @@ int FTextEdit::handle(int event)
 	case FL_PUSH:
 	{
 		int eb = Fl::event_button();
-		if (eb == FL_RIGHT_MOUSE)
-			break;
+		if (eb == FL_RIGHT_MOUSE) {
+			handle_context_menu();
+			return 1;
+		}
 		else if (eb == FL_MIDDLE_MOUSE && xy_to_position(Fl::event_x(), Fl::event_y(), CHARACTER_POS) < txpos)
 			return 1; // ignore mouse2 text pastes inside the transmitted text
 	}
 	default:
-		return FTextBase::handle(event);
+		break;
 	}
 
-	// handle a right click
-	if (trx_state == STATE_RX)
-		memcpy(&edit_menu[TX_MENU_TX], &edit_txabort[0], sizeof(edit_menu[TX_MENU_TX]));
-	else
-		memcpy(&edit_menu[TX_MENU_TX], &edit_txabort[1], sizeof(edit_menu[TX_MENU_TX]));
-	set_active(&edit_menu[TX_MENU_TX], wf->xmtrcv->active());
-
-	set_active(&edit_menu[TX_MENU_RX], trx_state != STATE_RX);
-
-	bool modify_text_ok = insert_position() >= txpos;
-	bool selected = tbuf->selected();
-	set_active(&edit_menu[TX_MENU_MFSK16_IMG], active_modem->get_cap() & modem::CAP_IMG);
-	set_active(&edit_menu[TX_MENU_CLEAR], tbuf->length());
-	set_active(&edit_menu[TX_MENU_CUT], selected && modify_text_ok);
-	set_active(&edit_menu[TX_MENU_COPY], selected);
-	set_active(&edit_menu[TX_MENU_PASTE], modify_text_ok);
-	set_active(&edit_menu[TX_MENU_READ], modify_text_ok);
-
-	if (wrap)
-		edit_menu[TX_MENU_WRAP].flags |= FL_MENU_VALUE;
-	else
-		edit_menu[TX_MENU_WRAP].flags &= ~FL_MENU_VALUE;
-
-	show_context_menu();
-	return 1;
+	return FTextBase::handle(event);
 }
 
 /// @see FTextView::add
@@ -1128,8 +1122,8 @@ int FTextEdit::handle_key(int key)
 	{
 		static time_t t[2] = { 0, 0 };
 		static unsigned char i = 0;
-		if (t[i] == time(&t[!i])) { // two presses in a second: reset modem
-			abort_tx();
+		if (t[i] == time(&t[!i])) { // two presses in a second: abort transmission
+			menu_cb(TX_MENU_ABORT);
 			t[i = !i] = 0;
 			return 1;
 		}
@@ -1354,6 +1348,43 @@ int FTextEdit::handle_dnd_drop(void)
 #endif
 }
 
+/// Handles mouse-3 clicks by displaying the context menu
+///
+/// @param val 
+///
+void FTextEdit::handle_context_menu(void)
+{
+	// adjust Abort/Transmit/Receive menu items
+	switch (trx_state) {
+	case STATE_TX: case STATE_TUNE:
+		edit_menu[TX_MENU_TX].hide();
+		edit_menu[TX_MENU_ABORT].show();
+		set_active(&edit_menu[TX_MENU_RX], true);
+		break;
+	default:
+		edit_menu[TX_MENU_TX].show();
+		edit_menu[TX_MENU_ABORT].hide();
+		set_active(&edit_menu[TX_MENU_RX], false);
+		break;
+	}
+
+	bool modify_text_ok = insert_position() >= txpos;
+	bool selected = tbuf->selected();
+	set_active(&edit_menu[TX_MENU_MFSK16_IMG], active_modem->get_cap() & modem::CAP_IMG);
+	set_active(&edit_menu[TX_MENU_CLEAR], tbuf->length());
+	set_active(&edit_menu[TX_MENU_CUT], selected && modify_text_ok);
+	set_active(&edit_menu[TX_MENU_COPY], selected);
+	set_active(&edit_menu[TX_MENU_PASTE], modify_text_ok);
+	set_active(&edit_menu[TX_MENU_READ], modify_text_ok);
+
+	if (wrap)
+		edit_menu[TX_MENU_WRAP].set();
+	else
+		edit_menu[TX_MENU_WRAP].clear();
+
+	show_context_menu();
+}
+
 /// The context menu handler
 ///
 /// @param val 
@@ -1362,16 +1393,14 @@ void FTextEdit::menu_cb(int val)
 {
   	switch (val) {
   	case TX_MENU_TX:
- 		if (trx_state == STATE_RX) {
- 			active_modem->set_stopflag(false);
- 			start_tx();
- 		}
- 		else {
+		active_modem->set_stopflag(false);
+		start_tx();
+		break;
+	case TX_MENU_ABORT:
 #ifndef NDEBUG
-			put_status("Don't panic!", 1.0);
+		put_status("Don't panic!", 1.0);
 #endif
- 			abort_tx();
-		}
+		abort_tx();
   		break;
   	case TX_MENU_RX:
  		if (trx_state == STATE_TX) {
@@ -1587,9 +1616,9 @@ int FTextLog::handle(int event)
 		set_active(&log_menu[LOG_MENU_CLEAR], tbuf->length());
 		set_active(&log_menu[LOG_MENU_COPY], tbuf->selected());
 		if (wrap)
-			log_menu[LOG_MENU_WRAP].flags |= FL_MENU_VALUE;
+			log_menu[LOG_MENU_WRAP].set();
 		else
-			log_menu[LOG_MENU_WRAP].flags &= ~FL_MENU_VALUE;
+			log_menu[LOG_MENU_WRAP].clear();
 
 		show_context_menu();
 		return 1;
