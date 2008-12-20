@@ -32,7 +32,51 @@
 #include "configuration.h"
 #include "status.h"
 
-//static char rttymsg[80];
+//=====================================================================
+// Baudot support
+//=====================================================================
+
+static unsigned char letters[32] = {
+	'\0',	'E',	'\n',	'A',	' ',	'S',	'I',	'U',
+	'\r',	'D',	'R',	'J',	'N',	'F',	'C',	'K',
+	'T',	'Z',	'L',	'W',	'H',	'Y',	'P',	'Q',
+	'O',	'B',	'G',	'·',	'M',	'X',	'V',	'·'
+};
+
+#if 0
+/*
+ * ITA-2 version of the figures case.
+ */
+static unsigned char figures[32] = {
+	'\0',	'3',	'\n',	'-',	' ',	'\'',	'8',	'7',
+	'\r',	'·',	'4',	'\a',	',',	'·',	':',	'(',
+	'5',	'+',	')',	'2',	'·',	'6',	'0',	'1',
+	'9',	'?',	'·',	'·',	'.',	'/',	'=',	'·'
+};
+#endif
+#if 1
+/*
+ * U.S. version of the figures case.
+ */
+static unsigned char figures[32] = {
+	'\0',	'3',	'\n',	'-',	' ',	'\a',	'8',	'7',
+	'\r',	'$',	'4',	'\'',	',',	'!',	':',	'(',
+	'5',	'"',	')',	'2',	'#',	'6',	'0',	'1',
+	'9',	'?',	'&',	'·',	'.',	'/',	';',	'·'
+};
+#endif
+#if 0
+/*
+ * A mix of the two. This is what seems to be what people actually use.
+ */
+static unsigned char figures[32] = {
+	'\0',	'3',	'\n',	'-',	' ',	'\'',	'8',	'7',
+	'\r',	'$',	'4',	'\a',	',',	'!',	':',	'(',
+	'5',	'+',	')',	'2',	'#',	'6',	'0',	'1',
+	'9',	'?',	'&',	'·',	'.',	'/',	'=',	'·'
+};
+#endif
+
 int dspcnt = 0;
 
 
@@ -645,10 +689,16 @@ void rtty::send_char(int c)
 // stop bit(s)
 	send_stop();
 
-	if (nbits == 5)
-		c = baudot_dec(c);
-	if (c)
-		put_echo_char(c);
+	if (nbits == 5) {
+		if (c == 0x1F || c == 0x1B)
+			return;
+		if (txmode == LETTERS)
+			c = letters[c];
+		else
+			c = figures[c];
+		if (c) 
+			put_echo_char(c);
+	}
 }
 
 void rtty::send_idle()
@@ -768,51 +818,6 @@ int rtty::tx_process()
 
 	return 0;
 }
-
-//=====================================================================
-// Baudot support
-//=====================================================================
-
-static unsigned char letters[32] = {
-	'\0',	'E',	'\n',	'A',	' ',	'S',	'I',	'U',
-	'\r',	'D',	'R',	'J',	'N',	'F',	'C',	'K',
-	'T',	'Z',	'L',	'W',	'H',	'Y',	'P',	'Q',
-	'O',	'B',	'G',	'·',	'M',	'X',	'V',	'·'
-};
-
-#if 0
-/*
- * ITA-2 version of the figures case.
- */
-static unsigned char figures[32] = {
-	'\0',	'3',	'\n',	'-',	' ',	'\'',	'8',	'7',
-	'\r',	'·',	'4',	'\a',	',',	'·',	':',	'(',
-	'5',	'+',	')',	'2',	'·',	'6',	'0',	'1',
-	'9',	'?',	'·',	'·',	'.',	'/',	'=',	'·'
-};
-#endif
-#if 1
-/*
- * U.S. version of the figures case.
- */
-static unsigned char figures[32] = {
-	'\0',	'3',	'\n',	'-',	' ',	'\a',	'8',	'7',
-	'\r',	'$',	'4',	'\'',	',',	'!',	':',	'(',
-	'5',	'"',	')',	'2',	'#',	'6',	'0',	'1',
-	'9',	'?',	'&',	'·',	'.',	'/',	';',	'·'
-};
-#endif
-#if 0
-/*
- * A mix of the two. This is what seems to be what people actually use.
- */
-static unsigned char figures[32] = {
-	'\0',	'3',	'\n',	'-',	' ',	'\'',	'8',	'7',
-	'\r',	'$',	'4',	'\a',	',',	'!',	':',	'(',
-	'5',	'+',	')',	'2',	'#',	'6',	'0',	'1',
-	'9',	'?',	'&',	'·',	'.',	'/',	'=',	'·'
-};
-#endif
 
 int rtty::baudot_enc(unsigned char data)
 {
