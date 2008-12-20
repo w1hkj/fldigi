@@ -519,7 +519,19 @@ void startup_modem(modem *m)
 }
 
 void cb_mnuOpenMacro(Fl_Menu_*, void*) {
+	if (macros.changed) {
+		switch (fl_choice(_("Save changed macros?"), _("Cancel"), _("Save"), _("Don't save"))) {
+		case 0:
+			return;
+		case 1:
+			macros.saveMacroFile();
+			// fall through
+		case 2:
+			break;
+		}
+	}
 	macros.openMacroFile();
+	macros.changed = false;
 	restoreFocus();
 }
 
