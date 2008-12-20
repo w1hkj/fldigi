@@ -138,6 +138,11 @@ Change Log:
       54) Added FText country information tooltip.  Tooltip is displayed when
           a mouse over occurs in the Rx pane on a word that qualifies as a
           call sign.
+      55) Corrected behavior of log fields when changing focus.  Enter key in
+          a qso log field restores focus to Tx panel.
+      56) Added option to force qso log "call" to uppercase.
+      57) Fixed RTTY tx character echo when unshift-on-space is selected for tx
+      58) Added check to save modified macros before loading a new macro file.
 
 3.03
       1) Changes to socket server to correct shutdown process
