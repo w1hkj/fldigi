@@ -156,13 +156,14 @@
         ELEM_(int,  wfwidth, "WFWIDTH", 3000)                                           \
         ELEM_(int,  wfheight, "WFHEIGHT", 125)                                          \
         ELEM_(bool, tooltips, "TOOLTIPS", true)                                         \
-        ELEM_(bool, useCheckButtons, "USECHECKBUTTONS", false)				\
+        ELEM_(bool, useCheckButtons, "USECHECKBUTTONS", false)                          \
         ELEM_(bool, NagMe, "NAGME", false)                                              \
         ELEM_(bool, ClearOnSave, "CLEARONSAVE", false)                                  \
         ELEM_(bool, menuicons, "MENUICONS", true)                                       \
         ELEM_(bool, rxtext_clicks_qso_data, "RXTEXTCLICKS", false)                      \
         ELEM_(bool, rxtext_tooltips, "RXTEXTTOOLTIPS", false)                           \
         ELEM_(bool, autofill_qso_fields, "AUTOFILLQSO", false)                          \
+        ELEM_(bool, calluppercase, "CALLUPPERCASE", false)                              \
 /* QRZ */                                                                               \
         ELEM_(int, QRZ, "QRZTYPE", 0) /* Not available */                               \
         ELEM_(std::string, QRZpathname, "QRZPATHNAME", "")                              \

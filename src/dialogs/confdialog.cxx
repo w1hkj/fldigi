@@ -146,6 +146,13 @@ static void cb_btnAutoFillQSO(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnCallUpperCase=(Fl_Check_Button *)0;
+
+static void cb_btnCallUpperCase(Fl_Check_Button* o, void*) {
+  progdefaults.calluppercase = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabWfallRestart=(Fl_Group *)0;
 
 Fl_Counter *cntrWfwidth=(Fl_Counter *)0;
@@ -2059,6 +2066,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { tabOperator = new Fl_Group(0, 25, 500, 345, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2127,11 +2135,10 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         tabOperator->end();
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 500, 345, _("UI"));
-        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 500, 345);
           tabsUI->selection_color(FL_LIGHT1);
           { tabUserInterface = new Fl_Group(0, 50, 500, 320, _("General"));
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 256);
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 276);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(15, 70, 120, 20, _("Show tooltips"));
                 btnShowTooltips->down_box(FL_DOWN_BOX);
@@ -2154,19 +2161,19 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 mnuScheme->add("plastic");
                 mnuScheme->value(mnuScheme->find_item(progdefaults.ui_scheme.c_str()));
               } // Fl_Choice* mnuScheme
-              { Fl_Check_Button* o = btnRXClicks = new Fl_Check_Button(15, 247, 305, 20, _("Double-click on RX text enters QSO data"));
+              { Fl_Check_Button* o = btnRXClicks = new Fl_Check_Button(15, 270, 305, 20, _("Double-click on RX text enters QSO data"));
                 btnRXClicks->down_box(FL_DOWN_BOX);
                 btnRXClicks->callback((Fl_Callback*)cb_btnRXClicks);
                 o->value(progdefaults.rxtext_clicks_qso_data);
               } // Fl_Check_Button* btnRXClicks
-              { Fl_Check_Button* o = btnRXTooltips = new Fl_Check_Button(15, 277, 282, 20, _("Show callsign tooltips in received text"));
+              { Fl_Check_Button* o = btnRXTooltips = new Fl_Check_Button(15, 300, 282, 20, _("Show callsign tooltips in received text"));
                 btnRXTooltips->down_box(FL_DOWN_BOX);
                 btnRXTooltips->callback((Fl_Callback*)cb_btnRXTooltips);
                 o->value(progdefaults.rxtext_tooltips);
               } // Fl_Check_Button* btnRXTooltips
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(15, 130, 258, 107, _("QSO logging"));
+            { Fl_Group* o = new Fl_Group(15, 130, 315, 127, _("QSO logging"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
               { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(25, 155, 155, 20, _("Prompt to save log"));
@@ -2174,17 +2181,22 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 btnNagMe->callback((Fl_Callback*)cb_btnNagMe);
                 o->value(progdefaults.NagMe);
               } // Fl_Check_Button* btnNagMe
-              { Fl_Check_Button* o = btnClearOnSave = new Fl_Check_Button(25, 181, 125, 20, _("Clear on save"));
+              { Fl_Check_Button* o = btnClearOnSave = new Fl_Check_Button(25, 180, 125, 20, _("Clear on save"));
                 btnClearOnSave->tooltip(_("Clear log entries after saving or using macro <LOG>"));
                 btnClearOnSave->down_box(FL_DOWN_BOX);
                 btnClearOnSave->callback((Fl_Callback*)cb_btnClearOnSave);
                 o->value(progdefaults.ClearOnSave);
               } // Fl_Check_Button* btnClearOnSave
-              { Fl_Check_Button* o = btnAutoFillQSO = new Fl_Check_Button(25, 207, 225, 20, _("Auto-fill Country and Azimuth"));
+              { Fl_Check_Button* o = btnAutoFillQSO = new Fl_Check_Button(25, 205, 225, 20, _("Auto-fill Country and Azimuth"));
                 btnAutoFillQSO->down_box(FL_DOWN_BOX);
                 btnAutoFillQSO->callback((Fl_Callback*)cb_btnAutoFillQSO);
                 o->value(progdefaults.autofill_qso_fields);
               } // Fl_Check_Button* btnAutoFillQSO
+              { Fl_Check_Button* o = btnCallUpperCase = new Fl_Check_Button(25, 230, 282, 20, _("Convert callsign field to upper case"));
+                btnCallUpperCase->down_box(FL_DOWN_BOX);
+                btnCallUpperCase->callback((Fl_Callback*)cb_btnCallUpperCase);
+                o->value(progdefaults.calluppercase);
+              } // Fl_Check_Button* btnCallUpperCase
               o->end();
             } // Fl_Group* o
             tabUserInterface->end();
@@ -2724,6 +2736,7 @@ an merging"));
                 cntCWdash2dot->type(1);
                 cntCWdash2dot->minimum(2.5);
                 cntCWdash2dot->maximum(4);
+                cntCWdash2dot->step(0.1);
                 cntCWdash2dot->value(3);
                 cntCWdash2dot->callback((Fl_Callback*)cb_cntCWdash2dot);
                 cntCWdash2dot->align(FL_ALIGN_RIGHT);
@@ -2734,6 +2747,7 @@ an merging"));
                 cntCWrisetime->type(1);
                 cntCWrisetime->minimum(0);
                 cntCWrisetime->maximum(15);
+                cntCWrisetime->step(0.1);
                 cntCWrisetime->value(4);
                 cntCWrisetime->callback((Fl_Callback*)cb_cntCWrisetime);
                 cntCWrisetime->align(FL_ALIGN_RIGHT);
@@ -2810,6 +2824,7 @@ an merging"));
                 valDominoEX_BW->type(1);
                 valDominoEX_BW->minimum(1);
                 valDominoEX_BW->maximum(2);
+                valDominoEX_BW->step(0.1);
                 valDominoEX_BW->value(1.5);
                 valDominoEX_BW->callback((Fl_Callback*)cb_valDominoEX_BW);
                 valDominoEX_BW->align(FL_ALIGN_RIGHT);
@@ -2825,6 +2840,7 @@ an merging"));
                 valDomCWI->tooltip(_("CWI detection and suppression"));
                 valDomCWI->type(1);
                 valDomCWI->selection_color(FL_SELECTION_COLOR);
+                valDomCWI->step(0.01);
                 valDomCWI->textsize(14);
                 valDomCWI->callback((Fl_Callback*)cb_valDomCWI);
                 valDomCWI->align(FL_ALIGN_TOP);
@@ -3252,6 +3268,7 @@ an merging"));
                 valTHOR_BW->type(1);
                 valTHOR_BW->minimum(1);
                 valTHOR_BW->maximum(2);
+                valTHOR_BW->step(0.1);
                 valTHOR_BW->value(1.5);
                 valTHOR_BW->callback((Fl_Callback*)cb_valTHOR_BW);
                 valTHOR_BW->align(FL_ALIGN_RIGHT);
@@ -3267,6 +3284,7 @@ an merging"));
                 valThorCWI->tooltip(_("CWI detection and suppression"));
                 valThorCWI->type(1);
                 valThorCWI->selection_color(FL_SELECTION_COLOR);
+                valThorCWI->step(0.01);
                 valThorCWI->textsize(14);
                 valThorCWI->callback((Fl_Callback*)cb_valThorCWI);
                 valThorCWI->align(FL_ALIGN_TOP);
@@ -3767,6 +3785,7 @@ l with your sound hardware."));
               { valPCMvolume = new Fl_Value_Slider(15, 167, 340, 21, _("PCM"));
                 valPCMvolume->type(1);
                 valPCMvolume->selection_color(FL_SELECTION_COLOR);
+                valPCMvolume->step(0.01);
                 valPCMvolume->value(0.8);
                 valPCMvolume->textsize(14);
                 valPCMvolume->callback((Fl_Callback*)cb_valPCMvolume);

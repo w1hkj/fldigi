@@ -69,15 +69,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {386 274 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
+    xywh {574 71 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 500 372} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
-        xywh {0 25 500 345} when 1
+        callback {progdefaults.changed = true;} open
+        xywh {0 25 500 345} when 1 hide
       } {
         Fl_Group {} {
           label Station open
@@ -133,7 +133,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        xywh {0 25 500 345} hide
+        xywh {0 25 500 345}
       } {
         Fl_Tabs tabsUI {open
           xywh {0 25 500 345} selection_color 50
@@ -143,7 +143,7 @@ progdefaults.changed = true;}
             xywh {0 50 500 320}
           } {
             Fl_Group {} {open
-              xywh {5 60 490 256} box ENGRAVED_FRAME
+              xywh {5 60 490 276} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnShowTooltips {
                 label {Show tooltips}
@@ -177,20 +177,20 @@ progdefaults.changed = true;}
                 label {Double-click on RX text enters QSO data}
                 callback {progdefaults.rxtext_clicks_qso_data = o->value();
 progdefaults.changed = true;}
-                xywh {15 247 305 20} down_box DOWN_BOX
+                xywh {15 270 305 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.rxtext_clicks_qso_data);}
               }
               Fl_Check_Button btnRXTooltips {
                 label {Show callsign tooltips in received text}
                 callback {progdefaults.rxtext_tooltips = o->value();
 progdefaults.changed = true;}
-                xywh {15 277 282 20} down_box DOWN_BOX
+                xywh {15 300 282 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.rxtext_tooltips);}
               }
             }
             Fl_Group {} {
               label {QSO logging} open
-              xywh {15 130 258 107} box ENGRAVED_FRAME align 21
+              xywh {15 130 315 127} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnNagMe {
                 label {Prompt to save log}
@@ -203,15 +203,22 @@ progdefaults.changed = true;}
                 label {Clear on save}
                 callback {progdefaults.ClearOnSave=o->value();
 progdefaults.changed = true;}
-                tooltip {Clear log entries after saving or using macro <LOG>} xywh {25 181 125 20} down_box DOWN_BOX
+                tooltip {Clear log entries after saving or using macro <LOG>} xywh {25 180 125 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.ClearOnSave);}
               }
               Fl_Check_Button btnAutoFillQSO {
                 label {Auto-fill Country and Azimuth}
                 callback {progdefaults.autofill_qso_fields = o->value();
 progdefaults.changed = true;}
-                xywh {25 207 225 20} down_box DOWN_BOX
+                xywh {25 205 225 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.autofill_qso_fields);}
+              }
+              Fl_Check_Button btnCallUpperCase {
+                label {Convert callsign field to upper case}
+                callback {progdefaults.calluppercase = o->value();
+progdefaults.changed = true;} selected
+                xywh {25 230 282 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.calluppercase);}
               }
             }
           }
@@ -809,14 +816,14 @@ progdefaults.changed = true;}
                     label {Dash to dot ratio}
                     callback {progdefaults.CWdash2dot=o->value();
 progdefaults.changed = true;}
-                    xywh {211 114 64 20} type Simple align 8 minimum 2.5 maximum 4 value 3
+                    xywh {211 114 64 20} type Simple align 8 minimum 2.5 maximum 4 step 0.1 value 3
                     code0 {o->value(progdefaults.CWdash2dot);}
                   }
                   Fl_Counter cntCWrisetime {
                     label Edge
                     callback {progdefaults.CWrisetime=o->value();
 progdefaults.changed = true;}
-                    tooltip {Leading and trailing edge risetimes (ms)} xywh {15 144 65 21} type Simple align 8 minimum 0 maximum 15 value 4
+                    tooltip {Leading and trailing edge risetimes (ms)} xywh {15 144 65 21} type Simple align 8 minimum 0 maximum 15 step 0.1 value 4
                     code0 {o->value(progdefaults.CWrisetime);}
                   }
                 }
@@ -878,7 +885,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.DOMINOEX_BW = o->value();
 resetDOMEX();
 progdefaults.changed = true;}
-                tooltip {Filter bandwidth relative to signal width} xywh {156 141 63 20} type Simple align 8 minimum 1 maximum 2 value 1.5
+                tooltip {Filter bandwidth relative to signal width} xywh {156 141 63 20} type Simple align 8 minimum 1 maximum 2 step 0.1 value 1.5
                 code0 {o->value(progdefaults.DOMINOEX_BW);}
               }
               Fl_Check_Button chkDominoEX_FEC {
@@ -892,7 +899,7 @@ progdefaults.changed = true;}
                 label {CWI threshold}
                 callback {progdefaults.DomCWI = o->value();
 progdefaults.changed = true;}
-                tooltip {CWI detection and suppression} xywh {15 207 260 20} type Horizontal selection_color 15 align 1 textsize 14
+                tooltip {CWI detection and suppression} xywh {15 207 260 20} type Horizontal selection_color 15 align 1 step 0.01 textsize 14
                 code0 {o->value(progdefaults.DomCWI);}
               }
               Fl_Counter valDominoEX_PATHS {
@@ -1345,7 +1352,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.THOR_BW = o->value();
 resetTHOR();
 progdefaults.changed = true;}
-                tooltip {Filter bandwidth relative to signal width} xywh {156 141 63 20} type Simple align 8 minimum 1 maximum 2 value 1.5
+                tooltip {Filter bandwidth relative to signal width} xywh {156 141 63 20} type Simple align 8 minimum 1 maximum 2 step 0.1 value 1.5
                 code0 {o->value(progdefaults.THOR_BW);}
               }
               Fl_Check_Button valTHOR_SOFT {
@@ -1359,7 +1366,7 @@ progdefaults.changed = true;}
                 label {CWI threshold}
                 callback {progdefaults.ThorCWI = o->value();
 progdefaults.changed = true;}
-                tooltip {CWI detection and suppression} xywh {15 218 260 20} type Horizontal selection_color 15 align 1 textsize 14
+                tooltip {CWI detection and suppression} xywh {15 218 260 20} type Horizontal selection_color 15 align 1 step 0.01 textsize 14
                 code0 {o->value(progdefaults.ThorCWI);}
               }
               Fl_Counter valTHOR_PATHS {
@@ -2152,7 +2159,7 @@ progdefaults.changed = true;}
                 label PCM
                 callback {setPCMvolume(o->value());
 progdefaults.changed = true;}
-                xywh {15 167 340 21} type Horizontal selection_color 15 align 8 value 0.8 textsize 14
+                xywh {15 167 340 21} type Horizontal selection_color 15 align 8 step 0.01 value 0.8 textsize 14
                 code0 {extern void setPCMvolume(double);}
               }
             }

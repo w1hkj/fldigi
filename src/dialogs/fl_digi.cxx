@@ -694,12 +694,14 @@ void cb_init_mode(Fl_Widget *, void *mode)
 }
 
 
-void restoreFocus()
+void restoreFocus(Fl_Widget* w)
 {
-	FL_LOCK_D();
+	if (w && Fl::event_inside(w) && Fl::event() == FL_KEYBOARD) {
+		int k = Fl::event_key();
+		if (k != FL_Enter && k != FL_KP_Enter)
+			return;
+	}
 	TransmitText->take_focus();
-	FL_UNLOCK_D();
-	FL_AWAKE_D();
 }
 
 void macro_cb(Fl_Widget *w, void *v)
@@ -1302,7 +1304,7 @@ void cb_loc(Fl_Widget* w, void*)
 	oktoclear = false;
 
 	if (!inpLoc->size() || !progdefaults.autofill_qso_fields)
-		return;
+		return restoreFocus(w);
 
 	double lon[2], lat[2], distance, azimuth;
 	if (locator2longlat(&lon[0], &lat[0], progdefaults.myLocator.c_str()) == RIG_OK &&
@@ -1316,20 +1318,45 @@ void cb_loc(Fl_Widget* w, void*)
 
 void cb_call(Fl_Widget* w, void*)
 {
+	if (!inpCall->size()) return;
+	
 	oktoclear = false;
 
-	inpTimeOn->value(inpTimeOff->value());
-	if (inpCall->size()) {
-		SearchLastQSO(inpCall->value());
+	int k = Fl::event_key();
+	int ev = Fl::event();
+	if (ev != FL_KEYBOARD || k == FL_Enter || k == FL_KP_Enter || k == FL_Tab) {
+		inpTimeOn->value(inpTimeOff->value());
+
+		if (progdefaults.calluppercase) {
+			int n = inpCall->size();
+			if (n) {
+				char *ucase = new char[n + 1];
+				strcpy(ucase, inpCall->value());
+				for (int i = 0; i < n; i++)
+					ucase[i] = toupper(ucase[i]);
+				inpCall->value(ucase);
+				delete [] ucase;
+			}
+		}
+
 		if (EnableDupCheck)
 			DupCheck(inpCall->value());
+
+		SearchLastQSO(inpCall->value());
+		if (k == FL_Enter || k == FL_KP_Enter)
+			return restoreFocus(w);
+		if (k == FL_Tab)
+			inpName->take_focus();
 	}
 
 	if (!progdefaults.autofill_qso_fields)
 		return;
+//		return restoreFocus(w);
+
 	const struct dxcc* e = dxcc_lookup(inpCall->value());
 	if (!e)
 		return;
+//		return restoreFocus(w);
 
 	double lon, lat, distance, azimuth;
 	if (locator2longlat(&lon, &lat, progdefaults.myLocator.c_str()) == RIG_OK &&
@@ -1341,13 +1368,14 @@ void cb_call(Fl_Widget* w, void*)
 
 	inpCountry->value(e->country);
 	inpCountry->position(0);
+	
+//	restoreFocus(w);
 }
 
 void cb_log(Fl_Widget* w, void*)
 {
 	oktoclear = false;
-	if (w == btnQRZ)
-		restoreFocus();
+	restoreFocus(w);
 }
 
 void qsoClear_cb(Fl_Widget *b, void *)
@@ -1376,7 +1404,7 @@ void qsoSave_cb(Fl_Widget *b, void *)
 void cb_QRZ(Fl_Widget *b, void *)
 {
 	if (!*inpCall->value())
-		return;
+		return restoreFocus();
 
 	switch (Fl::event_button()) {
 	case FL_LEFT_MOUSE:
@@ -1390,6 +1418,7 @@ void cb_QRZ(Fl_Widget *b, void *)
 	default:
 		break;
 	}
+	restoreFocus();
 }
 
 void status_cb(Fl_Widget *b, void *arg)
@@ -2265,6 +2294,7 @@ void create_fl_digi_main() {
 				inpTimeOn = new Fl_Input2(rightof(inpFreq) + pad, y2, w_inpTime, qh - pad, _("On"));
 				inpTimeOn->tooltip("");
 				inpTimeOn->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+				inpTimeOn->type(FL_INT_INPUT);
 
 				inpTimeOff = new Fl_Input2(rightof(inpTimeOn) + pad, y2, w_inpTime, qh - pad, _("Off"));
 				inpTimeOff->tooltip("");
@@ -2274,7 +2304,6 @@ void create_fl_digi_main() {
 				inpCall = new Fl_Input2(rightof(inpTimeOff) + pad, y2, w_inpCall, qh - pad, _("Call"));
 				inpCall->tooltip("");
 				inpCall->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-				inpCall->when(FL_WHEN_CHANGED | FL_WHEN_ENTER_KEY);
 
 				inpName = new Fl_Input2(rightof(inpCall) + pad, y2, w_inpName, qh - pad, _("Name"));
 				inpName->tooltip("");
@@ -2322,7 +2351,6 @@ void create_fl_digi_main() {
 					inpLoc = new Fl_Input2(rightof(fm4box), y3, w_inpLOC, qh - pad, "");
 					inpLoc->tooltip("");
 					inpLoc->align(FL_ALIGN_INSIDE);
-					inpLoc->when(FL_WHEN_CHANGED | FL_WHEN_ENTER_KEY);
 
 					Fl_Box *fm5box = new Fl_Box(rightof(inpLoc), y3, w_fm5, qh - pad, _("Az"));
 					fm5box->align(FL_ALIGN_INSIDE);
@@ -2390,13 +2418,18 @@ void create_fl_digi_main() {
 	
 		Y = Hmenu + Hqsoframe + Hnotes + pad;
 
-		Fl_Widget* logfields[] = { inpName, inpTimeOn, inpRstIn, inpRstOut, 
-				inpQth, inpVEprov, inpCountry, inpAZ, inpNotes,
+		Fl_Widget* logfields[] = { inpCall, inpName, inpTimeOn, inpRstIn, inpRstOut,
+				inpQth, inpVEprov, inpCountry, inpLoc, inpAZ, inpNotes,
 				inpSerNo, inpXchg1, inpXchg1, inpXchg1 };
-		for (size_t i = 0; i < sizeof(logfields)/sizeof(*logfields); i++)
+		for (size_t i = 0; i < sizeof(logfields)/sizeof(*logfields); i++) {
 			logfields[i]->callback(cb_log);
+			logfields[i]->when(FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED | FL_WHEN_ENTER_KEY);
+		}
+// exceptions
 		inpCall->callback(cb_call);
+		inpCall->when(FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED | FL_WHEN_ENTER_KEY | FL_WHEN_RELEASE);
 		inpLoc->callback(cb_loc);
+		inpNotes->when(FL_WHEN_RELEASE);
 
 		int sw = DEFAULT_SW;
 		MixerFrame = new Fl_Group(0,Y,sw, Hrcvtxt + Hxmttxt);
