@@ -1312,7 +1312,6 @@ void Table::scrollTo(int pos) {
   damage(DAMAGE_ROWS);
   if (when() & FL_WHEN_CHANGED)
     do_callback();
-  take_focus ();
 
 }
 

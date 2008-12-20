@@ -1318,7 +1318,7 @@ void cb_loc(Fl_Widget* w, void*)
 
 void cb_call(Fl_Widget* w, void*)
 {
-	if (!inpCall->size()) return;
+	if (!inpCall->size()) return restoreFocus(w);
 	
 	oktoclear = false;
 
@@ -1351,12 +1351,10 @@ void cb_call(Fl_Widget* w, void*)
 
 	if (!progdefaults.autofill_qso_fields)
 		return;
-//		return restoreFocus(w);
 
 	const struct dxcc* e = dxcc_lookup(inpCall->value());
 	if (!e)
 		return;
-//		return restoreFocus(w);
 
 	double lon, lat, distance, azimuth;
 	if (locator2longlat(&lon, &lat, progdefaults.myLocator.c_str()) == RIG_OK &&
@@ -1369,7 +1367,6 @@ void cb_call(Fl_Widget* w, void*)
 	inpCountry->value(e->country);
 	inpCountry->position(0);
 	
-//	restoreFocus(w);
 }
 
 void cb_log(Fl_Widget* w, void*)
@@ -2418,9 +2415,9 @@ void create_fl_digi_main() {
 	
 		Y = Hmenu + Hqsoframe + Hnotes + pad;
 
-		Fl_Widget* logfields[] = { inpCall, inpName, inpTimeOn, inpRstIn, inpRstOut,
-				inpQth, inpVEprov, inpCountry, inpLoc, inpAZ, inpNotes,
-				inpSerNo, inpXchg1, inpXchg1, inpXchg1 };
+		Fl_Widget* logfields[] = { inpCall, inpName, inpTimeOn, inpTimeOff, inpRstIn, inpRstOut,
+				inpQth, inpState, inpVEprov, inpCountry, inpLoc, inpAZ, inpNotes,
+				inpSerNo, outSerNo, inpXchg1, inpXchg2, inpXchg3 };
 		for (size_t i = 0; i < sizeof(logfields)/sizeof(*logfields); i++) {
 			logfields[i]->callback(cb_log);
 			logfields[i]->when(FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED | FL_WHEN_ENTER_KEY);
