@@ -219,6 +219,7 @@ enum State {VIEWREC, NEWREC};
 static State logState = VIEWREC;
 
 void activateButtons() {
+	
 	if (logState == NEWREC) {
 		bNewSave->label ("Save");
 		bUpdateCancel->label ("Cancel");
@@ -233,6 +234,7 @@ void activateButtons() {
 	bDelete->activate();
 	bSearchNext->activate ();
 	bSearchPrev->activate ();
+	wBrowser->take_focus();
 }
 
 void cb_btnNewSave(Fl_Button* b, void* d) {
@@ -253,12 +255,15 @@ void cb_btnUpdateCancel(Fl_Button* b, void* d) {
 	if (logState == NEWREC) {
 		logState = VIEWREC;
 		activateButtons ();
-	} else
+	} else {
 		updateRecord();
+		wBrowser->take_focus();
+	}
 }
 
 void cb_btnDelete(Fl_Button* b, void* d) {
 	deleteRecord();
+	wBrowser->take_focus();
 }
 
 enum sorttype {NONE, SORTCALL, SORTDATE, SORTFREQ, SORTMODE};
@@ -373,6 +378,7 @@ void cb_search(Fl_Widget* w, void*)
 
 	if (wBrowser->search(row, col, rev, str))
 		wBrowser->GotoRow(row);
+	wBrowser->take_focus();
 }
 
 int log_search_handler(int)
