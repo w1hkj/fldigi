@@ -179,7 +179,7 @@ extern void resetOLIVIA();
 extern void resetTHOR();
 extern void resetDOMEX();
 extern void resetSoundCard();
-extern void restoreFocus(Fl_Widget* w = 0);
+extern void restoreFocus();
 extern void setReverse(int);
 extern void clearQSO();
 extern void closeRigDialog();
