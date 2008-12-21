@@ -143,6 +143,9 @@ Change Log:
       56) Added option to force qso log "call" to uppercase.
       57) Fixed RTTY tx character echo when unshift-on-space is selected for tx
       58) Added check to save modified macros before loading a new macro file.
+      59) Added clear logbook fields when qso fields cleared
+      60) Added Load Macro file Rx Panel message whenever a macro file is
+          loaded.
 
 3.03
       1) Changes to socket server to correct shutdown process
