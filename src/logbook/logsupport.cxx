@@ -396,8 +396,6 @@ int log_search_handler(int)
 	default:
 		return 0;
 	}
-
-	inpSearchString->take_focus();
 	return 1;
 }
 
@@ -408,10 +406,10 @@ void clearRecord() {
 	inpCall_log->value ("");
 	inpName_log->value ("");
 	inpDate_log->value (tdy.szDate(2));
-	inpTimeOn_log->value ("0000");
-	inpTimeOff_log->value ("0000");
-	inpRstR_log->value ("599");
-	inpRstS_log->value ("599");
+	inpTimeOn_log->value ("");
+	inpTimeOff_log->value ("");
+	inpRstR_log->value ("");
+	inpRstS_log->value ("");
 	inpFreq_log->value ("");
 	inpMode_log->value ("");
 	inpQth_log->value ("");
@@ -427,6 +425,7 @@ void clearRecord() {
 	inpXchg2_log->value("");
 	inpXchg3_log->value("");
 	inpComment_log->value ("");
+	inpSearchString->value ("");
 	editGroup->show();
 }
 

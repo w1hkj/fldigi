@@ -1394,10 +1394,12 @@ void qsoClear_cb(Fl_Widget *b, void *)
 	if (progdefaults.NagMe) {
 		if (oktoclear || fl_choice(_("Clear log fields?"), _("Cancel"), _("OK"), NULL) == 1) {
 			clearQSO();
+			clearRecord();
 			oktoclear = true;
 		}
 	} else {
 		clearQSO();
+		clearRecord();
 		oktoclear = true;
 	}
 	restoreFocus();
