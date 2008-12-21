@@ -701,6 +701,7 @@ void MACROTEXT::openMacroFile()
 		loadMacros(p);
 		progStatus.LastMacroFile = fl_filename_name(p);
 	}
+	showMacroSet();
 }
 
 void MACROTEXT::saveMacroFile()
@@ -723,6 +724,7 @@ void MACROTEXT::loadnewMACROS(string &s, size_t &i)
 		progStatus.LastMacroFile = fl_filename_name(fname.c_str());
 	}
 	s.replace(i, endbracket - i + 1, "");
+	showMacroSet();
 }
 
 string MACROTEXT::expandMacro(int n)

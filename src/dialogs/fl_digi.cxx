@@ -2056,6 +2056,15 @@ void setTabColors()
 	if (dlgColorFont->visible()) dlgColorFont->redraw();
 }
 
+void showMacroSet() {
+	if (progdefaults.DisplayMacroFilename) {
+		string Macroset = "\n<<<===== Macro File ";
+		Macroset.append(progStatus.LastMacroFile);
+		Macroset.append(" Loaded =====>>>\n");
+		ReceiveText->add(Macroset.c_str());
+	}
+}
+
 void create_fl_digi_main() {
 
 	int Y = 0;
@@ -2489,13 +2498,7 @@ void create_fl_digi_main() {
 			ReceiveText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
 			ReceiveText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
 			ReceiveText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
-			
-			if (progdefaults.DisplayMacroFilename) {
-				string Macroset = "<<<===== Macro File ";
-				Macroset.append(progStatus.LastMacroFile);
-				Macroset.append(" Loaded =====>>>\n\n");
-				ReceiveText->add(Macroset.c_str());
-			}
+			showMacroSet();
 			
 			TiledGroup->add_resize_check(FTextView::wheight_mult_tsize, ReceiveText);
 			FHdisp = new Raster(sw, Y, WNOM-sw, minRxHeight);

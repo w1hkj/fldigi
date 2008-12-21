@@ -167,6 +167,7 @@ extern void show_frequency(long long);
 extern void show_mode(const string& mode);
 extern void show_bw(const string& sWidth);
 extern void show_spot(bool v);
+extern void showMacroSet();
 
 extern void put_WARNstatus(double);
 
