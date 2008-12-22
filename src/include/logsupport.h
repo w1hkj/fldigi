@@ -21,7 +21,7 @@ extern std::string logbook_filename;
 
 extern bool EnableDupCheck;
 
-extern void loadBrowser();
+extern void loadBrowser(bool keep_pos = false);
 
 extern void Export_log();
 extern void cb_SortByCall();

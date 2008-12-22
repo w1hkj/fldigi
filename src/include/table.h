@@ -186,6 +186,7 @@ public:
 
 	void where(int x, int y, int &row, int &column, int &resize);
 	void scrollTo(int pos);
+	int scrollPos() const;
 
 	int columns();
 	int rows();
