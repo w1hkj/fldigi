@@ -2,10 +2,20 @@
 #include <FL/filename.H>
 #include <FL/fl_ask.H>
 
+#include <string>
+#include <iostream>
 
 #include "adif_io.h"
 #include "config.h"
 #include "lgbook.h"
+
+using namespace std;
+
+#ifdef __CYGWIN__
+static const char *szEOL = "\r\n";
+#else
+static const char *szEOL = "\n";
+#endif
 
 // These ADIF fields are a part of the QSO database
     
@@ -160,12 +170,21 @@ void cAdifIO::readFile (const char *fname, cQsoDb *db) {
 
 }
 
-static const char *ADIFHEADER = "\
-File: %s\n\
-<ADIF_VER:%d>%s\n\
-<PROGRAMID:%d>%s\n\
-<PROGRAMVERSION:%d>%s\n\
-<EOH>\n";
+string ADIFHEADER = "";
+
+static void make_adif_header()
+{
+	ADIFHEADER = "File: %s";
+	ADIFHEADER.append(szEOL);
+	ADIFHEADER.append("<ADIF_VER:%d>%s");
+	ADIFHEADER.append(szEOL);
+	ADIFHEADER.append("<PROGRAMID:%d>%s");
+	ADIFHEADER.append(szEOL);
+	ADIFHEADER.append("<PROGRAMVERSION:%d>%s");
+	ADIFHEADER.append(szEOL);
+	ADIFHEADER.append("<EOH>");
+	ADIFHEADER.append(szEOL);
+}
 
 static const char *adifmt = "<%s:%d>%s";
 
@@ -173,12 +192,13 @@ static const char *adifmt = "<%s:%d>%s";
 
 
 int cAdifIO::writeFile (const char *fname, cQsoDb *db) {
+	if (ADIFHEADER.empty()) make_adif_header();
 // open the adif file
     cQsoRec *rec;
     adiFile = fopen (fname, "w");
     if (!adiFile)
         return 1;
-    fprintf (adiFile, ADIFHEADER,
+    fprintf (adiFile, ADIFHEADER.c_str(),
              fl_filename_name(fname),
              strlen(ADIF_VERS), ADIF_VERS,
              strlen(PACKAGE_NAME), PACKAGE_NAME,
@@ -256,7 +276,8 @@ int cAdifIO::writeFile (const char *fname, cQsoDb *db) {
         	
             rec->putField(EXPORT,"");
             db->qsoUpdRec(i, rec);
-            fprintf(adiFile, "<EOR>\n");
+            fprintf(adiFile, "<EOR>");
+            fprintf(adiFile, szEOL);
         }
     }    
     fclose (adiFile);
@@ -266,13 +287,14 @@ int cAdifIO::writeFile (const char *fname, cQsoDb *db) {
 // write ALL records to the common log
 
 int cAdifIO::writeLog (const char *fname, cQsoDb *db) {
+	if (ADIFHEADER.empty()) make_adif_header();
 // open the adif file
     char *szFld;
     cQsoRec *rec;
     adiFile = fopen (fname, "w");
     if (!adiFile)
         return 1;
-    fprintf (adiFile, ADIFHEADER,
+    fprintf (adiFile, ADIFHEADER.c_str(),
              fl_filename_name(fname),
              strlen(ADIF_VERS), ADIF_VERS,
              strlen(PACKAGE_NAME), PACKAGE_NAME,
@@ -287,7 +309,8 @@ int cAdifIO::writeLog (const char *fname, cQsoDb *db) {
                     fields[j].name, strlen(szFld), szFld);
         }
         db->qsoUpdRec(i, rec);
-        fprintf(adiFile, "<EOR>\n");
+        fprintf(adiFile, "<EOR>");
+        fprintf(adiFile, szEOL);
     }
     fclose (adiFile);
     return 0;

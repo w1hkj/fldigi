@@ -9,6 +9,12 @@ using namespace std;
 #include "textio.h"
 #include "lgbook.h"
 
+#ifdef __CYGWIN__
+static const char *szEOL = "\r\n";
+#else
+static const char *szEOL = "\n";
+#endif
+
 char * cTextFile::adif_to_date( char *s) {
 static char date[9];
 	strcpy(date, "  /  /  ");
@@ -54,7 +60,7 @@ void cTextFile::writeCSVHeader(FILE *txtFile)
 	if (btnSelectXchg1->value())     fprintf (txtFile, "XCHG1\t");
 	if (btnSelectXchg2->value())     fprintf (txtFile, "XCHG2\t");
 	if (btnSelectXchg3->value())     fprintf (txtFile, "XCHG3");
-	fprintf (txtFile, "\n");
+	fprintf (txtFile, szEOL);
 }
 
 int cTextFile::writeCSVFile (const char *fname, cQsoDb *db) {
@@ -115,7 +121,7 @@ int cTextFile::writeCSVFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, "%s\t", pRec->getField(XCHG2));
 				if (btnSelectXchg3->value())
 					fprintf (txtFile, "%s", pRec->getField(XCHG3));
-				fprintf (txtFile, "\n");
+				fprintf (txtFile, szEOL);
 				pRec->putField(EXPORT,"");
 				db->qsoUpdRec(i, pRec);
 			}
@@ -144,13 +150,13 @@ void cTextFile::writeTXTHeader(FILE *txtFile)
 	if (btnSelectCountry->value())   fprintf (txtFile, "%-15s", "CNTRY");
 	if (btnSelectQSLrcvd->value())   fprintf (txtFile, "%-10s", "QSLR");
 	if (btnSelectQSLsent->value())   fprintf (txtFile, "%-10s", "QSLS");
-	if (btnSelectComment->value())   fprintf (txtFile, "%-30s", "COMMENT");
+	if (btnSelectComment->value())   fprintf (txtFile, "%-80s", "COMMENT");
 	if (btnSelectSerialIN->value())  fprintf (txtFile, "%-7s", "SRX");
 	if (btnSelectSerialOUT->value()) fprintf (txtFile, "%-7s", "STX");
 	if (btnSelectXchg1->value())     fprintf (txtFile, "%-15s", "XCHG1");
 	if (btnSelectXchg2->value())     fprintf (txtFile, "%-15s", "XCHG2");
 	if (btnSelectXchg3->value())     fprintf (txtFile, "%-15s", "XCHG3");
-	fprintf (txtFile, "\n");
+	fprintf (txtFile, szEOL);
 }
 
 int cTextFile::writeTXTFile (const char *fname, cQsoDb *db) {
@@ -199,7 +205,7 @@ int cTextFile::writeTXTFile (const char *fname, cQsoDb *db) {
 					string temp = pRec->getField(COMMENT);
 				for (size_t n = 0; n < temp.length(); n++)
 					if (temp[n] == '\n') temp[n] = ';';
-					fprintf (txtFile, "-30%s", temp.c_str());
+					fprintf (txtFile, "%-80s", temp.c_str());
 				}
 				if (btnSelectSerialIN->value())
 					fprintf (txtFile, "%-7s", pRec->getField(SRX));
@@ -211,7 +217,7 @@ int cTextFile::writeTXTFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, "%-15s", pRec->getField(XCHG2));
 				if (btnSelectXchg3->value())
 					fprintf (txtFile, "%-15s", pRec->getField(XCHG3));
-				fprintf (txtFile, "\n");
+				fprintf (txtFile, szEOL);
 				pRec->putField(EXPORT,"");
 				db->qsoUpdRec(i, pRec);
 			}
