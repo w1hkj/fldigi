@@ -1375,8 +1375,12 @@ void cb_log(Fl_Widget* w, void*)
 
 void qsoClear_cb(Fl_Widget *b, void *)
 {
-	if (oktoclear || (progdefaults.NagMe &&
-			  fl_choice(_("Clear log fields?"), _("Cancel"), _("OK"), NULL) == 1)) {
+	bool clearlog = true;
+	if (progdefaults.NagMe && !oktoclear)
+		clearlog = (fl_choice(_("Clear log fields?"), _("Cancel"), _("OK"), NULL) == 1);
+//	if (oktoclear || (progdefaults.NagMe &&
+//			  fl_choice(_("Clear log fields?"), _("Cancel"), _("OK"), NULL) == 1)) {
+	if (clearlog) {
 		clearQSO();
 		clearRecord();
 		oktoclear = true;
