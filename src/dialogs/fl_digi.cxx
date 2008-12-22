@@ -37,6 +37,7 @@
 #include <cstdlib>
 #include <cstdarg>
 #include <string>
+#include <algorithm>
 
 #include "gettext.h"
 #include "fl_digi.h"
@@ -706,9 +707,17 @@ void cb_init_mode(Fl_Widget *, void *mode)
 }
 
 
-void restoreFocus()
+void restoreFocus(Fl_Widget* w)
 {
-	TransmitText->take_focus();
+	// if w is not NULL, give focus to TransmitText only if the last event
+	// was an Enter keypress
+	if (!w)
+		TransmitText->take_focus();
+	else if (Fl::event() == FL_KEYBOARD) {
+		int k = Fl::event_key();
+		if (k == FL_Enter || k == FL_KP_Enter)
+			TransmitText->take_focus();
+	}
 }
 
 void macro_cb(Fl_Widget *w, void *v)
@@ -1308,16 +1317,8 @@ void cb_ResetSerNbr()
 
 void cb_loc(Fl_Widget* w, void*)
 {
-	oktoclear = false;
-
-	int k = Fl::event_key();
-	if (k == FL_Tab) return;
-	int ev = Fl::event();
-	if (!inpLoc->size() || ev != FL_KEYBOARD || k == FL_Enter || k == FL_KP_Enter)
-		restoreFocus();
-
-	if (!progdefaults.autofill_qso_fields)
-		return restoreFocus();
+	if ((oktoclear = !inpLoc->size()) || !progdefaults.autofill_qso_fields)
+		return restoreFocus(w);
 
 	double lon[2], lat[2], distance, azimuth;
 	if (locator2longlat(&lon[0], &lat[0], progdefaults.myLocator.c_str()) == RIG_OK &&
@@ -1327,77 +1328,55 @@ void cb_loc(Fl_Widget* w, void*)
 		snprintf(az, sizeof(az), "%3.0f", azimuth);
 		inpAZ->value(az);
 	}
-	restoreFocus();
+	restoreFocus(w);
 }
 
 void cb_call(Fl_Widget* w, void*)
 {
-	int k = Fl::event_key();
-	int ev = Fl::event();
-	if (inpCall->size()) {
-		oktoclear = false;
-		if (ev != FL_KEYBOARD || k == FL_Enter || k == FL_KP_Enter || k == FL_Tab) {
-			inpTimeOn->value(inpTimeOff->value());
+	if ((oktoclear = !inpCall->size()))
+		return restoreFocus(w);
 
-			if (progdefaults.calluppercase) {
-				int n = inpCall->size();
-				if (n) {
-					char *ucase = new char[n + 1];
-					strcpy(ucase, inpCall->value());
-					for (int i = 0; i < n; i++)
-						ucase[i] = toupper(ucase[i]);
-					inpCall->value(ucase);
-					delete [] ucase;
-				}
-			}
-
-			if (EnableDupCheck)
-				DupCheck(inpCall->value());
-
-			SearchLastQSO(inpCall->value());
-			
-			if (progdefaults.autofill_qso_fields) {
-				const struct dxcc* e = dxcc_lookup(inpCall->value());
-				if (e) {
-					double lon, lat, distance, azimuth;
-					if (locator2longlat(&lon, &lat, progdefaults.myLocator.c_str()) == RIG_OK &&
-	    				qrb(lon, lat, -e->longitude, e->latitude, &distance, &azimuth) == RIG_OK) {
-						char az[4];
-						snprintf(az, sizeof(az), "%3.0f", azimuth);
-						inpAZ->value(az);
-					}
-					inpCountry->value(e->country);
-					inpCountry->position(0);
-				}	
-			}
-
-			if (k == FL_Tab) return;
-		}
+	if (!inpCall->changed() && progdefaults.calluppercase) {
+		char* uc = new char[inpCall->size()];
+		transform(inpCall->value(), inpCall->value() + inpCall->size(), uc,
+			  static_cast<int (*)(int)>(std::toupper));
+		inpCall->value(uc, inpCall->size());
+		delete [] uc;
 	}
-	if (ev != FL_KEYBOARD || k == FL_Enter || k == FL_KP_Enter) 
-		restoreFocus();
-	return;
+
+	inpTimeOn->value(inpTimeOff->value(), inpTimeOff->size());
+	SearchLastQSO(inpCall->value());
+	if (EnableDupCheck)
+		DupCheck(inpCall->value());
+
+	if (!progdefaults.autofill_qso_fields)
+		return restoreFocus(w);
+	const struct dxcc* e = dxcc_lookup(inpCall->value());
+	if (!e)
+		return restoreFocus(w);
+	double lon, lat, distance, azimuth;
+	if (locator2longlat(&lon, &lat, progdefaults.myLocator.c_str()) == RIG_OK &&
+	    qrb(lon, lat, -e->longitude, e->latitude, &distance, &azimuth) == RIG_OK) {
+		char az[4];
+		snprintf(az, sizeof(az), "%3.0f", azimuth);
+		inpAZ->value(az, sizeof(az) - 1);
+	}
+	inpCountry->value(e->country);
+	inpCountry->position(0);
+
+	restoreFocus(w);
 }
 
 void cb_log(Fl_Widget* w, void*)
 {
 	oktoclear = false;
-	int k = Fl::event_key();
-	int ev = Fl::event();
-	if (k == FL_Tab) return;
-	if (!((Fl_Input2 *)w)->size() || ev != FL_KEYBOARD || k == FL_Enter || k == FL_KP_Enter)
-		restoreFocus();
+	restoreFocus(w);
 }
 
 void qsoClear_cb(Fl_Widget *b, void *)
 {
-	if (progdefaults.NagMe) {
-		if (oktoclear || fl_choice(_("Clear log fields?"), _("Cancel"), _("OK"), NULL) == 1) {
-			clearQSO();
-			clearRecord();
-			oktoclear = true;
-		}
-	} else {
+	if (oktoclear || (progdefaults.NagMe &&
+			  fl_choice(_("Clear log fields?"), _("Cancel"), _("OK"), NULL) == 1)) {
 		clearQSO();
 		clearRecord();
 		oktoclear = true;
@@ -2445,10 +2424,9 @@ void create_fl_digi_main() {
 				inpSerNo, outSerNo, inpXchg1, inpXchg2, inpXchg3 };
 		for (size_t i = 0; i < sizeof(logfields)/sizeof(*logfields); i++) {
 			logfields[i]->callback(cb_log);
-			logfields[i]->when(FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED | FL_WHEN_ENTER_KEY | FL_WHEN_RELEASE);
-//			logfields[i]->when(FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED | FL_WHEN_ENTER_KEY);
+			logfields[i]->when(FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED | FL_WHEN_ENTER_KEY);
 		}
-// exceptions
+		// exceptions
 		inpCall->callback(cb_call);
 		inpCall->when(FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED | FL_WHEN_ENTER_KEY | FL_WHEN_RELEASE);
 		inpLoc->callback(cb_loc);

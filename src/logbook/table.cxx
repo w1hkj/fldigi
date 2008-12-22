@@ -1315,6 +1315,11 @@ void Table::scrollTo(int pos) {
 
 }
 
+int Table::scrollPos() const
+{
+  return (int)vScroll->value();
+}
+
 /*
  * ===========================================
  *  void Table.sort(int column, bool ascent);

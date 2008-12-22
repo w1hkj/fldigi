@@ -484,7 +484,7 @@ cQsoRec rec;
 	rec.putField(XCHG3, inpXchg3_log->value());	
 	qsodb.qsoUpdRec (editNbr, &rec);
 	qsodb.isdirty(1);
-	loadBrowser();
+	loadBrowser(true);
 }
 
 void deleteRecord () {
@@ -493,7 +493,7 @@ void deleteRecord () {
 		return;
 
 	qsodb.qsoDelRec(editNbr);
-	loadBrowser();
+	loadBrowser(true);
 	qsodb.isdirty(1);
 }
 
@@ -573,10 +573,11 @@ void cb_browser (Fl_Widget *w, void *data )
 	EditRecord (editNbr);  
 }
 
-void loadBrowser()
+void loadBrowser(bool keep_pos)
 {
 	cQsoRec *rec;
 	char sNbr[6];
+	int row = wBrowser->value(), pos = wBrowser->scrollPos();
 	wBrowser->clear();
 	if (qsodb.nbrRecs() == 0)
 		return;
@@ -592,10 +593,16 @@ void loadBrowser()
 			rec->getField(MODE),
 			sNbr);
 	}
-	if (cQsoDb::reverse == true)
-		wBrowser->FirstRow ();
-	else
-		wBrowser->LastRow ();
+	if (keep_pos && row >= 0) {
+		wBrowser->value(row);
+		wBrowser->scrollTo(pos);
+	}
+	else {
+		if (cQsoDb::reverse == true)
+			wBrowser->FirstRow ();
+		else
+			wBrowser->LastRow ();
+	}
 	char szRecs[6];
 	snprintf(szRecs, sizeof(szRecs), "%5d", qsodb.nbrRecs());
 	txtNbrRecs_log->value(szRecs);
