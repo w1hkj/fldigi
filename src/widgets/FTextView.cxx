@@ -60,6 +60,7 @@
 #include "debug.h"
 
 
+
 using namespace std;
 
 
@@ -433,7 +434,7 @@ static bool view_init = false;
 /// @param h 
 /// @param l 
 FTextView::FTextView(int x, int y, int w, int h, const char *l)
-        : FTextBase(x, y, w, h, l)
+        : FTextBase(x, y, w, h, l), quick_entry(false)
 {
 	tbuf->remove_modify_callback(buffer_modified_cb, this);
 	tbuf->add_modify_callback(changed_cb, this);
@@ -802,6 +803,7 @@ void FTextView::menu_cb(int val)
 
 	case RX_MENU_QUICK_ENTRY:
 		view_menu[val].flags ^= FL_MENU_VALUE;
+		quick_entry = view_menu[val].value();
 		break;
 
 	case RX_MENU_WRAP:

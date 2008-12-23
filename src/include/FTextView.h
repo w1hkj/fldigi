@@ -112,6 +112,18 @@ public:
                         add(*s++, attr);
         }
 	void		clear(void);
+	void		QuickEntry(bool b) {
+		quick_entry = b;
+		if (b) view_menu[RX_MENU_QUICK_ENTRY].set();
+		else   view_menu[RX_MENU_QUICK_ENTRY].clear();
+	}
+	bool		QuickEntry() { return quick_entry;}
+	void		WordWrap(bool b) {
+		wrap = b;
+		wrap_mode((wrap), wrap_col);
+		show_insert_position();
+	}
+	bool		WordWrap() { return wrap;}
 
 protected:
 	enum { RX_MENU_QRZ_THIS, RX_MENU_CALL, RX_MENU_NAME, RX_MENU_QTH,
@@ -137,6 +149,7 @@ protected:
 private:
 	FTextView();
 	FTextView(const FTextView &t);
+	bool	quick_entry;
 
 protected:
 	static Fl_Menu_Item view_menu[];
@@ -163,6 +176,12 @@ public:
 	void		clear(void);
 	void		clear_sent(void);
 	int		nextChar(void);
+	void		WordWrap(bool b) {
+		wrap = b;
+		wrap_mode((wrap), wrap_col);
+		show_insert_position();
+	}
+	bool		WordWrap() { return wrap;}
 
 protected:
 	enum { TX_MENU_TX, TX_MENU_ABORT, TX_MENU_RX, TX_MENU_MFSK16_IMG,

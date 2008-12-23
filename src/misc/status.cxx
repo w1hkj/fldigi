@@ -75,6 +75,10 @@ status progStatus = {
 	false,			// bool spot_recv
 	false,			// bool spot_log
 	false,			// bool contest
+	
+	true,				// bool quick_entry
+	true,				// bool rx_word_wrap
+	true,				// bool tx_word_wrap
 
 	50,					// int logbook_x;
 	50,					// int logbook_y;
@@ -115,6 +119,10 @@ void status::saveLastState()
 	logbook_col_3 = wBrowser->columnWidth(3);
 	logbook_col_4 = wBrowser->columnWidth(4);
 	logbook_col_5 = wBrowser->columnWidth(5);
+	
+	quick_entry = ReceiveText->QuickEntry();
+	rx_word_wrap = ReceiveText->WordWrap();
+	tx_word_wrap = TransmitText->WordWrap();
 	
 	VIEWERvisible = false;
 	if (dlgViewer && dlgViewer->visible()) {
@@ -189,6 +197,9 @@ void status::saveLastState()
 	spref.set("spot_log", spot_recv);
 
 	spref.set("contest", contest);
+	spref.set("quick_entry", quick_entry);
+	spref.set("rx_word_wrap", rx_word_wrap);
+	spref.set("tx_word_wrap", tx_word_wrap);
 
 	spref.set("logbook_x", logbook_x);
 	spref.set("logbook_y", logbook_y);
@@ -271,6 +282,9 @@ void status::loadLastState()
 	spref.get("spot_log", i, i); spot_log = i;
 
 	spref.get("contest", i, i); contest = i;
+	spref.get("quick_entry", i, i); quick_entry = i;
+	spref.get("rx_word_wrap", i, i); rx_word_wrap = i;
+	spref.get("tx_word_wrap", i, i); tx_word_wrap = i;
 
 	spref.get("logbook_x", logbook_x, logbook_x);
 	spref.get("logbook_y", logbook_y, logbook_y);

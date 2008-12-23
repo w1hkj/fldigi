@@ -41,6 +41,9 @@ struct status {
 	bool	spot_recv;
 	bool	spot_log;
 	bool	contest;
+	bool	quick_entry;
+	bool	rx_word_wrap;
+	bool	tx_word_wrap;
 
 	int		logbook_x;
 	int		logbook_y;
