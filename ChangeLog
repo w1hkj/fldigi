@@ -146,6 +146,17 @@ Change Log:
       59) Added clear logbook fields when qso fields cleared
       60) Added Load Macro file Rx Panel message whenever a macro file is
           loaded.
+      61) Fix qso clear button bug; Clear would only work with NagMe set.
+          Corrected logic.
+      62) Logbook text i/o bug fixes.  Changed all logbook text out to use CRLF
+          convention in MS.  Fixed "-30" bug in text output for comment field.
+      63) Fix logbook update.  Maintain scroll position when updating QSO log 
+          fields.
+      64) Fix PSK browser crash
+      65) Organize HomeDir contents.  HomeDir (~/.fldigi) (<user>/fldigi.files)
+          now contains the following subdirectories:
+            rigs, scripts, palettes, logs, images, help, macros & temp
+          correctly populated with the corresponding default files.
 
 3.03
       1) Changes to socket server to correct shutdown process
