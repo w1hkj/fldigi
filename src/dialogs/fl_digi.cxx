@@ -1306,6 +1306,7 @@ void clearQSO()
 		inpRstOut->value("599");
 	}
 	updateOutSerNo();
+	inpSearchString->value ("");
 	lblDup->hide();
 }
 
@@ -1346,6 +1347,7 @@ void cb_call(Fl_Widget* w, void*)
 
 	inpTimeOn->value(inpTimeOff->value(), inpTimeOff->size());
 	SearchLastQSO(inpCall->value());
+	lblDup->hide();
 	if (EnableDupCheck)
 		DupCheck(inpCall->value());
 
@@ -1380,7 +1382,6 @@ void qsoClear_cb(Fl_Widget *b, void *)
 		clearlog = (fl_choice(_("Clear log fields?"), _("Cancel"), _("OK"), NULL) == 1);
 	if (clearlog) {
 		clearQSO();
-		clearRecord();
 		oktoclear = true;
 	}
 	restoreFocus();

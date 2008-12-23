@@ -530,12 +530,14 @@ int parse_args(int argc, char **argv, int& idx)
 
 		case OPT_CONFIG_DIR:
 			HomeDir = optarg;
+#ifndef __CYGWIN__
 			if (HomeDir[0] != '/') {
 				string wkngdir = getenv("PWD");
 				wkngdir += '/';
 				wkngdir.append(HomeDir);
 				HomeDir = wkngdir;
 			}
+#endif
 			if (*HomeDir.rbegin() != '/')
 				HomeDir += '/';
 			break;
