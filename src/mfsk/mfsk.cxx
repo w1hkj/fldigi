@@ -691,11 +691,11 @@ int mfsk::rx_process(const double *buf, int len)
 				rxstate = RX_STATE_DATA;
 				put_status("");
 #if USE_LIBPNG
-				string autosave_dir = HomeDir + "mfsk_pics/";
+				string autosave_dir = PicsDir;
 				picRx->save_png(autosave_dir.c_str());
 #else
 #  if USE_LIBJPEG
-				string autosave_dir = HomeDir + "mfsk_pics/";
+				string autosave_dir = PicsDir;
 				picRx->save_jpeg(autosave_dir.c_str());
 #  endif
 #endif

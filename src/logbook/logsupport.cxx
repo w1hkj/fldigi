@@ -20,10 +20,9 @@
 #include "fl_digi.h"
 #include "fileselect.h"
 #include "configuration.h"
+#include "main.h"
 
 #include <FL/fl_ask.H>
-
-extern string HomeDir;
 
 using namespace std;
 
@@ -125,7 +124,7 @@ void saveLogbook()
 void cb_mnuNewLogbook(Fl_Menu_* m, void* d){
 	saveLogbook();
 
-	logbook_filename = HomeDir;
+	logbook_filename = LogsDir;
 	logbook_filename.append("newlog." ADIF_SUFFIX);
 	progdefaults.logbookfilename = logbook_filename;
 	dlgLogbook->label(fl_filename_name(logbook_filename.c_str()));
@@ -137,7 +136,8 @@ void cb_mnuNewLogbook(Fl_Menu_* m, void* d){
 
 void cb_mnuOpenLogbook(Fl_Menu_* m, void* d)
 {
-	const char* p = FSEL::select("Open logbook file", "ADIF\t*." ADIF_SUFFIX);
+	const char* p = FSEL::select("Open logbook file", "ADIF\t*." ADIF_SUFFIX,
+						logbook_filename.c_str());
 	if (p) {
 		saveLogbook();
 		qsodb.deleteRecs();

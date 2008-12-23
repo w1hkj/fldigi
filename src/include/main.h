@@ -23,6 +23,16 @@
 
 extern string		appname;
 extern string		HomeDir;
+extern string		RigsDir;
+extern string		ScriptsDir;
+extern string		PalettesDir;
+extern string		LogsDir;
+extern string		PicsDir;
+extern string		HelpDir;
+extern string		MacrosDir;
+extern string		TempDir;
+extern string		PskMailDir;
+
 extern string		xmlfname;
 
 extern std::string	 scDevice[2];
@@ -33,7 +43,6 @@ extern Rig			*xcvr;
 
 extern cLogfile		*Maillogfile;
 extern cLogfile		*logfile;
-extern string		PskMailDir;
 extern bool			gmfskmail;
 extern bool			arqmode;
 extern string		ArqFilename;

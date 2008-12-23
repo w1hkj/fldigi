@@ -82,16 +82,15 @@ void cb_picRxSave( Fl_Widget *w, void *)
 		"Independent JPEG Group\t*.{jpg,jpeg}"
 #endif
 		;
-	const char dfname[] = "image."
+	string dfname = PicsDir;
 #if USE_LIBPNG
-		"png"
+	dfname.append("image.png");
 #else
-		"jpg"
+	dfname.append("image.jpg");
 #endif
-		;
 
 	int fsel;
-	const char *fn = FSEL::saveas(_("Save image as:"), ffilter, dfname, &fsel);
+	const char *fn = FSEL::saveas(_("Save image as:"), ffilter, dfname.c_str(), &fsel);
 	if (!fn) return;
         // selected filter determines format
 	switch (fsel) {
@@ -245,7 +244,7 @@ void cb_picTxLoad(Fl_Widget *, void *)
 	const char *fn = 
 		FSEL::select(_("Load image file"), "Portable Network Graphics\t*.png\n"
 			    "Independent JPEG Group\t*.{jpg,jif,jpeg,jpe}\n"
-			    "Graphics Interchange Format\t*.gif");
+			    "Graphics Interchange Format\t*.gif", PicsDir.c_str());
 	if (!fn) return;
 	load_image(fn);
 }

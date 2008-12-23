@@ -69,6 +69,7 @@
 #include "pskrep.h"
 #include "logbook.h"
 #include "dxcc.h"
+#include "newinstall.h"
 
 #if USE_HAMLIB
 	#include "rigclass.h"
@@ -92,12 +93,21 @@ string scDevice[2];
 
 char szHomedir[120] = "";
 char szPskMailDir[120] = "";
+
+string HomeDir;
+string RigsDir;
+string ScriptsDir;
+string PalettesDir;
+string LogsDir;
+string PicsDir;
+string HelpDir;
+string MacrosDir;
+string TempDir;
 string PskMailDir;
+
 string PskMailFile;
 string ArqFilename;
-string HomeDir;
 string xmlfname;
-
 
 PTT		*push2talk = (PTT *)0;
 #if USE_HAMLIB
@@ -129,6 +139,7 @@ void debug_exec(char** argv);
 void set_platform_ui(void);
 double speed_test(int converter, unsigned repeat);
 static void setup_signal_handlers(void);
+static void checkdirectories(void);
 
 int main(int argc, char ** argv)
 {
@@ -170,18 +181,7 @@ int main(int argc, char ** argv)
 	    exit(EXIT_FAILURE);
 	}
 
-	{
-		DIR *dir = opendir(HomeDir.c_str());
-		if (dir == 0) {
-			if ( mkdir(HomeDir.c_str(), 0777) == -1) {
-				cerr << _("Could not make directory ") << HomeDir << ": "
-				     << strerror(errno) << endl;
-				exit(EXIT_FAILURE);
-			}
-		} else
-			closedir(dir);
-	}
-
+	checkdirectories();
 	bool have_config = progdefaults.readDefaultsXML();
 	try {
 		debug::start(string(HomeDir).append("status_log.txt").c_str());
@@ -530,6 +530,12 @@ int parse_args(int argc, char **argv, int& idx)
 
 		case OPT_CONFIG_DIR:
 			HomeDir = optarg;
+			if (HomeDir[0] != '/') {
+				string wkngdir = getenv("PWD");
+				wkngdir += '/';
+				wkngdir.append(HomeDir);
+				HomeDir = wkngdir;
+			}
 			if (*HomeDir.rbegin() != '/')
 				HomeDir += '/';
 			break;
@@ -843,3 +849,43 @@ int setup_nls(void)
 	return nls_set_up = 1;
 }
 #endif
+
+static bool checkdir(string &dirname)
+{
+	DIR *dir;
+	dir = opendir(dirname.c_str());
+	if (dir == 0) {
+		if ( mkdir(dirname.c_str(), 0777) == -1) {
+			cerr << _("Could not make directory ") << dirname.c_str() << ": "
+		    	 << strerror(errno) << endl;
+			exit(EXIT_FAILURE);
+		}
+		closedir(dir);
+		return true;
+	} else
+		closedir(dir);
+		return false;
+}
+
+static void checkdirectories(void)
+{
+	RigsDir = HomeDir + _("rigs/)");
+	ScriptsDir = HomeDir + _("scripts/");
+	PalettesDir = HomeDir + _("palettes/");
+	LogsDir = HomeDir + _("logs/");
+	PicsDir = HomeDir + _("images/");
+	HelpDir = HomeDir + _("help/");
+	MacrosDir = HomeDir + _("macros/");
+	TempDir = HomeDir + _("temp/");
+	
+	checkdir(HomeDir);
+	checkdir(ScriptsDir);
+	checkdir(LogsDir);
+	checkdir(PicsDir);
+	checkdir(HelpDir);
+	checkdir(TempDir);
+	if (checkdir(PalettesDir)) create_new_palettes();
+	if (checkdir(MacrosDir)) create_new_macros();
+}
+
+

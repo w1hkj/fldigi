@@ -42,7 +42,7 @@ typedef struct {
 	char mtext[LOG_MSG_LEN];
 } msgtype;
 
-extern int submit_log();
+extern void submit_log();
 
 extern	char logdate[];
 extern  char logtime[];

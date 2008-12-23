@@ -99,7 +99,7 @@ void loadBrowser(Fl_Widget *widget) {
 	}
 
 	glob_t gbuf;
-	glob(string(HomeDir).append("scripts/*").c_str(), 0, NULL, &gbuf);
+	glob(string(ScriptsDir).append("*").c_str(), 0, NULL, &gbuf);
 	if (gbuf.gl_pathc == 0) {
 		globfree(&gbuf);
 		return;

@@ -81,12 +81,12 @@ label[12] = "C Ans @>|";
 text[12] = "<TX>de <MYCALL> <MYCALL><RX>";
 
 label[13] = "C rpt @>|";
-text[13] = "<TX><DECR><CNTR> <CNTR><INCR> QSL DE <MYCALL> K\n\
+text[13] = "<TX><CNTR> <CNTR> QSL DE <MYCALL> K\n\
 <RX>";
 
 label[14] = "C Rep @>|";
 text[14] = "<TX>\n\
-<CALL> RR NBR <CNTR> <CNTR><INCR> TU DE <MYCALL> K\n\
+<CALL> RR NBR <CNTR> <CNTR> TU DE <MYCALL> K\n\
 <RX>";
 
 label[15] = "C Incr";
@@ -96,7 +96,7 @@ label[16] = "C Decr";
 text[16] = "<DECR>";
 
 label[17] = "Log QSO";
-text[17] = "<LOG>";
+text[17] = "<LOG><INCR>";
 
 label[18] = "CW-CQ @>|";
 text[18] = "<TX>CQ CQ CQ DE <MYCALL> <MYCALL> <MYCALL>  CQ CQ CQ DE <MYCALL> K<RX>";
@@ -251,12 +251,12 @@ paldata palfiles[] = {
 	}
 };
 	
-void newpalettes()
+void create_new_palettes()
 {
 	paldata *pd = palfiles;
 	string Filename;
 	while (pd->fname) {
-		Filename = HomeDir;
+		Filename = PalettesDir;
 		Filename.append(pd->fname);
 		ofstream pfile(Filename.c_str());
 		pfile << pd->rgbstr0 << endl;
@@ -273,12 +273,11 @@ void newpalettes()
 	}
 }
 
-void createDotFldigi()
+void create_new_macros()
 {
-	string Filename = HomeDir;
+	string Filename = MacrosDir;
 	Filename.append("macros.mdf");
 	newmacros();
 	macros.saveMacros(Filename);
-	newpalettes();
 }
 

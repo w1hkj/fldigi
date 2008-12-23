@@ -977,7 +977,7 @@ void html_help( const string &Html)
 
 void cb_mnuBeginnersURL(Fl_Widget*, void*)
 {
-	string deffname = HomeDir;
+	string deffname = HelpDir;
 	deffname.append("beginners.html");
 	ofstream f(deffname.c_str());
 	if (!f)
@@ -1378,8 +1378,6 @@ void qsoClear_cb(Fl_Widget *b, void *)
 	bool clearlog = true;
 	if (progdefaults.NagMe && !oktoclear)
 		clearlog = (fl_choice(_("Clear log fields?"), _("Cancel"), _("OK"), NULL) == 1);
-//	if (oktoclear || (progdefaults.NagMe &&
-//			  fl_choice(_("Clear log fields?"), _("Cancel"), _("OK"), NULL) == 1)) {
 	if (clearlog) {
 		clearQSO();
 		clearRecord();

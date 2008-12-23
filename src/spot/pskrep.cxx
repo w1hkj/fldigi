@@ -273,7 +273,7 @@ bool pskrep_start(void)
 		return false;
 
 	// get identifier
-	string fname = HomeDir;
+	string fname = TempDir;
 	fname.append(PSKREP_ID_FILE);
 	ifstream in(fname.c_str());
 	string long_id, short_id;
@@ -482,7 +482,7 @@ static istream& operator>>(istream& in, queue_t& q);
 
 void pskrep::save_queue(void)
 {
-	string fname = HomeDir;
+	string fname = TempDir;
 	fname.append(PSKREP_QUEUE_FILE);
 	ofstream out(fname.c_str());
 
@@ -494,7 +494,7 @@ void pskrep::save_queue(void)
 
 void pskrep::load_queue(void)
 {
-	string fname = HomeDir;
+	string fname = TempDir;
 	fname.append(PSKREP_QUEUE_FILE);
 	ifstream in(fname.c_str());
 	if (!in)

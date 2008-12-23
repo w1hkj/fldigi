@@ -24,7 +24,7 @@ void start_logbook ()
 	create_logbook_dialogs();
 
 	if (progdefaults.logbookfilename.empty()) {
-		logbook_filename = HomeDir;
+		logbook_filename = LogsDir;
 		logbook_filename.append("logbook." ADIF_SUFFIX);
 		progdefaults.logbookfilename = logbook_filename;
 		progdefaults.changed = true;

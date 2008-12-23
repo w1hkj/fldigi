@@ -477,16 +477,11 @@ void set_env(void)
 	};
 
 	// PATH
-	static string path;
-	if (path.length() == 0) {
-		path = HomeDir;
-		if (*path.rbegin() != '/')
-			path += '/';
-		path.append("scripts");
-		const char* p;
-		if ((p = getenv("PATH")))
-			path.append(":").append(p);
-	}
+	static string path = ScriptsDir;
+	path.erase(path.length()-1,1);
+	const char* p;
+	if ((p = getenv("PATH")))
+		path.append(":").append(p);
 	env[PATH].val = path.c_str();
 
 	// IPC keys
@@ -615,15 +610,12 @@ int MACROTEXT::loadMacros(string filename)
 	ifstream mFile(filename.c_str());
 	
 	if (!mFile) {
-		createDotFldigi();
+		create_new_macros();
 		for (int i = 0; i < 12; i++) {
 			btnMacro[i]->label( name[i].c_str());
 			btnMacro[i]->redraw_label();
 		}
 		return 0;
-//		mFile.open(filename.c_str());
-//		if (!mFile)
-//			return -1;
 	}
 	
 	mFile.getline(szLine, 4095);
@@ -677,7 +669,7 @@ int MACROTEXT::loadMacros(string filename)
 void MACROTEXT::loadDefault()
 {
 	int erc;
-	string Filename = HomeDir;
+	string Filename = MacrosDir;
 	if (progdefaults.UseLastMacro == true)
 		Filename.append(progStatus.LastMacroFile);
 	else {
@@ -694,7 +686,7 @@ void MACROTEXT::loadDefault()
 
 void MACROTEXT::openMacroFile()
 {
-	string deffilename = HomeDir;
+	string deffilename = MacrosDir;
 	deffilename.append(progStatus.LastMacroFile);
     const char *p = FSEL::select("Open macro file", "Fldigi macro definition file\t*.mdf", deffilename.c_str());
     if (p) {
@@ -706,7 +698,7 @@ void MACROTEXT::openMacroFile()
 
 void MACROTEXT::saveMacroFile()
 {
-	string deffilename = HomeDir;
+	string deffilename = MacrosDir;
 	deffilename.append(progStatus.LastMacroFile);
     const char *p = FSEL::saveas("Save macro file", "Fldigi macro definition file\t*.mdf", deffilename.c_str());
     if (p) {
