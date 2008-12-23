@@ -157,6 +157,11 @@ Change Log:
           now contains the following subdirectories:
             rigs, scripts, palettes, logs, images, help, macros & temp
           correctly populated with the corresponding default files.
+      66) Additional state variables.
+          Save & restore state of: ReceiveText quick entry, ReceiveText word 
+          wrap and TransmitText word wrap
+      67) Fixed --config-dir failure on MS
+      68) Changed qso clear to only clear the search field on logbook dialog
 
 3.03
       1) Changes to socket server to correct shutdown process
