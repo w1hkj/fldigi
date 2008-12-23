@@ -140,7 +140,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabUserInterface {
             label General open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {5 60 490 276} box ENGRAVED_FRAME
@@ -216,7 +216,7 @@ progdefaults.changed = true;}
               Fl_Check_Button btnCallUpperCase {
                 label {Convert callsign field to upper case}
                 callback {progdefaults.calluppercase = o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
                 xywh {25 230 282 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.calluppercase);}
               }
@@ -269,7 +269,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabContest {
             label Contest open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {
               label Exchanges open
@@ -401,8 +401,8 @@ progdefaults.changed = true;}
               }
               Fl_Check_Button btnDupTimeSpan {
                 label {Time span over}
-                callback {progdefaults.duptimespan=o->value();
-progdefaults.changed = true;}
+                callback {progdefaults.duptimespan=(int)o->value();
+progdefaults.changed = true;} selected
                 xywh {15 313 129 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.duptimespan);}
               }

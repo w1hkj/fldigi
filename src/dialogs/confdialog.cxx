@@ -307,7 +307,7 @@ progdefaults.changed = true;
 Fl_Check_Button *btnDupTimeSpan=(Fl_Check_Button *)0;
 
 static void cb_btnDupTimeSpan(Fl_Check_Button* o, void*) {
-  progdefaults.duptimespan=o->value();
+  progdefaults.duptimespan=(int)o->value();
 progdefaults.changed = true;
 }
 
@@ -2138,6 +2138,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         { tabsUI = new Fl_Tabs(0, 25, 500, 345);
           tabsUI->selection_color(FL_LIGHT1);
           { tabUserInterface = new Fl_Group(0, 50, 500, 320, _("General"));
+            tabUserInterface->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 276);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(15, 70, 120, 20, _("Show tooltips"));
@@ -2251,7 +2252,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             tabWfallRestart->end();
           } // Fl_Group* tabWfallRestart
           { tabContest = new Fl_Group(0, 50, 500, 320, _("Contest"));
-            tabContest->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 80, _("Exchanges"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
