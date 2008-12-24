@@ -1345,12 +1345,15 @@ void cb_call(Fl_Widget* w, void*)
 		delete [] uc;
 	}
 
-	inpTimeOn->value(inpTimeOff->value(), inpTimeOff->size());
-	SearchLastQSO(inpCall->value());
-	lblDup->hide();
-	if (EnableDupCheck)
-		DupCheck(inpCall->value());
+	if (!inpCall->changed()) {
+		inpTimeOn->value(inpTimeOff->value(), inpTimeOff->size());
+		SearchLastQSO(inpCall->value());
+		lblDup->hide();
+		if (EnableDupCheck)
+			DupCheck(inpCall->value());
 
+	}
+	
 	if (!progdefaults.autofill_qso_fields)
 		return restoreFocus(w);
 	const struct dxcc* e = dxcc_lookup(inpCall->value());
