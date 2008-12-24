@@ -164,6 +164,9 @@ Change Log:
       68) Changed qso clear to only clear the search field on logbook dialog
       69) Bug fix - TimeOn reset logic
       70) Bug fix - missing (int) cast in confdialog.fl
+      71) Added TX_PWR, IOTA and DXCC to logbook fields
+      72) Changed main dialog field name "Notes" to "Comment" to be consistent
+          with the logbook dialog
 
 3.03
       1) Changes to socket server to correct shutdown process
