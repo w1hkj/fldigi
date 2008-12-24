@@ -425,6 +425,9 @@ void clearRecord() {
 	inpXchg2_log->value("");
 	inpXchg3_log->value("");
 	inpComment_log->value ("");
+	inpIOTA_log->value("");
+	inpDXCC_log->value("");
+	inpTX_pwr_log->value("");
 	inpSearchString->value ("");
 	editGroup->show();
 }
@@ -453,6 +456,9 @@ cQsoRec rec;
 	rec.putField(XCHG1, inpXchg1_log->value());
 	rec.putField(XCHG2, inpXchg2_log->value());
 	rec.putField(XCHG3, inpXchg3_log->value());	
+	rec.putField(IOTA, inpIOTA_log->value());
+	rec.putField(DXCC, inpDXCC_log->value());
+	rec.putField(TX_PWR, inpTX_pwr_log->value());
 	
 	qsodb.qsoNewRec (&rec);
 }
@@ -482,6 +488,9 @@ cQsoRec rec;
 	rec.putField(XCHG1, inpXchg1_log->value());
 	rec.putField(XCHG2, inpXchg2_log->value());
 	rec.putField(XCHG3, inpXchg3_log->value());	
+	rec.putField(IOTA, inpIOTA_log->value());
+	rec.putField(DXCC, inpDXCC_log->value());
+	rec.putField(TX_PWR, inpTX_pwr_log->value());
 	qsodb.qsoUpdRec (editNbr, &rec);
 	qsodb.isdirty(1);
 	loadBrowser(true);
@@ -525,6 +534,9 @@ void EditRecord( int i )
 	inpXchg1_log->value(editQSO->getField(XCHG1));
 	inpXchg2_log->value(editQSO->getField(XCHG2));
 	inpXchg3_log->value(editQSO->getField(XCHG3));
+	inpIOTA_log->value(editQSO->getField(IOTA));
+	inpDXCC_log->value(editQSO->getField(DXCC));
+	inpTX_pwr_log->value(editQSO->getField(TX_PWR));
 	editGroup->show();
 }
 

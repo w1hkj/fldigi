@@ -46,12 +46,15 @@ void cTextFile::writeCSVHeader(FILE *txtFile)
 	if (btnSelectBand->value())      fprintf (txtFile, "BAND\t");
 	if (btnSelectFreq->value())      fprintf (txtFile, "FREQ\t");
 	if (btnSelectMode->value())      fprintf (txtFile, "MODE\t");
+	if (btnSelectTX_pwr->value())    fprintf (txtFile, "TX_PWR\t");
 	if (btnSelectRSTsent->value())   fprintf (txtFile, "RSTSENT\t");
 	if (btnSelectRSTrcvd->value())   fprintf (txtFile, "RSTRCVD\t");
 	if (btnSelectQth->value())       fprintf (txtFile, "QTH\t");
 	if (btnSelectState->value())     fprintf (txtFile, "ST\t");
 	if (btnSelectProvince->value())  fprintf (txtFile, "PR\t");
 	if (btnSelectCountry->value())   fprintf (txtFile, "CNTRY\t");
+	if (btnSelectDXCC->value())      fprintf (txtFile, "DXCC\t");
+	if (btnSelectIOTA->value())      fprintf (txtFile, "IOTA\t");
 	if (btnSelectQSLrcvd->value())   fprintf (txtFile, "QSL_RCVD\t");
 	if (btnSelectQSLsent->value())   fprintf (txtFile, "QSL_SENT\t");
 	if (btnSelectComment->value())   fprintf (txtFile, "COMMENT\t");
@@ -89,6 +92,8 @@ int cTextFile::writeCSVFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, "%s\t", pRec->getField(FREQ));
 				if (btnSelectMode->value())
 					fprintf (txtFile, "%s\t", pRec->getField(MODE));
+				if (btnSelectTX_pwr->value())
+					fprintf (txtFile, "%s\t", pRec->getField(TX_PWR));
 				if (btnSelectRSTsent->value())
 					fprintf (txtFile, "%s\t", pRec->getField(RST_SENT));
 				if (btnSelectRSTrcvd->value())
@@ -101,6 +106,10 @@ int cTextFile::writeCSVFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, "%s\t", pRec->getField(VE_PROV));
 				if (btnSelectCountry->value())
 					fprintf (txtFile, "%s\t", pRec->getField(COUNTRY));
+				if (btnSelectDXCC->value())
+					fprintf (txtFile, "%s\t", pRec->getField(DXCC));
+				if (btnSelectIOTA->value())
+					fprintf (txtFile, "%s\t", pRec->getField(IOTA));
 				if (btnSelectQSLrcvd->value())
 					fprintf (txtFile, "%s\t", pRec->getField(QSL_RCVD));
 				if (btnSelectQSLsent->value())
@@ -142,12 +151,17 @@ void cTextFile::writeTXTHeader(FILE *txtFile)
 	if (btnSelectBand->value())      fprintf (txtFile, "%-7s", "BAND");
 	if (btnSelectFreq->value())      fprintf (txtFile, "%-12s", "FREQ");
 	if (btnSelectMode->value())      fprintf (txtFile, "%-8s", "MODE");
+	if (btnSelectTX_pwr->value())    fprintf (txtFile, "%-8s", "TX_PWR");
+	
 	if (btnSelectRSTsent->value())   fprintf (txtFile, "%-6s", "RSTX");
 	if (btnSelectRSTrcvd->value())   fprintf (txtFile, "%-6s", "RSTR");
 	if (btnSelectQth->value())       fprintf (txtFile, "%-20s", "QTH");
 	if (btnSelectState->value())     fprintf (txtFile, "%-5s", "ST");
 	if (btnSelectProvince->value())  fprintf (txtFile, "%-5s", "PR");
 	if (btnSelectCountry->value())   fprintf (txtFile, "%-15s", "CNTRY");
+	if (btnSelectDXCC->value())      fprintf (txtFile, "%-8s",  "DXCC");
+	if (btnSelectIOTA->value())      fprintf (txtFile, "%-8s", "IOTA");
+	
 	if (btnSelectQSLrcvd->value())   fprintf (txtFile, "%-10s", "QSLR");
 	if (btnSelectQSLsent->value())   fprintf (txtFile, "%-10s", "QSLS");
 	if (btnSelectComment->value())   fprintf (txtFile, "%-80s", "COMMENT");
@@ -185,6 +199,8 @@ int cTextFile::writeTXTFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, "%-12s", pRec->getField(FREQ));
 				if (btnSelectMode->value())
 					fprintf (txtFile, "%-8s", pRec->getField(MODE));
+				if (btnSelectTX_pwr->value())
+					fprintf (txtFile, "%-8s", pRec->getField(TX_PWR));
 				if (btnSelectRSTsent->value())
 					fprintf (txtFile, "%-6s", pRec->getField(RST_SENT));
 				if (btnSelectRSTrcvd->value())
@@ -197,6 +213,10 @@ int cTextFile::writeTXTFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, "%-5s", pRec->getField(VE_PROV));
 				if (btnSelectCountry->value())
 					fprintf (txtFile, "%-15s", pRec->getField(COUNTRY));
+				if (btnSelectDXCC->value())
+					fprintf (txtFile, "%-8s", pRec->getField(DXCC));
+				if (btnSelectIOTA->value())
+					fprintf (txtFile, "%-8s", pRec->getField(IOTA));
 				if (btnSelectQSLrcvd->value())
 					fprintf (txtFile, "%-10s", pRec->getField(QSL_RCVD));
 				if (btnSelectQSLsent->value())
