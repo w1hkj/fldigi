@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fldigi 3.04AZ\n"
 "Report-Msgid-Bugs-To: w1hkj AT w1hkj DOT com\n"
-"POT-Creation-Date: 2008-12-24 10:29-0600\n"
+"POT-Creation-Date: 2008-12-24 15:51-0600\n"
 "PO-Revision-Date: 2008-11-25 07:16+0000\n"
 "Last-Translator: Stephane Fillod <fillods@users.sourceforge.net>\n"
 "Language-Team: French\n"
@@ -93,7 +93,7 @@ msgstr "Sauvegarder les macros avant de quitter?"
 
 #: src/dialogs/fl_digi.cxx:524 src/dialogs/fl_digi.cxx:1385
 #: src/dialogs/fl_digi.cxx:1522 src/dialogs/fl_digi.cxx:1533
-#: src/dialogs/fl_digi.cxx:1544 src/dialogs/fl_digi.cxx:3292
+#: src/dialogs/fl_digi.cxx:1544 src/dialogs/fl_digi.cxx:3289
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -589,10 +589,10 @@ msgid "Contest exchange #3"
 msgstr ""
 
 #: src/dialogs/fl_digi.cxx:2412
-msgid "Notes"
-msgstr "Notes"
+msgid "Comment"
+msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2536
+#: src/dialogs/fl_digi.cxx:2533
 msgid ""
 "Left Click - execute\n"
 "Right Click - edit"
@@ -600,19 +600,19 @@ msgstr ""
 "Clic Gauche - exécute\n"
 "Clic Droit - édite"
 
-#: src/dialogs/fl_digi.cxx:2545
+#: src/dialogs/fl_digi.cxx:2542
 msgid "Change macro set"
 msgstr "Change d'ensemble de macro"
 
-#: src/dialogs/fl_digi.cxx:2595
+#: src/dialogs/fl_digi.cxx:2592
 msgid "Detected signal level"
 msgstr "Détecte le niveau de signal"
 
-#: src/dialogs/fl_digi.cxx:2607
+#: src/dialogs/fl_digi.cxx:2604
 msgid "Squelch level"
 msgstr "Niveau squelch"
 
-#: src/dialogs/fl_digi.cxx:2622
+#: src/dialogs/fl_digi.cxx:2619
 #, fuzzy
 msgid ""
 "Left click: change mode\n"
@@ -621,20 +621,20 @@ msgstr ""
 "Clic Gauche - change mode\n"
 "Clic Droit - Onglet modem"
 
-#: src/dialogs/fl_digi.cxx:2680
+#: src/dialogs/fl_digi.cxx:2677
 msgid "Automatic Frequency Control"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2683
+#: src/dialogs/fl_digi.cxx:2680
 #, fuzzy
 msgid "Squelch"
 msgstr "Niveau squelch"
 
-#: src/dialogs/fl_digi.cxx:2702
+#: src/dialogs/fl_digi.cxx:2699
 msgid "Scope"
 msgstr "Scope"
 
-#: src/dialogs/fl_digi.cxx:3292
+#: src/dialogs/fl_digi.cxx:3289
 #, fuzzy
 msgid "Confirm"
 msgstr "Configuration"
@@ -2249,6 +2249,9 @@ msgstr ""
 #: src/rigcontrol/rigdialog.cxx:132
 msgid "@-1square"
 msgstr ""
+
+#~ msgid "Notes"
+#~ msgstr "Notes"
 
 #~ msgid "QRZ cdrom"
 #~ msgstr "QRZ cdrom"

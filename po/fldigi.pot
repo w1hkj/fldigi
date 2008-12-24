@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fldigi 3.04BO\n"
 "Report-Msgid-Bugs-To: w1hkj AT w1hkj DOT com\n"
-"POT-Creation-Date: 2008-12-24 10:29-0600\n"
+"POT-Creation-Date: 2008-12-24 15:51-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -82,7 +82,7 @@ msgstr ""
 
 #: src/dialogs/fl_digi.cxx:524 src/dialogs/fl_digi.cxx:1385
 #: src/dialogs/fl_digi.cxx:1522 src/dialogs/fl_digi.cxx:1533
-#: src/dialogs/fl_digi.cxx:1544 src/dialogs/fl_digi.cxx:3292
+#: src/dialogs/fl_digi.cxx:1544 src/dialogs/fl_digi.cxx:3289
 msgid "Cancel"
 msgstr ""
 
@@ -553,46 +553,46 @@ msgid "Contest exchange #3"
 msgstr ""
 
 #: src/dialogs/fl_digi.cxx:2412
-msgid "Notes"
+msgid "Comment"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2536
+#: src/dialogs/fl_digi.cxx:2533
 msgid ""
 "Left Click - execute\n"
 "Right Click - edit"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2545
+#: src/dialogs/fl_digi.cxx:2542
 msgid "Change macro set"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2595
+#: src/dialogs/fl_digi.cxx:2592
 msgid "Detected signal level"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2607
+#: src/dialogs/fl_digi.cxx:2604
 msgid "Squelch level"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2622
+#: src/dialogs/fl_digi.cxx:2619
 msgid ""
 "Left click: change mode\n"
 "Right click: configure"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2680
+#: src/dialogs/fl_digi.cxx:2677
 msgid "Automatic Frequency Control"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2683
+#: src/dialogs/fl_digi.cxx:2680
 msgid "Squelch"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2702
+#: src/dialogs/fl_digi.cxx:2699
 msgid "Scope"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3292
+#: src/dialogs/fl_digi.cxx:3289
 msgid "Confirm"
 msgstr ""
 
