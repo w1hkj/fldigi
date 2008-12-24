@@ -162,6 +162,8 @@ Change Log:
           wrap and TransmitText word wrap
       67) Fixed --config-dir failure on MS
       68) Changed qso clear to only clear the search field on logbook dialog
+      69) Bug fix - TimeOn reset logic
+      70) Bug fix - missing (int) cast in confdialog.fl
 
 3.03
       1) Changes to socket server to correct shutdown process
