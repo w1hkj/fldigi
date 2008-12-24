@@ -226,8 +226,8 @@ void status::loadLastState()
 	// version name/value pair; also clear everything to avoid creating
 	// entries out of existing file contents.
 	if (!bLastStateRead) {
-		while (spref.entries())
-			spref.deleteEntry(spref.entry(0));
+//		while (spref.entries())
+//			spref.deleteEntry(spref.entry(0));
 		return;
 	}
 
@@ -370,5 +370,9 @@ void status::initLastState()
 	wBrowser->columnWidth(3, logbook_col_3);
 	wBrowser->columnWidth(4, logbook_col_4);
 	wBrowser->columnWidth(5, logbook_col_5);
-		
+	
+	ReceiveText->QuickEntry(quick_entry);
+	ReceiveText->WordWrap(rx_word_wrap);
+	TransmitText->WordWrap(tx_word_wrap);
+	
 }

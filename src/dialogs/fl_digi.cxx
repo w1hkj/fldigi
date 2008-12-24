@@ -2484,8 +2484,6 @@ void create_fl_digi_main() {
 			ReceiveText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
 			ReceiveText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
 			ReceiveText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
-			ReceiveText->QuickEntry(progStatus.quick_entry);
-			ReceiveText->WordWrap(progStatus.rx_word_wrap);
 			showMacroSet();
 			
 			TiledGroup->add_resize_check(FTextView::wheight_mult_tsize, ReceiveText);
@@ -2506,7 +2504,6 @@ void create_fl_digi_main() {
 			TransmitText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
 			TransmitText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
 			TransmitText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
-			TransmitText->WordWrap(progStatus.tx_word_wrap);
 
 			Fl_Box *minbox = new Fl_Box(sw,Y + 66, WNOM-sw, Htext - 66 - 32);
 			minbox->hide();
