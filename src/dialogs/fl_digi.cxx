@@ -1293,6 +1293,8 @@ void updateOutSerNo()
 		outSerNo->value("");
 }
 
+string old_call = "";
+
 void clearQSO()
 {
 	Fl_Input* in[] = { 
@@ -1308,6 +1310,7 @@ void clearQSO()
 	updateOutSerNo();
 	inpSearchString->value ("");
 	lblDup->hide();
+	old_call.clear();
 }
 
 void cb_ResetSerNbr()
@@ -1345,13 +1348,13 @@ void cb_call(Fl_Widget* w, void*)
 		delete [] uc;
 	}
 
-	if (!inpCall->changed()) {
+	if (old_call != inpCall->value()) {
+		old_call = inpCall->value();
 		inpTimeOn->value(inpTimeOff->value(), inpTimeOff->size());
 		SearchLastQSO(inpCall->value());
 		lblDup->hide();
 		if (EnableDupCheck)
 			DupCheck(inpCall->value());
-
 	}
 	
 	if (!progdefaults.autofill_qso_fields)
