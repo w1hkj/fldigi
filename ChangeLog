@@ -167,6 +167,8 @@ Change Log:
       71) Added TX_PWR, IOTA and DXCC to logbook fields
       72) Changed main dialog field name "Notes" to "Comment" to be consistent
           with the logbook dialog
+      73) Additional fix for TimeOn logic
+      74) Change to Rx text popup menu configuration.
 
 3.03
       1) Changes to socket server to correct shutdown process
