@@ -397,8 +397,8 @@ void FTextBase::reset_styles(int set)
 #endif
 
 Fl_Menu_Item FTextView::view_menu[] = {
-	{ make_icon_label(LOOKUP_SYMBOL _("&Look up call"), net_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
-	{ make_icon_label(ENTER_SYMBOL _("&Call"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(LOOKUP_SYMBOL _("&Look up call"), net_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL _("&Call"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ make_icon_label(ENTER_SYMBOL "&Name", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(ENTER_SYMBOL _("QT&H"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(ENTER_SYMBOL _("&State"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
@@ -694,7 +694,8 @@ void FTextView::handle_context_menu(void)
 	// toggle visibility of quick entry items
 	bool v;
 	v = view_menu[RX_MENU_QUICK_ENTRY].value();
-	for (size_t i = RX_MENU_CALL; i <= RX_MENU_RST_IN; i++)
+//	for (size_t i = RX_MENU_CALL; i <= RX_MENU_RST_IN; i++)
+	for (size_t i = RX_MENU_NAME; i <= RX_MENU_RST_IN; i++)
 		v ? view_menu[i].show() : view_menu[i].hide();
 
 	set_active(&view_menu[RX_MENU_COPY], tbuf->selected());
