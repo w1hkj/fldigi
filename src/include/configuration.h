@@ -251,6 +251,7 @@
         ELEM_(std::string, Xchg1, "XCGH1", "")                                          \
         ELEM_(std::string, Xchg2, "XCGH2", "")                                          \
         ELEM_(std::string, Xchg3, "XCGH3", "")                                          \
+        ELEM_(std::string, mytxpower, "TXPOWER", "20")                                  \
 /* Macro timer constants and controls */                                                \
         ELEM_(bool, useTimer, "USETIMER", false)                                        \
         ELEM_(int, macronumber, "MACRONUMBER", 0)                                       \

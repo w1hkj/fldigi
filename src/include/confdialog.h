@@ -32,6 +32,7 @@ extern Fl_Check_Button *btnNagMe;
 extern Fl_Check_Button *btnClearOnSave;
 extern Fl_Check_Button *btnAutoFillQSO;
 extern Fl_Check_Button *btnCallUpperCase;
+extern Fl_Input2 *inpMyPower;
 extern Fl_Group *tabWfallRestart;
 #include <FL/Fl_Counter.H>
 extern Fl_Counter *cntrWfwidth;

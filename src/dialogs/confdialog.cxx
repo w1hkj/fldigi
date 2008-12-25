@@ -153,6 +153,13 @@ static void cb_btnCallUpperCase(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Input2 *inpMyPower=(Fl_Input2 *)0;
+
+static void cb_inpMyPower(Fl_Input2* o, void*) {
+  progdefaults.mytxpower = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabWfallRestart=(Fl_Group *)0;
 
 Fl_Counter *cntrWfwidth=(Fl_Counter *)0;
@@ -2138,8 +2145,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         { tabsUI = new Fl_Tabs(0, 25, 500, 345);
           tabsUI->selection_color(FL_LIGHT1);
           { tabUserInterface = new Fl_Group(0, 50, 500, 320, _("General"));
-            tabUserInterface->hide();
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 276);
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 301);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(15, 70, 120, 20, _("Show tooltips"));
                 btnShowTooltips->down_box(FL_DOWN_BOX);
@@ -2162,19 +2168,19 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 mnuScheme->add("plastic");
                 mnuScheme->value(mnuScheme->find_item(progdefaults.ui_scheme.c_str()));
               } // Fl_Choice* mnuScheme
-              { Fl_Check_Button* o = btnRXClicks = new Fl_Check_Button(15, 270, 305, 20, _("Double-click on RX text enters QSO data"));
+              { Fl_Check_Button* o = btnRXClicks = new Fl_Check_Button(15, 295, 305, 20, _("Double-click on RX text enters QSO data"));
                 btnRXClicks->down_box(FL_DOWN_BOX);
                 btnRXClicks->callback((Fl_Callback*)cb_btnRXClicks);
                 o->value(progdefaults.rxtext_clicks_qso_data);
               } // Fl_Check_Button* btnRXClicks
-              { Fl_Check_Button* o = btnRXTooltips = new Fl_Check_Button(15, 300, 282, 20, _("Show callsign tooltips in received text"));
+              { Fl_Check_Button* o = btnRXTooltips = new Fl_Check_Button(15, 325, 282, 20, _("Show callsign tooltips in received text"));
                 btnRXTooltips->down_box(FL_DOWN_BOX);
                 btnRXTooltips->callback((Fl_Callback*)cb_btnRXTooltips);
                 o->value(progdefaults.rxtext_tooltips);
               } // Fl_Check_Button* btnRXTooltips
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(15, 130, 315, 127, _("QSO logging"));
+            { Fl_Group* o = new Fl_Group(15, 130, 470, 160, _("QSO logging"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
               { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(25, 155, 155, 20, _("Prompt to save log"));
@@ -2198,6 +2204,19 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 btnCallUpperCase->callback((Fl_Callback*)cb_btnCallUpperCase);
                 o->value(progdefaults.calluppercase);
               } // Fl_Check_Button* btnCallUpperCase
+              { Fl_Input2* o = inpMyPower = new Fl_Input2(25, 256, 50, 24, _("Transmit Power"));
+                inpMyPower->box(FL_DOWN_BOX);
+                inpMyPower->color(FL_BACKGROUND2_COLOR);
+                inpMyPower->selection_color(FL_SELECTION_COLOR);
+                inpMyPower->labeltype(FL_NORMAL_LABEL);
+                inpMyPower->labelfont(0);
+                inpMyPower->labelsize(14);
+                inpMyPower->labelcolor(FL_FOREGROUND_COLOR);
+                inpMyPower->callback((Fl_Callback*)cb_inpMyPower);
+                inpMyPower->align(FL_ALIGN_RIGHT);
+                inpMyPower->when(FL_WHEN_RELEASE);
+                o->value(progdefaults.mytxpower.c_str());
+              } // Fl_Input2* inpMyPower
               o->end();
             } // Fl_Group* o
             tabUserInterface->end();
@@ -2252,6 +2271,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             tabWfallRestart->end();
           } // Fl_Group* tabWfallRestart
           { tabContest = new Fl_Group(0, 50, 500, 320, _("Contest"));
+            tabContest->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 80, _("Exchanges"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);

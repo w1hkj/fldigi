@@ -571,6 +571,8 @@ void AddRecord ()
 	inpQSLsentdate_log->value ("");
 	inpComment_log->value (inpNotes->value());
 	
+	inpTX_pwr_log->value (progdefaults.mytxpower.c_str());
+	
 	saveRecord();
 	qsodb.SortByDate();
 	loadBrowser();
