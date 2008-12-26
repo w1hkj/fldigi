@@ -171,6 +171,7 @@ Change Log:
       74) Change to Rx text popup menu configuration.
       75) Restored IPC log output (SysV message) to xlog for saving log
       76) Added Tx Power configuration item
+      77) Added TX_PWR and COUNTRY to adif export
 
 3.03
       1) Changes to socket server to correct shutdown process
