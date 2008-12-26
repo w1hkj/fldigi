@@ -60,6 +60,10 @@ btnSelectXchg2->value(0);
 btnSelectXchg3->value(0);
 btnSelectRSTsent->value(0);
 btnSelectRSTrcvd->value(0);
+btnSelectIOTA->value(0);
+btnSelectDXCC->value(0);
+btnSelectTX_pwr->value(0);
+btnSelectComment->value(0);
 }
 
 Fl_Button *btnCheckAllFields=(Fl_Button *)0;
@@ -87,6 +91,10 @@ btnSelectXchg2->value(1);
 btnSelectXchg3->value(1);
 btnSelectRSTsent->value(1);
 btnSelectRSTrcvd->value(1);
+btnSelectIOTA->value(1);
+btnSelectDXCC->value(1);
+btnSelectTX_pwr->value(1);
+btnSelectComment->value(1);
 }
 
 Fl_Check_Button *btnSelectCall=(Fl_Check_Button *)0;
@@ -166,6 +174,10 @@ btnSelectXchg2->value(0);
 btnSelectXchg3->value(0);
 btnSelectRSTsent->value(0);
 btnSelectRSTrcvd->value(1);
+btnSelectComment->value(0);
+btnSelectIOTA->value(0);
+btnSelectDXCC->value(0);
+btnSelectTX_pwr->value(0);
 }
 
 Fl_Double_Window *dlgLogbook=(Fl_Double_Window *)0;

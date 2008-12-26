@@ -76,7 +76,11 @@ btnSelectXchg1->value(0);
 btnSelectXchg2->value(0);
 btnSelectXchg3->value(0);
 btnSelectRSTsent->value(0);
-btnSelectRSTrcvd->value(0);}
+btnSelectRSTrcvd->value(0);
+btnSelectIOTA->value(0);
+btnSelectDXCC->value(0);
+btnSelectTX_pwr->value(0);
+btnSelectComment->value(0);}
         xywh {397 275 76 20}
       }
       Fl_Button btnCheckAllFields {
@@ -102,7 +106,11 @@ btnSelectXchg1->value(1);
 btnSelectXchg2->value(1);
 btnSelectXchg3->value(1);
 btnSelectRSTsent->value(1);
-btnSelectRSTrcvd->value(1);}
+btnSelectRSTrcvd->value(1);
+btnSelectIOTA->value(1);
+btnSelectDXCC->value(1);
+btnSelectTX_pwr->value(1);
+btnSelectComment->value(1);}
         xywh {477 275 76 20}
       }
       Fl_Check_Button btnSelectCall {
@@ -232,7 +240,11 @@ btnSelectXchg1->value(0);
 btnSelectXchg2->value(0);
 btnSelectXchg3->value(0);
 btnSelectRSTsent->value(0);
-btnSelectRSTrcvd->value(1);}
+btnSelectRSTrcvd->value(1);
+btnSelectComment->value(0);
+btnSelectIOTA->value(0);
+btnSelectDXCC->value(0);
+btnSelectTX_pwr->value(0);} selected
         xywh {557 275 76 20}
       }
     }
@@ -412,7 +424,7 @@ btnSelectRSTrcvd->value(1);}
         class Fl_Input2
       }
       Fl_Input inpDXCC_log {
-        label DXCC selected
+        label DXCC
         xywh {357 130 80 22} labelsize 12 align 5 textsize 12
         class Fl_Input2
       }
