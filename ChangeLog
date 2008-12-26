@@ -172,6 +172,7 @@ Change Log:
       75) Restored IPC log output (SysV message) to xlog for saving log
       76) Added Tx Power configuration item
       77) Added TX_PWR and COUNTRY to adif export
+      78) Bug fix, delete last qso in logbook browser
 
 3.03
       1) Changes to socket server to correct shutdown process
