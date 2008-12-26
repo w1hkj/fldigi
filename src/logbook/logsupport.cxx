@@ -592,6 +592,7 @@ void loadBrowser(bool keep_pos)
 	cQsoRec *rec;
 	char sNbr[6];
 	int row = wBrowser->value(), pos = wBrowser->scrollPos();
+	if (row >= qsodb.nbrRecs()) row = qsodb.nbrRecs() - 1;
 	wBrowser->clear();
 	if (qsodb.nbrRecs() == 0)
 		return;
