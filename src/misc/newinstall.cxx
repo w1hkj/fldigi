@@ -106,8 +106,8 @@ text[19] = "";
 
 label[20] = "CQ @-3+";
 text[20] = "<TX>\n\
-CQ CQ CQ de <MYCALL> <MYCALL> <MYCALL>\n\
-CQ CQ CQ de <MYCALL> <MYCALL> <MYCALL> k<TIMER>15 <RX>";
+<IDLE:5>CQ CQ CQ de <MYCALL> <MYCALL> <MYCALL>\n\
+CQ CQ CQ de <MYCALL> <MYCALL> <MYCALL> k<RX><TIMER:15>";
 
 label[21] = "CQ-ID @>|";
 text[21] = "<TX><ID>\n\

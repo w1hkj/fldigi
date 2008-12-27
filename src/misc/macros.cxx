@@ -106,8 +106,8 @@ MTAGS mtags[] = {
 {"<X2>",		pX2},
 {"<X3>",		pX3},
 {"<LOG>",		pLOG},
-{"<TIMER>",		pTIMER},
-{"<IDLE>",		pIDLE},
+{"<TIMER:",		pTIMER},
+{"<IDLE:",		pIDLE},
 {"<MODEM>",		pMODEM},
 {"<EXEC>",		pEXEC},
 {"<STOP>",		pSTOP},
@@ -143,6 +143,38 @@ void pFILE(string &s, size_t &i)
 			}
 		s.replace(i, endbracket - i + 1, buffer);
 		fclose(toadd);
+	} else
+		s.replace(i, endbracket - i + 1, "");
+}
+
+void pTIMER(string &s, size_t &i)
+{
+	size_t endbracket = s.find('>',i);
+	int number;
+	string sTime = s.substr(i+7, endbracket - i - 7);
+	if (sTime.length() > 0) {
+		sscanf(sTime.c_str(), "%d", &number);
+		s.replace(i, endbracket - i + 1, "");
+		progdefaults.timeout = number;
+		progdefaults.macronumber = mNbr;
+		progdefaults.useTimer = true;
+	} else
+		s.replace(i, endbracket - i + 1, "");
+}
+
+bool useIdle = false;
+int  idleTime = 0;
+
+void pIDLE(string &s, size_t &i)
+{
+	size_t endbracket = s.find('>',i);
+	int number;
+	string sTime = s.substr(i+6, endbracket - i - 6);
+	if (sTime.length() > 0) {
+		sscanf(sTime.c_str(), "%d", &number);
+		s.replace(i, endbracket - i + 1, "");
+		useIdle = true;
+		idleTime = number;
 	} else
 		s.replace(i, endbracket - i + 1, "");
 }
@@ -367,39 +399,6 @@ void pLOG(string &s, size_t &i)
 	s.replace(i, 5, "");
 	if (progdefaults.ClearOnSave)
 		clearQSO();
-}
-
-void pTIMER(string &s, size_t &i)
-{
-	int number;
-	sscanf(s.substr(i+7).c_str(), "%d", &number);
-	size_t i2;
-	i2 = s.find(" ",i);
-	if (i2 == string::npos)
-		i2 = s.find("\n", i);
-	s.replace (i, i2 - i, "");
-	progdefaults.timeout = number;
-	progdefaults.macronumber = mNbr;
-	progdefaults.useTimer = true;
-}
-
-bool useIdle = false;
-int  idleTime = 0;
-
-void pIDLE(string &s, size_t &i)
-{
-	int number;
-	sscanf(s.substr(i+6).c_str(), "%d", &number);
-	size_t i2, i3;
-	i2 = s.find(" ", i);
-	i3 = s.find("\n", i);
-	if (i2 == string::npos)
-		i2 = i3;
-	if (i3 < i2)
-		i2 = i3;
-	s.replace (i, i2 - i + 1, "");
-	useIdle = true;
-	idleTime = number;
 }
 
 void pMODEM(string &s, size_t &i)

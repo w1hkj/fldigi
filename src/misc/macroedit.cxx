@@ -84,8 +84,8 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add("<TX>\ttransmit");
 	w->add("<LOG>\tsave QSO data");
 	w->add("<VER>\tFldigi + version");
-	w->add("<TIMER>\trepeat every NNN sec");
-	w->add("<IDLE>\tidle signal for NNN sec");
+	w->add("<TIMER:NN>\trepeat every NN sec");
+	w->add("<IDLE:NN>\tidle signal for NN sec");
 	
 	w->add(LINE_SEP);
 	w->add("<FILE:>\tinsert text file");
