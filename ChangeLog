@@ -173,6 +173,10 @@ Change Log:
       76) Added Tx Power configuration item
       77) Added TX_PWR and COUNTRY to adif export
       78) Bug fix, delete last qso in logbook browser
+      79) Balanced pre/post amble tones with mfsk tones on Oliva - effectively
+          increases average transmitted power in Olivia
+      80) Change macros for <TIMER> and <IDLE> to use new format:
+          <TIMER:NN> and <IDLE:NN> where NN is time in seconds.
 
 3.03
       1) Changes to socket server to correct shutdown process
