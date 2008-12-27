@@ -200,8 +200,9 @@ int olivia::tx_process()
 			put_echo_char(c);
 
 	if ((len = Tx->Output(txbuffer)) > 0) {
-		for (i = 0; i < len; i++)
-			txfbuffer[i] = (double) (txbuffer[i] / 32767.0);
+		for (i = 0; i < len; i++) {
+			txfbuffer[i] = (double) (txbuffer[i] / 24000.0);
+		}
 
 		ModulateXmtr(txfbuffer, len);
 	}
