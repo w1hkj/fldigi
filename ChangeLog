@@ -177,6 +177,10 @@ Change Log:
           increases average transmitted power in Olivia
       80) Change macros for <TIMER> and <IDLE> to use new format:
           <TIMER:NN> and <IDLE:NN> where NN is time in seconds.
+      81) Added clear IOTA field when QSO data saved to logbook
+      82) Fixed hamlib's azimuth calculation.  Disabled conditional compilation
+          for locator.c.
+
 
 3.03
       1) Changes to socket server to correct shutdown process
