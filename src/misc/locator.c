@@ -539,8 +539,11 @@ int HAMLIB_API qrb(double lon1, double lat1, double lon2, double lat2, double *d
 	 * This method is easier than the one in the handbook
 	 */
 
-	/* Short Path */
+	
 	*distance = ARC_IN_KM * RADIAN * arc;
+
+	/* Short Path */
+	/* Change to azimuth computation by Dave Freese, W1HKJ */
 
 	az = RADIAN * atan2(sin(lon2 - lon1) * cos(lat2),
 			    (cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(lon2 - lon1)));
@@ -552,7 +555,6 @@ int HAMLIB_API qrb(double lon1, double lat1, double lon2, double lat2, double *d
 		az -= 360.0;
 
 	*azimuth = floor(az + 0.5);
-
 	return RIG_OK;
 }
 
