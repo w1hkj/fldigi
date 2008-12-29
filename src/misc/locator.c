@@ -542,26 +542,17 @@ int HAMLIB_API qrb(double lon1, double lat1, double lon2, double lat2, double *d
 	/* Short Path */
 	*distance = ARC_IN_KM * RADIAN * arc;
 
-	/* This formula seems to work with very small distances
-	 *
-	 * I found it on the Web at:
-	 * http://williams.best.vwh.net/avform.htm#Crs
-	 *
-	 * Strangely, all the computed values were negative thus the
-	 * sign reversal below.
-	 * - N0NB
-	 */
-	az = RADIAN * fmod(atan2(sin(lon1 - lon2) * cos(lat2),
-				 cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(lon1 - lon2)), 2 * M_PI);
-	if (lon1 > lon2) {
-		az -= 360.;
-		*azimuth = -az;
-	} else {
-		if (az >= 0.0)
-			*azimuth = az;
-		else
-			*azimuth = -az;
-	}
+	az = RADIAN * atan2(sin(lon2 - lon1) * cos(lat2),
+			    (cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(lon2 - lon1)));
+
+	az = fmod(360.0 + az, 360.0);
+	if (az < 0.0)
+		az += 360.0;
+	else if (az >= 360.0)
+		az -= 360.0;
+
+	*azimuth = floor(az + 0.5);
+
 	return RIG_OK;
 }
 

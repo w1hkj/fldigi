@@ -39,9 +39,8 @@ endif
 
 if ENABLE_HAMLIB
   fldigi_SOURCES += $(HAMLIB_SRC)
-else
-  fldigi_SOURCES += $(LOCATOR_SRC)
 endif
+fldigi_SOURCES += $(LOCATOR_SRC)
 
 if ENABLE_XMLRPC
   fldigi_SOURCES += $(XMLRPC_SRC)
