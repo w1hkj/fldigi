@@ -204,7 +204,10 @@ Fl_Button			*btnQRZ;
 Fl_Group			*MixerFrame;
 Fl_Value_Slider			*valRcvMixer;
 Fl_Value_Slider			*valXmtMixer;
-AFCind				*AFCindicator;
+
+// AFC indicator useful during modem debugging
+// adds confusion factor to normal operations
+//AFCind				*AFCindicator;
 
 #define FREQWIDTH 172  // FREQWIDTH should be a multiple of 9 + 10
 #define FREQHEIGHT 30
@@ -2633,24 +2636,24 @@ void create_fl_digi_main() {
 
 			StatusBar = new Fl_Box(
                 rightof(Status2), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
-                WNOM - bwSqlOnOff - bwAfcOnOff - Wwarn - rightof(Status2) - 60, 
+                WNOM - bwSqlOnOff - bwAfcOnOff - Wwarn - rightof(Status2) - 2 * pad,// - 60, 
                 Hstatus, "");
 			StatusBar->box(FL_DOWN_BOX);
 			StatusBar->color(FL_BACKGROUND2_COLOR);
 			StatusBar->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 			
 			WARNstatus = new Fl_Box(
-				rightof(StatusBar), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
+				rightof(StatusBar) + pad, Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
                 Wwarn, Hstatus, "");
 			WARNstatus->box(FL_DIAMOND_DOWN_BOX);
 			WARNstatus->color(FL_BACKGROUND_COLOR);
 			WARNstatus->labelcolor(FL_RED);
 			WARNstatus->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE);
 				
-			AFCindicator = new AFCind(
-				rightof(WARNstatus), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
-				60,
-				Hstatus, "");
+//			AFCindicator = new AFCind(
+//				rightof(WARNstatus), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
+//				60,
+//				Hstatus, "");
 
 			int sql_width = bwSqlOnOff;
 #ifdef __APPLE__
@@ -3242,13 +3245,12 @@ void abort_tx()
 
 void set_AFCind(double val)
 {
-	REQ (&AFCind::value, AFCindicator, val );
+//	REQ (&AFCind::value, AFCindicator, val );
 }
 
 void set_AFCrange(double val)
 {
-	REQ (&AFCind::range, AFCindicator, val);
-
+//	REQ (&AFCind::range, AFCindicator, val);
 }
 
 // Adjust and return fg color to ensure good contrast with bg
