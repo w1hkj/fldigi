@@ -91,9 +91,6 @@ string appname;
 
 string scDevice[2];
 
-char szHomedir[120] = "";
-char szPskMailDir[120] = "";
-
 string HomeDir;
 string RigsDir;
 string ScriptsDir;
@@ -161,13 +158,17 @@ int main(int argc, char ** argv)
 	setlocale(LC_TIME, "");
 #endif
 
+	{
+		char dirbuf[FL_PATH_MAX + 1];
 #ifdef __CYGWIN__
-	fl_filename_expand(szHomedir, 119, "$USERPROFILE/fldigi.files/");
-	HomeDir = szHomedir;
+		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$USERPROFILE/fldigi.files/");
 #else
-	fl_filename_expand(szHomedir, 119, "$HOME/.fldigi/");
-	HomeDir = szHomedir;
+		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$HOME/.fldigi/");
 #endif
+		HomeDir = dirbuf;
+		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$HOME/");
+		PskMailDir = dirbuf;
+	}
 
 	set_platform_ui();
 
@@ -210,9 +211,8 @@ int main(int argc, char ** argv)
 	txmsgid = -1;
 #endif
 
-	fl_filename_expand(szPskMailDir, 119, "$HOME/");
-	PskMailDir = szPskMailDir;
 	checkTLF();
+
 
 	Fl::lock();  // start the gui thread!!
 	Fl::visual(FL_RGB); // insure 24 bit color operation
@@ -528,18 +528,13 @@ int parse_args(int argc, char **argv, int& idx)
 			break;
 #endif
 
-		case OPT_CONFIG_DIR:
-			HomeDir = optarg;
-#ifndef __CYGWIN__
-			if (HomeDir[0] != '/') {
-				string wkngdir = getenv("PWD");
-				wkngdir += '/';
-				wkngdir.append(HomeDir);
-				HomeDir = wkngdir;
-			}
-#endif
+		case OPT_CONFIG_DIR: {
+			char buf[FL_PATH_MAX + 1];
+			fl_filename_absolute(buf, sizeof(buf) - 1, optarg);
+			HomeDir = buf;
+		}
 			if (*HomeDir.rbegin() != '/')
-				HomeDir += '/';
+			       HomeDir += '/';
 			break;
 
 		case OPT_ARQ_ADDRESS:
@@ -852,42 +847,35 @@ int setup_nls(void)
 }
 #endif
 
-static bool checkdir(string &dirname)
-{
-	DIR *dir;
-	dir = opendir(dirname.c_str());
-	if (dir == 0) {
-		if ( mkdir(dirname.c_str(), 0777) == -1) {
-			cerr << _("Could not make directory ") << dirname.c_str() << ": "
-		    	 << strerror(errno) << endl;
-			exit(EXIT_FAILURE);
-		}
-		closedir(dir);
-		return true;
-	} else
-		closedir(dir);
-		return false;
-}
-
 static void checkdirectories(void)
 {
-	RigsDir = HomeDir + _("rigs/)");
-	ScriptsDir = HomeDir + _("scripts/");
-	PalettesDir = HomeDir + _("palettes/");
-	LogsDir = HomeDir + _("logs/");
-	PicsDir = HomeDir + _("images/");
-	HelpDir = HomeDir + _("help/");
-	MacrosDir = HomeDir + _("macros/");
-	TempDir = HomeDir + _("temp/");
-	
-	checkdir(HomeDir);
-	checkdir(ScriptsDir);
-	checkdir(LogsDir);
-	checkdir(PicsDir);
-	checkdir(HelpDir);
-	checkdir(TempDir);
-	if (checkdir(PalettesDir)) create_new_palettes();
-	if (checkdir(MacrosDir)) create_new_macros();
+	struct {
+		string& dir;
+		const char* suffix;
+		void (*new_dir_func)(void);
+	} dirs[] = {
+		{ HomeDir, 0, 0 },
+		{ RigsDir, "rigs", 0 },
+		{ ScriptsDir, "scripts", 0 },
+		{ PalettesDir, "palettes", create_new_palettes },
+		{ LogsDir, "logs", 0 },
+		{ PicsDir, "images", 0 },
+		{ HelpDir, "help", 0 },
+		{ MacrosDir, "macros", create_new_macros },
+		{ TempDir, "temp", 0 },
+	};
+
+	int r;
+	for (size_t i = 0; i < sizeof(dirs)/sizeof(*dirs); i++) {
+		if (dirs[i].suffix)
+			dirs[i].dir.assign(HomeDir).append(dirs[i].suffix).append("/");
+
+		if ((r = mkdir(dirs[i].dir.c_str(), 0777)) == -1 && errno != EEXIST) {
+			cerr << _("Could not make directory") << ' ' << dirs[i].dir
+			     << ": " << strerror(errno) << '\n';
+			exit(EXIT_FAILURE);
+		}
+		else if (r == 0 && dirs[i].new_dir_func)
+			dirs[i].new_dir_func();
+	}
 }
-
-
