@@ -4,6 +4,8 @@
 //
 // Copyright (C) 2006
 //		Dave Freese, W1HKJ
+// Copyright (C) 2008
+//		Stelios Bounanos, M0GLD
 //
 // This file is part of fldigi.  Adapted from code contained in gmfsk source code 
 // distribution.
@@ -29,6 +31,16 @@
 
 #include <config.h>
 
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/select.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <termios.h>
+#include <errno.h>
+#include <cstring>
+
 #include "ptt.h"
 #include "configuration.h"
 #include "rigMEM.h"
@@ -36,132 +48,140 @@
 #if USE_HAMLIB
 	#include "hamlib.h"
 #endif
+#include "serial.h"
+#include "re.h"
+#include "debug.h"
 
-#include <FL/fl_ask.H>
+using namespace std;
 
 
-// dev may be one of
-// "none" - 0
-// "hamlib" - 1
-// "memmap" - 2
-// "rigcat" - 3
-// "tty" - 4 (SPECIFIED by progdefaults.PTTdev)
-
-PTT::PTT(int dev)//, int mode, bool inverted)
+PTT::PTT(ptt_t dev) : pttdev(PTT_INVALID), oldtio(0)
 {
-	pttfd = -1;
-	reset_(dev);//, mode, inverted);
+	reset(dev);
 }
 
 PTT::~PTT()
 {
-	if (pttdev < 4)
-		return;
-
-	if (pttfd != -1) {
-		tcsetattr (pttfd, TCSANOW, &oldtio);
-		close(pttfd);
-		pttfd = -1;
-	}
+	close_all();
 }
 
-void PTT::reset_(int dev)//, int mode, bool inverted)
+void PTT::reset(ptt_t dev)
 {
-	pttdev = dev;
-//	pttinv = inverted;
-//	pttmode = mode;
+	close_all();
 
-	if (pttdev < 4) {
-		set(false);
-		return;
+	switch (pttdev = dev) {
+	case PTT_INVALID: default:
+		LOG_ERROR("Bad PTT device type %d. Disabling PTT.", pttdev);
+		pttdev = PTT_NONE;
+		// fall through
+	case PTT_NONE: case PTT_HAMLIB: case PTT_MEMMAP: case PTT_RIGCAT:
+		break; // nothing to open
+
+	case PTT_TTY:
+		if (progdefaults.PTTdev.find(UHROUTER_FIFO_PREFIX) != 0) {
+			open_tty();
+			break;
+		}
+		else
+			pttdev = PTT_UHROUTER;
+		// fall through
+	case PTT_UHROUTER:
+		open_uhrouter();
+		break;
 	}
 
-// convert to and from Windows / Linux serial port naming
-
-#ifdef __CYGWIN__
-	if (progdefaults.PTTdev == "COM1")
-		pttdevName = "/dev/ttyS0";
-	else if (progdefaults.PTTdev == "COM2")
-		pttdevName = "/dev/ttyS1";
-	else if (progdefaults.PTTdev == "COM3")
-		pttdevName = "/dev/ttyS2";
-	else if (progdefaults.PTTdev == "COM4")
-		pttdevName = "/dev/ttyS3";
-	else if (progdefaults.PTTdev == "COM5")
-		pttdevName = "/dev/ttyS4";
-	else if (progdefaults.PTTdev == "COM6")
-		pttdevName = "/dev/ttyS5";
-	else if (progdefaults.PTTdev == "COM7")
-		pttdevName = "/dev/ttyS6";
-	else if (progdefaults.PTTdev == "COM8")
-		pttdevName = "/dev/ttyS7";
-	else if (progdefaults.PTTdev == "COM9")
-		pttdevName = "/dev/ttyS8";
-	else if (progdefaults.PTTdev == "COM10")
-		pttdevName = "/dev/ttyS9";
-	else if (progdefaults.PTTdev == "COM11")
-		pttdevName = "/dev/ttyS10";
-	else if (progdefaults.PTTdev == "COM12")
-		pttdevName = "/dev/ttyS11";
-	else if (progdefaults.PTTdev == "COM13")
-		pttdevName = "/dev/ttyS12";
-	else if (progdefaults.PTTdev == "COM14")
-		pttdevName = "/dev/ttyS13";
-	else
-		pttdevName = progdefaults.PTTdev;
-#else
-	pttdevName = progdefaults.PTTdev;
-#endif
-
-	openptt();
-	if (pttfd == -1) {
-		string msg = "Cannot open ";
-		msg = msg + progdefaults.PTTdev; //pttdevName;
-		fl_message( msg.c_str() );
-		return;
-	}
 	set(false);
-}
-
-
-void PTT::reset(int dev)//, int mode, bool inverted)
-{
-	if (pttfd != -1) {
-		tcsetattr (pttfd, TCSANOW, &oldtio);
-		close(pttfd);
-		pttfd = -1;
-	}
-	reset_(dev);//, mode, inverted);
 }
 
 void PTT::set(bool ptt)
 {
-	if (pttdev == 0) return;
-
-	if (active_modem == cw_modem && 
-			((progdefaults.useCWkeylineRTS == true) || 
-			 (progdefaults.useCWkeylineDTR == true) ) )
+	if (active_modem == cw_modem &&
+	    ((progdefaults.useCWkeylineRTS) || progdefaults.useCWkeylineDTR == true))
 		return;
 
-// Hamlib ptt
+	switch (pttdev) {
+	case PTT_NONE: default:
+		break;
 #if USE_HAMLIB
-	if (pttdev == 1) {
+	case PTT_HAMLIB:
 		hamlib_set_ptt(ptt);
-		return;
-	}
+		break;
 #endif
-// Memory mapped i/o
-	if (pttdev == 2) { 
-		setrigMEM_PTT (ptt);
+	case PTT_MEMMAP:
+		setrigMEM_PTT(ptt);
+		break;
+	case PTT_RIGCAT:
+		rigCAT_set_ptt(ptt);
+		break;
+	case PTT_TTY:
+		set_tty(ptt);
+		break;
+	case PTT_UHROUTER:
+		set_uhrouter(ptt);
+		break;
+	}
+}
+
+void PTT::close_all(void)
+{
+	set(false);
+
+	switch (pttdev) {
+	case PTT_TTY:
+		close_tty();
+		break;
+	case PTT_UHROUTER:
+		close_uhrouter();
+		break;
+	default:
+		break;
+	}
+}
+
+//-------------------- serial port PTT --------------------//
+
+void PTT::open_tty(void)
+{
+	string pttdevName = progdefaults.PTTdev;
+#ifdef __CYGWIN__
+	// convert to Linux serial port naming
+	adjust_port(pttdevName);
+#endif
+
+	if ((pttfd = open(pttdevName.c_str(), O_RDWR | O_NOCTTY | O_NDELAY)) < 0) {
+		LOG_ERROR("Could not open \"%s\": %s", pttdevName.c_str(), strerror(errno));
 		return;
 	}
-	if (pttdev == 3){
-		rigCAT_set_ptt (ptt);
-		return;
+
+	oldtio = new struct termios;
+	tcgetattr(pttfd, oldtio);
+
+	int status;
+	ioctl(pttfd, TIOCMGET, &status);
+
+	if (progdefaults.RTSplus)
+		status |= TIOCM_RTS;		// set RTS bit
+	else
+		status &= ~TIOCM_RTS;		// clear RTS bit
+	if (progdefaults.DTRplus)
+		status |= TIOCM_DTR;		// set DTR bit
+	else
+		status &= ~TIOCM_DTR;		// clear DTR bit
+
+	ioctl(pttfd, TIOCMSET, &status);
+}
+
+void PTT::close_tty(void)
+{
+	if (pttfd >= 0) {
+		tcsetattr(pttfd, TCSANOW, oldtio);
+		close(pttfd);
 	}
-	if (pttfd == -1)
-		return;
-	
+	delete oldtio;
+}
+
+void PTT::set_tty(bool ptt)
+{
 	int status;
 	ioctl(pttfd, TIOCMGET, &status);
 
@@ -186,33 +206,222 @@ void PTT::set(bool ptt)
 	}
 
 	ioctl(pttfd, TIOCMSET, &status);
-
 }
 
+//-------------------- uhRouter PTT --------------------//
 
-void PTT::openptt()
+// See interface documentation at:
+// http://homepage.mac.com/chen/w7ay/Router/Contents/routerInterface.html
+
+#define	FUNCTIONMASK     0x1f
+
+#define ROUTERFUNCTION   0x80
+#define OPENMICROKEYER   (ROUTERFUNCTION + 0x01) // get a port to the microKEYER router
+#define OPENCWKEYER      (ROUTERFUNCTION + 0x02) // get a port to the CW KEYER router
+#define OPENDIGIKEYER    (ROUTERFUNCTION + 0x03) // get a port to the DIGI KEYER router
+#define QUITIFNOKEYER    (ROUTERFUNCTION + 0x1f) // quit if there are no keyers
+#define QUITIFNOTINUSE   (ROUTERFUNCTION + 0x1e) // quit if not connected
+#define QUITALWAYS       (ROUTERFUNCTION + 0x1d) // quit
+#define CLOSEKEYER       (ROUTERFUNCTION + FUNCTIONMASK)
+
+#define KEYERFUNCTION    0x40
+#define OPENPTT          (KEYERFUNCTION + 0x04)  // get a port to the PTT flag bit
+
+#ifndef PATH_MAX
+#  define PATH_MAX 1024
+#endif
+
+static ssize_t tm_read(int fd, void* buf, size_t len, const struct timeval* to)
 {
-//	unsigned int arg = pttarg;
-	int status;
-	if ((pttfd = open(pttdevName.c_str(), O_RDWR | O_NOCTTY | O_NDELAY)) < 0)
+	fd_set s;
+	FD_ZERO(&s);
+	FD_SET(fd, &s);
+
+	struct timeval t;
+	memcpy(&t, to, sizeof(t));
+
+	ssize_t n;
+	if ((n = select(fd + 1, &s, 0, 0, &t)) != 1)
+		return n;
+
+	return read(fd, buf, len);
+}
+
+static ssize_t tm_write(int fd, const void* buf, size_t len, const struct timeval* to)
+{
+	fd_set s;
+	FD_ZERO(&s);
+	FD_SET(fd, &s);
+
+	struct timeval t;
+	memcpy(&t, to, sizeof(t));
+
+	ssize_t n;
+	if ((n = select(fd + 1, 0, &s, 0, &t)) != 1)
+		return n;
+
+	return write(fd, buf, len);
+}
+
+static bool open_fifos(const char* base, int fd[2])
+{
+	struct stat st;
+	string fifo = base;
+	size_t len = fifo.length();
+
+	fifo += "Read";
+	if (stat(fifo.c_str(), &st) == -1 || !S_ISFIFO(st.st_mode)) {
+		LOG_ERROR("%s is not a fifo", fifo.c_str());
+		return false;
+	}
+	if ((fd[0] = open(fifo.c_str(), O_RDONLY | O_NONBLOCK)) == -1) {
+		LOG_ERROR("Could not open %s: %s", fifo.c_str(), strerror(errno));
+		return false;
+	}
+
+	fifo.erase(len);
+	fifo += "Write";
+	if (stat(fifo.c_str(), &st) == -1 || !S_ISFIFO(st.st_mode)) {
+		LOG_ERROR("%s is not a fifo", fifo.c_str());
+		return false;
+	}
+	if ((fd[1] = open(fifo.c_str(), O_WRONLY | O_NONBLOCK)) == -1) {
+		LOG_ERROR("Could not open %s: %s", fifo.c_str(), strerror(errno));
+		return false;
+	}
+
+	return true;
+}
+
+static bool get_fifos(const int fd[2], const unsigned char* msg, size_t msglen, char* base, size_t baselen)
+{
+	struct timeval to = { 2, 0 };
+	if (tm_write(fd[1], msg, msglen, &to) < (ssize_t)msglen) {
+		LOG_PERROR("Could not write request");
+		return false;
+	}
+	ssize_t r;
+	if ((r = tm_read(fd[0], base, baselen-1, &to)) <= 0) {
+		LOG_PERROR("Could not read FIFO name");
+		return false;
+	}
+	base[r] = '\0';
+	return true;
+}
+
+void PTT::open_uhrouter(void)
+{
+	struct {
+		unsigned char keyer;
+		const char* name;
+		const char* abbrev;
+	} keyers[] = {
+		{ OPENMICROKEYER, "microKeyer", "MK" },
+		{ OPENCWKEYER,    "CWKeyer",    "CK" },
+		{ OPENDIGIKEYER,  "DigiKeyer",  "DK" }
+	};
+	size_t start = 0, end = sizeof(keyers)/sizeof(*keyers);
+
+	// If the device string is something like /tmp/microHamRouter/microKeyer,
+	// or /tmp/microHamRouter/MK, try that keyer only.
+	re_t keyer_re("^" UHROUTER_FIFO_PREFIX "/(.+)$", REG_EXTENDED);
+	if (keyer_re.match(progdefaults.PTTdev.c_str()) && keyer_re.nsub() == 2) {
+		const char* keyer = keyer_re.submatch(1).c_str();
+		// do we recognise this keyer name?
+		for (size_t i = 0; i < sizeof(keyers)/sizeof(*keyers); i++) {
+			if (!strcasecmp(keyers[i].name, keyer) || !strcasecmp(keyers[i].abbrev, keyer)) {
+				start = end = i;
+				break;
+			}
+		}
+	}
+	LOG_INFO("Will try %s", (start == end ? keyers[start].name : "all keyers"));
+
+	int uhrfd[2];
+	uhrfd[0] = uhrfd[1] = uhkfd[0] = uhkfd[1] = uhfd[0] = uhfd[1] = -1;
+
+	if (!open_fifos(UHROUTER_FIFO_PREFIX, uhrfd)) {
+		LOG_ERROR("Could not open router");
+		return;
+	}
+
+	char fifo_name[PATH_MAX];
+	size_t len = PATH_MAX - 8;
+	memset(fifo_name, 0, sizeof(fifo_name));
+	for (size_t i = start; i < end; i++) {
+		// open keyer
+		if (!get_fifos(uhrfd, &keyers[i].keyer, 1, fifo_name, len) || *fifo_name == '\0') {
+			LOG_INFO("Keyer \"%s\" not found", keyers[i].name);
+			continue;
+		}
+
+		// open ptt port
+		if (!open_fifos(fifo_name, uhkfd)) {
+			LOG_ERROR("Could not open keyer %s", keyers[i].name);
+			continue;
+		}
+		LOG_INFO("Opened keyer %s", keyers[i].name);
+
+		unsigned char port = OPENPTT;
+		if (!get_fifos(uhkfd, &port, 1, fifo_name, len)) {
+			LOG_ERROR("Could not get PTT port");
+			continue;
+		}
+		if (!open_fifos(fifo_name, uhfd)) {
+			LOG_ERROR("Could not open PTT port %s", fifo_name);
+			continue;
+		}
+
+		LOG_INFO("Successfully opened PTT port of keyer %s", keyers[i].name);
+		break;
+	}
+
+	// close router FIFOs
+	close(uhrfd[0]);
+	close(uhrfd[1]);
+}
+
+void PTT::close_uhrouter(void)
+{
+	close(uhfd[0]);
+	close(uhfd[1]);
+
+	unsigned char c = CLOSEKEYER;
+	write(uhkfd[1], &c, 1);
+	close(uhkfd[0]);
+	close(uhkfd[1]);
+}
+
+void PTT::set_uhrouter(bool ptt)
+{
+	if (uhfd[0] == -1 || uhfd[1] == -1)
 		return;
 
-	tcgetattr (pttfd, &oldtio);
+	unsigned char buf[_POSIX_PIPE_BUF];
+	// empty the fifo
+	while (read(uhfd[0], buf, sizeof(buf)) > 0);
 
-	ioctl(pttfd, TIOCMGET, &status);
+	// send command
+	*buf = '0' + ptt;
+	LOG_INFO("Sending PTT=%uc", *buf);
+	struct timeval t = { 2, 0 };
+	if (tm_write(uhfd[1], buf, 1, &t) != 1) {
+		LOG_ERROR("Could not set PTT: %s", strerror(errno));
+		return;
+	}
 
-	if (progdefaults.RTSplus)
-		status |= TIOCM_RTS;		// set RTS bit
-	else
-		status &= ~TIOCM_RTS;		// clear RTS bit
-	if (progdefaults.DTRplus)
-		status |= TIOCM_DTR;		// set DTR bit
-	else
-		status &= ~TIOCM_DTR;		// clear DTR bit
-
-	ioctl(pttfd, TIOCMSET, &status);
-
-	return;
+	// wait for status
+	ssize_t n = tm_read(uhfd[0], buf, sizeof(buf), &t);
+	switch (n) {
+	case -1:
+		LOG_PERROR("tm_read");
+		break;
+	case 0:
+		LOG_ERROR("No reply to PTT command within %ld", t.tv_sec);
+		break;
+	default:
+		LOG_INFO("Received \"%s\"", str2hex(buf, n, (char*)buf+n, sizeof(buf)-n));
+		// last received char should be '1'(?)
+		break;
+	}
 }
-
-

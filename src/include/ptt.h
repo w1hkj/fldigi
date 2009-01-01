@@ -4,6 +4,8 @@
 //
 // Copyright (C) 2006
 //		Dave Freese, W1HKJ
+// Copyright (C) 2008
+//		Stelios Bounanos, M0GLD
 //
 // This file is part of fldigi.  Adapted from code contained in gmfsk source code 
 // distribution.
@@ -27,36 +29,39 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ----------------------------------------------------------------------------
 
-#ifndef _PTT_H
-#define _PTT_H
+#ifndef PTT_H_
+#define PTT_H_
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
-#include <termios.h>
-#include <string>
-
-using namespace std;
+struct termios;
 
 class PTT {
-private:
-	int pttfd;
-//	int pttinv;
-//	int pttmode;
-	int pttarg;
-	int pttdev;
-	string pttdevName;
-	struct termios oldtio;
-	void  openptt();
-	void reset_(int dev);//, int mode, bool inverted);
 public:
-	PTT(int dev = 0);//, int mode = 0, bool inverted = false);
+	enum ptt_t { PTT_INVALID = -1, PTT_NONE, PTT_HAMLIB,
+		     PTT_MEMMAP, PTT_RIGCAT, PTT_TTY, PTT_UHROUTER };
+	PTT(ptt_t dev = PTT_NONE);
 	~PTT();
-	void reset(int dev = 0);//, int mode = 0, bool inverted = false);
 	void set(bool on);
+	void reset(ptt_t dev);
+private:
+	ptt_t pttdev;
 
+	// tty
+	int pttfd;
+	struct termios* oldtio;
+
+	// uhrouter
+	int uhkfd[2]; // keyer
+	int uhfd[2];  // ptt
+
+	void close_all(void);
+	void open_tty(void);
+	void set_tty(bool ptt);
+	void close_tty(void);
+	void open_uhrouter(void);
+	void set_uhrouter(bool ptt);
+	void close_uhrouter(void);
 };
 
+#define UHROUTER_FIFO_PREFIX "/tmp/microHamRouter"
 
-#endif
+#endif // PTT_H_

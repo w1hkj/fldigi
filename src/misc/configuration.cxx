@@ -33,6 +33,8 @@
 #endif
 #ifndef __CYGWIN__
 #  include <sys/stat.h>
+#else
+#  include <fcntl.h>
 #endif
 
 using namespace std;
@@ -613,7 +615,7 @@ void configuration::initInterface()
 			qsoFreqDisp->activate();
 	}
 
-	push2talk->reset(btnPTTis);
+	push2talk->reset(static_cast<PTT::ptt_t>(btnPTTis));
 	wf->setRefLevel();
 	wf->setAmpSpan();
 	cntLowFreqCutoff->value(LowFreqCutoff);
@@ -748,4 +750,10 @@ out:
 		globfree(&gbuf);
 #endif // __APPLE__
 	}
+
+#ifdef __APPLE__
+	if (stat(UHROUTER_FIFO_PREFIX "Read", &st) != -1 && S_ISFIFO(st.st_mode) &&
+	    stat(UHROUTER_FIFO_PREFIX "Write", &st) != -1 && S_ISFIFO(st.st_mode))
+		inpTTYdev->add(UHROUTER_FIFO_PREFIX);
+#endif // __APPLE__
 }
