@@ -178,8 +178,6 @@ void cb_Export_log() {
 	cQsoRec *rec;
 	char line[80];
 	chkExportBrowser->clear();
-	chkExportBrowser->textfont(FL_COURIER);
-	chkExportBrowser->textsize(12);
 	for( int i = 0; i < qsodb.nbrRecs(); i++ ) {
 		rec = qsodb.getRec (i);
 		memset(line, sizeof(line), 0);

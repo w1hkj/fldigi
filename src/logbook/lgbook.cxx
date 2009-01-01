@@ -380,16 +380,14 @@ void create_logbook_dialogs() {
     { editGroup = new Fl_Group(2, 2, 565, 228);
       editGroup->box(FL_ENGRAVED_FRAME);
       editGroup->color(FL_LIGHT2);
-      editGroup->labelsize(12);
       { inpDate_log = new Fl_DateInput(5, 20, 100, 22, _("Date / Time"));
         inpDate_log->box(FL_DOWN_BOX);
         inpDate_log->color(FL_BACKGROUND2_COLOR);
         inpDate_log->selection_color(FL_SELECTION_COLOR);
         inpDate_log->labeltype(FL_NORMAL_LABEL);
         inpDate_log->labelfont(0);
-        inpDate_log->labelsize(12);
+        inpDate_log->labelsize(14);
         inpDate_log->labelcolor(FL_FOREGROUND_COLOR);
-        inpDate_log->textsize(12);
         inpDate_log->align(FL_ALIGN_TOP_LEFT);
         inpDate_log->when(FL_WHEN_RELEASE);
         inpDate_log->format(2);
@@ -400,9 +398,8 @@ void create_logbook_dialogs() {
         inpTimeOn_log->selection_color(FL_SELECTION_COLOR);
         inpTimeOn_log->labeltype(FL_NORMAL_LABEL);
         inpTimeOn_log->labelfont(0);
-        inpTimeOn_log->labelsize(12);
+        inpTimeOn_log->labelsize(14);
         inpTimeOn_log->labelcolor(FL_FOREGROUND_COLOR);
-        inpTimeOn_log->textsize(12);
         inpTimeOn_log->align(FL_ALIGN_TOP_LEFT);
         inpTimeOn_log->when(FL_WHEN_RELEASE);
       } // Fl_Input2* inpTimeOn_log
@@ -412,9 +409,8 @@ void create_logbook_dialogs() {
         inpTimeOff_log->selection_color(FL_SELECTION_COLOR);
         inpTimeOff_log->labeltype(FL_NORMAL_LABEL);
         inpTimeOff_log->labelfont(0);
-        inpTimeOff_log->labelsize(12);
+        inpTimeOff_log->labelsize(14);
         inpTimeOff_log->labelcolor(FL_FOREGROUND_COLOR);
-        inpTimeOff_log->textsize(12);
         inpTimeOff_log->align(FL_ALIGN_TOP_LEFT);
         inpTimeOff_log->when(FL_WHEN_RELEASE);
       } // Fl_Input2* inpTimeOff_log
@@ -424,9 +420,8 @@ void create_logbook_dialogs() {
         inpCall_log->selection_color(FL_SELECTION_COLOR);
         inpCall_log->labeltype(FL_NORMAL_LABEL);
         inpCall_log->labelfont(0);
-        inpCall_log->labelsize(12);
+        inpCall_log->labelsize(14);
         inpCall_log->labelcolor(FL_FOREGROUND_COLOR);
-        inpCall_log->textsize(12);
         inpCall_log->align(FL_ALIGN_TOP_LEFT);
         inpCall_log->when(FL_WHEN_RELEASE);
       } // Fl_Input2* inpCall_log
@@ -436,9 +431,8 @@ void create_logbook_dialogs() {
         inpName_log->selection_color(FL_SELECTION_COLOR);
         inpName_log->labeltype(FL_NORMAL_LABEL);
         inpName_log->labelfont(0);
-        inpName_log->labelsize(12);
+        inpName_log->labelsize(14);
         inpName_log->labelcolor(FL_FOREGROUND_COLOR);
-        inpName_log->textsize(12);
         inpName_log->align(FL_ALIGN_TOP_LEFT);
         inpName_log->when(FL_WHEN_RELEASE);
       } // Fl_Input2* inpName_log
@@ -448,9 +442,8 @@ void create_logbook_dialogs() {
         inpFreq_log->selection_color(FL_SELECTION_COLOR);
         inpFreq_log->labeltype(FL_NORMAL_LABEL);
         inpFreq_log->labelfont(0);
-        inpFreq_log->labelsize(12);
+        inpFreq_log->labelsize(14);
         inpFreq_log->labelcolor(FL_FOREGROUND_COLOR);
-        inpFreq_log->textsize(12);
         inpFreq_log->align(FL_ALIGN_TOP_LEFT);
         inpFreq_log->when(FL_WHEN_RELEASE);
       } // Fl_Input2* inpFreq_log
@@ -460,9 +453,8 @@ void create_logbook_dialogs() {
         inpMode_log->selection_color(FL_SELECTION_COLOR);
         inpMode_log->labeltype(FL_NORMAL_LABEL);
         inpMode_log->labelfont(0);
-        inpMode_log->labelsize(12);
+        inpMode_log->labelsize(14);
         inpMode_log->labelcolor(FL_FOREGROUND_COLOR);
-        inpMode_log->textsize(12);
         inpMode_log->align(FL_ALIGN_TOP_LEFT);
         inpMode_log->when(FL_WHEN_RELEASE);
       } // Fl_Input2* inpMode_log
@@ -472,9 +464,8 @@ void create_logbook_dialogs() {
         inpRstR_log->selection_color(FL_SELECTION_COLOR);
         inpRstR_log->labeltype(FL_NORMAL_LABEL);
         inpRstR_log->labelfont(0);
-        inpRstR_log->labelsize(12);
+        inpRstR_log->labelsize(14);
         inpRstR_log->labelcolor(FL_FOREGROUND_COLOR);
-        inpRstR_log->textsize(12);
         inpRstR_log->align(FL_ALIGN_TOP_LEFT);
         inpRstR_log->when(FL_WHEN_RELEASE);
       } // Fl_Input2* inpRstR_log
@@ -484,9 +475,8 @@ void create_logbook_dialogs() {
         inpRstS_log->selection_color(FL_SELECTION_COLOR);
         inpRstS_log->labeltype(FL_NORMAL_LABEL);
         inpRstS_log->labelfont(0);
-        inpRstS_log->labelsize(12);
+        inpRstS_log->labelsize(14);
         inpRstS_log->labelcolor(FL_FOREGROUND_COLOR);
-        inpRstS_log->textsize(12);
         inpRstS_log->align(FL_ALIGN_TOP_LEFT);
         inpRstS_log->when(FL_WHEN_RELEASE);
       } // Fl_Input2* inpRstS_log
@@ -496,9 +486,8 @@ void create_logbook_dialogs() {
         inpQth_log->selection_color(FL_SELECTION_COLOR);
         inpQth_log->labeltype(FL_NORMAL_LABEL);
         inpQth_log->labelfont(0);
-        inpQth_log->labelsize(12);
+        inpQth_log->labelsize(14);
         inpQth_log->labelcolor(FL_FOREGROUND_COLOR);
-        inpQth_log->textsize(12);
         inpQth_log->align(FL_ALIGN_TOP_LEFT);
         inpQth_log->when(FL_WHEN_RELEASE);
       } // Fl_Input2* inpQth_log
@@ -508,9 +497,8 @@ void create_logbook_dialogs() {
         inpState_log->selection_color(FL_SELECTION_COLOR);
         inpState_log->labeltype(FL_NORMAL_LABEL);
         inpState_log->labelfont(0);
-        inpState_log->labelsize(12);
+        inpState_log->labelsize(14);
         inpState_log->labelcolor(FL_FOREGROUND_COLOR);
-        inpState_log->textsize(12);
         inpState_log->align(FL_ALIGN_TOP_LEFT);
         inpState_log->when(FL_WHEN_RELEASE);
       } // Fl_Input2* inpState_log
@@ -520,9 +508,8 @@ void create_logbook_dialogs() {
         inpVE_Prov_log->selection_color(FL_SELECTION_COLOR);
         inpVE_Prov_log->labeltype(FL_NORMAL_LABEL);
         inpVE_Prov_log->labelfont(0);
-        inpVE_Prov_log->labelsize(12);
+        inpVE_Prov_log->labelsize(14);
         inpVE_Prov_log->labelcolor(FL_FOREGROUND_COLOR);
-        inpVE_Prov_log->textsize(12);
         inpVE_Prov_log->align(FL_ALIGN_TOP_LEFT);
         inpVE_Prov_log->when(FL_WHEN_RELEASE);
       } // Fl_Input2* inpVE_Prov_log
@@ -532,9 +519,8 @@ void create_logbook_dialogs() {
         inpCountry_log->selection_color(FL_SELECTION_COLOR);
         inpCountry_log->labeltype(FL_NORMAL_LABEL);
         inpCountry_log->labelfont(0);
-        inpCountry_log->labelsize(12);
+        inpCountry_log->labelsize(14);
         inpCountry_log->labelcolor(FL_FOREGROUND_COLOR);
-        inpCountry_log->textsize(12);
         inpCountry_log->align(FL_ALIGN_TOP_LEFT);
         inpCountry_log->when(FL_WHEN_RELEASE);
       } // Fl_Input2* inpCountry_log
@@ -545,9 +531,8 @@ void create_logbook_dialogs() {
         inpLoc_log->selection_color(FL_SELECTION_COLOR);
         inpLoc_log->labeltype(FL_NORMAL_LABEL);
         inpLoc_log->labelfont(0);
-        inpLoc_log->labelsize(12);
+        inpLoc_log->labelsize(14);
         inpLoc_log->labelcolor(FL_FOREGROUND_COLOR);
-        inpLoc_log->textsize(12);
         inpLoc_log->align(FL_ALIGN_TOP_LEFT);
         inpLoc_log->when(FL_WHEN_RELEASE);
       } // Fl_Input2* inpLoc_log
@@ -558,9 +543,8 @@ void create_logbook_dialogs() {
         inpComment_log->selection_color(FL_SELECTION_COLOR);
         inpComment_log->labeltype(FL_NORMAL_LABEL);
         inpComment_log->labelfont(0);
-        inpComment_log->labelsize(12);
+        inpComment_log->labelsize(14);
         inpComment_log->labelcolor(FL_FOREGROUND_COLOR);
-        inpComment_log->textsize(12);
         inpComment_log->align(FL_ALIGN_TOP_LEFT);
         inpComment_log->when(FL_WHEN_RELEASE);
       } // Fl_Input2* inpComment_log
@@ -570,9 +554,8 @@ void create_logbook_dialogs() {
         inpQSLrcvddate_log->selection_color(FL_SELECTION_COLOR);
         inpQSLrcvddate_log->labeltype(FL_NORMAL_LABEL);
         inpQSLrcvddate_log->labelfont(0);
-        inpQSLrcvddate_log->labelsize(12);
+        inpQSLrcvddate_log->labelsize(14);
         inpQSLrcvddate_log->labelcolor(FL_FOREGROUND_COLOR);
-        inpQSLrcvddate_log->textsize(12);
         inpQSLrcvddate_log->align(FL_ALIGN_TOP_LEFT);
         inpQSLrcvddate_log->when(FL_WHEN_RELEASE);
         o->format(2);
@@ -583,9 +566,8 @@ void create_logbook_dialogs() {
         inpQSLsentdate_log->selection_color(FL_SELECTION_COLOR);
         inpQSLsentdate_log->labeltype(FL_NORMAL_LABEL);
         inpQSLsentdate_log->labelfont(0);
-        inpQSLsentdate_log->labelsize(12);
+        inpQSLsentdate_log->labelsize(14);
         inpQSLsentdate_log->labelcolor(FL_FOREGROUND_COLOR);
-        inpQSLsentdate_log->textsize(12);
         inpQSLsentdate_log->align(FL_ALIGN_TOP_LEFT);
         inpQSLsentdate_log->when(FL_WHEN_RELEASE);
         o->format(2);
@@ -594,21 +576,18 @@ void create_logbook_dialogs() {
         bNewSave->shortcut(0x8004e);
         bNewSave->color(FL_LIGHT1);
         bNewSave->selection_color((Fl_Color)48);
-        bNewSave->labelsize(12);
         bNewSave->callback((Fl_Callback*)cb_btnNewSave);
       } // Fl_Button* bNewSave
       { bUpdateCancel = new Fl_Button(192, 201, 55, 22, _("Update"));
         bUpdateCancel->shortcut(0x80055);
         bUpdateCancel->color(FL_LIGHT1);
         bUpdateCancel->selection_color((Fl_Color)48);
-        bUpdateCancel->labelsize(12);
         bUpdateCancel->callback((Fl_Callback*)cb_btnUpdateCancel);
       } // Fl_Button* bUpdateCancel
       { bDelete = new Fl_Button(264, 201, 55, 22, _("Delete"));
         bDelete->shortcut(0x80044);
         bDelete->color(FL_LIGHT1);
         bDelete->selection_color((Fl_Color)48);
-        bDelete->labelsize(12);
         bDelete->callback((Fl_Callback*)cb_btnDelete);
       } // Fl_Button* bDelete
       { txtNbrRecs_log = new Fl_Input2(38, 201, 65, 22, _("Recs"));
@@ -617,9 +596,8 @@ void create_logbook_dialogs() {
         txtNbrRecs_log->selection_color(FL_SELECTION_COLOR);
         txtNbrRecs_log->labeltype(FL_NORMAL_LABEL);
         txtNbrRecs_log->labelfont(0);
-        txtNbrRecs_log->labelsize(12);
+        txtNbrRecs_log->labelsize(14);
         txtNbrRecs_log->labelcolor(FL_FOREGROUND_COLOR);
-        txtNbrRecs_log->textsize(12);
         txtNbrRecs_log->align(FL_ALIGN_LEFT);
         txtNbrRecs_log->when(FL_WHEN_RELEASE);
       } // Fl_Input2* txtNbrRecs_log
@@ -632,9 +610,8 @@ void create_logbook_dialogs() {
           inpSerNoOut_log->selection_color(FL_SELECTION_COLOR);
           inpSerNoOut_log->labeltype(FL_NORMAL_LABEL);
           inpSerNoOut_log->labelfont(0);
-          inpSerNoOut_log->labelsize(12);
+          inpSerNoOut_log->labelsize(14);
           inpSerNoOut_log->labelcolor(FL_FOREGROUND_COLOR);
-          inpSerNoOut_log->textsize(12);
           inpSerNoOut_log->align(FL_ALIGN_TOP_LEFT);
           inpSerNoOut_log->when(FL_WHEN_RELEASE);
         } // Fl_Input2* inpSerNoOut_log
@@ -645,9 +622,8 @@ void create_logbook_dialogs() {
           inpSerNoIn_log->selection_color(FL_SELECTION_COLOR);
           inpSerNoIn_log->labeltype(FL_NORMAL_LABEL);
           inpSerNoIn_log->labelfont(0);
-          inpSerNoIn_log->labelsize(12);
+          inpSerNoIn_log->labelsize(14);
           inpSerNoIn_log->labelcolor(FL_FOREGROUND_COLOR);
-          inpSerNoIn_log->textsize(12);
           inpSerNoIn_log->align(FL_ALIGN_TOP_LEFT);
           inpSerNoIn_log->when(FL_WHEN_RELEASE);
         } // Fl_Input2* inpSerNoIn_log
@@ -658,9 +634,8 @@ void create_logbook_dialogs() {
           inpXchg1_log->selection_color(FL_SELECTION_COLOR);
           inpXchg1_log->labeltype(FL_NORMAL_LABEL);
           inpXchg1_log->labelfont(0);
-          inpXchg1_log->labelsize(12);
+          inpXchg1_log->labelsize(14);
           inpXchg1_log->labelcolor(FL_FOREGROUND_COLOR);
-          inpXchg1_log->textsize(12);
           inpXchg1_log->align(FL_ALIGN_TOP_LEFT);
           inpXchg1_log->when(FL_WHEN_RELEASE);
         } // Fl_Input2* inpXchg1_log
@@ -671,9 +646,8 @@ void create_logbook_dialogs() {
           inpXchg2_log->selection_color(FL_SELECTION_COLOR);
           inpXchg2_log->labeltype(FL_NORMAL_LABEL);
           inpXchg2_log->labelfont(0);
-          inpXchg2_log->labelsize(12);
+          inpXchg2_log->labelsize(14);
           inpXchg2_log->labelcolor(FL_FOREGROUND_COLOR);
-          inpXchg2_log->textsize(12);
           inpXchg2_log->align(FL_ALIGN_TOP_LEFT);
           inpXchg2_log->when(FL_WHEN_RELEASE);
         } // Fl_Input2* inpXchg2_log
@@ -684,9 +658,8 @@ void create_logbook_dialogs() {
           inpXchg3_log->selection_color(FL_SELECTION_COLOR);
           inpXchg3_log->labeltype(FL_NORMAL_LABEL);
           inpXchg3_log->labelfont(0);
-          inpXchg3_log->labelsize(12);
+          inpXchg3_log->labelsize(14);
           inpXchg3_log->labelcolor(FL_FOREGROUND_COLOR);
-          inpXchg3_log->textsize(12);
           inpXchg3_log->align(FL_ALIGN_TOP_LEFT);
           inpXchg3_log->when(FL_WHEN_RELEASE);
         } // Fl_Input2* inpXchg3_log
@@ -700,9 +673,8 @@ void create_logbook_dialogs() {
           inpSearchString->selection_color(FL_SELECTION_COLOR);
           inpSearchString->labeltype(FL_NORMAL_LABEL);
           inpSearchString->labelfont(0);
-          inpSearchString->labelsize(12);
+          inpSearchString->labelsize(14);
           inpSearchString->labelcolor(FL_FOREGROUND_COLOR);
-          inpSearchString->textsize(12);
           inpSearchString->align(FL_ALIGN_TOP_LEFT);
           inpSearchString->when(FL_WHEN_RELEASE);
         } // Fl_Input2* inpSearchString
@@ -710,7 +682,6 @@ void create_logbook_dialogs() {
           bSearchPrev->tooltip(_("Find previous"));
           bSearchPrev->color(FL_LIGHT1);
           bSearchPrev->selection_color((Fl_Color)48);
-          bSearchPrev->labelsize(12);
           bSearchPrev->callback((Fl_Callback*)cb_search);
           bSearchPrev->align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
           bSearchPrev->image(new Fl_Pixmap(left_arrow_icon));
@@ -719,7 +690,6 @@ void create_logbook_dialogs() {
           bSearchNext->tooltip(_("Find next"));
           bSearchNext->color(FL_LIGHT1);
           bSearchNext->selection_color((Fl_Color)48);
-          bSearchNext->labelsize(12);
           bSearchNext->callback((Fl_Callback*)cb_search);
           bSearchNext->align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
           bSearchNext->image(new Fl_Pixmap(right_arrow_icon));
@@ -732,9 +702,8 @@ void create_logbook_dialogs() {
         inpIOTA_log->selection_color(FL_SELECTION_COLOR);
         inpIOTA_log->labeltype(FL_NORMAL_LABEL);
         inpIOTA_log->labelfont(0);
-        inpIOTA_log->labelsize(12);
+        inpIOTA_log->labelsize(14);
         inpIOTA_log->labelcolor(FL_FOREGROUND_COLOR);
-        inpIOTA_log->textsize(12);
         inpIOTA_log->align(FL_ALIGN_TOP_LEFT);
         inpIOTA_log->when(FL_WHEN_RELEASE);
       } // Fl_Input2* inpIOTA_log
@@ -744,9 +713,8 @@ void create_logbook_dialogs() {
         inpTX_pwr_log->selection_color(FL_SELECTION_COLOR);
         inpTX_pwr_log->labeltype(FL_NORMAL_LABEL);
         inpTX_pwr_log->labelfont(0);
-        inpTX_pwr_log->labelsize(12);
+        inpTX_pwr_log->labelsize(14);
         inpTX_pwr_log->labelcolor(FL_FOREGROUND_COLOR);
-        inpTX_pwr_log->textsize(12);
         inpTX_pwr_log->align(FL_ALIGN_TOP_LEFT);
         inpTX_pwr_log->when(FL_WHEN_RELEASE);
       } // Fl_Input2* inpTX_pwr_log
@@ -756,9 +724,8 @@ void create_logbook_dialogs() {
         inpDXCC_log->selection_color(FL_SELECTION_COLOR);
         inpDXCC_log->labeltype(FL_NORMAL_LABEL);
         inpDXCC_log->labelfont(0);
-        inpDXCC_log->labelsize(12);
+        inpDXCC_log->labelsize(14);
         inpDXCC_log->labelcolor(FL_FOREGROUND_COLOR);
-        inpDXCC_log->textsize(12);
         inpDXCC_log->align(FL_ALIGN_TOP_LEFT);
         inpDXCC_log->when(FL_WHEN_RELEASE);
       } // Fl_Input2* inpDXCC_log
@@ -770,7 +737,7 @@ void create_logbook_dialogs() {
       wBrowser->selection_color(FL_SELECTION_COLOR);
       wBrowser->labeltype(FL_NORMAL_LABEL);
       wBrowser->labelfont(0);
-      wBrowser->labelsize(12);
+      wBrowser->labelsize(14);
       wBrowser->labelcolor(FL_FOREGROUND_COLOR);
       wBrowser->align(FL_ALIGN_TOP);
       wBrowser->when(FL_WHEN_RELEASE);
