@@ -325,30 +325,14 @@ void DupCheck(const char *callsign)
 		lblDup->show();
 }
 
-cQsoRec *srchRec = 0;
-
-char *getSearchField( int fld )
-{
-	if (srchRec && fld >= CALL && fld < EXPORT)
-		return srchRec->getField(fld);
-	return 0;		
-}
-
-int SearchLog(const char *callsign, const char*** data)
+cQsoRec* SearchLog(const char *callsign)
 {
 	size_t len = strlen(callsign);
 	char* re = new char[len + 3];
 	snprintf(re, len + 3, "^%s$", callsign);
 
 	int row = 0, col = 2;
-
-	if (wBrowser->search(row, col, !cQsoDb::reverse, re)) {
-		srchRec = qsodb.getRec (row);
-		*data = wBrowser->getRow(row);
-		return wBrowser->columns();
-	}
-	srchRec = 0;
-	return 0;
+	return wBrowser->search(row, col, !cQsoDb::reverse, re) ? qsodb.getRec(row) : 0;
 }
 
 void SearchLastQSO(const char *callsign)

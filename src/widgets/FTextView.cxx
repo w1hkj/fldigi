@@ -884,54 +884,60 @@ const char* FTextView::dxcc_lookup_call(int x, int y)
 {
 	char* s = get_word(x - this->x(), y - this->y());
 	const char* ret = 0;
+	if (!(s && *s && call.match(s))) {
+		free(s);
+		return 0;
+	}
 
-	if (s && *s && call.match(s)) {
-		const dxcc* e = dxcc_lookup(s);
-		if (!e)
-			goto ret;
+	const dxcc* e = dxcc_lookup(s);
+	cQsoRec* qso = SearchLog(s);
+	const char *name = 0, *date = 0;
+	double lon1, lat1, lon2 = 360.0, lat2 = 360.0, distance, azimuth;
+	static char tip[256];
+	size_t len = 0;
 
-		static char tip[128];
-		size_t len = snprintf(tip, sizeof(tip), "%s (%s GMT%+0.1f) CQ-%d ITU-%d",
-				   e->country, e->continent, -e->gmt_offset, e->cq_zone, e->itu_zone);
-		if (len < sizeof(tip)) {
-			const char** data;
-			char*  locator = 0;
-			char*  name = 0;
-			if (SearchLog(s, &data) > 0) {
-				locator = getSearchField(GRIDSQUARE);
-				name = getSearchField(NAME);
-				if (name)
-					len += snprintf(tip + len, sizeof(tip) - len, "\n* %s  %s (%s)", 
-								name, _("worked before"), data[0]);
-				else
-					len += snprintf(tip + len, sizeof(tip) - len, "\n* %s (%s)", 
-								_("worked before"), data[0]);				
-				if ( locator ) {
-					if (len < sizeof(tip) && !progdefaults.myLocator.empty()) {
-						double lon, lat, lon2, lat2, distance, azimuth;
-						if (locator2longlat(&lon, &lat, progdefaults.myLocator.c_str()) == RIG_OK &&
-							locator2longlat(&lon2, &lat2, locator) == RIG_OK &&
-						    qrb(lon, lat, lon2, lat2, &distance, &azimuth) == RIG_OK)
-							len += snprintf(tip + len, sizeof(tip) - len,
-									"\nQTE %.0f\260 (%.0f\260)  QRB %.0fkm (%.0fkm)",
-									azimuth, azimuth_long_path(azimuth), distance, distance_long_path(distance));
-					}
-				}
-			} else {
-				if (len < sizeof(tip) && !progdefaults.myLocator.empty()) {
-					double lon, lat, distance, azimuth;
-					if (locator2longlat(&lon, &lat, progdefaults.myLocator.c_str()) == RIG_OK &&
-			    		qrb(lon, lat, -e->longitude, e->latitude, &distance, &azimuth) == RIG_OK)
-						len += snprintf(tip + len, sizeof(tip) - len,
-								"\nQTE %.0f\260 (%.0f\260)  QRB %.0fkm (%.0fkm)",
-								azimuth, azimuth_long_path(azimuth), distance, distance_long_path(distance));
-				}
-			}
-		}
+	if (qso) {
+		const char* locator = qso->getField(GRIDSQUARE);
+		if (!(locator && *locator && locator2longlat(&lon2, &lat2, locator) == RIG_OK))
+			lon2 = lat2 = 360.0;
+		name = qso->getField(NAME);
+		date = qso->getField(QSO_DATE);
+	}
+	if (e) {
+		if (lon2 == 360.0)
+			lon2 = -e->longitude;
+		if (lat2 == 360.0)
+			lat2 = e->latitude;
+		len += snprintf(tip, sizeof(tip), "%s (%s GMT%+0.1f) CQ-%d ITU-%d\n",
+				e->country, e->continent, -e->gmt_offset, e->cq_zone, e->itu_zone);
 		ret = tip;
 	}
 
-ret:
+	if (len < sizeof(tip) && locator2longlat(&lon1, &lat1, progdefaults.myLocator.c_str()) == RIG_OK &&
+	    qrb(lon1, lat1, lon2, lat2, &distance, &azimuth) == RIG_OK) {
+		len += snprintf(tip + len, sizeof(tip) - len, "QTE %.0f\260 (%.0f\260)  QRB %.0fkm (%.0fkm)\n",
+				azimuth, azimuth_long_path(azimuth), distance, distance_long_path(distance));
+		ret = tip;
+	}
+	if (len < sizeof(tip) && name && *name) {
+		len += snprintf(tip + len, sizeof(tip) - len, "* %s", name);
+		const char* qth = qso->getField(QTH);
+		if (len < sizeof(tip) && qth && *qth)
+			len += snprintf(tip + len, sizeof(tip) - len, " %s %s\n", _("in"), qth);
+		else if (len + 1 < sizeof(tip)) {
+			tip[len++] = '\n';
+			tip[len] = '\0';
+		}
+		ret = tip;
+	}
+	if (len < sizeof(tip) && date && *date) {
+		len += snprintf(tip + len, sizeof(tip) - len, "* %s: %s", _("Last QSO"), date);
+		const char* mode = qso->getField(MODE);
+		if (len < sizeof(tip) && mode && *mode)
+			len += snprintf(tip + len, sizeof(tip) - len, " %s %s", _("in"), mode);
+		ret = tip;
+	}
+
 	free(s);
 	return ret;
 }
