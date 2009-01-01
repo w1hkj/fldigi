@@ -1296,7 +1296,7 @@ void updateOutSerNo()
 		outSerNo->value("");
 }
 
-string old_call = "";
+string old_call;
 
 void clearQSO()
 {
@@ -1343,15 +1343,16 @@ void cb_call(Fl_Widget* w, void*)
 	if ((oktoclear = !inpCall->size()))
 		return restoreFocus(w);
 
-	if (!inpCall->changed() && progdefaults.calluppercase) {
-		char* uc = new char[inpCall->size()];
-		transform(inpCall->value(), inpCall->value() + inpCall->size(), uc,
-			  static_cast<int (*)(int)>(std::toupper));
-		inpCall->value(uc, inpCall->size());
-		delete [] uc;
+	if (!inpCall->changed()) {
+		if (progdefaults.calluppercase) {
+			char* uc = new char[inpCall->size()];
+			transform(inpCall->value(), inpCall->value() + inpCall->size(), uc,
+				  static_cast<int (*)(int)>(std::toupper));
+			inpCall->value(uc, inpCall->size());
+			delete [] uc;
+		}
 	}
-
-	if (old_call != inpCall->value()) {
+	else if (old_call != inpCall->value()) {
 		old_call = inpCall->value();
 		inpTimeOn->value(inpTimeOff->value(), inpTimeOff->size());
 		SearchLastQSO(inpCall->value());
@@ -1359,7 +1360,7 @@ void cb_call(Fl_Widget* w, void*)
 		if (EnableDupCheck)
 			DupCheck(inpCall->value());
 	}
-	
+
 	if (!progdefaults.autofill_qso_fields)
 		return restoreFocus(w);
 	const struct dxcc* e = dxcc_lookup(inpCall->value());
