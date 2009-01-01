@@ -416,7 +416,7 @@ progdefaults.changed = true;}
               }
               Fl_Value_Input nbrTimeSpan {
                 label minutes
-                callback {progdefaults.timespan = o->value();
+                callback {progdefaults.timespan = (int)o->value();
 progdefaults.changed = true;}
                 xywh {158 313 53 20} align 8 maximum 1440 step 1 value 120
                 code0 {o->value(progdefaults.timespan);}

@@ -343,7 +343,7 @@ void olivia::restart()
 	fragmentsize = 1024;
 	set_bandwidth(Tx->Bandwidth - Tx->Bandwidth / Tx->Tones);
 
-	put_MODEstatus("%s %d/%d", get_mode_name(), Tx->Tones, Tx->Bandwidth);
+	put_MODEstatus("%s %zu/%zu", get_mode_name(), Tx->Tones, Tx->Bandwidth);
 }
 
 void olivia::init()

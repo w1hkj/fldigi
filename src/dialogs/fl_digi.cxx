@@ -1266,7 +1266,7 @@ void ztimer(void* first_call)
 
 	double st = 60.0 - tv.tv_sec % 60 - tv.tv_usec / 1e6;
 	if (!first_call) {
-		tv.tv_sec = 60.0 * round(tv.tv_sec / 60.0);
+		tv.tv_sec = (int)(60.0 * round(tv.tv_sec / 60.0));
 		if (st < 1.0)
 			st += 60.0;
 	}

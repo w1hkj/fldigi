@@ -472,7 +472,7 @@ void pskrep::gc(void)
 			++i;
 	}
 
-	LOG_DEBUG("Removed %zu sent report(s)", rm);
+	LOG_DEBUG("Removed %u sent report(s)", rm);
 }
 
 static ostream& operator<<(ostream& out, const rcpt_report_t& r);
@@ -750,10 +750,8 @@ void* pskrep_sender::resolver(void* obj)
 
 void pskrep_sender::create_socket(void)
 {
-	if (pthread_create(&resolver_thread, NULL, resolver, this) != 0) {
+	if (pthread_create(&resolver_thread, NULL, resolver, this) != 0)
 		LOG_PERROR("pthread_create");
-		return;
-	}
 }
 
 bool pskrep_sender::send(void)

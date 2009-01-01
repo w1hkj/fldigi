@@ -321,7 +321,7 @@ progdefaults.changed = true;
 Fl_Value_Input *nbrTimeSpan=(Fl_Value_Input *)0;
 
 static void cb_nbrTimeSpan(Fl_Value_Input* o, void*) {
-  progdefaults.timespan = o->value();
+  progdefaults.timespan = (int)o->value();
 progdefaults.changed = true;
 }
 
