@@ -59,33 +59,6 @@ string noCATwidth = "";
 
 static void *rigCAT_loop(void *args);
 
-static const char hexsym[] = "0123456789ABCDEF";
-
-const string& printhex(const unsigned char* s, size_t len)
-{
-	static string hex;
-	if (unlikely(len == 0))
-		return hex.erase();
-
-	hex.resize(len * 3 - 1);
-	string::iterator i = hex.begin();
-	size_t j;
-	for (j = 0; j < len-1; j++) {
-		*i++ = hexsym[s[j] >> 4];
-		*i++ = hexsym[s[j] & 0xF];
-	        *i++ = ' ';
-	}
-        *i++ = hexsym[s[j] >> 4];
-	*i = hexsym[s[j] & 0xF];
-
-	return hex;
-}
-
-const string& printhex(const string& s)
-{
-	return printhex((const unsigned char*)s.data(), s.length());
-}
-
 bool readpending = false;
 int  readtimeout;
 
@@ -95,7 +68,7 @@ bool hexout(const string& s, int retnbr)
 // wait here until that processing is finished or a timeout occurs
 // reset the readpending & return false if a timeout occurs
 
-	LOG_DEBUG("cmd = %s", printhex(s).c_str());
+	LOG_DEBUG("cmd = %s", printhex(s.data(), s.length()));
 
 	readtimeout = (rig.wait +rig.timeout) * rig.retries + 2000; // 2 second min timeout
 	while (readpending && readtimeout--)
@@ -121,7 +94,7 @@ bool hexout(const string& s, int retnbr)
 			MilliSleep(10);
 //#endif
 			num = rigio.ReadBuffer (replybuff, s.size());
-			LOG_DEBUG("echoed = %s", printhex(replybuff, num).c_str());
+			LOG_DEBUG("echoed = %s", printhex(replybuff, num));
 		}
 
 		memset (replybuff, 0, 200);
@@ -138,7 +111,7 @@ bool hexout(const string& s, int retnbr)
 
 // debug code
 			if (num)
-				LOG_DEBUG("resp (%d) = %s", n, printhex(replybuff, num).c_str());
+				LOG_DEBUG("resp (%d) = %s", n, printhex(replybuff, num));
 			else
 				LOG_DEBUG("resp (%d) no reply", n);
 		} else

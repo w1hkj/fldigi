@@ -123,3 +123,42 @@ uint32_t simple_hash_str(const unsigned char* str, uint32_t code)
 		code = ((code << 4) | (code >> (32 - 4))) ^ (uint32_t)*str++;
 	return code;
 }
+
+static const char hexsym[] = "0123456789ABCDEF";
+char* str2hex(const unsigned char* in, size_t ilen, char* out, size_t olen)
+{
+	if (unlikely(ilen == 0 || olen == 0))
+		return out;
+	if (unlikely(olen < ilen * 3))
+		ilen = olen / 3;
+
+	char* r = out;
+	size_t i;
+	for (i = 0; i < ilen; i++) {
+		*out++ = hexsym[in[i] >> 4];
+		*out++ = hexsym[in[i] & 0xF];
+		*out++ = ' ';
+	}
+	*(out - 1) = '\0';
+
+	return r;
+}
+
+static char* hexbuf = 0;
+static size_t hexlen = 0;
+const char* printhex(const unsigned char* str, size_t len)
+{
+	if (len == 0)
+		return "";
+	len *= 3;
+	if (hexlen < len && (hexbuf = (char*)realloc(hexbuf, (hexlen = len))) == NULL) {
+		hexlen = 0;
+		return "";
+	}
+	return str2hex(str, len, hexbuf, hexlen);
+}
+
+const char* printhex(const char* str, size_t len)
+{
+	return printhex((const unsigned char*)str, len ? len : strlen(str));
+}

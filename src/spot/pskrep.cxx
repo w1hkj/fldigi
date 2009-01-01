@@ -157,7 +157,6 @@ private:
 	static void* resolver(void* obj);
 
 	static const char hexsym[];
-	static const string& printhex(const unsigned char* s, size_t len);
 
 	static size_t pad(size_t len, size_t mult);
 };
@@ -614,7 +613,7 @@ void pskrep_sender::write_station_info(void)
 	npad = &long_station_info[0] + long_len - p;
 	if (npad)
 		memset(p, 0, npad);
-	LOG_DEBUG("long_station_info=\"%s\"", printhex(&long_station_info[0], long_len).c_str());
+	LOG_DEBUG("long_station_info=\"%s\"", printhex(&long_station_info[0], long_len));
 
 	// Write the short station info
 	p = &short_station_info[0];
@@ -631,7 +630,7 @@ void pskrep_sender::write_station_info(void)
 	npad = &short_station_info[0] + short_len - p;
 	if (npad)
 		memset(p, 0, npad);
-	LOG_DEBUG("short_station_info=\"%s\"", printhex(&short_station_info[0], short_len).c_str());
+	LOG_DEBUG("short_station_info=\"%s\"", printhex(&short_station_info[0], short_len));
 }
 
 // fldigi uses 0x022C as the reception record template id (bytes 4,5)
@@ -728,7 +727,7 @@ bool pskrep_sender::append(const string& callsign, const band_map_t::value_type&
 	// info source
 	*p++ = r.rtype;
 
-	LOG_DEBUG("                 \"%s\"", printhex(start, p - start).c_str());
+	LOG_DEBUG("                 \"%s\"", printhex(start, p - start));
 
 	dgram_size += rlen;
 	return true;
@@ -781,7 +780,7 @@ bool pskrep_sender::send(void)
 	*reinterpret_cast<uint32_t*>(dgram + 4) = htonl(time(NULL));
 
 	bool ret;
-	LOG_DEBUG("Sending datagram (%zu): \"%s\"", dgram_size, printhex(dgram, dgram_size).c_str());
+	LOG_DEBUG("Sending datagram (%zu): \"%s\"", dgram_size, printhex(dgram, dgram_size));
 	try {
 		if ((size_t)send_socket->send(dgram, dgram_size) != dgram_size)
 			throw SocketException("short write");
@@ -804,27 +803,6 @@ size_t pskrep_sender::pad(size_t len, size_t mult)
 {
 	size_t r = len % mult;
 	return r ? len + mult - r : len;
-}
-
-const char pskrep_sender::hexsym[] = "0123456789ABCDEF";
-const string& pskrep_sender::printhex(const unsigned char* s, size_t len)
-{
-        static string hex;
-        if (unlikely(len == 0))
-                return hex.erase();
-
-        hex.resize(len * 3 - 1);
-        string::iterator i = hex.begin();
-        size_t j;
-        for (j = 0; j < len-1; j++) {
-                *i++ = hexsym[s[j] >> 4];
-                *i++ = hexsym[s[j] & 0xF];
-                *i++ = ' ';
-        }
-        *i++ = hexsym[s[j] >> 4];
-        *i = hexsym[s[j] & 0xF];
-
-        return hex;
 }
 
 // -------------------------------------------------------------------------------------------------

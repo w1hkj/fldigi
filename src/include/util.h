@@ -120,9 +120,19 @@ void restore_signals(void);
 } // extern "C"
 #endif
 
+#include <stddef.h>
+
 #ifdef __cplusplus
-uint32_t simple_hash_data(const unsigned char* buf, unsigned len, uint32_t code = 0);
+uint32_t simple_hash_data(const unsigned char* buf, size_t len, uint32_t code = 0);
 uint32_t simple_hash_str(const unsigned char* str, uint32_t code = 0);
+#endif
+
+char* str2hex(const unsigned char* in, size_t inlen, char* out, size_t outlen);
+#ifdef __cplusplus
+const char* printhex(const unsigned char* str, size_t len);
+const char* printhex(const char* str, size_t len = 0);
+#else
+const char* printhex(const unsigned* str, size_t len);
 #endif
 
 #if !defined(NDEBUG) && defined(deprecated__) && defined(__GNUC__)
