@@ -184,6 +184,37 @@ Change Log:
           data if available.  Popup will then show Name, Last QSO Date 
           & Az/Dist based on logbook record.  Otherwise the data shown is based
           on the cty.dat file.
+      84) Updated build system
+          a. Use ax_boost_base.m4 from autoconf-archive 2008-11-07
+          b. Add ax_compare_version.m4
+          c. Modify pkg-config.m4 to store version in pkg_package_version
+          d. Build bundled locator.c for hamlib <= 1.2.8 or when it is not available
+          e. Add -mfpmath=sse to compiler flags for --enable-optimizations=native
+      85) Updated FTextView context menu
+          a. Hide quick entry fields by default
+          b. Use divider for Call menu item
+      86) Fixed directory creation
+          a. Use a single buffer for HomeDir and PskMailDir expansion
+          b. Use fl_filename_absolute to expand --config-dir argument
+          c. Replace checkdir() and checkdirectories() with single function
+      87) Fix OS X compilation
+          the ttyname array in configuration::testCommPorts is needed on OS X.
+      88) Simplify FText dxcc lookup
+          a. Change SearchLog to return a QSO record pointer
+          b. Change FText tooltip format
+          c. Display "last QSO" information in tooltip when cty.dat is missing
+      89) Miscellaneous changes:
+          Fix compiler warnings
+          Add hex print functions
+          Fix restore_signals
+      90) Add microHam keyer PTT support via uH Router
+          This is not native support for the microHam devices; rather, the FIFO
+          interface of W7AY's uH Router application is used when the PTT TTY
+          device string contains "/tmp/microHamRouter".  uH Router is currently
+          available only for OS X.
+      91) Added rx_flush to MT63 modem class.  Allows immediate transition
+          from Rx to Tx after remote station ceases transmission.  No loss
+          in Rx characters.
 
 
 3.03
