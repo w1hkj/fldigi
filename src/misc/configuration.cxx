@@ -643,9 +643,7 @@ void configuration::testCommPorts()
 #ifndef __CYGWIN__
 	struct stat st;
 #endif
-#ifndef __APPLE__
 	char ttyname[PATH_MAX + 1];
-#endif
 
 #ifdef __linux__
 	bool ret = false;
