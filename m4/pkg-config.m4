@@ -29,8 +29,10 @@ esac
 
 if test "x$ac_cv_[]$1" = "xyes"; then
     AC_DEFINE([USE_]PKG_NAME_UC, 1, [Define to 1 if we are using $1])
+    pkg_[]$1_version=`$PKG_CONFIG --modversion "$2" 2>/dev/null`
 else
     AC_DEFINE([USE_]PKG_NAME_UC, 0, [Define to 1 if we are using $1])
+    pkg_[]$1_version=""
 fi
 
 AC_SUBST(PKG_NAME_UC[_CFLAGS])

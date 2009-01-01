@@ -19,7 +19,7 @@ AC_DEFUN([AC_FLDIGI_OPT], [
           OPT_CFLAGS="$OPT_CFLAGS -msse3 -mfpmath=sse"
 	  ;;
       native)
-          OPT_CFLAGS="$OPT_CFLAGS -march=native"
+          OPT_CFLAGS="$OPT_CFLAGS -march=native -mfpmath=sse"
 	  ;;
       none)
           ;;
