@@ -102,8 +102,7 @@ void restore_signals(void)
 {
 	pthread_mutex_lock(&sigmutex);
 	for (size_t i = 1; i <= nsig; i++)
-		if (sigaction(i, &sigact[i-1], NULL) == -1)
-			break;
+		sigaction(i, &sigact[i-1], NULL);
 	delete [] sigact;
 	sigact = 0;
 	nsig = 0;
