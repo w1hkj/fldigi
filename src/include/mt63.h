@@ -47,7 +47,9 @@ private:
 
 	dspLevelMonitor *InpLevel;
 	double_buff *InpBuff;
-	
+	double_buff *emptyBuff;
+	bool flushbuffer;
+		
 public:
 	mt63(trx_mode mode);
 	~mt63();
@@ -57,6 +59,8 @@ public:
 	void restart();
 	int rx_process(const double *buf, int len);
 	int tx_process();
+	
+	void rx_flush();
 };
 
 

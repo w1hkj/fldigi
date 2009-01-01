@@ -26,6 +26,8 @@
 #include <config.h>
 
 #include <string>
+#include <iostream>
+
 #include <FL/Fl.H>
 #include <FL/fl_ask.H>
 
@@ -61,6 +63,8 @@ int mt63::tx_process()
 	int c;
 	double maxval = 0;
 
+	rx_flush();
+	
 	c = get_tx_char();
 	if (c == 0x03)  {
 		stopflag = true;
@@ -149,6 +153,7 @@ int mt63::rx_process(const double *buf, int len)
 	if (progStatus.sqlonoff && snr < progStatus.sldrSquelchValue)
 		return 0;
 
+	
 	for (i = 0; i < Rx->Output.Len; i++) {
 		c = Rx->Output.Data[i];
 
@@ -172,8 +177,60 @@ int mt63::rx_process(const double *buf, int len)
 
 		put_rx_char(c);
 	}
-
+	flushbuffer = true;
+		
 	return 0;
+}
+
+void mt63::rx_flush()
+{
+	unsigned int c;
+	int len = 512;
+	int dlen = 0;
+
+	if (!flushbuffer) return;
+	
+	if (emptyBuff->EnsureSpace(len) == -1) {
+		flushbuffer = false;
+		return;
+	}
+
+	for (int j = 0; j < len; j++)
+		emptyBuff->Data[j] = 0.0;
+	emptyBuff->Len = len;
+	InpLevel->Process(emptyBuff);
+	Rx->Process(emptyBuff);
+	dlen = Rx->Output.Len;
+
+	while (Rx->SYNC_LockStatus()) {
+		for (int i = 0; i < dlen; i++) {
+			c = Rx->Output.Data[i];
+			if (!progdefaults.mt63_8bit) {
+				put_rx_char(c);
+				continue;
+			}
+			if ((c < 8) && (escape == 0))
+				continue;
+			if (c == 127) {
+				escape = 1;
+				continue;
+			}
+			if (escape) {
+				c += 128;
+				escape = 0;
+			}
+			put_rx_char(c);
+		}
+		for (int j = 0; j < len; j++)
+			emptyBuff->Data[j] = 0.0;
+		emptyBuff->Len = len;
+		InpLevel->Process(emptyBuff);
+		Rx->Process(emptyBuff);
+		dlen = Rx->Output.Len;
+	}
+	flushbuffer = false;
+	
+	return;
 }
 
 void mt63::restart()
@@ -199,6 +256,7 @@ void mt63::init()
 {
 	modem::init();
 	restart();
+	flushbuffer = false;
 }
 
 mt63::mt63 (trx_mode mt63_mode) : modem()
@@ -222,6 +280,7 @@ mt63::mt63 (trx_mode mt63_mode) : modem()
 
 	InpLevel = new dspLevelMonitor;
 	InpBuff = new double_buff;
+	emptyBuff = new double_buff;
 
 	samplerate = 8000;
 	fragmentsize = 1024;
