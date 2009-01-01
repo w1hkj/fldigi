@@ -75,8 +75,8 @@ status progStatus = {
 	false,			// bool spot_recv
 	false,			// bool spot_log
 	false,			// bool contest
-	
-	true,				// bool quick_entry
+
+	false,				// bool quick_entry
 	true,				// bool rx_word_wrap
 	true,				// bool tx_word_wrap
 
