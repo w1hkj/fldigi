@@ -21,6 +21,7 @@
 #include "fileselect.h"
 #include "configuration.h"
 #include "main.h"
+#include "locator.h"
 
 #include <FL/fl_ask.H>
 
@@ -353,9 +354,29 @@ void SearchLastQSO(const char *callsign)
 		inpVEprov->value(inpVE_Prov_log->value ());
 		inpCountry->value(inpCountry_log->value ());
 		inpSearchString->value(callsign);
-	} else
+		if (inpLoc->value()[0]) {
+			double lon1, lat1, lon2, lat2;
+			double azimuth, distance;
+			char szAZ[4];
+			if ( locator2longlat(&lon1, &lat1, progdefaults.myLocator.c_str()) == RIG_OK &&
+				 locator2longlat(&lon2, &lat2, inpLoc->value()) == RIG_OK &&
+				 qrb(lon1, lat1, lon2, lat2, &distance, &azimuth) == RIG_OK ) {
+				snprintf(szAZ,sizeof(szAZ),"%0.f", azimuth);
+				inpAZ->value(szAZ);
+			} else
+				inpAZ->value("");
+		} else
+			inpAZ->value("");
+	} else {
+		inpName->value("");
+		inpQth->value("");
+		inpLoc->value("");
+		inpState->value("");
+		inpVEprov->value("");
+		inpCountry->value("");
+		inpAZ->value("");
 		inpSearchString->value("");
-
+	}
 	delete [] re;
 }
 

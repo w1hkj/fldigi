@@ -399,6 +399,7 @@ void QRZ_disp_result()
 	inpAZ->value(buf);
 
 	inpNotes->value(lookup_notes.c_str());
+	inpCountry->value(lookup_country.c_str());
 }
 
 void QRZ_CD_query()

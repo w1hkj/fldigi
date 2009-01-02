@@ -135,9 +135,9 @@ const char* printhex(const char* str, size_t len = 0);
 const char* printhex(const unsigned* str, size_t len);
 #endif
 
-#if !defined(NDEBUG) && defined(deprecated__) && defined(__GNUC__)
 #include <stdio.h>
 #include <string.h>
+#if !defined(NDEBUG) && defined(deprecated__) && defined(__GNUC__)
 deprecated__ typeof(sprintf) sprintf;
 /* there are far too many of these in the qrz code
 deprecated__ typeof(strcpy) strcpy;

@@ -889,19 +889,24 @@ const char* FTextView::dxcc_lookup_call(int x, int y)
 		return 0;
 	}
 
-	const dxcc* e = dxcc_lookup(s);
-	cQsoRec* qso = SearchLog(s);
-	const char *name = 0, *date = 0;
+	const char *name = 0, *date = 0, *qth = 0, *locator = 0, *mode;
 	double lon1, lat1, lon2 = 360.0, lat2 = 360.0, distance, azimuth;
 	static char tip[256];
 	size_t len = 0;
+	const dxcc* e = 0;
+	cQsoRec* qso = 0;
 
+	e = dxcc_lookup(s);
+	qso = SearchLog(s);
+	
 	if (qso) {
-		const char* locator = qso->getField(GRIDSQUARE);
+		locator = qso->getField(GRIDSQUARE);
 		if (!(locator && *locator && locator2longlat(&lon2, &lat2, locator) == RIG_OK))
 			lon2 = lat2 = 360.0;
 		name = qso->getField(NAME);
 		date = qso->getField(QSO_DATE);
+		qth  = qso->getField(QTH);
+		
 	}
 	if (e) {
 		if (lon2 == 360.0)
@@ -921,7 +926,6 @@ const char* FTextView::dxcc_lookup_call(int x, int y)
 	}
 	if (len < sizeof(tip) && name && *name) {
 		len += snprintf(tip + len, sizeof(tip) - len, "* %s", name);
-		const char* qth = qso->getField(QTH);
 		if (len < sizeof(tip) && qth && *qth)
 			len += snprintf(tip + len, sizeof(tip) - len, " %s %s\n", _("in"), qth);
 		else if (len + 1 < sizeof(tip)) {
@@ -932,7 +936,7 @@ const char* FTextView::dxcc_lookup_call(int x, int y)
 	}
 	if (len < sizeof(tip) && date && *date) {
 		len += snprintf(tip + len, sizeof(tip) - len, "* %s: %s", _("Last QSO"), date);
-		const char* mode = qso->getField(MODE);
+		mode = qso->getField(MODE);
 		if (len < sizeof(tip) && mode && *mode)
 			len += snprintf(tip + len, sizeof(tip) - len, " %s %s", _("in"), mode);
 		ret = tip;
