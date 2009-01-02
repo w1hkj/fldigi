@@ -54,7 +54,8 @@ extern Fl_Value_Input *nbrContestStart;
 extern Fl_Value_Input *nbrContestDigits;
 #include <FL/Fl_Button.H>
 extern Fl_Button *btnResetSerNbr;
-extern Fl_Check_Button *btnDupCheckOn;
+#include <FL/Fl_Light_Button.H>
+extern Fl_Light_Button *btnDupCheckOn;
 extern Fl_Check_Button *btnDupBand;
 extern Fl_Check_Button *btnDupMode;
 extern Fl_Check_Button *btnDupState;
@@ -247,7 +248,6 @@ extern Fl_Group *tabMixer;
 extern void resetMixerControls();
 extern Fl_Check_Button *btnMixer;
 extern Fl_Input_Choice *menuMix;
-#include <FL/Fl_Light_Button.H>
 extern Fl_Light_Button *btnMicIn;
 extern void setMixerInput(int);
 extern Fl_Light_Button *btnLineIn;

@@ -19,8 +19,6 @@ extern cQsoDb        qsodb;
 extern cAdifIO       adifFile;
 extern std::string logbook_filename;
 
-extern bool EnableDupCheck;
-
 extern void loadBrowser(bool keep_pos = false);
 
 extern void Export_log();
@@ -48,7 +46,7 @@ extern void deleteRecord ();
 extern void AddRecord ();
 extern void SearchLastQSO (const char *);
 extern cQsoRec* SearchLog(const char *callsign);
-extern void DupCheck(const char *);
+extern void DupCheck();
 extern void cb_search(Fl_Widget* w, void*);
 extern int log_search_handler(int);
 

@@ -215,6 +215,10 @@ Change Log:
       91) Added rx_flush to MT63 modem class.  Allows immediate transition
           from Rx to Tx after remote station ceases transmission.  No loss
           in Rx characters.
+      92) Restored export of fldigi.adif (only on Windows platform)
+      93) Fixed bug, missing Country field in QRZ lookupcall process
+      94) Fixed various logic errors associated with Call entry & automatic
+          qso field fill-in
 
 
 3.03

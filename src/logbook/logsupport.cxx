@@ -33,8 +33,6 @@ cTextFile	txtFile;
 
 string		logbook_filename;
 
-bool EnableDupCheck = false;
-
 void Export_CSV()
 {
 	if (chkExportBrowser->nchecked() == 0) return;
@@ -312,18 +310,19 @@ void cb_SortByFreq (void) {
 	loadBrowser();
 }
 
-void DupCheck(const char *callsign)
+void DupCheck()
 {
 	if (qsodb.duplicate(
-			callsign,
+			inpCall->value(),
 			zdate(), ztime(), progdefaults.timespan, progdefaults.duptimespan, 
 			inpFreq->value(), progdefaults.dupband,
 			inpState->value(), progdefaults.dupstate,
 			mode_info[active_modem->get_mode()].adif_name, progdefaults.dupmode,
 			inpXchg1->value(), progdefaults.dupxchg1,
 			inpXchg2->value(), progdefaults.dupxchg2,
-			inpXchg3->value(), progdefaults.dupxchg3 ) )
+			inpXchg3->value(), progdefaults.dupxchg3 ) ) {
 		lblDup->show();
+	}
 }
 
 cQsoRec* SearchLog(const char *callsign)

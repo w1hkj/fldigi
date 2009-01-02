@@ -335,7 +335,7 @@ bool cQsoDb::qsoIsValidFile(const char *fname) {
   if (!inQsoFile)
     return false;
   inQsoFile.getline (buff, 256);
-  if (strstr (buff, "_LOGBOOK DB") == 0) {
+  if (strstr (buff, "_LOGBODUP DB") == 0) {
     inQsoFile.close();
     return false;
   }
@@ -349,11 +349,11 @@ char buff[256];
   if (!inQsoFile)
     return 1;
   inQsoFile.getline (buff, 256);
-  if (strstr (buff, "_LOGBOOK DB") == 0) {
+  if (strstr (buff, "_LOGBODUP DB") == 0) {
     inQsoFile.close();
     return 2;
   }
-  if (strstr (buff, "_LOGBOOK DBX") == 0) // new file format
+  if (strstr (buff, "_LOGBODUP DBX") == 0) // new file format
     delim_in = '\n';
   if (strstr (buff, "3.0") != 0)
 	isVer3 = true;    
@@ -374,7 +374,7 @@ int cQsoDb::qsoWriteFile (const char *fname) {
   	printf("write failure: %s\n", fname);
     return 1;
   }
-  outQsoFile << "_LOGBOOK DBX 3.0" << '\n';
+  outQsoFile << "_LOGBODUP DBX 3.0" << '\n';
   for (int i = 0; i < nbrrecs; i++)
     outQsoFile << qsorec[i];
   outQsoFile.close();
@@ -437,47 +437,55 @@ bool cQsoDb::duplicate(
 		const char *xchg2, bool chkxchg2,
 		const char *xchg3, bool chkxchg3 )
 {
-	int f1, f2;
+	int f1, f2 = 0;
 	f1 = (int)(atof(freq)/1000.0);
-	bool b_freqOK = true, b_stateOK = true, b_modeOK = true,
-		 b_xchg1OK = true, b_xchg2OK = true, b_xchg3OK = true,
-		 b_dtimeOK = true;
+	bool b_freqDUP = true, b_stateDUP = true, b_modeDUP = true,
+		 b_xchg1DUP = true, b_xchg2DUP = true, b_xchg3DUP = true,
+		 b_dtimeDUP = true;
 	unsigned int datetime = epoch_minutes(szdate, sztime);
 	unsigned int qsodatetime;
 	
 	for (int i = 0; i < nbrrecs; i++) {
 		if (strcasecmp(qsorec[i].getField(CALL), callsign) == 0) {
 // found callsign duplicate
-			if (chkfreq) { // test integer part of frequency
-				f2 = (int)(atof(qsorec[i].getField(FREQ))/1000.0);
-				b_freqOK = (f1 == f2);
+			b_freqDUP = b_stateDUP = b_modeDUP = 
+				   	   b_xchg1DUP = b_xchg2DUP = b_xchg3DUP = 
+				       b_dtimeDUP = false;
+			if (chkfreq) {
+				f2 = (int)atof(qsorec[i].getField(FREQ));
+				b_freqDUP = (f1 == f2);
 			}
 			if (chkstate)
-				b_stateOK = (strcasecmp(qsorec[i].getField(STATE), state) == 0);
-
+				b_stateDUP = (qsorec[i].getField(STATE)[0] == 0 && state[0] == 0) ||
+							 (strcasestr(qsorec[i].getField(STATE), state) != 0);
 			if (chkmode)
-				b_modeOK = (strcasecmp(qsorec[i].getField(MODE), mode) == 0);
-
+				b_modeDUP  = (qsorec[i].getField(MODE)[0] == 0 && mode[0] == 0) ||
+							 (strcasestr(qsorec[i].getField(MODE), mode) != 0);
 			if (chkxchg1)
-				b_xchg1OK = (strcasecmp(qsorec[i].getField(XCHG1), xchg1) == 0);
-
+				b_xchg1DUP = (qsorec[i].getField(XCHG1)[0] == 0 && xchg1[0] == 0) ||
+							 (strcasestr(qsorec[i].getField(XCHG1), xchg1) != 0);
 			if (chkxchg2)
-				b_xchg2OK = (strcasecmp(qsorec[i].getField(XCHG2), xchg2) == 0);
-
+				b_xchg2DUP = (qsorec[i].getField(XCHG2)[0] == 0 && xchg2[0] == 0) ||
+							 (strcasestr(qsorec[i].getField(XCHG2), xchg2) != 0);
 			if (chkxchg3)
-				b_xchg3OK = (strcasecmp(qsorec[i].getField(XCHG3), xchg3) == 0);
+				b_xchg3DUP = (qsorec[i].getField(XCHG3)[0] == 0 && xchg3[0] == 0) ||
+							 (strcasestr(qsorec[i].getField(XCHG3), xchg3) != 0);
 
 			if (chkdatetime) {
 				qsodatetime = epoch_minutes (
 								qsorec[i].getField(QSO_DATE),
 								qsorec[i].getField(TIME_OFF));
-				if ((datetime - qsodatetime) >= interval) b_dtimeOK = false;
+				if ((datetime - qsodatetime) < interval) b_dtimeDUP = true;
 			}
-// all must be true for a dup.
-			if (b_freqOK && b_stateOK && b_modeOK && 
-			    b_xchg1OK && b_xchg2OK && b_xchg3OK && 
-			    b_dtimeOK)
-				return true;
+ 			if ( (!chkfreq     || (chkfreq     && b_freqDUP)) &&
+			     (!chkstate    || (chkstate    && b_stateDUP)) &&
+			     (!chkmode     || (chkmode     && b_modeDUP)) &&
+			     (!chkxchg1    || (chkxchg1    && b_xchg1DUP)) &&
+			     (!chkxchg2    || (chkxchg2    && b_xchg2DUP)) &&
+			     (!chkxchg3    || (chkxchg3    && b_xchg3DUP)) &&
+			     (!chkdatetime || (chkdatetime && b_dtimeDUP))) {
+			     return true;
+			 }
 		}
 	}
 	return false;

@@ -103,9 +103,9 @@ void submit_ADIF(void)
 	putadif(CALL, inpCall_log->value());
 	putadif(FREQ, strFreqMhz);
 	putadif(MODE, logmode);
-	putadif(TX_PWR, inpTX_pwr_log->value());
 	putadif(RST_SENT, inpRstS_log->value());
 	putadif(RST_RCVD, inpRstR_log->value());
+	putadif(TX_PWR, inpTX_pwr_log->value());
 	putadif(NAME, inpName_log->value());
 	putadif(QTH, inpQth_log->value());
 	putadif(STATE, inpState_log->value());
@@ -118,6 +118,12 @@ void submit_ADIF(void)
 	putadif(XCHG2, inpXchg2_log->value());
 	putadif(XCHG3, inpXchg3_log->value());
 	putadif(COMMENT, inpComment_log->value());
+// these fields will always be blank unless they are added to the main
+// QSO log area.
+	putadif(IOTA, inpIOTA_log->value());
+	putadif(DXCC, inpDXCC_log->value());
+	putadif(QSLRDATE, inpQSLrcvddate_log->value());
+	putadif(QSLSDATE, inpQSLsentdate_log->value());
 
 	writeADIF();
 }

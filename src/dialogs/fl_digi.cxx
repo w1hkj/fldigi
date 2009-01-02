@@ -1357,11 +1357,16 @@ void cb_call(Fl_Widget* w, void*)
 	if (old_call != new_call) {
 		old_call = new_call;
 		inpTimeOn->value(inpTimeOff->value(), inpTimeOff->size());
-		SearchLastQSO(inpCall->value());
 		lblDup->hide();
-		if (EnableDupCheck)
-			DupCheck(inpCall->value());
 	}
+
+	if (progdefaults.EnableDupCheck) {
+		if (!lblDup->visible())
+			DupCheck();
+		return restoreFocus(w);
+	}
+
+	SearchLastQSO(inpCall->value());
 
 	if (inpAZ->value()[0])
 		return restoreFocus(w);
@@ -1387,6 +1392,10 @@ void cb_call(Fl_Widget* w, void*)
 void cb_log(Fl_Widget* w, void*)
 {
 	oktoclear = false;
+	if (progdefaults.EnableDupCheck) {
+		lblDup->hide();
+		DupCheck();
+	}
 	restoreFocus(w);
 }
 
@@ -2442,11 +2451,11 @@ void create_fl_digi_main() {
 				inpSerNo, outSerNo, inpXchg1, inpXchg2, inpXchg3 };
 		for (size_t i = 0; i < sizeof(logfields)/sizeof(*logfields); i++) {
 			logfields[i]->callback(cb_log);
-			logfields[i]->when(FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED | FL_WHEN_ENTER_KEY);
+			logfields[i]->when(FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED | FL_WHEN_ENTER_KEY | FL_WHEN_RELEASE );
 		}
 		// exceptions
 		inpCall->callback(cb_call);
-		inpCall->when(FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED | FL_WHEN_ENTER_KEY | FL_WHEN_RELEASE);
+		inpCall->when(FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED | FL_WHEN_ENTER_KEY | FL_WHEN_RELEASE );
 		inpLoc->callback(cb_loc);
 		inpNotes->when(FL_WHEN_RELEASE);
 

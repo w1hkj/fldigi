@@ -263,10 +263,11 @@ static void cb_btnResetSerNbr(Fl_Button*, void*) {
   cb_ResetSerNbr();
 }
 
-Fl_Check_Button *btnDupCheckOn=(Fl_Check_Button *)0;
+Fl_Light_Button *btnDupCheckOn=(Fl_Light_Button *)0;
 
-static void cb_btnDupCheckOn(Fl_Check_Button* o, void*) {
-  EnableDupCheck = o->value();
+static void cb_btnDupCheckOn(Fl_Light_Button* o, void*) {
+  progdefaults.EnableDupCheck = o->value();
+progdefaults.changed = true;
 }
 
 Fl_Check_Button *btnDupBand=(Fl_Check_Button *)0;
@@ -2145,6 +2146,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         { tabsUI = new Fl_Tabs(0, 25, 500, 345);
           tabsUI->selection_color(FL_LIGHT1);
           { tabUserInterface = new Fl_Group(0, 50, 500, 320, _("General"));
+            tabUserInterface->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 301);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(15, 70, 120, 20, _("Show tooltips"));
@@ -2271,7 +2273,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             tabWfallRestart->end();
           } // Fl_Group* tabWfallRestart
           { tabContest = new Fl_Group(0, 50, 500, 320, _("Contest"));
-            tabContest->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 80, _("Exchanges"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2356,25 +2357,25 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
               } // Fl_Button* btnResetSerNbr
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(5, 225, 490, 130, _("Duplicates check"));
+            { Fl_Group* o = new Fl_Group(5, 225, 490, 130, _("Duplicate check, CALL plus"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = btnDupCheckOn = new Fl_Check_Button(15, 253, 80, 20, _("Callsign"));
-                btnDupCheckOn->down_box(FL_DOWN_BOX);
+              { Fl_Light_Button* o = btnDupCheckOn = new Fl_Light_Button(15, 255, 74, 20, _("On/Off"));
+                btnDupCheckOn->selection_color((Fl_Color)2);
                 btnDupCheckOn->callback((Fl_Callback*)cb_btnDupCheckOn);
-                o->value(0);
-              } // Fl_Check_Button* btnDupCheckOn
-              { Fl_Check_Button* o = btnDupBand = new Fl_Check_Button(156, 253, 70, 20, _("Band"));
+                o->value(progdefaults.EnableDupCheck);
+              } // Fl_Light_Button* btnDupCheckOn
+              { Fl_Check_Button* o = btnDupBand = new Fl_Check_Button(156, 255, 70, 20, _("Band"));
                 btnDupBand->down_box(FL_DOWN_BOX);
                 btnDupBand->callback((Fl_Callback*)cb_btnDupBand);
                 o->value(progdefaults.dupband);
               } // Fl_Check_Button* btnDupBand
-              { Fl_Check_Button* o = btnDupMode = new Fl_Check_Button(276, 253, 70, 20, _("Mode"));
+              { Fl_Check_Button* o = btnDupMode = new Fl_Check_Button(276, 255, 70, 20, _("Mode"));
                 btnDupMode->down_box(FL_DOWN_BOX);
                 btnDupMode->callback((Fl_Callback*)cb_btnDupMode);
                 o->value(progdefaults.dupmode);
               } // Fl_Check_Button* btnDupMode
-              { Fl_Check_Button* o = btnDupState = new Fl_Check_Button(395, 253, 70, 20, _("State"));
+              { Fl_Check_Button* o = btnDupState = new Fl_Check_Button(395, 255, 70, 20, _("State"));
                 btnDupState->down_box(FL_DOWN_BOX);
                 btnDupState->callback((Fl_Callback*)cb_btnDupState);
                 o->value(progdefaults.dupstate);

@@ -140,7 +140,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabUserInterface {
             label General open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {5 60 490 301} box ENGRAVED_FRAME
@@ -223,7 +223,7 @@ progdefaults.changed = true;}
               Fl_Input inpMyPower {
                 label {Transmit Power}
                 callback {progdefaults.mytxpower = o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
                 xywh {25 256 50 24} align 8
                 code0 {o->value(progdefaults.mytxpower.c_str());}
                 class Fl_Input2
@@ -277,7 +277,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabContest {
             label Contest open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {
               label Exchanges open
@@ -356,34 +356,35 @@ progdefaults.changed = true;}
               }
             }
             Fl_Group {} {
-              label {Duplicates check} open
+              label {Duplicate check, CALL plus} open
               xywh {5 225 490 130} box ENGRAVED_FRAME align 21
             } {
-              Fl_Check_Button btnDupCheckOn {
-                label Callsign
-                callback {EnableDupCheck = o->value();}
-                xywh {15 253 80 20} down_box DOWN_BOX
-                code0 {o->value(0);}
+              Fl_Light_Button btnDupCheckOn {
+                label {On/Off}
+                callback {progdefaults.EnableDupCheck = o->value();
+progdefaults.changed = true;} selected
+                xywh {15 255 74 20} selection_color 2
+                code0 {o->value(progdefaults.EnableDupCheck);}
               }
               Fl_Check_Button btnDupBand {
                 label Band
                 callback {progdefaults.dupband = o->value();
 progdefaults.changed = true;}
-                xywh {156 253 70 20} down_box DOWN_BOX
+                xywh {156 255 70 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.dupband);}
               }
               Fl_Check_Button btnDupMode {
                 label Mode
                 callback {progdefaults.dupmode = o->value();
 progdefaults.changed = true;}
-                xywh {276 253 70 20} down_box DOWN_BOX
+                xywh {276 255 70 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.dupmode);}
               }
               Fl_Check_Button btnDupState {
                 label State
                 callback {progdefaults.dupstate = o->value();
 progdefaults.changed = true;}
-                xywh {395 253 70 20} down_box DOWN_BOX
+                xywh {395 255 70 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.dupstate);}
               }
               Fl_Check_Button btnDupXchg1 {

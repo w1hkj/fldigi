@@ -238,6 +238,7 @@
         ELEM_(bool, fixed599, "FIXED599", false)                                        \
         ELEM_(bool, UseLeadingZeros, "USELEADINGZEROS", true)                           \
         ELEM_(bool, cutnbrs, "CUTNBRS", false)                                          \
+        ELEM_(bool, EnableDupCheck, "ENABLEDUPCHECK", false)                            \
         ELEM_(bool, dupmode, "DUPMODE", true)                                           \
         ELEM_(bool, dupband, "DUPBAND", true)                                           \
         ELEM_(bool, dupstate, "DUPSTATE", false)                                        \
@@ -251,7 +252,7 @@
         ELEM_(std::string, Xchg1, "XCGH1", "")                                          \
         ELEM_(std::string, Xchg2, "XCGH2", "")                                          \
         ELEM_(std::string, Xchg3, "XCGH3", "")                                          \
-        ELEM_(std::string, mytxpower, "TXPOWER", "20")                                  \
+        ELEM_(std::string, mytxpower, "TXPOWER", "")                                    \
 /* Macro timer constants and controls */                                                \
         ELEM_(bool, useTimer, "USETIMER", false)                                        \
         ELEM_(int, macronumber, "MACRONUMBER", 0)                                       \
