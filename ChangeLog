@@ -1,6 +1,6 @@
 Change Log:
 
-3.04
+3.1
       1) Changes to irrxml functions; 
          added main.set_sideband <USB/LSB>
          added log.set_call <CALL>
@@ -220,6 +220,11 @@ Change Log:
       94) Fixed various logic errors associated with Call entry & automatic
           qso field fill-in
       95) Fixed logic errors associated with Duplicate checking
+      96) Added "Echo" configuration item for rigCAT; removed <ECHO>...</ECHO>
+          parsing of rig.xml files
+      97) Suppressed clearing Country, Loc and Azimuth fields by a call sign
+          database query when the db does not support those fields
+      98) Added missing tooltips to all configuration items
 
 
 3.03
