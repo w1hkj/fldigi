@@ -504,7 +504,8 @@ void parseDevice(size_t &p1)
 
 void parseEcho(size_t &p1)
 {
-	rig.echo = getBool(p1);
+// a configuration item for RigCAT
+//	rig.echo = getBool(p1);
 }
 
 void parseRetries(size_t &p1)
@@ -519,7 +520,8 @@ void parseTimeout(size_t &p1)
 
 void parseWait(size_t &p1)
 {
-	rig.wait = getInt(p1);
+// configuration item on RigCAT tab
+//	rig.wait = getInt(p1);
 }
 
 void parseDTRinit(size_t &p1)
@@ -556,6 +558,11 @@ void parseRTSCTS(size_t &p1)
 }
 
 //===================================================
+// All <PORT> parameters have been moved to the
+// configuration dialog tab for RigCAT control
+// User might be using an older file - this code
+// parses the <PORT>...</PORT> entries and then
+// discards them.
 void parsePORT(size_t &p0)
 {
 	size_t pend = tagEnd(p0);
@@ -580,6 +587,7 @@ void parsePORT(size_t &p0)
 		p1 = tagEnd(p1);
 		p1 = nextTag(p1);
 	}
+// Older code that is stubbed so that entries are ignored
 //	if (rig.port.size()) {
 //		rigio.Baud( rig.baud );
 //		rigio.Device( rig.port );

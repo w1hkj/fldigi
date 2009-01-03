@@ -197,6 +197,7 @@ extern Fl_Counter *cntRigCatRetries;
 extern Fl_Counter *cntRigCatTimeout;
 extern Fl_Counter *cntRigCatWait;
 extern Fl_Button *btnInitRIGCAT;
+extern Fl_Check_Button *btnRigCatEcho;
 extern Fl_Group *grpRigCATPTT;
 extern Fl_Round_Button *btnRigCatRTSptt;
 extern Fl_Round_Button *btnRigCatDTRptt;

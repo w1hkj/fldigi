@@ -125,7 +125,6 @@ void clear_Lookup()
 	lookup_state.clear();
 	lookup_province.clear();
 	lookup_zip.clear();
-	lookup_country.clear();
 	lookup_born.clear();
 	lookup_fname.clear();
 	lookup_qth.clear();
@@ -133,6 +132,7 @@ void clear_Lookup()
 	lookup_latd.clear();
 	lookup_lond.clear();
 	lookup_notes.clear();
+	lookup_country.clear();
 }
 
 // ----------------------------------------------------------------------------
@@ -387,19 +387,20 @@ void QRZ_disp_result()
 		
 	inpLoc->value(lookup_grid.c_str());
 
-	char buf[10];
-	buf[0] = '\0';
+	if (!lookup_country.empty())
+		inpCountry->value(lookup_country.c_str());
+
 	if (!progdefaults.myLocator.empty() && !lookup_grid.empty()) {
+		char buf[10];
+		buf[0] = '\0';
 		double distance, azimuth, lon[2], lat[2];
 		if (locator2longlat(&lon[0], &lat[0], progdefaults.myLocator.c_str()) == RIG_OK &&
 		    locator2longlat(&lon[1], &lat[1], lookup_grid.c_str()) == RIG_OK &&
 		    qrb(lon[0], lat[0], lon[1], lat[1], &distance, &azimuth) == RIG_OK)
 			snprintf(buf, sizeof(buf), "%03.0f", round(azimuth));
+		inpAZ->value(buf);
 	}
-	inpAZ->value(buf);
-
 	inpNotes->value(lookup_notes.c_str());
-	inpCountry->value(lookup_country.c_str());
 }
 
 void QRZ_CD_query()

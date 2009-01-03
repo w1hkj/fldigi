@@ -201,6 +201,7 @@
         ELEM_(int, RigCatRetries, "RIGCATRETRIES", 2)                                   \
         ELEM_(int, RigCatTimeout, "RIGCATTIMEOUT", 10)                                  \
         ELEM_(int, RigCatWait, "RIGCATWAIT", 50)                                        \
+        ELEM_(bool, RigCatECHO, "RIGCATECHO", 0)                                        \
 /* Hamlib parameters */                                                                 \
         ELEM_(bool, HamlibRTSplus, "HAMLIBRTSPLUS", 0)                                  \
         ELEM_(bool, HamlibDTRplus, "HAMLIBDTRPLUS", 0)                                  \

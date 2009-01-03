@@ -1253,6 +1253,15 @@ o->labelcolor(FL_FOREGROUND_COLOR);
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnRigCatEcho=(Fl_Check_Button *)0;
+
+static void cb_btnRigCatEcho(Fl_Check_Button* o, void*) {
+  progdefaults.RigCatECHO=o->value();
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw_label();
+progdefaults.changed = true;
+}
+
 static void cb_btnPTT2(Fl_Round_Button* o, void*) {
   if (o->value()== 1) {
   btnRigCatRTSptt->value(0);
@@ -2079,6 +2088,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
           { inpMyCallsign = new Fl_Input2(110, 64, 110, 24, _("Callsign:"));
+            inpMyCallsign->tooltip(_("Operators callsign"));
             inpMyCallsign->box(FL_DOWN_BOX);
             inpMyCallsign->color(FL_BACKGROUND2_COLOR);
             inpMyCallsign->selection_color(FL_SELECTION_COLOR);
@@ -2091,6 +2101,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             inpMyCallsign->when(FL_WHEN_RELEASE);
           } // Fl_Input2* inpMyCallsign
           { inpMyName = new Fl_Input2(290, 64, 140, 24, _("Name:"));
+            inpMyName->tooltip(_("Operators name"));
             inpMyName->box(FL_DOWN_BOX);
             inpMyName->color(FL_BACKGROUND2_COLOR);
             inpMyName->selection_color(FL_SELECTION_COLOR);
@@ -2103,6 +2114,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             inpMyName->when(FL_WHEN_RELEASE);
           } // Fl_Input2* inpMyName
           { inpMyQth = new Fl_Input2(110, 98, 320, 24, _("QTH:"));
+            inpMyQth->tooltip(_("Operators QTH"));
             inpMyQth->box(FL_DOWN_BOX);
             inpMyQth->color(FL_BACKGROUND2_COLOR);
             inpMyQth->selection_color(FL_SELECTION_COLOR);
@@ -2115,6 +2127,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             inpMyQth->when(FL_WHEN_RELEASE);
           } // Fl_Input2* inpMyQth
           { inpMyLocator = new Fl_Input2(110, 166, 85, 24, _("Locator:"));
+            inpMyLocator->tooltip(_("Maidenhead locator as in EM64qv"));
             inpMyLocator->box(FL_DOWN_BOX);
             inpMyLocator->color(FL_BACKGROUND2_COLOR);
             inpMyLocator->selection_color(FL_SELECTION_COLOR);
@@ -2129,6 +2142,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           o->end();
         } // Fl_Group* o
         { inpMyAntenna = new Fl_Input2(110, 132, 320, 24, _("Antenna:"));
+          inpMyAntenna->tooltip(_("Short description of antenna"));
           inpMyAntenna->box(FL_DOWN_BOX);
           inpMyAntenna->color(FL_BACKGROUND2_COLOR);
           inpMyAntenna->selection_color(FL_SELECTION_COLOR);
@@ -2143,19 +2157,21 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         tabOperator->end();
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 500, 345, _("UI"));
+        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 500, 345);
           tabsUI->selection_color(FL_LIGHT1);
           { tabUserInterface = new Fl_Group(0, 50, 500, 320, _("General"));
-            tabUserInterface->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 301);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(15, 70, 120, 20, _("Show tooltips"));
+                btnShowTooltips->tooltip(_("Enable / disable tooltips"));
                 btnShowTooltips->down_box(FL_DOWN_BOX);
                 btnShowTooltips->value(1);
                 btnShowTooltips->callback((Fl_Callback*)cb_btnShowTooltips);
                 o->value(progdefaults.tooltips);
               } // Fl_Check_Button* btnShowTooltips
               { Fl_Check_Button* o = chkMenuIcons = new Fl_Check_Button(15, 100, 150, 20, _("Show menu icons"));
+                chkMenuIcons->tooltip(_("Enable / disable icons on menus"));
                 chkMenuIcons->down_box(FL_DOWN_BOX);
                 chkMenuIcons->callback((Fl_Callback*)cb_chkMenuIcons);
                 o->value(progdefaults.menuicons);
@@ -2171,11 +2187,13 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 mnuScheme->value(mnuScheme->find_item(progdefaults.ui_scheme.c_str()));
               } // Fl_Choice* mnuScheme
               { Fl_Check_Button* o = btnRXClicks = new Fl_Check_Button(15, 295, 305, 20, _("Double-click on RX text enters QSO data"));
+                btnRXClicks->tooltip(_("I like to double click in Rx panel"));
                 btnRXClicks->down_box(FL_DOWN_BOX);
                 btnRXClicks->callback((Fl_Callback*)cb_btnRXClicks);
                 o->value(progdefaults.rxtext_clicks_qso_data);
               } // Fl_Check_Button* btnRXClicks
               { Fl_Check_Button* o = btnRXTooltips = new Fl_Check_Button(15, 325, 282, 20, _("Show callsign tooltips in received text"));
+                btnRXTooltips->tooltip(_("Popup info after a 2 second hover on a callsign"));
                 btnRXTooltips->down_box(FL_DOWN_BOX);
                 btnRXTooltips->callback((Fl_Callback*)cb_btnRXTooltips);
                 o->value(progdefaults.rxtext_tooltips);
@@ -2186,6 +2204,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
               { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(25, 155, 155, 20, _("Prompt to save log"));
+                btnNagMe->tooltip(_("Bug me about saving log entries"));
                 btnNagMe->down_box(FL_DOWN_BOX);
                 btnNagMe->callback((Fl_Callback*)cb_btnNagMe);
                 o->value(progdefaults.NagMe);
@@ -2197,16 +2216,19 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 o->value(progdefaults.ClearOnSave);
               } // Fl_Check_Button* btnClearOnSave
               { Fl_Check_Button* o = btnAutoFillQSO = new Fl_Check_Button(25, 205, 225, 20, _("Auto-fill Country and Azimuth"));
+                btnAutoFillQSO->tooltip(_("Fill in Country / Azimuth using cty.dat information"));
                 btnAutoFillQSO->down_box(FL_DOWN_BOX);
                 btnAutoFillQSO->callback((Fl_Callback*)cb_btnAutoFillQSO);
                 o->value(progdefaults.autofill_qso_fields);
               } // Fl_Check_Button* btnAutoFillQSO
               { Fl_Check_Button* o = btnCallUpperCase = new Fl_Check_Button(25, 230, 282, 20, _("Convert callsign field to upper case"));
+                btnCallUpperCase->tooltip(_("Force callsign field to UPPERCASE"));
                 btnCallUpperCase->down_box(FL_DOWN_BOX);
                 btnCallUpperCase->callback((Fl_Callback*)cb_btnCallUpperCase);
                 o->value(progdefaults.calluppercase);
               } // Fl_Check_Button* btnCallUpperCase
               { Fl_Input2* o = inpMyPower = new Fl_Input2(25, 256, 50, 24, _("Transmit Power"));
+                inpMyPower->tooltip(_("Tx power used for logbook entries"));
                 inpMyPower->box(FL_DOWN_BOX);
                 inpMyPower->color(FL_BACKGROUND2_COLOR);
                 inpMyPower->selection_color(FL_SELECTION_COLOR);
@@ -2226,6 +2248,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           { tabWfallRestart = new Fl_Group(0, 50, 500, 320, _("Restart"));
             tabWfallRestart->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 190, _("These changes take effect on next program startup"));
+              o->tooltip(_("Show me more or less waterfall"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP|FL_ALIGN_INSIDE);
               { Fl_Counter* o = cntrWfwidth = new Fl_Counter(15, 97, 95, 21, _("Waterfall width in Hz"));
@@ -2264,6 +2287,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 o->value(progdefaults.docked_rig_control);
               } // Fl_Check_Button* btnDockedRigControl
               { Fl_Check_Button* o = btnCheckButtons = new Fl_Check_Button(15, 219, 275, 20, _("Use check buttons for AFC and SQL"));
+                btnCheckButtons->tooltip(_("Check buttons or default lighted switch"));
                 btnCheckButtons->down_box(FL_DOWN_BOX);
                 btnCheckButtons->callback((Fl_Callback*)cb_btnCheckButtons);
                 o->value(progdefaults.useCheckButtons);
@@ -2273,12 +2297,14 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             tabWfallRestart->end();
           } // Fl_Group* tabWfallRestart
           { tabContest = new Fl_Group(0, 50, 500, 320, _("Contest"));
+            tabContest->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 80, _("Exchanges"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
               { lblSend = new Fl_Box(15, 95, 55, 20, _("Send:"));
               } // Fl_Box* lblSend
               { Fl_Input2* o = inpSend1 = new Fl_Input2(70, 95, 70, 20, _("1"));
+                inpSend1->tooltip(_("free form exchange"));
                 inpSend1->box(FL_DOWN_BOX);
                 inpSend1->color(FL_BACKGROUND2_COLOR);
                 inpSend1->selection_color(FL_SELECTION_COLOR);
@@ -2292,6 +2318,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 o->value(progdefaults.Xchg1.c_str());
               } // Fl_Input2* inpSend1
               { Fl_Input2* o = inpSend2 = new Fl_Input2(150, 95, 70, 20, _("2"));
+                inpSend2->tooltip(_("free form exchange"));
                 inpSend2->box(FL_DOWN_BOX);
                 inpSend2->color(FL_BACKGROUND2_COLOR);
                 inpSend2->selection_color(FL_SELECTION_COLOR);
@@ -2305,6 +2332,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 o->value(progdefaults.Xchg2.c_str());
               } // Fl_Input2* inpSend2
               { Fl_Input2* o = inpSend3 = new Fl_Input2(230, 95, 70, 20, _("3"));
+                inpSend3->tooltip(_("free form exchange"));
                 inpSend3->box(FL_DOWN_BOX);
                 inpSend3->color(FL_BACKGROUND2_COLOR);
                 inpSend3->selection_color(FL_SELECTION_COLOR);
@@ -2318,11 +2346,13 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 o->value(progdefaults.Xchg3.c_str());
               } // Fl_Input2* inpSend3
               { Fl_Check_Button* o = btn599 = new Fl_Check_Button(310, 80, 130, 20, _("RST always 599"));
+                btn599->tooltip(_("Force RST in/out to 599"));
                 btn599->down_box(FL_DOWN_BOX);
                 btn599->callback((Fl_Callback*)cb_btn599);
                 o->value(progdefaults.fixed599);
               } // Fl_Check_Button* btn599
               { Fl_Check_Button* o = btnCutNbrs = new Fl_Check_Button(310, 110, 180, 20, _("Send CW cut numbers"));
+                btnCutNbrs->tooltip(_("0 = T; 9 = N"));
                 btnCutNbrs->down_box(FL_DOWN_BOX);
                 btnCutNbrs->callback((Fl_Callback*)cb_btnCutNbrs);
                 o->value(progdefaults.cutnbrs);
@@ -2333,11 +2363,13 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
               { btnUseLeadingZeros = new Fl_Check_Button(26, 176, 154, 20, _("Use leading zeros"));
+                btnUseLeadingZeros->tooltip(_("Insert leading zeros into Xmtd serial number"));
                 btnUseLeadingZeros->down_box(FL_DOWN_BOX);
                 btnUseLeadingZeros->value(1);
                 btnUseLeadingZeros->callback((Fl_Callback*)cb_btnUseLeadingZeros);
               } // Fl_Check_Button* btnUseLeadingZeros
               { Fl_Value_Input* o = nbrContestStart = new Fl_Value_Input(221, 176, 45, 20, _("Start"));
+                nbrContestStart->tooltip(_("Starting number"));
                 nbrContestStart->maximum(10000);
                 nbrContestStart->step(1);
                 nbrContestStart->callback((Fl_Callback*)cb_nbrContestStart);
@@ -2345,6 +2377,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 o->value(progdefaults.ContestStart);
               } // Fl_Value_Input* nbrContestStart
               { nbrContestDigits = new Fl_Value_Input(303, 175, 45, 20, _("Digits"));
+                nbrContestDigits->tooltip(_("Number of digits in serial number"));
                 nbrContestDigits->minimum(1);
                 nbrContestDigits->maximum(5);
                 nbrContestDigits->step(1);
@@ -2353,6 +2386,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 nbrContestDigits->align(FL_ALIGN_TOP);
               } // Fl_Value_Input* nbrContestDigits
               { btnResetSerNbr = new Fl_Button(395, 176, 70, 20, _("Reset"));
+                btnResetSerNbr->tooltip(_("Initialize the QSO logging fields"));
                 btnResetSerNbr->callback((Fl_Callback*)cb_btnResetSerNbr);
               } // Fl_Button* btnResetSerNbr
               o->end();
@@ -2361,46 +2395,55 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
               { Fl_Light_Button* o = btnDupCheckOn = new Fl_Light_Button(15, 255, 74, 20, _("On/Off"));
+                btnDupCheckOn->tooltip(_("Check for duplicates"));
                 btnDupCheckOn->selection_color((Fl_Color)2);
                 btnDupCheckOn->callback((Fl_Callback*)cb_btnDupCheckOn);
                 o->value(progdefaults.EnableDupCheck);
               } // Fl_Light_Button* btnDupCheckOn
               { Fl_Check_Button* o = btnDupBand = new Fl_Check_Button(156, 255, 70, 20, _("Band"));
+                btnDupBand->tooltip(_("Bands must match"));
                 btnDupBand->down_box(FL_DOWN_BOX);
                 btnDupBand->callback((Fl_Callback*)cb_btnDupBand);
                 o->value(progdefaults.dupband);
               } // Fl_Check_Button* btnDupBand
               { Fl_Check_Button* o = btnDupMode = new Fl_Check_Button(276, 255, 70, 20, _("Mode"));
+                btnDupMode->tooltip(_("Mode must match"));
                 btnDupMode->down_box(FL_DOWN_BOX);
                 btnDupMode->callback((Fl_Callback*)cb_btnDupMode);
                 o->value(progdefaults.dupmode);
               } // Fl_Check_Button* btnDupMode
               { Fl_Check_Button* o = btnDupState = new Fl_Check_Button(395, 255, 70, 20, _("State"));
+                btnDupState->tooltip(_("State must match"));
                 btnDupState->down_box(FL_DOWN_BOX);
                 btnDupState->callback((Fl_Callback*)cb_btnDupState);
                 o->value(progdefaults.dupstate);
               } // Fl_Check_Button* btnDupState
               { Fl_Check_Button* o = btnDupXchg1 = new Fl_Check_Button(15, 283, 105, 20, _("Exchange 1"));
+                btnDupXchg1->tooltip(_("free form 1 must match"));
                 btnDupXchg1->down_box(FL_DOWN_BOX);
                 btnDupXchg1->callback((Fl_Callback*)cb_btnDupXchg1);
                 o->value(progdefaults.dupxchg1);
               } // Fl_Check_Button* btnDupXchg1
               { Fl_Check_Button* o = btnDupXchg2 = new Fl_Check_Button(156, 283, 105, 20, _("Exchange 2"));
+                btnDupXchg2->tooltip(_("free form 3 must match"));
                 btnDupXchg2->down_box(FL_DOWN_BOX);
                 btnDupXchg2->callback((Fl_Callback*)cb_btnDupXchg2);
                 o->value(progdefaults.dupxchg2);
               } // Fl_Check_Button* btnDupXchg2
               { Fl_Check_Button* o = btnDupXchg3 = new Fl_Check_Button(276, 283, 105, 20, _("Exchange 3"));
+                btnDupXchg3->tooltip(_("free form 3 must match"));
                 btnDupXchg3->down_box(FL_DOWN_BOX);
                 btnDupXchg3->callback((Fl_Callback*)cb_btnDupXchg3);
                 o->value(progdefaults.dupxchg3);
               } // Fl_Check_Button* btnDupXchg3
               { Fl_Check_Button* o = btnDupTimeSpan = new Fl_Check_Button(15, 313, 129, 20, _("Time span over"));
+                btnDupTimeSpan->tooltip(_("QSO must not occur within a time period of"));
                 btnDupTimeSpan->down_box(FL_DOWN_BOX);
                 btnDupTimeSpan->callback((Fl_Callback*)cb_btnDupTimeSpan);
                 o->value(progdefaults.duptimespan);
               } // Fl_Check_Button* btnDupTimeSpan
               { Fl_Value_Input* o = nbrTimeSpan = new Fl_Value_Input(158, 313, 53, 20, _("minutes"));
+                nbrTimeSpan->tooltip(_("Enter time span in minutes"));
                 nbrTimeSpan->maximum(1440);
                 nbrTimeSpan->step(1);
                 nbrTimeSpan->value(120);
@@ -2422,6 +2465,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           tabsWaterfall->color(FL_LIGHT1);
           tabsWaterfall->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Display"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 162, _("Colors and cursors"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2439,66 +2483,83 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 o->label(progdefaults.PaletteName.c_str());
               } // colorbox* WF_Palette
               { btnColor[0] = new Fl_Button(15, 128, 20, 24);
+                btnColor[0]->tooltip(_("Change color"));
                 btnColor[0]->callback((Fl_Callback*)cb_btnColor);
               } // Fl_Button* btnColor[0]
               { btnColor[1] = new Fl_Button(45, 128, 20, 24);
+                btnColor[1]->tooltip(_("Change color"));
                 btnColor[1]->callback((Fl_Callback*)cb_btnColor1);
               } // Fl_Button* btnColor[1]
               { btnColor[2] = new Fl_Button(75, 128, 20, 24);
+                btnColor[2]->tooltip(_("Change color"));
                 btnColor[2]->callback((Fl_Callback*)cb_btnColor2);
               } // Fl_Button* btnColor[2]
               { btnColor[3] = new Fl_Button(105, 128, 20, 24);
+                btnColor[3]->tooltip(_("Change color"));
                 btnColor[3]->callback((Fl_Callback*)cb_btnColor3);
               } // Fl_Button* btnColor[3]
               { btnColor[4] = new Fl_Button(135, 128, 20, 24);
+                btnColor[4]->tooltip(_("Change color"));
                 btnColor[4]->callback((Fl_Callback*)cb_btnColor4);
               } // Fl_Button* btnColor[4]
               { btnColor[5] = new Fl_Button(165, 128, 20, 24);
+                btnColor[5]->tooltip(_("Change color"));
                 btnColor[5]->callback((Fl_Callback*)cb_btnColor5);
               } // Fl_Button* btnColor[5]
               { btnColor[6] = new Fl_Button(195, 128, 20, 24);
+                btnColor[6]->tooltip(_("Change color"));
                 btnColor[6]->callback((Fl_Callback*)cb_btnColor6);
               } // Fl_Button* btnColor[6]
               { btnColor[7] = new Fl_Button(225, 128, 20, 24);
+                btnColor[7]->tooltip(_("Change color"));
                 btnColor[7]->callback((Fl_Callback*)cb_btnColor7);
               } // Fl_Button* btnColor[7]
               { btnColor[8] = new Fl_Button(256, 128, 20, 24);
+                btnColor[8]->tooltip(_("Change color"));
                 btnColor[8]->callback((Fl_Callback*)cb_btnColor8);
               } // Fl_Button* btnColor[8]
               { btnLoadPalette = new Fl_Button(314, 96, 70, 24, _("Load..."));
+                btnLoadPalette->tooltip(_("Load a new palette"));
                 btnLoadPalette->callback((Fl_Callback*)cb_btnLoadPalette);
               } // Fl_Button* btnLoadPalette
               { btnSavePalette = new Fl_Button(314, 128, 70, 24, _("Save..."));
+                btnSavePalette->tooltip(_("Save this palette"));
                 btnSavePalette->callback((Fl_Callback*)cb_btnSavePalette);
               } // Fl_Button* btnSavePalette
               { Fl_Check_Button* o = btnUseCursorLines = new Fl_Check_Button(15, 161, 150, 20, _("Bandwidth cursor"));
+                btnUseCursorLines->tooltip(_("Show cursor with bandwidth lines"));
                 btnUseCursorLines->down_box(FL_DOWN_BOX);
                 btnUseCursorLines->callback((Fl_Callback*)cb_btnUseCursorLines);
                 o->value(progdefaults.UseCursorLines);
               } // Fl_Check_Button* btnUseCursorLines
               { Fl_Button* o = btnCursorBWcolor = new Fl_Button(15, 191, 20, 20, _("Cursor color"));
+                btnCursorBWcolor->tooltip(_("Change color"));
                 btnCursorBWcolor->color((Fl_Color)3);
                 btnCursorBWcolor->callback((Fl_Callback*)cb_btnCursorBWcolor);
                 btnCursorBWcolor->align(FL_ALIGN_RIGHT);
                 o->color(fl_rgb_color(progdefaults.cursorLineRGBI.R,progdefaults.cursorLineRGBI.G,progdefaults.cursorLineRGBI.B));
               } // Fl_Button* btnCursorBWcolor
               { Fl_Check_Button* o = btnUseCursorCenterLine = new Fl_Check_Button(185, 161, 149, 20, _("Cursor center line"));
+                btnUseCursorCenterLine->tooltip(_("Show cursor with center line"));
                 btnUseCursorCenterLine->down_box(FL_DOWN_BOX);
                 btnUseCursorCenterLine->callback((Fl_Callback*)cb_btnUseCursorCenterLine);
                 o->value(progdefaults.UseCursorCenterLine);
               } // Fl_Check_Button* btnUseCursorCenterLine
               { Fl_Button* o = btnCursorCenterLineColor = new Fl_Button(185, 191, 20, 20, _("Center line color"));
+                btnCursorCenterLineColor->tooltip(_("Change color"));
                 btnCursorCenterLineColor->color(FL_BACKGROUND2_COLOR);
                 btnCursorCenterLineColor->callback((Fl_Callback*)cb_btnCursorCenterLineColor);
                 btnCursorCenterLineColor->align(FL_ALIGN_RIGHT);
                 o->color(fl_rgb_color(progdefaults.cursorCenterRGBI.R,progdefaults.cursorCenterRGBI.G,progdefaults.cursorCenterRGBI.B));
               } // Fl_Button* btnCursorCenterLineColor
               { Fl_Check_Button* o = btnUseBWTracks = new Fl_Check_Button(346, 161, 145, 20, _("Bandwidth tracks"));
+                btnUseBWTracks->tooltip(_("Show bandwidth tracks on waterfall"));
                 btnUseBWTracks->down_box(FL_DOWN_BOX);
                 btnUseBWTracks->callback((Fl_Callback*)cb_btnUseBWTracks);
                 o->value(progdefaults.UseBWTracks);
               } // Fl_Check_Button* btnUseBWTracks
               { Fl_Button* o = btnBwTracksColor = new Fl_Button(346, 191, 20, 20, _("Tracks color"));
+                btnBwTracksColor->tooltip(_("Change color"));
                 btnBwTracksColor->color((Fl_Color)1);
                 btnBwTracksColor->callback((Fl_Callback*)cb_btnBwTracksColor);
                 btnBwTracksColor->align(FL_ALIGN_RIGHT);
@@ -2510,11 +2571,13 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
               { Fl_Check_Button* o = chkShowAudioScale = new Fl_Check_Button(15, 252, 240, 20, _("Always show audio frequencies"));
+                chkShowAudioScale->tooltip(_("Audio or RF frequencies on waterfall scale"));
                 chkShowAudioScale->down_box(FL_DOWN_BOX);
                 chkShowAudioScale->callback((Fl_Callback*)cb_chkShowAudioScale);
                 o->value(progdefaults.wf_audioscale);
               } // Fl_Check_Button* chkShowAudioScale
               { btnWaterfallFont = new Fl_Button(314, 252, 70, 24, _("Font..."));
+                btnWaterfallFont->tooltip(_("Select waterfall scale font"));
                 btnWaterfallFont->callback((Fl_Callback*)cb_btnWaterfallFont);
               } // Fl_Button* btnWaterfallFont
               o->end();
@@ -2523,11 +2586,13 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
               { Fl_Check_Button* o = btnViewXmtSignal = new Fl_Check_Button(15, 315, 205, 20, _("Monitor transmitted signal"));
+                btnViewXmtSignal->tooltip(_("Show transmit signal on waterfall"));
                 btnViewXmtSignal->down_box(FL_DOWN_BOX);
                 btnViewXmtSignal->callback((Fl_Callback*)cb_btnViewXmtSignal);
                 o->value(progdefaults.viewXmtSignal);
               } // Fl_Check_Button* btnViewXmtSignal
               { Fl_Value_Slider* o = valTxMonitorLevel = new Fl_Value_Slider(270, 315, 200, 20, _("Signal level"));
+                valTxMonitorLevel->tooltip(_("Set level for good viewing"));
                 valTxMonitorLevel->type(1);
                 valTxMonitorLevel->selection_color(FL_SELECTION_COLOR);
                 valTxMonitorLevel->step(0.05);
@@ -2546,6 +2611,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             { Fl_Group* o = new Fl_Group(5, 62, 490, 135);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Counter* o = cntLowFreqCutoff = new Fl_Counter(15, 72, 70, 20, _("Low frequency cutoff"));
+                cntLowFreqCutoff->tooltip(_("Suppress waterfall below this audio frequency"));
                 cntLowFreqCutoff->type(1);
                 cntLowFreqCutoff->minimum(0);
                 cntLowFreqCutoff->maximum(500);
@@ -2568,11 +2634,13 @@ an merging"));
                 o->value(progdefaults.latency);
               } // Fl_Counter* valLatency
               { Fl_Check_Button* o = btnWFaveraging = new Fl_Check_Button(15, 133, 120, 20, _("FFT averaging"));
+                btnWFaveraging->tooltip(_("Use averaging to decrease waterfall noise"));
                 btnWFaveraging->down_box(FL_DOWN_BOX);
                 btnWFaveraging->callback((Fl_Callback*)cb_btnWFaveraging);
                 o->value(progdefaults.WFaveraging);
               } // Fl_Check_Button* btnWFaveraging
               { mnuFFTPrefilter = new Fl_Choice(15, 163, 120, 25, _("FFT prefilter window function"));
+                mnuFFTPrefilter->tooltip(_("Select the type of FFT prefilter"));
                 mnuFFTPrefilter->down_box(FL_BORDER_BOX);
                 mnuFFTPrefilter->callback((Fl_Callback*)cb_mnuFFTPrefilter);
                 mnuFFTPrefilter->align(FL_ALIGN_RIGHT);
@@ -2586,20 +2654,22 @@ an merging"));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Mouse"));
-            o->hide();
             { Fl_Group* o = new Fl_Group(5, 62, 490, 170);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnWaterfallHistoryDefault = new Fl_Check_Button(15, 76, 340, 20, _("Left or right click always replays audio history"));
+                btnWaterfallHistoryDefault->tooltip(_("Replay trackline audio"));
                 btnWaterfallHistoryDefault->down_box(FL_DOWN_BOX);
                 btnWaterfallHistoryDefault->callback((Fl_Callback*)cb_btnWaterfallHistoryDefault);
                 o->value(progdefaults.WaterfallHistoryDefault);
               } // Fl_Check_Button* btnWaterfallHistoryDefault
               { Fl_Check_Button* o = btnWaterfallQSY = new Fl_Check_Button(15, 106, 380, 20, _("Dragging on the waterfall scale changes frequency"));
+                btnWaterfallQSY->tooltip(_("Enable drag cursor on waterfall scale"));
                 btnWaterfallQSY->down_box(FL_DOWN_BOX);
                 btnWaterfallQSY->callback((Fl_Callback*)cb_btnWaterfallQSY);
                 o->value(progdefaults.WaterfallQSY);
               } // Fl_Check_Button* btnWaterfallQSY
               { Fl_Check_Button* o = btnWaterfallClickInsert = new Fl_Check_Button(15, 148, 225, 20, _("Insert text on single left click"));
+                btnWaterfallClickInsert->tooltip(_("Insert special text in Rx panel\nwhen waterfall clicked"));
                 btnWaterfallClickInsert->down_box(FL_DOWN_BOX);
                 btnWaterfallClickInsert->callback((Fl_Callback*)cb_btnWaterfallClickInsert);
                 o->value(progdefaults.WaterfallClickInsert);
@@ -2642,10 +2712,12 @@ an merging"));
               tabsCW->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
                 o->align(FL_ALIGN_TOP_LEFT);
+                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 130, _("Receive"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
                 { Fl_Value_Slider* o = sldrCWbandwidth = new Fl_Value_Slider(40, 115, 290, 20, _("Filter bandwidth"));
+                sldrCWbandwidth->tooltip(_("CW dsp filter bandwidth"));
                 sldrCWbandwidth->type(1);
                 sldrCWbandwidth->selection_color(FL_SELECTION_COLOR);
                 sldrCWbandwidth->minimum(10);
@@ -2658,12 +2730,14 @@ an merging"));
                 o->value(progdefaults.CWbandwidth);
                 } // Fl_Value_Slider* sldrCWbandwidth
                 { Fl_Check_Button* o = btnCWrcvTrack = new Fl_Check_Button(40, 150, 80, 20, _("Tracking"));
+                btnCWrcvTrack->tooltip(_("Automatic Rx speed tracking"));
                 btnCWrcvTrack->down_box(FL_DOWN_BOX);
                 btnCWrcvTrack->value(1);
                 btnCWrcvTrack->callback((Fl_Callback*)cb_btnCWrcvTrack);
                 o->value(progdefaults.CWtrack);
                 } // Fl_Check_Button* btnCWrcvTrack
                 { Fl_Counter* o = cntCWrange = new Fl_Counter(225, 150, 65, 20, _("Tracking range (WPM)"));
+                cntCWrange->tooltip(_("Range +/- wpm"));
                 cntCWrange->type(1);
                 cntCWrange->minimum(5);
                 cntCWrange->maximum(25);
@@ -2678,6 +2752,7 @@ an merging"));
                 valCWrcvWPM->callback((Fl_Callback*)cb_valCWrcvWPM);
                 } // Fl_Value_Output* valCWrcvWPM
                 { prgsCWrcvWPM = new Fl_Progress(75, 188, 255, 20);
+                prgsCWrcvWPM->tooltip(_("Tracked CW speed in WPM"));
                 prgsCWrcvWPM->color(FL_BACKGROUND_COLOR);
                 prgsCWrcvWPM->selection_color(FL_SELECTION_COLOR);
                 prgsCWrcvWPM->align(FL_ALIGN_CENTER);
@@ -2691,6 +2766,7 @@ an merging"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
                 { Fl_Value_Slider* o = sldrCWxmtWPM = new Fl_Value_Slider(40, 248, 290, 20, _("TX WPM"));
+                sldrCWxmtWPM->tooltip(_("My transmit CW WPM"));
                 sldrCWxmtWPM->type(1);
                 sldrCWxmtWPM->selection_color(FL_SELECTION_COLOR);
                 sldrCWxmtWPM->minimum(5);
@@ -2703,6 +2779,7 @@ an merging"));
                 o->value(progdefaults.CWspeed);
                 } // Fl_Value_Slider* sldrCWxmtWPM
                 { Fl_Counter* o = cntCWdefWPM = new Fl_Counter(40, 294, 64, 20, _("Default"));
+                cntCWdefWPM->tooltip(_("The default CW speed"));
                 cntCWdefWPM->type(1);
                 cntCWdefWPM->minimum(5);
                 cntCWdefWPM->maximum(200);
@@ -2713,6 +2790,7 @@ an merging"));
                 o->value(progdefaults.defCWspeed);
                 } // Fl_Counter* cntCWdefWPM
                 { Fl_Counter* o = cntCWlowerlimit = new Fl_Counter(152, 294, 65, 20, _("Lower limit"));
+                cntCWlowerlimit->tooltip(_("No slower than this"));
                 cntCWlowerlimit->type(1);
                 cntCWlowerlimit->minimum(5);
                 cntCWlowerlimit->maximum(20);
@@ -2723,6 +2801,7 @@ an merging"));
                 o->value(progdefaults.CWlowerlimit);
                 } // Fl_Counter* cntCWlowerlimit
                 { Fl_Counter* o = cntCWupperlimit = new Fl_Counter(265, 294, 65, 20, _("Upper limit"));
+                cntCWupperlimit->tooltip(_("No faster than this"));
                 cntCWupperlimit->type(1);
                 cntCWupperlimit->minimum(25);
                 cntCWupperlimit->maximum(200);
@@ -2738,7 +2817,6 @@ an merging"));
               } // Fl_Group* o
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("Timing and QSK"));
                 o->align(FL_ALIGN_TOP_LEFT);
-                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 95, _("Timing"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2754,6 +2832,7 @@ an merging"));
                 o->value(progdefaults.CWweight);
                 } // Fl_Counter* cntCWweight
                 { Fl_Counter* o = cntCWdash2dot = new Fl_Counter(211, 114, 64, 20, _("Dash to dot ratio"));
+                cntCWdash2dot->tooltip(_("Dash to dot ratio"));
                 cntCWdash2dot->type(1);
                 cntCWdash2dot->minimum(2.5);
                 cntCWdash2dot->maximum(4);
@@ -2764,7 +2843,7 @@ an merging"));
                 o->value(progdefaults.CWdash2dot);
                 } // Fl_Counter* cntCWdash2dot
                 { Fl_Counter* o = cntCWrisetime = new Fl_Counter(15, 144, 65, 21, _("Edge"));
-                cntCWrisetime->tooltip(_("Leading and trailing edge risetimes (ms)"));
+                cntCWrisetime->tooltip(_("Leading and trailing edge risetimes (msec)"));
                 cntCWrisetime->type(1);
                 cntCWrisetime->minimum(0);
                 cntCWrisetime->maximum(15);
@@ -2780,6 +2859,7 @@ an merging"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
                 { Fl_Check_Button* o = btnQSK = new Fl_Check_Button(15, 208, 211, 20, _("QSK on right audio channel"));
+                btnQSK->tooltip(_("Generate square wave signal on right channel"));
                 btnQSK->down_box(FL_DOWN_BOX);
                 btnQSK->callback((Fl_Callback*)cb_btnQSK);
                 o->value(progdefaults.QSK);
@@ -2835,6 +2915,7 @@ an merging"));
                 txtSecondary->when(FL_WHEN_CHANGED);
               } // Fl_Input2* txtSecondary
               { Fl_Check_Button* o = valDominoEX_FILTER = new Fl_Check_Button(15, 141, 80, 20, _("Filtering"));
+                valDominoEX_FILTER->tooltip(_("Use DSP filter before decoder"));
                 valDominoEX_FILTER->down_box(FL_DOWN_BOX);
                 valDominoEX_FILTER->value(1);
                 valDominoEX_FILTER->callback((Fl_Callback*)cb_valDominoEX_FILTER);
@@ -2886,6 +2967,7 @@ an merging"));
             { Fl_Group* o = new Fl_Group(5, 60, 490, 145);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Choice* o = selHellFont = new Fl_Choice(15, 70, 150, 20, _("Transmit font"));
+                selHellFont->tooltip(_("Select TX raster font"));
                 selHellFont->down_box(FL_BORDER_BOX);
                 selHellFont->callback((Fl_Callback*)cb_selHellFont);
                 selHellFont->align(FL_ALIGN_RIGHT);
@@ -2893,11 +2975,13 @@ an merging"));
                 o->value(progdefaults.feldfontnbr);
               } // Fl_Choice* selHellFont
               { Fl_Check_Button* o = btnBlackboard = new Fl_Check_Button(300, 70, 125, 20, _("Reverse video"));
+                btnBlackboard->tooltip(_("Display RX in reverse video"));
                 btnBlackboard->down_box(FL_DOWN_BOX);
                 btnBlackboard->callback((Fl_Callback*)cb_btnBlackboard);
                 o->value(progdefaults.HellBlackboard);
               } // Fl_Check_Button* btnBlackboard
               { Fl_Spinner* o = valHellXmtWidth = new Fl_Spinner(15, 100, 40, 20, _("Transmit width"));
+                valHellXmtWidth->tooltip(_("# of multiple scans / character line"));
                 valHellXmtWidth->maximum(3);
                 valHellXmtWidth->value(1);
                 valHellXmtWidth->callback((Fl_Callback*)cb_valHellXmtWidth);
@@ -2905,19 +2989,22 @@ an merging"));
                 o->value(progdefaults.HellXmtWidth);
               } // Fl_Spinner* valHellXmtWidth
               { Fl_Check_Button* o = btnHellRcvWidth = new Fl_Check_Button(300, 100, 155, 20, _("Halve receive width"));
+                btnHellRcvWidth->tooltip(_("Compress Rx in time"));
                 btnHellRcvWidth->down_box(FL_DOWN_BOX);
                 btnHellRcvWidth->callback((Fl_Callback*)cb_btnHellRcvWidth);
                 o->value(progdefaults.HellRcvWidth);
               } // Fl_Check_Button* btnHellRcvWidth
-              { Fl_Choice* o = mnuHellPulse = new Fl_Choice(15, 147, 130, 20, _("Pulse shape"));
+              { Fl_Choice* o = mnuHellPulse = new Fl_Choice(15, 147, 150, 20, _("Pulse shape"));
+                mnuHellPulse->tooltip(_("Raised cosine pulse shape factor"));
                 mnuHellPulse->down_box(FL_BORDER_BOX);
                 mnuHellPulse->callback((Fl_Callback*)cb_mnuHellPulse);
                 mnuHellPulse->align(FL_ALIGN_TOP_LEFT);
-                o->add("Slow attack (4 ms)");
-                o->add("Fast attack (2 ms)");
+                o->add("Slow (4 msec)");
+                o->add("Fast (2 msec)");
                 o->value(progdefaults.HellPulseFast);
               } // Fl_Choice* mnuHellPulse
               { Fl_Value_Slider* o = sldrHellBW = new Fl_Value_Slider(206, 147, 246, 20, _("Receive filter bandwidth"));
+                sldrHellBW->tooltip(_("Adjust the DSP bandwidth"));
                 sldrHellBW->type(1);
                 sldrHellBW->selection_color(FL_SELECTION_COLOR);
                 sldrHellBW->minimum(10);
@@ -2930,6 +3017,7 @@ an merging"));
                 o->value(progdefaults.HELL_BW);
               } // Fl_Value_Slider* sldrHellBW
               { Fl_Check_Button* o = btnFeldHellIdle = new Fl_Check_Button(15, 177, 230, 20, _("Transmit periods (.) when idle"));
+                btnFeldHellIdle->tooltip(_("Transmits a diddle dot when no keyboard activity"));
                 btnFeldHellIdle->down_box(FL_DOWN_BOX);
                 btnFeldHellIdle->value(1);
                 btnFeldHellIdle->callback((Fl_Callback*)cb_btnFeldHellIdle);
@@ -2951,7 +3039,9 @@ an merging"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
               { Fl_Check_Button* o = btnmt63_interleave = new Fl_Check_Button(150, 78, 185, 20, _("64-bit (long) interleave"));
+                btnmt63_interleave->tooltip(_("Use Long interleave (default)"));
                 btnmt63_interleave->down_box(FL_DOWN_BOX);
+                btnmt63_interleave->value(1);
                 btnmt63_interleave->callback((Fl_Callback*)cb_btnmt63_interleave);
                 o->value(0);if (progdefaults.mt63_interleave == 64) o->value(1);
               } // Fl_Check_Button* btnmt63_interleave
@@ -2970,6 +3060,7 @@ an merging"));
             { Fl_Group* o = new Fl_Group(5, 60, 490, 200);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Choice* o = mnuOlivia_Bandwidth = new Fl_Choice(60, 80, 85, 20, _("Bandwidth"));
+                mnuOlivia_Bandwidth->tooltip(_("Select bandwidth"));
                 mnuOlivia_Bandwidth->down_box(FL_BORDER_BOX);
                 mnuOlivia_Bandwidth->callback((Fl_Callback*)cb_mnuOlivia_Bandwidth);
                 mnuOlivia_Bandwidth->align(FL_ALIGN_RIGHT);
@@ -2977,6 +3068,7 @@ an merging"));
                 o->value(2);
               } // Fl_Choice* mnuOlivia_Bandwidth
               { Fl_Choice* o = mnuOlivia_Tones = new Fl_Choice(321, 80, 70, 20, _("Tones"));
+                mnuOlivia_Tones->tooltip(_("Select number of tones"));
                 mnuOlivia_Tones->down_box(FL_BORDER_BOX);
                 mnuOlivia_Tones->callback((Fl_Callback*)cb_mnuOlivia_Tones);
                 mnuOlivia_Tones->align(FL_ALIGN_RIGHT);
@@ -2987,6 +3079,7 @@ an merging"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
                 { cntOlivia_smargin = new Fl_Counter(80, 150, 70, 20, _("Tune margin (tone frequency spacing)"));
+                cntOlivia_smargin->tooltip(_("Change ONLY to experiment"));
                 cntOlivia_smargin->type(1);
                 cntOlivia_smargin->minimum(2);
                 cntOlivia_smargin->maximum(128);
@@ -2996,6 +3089,7 @@ an merging"));
                 cntOlivia_smargin->align(FL_ALIGN_RIGHT);
                 } // Fl_Counter* cntOlivia_smargin
                 { cntOlivia_sinteg = new Fl_Counter(80, 180, 70, 20, _("Integration period (FEC blocks)"));
+                cntOlivia_sinteg->tooltip(_("Change ONLY to experiment"));
                 cntOlivia_sinteg->type(1);
                 cntOlivia_sinteg->minimum(2);
                 cntOlivia_sinteg->maximum(128);
@@ -3020,6 +3114,7 @@ an merging"));
               tabsPSK->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
                 o->align(FL_ALIGN_TOP_LEFT);
+                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 98, _("AFC behavior"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -3051,6 +3146,7 @@ an merging"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
                 { Fl_Choice* o = mnuPSKStatusTimeout = new Fl_Choice(15, 214, 80, 20, _("after"));
+                mnuPSKStatusTimeout->tooltip(_("Behavior of s/n imd"));
                 mnuPSKStatusTimeout->down_box(FL_BORDER_BOX);
                 mnuPSKStatusTimeout->callback((Fl_Callback*)cb_mnuPSKStatusTimeout);
                 mnuPSKStatusTimeout->align(FL_ALIGN_RIGHT);
@@ -3058,6 +3154,7 @@ an merging"));
                 o->value(progdefaults.StatusDim);
                 } // Fl_Choice* mnuPSKStatusTimeout
                 { Fl_Counter* o = new Fl_Counter(156, 214, 75, 20, _("seconds"));
+                o->tooltip(_("Will occur after this time in seconds"));
                 o->type(1);
                 o->minimum(0);
                 o->maximum(30);
@@ -3099,15 +3196,16 @@ an merging"));
               } // Fl_Group* o
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("Viewer"));
                 o->align(FL_ALIGN_TOP_LEFT);
-                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 110);
                 o->box(FL_ENGRAVED_FRAME);
                 { Fl_Check_Button* o = btnMarquee = new Fl_Check_Button(212, 125, 165, 20, _("Continuous scrolling"));
+                btnMarquee->tooltip(_("ON - Marquee style\nOFF - Clear & restart"));
                 btnMarquee->down_box(FL_DOWN_BOX);
                 btnMarquee->callback((Fl_Callback*)cb_btnMarquee);
                 o->value(progdefaults.VIEWERmarquee);
                 } // Fl_Check_Button* btnMarquee
                 { Fl_Spinner* o = cntChannels = new Fl_Spinner(15, 95, 39, 20, _("Channels"));
+                cntChannels->tooltip(_("Change # of psk viewer channels"));
                 cntChannels->value(1);
                 cntChannels->callback((Fl_Callback*)cb_cntChannels);
                 cntChannels->align(FL_ALIGN_RIGHT);
@@ -3117,6 +3215,7 @@ an merging"));
                 o->value(progdefaults.VIEWERchannels);
                 } // Fl_Spinner* cntChannels
                 { Fl_Spinner* o = cntStartFrequency = new Fl_Spinner(15, 125, 50, 20, _("Start frequency"));
+                cntStartFrequency->tooltip(_("Start decoding at this frequency"));
                 cntStartFrequency->value(1);
                 cntStartFrequency->callback((Fl_Callback*)cb_cntStartFrequency);
                 cntStartFrequency->align(FL_ALIGN_RIGHT);
@@ -3136,6 +3235,7 @@ an merging"));
                 o->value(progdefaults.VIEWERtimeout);
                 } // Fl_Spinner* cntTimeout
                 { mnuViewerLabel = new Fl_Choice(15, 155, 150, 25, _("Channel label"));
+                mnuViewerLabel->tooltip(_("Appearance of label on each channel"));
                 mnuViewerLabel->down_box(FL_BORDER_BOX);
                 mnuViewerLabel->callback((Fl_Callback*)cb_mnuViewerLabel);
                 mnuViewerLabel->align(FL_ALIGN_RIGHT);
@@ -3157,6 +3257,7 @@ an merging"));
             { Fl_Group* o = new Fl_Group(5, 60, 490, 225);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Choice* o = selShift = new Fl_Choice(15, 70, 100, 20, _("Carrier shift"));
+                selShift->tooltip(_("Select carrier shift"));
                 selShift->down_box(FL_BORDER_BOX);
                 selShift->callback((Fl_Callback*)cb_selShift);
                 selShift->align(FL_ALIGN_RIGHT);
@@ -3164,6 +3265,7 @@ an merging"));
                 o->add(szShifts);
               } // Fl_Choice* selShift
               { Fl_Choice* o = selBaud = new Fl_Choice(15, 100, 100, 20, _("Baud rate"));
+                selBaud->tooltip(_("Select carrier baudrate"));
                 selBaud->down_box(FL_BORDER_BOX);
                 selBaud->callback((Fl_Callback*)cb_selBaud);
                 selBaud->align(FL_ALIGN_RIGHT);
@@ -3171,6 +3273,7 @@ an merging"));
                 o->add(szBauds);
               } // Fl_Choice* selBaud
               { Fl_Choice* o = selBits = new Fl_Choice(15, 130, 100, 20, _("Bits per character"));
+                selBits->tooltip(_("Select # bits / char"));
                 selBits->down_box(FL_BORDER_BOX);
                 selBits->callback((Fl_Callback*)cb_selBits);
                 selBits->align(FL_ALIGN_RIGHT);
@@ -3178,6 +3281,7 @@ an merging"));
                 o->add(szSelBits);
               } // Fl_Choice* selBits
               { Fl_Choice* o = selParity = new Fl_Choice(15, 160, 100, 20, _("Parity"));
+                selParity->tooltip(_("Select parity"));
                 selParity->down_box(FL_BORDER_BOX);
                 selParity->callback((Fl_Callback*)cb_selParity);
                 selParity->align(FL_ALIGN_RIGHT);
@@ -3185,6 +3289,7 @@ an merging"));
                 o->add(szParity);
               } // Fl_Choice* selParity
               { Fl_Choice* o = selStopBits = new Fl_Choice(15, 190, 100, 20, _("Stop bits"));
+                selStopBits->tooltip(_("Select # stop bits"));
                 selStopBits->down_box(FL_BORDER_BOX);
                 selStopBits->callback((Fl_Callback*)cb_selStopBits);
                 selStopBits->align(FL_ALIGN_RIGHT);
@@ -3194,17 +3299,20 @@ an merging"));
               { Fl_Group* o = new Fl_Group(255, 68, 230, 80);
                 o->box(FL_ENGRAVED_FRAME);
                 { Fl_Check_Button* o = btnAUTOCRLF = new Fl_Check_Button(265, 79, 90, 22, _("AutoCRLF"));
+                btnAUTOCRLF->tooltip(_("Add CRLF after page width characters"));
                 btnAUTOCRLF->down_box(FL_DOWN_BOX);
                 btnAUTOCRLF->callback((Fl_Callback*)cb_btnAUTOCRLF);
                 o->value(progdefaults.rtty_autocrlf);
                 } // Fl_Check_Button* btnAUTOCRLF
                 { Fl_Check_Button* o = btnCRCRLF = new Fl_Check_Button(385, 79, 90, 22, _("CR-CR-LF"));
+                btnCRCRLF->tooltip(_("Use \"cr cr lf\" for \"cr lf\""));
                 btnCRCRLF->down_box(FL_DOWN_BOX);
                 btnCRCRLF->callback((Fl_Callback*)cb_btnCRCRLF);
                 btnCRCRLF->when(FL_WHEN_RELEASE_ALWAYS);
                 o->value(progdefaults.rtty_crcrlf);
                 } // Fl_Check_Button* btnCRCRLF
                 { cntrAUTOCRLF = new Fl_Counter(335, 118, 65, 20, _("characters"));
+                cntrAUTOCRLF->tooltip(_("Set page width"));
                 cntrAUTOCRLF->type(1);
                 cntrAUTOCRLF->minimum(68);
                 cntrAUTOCRLF->maximum(80);
@@ -3218,39 +3326,44 @@ an merging"));
                 } // Fl_Box* o
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(355, 158, 130, 62, _("Unshift On Space"));
+              { Fl_Group* o = new Fl_Group(320, 158, 165, 62, _("Unshift On Space"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-                { Fl_Check_Button* o = chkUOSrx = new Fl_Check_Button(365, 190, 45, 20, _("RX"));
+                { Fl_Check_Button* o = chkUOSrx = new Fl_Check_Button(355, 185, 45, 20, _("RX"));
+                chkUOSrx->tooltip(_("Revert to Unsifted char\'s on a space"));
                 chkUOSrx->down_box(FL_DOWN_BOX);
                 chkUOSrx->callback((Fl_Callback*)cb_chkUOSrx);
                 o->value(progdefaults.UOSrx);
                 } // Fl_Check_Button* chkUOSrx
-                { Fl_Check_Button* o = chkUOStx = new Fl_Check_Button(430, 190, 45, 20, _("TX"));
+                { Fl_Check_Button* o = chkUOStx = new Fl_Check_Button(420, 185, 45, 20, _("TX"));
+                chkUOStx->tooltip(_("Revert to Unsifted char\'s on a space"));
                 chkUOStx->down_box(FL_DOWN_BOX);
                 chkUOStx->callback((Fl_Callback*)cb_chkUOStx);
                 o->value(progdefaults.UOStx);
                 } // Fl_Check_Button* chkUOStx
                 o->end();
               } // Fl_Group* o
-              { Fl_Check_Button* o = btnPreferXhairScope = new Fl_Check_Button(15, 224, 165, 20, _("Use crosshair scope"));
+              { Fl_Check_Button* o = btnPreferXhairScope = new Fl_Check_Button(15, 224, 165, 20, _("Use cross hair scope"));
+                btnPreferXhairScope->tooltip(_("Default to cross hair digiscope"));
                 btnPreferXhairScope->down_box(FL_DOWN_BOX);
                 btnPreferXhairScope->callback((Fl_Callback*)cb_btnPreferXhairScope);
                 o->value(progdefaults.PreferXhairScope);
               } // Fl_Check_Button* btnPreferXhairScope
               { Fl_Check_Button* o = chkPseudoFSK = new Fl_Check_Button(15, 254, 270, 20, _("Pseudo-FSK on right audio channel"));
+                chkPseudoFSK->tooltip(_("Create square wave on right channel"));
                 chkPseudoFSK->down_box(FL_DOWN_BOX);
                 chkPseudoFSK->callback((Fl_Callback*)cb_chkPseudoFSK);
                 o->value(progdefaults.PseudoFSK);
               } // Fl_Check_Button* chkPseudoFSK
               { Fl_Choice* o = mnuRTTYAFCSpeed = new Fl_Choice(326, 254, 80, 20, _("AFC speed"));
+                mnuRTTYAFCSpeed->tooltip(_("AFC tracking speed"));
                 mnuRTTYAFCSpeed->down_box(FL_BORDER_BOX);
                 mnuRTTYAFCSpeed->callback((Fl_Callback*)cb_mnuRTTYAFCSpeed);
                 mnuRTTYAFCSpeed->align(FL_ALIGN_RIGHT);
                 o->add("Slow"); o->add("Normal"); o->add("Fast");
                 o->value(progdefaults.rtty_afcspeed);
               } // Fl_Choice* mnuRTTYAFCSpeed
-              { Fl_Check_Button* o = chkXagc = new Fl_Check_Button(217, 175, 62, 22, _("X-agc (hidden)"));
+              { Fl_Check_Button* o = chkXagc = new Fl_Check_Button(320, 223, 62, 22, _("X-agc (hidden)"));
                 chkXagc->down_box(FL_DOWN_BOX);
                 chkXagc->callback((Fl_Callback*)cb_chkXagc);
                 o->value(progdefaults.Xagc);
@@ -3279,6 +3392,7 @@ an merging"));
                 txtTHORSecondary->when(FL_WHEN_CHANGED);
               } // Fl_Input2* txtTHORSecondary
               { Fl_Check_Button* o = valTHOR_FILTER = new Fl_Check_Button(15, 141, 80, 20, _("Filtering"));
+                valTHOR_FILTER->tooltip(_("Enable DSP prior to decoder"));
                 valTHOR_FILTER->down_box(FL_DOWN_BOX);
                 valTHOR_FILTER->value(1);
                 valTHOR_FILTER->callback((Fl_Callback*)cb_valTHOR_FILTER);
@@ -3345,6 +3459,7 @@ an merging"));
               btnPTT[0]->hide();
             } // Fl_Round_Button* btnPTT[0]
             { btnPTT[4] = new Fl_Round_Button(161, 62, 155, 20, _("Use serial port PTT"));
+              btnPTT[4]->tooltip(_("Serial port h/w used for PTT"));
               btnPTT[4]->down_box(FL_DIAMOND_DOWN_BOX);
               btnPTT[4]->selection_color(FL_SELECTION_COLOR);
               btnPTT[4]->callback((Fl_Callback*)cb_btnPTT1);
@@ -3356,6 +3471,7 @@ an merging"));
                 inpTTYdev->callback((Fl_Callback*)cb_inpTTYdev);
               } // Fl_Input_Choice* inpTTYdev
               { btnRTSptt = new Fl_Round_Button(147, 139, 85, 20, _("Use RTS"));
+                btnRTSptt->tooltip(_("RTS is ptt signal line"));
                 btnRTSptt->down_box(FL_DOWN_BOX);
                 btnRTSptt->callback((Fl_Callback*)cb_btnRTSptt);
               } // Fl_Round_Button* btnRTSptt
@@ -3365,6 +3481,7 @@ an merging"));
                 btnRTSplusV->callback((Fl_Callback*)cb_btnRTSplusV);
               } // Fl_Round_Button* btnRTSplusV
               { btnDTRptt = new Fl_Round_Button(147, 169, 85, 20, _("Use DTR"));
+                btnDTRptt->tooltip(_("DTR is ptt signal line"));
                 btnDTRptt->down_box(FL_DOWN_BOX);
                 btnDTRptt->callback((Fl_Callback*)cb_btnDTRptt);
               } // Fl_Round_Button* btnDTRptt
@@ -3374,6 +3491,7 @@ an merging"));
                 btnDTRplusV->callback((Fl_Callback*)cb_btnDTRplusV);
               } // Fl_Round_Button* btnDTRplusV
               { btnInitHWPTT = new Fl_Button(188, 207, 113, 24, _("Initialize"));
+                btnInitHWPTT->tooltip(_("Initialize the ptt h/w interface"));
                 btnInitHWPTT->callback((Fl_Callback*)cb_btnInitHWPTT);
               } // Fl_Button* btnInitHWPTT
               grpHWPTT->end();
@@ -3382,32 +3500,36 @@ an merging"));
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("RigCAT"));
             o->tooltip(_("Rig Control using xml spec file"));
-            o->hide();
             { chkUSERIGCAT = new Fl_Check_Button(195, 60, 110, 20, _("Use RigCAT"));
+              chkUSERIGCAT->tooltip(_("RigCAT used for rig control"));
               chkUSERIGCAT->down_box(FL_DOWN_BOX);
               chkUSERIGCAT->callback((Fl_Callback*)cb_chkUSERIGCAT);
             } // Fl_Check_Button* chkUSERIGCAT
             { grpRigCAT = new Fl_Group(5, 85, 490, 142);
               grpRigCAT->box(FL_ENGRAVED_FRAME);
-              { Fl_Output* o = txtXmlRigFilename = new Fl_Output(15, 114, 130, 22, _("Rig description file:"));
+              { Fl_Output* o = txtXmlRigFilename = new Fl_Output(15, 107, 130, 22, _("Rig description file:"));
+                txtXmlRigFilename->tooltip(_("Use Open to select descriptor file"));
                 txtXmlRigFilename->color(FL_LIGHT2);
                 txtXmlRigFilename->align(FL_ALIGN_TOP_LEFT);
                 o->value(fl_filename_name(progdefaults.XmlRigFilename.c_str()));
               } // Fl_Output* txtXmlRigFilename
-              { btnSelectRigXmlFile = new Fl_Button(148, 114, 60, 22, _("Open..."));
+              { btnSelectRigXmlFile = new Fl_Button(148, 107, 60, 22, _("Open..."));
+                btnSelectRigXmlFile->tooltip(_("Select rig descriptor file"));
                 btnSelectRigXmlFile->callback((Fl_Callback*)cb_btnSelectRigXmlFile);
               } // Fl_Button* btnSelectRigXmlFile
-              { Fl_Input_Choice* o = inpXmlRigDevice = new Fl_Input_Choice(341, 114, 144, 22, _("Device:"));
+              { Fl_Input_Choice* o = inpXmlRigDevice = new Fl_Input_Choice(341, 107, 144, 22, _("Device:"));
+                inpXmlRigDevice->tooltip(_("Serial device"));
                 inpXmlRigDevice->callback((Fl_Callback*)cb_inpXmlRigDevice);
                 o->value(progdefaults.XmlRigDevice.c_str());
               } // Fl_Input_Choice* inpXmlRigDevice
-              { Fl_Choice* o = mnuXmlRigBaudrate = new Fl_Choice(386, 146, 99, 22, _("Baud rate:"));
+              { Fl_Choice* o = mnuXmlRigBaudrate = new Fl_Choice(386, 147, 99, 22, _("Baud rate:"));
+                mnuXmlRigBaudrate->tooltip(_("Pick baud rate from list"));
                 mnuXmlRigBaudrate->down_box(FL_BORDER_BOX);
                 mnuXmlRigBaudrate->callback((Fl_Callback*)cb_mnuXmlRigBaudrate);
                 o->add(szBaudRates);
                 o->value(progdefaults.XmlRigBaudrate);
               } // Fl_Choice* mnuXmlRigBaudrate
-              { Fl_Counter* o = cntRigCatRetries = new Fl_Counter(15, 163, 75, 20, _("Retries"));
+              { Fl_Counter* o = cntRigCatRetries = new Fl_Counter(15, 148, 75, 20, _("Retries"));
                 cntRigCatRetries->tooltip(_("Number of  times to resend\ncommand before giving up"));
                 cntRigCatRetries->type(1);
                 cntRigCatRetries->minimum(1);
@@ -3418,7 +3540,8 @@ an merging"));
                 cntRigCatRetries->align(FL_ALIGN_TOP);
                 o->value(progdefaults.RigCatRetries);
               } // Fl_Counter* cntRigCatRetries
-              { Fl_Counter* o = cntRigCatTimeout = new Fl_Counter(153, 163, 75, 20, _("Retry interval (ms)"));
+              { Fl_Counter* o = cntRigCatTimeout = new Fl_Counter(153, 148, 75, 20, _("Retry interval (ms)"));
+                cntRigCatTimeout->tooltip(_("Time between retires is msec"));
                 cntRigCatTimeout->type(1);
                 cntRigCatTimeout->minimum(2);
                 cntRigCatTimeout->maximum(200);
@@ -3428,7 +3551,8 @@ an merging"));
                 cntRigCatTimeout->align(FL_ALIGN_TOP);
                 o->value(progdefaults.RigCatTimeout);
               } // Fl_Counter* cntRigCatTimeout
-              { Fl_Counter* o = cntRigCatWait = new Fl_Counter(15, 193, 75, 20, _("Command interval (ms)"));
+              { Fl_Counter* o = cntRigCatWait = new Fl_Counter(15, 175, 75, 20, _("Command interval (ms)"));
+                cntRigCatWait->tooltip(_("Millseconds between sequential commands"));
                 cntRigCatWait->type(1);
                 cntRigCatWait->minimum(0);
                 cntRigCatWait->maximum(100);
@@ -3442,9 +3566,16 @@ an merging"));
                 btnInitRIGCAT->tooltip(_("Initialize RigCAT interface"));
                 btnInitRIGCAT->callback((Fl_Callback*)cb_btnInitRIGCAT);
               } // Fl_Button* btnInitRIGCAT
+              { Fl_Check_Button* o = btnRigCatEcho = new Fl_Check_Button(74, 201, 192, 22, _("Commands are echoed"));
+                btnRigCatEcho->tooltip(_("Rig or interface echos serial data"));
+                btnRigCatEcho->down_box(FL_DOWN_BOX);
+                btnRigCatEcho->callback((Fl_Callback*)cb_btnRigCatEcho);
+                o->value(progdefaults.RigCatECHO);
+              } // Fl_Check_Button* btnRigCatEcho
               grpRigCAT->end();
             } // Fl_Group* grpRigCAT
             { btnPTT[3] = new Fl_Round_Button(166, 232, 180, 20, _("PTT via CAT command"));
+              btnPTT[3]->tooltip(_("PTT is a CAT command (not hardware)"));
               btnPTT[3]->down_box(FL_DIAMOND_DOWN_BOX);
               btnPTT[3]->selection_color(FL_SELECTION_COLOR);
               btnPTT[3]->callback((Fl_Callback*)cb_btnPTT2);
@@ -3453,16 +3584,18 @@ an merging"));
             { grpRigCATPTT = new Fl_Group(5, 256, 490, 100);
               grpRigCATPTT->box(FL_ENGRAVED_FRAME);
               { Fl_Round_Button* o = btnRigCatRTSptt = new Fl_Round_Button(74, 268, 160, 20, _("Toggle RTS for PTT"));
+                btnRigCatRTSptt->tooltip(_("RTS is ptt line"));
                 btnRigCatRTSptt->down_box(FL_ROUND_DOWN_BOX);
                 btnRigCatRTSptt->callback((Fl_Callback*)cb_btnRigCatRTSptt);
                 o->value(progdefaults.RigCatRTSptt);
               } // Fl_Round_Button* btnRigCatRTSptt
               { Fl_Round_Button* o = btnRigCatDTRptt = new Fl_Round_Button(249, 268, 160, 20, _("Toggle DTR for PTT"));
+                btnRigCatDTRptt->tooltip(_("DTR is ptt line"));
                 btnRigCatDTRptt->down_box(FL_ROUND_DOWN_BOX);
                 btnRigCatDTRptt->callback((Fl_Callback*)cb_btnRigCatDTRptt);
                 o->value(progdefaults.RigCatDTRptt);
               } // Fl_Round_Button* btnRigCatDTRptt
-              { Fl_Check_Button* o = btnRigCatRTSplus = new Fl_Check_Button(75, 298, 100, 20, _("RTS +12 v"));
+              { Fl_Check_Button* o = btnRigCatRTSplus = new Fl_Check_Button(74, 298, 100, 20, _("RTS +12 v"));
                 btnRigCatRTSplus->tooltip(_("Initial state of RTS"));
                 btnRigCatRTSplus->down_box(FL_DOWN_BOX);
                 btnRigCatRTSplus->callback((Fl_Callback*)cb_btnRigCatRTSplus);
@@ -3474,7 +3607,8 @@ an merging"));
                 btnRigCatDTRplus->callback((Fl_Callback*)cb_btnRigCatDTRplus);
                 o->value(progdefaults.RigCatDTRplus);
               } // Fl_Check_Button* btnRigCatDTRplus
-              { Fl_Check_Button* o = chkRigCatRTSCTSflow = new Fl_Check_Button(75, 328, 170, 20, _("RTS/CTS flow control"));
+              { Fl_Check_Button* o = chkRigCatRTSCTSflow = new Fl_Check_Button(74, 328, 170, 20, _("RTS/CTS flow control"));
+                chkRigCatRTSCTSflow->tooltip(_("Rig uses RTS/CTS handshake"));
                 chkRigCatRTSCTSflow->down_box(FL_DOWN_BOX);
                 chkRigCatRTSCTSflow->callback((Fl_Callback*)cb_chkRigCatRTSCTSflow);
                 o->value(progdefaults.RigCatRTSCTSflow);
@@ -3484,13 +3618,16 @@ an merging"));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hamlib"));
+            o->hide();
             { chkUSEHAMLIB = new Fl_Check_Button(195, 60, 100, 20, _("Use Hamlib"));
+              chkUSEHAMLIB->tooltip(_("Hamlib used for rig control"));
               chkUSEHAMLIB->down_box(FL_DOWN_BOX);
               chkUSEHAMLIB->callback((Fl_Callback*)cb_chkUSEHAMLIB);
             } // Fl_Check_Button* chkUSEHAMLIB
             { grpHamlib = new Fl_Group(5, 85, 490, 166);
               grpHamlib->box(FL_ENGRAVED_FRAME);
               { Fl_ComboBox* o = cboHamlibRig = new Fl_ComboBox(46, 95, 160, 22, _("Rig:"));
+                cboHamlibRig->tooltip(_("Select the rig by name"));
                 cboHamlibRig->box(FL_DOWN_BOX);
                 cboHamlibRig->color(FL_BACKGROUND2_COLOR);
                 cboHamlibRig->selection_color(FL_BACKGROUND_COLOR);
@@ -3504,10 +3641,12 @@ an merging"));
                 o->readonly();
               } // Fl_ComboBox* cboHamlibRig
               { Fl_Input_Choice* o = inpRIGdev = new Fl_Input_Choice(341, 95, 144, 22, _("Device:"));
+                inpRIGdev->tooltip(_("Serial port"));
                 inpRIGdev->callback((Fl_Callback*)cb_inpRIGdev);
                 o->value(progdefaults.HamRigDevice.c_str());
               } // Fl_Input_Choice* inpRIGdev
               { Fl_Choice* o = mnuBaudRate = new Fl_Choice(386, 127, 99, 22, _("Baud rate:"));
+                mnuBaudRate->tooltip(_("Serial port baud rate"));
                 mnuBaudRate->down_box(FL_BORDER_BOX);
                 mnuBaudRate->callback((Fl_Callback*)cb_mnuBaudRate);
                 o->add(szBaudRates);
@@ -3525,6 +3664,7 @@ an merging"));
                 o->value(progdefaults.HamlibRetries);
               } // Fl_Counter* cntHamlibtRetries
               { Fl_Counter* o = cntHamlibTimeout = new Fl_Counter(131, 146, 75, 20, _("Retry interval (ms)"));
+                cntHamlibTimeout->tooltip(_("Msec\'s between retries"));
                 cntHamlibTimeout->type(1);
                 cntHamlibTimeout->minimum(2);
                 cntHamlibTimeout->maximum(200);
@@ -3535,6 +3675,7 @@ an merging"));
                 o->value(progdefaults.HamlibTimeout);
               } // Fl_Counter* cntHamlibTimeout
               { Fl_Counter* o = cntHamlibWait = new Fl_Counter(15, 177, 75, 20, _("Command interval (ms)"));
+                cntHamlibWait->tooltip(_("Msec\'s between sequential commands"));
                 cntHamlibWait->type(1);
                 cntHamlibWait->minimum(0);
                 cntHamlibWait->maximum(100);
@@ -3559,11 +3700,13 @@ an merging"));
                 inpHamlibConfig->value(progdefaults.HamConfig.c_str());
               } // Fl_Input2* inpHamlibConfig
               { btnInitHAMLIB = new Fl_Button(372, 222, 113, 24, _("Initialize"));
+                btnInitHAMLIB->tooltip(_("Initialize the serial port"));
                 btnInitHAMLIB->callback((Fl_Callback*)cb_btnInitHAMLIB);
               } // Fl_Button* btnInitHAMLIB
               grpHamlib->end();
             } // Fl_Group* grpHamlib
             { btnPTT[1] = new Fl_Round_Button(163, 258, 200, 20, _("PTT via Hamlib command"));
+              btnPTT[1]->tooltip(_("PTT is a hamlib command"));
               btnPTT[1]->down_box(FL_DIAMOND_DOWN_BOX);
               btnPTT[1]->selection_color(FL_SELECTION_COLOR);
               btnPTT[1]->callback((Fl_Callback*)cb_btnPTT3);
@@ -3583,11 +3726,13 @@ an merging"));
                 chkHamlibRTSplus->callback((Fl_Callback*)cb_chkHamlibRTSplus);
               } // Fl_Check_Button* chkHamlibRTSplus
               { Fl_Check_Button* o = chkHamlibRTSCTSflow = new Fl_Check_Button(54, 332, 170, 20, _("RTS/CTS flow control"));
+                chkHamlibRTSCTSflow->tooltip(_("Rig requires RTS/CTS flow control"));
                 chkHamlibRTSCTSflow->down_box(FL_DOWN_BOX);
                 chkHamlibRTSCTSflow->callback((Fl_Callback*)cb_chkHamlibRTSCTSflow);
                 o->value(progdefaults.HamlibRTSCTSflow);
               } // Fl_Check_Button* chkHamlibRTSCTSflow
               { Fl_Check_Button* o = chkHamlibXONXOFFflow = new Fl_Check_Button(273, 332, 185, 20, _("XON/XOFF flow control"));
+                chkHamlibXONXOFFflow->tooltip(_("Rig requires Xon/Xoff flow control"));
                 chkHamlibXONXOFFflow->down_box(FL_DOWN_BOX);
                 chkHamlibXONXOFFflow->callback((Fl_Callback*)cb_chkHamlibXONXOFFflow);
                 o->value(progdefaults.HamlibXONXOFFflow);
@@ -3607,6 +3752,7 @@ an merging"));
                 o->value("Control via Memory Mapped\nshared variables\ni.e.: Kachina program");
               } // Fl_Output* o
               { chkUSEMEMMAP = new Fl_Check_Button(160, 147, 120, 20, _("Use Memmap"));
+                chkUSEMEMMAP->tooltip(_("Rig control via memory mapped Kachina"));
                 chkUSEMEMMAP->down_box(FL_DOWN_BOX);
                 chkUSEMEMMAP->callback((Fl_Callback*)cb_chkUSEMEMMAP);
               } // Fl_Check_Button* chkUSEMEMMAP
@@ -3617,6 +3763,7 @@ an merging"));
                 btnPTT[2]->deactivate();
               } // Fl_Round_Button* btnPTT[2]
               { btnInitMEMMAP = new Fl_Button(197, 207, 113, 24, _("Initialize"));
+                btnInitMEMMAP->tooltip(_("Initialize Memmap interface"));
                 btnInitMEMMAP->callback((Fl_Callback*)cb_btnInitMEMMAP);
               } // Fl_Button* btnInitMEMMAP
               grpMemmap->end();
@@ -3639,6 +3786,7 @@ an merging"));
                 chkUSEXMLRPC->callback((Fl_Callback*)cb_chkUSEXMLRPC);
               } // Fl_Check_Button* chkUSEXMLRPC
               { btnInitXMLRPC = new Fl_Button(201, 183, 113, 24, _("Initialize"));
+                btnInitXMLRPC->tooltip(_("Initialize xmlrpm rig control"));
                 btnInitXMLRPC->callback((Fl_Callback*)cb_btnInitXMLRPC);
               } // Fl_Button* btnInitXMLRPC
               grpXMLRPC->end();
@@ -3657,11 +3805,13 @@ an merging"));
             { AudioOSS = new Fl_Group(5, 60, 490, 45);
               AudioOSS->box(FL_ENGRAVED_FRAME);
               { btnAudioIO[0] = new Fl_Round_Button(15, 70, 53, 25, _("OSS"));
+                btnAudioIO[0]->tooltip(_("Use OSS audio server"));
                 btnAudioIO[0]->down_box(FL_DIAMOND_DOWN_BOX);
                 btnAudioIO[0]->selection_color(FL_SELECTION_COLOR);
                 btnAudioIO[0]->callback((Fl_Callback*)cb_btnAudioIO);
               } // Fl_Round_Button* btnAudioIO[0]
               { Fl_Input_Choice* o = menuOSSDev = new Fl_Input_Choice(375, 70, 110, 25, _("Device:"));
+                menuOSSDev->tooltip(_("Select device"));
                 menuOSSDev->callback((Fl_Callback*)cb_menuOSSDev);
                 o->value(progdefaults.OSSdevice.c_str());
               } // Fl_Input_Choice* menuOSSDev
@@ -3670,15 +3820,18 @@ an merging"));
             { AudioPort = new Fl_Group(5, 105, 490, 80);
               AudioPort->box(FL_ENGRAVED_FRAME);
               { btnAudioIO[1] = new Fl_Round_Button(15, 133, 95, 25, _("PortAudio"));
+                btnAudioIO[1]->tooltip(_("Use Port Audio server"));
                 btnAudioIO[1]->down_box(FL_DIAMOND_DOWN_BOX);
                 btnAudioIO[1]->selection_color(FL_SELECTION_COLOR);
                 btnAudioIO[1]->callback((Fl_Callback*)cb_btnAudioIO1);
               } // Fl_Round_Button* btnAudioIO[1]
               { menuPortInDev = new Fl_Choice(215, 115, 270, 25, _("Capture:"));
+                menuPortInDev->tooltip(_("Audio input device"));
                 menuPortInDev->down_box(FL_BORDER_BOX);
                 menuPortInDev->callback((Fl_Callback*)cb_menuPortInDev);
               } // Fl_Choice* menuPortInDev
               { menuPortOutDev = new Fl_Choice(215, 150, 270, 25, _("Playback:"));
+                menuPortOutDev->tooltip(_("Audio output device"));
                 menuPortOutDev->down_box(FL_BORDER_BOX);
                 menuPortOutDev->callback((Fl_Callback*)cb_menuPortOutDev);
               } // Fl_Choice* menuPortOutDev
@@ -3687,6 +3840,7 @@ an merging"));
             { AudioPulse = new Fl_Group(5, 185, 490, 45);
               AudioPulse->box(FL_ENGRAVED_FRAME);
               { btnAudioIO[2] = new Fl_Round_Button(15, 196, 100, 25, _("PulseAudio"));
+                btnAudioIO[2]->tooltip(_("Use Pulse Audio server"));
                 btnAudioIO[2]->down_box(FL_DIAMOND_DOWN_BOX);
                 btnAudioIO[2]->selection_color(FL_SELECTION_COLOR);
                 btnAudioIO[2]->callback((Fl_Callback*)cb_btnAudioIO2);
@@ -3710,6 +3864,7 @@ an merging"));
             { AudioNull = new Fl_Group(5, 230, 490, 45);
               AudioNull->box(FL_ENGRAVED_FRAME);
               { btnAudioIO[3] = new Fl_Round_Button(16, 240, 100, 25, _("File I/O only"));
+                btnAudioIO[3]->tooltip(_("NO AUDIO DEVICE AVAILABLE (or testing)"));
                 btnAudioIO[3]->down_box(FL_DIAMOND_DOWN_BOX);
                 btnAudioIO[3]->selection_color(FL_SELECTION_COLOR);
                 btnAudioIO[3]->callback((Fl_Callback*)cb_btnAudioIO3);
@@ -3734,6 +3889,7 @@ l with your sound hardware."));
                 o->clear_changed();
               } // Fl_Choice* menuInSampleRate
               { menuSampleConverter = new Fl_Choice(269, 89, 216, 25, _("Converter"));
+                menuSampleConverter->tooltip(_("Set the type of resampler used of offset correction"));
                 menuSampleConverter->down_box(FL_BORDER_BOX);
                 menuSampleConverter->callback((Fl_Callback*)cb_menuSampleConverter);
                 menuSampleConverter->align(FL_ALIGN_TOP);
@@ -3754,6 +3910,7 @@ l with your sound hardware."));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
               { Fl_Spinner* o = cntRxRateCorr = new Fl_Spinner(15, 191, 85, 25, _("RX ppm"));
+                cntRxRateCorr->tooltip(_("RX sound card correction"));
                 cntRxRateCorr->value(1);
                 cntRxRateCorr->callback((Fl_Callback*)cb_cntRxRateCorr);
                 cntRxRateCorr->align(FL_ALIGN_RIGHT);
@@ -3762,6 +3919,7 @@ l with your sound hardware."));
                 o->maximum(50000);
               } // Fl_Spinner* cntRxRateCorr
               { Fl_Spinner* o = cntTxRateCorr = new Fl_Spinner(176, 191, 85, 25, _("TX ppm"));
+                cntTxRateCorr->tooltip(_("TX sound card correction"));
                 cntTxRateCorr->value(1);
                 cntTxRateCorr->callback((Fl_Callback*)cb_cntTxRateCorr);
                 cntTxRateCorr->align(FL_ALIGN_RIGHT);
@@ -3770,6 +3928,7 @@ l with your sound hardware."));
                 o->maximum(50000);
               } // Fl_Spinner* cntTxRateCorr
               { Fl_Spinner* o = cntTxOffset = new Fl_Spinner(338, 191, 85, 25, _("TX offset"));
+                cntTxOffset->tooltip(_("Difference between Rx & Tx freq (rig offset)"));
                 cntTxOffset->value(1);
                 cntTxOffset->callback((Fl_Callback*)cb_cntTxOffset);
                 cntTxOffset->align(FL_ALIGN_RIGHT);
@@ -3788,22 +3947,27 @@ l with your sound hardware."));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
               { Fl_Check_Button* o = btnMixer = new Fl_Check_Button(15, 89, 125, 25, _("Manage mixer"));
+                btnMixer->tooltip(_("Add mixer controls to main dialog"));
                 btnMixer->down_box(FL_DOWN_BOX);
                 btnMixer->callback((Fl_Callback*)cb_btnMixer);
                 o->value(progdefaults.EnableMixer);
               } // Fl_Check_Button* btnMixer
               { Fl_Input_Choice* o = menuMix = new Fl_Input_Choice(161, 132, 110, 25, _("Device:"));
+                menuMix->tooltip(_("Select Mixer device"));
                 menuMix->callback((Fl_Callback*)cb_menuMix);
                 o->value(progdefaults.MXdevice.c_str());
               } // Fl_Input_Choice* menuMix
               { btnMicIn = new Fl_Light_Button(281, 93, 74, 25, _("Mic In"));
+                btnMicIn->tooltip(_("Use microphone input"));
                 btnMicIn->callback((Fl_Callback*)cb_btnMicIn);
               } // Fl_Light_Button* btnMicIn
               { btnLineIn = new Fl_Light_Button(281, 132, 74, 25, _("Line In"));
+                btnLineIn->tooltip(_("Use Line-In device"));
                 btnLineIn->selection_color((Fl_Color)3);
                 btnLineIn->callback((Fl_Callback*)cb_btnLineIn);
               } // Fl_Light_Button* btnLineIn
               { valPCMvolume = new Fl_Value_Slider(15, 167, 340, 21, _("PCM"));
+                valPCMvolume->tooltip(_("Set the sound card PCM level (not in Windows)"));
                 valPCMvolume->type(1);
                 valPCMvolume->selection_color(FL_SELECTION_COLOR);
                 valPCMvolume->step(0.01);
@@ -3826,10 +3990,12 @@ l with your sound hardware."));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
           { btnsendid = new Fl_Check_Button(15, 67, 150, 20, _("Transmit mode ID"));
+            btnsendid->tooltip(_("Waterfall video ID"));
             btnsendid->down_box(FL_DOWN_BOX);
             btnsendid->callback((Fl_Callback*)cb_btnsendid);
           } // Fl_Check_Button* btnsendid
           { Fl_Check_Button* o = btnsendvideotext = new Fl_Check_Button(15, 97, 155, 20, _("Transmit video text"));
+            btnsendvideotext->tooltip(_("Waterfall video text"));
             btnsendvideotext->down_box(FL_DOWN_BOX);
             btnsendvideotext->callback((Fl_Callback*)cb_btnsendvideotext);
             o->value(progdefaults.sendtextid);
@@ -3849,6 +4015,7 @@ l with your sound hardware."));
             o->value(progdefaults.strTextid.c_str());
           } // Fl_Input2* valVideotext
           { Fl_Check_Button* o = chkID_SMALL = new Fl_Check_Button(15, 127, 120, 20, _("Use small font"));
+            chkID_SMALL->tooltip(_("ON - small font\nOFF - large font"));
             chkID_SMALL->down_box(FL_DOWN_BOX);
             chkID_SMALL->value(1);
             chkID_SMALL->callback((Fl_Callback*)cb_chkID_SMALL);
@@ -3873,11 +4040,13 @@ l with your sound hardware."));
           sld->box(FL_ENGRAVED_FRAME);
           sld->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
           { Fl_Check_Button* o = btnCWID = new Fl_Check_Button(15, 185, 140, 20, _("Transmit callsign"));
+            btnCWID->tooltip(_("Send Callsign in CW at end of every transmission"));
             btnCWID->down_box(FL_DOWN_BOX);
             btnCWID->callback((Fl_Callback*)cb_btnCWID);
             o->value(progdefaults.CWid);
           } // Fl_Check_Button* btnCWID
           { Fl_Value_Slider* o = sldrCWIDwpm = new Fl_Value_Slider(285, 185, 200, 20, _("Speed (WPM):"));
+            sldrCWIDwpm->tooltip(_("Send at this WPM"));
             sldrCWIDwpm->type(1);
             sldrCWIDwpm->selection_color(FL_SELECTION_COLOR);
             sldrCWIDwpm->minimum(15);
@@ -3895,11 +4064,13 @@ l with your sound hardware."));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
           { Fl_Check_Button* o = chkTransmitRSid = new Fl_Check_Button(15, 246, 165, 20, _("Transmit mode RSID"));
+            chkTransmitRSid->tooltip(_("Transmit RSID at beginning & end of transmission"));
             chkTransmitRSid->down_box(FL_DOWN_BOX);
             chkTransmitRSid->callback((Fl_Callback*)cb_chkTransmitRSid);
             o->value(progdefaults.TransmitRSid);
           } // Fl_Check_Button* chkTransmitRSid
           { Fl_Check_Button* o = chkRSidWideSearch = new Fl_Check_Button(215, 246, 270, 20, _("Detector searches entire passband"));
+            chkRSidWideSearch->tooltip(_("ON - search over entire waterfall\nOFF - limit search to +/- 200 Hz"));
             chkRSidWideSearch->down_box(FL_DOWN_BOX);
             chkRSidWideSearch->callback((Fl_Callback*)cb_chkRSidWideSearch);
             o->value(progdefaults.rsidWideSearch);
@@ -3913,10 +4084,12 @@ l with your sound hardware."));
         { tabsMisc = new Fl_Tabs(0, 25, 500, 345);
           tabsMisc->selection_color(FL_LIGHT1);
           { tabSweetSpot = new Fl_Group(0, 50, 500, 320, _("Sweet Spot"));
+            tabSweetSpot->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 75);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
               { Fl_Value_Input* o = valCWsweetspot = new Fl_Value_Input(42, 71, 65, 20, _("CW"));
+                valCWsweetspot->tooltip(_("Default CW tracking point"));
                 valCWsweetspot->minimum(200);
                 valCWsweetspot->maximum(4000);
                 valCWsweetspot->step(1);
@@ -3925,6 +4098,7 @@ l with your sound hardware."));
                 o->value(progdefaults.CWsweetspot);
               } // Fl_Value_Input* valCWsweetspot
               { Fl_Value_Input* o = valRTTYsweetspot = new Fl_Value_Input(220, 71, 65, 20, _("RTTY"));
+                valRTTYsweetspot->tooltip(_("Default RTTY tracking point"));
                 valRTTYsweetspot->minimum(200);
                 valRTTYsweetspot->maximum(4000);
                 valRTTYsweetspot->step(1);
@@ -3933,6 +4107,7 @@ l with your sound hardware."));
                 o->value(progdefaults.RTTYsweetspot);
               } // Fl_Value_Input* valRTTYsweetspot
               { Fl_Value_Input* o = valPSKsweetspot = new Fl_Value_Input(420, 71, 65, 20, _("PSK et al."));
+                valPSKsweetspot->tooltip(_("Default for all other modems"));
                 valPSKsweetspot->minimum(200);
                 valPSKsweetspot->maximum(4000);
                 valPSKsweetspot->step(1);
@@ -3941,6 +4116,7 @@ l with your sound hardware."));
                 o->value(progdefaults.PSKsweetspot);
               } // Fl_Value_Input* valPSKsweetspot
               { Fl_Check_Button* o = btnStartAtSweetSpot = new Fl_Check_Button(15, 101, 348, 20, _("Always start new modems at these frequencies"));
+                btnStartAtSweetSpot->tooltip(_("ON - start at default\nOFF - keep current wf cursor position"));
                 btnStartAtSweetSpot->down_box(FL_DOWN_BOX);
                 btnStartAtSweetSpot->value(1);
                 btnStartAtSweetSpot->callback((Fl_Callback*)cb_btnStartAtSweetSpot);
@@ -3956,21 +4132,25 @@ l with your sound hardware."));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
               { btnPSKRepAuto = new Fl_Check_Button(15, 91, 324, 20, _("Automatically spot callsigns in decoded text"));
+                btnPSKRepAuto->tooltip(_("Parse all incoming text"));
                 btnPSKRepAuto->down_box(FL_DOWN_BOX);
                 btnPSKRepAuto->callback((Fl_Callback*)cb_btnPSKRepAuto);
                 btnPSKRepAuto->value(progdefaults.pskrep_auto);
               } // Fl_Check_Button* btnPSKRepAuto
               { btnPSKRepLog = new Fl_Check_Button(15, 121, 327, 20, _("Send reception report when logging a QSO"));
+                btnPSKRepLog->tooltip(_("Send report only when QSO is logged"));
                 btnPSKRepLog->down_box(FL_DOWN_BOX);
                 btnPSKRepLog->callback((Fl_Callback*)cb_btnPSKRepLog);
                 btnPSKRepLog->value(progdefaults.pskrep_log);
               } // Fl_Check_Button* btnPSKRepLog
               { btnPSKRepQRG = new Fl_Check_Button(15, 151, 416, 20, _("Report rig frequency (enable only if you have rig control!)"));
+                btnPSKRepQRG->tooltip(_("Include the transmit frequency"));
                 btnPSKRepQRG->down_box(FL_DOWN_BOX);
                 btnPSKRepQRG->callback((Fl_Callback*)cb_btnPSKRepQRG);
                 btnPSKRepQRG->value(progdefaults.pskrep_qrg);
               } // Fl_Check_Button* btnPSKRepQRG
               { inpPSKRepHost = new Fl_Input2(56, 191, 220, 24, _("Host:"));
+                inpPSKRepHost->tooltip(_("To whom the connection is made"));
                 inpPSKRepHost->box(FL_DOWN_BOX);
                 inpPSKRepHost->color(FL_BACKGROUND2_COLOR);
                 inpPSKRepHost->selection_color(FL_SELECTION_COLOR);
@@ -3984,6 +4164,7 @@ l with your sound hardware."));
                 inpPSKRepHost->value(progdefaults.pskrep_host.c_str());
               } // Fl_Input2* inpPSKRepHost
               { inpPSKRepPort = new Fl_Input2(425, 191, 60, 24, _("Port:"));
+                inpPSKRepPort->tooltip(_("Using UDP port #"));
                 inpPSKRepPort->box(FL_DOWN_BOX);
                 inpPSKRepPort->color(FL_BACKGROUND2_COLOR);
                 inpPSKRepPort->selection_color(FL_SELECTION_COLOR);
@@ -3997,6 +4178,7 @@ l with your sound hardware."));
                 inpPSKRepPort->value(progdefaults.pskrep_port.c_str());
               } // Fl_Input2* inpPSKRepPort
               { btnPSKRepInit = new Fl_Button(405, 236, 80, 24, _("Initialize"));
+                btnPSKRepInit->tooltip(_("Initialize the socket client"));
                 btnPSKRepInit->callback((Fl_Callback*)cb_btnPSKRepInit);
               } // Fl_Button* btnPSKRepInit
               { boxPSKRepMsg = new Fl_Box(30, 236, 300, 24, _("<PSK Reporter error message>"));
@@ -4008,10 +4190,10 @@ l with your sound hardware."));
             tabSpot->end();
           } // Fl_Group* tabSpot
           { tabMacros = new Fl_Group(0, 50, 500, 320, _("Macros"));
-            tabMacros->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 75);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnUseLastMacro = new Fl_Check_Button(15, 70, 274, 20, _("Load last used macro file on startup"));
+                btnUseLastMacro->tooltip(_("ON - use last set of macros\nOFF - use default set"));
                 btnUseLastMacro->down_box(FL_DOWN_BOX);
                 btnUseLastMacro->callback((Fl_Callback*)cb_btnUseLastMacro);
                 o->value(progdefaults.UseLastMacro);
@@ -4032,6 +4214,7 @@ l with your sound hardware."));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
               { Fl_Check_Button* o = chkSlowCpu = new Fl_Check_Button(136, 76, 225, 20, _("Slow CPU (less than 700MHz)"));
+                chkSlowCpu->tooltip(_("Enable if you\'re computer does not decode properly"));
                 chkSlowCpu->down_box(FL_DOWN_BOX);
                 chkSlowCpu->callback((Fl_Callback*)cb_chkSlowCpu);
                 o->value(progdefaults.slowcpu);
@@ -4045,17 +4228,17 @@ l with your sound hardware."));
         tabMisc->end();
       } // Fl_Group* tabMisc
       { tabQRZ = new Fl_Group(0, 25, 500, 345, _("Callsign DB"));
-        tabQRZ->hide();
         { Fl_Group* o = new Fl_Group(5, 180, 490, 75, _("CDROM"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
           { Fl_Round_Button* o = btnQRZcdrom = new Fl_Round_Button(25, 215, 70, 20, _("QRZ"));
+            btnQRZcdrom->tooltip(_("Use CD or hard drive CD image"));
             btnQRZcdrom->down_box(FL_ROUND_DOWN_BOX);
             btnQRZcdrom->callback((Fl_Callback*)cb_btnQRZcdrom);
             o->value(progdefaults.QRZ == QRZCD);
           } // Fl_Round_Button* btnQRZcdrom
           { Fl_Input2* o = txtQRZpathname = new Fl_Input2(104, 215, 300, 20, _("at:"));
-            txtQRZpathname->tooltip(_("ie: /home/dave/CALLBK/ or C:/CALLBK/^jLeave blank to search for database"));
+            txtQRZpathname->tooltip(_("ie: /home/dave/CALLBK/ or C:/CALLBK/\nLeave blank to search for database"));
             txtQRZpathname->box(FL_DOWN_BOX);
             txtQRZpathname->color(FL_BACKGROUND2_COLOR);
             txtQRZpathname->selection_color(FL_SELECTION_COLOR);
@@ -4074,18 +4257,19 @@ l with your sound hardware."));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
           { Fl_Round_Button* o = btnQRZsub = new Fl_Round_Button(25, 291, 90, 20, _("QRZ.com"));
-            btnQRZsub->tooltip(_("You need a paid QRZ online subscription to access"));
+            btnQRZsub->tooltip(_("You need a paid QRZ online\nsubscription to access"));
             btnQRZsub->down_box(FL_ROUND_DOWN_BOX);
             btnQRZsub->callback((Fl_Callback*)cb_btnQRZsub);
             o->value(progdefaults.QRZ == QRZNET);
           } // Fl_Round_Button* btnQRZsub
           { Fl_Round_Button* o = btnHamcall = new Fl_Round_Button(25, 321, 105, 20, _("Hamcall.net"));
-            btnHamcall->tooltip(_("You need a paid Hamcall online subscription to access"));
+            btnHamcall->tooltip(_("You need a paid Hamcall online\nsubscription to access"));
             btnHamcall->down_box(FL_ROUND_DOWN_BOX);
             btnHamcall->callback((Fl_Callback*)cb_btnHamcall);
             o->value(progdefaults.QRZ == HAMCALLNET);
           } // Fl_Round_Button* btnHamcall
           { Fl_Input2* o = inpQRZusername = new Fl_Input2(235, 291, 90, 20, _("User name"));
+            inpQRZusername->tooltip(_("Your login name"));
             inpQRZusername->box(FL_DOWN_BOX);
             inpQRZusername->color(FL_BACKGROUND2_COLOR);
             inpQRZusername->selection_color(FL_SELECTION_COLOR);
@@ -4099,6 +4283,7 @@ l with your sound hardware."));
             o->value(progdefaults.QRZusername.c_str());
           } // Fl_Input2* inpQRZusername
           { Fl_Input2* o = inpQRZuserpassword = new Fl_Input2(236, 321, 90, 20, _("Password"));
+            inpQRZuserpassword->tooltip(_("Your login password"));
             inpQRZuserpassword->box(FL_DOWN_BOX);
             inpQRZuserpassword->color(FL_BACKGROUND2_COLOR);
             inpQRZuserpassword->selection_color(FL_SELECTION_COLOR);
@@ -4113,6 +4298,7 @@ l with your sound hardware."));
             o->type(FL_SECRET_INPUT);
           } // Fl_Input2* inpQRZuserpassword
           { btnQRZpasswordShow = new Fl_Button(336, 321, 70, 20, _("Show"));
+            btnQRZpasswordShow->tooltip(_("Show password in plain text"));
             btnQRZpasswordShow->callback((Fl_Callback*)cb_btnQRZpasswordShow);
           } // Fl_Button* btnQRZpasswordShow
           o->end();
@@ -4121,17 +4307,20 @@ l with your sound hardware."));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
           { Fl_Round_Button* o = btnQRZonline = new Fl_Round_Button(25, 75, 300, 20, _("QRZ online via default Internet Browser"));
+            btnQRZonline->tooltip(_("Visit QRZ web site"));
             btnQRZonline->down_box(FL_ROUND_DOWN_BOX);
             btnQRZonline->callback((Fl_Callback*)cb_btnQRZonline);
             o->value(progdefaults.QRZ == QRZHTML);
           } // Fl_Round_Button* btnQRZonline
           { Fl_Round_Button* o = btnQRZnotavailable = new Fl_Round_Button(25, 45, 110, 20, _("Not available"));
+            btnQRZnotavailable->tooltip(_("Do not use callsign database"));
             btnQRZnotavailable->down_box(FL_ROUND_DOWN_BOX);
             btnQRZnotavailable->value(1);
             btnQRZnotavailable->callback((Fl_Callback*)cb_btnQRZnotavailable);
             o->value(progdefaults.QRZ == QRZNONE);
           } // Fl_Round_Button* btnQRZnotavailable
           { Fl_Round_Button* o = btnHAMCALLonline = new Fl_Round_Button(25, 105, 300, 20, _("HamCall online via default Internet Browser"));
+            btnHAMCALLonline->tooltip(_("Vist Hamcall web site"));
             btnHAMCALLonline->down_box(FL_ROUND_DOWN_BOX);
             btnHAMCALLonline->callback((Fl_Callback*)cb_btnHAMCALLonline);
             o->value(progdefaults.QRZ == HAMCALLHTML);

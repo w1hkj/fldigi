@@ -946,6 +946,7 @@ bool rigCAT_init(bool useXML)
 			rigio.RTSptt(progdefaults.RigCatDTRptt);
 			rigio.RTSCTS(progdefaults.RigCatRTSCTSflow);
 			rig.wait = progdefaults.RigCatWait;
+			rig.echo = progdefaults.RigCatECHO;
 			
 	LOG_INFO("\n\
 Serial port parameters:\n\
@@ -958,13 +959,15 @@ initial rts: %+d\n\
 use rts ptt: %c\n\
 initial dtr: %+d\n\
 use dtr ptt: %c\n\
-flowcontrol: %c",
+flowcontrol: %c\n\
+echo       : %c\n",
           rigio.Device().c_str(),
           rigio.Baud(),
 		  rigio.Retries(), rigio.Timeout(), rig.wait,
 		  (rigio.RTS() ? +12 : -12), (rigio.RTSptt() ? 'T' : 'F'), 
 		  (rigio.DTR() ? +12 : -12), (rigio.DTRptt() ? 'T' : 'F'),
-		  (rigio.RTSCTS() ? 'T' : 'F'));
+		  (rigio.RTSCTS() ? 'T' : 'F'),
+		  rig.echo );
 
 			if (rigio.OpenPort() == false) {
 				LOG_ERROR("Cannot open serial port %s", rigio.Device().c_str());
@@ -1094,8 +1097,6 @@ static void *rigCAT_loop(void *args)
 	string sWidth, sMode;
 
 	for (;;) {
-//		if (2*rig.wait < 100)
-//			MilliSleep(100 - 2 * rig.wait);
 		MilliSleep(100);
 		
 		if (rigCAT_bypass == true)
@@ -1107,14 +1108,10 @@ static void *rigCAT_loop(void *args)
 			freq = rigCAT_getfreq();
 		pthread_mutex_unlock(&rigCAT_mutex);
 
-//		MilliSleep(rig.wait);
-					
 		pthread_mutex_lock(&rigCAT_mutex);
 			sWidth = rigCAT_getwidth();
 		pthread_mutex_unlock(&rigCAT_mutex);
 
-//		MilliSleep(rig.wait);
-		
 		pthread_mutex_lock(&rigCAT_mutex);
 			sMode = rigCAT_getmode();
 		pthread_mutex_unlock(&rigCAT_mutex);
