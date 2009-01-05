@@ -78,13 +78,18 @@ void PTT::reset(ptt_t dev)
 		break; // nothing to open
 
 	case PTT_TTY:
-		if (progdefaults.PTTdev.find(UHROUTER_FIFO_PREFIX) != 0) {
-			open_tty();
-			break;
-		}
-		else
+		if (progdefaults.PTTdev.find(UHROUTER_FIFO_PREFIX) == 0) {
 			pttdev = PTT_UHROUTER;
-		// fall through
+			open_uhrouter();
+		}
+		else {
+			open_parport();
+			if (pttfd >= 0)
+				pttdev = PTT_PARPORT;
+			else
+				open_tty();
+		}
+		break;
 	case PTT_UHROUTER:
 		open_uhrouter();
 		break;
@@ -116,6 +121,9 @@ void PTT::set(bool ptt)
 	case PTT_TTY:
 		set_tty(ptt);
 		break;
+	case PTT_PARPORT:
+		set_parport(ptt);
+		break;
 	case PTT_UHROUTER:
 		set_uhrouter(ptt);
 		break;
@@ -129,6 +137,9 @@ void PTT::close_all(void)
 	switch (pttdev) {
 	case PTT_TTY:
 		close_tty();
+		break;
+	case PTT_PARPORT:
+		close_parport();
 		break;
 	case PTT_UHROUTER:
 		close_uhrouter();
@@ -206,6 +217,69 @@ void PTT::set_tty(bool ptt)
 	}
 
 	ioctl(pttfd, TIOCMSET, &status);
+}
+
+//-------------------- parallel port PTT --------------------//
+
+#if HAVE_LINUX_PPDEV_H
+#  include <linux/ppdev.h>
+#  include <linux/parport.h>
+#elif HAVE_DEV_PPBUS_PPI_H
+#  include <dev/ppbus/ppi.h>
+#  include <dev/ppbus/ppbconf.h>
+#endif
+
+void PTT::open_parport(void)
+{
+	if ((pttfd = open(progdefaults.PTTdev.c_str(), O_RDWR | O_NDELAY)) == -1) {
+		LOG_ERROR("Could not open %s: %s", progdefaults.PTTdev.c_str(), strerror(errno));
+		return;
+	}
+
+	bool isparport = false;
+	struct stat st;
+	int status;
+
+#if HAVE_LINUX_PPDEV_H     // Linux (ppdev)
+	isparport = (fstat(pttfd, &st) == 0 && S_ISCHR(st.st_mode) &&
+		     ioctl(pttfd, PPGETMODE, &status) != -1);
+#elif HAVE_DEV_PPBUS_PPI_H // FreeBSD (ppbus/ppi) */
+	isparport = (fstat(pttfd, &st) == 0 && S_ISCHR(st.st_mode) &&
+		     ioctl(pttfd, PPISSTATUS, &status) != -1);
+#else                      // Fallback (nothing)
+	isparport = false;
+#endif
+
+	if (!isparport) {
+		LOG_INFO("%s: not a supported parallel port device", progdefaults.PTTdev.c_str());
+		close_parport();
+		pttfd = -1;
+	}
+}
+
+void PTT::close_parport(void)
+{
+	close(pttfd);
+}
+
+void PTT::set_parport(bool ptt)
+{
+#ifdef HAVE_LINUX_PPDEV_H
+	struct ppdev_frob_struct frob;
+
+	frob.mask = PARPORT_CONTROL_INIT;
+	frob.val = !ptt;
+	ioctl(pttfd, PPFCONTROL, &frob);
+#elif HAVE_DEV_PPBUS_PPI_H
+	u_int8_t val;
+
+	ioctl(pttfd, PPIGCTRL, &val);
+	if (ptt)
+		val |= nINIT;
+	else
+		val &= ~nINIT;
+	ioctl(pttfd, PPISCTRL, &val);
+#endif
 }
 
 //-------------------- uhRouter PTT --------------------//

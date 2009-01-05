@@ -36,8 +36,10 @@ struct termios;
 
 class PTT {
 public:
-	enum ptt_t { PTT_INVALID = -1, PTT_NONE, PTT_HAMLIB,
-		     PTT_MEMMAP, PTT_RIGCAT, PTT_TTY, PTT_UHROUTER };
+	enum ptt_t {
+		PTT_INVALID = -1, PTT_NONE, PTT_HAMLIB, PTT_MEMMAP,
+		PTT_RIGCAT, PTT_TTY, PTT_PARPORT, PTT_UHROUTER
+	};
 	PTT(ptt_t dev = PTT_NONE);
 	~PTT();
 	void set(bool on);
@@ -45,7 +47,7 @@ public:
 private:
 	ptt_t pttdev;
 
-	// tty
+	// tty and parport
 	int pttfd;
 	struct termios* oldtio;
 
@@ -54,9 +56,15 @@ private:
 	int uhfd[2];  // ptt
 
 	void close_all(void);
+
 	void open_tty(void);
 	void set_tty(bool ptt);
 	void close_tty(void);
+
+	void open_parport(void);
+	void set_parport(bool ptt);
+	void close_parport(void);
+
 	void open_uhrouter(void);
 	void set_uhrouter(bool ptt);
 	void close_uhrouter(void);
