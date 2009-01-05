@@ -34,6 +34,8 @@
 #include "debug.h"
 #include "re.h"
 
+LOG_SET_SOURCE(debug::LOG_RIGCONTROL);
+
 using namespace std;
 
 static pthread_mutex_t	hamlib_mutex = PTHREAD_MUTEX_INITIALIZER;

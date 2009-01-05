@@ -42,6 +42,8 @@
 #include "status.h"
 #include "debug.h"
 
+LOG_SET_SOURCE(debug::LOG_MODEM);
+
 void cw::tx_init(SoundBase *sc)
 {
 	scard = sc;

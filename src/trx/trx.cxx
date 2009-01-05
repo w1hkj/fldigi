@@ -47,6 +47,8 @@
 #include "qrunner.h"
 #include "debug.h"
 
+LOG_SET_SOURCE(debug::LOG_MODEM);
+
 using namespace std;
 
 void	trx_reset_loop();
@@ -353,7 +355,7 @@ void *trx_loop(void *args)
 			trx_trx_receive_loop();
 			break;
 		default:
-			LOG_ERROR("trx in bad state %d\n", trx_state);
+			LOG(debug::ERROR_LEVEL, debug::LOG_MODEM, "trx in bad state %d\n", trx_state);
 			MilliSleep(100);
 		}
 	}
@@ -473,7 +475,7 @@ void trx_start_macro_timer()
 void trx_start(void)
 {
 	if (trxrunning) {
-		LOG_ERROR("trx already running!");
+		LOG(debug::ERROR_LEVEL, debug::LOG_MODEM, "trx already running!");
 		return;
 	}
 	
@@ -510,7 +512,7 @@ void trx_start(void)
 	_trx_tune = 0;
 	active_modem = 0;
 	if (pthread_create(&trx_thread, NULL, trx_loop, NULL) < 0) {
-		LOG_ERROR("pthread_create failed");
+		LOG(debug::ERROR_LEVEL, debug::LOG_MODEM, "pthread_create failed");
 		trxrunning = false;
 		exit(1);
 	} 

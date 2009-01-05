@@ -26,8 +26,9 @@
 #include "rigsupport.h"
 #include "rigdialog.h"
 
-
 #include "debug.h"
+
+LOG_SET_SOURCE(debug::LOG_RIGCONTROL);
 
 /* ---------------------------------------------------------------------- */
 

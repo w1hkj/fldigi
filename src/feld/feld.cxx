@@ -44,6 +44,8 @@
 #include <FL/Fl.H>
 #include <FL/Fl_Value_Slider.H>
 
+LOG_SET_SOURCE(debug::LOG_MODEM);
+
 char feldmsg[80];
 
 void feld::tx_init(SoundBase *sc)

@@ -53,6 +53,8 @@
 #include <FL/Fl.H>
 #include <FL/fl_ask.H>
 
+LOG_SET_SOURCE(debug::LOG_RPC);
+
 using namespace std;
 
 static string arqtext;

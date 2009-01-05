@@ -29,6 +29,10 @@ class debug
 {
 public:
 	enum level_e { QUIET_LEVEL, ERROR_LEVEL, WARN_LEVEL, INFO_LEVEL, DEBUG_LEVEL, LOG_NLEVELS };
+	enum source_e {
+		LOG_AUDIO = 1 << 0, LOG_MODEM = 1 << 1, LOG_RIGCONTROL = 1 << 2,
+		LOG_RPC = 1 << 3, LOG_SPOTTER = 1 << 4, LOG_OTHER = 1 << 5
+	};
 	static void start(const char* filename);
 	static void stop(void);
 	static void log(level_e level, const char* func, const char* srcf, int line,
@@ -36,6 +40,7 @@ public:
 	static void elog(const char* func, const char* srcf, int line, const char* text);
 	static void show(void);
 	static level_e level;
+	static uint32_t mask;
 private:
 	static void sync_text(void*);
 	debug(const char* filename);
@@ -45,23 +50,31 @@ private:
 	static debug* inst;
 };
 
-#define LOG(level__, ...)						\
-	do {								\
-		if (level__ <= debug::level)				\
+#define LOG(level__, source__, ...)							\
+	do {										\
+		if (level__ <= debug::level && source__ & debug::mask)			\
 			debug::log(level__, __func__, __FILE__, __LINE__, __VA_ARGS__); \
 	} while (0)
 
-#define LOG_DEBUG(...) LOG(debug::DEBUG_LEVEL, __VA_ARGS__)
-#define LOG_INFO(...) LOG(debug::INFO_LEVEL, __VA_ARGS__)
-#define LOG_WARN(...) LOG(debug::WARN_LEVEL, __VA_ARGS__)
-#define LOG_ERROR(...) LOG(debug::ERROR_LEVEL, __VA_ARGS__)
+#define LOG_DEBUG(...) LOG(debug::DEBUG_LEVEL, log_source_, __VA_ARGS__)
+#define LOG_INFO(...) LOG(debug::INFO_LEVEL, log_source_, __VA_ARGS__)
+#define LOG_WARN(...) LOG(debug::WARN_LEVEL, log_source_, __VA_ARGS__)
+#define LOG_ERROR(...) LOG(debug::ERROR_LEVEL, log_source_, __VA_ARGS__)
 
-#define LOG_PERROR(msg__)						\
-	do {								\
-		if (debug::ERROR_LEVEL <= debug::level)			\
-			debug::elog(__func__, __FILE__, __LINE__, msg__); \
+#define LOG_PERROR(msg__)								\
+	do {										\
+		if (debug::ERROR_LEVEL <= debug::level && log_source_ & debug::mask)	\
+			debug::elog(__func__, __FILE__, __LINE__, msg__);		\
 	} while (0)
 
+unused__ static uint32_t log_source_ = debug::LOG_OTHER;
+#if defined(__GNUC__) && (__GNUC__ >= 3)
+#  define LOG_SET_SOURCE(source__)						\
+	__attribute__((constructor))						\
+	static void log_set_source_(void) { log_source_ = source__; }
+#else
+#  define LOG_SET_SOURCE(source__)
+#endif
 
 #endif // _DEBUG_H_
 

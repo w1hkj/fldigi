@@ -34,6 +34,8 @@
 
 #include "gettext.h"
 
+LOG_SET_SOURCE(debug::LOG_RIGCONTROL);
+
 using namespace std;
 
 Fl_Double_Window *rigcontrol = (Fl_Double_Window *)0;

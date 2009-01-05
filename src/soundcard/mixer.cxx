@@ -49,6 +49,7 @@
 #include "configuration.h"
 #include "debug.h"
 
+LOG_SET_SOURCE(debug::LOG_AUDIO);
 
 #if USE_OSS
 

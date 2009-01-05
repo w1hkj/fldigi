@@ -66,6 +66,8 @@
 #include "re.h"
 #include "pskrep.h"
 
+LOG_SET_SOURCE(debug::LOG_RPC);
+
 using namespace std;
 
 struct rpc_method

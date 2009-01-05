@@ -187,7 +187,7 @@ int main(int argc, char ** argv)
 	try {
 		debug::start(string(HomeDir).append("status_log.txt").c_str());
 		time_t t = time(NULL);
-		LOG(debug::QUIET_LEVEL, _("%s log started on %s"), PACKAGE_STRING, ctime(&t));
+		LOG(debug::QUIET_LEVEL, debug::LOG_OTHER, _("%s log started on %s"), PACKAGE_STRING, ctime(&t));
 	}
 	catch (const char* error) {
 		cerr << error << '\n';

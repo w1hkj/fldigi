@@ -34,6 +34,8 @@
 #include <FL/Fl.H>
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Slider.H>
+#include <FL/Fl_Menu_Item.H>
+#include <FL/Fl_Menu_Button.H>
 #include "FTextView.h"
 
 #include "debug.h"
@@ -54,10 +56,22 @@ static FTextLog* text;
 
 debug* debug::inst = 0;
 debug::level_e debug::level = debug::WARN_LEVEL;
+uint32_t debug::mask = ~0u;
 
 const char* prefix[] = { _("Quiet"), _("Error"), _("Warning"), _("Info"), _("Debug") };
 
 static void slider_cb(Fl_Widget* w, void*);
+static void src_menu_cb(Fl_Widget* w, void*);
+
+Fl_Menu_Item src_menu[] = {
+	{ _("Audio"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
+	{ _("Modem"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
+	{ _("Rig control"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
+	{ _("RPC"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
+	{ _("Spotter"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE | FL_MENU_DIVIDER },
+	{ _("Other"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
+	{ 0 }
+};
 
 void debug::start(const char* filename)
 {
@@ -69,7 +83,11 @@ void debug::start(const char* filename)
 	window->xclass(PACKAGE_TARNAME);
 
 	int pad = 2;
-	Fl_Slider* slider = new Fl_Slider(pad, pad, 128, 20, prefix[level]);
+	Fl_Menu_Button* button = new Fl_Menu_Button(pad, pad, 128, 20, _("Log sources"));
+	button->menu(src_menu);
+	button->callback(src_menu_cb);
+
+	Fl_Slider* slider = new Fl_Slider(button->x() + button->w() + pad, pad, 128, 20, prefix[level]);
 	slider->tooltip(_("Change log level"));
 	slider->align(FL_ALIGN_RIGHT);
 	slider->type(FL_HOR_NICE_SLIDER);
@@ -171,8 +189,12 @@ debug::~debug()
 
 static void slider_cb(Fl_Widget* w, void*)
 {
-	Fl_Slider* s = static_cast<Fl_Slider*>(w);
-	debug::level = (debug::level_e)s->value();
-	s->label(prefix[debug::level]);
-	s->parent()->redraw();
+	debug::level = (debug::level_e)((Fl_Slider*)w)->value();
+	w->label(prefix[debug::level]);
+	w->parent()->redraw();
+}
+
+static void src_menu_cb(Fl_Widget* w, void*)
+{
+	debug::mask ^= 1 << ((Fl_Menu_*)w)->value();
 }

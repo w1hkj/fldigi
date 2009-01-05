@@ -21,6 +21,8 @@
 #include "serial.h"
 #include "debug.h"
 
+LOG_SET_SOURCE(debug::LOG_RIGCONTROL);
+
 using namespace std;
 
 #ifdef __CYGWIN__

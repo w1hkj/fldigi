@@ -56,6 +56,8 @@
 
 #include "pskrep.h"
 
+LOG_SET_SOURCE(debug::LOG_SPOTTER);
+
 // -------------------------------------------------------------------------------------------------
 
 // The regular expression that matches the spotter's buffer when it calls us.

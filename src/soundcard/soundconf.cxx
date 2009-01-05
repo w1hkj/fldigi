@@ -15,6 +15,8 @@
 #include "confdialog.h"
 #include "debug.h"
 
+LOG_SET_SOURCE(debug::LOG_AUDIO);
+
 using namespace std;
 
 double std_sample_rates[] = { 8000.0, 9600.0, 11025.0, 12000.0, 16000.0, 22050.0, 24000.0,
