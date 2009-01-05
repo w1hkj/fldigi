@@ -586,6 +586,7 @@ void AddRecord ()
 	
 	inpTX_pwr_log->value (progdefaults.mytxpower.c_str());
 	inpIOTA_log->value("");
+	inpDXCC_log->value("");
 	
 	saveRecord();
 	qsodb.SortByDate();

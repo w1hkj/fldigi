@@ -53,8 +53,6 @@
 #include <FL/Fl.H>
 #include <FL/fl_ask.H>
 
-LOG_SET_SOURCE(debug::LOG_RPC);
-
 using namespace std;
 
 static string arqtext;
@@ -273,7 +271,7 @@ bool TLF_arqRx()
 			arq_text_available = true;
 			active_modem->set_stopflag(false);
 			start_tx();
-LOG_DEBUG("TLF string: %s", txstring.c_str());
+LOG_DEBUG(txstring.c_str());
 			txstring.clear();
 		}
 
@@ -283,19 +281,7 @@ LOG_DEBUG("TLF string: %s", txstring.c_str());
 
 //-----------------------------------------------------------------------------
 // Socket ARQ i/o used on all platforms
-// Socket implementation emulates the MultiPsk socket i/o
 //-----------------------------------------------------------------------------
-#define MPSK_TX   "TX"
-#define MPSK_RX   "RX"
-#define MPSK_TX2RX "RX_AFTER_TX"
-#define MPSK_BYTE 25
-#define MPSK_CMD  26
-#define MPSK_END  27
-#define MPSK_ISTX 28
-#define MPSK_ISRX 29
-#define MPSK_ISCMD 30
-#define MPSK_CMDEND 31
-
 
 extern void arq_run(Socket s);
 extern void arq_stop();
@@ -306,7 +292,7 @@ string response;
 bool isTxChar = false;
 bool isCmdChar = false;
 
-bool isNotMULTIPSK = false;
+bool isNotMULTIPSK = true;
 
 static pthread_t* arq_socket_thread = 0;
 ARQ_SOCKET_Server* ARQ_SOCKET_Server::inst = 0;
@@ -421,24 +407,9 @@ void arq_stop()
 void WriteARQsocket(unsigned int data)
 {
 	if (!isSocketConnected) return;
-	
-	string response;
-
-	if (isNotMULTIPSK) {
-		response = "";
-		response += data;
-	} else {
-		if (data == 0x06) {
-		response = MPSK_ISCMD;
-		response.append("RX_AFTER_TX OK");
-		response += MPSK_CMDEND;
-		} else {
-			response = MPSK_ISRX;
-			response += data;
-		}
-	}
+	char c = data;
 	try {
-		arqclient.send(response);
+		arqclient.send(&c, 1);
 	}
 	catch (const SocketException& e) {
 		arq_stop();
@@ -450,52 +421,11 @@ bool Socket_arqRx()
 	if (!isSocketConnected) return false;
 	
 	string instr;
-	char cs;
 
 	try {
 		size_t n = arqclient.recv(instr);
-
-		if ( n > 0) {
-			for (size_t i = 0; i < n; i++) {
-				cs = instr[i];
-				if (cs == MPSK_BYTE) {
-					isTxChar = true;
-					continue;
-				}
-				if (cs == MPSK_CMD) {
-					isCmdChar = true;
-					continue;
-				}
-				if (isCmdChar) {
-					if (cs == MPSK_END)
-						isCmdChar = false;
-					else
-						cmdstring += cs;
-					continue;
-				}
-				if (isNotMULTIPSK) {
-					txstring += cs;
-					continue;
-				}
-				if (isTxChar) {
-					txstring += cs;
-					isTxChar = false;
-					continue;
-				}
-			}
-		}
-		if (cmdstring.find("MULTIPSK-OFF") != string::npos) {
-			isNotMULTIPSK = true;
-			txstring.clear();
-LOG_DEBUG (cmdstring.c_str());
-			cmdstring.clear();
-		}
-		if (cmdstring.find("MULTIPSK-ON") != string::npos) {
-			isNotMULTIPSK = false;
-			txstring.clear();
-LOG_DEBUG (cmdstring.c_str());
-			cmdstring.clear();
-		}
+		if ( n > 0)
+			txstring.append(instr);
 			
 		if (progdefaults.rsid == true) {
 			send0x06();
@@ -504,7 +434,7 @@ LOG_DEBUG (cmdstring.c_str());
 			cmdstring.clear();
 			return true;
 		}
-		
+	
 		if (arqtext.empty() && !txstring.empty()) {
 			arqtext = txstring;
 			parse_arqtext(arqtext);
@@ -515,7 +445,7 @@ LOG_DEBUG (cmdstring.c_str());
 				arq_text_available = true;
 				active_modem->set_stopflag(false);
 				start_tx();
-LOG_DEBUG("ARQ string: %s", txstring.c_str());
+LOG_DEBUG(txstring.c_str());
 			}
 			txstring.clear();
 		}

@@ -324,7 +324,7 @@
         ELEM_(int, rx_msgid, "", 9876)                                                  \
         ELEM_(int, tx_msgid, "", 6789)                                                  \
         ELEM_(std::string, arq_address, "", "127.0.0.1")                                \
-        ELEM_(std::string, arq_port, "", "3122")                                        \
+        ELEM_(std::string, arq_port, "", "7322")                                        \
 /* PSK reporter */                                                                      \
         ELEM_(bool, usepskrep, "USEPSKREP", false)                                      \
         ELEM_(bool, pskrep_auto, "PSKREPAUTO", false)                                   \

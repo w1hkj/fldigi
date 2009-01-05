@@ -1353,12 +1353,13 @@ void cb_call(Fl_Widget* w, void*)
 		delete [] uc;
 	}
 	new_call = inpCall->value();
-		
-	if (old_call != new_call) {
-		old_call = new_call;
-		inpTimeOn->value(inpTimeOff->value(), inpTimeOff->size());
-		lblDup->hide();
-	}
+	
+	if (old_call == new_call)
+		return restoreFocus(w);
+			
+	old_call = new_call;
+	inpTimeOn->value(inpTimeOff->value(), inpTimeOff->size());
+	lblDup->hide();
 
 	if (progdefaults.EnableDupCheck) {
 		if (!lblDup->visible())
