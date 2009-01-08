@@ -63,16 +63,8 @@ LOG_SET_SOURCE(debug::LOG_SPOTTER);
 // The regular expression that matches the spotter's buffer when it calls us.
 // It must define at least two capturing groups, the second of which is the
 // spotted callsign.
-//#define CALLSIGN_RE "[[:alnum:]]?[[:alpha:]/]+[[:digit:]]+[[:alnum:]/]+"
-//#define PSKREP_RE "(de|cq|qrz)[^[:alnum:]/\n]+"  "(" CALLSIGN_RE ")"  " +(.* +)?\\2[^[:alnum:]]+$"
-
-#define CALLSIGN_RE "("\
-"[[:alnum:]]+/[[:alnum:]]?[[:alpha:]]+[[:digit:]]+[[:alnum:]/]+"\
-")|("\
-"[[:alnum:]]?[[:alpha:]]+[[:digit:]]+[[:alnum:]/]+"\
-")"
-
-#define PSKREP_RE "(de|cq|qrz)[^[:alnum:]]+"  "(" CALLSIGN_RE ")"  " +(.* +)?\\2[^[:alnum:]]+$"
+#define CALLSIGN_RE "[[:alnum:]]?[[:alpha:]/]+[[:digit:]]+[[:alnum:]/]+"
+#define PSKREP_RE "(de|cq|qrz)[^[:alnum:]/\n]+"  "(" CALLSIGN_RE ")"  " +(.* +)?\\2[^[:alnum:]]+$"
 
 // Try to flush the report queue every SEND_INTERVAL seconds.
 #define SEND_INTERVAL 300

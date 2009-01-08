@@ -195,8 +195,7 @@ static void send_IPC_log(void)
 void submit_log(void)
 {
 	if (progStatus.spot_log)
-//		spot_log(inpCall->value(), inpLoc->value());
-		spot_log(inpCall->value(), inpLoc->value(), active_modem->get_freq());
+		spot_log(inpCall->value(), inpLoc->value());
 
 	struct tm *tm;
 	time_t t;
