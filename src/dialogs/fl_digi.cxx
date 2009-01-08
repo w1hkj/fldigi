@@ -1433,7 +1433,8 @@ void cb_QRZ(Fl_Widget *b, void *)
 		break;
 	case FL_RIGHT_MOUSE:
 		if (quick_choice(string("Spot \"").append(inpCall->value()).append("\"?").c_str(), false))
-			spot_manual(inpCall->value(), inpLoc->value());
+//			spot_manual(inpCall->value(), inpLoc->value());
+			spot_manual(inpCall->value(), inpLoc->value(), active_modem->get_freq());
 		break;
 	default:
 		break;
@@ -2879,15 +2880,16 @@ void put_rx_char(unsigned int data)
 
 	WriteARQ(data);
 	
+	bool viewer = (mode >= MODE_PSK_FIRST && mode <= MODE_PSK_LAST && dlgViewer && dlgViewer->visible());
+	if (progStatus.spot_recv && !viewer)
+		spot_recv(data);
+
 	string s;
 	if (iscntrl(data))
 		s = ascii2[data & 0x7F];
-	else {
+	else
 		s += data;
-		bool viewer = (mode >= MODE_PSK_FIRST && mode <= MODE_PSK_LAST && dlgViewer && dlgViewer->visible());
-		if (progStatus.spot_recv && !viewer)
-			spot_recv(data);
-	}
+
 	if (Maillogfile)
 		Maillogfile->log_to_file(cLogfile::LOG_RX, s);
 
@@ -3099,6 +3101,7 @@ void put_echo_char(unsigned int data)
 
 	if (progStatus.LOGenabled)
 		logfile->log_to_file(cLogfile::LOG_TX, s);
+
 }
 
 void resetRTTY() {

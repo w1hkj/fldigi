@@ -14,6 +14,8 @@
 #include "flinput2.h"
 #include "spot.h"
 
+#include "debug.h"
+
 #include <FL/Enumerations.H>
 #include <FL/Fl_Slider.H>
 #include <FL/fl_ask.H>

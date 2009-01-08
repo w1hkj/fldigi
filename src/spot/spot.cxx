@@ -32,8 +32,12 @@
 #include "debug.h"
 #include "spot.h"
 
+#include <iostream>
+using namespace std;
+
 #define SEARCHLEN 32
-#define DECBUFSIZE 8 * SEARCHLEN
+//#define DECBUFSIZE 8 * SEARCHLEN
+#define DECBUFSIZE 4 * SEARCHLEN
 
 
 using namespace std;
@@ -55,9 +59,21 @@ typedef vector<callback_t> cblist_t;
 
 static cblist_t cblist;
 
+#define CALLSIGN_RE "("\
+"[[:alnum:]]+/[[:alnum:]]?[[:alpha:]]+[[:digit:]]+[[:alnum:]/]+"\
+")|("\
+"[[:alnum:]]?[[:alpha:]]+[[:digit:]]+[[:alnum:]/]+"\
+")"
+#define CALLSIGN_REP CALLSIGN_RE "[^[:alnum:]]+$"
+
+static fre_t re_call(CALLSIGN_REP, REG_EXTENDED);
+
 void spot_recv(char c, int decoder, int afreq)
 {
 	static trx_mode last_mode = NUM_MODES + 1;
+
+	if (c == '\n' ) c = ' ';
+	if (c < ' ') return;
 
 	switch (decoder) {
 	case -1: // mode without multiple decoders
@@ -84,19 +100,35 @@ void spot_recv(char c, int decoder, int afreq)
 	string& buf = buffers[decoder];
 	buf.reserve(DECBUFSIZE);
 
-	buf += c;
-	string::size_type n = buf.length();
+	size_t n = buf.length();
 	if (n == DECBUFSIZE)
 		buf.erase(0, DECBUFSIZE - SEARCHLEN);
-	const char* search = buf.c_str() + (n > SEARCHLEN ? n - SEARCHLEN : 0);
 
-	for (cblist_t::iterator i = cblist.begin(); i != cblist.end(); ++i) {
-		if (i->rcb && unlikely(i->re->match(search))) {
-			const vector<regmatch_t>& m = i->re->suboff();
-			if (m.empty())
-				i->rcb(afreq, search, NULL, 0, i->data);
-			else
-				i->rcb(afreq, search, &m[0], m.size(), i->data);
+	buf += toupper(c);
+	n = buf.length();
+
+//#ifdef __CYGWIN__
+// This code segment resolves regexec problems on Windows
+// Windows regex compile does not recognize the \2 tag in the reg expression
+// (see pskrep.cxx)
+
+	string search = buf.substr(n> SEARCHLEN ? n - SEARCHLEN: 0);
+
+	for (cblist_t::iterator cbl = cblist.begin(); cbl != cblist.end(); ++cbl) {
+		if (cbl->rcb) {
+			if (re_call.match(search.c_str())) {
+				const vector<regmatch_t>& offset = re_call.suboff();
+				if (!offset.empty()) {
+					size_t pos = offset[0].rm_so;
+					string call = search.substr(pos);
+					size_t firstcall = search.find(call);
+					if (firstcall != pos)
+						if ( ( (pos = search.find("DE ")) != string::npos && pos < firstcall) ||
+							 ( (pos = search.find("CQ ")) != string::npos && pos < firstcall) ||
+							 ( (pos = search.find("QRZ ")) != string::npos && pos < firstcall) )
+							cbl->rcb(afreq, search.c_str(), &offset[0], offset.size(), cbl->data);					
+				}
+			}
 		}
 	}
 }
