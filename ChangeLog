@@ -225,6 +225,11 @@ Change Log:
       97) Suppressed clearing Country, Loc and Azimuth fields by a call sign
           database query when the db does not support those fields
       98) Added missing tooltips to all configuration items
+      99) Windows does not recognize '\2' reference tag in regular expression 
+          defined in pskrep.cxx.  Changed to a combination of regexec and
+          string find processing to obtain required spot parsing.
+     100) Added modem frequency to spotting call when logging or forcing a spot
+          report.
 
 
 3.03
