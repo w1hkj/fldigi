@@ -1342,9 +1342,6 @@ void cb_loc(Fl_Widget* w, void*)
 
 void cb_call(Fl_Widget* w, void*)
 {
-	if ((oktoclear = !inpCall->size()))
-		return restoreFocus(w);
-		
 	if (progdefaults.calluppercase) {
 		char* uc = new char[inpCall->size()];
 		transform(inpCall->value(), inpCall->value() + inpCall->size(), uc,
@@ -1358,6 +1355,8 @@ void cb_call(Fl_Widget* w, void*)
 		return restoreFocus(w);
 			
 	old_call = new_call;
+	oktoclear = false;
+	
 	inpTimeOn->value(inpTimeOff->value(), inpTimeOff->size());
 	lblDup->hide();
 
@@ -1392,7 +1391,9 @@ void cb_call(Fl_Widget* w, void*)
 
 void cb_log(Fl_Widget* w, void*)
 {
-	oktoclear = false;
+	Fl_Input2 *inp = (Fl_Input2 *) w;
+	if (inp->value()[0])
+		oktoclear = false;
 	if (progdefaults.EnableDupCheck) {
 		lblDup->hide();
 		DupCheck();
