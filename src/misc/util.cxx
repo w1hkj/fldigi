@@ -143,6 +143,8 @@ char* str2hex(const unsigned char* in, size_t ilen, char* out, size_t olen)
 	return r;
 }
 
+#include <string.h>
+
 static char* hexbuf = 0;
 static size_t hexlen = 0;
 const char* printhex(const unsigned char* str, size_t len)
