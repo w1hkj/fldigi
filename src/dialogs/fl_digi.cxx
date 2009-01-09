@@ -2085,7 +2085,7 @@ void create_fl_digi_main() {
 	Hwfall = progdefaults.wfheight;
 	HNOM = DEFAULT_HNOM;
 
-	WNOM = progStatus.mainW;//DEFAULT_HNOM;
+	WNOM = progStatus.mainW ? progStatus.mainW : WMIN;
 	if (progdefaults.docked_scope)	
 		Wwfall = WNOM - 2 * BEZEL - Hwfall + 24;
 	else
@@ -2716,7 +2716,7 @@ void create_fl_digi_main() {
 #endif
 
 	fl_digi_main->xclass(PACKAGE_NAME);
-	fl_digi_main->size_range(WMIN, HMIN);//WNOM, (HNOM < 400 ? HNOM : 400));
+	fl_digi_main->size_range(WMIN, HMIN);
 
 	scopeview = new Fl_Double_Window(0,0,140,140, _("Scope"));
 	scopeview->xclass(PACKAGE_NAME);

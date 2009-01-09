@@ -611,7 +611,7 @@ progdefaults.changed = true;}
                 label {Signal level}
                 callback {progdefaults.TxMonitorLevel = o->value();
 progdefaults.changed = true;}
-                tooltip {Set level for good viewing} xywh {270 315 200 20} type Horizontal selection_color 15 align 1 step 0.05 value 0.5 textsize 14
+                tooltip {Set level for good viewing} xywh {270 315 200 20} type Horizontal selection_color 49 align 1 step 0.05 value 0.5 textsize 14
                 code0 {o->value(progdefaults.TxMonitorLevel);}
               }
             }
@@ -734,7 +734,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
                     label {Filter bandwidth}
                     callback {progdefaults.CWbandwidth = (int)o->value();
 progdefaults.changed = true;}
-                    tooltip {CW dsp filter bandwidth} xywh {40 115 290 20} type Horizontal selection_color 15 align 8 minimum 10 maximum 500 step 10 value 150 textsize 14
+                    tooltip {CW dsp filter bandwidth} xywh {40 115 290 20} type Horizontal selection_color 49 align 8 minimum 10 maximum 500 step 10 value 150 textsize 14
                     code0 {o->value(progdefaults.CWbandwidth);}
                   }
                   Fl_Check_Button btnCWrcvTrack {
@@ -773,7 +773,7 @@ progdefaults.changed = true;}
 cntPreTiming->maximum((int)(2400/o->value())/2.0);
 cntPostTiming->maximum((int)(2400/o->value())/2.0);
 progdefaults.changed = true;}
-                    tooltip {My transmit CW WPM} xywh {40 248 290 20} type Horizontal selection_color 15 align 8 minimum 5 maximum 100 step 1 value 20 textsize 14
+                    tooltip {My transmit CW WPM} xywh {40 248 290 20} type Horizontal selection_color 49 align 8 minimum 5 maximum 100 step 1 value 20 textsize 14
                     code0 {o->value(progdefaults.CWspeed);}
                   }
                   Fl_Counter cntCWdefWPM {
@@ -909,7 +909,7 @@ progdefaults.changed = true;}
                 label {CWI threshold}
                 callback {progdefaults.DomCWI = o->value();
 progdefaults.changed = true;}
-                tooltip {CWI detection and suppression} xywh {15 207 260 20} type Horizontal selection_color 15 align 1 step 0.01 textsize 14
+                tooltip {CWI detection and suppression} xywh {15 207 260 20} type Horizontal selection_color 49 align 1 step 0.01 textsize 14
                 code0 {o->value(progdefaults.DomCWI);}
               }
               Fl_Counter valDominoEX_PATHS {
@@ -971,7 +971,7 @@ progdefaults.changed = true;} open
               Fl_Value_Slider sldrHellBW {
                 label {Receive filter bandwidth}
                 callback {progdefaults.HELL_BW = sldrHellBW->value();}
-                tooltip {Adjust the DSP bandwidth} xywh {206 147 246 20} type Horizontal selection_color 15 align 5 minimum 10 maximum 2400 step 5 value 400 textsize 14
+                tooltip {Adjust the DSP bandwidth} xywh {206 147 246 20} type Horizontal selection_color 49 align 5 minimum 10 maximum 2400 step 5 value 400 textsize 14
                 code0 {o->value(progdefaults.HELL_BW);}
               }
               Fl_Check_Button btnFeldHellIdle {
@@ -1377,7 +1377,7 @@ progdefaults.changed = true;}
                 label {CWI threshold}
                 callback {progdefaults.ThorCWI = o->value();
 progdefaults.changed = true;}
-                tooltip {CWI detection and suppression} xywh {15 218 260 20} type Horizontal selection_color 15 align 1 step 0.01 textsize 14
+                tooltip {CWI detection and suppression} xywh {15 218 260 20} type Horizontal selection_color 49 align 1 step 0.01 textsize 14
                 code0 {o->value(progdefaults.ThorCWI);}
               }
               Fl_Counter valTHOR_PATHS {
@@ -2252,7 +2252,7 @@ progdefaults.changed = true;}
             label {Speed (WPM):}
             callback {progdefaults.CWIDwpm = (int)o->value();
 progdefaults.changed = true;}
-            tooltip {Send at this WPM} xywh {285 185 200 20} type Horizontal selection_color 15 align 1 minimum 15 maximum 40 step 1 value 18 textsize 14
+            tooltip {Send at this WPM} xywh {285 185 200 20} type Horizontal selection_color 49 align 1 minimum 15 maximum 40 step 1 value 18 textsize 14
             code0 {o->value(progdefaults.CWIDwpm);}
           }
         }

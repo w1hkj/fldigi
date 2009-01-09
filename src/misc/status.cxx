@@ -43,9 +43,9 @@ status progStatus = {
 	MODE_BPSK31,		// trx_mode	lastmode;
 	50,					// int mainX;
 	50,					// int mainY;
-	WMIN,				// int mainW;
-	HMIN,				// int mainH;
-	Hrcvtxt,			// int RxTextHeight;
+	0,				// int mainW;
+	0,				// int mainH;
+	0,				// int RxTextHeight;
 	false,				// bool rigShown;
 	50,					// int rigX;
 	50,					// int rigY;
@@ -315,32 +315,22 @@ void status::initLastState()
 	wf->setRefLevel();
 	wf->setAmpSpan();
 	wf->movetocenter();
-	
-	FL_LOCK_D();
+
 	btn_afconoff->value(afconoff);
 	btn_sqlonoff->value(sqlonoff);
 	sldrSquelch->value(sldrSquelchValue);
 	valRcvMixer->value(RcvMixer * 100.0);
 	valXmtMixer->value(XmtMixer * 100.0);
 
-	FL_UNLOCK_D();
+	if (mainW == 0)
+		mainW = MAX(WMIN, Fl::w() / 2);
+	if (mainH == 0)
+		mainH = MAX(HMIN, Fl::h() / 2);
+	fl_digi_main->resize(mainX, mainY, mainW, mainH);
 
-	{
-		fl_digi_main->resize(mainX, mainY, mainW, mainH);
-
-		int X, Y, W, H, Yx, Hx;
-		X = ReceiveText->x();
-		Y = ReceiveText->y();
-		W = ReceiveText->w();
-		H = ReceiveText->h();
-		Yx = TransmitText->y();
-		Hx = TransmitText->h();	
-
-//		ReceiveText->resize(X,Y,W,RxTextHeight);
-//		FHdisp->resize(X,Y,W,RxTextHeight);
-//		TransmitText->resize(X, Y + RxTextHeight, W, H + Hx - RxTextHeight);
-		TiledGroup->position( X, Y + H, X, Y + RxTextHeight);
-	}
+	if (!(RxTextHeight > 0 && RxTextHeight < TiledGroup->h()))
+		RxTextHeight = TiledGroup->h() / 3 * 2;
+	TiledGroup->position(0, TransmitText->y(), 0, TiledGroup->y() + RxTextHeight);
 
 	if (!progdefaults.docked_rig_control && rigShown == true) {
 		if (!rigcontrol)

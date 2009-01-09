@@ -976,8 +976,8 @@ void FTextView::dxcc_tooltip(void* obj)
 
 Fl_Menu_Item FTextEdit::edit_menu[] = {
 	{ make_icon_label(_("&Transmit"), tx_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("&Abort"), process_stop_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(_("&Receive"), rx_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("&Abort"), process_stop_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(_("Send &image..."), image_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ make_icon_label(_("C&lear"), edit_clear_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(_("Cu&t"), edit_cut_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
@@ -1396,15 +1396,20 @@ void FTextEdit::handle_context_menu(void)
 {
 	// adjust Abort/Transmit/Receive menu items
 	switch (trx_state) {
-	case STATE_TX: case STATE_TUNE:
+	case STATE_TX:
 		edit_menu[TX_MENU_TX].hide();
+		edit_menu[TX_MENU_RX].show();
 		edit_menu[TX_MENU_ABORT].show();
-		set_active(&edit_menu[TX_MENU_RX], true);
+		break;
+	case STATE_TUNE:
+		edit_menu[TX_MENU_TX].hide();
+		edit_menu[TX_MENU_RX].show();
+		edit_menu[TX_MENU_ABORT].hide();
 		break;
 	default:
 		edit_menu[TX_MENU_TX].show();
+		edit_menu[TX_MENU_RX].hide();
 		edit_menu[TX_MENU_ABORT].hide();
-		set_active(&edit_menu[TX_MENU_RX], false);
 		break;
 	}
 
