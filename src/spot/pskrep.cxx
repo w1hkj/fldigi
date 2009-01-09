@@ -64,7 +64,12 @@ LOG_SET_SOURCE(debug::LOG_SPOTTER);
 // It must define at least two capturing groups, the second of which is the
 // spotted callsign.
 #define CALLSIGN_RE "[[:alnum:]]?[[:alpha:]/]+[[:digit:]]+[[:alnum:]/]+"
-#define PSKREP_RE "(de|cq|qrz)[^[:alnum:]/\n]+"  "(" CALLSIGN_RE ")"  " +(.* +)?\\2[^[:alnum:]]+$"
+#ifdef __linux__
+#  define PSKREP_RE "(de|cq|qrz)[^[:alnum:]/\n]+"  "(" CALLSIGN_RE ")"  " +(.* +)?\\2[^[:alnum:]]+$"
+#else
+#  define PSKREP_RE "(de|cq|qrz)[^[:alnum:]/\n]+"  "(" CALLSIGN_RE ")"  " +(.* +)?" \
+	"(" CALLSIGN_RE ")" "[^[:alnum:]]+$"
+#endif
 
 // Try to flush the report queue every SEND_INTERVAL seconds.
 #define SEND_INTERVAL 300
@@ -344,6 +349,12 @@ void pskrep::recv(int afreq, const char* str, const regmatch_t* calls, size_t le
 {
 	if (unlikely(calls[2].rm_so == -1 || calls[2].rm_eo == -1))
 		return;
+
+#ifndef __linux__ // workaround for systems without glibc's support for RE back refs
+	if (calls[4].rm_eo - calls[4].rm_so != calls[2].rm_eo - calls[2].rm_so ||
+	    strncasecmp(str + calls[2].rm_so, str + calls[4].rm_so, calls[2].rm_eo - calls[2].rm_so))
+		return;
+#endif
 
 	string call(str, calls[2].rm_so, calls[2].rm_eo - calls[2].rm_so);
 	long long freq = afreq;
