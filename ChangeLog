@@ -227,9 +227,8 @@ Change Log:
       98) Added missing tooltips to all configuration items
       99) Windows does not recognize '\2' reference tag in regular expression 
           defined in pskrep.cxx.  Changed to a combination of regexec and
-          string find processing to obtain required spot parsing.
-     100) Added modem frequency to spotting call when logging or forcing a spot
-          report.
+          string find processing to obtain required spot parsing on Windows.
+     100) Fix to KDE desktop refocus causing QSO fields to changed state.
 
 
 3.03
