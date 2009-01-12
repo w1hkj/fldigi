@@ -97,8 +97,14 @@ bool dxcc_open(const char* filename)
 
 void dxcc_close(void)
 {
+	if (!cmap)
+		return;
 	delete cnames;
 	cnames = 0;
+	map<dxcc*, bool> rm;
+	for (dxcc_map::iterator i = cmap->begin(); i != cmap->end(); ++i)
+		if (rm.insert(make_pair(i->second, true)).second)
+			delete i->second;
 	delete cmap;
 	cmap = 0;
 }

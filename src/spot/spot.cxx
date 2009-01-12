@@ -192,6 +192,7 @@ void spot_unregister_recv(spot_recv_cb_t rcb, void* rdata)
 	cblist_t::reverse_iterator ri;
 	for (ri = cblist.rbegin(); ri != cblist.rend(); ++ri) {
 		if (rcb == ri->rcb && rdata == ri->data) {
+			delete ri->re;
 			cblist.erase((++ri).base());
 			break;
 		}

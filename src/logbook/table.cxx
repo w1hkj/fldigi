@@ -748,7 +748,7 @@ void Table::clear(bool removeColumns) {
     row = *i;
     for (int i = 0; i < nCols; i++)
       free(row[i]);
-    free(row);
+    delete [] row;
   }
   data.clear();
 

@@ -24,7 +24,7 @@ cQsoRec::cQsoRec() {
 
 cQsoRec::~cQsoRec () {
   for (int i = 0; i < NUMFIELDS; i++)
-    delete qsofield[i];
+    delete [] qsofield[i];
 }
 
 void cQsoRec::clearRec () {
@@ -149,6 +149,8 @@ int compareCalls (const cQsoRec &r1, const cQsoRec &r2) {
     }
   } else
     cmp = strcmp (r1.qsofield[CALL], r2.qsofield[CALL]);
+  delete [] s1;
+  delete [] s2;
   if (cmp == 0)
     return compareDates (r1,r2);
   return cmp;

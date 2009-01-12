@@ -111,6 +111,7 @@ int n, fldsize;
     memset (flddata, 0, fldsize + 1);
     strncpy (flddata, p, fldsize);
     adifqso.putField (fieldnum, (const char *)flddata); 
+    delete [] flddata;
 }
 
 void cAdifIO::readFile (const char *fname, cQsoDb *db) {
@@ -167,8 +168,7 @@ void cAdifIO::readFile (const char *fname, cQsoDb *db) {
         p2 = strchr(p1,'<');
     }
     db->SortByDate();
-    return;
-
+    delete [] buff;
 }
 
 string ADIFHEADER = "";
