@@ -27,21 +27,23 @@ uint32_t floor2(uint32_t n)
         return n - (n >> 1);
 }
 
-#  include <stdlib.h>
-#include "re.h"
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
 long ver2int(const char* version)
 {
-	const char version_re[] = "([0-9])\\.([0-9]+)\\.?([0-9]+)?";
-	re_t re(version_re, REG_EXTENDED);
-	long v = 0;
+	long v = 0L, mult = 1000000000L;
 
-	if (!re.match(version))
-		return 0;
-
-	if (re.nsub() == 4)
-		v += strtol(re.submatch(3).c_str(), NULL, 10);
-	v += strtol(re.submatch(2).c_str(), NULL, 10) * 1000L;
-	v += strtol(re.submatch(1).c_str(), NULL, 10) * 1000000L;
+	for (const char* p = version; *p; p++) {
+		if (isdigit(*p)) {
+			v += (*p - '0') * mult;
+			mult /= 10L;
+		}
+		else if (*p == '.')
+			mult /= 10L;
+		else
+			v += *p;
+	}
 
 	return v;
 }
@@ -142,8 +144,6 @@ char* str2hex(const unsigned char* in, size_t ilen, char* out, size_t olen)
 
 	return r;
 }
-
-#include <string.h>
 
 static char* hexbuf = 0;
 static size_t hexlen = 0;
