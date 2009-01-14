@@ -238,7 +238,7 @@ int w_inpLOC   	= 55;
 int w_inpAZ    	= 30;
 int w_inpQth 	= wf1 - w_fm1 - w_fm2 - w_fm3 - w_fm4 - w_fm5 - w_fm6 -
                   w_inpState - w_inpProv - w_inpLOC - w_inpAZ - w_inpCountry;
-int w_Xchg	= (wf1 - w_fm6 - 4*w_fm5 - 4*pad - 2 * w_SerNo) / 3;
+int w_Xchg = (wf1 - w_fm6 - 4*w_fm5 - 4*pad - 2 * w_SerNo) / 3;
 
 int qh = Hqsoframe / 2;
 int rig_control_width = FREQWIDTH + 4;
@@ -937,17 +937,32 @@ void cb_mnuVisitURL(Fl_Widget*, void* arg)
 	const char* browsers[] = { getenv("FLDIGI_BROWSER"), "xdg-open", getenv("BROWSER"),
 				   "sensible-brower", "firefox", "mozilla" };
 #  endif
+	int pfd[2];
+	if (pipe(pfd) == -1) {
+		LOG_PERROR("pipe");
+		return;
+	}
 	switch (fork()) {
 	case 0:
+#  ifndef NDEBUG
+		unsetenv("MALLOC_CHECK_");
+		unsetenv("MALLOC_PERTURB_");
+#  endif
+		close(pfd[0]);
+		set_cloexec(pfd[1], 1);
 		for (size_t i = 0; i < sizeof(browsers)/sizeof(browsers[0]); i++)
 			if (browsers[i])
 				execlp(browsers[i], browsers[i], url, (char*)0);
-		LOG_PERROR("Could not execute a web browser");
 		exit(EXIT_FAILURE);
 	case -1:
 		fl_alert(_("Could not run a web browser:\n%s\n\n"
 			 "Open this URL manually:\n%s"),
 			 strerror(errno), url);
+		break;
+	default:
+		close(pfd[1]);
+		read(pfd[0], &pfd[1], 1);
+		close(pfd[0]);
 	}
 #else
 	// gurgle... gurgle... HOWL
@@ -2418,7 +2433,8 @@ void create_fl_digi_main() {
 					
 					Fl_Box *fm10box = new Fl_Box(rightof(inpXchg2) + pad, y3, w_fm5, qh - pad, _("X3"));
 					fm10box->align(FL_ALIGN_INSIDE);
-					inpXchg3 = new Fl_Input2(rightof(fm10box), y3, w_Xchg, qh - pad, "");
+					inpXchg3 = new Fl_Input2(rightof(fm10box), y3, 
+							rightof(inpAZ) - rightof(fm10box) , qh - pad, "");
 					inpXchg3->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 					inpXchg3->tooltip(_("Contest exchange #3"));
 					
