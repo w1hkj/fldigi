@@ -229,6 +229,9 @@ Change Log:
           defined in pskrep.cxx.  Changed to a combination of regexec and
           string find processing to obtain required spot parsing on Windows.
      100) Fix to KDE desktop refocus causing QSO fields to changed state.
+     101) Memory leak fix
+     102) KDE desktop / xdg-open fault
+     103) Cosmetic change to align Xchg fields.     
 
 
 3.03
