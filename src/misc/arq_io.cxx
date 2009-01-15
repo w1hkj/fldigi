@@ -173,7 +173,7 @@ bool bSend0x06 = false;
 
 void process_msgque()
 {
-	memset(txmsgst.buffer, ARQBUFSIZ, 0);
+	memset(txmsgst.buffer, 0, ARQBUFSIZ);
 	int nbytes = msgrcv (txmsgid, (void *)&txmsgst, ARQBUFSIZ, 0, IPC_NOWAIT);
 	if (nbytes > 0) { 
 		txstring.append(txmsgst.buffer);

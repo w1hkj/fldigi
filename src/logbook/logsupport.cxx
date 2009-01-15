@@ -179,7 +179,7 @@ void cb_Export_log() {
 	chkExportBrowser->clear();
 	for( int i = 0; i < qsodb.nbrRecs(); i++ ) {
 		rec = qsodb.getRec (i);
-		memset(line, sizeof(line), 0);
+		memset(line, 0, sizeof(line));
 		snprintf(line,sizeof(line),"%-10s%-6s%-12s%-12s%-s",
 			rec->getField(QSO_DATE),
 			rec->getField(TIME_OFF),
