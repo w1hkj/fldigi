@@ -437,6 +437,8 @@ FL_LOCK_D();
 	int cbc = ptrCB;
 	for (int c = 0; c < IMAGE_WIDTH; c++) {
 		ynext = (int)(h2 * sig[cbc]);
+		if (ynext < -h2) ynext = -h2;
+		if (ynext > h2) ynext = h2;
 		cbc = (cbc + 1) % (FFT_LEN *2);
 		for (; sigy < ynext; sigy++) sig_img[sigpixel -= IMAGE_WIDTH] = graylevel;
 		for (; sigy > ynext; sigy--) sig_img[sigpixel += IMAGE_WIDTH] = graylevel;
