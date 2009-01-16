@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fldigi 3.04AZ\n"
 "Report-Msgid-Bugs-To: w1hkj AT w1hkj DOT com\n"
-"POT-Creation-Date: 2009-01-15 08:54-0600\n"
+"POT-Creation-Date: 2009-01-15 20:18-0600\n"
 "PO-Revision-Date: 2008-11-25 07:16+0000\n"
 "Last-Translator: Stephane Fillod <fillods@users.sourceforge.net>\n"
 "Language-Team: French\n"
@@ -722,46 +722,46 @@ msgstr ""
 msgid "Load"
 msgstr "Charge"
 
-#: src/waterfall/waterfall.cxx:1302
+#: src/waterfall/waterfall.cxx:1304
 #, fuzzy
 msgid "Waterfall / FFT / Scope"
 msgstr "Police Chute d'eau"
 
-#: src/waterfall/waterfall.cxx:1312
+#: src/waterfall/waterfall.cxx:1314
 msgid "Upper signal level (dB)"
 msgstr "Niveau haut de signal (dB)"
 
-#: src/waterfall/waterfall.cxx:1323
+#: src/waterfall/waterfall.cxx:1325
 msgid "Signal range (dB)"
 msgstr "Plage du signal (dB)"
 
-#: src/waterfall/waterfall.cxx:1329
+#: src/waterfall/waterfall.cxx:1331
 msgid "Change waterfall scale"
 msgstr "Change échelle chute d'eau"
 
-#: src/waterfall/waterfall.cxx:1334
+#: src/waterfall/waterfall.cxx:1336
 #, fuzzy
 msgid "Slew display lower in frequency"
 msgstr "Décale l'affichage vers fréquences basse"
 
-#: src/waterfall/waterfall.cxx:1339
+#: src/waterfall/waterfall.cxx:1341
 msgid "Center display on signal"
 msgstr "Centre affichage sur signal"
 
-#: src/waterfall/waterfall.cxx:1344
+#: src/waterfall/waterfall.cxx:1346
 #, fuzzy
 msgid "Slew display higher in frequency"
 msgstr "Décale l'affichage vers fréquences hautes"
 
-#: src/waterfall/waterfall.cxx:1349
+#: src/waterfall/waterfall.cxx:1351
 msgid "Waterfall drop speed"
 msgstr "Vistesse chute d'eau"
 
-#: src/waterfall/waterfall.cxx:1359
+#: src/waterfall/waterfall.cxx:1361
 msgid "Adjust cursor frequency"
 msgstr "Ajuste fréquence curseur"
 
-#: src/waterfall/waterfall.cxx:1364
+#: src/waterfall/waterfall.cxx:1366
 #, fuzzy
 msgid ""
 "Center in passband\n"
@@ -770,7 +770,7 @@ msgstr ""
 "Cntr in Xcvr PB\n"
 "Clic droit pour défaire"
 
-#: src/waterfall/waterfall.cxx:1370
+#: src/waterfall/waterfall.cxx:1372
 msgid ""
 "Store mode and frequency\n"
 "Right click for list"
@@ -778,16 +778,16 @@ msgstr ""
 "Enregistre le mode et la fréquence\n"
 "Clic droit pour la liste"
 
-#: src/waterfall/waterfall.cxx:1380
+#: src/waterfall/waterfall.cxx:1382
 #, fuzzy
 msgid "Lock transmit frequency"
 msgstr "Ajoute fréquence courante"
 
-#: src/waterfall/waterfall.cxx:1387
+#: src/waterfall/waterfall.cxx:1389
 msgid "Reverse"
 msgstr "Inverse"
 
-#: src/waterfall/waterfall.cxx:1395
+#: src/waterfall/waterfall.cxx:1397
 msgid "Transmit/Receive"
 msgstr "Transmet/Reçoit"
 

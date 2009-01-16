@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fldigi 3.1\n"
 "Report-Msgid-Bugs-To: w1hkj AT w1hkj DOT com\n"
-"POT-Creation-Date: 2009-01-15 08:54-0600\n"
+"POT-Creation-Date: 2009-01-15 20:18-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -674,63 +674,63 @@ msgstr ""
 msgid "Load"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1302
+#: src/waterfall/waterfall.cxx:1304
 msgid "Waterfall / FFT / Scope"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1312
+#: src/waterfall/waterfall.cxx:1314
 msgid "Upper signal level (dB)"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1323
+#: src/waterfall/waterfall.cxx:1325
 msgid "Signal range (dB)"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1329
+#: src/waterfall/waterfall.cxx:1331
 msgid "Change waterfall scale"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1334
+#: src/waterfall/waterfall.cxx:1336
 msgid "Slew display lower in frequency"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1339
+#: src/waterfall/waterfall.cxx:1341
 msgid "Center display on signal"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1344
+#: src/waterfall/waterfall.cxx:1346
 msgid "Slew display higher in frequency"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1349
+#: src/waterfall/waterfall.cxx:1351
 msgid "Waterfall drop speed"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1359
+#: src/waterfall/waterfall.cxx:1361
 msgid "Adjust cursor frequency"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1364
+#: src/waterfall/waterfall.cxx:1366
 msgid ""
 "Center in passband\n"
 "Right click to undo"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1370
+#: src/waterfall/waterfall.cxx:1372
 msgid ""
 "Store mode and frequency\n"
 "Right click for list"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1380
+#: src/waterfall/waterfall.cxx:1382
 msgid "Lock transmit frequency"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1387
+#: src/waterfall/waterfall.cxx:1389
 msgid "Reverse"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1395
+#: src/waterfall/waterfall.cxx:1397
 msgid "Transmit/Receive"
 msgstr ""
 
