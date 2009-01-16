@@ -132,8 +132,17 @@ void cAdifIO::readFile (const char *fname, cQsoDb *db) {
     fclose (adiFile);
     
 // relaxed file integrity test to all importing from non conforming log programs
-    if (filesize == 0 || (strcasestr( buff, "<CALL:")) == 0) { //"<ADIF_VER")) == 0) {
-    	fl_message("Not an ADIF log file");
+    if (filesize == 0) {
+    	fl_message("Empty ADIF logbook file");
+    	return;
+	}
+	if ((strcasestr(buff, "<ADIF_VER:") != 0) &&
+	    (strcasestr(buff, "<CALL:") == 0)) {
+    	fl_message("No records in ADIF logbook file");
+    	return;
+	}
+	if (strcasestr(buff, "<CALL:") == 0) {
+    	fl_message("Not an ADIF file");
     	return;
 	}
 
