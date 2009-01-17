@@ -97,7 +97,7 @@ void submit_ADIF(void)
 {
 	adif.erase();
 	
-	putadif(QSO_DATE, logdate); 
+	putadif(QSO_DATE, inpDate_log->value());//logdate); 
 	putadif(TIME_ON, inpTimeOn_log->value());
 	putadif(TIME_OFF, inpTimeOff_log->value());
 	putadif(CALL, inpCall_log->value());
