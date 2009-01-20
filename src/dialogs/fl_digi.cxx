@@ -1358,10 +1358,12 @@ void cb_loc(Fl_Widget* w, void*)
 void cb_call(Fl_Widget* w, void*)
 {
 	if (progdefaults.calluppercase) {
+		int pos = inpCall->position();
 		char* uc = new char[inpCall->size()];
 		transform(inpCall->value(), inpCall->value() + inpCall->size(), uc,
 			  static_cast<int (*)(int)>(std::toupper));
 		inpCall->value(uc, inpCall->size());
+		inpCall->position(pos);
 		delete [] uc;
 	}
 	new_call = inpCall->value();

@@ -969,7 +969,7 @@ echo       : %c\n",
 		  (rigio.RTS() ? +12 : -12), (rigio.RTSptt() ? 'T' : 'F'), 
 		  (rigio.DTR() ? +12 : -12), (rigio.DTRptt() ? 'T' : 'F'),
 		  (rigio.RTSCTS() ? 'T' : 'F'),
-		  rig.echo );
+		  rig.echo ? 'T' : 'F');
 
 			if (rigio.OpenPort() == false) {
 				LOG_ERROR("Cannot open serial port %s", rigio.Device().c_str());
