@@ -72,7 +72,7 @@ bool hexout(const string& s, int retnbr)
 
 	LOG_DEBUG("cmd = %s", printhex(s.data(), s.length()));
 
-	readtimeout = (rig.wait +rig.timeout) * rig.retries + 2000; // 2 second min timeout
+	readtimeout = (progdefaults.RigCatWait + progdefaults.RigCatTimeout) * progdefaults.RigCatRetries + 2000; // 2 second min timeout
 	while (readpending && readtimeout--)
 		MilliSleep(1);
 	if (readtimeout == 0) {
@@ -83,7 +83,7 @@ bool hexout(const string& s, int retnbr)
 
 	readpending = true;
 	
-	for (int n = 0; n < rig.retries; n++) {	
+	for (int n = 0; n < progdefaults.RigCatRetries; n++) {	
 		int num = 0;
 		memset(sendbuff,0, 200);
 		for (unsigned int i = 0; i < s.length(); i++)
@@ -91,7 +91,7 @@ bool hexout(const string& s, int retnbr)
 
 		rigio.FlushBuffer();
 		rigio.WriteBuffer(sendbuff, s.size());
-		if (rig.echo == true) {
+		if (progdefaults.RigCatECHO == true) {
 //#ifdef __CYGWIN__
 			MilliSleep(10);
 //#endif
@@ -102,7 +102,7 @@ bool hexout(const string& s, int retnbr)
 		memset (replybuff, 0, 200);
 	
 // wait interval before trying to read response
-		if ((readtimeout = rig.wait) > 0)
+		if ((readtimeout = progdefaults.RigCatWait) > 0)
 			while (readtimeout--)
 				MilliSleep(1);
 
@@ -123,7 +123,7 @@ bool hexout(const string& s, int retnbr)
 			readpending = false;
 			return true;
 //
-		if ((readtimeout = rig.timeout) > 0)
+		if ((readtimeout = progdefaults.RigCatTimeout) > 0)
 			while (readtimeout--)
 				MilliSleep(1);
 
@@ -926,31 +926,25 @@ bool rigCAT_init(bool useXML)
 		return false;
 	}
 	
-	if (useXML == true) {
-		
-		noXMLfile = false;
-		if (readRigXML() == false) {
-			LOG_ERROR("No rig.xml file present");
-			noXMLfile = true;
-			sRigMode = "";
-			sRigWidth = "";
-			nonCATrig = true;
-		}
+	noXMLfile = true;
+	sRigMode = "";
+	sRigWidth = "";
+	nonCATrig = true;
 
-		if (noXMLfile == false) {	
+	if (useXML == true) {
+		if (readRigXML() == false)
+			LOG_ERROR("No rig.xml file present");
+		else {	
+			noXMLfile = false;
 			rigio.Device(progdefaults.XmlRigDevice);
 			rigio.Baud(progdefaults.BaudRate(progdefaults.XmlRigBaudrate));
-			rigio.Retries(progdefaults.RigCatRetries);
-			rigio.Timeout(progdefaults.RigCatTimeout);
 			rigio.RTS(progdefaults.RigCatRTSplus);
 			rigio.DTR(progdefaults.RigCatDTRplus);
 			rigio.RTSptt(progdefaults.RigCatRTSptt);
 			rigio.RTSptt(progdefaults.RigCatDTRptt);
 			rigio.RTSCTS(progdefaults.RigCatRTSCTSflow);
-			rig.wait = progdefaults.RigCatWait;
-			rig.echo = progdefaults.RigCatECHO;
 			
-	LOG_INFO("\n\
+			LOG_INFO("\n\
 Serial port parameters:\n\
 device     : %s\n\
 baudrate   : %d\n\
@@ -963,13 +957,15 @@ initial dtr: %+d\n\
 use dtr ptt: %c\n\
 flowcontrol: %c\n\
 echo       : %c\n",
-          rigio.Device().c_str(),
-          rigio.Baud(),
-		  rigio.Retries(), rigio.Timeout(), rig.wait,
-		  (rigio.RTS() ? +12 : -12), (rigio.RTSptt() ? 'T' : 'F'), 
-		  (rigio.DTR() ? +12 : -12), (rigio.DTRptt() ? 'T' : 'F'),
-		  (rigio.RTSCTS() ? 'T' : 'F'),
-		  rig.echo ? 'T' : 'F');
+	        	rigio.Device().c_str(),
+				rigio.Baud(),
+				progdefaults.RigCatRetries, 
+				progdefaults.RigCatTimeout, 
+				progdefaults.RigCatWait,
+				(rigio.RTS() ? +12 : -12), (rigio.RTSptt() ? 'T' : 'F'), 
+				(rigio.DTR() ? +12 : -12), (rigio.DTRptt() ? 'T' : 'F'),
+				(rigio.RTSCTS() ? 'T' : 'F'),
+				progdefaults.RigCatECHO ? 'T' : 'F');
 
 			if (rigio.OpenPort() == false) {
 				LOG_ERROR("Cannot open serial port %s", rigio.Device().c_str());
@@ -989,12 +985,8 @@ echo       : %c\n",
 				init_Xml_RigDialog();
 			}
 		}
-	} else {
-		sRigMode = "";
-		sRigWidth = "";
-		nonCATrig = true;
+	} else
 		init_NoRig_RigDialog();
-	}
 	
 	llFreq = 0;
 	rigCAT_bypass = false;

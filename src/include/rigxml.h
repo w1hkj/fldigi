@@ -64,26 +64,16 @@ struct XMLIOS {
 struct TAGS { const char *tag; void (*fp)(size_t &);};
 
 struct XMLRIG {
-	std::string	SYMBOL;
 	std::string	port;
 	int		baud;
-	bool	echo;
-	int		timeout;
-	int		retries;
-	int		wait;
 	bool	dtr;
 	bool	dtrptt;
 	bool	rts;
 	bool	rtsptt;
 	bool	rtscts;
 	void clear() {
-		SYMBOL = "";
 		port = "";
 		baud = 1200;
-		echo = false;
-		timeout = 200;
-		retries = 4;
-		wait = 0;
 		dtr = false;
 		dtrptt = false;
 		rts = false;

@@ -31,7 +31,6 @@
 void parseRIGDEF(size_t &);
 void parseRIG(size_t &);
 void parseCOMMAND(size_t &);
-void parsePORT(size_t &);
 void parseREPLY(size_t &);
 void parseMODES(size_t &);
 void parseBANDWIDTHS(size_t &);
@@ -55,18 +54,6 @@ void parseIOSbad(size_t &);
 void parseIOSstring(size_t &);
 void parseIOSint(size_t &);
 void parseIOSfill(size_t &);
-
-void parseBaud(size_t &);
-void parseDevice(size_t &);
-void parseEcho(size_t &);
-void parseRetries(size_t &);
-void parseTimeout(size_t &);
-void parseWait(size_t &);
-void parseDTRinit(size_t &);
-void parseDTRptt(size_t &);
-void parseRTSinit(size_t &);
-void parseRTSptt(size_t &);
-void parseRTSCTS(size_t &);
 
 void parseDTYPE(size_t &);
 void parseDSIZE(size_t &);
@@ -99,7 +86,6 @@ TAGS rigdeftags[] = {
 	{"<RIGDEF",		parseRIGDEF},
 	{"<RIG", 		parseRIG},
 	{"<COMMAND",	parseCOMMAND},
-	{"<PORT",		parsePORT},
 	{"<REPLY",		parseREPLY},
 	{"<BANDWIDTHS", parseBANDWIDTHS},
 	{"<BW-CMD",		parseBWCMD},
@@ -138,21 +124,6 @@ TAGS replytags[] = {
 	{"<STRING", parseIOSstring},
 	{"<INT",	parseIOSint},
 	{"<FILL",	parseIOSfill},
-	{0,0}
-};
-
-TAGS porttags[] = {
-	{"<BAUD",	parseBaud},
-	{"<DEVICE",	parseDevice},
-	{"<ECHO",	parseEcho},
-	{"<RETRIES",parseRetries},
-	{"<TIMEOUT",parseTimeout},
-	{"<WAIT",	parseWait},
-	{"<DTRINIT",parseDTRinit},
-	{"<DTRPTT",	parseDTRptt},
-	{"<RTSINIT",parseRTSinit},
-	{"<RTSPTT",	parseRTSptt},
-	{"<RTSCTS",	parseRTSCTS},
 	{0,0}
 };
 
@@ -480,127 +451,7 @@ void parseTITLE(size_t &p0)
 void parseRIG(size_t &p0)
 {
 	size_t pend = tagEnd(p0);
-	rig.SYMBOL = getElement(p0);
 	p0 = pend;
-}
-
-//---------------------------------------------------------------------
-// Parse Port definition
-//---------------------------------------------------------------------
-
-void parseBaud(size_t &p1)
-{
-	int baud;
-	baud = atoi (getElement (p1).c_str());
-	rig.baud = baud;
-}
-
-void parseDevice(size_t &p1)
-{
-	string stemp = getElement(p1);
-	rig.port = stemp;
-
-}
-
-void parseEcho(size_t &p1)
-{
-// a configuration item for RigCAT
-//	rig.echo = getBool(p1);
-}
-
-void parseRetries(size_t &p1)
-{
-	rig.retries = getInt(p1);
-}
-
-void parseTimeout(size_t &p1)
-{
-	rig.timeout = getInt(p1);
-}
-
-void parseWait(size_t &p1)
-{
-// configuration item on RigCAT tab
-//	rig.wait = getInt(p1);
-}
-
-void parseDTRinit(size_t &p1)
-{
-	int val = getInt(p1);
-	if (val > 0)
-		rig.dtr = true;
-	else
-		rig.dtr = false;
-}
-
-void parseDTRptt(size_t &p1)
-{
-	rig.dtrptt = getBool(p1);
-}
-
-void parseRTSinit(size_t &p1)
-{
-	int val = getInt(p1);
-	if (val > 0)
-		rig.rts = true;
-	else
-		rig.rts = false;
-}
-
-void parseRTSptt(size_t &p1)
-{
-	rig.rtsptt = getBool(p1);
-}
-
-void parseRTSCTS(size_t &p1)
-{
-	rig.rtscts = getBool(p1);
-}
-
-//===================================================
-// All <PORT> parameters have been moved to the
-// configuration dialog tab for RigCAT control
-// User might be using an older file - this code
-// parses the <PORT>...</PORT> entries and then
-// discards them.
-void parsePORT(size_t &p0)
-{
-	size_t pend = tagEnd(p0);
-	size_t p1;
-	TAGS *pv;
-
-	print(p0,0);
-
-	rig.clear();
-	p1 = nextTag(p0);
-	while (p1 < pend) {
-		pv = porttags;
-		while (pv->tag) {
-			if (strXML.find(pv->tag, p1) == p1) {
-				print(p1, 1);
-				if (pv->fp) 
-					(pv->fp)(p1);
-				break;
-			}
-			pv++;
-		}
-		p1 = tagEnd(p1);
-		p1 = nextTag(p1);
-	}
-// Older code that is stubbed so that entries are ignored
-//	if (rig.port.size()) {
-//		rigio.Baud( rig.baud );
-//		rigio.Device( rig.port );
-//		rigio.Retries(rig.retries);
-//		rigio.Timeout(rig.timeout);
-//		rigio.RTS(rig.rts);
-//		rigio.RTSptt(rig.rtsptt);
-//		rigio.DTR(rig.dtr);
-//		rigio.DTRptt(rig.dtrptt);
-//		rigio.RTSCTS(rig.rtscts);
-//	}
-	p0 = pend;
-
 }
 
 //---------------------------------------------------------------------
