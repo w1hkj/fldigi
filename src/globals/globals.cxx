@@ -74,7 +74,7 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_PSK63, &psk63_modem, "BPSK63", "BPSK-63", "PSK63", "PSK63" },
 	{ MODE_QPSK63, &qpsk63_modem, "QPSK63", "QPSK-63", "QPSK63", "QPSK63" },
 	{ MODE_PSK125, &psk125_modem, "BPSK125", "BPSK-125", "PSK125", "PSK125" },
-	{ MODE_QPSK125, &qpsk125_modem, "QPSK125", "QPSK-125", "QPSK125", "PSK125" },
+	{ MODE_QPSK125, &qpsk125_modem, "QPSK125", "QPSK-125", "QPSK125", "QPSK125" },
 	{ MODE_PSK250, &psk250_modem, "BPSK250", "BPSK-250", "PSK250", "PSK250" },
 	{ MODE_QPSK250, &qpsk250_modem, "QPSK250", "QPSK-250", "QPSK250", "QPSK250" },
 
