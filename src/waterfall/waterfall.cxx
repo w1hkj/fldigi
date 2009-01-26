@@ -1549,6 +1549,8 @@ int WFdisp::handle(int event)
 	int ypos = Fl::event_y() - y();
 	int eb;
 
+	stopMacroTimer();
+	
 	switch (event) {
 	case FL_MOVE:
 		if (progdefaults.WaterfallQSY && ypos < WFTEXT + WFSCALE) {
