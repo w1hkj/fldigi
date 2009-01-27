@@ -16,6 +16,7 @@
 #include "pskrep.h"
 #include "flinput2.h"
 #include "logsupport.h"
+static const char *txtExtract = "Detect the occurance of [WRAP:beg] and [WRAP:end]\nSave tags and all enclosed text to date-time stamped files placed\nin the folder 'temp' located in the fldigi files folder.\n\nie:'extract-20090127-0925.wrap"; 
 Fl_Double_Window *dlgConfig; 
 
 void set_qrz_buttons(Fl_Button* b) {
@@ -1969,6 +1970,15 @@ static void cb_chkSlowCpu(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Group *tabFileExtraction=(Fl_Group *)0;
+
+Fl_Check_Button *chkAutoExtract=(Fl_Check_Button *)0;
+
+static void cb_chkAutoExtract(Fl_Check_Button* o, void*) {
+  progdefaults.autoextract = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabQRZ=(Fl_Group *)0;
 
 Fl_Round_Button *btnQRZcdrom=(Fl_Round_Button *)0;
@@ -2161,6 +2171,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         { tabsUI = new Fl_Tabs(0, 25, 500, 345);
           tabsUI->selection_color(FL_LIGHT1);
           { tabUserInterface = new Fl_Group(0, 50, 500, 320, _("General"));
+            tabUserInterface->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 301);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(15, 70, 120, 20, _("Show tooltips"));
@@ -2297,7 +2308,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             tabWfallRestart->end();
           } // Fl_Group* tabWfallRestart
           { tabContest = new Fl_Group(0, 50, 500, 320, _("Contest"));
-            tabContest->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 80, _("Exchanges"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -4073,7 +4083,6 @@ l with your sound hardware."));
         tabID->end();
       } // Fl_Group* tabID
       { tabMisc = new Fl_Group(0, 25, 500, 345, _("Misc"));
-        tabMisc->hide();
         { tabsMisc = new Fl_Tabs(0, 25, 500, 345);
           tabsMisc->selection_color(FL_LIGHT1);
           { tabSweetSpot = new Fl_Group(0, 50, 500, 320, _("Sweet Spot"));
@@ -4183,6 +4192,7 @@ l with your sound hardware."));
             tabSpot->end();
           } // Fl_Group* tabSpot
           { tabMacros = new Fl_Group(0, 50, 500, 320, _("Macros"));
+            tabMacros->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 75);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnUseLastMacro = new Fl_Check_Button(15, 70, 274, 20, _("Load last used macro file on startup"));
@@ -4203,10 +4213,10 @@ l with your sound hardware."));
           } // Fl_Group* tabMacros
           { tabCPUspeed = new Fl_Group(0, 50, 500, 320, _("CPU"));
             tabCPUspeed->hide();
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 50);
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 51);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = chkSlowCpu = new Fl_Check_Button(136, 76, 225, 20, _("Slow CPU (less than 700MHz)"));
+              { Fl_Check_Button* o = chkSlowCpu = new Fl_Check_Button(151, 75, 225, 20, _("Slow CPU (less than 700MHz)"));
                 chkSlowCpu->tooltip(_("Enable if you\'re computer does not decode properly"));
                 chkSlowCpu->down_box(FL_DOWN_BOX);
                 chkSlowCpu->callback((Fl_Callback*)cb_chkSlowCpu);
@@ -4216,11 +4226,30 @@ l with your sound hardware."));
             } // Fl_Group* o
             tabCPUspeed->end();
           } // Fl_Group* tabCPUspeed
+          { tabFileExtraction = new Fl_Group(0, 50, 500, 320, _("Extract"));
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 155, _("Extract files from rx stream"));
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { Fl_Check_Button* o = chkAutoExtract = new Fl_Check_Button(136, 180, 227, 20, _("Enable detection && extraction"));
+                chkAutoExtract->tooltip(_("Extract files for use with external \"wrap\" program"));
+                chkAutoExtract->down_box(FL_DOWN_BOX);
+                chkAutoExtract->callback((Fl_Callback*)cb_chkAutoExtract);
+                o->value(progdefaults.autoextract);
+              } // Fl_Check_Button* chkAutoExtract
+              { Fl_Box* o = new Fl_Box(15, 85, 465, 62, _("label"));
+                o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+                o->label(txtExtract);
+              } // Fl_Box* o
+              o->end();
+            } // Fl_Group* o
+            tabFileExtraction->end();
+          } // Fl_Group* tabFileExtraction
           tabsMisc->end();
         } // Fl_Tabs* tabsMisc
         tabMisc->end();
       } // Fl_Group* tabMisc
       { tabQRZ = new Fl_Group(0, 25, 500, 345, _("Callsign DB"));
+        tabQRZ->hide();
         { Fl_Group* o = new Fl_Group(5, 180, 490, 75, _("CDROM"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);

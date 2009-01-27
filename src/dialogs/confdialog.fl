@@ -44,6 +44,8 @@ decl {\#include "flinput2.h"} {global
 
 decl {\#include "logsupport.h"} {} 
 
+decl {const char *txtExtract = "Detect the occurance of [WRAP:beg] and [WRAP:end]\\nSave tags and all enclosed text to date-time stamped files placed\\nin the folder 'temp' located in the fldigi files folder.\\n\\nie:'extract-20090127-0925.wrap"} {} 
+
 decl {Fl_Double_Window *dlgConfig;} {public
 } 
 
@@ -140,7 +142,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabUserInterface {
             label General open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {5 60 490 301} box ENGRAVED_FRAME
@@ -277,7 +279,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabContest {
             label Contest open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {
               label Exchanges open
@@ -611,7 +613,7 @@ progdefaults.changed = true;}
                 label {Signal level}
                 callback {progdefaults.TxMonitorLevel = o->value();
 progdefaults.changed = true;}
-                tooltip {Set level for good viewing} xywh {270 315 200 20} type Horizontal selection_color 49 align 1 step 0.05 value 0.5 textsize 14
+                tooltip {Set level for good viewing} xywh {270 315 200 20} type Horizontal align 1 step 0.05 value 0.5 textsize 14
                 code0 {o->value(progdefaults.TxMonitorLevel);}
               }
             }
@@ -734,7 +736,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
                     label {Filter bandwidth}
                     callback {progdefaults.CWbandwidth = (int)o->value();
 progdefaults.changed = true;}
-                    tooltip {CW dsp filter bandwidth} xywh {40 115 290 20} type Horizontal selection_color 49 align 8 minimum 10 maximum 500 step 10 value 150 textsize 14
+                    tooltip {CW dsp filter bandwidth} xywh {40 115 290 20} type Horizontal align 8 minimum 10 maximum 500 step 10 value 150 textsize 14
                     code0 {o->value(progdefaults.CWbandwidth);}
                   }
                   Fl_Check_Button btnCWrcvTrack {
@@ -773,7 +775,7 @@ progdefaults.changed = true;}
 cntPreTiming->maximum((int)(2400/o->value())/2.0);
 cntPostTiming->maximum((int)(2400/o->value())/2.0);
 progdefaults.changed = true;}
-                    tooltip {My transmit CW WPM} xywh {40 248 290 20} type Horizontal selection_color 49 align 8 minimum 5 maximum 100 step 1 value 20 textsize 14
+                    tooltip {My transmit CW WPM} xywh {40 248 290 20} type Horizontal align 8 minimum 5 maximum 100 step 1 value 20 textsize 14
                     code0 {o->value(progdefaults.CWspeed);}
                   }
                   Fl_Counter cntCWdefWPM {
@@ -909,7 +911,7 @@ progdefaults.changed = true;}
                 label {CWI threshold}
                 callback {progdefaults.DomCWI = o->value();
 progdefaults.changed = true;}
-                tooltip {CWI detection and suppression} xywh {15 207 260 20} type Horizontal selection_color 49 align 1 step 0.01 textsize 14
+                tooltip {CWI detection and suppression} xywh {15 207 260 20} type Horizontal align 1 step 0.01 textsize 14
                 code0 {o->value(progdefaults.DomCWI);}
               }
               Fl_Counter valDominoEX_PATHS {
@@ -971,7 +973,7 @@ progdefaults.changed = true;} open
               Fl_Value_Slider sldrHellBW {
                 label {Receive filter bandwidth}
                 callback {progdefaults.HELL_BW = sldrHellBW->value();}
-                tooltip {Adjust the DSP bandwidth} xywh {206 147 246 20} type Horizontal selection_color 49 align 5 minimum 10 maximum 2400 step 5 value 400 textsize 14
+                tooltip {Adjust the DSP bandwidth} xywh {206 147 246 20} type Horizontal align 5 minimum 10 maximum 2400 step 5 value 400 textsize 14
                 code0 {o->value(progdefaults.HELL_BW);}
               }
               Fl_Check_Button btnFeldHellIdle {
@@ -1377,7 +1379,7 @@ progdefaults.changed = true;}
                 label {CWI threshold}
                 callback {progdefaults.ThorCWI = o->value();
 progdefaults.changed = true;}
-                tooltip {CWI detection and suppression} xywh {15 218 260 20} type Horizontal selection_color 49 align 1 step 0.01 textsize 14
+                tooltip {CWI detection and suppression} xywh {15 218 260 20} type Horizontal align 1 step 0.01 textsize 14
                 code0 {o->value(progdefaults.ThorCWI);}
               }
               Fl_Counter valTHOR_PATHS {
@@ -2252,7 +2254,7 @@ progdefaults.changed = true;}
             label {Speed (WPM):}
             callback {progdefaults.CWIDwpm = (int)o->value();
 progdefaults.changed = true;}
-            tooltip {Send at this WPM} xywh {285 185 200 20} type Horizontal selection_color 49 align 1 minimum 15 maximum 40 step 1 value 18 textsize 14
+            tooltip {Send at this WPM} xywh {285 185 200 20} type Horizontal align 1 minimum 15 maximum 40 step 1 value 18 textsize 14
             code0 {o->value(progdefaults.CWIDwpm);}
           }
         }
@@ -2279,7 +2281,7 @@ OFF - limit search to +/- 200 Hz} xywh {215 246 270 20} down_box DOWN_BOX
       }
       Fl_Group tabMisc {
         label Misc open
-        xywh {0 25 500 345} hide
+        xywh {0 25 500 345}
       } {
         Fl_Tabs tabsMisc {open
           xywh {0 25 500 345} selection_color 50
@@ -2398,7 +2400,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabMacros {
             label Macros open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {5 60 490 75} box ENGRAVED_FRAME
@@ -2426,14 +2428,36 @@ progdefaults.changed = true;}
             xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
-              xywh {5 60 490 50} box ENGRAVED_FRAME align 21
+              xywh {5 60 490 51} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button chkSlowCpu {
                 label {Slow CPU (less than 700MHz)}
                 callback {progdefaults.slowcpu = o->value();
 progdefaults.changed = true;}
-                tooltip {Enable if you're computer does not decode properly} xywh {136 76 225 20} down_box DOWN_BOX
+                tooltip {Enable if you're computer does not decode properly} xywh {151 75 225 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.slowcpu);}
+              }
+            }
+          }
+          Fl_Group tabFileExtraction {
+            label Extract open
+            xywh {0 50 500 320}
+          } {
+            Fl_Group {} {
+              label {Extract files from rx stream} open selected
+              xywh {5 60 490 155} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Check_Button chkAutoExtract {
+                label {Enable detection && extraction}
+                callback {progdefaults.autoextract = o->value();
+progdefaults.changed = true;}
+                tooltip {Extract files for use with external "wrap" program} xywh {136 180 227 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.autoextract);}
+              }
+              Fl_Box {} {
+                label label
+                xywh {15 85 465 62} align 21
+                code0 {o->label(txtExtract);}
               }
             }
           }
@@ -2441,7 +2465,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabQRZ {
         label {Callsign DB} open
-        xywh {0 25 500 345}
+        xywh {0 25 500 345} hide
       } {
         Fl_Group {} {
           label CDROM open
@@ -2483,7 +2507,7 @@ subscription to access} xywh {25 291 90 20} down_box ROUND_DOWN_BOX
             label {Hamcall.net}
             callback {set_qrz_buttons(o);
 progdefaults.QRZ = HAMCALLNET;
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
             tooltip {You need a paid Hamcall online
 subscription to access} xywh {25 321 105 20} down_box ROUND_DOWN_BOX
             code0 {o->value(progdefaults.QRZ == HAMCALLNET);}

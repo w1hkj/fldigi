@@ -122,6 +122,8 @@
 
 #include "logbook.h"
 
+#include "rx_extract.h"
+
 Fl_Double_Window	*fl_digi_main=(Fl_Double_Window *)0;
 Fl_Help_Dialog 		*help_dialog = (Fl_Help_Dialog *)0;
 Fl_Double_Window	*scopeview = (Fl_Double_Window *)0;
@@ -2884,6 +2886,8 @@ void put_rx_char(unsigned int data)
 	if (wf->tmp_carrier())
 		style = FTextBase::ALTR;
 
+	if (progdefaults.autoextract == true) rx_extract_add(data);
+	
 	switch (data) {
 		case '\n':
 			if (last == '\r')
