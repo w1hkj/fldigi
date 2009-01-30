@@ -9,7 +9,7 @@ dnl major and minor must be integers; patch may
 dnl contain other characters or be empty
 m4_define(FLDIGI_MAJOR, [3])
 m4_define(FLDIGI_MINOR, [1])
-m4_define(FLDIGI_PATCH, [1AB])
+m4_define(FLDIGI_PATCH, [1AC])
 
 AC_INIT([fldigi], FLDIGI_MAJOR.FLDIGI_MINOR[FLDIGI_PATCH], [w1hkj AT w1hkj DOT com])
 
