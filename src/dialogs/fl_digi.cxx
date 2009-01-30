@@ -2409,21 +2409,21 @@ void create_fl_digi_main() {
 				QsoInfoFrame1A->end();
 				
 				QsoInfoFrame1B = new Fl_Group (x_qsoframe, y3 - 1, wf1, Hnotes); 
-					Fl_Box *fm6box = new Fl_Box(x_qsoframe, y3, w_fm5, qh - pad, _("#In"));
+					Fl_Box *fm6box = new Fl_Box(x_qsoframe, y3, w_fm7, qh - pad, _("#Out"));
 					fm6box->align(FL_ALIGN_INSIDE);
-					inpSerNo = new Fl_Input2(rightof(fm6box), y3, w_SerNo, qh - pad, "");
-					inpSerNo->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-					inpSerNo->tooltip(_("Received serial number"));
-
-					Fl_Box *fm7box = new Fl_Box(rightof(inpSerNo) + pad, y3, w_fm7, qh - pad, _("#Out"));
-					fm7box->align(FL_ALIGN_INSIDE);
-					outSerNo = new Fl_Input2(rightof(fm7box), y3, w_SerNo, qh - pad, "");
+					outSerNo = new Fl_Input2(rightof(fm6box), y3, w_SerNo, qh - pad, "");
 					outSerNo->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 					outSerNo->tooltip(_("Sent serial number (read only)"));
 					outSerNo->type(FL_NORMAL_OUTPUT);
 
-					Fl_Box *fm8box = new Fl_Box(rightof(outSerNo) + pad, y3, w_fm7, qh - pad, _("Xchg"));
+					Fl_Box *fm7box = new Fl_Box(rightof(outSerNo) + pad, y3, w_fm5, qh - pad, _("#In"));
 					fm7box->align(FL_ALIGN_INSIDE);
+					inpSerNo = new Fl_Input2(rightof(fm7box), y3, w_SerNo, qh - pad, "");
+					inpSerNo->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+					inpSerNo->tooltip(_("Received serial number"));
+
+					Fl_Box *fm8box = new Fl_Box(rightof(inpSerNo) + pad, y3, w_fm7, qh - pad, _("Xchg"));
+					fm8box->align(FL_ALIGN_INSIDE);
 					inpXchgIn = new Fl_Input2(rightof(fm8box), y3, w_Xchg, qh - pad, "");
 					inpXchgIn->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 					inpXchgIn->tooltip(_("Contest exchange in"));

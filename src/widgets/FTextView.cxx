@@ -739,6 +739,7 @@ void FTextView::handle_context_menu(void)
 void FTextView::menu_cb(int val)
 {
 	Fl_Input* input = 0;
+	bool append = false;
 	switch (val) {
 	case RX_MENU_QRZ_THIS:
 		menu_cb(RX_MENU_CALL);
@@ -774,6 +775,7 @@ void FTextView::menu_cb(int val)
 		input = inpSerNo;
 		break;
 	case RX_MENU_XCHG:
+		append = true;
 		input = inpXchgIn;
 		break;
 
@@ -822,7 +824,15 @@ void FTextView::menu_cb(int val)
 	if (input) {
 		char* s = get_word(popx, popy);
 		if (s) {
-			input->value(s);
+			if (append) {
+				char strInput[40];
+				strncpy(strInput, input->value(), 39);
+				if (strlen(strInput) > 0)
+					strncat(strInput, " ", 39);
+				strncat(strInput, s, 39);
+				input->value(strInput);
+			} else
+				input->value(s);
 			input->do_callback();
 			free(s);
 			if (input == inpCall)
