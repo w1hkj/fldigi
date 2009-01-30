@@ -666,14 +666,20 @@ enum icontest {
 	SAC_CW, SAC_SSB, STEW_PERRY, TARA_RTTY
 };
 
+bool bInitCombo = true;
+
 void cb_Export_Cabrillo(Fl_Menu_* m, void* d) {
 	if (qsodb.nbrRecs() == 0) return;
 	cQsoRec *rec;
 	char line[80];
 	int indx = 0;
-	while (contests[indx]) {
-		cboContest->add(contests[indx]);
-		indx++;
+
+	if (bInitCombo) {
+		bInitCombo = false;	
+		while (contests[indx]) 	{
+			cboContest->add(contests[indx]);
+			indx++;
+		}
 	}
 	cboContest->index(0);
 	chkCabBrowser->clear();
@@ -728,11 +734,22 @@ void cabrillo_append_qso (FILE *fp, cQsoRec *rec)
 		strncpy (rst_out, rec->getField(RST_SENT), rst_len);
 		rst_out[rst_len] = '\0';
 	}
-	
+
+	if (btnCabSerialIN->value()) {
+		strcpy (exch_in, rec->getField(SRX));
+		if (strlen(exch_in) > 0)
+			strcat (exch_in, " ");
+	}
 	if (btnCabXchgIn->value())
-		strcpy (exch_in, rec->getField(XCHG1));
+		strcat (exch_in, rec->getField(XCHG1));
+
+	if (btnCabSerialOUT->value()) {
+		strcpy (exch_out, rec->getField(STX));
+		if (strlen(exch_out) > 0)
+			strcat (exch_out, " ");
+	}
 	if (btnCabMyXchg->value())
-		strcpy (exch_out, rec->getField(MYXCHG));
+		strcat (exch_out, rec->getField(MYXCHG));
 
 	if (btnCabFreq->value()) {
 		ifreq = (int)(1000.0 * atof(rec->getField(FREQ)));
