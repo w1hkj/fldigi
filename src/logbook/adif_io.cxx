@@ -66,10 +66,9 @@ FIELD fields[] = {
     {TEN_TEN, 		"TEN_TEN",     	10, NULL},    			// ten ten # of other station
     {VE_PROV,		"VE_PROV",       2, &btnSelectProvince}, // 2 letter abbreviation for Canadian Province
 // fldigi specific fields
-	{XCHG1,			"XCHG1",        20, &btnSelectXchg1},    // contest exchange #1 / free1 in xlog
-	{XCHG2,			"XCHG2",        20, &btnSelectXchg2},    // contest exchange #2 / free2 in xlog
-	{XCHG3,			"XCHG3",        20, &btnSelectXchg3},    // contest exchange #3
-    {EXPORT,		"EXPORT",        1, NULL}     			// used to indicate record is to be exported
+	{XCHG1,			"XCHG1",        20, &btnSelectXchgIn},    // contest exchange #1 / free1 in xlog
+	{MYXCHG,		"MYXCHG",       20, &btnSelectMyXchg},   // contest exchange #3
+    {EXPORT,		"EXPORT",        1, NULL}     			 // used to indicate record is to be exported
 };
 
 int fieldnbr (const char *s) {

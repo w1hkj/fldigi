@@ -205,21 +205,7 @@ Fl_Box *lblSend=(Fl_Box *)0;
 Fl_Input2 *inpSend1=(Fl_Input2 *)0;
 
 static void cb_inpSend1(Fl_Input2* o, void*) {
-  progdefaults.Xchg1=o->value();
-progdefaults.changed = true;
-}
-
-Fl_Input2 *inpSend2=(Fl_Input2 *)0;
-
-static void cb_inpSend2(Fl_Input2* o, void*) {
-  progdefaults.Xchg2=o->value();
-progdefaults.changed = true;
-}
-
-Fl_Input2 *inpSend3=(Fl_Input2 *)0;
-
-static void cb_inpSend3(Fl_Input2* o, void*) {
-  progdefaults.Xchg3=o->value();
+  progdefaults.myXchg=o->value();
 progdefaults.changed = true;
 }
 
@@ -296,20 +282,6 @@ Fl_Check_Button *btnDupXchg1=(Fl_Check_Button *)0;
 
 static void cb_btnDupXchg1(Fl_Check_Button* o, void*) {
   progdefaults.dupxchg1 = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnDupXchg2=(Fl_Check_Button *)0;
-
-static void cb_btnDupXchg2(Fl_Check_Button* o, void*) {
-  progdefaults.dupxchg2 = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnDupXchg3=(Fl_Check_Button *)0;
-
-static void cb_btnDupXchg3(Fl_Check_Button* o, void*) {
-  progdefaults.dupxchg3 = o->value();
 progdefaults.changed = true;
 }
 
@@ -2087,13 +2059,12 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     o->selection_color((Fl_Color)51);
     o->labelsize(18);
     o->align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE);
-    { tabsConfigure = new Fl_Tabs(0, 0, 500, 372);
+    { tabsConfigure = new Fl_Tabs(0, 0, 505, 372);
       tabsConfigure->color(FL_LIGHT1);
       tabsConfigure->selection_color(FL_LIGHT1);
       { tabOperator = new Fl_Group(0, 25, 500, 345, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2166,12 +2137,11 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         } // Fl_Input2* inpMyAntenna
         tabOperator->end();
       } // Fl_Group* tabOperator
-      { tabUI = new Fl_Group(0, 25, 500, 345, _("UI"));
+      { tabUI = new Fl_Group(0, 25, 505, 345, _("UI"));
         tabUI->hide();
-        { tabsUI = new Fl_Tabs(0, 25, 500, 345);
+        { tabsUI = new Fl_Tabs(0, 25, 505, 345);
           tabsUI->selection_color(FL_LIGHT1);
           { tabUserInterface = new Fl_Group(0, 50, 500, 320, _("General"));
-            tabUserInterface->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 301);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(15, 70, 120, 20, _("Show tooltips"));
@@ -2308,12 +2278,13 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             tabWfallRestart->end();
           } // Fl_Group* tabWfallRestart
           { tabContest = new Fl_Group(0, 50, 500, 320, _("Contest"));
+            tabContest->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 80, _("Exchanges"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { lblSend = new Fl_Box(15, 95, 55, 20, _("Send:"));
+              { lblSend = new Fl_Box(37, 95, 55, 20, _("Send:"));
               } // Fl_Box* lblSend
-              { Fl_Input2* o = inpSend1 = new Fl_Input2(70, 95, 70, 20, _("1"));
+              { Fl_Input2* o = inpSend1 = new Fl_Input2(95, 95, 140, 20, _("Exchange Out"));
                 inpSend1->tooltip(_("free form exchange"));
                 inpSend1->box(FL_DOWN_BOX);
                 inpSend1->color(FL_BACKGROUND2_COLOR);
@@ -2325,36 +2296,8 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 inpSend1->callback((Fl_Callback*)cb_inpSend1);
                 inpSend1->align(FL_ALIGN_TOP);
                 inpSend1->when(FL_WHEN_RELEASE);
-                o->value(progdefaults.Xchg1.c_str());
+                o->value(progdefaults.myXchg.c_str());
               } // Fl_Input2* inpSend1
-              { Fl_Input2* o = inpSend2 = new Fl_Input2(150, 95, 70, 20, _("2"));
-                inpSend2->tooltip(_("free form exchange"));
-                inpSend2->box(FL_DOWN_BOX);
-                inpSend2->color(FL_BACKGROUND2_COLOR);
-                inpSend2->selection_color(FL_SELECTION_COLOR);
-                inpSend2->labeltype(FL_NORMAL_LABEL);
-                inpSend2->labelfont(0);
-                inpSend2->labelsize(14);
-                inpSend2->labelcolor(FL_FOREGROUND_COLOR);
-                inpSend2->callback((Fl_Callback*)cb_inpSend2);
-                inpSend2->align(FL_ALIGN_TOP);
-                inpSend2->when(FL_WHEN_RELEASE);
-                o->value(progdefaults.Xchg2.c_str());
-              } // Fl_Input2* inpSend2
-              { Fl_Input2* o = inpSend3 = new Fl_Input2(230, 95, 70, 20, _("3"));
-                inpSend3->tooltip(_("free form exchange"));
-                inpSend3->box(FL_DOWN_BOX);
-                inpSend3->color(FL_BACKGROUND2_COLOR);
-                inpSend3->selection_color(FL_SELECTION_COLOR);
-                inpSend3->labeltype(FL_NORMAL_LABEL);
-                inpSend3->labelfont(0);
-                inpSend3->labelsize(14);
-                inpSend3->labelcolor(FL_FOREGROUND_COLOR);
-                inpSend3->callback((Fl_Callback*)cb_inpSend3);
-                inpSend3->align(FL_ALIGN_TOP);
-                inpSend3->when(FL_WHEN_RELEASE);
-                o->value(progdefaults.Xchg3.c_str());
-              } // Fl_Input2* inpSend3
               { Fl_Check_Button* o = btn599 = new Fl_Check_Button(310, 80, 130, 20, _("RST always 599"));
                 btn599->tooltip(_("Force RST in/out to 599"));
                 btn599->down_box(FL_DOWN_BOX);
@@ -2428,31 +2371,19 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 btnDupState->callback((Fl_Callback*)cb_btnDupState);
                 o->value(progdefaults.dupstate);
               } // Fl_Check_Button* btnDupState
-              { Fl_Check_Button* o = btnDupXchg1 = new Fl_Check_Button(15, 283, 105, 20, _("Exchange 1"));
+              { Fl_Check_Button* o = btnDupXchg1 = new Fl_Check_Button(156, 283, 105, 20, _("Exchange In"));
                 btnDupXchg1->tooltip(_("free form 1 must match"));
                 btnDupXchg1->down_box(FL_DOWN_BOX);
                 btnDupXchg1->callback((Fl_Callback*)cb_btnDupXchg1);
                 o->value(progdefaults.dupxchg1);
               } // Fl_Check_Button* btnDupXchg1
-              { Fl_Check_Button* o = btnDupXchg2 = new Fl_Check_Button(156, 283, 105, 20, _("Exchange 2"));
-                btnDupXchg2->tooltip(_("free form 3 must match"));
-                btnDupXchg2->down_box(FL_DOWN_BOX);
-                btnDupXchg2->callback((Fl_Callback*)cb_btnDupXchg2);
-                o->value(progdefaults.dupxchg2);
-              } // Fl_Check_Button* btnDupXchg2
-              { Fl_Check_Button* o = btnDupXchg3 = new Fl_Check_Button(276, 283, 105, 20, _("Exchange 3"));
-                btnDupXchg3->tooltip(_("free form 3 must match"));
-                btnDupXchg3->down_box(FL_DOWN_BOX);
-                btnDupXchg3->callback((Fl_Callback*)cb_btnDupXchg3);
-                o->value(progdefaults.dupxchg3);
-              } // Fl_Check_Button* btnDupXchg3
-              { Fl_Check_Button* o = btnDupTimeSpan = new Fl_Check_Button(15, 313, 129, 20, _("Time span over"));
+              { Fl_Check_Button* o = btnDupTimeSpan = new Fl_Check_Button(156, 313, 129, 20, _("Time span over"));
                 btnDupTimeSpan->tooltip(_("QSO must not occur within a time period of"));
                 btnDupTimeSpan->down_box(FL_DOWN_BOX);
                 btnDupTimeSpan->callback((Fl_Callback*)cb_btnDupTimeSpan);
                 o->value(progdefaults.duptimespan);
               } // Fl_Check_Button* btnDupTimeSpan
-              { Fl_Value_Input* o = nbrTimeSpan = new Fl_Value_Input(158, 313, 53, 20, _("minutes"));
+              { Fl_Value_Input* o = nbrTimeSpan = new Fl_Value_Input(285, 313, 53, 20, _("minutes"));
                 nbrTimeSpan->tooltip(_("Enter time span in minutes"));
                 nbrTimeSpan->maximum(1440);
                 nbrTimeSpan->step(1);
@@ -2475,7 +2406,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           tabsWaterfall->color(FL_LIGHT1);
           tabsWaterfall->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Display"));
-            o->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 162, _("Colors and cursors"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2663,6 +2593,7 @@ an merging"));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Mouse"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(5, 62, 490, 170);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnWaterfallHistoryDefault = new Fl_Check_Button(15, 76, 340, 20, _("Left or right click always replays audio history"));
@@ -3119,7 +3050,6 @@ an merging"));
               tabsPSK->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
                 o->align(FL_ALIGN_TOP_LEFT);
-                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 98, _("AFC behavior"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -3201,6 +3131,7 @@ an merging"));
               } // Fl_Group* o
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("Viewer"));
                 o->align(FL_ALIGN_TOP_LEFT);
+                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 110);
                 o->box(FL_ENGRAVED_FRAME);
                 { Fl_Check_Button* o = btnMarquee = new Fl_Check_Button(212, 125, 165, 20, _("Continuous scrolling"));
@@ -3454,7 +3385,6 @@ an merging"));
           tabsRig->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hardware PTT"));
             o->tooltip(_("Tottle DTR for ptt"));
-            o->hide();
             { btnPTT[0] = new Fl_Round_Button(15, 70, 74, 17, _("none"));
               btnPTT[0]->down_box(FL_DIAMOND_DOWN_BOX);
               btnPTT[0]->value(1);
@@ -3504,6 +3434,7 @@ an merging"));
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("RigCAT"));
             o->tooltip(_("Rig Control using xml spec file"));
+            o->hide();
             { chkUSERIGCAT = new Fl_Check_Button(195, 60, 110, 20, _("Use RigCAT"));
               chkUSERIGCAT->tooltip(_("RigCAT used for rig control"));
               chkUSERIGCAT->down_box(FL_DOWN_BOX);
@@ -4083,10 +4014,10 @@ l with your sound hardware."));
         tabID->end();
       } // Fl_Group* tabID
       { tabMisc = new Fl_Group(0, 25, 500, 345, _("Misc"));
+        tabMisc->hide();
         { tabsMisc = new Fl_Tabs(0, 25, 500, 345);
           tabsMisc->selection_color(FL_LIGHT1);
           { tabSweetSpot = new Fl_Group(0, 50, 500, 320, _("Sweet Spot"));
-            tabSweetSpot->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 75);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -4227,6 +4158,7 @@ l with your sound hardware."));
             tabCPUspeed->end();
           } // Fl_Group* tabCPUspeed
           { tabFileExtraction = new Fl_Group(0, 50, 500, 320, _("Extract"));
+            tabFileExtraction->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 155, _("Extract files from rx stream"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);

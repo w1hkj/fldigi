@@ -167,9 +167,7 @@ Fl_Input2			*inpState;
 Fl_Input2			*inpCountry;
 Fl_Input2			*inpSerNo;
 Fl_Input2			*outSerNo;
-Fl_Input2			*inpXchg1;
-Fl_Input2			*inpXchg2;
-Fl_Input2			*inpXchg3;
+Fl_Input2			*inpXchgIn;
 Fl_Box				*lblDup;
 Fl_Input2			*inpVEprov;
 Fl_Input2			*inpNotes;
@@ -231,8 +229,9 @@ int w_fm1 		= 25;
 int w_fm2 		= 15;
 int w_fm3 		= 15;
 int w_fm4 		= 25;
-int w_fm5 		= 20;
+int w_fm5 		= 25;
 int w_fm6		= 30;
+int w_fm7       = 35;
 int w_inpState 	= 25;
 int w_inpProv	= 25;
 int w_inpCountry = 60;
@@ -240,7 +239,7 @@ int w_inpLOC   	= 55;
 int w_inpAZ    	= 30;
 int w_inpQth 	= wf1 - w_fm1 - w_fm2 - w_fm3 - w_fm4 - w_fm5 - w_fm6 -
                   w_inpState - w_inpProv - w_inpLOC - w_inpAZ - w_inpCountry;
-int w_Xchg = (wf1 - w_fm6 - 4*w_fm5 - 4*pad - 2 * w_SerNo) / 3;
+int w_Xchg      = wf1 - 2*w_fm7 - w_fm5 - 2*pad - 2 * w_SerNo;
 
 int qh = Hqsoframe / 2;
 int rig_control_width = FREQWIDTH + 4;
@@ -977,8 +976,7 @@ void cb_mnuVisitURL(Fl_Widget*, void* arg)
 	if ((int)ShellExecute(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL) <= 32)
 		fl_alert(_("Could not open url:\n%s\n"), url);
 #endif
-
-        restoreFocus();
+//	REQ (restoreFocus());
 }
 
 void cb_mnuVisitPSKRep(Fl_Widget*, void*)
@@ -1321,7 +1319,7 @@ void clearQSO()
 	Fl_Input* in[] = { 
 		inpCall, inpName, inpTimeOn, inpRstIn, inpRstOut,
 		inpQth, inpLoc, inpAZ, inpState, inpVEprov, inpCountry,
-		inpSerNo, outSerNo, inpXchg1, inpXchg2, inpXchg3, inpNotes };
+		inpSerNo, outSerNo, inpXchgIn, inpNotes };
 	for (size_t i = 0; i < sizeof(in)/sizeof(*in); i++)
 		in[i]->value("");
 	if (progdefaults.fixed599) {
@@ -1662,6 +1660,7 @@ Fl_Menu_Item menu_[] = {
 { make_icon_label(_("Export ADIF")), 0, (Fl_Callback*)cb_mnuExportADIF_log, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Export Text")), 0, (Fl_Callback*)cb_mnuExportTEXT_log, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Export CSV")), 0, (Fl_Callback*)cb_mnuExportCSV_log, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("Cabrillo Rpt")), 0, (Fl_Callback*)cb_Export_Cabrillo, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { LOG_TO_FILE_MLABEL, 0, cb_logfile, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
@@ -2416,32 +2415,19 @@ void create_fl_digi_main() {
 					inpSerNo->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 					inpSerNo->tooltip(_("Received serial number"));
 
-					Fl_Box *fm7box = new Fl_Box(rightof(inpSerNo) + pad, y3, w_fm6, qh - pad, _("#Out"));
+					Fl_Box *fm7box = new Fl_Box(rightof(inpSerNo) + pad, y3, w_fm7, qh - pad, _("#Out"));
 					fm7box->align(FL_ALIGN_INSIDE);
 					outSerNo = new Fl_Input2(rightof(fm7box), y3, w_SerNo, qh - pad, "");
 					outSerNo->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 					outSerNo->tooltip(_("Sent serial number (read only)"));
 					outSerNo->type(FL_NORMAL_OUTPUT);
 
-					Fl_Box *fm8box = new Fl_Box(rightof(outSerNo) + pad, y3, w_fm5, qh - pad, _("X1"));
+					Fl_Box *fm8box = new Fl_Box(rightof(outSerNo) + pad, y3, w_fm7, qh - pad, _("Xchg"));
 					fm7box->align(FL_ALIGN_INSIDE);
-					inpXchg1 = new Fl_Input2(rightof(fm8box), y3, w_Xchg, qh - pad, "");
-					inpXchg1->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-					inpXchg1->tooltip(_("Contest exchange #1"));
-					
-					Fl_Box *fm9box = new Fl_Box(rightof(inpXchg1) + pad, y3, w_fm5, qh - pad, _("X2"));
-					fm9box->align(FL_ALIGN_INSIDE);
-					inpXchg2 = new Fl_Input2(rightof(fm9box), y3, w_Xchg, qh - pad, "");
-					inpXchg2->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-					inpXchg2->tooltip(_("Contest exchange #2"));
-					
-					Fl_Box *fm10box = new Fl_Box(rightof(inpXchg2) + pad, y3, w_fm5, qh - pad, _("X3"));
-					fm10box->align(FL_ALIGN_INSIDE);
-					inpXchg3 = new Fl_Input2(rightof(fm10box), y3, 
-							rightof(inpAZ) - rightof(fm10box) , qh - pad, "");
-					inpXchg3->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-					inpXchg3->tooltip(_("Contest exchange #3"));
-					
+					inpXchgIn = new Fl_Input2(rightof(fm8box), y3, w_Xchg, qh - pad, "");
+					inpXchgIn->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+					inpXchgIn->tooltip(_("Contest exchange in"));
+									
 				QsoInfoFrame1B->end();
 				QsoInfoFrame1B->hide();
 				
@@ -2470,7 +2456,7 @@ void create_fl_digi_main() {
 
 		Fl_Widget* logfields[] = { inpCall, inpName, inpTimeOn, inpTimeOff, inpRstIn, inpRstOut,
 				inpQth, inpState, inpVEprov, inpCountry, inpLoc, inpAZ, inpNotes,
-				inpSerNo, outSerNo, inpXchg1, inpXchg2, inpXchg3 };
+				inpSerNo, outSerNo, inpXchgIn };
 		for (size_t i = 0; i < sizeof(logfields)/sizeof(*logfields); i++) {
 			logfields[i]->callback(cb_log);
 			logfields[i]->when(FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED | FL_WHEN_ENTER_KEY | FL_WHEN_RELEASE );

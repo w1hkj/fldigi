@@ -47,9 +47,8 @@ enum ADIF_FIELD_POS {
     TEN_TEN, 
     VE_PROV,
 // following fields are specific to fldigi's logbook
-	XCHG1,  // contest exchange field #1
-	XCHG2,  // contest exchange field #2
-	XCHG3,  // contest exchange field #3
+	XCHG1,   // contest exchange field
+	MYXCHG,  // contest exchange field #3
     EXPORT, // flag used internally in fldigi's logbook
     NUMFIELDS // counter for number of fields in enum
 };

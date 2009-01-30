@@ -74,12 +74,12 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     xywh {574 71 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
-      xywh {0 0 500 372} color 50 selection_color 50
+      xywh {0 0 505 372} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open
-        xywh {0 25 500 345} when 1 hide
+        callback {progdefaults.changed = true;} open selected
+        xywh {0 25 500 345} when 1
       } {
         Fl_Group {} {
           label Station open
@@ -135,14 +135,14 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        xywh {0 25 500 345} hide
+        xywh {0 25 505 345} hide
       } {
         Fl_Tabs tabsUI {open
-          xywh {0 25 500 345} selection_color 50
+          xywh {0 25 505 345} selection_color 50
         } {
           Fl_Group tabUserInterface {
             label General open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {open
               xywh {5 60 490 301} box ENGRAVED_FRAME
@@ -279,7 +279,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabContest {
             label Contest open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {
               label Exchanges open
@@ -287,30 +287,14 @@ progdefaults.changed = true;}
             } {
               Fl_Box lblSend {
                 label {Send:}
-                xywh {15 95 55 20}
+                xywh {37 95 55 20}
               }
               Fl_Input inpSend1 {
-                label 1
-                callback {progdefaults.Xchg1=o->value();
+                label {Exchange Out}
+                callback {progdefaults.myXchg=o->value();
 progdefaults.changed = true;}
-                tooltip {free form exchange} xywh {70 95 70 20} align 1
-                code0 {o->value(progdefaults.Xchg1.c_str());}
-                class Fl_Input2
-              }
-              Fl_Input inpSend2 {
-                label 2
-                callback {progdefaults.Xchg2=o->value();
-progdefaults.changed = true;}
-                tooltip {free form exchange} xywh {150 95 70 20} align 1
-                code0 {o->value(progdefaults.Xchg2.c_str());}
-                class Fl_Input2
-              }
-              Fl_Input inpSend3 {
-                label 3
-                callback {progdefaults.Xchg3=o->value();
-progdefaults.changed = true;}
-                tooltip {free form exchange} xywh {230 95 70 20} align 1
-                code0 {o->value(progdefaults.Xchg3.c_str());}
+                tooltip {free form exchange} xywh {95 95 140 20} align 1
+                code0 {o->value(progdefaults.myXchg.c_str());}
                 class Fl_Input2
               }
               Fl_Check_Button btn599 {
@@ -390,38 +374,24 @@ progdefaults.changed = true;}
                 code0 {o->value(progdefaults.dupstate);}
               }
               Fl_Check_Button btnDupXchg1 {
-                label {Exchange 1}
+                label {Exchange In}
                 callback {progdefaults.dupxchg1 = o->value();
 progdefaults.changed = true;}
-                tooltip {free form 1 must match} xywh {15 283 105 20} down_box DOWN_BOX
+                tooltip {free form 1 must match} xywh {156 283 105 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.dupxchg1);}
-              }
-              Fl_Check_Button btnDupXchg2 {
-                label {Exchange 2}
-                callback {progdefaults.dupxchg2 = o->value();
-progdefaults.changed = true;}
-                tooltip {free form 3 must match} xywh {156 283 105 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.dupxchg2);}
-              }
-              Fl_Check_Button btnDupXchg3 {
-                label {Exchange 3}
-                callback {progdefaults.dupxchg3 = o->value();
-progdefaults.changed = true;}
-                tooltip {free form 3 must match} xywh {276 283 105 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.dupxchg3);}
               }
               Fl_Check_Button btnDupTimeSpan {
                 label {Time span over}
                 callback {progdefaults.duptimespan=(int)o->value();
 progdefaults.changed = true;}
-                tooltip {QSO must not occur within a time period of} xywh {15 313 129 20} down_box DOWN_BOX
+                tooltip {QSO must not occur within a time period of} xywh {156 313 129 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.duptimespan);}
               }
               Fl_Value_Input nbrTimeSpan {
                 label minutes
                 callback {progdefaults.timespan = (int)o->value();
 progdefaults.changed = true;}
-                tooltip {Enter time span in minutes} xywh {158 313 53 20} align 8 maximum 1440 step 1 value 120
+                tooltip {Enter time span in minutes} xywh {285 313 53 20} align 8 maximum 1440 step 1 value 120
                 code0 {o->value(progdefaults.timespan);}
               }
             }
@@ -437,7 +407,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label Display open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {
               label {Colors and cursors} open
@@ -661,7 +631,7 @@ progdefaults.changed = true;} open
           }
           Fl_Group {} {
             label Mouse open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {5 62 490 170} box ENGRAVED_FRAME
@@ -1080,7 +1050,7 @@ progdefaults.changed = true;}
             } {
               Fl_Group {} {
                 label General open
-                xywh {0 75 500 295} align 5 hide
+                xywh {0 75 500 295} align 5
               } {
                 Fl_Group {} {
                   label {AFC behavior} open
@@ -1149,7 +1119,7 @@ progdefaults.changed = true;}
               }
               Fl_Group {} {
                 label Viewer open
-                xywh {0 75 500 295} align 5
+                xywh {0 75 500 295} align 5 hide
               } {
                 Fl_Group {} {open
                   xywh {5 85 490 110} box ENGRAVED_FRAME
@@ -1403,7 +1373,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label {Hardware PTT} open
-            tooltip {Tottle DTR for ptt} xywh {0 50 500 320} hide
+            tooltip {Tottle DTR for ptt} xywh {0 50 500 320}
           } {
             Fl_Round_Button {btnPTT[0]} {
               label none
@@ -1479,7 +1449,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label RigCAT open
-            tooltip {Rig Control using xml spec file} xywh {0 50 500 320}
+            tooltip {Rig Control using xml spec file} xywh {0 50 500 320} hide
           } {
             Fl_Check_Button chkUSERIGCAT {
               label {Use RigCAT}
@@ -2281,14 +2251,14 @@ OFF - limit search to +/- 200 Hz} xywh {215 246 270 20} down_box DOWN_BOX
       }
       Fl_Group tabMisc {
         label Misc open
-        xywh {0 25 500 345}
+        xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsMisc {open
           xywh {0 25 500 345} selection_color 50
         } {
           Fl_Group tabSweetSpot {
             label {Sweet Spot} open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {open
               xywh {5 60 490 75} box ENGRAVED_FRAME align 21
@@ -2441,10 +2411,10 @@ progdefaults.changed = true;}
           }
           Fl_Group tabFileExtraction {
             label Extract open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {
-              label {Extract files from rx stream} open selected
+              label {Extract files from rx stream} open
               xywh {5 60 490 155} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button chkAutoExtract {

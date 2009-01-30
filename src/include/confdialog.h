@@ -44,8 +44,6 @@ extern Fl_Group *tabContest;
 #include <FL/Fl_Box.H>
 extern Fl_Box *lblSend;
 extern Fl_Input2 *inpSend1;
-extern Fl_Input2 *inpSend2;
-extern Fl_Input2 *inpSend3;
 extern Fl_Check_Button *btn599;
 extern Fl_Check_Button *btnCutNbrs;
 extern Fl_Check_Button *btnUseLeadingZeros;
@@ -60,8 +58,6 @@ extern Fl_Check_Button *btnDupBand;
 extern Fl_Check_Button *btnDupMode;
 extern Fl_Check_Button *btnDupState;
 extern Fl_Check_Button *btnDupXchg1;
-extern Fl_Check_Button *btnDupXchg2;
-extern Fl_Check_Button *btnDupXchg3;
 extern Fl_Check_Button *btnDupTimeSpan;
 extern Fl_Value_Input *nbrTimeSpan;
 extern Fl_Group *tabWaterfall;

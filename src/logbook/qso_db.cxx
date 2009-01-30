@@ -435,14 +435,12 @@ bool cQsoDb::duplicate(
 		const char *freq, bool chkfreq,
 		const char *state, bool chkstate,
 		const char *mode, bool chkmode,
-		const char *xchg1, bool chkxchg1,
-		const char *xchg2, bool chkxchg2,
-		const char *xchg3, bool chkxchg3 )
+		const char *xchg1, bool chkxchg1 )
 {
 	int f1, f2 = 0;
 	f1 = (int)(atof(freq)/1000.0);
 	bool b_freqDUP = true, b_stateDUP = true, b_modeDUP = true,
-		 b_xchg1DUP = true, b_xchg2DUP = true, b_xchg3DUP = true,
+		 b_xchg1DUP = true,
 		 b_dtimeDUP = true;
 	unsigned int datetime = epoch_minutes(szdate, sztime);
 	unsigned int qsodatetime;
@@ -451,8 +449,7 @@ bool cQsoDb::duplicate(
 		if (strcasecmp(qsorec[i].getField(CALL), callsign) == 0) {
 // found callsign duplicate
 			b_freqDUP = b_stateDUP = b_modeDUP = 
-				   	   b_xchg1DUP = b_xchg2DUP = b_xchg3DUP = 
-				       b_dtimeDUP = false;
+				   	   b_xchg1DUP = b_dtimeDUP = false;
 			if (chkfreq) {
 				f2 = (int)atof(qsorec[i].getField(FREQ));
 				b_freqDUP = (f1 == f2);
@@ -466,12 +463,6 @@ bool cQsoDb::duplicate(
 			if (chkxchg1)
 				b_xchg1DUP = (qsorec[i].getField(XCHG1)[0] == 0 && xchg1[0] == 0) ||
 							 (strcasestr(qsorec[i].getField(XCHG1), xchg1) != 0);
-			if (chkxchg2)
-				b_xchg2DUP = (qsorec[i].getField(XCHG2)[0] == 0 && xchg2[0] == 0) ||
-							 (strcasestr(qsorec[i].getField(XCHG2), xchg2) != 0);
-			if (chkxchg3)
-				b_xchg3DUP = (qsorec[i].getField(XCHG3)[0] == 0 && xchg3[0] == 0) ||
-							 (strcasestr(qsorec[i].getField(XCHG3), xchg3) != 0);
 
 			if (chkdatetime) {
 				qsodatetime = epoch_minutes (
@@ -483,8 +474,6 @@ bool cQsoDb::duplicate(
 			     (!chkstate    || (chkstate    && b_stateDUP)) &&
 			     (!chkmode     || (chkmode     && b_modeDUP)) &&
 			     (!chkxchg1    || (chkxchg1    && b_xchg1DUP)) &&
-			     (!chkxchg2    || (chkxchg2    && b_xchg2DUP)) &&
-			     (!chkxchg3    || (chkxchg3    && b_xchg3DUP)) &&
 			     (!chkdatetime || (chkdatetime && b_dtimeDUP))) {
 			     return true;
 			 }

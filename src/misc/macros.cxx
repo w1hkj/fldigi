@@ -56,9 +56,7 @@ void pVER(string &, size_t &);
 void pCNTR(string &, size_t &);
 void pDECR(string &, size_t &);
 void pINCR(string &, size_t &);
-void pX1(string &, size_t &);
-void pX2(string &, size_t &);
-void pX3(string &, size_t &);
+void pXOUT(string &, size_t &);
 void pLOG(string &, size_t &);
 void pTIMER(string &, size_t &);
 void pIDLE(string &, size_t &);
@@ -102,9 +100,8 @@ MTAGS mtags[] = {
 {"<CNTR>",		pCNTR},
 {"<DECR>",		pDECR},
 {"<INCR>",		pINCR},
-{"<X1>",		pX1},
-{"<X2>",		pX2},
-{"<X3>",		pX3},
+{"<X1>",		pXOUT},
+{"<XOUT>",      pXOUT},
 {"<LOG>",		pLOG},
 {"<TIMER:",		pTIMER},
 {"<IDLE:",		pIDLE},
@@ -378,19 +375,9 @@ void pINCR(string &s, size_t &i)
 	updateOutSerNo();
 }
 
-void pX1(string &s, size_t &i)
+void pXOUT(string &s, size_t &i)
 {
-	s.replace (i, 4, progdefaults.Xchg1);
-}
-
-void pX2(string &s, size_t &i)
-{
-	s.replace (i, 4, progdefaults.Xchg2);
-}
-
-void pX3(string &s, size_t &i)
-{
-	s.replace (i, 4, progdefaults.Xchg3);
+	s.replace (i, 4, progdefaults.myXchg);
 }
 
 void pLOG(string &s, size_t &i)

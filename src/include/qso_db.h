@@ -90,9 +90,7 @@ public:
 		const char *freq, bool chkfreq,
 		const char *state, bool chkstate,
 		const char *mode, bool chkmode,
-		const char *xchg1, bool chkxchg1,
-		const char *xchg2, bool chkxchg2,
-		const char *xchg3, bool chkxchg3 );
+		const char *xchg1, bool chkxchg1 );
 
 };
 

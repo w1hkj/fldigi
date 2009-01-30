@@ -17,8 +17,8 @@ decl {\#include "flinput2.h"} {public
 Function {create_logbook_dialogs()} {open return_type void
 } {
   Fl_Window wExport {
-    label {Export Setup} open
-    xywh {560 484 655 340} type Double modal visible
+    label {Export Setup}
+    xywh {557 451 655 340} type Double hide modal
   } {
     Fl_Group {} {
       label {Select Records to Export} open
@@ -72,9 +72,8 @@ btnSelectQSLrcvd->value(0);
 btnSelectQSLsent->value(0);
 btnSelectSerialIN->value(0);
 btnSelectSerialOUT->value(0);
-btnSelectXchg1->value(0);
-btnSelectXchg2->value(0);
-btnSelectXchg3->value(0);
+btnSelectXchgIn->value(0);
+btnSelectMyXchg->value(0);
 btnSelectRSTsent->value(0);
 btnSelectRSTrcvd->value(0);
 btnSelectIOTA->value(0);
@@ -102,9 +101,8 @@ btnSelectQSLrcvd->value(1);
 btnSelectQSLsent->value(1);
 btnSelectSerialIN->value(1);
 btnSelectSerialOUT->value(1);
-btnSelectXchg1->value(1);
-btnSelectXchg2->value(1);
-btnSelectXchg3->value(1);
+btnSelectXchgIn->value(1);
+btnSelectMyXchg->value(1);
 btnSelectRSTsent->value(1);
 btnSelectRSTrcvd->value(1);
 btnSelectIOTA->value(1);
@@ -205,17 +203,13 @@ btnSelectComment->value(1);}
         label {Serial \# out}
         xywh {520 197 70 15} down_box DOWN_BOX
       }
-      Fl_Check_Button btnSelectXchg1 {
-        label {Exchange 1}
+      Fl_Check_Button btnSelectXchgIn {
+        label {Exchange In}
         xywh {520 216 70 15} down_box DOWN_BOX
       }
-      Fl_Check_Button btnSelectXchg2 {
-        label {Exchange 2}
+      Fl_Check_Button btnSelectMyXchg {
+        label {Exchange Out}
         xywh {520 235 70 15} down_box DOWN_BOX
-      }
-      Fl_Check_Button btnSelectXchg3 {
-        label {Exchange 3}
-        xywh {520 255 70 15} down_box DOWN_BOX
       }
       Fl_Button btnSetFieldDefaults {
         label Defaults
@@ -236,112 +230,111 @@ btnSelectQSLrcvd->value(0);
 btnSelectQSLsent->value(0);
 btnSelectSerialIN->value(0);
 btnSelectSerialOUT->value(0);
-btnSelectXchg1->value(0);
-btnSelectXchg2->value(0);
-btnSelectXchg3->value(0);
+btnSelectXchgIn->value(0);
+btnSelectMyXchg->value(0);
 btnSelectRSTsent->value(0);
 btnSelectRSTrcvd->value(1);
 btnSelectComment->value(0);
 btnSelectIOTA->value(0);
 btnSelectDXCC->value(0);
-btnSelectTX_pwr->value(0);} selected
+btnSelectTX_pwr->value(0);}
         xywh {557 275 76 20}
       }
     }
   }
   Fl_Window dlgLogbook {
-    label Logbook open
-    xywh {550 71 570 350} type Double color 47 resizable visible
+    label Logbook
+    xywh {382 388 570 350} type Double color 47 hide resizable
   } {
     Fl_Group editGroup {open
       xywh {2 2 565 228} box ENGRAVED_FRAME color 52
     } {
       Fl_Input inpDate_log {
-        label {Date / Time}
-        xywh {5 20 100 22} align 5
+        label Date
+        tooltip {Date of QSO} xywh {5 20 100 22} labelsize 12 align 5
         code0 {\#include "calendar.h"}
         code1 {inpDate_log->format(2);}
         class Fl_DateInput
       }
       Fl_Input inpTimeOn_log {
         label On
-        xywh {106 20 40 22} align 5
+        tooltip {Time QSO started} xywh {106 20 40 22} labelsize 12 align 5
         class Fl_Input2
       }
       Fl_Input inpTimeOff_log {
         label Off
-        xywh {148 20 40 22} align 5
+        tooltip {Time QSO ended} xywh {148 20 40 22} labelsize 12 align 5
         class Fl_Input2
       }
       Fl_Input inpCall_log {
         label Call
-        xywh {189 20 105 22} align 5
+        tooltip {Call sign worked} xywh {189 20 105 22} labelsize 12 align 5
         class Fl_Input2
       }
       Fl_Input inpName_log {
         label Name
-        xywh {296 20 60 22} align 5
+        tooltip {Operator worked} xywh {296 20 60 22} labelsize 12 align 5
         class Fl_Input2
       }
       Fl_Input inpFreq_log {
         label {Freq.}
-        xywh {357 20 80 22} align 5
+        tooltip {Frequency in MHz} xywh {357 20 80 22} labelsize 12 align 5
         class Fl_Input2
       }
       Fl_Input inpMode_log {
         label Mode
-        xywh {439 20 60 22} align 5
+        tooltip {Mode in use} xywh {439 20 60 22} labelsize 12 align 5
         class Fl_Input2
       }
       Fl_Input inpRstR_log {
         label In
-        xywh {500 20 30 22} align 5
+        tooltip {Rst received} xywh {500 20 30 22} labelsize 12 align 5
         class Fl_Input2
       }
       Fl_Input inpRstS_log {
         label Out
-        xywh {532 20 30 22} align 5
+        tooltip {Rst sent} xywh {532 20 30 22} labelsize 12 align 5
         class Fl_Input2
       }
       Fl_Input inpQth_log {
         label Qth
-        xywh {5 56 115 22} align 5
+        tooltip {City of station worked} xywh {5 56 115 22} labelsize 12 align 5
         class Fl_Input2
       }
       Fl_Input inpState_log {
         label St
-        xywh {122 56 30 22} align 5
+        tooltip {US state of station worked} xywh {122 56 30 22} labelsize 12 align 5
         class Fl_Input2
       }
       Fl_Input inpVE_Prov_log {
         label Pr
-        xywh {155 56 30 22} align 5
+        tooltip {Province of station worked} xywh {155 56 30 22} labelsize 12 align 5
         class Fl_Input2
       }
       Fl_Input inpCountry_log {
         label Country
-        xywh {188 56 90 22} align 5
+        tooltip {Country of station worked} xywh {188 56 90 22} labelsize 12 align 5
         class Fl_Input2
       }
       Fl_Input inpLoc_log {
         label Loc
-        tooltip {Stations grid square} xywh {281 56 75 22} align 5
+        tooltip {Stations grid square} xywh {281 56 75 22} labelsize 12 align 5
         class Fl_Input2
       }
       Fl_Input inpComment_log {
         label Comment
-        xywh {5 95 350 57} type Multiline align 5
+        tooltip {Interesting notes (80 chars max)} xywh {5 95 350 57} type Multiline labelsize 12 align 5
         class Fl_Input2
       }
       Fl_Input inpQSLrcvddate_log {
         label {QSL-rcvd}
-        xywh {455 56 100 22} align 5
+        tooltip {QSL received on this date} xywh {455 56 100 22} labelsize 12 align 5
         code1 {o->format(2);}
         class Fl_DateInput
       }
       Fl_Input inpQSLsentdate_log {
         label {QSL-sent}
-        xywh {455 95 100 22} align 5
+        tooltip {QSL sent on this date} xywh {455 95 100 22} labelsize 12 align 5
         code1 {o->format(2);}
         class Fl_DateInput
       }
@@ -362,7 +355,7 @@ btnSelectTX_pwr->value(0);} selected
       }
       Fl_Input txtNbrRecs_log {
         label Recs
-        xywh {38 201 65 22}
+        tooltip {\# Records in logbook} xywh {38 201 65 22} labelsize 12
         class Fl_Input2
       }
       Fl_Group {} {open
@@ -370,27 +363,22 @@ btnSelectTX_pwr->value(0);} selected
       } {
         Fl_Input inpSerNoOut_log {
           label {Ser\# out}
-          tooltip {Contest seral \# sent} xywh {8 171 60 22} align 5
+          tooltip {Contest seral \# sent} xywh {8 171 60 22} labelsize 12 align 5
+          class Fl_Input2
+        }
+        Fl_Input inpMyXchg_log {
+          label {Exchange Out}
+          tooltip {Contest exchange sent} xywh {77 171 140 22} labelsize 12 align 5
           class Fl_Input2
         }
         Fl_Input inpSerNoIn_log {
           label {Ser\# in}
-          tooltip {Contest serial \# received} xywh {71 171 60 22} align 5
+          tooltip {Contest serial \# received} xywh {226 171 60 22} labelsize 12 align 5
           class Fl_Input2
         }
-        Fl_Input inpXchg1_log {
-          label {Xchg \#1}
-          tooltip {Exchange \#1} xywh {135 171 100 22} align 5
-          class Fl_Input2
-        }
-        Fl_Input inpXchg2_log {
-          label {Xchg \#2}
-          tooltip {Exchange \#2} xywh {239 171 100 22} align 5
-          class Fl_Input2
-        }
-        Fl_Input inpXchg3_log {
-          label {Xchg \#3}
-          tooltip {Exchange \#3} xywh {343 171 100 22} align 5
+        Fl_Input inpXchgIn_log {
+          label {Exchange In}
+          tooltip {Contest exchange received} xywh {295 171 140 22} labelsize 12 align 5
           class Fl_Input2
         }
       }
@@ -399,7 +387,7 @@ btnSelectTX_pwr->value(0);} selected
       } {
         Fl_Input inpSearchString {
           label {Call Search}
-          xywh {454 139 105 22} align 5
+          tooltip {Search for this callsign} xywh {454 139 105 22} labelsize 12 align 5
           class Fl_Input2
         }
         Fl_Button bSearchPrev {
@@ -415,17 +403,17 @@ btnSelectTX_pwr->value(0);} selected
       }
       Fl_Input inpIOTA_log {
         label IOTA
-        xywh {357 95 80 22} align 5
+        tooltip {Islands on the air} xywh {357 95 80 22} labelsize 12 align 5
         class Fl_Input2
       }
       Fl_Input inpTX_pwr_log {
         label {Tx Power}
-        xywh {357 56 80 22} align 5
+        tooltip {Transmit power used} xywh {357 56 80 22} labelsize 12 align 5
         class Fl_Input2
       }
       Fl_Input inpDXCC_log {
         label DXCC
-        xywh {357 130 80 22} align 5
+        xywh {357 130 80 22} labelsize 12 align 5
         class Fl_Input2
       }
     }
@@ -455,4 +443,123 @@ wBrowser->headerSize (FL_NORMAL_SIZE);
 wBrowser->allowResize (1);
 wBrowser->gridEnabled (0);
 dlgLogbook->xclass(PACKAGE_TARNAME);} {}
+  Fl_Window wCabrillo {
+    label {Cabrillo Setup} open
+    xywh {557 88 655 340} type Double modal visible
+  } {
+    Fl_Group {} {
+      label {Select Records to Export} open
+      xywh {4 4 388 305} box ENGRAVED_FRAME align 21
+    } {
+      Fl_Check_Browser chkCabBrowser {
+        xywh {13 25 370 245}
+      }
+      Fl_Button btnCabClearAll {
+        label {Clear All}
+        callback {chkCabBrowser->check_none();}
+        xywh {69 277 109 20}
+      }
+      Fl_Button btnCabCheckAll {
+        label {Check All}
+        callback {chkCabBrowser->check_all();}
+        xywh {200 277 109 20}
+      }
+    }
+    Fl_Return_Button btnCabOK {
+      label OK
+      callback {wCabrillo->hide();
+WriteCabrillo();}
+      xywh {536 312 100 20}
+    }
+    Fl_Button btnCabCancel {
+      label Cancel
+      callback {wCabrillo->hide();}
+      xywh {405 312 100 20}
+    }
+    Fl_Group {} {
+      label {Select Cabrillo Contest & Fields} open
+      xywh {390 4 258 303} box ENGRAVED_FRAME align 21
+    } {
+      Fl_Group cboContest {
+        label {Contest:} open selected
+        xywh {460 35 180 20} box BORDER_BOX color 7 align 4
+        code0 {\#include "combo.h"}
+        class Fl_ComboBox
+      } {}
+      Fl_Check_Button btnCabCall {
+        label Call
+        xywh {420 75 70 15} down_box DOWN_BOX value 1
+      }
+      Fl_Check_Button btnCabFreq {
+        label Freq
+        xywh {420 99 70 15} down_box DOWN_BOX value 1
+      }
+      Fl_Check_Button btnCabMode {
+        label Mode
+        xywh {420 123 70 15} down_box DOWN_BOX value 1
+      }
+      Fl_Check_Button btnCabQSOdate {
+        label {QSO Date}
+        xywh {420 147 70 15} down_box DOWN_BOX value 1
+      }
+      Fl_Check_Button btnCabTimeOFF {
+        label {Time OFF}
+        xywh {420 171 70 15} down_box DOWN_BOX value 1
+      }
+      Fl_Check_Button btnCabRSTsent {
+        label {RST sent}
+        xywh {420 195 70 15} down_box DOWN_BOX value 1
+      }
+      Fl_Check_Button btnCabRSTrcvd {
+        label {RST rcvd}
+        xywh {420 220 70 15} down_box DOWN_BOX value 1
+      }
+      Fl_Check_Button btnCabSerialIN {
+        label {Serial \# in}
+        xywh {522 99 70 15} down_box DOWN_BOX value 1
+      }
+      Fl_Check_Button btnCabSerialOUT {
+        label {Serial \# out}
+        xywh {522 123 70 15} down_box DOWN_BOX value 1
+      }
+      Fl_Check_Button btnCabXchgIn {
+        label {Exchange In}
+        xywh {522 147 70 15} down_box DOWN_BOX value 1
+      }
+      Fl_Check_Button btnCabMyXchg {
+        label {Exchange Out}
+        xywh {522 171 70 15} down_box DOWN_BOX value 1
+      }
+      Fl_Button btnCabClearAllFields {
+        label {Clear All}
+        callback {btnCabCall->value(0);
+btnCabFreq->value(0);
+btnCabMode->value(0);
+btnCabQSOdate->value(0);
+btnCabTimeOFF->value(0);
+btnCabSerialIN->value(0);
+btnCabSerialOUT->value(0);
+btnCabXchgIn->value(0);
+btnCabMyXchg->value(0);
+btnCabRSTsent->value(0);
+btnCabRSTrcvd->value(0);}
+        xywh {435 275 76 20}
+      }
+      Fl_Button btnCabCheckAllFields {
+        label {Check All}
+        callback {btnCabCall->value(1);
+btnCabFreq->value(1);
+btnCabMode->value(1);
+btnCabQSOdate->value(1);
+btnCabTimeOFF->value(1);
+btnCabSerialIN->value(1);
+btnCabSerialOUT->value(1);
+btnCabXchgIn->value(1);
+btnCabMyXchg->value(1);
+btnCabRSTsent->value(1);
+btnCabRSTrcvd->value(1);}
+        xywh {531 275 76 20}
+      }
+    }
+  }
 } 

@@ -177,10 +177,12 @@ void cb_Export_log() {
 	cQsoRec *rec;
 	char line[80];
 	chkExportBrowser->clear();
+	chkExportBrowser->textfont(FL_COURIER);
+	chkExportBrowser->textsize(12);
 	for( int i = 0; i < qsodb.nbrRecs(); i++ ) {
 		rec = qsodb.getRec (i);
 		memset(line, 0, sizeof(line));
-		snprintf(line,sizeof(line),"%-10s%-6s%-12s%-12s%-s",
+		snprintf(line,sizeof(line),"%8s  %4s  %-10s  %10s  %-s",
 			rec->getField(QSO_DATE),
 			rec->getField(TIME_OFF),
 			rec->getField(CALL),
@@ -318,9 +320,7 @@ void DupCheck()
 			inpFreq->value(), progdefaults.dupband,
 			inpState->value(), progdefaults.dupstate,
 			mode_info[active_modem->get_mode()].adif_name, progdefaults.dupmode,
-			inpXchg1->value(), progdefaults.dupxchg1,
-			inpXchg2->value(), progdefaults.dupxchg2,
-			inpXchg3->value(), progdefaults.dupxchg3 ) ) {
+			inpXchgIn->value(), progdefaults.dupxchg1 ) ) {
 		lblDup->show();
 	}
 }
@@ -434,9 +434,8 @@ void clearRecord() {
 	inpQSLsentdate_log->value ("");
 	inpSerNoOut_log->value ("");
 	inpSerNoIn_log->value ("");
-	inpXchg1_log->value("");
-	inpXchg2_log->value("");
-	inpXchg3_log->value("");
+	inpXchgIn_log->value("");
+	inpMyXchg_log->value(progdefaults.myXchg.c_str());
 	inpComment_log->value ("");
 	inpIOTA_log->value("");
 	inpDXCC_log->value("");
@@ -466,9 +465,8 @@ cQsoRec rec;
 	rec.putField(RST_SENT, inpRstS_log->value ());
 	rec.putField(SRX, inpSerNoIn_log->value());
 	rec.putField(STX, inpSerNoOut_log->value());
-	rec.putField(XCHG1, inpXchg1_log->value());
-	rec.putField(XCHG2, inpXchg2_log->value());
-	rec.putField(XCHG3, inpXchg3_log->value());	
+	rec.putField(XCHG1, inpXchgIn_log->value());
+	rec.putField(MYXCHG, inpMyXchg_log->value());
 	rec.putField(IOTA, inpIOTA_log->value());
 	rec.putField(DXCC, inpDXCC_log->value());
 	rec.putField(TX_PWR, inpTX_pwr_log->value());
@@ -498,9 +496,8 @@ cQsoRec rec;
 	rec.putField(RST_SENT, inpRstS_log->value ());
 	rec.putField(SRX, inpSerNoIn_log->value());
 	rec.putField(STX, inpSerNoOut_log->value());
-	rec.putField(XCHG1, inpXchg1_log->value());
-	rec.putField(XCHG2, inpXchg2_log->value());
-	rec.putField(XCHG3, inpXchg3_log->value());	
+	rec.putField(XCHG1, inpXchgIn_log->value());
+	rec.putField(MYXCHG, inpMyXchg_log->value());
 	rec.putField(IOTA, inpIOTA_log->value());
 	rec.putField(DXCC, inpDXCC_log->value());
 	rec.putField(TX_PWR, inpTX_pwr_log->value());
@@ -544,9 +541,8 @@ void EditRecord( int i )
 	inpComment_log->value (editQSO->getField(COMMENT));
 	inpSerNoIn_log->value(editQSO->getField(SRX));
 	inpSerNoOut_log->value(editQSO->getField(STX));
-	inpXchg1_log->value(editQSO->getField(XCHG1));
-	inpXchg2_log->value(editQSO->getField(XCHG2));
-	inpXchg3_log->value(editQSO->getField(XCHG3));
+	inpXchgIn_log->value(editQSO->getField(XCHG1));
+	inpMyXchg_log->value(editQSO->getField(MYXCHG));
 	inpIOTA_log->value(editQSO->getField(IOTA));
 	inpDXCC_log->value(editQSO->getField(DXCC));
 	inpTX_pwr_log->value(editQSO->getField(TX_PWR));
@@ -574,9 +570,8 @@ void AddRecord ()
 
 	inpSerNoIn_log->value(inpSerNo->value());
 	inpSerNoOut_log->value(outSerNo->value());
-	inpXchg1_log->value(inpXchg1->value());
-	inpXchg2_log->value(inpXchg2->value());
-	inpXchg3_log->value(inpXchg3->value());
+	inpXchgIn_log->value(inpXchgIn->value());
+	inpMyXchg_log->value(progdefaults.myXchg.c_str());
 
 	inpQth_log->value (inpQth->value());
 	inpLoc_log->value (inpLoc->value());
@@ -638,4 +633,250 @@ void loadBrowser(bool keep_pos)
 	txtNbrRecs_log->value(szRecs);
 }
 
+//=============================================================================
+// Cabrillo reporter
+//=============================================================================
 
+const char *contests[] = 
+{	"AP-SPRINT", 
+	"ARRL-10", "ARRL-160", "ARRL-DX-CW", "ARRL-DX-SSB", "ARRL-SS-CW",
+	"ARRL-SS-SSB", "ARRL-UHF-AUG", "ARRL-VHF-JAN", "ARRL-VHF-JUN", "ARRL-VHF-SEP", 
+	"ARRL-RTTY", 
+	"BARTG-RTTY", 
+	"CQ-160-CW", "CQ-160-SSB", "CQ-WPX-CW", "CQ-WPX-RTTY", "CQ-WPX-SSB", "CQ-VHF", 
+	"CQ-WW-CW", "CQ-WW-RTTY", "CQ-WW-SSB", 
+	"DARC-WAEDC-CW", "DARC-WAEDC-RTTY", "DARC-WAEDC-SSB", 
+	"FCG-FQP", "IARU-HF", "JIDX-CW", "JIDX-SSB", 
+	"NAQP-CW", "NAQP-RTTY", "NAQP-SSB", "NA-SPRINT-CW", "NA-SPRINT-SSB", "NCCC-CQP",
+	"NEQP", "OCEANIA-DX-CW", "OCEANIA-DX-SSB", "RDXC", "RSGB-IOTA",
+	"SAC-CW", "SAC-SSB", "STEW-PERRY", "TARA-RTTY", 0 };
+
+enum icontest {
+	AP_SPRINT, 
+	ARRL_10, ARRL_160, ARRL_DX_CW, ARRL_DX_SSB, ARRL_SS_CW,
+	ARRL_SS_SSB, ARRL_UHF_AUG, ARRL_VHF_JAN, ARRL_VHF_JUN, ARRL_VHF_SEP, 
+	ARRL_RTTY, 
+	BARTG_RTTY, 
+	CQ_160_CW, CQ_160_SSB, CQ_WPX_CW, CQ_WPX_RTTY, CQ_WPX_SSB, CQ_VHF, 
+	CQ_WW_CW, CQ_WW_RTTY, CQ_WW_SSB, 
+	DARC_WAEDC_CW, DARC_WAEDC_RTTY, DARC_WAEDC_SSB, 
+	FCG_FQP, IARU_HF, JIDX_CW, JIDX_SSB, 
+	NAQP_CW, NAQP_RTTY, NAQP_SSB, NA_SPRINT_CW, NA_SPRINT_SSB, NCCC_CQP,
+	NEQP, OCEANIA_DX_CW, OCEANIA_DX_SSB, RDXC, RSGB_IOTA, 
+	SAC_CW, SAC_SSB, STEW_PERRY, TARA_RTTY
+};
+
+void cb_Export_Cabrillo(Fl_Menu_* m, void* d) {
+	if (qsodb.nbrRecs() == 0) return;
+	cQsoRec *rec;
+	char line[80];
+	int indx = 0;
+	while (contests[indx]) {
+		cboContest->add(contests[indx]);
+		indx++;
+	}
+	cboContest->index(0);
+	chkCabBrowser->clear();
+	chkCabBrowser->textfont(FL_COURIER);
+	chkCabBrowser->textsize(12);
+	for( int i = 0; i < qsodb.nbrRecs(); i++ ) {
+		rec = qsodb.getRec (i);
+		memset(line, 0, sizeof(line));
+		snprintf(line,sizeof(line),"%8s  %4s  %-10s  %10s  %-s",
+			rec->getField(QSO_DATE),
+			rec->getField(TIME_OFF),
+			rec->getField(CALL),
+			rec->getField(FREQ),
+			rec->getField(MODE) );
+        chkCabBrowser->add(line);
+	}
+	wCabrillo->show();
+}
+
+void cabrillo_append_qso (FILE *fp, cQsoRec *rec)
+{
+	char rst_in[16] = "", 
+		 exch_in[16] = "", 
+		 rst_out[16] = "", 
+		 exch_out[16] = "", 
+		 date[16] = "",
+		 year[16] = "",
+		 month[16] = "",
+		 day[15] = "", 
+		 time[16] = "", 
+		 mode[16] = "",
+		 freq[16] = "";
+	int rst_len = 3;
+	int ifreq = 0;
+	
+	if (btnCabMode->value()) {
+		strcpy (mode, rec->getField(MODE));
+		if (!strcmp (mode, "USB") || !strcmp (mode, "LSB") || !strcmp (mode, "SSB"))
+			strcpy(mode,"PH");
+		else if (!strcmp (mode, "RTTY"))
+			strcpy(mode,"RY");
+		else if (!strcmp (mode, "FM") || !strcmp (mode, "CW")) ;
+		else strcpy(mode,"  ");
+		if (!strcmp (mode, "SSB") || !strcmp (mode, "USB")
+				|| !strcmp (mode, "LSB") || !strcmp (mode, "FM"))
+			rst_len = 2;
+	}
+	
+	if (btnCabRSTrcvd->value()) {
+		strncpy (rst_in, rec->getField(RST_RCVD), rst_len);
+		rst_in[rst_len] = '\0';
+		strncpy (rst_out, rec->getField(RST_SENT), rst_len);
+		rst_out[rst_len] = '\0';
+	}
+	
+	if (btnCabXchgIn->value())
+		strcpy (exch_in, rec->getField(XCHG1));
+	if (btnCabMyXchg->value())
+		strcpy (exch_out, rec->getField(MYXCHG));
+
+	if (btnCabFreq->value()) {
+		ifreq = (int)(1000.0 * atof(rec->getField(FREQ)));
+		snprintf(freq, sizeof(freq), "%d", ifreq);
+	}
+	
+	if (btnCabQSOdate->value()) {
+		strcpy (date, rec->getField(QSO_DATE));
+		strcpy (year, date); year[4] = 0;
+		strcpy (month, &date[4]); month[2] = 0;
+		strcpy (day, &date[6]); day[2] = 0;
+		date[4] = 0;
+		strcat(date,"-"); strcat(date,month);
+		strcat(date,"-"); strcat(date,day);
+	}
+	
+	if (btnCabTimeOFF->value())
+		strcpy (time, rec->getField(TIME_OFF));
+
+	fprintf (fp, "QSO: %-5s %-3s%-11s%-5s%-14s%-4s%-7s%-14s%-4s%-7s\n",
+		freq, mode, date, time,
+		progdefaults.myCall.c_str(), 
+		rst_out, exch_out, 
+		btnCabCall->value() ? rec->getField(CALL) : "", 
+		rst_in, exch_in);
+	return;
+}
+
+void WriteCabrillo()
+{
+	if (chkCabBrowser->nchecked() == 0) return;
+
+	cQsoRec *rec;
+
+	string filters = "TEXT\t*.txt";
+	string strContest = "";
+	
+	const char* p = FSEL::saveas("Create cabrillo report", filters.c_str(),
+					 "contest.txt");
+	if (!p)
+		return;
+
+	for (int i = 0; i < chkCabBrowser->nitems(); i++) {
+		if (chkCabBrowser->checked(i + 1)) {
+			rec = qsodb.getRec(i);
+			rec->putField(EXPORT, "E");
+			qsodb.qsoUpdRec (i, rec);
+		}
+	}
+
+    FILE *cabFile = fopen (p, "w");
+    if (!cabFile)
+        return;
+    
+    strContest = cboContest->value();
+     
+	fprintf (cabFile, 
+"START-OF-LOG: 3.0\n\
+CREATED-BY: %s %s\n\
+\n\
+# The callsign used during the contest.\n\
+CALLSIGN: %s\n\
+\n\
+# ASSISTED or NON-ASSISTED\n\
+CATEGORY-ASSISTED: \n\
+\n\
+# Band: ALL, 160M, 80M, 40M, 20M, 15M, 10M, 6M, 2M, 222, 432, 902, 1.2G\n\
+CATEGORY-BAND: \n\
+\n\
+# Mode: SSB, CW, RTTY, MIXED \n\
+CATEGORY-MODE: \n\
+\n\
+# Operator: SINGLE-OP, MULTI-OP, CHECKLOG \n\
+CATEGORY-OPERATOR: \n\
+\n\
+# Power: HIGH, LOW, QRP \n\
+CATEGORY-POWER: \n\
+\n\
+# Station: FIXED, MOBILE, PORTABLE, ROVER, EXPEDITION, HQ, SCHOOL \n\
+CATEGORY-STATION: \n\
+\n\
+# Time: 6-HOURS, 12-HOURS, 24-HOURS \n\
+CATEGORY-TIME: \n\
+\n\
+# Transmitter: ONE, TWO, LIMITED, UNLIMITED, SWL \n\
+CATEGORY-TRANSMITTER: \n\
+\n\
+# Overlay: ROOKIE, TB-WIRES, NOVICE-TECH, OVER-50 \n\
+CATEGORY-OVERLAY: \n\
+\n\
+# Integer number\n\
+CLAIMED-SCORE: \n\
+\n\
+# Name of the radio club with which the score should be aggregated.\n\
+CLUB: \n\
+\n\
+# Contest: AP-SPRINT, ARRL-10, ARRL-160, ARRL-DX-CW, ARRL-DX-SSB, ARRL-SS-CW,\n\
+# ARRL-SS-SSB, ARRL-UHF-AUG, ARRL-VHF-JAN, ARRL-VHF-JUN, ARRL-VHF-SEP,\n\
+# ARRL-RTTY, BARTG-RTTY, CQ-160-CW, CQ-160-SSB, CQ-WPX-CW, CQ-WPX-RTTY,\n\
+# CQ-WPX-SSB, CQ-VHF, CQ-WW-CW, CQ-WW-RTTY, CQ-WW-SSB, DARC-WAEDC-CW,\n\
+# DARC-WAEDC-RTTY, DARC-WAEDC-SSB, FCG-FQP, IARU-HF, JIDX-CW, JIDX-SSB,\n\
+# NAQP-CW, NAQP-RTTY, NAQP-SSB, NA-SPRINT-CW, NA-SPRINT-SSB, NCCC-CQP,\n\
+# NEQP, OCEANIA-DX-CW, OCEANIA-DX-SSB, RDXC, RSGB-IOTA, SAC-CW, SAC-SSB,\n\
+# STEW-PERRY, TARA-RTTY \n\
+CONTEST: %s\n\
+\n\
+# Optional email address\n\
+EMAIL: \n\
+\n\
+LOCATION: \n\
+\n\
+# Operator name\n\
+NAME: \n\
+\n\
+# Maximum 4 address lines.\n\
+ADDRESS: \n\
+ADDRESS: \n\
+ADDRESS: \n\
+ADDRESS: \n\
+\n\
+# A space-delimited list of operator callsign(s). \n\
+OPERATORS: \n\
+\n\
+# Offtime yyyy-mm-dd nnnn yyyy-mm-dd nnnn \n\
+# OFFTIME: \n\
+\n\
+# Soapbox comments.\n\
+SOAPBOX: \n\
+SOAPBOX: \n\
+SOAPBOX: \n\n",
+		PACKAGE_NAME, PACKAGE_VERSION,
+		progdefaults.myCall.c_str(),
+		strContest.c_str() );
+        
+	qsodb.SortByDate();
+    for (int i = 0; i < qsodb.nbrRecs(); i++) {
+        rec = qsodb.getRec(i);
+        if (rec->getField(EXPORT)[0] == 'E') {
+        	cabrillo_append_qso(cabFile, rec);
+            rec->putField(EXPORT,"");
+            qsodb.qsoUpdRec(i, rec);
+        }
+    }
+    fprintf(cabFile, "END-OF-LOG:\n");
+    fclose (cabFile);
+    return;
+}

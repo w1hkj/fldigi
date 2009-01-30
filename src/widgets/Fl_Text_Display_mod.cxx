@@ -46,6 +46,7 @@
 #define BOTTOM_MARGIN 1
 #define LEFT_MARGIN 3
 #define RIGHT_MARGIN 3
+#define SCROLL_BAR_WIDTH 16
 
 #define NO_HINT -1
 
@@ -107,7 +108,7 @@ Fl_Text_Display_mod::Fl_Text_Display_mod(int X, int Y, int W, int H,  const char
 
   end();
 
-  scrollbar_width(16);
+  scrollbar_width(SCROLL_BAR_WIDTH);
   scrollbar_align(FL_ALIGN_BOTTOM_RIGHT);
 
   mCursorOn = 0;
@@ -427,9 +428,11 @@ void Fl_Text_Display_mod::resize(int X, int Y, int W, int H) {
 
     // figure the scrollbars
     if (scrollbar_width()) {
-      /* Decide if the vertical scroll bar needs to be visible */
-      if (scrollbar_align() & (FL_ALIGN_LEFT|FL_ALIGN_RIGHT) &&
-          mNBufferLines >= mNVisibleLines - 1)
+/* Decide if the vertical scroll bar needs to be visible */
+//      if (scrollbar_align() & (FL_ALIGN_LEFT|FL_ALIGN_RIGHT) &&
+//         mNBufferLines >= mNVisibleLines - 1)
+// always use the vertical scrollbar
+	if (1)
       {
         mVScrollBar->set_visible();
         if (scrollbar_align() & FL_ALIGN_LEFT) {
@@ -659,7 +662,10 @@ void Fl_Text_Display_mod::cursor_style(int style) {
 }
 
 void Fl_Text_Display_mod::wrap_mode(int wrap, int wrapMargin) {
-  mWrapMargin = wrapMargin;
+//  mWrapMargin = wrapMargin;
+  mWrapMargin = 0;
+  mFixedFontWidth = -1;
+  
   mContinuousWrap = wrap;
 
   if (buffer()) {
@@ -2663,12 +2669,12 @@ void Fl_Text_Display_mod::wrapped_line_counter(Fl_Text_Buffer *buf, int startPos
        True), and set the wrap target for either pixels or columns */
     if (mFixedFontWidth != -1 || mWrapMargin != 0) {
     	countPixels = false;
-	wrapMargin = mWrapMargin ? mWrapMargin : text_area.w / (mFixedFontWidth + 1);
+		wrapMargin = mWrapMargin ? mWrapMargin : text_area.w / (mFixedFontWidth + 1);
         maxWidth = INT_MAX;
     } else {
     	countPixels = true;
     	wrapMargin = INT_MAX;
-    	maxWidth = text_area.w;
+    	maxWidth = w() - SCROLL_BAR_WIDTH - LEFT_MARGIN - RIGHT_MARGIN;
     }
     
     /* Find the start of the line if the start pos is not marked as a

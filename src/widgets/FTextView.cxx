@@ -361,18 +361,25 @@ void FTextBase::show_context_menu(void)
 /// At the moment we only handle constant width fonts. Using proportional fonts
 /// will result in a small amount of unused space at the end of each line.
 ///
+const char *alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 int FTextBase::reset_wrap_col(void)
 {
 	if (!wrap || wrap_col == 0 || text_area.w == 0)
 		return wrap_col;
 
 	int old_wrap_col = wrap_col;
+	int col_width;
 
 	fl_font(textfont(), textsize());
-	wrap_col = (int)floor(text_area.w / fl_width('X'));
+	col_width = fl_width(alphabet);
+	if (col_width == 0) return old_wrap_col;
+	
+	wrap_col = (int)floor(52 * text_area.w / col_width);
 	// wrap_mode triggers a resize; don't call it if wrap_col hasn't changed
-	if (old_wrap_col != wrap_col)
+	if (old_wrap_col != wrap_col) {
 		wrap_mode(wrap, wrap_col);
+	LOG_DEBUG("Wrap Col: %d", wrap_col);
+}		
 
 	return old_wrap_col;
 }
@@ -407,9 +414,7 @@ Fl_Menu_Item FTextView::view_menu[] = {
 	{ make_icon_label(ENTER_SYMBOL _("&Locator"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(ENTER_SYMBOL _("&RST(r)"), enter_key_icon), 0, 0, 0,  FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ make_icon_label(ENTER_SYMBOL _("Serial number"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(ENTER_SYMBOL _("Exchange &1"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(ENTER_SYMBOL _("Exchange &2"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(ENTER_SYMBOL _("Exchange &3"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL _("Exchange In"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ make_icon_label(_("Insert divider"), insert_link_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(_("&Copy"), edit_copy_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(_("C&lear"), edit_clear_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
@@ -699,7 +704,7 @@ void FTextView::handle_context_menu(void)
 	}
 	else {
 		view_menu[RX_MENU_CALL].flags |= FL_MENU_DIVIDER;
-		for (size_t i = RX_MENU_NAME; i <= RX_MENU_RST_IN; i++)
+		for (size_t i = RX_MENU_NAME; i <= (progStatus.contest ? RX_MENU_LOC : RX_MENU_RST_IN); i++)
 			view_menu[i].hide();
 	}
 
@@ -712,12 +717,13 @@ void FTextView::handle_context_menu(void)
 	else
 		view_menu[RX_MENU_WRAP].clear();
 
-	// toggle visibility of contest items
-	for (size_t i = RX_MENU_SERIAL; i <= RX_MENU_X3; i++)
-		if (progStatus.contest)
-			view_menu[i].show();
-		else
-			view_menu[i].hide();
+	if (progStatus.contest) {
+			view_menu[RX_MENU_SERIAL].show();
+			view_menu[RX_MENU_XCHG].show();
+	} else {
+			view_menu[RX_MENU_SERIAL].hide();
+			view_menu[RX_MENU_XCHG].hide();
+	}
 
 	if (progdefaults.QRZ != QRZNONE)
 		view_menu[RX_MENU_QRZ_THIS].show();
@@ -767,14 +773,8 @@ void FTextView::menu_cb(int val)
 	case RX_MENU_SERIAL:
 		input = inpSerNo;
 		break;
-	case RX_MENU_X1:
-		input = inpXchg1;
-		break;
-	case RX_MENU_X2:
-		input = inpXchg2;
-		break;
-	case RX_MENU_X3:
-		input = inpXchg3;
+	case RX_MENU_XCHG:
+		input = inpXchgIn;
 		break;
 
 	case RX_MENU_DIV:

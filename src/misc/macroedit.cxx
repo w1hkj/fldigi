@@ -70,9 +70,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add("<CNTR>\tcontest cnt");
 	w->add("<DECR>\tdecr cnt");
 	w->add("<INCR>\tincr cnt");
-	w->add("<X1>\teXchange 1");
-	w->add("<X2>\teXchange 2");
-	w->add("<X3>\teXchange 3");
+	w->add("<XOUT>\tExchange out");
 
 	w->add(LINE_SEP);
 	w->add("<ID>\tMode ID'r");

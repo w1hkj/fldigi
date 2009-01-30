@@ -114,9 +114,8 @@ void submit_ADIF(void)
 	putadif(GRIDSQUARE, inpLoc_log->value());
 	putadif(STX, inpSerNoOut_log->value());
 	putadif(SRX, inpSerNoIn_log->value());
-	putadif(XCHG1, inpXchg1_log->value());
-	putadif(XCHG2, inpXchg2_log->value());
-	putadif(XCHG3, inpXchg3_log->value());
+	putadif(XCHG1, inpXchgIn_log->value());
+	putadif(MYXCHG, inpMyXchg_log->value());
 	putadif(COMMENT, inpComment_log->value());
 // these fields will always be blank unless they are added to the main
 // QSO log area.
@@ -165,8 +164,7 @@ static void send_IPC_log(void)
 	addtomsg("locator:",	inpLoc_log->value());
 	addtomsg("serialout:",	inpSerNoOut_log->value());
 	addtomsg("serialin:",	inpSerNoIn_log->value());
-	addtomsg("free1:",		inpXchg1_log->value());
-	addtomsg("free2:",		inpXchg2_log->value());
+	addtomsg("free1:",		inpXchgIn_log->value());
 	addtomsg("notes:",		inpComment_log->value());
 	addtomsg("power:",		inpTX_pwr_log->value());
 	

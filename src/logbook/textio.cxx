@@ -60,9 +60,8 @@ void cTextFile::writeCSVHeader(FILE *txtFile)
 	if (btnSelectComment->value())   fprintf (txtFile, "COMMENT\t");
 	if (btnSelectSerialIN->value())  fprintf (txtFile, "SERIAL RCVD\t");
 	if (btnSelectSerialOUT->value()) fprintf (txtFile, "SERIAL_SENT\t");
-	if (btnSelectXchg1->value())     fprintf (txtFile, "XCHG1\t");
-	if (btnSelectXchg2->value())     fprintf (txtFile, "XCHG2\t");
-	if (btnSelectXchg3->value())     fprintf (txtFile, "XCHG3");
+	if (btnSelectXchgIn->value())     fprintf (txtFile, "XCHG1\t");
+	if (btnSelectMyXchg->value())    fprintf (txtFile, "MYXCHG");
 	fprintf (txtFile, szEOL);
 }
 
@@ -124,12 +123,10 @@ int cTextFile::writeCSVFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, "%s\t", pRec->getField(SRX));
 				if (btnSelectSerialOUT->value())
 					fprintf (txtFile, "%s\t", pRec->getField(STX));
-				if (btnSelectXchg1->value())
+				if (btnSelectXchgIn->value())
 					fprintf (txtFile, "%s\t", pRec->getField(XCHG1));
-				if (btnSelectXchg2->value())
-					fprintf (txtFile, "%s\t", pRec->getField(XCHG2));
-				if (btnSelectXchg3->value())
-					fprintf (txtFile, "%s", pRec->getField(XCHG3));
+				if (btnSelectMyXchg->value())
+					fprintf (txtFile, "%s", pRec->getField(MYXCHG));
 				fprintf (txtFile, szEOL);
 				pRec->putField(EXPORT,"");
 				db->qsoUpdRec(i, pRec);
@@ -167,9 +164,8 @@ void cTextFile::writeTXTHeader(FILE *txtFile)
 	if (btnSelectComment->value())   fprintf (txtFile, "%-80s", "COMMENT");
 	if (btnSelectSerialIN->value())  fprintf (txtFile, "%-7s", "SRX");
 	if (btnSelectSerialOUT->value()) fprintf (txtFile, "%-7s", "STX");
-	if (btnSelectXchg1->value())     fprintf (txtFile, "%-15s", "XCHG1");
-	if (btnSelectXchg2->value())     fprintf (txtFile, "%-15s", "XCHG2");
-	if (btnSelectXchg3->value())     fprintf (txtFile, "%-15s", "XCHG3");
+	if (btnSelectXchgIn->value())     fprintf (txtFile, "%-15s", "XCHG1");
+	if (btnSelectMyXchg->value())     fprintf (txtFile, "%-15s", "MYXCHG");
 	fprintf (txtFile, szEOL);
 }
 
@@ -231,12 +227,10 @@ int cTextFile::writeTXTFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, "%-7s", pRec->getField(SRX));
 				if (btnSelectSerialOUT->value())
 					fprintf (txtFile, "%-7s", pRec->getField(STX));
-				if (btnSelectXchg1->value())
+				if (btnSelectXchgIn->value())
 					fprintf (txtFile, "%-15s", pRec->getField(XCHG1));
-				if (btnSelectXchg2->value())
-					fprintf (txtFile, "%-15s", pRec->getField(XCHG2));
-				if (btnSelectXchg3->value())
-					fprintf (txtFile, "%-15s", pRec->getField(XCHG3));
+				if (btnSelectMyXchg->value())
+					fprintf (txtFile, "%-15s", pRec->getField(MYXCHG));
 				fprintf (txtFile, szEOL);
 				pRec->putField(EXPORT,"");
 				db->qsoUpdRec(i, pRec);

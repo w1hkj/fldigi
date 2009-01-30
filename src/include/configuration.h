@@ -245,15 +245,11 @@
         ELEM_(bool, dupband, "DUPBAND", true)                                           \
         ELEM_(bool, dupstate, "DUPSTATE", false)                                        \
         ELEM_(bool, dupxchg1, "DUPXCHG1", false)                                        \
-        ELEM_(bool, dupxchg2, "DUPXCHG2", false)                                        \
-        ELEM_(bool, dupxchg3, "DUPXCHG3", false)                                        \
         ELEM_(bool, duptimespan, "DUPTIMESPAN", false)                                  \
         ELEM_(int, timespan, "TIMESPAN", 120)                                           \
         ELEM_(int, ContestStart, "CONTESTSTART", 0)                                     \
         ELEM_(int, ContestDigits, "CONTESTDIGITS", 4)                                   \
-        ELEM_(std::string, Xchg1, "XCGH1", "")                                          \
-        ELEM_(std::string, Xchg2, "XCGH2", "")                                          \
-        ELEM_(std::string, Xchg3, "XCGH3", "")                                          \
+        ELEM_(std::string, myXchg, "MYXCGH", "")                                        \
         ELEM_(std::string, mytxpower, "TXPOWER", "")                                    \
 /* Macro timer constants and controls */                                                \
         ELEM_(bool, useTimer, "USETIMER", false)                                        \
