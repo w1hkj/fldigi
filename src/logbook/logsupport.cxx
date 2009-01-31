@@ -701,80 +701,72 @@ void cb_Export_Cabrillo(Fl_Menu_* m, void* d) {
 
 void cabrillo_append_qso (FILE *fp, cQsoRec *rec)
 {
-	char rst_in[16] = "", 
-		 exch_in[16] = "", 
-		 rst_out[16] = "", 
-		 exch_out[16] = "", 
-		 date[16] = "",
-		 year[16] = "",
-		 month[16] = "",
-		 day[15] = "", 
-		 time[16] = "", 
-		 mode[16] = "",
-		 freq[16] = "";
+	string rst_in, rst_out, exch_in, exch_out, date, time, mode, mycall, call;
+	char freq[16] = "";
+		   
 	int rst_len = 3;
 	int ifreq = 0;
 	
+	mycall = progdefaults.myCall;
+	if (mycall.length() > 13) mycall = mycall.substr(0,13);
+
+	if (btnCabCall->value()) {
+		call = rec->getField(CALL);
+		if (call.length() > 13) call = call.substr(0,13);
+	}
+			
 	if (btnCabMode->value()) {
-		strcpy (mode, rec->getField(MODE));
-		if (!strcmp (mode, "USB") || !strcmp (mode, "LSB") || !strcmp (mode, "SSB"))
-			strcpy(mode,"PH");
-		else if (!strcmp (mode, "RTTY"))
-			strcpy(mode,"RY");
-		else if (!strcmp (mode, "FM") || !strcmp (mode, "CW")) ;
-		else strcpy(mode,"  ");
-		if (!strcmp (mode, "SSB") || !strcmp (mode, "USB")
-				|| !strcmp (mode, "LSB") || !strcmp (mode, "FM"))
-			rst_len = 2;
+		mode = rec->getField(MODE);
+		if (mode.compare("USB") == 0 || mode.compare("LSB") == 0 || 
+		    mode.compare("PH") == 0 ) mode = "PH";
+		else if (mode.compare("FM") == 0 || mode.compare("CW") == 0 ) ;
+		else mode = "RY";
+		if (mode.compare("PH") == 0 || mode.compare("FM") == 0 ) rst_len = 2;
 	}
 	
 	if (btnCabRSTrcvd->value()) {
-		strncpy (rst_in, rec->getField(RST_RCVD), rst_len);
-		rst_in[rst_len] = '\0';
-		strncpy (rst_out, rec->getField(RST_SENT), rst_len);
-		rst_out[rst_len] = '\0';
+		rst_in = rec->getField(RST_RCVD);
+		rst_in = rst_in.substr(0,rst_len);
+		rst_out = rec->getField(RST_SENT);
+		rst_out = rst_out.substr(0,rst_len);
 	}
 
 	if (btnCabSerialIN->value()) {
-		strcpy (exch_in, rec->getField(SRX));
-		if (strlen(exch_in) > 0)
-			strcat (exch_in, " ");
+		exch_in = rec->getField(SRX);
+		if (exch_in.length())
+			exch_in += ' ';
 	}
 	if (btnCabXchgIn->value())
-		strcat (exch_in, rec->getField(XCHG1));
+		exch_in.append(rec->getField(XCHG1));
+	if (exch_in.length() > 10) exch_in = exch_in.substr(0,10);
 
 	if (btnCabSerialOUT->value()) {
-		strcpy (exch_out, rec->getField(STX));
-		if (strlen(exch_out) > 0)
-			strcat (exch_out, " ");
+		exch_out = rec->getField(STX);
+		if (exch_out.length())
+			exch_out += ' ';
 	}
 	if (btnCabMyXchg->value())
-		strcat (exch_out, rec->getField(MYXCHG));
-
+		exch_out.append(rec->getField(MYXCHG));
+	if (exch_out.length() > 10) exch_out = exch_out.substr(0,10);
+	
 	if (btnCabFreq->value()) {
 		ifreq = (int)(1000.0 * atof(rec->getField(FREQ)));
 		snprintf(freq, sizeof(freq), "%d", ifreq);
 	}
 	
 	if (btnCabQSOdate->value()) {
-		strcpy (date, rec->getField(QSO_DATE));
-		strcpy (year, date); year[4] = 0;
-		strcpy (month, &date[4]); month[2] = 0;
-		strcpy (day, &date[6]); day[2] = 0;
-		date[4] = 0;
-		strcat(date,"-"); strcat(date,month);
-		strcat(date,"-"); strcat(date,day);
+		date = rec->getField(QSO_DATE);
+		date.insert(4,"-");
+		date.insert(7,"-");
 	}
 	
 	if (btnCabTimeOFF->value())
-		strcpy (time, rec->getField(TIME_OFF));
+		time = rec->getField(TIME_OFF);
 
-	fprintf (fp, "QSO: %-5s %-3s%-11s%-5s%-14s%-4s%-7s%-14s%-4s%-7s\n",
-		freq, mode, date, time,
-		progdefaults.myCall.c_str(), 
-		rst_out, exch_out, 
-		btnCabCall->value() ? rec->getField(CALL) : "", 
-		rst_in, exch_in);
+	fprintf (fp, "QSO: %-5s %-2s %-10s %-4s %-13s %-3s %-10s %-13s %-3s %-10s\n",
+		freq, mode.c_str(), date.c_str(), time.c_str(), 
+		mycall.c_str(), rst_out.c_str(), exch_out.c_str(), 
+		call.c_str(), rst_in.c_str(), exch_in.c_str() );
 	return;
 }
 
