@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fldigi 3.04AZ\n"
 "Report-Msgid-Bugs-To: w1hkj AT w1hkj DOT com\n"
-"POT-Creation-Date: 2009-01-29 16:09-0600\n"
+"POT-Creation-Date: 2009-01-31 15:09-0600\n"
 "PO-Revision-Date: 2008-11-25 07:16+0000\n"
 "Last-Translator: Stephane Fillod <fillods@users.sourceforge.net>\n"
 "Language-Team: French\n"
@@ -521,19 +521,19 @@ msgid "Az"
 msgstr ""
 
 #: src/dialogs/fl_digi.cxx:2412
-msgid "#In"
-msgstr ""
-
-#: src/dialogs/fl_digi.cxx:2416
-msgid "Received serial number"
-msgstr ""
-
-#: src/dialogs/fl_digi.cxx:2418
 msgid "#Out"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2422
+#: src/dialogs/fl_digi.cxx:2416
 msgid "Sent serial number (read only)"
+msgstr ""
+
+#: src/dialogs/fl_digi.cxx:2419
+msgid "#In"
+msgstr ""
+
+#: src/dialogs/fl_digi.cxx:2423
+msgid "Received serial number"
 msgstr ""
 
 #: src/dialogs/fl_digi.cxx:2425
