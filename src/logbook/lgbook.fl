@@ -481,9 +481,11 @@ WriteCabrillo();}
       xywh {390 4 258 303} box ENGRAVED_FRAME align 21
     } {
       Fl_Group cboContest {
-        label {Contest:} open selected
+        label {Contest:}
+        callback {setContestType();} open selected
         xywh {460 35 180 20} box BORDER_BOX color 7 align 4
         code0 {\#include "combo.h"}
+        code1 {extern void setContestType();}
         class Fl_ComboBox
       } {}
       Fl_Check_Button btnCabCall {

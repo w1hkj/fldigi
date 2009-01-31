@@ -274,6 +274,10 @@ static void cb_btnCabCancel(Fl_Button*, void*) {
 
 Fl_ComboBox *cboContest=(Fl_ComboBox *)0;
 
+static void cb_cboContest(Fl_ComboBox*, void*) {
+  setContestType();
+}
+
 Fl_Check_Button *btnCabCall=(Fl_Check_Button *)0;
 
 Fl_Check_Button *btnCabFreq=(Fl_Check_Button *)0;
@@ -880,6 +884,7 @@ dlgLogbook->xclass(PACKAGE_TARNAME);
         cboContest->labelfont(0);
         cboContest->labelsize(14);
         cboContest->labelcolor(FL_FOREGROUND_COLOR);
+        cboContest->callback((Fl_Callback*)cb_cboContest);
         cboContest->align(FL_ALIGN_LEFT);
         cboContest->when(FL_WHEN_RELEASE);
         cboContest->end();

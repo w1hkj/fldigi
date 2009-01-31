@@ -91,6 +91,7 @@ extern Fl_Button *btnCabCheckAll;
 extern Fl_Return_Button *btnCabOK;
 extern Fl_Button *btnCabCancel;
 #include "combo.h"
+extern void setContestType();
 extern Fl_ComboBox *cboContest;
 extern Fl_Check_Button *btnCabCall;
 extern Fl_Check_Button *btnCabFreq;
