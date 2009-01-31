@@ -145,8 +145,8 @@ void cb_mnuOpenLogbook(Fl_Menu_* m, void* d)
 		progdefaults.logbookfilename = logbook_filename;
 		progdefaults.changed = true;
 		adifFile.readFile (logbook_filename.c_str(), &qsodb);
-		loadBrowser();
 		qsodb.isdirty(0);
+		loadBrowser();
 		dlgLogbook->label(fl_filename_name(logbook_filename.c_str()));
 	}
 }
@@ -471,6 +471,9 @@ cQsoRec rec;
 	rec.putField(DXCC, inpDXCC_log->value());
 	rec.putField(TX_PWR, inpTX_pwr_log->value());
 	
+	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
+	qsodb.isdirty(0);
+	
 	qsodb.qsoNewRec (&rec);
 }
 
@@ -502,7 +505,8 @@ cQsoRec rec;
 	rec.putField(DXCC, inpDXCC_log->value());
 	rec.putField(TX_PWR, inpTX_pwr_log->value());
 	qsodb.qsoUpdRec (editNbr, &rec);
-	qsodb.isdirty(1);
+	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
+	qsodb.isdirty(0);
 	loadBrowser(true);
 }
 
@@ -512,8 +516,10 @@ void deleteRecord () {
 		return;
 
 	qsodb.qsoDelRec(editNbr);
+	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
+	qsodb.isdirty(0);
+	
 	loadBrowser(true);
-	qsodb.isdirty(1);
 }
 
 void EditRecord( int i )
@@ -585,6 +591,9 @@ void AddRecord ()
 	
 	saveRecord();
 	qsodb.SortByDate();
+	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
+	qsodb.isdirty(0);
+	
 	loadBrowser();
 	logState = VIEWREC;
 	activateButtons();
