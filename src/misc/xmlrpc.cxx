@@ -65,6 +65,7 @@
 #include "debug.h"
 #include "re.h"
 #include "pskrep.h"
+#include "Viewer.h"
 
 LOG_SET_SOURCE(debug::LOG_RPC);
 
@@ -1600,6 +1601,37 @@ public:
 	}
 };
 
+class Pskviewer_open : public xmlrpc_c::method
+{
+public:
+	Pskviewer_open()
+	{
+		_signature = "n:n";
+		_help = "Opens the PSK Viewer.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+	        openViewer();
+		*retval = xmlrpc_c::value_nil();
+	}
+};
+
+class Pskviewer_close : public xmlrpc_c::method
+{
+public:
+	Pskviewer_close()
+	{
+		_signature = "n:n";
+		_help = "Closes the PSK Viewer.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+	        closeViewer();
+		*retval = xmlrpc_c::value_nil();
+	}
+};
+
+
 // =============================================================================
 
 // End XML-RPC interface
@@ -1677,14 +1709,14 @@ public:
 	ELEM_(Main_get_max_macro_id, "main.get_max_macro_id")		\
 									\
 	ELEM_(Log_get_freq, "log.get_frequency")			\
-	ELEM_(Log_get_time_on, "log.get_time_on")				\
-	ELEM_(Log_get_time_off, "log.get_time_off")				\
+	ELEM_(Log_get_time_on, "log.get_time_on")			\
+	ELEM_(Log_get_time_off, "log.get_time_off")			\
 	ELEM_(Log_get_call, "log.get_call")				\
 	ELEM_(Log_get_name, "log.get_name")				\
 	ELEM_(Log_get_rst_in, "log.get_rst_in")				\
 	ELEM_(Log_get_rst_out, "log.get_rst_out")			\
 	ELEM_(Log_get_serial_number, "log.get_serial_number")		\
-	ELEM_(Log_get_state, "log.get_state")			\
+	ELEM_(Log_get_state, "log.get_state")			        \
 	ELEM_(Log_get_province, "log.get_province")			\
 	ELEM_(Log_get_country, "log.get_country")			\
 	ELEM_(Log_get_qth, "log.get_qth")				\
@@ -1696,6 +1728,9 @@ public:
 	ELEM_(Log_clear, "log.clear")					\
 	ELEM_(Log_set_call, "log.set_call")				\
 									\
+	ELEM_(Pskviewer_open, "pskviewer.open")                         \
+	ELEM_(Pskviewer_close, "pskviewer.close")                       \
+                                                                        \
 	ELEM_(Text_get_rx_length, "text.get_rx_length")			\
 	ELEM_(Text_get_rx, "text.get_rx")				\
 	ELEM_(Text_clear_rx, "text.clear_rx")				\

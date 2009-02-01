@@ -174,6 +174,10 @@ static void evalcwidth()
 }
 
 static void cb_btnCloseViewer(Fl_Button*, void*) {
+        closeViewer();
+}
+
+void closeViewer() {
 	progStatus.VIEWERxpos = dlgViewer->x();
 	progStatus.VIEWERypos = dlgViewer->y();
 	dlgViewer->hide();
