@@ -912,6 +912,7 @@ void carrier_cb(Fl_Widget *w, void *v) {
 	Fl_Counter *cntr = (Fl_Counter *)w;
 	waterfall *wf = (waterfall *)w->parent();
 	int selfreq = (int) cntr->value();
+	stopMacroTimer();
 	active_modem->set_freq(selfreq);
 	wf->wfdisp->carrier(selfreq);
 	restoreFocus();
@@ -1549,8 +1550,6 @@ int WFdisp::handle(int event)
 	int ypos = Fl::event_y() - y();
 	int eb;
 
-	stopMacroTimer();
-	
 	switch (event) {
 	case FL_MOVE:
 		if (progdefaults.WaterfallQSY && ypos < WFTEXT + WFSCALE) {
@@ -1573,6 +1572,8 @@ int WFdisp::handle(int event)
 		redrawCursor();
 		break;
 	case FL_DRAG: case FL_PUSH:
+		stopMacroTimer();
+	
 		switch (eb = Fl::event_button()) {
 		case FL_RIGHT_MOUSE:
 			wantcursor = false;
@@ -1659,6 +1660,8 @@ int WFdisp::handle(int event)
 
 	case FL_MOUSEWHEEL:
 	{
+		stopMacroTimer();
+	
 		int d;
 		if ( !((d = Fl::event_dy()) || (d = Fl::event_dx())) )
 			break;
@@ -1683,6 +1686,8 @@ int WFdisp::handle(int event)
 		break;
 	case FL_KEYBOARD:
 	{
+		stopMacroTimer();
+	
 		int d = (Fl::event_state() & FL_CTRL) ? 10 : 1;
 		int k = Fl::event_key();
 		switch (k) {
