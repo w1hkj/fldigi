@@ -54,7 +54,6 @@ void wwv::rx_init()
 	zoom = false;
 	set_scope_mode(Digiscope::WWV);
 	put_MODEstatus(mode);
-	set_AFCind(0.0);
 }
 
 void wwv::init()

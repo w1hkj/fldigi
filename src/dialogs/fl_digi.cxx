@@ -57,7 +57,6 @@
 #include "waterfall.h"
 #include "raster.h"
 #include "progress.h"
-#include "afcind.h"
 #include "rigdialog.h"
 
 #include "main.h"
@@ -204,10 +203,6 @@ Fl_Button			*btnQRZ;
 Fl_Group			*MixerFrame;
 Fl_Value_Slider			*valRcvMixer;
 Fl_Value_Slider			*valXmtMixer;
-
-// AFC indicator useful during modem debugging
-// adds confusion factor to normal operations
-//AFCind				*AFCindicator;
 
 #define FREQWIDTH 172  // FREQWIDTH should be a multiple of 9 + 10
 #define FREQHEIGHT 30
@@ -2673,11 +2668,6 @@ void create_fl_digi_main() {
 			WARNstatus->labelcolor(FL_RED);
 			WARNstatus->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE);
 				
-//			AFCindicator = new AFCind(
-//				rightof(WARNstatus), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
-//				60,
-//				Hstatus, "");
-
 			int sql_width = bwSqlOnOff;
 #ifdef __APPLE__
 			sql_width -= 15; // leave room for resize handle
@@ -3266,16 +3256,6 @@ void abort_tx()
 	}
 	else if (trx_state == STATE_TX)
 		trx_start_modem(active_modem);
-}
-
-void set_AFCind(double val)
-{
-//	REQ (&AFCind::value, AFCindicator, val );
-}
-
-void set_AFCrange(double val)
-{
-//	REQ (&AFCind::range, AFCindicator, val);
 }
 
 // Adjust and return fg color to ensure good contrast with bg

@@ -82,8 +82,6 @@ void dominoex::rx_init()
 	Mu_datashreg = 1;
 	
 	staticburst = false;
-	set_AFCrange(0.1);
-	set_AFCind(0.0);
 }
 
 void dominoex::reset_filters()
@@ -503,8 +501,6 @@ void dominoex::synchronize()
 
 	synccounter += (int) floor(1.0 * (syn - symlen) / NUMTONES + 0.5);
 	
-	set_AFCind(1.0 * (synccounter - symlen) / symlen);
-
 	update_syncscope();
 }
 

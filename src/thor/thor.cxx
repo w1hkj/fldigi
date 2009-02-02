@@ -71,8 +71,6 @@ void thor::rx_init()
 	put_sec_char(0);
 	syncfilter->reset();
 	datashreg = 1;
-	set_AFCrange(0.1);
-	set_AFCind(0.0);
 }
 
 void thor::reset_filters()
@@ -464,8 +462,6 @@ void thor::synchronize()
 	syn = syncfilter->run(syn);
 
 	synccounter += (int) floor(1.0 * (syn - symlen) / THORNUMTONES + 0.5);
-
-	set_AFCind(1.0 * (synccounter - symlen) / symlen);
 
 	update_syncscope();
 

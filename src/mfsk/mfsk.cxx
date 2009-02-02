@@ -32,7 +32,6 @@
 
 #include "mfsk.h"
 #include "modem.h"
-#include "afcind.h"
 
 #include "configuration.h"
 #include "status.h"
@@ -78,7 +77,6 @@ void  mfsk::rx_init()
 	memset(picheader, ' ', PICHEADER - 1);
 	picheader[PICHEADER -1] = 0;
 	put_MODEstatus(mode);
-	set_AFCrange (tonespacing / 10.0);
 	syncfilter->reset();
 	staticburst = false;
 }
@@ -640,7 +638,6 @@ void mfsk::afc()
 	if ( fabs(f1 - f) < ts) {
 		freqerr = decayavg(freqerr, (f1 - f), 32);
 		set_freq(frequency - freqerr);
-		set_AFCind( freqerr );
 	}
 
 }

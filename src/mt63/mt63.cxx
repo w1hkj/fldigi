@@ -53,7 +53,6 @@ void mt63::rx_init()
 	set_freq(500.0 + bandwidth / 2.0);
 	InpLevel->Preset(64.0, 0.75);
 	escape = 0;
-	set_AFCind(0.0);
 }
 
 double peak = 0.0;

@@ -158,8 +158,6 @@ extern void put_MODEstatus(const char* fmt, ...) format__(printf, 1, 2);
 extern void put_MODEstatus(trx_mode mode);
 extern void put_Status1(const char *msg, double timeout = 0.0, status_timeout action = STATUS_CLEAR);
 extern void put_Status2(const char *msg, double timeout = 0.0, status_timeout action = STATUS_CLEAR);
-extern void set_AFCind( double val );
-extern void set_AFCrange(double val);
 
 extern void show_frequency(long long);
 extern void show_mode(const string& mode);

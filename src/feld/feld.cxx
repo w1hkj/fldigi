@@ -69,7 +69,6 @@ void feld::rx_init()
 	peakhold = 0.0;
 	minhold = 1.0;
 	agc = 0.0;
-	set_AFCind(0.0);
 	return;
 }
 
