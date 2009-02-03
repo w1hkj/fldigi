@@ -238,6 +238,7 @@ fldigi_SOURCES += \
 	include/rsid.h \
 	include/rtty.h \
 	include/rx_extract.h \
+	include/speak.h \
 	include/serial.h \
 	include/socket.h \
 	include/sound.h \
@@ -287,6 +288,7 @@ fldigi_SOURCES += \
 	logbook/textio.cxx \
 	logger/logger.cxx \
 	logger/rx_extract.cxx \
+	logger/speak.cxx \
 	main.cxx \
 	mfsk/interleave.cxx \
 	mfsk/mfsk.cxx \

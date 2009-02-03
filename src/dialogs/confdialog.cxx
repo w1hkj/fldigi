@@ -1951,6 +1951,15 @@ static void cb_chkAutoExtract(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Group *tabRxStream=(Fl_Group *)0;
+
+Fl_Check_Button *chkRxStream=(Fl_Check_Button *)0;
+
+static void cb_chkRxStream(Fl_Check_Button* o, void*) {
+  progdefaults.speak = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabQRZ=(Fl_Group *)0;
 
 Fl_Round_Button *btnQRZcdrom=(Fl_Round_Button *)0;
@@ -4018,6 +4027,7 @@ l with your sound hardware."));
         { tabsMisc = new Fl_Tabs(0, 25, 500, 345);
           tabsMisc->selection_color(FL_LIGHT1);
           { tabSweetSpot = new Fl_Group(0, 50, 500, 320, _("Sweet Spot"));
+            tabSweetSpot->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 75);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -4176,6 +4186,20 @@ l with your sound hardware."));
             } // Fl_Group* o
             tabFileExtraction->end();
           } // Fl_Group* tabFileExtraction
+          { tabRxStream = new Fl_Group(0, 50, 500, 320, _("RxText"));
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 97, _("Send rx stream to external file"));
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { Fl_Check_Button* o = chkRxStream = new Fl_Check_Button(162, 105, 175, 20, _("Enable rx text stream"));
+                chkRxStream->tooltip(_("Send rx text to file: textout.txt"));
+                chkRxStream->down_box(FL_DOWN_BOX);
+                chkRxStream->callback((Fl_Callback*)cb_chkRxStream);
+                o->value(progdefaults.speak);
+              } // Fl_Check_Button* chkRxStream
+              o->end();
+            } // Fl_Group* o
+            tabRxStream->end();
+          } // Fl_Group* tabRxStream
           tabsMisc->end();
         } // Fl_Tabs* tabsMisc
         tabMisc->end();

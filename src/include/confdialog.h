@@ -283,6 +283,8 @@ extern Fl_Group *tabCPUspeed;
 extern Fl_Check_Button *chkSlowCpu;
 extern Fl_Group *tabFileExtraction;
 extern Fl_Check_Button *chkAutoExtract;
+extern Fl_Group *tabRxStream;
+extern Fl_Check_Button *chkRxStream;
 extern Fl_Group *tabQRZ;
 extern Fl_Round_Button *btnQRZcdrom;
 extern Fl_Input2 *txtQRZpathname;

@@ -2258,7 +2258,7 @@ OFF - limit search to +/- 200 Hz} xywh {215 246 270 20} down_box DOWN_BOX
         } {
           Fl_Group tabSweetSpot {
             label {Sweet Spot} open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {5 60 490 75} box ENGRAVED_FRAME align 21
@@ -2428,6 +2428,23 @@ progdefaults.changed = true;}
                 label label
                 xywh {15 85 465 62} align 21
                 code0 {o->label(txtExtract);}
+              }
+            }
+          }
+          Fl_Group tabRxStream {
+            label RxText open
+            xywh {0 50 500 320}
+          } {
+            Fl_Group {} {
+              label {Send rx stream to external file} open
+              xywh {5 60 490 97} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Check_Button chkRxStream {
+                label {Enable rx text stream}
+                callback {progdefaults.speak = o->value();
+progdefaults.changed = true;}
+                tooltip {Send rx text to file: textout.txt} xywh {162 105 175 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.speak);}
               }
             }
           }

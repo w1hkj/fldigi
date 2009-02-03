@@ -165,6 +165,7 @@
         ELEM_(bool, autofill_qso_fields, "AUTOFILLQSO", false)                          \
         ELEM_(bool, calluppercase, "CALLUPPERCASE", false)                              \
         ELEM_(bool, autoextract, "AUTOEXTRACT", false)                                  \
+        ELEM_(bool, speak, "SPEAK", false)                                              \
 /* QRZ */                                                                               \
         ELEM_(int, QRZ, "QRZTYPE", 0) /* Not available */                               \
         ELEM_(std::string, QRZpathname, "QRZPATHNAME", "")                              \
