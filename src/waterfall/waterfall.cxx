@@ -604,7 +604,9 @@ void WFdisp::drawScale() {
 	double fr;
 	uchar *pixmap;
 	
-	if (usb || !rfc)
+	if (progdefaults.wf_audioscale)
+		pixmap = (scaleimage + (int)offset);
+	else if (usb || !rfc)
 		pixmap = (scaleimage +  (int)((rfc % 1000 + offset)) );
 	else
 		pixmap = (scaleimage + (int)((1000 - rfc % 1000 + offset)));
@@ -634,7 +636,9 @@ void WFdisp::drawScale() {
 		else
 			snprintf(szFreq, sizeof(szFreq), "%7.1f", fr);
 		fw = (int)fl_width(szFreq);
-		if (usb || progdefaults.wf_audioscale)
+		if (progdefaults.wf_audioscale)
+			xchar = (int) (( (1000.0/step) * i - fw) / 2.0 - offset /step );
+		else if (usb)
 			xchar = (int) ( ( (1000.0/step) * i - fw) / 2.0 - 
 							(offset + rfc % 500) /step );
 		else
