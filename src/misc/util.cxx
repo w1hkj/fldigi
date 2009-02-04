@@ -1,5 +1,6 @@
 #include <config.h>
 
+#include <string.h>
 #include "util.h"
 
 /* Return the smallest power of 2 not less than n */
@@ -27,30 +28,21 @@ uint32_t floor2(uint32_t n)
         return n - (n >> 1);
 }
 
-#include <string.h>
 #include <stdlib.h>
-#include <ctype.h>
-long ver2int(const char* version)
+unsigned long ver2int(const char* version)
 {
-	long v = 0L, mult = 1000000000L;
+	unsigned long v;
+	char* p;
 
-	for (const char* p = version; *p; p++) {
-		if (isdigit(*p)) {
-			v += (*p - '0') * mult;
-			mult /= 10L;
-		}
-		else if (*p == '.')
-			mult /= 10L;
-		else
-			v += *p;
-	}
+	v = (unsigned long)(strtod(version, &p) * 1e7 + 0.5);
+	while (*p)
+		v += *p++;
 
 	return v;
 }
 
 #if !HAVE_STRCASESTR
 #  include <ctype.h>
-#  include <string.h>
 // a simple inefficient implementation of strcasestr
 char* strcasestr(const char* haystack, const char* needle)
 {

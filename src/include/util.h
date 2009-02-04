@@ -111,7 +111,7 @@ char* strcasestr(const char* haystack, const char* needle);
 
 int set_cloexec(int fd, unsigned char v);
 
-long ver2int(const char* version);
+unsigned long ver2int(const char* version);
 
 void save_signals(void);
 void restore_signals(void);
