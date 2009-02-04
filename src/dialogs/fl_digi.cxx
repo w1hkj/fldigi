@@ -924,29 +924,25 @@ void cb_mnuSaveConfig(Fl_Menu_ *, void *) {
 	restoreFocus();
 }
 
+// This function may be called by the QRZ thread
 void cb_mnuVisitURL(Fl_Widget*, void* arg)
 {
 	const char* url = reinterpret_cast<const char *>(arg);
 #ifndef __CYGWIN__
+	const char* browsers[] = {
+		getenv("FLDIGI_BROWSER"),
 #  ifdef __APPLE__
-	const char* browsers[] = { "open" };
+		"open"
 #  else
-	const char* browsers[] = { getenv("FLDIGI_BROWSER"), "xdg-open", getenv("BROWSER"),
-				   "sensible-brower", "firefox", "mozilla" };
+		"xdg-open", getenv("BROWSER"), "sensible-brower", "firefox", "mozilla"
+	};
 #  endif
-	int pfd[2];
-	if (pipe(pfd) == -1) {
-		LOG_PERROR("pipe");
-		return;
-	}
 	switch (fork()) {
 	case 0:
 #  ifndef NDEBUG
 		unsetenv("MALLOC_CHECK_");
 		unsetenv("MALLOC_PERTURB_");
 #  endif
-		close(pfd[0]);
-		set_cloexec(pfd[1], 1);
 		for (size_t i = 0; i < sizeof(browsers)/sizeof(browsers[0]); i++)
 			if (browsers[i])
 				execlp(browsers[i], browsers[i], url, (char*)0);
@@ -955,11 +951,6 @@ void cb_mnuVisitURL(Fl_Widget*, void* arg)
 		fl_alert(_("Could not run a web browser:\n%s\n\n"
 			 "Open this URL manually:\n%s"),
 			 strerror(errno), url);
-		break;
-	default:
-		close(pfd[1]);
-		read(pfd[0], &pfd[1], 1);
-		close(pfd[0]);
 	}
 #else
 	// gurgle... gurgle... HOWL
@@ -972,7 +963,6 @@ void cb_mnuVisitURL(Fl_Widget*, void* arg)
 	if ((int)ShellExecute(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL) <= 32)
 		fl_alert(_("Could not open url:\n%s\n"), url);
 #endif
-//	REQ (restoreFocus());
 }
 
 void cb_mnuVisitPSKRep(Fl_Widget*, void*)
