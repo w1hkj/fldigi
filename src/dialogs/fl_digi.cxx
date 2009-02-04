@@ -1442,7 +1442,8 @@ void cb_QRZ(Fl_Widget *b, void *)
 		oktoclear = false;
 		break;
 	case FL_RIGHT_MOUSE:
-		if (quick_choice(string("Spot \"").append(inpCall->value()).append("\"?").c_str(), false))
+		if (quick_choice(string("Spot \"").append(inpCall->value()).append("\"?").c_str(),
+				 2, "Confirm", "Cancel", NULL) == 1)
 			spot_manual(inpCall->value(), inpLoc->value());
 		break;
 	default:
@@ -3295,8 +3296,38 @@ void qsy(long long rfc, long long fmid)
 		active_modem->set_freq(fmid);
 }
 
-bool quick_choice(const char* title, bool sel)
+unsigned quick_choice_menu(const char* title, unsigned sel, const Fl_Menu_Item* menu)
 {
-	Fl_Menu_Item m[] = { { _("Confirm") }, { _("Cancel") }, { 0 } };
-	return m->popup(Fl::event_x(), Fl::event_y(), title, m + !sel) == m;
+	unsigned n = menu->size();
+	sel = CLAMP(sel - 1, 0, n - 1);
+	int t = Fl_Tooltip::enabled();
+	Fl_Tooltip::disable();
+	const Fl_Menu_Item* p = menu->popup(Fl::event_x(), Fl::event_y(), title, menu + sel);
+	Fl_Tooltip::enable(t);
+	return p ? p - menu + 1 : 0;
+}
+
+unsigned quick_choice(const char* title, unsigned sel, ...)
+{
+	const char* item;
+	const Fl_Menu_Item* menu = NULL;
+	Fl_Menu_Item* p = NULL;
+
+	va_list ap;
+	va_start(ap, sel);
+	for (size_t n = 0; (item = va_arg(ap, const char*)); n++) {
+		if ((p = (Fl_Menu_Item*)realloc(p, (n+2) * sizeof(Fl_Menu_Item))) == NULL) {
+			free((Fl_Menu_Item*)menu);
+			return 0;
+		}
+		memset(p + n, 0, 2 * sizeof(Fl_Menu_Item));
+		p[n].label(item);
+		p[n+1].label(NULL);
+		menu = p;
+	}
+	va_end(ap);
+
+	sel = quick_choice_menu(title, sel, menu);
+	free(p);
+	return sel;
 }

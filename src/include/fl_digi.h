@@ -39,6 +39,7 @@
 #include <FL/Fl_Tile.H>
 #include <FL/Fl_Light_Button.H>
 #include <FL/Fl_Check_Button.H>
+#include <FL/Fl_Menu_Item.H>
 
 #include "combo.h"
 #include "FTextView.h"
@@ -212,6 +213,7 @@ extern void setTabColors();
 
 void qsy(long long rfc, long long fmid = -1LL);
 
-bool quick_choice(const char* title = 0, bool sel = true);
+unsigned quick_choice_menu(const char* title, unsigned sel, const Fl_Menu_Item* menu);
+unsigned quick_choice(const char* title, unsigned sel, ...);
 
 #endif
