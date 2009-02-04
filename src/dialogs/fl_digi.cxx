@@ -1012,9 +1012,9 @@ void cb_mnuCheckUpdate(Fl_Widget*, void*)
 		const char* url;
 		const char* re;
 		string version_str;
-		long version;
+		unsigned long version;
 	} sites[] = {
-		{ PACKAGE_HOME, "fldigi-distro/fldigi-([0-9.]+).tar.gz", "", 0 },
+		{ PACKAGE_DL, "fldigi-distro/fldigi-([0-9.]+).tar.gz", "", 0 },
 		{ PACKAGE_PROJ, "fldigi/fldigi-([0-9.]+).tar.gz", "", 0 }
 	}, *latest;
 	string reply;
