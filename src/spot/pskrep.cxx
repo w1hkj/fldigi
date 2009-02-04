@@ -64,7 +64,7 @@ LOG_SET_SOURCE(debug::LOG_SPOTTER);
 // It must define at least two capturing groups, the second of which is the
 // spotted callsign.
 #define CALLSIGN_RE "[[:alnum:]]?[[:alpha:]/]+[[:digit:]]+[[:alnum:]/]+"
-#ifdef __linux__
+#if HAVE_REGEX_BACKREF
 #  define PSKREP_RE "(de|cq|qrz)[^[:alnum:]/\n]+"  "(" CALLSIGN_RE ")"  " +(.* +)?\\2[^[:alnum:]]+$"
 #else
 #  define PSKREP_RE "(de|cq|qrz)[^[:alnum:]/\n]+"  "(" CALLSIGN_RE ")"  " +(.* +)?" \
@@ -350,7 +350,7 @@ void pskrep::recv(int afreq, const char* str, const regmatch_t* calls, size_t le
 	if (unlikely(calls[2].rm_so == -1 || calls[2].rm_eo == -1))
 		return;
 
-#ifndef __linux__ // workaround for systems without glibc's support for RE back refs
+#if !HAVE_REGEX_BACKREF // workaround for systems without support for RE back refs
 	if (calls[4].rm_eo - calls[4].rm_so != calls[2].rm_eo - calls[2].rm_so ||
 	    strncasecmp(str + calls[2].rm_so, str + calls[4].rm_so, calls[2].rm_eo - calls[2].rm_so))
 		return;
@@ -394,8 +394,8 @@ void pskrep::append(string call, const char* loc, long long freq, trx_mode mode,
 	band_map_t& bandq = queue[call][band(freq)];
 	if (bandq.empty() || rtime - bandq.back().rtime >= DUP_INTERVAL) { // add new
 		bandq.push_back(rcpt_report_t(mode, freq, rtime, rtype, loc));
-		LOG_INFO("Added (call=\"%s\", loc=\"%s\", mode=\"%s\", freq=%lld, time=%ld, type=%u)",
-			 call.c_str(), loc, mode_info[mode].adif_name, freq, rtime, rtype);
+		LOG_INFO("Added (call=\"%s\", loc=\"%s\", mode=\"%s\", freq=%lld, time=%jd, type=%u)",
+			 call.c_str(), loc, mode_info[mode].adif_name, freq, (intmax_t)rtime, rtype);
 		new_count++;
 		save_queue();
 	}
@@ -404,8 +404,8 @@ void pskrep::append(string call, const char* loc, long long freq, trx_mode mode,
 		if (r.status != STATUS_SENT && *loc && r.locator != loc) { // update last
 			r.locator = loc;
 			r.rtype = rtype;
-			LOG_INFO("Updated (call=\"%s\", loc=\"%s\", mode=\"%s\", freq=%lld, time=%ld, type=%u)",
-				 call.c_str(), loc, mode_info[r.mode].adif_name, r.freq, r.rtime, rtype);
+			LOG_INFO("Updated (call=\"%s\", loc=\"%s\", mode=\"%s\", freq=%lld, time=%jd, type=%u)",
+				 call.c_str(), loc, mode_info[r.mode].adif_name, r.freq, (intmax_t)r.rtime, rtype);
 			save_queue();
 		}
 	}
@@ -722,8 +722,8 @@ bool pskrep_sender::append(const string& callsign, const band_map_t::value_type&
 		return false;
 
 
-	LOG_INFO("Appending report (call=%s mode=%s freq=%lld time=%ld type=%u)",
-		 callsign.c_str(), mode_info[r.mode].adif_name, r.freq, r.rtime, r.rtype);
+	LOG_INFO("Appending report (call=%s mode=%s freq=%lld time=%jd type=%u)",
+		 callsign.c_str(), mode_info[r.mode].adif_name, r.freq, (intmax_t)r.rtime, r.rtype);
 
 	unsigned char* start = dgram + dgram_size;
 	unsigned char* p = start;

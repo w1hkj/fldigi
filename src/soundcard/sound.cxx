@@ -1250,12 +1250,11 @@ void SoundPort::init_stream(unsigned dir)
 	else if (sd[dir].idev == devs.end()) // if we only found a near-match point the idev iterator to it
 		sd[dir].idev = devs.begin() + idx;
 
-
-#ifdef __linux__
-	if ((dir == 0 && (*sd[dir].idev)->maxInputChannels == 0) ||
-	    (dir == 1 && (*sd[dir].idev)->maxOutputChannels == 0))
+	const PaHostApiInfo* host_api = Pa_GetHostApiInfo((*sd[dir].idev)->hostApi);
+	int max_channels = dir ? (*sd[dir].idev)->maxOutputChannels :
+		(*sd[dir].idev)->maxInputChannels;
+	if ((host_api->type == paALSA || host_api->type == paOSS) && max_channels == 0)
 		throw SndException(EBUSY);
-#endif
 
 	if (dir == 0) {
 		sd[0].params.device = idx;
@@ -1268,7 +1267,7 @@ void SoundPort::init_stream(unsigned dir)
 		sd[1].params.device = idx;
 		sd[1].params.channelCount = OUTPUT_CHANNELS;
 		sd[1].params.sampleFormat = paFloat32;
-                if (Pa_GetHostApiInfo((*sd[dir].idev)->hostApi)->type == paMME)
+		if (host_api->type == paMME)
                         sd[1].params.suggestedLatency = (*sd[dir].idev)->defaultLowOutputLatency;
                 else
                         sd[1].params.suggestedLatency = (*sd[dir].idev)->defaultHighOutputLatency;
@@ -1288,7 +1287,7 @@ void SoundPort::init_stream(unsigned dir)
         device_text[dir]
 		<< "index: " << idx
 		<< "\nname: " << (*sd[dir].idev)->name
-		<< "\nhost API: " << Pa_GetHostApiInfo((*sd[dir].idev)->hostApi)->name
+		<< "\nhost API: " << host_api->name
 		<< "\nmax input channels: " << (*sd[dir].idev)->maxInputChannels
 		<< "\nmax output channels: " << (*sd[dir].idev)->maxOutputChannels
 		<< "\ndefault sample rate: " << (*sd[dir].idev)->defaultSampleRate
@@ -1299,8 +1298,8 @@ void SoundPort::init_stream(unsigned dir)
 		<< "\nfull duplex: " << full_duplex_device(*sd[dir].idev)
 		<< "\nsystem default input: " << (idx == Pa_GetDefaultInputDevice())
 		<< "\nsystem default output: " << (idx == Pa_GetDefaultOutputDevice())
-		<< "\nhost API default input: " << (idx == Pa_GetHostApiInfo((*sd[dir].idev)->hostApi)->defaultInputDevice)
-		<< "\nhost API default output: " << (idx == Pa_GetHostApiInfo((*sd[dir].idev)->hostApi)->defaultOutputDevice)
+		<< "\nhost API default input: " << (idx == host_api->defaultInputDevice)
+		<< "\nhost API default output: " << (idx == host_api->defaultOutputDevice)
 		<< "\ndefault low input latency: " << (*sd[dir].idev)->defaultLowInputLatency
 		<< "\ndefault high input latency: " << (*sd[dir].idev)->defaultHighInputLatency
 		<< "\ndefault low output latency: " << (*sd[dir].idev)->defaultLowOutputLatency

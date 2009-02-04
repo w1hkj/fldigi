@@ -4,6 +4,7 @@
 #include <config.h>
 
 #include <pthread.h>
+#include <stdint.h>
 
 #include <semaphore.h>
 #if !HAVE_SEM_TIMEDWAIT
@@ -32,7 +33,7 @@ enum { INVALID_TID = -1, TRX_TID, QRZ_TID, RIGCTL_TID, NORIGCTL_TID,
 #       define THREAD_ID_TYPE pthread_key_t
 #	define CREATE_THREAD_ID() pthread_key_create(&thread_id_, 0)
 #	define SET_THREAD_ID(x)   pthread_setspecific(thread_id_, (void *)(x))
-#	define GET_THREAD_ID()    (int)pthread_getspecific(thread_id_)
+#	define GET_THREAD_ID()    (intptr_t)pthread_getspecific(thread_id_)
 #endif // USE_TLS
 
 

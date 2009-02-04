@@ -251,7 +251,7 @@ int cFreqControl::handle(int event)
 				}
 			}
 			else {
-				if (d == FL_Escape) {
+				if (d == FL_Escape && window() != Fl::first_window()) {
 					window()->do_callback();
 					return 1;
 				}

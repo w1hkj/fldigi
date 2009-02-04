@@ -40,6 +40,7 @@
 #include <termios.h>
 #include <errno.h>
 #include <cstring>
+#include <stdint.h>
 
 #include "ptt.h"
 #include "configuration.h"
@@ -493,7 +494,7 @@ void PTT::set_uhrouter(bool ptt)
 		LOG_PERROR("tm_read");
 		break;
 	case 0:
-		LOG_ERROR("No reply to PTT command within %ld", t.tv_sec);
+		LOG_ERROR("No reply to PTT command within %jd", (intmax_t)t.tv_sec);
 		break;
 	default:
 		LOG_INFO("Received \"%s\"", str2hex(buf, n, (char*)buf+n, sizeof(buf)-n));

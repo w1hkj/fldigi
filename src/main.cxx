@@ -278,10 +278,6 @@ int main(int argc, char ** argv)
 	trx_start();
 
 	progdefaults.initInterface();
-	
-#ifdef __CYGWIN__
-	fl_digi_main->icon((char*)LoadIcon(fl_display, MAKEINTRESOURCE(IDI_ICON)));
-#endif
 
 // OS X will prevent the main window from being resized if we change its
 // size *after* it has been shown. With some X11 window managers, OTOH,
@@ -723,9 +719,7 @@ void debug_exec(char** argv)
 
 void set_platform_ui(void)
 {
-#if defined (__linux__)
-       FL_NORMAL_SIZE = 12;
-#elif defined(__APPLE__)
+#if defined(__APPLE__)
        FL_NORMAL_SIZE = 12;
        progdefaults.WaterfallFontsize = 12;
        progdefaults.RxFontsize = 12;
@@ -737,6 +731,8 @@ void set_platform_ui(void)
        progdefaults.WaterfallFontsize = 12;
        progdefaults.RxFontsize = 12;
        progdefaults.TxFontsize = 12;
+#else
+       FL_NORMAL_SIZE = 12;
 #endif
 }
 
