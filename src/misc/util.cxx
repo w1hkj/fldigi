@@ -57,7 +57,7 @@ char* strcasestr(const char* haystack, const char* needle)
 ret:
 	free(h);
 	free(n);
-	return p;
+	return p ? (char*)haystack + (p - h) : NULL;
 }
 #endif // !HAVE_STRCASESTR
 
