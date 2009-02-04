@@ -3,6 +3,7 @@
 
 #include <config.h>
 #include <time.h>
+#include <sys/time.h>
 
 #if !HAVE_CLOCK_GETTIME
 enum clockid_t { CLOCK_REALTIME, CLOCK_MONOTONIC };
@@ -13,7 +14,14 @@ int clock_gettime(clockid_t clock_id, struct timespec* tp);
 
 struct timespec operator+(const struct timespec &t0, const double &t);
 struct timespec operator-(const struct timespec &t0, const struct timespec &t1);
+struct timespec& operator-=(struct timespec &t0, const struct timespec &t1);
 bool operator>(const struct timespec &t0, const struct timespec &t1);
 bool operator==(const struct timespec &t0, const struct timespec &t1);
+
+struct timeval operator+(const struct timeval &t0, const double &t);
+struct timeval operator-(const struct timeval &t0, const struct timeval &t1);
+struct timeval& operator-=(struct timeval &t0, const struct timeval &t1);
+bool operator>(const struct timeval &t0, const struct timeval &t1);
+bool operator==(const struct timeval &t0, const struct timeval &t1);
 
 #endif // TIMEOPS_H_

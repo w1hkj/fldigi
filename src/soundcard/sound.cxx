@@ -1829,17 +1829,19 @@ size_t SoundNull::Write_stereo(double* bufleft, double* bufright, size_t count)
 
 size_t SoundNull::Read(double *buf, size_t count)
 {
-	memset(buf, 0, count * sizeof(*buf));
-
 #if USE_SNDFILE
-	if (capture)
-		write_file(ofCapture, buf, count);
 	if (playback) {
 		read_file(ifPlayback, buf, count);
 		if (progdefaults.EnableMixer)
 			for (size_t i = 0; i < count; i++)
 				buf[i] *= progStatus.RcvMixer;
 	}
+	else
+#endif
+		memset(buf, 0, count * sizeof(*buf));
+#if USE_SNDFILE
+	if (capture)
+		write_file(ofCapture, buf, count);
 #endif
 
 	usleep((useconds_t)ceil((1e6 * count) / sample_frequency));

@@ -47,6 +47,10 @@
 #include "qrunner.h"
 #include "debug.h"
 
+#if BENCHMARK_MODE
+#  include "benchmark.h"
+#endif
+
 LOG_SET_SOURCE(debug::LOG_MODEM);
 
 using namespace std;
@@ -96,118 +100,127 @@ void trx_trx_receive_loop()
 	int  current_samplerate;
 	assert(powerof2(SCBLOCKSIZE));
 
-	if (!scard) {
+	if (unlikely(!active_modem)) {
 		MilliSleep(10);
 		return;
 	}
-	if (active_modem) {
-		try {
-			current_samplerate = active_modem->get_samplerate();
-			if (scard->Open(O_RDONLY, current_samplerate))
-				REQ(sound_update, progdefaults.btnAudioIOis);
-		}
-		catch (const SndException& e) {
-			LOG_ERROR("%s", e.what());
-			put_status(e.what(), 5);
-			scard->Close();
-			if (e.error() == EBUSY && progdefaults.btnAudioIOis == SND_IDX_PORT) {
-				sound_close();
-				sound_init();
-			}
-			MilliSleep(1000);
-			return;
-		}
-		active_modem->rx_init();
 
-		while (1) {
-			if (progdefaults.rsid == true && rsid_detecting == false) {
-				rsid_detecting = true;
-				try {
-					current_samplerate = ReedSolomon->samplerate();
-					scard->Open(O_RDONLY, current_samplerate);
-				}
-				catch (const SndException& e) {
-					LOG_ERROR("%s", e.what());
-					put_status(e.what(), 5);
-					scard->Close();
-					if (e.error() == EBUSY && progdefaults.btnAudioIOis == SND_IDX_PORT) {
-						sound_close();
-						sound_init();
-					}
-					MilliSleep(1000);
-					return;
-				}
-			}
-			if (progdefaults.rsid == false && rsid_detecting == true) {
-				rsid_detecting = false;
-				active_modem->rx_init();
-				try {
-					current_samplerate = active_modem->get_samplerate();
-					scard->Open(O_RDONLY, current_samplerate);
-				}
-				catch (const SndException& e) {
-					LOG_ERROR("%s", e.what());
-					put_status(e.what(), 5);
-					scard->Close();
-					if (e.error() == EBUSY && progdefaults.btnAudioIOis == SND_IDX_PORT) {
-						sound_close();
-						sound_init();
-					}
-					MilliSleep(1000);
-					return;
-				}
-			}
-			// If we change to an 8000Hz modem while RSID is on we'll never detect anything.
-			// Toggle rsid_detecting so that the audio device is reopened with the ReedSolomon
-			// samplerate in the next loop iteration.
-			if (progdefaults.rsid && rsid_detecting && current_samplerate != ReedSolomon->samplerate())
-				rsid_detecting = false;
+#if BENCHMARK_MODE
+	do_benchmark();
+	trx_state = STATE_ENDED;
+	return;
+#endif
 
+	if (unlikely(!scard)) {
+		MilliSleep(10);
+		return;
+	}
+
+	try {
+		current_samplerate = active_modem->get_samplerate();
+		if (scard->Open(O_RDONLY, current_samplerate))
+			REQ(sound_update, progdefaults.btnAudioIOis);
+	}
+	catch (const SndException& e) {
+		LOG_ERROR("%s", e.what());
+		put_status(e.what(), 5);
+		scard->Close();
+		if (e.error() == EBUSY && progdefaults.btnAudioIOis == SND_IDX_PORT) {
+			sound_close();
+			sound_init();
+		}
+		MilliSleep(1000);
+		return;
+	}
+	active_modem->rx_init();
+
+	while (1) {
+		if (progdefaults.rsid == true && rsid_detecting == false) {
+			rsid_detecting = true;
 			try {
-				if (trxrb.write_space() == 0) // discard some old data
-					trxrb.read_advance(SCBLOCKSIZE);
-				trxrb.get_wv(rbvec);
-				numread = 0;
-				while (numread < SCBLOCKSIZE && trx_state == STATE_RX)
-					numread += scard->Read(rbvec[0].buf + numread, SCBLOCKSIZE - numread);
+				current_samplerate = ReedSolomon->samplerate();
+				scard->Open(O_RDONLY, current_samplerate);
 			}
 			catch (const SndException& e) {
-				scard->Close();
 				LOG_ERROR("%s", e.what());
 				put_status(e.what(), 5);
-				MilliSleep(10);
+				scard->Close();
+				if (e.error() == EBUSY && progdefaults.btnAudioIOis == SND_IDX_PORT) {
+					sound_close();
+					sound_init();
+				}
+				MilliSleep(1000);
 				return;
 			}
-			if (trx_state != STATE_RX)
-				break;
-
-			trxrb.write_advance(numread);
-			REQ(&waterfall::sig_data, wf, rbvec[0].buf, numread, current_samplerate);
-
-			if (!bHistory) {
-				if (rsid_detecting == true)
-					ReedSolomon->search(rbvec[0].buf, numread);
-				else
-					active_modem->rx_process(rbvec[0].buf, numread);
+		}
+		if (progdefaults.rsid == false && rsid_detecting == true) {
+			rsid_detecting = false;
+			active_modem->rx_init();
+			try {
+				current_samplerate = active_modem->get_samplerate();
+				scard->Open(O_RDONLY, current_samplerate);
 			}
-			else {
-				bool afc = progStatus.afconoff;
-				progStatus.afconoff = false;
-				QRUNNER_DROP(true);
-				active_modem->HistoryON(true);
-				trxrb.get_rv(rbvec);
-				if (rbvec[0].len)
-					active_modem->rx_process(rbvec[0].buf, rbvec[0].len);
-				if (rbvec[1].len)
-					active_modem->rx_process(rbvec[1].buf, rbvec[1].len);
-				QRUNNER_DROP(false);
-				progStatus.afconoff = afc;
-				bHistory = false;
-				active_modem->HistoryON(false);
+			catch (const SndException& e) {
+				LOG_ERROR("%s", e.what());
+				put_status(e.what(), 5);
+				scard->Close();
+				if (e.error() == EBUSY && progdefaults.btnAudioIOis == SND_IDX_PORT) {
+					sound_close();
+					sound_init();
+				}
+				MilliSleep(1000);
+				return;
 			}
 		}
-	} else
-		MilliSleep(10);
+		// If we change to an 8000Hz modem while RSID is on we'll never detect anything.
+		// Toggle rsid_detecting so that the audio device is reopened with the ReedSolomon
+		// samplerate in the next loop iteration.
+		if (progdefaults.rsid && rsid_detecting && current_samplerate != ReedSolomon->samplerate())
+			rsid_detecting = false;
+
+		try {
+			if (trxrb.write_space() == 0) // discard some old data
+				trxrb.read_advance(SCBLOCKSIZE);
+			trxrb.get_wv(rbvec);
+			numread = 0;
+			while (numread < SCBLOCKSIZE && trx_state == STATE_RX)
+				numread += scard->Read(rbvec[0].buf + numread, SCBLOCKSIZE - numread);
+		}
+		catch (const SndException& e) {
+			scard->Close();
+			LOG_ERROR("%s", e.what());
+			put_status(e.what(), 5);
+			MilliSleep(10);
+			return;
+		}
+		if (trx_state != STATE_RX)
+			break;
+
+		trxrb.write_advance(numread);
+		REQ(&waterfall::sig_data, wf, rbvec[0].buf, numread, current_samplerate);
+
+		if (!bHistory) {
+			if (rsid_detecting == true)
+				ReedSolomon->search(rbvec[0].buf, numread);
+			else
+				active_modem->rx_process(rbvec[0].buf, numread);
+		}
+		else {
+			bool afc = progStatus.afconoff;
+			progStatus.afconoff = false;
+			QRUNNER_DROP(true);
+			active_modem->HistoryON(true);
+			trxrb.get_rv(rbvec);
+			if (rbvec[0].len)
+				active_modem->rx_process(rbvec[0].buf, rbvec[0].len);
+			if (rbvec[1].len)
+				active_modem->rx_process(rbvec[1].buf, rbvec[1].len);
+			QRUNNER_DROP(false);
+			progStatus.afconoff = afc;
+			bHistory = false;
+			active_modem->HistoryON(false);
+		}
+	}
 }
 
 
@@ -338,6 +351,8 @@ void *trx_loop(void *args)
 			delete scard;
 			scard = 0;
 			trx_state = STATE_ENDED;
+			// fall through
+		case STATE_ENDED:
 			return 0;
 		case STATE_RESTART:
 			trx_reset_loop();
@@ -474,6 +489,7 @@ void trx_start_macro_timer()
 //=============================================================================
 void trx_start(void)
 {
+#if !BENCHMARK_MODE
 	if (trxrunning) {
 		LOG(debug::ERROR_LEVEL, debug::LOG_MODEM, "trx already running!");
 		return;
@@ -507,7 +523,8 @@ void trx_start(void)
 	}
 
 	ReedSolomon = new cRsId;
-	
+#endif // !BENCHMARK_MODE
+
 	trx_state = STATE_RX;
 	_trx_tune = 0;
 	active_modem = 0;

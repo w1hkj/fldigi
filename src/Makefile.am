@@ -24,9 +24,10 @@ HAMLIB_SRC = include/hamlib.h rigcontrol/hamlib.cxx include/rigclass.h rigcontro
 XMLRPC_SRC = include/xmlrpc.h misc/xmlrpc.cxx
 WIN32_RES_SRC = fldigirc.rc
 LOCATOR_SRC = misc/locator.c
+BENCHMARK_SRC = include/benchmark.h misc/benchmark.cxx
 
 # We distribute these but do not always compile them
-EXTRA_fldigi_SOURCES = $(HAMLIB_SRC) $(XMLRPC_SRC) $(WIN32_RES_SRC) $(LOCATOR_SRC)
+EXTRA_fldigi_SOURCES = $(HAMLIB_SRC) $(XMLRPC_SRC) $(WIN32_RES_SRC) $(LOCATOR_SRC) $(BENCHMARK_SRC)
 
 fldigi_SOURCES =
 
@@ -46,6 +47,10 @@ endif
 
 if ENABLE_XMLRPC
   fldigi_SOURCES += $(XMLRPC_SRC)
+endif
+
+if ENABLE_BENCHMARK
+  fldigi_SOURCES += $(BENCHMARK_SRC)
 endif
 
 FLDIGI_VERSION_MAJOR = @FLDIGI_VERSION_MAJOR@

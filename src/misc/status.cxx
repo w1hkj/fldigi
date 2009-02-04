@@ -305,9 +305,7 @@ void status::initLastState()
 	if (!bLastStateRead)
 		loadLastState();
 
-	init_modem(lastmode);
-
-	while (!active_modem) MilliSleep(100);
+	init_modem_sync(lastmode);
 
  	wf->opmode();
 	wf->Mag(mag);

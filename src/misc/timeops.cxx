@@ -68,6 +68,18 @@ struct timespec operator-(const struct timespec &t0, const struct timespec &t1)
         return r;
 }
 
+struct timespec& operator-=(struct timespec &t0, const struct timespec &t1)
+{
+        if (t0.tv_nsec < t1.tv_nsec) {
+                --t0.tv_sec;
+                t0.tv_nsec += 1000000000L;
+        }
+        t0.tv_sec -= t1.tv_sec;
+        t0.tv_nsec -= t1.tv_nsec;
+
+        return t0;
+}
+
 bool operator>(const struct timespec &t0, const struct timespec &t1)
 {
         if (t0.tv_sec == t1.tv_sec)
@@ -81,4 +93,58 @@ bool operator>(const struct timespec &t0, const struct timespec &t1)
 bool operator==(const struct timespec &t0, const struct timespec &t1)
 {
 	return t0.tv_sec == t1.tv_sec && t0.tv_nsec == t1.tv_nsec;
+}
+
+
+struct timeval operator+(const struct timeval &t0, const double &t)
+{
+        struct timeval r;
+        r.tv_sec = t0.tv_sec + static_cast<time_t>(t);
+        r.tv_usec = t0.tv_usec + static_cast<suseconds_t>((t - static_cast<time_t>(t)) * 1e9);
+        if (r.tv_usec > 1000000) {
+                r.tv_usec -= 1000000;
+                r.tv_sec++;
+        }
+        return r;
+}
+
+struct timeval operator-(const struct timeval &t0, const struct timeval &t1)
+{
+        struct timeval r = t0;
+
+        if (r.tv_usec < t1.tv_usec) {
+                --r.tv_sec;
+                r.tv_usec += 1000000;
+        }
+        r.tv_sec -= t1.tv_sec;
+        r.tv_usec -= t1.tv_usec;
+
+        return r;
+}
+
+struct timeval& operator-=(struct timeval &t0, const struct timeval &t1)
+{
+        if (t0.tv_usec < t1.tv_usec) {
+                --t0.tv_sec;
+                t0.tv_usec += 1000000L;
+        }
+        t0.tv_sec -= t1.tv_sec;
+        t0.tv_usec -= t1.tv_usec;
+
+        return t0;
+}
+
+bool operator>(const struct timeval &t0, const struct timeval &t1)
+{
+        if (t0.tv_sec == t1.tv_sec)
+                return t0.tv_usec > t1.tv_usec;
+        else if (t0.tv_sec > t1.tv_sec)
+                return true;
+        else
+                return false;
+}
+
+bool operator==(const struct timeval &t0, const struct timeval &t1)
+{
+	return t0.tv_sec == t1.tv_sec && t0.tv_usec == t1.tv_usec;
 }

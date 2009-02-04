@@ -85,6 +85,10 @@
 	#include "xmlrpc.h"
 #endif
 
+#if BENCHMARK_MODE
+	#include "benchmark.h"
+#endif
+
 using namespace std;
 
 string appname;
@@ -253,6 +257,11 @@ int main(int argc, char ** argv)
 	Fl::scheme(progdefaults.ui_scheme.c_str());
 	
 	create_fl_digi_main();
+
+#if BENCHMARK_MODE
+	return setup_benchmark();
+#endif
+
 	FSEL::create();
 
 	createConfig();
@@ -372,6 +381,45 @@ void generate_option_help(void) {
 	     << "    List all available methods\n\n"
 #endif
 
+#if BENCHMARK_MODE
+	     << "  --benchmark-modem ID\n"
+	     << "    Specify the modem\n"
+	     << "    Default: " << mode_info[benchmark.modem].sname << "\n\n"
+	     << "  --benchmark-frequency FREQ\n"
+	     << "    Specify the modem frequency\n"
+	     << "    Default: " << benchmark.freq << "\n\n"
+	     << "  --benchmark-afc BOOLEAN\n"
+	     << "    Set modem AFC\n"
+	     << "    Default: " << benchmark.afc
+	     << " (" << boolalpha << benchmark.afc << noboolalpha << ")\n\n"
+	     << "  --benchmark-squelch BOOLEAN\n"
+	     << "    Set modem squelch\n"
+	     << "    Default: " << benchmark.sql
+	     << " (" << boolalpha << benchmark.sql << noboolalpha << ")\n\n"
+	     << "  --benchmark-squelch-level LEVEL\n"
+	     << "    Set modem squelch level\n"
+	     << "    Default: " << benchmark.sqlevel << " (%)\n\n"
+	     << "  --benchmark-input INPUT\n"
+	     << "    Specify the input\n"
+	     << "    Must be a positive integer indicating the number of samples\n"
+		"    of silence to generate as the input"
+#  if USE_SNDFILE
+		", or a filename containing\n"
+		"    non-digit characters"
+#endif
+		"\n\n"
+
+	     << "  --benchmark-output FILE\n"
+	     << "    Specify the output data file\n"
+	     << "    Default: decoder output is discarded\n\n"
+	     << "  --benchmark-src-ratio RATIO\n"
+	     << "    Specify the sample rate conversion ratio\n"
+	     << "    Default: 1.0 (input is not resampled)\n\n"
+	     << "  --benchmark-src-type TYPE\n"
+	     << "    Specify the sample rate conversion type\n"
+	     << "    Default: " << benchmark.src_type << " (" << src_get_name(benchmark.src_type) << ")\n\n"
+#endif
+
 	     << "  --debug-level LEVEL\n"
 	     << "    Set the event log verbosity\n\n"
 
@@ -448,6 +496,13 @@ int parse_args(int argc, char **argv, int& idx)
 	       OPT_CONFIG_XMLRPC_ADDRESS, OPT_CONFIG_XMLRPC_PORT,
 	       OPT_CONFIG_XMLRPC_ALLOW, OPT_CONFIG_XMLRPC_DENY, OPT_CONFIG_XMLRPC_LIST,
 #endif
+
+#if BENCHMARK_MODE
+	       OPT_BENCHMARK_MODEM, OPT_BENCHMARK_AFC, OPT_BENCHMARK_SQL, OPT_BENCHMARK_SQLEVEL,
+	       OPT_BENCHMARK_FREQ, OPT_BENCHMARK_INPUT, OPT_BENCHMARK_OUTPUT,
+	       OPT_BENCHMARK_SRC_RATIO, OPT_BENCHMARK_SRC_TYPE,
+#endif
+
                OPT_FONT, OPT_WFALL_HEIGHT, OPT_WFALL_WIDTH, 
                OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT, 
 //               OPT_TOGGLE_CHECK,
@@ -478,6 +533,19 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "xmlrpc-deny",           1, 0, OPT_CONFIG_XMLRPC_DENY },
 		{ "xmlrpc-list",           0, 0, OPT_CONFIG_XMLRPC_LIST },
 #endif
+
+#if BENCHMARK_MODE
+		{ "benchmark-modem", 1, 0, OPT_BENCHMARK_MODEM },
+		{ "benchmark-frequency", 1, 0, OPT_BENCHMARK_FREQ },
+		{ "benchmark-afc", 1, 0, OPT_BENCHMARK_AFC },
+		{ "benchmark-squelch", 1, 0, OPT_BENCHMARK_SQL },
+		{ "benchmark-squelch-level", 1, 0, OPT_BENCHMARK_SQLEVEL },
+		{ "benchmark-input", 1, 0, OPT_BENCHMARK_INPUT },
+		{ "benchmark-output", 1, 0, OPT_BENCHMARK_OUTPUT },
+		{ "benchmark-src-ratio", 1, 0, OPT_BENCHMARK_SRC_RATIO },
+		{ "benchmark-src-type", 1, 0, OPT_BENCHMARK_SRC_TYPE },
+#endif
+
 		{ "font",	   1, 0, OPT_FONT },
 
 		{ "wfall-width",   1, 0, OPT_WFALL_WIDTH },
@@ -562,6 +630,52 @@ int parse_args(int argc, char **argv, int& idx)
 		case OPT_CONFIG_XMLRPC_LIST:
 			XML_RPC_Server::list_methods(cout);
 			exit(EXIT_SUCCESS);
+#endif
+
+#if BENCHMARK_MODE
+		case OPT_BENCHMARK_MODEM:
+			benchmark.modem = strtol(optarg, NULL, 10);
+			if (!(benchmark.modem >= 0 && benchmark.modem < NUM_MODES)) {
+				cerr << "Bad modem id\n";
+				exit(EXIT_FAILURE);
+			}
+			break;
+
+		case OPT_BENCHMARK_FREQ:
+			benchmark.freq = strtol(optarg, NULL, 10);
+			if (benchmark.freq < 0) {
+				cerr << "Bad frequency\n";
+				exit(EXIT_FAILURE);
+			}
+			break;
+
+		case OPT_BENCHMARK_AFC:
+			benchmark.afc = strtol(optarg, NULL, 10);
+			break;
+
+		case OPT_BENCHMARK_SQL:
+			benchmark.sql = strtol(optarg, NULL, 10);
+			break;
+
+		case OPT_BENCHMARK_SQLEVEL:
+			benchmark.sqlevel = strtod(optarg, NULL);
+			break;
+
+		case OPT_BENCHMARK_INPUT:
+			benchmark.input = optarg;
+			break;
+
+		case OPT_BENCHMARK_OUTPUT:
+			benchmark.output = optarg;
+			break;
+
+		case OPT_BENCHMARK_SRC_RATIO:
+			benchmark.src_ratio = strtod(optarg, NULL);
+			break;
+
+		case OPT_BENCHMARK_SRC_TYPE:
+			benchmark.src_type = strtol(optarg, NULL, 10);
+			break;
 #endif
 
 		case OPT_FONT:

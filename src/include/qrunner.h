@@ -156,6 +156,13 @@ public:
 
 extern qrunner *cbq[NUM_QRUNNER_THREADS];
 
+#if BENCHMARK_MODE
+#define REQ(...) ((void)0)
+#define REQ_DROP(...) ((void)0)
+#define REQ_SYNC(...) ((void)0)
+#define REQ_FLUSH(...) ((void)0)
+#define QRUNNER_DROP(...) ((void)0)
+#else
 
 #define REQ REQ_ASYNC
 #define REQ_DROP REQ_ASYNC_DROP
@@ -212,6 +219,7 @@ extern qrunner *cbq[NUM_QRUNNER_THREADS];
 		if ((GET_THREAD_ID() != FLMAIN_TID))		\
 			cbq[GET_THREAD_ID()]->drop_flag = v_;	\
 	} while (0)
+#endif // BENCHMARK_MODE
 
 #endif // QRUNNER_H_
 

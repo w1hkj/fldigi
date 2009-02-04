@@ -112,6 +112,9 @@
 #if USE_XMLRPC
 #	include "xmlrpc.h"
 #endif
+#if BENCHMARK_MODE
+#	include "benchmark.h"
+#endif
 #include "debug.h"
 #include "re.h"
 #include "network.h"
@@ -486,6 +489,9 @@ static void default_cursor(void*)
 void startup_modem(modem *m)
 {
 	trx_start_modem(m);
+#if BENCHMARK_MODE
+	return;
+#endif
 
 	restoreFocus();
 
@@ -573,9 +579,6 @@ void cb_wMain(Fl_Widget*, void*)
 void init_modem(trx_mode mode)
 {
 	ENSURE_THREAD(FLMAIN_TID);
-
-	quick_change = 0;
-	modem_config_tab = tabsModems->child(0);
 
 	switch (mode) {
 	case MODE_NEXT:
@@ -690,6 +693,13 @@ void init_modem(trx_mode mode)
 		LOG_ERROR("Unknown mode: %" PRIdPTR, mode);
 		return init_modem(MODE_BPSK31);
 	}
+
+#if BENCHMARK_MODE
+	return;
+#endif
+
+	quick_change = 0;
+	modem_config_tab = tabsModems->child(0);
 
 	clear_StatusMessages();
 	progStatus.lastmode = mode;
@@ -2907,6 +2917,14 @@ void set_zdata(complex *zarray, int len)
 
 void put_rx_char(unsigned int data)
 {
+#if BENCHMARK_MODE
+	if (!benchmark.output.empty()) {
+		if (unlikely(benchmark.buffer.length() + 16 > benchmark.buffer.capacity()))
+			benchmark.buffer.reserve(benchmark.buffer.capacity() + BUFSIZ);
+		benchmark.buffer += (char)data;
+	}
+	return;
+#endif
 	static unsigned int last = 0;
 	const char **asc = ascii;
 	trx_mode mode = active_modem->get_mode();

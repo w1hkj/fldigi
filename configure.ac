@@ -126,6 +126,12 @@ AC_FLDIGI_OPT
 # Substitute RDYNAMIC in Makefile
 AC_FLDIGI_DEBUG
 
+### benchmark mode
+# Set ac_cv_benchmark to yes/no
+# Define BENCHMARK_MODE in config.h
+# Set ENABLE_BENCHMARK Makefile conditional
+AC_FLDIGI_BENCHMARK
+
 ### TLS flag
 # Set ac_cv_tls to yes/no
 # Define USE_TLS in config.h
