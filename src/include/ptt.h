@@ -32,14 +32,36 @@
 #ifndef PTT_H_
 #define PTT_H_
 
+#include <config.h>
+
+#if HAVE_LINUX_PPDEV_H || HAVE_DEV_PPBUS_PPI_H
+#  define HAVE_PARPORT 1
+#else
+#  define HAVE_PARPORT 0
+#endif
+
+#ifdef __APPLE__
+#  define HAVE_UHROUTER 1
+#  define UHROUTER_FIFO_PREFIX "/tmp/microHamRouter"
+#else
+#  define HAVE_UHROUTER 0
+#endif
+
 struct termios;
 
 class PTT {
 public:
 	enum ptt_t {
 		PTT_INVALID = -1, PTT_NONE, PTT_HAMLIB, PTT_MEMMAP,
-		PTT_RIGCAT, PTT_TTY, PTT_PARPORT, PTT_UHROUTER
+		PTT_RIGCAT, PTT_TTY,
+#if HAVE_PARPORT
+		PTT_PARPORT,
+#endif
+#if HAVE_UHROUTER
+		PTT_UHROUTER,
+#endif
 	};
+
 	PTT(ptt_t dev = PTT_NONE);
 	~PTT();
 	void set(bool on);
@@ -51,9 +73,11 @@ private:
 	int pttfd;
 	struct termios* oldtio;
 
+#if HAVE_UHROUTER
 	// uhrouter
 	int uhkfd[2]; // keyer
 	int uhfd[2];  // ptt
+#endif
 
 	void close_all(void);
 
@@ -61,15 +85,18 @@ private:
 	void set_tty(bool ptt);
 	void close_tty(void);
 
+#if HAVE_PARPORT
 	void open_parport(void);
 	void set_parport(bool ptt);
 	void close_parport(void);
+#endif
 
+#if HAVE_UHROUTER
 	void open_uhrouter(void);
 	void set_uhrouter(bool ptt);
 	void close_uhrouter(void);
+#endif
 };
 
-#define UHROUTER_FIFO_PREFIX "/tmp/microHamRouter"
 
 #endif // PTT_H_

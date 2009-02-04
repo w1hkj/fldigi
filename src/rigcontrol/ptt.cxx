@@ -81,21 +81,26 @@ void PTT::reset(ptt_t dev)
 		break; // nothing to open
 
 	case PTT_TTY:
+#if HAVE_UHROUTER
 		if (progdefaults.PTTdev.find(UHROUTER_FIFO_PREFIX) == 0) {
 			pttdev = PTT_UHROUTER;
 			open_uhrouter();
+			break;
 		}
-		else {
-			open_parport();
-			if (pttfd >= 0)
-				pttdev = PTT_PARPORT;
-			else
-				open_tty();
-		}
+#endif
+#if HAVE_PARPORT
+		open_parport();
+		if (pttfd >= 0)
+			pttdev = PTT_PARPORT;
+		else
+#endif
+			open_tty();
 		break;
+#if HAVE_UHROUTER
 	case PTT_UHROUTER:
 		open_uhrouter();
 		break;
+#endif
 	}
 
 	set(false);
@@ -124,12 +129,16 @@ void PTT::set(bool ptt)
 	case PTT_TTY:
 		set_tty(ptt);
 		break;
+#if HAVE_PARPORT
 	case PTT_PARPORT:
 		set_parport(ptt);
 		break;
+#endif
+#if HAVE_UHROUTER
 	case PTT_UHROUTER:
 		set_uhrouter(ptt);
 		break;
+#endif
 	}
 }
 
@@ -141,12 +150,16 @@ void PTT::close_all(void)
 	case PTT_TTY:
 		close_tty();
 		break;
+#if HAVE_PARPORT
 	case PTT_PARPORT:
 		close_parport();
 		break;
+#endif
+#if HAVE_UHROUTER
 	case PTT_UHROUTER:
 		close_uhrouter();
 		break;
+#endif
 	default:
 		break;
 	}
@@ -222,6 +235,7 @@ void PTT::set_tty(bool ptt)
 	ioctl(pttfd, TIOCMSET, &status);
 }
 
+#if HAVE_PARPORT
 //-------------------- parallel port PTT --------------------//
 
 #if HAVE_LINUX_PPDEV_H
@@ -241,10 +255,8 @@ void PTT::open_parport(void)
 
 	bool isparport = false;
 
-#if HAVE_LINUX_PPDEV_H || HAVE_DEV_PPBUS_PPI_H
 	struct stat st;
 	int status;
-#endif
 
 #if HAVE_LINUX_PPDEV_H     // Linux (ppdev)
 	isparport = (fstat(pttfd, &st) == 0 && S_ISCHR(st.st_mode) &&
@@ -287,7 +299,10 @@ void PTT::set_parport(bool ptt)
 	ioctl(pttfd, PPISCTRL, &val);
 #endif
 }
+#endif // HAVE_PARPORT
 
+
+#if HAVE_UHROUTER
 //-------------------- uhRouter PTT --------------------//
 
 // See interface documentation at:
@@ -389,6 +404,40 @@ static bool get_fifos(const int fd[2], const unsigned char* msg, size_t msglen, 
 	return true;
 }
 
+#ifdef __APPLE__
+#  include <ApplicationServices/ApplicationServices.h>
+#endif
+
+static bool start_uhrouter(void)
+{
+#ifdef __APPLE__
+	int err;
+	FSRef fsr;
+	if ((err = FSPathMakeRef((const UInt8*)"/Applications/µH Router.app", &fsr, NULL)) != noErr) {
+		LOG_ERROR("FSPathMakeRef failed for /Applications/\265H Router.app: error %d", err);
+		return false;
+	}
+
+	LSApplicationParameters lsap;
+	memset(&lsap, 0, sizeof(lsap));
+	lsap.version = 0;
+	lsap.flags = kLSLaunchDontAddToRecents | kLSLaunchDontSwitch |
+		     kLSLaunchNoParams | kLSLaunchStartClassic;
+	lsap.application = &fsr;
+	lsap.asyncLaunchRefCon = NULL;
+	lsap.environment = NULL;
+	lsap.argv = NULL;
+	lsap.initialEvent = NULL;
+
+	if ((err = LSOpenApplication(&lsap, NULL)) != noErr)
+		LOG_ERROR("LSOpenApplication failed for /Applications/\265H Router.app: error %d", err);
+
+	return err == noErr;
+#else
+	return false;
+#endif // __APPLE__
+}
+
 void PTT::open_uhrouter(void)
 {
 	struct {
@@ -410,7 +459,8 @@ void PTT::open_uhrouter(void)
 		// do we recognise this keyer name?
 		for (size_t i = 0; i < sizeof(keyers)/sizeof(*keyers); i++) {
 			if (!strcasecmp(keyers[i].name, keyer) || !strcasecmp(keyers[i].abbrev, keyer)) {
-				start = end = i;
+				start = i;
+				end = start + 1;
 				break;
 			}
 		}
@@ -420,7 +470,11 @@ void PTT::open_uhrouter(void)
 	int uhrfd[2];
 	uhrfd[0] = uhrfd[1] = uhkfd[0] = uhkfd[1] = uhfd[0] = uhfd[1] = -1;
 
-	if (!open_fifos(UHROUTER_FIFO_PREFIX, uhrfd)) {
+	// if we just started uhrouter we will retry open_fifos a few times
+	unsigned retries = start_uhrouter() ? 30 : 0;
+	while (!open_fifos(UHROUTER_FIFO_PREFIX, uhrfd) && retries--)
+		MilliSleep(100);
+	if (uhrfd[0] == -1 || uhrfd[1] == -1) {
 		LOG_ERROR("Could not open router");
 		return;
 	}
@@ -497,7 +551,7 @@ void PTT::set_uhrouter(bool ptt)
 		LOG_PERROR("tm_read");
 		break;
 	case 0:
-		LOG_ERROR("No reply to PTT command within %jd", (intmax_t)t.tv_sec);
+		LOG_ERROR("No reply to PTT command within %jd seconds", (intmax_t)t.tv_sec);
 		break;
 	default:
 		LOG_INFO("Received \"%s\"", str2hex(buf, n, (char*)buf+n, sizeof(buf)-n));
@@ -505,3 +559,5 @@ void PTT::set_uhrouter(bool ptt)
 		break;
 	}
 }
+
+#endif // HAVE_UHROUTER

@@ -753,9 +753,9 @@ out:
 #endif // __APPLE__
 	}
 
-#ifdef __APPLE__
+#if HAVE_UHROUTER
 	if (stat(UHROUTER_FIFO_PREFIX "Read", &st) != -1 && S_ISFIFO(st.st_mode) &&
 	    stat(UHROUTER_FIFO_PREFIX "Write", &st) != -1 && S_ISFIFO(st.st_mode))
 		inpTTYdev->add(UHROUTER_FIFO_PREFIX);
-#endif // __APPLE__
+#endif // HAVE_UHROUTER
 }
