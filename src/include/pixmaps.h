@@ -39,6 +39,7 @@ extern const char *preferences_desktop_font_icon[];
 extern const char *system_users_icon[];
 extern const char *utilities_system_monitor_icon[];
 extern const char *multimedia_player_icon[];
+extern const char *chat_icon[];
 extern const char *audio_card_icon[];
 extern const char *help_about_icon[];
 extern const char *insert_link_icon[];

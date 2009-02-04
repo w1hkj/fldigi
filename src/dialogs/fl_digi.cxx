@@ -199,6 +199,8 @@ Fl_Button			*qso_btnAddFreq = (Fl_Button *)0;
 Fl_Button			*qso_btnSelFreq = (Fl_Button *)0;
 Fl_Button			*qso_btnDelFreq = (Fl_Button *)0;
 Fl_Button			*qso_btnClearList = (Fl_Button *)0;
+Fl_Button			*qso_btnAct = 0;
+Fl_Input2			*qso_inpAct = 0;
 
 Fl_Button			*btnQRZ;
 Fl_Group			*MixerFrame;
@@ -1996,6 +1998,53 @@ void cb_qso_btnClearList(Fl_Widget *, void *)
 	qso_clearList();
 }
 
+void cb_qso_inpAct(Fl_Widget*, void*)
+{
+	string data, url;
+	data.reserve(128);
+	url = "http://pskreporter.info/cgi-bin/psk-freq.pl";
+	if (qso_inpAct->size())
+		url.append("?grid=").append(qso_inpAct->value());
+	else if (progdefaults.myLocator.length() > 2)
+		url.append("?grid=").append(progdefaults.myLocator, 0, 2);
+
+	string::size_type i;
+	if (!fetch_http_gui(url, data, 10.0, busy_cursor, 0, default_cursor, 0) ||
+	    (i = data.find("\r\n\r\n")) == string::npos) {
+		LOG_ERROR("Error while fetching \"%s\": %s", url.c_str(), data.c_str());
+		return;
+	}
+
+	i += strlen("\r\n\r\n");
+	re_t re("([[:digit:]]{6,}) [[:digit:]]+ ([[:digit:]]+)[[:space:]]+", REG_EXTENDED);
+
+	const size_t menu_max = 8;
+	Fl_Menu_Item menu[menu_max + 1];
+	string str[menu_max];
+	size_t j = 0;
+	memset(menu, 0, sizeof(menu));
+
+	while (re.match(data.c_str() + i) && j < menu_max) {
+		i += re.submatch(0).length();
+		str[j].assign(re.submatch(1)).append(" (").append(re.submatch(2)).
+			append(" ").append(atoi(re.submatch(2).c_str()) == 1 ? _("report") : _("reports")).append(")");
+		menu[j].label(str[j].c_str());
+		menu[++j].label(NULL);
+	}
+
+	if ((i = data.find(" grid ", i)) != string::npos)
+		data.assign(data, i + strlen(" grid"), 3);
+	else
+		data = " (?)";
+	if (j)
+		data.insert(0, _("Recent activity for grid"));
+	else
+		data = "No recent activity";
+
+	if ((j = quick_choice_menu(data.c_str(), 1, menu)))
+		qsy(strtoll(str[j - 1].erase(str[j - 1].find(' ')).c_str(), NULL, 10));
+}
+
 void cb_qso_opBrowser(Fl_Browser*, void*)
 {
 	if (!qso_opBrowser->value())
@@ -2260,6 +2309,16 @@ void create_fl_digi_main() {
 				qso_btnDelFreq->image(new Fl_Pixmap(minus_icon));
 				qso_btnDelFreq->tooltip(_("Delete from list"));
 				qso_btnDelFreq->callback((Fl_Callback*)cb_qso_btnDelFreq);
+
+				qso_btnAct = new Fl_Button(rightof(RigControlFrame), Hmenu + 2*qh + 1, 20, Hnotes - 2);
+				qso_btnAct->image(new Fl_Pixmap(chat_icon));
+				qso_btnAct->callback(cb_qso_inpAct);
+				qso_btnAct->tooltip("Show active frequencies");
+
+				qso_inpAct = new Fl_Input2(rightof(qso_btnAct) + pad, Hmenu + 2*qh + 1, 20 - 1 + 1, Hnotes - 2);
+				qso_inpAct->when(FL_WHEN_ENTER_KEY | FL_WHEN_NOT_CHANGED);
+				qso_inpAct->callback(cb_qso_inpAct);
+				qso_inpAct->tooltip("Grid prefix for activity list");
 
 				qso_opBrowser = new Fl_Browser(rightof(qso_btnDelFreq) + pad,  Hmenu + 1, opB_w, BV_h - 1 );
 			    qso_opBrowser->tooltip(_("Select operating parameters"));
