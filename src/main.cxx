@@ -312,6 +312,11 @@ int main(int argc, char ** argv)
 
 	if (progdefaults.rxtext_tooltips || progdefaults.autofill_qso_fields)
 		dxcc_open(string(HomeDir).append("cty.dat").c_str());
+	if (progdefaults.rxtext_tooltips) {
+		qsl_open(string(HomeDir).append("lotw1.txt").c_str(), QSL_LOTW);
+		if (!qsl_open(string(HomeDir).append("eqsl.txt").c_str(), QSL_EQSL))
+			qsl_open(string(HomeDir).append("AGMemberList.txt").c_str(), QSL_EQSL);
+	}
 
 	int ret = Fl::run();
 

@@ -186,3 +186,52 @@ static void add_prefix(string& prefix, dxcc* entry)
 	prefix.erase(first);
 	prev_entry = cmap->insert(prev_entry, make_pair(prefix, entry));
 }
+
+typedef map<string, unsigned char> qsl_map;
+static qsl_map* qsl_calls;
+const char* qsl_names[] = { "LoTW", "eQSL" };
+
+bool qsl_open(const char* filename, qsl_t qsl_type)
+{
+	ifstream in(filename);
+	if (!in)
+		return false;
+	if (!qsl_calls)
+		qsl_calls = new qsl_map;
+
+	size_t n = qsl_calls->size();
+	qsl_map::iterator prev_entry = qsl_calls->begin();
+	string::size_type p;
+	string s;
+	s.reserve(32);
+	while (getline(in, s)) {
+		if ((p = s.rfind('\r')) != string::npos)
+			s.erase(p);
+		prev_entry = qsl_calls->insert(prev_entry, make_pair(s, 0));
+		prev_entry->second |= (1 << qsl_type);
+	}
+
+	LOG_INFO("Added %zu %s callsigns from \"%s\"",
+		 qsl_calls->size() - n, qsl_names[qsl_type], filename);
+
+	return true;
+}
+
+void qsl_close(void)
+{
+	delete qsl_calls;
+	qsl_calls = 0;
+}
+
+unsigned char qsl_lookup(const char* callsign)
+{
+	if (qsl_calls == 0)
+		return 0;
+
+	string str;
+	str.resize(strlen(callsign));
+	transform(callsign, callsign + str.length(), str.begin(), static_cast<int (*)(int)>(toupper));
+
+	qsl_map::const_iterator i = qsl_calls->find(str);
+	return i == qsl_calls->end() ? 0 : i->second;
+}

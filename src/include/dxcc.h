@@ -13,8 +13,15 @@ struct dxcc {
 	     float lat = 0.0f, float lon = 0.0f, float tz = 0.0f);
 };
 
+enum qsl_t { QSL_LOTW, QSL_EQSL, QSL_END };
+extern const char* qsl_names[];
+
 bool dxcc_open(const char* filename);
 void dxcc_close(void);
 const dxcc* dxcc_lookup(const char* callsign);
+
+bool qsl_open(const char* filename, qsl_t qsl_type);
+void qsl_close(void);
+unsigned char qsl_lookup(const char* callsign);
 
 #endif // DXCC_H_

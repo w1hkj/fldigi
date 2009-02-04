@@ -29,6 +29,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <map>
+#include <sstream>
 #include <algorithm>
 
 #include <FL/Fl_Tooltip.H>
@@ -893,7 +894,6 @@ loop:
 const char* FTextView::dxcc_lookup_call(int x, int y)
 {
 	char* s = get_word(x - this->x(), y - this->y());
-	const char* ret = 0;
 	if (!(s && *s && call.match(s))) {
 		free(s);
 		return 0;
@@ -901,14 +901,16 @@ const char* FTextView::dxcc_lookup_call(int x, int y)
 
 	const char *name = 0, *date = 0, *qth = 0, *locator = 0, *mode;
 	double lon1, lat1, lon2 = 360.0, lat2 = 360.0, distance, azimuth;
-	static char tip[256];
-	size_t len = 0;
+	static string tip;
+	ostringstream stip;
 	const dxcc* e = 0;
 	cQsoRec* qso = 0;
+	unsigned char qsl;
 
 	e = dxcc_lookup(s);
+	qsl = qsl_lookup(s);
 	qso = SearchLog(s);
-	
+
 	if (qso) {
 		locator = qso->getField(GRIDSQUARE);
 		if (!(locator && *locator && locator2longlat(&lon2, &lat2, locator) == RIG_OK))
@@ -916,44 +918,47 @@ const char* FTextView::dxcc_lookup_call(int x, int y)
 		name = qso->getField(NAME);
 		date = qso->getField(QSO_DATE);
 		qth  = qso->getField(QTH);
-		
 	}
 	if (e) {
 		if (lon2 == 360.0)
 			lon2 = -e->longitude;
 		if (lat2 == 360.0)
 			lat2 = e->latitude;
-		len += snprintf(tip, sizeof(tip), "%s (%s GMT%+0.1f) CQ-%d ITU-%d\n",
-				e->country, e->continent, -e->gmt_offset, e->cq_zone, e->itu_zone);
-		ret = tip;
+		stip << e->country << " (" << e->continent
+		     << " GMT" << fixed << showpos << setprecision(1) << -e->gmt_offset << noshowpos
+		     << ") CQ-" << e->cq_zone << " ITU-" << e->itu_zone << '\n';
 	}
 
-	if (len < sizeof(tip) && locator2longlat(&lon1, &lat1, progdefaults.myLocator.c_str()) == RIG_OK &&
+	if (locator2longlat(&lon1, &lat1, progdefaults.myLocator.c_str()) == RIG_OK &&
 	    qrb(lon1, lat1, lon2, lat2, &distance, &azimuth) == RIG_OK) {
-		len += snprintf(tip + len, sizeof(tip) - len, "QTE %.0f\260 (%.0f\260)  QRB %.0fkm (%.0fkm)\n",
-				azimuth, azimuth_long_path(azimuth), distance, distance_long_path(distance));
-		ret = tip;
+		stip << "QTE " << setprecision(0) << azimuth << '\260' << " ("
+		     << azimuth_long_path(azimuth) << '\260' << ")  QRB " << distance << "km ("
+		     << distance_long_path(distance) << "km)\n";
 	}
-	if (len < sizeof(tip) && name && *name) {
-		len += snprintf(tip + len, sizeof(tip) - len, "* %s", name);
-		if (len < sizeof(tip) && qth && *qth)
-			len += snprintf(tip + len, sizeof(tip) - len, " %s %s\n", _("in"), qth);
-		else if (len + 1 < sizeof(tip)) {
-			tip[len++] = '\n';
-			tip[len] = '\0';
-		}
-		ret = tip;
+	if (name && *name) {
+		stip << "* " << name;
+		if (qth && *qth)
+			stip << ' ' << _("in") << ' ' << qth;
+		stip << '\n';
 	}
-	if (len < sizeof(tip) && date && *date) {
-		len += snprintf(tip + len, sizeof(tip) - len, "* %s: %s", _("Last QSO"), date);
+	if (date && *date) {
+		stip << "* " << _("Last QSO") << ": " << date;
 		mode = qso->getField(MODE);
-		if (len < sizeof(tip) && mode && *mode)
-			len += snprintf(tip + len, sizeof(tip) - len, " %s %s", _("in"), mode);
-		ret = tip;
+		if (mode)
+			stip << ' ' << _("in") << ' ' << mode;
+		stip << '\n';
+	}
+	if (qsl) {
+		stip << "* ";
+		for (unsigned char i = 0; i < QSL_END; i++)
+			if (qsl & (1 << i))
+				stip << qsl_names[i] << ' ';
+		stip << '\n';
 	}
 
 	free(s);
-	return ret;
+	tip = stip.str();
+	return tip.empty() ? 0 : tip.c_str();
 }
 
 void FTextView::dxcc_tooltip(void* obj)
