@@ -27,7 +27,8 @@
 #    include "debug.h"
 #endif
 
-#include <errno.h>
+#include <unistd.h>
+#include <cerrno>
 #include <stdexcept>
 #include <cstring>
 

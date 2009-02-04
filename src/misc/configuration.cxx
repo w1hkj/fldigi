@@ -17,6 +17,8 @@
 
 #include <FL/Fl_Tooltip.H>
 
+#include <unistd.h>
+
 #include <iostream>
 #include <fstream>
 

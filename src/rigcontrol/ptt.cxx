@@ -240,8 +240,11 @@ void PTT::open_parport(void)
 	}
 
 	bool isparport = false;
+
+#if HAVE_LINUX_PPDEV_H || HAVE_DEV_PPBUS_PPI_H
 	struct stat st;
 	int status;
+#endif
 
 #if HAVE_LINUX_PPDEV_H     // Linux (ppdev)
 	isparport = (fstat(pttfd, &st) == 0 && S_ISCHR(st.st_mode) &&
