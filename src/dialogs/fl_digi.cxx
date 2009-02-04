@@ -472,6 +472,15 @@ void cb_rttyCustom(Fl_Widget *w, void *arg)
 	cb_init_mode(w, arg);
 }
 
+static void busy_cursor(void*)
+{
+	Fl::first_window()->cursor(FL_CURSOR_WAIT);
+}
+static void default_cursor(void*)
+{
+	Fl::first_window()->cursor(FL_CURSOR_DEFAULT);
+}
+
 void startup_modem(modem *m)
 {
 	trx_start_modem(m);
@@ -995,7 +1004,7 @@ void cb_mnuBeginnersURL(Fl_Widget*, void*)
 #endif
 }
 
-void cb_mnuCheckUpdate(Fl_Widget* w, void*)
+void cb_mnuCheckUpdate(Fl_Widget*, void*)
 {
 	struct {
 		const char* url;
@@ -1008,12 +1017,10 @@ void cb_mnuCheckUpdate(Fl_Widget* w, void*)
 	}, *latest;
 	string reply;
 
-	w->window()->cursor(FL_CURSOR_WAIT);
 	put_status(_("Checking for updates..."));
 	for (size_t i = 0; i < sizeof(sites)/sizeof(*sites); i++) { // fetch .url, grep for .re
-		Fl::check();
 		reply.clear();
-		if (!fetch_http(sites[i].url, reply, 20.0))
+		if (!fetch_http_gui(sites[i].url, reply, 20.0, busy_cursor, 0, default_cursor, 0))
 			continue;
 		re_t re(sites[i].re, REG_EXTENDED | REG_ICASE | REG_NEWLINE);
 		if (!re.match(reply.c_str()) || re.nsub() != 2)
@@ -1021,7 +1028,6 @@ void cb_mnuCheckUpdate(Fl_Widget* w, void*)
 
 		sites[i].version = ver2int((sites[i].version_str = re.submatch(1)).c_str());
 	}
-	w->window()->cursor(FL_CURSOR_DEFAULT);
 	put_status("");
 
 	latest = sites[1].version > sites[0].version ? &sites[1] : &sites[0];
