@@ -66,7 +66,7 @@
 #include <math.h>
 
 
-#include <hamlib/rotator.h>
+#include "locator.h"
 
 
 #ifndef DOC_HIDDEN
