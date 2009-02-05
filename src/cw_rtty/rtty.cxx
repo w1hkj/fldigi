@@ -515,13 +515,6 @@ int rtty::rx_process(const double *buf, int len)
 				}
 //	hysterisis dead zone in frequency discriminator bit detector
 
-//				if (f > deadzone )  {
-//					bit = false;
-//				}
-//				if (f < -deadzone) {
-//					bit = true;
-//				}
-			
 				if (dspcnt && (--dspcnt % (nbits + 2) == 0)) {
 					pipe[pipeptr] = f / shift; // display filtered signal		
 					pipeptr = (pipeptr + 1) % (2*symbollen);

@@ -408,7 +408,7 @@ static void *hamlib_loop(void *args)
 					hamlib_rmode == RIG_MODE_CWR ||	
 					hamlib_rmode == RIG_MODE_PKTLSB ||
 					hamlib_rmode == RIG_MODE_ECSSLSB ||
-					hamlib_rmode == RIG_MODE_RTTYR) {
+					hamlib_rmode == RIG_MODE_RTTY) {
 				wf->USB(false);
 			} else {
 				wf->USB(true);
