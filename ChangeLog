@@ -1,5 +1,87 @@
 Change Log:
 
+3.11
+    1)  FText changes - changed the FText tooltip display function to use a 
+        string stream
+    2)  Update config UI
+        Move rx text extraction and output options to the same tab
+        Hide mixer tab on win32
+    3)  Add LoTW and eQSL hints to dxcc popup
+        This uses the following files:
+           http://www.hb9bza.net/lotw/lotw1.txt in ~/.fldigi/lotw1.txt
+           http://www.eqsl.cc/QSLCard/DownloadedFiles/AGMemberList.txt in 
+               ~/.fldigi/AGMemberList.txt or ~/.fldigi/eqsl.txt
+    5)  Add benchmark and batch decoding switches
+        This patch adds a new configure switch (--enable-benchmark) which 
+        builds a binary suitable for measuring the modems' decoding speed.
+        The new --benchmark-* switches can also be used to batch-decode audio 
+        files if sndfile support is enabled.
+    6)  Fix uhrouter support
+        Add function to run the uhrouter program on OS X
+        Compile uhrouter code only on OS X
+        Compile parport code only on Linux and FreeBSD
+    7)  Fix cygwin gcc-4 compilation
+    8)  Fix local strcasestr
+    9)  Fix new version check; add new download URL
+    10) Add PSK reporter activity text field
+        This patch adds a button and text field to the main window rig control 
+        frame that can be used to QSY to frequencies around which there have 
+        been recent reception reports in a particular geographic area. The area
+        is determined by the field text, which must be an IARU grid prefix. If
+        the field is empty, the first two characters of the operator's locator 
+        are used.  If the locator is unset, pskreporter.info uses (currently) 
+        IP geolocation to approximate it.
+    
+        A popup menu is displayed when the user clicks the button or presses 
+        Return inside the text field (which may be empty).  The popup shows 
+        frequencies sorted by a measure of activity that gives more weight to 
+        transmissions.  If rig control is enabled, a frequency can be sent to 
+        the rig by selecting it.
+    
+        The data is retrieved from this URL:
+            http://pskreporter.info/cgi-bin/psk-freq.pl
+    
+        Or, with an non-empty text field:
+            http://pskreporter.info/cgi-bin/psk-freq.pl?grid=TEXT
+    11) Add new quick_choice popups
+    12) Add fetch_http_gui.  This is a new function to download data over HTTP 
+        while keeping the UI up to date
+    13) Update guide
+            Add newlines
+            Update references to menus
+            Use html name for (C) symbol
+            Add version number to footer
+    14) Update platform ifdefs. Merge patches for FreeBSD submitted by Diane 
+        Bruce.
+    15) Use POSIX paths on cygwin
+    16) Fix open URL function
+    17) Fix compilation error with --without-hamlib
+    18) Fix to wf_audioscale waterfall scale change error
+    19) Added Rx text output to temporary text file.
+            Intended use: text to speech conversion for blind operators
+    20) Deleted all references to afcIND
+    21) Changed waterfall event behavior for disabling <TIMER:nn> operation
+    22) Fixed PSKnnn ADIF naming convention to comply with adif 2.0 spec
+    23) Added logbook save to file after every change to the logbook
+    24) Modified contest exchange fill-in; appends if field partially filled
+    25) Reversed #Out and #In fields for contest log
+    26) Added Cabrillo report writer for logbook / contest use
+        Removed free form Exchange fields #2 and #3
+        Renamed Exchange field #1 to Exchange Out
+        Added Exchange In field to the logbook
+        Added Cabrillo field defaults per Contest selection
+        Modified Cabrillo report line QSO: format
+    27) Added rx stream file extraction for use with external program "wrap"
+        Extracts all text between and including [WRAP:beg]...[WRAP:end]
+    28) Add stop macro timer to all waterfall events
+    29) Fix rig xml <PORT dependency
+    30) Fix rigCAT_init Event Log output
+    31) Fix cursor positioning problem in QSO Call field
+    32) Fix DxKeeper adif file output - Changed date format to YYYYMMDD
+    33) Fix missing quick-pick popup menu(s)
+    34) Added "wrap" and "talk" sub directories to fldigi files directory
+        Target directories for save wrap files and textout.txt respectively.
+
 3.1
       1) Changes to irrxml functions; 
          added main.set_sideband <USB/LSB>
