@@ -16,7 +16,6 @@
 #include "pskrep.h"
 #include "flinput2.h"
 #include "logsupport.h"
-static const char *txtExtract = "Detect the occurance of [WRAP:beg] and [WRAP:end]\nSave tags and all enclosed text to date-time stamped files placed\nin the folder 'temp' located in the fldigi files folder.\n\nie:'extract-20090127-0925.wrap"; 
 Fl_Double_Window *dlgConfig; 
 
 void set_qrz_buttons(Fl_Button* b) {
@@ -1951,8 +1950,6 @@ static void cb_chkAutoExtract(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Group *tabRxStream=(Fl_Group *)0;
-
 Fl_Check_Button *chkRxStream=(Fl_Check_Button *)0;
 
 static void cb_chkRxStream(Fl_Check_Button* o, void*) {
@@ -2656,7 +2653,6 @@ an merging"));
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
           { tabCW = new Fl_Group(0, 50, 500, 320, _("CW"));
-            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 500, 320);
               tabsCW->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
@@ -3055,6 +3051,7 @@ an merging"));
             tabOlivia->end();
           } // Fl_Group* tabOlivia
           { tabPSK = new Fl_Group(0, 50, 500, 320, _("PSK"));
+            tabPSK->hide();
             { tabsPSK = new Fl_Tabs(0, 50, 500, 320);
               tabsPSK->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
@@ -4027,7 +4024,6 @@ l with your sound hardware."));
         { tabsMisc = new Fl_Tabs(0, 25, 500, 345);
           tabsMisc->selection_color(FL_LIGHT1);
           { tabSweetSpot = new Fl_Group(0, 50, 500, 320, _("Sweet Spot"));
-            tabSweetSpot->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 75);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -4167,39 +4163,40 @@ l with your sound hardware."));
             } // Fl_Group* o
             tabCPUspeed->end();
           } // Fl_Group* tabCPUspeed
-          { tabFileExtraction = new Fl_Group(0, 50, 500, 320, _("Extract"));
+          { tabFileExtraction = new Fl_Group(0, 50, 500, 320, _("Text Capture"));
             tabFileExtraction->hide();
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 155, _("Extract files from rx stream"));
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 155, _("Auto Extract files from rx stream"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = chkAutoExtract = new Fl_Check_Button(136, 180, 227, 20, _("Enable detection && extraction"));
+              { Fl_Check_Button* o = chkAutoExtract = new Fl_Check_Button(136, 184, 227, 20, _("Enable detection && extraction"));
                 chkAutoExtract->tooltip(_("Extract files for use with external \"wrap\" program"));
                 chkAutoExtract->down_box(FL_DOWN_BOX);
                 chkAutoExtract->callback((Fl_Callback*)cb_chkAutoExtract);
                 o->value(progdefaults.autoextract);
               } // Fl_Check_Button* chkAutoExtract
-              { Fl_Box* o = new Fl_Box(15, 85, 465, 62, _("label"));
+              { Fl_Box* o = new Fl_Box(15, 85, 465, 92, _("0\n1\n2\n3\n4"));
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-                o->label(txtExtract);
+                o->label(txtWrapInfo);
               } // Fl_Box* o
               o->end();
             } // Fl_Group* o
-            tabFileExtraction->end();
-          } // Fl_Group* tabFileExtraction
-          { tabRxStream = new Fl_Group(0, 50, 500, 320, _("RxText"));
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 97, _("Send rx stream to external file"));
+            { Fl_Group* o = new Fl_Group(5, 218, 490, 144, _("Capture rx text to external file"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = chkRxStream = new Fl_Check_Button(162, 105, 175, 20, _("Enable rx text stream"));
+              { Fl_Check_Button* o = chkRxStream = new Fl_Check_Button(136, 330, 175, 20, _("Enable rx text stream"));
                 chkRxStream->tooltip(_("Send rx text to file: textout.txt"));
                 chkRxStream->down_box(FL_DOWN_BOX);
                 chkRxStream->callback((Fl_Callback*)cb_chkRxStream);
                 o->value(progdefaults.speak);
               } // Fl_Check_Button* chkRxStream
+              { Fl_Box* o = new Fl_Box(20, 241, 465, 69, _("0\n1\n2\n3"));
+                o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+                o->label(txtTalkInfo);
+              } // Fl_Box* o
               o->end();
             } // Fl_Group* o
-            tabRxStream->end();
-          } // Fl_Group* tabRxStream
+            tabFileExtraction->end();
+          } // Fl_Group* tabFileExtraction
           tabsMisc->end();
         } // Fl_Tabs* tabsMisc
         tabMisc->end();

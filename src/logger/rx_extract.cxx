@@ -36,6 +36,12 @@ using namespace std;
 
 const char *beg = "[WRAP:beg]";
 const char *end = "[WRAP:end]";
+const char *txtWrapInfo = "\
+Detect the occurance of [WRAP:beg] and [WRAP:end]\n\
+Save tags and all enclosed text to date-time stamped files placed\n\
+in the folder 'wrap' located in the fldigi files folder, ie:\n\n\
+    fldigi.files\\wrap\\extract-20090127-0925.wrap (Windows)\n\
+    ~/.fldigi/wrap/extract-20090127-0925.wrap (Linux, OS X, Free BSD)"; 
 
 #define   bufsize  16
 char  rx_extract_buff[bufsize + 1];
@@ -84,7 +90,7 @@ void rx_extract_add(int c)
 	        gmtime_r(&t, &tim);
 			strftime(dttm, sizeof(dttm), "%Y%m%d-%H%M", &tim);
 			
-			string outfilename = TempDir;
+			string outfilename = WrapDir;
 			outfilename.append("extract-");
 			outfilename.append(dttm);
 			outfilename.append(".wrap");			

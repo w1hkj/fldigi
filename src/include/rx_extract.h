@@ -24,6 +24,7 @@
 #ifndef _RX_EXTRACT_H
 #define _RX_EXTRACT_H
 
-void rx_extract_add(int c);
+extern const char *txtWrapInfo;
+extern void rx_extract_add(int c);
 
 #endif

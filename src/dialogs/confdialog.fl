@@ -44,8 +44,6 @@ decl {\#include "flinput2.h"} {global
 
 decl {\#include "logsupport.h"} {} 
 
-decl {const char *txtExtract = "Detect the occurance of [WRAP:beg] and [WRAP:end]\\nSave tags and all enclosed text to date-time stamped files placed\\nin the folder 'temp' located in the fldigi files folder.\\n\\nie:'extract-20090127-0925.wrap"} {} 
-
 decl {Fl_Double_Window *dlgConfig;} {public
 } 
 
@@ -689,7 +687,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 500 320} selection_color 50
@@ -1043,7 +1041,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabPSK {
             label PSK open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Tabs tabsPSK {open
               xywh {0 50 500 320} selection_color 50
@@ -2258,7 +2256,7 @@ OFF - limit search to +/- 200 Hz} xywh {215 246 270 20} down_box DOWN_BOX
         } {
           Fl_Group tabSweetSpot {
             label {Sweet Spot} open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {open
               xywh {5 60 490 75} box ENGRAVED_FRAME align 21
@@ -2410,41 +2408,50 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabFileExtraction {
-            label Extract open
+            label {Text Capture} open
             xywh {0 50 500 320} hide
           } {
             Fl_Group {} {
-              label {Extract files from rx stream} open
+              label {Auto Extract files from rx stream} open
               xywh {5 60 490 155} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button chkAutoExtract {
                 label {Enable detection && extraction}
                 callback {progdefaults.autoextract = o->value();
 progdefaults.changed = true;}
-                tooltip {Extract files for use with external "wrap" program} xywh {136 180 227 20} down_box DOWN_BOX
+                tooltip {Extract files for use with external "wrap" program} xywh {136 184 227 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.autoextract);}
               }
               Fl_Box {} {
-                label label
-                xywh {15 85 465 62} align 21
-                code0 {o->label(txtExtract);}
+                label {0
+1
+2
+3
+4}
+                xywh {15 85 465 92} align 21
+                code0 {o->label(txtWrapInfo);}
+                code1 {\#include "rx_extract.h"}
               }
             }
-          }
-          Fl_Group tabRxStream {
-            label RxText open
-            xywh {0 50 500 320}
-          } {
             Fl_Group {} {
-              label {Send rx stream to external file} open
-              xywh {5 60 490 97} box ENGRAVED_FRAME align 21
+              label {Capture rx text to external file} open
+              xywh {5 218 490 144} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button chkRxStream {
                 label {Enable rx text stream}
                 callback {progdefaults.speak = o->value();
 progdefaults.changed = true;}
-                tooltip {Send rx text to file: textout.txt} xywh {162 105 175 20} down_box DOWN_BOX
+                tooltip {Send rx text to file: textout.txt} xywh {136 330 175 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.speak);}
+              }
+              Fl_Box {} {
+                label {0
+1
+2
+3}
+                xywh {20 241 465 69} align 21
+                code0 {o->label(txtTalkInfo);}
+                code1 {\#include "speak.h"}
               }
             }
           }

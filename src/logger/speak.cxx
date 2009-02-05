@@ -34,13 +34,18 @@
 
 using namespace std;
 
+const char *txtTalkInfo = "\
+Save all received text, one character at a time to the following file:\n\n\
+    fldigi.files\\talk\\textout.txt (Windows)\n\
+    ~/.fldigi/talk/textout.txt (Linux, OS X, Free BSD)"; 
+
 string speakfname = "";
 ofstream speakout;
 bool speakOK = false;
 
 void speak_open()
 {
-    speakfname = TempDir;
+    speakfname = TalkDir;
     speakfname.append("textout.txt");
     speakout.open(speakfname.c_str());
     if (speakout) speakOK = true;

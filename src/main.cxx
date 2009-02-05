@@ -103,6 +103,8 @@ string LogsDir;
 string PicsDir;
 string HelpDir;
 string MacrosDir;
+string WrapDir;
+string TalkDir;
 string TempDir;
 string PskMailDir;
 
@@ -977,6 +979,8 @@ static void checkdirectories(void)
 		{ PicsDir, "images", 0 },
 		{ HelpDir, "help", 0 },
 		{ MacrosDir, "macros", create_new_macros },
+		{ WrapDir, "wrap", 0 },
+		{ TalkDir, "talk", 0 },
 		{ TempDir, "temp", 0 },
 	};
 

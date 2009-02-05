@@ -24,6 +24,8 @@
 #ifndef _SPEAK_H
 #define _SPEAK_H
 
+extern const char *txtTalkInfo;
+
 void speak_open();
 void speak_close();
 void speak(int c);

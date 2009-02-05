@@ -31,6 +31,8 @@ extern string		LogsDir;
 extern string		PicsDir;
 extern string		HelpDir;
 extern string		MacrosDir;
+extern string       WrapDir;
+extern string       TalkDir;
 extern string		TempDir;
 extern string		PskMailDir;
 

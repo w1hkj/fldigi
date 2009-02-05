@@ -224,7 +224,7 @@ int w_inpRstIn	= 30;
 int w_inpRstOut = 30;
 int w_SerNo	= 40;
 int wf1 = pad + w_inpFreq + pad + 2*w_inpTime +  pad + w_inpCall + 
-          pad + w_inpName + pad + w_inpRstIn + pad + w_inpRstOut;
+          pad + w_inpName + pad + w_inpRstIn + pad + w_inpRstOut + pad;
 
 int w_fm1 		= 25;
 int w_fm2 		= 15;
@@ -580,6 +580,11 @@ void init_modem(trx_mode mode)
 {
 	ENSURE_THREAD(FLMAIN_TID);
 
+#if !BENCHMARK_MODE
+       quick_change = 0;
+       modem_config_tab = tabsModems->child(0);
+#endif
+
 	switch (mode) {
 	case MODE_NEXT:
 		if ((mode = active_modem->get_mode() + 1) == NUM_MODES)
@@ -697,9 +702,6 @@ void init_modem(trx_mode mode)
 #if BENCHMARK_MODE
 	return;
 #endif
-
-	quick_change = 0;
-	modem_config_tab = tabsModems->child(0);
 
 	clear_StatusMessages();
 	progStatus.lastmode = mode;
@@ -1466,20 +1468,19 @@ void cb_QRZ(Fl_Widget *b, void *)
 
 void status_cb(Fl_Widget *b, void *arg)
 {
-        if (Fl::event_button() == FL_RIGHT_MOUSE) {
-		progdefaults.loadDefaults();
-                tabsConfigure->value(tabModems);
-                tabsModems->value(modem_config_tab);
-                dlgConfig->show();
-        }
-        else {
-                if (!quick_change)
-                        return;
-                const Fl_Menu_Item *m = quick_change->popup(Fl::event_x(), Fl::event_y());
-                if (m && m->callback())
-                        m->do_callback(0);
-        }
-
+    if (Fl::event_button() == FL_RIGHT_MOUSE) {
+   		progdefaults.loadDefaults();
+        tabsConfigure->value(tabModems);
+        tabsModems->value(modem_config_tab);
+        dlgConfig->show();
+    }
+    else {
+        if (!quick_change)
+            return;
+        const Fl_Menu_Item *m = quick_change->popup(Fl::event_x(), Fl::event_y());
+        if (m && m->callback())
+            m->do_callback(0);
+    }
 	static_cast<Fl_Button*>(b)->clear();
 	restoreFocus();
 }
@@ -2464,7 +2465,8 @@ void create_fl_digi_main() {
 
 					Fl_Box *fm5box = new Fl_Box(rightof(inpLoc), y3, w_fm5, qh - pad, _("Az"));
 					fm5box->align(FL_ALIGN_INSIDE);
-					inpAZ = new Fl_Input2(rightof(fm5box), y3, w_inpAZ, qh - pad, "");
+					inpAZ = new Fl_Input2(rightof(fm5box), y3, 
+					    rightof(inpRstOut) - rightof(fm5box), qh - pad, "");
 					inpAZ->tooltip("");
 					inpAZ->align(FL_ALIGN_INSIDE);
 					
@@ -2486,7 +2488,8 @@ void create_fl_digi_main() {
 
 					Fl_Box *fm8box = new Fl_Box(rightof(inpSerNo) + pad, y3, w_fm7, qh - pad, _("Xchg"));
 					fm8box->align(FL_ALIGN_INSIDE);
-					inpXchgIn = new Fl_Input2(rightof(fm8box), y3, w_Xchg, qh - pad, "");
+					inpXchgIn = new Fl_Input2(rightof(fm8box), y3, 
+					    rightof(inpRstOut) - rightof(fm8box), qh - pad, "");
 					inpXchgIn->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 					inpXchgIn->tooltip(_("Contest exchange in"));
 									
