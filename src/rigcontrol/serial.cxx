@@ -169,37 +169,28 @@ void Cserial::SetPTT(bool b)
 		LOG_DEBUG("ptt fd < 0");
 		return;
 	}
-	if ( !(dtrptt || rtsptt) ) {
-		return;
-	}
-
-	ioctl(fd, TIOCMGET, &status);
-	LOG_INFO("h/w ptt %d, Status %X", b, status);
-	if (b == true) {				// ptt enabled
-		if (dtrptt && dtr)
-			status &= ~TIOCM_DTR;	// toggle low
-		if (dtrptt && !dtr)
-			status |= TIOCM_DTR;	// toggle high
-		if (rtscts == false) {
-			if (rtsptt && rts)
-				status &= ~TIOCM_RTS;	// toggle low
-			if (rtsptt && !rts)
-				status |= TIOCM_RTS;	// toggle high
-		}
-	} else {						// ptt disabled
-		if (dtrptt && dtr)
-			status |= TIOCM_DTR;	// toggle high
-		if (dtrptt && !dtr)
-			status &= ~TIOCM_DTR;	// toggle low
-		if (rtscts == false) {
-			if (rtsptt && rts)
-				status |= TIOCM_RTS;	// toggle high
-			if (rtsptt && !rts)
-				status &= ~TIOCM_RTS;	// toggle low
-		}
-	}
-	LOG_DEBUG("Status %X", status);
-	ioctl(fd, TIOCMSET, &status);
+	if (dtrptt || rtsptt) {
+        ioctl(fd, TIOCMGET, &status);
+	    LOG_INFO("h/w ptt %d, Status %X", b, status);
+	    if (b == true) {                                  // ptt enabled
+		    if (dtrptt && dtr)  status &= ~TIOCM_DTR;     // toggle low
+		    if (dtrptt && !dtr) status |= TIOCM_DTR;      // toggle high
+            if (rtscts == false) {
+			    if (rtsptt && rts)  status &= ~TIOCM_RTS; // toggle low
+			    if (rtsptt && !rts) status |= TIOCM_RTS;  // toggle high
+		    }
+	    } else {                                          // ptt disabled
+		    if (dtrptt && dtr)  status |= TIOCM_DTR;      // toggle high
+		    if (dtrptt && !dtr) status &= ~TIOCM_DTR;     // toggle low
+		    if (rtscts == false) {
+			    if (rtsptt && rts)  status |= TIOCM_RTS;  // toggle high
+			    if (rtsptt && !rts) status &= ~TIOCM_RTS; // toggle low
+		    }
+	    }
+	    LOG_INFO("Status %02X, %s", status & 0xFF, binarystr(status, 8));
+	    ioctl(fd, TIOCMSET, &status);
+    }
+    LOG_DEBUG("No ptt specified");
 }
 
 ///////////////////////////////////////////////////////

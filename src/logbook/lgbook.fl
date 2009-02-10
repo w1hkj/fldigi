@@ -79,7 +79,7 @@ btnSelectRSTrcvd->value(0);
 btnSelectIOTA->value(0);
 btnSelectDXCC->value(0);
 btnSelectTX_pwr->value(0);
-btnSelectComment->value(0);}
+btnSelectNotes->value(0);}
         xywh {397 275 76 20}
       }
       Fl_Button btnCheckAllFields {
@@ -108,7 +108,7 @@ btnSelectRSTrcvd->value(1);
 btnSelectIOTA->value(1);
 btnSelectDXCC->value(1);
 btnSelectTX_pwr->value(1);
-btnSelectComment->value(1);}
+btnSelectNotes->value(1);}
         xywh {477 275 76 20}
       }
       Fl_Check_Button btnSelectCall {
@@ -175,8 +175,8 @@ btnSelectComment->value(1);}
         label Country
         xywh {520 63 70 15} down_box DOWN_BOX
       }
-      Fl_Check_Button btnSelectComment {
-        label Comment
+      Fl_Check_Button btnSelectNotes {
+        label Notes
         xywh {520 82 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectIOTA {
@@ -234,7 +234,7 @@ btnSelectXchgIn->value(0);
 btnSelectMyXchg->value(0);
 btnSelectRSTsent->value(0);
 btnSelectRSTrcvd->value(1);
-btnSelectComment->value(0);
+btnSelectNotes->value(0);
 btnSelectIOTA->value(0);
 btnSelectDXCC->value(0);
 btnSelectTX_pwr->value(0);}
@@ -321,8 +321,8 @@ btnSelectTX_pwr->value(0);}
         tooltip {Stations grid square} xywh {281 56 75 22} labelsize 12 align 5
         class Fl_Input2
       }
-      Fl_Input inpComment_log {
-        label Comment
+      Fl_Input inpNotes_log {
+        label Notes
         tooltip {Interesting notes (80 chars max)} xywh {5 95 350 57} type Multiline labelsize 12 align 5
         class Fl_Input2
       }

@@ -62,7 +62,7 @@ btnSelectRSTrcvd->value(0);
 btnSelectIOTA->value(0);
 btnSelectDXCC->value(0);
 btnSelectTX_pwr->value(0);
-btnSelectComment->value(0);
+btnSelectNotes->value(0);
 }
 
 Fl_Button *btnCheckAllFields=(Fl_Button *)0;
@@ -92,7 +92,7 @@ btnSelectRSTrcvd->value(1);
 btnSelectIOTA->value(1);
 btnSelectDXCC->value(1);
 btnSelectTX_pwr->value(1);
-btnSelectComment->value(1);
+btnSelectNotes->value(1);
 }
 
 Fl_Check_Button *btnSelectCall=(Fl_Check_Button *)0;
@@ -127,7 +127,7 @@ Fl_Check_Button *btnSelectProvince=(Fl_Check_Button *)0;
 
 Fl_Check_Button *btnSelectCountry=(Fl_Check_Button *)0;
 
-Fl_Check_Button *btnSelectComment=(Fl_Check_Button *)0;
+Fl_Check_Button *btnSelectNotes=(Fl_Check_Button *)0;
 
 Fl_Check_Button *btnSelectIOTA=(Fl_Check_Button *)0;
 
@@ -169,7 +169,7 @@ btnSelectXchgIn->value(0);
 btnSelectMyXchg->value(0);
 btnSelectRSTsent->value(0);
 btnSelectRSTrcvd->value(1);
-btnSelectComment->value(0);
+btnSelectNotes->value(0);
 btnSelectIOTA->value(0);
 btnSelectDXCC->value(0);
 btnSelectTX_pwr->value(0);
@@ -207,7 +207,7 @@ Fl_Input2 *inpCountry_log=(Fl_Input2 *)0;
 
 Fl_Input2 *inpLoc_log=(Fl_Input2 *)0;
 
-Fl_Input2 *inpComment_log=(Fl_Input2 *)0;
+Fl_Input2 *inpNotes_log=(Fl_Input2 *)0;
 
 Fl_DateInput *inpQSLrcvddate_log=(Fl_DateInput *)0;
 
@@ -419,9 +419,9 @@ void create_logbook_dialogs() {
       { btnSelectCountry = new Fl_Check_Button(520, 63, 70, 15, _("Country"));
         btnSelectCountry->down_box(FL_DOWN_BOX);
       } // Fl_Check_Button* btnSelectCountry
-      { btnSelectComment = new Fl_Check_Button(520, 82, 70, 15, _("Comment"));
-        btnSelectComment->down_box(FL_DOWN_BOX);
-      } // Fl_Check_Button* btnSelectComment
+      { btnSelectNotes = new Fl_Check_Button(520, 82, 70, 15, _("Notes"));
+        btnSelectNotes->down_box(FL_DOWN_BOX);
+      } // Fl_Check_Button* btnSelectNotes
       { btnSelectIOTA = new Fl_Check_Button(520, 101, 70, 15, _("IOTA"));
         btnSelectIOTA->down_box(FL_DOWN_BOX);
       } // Fl_Check_Button* btnSelectIOTA
@@ -628,19 +628,19 @@ void create_logbook_dialogs() {
         inpLoc_log->align(FL_ALIGN_TOP_LEFT);
         inpLoc_log->when(FL_WHEN_RELEASE);
       } // Fl_Input2* inpLoc_log
-      { inpComment_log = new Fl_Input2(5, 95, 350, 57, _("Comment"));
-        inpComment_log->tooltip(_("Interesting notes (80 chars max)"));
-        inpComment_log->type(4);
-        inpComment_log->box(FL_DOWN_BOX);
-        inpComment_log->color(FL_BACKGROUND2_COLOR);
-        inpComment_log->selection_color(FL_SELECTION_COLOR);
-        inpComment_log->labeltype(FL_NORMAL_LABEL);
-        inpComment_log->labelfont(0);
-        inpComment_log->labelsize(12);
-        inpComment_log->labelcolor(FL_FOREGROUND_COLOR);
-        inpComment_log->align(FL_ALIGN_TOP_LEFT);
-        inpComment_log->when(FL_WHEN_RELEASE);
-      } // Fl_Input2* inpComment_log
+      { inpNotes_log = new Fl_Input2(5, 95, 350, 57, _("Notes"));
+        inpNotes_log->tooltip(_("Interesting notes (80 chars max)"));
+        inpNotes_log->type(4);
+        inpNotes_log->box(FL_DOWN_BOX);
+        inpNotes_log->color(FL_BACKGROUND2_COLOR);
+        inpNotes_log->selection_color(FL_SELECTION_COLOR);
+        inpNotes_log->labeltype(FL_NORMAL_LABEL);
+        inpNotes_log->labelfont(0);
+        inpNotes_log->labelsize(12);
+        inpNotes_log->labelcolor(FL_FOREGROUND_COLOR);
+        inpNotes_log->align(FL_ALIGN_TOP_LEFT);
+        inpNotes_log->when(FL_WHEN_RELEASE);
+      } // Fl_Input2* inpNotes_log
       { Fl_DateInput* o = inpQSLrcvddate_log = new Fl_DateInput(455, 56, 100, 22, _("QSL-rcvd"));
         inpQSLrcvddate_log->tooltip(_("QSL received on this date"));
         inpQSLrcvddate_log->box(FL_DOWN_BOX);

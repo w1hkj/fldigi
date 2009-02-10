@@ -173,7 +173,6 @@ extern Fl_Counter *valTHOR_PATHS;
 extern Fl_Group *tabRig;
 extern Fl_Tabs *tabsRig;
 #include <FL/Fl_Round_Button.H>
-extern Fl_Round_Button *btnPTT[5];
 extern Fl_Group *grpHWPTT;
 #include <FL/Fl_Input_Choice.H>
 extern Fl_Input_Choice *inpTTYdev;
@@ -200,6 +199,7 @@ extern Fl_Round_Button *btnRigCatDTRptt;
 extern Fl_Check_Button *btnRigCatRTSplus;
 extern Fl_Check_Button *btnRigCatDTRplus;
 extern Fl_Check_Button *chkRigCatRTSCTSflow;
+extern Fl_Round_Button *btnPTT[6];
 extern Fl_Check_Button *chkUSEHAMLIB;
 extern Fl_Group *grpHamlib;
 extern Fl_ComboBox *cboHamlibRig;

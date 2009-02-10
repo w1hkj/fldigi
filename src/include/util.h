@@ -135,6 +135,8 @@ const char* printhex(const char* str, size_t len = 0);
 const char* printhex(const unsigned* str, size_t len);
 #endif
 
+const char* binarystr(int d, int len);
+
 #if !defined(NDEBUG) && defined(deprecated__) && defined(__GNUC__)
 #include <stdio.h>
 #include <string.h>

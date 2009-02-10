@@ -549,7 +549,8 @@ void configuration::initInterface()
 		    btnPTT[1]->value() ? 1 :
 		    btnPTT[2]->value() ? 2 :
 		    btnPTT[3]->value() ? 3 :
-		    btnPTT[4]->value() ? 4 : 0); // default is None
+		    btnPTT[4]->value() ? 4 : 
+		    btnPTT[5]->value() ? 5 : 0); // default is None
 
 	RTSptt = btnRTSptt->value();
 	DTRptt = btnDTRptt->value();

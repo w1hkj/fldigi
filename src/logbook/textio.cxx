@@ -57,10 +57,10 @@ void cTextFile::writeCSVHeader(FILE *txtFile)
 	if (btnSelectIOTA->value())      fprintf (txtFile, "IOTA\t");
 	if (btnSelectQSLrcvd->value())   fprintf (txtFile, "QSL_RCVD\t");
 	if (btnSelectQSLsent->value())   fprintf (txtFile, "QSL_SENT\t");
-	if (btnSelectComment->value())   fprintf (txtFile, "COMMENT\t");
+	if (btnSelectNotes->value())     fprintf (txtFile, "NOTES\t");
 	if (btnSelectSerialIN->value())  fprintf (txtFile, "SERIAL RCVD\t");
 	if (btnSelectSerialOUT->value()) fprintf (txtFile, "SERIAL_SENT\t");
-	if (btnSelectXchgIn->value())     fprintf (txtFile, "XCHG1\t");
+	if (btnSelectXchgIn->value())    fprintf (txtFile, "XCHG1\t");
 	if (btnSelectMyXchg->value())    fprintf (txtFile, "MYXCHG");
 	fprintf (txtFile, szEOL);
 }
@@ -113,11 +113,11 @@ int cTextFile::writeCSVFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, "%s\t", pRec->getField(QSL_RCVD));
 				if (btnSelectQSLsent->value())
 					fprintf (txtFile, "%s\t", pRec->getField(QSL_SENT));
-				if (btnSelectComment->value()) {
-					string temp = pRec->getField(COMMENT);
-				for (size_t n = 0; n < temp.length(); n++)
-					if (temp[n] == '\n') temp[n] = ';';
-					fprintf (txtFile, "%s\t", temp.c_str());
+				if (btnSelectNotes->value()) {
+					string temp = pRec->getField(NOTES);
+    				for (size_t n = 0; n < temp.length(); n++)
+	    				if (temp[n] == '\n') temp[n] = ';';
+		    			fprintf (txtFile, "%s\t", temp.c_str());
 				}
 				if (btnSelectSerialIN->value())
 					fprintf (txtFile, "%s\t", pRec->getField(SRX));
@@ -161,11 +161,11 @@ void cTextFile::writeTXTHeader(FILE *txtFile)
 	
 	if (btnSelectQSLrcvd->value())   fprintf (txtFile, "%-10s", "QSLR");
 	if (btnSelectQSLsent->value())   fprintf (txtFile, "%-10s", "QSLS");
-	if (btnSelectComment->value())   fprintf (txtFile, "%-80s", "COMMENT");
+	if (btnSelectNotes->value())     fprintf (txtFile, "%-80s", "NOTES");
 	if (btnSelectSerialIN->value())  fprintf (txtFile, "%-7s", "SRX");
 	if (btnSelectSerialOUT->value()) fprintf (txtFile, "%-7s", "STX");
-	if (btnSelectXchgIn->value())     fprintf (txtFile, "%-15s", "XCHG1");
-	if (btnSelectMyXchg->value())     fprintf (txtFile, "%-15s", "MYXCHG");
+	if (btnSelectXchgIn->value())    fprintf (txtFile, "%-15s", "XCHG1");
+	if (btnSelectMyXchg->value())    fprintf (txtFile, "%-15s", "MYXCHG");
 	fprintf (txtFile, szEOL);
 }
 
@@ -217,8 +217,8 @@ int cTextFile::writeTXTFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, "%-10s", pRec->getField(QSL_RCVD));
 				if (btnSelectQSLsent->value())
 					fprintf (txtFile, "%-10s", pRec->getField(QSL_SENT));
-				if (btnSelectComment->value()) {
-					string temp = pRec->getField(COMMENT);
+				if (btnSelectNotes->value()) {
+					string temp = pRec->getField(NOTES);
 				for (size_t n = 0; n < temp.length(); n++)
 					if (temp[n] == '\n') temp[n] = ';';
 					fprintf (txtFile, "%-80s", temp.c_str());

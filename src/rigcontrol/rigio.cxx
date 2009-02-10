@@ -38,7 +38,6 @@ LOG_SET_SOURCE(debug::LOG_RIGCONTROL);
 
 using namespace std;
 
-
 Cserial rigio;
 static pthread_mutex_t	rigCAT_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_t		*rigCAT_thread = 0;
@@ -941,7 +940,7 @@ bool rigCAT_init(bool useXML)
 			rigio.RTS(progdefaults.RigCatRTSplus);
 			rigio.DTR(progdefaults.RigCatDTRplus);
 			rigio.RTSptt(progdefaults.RigCatRTSptt);
-			rigio.RTSptt(progdefaults.RigCatDTRptt);
+			rigio.DTRptt(progdefaults.RigCatDTRptt);
 			rigio.RTSCTS(progdefaults.RigCatRTSCTSflow);
 			
 			LOG_INFO("\n\

@@ -77,7 +77,8 @@ void PTT::reset(ptt_t dev)
 		LOG_ERROR("Bad PTT device type %d. Disabling PTT.", pttdev);
 		pttdev = PTT_NONE;
 		// fall through
-	case PTT_NONE: case PTT_HAMLIB: case PTT_MEMMAP: case PTT_RIGCAT:
+	case PTT_NONE: case PTT_HAMLIB: case PTT_MEMMAP: 
+	case PTT_RIGCAT: case PTT_RIGCAT_HW :
 		break; // nothing to open
 
 	case PTT_TTY:
@@ -123,7 +124,10 @@ void PTT::set(bool ptt)
 	case PTT_MEMMAP:
 		setrigMEM_PTT(ptt);
 		break;
-	case PTT_RIGCAT:
+	case PTT_RIGCAT: 
+		rigCAT_set_ptt(ptt);
+		break;
+    case PTT_RIGCAT_HW :
 		rigCAT_set_ptt(ptt);
 		break;
 	case PTT_TTY:
@@ -163,6 +167,7 @@ void PTT::close_all(void)
 	default:
 		break;
 	}
+	pttfd = -1;
 }
 
 //-------------------- serial port PTT --------------------//
@@ -196,6 +201,8 @@ void PTT::open_tty(void)
 		status &= ~TIOCM_DTR;		// clear DTR bit
 
 	ioctl(pttfd, TIOCMSET, &status);
+	LOG_DEBUG("Serial port %s open", progdefaults.PTTdev.c_str());
+    LOG_DEBUG("   status = %02X, %s", status, binarystr(status, 8));
 }
 
 void PTT::close_tty(void)
@@ -231,7 +238,7 @@ void PTT::set_tty(bool ptt)
 		if (progdefaults.DTRptt == true && progdefaults.DTRplus == true)
 			status |= TIOCM_DTR;
 	}
-
+	LOG_DEBUG("Status %02X, %s", status & 0xFF, binarystr(status, 8));
 	ioctl(pttfd, TIOCMSET, &status);
 }
 
@@ -248,6 +255,8 @@ void PTT::set_tty(bool ptt)
 
 void PTT::open_parport(void)
 {
+    if (progdefaults.PTTdev.find("tty") != string::npos) return;
+    
 	if ((pttfd = open(progdefaults.PTTdev.c_str(), O_RDWR | O_NDELAY)) == -1) {
 		LOG_ERROR("Could not open %s: %s", progdefaults.PTTdev.c_str(), strerror(errno));
 		return;

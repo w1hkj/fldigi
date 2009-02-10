@@ -53,7 +53,7 @@ class PTT {
 public:
 	enum ptt_t {
 		PTT_INVALID = -1, PTT_NONE, PTT_HAMLIB, PTT_MEMMAP,
-		PTT_RIGCAT, PTT_TTY,
+		PTT_RIGCAT, PTT_TTY, PTT_RIGCAT_HW, 
 #if HAVE_PARPORT
 		PTT_PARPORT,
 #endif

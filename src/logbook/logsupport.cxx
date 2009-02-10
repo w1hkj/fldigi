@@ -436,7 +436,7 @@ void clearRecord() {
 	inpSerNoIn_log->value ("");
 	inpXchgIn_log->value("");
 	inpMyXchg_log->value(progdefaults.myXchg.c_str());
-	inpComment_log->value ("");
+	inpNotes_log->value ("");
 	inpIOTA_log->value("");
 	inpDXCC_log->value("");
 	inpTX_pwr_log->value("");
@@ -458,7 +458,7 @@ cQsoRec rec;
 	rec.putField(VE_PROV, inpVE_Prov_log->value());
 	rec.putField(COUNTRY, inpCountry_log->value());
 	rec.putField(GRIDSQUARE, inpLoc_log->value());
-	rec.putField(COMMENT, inpComment_log->value());
+	rec.putField(NOTES, inpNotes_log->value());
 	rec.putField(QSLRDATE, inpQSLrcvddate_log->value());
 	rec.putField(QSLSDATE, inpQSLsentdate_log->value());
 	rec.putField(RST_RCVD, inpRstR_log->value ());
@@ -492,7 +492,7 @@ cQsoRec rec;
 	rec.putField(VE_PROV, inpVE_Prov_log->value());
 	rec.putField(COUNTRY, inpCountry_log->value());
 	rec.putField(GRIDSQUARE, inpLoc_log->value());
-	rec.putField(COMMENT, inpComment_log->value());
+	rec.putField(NOTES, inpNotes_log->value());
 	rec.putField(QSLRDATE, inpQSLrcvddate_log->value());
 	rec.putField(QSLSDATE, inpQSLsentdate_log->value());
 	rec.putField(RST_RCVD, inpRstR_log->value ());
@@ -544,7 +544,7 @@ void EditRecord( int i )
 	inpLoc_log->value (editQSO->getField(GRIDSQUARE));
 	inpQSLrcvddate_log->value (editQSO->getField(QSLRDATE));
 	inpQSLsentdate_log->value (editQSO->getField(QSLSDATE));
-	inpComment_log->value (editQSO->getField(COMMENT));
+	inpNotes_log->value (editQSO->getField(NOTES));
 	inpSerNoIn_log->value(editQSO->getField(SRX));
 	inpSerNoOut_log->value(editQSO->getField(STX));
 	inpXchgIn_log->value(editQSO->getField(XCHG1));
@@ -583,7 +583,7 @@ void AddRecord ()
 	inpLoc_log->value (inpLoc->value());
 	inpQSLrcvddate_log->value ("");
 	inpQSLsentdate_log->value ("");
-	inpComment_log->value (inpNotes->value());
+	inpNotes_log->value (inpNotes->value());
 	
 	inpTX_pwr_log->value (progdefaults.mytxpower.c_str());
 	inpIOTA_log->value("");

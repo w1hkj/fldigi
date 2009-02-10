@@ -56,6 +56,7 @@ char strFreqMhz[20];
 
 static string log_msg;
 static string errmsg;
+static string notes;
 
 //=============================================================================
 
@@ -116,7 +117,10 @@ void submit_ADIF(void)
 	putadif(SRX, inpSerNoIn_log->value());
 	putadif(XCHG1, inpXchgIn_log->value());
 	putadif(MYXCHG, inpMyXchg_log->value());
-	putadif(COMMENT, inpComment_log->value());
+	notes = inpNotes_log->value();
+	for (size_t i = 0; i < notes.length(); i++)
+	    if (notes[i] == '\n') notes[i] = ';';
+	putadif(NOTES, notes.c_str());
 // these fields will always be blank unless they are added to the main
 // QSO log area.
 	putadif(IOTA, inpIOTA_log->value());
@@ -165,7 +169,10 @@ static void send_IPC_log(void)
 	addtomsg("serialout:",	inpSerNoOut_log->value());
 	addtomsg("serialin:",	inpSerNoIn_log->value());
 	addtomsg("free1:",		inpXchgIn_log->value());
-	addtomsg("notes:",		inpComment_log->value());
+	notes = inpNotes_log->value();
+	for (size_t i = 0; i < notes.length(); i++)
+	    if (notes[i] == '\n') notes[i] = ';';
+	addtomsg("notes:",		notes.c_str());
 	addtomsg("power:",		inpTX_pwr_log->value());
 	
 	strncpy(msgbuf.mtext, log_msg.c_str(), sizeof(msgbuf.mtext));

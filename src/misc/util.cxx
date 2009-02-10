@@ -155,3 +155,20 @@ const char* printhex(const char* str, size_t len)
 {
 	return printhex((const unsigned char*)str, len ? len : strlen(str));
 }
+
+#include <stdio.h>
+static char *binbuf = 0;
+const char* binarystr(int d, int len)
+{
+    if (len == 0) len = sizeof(d) * 8;
+    
+    if ((binbuf = (char *)realloc(binbuf, len + 1)) == NULL)
+        return "";
+    for (int i = 0; i < len; i++) {
+        if (d & 1) binbuf[len - 1 - i] = '1';
+        else       binbuf[len - 1 - i] = '0';
+        d >>= 1;
+    }
+    binbuf[len] = 0;
+    return binbuf;    
+}

@@ -2503,7 +2503,7 @@ void create_fl_digi_main() {
 				WNOM - rightof(QsoInfoFrame1) - 2*pad, Hqsoframe + Hnotes); 
 					
 				inpNotes = new Fl_Input2(x_qsoframe + wf1 + pad, y2, 
-					WNOM - rightof(QsoInfoFrame1) - 2*pad, qh + Hnotes - pad, _("Comment"));
+					WNOM - rightof(QsoInfoFrame1) - 2*pad, qh + Hnotes - pad, _("Notes"));
 				inpNotes->type(FL_MULTILINE_INPUT);
 				inpNotes->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
