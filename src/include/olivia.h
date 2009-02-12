@@ -34,17 +34,11 @@
 class olivia : public modem {
 private:
 
-	MFSK_Transmitter < float >*Tx;
-	MFSK_Receiver < float >*Rx;
-//	MFSK_Transmitter < double >*Tx;
-//	MFSK_Receiver < double >*Rx;
+	MFSK_Transmitter < double >*Tx;
+	MFSK_Receiver < double >*Rx;
 
-	short int	*txbuffer;
 	double		*txfbuffer;
 	int 		txbufferlen;
-
-	short int	*rxbuffer;
-	int			rxbufferlen;
 
 	double		phaseacc;
 	complex		prevsymbol;

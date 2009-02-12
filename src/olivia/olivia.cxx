@@ -157,7 +157,7 @@ int olivia::unescape(int c)
 
 int olivia::tx_process()
 {
-	int c, i, len;
+	int c, len;//, i;
 	unsigned char ch;
 
 	if (tones	!= progdefaults.oliviatones ||
@@ -183,7 +183,7 @@ int olivia::tx_process()
 		} else {
 			/* Replace un-representable characters with a dot */
 			if (c == -1)
-                                c = 0;
+                c = 0;
 			if (c > (progdefaults.olivia8bit ? 255 : 127))
 				c = '.';
 			if (c > 127) {
@@ -198,13 +198,8 @@ int olivia::tx_process()
 		if ((c = unescape(ch)) != -1)
 			put_echo_char(c);
 
-	if ((len = Tx->Output(txbuffer)) > 0) {
-		for (i = 0; i < len; i++) {
-			txfbuffer[i] = (double) (txbuffer[i] / 24000.0);
-		}
-
+    if ((len = Tx->Output(txfbuffer)) > 0)
 		ModulateXmtr(txfbuffer, len);
-	}
 
 	if (stopflag && Tx->DoPostambleYet() == 1 && postamblesent != 1) {
 		postamblesent = 1; 
@@ -216,18 +211,18 @@ int olivia::tx_process()
 		cwid();
 		return -1;
 	}
-
+ 
 	return 0;
 }
 
+
 int olivia::rx_process(const double *buf, int len)
 {
-	int i, c;
+	int c;
 	unsigned char ch = 0;
 	double snr;
 	static char msg1[20];
 	static char msg2[20];
-//	static char msg3[60];
 
 	if (tones	!= progdefaults.oliviatones ||
 		bw 		!= progdefaults.oliviabw ||
@@ -248,35 +243,37 @@ int olivia::rx_process(const double *buf, int len)
 		Rx->Preset();
 	}
 
-	if (len > rxbufferlen) {
-		delete [] rxbuffer;
-		rxbuffer = new short int[len];
-		rxbufferlen = len;
-	}
-
-	for (i = 0; i < len; i++)
-		rxbuffer[i] = (short int) (buf[i] * 32767.0);
-
 	Rx->SyncThreshold = progStatus.sqlonoff ? progStatus.sldrSquelchValue / 2.0 : 0.0;
 
-	Rx->Process(rxbuffer, len);
+    Rx->Process(buf, len);
 
-	snr = Rx->SignalToNoiseRatio();
-
-	set_metric(snr);
-	display_metric(snr > 50.0 ? 100.0 : snr * 2.0);
 	
-	double s2n = 20.0 * log10(snr < 0.1 ? 0.1 : snr);
+	bool gotchar = false;
+	while (Rx->GetChar(ch) > 0) {
+		if ((c = unescape(ch)) != -1 && c > 7) {
+    		put_rx_char(c);
+            gotchar = true;
+        }
+    }
+    if (gotchar) {
+        double noisepwr1 = wf->powerDensity((1.0 * frequency - Rx->Bandwidth / 2.0 - 100.0), 50.0),
+               noisepwr2 = wf->powerDensity((1.0 * frequency + Rx->Bandwidth / 2.0 + 100.0), 50.0),
+               noisepwr = 0,
+               sigpwr   = wf->powerDensity(1.0 * frequency, 1.0 * Rx->Bandwidth);
+        noisepwr = noisepwr1 < noisepwr ? noisepwr1 : noisepwr2;
+        if (noisepwr == 0) noisepwr = 1.0e-10;
+    	metric = decayavg( metric, sigpwr / noisepwr, 8);
+    	
+	    snprintf(msg1, sizeof(msg1), "s/n %4.1f dB", 10.0 * log10(metric));
+	    put_Status1(msg1, 5, STATUS_CLEAR);
 
-	snprintf(msg1, sizeof(msg1), "s/n %4.1f dB", s2n);
-	put_Status1(msg1);
-	snprintf(msg2, sizeof(msg2), "f/o %+4.1f Hz", Rx->FrequencyOffset());
-	put_Status2(msg2);
+	    snprintf(msg2, sizeof(msg2), "f/o %+4.1f Hz", Rx->FrequencyOffset());
+        put_Status2(msg2, 5, STATUS_CLEAR);
 
-	while (Rx->GetChar(ch) > 0)
-		if ((c = unescape(ch)) != -1 && c > 7)
-			put_rx_char(c);
-
+    	snr = 3 * Rx->SignalToNoiseRatio();
+	    display_metric(snr > 100.0 ? 100.0 : snr );
+    }
+    
 	return 0;
 }
 
@@ -309,15 +306,10 @@ void olivia::restart()
 	}
 		
 	txbufferlen = Tx->MaxOutputLen;
-	if (txbuffer) delete [] txbuffer;
-	txbuffer = new short int[txbufferlen];
 	
 	if (txfbuffer) delete [] txfbuffer;
 	txfbuffer = new double[txbufferlen];
 
-	rxbufferlen = 0;
-	rxbuffer = 0;
-	
 	Rx->Tones = Tx->Tones;
 	Rx->Bandwidth = Tx->Bandwidth;
 	Rx->SyncMargin = smargin;
@@ -343,6 +335,7 @@ void olivia::restart()
 	set_bandwidth(Tx->Bandwidth - Tx->Bandwidth / Tx->Tones);
 
 	put_MODEstatus("%s %zu/%zu", get_mode_name(), Tx->Tones, Tx->Bandwidth);
+	metric = 0;
 }
 
 void olivia::init()
@@ -356,13 +349,11 @@ olivia::olivia()
 {
 	cap = CAP_REV;
 
-	txbuffer = 0;
 	txfbuffer = 0;
-	rxbuffer = 0;
 	samplerate = 8000;
 
-	Tx = new MFSK_Transmitter< float >;
-	Rx = new MFSK_Receiver< float >;
+	Tx = new MFSK_Transmitter< double >;
+	Rx = new MFSK_Receiver< double >;
 
 	mode = MODE_OLIVIA;
 	lastfreq = 0;
@@ -373,8 +364,6 @@ olivia::~olivia()
 {
 	if (Tx) delete Tx;
 	if (Rx) delete Rx;
-	if (txbuffer) delete [] txbuffer;
 	if (txfbuffer) delete [] txfbuffer;
-	if (rxbuffer) delete [] rxbuffer;
 }
 
