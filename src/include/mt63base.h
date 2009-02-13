@@ -33,23 +33,6 @@
 #define MT63BASE_H
 
 // ==========================================================================
-// Morse Encoder
-/*
-class MorseEncoder
-{ public:
-   MorseEncoder();
-   ~MorseEncoder();
-   void Free(void);
-   int SetTxMsg(char *Msg); // set the message to be transmitted
-   int NextKey(void);       // get the next key state (ON of OFF)
-  private:
-   char *TxMsg;
-   int TxPtr;
-   long Code;
-} ;
-*/
-
-// ==========================================================================
 // Character encoder and block interleaver for the MT63 modem
 /*
 How to use this class:
@@ -74,58 +57,25 @@ How to use this class:
 // Date: 05-NOV-1999
 
 class MT63encoder
-{ public:
-   MT63encoder();
-   ~MT63encoder();
-   void Free();
-   int Preset(int Carriers, int Intlv, int *Pattern, int RandFill=0);
-   int Process(char code);
-   char *Output;
-  private:
-   int DataCarriers;
-   char CodeMask;
-   int IntlvLen;
-   int IntlvSize;
-   int *IntlvPatt;
-   char *IntlvPipe;
-   int IntlvPtr;
-   double *WalshBuff;
+{ 
+public:
+    MT63encoder();
+    ~MT63encoder();
+    void    Free();
+    int     Preset(int Carriers, int Intlv, int *Pattern, int RandFill=0);
+    int     Process(char code);
+    char    *Output;
+private:
+    int     DataCarriers;
+    char    CodeMask;
+    int     IntlvLen;
+    int     IntlvSize;
+    int     *IntlvPatt;
+    char    *IntlvPipe;
+    int     IntlvPtr;
+    double  *WalshBuff;
 } ;
 
-// ==========================================================================
-// MT63 envelope (non-synchronous) time and frequency synchronizer
-// experimental status: looks like it's not good enough.
-/*
-class MT63sync
-{ public:
-   MT63sync();
-   ~MT63sync();
-   void Free(void);
-   int Preset(int FFTlen, int FirstCarr, int CarrSepar, int Carriers, int Steps,
-	      int Margin, int Integ);
-   int Process(dspCmpx *SpectraSlice);
-   int SdspAmpleNow;
-   int Locked;
-   double FreqOfs;
-   double TimeOfs;
-  private:
-   int FFTmask;
-   int FirstDataCarr;
-   int DataCarrSepar;
-   int DataCarriers;
-   int ScanMargin;
-   int ScanFirst;
-   int ScanLen;
-   int StepsPerSymb;
-   int ScanSize;
-   double *PwrIntegMid,*PwrIntegOut;
-   int IntegPtr;
-   int NodspRMSize;
-   double *NormPwr;
-   // int SymbPtr;
-   double W1,W2,W5;
-} ;
-*/
 // ==========================================================================
 // MT63 deinterleaver and decoder
 /*
@@ -151,34 +101,35 @@ How to use this class:
 */
 
 class MT63decoder
-{ public:
-   MT63decoder();
-   ~MT63decoder();
-   void Free();
-   int Preset(int Carriers, int Intlv, int *Pattern, int Margin, int Integ);
-   int Process(double *Data);
-   char Output;
-   double SignalToNoise;
-   int CarrOfs;
+{
+public:
+    MT63decoder();
+    ~MT63decoder();
+    void    Free();
+    int     Preset(int Carriers, int Intlv, int *Pattern, int Margin, int Integ);
+    int     Process(double *Data);
+    char    Output;
+    double  SignalToNoise;
+    int     CarrOfs;
 
-  private:
-   int DataCarriers;
-   double *IntlvPipe;
-   int IntlvLen;
-   int IntlvSize;
-   int IntlvPtr;
-   int *IntlvPatt;
+private:
+    int     DataCarriers;
+    double  *IntlvPipe;
+    int     IntlvLen;
+    int     IntlvSize;
+    int     IntlvPtr;
+    int     *IntlvPatt;
 
-   double *WalshBuff;
+    double  *WalshBuff;
 
-   int ScanLen;
-   int ScanSize;
-   double *DecodeSnrMid,*DecodeSnrOut;
-   double W1,W2,W5;
-   char *DecodePipe;
-   int DecodeLen;
-   int DecodeSize;
-   int DecodePtr;
+    int     ScanLen;
+    int     ScanSize;
+    double  *DecodeSnrMid,*DecodeSnrOut;
+    double  W1, W2, W5;
+    char    *DecodePipe;
+    int     DecodeLen;
+    int     DecodeSize;
+    int     DecodePtr;
 
 } ;
 
@@ -223,48 +174,44 @@ How to use this class:
 */
 
 class MT63tx
-{ public:
-   MT63tx(); ~MT63tx();
-   void Free(void);
-   int Preset(int BandWidth=1000, int LongInterleave=0);//, char *ID=NULL);
-   int SendTune(void);
-   int SendChar(char ch);
-   int SendJam(void);
-   int SendSilence(void);
+{
+public:
+    MT63tx();
+    ~MT63tx();
+    void    Free(void);
+    int     Preset(int BandWidth=1000, int LongInterleave=0);//, char *ID=NULL);
+    int     SendTune(void);
+    int     SendChar(char ch);
+    int     SendJam(void);
+    int     SendSilence(void);
 
-  private:
-   int DataCarriers;	// the number of data carriers
-   int FirstDataCarr;	// the FFT index of the first data carrier
-   // int DataCarrSepar;	// separation [FFT bins] between data carriers
-   int WindowLen;	// FFT window and symbol shape length
-   double *TxWindow;	// The shape of the FFT window (=symbol shape)
-   // int SymbolSepar;	// separation between symbols on a carrier
-   int AliasFilterLen;  // anti-alias filter length
-   double *AliasShapeI,*AliasShapeQ; // and shapes
-   int DecimateRatio;	// decimation/interpolation after/before filter
-   int *InterleavePattern; // how the bits of one block are placed on data carriers
-   double TxdspAmpl;	// dspAmplitude applied to generate a carrier (before IFFT)
-   long CarrMarkCode;
-   int CarrMarkdspAmpl;
+private:
+    int     DataCarriers;	// the number of data carriers
+    int     FirstDataCarr;	// the FFT index of the first data carrier
+//  int     DataCarrSepar;	// separation [FFT bins] between data carriers
+    int     WindowLen;	    // FFT window and symbol shape length
+    double  *TxWindow;	    // The shape of the FFT window (=symbol shape)
+//  int     SymbolSepar;	// separation between symbols on a carrier
+    int     AliasFilterLen; // anti-alias filter length
+    double  *AliasShapeI,
+            *AliasShapeQ;   // and shapes
+    int     DecimateRatio;	// decimation/interpolation after/before filter
+    int     *InterleavePattern; // how the bits of one block are placed on data carriers
+    double  TxdspAmpl;	    // dspAmplitude applied to generate a carrier (before IFFT)
+    long    CarrMarkCode;
+    int     CarrMarkdspAmpl;
 
-//   MorseEncoder CW_Coder; // CW encoder
-//   char *CW_ID;		// Morse Code identifier to be transmitted along the MT63 signal
-//   int CW_Carr;		// the carrier index to transmit the CW
-//   double CW_dspAmpl;	// CW dspAmplitude
-//   int CW_dspPhase;	// CW dspPhase
-//   int CW_dspPhaseCorr;	// CW dspPhase correction
+    MT63encoder     Encoder;        // data encode and interleaver
+    int             *TxVect;		// modulator vector (dspPhases)
+    int             *dspPhaseCorr;	// dspPhase corrections for each carrier
+    dspCmpx_buff    WindowBuff;     // FFT/window buffer
+    dsp_r2FFT       FFT;		    // FFT engine
+    dspCmpxOverlapWindow Window;    // overlapping window
+    int ProcessTxVect();
 
-   MT63encoder Encoder; // data encode and interleaver
-   int *TxVect;		// modulator vector (dspPhases)
-   int *dspPhaseCorr;	// dspPhase corrections for each carrier
-   dspCmpx_buff WindowBuff; // FFT/window buffer
-   dsp_r2FFT FFT;		// FFT engine
-   dspCmpxOverlapWindow Window; // overlapping window
-   int ProcessTxVect();
-
-  public:
-   int DataInterleave;
-   dspQuadrComb Comb; // the output of this module is in Comb.Output
+public:
+    int             DataInterleave;
+    dspQuadrComb    Comb;       // the output of this module is in Comb.Output
 } ;
 
 // ==========================================================================
@@ -278,10 +225,7 @@ How to use this class:
    For weak signals I recommend integration of 32 or more,
    otherwise 16 is enough. By the way, 16 means 1.6 second for 1000 Hz mode
    because then we transmit 10 symbols per second.
-3. Feed doubleing point sdspAmples into the Rx.Process, if you have signed 16-bit
-   sdspAmples, you should convert them first to doubleing point - look at how
-   I do it in mt63rx.cc
-4. After EACH new batch of sdspAmples
+3. After EACH new batch of sdspAmples
    you should look into Rx.Output for the decoded characters.
    You can egzamin the receiver status at any time by calling:
      Rx.SYNC_LockStatus() => logical value 0 or 1
@@ -292,125 +236,136 @@ How to use this class:
 */
 
 class MT63rx
-{ public:
-   MT63rx(); ~MT63rx();
-   void Free(void);
-   int Preset(int BandWidth=1000, int LongInterleave=0, int Integ=16,
-	      void (*Display)(double *Spectra, int Len)=NULL);
-   int Process(double_buff *Input);
-   char_buff Output;		// decoded characters
+{
+public:
+    MT63rx();
+    ~MT63rx();
+    void    Free(void);
+    int     Preset( int BandWidth = 1000,
+                    int LongInterleave = 0,
+                    int Integ = 16,
+	                void (*Display)(double *Spectra, int Len) = NULL);
+    int     Process(double_buff *Input);
+    char_buff Output;		// decoded characters
 
-   int   SYNC_LockStatus(void); // 1 => locked, 0 => not locked
-   double SYNC_Confidence(void); // lock confidence <0..1>
-   double SYNC_FreqOffset(void);
-   double SYNC_FreqDevdspRMS(void);
-   double SYNC_TimeOffset(void);
-   double TotalFreqOffset();	// Total frequency offset in [Hz]
-   double FEC_SNR(void);		// signal-to-noise ratio at the FEC
-   int FEC_CarrOffset(void);
+    int    SYNC_LockStatus(void); // 1 => locked, 0 => not locked
+    double SYNC_Confidence(void); // lock confidence <0..1>
+    double SYNC_FreqOffset(void);
+    double SYNC_FreqDevdspRMS(void);
+    double SYNC_TimeOffset(void);
+    double TotalFreqOffset();	// Total frequency offset in [Hz]
+    double FEC_SNR(void);		// signal-to-noise ratio at the FEC
+    int    FEC_CarrOffset(void);
 
-  private:
-   dspQuadrSplit InpSplit;    // input filter, I/Q splitter, decimator
-   dspCmpxMixer TestOfs;	   // frequency offset for tests
+private:
+    dspQuadrSplit   InpSplit;   // input filter, I/Q splitter, decimator
+    dspCmpxMixer    TestOfs;	// frequency offset for tests
 
-   dspDelayLine<dspCmpx> ProcLine; // processing pipe
-   int ProcdspDelay;	// processing dspDelay for optimal symbol probing
-   int SyncProcPtr;     // sdspAmpling pointer for the synchronizer
-   int DataProcPtr;	// sdspAmpling pointer for the data demodulator
+    dspDelayLine<dspCmpx> ProcLine; // processing pipe
+    int     ProcdspDelay;   // processing dspDelay for optimal symbol probing
+    int     SyncProcPtr;    // sdspAmpling pointer for the synchronizer
+    int     DataProcPtr;	// sdspAmpling pointer for the data demodulator
 
-   dsp_r2FFT FFT;		// FFT engine
-   int WindowLen;	// FFT window length = symbol shape length
-   int WindowLenMask;	// WindowLen-1 for pointer wrapping
-   double *RxWindow;	// FFT window shape = symbol shape
+    dsp_r2FFT FFT;		    // FFT engine
+    int     WindowLen;	    // FFT window length = symbol shape length
+    int     WindowLenMask;	// WindowLen-1 for pointer wrapping
+    double  *RxWindow;	    // FFT window shape = symbol shape
 
-   void (*SpectraDisplay)(double *Spectra, int Len);
-   double *SpectradspPower;
+    void (*SpectraDisplay)(double *Spectra, int Len);
+    double *SpectradspPower;
 
-   int AliasFilterLen;  // anti-alias filter length
-   double *AliasShapeI,*AliasShapeQ; // and shapes
-   int DecimateRatio;	// decimation/interpolation after/before filter
+    int     AliasFilterLen; // anti-alias filter length
+    double  *AliasShapeI,
+            *AliasShapeQ;   // and shapes
+    int     DecimateRatio;	// decimation/interpolation after/before filter
 
-   int *InterleavePattern; // how the bits of one block are placed on data carriers
-   int DataInterleave;  // data interleave depth
+// how the bits of one block are placed on data carriers
+    int     *InterleavePattern; 
+    int DataInterleave;     // data interleave depth
 
-   int DataCarriers;	// number of carriers
-   int FirstDataCarr;	// the FFT index of the first data carrier
-   // int DataCarrSepar;	// freq. separation between carriers [FFT bins]
-   long CarrMarkCode;   // code to mark carriers (not in use here)
-   // int SymbolSepar;	// time separation between symbols [sdspAmples]
-   int ScanMargin;	// How many carriers up and down to search
-   int IntegLen;        // Over how many symbols we integrate to synchronize
+    int     DataCarriers;	// number of carriers
+    int     FirstDataCarr;	// the FFT index of the first data carrier
+//  int     DataCarrSepar;	// freq. separation between carriers [FFT bins]
+    long    CarrMarkCode;   // code to mark carriers (not in use here)
+//  int     SymbolSepar;	// time separation between symbols [sdspAmples]
+    int     ScanMargin;	    // How many carriers up and down to search
+    int     IntegLen;       // Over how many symbols we integrate to synchronize
 
-   int SymbolDiv;	// =4 we probe the input 4 times per symbol time
-   int SyncStep;	// SymbolSepar/SymbolDiv
-   int ScanFirst;	// first carrier to scan
-   int ScanLen;		// number of carriers to scan
+    int     SymbolDiv;	    // =4 we probe the input 4 times per symbol time
+    int     SyncStep;	    // SymbolSepar/SymbolDiv
+    int     ScanFirst;	    // first carrier to scan
+    int     ScanLen;		// number of carriers to scan
 
-   dspCmpx *FFTbuff;
-   dspCmpx *FFTbuff2;
+    dspCmpx *FFTbuff;
+    dspCmpx *FFTbuff2;
 
-   // here starts the time/frequency synchronizer
-   void SyncProcess(dspCmpx *Slice);
+// here starts the time/frequency synchronizer
+    void    SyncProcess(dspCmpx *Slice);
 
-   dspCmpx *SyncPipe[4];	// FFT result buffer for sync.
-   int SyncPtr;		// wrapping pointer for SyncPipe and integrators
-   int SymbPtr;		// points about where the symbol is
+    dspCmpx *SyncPipe[4];	// FFT result buffer for sync.
+    int     SyncPtr;		// wrapping pointer for SyncPipe and integrators
+    int     SymbPtr;		// points about where the symbol is
 
-   dspCmpx *SyncPhCorr;  // dspPhase corrections for the sync. processor
+    dspCmpx *SyncPhCorr;    // dspPhase corrections for the sync. processor
 
-   dspCmpx  *CorrelMid[4], *CorrelOut[4];	// correlation integrator
-   double *dspPowerMid, *dspPowerOut;		// carrier dspPower integrator
-   dspCmpx *CorrelNorm[4];		// normalized correlation
-   double W1,W2,W5;		// correlation integrator weights
-   double W1p,W2p,W5p;		// dspPower integrator weights
+    dspCmpx *CorrelMid[4], 
+            *CorrelOut[4];	// correlation integrator
+    double  *dspPowerMid, 
+            *dspPowerOut;	// carrier dspPower integrator
+    dspCmpx *CorrelNorm[4];	// normalized correlation
+    double  W1, W2, W5;		// correlation integrator weights
+    double  W1p, W2p, W5p;	// dspPower integrator weights
 
-   dspCmpx *CorrelAver[4];	// sliding sum to fit the carrier pattern
-   int FitLen;
+    dspCmpx *CorrelAver[4];	// sliding sum to fit the carrier pattern
+    int     FitLen;
 
-   void DoCorrelSum(dspCmpx *Correl1, dspCmpx *Correl2, dspCmpx *Aver);
+    void    DoCorrelSum(dspCmpx *Correl1, dspCmpx *Correl2, dspCmpx *Aver);
 
-   dspCmpx *SymbFit;	// vectors to match symbol shift and confidence
-   int SymbFitPos;	// "smoothed" peak position
+    dspCmpx *SymbFit;	    // vectors to match symbol shift and confidence
+    int     SymbFitPos;	    // "smoothed" peak position
 
-   double *FreqPipe;	// smoothing pipe for frequency offset
-   dspCmpx *SymbPipe;	// smoothing pipe for symbol shift
-   int TrackPipeLen;	// tracking pipe length
-   int TrackPipePtr;	// pipe pointer
-   double AverFreq;	// dspAveraged frequency
-   dspCmpx AverSymb;	// dspAveraged symbol dspPhase
+    double  *FreqPipe;	    // smoothing pipe for frequency offset
+    dspCmpx *SymbPipe;	    // smoothing pipe for symbol shift
+    int     TrackPipeLen;	// tracking pipe length
+    int     TrackPipePtr;	// pipe pointer
+    double  AverFreq;	    // dspAveraged frequency
+    dspCmpx AverSymb;       // dspAveraged symbol dspPhase
 
-   double SyncLockThres; // lock confidence threshold
-   double SyncHoldThres; // minimal confidence to hold the lock
+    double  SyncLockThres;  // lock confidence threshold
+    double  SyncHoldThres;  // minimal confidence to hold the lock
 
-   int   SyncLocked;	// locked or not locked
-   double SyncSymbConf;  // current smoothed confidence
-   double SyncFreqOfs;	// current smoothed frequency offset
-   double SyncFreqDev;   // frequency deviation (dspRMS)
-   double SyncSymbShift; // current smoothed symbol time shift
+    int     SyncLocked;     // locked or not locked
+    double  SyncSymbConf;   // current smoothed confidence
+    double  SyncFreqOfs;    // current smoothed frequency offset
+    double  SyncFreqDev;    // frequency deviation (dspRMS)
+    double  SyncSymbShift;  // current smoothed symbol time shift
 
-   // here starts the data decoder
-   void DataProcess(dspCmpx *EvenSlice, dspCmpx *OddSlice, double FreqOfs, int TimeDist);
+// here starts the data decoder
+    void    DataProcess( dspCmpx *EvenSlice, 
+                         dspCmpx *OddSlice, 
+                         double FreqOfs, 
+                         int TimeDist);
 
-   int DataScanMargin;	// +/- data carriers to scan for best FEC match
-   int DataScanLen;	// total number of data carriers being processed
-   int DataScanFirst;
+    int     DataScanMargin; // +/- data carriers to scan for best FEC match
+    int     DataScanLen;    // total number of data carriers being processed
+    int     DataScanFirst;
 
-   dspCmpx *RefDataSlice;  // reference data slice for differential dspPhase decode
-   dspCmpx *DataVect;	 // differentially decoded data vactor
+    dspCmpx *RefDataSlice;  // reference data slice for differential dspPhase decode
+    dspCmpx *DataVect;      // differentially decoded data vactor
 
-   int DataPipeLen;	// pipe length
-   int DataPipePtr;	// wrapping pointer
-   dspCmpx **DataPipe;	// decoded vectors pipe
-   double *DataPwrMid,*DataPwrOut; // carrier dspPower integrator
-   dspCmpx *DataSqrMid,*DataSqrOut; // carrier complex square integrator
-   double dW1,dW2,dW5;	// integrator constants
+    int     DataPipeLen;    // pipe length
+    int     DataPipePtr;    // wrapping pointer
+    dspCmpx **DataPipe;     // decoded vectors pipe
+    double  *DataPwrMid,
+            *DataPwrOut;    // carrier dspPower integrator
+    dspCmpx *DataSqrMid,
+            *DataSqrOut;    // carrier complex square integrator
+    double  dW1, dW2, dW5;  // integrator constants
 
-   double *DatadspPhase;	 // differential decoded dspPhases
-   double *DatadspPhase2;	 // rather for debugging, not use otherwise
+    double  *DatadspPhase;  // differential decoded dspPhases
+    double  *DatadspPhase2; // rather for debugging, not use otherwise
 
-   MT63decoder Decoder;
-
-//   MT63sync EnvSync;	// envelope synchronizer (experimental)
+    MT63decoder Decoder;
 
 } ;
 

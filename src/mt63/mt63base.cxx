@@ -7,8 +7,9 @@
  *    modified from original
  *    excluded CW_ID which is a part of the base modem class for fldigi
  *    changed all floats to double and removed all float functions/methods
+ *    changed from int* to double* for all sound card buffer transfers
  *
-  *    based on mt63 code by Pawel Jalocha
+ *    based on mt63 code by Pawel Jalocha
  *    Copyright (C) 1999-2004 Pawel Jalocha, SP9VRC
  *    Copyright (c) 2007-2008 Dave Freese, W1HKJ
  *
@@ -77,8 +78,7 @@ void MT63tx::Free(void)
 
 int MT63tx::Preset(int BandWidth, int LongInterleave)
 { 
-    int err;
-    int i,p,step,incr,mask;
+    int i, p, step, incr, mask;
 
     switch(BandWidth) { 
         case 500:
@@ -124,25 +124,29 @@ int MT63tx::Preset(int BandWidth, int LongInterleave)
         InterleavePattern = ShortIntlvPatt; 
     }
 
-    if (dspRedspAllocArray(&TxVect, DataCarriers)) goto Error;
-    if (dspRedspAllocArray(&dspPhaseCorr, DataCarriers)) goto Error;
-    err = WindowBuff.EnsureSpace(2*WindowLen); if (err) goto Error;
+    if (dspRedspAllocArray(&TxVect, DataCarriers))
+        goto Error;
+    if (dspRedspAllocArray(&dspPhaseCorr, DataCarriers))
+        goto Error;
+    if (WindowBuff.EnsureSpace(2 * WindowLen))
+        goto Error;
     WindowBuff.Len = 2 * WindowLen;
 
-    err = Encoder.Preset(DataCarriers, DataInterleave, InterleavePattern, 1);
-    if (err) goto Error;
-    err = FFT.Preset(WindowLen);
-    if (err) goto Error;
-    err = Window.Preset(WindowLen, SymbolSepar / 2, TxWindow);
-    if (err) goto Error;
-    err = Comb.Preset(AliasFilterLen, AliasShapeI, AliasShapeQ, DecimateRatio);
-    if (err) goto Error;
+    if (Encoder.Preset(DataCarriers, DataInterleave, InterleavePattern, 1))
+        goto Error;
+    if (FFT.Preset(WindowLen))
+        goto Error;
+    if (Window.Preset(WindowLen, SymbolSepar / 2, TxWindow))
+        goto Error;
+    if (Comb.Preset(AliasFilterLen, AliasShapeI, AliasShapeQ, DecimateRatio))
+        goto Error;
 
-    mask = FFT.Size-1;
+    mask = FFT.Size - 1;
 
 // Preset the initial dspPhase for each data carrier.
 // Here we only compute indexes to the FFT twiddle factors
 // so the actual vector is FFT.Twiddle[TxVect[i]]
+
     for (step = 0, incr = 1, p = 0, i = 0; i < DataCarriers; i++) { 
         TxVect[i] = p; 
         step += incr; 
@@ -151,6 +155,7 @@ int MT63tx::Preset(int BandWidth, int LongInterleave)
 
 // compute dspPhase correction between successive FFTs separated by SymbolSepar
 // Like above we compute indexes to the FFT.Twiddle[]
+
     incr = (SymbolSepar * DataCarrSepar) & mask;
     for (p = (SymbolSepar * FirstDataCarr) & mask, i = 0; i < DataCarriers; i++) { 
         dspPhaseCorr[i] = p; 
@@ -163,13 +168,15 @@ Error:
 }
 
 int MT63tx::SendTune(void)
-{ int i,c,r,mask; double dspAmpl;
+{
+    int i, c, r, mask;
+    double dspAmpl;
 
     mask = FFT.Size - 1;
     dspAmpl = TxdspAmpl * sqrt(DataCarriers / 2);
 
     for (i = 0; i < DataCarriers; i++)
-            TxVect[i] = (TxVect[i] + dspPhaseCorr[i]) & mask;
+        TxVect[i] = (TxVect[i] + dspPhaseCorr[i]) & mask;
 
     for (i = 0; i < 2 * WindowLen; i++) 
         WindowBuff.Data[i].im = WindowBuff.Data[i].re = 0.0;
@@ -206,13 +213,14 @@ int MT63tx::SendChar(char ch)
     int i,mask,flip;
 
     Encoder.Process(ch); // encode and interleave the character
-/*
+
 // print the character and the DataBlock being sent
-  printf("0x%02x [%c] => ", ch, ch>=' ' ? ch : '.');
-  for (i=0; i<DataCarriers; i++) printf("%c",'0'+Encoder.Output[i]);
-  printf("\n");
-*/
-  // here we encode the Encoder.Output into dspPhase flips
+//    printf("0x%02x [%c] => ", ch, ch>=' ' ? ch : '.');
+//    for (i=0; i<DataCarriers; i++) printf("%c",'0'+Encoder.Output[i]);
+//  printf("\n");
+
+// here we encode the Encoder.Output into dspPhase flips
+
     mask = FFT.Size - 1;
     flip = FFT.Size / 2;
     for (i = 0; i < DataCarriers; i++) {
@@ -236,7 +244,6 @@ int MT63tx::SendJam(void)
     left = FFT.Size / 4;
     right = 3 * (FFT.Size / 4);
     for (i = 0; i < DataCarriers; i++) {
-// faster & simpler random generator ?
         if (rand() & 0x100) // turn left 90 degrees
             TxVect[i] = (TxVect[i] + dspPhaseCorr[i] + left) & mask; 
         else                // turn right 90 degrees
@@ -272,13 +279,17 @@ int MT63tx::ProcessTxVect(void)
     }
     FFT.CoreProc(WindowBuff.Data);
     FFT.CoreProc(WindowBuff.Data + WindowLen);
+
 // negate the imaginary part for the IFFT
     for (i = 0; i < 2 * WindowLen; i++) 
         WindowBuff.Data[i].im *= (-1.0);
+
 // we could be faster by avoiding Scramble and using the FFT.RevIdx[]
     Window.Process(&WindowBuff);
-    Comb.Process(&Window.Output);
+
 // audio output to be sent out is in Comb.Output
+    Comb.Process(&Window.Output);
+
   return 0;
 }
 

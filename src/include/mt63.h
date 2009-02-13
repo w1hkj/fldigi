@@ -38,29 +38,31 @@ using namespace std;
 
 class mt63 : public modem {
 private:
-	int Interleave;
-	int flush;
-	int escape;
+	int     Interleave;
+	int     flush;
+	int     escape;
 
-	MT63tx *Tx;
-	MT63rx *Rx;
+	MT63tx  *Tx;
+	MT63rx  *Rx;
 
 	dspLevelMonitor *InpLevel;
-	double_buff *InpBuff;
-	double_buff *emptyBuff;
-	bool flushbuffer;
+	double_buff     *InpBuff;
+	double_buff     *emptyBuff;
+	bool            flushbuffer;
+	double          FEC_offset;
+	double          FEC_snr;
 		
 public:
 	mt63(trx_mode mode);
 	~mt63();
-	void init();
-	void rx_init();
-	void tx_init(SoundBase*);
-	void restart();
-	int rx_process(const double *buf, int len);
-	int tx_process();
+	void    init();
+	void    rx_init();
+	void    tx_init(SoundBase*);
+	void    restart();
+	int     rx_process(const double *buf, int len);
+	int     tx_process();
 	
-	void rx_flush();
+	void    rx_flush();
 };
 
 

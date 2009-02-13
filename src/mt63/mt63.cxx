@@ -119,6 +119,8 @@ int mt63::rx_process(const double *buf, int len)
 	double snr;
 	unsigned int c;
 	int i;
+	static char msg1[20];
+	static char msg2[20];
 
 	if (get_freq() != (500.0 + bandwidth / 2.0))
 	    set_freq(500.0 + bandwidth / 2.0);
@@ -141,18 +143,24 @@ int mt63::rx_process(const double *buf, int len)
 	Rx->Process(InpBuff);
 
 	snr = Rx->FEC_SNR();
+	
+	if (progStatus.sqlonoff && snr < progStatus.sldrSquelchValue) {
+	    put_Status1("");
+	    put_Status2("");
+	    display_metric(0);
+		return 0;
+    }
+
 	if (snr > 99.9)
 		snr = 99.9;
 	display_metric(snr);
 
-//	static char msg1[15];
-//	double s2n = 10.0*log10( snr );
-//	snprintf(msg1, sizeof(msg1), "s/n %2d dB", (int)(floor(s2n))); 
-//  put_Status1(msg1);
+	double s2n = 10.0*log10( snr == 0 ? 0.001 : snr);
+	snprintf(msg1, sizeof(msg1), "s/n %2d dB", (int)(floor(s2n))); 
+    put_Status1(msg1);
 
-	if (progStatus.sqlonoff && snr < progStatus.sldrSquelchValue)
-		return 0;
-
+    snprintf(msg2, sizeof(msg2), "f/o %+4.1f Hz", Rx->TotalFreqOffset());
+    put_Status2(msg2, 5, STATUS_CLEAR);
 	
 	for (i = 0; i < Rx->Output.Len; i++) {
 		c = Rx->Output.Data[i];
@@ -246,6 +254,10 @@ void mt63::restart()
 		fprintf(stderr, "mt63_txinit: init failed\n");
 	flush = Tx->DataInterleave;
 
+// Rx->Preset( int BandWidth = 1000,
+//               int LongInterleave = 0,
+//               int Integ = 16,
+//  	         void (*Display)(double *Spectra, int Len) = NULL);
 	err = Rx->Preset((int)bandwidth, Interleave == 64 ? 1 : 0, IntegLen);
 	if (err)
 		fprintf(stderr, "mt63_rxinit: init failed\n");
