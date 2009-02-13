@@ -120,7 +120,8 @@ int mt63::rx_process(const double *buf, int len)
 	unsigned int c;
 	int i;
 
-	if (get_freq() != (500.0 + bandwidth / 2.0)) 	set_freq(500.0 + bandwidth / 2.0);
+	if (get_freq() != (500.0 + bandwidth / 2.0))
+	    set_freq(500.0 + bandwidth / 2.0);
 
 	if (Interleave != progdefaults.mt63_interleave) {
 		Interleave = progdefaults.mt63_interleave;
