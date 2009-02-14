@@ -510,6 +510,9 @@ void startup_modem(modem *m)
 		ReceiveText->show();
 		FHdisp->hide();
 	}
+	if (m == rtty_modem) {
+	    sldrRTTYbandwidth->value(progdefaults.RTTY_BW);
+    }
 
 	if (m->get_cap() & modem::CAP_AFC) {
 		btn_afconoff->value(progStatus.afconoff);

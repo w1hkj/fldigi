@@ -680,14 +680,14 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 500 345} hide
+        xywh {0 25 500 345}
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 500 345} selection_color 50 align 9
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 500 320} selection_color 50
@@ -1179,11 +1179,11 @@ progdefaults.changed = true;} open
             }
           }
           Fl_Group tabRTTY {
-            label RTTY open
-            xywh {0 50 500 320} hide
+            label RTTY open selected
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {open
-              xywh {5 60 490 225} box ENGRAVED_FRAME
+              xywh {5 60 490 270} box ENGRAVED_FRAME
             } {
               Fl_Choice selShift {
                 label {Carrier shift}
@@ -1304,6 +1304,12 @@ progdefaults.changed = true;}
                 code0 {o->value(progdefaults.Xagc);}
                 code1 {o->hide();}
               }
+              Fl_Value_Slider sldrRTTYbandwidth {
+                label {Receive filter bandwidth}
+                callback {progdefaults.RTTY_BW = o->value();}
+                tooltip {Adjust the DSP bandwidth} xywh {100 295 300 20} type Horizontal align 5 minimum 50 maximum 1000 step 5 value 400 textsize 14
+                code0 {o->value(progdefaults.RTTY_BW);}
+              }
             }
           }
           Fl_Group tabTHOR {
@@ -1364,7 +1370,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabRig {
         label Rig open
-        xywh {0 25 500 345}
+        xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsRig {open
           xywh {0 25 500 345} selection_color 50
@@ -1484,7 +1490,7 @@ progdefaults.changed = true;}
   }
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
               tooltip {RigCAT used for rig control} xywh {195 60 110 20} down_box DOWN_BOX
             }
             Fl_Group grpRigCAT {open

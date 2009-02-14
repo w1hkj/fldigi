@@ -86,6 +86,7 @@ private:
 	double		phaseacc;
 	double		rtty_squelch;
 	double		rtty_shift;
+	double      rtty_BW;
 	double		rtty_baud;
 	int 		rtty_bits;
 	RTTY_PARITY	rtty_parity;

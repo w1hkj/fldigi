@@ -84,6 +84,7 @@
         ELEM_(bool, UOSrx, "UOSRX", true)                                               \
         ELEM_(bool, UOStx, "UOSTX", true)                                               \
         ELEM_(bool, Xagc, "XAGC", false)                                                \
+        ELEM_(double, RTTY_BW, "RTTYBW", 400.0)                                         \
 /* CW */                                                                                \
         ELEM_(bool, useCWkeylineRTS, "", false)                                         \
         ELEM_(bool, useCWkeylineDTR, "", false)                                         \

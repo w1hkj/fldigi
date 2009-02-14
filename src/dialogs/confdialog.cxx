@@ -1004,6 +1004,12 @@ static void cb_chkXagc(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Value_Slider *sldrRTTYbandwidth=(Fl_Value_Slider *)0;
+
+static void cb_sldrRTTYbandwidth(Fl_Value_Slider* o, void*) {
+  progdefaults.RTTY_BW = o->value();
+}
+
 Fl_Group *tabTHOR=(Fl_Group *)0;
 
 Fl_Input2 *txtTHORSecondary=(Fl_Input2 *)0;
@@ -2672,11 +2678,11 @@ an merging"));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 500, 345, _("Modems"));
-        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 500, 345);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
           { tabCW = new Fl_Group(0, 50, 500, 320, _("CW"));
+            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 500, 320);
               tabsCW->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
@@ -3219,8 +3225,7 @@ an merging"));
             tabPSK->end();
           } // Fl_Group* tabPSK
           { tabRTTY = new Fl_Group(0, 50, 500, 320, _("RTTY"));
-            tabRTTY->hide();
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 225);
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 270);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Choice* o = selShift = new Fl_Choice(15, 70, 100, 20, _("Carrier shift"));
                 selShift->tooltip(_("Select carrier shift"));
@@ -3335,6 +3340,18 @@ an merging"));
                 o->value(progdefaults.Xagc);
                 o->hide();
               } // Fl_Check_Button* chkXagc
+              { Fl_Value_Slider* o = sldrRTTYbandwidth = new Fl_Value_Slider(100, 295, 300, 20, _("Receive filter bandwidth"));
+                sldrRTTYbandwidth->tooltip(_("Adjust the DSP bandwidth"));
+                sldrRTTYbandwidth->type(1);
+                sldrRTTYbandwidth->minimum(50);
+                sldrRTTYbandwidth->maximum(1000);
+                sldrRTTYbandwidth->step(5);
+                sldrRTTYbandwidth->value(400);
+                sldrRTTYbandwidth->textsize(14);
+                sldrRTTYbandwidth->callback((Fl_Callback*)cb_sldrRTTYbandwidth);
+                sldrRTTYbandwidth->align(FL_ALIGN_TOP_LEFT);
+                o->value(progdefaults.RTTY_BW);
+              } // Fl_Value_Slider* sldrRTTYbandwidth
               o->end();
             } // Fl_Group* o
             tabRTTY->end();
@@ -3410,6 +3427,7 @@ an merging"));
         tabModems->end();
       } // Fl_Group* tabModems
       { tabRig = new Fl_Group(0, 25, 500, 345, _("Rig"));
+        tabRig->hide();
         { tabsRig = new Fl_Tabs(0, 25, 500, 345);
           tabsRig->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hardware PTT"));

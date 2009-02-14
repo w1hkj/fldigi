@@ -194,6 +194,8 @@ void WFdisp::makeMarker() {
 				progdefaults.SearchRange;
 		if (mode >= MODE_FELDHELL && mode <= MODE_HELL80)
 			marker_width = (int)progdefaults.HELL_BW;
+        if (mode == MODE_RTTY)
+            marker_width = (int)progdefaults.RTTY_BW;
 	}
 	marker_width = (int)(marker_width / 2.0 + 1);
 
@@ -1754,6 +1756,8 @@ void waterfall::handle_mouse_wheel(int what, int d)
 			val = sldrHellBW;
 		else if (m == MODE_CW)
 			val = sldrCWbandwidth;
+        else if (m == MODE_RTTY)
+            val = sldrRTTYbandwidth;
 		else
 			return;
 		msg_fmt = "%s = %2.0f Hz";

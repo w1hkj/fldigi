@@ -25,6 +25,8 @@
 // ----------------------------------------------------------------------------
 
 #include <config.h>
+#include <iostream>
+using namespace std;
 
 #include "rtty.h"
 #include "waterfall.h"
@@ -135,8 +137,6 @@ rtty::~rtty()
 
 void rtty::restart()
 {
-	double fhi;
-	double flo;
 	double stl;
 	
 	rtty_shift = shift = _SHIFT[progdefaults.rtty_shift];
@@ -159,21 +159,20 @@ void rtty::restart()
 	rxmode = LETTERS;
 	symbollen = (int) (samplerate / rtty_baud + 0.5);
 	set_bandwidth(shift);
+	
+    rtty_BW = shift + rtty_baud;
+	progdefaults.RTTY_BW = rtty_BW;
+	wf->redraw_marker();
 
-//	fhi = (shift / 2 + rtty_baud* 1.5) / samplerate;
-	fhi = (shift / 2 + rtty_baud * 2.0) / samplerate;
-	flo = 0.0;
-//	flo = (shift / 2 - rtty_baud* 1.5) / samplerate;
 	if (bpfilt) 
-		bpfilt->create_filter(flo, fhi);
+		bpfilt->create_filter(0, rtty_BW / samplerate / 2.0);
 	else
-		bpfilt = new fftfilt(flo, fhi, 1024);
-
+		bpfilt = new fftfilt(0, rtty_BW / samplerate / 2.0, 1024);
 
 	if (bitfilt)
-		bitfilt->setLength(symbollen / 4);//6);
+		bitfilt->setLength(symbollen / 8);//4);
 	else
-		bitfilt = new Cmovavg(symbollen / 4);//6);
+		bitfilt = new Cmovavg(symbollen / 8);//4);
 
 // stop length = 1, 1.5 or 2 bits
 	rtty_stop = progdefaults.rtty_stop;
@@ -403,7 +402,9 @@ void rtty::Metric()
 	 		   wf->powerDensity(frequency + shift * 1.5, delta) + 1e-10;
 	sigpwr = wf->powerDensity(frequency - shift/2, delta) +
 			 wf->powerDensity(frequency + shift/2, delta) + 1e-10;
-	metric = decayavg( metric, 40.0*log10(sigpwr / noisepwr), 8);
+    double snr = sigpwr / noisepwr;
+    metric = decayavg( metric, snr, 16);
+    metric = CLAMP(metric, 0.0, 100.0);
 	display_metric(metric);
 }
 
@@ -457,6 +458,12 @@ int rtty::rx_process(const double *buf, int len)
 	double halfshift = rtty_shift/2.0;
 	double ferr = 0;
 
+	if (progdefaults.RTTY_BW != rtty_BW) {
+		rtty_BW = progdefaults.RTTY_BW;
+		bpfilt->create_filter(0, rtty_BW / samplerate / 2.0);
+		wf->redraw_marker();
+	}
+
 	while (len-- > 0) {
 		
 // create analytic signal from sound card input samples
@@ -473,6 +480,7 @@ int rtty::rx_process(const double *buf, int len)
 // bandpass filter using Windowed Sinc - Overlap-Add convolution filter
 
 		n = bpfilt->run(z, &zp);
+		Metric();
 		if (n) {
 			for (int i = 0; i < n; i++) {
 			
@@ -541,7 +549,7 @@ int rtty::rx_process(const double *buf, int len)
 						poserr = posfreq/poscnt;
 						negerr = negfreq/negcnt;
 						
-						Metric();
+//						Metric();
 				
 // compute the frequency error as the median of + and - relative freq's
 						if (sigsearch) sigsearch--;
