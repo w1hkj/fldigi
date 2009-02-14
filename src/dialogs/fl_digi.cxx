@@ -505,8 +505,7 @@ void startup_modem(modem *m)
 		m == feld_80modem ) {
 		ReceiveText->hide();
 		FHdisp->show();
-		sldrHellBW->value(m->get_bandwidth());
-		progdefaults.HELL_BW = m->get_bandwidth();
+		sldrHellBW->value(progdefaults.HELL_BW);
 	} else {
 		ReceiveText->show();
 		FHdisp->hide();

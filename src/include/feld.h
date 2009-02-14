@@ -50,6 +50,7 @@ enum FELD_STATE {PREAMBLE, POSTAMBLE, DATA};
 protected:
 //rx
 	double rxphacc;
+	double rxdelta;
 	double rxcounter;
 	double agc;
 	double peakhold;

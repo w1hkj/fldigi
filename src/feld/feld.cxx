@@ -34,6 +34,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <iostream>
+
+using namespace std;
+
 #include "feld.h"
 #include "fontdef.h"
 #include "confdialog.h"
@@ -117,15 +121,24 @@ feld::feld(trx_mode m)
 			break;
 // Frequency modulation modes
 		case MODE_FSKHELL: 
-			feldcolumnrate = 17.5; 
+			feldcolumnrate = 17.5;
+			hell_bandwidth = 122.5; 
+            phi2freq = samplerate / M_PI / (hell_bandwidth / 2.0);
+            filter_bandwidth = 3.0 * hell_bandwidth;
 			cap = CAP_REV;
 			break; 
 		case MODE_FSKH105: 
-			feldcolumnrate = 7.5;//17.5; 
+			feldcolumnrate = 17.5;
+			hell_bandwidth = 55;
+            phi2freq = samplerate / M_PI / (hell_bandwidth / 2.0);
+            filter_bandwidth = 3.0 * hell_bandwidth;
 			cap = CAP_REV;
 			break; 
 		case MODE_HELL80: 
-			feldcolumnrate = 35; 
+			feldcolumnrate = 35;
+			hell_bandwidth = 490;
+            phi2freq = samplerate / M_PI / (hell_bandwidth / 2.0);
+            filter_bandwidth = 2.0 * hell_bandwidth;
 			cap = CAP_REV;
 			break;
  		default :
@@ -133,29 +146,27 @@ feld::feld(trx_mode m)
  			break; 
  	}
 
-	rxpixrate = (RxColumnLen * feldcolumnrate);
-	txpixrate = (TxColumnLen * feldcolumnrate);
-	downsampleinc = (double)(rxpixrate/samplerate);
-	upsampleinc = (double)(txpixrate/samplerate);
-	phi2freq = samplerate / txpixrate / 2.0 / M_PI;
-	
-	hell_bandwidth = txpixrate;
-
-	set_bandwidth(hell_bandwidth);
-	
 	hilbert = new C_FIR_filter();
 	hilbert->init_hilbert(37, 1);
 	
-	filter_bandwidth = hell_bandwidth;
+   	rxpixrate = (RxColumnLen * feldcolumnrate);
+    txpixrate = (TxColumnLen * feldcolumnrate);
+    downsampleinc = (double)(rxpixrate/samplerate);
+    upsampleinc = (double)(txpixrate/samplerate);
+
+    if (mode < MODE_FSKHELL) {
+        hell_bandwidth = txpixrate;
+        filter_bandwidth = hell_bandwidth;
+    }
+
+    set_bandwidth(hell_bandwidth);
+    progdefaults.HELL_BW = filter_bandwidth;
+    wf->redraw_marker();
 	
-	if (filter_bandwidth != progdefaults.HELL_BW)
-		progdefaults.HELL_BW = filter_bandwidth;
-	
-	lp = 1.5 * filter_bandwidth / samplerate;
-	
-	bpfilt = new fftfilt(0, lp, 1024);
-	
-	bbfilt = new Cmovavg(8);
+   	lp = filter_bandwidth / samplerate;
+    bpfilt = new fftfilt(0, lp, 1024);
+
+    bbfilt = new Cmovavg(8);
 	
 	minmaxfilt = new Cmovavg(120);
 	
@@ -189,34 +200,30 @@ complex feld::mixer(complex in)
 	return z;
 }
 
-
 void feld::FSKHELL_rx(complex z)
 {
 	double f;
-	int vid;
+	double vid;
 
 	f = (prev % z).arg() * phi2freq;
-	prev = z;
-	
+	prev = z;	
 	f = bbfilt->run(f);
-
 	rxcounter += downsampleinc;
+	
 	if (rxcounter < 1.0)
 		return;
+	rxcounter -= 1.0;	
 
-	rxcounter -= 1.0;
-	
-	f = CLAMP(f + 0.5, 0.0, 1.0);
+    vid = f + 0.5;
+	vid = CLAMP(vid, 0.0, 1.0);
 	if (mode == MODE_HELL80)
-		f = 1.0 - f;
-	
+		vid = 1.0 - vid;
 	if (reverse)
-		f = 1.0 - f;
+		vid = 1.0 - vid;
 	if (blackboard)
-		f = 1.0 - f;
-	vid = (int)(255 * f);
+		vid = 1.0 - vid;
 
-	col_data[col_pointer + RxColumnLen] = vid;
+	col_data[col_pointer + RxColumnLen] = (int)(vid * 255.0);
 	col_pointer++;
 	if (col_pointer == RxColumnLen) {
 		REQ(put_rx_data, col_data, col_data.size());
@@ -288,7 +295,7 @@ int feld::rx_process(const double *buf, int len)
 	if (progdefaults.HELL_BW != filter_bandwidth) {
 		double lp;
 		filter_bandwidth = progdefaults.HELL_BW;
-		lp = 1.5 * filter_bandwidth / 2.0 / samplerate;
+       	lp = filter_bandwidth / samplerate;
 		bpfilt->create_filter(0, lp);
 		wf->redraw_marker();
 	}
@@ -388,22 +395,16 @@ double feld::nco(double freq)
 void feld::send_symbol(int currsymb, int nextsymb)
 {
 	double tone = get_txfreq_woffset();
-	double midtone = tone;
 	double Amp;
 	int outlen = 0;
 	
+	Amp = 1.0;
+	if (mode >= MODE_FSKHELL && mode <= MODE_HELL80)
+	    tone += (reverse ? -1 : 1) * (currsymb ? -1 : 1) * bandwidth / 2.0;
 	for (;;) {
-		Amp = 1.0;
 		switch (mode) {
-			case MODE_FSKHELL :
-				tone = midtone + (reverse ? -1 : 1) * (currsymb ? -1 : 1) * txpixrate / 2.0;
-				break;
-			case MODE_FSKH105 :
-				tone = midtone + (reverse ? -1 : 1) * (currsymb ? -1 : 1) * txpixrate / 2.0;
-				break;
-			case MODE_HELL80:
-				tone = midtone - (reverse ? -1 : 1) * (currsymb ? -1 : 1) * txpixrate / 2.0;
-				break;
+			case MODE_FSKHELL : case MODE_FSKH105 : case MODE_HELL80 :
+                break;
 			case MODE_HELLX5 : case MODE_HELLX9 :
 				Amp = currsymb;
 				break;
