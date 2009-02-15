@@ -479,15 +479,16 @@ void PTT::open_uhrouter(void)
 	int uhrfd[2];
 	uhrfd[0] = uhrfd[1] = uhkfd[0] = uhkfd[1] = uhfd[0] = uhfd[1] = -1;
 
-	// if we just started uhrouter we will retry open_fifos a few times
-	unsigned retries = start_uhrouter() ? 30 : 0;
-	while (!open_fifos(UHROUTER_FIFO_PREFIX, uhrfd) && retries--)
-		MilliSleep(100);
-	if (uhrfd[0] == -1 || uhrfd[1] == -1) {
-		LOG_ERROR("Could not open router");
-		return;
+	if (!open_fifos(UHROUTER_FIFO_PREFIX, uhrfd)) {
+		// if we just started uhrouter we will retry open_fifos a few times
+		unsigned retries = start_uhrouter() ? 30 : 0;
+		while (retries-- && !open_fifos(UHROUTER_FIFO_PREFIX, uhrfd))
+			MilliSleep(100);
+		if (uhrfd[0] == -1 || uhrfd[1] == -1) {
+			LOG_ERROR("Could not open router");
+			return;
+		}
 	}
-
 	char fifo_name[PATH_MAX];
 	size_t len = PATH_MAX - 8;
 	memset(fifo_name, 0, sizeof(fifo_name));
@@ -529,7 +530,7 @@ void PTT::close_uhrouter(void)
 	close(uhfd[0]);
 	close(uhfd[1]);
 
-	unsigned char c = CLOSEKEYER;
+	unsigned char c = QUITIFNOTINUSE;
 	write(uhkfd[1], &c, 1);
 	close(uhkfd[0]);
 	close(uhkfd[1]);
