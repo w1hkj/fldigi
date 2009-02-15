@@ -513,6 +513,8 @@ void startup_modem(modem *m)
 	if (m == rtty_modem) {
 	    sldrRTTYbandwidth->value(progdefaults.RTTY_BW);
     }
+    if (m >= psk31_modem && m <= qpsk250_modem)
+        m->set_sigsearch(SIGSEARCH);
 
 	if (m->get_cap() & modem::CAP_AFC) {
 		btn_afconoff->value(progStatus.afconoff);

@@ -566,23 +566,26 @@ int rtty::rx_process(const double *buf, int len)
 						freqerr   = decayavg(freqerr, ferr,  avging);
 
 // display the FSK +/- signals on the digiscope					
-						set_rtty( 
-							negerr/(halfshift), 
-							poserr/(halfshift), 
-							1.0 );
-					}
-					poscnt = 0; posfreq = 0.0;
-					negcnt = 0; negfreq = 0.0;
+    					if ((metric > progStatus.sldrSquelchValue && progStatus.sqlonoff) || !progStatus.sqlonoff)
+		    				set_rtty( negerr/(halfshift), poserr/(halfshift), 1.0 );
+					    else 
+						    set_rtty(0.0, 0.0, 0.0);
 
-					if (progStatus.afconoff) {
-						if (metric > progStatus.sldrSquelchValue || !progStatus.sqlonoff) {// || sigsearch) {
-							set_freq(frequency - ferr);
+		    			poscnt = 0; posfreq = 0.0;
+			    		negcnt = 0; negfreq = 0.0;
+
+			    		if (progStatus.afconoff) {
+			    			if (metric > progStatus.sldrSquelchValue || !progStatus.sqlonoff) // || sigsearch) {
+			    				set_freq(frequency - ferr);
 						}
-					}
+					} else if ((metric <= progStatus.sldrSquelchValue && progStatus.sqlonoff) || !progStatus.sqlonoff) 
+					    set_rtty(0.0, 0.0, 0.0);
 				}
 			}
 		}
-		set_zdata(QI, n);
+		if (metric < progStatus.sldrSquelchValue && progStatus.sqlonoff)
+            for (int i = 0; i < n; i++) QI[i].re = QI[i].im = 0.0;
+        set_zdata(QI, n);
 	}
 
 	return 0;
