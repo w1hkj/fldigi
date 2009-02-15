@@ -938,8 +938,8 @@ void cb_mnuVisitURL(Fl_Widget*, void* arg)
 		"open"
 #  else
 		"xdg-open", getenv("BROWSER"), "sensible-brower", "firefox", "mozilla"
-	};
 #  endif
+	};
 	switch (fork()) {
 	case 0:
 #  ifndef NDEBUG
