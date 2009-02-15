@@ -101,8 +101,8 @@ bool fetch_http_gui(const string& url, string& reply, double timeout,
 		if (Fl::event() == FL_KEYUP && Fl::event_key() == FL_Escape)
 			break;
 		clock_gettime(CLOCK_MONOTONIC, &ts[1]);
-		ts[1] = ts[1] - ts[0];
-		if ((timeout = ts[1].tv_sec + ts[1].tv_nsec / 1e9) <= 0.0)
+		ts[1] -= ts[0];
+		if (timeout - ts[1].tv_sec + ts[1].tv_nsec / 1e9 <= 0.0)
 			break;
 		if (busy)
 			busy(arg1);
@@ -118,8 +118,7 @@ bool fetch_http_gui(const string& url, string& reply, double timeout,
 	}
 	else {
 		Fl::add_timeout(1.0, fetch_url_cleanup, data);
-		if (timeout >= 0.0)
-			reply = _("Aborted");
+		reply = (timeout >= 0.0 ? _("Aborted") : _("Timed out"));
 		ret = false;
 	}
 
