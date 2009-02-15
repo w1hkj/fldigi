@@ -129,9 +129,12 @@ void debug::log(level_e level, const char* func, const char* srcf, int line, con
 	va_list args;
 	va_start(args, format);
 	vfprintf(wfile, fmt, args);
-	if (tty && level <= DEBUG_LEVEL && level > QUIET_LEVEL)
-		vfprintf(stderr, fmt, args);
 	va_end(args);
+	if (tty && level <= DEBUG_LEVEL && level > QUIET_LEVEL) {
+		va_start(args, format);
+		vfprintf(stderr, fmt, args);
+		va_end(args);
+	}
 
 	Fl::add_timeout(0.0, sync_text, 0);
 }
