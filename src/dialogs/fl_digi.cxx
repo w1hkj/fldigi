@@ -3402,6 +3402,7 @@ unsigned quick_choice(const char* title, unsigned sel, ...)
 	for (size_t n = 0; (item = va_arg(ap, const char*)); n++) {
 		if ((p = (Fl_Menu_Item*)realloc(p, (n+2) * sizeof(Fl_Menu_Item))) == NULL) {
 			free((Fl_Menu_Item*)menu);
+			va_end(ap);
 			return 0;
 		}
 		memset(p + n, 0, 2 * sizeof(Fl_Menu_Item));
