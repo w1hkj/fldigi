@@ -106,7 +106,34 @@ Change Log:
             Notes ADIF field is multi-line character
             Converts all ADIF comment fields to Notes; backward compatibility
     45) Bug fix to recent rtty mods - excessive cpu usage
-
+    46) Olivia pulse shape changes.   
+        Transmit noise floor was < -55 dB; mod changes it to -85 dB
+    47) Initialise hamlib's RTS +12 setting
+    48) Improve font handling
+        Save font names rather than numbers in the settings file
+        Display actual sizes for non-scalable fonts
+        Make the font browser's size text field writeable
+        Use a single callback for the font browser widgets
+    49) Remove bad sample rate converters
+          Remove Zero Order Hold from the settings menu and change the user
+        setting to Linear if ZOH had been selected.
+          Remove Linear on PowerPC because it segfaults when used via SRC's
+        callback interface with a non-integer sample rate ratio.  This should
+        be investigated further, but not having Linear is no big loss and we
+        can just disable it for now.  The user setting is changed to
+        SINC_FASTEST if it was Linear.
+          A warning message is emitted in either case to let the user know that
+        we did this.
+    50) Add locator tooltip
+          Change the FTextView string lookup code to recognise locator strings 
+        and display a QRB & QTE tooltip (thanks Thomas Osterried, DL9SAU).  The
+        Control key can be held down to force a callsign lookup.
+          Also move FTextEdit menu/Clear to the end of the edit command group, 
+        and simplify the FTextView menu handling for the Exchange field.
+    51) Close PTT when exiting
+    52) Bug fix ... error in extracting font_number from font_name
+    53) Added new palette, fldigi.pal
+    
 3.1
       1) Changes to irrxml functions; 
          added main.set_sideband <USB/LSB>
