@@ -121,6 +121,7 @@ private:
 	
 	complex QI[1024];
 	int QIptr;
+	bool   clear_zdata;
 	double sigpwr;
 	double noisepwr;
 	double avgsig;

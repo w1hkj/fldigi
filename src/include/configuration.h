@@ -56,6 +56,8 @@
         ELEM_(bool, WaterfallClickInsert, "WATERFALLCLICKINSERT", false)                \
         ELEM_(std::string, WaterfallClickText, "WATERFALLCLICKTEXT", "\n<FREQ>\n")      \
         ELEM_(int, WaterfallWheelAction, "WATERFALLWHEELACTION", waterfall::WF_CARRIER) \
+/* PSK, filter can be 0, 1, 2, 3 or 4 */                                                \
+        ELEM_(int, PSK_filter, "PSKFILTER", 0)                                          \
 /* PSK / PSKmail interface */                                                           \
         ELEM_(int, SearchRange, "PSKSEARCHRANGE", 200)                                  \
         ELEM_(double, ACQsn, "ACQSN", 6.0)                                              \

@@ -1,7 +1,7 @@
 //=============================================================================
 //    fftfilt.cxx  --  Fast convolution Overlap-Add filter
 //
-// Filter implemented using overlay-add FFT convolution method
+// Filter implemented using overlap-add FFT convolution method
 // h(t) characterized by Windowed-Sinc impulse response
 // 
 // Reference: 

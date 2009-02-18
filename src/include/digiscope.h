@@ -43,10 +43,10 @@ class Digiscope : public Fl_Widget {
 public:
 #define DEFAULT_WIDTH	100
 #define DEFAULT_HEIGHT	100
-#define	MAX_LEN			4096
-//#define MAX_ZLEN		16184
-//#define MAX_ZLEN		8192
-#define MAX_ZLEN		4096
+//#define	MAX_LEN			4096
+//#define MAX_ZLEN		4096
+#define	MAX_LEN			1024
+#define MAX_ZLEN		1024
 	enum scope_mode {
 		SCOPE,
 		PHASE,

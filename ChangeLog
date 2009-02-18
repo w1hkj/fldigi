@@ -81,6 +81,31 @@ Change Log:
     33) Fix missing quick-pick popup menu(s)
     34) Added "wrap" and "talk" sub directories to fldigi files directory
         Target directories for save wrap files and textout.txt respectively.
+    35) Fix va_args calls
+    36) OS X fixes
+          Fix ifdef in open URL routine
+          Try to start uH Router only if the fifos could not be opened
+          Send uH Router quit-if-not-in-use command on exit
+    37) Fix fetch_http_gui timeout check
+    38) Added RTTY x-y scope extinguish on loss of signal
+    39) Added PSK modes set_sigsearch(...) on modem change to any psk mode.
+        Added DSP filter width adjustment to RTTY
+    40) Bug fix for Feld FM modes
+    41) Added FEC_snr and FEC_freq_offset displays to status bar
+    42) Cosmetic changes to mt63 source - increase white space for easier 
+        reading
+    43) Olivia decoder/encoder improvements removed all extraneous 
+        double/integer/double conversions added new signal/noise computation 
+        method
+    44) Bug fix - PTT via rigCAT serial h/w
+        RTS/DTR was inaccessible
+        Bug fix - Xlog stream; suppress newlines in Notes field
+        Added binary string format to display bit fields, ie: RTS / DTR state
+        Changed 'Comments' to 'Notes' in all references re: logbook
+            Comments ADIF field is single line character
+            Notes ADIF field is multi-line character
+            Converts all ADIF comment fields to Notes; backward compatibility
+    45) Bug fix to recent rtty mods - excessive cpu usage
 
 3.1
       1) Changes to irrxml functions; 

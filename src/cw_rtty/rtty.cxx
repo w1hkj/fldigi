@@ -33,6 +33,7 @@ using namespace std;
 #include "confdialog.h"
 #include "configuration.h"
 #include "status.h"
+#include "digiscope.h"
 
 //=====================================================================
 // Baudot support
@@ -160,7 +161,7 @@ void rtty::restart()
 	symbollen = (int) (samplerate / rtty_baud + 0.5);
 	set_bandwidth(shift);
 	
-    rtty_BW = shift + rtty_baud;
+    rtty_BW = shift + 3*rtty_baud;
 	progdefaults.RTTY_BW = rtty_BW;
 	wf->redraw_marker();
 
@@ -199,6 +200,8 @@ void rtty::restart()
 	freqerrlo = freqerrhi = 0.0;
 	sigsearch = 0;
 	dspcnt = 2*(nbits + 2);//nbits + 2; //2 * symbollen * (nbits + 2);
+	
+	clear_zdata = true;
 }
 
 rtty::rtty(trx_mode tty_mode)
@@ -226,12 +229,12 @@ rtty::rtty(trx_mode tty_mode)
 void rtty::update_syncscope()
 {
 	int j;
-	for (int i = 0; i < 2 * symbollen; i++) {
+	for (int i = 0; i < symbollen; i++) {
 		j = pipeptr - i;
-		if (j < 0) j += (2*symbollen);
+		if (j < 0) j += symbollen;
 		dsppipe[i] = pipe[j];
 	}
-	set_scope(dsppipe, 2*symbollen, false);
+	set_scope(dsppipe, symbollen, false);
 }
 
 void rtty::clear_syncscope()
@@ -403,7 +406,7 @@ void rtty::Metric()
 	sigpwr = wf->powerDensity(frequency - shift/2, delta) +
 			 wf->powerDensity(frequency + shift/2, delta) + 1e-10;
     double snr = sigpwr / noisepwr;
-    metric = decayavg( metric, snr, 16);
+    metric = decayavg( metric, snr, 8);//16);
     metric = CLAMP(metric, 0.0, 100.0);
 	display_metric(metric);
 }
@@ -452,10 +455,9 @@ int rtty::rx_process(const double *buf, int len)
 	double f = 0.0;
 	double fin;
 	static bool bit = true;//false;
-	int n, rxflag;
+	int n = 0, rxflag;
 	double deadzone = shift/8;
 	double rotate;
-	double halfshift = rtty_shift/2.0;
 	double ferr = 0;
 
 	if (progdefaults.RTTY_BW != rtty_BW) {
@@ -464,6 +466,8 @@ int rtty::rx_process(const double *buf, int len)
 		wf->redraw_marker();
 	}
 
+	Metric();
+
 	while (len-- > 0) {
 		
 // create analytic signal from sound card input samples
@@ -471,8 +475,6 @@ int rtty::rx_process(const double *buf, int len)
 		z.re = z.im = *buf++;
 		hilbert->run(z, z);
 
-//		MarkSpace(z);
-		
 // mix it with the audio carrier frequency to create a baseband signal
 
 		z = mixer(z);
@@ -480,7 +482,6 @@ int rtty::rx_process(const double *buf, int len)
 // bandpass filter using Windowed Sinc - Overlap-Add convolution filter
 
 		n = bpfilt->run(z, &zp);
-		Metric();
 		if (n) {
 			for (int i = 0; i < n; i++) {
 			
@@ -496,36 +497,34 @@ int rtty::rx_process(const double *buf, int len)
 				f = bitfilt->run(fin);
 			
 // track the + and - frequency excursions separately to derive an afc signal
-			
+
+                rotate = -4.0 * M_PI * freqerr / rtty_shift;
+                double xmix = fabs(4.0 * freqerr / rtty_shift);
+                if (xmix > 0.5) xmix = 0.5;
+                xmix += 0.05;
 				if (fin > 0.0) {
 					poscnt++;
 					posfreq += fin;
 					QI[i].re = zp[i].re;
-					QI[i].im = 0.1 * zp[i].im;
+					QI[i].im = xmix * zp[i].im;
 				} 
 				if (fin < 0.0) {
 					negcnt++;
 					negfreq += fin;
-					QI[i].re = 0.1 * zp[i].im;
+					QI[i].re = xmix * zp[i].im;
 					QI[i].im = zp[i].re;
 				}
-				
-				if (fin >= 0.0)
-					rotate = (halfshift - freqerrhi) * (M_PI/4.0) / halfshift;
-				else
-					rotate = -(halfshift + freqerrlo) * (M_PI/4.0) / halfshift;
 				QI[i] = QI[i] * complex(cos(rotate), sin(rotate));
-				avgsig = decayavg(avgsig, zp[i].mag(), 32);
+                avgsig = decayavg(avgsig, 1.25 * zp[i].mag(), 64);
 				
-				if (avgsig > 0.002) {
-					QI[i].re = (0.7 / avgsig) * QI[i].re;
-					QI[i].im = (0.7 / avgsig) * QI[i].im;
-				}
+				if (avgsig > 0) 
+				    QI[i] = QI[i] / avgsig;
+
 //	hysterisis dead zone in frequency discriminator bit detector
 
 				if (dspcnt && (--dspcnt % (nbits + 2) == 0)) {
 					pipe[pipeptr] = f / shift; // display filtered signal		
-					pipeptr = (pipeptr + 1) % (2*symbollen);
+					pipeptr = (pipeptr + 1) % symbollen;
 				}
 
 				if (f > deadzone )
@@ -538,19 +537,12 @@ int rtty::rx_process(const double *buf, int len)
 				rxflag = rx (reverse ? !bit : bit);
 
 				if (rxflag == 2) {
-					if ((metric > progStatus.sldrSquelchValue && progStatus.sqlonoff) || !progStatus.sqlonoff) {
-						update_syncscope();
-					}
-					else
-						clear_syncscope();
-					dspcnt = symbollen * 2 * (nbits + 2);
+					dspcnt = symbollen * (nbits + 2);
 
 					if (poscnt && negcnt) {
 						poserr = posfreq/poscnt;
 						negerr = negfreq/negcnt;
 						
-//						Metric();
-				
 // compute the frequency error as the median of + and - relative freq's
 						if (sigsearch) sigsearch--;
 
@@ -561,32 +553,32 @@ int rtty::rx_process(const double *buf, int len)
 						if (fs == 0) avging = 8;
 						else if (fs == 1) avging = 4;
 						else avging = 1;
-						freqerrhi = decayavg(freqerrhi, poserr, avging);
-						freqerrlo = decayavg(freqerrlo, negerr, avging);
 						freqerr   = decayavg(freqerr, ferr,  avging);
-
-// display the FSK +/- signals on the digiscope					
-    					if ((metric > progStatus.sldrSquelchValue && progStatus.sqlonoff) || !progStatus.sqlonoff)
-		    				set_rtty( negerr/(halfshift), poserr/(halfshift), 1.0 );
-					    else 
-						    set_rtty(0.0, 0.0, 0.0);
 
 		    			poscnt = 0; posfreq = 0.0;
 			    		negcnt = 0; negfreq = 0.0;
 
-			    		if (progStatus.afconoff) {
-			    			if (metric > progStatus.sldrSquelchValue || !progStatus.sqlonoff) // || sigsearch) {
-			    				set_freq(frequency - ferr);
-						}
-					} else if ((metric <= progStatus.sldrSquelchValue && progStatus.sqlonoff) || !progStatus.sqlonoff) 
-					    set_rtty(0.0, 0.0, 0.0);
+					}
 				}
 			}
 		}
-		if (metric < progStatus.sldrSquelchValue && progStatus.sqlonoff)
-            for (int i = 0; i < n; i++) QI[i].re = QI[i].im = 0.0;
-        set_zdata(QI, n);
 	}
+	if (progStatus.afconoff) {
+        if (metric > progStatus.sldrSquelchValue || !progStatus.sqlonoff) // || sigsearch) {
+            set_freq(frequency - ferr);
+    }
+    if (metric < progStatus.sldrSquelchValue && progStatus.sqlonoff) {
+        if (clear_zdata) {
+            for (int i = 0; i < MAX_ZLEN; i++) QI[i].re = QI[i].im = 0.0;
+            set_zdata(QI, MAX_ZLEN);
+            clear_zdata = false;
+            clear_syncscope();
+        }
+    } else {
+        clear_zdata = true;
+        update_syncscope();
+        set_zdata(QI, n);
+    }
 
 	return 0;
 }

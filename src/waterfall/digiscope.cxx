@@ -113,6 +113,7 @@ void Digiscope::data(double *data, int len, bool scale)
 	
 	if (data == 0) {
 		memset(_buf, 0, MAX_LEN * sizeof(*_buf));
+    	REQ_DROP(&Digiscope::redraw, this);
 		return;
 	}
 	if (len == 0)
@@ -443,22 +444,28 @@ int Digiscope::handle(int event)
 		case PHASE1: case PHASE2:
 			_mode = (scope_mode)((int)_mode + 1);
 			phase_mode = _mode;
+			redraw();
 			break;
 		case PHASE3:
 			_mode = PHASE1;
 			phase_mode = _mode;
+			redraw();
 			break;
 		case RTTY:
 			_mode = XHAIRS;
+			redraw();
 			break;
 		case XHAIRS:
 			_mode = RTTY;
+			redraw();
 			break;
 		case DOMDATA:
 			_mode = DOMWF;
+			redraw();
 			break;
 		case DOMWF:
 			_mode = DOMDATA;
+			redraw();
 			break;
 		case WWV:
 			event = Fl::event_button();
