@@ -86,8 +86,13 @@ void olivia::tx_init(SoundBase *sc)
 void olivia::send_preamble()
 {
 	double freqa, freqb;
-    int i, sr4 = samplerate / 4;
-
+    int i, j, sr4 = samplerate / 4;
+    double ampshape[sr4];
+    
+    for (int i = 0; i < sr4; i++) ampshape[i] = 1.0;
+    for (int i = 0; i < sr4 / 4; i++)
+        ampshape[i] = ampshape[sr4 - 1 - i] = 0.5 * (1.0 - cos(M_PI * i / (sr4/4)));
+        
 	if (reverse) { 
 		freqa = txbasefreq + (bandwidth / 2.0); 
 		freqb = txbasefreq - (bandwidth / 2.0); 
@@ -96,22 +101,27 @@ void olivia::send_preamble()
 		freqb = txbasefreq + (bandwidth / 2.0); 
 	}
 
-	for (i = 0; i < sr4; i++)
-		outbuf[i] = nco(freqa);
-	for (i = sr4; i < 2*sr4; i++)
-		outbuf[i] = nco(freqb);
-	for (i = 2*sr4; i < 3*sr4; i++)
-		outbuf[i] = nco(freqa);
-	for (i = 3*sr4; i < samplerate; i++)
-		outbuf[i] = nco(freqb);
+	for (i = 0, j = 0; i < sr4; i++, j++)
+		outbuf[i] = nco(freqa) * ampshape[j];
+	for (i = sr4, j = 0; i < 2*sr4; i++, j++)
+		outbuf[i] = nco(freqb) * ampshape[j];
+	for (i = 2*sr4, j = 0; i < 3*sr4; i++, j++)
+		outbuf[i] = nco(freqa) * ampshape[j];
+	for (i = 3*sr4, j = 0; i < samplerate; i++, j++)
+		outbuf[i] = nco(freqb) * ampshape[j];
 	ModulateXmtr(outbuf, samplerate);
 }
 
 void olivia::send_postamble()
 {
 	double freqa, freqb;
-	int i, sr4 = samplerate / 4;
-
+	int i, j, sr4 = samplerate / 4;
+    double ampshape[sr4];
+    
+    for (int i = 0; i < sr4; i++) ampshape[i] = 1.0;
+    for (int i = 0; i < sr4 / 8; i++)
+        ampshape[i] = ampshape[sr4 - 1 - i] = 0.5 * (1.0 - cos(M_PI * i / (sr4/8)));
+        
 	if (reverse) { 
 		freqa = txbasefreq + (bandwidth / 2.0); 
 		freqb = txbasefreq - (bandwidth / 2.0); 
@@ -120,14 +130,14 @@ void olivia::send_postamble()
 		freqb = txbasefreq + (bandwidth / 2.0); 
 	}
 
-	for (i = 0; i < sr4; i++)
-		outbuf[i] = nco(freqa);
-	for (i = sr4; i < 2*sr4; i++)
-		outbuf[i] = nco(freqb);
-	for (i = 2*sr4; i < 3*sr4; i++)
-		outbuf[i] = nco(freqa);
-	for (i = 3*sr4; i < samplerate; i++)
-		outbuf[i] = nco(freqb);
+	for (i = 0, j = 0; i < sr4; i++, j++)
+		outbuf[i] = nco(freqa) * ampshape[j];
+	for (i = sr4, j = 0; i < 2*sr4; i++, j++)
+		outbuf[i] = nco(freqb) * ampshape[j];
+	for (i = 2*sr4, j = 0; i < 3*sr4; i++, j++)
+		outbuf[i] = nco(freqa) * ampshape[j];
+	for (i = 3*sr4, j = 0; i < samplerate; i++, j++)
+		outbuf[i] = nco(freqb) * ampshape[j];
 	ModulateXmtr(outbuf, samplerate);
 }
 

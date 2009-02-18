@@ -413,13 +413,21 @@ public:
 
 // the symbol shape described in frequency domain
 static const double MFSK_SymbolFreqShape[] =
-// { 1.0, 1.0 } ;
- {  +1.0000000000, 
-    +1.1913785723, 
-    -0.0793018558, 
-    -0.2171442026, 
-    -0.0014526076 
-};
+ { 1.0, 1.0 } ; // use raised cosine shape - experimental
+// from gMFSK
+// {  +1.0000000000, 
+//    +1.1913785723, 
+//    -0.0793018558, 
+//    -0.2171442026, 
+//    -0.0014526076 
+//};
+// from DM780
+//{
+//	+1.0000000000,
+//	+2.1373197349,
+//	+1.1207588117,
+//	-0.0165609232 
+//};
 
 static const size_t MFSK_SymbolFreqShapeLen = 
     sizeof(MFSK_SymbolFreqShape) / sizeof(double);
@@ -595,8 +603,12 @@ private:
     void AddSymbol(int Freq, int Phase) {
         size_t Time;
         for (Time = 0; Time < SymbolLen; Time++) {
-            // Type Shape=1.0-CosineTable[Time];
-            OutTap[TapPtr] += CosineTable[Phase] * SymbolShape[Time];
+// experimental use with {1.0, 1.0};
+            Type Shape=1.0-CosineTable[Time];
+            OutTap[TapPtr] += CosineTable[Phase] * Shape;
+            
+//            OutTap[TapPtr] += CosineTable[Phase] * SymbolShape[Time];
+
             Phase += Freq;
             Phase &= WrapMask;
             TapPtr += 1;
