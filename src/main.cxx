@@ -322,6 +322,7 @@ int main(int argc, char ** argv)
 
 	int ret = Fl::run();
 
+	delete push2talk;
 	arq_close();
 
 #if USE_XMLRPC
