@@ -274,16 +274,16 @@
         ELEM_(bool, MuteInput, "MUTEINPUT", true)                                       \
         ELEM_(double, TxMonitorLevel, "TXMONITORLEVEL", 0.5)                            \
 /* Waterfall palette */                                                                 \
-		ELEM_(std::string, PaletteName, "PALETTENAME", "")                      \
-        ELEM_(RGB, cfgpal0, "PALETTE0", { 0, 0, 0 })                                    \
-        ELEM_(RGB, cfgpal1, "PALETTE1", { 0, 0, 62 })                                   \
-        ELEM_(RGB, cfgpal2, "PALETTE2", { 0, 0, 126 })                                  \
-        ELEM_(RGB, cfgpal3, "PALETTE3", { 0, 0, 214 })                                  \
-        ELEM_(RGB, cfgpal4, "PALETTE4", { 145, 142, 96 })                               \
-        ELEM_(RGB, cfgpal5, "PALETTE5", { 181, 184, 48 })                               \
-        ELEM_(RGB, cfgpal6, "PALETTE6", { 223, 226, 105 })                              \
-        ELEM_(RGB, cfgpal7, "PALETTE7", { 254, 254, 4 })                                \
-        ELEM_(RGB, cfgpal8, "PALETTE8", { 255, 58, 0 })                                 \
+		ELEM_(std::string, PaletteName, "PALETTENAME", "")                              \
+        ELEM_(RGB, cfgpal0, "PALETTE0", { 0,0,0 })                                      \
+        ELEM_(RGB, cfgpal1, "PALETTE1", { 0,0,177 })                                    \
+        ELEM_(RGB, cfgpal2, "PALETTE2", { 3,110,227 })                                  \
+        ELEM_(RGB, cfgpal3, "PALETTE3", { 0,204,204 })                                  \
+        ELEM_(RGB, cfgpal4, "PALETTE4", { 223,223,223 })                                \
+        ELEM_(RGB, cfgpal5, "PALETTE5", { 0,234,0 })                                    \
+        ELEM_(RGB, cfgpal6, "PALETTE6", { 244,244,0 })                                  \
+        ELEM_(RGB, cfgpal7, "PALETTE7", { 250,126,0 })                                  \
+        ELEM_(RGB, cfgpal8, "PALETTE8", { 244,0,0 })                                    \
 /* Palettes for macro button groups */                                                  \
         ELEM_(bool, useGroupColors, "USEGROUPCOLORS", true)                             \
         ELEM_(RGB, btnGroup1, "FKEYGROUP1", { 80, 144, 144 })                           \
