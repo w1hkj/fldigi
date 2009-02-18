@@ -777,11 +777,10 @@ out:
 
 Fl_Font font_number(const char* name)
 {
-	Fl_Font n = Fl::set_fonts(0);
-	while (n) {
-		if (!strcmp(Fl::get_font_name(n), name))
-			return n;
-		n = (Fl_Font)(n - 1);
-	}
+    int n = (int)Fl::set_fonts(0);
+    for (int i = 0; i < n; i++) {
+        if (strcmp(Fl::get_font_name((Fl_Font)i), name) == 0)
+            return (Fl_Font)i;
+    }
 	return FL_HELVETICA;
 }

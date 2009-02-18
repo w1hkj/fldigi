@@ -189,11 +189,11 @@ void Font_Browser::fontNumber(Fl_Font n)
     lst_Font->value(1);
     int s = lst_Font->size();
     for (int i = 1; i < s; i++ ) {
-	if ((Fl_Font)reinterpret_cast<intptr_t>(lst_Font->data(i)) == n) {
-	    lst_Font->value(i);
-	    FontNameSelect();
-	    break;
-	}
+    	if ((Fl_Font)reinterpret_cast<intptr_t>(lst_Font->data(i)) == n) {
+	        lst_Font->value(i);
+	        FontNameSelect();
+	        break;
+	    }
     }
 }
 
@@ -221,10 +221,10 @@ void Font_Browser::fontName(const char* n)
 {
     int s = lst_Font->size();
     for (int i = 1; i < s; i++) {
-	if (!strcmp(lst_Font->text(i), n)) {
-	    lst_Font->value(i);
-	    FontNameSelect();
-	}
+        if (!strcmp(lst_Font->text(i), n)) {
+	        lst_Font->value(i);
+	        FontNameSelect();
+	    }
     }
 }
 
