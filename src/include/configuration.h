@@ -291,9 +291,11 @@
         ELEM_(RGB, btnGroup3, "FKEYGROUP3", { 80, 80, 144 })                            \
         ELEM_(RGB, btnFkeyTextColor, "FKEYTEXTCOLOR", { 255, 255, 255 })                \
 /* RX / TX / Waterfall text widgets */                                                  \
+        ELEM_(std::string, RxFontName, "RXFONTNAME", "")                                \
         ELEM_(Fl_Font, RxFontnbr, "RXFONTNBR", FL_SCREEN)                               \
         ELEM_(int, RxFontsize, "RXFONTSIZE", 16)                                        \
         ELEM_(Fl_Color, RxFontcolor, "RXFNTCOLOR", FL_BLACK)                            \
+        ELEM_(std::string, TxFontName, "TXFONTNAME", "")                                \
         ELEM_(Fl_Font, TxFontnbr, "TXFONTNBR", FL_SCREEN)                               \
         ELEM_(int, TxFontsize, "TXFONTSIZE", 16)                                        \
         ELEM_(Fl_Color, TxFontcolor, "TXFNTCOLOR", FL_BLACK)                            \
@@ -303,6 +305,7 @@
         ELEM_(Fl_Color, CTRLcolor, "CTRLCOLOR", FL_DARK_GREEN)                          \
         ELEM_(Fl_Color, SKIPcolor, "SKIPCOLOR", FL_BLUE)                                \
         ELEM_(Fl_Color, ALTRcolor, "ALTRCOLOR", FL_DARK_MAGENTA)                        \
+        ELEM_(std::string, WaterfallFontName, "WATERFALLFONTNAME", "")                  \
         ELEM_(Fl_Font, WaterfallFontnbr, "WATERFALLFONTNBR", FL_SCREEN)                 \
         ELEM_(int, WaterfallFontsize, "WATERFALLFONTSIZE", 12)                          \
         ELEM_(std::string, ui_scheme, "UISCHEME", "gtk+")                               \
@@ -319,6 +322,7 @@
         ELEM_(int, VIEWERchannels, "VIEWERCHANNELS", 20)                                \
         ELEM_(double, VIEWERsquelch, "VIEWERSQUELCH", 10.0)                             \
         ELEM_(int, VIEWERtimeout, "VIEWERTIMEOUT", 15)                                  \
+        ELEM_(std::string, ViewerFontName, "VIEWERFONTNAME", "")                        \
         ELEM_(Fl_Font, ViewerFontnbr, "VIEWERFONTNBR", FL_COURIER)                      \
         ELEM_(int, ViewerFontsize, "VIEWERFONTSIZE", FL_NORMAL_SIZE)                    \
 /* XML-RPC/ARQ servers */                                                               \
@@ -365,6 +369,7 @@ extern configuration progdefaults;
 
 extern void mixerInputs();
 extern void enableMixer(bool);
+extern Fl_Font font_number(const char* name);
 
 enum { SAMPLE_RATE_UNSET = -1, SAMPLE_RATE_AUTO, SAMPLE_RATE_NATIVE, SAMPLE_RATE_OTHER };
 

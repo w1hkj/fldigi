@@ -31,15 +31,13 @@
 #ifndef FONTBROWSER_H
 #define FONTBROWSER_H
 
-#include <FL/Fl.H>
-#include <FL/Fl_Double_Window.H>
+#include <FL/Enumerations.H>
+#include <FL/Fl_Window.H>
+#include <FL/Fl_Widget.H>
 #include <FL/Fl_Browser.H>
-#include <FL/Fl_Input.H>
-#include <FL/Fl_Output.H>
+#include <FL/Fl_Value_Input.H>
 #include <FL/Fl_Button.H>
-#include <FL/Fl_Box.H>
-#include <FL/Fl_Group.H>
-#include <FL/Fl_Check_Button.H>
+#include <FL/Fl_Return_Button.H>
 #include <FL/fl_draw.H>
 #include <FL/fl_show_colormap.H>
 #include <FL/Fl_Color_Chooser.H>
@@ -49,36 +47,19 @@
 class Preview_Box : public Fl_Widget
 {
 private:
-	int		fontName;
-	int		fontSize;
-	Fl_Color fontColor;
+    int		fontName;
+    int		fontSize;
+    Fl_Color	fontColor;
 
-	void	draw() {
-    	draw_box(); 
-    	fl_font((Fl_Font)fontName, fontSize);
-    	fl_color(fontColor);
-    	fl_draw(label(), x()+3, y()+3, w()-6, h()-6, align()); 
-	}
-public: 
-	Preview_Box(int x, int y, int w, int h, const char* l) : Fl_Widget(x, y, w, h, l)
-	{
-    	fontName = 1;
-    	fontSize = FL_NORMAL_SIZE;
-    	box(FL_DOWN_BOX);  
-    	color(FL_WHITE);
-    	fontColor = FL_BLACK;
-	}
-    void SetFont( int fontname, int fontsize, Fl_Color c)
-	{
-    	fontName = fontname;
-    	fontSize = fontsize;
-    	fontColor = c;
-    	redraw();
-	}
+    void	draw();
+public:
+    Preview_Box(int x, int y, int w, int h, const char* l);
+    void SetFont( int fontname, int fontsize, Fl_Color c);
 };
 
 // Font browser widget
-class Font_Browser : public Fl_Window {
+class Font_Browser : public Fl_Window
+{
 private:
     int		numfonts;
     Fl_Font	fontnbr;
@@ -87,59 +68,33 @@ private:
     void	*data_;
 
     Fl_Browser	*lst_Font;
-    Fl_Output	*txt_OutputFont;
     Fl_Browser	*lst_Size;
-    Fl_Output	*txt_OutputSize;
-    Fl_Button	*btn_OK;
+    Fl_Value_Input *txt_Size;
+    Fl_Return_Button *btn_OK;
     Fl_Button	*btn_Cancel;
     Fl_Button	*btn_Color;
     Preview_Box	*box_Example;
 
-	void	FontSort();
-    void	(*callback_)(Fl_Widget*, void *);
-	
+    void	FontSort();
+    Fl_Callback* callback_;
+
 public:
-    Font_Browser(const char *lbl = "Font Browser");
-    void callback(void (*cb)(Fl_Widget *, void *), void *d = 0) {
-    	callback_ = cb;
-    	data_     = d;
-	}
-	void	FontNameSelect();
-	void	FontSizeSelect();
-	void	ColorSelect();
-    void	okBtn();
+    Font_Browser(int x = 100, int y = 100, int w = 400, int h = 225, const char *lbl = "Font Browser");
+    void callback(Fl_Callback* cb, void *d = 0) { callback_ = cb; data_ = d; }
+    static void fb_callback(Fl_Widget* w, void* arg);
+    void	FontNameSelect();
+    void	ColorSelect();
 
     int numFonts() { return numfonts; }
-
-    void fontNumber(Fl_Font n) { 
-    	fontnbr = n;
-    	lst_Font->value(1);
-		for ( int i = 1; i <= lst_Font->size() - 1; i++ ) {
-			if ((Fl_Font)reinterpret_cast<long>(lst_Font->data(i)) == n) {
-				lst_Font->value(i);
-				break;
-			}
-		}
-    	FontNameSelect();
-    };
+    void fontNumber(Fl_Font n);
     Fl_Font fontNumber() { return fontnbr; }
-
-    void fontSize(int s) { 
-    	fontsize = s;
-    	lst_Size->value(fontsize);
-    	FontSizeSelect(); 
-    }
+    void fontSize(int s);
     int fontSize() { return fontsize; }
-
-	void fontColor(Fl_Color c) { 
-		fontcolor = c; 
-	    btn_Color->color( fontcolor );
-    	box_Example->SetFont( fontnbr, fontsize, fontcolor );
-	}
+    void fontColor(Fl_Color c);
     Fl_Color fontColor() { return fontcolor; };
 
-    const char *fontName() { return txt_OutputFont->value(); }
-
+    const char *fontName() { return lst_Font->text(lst_Font->value()); }
+    void fontName(const char* n);
 };
 
 #endif

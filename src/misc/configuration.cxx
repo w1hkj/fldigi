@@ -321,6 +321,11 @@ void configuration::saveDefaults()
 	memcpy(&cfgpal7, &palette[7], sizeof(cfgpal7));
 	memcpy(&cfgpal8, &palette[8], sizeof(cfgpal8));
 
+	RxFontName = Fl::get_font_name(RxFontnbr);
+	TxFontName = Fl::get_font_name(TxFontnbr);
+	WaterfallFontName = Fl::get_font_name(WaterfallFontnbr);
+	ViewerFontName = Fl::get_font_name(ViewerFontnbr);
+
 	writeDefaultsXML();
 	changed = false;
 }
@@ -525,6 +530,15 @@ int configuration::setDefaults()
 
 	wf->setcolors();
 	setColorButtons();
+
+	if (!RxFontName.empty())
+		RxFontnbr = font_number(RxFontName.c_str());
+	if (!TxFontName.empty())
+		TxFontnbr = font_number(TxFontName.c_str());
+	if (!WaterfallFontName.empty())
+		WaterfallFontnbr = font_number(WaterfallFontName.c_str());
+	if (!ViewerFontName.empty())
+		ViewerFontnbr = font_number(ViewerFontName.c_str());
 
 	return 1;
 }
@@ -759,4 +773,15 @@ out:
 	    stat(UHROUTER_FIFO_PREFIX "Write", &st) != -1 && S_ISFIFO(st.st_mode))
 		inpTTYdev->add(UHROUTER_FIFO_PREFIX);
 #endif // HAVE_UHROUTER
+}
+
+Fl_Font font_number(const char* name)
+{
+	Fl_Font n = Fl::set_fonts(0);
+	while (n) {
+		if (!strcmp(Fl::get_font_name(n), name))
+			return n;
+		n = (Fl_Font)(n - 1);
+	}
+	return FL_HELVETICA;
 }

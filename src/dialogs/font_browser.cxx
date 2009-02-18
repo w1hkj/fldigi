@@ -32,6 +32,11 @@
 #include <string>
 #include <cstdlib>
 #include <cstring>
+#include <stdint.h>
+
+#include <FL/Fl.H>
+#include <FL/Fl_Color_Chooser.H>
+#include <FL/fl_draw.H>
 
 #include "font_browser.h"
 
@@ -46,131 +51,107 @@ void Font_Browser::ColorSelect()
     if (fl_color_chooser("Font color", r, g, b) == 0)
 	    return;
     fontcolor = fl_rgb_color(r, g, b);
-    btn_Color->color( fontcolor );
-    box_Example->SetFont( fontnbr, fontsize, fontcolor );
+    btn_Color->color(fontcolor);
 }
 
-void cb_Color_Select(Fl_Widget*, void*frmWid) 
+void Font_Browser::fb_callback(Fl_Widget* w, void* arg)
 {
-    Font_Browser *ft=(Font_Browser*)frmWid;
-    ft->ColorSelect();
-}
+    Font_Browser* fb = reinterpret_cast<Font_Browser*>(arg);
 
-
-// OK button pressed
-void Font_Browser::okBtn()
-{
-    if (callback_!=0)
-        (*callback_)(this, data_);
-}
-
-void cb_okBtn(Fl_Button* o, void* v) 
-{
-    ((Font_Browser*)(o->parent()))->okBtn();
-}
-
-// Cancel button callback
-void cb_Cancel (Fl_Widget*, void*frmWid) 
-{
-    Font_Browser *ft=(Font_Browser*)frmWid;
-    ft->hide();
-}
-
-// Font size changed callback
-void Font_Browser::FontSizeSelect()
-{
-    txt_OutputSize->value(lst_Size->text( lst_Size->value() ) );  
-    fontsize = atoi( lst_Size->text( lst_Size->value() ) );
-    box_Example->SetFont( fontnbr, fontsize, fontcolor );
-    box_Example->redraw();
-}
-
-void cb_FontSize_Selected (Fl_Widget*, void*frmWid) 
-{
-    Font_Browser *ft=(Font_Browser*)frmWid;
-	ft->FontSizeSelect();
+    if (w == fb->btn_Cancel)
+	fb->hide();
+    else if (w == fb->btn_OK) {
+	if (fb->callback_)
+	    (*fb->callback_)(fb, fb->data_);
+    }
+    else if (w == fb->btn_Color)
+	fb->ColorSelect();
+    else if (w == fb->lst_Font)
+	fb->FontNameSelect();
+    else {
+	if (w == fb->lst_Size)
+	    fb->txt_Size->value(strtol(fb->lst_Size->text(fb->lst_Size->value()), NULL, 10));
+	fb->fontsize = fb->txt_Size->value();
+    }
+    fb->box_Example->SetFont(fb->fontnbr, fb->fontsize, fb->fontcolor);
 }
 
 // Sort the font list
-void Font_Browser::FontSort() 
+void Font_Browser::FontSort()
 {
-     for ( int t = 1; t <= lst_Font->size() - 1; t++ )
-         for ( int r = t+1; r <= lst_Font->size(); r++ )
+    int size = lst_Font->size();
+     for ( int t = 1; t <= size - 1; t++ )
+         for ( int r = t+1; r <= size; r++ )
              if ( strcasecmp(lst_Font->text(t), lst_Font->text(r)) > 0 ) 
                 lst_Font->swap(t,r);
 }
-         
+
 // Font Name changed callback
 void Font_Browser::FontNameSelect()
 {
     int fn = lst_Font->value();
-    
-    if (!fn) 
+    if (!fn)
         return;
 
-    fontnbr = (Fl_Font)reinterpret_cast<long>(lst_Font->data(fn));
-    
-// show the font name in the input
-    txt_OutputFont->value(Fl::get_font_name(fontnbr));  
+    fontnbr = (Fl_Font)reinterpret_cast<intptr_t>(lst_Font->data(fn));
 
-    box_Example->SetFont( fontnbr, fontsize, fontcolor );
+    // get sizes and fill browser; skip first element if it is zero
+    lst_Size->clear();
+    int nsizes, *sizes;
+    char buf[4];
+    nsizes = Fl::get_font_sizes(fontnbr, sizes);
+    //
+    for (int i = !*sizes; i < nsizes; i++)
+	if ((size_t)snprintf(buf, sizeof(buf), "%d", sizes[i]) < sizeof(buf))
+	    lst_Size->add(buf, (void*)sizes[i]);
 
+    // scalable font with no suggested sizes
+    if (!lst_Size->size()) {
+	for (int i = 1; i <= 48; i++) {
+	    snprintf(buf, sizeof(buf), "%d", i);
+	    lst_Size->add(buf, (void*)i);
+	}
+    }
+    fontSize(fontsize);
 }
 
-void cb_FontName_Selected(Fl_Widget*, void*frmWid) 
+Font_Browser::Font_Browser(int x, int y, int w, int h, const char *lbl )
+     : Fl_Window(x, y, w, h, lbl)
 {
-    Font_Browser *ft=(Font_Browser*)frmWid;
-    ft->FontNameSelect();
-}
-
-Font_Browser::Font_Browser(const char *lbl ) : 
-	Fl_Window(100,100, 400, 225, lbl) 
-{
-    txt_OutputFont = new Fl_Output(5, 15, 280, 22, "Font:");
-    txt_OutputFont->labelsize(12);
-    txt_OutputFont->textsize(12);
-    txt_OutputFont->align(FL_ALIGN_TOP_LEFT);
-    txt_OutputFont->when(FL_WHEN_ENTER_KEY);
-    
-    txt_OutputSize = new Fl_Output(290, 15, 50, 22, "Size:");
-    txt_OutputSize->labelsize(12);
-    txt_OutputSize->align(FL_ALIGN_TOP_LEFT);
-    txt_OutputSize->textsize(12);    
-      
-    lst_Font = new Fl_Browser(5, 40, 280, 100);
-    lst_Font->labelsize(12);
-    lst_Font->textsize(12);
+    lst_Font = new Fl_Browser(5, 15, 280, 125, "Font:");
+    lst_Font->align(FL_ALIGN_TOP_LEFT);
     lst_Font->type(FL_HOLD_BROWSER);
-    lst_Font->callback( (Fl_Callback*)cb_FontName_Selected, this );
-    
+    lst_Font->callback(fb_callback, this);
+
+    txt_Size = new Fl_Value_Input(290, 15, 50, 22, "Size:");
+    txt_Size->align(FL_ALIGN_TOP_LEFT);
+    txt_Size->range(1.0, 48.0);
+    txt_Size->step(1.0);
+    txt_Size->callback(fb_callback, this);
+
     lst_Size = new Fl_Browser(290, 40, 50, 100);
-    lst_Size->labelsize(12);
     lst_Size->type(FL_HOLD_BROWSER);
-    lst_Size->textsize(12); 
-    lst_Size->callback( (Fl_Callback*)cb_FontSize_Selected, this );
-      
-    btn_OK =new Fl_Button(345, 40, 50, 25, "&OK");
+    lst_Size->callback(fb_callback, this);
+
+    btn_OK = new Fl_Return_Button(345, 40, 50, 25, "&OK");
     btn_OK->shortcut(0x8006f);
-    btn_OK->labelfont(1);
-    btn_OK->labelsize(12);
-    btn_OK->callback((Fl_Callback*)cb_okBtn );
-         
-    btn_Cancel =new Fl_Button(345, 70, 50, 25, "Cancel");
+    btn_OK->callback(fb_callback, this);
+
+    btn_Cancel = new Fl_Button(345, 70, 50, 25, "Cancel");
     btn_Cancel->labelsize(12);
-    btn_Cancel->callback((Fl_Callback*)cb_Cancel, this );
+    btn_Cancel->callback(fb_callback, this);
 
-    btn_Color = new Fl_Button(345, 100, 50, 25, "");
+    btn_Color = new Fl_Button(345, 100, 50, 25, "Color");
     btn_Color->down_box(FL_BORDER_BOX);
-    btn_Color->labelsize(12);
-    btn_Color->align(FL_ALIGN_TOP_LEFT);
-    btn_Color->color(FL_BLACK);
-    btn_Color->callback( (Fl_Callback*)cb_Color_Select, this );
-//    btn_Color->hide(); // comment this out if you need color selection
+    btn_Color->color(FL_FOREGROUND_COLOR);
+    btn_Color->callback(fb_callback, this);
 
-    box_Example = new Preview_Box(5, 145, 390, 75, "abcdefghijk ABCDEFGHIJK\n0 1 2 3 4 5 6 7 8 9");
+    box_Example = new Preview_Box(5, 145, 390, 75, "That crazy fox jumped over the dog again!\n"
+				  "ABCDEFGHIJKLMNOPQRSTUVQXYZ 0123456789\n"
+				  "!\"#$%&'()*+,-./:;<=>?@@[\\]^_`{|}~");
     box_Example->box(FL_DOWN_BOX);
-    box_Example->labelsize(12);
     box_Example->align(FL_ALIGN_WRAP|FL_ALIGN_CLIP|FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
+    resizable(box_Example);
 
     set_modal();
     end();
@@ -182,35 +163,95 @@ Font_Browser::Font_Browser(const char *lbl ) :
 
     numfonts =   Fl::set_fonts(0); // Nr of fonts available on the server
 
-	fontnbr = (Fl_Font)1;
-	
-	string name;
-    for(int i= 0; i < numfonts; i++) {
-        int t;
-        name = Fl::get_font_name((Fl_Font)i, &t);
-        if (strcmp(name.c_str(),"system") == 0) fontnbr = (Fl_Font)i;
-       	if (name[0] >= 'A' && name[0] <= 'z') {
-        	lst_Font->add(name.c_str(), (void *)i);
-       	}
+    const char* name;
+    for(int i = 0; i < numfonts; i++) {
+	name = Fl::get_font_name((Fl_Font)i);
+	if (isalpha(*name))
+	    lst_Font->add(name, (void *)i);
     }
     FontSort();
-  
-	char buf[5];
-	for (int i = 1; i < 48; i+=1) {
-            snprintf(buf, sizeof(buf), "%d", i);
-        lst_Size->add(buf);
-    }
 
-	fontnbr = (Fl_Font)1;
+    fontnbr = FL_HELVETICA;;
     fontsize = FL_NORMAL_SIZE; // Font Size to be used
-    fontcolor = FL_BLACK;
+    fontcolor = FL_FOREGROUND_COLOR;
 
-    lst_Size->value( fontsize );
-    lst_Font->value((int)fontnbr);
-    
+    lst_Font->value(1);
     FontNameSelect();
 
     Fl::focus(lst_Font);
 
     xclass(PACKAGE_NAME);
+}
+
+void Font_Browser::fontNumber(Fl_Font n)
+{
+    fontnbr = n;
+    lst_Font->value(1);
+    int s = lst_Font->size();
+    for (int i = 1; i < s; i++ ) {
+	if ((Fl_Font)reinterpret_cast<intptr_t>(lst_Font->data(i)) == n) {
+	    lst_Font->value(i);
+	    FontNameSelect();
+	    break;
+	}
+    }
+}
+
+void Font_Browser::fontSize(int s)
+{
+    fontsize = s;
+    int n = lst_Size->size();
+    for (int i = 1; i < n; i++) {
+	if ((intptr_t)lst_Size->data(i) == fontsize) {
+	    lst_Size->value(i);
+	    break;
+	}
+    }
+    txt_Size->value(s);
+}
+
+void Font_Browser::fontColor(Fl_Color c)
+{
+    btn_Color->color(fontcolor = c);
+    box_Example->SetFont(fontnbr, fontsize, fontcolor);
+    box_Example->redraw();
+}
+
+void Font_Browser::fontName(const char* n)
+{
+    int s = lst_Font->size();
+    for (int i = 1; i < s; i++) {
+	if (!strcmp(lst_Font->text(i), n)) {
+	    lst_Font->value(i);
+	    FontNameSelect();
+	}
+    }
+}
+
+//////////////////////////////////////////////////////////////////////
+
+Preview_Box::Preview_Box(int x, int y, int w, int h, const char* l)
+  : Fl_Widget(x, y, w, h, l)
+{
+    fontName = 1;
+    fontSize = FL_NORMAL_SIZE;
+    box(FL_DOWN_BOX);
+    color(FL_BACKGROUND2_COLOR);
+    fontColor = FL_FOREGROUND_COLOR;
+}
+
+void Preview_Box::draw()
+{
+    draw_box();
+    fl_font((Fl_Font)fontName, fontSize);
+    fl_color(fontColor);
+    fl_draw(label(), x()+3, y()+3, w()-6, h()-6, align());
+}
+
+void Preview_Box::SetFont(int fontname, int fontsize, Fl_Color c)
+{
+    fontName = fontname;
+    fontSize = fontsize;
+    fontColor = c;
+    redraw();
 }
