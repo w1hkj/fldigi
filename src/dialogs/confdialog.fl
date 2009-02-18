@@ -2071,10 +2071,10 @@ progdefaults.changed = true;} open
               } {}
               Fl_Choice menuSampleConverter {
                 label Converter
-                callback {progdefaults.sample_converter = o->value();
+                callback {progdefaults.sample_converter = sample_rate_converters[o->value()];
 resetSoundCard();
 progdefaults.changed = true;
-o->tooltip(src_get_description(o->value()));} open
+o->tooltip(src_get_description(sample_rate_converters[o->value()]));} open
                 tooltip {Set the type of resampler used of offset correction} xywh {269 89 216 25} down_box BORDER_BOX align 1
               } {}
               Fl_Choice menuOutSampleRate {

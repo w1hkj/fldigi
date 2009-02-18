@@ -212,6 +212,15 @@ static void build_srate_menu(Fl_Menu_* menu, const double* rates, size_t length,
 	}
 }
 
+int sample_rate_converters[FLDIGI_NUM_SRC] = {
+	SRC_SINC_BEST_QUALITY,
+	SRC_SINC_MEDIUM_QUALITY,
+	SRC_SINC_FASTEST
+#if !(defined(__ppc__) || defined(__powerpc__) || defined(__PPC__))
+	, SRC_LINEAR
+#endif
+};
+
 static void sound_init_options(void)
 {
 	build_srate_menu(menuInSampleRate, std_sample_rates,
@@ -219,13 +228,29 @@ static void sound_init_options(void)
 	build_srate_menu(menuOutSampleRate, std_sample_rates,
 			 sizeof(std_sample_rates)/sizeof(*std_sample_rates) - 1);
 
-	const char* cname;
-	for (int i = 0; (cname = src_get_name(i)); i++) {
-		menuSampleConverter->add(cname);
+	for (int i = 0; i < FLDIGI_NUM_SRC; i++)
+		menuSampleConverter->add(src_get_name(sample_rate_converters[i]));
+	// Warn if we are using ZOH
+	if (progdefaults.sample_converter == SRC_ZERO_ORDER_HOLD) {
+		progdefaults.sample_converter = SRC_LINEAR;
+		LOG_WARN("The Zero Order Hold sample rate converter should not be used! "
+			 "Your setting has been changed to Linear.");
 	}
-	menuSampleConverter->value(progdefaults.sample_converter);
-	menuSampleConverter->tooltip(src_get_description(progdefaults.sample_converter));
-
+#if defined(__ppc__) || defined(__powerpc__) || defined(__PPC__)
+	// SRC_LINEAR may crash with 11025Hz modems. Change to SINC_FASTEST.
+	if (progdefaults.sample_converter == SRC_LINEAR) {
+		progdefaults.sample_converter = SRC_SINC_FASTEST;
+		LOG_WARN("Linear sample rate converter may not work on this architecture. "
+			 "Your setting has been changed to Fastest Sinc");
+	}
+#endif
+	for (int i = 0; i < FLDIGI_NUM_SRC; i++) {
+		if (sample_rate_converters[i] == progdefaults.sample_converter) {
+			menuSampleConverter->value(i);
+			menuSampleConverter->tooltip(src_get_description(progdefaults.sample_converter));
+			break;
+		}
+	}
 
 	valPCMvolume->value(progdefaults.PCMvolume);
 	btnMicIn->value(progdefaults.MicIn);
