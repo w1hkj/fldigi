@@ -1821,6 +1821,7 @@ btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 progdefaults.changed = true;}
                 tooltip {Initial state of RTS} xywh {273 298 85 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.HamlibRTSplus);}
               }
               Fl_Check_Button chkHamlibRTSCTSflow {
                 label {RTS/CTS flow control}
