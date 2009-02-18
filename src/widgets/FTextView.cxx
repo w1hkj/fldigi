@@ -663,7 +663,7 @@ void FTextView::handle_qsy(int start, int end)
 }
 
 static fre_t rst("^[1-5][1-9]{2}$", REG_EXTENDED | REG_NOSUB);
-static fre_t loc("^[a-r]{2}[[:digit:]]{2}([a-x]{2})?", REG_EXTENDED | REG_ICASE | REG_NOSUB);
+static fre_t loc("[a-r]{2}[[:digit:]]{2}([a-x]{2})?", REG_EXTENDED | REG_ICASE);
 static fre_t call("([[:alnum:]]?[[:alpha:]/]+[[:digit:]]+[[:alnum:]/]+)", REG_EXTENDED);
 
 void FTextView::handle_qso_data(int start, int end)
@@ -740,7 +740,6 @@ void FTextView::handle_context_menu(void)
 void FTextView::menu_cb(int val)
 {
 	Fl_Input* input = 0;
-	bool append = false;
 	switch (val) {
 	case RX_MENU_QRZ_THIS:
 		menu_cb(RX_MENU_CALL);
@@ -776,7 +775,6 @@ void FTextView::menu_cb(int val)
 		input = inpSerNo;
 		break;
 	case RX_MENU_XCHG:
-		append = true;
 		input = inpXchgIn;
 		break;
 
@@ -822,24 +820,23 @@ void FTextView::menu_cb(int val)
 		break;
 	}
 
-	if (input) {
-		char* s = get_word(popx, popy);
-		if (s) {
-			if (append) {
-				char strInput[40];
-				strncpy(strInput, input->value(), 39);
-				if (strlen(strInput) > 0)
-					strncat(strInput, " ", 39);
-				strncat(strInput, s, 39);
-				input->value(strInput);
-			} else
-				input->value(s);
-			input->do_callback();
-			free(s);
-			if (input == inpCall)
-				stopMacroTimer();
-		}
+	if (!input)
+		return;
+	char* s = get_word(popx, popy);
+	if (!s)
+		return;
+
+	if (val == RX_MENU_XCHG) { // append
+		input->position(input->size());
+		input->insert(" ", 1);
+		input->insert(s);
 	}
+	else
+		input->value(s);
+	input->do_callback();
+	free(s);
+	if (input == inpCall)
+		stopMacroTimer();
 }
 
 /// Scrolls down if the buffer has been modified and the last line is
@@ -894,6 +891,7 @@ loop:
 const char* FTextView::dxcc_lookup_call(int x, int y)
 {
 	char* s = get_word(x - this->x(), y - this->y());
+	char* mem = s;
 	if (!(s && *s && call.match(s))) {
 		free(s);
 		return 0;
@@ -907,9 +905,20 @@ const char* FTextView::dxcc_lookup_call(int x, int y)
 	cQsoRec* qso = 0;
 	unsigned char qsl;
 
-	e = dxcc_lookup(s);
-	qsl = qsl_lookup(s);
-	qso = SearchLog(s);
+	// prevent locator-only lookup if Ctrl is held
+	if (!(Fl::event_state() & FL_CTRL) && loc.match(s)) {
+		const vector<regmatch_t>& v = loc.suboff();
+		s += v[0].rm_so;
+		*(s + v[0].rm_eo) = '\0';
+		if (locator2longlat(&lon2, &lat2, s) != RIG_OK)
+			goto ret;
+		e = 0; qsl = 0; qso = 0;
+	}
+	else {
+		e = dxcc_lookup(s);
+		qsl = qsl_lookup(s);
+		qso = SearchLog(s);
+	}
 
 	if (qso) {
 		locator = qso->getField(GRIDSQUARE);
@@ -931,7 +940,7 @@ const char* FTextView::dxcc_lookup_call(int x, int y)
 
 	if (locator2longlat(&lon1, &lat1, progdefaults.myLocator.c_str()) == RIG_OK &&
 	    qrb(lon1, lat1, lon2, lat2, &distance, &azimuth) == RIG_OK) {
-		stip << "QTE " << setprecision(0) << azimuth << '\260' << " ("
+		stip << "QTE " << fixed << setprecision(0) << azimuth << '\260' << " ("
 		     << azimuth_long_path(azimuth) << '\260' << ")  QRB " << distance << "km ("
 		     << distance_long_path(distance) << "km)\n";
 	}
@@ -956,7 +965,8 @@ const char* FTextView::dxcc_lookup_call(int x, int y)
 		stip << '\n';
 	}
 
-	free(s);
+ret:
+	free(mem);
 	tip = stip.str();
 	return tip.empty() ? 0 : tip.c_str();
 }
@@ -994,10 +1004,10 @@ Fl_Menu_Item FTextEdit::edit_menu[] = {
 	{ make_icon_label(_("&Receive"), rx_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(_("&Abort"), process_stop_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(_("Send &image..."), image_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
-	{ make_icon_label(_("C&lear"), edit_clear_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(_("Cu&t"), edit_cut_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(_("&Copy"), edit_copy_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(_("&Paste"), edit_paste_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("C&lear"), edit_clear_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ make_icon_label(_("Insert &file..."), file_open_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ _("Word &wrap"), 0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL } ,
 	{ 0 }
