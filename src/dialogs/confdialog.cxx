@@ -3708,10 +3708,11 @@ an merging"));
                 btnHamlibDTRplus->callback((Fl_Callback*)cb_btnHamlibDTRplus);
                 o->value(progdefaults.HamlibDTRplus);
               } // Fl_Check_Button* btnHamlibDTRplus
-              { chkHamlibRTSplus = new Fl_Check_Button(273, 298, 85, 20, _("RTS +12"));
+              { Fl_Check_Button* o = chkHamlibRTSplus = new Fl_Check_Button(273, 298, 85, 20, _("RTS +12"));
                 chkHamlibRTSplus->tooltip(_("Initial state of RTS"));
                 chkHamlibRTSplus->down_box(FL_DOWN_BOX);
                 chkHamlibRTSplus->callback((Fl_Callback*)cb_chkHamlibRTSplus);
+                o->value(progdefaults.HamlibRTSplus);
               } // Fl_Check_Button* chkHamlibRTSplus
               { Fl_Check_Button* o = chkHamlibRTSCTSflow = new Fl_Check_Button(54, 332, 170, 20, _("RTS/CTS flow control"));
                 chkHamlibRTSCTSflow->tooltip(_("Rig requires RTS/CTS flow control"));
