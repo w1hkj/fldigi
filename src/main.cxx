@@ -938,7 +938,7 @@ int setup_nls(void)
 		return nls_set_up;
 
 	setlocale (LC_MESSAGES, "");
-	setlocale (LC_CTYPE, "");
+	setlocale (LC_CTYPE, "C");
 	setlocale (LC_TIME, "");
 	// setting LC_NUMERIC might break the config read/write routines
 
