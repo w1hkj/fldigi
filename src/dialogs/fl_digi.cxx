@@ -1611,6 +1611,7 @@ bool clean_exit(void) {
 
 	progStatus.saveLastState();
 
+	delete push2talk;
 #if USE_HAMLIB
 	hamlib_close();
 #endif
