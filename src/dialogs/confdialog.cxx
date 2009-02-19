@@ -1687,7 +1687,9 @@ progdefaults.changed = true;
 Fl_Choice *menuSampleConverter=(Fl_Choice *)0;
 
 static void cb_menuSampleConverter(Fl_Choice* o, void*) {
-  progdefaults.sample_converter = sample_rate_converters[o->value()];
+  if (o->value() == FLDIGI_SRC_BEST)
+    fl_alert("The best quality SINC interpolator has very high CPU overhead");
+progdefaults.sample_converter = sample_rate_converters[o->value()];
 resetSoundCard();
 progdefaults.changed = true;
 o->tooltip(src_get_description(sample_rate_converters[o->value()]));
