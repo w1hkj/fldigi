@@ -7,7 +7,7 @@ AC_DEFUN([AC_FLDIGI_OPT], [
                   *)                         AC_MSG_ERROR([bad value ${enableval} for --enable-optimizations]) ;;
                  esac],
                  [ac_cv_opt=none])
-  OPT_CFLAGS="-O2 -ffast-math -finline-functions"
+  OPT_CFLAGS="-O2 -ffast-math -finline-functions -fomit-frame-pointer"
   case "$ac_cv_opt" in
       sse)
           OPT_CFLAGS="$OPT_CFLAGS -msse -mfpmath=sse"
