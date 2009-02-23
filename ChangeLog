@@ -133,6 +133,12 @@ Change Log:
     51) Close PTT when exiting
     52) Bug fix ... error in extracting font_number from font_name
     53) Added new palette, fldigi.pal
+    54) Cosmetic change to font_browser
+    55) Exception handling fix for portaudio
+    56) Thread shutdown bug fix for win32
+    57) Cosmetic change to colorsfonts dialog
+    58) Change to FTextView family, reverted to character counting for 
+        proportional fonts
     
 3.1
       1) Changes to irrxml functions; 
