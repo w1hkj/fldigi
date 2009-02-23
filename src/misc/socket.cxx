@@ -556,6 +556,20 @@ void Socket::bind(void)
 }
 
 ///
+/// Calls listen(2) on the socket file desriptor
+///
+/// The socket must already have been bound to an address via a call to the bind
+/// method.
+///
+/// @params backlog The maximum number of pending connections (default SOMAXCONN)
+///
+void Socket::listen(int backlog)
+{
+	if (::listen(sockfd, backlog) == -1)
+		throw SocketException(errno, "listen");
+}
+
+///
 /// Accepts a connection
 ///
 /// The socket must already have been bound to an address via a call to the bind
@@ -565,8 +579,7 @@ void Socket::bind(void)
 ///
 Socket Socket::accept(void)
 {
-	if (listen(sockfd, SOMAXCONN) == -1)
-		throw SocketException(errno, "listen");
+	listen();
 
 	// wait for fd to become readable
 	if (nonblocking && (timeout.tv_sec > 0 || timeout.tv_usec > 0))

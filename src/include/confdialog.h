@@ -237,6 +237,7 @@ extern Fl_Round_Button *btnAudioIO[4];
 extern Fl_Group *tabAudioOpt;
 extern Fl_Group *AudioSampleRate;
 extern Fl_Choice *menuInSampleRate;
+#include <FL/fl_ask.H>
 extern Fl_Choice *menuSampleConverter;
 extern Fl_Choice *menuOutSampleRate;
 extern Fl_Spinner *cntRxRateCorr;

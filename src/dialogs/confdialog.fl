@@ -76,8 +76,8 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open
-        xywh {0 25 500 345} when 1 hide
+        callback {progdefaults.changed = true;} open selected
+        xywh {0 25 500 345} when 1
       } {
         Fl_Group {} {
           label Station open
@@ -680,7 +680,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 500 345}
+        xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 500 345} selection_color 50 align 9
@@ -1179,7 +1179,7 @@ progdefaults.changed = true;} open
             }
           }
           Fl_Group tabRTTY {
-            label RTTY open selected
+            label RTTY open
             xywh {0 50 500 320}
           } {
             Fl_Group {} {open
@@ -1970,7 +1970,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabAudio {
             label Devices open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group AudioOSS {open
               xywh {5 60 490 45} box ENGRAVED_FRAME
@@ -2053,7 +2053,7 @@ resetSoundCard();}
           }
           Fl_Group tabAudioOpt {
             label Settings open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group AudioSampleRate {
               label {Sample rate} open
@@ -2078,6 +2078,7 @@ resetSoundCard();
 progdefaults.changed = true;
 o->tooltip(src_get_description(sample_rate_converters[o->value()]));} open
                 tooltip {Set the type of resampler used of offset correction} xywh {269 89 216 25} down_box BORDER_BOX align 1
+                code0 {\#include <FL/fl_ask.H>}
               } {}
               Fl_Choice menuOutSampleRate {
                 label Playback

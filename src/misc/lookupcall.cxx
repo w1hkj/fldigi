@@ -454,7 +454,8 @@ void QRZclose(void)
 	if (!QRZ_thread)
 		return;
 
-	pthread_kill(*QRZ_thread, SIGUSR2);
+	CANCEL_THREAD(*QRZ_thread);
+
 	DB_query = QRZ_EXIT;
 	pthread_mutex_lock(&qrz_mutex);
 	pthread_cond_signal(&qrz_cond);
@@ -642,14 +643,10 @@ static void *LOOKUP_loop(void *args)
 {
 	SET_THREAD_ID(QRZ_TID);
 
-	{
-		sigset_t usr2;
-		sigemptyset(&usr2);
-		sigaddset(&usr2, SIGUSR2);
-		pthread_sigmask(SIG_UNBLOCK, &usr2, NULL);
-	}
+	SET_THREAD_CANCEL();
 
 	for (;;) {
+		TEST_THREAD_CANCEL();
 		pthread_mutex_lock(&qrz_mutex);
 		pthread_cond_wait(&qrz_cond, &qrz_mutex);
 		pthread_mutex_unlock(&qrz_mutex);

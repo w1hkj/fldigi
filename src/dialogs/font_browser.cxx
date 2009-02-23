@@ -147,7 +147,7 @@ Font_Browser::Font_Browser(int x, int y, int w, int h, const char *lbl )
     btn_Color->callback(fb_callback, this);
 
     box_Example = new Preview_Box(5, 145, 390, 75, "That crazy fox jumped over the dog again!\n"
-				  "ABCDEFGHIJKLMNOPQRSTUVQXYZ 0123456789\n"
+				  "ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789\n"
 				  "!\"#$%&'()*+,-./:;<=>?@@[\\]^_`{|}~");
     box_Example->box(FL_DOWN_BOX);
     box_Example->align(FL_ALIGN_WRAP|FL_ALIGN_CLIP|FL_ALIGN_CENTER|FL_ALIGN_INSIDE);

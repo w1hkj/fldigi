@@ -311,7 +311,7 @@ ARQ_SOCKET_Server::~ARQ_SOCKET_Server()
 {
 	run = false;
 	if (arq_socket_thread) {
-		pthread_kill(*arq_socket_thread, SIGUSR2);
+		CANCEL_THREAD(*arq_socket_thread);
 		pthread_join(*arq_socket_thread, NULL);
 		delete arq_socket_thread;
 		arq_socket_thread = 0;
@@ -329,6 +329,10 @@ bool ARQ_SOCKET_Server::start(const char* node, const char* service)
 	try {
 		inst->server_socket->open(Address(node, service));
 		inst->server_socket->bind();
+#if defined(__CYGWIN__) || defined(__MINGW32__)
+		inst->server_socket->listen();
+		inst->server_socket->set_timeout(0.1);
+#endif
 	}
 	catch (const SocketException& e) {
 		errstring = "Could not start ARQ server (";
@@ -360,16 +364,17 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 {
 	SET_THREAD_ID(ARQSOCKET_TID);
 
-	{
-		sigset_t usr2;
-		sigemptyset(&usr2);
-		sigaddset(&usr2, SIGUSR2);
-		pthread_sigmask(SIG_UNBLOCK, &usr2, NULL);
-	}
+	SET_THREAD_CANCEL();
 
+	// On POSIX we block indefinitely and are interrupted by a signal.
+	// On woe32 we block for a short time and test for cancellation.
 	while (inst->run) {
 		try {
-			arq_run(inst->server_socket->accept());
+#if defined(__CYGWIN__) || defined(__MINGW32__)
+			if (inst->server_socket->wait(0))
+#endif
+				arq_run(inst->server_socket->accept());
+			TEST_THREAD_CANCEL();
 		}
 		catch (const SocketException& e) {
 			if (e.error() != EINTR) {

@@ -2102,7 +2102,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { tabOperator = new Fl_Group(0, 25, 500, 345, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2680,6 +2679,7 @@ an merging"));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 500, 345, _("Modems"));
+        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 500, 345);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
@@ -3793,6 +3793,7 @@ an merging"));
         { tabsSoundCard = new Fl_Tabs(0, 25, 500, 345);
           tabsSoundCard->selection_color(FL_LIGHT1);
           { tabAudio = new Fl_Group(0, 50, 500, 320, _("Devices"));
+            tabAudio->hide();
             { AudioOSS = new Fl_Group(5, 60, 490, 45);
               AudioOSS->box(FL_ENGRAVED_FRAME);
               { btnAudioIO[0] = new Fl_Round_Button(15, 70, 53, 25, _("OSS"));
@@ -3865,7 +3866,6 @@ an merging"));
             tabAudio->end();
           } // Fl_Group* tabAudio
           { tabAudioOpt = new Fl_Group(0, 50, 500, 320, _("Settings"));
-            tabAudioOpt->hide();
             { AudioSampleRate = new Fl_Group(5, 60, 490, 100, _("Sample rate"));
               AudioSampleRate->box(FL_ENGRAVED_FRAME);
               AudioSampleRate->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);

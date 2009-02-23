@@ -1000,7 +1000,7 @@ size_t SoundPort::Read(double *buf, size_t count)
 		sd[0].blocksize = SCBLOCKSIZE;
 		while (n < count) {
 			if  ((r = src_callback_read(rx_src_state, sd[0].src_ratio, count - n, rbuf + n)) == 0)
-				return n;
+				throw SndException(ETIMEDOUT);
 			n += r;
 		}
 	}

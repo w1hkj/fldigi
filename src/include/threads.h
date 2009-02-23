@@ -60,6 +60,26 @@ bool thread_in_list(int id, const int* list);
 #endif // ! NDEBUG
 
 extern THREAD_ID_TYPE thread_id_;
+// On POSIX systems we cancel threads by sending them SIGUSR2,
+// which will also interrupt blocking calls.  On woe32 we use
+// pthread_cancel and there is no good/sane way to interrupt.
+#if !defined(__CYGWIN__) && !defined(__MINGW32__)
+#  define SET_THREAD_CANCEL()					\
+	do {							\
+		sigset_t usr2;					\
+		sigemptyset(&usr2);				\
+		sigaddset(&usr2, SIGUSR2);			\
+		pthread_sigmask(SIG_UNBLOCK, &usr2, NULL);	\
+	} while (0)
+#  define TEST_THREAD_CANCEL() /* nothing */
+#  define CANCEL_THREAD(t__) pthread_kill(t__, SIGUSR2)
+#else
+// threads have PTHREAD_CANCEL_ENABLE, PTHREAD_CANCEL_DEFERRED when created
+#  define SET_THREAD_CANCEL() /* nothing */
+#  define TEST_THREAD_CANCEL() pthread_testcancel()
+#  define CANCEL_THREAD(t__) pthread_cancel(t__);
+#endif
+
 
 #include "fl_lock.h"
 

@@ -686,7 +686,6 @@ Fl_Double_Window* make_colorsfonts() {
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(5, 30, 365, 150, _("Text Ctrls"));
-        o->hide();
         { RxText = new Fl_Input(15, 43, 165, 35);
           RxText->value("Receive Text");
           RxText->color(fl_rgb_color(progdefaults.RxColor.R, progdefaults.RxColor.G, progdefaults.RxColor.B));
@@ -744,6 +743,7 @@ Fl_Double_Window* make_colorsfonts() {
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(0, 30, 365, 150, _("Tab Colors"));
+        o->hide();
         { btnTabColor = new Fl_Button(85, 75, 75, 20, _("Tab Color"));
           btnTabColor->callback((Fl_Callback*)cb_btnTabColor);
         } // Fl_Button* btnTabColor

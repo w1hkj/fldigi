@@ -903,16 +903,13 @@ double speed_test(int converter, unsigned repeat)
 
 static void setup_signal_handlers(void)
 {
+#if !defined(__CYGWIN__) && !defined(__MINGW32__)
 	struct sigaction action;
 	memset(&action, 0, sizeof(struct sigaction));
 
 	// no child stopped notifications, no zombies
-#ifdef __CYGWIN__
-	action.sa_handler = SIG_IGN;
-#else
 	action.sa_handler = SIG_DFL;
 	action.sa_flags = SA_NOCLDSTOP | SA_NOCLDWAIT;
-#endif
 	sigaction(SIGCHLD, &action, NULL);
 	action.sa_flags = 0;
 
@@ -928,6 +925,11 @@ static void setup_signal_handlers(void)
 	sigemptyset(&action.sa_mask);
 	sigaddset(&action.sa_mask, SIGUSR2);
 	pthread_sigmask(SIG_BLOCK, &action.sa_mask, NULL);
+#else
+	signal(SIGSEGV, handle_signal);
+	signal(SIGILL, handle_signal);
+	signal(SIGABRT, handle_signal);
+#endif
 }
 
 #ifdef ENABLE_NLS

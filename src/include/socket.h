@@ -118,6 +118,7 @@ public:
 
 	// Server
         void bind(void);
+	void listen(int backlog = SOMAXCONN);
 	Socket accept(void);
 	Socket accept1(void);
 

@@ -406,8 +406,8 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group {} {
-        label {Text Ctrls} open
-        xywh {5 30 365 150} hide
+        label {Text Ctrls} open selected
+        xywh {5 30 365 150}
       } {
         Fl_Input RxText {
           xywh {15 43 165 35}
@@ -656,7 +656,7 @@ b->show();}
       }
       Fl_Group {} {
         label {Tab Colors} open
-        xywh {0 30 365 150}
+        xywh {0 30 365 150} hide
       } {
         Fl_Button btnTabColor {
           label {Tab Color}
@@ -669,7 +669,7 @@ progdefaults.changed = true;}
           label System
           callback {progdefaults.TabsColor = FL_BACKGROUND2_COLOR;
 setTabColors();    
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
           xywh {215 75 75 20}
         }
       }
