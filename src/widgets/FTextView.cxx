@@ -80,12 +80,15 @@ FTextBase::FTextBase(int x, int y, int w, int h, const char *l)
 	sbuf = new Fl_Text_Buffer;
 
 	cursor_style(Fl_Text_Editor_mod::NORMAL_CURSOR);
-	reset_styles(SET_FONT | SET_SIZE | SET_COLOR);
-
 	buffer(tbuf);
 	highlight_data(sbuf, styles, NATTR, FTEXT_DEF, 0, 0);
 
 	wrap_mode(wrap, wrap_col);
+
+	// Do we want narrower scrollbars? The default width is 16.
+	// scrollbar_width((int)floor(scrollbar_width() * 3.0/4.0));
+
+	reset_styles(SET_FONT | SET_SIZE | SET_COLOR);
 }
 
 int FTextBase::handle(int event)
@@ -202,31 +205,12 @@ void FTextBase::set_style(int attr, Fl_Font f, int s, Fl_Color c, int set)
 			else
 				styles[i].color = c;
 		}
-		if (set & SET_FONT || set & SET_SIZE) {
-    		int avg = 0;
-	    	int num = 0;
-	    	const char *sztest =
-"0123456789 abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ;.-/";
-//"CQ CQ CQ M0GLD de W1HKJ The quick red fox jumped over the lazy brown dog in 12345 secs.";	    	
-		    fl_font(f, s);
-		    for (int n = 0; n < 256; n++) {
-		        styles[i].width[n] = (int)fl_width(n);
-            }
-            num = strlen(sztest);
-            for (int n = 0; n < num; n++) avg += styles[i].width[(int)sztest[n]];
-            avg /= num;
-            styles[i].colwidth = avg;            
-            
-            styles[i].vertsize = fl_height(styles[i].font, styles[i].size);
-        }
-
 		if (i == SKIP) // clickable styles always same as SKIP for now
 			for (int j = CLICK_START; j < NATTR; j++)
 				memcpy(&styles[j], &styles[i], sizeof(styles[j]));
 	}
 
-    if (set & SET_FONT || set & SET_SIZE)
-    	resize(x(), y(), w(), h()); // to redraw and recalculate the wrap column
+	resize(x(), y(), w(), h()); // to redraw and recalculate the wrap column
 }
 
 /// Reads a file and inserts its contents.
@@ -380,18 +364,18 @@ void FTextBase::show_context_menu(void)
 ///
 int FTextBase::reset_wrap_col(void)
 {
-	if (!wrap || text_area.w == 0)
+	if (!wrap || wrap_col == 0 || text_area.w == 0)
 		return wrap_col;
 
 	int old_wrap_col = wrap_col;
 
-    wrap_col = styles[0].colwidth ? text_area.w / styles[0].colwidth : 0;
-    
-// wrap_mode triggers a resize; don't call it if wrap_col hasn't changed
-    if (wrap_col != old_wrap_col)
-        wrap_mode(wrap, wrap_col);
+	fl_font(textfont(), textsize());
+	wrap_col = (int)floor(text_area.w / fl_width('X'));
+	// wrap_mode triggers a resize; don't call it if wrap_col hasn't changed
+	if (old_wrap_col != wrap_col)
+		wrap_mode(wrap, wrap_col);
 
-    return wrap_col;
+	return old_wrap_col;
 }
 
 void FTextBase::reset_styles(int set)

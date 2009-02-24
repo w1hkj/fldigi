@@ -1858,10 +1858,6 @@ int Fl_Text_Display_mod::position_style( int lineStartPos,
 ** Find the width of a string in the font of a particular style
 */
 int Fl_Text_Display_mod::string_width( const char *string, int length, int style ) {
-    int w = 0;
-    for (int n = 0; n < length; n++) w += mStyleTable[0].width[(int)string[n]];
-    return w;
-/*
   Fl_Font font;
   int fsize;
 
@@ -1879,7 +1875,6 @@ int Fl_Text_Display_mod::string_width( const char *string, int length, int style
   fl_font( font, fsize );
 
   return ( int ) ( fl_width( string, length ) );
-*/
 }
 
 /*

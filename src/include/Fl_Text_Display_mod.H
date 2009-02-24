@@ -69,9 +69,6 @@ class Fl_Text_Display_mod: public Fl_Group {
       Fl_Font	font;
       int	size;
       unsigned	attr;
-      int width[256];
-      int colwidth;
-      int vertsize;
     };
 
     Fl_Text_Display_mod(int X, int Y, int W, int H, const char *l = 0);
