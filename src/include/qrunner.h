@@ -24,6 +24,7 @@
 #define QRUNNER_H_
 
 #ifndef NDEBUG
+#    include <inttypes.h>
 #    include "debug.h"
 #endif
 
@@ -108,7 +109,7 @@ public:
                 }
 
 #ifndef NDEBUG
-		LOG_ERROR("qrunner: thread %d fifo full!", GET_THREAD_ID());
+		LOG_ERROR("qrunner: thread %" PRIdPTR " fifo full!", GET_THREAD_ID());
 #endif
                 return false;
         }
