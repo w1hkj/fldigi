@@ -364,6 +364,7 @@ struct configuration
 	void testCommPorts();
 	const char* strBaudRate();
 	int  BaudRate(size_t);
+	void initFonts(void);
 };
 
 extern configuration progdefaults;

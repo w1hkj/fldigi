@@ -257,7 +257,7 @@ int main(int argc, char ** argv)
 	progStatus.loadLastState();
 
 	Fl::scheme(progdefaults.ui_scheme.c_str());
-	
+	progdefaults.initFonts();
 	create_fl_digi_main();
 
 #if BENCHMARK_MODE

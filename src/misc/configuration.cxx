@@ -531,15 +531,6 @@ int configuration::setDefaults()
 	wf->setcolors();
 	setColorButtons();
 
-	if (!RxFontName.empty())
-		RxFontnbr = font_number(RxFontName.c_str());
-	if (!TxFontName.empty())
-		TxFontnbr = font_number(TxFontName.c_str());
-	if (!WaterfallFontName.empty())
-		WaterfallFontnbr = font_number(WaterfallFontName.c_str());
-	if (!ViewerFontName.empty())
-		ViewerFontnbr = font_number(ViewerFontName.c_str());
-
 	return 1;
 }
 
@@ -783,4 +774,17 @@ Fl_Font font_number(const char* name)
             return (Fl_Font)i;
     }
 	return FL_HELVETICA;
+}
+
+void configuration::initFonts(void)
+{
+	if (!RxFontName.empty())
+		RxFontnbr = font_number(RxFontName.c_str());
+	if (!TxFontName.empty())
+		TxFontnbr = font_number(TxFontName.c_str());
+	if (!WaterfallFontName.empty())
+		WaterfallFontnbr = font_number(WaterfallFontName.c_str());
+	if (!ViewerFontName.empty())
+		ViewerFontnbr = font_number(ViewerFontName.c_str());
+
 }
