@@ -182,6 +182,7 @@ extern Fl_Round_Button *btnRTSplusV;
 extern Fl_Round_Button *btnDTRptt;
 extern Fl_Round_Button *btnDTRplusV;
 extern Fl_Button *btnInitHWPTT;
+extern Fl_Check_Button *btnPTTrightchannel;
 extern Fl_Check_Button *chkUSERIGCAT;
 extern Fl_Group *grpRigCAT;
 #include <FL/Fl_Output.H>

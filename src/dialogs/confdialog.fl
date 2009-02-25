@@ -140,7 +140,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabUserInterface {
             label General open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {5 60 490 301} box ENGRAVED_FRAME
@@ -277,7 +277,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabContest {
             label Contest open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {
               label Exchanges open
@@ -1377,10 +1377,10 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label {Hardware PTT} open
-            tooltip {Tottle DTR for ptt} xywh {0 50 500 320} hide
+            tooltip {Tottle DTR for ptt} xywh {0 50 500 320}
           } {
             Fl_Round_Button {btnPTT[0]} {
-              label {No PTT available}
+              label {No h/w PTT available}
               callback {btnPTT[1]->value(0);
 btnPTT[2]->value(0);
 btnPTT[3]->value(0);
@@ -1390,52 +1390,52 @@ o->value(1);
 btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;}
-              xywh {181 68 138 17} down_box DIAMOND_DOWN_BOX value 1 selection_color 1
+              xywh {45 68 138 17} down_box DIAMOND_DOWN_BOX value 1 selection_color 1
             }
             Fl_Group grpHWPTT {open
-              xywh {5 105 490 190} box ENGRAVED_FRAME
+              xywh {5 140 490 190} box ENGRAVED_FRAME
             } {
               Fl_Input_Choice inpTTYdev {
                 label {Device:}
                 callback {btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;} open
-                tooltip {Select serial port} xywh {200 152 150 22}
+                tooltip {Select serial port} xywh {200 183 150 22}
               } {}
               Fl_Round_Button btnRTSptt {
                 label {Use RTS}
                 callback {btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;}
-                tooltip {RTS is ptt signal line} xywh {147 192 85 20} down_box DOWN_BOX
+                tooltip {RTS is ptt signal line} xywh {147 223 85 20} down_box DOWN_BOX
               }
               Fl_Round_Button btnRTSplusV {
                 label {RTS = +V}
                 callback {btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;}
-                tooltip {Initial voltage on RTS} xywh {262 192 100 20} down_box DOWN_BOX
+                tooltip {Initial voltage on RTS} xywh {262 223 100 20} down_box DOWN_BOX
               }
               Fl_Round_Button btnDTRptt {
                 label {Use DTR}
                 callback {btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;}
-                tooltip {DTR is ptt signal line} xywh {147 222 85 20} down_box DOWN_BOX
+                tooltip {DTR is ptt signal line} xywh {147 253 85 20} down_box DOWN_BOX
               }
               Fl_Round_Button btnDTRplusV {
                 label {DTR = +V}
                 callback {btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;}
-                tooltip {Initial voltage on DTR} xywh {262 222 100 20} down_box DOWN_BOX
+                tooltip {Initial voltage on DTR} xywh {262 253 100 20} down_box DOWN_BOX
               }
               Fl_Button btnInitHWPTT {
                 label Initialize
                 callback {progdefaults.initInterface();
 o->labelcolor(FL_FOREGROUND_COLOR);
 progdefaults.changed = true;}
-                tooltip {Initialize the ptt h/w interface} xywh {188 260 113 24}
+                tooltip {Initialize the ptt h/w interface} xywh {188 291 113 24}
               }
               Fl_Round_Button {btnPTT[4]} {
                 label {Use separate serial port PTT}
@@ -1451,13 +1451,20 @@ btnRigCatDTRptt->value(0);
 btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;}
-                tooltip {Serial port h/w used for PTT} xywh {145 120 210 20} down_box DIAMOND_DOWN_BOX selection_color 15
+                tooltip {Serial port h/w used for PTT} xywh {145 151 210 20} down_box DIAMOND_DOWN_BOX selection_color 15
               }
+            }
+            Fl_Check_Button btnPTTrightchannel {
+              label {Enable right audio channel PTT tone}
+              callback {progdefaults.PTTrightchannel = o->value();
+progdefaults.changed = true;}
+              tooltip {Can be used in lieu of or in addition to other PTT types} xywh {45 105 70 15} down_box DOWN_BOX
+              code0 {o->value(progdefaults.PTTrightchannel);}
             }
           }
           Fl_Group {} {
             label RigCAT open
-            tooltip {Rig Control using xml spec file} xywh {0 50 500 320}
+            tooltip {Rig Control using xml spec file} xywh {0 50 500 320} hide
           } {
             Fl_Check_Button chkUSERIGCAT {
               label {Use RigCAT}
@@ -2290,7 +2297,7 @@ OFF - limit search to +/- 200 Hz} xywh {215 246 270 20} down_box DOWN_BOX
         } {
           Fl_Group tabSweetSpot {
             label {Sweet Spot} open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {5 60 490 75} box ENGRAVED_FRAME align 21
@@ -2443,7 +2450,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabFileExtraction {
             label {Text Capture} open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {
               label {Auto Extract files from rx stream} open

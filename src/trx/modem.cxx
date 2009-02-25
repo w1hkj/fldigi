@@ -93,6 +93,7 @@ modem::modem()
 	reverse = wfrev ^ !wfsb;
 	historyON = false;
 	cap = 0;
+	PTTphaseacc = 0.0;
 }
 
 void modem::init()
@@ -232,10 +233,24 @@ void modem::set_samplerate(int smprate)
 	samplerate = smprate;
 }
 
+double modem::PTTnco()
+{
+	PTTphaseacc += TWOPI * 1000 / samplerate;
+	if (PTTphaseacc > M_PI)
+		PTTphaseacc -= TWOPI;
+	return sin(PTTphaseacc);
+}
+
 mbuffer<double, 512 * 2, 2> _mdm_scdbl;
 
 void modem::ModulateXmtr(double *buffer, int len) 
 {
+    if (progdefaults.PTTrightchannel) {
+        for (int i = 0; i < len; i++)
+            PTTchannel[i] = PTTnco();
+            ModulateStereo( buffer, PTTchannel, len);
+        return;
+    }
 	try {
 		unsigned n = 4;
 		while (scard->Write(buffer, len) == 0 && --n);

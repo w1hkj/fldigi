@@ -41,6 +41,8 @@ protected:
 	double	rx_corr;
 	double	tx_corr;
 	double	tx_frequency;
+	double  PTTphaseacc;
+	double  PTTchannel[OUTBUFSIZE];
 
 // for CW modem use only
 	bool	cwTrack;
@@ -152,6 +154,8 @@ private:
 
 	void	wfid_sendchar(char c);
 	void	wfid_sendchars(std::string s);
+	
+	double  PTTnco();
 
 public:
 	void	wfid_text(const std::string& s);

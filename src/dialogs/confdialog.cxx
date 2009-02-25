@@ -1137,6 +1137,13 @@ btnInitHWPTT->redraw();
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnPTTrightchannel=(Fl_Check_Button *)0;
+
+static void cb_btnPTTrightchannel(Fl_Check_Button* o, void*) {
+  progdefaults.PTTrightchannel = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *chkUSERIGCAT=(Fl_Check_Button *)0;
 
 static void cb_chkUSERIGCAT(Fl_Check_Button* o, void*) {
@@ -2179,6 +2186,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         { tabsUI = new Fl_Tabs(0, 25, 505, 345);
           tabsUI->selection_color(FL_LIGHT1);
           { tabUserInterface = new Fl_Group(0, 50, 500, 320, _("General"));
+            tabUserInterface->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 301);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(15, 70, 120, 20, _("Show tooltips"));
@@ -2315,7 +2323,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             tabWfallRestart->end();
           } // Fl_Group* tabWfallRestart
           { tabContest = new Fl_Group(0, 50, 500, 320, _("Contest"));
-            tabContest->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 80, _("Exchanges"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -3434,44 +3441,43 @@ an merging"));
           tabsRig->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hardware PTT"));
             o->tooltip(_("Tottle DTR for ptt"));
-            o->hide();
-            { btnPTT[0] = new Fl_Round_Button(181, 68, 138, 17, _("No PTT available"));
+            { btnPTT[0] = new Fl_Round_Button(45, 68, 138, 17, _("No h/w PTT available"));
               btnPTT[0]->down_box(FL_DIAMOND_DOWN_BOX);
               btnPTT[0]->value(1);
               btnPTT[0]->selection_color((Fl_Color)1);
               btnPTT[0]->callback((Fl_Callback*)cb_btnPTT);
             } // Fl_Round_Button* btnPTT[0]
-            { grpHWPTT = new Fl_Group(5, 105, 490, 190);
+            { grpHWPTT = new Fl_Group(5, 140, 490, 190);
               grpHWPTT->box(FL_ENGRAVED_FRAME);
-              { inpTTYdev = new Fl_Input_Choice(200, 152, 150, 22, _("Device:"));
+              { inpTTYdev = new Fl_Input_Choice(200, 183, 150, 22, _("Device:"));
                 inpTTYdev->tooltip(_("Select serial port"));
                 inpTTYdev->callback((Fl_Callback*)cb_inpTTYdev);
               } // Fl_Input_Choice* inpTTYdev
-              { btnRTSptt = new Fl_Round_Button(147, 192, 85, 20, _("Use RTS"));
+              { btnRTSptt = new Fl_Round_Button(147, 223, 85, 20, _("Use RTS"));
                 btnRTSptt->tooltip(_("RTS is ptt signal line"));
                 btnRTSptt->down_box(FL_DOWN_BOX);
                 btnRTSptt->callback((Fl_Callback*)cb_btnRTSptt);
               } // Fl_Round_Button* btnRTSptt
-              { btnRTSplusV = new Fl_Round_Button(262, 192, 100, 20, _("RTS = +V"));
+              { btnRTSplusV = new Fl_Round_Button(262, 223, 100, 20, _("RTS = +V"));
                 btnRTSplusV->tooltip(_("Initial voltage on RTS"));
                 btnRTSplusV->down_box(FL_DOWN_BOX);
                 btnRTSplusV->callback((Fl_Callback*)cb_btnRTSplusV);
               } // Fl_Round_Button* btnRTSplusV
-              { btnDTRptt = new Fl_Round_Button(147, 222, 85, 20, _("Use DTR"));
+              { btnDTRptt = new Fl_Round_Button(147, 253, 85, 20, _("Use DTR"));
                 btnDTRptt->tooltip(_("DTR is ptt signal line"));
                 btnDTRptt->down_box(FL_DOWN_BOX);
                 btnDTRptt->callback((Fl_Callback*)cb_btnDTRptt);
               } // Fl_Round_Button* btnDTRptt
-              { btnDTRplusV = new Fl_Round_Button(262, 222, 100, 20, _("DTR = +V"));
+              { btnDTRplusV = new Fl_Round_Button(262, 253, 100, 20, _("DTR = +V"));
                 btnDTRplusV->tooltip(_("Initial voltage on DTR"));
                 btnDTRplusV->down_box(FL_DOWN_BOX);
                 btnDTRplusV->callback((Fl_Callback*)cb_btnDTRplusV);
               } // Fl_Round_Button* btnDTRplusV
-              { btnInitHWPTT = new Fl_Button(188, 260, 113, 24, _("Initialize"));
+              { btnInitHWPTT = new Fl_Button(188, 291, 113, 24, _("Initialize"));
                 btnInitHWPTT->tooltip(_("Initialize the ptt h/w interface"));
                 btnInitHWPTT->callback((Fl_Callback*)cb_btnInitHWPTT);
               } // Fl_Button* btnInitHWPTT
-              { btnPTT[4] = new Fl_Round_Button(145, 120, 210, 20, _("Use separate serial port PTT"));
+              { btnPTT[4] = new Fl_Round_Button(145, 151, 210, 20, _("Use separate serial port PTT"));
                 btnPTT[4]->tooltip(_("Serial port h/w used for PTT"));
                 btnPTT[4]->down_box(FL_DIAMOND_DOWN_BOX);
                 btnPTT[4]->selection_color(FL_SELECTION_COLOR);
@@ -3479,10 +3485,17 @@ an merging"));
               } // Fl_Round_Button* btnPTT[4]
               grpHWPTT->end();
             } // Fl_Group* grpHWPTT
+            { Fl_Check_Button* o = btnPTTrightchannel = new Fl_Check_Button(45, 105, 70, 15, _("Enable right audio channel PTT tone"));
+              btnPTTrightchannel->tooltip(_("Can be used in lieu of or in addition to other PTT types"));
+              btnPTTrightchannel->down_box(FL_DOWN_BOX);
+              btnPTTrightchannel->callback((Fl_Callback*)cb_btnPTTrightchannel);
+              o->value(progdefaults.PTTrightchannel);
+            } // Fl_Check_Button* btnPTTrightchannel
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("RigCAT"));
             o->tooltip(_("Rig Control using xml spec file"));
+            o->hide();
             { chkUSERIGCAT = new Fl_Check_Button(195, 60, 110, 20, _("Use RigCAT"));
               chkUSERIGCAT->tooltip(_("RigCAT used for rig control"));
               chkUSERIGCAT->down_box(FL_DOWN_BOX);
@@ -4074,6 +4087,7 @@ l with your sound hardware."));
         { tabsMisc = new Fl_Tabs(0, 25, 500, 345);
           tabsMisc->selection_color(FL_LIGHT1);
           { tabSweetSpot = new Fl_Group(0, 50, 500, 320, _("Sweet Spot"));
+            tabSweetSpot->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 75);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -4214,7 +4228,6 @@ l with your sound hardware."));
             tabCPUspeed->end();
           } // Fl_Group* tabCPUspeed
           { tabFileExtraction = new Fl_Group(0, 50, 500, 320, _("Text Capture"));
-            tabFileExtraction->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 155, _("Auto Extract files from rx stream"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);

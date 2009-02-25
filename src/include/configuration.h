@@ -186,6 +186,7 @@
         ELEM_(bool, DTRptt, "DTRPTT", false)                                            \
         ELEM_(bool, RTSplus, "RTSPLUS", false)                                          \
         ELEM_(bool, DTRplus, "DTRPLUS", false)                                          \
+        ELEM_(bool, PTTrightchannel, "PTTRIGHTCHANNEL", false)                          \
         ELEM_(int, choiceHAMLIBis, "CHOICEHAMLIBIS", 0)                                 \
         ELEM_(int, chkUSEMEMMAPis, "CHKUSEMEMMAPIS", 0)                                 \
         ELEM_(int, chkUSEHAMLIBis, "CHKUSEHAMLIBIS", 0)                                 \
