@@ -95,6 +95,8 @@ public:
 
     const char *fontName() { return lst_Font->text(lst_Font->value()); }
     void fontName(const char* n);
+
+    static bool fixed_width(Fl_Font f);
 };
 
 #endif

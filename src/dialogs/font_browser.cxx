@@ -228,6 +228,13 @@ void Font_Browser::fontName(const char* n)
     }
 }
 
+bool Font_Browser::fixed_width(Fl_Font f)
+{
+	fl_font(f, FL_NORMAL_SIZE);
+	return fl_width('X') == fl_width('i');
+}
+
+
 //////////////////////////////////////////////////////////////////////
 
 Preview_Box::Preview_Box(int x, int y, int w, int h, const char* l)

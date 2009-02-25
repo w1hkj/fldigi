@@ -431,6 +431,8 @@ void Fl_Text_Display_mod::resize(int X, int Y, int W, int H) {
       if (scrollbar_align() & (FL_ALIGN_LEFT|FL_ALIGN_RIGHT) &&
           mNBufferLines >= mNVisibleLines - 1)
       {
+        if (!mVScrollBar->visible())
+	   again = 1;
         mVScrollBar->set_visible();
         if (scrollbar_align() & FL_ALIGN_LEFT) {
           text_area.x = X+scrollbar_width()+LEFT_MARGIN;

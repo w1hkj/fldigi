@@ -59,6 +59,11 @@ public:
 	void		setFont(Fl_Font f, int attr = NATTR);
 	void		setFontSize(int s, int attr = NATTR);
 	void		setFontColor(Fl_Color c, int attr = NATTR);
+	// Override Fl_Text_Display, which stores the font number in an unsigned
+	// character and therefore cannot represent all fonts
+	Fl_Font		textfont(void) { return styles[0].font; }
+	void		textfont(Fl_Font f) { setFont(f); }
+	void		textfont(uchar s) { textfont((Fl_Font)s); }
 
 	void		cursorON(void) { show_cursor(); }
 	virtual void	resize(int X, int Y, int W, int H);
@@ -93,6 +98,10 @@ protected:
 	int					wrap_col;
 	int					max_lines;
 	bool					scroll_hint;
+
+private:
+	int					oldw, olds;
+	Fl_Font					oldf;
 };
 
 ///

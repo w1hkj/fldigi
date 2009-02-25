@@ -119,8 +119,8 @@ class Fl_Text_Display_mod: public Fl_Group {
     int position_style(int lineStartPos, int lineLen, int lineIndex,
                        int dispIndex);
 
-    Fl_Font textfont() const {return (Fl_Font)textfont_;}
-    void textfont(uchar s) {textfont_ = s;}
+    Fl_Font textfont() const {return textfont_;}
+    void textfont(Fl_Font f) {textfont_ = f;}
     uchar textsize() const {return textsize_;}
     void textsize(uchar s) {textsize_ = s;}
     Fl_Color textcolor() const {return (Fl_Color)textcolor_;}
@@ -280,7 +280,7 @@ class Fl_Text_Display_mod: public Fl_Group {
     int display_insert_position_hint;
     struct { int x, y, w, h; } text_area;
 
-    uchar textfont_;
+    Fl_Font textfont_;
     uchar textsize_;
     unsigned textcolor_;
 

@@ -43,6 +43,7 @@
 #include "cw.h"
 
 #include "fileselect.h"
+#include "font_browser.h"
 
 #include "ascii.h"
 #include "configuration.h"
@@ -76,6 +77,12 @@ FTextBase::FTextBase(int x, int y, int w, int h, const char *l)
 	: Fl_Text_Editor_mod(x, y, w, h, l),
           wrap(true), wrap_col(80), max_lines(0), scroll_hint(false)
 {
+	oldw = olds = -1;
+	oldf = (Fl_Font)-1;
+	textfont(FL_SCREEN);
+	textsize(FL_NORMAL_SIZE);
+	textcolor(FL_FOREGROUND_COLOR);
+
 	tbuf = new Fl_Text_Buffer;
 	sbuf = new Fl_Text_Buffer;
 
@@ -133,8 +140,11 @@ void FTextBase::setFontColor(Fl_Color c, int attr)
 ///
 void FTextBase::resize(int X, int Y, int W, int H)
 {
-	reset_wrap_col();
-
+	// do we need to recalculate the wrap column?
+	if (unlikely(text_area.w != oldw || textfont() != oldf || textsize() != olds)) {
+		oldw = text_area.w; oldf = textfont(); olds = textsize();
+		reset_wrap_col();
+	}
         if (scroll_hint) {
                 mTopLineNumHint = mNBufferLines;
                 mHorizOffsetHint = 0;
@@ -179,7 +189,7 @@ void FTextBase::set_style(int attr, Fl_Font f, int s, Fl_Color c, int set)
 		start = 0;
 		end = NATTR;
 		if (set & SET_FONT)
-			textfont(f);
+			Fl_Text_Display_mod::textfont(f);
 		if (set & SET_SIZE)
 			textsize(s);
 		if (set & SET_COLOR)
@@ -355,22 +365,23 @@ void FTextBase::show_context_menu(void)
 			}
 		}
 	}
-	restoreFocus();
 }
 
 /// Recalculates the wrap margin when the font is changed or the widget resized.
-/// At the moment we only handle constant width fonts. Using proportional fonts
-/// will result in a small amount of unused space at the end of each line.
+/// Line wrapping works with proportional fonts but may be very slow.
 ///
 int FTextBase::reset_wrap_col(void)
 {
-	if (!wrap || wrap_col == 0 || text_area.w == 0)
+	if (!wrap || text_area.w == 0)
 		return wrap_col;
 
 	int old_wrap_col = wrap_col;
-
-	fl_font(textfont(), textsize());
-	wrap_col = (int)floor(text_area.w / fl_width('X'));
+	if (Font_Browser::fixed_width(textfont())) {
+		fl_font(textfont(), textsize());
+		wrap_col = (int)floorf(text_area.w / fl_width('X'));
+	}
+	else // use slower (but accurate) wrapping for variable width fonts
+		wrap_col = 0;
 	// wrap_mode triggers a resize; don't call it if wrap_col hasn't changed
 	if (old_wrap_col != wrap_col)
 		wrap_mode(wrap, wrap_col);
@@ -400,7 +411,7 @@ void FTextBase::reset_styles(int set)
 Fl_Menu_Item FTextView::view_menu[] = {
 	{ make_icon_label(LOOKUP_SYMBOL _("&Look up call"), net_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ make_icon_label(ENTER_SYMBOL _("&Call"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(ENTER_SYMBOL "&Name", enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(ENTER_SYMBOL _("&Name"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(ENTER_SYMBOL _("QT&H"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(ENTER_SYMBOL _("&State"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(ENTER_SYMBOL _("&Province"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
