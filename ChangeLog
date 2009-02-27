@@ -133,7 +133,23 @@ Change Log:
     51) Close PTT when exiting
     52) Bug fix ... error in extracting font_number from font_name
     53) Added new palette, fldigi.pal
-    
+    54) Fix ptt deletion
+    55) Add optimisation flag
+    56) Add SINC_BEST_QUALITY warning
+    57) Set LC_CTYPE to C
+    58) Cosmetic change to colorsfonts dialog
+    59) Thread shutdown bug fix for win32
+    60) Exception handling fix for portaudio
+    61) Cosmetic change to font_browser
+    62) Added right audio channel PTT signal
+    63) Fix printf format string
+    64) Fix font name/number compatibility code
+    65) Add better support for proportional font
+        Wrap lines correctly using Fl_Text_Display's slow pixel counting
+        method when the font width is variable.  A warning is displayed when
+        selecting these fonts for the RX or TX text widgets.
+        Override Fl_Text_Display's textfont methods.
+
 3.1
       1) Changes to irrxml functions; 
          added main.set_sideband <USB/LSB>
