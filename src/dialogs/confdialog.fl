@@ -140,7 +140,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabUserInterface {
             label General open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {open
               xywh {5 60 490 301} box ENGRAVED_FRAME
@@ -277,7 +277,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabContest {
             label Contest open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {
               label Exchanges open
@@ -687,7 +687,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 500 320} selection_color 50
@@ -1180,7 +1180,7 @@ progdefaults.changed = true;} open
           }
           Fl_Group tabRTTY {
             label RTTY open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {5 60 490 270} box ENGRAVED_FRAME
@@ -1377,7 +1377,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label {Hardware PTT} open
-            tooltip {Tottle DTR for ptt} xywh {0 50 500 320}
+            xywh {0 50 500 320}
           } {
             Fl_Round_Button {btnPTT[0]} {
               label {No h/w PTT available}
@@ -1977,7 +1977,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabAudio {
             label Devices open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group AudioOSS {open
               xywh {5 60 490 45} box ENGRAVED_FRAME
@@ -2060,7 +2060,7 @@ resetSoundCard();}
           }
           Fl_Group tabAudioOpt {
             label Settings open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group AudioSampleRate {
               label {Sample rate} open
@@ -2297,7 +2297,7 @@ OFF - limit search to +/- 200 Hz} xywh {215 246 270 20} down_box DOWN_BOX
         } {
           Fl_Group tabSweetSpot {
             label {Sweet Spot} open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {open
               xywh {5 60 490 75} box ENGRAVED_FRAME align 21
@@ -2450,7 +2450,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabFileExtraction {
             label {Text Capture} open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {
               label {Auto Extract files from rx stream} open
