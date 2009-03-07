@@ -5,6 +5,8 @@
 #include "xmlreader.h"
 #include "soundconf.h"
 #include "waterfall.h"
+#include "main.h"
+#include "gettext.h"
 
 #if USE_HAMLIB
 	#include "hamlib.h"
@@ -534,6 +536,22 @@ int configuration::setDefaults()
 	setColorButtons();
 
 	return 1;
+}
+
+void configuration::resetDefaults(void)
+{
+	if (!fl_choice(_("Reset all options to their default values?"), "OK", "Cancel", NULL) &&
+	    Fl::event_key() != FL_Escape) {
+		fl_message(_("Reset options will take effect at the next start"));
+		reset();
+		atexit(reset);
+	}
+}
+
+void configuration::reset(void)
+{
+	remove(string(HomeDir).append("fldigi_def.xml").c_str());
+	remove(string(HomeDir).append("fldigi.prefs").c_str());
 }
 
 #include "rigio.h"

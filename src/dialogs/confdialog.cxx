@@ -2108,6 +2108,13 @@ static void cb_btnCloseConfig(Fl_Return_Button*, void*) {
   closeDialog();
 }
 
+Fl_Button *btnResetConfig=(Fl_Button *)0;
+
+static void cb_btnResetConfig(Fl_Button*, void*) {
+  progdefaults.resetDefaults();
+progdefaults.changed = false;
+}
+
 Fl_Double_Window* ConfigureDialog() {
   Fl_Double_Window* w;
   static const char szShifts[]  = "23|85|160|170|182|200|240|350|425|850";
@@ -4411,6 +4418,9 @@ l with your sound hardware."));
     { btnCloseConfig = new Fl_Return_Button(367, 375, 130, 22, _("Close"));
       btnCloseConfig->callback((Fl_Callback*)cb_btnCloseConfig);
     } // Fl_Return_Button* btnCloseConfig
+    { btnResetConfig = new Fl_Button(5, 375, 130, 22, _("Restore defaults"));
+      btnResetConfig->callback((Fl_Callback*)cb_btnResetConfig);
+    } // Fl_Button* btnResetConfig
     o->end();
   } // Fl_Double_Window* o
   return w;

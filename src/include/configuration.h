@@ -360,8 +360,9 @@ struct configuration
 	void loadDefaults();
 	void saveDefaults();
 	int  setDefaults();
+	void resetDefaults(void);
+	static void reset(void);
 
-	void initOperator();
 	void initInterface();
 	void initMixerDevices();
 	void testCommPorts();

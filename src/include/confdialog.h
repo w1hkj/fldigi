@@ -309,6 +309,7 @@ extern Fl_Round_Button *btnHAMCALLonline;
 extern Fl_Button *btnSaveConfig;
 #include <FL/Fl_Return_Button.H>
 extern Fl_Return_Button *btnCloseConfig;
+extern Fl_Button *btnResetConfig;
 Fl_Double_Window* ConfigureDialog();
 void openConfig();
 void closeDialog();

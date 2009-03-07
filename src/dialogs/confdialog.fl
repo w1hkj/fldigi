@@ -2629,6 +2629,12 @@ progdefaults.changed = true;}
       callback {closeDialog();}
       xywh {367 375 130 22}
     }
+    Fl_Button btnResetConfig {
+      label {Restore defaults}
+      callback {progdefaults.resetDefaults();
+progdefaults.changed = false;}
+      xywh {5 375 130 22}
+    }
   }
 } 
 
