@@ -2130,7 +2130,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { tabOperator = new Fl_Group(0, 25, 500, 345, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2708,15 +2707,16 @@ an merging"));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 500, 345, _("Modems"));
+        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 500, 345);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
           { tabCW = new Fl_Group(0, 50, 500, 320, _("CW"));
+            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 500, 320);
               tabsCW->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
                 o->align(FL_ALIGN_TOP_LEFT);
-                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 130, _("Receive"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2819,6 +2819,7 @@ an merging"));
               } // Fl_Group* o
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("Timing and QSK"));
                 o->align(FL_ALIGN_TOP_LEFT);
+                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 95, _("Timing"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2844,7 +2845,7 @@ an merging"));
                 cntCWdash2dot->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.CWdash2dot);
                 } // Fl_Counter* cntCWdash2dot
-                { Fl_Counter* o = cntCWrisetime = new Fl_Counter(15, 144, 65, 21, _("Edge"));
+                { Fl_Counter* o = cntCWrisetime = new Fl_Counter(15, 144, 65, 20, _("Edge"));
                 cntCWrisetime->tooltip(_("Leading and trailing edge risetimes (msec)"));
                 cntCWrisetime->type(1);
                 cntCWrisetime->minimum(0);
@@ -2886,13 +2887,13 @@ an merging"));
                 cntPostTiming->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.CWpre);
                 } // Fl_Counter* cntPostTiming
-                { Fl_Check_Button* o = btnQSKadjust = new Fl_Check_Button(290, 240, 150, 15, _("Send continuous"));
+                { Fl_Check_Button* o = btnQSKadjust = new Fl_Check_Button(290, 240, 150, 20, _("Send continuous"));
                 btnQSKadjust->tooltip(_("Send a continuous stream of test characters"));
                 btnQSKadjust->down_box(FL_DOWN_BOX);
                 btnQSKadjust->callback((Fl_Callback*)cb_btnQSKadjust);
                 o->value(progdefaults.QSKadjust);
                 } // Fl_Check_Button* btnQSKadjust
-                { Fl_Choice* o = mnuTestChar = new Fl_Choice(290, 210, 41, 18, _("Test char"));
+                { Fl_Choice* o = mnuTestChar = new Fl_Choice(290, 210, 41, 20, _("Test char"));
                 mnuTestChar->tooltip(_("Test character for QSK adjustment"));
                 mnuTestChar->down_box(FL_BORDER_BOX);
                 mnuTestChar->callback((Fl_Callback*)cb_mnuTestChar);
@@ -3120,7 +3121,6 @@ an merging"));
             tabOlivia->end();
           } // Fl_Group* tabOlivia
           { tabPSK = new Fl_Group(0, 50, 500, 320, _("PSK"));
-            tabPSK->hide();
             { tabsPSK = new Fl_Tabs(0, 50, 500, 320);
               tabsPSK->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
@@ -3472,7 +3472,7 @@ an merging"));
           tabsRig->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hardware PTT"));
             o->hide();
-            { btnPTT[0] = new Fl_Round_Button(45, 68, 138, 17, _("No h/w PTT available"));
+            { btnPTT[0] = new Fl_Round_Button(45, 68, 165, 20, _("No H/W PTT available"));
               btnPTT[0]->down_box(FL_DIAMOND_DOWN_BOX);
               btnPTT[0]->value(1);
               btnPTT[0]->selection_color((Fl_Color)1);
@@ -3505,18 +3505,18 @@ an merging"));
                 btnDTRplusV->callback((Fl_Callback*)cb_btnDTRplusV);
               } // Fl_Round_Button* btnDTRplusV
               { btnInitHWPTT = new Fl_Button(188, 291, 113, 24, _("Initialize"));
-                btnInitHWPTT->tooltip(_("Initialize the ptt h/w interface"));
+                btnInitHWPTT->tooltip(_("Initialize the H/W PTT interface"));
                 btnInitHWPTT->callback((Fl_Callback*)cb_btnInitHWPTT);
               } // Fl_Button* btnInitHWPTT
-              { btnPTT[4] = new Fl_Round_Button(145, 151, 210, 20, _("Use separate serial port PTT"));
-                btnPTT[4]->tooltip(_("Serial port h/w used for PTT"));
+              { btnPTT[4] = new Fl_Round_Button(145, 151, 220, 20, _("Use separate serial port PTT"));
+                btnPTT[4]->tooltip(_("Serial port H/W used for PTT"));
                 btnPTT[4]->down_box(FL_DIAMOND_DOWN_BOX);
-                btnPTT[4]->selection_color(FL_SELECTION_COLOR);
+                btnPTT[4]->selection_color((Fl_Color)1);
                 btnPTT[4]->callback((Fl_Callback*)cb_btnPTT1);
               } // Fl_Round_Button* btnPTT[4]
               grpHWPTT->end();
             } // Fl_Group* grpHWPTT
-            { Fl_Check_Button* o = btnPTTrightchannel = new Fl_Check_Button(45, 105, 70, 15, _("Enable right audio channel PTT tone"));
+            { Fl_Check_Button* o = btnPTTrightchannel = new Fl_Check_Button(45, 105, 275, 20, _("Enable right audio channel PTT tone"));
               btnPTTrightchannel->tooltip(_("Can be used in lieu of or in addition to other PTT types"));
               btnPTTrightchannel->down_box(FL_DOWN_BOX);
               btnPTTrightchannel->callback((Fl_Callback*)cb_btnPTTrightchannel);
@@ -3604,7 +3604,7 @@ an merging"));
             { btnPTT[3] = new Fl_Round_Button(20, 232, 180, 20, _("PTT via CAT command"));
               btnPTT[3]->tooltip(_("PTT is a CAT command (not hardware)"));
               btnPTT[3]->down_box(FL_DIAMOND_DOWN_BOX);
-              btnPTT[3]->selection_color(FL_SELECTION_COLOR);
+              btnPTT[3]->selection_color((Fl_Color)1);
               btnPTT[3]->callback((Fl_Callback*)cb_btnPTT2);
               btnPTT[3]->deactivate();
             } // Fl_Round_Button* btnPTT[3]
@@ -3645,7 +3645,7 @@ an merging"));
             { btnPTT[5] = new Fl_Round_Button(275, 232, 180, 20, _("PTT via serial port"));
               btnPTT[5]->tooltip(_("PTT uses serial port RTS or DTR"));
               btnPTT[5]->down_box(FL_DIAMOND_DOWN_BOX);
-              btnPTT[5]->selection_color(FL_SELECTION_COLOR);
+              btnPTT[5]->selection_color((Fl_Color)1);
               btnPTT[5]->callback((Fl_Callback*)cb_btnPTT3);
               btnPTT[5]->deactivate();
             } // Fl_Round_Button* btnPTT[5]
@@ -3733,7 +3733,7 @@ an merging"));
                 inpHamlibConfig->value(progdefaults.HamConfig.c_str());
               } // Fl_Input2* inpHamlibConfig
               { btnInitHAMLIB = new Fl_Button(372, 222, 113, 24, _("Initialize"));
-                btnInitHAMLIB->tooltip(_("Initialize the serial port"));
+                btnInitHAMLIB->tooltip(_("Initialize hamlib interface"));
                 btnInitHAMLIB->callback((Fl_Callback*)cb_btnInitHAMLIB);
               } // Fl_Button* btnInitHAMLIB
               { mnuSideband = new Fl_Choice(341, 175, 144, 22, _("Sideband:"));
@@ -3747,7 +3747,7 @@ an merging"));
             { btnPTT[1] = new Fl_Round_Button(163, 258, 200, 20, _("PTT via Hamlib command"));
               btnPTT[1]->tooltip(_("PTT is a hamlib command"));
               btnPTT[1]->down_box(FL_DIAMOND_DOWN_BOX);
-              btnPTT[1]->selection_color(FL_SELECTION_COLOR);
+              btnPTT[1]->selection_color((Fl_Color)1);
               btnPTT[1]->callback((Fl_Callback*)cb_btnPTT4);
               btnPTT[1]->deactivate();
             } // Fl_Round_Button* btnPTT[1]
@@ -3798,7 +3798,7 @@ an merging"));
               } // Fl_Check_Button* chkUSEMEMMAP
               { btnPTT[2] = new Fl_Round_Button(160, 177, 150, 20, _("Use Memmap PTT"));
                 btnPTT[2]->down_box(FL_DIAMOND_DOWN_BOX);
-                btnPTT[2]->selection_color(FL_SELECTION_COLOR);
+                btnPTT[2]->selection_color((Fl_Color)1);
                 btnPTT[2]->callback((Fl_Callback*)cb_btnPTT5);
                 btnPTT[2]->deactivate();
               } // Fl_Round_Button* btnPTT[2]
@@ -3826,7 +3826,7 @@ an merging"));
                 chkUSEXMLRPC->callback((Fl_Callback*)cb_chkUSEXMLRPC);
               } // Fl_Check_Button* chkUSEXMLRPC
               { btnInitXMLRPC = new Fl_Button(201, 183, 113, 24, _("Initialize"));
-                btnInitXMLRPC->tooltip(_("Initialize xmlrpm rig control"));
+                btnInitXMLRPC->tooltip(_("Initialize XML-RPC rig control"));
                 btnInitXMLRPC->callback((Fl_Callback*)cb_btnInitXMLRPC);
               } // Fl_Button* btnInitXMLRPC
               grpXMLRPC->end();
@@ -3847,7 +3847,7 @@ an merging"));
               { btnAudioIO[0] = new Fl_Round_Button(15, 70, 53, 25, _("OSS"));
                 btnAudioIO[0]->tooltip(_("Use OSS audio server"));
                 btnAudioIO[0]->down_box(FL_DIAMOND_DOWN_BOX);
-                btnAudioIO[0]->selection_color(FL_SELECTION_COLOR);
+                btnAudioIO[0]->selection_color((Fl_Color)1);
                 btnAudioIO[0]->callback((Fl_Callback*)cb_btnAudioIO);
               } // Fl_Round_Button* btnAudioIO[0]
               { Fl_Input_Choice* o = menuOSSDev = new Fl_Input_Choice(375, 70, 110, 25, _("Device:"));
@@ -3862,7 +3862,7 @@ an merging"));
               { btnAudioIO[1] = new Fl_Round_Button(15, 133, 95, 25, _("PortAudio"));
                 btnAudioIO[1]->tooltip(_("Use Port Audio server"));
                 btnAudioIO[1]->down_box(FL_DIAMOND_DOWN_BOX);
-                btnAudioIO[1]->selection_color(FL_SELECTION_COLOR);
+                btnAudioIO[1]->selection_color((Fl_Color)1);
                 btnAudioIO[1]->callback((Fl_Callback*)cb_btnAudioIO1);
               } // Fl_Round_Button* btnAudioIO[1]
               { menuPortInDev = new Fl_Choice(215, 115, 270, 25, _("Capture:"));
@@ -3882,7 +3882,7 @@ an merging"));
               { btnAudioIO[2] = new Fl_Round_Button(15, 196, 100, 25, _("PulseAudio"));
                 btnAudioIO[2]->tooltip(_("Use Pulse Audio server"));
                 btnAudioIO[2]->down_box(FL_DIAMOND_DOWN_BOX);
-                btnAudioIO[2]->selection_color(FL_SELECTION_COLOR);
+                btnAudioIO[2]->selection_color((Fl_Color)1);
                 btnAudioIO[2]->callback((Fl_Callback*)cb_btnAudioIO2);
               } // Fl_Round_Button* btnAudioIO[2]
               { Fl_Input2* o = inpPulseServer = new Fl_Input2(260, 196, 225, 25, _("Server string:"));
@@ -3906,7 +3906,7 @@ an merging"));
               { btnAudioIO[3] = new Fl_Round_Button(16, 240, 100, 25, _("File I/O only"));
                 btnAudioIO[3]->tooltip(_("NO AUDIO DEVICE AVAILABLE (or testing)"));
                 btnAudioIO[3]->down_box(FL_DIAMOND_DOWN_BOX);
-                btnAudioIO[3]->selection_color(FL_SELECTION_COLOR);
+                btnAudioIO[3]->selection_color((Fl_Color)1);
                 btnAudioIO[3]->callback((Fl_Callback*)cb_btnAudioIO3);
               } // Fl_Round_Button* btnAudioIO[3]
               AudioNull->end();
@@ -4006,8 +4006,8 @@ l with your sound hardware."));
                 btnLineIn->selection_color((Fl_Color)3);
                 btnLineIn->callback((Fl_Callback*)cb_btnLineIn);
               } // Fl_Light_Button* btnLineIn
-              { valPCMvolume = new Fl_Value_Slider(15, 167, 340, 21, _("PCM"));
-                valPCMvolume->tooltip(_("Set the sound card PCM level (not in Windows)"));
+              { valPCMvolume = new Fl_Value_Slider(15, 167, 340, 20, _("PCM"));
+                valPCMvolume->tooltip(_("Set the sound card PCM level"));
                 valPCMvolume->type(1);
                 valPCMvolume->selection_color(FL_SELECTION_COLOR);
                 valPCMvolume->step(0.01);
