@@ -105,6 +105,8 @@
         ELEM_(double, CWpost, "CWPOST", 4.0)                                            \
         ELEM_(bool, CWid, "CWID", false)                                                \
         ELEM_(int, CWIDwpm, "IDWPM", 18)                                                \
+        ELEM_(bool, QSKadjust, "QSKADJUST", false)                                      \
+        ELEM_(int, TestChar, "TESTCHAR", 0)                                             \
 /* FELD HELL */                                                                         \
         ELEM_(double, HELL_BW, "", 150.0)                                               \
         ELEM_(bool, HellRcvWidth, "HELLRCVWIDTH", false)                                \

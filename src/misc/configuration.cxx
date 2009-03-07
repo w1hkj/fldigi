@@ -471,9 +471,7 @@ int configuration::setDefaults()
 	sldrCWxmtWPM->minimum(CWlowerlimit);
 	sldrCWxmtWPM->maximum(CWupperlimit);
 	btnQSK->value(QSK);
-	cntPreTiming->maximum((int)(2400/CWspeed)/2.0); 
 	cntPreTiming->value(CWpre);
-	cntPostTiming->maximum((int)(2400/CWspeed)/2.0);
 	cntPostTiming->value(CWpost);
 	btnCWID->value(CWid);
 			

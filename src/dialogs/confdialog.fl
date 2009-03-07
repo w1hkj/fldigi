@@ -76,8 +76,8 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
-        xywh {0 25 500 345} when 1
+        callback {progdefaults.changed = true;} open
+        xywh {0 25 500 345} when 1 hide
       } {
         Fl_Group {} {
           label Station open
@@ -680,7 +680,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 500 345} hide
+        xywh {0 25 500 345}
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 500 345} selection_color 50 align 9
@@ -740,8 +740,6 @@ progdefaults.changed = true;}
                   Fl_Value_Slider sldrCWxmtWPM {
                     label {TX WPM}
                     callback {progdefaults.CWspeed = (int)o->value();
-cntPreTiming->maximum((int)(2400/o->value())/2.0);
-cntPostTiming->maximum((int)(2400/o->value())/2.0);
 progdefaults.changed = true;}
                     tooltip {My transmit CW WPM} xywh {40 248 290 20} type Horizontal align 8 minimum 5 maximum 100 step 1 value 20 textsize 14
                     code0 {o->value(progdefaults.CWspeed);}
@@ -822,18 +820,30 @@ progdefaults.changed = true;}
                     label {Pre-keydown timing (ms)}
                     callback {progdefaults.CWpre=o->value();
 progdefaults.changed = true;}
-                    tooltip {Msec pre-keydown} xywh {15 238 64 20} type Simple align 8 minimum 0 maximum 50 step 0.5 value 4
+                    tooltip {Msec pre-keydown (+ is earlier in time)} xywh {15 238 64 20} type Simple align 8 minimum 0 maximum 20 step 0.5
                     code0 {o->value(progdefaults.CWpre);}
-                    code1 {o->maximum((int)(2400/progdefaults.CWspeed)/2.0);}
                   }
                   Fl_Counter cntPostTiming {
                     label {Post-keydown timing (ms)}
                     callback {progdefaults.CWpost=o->value();
-progdefaults.changed = true;}
-                    tooltip {Msec post-keydown} xywh {15 268 64 20} type Simple align 8 minimum -20 maximum 50 step 0.5 value 4
+progdefaults.changed = true;} selected
+                    tooltip {Msec post-keydown (+ is earlier in time)} xywh {15 268 64 20} type Simple align 8 minimum -20 maximum 20 step 0.5
                     code0 {o->value(progdefaults.CWpre);}
-                    code1 {o->maximum((int)(2400/progdefaults.CWspeed)/2.0);}
                   }
+                  Fl_Check_Button btnQSKadjust {
+                    label {Send continuous}
+                    callback {progdefaults.QSKadjust = o->value();}
+                    tooltip {Send a continuous stream of test characters} xywh {290 240 150 15} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.QSKadjust);}
+                  }
+                  Fl_Choice mnuTestChar {
+                    label {Test char}
+                    callback {progdefaults.TestChar = o->value();} open
+                    tooltip {Test character for QSK adjustment} xywh {290 210 41 18} down_box BORDER_BOX align 8
+                    code0 {extern char szTestChar[];}
+                    code1 {o->add(szTestChar);}
+                    code2 {o->value(progdefaults.TestChar);}
+                  } {}
                 }
               }
             }
@@ -1377,7 +1387,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label {Hardware PTT} open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Round_Button {btnPTT[0]} {
               label {No h/w PTT available}
@@ -1464,7 +1474,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label RigCAT open
-            tooltip {Rig Control using xml spec file} xywh {0 50 500 320} hide
+            tooltip {Rig Control using xml spec file} xywh {0 50 500 320}
           } {
             Fl_Check_Button chkUSERIGCAT {
               label {Use RigCAT}

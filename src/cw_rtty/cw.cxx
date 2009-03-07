@@ -49,7 +49,7 @@ void cw::tx_init(SoundBase *sc)
 	scard = sc;
 	phaseacc = 0;
 	lastsym = 0;
-	qrqphase = 0;
+	qskphase = 0;
 }
 
 void cw::rx_init()
@@ -70,7 +70,7 @@ void cw::init()
 	cw_adaptive_receive_threshold = (long int)trackingfilter->run(2 * cw_send_dot_length);
 	put_cwRcvWPM(cw_send_speed);
 	for (int i = 0; i < OUTBUFSIZE; i++)
-		outbuf[i] = qrqbuf[i] = 0.0;
+		outbuf[i] = qskbuf[i] = 0.0;
 	rx_init();
 }
 
@@ -201,6 +201,8 @@ void cw::sync_parameters()
 	cw_receive_dash_length = 3 * cw_receive_dot_length;
 
 	cw_noise_spike_threshold = cw_receive_dot_length / 4;
+	
+	update_Status();
 
 }
 
@@ -522,8 +524,10 @@ void cw::makeshape()
 {
 	for (int i = 0; i < KNUM; i++) keyshape[i] = 1.0;
 	knum = (int)(8 * risetime);
-	if (knum > symbollen)
-		knum = symbollen;
+//	if (knum > (int) ((symbollen * (progdefaults.CWweight - 50) / 100.0) / 2)) 
+//	    knum = (int) ((symbollen * (progdefaults.CWweight - 50) / 100.0) / 2);
+	if (knum >= symbollen)
+		knum = symbollen - 1;
 	if (knum > KNUM) 
 		knum = KNUM;
 	for (int i = 0; i < knum; i++)
@@ -540,14 +544,14 @@ inline double cw::nco(double freq)
 	return sin(phaseacc);
 }
 
-inline double cw::qrqnco()
+inline double cw::qsknco()
 {
-	qrqphase += 2.0 * M_PI * 1600.0 / samplerate;
+	qskphase += 2.0 * M_PI * 1000 / samplerate;//1600.0 / samplerate;
 
-	if (qrqphase > M_PI)
-		qrqphase -= 2.0 * M_PI;
+	if (qskphase > M_PI)
+		qskphase -= 2.0 * M_PI;
 
-	return sin(qrqphase);
+	return sin(qskphase);
 }
 
 //=====================================================================
@@ -558,17 +562,19 @@ inline double cw::qrqnco()
 //
 // Left channel contains the shaped A2 CW waveform
 // Right channel contains a square wave burst of 1600 Hz that is used
-// to trigger a QRQ switch.  Right channel has pre and post timings for
-// proper switching of the QRQ switch before and after the A2 element.
+// to trigger a qsk switch.  Right channel has pre and post timings for
+// proper switching of the qsk switch before and after the A2 element.
 // If the Pre + Post timing exceeds the interelement spacing then the
 // Pre and / or Post is only applied at the beginning and end of the
 // character.
 //=======================================================================
 
+int q_carryover = 0, carryover = 0;
+
 void cw::send_symbol(int bits)
 {
 	double freq;
-	int sample = 0, i;
+	int sample, qsample, i;
 	int delta = 0;
 	int keydown;
 	int keyup;
@@ -576,103 +582,135 @@ void cw::send_symbol(int bits)
 	int kpost;
 	int duration = 0;
 	int symlen = 0;
-	double dsymlen = 0.0;
+	float dsymlen = 0.0;
 	int currsym = bits & 1;
 	
 	freq = get_txfreq_woffset();
 
-    if ((currsym == 1) && (lastsym == 0)) {
-    	phaseacc = 0.0;
-//    	qrqphase = 0.0;
-    }
+    delta = (int) (symbollen * (progdefaults.CWweight - 50) / 100.0);
 
-	if ((currsym == 1 && lastsym == 0) || (currsym == 0 && lastsym == 1))
-		delta = (int) (symbollen * (progdefaults.CWweight - 50) / 100.0);
-
+    symlen = symbollen;
 	if (currsym == 1) {
-		dsymlen = symbollen * 4.0 / (progdefaults.CWdash2dot + 1.0);
+   		dsymlen = symbollen * (progdefaults.CWdash2dot - 3.0) / (progdefaults.CWdash2dot + 1.0);
 		if (lastsym == 1 && currsym == 1)
-			dsymlen *= ((progdefaults.CWdash2dot - 1.0) / 2.0);
-		symlen = (int) dsymlen;
-		if (symlen < knum) symlen = knum;
-	} else
-		symlen = symbollen;
-//	LOG_DEBUG("%d-%d", symbol & 1, symlen);
+			symlen += (int)(3 * dsymlen);
+        else
+            symlen -= (int)dsymlen;
+	}
 
 	if (delta < -(symlen - knum)) delta = -(symlen - knum);
 	if (delta > (symlen - knum)) delta = symlen - knum;
 
-	keydown = symlen - knum + delta;
-	keyup = symlen - knum - delta;
-	
+	keydown = symlen + delta ;
+	keyup = symlen - delta;
+
 	kpre = (int)(progdefaults.CWpre * 8);
-	kpost = (int)(progdefaults.CWpost * 8);
-	
-	if ( (kpre + kpost) > keyup) {
-		kpre = keyup / 2;
-		kpost = keyup - kpre;
-	}
-	if (bits == 4) {
-		kpost = (int)(progdefaults.CWpost * 8);
-		if (kpost > keyup)
-			kpost = keyup;
-	}
-	if (firstelement) {
-		kpre = (int)(progdefaults.CWpre * 8);
-		kpost = 0;
-		if (kpre > keydown)
-			kpre = keydown;
-	}
-	
-	if (currsym == 1) { // keydown
-		for (i = 0; i < knum; i++, sample++) {
-			if (lastsym == 0)
-				outbuf[sample] = nco(freq) * keyshape[i];
-			else
-				outbuf[sample] = nco(freq);
-			qrqbuf[sample] = qrqnco();
-		}
-		for (i = 0; i < keydown; i++, sample++) {
-			outbuf[sample] = nco(freq);
-			qrqbuf[sample] = qrqnco();
-		}
-		duration = knum + keydown;
-	}
-	else { // keyup
-		for (i = knum - 1; i >= 0; i--, sample++) {
-			if (lastsym == 1) {
-				outbuf[sample] = nco(freq) * keyshape[i];
-			} else {
-				outbuf[sample] = 0.0;
-			}
-		}
-		for (i = 0; i < keyup; i++, sample++) {
-			outbuf[sample] = 0.0;
-		}
+	if (kpre > symlen) kpre = symlen;
 
-		sample -= (knum + keyup);
-				
-		for (i = 0; i < knum + kpost ; i++, sample++) {
-			if (bits > 2 && lastsym == 1)
-				qrqbuf[sample] = qrqnco();
-			else
-				qrqbuf[sample] = 0.0;
-		}
-		for (i = 0; i < (keyup - kpre - kpost); i++, sample++)
-			qrqbuf[sample] = 0.0;
-		for (i = 0; i < kpre; i++, sample++)
-			if (bits > 4)
-				qrqbuf[sample] = qrqnco();
-			else
-				qrqbuf[sample] = 0.0;
-				
-		duration = knum + keyup;
-	}
+	if (keydown - 2*knum < 0)
+    	kpost = knum + (int)(progdefaults.CWpost * 8);
+    else
+	    kpost = keydown - knum + (int)(progdefaults.CWpost * 8);
+	if (kpost < 0) kpost = 0;
+	
+	
+    if (currsym == 1) { // keydown
+        sample = 0;
+        if (lastsym == 1) {
+            for (i = 0; i < keydown; i++, sample++) {
+                outbuf[sample] = nco(freq);
+                qskbuf[sample] = qsknco();
+            }
+            duration = keydown;
+        } else {
+            if (carryover) {
+                for (int i = carryover; i < knum; i++, sample++)
+                    outbuf[sample] = nco(freq) * keyshape[knum - i];
+                while (sample < kpre)
+                    outbuf[sample++] = 0 * nco(freq);
+            } else
+                for (int i = 0; i < kpre; i++, sample++)
+                    outbuf[sample] = 0 * nco(freq);
+            sample = 0;
+            for (int i = 0; i < kpre; i++, sample++) {
+                qskbuf[sample] = qsknco();
+            }
+            for (int i = 0; i < knum; i++, sample++) {
+                outbuf[sample] = nco(freq) * keyshape[i];
+                qskbuf[sample] = qsknco();
+            }
+            duration = kpre + knum;
+        }
+        carryover = 0;
+    }
+    else { // keyup
+        if (lastsym == 0) {
+            duration = keyup;
+            sample = 0;
+            if (carryover) {
+                for (int i = carryover; i < knum; i++, sample++)
+                    outbuf[sample] = nco(freq) * keyshape[knum - i];
+                while (sample < duration)
+                    outbuf[sample++] = 0 * nco(freq);
+            } else
+                while (sample < duration)
+                    outbuf[sample++] = 0 * nco(freq);
+            carryover = 0;
 
-	if (progdefaults.QSK)
-		ModulateStereo(outbuf, qrqbuf, duration);
-	else
-		ModulateXmtr(outbuf, duration);
+            qsample = 0;
+            if (q_carryover) {
+                for (int i = 0; i < q_carryover; i++, qsample++) {
+                    qskbuf[qsample] = qsknco();
+                }
+                while (qsample < duration)
+                    qskbuf[qsample++] = 0 * qsknco();
+            } else
+                while (qsample < duration)
+                    qskbuf[qsample++] = 0 * qsknco();
+            if (q_carryover > duration)
+                q_carryover = duration - q_carryover;
+            else
+                q_carryover = 0;
+
+        } else { // last symbol = 1
+            duration = 2 * symbollen - kpre - knum;
+            carryover = 0;
+            sample = 0;
+
+            for (int i = 0; i < keydown - 2*knum; i++, sample++)
+                outbuf[sample] = nco(freq);
+
+            for (int i = 0; i < knum; i++, sample++) {
+                if (sample == duration) {
+                    carryover = i;
+                    break;
+                }
+                outbuf[sample] = nco(freq) * keyshape[knum - i];
+            }
+            while (sample < duration)
+                outbuf[sample++] = 0 * nco(freq);
+                
+            q_carryover = 0;
+            qsample = 0;
+
+            for (int i = 0; i < kpost; i++, qsample++) {
+                if (qsample == duration) {
+                    q_carryover = kpost - duration;
+                    break;
+                }
+                qskbuf[qsample] = qsknco();
+            }
+            while (qsample < duration)
+                qskbuf[qsample++] = 0 * qsknco();
+        }
+    }
+
+    if (duration > 0) {
+    	if (progdefaults.QSK)
+	    	ModulateStereo(outbuf, qskbuf, duration);
+	    else
+		    ModulateXmtr(outbuf, duration);
+	}
 	
 	lastsym = currsym;
 	firstelement = false;
@@ -721,7 +759,7 @@ void cw::send_ch(int ch)
 	while (code > 1) {
 		send_symbol(code);// & 1);
 		code = code >> 1;
-        FL_AWAKE();
+        FL_AWAKE(); // ??? do we want this here still ???
 	}
 
 	if (ch != -1)

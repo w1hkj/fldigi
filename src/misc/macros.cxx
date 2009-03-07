@@ -69,6 +69,10 @@ void pINFO1(string &, size_t &);
 void pINFO2(string &, size_t &);
 void pCLRRX(string &, size_t &);
 void pFILE(string &, size_t &);
+void pWPM(string &, size_t &);
+void pRISETIME(string &, size_t &);
+void pPRE(string &, size_t &);
+void pPOST(string &, size_t &);
 //void pMACROS(string &, size_t &);
 
 MTAGS mtags[] = {
@@ -112,6 +116,10 @@ MTAGS mtags[] = {
 {"<GET>",		pGET},
 {"<CLRRX>",		pCLRRX},
 {"<FILE:",		pFILE},
+{"<WPM:",       pWPM},
+{"<RISE:",      pRISETIME},
+{"<PRE:",       pPRE},
+{"<POST:",      pPOST},
 //{"<MACROS:",	pMACROS},
 {0, 0}
 };
@@ -159,6 +167,70 @@ void pTIMER(string &s, size_t &i)
 		s.replace(i, endbracket - i + 1, "");
 }
 
+void pWPM(string &s, size_t &i)
+{
+	size_t endbracket = s.find('>',i);
+	int number;
+	string sTime = s.substr(i+5, endbracket - i - 5);
+	if (sTime.length() > 0) {
+		sscanf(sTime.c_str(), "%d", &number);
+		if (number < 5) number = 5;
+		if (number > 200) number = 200;
+		s.replace(i, endbracket - i + 1, "");
+		progdefaults.CWspeed = number;
+        sldrCWxmtWPM->value(number);
+	} else
+		s.replace(i, endbracket - i + 1, "");
+}
+
+void pRISETIME(string &s, size_t &i)
+{
+	size_t endbracket = s.find('>',i);
+	float number;
+	string sVal = s.substr(i+6, endbracket - i - 6);
+	if (sVal.length() > 0) {
+		sscanf(sVal.c_str(), "%f", &number);
+		if (number < 0) number = 0;
+		if (number > 20) number = 20;
+		s.replace(i, endbracket - i + 1, "");
+		progdefaults.CWrisetime = number;
+    	cntCWrisetime->value(number);
+	} else
+		s.replace(i, endbracket - i + 1, "");
+}
+
+void pPRE(string &s, size_t &i)
+{
+	size_t endbracket = s.find('>',i);
+	float number;
+	string sVal = s.substr(i+5, endbracket - i - 5);
+	if (sVal.length() > 0) {
+		sscanf(sVal.c_str(), "%f", &number);
+		if (number < 0) number = 0;
+		if (number > 20) number = 20;
+		s.replace(i, endbracket - i + 1, "");
+		progdefaults.CWpre = number;
+		cntPreTiming->value(number);
+	} else
+		s.replace(i, endbracket - i + 1, "");
+}
+
+void pPOST(string &s, size_t &i)
+{
+	size_t endbracket = s.find('>',i);
+	float number;
+	string sVal = s.substr(i+6, endbracket - i - 6);
+	if (sVal.length() > 0) {
+		sscanf(sVal.c_str(), "%f", &number);
+		s.replace(i, endbracket - i + 1, "");
+		if (number < -20) number = -20;
+		if (number > 20) number = 20;
+		progdefaults.CWpost = number;
+		cntPostTiming->value(number);
+	} else
+		s.replace(i, endbracket - i + 1, "");
+}
+
 bool useIdle = false;
 int  idleTime = 0;
 
@@ -175,6 +247,7 @@ void pIDLE(string &s, size_t &i)
 	} else
 		s.replace(i, endbracket - i + 1, "");
 }
+
 
 void pINFO1(string &s, size_t &i)
 {

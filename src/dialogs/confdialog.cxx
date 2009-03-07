@@ -574,8 +574,6 @@ Fl_Value_Slider *sldrCWxmtWPM=(Fl_Value_Slider *)0;
 
 static void cb_sldrCWxmtWPM(Fl_Value_Slider* o, void*) {
   progdefaults.CWspeed = (int)o->value();
-cntPreTiming->maximum((int)(2400/o->value())/2.0);
-cntPostTiming->maximum((int)(2400/o->value())/2.0);
 progdefaults.changed = true;
 }
 
@@ -648,6 +646,18 @@ Fl_Counter *cntPostTiming=(Fl_Counter *)0;
 static void cb_cntPostTiming(Fl_Counter* o, void*) {
   progdefaults.CWpost=o->value();
 progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnQSKadjust=(Fl_Check_Button *)0;
+
+static void cb_btnQSKadjust(Fl_Check_Button* o, void*) {
+  progdefaults.QSKadjust = o->value();
+}
+
+Fl_Choice *mnuTestChar=(Fl_Choice *)0;
+
+static void cb_mnuTestChar(Fl_Choice* o, void*) {
+  progdefaults.TestChar = o->value();
 }
 
 Fl_Group *tabDomEX=(Fl_Group *)0;
@@ -2109,6 +2119,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { tabOperator = new Fl_Group(0, 25, 500, 345, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2686,7 +2697,6 @@ an merging"));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 500, 345, _("Modems"));
-        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 500, 345);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
@@ -2846,29 +2856,39 @@ an merging"));
                 o->value(progdefaults.QSK);
                 } // Fl_Check_Button* btnQSK
                 { Fl_Counter* o = cntPreTiming = new Fl_Counter(15, 238, 64, 20, _("Pre-keydown timing (ms)"));
-                cntPreTiming->tooltip(_("Msec pre-keydown"));
+                cntPreTiming->tooltip(_("Msec pre-keydown (+ is earlier in time)"));
                 cntPreTiming->type(1);
                 cntPreTiming->minimum(0);
-                cntPreTiming->maximum(50);
+                cntPreTiming->maximum(20);
                 cntPreTiming->step(0.5);
-                cntPreTiming->value(4);
                 cntPreTiming->callback((Fl_Callback*)cb_cntPreTiming);
                 cntPreTiming->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.CWpre);
-                o->maximum((int)(2400/progdefaults.CWspeed)/2.0);
                 } // Fl_Counter* cntPreTiming
                 { Fl_Counter* o = cntPostTiming = new Fl_Counter(15, 268, 64, 20, _("Post-keydown timing (ms)"));
-                cntPostTiming->tooltip(_("Msec post-keydown"));
+                cntPostTiming->tooltip(_("Msec post-keydown (+ is earlier in time)"));
                 cntPostTiming->type(1);
                 cntPostTiming->minimum(-20);
-                cntPostTiming->maximum(50);
+                cntPostTiming->maximum(20);
                 cntPostTiming->step(0.5);
-                cntPostTiming->value(4);
                 cntPostTiming->callback((Fl_Callback*)cb_cntPostTiming);
                 cntPostTiming->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.CWpre);
-                o->maximum((int)(2400/progdefaults.CWspeed)/2.0);
                 } // Fl_Counter* cntPostTiming
+                { Fl_Check_Button* o = btnQSKadjust = new Fl_Check_Button(290, 240, 150, 15, _("Send continuous"));
+                btnQSKadjust->tooltip(_("Send a continuous stream of test characters"));
+                btnQSKadjust->down_box(FL_DOWN_BOX);
+                btnQSKadjust->callback((Fl_Callback*)cb_btnQSKadjust);
+                o->value(progdefaults.QSKadjust);
+                } // Fl_Check_Button* btnQSKadjust
+                { Fl_Choice* o = mnuTestChar = new Fl_Choice(290, 210, 41, 18, _("Test char"));
+                mnuTestChar->tooltip(_("Test character for QSK adjustment"));
+                mnuTestChar->down_box(FL_BORDER_BOX);
+                mnuTestChar->callback((Fl_Callback*)cb_mnuTestChar);
+                mnuTestChar->align(FL_ALIGN_RIGHT);
+                o->add(szTestChar);
+                o->value(progdefaults.TestChar);
+                } // Fl_Choice* mnuTestChar
                 o->end();
                 } // Fl_Group* o
                 o->end();
@@ -3440,6 +3460,7 @@ an merging"));
         { tabsRig = new Fl_Tabs(0, 25, 500, 345);
           tabsRig->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hardware PTT"));
+            o->hide();
             { btnPTT[0] = new Fl_Round_Button(45, 68, 138, 17, _("No h/w PTT available"));
               btnPTT[0]->down_box(FL_DIAMOND_DOWN_BOX);
               btnPTT[0]->value(1);
@@ -3494,7 +3515,6 @@ an merging"));
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("RigCAT"));
             o->tooltip(_("Rig Control using xml spec file"));
-            o->hide();
             { chkUSERIGCAT = new Fl_Check_Button(195, 60, 110, 20, _("Use RigCAT"));
               chkUSERIGCAT->tooltip(_("RigCAT used for rig control"));
               chkUSERIGCAT->down_box(FL_DOWN_BOX);

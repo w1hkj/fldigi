@@ -127,8 +127,8 @@ protected:
 	int lastsym;					// last symbol sent
 	double risetime;			    // leading/trailing edge rise time (msec)
 	int knum;						// number of samples on edges
-	double qrqbuf[OUTBUFSIZE];		// signal array for qrq drive
-	double qrqphase;				//
+	double qskbuf[OUTBUFSIZE];		// signal array for qsk drive
+	double qskphase;				//
 	bool firstelement;
 	
 //	double *keyshape;				// array defining leading edge
@@ -151,7 +151,7 @@ protected:
 	double dash_tracking;
 	
 	inline double nco(double freq);
-	inline double qrqnco();
+	inline double qsknco();
 	void	update_syncscope();
 	void	update_Status();
 	void	sync_parameters();

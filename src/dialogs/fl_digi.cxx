@@ -3112,11 +3112,15 @@ void put_rx_data(int *data, int len)
  	FHdisp->data(data, len);
 }
 
+char szTestChar[] = "E|I|S|T|M|O|A|V";
 int get_tx_char(void)
 {
 	if (arq_text_available)
 		return arq_get_char();
 
+    if (active_modem == cw_modem && progdefaults.QSKadjust)
+        return szTestChar[2 * progdefaults.TestChar];
+        
 	int c;
 	static int pending = -1;
 	if (pending >= 0) {
@@ -3160,6 +3164,8 @@ int get_tx_char(void)
 
 void put_echo_char(unsigned int data)
 {
+    if (progdefaults.QSKadjust) return;
+    
 	static unsigned int last = 0;
 	const char **asc = ascii;
 	

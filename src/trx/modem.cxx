@@ -275,6 +275,8 @@ void modem::ModulateXmtr(double *buffer, int len)
 	}
 }
 
+#include <iostream>
+using namespace std;
 void modem::ModulateStereo(double *left, double *right, int len)
 {
 	try {
@@ -299,6 +301,8 @@ void modem::ModulateStereo(double *left, double *right, int len)
 			_mdm_scdbl.next(); // change buffers
 		}
 	}
+//	for (int i = 0; i < len; i++)
+//	    std::cout << (left[i] + 1.0) << "," << (right[i] - 1.0) << std::endl;
 }
 
 

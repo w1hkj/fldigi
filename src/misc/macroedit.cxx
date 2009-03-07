@@ -86,6 +86,12 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add("<IDLE:NN>\tidle signal for NN sec");
 	
 	w->add(LINE_SEP);
+	w->add("<WPM:NN>\tCW wpm");
+	w->add("<RISE:nn.n>\tCW risetime");
+	w->add("<PRE:nn.n>\tQSK pre-timing");
+	w->add("<POST:+/-nn.n>\tQSK post-timing");
+	
+	w->add(LINE_SEP);
 	w->add("<FILE:>\tinsert text file");
 	w->add("<MACROS:>\tchange macro defs file");
 
