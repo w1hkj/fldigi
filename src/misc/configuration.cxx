@@ -380,19 +380,19 @@ int configuration::setDefaults()
 		btnPTT[i]->activate();
 	}
 	btnPTT[btnPTTis]->value(1);
-#if !USE_HAMLIB
-	btnPTT[1]->deactivate();
-	chkUSEHAMLIB->deactivate();
-	inpRIGdev->hide();
-	mnuBaudRate->hide();
-	cboHamlibRig->hide();
-#else
+#if USE_HAMLIB
+	mnuSideband->add("Rig mode");
+	mnuSideband->add("Always LSB");
+	mnuSideband->add("Always USB");
+	mnuSideband->value(HamlibSideband);
 	btnPTT[1]->activate();
 	chkUSEHAMLIB->activate();
 	inpRIGdev->show();
 	mnuBaudRate->show();
 	cboHamlibRig->show();
 	cboHamlibRig->value(HamRigName.c_str());
+#else
+	tabHamlib->parent()->remove(*tabHamlib);
 #endif
 	btnRTSptt->value(RTSptt);
 	btnDTRptt->value(DTRptt);
@@ -425,7 +425,11 @@ int configuration::setDefaults()
 
 	inpRIGdev->value(HamRigDevice.c_str());
 	mnuBaudRate->value(HamRigBaudrate);
-	
+
+#if !USE_XMLRPC
+	tabXMLRPC->parent()->remove(*tabXMLRPC);
+#endif
+
 	inpXmlRigDevice->value(XmlRigDevice.c_str());
 	mnuXmlRigBaudrate->value(XmlRigBaudrate);
 

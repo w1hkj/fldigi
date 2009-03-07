@@ -58,6 +58,8 @@ static pbwidth_t hamlib_pbwidth = 3000;
 typedef std::vector<const struct rig_caps *> rig_list_t;
 rig_list_t hamlib_rigs;
 
+enum { SIDEBAND_RIG, SIDEBAND_LSB, SIDEBAND_USB };
+
 static void *hamlib_loop(void *args);
 
 void show_error(const char* msg1, const char* msg2 = 0)
@@ -401,18 +403,15 @@ static void *hamlib_loop(void *args)
 		
 		if (modeok && (hamlib_rmode != numode)) {
 			hamlib_rmode = numode;
-//			selMode(hamlib_rmode);
-//			qso_selMode(hamlib_rmode);
 			show_mode(modeString(hamlib_rmode));
-			if (hamlib_rmode == RIG_MODE_LSB ||
-					hamlib_rmode == RIG_MODE_CWR ||	
+			if (progdefaults.HamlibSideband != SIDEBAND_RIG)
+				wf->USB(progdefaults.HamlibSideband == SIDEBAND_USB);
+			else
+				wf->USB(hamlib_rmode == RIG_MODE_LSB ||
+					hamlib_rmode == RIG_MODE_CW ||
 					hamlib_rmode == RIG_MODE_PKTLSB ||
 					hamlib_rmode == RIG_MODE_ECSSLSB ||
-					hamlib_rmode == RIG_MODE_RTTY) {
-				wf->USB(false);
-			} else {
-				wf->USB(true);
-			}
+					hamlib_rmode == RIG_MODE_RTTY);
 		}
 		
 		if (hamlib_exit)

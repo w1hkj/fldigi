@@ -222,6 +222,7 @@
         ELEM_(int, HamlibRetries, "HAMLIBRETRIES", 2)                                   \
         ELEM_(int, HamlibTimeout, "HAMLIBTIMEOUT", 10)                                  \
         ELEM_(int, HamlibWait, "HAMLIBWAIT", 50)                                        \
+        ELEM_(int, HamlibSideband, "HAMLIBSIDEBAND", 0) /* SIDEBAND_RIG */              \
 /* Operator */                                                                          \
         ELEM_(std::string, myCall, "MYCALL", "")                                        \
         ELEM_(std::string, myQth, "MYQTH", "")                                          \

@@ -1360,6 +1360,8 @@ btnInitRIGCAT->redraw();
 progdefaults.changed = true;
 }
 
+Fl_Group *tabHamlib=(Fl_Group *)0;
+
 Fl_Check_Button *chkUSEHAMLIB=(Fl_Check_Button *)0;
 
 static void cb_chkUSEHAMLIB(Fl_Check_Button* o, void*) {
@@ -1458,6 +1460,13 @@ Fl_Button *btnInitHAMLIB=(Fl_Button *)0;
 static void cb_btnInitHAMLIB(Fl_Button* o, void*) {
   progdefaults.initInterface();
 o->labelcolor(FL_FOREGROUND_COLOR);
+progdefaults.changed = true;
+}
+
+Fl_Choice *mnuSideband=(Fl_Choice *)0;
+
+static void cb_mnuSideband(Fl_Choice* o, void*) {
+  progdefaults.HamlibSideband = o->value();
 progdefaults.changed = true;
 }
 
@@ -1579,6 +1588,8 @@ static void cb_btnInitMEMMAP(Fl_Button* o, void*) {
 o->labelcolor(FL_FOREGROUND_COLOR);
 progdefaults.changed = true;
 }
+
+Fl_Group *tabXMLRPC=(Fl_Group *)0;
 
 Fl_Group *grpXMLRPC=(Fl_Group *)0;
 
@@ -3515,6 +3526,7 @@ an merging"));
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("RigCAT"));
             o->tooltip(_("Rig Control using xml spec file"));
+            o->hide();
             { chkUSERIGCAT = new Fl_Check_Button(195, 60, 110, 20, _("Use RigCAT"));
               chkUSERIGCAT->tooltip(_("RigCAT used for rig control"));
               chkUSERIGCAT->down_box(FL_DOWN_BOX);
@@ -3639,8 +3651,7 @@ an merging"));
             } // Fl_Round_Button* btnPTT[5]
             o->end();
           } // Fl_Group* o
-          { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hamlib"));
-            o->hide();
+          { tabHamlib = new Fl_Group(0, 50, 500, 320, _("Hamlib"));
             { chkUSEHAMLIB = new Fl_Check_Button(195, 60, 100, 20, _("Use Hamlib"));
               chkUSEHAMLIB->tooltip(_("Hamlib used for rig control"));
               chkUSEHAMLIB->down_box(FL_DOWN_BOX);
@@ -3725,6 +3736,12 @@ an merging"));
                 btnInitHAMLIB->tooltip(_("Initialize the serial port"));
                 btnInitHAMLIB->callback((Fl_Callback*)cb_btnInitHAMLIB);
               } // Fl_Button* btnInitHAMLIB
+              { mnuSideband = new Fl_Choice(341, 175, 144, 22, _("Sideband:"));
+                mnuSideband->tooltip(_("Force the rig sideband. Takes\neffect when rig mode changes."));
+                mnuSideband->down_box(FL_BORDER_BOX);
+                mnuSideband->callback((Fl_Callback*)cb_mnuSideband);
+                mnuSideband->align(FL_ALIGN_TOP);
+              } // Fl_Choice* mnuSideband
               grpHamlib->end();
             } // Fl_Group* grpHamlib
             { btnPTT[1] = new Fl_Round_Button(163, 258, 200, 20, _("PTT via Hamlib command"));
@@ -3762,8 +3779,8 @@ an merging"));
               } // Fl_Check_Button* chkHamlibXONXOFFflow
               grpHamlibPTT->end();
             } // Fl_Group* grpHamlibPTT
-            o->end();
-          } // Fl_Group* o
+            tabHamlib->end();
+          } // Fl_Group* tabHamlib
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("MemMap"));
             o->hide();
             { grpMemmap = new Fl_Group(5, 60, 490, 185);
@@ -3793,8 +3810,8 @@ an merging"));
             } // Fl_Group* grpMemmap
             o->end();
           } // Fl_Group* o
-          { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("XML-RPC"));
-            o->hide();
+          { tabXMLRPC = new Fl_Group(0, 50, 500, 320, _("XML-RPC"));
+            tabXMLRPC->hide();
             { grpXMLRPC = new Fl_Group(5, 60, 490, 160);
               grpXMLRPC->box(FL_ENGRAVED_FRAME);
               { Fl_Output* o = new Fl_Output(160, 79, 190, 58);
@@ -3814,8 +3831,8 @@ an merging"));
               } // Fl_Button* btnInitXMLRPC
               grpXMLRPC->end();
             } // Fl_Group* grpXMLRPC
-            o->end();
-          } // Fl_Group* o
+            tabXMLRPC->end();
+          } // Fl_Group* tabXMLRPC
           tabsRig->end();
         } // Fl_Tabs* tabsRig
         tabRig->end();
