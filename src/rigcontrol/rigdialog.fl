@@ -13,6 +13,8 @@ decl {\#include <FL/Fl_Box.H>} {}
 
 decl {\#include "rigsupport.h"} {} 
 
+decl {\#include "fl_digi.h"} {} 
+
 decl {using namespace std;} {} 
 
 Function {rig_dialog()} {open
@@ -73,7 +75,8 @@ Middle click to replace, Shift-left click to delete} xywh {278 5 280 70} type Ho
     }
     Fl_Button btnClearList {
       label {@-1square}
-      callback {clearList()}
+      callback {if (quick_choice("Clear list?", 2, "Confirm", "Cancel", NULL) == 1)
+    clearList();}
       tooltip {Clear list} xywh {257 54 20 20} box UP_BOX labelsize 10
     }
     Fl_Button btnRCclose {

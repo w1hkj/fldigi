@@ -203,11 +203,6 @@ void clearList()
 		qso_opBrowser->clear();
 }
 
-void qso_clearList()
-{
-	clearList();
-}
-
 void updateSelect()
 {
 	FreqSelect->clear();

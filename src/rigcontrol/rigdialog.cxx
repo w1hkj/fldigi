@@ -6,6 +6,7 @@
 #include <string>
 #include <FL/Fl_Box.H>
 #include "rigsupport.h"
+#include "fl_digi.h"
 using namespace std;
 
 cFreqControl *FreqDisp=(cFreqControl *)0;
@@ -56,7 +57,8 @@ static void cb_btnDelFreq(Fl_Button*, void*) {
 Fl_Button *btnClearList=(Fl_Button *)0;
 
 static void cb_btnClearList(Fl_Button*, void*) {
-  clearList();
+  if (quick_choice("Clear list?", 2, "Confirm", "Cancel", NULL) == 1)
+    clearList();
 }
 
 Fl_Button *btnRCclose=(Fl_Button *)0;

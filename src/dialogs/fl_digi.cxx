@@ -2011,7 +2011,8 @@ void cb_qso_btnAddFreq(Fl_Widget *, void *)
 
 void cb_qso_btnClearList(Fl_Widget *, void *)
 {
-	qso_clearList();
+	if (quick_choice("Clear list?", 2, "Confirm", "Cancel", NULL) == 1)
+		clearList();
 }
 
 void cb_qso_inpAct(Fl_Widget*, void*)
