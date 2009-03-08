@@ -407,11 +407,11 @@ static void *hamlib_loop(void *args)
 			if (progdefaults.HamlibSideband != SIDEBAND_RIG)
 				wf->USB(progdefaults.HamlibSideband == SIDEBAND_USB);
 			else
-				wf->USB(hamlib_rmode == RIG_MODE_LSB ||
-					hamlib_rmode == RIG_MODE_CW ||
-					hamlib_rmode == RIG_MODE_PKTLSB ||
-					hamlib_rmode == RIG_MODE_ECSSLSB ||
-					hamlib_rmode == RIG_MODE_RTTY);
+				wf->USB(!(hamlib_rmode == RIG_MODE_LSB ||
+					  hamlib_rmode == RIG_MODE_CWR ||
+					  hamlib_rmode == RIG_MODE_PKTLSB ||
+					  hamlib_rmode == RIG_MODE_ECSSLSB ||
+					  hamlib_rmode == RIG_MODE_RTTY));
 		}
 		
 		if (hamlib_exit)
