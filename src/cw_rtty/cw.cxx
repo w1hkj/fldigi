@@ -112,7 +112,7 @@ cw::cw() : modem()
 	cw_noise_spike_threshold = cw_adaptive_receive_threshold / 4;
 	cw_send_dot_length = DOT_MAGIC / cw_send_speed;
 	cw_send_dash_length = 3 * cw_send_dot_length;
-	symbollen = (int)(1.0 * samplerate * cw_send_dot_length / USECS_PER_SEC);
+	symbollen = (samplerate * 12) / (progdefaults.CWspeed * 10);
 	
 	memset(rx_rep_buf, 0, sizeof(rx_rep_buf));
 
@@ -155,7 +155,8 @@ void cw::sync_parameters()
 		cw_send_dot_length = DOT_MAGIC / progdefaults.defCWspeed;
 		
 	cw_send_dash_length = 3 * cw_send_dot_length;
-	nusymbollen = (int)(1.0 * samplerate * cw_send_dot_length / USECS_PER_SEC);
+	nusymbollen = (samplerate * 12) / (progdefaults.CWspeed * 10);
+//	(int)(1.0 * samplerate * cw_send_dot_length / USECS_PER_SEC);
 
 	if (symbollen != nusymbollen || risetime != progdefaults.CWrisetime) {
 		risetime = progdefaults.CWrisetime;
@@ -613,6 +614,10 @@ void cw::send_symbol(int bits)
 	    kpost = keydown - knum + (int)(progdefaults.CWpost * 8);
 	if (kpost < 0) kpost = 0;
 	
+	if (firstelement) {
+	    firstelement = false;
+	    return;
+    }
 	
     if (currsym == 1) { // keydown
         sample = 0;
@@ -730,14 +735,13 @@ void cw::send_ch(int ch)
 
 	sync_parameters();
 // handle word space separately (7 dots spacing) 
-// last char already had 2 elements of inter-character spacing 
+// last char already had 3 elements of inter-character spacing 
 
 	if (progdefaults.cutnbrs && (ch >= '0' && ch <= '9'))
 		chout = cutnumbers[ch - '0'];
 		
 	if ((chout == ' ') || (chout == '\n')) {
 		firstelement = false;
-		send_symbol(0);
 		send_symbol(0);
 		send_symbol(0);
 		send_symbol(0);
@@ -759,9 +763,11 @@ void cw::send_ch(int ch)
 	while (code > 1) {
 		send_symbol(code);// & 1);
 		code = code >> 1;
-        FL_AWAKE(); // ??? do we want this here still ???
 	}
+	send_symbol(0);
 
+    FL_AWAKE();
+    
 	if (ch != -1)
 		put_echo_char(ch);
 }
