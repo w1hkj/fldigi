@@ -60,15 +60,22 @@ void cFreqControl::DecFreq (int nbr) {
 
 void cbSelectDigit (Fl_Widget *btn, void * nbr)
 {
-	Fl_Button *b = (Fl_Button *)btn;
-	bool top = (Fl::event_y() < b->y() + b->h()/2);
+
+    Fl_Button *b = (Fl_Button *)btn;
+//	bool top = (Fl::event_y() < b->y() + b->h()/2);
 	int Nbr = (int)(reinterpret_cast<long> (nbr));
 	
 	cFreqControl *fc = (cFreqControl *)b->parent();
-	if (top)
+/*	if (top)
 		fc->IncFreq(Nbr);
 	else
 		fc->DecFreq(Nbr);
+*/
+    if (Fl::event_button1())
+        fc->IncFreq(Nbr);
+    else if (Fl::event_button3())
+        fc->DecFreq(Nbr);
+
 	fc->damage();
 }
 
