@@ -106,6 +106,8 @@ extern Fl_Counter *cntCWupperlimit;
 extern Fl_Counter *cntCWweight;
 extern Fl_Counter *cntCWdash2dot;
 extern Fl_Counter *cntCWrisetime;
+extern Fl_Choice *mnuQSKshape;
+extern Fl_Check_Button *btnCWnarrow;
 extern Fl_Check_Button *btnQSK;
 extern Fl_Counter *cntPreTiming;
 extern Fl_Counter *cntPostTiming;

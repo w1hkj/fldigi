@@ -474,6 +474,7 @@ int configuration::setDefaults()
 	cntCWupperlimit->minimum(CWlowerlimit + 20);
 	cntCWrisetime->value(CWrisetime);
 	cntCWdash2dot->value(CWdash2dot);
+	mnuQSKshape->value(QSKshape);
 	sldrCWxmtWPM->minimum(CWlowerlimit);
 	sldrCWxmtWPM->maximum(CWupperlimit);
 	btnQSK->value(QSK);

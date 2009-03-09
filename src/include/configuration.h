@@ -107,6 +107,8 @@
         ELEM_(int, CWIDwpm, "IDWPM", 18)                                                \
         ELEM_(bool, QSKadjust, "QSKADJUST", false)                                      \
         ELEM_(int, TestChar, "TESTCHAR", 0)                                             \
+        ELEM_(int, QSKshape, "QSKSHAPE", 0)                                             \
+        ELEM_(bool, CWnarrow, "CWNARROW", false)                                        \
 /* FELD HELL */                                                                         \
         ELEM_(double, HELL_BW, "", 150.0)                                               \
         ELEM_(bool, HellRcvWidth, "HELLRCVWIDTH", false)                                \

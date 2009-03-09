@@ -75,14 +75,9 @@ void cw::init()
 }
 
 cw::~cw() {
-//	if (KeyLine) {
-//		delete KeyLine;
-//		KeyLine = (modeIO *)0;
-//	}
 	if (cwfilter) delete cwfilter;
 	if (bitfilter) delete bitfilter;
 	if (trackingfilter) delete trackingfilter;
-//	if (keyshape) delete [] keyshape;
 }
 
 
@@ -99,6 +94,7 @@ cw::cw() : modem()
 	frequency = progdefaults.CWsweetspot;
 	tx_frequency = get_txfreq_woffset();
 	risetime = progdefaults.CWrisetime;
+	QSKshape = progdefaults.QSKshape;
 	
 	samplerate = CWSampleRate;
 	fragmentsize = CWMaxSymLen;
@@ -158,8 +154,11 @@ void cw::sync_parameters()
 	nusymbollen = (samplerate * 12) / (progdefaults.CWspeed * 10);
 //	(int)(1.0 * samplerate * cw_send_dot_length / USECS_PER_SEC);
 
-	if (symbollen != nusymbollen || risetime != progdefaults.CWrisetime) {
+	if (symbollen != nusymbollen
+	    || risetime != progdefaults.CWrisetime ||
+	    QSKshape != progdefaults.QSKshape ) {
 		risetime = progdefaults.CWrisetime;
+		QSKshape = progdefaults.QSKshape;
 		symbollen = nusymbollen;
 		makeshape();
 	}
@@ -525,14 +524,28 @@ void cw::makeshape()
 {
 	for (int i = 0; i < KNUM; i++) keyshape[i] = 1.0;
 	knum = (int)(8 * risetime);
-//	if (knum > (int) ((symbollen * (progdefaults.CWweight - 50) / 100.0) / 2)) 
-//	    knum = (int) ((symbollen * (progdefaults.CWweight - 50) / 100.0) / 2);
+
 	if (knum >= symbollen)
 		knum = symbollen - 1;
+
 	if (knum > KNUM) 
 		knum = KNUM;
-	for (int i = 0; i < knum; i++)
-		keyshape[i] = 0.5 * (1.0 - cos (M_PI * i / knum));
+
+	for (int i = 0; i < knum; i++) {
+	    switch (QSKshape) {
+	        case 0:
+                keyshape[i] = 0.5 * (1.0 - cos (M_PI * i / knum));
+                break;
+            case 1:
+                keyshape[i] = 1.0 - exp(-3.0 * i / knum);
+                break;
+            case 2:
+                keyshape[i] = sin (0.5 * M_PI * i / knum);
+                break;
+            default:
+                keyshape[i] = 0.5 * (1.0 - cos (M_PI * i / knum));
+        }
+    }
 }
 
 inline double cw::nco(double freq)
@@ -608,10 +621,14 @@ void cw::send_symbol(int bits)
 	kpre = (int)(progdefaults.CWpre * 8);
 	if (kpre > symlen) kpre = symlen;
 
-	if (keydown - 2*knum < 0)
-    	kpost = knum + (int)(progdefaults.CWpost * 8);
-    else
-	    kpost = keydown - knum + (int)(progdefaults.CWpost * 8);
+    if (progdefaults.CWnarrow) {
+        if (keydown - 2*knum < 0)
+            kpost = knum + (int)(progdefaults.CWpost * 8);
+        else
+	        kpost = keydown - knum + (int)(progdefaults.CWpost * 8);
+    } else
+        kpost = keydown + (int)(progdefaults.CWpost * 8);
+
 	if (kpost < 0) kpost = 0;
 	
 	if (firstelement) {
@@ -682,7 +699,11 @@ void cw::send_symbol(int bits)
             carryover = 0;
             sample = 0;
 
-            for (int i = 0; i < keydown - 2*knum; i++, sample++)
+            int next = keydown - knum;
+            if (progdefaults.CWnarrow)
+                next = keydown - 2*knum;
+
+            for (int i = 0; i < next; i++, sample++)
                 outbuf[sample] = nco(freq);
 
             for (int i = 0; i < knum; i++, sample++) {

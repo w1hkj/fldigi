@@ -627,6 +627,20 @@ static void cb_cntCWrisetime(Fl_Counter* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Choice *mnuQSKshape=(Fl_Choice *)0;
+
+static void cb_mnuQSKshape(Fl_Choice* o, void*) {
+  progdefaults.QSKshape = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnCWnarrow=(Fl_Check_Button *)0;
+
+static void cb_btnCWnarrow(Fl_Check_Button* o, void*) {
+  progdefaults.CWnarrow = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *btnQSK=(Fl_Check_Button *)0;
 
 static void cb_btnQSK(Fl_Check_Button* o, void*) {
@@ -2719,7 +2733,6 @@ an merging"));
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
           { tabCW = new Fl_Group(0, 50, 500, 320, _("CW"));
-            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 500, 320);
               tabsCW->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
@@ -2757,17 +2770,17 @@ an merging"));
                 cntCWrange->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.CWrange);
                 } // Fl_Counter* cntCWrange
-                { valCWrcvWPM = new Fl_Value_Output(40, 188, 35, 20);
+                { valCWrcvWPM = new Fl_Value_Output(70, 185, 35, 20);
                 valCWrcvWPM->color(FL_BACKGROUND2_COLOR);
                 valCWrcvWPM->callback((Fl_Callback*)cb_valCWrcvWPM);
                 } // Fl_Value_Output* valCWrcvWPM
-                { prgsCWrcvWPM = new Fl_Progress(75, 188, 255, 20);
+                { prgsCWrcvWPM = new Fl_Progress(105, 185, 250, 20);
                 prgsCWrcvWPM->tooltip(_("Tracked CW speed in WPM"));
                 prgsCWrcvWPM->color(FL_BACKGROUND_COLOR);
                 prgsCWrcvWPM->selection_color(FL_SELECTION_COLOR);
                 prgsCWrcvWPM->align(FL_ALIGN_CENTER);
                 } // Fl_Progress* prgsCWrcvWPM
-                { Fl_Box* o = new Fl_Box(330, 188, 70, 20, _("RX WPM"));
+                { Fl_Box* o = new Fl_Box(360, 185, 70, 20, _("RX WPM"));
                 o->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
                 } // Fl_Box* o
                 o->end();
@@ -2775,7 +2788,7 @@ an merging"));
                 { Fl_Group* o = new Fl_Group(5, 215, 490, 110, _("Transmit"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-                { Fl_Value_Slider* o = sldrCWxmtWPM = new Fl_Value_Slider(40, 248, 290, 20, _("TX WPM"));
+                { Fl_Value_Slider* o = sldrCWxmtWPM = new Fl_Value_Slider(20, 248, 400, 20, _("TX WPM"));
                 sldrCWxmtWPM->tooltip(_("My transmit CW WPM"));
                 sldrCWxmtWPM->type(1);
                 sldrCWxmtWPM->minimum(5);
@@ -2798,7 +2811,7 @@ an merging"));
                 cntCWdefWPM->align(FL_ALIGN_TOP);
                 o->value(progdefaults.defCWspeed);
                 } // Fl_Counter* cntCWdefWPM
-                { Fl_Counter* o = cntCWlowerlimit = new Fl_Counter(152, 294, 65, 20, _("Lower limit"));
+                { Fl_Counter* o = cntCWlowerlimit = new Fl_Counter(197, 294, 65, 20, _("Lower limit"));
                 cntCWlowerlimit->tooltip(_("No slower than this"));
                 cntCWlowerlimit->type(1);
                 cntCWlowerlimit->minimum(5);
@@ -2809,7 +2822,7 @@ an merging"));
                 cntCWlowerlimit->align(FL_ALIGN_TOP);
                 o->value(progdefaults.CWlowerlimit);
                 } // Fl_Counter* cntCWlowerlimit
-                { Fl_Counter* o = cntCWupperlimit = new Fl_Counter(265, 294, 65, 20, _("Upper limit"));
+                { Fl_Counter* o = cntCWupperlimit = new Fl_Counter(355, 294, 65, 20, _("Upper limit"));
                 cntCWupperlimit->tooltip(_("No faster than this"));
                 cntCWupperlimit->type(1);
                 cntCWupperlimit->minimum(25);
@@ -2827,7 +2840,7 @@ an merging"));
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("Timing and QSK"));
                 o->align(FL_ALIGN_TOP_LEFT);
                 o->hide();
-                { Fl_Group* o = new Fl_Group(5, 85, 490, 95, _("Timing"));
+                { Fl_Group* o = new Fl_Group(5, 85, 490, 120, _("Timing"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
                 { Fl_Counter* o = cntCWweight = new Fl_Counter(15, 114, 65, 20, _("Weight (%)"));
@@ -2841,7 +2854,7 @@ an merging"));
                 cntCWweight->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.CWweight);
                 } // Fl_Counter* cntCWweight
-                { Fl_Counter* o = cntCWdash2dot = new Fl_Counter(211, 114, 64, 20, _("Dash to dot ratio"));
+                { Fl_Counter* o = cntCWdash2dot = new Fl_Counter(240, 114, 64, 20, _("Dash to dot ratio"));
                 cntCWdash2dot->tooltip(_("Dash to dot ratio"));
                 cntCWdash2dot->type(1);
                 cntCWdash2dot->minimum(2.5);
@@ -2852,8 +2865,8 @@ an merging"));
                 cntCWdash2dot->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.CWdash2dot);
                 } // Fl_Counter* cntCWdash2dot
-                { Fl_Counter* o = cntCWrisetime = new Fl_Counter(15, 144, 65, 20, _("Edge"));
-                cntCWrisetime->tooltip(_("Leading and trailing edge risetimes (msec)"));
+                { Fl_Counter* o = cntCWrisetime = new Fl_Counter(240, 145, 65, 20, _("Edge timing"));
+                cntCWrisetime->tooltip(_("Leading and Trailing edge risetimes (msec)"));
                 cntCWrisetime->type(1);
                 cntCWrisetime->minimum(0);
                 cntCWrisetime->maximum(15);
@@ -2863,18 +2876,32 @@ an merging"));
                 cntCWrisetime->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.CWrisetime);
                 } // Fl_Counter* cntCWrisetime
+                { Fl_Choice* o = mnuQSKshape = new Fl_Choice(15, 144, 112, 20, _("Edge shape"));
+                mnuQSKshape->tooltip(_("Leading and Trailing edge shape"));
+                mnuQSKshape->down_box(FL_BORDER_BOX);
+                mnuQSKshape->callback((Fl_Callback*)cb_mnuQSKshape);
+                mnuQSKshape->align(FL_ALIGN_RIGHT);
+                o->add("Raised Cos|Expontial|Sine");
+                o->value(progdefaults.QSKshape);
+                } // Fl_Choice* mnuQSKshape
+                { Fl_Check_Button* o = btnCWnarrow = new Fl_Check_Button(15, 175, 225, 15, _("Edge decreases pulse width"));
+                btnCWnarrow->tooltip(_("Weight decreases with increasing edge timing"));
+                btnCWnarrow->down_box(FL_DOWN_BOX);
+                btnCWnarrow->callback((Fl_Callback*)cb_btnCWnarrow);
+                o->value(progdefaults.CWnarrow);
+                } // Fl_Check_Button* btnCWnarrow
                 o->end();
                 } // Fl_Group* o
-                { Fl_Group* o = new Fl_Group(5, 180, 490, 118, _("QSK"));
+                { Fl_Group* o = new Fl_Group(5, 217, 490, 118, _("QSK"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-                { Fl_Check_Button* o = btnQSK = new Fl_Check_Button(15, 208, 211, 20, _("QSK on right audio channel"));
+                { Fl_Check_Button* o = btnQSK = new Fl_Check_Button(15, 245, 211, 20, _("QSK on right audio channel"));
                 btnQSK->tooltip(_("Generate square wave signal on right channel"));
                 btnQSK->down_box(FL_DOWN_BOX);
                 btnQSK->callback((Fl_Callback*)cb_btnQSK);
                 o->value(progdefaults.QSK);
                 } // Fl_Check_Button* btnQSK
-                { Fl_Counter* o = cntPreTiming = new Fl_Counter(15, 238, 64, 20, _("Pre-keydown timing (ms)"));
+                { Fl_Counter* o = cntPreTiming = new Fl_Counter(15, 275, 64, 20, _("Pre-keydown timing (ms)"));
                 cntPreTiming->tooltip(_("Msec pre-keydown (+ is earlier in time)"));
                 cntPreTiming->type(1);
                 cntPreTiming->minimum(0);
@@ -2884,7 +2911,7 @@ an merging"));
                 cntPreTiming->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.CWpre);
                 } // Fl_Counter* cntPreTiming
-                { Fl_Counter* o = cntPostTiming = new Fl_Counter(15, 268, 64, 20, _("Post-keydown timing (ms)"));
+                { Fl_Counter* o = cntPostTiming = new Fl_Counter(15, 305, 64, 20, _("Post-keydown timing (ms)"));
                 cntPostTiming->tooltip(_("Msec post-keydown (+ is earlier in time)"));
                 cntPostTiming->type(1);
                 cntPostTiming->minimum(-20);
@@ -2894,13 +2921,13 @@ an merging"));
                 cntPostTiming->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.CWpre);
                 } // Fl_Counter* cntPostTiming
-                { Fl_Check_Button* o = btnQSKadjust = new Fl_Check_Button(290, 240, 150, 20, _("Send continuous"));
+                { Fl_Check_Button* o = btnQSKadjust = new Fl_Check_Button(290, 275, 150, 20, _("Send continuous"));
                 btnQSKadjust->tooltip(_("Send a continuous stream of test characters"));
                 btnQSKadjust->down_box(FL_DOWN_BOX);
                 btnQSKadjust->callback((Fl_Callback*)cb_btnQSKadjust);
                 o->value(progdefaults.QSKadjust);
                 } // Fl_Check_Button* btnQSKadjust
-                { Fl_Choice* o = mnuTestChar = new Fl_Choice(290, 210, 41, 20, _("Test char"));
+                { Fl_Choice* o = mnuTestChar = new Fl_Choice(290, 245, 41, 20, _("Test char"));
                 mnuTestChar->tooltip(_("Test character for QSK adjustment"));
                 mnuTestChar->down_box(FL_BORDER_BOX);
                 mnuTestChar->callback((Fl_Callback*)cb_mnuTestChar);
@@ -3128,6 +3155,7 @@ an merging"));
             tabOlivia->end();
           } // Fl_Group* tabOlivia
           { tabPSK = new Fl_Group(0, 50, 500, 320, _("PSK"));
+            tabPSK->hide();
             { tabsPSK = new Fl_Tabs(0, 50, 500, 320);
               tabsPSK->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));

@@ -127,6 +127,7 @@ protected:
 	int lastsym;					// last symbol sent
 	double risetime;			    // leading/trailing edge rise time (msec)
 	int knum;						// number of samples on edges
+	int QSKshape;                   // leading/trailing edge shape factor
 	double qskbuf[OUTBUFSIZE];		// signal array for qsk drive
 	double qskphase;				//
 	bool firstelement;
