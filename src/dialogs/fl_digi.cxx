@@ -245,6 +245,14 @@ int w_Xchg      = wf1 - 2*w_fm7 - w_fm5 - 2*pad - 2 * w_SerNo;
 int qh = Hqsoframe / 2;
 int rig_control_width = FREQWIDTH + 4;
 
+int IMAGE_WIDTH;
+int Hwfall;
+int HNOM;
+// WNOM must be large enough to contain ALL of the horizontal widgets 
+// when the main dialog is initially created.
+int WNOM = 650;//progStatus.mainW ? progStatus.mainW : WMIN;
+int Wwfall;
+
 int					altMacros = 0;
 bool				bSaveFreqList = false;
 string				strMacroName[NUMMACKEYS];
@@ -264,12 +272,6 @@ Fl_Pixmap 			*closepixmap = 0;
 #if !defined(__APPLE__) && !defined(__CYGWIN__)
 Pixmap				fldigi_icon_pixmap;
 #endif
-
-int IMAGE_WIDTH;
-int Hwfall;
-int HNOM;
-int WNOM;
-int Wwfall;
 
 Fl_Menu_Item *getMenuItem(const char *caption, Fl_Menu_Item* submenu = 0);
 bool clean_exit(void);
@@ -2163,7 +2165,6 @@ void create_fl_digi_main() {
 	Hwfall = progdefaults.wfheight;
 	HNOM = DEFAULT_HNOM;
 
-	WNOM = progStatus.mainW ? progStatus.mainW : WMIN;
 	if (progdefaults.docked_scope)	
 		Wwfall = WNOM - 2 * BEZEL - Hwfall + 24;
 	else
