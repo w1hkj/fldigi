@@ -531,20 +531,15 @@ void cw::makeshape()
 	if (knum > KNUM) 
 		knum = KNUM;
 
-	for (int i = 0; i < knum; i++) {
-	    switch (QSKshape) {
-	        case 0:
+    switch (QSKshape) {
+        case 1: // blackman 
+            for (int i = 0; i < knum; i++)
+                keyshape[i] = (0.42 - 0.50 * cos(M_PI * i/ knum) + 0.08 * cos(2 * M_PI * i / knum));
+            break;
+        case 0: // raised cosine (hanning)
+        default:
+            for (int i = 0; i < knum; i++)
                 keyshape[i] = 0.5 * (1.0 - cos (M_PI * i / knum));
-                break;
-            case 1:
-                keyshape[i] = 1.0 - exp(-3.0 * i / knum);
-                break;
-            case 2:
-                keyshape[i] = sin (0.5 * M_PI * i / knum);
-                break;
-            default:
-                keyshape[i] = 0.5 * (1.0 - cos (M_PI * i / knum));
-        }
     }
 }
 

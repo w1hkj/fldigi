@@ -694,7 +694,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
             } {
               Fl_Group {} {
                 label General open
-                xywh {0 75 500 295} align 5
+                xywh {0 75 500 295} align 5 hide
               } {
                 Fl_Group {} {
                   label Receive open
@@ -777,7 +777,7 @@ cntCWlowerlimit->maximum(o->value()-20);}
               }
               Fl_Group {} {
                 label {Timing and QSK} open
-                xywh {0 75 500 295} align 5 hide
+                xywh {0 75 500 295} align 5
               } {
                 Fl_Group {} {
                   label Timing open
@@ -808,8 +808,8 @@ progdefaults.changed = true;}
                     label {Edge shape}
                     callback {progdefaults.QSKshape = o->value();
 progdefaults.changed = true;} open
-                    tooltip {Leading and Trailing edge shape} xywh {15 144 112 20} down_box BORDER_BOX align 8
-                    code0 {o->add("Raised Cos|Expontial|Sine");}
+                    tooltip {Raised cosine = Hanning} xywh {15 144 112 20} down_box BORDER_BOX align 8
+                    code0 {o->add("Hanning|Blackman");}
                     code1 {o->value(progdefaults.QSKshape);}
                   } {}
                   Fl_Check_Button btnCWnarrow {

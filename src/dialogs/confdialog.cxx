@@ -2737,6 +2737,7 @@ an merging"));
               tabsCW->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
                 o->align(FL_ALIGN_TOP_LEFT);
+                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 130, _("Receive"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2839,7 +2840,6 @@ an merging"));
               } // Fl_Group* o
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("Timing and QSK"));
                 o->align(FL_ALIGN_TOP_LEFT);
-                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 120, _("Timing"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2877,11 +2877,11 @@ an merging"));
                 o->value(progdefaults.CWrisetime);
                 } // Fl_Counter* cntCWrisetime
                 { Fl_Choice* o = mnuQSKshape = new Fl_Choice(15, 144, 112, 20, _("Edge shape"));
-                mnuQSKshape->tooltip(_("Leading and Trailing edge shape"));
+                mnuQSKshape->tooltip(_("Raised cosine = Hanning"));
                 mnuQSKshape->down_box(FL_BORDER_BOX);
                 mnuQSKshape->callback((Fl_Callback*)cb_mnuQSKshape);
                 mnuQSKshape->align(FL_ALIGN_RIGHT);
-                o->add("Raised Cos|Expontial|Sine");
+                o->add("Hanning|Blackman");
                 o->value(progdefaults.QSKshape);
                 } // Fl_Choice* mnuQSKshape
                 { Fl_Check_Button* o = btnCWnarrow = new Fl_Check_Button(15, 175, 225, 15, _("Edge decreases pulse width"));
