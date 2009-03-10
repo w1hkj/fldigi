@@ -77,7 +77,7 @@ LOG_SET_SOURCE(debug::LOG_SPOTTER);
 // Ignore reports that are less than DUP_INTERVAL seconds older than
 // a previously sent report for the same callsign and frequency band.
 // Sent reports are also garbage-collected after DUP_INTERVAL seconds.
-#define DUP_INTERVAL 3600
+#define DUP_INTERVAL 1800
 
 // The first TEMPLATE_THRESHOLD packets will contain the long templates;
 // the next TEMPLATE_THRESHOLD packets will include the short templates
