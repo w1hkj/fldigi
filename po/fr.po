@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fldigi 3.04AZ\n"
 "Report-Msgid-Bugs-To: w1hkj AT w1hkj DOT com\n"
-"POT-Creation-Date: 2009-03-09 08:13-0500\n"
+"POT-Creation-Date: 2009-03-10 14:53-0500\n"
 "PO-Revision-Date: 2008-11-25 07:16+0000\n"
 "Last-Translator: Stephane Fillod <fillods@users.sourceforge.net>\n"
 "Language-Team: French\n"
@@ -1492,81 +1492,81 @@ msgstr ""
 msgid "CW"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:2740
+#: src/dialogs/confdialog.cxx:2741
 #, fuzzy
 msgid "Receive"
 msgstr "Transmet/Reçoit"
 
-#: src/dialogs/confdialog.cxx:2743
+#: src/dialogs/confdialog.cxx:2744
 msgid "Filter bandwidth"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:2744
+#: src/dialogs/confdialog.cxx:2745
 msgid "CW dsp filter bandwidth"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:2755
+#: src/dialogs/confdialog.cxx:2756
 msgid "Tracking"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:2756
+#: src/dialogs/confdialog.cxx:2757
 msgid "Automatic Rx speed tracking"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:2762
+#: src/dialogs/confdialog.cxx:2763
 msgid "Tracking range (WPM)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:2763
+#: src/dialogs/confdialog.cxx:2764
 msgid "Range +/- wpm"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:2778
+#: src/dialogs/confdialog.cxx:2779
 msgid "Tracked CW speed in WPM"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:2783
+#: src/dialogs/confdialog.cxx:2784
 msgid "RX WPM"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:2788
+#: src/dialogs/confdialog.cxx:2789
 #, fuzzy
 msgid "Transmit"
 msgstr "Transmet RSid"
 
-#: src/dialogs/confdialog.cxx:2791
+#: src/dialogs/confdialog.cxx:2792
 msgid "TX WPM"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:2792
+#: src/dialogs/confdialog.cxx:2793
 msgid "My transmit CW WPM"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:2803
+#: src/dialogs/confdialog.cxx:2804
 msgid "Default"
 msgstr "Défaut"
 
-#: src/dialogs/confdialog.cxx:2804
+#: src/dialogs/confdialog.cxx:2805
 msgid "The default CW speed"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:2814
+#: src/dialogs/confdialog.cxx:2815
 msgid "Lower limit"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:2815
+#: src/dialogs/confdialog.cxx:2816
 msgid "No slower than this"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:2825
+#: src/dialogs/confdialog.cxx:2826
 msgid "Upper limit"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:2826
+#: src/dialogs/confdialog.cxx:2827
 msgid "No faster than this"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:2840
+#: src/dialogs/confdialog.cxx:2841
 msgid "Timing and QSK"
 msgstr ""
 
@@ -1599,7 +1599,7 @@ msgid "Edge shape"
 msgstr ""
 
 #: src/dialogs/confdialog.cxx:2880
-msgid "Leading and Trailing edge shape"
+msgid "Raised cosine = Hanning"
 msgstr ""
 
 #: src/dialogs/confdialog.cxx:2887
