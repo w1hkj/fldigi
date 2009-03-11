@@ -34,14 +34,16 @@ use IO::Handle;
 use Getopt::Std;
 use Data::Dumper;
 use Time::HiRes qw(gettimeofday tv_interval usleep);
+use LWP;
 
 ################################################################################
 
-our $VERSION = "0.36";
+our $VERSION = "0.37";
 our $progname = (split(/\//, $0))[-1];
 our $histfile = $ENV{'HOME'} . "/.fldigi/shell-history";
 
 our $client;
+our $ua;
 
 our $term;
 our $OUT = \*STDOUT;
@@ -306,34 +308,59 @@ sub source
     close(IN);
 }
 
+sub pskrep_qsy
+{
+    if (!defined($ua)) {
+	$ua = LWP::UserAgent->new;
+	$ua->agent($progname . "/" . $VERSION . " ");
+    }
+
+    my $url = 'http://pskreporter.info/cgi-bin/psk-freq.pl';
+    my $idx = 0;
+    foreach (@_) {
+	$url .= '?grid=' . $_ if (m/[A-R]{2}/i);
+	$idx = $_ if (/^\d+$/);
+    }
+
+    my $r = $ua->request(HTTP::Request->new(GET => $url));
+    if (!$r->is_success()) {
+	print STDERR "HTTP::Request error: ", $r->status_line, "\n";
+	return;
+    }
+    print "pskreporter response='", $r->content, "'\n" if ($debug);
+
+    my @freqs = grep(!/^#/, split(/\n/, $r->content));
+    if ($idx <= $#freqs && $freqs[$idx] =~ m/^(\d{5,})/) {
+	execute("main.set_frequency $1");
+    }
+}
+
 ################################################################################
 
 %opts = ( "c" => "", "d" => 0, "u" => "http://localhost:7362/RPC2" );
 
-%commands = ( "help"      => [ "n:n", "Print this command help", \&help ],
-	      "poll"      => [ "s:i", "Poll for RX text every ``i'' seconds (def=1)", \&recv_text ],
-	      "send"      => [ "n:s", "Send text, one line at a time", \&send_line ],
-	      "sendchar"  => [ "n:s", "Send text, one character at a time", \&send_char ],
-	      "exit"      => [ "n:n", "Exit the shell", sub { exit(0) } ],
-	      "eval"      => [ "s:s", "Evaluate Perl code", sub { evaluate "@_"; } ],
-	      "history"   => [ "s:n", "Print command history", sub { print_history($OUT, 0); } ],
-	      "debug"     => [ "n:n", "Toggle debugging output", sub { $debug = (@_ ? $_[0] : !$debug); } ],
-	      "reinit"    => [ "n:n", "Rebuild command list", sub { build_cmds(); setup_compl(); } ],
-	      "modems"    => [ "s:n", "List all modem names", \&list_modem_names ],
-              "recvtext"  => [ "s:n", "Get all received text", \&get_recv_text ],
-              "sendfile"  => [ "n:s", "Send text from file ``s''", \&send_file ],
-              "sendstr"   => [ "n:s", "Send string ``s''", sub { send_line(@_); } ],
-	      "source"    => [ "n:s", "Read commands from file ``s''", sub { source(@_) } ],
-              "wait"      => [ "n:s", "Wait for trx state to become ``s''", \&wait_for_state ],
-              "time"      => [ "s:s", "Time a command", \&time_cmd ]
-	    );
+%commands = (
+    "debug"     => [ "n:n", "Toggle debugging output", sub { $debug = (@_ ? $_[0] : !$debug); } ],
+    "eval"      => [ "s:s", "Evaluate Perl code", sub { evaluate "@_"; } ],
+    "exit"      => [ "n:n", "Exit the shell", sub { exit(0) } ],
+    "help"      => [ "n:n", "Print this command help", \&help ],
+    "history"   => [ "s:n", "Print command history", sub { print_history($OUT, 0); } ],
+    "modems"    => [ "s:n", "List all modem names", \&list_modem_names ],
+    "poll"      => [ "s:i", "Poll for new received text every ``i'' seconds (def=1)", \&recv_text ],
+    "pskrqsy"   => [ "n:si", "QSY to ``i''th best frequency for grid ``s''", \&pskrep_qsy ],
+    "recvtext"  => [ "s:n", "Get all received text", \&get_recv_text ],
+    "reinit"    => [ "n:n", "Rebuild command list", sub { build_cmds(); setup_compl(); } ],
+    "send"      => [ "n:s", "Send text, one line at a time", \&send_line ],
+    "sendchar"  => [ "n:s", "Send text, one character at a time", \&send_char ],
+    "sendfile"  => [ "n:s", "Send text from file ``s''", \&send_file ],
+    "sendstr"   => [ "n:s", "Send string ``s''", sub { send_line(@_); } ],
+    "source"    => [ "n:s", "Read commands from file ``s''", sub { source(@_) } ],
+    "time"      => [ "s:s", "Time a command", \&time_cmd ],
+    "wait"      => [ "n:s", "Wait for trx state to become ``s''", \&wait_for_state ]
+);
 
 %encoders = ( "b" => \&RPC_BOOLEAN, "6" => \&RPC_BASE64,
 	      "d" => \&RPC_DOUBLE, "s" => \&RPC_STRING );
-
-# our %abbrev = ( "int" => "i", "boolean" => "b", "double" => "d", "string" => "s", "base64" => "6",
-# 		"nil" => "n", "aray" => "A", "struct" => "S"
-# 	      );
 
 ################################################################################
 
