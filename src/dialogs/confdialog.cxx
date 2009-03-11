@@ -1488,6 +1488,7 @@ static void cb_chkHamlibRTSCTSflow(Fl_Check_Button* o, void*) {
   progdefaults.HamlibRTSCTSflow = o->value();
 if (o->value() == 1) {
   chkHamlibRTSplus->value(0);
+  progdefaults.HamlibRTSplus = false;
   chkHamlibXONXOFFflow->value(0);
   progdefaults.HamlibXONXOFFflow = false;
 }
