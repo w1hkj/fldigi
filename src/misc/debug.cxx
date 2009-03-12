@@ -97,7 +97,7 @@ void debug::start(const char* filename)
 	slider->callback(slider_cb);
 
 	text = new FTextLog(pad, slider->h()+pad, window->w()-2*pad, window->h()-slider->h()-2*pad, 0);
-	text->textfont(FL_SCREEN);
+	text->textfont(FL_COURIER);
 	text->textsize(FL_NORMAL_SIZE);
 	window->resizable(text);
 	window->end();

@@ -289,7 +289,7 @@ Fl_Double_Window* createViewer() {
 	    	inpSeek = new Fl_Input2(50, 5, 200, 25, _("Find: ")); 
     		inpSeek->callback((Fl_Callback*)cb_Seek);
     		inpSeek->when(FL_WHEN_CHANGED);
-			inpSeek->textfont(FL_SCREEN);
+			inpSeek->textfont(FL_COURIER);
     		inpSeek->value("CQ");
 //			chkBeep = new Fl_Light_Button(inpSeek->x() + border, inpSeek->y(), 60, inpSeek->h(), "Beep");
     		bx = new Fl_Box(250, 5, 200, 25);

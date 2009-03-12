@@ -79,7 +79,7 @@ FTextBase::FTextBase(int x, int y, int w, int h, const char *l)
 {
 	oldw = olds = -1;
 	oldf = (Fl_Font)-1;
-	textfont(FL_SCREEN);
+	textfont(FL_COURIER);
 	textsize(FL_NORMAL_SIZE);
 	textcolor(FL_FOREGROUND_COLOR);
 
@@ -116,6 +116,30 @@ int FTextBase::handle(int event)
 void FTextBase::setFont(Fl_Font f, int attr)
 {
 	set_style(attr, f, textsize(), textcolor(), SET_FONT);
+
+	if (Font_Browser::fixed_width(f))
+		return;
+
+	// Check if we should generate a warning message
+	bool* warn = 0;
+	const char* fn = Fl::get_font_name(f);
+	if (this == ReceiveText) {
+		warn = &progdefaults.RxFontWarn;
+		if (progdefaults.RxFontName != fn)
+			*warn = true;
+	}
+	else if (this == TransmitText) {
+		warn = &progdefaults.TxFontWarn;
+		if (progdefaults.TxFontName != fn)
+			*warn = true;
+	}
+	if (warn && *warn) {
+		add(Fl::get_font_name(f), XMIT);
+		add(" is a variable width font.\n", XMIT);
+		add("Line wrapping with a variable width font may be\n"
+		    "too slow. Consider using a fixed width font.\n\n", XMIT);
+		*warn = false;
+	}
 }
 
 void FTextBase::setFontSize(int s, int attr)
@@ -391,11 +415,11 @@ int FTextBase::reset_wrap_col(void)
 
 void FTextBase::reset_styles(int set)
 {
-	set_style(NATTR, FL_SCREEN, FL_NORMAL_SIZE, FL_FOREGROUND_COLOR, set);
-	set_style(XMIT, FL_SCREEN, FL_NORMAL_SIZE, FL_RED, set);
-	set_style(CTRL, FL_SCREEN, FL_NORMAL_SIZE, FL_DARK_GREEN, set);
-	set_style(SKIP, FL_SCREEN, FL_NORMAL_SIZE, FL_BLUE, set);
-	set_style(ALTR, FL_SCREEN, FL_NORMAL_SIZE, FL_DARK_MAGENTA, set);
+	set_style(NATTR, FL_COURIER, FL_NORMAL_SIZE, FL_FOREGROUND_COLOR, set);
+	set_style(XMIT, FL_COURIER, FL_NORMAL_SIZE, FL_RED, set);
+	set_style(CTRL, FL_COURIER, FL_NORMAL_SIZE, FL_DARK_GREEN, set);
+	set_style(SKIP, FL_COURIER, FL_NORMAL_SIZE, FL_BLUE, set);
+	set_style(ALTR, FL_COURIER, FL_NORMAL_SIZE, FL_DARK_MAGENTA, set);
 }
 
 // ----------------------------------------------------------------------------

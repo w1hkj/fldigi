@@ -280,7 +280,7 @@
         ELEM_(bool, MuteInput, "MUTEINPUT", true)                                       \
         ELEM_(double, TxMonitorLevel, "TXMONITORLEVEL", 0.5)                            \
 /* Waterfall palette */                                                                 \
-		ELEM_(std::string, PaletteName, "PALETTENAME", "default.pal")                   \
+	ELEM_(std::string, PaletteName, "PALETTENAME", "default.pal")                   \
         ELEM_(RGB, cfgpal0, "PALETTE0", { 0,0,0 })                                      \
         ELEM_(RGB, cfgpal1, "PALETTE1", { 0,0,136 })                                    \
         ELEM_(RGB, cfgpal2, "PALETTE2", { 0,19,198 })                                   \
@@ -298,11 +298,13 @@
         ELEM_(RGB, btnFkeyTextColor, "FKEYTEXTCOLOR", { 255, 255, 255 })                \
 /* RX / TX / Waterfall text widgets */                                                  \
         ELEM_(std::string, RxFontName, "RXFONTNAME", "")                                \
-        ELEM_(Fl_Font, RxFontnbr, "RXFONTNBR", FL_SCREEN)                               \
+        ELEM_(bool, RxFontWarn, "RXFONTWARN", true)                                     \
+        ELEM_(Fl_Font, RxFontnbr, "RXFONTNBR", FL_COURIER)                              \
         ELEM_(int, RxFontsize, "RXFONTSIZE", 16)                                        \
         ELEM_(Fl_Color, RxFontcolor, "RXFNTCOLOR", FL_BLACK)                            \
         ELEM_(std::string, TxFontName, "TXFONTNAME", "")                                \
-        ELEM_(Fl_Font, TxFontnbr, "TXFONTNBR", FL_SCREEN)                               \
+        ELEM_(bool, TxFontWarn, "TXFONTWARN", true)                                     \
+        ELEM_(Fl_Font, TxFontnbr, "TXFONTNBR", FL_COURIER)                              \
         ELEM_(int, TxFontsize, "TXFONTSIZE", 16)                                        \
         ELEM_(Fl_Color, TxFontcolor, "TXFNTCOLOR", FL_BLACK)                            \
         ELEM_(RGB, RxColor, "RXFONTCOLOR", { 255, 242, 190 })                           \
@@ -312,7 +314,7 @@
         ELEM_(Fl_Color, SKIPcolor, "SKIPCOLOR", FL_BLUE)                                \
         ELEM_(Fl_Color, ALTRcolor, "ALTRCOLOR", FL_DARK_MAGENTA)                        \
         ELEM_(std::string, WaterfallFontName, "WATERFALLFONTNAME", "")                  \
-        ELEM_(Fl_Font, WaterfallFontnbr, "WATERFALLFONTNBR", FL_SCREEN)                 \
+        ELEM_(Fl_Font, WaterfallFontnbr, "WATERFALLFONTNBR", FL_COURIER)                \
         ELEM_(int, WaterfallFontsize, "WATERFALLFONTSIZE", 12)                          \
         ELEM_(std::string, ui_scheme, "UISCHEME", "gtk+")                               \
         ELEM_(bool, wf_audioscale, "WFAUDIOSCALE", false)				\

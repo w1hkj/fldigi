@@ -19,8 +19,6 @@ decl {\#include "font_browser.h"} {public global
 
 decl {\#include "rigdialog.h"} {} 
 
-decl {\#include <FL/fl_ask.H>} {} 
-
 decl {\#include <FL/Fl_Color_Chooser.H>} {} 
 decl {\#include <FL/fl_show_colormap.H>} {} 
 
@@ -66,10 +64,6 @@ Function {cbRxFontBrowser(Fl_Widget* w, void* arg)} {open private return_type vo
 
     fb->hide();
 
-    if (!Font_Browser::fixed_width(font))
-        fl_alert("Line wrapping with a variable width font may be\\n"
-		 "too slow. Consider using a fixed width font.");
-
     progdefaults.changed = true;} {}
 } 
 
@@ -94,10 +88,6 @@ Function {cbTxFontBrowser(Fl_Widget* w, void* arg)} {open private return_type vo
     TransmitText->setFontColor(progdefaults.TxFontcolor, FTextBase::RECV);
 
     fb->hide();
-
-    if (!Font_Browser::fixed_width(font))
-        fl_alert("Line wrapping with a variable width font may be\\n"
-		 "too slow. Consider using a fixed width font.");
 
     progdefaults.changed = true;} {}
 } 

@@ -6,7 +6,6 @@
 #include "fl_digi.h"
 #include "configuration.h"
 #include "rigdialog.h"
-#include <FL/fl_ask.H>
 #include <FL/Fl_Color_Chooser.H>
 #include <FL/fl_show_colormap.H>
 
@@ -48,10 +47,6 @@ static void cbRxFontBrowser(Fl_Widget* w, void* arg) {
 
     fb->hide();
 
-    if (!Font_Browser::fixed_width(font))
-        fl_alert("Line wrapping with a variable width font may be\n"
-		 "too slow. Consider using a fixed width font.");
-
     progdefaults.changed = true;
 }
 
@@ -75,10 +70,6 @@ static void cbTxFontBrowser(Fl_Widget* w, void* arg) {
     TransmitText->setFontColor(progdefaults.TxFontcolor, FTextBase::RECV);
 
     fb->hide();
-
-    if (!Font_Browser::fixed_width(font))
-        fl_alert("Line wrapping with a variable width font may be\n"
-		 "too slow. Consider using a fixed width font.");
 
     progdefaults.changed = true;
 }
