@@ -29,11 +29,11 @@
 
 #include <config.h>
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include <cstring>
 
-#include <sys/time.h>
+#include "digiscope.h"
+#include "waterfall.h"
+#include "fl_digi.h"
 
 #include "cw.h"
 #include "misc.h"
@@ -42,7 +42,8 @@
 #include "status.h"
 #include "debug.h"
 
-LOG_SET_SOURCE(debug::LOG_MODEM);
+#define	DEC_RATIO	16
+#define CW_FIRLEN   64
 
 void cw::tx_init(SoundBase *sc)
 {
@@ -58,9 +59,10 @@ void cw::rx_init()
 	smpl_ctr = 0;				
 	cw_rr_current = 0;			
 	agc_peak = 0;	
-	set_scope_mode(Digiscope::SCOPE);
+    set_scope_mode(Digiscope::SCOPE);
 	put_MODEstatus(mode);
 	usedefaultWPM = false;
+	scope_clear = true;
 }
 
 void cw::init()
@@ -124,7 +126,7 @@ cw::cw() : modem()
 	cwfilter->init_lowpass (CW_FIRLEN, DEC_RATIO, lp);
 	
 	bitfilter = new Cmovavg(8);
-	bitfilterlen = (int)(samplerate / frequency / 2);
+	bitfilterlen = (int)(samplerate / frequency / 4);
 	bitfilterlen = bitfilterlen < 2 ? 2 : bitfilterlen;
 	bitfilter->setLength(bitfilterlen);
 
@@ -152,7 +154,6 @@ void cw::sync_parameters()
 		
 	cw_send_dash_length = 3 * cw_send_dot_length;
 	nusymbollen = (samplerate * 12) / (progdefaults.CWspeed * 10);
-//	(int)(1.0 * samplerate * cw_send_dot_length / USECS_PER_SEC);
 
 	if (symbollen != nusymbollen
 	    || risetime != progdefaults.CWrisetime ||
@@ -162,7 +163,7 @@ void cw::sync_parameters()
 		symbollen = nusymbollen;
 		makeshape();
 	}
-	int len = (int)(samplerate / frequency / 2);
+	int len = (int)(samplerate / frequency / 4);
 	len = len < 2 ? 2 : len;
 	if (bitfilterlen != len) {
 		bitfilterlen = len;
@@ -256,18 +257,31 @@ void cw::update_Status()
 //For CW this is an o scope pattern that shows the cw data stream.
 //=======================================================================
 //
+
+static int clrcount = 16;
 void cw::update_syncscope()
 {
 	int j;
 
 	for (int i = 0; i < pipesize; i++) {
 		j = (i + pipeptr) % pipesize;
-		scopedata[i] = 0.1 + 0.8 * pipe[j] / agc_peak;
+		scopedata[i] = 0.1 + 0.6 * pipe[j] / agc_peak;
 	}
 	set_scope(scopedata, pipesize, false);
 	scopedata.next(); // change buffers
+	clrcount = 16;
 	put_cwRcvWPM(cw_receive_speed);
 	update_Status();
+}
+
+void cw::clear_syncscope()
+{
+    if (--clrcount) return;
+    for (int i = 0; i < pipesize; i++)
+        scopedata[i] = 0;
+    set_scope(scopedata, pipesize, false);
+    scopedata.next();
+    clrcount = 16;
 }
 
 
@@ -322,8 +336,8 @@ int cw::rx_process(const double *buf, int len)
 // save correlation amplitude value for the sync scope
 			pipe[pipeptr] = value;
 			pipeptr = (pipeptr + 1) % pipesize;
-			if (pipeptr == pipesize - 1)
-				update_syncscope();
+//			if (pipeptr == pipesize - 1)
+//				update_syncscope();
 
 			if (!progStatus.sqlonoff || metric > progStatus.sldrSquelchValue ) {
 // upward trend means tone starting 
@@ -336,9 +350,11 @@ int cw::rx_process(const double *buf, int len)
 			if (handle_event(CW_QUERY_EVENT, &c) == CW_SUCCESS) {
 				while (*c)
 					put_rx_char(*c++);
-			}
+                update_syncscope();
+            }
 		}
 	}
+    clear_syncscope();
 
 	return 0;
 }

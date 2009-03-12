@@ -29,10 +29,8 @@
 #ifndef _CW_H
 #define _CW_H
 
-//#include "complex.h"
 #include "modem.h"
 #include "filters.h"
-//#include "morse.h"
 #include "mbuffer.h"
 
 #define	CWSampleRate	8000
@@ -40,8 +38,9 @@
 #define KNUM 			128
 
 // decimation ratio for the receiver 
-#define	DEC_RATIO	8		
-#define CW_FIRLEN   128      
+//#define	DEC_RATIO	8
+//#define CW_FIRLEN 32		
+//#define CW_FIRLEN   128      
 //#define CW_FIRLEN	  256
 //#define CW_FIRLEN   512
 // Limits on values of CW send and timing parameters 
@@ -106,6 +105,7 @@ protected:
 	mbuffer<double, CWMaxSymLen, 2> scopedata;
 	int pipeptr;
 	int pipesize;
+	bool scope_clear;
 	
 // user configurable data - local copy passed in from gui
 	int cw_speed;
@@ -154,6 +154,7 @@ protected:
 	inline double nco(double freq);
 	inline double qsknco();
 	void	update_syncscope();
+	void    clear_syncscope();
 	void	update_Status();
 	void	sync_parameters();
 	int		handle_event(int cw_event, const char **c);
