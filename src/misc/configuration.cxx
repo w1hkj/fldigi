@@ -377,19 +377,17 @@ int configuration::setDefaults()
 	valDominoEX_PATHS->value(DOMINOEX_PATHS);
 	valDomCWI->value(DomCWI);
 
-	for (size_t i = 0; i < sizeof(btnPTT)/sizeof(*btnPTT); i++) {
-		btnPTT[i]->value(0);
-		btnPTT[i]->activate();
-	}
-	btnPTT[btnPTTis]->value(1);
+    btnMEMMAPptt->value(MEMMAPptt);
+    btnRigCatCMDptt->value(RigCatCMDptt);
+    btnTTYptt->value(TTYptt);
+    
 #if USE_HAMLIB
 	mnuSideband->add("Rig mode");
 	mnuSideband->add("Always LSB");
 	mnuSideband->add("Always USB");
 	mnuSideband->value(HamlibSideband);
-	btnPTT[1]->activate();
-	chkUSEHAMLIB->activate();
-	inpRIGdev->show();
+    btnHamlibCMDptt->value(HamlibCMDptt);
+    inpRIGdev->show();
 	mnuBaudRate->show();
 	cboHamlibRig->show();
 	cboHamlibRig->value(HamRigName.c_str());
@@ -406,23 +404,18 @@ int configuration::setDefaults()
 	if(chkUSEMEMMAPis) {
 		chkUSEMEMMAP->value(1); 
 		chkUSEHAMLIB->value(0); chkUSERIGCAT->value(0); chkUSEXMLRPC->value(0);
-		btnPTT[1]->deactivate(); btnPTT[2]->activate(); btnPTT[3]->deactivate();
 	} else if (chkUSEHAMLIBis) {
 		chkUSEHAMLIB->value(1);
 		chkUSEMEMMAP->value(0); chkUSERIGCAT->value(0);  chkUSEXMLRPC->value(0);
-		btnPTT[1]->activate(); btnPTT[2]->deactivate(); btnPTT[3]->deactivate();
 	} else if (chkUSERIGCATis) {
 		chkUSERIGCAT->value(1);
 		chkUSEMEMMAP->value(0); chkUSEHAMLIB->value(0); chkUSEXMLRPC->value(0);
-		btnPTT[1]->deactivate(); btnPTT[2]->deactivate(); btnPTT[3]->activate();
 	} else if (chkUSEXMLRPCis) {
 		chkUSEXMLRPC->value(1);
 		chkUSEMEMMAP->value(0); chkUSEHAMLIB->value(0); chkUSERIGCAT->value(0);
-		btnPTT[1]->deactivate(); btnPTT[2]->deactivate(); btnPTT[3]->deactivate();
 	} else {
 		chkUSEMEMMAP->value(0); chkUSEHAMLIB->value(0); 
 		chkUSERIGCAT->value(0);	chkUSEHAMLIB->value(0); chkUSEXMLRPC->value(0);
-		btnPTT[1]->deactivate(); btnPTT[2]->deactivate(); btnPTT[3]->deactivate();
 	}
 
 	inpRIGdev->value(HamRigDevice.c_str());
@@ -535,6 +528,18 @@ int configuration::setDefaults()
 
 	wf->setcolors();
 	setColorButtons();
+	
+#if HAVE_UHROUTER
+    btnUseUHrouterPTT->show();
+#else
+    btnUseUHrouterPTT->hide();
+#endif
+
+#if HAVE_PARPORT
+    btnUsePPortPTT->show();
+#else
+    btnUsePPortPTT->hide();
+#endif
 
 	return 1;
 }
@@ -571,12 +576,9 @@ void configuration::initInterface()
 	rigCAT_close();
 //		MilliSleep(100);
 
-	btnPTTis = (btnPTT[0]->value() ? 0 :
-		    btnPTT[1]->value() ? 1 :
-		    btnPTT[2]->value() ? 2 :
-		    btnPTT[3]->value() ? 3 :
-		    btnPTT[4]->value() ? 4 : 
-		    btnPTT[5]->value() ? 5 : 0); // default is None
+    MEMMAPptt = btnMEMMAPptt->value();
+    RigCatCMDptt = btnRigCatCMDptt->value();
+    TTYptt = btnTTYptt->value();
 
 	RTSptt = btnRTSptt->value();
 	DTRptt = btnDTRptt->value();
@@ -587,6 +589,7 @@ void configuration::initInterface()
 
 #if USE_HAMLIB
 	chkUSEHAMLIBis = chkUSEHAMLIB->value();
+     HamlibCMDptt = btnHamlibCMDptt->value();
 #endif
 	chkUSEMEMMAPis = chkUSEMEMMAP->value();
 	chkUSERIGCATis = chkUSERIGCAT->value();
@@ -608,7 +611,6 @@ void configuration::initInterface()
 
 	if (chkUSEMEMMAPis) {// start the memory mapped i/o thread
 		if (rigMEM_init()) {
-			btnPTT[2]->activate();
 			wf->setQSY(1);
 			if (docked_rig_control)
 				qsoFreqDisp->activate();
@@ -624,7 +626,7 @@ void configuration::initInterface()
 		}
 #if USE_HAMLIB
 	} else if (chkUSEHAMLIBis) { // start the hamlib thread
-		if (hamlib_init(btnPTTis == 1 ? true : false)) {
+		if (hamlib_init(true)) {
 			wf->USB(true);
 			wf->setQSY(1);
 			if (docked_rig_control)
@@ -644,7 +646,17 @@ void configuration::initInterface()
 			qsoFreqDisp->activate();
 	}
 
-	push2talk->reset(static_cast<PTT::ptt_t>(btnPTTis));
+    if (HamlibCMDptt && chkUSEHAMLIBis) 
+        push2talk->reset(PTT::PTT_HAMLIB);
+    else if (MEMMAPptt && chkUSEMEMMAPis) 
+        push2talk->reset(PTT::PTT_MEMMAP);
+    else if ((RigCatCMDptt || RigCatRTSptt || RigCatDTRptt) && chkUSERIGCATis)
+        push2talk->reset(PTT::PTT_RIGCAT);
+    else if (TTYptt)
+    	push2talk->reset(PTT::PTT_TTY);
+    else
+        push2talk->reset(PTT::PTT_NONE);
+    	
 	wf->setRefLevel();
 	wf->setAmpSpan();
 	cntLowFreqCutoff->value(LowFreqCutoff);

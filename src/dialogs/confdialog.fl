@@ -9,7 +9,11 @@ decl {\#include <config.h>} {}
 
 decl {\#include <FL/Fl_Tooltip.H>} {} 
 
+decl {\#include <FL/filename.H>} {} 
+
 decl {\#include "main.h"} {} 
+
+decl {\#include "fl_digi.h"} {} 
 
 decl {\#include "soundconf.h"} {} 
 
@@ -22,7 +26,8 @@ decl {\#include "modem.h"} {public
 decl {\#include "configuration.h"} {public
 } 
 
-decl {\#include "combo.h"} {} 
+decl {\#include "combo.h"} {public
+} 
 
 decl {\#include "colorsfonts.h"} {} 
 
@@ -39,7 +44,7 @@ decl {\#include "Viewer.h"} {}
 decl {\#include "pskrep.h"} {global
 } 
 
-decl {\#include "flinput2.h"} {global
+decl {\#include "flinput2.h"} {public
 } 
 
 decl {\#include "logsupport.h"} {} 
@@ -76,8 +81,8 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
-        xywh {0 25 500 345} when 1
+        callback {progdefaults.changed = true;} open
+        xywh {0 25 500 345} when 1 hide
       } {
         Fl_Group {} {
           label Station open
@@ -1395,96 +1400,98 @@ progdefaults.changed = true;}
       }
       Fl_Group tabRig {
         label Rig open
-        xywh {0 25 500 345} hide
+        xywh {0 25 500 345}
       } {
         Fl_Tabs tabsRig {open
           xywh {0 25 500 345} selection_color 50
         } {
           Fl_Group {} {
             label {Hardware PTT} open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
-            Fl_Round_Button {btnPTT[0]} {
-              label {No H/W PTT available}
-              callback {btnPTT[1]->value(0);
-btnPTT[2]->value(0);
-btnPTT[3]->value(0);
-btnPTT[4]->value(0);
-btnPTT[5]->value(0);
-o->value(1);
-btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;}
-              xywh {45 68 165 20} down_box DIAMOND_DOWN_BOX value 1 selection_color 1
-            }
             Fl_Group grpHWPTT {open
-              xywh {5 140 490 190} box ENGRAVED_FRAME
+              xywh {5 100 490 190} box ENGRAVED_FRAME
             } {
               Fl_Input_Choice inpTTYdev {
                 label {Device:}
                 callback {btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;} open
-                tooltip {Select serial port} xywh {200 183 150 22}
+                tooltip {Select serial port} xywh {200 143 150 22}
               } {}
               Fl_Round_Button btnRTSptt {
                 label {Use RTS}
                 callback {btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;}
-                tooltip {RTS is ptt signal line} xywh {147 223 85 20} down_box DOWN_BOX
+                tooltip {RTS is ptt signal line} xywh {147 183 85 20} down_box DOWN_BOX
               }
               Fl_Round_Button btnRTSplusV {
                 label {RTS = +V}
                 callback {btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;}
-                tooltip {Initial voltage on RTS} xywh {262 223 100 20} down_box DOWN_BOX
+                tooltip {Initial voltage on RTS} xywh {262 183 100 20} down_box DOWN_BOX
               }
               Fl_Round_Button btnDTRptt {
                 label {Use DTR}
                 callback {btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;}
-                tooltip {DTR is ptt signal line} xywh {147 253 85 20} down_box DOWN_BOX
+                tooltip {DTR is ptt signal line} xywh {147 213 85 20} down_box DOWN_BOX
               }
               Fl_Round_Button btnDTRplusV {
                 label {DTR = +V}
                 callback {btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;}
-                tooltip {Initial voltage on DTR} xywh {262 253 100 20} down_box DOWN_BOX
+                tooltip {Initial voltage on DTR} xywh {262 213 100 20} down_box DOWN_BOX
               }
               Fl_Button btnInitHWPTT {
                 label Initialize
                 callback {progdefaults.initInterface();
 o->labelcolor(FL_FOREGROUND_COLOR);
 progdefaults.changed = true;}
-                tooltip {Initialize the H/W PTT interface} xywh {188 291 113 24}
+                tooltip {Initialize the H/W PTT interface} xywh {188 251 113 24}
               }
-              Fl_Round_Button {btnPTT[4]} {
+              Fl_Round_Button btnTTYptt {
                 label {Use separate serial port PTT}
-                callback {if (o->value() == 1) {
-btnPTT[0]->value(0);
-btnPTT[1]->value(0);
-btnPTT[2]->value(0);
-btnPTT[3]->value(0);
-btnPTT[5]->value(0);
-btnRigCatRTSptt->value(0);
-btnRigCatDTRptt->value(0);
-}
+                callback {progdefaults.TTYptt=o->value();
+
 btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;}
-                tooltip {Serial port H/W used for PTT} xywh {145 151 220 20} down_box DIAMOND_DOWN_BOX selection_color 1
+                tooltip {Serial port H/W used for PTT} xywh {145 111 220 20} down_box DIAMOND_DOWN_BOX selection_color 1
               }
             }
-            Fl_Check_Button btnPTTrightchannel {
-              label {Enable right audio channel PTT tone}
-              callback {progdefaults.PTTrightchannel = o->value();
+            Fl_Group {} {open
+              xywh {5 65 490 32} box ENGRAVED_FRAME
+            } {
+              Fl_Check_Button btnPTTrightchannel {
+                label {Enable right audio channel PTT tone}
+                callback {progdefaults.PTTrightchannel = o->value();
 progdefaults.changed = true;}
-              tooltip {Can be used in lieu of or in addition to other PTT types} xywh {45 105 275 20} down_box DOWN_BOX
-              code0 {o->value(progdefaults.PTTrightchannel);}
+                tooltip {Can be used in lieu of or in addition to other PTT types} xywh {130 69 275 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.PTTrightchannel);}
+              }
+            }
+            Fl_Group {} {open selected
+              xywh {5 292 490 72} box ENGRAVED_FRAME
+            } {
+              Fl_Check_Button btnUsePPortPTT {
+                label {use parallel port for PTT}
+                callback {progdefaults.UsePPortPTT=o->value();
+progdefaults.changed = true;}
+                xywh {154 304 191 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.UsePPortPTT);}
+              }
+              Fl_Check_Button btnUseUHrouterPTT {
+                label {use UHrouter for PTT}
+                callback {progdefaults.UseUHrouterPTT = o->value();
+progdefaults.changed = true;}
+                xywh {154 330 191 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.UseUHrouterPTT);}
+              }
             }
           }
           Fl_Group {} {
@@ -1497,27 +1504,11 @@ progdefaults.changed = true;}
   chkUSEHAMLIB->value(0);
   chkUSEMEMMAP->value(0);
   chkUSEXMLRPC->value(0);
-  btnPTT[1]->value(0);
-  btnPTT[1]->deactivate();
-  btnPTT[2]->value(0);
-  btnPTT[2]->deactivate();
-  btnPTT[3]->activate();
-  btnPTT[5]->activate();
   progdefaults.chkUSEMEMMAPis = false;
   progdefaults.chkUSEHAMLIBis = false;
   progdefaults.chkUSERIGCATis = true;
   progdefaults.chkUSEXMLRPCis = false;
   } else {
-  btnPTT[0]->value(1);
-  btnPTT[3]->value(0);
-  btnPTT[3]->deactivate();
-  btnPTT[5]->value(0);
-  btnPTT[5]->deactivate();
-  btnRigCatRTSptt->value(0);
-  btnRigCatDTRptt->value(0);
-  btnRigCatRTSplus->value(0);
-  btnRigCatDTRplus->value(0);
-  chkRigCatRTSCTSflow->value(0);
   progdefaults.chkUSERIGCATis = false;
   }
 btnInitRIGCAT->labelcolor(FL_RED);
@@ -1526,7 +1517,7 @@ progdefaults.changed = true;}
               tooltip {RigCAT used for rig control} xywh {195 60 110 20} down_box DOWN_BOX
             }
             Fl_Group grpRigCAT {open
-              xywh {5 85 490 142} box ENGRAVED_FRAME
+              xywh {5 83 490 279} box ENGRAVED_FRAME
             } {
               Fl_Output txtXmlRigFilename {
                 label {Rig description file:}
@@ -1555,7 +1546,7 @@ progdefaults.changed = true;} open
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 progdefaults.changed = true;} open
-                tooltip {Pick baud rate from list} xywh {386 147 99 22} down_box BORDER_BOX
+                tooltip {Pick baud rate from list} xywh {386 154 99 22} down_box BORDER_BOX
                 code0 {o->add(szBaudRates);}
                 code1 {o->value(progdefaults.XmlRigBaudrate);}
               } {}
@@ -1566,7 +1557,7 @@ btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 progdefaults.changed = true;}
                 tooltip {Number of  times to resend
-command before giving up} xywh {15 148 75 20} type Simple align 1 minimum 1 maximum 10 step 1 value 5
+command before giving up} xywh {15 150 75 20} type Simple align 1 minimum 1 maximum 10 step 1 value 5
                 code0 {o->value(progdefaults.RigCatRetries);}
               }
               Fl_Counter cntRigCatTimeout {
@@ -1575,7 +1566,7 @@ command before giving up} xywh {15 148 75 20} type Simple align 1 minimum 1 maxi
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 progdefaults.changed = true;}
-                tooltip {Time between retires is msec} xywh {153 148 75 20} type Simple align 1 minimum 2 maximum 200 step 1 value 10
+                tooltip {Time between retires is msec} xywh {153 155 75 20} type Simple align 1 minimum 2 maximum 200 step 1 value 10
                 code0 {o->value(progdefaults.RigCatTimeout);}
               }
               Fl_Counter cntRigCatWait {
@@ -1584,7 +1575,7 @@ progdefaults.changed = true;}
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 progdefaults.changed = true;}
-                tooltip {Millseconds between sequential commands} xywh {15 175 75 20} type Simple align 8 minimum 0 maximum 100 step 1 value 5
+                tooltip {Millseconds between sequential commands} xywh {15 185 75 20} type Simple align 8 minimum 0 maximum 100 step 1 value 5
                 code0 {o->value(progdefaults.RigCatWait);}
               }
               Fl_Button btnInitRIGCAT {
@@ -1592,7 +1583,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.initInterface();
 o->labelcolor(FL_FOREGROUND_COLOR);
 progdefaults.changed = true;}
-                tooltip {Initialize RigCAT interface} xywh {372 193 113 24}
+                tooltip {Initialize RigCAT interface} xywh {365 321 113 24}
               }
               Fl_Check_Button btnRigCatEcho {
                 label {Commands are echoed}
@@ -1600,65 +1591,55 @@ progdefaults.changed = true;}
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 progdefaults.changed = true;}
-                tooltip {Rig or interface echos serial data} xywh {74 201 192 22} down_box DOWN_BOX
+                tooltip {Rig or interface echos serial data} xywh {50 216 192 22} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RigCatECHO);}
               }
-            }
-            Fl_Round_Button {btnPTT[3]} {
-              label {PTT via CAT command}
-              callback {if (o->value()== 1) {
-btnPTT[0]->value(0);
-btnPTT[1]->value(0);
-btnPTT[2]->value(0);
-btnPTT[4]->value(0);
-btnPTT[5]->value(0);
-btnRigCatRTSptt->value(0);
-btnRigCatDTRptt->value(0);
-  }
+              Fl_Round_Button btnRigCatCMDptt {
+                label {CAT command for PTT}
+                callback {progdefaults.RigCatCMDptt=o->value();
+if (o->value()== 1) {
+  btnRigCatRTSptt->value(0);
+  btnRigCatDTRptt->value(0);
+  progdefaults.RigCatRTSptt = false;
+  progdefaults.RigCatDTRptt = false;
+}
+  
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw();
 progdefaults.changed = true;}
-              tooltip {PTT is a CAT command (not hardware)} xywh {20 232 180 20} down_box DIAMOND_DOWN_BOX selection_color 1 deactivate
-            }
-            Fl_Group grpRigCATPTT {open
-              xywh {5 256 490 100} box ENGRAVED_FRAME
-            } {
+                tooltip {PTT is a CAT command (not hardware)} xywh {256 217 207 20} down_box ROUND_DOWN_BOX selection_color 1
+                code0 {o->value(progdefaults.RigCatCMDptt);}
+              }
               Fl_Round_Button btnRigCatRTSptt {
                 label {Toggle RTS for PTT}
-                callback {if (o->value() == 1) {
+                callback {progdefaults.RigCatRTSptt = o->value();
+if (o->value() == 1) {
   btnRigCatDTRptt->value(0);
-  btnPTT[0]->value(0);
-  btnPTT[1]->value(0);
-  btnPTT[2]->value(0);
-  btnPTT[3]->value(0);
-  btnPTT[4]->value(0);
-  progdefaults.RigCatRTSptt = true;
+  btnRigCatCMDptt->value(0);
   progdefaults.RigCatDTRptt = false;
-} else
-  progdefaults.RigCatRTSptt = false;
+  progdefaults.RigCatCMDptt = false;
+}
+
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 progdefaults.changed = true;}
-                tooltip {RTS is ptt line} xywh {74 268 160 20} down_box ROUND_DOWN_BOX
+                tooltip {RTS is ptt line} xywh {50 250 160 20} down_box ROUND_DOWN_BOX
                 code0 {o->value(progdefaults.RigCatRTSptt);}
               }
               Fl_Round_Button btnRigCatDTRptt {
                 label {Toggle DTR for PTT}
-                callback {if (o->value() == 1) {
+                callback {progdefaults.RigCatDTRptt=o->value();
+if (o->value() == 1) {
   btnRigCatRTSptt->value(0);
-  btnPTT[0]->value(0);
-  btnPTT[1]->value(0);
-  btnPTT[2]->value(0);
-  btnPTT[3]->value(0);
-  btnPTT[4]->value(0);
-  progdefaults.RigCatDTRptt = true;
+  btnRigCatCMDptt->value(0);
   progdefaults.RigCatRTSptt = false;
-} else
-  progdefaults.RigCatDTRptt = false;
+  progdefaults.RigCatCMDptt = false;
+}
+
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 progdefaults.changed = true;}
-                tooltip {DTR is ptt line} xywh {249 268 160 20} down_box ROUND_DOWN_BOX
+                tooltip {DTR is ptt line} xywh {256 250 160 20} down_box ROUND_DOWN_BOX
                 code0 {o->value(progdefaults.RigCatDTRptt);}
               }
               Fl_Check_Button btnRigCatRTSplus {
@@ -1667,7 +1648,7 @@ progdefaults.changed = true;}
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 progdefaults.changed = true;}
-                tooltip {Initial state of RTS} xywh {74 298 100 20} down_box DOWN_BOX
+                tooltip {Initial state of RTS} xywh {50 285 100 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RigCatRTSplus);}
               }
               Fl_Check_Button btnRigCatDTRplus {
@@ -1676,7 +1657,7 @@ progdefaults.changed = true;}
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 progdefaults.changed = true;}
-                tooltip {Initial state of DTR} xywh {250 298 100 20} down_box DOWN_BOX
+                tooltip {Initial state of DTR} xywh {256 285 100 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RigCatDTRplus);}
               }
               Fl_Check_Button chkRigCatRTSCTSflow {
@@ -1685,59 +1666,34 @@ progdefaults.changed = true;}
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 progdefaults.changed = true;}
-                tooltip {Rig uses RTS/CTS handshake} xywh {74 328 170 20} down_box DOWN_BOX
+                tooltip {Rig uses RTS/CTS handshake} xywh {50 320 170 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RigCatRTSCTSflow);}
               }
-            }
-            Fl_Round_Button {btnPTT[5]} {
-              label {PTT via serial port}
-              callback {if (o->value()== 1) {
-btnPTT[0]->value(0);
-btnPTT[1]->value(0);
-btnPTT[2]->value(0);
-btnPTT[3]->value(0);
-btnPTT[4]->value(0);
-  }
-btnInitRIGCAT->labelcolor(FL_RED);
-btnInitRIGCAT->redraw();
-progdefaults.changed = true;}
-              tooltip {PTT uses serial port RTS or DTR} xywh {275 232 180 20} down_box DIAMOND_DOWN_BOX selection_color 1 deactivate
             }
           }
           Fl_Group tabHamlib {
             label Hamlib open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Check_Button chkUSEHAMLIB {
               label {Use Hamlib}
-              callback {if (o->value() == 1) {
+              callback {progdefaults.chkUSEHAMLIBis = o->value();
+if (o->value() == 1) {
   chkUSEMEMMAP->value(0);
   chkUSERIGCAT->value(0);
   chkUSEXMLRPC->value(0);
-  btnPTT[3]->value(0);
-  btnPTT[3]->deactivate();
-  btnPTT[5]->value(0);
-  btnPTT[5]->deactivate();
-  btnPTT[2]->value(0);
-  btnPTT[2]->deactivate();
-  btnPTT[1]->activate();
   progdefaults.chkUSEMEMMAPis = false;
-  progdefaults.chkUSEHAMLIBis = true;
   progdefaults.chkUSERIGCATis = false;
   progdefaults.chkUSEXMLRPCis = false;
-  } else {
-  btnPTT[0]->value(1);
-  btnPTT[1]->value(0);
-  btnPTT[1]->deactivate();
-  progdefaults.chkUSEHAMLIBis = false;
-  }
+}
+  
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw();
 progdefaults.changed = true;}
               tooltip {Hamlib used for rig control} xywh {195 60 100 20} down_box DOWN_BOX
             }
             Fl_Group grpHamlib {open
-              xywh {5 85 490 166} box ENGRAVED_FRAME
+              xywh {5 85 490 277} box ENGRAVED_FRAME
             } {
               Fl_Box cboHamlibRig {
                 label {Rig:}
@@ -1754,7 +1710,7 @@ progdefaults.changed = true;}
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 progdefaults.changed = true;} open
-                tooltip {Serial port} xywh {341 95 144 22}
+                tooltip {Serial port} xywh {340 95 144 22}
                 code0 {o->value(progdefaults.HamRigDevice.c_str());}
               } {}
               Fl_Choice mnuBaudRate {
@@ -1763,7 +1719,7 @@ progdefaults.changed = true;} open
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 progdefaults.changed = true;} open
-                tooltip {Serial port baud rate} xywh {386 127 99 22} down_box BORDER_BOX
+                tooltip {Serial port baud rate} xywh {385 127 99 22} down_box BORDER_BOX
                 code0 {o->add(szBaudRates);}
                 code1 {o->value(progdefaults.HamRigBaudrate);}
               } {}
@@ -1802,7 +1758,7 @@ btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 progdefaults.changed = true;}
                 tooltip {Optional configuration
-in format: param=val ...} xywh {15 224 320 22} align 1
+in format: param=val ...} xywh {20 328 320 22} align 1
                 code0 {inpHamlibConfig->value(progdefaults.HamConfig.c_str());}
                 class Fl_Input2
               }
@@ -1811,42 +1767,32 @@ in format: param=val ...} xywh {15 224 320 22} align 1
                 callback {progdefaults.initInterface();
 o->labelcolor(FL_FOREGROUND_COLOR);
 progdefaults.changed = true;}
-                tooltip {Initialize hamlib interface} xywh {372 222 113 24}
+                tooltip {Initialize hamlib interface} xywh {371 327 113 24}
               }
               Fl_Choice mnuSideband {
                 label {Sideband:}
                 callback {progdefaults.HamlibSideband = o->value();
 progdefaults.changed = true;} open
                 tooltip {Force the rig sideband. Takes
-effect when rig mode changes.} xywh {341 175 144 22} down_box BORDER_BOX align 1
+effect when rig mode changes.} xywh {340 175 144 22} down_box BORDER_BOX align 1
               } {}
-            }
-            Fl_Round_Button {btnPTT[1]} {
-              label {PTT via Hamlib command}
-              callback {if (o->value() == 1) {
-btnPTT[0]->value(0);
-btnPTT[2]->value(0);
-btnPTT[3]->value(0);
-btnPTT[4]->value(0);
-btnPTT[5]->value(0);
-btnRigCatRTSptt->value(0);
-btnRigCatDTRptt->value(0);
-}
+              Fl_Round_Button btnHamlibCMDptt {
+                label {PTT via Hamlib command}
+                callback {progdefaults.HamlibCMDptt=o->value();
+
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 progdefaults.changed = true;}
-              tooltip {PTT is a hamlib command} xywh {163 258 200 20} down_box DIAMOND_DOWN_BOX selection_color 1 deactivate
-            }
-            Fl_Group grpHamlibPTT {open
-              xywh {5 285 490 80} box ENGRAVED_FRAME
-            } {
+                tooltip {PTT is a hamlib command} xywh {45 215 200 20} down_box DIAMOND_DOWN_BOX selection_color 1
+                code0 {o->value(progdefaults.HamlibCMDptt);}
+              }
               Fl_Check_Button btnHamlibDTRplus {
                 label {DTR +12}
                 callback {progdefaults.HamlibDTRplus = o->value();
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 progdefaults.changed = true;}
-                tooltip {Initial state of DTR} xywh {54 298 90 20} down_box DOWN_BOX
+                tooltip {Initial state of DTR} xywh {45 246 90 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.HamlibDTRplus);}
               }
               Fl_Check_Button chkHamlibRTSplus {
@@ -1854,19 +1800,17 @@ progdefaults.changed = true;}
                 callback {progdefaults.HamlibRTSplus = o->value();
 if (o->value() == 1) {
 chkHamlibRTSCTSflow->value(0);
-progdefaults.HamlibRTSCTSflow = false;
 }
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 progdefaults.changed = true;}
-                tooltip {Initial state of RTS} xywh {273 298 85 20} down_box DOWN_BOX
+                tooltip {Initial state of RTS} xywh {269 246 85 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.HamlibRTSplus);}
               }
               Fl_Check_Button chkHamlibRTSCTSflow {
                 label {RTS/CTS flow control}
                 callback {progdefaults.HamlibRTSCTSflow = o->value();
 if (o->value() == 1) {
-  chkHamlibRTSplus->value(0);
   progdefaults.HamlibRTSplus = false;
   chkHamlibXONXOFFflow->value(0);
   progdefaults.HamlibXONXOFFflow = false;
@@ -1874,7 +1818,7 @@ if (o->value() == 1) {
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 progdefaults.changed = true;}
-                tooltip {Rig requires RTS/CTS flow control} xywh {54 332 170 20} down_box DOWN_BOX
+                tooltip {Rig requires RTS/CTS flow control} xywh {45 280 170 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.HamlibRTSCTSflow);}
               }
               Fl_Check_Button chkHamlibXONXOFFflow {
@@ -1887,7 +1831,7 @@ if (o->value() == 1) {
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 progdefaults.changed = true;}
-                tooltip {Rig requires Xon/Xoff flow control} xywh {273 332 185 20} down_box DOWN_BOX
+                tooltip {Rig requires Xon/Xoff flow control} xywh {269 280 185 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.HamlibXONXOFFflow);}
               }
             }
@@ -1905,46 +1849,30 @@ progdefaults.changed = true;}
               }
               Fl_Check_Button chkUSEMEMMAP {
                 label {Use Memmap}
-                callback {if(o->value() == 1){
+                callback {progdefaults.chkUSEMEMMAPis = o->value();
+if(o->value() == 1){
   chkUSEHAMLIB->value(0);
   chkUSERIGCAT->value(0);
   chkUSEXMLRPC->value(0);
-  btnPTT[3]->value(0);
-  btnPTT[3]->deactivate();
-  btnPTT[1]->value(0);
-  btnPTT[1]->deactivate();
-  btnPTT[2]->activate();
-  progdefaults.chkUSEMEMMAPis = true;
   progdefaults.chkUSEHAMLIBis = false;
   progdefaults.chkUSERIGCATis = false;
   progdefaults.chkUSEXMLRPCis = false;
-  } else {
-  if (btnPTT[2]->value()==1)
-  	btnPTT[0]->value(1);
-  btnPTT[2]->value(0);
-  btnPTT[2]->deactivate();
-  progdefaults.chkUSEMEMMAPis = false;
-  }
+}
+  
 btnInitMEMMAP->labelcolor(FL_RED);
 btnInitMEMMAP->redraw_label();
 progdefaults.changed = true;}
                 tooltip {Rig control via memory mapped Kachina} xywh {160 147 120 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.chkUSEMEMMAPis);}
               }
-              Fl_Round_Button {btnPTT[2]} {
+              Fl_Round_Button btnMEMMAPptt {
                 label {Use Memmap PTT}
-                callback {if (o->value() == 1) {
-btnPTT[0]->value(0);
-btnPTT[1]->value(0);
-btnPTT[3]->value(0);
-btnPTT[4]->value(0);
-btnPTT[5]->value(0);
-btnRigCatRTSptt->value(0);
-btnRigCatDTRptt->value(0);
-}
+                callback {progdefaults.MEMMAPptt=o->value();
+
 btnInitMEMMAP->labelcolor(FL_RED);
 btnInitMEMMAP->redraw_label();
 progdefaults.changed = true;}
-                xywh {160 177 150 20} down_box DIAMOND_DOWN_BOX selection_color 1 deactivate
+                xywh {160 177 150 20} down_box DIAMOND_DOWN_BOX selection_color 1
               }
               Fl_Button btnInitMEMMAP {
                 label Initialize
@@ -1968,23 +1896,16 @@ progdefaults.changed = true;}
               }
               Fl_Check_Button chkUSEXMLRPC {
                 label {Use XML-RPC program}
-                callback {if(o->value() == 1){
+                callback {progdefaults.chkUSEXMLRPCis = o->value();
+if(o->value() == 1){
   chkUSEHAMLIB->value(0);
   chkUSERIGCAT->value(0);
   chkUSEMEMMAP->value(0);
-  btnPTT[0]->value(1);
-  btnPTT[1]->value(0);
-  btnPTT[2]->value(0);
-  btnPTT[3]->value(0);
-  btnPTT[4]->value(0);
-  btnPTT[5]->value(0);
   progdefaults.chkUSEMEMMAPis = false;
   progdefaults.chkUSEHAMLIBis = false;
   progdefaults.chkUSERIGCATis = false;
-  progdefaults.chkUSEXMLRPCis = true;
-  } else {
-  progdefaults.chkUSEXMLRPCis = false;
-  }
+}
+  
 btnInitXMLRPC->labelcolor(FL_RED);
 btnInitXMLRPC->redraw_label();
 progdefaults.changed = true;}

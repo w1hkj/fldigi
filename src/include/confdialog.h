@@ -6,6 +6,8 @@
 #include "globals.h"
 #include "modem.h"
 #include "configuration.h"
+#include "combo.h"
+#include "flinput2.h"
 extern Fl_Double_Window *dlgConfig; 
 void set_qrz_buttons(Fl_Button* b);
 #include <FL/Fl_Double_Window.H>
@@ -178,16 +180,19 @@ extern Fl_Value_Slider *valThorCWI;
 extern Fl_Counter *valTHOR_PATHS;
 extern Fl_Group *tabRig;
 extern Fl_Tabs *tabsRig;
-#include <FL/Fl_Round_Button.H>
 extern Fl_Group *grpHWPTT;
 #include <FL/Fl_Input_Choice.H>
 extern Fl_Input_Choice *inpTTYdev;
+#include <FL/Fl_Round_Button.H>
 extern Fl_Round_Button *btnRTSptt;
 extern Fl_Round_Button *btnRTSplusV;
 extern Fl_Round_Button *btnDTRptt;
 extern Fl_Round_Button *btnDTRplusV;
 extern Fl_Button *btnInitHWPTT;
+extern Fl_Round_Button *btnTTYptt;
 extern Fl_Check_Button *btnPTTrightchannel;
+extern Fl_Check_Button *btnUsePPortPTT;
+extern Fl_Check_Button *btnUseUHrouterPTT;
 extern Fl_Check_Button *chkUSERIGCAT;
 extern Fl_Group *grpRigCAT;
 #include <FL/Fl_Output.H>
@@ -200,13 +205,12 @@ extern Fl_Counter *cntRigCatTimeout;
 extern Fl_Counter *cntRigCatWait;
 extern Fl_Button *btnInitRIGCAT;
 extern Fl_Check_Button *btnRigCatEcho;
-extern Fl_Group *grpRigCATPTT;
+extern Fl_Round_Button *btnRigCatCMDptt;
 extern Fl_Round_Button *btnRigCatRTSptt;
 extern Fl_Round_Button *btnRigCatDTRptt;
 extern Fl_Check_Button *btnRigCatRTSplus;
 extern Fl_Check_Button *btnRigCatDTRplus;
 extern Fl_Check_Button *chkRigCatRTSCTSflow;
-extern Fl_Round_Button *btnPTT[6];
 extern Fl_Group *tabHamlib;
 extern Fl_Check_Button *chkUSEHAMLIB;
 extern Fl_Group *grpHamlib;
@@ -219,13 +223,14 @@ extern Fl_Counter *cntHamlibWait;
 extern Fl_Input2 *inpHamlibConfig;
 extern Fl_Button *btnInitHAMLIB;
 extern Fl_Choice *mnuSideband;
-extern Fl_Group *grpHamlibPTT;
+extern Fl_Round_Button *btnHamlibCMDptt;
 extern Fl_Check_Button *btnHamlibDTRplus;
 extern Fl_Check_Button *chkHamlibRTSplus;
 extern Fl_Check_Button *chkHamlibRTSCTSflow;
 extern Fl_Check_Button *chkHamlibXONXOFFflow;
 extern Fl_Group *grpMemmap;
 extern Fl_Check_Button *chkUSEMEMMAP;
+extern Fl_Round_Button *btnMEMMAPptt;
 extern Fl_Button *btnInitMEMMAP;
 extern Fl_Group *tabXMLRPC;
 extern Fl_Group *grpXMLRPC;

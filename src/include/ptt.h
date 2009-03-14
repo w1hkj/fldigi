@@ -51,15 +51,11 @@ struct termios;
 
 class PTT {
 public:
+	// The ptt_t enums must be defined even if the corresponding
+	// code is not compiled.  New tags go to the end of the list.
 	enum ptt_t {
 		PTT_INVALID = -1, PTT_NONE, PTT_HAMLIB, PTT_MEMMAP,
-		PTT_RIGCAT, PTT_TTY, PTT_RIGCAT_HW, 
-#if HAVE_PARPORT
-		PTT_PARPORT,
-#endif
-#if HAVE_UHROUTER
-		PTT_UHROUTER,
-#endif
+		PTT_RIGCAT, PTT_TTY, PTT_PARPORT, PTT_UHROUTER,
 	};
 
 	PTT(ptt_t dev = PTT_NONE);

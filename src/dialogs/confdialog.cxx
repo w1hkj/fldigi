@@ -4,9 +4,10 @@
 #include "confdialog.h"
 #include <config.h>
 #include <FL/Fl_Tooltip.H>
+#include <FL/filename.H>
 #include "main.h"
+#include "fl_digi.h"
 #include "soundconf.h"
-#include "combo.h"
 #include "colorsfonts.h"
 #include "waterfall.h"
 #include "rigxml.h"
@@ -14,7 +15,6 @@
 #include "icons.h"
 #include "Viewer.h"
 #include "pskrep.h"
-#include "flinput2.h"
 #include "logsupport.h"
 Fl_Double_Window *dlgConfig; 
 
@@ -1084,18 +1084,6 @@ Fl_Group *tabRig=(Fl_Group *)0;
 
 Fl_Tabs *tabsRig=(Fl_Tabs *)0;
 
-static void cb_btnPTT(Fl_Round_Button* o, void*) {
-  btnPTT[1]->value(0);
-btnPTT[2]->value(0);
-btnPTT[3]->value(0);
-btnPTT[4]->value(0);
-btnPTT[5]->value(0);
-o->value(1);
-btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;
-}
-
 Fl_Group *grpHWPTT=(Fl_Group *)0;
 
 Fl_Input_Choice *inpTTYdev=(Fl_Input_Choice *)0;
@@ -1146,16 +1134,11 @@ o->labelcolor(FL_FOREGROUND_COLOR);
 progdefaults.changed = true;
 }
 
-static void cb_btnPTT1(Fl_Round_Button* o, void*) {
-  if (o->value() == 1) {
-btnPTT[0]->value(0);
-btnPTT[1]->value(0);
-btnPTT[2]->value(0);
-btnPTT[3]->value(0);
-btnPTT[5]->value(0);
-btnRigCatRTSptt->value(0);
-btnRigCatDTRptt->value(0);
-}
+Fl_Round_Button *btnTTYptt=(Fl_Round_Button *)0;
+
+static void cb_btnTTYptt(Fl_Round_Button* o, void*) {
+  progdefaults.TTYptt=o->value();
+
 btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;
@@ -1168,6 +1151,20 @@ static void cb_btnPTTrightchannel(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnUsePPortPTT=(Fl_Check_Button *)0;
+
+static void cb_btnUsePPortPTT(Fl_Check_Button* o, void*) {
+  progdefaults.UsePPortPTT=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnUseUHrouterPTT=(Fl_Check_Button *)0;
+
+static void cb_btnUseUHrouterPTT(Fl_Check_Button* o, void*) {
+  progdefaults.UseUHrouterPTT = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *chkUSERIGCAT=(Fl_Check_Button *)0;
 
 static void cb_chkUSERIGCAT(Fl_Check_Button* o, void*) {
@@ -1175,27 +1172,11 @@ static void cb_chkUSERIGCAT(Fl_Check_Button* o, void*) {
   chkUSEHAMLIB->value(0);
   chkUSEMEMMAP->value(0);
   chkUSEXMLRPC->value(0);
-  btnPTT[1]->value(0);
-  btnPTT[1]->deactivate();
-  btnPTT[2]->value(0);
-  btnPTT[2]->deactivate();
-  btnPTT[3]->activate();
-  btnPTT[5]->activate();
   progdefaults.chkUSEMEMMAPis = false;
   progdefaults.chkUSEHAMLIBis = false;
   progdefaults.chkUSERIGCATis = true;
   progdefaults.chkUSEXMLRPCis = false;
   } else {
-  btnPTT[0]->value(1);
-  btnPTT[3]->value(0);
-  btnPTT[3]->deactivate();
-  btnPTT[5]->value(0);
-  btnPTT[5]->deactivate();
-  btnRigCatRTSptt->value(0);
-  btnRigCatDTRptt->value(0);
-  btnRigCatRTSplus->value(0);
-  btnRigCatDTRplus->value(0);
-  chkRigCatRTSCTSflow->value(0);
   progdefaults.chkUSERIGCATis = false;
   }
 btnInitRIGCAT->labelcolor(FL_RED);
@@ -1277,37 +1258,33 @@ btnInitRIGCAT->redraw_label();
 progdefaults.changed = true;
 }
 
-static void cb_btnPTT2(Fl_Round_Button* o, void*) {
-  if (o->value()== 1) {
-btnPTT[0]->value(0);
-btnPTT[1]->value(0);
-btnPTT[2]->value(0);
-btnPTT[4]->value(0);
-btnPTT[5]->value(0);
-btnRigCatRTSptt->value(0);
-btnRigCatDTRptt->value(0);
-  }
+Fl_Round_Button *btnRigCatCMDptt=(Fl_Round_Button *)0;
+
+static void cb_btnRigCatCMDptt(Fl_Round_Button* o, void*) {
+  progdefaults.RigCatCMDptt=o->value();
+if (o->value()== 1) {
+  btnRigCatRTSptt->value(0);
+  btnRigCatDTRptt->value(0);
+  progdefaults.RigCatRTSptt = false;
+  progdefaults.RigCatDTRptt = false;
+}
+  
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw();
 progdefaults.changed = true;
 }
 
-Fl_Group *grpRigCATPTT=(Fl_Group *)0;
-
 Fl_Round_Button *btnRigCatRTSptt=(Fl_Round_Button *)0;
 
 static void cb_btnRigCatRTSptt(Fl_Round_Button* o, void*) {
-  if (o->value() == 1) {
+  progdefaults.RigCatRTSptt = o->value();
+if (o->value() == 1) {
   btnRigCatDTRptt->value(0);
-  btnPTT[0]->value(0);
-  btnPTT[1]->value(0);
-  btnPTT[2]->value(0);
-  btnPTT[3]->value(0);
-  btnPTT[4]->value(0);
-  progdefaults.RigCatRTSptt = true;
+  btnRigCatCMDptt->value(0);
   progdefaults.RigCatDTRptt = false;
-} else
-  progdefaults.RigCatRTSptt = false;
+  progdefaults.RigCatCMDptt = false;
+}
+
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 progdefaults.changed = true;
@@ -1316,17 +1293,14 @@ progdefaults.changed = true;
 Fl_Round_Button *btnRigCatDTRptt=(Fl_Round_Button *)0;
 
 static void cb_btnRigCatDTRptt(Fl_Round_Button* o, void*) {
-  if (o->value() == 1) {
+  progdefaults.RigCatDTRptt=o->value();
+if (o->value() == 1) {
   btnRigCatRTSptt->value(0);
-  btnPTT[0]->value(0);
-  btnPTT[1]->value(0);
-  btnPTT[2]->value(0);
-  btnPTT[3]->value(0);
-  btnPTT[4]->value(0);
-  progdefaults.RigCatDTRptt = true;
+  btnRigCatCMDptt->value(0);
   progdefaults.RigCatRTSptt = false;
-} else
-  progdefaults.RigCatDTRptt = false;
+  progdefaults.RigCatCMDptt = false;
+}
+
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 progdefaults.changed = true;
@@ -1359,47 +1333,21 @@ btnInitRIGCAT->redraw_label();
 progdefaults.changed = true;
 }
 
-Fl_Round_Button *btnPTT[6]={(Fl_Round_Button *)0};
-
-static void cb_btnPTT3(Fl_Round_Button* o, void*) {
-  if (o->value()== 1) {
-btnPTT[0]->value(0);
-btnPTT[1]->value(0);
-btnPTT[2]->value(0);
-btnPTT[3]->value(0);
-btnPTT[4]->value(0);
-  }
-btnInitRIGCAT->labelcolor(FL_RED);
-btnInitRIGCAT->redraw();
-progdefaults.changed = true;
-}
-
 Fl_Group *tabHamlib=(Fl_Group *)0;
 
 Fl_Check_Button *chkUSEHAMLIB=(Fl_Check_Button *)0;
 
 static void cb_chkUSEHAMLIB(Fl_Check_Button* o, void*) {
-  if (o->value() == 1) {
+  progdefaults.chkUSEHAMLIBis = o->value();
+if (o->value() == 1) {
   chkUSEMEMMAP->value(0);
   chkUSERIGCAT->value(0);
   chkUSEXMLRPC->value(0);
-  btnPTT[3]->value(0);
-  btnPTT[3]->deactivate();
-  btnPTT[5]->value(0);
-  btnPTT[5]->deactivate();
-  btnPTT[2]->value(0);
-  btnPTT[2]->deactivate();
-  btnPTT[1]->activate();
   progdefaults.chkUSEMEMMAPis = false;
-  progdefaults.chkUSEHAMLIBis = true;
   progdefaults.chkUSERIGCATis = false;
   progdefaults.chkUSEXMLRPCis = false;
-  } else {
-  btnPTT[0]->value(1);
-  btnPTT[1]->value(0);
-  btnPTT[1]->deactivate();
-  progdefaults.chkUSEHAMLIBis = false;
-  }
+}
+  
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw();
 progdefaults.changed = true;
@@ -1484,22 +1432,15 @@ static void cb_mnuSideband(Fl_Choice* o, void*) {
 progdefaults.changed = true;
 }
 
-static void cb_btnPTT4(Fl_Round_Button* o, void*) {
-  if (o->value() == 1) {
-btnPTT[0]->value(0);
-btnPTT[2]->value(0);
-btnPTT[3]->value(0);
-btnPTT[4]->value(0);
-btnPTT[5]->value(0);
-btnRigCatRTSptt->value(0);
-btnRigCatDTRptt->value(0);
-}
+Fl_Round_Button *btnHamlibCMDptt=(Fl_Round_Button *)0;
+
+static void cb_btnHamlibCMDptt(Fl_Round_Button* o, void*) {
+  progdefaults.HamlibCMDptt=o->value();
+
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 progdefaults.changed = true;
 }
-
-Fl_Group *grpHamlibPTT=(Fl_Group *)0;
 
 Fl_Check_Button *btnHamlibDTRplus=(Fl_Check_Button *)0;
 
@@ -1516,7 +1457,6 @@ static void cb_chkHamlibRTSplus(Fl_Check_Button* o, void*) {
   progdefaults.HamlibRTSplus = o->value();
 if (o->value() == 1) {
 chkHamlibRTSCTSflow->value(0);
-progdefaults.HamlibRTSCTSflow = false;
 }
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
@@ -1528,7 +1468,6 @@ Fl_Check_Button *chkHamlibRTSCTSflow=(Fl_Check_Button *)0;
 static void cb_chkHamlibRTSCTSflow(Fl_Check_Button* o, void*) {
   progdefaults.HamlibRTSCTSflow = o->value();
 if (o->value() == 1) {
-  chkHamlibRTSplus->value(0);
   progdefaults.HamlibRTSplus = false;
   chkHamlibXONXOFFflow->value(0);
   progdefaults.HamlibXONXOFFflow = false;
@@ -1556,41 +1495,26 @@ Fl_Group *grpMemmap=(Fl_Group *)0;
 Fl_Check_Button *chkUSEMEMMAP=(Fl_Check_Button *)0;
 
 static void cb_chkUSEMEMMAP(Fl_Check_Button* o, void*) {
-  if(o->value() == 1){
+  progdefaults.chkUSEMEMMAPis = o->value();
+if(o->value() == 1){
   chkUSEHAMLIB->value(0);
   chkUSERIGCAT->value(0);
   chkUSEXMLRPC->value(0);
-  btnPTT[3]->value(0);
-  btnPTT[3]->deactivate();
-  btnPTT[1]->value(0);
-  btnPTT[1]->deactivate();
-  btnPTT[2]->activate();
-  progdefaults.chkUSEMEMMAPis = true;
   progdefaults.chkUSEHAMLIBis = false;
   progdefaults.chkUSERIGCATis = false;
   progdefaults.chkUSEXMLRPCis = false;
-  } else {
-  if (btnPTT[2]->value()==1)
-  	btnPTT[0]->value(1);
-  btnPTT[2]->value(0);
-  btnPTT[2]->deactivate();
-  progdefaults.chkUSEMEMMAPis = false;
-  }
+}
+  
 btnInitMEMMAP->labelcolor(FL_RED);
 btnInitMEMMAP->redraw_label();
 progdefaults.changed = true;
 }
 
-static void cb_btnPTT5(Fl_Round_Button* o, void*) {
-  if (o->value() == 1) {
-btnPTT[0]->value(0);
-btnPTT[1]->value(0);
-btnPTT[3]->value(0);
-btnPTT[4]->value(0);
-btnPTT[5]->value(0);
-btnRigCatRTSptt->value(0);
-btnRigCatDTRptt->value(0);
-}
+Fl_Round_Button *btnMEMMAPptt=(Fl_Round_Button *)0;
+
+static void cb_btnMEMMAPptt(Fl_Round_Button* o, void*) {
+  progdefaults.MEMMAPptt=o->value();
+
 btnInitMEMMAP->labelcolor(FL_RED);
 btnInitMEMMAP->redraw_label();
 progdefaults.changed = true;
@@ -1611,23 +1535,16 @@ Fl_Group *grpXMLRPC=(Fl_Group *)0;
 Fl_Check_Button *chkUSEXMLRPC=(Fl_Check_Button *)0;
 
 static void cb_chkUSEXMLRPC(Fl_Check_Button* o, void*) {
-  if(o->value() == 1){
+  progdefaults.chkUSEXMLRPCis = o->value();
+if(o->value() == 1){
   chkUSEHAMLIB->value(0);
   chkUSERIGCAT->value(0);
   chkUSEMEMMAP->value(0);
-  btnPTT[0]->value(1);
-  btnPTT[1]->value(0);
-  btnPTT[2]->value(0);
-  btnPTT[3]->value(0);
-  btnPTT[4]->value(0);
-  btnPTT[5]->value(0);
   progdefaults.chkUSEMEMMAPis = false;
   progdefaults.chkUSEHAMLIBis = false;
   progdefaults.chkUSERIGCATis = false;
-  progdefaults.chkUSEXMLRPCis = true;
-  } else {
-  progdefaults.chkUSEXMLRPCis = false;
-  }
+}
+  
 btnInitXMLRPC->labelcolor(FL_RED);
 btnInitXMLRPC->redraw_label();
 progdefaults.changed = true;
@@ -2152,6 +2069,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { tabOperator = new Fl_Group(0, 25, 500, 345, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -3503,61 +3421,71 @@ an merging"));
         tabModems->end();
       } // Fl_Group* tabModems
       { tabRig = new Fl_Group(0, 25, 500, 345, _("Rig"));
-        tabRig->hide();
         { tabsRig = new Fl_Tabs(0, 25, 500, 345);
           tabsRig->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hardware PTT"));
-            o->hide();
-            { btnPTT[0] = new Fl_Round_Button(45, 68, 165, 20, _("No H/W PTT available"));
-              btnPTT[0]->down_box(FL_DIAMOND_DOWN_BOX);
-              btnPTT[0]->value(1);
-              btnPTT[0]->selection_color((Fl_Color)1);
-              btnPTT[0]->callback((Fl_Callback*)cb_btnPTT);
-            } // Fl_Round_Button* btnPTT[0]
-            { grpHWPTT = new Fl_Group(5, 140, 490, 190);
+            { grpHWPTT = new Fl_Group(5, 100, 490, 190);
               grpHWPTT->box(FL_ENGRAVED_FRAME);
-              { inpTTYdev = new Fl_Input_Choice(200, 183, 150, 22, _("Device:"));
+              { inpTTYdev = new Fl_Input_Choice(200, 143, 150, 22, _("Device:"));
                 inpTTYdev->tooltip(_("Select serial port"));
                 inpTTYdev->callback((Fl_Callback*)cb_inpTTYdev);
               } // Fl_Input_Choice* inpTTYdev
-              { btnRTSptt = new Fl_Round_Button(147, 223, 85, 20, _("Use RTS"));
+              { btnRTSptt = new Fl_Round_Button(147, 183, 85, 20, _("Use RTS"));
                 btnRTSptt->tooltip(_("RTS is ptt signal line"));
                 btnRTSptt->down_box(FL_DOWN_BOX);
                 btnRTSptt->callback((Fl_Callback*)cb_btnRTSptt);
               } // Fl_Round_Button* btnRTSptt
-              { btnRTSplusV = new Fl_Round_Button(262, 223, 100, 20, _("RTS = +V"));
+              { btnRTSplusV = new Fl_Round_Button(262, 183, 100, 20, _("RTS = +V"));
                 btnRTSplusV->tooltip(_("Initial voltage on RTS"));
                 btnRTSplusV->down_box(FL_DOWN_BOX);
                 btnRTSplusV->callback((Fl_Callback*)cb_btnRTSplusV);
               } // Fl_Round_Button* btnRTSplusV
-              { btnDTRptt = new Fl_Round_Button(147, 253, 85, 20, _("Use DTR"));
+              { btnDTRptt = new Fl_Round_Button(147, 213, 85, 20, _("Use DTR"));
                 btnDTRptt->tooltip(_("DTR is ptt signal line"));
                 btnDTRptt->down_box(FL_DOWN_BOX);
                 btnDTRptt->callback((Fl_Callback*)cb_btnDTRptt);
               } // Fl_Round_Button* btnDTRptt
-              { btnDTRplusV = new Fl_Round_Button(262, 253, 100, 20, _("DTR = +V"));
+              { btnDTRplusV = new Fl_Round_Button(262, 213, 100, 20, _("DTR = +V"));
                 btnDTRplusV->tooltip(_("Initial voltage on DTR"));
                 btnDTRplusV->down_box(FL_DOWN_BOX);
                 btnDTRplusV->callback((Fl_Callback*)cb_btnDTRplusV);
               } // Fl_Round_Button* btnDTRplusV
-              { btnInitHWPTT = new Fl_Button(188, 291, 113, 24, _("Initialize"));
+              { btnInitHWPTT = new Fl_Button(188, 251, 113, 24, _("Initialize"));
                 btnInitHWPTT->tooltip(_("Initialize the H/W PTT interface"));
                 btnInitHWPTT->callback((Fl_Callback*)cb_btnInitHWPTT);
               } // Fl_Button* btnInitHWPTT
-              { btnPTT[4] = new Fl_Round_Button(145, 151, 220, 20, _("Use separate serial port PTT"));
-                btnPTT[4]->tooltip(_("Serial port H/W used for PTT"));
-                btnPTT[4]->down_box(FL_DIAMOND_DOWN_BOX);
-                btnPTT[4]->selection_color((Fl_Color)1);
-                btnPTT[4]->callback((Fl_Callback*)cb_btnPTT1);
-              } // Fl_Round_Button* btnPTT[4]
+              { btnTTYptt = new Fl_Round_Button(145, 111, 220, 20, _("Use separate serial port PTT"));
+                btnTTYptt->tooltip(_("Serial port H/W used for PTT"));
+                btnTTYptt->down_box(FL_DIAMOND_DOWN_BOX);
+                btnTTYptt->selection_color((Fl_Color)1);
+                btnTTYptt->callback((Fl_Callback*)cb_btnTTYptt);
+              } // Fl_Round_Button* btnTTYptt
               grpHWPTT->end();
             } // Fl_Group* grpHWPTT
-            { Fl_Check_Button* o = btnPTTrightchannel = new Fl_Check_Button(45, 105, 275, 20, _("Enable right audio channel PTT tone"));
-              btnPTTrightchannel->tooltip(_("Can be used in lieu of or in addition to other PTT types"));
-              btnPTTrightchannel->down_box(FL_DOWN_BOX);
-              btnPTTrightchannel->callback((Fl_Callback*)cb_btnPTTrightchannel);
-              o->value(progdefaults.PTTrightchannel);
-            } // Fl_Check_Button* btnPTTrightchannel
+            { Fl_Group* o = new Fl_Group(5, 65, 490, 32);
+              o->box(FL_ENGRAVED_FRAME);
+              { Fl_Check_Button* o = btnPTTrightchannel = new Fl_Check_Button(130, 69, 275, 20, _("Enable right audio channel PTT tone"));
+                btnPTTrightchannel->tooltip(_("Can be used in lieu of or in addition to other PTT types"));
+                btnPTTrightchannel->down_box(FL_DOWN_BOX);
+                btnPTTrightchannel->callback((Fl_Callback*)cb_btnPTTrightchannel);
+                o->value(progdefaults.PTTrightchannel);
+              } // Fl_Check_Button* btnPTTrightchannel
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(5, 292, 490, 72);
+              o->box(FL_ENGRAVED_FRAME);
+              { Fl_Check_Button* o = btnUsePPortPTT = new Fl_Check_Button(154, 304, 191, 15, _("use parallel port for PTT"));
+                btnUsePPortPTT->down_box(FL_DOWN_BOX);
+                btnUsePPortPTT->callback((Fl_Callback*)cb_btnUsePPortPTT);
+                o->value(progdefaults.UsePPortPTT);
+              } // Fl_Check_Button* btnUsePPortPTT
+              { Fl_Check_Button* o = btnUseUHrouterPTT = new Fl_Check_Button(154, 330, 191, 15, _("use UHrouter for PTT"));
+                btnUseUHrouterPTT->down_box(FL_DOWN_BOX);
+                btnUseUHrouterPTT->callback((Fl_Callback*)cb_btnUseUHrouterPTT);
+                o->value(progdefaults.UseUHrouterPTT);
+              } // Fl_Check_Button* btnUseUHrouterPTT
+              o->end();
+            } // Fl_Group* o
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("RigCAT"));
@@ -3568,7 +3496,7 @@ an merging"));
               chkUSERIGCAT->down_box(FL_DOWN_BOX);
               chkUSERIGCAT->callback((Fl_Callback*)cb_chkUSERIGCAT);
             } // Fl_Check_Button* chkUSERIGCAT
-            { grpRigCAT = new Fl_Group(5, 85, 490, 142);
+            { grpRigCAT = new Fl_Group(5, 83, 490, 279);
               grpRigCAT->box(FL_ENGRAVED_FRAME);
               { Fl_Output* o = txtXmlRigFilename = new Fl_Output(15, 107, 130, 22, _("Rig description file:"));
                 txtXmlRigFilename->tooltip(_("Use Open to select descriptor file"));
@@ -3585,14 +3513,14 @@ an merging"));
                 inpXmlRigDevice->callback((Fl_Callback*)cb_inpXmlRigDevice);
                 o->value(progdefaults.XmlRigDevice.c_str());
               } // Fl_Input_Choice* inpXmlRigDevice
-              { Fl_Choice* o = mnuXmlRigBaudrate = new Fl_Choice(386, 147, 99, 22, _("Baud rate:"));
+              { Fl_Choice* o = mnuXmlRigBaudrate = new Fl_Choice(386, 154, 99, 22, _("Baud rate:"));
                 mnuXmlRigBaudrate->tooltip(_("Pick baud rate from list"));
                 mnuXmlRigBaudrate->down_box(FL_BORDER_BOX);
                 mnuXmlRigBaudrate->callback((Fl_Callback*)cb_mnuXmlRigBaudrate);
                 o->add(szBaudRates);
                 o->value(progdefaults.XmlRigBaudrate);
               } // Fl_Choice* mnuXmlRigBaudrate
-              { Fl_Counter* o = cntRigCatRetries = new Fl_Counter(15, 148, 75, 20, _("Retries"));
+              { Fl_Counter* o = cntRigCatRetries = new Fl_Counter(15, 150, 75, 20, _("Retries"));
                 cntRigCatRetries->tooltip(_("Number of  times to resend\ncommand before giving up"));
                 cntRigCatRetries->type(1);
                 cntRigCatRetries->minimum(1);
@@ -3603,7 +3531,7 @@ an merging"));
                 cntRigCatRetries->align(FL_ALIGN_TOP);
                 o->value(progdefaults.RigCatRetries);
               } // Fl_Counter* cntRigCatRetries
-              { Fl_Counter* o = cntRigCatTimeout = new Fl_Counter(153, 148, 75, 20, _("Retry interval (ms)"));
+              { Fl_Counter* o = cntRigCatTimeout = new Fl_Counter(153, 155, 75, 20, _("Retry interval (ms)"));
                 cntRigCatTimeout->tooltip(_("Time between retires is msec"));
                 cntRigCatTimeout->type(1);
                 cntRigCatTimeout->minimum(2);
@@ -3614,7 +3542,7 @@ an merging"));
                 cntRigCatTimeout->align(FL_ALIGN_TOP);
                 o->value(progdefaults.RigCatTimeout);
               } // Fl_Counter* cntRigCatTimeout
-              { Fl_Counter* o = cntRigCatWait = new Fl_Counter(15, 175, 75, 20, _("Command interval (ms)"));
+              { Fl_Counter* o = cntRigCatWait = new Fl_Counter(15, 185, 75, 20, _("Command interval (ms)"));
                 cntRigCatWait->tooltip(_("Millseconds between sequential commands"));
                 cntRigCatWait->type(1);
                 cntRigCatWait->minimum(0);
@@ -3625,75 +3553,65 @@ an merging"));
                 cntRigCatWait->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.RigCatWait);
               } // Fl_Counter* cntRigCatWait
-              { btnInitRIGCAT = new Fl_Button(372, 193, 113, 24, _("Initialize"));
+              { btnInitRIGCAT = new Fl_Button(365, 321, 113, 24, _("Initialize"));
                 btnInitRIGCAT->tooltip(_("Initialize RigCAT interface"));
                 btnInitRIGCAT->callback((Fl_Callback*)cb_btnInitRIGCAT);
               } // Fl_Button* btnInitRIGCAT
-              { Fl_Check_Button* o = btnRigCatEcho = new Fl_Check_Button(74, 201, 192, 22, _("Commands are echoed"));
+              { Fl_Check_Button* o = btnRigCatEcho = new Fl_Check_Button(50, 216, 192, 22, _("Commands are echoed"));
                 btnRigCatEcho->tooltip(_("Rig or interface echos serial data"));
                 btnRigCatEcho->down_box(FL_DOWN_BOX);
                 btnRigCatEcho->callback((Fl_Callback*)cb_btnRigCatEcho);
                 o->value(progdefaults.RigCatECHO);
               } // Fl_Check_Button* btnRigCatEcho
-              grpRigCAT->end();
-            } // Fl_Group* grpRigCAT
-            { btnPTT[3] = new Fl_Round_Button(20, 232, 180, 20, _("PTT via CAT command"));
-              btnPTT[3]->tooltip(_("PTT is a CAT command (not hardware)"));
-              btnPTT[3]->down_box(FL_DIAMOND_DOWN_BOX);
-              btnPTT[3]->selection_color((Fl_Color)1);
-              btnPTT[3]->callback((Fl_Callback*)cb_btnPTT2);
-              btnPTT[3]->deactivate();
-            } // Fl_Round_Button* btnPTT[3]
-            { grpRigCATPTT = new Fl_Group(5, 256, 490, 100);
-              grpRigCATPTT->box(FL_ENGRAVED_FRAME);
-              { Fl_Round_Button* o = btnRigCatRTSptt = new Fl_Round_Button(74, 268, 160, 20, _("Toggle RTS for PTT"));
+              { Fl_Round_Button* o = btnRigCatCMDptt = new Fl_Round_Button(256, 217, 207, 20, _("CAT command for PTT"));
+                btnRigCatCMDptt->tooltip(_("PTT is a CAT command (not hardware)"));
+                btnRigCatCMDptt->down_box(FL_ROUND_DOWN_BOX);
+                btnRigCatCMDptt->selection_color((Fl_Color)1);
+                btnRigCatCMDptt->callback((Fl_Callback*)cb_btnRigCatCMDptt);
+                o->value(progdefaults.RigCatCMDptt);
+              } // Fl_Round_Button* btnRigCatCMDptt
+              { Fl_Round_Button* o = btnRigCatRTSptt = new Fl_Round_Button(50, 250, 160, 20, _("Toggle RTS for PTT"));
                 btnRigCatRTSptt->tooltip(_("RTS is ptt line"));
                 btnRigCatRTSptt->down_box(FL_ROUND_DOWN_BOX);
                 btnRigCatRTSptt->callback((Fl_Callback*)cb_btnRigCatRTSptt);
                 o->value(progdefaults.RigCatRTSptt);
               } // Fl_Round_Button* btnRigCatRTSptt
-              { Fl_Round_Button* o = btnRigCatDTRptt = new Fl_Round_Button(249, 268, 160, 20, _("Toggle DTR for PTT"));
+              { Fl_Round_Button* o = btnRigCatDTRptt = new Fl_Round_Button(256, 250, 160, 20, _("Toggle DTR for PTT"));
                 btnRigCatDTRptt->tooltip(_("DTR is ptt line"));
                 btnRigCatDTRptt->down_box(FL_ROUND_DOWN_BOX);
                 btnRigCatDTRptt->callback((Fl_Callback*)cb_btnRigCatDTRptt);
                 o->value(progdefaults.RigCatDTRptt);
               } // Fl_Round_Button* btnRigCatDTRptt
-              { Fl_Check_Button* o = btnRigCatRTSplus = new Fl_Check_Button(74, 298, 100, 20, _("RTS +12 v"));
+              { Fl_Check_Button* o = btnRigCatRTSplus = new Fl_Check_Button(50, 285, 100, 20, _("RTS +12 v"));
                 btnRigCatRTSplus->tooltip(_("Initial state of RTS"));
                 btnRigCatRTSplus->down_box(FL_DOWN_BOX);
                 btnRigCatRTSplus->callback((Fl_Callback*)cb_btnRigCatRTSplus);
                 o->value(progdefaults.RigCatRTSplus);
               } // Fl_Check_Button* btnRigCatRTSplus
-              { Fl_Check_Button* o = btnRigCatDTRplus = new Fl_Check_Button(250, 298, 100, 20, _("DTR +12 v"));
+              { Fl_Check_Button* o = btnRigCatDTRplus = new Fl_Check_Button(256, 285, 100, 20, _("DTR +12 v"));
                 btnRigCatDTRplus->tooltip(_("Initial state of DTR"));
                 btnRigCatDTRplus->down_box(FL_DOWN_BOX);
                 btnRigCatDTRplus->callback((Fl_Callback*)cb_btnRigCatDTRplus);
                 o->value(progdefaults.RigCatDTRplus);
               } // Fl_Check_Button* btnRigCatDTRplus
-              { Fl_Check_Button* o = chkRigCatRTSCTSflow = new Fl_Check_Button(74, 328, 170, 20, _("RTS/CTS flow control"));
+              { Fl_Check_Button* o = chkRigCatRTSCTSflow = new Fl_Check_Button(50, 320, 170, 20, _("RTS/CTS flow control"));
                 chkRigCatRTSCTSflow->tooltip(_("Rig uses RTS/CTS handshake"));
                 chkRigCatRTSCTSflow->down_box(FL_DOWN_BOX);
                 chkRigCatRTSCTSflow->callback((Fl_Callback*)cb_chkRigCatRTSCTSflow);
                 o->value(progdefaults.RigCatRTSCTSflow);
               } // Fl_Check_Button* chkRigCatRTSCTSflow
-              grpRigCATPTT->end();
-            } // Fl_Group* grpRigCATPTT
-            { btnPTT[5] = new Fl_Round_Button(275, 232, 180, 20, _("PTT via serial port"));
-              btnPTT[5]->tooltip(_("PTT uses serial port RTS or DTR"));
-              btnPTT[5]->down_box(FL_DIAMOND_DOWN_BOX);
-              btnPTT[5]->selection_color((Fl_Color)1);
-              btnPTT[5]->callback((Fl_Callback*)cb_btnPTT3);
-              btnPTT[5]->deactivate();
-            } // Fl_Round_Button* btnPTT[5]
+              grpRigCAT->end();
+            } // Fl_Group* grpRigCAT
             o->end();
           } // Fl_Group* o
           { tabHamlib = new Fl_Group(0, 50, 500, 320, _("Hamlib"));
+            tabHamlib->hide();
             { chkUSEHAMLIB = new Fl_Check_Button(195, 60, 100, 20, _("Use Hamlib"));
               chkUSEHAMLIB->tooltip(_("Hamlib used for rig control"));
               chkUSEHAMLIB->down_box(FL_DOWN_BOX);
               chkUSEHAMLIB->callback((Fl_Callback*)cb_chkUSEHAMLIB);
             } // Fl_Check_Button* chkUSEHAMLIB
-            { grpHamlib = new Fl_Group(5, 85, 490, 166);
+            { grpHamlib = new Fl_Group(5, 85, 490, 277);
               grpHamlib->box(FL_ENGRAVED_FRAME);
               { Fl_ComboBox* o = cboHamlibRig = new Fl_ComboBox(46, 95, 160, 22, _("Rig:"));
                 cboHamlibRig->tooltip(_("Select the rig by name"));
@@ -3709,12 +3627,12 @@ an merging"));
                 cboHamlibRig->when(FL_WHEN_RELEASE);
                 o->readonly();
               } // Fl_ComboBox* cboHamlibRig
-              { Fl_Input_Choice* o = inpRIGdev = new Fl_Input_Choice(341, 95, 144, 22, _("Device:"));
+              { Fl_Input_Choice* o = inpRIGdev = new Fl_Input_Choice(340, 95, 144, 22, _("Device:"));
                 inpRIGdev->tooltip(_("Serial port"));
                 inpRIGdev->callback((Fl_Callback*)cb_inpRIGdev);
                 o->value(progdefaults.HamRigDevice.c_str());
               } // Fl_Input_Choice* inpRIGdev
-              { Fl_Choice* o = mnuBaudRate = new Fl_Choice(386, 127, 99, 22, _("Baud rate:"));
+              { Fl_Choice* o = mnuBaudRate = new Fl_Choice(385, 127, 99, 22, _("Baud rate:"));
                 mnuBaudRate->tooltip(_("Serial port baud rate"));
                 mnuBaudRate->down_box(FL_BORDER_BOX);
                 mnuBaudRate->callback((Fl_Callback*)cb_mnuBaudRate);
@@ -3754,7 +3672,7 @@ an merging"));
                 cntHamlibWait->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.HamlibWait);
               } // Fl_Counter* cntHamlibWait
-              { inpHamlibConfig = new Fl_Input2(15, 224, 320, 22, _("Advanced configuration:"));
+              { inpHamlibConfig = new Fl_Input2(20, 328, 320, 22, _("Advanced configuration:"));
                 inpHamlibConfig->tooltip(_("Optional configuration\nin format: param=val ..."));
                 inpHamlibConfig->box(FL_DOWN_BOX);
                 inpHamlibConfig->color(FL_BACKGROUND2_COLOR);
@@ -3768,53 +3686,49 @@ an merging"));
                 inpHamlibConfig->when(FL_WHEN_RELEASE);
                 inpHamlibConfig->value(progdefaults.HamConfig.c_str());
               } // Fl_Input2* inpHamlibConfig
-              { btnInitHAMLIB = new Fl_Button(372, 222, 113, 24, _("Initialize"));
+              { btnInitHAMLIB = new Fl_Button(371, 327, 113, 24, _("Initialize"));
                 btnInitHAMLIB->tooltip(_("Initialize hamlib interface"));
                 btnInitHAMLIB->callback((Fl_Callback*)cb_btnInitHAMLIB);
               } // Fl_Button* btnInitHAMLIB
-              { mnuSideband = new Fl_Choice(341, 175, 144, 22, _("Sideband:"));
+              { mnuSideband = new Fl_Choice(340, 175, 144, 22, _("Sideband:"));
                 mnuSideband->tooltip(_("Force the rig sideband. Takes\neffect when rig mode changes."));
                 mnuSideband->down_box(FL_BORDER_BOX);
                 mnuSideband->callback((Fl_Callback*)cb_mnuSideband);
                 mnuSideband->align(FL_ALIGN_TOP);
               } // Fl_Choice* mnuSideband
-              grpHamlib->end();
-            } // Fl_Group* grpHamlib
-            { btnPTT[1] = new Fl_Round_Button(163, 258, 200, 20, _("PTT via Hamlib command"));
-              btnPTT[1]->tooltip(_("PTT is a hamlib command"));
-              btnPTT[1]->down_box(FL_DIAMOND_DOWN_BOX);
-              btnPTT[1]->selection_color((Fl_Color)1);
-              btnPTT[1]->callback((Fl_Callback*)cb_btnPTT4);
-              btnPTT[1]->deactivate();
-            } // Fl_Round_Button* btnPTT[1]
-            { grpHamlibPTT = new Fl_Group(5, 285, 490, 80);
-              grpHamlibPTT->box(FL_ENGRAVED_FRAME);
-              { Fl_Check_Button* o = btnHamlibDTRplus = new Fl_Check_Button(54, 298, 90, 20, _("DTR +12"));
+              { Fl_Round_Button* o = btnHamlibCMDptt = new Fl_Round_Button(45, 215, 200, 20, _("PTT via Hamlib command"));
+                btnHamlibCMDptt->tooltip(_("PTT is a hamlib command"));
+                btnHamlibCMDptt->down_box(FL_DIAMOND_DOWN_BOX);
+                btnHamlibCMDptt->selection_color((Fl_Color)1);
+                btnHamlibCMDptt->callback((Fl_Callback*)cb_btnHamlibCMDptt);
+                o->value(progdefaults.HamlibCMDptt);
+              } // Fl_Round_Button* btnHamlibCMDptt
+              { Fl_Check_Button* o = btnHamlibDTRplus = new Fl_Check_Button(45, 246, 90, 20, _("DTR +12"));
                 btnHamlibDTRplus->tooltip(_("Initial state of DTR"));
                 btnHamlibDTRplus->down_box(FL_DOWN_BOX);
                 btnHamlibDTRplus->callback((Fl_Callback*)cb_btnHamlibDTRplus);
                 o->value(progdefaults.HamlibDTRplus);
               } // Fl_Check_Button* btnHamlibDTRplus
-              { Fl_Check_Button* o = chkHamlibRTSplus = new Fl_Check_Button(273, 298, 85, 20, _("RTS +12"));
+              { Fl_Check_Button* o = chkHamlibRTSplus = new Fl_Check_Button(269, 246, 85, 20, _("RTS +12"));
                 chkHamlibRTSplus->tooltip(_("Initial state of RTS"));
                 chkHamlibRTSplus->down_box(FL_DOWN_BOX);
                 chkHamlibRTSplus->callback((Fl_Callback*)cb_chkHamlibRTSplus);
                 o->value(progdefaults.HamlibRTSplus);
               } // Fl_Check_Button* chkHamlibRTSplus
-              { Fl_Check_Button* o = chkHamlibRTSCTSflow = new Fl_Check_Button(54, 332, 170, 20, _("RTS/CTS flow control"));
+              { Fl_Check_Button* o = chkHamlibRTSCTSflow = new Fl_Check_Button(45, 280, 170, 20, _("RTS/CTS flow control"));
                 chkHamlibRTSCTSflow->tooltip(_("Rig requires RTS/CTS flow control"));
                 chkHamlibRTSCTSflow->down_box(FL_DOWN_BOX);
                 chkHamlibRTSCTSflow->callback((Fl_Callback*)cb_chkHamlibRTSCTSflow);
                 o->value(progdefaults.HamlibRTSCTSflow);
               } // Fl_Check_Button* chkHamlibRTSCTSflow
-              { Fl_Check_Button* o = chkHamlibXONXOFFflow = new Fl_Check_Button(273, 332, 185, 20, _("XON/XOFF flow control"));
+              { Fl_Check_Button* o = chkHamlibXONXOFFflow = new Fl_Check_Button(269, 280, 185, 20, _("XON/XOFF flow control"));
                 chkHamlibXONXOFFflow->tooltip(_("Rig requires Xon/Xoff flow control"));
                 chkHamlibXONXOFFflow->down_box(FL_DOWN_BOX);
                 chkHamlibXONXOFFflow->callback((Fl_Callback*)cb_chkHamlibXONXOFFflow);
                 o->value(progdefaults.HamlibXONXOFFflow);
               } // Fl_Check_Button* chkHamlibXONXOFFflow
-              grpHamlibPTT->end();
-            } // Fl_Group* grpHamlibPTT
+              grpHamlib->end();
+            } // Fl_Group* grpHamlib
             tabHamlib->end();
           } // Fl_Group* tabHamlib
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("MemMap"));
@@ -3827,17 +3741,17 @@ an merging"));
                 o->color(FL_LIGHT1);
                 o->value("Control via Memory Mapped\nshared variables\ni.e.: Kachina program");
               } // Fl_Output* o
-              { chkUSEMEMMAP = new Fl_Check_Button(160, 147, 120, 20, _("Use Memmap"));
+              { Fl_Check_Button* o = chkUSEMEMMAP = new Fl_Check_Button(160, 147, 120, 20, _("Use Memmap"));
                 chkUSEMEMMAP->tooltip(_("Rig control via memory mapped Kachina"));
                 chkUSEMEMMAP->down_box(FL_DOWN_BOX);
                 chkUSEMEMMAP->callback((Fl_Callback*)cb_chkUSEMEMMAP);
+                o->value(progdefaults.chkUSEMEMMAPis);
               } // Fl_Check_Button* chkUSEMEMMAP
-              { btnPTT[2] = new Fl_Round_Button(160, 177, 150, 20, _("Use Memmap PTT"));
-                btnPTT[2]->down_box(FL_DIAMOND_DOWN_BOX);
-                btnPTT[2]->selection_color((Fl_Color)1);
-                btnPTT[2]->callback((Fl_Callback*)cb_btnPTT5);
-                btnPTT[2]->deactivate();
-              } // Fl_Round_Button* btnPTT[2]
+              { btnMEMMAPptt = new Fl_Round_Button(160, 177, 150, 20, _("Use Memmap PTT"));
+                btnMEMMAPptt->down_box(FL_DIAMOND_DOWN_BOX);
+                btnMEMMAPptt->selection_color((Fl_Color)1);
+                btnMEMMAPptt->callback((Fl_Callback*)cb_btnMEMMAPptt);
+              } // Fl_Round_Button* btnMEMMAPptt
               { btnInitMEMMAP = new Fl_Button(197, 207, 113, 24, _("Initialize"));
                 btnInitMEMMAP->tooltip(_("Initialize Memmap interface"));
                 btnInitMEMMAP->callback((Fl_Callback*)cb_btnInitMEMMAP);

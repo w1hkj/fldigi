@@ -185,13 +185,11 @@
         ELEM_(bool, QRZchanged, "", false)                                              \
 /* Rig control */                                                                       \
         ELEM_(bool, btnusb, "BTNUSB", true)                                             \
-        ELEM_(int, btnPTTis, "BTNPTTIS", 0)                                             \
         ELEM_(bool, RTSptt, "RTSPTT", false)                                            \
         ELEM_(bool, DTRptt, "DTRPTT", false)                                            \
         ELEM_(bool, RTSplus, "RTSPLUS", false)                                          \
         ELEM_(bool, DTRplus, "DTRPLUS", false)                                          \
         ELEM_(bool, PTTrightchannel, "PTTRIGHTCHANNEL", false)                          \
-        ELEM_(int, choiceHAMLIBis, "CHOICEHAMLIBIS", 0)                                 \
         ELEM_(int, chkUSEMEMMAPis, "CHKUSEMEMMAPIS", 0)                                 \
         ELEM_(int, chkUSEHAMLIBis, "CHKUSEHAMLIBIS", 0)                                 \
         ELEM_(int, chkUSERIGCATis, "CHKUSERIGCATIS", 0)                                 \
@@ -206,6 +204,12 @@
         ELEM_(std::string, XmlRigFilename, "XMLRIGFILENAME", "")                        \
         ELEM_(std::string, XmlRigDevice, "XMLRIGDEVICE", DEFAULT_HAMRIGDEVICE)          \
         ELEM_(int, XmlRigBaudrate, "XMLRIGBAUDRATE", 1)                                 \
+        ELEM_(bool, TTYptt, "TTYPTT", false)                                            \
+        ELEM_(bool, HamlibCMDptt, "HAMLIBCMDPTT", false)                                \
+        ELEM_(bool, RigCatCMDptt, "RIGCATCMDPTT", false)                                \
+        ELEM_(bool, MEMMAPptt, "MEMMAPPTT", false)                                      \
+        ELEM_(bool, UseUHrouterPTT, "USEUHROUTERPTT", false)                            \
+        ELEM_(bool, UsePPortPTT, "USEPPORTPTT", false)                                  \
 /* RigCAT parameters */                                                                 \
         ELEM_(bool, RigCatRTSplus, "RIGCATRTSPLUS", 0)                                  \
         ELEM_(bool, RigCatDTRplus, "RIGCATDTRPLUS", 0)                                  \

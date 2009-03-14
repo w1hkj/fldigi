@@ -73,37 +73,30 @@ void PTT::reset(ptt_t dev)
 	close_all();
 
 	switch (pttdev = dev) {
-	case PTT_INVALID: default:
-		LOG_ERROR("Bad PTT device type %d. Disabling PTT.", pttdev);
-		pttdev = PTT_NONE;
-		// fall through
-	case PTT_NONE: case PTT_HAMLIB: case PTT_MEMMAP: 
-	case PTT_RIGCAT: case PTT_RIGCAT_HW :
-		break; // nothing to open
-
-	case PTT_TTY:
 #if HAVE_UHROUTER
-		if (progdefaults.PTTdev.find(UHROUTER_FIFO_PREFIX) == 0) {
-			pttdev = PTT_UHROUTER;
-			open_uhrouter();
-			break;
-		}
+        case PTT_UHROUTER:
+		    if (progdefaults.PTTdev.find(UHROUTER_FIFO_PREFIX) == 0) {
+			    pttdev = PTT_UHROUTER;
+			    open_uhrouter();
+			    break;
+		    } else {
+		        pttdev = PTT_NONE;
+		        break;
+            }
 #endif
 #if HAVE_PARPORT
-		open_parport();
-		if (pttfd >= 0)
-			pttdev = PTT_PARPORT;
-		else
+        case PTT_PARPORT:
+		    open_parport();
+		    if (pttfd < 0)
+		        pttdev = PTT_NONE;
+            break;
 #endif
-			open_tty();
-		break;
-#if HAVE_UHROUTER
-	case PTT_UHROUTER:
-		open_uhrouter();
-		break;
-#endif
+	    case PTT_TTY:
+            open_tty();
+		    break;
+	    default:
+		    break; // nothing to open
 	}
-
 	set(false);
 }
 
@@ -125,9 +118,6 @@ void PTT::set(bool ptt)
 		setrigMEM_PTT(ptt);
 		break;
 	case PTT_RIGCAT: 
-		rigCAT_set_ptt(ptt);
-		break;
-    case PTT_RIGCAT_HW :
 		rigCAT_set_ptt(ptt);
 		break;
 	case PTT_TTY:
