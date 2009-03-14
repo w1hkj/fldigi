@@ -160,6 +160,7 @@ Fl_Button			*btn_sqlonoff;
 Fl_Input2			*inpFreq;
 Fl_Input2			*inpTimeOff;
 Fl_Input2			*inpTimeOn;
+Fl_Button           *btnTimeOn;
 Fl_Input2			*inpCall;
 Fl_Input2			*inpName;
 Fl_Input2			*inpRstIn;
@@ -1351,6 +1352,13 @@ void cb_ResetSerNbr()
 	updateOutSerNo();
 }
 
+void cb_btnTimeOn(Fl_Widget* w, void*)
+{
+	inpTimeOn->value(inpTimeOff->value(), inpTimeOff->size());
+	sDate_on = zdate();
+	restoreFocus();
+}
+
 void cb_loc(Fl_Widget* w, void*)
 {
 	if ((oktoclear = !inpLoc->size()) || !progdefaults.autofill_qso_fields)
@@ -1387,6 +1395,7 @@ void cb_call(Fl_Widget* w, void*)
 	oktoclear = false;
 	
 	inpTimeOn->value(inpTimeOff->value(), inpTimeOff->size());
+	sDate_on = zdate();
 	lblDup->hide();
 
 	if (progdefaults.EnableDupCheck) {
@@ -2409,10 +2418,16 @@ void create_fl_digi_main() {
 				inpFreq->tooltip("");
 				inpFreq->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
-				inpTimeOn = new Fl_Input2(rightof(inpFreq) + pad, y2, w_inpTime, qh - pad, _("On"));
+				inpTimeOn = new Fl_Input2(rightof(inpFreq) + pad, y2, w_inpTime, qh - pad, "");
 				inpTimeOn->tooltip("");
 				inpTimeOn->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 				inpTimeOn->type(FL_INT_INPUT);
+				
+				btnTimeOn = new Fl_Button(leftof(inpTimeOn), Hmenu + pad, w_inpTime, qh, _("On"));
+				btnTimeOn->align(FL_ALIGN_LEFT | FL_ALIGN_BOTTOM | FL_ALIGN_INSIDE);
+				btnTimeOn->tooltip(_("Press to update"));
+				btnTimeOn->box(FL_NO_BOX);
+				btnTimeOn->callback(cb_btnTimeOn);
 
 				inpTimeOff = new Fl_Input2(rightof(inpTimeOn) + pad, y2, w_inpTime, qh - pad, _("Off"));
 				inpTimeOff->tooltip("");

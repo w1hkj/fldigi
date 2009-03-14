@@ -18,6 +18,7 @@ enum savetype {ADIF, CSV, TEXT, LO};
 extern cQsoDb        qsodb;
 extern cAdifIO       adifFile;
 extern std::string logbook_filename;
+extern std::string sDate_on;
 
 extern void loadBrowser(bool keep_pos = false);
 

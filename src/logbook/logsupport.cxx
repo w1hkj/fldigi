@@ -555,13 +555,16 @@ void EditRecord( int i )
 	editGroup->show();
 }
 
+std::string sDate_on = "";
+
 void AddRecord ()
 {
 	inpCall_log->value(inpCall->value());
 	inpName_log->value (inpName->value());
-	inpDate_log->value (zdate());
 	inpTimeOn_log->value (inpTimeOn->value());
 	inpTimeOff_log->value (ztime());
+    inpDate_log->value(sDate_on.c_str());
+//	inpDate_log->value (zdate());
 	inpRstR_log->value (inpRstIn->value());
 	inpRstS_log->value (inpRstOut->value());
 	{
