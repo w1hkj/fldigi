@@ -103,6 +103,9 @@ bool hamlib_init(bool bPtt)
 		snprintf(szParam, sizeof(szParam), "%d", progdefaults.HamlibWait);
 		xcvr->setConf("post_write_delay", szParam);
 
+		snprintf(szParam, sizeof(szParam), "%d", progdefaults.HamlibWriteDelay);
+		xcvr->setConf("write_delay", szParam);
+
 		snprintf(szParam, sizeof(szParam), "%d", progdefaults.HamlibTimeout);
 		xcvr->setConf("timeout", szParam);
 
