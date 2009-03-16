@@ -192,7 +192,7 @@ void PTT::open_tty(void)
 
 	ioctl(pttfd, TIOCMSET, &status);
 	LOG_DEBUG("Serial port %s open", progdefaults.PTTdev.c_str());
-    LOG_DEBUG("   status = %02X, %s", status, binarystr(status, 8));
+    LOG_DEBUG("   status = %02X, %s", status, uint2bin(status, 8));
 }
 
 void PTT::close_tty(void)
@@ -228,7 +228,7 @@ void PTT::set_tty(bool ptt)
 		if (progdefaults.DTRptt == true && progdefaults.DTRplus == true)
 			status |= TIOCM_DTR;
 	}
-	LOG_DEBUG("Status %02X, %s", status & 0xFF, binarystr(status, 8));
+	LOG_DEBUG("Status %02X, %s", status & 0xFF, uint2bin(status, 8));
 	ioctl(pttfd, TIOCMSET, &status);
 }
 

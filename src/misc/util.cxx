@@ -117,58 +117,56 @@ uint32_t simple_hash_str(const unsigned char* str, uint32_t code)
 	return code;
 }
 
+#include <vector>
+#include <climits>
+
 static const char hexsym[] = "0123456789ABCDEF";
-char* str2hex(const unsigned char* in, size_t ilen, char* out, size_t olen)
+static std::vector<char>* hexbuf;
+const char* str2hex(const unsigned char* str, size_t len)
 {
-	if (unlikely(ilen == 0 || olen == 0))
-		return out;
-	if (unlikely(olen < ilen * 3))
-		ilen = olen / 3;
+	if (unlikely(len == 0))
+		return "";
+	if (unlikely(!hexbuf)) {
+		hexbuf = new std::vector<char>;
+		hexbuf->reserve(192);
+	}
+	if (unlikely(hexbuf->size() < len * 3))
+		hexbuf->resize(len * 3);
 
-	char* r = out;
+	char* p = &(*hexbuf)[0];
 	size_t i;
-	for (i = 0; i < ilen; i++) {
-		*out++ = hexsym[in[i] >> 4];
-		*out++ = hexsym[in[i] & 0xF];
-		*out++ = ' ';
+	for (i = 0; i < len; i++) {
+		*p++ = hexsym[str[i] >> 4];
+		*p++ = hexsym[str[i] & 0xF];
+		*p++ = ' ';
 	}
-	*(out - 1) = '\0';
+	*(p - 1) = '\0';
 
-	return r;
+	return &(*hexbuf)[0];
+}
+const char* str2hex(const char* str, size_t len)
+{
+	return str2hex((const unsigned char*)str, len ? len : strlen(str));
 }
 
-static char* hexbuf = 0;
-static size_t hexlen = 0;
-const char* printhex(const unsigned char* str, size_t len)
+static std::vector<char>* binbuf;
+const char* uint2bin(unsigned u, size_t len)
 {
-	if (len == 0)
-		return "";
-	len *= 3;
-	if (hexlen < len && (hexbuf = (char*)realloc(hexbuf, (hexlen = len))) == NULL) {
-		hexlen = 0;
-		return "";
+	if (unlikely(len == 0))
+		len = sizeof(u) * CHAR_BIT;
+
+	if (unlikely(!binbuf)) {
+		binbuf = new std::vector<char>;
+		binbuf->reserve(sizeof(u) * CHAR_BIT);
 	}
-	return str2hex(str, len, hexbuf, hexlen);
-}
+	if (unlikely(binbuf->size() < len + 1))
+		binbuf->resize(len + 1);
 
-const char* printhex(const char* str, size_t len)
-{
-	return printhex((const unsigned char*)str, len ? len : strlen(str));
-}
+	for (size_t i = 0; i < len; i++) {
+		(*binbuf)[len - i - 1] = '0' + (u & 1);
+		u >>= 1;
+	}
+	(*binbuf)[len] = '\0';
 
-#include <stdio.h>
-static char *binbuf = 0;
-const char* binarystr(int d, int len)
-{
-    if (len == 0) len = sizeof(d) * 8;
-    
-    if ((binbuf = (char *)realloc(binbuf, len + 1)) == NULL)
-        return "";
-    for (int i = 0; i < len; i++) {
-        if (d & 1) binbuf[len - 1 - i] = '1';
-        else       binbuf[len - 1 - i] = '0';
-        d >>= 1;
-    }
-    binbuf[len] = 0;
-    return binbuf;    
+	return &(*binbuf)[0];
 }

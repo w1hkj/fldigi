@@ -626,7 +626,7 @@ void pskrep_sender::write_station_info(void)
 	npad = &long_station_info[0] + long_len - p;
 	if (npad)
 		memset(p, 0, npad);
-	LOG_DEBUG("long_station_info=\"%s\"", printhex(&long_station_info[0], long_len));
+	LOG_DEBUG("long_station_info=\"%s\"", str2hex(&long_station_info[0], long_len));
 
 	// Write the short station info
 	p = &short_station_info[0];
@@ -643,7 +643,7 @@ void pskrep_sender::write_station_info(void)
 	npad = &short_station_info[0] + short_len - p;
 	if (npad)
 		memset(p, 0, npad);
-	LOG_DEBUG("short_station_info=\"%s\"", printhex(&short_station_info[0], short_len));
+	LOG_DEBUG("short_station_info=\"%s\"", str2hex(&short_station_info[0], short_len));
 }
 
 // fldigi uses 0x022C as the reception record template id (bytes 4,5)
@@ -740,7 +740,7 @@ bool pskrep_sender::append(const string& callsign, const band_map_t::value_type&
 	// info source
 	*p++ = r.rtype;
 
-	LOG_DEBUG("                 \"%s\"", printhex(start, p - start));
+	LOG_DEBUG("                 \"%s\"", str2hex(start, p - start));
 
 	dgram_size += rlen;
 	return true;
@@ -793,7 +793,7 @@ bool pskrep_sender::send(void)
 	*reinterpret_cast<uint32_t*>(dgram + 4) = htonl(time(NULL));
 
 	bool ret;
-	LOG_DEBUG("Sending datagram (%zu): \"%s\"", dgram_size, printhex(dgram, dgram_size));
+	LOG_DEBUG("Sending datagram (%zu): \"%s\"", dgram_size, str2hex(dgram, dgram_size));
 	try {
 		if ((size_t)send_socket->send(dgram, dgram_size) != dgram_size)
 			throw SocketException("short write");

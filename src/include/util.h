@@ -127,15 +127,14 @@ uint32_t simple_hash_data(const unsigned char* buf, size_t len, uint32_t code = 
 uint32_t simple_hash_str(const unsigned char* str, uint32_t code = 0);
 #endif
 
-char* str2hex(const unsigned char* in, size_t inlen, char* out, size_t outlen);
 #ifdef __cplusplus
-const char* printhex(const unsigned char* str, size_t len);
-const char* printhex(const char* str, size_t len = 0);
+const char* str2hex(const unsigned char* str, size_t len);
+const char* str2hex(const char* str, size_t len = 0);
 #else
-const char* printhex(const unsigned* str, size_t len);
+const char* str2hex(const unsigned* str, size_t len);
 #endif
 
-const char* binarystr(int d, int len);
+const char* uint2bin(unsigned u, size_t len);
 
 #if !defined(NDEBUG) && defined(deprecated__) && defined(__GNUC__)
 #include <stdio.h>

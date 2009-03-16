@@ -69,7 +69,7 @@ bool hexout(const string& s, int retnbr)
 // wait here until that processing is finished or a timeout occurs
 // reset the readpending & return false if a timeout occurs
 
-	LOG_DEBUG("cmd = %s", printhex(s.data(), s.length()));
+	LOG_DEBUG("cmd = %s", str2hex(s.data(), s.length()));
 
 	readtimeout = (progdefaults.RigCatWait + progdefaults.RigCatTimeout) * progdefaults.RigCatRetries + 2000; // 2 second min timeout
 	while (readpending && readtimeout--)
@@ -95,7 +95,7 @@ bool hexout(const string& s, int retnbr)
 			MilliSleep(10);
 //#endif
 			num = rigio.ReadBuffer (replybuff, s.size());
-			LOG_DEBUG("echoed = %s", printhex(replybuff, num));
+			LOG_DEBUG("echoed = %s", str2hex(replybuff, num));
 		}
 
 		memset (replybuff, 0, 200);
@@ -112,7 +112,7 @@ bool hexout(const string& s, int retnbr)
 
 // debug code
 			if (num)
-				LOG_DEBUG("resp (%d) = %s", n, printhex(replybuff, num));
+				LOG_DEBUG("resp (%d) = %s", n, str2hex(replybuff, num));
 			else
 				LOG_DEBUG("resp (%d) no reply", n);
 		} else

@@ -187,7 +187,7 @@ void Cserial::SetPTT(bool b)
 			    if (rtsptt && !rts) status &= ~TIOCM_RTS; // toggle low
 		    }
 	    }
-	    LOG_INFO("Status %02X, %s", status & 0xFF, binarystr(status, 8));
+	    LOG_INFO("Status %02X, %s", status & 0xFF, uint2bin(status, 8));
 	    ioctl(fd, TIOCMSET, &status);
     }
     LOG_DEBUG("No ptt specified");
