@@ -4,6 +4,8 @@
 src/main.cxx
 src/dialogs/fl_digi.cxx
 src/dialogs/Viewer.cxx
+src/logbook/lgbook.cxx
+src/logbook/logbook.cxx
 src/misc/status.cxx
 src/misc/debug.cxx
 src/mfsk/mfsk-pic.cxx
