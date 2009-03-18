@@ -1,9 +1,8 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Dave Freese, Stelios Bounanos, Leigh Klotz, and others
+# Translation template for fldigi package
+# Copyright (C) 2009 Dave Freese, Stelios Bounanos, Leigh Klotz, and others
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: fldigi 3.11AQ\n"
@@ -50,7 +49,8 @@ msgstr ""
 
 #: src/dialogs/fl_digi.cxx:548 src/dialogs/fl_digi.cxx:1446
 #: src/dialogs/fl_digi.cxx:1583 src/dialogs/fl_digi.cxx:1594
-#: src/dialogs/fl_digi.cxx:1605
+#: src/dialogs/fl_digi.cxx:1605 src/logbook/lgbook.cxx:353
+#: src/logbook/lgbook.cxx:873
 msgid "Cancel"
 msgstr ""
 
@@ -150,7 +150,8 @@ msgstr ""
 msgid "Clear log fields?"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1446
+#: src/dialogs/fl_digi.cxx:1446 src/logbook/lgbook.cxx:350
+#: src/logbook/lgbook.cxx:870
 msgid "OK"
 msgstr ""
 
@@ -320,7 +321,7 @@ msgstr ""
 msgid "PSK Browser"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1816
+#: src/dialogs/fl_digi.cxx:1816 src/logbook/lgbook.cxx:457
 msgid "Logbook"
 msgstr ""
 
@@ -429,7 +430,7 @@ msgstr ""
 msgid "QSO Freq"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2426
+#: src/dialogs/fl_digi.cxx:2426 src/logbook/lgbook.cxx:475
 msgid "On"
 msgstr ""
 
@@ -437,23 +438,25 @@ msgstr ""
 msgid "Press to update"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2432
+#: src/dialogs/fl_digi.cxx:2432 src/logbook/lgbook.cxx:487
 msgid "Off"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2437
+#: src/dialogs/fl_digi.cxx:2437 src/logbook/lgbook.cxx:365
+#: src/logbook/lgbook.cxx:499 src/logbook/lgbook.cxx:892
 msgid "Call"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2441
+#: src/dialogs/fl_digi.cxx:2441 src/logbook/lgbook.cxx:369
+#: src/logbook/lgbook.cxx:511 src/logbook/lgbook.cxx:842
 msgid "Name"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2445
+#: src/dialogs/fl_digi.cxx:2445 src/logbook/lgbook.cxx:547
 msgid "In"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2449
+#: src/dialogs/fl_digi.cxx:2449 src/logbook/lgbook.cxx:559
 msgid "Out"
 msgstr ""
 
@@ -469,7 +472,7 @@ msgstr ""
 msgid "City"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2464
+#: src/dialogs/fl_digi.cxx:2464 src/logbook/lgbook.cxx:583
 msgid "St"
 msgstr ""
 
@@ -477,7 +480,7 @@ msgstr ""
 msgid "US State"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2470
+#: src/dialogs/fl_digi.cxx:2470 src/logbook/lgbook.cxx:595
 msgid "Pr"
 msgstr ""
 
@@ -489,11 +492,12 @@ msgstr ""
 msgid "Cnty"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2479
+#: src/dialogs/fl_digi.cxx:2479 src/logbook/lgbook.cxx:419
+#: src/logbook/lgbook.cxx:607
 msgid "Country"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2482
+#: src/dialogs/fl_digi.cxx:2482 src/logbook/lgbook.cxx:619
 msgid "Loc"
 msgstr ""
 
@@ -525,7 +529,8 @@ msgstr ""
 msgid "Contest exchange in"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2528
+#: src/dialogs/fl_digi.cxx:2528 src/logbook/lgbook.cxx:422
+#: src/logbook/lgbook.cxx:631
 msgid "Notes"
 msgstr ""
 
@@ -581,6 +586,301 @@ msgstr ""
 
 #: src/dialogs/Viewer.cxx:315
 msgid "Set Viewer Squelch"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:336
+msgid "Export Setup"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:337 src/logbook/lgbook.cxx:857
+msgid "Select Records to Export"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:342 src/logbook/lgbook.cxx:359
+#: src/logbook/lgbook.cxx:862 src/logbook/lgbook.cxx:936
+msgid "Clear All"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:345 src/logbook/lgbook.cxx:362
+#: src/logbook/lgbook.cxx:865 src/logbook/lgbook.cxx:939
+msgid "Check All"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:356
+msgid "Select Fields to Export"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:373 src/logbook/lgbook.cxx:896
+msgid "Freq"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:377 src/dialogs/confdialog.cxx:2369
+msgid "Band"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:380 src/logbook/lgbook.cxx:535
+#: src/logbook/lgbook.cxx:845 src/logbook/lgbook.cxx:900
+#: src/dialogs/confdialog.cxx:2375
+msgid "Mode"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:384 src/logbook/lgbook.cxx:904
+msgid "QSO Date"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:388
+msgid "Time ON"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:391 src/logbook/lgbook.cxx:908
+msgid "Time OFF"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:395
+msgid "TX Power"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:398 src/logbook/lgbook.cxx:912
+msgid "RST sent"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:402 src/logbook/lgbook.cxx:916
+msgid "RST rcvd"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:406 src/logbook/lgbook.cxx:571
+msgid "Qth"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:409
+msgid "LOC"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:413 src/dialogs/confdialog.cxx:2381
+msgid "State"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:416
+msgid "Province"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:425 src/logbook/lgbook.cxx:784
+msgid "IOTA"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:428 src/logbook/lgbook.cxx:808
+msgid "DXCC"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:431
+msgid "QSL rcvd date"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:434
+msgid "QSL sent date"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:437 src/logbook/lgbook.cxx:920
+msgid "Serial # in"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:440 src/logbook/lgbook.cxx:924
+msgid "Serial # out"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:443 src/logbook/lgbook.cxx:738
+#: src/logbook/lgbook.cxx:928 src/dialogs/confdialog.cxx:2387
+msgid "Exchange In"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:446 src/logbook/lgbook.cxx:714
+#: src/logbook/lgbook.cxx:932 src/dialogs/confdialog.cxx:2300
+msgid "Exchange Out"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:449 src/dialogs/colorsfonts.cxx:685
+#: src/dialogs/colorsfonts.cxx:742
+msgid "Defaults"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:462 src/logbook/lgbook.cxx:837
+msgid "Date"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:463
+msgid "Date of QSO"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:476
+msgid "Time QSO started"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:488
+msgid "Time QSO ended"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:500
+msgid "Call sign worked"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:512
+msgid "Operator worked"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:523
+msgid "Freq."
+msgstr ""
+
+#: src/logbook/lgbook.cxx:524
+msgid "Frequency in MHz"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:536
+msgid "Mode in use"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:548
+msgid "Rst received"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:560
+msgid "Rst sent"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:572
+msgid "City of station worked"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:584
+msgid "US state of station worked"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:596
+msgid "Province of station worked"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:608
+msgid "Country of station worked"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:620
+msgid "Stations grid square"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:632
+msgid "Interesting notes (80 chars max)"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:644
+msgid "QSL-rcvd"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:645
+msgid "QSL received on this date"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:657
+msgid "QSL-sent"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:658
+msgid "QSL sent on this date"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:670
+msgid "New"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:676
+msgid "Update"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:682 src/widgets/flinput2.cxx:24
+msgid "Delete"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:688
+msgid "Recs"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:689
+msgid "# Records in logbook"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:702
+msgid "Ser# out"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:703
+msgid "Contest seral # sent"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:715
+msgid "Contest exchange sent"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:726
+msgid "Ser# in"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:727
+msgid "Contest serial # received"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:739
+msgid "Contest exchange received"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:754
+msgid "Call Search"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:755
+msgid "Search for this callsign"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:767
+msgid "Find previous"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:775
+msgid "Find next"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:785
+msgid "Islands on the air"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:796
+msgid "Tx Power"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:797
+msgid "Transmit power used"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:839
+msgid "Time"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:840
+msgid "Callsign"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:843
+msgid "Frequency"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:856
+msgid "Cabrillo Setup"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:876
+msgid "Select Cabrillo Contest & Fields"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:879
+msgid "Contest:"
 msgstr ""
 
 #: src/misc/debug.cxx:61
@@ -768,10 +1068,6 @@ msgstr ""
 msgid "Paste"
 msgstr ""
 
-#: src/widgets/flinput2.cxx:24
-msgid "Delete"
-msgstr ""
-
 #: src/widgets/flinput2.cxx:26
 msgid "Select All"
 msgstr ""
@@ -835,10 +1131,6 @@ msgstr ""
 
 #: src/dialogs/colorsfonts.cxx:680
 msgid "Label text"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:685 src/dialogs/colorsfonts.cxx:742
-msgid "Defaults"
 msgstr ""
 
 #: src/dialogs/colorsfonts.cxx:690
@@ -1104,10 +1396,6 @@ msgstr ""
 msgid "Send:"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:2300
-msgid "Exchange Out"
-msgstr ""
-
 #: src/dialogs/confdialog.cxx:2301
 msgid "free form exchange"
 msgstr ""
@@ -1176,32 +1464,16 @@ msgstr ""
 msgid "Check for duplicates"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:2369
-msgid "Band"
-msgstr ""
-
 #: src/dialogs/confdialog.cxx:2370
 msgid "Bands must match"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:2375
-msgid "Mode"
 msgstr ""
 
 #: src/dialogs/confdialog.cxx:2376
 msgid "Mode must match"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:2381
-msgid "State"
-msgstr ""
-
 #: src/dialogs/confdialog.cxx:2382
 msgid "State must match"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:2387
-msgid "Exchange In"
 msgstr ""
 
 #: src/dialogs/confdialog.cxx:2388
