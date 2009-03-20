@@ -67,7 +67,7 @@ FIELD fields[] = {
     {VE_PROV,		"VE_PROV",       2, &btnSelectProvince},    // 2 letter abbreviation for Canadian Province
 // fldigi specific fields
 	{XCHG1,			"XCHG1",        20, &btnSelectXchgIn},      // contest exchange #1 / free1 in xlog
-	{MYXCHG,		"MYXCHG",       20, &btnSelectMyXchg},      // contest exchange #3
+	{MYXCHG,		"MYXCHG",       20, &btnSelectMyXchg},      // contest exchange sent
     {EXPORT,		"EXPORT",        1, NULL}                   // used to indicate record is to be exported
 };
 
