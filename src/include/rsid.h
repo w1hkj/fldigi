@@ -120,11 +120,8 @@ public:
 	~cRsId();
 	void	reset();
 	void	search( const double *pSamples, int nSamples );
-//	, bool bReverse, 
-//					int *pSymbolOut, int *pBinOut, int *pDistanceOut, 
-//					int *pMetricsOut);
 	void	apply (int iSymbol, int iBin);
-	void	send();
+	void	send(bool postidle);
 	
 	int		samplerate() { return _samplerate;}
 	

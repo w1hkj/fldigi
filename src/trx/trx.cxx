@@ -249,7 +249,7 @@ void trx_trx_transmit_loop()
 		active_modem->tx_init(scard);
 
 		if (progdefaults.TransmitRSid == true)
-			ReedSolomon->send();
+			ReedSolomon->send(true);
 		
 		while (trx_state == STATE_TX) {
 			try {
@@ -266,7 +266,7 @@ void trx_trx_transmit_loop()
 		}
 
 		if (progdefaults.TransmitRSid == true)
-			ReedSolomon->send();
+			ReedSolomon->send(false);
 		
         scard->flush();
 		if (scard->must_close())

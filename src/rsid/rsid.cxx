@@ -495,10 +495,11 @@ void cRsId::apply(int iSymbol, int iBin)
 		break;
 	}
 
-	REQ(&configuration::loadDefaults, &progdefaults);
+//	REQ(&configuration::loadDefaults, &progdefaults);
 
-	active_modem->set_freq(freq);
+//	active_modem->set_freq(freq);
 	REQ(init_modem, mbin);
+	active_modem->set_freq(freq);
 	
 }
 
@@ -601,7 +602,7 @@ bool cRsId::search_amp( int &SymbolOut,	int &BinOut)
 // transmit rsid code for current mode
 //=============================================================================
 
-void cRsId::send()
+void cRsId::send(bool postidle)
 {
 	int iTone;
 	uchar rsid[RSID_NSYMBOLS];
@@ -707,6 +708,12 @@ void cRsId::send()
 
 	outbuf = new double[symlen];
 		
+// transmit 6 symbol periods of silence
+    if (!postidle) {
+    	for (int j = 0; j < symlen; j++) outbuf[j] = 0.0;
+	    for (int i = 0; i < 6; i++) active_modem->ModulateXmtr(outbuf, symlen);
+    }
+
 // transmit sequence of 15 symbols (tones)
 	phase = 0.0;
 	for (int i = 0; i < 15; i++) {
@@ -724,11 +731,11 @@ void cRsId::send()
 		active_modem->ModulateXmtr(outbuf, symlen);
 
 	}
-// transmit 3 symbol periods of silence
-	for (int j = 0; j < symlen; j++) outbuf[j] = 0.0;
-	active_modem->ModulateXmtr(outbuf, symlen);
-	active_modem->ModulateXmtr(outbuf, symlen);
-	active_modem->ModulateXmtr(outbuf, symlen);
+// transmit 6 symbol periods of silence
+    if (postidle) {
+    	for (int j = 0; j < symlen; j++) outbuf[j] = 0.0;
+	    for (int i = 0; i < 6; i++) active_modem->ModulateXmtr(outbuf, symlen);
+    }
 // clean up
 
 	delete [] outbuf;
