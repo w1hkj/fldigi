@@ -145,13 +145,8 @@ RSIDs cRsId::rsid_ids[] = {
 	{ RSID_MFSK8, MODE_MFSK8 },
 	{ RSID_MFSK16, MODE_MFSK16 },
 	{ RSID_MFSK32, MODE_MFSK32 },
-#ifdef EXPERIMENTAL
 	{ RSID_MFSK11, MODE_MFSK11 },
 	{ RSID_MFSK22, MODE_MFSK22 },
-#else
-	{ RSID_MFSK11, NUM_MODES },
-	{ RSID_MFSK22, NUM_MODES },
-#endif
 
 	{ RSID_RTTYM_8_250, NUM_MODES },
 	{ RSID_RTTYM_16_500, NUM_MODES },
@@ -313,10 +308,9 @@ void cRsId::CalculateBuckets(const double *pSpectrum, int iBegin, int iEnd)
 	double   Amp = 0.0, AmpMax = 0.0;
 	int   iBucketMax = iBegin - RSID_RESOL;
 	int   i, j;
-	bool  firstpass = true;
 
 	for (i = iBegin; i < iEnd; i += RSID_RESOL) {
-		if (firstpass) {
+		if (iBucketMax == i - RSID_RESOL) {
 			AmpMax		= pSpectrum[i];
 			iBucketMax	= i;
 			for (j = i + RSID_RESOL; j < i + RSID_NTIMES + RSID_RESOL; j += RSID_RESOL) {
@@ -326,7 +320,6 @@ void cRsId::CalculateBuckets(const double *pSpectrum, int iBegin, int iEnd)
 					iBucketMax = j;
 				}
 			}
-			firstpass = false;
 		} else {
 			j    = i + RSID_NTIMES;
 			Amp = pSpectrum[j];
@@ -372,10 +365,9 @@ void cRsId::search( const double *pSamples, int nSamples )
 	memcpy  (aInputSamples + ns, pSamples, ns * sizeof(double));
 	
 	memset  (aFFTReal, 0, RSID_ARRAY_SIZE * sizeof(double));
-	memcpy  (aFFTReal, aInputSamples, RSID_FFT_SIZE * sizeof(double));
-// or 
-//	for (int i = 0; i < RSID_FFT_SIZE; i++)
-//		aFFTReal[i] = aInputSamples[i] * fftwindow[i];
+
+	for (int i = 0; i < RSID_FFT_SIZE; i++)
+		aFFTReal[i] = aInputSamples[i] * fftwindow[i];
 
 	rsrfft( aFFTReal, 11);
 
@@ -710,8 +702,8 @@ void cRsId::send()
 	}
 	if (rmode == RSID_NONE)
 		return;
+		
 	Encode(rmode, rsid);
-
 
 	outbuf = new double[symlen];
 		
