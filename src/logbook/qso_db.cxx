@@ -18,7 +18,7 @@ bool cQsoDb::reverse = false;
 cQsoRec::cQsoRec() {
   for (int i=0;i < NUMFIELDS; i++) {
     qsofield[i] = new char [fields[i].size + 1];
-    memset (qsofield[i],0, fields[i].size + 1);
+    memset (qsofield[i], 0, fields[i].size + 1);
   }
 }
 
@@ -77,7 +77,15 @@ void cQsoRec::checkBand() {
 
 void cQsoRec::putField (int n, const char *s){
   if (n < 0 || n >= NUMFIELDS) return;
-  strncpy( qsofield[n], s, fields[n].size);
+  memset(qsofield[n], 0, fields[n].size);
+  strcpy( qsofield[n], s);
+}
+
+void cQsoRec::putField (int n, const char *s, int len) {
+    if (n < 0 || n >= NUMFIELDS) return;
+    if (len > fields[n].size) len = fields[n].size;
+    strncpy(qsofield[n], s, len);
+    qsofield[n][len] = 0;
 }
 
 void cQsoRec::addtoField (int n, const char *s){
@@ -246,10 +254,12 @@ int i, j, max;
 //======================================================================
 // class cQsoDb
 
+#define MAXRECS 8192
+
 cQsoDb::cQsoDb() {
   nbrrecs = 0;
-  maxrecs = 1;
-  qsorec = new cQsoRec[1];
+  maxrecs = MAXRECS;
+  qsorec = new cQsoRec[maxrecs];
   compby = COMPDATE;
   dirty = 0;
 }
@@ -260,9 +270,9 @@ cQsoDb::~cQsoDb() {
 
 void cQsoDb::deleteRecs() {
   delete [] qsorec;
-  qsorec = new cQsoRec[1];
   nbrrecs = 0;
-  maxrecs = 1;
+  maxrecs = MAXRECS;
+  qsorec = new cQsoRec[maxrecs];
   dirty = 0;
 }
 
@@ -278,13 +288,11 @@ int cQsoDb::qsoFindRec(cQsoRec *rec) {
 }
 
 void cQsoDb::qsoNewRec (cQsoRec *nurec) {
-  nurec->trimFields();
-  if (qsoFindRec(nurec) > -1) return;
   if (nbrrecs == maxrecs) {
     maxrecs *= 2;
     cQsoRec *atemp = new cQsoRec[maxrecs];
     for (int i = 0; i < nbrrecs; i++)
-      atemp[i] = qsorec[i];
+        atemp[i] = qsorec[i];
     delete [] qsorec;
     qsorec = atemp;
   }

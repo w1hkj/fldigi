@@ -14,42 +14,40 @@ enum ADIF_FIELD_POS {
     COUNTRY,
     CQZ, 
     DXCC, 
+    EXPORT, // flag used internally in fldigi's logbook
     FREQ, 
     GRIDSQUARE, 
+    IOTA,
+    ITUZ,
     MODE,
+	MYXCHG,  // contest exchange field #3
     NAME, 
     NOTES, 
+    OPERATOR,
+    PFX,
+    PROP_MODE,
     QSLRDATE, 
     QSLSDATE, 
+    QSL_MSG,
     QSL_RCVD,
     QSL_SENT, 
+    QSL_VIA, 
     QSO_DATE,
     QTH, 
     RST_RCVD, 
     RST_SENT,
-    STATE, 
-    STX,
-    TIME_OFF, 
-    TIME_ON, 
-    TX_PWR,
-// additional for 2.0
-    IOTA,
-    ITUZ,
-    OPERATOR,
-    PFX,
-    PROP_MODE,
-    QSL_MSG,
-    QSL_VIA, 
     RX_PWR, 
     SAT_MODE,
     SAT_NAME,
     SRX, 
+    STATE, 
+    STX,
     TEN_TEN, 
+    TIME_OFF, 
+    TIME_ON, 
+    TX_PWR,
     VE_PROV,
-// following fields are specific to fldigi's logbook
 	XCHG1,   // contest exchange field
-	MYXCHG,  // contest exchange field #3
-    EXPORT, // flag used internally in fldigi's logbook
     NUMFIELDS // counter for number of fields in enum
 };
 

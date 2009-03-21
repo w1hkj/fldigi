@@ -16,7 +16,7 @@ private:
 	FILE *adiFile;
 	void fillfield(int, char *);
 public:
-	cAdifIO () {};
+	cAdifIO ();
 	~cAdifIO () {};
 	int readAdifRec () {return 0;};
 	int writeAdifRec () {return 0;};

@@ -27,6 +27,7 @@ public:
 	cQsoRec ();
 	~cQsoRec ();
 	void putField (int, const char *);
+	void putField (int, const char *, int);
 	void addtoField (int, const char *);
 	char *getField (int);
 	void trimFields();

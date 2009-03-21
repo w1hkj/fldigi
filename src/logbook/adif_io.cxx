@@ -4,6 +4,7 @@
 
 #include <string>
 #include <iostream>
+#include <ctime>
 
 #include "adif_io.h"
 #include "config.h"
@@ -21,106 +22,129 @@ static const char *szEOL = "\n";
     
 FIELD fields[] = {
 //  TYPE,  NAME,    SIZE
-    {ADDRESS,       "ADDRESS",      40, NULL},                  // contacted stations mailing address
-    {AGE,           "AGE",           3, NULL},                  // contacted operators age in years
-    {ARRL_SECT,     "ARRL_SECT",    12, NULL},                  // contacted stations ARRL section
-    {BAND,          "BAND",          6, &btnSelectBand},        // QSO band
-    {CALL,          "CALL",         10, &btnSelectCall},        // contacted stations CALLSIGN
-    {CNTY,          "CNTY",         20, NULL},                  // secondary political subdivision, ie: county
-    {COMMENT,       "COMMENT",      80, NULL},                  // comment field for QSO
-    {CONT,          "CONT",         10, NULL},                  // contacted stations continent
-    {CONTEST_ID,    "CONTEST_ID",    6, NULL},                  // QSO contest identifier
-    {COUNTRY,       "COUNTRY",      20, &btnSelectCountry},     // contacted stations DXCC entity name
-    {CQZ,           "CQZ",           8, NULL},                  // contacted stations CQ Zone
-    {DXCC,          "DXCC",          8, &btnSelectDXCC},        // contacted stations Country Code
-    {FREQ, 			"FREQ",			10, &btnSelectFreq},        // QSO frequency in Mhz
-    {GRIDSQUARE, 	"GRIDSQUARE",	 6, &btnSelectLOC},         // contacted stations Maidenhead Grid Square
-    {MODE,			"MODE",          8, &btnSelectMode},        // QSO mode
-    {NAME, 			"NAME",         18, &btnSelectName},        // contacted operators NAME
-    {NOTES, 		"NOTES",        80, &btnSelectNotes},       // QSO notes
-    {QSLRDATE, 		"QSLRDATE",      8, &btnSelectQSLrcvd},     // QSL received date
-    {QSLSDATE, 		"QSLSDATE",      8, &btnSelectQSLsent},     // QSL sent date
-    {QSL_RCVD, 		"QSL_RCVD",      1, NULL},                  // QSL received status
-    {QSL_SENT, 		"QSL_SENT",      1, NULL},                  // QSL sent status
-    {QSO_DATE, 		"QSO_DATE",      8, &btnSelectQSOdate},     // QSO data
-    {QTH, 			"QTH",          30, &btnSelectQth},         // contacted stations city
-    {RST_RCVD, 		"RST_RCVD",      3, &btnSelectRSTrcvd},     // received signal report
-    {RST_SENT, 		"RST_SENT",      3, &btnSelectRSTsent},     // sent signal report
-    {STATE, 		"STATE",         2, &btnSelectState},       // contacted stations STATE
-    {STX, 			"STX",           8, &btnSelectSerialOUT},   // QSO transmitted serial number
-    {TIME_OFF, 		"TIME_OFF",      4, &btnSelectTimeOFF},     // HHMM or HHMMSS in UTC
-    {TIME_ON, 		"TIME_ON",       4, &btnSelectTimeON},      // HHMM or HHMMSS in UTC
-    {TX_PWR, 		"TX_PWR",        4, &btnSelectTX_pwr},      // power transmitted by this station
-// new fields
-    {IOTA, 			"IOTA",       	 6, &btnSelectIOTA},        // Islands on the air 
-    {ITUZ,			"ITUZ",       	 6, NULL},                  // ITU zone
-    {OPERATOR,		"OPERATOR",   	10, NULL},                  // Callsign of person loggin the QSO
-    {PFX,			"PFX",        	 5, NULL},                  // WPA prefix
-    {PROP_MODE,		"PROP_MODE",  	 5, NULL},                  // propogation mode
-    {QSL_MSG,		"QSL_MSG",    	80, NULL},                  // personal message to appear on qsl card
-    {QSL_VIA, 		"QSL_VIA",    	30, NULL},
-    {RX_PWR, 		"RX_PWR",     	 4, NULL},                  // power of other station in watts
-    {SAT_MODE,		"SAT_MODE",   	 8, NULL},                  // satellite mode
-    {SAT_NAME,		"SAT_NAME",   	12, NULL},                  // satellite name
-    {SRX,			"SRX",        	 5, &btnSelectSerialIN},    // received serial number for a contest QSO
-    {TEN_TEN, 		"TEN_TEN",     	10, NULL},                  // ten ten # of other station
-    {VE_PROV,		"VE_PROV",       2, &btnSelectProvince},    // 2 letter abbreviation for Canadian Province
-// fldigi specific fields
-	{XCHG1,			"XCHG1",        20, &btnSelectXchgIn},      // contest exchange #1 / free1 in xlog
-	{MYXCHG,		"MYXCHG",       20, &btnSelectMyXchg},      // contest exchange sent
-    {EXPORT,		"EXPORT",        1, NULL}                   // used to indicate record is to be exported
+    {ADDRESS,       "ADDRESS",      0, 40, NULL},                  // contacted stations mailing address
+    {AGE,           "AGE",          0,  3, NULL},                  // contacted operators age in years
+    {ARRL_SECT,     "ARRL_SECT",    0, 12, NULL},                  // contacted stations ARRL section
+    {BAND,          "BAND",         0,  6, &btnSelectBand},        // QSO band
+    {CALL,          "CALL",         0, 10, &btnSelectCall},        // contacted stations CALLSIGN
+    {CNTY,          "CNTY",         0, 20, NULL},                  // secondary political subdivision, ie: county
+    {COMMENT,       "COMMENT",      0, 80, NULL},                  // comment field for QSO
+    {CONT,          "CONT",         0, 10, NULL},                  // contacted stations continent
+    {CONTEST_ID,    "CONTEST_ID",   0,  6, NULL},                  // QSO contest identifier
+    {COUNTRY,       "COUNTRY",      0, 20, &btnSelectCountry},     // contacted stations DXCC entity name
+    {CQZ,           "CQZ",          0,  8, NULL},                  // contacted stations CQ Zone
+    {DXCC,          "DXCC",         0,  8, &btnSelectDXCC},        // contacted stations Country Code
+    {EXPORT,		"EXPORT",       0,  1, NULL},                  // used to indicate record is to be exported
+    {FREQ, 			"FREQ",			0, 10, &btnSelectFreq},        // QSO frequency in Mhz
+    {GRIDSQUARE, 	"GRIDSQUARE",	0,  6, &btnSelectLOC},         // contacted stations Maidenhead Grid Square
+    {IOTA, 			"IOTA",       	0,  6, &btnSelectIOTA},        // Islands on the air 
+    {ITUZ,			"ITUZ",       	0,  6, NULL},                  // ITU zone
+    {MODE,			"MODE",         0,  8, &btnSelectMode},        // QSO mode
+	{MYXCHG,		"MYXCHG",       0, 20, &btnSelectMyXchg},      // contest exchange sent
+    {NAME, 			"NAME",         0, 18, &btnSelectName},        // contacted operators NAME
+    {NOTES, 		"NOTES",        0, 80, &btnSelectNotes},       // QSO notes
+    {OPERATOR,		"OPERATOR",   	0, 10, NULL},                  // Callsign of person loggin the QSO
+    {PFX,			"PFX",        	0,  5, NULL},                  // WPA prefix
+    {PROP_MODE,		"PROP_MODE",  	0,  5, NULL},                  // propogation mode
+    {QSLRDATE, 		"QSLRDATE",     0,  8, &btnSelectQSLrcvd},     // QSL received date
+    {QSLSDATE, 		"QSLSDATE",     0,  8, &btnSelectQSLsent},     // QSL sent date
+    {QSL_MSG,		"QSL_MSG",    	0, 80, NULL},                  // personal message to appear on qsl card
+    {QSL_RCVD, 		"QSL_RCVD",     0,  1, NULL},                  // QSL received status
+    {QSL_SENT, 		"QSL_SENT",     0,  1, NULL},                  // QSL sent status
+    {QSL_VIA, 		"QSL_VIA",    	0, 30, NULL},
+    {QSO_DATE, 		"QSO_DATE",     0,  8, &btnSelectQSOdate},     // QSO data
+    {QTH, 			"QTH",          0, 30, &btnSelectQth},         // contacted stations city
+    {RST_RCVD, 		"RST_RCVD",     0,  3, &btnSelectRSTrcvd},     // received signal report
+    {RST_SENT, 		"RST_SENT",     0,  3, &btnSelectRSTsent},     // sent signal report
+    {RX_PWR, 		"RX_PWR",     	0,  4, NULL},                  // power of other station in watts
+    {SAT_MODE,		"SAT_MODE",   	0,  8, NULL},                  // satellite mode
+    {SAT_NAME,		"SAT_NAME",   	0, 12, NULL},                  // satellite name
+    {SRX,			"SRX",        	0,  5, &btnSelectSerialIN},    // received serial number for a contest QSO
+    {STATE, 		"STATE",        0,  2, &btnSelectState},       // contacted stations STATE
+    {STX, 			"STX",          0,  8, &btnSelectSerialOUT},   // QSO transmitted serial number
+    {TEN_TEN, 		"TEN_TEN",     	0, 10, NULL},                  // ten ten # of other station
+    {TIME_OFF, 		"TIME_OFF",     0,  4, &btnSelectTimeOFF},     // HHMM or HHMMSS in UTC
+    {TIME_ON, 		"TIME_ON",      0,  4, &btnSelectTimeON},      // HHMM or HHMMSS in UTC
+    {TX_PWR, 		"TX_PWR",       0,  4, &btnSelectTX_pwr},      // power transmitted by this station
+    {VE_PROV,		"VE_PROV",      0,  2, &btnSelectProvince},    // 2 letter abbreviation for Canadian Province
+	{XCHG1,			"XCHG1",        0, 20, &btnSelectXchgIn}       // contest exchange #1 / free1 in xlog
 };
 
+int numfields = sizeof(fields) / sizeof(FIELD);
+
+void initfields()
+{
+    for (int i = 0; i < numfields; i++)
+        fields[i].len = strlen(fields[i].name);
+}
+
 int fieldnbr (const char *s) {
-    for (int i = 0; i < EXPORT; i++)
+    for (int i = 0;  i < numfields; i++)
         if (strncasecmp( fields[i].name, s, fields[i].size) == 0) {
-            if (i == COMMENT) i = NOTES;
-            return i;
+            if (fields[i].type == COMMENT) return(NOTES);
+            return fields[i].type;
         }
     return -1;
 }
 
-int findfield (char *p) {
-    for (int i=0; i < EXPORT; i++)
-        if (strncasecmp (p, fields[i].name, strlen(fields[i].name)) == 0) {
-            if (i == COMMENT) i = NOTES;
-            return i;
-        }
+int findfield( char *p )
+{
+	int low = 0;
+	int high = numfields - 1;
+	int middle;
+	int test;
+	
     if (strncasecmp (p, "EOR>", 4) == 0)
         return -1;
-    return -2;
+    
+	while( low <= high ) {
+		middle = ( low  + high ) / 2;
+		if ( (test = strncasecmp( p, 
+                                  fields[middle].name, 
+                                  fields[middle].len ) ) == 0 ) { //match
+            if (fields[middle].type == COMMENT) return(NOTES);
+            return fields[middle].type;
+        }
+		else if( test < 0 )
+			high = middle - 1;		//search low end of array
+		else
+			low = middle + 1;		//search high end of array
+	}
+	return -2;		//search key not found
+}
+
+cAdifIO::cAdifIO ()
+{
+    initfields();
 }
 
 void cAdifIO::fillfield (int fieldnum, char *buff){
-char *p = buff;
-char numeral[8];
+const char *p = buff;
 int n, fldsize;
-    memset (numeral, 0, 8);
     n = 0;
     while (*p != ':' && n < 11) {p++; n++;}
     if (n == 11) return; // bad ADIF specifier ---> no ':' after field name
 // found first ':'
     p++;
     n = 0;
-    while (*p >= '0' && *p <= '9' && n < 8) {
-        numeral[n++] = *p;
+    fldsize = 0;
+    const char *p2 = strchr(buff,'>');
+    if (!p2) return;
+    while (p != p2) {
+        if (*p >= '0' && *p <= '9' && n < 8) {
+            fldsize = fldsize * 10 + *p - '0';
+            n++;
+        }
         p++;
     }
-    fldsize = atoi(numeral);
-    p = strchr(buff,'>'); // end of specifier +1 == > start of data
-    if (!p) return;
-    p++;
-    char *flddata = new char[fldsize+1];
-    memset (flddata, 0, fldsize + 1);
-    strncpy (flddata, p, fldsize);
-    adifqso.putField (fieldnum, (const char *)flddata); 
-    delete [] flddata;
+    adifqso.putField (fieldnum, p2+1, fldsize); 
 }
 
 void cAdifIO::readFile (const char *fname, cQsoDb *db) {
     long filesize = 0;
     char *buff;
     int found;
+    
 // open the adif file
     adiFile = fopen (fname, "r");
     if (!adiFile)
@@ -162,6 +186,7 @@ void cAdifIO::readFile (const char *fname, cQsoDb *db) {
     
     p2 = strchr(p1,'<'); // find first ADIF specifier
     adifqso.clearRec();
+    
     while (p2) {
         found = findfield(p2+1); // -2 ==> not found; -1 <eor> 0 ...N field #
 //        if (found == -2 ) return; // unknown field
