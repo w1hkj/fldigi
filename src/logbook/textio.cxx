@@ -55,6 +55,8 @@ void cTextFile::writeCSVHeader(FILE *txtFile)
 	if (btnSelectCountry->value())   fprintf (txtFile, "CNTRY\t");
 	if (btnSelectDXCC->value())      fprintf (txtFile, "DXCC\t");
 	if (btnSelectIOTA->value())      fprintf (txtFile, "IOTA\t");
+	if (btnSelectCONT->value())      fprintf (txtFile, "CONT\t");
+	if (btnSelectITUZ->value())      fprintf (txtFile, "ITUZ\t");
 	if (btnSelectQSLrcvd->value())   fprintf (txtFile, "QSL_RCVD\t");
 	if (btnSelectQSLsent->value())   fprintf (txtFile, "QSL_SENT\t");
 	if (btnSelectNotes->value())     fprintf (txtFile, "NOTES\t");
@@ -109,6 +111,10 @@ int cTextFile::writeCSVFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, "%s\t", pRec->getField(DXCC));
 				if (btnSelectIOTA->value())
 					fprintf (txtFile, "%s\t", pRec->getField(IOTA));
+				if (btnSelectCONT->value())
+					fprintf (txtFile, "%s\t", pRec->getField(CONT));
+				if (btnSelectITUZ->value())
+					fprintf (txtFile, "%s\t", pRec->getField(ITUZ));
 				if (btnSelectQSLrcvd->value())
 					fprintf (txtFile, "%s\t", pRec->getField(QSL_RCVD));
 				if (btnSelectQSLsent->value())
@@ -158,6 +164,8 @@ void cTextFile::writeTXTHeader(FILE *txtFile)
 	if (btnSelectCountry->value())   fprintf (txtFile, "%-15s", "CNTRY");
 	if (btnSelectDXCC->value())      fprintf (txtFile, "%-8s",  "DXCC");
 	if (btnSelectIOTA->value())      fprintf (txtFile, "%-8s", "IOTA");
+	if (btnSelectCONT->value())      fprintf (txtFile, "%-8s",  "CONT");
+	if (btnSelectITUZ->value())      fprintf (txtFile, "%-8s",  "ITUZ");
 	
 	if (btnSelectQSLrcvd->value())   fprintf (txtFile, "%-10s", "QSLR");
 	if (btnSelectQSLsent->value())   fprintf (txtFile, "%-10s", "QSLS");
@@ -213,6 +221,10 @@ int cTextFile::writeTXTFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, "%-8s", pRec->getField(DXCC));
 				if (btnSelectIOTA->value())
 					fprintf (txtFile, "%-8s", pRec->getField(IOTA));
+				if (btnSelectCONT->value())
+					fprintf (txtFile, "%-8s", pRec->getField(CONT));
+				if (btnSelectITUZ->value())
+					fprintf (txtFile, "%-8s", pRec->getField(ITUZ));
 				if (btnSelectQSLrcvd->value())
 					fprintf (txtFile, "%-10s", pRec->getField(QSL_RCVD));
 				if (btnSelectQSLsent->value())

@@ -17,41 +17,41 @@ decl {\#include "flinput2.h"} {public
 Function {create_logbook_dialogs()} {open return_type void
 } {
   Fl_Window wExport {
-    label {Export Setup}
-    xywh {557 451 655 340} type Double hide modal
+    label {Export Setup} open
+    xywh {537 92 655 365} type Double hide modal
   } {
     Fl_Group {} {
       label {Select Records to Export} open
-      xywh {4 4 388 305} box ENGRAVED_FRAME align 21
+      xywh {4 4 388 330} box ENGRAVED_FRAME align 21
     } {
       Fl_Check_Browser chkExportBrowser {
-        xywh {13 25 370 245}
+        xywh {13 25 370 275}
       }
       Fl_Button btnClearAll {
         label {Clear All}
         callback {chkExportBrowser->check_none();}
-        xywh {69 277 109 20}
+        xywh {69 305 109 20}
       }
       Fl_Button btnCheckAll {
         label {Check All}
         callback {chkExportBrowser->check_all();}
-        xywh {200 277 109 20}
+        xywh {200 305 109 20}
       }
     }
     Fl_Return_Button btnOK {
       label OK
       callback {wExport->hide();
 Export_log();}
-      xywh {536 312 100 20}
+      xywh {536 340 100 20}
     }
     Fl_Button btnCancel {
       label Cancel
       callback {wExport->hide();}
-      xywh {405 312 100 20}
+      xywh {405 340 100 20}
     }
     Fl_Group {} {
-      label {Select Fields to Export} open
-      xywh {392 4 258 303} box ENGRAVED_FRAME align 21
+      label {Select Fields to Export}
+      xywh {392 4 258 330} box ENGRAVED_FRAME align 21
     } {
       Fl_Button btnClearAllFields {
         label {Clear All}
@@ -77,10 +77,12 @@ btnSelectMyXchg->value(0);
 btnSelectRSTsent->value(0);
 btnSelectRSTrcvd->value(0);
 btnSelectIOTA->value(0);
-btnSelectDXCC->value(0);
+btnSelectCONT->value(0);
+btnSelectCQZ->value(0);
+btnSelectITUZ->value(0);
 btnSelectTX_pwr->value(0);
 btnSelectNotes->value(0);}
-        xywh {397 275 76 20}
+        xywh {400 305 76 20}
       }
       Fl_Button btnCheckAllFields {
         label {Check All}
@@ -107,9 +109,12 @@ btnSelectRSTsent->value(1);
 btnSelectRSTrcvd->value(1);
 btnSelectIOTA->value(1);
 btnSelectDXCC->value(1);
+btnSelectCONT->value(1);
+btnSelectCQZ->value(1);
+btnSelectITUZ->value(1);
 btnSelectTX_pwr->value(1);
 btnSelectNotes->value(1);}
-        xywh {477 275 76 20}
+        xywh {480 305 76 20}
       }
       Fl_Check_Button btnSelectCall {
         label Call
@@ -121,95 +126,107 @@ btnSelectNotes->value(1);}
       }
       Fl_Check_Button btnSelectFreq {
         label Freq
-        xywh {412 63 70 15} down_box DOWN_BOX value 1
+        xywh {412 64 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectBand {
         label Band
-        xywh {412 82 70 15} down_box DOWN_BOX
+        xywh {412 83 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectMode {
         label Mode
-        xywh {412 101 70 15} down_box DOWN_BOX value 1
+        xywh {412 103 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectQSOdate {
         label {QSO Date}
-        xywh {412 120 70 15} down_box DOWN_BOX value 1
+        xywh {412 122 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectTimeON {
         label {Time ON}
-        xywh {412 140 70 15} down_box DOWN_BOX
+        xywh {412 142 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectTimeOFF {
         label {Time OFF}
-        xywh {412 159 70 15} down_box DOWN_BOX value 1
+        xywh {412 162 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectTX_pwr {
         label {TX Power}
-        xywh {412 178 70 15} down_box DOWN_BOX
+        xywh {412 181 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectRSTsent {
         label {RST sent}
-        xywh {412 197 70 15} down_box DOWN_BOX value 1
+        xywh {412 201 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectRSTrcvd {
         label {RST rcvd}
-        xywh {412 216 70 15} down_box DOWN_BOX value 1
+        xywh {412 220 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectQth {
         label Qth
-        xywh {412 235 70 15} down_box DOWN_BOX
+        xywh {412 240 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectLOC {
         label LOC
-        xywh {412 255 70 15} down_box DOWN_BOX value 1
+        xywh {412 260 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectState {
         label State
-        xywh {520 25 70 15} down_box DOWN_BOX
+        xywh {410 280 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectProvince {
         label Province
-        xywh {520 44 70 15} down_box DOWN_BOX
+        xywh {520 24 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectCountry {
         label Country
-        xywh {520 63 70 15} down_box DOWN_BOX
+        xywh {520 44 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectNotes {
         label Notes
-        xywh {520 82 70 15} down_box DOWN_BOX
-      }
-      Fl_Check_Button btnSelectIOTA {
-        label IOTA
-        xywh {520 101 70 15} down_box DOWN_BOX
-      }
-      Fl_Check_Button btnSelectDXCC {
-        label DXCC
-        xywh {520 120 70 15} down_box DOWN_BOX
+        xywh {520 63 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectQSLrcvd {
         label {QSL rcvd date}
-        xywh {520 140 70 15} down_box DOWN_BOX
+        xywh {520 83 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectQSLsent {
         label {QSL sent date}
-        xywh {520 159 70 15} down_box DOWN_BOX
+        xywh {520 103 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectSerialIN {
         label {Serial \# in}
-        xywh {520 178 70 15} down_box DOWN_BOX
+        xywh {520 122 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectSerialOUT {
         label {Serial \# out}
-        xywh {520 197 70 15} down_box DOWN_BOX
+        xywh {520 142 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectXchgIn {
         label {Exchange In}
-        xywh {520 216 70 15} down_box DOWN_BOX
+        xywh {520 161 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectMyXchg {
         label {Exchange Out}
-        xywh {520 235 70 15} down_box DOWN_BOX
+        xywh {520 181 70 15} down_box DOWN_BOX
+      }
+      Fl_Check_Button btnSelectCONT {
+        label CONT
+        xywh {521 201 70 15} down_box DOWN_BOX
+      }
+      Fl_Check_Button btnSelectCQZ {
+        label CQZ
+        xywh {521 220 70 15} down_box DOWN_BOX
+      }
+      Fl_Check_Button btnSelectDXCC {
+        label DXCC
+        xywh {521 240 70 15} down_box DOWN_BOX
+      }
+      Fl_Check_Button btnSelectIOTA {
+        label IOTA
+        xywh {521 260 70 15} down_box DOWN_BOX
+      }
+      Fl_Check_Button btnSelectITUZ {
+        label ITUZ
+        xywh {521 280 70 15} down_box DOWN_BOX
       }
       Fl_Button btnSetFieldDefaults {
         label Defaults
@@ -238,15 +255,15 @@ btnSelectNotes->value(0);
 btnSelectIOTA->value(0);
 btnSelectDXCC->value(0);
 btnSelectTX_pwr->value(0);}
-        xywh {557 275 76 20}
+        xywh {560 305 76 20}
       }
     }
   }
   Fl_Window dlgLogbook {
-    label Logbook
-    xywh {382 388 570 350} type Double color 47 hide resizable
+    label Logbook open
+    xywh {540 120 570 350} type Double color 47 resizable visible
   } {
-    Fl_Group editGroup {open
+    Fl_Group editGroup {open selected
       xywh {2 2 565 228} box ENGRAVED_FRAME color 52
     } {
       Fl_Input inpDate_log {
@@ -298,43 +315,48 @@ btnSelectTX_pwr->value(0);}
       }
       Fl_Input inpQth_log {
         label Qth
-        tooltip {City of station worked} xywh {5 56 115 22} labelsize 12 align 5
+        tooltip {City of station worked} xywh {5 56 140 22} labelsize 12 align 5
         class Fl_Input2
       }
       Fl_Input inpState_log {
         label St
-        tooltip {US state of station worked} xywh {122 56 30 22} labelsize 12 align 5
+        tooltip {US state of station worked} xywh {148 56 30 22} labelsize 12 align 5
         class Fl_Input2
       }
       Fl_Input inpVE_Prov_log {
         label Pr
-        tooltip {Province of station worked} xywh {155 56 30 22} labelsize 12 align 5
+        tooltip {Province of station worked} xywh {182 56 30 22} labelsize 12 align 5
         class Fl_Input2
       }
       Fl_Input inpCountry_log {
         label Country
-        tooltip {Country of station worked} xywh {188 56 90 22} labelsize 12 align 5
+        tooltip {Country of station worked} xywh {216 56 97 22} labelsize 12 align 5
         class Fl_Input2
       }
       Fl_Input inpLoc_log {
         label Loc
-        tooltip {Stations grid square} xywh {281 56 75 22} labelsize 12 align 5
+        tooltip {Stations grid square} xywh {316 56 75 22} labelsize 12 align 5
         class Fl_Input2
       }
-      Fl_Input inpNotes_log {
-        label Notes
-        tooltip {Interesting notes (80 chars max)} xywh {5 95 350 57} type Multiline labelsize 12 align 5
+      Fl_Input inpTX_pwr_log {
+        label {Tx Power}
+        tooltip {Transmit power used} xywh {395 56 63 22} labelsize 12 align 5
         class Fl_Input2
       }
       Fl_Input inpQSLrcvddate_log {
         label {QSL-rcvd}
-        tooltip {QSL received on this date} xywh {455 56 100 22} labelsize 12 align 5
+        tooltip {QSL received on this date} xywh {462 56 100 22} labelsize 12 align 5
         code1 {o->format(2);}
         class Fl_DateInput
       }
+      Fl_Input inpNotes_log {
+        label Notes
+        tooltip {Interesting notes (80 chars max)} xywh {5 93 455 35} type Multiline labelsize 12 align 5
+        class Fl_Input2
+      }
       Fl_Input inpQSLsentdate_log {
         label {QSL-sent}
-        tooltip {QSL sent on this date} xywh {455 95 100 22} labelsize 12 align 5
+        tooltip {QSL sent on this date} xywh {462 95 100 22} labelsize 12 align 5
         code1 {o->format(2);}
         class Fl_DateInput
       }
@@ -383,37 +405,47 @@ btnSelectTX_pwr->value(0);}
         }
       }
       Fl_Group {} {open
-        xywh {449 118 116 80} box ENGRAVED_FRAME
+        xywh {447 154 116 73} box ENGRAVED_FRAME
       } {
         Fl_Input inpSearchString {
           label {Call Search}
-          tooltip {Search for this callsign} xywh {454 139 105 22} labelsize 12 align 5
+          tooltip {Search for this callsign} xywh {457 171 105 22} labelsize 12 align 5
           class Fl_Input2
         }
         Fl_Button bSearchPrev {
           callback cb_search
-          tooltip {Find previous} xywh {454 171 24 22} color 50 selection_color 48 align 16
+          tooltip {Find previous} xywh {452 201 24 22} color 50 selection_color 48 align 16
           code0 {bSearchPrev->image(new Fl_Pixmap(left_arrow_icon));}
         }
         Fl_Button bSearchNext {
           callback cb_search
-          tooltip {Find next} xywh {535 171 24 22} color 50 selection_color 48 align 16
+          tooltip {Find next} xywh {533 201 24 22} color 50 selection_color 48 align 16
           code0 {bSearchNext->image(new Fl_Pixmap(right_arrow_icon));}
         }
       }
-      Fl_Input inpIOTA_log {
-        label IOTA
-        tooltip {Islands on the air} xywh {357 95 80 22} labelsize 12 align 5
-        class Fl_Input2
-      }
-      Fl_Input inpTX_pwr_log {
-        label {Tx Power}
-        tooltip {Transmit power used} xywh {357 56 80 22} labelsize 12 align 5
+      Fl_Input inpCONT_log {
+        label CONT
+        tooltip Continent xywh {40 130 65 22} labelsize 12
         class Fl_Input2
       }
       Fl_Input inpDXCC_log {
         label DXCC
-        xywh {357 130 80 22} labelsize 12 align 5
+        tooltip {DXCC designator} xywh {154 130 65 22} labelsize 12
+        class Fl_Input2
+      }
+      Fl_Input inpIOTA_log {
+        label IOTA
+        tooltip {Islands on the air} xywh {268 130 65 22} labelsize 12
+        class Fl_Input2
+      }
+      Fl_Input inpCQZ_log {
+        label CQZ
+        tooltip {CQ zone} xywh {382 130 65 22} labelsize 12
+        class Fl_Input2
+      }
+      Fl_Input inpITUZ_log {
+        label ITUZ
+        tooltip {ITU zone} xywh {497 130 65 22} labelsize 12
         class Fl_Input2
       }
     }
@@ -445,7 +477,7 @@ wBrowser->gridEnabled (0);
 dlgLogbook->xclass(PACKAGE_TARNAME);} {}
   Fl_Window wCabrillo {
     label {Cabrillo Setup} open
-    xywh {557 88 655 340} type Double modal visible
+    xywh {557 88 655 340} type Double hide modal
   } {
     Fl_Group {} {
       label {Select Records to Export} open
@@ -477,12 +509,12 @@ WriteCabrillo();}
       xywh {405 312 100 20}
     }
     Fl_Group {} {
-      label {Select Cabrillo Contest & Fields} open
+      label {Select Cabrillo Contest & Fields}
       xywh {390 4 258 303} box ENGRAVED_FRAME align 21
     } {
       Fl_Group cboContest {
         label {Contest:}
-        callback {setContestType();} open selected
+        callback {setContestType();} open
         xywh {460 35 180 20} box BORDER_BOX color 7 align 4
         code0 {\#include "combo.h"}
         code1 {extern void setContestType();}

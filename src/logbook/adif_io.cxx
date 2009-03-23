@@ -29,21 +29,21 @@ FIELD fields[] = {
     {CALL,          "CALL",         0, 10, &btnSelectCall},        // contacted stations CALLSIGN
     {CNTY,          "CNTY",         0, 20, NULL},                  // secondary political subdivision, ie: county
     {COMMENT,       "COMMENT",      0, 80, NULL},                  // comment field for QSO
-    {CONT,          "CONT",         0, 10, NULL},                  // contacted stations continent
+    {CONT,          "CONT",         0, 10, &btnSelectCONT},        // contacted stations continent
     {CONTEST_ID,    "CONTEST_ID",   0,  6, NULL},                  // QSO contest identifier
     {COUNTRY,       "COUNTRY",      0, 20, &btnSelectCountry},     // contacted stations DXCC entity name
-    {CQZ,           "CQZ",          0,  8, NULL},                  // contacted stations CQ Zone
+    {CQZ,           "CQZ",          0,  8, &btnSelectCQZ},         // contacted stations CQ Zone
     {DXCC,          "DXCC",         0,  8, &btnSelectDXCC},        // contacted stations Country Code
     {EXPORT,		"EXPORT",       0,  1, NULL},                  // used to indicate record is to be exported
     {FREQ, 			"FREQ",			0, 10, &btnSelectFreq},        // QSO frequency in Mhz
     {GRIDSQUARE, 	"GRIDSQUARE",	0,  6, &btnSelectLOC},         // contacted stations Maidenhead Grid Square
     {IOTA, 			"IOTA",       	0,  6, &btnSelectIOTA},        // Islands on the air 
-    {ITUZ,			"ITUZ",       	0,  6, NULL},                  // ITU zone
+    {ITUZ,			"ITUZ",       	0,  6, &btnSelectITUZ},        // ITU zone
     {MODE,			"MODE",         0,  8, &btnSelectMode},        // QSO mode
 	{MYXCHG,		"MYXCHG",       0, 20, &btnSelectMyXchg},      // contest exchange sent
     {NAME, 			"NAME",         0, 18, &btnSelectName},        // contacted operators NAME
     {NOTES, 		"NOTES",        0, 80, &btnSelectNotes},       // QSO notes
-    {OPERATOR,		"OPERATOR",   	0, 10, NULL},                  // Callsign of person loggin the QSO
+    {OPERATOR,		"OPERATOR",   	0, 10, NULL},                  // Callsign of person logging the QSO
     {PFX,			"PFX",        	0,  5, NULL},                  // WPA prefix
     {PROP_MODE,		"PROP_MODE",  	0,  5, NULL},                  // propogation mode
     {QSLRDATE, 		"QSLRDATE",     0,  8, &btnSelectQSLrcvd},     // QSL received date
@@ -247,12 +247,13 @@ int cAdifIO::writeFile (const char *fname, cQsoDb *db)
     for (int i = 0; i < db->nbrRecs(); i++) {
         rec = db->getRec(i);
         if (rec->getField(EXPORT)[0] == 'E') {
-        	for (int j = 0; j < EXPORT; j++) {
+        	for (int j = 0; j < numfields; j++) {
         		if (fields[j].btn != NULL)
         			if ((*fields[j].btn)->value()) {
        			    	szFld = rec->getField(fields[j].type);
-        				fprintf(adiFile, adifmt,
-   	    						fields[j].name, strlen(szFld), szFld);
+                        if (strlen(szFld))
+        	    			fprintf(adiFile, adifmt,
+   	    		    				fields[j].name, strlen(szFld), szFld);
 				}
 			}
             rec->putField(EXPORT,"");
@@ -283,7 +284,7 @@ int cAdifIO::writeLog (const char *fname, cQsoDb *db) {
 //    db->SortByDate();
     for (int i = 0; i < db->nbrRecs(); i++) {
         rec = db->getRec(i);
-        for (int j = 0; j < EXPORT; j++) {
+        for (int j = 0; j < numfields; j++) {
             szFld = rec->getField(j);
             if (strlen(szFld))
                 fprintf(adiFile, adifmt,

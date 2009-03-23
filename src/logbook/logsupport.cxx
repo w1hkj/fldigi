@@ -439,6 +439,9 @@ void clearRecord() {
 	inpNotes_log->value ("");
 	inpIOTA_log->value("");
 	inpDXCC_log->value("");
+	inpCONT_log->value("");
+	inpCQZ_log->value("");
+	inpITUZ_log->value("");
 	inpTX_pwr_log->value("");
 	inpSearchString->value ("");
 	editGroup->show();
@@ -469,6 +472,9 @@ cQsoRec rec;
 	rec.putField(MYXCHG, inpMyXchg_log->value());
 	rec.putField(IOTA, inpIOTA_log->value());
 	rec.putField(DXCC, inpDXCC_log->value());
+	rec.putField(CONT, inpCONT_log->value());
+	rec.putField(CQZ, inpCQZ_log->value());
+	rec.putField(ITUZ, inpITUZ_log->value());
 	rec.putField(TX_PWR, inpTX_pwr_log->value());
 	
 	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
@@ -503,6 +509,9 @@ cQsoRec rec;
 	rec.putField(MYXCHG, inpMyXchg_log->value());
 	rec.putField(IOTA, inpIOTA_log->value());
 	rec.putField(DXCC, inpDXCC_log->value());
+	rec.putField(CONT, inpCONT_log->value());
+	rec.putField(CQZ, inpCQZ_log->value());
+	rec.putField(ITUZ, inpITUZ_log->value());
 	rec.putField(TX_PWR, inpTX_pwr_log->value());
 	qsodb.qsoUpdRec (editNbr, &rec);
 	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
@@ -551,6 +560,9 @@ void EditRecord( int i )
 	inpMyXchg_log->value(editQSO->getField(MYXCHG));
 	inpIOTA_log->value(editQSO->getField(IOTA));
 	inpDXCC_log->value(editQSO->getField(DXCC));
+	inpCONT_log->value(editQSO->getField(CONT));
+	inpCQZ_log->value(editQSO->getField(CQZ));
+	inpITUZ_log->value(editQSO->getField(ITUZ));
 	inpTX_pwr_log->value(editQSO->getField(TX_PWR));
 	editGroup->show();
 }
@@ -564,7 +576,6 @@ void AddRecord ()
 	inpTimeOn_log->value (inpTimeOn->value());
 	inpTimeOff_log->value (ztime());
     inpDate_log->value(sDate_on.c_str());
-//	inpDate_log->value (zdate());
 	inpRstR_log->value (inpRstIn->value());
 	inpRstS_log->value (inpRstOut->value());
 	{
@@ -591,6 +602,9 @@ void AddRecord ()
 	inpTX_pwr_log->value (progdefaults.mytxpower.c_str());
 	inpIOTA_log->value("");
 	inpDXCC_log->value("");
+	inpCONT_log->value("");
+	inpCQZ_log->value("");
+	inpITUZ_log->value("");
 	
 	saveRecord();
 	qsodb.SortByDate();
