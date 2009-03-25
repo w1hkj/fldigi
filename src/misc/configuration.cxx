@@ -626,7 +626,7 @@ void configuration::initInterface()
 		}
 #if USE_HAMLIB
 	} else if (chkUSEHAMLIBis) { // start the hamlib thread
-		if (hamlib_init(true)) {
+		if (hamlib_init(HamlibCMDptt)) {
 			wf->USB(true);
 			wf->setQSY(1);
 			if (docked_rig_control)

@@ -170,6 +170,8 @@ bool hamlib_init(bool bPtt)
 		show_error("Get Freq", Ex.what());
 		need_freq = false;
 	}
+
+	LOG_INFO("trying mode query");
 	try {
 		need_mode = true;
 		mode = xcvr->getMode(width);
@@ -178,9 +180,12 @@ bool hamlib_init(bool bPtt)
 		show_error("Get Mode", Ex.what());
 		need_mode = false;
 	}
+	
 	try {
-		if (hamlib_ptt == true)
-		xcvr->setPTT(RIG_PTT_OFF);
+		if (hamlib_ptt == true) {
+        	LOG_INFO("trying PTT");
+		    xcvr->setPTT(RIG_PTT_OFF);
+        }
 	}
 	catch (const RigException& Ex) {
 		show_error("Set Ptt", Ex.what());
@@ -189,6 +194,7 @@ bool hamlib_init(bool bPtt)
 
 	if (need_freq == false && need_mode == false && hamlib_ptt == false ) {
 		xcvr->close();
+		LOG_INFO("Failed freq/mode/ptt");
 		return false;
 	}
 
