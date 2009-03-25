@@ -70,7 +70,9 @@ void writeADIF () {
 	string sfname;
 
 // Append to FL_LOGBOOK adif file on Windows if and only if C:\FL_LOGBOOK exists
-	sfname = "C:/FL_LOGBOOK/log.adif";
+    sfname = TempDir;
+    sfname.append("log.adif");
+//	sfname = "C:/FL_LOGBOOK/log.adif";
 	adiFile = fopen (sfname.c_str(), "a");
 	if (adiFile) {
 // write the current record to the file  
