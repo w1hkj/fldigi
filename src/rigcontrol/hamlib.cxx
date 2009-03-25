@@ -117,9 +117,13 @@ bool hamlib_init(bool bPtt)
 
 			if (progdefaults.HamlibRTSplus)
 				xcvr->setConf("rts_state", "ON");
+            else
+                xcvr->setConf("rts_state", "OFF");
 
 			if (progdefaults.HamlibDTRplus)
 				xcvr->setConf("dtr_state", "ON");
+            else
+                xcvr->setConf("dtr_state", "OFF");
 
 			if (progdefaults.HamlibRTSCTSflow)
 				xcvr->setConf("serial_handshake", "Hardware");
