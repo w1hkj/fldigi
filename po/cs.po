@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FLDigi 3.11\n"
 "Report-Msgid-Bugs-To: w1hkj AT w1hkj DOT com\n"
-"POT-Creation-Date: 2009-03-25 19:01-0500\n"
+"POT-Creation-Date: 2009-03-26 18:03-0500\n"
 "PO-Revision-Date: 2009-03-11 15:20+0100\n"
 "Last-Translator: OK2WO <jklimosz@gmail.com>\n"
 "Language-Team: OK2WO <jklimosz@gmail.com>\n"
@@ -1316,8 +1316,8 @@ msgstr "Kratky popis anteny"
 msgid "UI"
 msgstr "UI"
 
-#: src/dialogs/confdialog.cxx:2157 src/dialogs/confdialog.cxx:2665
-#: src/dialogs/confdialog.cxx:3088
+#: src/dialogs/confdialog.cxx:2157 src/dialogs/confdialog.cxx:2666
+#: src/dialogs/confdialog.cxx:3089
 msgid "General"
 msgstr "Vseobecne"
 
@@ -1766,408 +1766,408 @@ msgstr ""
 msgid "CW"
 msgstr "CW"
 
-#: src/dialogs/confdialog.cxx:2668
+#: src/dialogs/confdialog.cxx:2669
 msgid "Receive"
 msgstr "Prijem"
 
-#: src/dialogs/confdialog.cxx:2671
+#: src/dialogs/confdialog.cxx:2672
 msgid "Filter bandwidth"
 msgstr "Sirka filtru"
 
-#: src/dialogs/confdialog.cxx:2672
+#: src/dialogs/confdialog.cxx:2673
 msgid "CW dsp filter bandwidth"
 msgstr "Sirka pasma CW DSP filtru"
 
-#: src/dialogs/confdialog.cxx:2683
+#: src/dialogs/confdialog.cxx:2684
 msgid "Tracking"
 msgstr "Sledovani"
 
-#: src/dialogs/confdialog.cxx:2684
+#: src/dialogs/confdialog.cxx:2685
 msgid "Automatic Rx speed tracking"
 msgstr "Automaticke sledovani rychlosti prijmu"
 
-#: src/dialogs/confdialog.cxx:2690
+#: src/dialogs/confdialog.cxx:2691
 msgid "Tracking range (WPM)"
 msgstr "Rozsah sledovani (WPM)"
 
-#: src/dialogs/confdialog.cxx:2691
+#: src/dialogs/confdialog.cxx:2692
 msgid "Range +/- wpm"
 msgstr "Rozsah +/- WPM"
 
-#: src/dialogs/confdialog.cxx:2706
+#: src/dialogs/confdialog.cxx:2707
 msgid "Tracked CW speed in WPM"
 msgstr "Rychlost sledovani CW (WPM)"
 
-#: src/dialogs/confdialog.cxx:2711
+#: src/dialogs/confdialog.cxx:2712
 msgid "RX WPM"
 msgstr "RX WPM"
 
-#: src/dialogs/confdialog.cxx:2716
+#: src/dialogs/confdialog.cxx:2717
 msgid "Transmit"
 msgstr "Vysilani"
 
-#: src/dialogs/confdialog.cxx:2719
+#: src/dialogs/confdialog.cxx:2720
 msgid "TX WPM"
 msgstr "TX WPM"
 
-#: src/dialogs/confdialog.cxx:2720
+#: src/dialogs/confdialog.cxx:2721
 msgid "My transmit CW WPM"
 msgstr "Rychlost vysilani CW (WPM)"
 
-#: src/dialogs/confdialog.cxx:2731
+#: src/dialogs/confdialog.cxx:2732
 msgid "Default"
 msgstr "Zakladni"
 
-#: src/dialogs/confdialog.cxx:2732
+#: src/dialogs/confdialog.cxx:2733
 msgid "The default CW speed"
 msgstr "Zakladni rychlost CW"
 
-#: src/dialogs/confdialog.cxx:2742
+#: src/dialogs/confdialog.cxx:2743
 msgid "Lower limit"
 msgstr "Spodni limit"
 
-#: src/dialogs/confdialog.cxx:2743
+#: src/dialogs/confdialog.cxx:2744
 msgid "No slower than this"
 msgstr "Ne pomaleji nez"
 
-#: src/dialogs/confdialog.cxx:2753
+#: src/dialogs/confdialog.cxx:2754
 msgid "Upper limit"
 msgstr "Horni limit"
 
-#: src/dialogs/confdialog.cxx:2754
+#: src/dialogs/confdialog.cxx:2755
 msgid "No faster than this"
 msgstr "Ne rychleji nez"
 
-#: src/dialogs/confdialog.cxx:2768
+#: src/dialogs/confdialog.cxx:2769
 msgid "Timing and QSK"
 msgstr "Casovani a QSK"
 
-#: src/dialogs/confdialog.cxx:2770
+#: src/dialogs/confdialog.cxx:2771
 msgid "Timing"
 msgstr "Casovani"
 
-#: src/dialogs/confdialog.cxx:2773
+#: src/dialogs/confdialog.cxx:2774
 msgid "Weight (%)"
 msgstr "Vaha (%)"
 
-#: src/dialogs/confdialog.cxx:2774
+#: src/dialogs/confdialog.cxx:2775
 msgid "Dot to dot-space ratio"
 msgstr "Pomer tecka/mezera"
 
-#: src/dialogs/confdialog.cxx:2784 src/dialogs/confdialog.cxx:2785
+#: src/dialogs/confdialog.cxx:2785 src/dialogs/confdialog.cxx:2786
 msgid "Dash to dot ratio"
 msgstr "Pomer carka/tecka"
 
-#: src/dialogs/confdialog.cxx:2795
+#: src/dialogs/confdialog.cxx:2796
 msgid "Edge timing"
 msgstr "Casovani hran"
 
-#: src/dialogs/confdialog.cxx:2796
+#: src/dialogs/confdialog.cxx:2797
 #, fuzzy
 msgid "Leading and Trailing edge risetimes (msec)"
 msgstr "Nabehova a ukoncovaci hrana (ms)"
 
-#: src/dialogs/confdialog.cxx:2806
+#: src/dialogs/confdialog.cxx:2807
 msgid "Edge shape"
 msgstr "Obalka hrany"
 
-#: src/dialogs/confdialog.cxx:2807
+#: src/dialogs/confdialog.cxx:2808
 msgid "Raised cosine = Hanning"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:2814
+#: src/dialogs/confdialog.cxx:2815
 msgid "Edge decreases pulse width"
 msgstr "Sirka sestupne hrany pulsu"
 
-#: src/dialogs/confdialog.cxx:2815
+#: src/dialogs/confdialog.cxx:2816
 msgid "Weight decreases with increasing edge timing"
 msgstr "Vaha se snizuje pri zvetseni casovani hran"
 
-#: src/dialogs/confdialog.cxx:2822
+#: src/dialogs/confdialog.cxx:2823
 msgid "QSK"
 msgstr "QSK"
 
-#: src/dialogs/confdialog.cxx:2825
+#: src/dialogs/confdialog.cxx:2826
 msgid "QSK on right audio channel"
 msgstr "QSK v pravem zvukovem kanalu"
 
-#: src/dialogs/confdialog.cxx:2826
+#: src/dialogs/confdialog.cxx:2827
 msgid "Generate square wave signal on right channel"
 msgstr "Vytvaret obdelnikovy signal v pravem zvukovem kanalu"
 
-#: src/dialogs/confdialog.cxx:2831
+#: src/dialogs/confdialog.cxx:2832
 msgid "Pre-keydown timing (ms)"
 msgstr "Cas predklicovani (ms)"
 
-#: src/dialogs/confdialog.cxx:2832
+#: src/dialogs/confdialog.cxx:2833
 msgid "Msec pre-keydown (+ is earlier in time)"
 msgstr "ms predklicovani (+ znamena drivejsi)"
 
-#: src/dialogs/confdialog.cxx:2841
+#: src/dialogs/confdialog.cxx:2842
 msgid "Post-keydown timing (ms)"
 msgstr "Cas odklicovani (ms)"
 
-#: src/dialogs/confdialog.cxx:2842
+#: src/dialogs/confdialog.cxx:2843
 msgid "Msec post-keydown (+ is earlier in time)"
 msgstr "ms po odklicovani (+ znamena drivejsi)"
 
-#: src/dialogs/confdialog.cxx:2851
+#: src/dialogs/confdialog.cxx:2852
 msgid "Send continuous"
 msgstr "Vysilat plynule"
 
-#: src/dialogs/confdialog.cxx:2852
+#: src/dialogs/confdialog.cxx:2853
 msgid "Send a continuous stream of test characters"
 msgstr "Vysilat plynuly proud testovacich znaku"
 
-#: src/dialogs/confdialog.cxx:2857
+#: src/dialogs/confdialog.cxx:2858
 msgid "Test char"
 msgstr "Testovaci znak"
 
-#: src/dialogs/confdialog.cxx:2858
+#: src/dialogs/confdialog.cxx:2859
 msgid "Test character for QSK adjustment"
 msgstr "Testovaci znak pro nastaveni QSK"
 
-#: src/dialogs/confdialog.cxx:2873
+#: src/dialogs/confdialog.cxx:2874
 msgid "DominoEX"
 msgstr "DominoEX"
 
-#: src/dialogs/confdialog.cxx:2877 src/dialogs/confdialog.cxx:3365
+#: src/dialogs/confdialog.cxx:2878 src/dialogs/confdialog.cxx:3365
 msgid "Secondary Text"
 msgstr "Pridavny text"
 
-#: src/dialogs/confdialog.cxx:2878 src/dialogs/confdialog.cxx:3366
+#: src/dialogs/confdialog.cxx:2879 src/dialogs/confdialog.cxx:3366
 msgid "Text to send during keyboard idle times"
 msgstr "Text vysilany behem prestavky v psani"
 
-#: src/dialogs/confdialog.cxx:2891 src/dialogs/confdialog.cxx:3379
+#: src/dialogs/confdialog.cxx:2892 src/dialogs/confdialog.cxx:3379
 msgid "Filtering"
 msgstr "Filtrovani"
 
-#: src/dialogs/confdialog.cxx:2892
+#: src/dialogs/confdialog.cxx:2893
 msgid "Use DSP filter before decoder"
 msgstr "Pouzivat pred dekodovanim DSP filtr"
 
-#: src/dialogs/confdialog.cxx:2898 src/dialogs/confdialog.cxx:3386
+#: src/dialogs/confdialog.cxx:2899 src/dialogs/confdialog.cxx:3386
 msgid "Filter bandwidth factor"
 msgstr "Faktor sirky pasma filtru"
 
-#: src/dialogs/confdialog.cxx:2899 src/dialogs/confdialog.cxx:3387
+#: src/dialogs/confdialog.cxx:2900 src/dialogs/confdialog.cxx:3387
 msgid "Filter bandwidth relative to signal width"
 msgstr "Relativni sirka vzhledem k sirce signalu"
 
-#: src/dialogs/confdialog.cxx:2909
+#: src/dialogs/confdialog.cxx:2910
 msgid "FEC"
 msgstr "FEC"
 
-#: src/dialogs/confdialog.cxx:2910
+#: src/dialogs/confdialog.cxx:2911
 msgid "Enable MultiPSK-compatible FEC"
 msgstr "Zapnout FEC kompatibilni s MultiPSK "
 
-#: src/dialogs/confdialog.cxx:2915 src/dialogs/confdialog.cxx:3403
+#: src/dialogs/confdialog.cxx:2916 src/dialogs/confdialog.cxx:3403
 msgid "CWI threshold"
 msgstr "Uroven CWI"
 
-#: src/dialogs/confdialog.cxx:2916 src/dialogs/confdialog.cxx:3404
+#: src/dialogs/confdialog.cxx:2917 src/dialogs/confdialog.cxx:3404
 msgid "CWI detection and suppression"
 msgstr "Detekce a potlaceni CWI"
 
-#: src/dialogs/confdialog.cxx:2924 src/dialogs/confdialog.cxx:3412
+#: src/dialogs/confdialog.cxx:2925 src/dialogs/confdialog.cxx:3412
 msgid "Paths (hidden)"
 msgstr "Cesty (skryte)"
 
-#: src/dialogs/confdialog.cxx:2938
+#: src/dialogs/confdialog.cxx:2939
 msgid "Feldhell"
 msgstr "Feldhell"
 
-#: src/dialogs/confdialog.cxx:2942
+#: src/dialogs/confdialog.cxx:2943
 msgid "Transmit font"
 msgstr "Vysilaci font"
 
-#: src/dialogs/confdialog.cxx:2943
+#: src/dialogs/confdialog.cxx:2944
 msgid "Select TX raster font"
 msgstr "Vybrat vysilany font"
 
-#: src/dialogs/confdialog.cxx:2950
+#: src/dialogs/confdialog.cxx:2951
 msgid "Reverse video"
 msgstr "Reverzni video"
 
-#: src/dialogs/confdialog.cxx:2951
+#: src/dialogs/confdialog.cxx:2952
 msgid "Display RX in reverse video"
 msgstr "Zobrazovat RX reverzne"
 
-#: src/dialogs/confdialog.cxx:2956
+#: src/dialogs/confdialog.cxx:2957
 msgid "Transmit width"
 msgstr "Vysilana sirka"
 
-#: src/dialogs/confdialog.cxx:2957
+#: src/dialogs/confdialog.cxx:2958
 msgid "# of multiple scans / character line"
 msgstr "pocet skenovani/znakovych radku"
 
-#: src/dialogs/confdialog.cxx:2964
+#: src/dialogs/confdialog.cxx:2965
 msgid "Halve receive width"
 msgstr "Polovicni sirka prijmu"
 
-#: src/dialogs/confdialog.cxx:2965
+#: src/dialogs/confdialog.cxx:2966
 msgid "Compress Rx in time"
 msgstr "Prubezna komprese RX"
 
-#: src/dialogs/confdialog.cxx:2970
+#: src/dialogs/confdialog.cxx:2971
 msgid "Pulse shape"
 msgstr "Hrany pulzu"
 
-#: src/dialogs/confdialog.cxx:2971
+#: src/dialogs/confdialog.cxx:2972
 msgid "Raised cosine pulse shape factor"
 msgstr "Kosinusove hrany pulzu"
 
-#: src/dialogs/confdialog.cxx:2979 src/dialogs/confdialog.cxx:3345
+#: src/dialogs/confdialog.cxx:2980 src/dialogs/confdialog.cxx:3345
 msgid "Receive filter bandwidth"
 msgstr "Sirka pasma RX filtru"
 
-#: src/dialogs/confdialog.cxx:2980 src/dialogs/confdialog.cxx:3346
+#: src/dialogs/confdialog.cxx:2981 src/dialogs/confdialog.cxx:3346
 msgid "Adjust the DSP bandwidth"
 msgstr "Nastaveni DSP filtru"
 
-#: src/dialogs/confdialog.cxx:2991
+#: src/dialogs/confdialog.cxx:2992
 msgid "Transmit periods (.) when idle"
 msgstr "Pri prestavce vysilat tecky (.)"
 
-#: src/dialogs/confdialog.cxx:2992
+#: src/dialogs/confdialog.cxx:2993
 msgid "Transmits a diddle dot when no keyboard activity"
 msgstr "Vysilat prazdne znaky pri prestavce v psani"
 
-#: src/dialogs/confdialog.cxx:2998
+#: src/dialogs/confdialog.cxx:2999
 msgid "2x Xmt Width (hidden)"
 msgstr "Dvojnasobna sirka vysilani (skryte)"
 
-#: src/dialogs/confdialog.cxx:3008
+#: src/dialogs/confdialog.cxx:3009
 msgid "MT-63"
 msgstr "MT-63"
 
-#: src/dialogs/confdialog.cxx:3013
+#: src/dialogs/confdialog.cxx:3014
 msgid "64-bit (long) interleave"
 msgstr "64 bitove (dlouhe) prokladani"
 
-#: src/dialogs/confdialog.cxx:3014
+#: src/dialogs/confdialog.cxx:3015
 msgid "Use Long interleave (default)"
 msgstr "Pouzivat dlouhe prokladani (prednastaveno)"
 
-#: src/dialogs/confdialog.cxx:3020 src/dialogs/confdialog.cxx:3075
+#: src/dialogs/confdialog.cxx:3021 src/dialogs/confdialog.cxx:3076
 msgid "8-bit extended characters"
 msgstr "8 bitove rozsirene znaky"
 
-#: src/dialogs/confdialog.cxx:3021 src/dialogs/confdialog.cxx:3076
+#: src/dialogs/confdialog.cxx:3022 src/dialogs/confdialog.cxx:3077
 msgid "Enable this for Latin-1 accented characters"
 msgstr "Zapnout pro akcentovane znaky"
 
-#: src/dialogs/confdialog.cxx:3030
+#: src/dialogs/confdialog.cxx:3031
 msgid "Olivia"
 msgstr "Olivia"
 
-#: src/dialogs/confdialog.cxx:3034
+#: src/dialogs/confdialog.cxx:3035
 msgid "Bandwidth"
 msgstr "Sirka pasma"
 
-#: src/dialogs/confdialog.cxx:3035
+#: src/dialogs/confdialog.cxx:3036
 msgid "Select bandwidth"
 msgstr "Zvolit sirku pasma"
 
-#: src/dialogs/confdialog.cxx:3042
+#: src/dialogs/confdialog.cxx:3043
 msgid "Tones"
 msgstr "Tony"
 
-#: src/dialogs/confdialog.cxx:3043
+#: src/dialogs/confdialog.cxx:3044
 msgid "Select number of tones"
 msgstr "Zvolit pocet tonu"
 
-#: src/dialogs/confdialog.cxx:3050
+#: src/dialogs/confdialog.cxx:3051
 msgid "Receive synchronizer"
 msgstr "Synchronizace prijmu"
 
-#: src/dialogs/confdialog.cxx:3053
+#: src/dialogs/confdialog.cxx:3054
 msgid "Tune margin (tone frequency spacing)"
 msgstr "Rozsah doladeni (vzdalenost tonu)"
 
-#: src/dialogs/confdialog.cxx:3054 src/dialogs/confdialog.cxx:3064
+#: src/dialogs/confdialog.cxx:3055 src/dialogs/confdialog.cxx:3065
 msgid "Change ONLY to experiment"
 msgstr "Menit POUZE pokusne"
 
-#: src/dialogs/confdialog.cxx:3063
+#: src/dialogs/confdialog.cxx:3064
 msgid "Integration period (FEC blocks)"
 msgstr "Integracni rozsah (bloky FEC)"
 
-#: src/dialogs/confdialog.cxx:3084
+#: src/dialogs/confdialog.cxx:3085
 msgid "PSK"
 msgstr "PSK"
 
-#: src/dialogs/confdialog.cxx:3090
+#: src/dialogs/confdialog.cxx:3091
 msgid "AFC behavior"
 msgstr "Vlastnosti AFC"
 
-#: src/dialogs/confdialog.cxx:3093
+#: src/dialogs/confdialog.cxx:3094
 msgid "Acquisition search range (Hz)"
 msgstr "Sledovany rozsah (Hz)"
 
-#: src/dialogs/confdialog.cxx:3094
+#: src/dialogs/confdialog.cxx:3095
 msgid "Capture signals within this frequency range"
 msgstr "Zaznamenavat signaly v tomto kmitoctovem rozsahu"
 
-#: src/dialogs/confdialog.cxx:3104
+#: src/dialogs/confdialog.cxx:3105
 msgid "Acquisition S/N (dB)"
 msgstr "Sledovany S/N (dB)"
 
-#: src/dialogs/confdialog.cxx:3105
+#: src/dialogs/confdialog.cxx:3106
 msgid "Capture signals over this threshold"
 msgstr "Zaznamenavat signaly nad touto urovni"
 
-#: src/dialogs/confdialog.cxx:3117
+#: src/dialogs/confdialog.cxx:3118
 msgid "S/N and IMD behavior"
 msgstr "Vlastnosti S/N a IMD"
 
-#: src/dialogs/confdialog.cxx:3120
+#: src/dialogs/confdialog.cxx:3121
 msgid "after"
 msgstr "po"
 
-#: src/dialogs/confdialog.cxx:3121
+#: src/dialogs/confdialog.cxx:3122
 msgid "Behavior of s/n imd"
 msgstr "Vlastnosti S/N IMD"
 
-#: src/dialogs/confdialog.cxx:3128
+#: src/dialogs/confdialog.cxx:3129
 msgid "seconds"
 msgstr "sekundach"
 
-#: src/dialogs/confdialog.cxx:3129
+#: src/dialogs/confdialog.cxx:3130
 msgid "Will occur after this time in seconds"
 msgstr "Provede se po tomto case (s)"
 
-#: src/dialogs/confdialog.cxx:3142
+#: src/dialogs/confdialog.cxx:3143
 msgid "Mail"
 msgstr "Spojeni"
 
-#: src/dialogs/confdialog.cxx:3147
+#: src/dialogs/confdialog.cxx:3148
 msgid "Use sweetspot frequencies"
 msgstr "Pouzit nastavene kmitocty"
 
-#: src/dialogs/confdialog.cxx:3148
+#: src/dialogs/confdialog.cxx:3149
 msgid "Return TX frequency to sweetspot"
 msgstr "Vratit kmitocet TX na prednastaveny"
 
-#: src/dialogs/confdialog.cxx:3154
+#: src/dialogs/confdialog.cxx:3155
 msgid "Server search range"
 msgstr "Rozsah hledani serveru"
 
-#: src/dialogs/confdialog.cxx:3155
+#: src/dialogs/confdialog.cxx:3156
 msgid "Listen for signals within this range"
 msgstr "Prijimat signaly v tomto rozsahu"
 
-#: src/dialogs/confdialog.cxx:3169
+#: src/dialogs/confdialog.cxx:3170
 msgid "Viewer"
 msgstr "Zobrazovac"
 
-#: src/dialogs/confdialog.cxx:3174
+#: src/dialogs/confdialog.cxx:3175
 msgid "Continuous scrolling"
 msgstr "Plynule zobrazeni"
 
-#: src/dialogs/confdialog.cxx:3175
+#: src/dialogs/confdialog.cxx:3176
 msgid ""
 "ON - Marquee style\n"
 "OFF - Clear & restart"
@@ -2175,27 +2175,27 @@ msgstr ""
 "Zap - plynule posouvani\n"
 "Vyp - vycisteni a restart"
 
-#: src/dialogs/confdialog.cxx:3180
+#: src/dialogs/confdialog.cxx:3181
 msgid "Channels"
 msgstr "Kanaly"
 
-#: src/dialogs/confdialog.cxx:3181
+#: src/dialogs/confdialog.cxx:3182
 msgid "Change # of psk viewer channels"
 msgstr "Zmenit pocet kanalu PSK"
 
-#: src/dialogs/confdialog.cxx:3190
+#: src/dialogs/confdialog.cxx:3191
 msgid "Start frequency"
 msgstr "Pocatecni kmitocet"
 
-#: src/dialogs/confdialog.cxx:3191
+#: src/dialogs/confdialog.cxx:3192
 msgid "Start decoding at this frequency"
 msgstr "Zacit dekodovani na tomto kmitoctu"
 
-#: src/dialogs/confdialog.cxx:3200
+#: src/dialogs/confdialog.cxx:3201
 msgid "Inactivity timeout"
 msgstr "Cas neaktivity"
 
-#: src/dialogs/confdialog.cxx:3201
+#: src/dialogs/confdialog.cxx:3202
 msgid ""
 "Clear channel text after\n"
 "# seconds of inactivity"
@@ -2203,15 +2203,15 @@ msgstr ""
 "Vycistit text kanalu po\n"
 "# sekundach neaktivity"
 
-#: src/dialogs/confdialog.cxx:3210
+#: src/dialogs/confdialog.cxx:3211
 msgid "Channel label"
 msgstr "Oznaceni kanalu"
 
-#: src/dialogs/confdialog.cxx:3211
+#: src/dialogs/confdialog.cxx:3212
 msgid "Appearance of label on each channel"
 msgstr "Oznaceni kazdeho kanalu"
 
-#: src/dialogs/confdialog.cxx:3228 src/dialogs/confdialog.cxx:4108
+#: src/dialogs/confdialog.cxx:3229 src/dialogs/confdialog.cxx:4108
 msgid "RTTY"
 msgstr "RTTY"
 
