@@ -580,7 +580,7 @@ void AddRecord ()
 	inpRstS_log->value (inpRstOut->value());
 	{
 		char Mhz[30];
-		snprintf(Mhz, sizeof(Mhz), "%10f", atof(inpFreq->value()) / 1000.0);
+		snprintf(Mhz, sizeof(Mhz), "%-10f", atof(inpFreq->value()) / 1000.0);
 		inpFreq_log->value(Mhz);
 	}		
 	inpMode_log->value (logmode);

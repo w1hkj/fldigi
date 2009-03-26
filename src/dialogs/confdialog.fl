@@ -692,7 +692,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 500 320} selection_color 50
@@ -1210,7 +1210,7 @@ progdefaults.changed = true;} open
           }
           Fl_Group tabRTTY {
             label RTTY open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {open
               xywh {5 60 490 270} box ENGRAVED_FRAME
@@ -1337,7 +1337,7 @@ progdefaults.changed = true;}
               Fl_Value_Slider sldrRTTYbandwidth {
                 label {Receive filter bandwidth}
                 callback {progdefaults.RTTY_BW = o->value();}
-                tooltip {Adjust the DSP bandwidth} xywh {100 295 300 20} type Horizontal align 5 minimum 50 maximum 1000 step 5 value 400 textsize 14
+                tooltip {Adjust the DSP bandwidth} xywh {100 295 300 20} type Horizontal align 5 minimum 50 maximum 1200 step 5 value 400 textsize 14
                 code0 {o->value(progdefaults.RTTY_BW);}
               }
             }

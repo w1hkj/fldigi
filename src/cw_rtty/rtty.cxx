@@ -163,6 +163,8 @@ void rtty::restart()
 	
     rtty_BW = shift + 3*rtty_baud;
 	progdefaults.RTTY_BW = rtty_BW;
+	sldrRTTYbandwidth->value(rtty_BW);
+	
 	wf->redraw_marker();
 
 	if (bpfilt) 
