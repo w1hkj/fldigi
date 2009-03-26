@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fldigi 3.11\n"
 "Report-Msgid-Bugs-To: w1hkj AT w1hkj DOT com\n"
-"POT-Creation-Date: 2009-03-16 20:37+0100\n"
+"POT-Creation-Date: 2009-03-25 19:01-0500\n"
 "PO-Revision-Date: 2009-02-22 21:40+0000\n"
 "Last-Translator: Stephane Fillod <fillods@users.sourceforge.net>\n"
 "Language-Team: French\n"
@@ -58,8 +58,8 @@ msgstr "Sauvegarder les macros modifiées?"
 
 #: src/dialogs/fl_digi.cxx:548 src/dialogs/fl_digi.cxx:1446
 #: src/dialogs/fl_digi.cxx:1583 src/dialogs/fl_digi.cxx:1594
-#: src/dialogs/fl_digi.cxx:1605 src/logbook/lgbook.cxx:353
-#: src/logbook/lgbook.cxx:873
+#: src/dialogs/fl_digi.cxx:1605 src/logbook/lgbook.cxx:370
+#: src/logbook/lgbook.cxx:936
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -168,8 +168,8 @@ msgstr ""
 msgid "Clear log fields?"
 msgstr "Efface champ de log?"
 
-#: src/dialogs/fl_digi.cxx:1446 src/logbook/lgbook.cxx:350
-#: src/logbook/lgbook.cxx:870
+#: src/dialogs/fl_digi.cxx:1446 src/logbook/lgbook.cxx:367
+#: src/logbook/lgbook.cxx:933
 msgid "OK"
 msgstr "OK"
 
@@ -339,7 +339,7 @@ msgstr "Digiscope"
 msgid "PSK Browser"
 msgstr "Navigateur PSK"
 
-#: src/dialogs/fl_digi.cxx:1816 src/logbook/lgbook.cxx:457
+#: src/dialogs/fl_digi.cxx:1816 src/logbook/lgbook.cxx:483
 msgid "Logbook"
 msgstr ""
 
@@ -448,7 +448,7 @@ msgstr "Effacer"
 msgid "QSO Freq"
 msgstr "Freq QSO"
 
-#: src/dialogs/fl_digi.cxx:2426 src/logbook/lgbook.cxx:475
+#: src/dialogs/fl_digi.cxx:2426 src/logbook/lgbook.cxx:501
 msgid "On"
 msgstr "Début"
 
@@ -456,25 +456,25 @@ msgstr "Début"
 msgid "Press to update"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2432 src/logbook/lgbook.cxx:487
+#: src/dialogs/fl_digi.cxx:2432 src/logbook/lgbook.cxx:513
 msgid "Off"
 msgstr "Fin"
 
-#: src/dialogs/fl_digi.cxx:2437 src/logbook/lgbook.cxx:365
-#: src/logbook/lgbook.cxx:499 src/logbook/lgbook.cxx:892
+#: src/dialogs/fl_digi.cxx:2437 src/logbook/lgbook.cxx:382
+#: src/logbook/lgbook.cxx:525 src/logbook/lgbook.cxx:955
 msgid "Call"
 msgstr "Indicatif"
 
-#: src/dialogs/fl_digi.cxx:2441 src/logbook/lgbook.cxx:369
-#: src/logbook/lgbook.cxx:511 src/logbook/lgbook.cxx:842
+#: src/dialogs/fl_digi.cxx:2441 src/logbook/lgbook.cxx:386
+#: src/logbook/lgbook.cxx:537 src/logbook/lgbook.cxx:905
 msgid "Name"
 msgstr "Nom"
 
-#: src/dialogs/fl_digi.cxx:2445 src/logbook/lgbook.cxx:547
+#: src/dialogs/fl_digi.cxx:2445 src/logbook/lgbook.cxx:573
 msgid "In"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2449 src/logbook/lgbook.cxx:559
+#: src/dialogs/fl_digi.cxx:2449 src/logbook/lgbook.cxx:585
 msgid "Out"
 msgstr ""
 
@@ -490,7 +490,7 @@ msgstr "QTH"
 msgid "City"
 msgstr "Ville"
 
-#: src/dialogs/fl_digi.cxx:2464 src/logbook/lgbook.cxx:583
+#: src/dialogs/fl_digi.cxx:2464 src/logbook/lgbook.cxx:609
 msgid "St"
 msgstr "St"
 
@@ -498,7 +498,7 @@ msgstr "St"
 msgid "US State"
 msgstr "Etat USA"
 
-#: src/dialogs/fl_digi.cxx:2470 src/logbook/lgbook.cxx:595
+#: src/dialogs/fl_digi.cxx:2470 src/logbook/lgbook.cxx:621
 msgid "Pr"
 msgstr ""
 
@@ -510,12 +510,12 @@ msgstr ""
 msgid "Cnty"
 msgstr "Pays"
 
-#: src/dialogs/fl_digi.cxx:2479 src/logbook/lgbook.cxx:419
-#: src/logbook/lgbook.cxx:607
+#: src/dialogs/fl_digi.cxx:2479 src/logbook/lgbook.cxx:436
+#: src/logbook/lgbook.cxx:633
 msgid "Country"
 msgstr "Pays"
 
-#: src/dialogs/fl_digi.cxx:2482 src/logbook/lgbook.cxx:619
+#: src/dialogs/fl_digi.cxx:2482 src/logbook/lgbook.cxx:645
 msgid "Loc"
 msgstr ""
 
@@ -547,8 +547,8 @@ msgstr ""
 msgid "Contest exchange in"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2528 src/logbook/lgbook.cxx:422
-#: src/logbook/lgbook.cxx:631
+#: src/dialogs/fl_digi.cxx:2528 src/logbook/lgbook.cxx:439
+#: src/logbook/lgbook.cxx:682
 msgid "Notes"
 msgstr "Notes"
 
@@ -612,298 +612,329 @@ msgstr ""
 msgid "Set Viewer Squelch"
 msgstr "Positionne le Squelch Visualiseur"
 
-#: src/logbook/lgbook.cxx:336
+#: src/logbook/lgbook.cxx:353
 msgid "Export Setup"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:337 src/logbook/lgbook.cxx:857
+#: src/logbook/lgbook.cxx:354 src/logbook/lgbook.cxx:920
 msgid "Select Records to Export"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:342 src/logbook/lgbook.cxx:359
-#: src/logbook/lgbook.cxx:862 src/logbook/lgbook.cxx:936
+#: src/logbook/lgbook.cxx:359 src/logbook/lgbook.cxx:376
+#: src/logbook/lgbook.cxx:925 src/logbook/lgbook.cxx:999
 msgid "Clear All"
 msgstr "Efface Tout"
 
-#: src/logbook/lgbook.cxx:345 src/logbook/lgbook.cxx:362
-#: src/logbook/lgbook.cxx:865 src/logbook/lgbook.cxx:939
+#: src/logbook/lgbook.cxx:362 src/logbook/lgbook.cxx:379
+#: src/logbook/lgbook.cxx:928 src/logbook/lgbook.cxx:1002
 msgid "Check All"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:356
+#: src/logbook/lgbook.cxx:373
 msgid "Select Fields to Export"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:373 src/logbook/lgbook.cxx:896
+#: src/logbook/lgbook.cxx:390 src/logbook/lgbook.cxx:959
 msgid "Freq"
 msgstr "Fréq"
 
-#: src/logbook/lgbook.cxx:377 src/dialogs/confdialog.cxx:2369
+#: src/logbook/lgbook.cxx:394 src/dialogs/confdialog.cxx:2369
 msgid "Band"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:380 src/logbook/lgbook.cxx:535
-#: src/logbook/lgbook.cxx:845 src/logbook/lgbook.cxx:900
+#: src/logbook/lgbook.cxx:397 src/logbook/lgbook.cxx:561
+#: src/logbook/lgbook.cxx:908 src/logbook/lgbook.cxx:963
 #: src/dialogs/confdialog.cxx:2375
 msgid "Mode"
 msgstr "Mode"
 
-#: src/logbook/lgbook.cxx:384 src/logbook/lgbook.cxx:904
+#: src/logbook/lgbook.cxx:401 src/logbook/lgbook.cxx:967
 msgid "QSO Date"
 msgstr "Date QSO"
 
-#: src/logbook/lgbook.cxx:388
+#: src/logbook/lgbook.cxx:405
 msgid "Time ON"
 msgstr "Heure ON"
 
-#: src/logbook/lgbook.cxx:391 src/logbook/lgbook.cxx:908
+#: src/logbook/lgbook.cxx:408 src/logbook/lgbook.cxx:971
 msgid "Time OFF"
 msgstr "Heure OFF"
 
-#: src/logbook/lgbook.cxx:395
+#: src/logbook/lgbook.cxx:412
 msgid "TX Power"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:398 src/logbook/lgbook.cxx:912
+#: src/logbook/lgbook.cxx:415 src/logbook/lgbook.cxx:975
 msgid "RST sent"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:402 src/logbook/lgbook.cxx:916
+#: src/logbook/lgbook.cxx:419 src/logbook/lgbook.cxx:979
 msgid "RST rcvd"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:406 src/logbook/lgbook.cxx:571
+#: src/logbook/lgbook.cxx:423 src/logbook/lgbook.cxx:597
 msgid "Qth"
 msgstr "Qth"
 
-#: src/logbook/lgbook.cxx:409
+#: src/logbook/lgbook.cxx:426
 msgid "LOC"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:413 src/dialogs/confdialog.cxx:2381
+#: src/logbook/lgbook.cxx:430 src/dialogs/confdialog.cxx:2381
 msgid "State"
 msgstr "Etat"
 
-#: src/logbook/lgbook.cxx:416
+#: src/logbook/lgbook.cxx:433
 msgid "Province"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:425 src/logbook/lgbook.cxx:784
-msgid "IOTA"
-msgstr ""
-
-#: src/logbook/lgbook.cxx:428 src/logbook/lgbook.cxx:808
-msgid "DXCC"
-msgstr ""
-
-#: src/logbook/lgbook.cxx:431
+#: src/logbook/lgbook.cxx:442
 msgid "QSL rcvd date"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:434
+#: src/logbook/lgbook.cxx:445
 msgid "QSL sent date"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:437 src/logbook/lgbook.cxx:920
+#: src/logbook/lgbook.cxx:448 src/logbook/lgbook.cxx:983
 msgid "Serial # in"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:440 src/logbook/lgbook.cxx:924
+#: src/logbook/lgbook.cxx:451 src/logbook/lgbook.cxx:987
 msgid "Serial # out"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:443 src/logbook/lgbook.cxx:738
-#: src/logbook/lgbook.cxx:928 src/dialogs/confdialog.cxx:2387
+#: src/logbook/lgbook.cxx:454 src/logbook/lgbook.cxx:776
+#: src/logbook/lgbook.cxx:991 src/dialogs/confdialog.cxx:2387
 msgid "Exchange In"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:446 src/logbook/lgbook.cxx:714
-#: src/logbook/lgbook.cxx:932 src/dialogs/confdialog.cxx:2300
+#: src/logbook/lgbook.cxx:457 src/logbook/lgbook.cxx:752
+#: src/logbook/lgbook.cxx:995 src/dialogs/confdialog.cxx:2300
 msgid "Exchange Out"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:449 src/dialogs/colorsfonts.cxx:685
+#: src/logbook/lgbook.cxx:460 src/logbook/lgbook.cxx:822
+msgid "CONT"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:463 src/logbook/lgbook.cxx:858
+#, fuzzy
+msgid "CQZ"
+msgstr "QRZ"
+
+#: src/logbook/lgbook.cxx:466 src/logbook/lgbook.cxx:834
+msgid "DXCC"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:469 src/logbook/lgbook.cxx:846
+msgid "IOTA"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:472 src/logbook/lgbook.cxx:870
+msgid "ITUZ"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:475 src/dialogs/colorsfonts.cxx:685
 #: src/dialogs/colorsfonts.cxx:742
 msgid "Defaults"
 msgstr "Défauts"
 
-#: src/logbook/lgbook.cxx:462 src/logbook/lgbook.cxx:837
+#: src/logbook/lgbook.cxx:488 src/logbook/lgbook.cxx:900
 msgid "Date"
 msgstr "Date"
 
-#: src/logbook/lgbook.cxx:463
+#: src/logbook/lgbook.cxx:489
 msgid "Date of QSO"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:476
+#: src/logbook/lgbook.cxx:502
 msgid "Time QSO started"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:488
+#: src/logbook/lgbook.cxx:514
 msgid "Time QSO ended"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:500
+#: src/logbook/lgbook.cxx:526
 msgid "Call sign worked"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:512
+#: src/logbook/lgbook.cxx:538
 msgid "Operator worked"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:523
+#: src/logbook/lgbook.cxx:549
 msgid "Freq."
 msgstr "Fréq."
 
-#: src/logbook/lgbook.cxx:524
+#: src/logbook/lgbook.cxx:550
 msgid "Frequency in MHz"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:536
+#: src/logbook/lgbook.cxx:562
 msgid "Mode in use"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:548
+#: src/logbook/lgbook.cxx:574
 msgid "Rst received"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:560
+#: src/logbook/lgbook.cxx:586
 msgid "Rst sent"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:572
+#: src/logbook/lgbook.cxx:598
 msgid "City of station worked"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:584
+#: src/logbook/lgbook.cxx:610
 msgid "US state of station worked"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:596
+#: src/logbook/lgbook.cxx:622
 msgid "Province of station worked"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:608
+#: src/logbook/lgbook.cxx:634
 msgid "Country of station worked"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:620
+#: src/logbook/lgbook.cxx:646
 msgid "Stations grid square"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:632
-msgid "Interesting notes (80 chars max)"
-msgstr ""
-
-#: src/logbook/lgbook.cxx:644
-msgid "QSL-rcvd"
-msgstr ""
-
-#: src/logbook/lgbook.cxx:645
-msgid "QSL received on this date"
-msgstr ""
-
 #: src/logbook/lgbook.cxx:657
-msgid "QSL-sent"
-msgstr ""
-
-#: src/logbook/lgbook.cxx:658
-msgid "QSL sent on this date"
-msgstr ""
-
-#: src/logbook/lgbook.cxx:670
-msgid "New"
-msgstr ""
-
-#: src/logbook/lgbook.cxx:676
-msgid "Update"
-msgstr ""
-
-#: src/logbook/lgbook.cxx:682 src/widgets/flinput2.cxx:24
-msgid "Delete"
-msgstr "Supprimer"
-
-#: src/logbook/lgbook.cxx:688
-msgid "Recs"
-msgstr ""
-
-#: src/logbook/lgbook.cxx:689
-msgid "# Records in logbook"
-msgstr ""
-
-#: src/logbook/lgbook.cxx:702
-msgid "Ser# out"
-msgstr ""
-
-#: src/logbook/lgbook.cxx:703
-msgid "Contest seral # sent"
-msgstr ""
-
-#: src/logbook/lgbook.cxx:715
-msgid "Contest exchange sent"
-msgstr ""
-
-#: src/logbook/lgbook.cxx:726
-msgid "Ser# in"
-msgstr ""
-
-#: src/logbook/lgbook.cxx:727
-msgid "Contest serial # received"
-msgstr ""
-
-#: src/logbook/lgbook.cxx:739
-msgid "Contest exchange received"
-msgstr ""
-
-#: src/logbook/lgbook.cxx:754
-msgid "Call Search"
-msgstr ""
-
-#: src/logbook/lgbook.cxx:755
-msgid "Search for this callsign"
-msgstr ""
-
-#: src/logbook/lgbook.cxx:767
-msgid "Find previous"
-msgstr ""
-
-#: src/logbook/lgbook.cxx:775
-msgid "Find next"
-msgstr ""
-
-#: src/logbook/lgbook.cxx:785
-msgid "Islands on the air"
-msgstr ""
-
-#: src/logbook/lgbook.cxx:796
 msgid "Tx Power"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:797
+#: src/logbook/lgbook.cxx:658
 msgid "Transmit power used"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:839
+#: src/logbook/lgbook.cxx:669
+msgid "QSL-rcvd"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:670
+msgid "QSL received on this date"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:683
+msgid "Interesting notes (80 chars max)"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:695
+msgid "QSL-sent"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:696
+msgid "QSL sent on this date"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:708
+msgid "New"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:714
+msgid "Update"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:720 src/widgets/flinput2.cxx:24
+msgid "Delete"
+msgstr "Supprimer"
+
+#: src/logbook/lgbook.cxx:726
+msgid "Recs"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:727
+msgid "# Records in logbook"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:740
+msgid "Ser# out"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:741
+msgid "Contest seral # sent"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:753
+msgid "Contest exchange sent"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:764
+msgid "Ser# in"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:765
+msgid "Contest serial # received"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:777
+msgid "Contest exchange received"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:792
+msgid "Call Search"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:793
+msgid "Search for this callsign"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:805
+msgid "Find previous"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:813
+msgid "Find next"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:823
+#, fuzzy
+msgid "Continent"
+msgstr "Contest"
+
+#: src/logbook/lgbook.cxx:835
+msgid "DXCC designator"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:847
+msgid "Islands on the air"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:859
+msgid "CQ zone"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:871
+#, fuzzy
+msgid "ITU zone"
+msgstr "Tons"
+
+#: src/logbook/lgbook.cxx:902
 msgid "Time"
 msgstr "Heure"
 
-#: src/logbook/lgbook.cxx:840
+#: src/logbook/lgbook.cxx:903
 msgid "Callsign"
 msgstr "Indicatif"
 
-#: src/logbook/lgbook.cxx:843
+#: src/logbook/lgbook.cxx:906
 msgid "Frequency"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:856
+#: src/logbook/lgbook.cxx:919
 msgid "Cabrillo Setup"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:876
+#: src/logbook/lgbook.cxx:939
 msgid "Select Cabrillo Contest & Fields"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:879
+#: src/logbook/lgbook.cxx:942
 msgid "Contest:"
 msgstr "Contest:"
 
