@@ -668,6 +668,14 @@ const char* configuration::strBaudRate()
 	return (szBaudRates[HamRigBaudrate + 1]);
 }
 
+int configuration::nBaudRate(const char *szBR)
+{
+    for (size_t i = 1; i < sizeof(szBaudRates); i++)
+        if (strcmp(szBaudRates[i], szBR) == 0)
+            return i - 1;
+    return 0;
+}
+
 int configuration::BaudRate(size_t n)
 {
 	if (n > sizeof(szBaudRates) + 1) return 1200;

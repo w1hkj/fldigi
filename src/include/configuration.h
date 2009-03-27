@@ -377,6 +377,7 @@ struct configuration
 	void testCommPorts();
 	const char* strBaudRate();
 	int  BaudRate(size_t);
+	int  nBaudRate(const char *);
 	void initFonts(void);
 };
 

@@ -49,6 +49,8 @@ decl {\#include "flinput2.h"} {public
 
 decl {\#include "logsupport.h"} {} 
 
+decl {\#include "hamlib.h"} {} 
+
 decl {Fl_Double_Window *dlgConfig;} {public
 } 
 
@@ -81,8 +83,8 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
-        xywh {0 25 500 345} when 1
+        callback {progdefaults.changed = true;} open
+        xywh {0 25 500 345} when 1 hide
       } {
         Fl_Group {} {
           label Station open
@@ -1400,14 +1402,14 @@ progdefaults.changed = true;}
       }
       Fl_Group tabRig {
         label Rig open
-        xywh {0 25 500 345} hide
+        xywh {0 25 500 345}
       } {
         Fl_Tabs tabsRig {open
           xywh {0 25 500 345} selection_color 50
         } {
           Fl_Group {} {
             label {Hardware PTT} open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group grpHWPTT {open
               xywh {5 100 490 190} box ENGRAVED_FRAME
@@ -1673,7 +1675,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabHamlib {
             label Hamlib open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Check_Button chkUSEHAMLIB {
               label {Use Hamlib}
@@ -1692,14 +1694,14 @@ btnInitHAMLIB->redraw();
 progdefaults.changed = true;}
               tooltip {Hamlib used for rig control} xywh {195 60 100 20} down_box DOWN_BOX
             }
-            Fl_Group grpHamlib {open
+            Fl_Group grpHamlib {open selected
               xywh {5 83 490 277} box ENGRAVED_FRAME
             } {
               Fl_Box cboHamlibRig {
                 label {Rig:}
                 callback {btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-progdefaults.changed = true;}
+hamlib_get_defaults();}
                 tooltip {Select the rig by name} xywh {65 93 160 22} box DOWN_BOX color 7 align 4
                 code0 {o->readonly();}
                 class Fl_ComboBox
@@ -1708,8 +1710,7 @@ progdefaults.changed = true;}
                 label {Device:}
                 callback {progdefaults.HamRigDevice = o->value();
 btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();
-progdefaults.changed = true;} open
+btnInitHAMLIB->redraw_label();} open
                 tooltip {Serial port} xywh {340 93 144 22}
                 code0 {o->value(progdefaults.HamRigDevice.c_str());}
               } {}
@@ -1717,46 +1718,41 @@ progdefaults.changed = true;} open
                 label {Baud rate:}
                 callback {progdefaults.HamRigBaudrate = o->value();
 btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();
-progdefaults.changed = true;} open
+btnInitHAMLIB->redraw_label();} open
                 tooltip {Serial port baud rate} xywh {385 139 99 22} down_box BORDER_BOX align 5
                 code0 {o->add(szBaudRates);}
                 code1 {o->value(progdefaults.HamRigBaudrate);}
               } {}
-              Fl_Counter cntHamlibtRetries {
+              Fl_Counter cntHamlibRetries {
                 label Retries
                 callback {progdefaults.HamlibRetries = (int)o->value();
 btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();
-progdefaults.changed = true;}
+btnInitHAMLIB->redraw_label();}
                 tooltip {Number of  times to resend
-command before giving up} xywh {15 140 75 20} type Simple align 5 minimum 1 maximum 10 step 1 value 5
+command before giving up} xywh {15 140 100 20} type Simple align 5 minimum 1 maximum 10 step 1 value 5
                 code0 {o->value(progdefaults.HamlibRetries);}
               }
               Fl_Counter cntHamlibTimeout {
                 label {Retry interval (ms)}
                 callback {progdefaults.HamlibTimeout = (int)o->value();
 btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();
-progdefaults.changed = true;}
-                tooltip {Msec's between retries} xywh {150 140 75 20} type Simple align 5 minimum 2 maximum 200 step 1 value 10
+btnInitHAMLIB->redraw_label();}
+                tooltip {Msec's between retries} xywh {150 140 100 20} type Simple align 5 minimum 2 maximum 20000 step 1 value 10
                 code0 {o->value(progdefaults.HamlibTimeout);}
               }
               Fl_Counter cntHamlibWait {
                 label {Post write delay (ms)}
                 callback {progdefaults.HamlibWait = (int)o->value();
 btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();
-progdefaults.changed = true;}
-                tooltip {Msec's between sequential commands} xywh {150 186 75 20} type Simple align 5 minimum 0 maximum 100 step 1 value 5
+btnInitHAMLIB->redraw_label();}
+                tooltip {Msec's between sequential commands} xywh {150 186 100 20} type Simple align 5 minimum 0 maximum 100 step 1 value 5
                 code0 {o->value(progdefaults.HamlibWait);}
               }
               Fl_Input inpHamlibConfig {
                 label {Advanced configuration:}
                 callback {progdefaults.HamConfig = o->value();
 btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();
-progdefaults.changed = true;}
+btnInitHAMLIB->redraw_label();}
                 tooltip {Optional configuration
 in format: param=val ...} xywh {20 326 320 22} align 5
                 code0 {inpHamlibConfig->value(progdefaults.HamConfig.c_str());}
@@ -1781,8 +1777,7 @@ effect when rig mode changes.} xywh {340 217 144 22} down_box BORDER_BOX align 5
                 callback {progdefaults.HamlibCMDptt=o->value();
 
 btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();
-progdefaults.changed = true;}
+btnInitHAMLIB->redraw_label();}
                 tooltip {PTT is a hamlib command} xywh {45 218 200 20} down_box DIAMOND_DOWN_BOX selection_color 1
                 code0 {o->value(progdefaults.HamlibCMDptt);}
               }
@@ -1790,8 +1785,7 @@ progdefaults.changed = true;}
                 label {DTR +12}
                 callback {progdefaults.HamlibDTRplus = o->value();
 btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();
-progdefaults.changed = true;}
+btnInitHAMLIB->redraw_label();}
                 tooltip {Initial state of DTR} xywh {45 248 90 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.HamlibDTRplus);}
               }
@@ -1802,8 +1796,7 @@ if (o->value() == 1) {
 chkHamlibRTSCTSflow->value(0);
 }
 btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();
-progdefaults.changed = true;}
+btnInitHAMLIB->redraw_label();}
                 tooltip {Initial state of RTS} xywh {269 248 85 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.HamlibRTSplus);}
               }
@@ -1816,8 +1809,7 @@ if (o->value() == 1) {
   progdefaults.HamlibXONXOFFflow = false;
 }
 btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();
-progdefaults.changed = true;}
+btnInitHAMLIB->redraw_label();}
                 tooltip {Rig requires RTS/CTS flow control} xywh {45 281 170 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.HamlibRTSCTSflow);}
               }
@@ -1829,8 +1821,7 @@ if (o->value() == 1) {
   progdefaults.HamlibRTSCTSflow = false;
 }
 btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();
-progdefaults.changed = true;}
+btnInitHAMLIB->redraw_label();}
                 tooltip {Rig requires Xon/Xoff flow control} xywh {269 281 185 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.HamlibXONXOFFflow);}
               }
@@ -1838,9 +1829,8 @@ progdefaults.changed = true;}
                 label {Write delay (ms)}
                 callback {progdefaults.HamlibWriteDelay = (int)o->value();
 btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();
-progdefaults.changed = true;}
-                tooltip {Msec's between sequential commands} xywh {15 186 75 20} type Simple align 5 minimum 0 maximum 100 step 1
+btnInitHAMLIB->redraw_label();}
+                tooltip {Msec's between sequential commands} xywh {15 186 100 20} type Simple align 5 minimum 0 maximum 100 step 1
                 code0 {o->value(progdefaults.HamlibWriteDelay);}
               }
             }

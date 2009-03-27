@@ -217,7 +217,7 @@ extern Fl_Group *grpHamlib;
 extern Fl_ComboBox *cboHamlibRig;
 extern Fl_Input_Choice *inpRIGdev;
 extern Fl_Choice *mnuBaudRate;
-extern Fl_Counter *cntHamlibtRetries;
+extern Fl_Counter *cntHamlibRetries;
 extern Fl_Counter *cntHamlibTimeout;
 extern Fl_Counter *cntHamlibWait;
 extern Fl_Input2 *inpHamlibConfig;

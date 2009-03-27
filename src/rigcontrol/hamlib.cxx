@@ -71,6 +71,64 @@ void show_error(const char* msg1, const char* msg2 = 0)
 	LOG_ERROR("%s", error.c_str());
 }
 
+void hamlib_get_defaults()
+{
+    char szParam[40];
+
+    progdefaults.HamRigModel = hamlib_get_rig_model(cboHamlibRig->index());
+    
+    xcvr->init(progdefaults.HamRigModel);
+    
+    if (xcvr->getCaps()->port_type != RIG_PORT_SERIAL) {
+        xcvr->close();
+        return;
+    }
+    
+    xcvr->getConf("serial_speed", szParam);
+    progdefaults.HamRigBaudrate = progdefaults.nBaudRate(szParam);
+    mnuBaudRate->value(progdefaults.HamRigBaudrate);
+
+    xcvr->getConf("post_write_delay", szParam);
+    sscanf(szParam, "%d", &progdefaults.HamlibWait);
+    cntHamlibWait->value(progdefaults.HamlibWait);
+    
+    xcvr->getConf("write_delay", szParam);
+    sscanf(szParam, "%d", &progdefaults.HamlibWriteDelay);
+    cntHamlibWriteDelay->value(progdefaults.HamlibWriteDelay);
+    
+    xcvr->getConf("timeout", szParam);
+    sscanf(szParam, "%d", &progdefaults.HamlibTimeout);
+    cntHamlibTimeout->value(progdefaults.HamlibTimeout);
+    
+    xcvr->getConf("retry", szParam);
+    sscanf(szParam, "%d", &progdefaults.HamlibRetries);
+    cntHamlibRetries->value(progdefaults.HamlibRetries);
+
+    xcvr->getConf("rts_state", szParam);
+    if (strcmp(szParam, "ON") == 0)
+        progdefaults.HamlibRTSplus = true;
+    else
+        progdefaults.HamlibRTSplus = false;
+    chkHamlibRTSplus->value(progdefaults.HamlibRTSplus);
+
+    xcvr->getConf("dtr_state", szParam);
+    if (strcmp(szParam, "ON") == 0)
+        progdefaults.HamlibDTRplus = true;
+    else
+        progdefaults.HamlibDTRplus = false;
+    btnHamlibDTRplus->value(progdefaults.HamlibDTRplus);
+    
+    progdefaults.HamlibRTSCTSflow = false;
+    progdefaults.HamlibXONXOFFflow = false;
+    xcvr->getConf("serial_handshake", szParam);
+    if (strcmp(szParam, "Hardware") == 0) progdefaults.HamlibRTSCTSflow = true;
+    if (strcmp(szParam, "XONXOFF") == 0) progdefaults.HamlibXONXOFFflow = true;
+    chkHamlibRTSCTSflow->value(progdefaults.HamlibRTSCTSflow);
+    chkHamlibXONXOFFflow->value(progdefaults.HamlibXONXOFFflow);
+
+    xcvr->close();
+}
+
 bool hamlib_init(bool bPtt)
 {
 	freq_t freq;

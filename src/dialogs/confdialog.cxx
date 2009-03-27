@@ -16,6 +16,7 @@
 #include "Viewer.h"
 #include "pskrep.h"
 #include "logsupport.h"
+#include "hamlib.h"
 Fl_Double_Window *dlgConfig; 
 
 void set_qrz_buttons(Fl_Button* b) {
@@ -1360,7 +1361,7 @@ Fl_ComboBox *cboHamlibRig=(Fl_ComboBox *)0;
 static void cb_cboHamlibRig(Fl_ComboBox*, void*) {
   btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-progdefaults.changed = true;
+hamlib_get_defaults();
 }
 
 Fl_Input_Choice *inpRIGdev=(Fl_Input_Choice *)0;
@@ -1369,7 +1370,6 @@ static void cb_inpRIGdev(Fl_Input_Choice* o, void*) {
   progdefaults.HamRigDevice = o->value();
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-progdefaults.changed = true;
 }
 
 Fl_Choice *mnuBaudRate=(Fl_Choice *)0;
@@ -1378,16 +1378,14 @@ static void cb_mnuBaudRate(Fl_Choice* o, void*) {
   progdefaults.HamRigBaudrate = o->value();
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-progdefaults.changed = true;
 }
 
-Fl_Counter *cntHamlibtRetries=(Fl_Counter *)0;
+Fl_Counter *cntHamlibRetries=(Fl_Counter *)0;
 
-static void cb_cntHamlibtRetries(Fl_Counter* o, void*) {
+static void cb_cntHamlibRetries(Fl_Counter* o, void*) {
   progdefaults.HamlibRetries = (int)o->value();
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-progdefaults.changed = true;
 }
 
 Fl_Counter *cntHamlibTimeout=(Fl_Counter *)0;
@@ -1396,7 +1394,6 @@ static void cb_cntHamlibTimeout(Fl_Counter* o, void*) {
   progdefaults.HamlibTimeout = (int)o->value();
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-progdefaults.changed = true;
 }
 
 Fl_Counter *cntHamlibWait=(Fl_Counter *)0;
@@ -1405,7 +1402,6 @@ static void cb_cntHamlibWait(Fl_Counter* o, void*) {
   progdefaults.HamlibWait = (int)o->value();
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-progdefaults.changed = true;
 }
 
 Fl_Input2 *inpHamlibConfig=(Fl_Input2 *)0;
@@ -1414,7 +1410,6 @@ static void cb_inpHamlibConfig(Fl_Input2* o, void*) {
   progdefaults.HamConfig = o->value();
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-progdefaults.changed = true;
 }
 
 Fl_Button *btnInitHAMLIB=(Fl_Button *)0;
@@ -1439,7 +1434,6 @@ static void cb_btnHamlibCMDptt(Fl_Round_Button* o, void*) {
 
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-progdefaults.changed = true;
 }
 
 Fl_Check_Button *btnHamlibDTRplus=(Fl_Check_Button *)0;
@@ -1448,7 +1442,6 @@ static void cb_btnHamlibDTRplus(Fl_Check_Button* o, void*) {
   progdefaults.HamlibDTRplus = o->value();
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-progdefaults.changed = true;
 }
 
 Fl_Check_Button *chkHamlibRTSplus=(Fl_Check_Button *)0;
@@ -1460,7 +1453,6 @@ chkHamlibRTSCTSflow->value(0);
 }
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-progdefaults.changed = true;
 }
 
 Fl_Check_Button *chkHamlibRTSCTSflow=(Fl_Check_Button *)0;
@@ -1474,7 +1466,6 @@ if (o->value() == 1) {
 }
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-progdefaults.changed = true;
 }
 
 Fl_Check_Button *chkHamlibXONXOFFflow=(Fl_Check_Button *)0;
@@ -1487,7 +1478,6 @@ if (o->value() == 1) {
 }
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-progdefaults.changed = true;
 }
 
 Fl_Counter *cntHamlibWriteDelay=(Fl_Counter *)0;
@@ -1496,7 +1486,6 @@ static void cb_cntHamlibWriteDelay(Fl_Counter* o, void*) {
   progdefaults.HamlibWriteDelay = (int)o->value();
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-progdefaults.changed = true;
 }
 
 Fl_Group *grpMemmap=(Fl_Group *)0;
@@ -2078,6 +2067,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { tabOperator = new Fl_Group(0, 25, 500, 345, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -3429,10 +3419,10 @@ an merging"));
         tabModems->end();
       } // Fl_Group* tabModems
       { tabRig = new Fl_Group(0, 25, 500, 345, _("Rig"));
-        tabRig->hide();
         { tabsRig = new Fl_Tabs(0, 25, 500, 345);
           tabsRig->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hardware PTT"));
+            o->hide();
             { grpHWPTT = new Fl_Group(5, 100, 490, 190);
               grpHWPTT->box(FL_ENGRAVED_FRAME);
               { inpTTYdev = new Fl_Input_Choice(200, 143, 150, 22, _("Device:"));
@@ -3614,7 +3604,6 @@ an merging"));
             o->end();
           } // Fl_Group* o
           { tabHamlib = new Fl_Group(0, 50, 500, 320, _("Hamlib"));
-            tabHamlib->hide();
             { chkUSEHAMLIB = new Fl_Check_Button(195, 60, 100, 20, _("Use Hamlib"));
               chkUSEHAMLIB->tooltip(_("Hamlib used for rig control"));
               chkUSEHAMLIB->down_box(FL_DOWN_BOX);
@@ -3649,29 +3638,29 @@ an merging"));
                 o->add(szBaudRates);
                 o->value(progdefaults.HamRigBaudrate);
               } // Fl_Choice* mnuBaudRate
-              { Fl_Counter* o = cntHamlibtRetries = new Fl_Counter(15, 140, 75, 20, _("Retries"));
-                cntHamlibtRetries->tooltip(_("Number of  times to resend\ncommand before giving up"));
-                cntHamlibtRetries->type(1);
-                cntHamlibtRetries->minimum(1);
-                cntHamlibtRetries->maximum(10);
-                cntHamlibtRetries->step(1);
-                cntHamlibtRetries->value(5);
-                cntHamlibtRetries->callback((Fl_Callback*)cb_cntHamlibtRetries);
-                cntHamlibtRetries->align(FL_ALIGN_TOP_LEFT);
+              { Fl_Counter* o = cntHamlibRetries = new Fl_Counter(15, 140, 100, 20, _("Retries"));
+                cntHamlibRetries->tooltip(_("Number of  times to resend\ncommand before giving up"));
+                cntHamlibRetries->type(1);
+                cntHamlibRetries->minimum(1);
+                cntHamlibRetries->maximum(10);
+                cntHamlibRetries->step(1);
+                cntHamlibRetries->value(5);
+                cntHamlibRetries->callback((Fl_Callback*)cb_cntHamlibRetries);
+                cntHamlibRetries->align(FL_ALIGN_TOP_LEFT);
                 o->value(progdefaults.HamlibRetries);
-              } // Fl_Counter* cntHamlibtRetries
-              { Fl_Counter* o = cntHamlibTimeout = new Fl_Counter(150, 140, 75, 20, _("Retry interval (ms)"));
+              } // Fl_Counter* cntHamlibRetries
+              { Fl_Counter* o = cntHamlibTimeout = new Fl_Counter(150, 140, 100, 20, _("Retry interval (ms)"));
                 cntHamlibTimeout->tooltip(_("Msec\'s between retries"));
                 cntHamlibTimeout->type(1);
                 cntHamlibTimeout->minimum(2);
-                cntHamlibTimeout->maximum(200);
+                cntHamlibTimeout->maximum(20000);
                 cntHamlibTimeout->step(1);
                 cntHamlibTimeout->value(10);
                 cntHamlibTimeout->callback((Fl_Callback*)cb_cntHamlibTimeout);
                 cntHamlibTimeout->align(FL_ALIGN_TOP_LEFT);
                 o->value(progdefaults.HamlibTimeout);
               } // Fl_Counter* cntHamlibTimeout
-              { Fl_Counter* o = cntHamlibWait = new Fl_Counter(150, 186, 75, 20, _("Post write delay (ms)"));
+              { Fl_Counter* o = cntHamlibWait = new Fl_Counter(150, 186, 100, 20, _("Post write delay (ms)"));
                 cntHamlibWait->tooltip(_("Msec\'s between sequential commands"));
                 cntHamlibWait->type(1);
                 cntHamlibWait->minimum(0);
@@ -3737,7 +3726,7 @@ an merging"));
                 chkHamlibXONXOFFflow->callback((Fl_Callback*)cb_chkHamlibXONXOFFflow);
                 o->value(progdefaults.HamlibXONXOFFflow);
               } // Fl_Check_Button* chkHamlibXONXOFFflow
-              { Fl_Counter* o = cntHamlibWriteDelay = new Fl_Counter(15, 186, 75, 20, _("Write delay (ms)"));
+              { Fl_Counter* o = cntHamlibWriteDelay = new Fl_Counter(15, 186, 100, 20, _("Write delay (ms)"));
                 cntHamlibWriteDelay->tooltip(_("Msec\'s between sequential commands"));
                 cntHamlibWriteDelay->type(1);
                 cntHamlibWriteDelay->minimum(0);

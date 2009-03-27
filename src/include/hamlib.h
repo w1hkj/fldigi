@@ -22,6 +22,7 @@ extern int	hamlib_setmode(rmode_t);
 extern rmode_t hamlib_getmode();
 extern int	hamlib_setwidth(pbwidth_t);
 extern pbwidth_t hamlib_getwidth();
+extern void hamlib_get_defaults();
 
 #endif
 
