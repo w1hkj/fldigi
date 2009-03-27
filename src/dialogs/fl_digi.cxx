@@ -888,6 +888,19 @@ void cb_mnuConfigModems(Fl_Menu_*, void*) {
 void cb_logfile(Fl_Widget* w, void*)
 {
 	progStatus.LOGenabled = reinterpret_cast<Fl_Menu_*>(w)->mvalue()->value();
+	if (progStatus.LOGenabled == true) {
+    	Date tdy;
+	    string lfname = HomeDir;
+	    lfname.append("fldigi");
+	    lfname.append(tdy.szDate(2));
+	    lfname.append(".log");
+	   	logfile = new cLogfile(lfname);
+    	logfile->log_to_file_start();
+    } else {
+        logfile->log_to_file_stop();
+        delete logfile;
+        logfile = 0;
+    }
 }
 
 #if USE_SNDFILE

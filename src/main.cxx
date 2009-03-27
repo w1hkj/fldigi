@@ -203,14 +203,6 @@ int main(int argc, char ** argv)
 	xmlfname = HomeDir; 
 	xmlfname.append("rig.xml");
 	
-	Date tdy;
-	string lfname = HomeDir;
-	lfname.append("fldigi");
-	lfname.append(tdy.szDate(2));
-	lfname.append(".log");
-	logfile = new cLogfile(lfname);
-	logfile->log_to_file_start();
-
 #ifndef __CYGWIN__
    	txmsgid = msgget( (key_t) progdefaults.tx_msgid, 0666 );
 #else
@@ -255,6 +247,16 @@ int main(int argc, char ** argv)
 		progdefaults.XmlRigFilename = xmlfname;
 
 	progStatus.loadLastState();
+
+	if (progStatus.LOGenabled == true) {
+    	Date tdy;
+	    string lfname = HomeDir;
+	    lfname.append("fldigi");
+	    lfname.append(tdy.szDate(2));
+	    lfname.append(".log");
+	    logfile = new cLogfile(lfname);
+	    logfile->log_to_file_start();
+    }
 
 	Fl::scheme(progdefaults.ui_scheme.c_str());
 	progdefaults.initFonts();
