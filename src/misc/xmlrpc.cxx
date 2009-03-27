@@ -742,6 +742,7 @@ void xmlrpc_set_qsy(long long rfc, long long fmid)
 		active_modem->set_freq((int)fmid);
 	wf->rfcarrier(rfc);
 	wf->movetocenter();
+	qsoFreqDisp->value(rfc);
 }
 
 class Main_set_freq : public xmlrpc_c::method
