@@ -24,5 +24,7 @@ extern bool rigCAT_init(bool);
 extern void rigCAT_set_ptt(int);
 extern void rigCAT_set_qsy(long long f, long long fmid);
 
+extern void rigCAT_defaults();
+
 #endif
 

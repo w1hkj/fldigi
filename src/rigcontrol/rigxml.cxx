@@ -43,6 +43,15 @@ void parseLSBMODES(size_t &);
 void parseCOMMENTS(size_t &);
 void parseDISCARD(size_t &);
 
+void parseWRITE_DELAY(size_t &);
+void parsePOST_WRITE_DELAY(size_t &);
+void parseRETRIES(size_t &);
+void parseTIMEOUT(size_t &);
+void parseBAUDRATE(size_t &);
+void parseRTSCTS(size_t &);
+void parseCMDPTT(size_t &);
+void parseECHO(size_t &);
+
 void parseIOSsymbol(size_t &);
 void parseIOSsize(size_t &);
 void parseIOSbytes(size_t &);
@@ -76,7 +85,7 @@ list<MODE>		lmodeCMD;
 list<MODE>		lmodeREPLY;
 list<string> 	LSBmodes;
 
-XMLRIG rig;
+XMLRIG xmlrig;
 
 XMLIOS iosTemp;
 
@@ -98,6 +107,14 @@ TAGS rigdeftags[] = {
 	{"<!--",        parseCOMMENTS},
 	{"<PROGRAMMER", parseDISCARD},
 	{"<STATUS",		parseDISCARD},
+	{"<WRITE_DELAY", parseWRITE_DELAY},
+	{"<POST_WRITE_DELAY", parsePOST_WRITE_DELAY},
+	{"<RETRIES", parseRETRIES},
+	{"<TIMEOUT", parseTIMEOUT},
+	{"<BAUDRATE", parseBAUDRATE},
+	{"<RTSCTS", parseRTSCTS},
+	{"<ECHO", parseECHO},
+	{"<CMDPTT", parseCMDPTT},
 	{0, 0} 
 };
 
@@ -455,6 +472,68 @@ void parseRIG(size_t &p0)
 }
 
 //---------------------------------------------------------------------
+// Parse Baudrate, write_delay, post_write_delay, timeout, retries
+// RTSCTS handshake
+//---------------------------------------------------------------------
+
+void parseBAUDRATE(size_t &p0)
+{
+    string sVal = getElement(p0);
+    xmlrig.baud = progdefaults.nBaudRate(sVal.c_str());
+	size_t pend = tagEnd(p0);
+	p0 = pend;
+}
+
+void parseWRITE_DELAY(size_t &p0){
+    int val = getInt(p0);
+    xmlrig.write_delay = val;
+    size_t pend = tagEnd(p0);
+	p0 = pend;
+}
+
+void parsePOST_WRITE_DELAY(size_t &p0){
+    int val = getInt(p0);
+    xmlrig.post_write_delay = val;
+	size_t pend = tagEnd(p0);
+	p0 = pend;
+}
+
+void parseRETRIES(size_t &p0){
+    int val = getInt(p0);
+    xmlrig.retries = val;
+	size_t pend = tagEnd(p0);
+	p0 = pend;
+}
+
+void parseTIMEOUT(size_t &p0){
+    int val = getInt(p0);
+    xmlrig.timeout = val;
+	size_t pend = tagEnd(p0);
+	p0 = pend;
+}
+
+void parseRTSCTS(size_t &p0){
+    bool val = getBool(p0);
+    xmlrig.rtscts = val;
+	size_t pend = tagEnd(p0);
+	p0 = pend;
+}
+
+void parseCMDPTT(size_t &p0) {
+    bool val = getBool(p0);
+    xmlrig.cmdptt = val;
+    size_t pend = tagEnd(p0);
+    p0 = pend;
+}
+
+void parseECHO(size_t &p0) {
+    bool val = getBool(p0);
+    xmlrig.echo = val;
+    size_t pend = tagEnd(p0);
+    p0 = pend;
+}
+
+//---------------------------------------------------------------------
 // Parse IOS (serial stream format) definitions
 //---------------------------------------------------------------------
 
@@ -722,5 +801,7 @@ void selectRigXmlFilename()
     if (p) {
    		progdefaults.XmlRigFilename = p;
    		txtXmlRigFilename->value(fl_filename_name(p));
+   		readRigXML();
+   		rigCAT_defaults();
 	}
 }

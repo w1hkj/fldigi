@@ -33,6 +33,7 @@
 #include "debug.h"
 #include "threads.h"
 #include "qrunner.h"
+#include "confdialog.h"
 
 LOG_SET_SOURCE(debug::LOG_RIGCONTROL);
 
@@ -915,6 +916,43 @@ void rigCAT_sendINIT()
 			hexout(strCmd, 0);
 		pthread_mutex_unlock(&rigCAT_mutex);
 	}
+}
+
+void rigCAT_defaults()
+{
+    progdefaults.XmlRigBaudrate = xmlrig.baud;
+    mnuXmlRigBaudrate->value(xmlrig.baud);
+    
+    progdefaults.RigCatRTSplus = xmlrig.rts;
+    btnRigCatRTSplus->value(xmlrig.rts);
+    
+	progdefaults.RigCatDTRplus = xmlrig.dtr;
+	btnRigCatDTRplus->value(xmlrig.dtr);
+	
+	progdefaults.RigCatRTSptt = xmlrig.rtsptt;
+	btnRigCatRTSptt->value(xmlrig.rtsptt);
+	
+	progdefaults.RigCatDTRptt = xmlrig.dtrptt;
+	btnRigCatDTRptt->value(xmlrig.dtrptt);
+	
+	progdefaults.RigCatRTSCTSflow = xmlrig.rtscts;
+	chkRigCatRTSCTSflow->value(xmlrig.rtscts);
+
+    progdefaults.RigCatRetries = xmlrig.retries;
+    cntRigCatRetries->value(xmlrig.retries);
+    
+    progdefaults.RigCatTimeout = xmlrig.timeout;
+    cntRigCatTimeout->value(xmlrig.timeout);
+    
+    progdefaults.RigCatWait = xmlrig.write_delay;
+    cntRigCatWait->value(xmlrig.write_delay);
+    
+    progdefaults.RigCatECHO = xmlrig.echo;
+    btnRigCatEcho->value(xmlrig.echo);
+    
+    progdefaults.RigCatCMDptt = xmlrig.cmdptt;
+    btnRigCatCMDptt->value(xmlrig.cmdptt);
+
 }
 
 bool rigCAT_init(bool useXML)

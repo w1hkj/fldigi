@@ -71,6 +71,12 @@ struct XMLRIG {
 	bool	rts;
 	bool	rtsptt;
 	bool	rtscts;
+	int     write_delay;
+	int     post_write_delay;
+	int     timeout;
+	int     retries;
+	bool    echo;
+	bool    cmdptt;
 	void clear() {
 		port = "";
 		baud = 1200;
@@ -79,6 +85,12 @@ struct XMLRIG {
 		rts = false;
 		rtsptt = false;
 		rtscts = false;
+		echo = false;
+		cmdptt = false;
+		write_delay = 0;
+		post_write_delay = 50;
+		timeout = 200;
+		retries = 5;
 	}
 };
 	
@@ -91,7 +103,7 @@ extern std::list<BW> lbws;
 extern std::list<BW> lbwCMD;
 extern std::list<BW> lbwREPLY;
 extern std::list<std::string> LSBmodes;
-extern XMLRIG rig;
+extern XMLRIG xmlrig;
 
 extern bool readRigXML();
 extern void	selectRigXmlFilename();
