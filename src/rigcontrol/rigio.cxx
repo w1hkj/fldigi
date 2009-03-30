@@ -61,77 +61,46 @@ string noCATwidth = "";
 
 static void *rigCAT_loop(void *args);
 
-bool readpending = false;
-int  readtimeout;
+int  readtimeout, readwait;
 
 bool hexout(const string& s, int retnbr)
 {
-// thread might call this function while a read from the rig is in process
-// wait here until that processing is finished or a timeout occurs
-// reset the readpending & return false if a timeout occurs
-
 	LOG_DEBUG("cmd = %s", str2hex(s.data(), s.length()));
-
-	readtimeout = (progdefaults.RigCatWait + progdefaults.RigCatTimeout) * progdefaults.RigCatRetries + 2000; // 2 second min timeout
-	while (readpending && readtimeout--)
-		MilliSleep(1);
-	if (readtimeout == 0) {
-		readpending = false;
-		LOG_ERROR("rigio timeout!");
-		return false;
-	}
-
-	readpending = true;
 	
 	for (int n = 0; n < progdefaults.RigCatRetries; n++) {	
 		int num = 0;
 		memset(sendbuff,0, 200);
 		for (unsigned int i = 0; i < s.length(); i++)
 			sendbuff[i] = s[i];
-
+// write the command string
 		rigio.FlushBuffer();
 		rigio.WriteBuffer(sendbuff, s.size());
 		if (progdefaults.RigCatECHO == true) {
-//#ifdef __CYGWIN__
 			MilliSleep(10);
-//#endif
 			num = rigio.ReadBuffer (replybuff, s.size());
 			LOG_DEBUG("echoed = %s", str2hex(replybuff, num));
 		}
-
-		memset (replybuff, 0, 200);
-	
-// wait interval before trying to read response
-		if ((readtimeout = progdefaults.RigCatWait) > 0)
-			while (readtimeout--)
+// wait before trying to read response
+		if ((readwait = progdefaults.RigCatWait) > 0)
+			while (readwait--)
 				MilliSleep(1);
-
+// read the rig response if one is expected
+		memset (replybuff, 0, 200);
 		if (retnbr > 0) {
-			LOG_DEBUG("waiting for %d bytes", retnbr);
-
 			num = rigio.ReadBuffer (replybuff, retnbr > 200 ? 200 : retnbr);
-
-// debug code
 			if (num)
-				LOG_DEBUG("resp (%d) = %s", n, str2hex(replybuff, num));
+				LOG_DEBUG("read %d bytes: %s", num, str2hex(replybuff, num));
 			else
-				LOG_DEBUG("resp (%d) no reply", n);
+				LOG_DEBUG("no reply ... retry # %d", n);
+            if (num == retnbr)
+                return true; // response OK
 		} else
-			LOG_DEBUG("No response needed");		
-
-		if (retnbr == 0 || num == retnbr) {
-			readpending = false;
-			return true;
-//
+		    return true; // no response needed
 		if ((readtimeout = progdefaults.RigCatTimeout) > 0)
 			while (readtimeout--)
 				MilliSleep(1);
-
-		}
 	}
-
-	readpending = false;
-	return false;
+	return false; // timed out
 }
 
 string to_bcd_be(long long freq, int len)
