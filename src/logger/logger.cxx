@@ -52,7 +52,6 @@
 const char *logmode;
 char logdate[32];
 char logtime[32];
-char strFreqMhz[20];
 
 static string log_msg;
 static string errmsg;
@@ -69,14 +68,12 @@ void writeADIF () {
 	FILE *adiFile;
 	string sfname;
 
-// Append to FL_LOGBOOK adif file on Windows if and only if C:\FL_LOGBOOK exists
     sfname = TempDir;
     sfname.append("log.adif");
-//	sfname = "C:/FL_LOGBOOK/log.adif";
 	adiFile = fopen (sfname.c_str(), "a");
 	if (adiFile) {
 // write the current record to the file  
-		fprintf(adiFile,"%s", adif.c_str());
+		fprintf(adiFile,"%s<EOR>\n", adif.c_str());
 		fclose (adiFile);
 	}
 }
@@ -104,7 +101,7 @@ void submit_ADIF(void)
 	putadif(TIME_ON, inpTimeOn_log->value());
 	putadif(TIME_OFF, inpTimeOff_log->value());
 	putadif(CALL, inpCall_log->value());
-	putadif(FREQ, strFreqMhz);
+	putadif(FREQ, inpFreq_log->value());
 	putadif(MODE, logmode);
 	putadif(RST_SENT, inpRstS_log->value());
 	putadif(RST_RCVD, inpRstR_log->value());
@@ -149,8 +146,6 @@ static void send_IPC_log(void)
 	const char   LOG_MSEPARATOR[2] = {1,0};
 	int msqid, len;
 	
-	snprintf(strFreqMhz, sizeof(strFreqMhz), "%-10f", wf->dFreq()/1.0e6);
-
 	log_msg = "";
 	log_msg = log_msg + "program:"	+ PACKAGE_NAME + " v " 	+ PACKAGE_VERSION + LOG_MSEPARATOR;
 	addtomsg("version:",	LOG_MVERSION);
@@ -158,7 +153,7 @@ static void send_IPC_log(void)
 	addtomsg("time:", 		inpTimeOn_log->value());
 	addtomsg("endtime:", 	inpTimeOff_log->value());
 	addtomsg("call:",		inpCall_log->value());
-	addtomsg("mhz:",		strFreqMhz);
+	addtomsg("mhz:",		inpFreq_log->value());
 	addtomsg("mode:",		logmode);
 	addtomsg("tx:",			inpRstS_log->value());
 	addtomsg("rx:",			inpRstR_log->value());

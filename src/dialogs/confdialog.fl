@@ -1694,14 +1694,16 @@ btnInitHAMLIB->redraw();
 progdefaults.changed = true;}
               tooltip {Hamlib used for rig control} xywh {195 60 100 20} down_box DOWN_BOX
             }
-            Fl_Group grpHamlib {open selected
+            Fl_Group grpHamlib {open
               xywh {5 83 490 277} box ENGRAVED_FRAME
             } {
               Fl_Box cboHamlibRig {
                 label {Rig:}
                 callback {btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-hamlib_get_defaults();}
+\#if USE_HAMLIB
+hamlib_get_defaults();
+\#endif} selected
                 tooltip {Select the rig by name} xywh {65 93 160 22} box DOWN_BOX color 7 align 4
                 code0 {o->readonly();}
                 class Fl_ComboBox

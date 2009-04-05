@@ -385,7 +385,7 @@ FL_LOCK_D();
 			if (i <= progdefaults.LowFreqCutoff)
 				pw = 0.0;
 			else
-				pw = fftout[n]*fftout[n];
+				pw = fftout[n]*fftout[n] + fftout[n+1]*fftout[n+1];
 			pwr[i] = pw;
 			ffth = (int)(10.0 * log10(pw + 1e-10) );
 			fft_db[ptrFFTbuff * IMAGE_WIDTH + i] = log2disp(ffth);

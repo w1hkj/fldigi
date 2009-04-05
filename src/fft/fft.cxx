@@ -71,7 +71,7 @@ void Cfft::cdft(double *aCmpx)
 		}
 	bitrv2(fftsiz, ip + 2, aCmpx);
 	cftfsub(fftsiz, aCmpx);
-	double scale = 2.0 / fftlen;
+	double scale = 1.0 / fftlen;
 	for (int i = 0; i < fftsiz; i++) aCmpx[i] = aCmpx[i] * scale;
 }
 
@@ -115,7 +115,7 @@ void Cfft::rdft(double *RealData) // RealData is 2N long
     double xi = RealData[0] - RealData[1];
     RealData[0] += RealData[1];
     RealData[1] = xi;
-	double scale = 2.0 / fftlen;
+	double scale = 1.0 / fftlen;
 	for (int i = 0; i < fftsiz; i++) RealData[i] *= scale;
 
 }

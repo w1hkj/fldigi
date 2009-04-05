@@ -1361,7 +1361,9 @@ Fl_ComboBox *cboHamlibRig=(Fl_ComboBox *)0;
 static void cb_cboHamlibRig(Fl_ComboBox*, void*) {
   btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
+#if USE_HAMLIB
 hamlib_get_defaults();
+#endif
 }
 
 Fl_Input_Choice *inpRIGdev=(Fl_Input_Choice *)0;
