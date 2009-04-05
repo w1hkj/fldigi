@@ -188,6 +188,7 @@ public:
 			case WF_FFT_HANNING: HanningWindow(fftwindow, FFT_LEN*2); break;
 			case WF_FFT_TRIANGULAR: TriangularWindow(fftwindow, FFT_LEN*2); break;
 		}
+		prefilter = v;
 //		switch (v) {
 //			case 0: wfft->setWindow(FFT_NONE); break;
 //			case 1: wfft->setWindow(FFT_BLACKMAN); break;
@@ -251,6 +252,7 @@ private:
 	int			ptrCB;
 	double		*pwr;
 	Cfft		*wfft;
+	int     prefilter;
 
 
 	int checkMag();
