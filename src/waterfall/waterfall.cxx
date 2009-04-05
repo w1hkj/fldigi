@@ -365,6 +365,9 @@ void WFdisp::processFFT() {
 	int		n;
 	double scale;
 	int    ptrSample;
+	if (prefilter != progdefaults.wfPreFilter)
+	    setPrefilter(progdefaults.wfPreFilter);
+	    
 	scale = (double)SC_SMPLRATE / srate;
     scale *= FFT_LEN / 2000.0;
 
