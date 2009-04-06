@@ -97,8 +97,12 @@ status progStatus = {
 
 void status::saveLastState()
 {
-	mainX = fl_digi_main->x();
-	mainY = fl_digi_main->y();
+    int mX = fl_digi_main->x();
+    int mY = fl_digi_main->y();
+    if (mX >= 0 && mX >= 0) {
+    	mainX = mX;
+	    mainY = mY;
+    }
 	mainW = fl_digi_main->w();
 	mainH = fl_digi_main->h();
 	RxTextHeight = ReceiveText->h();
