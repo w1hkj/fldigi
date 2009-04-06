@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_COPYRIGHT([Copyright (C) 2007, 2008 Stelios Bounanos, M0GLD (m0gld AT enotty DOT net)])
+AC_COPYRIGHT([Copyright (C) 2007, 2008, 2009 Stelios Bounanos, M0GLD (m0gld AT enotty DOT net)])
 
 AC_PREREQ(2.61)
 
@@ -31,7 +31,7 @@ AC_CANONICAL_HOST
 # define target, target_cpu, target_vendor, target_os
 AC_CANONICAL_TARGET
 
-AM_INIT_AUTOMAKE([-Wall foreign std-options dist-bzip2 1.9.6])
+AM_INIT_AUTOMAKE([-Wall foreign std-options 1.9.6])
 AM_MAINTAINER_MODE
 AC_CONFIG_SRCDIR([src/main.cxx])
 AC_CONFIG_HEADER([src/config.h])
@@ -232,6 +232,11 @@ AM_CONDITIONAL([NEED_HAMLIB_LOCATOR], [test "$need_locator_c" = "yes"], [:])
 # (default to LIBINTL)
 AC_FLDIGI_INTL
 
+### asciidoc
+# substitute ASCIIDOC and A2X in doc/Makefile
+# set HAVE_ASCIIDOC Makefile conditional
+AC_FLDIGI_DOCS
+
 
 ### output
 AH_TOP([
@@ -242,7 +247,7 @@ AH_BOTTOM([
 #include "util.h"
 #endif /* CONFIG_H_ */
 ])
-AC_CONFIG_FILES([Makefile src/Makefile po/Makefile.in])
+AC_CONFIG_FILES([Makefile src/Makefile po/Makefile.in doc/Makefile])
 AC_OUTPUT
 
 

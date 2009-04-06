@@ -84,7 +84,7 @@
 
 dnl #########################################################################
 AC_DEFUN([AX_COMPARE_VERSION], [
-  AC_PROG_AWK
+  AC_REQUIRE([AC_PROG_AWK])
 
   # Used to indicate true or false condition
   ax_compare_version=false

@@ -25,7 +25,7 @@
 #ifndef HTMLSTRINGS_H
 #define HTMLSTRINGS_H
 
-extern char szBeginner[];
-extern char szAbout[];
+extern const char* szBeginner;
+extern const char* szAbout;
 
 #endif

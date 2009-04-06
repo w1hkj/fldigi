@@ -1,4 +1,4 @@
-# Copyright (C) 2007 Stelios Bounanos, M0GLD (m0gld AT enotty DOT net)
+# Copyright (C) 2007-2009 Stelios Bounanos, M0GLD (m0gld AT enotty DOT net)
 # Copyright (c) 2008 Dave Freese, W1HKJ (w1hkj AT w1hkj DOT com)
 
 bin_PROGRAMS = fldigi
@@ -69,8 +69,6 @@ nodist_fldigi_SOURCES = $(BUILT_SOURCES)
 # and deleted by the clean targets
 CLEANFILES = $(BUILT_SOURCES)
 
-CLEAN_LOCAL_FILES =
-
 if WIN32
 if HAVE_WINDRES
 .rc.o:
@@ -79,17 +77,26 @@ fldigi_SOURCES += $(WIN32_RES_SRC)
 endif
 endif
 
+install-exec-local:
+if ENABLE_XMLRPC
+	if test -f $(srcdir)/../scripts/fldigi-shell; then \
+	    $(mkinstalldirs) $(DESTDIR)/$(bindir); \
+            $(INSTALL_SCRIPT) $(srcdir)/../scripts/fldigi-shell $(DESTDIR)/$(bindir); \
+        fi
+endif
+
 install-data-local:
 	if test -f $(srcdir)/../data/fldigi.xpm; then \
-	    $(mkinstalldirs) $(DESTDIR)$(datadir)/pixmaps; \
+	    $(mkinstalldirs) $(DESTDIR)/$(datadir)/pixmaps; \
 	    $(INSTALL_DATA) $(srcdir)/../data/fldigi.xpm $(DESTDIR)/$(datadir)/pixmaps; \
 	fi
 	if test -f $(srcdir)/../data/fldigi.desktop; then \
-	    $(mkinstalldirs) $(DESTDIR)$(datadir)/applications; \
+	    $(mkinstalldirs) $(DESTDIR)/$(datadir)/applications; \
 	    $(INSTALL_DATA) $(srcdir)/../data/fldigi.desktop $(DESTDIR)/$(datadir)/applications; \
 	fi
 
 uninstall-local:
+	rm -f $(DESTDIR)$(bindir)/fldigi-shell
 	rm -f $(DESTDIR)/$(datadir)/pixmaps/fldigi.xpm
 	rm -f $(DESTDIR)/$(datadir)/applications/fldigi.desktop
 
@@ -107,7 +114,7 @@ appbundle: fldigi
 	sh $(srcdir)/../scripts/mkappbundle.sh "$(srcdir)/../data" . \
 	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-nolibs \
 	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)
-CLEAN_LOCAL_FILES += $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-nolibs \
+    CLEANFILES  += $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-nolibs \
 	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION) \
 	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)*.dmg
 endif
@@ -117,10 +124,23 @@ hamlib-static: $(fldigi_OBJECTS)
 	sh $(srcdir)/../scripts/mkhamlibstatic.sh fldigi
 endif
 
-clean-local:
-	@rm -rf $(CLEAN_LOCAL_FILES)
-
 TESTS = $(srcdir)/../scripts/tests/config-h.sh $(srcdir)/../scripts/tests/cr.sh
+
+if HAVE_ASCIIDOC
+$(builddir)/../doc/guide.html: $(builddir)/../doc/guide.txt
+	$(MAKE) -C $(builddir)/../doc $(AM_MAKEFLAGS) guide.html
+
+$(builddir)/dialogs/guide.cxx: $(builddir)/../doc/guide.html
+	mkdir -p $(builddir)/dialogs
+	sed 's/"/\\"/g; s/$$/\\n\\/g; 1 s/.*/const char* szBeginner = "&/; $$ s/.*/&n";/' $< > $@
+dialogs/htmlstrings.cxx: $(builddir)/dialogs/guide.cxx
+
+distclean-local:
+	@if test "$(builddir)" != "$(srcdir)"; then \
+	    rm -f $(builddir)/dialogs/guide.cxx; \
+        fi
+endif
+
 
 # Sources that we build. It is OK to have headers here.
 fldigi_SOURCES += \
@@ -397,7 +417,8 @@ EXTRA_fldigi_SOURCES += \
 	mt63/mt63intl.dat \
 	trx/tune.cxx \
 	rsid/rsid_fft.cxx \
-	rsid/rsid_fft.h
+	rsid/rsid_fft.h \
+	dialogs/guide.cxx
 
 # Additional non-source files that we distribute
 EXTRA_DIST = \

@@ -182,7 +182,7 @@ int main(int argc, char ** argv)
 	generate_version_text();
 	int arg_idx;
 	if (Fl::args(argc, argv, arg_idx, parse_args) != argc) {
-	    cerr << PACKAGE_NAME << ": unrecognized option `" << argv[arg_idx]
+	    cerr << PACKAGE_NAME << ": bad option `" << argv[arg_idx]
 		 << "'\nTry `" << PACKAGE_NAME
 		 << " --help' for more information.\n";
 	    exit(EXIT_FAILURE);

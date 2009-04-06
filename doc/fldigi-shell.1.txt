@@ -1,0 +1,151 @@
+FLDIGI-SHELL(1)
+===============
+
+
+== NAME ==
+fldigi-shell - program for controlling fldigi
+
+
+== SYNOPSIS ==
+*fldigi-shell* ['OPTIONS'] ['FILE']
+
+
+== DESCRIPTION ==
+The fldigi-shell program controls +fldigi(1)+ over HTTP via XML-encoded remote
+procedure calls (XML-RPC). It can call any XML-RPC method exported by fldigi,
+and also defines some useful commands of its own.
+
+
+== OPTIONS ==
+*-d*::
+  Enable debug output.
+
+*-u* 'URL'::
+  Use 'URL' to access the server. Defaults to ``http://localhost:7362/RPC2'',
+  which corresponds to fldigi's default listen address and port.
+
+*-c* 'COMMAND'::
+  Execute command 'COMMAND' and exit.
+
+
+== COMMANDS ==
+[NOTE]
+================================================================================
+The ``x:yz'' notation refers to the return type and argument type(s). They are:
+``n'' (nil), ``i'' (integer), and ``s'' (string).
+================================================================================
+
+debug (n:n:)::
+  Toggle debug output.
+
+eval (s:s)::
+  Evaluate Perl code.
+
+exit (n:n)::
+  Exit the shell.
+
+help (n:n)::
+  Print help for server (fldigi) methods and shell commands.
+
+history (s:n)::
+  Print command history.
+
+modems (s:n)::
+  List all modem names.
+
+poll (s:i)::
+  Poll for new received text every 'i' seconds. Defaults to '1'.
+
+pskrqsy (n:si)::
+  QSY to 'i'^th^ best frequency for grid 's'. The list of frequencies is
+  retrieved from the PSK Reporter website; see *RESOURCES*.  The grid square
+  string may be left empty, and the index argument defaults to '0' (first
+  frequency).
+
+recvtext (s:n)::
+  Get all received text.
+
+reinit (n:n)::
+  Fetch commands from the server and rebuild command list.
+
+send (n:s)::
+  Send text interactively, one line at a time.
+
+sendchar (n:s)::
+  Send text interactively, one character at a time.
+
+sendfile (n:s)::
+  Send text read from file 's'.
+
+sendstr (n:s)::
+  Send string 's'.
+
+source (n:s)::
+  Read commands from file 's'.
+
+time (s:s)::
+  Time a command.
+
+wait (n:s)::
+  Wait for server TRX state to become 's'.
+
+
+== EXTENDED DESCRIPTION ==
+The shell has three modes of operation:
+
+. Interactive mode with history, tab completion and command line editing. This
+  is the default mode when fldigi-shell is run without arguments.
+
+. Batch mode for a single command with the *-c* option.
+
+. Batch mode to ``source'' a file containing Perl code.  Fldigi-shell commands
+  can be called using ``execute("COMMAND [ARG ...]")'' calls.
+
+
+== FILES ==
+$HOME/.fldigi/shell-history::
+  Contains the fldigi-shell command history.
+
+
+== EXAMPLES ==
++while :; do fldigi-shell -c pskrqsy; sleep 900; done+::
+  Change to the ``best frequency'' (see PSK Reporter) every fifteen minutes.
+
+
+== SEE ALSO ==
+fldigi(1), xmlrpc(1), readline(3), RPC::XML(3pm)
+
+
+== BUGS ==
+* Some additional command wrappers are needed.
+* Command completion should be enabled for the arguments of some commands.
+* The XML-RPC handling code should probably go in a separate module.
+* It should be possible to pass multiple '-c CMD' arguments.
+
+
+== RESOURCES ==
+Fldigi web site: http://www.w1hkj.com/Fldigi.html
+
+The PSK Automatic Propagation Reporter site can be found at
+http://www.pskreporter.info/
+
+The GNU Readline Library: http://directory.fsf.org/project/readline/
+
+XML-RPC home page: http://www.xmlrpc.com/
+
+
+== AUTHOR ==
+Fldigi-shell and this manual page were written by Stelios Bounanos, +M0GLD+
+<sb[at]enotty(dot)net>.
+
+
+== COPYING ==
+License GPLv2+: GNU GPL version 2 or later.
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Emacs settings
+// Local Variables:
+// mode: doc
+// End:
+////////////////////////////////////////////////////////////////////////////////

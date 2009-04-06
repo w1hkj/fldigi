@@ -1,0 +1,443 @@
+FLDIGI(1)
+=========
+
+
+== NAME ==
+fldigi - digital modem program for hamradio operators
+
+
+== SYNOPSIS ==
+*fldigi* ['OPTIONS']
+
+
+== DESCRIPTION ==
+*Fldigi* is a cross-platform multi-modem program for most of the digital modes
+used by radio amateurs today: CW, PSK, MFSK, MT-63, RTTY, Hellschreiber,
+DominoEX, Olivia, THOR and Throb are all supported. It can also help calibrate a
+sound card to a time signal and do on-air frequency measurement tests.  Fldigi
+features basic rig control, logging, and contest operation, ``panoramic'' PSK
+decoding, a PSK Reporter client, and remote control via XML-RPC.
+
+
+== OPTIONS ==
+Long options begin with two hyphens and are handled by fldigi. The option names
+may be abbreviated to any unambiguous substring, and the option argument may be
+separated from the name by a space or equals sign, as per +getopt(3)+.
+
+Short options begin with a single hyphen and are passed directly to FLTK. They
+may be abbreviated only as indicated.
+
+*--config-dir* 'DIRECTORY'::
+  Look for and store configuration files in directory 'DIRECTORY', which is
+  created if it does not exist. Defaults to ``$HOME/.fldigi''.
+
+*--rx-ipc-key* 'KEY'::
+  Set the receive message queue key. May be given in hex if prefixed with
+  ``0x''.  Defaults to ``9876'' or ``0x2694''.
+
+*--tx-ipc-key* 'KEY'::
+  Set the transmit message queue key. May be given in hex if prefixed with
+  ``0x''.  Defaults to ``6789'' or ``0x1a85''.
+
+*--arq-server-address* 'HOSTNAME'::
+  Set the ARQ TCP server address. Defaults to ``127.0.0.1''. 'HOSTNAME' may be
+  any 'node name' string accepted by +getaddrinfo(3)+.
+
+*--arq-server-port* 'PORT'::
+  Set the ARQ TCP server port. Defaults to ``7322''. 'PORT' may be any 'service
+  name' string accepted by +getaddrinfo(3)+.
+
+[NOTE]
+================================================================================
+The '--xmlrpc-*' options are only available if fldigi was built with XML-RPC
+support.
+================================================================================
+
+*--xmlrpc-server-address* 'HOSTNAME'::
+  Set the XML-RPC server address. Defaults to ``127.0.0.1''.
+
+*--xmlrpc-server-port* 'PORT'::
+  Set the XML-RPC server port. Defaults to ``7362''.
+
+*--xmlrpc-allow* 'REGEX'::
+  Allow only the methods whose names match 'REGEX'. 'REGEX' is a POSIX extended
+  regular expression.
+
+*--xmlrpc-deny* 'REGEX'::
+  Allow only the methods whose names do not match 'REGEX'.
+
+*--xmlrpc-list*::
+  List all available XML-RPC methods and exit. May be preceded by the
+  '--xmlrpc-allow' or '--xmlrpc-deny' options to verify their effect.
+
+*--debug-level* 'LEVEL'::
+  Set the event log verbosity. 'LEVEL' is clamped to the range [0,4]; for
+  'Quiet', 'Error', 'Warning', 'Info', and 'Debug'.  Defaults to ``2''
+  ('Warning').
+
+*--version*::
+  Print version information and exit.
+
+*--help*::
+  Print options summary and exit.
+
+=== Standard FLTK options ===
+*-bg, -background* 'COLOUR'::
+  Set the background colour.
+
+*-bg2, -background2* 'COLOUR'::
+  Set the secondary (text) background colour.
+
+*-di, -display* 'DISPLAY'::
+  Specifies the X server to connect to; see +X(7)+.
+
+*-dn, -dnd* or *-nodn, -nodnd*::
+  Enable or disable drag and drop copy and paste in text fields.
+
+*-fg, -foreground* 'COLOUR'::
+  Set the foreground colour.
+
+*-g, -geometry* 'GEOMETRY'::
+  Set the initial window size and position. *Fldigi may not honour this option*.
+
+*-i, -iconic*::
+  Start fldigi in iconified state. *Fldigi may not honour this option*.
+
+*-k, -kbd* or *-nok, -nokbd*::
+  Enable or disable visible keyboard focus in non-text widgets.
+
+*-na, -name* 'CLASSNAME'::
+  Set the window class. Defaults to ``Fldigi''.
+
+*-ti, -title* 'WINDOWTITLE'::
+  Set the window title. Defaults to ``fldigi - <callsign>''.
+
+=== Additional UI options ===
+*--font* 'FONT[:SIZE]'::
+  Set the widget font and (optionally) size. Defaults to ``sans:12''.
+
+=== Options useful to developers ===
+[NOTE]
+================================================================================
+The --benchmark-* options are only enabled if fldigi was built (exclusively) for
+benchmarking and batch decoding.
+================================================================================
+
+*--benchmark-modem* 'ID'::
+  Specify the modem. Defaults to ``25'' (``BPSK31'').
+
+*--benchmark-frequency* 'FREQ'::
+  Set the modem frequency in Hz. Defaults to ``1000''.
+
+*--benchmark-afc* 'BOOLEAN'::
+  Enable or disable modem AFC. Defaults to ``false''.
+
+*--benchmark-squelch* 'BOOLEAN'::
+  Enable or disable modem squelch. Defaults to ``false''.
+
+*--benchmark-squelch-level* 'LEVEL'::
+  Set the modem squelch level (1--100%). Defaults to ``0.0''.
+
+*--benchmark-input* 'INPUT'::
+  Specify the input. Must be a positive integer indicating the number of samples
+  of silence to generate as the input, or, if fldigi was linked with libsndfile,
+  the name of the input audio file. The filename must contain non-digit
+  characters.
+
+*--benchmark-output* 'FILE'::
+  Specify the output data file. Non-textual output (i.e. Hellschreiber or MFSK
+  images) cannot be saved. Default: decoder output is discarded.
+
+*--benchmark-src-ratio* 'RATIO'::
+  Specify the sample rate conversion ratio. Defaults to ``1.0'' (input is not
+  resampled).
+
+*--benchmark-src-type* 'TYPE'::
+  Set the sample rate conversion type. TYPE is an integer in the range
+  [0,4]. Defaults to ``2'' (``Fastest SINC Interpolator'').
+
+[WARNING]
+================================================================================
+*The following options should not be relied upon. They are listed here only for
+the sake of completeness, and may be replaced by GUI settings or removed
+altogether in a future version.*
+================================================================================
+
+*--wfall-width* 'WIDTH'::
+  Set the waterfall width.
+
+*--wfall-height* 'HEIGHT'::
+  Set the waterfall height.
+
+*--window-width* 'WIDTH'::
+  Set the minimum window width.
+
+*--window-height* 'HEIGHT'::
+  Set the minimum window height.
+
+*--exit-after* 'SECONDS'::
+  Run for approximately 'SECONDS' seconds.
+
+*--frames-per-buf* 'FRAMES'::
+  Set frames per buffer option to 'FRAMES' when creating PortAudio
+  streams. Defaults to ``0'' (let PortAudio choose).
+
+*--pskr-test-str* 'STRING'::
+  Test the PSK reporter client pattern matching. UTSL!
+
+
+== ENVIRONMENT ==
+Fldigi uses several environment variables:
+
+FLDIGI_BROWSER::
+  The web browser to use for http and file URIs. Overrides +$BROWSER+ and
+  +xdg-open(1)+.
+
+[NOTE]
+================================================================================
+The following variables are created in the environment of the child process that
+is forked by the '<EXEC>' macro.  They are empty if values are not available.
+================================================================================
+
+FLDIGI_RX_IPC_KEY::
+  The receive message queue key.
+
+FLDIGI_TX_IPC_KEY::
+  The transmit message queue key.
+
+FLDIGI_VERSION::
+  The version string.
+
+FLDIGI_PID::
+  The process ID of the parent fldigi process.
+
+FLDIGI_CONFIG_DIR::
+  The configuration directory.
+
+FLDIGI_MY_CALL::
+  The operator's callsign.
+
+FLDIGI_MY_NAME::
+  The operator's name.
+
+FLDIGI_MY_LOCATOR::
+  The operator's IARU locator.
+
+FLDIGI_MODEM::
+  The short modem name.
+
+FLDIGI_MODEM_LONG_NAME::
+  The long modem name.
+
+FLDIGI_DIAL_FREQUENCY::
+  The rig (radio) frequency.
+
+FLDIGI_AUDIO_FREQUENCY::
+  The modem (audio) centre frequency.
+
+FLDIGI_FREQUENCY::
+  The actual receive/transmit frequency, i.e. the sum of rig and modem
+  frequencies taking into account the rig sideband.
+
+FLDIGI_LOG_FREQUENCY::
+  The text (frequency in MHz) contained in the 'QSO Freq' log field.
+
+FLDIGI_LOG_TIME_ON::
+  The text (QSO start time) contained in the (time) 'On' log field.
+
+FLDIGI_LOG_TIME_OFF::
+  The text (QSO end time) contained in the (time) 'Off' log field.
+
+FLDIGI_LOG_CALL::
+  The text (other station's callsign) contained in the 'Call' log field.
+
+FLDIGI_LOG_NAME::
+  The text (other station's name) contained in the 'Name' log field.
+
+FLDIGI_LOG_RST_IN::
+  The text (received RST) contained in the (RST) 'In' log field.
+
+FLDIGI_LOG_RST_OUT::
+  The text (sent RST) contained in the (RST) 'Out' log field.
+
+FLDIGI_LOG_QTH::
+  The text (other station's QTH) contained in the 'QTH' log field.
+
+FLDIGI_LOG_LOCATOR::
+  The text (other station's IARU locator) contained in the 'Loc' log field.
+
+FLDIGI_LOG_NOTES::
+  The text (free-form notes) contained in the 'Notes' log field.
+
+FLDIGI_AZ::
+  The text (azimuth in degrees to other station) contained in the 'Az' log field.
+
+[NOTE]
+================================================================================
+The following variables are only used if fldigi was built with debugging support
+('--enable-debug'), or they are only useful when debugging specific modules.
+================================================================================
+
+FLDIGI_PSKRTEST_COLOR::
+  Forces colour output even if stdout is not a terminal.
+
+FLDIGI_PSKRTEST_NOTEOL::
+  Forces EOL matching. UTSL!
+
+FLDIGI_NO_EXEC::
+  If set, this variable disables glibc's malloc debugging, which fldigi enables
+  by default when built for debugging.
+
+FLDIGI_TRACE_LOCKS::
+  Traces 'Fl::lock()' calls.
+
+FLDIGI_HAMLIB_DEBUG::
+  Initialises hamlib in debug mode.
+
+
+== RESTRICTIONS ==
+Fldigi is licensed under the GNU GPL, which grants you the right to run the
+program for any purpose (freedom 0).  However, permission to use it for the
+transmission of radio signals can only be obtained from the communications
+authority of your country.  When given, this permission almost always comes in
+the form of an amateur radio license.
+
+If you do not have an amateur radio license you can still have fun using fldigi
+as a shortwave listener. One way to do so is by using the builtin PSK Reporter
+client to submit realtime spots of transmitting stations; see RESOURCES below.
+All you need is a computer, homebrew SDR receiver, and simple wire antenna!
+
+
+== FILES ==
+Various files and subdirectories are created in $HOME/.fldigi. Some of the most
+interesting ones are listed below.
+
+fldigi_def.xml::
+  The main settings file.
+
+fldigi.prefs::
+  The ``status'' file. Stores window geometries, button states, current modem,
+  current audio frequency, squelch level, and so on.
+
+logbook.adif::
+  The default file in which fldigi saves its QSO data.
+
+status_log.txt::
+  The event log.
+
+macros/macros.mdf::
+  The default macro file.
+
+palettes/::
+  This directory contains waterfall palettes.
+
+scripts/::
+  This directory is added to the PATH environment variable of the child process
+  that runs <EXEC> macros.
+
+logs/::
+  This directory contains logged received and sent text (when such logging is
+  enabled).
+
+images/::
+  Received MFSK images are automatically saved in this directory.
+
+freqanalysis.csv::
+  This file is written by the frequency analysis modem. The fields are dial
+  frequency, audio frequency, and offset. See documentation for details.
+
+[NOTE]
+================================================================================
+The following files are used if present.  They must be downloaded and copied
+to ~/.fldigi/ by the user.
+================================================================================
+
+cty.dat::
+  List of DXCC entities and callsign prefixes; used to display tooltips in the
+  received text buffer, and also to auto-fill the Country, Locator and Azimuth
+  log fields. Available at http://www.country-files.com/cty/.
+
+lotw1.txt::
+  List of known LOTW users (one callsign per line); used for the received text
+  tooltips. Available at http://www.hb9bza.net/lotw/.
+
+AGMemberList.txt or eqsl.txt::
+  List of ``Authenticity Guaranteed'' eQSL users (one callsign per line); used
+  for the received text tooltips. Available at
+  http://www.eqsl.cc/QSLcard/Programming.cfm.
+
+
+== EXAMPLES ==
++fldigi --wfall-height 144 --font sans:11 -fg "#c0c0c0" -bg "#5f5f63" -bg2 "#19213b"+::
+  This is how the author of this document invokes fldigi.
+
++fldigi --xmlrpc-deny "main.(tx|tune|run_macro)"+::
+  Unregister XML-RPC methods that may transmit.
+
++ssh -L 7362:localhost:7362 remote-host xvfb-run fldigi -display :99+::
+  Start fldigi on 'remote-host' under a ``fake'' X server.  (The +xvfb-run(1)+
+  utility is available on Debian systems).  The remote ``headless'' fldigi is
+  then controlled via XML-RPC on port 7362, e.g. using +fldigi-shell(1)+.
+
++fldigi --benchmark-input 480000 --benchmark-modem 1+::
+  Benchmark the DominoEX-4 modem with 480K audio samples.
+
++fldigi --benchmark-input audio.wav --benchmark-modem 25 --benchmark-frequency 1500 --benchmark-afc 1 --benchmark-squelch 1 --benchmark-squelch-level 5.0 --benchmark-output out.txt+::
+  Read 'audio.wav' (whose sample rate must be 8000Hz in this case) and decode
+  BPSK-31 signals at 1500Hz.  AFC is enabled and the squelch is set to 5%.
+  Decoded text is saved to 'out.txt'.
+
+
+== BUGS ==
+* Batch decoding requires a connection to the X server even though no window is displayed.
+* There is no batch encoding mode.
+* Probably a few more.
+
+
+== SEE ALSO ==
+fldigi-shell(1), gmfsk(1), gpsk31(1), grig(1), rigctl(1), xlog(1),
+getaddrinfo(3), getopt(3), regex(7), X(7)
+
+
+== RESOURCES ==
+Main web site: http://www.w1hkj.com/Fldigi.html
+
+BerliOS project page: http://developer.berlios.de/projects/fldigi/
+
+More information on MFSK16, DominoEX and other digital modes can be found at
+http://www.qsl.net/zl1bpu/
+
+The PSK Automatic Propagation Reporter site can be found at
+http://www.pskreporter.info/
+
+
+== AUTHORS ==
+Fldigi was written by::
+________________________________________________________________________________
+  * David Freese, +W1HKJ+.
+  * Stelios Bounanos, +M0GLD+.
+  * Leigh L. Klotz, Jr., +WA5ZNU+.
+________________________________________________________________________________
+
+Fldigi also includes code written by others. Among them are:::
+________________________________________________________________________________
+  * Tomi Manninen, +OH2BNS+.
+  * Pawel Jalocha, +SP9VRC+.
+  * Hamish Moffatt, +VK3SB+.
+________________________________________________________________________________
+
++++
++++
+
+This manual page was written by Stelios Bounanos <sb[at]enotty(dot)net>.
+
+
+== COPYING ==
+License GPLv2+: GNU GPL version 2 or later.
+
+////////////////////////////////////////////////////////////////////////////////
+// Emacs settings
+// Local Variables:
+// mode: doc
+// End:
+////////////////////////////////////////////////////////////////////////////////
