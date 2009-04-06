@@ -5,7 +5,7 @@
 
 #include <config.h>
 
-#ifndef __CYGWIN__
+#if !defined(__CYGWIN__) && !defined(__APPLE__)
 #  include <sys/ipc.h>
 #  include <sys/msg.h>
 #  include <sys/shm.h>
@@ -48,8 +48,8 @@ static bool rigMEMisPTT = false;
 static long long qsy_f;
 static long long qsy_fmid;
 
-#ifndef __CYGWIN__
-// Linux & OS_X interface to Kachina
+#if !defined(__CYGWIN__) && !defined(__APPLE__)
+// Linux & *BSD interface to Kachina
 
 struct ST_SHMEM {
 	int  flag;
@@ -217,7 +217,7 @@ static void *rigMEM_loop(void *args)
 	return NULL;
 }
 
-#else // __CYGWIN__
+#elif defined(__CYGWIN__) // __CYGWIN__
 //===================================================
 // Windows interface to Kachina / rigCAT
 //

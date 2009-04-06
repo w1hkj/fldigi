@@ -33,7 +33,7 @@
 #include <errno.h>
 
 #include <sys/types.h>
-#ifndef __CYGWIN__
+#if !defined(__CYGWIN__) && !defined(__APPLE__)
 #  include <sys/ipc.h>
 #  include <sys/msg.h>
 #endif
@@ -169,8 +169,7 @@ bool bSend0x06 = false;
 // SysV ARQ used only on Linux / Free-BSD or Unix type OS
 //-----------------------------------------------------------------------------
 
-#ifndef __CYGWIN__
-
+#if !defined(__CYGWIN__) && !defined(__APPLE__)
 void process_msgque()
 {
 	memset(txmsgst.buffer, 0, ARQBUFSIZ);
@@ -187,7 +186,7 @@ void process_msgque()
 			arq_text_available = true;
 			active_modem->set_stopflag(false);
 			start_tx();
-LOG_DEBUG("SYSV ARQ string: %s", txstring.c_str());
+			LOG_DEBUG("SYSV ARQ string: %s", txstring.c_str());
 			txstring.clear();
 		}
 	}
@@ -329,7 +328,7 @@ bool ARQ_SOCKET_Server::start(const char* node, const char* service)
 	try {
 		inst->server_socket->open(Address(node, service));
 		inst->server_socket->bind();
-#if defined(__CYGWIN__) || defined(__MINGW32__)
+#if defined(__CYGWIN__)
 		inst->server_socket->listen();
 		inst->server_socket->set_timeout(0.1);
 #endif
@@ -370,7 +369,7 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 	// On woe32 we block for a short time and test for cancellation.
 	while (inst->run) {
 		try {
-#if defined(__CYGWIN__) || defined(__MINGW32__)
+#if defined(__CYGWIN__)
 			if (inst->server_socket->wait(0))
 #endif
 				arq_run(inst->server_socket->accept());
@@ -466,7 +465,7 @@ LOG_DEBUG(txstring.c_str());
 //-----------------------------------------------------------------------------
 // Send ARQ characters to ARQ client
 //-----------------------------------------------------------------------------
-#ifndef __CYGWIN__
+#if !defined(__CYGWIN__) && !defined(__APPLE__)
 void WriteARQSysV(unsigned int data)
 {
 	rxmsgid = msgget( (key_t) progdefaults.rx_msgid, 0666);
@@ -481,7 +480,7 @@ void WriteARQSysV(unsigned int data)
 void WriteARQ( unsigned int data)
 {
 	WriteARQsocket(data);
-#ifndef __CYGWIN__
+#if !defined(__CYGWIN__) && !defined(__APPLE__)
 	WriteARQSysV(data);
 #endif
 }
@@ -547,14 +546,12 @@ static void *arq_loop(void *args)
 		if (bSend0x06)
 			send0x06();
 
-#ifdef __CYGWIN__
-	Socket_arqRx();
+#if !defined(__CYGWIN__) && !defined(__APPLE__)
+		// order of precedence; Socket, SysV, GMFSKfile
+		if (!Socket_arqRx() && !SysV_arqRx() && tlfio)
+			TLF_arqRx();
 #else
-// order of precedence; Socket, SysV, GMFSKfile
-		if (Socket_arqRx() == false)
-			if (SysV_arqRx() == false)
-				if (tlfio == true)
-					TLF_arqRx();
+		Socket_arqRx();
 #endif
 		MilliSleep(50);
 	}

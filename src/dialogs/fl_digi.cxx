@@ -25,10 +25,6 @@
 #include <config.h>
 
 #include <sys/types.h>
-#ifndef __CYGWIN__
-#  include <sys/ipc.h>
-#  include <sys/msg.h>
-#endif
 
 #ifdef __CYGWIN__
 #  include <w32api/windows.h>

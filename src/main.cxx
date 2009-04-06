@@ -29,7 +29,7 @@
 #include <cstdlib>
 #include <getopt.h>
 #include <sys/types.h>
-#ifndef __CYGWIN__
+#if !defined(__CYGWIN__) && !defined(__APPLE__)
 #  include <sys/ipc.h>
 #  include <sys/msg.h>
 #endif
@@ -202,8 +202,8 @@ int main(int argc, char ** argv)
 
 	xmlfname = HomeDir; 
 	xmlfname.append("rig.xml");
-	
-#ifndef __CYGWIN__
+
+#if !defined(__CYGWIN__) && !defined(__APPLE__)
    	txmsgid = msgget( (key_t) progdefaults.tx_msgid, 0666 );
 #else
 	txmsgid = -1;
@@ -354,7 +354,7 @@ void generate_option_help(void) {
 	     << "    Look for configuration files in DIRECTORY\n"
 	     << "    The default is: " << HomeDir << "\n\n"
 
-#ifndef __CYGWIN__
+#if !defined(__CYGWIN__) && !defined(__APPLE__)
 	     << "  --rx-ipc-key KEY\n"
 	     << "    Set the receive message queue key\n"
 	     << "    May be given in hex if prefixed with \"0x\"\n"
@@ -586,7 +586,7 @@ int parse_args(int argc, char **argv, int& idx)
 			// handle options with non-0 flag here
 			return 0;
 
-#ifndef __CYGWIN__
+#if !defined(__CYGWIN__) && !defined(__APPLE__)
 		case OPT_RX_IPC_KEY: case OPT_TX_IPC_KEY:
 		{
 			errno = 0;

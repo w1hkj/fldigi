@@ -8,9 +8,6 @@
 #include <config.h>
 
 #include <ctime>
-#include <sys/ipc.h>
-#include <sys/msg.h>
-#include <sys/shm.h>
 #include <sys/time.h>
 #include <iostream>
 #include <list>

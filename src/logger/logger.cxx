@@ -26,7 +26,7 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#ifndef __CYGWIN__
+#if !defined(__CYGWIN__) && !defined(__APPLE__)
 #  include <sys/ipc.h>
 #  include <sys/msg.h>
 #endif
@@ -59,7 +59,7 @@ static string notes;
 
 //=============================================================================
 
-#ifdef __CYGWIN__
+#if defined(__CYGWIN__) || defined(__APPLE__)
 
 static string adif;
 
@@ -136,7 +136,7 @@ void submit_ADIF(void)
 // the following IPC message is compatible with xlog remote data spec.
 //---------------------------------------------------------------------
 
-#ifndef __CYGWIN__
+#if !defined(__CYGWIN__) && !defined(__APPLE__)
 
 #define addtomsg(x, y)	log_msg = log_msg + (x) + (y) + LOG_MSEPARATOR
 
@@ -210,7 +210,7 @@ void submit_log(void)
 
 	AddRecord();
 
-#ifndef __CYGWIN__
+#if !defined(__CYGWIN__) && !defined(__APPLE__)
 	send_IPC_log();
 #else
 	submit_ADIF();
