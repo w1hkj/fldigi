@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FLDigi 3.11\n"
 "Report-Msgid-Bugs-To: w1hkj AT w1hkj DOT com\n"
-"POT-Creation-Date: 2009-04-05 15:36-0500\n"
+"POT-Creation-Date: 2009-04-10 18:03-0500\n"
 "PO-Revision-Date: 2009-03-11 15:20+0100\n"
 "Last-Translator: OK2WO <jklimosz@gmail.com>\n"
 "Language-Team: OK2WO <jklimosz@gmail.com>\n"
@@ -46,39 +46,39 @@ msgstr ""
 msgid "Could not make directory"
 msgstr "Nelze vytvorit adresar"
 
-#: src/dialogs/fl_digi.cxx:377 src/dialogs/fl_digi.cxx:385
-#: src/dialogs/fl_digi.cxx:1756 src/dialogs/fl_digi.cxx:1774
+#: src/dialogs/fl_digi.cxx:373 src/dialogs/fl_digi.cxx:381
+#: src/dialogs/fl_digi.cxx:1752 src/dialogs/fl_digi.cxx:1770
 msgid "Custom..."
 msgstr "Vlastni..."
 
-#: src/dialogs/fl_digi.cxx:548
+#: src/dialogs/fl_digi.cxx:544
 msgid "Save changed macros?"
 msgstr "Ulozit zmenena makra?"
 
-#: src/dialogs/fl_digi.cxx:548 src/dialogs/fl_digi.cxx:1459
-#: src/dialogs/fl_digi.cxx:1596 src/dialogs/fl_digi.cxx:1607
-#: src/dialogs/fl_digi.cxx:1618 src/logbook/lgbook.cxx:370
+#: src/dialogs/fl_digi.cxx:544 src/dialogs/fl_digi.cxx:1455
+#: src/dialogs/fl_digi.cxx:1592 src/dialogs/fl_digi.cxx:1603
+#: src/dialogs/fl_digi.cxx:1614 src/logbook/lgbook.cxx:370
 #: src/logbook/lgbook.cxx:936
 msgid "Cancel"
 msgstr "Zrusit"
 
-#: src/dialogs/fl_digi.cxx:548 src/dialogs/fl_digi.cxx:1596
-#: src/dialogs/fl_digi.cxx:1607 src/dialogs/fl_digi.cxx:1618
-#: src/dialogs/fl_digi.cxx:2395 src/dialogs/fl_digi.cxx:2417
+#: src/dialogs/fl_digi.cxx:544 src/dialogs/fl_digi.cxx:1592
+#: src/dialogs/fl_digi.cxx:1603 src/dialogs/fl_digi.cxx:1614
+#: src/dialogs/fl_digi.cxx:2391 src/dialogs/fl_digi.cxx:2413
 #: src/dialogs/confdialog.cxx:4369
 msgid "Save"
 msgstr "Ulozit"
 
-#: src/dialogs/fl_digi.cxx:548 src/dialogs/fl_digi.cxx:1596
-#: src/dialogs/fl_digi.cxx:1607 src/dialogs/fl_digi.cxx:1618
+#: src/dialogs/fl_digi.cxx:544 src/dialogs/fl_digi.cxx:1592
+#: src/dialogs/fl_digi.cxx:1603 src/dialogs/fl_digi.cxx:1614
 msgid "Don't save"
 msgstr "Neukladat"
 
-#: src/dialogs/fl_digi.cxx:954
+#: src/dialogs/fl_digi.cxx:950
 msgid "Spotting disabled"
 msgstr "Spoty jsou vypnuty"
 
-#: src/dialogs/fl_digi.cxx:994
+#: src/dialogs/fl_digi.cxx:990
 #, c-format
 msgid ""
 "Could not run a web browser:\n"
@@ -93,7 +93,7 @@ msgstr ""
 "Zkuste otevrit manualne tuto adresu:\n"
 "%s"
 
-#: src/dialogs/fl_digi.cxx:1007
+#: src/dialogs/fl_digi.cxx:1003
 #, c-format
 msgid ""
 "Could not open url:\n"
@@ -102,11 +102,11 @@ msgstr ""
 "Nelze otevrit URL:\n"
 "%s\n"
 
-#: src/dialogs/fl_digi.cxx:1054
+#: src/dialogs/fl_digi.cxx:1050
 msgid "Checking for updates..."
 msgstr "Hledani aktualizaci..."
 
-#: src/dialogs/fl_digi.cxx:1069
+#: src/dialogs/fl_digi.cxx:1065
 #, c-format
 msgid ""
 "Could not check for updates:\n"
@@ -115,7 +115,7 @@ msgstr ""
 "Nelze vyhledat aktualizace:\n"
 "%s"
 
-#: src/dialogs/fl_digi.cxx:1073
+#: src/dialogs/fl_digi.cxx:1069
 #, c-format
 msgid ""
 "Version %s is available at\n"
@@ -130,433 +130,433 @@ msgstr ""
 "\n"
 "Co chcete udelat?"
 
-#: src/dialogs/fl_digi.cxx:1074 src/dialogs/Viewer.cxx:311
+#: src/dialogs/fl_digi.cxx:1070 src/dialogs/Viewer.cxx:311
 #: src/mfsk/mfsk-pic.cxx:405 src/dialogs/colorsfonts.cxx:630
 #: src/dialogs/confdialog.cxx:4372 src/rigcontrol/rigdialog.cxx:139
 msgid "Close"
 msgstr "Zavrit"
 
-#: src/dialogs/fl_digi.cxx:1074
+#: src/dialogs/fl_digi.cxx:1070
 msgid "Visit URL"
 msgstr "Navstivit URL"
 
-#: src/dialogs/fl_digi.cxx:1074
+#: src/dialogs/fl_digi.cxx:1070
 msgid "Copy URL"
 msgstr "Kopirovat URL"
 
-#: src/dialogs/fl_digi.cxx:1086
+#: src/dialogs/fl_digi.cxx:1082
 msgid "You are running the latest version"
 msgstr "Pouzivate posledni verzi"
 
-#: src/dialogs/fl_digi.cxx:1152
+#: src/dialogs/fl_digi.cxx:1148
 msgid "Sunspot creation underway!"
 msgstr "Probiha vytvareni spotu!"
 
-#: src/dialogs/fl_digi.cxx:1159
+#: src/dialogs/fl_digi.cxx:1155
 msgid "Audio device information is only available for the PortAudio backend"
 msgstr "Informace o zvukovem zarizeni jsou k dispozici pouze pro PortAudio"
 
-#: src/dialogs/fl_digi.cxx:1168
+#: src/dialogs/fl_digi.cxx:1164
 msgid "Capture device"
 msgstr "Zaznamove zarizeni"
 
-#: src/dialogs/fl_digi.cxx:1169
+#: src/dialogs/fl_digi.cxx:1165
 msgid "Playback device"
 msgstr "Prehravaci zarizeni"
 
-#: src/dialogs/fl_digi.cxx:1173
+#: src/dialogs/fl_digi.cxx:1169
 msgid "Capture and playback devices"
 msgstr "Zaznamova a prehravaci zarizeni"
 
-#: src/dialogs/fl_digi.cxx:1459
+#: src/dialogs/fl_digi.cxx:1455
 msgid "Clear log fields?"
 msgstr "Vymazat pole deniku?"
 
-#: src/dialogs/fl_digi.cxx:1459 src/logbook/lgbook.cxx:367
+#: src/dialogs/fl_digi.cxx:1455 src/logbook/lgbook.cxx:367
 #: src/logbook/lgbook.cxx:933
 msgid "OK"
 msgstr "OK"
 
-#: src/dialogs/fl_digi.cxx:1596
+#: src/dialogs/fl_digi.cxx:1592
 msgid "Save changed configuration before exiting?"
 msgstr "Ulozit zmenena nastaveni pred ukoncenim?"
 
-#: src/dialogs/fl_digi.cxx:1607
+#: src/dialogs/fl_digi.cxx:1603
 msgid "Save log before exiting?"
 msgstr "Ulozit denik pred ukoncenim?"
 
-#: src/dialogs/fl_digi.cxx:1618
+#: src/dialogs/fl_digi.cxx:1614
 msgid "Save changed macros before exiting?"
 msgstr "Ulozit zmenena makra pred ukoncenim?"
 
-#: src/dialogs/fl_digi.cxx:1677
+#: src/dialogs/fl_digi.cxx:1673
 msgid "Log all RX/TX text"
 msgstr "Zaznamenavat vsechny RX/TX texty"
 
-#: src/dialogs/fl_digi.cxx:1678
+#: src/dialogs/fl_digi.cxx:1674
 msgid "Rig Control"
 msgstr "Ovladani rigu"
 
-#: src/dialogs/fl_digi.cxx:1679
+#: src/dialogs/fl_digi.cxx:1675
 msgid "View"
 msgstr "Zobrazit"
 
-#: src/dialogs/fl_digi.cxx:1680
+#: src/dialogs/fl_digi.cxx:1676
 msgid "MFSK Image"
 msgstr "Obrazek MFSK"
 
-#: src/dialogs/fl_digi.cxx:1681 src/dialogs/confdialog.cxx:2285
+#: src/dialogs/fl_digi.cxx:1677 src/dialogs/confdialog.cxx:2285
 msgid "Contest"
 msgstr "Kontest"
 
-#: src/dialogs/fl_digi.cxx:1682
+#: src/dialogs/fl_digi.cxx:1678
 msgid "Contest fields"
 msgstr "Kontestova pole"
 
-#: src/dialogs/fl_digi.cxx:1685
+#: src/dialogs/fl_digi.cxx:1681
 msgid "&File"
 msgstr "&Soubor"
 
-#: src/dialogs/fl_digi.cxx:1686
+#: src/dialogs/fl_digi.cxx:1682
 msgid "Open macros..."
 msgstr "Otevrit makra..."
 
-#: src/dialogs/fl_digi.cxx:1687
+#: src/dialogs/fl_digi.cxx:1683
 msgid "Save macros..."
 msgstr "Ulozit makra..."
 
-#: src/dialogs/fl_digi.cxx:1688
+#: src/dialogs/fl_digi.cxx:1684
 msgid "Show config"
 msgstr "Zobrazit nastaveni"
 
-#: src/dialogs/fl_digi.cxx:1690
+#: src/dialogs/fl_digi.cxx:1686
 msgid "Logs"
 msgstr "Deniky"
 
-#: src/dialogs/fl_digi.cxx:1691
+#: src/dialogs/fl_digi.cxx:1687
 msgid "New logbook"
 msgstr "Novy denik"
 
-#: src/dialogs/fl_digi.cxx:1692
+#: src/dialogs/fl_digi.cxx:1688
 msgid "Open logbook..."
 msgstr "Otevrit denik..."
 
-#: src/dialogs/fl_digi.cxx:1693
+#: src/dialogs/fl_digi.cxx:1689
 msgid "Save logbook"
 msgstr "Ulozit denik..."
 
-#: src/dialogs/fl_digi.cxx:1694
+#: src/dialogs/fl_digi.cxx:1690
 msgid "Merge ADIF..."
 msgstr "Pripojit ADIF..."
 
-#: src/dialogs/fl_digi.cxx:1695
+#: src/dialogs/fl_digi.cxx:1691
 msgid "Export ADIF"
 msgstr "Exportovat ADIF"
 
-#: src/dialogs/fl_digi.cxx:1696
+#: src/dialogs/fl_digi.cxx:1692
 msgid "Export Text"
 msgstr "Exportovat text"
 
-#: src/dialogs/fl_digi.cxx:1697
+#: src/dialogs/fl_digi.cxx:1693
 msgid "Export CSV"
 msgstr "Exportovat CSV"
 
-#: src/dialogs/fl_digi.cxx:1698
+#: src/dialogs/fl_digi.cxx:1694
 msgid "Cabrillo Rpt"
 msgstr "Cabrillo rep."
 
-#: src/dialogs/fl_digi.cxx:1703 src/misc/debug.cxx:67
+#: src/dialogs/fl_digi.cxx:1699 src/misc/debug.cxx:67
 #: src/dialogs/confdialog.cxx:3801
 msgid "Audio"
 msgstr "Zvuk"
 
-#: src/dialogs/fl_digi.cxx:1704
+#: src/dialogs/fl_digi.cxx:1700
 msgid "RX capture"
 msgstr "Zaznam RX"
 
-#: src/dialogs/fl_digi.cxx:1705
+#: src/dialogs/fl_digi.cxx:1701
 msgid "TX generate"
 msgstr "Generovani TX"
 
-#: src/dialogs/fl_digi.cxx:1706 src/dialogs/confdialog.cxx:3898
+#: src/dialogs/fl_digi.cxx:1702 src/dialogs/confdialog.cxx:3898
 msgid "Playback"
 msgstr "Prehravani"
 
-#: src/dialogs/fl_digi.cxx:1709
+#: src/dialogs/fl_digi.cxx:1705
 msgid "E&xit"
 msgstr "Konec-&X"
 
-#: src/dialogs/fl_digi.cxx:1711
+#: src/dialogs/fl_digi.cxx:1707
 msgid "Op &Mode"
 msgstr "&Mod"
 
-#: src/dialogs/fl_digi.cxx:1809
+#: src/dialogs/fl_digi.cxx:1805
 msgid "Configure"
 msgstr "Nastaveni"
 
-#: src/dialogs/fl_digi.cxx:1810 src/dialogs/confdialog.cxx:2069
+#: src/dialogs/fl_digi.cxx:1806 src/dialogs/confdialog.cxx:2069
 msgid "Operator"
 msgstr "Operator"
 
-#: src/dialogs/fl_digi.cxx:1811
+#: src/dialogs/fl_digi.cxx:1807
 msgid "Colors && Fonts"
 msgstr "Barvy a fonty"
 
-#: src/dialogs/fl_digi.cxx:1812
+#: src/dialogs/fl_digi.cxx:1808
 msgid "User Interface"
 msgstr "Uzivatelske rozhrani"
 
-#: src/dialogs/fl_digi.cxx:1813 src/dialogs/confdialog.cxx:2408
+#: src/dialogs/fl_digi.cxx:1809 src/dialogs/confdialog.cxx:2408
 msgid "Waterfall"
 msgstr "Vodopad"
 
-#: src/dialogs/fl_digi.cxx:1814 src/dialogs/confdialog.cxx:2649
+#: src/dialogs/fl_digi.cxx:1810 src/dialogs/confdialog.cxx:2649
 msgid "Modems"
 msgstr "Modemy"
 
-#: src/dialogs/fl_digi.cxx:1816
+#: src/dialogs/fl_digi.cxx:1812
 msgid "Sound Card"
 msgstr "Zvukova karta"
 
-#: src/dialogs/fl_digi.cxx:1817
+#: src/dialogs/fl_digi.cxx:1813
 msgid "IDs"
 msgstr "Identifikace"
 
-#: src/dialogs/fl_digi.cxx:1818 src/dialogs/confdialog.cxx:4082
+#: src/dialogs/fl_digi.cxx:1814 src/dialogs/confdialog.cxx:4082
 msgid "Misc"
 msgstr "Ruzne"
 
-#: src/dialogs/fl_digi.cxx:1820 src/dialogs/fl_digi.cxx:2383
-#: src/dialogs/fl_digi.cxx:2405 src/dialogs/confdialog.cxx:4269
+#: src/dialogs/fl_digi.cxx:1816 src/dialogs/fl_digi.cxx:2379
+#: src/dialogs/fl_digi.cxx:2401 src/dialogs/confdialog.cxx:4269
 msgid "QRZ"
 msgstr "QRZ"
 
-#: src/dialogs/fl_digi.cxx:1821
+#: src/dialogs/fl_digi.cxx:1817
 msgid "Save Config"
 msgstr "Ulozit nastaveni"
 
-#: src/dialogs/fl_digi.cxx:1825
+#: src/dialogs/fl_digi.cxx:1821
 msgid "Digiscope"
 msgstr "Digiskop"
 
-#: src/dialogs/fl_digi.cxx:1827
+#: src/dialogs/fl_digi.cxx:1823
 msgid "PSK Browser"
 msgstr "Zobrazovac PSK"
 
-#: src/dialogs/fl_digi.cxx:1829 src/logbook/lgbook.cxx:483
+#: src/dialogs/fl_digi.cxx:1825 src/logbook/lgbook.cxx:483
 msgid "Logbook"
 msgstr "Denik"
 
-#: src/dialogs/fl_digi.cxx:1834
+#: src/dialogs/fl_digi.cxx:1830
 msgid "Help"
 msgstr "Napoveda"
 
-#: src/dialogs/fl_digi.cxx:1837
+#: src/dialogs/fl_digi.cxx:1833
 msgid "Create sunspots"
 msgstr "Tvorba spotu"
 
-#: src/dialogs/fl_digi.cxx:1839
+#: src/dialogs/fl_digi.cxx:1835
 msgid "Beginners' Guide"
 msgstr "Pro zacinajici"
 
-#: src/dialogs/fl_digi.cxx:1840
+#: src/dialogs/fl_digi.cxx:1836
 msgid "Online documentation..."
 msgstr "Dokumentace online..."
 
-#: src/dialogs/fl_digi.cxx:1841
+#: src/dialogs/fl_digi.cxx:1837
 msgid "Fldigi web site..."
 msgstr "Web Fldigi"
 
-#: src/dialogs/fl_digi.cxx:1842
+#: src/dialogs/fl_digi.cxx:1838
 msgid "Reception reports..."
 msgstr "Reporty o prijmu..."
 
-#: src/dialogs/fl_digi.cxx:1843
+#: src/dialogs/fl_digi.cxx:1839
 msgid "Command line options"
 msgstr "Volby prikazove radky"
 
-#: src/dialogs/fl_digi.cxx:1844
+#: src/dialogs/fl_digi.cxx:1840
 msgid "Audio device info"
 msgstr "Info o zvuk. zarizeni"
 
-#: src/dialogs/fl_digi.cxx:1845
+#: src/dialogs/fl_digi.cxx:1841
 msgid "Build info"
 msgstr "Info o vydani"
 
-#: src/dialogs/fl_digi.cxx:1846 src/misc/debug.cxx:82
+#: src/dialogs/fl_digi.cxx:1842 src/misc/debug.cxx:82
 msgid "Event log"
 msgstr "Zaznam udalosti"
 
-#: src/dialogs/fl_digi.cxx:1847
+#: src/dialogs/fl_digi.cxx:1843
 msgid "Check for updates..."
 msgstr "Hledani aktualizaci..."
 
-#: src/dialogs/fl_digi.cxx:1848
+#: src/dialogs/fl_digi.cxx:1844
 msgid "About"
 msgstr "O programu"
 
-#: src/dialogs/fl_digi.cxx:1992
+#: src/dialogs/fl_digi.cxx:1988
 msgid "NO CALLSIGN SET"
 msgstr "NENASTAVEN VOLACI ZNAK"
 
-#: src/dialogs/fl_digi.cxx:2007
+#: src/dialogs/fl_digi.cxx:2003
 msgid "Close List"
 msgstr "Zavrit seznam"
 
-#: src/dialogs/fl_digi.cxx:2018 src/dialogs/fl_digi.cxx:2314
+#: src/dialogs/fl_digi.cxx:2014 src/dialogs/fl_digi.cxx:2310
 msgid "Open List"
 msgstr "Otevrit seznam"
 
-#: src/dialogs/fl_digi.cxx:2071
+#: src/dialogs/fl_digi.cxx:2067
 msgid "report"
 msgstr "report"
 
-#: src/dialogs/fl_digi.cxx:2071
+#: src/dialogs/fl_digi.cxx:2067
 msgid "reports"
 msgstr "reporty"
 
-#: src/dialogs/fl_digi.cxx:2081
+#: src/dialogs/fl_digi.cxx:2077
 msgid "Recent activity for grid"
 msgstr "Posledni aktivita "
 
-#: src/dialogs/fl_digi.cxx:2253
+#: src/dialogs/fl_digi.cxx:2249
 msgid "No rig specified"
 msgstr "Rig nespecifikovan"
 
-#: src/dialogs/fl_digi.cxx:2329
+#: src/dialogs/fl_digi.cxx:2325
 msgid "Select"
 msgstr "Vybrat"
 
-#: src/dialogs/fl_digi.cxx:2336
+#: src/dialogs/fl_digi.cxx:2332
 msgid "Add current frequency"
 msgstr "Vlozit aktualni kmitocet"
 
-#: src/dialogs/fl_digi.cxx:2343 src/rigcontrol/rigdialog.cxx:135
+#: src/dialogs/fl_digi.cxx:2339 src/rigcontrol/rigdialog.cxx:135
 msgid "Clear list"
 msgstr "Vymazat seznam"
 
-#: src/dialogs/fl_digi.cxx:2350 src/rigcontrol/rigdialog.cxx:130
+#: src/dialogs/fl_digi.cxx:2346 src/rigcontrol/rigdialog.cxx:130
 msgid "Delete from list"
 msgstr "Vymazat ze seznamu"
 
-#: src/dialogs/fl_digi.cxx:2364
+#: src/dialogs/fl_digi.cxx:2360
 msgid "Select operating parameters"
 msgstr "Nastavit pracovni parametry"
 
-#: src/dialogs/fl_digi.cxx:2389 src/dialogs/fl_digi.cxx:2411
+#: src/dialogs/fl_digi.cxx:2385 src/dialogs/fl_digi.cxx:2407
 #: src/dialogs/Viewer.cxx:307 src/widgets/flinput2.cxx:25
 msgid "Clear"
 msgstr "Vycistit"
 
-#: src/dialogs/fl_digi.cxx:2429
+#: src/dialogs/fl_digi.cxx:2425
 msgid "QSO Freq"
 msgstr "Kmitocet"
 
-#: src/dialogs/fl_digi.cxx:2439 src/logbook/lgbook.cxx:501
+#: src/dialogs/fl_digi.cxx:2435 src/logbook/lgbook.cxx:501
 msgid "On"
 msgstr "Start"
 
-#: src/dialogs/fl_digi.cxx:2441
+#: src/dialogs/fl_digi.cxx:2437
 msgid "Press to update"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2445 src/logbook/lgbook.cxx:513
+#: src/dialogs/fl_digi.cxx:2441 src/logbook/lgbook.cxx:513
 msgid "Off"
 msgstr "Konec"
 
-#: src/dialogs/fl_digi.cxx:2450 src/logbook/lgbook.cxx:382
+#: src/dialogs/fl_digi.cxx:2446 src/logbook/lgbook.cxx:382
 #: src/logbook/lgbook.cxx:525 src/logbook/lgbook.cxx:955
 msgid "Call"
 msgstr "Volaci znak"
 
-#: src/dialogs/fl_digi.cxx:2454 src/logbook/lgbook.cxx:386
+#: src/dialogs/fl_digi.cxx:2450 src/logbook/lgbook.cxx:386
 #: src/logbook/lgbook.cxx:537 src/logbook/lgbook.cxx:905
 msgid "Name"
 msgstr "Jmeno"
 
-#: src/dialogs/fl_digi.cxx:2458 src/logbook/lgbook.cxx:573
+#: src/dialogs/fl_digi.cxx:2454 src/logbook/lgbook.cxx:573
 msgid "In"
 msgstr "RX"
 
-#: src/dialogs/fl_digi.cxx:2462 src/logbook/lgbook.cxx:585
+#: src/dialogs/fl_digi.cxx:2458 src/logbook/lgbook.cxx:585
 msgid "Out"
 msgstr "TX"
 
-#: src/dialogs/fl_digi.cxx:2466
+#: src/dialogs/fl_digi.cxx:2462
 msgid "*** DUP ***"
 msgstr "*** DUP ***"
 
-#: src/dialogs/fl_digi.cxx:2471
+#: src/dialogs/fl_digi.cxx:2467
 msgid "QTH"
 msgstr "QTH"
 
-#: src/dialogs/fl_digi.cxx:2474
+#: src/dialogs/fl_digi.cxx:2470
 msgid "City"
 msgstr "Misto"
 
-#: src/dialogs/fl_digi.cxx:2477 src/logbook/lgbook.cxx:609
+#: src/dialogs/fl_digi.cxx:2473 src/logbook/lgbook.cxx:609
 msgid "St"
 msgstr "St"
 
-#: src/dialogs/fl_digi.cxx:2480
+#: src/dialogs/fl_digi.cxx:2476
 msgid "US State"
 msgstr "Stat USA"
 
-#: src/dialogs/fl_digi.cxx:2483 src/logbook/lgbook.cxx:621
+#: src/dialogs/fl_digi.cxx:2479 src/logbook/lgbook.cxx:621
 msgid "Pr"
 msgstr "Pr"
 
-#: src/dialogs/fl_digi.cxx:2486
+#: src/dialogs/fl_digi.cxx:2482
 msgid "Can. Province"
 msgstr "Kanadska provincie"
 
-#: src/dialogs/fl_digi.cxx:2489
+#: src/dialogs/fl_digi.cxx:2485
 msgid "Cnty"
 msgstr "Cnty"
 
-#: src/dialogs/fl_digi.cxx:2492 src/logbook/lgbook.cxx:436
+#: src/dialogs/fl_digi.cxx:2488 src/logbook/lgbook.cxx:436
 #: src/logbook/lgbook.cxx:633
 msgid "Country"
 msgstr "Zeme"
 
-#: src/dialogs/fl_digi.cxx:2495 src/logbook/lgbook.cxx:645
+#: src/dialogs/fl_digi.cxx:2491 src/logbook/lgbook.cxx:645
 msgid "Loc"
 msgstr "Loc"
 
-#: src/dialogs/fl_digi.cxx:2501
+#: src/dialogs/fl_digi.cxx:2497
 msgid "Az"
 msgstr "Az"
 
-#: src/dialogs/fl_digi.cxx:2511
+#: src/dialogs/fl_digi.cxx:2507
 msgid "#Out"
 msgstr "#tx"
 
-#: src/dialogs/fl_digi.cxx:2515
+#: src/dialogs/fl_digi.cxx:2511
 msgid "Sent serial number (read only)"
 msgstr "Odeslane cislo spojeni (jen ke cteni)"
 
-#: src/dialogs/fl_digi.cxx:2518
+#: src/dialogs/fl_digi.cxx:2514
 msgid "#In"
 msgstr "#rx"
 
-#: src/dialogs/fl_digi.cxx:2522
+#: src/dialogs/fl_digi.cxx:2518
 msgid "Received serial number"
 msgstr "Prijate cislo spojeni"
 
-#: src/dialogs/fl_digi.cxx:2524
+#: src/dialogs/fl_digi.cxx:2520
 msgid "Xchg"
 msgstr "Kod"
 
-#: src/dialogs/fl_digi.cxx:2529
+#: src/dialogs/fl_digi.cxx:2525
 msgid "Contest exchange in"
 msgstr "Kontestovy kod prij."
 
-#: src/dialogs/fl_digi.cxx:2541 src/logbook/lgbook.cxx:439
+#: src/dialogs/fl_digi.cxx:2537 src/logbook/lgbook.cxx:439
 #: src/logbook/lgbook.cxx:682
 msgid "Notes"
 msgstr "Poznamky"
 
-#: src/dialogs/fl_digi.cxx:2662
+#: src/dialogs/fl_digi.cxx:2658
 msgid ""
 "Left Click - execute\n"
 "Right Click - edit"
@@ -564,19 +564,19 @@ msgstr ""
 "Levy klik - spustit\n"
 "Pravy klik - editovat"
 
-#: src/dialogs/fl_digi.cxx:2671
+#: src/dialogs/fl_digi.cxx:2667
 msgid "Change macro set"
 msgstr "Zmenit sadu maker"
 
-#: src/dialogs/fl_digi.cxx:2721
+#: src/dialogs/fl_digi.cxx:2717
 msgid "Detected signal level"
 msgstr "Uroven signalu"
 
-#: src/dialogs/fl_digi.cxx:2733
+#: src/dialogs/fl_digi.cxx:2729
 msgid "Squelch level"
 msgstr "Uroven squelche"
 
-#: src/dialogs/fl_digi.cxx:2748
+#: src/dialogs/fl_digi.cxx:2744
 msgid ""
 "Left click: change mode\n"
 "Right click: configure"
@@ -584,15 +584,15 @@ msgstr ""
 "Levy klik: Volba modemu\n"
 "Pravy klik: Nastaveni"
 
-#: src/dialogs/fl_digi.cxx:2801
+#: src/dialogs/fl_digi.cxx:2797
 msgid "Automatic Frequency Control"
 msgstr "Aut. doladeni"
 
-#: src/dialogs/fl_digi.cxx:2804
+#: src/dialogs/fl_digi.cxx:2800
 msgid "Squelch"
 msgstr "Squelch"
 
-#: src/dialogs/fl_digi.cxx:2826
+#: src/dialogs/fl_digi.cxx:2822
 msgid "Scope"
 msgstr "Osciloskop"
 
@@ -1035,43 +1035,43 @@ msgstr "Rychlost prenosu, X1-normalni"
 msgid "Load"
 msgstr "Nahrat"
 
-#: src/waterfall/waterfall.cxx:1311
+#: src/waterfall/waterfall.cxx:1314
 msgid "Waterfall / FFT / Scope"
 msgstr "Vodopad/FFT/osciloskop"
 
-#: src/waterfall/waterfall.cxx:1321
+#: src/waterfall/waterfall.cxx:1324
 msgid "Upper signal level (dB)"
 msgstr "Vyssi uroven signalu (dB)"
 
-#: src/waterfall/waterfall.cxx:1332
+#: src/waterfall/waterfall.cxx:1335
 msgid "Signal range (dB)"
 msgstr "Rozsah signalu (dB)"
 
-#: src/waterfall/waterfall.cxx:1338
+#: src/waterfall/waterfall.cxx:1341
 msgid "Change waterfall scale"
 msgstr "Zmenit rozsah vodopadu"
 
-#: src/waterfall/waterfall.cxx:1343
+#: src/waterfall/waterfall.cxx:1346
 msgid "Slew display lower in frequency"
 msgstr "Posun displeje k nizsim kmitoctum"
 
-#: src/waterfall/waterfall.cxx:1348
+#: src/waterfall/waterfall.cxx:1351
 msgid "Center display on signal"
 msgstr "Vycentrovat displej na signal"
 
-#: src/waterfall/waterfall.cxx:1353
+#: src/waterfall/waterfall.cxx:1356
 msgid "Slew display higher in frequency"
 msgstr "Posun displeje k vyssim kmitoctum"
 
-#: src/waterfall/waterfall.cxx:1358
+#: src/waterfall/waterfall.cxx:1361
 msgid "Waterfall drop speed"
 msgstr "Rychlost vodopadu"
 
-#: src/waterfall/waterfall.cxx:1368
+#: src/waterfall/waterfall.cxx:1371
 msgid "Adjust cursor frequency"
 msgstr "Nastavit kmitocet kurzoru"
 
-#: src/waterfall/waterfall.cxx:1373
+#: src/waterfall/waterfall.cxx:1376
 msgid ""
 "Center in passband\n"
 "Right click to undo"
@@ -1079,7 +1079,7 @@ msgstr ""
 "Na stred pasma\n"
 "Pravym klikem vratit"
 
-#: src/waterfall/waterfall.cxx:1379
+#: src/waterfall/waterfall.cxx:1382
 msgid ""
 "Store mode and frequency\n"
 "Right click for list"
@@ -1087,15 +1087,15 @@ msgstr ""
 "Ulozit mod a kmitocet\n"
 "Pravy klik - seznam"
 
-#: src/waterfall/waterfall.cxx:1389
+#: src/waterfall/waterfall.cxx:1392
 msgid "Lock transmit frequency"
 msgstr "Zamknout vysilaci kmitocet"
 
-#: src/waterfall/waterfall.cxx:1396
+#: src/waterfall/waterfall.cxx:1399
 msgid "Reverse"
 msgstr "Reverzni"
 
-#: src/waterfall/waterfall.cxx:1404
+#: src/waterfall/waterfall.cxx:1407
 msgid "Transmit/Receive"
 msgstr "Vysilani/prijem"
 
