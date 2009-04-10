@@ -319,9 +319,6 @@ fldigi.prefs::
   The ``status'' file. Stores window geometries, button states, current modem,
   current audio frequency, squelch level, and so on.
 
-logbook.adif::
-  The default file in which fldigi saves its QSO data.
-
 status_log.txt::
   The event log.
 
@@ -337,7 +334,7 @@ scripts/::
 
 logs/::
   This directory contains logged received and sent text (when such logging is
-  enabled).
+  enabled), including the default logbook database, logbook.adif.
 
 images/::
   Received MFSK images are automatically saved in this directory.
