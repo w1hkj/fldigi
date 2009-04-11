@@ -554,7 +554,7 @@ void PTT::set_uhrouter(bool ptt)
 		LOG_ERROR("No reply to PTT command within %jd seconds", (intmax_t)t.tv_sec);
 		break;
 	default:
-		LOG_INFO("Received \"%s\"", str2hex(buf, n, (char*)buf+n, sizeof(buf)-n));
+		LOG_INFO("Received \"%s\"", str2hex(buf, n));
 		// last received char should be '1'(?)
 		break;
 	}
