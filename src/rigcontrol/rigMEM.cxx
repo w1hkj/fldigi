@@ -338,6 +338,14 @@ static void *rigMEM_loop(void *args)
 	return NULL;
 }
 
+#elif defined(__APPLE__)
+// FIXME: we should be using an IPC mechanism that works on all Unix variants,
+// or not compile rigMEM at all on OS X.
+
+bool rigMEM_init(void) { return false; }
+void rigMEM_close(void) { }
+static void *rigMEM_loop(void *args) { return NULL; }
+
 #endif
 
 bool rigMEM_active(void)
