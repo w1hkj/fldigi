@@ -426,6 +426,7 @@ EXTRA_DIST = \
 	$(srcdir)/../scripts/mkappbundle.sh \
 	$(srcdir)/../scripts/mkhamlibstatic.sh \
 	$(srcdir)/../scripts/fldigi-shell \
+	$(srcdir)/../scripts/tests/cr.sh \
 	$(srcdir)/../scripts/tests/config-h.sh \
 	$(srcdir)/../data/fldigi-psk.png \
 	$(srcdir)/../data/fldigi-rtty.png \
