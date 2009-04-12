@@ -40,7 +40,7 @@
 #include "mfskvaricode.h"
 #include "debug.h"
 
-LOG_SET_SOURCE(debug::LOG_MODEM);
+LOG_FILE_SOURCE(debug::LOG_MODEM);
 
 using namespace std;
 

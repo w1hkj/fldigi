@@ -57,7 +57,7 @@
 
 #include "pskrep.h"
 
-LOG_SET_SOURCE(debug::LOG_SPOTTER);
+LOG_FILE_SOURCE(debug::LOG_SPOTTER);
 
 // -------------------------------------------------------------------------------------------------
 

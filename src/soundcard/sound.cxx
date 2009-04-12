@@ -69,7 +69,7 @@
 
 using namespace std;
 
-LOG_SET_SOURCE(debug::LOG_AUDIO);
+LOG_FILE_SOURCE(debug::LOG_AUDIO);
 
 // Define these constants here to avoid littering the code with magic numbers.
 // Audio input is mono in SoundPort and SoundPulse, stereo in SoundOSS

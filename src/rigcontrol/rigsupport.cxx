@@ -38,7 +38,7 @@
 
 #include "gettext.h"
 
-LOG_SET_SOURCE(debug::LOG_RIGCONTROL);
+LOG_FILE_SOURCE(debug::LOG_RIGCONTROL);
 
 using namespace std;
 

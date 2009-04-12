@@ -69,12 +69,14 @@ private:
 
 unused__ static uint32_t log_source_ = debug::LOG_OTHER;
 #if defined(__GNUC__) && (__GNUC__ >= 3)
-#  define LOG_SET_SOURCE(source__)						\
+#  define LOG_FILE_SOURCE(source__)						\
 	__attribute__((constructor))						\
 	static void log_set_source_(void) { log_source_ = source__; }
 #else
-#  define LOG_SET_SOURCE(source__)
+#  define LOG_FILE_SOURCE(source__)
 #endif
+
+#define LOG_SET_SOURCE(source__) log_source_ = source__
 
 #endif // _DEBUG_H_
 

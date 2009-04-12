@@ -66,7 +66,7 @@
 #include "re.h"
 #include "pskrep.h"
 
-LOG_SET_SOURCE(debug::LOG_RPC);
+LOG_FILE_SOURCE(debug::LOG_RPC);
 
 using namespace std;
 

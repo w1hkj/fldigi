@@ -49,7 +49,7 @@ using namespace std;
 #include <FL/Fl.H>
 #include <FL/Fl_Value_Slider.H>
 
-LOG_SET_SOURCE(debug::LOG_MODEM);
+LOG_FILE_SOURCE(debug::LOG_MODEM);
 
 char feldmsg[80];
 

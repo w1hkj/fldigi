@@ -31,7 +31,7 @@
 
 using namespace std;
 
-LOG_SET_SOURCE(debug::LOG_RIGCONTROL);
+LOG_FILE_SOURCE(debug::LOG_RIGCONTROL);
 
 /* ---------------------------------------------------------------------- */
 
