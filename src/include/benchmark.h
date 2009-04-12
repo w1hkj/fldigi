@@ -3,6 +3,7 @@
 
 #include <string>
 #include <sys/types.h>
+#include "globals.h"
 
 struct benchmark_params {
 	trx_mode modem;

@@ -3,16 +3,25 @@
 
 #include <config.h>
 
+#include <string>
+
+#include "misc.h"
 #include "filters.h"
 
 #include "confdialog.h"
 #include "modem.h"
+#include "trx.h"
+#include "fl_digi.h"
+#include "main.h"
 #include "configuration.h"
-
+#include "waterfall.h"
 #include "qrunner.h"
+#include "mbuffer.h"
 
 #include "status.h"
 #include "debug.h"
+
+using namespace std;
 
 modem *cw_modem = 0;
 

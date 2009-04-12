@@ -7,14 +7,9 @@
 
 #include "threads.h"
 
-#include "misc.h"
 #include "sound.h"
-#include "waterfall.h"
-#include "fl_digi.h"
+#include "digiscope.h"
 #include "globals.h"
-#include "fl_digi.h"
-
-#include "fldigi-config.h"
 #include "morse.h"
 
 #define	OUTBUFSIZE	16384

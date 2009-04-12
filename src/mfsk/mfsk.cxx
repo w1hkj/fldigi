@@ -30,9 +30,14 @@
 #include <cstring>
 #include <libgen.h>
 
+#include <FL/Fl.H>
+
 #include "mfsk.h"
 #include "modem.h"
 
+#include "misc.h"
+#include "main.h"
+#include "fl_digi.h"
 #include "configuration.h"
 #include "status.h"
 #include "trx.h"

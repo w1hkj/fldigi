@@ -22,23 +22,14 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ----------------------------------------------------------------------------
 
-#ifndef fl_digi_h
+#ifndef FL_DIGI_H
+#define FL_DIGI_H
 
-#define fl_digi_h
-
-#include <string.h>
-
-#include <FL/Fl.H>
 #include <FL/Fl_Double_Window.H>
-#include <FL/Fl_Menu_Bar.H>
-#include <FL/Fl_Pack.H>
-#include <FL/Fl_Text_Buffer.H>
 #include <FL/Fl_Browser.H>
 #include <FL/Fl_Value_Slider.H>
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Tile.H>
-#include <FL/Fl_Light_Button.H>
-#include <FL/Fl_Check_Button.H>
 #include <FL/Fl_Menu_Item.H>
 
 #include "combo.h"
@@ -52,7 +43,6 @@
 #include "FreqControl.h"
 #include <flinput2.h>
 
-using namespace std;
 
 extern Fl_Double_Window *fl_digi_main;
 extern Fl_Double_Window *scopeview;
@@ -161,8 +151,8 @@ extern void put_Status1(const char *msg, double timeout = 0.0, status_timeout ac
 extern void put_Status2(const char *msg, double timeout = 0.0, status_timeout action = STATUS_CLEAR);
 
 extern void show_frequency(long long);
-extern void show_mode(const string& mode);
-extern void show_bw(const string& sWidth);
+extern void show_mode(const std::string& mode);
+extern void show_bw(const std::string& sWidth);
 extern void show_spot(bool v);
 extern void showMacroSet();
 

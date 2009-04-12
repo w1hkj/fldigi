@@ -40,18 +40,8 @@
 #ifndef RSID_H
 #define RSID_H
 
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <stdio.h>
-#include <sys/time.h>
-#include <cstring>
-#include <FL/Fl.H>
-
 #include "globals.h"
 #include "modem.h"
-#include "fft.h"
-#include "misc.h"
 
 #define RSID_FFT_SIZE	1024
 #define RSID_ARRAY_SIZE	(RSID_FFT_SIZE * 2)

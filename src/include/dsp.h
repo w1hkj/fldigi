@@ -24,9 +24,9 @@
  *
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
+#include <cstdlib>
+#include <cstring>
+#include <cmath>
 
 // ----------------------------------------------------------------------------
 // double/other-complex type

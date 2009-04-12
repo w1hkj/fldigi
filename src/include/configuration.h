@@ -3,8 +3,8 @@
 
 #include <string>
 
-#include "main.h"
 #include "rtty.h"
+#include "waterfall.h"
 #include "lookupcall.h"
 #include "Viewer.h"
 
@@ -178,7 +178,7 @@
         ELEM_(bool, autoextract, "AUTOEXTRACT", false)                                  \
         ELEM_(bool, speak, "SPEAK", false)                                              \
 /* QRZ */                                                                               \
-        ELEM_(int, QRZ, "QRZTYPE", 0) /* Not available */                               \
+        ELEM_(int, QRZ, "QRZTYPE", QRZNONE)                                             \
         ELEM_(std::string, QRZpathname, "QRZPATHNAME", "")                              \
         ELEM_(std::string, QRZusername, "QRZUSER", "")                                  \
         ELEM_(std::string, QRZuserpassword, "QRZPASSWORD", "")                          \

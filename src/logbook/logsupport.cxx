@@ -1,14 +1,15 @@
 #include <config.h>
 
-#include <stdlib.h>
 #include <string>
+#include <cstring>
+#include <cstdlib>
 
 #include "main.h"
-#include "modem.h"
+#include "trx.h"
 #include "debug.h"
 #include "macros.h"
 #include "status.h"
-#include "spot.h"
+#include "date.h"
 
 #include "adif_io.h"
 
@@ -23,6 +24,7 @@
 #include "main.h"
 #include "locator.h"
 
+#include <FL/filename.H>
 #include <FL/fl_ask.H>
 
 using namespace std;

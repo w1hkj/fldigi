@@ -1,9 +1,11 @@
 #include <config.h>
 
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
+
 #include <FL/Fl.H>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <FL/Fl_Pixmap.H>
 
 #include "pixmaps.h"
 #include "calendar.h"

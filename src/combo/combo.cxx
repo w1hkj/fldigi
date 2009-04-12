@@ -1,5 +1,9 @@
 #include <config.h>
 
+#include <cstring>
+#include <cstdlib>
+#include <FL/Fl.H>
+
 #include "combo.h"
 #include "debug.h"
 

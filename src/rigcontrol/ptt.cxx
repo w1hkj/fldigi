@@ -42,6 +42,7 @@
 #include <cstring>
 #include <stdint.h>
 
+#include "trx.h"
 #include "ptt.h"
 #include "configuration.h"
 #include "rigMEM.h"

@@ -11,6 +11,10 @@
 #include <config.h>
 
 #include <fstream>
+#include <string>
+#include <list>
+
+#include <FL/filename.H>
 
 #include "rigio.h"
 #include "rigxml.h"
@@ -25,6 +29,8 @@
 #include "configuration.h"
 #include "fileselect.h"
 #include "confdialog.h"
+
+using namespace std;
 
 //#define DEBUGXML
 

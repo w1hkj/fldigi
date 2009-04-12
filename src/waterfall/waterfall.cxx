@@ -33,8 +33,21 @@
 #include <algorithm>
 #include <map>
 
+#include <FL/Fl.H>
+#include <FL/fl_draw.H>
+#include <FL/Fl_Widget.H>
+#include <FL/Fl_Repeat_Button.H>
+#include <FL/Fl_Light_Button.H>
+#include <FL/Fl_Menu_Button.H>
+#include <FL/Fl_Group.H>
+#include <FL/Fl_Box.H>
+#include <FL/Fl_Counter.H>
+#include <FL/Enumerations.H>
+
+#include "fl_digi.h"
+#include "trx.h"
+#include "misc.h"
 #include "waterfall.h"
-#include "threads.h"
 #include "main.h"
 #include "modem.h"
 #include "qrunner.h"
@@ -52,6 +65,8 @@
 #include "arq_io.h"
 #include "confdialog.h"
 #include "gettext.h"
+
+using namespace std;
 
 #define bwFFT		30
 #define cwRef		50
@@ -351,6 +366,18 @@ double WFdisp::powerDensity(double f0, double bw)
 	for (int i = flower; i <= fupper; i++)
 		pwrdensity += pwr[i];
 	return pwrdensity/(bw+1);
+}
+
+void WFdisp::setPrefilter(int v)
+{
+	switch (v) {
+	case WF_FFT_RECTANGULAR: RectWindow(fftwindow, FFT_LEN*2); break;
+	case WF_FFT_BLACKMAN: BlackmanWindow(fftwindow, FFT_LEN*2); break;
+	case WF_FFT_HAMMING: HammingWindow(fftwindow, FFT_LEN*2); break;
+	case WF_FFT_HANNING: HanningWindow(fftwindow, FFT_LEN*2); break;
+	case WF_FFT_TRIANGULAR: TriangularWindow(fftwindow, FFT_LEN*2); break;
+	}
+	prefilter = v;
 }
 
 int WFdisp::log2disp(int v)

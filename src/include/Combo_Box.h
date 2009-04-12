@@ -20,8 +20,6 @@
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Group.H>
 
-//#include "Enumerations.h"
-
 //! This is a generic base class for implementing widgets with combo-box-like behavior (i.e. a pulldown menu where the "input" area is editable
 class Combo_Box : public Fl_Group
 {

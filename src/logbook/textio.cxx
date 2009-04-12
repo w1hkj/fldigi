@@ -1,13 +1,15 @@
 // textio.cxx
 
 #include <config.h>
-#include <string>
-#include <iostream>
 
-using namespace std;
+#include <string>
+#include <cstdio>
+#include <cstring>
 
 #include "textio.h"
 #include "lgbook.h"
+
+using namespace std;
 
 #ifdef __CYGWIN__
 static const char *szEOL = "\r\n";

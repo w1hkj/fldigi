@@ -1,10 +1,6 @@
 #ifndef MULTIPSK_H
 #define MULTIPSK_H
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
 #include "qso_db.h"
 
 class cTextFile {
@@ -23,4 +19,3 @@ public:
 };
 
 #endif
-

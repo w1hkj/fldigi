@@ -24,23 +24,13 @@
 #ifndef _anal_H
 #define _anal_H
 
-#include <iostream>
-#include <fstream>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <stdio.h>
-#include <sys/time.h>
 #include <string>
+#include <fstream>
 
 #include "complex.h"
-#include "modem.h"
-#include "trx.h"
-#include "misc.h"
 #include "filters.h"
 #include "fftfilt.h"
-#include "digiscope.h"
-#include "main.h"
+#include "modem.h"
 #include "mbuffer.h"
 
 #define	anal_SampleRate	8000
@@ -78,8 +68,8 @@ private:
 	double nco(double freq);
 	void writeFile();
 	
-	ofstream	analysisFile;
-	string		analysisFilename;
+	std::ofstream	analysisFile;
+	std::string	analysisFilename;
 	
 public:
 	anal();

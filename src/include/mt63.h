@@ -28,13 +28,9 @@
 #ifndef MT63_MODEM_H
 #define MT63_MODEM_H
 
-#include "sound.h"
-#include "confdialog.h"
 #include "dsp.h"
 #include "mt63base.h"
-#include "trx.h"
-
-using namespace std;
+#include "modem.h"
 
 class mt63 : public modem {
 private:

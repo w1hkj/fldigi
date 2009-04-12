@@ -29,14 +29,8 @@
 #ifndef DIGISCOPE_H
 #define DIGISCOPE_H
 
-#include <math.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include <FL/Fl.H>
-#include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Widget.H>
-#include <FL/fl_draw.H>
+
 #include "complex.h"
 
 class Digiscope : public Fl_Widget { 

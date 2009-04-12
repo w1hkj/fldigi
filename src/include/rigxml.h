@@ -3,10 +3,6 @@
 
 #include <string>
 #include <list>
-#include <map>
-#include <sstream>
-#include <iostream>
-#include <ctype.h>
 
 struct MODE {
 	std::string SYMBOL;

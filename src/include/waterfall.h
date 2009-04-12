@@ -22,28 +22,16 @@
 #ifndef _WF_H
 #define _WF_H
 
-#include <math.h>
-#include <stdio.h>
-#include <string.h>
-
-#include "complex.h"
-#include "fft.h"
-#include "sound.h"
-#include "globals.h"
-#include "fldigi-config.h"
-
-#include <FL/Fl.H>
-#include <FL/fl_draw.H>
 #include <FL/Fl_Widget.H>
-#include <FL/Fl_Repeat_Button.H>
+#include <FL/Fl_Group.H>
+#include <FL/Fl_Button.H>
 #include <FL/Fl_Light_Button.H>
 #include <FL/Fl_Menu_Button.H>
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Group.H>
-#include <FL/Fl_Box.H>
 #include <FL/Fl_Counter.H>
-#include <FL/Fl_Choice.H>
-#include <FL/Enumerations.H>
+#include <FL/Fl_Box.H>
+
+#include "fft.h"
+#include "fldigi-config.h"
 
 enum {
 	WF_FFT_RECTANGULAR, WF_FFT_BLACKMAN, WF_FFT_HAMMING,
@@ -62,8 +50,6 @@ enum {
 #define FFT_LEN		4096
 
 #define SC_SMPLRATE	8000
- 
-#define fftabs(a,b) sqrt((a)*(a) + (b)*(b))
 
 struct RGB {
 	uchar R;
@@ -93,7 +79,7 @@ enum WFmode {
 #define MAG_4 3
 
 //enum WFspeed {FAST = 1, NORMAL = 2, SLOW = 8};
-enum WFspeed {FAST = 1, NORMAL = 2, SLOW = 4, PAUSE = INT_MAX};
+enum WFspeed { PAUSE = 0, FAST = 1, NORMAL = 2, SLOW = 4 };
 
 class WFdisp : public Fl_Widget {
 public:
@@ -180,23 +166,7 @@ public:
 		drawMarker();};
 	int peakFreq(int f0, int delta);
 	double powerDensity(double f0, double bw);
-	void setPrefilter(int v) {
-		switch (v) {
-			case WF_FFT_RECTANGULAR: RectWindow(fftwindow, FFT_LEN*2); break;
-			case WF_FFT_BLACKMAN: BlackmanWindow(fftwindow, FFT_LEN*2); break;
-			case WF_FFT_HAMMING: HammingWindow(fftwindow, FFT_LEN*2); break;
-			case WF_FFT_HANNING: HanningWindow(fftwindow, FFT_LEN*2); break;
-			case WF_FFT_TRIANGULAR: TriangularWindow(fftwindow, FFT_LEN*2); break;
-		}
-		prefilter = v;
-//		switch (v) {
-//			case 0: wfft->setWindow(FFT_NONE); break;
-//			case 1: wfft->setWindow(FFT_BLACKMAN); break;
-//			case 2: wfft->setWindow(FFT_HAMMING); break;
-//			case 3: wfft->setWindow(FFT_HANNING); break;
-//			case 4: wfft->setWindow(FFT_TRIANGULAR); break;
-//		}
-	}
+	void setPrefilter(int v);
 	void setcolors();
 	double dFreq() {return dfreq;}
 	void redrawCursor();

@@ -24,11 +24,6 @@
 #ifndef _LOGGER_H
 #define _LOGGER_H
 
-#include <string>
-
-using namespace std;
-
-
 // IPC interface to Xlog and fl_logbook
 
 #define	LOG_MVERSION	"1"

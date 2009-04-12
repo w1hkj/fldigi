@@ -23,10 +23,22 @@
 
 #include <config.h>
 
+#include <iosfwd>
+#include <fstream>
+#include <string>
+#include <cstdio>
+
 #include "analysis.h"
+#include "modem.h"
+#include "misc.h"
+#include "filters.h"
+#include "fftfilt.h"
+#include "digiscope.h"
 #include "waterfall.h"
-#include "confdialog.h"
-#include "configuration.h"
+#include "main.h"
+#include "fl_digi.h"
+
+using namespace std;
 
 #define anal_BW         4
 

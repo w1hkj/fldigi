@@ -33,6 +33,7 @@
 #  include <sys/ipc.h>
 #  include <sys/msg.h>
 #endif
+#include <sys/stat.h>
 #include <sys/utsname.h>
 #include <unistd.h>
 #include <dirent.h>
@@ -45,19 +46,16 @@
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Shared_Image.H>
 #include <FL/x.H>
+#include <FL/filename.H>
 
 #include "gettext.h"
 #include "main.h"
 #include "waterfall.h"
-#include "fft.h"
+#include "trx.h"
 #include "soundconf.h"
-#include "complex.h"
 #include "fl_digi.h"
 #include "rigio.h"
 #include "globals.h"
-#include "psk.h"
-#include "cw.h"
-#include "mfsk.h"
 #include "confdialog.h"
 #include "colorsfonts.h"
 #include "configuration.h"

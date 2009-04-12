@@ -1,15 +1,17 @@
 #include <config.h>
 
-#include "colorbox.h"
-#include "waterfall.h"
-#include "confdialog.h"
 #include <string>
 #include <FL/Fl_Color_Chooser.H>
 
-using namespace std;
-
+#include "colorbox.h"
+#include "waterfall.h"
+#include "confdialog.h"
+#include "main.h"
+#include "fl_digi.h"
 #include "fileselect.h"
 #include "debug.h"
+
+using namespace std;
 
 void colorbox::draw() {
 	int ypos = y() + 2;

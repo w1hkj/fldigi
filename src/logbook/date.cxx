@@ -25,6 +25,10 @@
 
 #include <config.h>
 
+#include <iostream>
+#include <cstring>
+#include <ctime>
+
 #include "date.h"
 
 using namespace std;

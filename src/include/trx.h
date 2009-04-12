@@ -27,12 +27,8 @@
 
 #include "threads.h"
 #include "modem.h"
-
-#include "misc.h"
 #include "sound.h"
-#include "waterfall.h"
 #include "globals.h"
-#include "fl_digi.h"
 #include "rsid.h"
 
 // ----------------------------------------------------------------------------

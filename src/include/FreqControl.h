@@ -35,10 +35,6 @@
 #ifndef _FREQCONTROL_H_
 #define _FREQCONTROL_H_
 
-#include <math.h>
-#include <stdio.h>
-#include <string.h>
-
 #include <FL/Fl.H>
 #include <FL/Fl_Widget.H>
 #include <FL/Fl_Repeat_Button.H>

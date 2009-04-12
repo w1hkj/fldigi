@@ -25,10 +25,16 @@
 
 #include <config.h>
 
+#include <cmath>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include <FL/fl_ask.H>
+#include <FL/Fl.H>
+#include <FL/fl_draw.H>
 
 #if USE_LIBJPEG
 #  include <cstdio>
@@ -38,6 +44,7 @@
 #  include <png.h>
 #endif
 
+#include "fl_lock.h"
 #include "picture.h"
 #include "debug.h"
 

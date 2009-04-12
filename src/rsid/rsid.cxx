@@ -1,11 +1,14 @@
 #include <config.h>
 
-#include <math.h>
+#include <cmath>
+#include <cstring>
 
 #include "rsid.h"
 #include "filters.h"
-#include "main.h"
+#include "fft.h"
+#include "misc.h"
 #include "trx.h"
+#include "fl_digi.h"
 #include "configuration.h"
 #include "confdialog.h"
 #include "qrunner.h"

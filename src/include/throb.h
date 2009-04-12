@@ -24,8 +24,8 @@
 #ifndef _THROB_H
 #define _THROB_H
 
-#include "trx.h"
 #include "modem.h"
+#include "globals.h"
 #include "fft.h"
 #include "fftfilt.h"
 #include "filters.h"

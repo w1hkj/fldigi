@@ -36,8 +36,9 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <errno.h>
+#include <cerrno>
 #include <unistd.h>
+#include <glob.h>
 
 #include <sys/ioctl.h>
 #include <fcntl.h>
@@ -59,11 +60,14 @@
 #include "configuration.h"
 #include "status.h"
 #include "fileselect.h"
-
-#include "threads.h" 
+#include "trx.h"
+#include "fl_digi.h"
+#include "threads.h"
 #include "timeops.h"
 #include "ringbuffer.h"
 #include "debug.h"
+
+using namespace std;
 
 LOG_SET_SOURCE(debug::LOG_AUDIO);
 

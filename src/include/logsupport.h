@@ -3,9 +3,11 @@
 
 #include <string>
 
+#include <FL/Fl_Widget.H>
+#include <FL/Fl_Menu_.H>
+
 #include "qso_db.h"
 #include "adif_io.h"
-#include "date.h"
 
 #ifdef __CYGWIN__
 #  define ADIF_SUFFIX "adi"

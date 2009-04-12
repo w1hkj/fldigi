@@ -170,3 +170,9 @@ const char* uint2bin(unsigned u, size_t len)
 
 	return &(*binbuf)[0];
 }
+
+void MilliSleep(long msecs)
+{
+	struct timespec tv = {0, msecs * 1000000L};
+	nanosleep(&tv, NULL);
+}

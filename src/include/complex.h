@@ -5,7 +5,7 @@
 #ifndef _COMPLEX_H
 #define _COMPLEX_H
 
-#include <math.h>
+#include <cmath>
 
 class complex {
 public:

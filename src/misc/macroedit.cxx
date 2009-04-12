@@ -1,5 +1,6 @@
 #include <config.h>
 
+#include <string>
 #include <glob.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -11,8 +12,9 @@
 #include "globals.h"
 #include "status.h"
 #include "fileselect.h"
-
-#include <string>
+#include "fl_lock.h"
+#include "fl_digi.h"
+#include "main.h"
 
 using namespace std;
 

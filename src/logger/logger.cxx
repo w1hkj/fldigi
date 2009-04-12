@@ -37,6 +37,9 @@
 #include "lgbook.h"
 #include "main.h"
 #include "modem.h"
+#include "waterfall.h"
+#include "fl_digi.h"
+#include "trx.h"
 #include "debug.h"
 #include "macros.h"
 #include "status.h"
@@ -47,6 +50,8 @@
 #include "logsupport.h"
 
 #include <FL/fl_ask.H>
+
+using namespace std;
 
 //---------------------------------------------------------------------
 const char *logmode;

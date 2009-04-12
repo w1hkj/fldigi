@@ -1,9 +1,6 @@
 #ifndef COLORBOX_H
 #define COLORBOX_H
 
-#include <FL/Fl.H>
-#include <FL/fl_draw.H>
-#include <FL/Fl_Widget.H>
 #include <FL/Fl_Button.H>
 
 extern void loadPalette();

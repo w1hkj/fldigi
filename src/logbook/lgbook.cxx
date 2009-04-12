@@ -3,6 +3,7 @@
 #include "gettext.h"
 #include "lgbook.h"
 #include <config.h>
+#include <FL/Fl_Pixmap.H>
 #include "logsupport.h"
 #include "pixmaps.h"
 

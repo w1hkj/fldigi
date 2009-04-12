@@ -23,10 +23,13 @@
 #include "rigMEM.h"
 #include "fl_digi.h"
 #include "main.h"
+#include "trx.h"
 #include "rigsupport.h"
 #include "rigdialog.h"
 
 #include "debug.h"
+
+using namespace std;
 
 LOG_SET_SOURCE(debug::LOG_RIGCONTROL);
 

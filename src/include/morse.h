@@ -31,11 +31,6 @@
 #ifndef _MORSE_H
 #define _MORSE_H
 
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-
-
 #define	MorseTableSize	256
  
 #define CW_ENTRY_NULL		0

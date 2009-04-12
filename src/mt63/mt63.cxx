@@ -25,14 +25,10 @@
 
 #include <config.h>
 
-#include <string>
-#include <iostream>
-
-#include <FL/Fl.H>
-#include <FL/fl_ask.H>
-
-#include "mt63.h"
+#include "configuration.h"
+#include "fl_digi.h"
 #include "status.h"
+#include "mt63.h"
 
 using namespace std;
 

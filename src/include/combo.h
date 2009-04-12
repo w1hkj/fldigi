@@ -26,17 +26,11 @@
 #ifndef _FL_COMBOBOX_H
 #define _FL_COMBOBOX_H
 
-#include <FL/Fl.H>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <memory.h>
-
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Group.H>
 #include <FL/Fl_Button.H>
-#include <FL/Fl_Output.H>
 #include <FL/Fl_Select_Browser.H>
+#include <FL/Fl_Input.H>
 
 #define FL_COMBO_UNIQUE 1
 #define FL_COMBO_UNIQUE_NOCASE 2

@@ -27,11 +27,18 @@
 // ----------------------------------------------------------------------------
 
 #include <config.h>
+
 #include <iostream>
+#include <cmath>
+#include <cstring>
+
+#include <FL/Fl.H>
+#include <FL/fl_draw.H>
 
 #include "digiscope.h"
 #include "modem.h"
 #include "trx.h"
+#include "fl_digi.h"
 #include "qrunner.h"
 
 

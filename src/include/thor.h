@@ -25,7 +25,8 @@
 #include <string>
 
 #include "complex.h"
-#include "trx.h"
+#include "modem.h"
+#include "globals.h"
 #include "fft.h"
 #include "filters.h"
 #include "fftfilt.h"
@@ -41,8 +42,6 @@
 #include "interleave.h"
 #include "viterbi.h"
 
-
-using namespace std;
 
 #define THORNUMTONES 18
 #define THORMAXFFTS  8
@@ -128,7 +127,7 @@ protected:
 	int txstate;
 	int txprevtone;
 	unsigned int bitshreg;
-	string strSecXmtText;
+	std::string strSecXmtText;
 	unsigned int cptr;
 	
 	viterbi		*Dec;

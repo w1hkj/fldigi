@@ -29,6 +29,9 @@
 using namespace std;
 
 #include "rtty.h"
+#include "fl_digi.h"
+#include "digiscope.h"
+#include "misc.h"
 #include "waterfall.h"
 #include "confdialog.h"
 #include "configuration.h"

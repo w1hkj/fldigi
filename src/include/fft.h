@@ -19,10 +19,7 @@
 #ifndef FFT_H
 #define FFT_H
 
-#include <math.h>
-#include <stdio.h>
 #include "complex.h"
-#include "misc.h"
 
 enum fftPrefilter {FFT_NONE, FFT_HAMMING, FFT_HANNING, FFT_BLACKMAN, FFT_TRIANGULAR};
 
@@ -61,19 +58,7 @@ public:
 	void irdft(double *a);
 	void irdft(complex *a) { irdft( (double *) a); }
 	
-	void setWindow(fftPrefilter pf) {
-		wintype = pf;
-		if (wintype == FFT_TRIANGULAR)
-			TriangularWindow(fftwin, fftlen*2);
-		else if (wintype == FFT_HAMMING)
-			HammingWindow(fftwin, fftlen*2);
-		else if (wintype == FFT_HANNING)
-			HanningWindow(fftwin, fftlen*2);
-		else if (wintype == FFT_BLACKMAN)
-			BlackmanWindow(fftwin, fftlen*2);
-		else
-			RectWindow(fftwin, fftlen*2);
-	}
+	void setWindow(fftPrefilter pf);
 };
 
 #endif

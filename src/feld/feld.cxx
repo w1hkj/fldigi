@@ -39,6 +39,7 @@
 using namespace std;
 
 #include "feld.h"
+#include "fl_digi.h"
 #include "fontdef.h"
 #include "confdialog.h"
 #include "qrunner.h"

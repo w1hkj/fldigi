@@ -4,7 +4,7 @@
 #include "confdialog.h"
 #include "xmlreader.h"
 #include "soundconf.h"
-#include "waterfall.h"
+#include "fl_digi.h"
 #include "main.h"
 #include "gettext.h"
 
@@ -14,16 +14,13 @@
 #endif
 
 #include "rigMEM.h"
-//#include "rigio.h"
 #include "debug.h"
 
 #include <FL/Fl_Tooltip.H>
 
 #include <unistd.h>
-
 #include <iostream>
 #include <fstream>
-
 #include <map>
 #include <sstream>
 

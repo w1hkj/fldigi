@@ -43,6 +43,7 @@
 #include "main.h"
 #include "configuration.h"
 #include "fl_digi.h"
+#include "trx.h"
 #include "arq_io.h"
 
 #include "threads.h"

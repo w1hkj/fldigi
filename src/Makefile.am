@@ -173,8 +173,6 @@ fldigi_SOURCES += \
 	include/Combo_Box.h \
 	include/Combo_List.h \
 	include/confdialog.h \
-	include/Enumerations.h \
-	include/FLdigiTypes.h \
 	include/FTextView.h \
 	include/fileselect.h \
 	include/Fl_Text_Display_mod.H \
@@ -209,7 +207,6 @@ fldigi_SOURCES += \
 	include/gettext.h \
 	include/globals.h \
 	include/icons.h \
-	include/id.h \
 	include/interleave.h \
 	include/jalocha/pj_cmpx.h \
 	include/jalocha/pj_fft.h \

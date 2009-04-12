@@ -25,6 +25,7 @@
 
 #include <config.h>
 
+#include <FL/Fl.H>
 #include <FL/fl_draw.H>
 
 #include <stdarg.h>

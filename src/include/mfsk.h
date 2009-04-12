@@ -4,7 +4,13 @@
 #ifndef _MFSK_H
 #define _MFSK_H
 
-#include "trx.h"
+#include <FL/Fl_Widget.H>
+#include <FL/Fl_Double_Window.H>
+#include <FL/Fl_Button.H>
+#include <FL/Fl_Shared_Image.H>
+
+#include "globals.h"
+#include "modem.h"
 #include "fft.h"
 #include "filters.h"
 #include "interleave.h"
@@ -12,11 +18,8 @@
 #include "complex.h"
 #include "mfskvaricode.h"
 #include "mbuffer.h"
-
-//#include "fileselect.h"
-
 #include "picture.h"
-#include <FL/Fl_Shared_Image.H>
+
 
 #define	MFSKSampleRate		8000
 

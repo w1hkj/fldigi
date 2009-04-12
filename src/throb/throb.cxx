@@ -33,6 +33,7 @@
 #include "throb.h"
 #include "ascii.h"
 #include "configuration.h"
+#include "fl_digi.h"
 #include "status.h"
 
 #undef  CLAMP

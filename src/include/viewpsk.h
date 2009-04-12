@@ -26,9 +26,9 @@
 #define _VIEWPSK_H
 
 #include "complex.h"
-#include "trx.h"
+#include "modem.h"
+#include "globals.h"
 #include "filters.h"
-#include "fldigi-config.h"
 #include "pskeval.h"
 
 //=====================================================================

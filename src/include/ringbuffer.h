@@ -44,7 +44,7 @@
 #define RINGBUFFER_H
 
 #include <cassert>
-#include <cstdlib>
+#include <cstring>
 #include "util.h"
 
 template <typename T>

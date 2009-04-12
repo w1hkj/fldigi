@@ -32,6 +32,7 @@
 
 #include "dominoex.h"
 #include "trx.h"
+#include "fl_digi.h"
 #include "fft.h"
 #include "filters.h"
 #include "misc.h"

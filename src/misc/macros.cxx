@@ -12,8 +12,10 @@
 #include "globals.h"
 #include "debug.h"
 #include "status.h"
+#include "trx.h"
 
 #include <FL/Fl.H>
+#include <FL/filename.H>
 #include "fileselect.h"
 
 #include <ctime>
@@ -22,6 +24,8 @@
 #include <unistd.h>
 #include <string>
 #include <fstream>
+
+using namespace std;
 
 MACROTEXT macros;
 CONTESTCNTR contest_count;
@@ -655,7 +659,7 @@ void pCONT(string &s, size_t &i)
 	expand = true;
 }
 
-int MACROTEXT::loadMacros(string filename)
+int MACROTEXT::loadMacros(const string& filename)
 {
 	string mLine;
 	string mName;
@@ -871,7 +875,7 @@ string mtext =
 //\n\
 ";
 
-void MACROTEXT::saveMacros(string fname) {
+void MACROTEXT::saveMacros(const string& fname) {
 	string work;
 	ofstream mfile(fname.c_str());
 	mfile << mtext;

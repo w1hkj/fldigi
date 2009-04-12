@@ -28,17 +28,21 @@
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>
+#include <sys/stat.h>
 #include <map>
+#include <fstream>
 #include <sstream>
 #include <algorithm>
+#include <iomanip>
 
 #include <FL/Fl_Tooltip.H>
 
 #include "FTextView.h"
 #include "main.h"
-
+#include "trx.h"
 #include "macros.h"
 #include "main.h"
+#include "fl_digi.h"
 
 #include "cw.h"
 

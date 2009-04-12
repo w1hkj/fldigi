@@ -1,15 +1,7 @@
 #ifndef _MACROS_H
 #define _MACROS_H
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <iostream>
-#include <fstream>
 #include <string>
-
-#include "main.h"
-
-using namespace std;
 
 #define NUMMACKEYS 12
 #define NUMKEYROWS 4
@@ -19,7 +11,7 @@ struct CONTESTCNTR {
 	int count;
 	char   szCount[20];
 	char   szDisp[40];
-	string fmt;
+	std::string fmt;
 	CONTESTCNTR() {
 		count = 0;
 		fmt = "%04d";
@@ -36,14 +28,14 @@ struct CONTESTCNTR {
 
 struct MACROTEXT {
 	bool	changed;
-	string name[MAXMACROS];
-	string text[MAXMACROS];
-	int  loadMacros(string filename);
+	std::string name[MAXMACROS];
+	std::string text[MAXMACROS];
+	int  loadMacros(const std::string& filename);
 	void loadDefault();
 	void openMacroFile();
 	void saveMacroFile();
-	void saveMacros(string);
-	string expandMacro(int n);
+	void saveMacros(const std::string& fname);
+	std::string expandMacro(int n);
 	void execute(int n);
 	MACROTEXT() {
 		changed = false;
@@ -55,14 +47,14 @@ struct MACROTEXT {
 		}
 	}
 private:
-	string expanded;
-	void loadnewMACROS(string &s, size_t &i);
+	std::string expanded;
+	void loadnewMACROS(std::string& s, size_t &i);
 };
 
 extern MACROTEXT macros;
 extern CONTESTCNTR contest_count;
 
-extern string info1msg;
-extern string info2msg;
+extern std::string info1msg;
+extern std::string info2msg;
 
 #endif

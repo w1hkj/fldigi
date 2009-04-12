@@ -147,12 +147,6 @@ unsigned char graydecode(unsigned char data)
 
 // ----------------------------------------------------------------------------
 
-void MilliSleep(long msecs)
-{
-	struct timespec tv = {0, msecs * 1000000L};
-	nanosleep(&tv, NULL);
-}
-
 // Rectangular - no pre filtering of data array
 void RectWindow(double *array, int n) {
 	for (int i = 0; i < n; i++)

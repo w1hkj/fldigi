@@ -3,8 +3,8 @@
 #include <FL/fl_ask.H>
 
 #include <string>
-#include <iostream>
-#include <ctime>
+#include <cstring>
+#include <cstdlib>
 
 #include "adif_io.h"
 #include "config.h"

@@ -25,12 +25,7 @@
 #ifndef DATE_H
 #define DATE_H
 
-#include <iostream>
-#include <iomanip>
-#include <time.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <iosfwd>
 
 typedef enum {
   SUNDAY,

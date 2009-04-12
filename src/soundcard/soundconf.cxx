@@ -7,6 +7,7 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <glob.h>
 
 #include "soundconf.h"
 #include "sound.h"

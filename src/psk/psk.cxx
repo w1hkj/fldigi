@@ -33,6 +33,10 @@
 #include <iomanip>
 
 #include "psk.h"
+#include "main.h"
+#include "fl_digi.h"
+#include "trx.h"
+#include "misc.h"
 #include "waterfall.h"
 #include "configuration.h"
 #include "status.h"

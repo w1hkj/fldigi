@@ -12,8 +12,8 @@
 
 #include <config.h>
 
-#include <stdlib.h>
-#include <math.h>
+#include <cmath>
+#include "misc.h"
 
 #include "fftfilt.h"
 

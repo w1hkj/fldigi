@@ -52,7 +52,6 @@ namespace qrbind {
 
 #include "threads.h"
 #include "qrunner/fqueue.h"
-#include "timeops.h"
 
 class qexception : public std::exception
 {

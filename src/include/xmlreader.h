@@ -1,4 +1,7 @@
-#include <irrXML.h>
+#include <string>
+
+#include "irrXML.h"
+
 using namespace irr;
 using namespace io;
 
@@ -15,7 +18,7 @@ public:
     p=0;
   }
 
-  IIrrXMLStringReader(const string &str) {
+  IIrrXMLStringReader(const std::string &str) {
     s=str.c_str();
     len = strlen(s);
     p=0;

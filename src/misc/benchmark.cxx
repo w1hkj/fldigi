@@ -26,6 +26,7 @@
 #include <string>
 #include <cstdio>
 #include <cstring>
+#include <cstdlib>
 
 #include <inttypes.h>
 #include <sys/time.h>
@@ -36,6 +37,7 @@
 #  include <sndfile.h>
 #endif
 
+#include "fl_digi.h"
 #include "modem.h"
 #include "trx.h"
 #include "timeops.h"
@@ -44,6 +46,8 @@
 #include "debug.h"
 
 #include "benchmark.h"
+
+using namespace std;
 
 struct benchmark_params benchmark = { MODE_BPSK31, 1000, false, false, 0.0, 1.0, SRC_SINC_FASTEST };
 

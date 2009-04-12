@@ -30,9 +30,8 @@
 #include <FL/Fl_Group.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Box.H>
-#include <FL/Fl_Pixmap.H>
-#include "flinput2.h"
 
+#include "flinput2.h"
 #include "date.h"
 
 class Fl_Calendar_Base : public Fl_Group , public Date

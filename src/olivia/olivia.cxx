@@ -31,8 +31,10 @@
 #include <FL/fl_ask.H>
 
 #include "olivia.h"
-#include "sound.h"
+#include "modem.h"
+#include "fl_digi.h"
 
+#include "misc.h"
 #include "confdialog.h"
 
 #include "status.h"

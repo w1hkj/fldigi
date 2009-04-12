@@ -26,9 +26,7 @@
 #define _PSKEVAL_H
 
 #include "complex.h"
-#include "trx.h"
 #include "filters.h"
-#include "fldigi-config.h"
 #include "waterfall.h"
 
 #define FLOWER 200

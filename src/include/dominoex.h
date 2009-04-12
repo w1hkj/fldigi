@@ -29,7 +29,7 @@
 #include <string>
 
 #include "complex.h"
-#include "trx.h"
+#include "modem.h"
 #include "fft.h"
 #include "filters.h"
 #include "fftfilt.h"
@@ -44,9 +44,6 @@
 //#include "mfskvaricode.h"
 #include "interleave.h"
 #include "viterbi.h"
-
-
-using namespace std;
 
 #define NUMTONES 18
 //#define MAXFFTS  4
@@ -126,7 +123,7 @@ protected:
 	int txstate;
 	int txprevtone;
 	unsigned int bitshreg;
-	string strSecXmtText;
+	std::string strSecXmtText;
 	
 // FEC variables
 	viterbi		*MuPskDec;

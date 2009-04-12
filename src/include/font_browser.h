@@ -38,10 +38,6 @@
 #include <FL/Fl_Value_Input.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Return_Button.H>
-#include <FL/fl_draw.H>
-#include <FL/fl_show_colormap.H>
-#include <FL/Fl_Color_Chooser.H>
-#include <iostream>
 
 // Preview box for showing font
 class Preview_Box : public Fl_Widget

@@ -29,13 +29,9 @@
 
 #include "complex.h"
 #include "modem.h"
-#include "trx.h"
-#include "misc.h"
+#include "globals.h"
 #include "filters.h"
 #include "fftfilt.h"
-#include "digiscope.h"
-//#include "id.h"
-#include "mbuffer.h"
 
 #define	RTTY_SampleRate	8000
 //#define RTTY_SampleRate 11025

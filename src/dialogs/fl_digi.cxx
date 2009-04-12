@@ -49,6 +49,8 @@
 #include <FL/Fl_Tooltip.H>
 #include <FL/Fl_Tabs.H>
 #include <FL/Fl_Multiline_Input.H>
+#include <FL/Fl_Menu_Bar.H>
+#include <FL/Fl_Pack.H>
 
 #include "waterfall.h"
 #include "raster.h"
@@ -122,6 +124,8 @@
 
 #include "rx_extract.h"
 #include "speak.h"
+
+using namespace std;
 
 Fl_Double_Window	*fl_digi_main=(Fl_Double_Window *)0;
 Fl_Help_Dialog 		*help_dialog = (Fl_Help_Dialog *)0;

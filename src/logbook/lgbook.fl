@@ -7,6 +7,8 @@ header_name {.h}
 code_name {.cxx}
 decl {\#include <config.h>} {} 
 
+decl {\#include <FL/Fl_Pixmap.H>} {} 
+
 decl {\#include "logsupport.h"} {} 
 
 decl {\#include "pixmaps.h"} {} 

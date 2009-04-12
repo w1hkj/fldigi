@@ -28,7 +28,6 @@
 
 #include <stdint.h>
 #include <string>
-#include "fldigi-config.h"
 
 enum state_t {
 	STATE_PAUSE = 0,

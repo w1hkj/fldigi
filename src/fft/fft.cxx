@@ -19,6 +19,7 @@
 
 #include <config.h>
 
+#include "misc.h"
 #include "fft.h"
 
 // n = size of fourier transform in complex pairs
@@ -159,6 +160,21 @@ void Cfft::irdft(double *RealData)
         }
     }
 */
+}
+
+void Cfft::setWindow(fftPrefilter pf)
+{
+	wintype = pf;
+	if (wintype == FFT_TRIANGULAR)
+		TriangularWindow(fftwin, fftlen*2);
+	else if (wintype == FFT_HAMMING)
+		HammingWindow(fftwin, fftlen*2);
+	else if (wintype == FFT_HANNING)
+		HanningWindow(fftwin, fftlen*2);
+	else if (wintype == FFT_BLACKMAN)
+		BlackmanWindow(fftwin, fftlen*2);
+	else
+		RectWindow(fftwin, fftlen*2);
 }
 
 /* -------- initializing routines -------- */

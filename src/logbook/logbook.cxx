@@ -1,23 +1,14 @@
 #include <config.h>
 
-#include <FL/Fl.H>
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Box.H>
-#include <FL/filename.H>
-#include <FL/x.H>
-#include <FL/fl_ask.H>
-#include <FL/filename.H>
+#include <string>
 
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <stdio.h>
-#include <sys/time.h>
-#include <unistd.h>
+#include <FL/filename.H>
 
 #include "main.h"
 #include "logbook.h"
 #include "configuration.h"
+
+using namespace std;
 
 void start_logbook ()
 {

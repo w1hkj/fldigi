@@ -3,6 +3,7 @@
 #include <config.h>
 
 #include "Viewer.h"
+#include "trx.h"
 #include "main.h"
 #include "viewpsk.h"
 #include "configuration.h"
@@ -16,7 +17,7 @@
 
 #include <FL/Enumerations.H>
 #include <FL/Fl_Slider.H>
-#include <FL/fl_ask.H>
+#include <FL/Fl_Pack.H>
 
 #include <string>
 

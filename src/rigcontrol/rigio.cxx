@@ -25,6 +25,7 @@
 #include "rigsupport.h"
 #include "rigdialog.h"
 #include "rigxml.h"
+#include "trx.h"
 #include "serial.h"
 #include "rigio.h"
 #include "debug.h"

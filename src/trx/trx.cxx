@@ -25,7 +25,7 @@
 #include <config.h>
 
 #include <fcntl.h>
-
+#include <cstdlib>
 #include <string>
 
 #include "trx.h"

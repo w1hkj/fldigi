@@ -2,18 +2,14 @@
 // hamlib.cxx  --  Hamlib (rig control) interface for fldigi
 #include <config.h>
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
-#include <termios.h>
 #include <cstdlib>
 #include <string>
 #include <vector>
+#include <algorithm>
 
+#include "trx.h"
 #include "configuration.h"
 #include "confdialog.h"
-#include <FL/fl_ask.H>
 
 #include "rigclass.h"
 

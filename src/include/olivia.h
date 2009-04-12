@@ -28,7 +28,7 @@
 #ifndef _OLIVIA_H
 #define _OLIVIA_H
 
-#include "trx.h"
+#include "modem.h"
 #include "jalocha/pj_mfsk.h"
 
 class olivia : public modem {

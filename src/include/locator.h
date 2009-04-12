@@ -5,7 +5,6 @@
 
 #if USE_HAMLIB
 #  include <hamlib/rotator.h>
-
 #else
 #  ifdef __cplusplus
 extern "C" {

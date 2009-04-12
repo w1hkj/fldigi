@@ -32,6 +32,10 @@
 #define FL_UNLOCK_E(x) FL_UNLOCK(x)
 #define FL_AWAKE_E(x)  FL_AWAKE(x)
 
+#if !defined(NDEBUG) && !defined(NO_LOCKS)
+#	include <FL/Fl.H>
+#endif
+
 #ifdef NDEBUG
 #	define FL_LOCK(x)   Fl::lock(x)
 #	define FL_UNLOCK(x) Fl::unlock(x)

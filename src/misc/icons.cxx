@@ -23,6 +23,7 @@
 #include <config.h>
 #include "icons.h"
 
+#include <FL/Fl.H>
 #include <FL/Fl_Menu_Item.H>
 
 #if USE_IMAGE_LABELS

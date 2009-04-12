@@ -11,7 +11,9 @@
 #include <config.h>
 
 #include <fstream>
+#include <sstream>
 #include <vector>
+#include <list>
 #include <map>
 #include <algorithm>
 #include <iterator>
@@ -25,6 +27,8 @@
 
 #include "threads.h"
 #include "main.h"
+#include "fl_digi.h"
+#include "trx.h"
 
 #include "configuration.h"
 

@@ -1,10 +1,7 @@
 #ifndef QSO_DB
 #define QSO_DB
 
-#include <iostream>
-
-#include <stdlib.h>
-#include <ctype.h>
+#include <iosfwd>
 
 #include "adif_def.h"
 

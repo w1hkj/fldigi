@@ -37,7 +37,7 @@ struct status {
 	bool	scopeVisible;
 	int		scopeW;
 	int		scopeH;
-	string	LastMacroFile;
+	std::string	LastMacroFile;
 	bool	spot_recv;
 	bool	spot_log;
 	bool	contest;

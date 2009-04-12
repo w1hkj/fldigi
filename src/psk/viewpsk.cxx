@@ -37,7 +37,7 @@
 #include "pskeval.h"
 #include "pskcoeff.h"
 #include "pskvaricode.h"
-#include "waterfall.h"
+#include "misc.h"
 #include "configuration.h"
 #include "Viewer.h"
 #include "qrunner.h"

@@ -25,7 +25,7 @@
 #ifndef _MISC_H
 #define _MISC_H
 
-#include <math.h>
+#include <cmath>
 
 extern unsigned long hweight32(unsigned long w);
 extern unsigned short int hweight16(unsigned short int w);
@@ -96,5 +96,7 @@ void HanningWindow(double *array, int n);
 void BlackmanWindow(double *array, int n);
 // Simple about effective as Hamming or Hanning
 void TriangularWindow(double *array, int n);
+
+#define fftabs(a,b) sqrt((a)*(a) + (b)*(b))
 
 #endif

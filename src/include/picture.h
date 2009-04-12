@@ -26,18 +26,9 @@
 #ifndef picture_H
 #define picture_H
 
-#include <math.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
-#include <FL/Fl.H>
-#include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Widget.H>
-#include <FL/fl_draw.H>
 #include <FL/Fl_Box.H>
-
-#include "threads.h"
+#include <FL/Fl_Image.H>
 
 class picture : public Fl_Widget { 
 private:

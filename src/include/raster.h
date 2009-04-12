@@ -24,10 +24,7 @@
 #ifndef _RASTER_H
 #define _RASTER_H
 
-#include <FL/Fl.H>
-#include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Widget.H>
-#include <FL/fl_draw.H>
 
 class Raster : public Fl_Widget { 
 public:

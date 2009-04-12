@@ -34,8 +34,6 @@
 #include <cmath>
 #include <cctype>
 
-#include <FL/fl_ask.H>
-
 #include "threads.h"
 
 #include "misc.h"

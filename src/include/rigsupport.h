@@ -4,21 +4,14 @@
 #include <FL/Fl_Double_Window.H>
 
 #include <string>
-#include <list>
-#include <sstream>
-#include <iostream>
-#include <ctype.h>
 
 #include "serial.h"
-
 #if USE_HAMLIB
 	#include "hamlib.h"
 #endif
 
-using namespace std;
-
 extern Fl_Double_Window *rigcontrol;
-extern string windowTitle;
+extern std::string windowTitle;
 extern Cserial rigio;
 
 extern void initOptionMenus();
@@ -55,7 +48,7 @@ extern bool init_rigMEM_RigDialog();
 #if USE_HAMLIB
 extern bool init_Hamlib_RigDialog();
 extern void selMode(rmode_t m);
-extern string modeString(rmode_t m);
+extern std::string modeString(rmode_t m);
 #endif
 
 extern Fl_Double_Window * createRigDialog();

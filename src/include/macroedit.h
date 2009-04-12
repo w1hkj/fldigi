@@ -1,9 +1,8 @@
-#ifndef macroedit_h
-#define macroedit_h
+#ifndef MACROEDIT_H
+#define MACROEDIT_H
 
-#include <FL/Fl.H>
+#include <FL/Fl_Widget.H>
 #include <FL/Fl_Double_Window.H>
-#include <FL/Fl_Input.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Hold_Browser.H>
 #include "flinput2.h"

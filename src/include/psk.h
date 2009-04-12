@@ -26,7 +26,8 @@
 #define _PSK_H
 
 #include "complex.h"
-#include "trx.h"
+#include "modem.h"
+#include "globals.h"
 #include "viterbi.h"
 #include "filters.h"
 #include "pskcoeff.h"

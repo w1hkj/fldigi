@@ -23,12 +23,13 @@
 
 #include <config.h>
 
+#include <FL/fl_draw.H>
+
 #include "raster.h"
 #include "modem.h"
 
-#include <math.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cmath>
+#include <cstring>
 
 #include "raster.h"
 #include "qrunner.h"
