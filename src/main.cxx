@@ -146,7 +146,7 @@ int		rxmsgid = -1;
 TXMSGSTRUC txmsgst;
 int txmsgid = -1;
 
-string option_help, version_text;
+string option_help, version_text, build_text;
 
 qrunner *cbq[NUM_QRUNNER_THREADS];
 
@@ -451,6 +451,9 @@ void generate_option_help(void) {
 	     << "  --version\n"
 	     << "    Print version information\n\n"
 
+	     << "  --build-info\n"
+	     << "    Print build information\n\n"
+
 	     << "  --help\n"
 	     << "    Print this option help\n\n";
 
@@ -536,7 +539,7 @@ int parse_args(int argc, char **argv, int& idx)
 #endif
 	       OPT_DEBUG_LEVEL,
                OPT_EXIT_AFTER,
-               OPT_DEPRECATED, OPT_HELP, OPT_VERSION };
+               OPT_DEPRECATED, OPT_HELP, OPT_VERSION, OPT_BUILD_INFO };
 
 	const char shortopts[] = "+";
 	static struct option longopts[] = {
@@ -588,6 +591,7 @@ int parse_args(int argc, char **argv, int& idx)
 
 		{ "help",	   0, 0, OPT_HELP },
 		{ "version",	   0, 0, OPT_VERSION },
+		{ "build-info",	   0, 0, OPT_BUILD_INFO },
 		{ 0 }
 	};
 
@@ -760,6 +764,10 @@ int parse_args(int argc, char **argv, int& idx)
 			cout << version_text;
 			exit(EXIT_SUCCESS);
 
+		case OPT_BUILD_INFO:
+			cout << build_text;
+			exit(EXIT_SUCCESS);
+
 		case '?': default:
 			cerr << "Try `" << PACKAGE_NAME << " --help' for more information.\n";
 			exit(EXIT_FAILURE);
@@ -781,52 +789,64 @@ int parse_args(int argc, char **argv, int& idx)
 
 void generate_version_text(void)
 {
-	ostringstream s;
-	s << PACKAGE_STRING << '\n'
-	  << "Copyright (c) 2008 " PACKAGE_AUTHORS "\n" <<
-	   _("License GPLv2+: GNU GPL version 2 or later <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>\n"
-	     "This is free software: you are free to change and redistribute it.\n"
-	     "There is NO WARRANTY, to the extent permitted by law.\n");
+	version_text.assign(PACKAGE_STRING "\nCopyright (C) 2008, 2009 " PACKAGE_AUTHORS ".\n");
+	version_text.append(_("License GPLv2+: GNU GPL version 2 or later "
+			      "<http://www.gnu.org/licenses/gpl-2.0.html>\n"
+			      "This is free software: you are free to change and redistribute it.\n"
+			      "There is NO WARRANTY, to the extent permitted by law.\n"));
 
-	s << _("\nSystem: ");
+	ostringstream s;
+	s << "Build information:\n";
+	s << "  built          : " << BUILD_DATE << " by " << BUILD_USER
+	  << '@' << BUILD_HOST << " on " << BUILD_BUILD_PLATFORM
+	  << " for " << BUILD_TARGET_PLATFORM << "\n\n"
+	  << "  configure flags: " << BUILD_CONFIGURE_ARGS << "\n\n"
+	  << "  compiler       : " << BUILD_COMPILER << "\n\n"
+	  << "  compiler flags : " << BUILD_CXXFLAGS << "\n\n"
+	  << "  linker flags   : " << BUILD_LDFLAGS << "\n\n"
+
+	  << "  libraries      : " "FLTK " FLTK_BUILD_VERSION "\n"
+	  << "                   " "libsamplerate " << SAMPLERATE_BUILD_VERSION "\n";
+#if USE_SNDFILE
+	s << "                   " "libsndfile " << SNDFILE_BUILD_VERSION "\n";
+#endif
+#if USE_PORTAUDIO
+	s << "                   " "PortAudio " << PORTAUDIO_BUILD_VERSION "\n";
+#endif
+#if USE_PULSEAUDIO
+	s << "                   " "PulseAudio " << PULSEAUDIO_BUILD_VERSION "\n";
+#endif
+#if USE_HAMLIB
+	s << "                   " "Hamlib " << HAMLIB_BUILD_VERSION "\n";
+#endif
+#if USE_XMLRPC
+	s << "                   " "XMLRPC-C " << XMLRPC_BUILD_VERSION "\n\n";
+#endif
+
+	s << "\nRuntime information:\n";
         struct utsname u;
         if (uname(&u) != -1) {
-		s << u.sysname << ' ' << u.nodename
-		  << ' ' << u.release << ' ' << u.version << ' '
-		  << u.machine << '\n';
+		s << "  system         : " << u.sysname << ' ' << u.nodename
+		  << ' ' << u.release << ' ' << u.version << ' ' << u.machine << "\n\n";
 	}
 
-#include "versions.h"
-#ifdef HAVE_VERSIONS_H
-	s /*<< "\nConfigured with: " << COMPILE_CFG*/ << '\n'
-	    << "Built on " << COMPILE_DATE << " by " << COMPILE_USER
-	    << '@' << COMPILE_HOST << " with:\n"
-	    << COMPILER << '\n'
-	    << "CFLAGS=" << CFLAGS << '\n'
-	    << "LDFLAGS=" << LDFLAGS << '\n';
-#endif // HAVE_VERSIONS_H
-
-	s << "Libraries:\n"
-	  << "FLTK " << FL_MAJOR_VERSION << '.' << FL_MINOR_VERSION << '.'
-	  << FL_PATCH_VERSION << '\n';
-
-	s << src_get_version() << '\n';
-
-#if USE_HAMLIB
-	s << hamlib_version << '\n';
-#endif
-
-#if USE_PORTAUDIO
-	s << Pa_GetVersionText() << ' ' << Pa_GetVersion() << '\n';
-#endif
-
+	s << "  libraries      : " << src_get_version() << '\n';
 #if USE_SNDFILE
 	char sndfile_version[32];
 	sf_command(NULL, SFC_GET_LIB_VERSION, sndfile_version, sizeof(sndfile_version));
-	s << sndfile_version << '\n';
+	s << "                   " << sndfile_version << '\n';
+#endif
+#if USE_PORTAUDIO
+	s << "                   " << Pa_GetVersionText() << ' ' << Pa_GetVersion() << '\n';
+#endif
+#if USE_PULSEAUDIO
+	s << "                   " << "Pulseaudio " << pa_get_library_version() << '\n';
+#endif
+#if USE_HAMLIB
+	s << "                   " << hamlib_version << '\n';
 #endif
 
-	version_text = s.str();
+	build_text = s.str();
 }
 
 // When debugging is enabled, reexec with malloc debugging hooks enabled, unless

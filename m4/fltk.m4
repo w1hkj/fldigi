@@ -42,6 +42,7 @@ AC_DEFUN([AC_FLDIGI_FLTK], [
   fi
   AC_SUBST([FLTK_CFLAGS])
   AC_SUBST([FLTK_LIBS])
+  AC_DEFINE_UNQUOTED([FLTK_BUILD_VERSION], ["`$FLTK_CONFIG --version`"], [FLTK version])
 
   AC_ARG_VAR([FLUID], [Fast Light User-Interface Designer])
   AC_CHECK_PROG([FLUID], [fluid], [fluid])

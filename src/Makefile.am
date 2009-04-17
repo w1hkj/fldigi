@@ -3,34 +3,12 @@
 
 bin_PROGRAMS = fldigi
 
-
-AM_CPPFLAGS =
-if USE_NLS
-  AM_CPPFLAGS += -DLOCALEDIR=\"$(localedir)\"
-endif
-AM_CPPFLAGS += -I$(srcdir) -I$(srcdir)/include -I$(srcdir)/irrxml \
-	       -I$(srcdir)/fileselector @BOOST_CPPFLAGS@
-
-AM_CXXFLAGS = @PORTAUDIO_CFLAGS@ @FLTK_CFLAGS@ @SNDFILE_CFLAGS@ \
-	@SAMPLERATE_CFLAGS@ @PULSEAUDIO_CFLAGS@ @HAMLIB_CFLAGS@ \
-	@IMAGE_CFLAGS@ @XMLRPC_CFLAGS@ @MAC_UNIVERSAL_CFLAGS@ \
-	@INTL_CFLAGS@ @PTW32_CFLAGS@ @BFD_CFLAGS@ \
-	-pipe -Wall -fexceptions @OPT_CFLAGS@ @DEBUG_CFLAGS@
+# The BUILD_* variables are defined in build.m4
+AM_CPPFLAGS = -DLOCALEDIR=\"$(localedir)\" @BUILD_CPPFLAGS@
+AM_CXXFLAGS = @BUILD_CXXFLAGS@
 AM_CFLAGS = $(AM_CXXFLAGS)
-
-AM_LDFLAGS = @MAC_UNIVERSAL_LDFLAGS@
-
-LDADD = @PORTAUDIO_LIBS@ @BOOST_LDFLAGS@ @FLTK_LIBS@ @SNDFILE_LIBS@ \
-	@SAMPLERATE_LIBS@ @PULSEAUDIO_LIBS@ @HAMLIB_LIBS@ @IMAGE_LIBS@ \
-	@XMLRPC_LIBS@ @INTL_LIBS@ @PTW32_LIBS@ @BFD_LIBS@ @EXTRA_LIBS@
-
-if ENABLE_DEBUG
-  AM_CPPFLAGS += -UNDEBUG
-  AM_LDFLAGS += @RDYNAMIC@
-else
-  AM_CPPFLAGS += -DNDEBUG
-endif
-
+AM_LDFLAGS = @BUILD_LDFLAGS@
+LDADD = @BUILD_LDADD@
 
 HAMLIB_SRC = include/hamlib.h rigcontrol/hamlib.cxx include/rigclass.h rigcontrol/rigclass.cxx
 XMLRPC_SRC = include/xmlrpc.h misc/xmlrpc.cxx
@@ -81,13 +59,10 @@ FLDIGI_VERSION_MAJOR = @FLDIGI_VERSION_MAJOR@
 FLDIGI_VERSION_MINOR = @FLDIGI_VERSION_MINOR@
 FLDIGI_VERSION_PATCH = @FLDIGI_VERSION_PATCH@
 
-.EXPORT_ALL_VARIABLES: versions.h appbundle hamlib-static
-
-versions.h: $(srcdir)/include/versions.h.in
-	sh $(srcdir)/../scripts/mkversions.sh $^ $@ || echo > $@
+.EXPORT_ALL_VARIABLES: appbundle hamlib-static
 
 # Sources that are generated,
-BUILT_SOURCES = versions.h
+BUILT_SOURCES =
 # not distributed,
 nodist_fldigi_SOURCES = $(BUILT_SOURCES)
 # and deleted by the clean targets
@@ -298,7 +273,6 @@ fldigi_SOURCES += \
 	include/timeops.h \
 	include/trx.h \
 	include/util.h \
-	include/versions.h.in \
 	include/Viewer.h \
 	include/viterbi.h \
 	include/waterfall.h \
@@ -443,7 +417,6 @@ EXTRA_fldigi_SOURCES += \
 
 # Additional non-source files that we distribute
 EXTRA_DIST = \
-	$(srcdir)/../scripts/mkversions.sh \
 	$(srcdir)/../scripts/mkappbundle.sh \
 	$(srcdir)/../scripts/mkhamlibstatic.sh \
 	$(srcdir)/../scripts/fldigi-shell \

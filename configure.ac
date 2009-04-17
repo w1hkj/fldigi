@@ -22,6 +22,8 @@ AC_DEFINE([FLDIGI_VERSION_MAJOR], [FLDIGI_MAJOR], [Major version number])
 AC_DEFINE([FLDIGI_VERSION_MINOR], [FLDIGI_MINOR], [Minor version number])
 AC_DEFINE([FLDIGI_VERSION_PATCH], ["FLDIGI_PATCH"], [Patch/alpha version string])
 
+AC_SUBST([AC_CONFIG_ARGS], [$ac_configure_args])
+
 AC_CONFIG_AUX_DIR([build-aux])
 
 # define build, build_cpu, build_vendor, build_os
@@ -236,6 +238,10 @@ AC_FLDIGI_INTL
 # substitute ASCIIDOC and A2X in doc/Makefile
 # set HAVE_ASCIIDOC Makefile conditional
 AC_FLDIGI_DOCS
+
+### build info
+# Define various build variables in config.h
+AC_FLDIGI_BUILD_INFO
 
 
 ### output

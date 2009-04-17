@@ -13,7 +13,6 @@
 #include "status.h"
 #include "configuration.h"
 #include "fl_digi.h"
-#include "versions.h"
 
 #include "waterfall.h"
 

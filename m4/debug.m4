@@ -74,7 +74,7 @@ AC_DEFUN([AC_FLDIGI_DEBUG], [
           gflag="-g"
       fi
       AC_MSG_RESULT([$gflag])
-      DEBUG_CFLAGS="-O0 $gflag -Wall"
+      DEBUG_CFLAGS="-O0 -fno-inline-functions -fno-omit-frame-pointer $gflag -Wall"
 
       AC_FLDIGI_RDYNAMIC
       if test "x$ac_cv_rdynamic" = "xyes"; then

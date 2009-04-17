@@ -1095,6 +1095,7 @@ void cb_mnuAboutURL(Fl_Widget*, void*)
 	if (!help_dialog)
 		help_dialog = new Fl_Help_Dialog;
 	help_dialog->value(szAbout);
+	help_dialog->resize(help_dialog->x(), help_dialog->y(), help_dialog->w(), 440);
 	help_dialog->show();
 	restoreFocus();
 }
@@ -1140,8 +1141,8 @@ void cb_mnuCmdLineHelp(Fl_Widget*, void*)
 
 void cb_mnuBuildInfo(Fl_Widget*, void*)
 {
-	extern string version_text;
-	fldigi_help(version_text);
+	extern string build_text;
+	fldigi_help(build_text);
 	restoreFocus();
 }
 

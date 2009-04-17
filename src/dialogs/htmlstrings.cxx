@@ -51,6 +51,8 @@ const char* szAbout =
 &nbsp; &nbsp; &nbsp;Murray Greenman, ZL1BPU<br>\n\
 <br>\n\
 <P>\n\
+Copyright \251 2008, 2009 Dave Freese, Stelios Bounanos, Leigh Klotz, and others.\n\
+<P>\n\
 Distributed under the GNU General Public License version 2 or later.<br>\n\
 This is free software: you are free to change and redistribute it.<br>\n\
 There is NO WARRANTY, to the extent permitted by law.\n\

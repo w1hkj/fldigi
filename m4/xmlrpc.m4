@@ -52,5 +52,6 @@ AC_DEFUN([AC_FLDIGI_XMLRPC], [
       fi
   fi
 
+  AC_DEFINE_UNQUOTED([XMLRPC_BUILD_VERSION], ["`$XMLRPC_C_CONFIG --version`"], [XMLRPC-C version])
   AM_CONDITIONAL([ENABLE_XMLRPC], [test "x$ac_cv_xmlrpc" = "xyes"])
 ])

@@ -78,6 +78,9 @@ support.
 *--version*::
   Print version information and exit.
 
+*--build-info*::
+  Print build information and exit.
+
 *--help*::
   Print options summary and exit.
 

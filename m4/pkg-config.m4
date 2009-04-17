@@ -37,6 +37,7 @@ fi
 
 AC_SUBST(PKG_NAME_UC[_CFLAGS])
 AC_SUBST(PKG_NAME_UC[_LIBS])
+AC_DEFINE_UNQUOTED(PKG_NAME_UC[_BUILD_VERSION], ["$pkg_[]$1_version"], [$1 version])
 
 m4_ifval([$6], [ AM_CONDITIONAL([$6], [test "x$ac_cv_[]$1" = "xyes"]) ], [:])
 ])

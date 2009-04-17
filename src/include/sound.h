@@ -40,6 +40,7 @@
 #if USE_PULSEAUDIO
 	#include <pulse/simple.h>
 	#include <pulse/error.h>
+extern "C" { const char* pa_get_library_version(void); };
 #endif
 #include <samplerate.h>
 #include <semaphore.h>
