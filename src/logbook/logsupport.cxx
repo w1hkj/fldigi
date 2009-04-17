@@ -23,6 +23,8 @@
 #include "configuration.h"
 #include "main.h"
 #include "locator.h"
+#include "icons.h"
+#include "gettext.h"
 
 #include <FL/filename.H>
 #include <FL/fl_ask.H>
@@ -42,7 +44,7 @@ void Export_CSV()
 	cQsoRec *rec;
 
 	string filters = "CSV\t*." "csv";
-	const char* p = FSEL::saveas("Export to CSV file", filters.c_str(),
+	const char* p = FSEL::saveas(_("Export to CSV file"), filters.c_str(),
 					 "export." "csv");
 	if (!p)
 		return;
@@ -64,7 +66,7 @@ void Export_TXT()
 	cQsoRec *rec;
 
 	string filters = "TEXT\t*." "txt";
-	const char* p = FSEL::saveas("Export to fixed field text file", filters.c_str(),
+	const char* p = FSEL::saveas(_("Export to fixed field text file"), filters.c_str(),
 					 "export." "txt");
 	if (!p)
 		return;
@@ -115,10 +117,10 @@ void saveLogbook()
 {
 	if (!qsodb.isdirty()) return;
 	if (progdefaults.NagMe)
-		if (!fl_choice("Save changed Logbook?", "No", "Yes", NULL)) 
+		if (!fl_choice2(_("Save changed Logbook?"), _("No"), _("Yes"), NULL)) 
 			return;
 	if (adifFile.writeLog (logbook_filename.c_str(), &qsodb))
-		fl_message ("Could not update file %s", logbook_filename.c_str());
+		fl_alert2(_("Could not update file %s"), logbook_filename.c_str());
 	qsodb.isdirty(0);
 }
 
@@ -137,8 +139,8 @@ void cb_mnuNewLogbook(Fl_Menu_* m, void* d){
 
 void cb_mnuOpenLogbook(Fl_Menu_* m, void* d)
 {
-	const char* p = FSEL::select("Open logbook file", "ADIF\t*." ADIF_SUFFIX,
-						logbook_filename.c_str());
+	const char* p = FSEL::select(_("Open logbook file"), "ADIF\t*." ADIF_SUFFIX,
+				     logbook_filename.c_str());
 	if (p) {
 		saveLogbook();
 		qsodb.deleteRecs();
@@ -154,19 +156,19 @@ void cb_mnuOpenLogbook(Fl_Menu_* m, void* d)
 }
 
 void cb_mnuSaveLogbook(Fl_Menu_*m, void* d) {
-	const char* p = FSEL::saveas("Save logbook file", "ADIF\t*." ADIF_SUFFIX,
+	const char* p = FSEL::saveas(_("Save logbook file"), "ADIF\t*." ADIF_SUFFIX,
 				     logbook_filename.c_str());
 	if (p) {
 		logbook_filename = p;
 		dlgLogbook->label(fl_filename_name(logbook_filename.c_str()));
 		if (adifFile.writeLog (p, &qsodb))
-			fl_message ("Could not write to %s", p);
+			fl_alert2(_("Could not write to %s"), p);
 		qsodb.isdirty(0);
 	}
 }
 
 void cb_mnuMergeADIF_log(Fl_Menu_* m, void* d) {
-	const char* p = FSEL::select("Merge ADIF file", "ADIF\t*." ADIF_SUFFIX);
+	const char* p = FSEL::select(_("Merge ADIF file"), "ADIF\t*." ADIF_SUFFIX);
 	if (p) {
 		adifFile.readFile (p, &qsodb);
 		loadBrowser();
@@ -222,16 +224,16 @@ static State logState = VIEWREC;
 void activateButtons() {
 	
 	if (logState == NEWREC) {
-		bNewSave->label ("Save");
-		bUpdateCancel->label ("Cancel");
+		bNewSave->label(_("Save"));
+		bUpdateCancel->label(_("Cancel"));
 		bDelete->deactivate ();
 		bSearchNext->deactivate ();
 		bSearchPrev->deactivate ();
 		inpDate_log->take_focus();
 		return;
 	}
-	bNewSave->label("New");
-	bUpdateCancel->label("Update");
+	bNewSave->label(_("New"));
+	bUpdateCancel->label(_("Update"));
 	bDelete->activate();
 	bSearchNext->activate ();
 	bSearchPrev->activate ();
@@ -522,8 +524,8 @@ cQsoRec rec;
 }
 
 void deleteRecord () {
-	if (qsodb.nbrRecs() == 0 || fl_choice("Really delete record for \"%s\"?\n",
-					      "Yes", "No", NULL, wBrowser->valueAt(-1, 2)))
+	if (qsodb.nbrRecs() == 0 || fl_choice2(_("Really delete record for \"%s\"?"),
+					       _("Yes"), _("No"), NULL, wBrowser->valueAt(-1, 2)))
 		return;
 
 	qsodb.qsoDelRec(editNbr);

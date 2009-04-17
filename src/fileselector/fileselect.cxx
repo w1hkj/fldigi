@@ -5,6 +5,7 @@
 #include <libgen.h>
 
 #include "fileselect.h"
+#include "icons.h"
 #include "debug.h"
 
 #include <FL/fl_ask.H>
@@ -78,7 +79,7 @@ const char* FSEL::get_file(void)
 
 #if FSEL_THREAD
 	if (pthread_create(&fsel_thread, NULL, thread_func, this) != 0) {
-		fl_alert("%s", "could not create file selector thread");
+		fl_alert2("could not create file selector thread");
 		return NULL;
 	}
 	for (;;) {
@@ -92,7 +93,7 @@ const char* FSEL::get_file(void)
 
 	switch (result) {
 	case -1:
-		fl_alert("%s", chooser->errmsg());
+		fl_alert2("%s", chooser->errmsg());
 		// fall through
 	case 1:
 		return NULL;

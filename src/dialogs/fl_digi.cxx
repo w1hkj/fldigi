@@ -549,7 +549,7 @@ void startup_modem(modem *m)
 
 void cb_mnuOpenMacro(Fl_Menu_*, void*) {
 	if (macros.changed) {
-		switch (fl_choice(_("Save changed macros?"), _("Cancel"), _("Save"), _("Don't save"))) {
+		switch (fl_choice2(_("Save changed macros?"), _("Cancel"), _("Save"), _("Don't save"))) {
 		case 0:
 			return;
 		case 1:
@@ -995,7 +995,7 @@ void cb_mnuVisitURL(Fl_Widget*, void* arg)
 				execlp(browsers[i], browsers[i], url, (char*)0);
 		exit(EXIT_FAILURE);
 	case -1:
-		fl_alert(_("Could not run a web browser:\n%s\n\n"
+		fl_alert2(_("Could not run a web browser:\n%s\n\n"
 			 "Open this URL manually:\n%s"),
 			 strerror(errno), url);
 	}
@@ -1008,7 +1008,7 @@ void cb_mnuVisitURL(Fl_Widget*, void* arg)
 	// int and compare it with the value 32 or one of the error
 	// codes below." (Error codes omitted to preserve sanity).
 	if ((int)ShellExecute(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL) <= 32)
-		fl_alert(_("Could not open url:\n%s\n"), url);
+		fl_alert2(_("Could not open url:\n%s\n"), url);
 #endif
 }
 
@@ -1070,11 +1070,11 @@ void cb_mnuCheckUpdate(Fl_Widget*, void*)
 
 	latest = sites[1].version > sites[0].version ? &sites[1] : &sites[0];
 	if (sites[0].version == 0 && sites[1].version == 0) {
-		fl_message(_("Could not check for updates:\n%s"), reply.c_str());
+		fl_alert2(_("Could not check for updates:\n%s"), reply.c_str());
 		return;
 	}
 	if (latest->version > ver2int(PACKAGE_VERSION)) {
-		switch (fl_choice(_("Version %s is available at\n\n%s\n\nWhat would you like to do?"),
+		switch (fl_choice2(_("Version %s is available at\n\n%s\n\nWhat would you like to do?"),
 				  _("Close"), _("Visit URL"), _("Copy URL"),
 				  latest->version_str.c_str(), latest->url)) {
 		case 1:
@@ -1087,7 +1087,7 @@ void cb_mnuCheckUpdate(Fl_Widget*, void*)
 		}
 	}
 	else
-		fl_message(_("You are running the latest version"));
+		fl_message2(_("You are running the latest version"));
 }
 
 void cb_mnuAboutURL(Fl_Widget*, void*)
@@ -1153,14 +1153,14 @@ void cb_mnuDebug(Fl_Widget*, void*)
 #ifndef NDEBUG
 void cb_mnuFun(Fl_Widget*, void*)
 {
-        fl_message(_("Sunspot creation underway!"));
+        fl_message2(_("Sunspot creation underway!"));
 }
 #endif
 
 void cb_mnuAudioInfo(Fl_Widget*, void*)
 {
         if (progdefaults.btnAudioIOis != SND_IDX_PORT) {
-                fl_alert(_("Audio device information is only available for the PortAudio backend"));
+                fl_alert2(_("Audio device information is only available for the PortAudio backend"));
                 return;
         }
 
@@ -1460,7 +1460,7 @@ void qsoClear_cb(Fl_Widget *b, void *)
 {
 	bool clearlog = true;
 	if (progdefaults.NagMe && !oktoclear)
-		clearlog = (fl_choice(_("Clear log fields?"), _("Cancel"), _("OK"), NULL) == 1);
+		clearlog = (fl_choice2(_("Clear log fields?"), _("Cancel"), _("OK"), NULL) == 1);
 	if (clearlog) {
 		clearQSO();
 		oktoclear = true;
@@ -1595,7 +1595,7 @@ int default_handler(int event)
 
 bool clean_exit(void) {
 	if (progdefaults.changed) {
-		switch (fl_choice(_("Save changed configuration before exiting?"),
+		switch (fl_choice2(_("Save changed configuration before exiting?"),
 				  _("Cancel"), _("Save"), _("Don't save"))) {
 		case 0:
 			return false;
@@ -1607,7 +1607,7 @@ bool clean_exit(void) {
 		}
 	}
 	if (!oktoclear && progdefaults.NagMe) {
-		switch (fl_choice(_("Save log before exiting?"),
+		switch (fl_choice2(_("Save log before exiting?"),
 				  _("Cancel"), _("Save"), _("Don't save"))) {
 		case 0:
 			return false;
@@ -1619,7 +1619,7 @@ bool clean_exit(void) {
 		}
 	}
 	if (macros.changed) {
-		switch (fl_choice(_("Save changed macros before exiting?"),
+		switch (fl_choice2(_("Save changed macros before exiting?"),
 				  _("Cancel"), _("Save"), _("Don't save"))) {
 		case 0:
 			return false;

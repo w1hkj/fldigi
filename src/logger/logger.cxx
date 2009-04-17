@@ -44,7 +44,6 @@
 #include "macros.h"
 #include "status.h"
 #include "spot.h"
-
 #include "adif_io.h"
 
 #include "logsupport.h"
@@ -181,18 +180,13 @@ static void send_IPC_log(void)
 	msgbuf.mtext[sizeof(msgbuf.mtext) - 1] = '\0';
 
 	if ((msqid = msgget(LOG_MKEY, 0666 | IPC_CREAT)) == -1) {
-		errmsg = "msgget: ";
-		errmsg.append(strerror(errno));
-		LOG_ERROR("%s", errmsg.c_str());
-		fl_message(errmsg.c_str());
+		LOG_PERROR("msgget");
 		return;
 	}
 	msgbuf.mtype = LOG_MTYPE;
 	len = strlen(msgbuf.mtext) + 1;
-	if (msgsnd(msqid, &msgbuf, len, IPC_NOWAIT) < 0) {
-		errmsg = "msgsnd: ";
-		fl_message(errmsg.c_str());
-	}
+	if (msgsnd(msqid, &msgbuf, len, IPC_NOWAIT) < 0)
+		LOG_PERROR("msgsnd");
 }
 
 #endif

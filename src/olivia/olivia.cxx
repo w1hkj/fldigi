@@ -28,7 +28,6 @@
 #include <config.h>
 
 #include <FL/Fl.H>
-#include <FL/fl_ask.H>
 
 #include "olivia.h"
 #include "modem.h"
@@ -36,8 +35,10 @@
 
 #include "misc.h"
 #include "confdialog.h"
-
 #include "status.h"
+#include "debug.h"
+
+LOG_FILE_SOURCE(debug::LOG_MODEM);
 
 using namespace std;
 
@@ -313,7 +314,7 @@ void olivia::restart()
 	}
 
 	if (Tx->Preset() < 0) {
-		fl_message("olivia: transmitter preset failed!");
+		LOG_ERROR("olivia: transmitter preset failed!");
 		return;
 	}
 		
@@ -340,7 +341,7 @@ void olivia::restart()
 	}
 
 	if (Rx->Preset() < 0) {
-		fl_message("olivia: receiver preset failed!");
+		LOG_ERROR("olivia: receiver preset failed!");
 		return;
 	}
 	fragmentsize = 1024;

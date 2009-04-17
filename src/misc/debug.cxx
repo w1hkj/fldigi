@@ -43,6 +43,7 @@
 #include "FTextView.h"
 
 #include "debug.h"
+#include "icons.h"
 #include "gettext.h"
 
 using namespace std;
@@ -54,6 +55,7 @@ static FILE* rfile;
 static size_t nlines = 0;
 static int rfd;
 static bool tty;
+static bool want_popup = true;
 
 static Fl_Double_Window* window;
 static FTextLog* text;
@@ -66,6 +68,7 @@ const char* prefix[] = { _("Quiet"), _("Error"), _("Warning"), _("Info"), _("Deb
 
 static void slider_cb(Fl_Widget* w, void*);
 static void src_menu_cb(Fl_Widget* w, void*);
+static void popup_message(void*);
 
 Fl_Menu_Item src_menu[] = {
 	{ _("Audio"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
@@ -134,11 +137,31 @@ void debug::log(level_e level, const char* func, const char* srcf, int line, con
 	va_start(args, format);
 	intptr_t nw = vfprintf(wfile, fmt, args);
 	va_end(args);
-	if (tty && level <= DEBUG_LEVEL && level > QUIET_LEVEL) {
-		va_start(args, format);
-		vfprintf(stderr, fmt, args);
-		va_end(args);
+	if (tty) {
+		if (level <= DEBUG_LEVEL && level > QUIET_LEVEL) {
+			va_start(args, format);
+			vfprintf(stderr, fmt, args);
+			va_end(args);
+		}
 	}
+	else if (unlikely(want_popup && (level == ERROR_LEVEL || level == WARN_LEVEL))) {
+		// If the backends logged an error and our stderr is not a tty,
+		// alert the user and offer to show the log window.  We only do
+		// this once and thereafter assume that the user will keep the
+		// log window displayed to be notified of errors.  To keep the
+		// popup small, we set a maximum width and add a ("...")  if it
+		// must be truncated.
+		const char ellipsis[] = "...";
+		size_t len = 60;
+		char* msg = new char[len + sizeof(ellipsis)];
+		va_start(args, format);
+		if ((size_t)vsnprintf(msg, len, fmt, args) >= len)
+			memcpy(msg + len - 1, ellipsis, sizeof(ellipsis));
+		va_end(args);
+		Fl::add_timeout(0.0, popup_message, msg);
+		want_popup = false;
+	}
+
 #ifdef __MINGW32__
 	fflush(wfile);
 #endif
@@ -214,4 +237,19 @@ static void slider_cb(Fl_Widget* w, void*)
 static void src_menu_cb(Fl_Widget* w, void*)
 {
 	debug::mask ^= 1 << ((Fl_Menu_*)w)->value();
+}
+
+static void popup_message(void* msg)
+{
+	if (!Fl::first_window() || !Fl::first_window()->visible()) // defer
+		return Fl::add_timeout(0.5, popup_message, msg);
+
+	if (fl_warn_choice2("%s:\n%s", _("Close"), _("View log"),
+			    NULL, _("A message was logged"), (char*)msg)) {
+		window->show();
+		text->insert_position(text->buffer()->length());
+		text->show_insert_position();
+	}
+
+	delete [] (char*)msg;
 }

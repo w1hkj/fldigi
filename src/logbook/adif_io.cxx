@@ -9,6 +9,8 @@
 #include "adif_io.h"
 #include "config.h"
 #include "lgbook.h"
+#include "icons.h"
+#include "gettext.h"
 
 using namespace std;
 
@@ -160,18 +162,18 @@ void cAdifIO::readFile (const char *fname, cQsoDb *db) {
     
 // relaxed file integrity test to all importing from non conforming log programs
     if (filesize == 0) {
-    	fl_message("Empty ADIF logbook file");
+	fl_alert2(_("Empty ADIF logbook file"));
+	return;
+    }
+    if ((strcasestr(buff, "<ADIF_VER:") != 0) &&
+	(strcasestr(buff, "<CALL:") == 0)) {
+	fl_alert2(_("No records in ADIF logbook file"));
     	return;
-	}
-	if ((strcasestr(buff, "<ADIF_VER:") != 0) &&
-	    (strcasestr(buff, "<CALL:") == 0)) {
-    	fl_message("No records in ADIF logbook file");
+    }
+    if (strcasestr(buff, "<CALL:") == 0) {
+	fl_alert2(_("Not an ADIF file"));
     	return;
-	}
-	if (strcasestr(buff, "<CALL:") == 0) {
-    	fl_message("Not an ADIF file");
-    	return;
-	}
+    }
 
 	char *p1 = buff, *p2;
 // is there a header?

@@ -239,3 +239,18 @@ void set_active_(T* t, bool v) {
 
 void set_active(Fl_Menu_Item* item, bool v) { set_active_(item, v); }
 void set_active(Fl_Widget* w, bool v) { set_active_(w, v); }
+
+static Fl_Image* msg_icon;
+void set_message_icon(const char** pixmap)
+{
+	if (msg_icon && msg_icon->data() == pixmap)
+		return;
+	delete msg_icon;
+
+	Fl_Widget* msg = fl_message_icon();
+	msg->label("");
+	msg->align(FL_ALIGN_TOP_LEFT | FL_ALIGN_INSIDE);
+	msg->color(msg->parent()->color());
+	msg->box(FL_NO_BOX);
+	msg->image(msg_icon = new Fl_Pixmap(pixmap));
+}

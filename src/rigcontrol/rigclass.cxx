@@ -22,7 +22,7 @@ Rig::Rig(rig_model_t rig_model)
 {
 	rig = rig_init(rig_model);
    	if (!rig)
-		throw RigException ("init");
+		throw RigException ("Could not initialize rig");
 }
 
 Rig::~Rig()
@@ -34,7 +34,7 @@ void Rig::init(rig_model_t rig_model)
 {
 	close();
 	if ((rig = rig_init(rig_model)) == NULL)
-		throw RigException ("init");
+		throw RigException ("Could not initialize rig");
 	LOG_INFO("Initialised rig model %d: %s", rig_model, getName());
 }
 

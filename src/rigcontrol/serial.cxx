@@ -452,7 +452,7 @@ BOOL Cserial::ConfigurePort(DWORD	BaudRate,
 								BYTE	StopBits)
 {
 	if((bPortReady = GetCommState(hComm, &dcb))==0) {
-//		fl_message("GetCommState Error on %s", szPortName);
+		LOG_ERROR("GetCommState Error on %s", device.c_str());
 		CloseHandle(hComm);
 		return FALSE;
 	}

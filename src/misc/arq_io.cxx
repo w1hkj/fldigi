@@ -76,11 +76,6 @@ static void set_button(Fl_Button* button, bool value)
 	button->do_callback();
 }
 
-static void popup_msg(void* msg)
-{
-	fl_message((const char*)msg);
-}
-
 void ParseMode(string src)
 {
 	if (src.find("PTTTUNE") != string::npos) {
@@ -344,7 +339,6 @@ bool ARQ_SOCKET_Server::start(const char* node, const char* service)
 		if (e.error() == EADDRINUSE)
 			errstring.append("\nMultiple instances of fldigi??");
 		LOG_ERROR("%s", errstring.c_str());
-		fl_message(errstring.c_str());
 
 		delete arq_socket_thread;
 		arq_socket_thread = 0;
@@ -384,7 +378,6 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 			if (e.error() != EINTR) {
 				errstring = e.what();
 				LOG_ERROR("%s", errstring.c_str());
-				Fl::add_timeout(0.0, popup_msg, (void*)errstring.c_str());
 				break;
 			}
 		}
@@ -575,7 +568,7 @@ void arq_init()
 		return;
 
 	if (pthread_create(&arq_thread, NULL, arq_loop, NULL) < 0) {
-		fl_message("arq init: pthread_create failed");
+		LOG_ERROR("arq init: pthread_create failed");
 		return;
 	} 
 

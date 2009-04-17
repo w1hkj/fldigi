@@ -211,7 +211,7 @@ static void *rigMEM_loop(void *args)
 	}
 
 	if (shmdt(shared_memory) == -1) {
-		fl_message("shmdt failed");
+		LOG_PERROR("shmdt");
 	}
 
 	shmid = -1;
@@ -242,7 +242,7 @@ bool rigMEM_init(void)
 	rigMEMisPTT = false;
 	
 	if (pthread_create(&rigMEM_thread, NULL, rigMEM_loop, NULL) < 0) {
-		fl_message("rigMEM init: pthread_create failed");
+		LOG_PERROR("pthread_create");
 		return false;
 	} 
 	rigMEM_enabled = true;
