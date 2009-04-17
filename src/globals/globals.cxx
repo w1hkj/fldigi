@@ -28,6 +28,8 @@
 #include <iomanip>
 #include <sstream>
 #include <string>
+#include <cstdlib>
+#include <cerrno>
 
 #include "globals.h"
 #include "modem.h"
@@ -141,8 +143,7 @@ std::string qrg_mode_t::str(void)
 band_t band(long long freq_hz)
 {
 	switch (freq_hz / 1000000LL) {
-		case 0: return BAND_LMW;
-		case 1: return BAND_160M;
+		case 0: case 1: return BAND_160M;
 		case 3: return BAND_80M;
 		case 4: return BAND_75M;
 		case 5: return BAND_60M;
@@ -162,37 +163,86 @@ band_t band(long long freq_hz)
 		case 1240 ... 1325: return BAND_23CM;
 		case 2300 ... 2450: return BAND_13CM;
 		case 3300 ... 3500: return BAND_9CM;
+		case 5650 ... 5925: return BAND_6CM;
+		case 10000 ... 10500: return BAND_3CM;
+		case 24000 ... 24250: return BAND_125MM;
+		case 47000 ... 47200: return BAND_6MM;
+		case 75500 ... 81000: return BAND_4MM;
+		case 119980 ... 120020: return BAND_2P5MM;
+		case 142000 ... 149000: return BAND_2MM;
+		case 241000 ... 250000: return BAND_1MM;
 	}
 
 	return BAND_OTHER;
 }
 
-static const char* band_names[NUM_BANDS] = {
-	"LMW",
-	"160m",
-	"80m",
-	"75m",
-	"60m",
-	"40m",
-	"30m",
-	"20m",
-	"17m",
-	"15m",
-	"12m",
-	"10m",
-	"6m",
-	"4m",
-	"2m",
-	"125cm",
-	"70cm",
-	"33cm",
-	"23cm",
-	"13cm",
-	"9cm",
-	"other"
+band_t band(const char* freq_mhz)
+{
+	errno = 0;
+	double d = strtod(freq_mhz, NULL);
+	if (d != 0.0 && errno == 0)
+		return band((long long)(d * 1e6));
+	else
+		return BAND_OTHER;
+}
+
+struct band_freq_t {
+	const char* band;
+	const char* freq;
+};
+
+static struct band_freq_t band_names[NUM_BANDS] = {
+	{ "160m", "1.8" },
+	{ "80m", "3.4" },
+	{ "75m", "4.0" },
+	{ "60m", "5.3" },
+	{ "40m", "7.0" },
+	{ "30m", "10.0" },
+	{ "20m", "14.0" },
+	{ "17m", "18.0" },
+	{ "15m", "21.0" },
+	{ "12m", "24.0" },
+	{ "10m", "28.0" },
+	{ "6m", "50.0" },
+	{ "4m", "70.0" },
+	{ "2m", "144.0" },
+	{ "1.25m", "222.0" },
+	{ "70cm", "420.0" },
+	{ "33cm", "902.0" },
+	{ "23cm", "1240.0" },
+	{ "13cm", "2300.0" },
+	{ "9cm", "3300.0" },
+	{ "6cm", "5650.0" },
+	{ "3cm", "10000.0" },
+	{ "1.25cm", "24000.0" },
+	{ "6mm", "47000.0" },
+	{ "4mm", "75500.0" },
+	{ "2.5mm", "119980.0" },
+	{ "2mm", "142000.0" },
+	{ "1mm", "241000.0" },
+	{ "other", "" }
 };
 
 const char* band_name(band_t b)
 {
-	return band_names[CLAMP(b, 0, NUM_BANDS-1)];
+	return band_names[CLAMP(b, 0, NUM_BANDS-1)].band;
+}
+
+const char* band_name(const char* freq_mhz)
+{
+	return band_name(band(freq_mhz));
+}
+
+const char* band_freq(band_t b)
+{
+	return band_names[CLAMP(b, 0, NUM_BANDS-1)].freq;
+}
+
+const char* band_freq(const char* band_name)
+{
+	for (size_t i = 0; i < BAND_OTHER; i++)
+		if (!strcmp(band_names[i].band, band_name))
+			return band_names[i].freq;
+
+	return "";
 }

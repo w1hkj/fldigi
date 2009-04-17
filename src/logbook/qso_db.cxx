@@ -6,6 +6,7 @@
 #include <iostream>
 #include "qso_db.h"
 #include "field_def.h"
+#include "globals.h"
 
 using namespace std;
 
@@ -37,42 +38,11 @@ int cQsoRec::validRec() {
 }
 
 void cQsoRec::checkBand() {
-	if (strlen(qsofield[FREQ]) == 0 && strlen(qsofield[BAND]) == 0) return;
-	if (strlen(qsofield[FREQ]) > 0 && strlen(qsofield[BAND]) > 0) return;
-	if (strlen(qsofield[FREQ]) == 0) {
-		if (strcmp(qsofield[BAND],"160m")==0) strcpy(qsofield[FREQ],"1.8");
-		else if (strcasecmp(qsofield[BAND],"80m")==0) strcpy(qsofield[FREQ],"3.5");
-		else if (strcasecmp(qsofield[BAND],"60m")==0) strcpy(qsofield[FREQ],"5.3");
-		else if (strcasecmp(qsofield[BAND],"40m")==0) strcpy(qsofield[FREQ],"7.0");
-		else if (strcasecmp(qsofield[BAND],"30m")==0) strcpy(qsofield[FREQ],"10.0");
-		else if (strcasecmp(qsofield[BAND],"20m")==0) strcpy(qsofield[FREQ],"14.0");
-		else if (strcasecmp(qsofield[BAND],"17m")==0) strcpy(qsofield[FREQ],"18.0");
-		else if (strcasecmp(qsofield[BAND],"15m")==0) strcpy(qsofield[FREQ],"21.0");
-		else if (strcasecmp(qsofield[BAND],"12m")==0) strcpy(qsofield[FREQ],"24.0");
-		else if (strcasecmp(qsofield[BAND],"10m")==0) strcpy(qsofield[FREQ],"28.0");
-		else if (strcasecmp(qsofield[BAND],"6m")==0) strcpy(qsofield[FREQ],"50.0");
-		else if (strcasecmp(qsofield[BAND],"2m")==0) strcpy(qsofield[FREQ],"144.0");
-		else if (strcasecmp(qsofield[BAND],"1.25m")==0) strcpy(qsofield[FREQ],"222.0");
-		else if (strcasecmp(qsofield[BAND],"70cm")==0) strcpy(qsofield[FREQ],"420.0");
-		return;
-	} else if (strlen(qsofield[BAND]) == 0) {
-		double mhz = atof(qsofield[FREQ]);
-		if (mhz < 3.5) strcpy(qsofield[BAND],"160m");
-		else if (mhz < 5.3) strcpy(qsofield[BAND],"80m");
-		else if (mhz < 7.0) strcpy(qsofield[BAND],"60m");
-		else if (mhz < 10.0) strcpy(qsofield[BAND],"40m");
-		else if (mhz < 14.0) strcpy(qsofield[BAND],"30m");
-		else if (mhz < 18.0) strcpy(qsofield[BAND],"20m");
-		else if (mhz < 21.0) strcpy(qsofield[BAND],"17m");
-		else if (mhz < 24.0) strcpy(qsofield[BAND],"15m");
-		else if (mhz < 28.0) strcpy(qsofield[BAND],"12m");
-		else if (mhz < 50.0) strcpy(qsofield[BAND],"10m");
-		else if (mhz < 144.0) strcpy(qsofield[BAND],"6m");
-		else if (mhz < 222.0) strcpy(qsofield[BAND],"2m");
-		else if (mhz < 420.0) strcpy(qsofield[BAND],"1.25m");
-		else if (mhz < 900.0) strcpy(qsofield[BAND],"70cm");
-		return;
-	}
+	size_t flen = strlen(qsofield[FREQ]), blen = strlen(qsofield[BAND]);
+	if (flen == 0 && blen != 0)
+		strcpy(qsofield[FREQ], band_freq(qsofield[BAND]));
+	else if (blen == 0 && flen != 0)
+		strcpy(qsofield[BAND], band_name(qsofield[FREQ]));
 }
 
 void cQsoRec::putField (int n, const char *s){
