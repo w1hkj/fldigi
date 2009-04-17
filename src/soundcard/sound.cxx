@@ -38,9 +38,7 @@
 #include <cstdlib>
 #include <cerrno>
 #include <unistd.h>
-#include <glob.h>
 
-#include <sys/ioctl.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -48,6 +46,7 @@
 #include <limits.h>
 
 #if USE_OSS
+#    include <sys/ioctl.h>
 #    include <sys/soundcard.h>
 #endif
 #include <math.h>
@@ -121,7 +120,7 @@ void SoundBase::get_file_params(const char* def_fname, const char** fname, int* 
 {
 	std::string filters = "Waveform Audio Format\t*.wav\n" "AU\t*.{au,snd}\n";
 // FIXME: we shouldn't need this conditional
-# ifndef __CYGWIN__
+# ifndef __WOE32__
 	if (format_supported(SF_FORMAT_FLAC | SF_FORMAT_PCM_16))
 		filters += "Free Lossless Audio Codec\t*.flac";
 # endif
@@ -293,7 +292,7 @@ void SoundBase::tag_file(SNDFILE *sndfile, const char *title)
 	time_t t = time(0);
 	struct tm zt;
 	(void)gmtime_r(&t, &zt);
-	if (strftime(s, sizeof(s), "%F %Tz", &zt) > 0)
+	if (strftime(s, sizeof(s), "%Y-%m-%dT%H:%M:%Sz", &zt) > 0)
 		sf_set_string(sndfile, SF_STR_DATE, s);
 }
 #endif // USE_SNDFILE
@@ -767,7 +766,7 @@ SoundPort::SoundPort(const char *in_dev, const char *out_dev)
 #endif
         for (size_t i = 0; i < sizeof(sems)/sizeof(*sems); i++) {
 #if USE_NAMED_SEMAPHORES
-		snprintf(sname, sizeof(sname), "%zu-%u-%s", i, getpid(), PACKAGE_TARNAME);
+		snprintf(sname, sizeof(sname), "%" PRIuSZ "-%u-%s", i, getpid(), PACKAGE_TARNAME);
 		if ((*sems[i] = sem_open(sname, O_CREAT | O_EXCL, 0600, 0)) == (sem_t*)SEM_FAILED)
 			throw SndException(errno);
 #  if HAVE_SEM_UNLINK
@@ -972,7 +971,7 @@ size_t SoundPort::Read(double *buf, size_t count)
 			for (size_t i = 0; i < count; i++)
 				buf[i] *= progStatus.RcvMixer;
 		if (!capture) {
-			usleep((useconds_t)ceil((1e6 * count) / req_sample_rate));
+			MilliSleep((long)ceil((1e3 * count) / req_sample_rate));
 			return count;
 		}
 	}
@@ -1186,13 +1185,13 @@ void SoundPort::src_data_reset(unsigned dir)
                                   MIN(req_sample_rate, sd[dir].dev_sample_rate)));
         if (dir == 0) {
                 rbsize = 2 * MAX(rbsize, 4096);
-		LOG_DEBUG("input rbsize=%zu", rbsize);
+		LOG_DEBUG("input rbsize=%" PRIuSZ "", rbsize);
         }
         else if (dir == 1) {
                 if (req_sample_rate > 8000)
                         rbsize *= 2;
                 rbsize = MAX(rbsize, 2048);
-		LOG_DEBUG("output rbsize=%zu", rbsize);
+		LOG_DEBUG("output rbsize=%" PRIuSZ "", rbsize);
         }
         if (!sd[dir].rb || sd[dir].rb->length() != rbsize) {
                 delete sd[dir].rb;
@@ -1513,7 +1512,7 @@ void SoundPort::pa_perror(int err, const char* str)
 
 void SoundPort::init_hostapi_ext(void)
 {
-#if HAVE_DLOPEN && !defined(__CYGWIN__)
+#if HAVE_DLOPEN && !defined(__WOE32__)
 	void* handle = dlopen(NULL, RTLD_LAZY);
 	if (!handle)
 		return;
@@ -1744,7 +1743,7 @@ size_t SoundPulse::Read(double *buf, size_t count)
 			for (size_t i = 0; i < count; i++)
 				buf[i] *= progStatus.RcvMixer;
 		if (!capture) {
-			usleep((useconds_t)ceil((1e6 * count) / sample_frequency));
+			MilliSleep((long)ceil((1e3 * count) / sample_frequency));
 			return count;
 		}
 	}
@@ -1814,7 +1813,7 @@ size_t SoundNull::Write(double* buf, size_t count)
 		write_file(ofGenerate, buf, count);
 #endif
 
-	usleep((useconds_t)ceil((1e6 * count) / sample_frequency));
+	MilliSleep((long)ceil((1e3 * count) / sample_frequency));
 
 	return count;
 }
@@ -1826,7 +1825,7 @@ size_t SoundNull::Write_stereo(double* bufleft, double* bufright, size_t count)
 		write_file(ofGenerate, bufleft, count);
 #endif
 
-	usleep((useconds_t)ceil((1e6 * count) / sample_frequency));
+	MilliSleep((long)ceil((1e3 * count) / sample_frequency));
 
 	return count;
 }
@@ -1848,7 +1847,7 @@ size_t SoundNull::Read(double *buf, size_t count)
 		write_file(ofCapture, buf, count);
 #endif
 
-	usleep((useconds_t)ceil((1e6 * count) / sample_frequency));
+	MilliSleep((long)ceil((1e3 * count) / sample_frequency));
 
 	return count;
 }

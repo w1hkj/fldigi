@@ -22,7 +22,6 @@
 
 #include <config.h>
 
-#include <regex.h>
 #include <vector>
 #include <string>
 

@@ -47,6 +47,12 @@
 #  define HAVE_UHROUTER 0
 #endif
 
+#if HAVE_TERMIOS_H
+#  define HAVE_TTYPORT 1
+#else
+#  define HAVE_TTYPORT 0
+#endif
+
 struct termios;
 
 class PTT {
@@ -55,7 +61,7 @@ public:
 	// code is not compiled.  New tags go to the end of the list.
 	enum ptt_t {
 		PTT_INVALID = -1, PTT_NONE, PTT_HAMLIB, PTT_MEMMAP,
-		PTT_RIGCAT, PTT_TTY, PTT_PARPORT, PTT_UHROUTER,
+		PTT_RIGCAT, PTT_TTY, PTT_PARPORT, PTT_UHROUTER, PTT_RIGCAT_HW
 	};
 
 	PTT(ptt_t dev = PTT_NONE);

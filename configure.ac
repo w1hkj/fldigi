@@ -53,7 +53,7 @@ AC_USE_SYSTEM_EXTENSIONS
 # Checks for header files.
 AC_HEADER_STDC
 AC_HEADER_DIRENT
-AC_CHECK_HEADERS([arpa/inet.h execinfo.h fcntl.h limits.h memory.h netdb.h netinet/in.h regex.h stdint.h stdlib.h string.h strings.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h termios.h unistd.h values.h linux/ppdev.h dev/ppbus/ppi.h])
+AC_CHECK_HEADERS([arpa/inet.h execinfo.h fcntl.h limits.h memory.h netdb.h netinet/in.h regex.h stdint.h stdlib.h string.h strings.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h sys/utsname.h termios.h unistd.h values.h linux/ppdev.h dev/ppbus/ppi.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
@@ -77,25 +77,20 @@ AC_C_VOLATILE
 AC_FUNC_CLOSEDIR_VOID
 AC_FUNC_ERROR_AT_LINE
 AC_PROG_GCC_TRADITIONAL
-AC_FUNC_MALLOC
-AC_FUNC_REALLOC
+dnl AC_FUNC_MALLOC
+dnl AC_FUNC_REALLOC
 AC_FUNC_SELECT_ARGTYPES
 AC_TYPE_SIGNAL
 AC_FUNC_STRFTIME
 AC_FUNC_STRTOD
-AC_CHECK_FUNCS([getaddrinfo gethostbyname localtime_r memmove memset mkdir select snprintf socket strcasecmp strchr strdup strerror strncasecmp strcasestr strrchr strstr strtol uname vsnprintf])
-
-AC_FLDIGI_SEARCH_LIBS([dlopen], [dl])
-AC_FLDIGI_SEARCH_LIBS([clock_gettime], [rt])
-AC_FLDIGI_SEARCH_LIBS([sem_unlink], [rt])
-AC_FLDIGI_SEARCH_LIBS([sem_timedwait], [rt])
-AC_SUBST([EXTRA_LIBS])
+AC_CHECK_FUNCS([getaddrinfo gethostbyname hstrerror gmtime_r localtime_r memmove memset mkdir select setenv snprintf socket socketpair strcasecmp strcasestr strchr strdup strerror strlcpy strncasecmp strrchr strstr strtol uname unsetenv vsnprintf])
 
 
 AC_PRESERVE_HELP_ORDER
 
 ### Internationalization
 AM_GNU_GETTEXT([external])
+AM_CONDITIONAL([USE_NLS], [test "x$USE_NLS" = "xyes"])
 
 ###### OS support
 ### OSX
@@ -108,6 +103,11 @@ AC_FLDIGI_MACOSX
 # Set HAVE_WINDRES Makefile conditional
 # Substitute WINDRES in Makefile
 AC_FLDIGI_WIN32
+
+### Non-POSIX compatibility (i.e. mingw32)
+# Sets various Makefile conditionals; see m4/np-compat.m4
+AC_FLDIGI_NP_COMPAT
+
 
 ### static flag
 # Set ac_cv_static to yes/no

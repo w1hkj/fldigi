@@ -29,8 +29,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
-# include <unistd.h>
-# include <pwd.h>
+#include <unistd.h>
 #include <string>
 
 #include <iostream>
@@ -44,7 +43,7 @@ static char QRZdir[256] = "";
 
 static const char *QRZpath;
 static const char *QRZtry[] = { 
-#ifdef __CYGWIN__
+#ifdef __WOE32__
   "C:/CALLBK/", // look on C: drive first
   "D:/CALLBK/", 
   "E:/CALLBK/",
@@ -61,22 +60,6 @@ static const char *QRZtry[] = {
 FILE *imagefile = NULL;
 
 #define isdirsep(c) ((c)=='/')
-
-#ifndef __CYGWIN__
-size_t strlcpy(
-        char       *dst,	/* O - Destination string */
-        const char *src,	/* I - Source string */
-        size_t      size) {	/* I - Size of destination string buffer */
-
-  size_t	srclen;		/* Length of source string */
-  size --;
-  srclen = strlen(src);
-  if (srclen > size) srclen = size;
-  memcpy(dst, src, srclen);
-  dst[srclen] = '\0';
-  return (srclen);
-}
-#endif
 
 int filename_expand(char *to,int tolen, const char *from) {
 

@@ -15,26 +15,38 @@ int sem_timedwait(sem_t* sem, const struct timespec* abs_timeout);
 int sem_timedwait_rel(sem_t* sem, double rel_timeout);
 int pthread_cond_timedwait_rel(pthread_cond_t* cond, pthread_mutex_t* mutex, double rel_timeout);
 
-// 3 threads use qrunner
-enum { INVALID_TID = -1, TRX_TID, QRZ_TID, RIGCTL_TID, NORIGCTL_TID,
+enum {
+	INVALID_TID = -1,
+	TRX_TID, QRZ_TID, RIGCTL_TID, NORIGCTL_TID,
 #if USE_XMLRPC
-       XMLRPC_TID,
+	XMLRPC_TID,
 #endif
-       ARQ_TID, ARQSOCKET_TID,
-       FLMAIN_TID, NUM_THREADS,
-       NUM_QRUNNER_THREADS = NUM_THREADS - 1 };
+	ARQ_TID, ARQSOCKET_TID,
+	FLMAIN_TID,
+	NUM_THREADS, NUM_QRUNNER_THREADS = NUM_THREADS - 1
+};
+
+// on mingw32 and with a static pthreads-w32 we must do some
+// non-portable initialisation before using the thread functions
+#if defined(__MINGW32__) && defined(PTW32_STATIC_LIB)
+void ptw32_init(void);
+#  define NP_THREAD_INIT() ptw32_init()
+#else
+#  define NP_THREAD_INIT()
+#endif
 
 #if USE_TLS
 #       define THREAD_ID_TYPE __thread int
-#	define CREATE_THREAD_ID() thread_id_ = INVALID_TID
+#       define CREATE_THREAD_ID() do { NP_THREAD_INIT(); thread_id_ = INVALID_TID; } while (0)
 #	define SET_THREAD_ID(x)   thread_id_ = (x)
 #	define GET_THREAD_ID()    thread_id_
 #else
 #       define THREAD_ID_TYPE pthread_key_t
-#	define CREATE_THREAD_ID() pthread_key_create(&thread_id_, 0)
-#	define SET_THREAD_ID(x)   pthread_setspecific(thread_id_, (void *)(x))
-#	define GET_THREAD_ID()    (intptr_t)pthread_getspecific(thread_id_)
+#	define CREATE_THREAD_ID() do { NP_THREAD_INIT(); pthread_key_create(&thread_id_, NULL); } while (0)
+#	define SET_THREAD_ID(x)   pthread_setspecific(thread_id_, (const void *)(x + 1))
+#	define GET_THREAD_ID()    ((intptr_t)pthread_getspecific(thread_id_) - 1)
 #endif // USE_TLS
+extern THREAD_ID_TYPE thread_id_;
 
 
 #ifndef NDEBUG
@@ -59,11 +71,11 @@ bool thread_in_list(int id, const int* list);
 #  define ENSURE_NOT_THREAD(...) ((void)0)
 #endif // ! NDEBUG
 
-extern THREAD_ID_TYPE thread_id_;
+
 // On POSIX systems we cancel threads by sending them SIGUSR2,
 // which will also interrupt blocking calls.  On woe32 we use
 // pthread_cancel and there is no good/sane way to interrupt.
-#if !defined(__CYGWIN__) && !defined(__MINGW32__)
+#ifndef __WOE32__
 #  define SET_THREAD_CANCEL()					\
 	do {							\
 		sigset_t usr2;					\
@@ -79,7 +91,6 @@ extern THREAD_ID_TYPE thread_id_;
 #  define TEST_THREAD_CANCEL() pthread_testcancel()
 #  define CANCEL_THREAD(t__) pthread_cancel(t__);
 #endif
-
 
 #include "fl_lock.h"
 

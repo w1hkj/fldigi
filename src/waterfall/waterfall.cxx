@@ -1507,7 +1507,7 @@ void note_qrg(bool check, char prefix, char suffix)
 	struct tm tm;
 	gmtime_r(&t, &tm);
 	size_t r1;
-	if ((r1 = strftime(buf, sizeof(buf), "<<%FT%H:%MZ ", &tm)) == 0)
+	if ((r1 = strftime(buf, sizeof(buf), "<<%Y-%m-%dT%H:%MZ ", &tm)) == 0)
 		return;
 
 	size_t r2;

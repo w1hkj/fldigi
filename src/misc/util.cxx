@@ -2,6 +2,9 @@
 
 #include <string.h>
 #include "util.h"
+#ifdef __MINGW32__
+#  include "compat.h"
+#endif
 
 /* Return the smallest power of 2 not less than n */
 uint32_t ceil2(uint32_t n)
@@ -43,35 +46,86 @@ unsigned long ver2int(const char* version)
 
 #if !HAVE_STRCASESTR
 #  include <ctype.h>
-// a simple inefficient implementation of strcasestr
-char* strcasestr(const char* haystack, const char* needle)
+// from git 1.6.1.2 compat/strcasestr.c
+char *strcasestr(const char *haystack, const char *needle)
 {
-	char *h = NULL, *n = NULL, *p = NULL;
-	if ((h = strdup(haystack)) == NULL || (n = strdup(needle)) == NULL)
-		goto ret;
-	for (p = h; *p; p++)
-		*p = tolower(*p);
-	for (p = n; *p; p++)
-		*p = tolower(*p);
-	p = strstr(h, n);
-ret:
-	free(h);
-	free(n);
-	return p ? (char*)haystack + (p - h) : NULL;
+	int nlen = strlen(needle);
+	int hlen = strlen(haystack) - nlen + 1;
+	int i;
+
+	for (i = 0; i < hlen; i++) {
+		int j;
+		for (j = 0; j < nlen; j++) {
+			unsigned char c1 = haystack[i+j];
+			unsigned char c2 = needle[j];
+			if (toupper(c1) != toupper(c2))
+				goto next;
+		}
+		return (char *) haystack + i;
+	next:
+		;
+	}
+	return NULL;
 }
 #endif // !HAVE_STRCASESTR
 
-#include <unistd.h>
-#include <fcntl.h>
+#if !HAVE_STRLCPY
+// from git 1.6.1.2 compat/strcasestr.c
+size_t strlcpy(char *dest, const char *src, size_t size)
+{
+	size_t ret = strlen(src);
+
+	if (size) {
+		size_t len = (ret >= size) ? size - 1 : ret;
+		memcpy(dest, src, len);
+		dest[len] = '\0';
+	}
+	return ret;
+}
+#endif // !HAVE_STRLCPY
+
+#ifdef __MINGW32__
+int set_cloexec(int fd, unsigned char v) { return 0; }
+#else
+#  include <unistd.h>
+#  include <fcntl.h>
 int set_cloexec(int fd, unsigned char v)
 {
-	int f;
+	int f = fcntl(fd, F_GETFD);
+	return f == -1 ? f : fcntl(fd, F_SETFD, (v ? f | FD_CLOEXEC : f & ~FD_CLOEXEC));
+}
+#endif // __MINGW32__
 
-	if ((f = fcntl(fd, F_GETFD)) != -1)
-		f = fcntl(fd, F_SETFD, f | (v ? FD_CLOEXEC : 0));
-	return f;
+int set_nonblock(int fd, unsigned char v)
+{
+#ifndef __MINGW32__
+	int f = fcntl(fd, F_GETFL);
+	return f == -1 ? f : fcntl(fd, F_SETFL, (v ? f | O_NONBLOCK : f & ~O_NONBLOCK));
+#else // __MINGW32__
+	u_long v_ = (u_long)v;
+	errno = 0;
+	if (ioctlsocket(fd, FIONBIO, &v_) == SOCKET_ERROR) {
+		errno = WSAGetLastError();
+		return -1;
+	}
+	else
+		return 0;
+#endif // __MINGW32__
 }
 
+#ifndef __MINGW32__
+#  include <sys/types.h>
+#  include <sys/socket.h>
+#  include <netinet/in.h>
+#  include <netinet/tcp.h>
+#endif
+int set_nodelay(int fd, unsigned char v)
+{
+	int val = v;
+	return setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (const char*)&val, sizeof(val));
+}
+
+#ifndef __MINGW32__
 #include <pthread.h>
 #include <signal.h>
 #ifndef NSIG
@@ -80,9 +134,11 @@ int set_cloexec(int fd, unsigned char v)
 static size_t nsig = 0;
 static struct sigaction* sigact = 0;
 static pthread_mutex_t sigmutex = PTHREAD_MUTEX_INITIALIZER;
+#endif
 
 void save_signals(void)
 {
+#ifndef __MINGW32__
 	pthread_mutex_lock(&sigmutex);
 	if (!sigact)
 		sigact = new struct sigaction[NSIG];
@@ -90,10 +146,12 @@ void save_signals(void)
 		if (sigaction(nsig, NULL, &sigact[nsig-1]) == -1)
 			break;
 	pthread_mutex_unlock(&sigmutex);
+#endif
 }
 
 void restore_signals(void)
 {
+#ifndef __MINGW32__
 	pthread_mutex_lock(&sigmutex);
 	for (size_t i = 1; i <= nsig; i++)
 		sigaction(i, &sigact[i-1], NULL);
@@ -101,6 +159,7 @@ void restore_signals(void)
 	sigact = 0;
 	nsig = 0;
 	pthread_mutex_unlock(&sigmutex);
+#endif
 }
 
 uint32_t simple_hash_data(const unsigned char* buf, size_t len, uint32_t code)
@@ -173,6 +232,10 @@ const char* uint2bin(unsigned u, size_t len)
 
 void MilliSleep(long msecs)
 {
+#ifndef __MINGW32__
 	struct timespec tv = {0, msecs * 1000000L};
 	nanosleep(&tv, NULL);
+#else
+	Sleep(msecs);
+#endif
 }

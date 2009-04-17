@@ -26,7 +26,7 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#if !defined(__CYGWIN__) && !defined(__APPLE__)
+#if !defined(__WOE32__) && !defined(__APPLE__)
 #  include <sys/ipc.h>
 #  include <sys/msg.h>
 #endif
@@ -64,7 +64,7 @@ static string notes;
 
 //=============================================================================
 
-#if defined(__CYGWIN__) || defined(__APPLE__)
+#if defined(__WOE32__) || defined(__APPLE__)
 
 static string adif;
 
@@ -88,7 +88,7 @@ void putadif(int num, const char *s)
         char tempstr[100];
         int slen = strlen(s);
         if (slen > fields[num].size) slen = fields[num].size;
-        int n = snprintf(tempstr, sizeof(tempstr), "<%s:%zu>", fields[num].name, slen);
+        int n = snprintf(tempstr, sizeof(tempstr), "<%s:%" PRIuSZ ">", fields[num].name, slen);
         if (n == -1) {
 		LOG_PERROR("snprintf");
                 return;
@@ -141,7 +141,7 @@ void submit_ADIF(void)
 // the following IPC message is compatible with xlog remote data spec.
 //---------------------------------------------------------------------
 
-#if !defined(__CYGWIN__) && !defined(__APPLE__)
+#if !defined(__WOE32__) && !defined(__APPLE__)
 
 #define addtomsg(x, y)	log_msg = log_msg + (x) + (y) + LOG_MSEPARATOR
 
@@ -215,7 +215,7 @@ void submit_log(void)
 
 	AddRecord();
 
-#if !defined(__CYGWIN__) && !defined(__APPLE__)
+#if !defined(__WOE32__) && !defined(__APPLE__)
 	send_IPC_log();
 #else
 	submit_ADIF();

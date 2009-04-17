@@ -26,6 +26,10 @@
 
 #include <config.h>
 
+#ifdef __MINGW32__
+#  include "compat.h"
+#endif
+
 #include <sys/time.h>
 #include "signal.h"
 #include <string>
@@ -80,10 +84,10 @@ string lookup_notes;
 qrz_query_t DB_query = QRZNONE;
 
 enum TAG {
-	IGNORE,	KEY,	ALERT,	ERROR,	CALL,
-	FNAME,	NAME,	ADDR1,	ADDR2,	STATE,
-	ZIP,	COUNTRY,LATD,	LOND,	GRID,
-	DOB
+	QRZ_IGNORE,	QRZ_KEY,	QRZ_ALERT,	QRZ_ERROR,	QRZ_CALL,
+	QRZ_FNAME,	QRZ_NAME,	QRZ_ADDR1,	QRZ_ADDR2,	QRZ_STATE,
+	QRZ_ZIP,	QRZ_COUNTRY,	QRZ_LATD,	QRZ_LOND,	QRZ_GRID,
+	QRZ_DOB
 };
 
 pthread_t* QRZ_thread = 0;
@@ -140,7 +144,7 @@ void clear_Lookup()
 bool parseSessionKey(const string& sessionpage)
 {
 	IrrXMLReader* xml = createIrrXMLReader(new IIrrXMLStringReader(sessionpage));
-	TAG tag=IGNORE;
+	TAG tag=QRZ_IGNORE;
 	while(xml && xml->read()) {
 		switch(xml->getNodeType())
 		{
@@ -150,29 +154,29 @@ bool parseSessionKey(const string& sessionpage)
 			{
 			default:
 				break;
-			case KEY:
+			case QRZ_KEY:
 				qrzSessionKey = xml->getNodeData();
 				break;
-			case ALERT:
+			case QRZ_ALERT:
 				qrzalert = xml->getNodeData();
 				break;
-			case ERROR:
+			case QRZ_ERROR:
 				qrzerror = xml->getNodeData();
 				break;
 			}
 			break;
 
 		case EXN_ELEMENT_END:
-			tag=IGNORE;
+			tag=QRZ_IGNORE;
 			break;
 
 		case EXN_ELEMENT:
 		{
 			const char *nodeName = xml->getNodeName();
-			if (!strcmp("Key", nodeName)) tag=KEY;
-			else if (!strcmp("Alert", nodeName)) tag=ALERT;
-			else if (!strcmp("Error", nodeName)) tag=ERROR;
-			else tag=IGNORE;
+			if (!strcmp("Key", nodeName)) tag=QRZ_KEY;
+			else if (!strcmp("Alert", nodeName)) tag=QRZ_ALERT;
+			else if (!strcmp("Error", nodeName)) tag=QRZ_ERROR;
+			else tag=QRZ_IGNORE;
 			break;
 		}
 
@@ -214,7 +218,7 @@ bool parse_xml(const string& xmlpage)
 			grid, 
 			dob;
 			
-	TAG tag = IGNORE;
+	TAG tag = QRZ_IGNORE;
 	
 // parse the file until end reached
 	while(xml && xml->read()) {
@@ -223,80 +227,80 @@ bool parse_xml(const string& xmlpage)
 			case EXN_CDATA:
 				switch (tag) {
 					default:
-					case IGNORE:
+					case QRZ_IGNORE:
 						break;
-					case CALL:
+					case QRZ_CALL:
 						call = xml->getNodeData();
 						break;
-					case FNAME:
+					case QRZ_FNAME:
 						lookup_fname =  xml->getNodeData();
 						break;
-					case NAME:
+					case QRZ_NAME:
 						lookup_name =  xml->getNodeData();
 						break;
-					case ADDR1:
+					case QRZ_ADDR1:
 						lookup_addr1 =  xml->getNodeData();
 						break;
-					case ADDR2:
+					case QRZ_ADDR2:
 						lookup_addr2 =  xml->getNodeData();
 						break;
-					case STATE:
+					case QRZ_STATE:
 						lookup_state =  xml->getNodeData();
 						break;
-					case ZIP:
+					case QRZ_ZIP:
 						lookup_zip =  xml->getNodeData();
 						break;
-					case COUNTRY:
+					case QRZ_COUNTRY:
 						lookup_country =  xml->getNodeData();
 						break;
-					case LATD:
+					case QRZ_LATD:
 						lookup_latd =  xml->getNodeData();
 						break;
-					case LOND:
+					case QRZ_LOND:
 						lookup_lond =  xml->getNodeData();
 						break;
-					case GRID:
+					case QRZ_GRID:
 						lookup_grid =  xml->getNodeData();
 						break;
-					case DOB:
+					case QRZ_DOB:
 						lookup_notes = "DOB: ";
 						lookup_notes += xml->getNodeData();
 						break;
-					case ALERT:
+					case QRZ_ALERT:
 						qrzalert = xml->getNodeData();
 						break;
-					case ERROR:
+					case QRZ_ERROR:
 						qrzerror = xml->getNodeData();
 						break;
-					case KEY:
+					case QRZ_KEY:
 						qrzSessionKey = xml->getNodeData();
 						break;
 				}
 				break;
 				
 			case EXN_ELEMENT_END:
-				tag=IGNORE;
+				tag=QRZ_IGNORE;
 				break;
 
 			case EXN_ELEMENT: 
 				{
 				const char *nodeName = xml->getNodeName();
-				if (!strcmp("call", nodeName)) 			tag = CALL;
-				else if (!strcmp("fname", nodeName)) 	tag = FNAME;
-				else if (!strcmp("name", nodeName)) 	tag = NAME;
-				else if (!strcmp("addr1", nodeName)) 	tag = ADDR1;
-				else if (!strcmp("addr2", nodeName)) 	tag = ADDR2;
-				else if (!strcmp("state", nodeName)) 	tag = STATE;
-				else if (!strcmp("zip", nodeName)) 		tag = ZIP;
-				else if (!strcmp("country", nodeName))	tag = COUNTRY;
-				else if (!strcmp("latd", nodeName)) 	tag = LATD;
-				else if (!strcmp("lond", nodeName)) 	tag = LOND;
-				else if (!strcmp("grid", nodeName)) 	tag = GRID;
-				else if (!strcmp("dob", nodeName)) 		tag = DOB;
-				else if (!strcmp("Alert", nodeName)) 	tag = ALERT;
-				else if (!strcmp("Error", nodeName)) 	tag = ERROR;
-				else if (!strcmp("Key", nodeName)) 		tag = KEY;
-				else tag = IGNORE;
+				if (!strcmp("call", nodeName)) 			tag = QRZ_CALL;
+				else if (!strcmp("fname", nodeName)) 	tag = QRZ_FNAME;
+				else if (!strcmp("name", nodeName)) 	tag = QRZ_NAME;
+				else if (!strcmp("addr1", nodeName)) 	tag = QRZ_ADDR1;
+				else if (!strcmp("addr2", nodeName)) 	tag = QRZ_ADDR2;
+				else if (!strcmp("state", nodeName)) 	tag = QRZ_STATE;
+				else if (!strcmp("zip", nodeName)) 		tag = QRZ_ZIP;
+				else if (!strcmp("country", nodeName))	tag = QRZ_COUNTRY;
+				else if (!strcmp("latd", nodeName)) 	tag = QRZ_LATD;
+				else if (!strcmp("lond", nodeName)) 	tag = QRZ_LOND;
+				else if (!strcmp("grid", nodeName)) 	tag = QRZ_GRID;
+				else if (!strcmp("dob", nodeName)) 		tag = QRZ_DOB;
+				else if (!strcmp("Alert", nodeName)) 	tag = QRZ_ALERT;
+				else if (!strcmp("Error", nodeName)) 	tag = QRZ_ERROR;
+				else if (!strcmp("Key", nodeName)) 		tag = QRZ_KEY;
+				else tag = QRZ_IGNORE;
 				}
 				break;
 

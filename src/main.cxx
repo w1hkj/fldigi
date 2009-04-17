@@ -29,14 +29,26 @@
 #include <cstdlib>
 #include <getopt.h>
 #include <sys/types.h>
-#if !defined(__CYGWIN__) && !defined(__APPLE__)
+
+#if !defined(__WOE32__) && !defined(__APPLE__)
 #  include <sys/ipc.h>
 #  include <sys/msg.h>
 #endif
+
+#ifdef __MINGW32__
+#  include "compat.h"
+#endif
+
 #include <sys/stat.h>
-#include <sys/utsname.h>
+
+#if HAVE_SYS_UTSNAME_H
+#  include <sys/utsname.h>
+#endif
+
 #include <unistd.h>
-#include <dirent.h>
+#ifndef __MINGW32__
+#  include <dirent.h>
+#endif
 #include <exception>
 #include <signal.h>
 #include <locale.h>
@@ -46,7 +58,13 @@
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Shared_Image.H>
 #include <FL/x.H>
+#ifdef __MINGW32__
+#  define dirent fl_dirent_no_thanks
+#endif
 #include <FL/filename.H>
+#ifdef __MINGW32__
+#  undef dirent
+#endif
 
 #include "gettext.h"
 #include "main.h"
@@ -164,7 +182,7 @@ int main(int argc, char ** argv)
 
 	{
 		char dirbuf[FL_PATH_MAX + 1];
-#ifdef __CYGWIN__
+#ifdef __WOE32__
 		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$USERPROFILE/fldigi.files/");
 #else
 		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$HOME/.fldigi/");
@@ -201,7 +219,7 @@ int main(int argc, char ** argv)
 	xmlfname = HomeDir; 
 	xmlfname.append("rig.xml");
 
-#if !defined(__CYGWIN__) && !defined(__APPLE__)
+#if !defined(__WOE32__) && !defined(__APPLE__)
    	txmsgid = msgget( (key_t) progdefaults.tx_msgid, 0666 );
 #else
 	txmsgid = -1;
@@ -352,7 +370,7 @@ void generate_option_help(void) {
 	     << "    Look for configuration files in DIRECTORY\n"
 	     << "    The default is: " << HomeDir << "\n\n"
 
-#if !defined(__CYGWIN__) && !defined(__APPLE__)
+#if !defined(__WOE32__) && !defined(__APPLE__)
 	     << "  --rx-ipc-key KEY\n"
 	     << "    Set the receive message queue key\n"
 	     << "    May be given in hex if prefixed with \"0x\"\n"
@@ -494,7 +512,7 @@ int parse_args(int argc, char **argv, int& idx)
 		return 0;
 
         enum { OPT_ZERO,
-#ifndef __CYGWIN__
+#ifndef __WOE32__
 	       OPT_RX_IPC_KEY, OPT_TX_IPC_KEY,
 #endif
 	       OPT_CONFIG_DIR,
@@ -522,7 +540,7 @@ int parse_args(int argc, char **argv, int& idx)
 
 	const char shortopts[] = "+";
 	static struct option longopts[] = {
-#ifndef __CYGWIN__
+#ifndef __WOE32__
 		{ "rx-ipc-key",	   1, 0, OPT_RX_IPC_KEY },
 		{ "tx-ipc-key",	   1, 0, OPT_TX_IPC_KEY },
 #endif
@@ -584,7 +602,7 @@ int parse_args(int argc, char **argv, int& idx)
 			// handle options with non-0 flag here
 			return 0;
 
-#if !defined(__CYGWIN__) && !defined(__APPLE__)
+#if !defined(__WOE32__) && !defined(__APPLE__)
 		case OPT_RX_IPC_KEY: case OPT_TX_IPC_KEY:
 		{
 			errno = 0;
@@ -815,7 +833,7 @@ void generate_version_text(void)
 // the env var FLDIGI_NO_EXEC is set, or our parent process is gdb.
 void debug_exec(char** argv)
 {
-#if !defined(NDEBUG) && !defined(__CYGWIN__)
+#if !defined(NDEBUG) && defined(__GLIBC__)
         if (getenv("FLDIGI_NO_EXEC"))
                 return;
 
@@ -845,7 +863,7 @@ void set_platform_ui(void)
        progdefaults.WaterfallFontsize = 12;
        progdefaults.RxFontsize = 12;
        progdefaults.TxFontsize = 12;
-#elif defined(__CYGWIN__)
+#elif defined(__WOE32__)
        Fl::set_font(FL_HELVETICA, "Tahoma");
        FL_NORMAL_SIZE = 11;
        progdefaults.WaterfallFontnbr = FL_HELVETICA;
@@ -903,7 +921,7 @@ double speed_test(int converter, unsigned repeat)
 
 static void setup_signal_handlers(void)
 {
-#if !defined(__CYGWIN__) && !defined(__MINGW32__)
+#ifndef __WOE32__
 	struct sigaction action;
 	memset(&action, 0, sizeof(struct sigaction));
 
@@ -989,7 +1007,7 @@ static void checkdirectories(void)
 	int r;
 	for (size_t i = 0; i < sizeof(dirs)/sizeof(*dirs); i++) {
 		if (dirs[i].suffix)
-			dirs[i].dir.assign(HomeDir).append(dirs[i].suffix).append("/");
+			dirs[i].dir.assign(HomeDir).append(dirs[i].suffix).append(PATH_SEP);
 
 		if ((r = mkdir(dirs[i].dir.c_str(), 0777)) == -1 && errno != EEXIST) {
 			cerr << _("Could not make directory") << ' ' << dirs[i].dir

@@ -91,7 +91,7 @@ bool dxcc_open(const char* filename)
 		in >> ws; // cr/lf after ';'
 	}
 
-	LOG_INFO("Loaded %zu prefixes for %u countries", cmap->size(), nrec);
+	LOG_INFO("Loaded %" PRIuSZ " prefixes for %u countries", cmap->size(), nrec);
 	return true;
 }
 
@@ -211,7 +211,7 @@ bool qsl_open(const char* filename, qsl_t qsl_type)
 		prev_entry->second |= (1 << qsl_type);
 	}
 
-	LOG_INFO("Added %zu %s callsigns from \"%s\"",
+	LOG_INFO("Added %" PRIuSZ " %s callsigns from \"%s\"",
 		 qsl_calls->size() - n, qsl_names[qsl_type], filename);
 
 	return true;

@@ -106,8 +106,7 @@ unsigned char rbits8(unsigned char w)
 
 // Integer base-2 logarithm
 
-#ifndef __CYGWIN__
-unsigned int log2(unsigned int x)
+unsigned int log2u(unsigned int x)
 {
 	int y = 0;
 	x >>= 1;
@@ -117,7 +116,6 @@ unsigned int log2(unsigned int x)
 	}
 	return y;
 }
-#endif
 
 // ----------------------------------------------------------------------------
 

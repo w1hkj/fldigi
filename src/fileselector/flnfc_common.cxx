@@ -45,6 +45,7 @@ static char *strfree(char *val) {
     return(NULL);
 }
 
+#ifndef __WOE32__
 // 'DYNAMICALLY' APPEND ONE STRING TO ANOTHER
 //    Returns newly allocated string, or NULL 
 //    if s && val == NULL.
@@ -68,6 +69,7 @@ static char *strapp(char *s, const char *val) {
     delete [] s;		// delete old string
     return(news);		// return new copy
 }
+#endif
 
 // APPEND A CHARACTER TO A STRING
 //     This does NOT allocate space for the new character.

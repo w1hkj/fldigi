@@ -24,7 +24,7 @@
 #include "rigdialog.h"
 
 #include "stacktrace.h"
-#ifdef CYGWIN
+#ifdef __WOE32__
 #  include "serial.h"
 #endif
 #include "debug.h"
@@ -136,7 +136,7 @@ bool hamlib_init(bool bPtt)
 
 #ifdef __CYGWIN__
 	string port = progdefaults.HamRigDevice;
-	adjust_port(port);
+	com_to_tty(port);
 #endif
 
 	if (progdefaults.HamRigModel == 0) {

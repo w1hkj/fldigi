@@ -23,6 +23,9 @@
 #include <config.h>
 
 #include "timeops.h"
+#ifdef __MINGW32__
+#  include "compat.h"
+#endif
 
 #if !HAVE_CLOCK_GETTIME
 #  if TIME_WITH_SYS_TIME

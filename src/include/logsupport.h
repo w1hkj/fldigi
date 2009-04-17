@@ -9,7 +9,7 @@
 #include "qso_db.h"
 #include "adif_io.h"
 
-#ifdef __CYGWIN__
+#ifdef __WOE32__
 #  define ADIF_SUFFIX "adi"
 #else
 #  define ADIF_SUFFIX "adif"

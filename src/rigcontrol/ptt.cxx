@@ -33,11 +33,17 @@
 
 #include <unistd.h>
 #include <sys/types.h>
-#include <sys/select.h>
+#if HAVE_SYS_SELECT_H
+#  include <sys/select.h>
+#endif
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <sys/ioctl.h>
-#include <termios.h>
+#if HAVE_SYS_IOCTL_H
+#  include <sys/ioctl.h>
+#endif
+#if HAVE_TERMIOS_H
+#  include <termios.h>
+#endif
 #include <errno.h>
 #include <cstring>
 #include <stdint.h>
@@ -165,10 +171,11 @@ void PTT::close_all(void)
 
 void PTT::open_tty(void)
 {
+#if HAVE_TTYPORT
 	string pttdevName = progdefaults.PTTdev;
 #ifdef __CYGWIN__
 	// convert to Linux serial port naming
-	adjust_port(pttdevName);
+	com_to_tty(pttdevName);
 #endif
 
 	if ((pttfd = open(pttdevName.c_str(), O_RDWR | O_NOCTTY | O_NDELAY)) < 0) {
@@ -192,21 +199,25 @@ void PTT::open_tty(void)
 		status &= ~TIOCM_DTR;		// clear DTR bit
 
 	ioctl(pttfd, TIOCMSET, &status);
-	LOG_DEBUG("Serial port %s open", progdefaults.PTTdev.c_str());
-    LOG_DEBUG("   status = %02X, %s", status, uint2bin(status, 8));
+	LOG_DEBUG("Serial port %s open; status = %02X, %s",
+		  progdefaults.PTTdev.c_str(), status, uint2bin(status, 8));
+#endif // HAVE_TTYPORT
 }
 
 void PTT::close_tty(void)
 {
+#if HAVE_TTYPORT
 	if (pttfd >= 0) {
 		tcsetattr(pttfd, TCSANOW, oldtio);
 		close(pttfd);
 	}
 	delete oldtio;
+#endif
 }
 
 void PTT::set_tty(bool ptt)
 {
+#if HAVE_TTYPORT
 	int status;
 	ioctl(pttfd, TIOCMGET, &status);
 
@@ -231,6 +242,7 @@ void PTT::set_tty(bool ptt)
 	}
 	LOG_DEBUG("Status %02X, %s", status & 0xFF, uint2bin(status, 8));
 	ioctl(pttfd, TIOCMSET, &status);
+#endif
 }
 
 #if HAVE_PARPORT

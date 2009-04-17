@@ -26,8 +26,12 @@
 
 #include <sys/types.h>
 
-#ifdef __CYGWIN__
-#  include <w32api/windows.h>
+#ifdef __WOE32__
+#  ifdef __CYGWIN__
+#    include <w32api/windows.h>
+#  else
+#    include <windows.h>
+#  endif
 #endif
 
 #include <cstdlib>
@@ -270,7 +274,7 @@ Fl_RGB_Image		*feld_image = 0;
 Fl_Pixmap 			*addrbookpixmap = 0;
 Fl_Pixmap 			*closepixmap = 0;
 
-#if !defined(__APPLE__) && !defined(__CYGWIN__)
+#if !defined(__APPLE__) && !defined(__WOE32__)
 Pixmap				fldigi_icon_pixmap;
 #endif
 
@@ -971,7 +975,7 @@ void cb_mnuSaveConfig(Fl_Menu_ *, void *) {
 void cb_mnuVisitURL(Fl_Widget*, void* arg)
 {
 	const char* url = reinterpret_cast<const char *>(arg);
-#ifndef __CYGWIN__
+#ifndef __WOE32__
 	const char* browsers[] = {
 		getenv("FLDIGI_BROWSER"),
 #  ifdef __APPLE__
@@ -1031,7 +1035,7 @@ void cb_mnuBeginnersURL(Fl_Widget*, void*)
 		return;
 	f << szBeginner;
 	f.close();
-#ifndef __CYGWIN__
+#ifndef __WOE32__
 	cb_mnuVisitURL(NULL, (void *)deffname.insert(0, "file://").c_str());
 #else
 	cb_mnuVisitURL(NULL, (void *)deffname.c_str());
@@ -1590,10 +1594,9 @@ int default_handler(int event)
 }
 
 bool clean_exit(void) {
-	arq_close();
-
 	if (progdefaults.changed) {
-		switch (fl_choice(_("Save changed configuration before exiting?"), _("Cancel"), _("Save"), _("Don't save"))) {
+		switch (fl_choice(_("Save changed configuration before exiting?"),
+				  _("Cancel"), _("Save"), _("Don't save"))) {
 		case 0:
 			return false;
 		case 1:
@@ -1604,7 +1607,8 @@ bool clean_exit(void) {
 		}
 	}
 	if (!oktoclear && progdefaults.NagMe) {
-		switch (fl_choice(_("Save log before exiting?"), _("Cancel"), _("Save"), _("Don't save"))) {
+		switch (fl_choice(_("Save log before exiting?"),
+				  _("Cancel"), _("Save"), _("Don't save"))) {
 		case 0:
 			return false;
 		case 1:
@@ -1615,7 +1619,8 @@ bool clean_exit(void) {
 		}
 	}
 	if (macros.changed) {
-		switch (fl_choice(_("Save changed macros before exiting?"), _("Cancel"), _("Save"), _("Don't save"))) {
+		switch (fl_choice(_("Save changed macros before exiting?"),
+				  _("Cancel"), _("Save"), _("Don't save"))) {
 		case 0:
 			return false;
 		case 1:
@@ -1664,9 +1669,6 @@ bool clean_exit(void) {
 	
 #if USE_HAMLIB
 	if (xcvr) delete xcvr;
-#endif
-#if USE_XMLRPC
-	XML_RPC_Server::stop();
 #endif
 
 	close_logbook();
@@ -1898,7 +1900,7 @@ void activate_mfsk_image_item(bool b)
 		set_active(mfsk_item, b);
 }
 
-#if !defined(__APPLE__) && !defined(__CYGWIN__)
+#if !defined(__APPLE__) && !defined(__WOE32__)
 void make_pixmap(Pixmap *xpm, const char **data)
 {
 	// We need a displayed window to provide a GC for X_CreatePixmap
@@ -2810,12 +2812,12 @@ void create_fl_digi_main() {
 	fl_digi_main->end();
 	fl_digi_main->callback(cb_wMain);
 
-#if defined (__CYGWIN__)
-#ifndef IDI_ICON
-#  define IDI_ICON 101
-#endif
+#if defined(__WOE32__)
+#  ifndef IDI_ICON
+#    define IDI_ICON 101
+#  endif
 	fl_digi_main->icon((char*)LoadIcon(fl_display, MAKEINTRESOURCE(IDI_ICON)));
-#elif !defined (__APPLE__)
+#elif !defined(__APPLE__)
 	make_pixmap(&fldigi_icon_pixmap, fldigi_icon);
 	fl_digi_main->icon((char *)fldigi_icon_pixmap);
 #endif

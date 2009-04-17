@@ -4,12 +4,17 @@
 bin_PROGRAMS = fldigi
 
 
-AM_CPPFLAGS = -DLOCALEDIR=\"$(localedir)\" -I$(srcdir) -I$(srcdir)/include \
-	      -I$(srcdir)/irrxml -I$(srcdir)/fileselector @BOOST_CPPFLAGS@
+AM_CPPFLAGS =
+if USE_NLS
+  AM_CPPFLAGS += -DLOCALEDIR=\"$(localedir)\"
+endif
+AM_CPPFLAGS += -I$(srcdir) -I$(srcdir)/include -I$(srcdir)/irrxml \
+	       -I$(srcdir)/fileselector @BOOST_CPPFLAGS@
 
 AM_CXXFLAGS = @PORTAUDIO_CFLAGS@ @FLTK_CFLAGS@ @SNDFILE_CFLAGS@ \
 	@SAMPLERATE_CFLAGS@ @PULSEAUDIO_CFLAGS@ @HAMLIB_CFLAGS@ \
-	@IMAGE_CFLAGS@ @XMLRPC_CFLAGS@ @MAC_UNIVERSAL_CFLAGS@ @INTL_CFLAGS@ \
+	@IMAGE_CFLAGS@ @XMLRPC_CFLAGS@ @MAC_UNIVERSAL_CFLAGS@ \
+	@INTL_CFLAGS@ @PTW32_CFLAGS@ \
 	-pipe -Wall -fexceptions @OPT_CFLAGS@ @DEBUG_CFLAGS@
 AM_CFLAGS = $(AM_CXXFLAGS)
 
@@ -17,7 +22,7 @@ AM_LDFLAGS = @MAC_UNIVERSAL_LDFLAGS@
 
 LDADD = @PORTAUDIO_LIBS@ @BOOST_LDFLAGS@ @FLTK_LIBS@ @SNDFILE_LIBS@ \
 	@SAMPLERATE_LIBS@ @PULSEAUDIO_LIBS@ @HAMLIB_LIBS@ @IMAGE_LIBS@ \
-	@XMLRPC_LIBS@ @INTL_LIBS@ @EXTRA_LIBS@
+	@XMLRPC_LIBS@ @INTL_LIBS@ @PTW32_LIBS@ @EXTRA_LIBS@
 
 
 HAMLIB_SRC = include/hamlib.h rigcontrol/hamlib.cxx include/rigclass.h rigcontrol/rigclass.cxx
@@ -25,9 +30,13 @@ XMLRPC_SRC = include/xmlrpc.h misc/xmlrpc.cxx
 WIN32_RES_SRC = fldigirc.rc
 LOCATOR_SRC = misc/locator.c
 BENCHMARK_SRC = include/benchmark.h misc/benchmark.cxx
+REGEX_SRC = compat/regex.h compat/regex.c
+MINGW32_SRC = include/compat.h compat/getsysinfo.c compat/mingw.c compat/mingw.h
+
 
 # We distribute these but do not always compile them
-EXTRA_fldigi_SOURCES = $(HAMLIB_SRC) $(XMLRPC_SRC) $(WIN32_RES_SRC) $(LOCATOR_SRC) $(BENCHMARK_SRC)
+EXTRA_fldigi_SOURCES = $(HAMLIB_SRC) $(XMLRPC_SRC) $(WIN32_RES_SRC) $(LOCATOR_SRC) \
+	$(BENCHMARK_SRC) $(REGEX_SRC) $(MINGW32_SRC)
 
 fldigi_SOURCES =
 
@@ -52,6 +61,18 @@ endif
 if ENABLE_BENCHMARK
   fldigi_SOURCES += $(BENCHMARK_SRC)
 endif
+
+
+if COMPAT_REGEX
+  fldigi_SOURCES += $(REGEX_SRC)
+endif
+
+if MINGW32
+  fldigi_SOURCES += $(MINGW32_SRC)
+endif
+
+########################################################################
+
 
 FLDIGI_VERSION_MAJOR = @FLDIGI_VERSION_MAJOR@
 FLDIGI_VERSION_MINOR = @FLDIGI_VERSION_MINOR@

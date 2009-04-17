@@ -53,19 +53,19 @@ AC_ARG_WITH([boost],
     [want_boost="yes"])
 
 
-AC_ARG_WITH([boost-libdir],
-        AS_HELP_STRING([--with-boost-libdir=LIB_DIR],
-        [Force given directory for boost libraries. Note that this will overwrite library path detection, so use this parameter only if default library detection fails and you know exactly where your boost libraries are located.]),
-        [
-        if test -d $withval
-        then
-                ac_boost_lib_path="$withval"
-        else
-                AC_MSG_ERROR(--with-boost-libdir expected directory name)
-        fi
-        ],
-        [ac_boost_lib_path=""]
-)
+# AC_ARG_WITH([boost-libdir],
+#         AS_HELP_STRING([--with-boost-libdir=LIB_DIR],
+#         [Force given directory for boost libraries. Note that this will overwrite library path detection, so use this parameter only if default library detection fails and you know exactly where your boost libraries are located.]),
+#         [
+#         if test -d $withval
+#         then
+#                 ac_boost_lib_path="$withval"
+#         else
+#                 AC_MSG_ERROR(--with-boost-libdir expected directory name)
+#         fi
+#         ],
+#         [ac_boost_lib_path=""]
+# )
 
 if test "x$want_boost" = "xyes"; then
 	boost_lib_version_req=ifelse([$1], ,1.20.0,$1)

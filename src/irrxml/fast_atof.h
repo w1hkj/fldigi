@@ -13,6 +13,9 @@ namespace irr
 namespace core
 {
 
+// Disable the use of powf(3) on mingw32 because it breaks cross compilation
+// on Debian unstable.
+#ifndef __MINGW32__
 const float fast_atof_table[] =	{
 										0.f,
 										0.1f,
@@ -131,6 +134,12 @@ inline float fast_atof(const char* c)
 	fast_atof_move_const(c, ret);
 	return ret;
 }
+#else // __MINGW32__
+inline float fast_atof(const char* c)
+{
+	return atof(c);
+}
+#endif // !__MINGW32__
 
 } // end namespace core
 }// end namespace irr

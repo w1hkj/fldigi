@@ -11,7 +11,7 @@
 
 using namespace std;
 
-#ifdef __CYGWIN__
+#ifdef __WOE32__
 static const char *szEOL = "\r\n";
 #else
 static const char *szEOL = "\n";

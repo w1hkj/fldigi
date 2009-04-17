@@ -25,10 +25,6 @@
 #ifndef FLDIGI_CONFIG_H
 #define FLDIGI_CONFIG_H
 
-#ifdef __CYGWIN__
-	#define IDI_ICON  101
-#endif
-
 //=============================================================================
 // You can change the x1 width of the waterfall / spectrum display by modifying this
 // constant.

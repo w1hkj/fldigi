@@ -25,6 +25,10 @@
 
 #include <config.h>
 
+#ifdef __MINGW32__
+#  include "compat.h"
+#endif
+
 #include <cmath>
 #include <cstdlib>
 #include <cstdio>
@@ -247,7 +251,7 @@ static FILE* open_file(const char* name, const char* suffix)
 		(void)gmtime_r(&time_sec, &ztime);
 
 		size_t sz;
-		if ((sz = strftime(newfn + flen, newlen - flen, "pic_%F_%H%M%Sz", &ztime)) > 0) {
+		if ((sz = strftime(newfn + flen, newlen - flen, "pic_%Y-%m-%d_%H%M%Sz", &ztime)) > 0) {
 			strncpy(newfn + flen + sz, suffix, newlen - flen - sz);
 			newfn[newlen - 1] = '\0';
 			mkdir(name, 0777);

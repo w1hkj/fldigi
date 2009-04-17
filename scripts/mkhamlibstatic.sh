@@ -33,6 +33,9 @@ case "$target_os" in
     *cygwin*)
 	AM_LDFLAGS="$AM_LDFLAGS -Wl,--export-all-symbols -Wl,--whole-archive $hamlib_libs -Wl,--no-whole-archive"
 	;;
+    *mingw32*)
+	AM_LDFLAGS="$AM_LDFLAGS -Wl,--export-dynamic -Wl,--allow-multiple-definition -Wl,--whole-archive $hamlib_libs -Wl,--no-whole-archive"
+	;;
     *)
 	echo "E: This script does not support $target_os" >&2
 	exit 1

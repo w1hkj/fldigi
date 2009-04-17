@@ -23,7 +23,11 @@
 #ifndef SPOT_H_
 #define SPOT_H_
 
-#include <regex.h>
+#ifdef HAVE_REGEX_H
+#  include <regex.h>
+#else
+#  include "compat/regex.h"
+#endif
 #include <sys/time.h>
 #include "globals.h"
 

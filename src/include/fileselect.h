@@ -1,7 +1,7 @@
 #ifndef FILESELECT_H
 #define FILESELECT_H
 
-#ifdef __CYGWIN__
+#ifdef __WOE32__
 #  define FSEL_THREAD 1
 #endif
 

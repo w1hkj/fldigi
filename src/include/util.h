@@ -101,6 +101,7 @@ extern "C" {
 #    define cold__
 #endif
 
+#include <stddef.h>
 
 const__ uint32_t ceil2(uint32_t n);
 const__ uint32_t floor2(uint32_t n);
@@ -109,18 +110,24 @@ const__ uint32_t floor2(uint32_t n);
 char* strcasestr(const char* haystack, const char* needle);
 #endif
 
+#if !HAVE_STRLCPY
+size_t strlcpy(char* dest, const char* src, size_t size);
+#endif
+
 int set_cloexec(int fd, unsigned char v);
+int set_nonblock(int fd, unsigned char v);
+int set_nodelay(int fd, unsigned char v);
 
 unsigned long ver2int(const char* version);
 
 void save_signals(void);
 void restore_signals(void);
 
+void MilliSleep(long msecs);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
-#include <stddef.h>
 
 #ifdef __cplusplus
 uint32_t simple_hash_data(const unsigned char* buf, size_t len, uint32_t code = 0);
@@ -136,7 +143,7 @@ const char* str2hex(const unsigned* str, size_t len);
 
 const char* uint2bin(unsigned u, size_t len);
 
-#if !defined(NDEBUG) && defined(deprecated__) && defined(__GNUC__)
+#if !defined(NDEBUG) && defined(deprecated__) && defined(__GNUC__) && !defined(__MINGW32__)
 #include <stdio.h>
 #include <string.h>
 deprecated__ typeof(sprintf) sprintf;
@@ -146,8 +153,22 @@ deprecated__ typeof(strcat) strcat;
 */
 #endif
 
-#ifdef __CYGWIN__
+#ifdef __WOE32__
 #  define NOMINMAX 1
+#endif
+
+#ifndef __MINGW32__
+#  define PRIuSZ "zu"
+#  define PRIdSZ "zd"
+#else
+#  define PRIuSZ "Iu"
+#  define PRIdSZ "Id"
+#endif
+
+#ifndef __MINGW32__
+#  define PATH_SEP "/"
+#else
+#  define PATH_SEP "\\"
 #endif
 
 #endif /* UTIL_H */

@@ -25,10 +25,14 @@
 
 #include <config.h>
 
-#include <sys/socket.h>
-#include <netdb.h>
-#include <netinet/in.h>
 #include <sys/time.h>
+#ifndef __MINGW32__
+#  include <sys/socket.h>
+#  include <netdb.h>
+#  include <netinet/in.h>
+#else
+#  include <winsock2.h>
+#endif
 
 #include <string>
 #include <exception>

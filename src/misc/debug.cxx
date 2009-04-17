@@ -22,6 +22,10 @@
 
 #include <config.h>
 
+#ifdef __MINGW32__
+#  include "compat.h"
+#endif
+
 #include <cstdio>
 #include <cstring>
 #include <cstdarg>
@@ -128,15 +132,18 @@ void debug::log(level_e level, const char* func, const char* srcf, int line, con
 		snprintf(fmt, sizeof(fmt), "%c: %s: %s\n", *prefix[level], func, format);
 	va_list args;
 	va_start(args, format);
-	vfprintf(wfile, fmt, args);
+	intptr_t nw = vfprintf(wfile, fmt, args);
 	va_end(args);
 	if (tty && level <= DEBUG_LEVEL && level > QUIET_LEVEL) {
 		va_start(args, format);
 		vfprintf(stderr, fmt, args);
 		va_end(args);
 	}
+#ifdef __MINGW32__
+	fflush(wfile);
+#endif
 
-	Fl::add_timeout(0.0, sync_text, 0);
+	Fl::add_timeout(0.0, sync_text, (void*)nw);
 }
 
 void debug::elog(const char* func, const char* srcf, int line, const char* text)
@@ -151,16 +158,22 @@ void debug::show(void)
 
 static char buf[BUFSIZ+1];
 
-void debug::sync_text(void*)
+void debug::sync_text(void* arg)
 {
+	intptr_t toread = (intptr_t)arg;
+	size_t block = MIN((size_t)toread, sizeof(buf) - 1);
 	ssize_t n;
-	while ((n = read(rfd, buf, sizeof(buf) - 1)) > 0) {
-		buf[n] = '\0';
-		text->add(buf);
+
+	while (toread > 0) {
+		if ((n = read(rfd, buf, block)) <= 0)
+			break;
 		if (unlikely(++nlines > MAX_LINES)) {
 			text->clear();
 			nlines = 0;
 		}
+		buf[n] = '\0';
+		text->add(buf);
+		toread -= n;
 	}
 }
 
@@ -168,19 +181,20 @@ debug::debug(const char* filename)
 {
 	if ((wfile = fopen(filename, "w")) == NULL)
 		throw strerror(errno);
-	setlinebuf(wfile);
+	setvbuf(wfile, (char*)NULL, _IOLBF, 0);
 	set_cloexec(fileno(wfile), 1);
 
 	if ((rfile = fopen(filename, "r")) == NULL)
 		throw strerror(errno);
 	rfd = fileno(rfile);
 	set_cloexec(rfd, 1);
+#ifndef __MINGW32__
 	int f;
 	if ((f = fcntl(rfd, F_GETFL)) == -1)
 		throw strerror(errno);
 	if (fcntl(rfd, F_SETFL, f | O_NONBLOCK) == -1)
 		throw strerror(errno);
-
+#endif
 	tty = isatty(fileno(stderr));
 }
 

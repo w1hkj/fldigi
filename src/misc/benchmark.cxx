@@ -30,8 +30,13 @@
 
 #include <inttypes.h>
 #include <sys/time.h>
-#include <sys/resource.h>
 #include <time.h>
+
+#ifndef __MINGW32__
+#  include <sys/resource.h>
+#else
+#  include "compat.h"
+#endif
 
 #if USE_SNDFILE
 #  include <sndfile.h>
@@ -147,10 +152,10 @@ void do_benchmark(void)
 	}
 #endif
 
-	LOG_INFO("processed: %zu samples (decoded %zu) in %.3f seconds", nproc, nrx,
+	LOG_INFO("processed: %" PRIuSZ " samples (decoded %" PRIuSZ ") in %.3f seconds", nproc, nrx,
 		 wall_time[1].tv_sec + wall_time[1].tv_nsec / 1e9);
 	double speed = nproc / (ru[1].ru_utime.tv_sec + ru[1].ru_utime.tv_usec / 1e6);
-	LOG_INFO("cpu time : %jd.%03jd; speed=%.3f samples/s; factor=%.3f",
+	LOG_INFO("cpu time : %" PRIdMAX ".%03" PRIdMAX "; speed=%.3f samples/s; factor=%.3f",
 		 (intmax_t)ru[1].ru_utime.tv_sec, (intmax_t)ru[1].ru_utime.tv_usec / 1000,
 		 speed, speed / active_modem->get_samplerate());
 }

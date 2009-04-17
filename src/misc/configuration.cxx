@@ -679,16 +679,37 @@ int configuration::BaudRate(size_t n)
 	return (atoi(szBaudRates[n + 1]));
 }
 
+#ifdef __WOE32__
+static bool open_serial(const char* dev)
+{
+	bool ret = false;
+#ifdef __CYGWIN__
+	int fd = open(dev, O_RDWR | O_NOCTTY | O_NDELAY);
+	if (fd != -1) {
+		close(fd);
+		ret = true;
+	}
+#elif defined(__MINGW32__)
+	HANDLE fd = CreateFile(dev, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0);
+	if (fd != INVALID_HANDLE_VALUE) {
+		CloseHandle(fd);
+		ret = true;
+	}
+#endif
+	return ret;
+}
+#endif // __WOE32__
+
 void configuration::testCommPorts()
 {
 	inpTTYdev->clear();
 	inpRIGdev->clear();
 	inpXmlRigDevice->clear();
-	
+
 #ifndef PATH_MAX
 #  define PATH_MAX 1024
 #endif
-#ifndef __CYGWIN__
+#ifndef __WOE32__
 	struct stat st;
 #endif
 	char ttyname[PATH_MAX + 1];
@@ -733,6 +754,7 @@ out:
 		return;
 #endif // __linux__
 
+	// TODO: will the mingw probing work for cygwin too?
 
 	const char* tty_fmt[] = {
 #if defined(__linux__)
@@ -743,14 +765,15 @@ out:
 		"/dev/ttyd%u"
 #elif defined(__CYGWIN__)
 		"/dev/ttyS%u"
+#elif defined(__MINGW32__)
+		"//./COM%u"
 #elif defined(__APPLE__)
 		"/dev/cu.*",
 		"/dev/tty.*"
 #endif
 	};
 
-#if defined(__CYGWIN__)
-	int fd;
+#if defined(__WOE32__)
 #  define TTY_MAX 255
 #elif defined(__APPLE__)
 	glob_t gbuf;
@@ -762,15 +785,18 @@ out:
 #ifndef __APPLE__
 		for (unsigned j = 0; j < TTY_MAX; j++) {
 			snprintf(ttyname, sizeof(ttyname), tty_fmt[i], j);
-#  ifndef __CYGWIN__
+#  ifndef __WOE32__
 			if ( !(stat(ttyname, &st) == 0 && S_ISCHR(st.st_mode)) )
 				continue;
-#  else // __CYGWIN__
-			if ((fd = open(ttyname, O_RDWR | O_NOCTTY | O_NDELAY)) == -1)
+#  else // __WOE32__
+			if (!open_serial(ttyname))
 				continue;
+#    ifdef __CYGWIN__
 			snprintf(ttyname, sizeof(ttyname), "COM%u", j+1);
-			close(fd);
-#  endif // __CYGWIN__
+#    else
+			snprintf(ttyname, sizeof(ttyname), "COM%u", j);
+#    endif
+#  endif // __WOE32__
 
 			LOG_INFO("Found serial port %s", ttyname);
 			inpTTYdev->add(ttyname);

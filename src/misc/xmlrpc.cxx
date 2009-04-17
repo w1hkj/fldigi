@@ -117,7 +117,7 @@ void XML_RPC_Server::start(const char* node, const char* service)
 	try {
 		inst->server_socket->open(Address(node, service));
 		inst->server_socket->bind();
-#if defined(__CYGWIN__) || defined(__MINGW32__)
+#ifdef __WOE32__
 		inst->server_socket->listen();
 		inst->server_socket->set_timeout(0.1);
 #endif
@@ -165,7 +165,7 @@ void* XML_RPC_Server::thread_func(void*)
 	// On woe32 we block for a short time and test for cancellation.
 	while (inst->run) {
 		try {
-#if defined(__CYGWIN__) || defined(__MINGW32__)
+#ifdef __WOE32__
 			if (inst->server_socket->wait(0))
 #endif
 				server.runConn(inst->server_socket->accept().fd());

@@ -4,6 +4,9 @@
 #include <config.h>
 #include <time.h>
 #include <sys/time.h>
+#ifdef __MINGW32__
+#  include <pthread.h>
+#endif
 
 #if !HAVE_CLOCK_GETTIME
 enum clockid_t { CLOCK_REALTIME, CLOCK_MONOTONIC };

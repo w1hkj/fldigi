@@ -7,7 +7,9 @@
 
 #include <cstdlib>
 #include <cstring>
-#include <glob.h>
+#if USE_OSS
+#  include <glob.h>
+#endif
 
 #include "soundconf.h"
 #include "sound.h"
@@ -44,7 +46,7 @@ static void init_oss(void)
 	menuMix->value(progdefaults.MXdevice.c_str());
 #else
 	progdefaults.EnableMixer = false;
-        tabMixer->deactivate();
+	tabMixer->parent()->remove(*tabMixer);
 #endif // USE_OSS
 }
 
@@ -92,7 +94,7 @@ static void init_portaudio(void)
 #if defined(__APPLE__)
 	pa_api_prio[paASIO] = 0;
 	pa_api_prio[paCoreAudio] = 1;
-#elif defined(__CYGWIN__)
+#elif defined(__WOE32__)
 	pa_api_prio[paASIO] = 0;
 	pa_api_prio[paWASAPI] = 1;
 	pa_api_prio[paMME] = 2;

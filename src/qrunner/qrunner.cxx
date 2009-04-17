@@ -24,9 +24,11 @@
 
 #include <unistd.h>
 #include <errno.h>
-#ifdef __CYGWIN__
+#if defined(__CYGWIN__)
 #  include <sys/types.h>
 #  include <sys/socket.h>
+#elif defined(__MINGW32__)
+#  include "compat.h"
 #endif
 #include <fcntl.h>
 
@@ -37,23 +39,29 @@
 
 #define FIFO_SIZE 2048
 
+#ifndef __MINGW32__
+#  define QRUNNER_EAGAIN() (errno == EAGAIN)
+#else
+#  define QRUNNER_EAGAIN() ((errno = WSAGetLastError()) == WSAEWOULDBLOCK)
+#endif
+
 qrunner::qrunner()
         : attached(false), drop_flag(false)
 {
         fifo = new fqueue(FIFO_SIZE);
-#ifndef __CYGWIN__
+#ifndef __WOE32__
         if (pipe(pfd) == -1)
 #else
-	if (socketpair(PF_UNIX, SOCK_DGRAM, 0, pfd) == -1)
+	if (socketpair(PF_INET, SOCK_STREAM, 0, pfd) == -1)
 #endif
                 throw qexception(errno);
 	set_cloexec(pfd[0], 1);
 	set_cloexec(pfd[1], 1);
-	int f = fcntl(pfd[0], F_GETFL);
-	if (f == -1)
+	if (set_nonblock(pfd[0], 1) == -1)
 		throw qexception(errno);
-	if (fcntl(pfd[0], F_SETFL, f | O_NONBLOCK) == -1)
-		throw qexception(errno);
+#ifdef __WOE32__
+	set_nodelay(pfd[1], 1);
+#endif
 }
 
 qrunner::~qrunner()
@@ -81,9 +89,9 @@ void qrunner::execute(int fd, void *arg)
 {
         qrunner *qr = reinterpret_cast<qrunner *>(arg);
 
-	switch (read(fd, rbuf, FIFO_SIZE)) {
+	switch (QRUNNER_READ(fd, rbuf, FIFO_SIZE)) {
 	case -1:
-		if (errno != EAGAIN)
+		if (!QRUNNER_EAGAIN())
 			throw qexception(errno);
 		// else fall through
 	case 0:

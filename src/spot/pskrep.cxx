@@ -27,9 +27,18 @@
 
 #include <config.h>
 
-#include <sys/utsname.h>
+#ifdef __MINGW32__
+#  include "compat.h"
+#endif
+
+#if HAVE_SYS_UTSNAME_H
+#  include <sys/utsname.h>
+#endif
+
 #include <sys/time.h>
-#include <arpa/inet.h>
+#if HAVE_ARPA_INET_H
+#  include <arpa/inet.h>
+#endif
 
 #include <stdint.h>
 #include <cstring>
@@ -96,7 +105,7 @@ LOG_FILE_SOURCE(debug::LOG_SPOTTER);
 
 using namespace std;
 
-enum status_t { STATUS_NEW, STATUS_PENDING, STATUS_SENT };
+enum status_t { PSKR_STATUS_NEW, PSKR_STATUS_PENDING, PSKR_STATUS_SENT };
 enum rtype_t { PSKREP_AUTO = 1, PSKREP_LOG = 2, PSKREP_MANUAL = 3 };
 
 struct rcpt_report_t
@@ -104,7 +113,7 @@ struct rcpt_report_t
 	rcpt_report_t(trx_mode m = 0, long long f = 0, time_t t = 0,
 		      rtype_t p = PSKREP_AUTO, string loc = "")
 		: mode(m), freq(f), rtime(t), rtype(p),
-		  status(STATUS_NEW), locator(loc) { }
+		  status(PSKR_STATUS_NEW), locator(loc) { }
 
 	trx_mode mode;
 	long long freq;
@@ -196,7 +205,7 @@ private:
 
 	static bool not_sent(const band_map_t::value_type& r)
 	{
-		return r.status != STATUS_SENT;
+		return r.status != PSKR_STATUS_SENT;
 	}
 
 	queue_t queue;
@@ -264,9 +273,9 @@ static void pskrep_make_id(string& id, size_t len)
 		unsigned seed = time(NULL);
 		if (!progdefaults.myCall.empty())
 			seed ^= simple_hash_str((const unsigned char*)progdefaults.myCall.c_str());
-		srandom(seed);
+		srand(seed);
 		for (size_t i = 0; i < len; i++)
-			while (!isgraph(id[i] = random() % 0x7F));
+			while (!isgraph(id[i] = rand() % 0x7F));
 	}
 }
 
@@ -402,7 +411,7 @@ void pskrep::append(string call, const char* loc, long long freq, trx_mode mode,
 	}
 	else if (!bandq.empty()) {
 		band_map_t::value_type& r = bandq.back();
-		if (r.status != STATUS_SENT && *loc && r.locator != loc) { // update last
+		if (r.status != PSKR_STATUS_SENT && *loc && r.locator != loc) { // update last
 			r.locator = loc;
 			r.rtype = rtype;
 			LOG_INFO("Updated (call=\"%s\", loc=\"%s\", mode=\"%s\", freq=%lld, time=%jd, type=%u)",
@@ -424,14 +433,14 @@ bool pskrep::progress(void)
 		for (call_map_t::iterator j = i->second.begin(); j != i->second.end(); ++j) {
 			for (band_map_t::iterator k = j->second.begin(); k != j->second.end(); ++k) {
 				switch (k->status) {
-				case STATUS_NEW:
+				case PSKR_STATUS_NEW:
 					if ((sender_full = !sender.append(i->first, *k)))
 						goto send_reports;
-					k->status = STATUS_PENDING;
+					k->status = PSKR_STATUS_PENDING;
 					nrep++;
 					break;
-				case STATUS_PENDING: // sent in last cycle
-					k->status = STATUS_SENT;
+				case PSKR_STATUS_PENDING: // sent in last cycle
+					k->status = PSKR_STATUS_SENT;
 				default:
 					break;
 				}
@@ -469,7 +478,7 @@ void pskrep::gc(void)
 			rm += k - b.begin();
 			k = b.erase(b.begin(), k);
 
-			if (k != b.end() && k->status == STATUS_SENT && k->rtime <= threshold) {
+			if (k != b.end() && k->status == PSKR_STATUS_SENT && k->rtime <= threshold) {
 				b.erase(k);
 				rm++;
 			}
@@ -518,8 +527,8 @@ void pskrep::load_queue(void)
 	for (queue_t::iterator i = queue.begin(); i != queue.end(); ++i)
 		for (call_map_t::iterator j = i->second.begin(); j != i->second.end(); ++j)
 			for (band_map_t::iterator k = j->second.begin(); k != j->second.end(); ++k)
-				if (k->status == STATUS_PENDING)
-					k->status = STATUS_NEW;
+				if (k->status == PSKR_STATUS_PENDING)
+					k->status = PSKR_STATUS_NEW;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -774,7 +783,7 @@ bool pskrep_sender::send(void)
 
 	// empty dgram or no reports (shouldn't happen)
 	if (dgram_size == 0 || dgram_size == report_offset + 4) {
-		LOG_DEBUG("Not sending empty dgram: %zu %zu", dgram_size, report_offset);
+		LOG_DEBUG("Not sending empty dgram: %" PRIuSZ " %" PRIuSZ "", dgram_size, report_offset);
 		return false;
 	}
 
@@ -794,7 +803,7 @@ bool pskrep_sender::send(void)
 	*reinterpret_cast<uint32_t*>(dgram + 4) = htonl(time(NULL));
 
 	bool ret;
-	LOG_DEBUG("Sending datagram (%zu): \"%s\"", dgram_size, str2hex(dgram, dgram_size));
+	LOG_DEBUG("Sending datagram (%" PRIuSZ "): \"%s\"", dgram_size, str2hex(dgram, dgram_size));
 	try {
 		if ((size_t)send_socket->send(dgram, dgram_size) != dgram_size)
 			throw SocketException("short write");

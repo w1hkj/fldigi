@@ -23,13 +23,18 @@
 #include <config.h>
 
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <sys/time.h>
-#include <sys/select.h>
+
+#ifndef __MINGW32__
+#  include <sys/socket.h>
+#  include <netdb.h>
+#  include <arpa/inet.h>
+#  include <netinet/in.h>
+#  include <sys/time.h>
+#  include <sys/select.h>
+#else
+#  include "compat.h"
+#endif
+
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -431,10 +436,15 @@ Socket::Socket(int fd)
 	if (sockfd == -1)
 		return;
 
+#ifndef __MINGW32__
 	int r = fcntl(sockfd, F_GETFL);
 	if (r == -1)
 		throw SocketException(errno, "fcntl");
 	nonblocking = r & O_NONBLOCK;
+#else
+	// no way to retrieve nonblocking status on woe32(?!)
+	set_nonblocking(false);
+#endif
 	autoclose = true;
 }
 
@@ -522,7 +532,7 @@ bool Socket::wait(int dir)
 {
 	fd_set fdset;
 	FD_ZERO(&fdset);
-	FD_SET(sockfd, &fdset);
+	FD_SET((unsigned)sockfd, &fdset);
 	struct timeval t = { timeout.tv_sec, timeout.tv_usec };
 
 	int r;
@@ -545,7 +555,7 @@ bool Socket::wait(int dir)
 void Socket::bind(void)
 {
 	int r = 1;
-	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &r, sizeof(r)) == -1)
+	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (const char*)&r, sizeof(r)) == -1)
 #ifndef NDEBUG
 		perror("setsockopt SO_REUSEADDR");
 #else
@@ -651,7 +661,7 @@ size_t Socket::send(const void* buf, size_t len)
 		if (!wait(1))
 			return 0;
 
-	ssize_t r = ::send(sockfd, buf, len, 0);
+	ssize_t r = ::send(sockfd, (const char*)buf, len, 0);
 	if (r == 0)
 		shutdown(sockfd, SHUT_WR);
 	else if (r == -1) {
@@ -692,7 +702,7 @@ size_t Socket::recv(void* buf, size_t len)
 		if (!wait(0))
 			return 0;
 
-	ssize_t r = ::recv(sockfd, buf, len, 0);
+	ssize_t r = ::recv(sockfd, (char*)buf, len, 0);
 	if (r == 0)
 		shutdown(sockfd, SHUT_RD);
 	else if (r == -1) {
@@ -731,15 +741,8 @@ size_t Socket::recv(string& buf)
 ///
 void Socket::set_nonblocking(bool v)
 {
-	int r;
-	if ((r = fcntl(sockfd, F_GETFL)) == -1)
-		throw SocketException(errno, "fcntl");
-	if (v)
-		r |= O_NONBLOCK;
-	else
-		r &= ~O_NONBLOCK;
-	if (fcntl(sockfd, F_SETFL, r) == -1)
-		throw SocketException(errno, "fcntl");
+	if (set_nonblock(sockfd, v) == -1)
+		throw SocketException(errno, "set_nonblock");
 	nonblocking = v;
 }
 
@@ -750,9 +753,8 @@ void Socket::set_nonblocking(bool v)
 ///
 void Socket::set_nodelay(bool v)
 {
-	int val = v;
-	if (setsockopt(sockfd, IPPROTO_TCP, TCP_NODELAY, &val, sizeof(val)) == -1)
-		throw SocketException(errno, "setsockopt");
+	if (::set_nodelay(sockfd, v) == -1)
+		throw SocketException(errno, "set_nodelay");
 }
 
 ///

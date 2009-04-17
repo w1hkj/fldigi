@@ -1,7 +1,9 @@
 #include <config.h>
 
 #include <string>
-#include <glob.h>
+#ifndef __MINGW32__
+#  include <glob.h>
+#endif
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -104,6 +106,7 @@ void loadBrowser(Fl_Widget *widget) {
 		w->add(s);
 	}
 
+#ifndef __MINGW32__
 	glob_t gbuf;
 	glob(string(ScriptsDir).append("*").c_str(), 0, NULL, &gbuf);
 	if (gbuf.gl_pathc == 0) {
@@ -124,6 +127,7 @@ void loadBrowser(Fl_Widget *widget) {
 		}
 	}
 	globfree(&gbuf);
+#endif
 }
 
 void cbMacroEditOK(Fl_Widget *w, void *)

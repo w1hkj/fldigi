@@ -23,7 +23,11 @@
 #ifndef RE_H_
 #define RE_H_
 
-#include <regex.h>
+#ifdef HAVE_REGEX_H
+#  include <regex.h>
+#else
+#  include "compat/regex.h"
+#endif
 #include <string>
 #include <vector>
 
@@ -68,7 +72,7 @@ private:
 
 #include <sys/types.h>
 #if (defined(__GLIBC__) && __GLIBC__ >= 2 && __GLIBC_MINOR__ >= 3) || \
-	defined(__FreeBSD__) || defined(__APPLE__)
+     defined(__FreeBSD__) || defined(__APPLE__) || defined(__MINGW32__)
 #  define HAVE_REGEX_BACKREF 1
 #else
 #  define HAVE_REGEX_BACKREF 0

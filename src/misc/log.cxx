@@ -5,6 +5,10 @@
 
 #include <config.h>
 
+#ifdef __MINGW32__
+#  include "compat.h"
+#endif
+
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -23,7 +27,7 @@ cLogfile::cLogfile(const string& fname)
 	: retflag(true), logtype(LOG_RX)
 {
 	if ((logfile = fopen(fname.c_str(), "a"))) {
-		setlinebuf(logfile);
+		setvbuf(logfile, (char*)NULL, _IOLBF, 0);
 		set_cloexec(fileno(logfile), 1);
 	}
 }

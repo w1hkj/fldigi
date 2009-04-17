@@ -4,7 +4,9 @@ AC_DEFUN([AC_FLDIGI_XMLRPC_CONFIG], [
   if test "x$XMLRPC_CFLAGS" != "x" && test "x$XMLRPC_LIBS" != "x"; then
       ac_cv_xmlrpc=yes
   else
-      AC_PATH_PROG([XMLRPC_C_CONFIG], [xmlrpc-c-config], [no])
+      if test "x$XMLRPC_C_CONFIG" = "x"; then
+          AC_PATH_PROG([XMLRPC_C_CONFIG], [xmlrpc-c-config], [no])
+      fi
       if test "x$XMLRPC_C_CONFIG" != "xno" && $XMLRPC_C_CONFIG c++2 abyss-server; then
           ac_cv_xmlrpc=yes
 
@@ -18,6 +20,7 @@ AC_DEFUN([AC_FLDIGI_XMLRPC_CONFIG], [
 ])
 
 AC_DEFUN([AC_FLDIGI_XMLRPC], [
+  AC_ARG_VAR([XMLRPC_C_CONFIG], [Path to xmlrpc-c-config utility])
   AC_ARG_VAR([XMLRPC_CFLAGS], [C compiler flags for libxmlrpc-c, overrriding xmlrpc-c-config])
   AC_ARG_VAR([XMLRPC_LIBS], [linker flags for libxmlrpc-c, overrriding xmlrpc-c-config])
 

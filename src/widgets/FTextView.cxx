@@ -261,7 +261,7 @@ int FTextBase::readFile(const char* fn)
 
 	int ret = 0, pos = insert_position();
 
-#ifdef __CYGWIN__
+#ifdef __WOE32__
 	FILE* tfile = fopen(fn, "rt");
 	if (!tfile)
 		return -1;
@@ -311,7 +311,7 @@ void FTextBase::saveFile(void)
 {
  	const char *fn = FSEL::saveas(_("Save text as"), "Text\t*.txt");
 	if (fn) {
-#ifdef __CYGWIN__
+#ifdef __WOE32__
 		ofstream tfile(fn);
 		if (!tfile)
 			return;
@@ -1426,7 +1426,7 @@ int FTextEdit::handle_dnd_drag(void)
 int FTextEdit::handle_dnd_drop(void)
 {
 	string text = Fl::event_text();
-#ifndef __CYGWIN__
+#ifndef __WOE32__
 	string::size_type cr;
 	if (text.find("file://") != string::npos) {
 		text.erase(0, 7);

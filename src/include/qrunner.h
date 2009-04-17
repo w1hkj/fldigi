@@ -53,6 +53,14 @@ namespace qrbind {
 #include "threads.h"
 #include "qrunner/fqueue.h"
 
+#ifndef __MINGW32__
+#  define QRUNNER_READ(fd__, buf__, len__) read(fd__, buf__, len__)
+#  define QRUNNER_WRITE(fd__, buf__, len__) write(fd__, buf__, len__)
+#else
+#  define QRUNNER_READ(fd__, buf__, len__) recv(fd__, (char*)buf__, len__, 0)
+#  define QRUNNER_WRITE(fd__, buf__, len__) send(fd__, (const char*)buf__, len__, 0)
+#endif
+
 class qexception : public std::exception
 {
 public:
@@ -99,10 +107,10 @@ public:
         {
                 if (fifo->push(f)) {
 #ifdef NDEBUG
-                        if (unlikely(write(pfd[1], "", 1) != 1))
+                        if (unlikely(QRUNNER_WRITE(pfd[1], "", 1) != 1))
                                 throw qexception(errno);
 #else
-                        assert(write(pfd[1], "", 1) == 1);
+                        assert(QRUNNER_WRITE(pfd[1], "", 1) == 1);
 #endif
                         return true;
                 }

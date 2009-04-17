@@ -31,13 +31,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <sys/ioctl.h>
 #include <fcntl.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <errno.h>
 #if USE_OSS
+#    include <sys/ioctl.h>
 #    include <sys/soundcard.h>
 #endif
 #include <math.h>

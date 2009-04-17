@@ -16,7 +16,7 @@
 #  define DEFAULT_PTTDEV "/dev/ttyd0"
 #  define DEFAULT_CWFSKPORT "/dev/ttyd1"
 #  define DEFAULT_HAMRIGDEVICE "/dev/ttyd0"
-#elif defined(__CYGWIN__)
+#elif defined(__WOE32__)
 #  define DEFAULT_PTTDEV "COM1"
 #  define DEFAULT_CWFSKPORT "COM2"
 #  define DEFAULT_HAMRIGDEVICE "COM1"

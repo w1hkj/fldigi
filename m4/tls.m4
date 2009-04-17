@@ -62,9 +62,15 @@ AC_DEFUN([AC_FLDIGI_TLS], [
                  esac],
                  [ac_cv_want_tls=check])
 
+  if test "x$target_mingw32" = "xyes"; then
+      ac_cv_want_tls=no
+  fi
+
   if test "x$ac_cv_want_tls" = "xno"; then
       AC_DEFINE(USE_TLS, 0, [Defined if we are using TLS])
       ac_cv_tls=no
+      AC_MSG_CHECKING([for TLS support])
+      AC_MSG_RESULT([disabled])
   else
       CHECK_TLS()
       if test "x$ac_cv_want_tls" = "xcheck"; then

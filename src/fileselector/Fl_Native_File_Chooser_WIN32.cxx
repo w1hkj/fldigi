@@ -59,6 +59,7 @@
 #define RBRACKET_CHR	']'
 #define MAXFILTERS	80
 
+#if 0
 // STATIC: PRINT WINDOWS 'DOUBLE NULL' STRING (DEBUG)
 static void dnullprint(char *wp) {
     if ( ! wp ) return;
@@ -74,6 +75,7 @@ static void dnullprint(char *wp) {
 	}
     }
 }
+#endif
 
 // RETURN LENGTH OF DOUBLENULL STRING
 //    Includes single nulls in count, excludes trailing doublenull.

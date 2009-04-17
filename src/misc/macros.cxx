@@ -489,6 +489,7 @@ void pMODEM(string &s, size_t &i)
 	s.erase(i, k-i);
 }
 
+#ifndef __MINGW32__
 void set_env(void)
 {
 	enum { PATH, FLDIGI_RX_IPC_KEY, FLDIGI_TX_IPC_KEY, FLDIGI_VERSION,
@@ -646,6 +647,15 @@ void pEXEC(string &s, size_t &i)
 	// i = start;
 	// option 2: do nothing and allow it to be parsed for more macros
 }
+#else // !__MINGW32__
+void pEXEC(string& s, size_t& i)
+{
+	size_t end = s.find("</EXEC>", i);
+	if (end != string::npos)
+		s.erase(i, end + strlen("</EXEC>") - i);
+	LOG_WARN("Ignoring unimplemented EXEC macro");
+}
+#endif // !__MINGW32__
 
 void pSTOP(string &s, size_t &i)
 {
@@ -740,7 +750,7 @@ void MACROTEXT::loadDefault()
 		progStatus.LastMacroFile = "macros.mdf";
 	}
 	if ((erc = loadMacros(Filename)) != 0)
-#ifndef __CYGWIN__
+#ifndef __WOE32__
 		LOG_ERROR("Error #%d loading %s\n", erc, Filename.c_str());
 #else
 	;
