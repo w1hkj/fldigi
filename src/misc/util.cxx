@@ -125,6 +125,21 @@ int set_nodelay(int fd, unsigned char v)
 	return setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (const char*)&val, sizeof(val));
 }
 
+#ifdef __MINGW32__
+#  include <ws2tcpip.h>
+#endif
+int get_bufsize(int fd, int dir, int* len)
+{
+	socklen_t optlen = sizeof(*len);
+	return getsockopt(fd, SOL_SOCKET, (dir == 0 ? SO_RCVBUF : SO_SNDBUF),
+			  (char*)len, &optlen);
+}
+int set_bufsize(int fd, int dir, int len)
+{
+	return setsockopt(fd, SOL_SOCKET, (dir == 0 ? SO_RCVBUF : SO_SNDBUF),
+			  (const char*)&len, sizeof(len));
+}
+
 #ifndef __MINGW32__
 #include <pthread.h>
 #include <signal.h>

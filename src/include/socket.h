@@ -139,6 +139,8 @@ public:
 	size_t recv(std::string& buf);
 
 	// Options
+	int get_bufsize(int dir);
+	void set_bufsize(int dir, int len);
 	void set_nonblocking(bool v = true);
 	void set_nodelay(bool v = true);
 	void set_timeout(const struct timeval& t);

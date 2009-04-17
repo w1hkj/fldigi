@@ -117,6 +117,8 @@ size_t strlcpy(char* dest, const char* src, size_t size);
 int set_cloexec(int fd, unsigned char v);
 int set_nonblock(int fd, unsigned char v);
 int set_nodelay(int fd, unsigned char v);
+int get_bufsize(int fd, int dir, int* len);
+int set_bufsize(int fd, int dir, int len);
 
 unsigned long ver2int(const char* version);
 

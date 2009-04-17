@@ -735,6 +735,31 @@ size_t Socket::recv(string& buf)
 }
 
 ///
+/// Retrieves the socket's receive or send buffer size
+///
+/// @param dir Specifies the I/O direction. 0 is input, 1 is output.
+///
+int Socket::get_bufsize(int dir)
+{
+	int len;
+	if (::get_bufsize(sockfd, dir, &len) == -1)
+		throw SocketException(errno, "get_bufsize");
+	return len;
+}
+
+///
+/// Sets the socket's receive or send buffer size
+///
+/// @param dir Specifies the I/O direction. 0 is input, 1 is output.
+/// @param len Specifies the new buffer size
+///
+void Socket::set_bufsize(int dir, int len)
+{
+	if (::set_bufsize(sockfd, dir, len) == -1)
+		throw SocketException(errno, "set_bufsize");
+}
+
+///
 /// Sets the socket's blocking mode
 ///
 /// @param v If true, the socket is set to non-blocking
