@@ -1,7 +1,7 @@
 // ----------------------------------------------------------------------------
 //	stacktrace.cxx: portable stack trace and error handlers
 //
-// Copyright (C) 2007
+// Copyright (C) 2007-2009
 //		Stelios Bounanos, M0GLD
 //
 // This file is part of fldigi.
@@ -22,60 +22,129 @@
 
 #include <config.h>
 
+#ifdef __MINGW32__
+#  include "compat.h"
+#endif
+
 #include <unistd.h>
+#if HAVE_DBG_STACK
+#  include <fstream>
+#endif
 #include <iostream>
+#include <cstdio>
 #include <cstdlib>
 #include <csignal>
 
-#if HAVE_EXECINFO_H
-#  include <execinfo.h>
-#endif
+#include "main.h"
 
-#include "stacktrace.h"
+using namespace std;
 
-#define MAX_STACK_FRAMES 64
 
 static volatile sig_atomic_t signum = 0;
+#if !HAVE_DBG_STACK
+static void pstack(int fd, unsigned skip = 0);
+#else
+static void pstack(ostream& out, unsigned skip = 0);
+#endif
+
+
+void diediedie(void)
+{
+	static bool print_trace = true;
+
+	if (!print_trace)
+		return abort();
+
+#define CRASH_HEADER "\nAborting " PACKAGE_TARNAME		\
+	" due to a fatal error. Please report this to "		\
+	PACKAGE_BUGREPORT ".\n\n****** Stack trace:\n"
+
+#ifndef __MINGW32__
+	if (isatty(STDERR_FILENO))
+#endif
+	{
+		if (signum)
+			cerr << "\nCaught signal " << signum;
+		cerr << CRASH_HEADER;
+#if !HAVE_DBG_STACK
+		pstack(STDERR_FILENO);
+#else
+		pstack(cerr);
+#endif
+
+		extern string version_text;
+		cerr << "\n****** Version information:\n" << version_text;
+
+		string stfname;
+		stfname.assign(HomeDir).append("stacktrace.txt");
+
+#if !HAVE_DBG_STACK
+		FILE* stfile = fopen(stfname.c_str(), "w");
+		if (stfile) {
+			pstack(fileno(stfile), 1);
+			fprintf(stfile, "%s\n****** Version information:\n%s", CRASH_HEADER,
+				version_text.c_str());
+		}
+#else
+		ofstream stfile(stfname.c_str());
+		if (stfile) {
+			stfile << CRASH_HEADER;
+			pstack(stfile, 1);
+			stfile << "\n****** Version information:\n" << version_text;
+		}
+#endif
+	}
+
+	print_trace = false;
+	abort();
+}
+
+
+#if !HAVE_DBG_STACK
+#  if HAVE_EXECINFO_H
+#    include <execinfo.h>
+#    define MAX_STACK_FRAMES 64
 
 void pstack(int fd, unsigned skip)
 {
-#if HAVE_EXECINFO_H
         void* stack[MAX_STACK_FRAMES];
 
         ++skip;
         backtrace_symbols_fd(stack + skip, backtrace(stack, MAX_STACK_FRAMES) - skip, fd);
-#endif
 }
+#  else
+void pstack(int fd, unsigned skip) { }
+#  endif
+#else
+#  include <algorithm>
+#  include <iterator>
+#  include "stack.h"
+
+static void pstack(ostream& out, unsigned skip)
+{
+	dbg::stack s;
+	dbg::stack::const_iterator start = s.begin(), end = s.end();
+
+	while (skip-- && ++start != end);
+	copy(start, end, ostream_iterator<dbg::stack_frame>(out, "\n"));
+}
+#endif
 
 void pstack_maybe(void)
 {
         static bool trace = getenv("FLDIGI_TRACE_LOCKS");
 
         if (trace)
+#if !HAVE_DBG_STACK
                 pstack(STDERR_FILENO, 1);
-}
-
-void diediedie(void)
-{
-	static bool print_trace = true;
-
-	if (print_trace) {
-		if (signum)
-			std::cerr << "\nCaught signal " << signum;
-		std::cerr << "\nAborting " PACKAGE_TARNAME
-			" due to a fatal error.\nPlease report this to "
-			PACKAGE_BUGREPORT << "\n\n*** Stack trace:\n";
-		pstack(STDERR_FILENO);
-		extern std::string version_text;
-		std::cerr << "\n*** Version information:\n" << version_text;
-		print_trace = false;
-	}
-	abort();
+#else
+		pstack(cerr, 1);
+#endif
 }
 
 void handle_unexpected(void)
 {
-        std::cerr << "Uncaught exception. Not again!\n";
+        cerr << "Uncaught exception. Not again!\n";
         abort();
 }
 
