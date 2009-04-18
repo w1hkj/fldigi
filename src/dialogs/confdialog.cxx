@@ -16,7 +16,9 @@
 #include "Viewer.h"
 #include "pskrep.h"
 #include "logsupport.h"
-#include "hamlib.h"
+#if USE_HAMLIB
+  #include "hamlib.h"
+#endif
 Fl_Double_Window *dlgConfig; 
 
 void set_qrz_buttons(Fl_Button* b) {

@@ -49,7 +49,9 @@ decl {\#include "flinput2.h"} {public
 
 decl {\#include "logsupport.h"} {} 
 
-decl {\#include "hamlib.h"} {} 
+decl {\#if USE_HAMLIB
+  \#include "hamlib.h"
+\#endif} {} 
 
 decl {Fl_Double_Window *dlgConfig;} {public
 } 
