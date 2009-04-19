@@ -1562,11 +1562,12 @@ int default_handler(int event)
 	if (event != FL_SHORTCUT)
 		return 0;
 
-	if (Fl::event_key() == FL_Escape &&
-	    Fl::event_inside(RigViewerFrame) && RigViewerFrame->visible()) {
-		CloseQsoView();
-		return 1;
-	}
+    if (RigViewerFrame)
+    	if (Fl::event_key() == FL_Escape &&
+	        Fl::event_inside(RigViewerFrame) && RigViewerFrame->visible()) {
+		    CloseQsoView();
+		    return 1;
+	    }
 
 	Fl_Widget* w = Fl::focus();
 
