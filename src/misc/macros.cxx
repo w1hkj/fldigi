@@ -450,7 +450,7 @@ void pINCR(string &s, size_t &i)
 
 void pXOUT(string &s, size_t &i)
 {
-	s.replace (i, 4, progdefaults.myXchg);
+	s.replace (i, 6, progdefaults.myXchg);
 }
 
 void pLOG(string &s, size_t &i)
