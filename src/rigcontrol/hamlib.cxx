@@ -209,7 +209,7 @@ bool hamlib_init(bool bPtt)
 		return false;
 	}
 
-	MilliSleep(200);
+	MilliSleep(500);
 
 	try {
 		need_freq = true;

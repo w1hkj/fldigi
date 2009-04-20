@@ -63,7 +63,7 @@ int  readtimeout, readwait;
 
 bool hexout(const string& s, int retnbr)
 {
-	LOG_DEBUG("cmd = %s", str2hex(s.data(), s.length()));
+	LOG_DEBUG("cmd %d bytes = %s", s.length(), str2hex(s.data(), s.length()));
 	
 	for (int n = 0; n < progdefaults.RigCatRetries; n++) {	
 		int num = 0;
@@ -74,9 +74,9 @@ bool hexout(const string& s, int retnbr)
 		rigio.FlushBuffer();
 		rigio.WriteBuffer(sendbuff, s.size());
 		if (progdefaults.RigCatECHO == true) {
-			MilliSleep(10);
+//			MilliSleep(50);
 			num = rigio.ReadBuffer (replybuff, s.size());
-			LOG_DEBUG("echoed = %s", str2hex(replybuff, num));
+			LOG_DEBUG("echoed %d bytes = %s", num, str2hex(replybuff, num));
 		}
 // wait before trying to read response
 		if ((readwait = progdefaults.RigCatWait) > 0)
@@ -275,10 +275,13 @@ long long fm_freqdata(DATA d, size_t p)
 	num = (int)(d.resolution * 100);
 	den = 100;
 	if (d.dtype == "BCD") {
-		if (d.reverse == true)
+		if (d.reverse == true) {
+			// LOG_INFO("BCD reverse");
 			return (long long int)(fm_bcd_be(p, d.size) * num / den);
-		else
+		} else {
+			// LOG_INFO("BCD normal");
 			return (long long int)(fm_bcd(p, d.size)  * num / den);
+		}
 	} else if (d.dtype == "BINARY") {
 		if (d.reverse == true)
 			return (long long int)(fm_binary_be(p, d.size)  * num / den);
@@ -318,62 +321,69 @@ long long rigCAT_getfreq()
 	}
 
 	modeCmd = *itrCmd;
-	
+
 	if ( modeCmd.str1.empty() == false)
 		strCmd.append(modeCmd.str1);
 
 	if (modeCmd.str2.empty() == false)
 		strCmd.append(modeCmd.str2);
 
-	if (modeCmd.info.size()) {
-		list<XMLIOS>::iterator preply = reply.begin();
-		while (preply != reply.end()) {
-			if (preply->SYMBOL == modeCmd.info) {
-				XMLIOS  rTemp = *preply;
-				size_t p = 0, pData = 0;
-				size_t len = rTemp.str1.size();
-				
-// send the command
-				if (hexout(strCmd, rTemp.size ) == false) {
-					return -1;
-				}
-				
-// check the pre data string				
-				if (len) {
-					for (size_t i = 0; i < len; i++)
-						if ((char)rTemp.str1[i] != (char)replybuff[i]) {
-							return 0;
-						}
-					p = len;
-				}
-				if (rTemp.fill1) p += rTemp.fill1;
-				pData = p;
-				if (rTemp.data.dtype == "BCD") {
-					p += rTemp.data.size / 2;
-					if (rTemp.data.size & 1) p++;
-				} else
-					p += rTemp.data.size;
-// check the post data string
-				len = rTemp.str2.size();
-				if (rTemp.fill2) p += rTemp.fill2;
-				if (len) {
-					for (size_t i = 0; i < len; i++)
-						if ((char)rTemp.str2[i] != (char)replybuff[p + i]) {
-							return 0;
-						}
-				}
-// convert the data field
-				long long f = fm_freqdata(rTemp.data, pData);
-				if ( f >= rTemp.data.min && f <= rTemp.data.max) {
-					return f;
-				}
-				else {
+	if (modeCmd.info.size() == 0)
+		return 0;
+
+	for (list<XMLIOS>::iterator preply = reply.begin(); preply != reply.end(); ++preply) {
+		if (preply->SYMBOL != modeCmd.info)
+			continue;
+
+		XMLIOS  rTemp = *preply;
+		size_t p = 0, pData = 0;
+		size_t len = rTemp.str1.size();
+
+		// send the command
+		if (hexout(strCmd, rTemp.size ) == false) {
+			LOG_ERROR("Hexout failed");
+			return -1;
+		}
+
+		// check the pre data string
+		if (len) {
+			for (size_t i = 0; i < len; i++) {
+				if ((char)rTemp.str1[i] != (char)replybuff[i]) {
+					LOG_WARN("failed pre data string test @ %d", i);
 					return 0;
 				}
 			}
-			preply++;
+			p = len;
+		}
+		if (rTemp.fill1) p += rTemp.fill1;
+		pData = p;
+		if (rTemp.data.dtype == "BCD") {
+			p += rTemp.data.size / 2;
+			if (rTemp.data.size & 1) p++;
+		} else
+			p += rTemp.data.size;
+		// check the post data string
+		len = rTemp.str2.size();
+		if (rTemp.fill2) p += rTemp.fill2;
+		if (len) {
+			for (size_t i = 0; i < len; i++)
+				if ((char)rTemp.str2[i] != (char)replybuff[p + i]) {
+					LOG_WARN("failed post data string test @ %d", i);
+					return 0;
+				}
+		}
+		// convert the data field
+		long long f = fm_freqdata(rTemp.data, pData);
+		if ( f >= rTemp.data.min && f <= rTemp.data.max) {
+			LOG_INFO("freq value returned %ld", (long)f);
+			return f;
+		}
+		else {
+			LOG_WARN("freq value failed %ld", f);
+			return 0;
 		}
 	}
+
 	return 0;
 }
 

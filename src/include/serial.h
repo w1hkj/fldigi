@@ -121,7 +121,7 @@ public:
 
 	void Timeout(int tm) { timeout = tm; return; };
 	int  Timeout() { return timeout; };
-	void FlushBuffer() {};
+	void FlushBuffer();
 
 	void Device (std::string dev) { device = dev;};
 	std::string Device() { return device;};

@@ -283,7 +283,9 @@ BOOL Cserial::OpenPort()
 
 	if(hComm == INVALID_HANDLE_VALUE)
 		return FALSE;
+
 	ConfigurePort( baud, 8, FALSE, NOPARITY, ONESTOPBIT);
+
 	return TRUE;
 }
 
@@ -360,6 +362,12 @@ int Cserial::ReadChars (unsigned char *buf, int nchars, int msec)
 	return ReadData (buf, nchars);
 }
 	
+void Cserial::FlushBuffer()
+{
+	unsigned char c;
+	while (ReadByte(c) == true);
+}
+
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::WriteByte
 // Description	    : Writes a Byte to teh selected port
@@ -413,26 +421,108 @@ BOOL Cserial::SetCommunicationTimeouts(
 	if((bPortReady = GetCommTimeouts (hComm, &CommTimeoutsSaved))==0)	{
 		return FALSE;
 	}
+    LOG_INFO("\n\
+COMMTIMOUT Original values:\n\
+    Read Interval Timeout............... %ld\n\
+    Read Total Timeout Multiplier....... %ld\n\
+    Read Total Timeout Constant Timeout. %ld\n\
+    Write Total Timeout Constant........ %ld\n\
+    Write Total Timeout Multiplier...... %ld",
+	     CommTimeoutsSaved.ReadIntervalTimeout,
+	     CommTimeoutsSaved.ReadTotalTimeoutMultiplier,
+	     CommTimeoutsSaved.ReadTotalTimeoutConstant,
+	     CommTimeoutsSaved.WriteTotalTimeoutConstant,
+	     CommTimeoutsSaved.WriteTotalTimeoutMultiplier);
 
-	CommTimeouts.ReadIntervalTimeout = ReadIntervalTimeout;
-	CommTimeouts.ReadTotalTimeoutMultiplier = ReadTotalTimeoutMultiplier;
-	CommTimeouts.ReadTotalTimeoutConstant = ReadTotalTimeoutConstant;
-	CommTimeouts.WriteTotalTimeoutConstant = WriteTotalTimeoutConstant;
-	CommTimeouts.WriteTotalTimeoutMultiplier = WriteTotalTimeoutMultiplier;
-	
-	bPortReady = SetCommTimeouts (hComm, &CommTimeouts);
-	
-	if(bPortReady ==0) { 
-		CloseHandle(hComm);
-		return FALSE;
-	}
-		
-	return TRUE;
+    CommTimeouts.ReadIntervalTimeout = ReadIntervalTimeout;
+    CommTimeouts.ReadTotalTimeoutMultiplier = ReadTotalTimeoutMultiplier;
+    CommTimeouts.ReadTotalTimeoutConstant = ReadTotalTimeoutConstant;
+    CommTimeouts.WriteTotalTimeoutConstant = WriteTotalTimeoutConstant;
+    CommTimeouts.WriteTotalTimeoutMultiplier = WriteTotalTimeoutMultiplier;
+
+    bPortReady = SetCommTimeouts (hComm, &CommTimeouts);
+
+    if(bPortReady ==0) {
+	    CloseHandle(hComm);
+	    return FALSE;
+    }
+
+    return TRUE;
 }
 
 BOOL Cserial::SetCommTimeout() {
-//	return SetCommunicationTimeouts (500L, 0L, 0L, 0L, 0L);
-  return SetCommunicationTimeouts ( MAXDWORD, 0L, 0L, 100L, 0L);
+/*
+ * ReadIntervalTimeout
+ * 
+ * The maximum time allowed to elapse between the arrival of two bytes on the 
+ * communications line, in milliseconds. During a ReadFile operation, the time 
+ * period begins when the first byte is received. If the interval between the 
+ * arrival of any two bytes exceeds this amount, the ReadFile operation is 
+ * completed and any buffered data is returned. A value of zero indicates that 
+ * interval time-outs are not used.
+ * 
+ * A value of MAXDWORD, combined with zero values for both the 
+ * ReadTotalTimeoutConstant and ReadTotalTimeoutMultiplier members, specifies 
+ * that the read operation is to return immediately with the bytes that have 
+ * already been received, even if no bytes have been received.
+ * 
+ * ReadTotalTimeoutMultiplier
+ * 
+ * The multiplier used to calculate the total time-out period for read 
+ * operations, in milliseconds. For each read operation, this value is 
+ * multiplied by the requested number of bytes to be read.
+ * 
+ * ReadTotalTimeoutConstant
+ * 
+ * A constant used to calculate the total time-out period for read operations,
+ * in milliseconds. For each read operation, this value is added to the product 
+ * of the ReadTotalTimeoutMultiplier member and the requested number of bytes.
+ * 
+ * A value of zero for both the ReadTotalTimeoutMultiplier and 
+ * ReadTotalTimeoutConstant members indicates that total time-outs are not 
+ * used for read operations.
+ * 
+ * WriteTotalTimeoutMultiplier
+ * 
+ * The multiplier used to calculate the total time-out period for write 
+ * operations, in milliseconds. For each write operation, this value is 
+ * multiplied by the number of bytes to be written.
+ * 
+ * WriteTotalTimeoutConstant
+ * 
+ * A constant used to calculate the total time-out period for write operations, 
+ * in milliseconds. For each write operation, this value is added to the product 
+ * of the WriteTotalTimeoutMultiplier member and the number of bytes to be 
+ * written.
+ * 
+ * A value of zero for both the WriteTotalTimeoutMultiplier and 
+ * WriteTotalTimeoutConstant members indicates that total time-outs are not 
+ * used for write operations.
+ * 
+ * Remarks
+ * 
+ * If an application sets ReadIntervalTimeout and ReadTotalTimeoutMultiplier to 
+ * MAXDWORD and sets ReadTotalTimeoutConstant to a value greater than zero and 
+ * less than MAXDWORD, one of the following occurs when the ReadFile function 
+ * is called:
+ * 
+ * If there are any bytes in the input buffer, ReadFile returns immediately 
+ * with the bytes in the buffer.
+ * 
+ * If there are no bytes in the input buffer, ReadFile waits until a byte 
+ * arrives and then returns immediately.
+ * 
+ * If no bytes arrive within the time specified by ReadTotalTimeoutConstant, 
+ * ReadFile times out.
+*/
+//  return SetCommunicationTimeouts (0, 500L, 0L, 100L, 0L );
+  return SetCommunicationTimeouts (
+    0L,    // Read Interval Timeout
+    50l,   // Read Total Timeout Multiplier
+    0l,    // Read Total Timeout Constant
+    50L,   // Write Total Timeout Constant
+    0L     // Write Total Timeout Multiplier
+    );
   }
 
 ///////////////////////////////////////////////////////
@@ -445,11 +535,11 @@ BOOL Cserial::SetCommTimeout() {
 // Argument         : BYTE  Parity
 // Argument         : BYTE StopBits
 ///////////////////////////////////////////////////////
-BOOL Cserial::ConfigurePort(DWORD	BaudRate, 
-								BYTE	ByteSize, 
-								DWORD	dwParity, 
-								BYTE	Parity, 
-								BYTE	StopBits)
+BOOL Cserial::ConfigurePort(DWORD	BaudRate,
+			    BYTE	ByteSize,
+			    DWORD	dwParity,
+			    BYTE	Parity,
+			    BYTE	StopBits)
 {
 	if((bPortReady = GetCommState(hComm, &dcb))==0) {
 		LOG_ERROR("GetCommState Error on %s", device.c_str());
@@ -457,36 +547,42 @@ BOOL Cserial::ConfigurePort(DWORD	BaudRate,
 		return FALSE;
 	}
 
-	dcb.BaudRate		    =	BaudRate;
-	dcb.ByteSize		    =	ByteSize;
-	dcb.Parity		      =	Parity ;
-	dcb.StopBits		    =	StopBits;
-	dcb.fBinary		      =	TRUE;
-	dcb.fDsrSensitivity =	FALSE;
-	dcb.fParity		      =	dwParity;
-	dcb.fOutX			      =	FALSE;
-	dcb.fInX			      =	FALSE;
-	dcb.fNull			      =	FALSE;
-	dcb.fAbortOnError	  =	TRUE;
-	dcb.fOutxCtsFlow	  =	FALSE;
-	dcb.fOutxDsrFlow	  =	FALSE;
-	
+	dcb.BaudRate            = BaudRate;
+	dcb.ByteSize            = ByteSize;
+	dcb.Parity              = Parity ;
+	dcb.StopBits            = StopBits;
+	dcb.fBinary             = TRUE;
+	dcb.fDsrSensitivity     = FALSE;
+	dcb.fParity             = dwParity;
+	dcb.fOutX               = FALSE;
+	dcb.fInX                = FALSE;
+	dcb.fNull               = FALSE;
+	dcb.fAbortOnError       = TRUE;
+	dcb.fOutxCtsFlow        = FALSE;
+	dcb.fOutxDsrFlow        = FALSE;
+
 	if (dtr)
 		dcb.fDtrControl = DTR_CONTROL_ENABLE;
 	else
-		dcb.fDtrControl	    =	DTR_CONTROL_DISABLE;
-	dcb.fDsrSensitivity =	FALSE;
-	if (rts)
+		dcb.fDtrControl = DTR_CONTROL_DISABLE;
+
+	dcb.fDsrSensitivity = FALSE;
+
+	if (rtscts)
 		dcb.fRtsControl = RTS_CONTROL_ENABLE;
-	else
-		dcb.fRtsControl	    =	RTS_CONTROL_DISABLE;
-	
+	else {
+		if (rts)
+			dcb.fRtsControl = RTS_CONTROL_ENABLE;
+		else
+			dcb.fRtsControl = RTS_CONTROL_DISABLE;
+	}
+
 	bPortReady = SetCommState(hComm, &dcb);
 	if(bPortReady == 0) {
 		CloseHandle(hComm);
 		return FALSE;
 	}
-  return SetCommTimeout();
+	return SetCommTimeout();
 }
 
 ///////////////////////////////////////////////////////
@@ -495,10 +591,15 @@ BOOL Cserial::ConfigurePort(DWORD	BaudRate,
 ///////////////////////////////////////////////////////
 void Cserial::SetPTT(bool b)
 {
-	if(hComm == INVALID_HANDLE_VALUE)
+	if(hComm == INVALID_HANDLE_VALUE) {
+		LOG_ERROR("Invalid handle");
 		return;
+	}
 	if ( !(dtrptt || rtsptt) )
 		return;
+	LOG_INFO("PTT = %d, DTRptt = %d, DTR = %d, RTSptt = %d, RTS = %d", 
+		 b, dtrptt, dtr, rtsptt, rts);
+
 	if (b == true) {				// ptt enabled
 		if (dtrptt && dtr)
 			dcb.fDtrControl = DTR_CONTROL_DISABLE;

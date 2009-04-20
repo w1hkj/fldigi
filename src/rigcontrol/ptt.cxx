@@ -171,12 +171,28 @@ void PTT::close_all(void)
 
 void PTT::open_tty(void)
 {
-#if HAVE_TTYPORT
+#ifdef __MINGW32__
+	serPort.Device(progdefaults.PTTdev);
+	serPort.RTS(progdefaults.RTSplus);
+	serPort.DTR(progdefaults.DTRplus);
+	serPort.RTSptt(progdefaults.RTSptt);
+	serPort.DTRptt(progdefaults.DTRptt);
+	if (serPort.OpenPort() == false) {
+		LOG_ERROR("Cannot open serial port %s", rigio.Device().c_str());
+		pttfd = -1;
+		return;
+	}
+	LOG_DEBUG("Serial port %s open", progdefaults.PTTdev.c_str());
+	pttfd = -1; // just a dummy return for this implementation
+
+#else
+
+#  if HAVE_TTYPORT
 	string pttdevName = progdefaults.PTTdev;
-#ifdef __CYGWIN__
+#    ifdef __CYGWIN__
 	// convert to Linux serial port naming
 	com_to_tty(pttdevName);
-#endif
+#    endif
 
 	if ((pttfd = open(pttdevName.c_str(), O_RDWR | O_NOCTTY | O_NDELAY)) < 0) {
 		LOG_ERROR("Could not open \"%s\": %s", pttdevName.c_str(), strerror(errno));
@@ -201,23 +217,32 @@ void PTT::open_tty(void)
 	ioctl(pttfd, TIOCMSET, &status);
 	LOG_DEBUG("Serial port %s open; status = %02X, %s",
 		  progdefaults.PTTdev.c_str(), status, uint2bin(status, 8));
-#endif // HAVE_TTYPORT
+#  endif // HAVE_TTYPORT
+#endif // __MINGW32__
 }
 
 void PTT::close_tty(void)
 {
-#if HAVE_TTYPORT
+#ifdef __MINGW32__
+	serPort.ClosePort();
+	LOG_DEBUG("Serial port %s closed", progdefaults.PTTdev.c_str());
+#else
+#  if HAVE_TTYPORT
 	if (pttfd >= 0) {
 		tcsetattr(pttfd, TCSANOW, oldtio);
 		close(pttfd);
 	}
 	delete oldtio;
-#endif
+#  endif // HAVE_TTYPORT
+#endif // __MINGW32__
 }
 
 void PTT::set_tty(bool ptt)
 {
-#if HAVE_TTYPORT
+#ifdef __MINGW32__
+	serPort.SetPTT(ptt);
+#else
+#  if HAVE_TTYPORT
 	int status;
 	ioctl(pttfd, TIOCMGET, &status);
 
@@ -242,7 +267,8 @@ void PTT::set_tty(bool ptt)
 	}
 	LOG_DEBUG("Status %02X, %s", status & 0xFF, uint2bin(status, 8));
 	ioctl(pttfd, TIOCMSET, &status);
-#endif
+#  endif // HAVE_TTYPORT
+#endif // __MINGW32__
 }
 
 #if HAVE_PARPORT

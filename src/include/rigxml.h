@@ -29,7 +29,7 @@ struct DATA {
 	int shiftbits;
 	void clear() {
 		size = 0;
-		dtype = "";
+		dtype.clear();
 		max = 199999999;
 		min = 0;
 		resolution = 1.0;
@@ -51,7 +51,12 @@ struct XMLIOS {
 	std::string	ok;
 	std::string	bad;
 	void clear() { 
-		SYMBOL = str1 = str2 = info = ok = bad = ""; 
+		SYMBOL.clear();
+		str1.clear();
+		str2.clear();
+		info.clear();
+		ok.clear();
+		bad.clear(); 
 		size = fill1 = fill2 = 0;
 		data.clear();
 	};
@@ -74,7 +79,7 @@ struct XMLRIG {
 	bool    echo;
 	bool    cmdptt;
 	void clear() {
-		port = "";
+		port.clear();
 		baud = 1200;
 		dtr = false;
 		dtrptt = false;
