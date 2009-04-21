@@ -105,6 +105,8 @@ extern Fl_Value_Slider *sldrCWxmtWPM;
 extern Fl_Counter *cntCWdefWPM;
 extern Fl_Counter *cntCWlowerlimit;
 extern Fl_Counter *cntCWupperlimit;
+extern Fl_Value_Slider *sldrCWfarnsworth;
+extern Fl_Check_Button *btnCWusefarnsworth;
 extern Fl_Counter *cntCWweight;
 extern Fl_Counter *cntCWdash2dot;
 extern Fl_Counter *cntCWrisetime;

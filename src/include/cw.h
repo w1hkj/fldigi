@@ -88,6 +88,7 @@ enum CW_EVENT {
 class cw : public modem {
 protected:
 	int				symbollen;		// length of a dot in sound samples (tx)
+	int             fsymlen;        // length of extra interelement space (farnsworth)
 	double			phaseacc;		// used by NCO for rx/tx tones
 	unsigned int	smpl_ctr;		// sample counter for timing cw rx 
 	double			agc_peak;		// threshold for tone detection 
@@ -159,7 +160,7 @@ protected:
 	void	sync_parameters();
 	int		handle_event(int cw_event, const char **c);
 	int		usec_diff(unsigned int earlier, unsigned int later);
-	void	send_symbol(int symbol);
+	void	send_symbol(int symbol, int len);
 	void	send_ch(int c);
 	bool 	tables_init();
 	unsigned int tokenize_representation(char *representation);

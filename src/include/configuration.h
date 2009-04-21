@@ -92,6 +92,8 @@
         ELEM_(bool, useCWkeylineDTR, "", false)                                         \
         ELEM_(int, CWweight, "CWWEIGHT", 50)                                            \
         ELEM_(int, CWspeed, "CWSPEED", 18)                                              \
+        ELEM_(int, CWfarnsworth, "CWFARNSWORTH", 18)                                    \
+        ELEM_(bool, CWusefarnsworth, "CWUSEFARNSWORTH", false)                          \
         ELEM_(int, defCWspeed, "CWDEFSPEED", 24)                                        \
         ELEM_(int, CWbandwidth, "CWBANDWIDTH", 150)                                     \
         ELEM_(bool, CWtrack, "CWTRACK", true)                                           \

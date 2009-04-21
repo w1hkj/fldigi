@@ -689,21 +689,21 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 500 345} hide
+        xywh {0 25 500 345}
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 500 345} selection_color 50 align 9
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 500 320} selection_color 50
             } {
               Fl_Group {} {
                 label General open
-                xywh {0 75 500 295} align 5 hide
+                xywh {0 75 500 295} align 5
               } {
                 Fl_Group {} {
                   label Receive open
@@ -744,20 +744,23 @@ progdefaults.changed = true;}
                 }
                 Fl_Group {} {
                   label Transmit open
-                  xywh {5 215 490 110} box ENGRAVED_FRAME align 21
+                  xywh {5 215 490 150} box ENGRAVED_FRAME align 21
                 } {
                   Fl_Value_Slider sldrCWxmtWPM {
                     label {TX WPM}
                     callback {progdefaults.CWspeed = (int)o->value();
+sldrCWfarnsworth->maximum(o->value());
+if (sldrCWfarnsworth->value() > o->value())
+sldrCWfarnsworth->value(o->value());
 progdefaults.changed = true;}
-                    tooltip {My transmit CW WPM} xywh {20 248 400 20} type Horizontal align 8 minimum 5 maximum 100 step 1 value 20 textsize 14
+                    tooltip {My transmit CW WPM} xywh {20 240 400 20} type Horizontal align 8 minimum 5 maximum 100 step 1 value 20 textsize 14
                     code0 {o->value(progdefaults.CWspeed);}
                   }
                   Fl_Counter cntCWdefWPM {
                     label Default
                     callback {progdefaults.defCWspeed = (int)o->value();
 progdefaults.changed = true;}
-                    tooltip {The default CW speed} xywh {40 294 64 20} type Simple align 1 minimum 5 maximum 200 step 1 value 18
+                    tooltip {The default CW speed} xywh {40 281 64 20} type Simple align 1 minimum 5 maximum 200 step 1 value 18
                     code0 {o->value(progdefaults.defCWspeed);}
                   }
                   Fl_Counter cntCWlowerlimit {
@@ -768,7 +771,7 @@ sldrCWxmtWPM->minimum(o->value());
 sldrCWxmtWPM->value(progdefaults.CWspeed);
 sldrCWxmtWPM->redraw();
 cntCWupperlimit->minimum(o->value()+20);}
-                    tooltip {No slower than this} xywh {197 294 65 20} type Simple align 1 minimum 5 maximum 20 step 5 value 10
+                    tooltip {No slower than this} xywh {197 281 65 20} type Simple align 1 minimum 5 maximum 20 step 5 value 10
                     code0 {o->value(progdefaults.CWlowerlimit);}
                   }
                   Fl_Counter cntCWupperlimit {
@@ -779,14 +782,28 @@ sldrCWxmtWPM->maximum(o->value());
 sldrCWxmtWPM->value(progdefaults.CWspeed);
 sldrCWxmtWPM->redraw();
 cntCWlowerlimit->maximum(o->value()-20);}
-                    tooltip {No faster than this} xywh {355 294 65 20} type Simple align 1 minimum 25 maximum 200 step 5 value 100
+                    tooltip {No faster than this} xywh {355 281 65 20} type Simple align 1 minimum 25 maximum 200 step 5 value 100
                     code0 {o->value(progdefaults.CWupperlimit);}
+                  }
+                  Fl_Value_Slider sldrCWfarnsworth {
+                    label {F-WPM}
+                    callback {progdefaults.CWfarnsworth = (int)o->value();
+progdefaults.changed = true;}
+                    tooltip {My transmit CW WPM} xywh {20 335 400 20} type Horizontal align 8 minimum 5 maximum 100 step 1 value 20 textsize 14
+                    code0 {o->value(progdefaults.CWfarnsworth);}
+                  }
+                  Fl_Check_Button btnCWusefarnsworth {
+                    label {Use Farnsworth timing}
+                    callback {progdefaults.CWusefarnsworth=o->value();
+progdefaults.changed = true;}
+                    xywh {40 312 180 15} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.CWusefarnsworth);}
                   }
                 }
               }
               Fl_Group {} {
                 label {Timing and QSK} open
-                xywh {0 75 500 295} align 5
+                xywh {0 75 500 295} align 5 hide
               } {
                 Fl_Group {} {
                   label Timing open
@@ -1214,7 +1231,7 @@ progdefaults.changed = true;} open
           }
           Fl_Group tabRTTY {
             label RTTY open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {5 60 490 270} box ENGRAVED_FRAME
@@ -1404,7 +1421,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabRig {
         label Rig open
-        xywh {0 25 500 345}
+        xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsRig {open
           xywh {0 25 500 345} selection_color 50
@@ -1705,7 +1722,7 @@ progdefaults.changed = true;}
 btnInitHAMLIB->redraw_label();
 \#if USE_HAMLIB
 hamlib_get_defaults();
-\#endif} selected
+\#endif}
                 tooltip {Select the rig by name} xywh {65 93 160 22} box DOWN_BOX color 7 align 4
                 code0 {o->readonly();}
                 class Fl_ComboBox
@@ -2566,7 +2583,7 @@ progdefaults.changed = true;}
     }
     Fl_Return_Button btnCloseConfig {
       label Close
-      callback {closeDialog();}
+      callback {closeDialog();} selected
       xywh {367 375 130 22}
     }
     Fl_Button btnResetConfig {

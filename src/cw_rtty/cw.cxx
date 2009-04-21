@@ -110,7 +110,8 @@ cw::cw() : modem()
 	cw_noise_spike_threshold = cw_adaptive_receive_threshold / 4;
 	cw_send_dot_length = DOT_MAGIC / cw_send_speed;
 	cw_send_dash_length = 3 * cw_send_dot_length;
-	symbollen = (samplerate * 12) / (progdefaults.CWspeed * 10);
+	symbollen = (int)(samplerate * 1.2 / progdefaults.CWspeed);
+	fsymlen = (int)((50*(samplerate * 1.2 / progdefaults.CWfarnsworth) - 41*symbollen)/9);
 	
 	memset(rx_rep_buf, 0, sizeof(rx_rep_buf));
 
@@ -145,7 +146,7 @@ cw::cw() : modem()
  
 void cw::sync_parameters()
 {
-	int lowerwpm, upperwpm, nusymbollen;
+	int lowerwpm, upperwpm, nusymbollen, nufsymlen;
 
 	if (usedefaultWPM == false)
 		cw_send_dot_length = DOT_MAGIC / progdefaults.CWspeed;
@@ -153,14 +154,17 @@ void cw::sync_parameters()
 		cw_send_dot_length = DOT_MAGIC / progdefaults.defCWspeed;
 		
 	cw_send_dash_length = 3 * cw_send_dot_length;
-	nusymbollen = (samplerate * 12) / (progdefaults.CWspeed * 10);
+	nusymbollen = (int)(samplerate * 1.2 / progdefaults.CWspeed);
+    nufsymlen = (int)((50*(samplerate * 1.2 / progdefaults.CWfarnsworth) - 41*symbollen)/9);
 
-	if (symbollen != nusymbollen
-	    || risetime != progdefaults.CWrisetime ||
-	    QSKshape != progdefaults.QSKshape ) {
+	if (symbollen != nusymbollen || 
+	    nufsymlen != fsymlen ||
+        risetime  != progdefaults.CWrisetime ||
+	    QSKshape  != progdefaults.QSKshape ) {
 		risetime = progdefaults.CWrisetime;
 		QSKshape = progdefaults.QSKshape;
 		symbollen = nusymbollen;
+		fsymlen = nufsymlen;
 		makeshape();
 	}
 	int len = (int)(samplerate / frequency / 4);
@@ -596,7 +600,7 @@ inline double cw::qsknco()
 
 int q_carryover = 0, carryover = 0;
 
-void cw::send_symbol(int bits)
+void cw::send_symbol(int bits, int len)
 {
 	double freq;
 	int sample, qsample, i;
@@ -612,11 +616,11 @@ void cw::send_symbol(int bits)
 	
 	freq = get_txfreq_woffset();
 
-    delta = (int) (symbollen * (progdefaults.CWweight - 50) / 100.0);
+    delta = (int) (len * (progdefaults.CWweight - 50) / 100.0);
 
-    symlen = symbollen;
+    symlen = len;
 	if (currsym == 1) {
-   		dsymlen = symbollen * (progdefaults.CWdash2dot - 3.0) / (progdefaults.CWdash2dot + 1.0);
+   		dsymlen = len * (progdefaults.CWdash2dot - 3.0) / (progdefaults.CWdash2dot + 1.0);
 		if (lastsym == 1 && currsym == 1)
 			symlen += (int)(3 * dsymlen);
         else
@@ -764,6 +768,7 @@ void cw::send_ch(int ch)
 {
 	int code;
 	int chout = ch;
+	int flen;
 
 	sync_parameters();
 // handle word space separately (7 dots spacing) 
@@ -774,10 +779,15 @@ void cw::send_ch(int ch)
 		
 	if ((chout == ' ') || (chout == '\n')) {
 		firstelement = false;
-		send_symbol(0);
-		send_symbol(0);
-		send_symbol(0);
-		send_symbol(0);
+		if (progdefaults.CWusefarnsworth)
+    		flen = 4 * fsymlen;
+        else
+            flen = 4 * symbollen;
+		while (flen - symbollen > 0) {
+		    send_symbol(0, symbollen);
+		    flen -= symbollen;
+        }
+        if (flen) send_symbol(0, flen);
 		put_echo_char(ch);
 		return;
 	}
@@ -793,11 +803,19 @@ void cw::send_ch(int ch)
 
 // loop sending out binary bits of cw character 
 	while (code > 1) {
-		send_symbol(code);// & 1);
+		send_symbol(code, symbollen);// & 1);
 		code = code >> 1;
 	}
-	send_symbol(0);
-
+		if (progdefaults.CWusefarnsworth)
+    		flen = fsymlen;
+        else
+            flen = symbollen;
+	while(flen - symbollen > 0) {
+    	send_symbol(0, symbollen);
+        flen -= symbollen;
+    }
+    if (flen) send_symbol(0, flen);
+    
     FL_AWAKE();
     
 	if (ch != -1)
@@ -815,7 +833,7 @@ int cw::tx_process()
 	int c;
 	c = get_tx_char();
 	if (c == 0x03 || stopflag) {			
-		send_symbol(0);
+		send_symbol(0, symbollen);
 		stopflag = false;
 			return -1;
 	}

@@ -577,6 +577,9 @@ Fl_Value_Slider *sldrCWxmtWPM=(Fl_Value_Slider *)0;
 
 static void cb_sldrCWxmtWPM(Fl_Value_Slider* o, void*) {
   progdefaults.CWspeed = (int)o->value();
+sldrCWfarnsworth->maximum(o->value());
+if (sldrCWfarnsworth->value() > o->value())
+sldrCWfarnsworth->value(o->value());
 progdefaults.changed = true;
 }
 
@@ -607,6 +610,20 @@ sldrCWxmtWPM->maximum(o->value());
 sldrCWxmtWPM->value(progdefaults.CWspeed);
 sldrCWxmtWPM->redraw();
 cntCWlowerlimit->maximum(o->value()-20);
+}
+
+Fl_Value_Slider *sldrCWfarnsworth=(Fl_Value_Slider *)0;
+
+static void cb_sldrCWfarnsworth(Fl_Value_Slider* o, void*) {
+  progdefaults.CWfarnsworth = (int)o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnCWusefarnsworth=(Fl_Check_Button *)0;
+
+static void cb_btnCWusefarnsworth(Fl_Check_Button* o, void*) {
+  progdefaults.CWusefarnsworth=o->value();
+progdefaults.changed = true;
 }
 
 Fl_Counter *cntCWweight=(Fl_Counter *)0;
@@ -2649,17 +2666,14 @@ an merging"));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 500, 345, _("Modems"));
-        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 500, 345);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
           { tabCW = new Fl_Group(0, 50, 500, 320, _("CW"));
-            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 500, 320);
               tabsCW->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
                 o->align(FL_ALIGN_TOP_LEFT);
-                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 130, _("Receive"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2708,10 +2722,10 @@ an merging"));
                 } // Fl_Box* o
                 o->end();
                 } // Fl_Group* o
-                { Fl_Group* o = new Fl_Group(5, 215, 490, 110, _("Transmit"));
+                { Fl_Group* o = new Fl_Group(5, 215, 490, 150, _("Transmit"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-                { Fl_Value_Slider* o = sldrCWxmtWPM = new Fl_Value_Slider(20, 248, 400, 20, _("TX WPM"));
+                { Fl_Value_Slider* o = sldrCWxmtWPM = new Fl_Value_Slider(20, 240, 400, 20, _("TX WPM"));
                 sldrCWxmtWPM->tooltip(_("My transmit CW WPM"));
                 sldrCWxmtWPM->type(1);
                 sldrCWxmtWPM->minimum(5);
@@ -2723,7 +2737,7 @@ an merging"));
                 sldrCWxmtWPM->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.CWspeed);
                 } // Fl_Value_Slider* sldrCWxmtWPM
-                { Fl_Counter* o = cntCWdefWPM = new Fl_Counter(40, 294, 64, 20, _("Default"));
+                { Fl_Counter* o = cntCWdefWPM = new Fl_Counter(40, 281, 64, 20, _("Default"));
                 cntCWdefWPM->tooltip(_("The default CW speed"));
                 cntCWdefWPM->type(1);
                 cntCWdefWPM->minimum(5);
@@ -2734,7 +2748,7 @@ an merging"));
                 cntCWdefWPM->align(FL_ALIGN_TOP);
                 o->value(progdefaults.defCWspeed);
                 } // Fl_Counter* cntCWdefWPM
-                { Fl_Counter* o = cntCWlowerlimit = new Fl_Counter(197, 294, 65, 20, _("Lower limit"));
+                { Fl_Counter* o = cntCWlowerlimit = new Fl_Counter(197, 281, 65, 20, _("Lower limit"));
                 cntCWlowerlimit->tooltip(_("No slower than this"));
                 cntCWlowerlimit->type(1);
                 cntCWlowerlimit->minimum(5);
@@ -2745,7 +2759,7 @@ an merging"));
                 cntCWlowerlimit->align(FL_ALIGN_TOP);
                 o->value(progdefaults.CWlowerlimit);
                 } // Fl_Counter* cntCWlowerlimit
-                { Fl_Counter* o = cntCWupperlimit = new Fl_Counter(355, 294, 65, 20, _("Upper limit"));
+                { Fl_Counter* o = cntCWupperlimit = new Fl_Counter(355, 281, 65, 20, _("Upper limit"));
                 cntCWupperlimit->tooltip(_("No faster than this"));
                 cntCWupperlimit->type(1);
                 cntCWupperlimit->minimum(25);
@@ -2756,12 +2770,30 @@ an merging"));
                 cntCWupperlimit->align(FL_ALIGN_TOP);
                 o->value(progdefaults.CWupperlimit);
                 } // Fl_Counter* cntCWupperlimit
+                { Fl_Value_Slider* o = sldrCWfarnsworth = new Fl_Value_Slider(20, 335, 400, 20, _("F-WPM"));
+                sldrCWfarnsworth->tooltip(_("My transmit CW WPM"));
+                sldrCWfarnsworth->type(1);
+                sldrCWfarnsworth->minimum(5);
+                sldrCWfarnsworth->maximum(100);
+                sldrCWfarnsworth->step(1);
+                sldrCWfarnsworth->value(20);
+                sldrCWfarnsworth->textsize(14);
+                sldrCWfarnsworth->callback((Fl_Callback*)cb_sldrCWfarnsworth);
+                sldrCWfarnsworth->align(FL_ALIGN_RIGHT);
+                o->value(progdefaults.CWfarnsworth);
+                } // Fl_Value_Slider* sldrCWfarnsworth
+                { Fl_Check_Button* o = btnCWusefarnsworth = new Fl_Check_Button(40, 312, 180, 15, _("Use Farnsworth timing"));
+                btnCWusefarnsworth->down_box(FL_DOWN_BOX);
+                btnCWusefarnsworth->callback((Fl_Callback*)cb_btnCWusefarnsworth);
+                o->value(progdefaults.CWusefarnsworth);
+                } // Fl_Check_Button* btnCWusefarnsworth
                 o->end();
                 } // Fl_Group* o
                 o->end();
               } // Fl_Group* o
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("Timing and QSK"));
                 o->align(FL_ALIGN_TOP_LEFT);
+                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 120, _("Timing"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2781,6 +2813,7 @@ an merging"));
                 cntCWdash2dot->type(1);
                 cntCWdash2dot->minimum(2.5);
                 cntCWdash2dot->maximum(4);
+                cntCWdash2dot->step(0.1);
                 cntCWdash2dot->value(3);
                 cntCWdash2dot->callback((Fl_Callback*)cb_cntCWdash2dot);
                 cntCWdash2dot->align(FL_ALIGN_RIGHT);
@@ -2791,6 +2824,7 @@ an merging"));
                 cntCWrisetime->type(1);
                 cntCWrisetime->minimum(0);
                 cntCWrisetime->maximum(15);
+                cntCWrisetime->step(0.1);
                 cntCWrisetime->value(4);
                 cntCWrisetime->callback((Fl_Callback*)cb_cntCWrisetime);
                 cntCWrisetime->align(FL_ALIGN_RIGHT);
@@ -2893,6 +2927,7 @@ an merging"));
                 valDominoEX_BW->type(1);
                 valDominoEX_BW->minimum(1);
                 valDominoEX_BW->maximum(2);
+                valDominoEX_BW->step(0.1);
                 valDominoEX_BW->value(1.5);
                 valDominoEX_BW->callback((Fl_Callback*)cb_valDominoEX_BW);
                 valDominoEX_BW->align(FL_ALIGN_RIGHT);
@@ -2907,6 +2942,7 @@ an merging"));
               { Fl_Value_Slider* o = valDomCWI = new Fl_Value_Slider(15, 207, 260, 20, _("CWI threshold"));
                 valDomCWI->tooltip(_("CWI detection and suppression"));
                 valDomCWI->type(1);
+                valDomCWI->step(0.01);
                 valDomCWI->textsize(14);
                 valDomCWI->callback((Fl_Callback*)cb_valDomCWI);
                 valDomCWI->align(FL_ALIGN_TOP);
@@ -3217,6 +3253,7 @@ an merging"));
             tabPSK->end();
           } // Fl_Group* tabPSK
           { tabRTTY = new Fl_Group(0, 50, 500, 320, _("RTTY"));
+            tabRTTY->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 270);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Choice* o = selShift = new Fl_Choice(15, 70, 100, 20, _("Carrier shift"));
@@ -3378,6 +3415,7 @@ an merging"));
                 valTHOR_BW->type(1);
                 valTHOR_BW->minimum(1);
                 valTHOR_BW->maximum(2);
+                valTHOR_BW->step(0.1);
                 valTHOR_BW->value(1.5);
                 valTHOR_BW->callback((Fl_Callback*)cb_valTHOR_BW);
                 valTHOR_BW->align(FL_ALIGN_RIGHT);
@@ -3392,6 +3430,7 @@ an merging"));
               { Fl_Value_Slider* o = valThorCWI = new Fl_Value_Slider(15, 218, 260, 20, _("CWI threshold"));
                 valThorCWI->tooltip(_("CWI detection and suppression"));
                 valThorCWI->type(1);
+                valThorCWI->step(0.01);
                 valThorCWI->textsize(14);
                 valThorCWI->callback((Fl_Callback*)cb_valThorCWI);
                 valThorCWI->align(FL_ALIGN_TOP);
@@ -3417,6 +3456,7 @@ an merging"));
         tabModems->end();
       } // Fl_Group* tabModems
       { tabRig = new Fl_Group(0, 25, 500, 345, _("Rig"));
+        tabRig->hide();
         { tabsRig = new Fl_Tabs(0, 25, 500, 345);
           tabsRig->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hardware PTT"));
@@ -3967,6 +4007,7 @@ l with your sound hardware."));
                 valPCMvolume->tooltip(_("Set the sound card PCM level"));
                 valPCMvolume->type(1);
                 valPCMvolume->selection_color(FL_SELECTION_COLOR);
+                valPCMvolume->step(0.01);
                 valPCMvolume->value(0.8);
                 valPCMvolume->textsize(14);
                 valPCMvolume->callback((Fl_Callback*)cb_valPCMvolume);
