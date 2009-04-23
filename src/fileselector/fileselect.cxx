@@ -68,7 +68,7 @@ void* FSEL::thread_func(void* arg)
 const char* FSEL::get_file(void)
 {
 	// Calling directory() is apparently not enough on Linux
-#ifndef __WOE32__
+#if !defined(__WOE32__) && !defined(__APPLE__)
 	const char* preset = chooser->preset_file();
 	if (preset && *preset != '/' && chooser->directory()) {
 		filename = chooser->directory();
