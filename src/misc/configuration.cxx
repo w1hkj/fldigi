@@ -375,10 +375,12 @@ int configuration::setDefaults()
 	valDominoEX_PATHS->value(DOMINOEX_PATHS);
 	valDomCWI->value(DomCWI);
 
-    btnMEMMAPptt->value(MEMMAPptt);
-    btnRigCatCMDptt->value(RigCatCMDptt);
-    btnTTYptt->value(TTYptt);
-    
+	btnMEMMAPptt->value(MEMMAPptt);
+	btnRigCatCMDptt->value(RigCatCMDptt);
+	btnTTYptt->value(TTYptt);
+	btnUsePPortPTT->value(progdefaults.UsePPortPTT);
+	btnUseUHrouterPTT->value(progdefaults.UseUHrouterPTT);
+
 #if USE_HAMLIB
 	mnuSideband->add("Rig mode");
 	mnuSideband->add("Always LSB");
@@ -526,17 +528,13 @@ int configuration::setDefaults()
 
 	wf->setcolors();
 	setColorButtons();
-	
-#if HAVE_UHROUTER
-    btnUseUHrouterPTT->show();
-#else
-    btnUseUHrouterPTT->hide();
+
+#if !HAVE_UHROUTER
+	btnUseUHrouterPTT->hide();
 #endif
 
-#if HAVE_PARPORT
-    btnUsePPortPTT->show();
-#else
-    btnUsePPortPTT->hide();
+#if !HAVE_PARPORT
+	btnUsePPortPTT->hide();
 #endif
 
 	return 1;
@@ -574,9 +572,9 @@ void configuration::initInterface()
 	rigCAT_close();
 //		MilliSleep(100);
 
-    MEMMAPptt = btnMEMMAPptt->value();
-    RigCatCMDptt = btnRigCatCMDptt->value();
-    TTYptt = btnTTYptt->value();
+	MEMMAPptt = btnMEMMAPptt->value();
+	RigCatCMDptt = btnRigCatCMDptt->value();
+	TTYptt = btnTTYptt->value();
 
 	RTSptt = btnRTSptt->value();
 	DTRptt = btnDTRptt->value();
@@ -644,21 +642,24 @@ void configuration::initInterface()
 			qsoFreqDisp->activate();
 	}
 
-    if (HamlibCMDptt && chkUSEHAMLIBis) 
-        push2talk->reset(PTT::PTT_HAMLIB);
-    else if (MEMMAPptt && chkUSEMEMMAPis) 
-        push2talk->reset(PTT::PTT_MEMMAP);
-    else if ((RigCatCMDptt || RigCatRTSptt || RigCatDTRptt) && chkUSERIGCATis)
-        push2talk->reset(PTT::PTT_RIGCAT);
-    else if (TTYptt)
-    	push2talk->reset(PTT::PTT_TTY);
-    else
-        push2talk->reset(PTT::PTT_NONE);
-    	
+	if (HamlibCMDptt && chkUSEHAMLIBis)
+		push2talk->reset(PTT::PTT_HAMLIB);
+	else if (MEMMAPptt && chkUSEMEMMAPis)
+		push2talk->reset(PTT::PTT_MEMMAP);
+	else if ((RigCatCMDptt || RigCatRTSptt || RigCatDTRptt) && chkUSERIGCATis)
+		push2talk->reset(PTT::PTT_RIGCAT);
+	else if (TTYptt)
+		push2talk->reset(PTT::PTT_TTY);
+	else if (UsePPortPTT)
+		push2talk->reset(PTT::PTT_PARPORT);
+	else if (UseUHrouterPTT)
+		push2talk->reset(PTT::PTT_UHROUTER);
+	else
+		push2talk->reset(PTT::PTT_NONE);
+
 	wf->setRefLevel();
 	wf->setAmpSpan();
 	cntLowFreqCutoff->value(LowFreqCutoff);
-
 }
 
 const char* configuration::strBaudRate()

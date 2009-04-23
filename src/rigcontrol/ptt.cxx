@@ -79,30 +79,33 @@ void PTT::reset(ptt_t dev)
 {
 	close_all();
 
+	LOG_INFO("Setting PTT to %d", dev);
+
 	switch (pttdev = dev) {
 #if HAVE_UHROUTER
         case PTT_UHROUTER:
-		    if (progdefaults.PTTdev.find(UHROUTER_FIFO_PREFIX) == 0) {
-			    pttdev = PTT_UHROUTER;
-			    open_uhrouter();
-			    break;
-		    } else {
+		if (progdefaults.PTTdev.find(UHROUTER_FIFO_PREFIX) == 0) {
+			pttdev = PTT_UHROUTER;
+			open_uhrouter();
+			break;
+		}
+		else {
 		        pttdev = PTT_NONE;
 		        break;
-            }
+		}
 #endif
 #if HAVE_PARPORT
         case PTT_PARPORT:
-		    open_parport();
-		    if (pttfd < 0)
+		open_parport();
+		if (pttfd < 0)
 		        pttdev = PTT_NONE;
-            break;
+		break;
 #endif
-	    case PTT_TTY:
-            open_tty();
-		    break;
-	    default:
-		    break; // nothing to open
+	case PTT_TTY:
+		open_tty();
+		break;
+	default:
+		break; // nothing to open
 	}
 	set(false);
 }
