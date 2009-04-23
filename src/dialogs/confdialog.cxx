@@ -1140,8 +1140,40 @@ progdefaults.changed = true;
 Fl_Round_Button *btnTTYptt=(Fl_Round_Button *)0;
 
 static void cb_btnTTYptt(Fl_Round_Button* o, void*) {
-  progdefaults.TTYptt=o->value();
+  btnUsePPortPTT->value(false);
+btnUseUHrouterPTT->value(false);
 
+progdefaults.TTYptt = o->value();
+progdefaults.UsePPortPTT = false;
+progdefaults.UseUHrouterPTT = false;
+btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;
+}
+
+Fl_Round_Button *btnUsePPortPTT=(Fl_Round_Button *)0;
+
+static void cb_btnUsePPortPTT(Fl_Round_Button* o, void*) {
+  btnTTYptt->value(false);
+btnUseUHrouterPTT->value(false);
+
+progdefaults.TTYptt = false;
+progdefaults.UsePPortPTT = o->value();
+progdefaults.UseUHrouterPTT = false;
+btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;
+}
+
+Fl_Round_Button *btnUseUHrouterPTT=(Fl_Round_Button *)0;
+
+static void cb_btnUseUHrouterPTT(Fl_Round_Button* o, void*) {
+  btnTTYptt->value(false);
+btnUsePPortPTT->value(false);
+
+progdefaults.TTYptt = false;
+progdefaults.UsePPortPTT = false;
+progdefaults.UseUHrouterPTT = o->value();
 btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;
@@ -1151,20 +1183,6 @@ Fl_Check_Button *btnPTTrightchannel=(Fl_Check_Button *)0;
 
 static void cb_btnPTTrightchannel(Fl_Check_Button* o, void*) {
   progdefaults.PTTrightchannel = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnUsePPortPTT=(Fl_Check_Button *)0;
-
-static void cb_btnUsePPortPTT(Fl_Check_Button* o, void*) {
-  progdefaults.UsePPortPTT=o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnUseUHrouterPTT=(Fl_Check_Button *)0;
-
-static void cb_btnUseUHrouterPTT(Fl_Check_Button* o, void*) {
-  progdefaults.UseUHrouterPTT = o->value();
 progdefaults.changed = true;
 }
 
@@ -2071,7 +2089,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { tabOperator = new Fl_Group(0, 25, 500, 345, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -3077,7 +3094,6 @@ an merging"));
             tabOlivia->end();
           } // Fl_Group* tabOlivia
           { tabPSK = new Fl_Group(0, 50, 500, 320, _("PSK"));
-            tabPSK->hide();
             { tabsPSK = new Fl_Tabs(0, 50, 500, 320);
               tabsPSK->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
@@ -3427,42 +3443,51 @@ an merging"));
           tabsRig->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hardware PTT"));
             o->hide();
-            { grpHWPTT = new Fl_Group(5, 100, 490, 190);
+            { grpHWPTT = new Fl_Group(5, 100, 490, 265);
               grpHWPTT->box(FL_ENGRAVED_FRAME);
-              { inpTTYdev = new Fl_Input_Choice(200, 143, 150, 22, _("Device:"));
+              { inpTTYdev = new Fl_Input_Choice(200, 209, 160, 22, _("Device:"));
                 inpTTYdev->tooltip(_("Select serial port"));
                 inpTTYdev->callback((Fl_Callback*)cb_inpTTYdev);
               } // Fl_Input_Choice* inpTTYdev
-              { btnRTSptt = new Fl_Round_Button(147, 183, 85, 20, _("Use RTS"));
-                btnRTSptt->tooltip(_("RTS is ptt signal line"));
+              { btnRTSptt = new Fl_Round_Button(145, 248, 85, 20, _("Use RTS"));
+                btnRTSptt->tooltip(_("RTS is PTT signal line"));
                 btnRTSptt->down_box(FL_DOWN_BOX);
                 btnRTSptt->callback((Fl_Callback*)cb_btnRTSptt);
               } // Fl_Round_Button* btnRTSptt
-              { btnRTSplusV = new Fl_Round_Button(262, 183, 100, 20, _("RTS = +V"));
+              { btnRTSplusV = new Fl_Round_Button(262, 248, 100, 20, _("RTS = +V"));
                 btnRTSplusV->tooltip(_("Initial voltage on RTS"));
                 btnRTSplusV->down_box(FL_DOWN_BOX);
                 btnRTSplusV->callback((Fl_Callback*)cb_btnRTSplusV);
               } // Fl_Round_Button* btnRTSplusV
-              { btnDTRptt = new Fl_Round_Button(147, 213, 85, 20, _("Use DTR"));
-                btnDTRptt->tooltip(_("DTR is ptt signal line"));
+              { btnDTRptt = new Fl_Round_Button(145, 278, 85, 20, _("Use DTR"));
+                btnDTRptt->tooltip(_("DTR is PTT signal line"));
                 btnDTRptt->down_box(FL_DOWN_BOX);
                 btnDTRptt->callback((Fl_Callback*)cb_btnDTRptt);
               } // Fl_Round_Button* btnDTRptt
-              { btnDTRplusV = new Fl_Round_Button(262, 213, 100, 20, _("DTR = +V"));
+              { btnDTRplusV = new Fl_Round_Button(262, 278, 100, 20, _("DTR = +V"));
                 btnDTRplusV->tooltip(_("Initial voltage on DTR"));
                 btnDTRplusV->down_box(FL_DOWN_BOX);
                 btnDTRplusV->callback((Fl_Callback*)cb_btnDTRplusV);
               } // Fl_Round_Button* btnDTRplusV
-              { btnInitHWPTT = new Fl_Button(188, 251, 113, 24, _("Initialize"));
+              { btnInitHWPTT = new Fl_Button(188, 316, 113, 24, _("Initialize"));
                 btnInitHWPTT->tooltip(_("Initialize the H/W PTT interface"));
                 btnInitHWPTT->callback((Fl_Callback*)cb_btnInitHWPTT);
               } // Fl_Button* btnInitHWPTT
-              { btnTTYptt = new Fl_Round_Button(145, 111, 220, 20, _("Use separate serial port PTT"));
-                btnTTYptt->tooltip(_("Serial port H/W used for PTT"));
+              { btnTTYptt = new Fl_Round_Button(145, 110, 220, 20, _("Use separate serial port PTT"));
                 btnTTYptt->down_box(FL_DIAMOND_DOWN_BOX);
                 btnTTYptt->selection_color((Fl_Color)1);
                 btnTTYptt->callback((Fl_Callback*)cb_btnTTYptt);
               } // Fl_Round_Button* btnTTYptt
+              { btnUsePPortPTT = new Fl_Round_Button(145, 140, 170, 20, _("Use parallel port PTT"));
+                btnUsePPortPTT->down_box(FL_DIAMOND_DOWN_BOX);
+                btnUsePPortPTT->selection_color((Fl_Color)1);
+                btnUsePPortPTT->callback((Fl_Callback*)cb_btnUsePPortPTT);
+              } // Fl_Round_Button* btnUsePPortPTT
+              { btnUseUHrouterPTT = new Fl_Round_Button(145, 170, 170, 20, _("Use uHRouter PTT"));
+                btnUseUHrouterPTT->down_box(FL_DIAMOND_DOWN_BOX);
+                btnUseUHrouterPTT->selection_color((Fl_Color)1);
+                btnUseUHrouterPTT->callback((Fl_Callback*)cb_btnUseUHrouterPTT);
+              } // Fl_Round_Button* btnUseUHrouterPTT
               grpHWPTT->end();
             } // Fl_Group* grpHWPTT
             { Fl_Group* o = new Fl_Group(5, 65, 490, 32);
@@ -3473,20 +3498,6 @@ an merging"));
                 btnPTTrightchannel->callback((Fl_Callback*)cb_btnPTTrightchannel);
                 o->value(progdefaults.PTTrightchannel);
               } // Fl_Check_Button* btnPTTrightchannel
-              o->end();
-            } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(5, 292, 490, 72);
-              o->box(FL_ENGRAVED_FRAME);
-              { Fl_Check_Button* o = btnUsePPortPTT = new Fl_Check_Button(154, 304, 191, 15, _("use parallel port for PTT"));
-                btnUsePPortPTT->down_box(FL_DOWN_BOX);
-                btnUsePPortPTT->callback((Fl_Callback*)cb_btnUsePPortPTT);
-                o->value(progdefaults.UsePPortPTT);
-              } // Fl_Check_Button* btnUsePPortPTT
-              { Fl_Check_Button* o = btnUseUHrouterPTT = new Fl_Check_Button(154, 330, 191, 15, _("use UHrouter for PTT"));
-                btnUseUHrouterPTT->down_box(FL_DOWN_BOX);
-                btnUseUHrouterPTT->callback((Fl_Callback*)cb_btnUseUHrouterPTT);
-                o->value(progdefaults.UseUHrouterPTT);
-              } // Fl_Check_Button* btnUseUHrouterPTT
               o->end();
             } // Fl_Group* o
             o->end();
