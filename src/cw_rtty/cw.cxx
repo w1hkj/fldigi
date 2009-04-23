@@ -202,9 +202,6 @@ void cw::sync_parameters()
 	cw_receive_dash_length = 3 * cw_receive_dot_length;
 
 	cw_noise_spike_threshold = cw_receive_dot_length / 4;
-	
-	update_Status();
-
 }
 
 
@@ -331,13 +328,10 @@ int cw::rx_process(const double *buf, int len)
 				agc_peak = decayavg(agc_peak, value, 800.0);
 
 			metric = clamp(agc_peak * 1000.0 , 0.0, 100.0);
-			display_metric(metric);
 			
 // save correlation amplitude value for the sync scope
 			pipe[pipeptr] = value;
 			pipeptr = (pipeptr + 1) % pipesize;
-//			if (pipeptr == pipesize - 1)
-//				update_syncscope();
 
 			if (!progStatus.sqlonoff || metric > progStatus.sldrSquelchValue ) {
 // upward trend means tone starting 
@@ -351,6 +345,7 @@ int cw::rx_process(const double *buf, int len)
 				while (*c)
 					put_rx_char(*c++);
                 update_syncscope();
+    			display_metric(metric);
             }
 		}
 	}
