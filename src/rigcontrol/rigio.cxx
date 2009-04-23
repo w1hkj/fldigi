@@ -379,7 +379,7 @@ long long rigCAT_getfreq()
 			return f;
 		}
 		else {
-			LOG_WARN("freq value failed %ld", f);
+			LOG_WARN("freq value failed %lld", f);
 			return 0;
 		}
 	}
