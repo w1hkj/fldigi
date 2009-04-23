@@ -17,6 +17,7 @@ Fl_PopBrowser::Fl_PopBrowser (int X, int Y, int W, int H, retvals R)
   popbrwsr->callback ( (Fl_Callback*)popbrwsr_cb);
   parent = 0;
   end();
+  set_modal();
 }
 
 Fl_PopBrowser::~Fl_PopBrowser ()
