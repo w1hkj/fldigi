@@ -1,5 +1,24 @@
 Change Log:
 
+3.11.2
+
+2009-04-24      Stelios Bounanos
+        c05ec4f: Make the combo box popup modal
+        1c5ab40: Fix OS X native file selector
+        dc43072: Fix uHRouter and parport PTT
+        ba1a6c2: Distribute cr.sh test script
+        1fe1a51: Fix rigMEM compilation on OS X
+        84f5433: Fix uHRouter log message
+
+2009-04-24      David Freese
+        52548ca: CW replay bug
+
+3.11.1
+
+2009-04-18      David Freese
+        29b73c8: Escape key bug fix
+        1161c76: Macro <XOUT> parse error fix
+
 3.11
     1)  FText changes - changed the FText tooltip display function to use a 
         string stream
