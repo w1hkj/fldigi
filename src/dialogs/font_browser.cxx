@@ -32,6 +32,7 @@
 #include <string>
 #include <cstdlib>
 #include <cstring>
+#include <cstdio>
 
 #include "font_browser.h"
 
