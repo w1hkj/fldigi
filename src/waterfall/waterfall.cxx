@@ -60,6 +60,7 @@
 
 #include "fldigi-config.h"
 #include "configuration.h"
+#include "status.h"
 #include "Viewer.h"
 #include "macros.h"
 #include "arq_io.h"
@@ -1038,8 +1039,8 @@ void xmtrcv_cb(Fl_Widget *w, void *vi)
 			TransmitText->clear();
 			if (arq_text_available)
 				AbortARQ();
-			if (progdefaults.useTimer)
-				progdefaults.useTimer = false;
+			if (progStatus.timer)
+				progStatus.timer = 0;
 		}
 	}
 	restoreFocus();

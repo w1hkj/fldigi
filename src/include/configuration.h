@@ -272,10 +272,7 @@
         ELEM_(int, ContestDigits, "CONTESTDIGITS", 4)                                   \
         ELEM_(std::string, myXchg, "MYXCGH", "")                                        \
         ELEM_(std::string, mytxpower, "TXPOWER", "")                                    \
-/* Macro timer constants and controls */                                                \
-        ELEM_(bool, useTimer, "USETIMER", false)                                        \
-        ELEM_(int, macronumber, "MACRONUMBER", 0)                                       \
-        ELEM_(int, timeout, "TIMEOUT", 0)                                               \
+/* Macro controls */                                                                    \
         ELEM_(bool, UseLastMacro, "USELASTMACRO", false)                                \
         ELEM_(bool, DisplayMacroFilename, "DISPLAYMACROFILENAME", false)                \
 /* Mixer */                                                                             \

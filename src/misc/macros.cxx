@@ -164,9 +164,8 @@ void pTIMER(string &s, size_t &i)
 	if (sTime.length() > 0) {
 		sscanf(sTime.c_str(), "%d", &number);
 		s.replace(i, endbracket - i + 1, "");
-		progdefaults.timeout = number;
-		progdefaults.macronumber = mNbr;
-		progdefaults.useTimer = true;
+		progStatus.timer = number;
+		progStatus.timerMacro = mNbr;
 	} else
 		s.replace(i, endbracket - i + 1, "");
 }

@@ -9,6 +9,8 @@
 #include <unistd.h>
 #include <cstring>
 
+#include <FL/Fl_Pixmap.H>
+
 #include "macros.h"
 #include "macroedit.h"
 #include "globals.h"
@@ -17,6 +19,7 @@
 #include "fl_lock.h"
 #include "fl_digi.h"
 #include "main.h"
+#include "pixmaps.h"
 
 using namespace std;
 
@@ -41,20 +44,20 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add("<MYCALL>\tmy call");
 	w->add("<MYLOC>\tmy locator");
 	w->add("<MYNAME>\tmy name");
-	w->add("<MYQTH>\tmy qth");
+	w->add("<MYQTH>\tmy QTH");
 	w->add("<MYRST>\tmy RST");
 
 	w->add(LINE_SEP);
 	w->add("<CALL>\tother call");
 	w->add("<LOC>\tother locator");
-	w->add("<NAME>\tremote name");
-	w->add("<QTH>\tother qth");
+	w->add("<NAME>\tother name");
+	w->add("<QTH>\tother QTH");
 	w->add("<RST>\tother RST");
-	w->add("<INFO1>\ts/n etc.");
-	w->add("<INFO2>\timd etc.");
+	w->add("<INFO1>\tS/N etc.");
+	w->add("<INFO2>\tIMD etc.");
 	
 	w->add(LINE_SEP);
-	w->add("<CLRRX>\tclear Rx pane");
+	w->add("<CLRRX>\tclear RX pane");
 	
 	w->add(LINE_SEP);
 	w->add("<GET>\ttext to NAME/QTH");
@@ -64,34 +67,34 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add("<MODE>\tmode");
 
 	w->add(LINE_SEP);
-	w->add("<QSOTIME>\tqso time HHMM");
+	w->add("<QSOTIME>\tQSO time (HHMM)");
 	w->add("<LDT>\tLocal datetime");
 	w->add("<ILDT>\tLDT in iso-8601 format");
-	w->add("<ZDT>\tZulu datetime");
+	w->add("<ZDT>\tUTC datetime");
 	w->add("<IZDT>\tZDT in iso-8601 format");
 
 	w->add(LINE_SEP);
-	w->add("<CNTR>\tcontest cnt");
-	w->add("<DECR>\tdecr cnt");
-	w->add("<INCR>\tincr cnt");
-	w->add("<XOUT>\tExchange out");
+	w->add("<CNTR>\tcontest counter");
+	w->add("<DECR>\tdecrement counter");
+	w->add("<INCR>\tincrement counter");
+	w->add("<XOUT>\texchange out");
 
 	w->add(LINE_SEP);
-	w->add("<ID>\tMode ID'r");
-	w->add("<TEXT>\tVideo text");
+	w->add("<ID>\tmode ID");
+	w->add("<TEXT>\tvideo text");
 	w->add("<CWID>\tCW identifier");
 
 	w->add(LINE_SEP);
 	w->add("<RX>\treceive");
 	w->add("<TX>\ttransmit");
 	w->add("<LOG>\tsave QSO data");
-	w->add("<VER>\tFldigi + version");
+	w->add("<VER>\tFldigi version");
 	w->add("<TIMER:NN>\trepeat every NN sec");
 	w->add("<IDLE:NN>\tidle signal for NN sec");
 	
 	w->add(LINE_SEP);
-	w->add("<WPM:NN>\tCW wpm");
-	w->add("<RISE:nn.n>\tCW risetime");
+	w->add("<WPM:NN>\tCW WPM");
+	w->add("<RISE:nn.n>\tCW rise time");
 	w->add("<PRE:nn.n>\tQSK pre-timing");
 	w->add("<POST:+/-nn.n>\tQSK post-timing");
 	
@@ -188,22 +191,25 @@ Fl_Double_Window* make_macroeditor(void)
 	editor_label.append("Macro editor - ").append(progStatus.LastMacroFile);
 
 	Fl_Double_Window* w = new Fl_Double_Window(700, 230, editor_label.c_str());
-		labeltext = new Fl_Input2(114, 15, 95, 25, "Label:");
-		
+		labeltext = new Fl_Input2(45, 15, 115, 25, "Label:");
+		labeltext->textfont(FL_COURIER);
+
 		btnMacroEditOK = new Fl_Button(500, 15, 75, 25, "OK");
 		btnMacroEditOK->callback(cbMacroEditOK);
 		
 		btnMacroEditCancel = new Fl_Button(600, 15, 75, 25, "Cancel");
 		btnMacroEditCancel->callback(cbMacroEditCancel);
 		
-		macrotext = new Fl_Input2(5, 60, 450, 165, "Text");
-		macrotext->type(4);
+		macrotext = new Fl_Input2(5, 60, 450, 165, "Text:");
+		macrotext->type(FL_MULTILINE_INPUT);
+		macrotext->textfont(FL_COURIER);
 		macrotext->align(FL_ALIGN_TOP_LEFT);
 		
-		btnInsertMacro = new Fl_Button(460, 114, 25, 25, "@<<");
+		btnInsertMacro = new Fl_Button(460, 125, 25, 25);
+		btnInsertMacro->image(new Fl_Pixmap(left_arrow_icon));
 		btnInsertMacro->callback(cbInsertMacro);
 		
-		macroDefs = new Fl_Hold_Browser(490, 60, 200, 165);
+		macroDefs = new Fl_Hold_Browser(490, 60, 205, 165);
 		macroDefs->column_widths(widths);
 		loadBrowser(macroDefs);
 	w->end();

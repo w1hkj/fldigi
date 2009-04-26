@@ -33,15 +33,9 @@
 #include "main.h"
 #include "fl_digi.h"
 #include "ascii.h"
-//#include "rigio.h"
-//#include "rigMEM.h"
 #include "misc.h"
-//#include "modeIO.h"
 #include "configuration.h"
 #include "status.h"
-#include "macros.h"
-
-#include <FL/Fl.H>
 
 #include "soundconf.h"
 #include "ringbuffer.h"
@@ -273,10 +267,6 @@ void trx_trx_transmit_loop()
 
 	push2talk->set(false);
 	REQ(&waterfall::set_XmtRcvBtn, wf, false);
-
-	if (progdefaults.useTimer == true) {
-		trx_start_macro_timer();
-	}
 }
 
 //=============================================================================
@@ -359,6 +349,8 @@ void *trx_loop(void *args)
 			break;
 		case STATE_TX:
 			trx_trx_transmit_loop();
+			if (progStatus.timer)
+				REQ(startMacroTimer);
 			break;
 		case STATE_TUNE:
 			trx_tune_loop();
@@ -439,51 +431,14 @@ void trx_reset_loop()
 }
 
 //=============================================================================
+
 void trx_reset(void)
 {
 	trx_state = STATE_RESTART;
 }
 
 //=============================================================================
-static char timermsg[80];
-static int  countdown = 1;
-void macro_timer(void *)
-{
-	if (progdefaults.useTimer == false)
-		return;
-	countdown--;
-	if (countdown == 0) {
-		progdefaults.useTimer = false;
-		macros.execute(progdefaults.macronumber);
-		FL_LOCK();
-		btnMacroTimer->hide();
-		btnMacroDummy->show();
-		FL_UNLOCK();
-	} else {
-		snprintf(timermsg, sizeof(timermsg), "%d", countdown);
-		FL_LOCK();
-		btnMacroTimer->label(timermsg);
-		btnMacroTimer->redraw_label();
-		FL_UNLOCK();
-		Fl::repeat_timeout(1.0, macro_timer);
-	}
-}
 
-//=============================================================================
-void trx_start_macro_timer()
-{
-	countdown = progdefaults.timeout;
-	Fl::add_timeout(1.0, macro_timer);
-	snprintf(timermsg, sizeof(timermsg), "%d", countdown);
-	FL_LOCK();
-	btnMacroTimer->label(timermsg);
-	btnMacroTimer->redraw_label();
-	btnMacroDummy->hide();
-	btnMacroTimer->show();
-	FL_UNLOCK();
-}
-
-//=============================================================================
 void trx_start(void)
 {
 #if !BENCHMARK_MODE

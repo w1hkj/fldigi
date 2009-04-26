@@ -70,6 +70,8 @@ status progStatus = {
 	false,				// bool	scopeVisible;
 	50,					// int	scopeW;
 	50,					// int	scopeH;
+	0,			// int timer
+	0,			// int timerMacro
 	"macros.mdf",		// string LastMacroFile;
 	false,			// bool spot_recv
 	false,			// bool spot_log

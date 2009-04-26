@@ -37,7 +37,11 @@ struct status {
 	bool	scopeVisible;
 	int		scopeW;
 	int		scopeH;
+
+	int		timer;
+	int		timerMacro;
 	std::string	LastMacroFile;
+
 	bool	spot_recv;
 	bool	spot_log;
 	bool	contest;

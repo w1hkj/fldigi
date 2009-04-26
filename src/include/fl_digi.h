@@ -102,8 +102,6 @@ extern Fl_Button		*btn_afconoff;
 extern Fl_Button		*btn_sqlonoff;
 extern Fl_Button		*btnAltMacros;
 extern Fl_Button		*btnMacroTimer;
-extern Fl_Button		*btnMacroDummy;
-
 
 extern bool				useCheckButtons;
 extern int				altMacros;
@@ -190,6 +188,7 @@ extern void colorize_macros();
 extern void set_rtty_tab_widgets();
 extern void set_olivia_tab_widgets();
 
+extern void startMacroTimer();
 extern void stopMacroTimer();
 extern void cb_ResetSerNbr();
 extern void updateOutSerNo();

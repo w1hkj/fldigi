@@ -145,8 +145,7 @@ Fl_Menu_Bar 		*mnu;
 Fl_Light_Button		*btnAutoSpot = (Fl_Light_Button *)0;
 Fl_Light_Button		*btnTune = (Fl_Light_Button *)0;
 Fl_Light_Button		*btnRSID = (Fl_Light_Button *)0;
-Fl_Button			*btnMacroTimer;
-Fl_Button			*btnMacroDummy;
+Fl_Button		*btnMacroTimer;
 
 Fl_Tile_check		*TiledGroup = 0;
 FTextView			*ReceiveText = 0;
@@ -756,13 +755,14 @@ void restoreFocus(Fl_Widget* w)
 
 void macro_cb(Fl_Widget *w, void *v)
 {
-	stopMacroTimer();
 	int b = (int)(reinterpret_cast<long> (v));
 	b += altMacros * NUMMACKEYS;
 	int mouse = Fl::event_button();
-	if (mouse == 1 && !macros.text[b].empty())
+	if (mouse == FL_LEFT_MOUSE && !macros.text[b].empty()) {
+		stopMacroTimer();
 		macros.execute(b);
-	else if (mouse == 3)
+	}
+	else if (mouse == FL_RIGHT_MOUSE)
 		editMacro(b);
 	restoreFocus();
 }
@@ -1536,22 +1536,45 @@ void sqlonoff_cb(Fl_Widget *w, void *vi)
 	progStatus.sqlonoff = v ? true : false;
 }
 
-void stopMacroTimer()
+void startMacroTimer()
 {
-	if (progdefaults.useTimer == false) return;
-	
-	progdefaults.useTimer = false;
-	Fl::remove_timeout(macro_timer);
-	FL_LOCK_D();
-	btnMacroTimer->hide();
-	btnMacroDummy->show();
-	FL_UNLOCK_D();
-	restoreFocus();
+	ENSURE_THREAD(FLMAIN_TID);
+
+	btnMacroTimer->color(fl_rgb_color(255, 255, 100));
+	btnMacroTimer->clear_output();
+	Fl::add_timeout(0.0, macro_timer);
 }
 
-void cbMacroTimerButton(Fl_Widget *w, void *d)
+void stopMacroTimer()
+{
+	ENSURE_THREAD(FLMAIN_TID);
+
+	progStatus.timer = 0;
+	Fl::remove_timeout(macro_timer);
+
+	btnMacroTimer->label(0);
+	btnMacroTimer->color(FL_BACKGROUND_COLOR);
+	btnMacroTimer->set_output();
+}
+
+void macro_timer(void*)
+{
+	char buf[8];
+	snprintf(buf, sizeof(buf), "%d", progStatus.timer);
+	btnMacroTimer->copy_label(buf);
+
+	if (progStatus.timer-- == 0) {
+		stopMacroTimer();
+		macros.execute(progStatus.timerMacro);
+	}
+	else
+		Fl::repeat_timeout(1.0, macro_timer);
+}
+
+void cbMacroTimerButton(Fl_Widget*, void*)
 {
 	stopMacroTimer();
+	restoreFocus();
 }
 
 void cb_RcvMixer(Fl_Widget *w, void *d)
@@ -2235,12 +2258,10 @@ void create_fl_digi_main() {
 			btnTune->callback(cbTune, 0);
 			
 			btnMacroTimer = new Fl_Button(WNOM - 50 - pad, 0, 50, Hmenu);
-			btnMacroTimer->color(fl_rgb_color(255, 255, 100));
 			btnMacroTimer->labelcolor(FL_RED);
-			btnMacroTimer->callback(cbMacroTimerButton, 0);
-			btnMacroTimer->hide();
-			btnMacroDummy = new Fl_Button(WNOM - 50 - pad, 0, 50, Hmenu, "");
-			
+			btnMacroTimer->callback(cbMacroTimerButton);
+			btnMacroTimer->set_output();
+
 			mnuFrame->resizable(mnu);
 		mnuFrame->end();
 				
