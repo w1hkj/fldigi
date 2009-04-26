@@ -39,6 +39,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <cmath>
+#include <cstdio>
 
 #ifndef NDEBUG
   #include "debug.h"
