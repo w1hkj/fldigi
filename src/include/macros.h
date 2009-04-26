@@ -37,15 +37,7 @@ struct MACROTEXT {
 	void saveMacros(const std::string& fname);
 	std::string expandMacro(int n);
 	void execute(int n);
-	MACROTEXT() {
-		changed = false;
-		char szname[5];
-		for (int i = 0; i < MAXMACROS; i++) {
-			snprintf(szname, sizeof(szname), "F-%d", i+1);
-			name[i] = szname;//"";
-			text[i] = "";
-		}
-	}
+	MACROTEXT();
 private:
 	std::string expanded;
 	void loadnewMACROS(std::string& s, size_t &i);

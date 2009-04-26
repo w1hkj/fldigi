@@ -874,6 +874,18 @@ void MACROTEXT::execute(int n)
 	useIdle = false;
 }
 
+MACROTEXT::MACROTEXT()
+{
+	changed = false;
+	char szname[5];
+	for (int i = 0; i < MAXMACROS; i++) {
+		snprintf(szname, sizeof(szname), "F-%d", i+1);
+		name[i] = szname;//"";
+		text[i] = "";
+	}
+}
+
+
 string mtext = 
 "//fldigi macro definition file extended\n\
 // This file defines the macro structe(s) for the digital modem program, fldigi\n\

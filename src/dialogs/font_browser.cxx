@@ -32,6 +32,7 @@
 #include <string>
 #include <cstdlib>
 #include <cstring>
+#include <cstdio>
 #include <stdint.h>
 
 #include <FL/Fl.H>

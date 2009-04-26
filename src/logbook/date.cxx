@@ -28,6 +28,7 @@
 #include <iostream>
 #include <cstring>
 #include <ctime>
+#include <cstdio>
 
 #include "date.h"
 
