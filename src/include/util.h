@@ -173,6 +173,14 @@ deprecated__ typeof(strcat) strcat;
 #  define PATH_SEP "\\"
 #endif
 
+// Unnamed sempahores are not supported on OS X
+// (and named semaphores are broken on cygwin).
+#ifdef __APPLE__
+#  define USE_NAMED_SEMAPHORES 1
+#else
+#  define USE_NAMED_SEMAPHORES 0
+#endif
+
 #endif /* UTIL_H */
 
 /*

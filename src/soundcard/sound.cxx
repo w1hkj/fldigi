@@ -80,14 +80,6 @@ LOG_FILE_SOURCE(debug::LOG_AUDIO);
 // We never write duplicate/QSK/PseudoFSK data to the sound files
 #define SNDFILE_CHANNELS 1
 
-// Unnamed sempahores are not supported on OS X,
-// and named semaphores are broken on cygwin.
-#ifdef __APPLE__
-#  define USE_NAMED_SEMAPHORES 1
-#else
-#  define USE_NAMED_SEMAPHORES 0
-#endif
-
 SoundBase::SoundBase()
         : sample_frequency(0),
 	  txppm(progdefaults.TX_corr), rxppm(progdefaults.RX_corr),

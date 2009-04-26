@@ -25,6 +25,7 @@
 #include <config.h>
 
 #include <fcntl.h>
+#include <semaphore.h>
 #include <cstdlib>
 #include <string>
 
@@ -60,24 +61,20 @@ void	trx_start_modem_loop();
 void	trx_receive_loop();
 void	trx_transmit_loop();
 void	trx_tune_loop();
-static void signal_trx_state(void);
+static void trx_signal_state(void);
 
 //#define DEBUG
 
 /* ---------------------------------------------------------------------- */
 
-
-pthread_mutex_t	trx_cond_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t	trx_cond = PTHREAD_COND_INITIALIZER;
-pthread_t	trx_thread;
+static sem_t*	trx_sem;
+static pthread_t trx_thread;
 state_t 	trx_state;
-bool		restartOK = false;
-bool		trx_wait = false;
 
 modem		*active_modem = 0;
 cRsId		*ReedSolomon = 0;
-SoundBase 		*scard;
-int			_trx_tune;
+SoundBase 	*scard;
+static int	_trx_tune;
 
 // Ringbuffer for the audio "history". A pointer into this buffer
 // is also passed to the waterfall signal drawing routines.
@@ -344,7 +341,7 @@ void *trx_loop(void *args)
 	for (;;) {
 		if (unlikely(old_state != trx_state)) {
 			old_state = trx_state;
-			signal_trx_state();
+			trx_signal_state();
 		}
 		switch (trx_state) {
 		case STATE_ABORT:
@@ -525,6 +522,27 @@ void trx_start(void)
 	ReedSolomon = new cRsId;
 #endif // !BENCHMARK_MODE
 
+#if USE_NAMED_SEMAPHORES
+	char sname[32];
+	snprintf(sname, sizeof(sname), "trx-%u-%s", getpid(), PACKAGE_TARNAME);
+	if ((trx_sem = sem_open(sname, O_CREAT | O_EXCL, 0600, 0)) == (sem_t*)SEM_FAILED) {
+		LOG_PERROR("sem_open");
+		abort();
+	}
+#  if HAVE_SEM_UNLINK
+	if (sem_unlink(sname) == -1) {
+		LOG_PERROR("sem_unlink");
+		abort();
+	}
+#  endif
+#else
+	trx_sem = new sem_t;
+	if (sem_init(trx_sem, 0, 0) == -1) {
+		LOG_PERROR("sem_init");
+		abort();
+	}
+#endif
+
 	trx_state = STATE_RX;
 	_trx_tune = 0;
 	active_modem = 0;
@@ -537,11 +555,21 @@ void trx_start(void)
 }
 
 //=============================================================================
-void trx_close() {
+void trx_close()
+{
 	trx_state = STATE_ABORT;
-	do {
+	while (trx_state != STATE_ENDED)
 		MilliSleep(100);
-	} while (trx_state != STATE_ENDED);
+
+#if USE_NAMED_SEMAPHORES
+	if (sem_close(trx_sem) == -1)
+		LOG_PERROR("sem_close");
+#else
+	if (sem_destroy(trx_sem) == -1)
+		LOG_PERROR("sem_destroy");
+	delete trx_sem;
+#endif
+
 	if (scard) {
 		delete scard;
 		scard = 0;
@@ -556,23 +584,14 @@ void trx_receive(void) { trx_state = STATE_RX; }
 
 //=============================================================================
 
-void wait_trx_state_prep(void)
+void trx_wait_state(void)
 {
-        pthread_mutex_lock(&trx_cond_mutex);
-}
-void wait_trx_state_wait(void)
-{
-        pthread_cond_wait(&trx_cond, &trx_cond_mutex);
-}
-void wait_trx_state_cmpl(void)
-{
-        pthread_mutex_unlock(&trx_cond_mutex);
+	ENSURE_NOT_THREAD(TRX_TID);
+	sem_wait(trx_sem);
 }
 
-static void signal_trx_state(void)
+static void trx_signal_state(void)
 {
 	ENSURE_THREAD(TRX_TID);
-        pthread_mutex_lock(&trx_cond_mutex);
-        pthread_cond_broadcast(&trx_cond);
-        pthread_mutex_unlock(&trx_cond_mutex);
+	sem_post(trx_sem);
 }
