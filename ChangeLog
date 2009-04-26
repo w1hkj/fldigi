@@ -1,5 +1,11 @@
 Change Log:
 
+3.11.3
+
+2009-04-26  Stelios Bounanos  <vcs@enotty.net>
+
+        3ba9ad1: Add missing includes
+
 3.11.2
 
 2009-04-24      Stelios Bounanos
