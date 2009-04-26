@@ -3109,9 +3109,9 @@ void put_WARNstatus(double val)
 
 void set_CWwpm()
 {
-	FL_LOCK();
+	FL_LOCK_D();
 	sldrCWxmtWPM->value(progdefaults.CWspeed);
-	FL_UNLOCK();
+	FL_UNLOCK_D();
 }
 
 void clear_StatusMessages()

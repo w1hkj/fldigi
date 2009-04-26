@@ -148,14 +148,22 @@ void cw::sync_parameters()
 {
 	int lowerwpm, upperwpm, nusymbollen, nufsymlen;
 
-	if (usedefaultWPM == false)
-		cw_send_dot_length = DOT_MAGIC / progdefaults.CWspeed;
-	else
-		cw_send_dot_length = DOT_MAGIC / progdefaults.defCWspeed;
+    int wpm = usedefaultWPM ? progdefaults.defCWspeed : progdefaults.CWspeed;
+    int fwpm = usedefaultWPM ? progdefaults.defCWspeed : progdefaults.CWfarnsworth;
+    
+    cw_send_dot_length = DOT_MAGIC / progdefaults.CWspeed;
+        
+//	if (usedefaultWPM == false)
+//		cw_send_dot_length = DOT_MAGIC / progdefaults.CWspeed;
+//	else
+//		cw_send_dot_length = DOT_MAGIC / progdefaults.defCWspeed;
 		
 	cw_send_dash_length = 3 * cw_send_dot_length;
-	nusymbollen = (int)(samplerate * 1.2 / progdefaults.CWspeed);
-    nufsymlen = (int)((50*(samplerate * 1.2 / progdefaults.CWfarnsworth) - 41*symbollen)/9);
+	
+	nusymbollen = (int)(samplerate * 1.2 / wpm);
+    nufsymlen = (int)((50*(samplerate * 1.2 / fwpm) - 41*symbollen)/9);
+//	nusymbollen = (int)(samplerate * 1.2 / progdefaults.CWspeed);
+//    nufsymlen = (int)((50*(samplerate * 1.2 / progdefaults.CWfarnsworth) - 41*symbollen)/9);
 
 	if (symbollen != nusymbollen || 
 	    nufsymlen != fsymlen ||
@@ -859,6 +867,7 @@ void	cw::decWPM()
 void	cw::toggleWPM()
 {
 	usedefaultWPM = !usedefaultWPM;
+	sync_parameters();
 	update_Status();
 }
 
