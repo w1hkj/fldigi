@@ -48,8 +48,12 @@ static bool rigMEM_PTT = PTT_OFF;
 static bool rig_qsy = false;
 static bool TogglePTT = false;
 static bool rigMEMisPTT = false;
-static long long qsy_f;
-static long long qsy_fmid;
+static bool change_mode = false;
+
+//static long long qsy_f;
+//static long long qsy_fmid;
+static long qsy_f;
+static long qsy_fmid;
 
 #if !defined(__WOE32__) && !defined(__APPLE__)
 // Linux & *BSD interface to Kachina
@@ -58,6 +62,7 @@ struct ST_SHMEM {
 	int  flag;
 	long freq;
 	long midfreq;
+	char mode[4];
 }sharedmem;
 
 
@@ -66,6 +71,8 @@ struct ST_SHMEM noshare;
 
 void *shared_memory = (void *)0;
 int  shmid = -1;
+
+char szmode[80];
 
 key_t hash (char *str)
 {
@@ -147,8 +154,9 @@ static void *rigMEM_loop(void *args)
 
 //		MilliSleep(20);
 
-		if (rig_qsy) {
+		if (rig_qsy || change_mode) {
 			freqflag->freq = qsy_f;
+            strncpy(freqflag->mode, szmode, 4);
 			freqflag->flag = -2; // set frequency
 			MilliSleep(20);
 			if (qsy_fmid > 0) {
@@ -163,7 +171,8 @@ static void *rigMEM_loop(void *args)
 				wf->movetocenter();
 			} else
 				wf->rfcarrier(freqflag->freq);
-			rig_qsy = false;
+			if (rig_qsy) rig_qsy = false;
+			if (change_mode) change_mode = false;
 		} else if (TogglePTT) {
 			if (rigMEM_PTT == PTT_ON)
 				freqflag->flag = -3;
@@ -192,21 +201,10 @@ static void *rigMEM_loop(void *args)
 			
 			if (wf->rfcarrier() != freqflag->freq)
 				wf->rfcarrier(freqflag->freq);
-			if (FreqDisp->value() != freqflag->freq)
-				FreqDisp->value(freqflag->freq);
-			if (qsoFreqDisp->value() != freqflag->freq)
-				qsoFreqDisp->value(freqflag->freq);
-
-			if (wf->USB() != sb)
-				wf->USB(sb);
-			if (sb && (strcmp(opMODE->value(), "USB") || strcmp(qso_opMODE->value(),"USB"))) {
-				REQ(&Fl_ComboBox::put_value, opMODE, "USB");
-				REQ(&Fl_ComboBox::put_value, qso_opMODE, "USB");
-			}
-			if (!sb && (strcmp(opMODE->value(), "LSB") || strcmp(qso_opMODE->value(),"LSB"))) {
-				REQ(&Fl_ComboBox::put_value, opMODE, "LSB");
-				REQ(&Fl_ComboBox::put_value, qso_opMODE, "LSB");
-			}
+            show_frequency(freqflag->freq);
+            wf->USB(sb);
+            REQ (&Fl_ComboBox::put_value, opMODE, sb ? "USB" : "LSB");
+            REQ (&Fl_ComboBox::put_value, qso_opMODE, sb ? "USB" : "LSB");
 		}
 	}
 
@@ -230,7 +228,6 @@ FILE *IOin;
 int  IOflag;
 long IOfreq = 7070000L;
 long IOmidfreq = 1000L;
-char szmode[80];
 
 bool rigMEM_init(void) 
 { 
@@ -240,12 +237,17 @@ bool rigMEM_init(void)
 	rigMEM_PTT = PTT_OFF;
 	TogglePTT = false;
 	rigMEMisPTT = false;
+	qsy_f = wf->rfcarrier();
+	qsy_fmid = 0;
 	
 	if (pthread_create(&rigMEM_thread, NULL, rigMEM_loop, NULL) < 0) {
 		LOG_PERROR("pthread_create");
 		return false;
 	} 
 	rigMEM_enabled = true;
+
+	init_rigMEM_RigDialog();
+		
 	return true;
 }
 
@@ -280,56 +282,39 @@ static void *rigMEM_loop(void *args)
 		if (rigMEM_exit)
 			break;
 
-//		if (rig_qsy) {
-//			freqflag->freq = qsy_f;
-//			freqflag->flag = -2; // set frequency
-//			MilliSleep(20);
-//			if (active_modem->freqlocked() == true) {
-//				active_modem->set_freqlock(false);
-//				active_modem->set_freq((int)qsy_fmid);
-//				active_modem->set_freqlock(true);
-//			} else
-//				active_modem->set_freq((int)qsy_fmid);
-//			wf->carrier((int)qsy_fmid);
-//			wf->rfcarrier(freqflag->freq);
-//			wf->movetocenter();
-//			rig_qsy = false;
-//		} else if (TogglePTT) {
-		if (TogglePTT) {
+		if (TogglePTT || rig_qsy || change_mode) {
 			IOout = fopen("c:/RIGCTL/ptt", "w");
 			if (IOout) {
-				if (rigMEM_PTT == PTT_ON)
-					putc('X', IOout);
-				else
-					putc('R', IOout);
-				fclose(IOin);
-				TogglePTT = false;
-			}
-		}
+LOG_INFO("sent %d, %c, %s", 
+    (int)qsy_f, 
+    rigMEM_PTT == PTT_ON ? 'X' : 'R',
+    szmode);
+   			    fprintf(IOout,"%c\n", rigMEM_PTT == PTT_ON ? 'X' : 'R');
+			    fprintf(IOout,"%d\n", (int)qsy_f);
+			    fprintf(IOout,"%s\n", szmode);
+				fclose(IOout);
+				if (TogglePTT) TogglePTT = false;
+          		if (rig_qsy) rig_qsy = false;
+          		if (change_mode) change_mode = false;
+          		show_frequency(qsy_f);
+            }		    
+        }
 		
 		IOin = fopen("c:/RIGCTL/rig", "r");
 		if (IOin) {
 			fscanf(IOin, "%ld\n", &IOfreq);
 			fscanf(IOin, "%s", szmode);
 			fclose(IOin);
-		}
-		if (strcmp(szmode,"LSB") == 0)
-			sb = false;
-			
-		if (wf->rfcarrier() != IOfreq) {
-			wf->rfcarrier(IOfreq);
-			FreqDisp->value(IOfreq);
-			qsoFreqDisp->value(IOfreq);
-		}
-		if (wf->USB() != sb) {
-			wf->USB(sb);
-			if (sb) {
-				REQ(&Fl_ComboBox::put_value, opMODE, "USB");
-				REQ(&Fl_ComboBox::put_value, qso_opMODE, "USB");
-			} else  {
-				REQ(&Fl_ComboBox::put_value, opMODE, "LSB");
-				REQ(&Fl_ComboBox::put_value, qso_opMODE, "LSB");
-			}
+			remove("c:/RIGCTL/rig");
+LOG_INFO("rcvd %d, %s", (int)IOfreq, szmode);
+
+		    wf->rfcarrier(IOfreq);
+		    show_frequency(IOfreq);
+		    qsy_f = IOfreq;
+            sb = (strcmp(szmode, "USB") == 0);
+            wf->USB(sb);
+            REQ (&Fl_ComboBox::put_value, opMODE, sb ? "USB" : "LSB");
+            REQ (&Fl_ComboBox::put_value, qso_opMODE, sb ? "USB" : "LSB");
 		}
 
 // delay for 50 msec interval
@@ -372,9 +357,17 @@ void rigMEM_set_qsy(long long f, long long fmid)
 	if (!rigMEM_enabled)
 		return;
 
+	if (active_modem->freqlocked() == true) {
+		active_modem->set_freqlock(false);
+		active_modem->set_freq(fmid);
+		active_modem->set_freqlock(true);
+	} else
+		active_modem->set_freq(fmid);
+	wf->rfcarrier(f);
+	wf->movetocenter();
+
 	qsy_f = f;
-	qsy_fmid = fmid;
-	rig_qsy = true;
+    rig_qsy = true;
 }
 
 void rigMEM_set_freq(long long f)
@@ -383,14 +376,17 @@ void rigMEM_set_freq(long long f)
 		return;
 
 	qsy_f = f;
-	qsy_fmid = 0;
+	wf->rfcarrier(f);
 	rig_qsy = true;
 
 }
 
 void rigMEM_setmode(const string& s)
 {
-	return; // not implemented for memMAP
+    strncpy(szmode, s.c_str(), 4);
+    wf->USB( strcmp(szmode,"USB") == 0 );
+    change_mode = true;
+	return;
 }
 
 /* ---------------------------------------------------------------------- */
