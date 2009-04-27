@@ -4,8 +4,8 @@
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Hold_Browser.H>
-#include <Fl/Fl_Group.H>
-#include <Fl/Fl_Pack.H>
+#include <FL/Fl_Group.H>
+#include <FL/Fl_Pack.H>
 
 enum { VIEWER_LABEL_AF, VIEWER_LABEL_RF, VIEWER_LABEL_CH, VIEWER_LABEL_NTYPES };
 
