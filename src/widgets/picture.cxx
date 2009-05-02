@@ -29,6 +29,7 @@
 #  include "compat.h"
 #endif
 
+#include <sstream>
 #include <cmath>
 #include <cstdlib>
 #include <cstdio>
@@ -43,6 +44,8 @@
 
 #include <png.h>
 
+#include "fl_digi.h"
+#include "trx.h"
 #include "fl_lock.h"
 #include "picture.h"
 #include "debug.h"
@@ -293,10 +296,26 @@ int picture::save_png(const char* filename)
 		     PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
 		     PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 
-	// TODO: write more useful image comments
+	// write text comments
+	struct tm tm;
+	time_t t = time(NULL);
+	gmtime_r(&t, &tm);
+	char z[20 + 1];
+	strftime(z, sizeof(z), "%Y-%m-%dT%H:%M:%SZ", &tm);
+	z[sizeof(z) - 1] = '\0';
+
+	ostringstream comment;
+	comment << "Program: " PACKAGE_STRING << '\n'
+		<< "Received: " << z << '\n'
+		<< "Modem: " << mode_info[active_modem->get_mode()].name << '\n'
+		<< "Frequency: " << inpFreq->value() << '\n';
+	if (inpCall->size())
+		comment << "Log call: " << inpCall->value() << '\n';
+
+	// set text
 	png_text text;
 	text.key = strdup("Comment");
-	text.text = strdup("MFSK-16 image decoded by " PACKAGE_STRING);
+	text.text = strdup(comment.str().c_str());
 	text.compression = PNG_TEXT_COMPRESSION_NONE;
 	png_set_text(png, info, &text, 1);
 
