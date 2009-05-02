@@ -152,24 +152,6 @@ AC_FLDIGI_BIND
 # Set HAVE_FLUID Makefile conditional
 AC_FLDIGI_FLTK
 
-### Image libraries
-# JPEG:
-#   Test if we can compile a program that includes jpeglib.h
-#   and link it either using the FLTK flags set above, or
-#   with -ljpeg.
-#   Set ac_cv_libjpeg to yes/no
-#   Define LIBJPEG_CFLAGS and LIBJPEG_CFLAGS and add them to
-#   IMAGE_CFLAGS and IMAGE_LIBS.
-#   Define USE_LIBJPEG in config.h
-# PNG:
-#   Check with the AC_FLDIGI_PKG_CHECK macro
-#   Set ac_cv_libpng to yes/no
-#   Define LIBJPEG_CFLAGS and LIBJPEG_CFLAGS and add them to
-#   IMAGE_CFLAGS and IMAGE_LIBS.
-#   Define USE_LIBPNG in config.h
-# Substitute IMAGE_CFLAGS and IMAGE_LIBS in Makefile
-AC_FLDIGI_IMAGES
-
 ### XML-RPC library
 # Set ac_cv_xmlrpc to yes/no
 # Substitute XMLRPC_CFLAGS and XMLRPC_LIBS in Makefile
@@ -181,6 +163,12 @@ AC_FLDIGI_XMLRPC
 # Set ac_cv_oss to yes/no
 # Define USE_OSS in config.h
 AC_FLDIGI_OSS
+
+### libpng
+# Set ac_cv_png to yes/no    (not used because we require libpng)
+# Define USE_PNG in config.h (as above)
+# Substitute PNG_CFLAGS and PNG_LIBS in Makefile
+AC_FLDIGI_PKG_CHECK([png], [libpng >= 1.2.8], [no], [no])
 
 ### libsamplerate
 # Set ac_cv_samplerate to yes/no    (not used because we require samplerate)
@@ -266,9 +254,6 @@ Configuration summary:
   Static linking .............. $ac_cv_static
   CPU optimizations ........... $ac_cv_opt
   Debugging ................... $ac_cv_debug
-
-  png ......................... $ac_cv_libpng
-  jpeg ........................ $ac_cv_libjpeg
 
   sndfile ..................... $ac_cv_sndfile
   oss ......................... $ac_cv_oss

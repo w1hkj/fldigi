@@ -37,7 +37,6 @@ private:
 	int width;
 	int height;
 	int depth;
-	int quality;
 	int numcol;
 	int slantdir;
 	void slant_corr(int x, int y);
@@ -54,12 +53,7 @@ public:
 	void	clear();
 	void	image(Fl_Image *img) {Fl_Widget::image(img);}
 	void	resize(int, int, int, int);
-#if USE_LIBJPEG
-	int	save_jpeg(const char *);
-#endif
-#if USE_LIBPNG
 	int	save_png(const char *);
-#endif
 };
 
 class picbox : public Fl_Box

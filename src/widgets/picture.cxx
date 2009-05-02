@@ -34,19 +34,14 @@
 #include <cstdio>
 #include <cstring>
 
+#include <time.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
 #include <FL/Fl.H>
 #include <FL/fl_draw.H>
 
-#if USE_LIBJPEG
-#  include <cstdio>
-#  include <jpeglib.h>
-#endif
-#if USE_LIBPNG
-#  include <png.h>
-#endif
+#include <png.h>
 
 #include "fl_lock.h"
 #include "picture.h"
@@ -60,7 +55,6 @@ picture::picture (int X, int Y, int W, int H) :
 	width = W;
 	height = H;
 	depth = 3;
-	quality = 80; // for jpeg export
 	bufsize = W * H * depth;
 	numcol = 0;
 	slantdir = 0;
@@ -267,53 +261,6 @@ static FILE* open_file(const char* name, const char* suffix)
 	return fp;
 }
 
-#if USE_LIBJPEG
-//
-// save_jpeg - Write a captured picture to a JPEG format file.
-//
-
-int picture::save_jpeg(const char *filename)
-{
-	unsigned char		*ptr;		// Pointer to image data
-	FILE				*fp = 0;	// File pointer
-	struct jpeg_compress_struct	info;		// Compressor info
-	struct jpeg_error_mgr		err;		// Error handler info
-
-	if ((fp = open_file(filename, ".jpg")) == NULL)
-		return -1;
-
-// Setup the JPEG compression stuff...
-	info.err = jpeg_std_error(&err);
-	jpeg_create_compress(&info);
-	jpeg_stdio_dest(&info, fp);
-
-	info.image_width      = width;
-	info.image_height     = height;
-	info.input_components = depth;
-	info.in_color_space   = JCS_RGB;//simg->d() == 1 ? JCS_GRAYSCALE : JCS_RGB;
-
-	jpeg_set_defaults(&info);
-	jpeg_set_quality(&info, quality, 1);
-	jpeg_simple_progression(&info);
-
-	info.optimize_coding = 1;
-
-// Save the image...
-	jpeg_start_compress(&info, 1);
-	while (info.next_scanline < info.image_height) {
-		ptr = &vidbuf[info.next_scanline * width * depth];
-		jpeg_write_scanlines(&info, &ptr, 1);
-	}
-	jpeg_finish_compress(&info);
-	jpeg_destroy_compress(&info);
-
-	fclose(fp);
-
-	return 0;
-}
-#endif // USE_LIBJPEG
-
-#if USE_LIBPNG
 int picture::save_png(const char* filename)
 {
 	FILE* fp;
@@ -372,7 +319,6 @@ int picture::save_png(const char* filename)
 
 	return 0;
 }
-#endif // USE_LIBPNG
 
 
 int picbox::handle(int event)

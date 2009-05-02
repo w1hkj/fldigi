@@ -74,38 +74,13 @@ void cb_picRxAbort( Fl_Widget *w, void *)
 
 void cb_picRxSave( Fl_Widget *w, void *)
 {
-	const char ffilter[] = ""
-#if USE_LIBPNG
-		"Portable Network Graphics\t*.png\n"
-#endif
-#if USE_LIBJPEG
-		"Independent JPEG Group\t*.{jpg,jpeg}"
-#endif
-		;
+	const char ffilter[] = "Portable Network Graphics\t*.png\n";
 	string dfname = PicsDir;
-#if USE_LIBPNG
 	dfname.append("image.png");
-#else
-	dfname.append("image.jpg");
-#endif
 
-	int fsel;
-	const char *fn = FSEL::saveas(_("Save image as:"), ffilter, dfname.c_str(), &fsel);
-	if (!fn) return;
-        // selected filter determines format
-	switch (fsel) {
-	case 0:
-#if USE_LIBPNG
+	const char *fn = FSEL::saveas(_("Save image as:"), ffilter, dfname.c_str(), NULL);
+	if (fn)
 		picRx->save_png(fn);
-		break;
-#endif
-		// fall through if no libpng
-	case 1:
-#if USE_LIBJPEG
-		picRx->save_jpeg(fn);
-#endif
-		break;
-	}
 }
 
 void createRxViewer()
@@ -119,9 +94,6 @@ void createRxViewer()
 	btnpicRxSave = new Fl_Button(5, 140 - 30, 60, 24,_("Save..."));
 	btnpicRxSave->callback(cb_picRxSave, 0);
 	btnpicRxSave->hide();
-#if !(USE_LIBPNG || USE_LIBJPEG)
-	btnpicRxSave->deactivate();
-#endif
 	btnpicRxAbort = new Fl_Button(70, 140 - 30, 60, 24, _("Abort"));
 	btnpicRxAbort->callback(cb_picRxAbort, 0);
 	btnpicRxClose = new Fl_Button(135, 140 - 30, 60, 24, _("Hide"));
@@ -239,14 +211,14 @@ void updateTxPic(unsigned char data)
 	}
 }
 
-void cb_picTxLoad(Fl_Widget *, void *) 
+void cb_picTxLoad(Fl_Widget *, void *)
 {
-	const char *fn = 
+	const char *fn =
 		FSEL::select(_("Load image file"), "Portable Network Graphics\t*.png\n"
 			    "Independent JPEG Group\t*.{jpg,jif,jpeg,jpe}\n"
 			    "Graphics Interchange Format\t*.gif", PicsDir.c_str());
-	if (!fn) return;
-	load_image(fn);
+	if (fn)
+		load_image(fn);
 }
 
 void cb_picTxClose( Fl_Widget *w, void *)
