@@ -54,6 +54,7 @@ static bool change_mode = false;
 //static long long qsy_fmid;
 static long qsy_f;
 static long qsy_fmid;
+char szmode[80];
 
 #if !defined(__WOE32__) && !defined(__APPLE__)
 // Linux & *BSD interface to Kachina
@@ -71,8 +72,6 @@ struct ST_SHMEM noshare;
 
 void *shared_memory = (void *)0;
 int  shmid = -1;
-
-char szmode[80];
 
 key_t hash (char *str)
 {
