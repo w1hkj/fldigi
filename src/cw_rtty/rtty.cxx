@@ -605,6 +605,7 @@ double rtty::nco(double freq)
 double rtty::FSKnco()
 {
 	FSKphaseacc += TWOPI * 1000 / samplerate;
+//	FSKphaseacc += TWOPI * 440 / samplerate;
 
 	if (FSKphaseacc > M_PI)
 
@@ -620,19 +621,18 @@ void rtty::send_symbol(int symbol)
 	
 	if (reverse)
 		symbol = !symbol;
-//	if (!progdefaults.RTTY_USB)
-//		symbol = !symbol;
 
 	if (symbol)
 		freq = get_txfreq_woffset() + shift / 2.0;
 	else
 		freq = get_txfreq_woffset() - shift / 2.0;
+    
 	for (int i = 0; i < symbollen; i++) {
 		outbuf[i] = nco(freq);
 		if (symbol)
 			FSKbuf[i] = FSKnco();
 		else
-			FSKbuf[i] = 0.0;
+			FSKbuf[i] = 0.0 * FSKnco();
 	}
 
 	if (progdefaults.PseudoFSK)
@@ -645,8 +645,6 @@ void rtty::send_stop()
 {
 	double freq;
 	bool invert = reverse;
-//	if (!progdefaults.RTTY_USB)
-//		invert = !invert;
 	
 	if (invert)
 		freq = get_txfreq_woffset() - shift / 2.0;
@@ -656,9 +654,9 @@ void rtty::send_stop()
 	for (int i = 0; i < stoplen; i++) {
 		outbuf[i] = nco(freq);
 		if (invert)
-			FSKbuf[i] = FSKnco();
+			FSKbuf[i] = 0.0 * FSKnco();
 		else
-			FSKbuf[i] = 0.0;
+			FSKbuf[i] = FSKnco();
 	}
 	if (progdefaults.PseudoFSK)
 		ModulateStereo(outbuf, FSKbuf, stoplen);
