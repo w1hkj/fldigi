@@ -789,7 +789,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		*retval = xmlrpc_c::value_boolean(btn_afconoff->value());
+		*retval = xmlrpc_c::value_boolean(btnAFC->value());
 	}
 };
 
@@ -803,8 +803,8 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		bool v = btn_afconoff->value();
-		REQ(set_button, btn_afconoff, params.getBoolean(0));
+		bool v = btnAFC->value();
+		REQ(set_button, btnAFC, params.getBoolean(0));
 		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
@@ -819,8 +819,8 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		bool v = !btn_afconoff->value();
-		REQ(set_button, btn_afconoff, v);
+		bool v = !btnAFC->value();
+		REQ(set_button, btnAFC, v);
 		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
@@ -837,7 +837,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		*retval = xmlrpc_c::value_boolean(btn_sqlonoff->value());
+		*retval = xmlrpc_c::value_boolean(btnSQL->value());
 	}
 };
 
@@ -851,8 +851,8 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		bool v = btn_sqlonoff->value();
-		REQ(set_button, btn_sqlonoff, params.getBoolean(0));
+		bool v = btnSQL->value();
+		REQ(set_button, btnSQL, params.getBoolean(0));
 		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
@@ -867,8 +867,8 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		bool v = !btn_sqlonoff->value();
-		REQ(set_button, btn_sqlonoff, v);
+		bool v = !btnSQL->value();
+		REQ(set_button, btnSQL, v);
 		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
@@ -1022,9 +1022,6 @@ public:
 };
 
 // =============================================================================
-
-extern Fl_Button* btnTune; // FIXME: export in fl_digi.h
-extern Fl_Button* btnRSID;
 
 class Main_get_trx_status : public xmlrpc_c::method
 {

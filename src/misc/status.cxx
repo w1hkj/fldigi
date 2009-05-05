@@ -319,8 +319,8 @@ void status::initLastState()
 	wf->setAmpSpan();
 	wf->movetocenter();
 
-	btn_afconoff->value(afconoff);
-	btn_sqlonoff->value(sqlonoff);
+	btnAFC->value(afconoff);
+	btnSQL->value(sqlonoff);
 	sldrSquelch->value(sldrSquelchValue);
 	valRcvMixer->value(RcvMixer * 100.0);
 	valXmtMixer->value(XmtMixer * 100.0);

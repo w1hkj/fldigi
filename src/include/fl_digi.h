@@ -98,8 +98,11 @@ extern Fl_Button		*qso_btnClearList;
 
 extern Fl_Value_Slider		*valRcvMixer;
 extern Fl_Value_Slider		*valXmtMixer;
-extern Fl_Button		*btn_afconoff;
-extern Fl_Button		*btn_sqlonoff;
+extern Fl_Button		*btnAFC;
+extern Fl_Button		*btnSQL;
+extern Fl_Light_Button  *btnRSID;
+extern Fl_Light_Button  *btnTune;
+
 extern Fl_Button		*btnAltMacros;
 extern Fl_Button		*btnMacroTimer;
 

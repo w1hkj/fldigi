@@ -1029,7 +1029,6 @@ void xmtrcv_cb(Fl_Widget *w, void *vi)
 		active_modem->set_stopflag(false);
 		trx_transmit();
 	} else {
-		extern Fl_Button* btnTune;
 		if (btnTune->value()) {
 			btnTune->value(0);
 			btnTune->do_callback();
@@ -1664,8 +1663,8 @@ int WFdisp::handle(int event)
 			if (Fl::event_state() & FL_CTRL)
 				viewer_paste_freq(cursorFreq(xpos));
 			else {
-				btn_afconoff->value(!btn_afconoff->value());
-				btn_afconoff->do_callback();
+				btnAFC->value(!btnAFC->value());
+				btnAFC->do_callback();
 			}
 		}
 		break;

@@ -30,7 +30,7 @@ Fl_Button	*btnMacroEditCancel = (Fl_Button *)0;
 Fl_Button	*btnInsertMacro = (Fl_Button *)0;
 Fl_Input2	*macrotext = (Fl_Input2 *)0;
 Fl_Input2	*labeltext = (Fl_Input2 *)0;
-static int widths[] = {90, 0};
+static int widths[] = {110, 0};
 
 Fl_Hold_Browser *macroDefs=(Fl_Hold_Browser *)0;
 
@@ -98,6 +98,10 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add("<PRE:nn.n>\tQSK pre-timing");
 	w->add("<POST:+/-nn.n>\tQSK post-timing");
 	
+	w->add(LINE_SEP);
+	w->add("<AFC:on|off|t>\tAFC  on,off,toggle");
+	w->add("<RSID:on|off|t>\tRSID on,off,toggle");
+
 	w->add(LINE_SEP);
 	w->add("<FILE:>\tinsert text file");
 	w->add("<MACROS:>\tchange macro defs file");
@@ -190,7 +194,7 @@ Fl_Double_Window* make_macroeditor(void)
 {
 	editor_label.append("Macro editor - ").append(progStatus.LastMacroFile);
 
-	Fl_Double_Window* w = new Fl_Double_Window(700, 230, editor_label.c_str());
+	Fl_Double_Window* w = new Fl_Double_Window(730, 230, editor_label.c_str());
 		labeltext = new Fl_Input2(45, 15, 115, 25, "Label:");
 		labeltext->textfont(FL_COURIER);
 
@@ -209,7 +213,7 @@ Fl_Double_Window* make_macroeditor(void)
 		btnInsertMacro->image(new Fl_Pixmap(left_arrow_icon));
 		btnInsertMacro->callback(cbInsertMacro);
 		
-		macroDefs = new Fl_Hold_Browser(490, 60, 205, 165);
+		macroDefs = new Fl_Hold_Browser(490, 60, 235, 165);
 		macroDefs->column_widths(widths);
 		loadBrowser(macroDefs);
 	w->end();

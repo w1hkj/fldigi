@@ -77,6 +77,8 @@ void pWPM(string &, size_t &);
 void pRISETIME(string &, size_t &);
 void pPRE(string &, size_t &);
 void pPOST(string &, size_t &);
+void pAFC(string &, size_t &);
+void pRSID(string &, size_t &);
 //void pMACROS(string &, size_t &);
 
 MTAGS mtags[] = {
@@ -124,6 +126,8 @@ MTAGS mtags[] = {
 {"<RISE:",      pRISETIME},
 {"<PRE:",       pPRE},
 {"<POST:",      pPOST},
+{"<AFC:",       pAFC},
+{"<RSID:",      pRSID},
 //{"<MACROS:",	pMACROS},
 {0, 0}
 };
@@ -163,11 +167,10 @@ void pTIMER(string &s, size_t &i)
 	string sTime = s.substr(i+7, endbracket - i - 7);
 	if (sTime.length() > 0) {
 		sscanf(sTime.c_str(), "%d", &number);
-		s.replace(i, endbracket - i + 1, "");
 		progStatus.timer = number;
 		progStatus.timerMacro = mNbr;
-	} else
-		s.replace(i, endbracket - i + 1, "");
+	}
+	s.replace(i, endbracket - i + 1, "");
 }
 
 void pWPM(string &s, size_t &i)
@@ -179,11 +182,10 @@ void pWPM(string &s, size_t &i)
 		sscanf(sTime.c_str(), "%d", &number);
 		if (number < 5) number = 5;
 		if (number > 200) number = 200;
-		s.replace(i, endbracket - i + 1, "");
 		progdefaults.CWspeed = number;
-        sldrCWxmtWPM->value(number);
-	} else
-		s.replace(i, endbracket - i + 1, "");
+		sldrCWxmtWPM->value(number);
+	}
+	s.replace(i, endbracket - i + 1, "");
 }
 
 void pRISETIME(string &s, size_t &i)
@@ -195,11 +197,10 @@ void pRISETIME(string &s, size_t &i)
 		sscanf(sVal.c_str(), "%f", &number);
 		if (number < 0) number = 0;
 		if (number > 20) number = 20;
-		s.replace(i, endbracket - i + 1, "");
 		progdefaults.CWrisetime = number;
-    	cntCWrisetime->value(number);
-	} else
-		s.replace(i, endbracket - i + 1, "");
+		cntCWrisetime->value(number);
+	}
+	s.replace(i, endbracket - i + 1, "");
 }
 
 void pPRE(string &s, size_t &i)
@@ -211,11 +212,10 @@ void pPRE(string &s, size_t &i)
 		sscanf(sVal.c_str(), "%f", &number);
 		if (number < 0) number = 0;
 		if (number > 20) number = 20;
-		s.replace(i, endbracket - i + 1, "");
 		progdefaults.CWpre = number;
 		cntPreTiming->value(number);
-	} else
-		s.replace(i, endbracket - i + 1, "");
+	}
+	s.replace(i, endbracket - i + 1, "");
 }
 
 void pPOST(string &s, size_t &i)
@@ -225,13 +225,12 @@ void pPOST(string &s, size_t &i)
 	string sVal = s.substr(i+6, endbracket - i - 6);
 	if (sVal.length() > 0) {
 		sscanf(sVal.c_str(), "%f", &number);
-		s.replace(i, endbracket - i + 1, "");
 		if (number < -20) number = -20;
 		if (number > 20) number = 20;
 		progdefaults.CWpost = number;
 		cntPostTiming->value(number);
-	} else
-		s.replace(i, endbracket - i + 1, "");
+	}
+	s.replace(i, endbracket - i + 1, "");
 }
 
 bool useIdle = false;
@@ -244,11 +243,10 @@ void pIDLE(string &s, size_t &i)
 	string sTime = s.substr(i+6, endbracket - i - 6);
 	if (sTime.length() > 0) {
 		sscanf(sTime.c_str(), "%d", &number);
-		s.replace(i, endbracket - i + 1, "");
 		useIdle = true;
 		idleTime = number;
-	} else
-		s.replace(i, endbracket - i + 1, "");
+	}
+	s.replace(i, endbracket - i + 1, "");
 }
 
 
@@ -486,6 +484,42 @@ void pMODEM(string &s, size_t &i)
 		}
 	}
 	s.erase(i, k-i);
+}
+
+void pAFC(string &s, size_t &i)
+{
+  size_t endbracket = s.find('>',i);
+  string sVal = s.substr(i+5, endbracket - i - 5);
+  if (sVal.length() > 0) {
+    // sVal = on|off|t   [ON, OFF or Toggle]
+    if (sVal.compare(0,2,"on") == 0)
+      btnAFC->value(1);
+    else if (sVal.compare(0,3,"off") == 0)
+      btnAFC->value(0);
+    else if (sVal.compare(0,1,"t") == 0)
+      btnAFC->value(!btnAFC->value());
+
+    btnAFC->do_callback();
+  }
+  s.replace(i, endbracket - i + 1, "");
+}
+
+void pRSID(string &s, size_t &i)
+{
+  size_t endbracket = s.find('>',i);
+  string sVal = s.substr(i+6, endbracket - i - 6);
+  if (sVal.length() > 0) {
+    // sVal = on|off|t   [ON, OFF or Toggle]
+    if (sVal.compare(0,2,"on") == 0)
+      btnRSID->value(1);
+    else if (sVal.compare(0,3,"off") == 0)
+      btnRSID->value(0);
+    else if (sVal.compare(0,1,"t") == 0)
+      btnRSID->value(!btnRSID->value());
+
+    btnRSID->do_callback();
+  }
+  s.replace(i, endbracket - i + 1, "");
 }
 
 #ifndef __MINGW32__

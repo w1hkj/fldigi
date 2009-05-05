@@ -281,7 +281,7 @@ Fl_Double_Window* createViewer() {
 	static int viewerwidth = (progStatus.VIEWERnchars * cwidth) + cols[0] + sbarwidth + border;
 	static int viewerheight = 50 + cheight * progdefaults.VIEWERchannels + border;
 
-	w = new Fl_Double_Window(progStatus.VIEWERxpos, progStatus.VIEWERypos, viewerwidth, viewerheight, _("Psk Viewer"));
+	w = new Fl_Double_Window(progStatus.VIEWERxpos, progStatus.VIEWERypos, viewerwidth, viewerheight, _("PSK Browser"));
 	w->xclass(PACKAGE_NAME);
 	p = new Fl_Pack(0,0,viewerwidth, viewerheight);
 		Fl_Pack *p1 = new Fl_Pack(0, 0, viewerwidth, 25);

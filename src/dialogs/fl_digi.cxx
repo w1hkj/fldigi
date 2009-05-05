@@ -145,7 +145,7 @@ Fl_Menu_Bar 		*mnu;
 Fl_Light_Button		*btnAutoSpot = (Fl_Light_Button *)0;
 Fl_Light_Button		*btnTune = (Fl_Light_Button *)0;
 Fl_Light_Button		*btnRSID = (Fl_Light_Button *)0;
-Fl_Button		*btnMacroTimer;
+Fl_Button		    *btnMacroTimer;
 
 Fl_Tile_check		*TiledGroup = 0;
 FTextView			*ReceiveText = 0;
@@ -158,8 +158,8 @@ Fl_Box				*WARNstatus = (Fl_Box *)0;
 Fl_Button			*MODEstatus = (Fl_Button *)0;
 Fl_Button 			*btnMacro[NUMMACKEYS];
 Fl_Button			*btnAltMacros;
-Fl_Button			*btn_afconoff;
-Fl_Button			*btn_sqlonoff;
+Fl_Button			*btnAFC;
+Fl_Button			*btnSQL;
 Fl_Input2			*inpFreq;
 Fl_Input2			*inpTimeOff;
 Fl_Input2			*inpTimeOn;
@@ -523,12 +523,12 @@ void startup_modem(modem *m)
         m->set_sigsearch(SIGSEARCH);
 
 	if (m->get_cap() & modem::CAP_AFC) {
-		btn_afconoff->value(progStatus.afconoff);
-		btn_afconoff->activate();
+		btnAFC->value(progStatus.afconoff);
+		btnAFC->activate();
 	}
 	else {
-		btn_afconoff->value(0);
-		btn_afconoff->deactivate();
+		btnAFC->value(0);
+		btnAFC->deactivate();
 	}
 
 	wf->btnRev->value(wf->Reverse());
@@ -1518,7 +1518,7 @@ void status_cb(Fl_Widget *b, void *arg)
 	restoreFocus();
 }
 
-void afconoff_cb(Fl_Widget *w, void *vi)
+void cbAFC(Fl_Widget *w, void *vi)
 {
 	FL_LOCK_D();
 	Fl_Button *b = (Fl_Button *)w;
@@ -1527,7 +1527,7 @@ void afconoff_cb(Fl_Widget *w, void *vi)
 	progStatus.afconoff = v;
 }
 
-void sqlonoff_cb(Fl_Widget *w, void *vi)
+void cbSQL(Fl_Widget *w, void *vi)
 {
 	FL_LOCK_D();
 	Fl_Button *b = (Fl_Button *)w;
@@ -1703,7 +1703,7 @@ bool clean_exit(void) {
 
 #define LOG_TO_FILE_MLABEL _("Log all RX/TX text")
 #define RIGCONTROL_MLABEL _("Rig Control")
-#define VIEW_MLABEL _("View")
+#define VIEW_MLABEL _("&View")
 #define MFSK_IMAGE_MLABEL _("MFSK Image")
 #define CONTEST_MLABEL _("Contest")
 #define CONTEST_FIELDS_MLABEL _("Contest fields")
@@ -1833,7 +1833,7 @@ Fl_Menu_Item menu_[] = {
 { mode_info[MODE_ANALYSIS].name, 0, cb_init_mode, (void *)MODE_ANALYSIS, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
-{_("Configure"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{_("&Configure"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { make_icon_label(_("Operator"), system_users_icon), 0, (Fl_Callback*)cb_mnuConfigOperator, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Colors && Fonts"), preferences_desktop_font_icon), 0, (Fl_Callback*)cb_mnuConfigFonts, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("User Interface")), 0,  (Fl_Callback*)cb_mnuUI, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
@@ -1849,16 +1849,16 @@ Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 { VIEW_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ make_icon_label(_("Digiscope"), utilities_system_monitor_icon), 0, (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("&Digiscope"), utilities_system_monitor_icon), 0, (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 0, (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(_("PSK Browser")), 0, (Fl_Callback*)cb_mnuViewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("&PSK Browser")), 0, (Fl_Callback*)cb_mnuViewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(RIGCONTROL_MLABEL, multimedia_player_icon), 0, (Fl_Callback*)cb_mnuRig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(_("Logbook")), 0, (Fl_Callback*)cb_mnuShowLogbook, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("&Logbook")), 0, (Fl_Callback*)cb_mnuShowLogbook, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { CONTEST_FIELDS_MLABEL, 0, (Fl_Callback*)cb_mnuContest, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
-{_("Help"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{_("&Help"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 #ifndef NDEBUG
 // settle the gmfsk vs fldigi argument once and for all
 { make_icon_label(_("Create sunspots"), weather_clear_icon), 0, cb_mnuFun, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
@@ -1872,7 +1872,7 @@ Fl_Menu_Item menu_[] = {
 { make_icon_label(_("Build info"), executable_icon), 0, cb_mnuBuildInfo, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Event log"), dialog_information_icon), 0, cb_mnuDebug, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Check for updates..."), system_software_update_icon), 0, cb_mnuCheckUpdate, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(_("About"), help_about_icon), 0, cb_mnuAboutURL, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("&About"), help_about_icon), 0, cb_mnuAboutURL, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"  ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
@@ -2803,30 +2803,30 @@ void create_fl_digi_main() {
 			sql_width -= 15; // leave room for resize handle
 #endif
 			if (progdefaults.useCheckButtons) {
-				btn_afconoff = new Fl_Check_Button(
+				btnAFC = new Fl_Check_Button(
 								WNOM - bwSqlOnOff - bwAfcOnOff, 
 								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
 								bwAfcOnOff, Hstatus, "AFC");
-				btn_sqlonoff = new Fl_Check_Button(
+				btnSQL = new Fl_Check_Button(
 								WNOM - bwSqlOnOff, 
 								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
 								sql_width, Hstatus, "SQL");
 			} else {
-				btn_afconoff = new Fl_Light_Button(
+				btnAFC = new Fl_Light_Button(
 								WNOM - bwSqlOnOff - bwAfcOnOff, 
 								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
 								bwAfcOnOff, Hstatus, "AFC");
-				btn_sqlonoff = new Fl_Light_Button(
+				btnSQL = new Fl_Light_Button(
 								WNOM - bwSqlOnOff, 
 								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
 								sql_width, Hstatus, "SQL");
 			}
-			btn_afconoff->callback(afconoff_cb, 0);
-			btn_afconoff->value(1);
-			btn_afconoff->tooltip(_("Automatic Frequency Control"));
-			btn_sqlonoff->callback(sqlonoff_cb, 0);
-			btn_sqlonoff->value(1);
-			btn_sqlonoff->tooltip(_("Squelch"));
+			btnAFC->callback(cbAFC, 0);
+			btnAFC->value(1);
+			btnAFC->tooltip(_("Automatic Frequency Control"));
+			btnSQL->callback(cbSQL, 0);
+			btnSQL->value(1);
+			btnSQL->tooltip(_("Squelch"));
 
 
 			Fl_Group::current()->resizable(StatusBar);
@@ -2897,14 +2897,14 @@ void put_Bandwidth(int bandwidth)
 static void set_metric(double metric)
 {
 	pgrsSquelch->value(metric);
-	static Fl_Color sqlcol = btn_sqlonoff->selection_color();
+	static Fl_Color sqlcol = btnSQL->selection_color();
 	if (!progStatus.sqlonoff)
 		return;
 	if (metric < progStatus.sldrSquelchValue)
-		btn_sqlonoff->selection_color(sqlcol);
+		btnSQL->selection_color(sqlcol);
 	else
-	        btn_sqlonoff->selection_color(FL_GREEN);
-	btn_sqlonoff->redraw_label();
+	        btnSQL->selection_color(FL_GREEN);
+	btnSQL->redraw_label();
 }
 
 void display_metric(double metric)
