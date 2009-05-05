@@ -1,5 +1,19 @@
 Change Log:
 
+3.11.4
+
+2009-05-05  Stelios Bounanos  <vcs@enotty.net>
+
+	ae6f9d5: Add missing include
+
+2009-05-04  David Freese  <w1hkj@w1hkj.com>
+
+	520ebf7: RTTY pseudo output, corrected stop bit inversion
+
+2009-04-27  Stelios Bounanos  <vcs@enotty.net>
+
+	dd7294c: Fix FLTK includes
+
 3.11.3
 
 2009-04-26  Stelios Bounanos  <vcs@enotty.net>
