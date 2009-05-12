@@ -20,8 +20,14 @@ if test "x$target_win32" = "xyes"; then
     AC_DEFINE([__WOE32__], 1, [Define to 1 if we are building on cygwin or mingw])
 fi
 
+if test "x$target_mingw32" = "xyes"; then
+    AC_CHECK_PROG([MAKENSIS], [makensis], [makensis])
+fi
+
 AC_SUBST([WINDRES])
 AM_CONDITIONAL([HAVE_WINDRES], [test "x$WINDRES" != "x"])
+AC_SUBST([MAKENSIS])
+AM_CONDITIONAL([HAVE_NSIS], [test "x$MAKENSIS" != "x"])
 AM_CONDITIONAL([WIN32], [test "x$target_win32" = "xyes"])
 AM_CONDITIONAL([MINGW32], [test "x$target_mingw32" = "xyes"])
 

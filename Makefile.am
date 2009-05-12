@@ -13,6 +13,11 @@ appbundle:
 	(cd src && $(MAKE) $(AM_MAKEFLAGS) $@)
 endif
 
+if HAVE_NSIS
+nsisinst:
+	(cd src && $(MAKE) $(AM_MAKEFLAGS) $@)
+endif
+
 if ENABLE_HAMLIB
 hamlib-static:
 	(cd src && $(MAKE) $(AM_MAKEFLAGS) $@)

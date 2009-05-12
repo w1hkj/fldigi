@@ -59,7 +59,7 @@ FLDIGI_VERSION_MAJOR = @FLDIGI_VERSION_MAJOR@
 FLDIGI_VERSION_MINOR = @FLDIGI_VERSION_MINOR@
 FLDIGI_VERSION_PATCH = @FLDIGI_VERSION_PATCH@
 
-.EXPORT_ALL_VARIABLES: appbundle hamlib-static
+.EXPORT_ALL_VARIABLES: appbundle nsisinst hamlib-static
 
 # Sources that are generated,
 BUILT_SOURCES =
@@ -109,13 +109,20 @@ flgen: $(srcdir)/dialogs/confdialog.fl $(srcdir)/dialogs/colorsfonts.fl $(srcdir
 endif
 
 if DARWIN
-appbundle: fldigi
+appbundle: $(bin_PROGRAMS)
 	sh $(srcdir)/../scripts/mkappbundle.sh "$(srcdir)/../data" . \
 	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-nolibs \
 	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)
     CLEANFILES  += $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-nolibs \
 	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION) \
 	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)*.dmg
+endif
+
+if HAVE_NSIS
+nsisinst: $(bin_PROGRAMS)
+	sh $(srcdir)/../scripts/mknsisinst.sh "$(srcdir)/../data" . \
+	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)_setup.exe
+    CLEANFILES  += $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)_setup.exe
 endif
 
 if ENABLE_HAMLIB

@@ -40,11 +40,25 @@ AC_CONFIG_HEADER([src/config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 
-AC_DEFINE([PACKAGE_AUTHORS], ["Dave Freese, Stelios Bounanos, Leigh Klotz, and others"], [Authors])
-AC_DEFINE([PACKAGE_HOME], ["http://www.w1hkj.com/Fldigi.html"], [Home page])
-AC_DEFINE([PACKAGE_DL], ["http://www.w1hkj.com/Downloads.html"], [Download page])
-AC_DEFINE([PACKAGE_PROJ], ["http://developer.berlios.de/project/showfiles.php?group_id=9149"], [BerliOS page])
-AC_DEFINE([PACKAGE_DOCS], ["http://www.w1hkj.com/FldigiHelp/index.html"], [Docs index])
+PACKAGE_AUTHORS="Dave Freese, Stelios Bounanos, Leigh Klotz, and others"
+PACKAGE_HOME="http://www.w1hkj.com/Fldigi.html"
+PACKAGE_DL="http://www.w1hkj.com/Downloads.html"
+PACKAGE_PROJ="http://developer.berlios.de/project/showfiles.php?group_id=9149"
+PACKAGE_DOCS="http://www.w1hkj.com/FldigiHelp/index.html"
+PACKAGE_GUIDE="http://www.w1hkj.com/beginners.html"
+AC_DEFINE_UNQUOTED([PACKAGE_AUTHORS], ["$PACKAGE_AUTHORS"], [Authors])
+AC_DEFINE_UNQUOTED([PACKAGE_HOME], ["$PACKAGE_HOME"], [Home page])
+AC_DEFINE_UNQUOTED([PACKAGE_DL], ["$PACKAGE_DL"], [Download page])
+AC_DEFINE_UNQUOTED([PACKAGE_PROJ], ["$PACKAGE_PROJ"], [BerliOS page])
+AC_DEFINE_UNQUOTED([PACKAGE_DOCS], ["$PACKAGE_DOCS"], [Docs index])
+AC_DEFINE_UNQUOTED([PACKAGE_GUIDE], ["$PACKAGE_GUIDE"], [Beginners guide])
+AC_SUBST([PACKAGE_AUTHORS], [$PACKAGE_AUTHORS])
+AC_SUBST([PACKAGE_HOME], [$PACKAGE_HOME])
+AC_SUBST([PACKAGE_DL], [$PACKAGE_DL])
+AC_SUBST([PACKAGE_PROJ], [$PACKAGE_PROJ])
+AC_SUBST([PACKAGE_DOCS], [$PACKAGE_DOCS])
+AC_SUBST([PACKAGE_GUIDE], [$PACKAGE_GUIDE])
+
 
 
 # Checks for programs.
