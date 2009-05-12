@@ -4,8 +4,8 @@ AC_DEFUN([AC_FLDIGI_SH_DQ], [
 
 AC_DEFUN([AC_FLDIGI_BUILD_INFO], [
 # define build flags and substitute in Makefile.in
-  BUILD_CPPFLAGS="$BUILD_CPPFLAGS -I$srcdir -I$srcdir/include -I$srcdir/irrxml \
--I$srcdir/fileselector $BOOST_CPPFLAGS"
+  BUILD_CPPFLAGS="$BUILD_CPPFLAGS -I\$(srcdir) -I\$(srcdir)/include -I\$(srcdir)/irrxml \
+-I\$(srcdir)/fileselector $BOOST_CPPFLAGS"
   AC_SUBST([BUILD_CPPFLAGS])
 
   BUILD_CXXFLAGS="$PORTAUDIO_CFLAGS $FLTK_CFLAGS $SNDFILE_CFLAGS $SAMPLERATE_CFLAGS \
