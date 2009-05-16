@@ -39,9 +39,9 @@ pskeval::pskeval() {
 pskeval::~pskeval() {
 }
 
-
 void pskeval::sigdensity() {
-/*	
+// restore the 3.03 algorithm for finding the signal density
+    static double alpha = 0.125;
 	double sig = 0.0;
 	double val;
 	int ihbw = (int)(bw / 2 + 0.5) + 1;
@@ -54,46 +54,32 @@ void pskeval::sigdensity() {
 	for (int i = FLOWER; i < IMAGE_WIDTH; i++) {
 		j++;
 		if (j == ibw + 1) j = 0;
+		val = wf->Pwr(i);
 		if (i >= fstart) {
-			sigpwr[i - ihbw - 1] = sig;
+			sigpwr[i - ihbw - 1] = (1-alpha)*sigpwr[i - ihbw - 1] + alpha * sig;
 			sig -= vals[j];
 		}
-		vals[j] = val = wf->Pwr(i);
+		vals[j] = val;
 		sig += val;
 		sigavg += val;
 	}		
 	sigavg /= (FFT_LEN - FLOWER);
 	if (sigavg == 0) sigavg = 1e-20;
 	delete [] vals;
-*/
-	int ibw = (int)bw;
-	if (ibw % 2) ibw++;
-	int ihbw = ibw / 2;
-	double val;
-	sigavg = 0;
-	for (int i = FLOWER+1; i < IMAGE_WIDTH - ibw - 1; i++) {
-		val = sigpwr[i+ihbw] = (wf->Pwr(i-1) + wf->Pwr(i) + wf->Pwr(i + ibw) + wf->Pwr(i+ibw+1))/4;
-		sigavg += val;
-	}
-	sigavg /= (IMAGE_WIDTH - FLOWER - 2);
 }
 
 double pskeval::sigpeak(int &f, int f1, int f2)
 {
+// restore the 3.03 algorithm for finding the signal peak
+// and frequency at which the peak occurs
 	double peak = 0;
-	double halfpower = 0;
-	for (int i = f1; i <= f2; i++) {
-		if (i == f1) integral[i] = sigpwr[i];
-		else integral[i] = integral[i-1] + sigpwr[i];
-		if (sigpwr[i] > peak)
+	f = (f1 + f2) / 2;
+	for (int i = f1; i <= f2; i++)
+		if (sigpwr[i] > peak) {
 			peak = sigpwr[i];
-//std::cout << i << "\t" << sigpwr[i] << "\t" << i << "\t" << integral[i] << std::endl;
-	}
-	halfpower = integral[f2] / 2.0;
-	for (f = f1; f < f2; f++)
-		if (integral[f] > halfpower)
-			break;
-	return peak / sigavg;// / bw;
+			f = i;
+		}
+	return peak / sigavg / bw;
 }
 
 void pskeval::clear() {
