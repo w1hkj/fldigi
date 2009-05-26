@@ -29,11 +29,10 @@
 #include <FL/Fl_Browser.H>
 #include <FL/Fl_Value_Slider.H>
 #include <FL/Fl_Input.H>
-#include <FL/Fl_Tile.H>
-#include <FL/Fl_Menu_Item.H>
 
 #include "combo.h"
-#include "FTextView.h"
+#include "Fl_Tile_Check.h"
+#include "FTextRXTX.h"
 #include "raster.h"
 #include "waterfall.h"
 #include "digiscope.h"
@@ -41,17 +40,17 @@
 #include "mixer.h"
 #include "progress.h"
 #include "FreqControl.h"
-#include <flinput2.h>
+#include "flinput2.h"
 
 
 extern Fl_Double_Window *fl_digi_main;
 extern Fl_Double_Window *scopeview;
 //extern Fl_Double_Window *opBrowserView;
 
-extern FTextView		*ReceiveText;
-extern FTextEdit		*TransmitText;
+extern FTextRX			*ReceiveText;
+extern FTextTX			*TransmitText;
 extern Raster			*FHdisp;
-extern Fl_Tile_check	*TiledGroup;
+extern Fl_Tile_Check		*TiledGroup;
 extern Fl_Box			*StatusBar;
 extern Fl_Box			*Status2;
 extern Fl_Box			*Status1;
@@ -199,13 +198,9 @@ extern void updateOutSerNo();
 const char* zdate(void);
 const char* ztime(void);
 
-Fl_Color adjust_color(Fl_Color fg, Fl_Color bg);
-
 extern void setTabColors();
 
 void qsy(long long rfc, long long fmid = -1LL);
 
-unsigned quick_choice_menu(const char* title, unsigned sel, const Fl_Menu_Item* menu);
-unsigned quick_choice(const char* title, unsigned sel, ...);
 
 #endif

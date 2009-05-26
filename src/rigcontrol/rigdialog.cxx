@@ -7,6 +7,7 @@
 #include <FL/Fl_Box.H>
 #include "rigsupport.h"
 #include "fl_digi.h"
+#include "flmisc.h"
 using namespace std;
 
 cFreqControl *FreqDisp=(cFreqControl *)0;

@@ -12,6 +12,7 @@
 #include "fl_digi.h"
 #include "re.h"
 #include "gettext.h"
+#include "flmisc.h"
 #include "flinput2.h"
 #include "spot.h"
 

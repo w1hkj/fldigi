@@ -85,7 +85,8 @@
 #include "ascii.h"
 #include "globals.h"
 #include "misc.h"
-//#include "help.h"
+#include "FTextRXTX.h"
+#include "Fl_Tile_Check.h"
 
 #include "confdialog.h"
 #include "configuration.h"
@@ -128,6 +129,7 @@
 
 #include "rx_extract.h"
 #include "speak.h"
+#include "flmisc.h"
 
 using namespace std;
 
@@ -147,9 +149,9 @@ Fl_Light_Button		*btnTune = (Fl_Light_Button *)0;
 Fl_Light_Button		*btnRSID = (Fl_Light_Button *)0;
 Fl_Button		    *btnMacroTimer;
 
-Fl_Tile_check		*TiledGroup = 0;
-FTextView			*ReceiveText = 0;
-FTextEdit			*TransmitText = 0;
+Fl_Tile_Check			*TiledGroup = 0;
+FTextRX				*ReceiveText = 0;
+FTextTX				*TransmitText = 0;
 Raster				*FHdisp;
 Fl_Box				*StatusBar = (Fl_Box *)0;
 Fl_Box				*Status2 = (Fl_Box *)0;
@@ -2616,13 +2618,13 @@ void create_fl_digi_main() {
 			valXmtMixer->callback( (Fl_Callback *)cb_XmtMixer);
 		MixerFrame->end();
 
-		TiledGroup = new Fl_Tile_check(sw, Y, WNOM-sw, Htext);
+		TiledGroup = new Fl_Tile_Check(sw, Y, WNOM-sw, Htext);
             int minRxHeight = Hrcvtxt;
             int minTxHeight;
             if (minRxHeight < 66) minRxHeight = 66;
             minTxHeight = Htext - minRxHeight;
 
-			ReceiveText = new FTextView(sw, Y, WNOM-sw, minRxHeight, "");
+			ReceiveText = new FTextRX(sw, Y, WNOM-sw, minRxHeight, "");
 			ReceiveText->color(
 				fl_rgb_color(
 					progdefaults.RxColor.R,
@@ -2640,11 +2642,11 @@ void create_fl_digi_main() {
 			ReceiveText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
 			showMacroSet();
 			
-			TiledGroup->add_resize_check(FTextView::wheight_mult_tsize, ReceiveText);
+			TiledGroup->add_resize_check(FTextRX::wheight_mult_tsize, ReceiveText);
 			FHdisp = new Raster(sw, Y, WNOM-sw, minRxHeight);
 			FHdisp->hide();
 
-			TransmitText = new FTextEdit(sw, Y + minRxHeight, WNOM-sw, minTxHeight);
+			TransmitText = new FTextTX(sw, Y + minRxHeight, WNOM-sw, minTxHeight);
 			TransmitText->color(
 				fl_rgb_color(
 					progdefaults.TxColor.R,
@@ -3199,7 +3201,7 @@ int get_tx_char(void)
 	case 'r': case 'R':
 		if (state != STATE_CTRL)
 			break;
-		REQ_SYNC(&FTextEdit::clear_sent, TransmitText);
+		REQ_SYNC(&FTextTX::clear_sent, TransmitText);
 		state = STATE_CHAR;
 		c = 3; // ETX
 		break;
@@ -3406,17 +3408,6 @@ void abort_tx()
 		trx_start_modem(active_modem);
 }
 
-// Adjust and return fg color to ensure good contrast with bg
-Fl_Color adjust_color(Fl_Color fg, Fl_Color bg)
-{
-	Fl_Color adj;
-	unsigned max = 24;
-	while ((adj = fl_contrast(fg, bg)) != fg  &&  max--)
-		fg = (adj == FL_WHITE) ? fl_color_average(fg, FL_WHITE, .9)
-				       : fl_color_average(fg, FL_BLACK, .9);
-	return fg;
-}
-
 void qsy(long long rfc, long long fmid)
 {
 	if (fmid < 0LL)
@@ -3440,41 +3431,4 @@ void qsy(long long rfc, long long fmid)
 #endif
 	else
 		active_modem->set_freq(fmid);
-}
-
-unsigned quick_choice_menu(const char* title, unsigned sel, const Fl_Menu_Item* menu)
-{
-	unsigned n = menu->size();
-	sel = CLAMP(sel - 1, 0, n - 1);
-	int t = Fl_Tooltip::enabled();
-	Fl_Tooltip::disable();
-	const Fl_Menu_Item* p = menu->popup(Fl::event_x(), Fl::event_y(), title, menu + sel);
-	Fl_Tooltip::enable(t);
-	return p ? p - menu + 1 : 0;
-}
-
-unsigned quick_choice(const char* title, unsigned sel, ...)
-{
-	const char* item;
-	const Fl_Menu_Item* menu = NULL;
-	Fl_Menu_Item* p = NULL;
-
-	va_list ap;
-	va_start(ap, sel);
-	for (size_t n = 0; (item = va_arg(ap, const char*)); n++) {
-		if ((p = (Fl_Menu_Item*)realloc(p, (n+2) * sizeof(Fl_Menu_Item))) == NULL) {
-			free((Fl_Menu_Item*)menu);
-			va_end(ap);
-			return 0;
-		}
-		memset(p + n, 0, 2 * sizeof(Fl_Menu_Item));
-		p[n].label(item);
-		p[n+1].label(NULL);
-		menu = p;
-	}
-	va_end(ap);
-
-	sel = quick_choice_menu(title, sel, menu);
-	free(p);
-	return sel;
 }

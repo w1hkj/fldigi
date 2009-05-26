@@ -125,9 +125,9 @@ void status::saveLastState()
 	logbook_col_4 = wBrowser->columnWidth(4);
 	logbook_col_5 = wBrowser->columnWidth(5);
 	
-	quick_entry = ReceiveText->QuickEntry();
-	rx_word_wrap = ReceiveText->WordWrap();
-	tx_word_wrap = TransmitText->WordWrap();
+	quick_entry = ReceiveText->get_quick_entry();
+	rx_word_wrap = ReceiveText->get_word_wrap();
+	tx_word_wrap = TransmitText->get_word_wrap();
 	
 	VIEWERvisible = false;
 	if (dlgViewer && dlgViewer->visible()) {
@@ -368,8 +368,8 @@ void status::initLastState()
 	wBrowser->columnWidth(4, logbook_col_4);
 	wBrowser->columnWidth(5, logbook_col_5);
 	
-	ReceiveText->QuickEntry(quick_entry);
-	ReceiveText->WordWrap(rx_word_wrap);
-	TransmitText->WordWrap(tx_word_wrap);
+	ReceiveText->set_quick_entry(quick_entry);
+	ReceiveText->set_word_wrap(rx_word_wrap);
+	TransmitText->set_word_wrap(tx_word_wrap);
 	
 }

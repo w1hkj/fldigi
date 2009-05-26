@@ -28,8 +28,8 @@
 //
 
 
-#ifndef FL_TEXT_EDITOR_H
-#define FL_TEXT_EDITOR_H
+#ifndef FL_TEXT_EDITOR_MOD_H
+#define FL_TEXT_EDITOR_MOD_H
 
 #include "Fl_Text_Display_mod.H"
 

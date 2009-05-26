@@ -27,8 +27,8 @@
 //     http://www.fltk.org/str.php
 //
 
-#ifndef FL_TEXT_DISPLAY_H
-#define FL_TEXT_DISPLAY_H
+#ifndef FL_TEXT_DISPLAY_MOD_H
+#define FL_TEXT_DISPLAY_MOD_H
 
 #include <FL/fl_draw.H>
 #include <FL/Fl_Group.H>

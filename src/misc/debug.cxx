@@ -58,7 +58,7 @@ static bool tty;
 static bool want_popup = true;
 
 static Fl_Double_Window* window;
-static FTextLog* text;
+static FTextView* text;
 
 debug* debug::inst = 0;
 debug::level_e debug::level = debug::WARN_LEVEL;
@@ -103,9 +103,10 @@ void debug::start(const char* filename)
 	slider->value(level);
 	slider->callback(slider_cb);
 
-	text = new FTextLog(pad, slider->h()+pad, window->w()-2*pad, window->h()-slider->h()-2*pad, 0);
+	text = new FTextView(pad, slider->h()+pad, window->w()-2*pad, window->h()-slider->h()-2*pad, 0);
 	text->textfont(FL_COURIER);
 	text->textsize(FL_NORMAL_SIZE);
+
 	window->resizable(text);
 	window->end();
 }

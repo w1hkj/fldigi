@@ -180,9 +180,11 @@ fldigi_SOURCES += \
 	include/Combo_List.h \
 	include/confdialog.h \
 	include/FTextView.h \
+	include/FTextRXTX.h \
 	include/fileselect.h \
 	include/Fl_Text_Display_mod.H \
 	include/Fl_Text_Editor_mod.H \
+	include/Fl_Tile_Check.h \
 	include/FreqControl.h \
 	include/analysis.h \
 	include/ascii.h \
@@ -207,6 +209,7 @@ fldigi_SOURCES += \
 	include/fl_lock.h \
 	include/fldigi-config.h \
 	include/flinput2.h \
+	include/flmisc.h \
 	include/flstring.h \
 	include/font_browser.h \
 	include/fontdef.h \
@@ -376,9 +379,12 @@ fldigi_SOURCES += \
 	waterfall/raster.cxx \
 	waterfall/waterfall.cxx \
 	widgets/FTextView.cxx \
+	widgets/FTextRXTX.cxx \
 	widgets/Fl_Text_Display_mod.cxx \
 	widgets/Fl_Text_Editor_mod.cxx \
+	widgets/Fl_Tile_Check.cxx \
 	widgets/flinput2.cxx \
+	widgets/flmisc.cxx \
 	widgets/picture.cxx \
 	widgets/progress.cxx \
 	wwv/analysis.cxx \
