@@ -1,8 +1,8 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0108 
-header_name {.h} 
+version 1.0109
+header_name {.h}
 code_name {.cxx}
-decl {\#include <config.h>} {} 
+decl {\#include <config.h>} {}
 
 decl {\#include <string>} {} 
 
@@ -11,8 +11,7 @@ decl {\#include "flarq.h"} {}
 decl {\#include "flinput2.h"} {public
 } 
 
-Function {arq_dialog()} {open
-} {
+Function {arq_dialog()} {} {
   Fl_Window {} {
     label flarq
     callback {arqCLOSE();} open
@@ -137,7 +136,7 @@ Function {arq_dialog()} {open
         code0 {o->type(FL_NORMAL_OUTPUT);}
         class Fl_Input2
       }
-      Fl_Output txtStatus2 {selected
+      Fl_Output txtStatus2 {
         xywh {225 208 170 22} align 20
         code0 {o->type(FL_NORMAL_OUTPUT);}
         class Fl_Input2
@@ -181,10 +180,11 @@ Function {arq_dialog()} {open
   }
 } 
 
-Function {arq_configure()} {} {
+Function {arq_configure()} {open
+} {
   Fl_Window {} {
     label {Configure flarq} open
-    xywh {519 621 610 195} type Double hide resizable
+    xywh {519 621 625 195} type Double resizable visible
   } {
     Fl_Group {} {open
       xywh {2 2 190 166} box ENGRAVED_FRAME
@@ -248,8 +248,8 @@ Function {arq_configure()} {} {
         code0 {o->value(bSylpheedFolder);}
       }
     }
-    Fl_Group {} {open
-      xywh {386 3 224 163} box ENGRAVED_FRAME
+    Fl_Group {} {open selected
+      xywh {386 3 239 163} box ENGRAVED_FRAME
     } {
       Fl_Spinner spnExponent {
         label {Exponent:}
@@ -274,7 +274,7 @@ cbSetConfig();}
         label {Retries:}
         callback {iretries = (int)o->value();
 cbSetConfig();}
-        tooltip {\# retries before connection declared down} xywh {558 7 45 22} value 1
+        tooltip {\# retries before connection declared down} xywh {570 6 45 22} value 1
         code0 {o->minimum(2);}
         code1 {o->maximum(20);}
         code2 {o->step(1);}
@@ -284,7 +284,7 @@ cbSetConfig();}
         label {Wait time (sec):}
         callback {iwaittime = (int)(1000 * o->value());
 cbSetConfig();}
-        tooltip {time between retries} xywh {533 33 70 22} value 1
+        tooltip {time between retries} xywh {545 32 70 22} value 1
         code0 {o->minimum(10);}
         code1 {o->maximum(30);}
         code2 {o->step(5);}
@@ -294,7 +294,7 @@ cbSetConfig();}
         label {Timeout (sec):}
         callback {itimeout = (int)(o->value() * 1000.0);
 cbSetConfig();}
-        tooltip {Time out for dead connection} xywh {533 59 70 22} value 1
+        tooltip {Time out for dead connection} xywh {545 58 70 22} value 1
         code0 {o->minimum(30);}
         code1 {o->maximum(300);}
         code2 {o->step(15);}
@@ -304,24 +304,24 @@ cbSetConfig();}
         label {Tx delay (msec):}
         callback {txdelay = (int)o->value();
 cbSetConfig();}
-        tooltip {delay from Rx to Tx} xywh {533 85 70 22} value 1
+        tooltip {delay from Rx to Tx} xywh {545 84 70 22} value 1
         code0 {o->minimum(200);}
         code1 {o->maximum(2000);}
         code2 {o->step(100);}
         code3 {o->value(txdelay);}
       }
       Fl_Spinner spnBcnInterval {
-        label {Beacon interval (sec)}
+        label {Beacon int' (sec)}
         callback {bcnInterval = (int)o->value();
 cbSetConfig();}
-        tooltip {Time between beacon transmissions} xywh {554 111 49 22} value 1
-        code0 {o->minimum(15); o->maximum(600);}
-        code1 {o->step(15);}
+        tooltip {Time between beacon transmissions} xywh {545 110 70 22} value 120
+        code0 {o->minimum(60); o->maximum(3600);}
+        code1 {o->step(30);}
         code2 {o->value(bcnInterval);}
       }
       Fl_Output txtBlockSize {
         label { = Blk Size}
-        xywh {568 137 35 24}
+        xywh {575 136 40 24}
         code0 {switch (exponent) {
 case 4: o->value("16"); break;
 case 5: o->value("32"); break;
@@ -330,15 +330,14 @@ case 7: o->value("128"); break;
 default:
 o->value("32");break;
 }
-o->type(FL_NORMAL_OUTPUT);
-}
+o->type(FL_NORMAL_OUTPUT);}
         class Fl_Input2
       }
     }
     Fl_Button btnOK {
       label Ok
       callback {closeConfig();}
-      xywh {540 169 62 24}
+      xywh {550 169 62 24}
     }
     Fl_Input txtBEACONTXT {
       label {Beacon Text}

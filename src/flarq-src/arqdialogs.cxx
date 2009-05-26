@@ -381,7 +381,7 @@ static void cb_txtBEACONTXT(Fl_Input2* o, void*) {
 
 Fl_Double_Window* arq_configure() {
   Fl_Double_Window* w;
-  { Fl_Double_Window* o = new Fl_Double_Window(610, 195, "Configure flarq");
+  { Fl_Double_Window* o = new Fl_Double_Window(625, 195, "Configure flarq");
     w = o;
     { Fl_Group* o = new Fl_Group(2, 2, 190, 166);
       o->box(FL_ENGRAVED_FRAME);
@@ -486,7 +486,7 @@ Fl_Double_Window* arq_configure() {
       } // Fl_Check_Button* btnSylpheedMail
       o->end();
     } // Fl_Group* o
-    { Fl_Group* o = new Fl_Group(386, 3, 224, 163);
+    { Fl_Group* o = new Fl_Group(386, 3, 239, 163);
       o->box(FL_ENGRAVED_FRAME);
       { Fl_Spinner* o = spnExponent = new Fl_Spinner(464, 138, 30, 22, "Exponent:");
         spnExponent->tooltip("block size = 2^exponent");
@@ -497,7 +497,7 @@ Fl_Double_Window* arq_configure() {
         o->step(1);
         o->value(exponent);
       } // Fl_Spinner* spnExponent
-      { Fl_Spinner* o = spnRetries = new Fl_Spinner(558, 7, 45, 22, "Retries:");
+      { Fl_Spinner* o = spnRetries = new Fl_Spinner(570, 6, 45, 22, "Retries:");
         spnRetries->tooltip("# retries before connection declared down");
         spnRetries->value(1);
         spnRetries->callback((Fl_Callback*)cb_spnRetries);
@@ -506,7 +506,7 @@ Fl_Double_Window* arq_configure() {
         o->step(1);
         o->value(iretries);
       } // Fl_Spinner* spnRetries
-      { Fl_Spinner* o = spnWaitTime = new Fl_Spinner(533, 33, 70, 22, "Wait time (sec):");
+      { Fl_Spinner* o = spnWaitTime = new Fl_Spinner(545, 32, 70, 22, "Wait time (sec):");
         spnWaitTime->tooltip("time between retries");
         spnWaitTime->value(1);
         spnWaitTime->callback((Fl_Callback*)cb_spnWaitTime);
@@ -515,7 +515,7 @@ Fl_Double_Window* arq_configure() {
         o->step(5);
         o->value(iwaittime/1000);
       } // Fl_Spinner* spnWaitTime
-      { Fl_Spinner* o = spnTimeout = new Fl_Spinner(533, 59, 70, 22, "Timeout (sec):");
+      { Fl_Spinner* o = spnTimeout = new Fl_Spinner(545, 58, 70, 22, "Timeout (sec):");
         spnTimeout->tooltip("Time out for dead connection");
         spnTimeout->value(1);
         spnTimeout->callback((Fl_Callback*)cb_spnTimeout);
@@ -524,7 +524,7 @@ Fl_Double_Window* arq_configure() {
         o->step(15);
         o->value(itimeout / 1000);
       } // Fl_Spinner* spnTimeout
-      { Fl_Spinner* o = spnTxDelay = new Fl_Spinner(533, 85, 70, 22, "Tx delay (msec):");
+      { Fl_Spinner* o = spnTxDelay = new Fl_Spinner(545, 84, 70, 22, "Tx delay (msec):");
         spnTxDelay->tooltip("delay from Rx to Tx");
         spnTxDelay->value(1);
         spnTxDelay->callback((Fl_Callback*)cb_spnTxDelay);
@@ -533,15 +533,15 @@ Fl_Double_Window* arq_configure() {
         o->step(100);
         o->value(txdelay);
       } // Fl_Spinner* spnTxDelay
-      { Fl_Spinner* o = spnBcnInterval = new Fl_Spinner(554, 111, 49, 22, "Beacon interval (sec)");
+      { Fl_Spinner* o = spnBcnInterval = new Fl_Spinner(545, 110, 70, 22, "Beacon int\' (sec)");
         spnBcnInterval->tooltip("Time between beacon transmissions");
-        spnBcnInterval->value(1);
+        spnBcnInterval->value(120);
         spnBcnInterval->callback((Fl_Callback*)cb_spnBcnInterval);
-        o->minimum(15); o->maximum(600);
-        o->step(15);
+        o->minimum(60); o->maximum(3600);
+        o->step(30);
         o->value(bcnInterval);
       } // Fl_Spinner* spnBcnInterval
-      { Fl_Input2* o = txtBlockSize = new Fl_Input2(568, 137, 35, 24, " = Blk Size");
+      { Fl_Input2* o = txtBlockSize = new Fl_Input2(575, 136, 40, 24, " = Blk Size");
         txtBlockSize->box(FL_DOWN_BOX);
         txtBlockSize->color(FL_BACKGROUND2_COLOR);
         txtBlockSize->selection_color(FL_SELECTION_COLOR);
@@ -563,7 +563,7 @@ o->type(FL_NORMAL_OUTPUT);
       } // Fl_Input2* txtBlockSize
       o->end();
     } // Fl_Group* o
-    { btnOK = new Fl_Button(540, 169, 62, 24, "Ok");
+    { btnOK = new Fl_Button(550, 169, 62, 24, "Ok");
       btnOK->callback((Fl_Callback*)cb_btnOK);
     } // Fl_Button* btnOK
     { Fl_Input2* o = txtBEACONTXT = new Fl_Input2(90, 168, 443, 24, "Beacon Text");
