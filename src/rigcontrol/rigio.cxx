@@ -63,7 +63,7 @@ int  readtimeout, readwait;
 
 bool hexout(const string& s, int retnbr)
 {
-	LOG_DEBUG("cmd %d bytes = %s", s.length(), str2hex(s.data(), s.length()));
+	LOG_DEBUG("cmd %" PRIuSZ " bytes = %s", s.length(), str2hex(s.data(), s.length()));
 	
 	for (int n = 0; n < progdefaults.RigCatRetries; n++) {	
 		int num = 0;
@@ -349,7 +349,7 @@ long long rigCAT_getfreq()
 		if (len) {
 			for (size_t i = 0; i < len; i++) {
 				if ((char)rTemp.str1[i] != (char)replybuff[i]) {
-					LOG_WARN("failed pre data string test @ %d", i);
+					LOG_WARN("failed pre data string test @ %" PRIuSZ, i);
 					return 0;
 				}
 			}
@@ -368,7 +368,7 @@ long long rigCAT_getfreq()
 		if (len) {
 			for (size_t i = 0; i < len; i++)
 				if ((char)rTemp.str2[i] != (char)replybuff[p + i]) {
-					LOG_WARN("failed post data string test @ %d", i);
+					LOG_WARN("failed post data string test @ %" PRIuSZ, i);
 					return 0;
 				}
 		}
