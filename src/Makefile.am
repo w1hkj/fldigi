@@ -18,10 +18,11 @@ BENCHMARK_SRC = include/benchmark.h misc/benchmark.cxx
 REGEX_SRC = compat/regex.h compat/regex.c
 STACK_SRC = include/stack.h misc/stack.cxx
 MINGW32_SRC = include/compat.h compat/getsysinfo.c compat/mingw.c compat/mingw.h
+NLS_SRC = misc/nls.cxx
 
 # We distribute these but do not always compile them
 EXTRA_fldigi_SOURCES = $(HAMLIB_SRC) $(XMLRPC_SRC) $(WIN32_RES_SRC) $(LOCATOR_SRC) \
-	$(BENCHMARK_SRC) $(REGEX_SRC) $(STACK_SRC) $(MINGW32_SRC)
+	$(BENCHMARK_SRC) $(REGEX_SRC) $(STACK_SRC) $(MINGW32_SRC) $(NLS_SRC)
 
 fldigi_SOURCES =
 
@@ -50,6 +51,10 @@ endif
 
 if MINGW32
   fldigi_SOURCES += $(MINGW32_SRC)
+endif
+
+if USE_NLS
+  fldigi_SOURCES += $(NLS_SRC)
 endif
 
 ########################################################################
