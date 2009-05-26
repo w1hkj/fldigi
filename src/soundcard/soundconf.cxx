@@ -70,12 +70,37 @@ public:
 	PaHostApiTypeId api;
 };
 
-#endif // USE_PORTAUDIO
+static PaDeviceIndex get_default_portaudio_device(int dir)
+{
+#ifndef __linux__
+	goto ret_def;
+#else
+	// Recent PortAudio snapshots prefer ALSA over OSS for the default device, but there are
+	// still versions out there that try OSS first.  We check the default host api type and,
+	// if it is not ALSA, return the ALSA default device instead.
+	PaHostApiIndex api_idx;
+	if ((api_idx = Pa_GetDefaultHostApi()) < 0)
+		goto ret_def;
+	const PaHostApiInfo* host_api;
+	if ((host_api = Pa_GetHostApiInfo(api_idx)) == NULL || host_api->type == paALSA)
+		goto ret_def;
 
+	LOG_DEBUG("Default host API is %s, trying default ALSA %s device instead",
+		  host_api->name, (dir == 0 ? "input" : "output"));
+	api_idx = Pa_GetHostApiCount();
+	if (api_idx < 0)
+		goto ret_def;
+	for (PaHostApiIndex i = 0; i < api_idx; i++)
+		if ((host_api = Pa_GetHostApiInfo(i)) && host_api->type == paALSA)
+			return dir == 0 ? host_api->defaultInputDevice : host_api->defaultOutputDevice;
+#endif // __linux__
+
+ret_def:
+	return dir == 0 ? Pa_GetDefaultInputDevice() : Pa_GetDefaultOutputDevice();
+}
 
 static void init_portaudio(void)
 {
-#if USE_PORTAUDIO
 	try {
 		SoundPort::initialize();
 	}
@@ -135,7 +160,7 @@ static void init_portaudio(void)
 
 	if (progdefaults.PortInDevice.length() == 0) {
 		if (progdefaults.PAdevice.length() == 0) {
-			PaDeviceIndex def = Pa_GetDefaultInputDevice();
+			PaDeviceIndex def = get_default_portaudio_device(0);
 			if (def != paNoDevice) {
 				progdefaults.PortInDevice = (*(SoundPort::devices().begin() + def))->name;
 				progdefaults.PortInIndex = def;
@@ -147,7 +172,7 @@ static void init_portaudio(void)
 
 	if (progdefaults.PortOutDevice.length() == 0) {
 		if (progdefaults.PAdevice.length() == 0) {
-			PaDeviceIndex def = Pa_GetDefaultOutputDevice();
+			PaDeviceIndex def = get_default_portaudio_device(1);
 			if (def != paNoDevice) {
 				progdefaults.PortOutDevice = (*(SoundPort::devices().begin() + def))->name;
 				progdefaults.PortOutIndex = def;
@@ -193,8 +218,10 @@ static void init_portaudio(void)
 		menuPortOutDev->value(idx);
 		menuPortOutDev->set_changed();
 	}
-#endif
 }
+#else
+static void init_portaudio(void) { }
+#endif // USE_PORTAUDIO
 
 static void build_srate_menu(Fl_Menu_* menu, const double* rates, size_t length, double defrate = -1.0)
 {
