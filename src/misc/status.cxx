@@ -83,8 +83,8 @@ status progStatus = {
 
 	50,					// int logbook_x;
 	50,					// int logbook_y;
-	380,				// int logbook_w;
-	290,				// int logbook_h;
+	570,				// int logbook_w;
+	350,				// int logbook_h;
 	false,				// bool logbook_reverse;
 	85,					// int		logbook_browser_col_0;
 	50,					// int		logbook_browser_col_1;
@@ -325,9 +325,13 @@ void status::initLastState()
 	valRcvMixer->value(RcvMixer * 100.0);
 	valXmtMixer->value(XmtMixer * 100.0);
 
-	if (mainW == 0)
+	if (mainX > Fl::w())
+		mainX = 20;
+	if (mainY > Fl::h())
+		mainY = 20;
+	if (mainW == 0 || mainW > Fl::w())
 		mainW = MAX(WMIN, Fl::w() / 2);
-	if (mainH == 0)
+	if (mainH == 0 || mainH > Fl::h())
 		mainH = MAX(HMIN, Fl::h() / 2);
 	fl_digi_main->resize(mainX, mainY, mainW, mainH);
 
