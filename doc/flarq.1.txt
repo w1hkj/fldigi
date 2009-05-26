@@ -1,0 +1,147 @@
+FLARQ(1)
+=========
+
+
+== NAME ==
+flarq - ARQ data transfer utility for fldigi
+
+
+== SYNOPSIS ==
+*flarq* ['OPTIONS']
+
+
+== DESCRIPTION ==
+*Flarq* (fast light automatic repeat request) is a file transfer application
+that is based on the ARQ specification developed by Paul Schmidt, K9PS.  It is
+capable of transmitting and receiving frames of ARQ data via fldigi, as well as
+MultiPSK on Windows.
+
+
+== OPTIONS ==
+Long options begin with two hyphens and are handled by flarq. The option names
+may be abbreviated to any unambiguous substring, and the option argument may be
+separated from the name by a space or equals sign, as per +getopt(3)+.
+
+Short options begin with a single hyphen and are passed directly to FLTK. They
+may be abbreviated only as indicated.
+
+*--arq-protocol* 'TYPE'::
+  Set the ARQ protocol. May be either ``fldigi'' or ``multipsk''. Defaults to
+  ``fldigi''.
+
+*--arq-server-address* 'HOSTNAME'::
+  Set the ARQ TCP server address. Defaults to ``127.0.0.1''. 'HOSTNAME' may be
+  any 'node name' string accepted by +getaddrinfo(3)+.
+
+*--arq-server-port* 'PORT'::
+  Set the ARQ TCP server port. Defaults to ``7322''. 'PORT' may be any 'service
+  name' string accepted by +getaddrinfo(3)+.
+
+*--debug*::
+  Enable debugging messages.
+
+*--version*::
+  Print version information and exit.
+
+*--build-info*::
+  Print build information and exit.
+
+*--help*::
+  Print options summary and exit.
+
+=== Standard FLTK options ===
+*-bg, -background* 'COLOUR'::
+  Set the background colour.
+
+*-bg2, -background2* 'COLOUR'::
+  Set the secondary (text) background colour.
+
+*-di, -display* 'DISPLAY'::
+  Specifies the X server to connect to; see +X(7)+.
+
+*-dn, -dnd* or *-nodn, -nodnd*::
+  Enable or disable drag and drop copy and paste in text fields.
+
+*-fg, -foreground* 'COLOUR'::
+  Set the foreground colour.
+
+*-g, -geometry* 'GEOMETRY'::
+  Set the initial window size and position. *Flarq may not honour this option*.
+
+*-i, -iconic*::
+  Start flarq in iconified state. *Flarq may not honour this option*.
+
+*-k, -kbd* or *-nok, -nokbd*::
+  Enable or disable visible keyboard focus in non-text widgets.
+
+*-na, -name* 'CLASSNAME'::
+  Set the window class. Defaults to ``Flarq''.
+
+*-ti, -title* 'WINDOWTITLE'::
+  Set the window title. Defaults to ``flarq - <callsign>''.
+
+=== Additional UI options ===
+*--font* 'FONT[:SIZE]'::
+  Set the widget font and (optionally) size. Defaults to ``sans:12''.
+
+
+== FILES ==
+$HOME/.flarq::
+  The main settings file.
+
+The following directories are used to interface with MUAs such as Sylpheed:
+
+$HOME/Mail/ARQin::
+  Stores incoming email messages.
+
+$HOME/Mail/ARQout::
+  Stores outgoing email messages.
+
+$HOME/Mail/ARQsent::
+  Stores sent email messages.
+
+The following directories are used for ARQ file transfer:
+
+$HOME/ARQrecv::
+  Stores received files.
+
+$HOME/ARQsend::
+  Stores files to be transmitted.
+
+$HOME/ARQfiles/logfile.txt::
+  Stores transfer logs.
+
+
+== BUGS ==
+* There are no command line arguments to override the default configuration file
+  and ARQ and Mail directories.
+
+
+== SEE ALSO ==
+fldigi(1), getaddrinfo(3), getopt(3), X(7)
+
+
+== RESOURCES ==
+Flarq web site: http://www.w1hkj.com/flarq_main.html
+
+Fldigi web site: http://www.w1hkj.com/Fldigi.html
+
+BerliOS project page: http://developer.berlios.de/projects/fldigi/
+
+ARQ specification by Paul Schmidt, K9PS: http://www.w1hkj.com/FlarqHelpFiles/ARQ2.pdf
+
+== AUTHORS ==
+Flarq was written by David Freese, +W1HKJ+.
+
+This manual page was written by Stelios Bounanos <sb[at]enotty(dot)net>.
+
+
+== COPYING ==
+License GPLv2+: GNU GPL version 2 or later.
+
+////////////////////////////////////////////////////////////////////////////////
+// Emacs settings
+// Local Variables:
+// mode: doc
+// End:
+////////////////////////////////////////////////////////////////////////////////

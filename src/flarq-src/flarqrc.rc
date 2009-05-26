@@ -1,0 +1,5 @@
+#include <windows.h> // include for version info constants
+
+#define IDI_ICON 101
+
+IDI_ICON ICON DISCARDABLE "flarq.ico"

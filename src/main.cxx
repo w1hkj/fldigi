@@ -803,8 +803,8 @@ void generate_version_text(void)
 	  << " for " << BUILD_TARGET_PLATFORM << "\n\n"
 	  << "  configure flags: " << BUILD_CONFIGURE_ARGS << "\n\n"
 	  << "  compiler       : " << BUILD_COMPILER << "\n\n"
-	  << "  compiler flags : " << BUILD_CXXFLAGS << "\n\n"
-	  << "  linker flags   : " << BUILD_LDFLAGS << "\n\n"
+	  << "  compiler flags : " << FLDIGI_BUILD_CXXFLAGS << "\n\n"
+	  << "  linker flags   : " << FLDIGI_BUILD_LDFLAGS << "\n\n"
 
 	  << "  libraries      : " "FLTK " FLTK_BUILD_VERSION "\n"
 	  << "                   " "libsamplerate " << SAMPLERATE_BUILD_VERSION "\n";

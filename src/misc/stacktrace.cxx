@@ -35,7 +35,11 @@
 #include <cstdlib>
 #include <csignal>
 
-#include "main.h"
+#ifdef BUILD_FLDIGI
+#  include "main.h"
+#else
+#  include "flarq.h"
+#endif
 
 using namespace std;
 
@@ -76,7 +80,11 @@ void diediedie(void)
 		cerr << "\n****** Version information:\n" << version_text;
 
 		string stfname;
+#ifdef BUILD_FLDIGI
 		stfname.assign(HomeDir).append("stacktrace.txt");
+#else
+		stfname = Logfile;
+#endif
 
 #if !HAVE_DBG_STACK
 		FILE* stfile = fopen(stfname.c_str(), "w");

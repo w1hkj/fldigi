@@ -1,18 +1,32 @@
 # Copyright (C) 2007-2009 Stelios Bounanos, M0GLD (m0gld AT enotty DOT net)
 # Copyright (c) 2008 Dave Freese, W1HKJ (w1hkj AT w1hkj DOT com)
 
-bin_PROGRAMS = fldigi
+bin_PROGRAMS =
+if WANT_FLDIGI
+    bin_PROGRAMS += fldigi
+endif
+if WANT_FLARQ
+    bin_PROGRAMS += flarq
+endif
 
 # The BUILD_* variables are defined in build.m4
-AM_CPPFLAGS = -DLOCALEDIR=\"$(localedir)\" @BUILD_CPPFLAGS@
-AM_CXXFLAGS = @BUILD_CXXFLAGS@
-AM_CFLAGS = $(AM_CXXFLAGS)
-AM_LDFLAGS = @BUILD_LDFLAGS@
-LDADD = @BUILD_LDADD@
+fldigi_CPPFLAGS = -DBUILD_FLDIGI -DLOCALEDIR=\"$(localedir)\" @FLDIGI_BUILD_CPPFLAGS@
+fldigi_CXXFLAGS = @FLDIGI_BUILD_CXXFLAGS@
+fldigi_CFLAGS = $(fldigi_CXXFLAGS)
+fldigi_LDFLAGS = @FLDIGI_BUILD_LDFLAGS@
+fldigi_LDADD = @FLDIGI_BUILD_LDADD@
+
+flarq_CPPFLAGS = -DBUILD_FLARQ -DLOCALEDIR=\"$(localedir)\" @FLARQ_BUILD_CPPFLAGS@
+flarq_CXXFLAGS = @FLARQ_BUILD_CXXFLAGS@
+flarq_CFLAGS = $(flarq_CXXFLAGS)
+flarq_LDFLAGS = @FLARQ_BUILD_LDFLAGS@
+flarq_LDADD = @FLARQ_BUILD_LDADD@
+
 
 HAMLIB_SRC = include/hamlib.h rigcontrol/hamlib.cxx include/rigclass.h rigcontrol/rigclass.cxx
 XMLRPC_SRC = include/xmlrpc.h misc/xmlrpc.cxx
-WIN32_RES_SRC = fldigirc.rc
+FLDIGI_WIN32_RES_SRC = fldigirc.rc
+FLARQ_WIN32_RES_SRC = flarq-src/flarqrc.rc
 LOCATOR_SRC = misc/locator.c
 BENCHMARK_SRC = include/benchmark.h misc/benchmark.cxx
 REGEX_SRC = compat/regex.h compat/regex.c
@@ -23,8 +37,10 @@ NLS_SRC = misc/nls.cxx
 # We distribute these but do not always compile them
 EXTRA_fldigi_SOURCES = $(HAMLIB_SRC) $(XMLRPC_SRC) $(WIN32_RES_SRC) $(LOCATOR_SRC) \
 	$(BENCHMARK_SRC) $(REGEX_SRC) $(STACK_SRC) $(MINGW32_SRC) $(NLS_SRC)
+EXTRA_flarq_SOURCES = $(FLARQ_WIN32_RES_SRC)
 
 fldigi_SOURCES =
+flarq_SOURCES =
 
 if ENABLE_HAMLIB
   fldigi_SOURCES += $(HAMLIB_SRC)
@@ -43,18 +59,22 @@ endif
 
 if COMPAT_REGEX
   fldigi_SOURCES += $(REGEX_SRC)
+  flarq_SOURCES += $(REGEX_SRC)
 endif
 
 if COMPAT_STACK
   fldigi_SOURCES += $(STACK_SRC)
+  flarq_SOURCES += $(STACK_SRC)
 endif
 
 if MINGW32
   fldigi_SOURCES += $(MINGW32_SRC)
+  flarq_SOURCES += $(MINGW32_SRC)
 endif
 
 if USE_NLS
   fldigi_SOURCES += $(NLS_SRC)
+  flarq_SOURCES += $(NLS_SRC)
 endif
 
 ########################################################################
@@ -63,6 +83,12 @@ endif
 FLDIGI_VERSION_MAJOR = @FLDIGI_VERSION_MAJOR@
 FLDIGI_VERSION_MINOR = @FLDIGI_VERSION_MINOR@
 FLDIGI_VERSION_PATCH = @FLDIGI_VERSION_PATCH@
+FLDIGI_VERSION = @FLDIGI_VERSION@
+FLARQ_VERSION_MAJOR = @FLARQ_VERSION_MAJOR@
+FLARQ_VERSION_MINOR = @FLARQ_VERSION_MINOR@
+FLARQ_VERSION_PATCH = @FLARQ_VERSION_PATCH@
+FLARQ_VERSION = @FLARQ_VERSION@
+
 
 .EXPORT_ALL_VARIABLES: appbundle nsisinst hamlib-static
 
@@ -72,24 +98,29 @@ BUILT_SOURCES =
 nodist_fldigi_SOURCES = $(BUILT_SOURCES)
 # and deleted by the clean targets
 CLEANFILES = $(BUILT_SOURCES)
+CLEAN_LOCAL =
 
 if WIN32
 if HAVE_WINDRES
 .rc.o:
 	$(WINDRES) -I$(srcdir)/include -I$(srcdir)/../data/win32 $< -O coff $@
-fldigi_SOURCES += $(WIN32_RES_SRC)
+fldigi_SOURCES += $(FLDIGI_WIN32_RES_SRC)
+flarq_SOURCES += $(FLARQ_WIN32_RES_SRC)
 endif
 endif
 
 install-exec-local:
+if WANT_FLDIGI
 if ENABLE_XMLRPC
 	if test -f $(srcdir)/../scripts/fldigi-shell; then \
 	    $(mkinstalldirs) $(DESTDIR)/$(bindir); \
             $(INSTALL_SCRIPT) $(srcdir)/../scripts/fldigi-shell $(DESTDIR)/$(bindir); \
         fi
 endif
+endif
 
 install-data-local:
+if WANT_FLDIGI
 	if test -f $(srcdir)/../data/fldigi.xpm; then \
 	    $(mkinstalldirs) $(DESTDIR)/$(datadir)/pixmaps; \
 	    $(INSTALL_DATA) $(srcdir)/../data/fldigi.xpm $(DESTDIR)/$(datadir)/pixmaps; \
@@ -98,41 +129,83 @@ install-data-local:
 	    $(mkinstalldirs) $(DESTDIR)/$(datadir)/applications; \
 	    $(INSTALL_DATA) $(srcdir)/../data/fldigi.desktop $(DESTDIR)/$(datadir)/applications; \
 	fi
+endif
+if WANT_FLARQ
+	if test -f $(srcdir)/../data/flarq.xpm; then \
+	    $(mkinstalldirs) $(DESTDIR)/$(datadir)/pixmaps; \
+	    $(INSTALL_DATA) $(srcdir)/../data/flarq.xpm $(DESTDIR)/$(datadir)/pixmaps; \
+	fi
+	if test -f $(srcdir)/../data/flarq.desktop; then \
+	    $(mkinstalldirs) $(DESTDIR)/$(datadir)/applications; \
+	    $(INSTALL_DATA) $(srcdir)/../data/flarq.desktop $(DESTDIR)/$(datadir)/applications; \
+	fi
+endif
 
 uninstall-local:
+if WANT_FLDIGI
 	rm -f $(DESTDIR)$(bindir)/fldigi-shell
 	rm -f $(DESTDIR)/$(datadir)/pixmaps/fldigi.xpm
 	rm -f $(DESTDIR)/$(datadir)/applications/fldigi.desktop
+endif
+if WANT_FLARQ
+	rm -f $(DESTDIR)/$(datadir)/pixmaps/flarq.xpm
+	rm -f $(DESTDIR)/$(datadir)/applications/flarq.desktop
+endif
+
+FLDIGI_FL_SRC = dialogs/confdialog.fl dialogs/colorsfonts.fl rigcontrol/rigdialog.fl logbook/lgbook.fl
+FLARQ_FL_SRC = flarq-src/arqdialogs.fl
 
 if HAVE_FLUID
-flgen: $(srcdir)/dialogs/confdialog.fl $(srcdir)/dialogs/colorsfonts.fl $(srcdir)/rigcontrol/rigdialog.fl
+flgen: $(FLDIGI_FL_SRC) $(FLARQ_FL_SRC)
+if WANT_FLDIGI
 	(cd $(srcdir)/include; \
-	$(FLUID) -c -o ../dialogs/confdialog.cxx -h confdialog.h ../dialogs/confdialog.fl; \
-	$(FLUID) -c -o ../dialogs/colorsfonts.cxx -h colorsfonts.h ../dialogs/colorsfonts.fl; \
-	$(FLUID) -c -o ../rigcontrol/rigdialog.cxx -h rigdialog.h ../rigcontrol/rigdialog.fl; \
-	$(FLUID) -c -o ../logbook/lgbook.cxx -h lgbook.h ../logbook/lgbook.fl)
+	for f in $(FLDIGI_FL_SRC); do \
+	    c=$${f%.fl}.cxx; h=$${f%.fl}.h; h=$${h##*/}; \
+	    $(FLUID) -c -o ../$$c -h $$h ../$$f; \
+	done)
+endif
+if WANT_FLARQ
+	(cd $(srcdir)/flarq-src/include; \
+	for f in $(FLARQ_FL_SRC); do \
+	    c=$${f%.fl}.cxx; h=$${f%.fl}.h; h=$${h##*/}; \
+	    $(FLUID) -c -o ../../$$c -h $$h ../../$$f; \
+	done)
+endif
+endif
+
+
+if WANT_FLDIGI
+    WANT_FLDIGI = yes
+    INSTALLER_FILE = $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)_setup.exe
+    APPBUNDLE=$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)
+    APPBUNDLE_NOLIBS=$(APPBUNDLE)-nolibs
+endif
+if WANT_FLARQ
+    WANT_FLARQ = yes
+if !WANT_FLDIGI
+        INSTALLER_FILE = flarq-$(FLARQ_VERSION)_setup.exe
+        APPBUNDLE=flarq-$(FLARQ_VERSION)
+        APPBUNDLE_NOLIBS=$(APPBUNDLE)-nolibs
+endif
 endif
 
 if DARWIN
 appbundle: $(bin_PROGRAMS)
-	sh $(srcdir)/../scripts/mkappbundle.sh "$(srcdir)/../data" . \
-	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-nolibs \
-	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)
-    CLEANFILES  += $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-nolibs \
-	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION) \
-	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)*.dmg
+	sh $(srcdir)/../scripts/mkappbundle.sh "$(srcdir)/../data" .
+    CLEAN_LOCAL += $(APPBUNDLE_NOLIBS) $(APPBUNDLE) $(APPBUNDLE)*.dmg
 endif
 
 if HAVE_NSIS
 nsisinst: $(bin_PROGRAMS)
-	sh $(srcdir)/../scripts/mknsisinst.sh "$(srcdir)/../data" . \
-	$(PACKAGE_TARNAME)-$(PACKAGE_VERSION)_setup.exe
-    CLEANFILES  += $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)_setup.exe
+	sh $(srcdir)/../scripts/mknsisinst.sh "$(srcdir)/../data" .
+    CLEANFILES += $(INSTALLER_FILE)
 endif
 
+if WANT_FLDIGI
 if ENABLE_HAMLIB
 hamlib-static: $(fldigi_OBJECTS)
 	sh $(srcdir)/../scripts/mkhamlibstatic.sh fldigi
+endif
 endif
 
 TESTS = $(srcdir)/../scripts/tests/config-h.sh $(srcdir)/../scripts/tests/cr.sh
@@ -152,6 +225,8 @@ distclean-local:
         fi
 endif
 
+clean-local:
+	-rm -rf $(CLEAN_LOCAL)
 
 # Sources that we build. It is OK to have headers here.
 fldigi_SOURCES += \
@@ -249,6 +324,7 @@ fldigi_SOURCES += \
 	include/dsp.h \
 	include/newinstall.h \
 	include/olivia.h \
+	include/pkg.h \
 	include/picture.h \
 	include/progress.h \
 	include/psk.h \
@@ -433,6 +509,52 @@ EXTRA_fldigi_SOURCES += \
 	rsid/rsid_fft.h \
 	dialogs/guide.cxx
 
+flarq_SOURCES += \
+	dialogs/font_browser.cxx \
+	flarq-src/arq.cxx \
+	flarq-src/arqdialogs.cxx \
+	flarq-src/arqhelp.cxx \
+	flarq-src/b64.cxx \
+	flarq-src/flarq.cxx \
+	flarq-src/flarqenv.cxx \
+	flarq-src/include/arq.h \
+	flarq-src/include/arqdialogs.h \
+	flarq-src/include/b64.h \
+	flarq-src/include/flarq.h \
+	flarq-src/include/flarqenv.h \
+	include/Fl_Text_Display_mod.H \
+	include/Fl_Text_Editor_mod.H \
+	include/FTextView.h \
+	include/debug.h \
+	include/fileselect.h \
+	include/flinput2.h \
+	include/flmisc.h \
+	include/font_browser.h \
+	include/icons.h \
+	include/pixmaps.h \
+	include/re.h \
+	include/socket.h \
+	include/stacktrace.h \
+	include/table.h \
+	include/util.h \
+	fileselector/FL/Fl_Native_File_Chooser.H \
+	fileselector/Fl_Native_File_Chooser.cxx \
+	fileselector/fileselect.cxx \
+	logbook/table.cxx \
+	misc/ascii.cxx \
+	misc/debug.cxx \
+	misc/stacktrace.cxx \
+	widgets/flinput2.cxx \
+	widgets/flmisc.cxx \
+	misc/icons.cxx \
+	misc/pixmaps.cxx \
+	misc/re.cxx \
+	misc/socket.cxx \
+	misc/util.cxx \
+	widgets/Fl_Text_Display_mod.cxx \
+	widgets/Fl_Text_Editor_mod.cxx \
+	widgets/FTextView.cxx
+
 # Additional non-source files that we distribute
 EXTRA_DIST = \
 	$(srcdir)/../scripts/mkappbundle.sh \
@@ -447,7 +569,9 @@ EXTRA_DIST = \
 	$(srcdir)/../data/mac/Info.plist.in \
 	$(srcdir)/../data/mac/fldigi.icns \
 	$(srcdir)/../data/win32/fldigi.ico \
-	dialogs/confdialog.fl \
-	dialogs/colorsfonts.fl \
-	rigcontrol/rigdialog.fl \
-	logbook/lgbook.fl
+	$(srcdir)/../data/flarq.desktop \
+	$(srcdir)/../data/flarq.xpm \
+	$(srcdir)/../data/mac/flarq.icns \
+	$(srcdir)/../data/win32/flarq.ico \
+	$(FLDIGI_FL_SRC) \
+	$(FLARQ_FL_SRC)

@@ -1,0 +1,445 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+decl {\#include <config.h>} {} 
+
+decl {\#include <string>} {} 
+
+decl {\#include "flarq.h"} {} 
+
+decl {\#include "flinput2.h"} {public
+} 
+
+Function {arq_dialog()} {open
+} {
+  Fl_Window {} {
+    label flarq
+    callback {arqCLOSE();} open
+    xywh {415 60 515 415} type Double color 50 resizable visible
+  } {
+    Fl_Menu_Bar mnu {open
+      xywh {0 0 516 22}
+    } {
+      Submenu {} {
+        label {&File} open
+        xywh {0 0 70 21}
+      } {
+        MenuItem mnuExit {
+          label {E&xit}
+          callback {arqCLOSE();}
+          xywh {0 0 36 21}
+        }
+      }
+      Submenu mnuSend {
+        label {&Send} open
+        xywh {0 0 70 21}
+      } {
+        MenuItem mnuSendEmail {
+          label Email
+          callback {sendEmailFile();}
+          xywh {0 0 34 21}
+        }
+        MenuItem mnuSendText {
+          label {Text File}
+          callback {sendAsciiFile();}
+          xywh {0 0 36 21}
+        }
+        MenuItem mnuSendImage {
+          label {Image File}
+          callback {sendImageFile();}
+          xywh {0 0 36 21}
+        }
+        MenuItem mnuSendBinary {
+          label {Binary File}
+          callback {sendBinaryFile();}
+          xywh {0 0 36 21}
+        }
+      }
+      MenuItem mnuCompose {
+        label Compose
+        callback {ComposeMail();}
+        xywh {0 0 30 20}
+        code0 {extern void ComposeMail();}
+      }
+      MenuItem mnuConfig {
+        label {&Config}
+        callback {cbMenuConfig();}
+        xywh {0 0 36 21}
+        code0 {extern void cbMenuConfig();}
+      }
+      Submenu mnuHelp {
+        label Help open
+        xywh {0 0 62 20}
+      } {
+        MenuItem mnuHowTo {
+          label {How To}
+          callback {help_cb();}
+          xywh {0 0 30 20}
+        }
+        MenuItem mnuAbout {
+          label About
+          callback {cbMenuAbout();}
+          xywh {5 5 36 21}
+          code0 {extern void cbMenuAbout();}
+        }
+      }
+    }
+    Fl_Group {} {open
+      xywh {0 25 515 60}
+    } {
+      Fl_Group {} {open
+        xywh {0 25 515 31} box ENGRAVED_FRAME
+      } {
+        Fl_Button btnCONNECT {
+          label Connnect
+          callback {arqCONNECT();}
+          tooltip {Connect to other station} xywh {5 28 90 24} color 50
+        }
+        Fl_Input txtURCALL {
+          tooltip {Connect-to callsign} xywh {97 28 70 24} align 20
+          class Fl_Input2
+        }
+        Fl_Light_Button btnBEACON {
+          label Beacon
+          callback {arqBEACON();}
+          tooltip {Beacon ON / OFF} xywh {168 28 79 24} selection_color 2
+        }
+        Fl_Output txtBeaconing {
+          label {output:}
+          xywh {249 28 261 24} box FLAT_BOX color 50 align 20 resizable
+          code0 {o->type(FL_NORMAL_OUTPUT);}
+          class Fl_Input2
+        }
+      }
+      Fl_Group {} {open
+        xywh {0 54 515 31} box ENGRAVED_FRAME
+      } {
+        Fl_Box indCONNECT {
+          tooltip {ARQ state} xywh {5 60 18 18} box DIAMOND_DOWN_BOX color 50 labelfont 13 align 24
+        }
+        Fl_Output txtState {
+          label Disconnecting
+          xywh {27 57 483 24} box FLAT_BOX color 50 align 20 resizable
+          code0 {o->type(FL_NORMAL_OUTPUT);}
+          class Fl_Input2
+        }
+      }
+    }
+    Fl_Text_Display txtARQ {
+      xywh {0 87 515 117} box DOWN_BOX textfont 4 resizable
+    }
+    Fl_Group {} {open
+      xywh {0 206 516 26} box DOWN_BOX
+    } {
+      Fl_Output txtStatus {
+        tooltip {Status messages} xywh {5 208 220 22} align 20 resizable
+        code0 {o->type(FL_NORMAL_OUTPUT);}
+        class Fl_Input2
+      }
+      Fl_Output txtStatus2 {selected
+        xywh {225 208 170 22} align 20
+        code0 {o->type(FL_NORMAL_OUTPUT);}
+        class Fl_Input2
+      }
+      Fl_Progress prgStatus {
+        tooltip {Tx/Rx ARQ file transfer progress} xywh {395 210 70 18} selection_color 70 labelfont 1
+        code0 {o->minimum(0.0);}
+        code1 {o->maximum(1.0);}
+      }
+      Fl_Button btnClearText {
+        label Clear
+        callback {cbClearText();}
+        xywh {468 210 45 20}
+      }
+    }
+    Fl_Group {} {
+      label {Plain Talk} open
+      xywh {0 235 515 180} box ENGRAVED_FRAME align 21
+    } {
+      Fl_Text_Display txtRX {
+        xywh {5 255 505 130} box DOWN_BOX textfont 4 resizable
+      }
+      Fl_Group {} {open
+        xywh {0 387 515 28} box ENGRAVED_FRAME
+      } {
+        Fl_Input txtTX {
+          label {input:}
+          callback {cbSendTalk();}
+          tooltip {Plain talk text - ENTER to send} xywh {5 390 450 22} align 0 when 8 resizable
+          code0 {txtTX->value("");}
+          code1 {txtTX->maximum_size(80);}
+          class Fl_Input2
+        }
+        Fl_Button btnSendTalk {
+          label Clear
+          callback {cbClearTalk();}
+          xywh {460 390 49 22}
+        }
+      }
+    }
+  }
+} 
+
+Function {arq_configure()} {} {
+  Fl_Window {} {
+    label {Configure flarq} open
+    xywh {519 621 610 195} type Double hide resizable
+  } {
+    Fl_Group {} {open
+      xywh {2 2 190 166} box ENGRAVED_FRAME
+    } {
+      Fl_Input txtMyCall {
+        label {My Call:}
+        callback {changeMyCall(o->value());}
+        xywh {5 22 100 24} align 5
+        code0 {o->value(MyCall.c_str());}
+        class Fl_Input2
+      }
+      Fl_Group {} {
+        label {Text/Binary Files} open
+        xywh {2 60 190 105} box ENGRAVED_FRAME align 17
+      } {
+        Fl_Input txtFolder {
+          label {In folder:}
+          callback {InFolder = o->value();}
+          tooltip {Folder (in $HOME) to store incoming files} xywh {6 96 180 24} align 5 when 1
+          code0 {o->value(InFolder.c_str());}
+          class Fl_Input2
+        }
+        Fl_Input txtOutputFolder {
+          label {Out folder:}
+          callback {OutFolder = o->value();}
+          tooltip {Folder (in $HOME)  to store outgoing files} xywh {6 138 180 24} align 5 when 1
+          code0 {o->value(OutFolder.c_str());}
+          class Fl_Input2
+        }
+      }
+    }
+    Fl_Group {} {
+      label {Mail Client Files} open
+      xywh {194 3 190 164} box ENGRAVED_FRAME align 17
+    } {
+      Fl_Input txtMail_IN {
+        label {Mail In:}
+        callback {MailInFolder = o->value();}
+        tooltip {Folder  to store incoming files} xywh {200 37 178 24} align 5 when 1
+        code0 {o->value(MailInFolder.c_str());}
+        class Fl_Input2
+      }
+      Fl_Input txtMail_OUT {
+        label {Mail Out:}
+        callback {MailOutFolder = o->value();}
+        tooltip {Folder  to store outgoing files} xywh {200 78 178 24} align 5 when 1
+        code0 {o->value(MailOutFolder.c_str());}
+        class Fl_Input2
+      }
+      Fl_Input txtMail_SENT {
+        label {Mail Sent:}
+        callback {MailSentFolder = o->value();}
+        tooltip {Folder to store outgoing files} xywh {200 119 178 24} align 5 when 1
+        code0 {o->value(MailSentFolder.c_str());}
+        class Fl_Input2
+      }
+      Fl_Check_Button btnSylpheedMail {
+        label {Sylpheed Mail Client}
+        callback {bSylpheedFolder = o->value();}
+        tooltip {Check ONLY if Sylpheed is used as mail client} xywh {200 146 175 15} down_box DOWN_BOX
+        code0 {o->value(bSylpheedFolder);}
+      }
+    }
+    Fl_Group {} {open
+      xywh {386 3 224 163} box ENGRAVED_FRAME
+    } {
+      Fl_Spinner spnExponent {
+        label {Exponent:}
+        callback {exponent = (int)o->value();
+switch (exponent) {
+case 4: txtBlockSize->value("16"); break;
+case 5: txtBlockSize->value("32"); break;
+case 6: txtBlockSize->value("64"); break;
+case 7: txtBlockSize->value("128"); break;
+case 8: txtBlockSize->value("256"); break;
+default:
+txtBlockSize->value("32");break;
+}
+cbSetConfig();}
+        tooltip {block size = 2^exponent} xywh {464 138 30 22} value 1
+        code0 {o->minimum(4);}
+        code1 {o->maximum(8);}
+        code2 {o->step(1);}
+        code3 {o->value(exponent);}
+      }
+      Fl_Spinner spnRetries {
+        label {Retries:}
+        callback {iretries = (int)o->value();
+cbSetConfig();}
+        tooltip {\# retries before connection declared down} xywh {558 7 45 22} value 1
+        code0 {o->minimum(2);}
+        code1 {o->maximum(20);}
+        code2 {o->step(1);}
+        code3 {o->value(iretries);}
+      }
+      Fl_Spinner spnWaitTime {
+        label {Wait time (sec):}
+        callback {iwaittime = (int)(1000 * o->value());
+cbSetConfig();}
+        tooltip {time between retries} xywh {533 33 70 22} value 1
+        code0 {o->minimum(10);}
+        code1 {o->maximum(30);}
+        code2 {o->step(5);}
+        code3 {o->value(iwaittime/1000);}
+      }
+      Fl_Spinner spnTimeout {
+        label {Timeout (sec):}
+        callback {itimeout = (int)(o->value() * 1000.0);
+cbSetConfig();}
+        tooltip {Time out for dead connection} xywh {533 59 70 22} value 1
+        code0 {o->minimum(30);}
+        code1 {o->maximum(300);}
+        code2 {o->step(15);}
+        code3 {o->value(itimeout / 1000);}
+      }
+      Fl_Spinner spnTxDelay {
+        label {Tx delay (msec):}
+        callback {txdelay = (int)o->value();
+cbSetConfig();}
+        tooltip {delay from Rx to Tx} xywh {533 85 70 22} value 1
+        code0 {o->minimum(200);}
+        code1 {o->maximum(2000);}
+        code2 {o->step(100);}
+        code3 {o->value(txdelay);}
+      }
+      Fl_Spinner spnBcnInterval {
+        label {Beacon interval (sec)}
+        callback {bcnInterval = (int)o->value();
+cbSetConfig();}
+        tooltip {Time between beacon transmissions} xywh {554 111 49 22} value 1
+        code0 {o->minimum(15); o->maximum(600);}
+        code1 {o->step(15);}
+        code2 {o->value(bcnInterval);}
+      }
+      Fl_Output txtBlockSize {
+        label { = Blk Size}
+        xywh {568 137 35 24}
+        code0 {switch (exponent) {
+case 4: o->value("16"); break;
+case 5: o->value("32"); break;
+case 6: o->value("64"); break;
+case 7: o->value("128"); break;
+default:
+o->value("32");break;
+}
+o->type(FL_NORMAL_OUTPUT);
+}
+        class Fl_Input2
+      }
+    }
+    Fl_Button btnOK {
+      label Ok
+      callback {closeConfig();}
+      xywh {540 169 62 24}
+    }
+    Fl_Input txtBEACONTXT {
+      label {Beacon Text}
+      callback {changeBeaconText(o->value());}
+      tooltip {Text for the beacon 64 chars max} xywh {90 168 443 24} resizable
+      code0 {o->value(beacontext.c_str());}
+      class Fl_Input2
+    }
+  }
+} 
+
+Function {arq_SendSelect()} {open
+} {
+  Fl_Window {} {
+    label {Select Email} open
+    xywh {427 717 500 170} type Double resizable modal visible
+  } {
+    Fl_Box tblOutgoing {
+      xywh {0 3 500 140} box DOWN_BOX color 7 selection_color 246 align 16
+      code0 {\#include "table.h"}
+      class Table
+    }
+    Fl_Button send_Cancel {
+      label Cancel
+      callback {sendCancel();}
+      xywh {335 145 70 20}
+      code0 {extern void sendCancel();}
+    }
+    Fl_Return_Button send_OK {
+      label OK
+      callback {sendOK();}
+      xywh {420 145 72 20}
+      code0 {extern void sendOK();}
+    }
+  }
+} 
+
+Function {arq_composer()} {open
+} {
+  Fl_Window {} {
+    label {Flarq Mail Composer} open
+    xywh {575 537 515 275} type Double resizable visible
+  } {
+    Fl_Input inpMailTo {
+      label {To:}
+      xywh {48 4 460 24}
+      class Fl_Input2
+    }
+    Fl_Input inpMailSubj {
+      label {Subj:}
+      xywh {48 30 460 24}
+      class Fl_Input2
+    }
+    Fl_Text_Editor txtMailText {
+      xywh {0 56 510 188} resizable
+    }
+    Fl_Pack {} {open
+      xywh {0 247 515 28} type HORIZONTAL
+    } {
+      Fl_Button btnOpenComposedMail {
+        label Open
+        callback {cb_OpenComposeMail();}
+        tooltip {Open existing Composed email} xywh {4 251 70 20}
+        code0 {extern void cb_OpenComposeMail();}
+      }
+      Fl_Box {} {
+        xywh {75 251 5 20}
+      }
+      Fl_Button btnClearComposer {
+        label Clear
+        callback {cb_ClearComposer();}
+        tooltip {Clear all fields} xywh {81 251 70 20}
+        code0 {extern void cb_ClearComposer();}
+      }
+      Fl_Box {} {
+        xywh {152 251 5 20}
+      }
+      Fl_Button btnUseTemplate {
+        label Template
+        callback {cb_UseTemplate();}
+        tooltip {Use template file} xywh {159 251 70 20}
+        code0 {extern void cb_UseTemplate();}
+      }
+      Fl_Box {} {
+        xywh {230 251 127 20} resizable
+      }
+      Fl_Button btnCancelComposedMail {
+        label Cancel
+        callback {cb_CancelComposeMail();}
+        tooltip {Close Dialog} xywh {358 251 70 20}
+        code0 {extern void cb_CancelComposeMail();}
+      }
+      Fl_Box {} {
+        xywh {429 251 5 20}
+      }
+      Fl_Button btnSaveComposedMail {
+        label Save
+        callback {cb_SaveComposeMail();}
+        tooltip {Save this message (shift click Save Template)} xywh {436 251 70 20}
+        code0 {extern void cb_SaveComposeMail();}
+      }
+    }
+  }
+} 

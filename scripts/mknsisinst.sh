@@ -4,8 +4,8 @@
 ### 20090510  Stelios Bounanos M0GLD
 
 
-if [ $# -ne 3 ]; then
-    echo "Syntax: $0 data-dir build-dir installer-file" >&2
+if [ $# -ne 2 ]; then
+    echo "Syntax: $0 data-dir build-dir" >&2
     exit 1
 fi
 
@@ -17,7 +17,6 @@ fi
 PWD=`pwd`
 data="${PWD}/$1"
 build="${PWD}/$2"
-installer_file="$3"
 
 # more sanity checks
 for d in "$data" "$build"; do
@@ -30,20 +29,26 @@ if ! test -w "$build"; then
     exit 1
 fi
 
-# aaaaaaaaaargh => Aaaaaaaaaargh
-upcase1()
-{
-    sed 'h; s/\(^.\).*/\1/; y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/; G; s/\n.//'
-}
+set -e
 
-binary="$PACKAGE_TARNAME".exe
-if test "x$STRIP" != "x0"; then
-    $STRIP -S "$binary"
+fldigi_name=Fldigi
+fldigi_bin=fldigi.exe
+flarq_name=Flarq
+flarq_bin=flarq.exe
+
+if test "x$WANT_FLDIGI" != "xyes" && test "x$WANT_FLARQ" != "xyes"; then
+    echo "E: refusing to create empty installer" >&2
+    exit 1
+fi
+if test "x$WANT_FLDIGI" = "xyes"; then
+    test "x$NOSTRIP" = "x" && $STRIP -S "$fldigi_bin"
+    def="$def -DHAVE_FLDIGI -DFLDIGI_NAME=$fldigi_name -DFLDIGI_BINARY=$fldigi_bin -DFLDIGI_VERSION=$PACKAGE_VERSION"
+fi
+if test "x$WANT_FLARQ" = "xyes"; then
+    test "x$NOSTRIP" = "x" && $STRIP -S "$flarq_bin"
+    def="$def -DHAVE_FLARQ -DFLARQ_NAME=$flarq_name -DFLARQ_BINARY=$flarq_bin -DFLARQ_VERSION=$FLARQ_VERSION"
 fi
 
-name="$(echo $PACKAGE_TARNAME | upcase1)"
-
-$MAKENSIS -V2 -NOCD -D"INSTALLER_FILE=$installer_file" -D"LICENSE_FILE=$data/../COPYING" \
-    -D"PROGRAM_NAME=$name" -D"PROGRAM_VERSION=$PACKAGE_VERSION" \
-    -D"BINARY=$binary" -D"SUPPORT_URL=$PACKAGE_HOME" -D"UPDATES_URL=$PACKAGE_DL" \
-    -D"DOCS_URL=$PACKAGE_DOCS" -D"GUIDE_URL=$PACKAGE_GUIDE" "$data/win32/fldigi.nsi"
+$MAKENSIS -V2 -NOCD -D"INSTALLER_FILE=$INSTALLER_FILE" -D"LICENSE_FILE=$data/../COPYING" \
+    -D"SUPPORT_URL=$PACKAGE_HOME" -D"UPDATES_URL=$PACKAGE_DL" -D"FLDIGI_DOCS_URL=$PACKAGE_DOCS" \
+    -D"FLARQ_DOCS_URL=$FLARQ_DOCS" -D"GUIDE_URL=$PACKAGE_GUIDE" $def "$data/win32/fldigi.nsi"

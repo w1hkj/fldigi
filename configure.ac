@@ -8,19 +8,32 @@ AC_PREREQ(2.61)
 dnl major and minor must be integers; patch may
 dnl contain other characters or be empty
 m4_define(FLDIGI_MAJOR, [3])
-m4_define(FLDIGI_MINOR, [1])
-m4_define(FLDIGI_PATCH, [2AF])
+m4_define(FLDIGI_MINOR, [12])
+m4_define(FLDIGI_PATCH, [AF])
+m4_define(FLARQ_MAJOR,  [4])
+m4_define(FLARQ_MINOR,  [1])
+m4_define(FLARQ_PATCH,  [])
 
-AC_INIT([fldigi], FLDIGI_MAJOR.FLDIGI_MINOR[FLDIGI_PATCH], [w1hkj AT w1hkj DOT com])
+AC_INIT([fldigi], FLDIGI_MAJOR.FLDIGI_MINOR[]FLDIGI_PATCH, [w1hkj AT w1hkj DOT com])
 
 # substitute in Makefiles
 AC_SUBST([FLDIGI_VERSION_MAJOR], [FLDIGI_MAJOR])
 AC_SUBST([FLDIGI_VERSION_MINOR], [FLDIGI_MINOR])
 AC_SUBST([FLDIGI_VERSION_PATCH], [FLDIGI_PATCH])
+AC_SUBST([FLDIGI_VERSION], [FLDIGI_MAJOR.FLDIGI_MINOR[]FLDIGI_PATCH])
+AC_SUBST([FLARQ_VERSION_MAJOR], [FLARQ_MAJOR])
+AC_SUBST([FLARQ_VERSION_MINOR], [FLARQ_MINOR])
+AC_SUBST([FLARQ_VERSION_PATCH], [FLARQ_PATCH])
+AC_SUBST([FLARQ_VERSION], [FLARQ_MAJOR.FLARQ_MINOR[]FLARQ_PATCH])
 # define in config.h
-AC_DEFINE([FLDIGI_VERSION_MAJOR], [FLDIGI_MAJOR], [Major version number])
-AC_DEFINE([FLDIGI_VERSION_MINOR], [FLDIGI_MINOR], [Minor version number])
-AC_DEFINE([FLDIGI_VERSION_PATCH], ["FLDIGI_PATCH"], [Patch/alpha version string])
+AC_DEFINE([FLDIGI_VERSION_MAJOR], [FLDIGI_MAJOR], [Fldigi major version number])
+AC_DEFINE([FLDIGI_VERSION_MINOR], [FLDIGI_MINOR], [Fldigi minor version number])
+AC_DEFINE([FLDIGI_VERSION_PATCH], ["FLDIGI_PATCH"], [Fldigi patch/alpha version string])
+AC_DEFINE([FLARQ_VERSION_MAJOR], [FLARQ_MAJOR], [Flarq major version number])
+AC_DEFINE([FLARQ_VERSION_MINOR], [FLARQ_MINOR], [Flarq minor version number])
+AC_DEFINE([FLARQ_VERSION_PATCH], ["FLARQ_PATCH"], [Flarq patch/alpha version string])
+AC_DEFINE([FLDIGI_VERSION], ["FLDIGI_MAJOR.FLDIGI_MINOR[]FLDIGI_PATCH"], [Fldigi version string])
+AC_DEFINE([FLARQ_VERSION], ["FLARQ_MAJOR.FLARQ_MINOR[]FLARQ_PATCH"], [Flarq version string])
 
 AC_SUBST([AC_CONFIG_ARGS], [$ac_configure_args])
 
@@ -40,25 +53,30 @@ AC_CONFIG_HEADER([src/config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 
-PACKAGE_AUTHORS="Dave Freese, Stelios Bounanos, Leigh Klotz, and others"
+FLDIGI_AUTHORS="Dave Freese, Stelios Bounanos, Leigh Klotz, and others"
+FLARQ_AUTHORS="Dave Freese"
 PACKAGE_HOME="http://www.w1hkj.com/Fldigi.html"
 PACKAGE_DL="http://www.w1hkj.com/Downloads.html"
 PACKAGE_PROJ="http://developer.berlios.de/project/showfiles.php?group_id=9149"
 PACKAGE_DOCS="http://www.w1hkj.com/FldigiHelp/index.html"
 PACKAGE_GUIDE="http://www.w1hkj.com/beginners.html"
-AC_DEFINE_UNQUOTED([PACKAGE_AUTHORS], ["$PACKAGE_AUTHORS"], [Authors])
+FLARQ_DOCS="http://www.w1hkj.com/FlarqHelpFiles/flarq.html"
+AC_DEFINE_UNQUOTED([FLDIGI_AUTHORS], ["$FLDIGI_AUTHORS"], [Fldigi authors])
+AC_DEFINE_UNQUOTED([FLARQ_AUTHORS], ["$FLARQ_AUTHORS"], [Flarq authors])
 AC_DEFINE_UNQUOTED([PACKAGE_HOME], ["$PACKAGE_HOME"], [Home page])
 AC_DEFINE_UNQUOTED([PACKAGE_DL], ["$PACKAGE_DL"], [Download page])
 AC_DEFINE_UNQUOTED([PACKAGE_PROJ], ["$PACKAGE_PROJ"], [BerliOS page])
 AC_DEFINE_UNQUOTED([PACKAGE_DOCS], ["$PACKAGE_DOCS"], [Docs index])
 AC_DEFINE_UNQUOTED([PACKAGE_GUIDE], ["$PACKAGE_GUIDE"], [Beginners guide])
-AC_SUBST([PACKAGE_AUTHORS], [$PACKAGE_AUTHORS])
+AC_DEFINE_UNQUOTED([FLARQ_DOCS], ["$FLARQ_DOCS"], [Flarq Docs index])
+AC_SUBST([FLDIGI_AUTHORS], [$FLDIGI_AUTHORS])
+AC_SUBST([FLARQ_AUTHORS], [$FLARQ_AUTHORS])
 AC_SUBST([PACKAGE_HOME], [$PACKAGE_HOME])
 AC_SUBST([PACKAGE_DL], [$PACKAGE_DL])
 AC_SUBST([PACKAGE_PROJ], [$PACKAGE_PROJ])
 AC_SUBST([PACKAGE_DOCS], [$PACKAGE_DOCS])
 AC_SUBST([PACKAGE_GUIDE], [$PACKAGE_GUIDE])
-
+AC_SUBST([FLARQ_DOCS], [$FLARQ_DOCS])
 
 
 # Checks for programs.
@@ -107,6 +125,12 @@ AC_PRESERVE_HELP_ORDER
 ### Internationalization
 AM_GNU_GETTEXT([external])
 AM_CONDITIONAL([USE_NLS], [test "x$USE_NLS" = "xyes"])
+
+### Programs
+# Determine if fldigi and flarq have been requested and can be built
+# Set ac_cv_want_fldigi and ac_cv_want_flarq to yes/no
+# Set WANT_FLDIGI and WANT_FLARQ Makefile conditionals
+AC_FLDIGI_PROGRAMS
 
 ###### OS support
 ### OSX
@@ -179,16 +203,18 @@ AC_FLDIGI_XMLRPC
 AC_FLDIGI_OSS
 
 ### libpng
-# Set ac_cv_png to yes/no    (not used because we require libpng)
+# Required if $ac_cv_want_fldigi is "yes"
+# Set ac_cv_png to yes/no    (not used)
 # Define USE_PNG in config.h (as above)
 # Substitute PNG_CFLAGS and PNG_LIBS in Makefile
-AC_FLDIGI_PKG_CHECK([png], [libpng >= 1.2.8], [no], [no])
+AC_FLDIGI_PKG_CHECK([png], [libpng >= 1.2.8], [$ac_cv_want_fldigi], [no])
 
 ### libsamplerate
-# Set ac_cv_samplerate to yes/no    (not used because we require samplerate)
+# Required if $ac_cv_want_fldigi is "yes"
+# Set ac_cv_samplerate to yes/no    (not used)
 # Define USE_SAMPLERATE in config.h (as above)
 # Substitute SAMPLERATE_CFLAGS and SAMPLERATE_LIBS in Makefile
-AC_FLDIGI_PKG_CHECK([samplerate], [samplerate >= 0.1.1], [no], [no])
+AC_FLDIGI_PKG_CHECK([samplerate], [samplerate >= 0.1.1], [$ac_cv_want_fldigi], [no])
 
 ### libsndfile
 # Set ac_cv_sndfile to yes/no
@@ -252,6 +278,7 @@ AH_TOP([
 #define CONFIG_H_
 ])
 AH_BOTTOM([
+#include "pkg.h"
 #include "util.h"
 #endif /* CONFIG_H_ */
 ])
@@ -269,6 +296,15 @@ Configuration summary:
   CPU optimizations ........... $ac_cv_opt
   Debugging ................... $ac_cv_debug
 
+  fldigi ...................... $ac_cv_want_fldigi
+  flarq ....................... $ac_cv_want_flarq
+
+  i18n ........................ $USE_NLS
+])
+
+if test "x$ac_cv_want_fldigi" = "xyes"; then
+  AC_MSG_RESULT([ fldigi build options:
+
   sndfile ..................... $ac_cv_sndfile
   oss ......................... $ac_cv_oss
   portaudio ................... $ac_cv_portaudio
@@ -276,6 +312,5 @@ Configuration summary:
 
   hamlib ...................... $ac_cv_hamlib
   xmlrpc ...................... $ac_cv_xmlrpc
-
-  i18n ........................ $USE_NLS
 ])
+fi
