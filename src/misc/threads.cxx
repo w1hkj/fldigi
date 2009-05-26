@@ -77,3 +77,16 @@ void ptw32_init(void)
        atexit(ptw32_cleanup);
 }
 #endif // __MINGW32__
+
+#ifdef __linux__
+#  ifndef _GNU_SOURCE
+#    define _GNU_SOURCE
+#  endif
+#  include <unistd.h>
+#  include <sys/syscall.h>
+#  include "debug.h"
+void linux_log_tid(void)
+{
+	LOG_DEBUG(PACKAGE_TARNAME " thread %d is LWP %ld", GET_THREAD_ID(), syscall(SYS_gettid));
+}
+#endif

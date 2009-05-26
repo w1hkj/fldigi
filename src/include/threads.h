@@ -35,15 +35,22 @@ void ptw32_init(void);
 #  define NP_THREAD_INIT()
 #endif
 
+#ifdef __linux__
+void linux_log_tid(void);
+#  define LOG_THREAD_ID() linux_log_tid()
+#else
+#  define LOG_THREAD_ID()  /* nothing */
+#endif
+
 #if USE_TLS
 #       define THREAD_ID_TYPE __thread int
 #       define CREATE_THREAD_ID() do { NP_THREAD_INIT(); thread_id_ = INVALID_TID; } while (0)
-#	define SET_THREAD_ID(x)   thread_id_ = (x)
+#	define SET_THREAD_ID(x)   do { thread_id_ = (x); LOG_THREAD_ID(); } while (0)
 #	define GET_THREAD_ID()    thread_id_
 #else
 #       define THREAD_ID_TYPE pthread_key_t
 #	define CREATE_THREAD_ID() do { NP_THREAD_INIT(); pthread_key_create(&thread_id_, NULL); } while (0)
-#	define SET_THREAD_ID(x)   pthread_setspecific(thread_id_, (const void *)(x + 1))
+#	define SET_THREAD_ID(x)   do { pthread_setspecific(thread_id_, (const void *)(x + 1)); LOG_THREAD_ID(); } while (0)
 #	define GET_THREAD_ID()    ((intptr_t)pthread_getspecific(thread_id_) - 1)
 #endif // USE_TLS
 extern THREAD_ID_TYPE thread_id_;
