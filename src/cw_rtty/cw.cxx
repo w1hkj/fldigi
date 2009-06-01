@@ -753,8 +753,6 @@ void cw::send_symbol(int bits)
 // sends a morse character and the space afterwards
 //=======================================================================
 
-char cutnumbers[] = "T12345678N";
-
 void cw::send_ch(int ch)
 {
 	int code;
@@ -764,9 +762,6 @@ void cw::send_ch(int ch)
 // handle word space separately (7 dots spacing) 
 // last char already had 3 elements of inter-character spacing 
 
-	if (progdefaults.cutnbrs && (ch >= '0' && ch <= '9'))
-		chout = cutnumbers[ch - '0'];
-		
 	if ((chout == ' ') || (chout == '\n')) {
 		firstelement = false;
 		send_symbol(0);
