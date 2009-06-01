@@ -77,14 +77,11 @@ bool dxcc_open(const char* filename)
 		string prefix;
 		while ((c = is.peek()) == ' ' || c == '\r' || c == '\n') {
 			is >> ws;
-			if (is.peek() == '=')
-				is.ignore();
+
 			while (getline(is, prefix, ',')) {
 				add_prefix(prefix, entry);
 				if ((c = is.peek()) == '\r' || c == '\n')
 					break;
-				else if (c == '=')
-					is.ignore();
 			}
 		}
 
@@ -115,10 +112,18 @@ const dxcc* dxcc_lookup(const char* callsign)
 		return NULL;
 
 	string sstr;
-	sstr.resize(strlen(callsign));
-	transform(callsign, callsign + sstr.length(), sstr.begin(), static_cast<int (*)(int)>(toupper));
+	sstr.resize(strlen(callsign) + 1);
+	transform(callsign, callsign + sstr.length() - 1, sstr.begin() + 1, static_cast<int (*)(int)>(toupper));
 
 	dxcc_map::const_iterator entry;
+
+	// first look for a full callsign (prefixed with '=')
+	sstr[0] = '=';
+	if ((entry = cmap->find(sstr)) != cmap->end())
+		return entry->second;
+
+	// erase the '=' and do a longest prefix search
+	sstr.erase(0, 1);
 	size_t len = sstr.length();
 	do {
 		sstr.resize(len--);
