@@ -13,6 +13,7 @@
 #include "debug.h"
 #include "status.h"
 #include "trx.h"
+#include "modem.h"
 
 #include <FL/Fl.H>
 #include <FL/filename.H>
@@ -137,6 +138,21 @@ static bool GET = false;
 
 string info1msg = "";
 string info2msg = "";
+
+static char cutnumbers[] = "T12345678N";
+static string cutstr;
+
+string cutstring(const char *s)
+{
+	cutstr = s;
+	if (!progdefaults.cutnbrs || active_modem != cw_modem)
+		return cutstr;
+
+	for (size_t i = 0; i < cutstr.length(); i++)
+		if (cutstr[i] >= '0' && cutstr[i] <= '9')
+			cutstr[i] = cutnumbers[cutstr[i] - '0'];
+	return cutstr;
+}
 
 size_t mystrftime( char *s, size_t max, const char *fmt, const struct tm *tm) {
 	return strftime(s, max, fmt, tm);
@@ -309,7 +325,7 @@ void pQSOTIME(string &s, size_t &i)
 
 void pRST(string &s, size_t &i)
 {
-	s.replace( i, 5, inpRstOut->value() );
+	s.replace( i, 5, cutstring(inpRstOut->value()));
 }
 
 void pMYCALL(string &s, size_t &i)
@@ -425,7 +441,7 @@ void pCNTR(string &s, size_t &i)
 	if (contestval) {
 		contest_count.Format(progdefaults.ContestDigits, progdefaults.UseLeadingZeros);
 		snprintf(contest_count.szCount, sizeof(contest_count.szCount), contest_count.fmt.c_str(), contestval);
-		s.replace (i, 6, contest_count.szCount);
+		s.replace (i, 6, cutstring(contest_count.szCount));
 	} else
 		s.replace (i, 6, "");
 }
@@ -451,7 +467,7 @@ void pINCR(string &s, size_t &i)
 
 void pXOUT(string &s, size_t &i)
 {
-	s.replace (i, 6, progdefaults.myXchg);
+	s.replace( i, 6, cutstring(progdefaults.myXchg.c_str()));
 }
 
 void pLOG(string &s, size_t &i)
