@@ -40,7 +40,7 @@ FIELD fields[] = {
     {IOTA, 			"IOTA",       	0,  6, &btnSelectIOTA},        // Islands on the air 
     {ITUZ,			"ITUZ",       	0,  6, &btnSelectITUZ},        // ITU zone
     {MODE,			"MODE",         0,  8, &btnSelectMode},        // QSO mode
-	{MYXCHG,		"MYXCHG",       0, 20, &btnSelectMyXchg},      // contest exchange sent
+	{MYXCHG,		"STX_STRING",   0, 40, &btnSelectMyXchg},      // contest exchange sent
     {NAME, 			"NAME",         0, 18, &btnSelectName},        // contacted operators NAME
     {NOTES, 		"NOTES",        0, 80, &btnSelectNotes},       // QSO notes
     {OPERATOR,		"OPERATOR",   	0, 10, NULL},                  // Callsign of person logging the QSO
@@ -67,7 +67,7 @@ FIELD fields[] = {
     {TIME_ON, 		"TIME_ON",      0,  4, &btnSelectTimeON},      // HHMM or HHMMSS in UTC
     {TX_PWR, 		"TX_PWR",       0,  4, &btnSelectTX_pwr},      // power transmitted by this station
     {VE_PROV,		"VE_PROV",      0,  2, &btnSelectProvince},    // 2 letter abbreviation for Canadian Province
-	{XCHG1,			"XCHG1",        0, 20, &btnSelectXchgIn}       // contest exchange #1 / free1 in xlog
+	{XCHG1,			"SRX_STRING",   0, 40, &btnSelectXchgIn}       // contest exchange #1 / free1 in xlog
 };
 
 int numfields = sizeof(fields) / sizeof(FIELD);
@@ -96,6 +96,15 @@ int findfield( char *p )
 	
     if (strncasecmp (p, "EOR>", 4) == 0)
         return -1;
+
+// following two tests are for backward compatibility with older
+// fldigi fields
+// changed to comply with ADIF 2.2.3
+
+	if (strncasecmp (p, "XCHG1>", 6) == 0)
+		return XCHG1;
+	if (strncasecmp (p, "MYXCHG>", 7) == 0)
+		return MYXCHG;
     
 	while( low <= high ) {
 		middle = ( low  + high ) / 2;
