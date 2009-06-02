@@ -12,7 +12,7 @@ m4_define(FLDIGI_MINOR, [12])
 m4_define(FLDIGI_PATCH, [AG])
 m4_define(FLARQ_MAJOR,  [4])
 m4_define(FLARQ_MINOR,  [2])
-m4_define(FLARQ_PATCH,  [AG])
+m4_define(FLARQ_PATCH,  [AH])
 
 AC_INIT([fldigi], FLDIGI_MAJOR.FLDIGI_MINOR[]FLDIGI_PATCH, [w1hkj AT w1hkj DOT com])
 
