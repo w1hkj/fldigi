@@ -56,6 +56,10 @@ void parseTIMEOUT(size_t &);
 void parseBAUDRATE(size_t &);
 void parseRTSCTS(size_t &);
 void parseCMDPTT(size_t &);
+void parseRTSPLUS(size_t &);
+void parseDTRPLUS(size_t &);
+void parseRTSPTT(size_t &);
+void parseDTRPTT(size_t &);
 void parseECHO(size_t &);
 
 void parseIOSsymbol(size_t &);
@@ -119,6 +123,10 @@ TAGS rigdeftags[] = {
 	{"<TIMEOUT", parseTIMEOUT},
 	{"<BAUDRATE", parseBAUDRATE},
 	{"<RTSCTS", parseRTSCTS},
+	{"<RTSPLUS", parseRTSPLUS},
+	{"<DTRPLUS", parseDTRPLUS},
+	{"<RTSPTT", parseRTSPTT},
+	{"<DTRPTT", parseDTRPTT},
 	{"<ECHO", parseECHO},
 	{"<CMDPTT", parseCMDPTT},
 	{0, 0} 
@@ -521,6 +529,38 @@ void parseTIMEOUT(size_t &p0){
 void parseRTSCTS(size_t &p0){
     bool val = getBool(p0);
     xmlrig.rtscts = val;
+	size_t pend = tagEnd(p0);
+	p0 = pend;
+}
+
+void parseRTSPLUS(size_t &p0)
+{
+	bool val = getBool(p0);
+	xmlrig.rts = val;
+	size_t pend = tagEnd(p0);
+	p0 = pend;
+}
+
+void parseDTRPLUS(size_t &p0)
+{
+	bool val = getBool(p0);
+	xmlrig.dtr = val;
+	size_t pend = tagEnd(p0);
+	p0 = pend;
+}
+
+void parseRTSPTT(size_t &p0)
+{
+	bool val = getBool(p0);
+	xmlrig.rtsptt = val;
+	size_t pend = tagEnd(p0);
+	p0 = pend;
+}
+
+void parseDTRPTT(size_t &p0)
+{
+	bool val = getBool(p0);
+	xmlrig.dtrptt = val;
 	size_t pend = tagEnd(p0);
 	p0 = pend;
 }
