@@ -149,7 +149,7 @@ void FTextBase::setFontSize(int s, int attr)
 
 void FTextBase::setFontColor(Fl_Color c, int attr)
 {
-	set_style(attr, textfont(), textsize(), c, SET_COLOR | SET_ADJ);
+	set_style(attr, textfont(), textsize(), c, SET_COLOR);
 }
 
 /// Resizes the text widget.
@@ -229,16 +229,8 @@ void FTextBase::set_style(int attr, Fl_Font f, int s, Fl_Color c, int set)
 			styles[i].font = f;
 		if (set & SET_SIZE)
 			styles[i].size = s;
-		if (set & SET_COLOR) {
-			// Fl_Text_Display_mod::draw_string may mindlessly clobber our colours with
-			// FL_WHITE or FL_BLACK to satisfy contrast requirements. We adjust the
-			// luminosity here so that at least we get something resembling the
-			// requested hue.
-			if (set & SET_ADJ)
-				styles[i].color = adjust_color(c, color());
-			else
-				styles[i].color = c;
-		}
+		if (set & SET_COLOR)
+			styles[i].color = c;
 		if (i == SKIP) // clickable styles always same as SKIP for now
 			for (int j = CLICK_START; j < NATTR; j++)
 				memcpy(&styles[j], &styles[i], sizeof(styles[j]));
