@@ -93,9 +93,7 @@ private:
 
 protected:
 	enum { FTEXT_DEF = 'A' };
-	enum set_style_op_e { SET_FONT = 1 << 0, SET_SIZE = 1 << 1,
-			      SET_COLOR = 1 << 2, SET_ADJ = 1 << 3
-	};
+	enum set_style_op_e { SET_FONT = 1 << 0, SET_SIZE = 1 << 1, SET_COLOR = 1 << 2 };
 	Fl_Text_Buffer				*tbuf;	///< text buffer
 	Fl_Text_Buffer				*sbuf;	///< style buffer
 	Fl_Text_Display_mod::Style_Table_Entry	styles[NATTR];
