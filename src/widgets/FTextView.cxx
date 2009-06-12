@@ -243,6 +243,8 @@ void FTextBase::set_style(int attr, Fl_Font f, int s, Fl_Color c, int set)
 			for (int j = CLICK_START; j < NATTR; j++)
 				memcpy(&styles[j], &styles[i], sizeof(styles[j]));
 	}
+	if (set & SET_COLOR)
+		mCursor_color = styles[0].color;
 
 	resize(x(), y(), w(), h()); // to redraw and recalculate the wrap column
 }
