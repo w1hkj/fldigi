@@ -2950,8 +2950,10 @@ void set_zdata(complex *zarray, int len)
 		wfscope->zdata(zarray, len);
 }
 
-void put_rx_char(unsigned int data)
+static void put_rx_char_flmain(unsigned int data)
 {
+	ENSURE_THREAD(FLMAIN_TID);
+
 #if BENCHMARK_MODE
 	if (!benchmark.output.empty()) {
 		if (unlikely(benchmark.buffer.length() + 16 > benchmark.buffer.capacity()))
@@ -2977,21 +2979,21 @@ void put_rx_char(unsigned int data)
 
 	if (progdefaults.autoextract == true) rx_extract_add(data);
 	if (progdefaults.speak == true) speak(data);
-	
+
 	switch (data) {
 		case '\n':
 			if (last == '\r')
 				break;
 		case '\r':
-			REQ(&FTextBase::addchr, ReceiveText, '\n', style);
+			ReceiveText->add('\n', style);
 			break;
 		default:
-			REQ(&FTextBase::addchr, ReceiveText, data, style);
+			ReceiveText->add(data, style);
 	}
 	last = data;
 
 	WriteARQ(data);
-	
+
 	string s;
 	if (iscntrl(data))
 		s = ascii2[data & 0x7F];
@@ -3008,29 +3010,37 @@ void put_rx_char(unsigned int data)
 		logfile->log_to_file(cLogfile::LOG_RX, s);
 }
 
-string strSecText = "";
-
-void put_sec_char( char chr )
+void put_rx_char(unsigned int data)
 {
+	REQ(put_rx_char_flmain, data);
+}
+
+static string strSecText = "";
+
+static void put_sec_char_flmain(char chr)
+{
+	ENSURE_THREAD(FLMAIN_TID);
+
 	fl_font(FL_HELVETICA, FL_NORMAL_SIZE);
 	char s[2] = "W";
 	int lc = (int)ceil(fl_width(s));
 	int w = StatusBar->w();
 	int lw = (int)ceil(fl_width(StatusBar->label()));
 	int over = 2 * lc + lw - w;
-	
+
 	if (chr >= ' ' && chr <= 'z') {
 		if ( over > 0 )
 			strSecText.erase(0, (int)(1.0 * over / lc + 0.5));
 		strSecText.append(1, chr);
-		FL_LOCK_D();
-		REQ(static_cast<void (Fl_Box::*)(const char *)>(&Fl_Box::label), StatusBar, strSecText.c_str());
+		StatusBar->label(strSecText.c_str());
 		WARNstatus->damage();
-		FL_UNLOCK_D();
-		FL_AWAKE_D();
 	}
 }
 
+void put_sec_char(char chr)
+{
+	REQ(put_sec_char_flmain, chr);
+}
 
 static void clear_status_cb(void* arg)
 {
