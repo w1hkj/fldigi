@@ -1,5 +1,37 @@
 Change Log:
 
+3.11.5
+
+2009-06-12  Stelios Bounanos  <vcs@enotty.net>
+
+	dc0007c: Fix text echo functions
+	3551ca1: Remove FText text colour adjustment
+	f32cca9: Always set the FText cursor colour
+	9b7755e: Disable FText text colour contrast check
+
+2009-06-12  David Freese  <w1hkj@w1hkj.com>
+
+	8897b3d: Logbook bug fix
+	d2b73cc: RigCAT mods
+
+2009-06-01  Stelios Bounanos  <vcs@enotty.net>
+
+	e642543: Fix Contest Country Files callsign lookup
+
+2009-06-01  David Freese  <w1hkj@w1hkj.com>
+
+	c8f10ee: ADIF_2.2.3 compliance
+	b8d28bd: Cut number mod for CW
+
+2009-05-26  Stelios Bounanos  <vcs@enotty.net>
+
+	4b325a9: Prefer ALSA default devices
+	a21b194: Fix initial window sizes
+
+2009-05-16  David Freese  <w1hkj@w1hkj.com>
+
+	3e4d2a4: PSK search algorithm
+
 3.11.4
 
 2009-05-05  Stelios Bounanos  <vcs@enotty.net>
