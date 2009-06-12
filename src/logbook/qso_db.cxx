@@ -48,12 +48,12 @@ void cQsoRec::checkBand() {
 void cQsoRec::putField (int n, const char *s){
   if (n < 0 || n >= NUMFIELDS) return;
   memset(qsofield[n], 0, fields[n].size);
-  strcpy( qsofield[n], s);
+  strncpy( qsofield[n], s, fields[n].size);
 }
 
 void cQsoRec::putField (int n, const char *s, int len) {
     if (n < 0 || n >= NUMFIELDS) return;
-    if (len > fields[n].size) len = fields[n].size;
+    if (len >= fields[n].size) len = fields[n].size;
     strncpy(qsofield[n], s, len);
     qsofield[n][len] = 0;
 }
@@ -64,6 +64,7 @@ void cQsoRec::addtoField (int n, const char *s){
 	strcpy(temp, qsofield[n]);
 	strcat(temp, s);
 	strncpy(qsofield[n], temp, fields[n].size);
+    delete [] temp;
 }
 
 void cQsoRec::trimFields () {
