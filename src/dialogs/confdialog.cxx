@@ -16,6 +16,7 @@
 #include "Viewer.h"
 #include "pskrep.h"
 #include "logsupport.h"
+#include "notify.h"
 #if USE_HAMLIB
   #include "hamlib.h"
 #endif
@@ -52,6 +53,7 @@ txtSecondary->value(progdefaults.secText.c_str());
 }
 progdefaults.myCall = o->value();
 update_main_title();
+notify_change_callsign();
 progdefaults.changed = true;
 }
 

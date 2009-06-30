@@ -538,11 +538,13 @@ void pRSID(string &s, size_t &i)
   s.replace(i, endbracket - i + 1, "");
 }
 
-#ifndef __MINGW32__
-void set_env(void)
+void set_macro_env(void)
 {
-	enum { PATH, FLDIGI_RX_IPC_KEY, FLDIGI_TX_IPC_KEY, FLDIGI_VERSION_ENVVAR,
-	       FLDIGI_PID, FLDIGI_CONFIG_DIR,
+	enum {
+#ifndef __WOE32__
+	       PATH, FLDIGI_RX_IPC_KEY, FLDIGI_TX_IPC_KEY,
+#endif
+	       FLDIGI_VERSION_ENVVAR, FLDIGI_PID, FLDIGI_CONFIG_DIR,
 
 	       FLDIGI_MY_CALL, FLDIGI_MY_NAME, FLDIGI_MY_LOCATOR,
 
@@ -558,9 +560,16 @@ void set_env(void)
 		const char* var;
 		const char* val;
 	} env[] = {
+#ifndef __WOE32__
 		{ "PATH", "" },
 		{ "FLDIGI_RX_IPC_KEY", "" },
 		{ "FLDIGI_TX_IPC_KEY", "" },
+#endif
+		{ "FLDIGI_XMLRPC_ADDRESS", progdefaults.xmlrpc_address.c_str() },
+		{ "FLDIGI_XMLRPC_PORT", progdefaults.xmlrpc_port.c_str() },
+		{ "FLDIGI_ARQ_ADDRESS", progdefaults.arq_address.c_str() },
+		{ "FLDIGI_ARQ_PORT", progdefaults.arq_port.c_str() },
+
 		{ "FLDIGI_VERSION", PACKAGE_VERSION },
 		{ "FLDIGI_PID", "" },
 		{ "FLDIGI_CONFIG_DIR", HomeDir.c_str() },
@@ -589,6 +598,7 @@ void set_env(void)
 		{ "FLDIGI_AZ", inpAZ->value() }
 	};
 
+#ifndef __WOE32__
 	// PATH
 	static string path = ScriptsDir;
 	path.erase(path.length()-1,1);
@@ -603,6 +613,7 @@ void set_env(void)
 	env[FLDIGI_RX_IPC_KEY].val = key[0];
 	snprintf(key[1], sizeof(key[1]), "%d", progdefaults.tx_msgid);
 	env[FLDIGI_TX_IPC_KEY].val = key[1];
+#endif
 
 	// pid
 	char pid[6];
@@ -623,7 +634,7 @@ void set_env(void)
 	env[FLDIGI_FREQUENCY].val = freq;
 
 	// debugging vars
-#ifndef NDEBUG
+#if !defined(NDEBUG) && !defined(__WOE32__)
 	unsetenv("FLDIGI_NO_EXEC");
 	unsetenv("MALLOC_CHECK_");
 	unsetenv("MALLOC_PERTURB_");
@@ -633,6 +644,7 @@ void set_env(void)
 		setenv(env[j].var, env[j].val, 1);
 }
 
+#ifndef __MINGW32__
 void pEXEC(string &s, size_t &i)
 {
 	size_t start, end;
@@ -661,9 +673,9 @@ void pEXEC(string &s, size_t &i)
 			exit(EXIT_FAILURE);
 		}
 		close(pfd[1]);
-		set_env();
+		set_macro_env();
 		execl("/bin/sh", "sh", "-c", s.substr(start, end-start).c_str(), (char *)NULL);
-		LOG_PERROR("execl");
+		perror("execl");
 		exit(EXIT_FAILURE);
 	}
 	// parent

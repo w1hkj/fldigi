@@ -49,6 +49,8 @@ decl {\#include "flinput2.h"} {public
 
 decl {\#include "logsupport.h"} {} 
 
+decl {\#include "notify.h"} {} 
+
 decl {\#if USE_HAMLIB
   \#include "hamlib.h"
 \#endif} {} 
@@ -106,6 +108,7 @@ txtSecondary->value(progdefaults.secText.c_str());
 }
 progdefaults.myCall = o->value();
 update_main_title();
+notify_change_callsign();
 progdefaults.changed = true;}
             tooltip {Operators callsign} xywh {110 64 110 24}
             code0 {inpMyCallsign->labelsize(FL_NORMAL_SIZE);}

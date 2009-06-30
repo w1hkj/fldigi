@@ -84,6 +84,71 @@ size_t strlcpy(char *dest, const char *src, size_t size)
 }
 #endif // !HAVE_STRLCPY
 
+#if !HAVE_SETENV
+// from git 1.6.3.1 compat/setenv.c
+int setenv(const char *name, const char *value, int replace)
+{
+	int out;
+	size_t namelen, valuelen;
+	char *envstr;
+
+	if (!name || !value) return -1;
+	if (!replace) {
+		char *oldval = NULL;
+		oldval = getenv(name);
+		if (oldval) return 0;
+	}
+
+	namelen = strlen(name);
+	valuelen = strlen(value);
+	envstr = (char*)malloc((namelen + valuelen + 2));
+	if (!envstr) return -1;
+
+	memcpy(envstr, name, namelen);
+	envstr[namelen] = '=';
+	memcpy(envstr + namelen + 1, value, valuelen);
+	envstr[namelen + valuelen + 1] = 0;
+
+	out = putenv(envstr);
+	/* putenv(3) makes the argument string part of the environment,
+	 * and changing that string modifies the environment --- which
+	 * means we do not own that storage anymore.  Do not free
+	 * envstr.
+	 */
+
+	return out;
+}
+#endif
+
+#if !HAVE_UNSETENV
+// from git 1.6.3.1 compat/setenv.c
+int unsetenv(const char *name)
+{
+	extern char **environ;
+	int src, dst;
+	size_t nmln;
+
+	nmln = strlen(name);
+
+	for (src = dst = 0; environ[src]; ++src) {
+		size_t enln;
+		enln = strlen(environ[src]);
+		if (enln > nmln) {
+			/* might match, and can test for '=' safely */
+			if (0 == strncmp (environ[src], name, nmln)
+			    && '=' == environ[src][nmln])
+				/* matches, so skip */
+				continue;
+		}
+		environ[dst] = environ[src];
+		++dst;
+	}
+	environ[dst] = NULL;
+
+	return 0;
+}
+#endif
+
 #ifdef __MINGW32__
 int set_cloexec(int fd, unsigned char v) { return 0; }
 #else

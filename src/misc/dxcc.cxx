@@ -29,24 +29,29 @@ dxcc::dxcc(const char* cn, int cq, int itu, const char* ct, float lat, float lon
 }
 
 typedef unordered_map<string, dxcc*> dxcc_map_t;
+typedef vector<dxcc*> dxcc_list_t;
 static dxcc_map_t* cmap = 0;
+static dxcc_list_t* clist = 0;
 static vector<string>* cnames = 0;
 
 static void add_prefix(string& prefix, dxcc* entry);
 
 bool dxcc_open(const char* filename)
 {
-	dxcc_close();
+	if (cmap)
+		return true;
 
 	ifstream in(filename);
 	if (!in) {
-		LOG_WARN("Could not read contest country file \"%s\"", filename);
+		LOG_INFO("Could not read contest country file \"%s\"", filename);
 		return false;
 	}
 
 	cmap = new dxcc_map_t;
 	cnames = new vector<string>;
 	cnames->reserve(345); // approximate number of dxcc entities
+	clist = new dxcc_list_t;
+	clist->reserve(345);
 
 	dxcc* entry;
 	string record;
@@ -59,6 +64,7 @@ bool dxcc_open(const char* filename)
 
 		// read country name
 		cnames->resize(cnames->size() + 1);
+		clist->push_back(entry);
 		getline(is, cnames->back(), ':');
 		entry->country = cnames->back().c_str();
 		// cq zone
@@ -95,6 +101,11 @@ bool dxcc_open(const char* filename)
 	return true;
 }
 
+bool dxcc_is_open(void)
+{
+	return cmap;
+}
+
 void dxcc_close(void)
 {
 	if (!cmap)
@@ -107,11 +118,13 @@ void dxcc_close(void)
 			delete i->second;
 	delete cmap;
 	cmap = 0;
+	delete clist;
+	clist = 0;
 }
 
-const vector<string>* dxcc_entity_list(void)
+const vector<dxcc*>* dxcc_entity_list(void)
 {
-	return cnames;
+	return clist;
 }
 
 const dxcc* dxcc_lookup(const char* callsign)
@@ -199,6 +212,7 @@ static void add_prefix(string& prefix, dxcc* entry)
 
 typedef unordered_map<string, unsigned char> qsl_map_t;
 static qsl_map_t* qsl_calls;
+static unsigned char qsl_open_;
 const char* qsl_names[] = { "LoTW", "eQSL" };
 
 bool qsl_open(const char* filename, qsl_t qsl_type)
@@ -222,13 +236,20 @@ bool qsl_open(const char* filename, qsl_t qsl_type)
 	LOG_INFO("Added %" PRIuSZ " %s callsigns from \"%s\"",
 		 qsl_calls->size() - n, qsl_names[qsl_type], filename);
 
+	qsl_open_ |= (1 << qsl_type);
 	return true;
+}
+
+unsigned char qsl_is_open(void)
+{
+	return qsl_open_;
 }
 
 void qsl_close(void)
 {
 	delete qsl_calls;
 	qsl_calls = 0;
+	qsl_open_ = 0;
 }
 
 unsigned char qsl_lookup(const char* callsign)

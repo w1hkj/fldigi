@@ -1,7 +1,6 @@
 #ifndef DXCC_H_
 #define DXCC_H_
 
-#include <string>
 #include <vector>
 
 struct dxcc {
@@ -20,11 +19,13 @@ enum qsl_t { QSL_LOTW, QSL_EQSL, QSL_END };
 extern const char* qsl_names[];
 
 bool dxcc_open(const char* filename);
+bool dxcc_is_open(void);
 void dxcc_close(void);
 const dxcc* dxcc_lookup(const char* callsign);
-const std::vector<std::string>* dxcc_entity_list(void);
+const std::vector<dxcc*>* dxcc_entity_list(void);
 
 bool qsl_open(const char* filename, qsl_t qsl_type);
+unsigned char qsl_is_open(void);
 void qsl_close(void);
 unsigned char qsl_lookup(const char* callsign);
 

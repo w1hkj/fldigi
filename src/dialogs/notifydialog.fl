@@ -1,0 +1,199 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0109 
+header_name {.h} 
+code_name {.cxx}
+decl {\#include <config.h>} {} 
+
+decl {\#include "table.h"} {public global
+} 
+
+decl {\#include "flinput2.h"} {public global
+} 
+
+decl {\#include "notify.h"} {} 
+
+Function {make_notify_window()} {open
+} {
+  Fl_Window {} {
+    label Notifications open
+    xywh {231 430 500 450} type Double resizable size_range {500 450 0 0} visible
+  } {
+    Fl_Group grpNotifyEvent {
+      label Event open
+      xywh {2 2 219 126} box ENGRAVED_FRAME align 21
+    } {
+      Fl_Choice mnuNotifyEvent {open
+        xywh {36 29 175 22} down_box BORDER_BOX
+      } {}
+      Fl_Light_Button btnNotifyEnabled {
+        label Enabled
+        xywh {131 94 80 23}
+      }
+      Fl_Input inpNotifyRE {
+        label {RE:}
+        xywh {36 61 175 23}
+        code0 {o->labelsize(FL_NORMAL_SIZE);}
+        class Fl_Input2
+      }
+    }
+    Fl_Group grpNotifyFilter {
+      label Filter open
+      xywh {2 130 219 176} box ENGRAVED_FRAME align 21
+    } {
+      Fl_Round_Button chkNotifyFilterCall {
+        label Callsign
+        callback {if (!o->value()) {
+    o->value(1);
+    return;
+}
+inpNotifyFilterCall->show();
+btnNotifyFilterDXCC->hide();
+chkNotifyFilterDXCC->value(0);}
+        xywh {12 157 80 20} down_box ROUND_DOWN_BOX
+      }
+      Fl_Input inpNotifyFilterCall {
+        xywh {131 157 80 20} align 0
+        class Fl_Input2
+      }
+      Fl_Round_Button chkNotifyFilterDXCC {
+        label {DXCC entity}
+        callback {if (!o->value()) {
+    o->value(1);
+    return;
+}
+inpNotifyFilterCall->hide();
+btnNotifyFilterDXCC->show();
+chkNotifyFilterCall->value(0);}
+        xywh {12 186 110 20} down_box ROUND_DOWN_BOX
+      }
+      Fl_Button btnNotifyFilterDXCC {
+        tooltip {Show DXCC entities} xywh {183 183 28 23}
+      }
+      Fl_Check_Button chkNotifyFilterNWB {
+        label {Not worked before}
+        xywh {12 216 155 20} down_box DOWN_BOX
+      }
+      Fl_Check_Button chkNotifyFilterLOTW {
+        label {LotW user}
+        xywh {12 246 100 20} down_box DOWN_BOX
+      }
+      Fl_Check_Button chkNotifyFilterEQSL {
+        label {eQSL user}
+        xywh {12 276 100 20} down_box DOWN_BOX
+      }
+    }
+    Fl_Group grpNotifyAction {
+      label Action open
+      xywh {222 2 276 304} box ENGRAVED_FRAME align 21
+    } {
+      Fl_Input inpNotifyActionDialog {
+        label {Show alert text:}
+        xywh {233 42 218 60} type Multiline align 5
+        code0 {o->labelsize(FL_NORMAL_SIZE);}
+        class Fl_Input2
+      }
+      Fl_Input inpNotifyActionProgram {
+        label {Run program:}
+        xywh {234 243 218 23} align 5
+        code0 {o->labelsize(FL_NORMAL_SIZE);}
+        class Fl_Input2
+      }
+      Fl_Button btnNotifyActionProgram {
+        xywh {461 243 28 23}
+      }
+      Fl_Spinner cntNotifyActionLimit {
+        label {Trigger limit (s):}
+        tooltip {Minimum time between events} xywh {399 276 52 20} minimum 0 maximum 3600 value 1
+      }
+      Fl_Input inpNotifyActionMacro {
+        label {Append to TX text:}
+        xywh {234 159 218 60} type Multiline align 5
+        code0 {o->labelsize(FL_NORMAL_SIZE);}
+        class Fl_Input2
+      }
+      Fl_Button btnNotifyActionMacro {
+        tooltip {Show macro editor} xywh {461 176 28 23}
+      }
+      Fl_Button btnNotifyActionDialogDefault {
+        tooltip {Insert default text} xywh {461 61 28 23}
+      }
+      Fl_Spinner cntNotifyActionDialogTimeout {
+        label {Hide after (s):}
+        xywh {399 112 52 20} minimum 0 maximum 3600 value 5
+      }
+    }
+    Fl_Button btnNotifyAdd {
+      xywh {5 313 80 23}
+    }
+    Fl_Button btnNotifyRemove {
+      xywh {90 313 80 23}
+    }
+    Fl_Button btnNotifyUpdate {
+      xywh {5 342 80 23}
+    }
+    Fl_Box tblNotifyList {selected
+      xywh {2 372 496 76} box UP_FRAME selection_color 15 resizable
+      class Table
+    }
+    Fl_Button btnNotifyTest {
+      xywh {90 342 80 23}
+    }
+    Fl_Group grpNotifyDup {open
+      xywh {173 308 325 60} box ENGRAVED_FRAME
+    } {
+      Fl_Check_Button chkNotifyDupIgnore {
+        label {Ignore duplicates}
+        xywh {183 316 145 19} down_box DOWN_BOX
+      }
+      Fl_Choice mnuNotifyDupWhich {
+        label {in:} open
+        xywh {368 316 120 20} down_box BORDER_BOX
+      } {}
+      Fl_Spinner cntNotifyDupTime {
+        label {Time (s):}
+        xywh {248 345 60 20} minimum 0 maximum 97200 value 600
+      }
+      Fl_Check_Button chkNotifyDupBand {
+        label Band
+        xywh {335 345 65 20} down_box DOWN_BOX
+      }
+      Fl_Check_Button chkNotifyDupMode {
+        label Mode
+        xywh {428 345 60 20} down_box DOWN_BOX
+      }
+    }
+  }
+} 
+
+Function {make_dxcc_window()} {open
+} {
+  Fl_Window {} {
+    label {DXCC entities} open
+    xywh {382 555 400 450} type Double resizable size_range {300 400 0 0} visible
+  } {
+    Fl_Button btnNotifyDXCCSelect {
+      label {Select all}
+      xywh {10 382 90 23}
+    }
+    Fl_Button btnNotifyDXCCDeselect {
+      label {Deselect all}
+      xywh {10 417 90 23}
+    }
+    Fl_Box tblNotifyFilterDXCC {
+      xywh {2 2 396 370} box UP_FRAME selection_color 15 resizable
+      class Table
+    }
+    Fl_Input inpNotifyDXCCSearchCountry {
+      label {Country search:}
+      tooltip {Press return to continue the search} xywh {270 382 120 23}
+      code0 {o->labelsize(FL_NORMAL_SIZE);}
+      class Fl_Input2
+    }
+    Fl_Input inpNotifyDXCCSearchCallsign {
+      label {Prefix search:}
+      xywh {270 417 120 23}
+      code0 {o->labelsize(FL_NORMAL_SIZE);}
+      class Fl_Input2
+    }
+  }
+} 

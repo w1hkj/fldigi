@@ -152,7 +152,8 @@ if WANT_FLARQ
 	rm -f $(DESTDIR)/$(datadir)/applications/flarq.desktop
 endif
 
-FLDIGI_FL_SRC = dialogs/confdialog.fl dialogs/colorsfonts.fl rigcontrol/rigdialog.fl logbook/lgbook.fl
+FLDIGI_FL_SRC = dialogs/confdialog.fl dialogs/colorsfonts.fl \
+		rigcontrol/rigdialog.fl logbook/lgbook.fl dialogs/notifydialog.fl
 FLARQ_FL_SRC = flarq-src/arqdialogs.fl
 
 if HAVE_FLUID
@@ -240,6 +241,7 @@ fldigi_SOURCES += \
 	dialogs/font_browser.cxx \
 	dialogs/Viewer.cxx \
 	dialogs/htmlstrings.cxx \
+	dialogs/notifydialog.cxx \
 	thor/thor.cxx \
 	thor/thorvaricode.cxx \
 	dominoex/dominoex.cxx \
@@ -323,6 +325,8 @@ fldigi_SOURCES += \
 	include/network.h \
 	include/dsp.h \
 	include/newinstall.h \
+	include/notify.h \
+	include/notifydialog.h \
 	include/olivia.h \
 	include/pkg.h \
 	include/picture.h \
@@ -452,6 +456,7 @@ fldigi_SOURCES += \
 	soundcard/mixer.cxx \
 	soundcard/sound.cxx \
 	soundcard/soundconf.cxx \
+	spot/notify.cxx \
 	spot/pskrep.cxx \
 	spot/spot.cxx \
 	throb/throb.cxx \

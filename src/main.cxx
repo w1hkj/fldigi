@@ -83,6 +83,7 @@
 #include "timeops.h"
 #include "debug.h"
 #include "pskrep.h"
+#include "notify.h"
 #include "logbook.h"
 #include "dxcc.h"
 #include "newinstall.h"
@@ -273,7 +274,12 @@ int main(int argc, char ** argv)
 	    lfname.append(".log");
 	    logfile = new cLogfile(lfname);
 	    logfile->log_to_file_start();
-    }
+	}
+
+	dxcc_open(string(HomeDir).append("cty.dat").c_str());
+	qsl_open(string(HomeDir).append("lotw1.txt").c_str(), QSL_LOTW);
+	if (!qsl_open(string(HomeDir).append("eqsl.txt").c_str(), QSL_EQSL))
+		qsl_open(string(HomeDir).append("AGMemberList.txt").c_str(), QSL_EQSL);
 
 	Fl::scheme(progdefaults.ui_scheme.c_str());
 	progdefaults.initFonts();
@@ -331,13 +337,7 @@ int main(int argc, char ** argv)
 		if (!pskrep_start())
 			LOG_ERROR("Could not start PSK reporter: %s", pskrep_error());
 
-	if (progdefaults.rxtext_tooltips || progdefaults.autofill_qso_fields)
-		dxcc_open(string(HomeDir).append("cty.dat").c_str());
-	if (progdefaults.rxtext_tooltips) {
-		qsl_open(string(HomeDir).append("lotw1.txt").c_str(), QSL_LOTW);
-		if (!qsl_open(string(HomeDir).append("eqsl.txt").c_str(), QSL_EQSL))
-			qsl_open(string(HomeDir).append("AGMemberList.txt").c_str(), QSL_EQSL);
-	}
+	notify_start();
 
 	int ret = Fl::run();
 

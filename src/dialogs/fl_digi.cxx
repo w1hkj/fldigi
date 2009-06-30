@@ -124,6 +124,7 @@
 #include "spot.h"
 #include "dxcc.h"
 #include "locator.h"
+#include "notify.h"
 
 #include "logbook.h"
 
@@ -860,6 +861,11 @@ void cb_mnuConfigMisc(Fl_Menu_*, void*) {
 	dlgConfig->show();
 }
 
+void cb_mnuConfigNotify(Fl_Menu_*, void*)
+{
+	notify_show();
+}
+
 void cb_mnuUI(Fl_Menu_*, void *) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabUI);
@@ -1272,6 +1278,11 @@ void cb_mnuRig(Fl_Menu_ *, void *) {
 
 void cb_mnuViewer(Fl_Menu_ *, void *) {
 	openViewer();
+}
+
+void cb_mnuShowCountries(Fl_Menu_ *, void *)
+{
+	notify_dxcc_show();
 }
 
 void cb_mnuContest(Fl_Menu_ *m, void *) {
@@ -1709,6 +1720,7 @@ bool clean_exit(void) {
 #define MFSK_IMAGE_MLABEL _("MFSK Image")
 #define CONTEST_MLABEL _("Contest")
 #define CONTEST_FIELDS_MLABEL _("Contest fields")
+#define COUNTRIES_MLABEL _("Countries")
 
 Fl_Menu_Item menu_[] = {
 {_("&File"), 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
@@ -1845,6 +1857,7 @@ Fl_Menu_Item menu_[] = {
 { make_icon_label(_("Sound Card"), audio_card_icon), 0, (Fl_Callback*)cb_mnuConfigSoundCard, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("IDs")), 0,  (Fl_Callback*)cb_mnuConfigID, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Misc")), 0,  (Fl_Callback*)cb_mnuConfigMisc, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("Notifications")), 0,  (Fl_Callback*)cb_mnuConfigNotify, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(CONTEST_MLABEL), 0,  (Fl_Callback*)cb_mnuConfigContest, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("QRZ"), net_icon), 0,  (Fl_Callback*)cb_mnuConfigQRZ, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Save Config"), save_icon), 0, (Fl_Callback*)cb_mnuSaveConfig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
@@ -1856,6 +1869,7 @@ Fl_Menu_Item menu_[] = {
 { make_icon_label(_("&PSK Browser")), 0, (Fl_Callback*)cb_mnuViewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(RIGCONTROL_MLABEL, multimedia_player_icon), 0, (Fl_Callback*)cb_mnuRig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("&Logbook")), 0, (Fl_Callback*)cb_mnuShowLogbook, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(COUNTRIES_MLABEL), 0, (Fl_Callback*)cb_mnuShowCountries, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { CONTEST_FIELDS_MLABEL, 0, (Fl_Callback*)cb_mnuContest, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
@@ -2143,13 +2157,17 @@ void show_bw(const string& sWidth)
 
 void show_spot(bool v)
 {
+	static bool oldval = false;
 	if (v) {
 		mnu->size(btnAutoSpot->x(), mnu->h());
+		if (oldval)
+			progStatus.spot_recv = true;
 		btnAutoSpot->value(progStatus.spot_recv);
 		btnAutoSpot->show();
 	}
 	else {
 		btnAutoSpot->hide();
+		oldval = btnAutoSpot->value();
 		btnAutoSpot->value(v);
 		btnAutoSpot->do_callback();
 		mnu->size(btnRSID->x(), mnu->h());
@@ -2860,6 +2878,8 @@ void create_fl_digi_main() {
 			}
 		}
 	}
+	if (!dxcc_is_open())
+		getMenuItem(COUNTRIES_MLABEL)->hide();
 }
 
 void put_freq(double frequency)

@@ -7,6 +7,9 @@
 extern "C" {
 #endif
 
+#ifndef __STDC_LIMIT_MACROS
+#  define __STDC_LIMIT_MACROS
+#endif
 #ifndef __STDC_FORMAT_MACROS
 #    define __STDC_FORMAT_MACROS 1
 #endif
@@ -112,6 +115,14 @@ char* strcasestr(const char* haystack, const char* needle);
 
 #if !HAVE_STRLCPY
 size_t strlcpy(char* dest, const char* src, size_t size);
+#endif
+
+#if !HAVE_SETENV
+int setenv(const char *name, const char *value, int replace);
+#endif
+
+#if !HAVE_UNSETENV
+int unsetenv(const char *name);
 #endif
 
 int set_cloexec(int fd, unsigned char v);

@@ -104,7 +104,7 @@ void Export_ADIF()
 	adifFile.writeFile (p, &qsodb);
 }
 
-savetype export_to = ADIF;
+static savetype export_to = ADIF;
 
 void Export_log()
 {
@@ -124,6 +124,11 @@ void saveLogbook()
 	qsodb.isdirty(0);
 }
 
+static void dxcc_entity_cache_clear(void);
+static void dxcc_entity_cache_add(cQsoRec* r);
+static void dxcc_entity_cache_rm(cQsoRec* r);
+static void dxcc_entity_cache_add(cQsoDb& db);
+
 void cb_mnuNewLogbook(Fl_Menu_* m, void* d){
 	saveLogbook();
 
@@ -133,6 +138,7 @@ void cb_mnuNewLogbook(Fl_Menu_* m, void* d){
 	dlgLogbook->label(fl_filename_name(logbook_filename.c_str()));
 	progdefaults.changed = true;
 	qsodb.deleteRecs();
+	dxcc_entity_cache_clear();
 	wBrowser->clear();
 	clearRecord();
 }
@@ -149,6 +155,8 @@ void cb_mnuOpenLogbook(Fl_Menu_* m, void* d)
 		progdefaults.logbookfilename = logbook_filename;
 		progdefaults.changed = true;
 		adifFile.readFile (logbook_filename.c_str(), &qsodb);
+		dxcc_entity_cache_clear();
+		dxcc_entity_cache_add(qsodb);
 		qsodb.isdirty(0);
 		loadBrowser();
 		dlgLogbook->label(fl_filename_name(logbook_filename.c_str()));
@@ -171,6 +179,8 @@ void cb_mnuMergeADIF_log(Fl_Menu_* m, void* d) {
 	const char* p = FSEL::select(_("Merge ADIF file"), "ADIF\t*." ADIF_SUFFIX);
 	if (p) {
 		adifFile.readFile (p, &qsodb);
+		dxcc_entity_cache_clear();
+		dxcc_entity_cache_add(qsodb);
 		loadBrowser();
 		qsodb.isdirty(1);
 	}
@@ -485,6 +495,7 @@ cQsoRec rec;
 	qsodb.isdirty(0);
 	
 	qsodb.qsoNewRec (&rec);
+	dxcc_entity_cache_add(&rec);
 }
 
 void updateRecord() {
@@ -517,7 +528,9 @@ cQsoRec rec;
 	rec.putField(CQZ, inpCQZ_log->value());
 	rec.putField(ITUZ, inpITUZ_log->value());
 	rec.putField(TX_PWR, inpTX_pwr_log->value());
+	dxcc_entity_cache_rm(qsodb.getRec(editNbr));
 	qsodb.qsoUpdRec (editNbr, &rec);
+	dxcc_entity_cache_add(&rec);
 	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
 	qsodb.isdirty(0);
 	loadBrowser(true);
@@ -528,6 +541,7 @@ void deleteRecord () {
 					       _("Yes"), _("No"), NULL, wBrowser->valueAt(-1, 2)))
 		return;
 
+	dxcc_entity_cache_rm(qsodb.getRec(editNbr));
 	qsodb.qsoDelRec(editNbr);
 	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
 	qsodb.isdirty(0);
@@ -1000,4 +1014,72 @@ SOAPBOX: \n\n",
     fprintf(cabFile, "END-OF-LOG:\n");
     fclose (cabFile);
     return;
+}
+
+
+#include <tr1/unordered_map>
+typedef tr1::unordered_map<string, unsigned> dxcc_entity_cache_t;
+static dxcc_entity_cache_t dxcc_entity_cache;
+static bool dxcc_entity_cache_enabled = false;
+
+#include "dxcc.h"
+
+static void dxcc_entity_cache_clear(void)
+{
+	if (dxcc_entity_cache_enabled)
+		dxcc_entity_cache.clear();
+}
+
+static void dxcc_entity_cache_add(cQsoRec* r)
+{
+	if (!dxcc_entity_cache_enabled | !r)
+		return;
+
+	const dxcc* e = dxcc_lookup(r->getField(CALL));
+	if (e)
+		dxcc_entity_cache[e->country]++;
+}
+static void dxcc_entity_cache_add(cQsoDb& db)
+{
+	if (!dxcc_entity_cache_enabled)
+		return;
+
+	int n = db.nbrRecs();
+	for (int i = 0; i < n; i++)
+		dxcc_entity_cache_add(db.getRec(i));
+	if (!dxcc_entity_cache.empty())
+		LOG_INFO("Found %" PRIuSZ " countries in %d QSO records",
+			 dxcc_entity_cache.size(), n);
+}
+
+static void dxcc_entity_cache_rm(cQsoRec* r)
+{
+	if (!dxcc_entity_cache_enabled || !r)
+		return;
+
+	const dxcc* e = dxcc_lookup(r->getField(CALL));
+	if (!e)
+		return;
+	dxcc_entity_cache_t::iterator i = dxcc_entity_cache.find(e->country);
+	if (i != dxcc_entity_cache.end()) {
+		if (i->second)
+			i->second--;
+		else
+			dxcc_entity_cache.erase(i);
+	}
+}
+
+void dxcc_entity_cache_enable(bool v)
+{
+	if (dxcc_entity_cache_enabled == v)
+		return;
+
+	dxcc_entity_cache_clear();
+	if ((dxcc_entity_cache_enabled = v))
+		dxcc_entity_cache_add(qsodb);
+}
+
+bool qsodb_dxcc_entity_find(const char* country)
+{
+	return dxcc_entity_cache.find(country) != dxcc_entity_cache.end();
 }

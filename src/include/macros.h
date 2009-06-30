@@ -49,4 +49,6 @@ extern CONTESTCNTR contest_count;
 extern std::string info1msg;
 extern std::string info2msg;
 
+void set_macro_env(void);
+
 #endif
