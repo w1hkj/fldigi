@@ -57,6 +57,7 @@
 #include "icons.h"
 #include "globals.h"
 #include "re.h"
+#include "strutil.h"
 #include "dxcc.h"
 #include "locator.h"
 #include "logsupport.h"
@@ -439,7 +440,6 @@ const char* FTextRX::dxcc_lookup_call(int x, int y)
 		return 0;
 	}
 
-	const char *name = 0, *date = 0, *qth = 0, *locator = 0, *mode;
 	double lon1, lat1, lon2 = 360.0, lat2 = 360.0, distance, azimuth;
 	static string tip;
 	ostringstream stip;
@@ -462,15 +462,11 @@ const char* FTextRX::dxcc_lookup_call(int x, int y)
 		qso = SearchLog(s);
 	}
 
-	if (qso) {
-		locator = qso->getField(GRIDSQUARE);
-		if (!(locator && *locator && locator2longlat(&lon2, &lat2, locator) == RIG_OK))
-			lon2 = lat2 = 360.0;
-		name = qso->getField(NAME);
-		date = qso->getField(QSO_DATE);
-		qth  = qso->getField(QTH);
-	}
+	if (qso && locator2longlat(&lon2, &lat2, qso->getField(GRIDSQUARE)) != RIG_OK)
+		lon2 = lat2 = 360.0;
+
 	if (e) {
+		// use dxcc data if we didn't have a good locator string in the log file
 		if (lon2 == 360.0)
 			lon2 = -e->longitude;
 		if (lat2 == 360.0)
@@ -486,21 +482,20 @@ const char* FTextRX::dxcc_lookup_call(int x, int y)
 		     << azimuth_long_path(azimuth) << '\260' << ")  QRB " << distance << "km ("
 		     << distance_long_path(distance) << "km)\n";
 	}
-	if (name && *name) {
-		stip << "* " << name;
-		if (qth && *qth)
-			stip << ' ' << _("in") << ' ' << qth;
-		stip << '\n';
-	}
-	if (date && *date) {
-		stip << "* " << _("Last QSO") << ": " << date;
-		mode = qso->getField(MODE);
-		if (mode)
-			stip << ' ' << _("in") << ' ' << mode;
-		stip << '\n';
+
+	if (qso) {
+		const char* info[] = {
+			qso->getField(NAME), qso->getField(QTH), qso->getField(QSO_DATE),
+			qso->getField(BAND), qso->getField(MODE)
+		};
+		// name & qth
+		if (*info[0])
+			join(stip << "* ", info, 2, _(" in "), true) << '\n';
+		// other info
+		join(stip << "* " << _("Last QSO") << ": ", info+2, 3, ", ", true) << '\n';
 	}
 	if (qsl) {
-		stip << "* ";
+		stip << "* QSL: ";
 		for (unsigned char i = 0; i < QSL_END; i++)
 			if (qsl & (1 << i))
 				stip << qsl_names[i] << ' ';
