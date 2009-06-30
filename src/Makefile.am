@@ -358,6 +358,7 @@ fldigi_SOURCES += \
 	include/spot.h \
 	include/stacktrace.h \
 	include/status.h \
+	include/strutil.h \
 	include/testmodem.h \
 	include/threads.h \
 	include/throb.h \
@@ -424,6 +425,7 @@ fldigi_SOURCES += \
 	misc/socket.cxx \
 	misc/stacktrace.cxx \
 	misc/status.cxx \
+	misc/strutil.cxx \
 	misc/threads.cxx \
 	misc/timeops.cxx \
 	misc/util.cxx \
