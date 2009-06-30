@@ -2619,7 +2619,6 @@ void create_fl_digi_main() {
 			ReceiveText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
 			showMacroSet();
 			
-			TiledGroup->add_resize_check(FTextRX::wheight_mult_tsize, ReceiveText);
 			FHdisp = new Raster(sw, Y, WNOM-sw, minRxHeight);
 			FHdisp->hide();
 

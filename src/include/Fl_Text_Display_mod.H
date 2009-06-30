@@ -213,6 +213,12 @@ class Fl_Text_Display_mod: public Fl_Group {
     int range_touches_selection(Fl_Text_Selection *sel, int rangeStart,
                                  int rangeEnd);
 
+    static const int DEFAULT_TOP_MARGIN;
+    static const int DEFAULT_BOTTOM_MARGIN;
+    static const int DEFAULT_LEFT_MARGIN;
+    static const int DEFAULT_RIGHT_MARGIN;
+    int TOP_MARGIN, BOTTOM_MARGIN, LEFT_MARGIN, RIGHT_MARGIN;
+
     int damage_range1_start, damage_range1_end;
     int damage_range2_start, damage_range2_end;
     int mCursorPos;

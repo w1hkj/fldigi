@@ -115,7 +115,6 @@ FTextRX::FTextRX(int x, int y, int w, int h, const char *l)
 
 FTextRX::~FTextRX()
 {
-	TiledGroup->remove_resize_check(FTextRX::wheight_mult_tsize, this);
 }
 
 /// Handles fltk events for this widget.
@@ -180,14 +179,7 @@ int FTextRX::handle(int event)
 	}
 	// catch some text-modifying events that are not handled by kf_* functions
 	case FL_KEYBOARD:
-		int k;
-		if (Fl::compose(k))
-			return 1;
-		k = Fl::event_key();
-		if (k == FL_BackSpace)
-			return 1;
-		else if (k == FL_Tab)
-		    return Fl_Widget::handle(event);
+		break;
 	case FL_ENTER:
 		if (!progdefaults.rxtext_tooltips || Fl_Tooltip::delay() == 0.0f)
 			break;

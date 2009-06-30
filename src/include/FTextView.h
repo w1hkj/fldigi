@@ -105,7 +105,7 @@ protected:
 	bool					scroll_hint;
 
 private:
-	int					oldw, olds;
+	int					oldw, oldh, olds;
 	Fl_Font					oldf;
 };
 

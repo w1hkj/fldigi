@@ -42,10 +42,10 @@
 
 // Text area margins.  Left & right margins should be at least 3 so that
 // there is some room for the overhanging parts of the cursor!
-#define TOP_MARGIN 1
-#define BOTTOM_MARGIN 1
-#define LEFT_MARGIN 3
-#define RIGHT_MARGIN 3
+const int Fl_Text_Display_mod::DEFAULT_TOP_MARGIN = 1;
+const int Fl_Text_Display_mod::DEFAULT_BOTTOM_MARGIN = 1;
+const int Fl_Text_Display_mod::DEFAULT_LEFT_MARGIN = 3;
+const int Fl_Text_Display_mod::DEFAULT_RIGHT_MARGIN = 3;
 
 #define NO_HINT -1
 
@@ -81,6 +81,11 @@ static int scroll_x = 0;
 Fl_Text_Display_mod::Fl_Text_Display_mod(int X, int Y, int W, int H,  const char* l)
     : Fl_Group(X, Y, W, H, l) {
   int i;
+
+  TOP_MARGIN = DEFAULT_TOP_MARGIN;
+  BOTTOM_MARGIN = DEFAULT_BOTTOM_MARGIN;
+  LEFT_MARGIN = DEFAULT_LEFT_MARGIN;
+  RIGHT_MARGIN = DEFAULT_RIGHT_MARGIN;
 
   mMaxsize = 0;
   damage_range1_start = damage_range1_end = -1;
@@ -378,7 +383,7 @@ void Fl_Text_Display_mod::resize(int X, int Y, int W, int H) {
   H -= Fl::box_dh(box());
 
   text_area.x = X+LEFT_MARGIN;
-  text_area.y = Y+BOTTOM_MARGIN;
+  text_area.y = Y+TOP_MARGIN;
   text_area.w = W-LEFT_MARGIN-RIGHT_MARGIN;
   text_area.h = H-TOP_MARGIN-BOTTOM_MARGIN;
   int i = 0;

@@ -61,7 +61,7 @@ FTextBase::FTextBase(int x, int y, int w, int h, const char *l)
 	: Fl_Text_Editor_mod(x, y, w, h, l),
           wrap(true), wrap_col(80), max_lines(0), scroll_hint(false)
 {
-	oldw = olds = -1;
+	oldw = oldh = olds = -1;
 	oldf = (Fl_Font)-1;
 	textfont(FL_COURIER);
 	textsize(FL_NORMAL_SIZE);
@@ -130,18 +130,46 @@ void FTextBase::setFontColor(Fl_Color c, int attr)
 ///
 void FTextBase::resize(int X, int Y, int W, int H)
 {
-	// do we need to recalculate the wrap column?
-	if (unlikely(text_area.w != oldw || textfont() != oldf || textsize() != olds)) {
-		oldw = text_area.w; oldf = textfont(); olds = textsize();
-		reset_wrap_col();
+	bool need_wrap_reset = false;
+	bool need_margin_reset = false;
+
+	if (unlikely(text_area.w != oldw)) {
+		oldw = text_area.w;
+		need_wrap_reset = true;
 	}
+	if (unlikely(text_area.h != oldh)) {
+		oldh = text_area.h;
+		need_margin_reset = true;
+	}
+	if (unlikely(textfont() != oldf || textsize() != olds)) {
+		oldf = textfont();
+		olds = textsize();
+		need_wrap_reset = need_margin_reset = true;
+	}
+
+	if (need_wrap_reset)
+		reset_wrap_col();
+
+	if (need_margin_reset && textsize() > 0) {
+		TOP_MARGIN = DEFAULT_TOP_MARGIN;
+		int r = H - Fl::box_dh(box()) - TOP_MARGIN - BOTTOM_MARGIN;
+		if (mHScrollBar->visible())
+			r -= scrollbar_width();
+		if (r %= textsize())
+			TOP_MARGIN += r;
+	}
+
         if (scroll_hint) {
                 mTopLineNumHint = mNBufferLines;
                 mHorizOffsetHint = 0;
+//		display_insert_position_hint = 1;
                 scroll_hint = false;
         }
 
+	bool hscroll_visible = mHScrollBar->visible();
 	Fl_Text_Editor_mod::resize(X, Y, W, H);
+	if (hscroll_visible != mHScrollBar->visible())
+		oldh = 0; // reset margins next time
 }
 
 /// Checks the new widget height.

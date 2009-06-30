@@ -15,7 +15,9 @@ Fl_Tile_Check::Fl_Tile_Check(int x, int y, int w, int h, const char* l)
 int Fl_Tile_Check::handle(int event)
 {
 	switch (event) {
-	case FL_DRAG: case FL_RELEASE:
+	case FL_DRAG:
+		return 1;
+	case FL_RELEASE:
 		if (!do_checks(Fl::event_x() - xstart, Fl::event_y() - ystart))
 			return 1;
 		// fall through to reset [xy]start
