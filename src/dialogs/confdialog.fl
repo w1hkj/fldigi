@@ -78,7 +78,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {549 106 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
+    xywh {326 139 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 505 372} color 50 selection_color 50
@@ -108,6 +108,7 @@ progdefaults.myCall = o->value();
 update_main_title();
 progdefaults.changed = true;}
             tooltip {Operators callsign} xywh {110 64 110 24}
+            code0 {inpMyCallsign->labelsize(FL_NORMAL_SIZE);}
             class Fl_Input2
           }
           Fl_Input inpMyName {
@@ -115,6 +116,7 @@ progdefaults.changed = true;}
             callback {progdefaults.myName = o->value();
 progdefaults.changed = true;}
             tooltip {Operators name} xywh {290 64 140 24}
+            code0 {inpMyName->labelsize(FL_NORMAL_SIZE);}
             class Fl_Input2
           }
           Fl_Input inpMyQth {
@@ -122,6 +124,7 @@ progdefaults.changed = true;}
             callback {progdefaults.myQth = o->value();
 progdefaults.changed = true;}
             tooltip {Operators QTH} xywh {110 98 320 24}
+            code0 {inpMyQth->labelsize(FL_NORMAL_SIZE);}
             class Fl_Input2
           }
           Fl_Input inpMyLocator {
@@ -129,6 +132,7 @@ progdefaults.changed = true;}
             callback {progdefaults.myLocator = o->value();
 progdefaults.changed = true;}
             tooltip {Maidenhead locator as in EM64qv} xywh {110 166 85 24}
+            code0 {inpMyLocator->labelsize(FL_NORMAL_SIZE);}
             class Fl_Input2
           }
         }
@@ -137,6 +141,7 @@ progdefaults.changed = true;}
           callback {progdefaults.myAntenna = o->value();
 progdefaults.changed = true;}
           tooltip {Short description of antenna} xywh {110 132 320 24}
+          code0 {inpMyAntenna->labelsize(FL_NORMAL_SIZE);}
           class Fl_Input2
         }
       }
@@ -235,6 +240,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {Tx power used for logbook entries} xywh {25 256 50 24} align 8
                 code0 {o->value(progdefaults.mytxpower.c_str());}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
               }
             }
@@ -302,6 +308,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {free form exchange} xywh {95 95 140 20} align 1
                 code0 {o->value(progdefaults.myXchg.c_str());}
+                code1 {inpSend1->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
               }
               Fl_Check_Button btn599 {
@@ -689,7 +696,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 500 345}
+        xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 500 345} selection_color 50 align 9
@@ -901,6 +908,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.secText = o->value();
 progdefaults.changed = true;}
                 tooltip {Text to send during keyboard idle times} xywh {15 87 360 40} type Multiline align 5 when 1
+                code0 {txtSecondary->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
               }
               Fl_Check_Button valDominoEX_FILTER {
@@ -1092,7 +1100,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabPSK {
             label PSK open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Tabs tabsPSK {open
               xywh {0 50 500 320} selection_color 50
@@ -1375,6 +1383,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.THORsecText = o->value();
 progdefaults.changed = true;}
                 tooltip {Text to send during keyboard idle times} xywh {15 87 360 40} type Multiline align 5 when 1
+                code0 {txtTHORSecondary->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
               }
               Fl_Check_Button valTHOR_FILTER {
@@ -1737,6 +1746,7 @@ hamlib_get_defaults();
 \#endif}
                 tooltip {Select the rig by name} xywh {65 93 160 22} box DOWN_BOX color 7 align 4
                 code0 {o->readonly();}
+                code1 {cboHamlibRig->labelsize(FL_NORMAL_SIZE);}
                 class Fl_ComboBox
               }
               Fl_Input_Choice inpRIGdev {
@@ -1789,6 +1799,7 @@ btnInitHAMLIB->redraw_label();}
                 tooltip {Optional configuration
 in format: param=val ...} xywh {20 326 320 22} align 5
                 code0 {inpHamlibConfig->value(progdefaults.HamConfig.c_str());}
+                code1 {inpHamlibConfig->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
               }
               Fl_Button btnInitHAMLIB {
@@ -2029,6 +2040,7 @@ progdefaults.changed = true;}
                 tooltip {Leave this blank or refer to
 http://www.pulseaudio.org/wiki/ServerStrings} xywh {260 196 225 25}
                 code0 {o->value(progdefaults.PulseServer.c_str());}
+                code1 {inpPulseServer->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
               }
             }
@@ -2211,6 +2223,7 @@ progdefaults.changed = true;}
             tooltip {Limit to a few characters,
 as in CQEM or IOTA etc.} xywh {365 96 120 20}
             code0 {o->value(progdefaults.strTextid.c_str());}
+            code1 {valVideotext->labelsize(FL_NORMAL_SIZE);}
             class Fl_Input2
           }
           Fl_Check_Button chkID_SMALL {
@@ -2360,6 +2373,7 @@ btnPSKRepInit->redraw_label();
 progdefaults.changed = true;}
                 tooltip {To whom the connection is made} xywh {56 191 220 24} when 1
                 code0 {inpPSKRepHost->value(progdefaults.pskrep_host.c_str());}
+                code1 {inpPSKRepHost->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
               }
               Fl_Input inpPSKRepPort {
@@ -2370,6 +2384,7 @@ btnPSKRepInit->redraw_label();
 progdefaults.changed = true;}
                 tooltip {Using UDP port \#} xywh {425 191 60 24} when 1
                 code0 {inpPSKRepPort->value(progdefaults.pskrep_port.c_str());}
+                code1 {inpPSKRepPort->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
               }
               Fl_Button btnPSKRepInit {
@@ -2508,6 +2523,7 @@ progdefaults.changed = true;}
             tooltip {ie: /home/dave/CALLBK/ or C:/CALLBK/
 Leave blank to search for database} xywh {104 215 300 20}
             code0 {o->value(progdefaults.QRZpathname.c_str());}
+            code1 {txtQRZpathname->labelsize(FL_NORMAL_SIZE);}
             class Fl_Input2
           }
         }
@@ -2539,6 +2555,7 @@ subscription to access} xywh {25 321 105 20} down_box ROUND_DOWN_BOX
 progdefaults.changed = true;}
             tooltip {Your login name} xywh {235 291 90 20}
             code0 {o->value(progdefaults.QRZusername.c_str());}
+            code1 {inpQRZusername->labelsize(FL_NORMAL_SIZE);}
             class Fl_Input2
           }
           Fl_Input inpQRZuserpassword {
@@ -2548,6 +2565,7 @@ progdefaults.changed = true;}
             tooltip {Your login password} xywh {236 321 90 20}
             code0 {o->value(progdefaults.QRZuserpassword.c_str());}
             code1 {o->type(FL_SECRET_INPUT);}
+            code2 {inpQRZuserpassword->labelsize(FL_NORMAL_SIZE);}
             class Fl_Input2
           }
           Fl_Button btnQRZpasswordShow {
@@ -2595,7 +2613,7 @@ progdefaults.changed = true;}
     }
     Fl_Return_Button btnCloseConfig {
       label Close
-      callback {closeDialog();} selected
+      callback {closeDialog();}
       xywh {367 375 130 22}
     }
     Fl_Button btnResetConfig {

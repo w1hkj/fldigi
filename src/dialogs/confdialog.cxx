@@ -2121,6 +2121,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             inpMyCallsign->callback((Fl_Callback*)cb_inpMyCallsign);
             inpMyCallsign->align(FL_ALIGN_LEFT);
             inpMyCallsign->when(FL_WHEN_RELEASE);
+            inpMyCallsign->labelsize(FL_NORMAL_SIZE);
           } // Fl_Input2* inpMyCallsign
           { inpMyName = new Fl_Input2(290, 64, 140, 24, _("Name:"));
             inpMyName->tooltip(_("Operators name"));
@@ -2134,6 +2135,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             inpMyName->callback((Fl_Callback*)cb_inpMyName);
             inpMyName->align(FL_ALIGN_LEFT);
             inpMyName->when(FL_WHEN_RELEASE);
+            inpMyName->labelsize(FL_NORMAL_SIZE);
           } // Fl_Input2* inpMyName
           { inpMyQth = new Fl_Input2(110, 98, 320, 24, _("QTH:"));
             inpMyQth->tooltip(_("Operators QTH"));
@@ -2147,6 +2149,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             inpMyQth->callback((Fl_Callback*)cb_inpMyQth);
             inpMyQth->align(FL_ALIGN_LEFT);
             inpMyQth->when(FL_WHEN_RELEASE);
+            inpMyQth->labelsize(FL_NORMAL_SIZE);
           } // Fl_Input2* inpMyQth
           { inpMyLocator = new Fl_Input2(110, 166, 85, 24, _("Locator:"));
             inpMyLocator->tooltip(_("Maidenhead locator as in EM64qv"));
@@ -2160,6 +2163,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             inpMyLocator->callback((Fl_Callback*)cb_inpMyLocator);
             inpMyLocator->align(FL_ALIGN_LEFT);
             inpMyLocator->when(FL_WHEN_RELEASE);
+            inpMyLocator->labelsize(FL_NORMAL_SIZE);
           } // Fl_Input2* inpMyLocator
           o->end();
         } // Fl_Group* o
@@ -2175,6 +2179,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           inpMyAntenna->callback((Fl_Callback*)cb_inpMyAntenna);
           inpMyAntenna->align(FL_ALIGN_LEFT);
           inpMyAntenna->when(FL_WHEN_RELEASE);
+          inpMyAntenna->labelsize(FL_NORMAL_SIZE);
         } // Fl_Input2* inpMyAntenna
         tabOperator->end();
       } // Fl_Group* tabOperator
@@ -2262,6 +2267,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 inpMyPower->align(FL_ALIGN_RIGHT);
                 inpMyPower->when(FL_WHEN_RELEASE);
                 o->value(progdefaults.mytxpower.c_str());
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Input2* inpMyPower
               o->end();
             } // Fl_Group* o
@@ -2338,6 +2344,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 inpSend1->align(FL_ALIGN_TOP);
                 inpSend1->when(FL_WHEN_RELEASE);
                 o->value(progdefaults.myXchg.c_str());
+                inpSend1->labelsize(FL_NORMAL_SIZE);
               } // Fl_Input2* inpSend1
               { Fl_Check_Button* o = btn599 = new Fl_Check_Button(310, 80, 130, 20, _("RST always 599"));
                 btn599->tooltip(_("Force RST in/out to 599"));
@@ -2683,6 +2690,7 @@ an merging"));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 500, 345, _("Modems"));
+        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 500, 345);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
@@ -2931,6 +2939,7 @@ an merging"));
                 txtSecondary->callback((Fl_Callback*)cb_txtSecondary);
                 txtSecondary->align(FL_ALIGN_TOP_LEFT);
                 txtSecondary->when(FL_WHEN_CHANGED);
+                txtSecondary->labelsize(FL_NORMAL_SIZE);
               } // Fl_Input2* txtSecondary
               { Fl_Check_Button* o = valDominoEX_FILTER = new Fl_Check_Button(15, 141, 80, 20, _("Filtering"));
                 valDominoEX_FILTER->tooltip(_("Use DSP filter before decoder"));
@@ -3126,6 +3135,7 @@ an merging"));
             tabOlivia->end();
           } // Fl_Group* tabOlivia
           { tabPSK = new Fl_Group(0, 50, 500, 320, _("PSK"));
+            tabPSK->hide();
             { tabsPSK = new Fl_Tabs(0, 50, 500, 320);
               tabsPSK->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
@@ -3418,6 +3428,7 @@ an merging"));
                 txtTHORSecondary->callback((Fl_Callback*)cb_txtTHORSecondary);
                 txtTHORSecondary->align(FL_ALIGN_TOP_LEFT);
                 txtTHORSecondary->when(FL_WHEN_CHANGED);
+                txtTHORSecondary->labelsize(FL_NORMAL_SIZE);
               } // Fl_Input2* txtTHORSecondary
               { Fl_Check_Button* o = valTHOR_FILTER = new Fl_Check_Button(15, 141, 80, 20, _("Filtering"));
                 valTHOR_FILTER->tooltip(_("Enable DSP prior to decoder"));
@@ -3673,6 +3684,7 @@ an merging"));
                 cboHamlibRig->align(FL_ALIGN_LEFT);
                 cboHamlibRig->when(FL_WHEN_RELEASE);
                 o->readonly();
+                cboHamlibRig->labelsize(FL_NORMAL_SIZE);
               } // Fl_ComboBox* cboHamlibRig
               { Fl_Input_Choice* o = inpRIGdev = new Fl_Input_Choice(340, 93, 144, 22, _("Device:"));
                 inpRIGdev->tooltip(_("Serial port"));
@@ -3733,6 +3745,7 @@ an merging"));
                 inpHamlibConfig->align(FL_ALIGN_TOP_LEFT);
                 inpHamlibConfig->when(FL_WHEN_RELEASE);
                 inpHamlibConfig->value(progdefaults.HamConfig.c_str());
+                inpHamlibConfig->labelsize(FL_NORMAL_SIZE);
               } // Fl_Input2* inpHamlibConfig
               { btnInitHAMLIB = new Fl_Button(371, 325, 113, 24, _("Initialize"));
                 btnInitHAMLIB->tooltip(_("Initialize hamlib interface"));
@@ -3906,6 +3919,7 @@ an merging"));
                 inpPulseServer->align(FL_ALIGN_LEFT);
                 inpPulseServer->when(FL_WHEN_RELEASE);
                 o->value(progdefaults.PulseServer.c_str());
+                inpPulseServer->labelsize(FL_NORMAL_SIZE);
               } // Fl_Input2* inpPulseServer
               AudioPulse->end();
             } // Fl_Group* AudioPulse
@@ -4061,6 +4075,7 @@ l with your sound hardware."));
             valVideotext->align(FL_ALIGN_LEFT);
             valVideotext->when(FL_WHEN_RELEASE);
             o->value(progdefaults.strTextid.c_str());
+            valVideotext->labelsize(FL_NORMAL_SIZE);
           } // Fl_Input2* valVideotext
           { Fl_Check_Button* o = chkID_SMALL = new Fl_Check_Button(15, 127, 120, 20, _("Use small font"));
             chkID_SMALL->tooltip(_("ON - small font\nOFF - large font"));
@@ -4208,6 +4223,7 @@ l with your sound hardware."));
                 inpPSKRepHost->align(FL_ALIGN_LEFT);
                 inpPSKRepHost->when(FL_WHEN_CHANGED);
                 inpPSKRepHost->value(progdefaults.pskrep_host.c_str());
+                inpPSKRepHost->labelsize(FL_NORMAL_SIZE);
               } // Fl_Input2* inpPSKRepHost
               { inpPSKRepPort = new Fl_Input2(425, 191, 60, 24, _("Port:"));
                 inpPSKRepPort->tooltip(_("Using UDP port #"));
@@ -4222,6 +4238,7 @@ l with your sound hardware."));
                 inpPSKRepPort->align(FL_ALIGN_LEFT);
                 inpPSKRepPort->when(FL_WHEN_CHANGED);
                 inpPSKRepPort->value(progdefaults.pskrep_port.c_str());
+                inpPSKRepPort->labelsize(FL_NORMAL_SIZE);
               } // Fl_Input2* inpPSKRepPort
               { btnPSKRepInit = new Fl_Button(405, 236, 80, 24, _("Initialize"));
                 btnPSKRepInit->tooltip(_("Initialize the socket client"));
@@ -4332,6 +4349,7 @@ l with your sound hardware."));
             txtQRZpathname->align(FL_ALIGN_LEFT);
             txtQRZpathname->when(FL_WHEN_RELEASE);
             o->value(progdefaults.QRZpathname.c_str());
+            txtQRZpathname->labelsize(FL_NORMAL_SIZE);
           } // Fl_Input2* txtQRZpathname
           o->end();
         } // Fl_Group* o
@@ -4363,6 +4381,7 @@ l with your sound hardware."));
             inpQRZusername->align(FL_ALIGN_LEFT);
             inpQRZusername->when(FL_WHEN_RELEASE);
             o->value(progdefaults.QRZusername.c_str());
+            inpQRZusername->labelsize(FL_NORMAL_SIZE);
           } // Fl_Input2* inpQRZusername
           { Fl_Input2* o = inpQRZuserpassword = new Fl_Input2(236, 321, 90, 20, _("Password"));
             inpQRZuserpassword->tooltip(_("Your login password"));
@@ -4378,6 +4397,7 @@ l with your sound hardware."));
             inpQRZuserpassword->when(FL_WHEN_RELEASE);
             o->value(progdefaults.QRZuserpassword.c_str());
             o->type(FL_SECRET_INPUT);
+            inpQRZuserpassword->labelsize(FL_NORMAL_SIZE);
           } // Fl_Input2* inpQRZuserpassword
           { btnQRZpasswordShow = new Fl_Button(336, 321, 70, 20, _("Show"));
             btnQRZpasswordShow->tooltip(_("Show password in plain text"));
