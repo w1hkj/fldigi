@@ -406,7 +406,7 @@ Fl_Align Table::columnAlign(int column) const {
 }
 
 void Table::columnAlign(int column, Fl_Align align) {
-  if ((column < 0) && (column >= nCols))
+  if ((column < 0) || (column >= nCols))
     return;
     /* NOT REACHED */
 
@@ -1052,7 +1052,8 @@ void Table::GotoRow(int n)
  */
 int Table::handle(int event) {
   int ret = 0;
-  int row, column, resize;
+  static int row, prev_row;
+  int column, resize;
 
   if (event != FL_KEYDOWN)
     ret = Fl_Group::handle(event);
@@ -1127,6 +1128,8 @@ int Table::handle(int event) {
             Fl::event_y());
         if (m != NULL)
           m->do_callback(this, m->user_data());
+	ret = 1;
+	break;
       }
 
 
@@ -1138,6 +1141,8 @@ int Table::handle(int event) {
       }
       else if (changed && (when() & FL_WHEN_CHANGED))
         do_callback();
+      else if (!changed && (when() & FL_WHEN_NOT_CHANGED))
+	do_callback();
       ret = 1;
       break;
     } // switch(row)
@@ -1147,7 +1152,7 @@ int Table::handle(int event) {
   /*
    * DRAG event
    */
-        case FL_DRAG:
+  case FL_DRAG:
     // Resizing...
     if (resizing > -1 ) {
       int offset = dragX - Fl::event_x();
@@ -1165,6 +1170,21 @@ int Table::handle(int event) {
         redraw();
       }
       ret = 1;
+    }
+    else {
+      prev_row = row;
+      where(Fl::event_x(), Fl::event_y(), row, column, resize);
+      if (row < 0 || pushed != -1) {
+        ret = 1;
+      	break;
+      }
+      if (prev_row != row) {
+        selected = row;
+        damage(DAMAGE_ROWS);
+        take_focus();
+        if (when() & FL_WHEN_CHANGED)
+          do_callback();
+      }
     }
     break;
 
