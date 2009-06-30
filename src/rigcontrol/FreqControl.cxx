@@ -24,6 +24,7 @@
 
 #include <config.h>
 
+#include <FL/Fl.H>
 #include <FL/Fl_Float_Input.H>
 #include <FL/fl_draw.H>
 #include <FL/Fl_Box.H>
@@ -284,7 +285,17 @@ int cFreqControl::handle(int event)
 		}
 		break;
 	case FL_PUSH:
-		return Fl_Group::handle(event);
+		if (Fl::event_button() == FL_MIDDLE_MOUSE)
+			Fl::paste(*this, 0);
+		else
+			return Fl_Group::handle(event);
+		break;
+	case FL_PASTE:
+		finp->value(Fl::event_text());
+		finp->position(finp->size());
+		finp->insert(" \n", 2); // space before newline for pasted text
+		finp->do_callback();
+		break;
 	}
 
 	return 1;
@@ -294,6 +305,8 @@ void cFreqControl::freq_input_cb(Fl_Widget*, void* arg)
 {
 	cFreqControl* fc = reinterpret_cast<cFreqControl*>(arg);
 	double val = strtod(fc->finp->value(), NULL);
+	if (val == 0.0 && fc->finp->index(fc->finp->size() - 2) == ' ')
+		return; // invalid pasted text
 	if (val >= 0.0 && val < pow(10.0, MAX_DIGITS - 3)) {
 		val *= 1e3;
 		val += 0.5;
