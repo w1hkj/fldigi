@@ -70,17 +70,6 @@ LOG_FILE_SOURCE(debug::LOG_SPOTTER);
 
 // -------------------------------------------------------------------------------------------------
 
-// The regular expression that matches the spotter's buffer when it calls us.
-// It must define at least two capturing groups, the second of which is the
-// spotted callsign.
-#define CALLSIGN_RE "[[:alnum:]]?[[:alpha:]/]+[[:digit:]]+[[:alnum:]/]+"
-#if HAVE_REGEX_BACKREF
-#  define PSKREP_RE "(de|cq|qrz)[^[:alnum:]/\n]+"  "(" CALLSIGN_RE ")"  " +(.* +)?\\2[^[:alnum:]]+$"
-#else
-#  define PSKREP_RE "(de|cq|qrz)[^[:alnum:]/\n]+"  "(" CALLSIGN_RE ")"  " +(.* +)?" \
-	"(" CALLSIGN_RE ")" "[^[:alnum:]]+$"
-#endif
-
 // Try to flush the report queue every SEND_INTERVAL seconds.
 #define SEND_INTERVAL 300
 
@@ -357,16 +346,10 @@ pskrep::~pskrep()
 // This function is called by spot_recv() when its buffer matches our PSKREP_RE
 void pskrep::recv(int afreq, const char* str, const regmatch_t* calls, size_t len, void* obj)
 {
-	if (unlikely(calls[2].rm_so == -1 || calls[2].rm_eo == -1))
+	if (unlikely(calls[PSKREP_RE_INDEX].rm_so == -1 || calls[PSKREP_RE_INDEX].rm_eo == -1))
 		return;
 
-#if !HAVE_REGEX_BACKREF // workaround for systems without support for RE back refs
-	if (calls[4].rm_eo - calls[4].rm_so != calls[2].rm_eo - calls[2].rm_so ||
-	    strncasecmp(str + calls[2].rm_so, str + calls[4].rm_so, calls[2].rm_eo - calls[2].rm_so))
-		return;
-#endif
-
-	string call(str, calls[2].rm_so, calls[2].rm_eo - calls[2].rm_so);
+	string call(str + calls[PSKREP_RE_INDEX].rm_so, calls[PSKREP_RE_INDEX].rm_eo - calls[PSKREP_RE_INDEX].rm_so);
 	long long freq = afreq;
 	if (!wf->USB())
 		freq = -freq;
