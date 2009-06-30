@@ -45,8 +45,8 @@ void spot_register_log(spot_log_cb_t lcb, void* ldata);
 void spot_register_manual(spot_log_cb_t mcb, void* mdata);
 void spot_register_recv(spot_recv_cb_t rcb, void* rdata, const char* re, int reflags);
 
-void spot_unregister_log(spot_log_cb_t lcb, void* ldata);
-void spot_unregister_manual(spot_log_cb_t mcb, void* mdata);
-void spot_unregister_recv(spot_recv_cb_t rcb, void* rdata);
+void spot_unregister_log(spot_log_cb_t lcb, const void* ldata);
+void spot_unregister_manual(spot_log_cb_t mcb, const void* mdata);
+void spot_unregister_recv(spot_recv_cb_t rcb, const void* rdata);
 
 #endif // SPOT_H_

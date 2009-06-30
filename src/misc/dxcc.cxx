@@ -8,12 +8,14 @@
 #include <string>
 #include <list>
 #include <map>
+#include <tr1/unordered_map>
 #include <algorithm>
 
 #include "dxcc.h"
 #include "debug.h"
 
 using namespace std;
+using tr1::unordered_map;
 
 
 dxcc::dxcc(const char* cn, int cq, int itu, const char* ct, float lat, float lon, float tz)
@@ -26,9 +28,9 @@ dxcc::dxcc(const char* cn, int cq, int itu, const char* ct, float lat, float lon
 	continent[2] = '\0';
 }
 
-typedef map<string, dxcc*> dxcc_map;
-static dxcc_map* cmap = 0;
-static list<string>* cnames = 0;
+typedef unordered_map<string, dxcc*> dxcc_map_t;
+static dxcc_map_t* cmap = 0;
+static vector<string>* cnames = 0;
 
 static void add_prefix(string& prefix, dxcc* entry);
 
@@ -42,8 +44,9 @@ bool dxcc_open(const char* filename)
 		return false;
 	}
 
-	cmap = new dxcc_map;
-	cnames = new list<string>;
+	cmap = new dxcc_map_t;
+	cnames = new vector<string>;
+	cnames->reserve(345); // approximate number of dxcc entities
 
 	dxcc* entry;
 	string record;
@@ -99,11 +102,16 @@ void dxcc_close(void)
 	delete cnames;
 	cnames = 0;
 	map<dxcc*, bool> rm;
-	for (dxcc_map::iterator i = cmap->begin(); i != cmap->end(); ++i)
+	for (dxcc_map_t::iterator i = cmap->begin(); i != cmap->end(); ++i)
 		if (rm.insert(make_pair(i->second, true)).second)
 			delete i->second;
 	delete cmap;
 	cmap = 0;
+}
+
+const vector<string>* dxcc_entity_list(void)
+{
+	return cnames;
 }
 
 const dxcc* dxcc_lookup(const char* callsign)
@@ -115,11 +123,10 @@ const dxcc* dxcc_lookup(const char* callsign)
 	sstr.resize(strlen(callsign) + 1);
 	transform(callsign, callsign + sstr.length() - 1, sstr.begin() + 1, static_cast<int (*)(int)>(toupper));
 
-	dxcc_map::const_iterator entry;
-
 	// first look for a full callsign (prefixed with '=')
 	sstr[0] = '=';
-	if ((entry = cmap->find(sstr)) != cmap->end())
+	dxcc_map_t::const_iterator entry = cmap->find(sstr);
+	if (entry != cmap->end())
 		return entry->second;
 
 	// erase the '=' and do a longest prefix search
@@ -136,11 +143,9 @@ const dxcc* dxcc_lookup(const char* callsign)
 
 static void add_prefix(string& prefix, dxcc* entry)
 {
-	static dxcc_map::iterator prev_entry = cmap->begin();
-
 	string::size_type i = prefix.find_first_of("([<{");
 	if (likely(i == string::npos)) {
-		prev_entry = cmap->insert(prev_entry, make_pair(prefix, entry));
+		(*cmap)[prefix] = entry;
 		return;
 	}
 
@@ -189,11 +194,11 @@ static void add_prefix(string& prefix, dxcc* entry)
 	} while ((i = prefix.find_first_of("([<{", j)) != string::npos);
 
 	prefix.erase(first);
-	prev_entry = cmap->insert(prev_entry, make_pair(prefix, entry));
+	(*cmap)[prefix] = entry;
 }
 
-typedef map<string, unsigned char> qsl_map;
-static qsl_map* qsl_calls;
+typedef unordered_map<string, unsigned char> qsl_map_t;
+static qsl_map_t* qsl_calls;
 const char* qsl_names[] = { "LoTW", "eQSL" };
 
 bool qsl_open(const char* filename, qsl_t qsl_type)
@@ -202,18 +207,16 @@ bool qsl_open(const char* filename, qsl_t qsl_type)
 	if (!in)
 		return false;
 	if (!qsl_calls)
-		qsl_calls = new qsl_map;
+		qsl_calls = new qsl_map_t;
 
 	size_t n = qsl_calls->size();
-	qsl_map::iterator prev_entry = qsl_calls->begin();
 	string::size_type p;
 	string s;
 	s.reserve(32);
 	while (getline(in, s)) {
 		if ((p = s.rfind('\r')) != string::npos)
 			s.erase(p);
-		prev_entry = qsl_calls->insert(prev_entry, make_pair(s, 0));
-		prev_entry->second |= (1 << qsl_type);
+		(*qsl_calls)[s] |= (1 << qsl_type);
 	}
 
 	LOG_INFO("Added %" PRIuSZ " %s callsigns from \"%s\"",
@@ -237,6 +240,6 @@ unsigned char qsl_lookup(const char* callsign)
 	str.resize(strlen(callsign));
 	transform(callsign, callsign + str.length(), str.begin(), static_cast<int (*)(int)>(toupper));
 
-	qsl_map::const_iterator i = qsl_calls->find(str);
+	qsl_map_t::const_iterator i = qsl_calls->find(str);
 	return i == qsl_calls->end() ? 0 : i->second;
 }

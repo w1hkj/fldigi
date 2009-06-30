@@ -45,11 +45,29 @@
 #include <cstdlib>
 
 #include <string>
-#include <map>
 #include <deque>
 #include <vector>
 #include <algorithm>
 #include <fstream>
+
+#if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)
+#  define MAP_TYPE std::tr1::unordered_map
+#define HASH_TYPE std::tr1::hash
+#  include <tr1/unordered_map>
+#else
+// use the non-standard gnu hash_map on gcc <= 4.0.x,
+// which has a broken tr1::unordered_map::operator=
+#  define MAP_TYPE __gnu_cxx::hash_map
+#define HASH_TYPE __gnu_cxx::hash
+#  include <ext/hash_map>
+namespace __gnu_cxx {
+	// define the missing hash specialisation for std::string
+	// using the 'const char*' hash function
+	template<> struct hash<std::string> {
+		size_t operator()(const std::string& s) const { return __stl_hash_string(s.c_str()); }
+	};
+}
+#endif
 
 #include <FL/Fl.H>
 
@@ -117,10 +135,9 @@ struct rcpt_report_t
 // A band_map_t holds a list of reception reports (for a particular callsign and band)
 typedef deque<rcpt_report_t> band_map_t;
 // A call_map_t holds reception reports for a particular callsign
-typedef map<band_t, band_map_t> call_map_t;
+typedef MAP_TYPE<band_t, band_map_t, HASH_TYPE<int> > call_map_t;
 // A container of this type holds all reception reports, sorted by callsign and band
-typedef map<string, call_map_t> queue_t;
-
+typedef MAP_TYPE<string, call_map_t> queue_t;
 
 class pskrep_sender
 {

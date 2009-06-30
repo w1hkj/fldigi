@@ -1,6 +1,9 @@
 #ifndef DXCC_H_
 #define DXCC_H_
 
+#include <string>
+#include <vector>
+
 struct dxcc {
 	const char* country;
 	int cq_zone;
@@ -19,6 +22,7 @@ extern const char* qsl_names[];
 bool dxcc_open(const char* filename);
 void dxcc_close(void);
 const dxcc* dxcc_lookup(const char* callsign);
+const std::vector<std::string>* dxcc_entity_list(void);
 
 bool qsl_open(const char* filename, qsl_t qsl_type);
 void qsl_close(void);
