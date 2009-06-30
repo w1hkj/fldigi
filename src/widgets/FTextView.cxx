@@ -621,6 +621,8 @@ FTextEdit::FTextEdit(int x, int y, int w, int h, const char *l)
 
 	context_menu = menu;
 	init_context_menu();
+
+	dnd_paste = false;
 }
 
 /// Handles fltk events for this widget.
@@ -636,8 +638,6 @@ int FTextEdit::handle(int event)
 {
 	if ( !(Fl::event_inside(this) || (event == FL_KEYBOARD && Fl::focus() == this)) )
 		return FTextBase::handle(event);
-
-	static bool dnd_paste = false;
 
 	switch (event) {
 	case FL_KEYBOARD:
@@ -748,19 +748,20 @@ int FTextEdit::handle_key_ascii(int key)
 
 /// Handles FL_DND_DRAG events by scrolling and moving the cursor
 ///
-/// @return 1 if a drop is permitted at the cursor position, 0 otherwise
+/// @return 1
 int FTextEdit::handle_dnd_drag(int pos)
 {
-	// scroll up or down if the event occured inside the
-	// upper or lower 20% of the text area
-	if (Fl::event_y() > y() + .8f * h())
-		scroll(mVScrollBar->value() + 1, mHorizOffset);
-	else if (Fl::event_y() < y() + .2f * h())
-		scroll(mVScrollBar->value() - 1, mHorizOffset);
-
-	if (Fl::focus() != this)
-		take_focus();
-	insert_position(pos);
+	// Scroll if the pointer is being dragged inside the scrollbars,
+	// otherwise obtain keyboard focus and set the insert position.
+	if (mVScrollBar->visible() && Fl::event_inside(mVScrollBar))
+		mVScrollBar->handle(FL_DRAG);
+	else if (mHScrollBar->visible() && Fl::event_inside(mHScrollBar))
+		mHScrollBar->handle(FL_DRAG);
+	else {
+		if (Fl::focus() != this)
+			take_focus();
+		insert_position(pos);
+	}
 
 	return 1;
 }
@@ -770,24 +771,38 @@ int FTextEdit::handle_dnd_drag(int pos)
 /// @return 1 or FTextBase::handle(FL_PASTE)
 int FTextEdit::handle_dnd_drop(void)
 {
-	string text = Fl::event_text();
-#ifndef __WOE32__
-	string::size_type cr;
-	if (text.find("file://") != string::npos) {
-		text.erase(0, 7);
-		if ((cr = text.find('\r')) != string::npos)
-			text.erase(cr);
-		readFile(text.c_str());
-		return 1;
-	}
-	else // insert verbatim
+	if (Fl::event_shift())
 		return FTextBase::handle(FL_PASTE);
-#else
-	if (readFile(text.c_str()) == -1) // paste as text
+
+#if !defined(__APPLE__) && !defined(__WOE32__)
+	if (strncmp(Fl::event_text(), "file://", 7))
 		return FTextBase::handle(FL_PASTE);
-	else
-		return 1;
 #endif
+
+	string text = Fl::event_text();
+#ifdef __WOE32__
+	const char sep[] = "\n";
+	text += sep;
+#else
+	const char sep[] = "\r\n";
+#endif
+
+	string::size_type p, len = text.length();
+	while ((p = text.find(sep)) != string::npos) {
+		text[p] = '\0';
+#if !defined(__APPLE__) && !defined(__WOE32__)
+		if (text.find("file://") == 0) {
+			text.erase(0, 7);
+			p -= 7;
+		}
+#endif
+		// paste everything verbatim if we couldn't read the first file
+		if (readFile(text.c_str()) == -1 && len == text.length())
+			return FTextBase::handle(FL_PASTE);
+		text.erase(0, p + sizeof(sep) - 1);
+	}
+
+	return 1;
 }
 
 /// Handles mouse-3 clicks by displaying the context menu

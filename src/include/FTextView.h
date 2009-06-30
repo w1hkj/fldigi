@@ -183,6 +183,7 @@ protected:
 	static Fl_Menu_Item	menu[];
 	char			ascii_cnt;
 	unsigned		ascii_chr;
+	bool			dnd_paste;
 };
 
 #endif // FTextView_H_
