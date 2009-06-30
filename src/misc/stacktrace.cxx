@@ -76,8 +76,9 @@ void diediedie(void)
 		pstack(cerr);
 #endif
 
-		extern string version_text;
-		cerr << "\n****** Version information:\n" << version_text;
+		extern string version_text, build_text;
+		cerr << "\n****** Version information:\n" << version_text
+		     << "\n****** Build information:\n" << build_text;
 
 		string stfname;
 #ifdef BUILD_FLDIGI
@@ -90,8 +91,8 @@ void diediedie(void)
 		FILE* stfile = fopen(stfname.c_str(), "w");
 		if (stfile) {
 			pstack(fileno(stfile), 1);
-			fprintf(stfile, "%s\n****** Version information:\n%s", CRASH_HEADER,
-				version_text.c_str());
+			fprintf(stfile, "%s\n****** Version information:\n%s\n****** Build information:%s\n",
+				CRASH_HEADER, version_text.c_str(), build_text.c_str());
 		}
 #else
 		ofstream stfile(stfname.c_str());
@@ -99,6 +100,7 @@ void diediedie(void)
 			stfile << CRASH_HEADER;
 			pstack(stfile, 1);
 			stfile << "\n****** Version information:\n" << version_text;
+			stfile << "\n****** Build information:\n" << build_text;
 		}
 #endif
 	}
