@@ -587,7 +587,7 @@ double HAMLIB_API distance_long_path(double distance) {
  */
 
 double HAMLIB_API azimuth_long_path(double azimuth) {
-	return 360.0 - azimuth;
+	return azimuth + (azimuth <= 180.0 ? 180.0 : -180.0);
 }
 
 /*! @} */

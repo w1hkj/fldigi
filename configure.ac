@@ -222,8 +222,8 @@ AC_FLDIGI_PKG_CHECK([hamlib], [hamlib >= 1.2.4], [yes], [yes],
                     [use hamradio control libraries @<:@autodetect@:>@],
                     [ENABLE_HAMLIB])
 # We compile our own copy of hamlib's locator.c if hamlib is not available
-# or if it is version <= 1.2.8, which has a broken qrb function
-AX_COMPARE_VERSION([$pkg_hamlib_version], [le], [1.2.8], [need_locator_c=yes], [need_locator_c=no])
+# or if it is version <= 1.2.9, which has a broken azimuth_long_path function
+AX_COMPARE_VERSION([$pkg_hamlib_version], [le], [1.2.9], [need_locator_c=yes], [need_locator_c=no])
 AM_CONDITIONAL([NEED_HAMLIB_LOCATOR], [test "$need_locator_c" = "yes"], [:])
 
 ### libintl
