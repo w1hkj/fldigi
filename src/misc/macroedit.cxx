@@ -34,7 +34,8 @@ static int widths[] = {110, 0};
 
 Fl_Hold_Browser *macroDefs=(Fl_Hold_Browser *)0;
 
-static int iMacro;
+static int iMacro, iType;
+static Fl_Input* iInput;
 
 // fl_color(0) is always the foreground colour
 #define LINE_SEP "@B0"
@@ -139,20 +140,21 @@ void loadBrowser(Fl_Widget *widget) {
 
 void cbMacroEditOK(Fl_Widget *w, void *)
 {
-	macros.text[iMacro] = macrotext->value();
-	macros.name[iMacro] = labeltext->value();
-	FL_LOCK_D();
-		int n = iMacro;
-		while (n >= 12) n-= 12;
-//		if (n >= 12) n -= 12;
-		btnMacro[n]->label( macros.name[iMacro].c_str());
-	FL_UNLOCK_D();
-	MacroEditDialog->hide();
-	macros.changed = true;
-}
+	if (w == btnMacroEditCancel)
+		goto ret;
 
-void cbMacroEditCancel(Fl_Widget *w, void *)
-{
+	if (iType == MACRO_EDIT_BUTTON) {
+		macros.text[iMacro] = macrotext->value();
+		macros.name[iMacro] = labeltext->value();
+		int n = iMacro;
+		while (n >= 12)
+			n-= 12;
+		btnMacro[n]->label(macros.name[iMacro].c_str());
+		macros.changed = true;
+	}
+	else if (iType == MACRO_EDIT_INPUT)
+		iInput->value(macrotext->value());
+ret:
 	MacroEditDialog->hide();
 }
 
@@ -188,50 +190,55 @@ void cbInsertMacro(Fl_Widget *, void *)
 	macrotext->take_focus();
 }
 
-static string editor_label;
-
 Fl_Double_Window* make_macroeditor(void)
 {
-	editor_label.append("Macro editor - ").append(progStatus.LastMacroFile);
+	Fl_Double_Window* w = new Fl_Double_Window(730, 230, "");
+	labeltext = new Fl_Input2(45, 15, 115, 25, "Label:");
+	labeltext->textfont(FL_COURIER);
 
-	Fl_Double_Window* w = new Fl_Double_Window(730, 230, editor_label.c_str());
-		labeltext = new Fl_Input2(45, 15, 115, 25, "Label:");
-		labeltext->textfont(FL_COURIER);
+	btnMacroEditOK = new Fl_Button(500, 15, 75, 25, "OK");
+	btnMacroEditOK->callback(cbMacroEditOK);
 
-		btnMacroEditOK = new Fl_Button(500, 15, 75, 25, "OK");
-		btnMacroEditOK->callback(cbMacroEditOK);
-		
-		btnMacroEditCancel = new Fl_Button(600, 15, 75, 25, "Cancel");
-		btnMacroEditCancel->callback(cbMacroEditCancel);
-		
-		macrotext = new Fl_Input2(5, 60, 450, 165, "Text:");
-		macrotext->type(FL_MULTILINE_INPUT);
-		macrotext->textfont(FL_COURIER);
-		macrotext->align(FL_ALIGN_TOP_LEFT);
-		
-		btnInsertMacro = new Fl_Button(460, 125, 25, 25);
-		btnInsertMacro->image(new Fl_Pixmap(left_arrow_icon));
-		btnInsertMacro->callback(cbInsertMacro);
-		
-		macroDefs = new Fl_Hold_Browser(490, 60, 235, 165);
-		macroDefs->column_widths(widths);
-		loadBrowser(macroDefs);
+	btnMacroEditCancel = new Fl_Button(600, 15, 75, 25, "Cancel");
+	btnMacroEditCancel->callback(cbMacroEditOK);
+
+	macrotext = new Fl_Input2(5, 60, 450, 165, "Text:");
+	macrotext->type(FL_MULTILINE_INPUT);
+	macrotext->textfont(FL_COURIER);
+	macrotext->align(FL_ALIGN_TOP_LEFT);
+
+	btnInsertMacro = new Fl_Button(460, 125, 25, 25);
+	btnInsertMacro->image(new Fl_Pixmap(left_arrow_icon));
+	btnInsertMacro->callback(cbInsertMacro);
+
+	macroDefs = new Fl_Hold_Browser(490, 60, 235, 165);
+	macroDefs->column_widths(widths);
+	loadBrowser(macroDefs);
 	w->end();
+	w->xclass(PACKAGE_NAME);
 	return w;
 }
 
-void editMacro(int n)
+void editMacro(int n, int t, Fl_Input* in)
 {
-	if (!MacroEditDialog) MacroEditDialog = make_macroeditor();
-	else {
-		editor_label = "";
+	if (!MacroEditDialog)
+		MacroEditDialog = make_macroeditor();
+	if (t == MACRO_EDIT_BUTTON) {
+		string editor_label;
 		editor_label.append("Macro editor - ").append(progStatus.LastMacroFile);
-		MacroEditDialog->label(editor_label.c_str());
+		if (editor_label != MacroEditDialog->label())
+			MacroEditDialog->copy_label(editor_label.c_str());
+		macrotext->value(macros.text[n].c_str());
+		labeltext->value(macros.name[n].c_str());
+		labeltext->show();
 	}
-	macrotext->value(macros.text[n].c_str());
-	labeltext->value(macros.name[n].c_str());
+	else if (t == MACRO_EDIT_INPUT) {
+		MacroEditDialog->label(in->label());
+		macrotext->value(in->value());
+		labeltext->hide();
+	}
 	iMacro = n;
-	MacroEditDialog->xclass(PACKAGE_NAME);
+	iType = t;
+	iInput = in;
 	MacroEditDialog->show();
 }
-

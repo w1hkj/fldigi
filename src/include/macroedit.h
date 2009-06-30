@@ -18,6 +18,7 @@ extern Fl_Input2		*labeltext;
 
 extern Fl_Double_Window* make_macroeditor();
 
-extern void editMacro(int);
+enum { MACRO_EDIT_BUTTON, MACRO_EDIT_INPUT };
+extern void editMacro(int b, int t = MACRO_EDIT_BUTTON, Fl_Input* in = 0);
 
 #endif
