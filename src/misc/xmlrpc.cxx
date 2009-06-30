@@ -66,6 +66,11 @@
 #include "re.h"
 #include "pskrep.h"
 
+// required for flrig support
+#include "fl_digi.h"
+#include "rigsupport.h"
+#include "rigdialog.h"
+
 LOG_FILE_SOURCE(debug::LOG_RPC);
 
 using namespace std;
@@ -198,7 +203,7 @@ ostream& XML_RPC_Server::list_methods(ostream& out)
 }
 
 // =============================================================================
-// helper functions
+// generic helper functions
 
 static void set_button(Fl_Button* button, bool value)
 {
@@ -216,6 +221,93 @@ static void set_text(Fl_Input* textw, string& value)
 	textw->do_callback();
 }
 
+// rig control helpers
+
+static void set_new_name(const string& name)
+{
+	windowTitle = name;
+	setTitle();
+}
+
+static void set_new_modes(const vector<string>& modes)
+{
+	opMODE->clear();
+	if (progdefaults.docked_rig_control)
+		qso_opMODE->clear();
+
+	if (modes.empty()) {
+		opMODE->add("");
+		opMODE->index(0);
+		opMODE->deactivate();
+		if (progdefaults.docked_rig_control) {
+			qso_opMODE->add("");
+			qso_opMODE->index(0);
+			qso_opMODE->deactivate();
+		}
+		return;
+	}
+
+	for (vector<string>::const_iterator i = modes.begin(); i != modes.end(); ++i) {
+		opMODE->add(i->c_str());
+		if (progdefaults.docked_rig_control)
+			qso_opMODE->add(i->c_str());
+	}
+
+	opMODE->index(0);
+	opMODE->activate();
+	if (progdefaults.docked_rig_control) {
+		qso_opMODE->index(0);
+		qso_opMODE->activate();
+	}
+}
+
+static void set_new_bandwidths(const vector<string>& bws)
+{
+	opBW->clear();
+	if (progdefaults.docked_rig_control)
+		qso_opBW->clear();
+
+	if (bws.empty()) {
+		opBW->add("");
+		opBW->index(0);
+		opBW->deactivate();
+		if (progdefaults.docked_rig_control) {
+			qso_opBW->add("");
+			qso_opBW->index(0);
+			qso_opBW->deactivate();
+		}
+		return;
+	}
+
+	for (vector<string>::const_iterator i = bws.begin(); i != bws.end(); ++i) {
+		opBW->add(i->c_str());
+		if (progdefaults.docked_rig_control)
+			qso_opBW->add(i->c_str());
+	}
+
+	opBW->index(0);
+	opBW->activate();
+	if (progdefaults.docked_rig_control) {
+		qso_opBW->index(0);
+		qso_opBW->activate();
+	}
+}
+
+static void set_rig_mode(const string& mode)
+{
+	if (progdefaults.docked_rig_control)
+		qso_opMODE->value(mode.c_str());
+	else
+		opMODE->value(mode.c_str());
+}
+
+static void set_rig_bandwidth(const string& bw)
+{
+	if (progdefaults.docked_rig_control)
+		qso_opBW->value(bw.c_str());
+	else
+		opBW->value(bw.c_str());
+}
 
 // =============================================================================
 
@@ -312,7 +404,7 @@ public:
 	Fldigi_config_dir()
 	{
 		_signature = "s:n";
-		_help = "Returns the name of theconfiguration directory.";
+		_help = "Returns the name of the configuration directory.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
@@ -710,6 +802,7 @@ public:
 			hamlib_setmode(s == "LSB" ? RIG_MODE_LSB : RIG_MODE_USB);
 #endif
 		else if (progdefaults.chkUSEXMLRPCis)
+//            REQ(xml_set_wf_USB, s == "USB");
 			REQ(static_cast<void (waterfall::*)(bool)>(&waterfall::USB), wf, s == "USB");
 
 		*retval = xmlrpc_c::value_nil();
@@ -742,7 +835,13 @@ void xmlrpc_set_qsy(long long rfc, long long fmid)
 		active_modem->set_freq((int)fmid);
 	wf->rfcarrier(rfc);
 	wf->movetocenter();
-	qsoFreqDisp->value(rfc);
+    show_frequency(rfc);
+}
+
+void xmlrpc_set_freq(long long rfc)
+{
+	wf->rfcarrier(rfc);
+    show_frequency(rfc);
 }
 
 class Main_set_freq : public xmlrpc_c::method
@@ -756,7 +855,8 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		double rfc = wf->rfcarrier();
-		qsy((long long int)params.getDouble(0, 0.0));
+        long long int fnew = (long long int)params.getDouble(0, 0.0);
+        REQ(xmlrpc_set_freq, fnew);
 		*retval = xmlrpc_c::value_double(rfc);
 	}
 };
@@ -1161,6 +1261,156 @@ public:
 		*retval = xmlrpc_c::value_nil();
 	}
 };
+
+// =============================================================================
+// classes added to support flrig
+//
+// dhf 6/23/09
+
+class Main_get_trx_state : public xmlrpc_c::method
+{
+public:
+	Main_get_trx_state()
+	{
+		_signature = "s:n";
+		_help = "Returns t/r state.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+		{
+		if (trx_state == STATE_TX || trx_state == STATE_TUNE)
+			*retval = xmlrpc_c::value_string("TX");
+		else
+			*retval = xmlrpc_c::value_string("RX");
+	}
+};
+
+class Main_set_rig_name : public xmlrpc_c::method
+{
+public:
+	Main_set_rig_name()
+	{
+		_signature = "n:s";
+		_help = "Sets the rig name for xmlrpc rig";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		REQ(set_new_name, params.getString(0));
+		*retval = xmlrpc_c::value_nil();
+	}
+};
+
+class Main_set_rig_modes : public xmlrpc_c::method
+{
+public:
+	Main_set_rig_modes()
+	{
+		_signature = "n:A";
+		_help = "Sets the list of available rig modes";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		vector<xmlrpc_c::value> v = params.getArray(0);
+
+		vector<string> modes;
+		modes.reserve(v.size());
+		// copy
+		for (vector<xmlrpc_c::value>::const_iterator i = v.begin(); i != v.end(); ++i)
+			modes.push_back(static_cast<string>(xmlrpc_c::value_string(*i)));
+
+		REQ(set_new_modes, modes); // queue a set_new_modes call with a copy of smodes
+
+		*retval = xmlrpc_c::value_nil();
+	}
+};
+
+class Main_set_rig_mode : public xmlrpc_c::method
+{
+public:
+	Main_set_rig_mode()
+	{
+		_signature = "n:s";
+		_help = "Sets a mode previously designated by main.set_rig_modes";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		REQ(set_rig_mode, params.getString(0));
+		*retval = xmlrpc_c::value_nil();
+	}
+};
+
+class Main_get_rig_mode : public xmlrpc_c::method
+{
+public:
+	Main_get_rig_mode()
+	{
+		_signature = "s:n";
+		_help = "Gets the name of the current transceiver mode";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		if (progdefaults.docked_rig_control)
+			*retval = xmlrpc_c::value_string(qso_opMODE->value());
+		else
+			*retval = xmlrpc_c::value_string(opMODE->value());
+	}
+};
+
+
+class Main_set_rig_bandwidths : public xmlrpc_c::method
+{
+public:
+	Main_set_rig_bandwidths()
+	{
+		_signature = "n:A";
+		_help = "Sets the list of available rig bandwidths";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		vector<xmlrpc_c::value> v = params.getArray(0);
+
+		vector<string> bws;
+		bws.reserve(v.size());
+		for (vector<xmlrpc_c::value>::const_iterator i = v.begin(); i != v.end(); ++i)
+			bws.push_back(static_cast<string>(xmlrpc_c::value_string(*i)));
+
+		REQ(set_new_bandwidths, bws);
+
+		*retval = xmlrpc_c::value_nil();
+	}
+};
+
+class Main_set_rig_bandwidth : public xmlrpc_c::method
+{
+public:
+	Main_set_rig_bandwidth()
+	{
+		_signature = "n:s";
+		_help = "Sets a bandwidth previously designated by main.set_rig_bandwidths";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		REQ(set_rig_bandwidth, params.getString(0));
+		*retval = xmlrpc_c::value_nil();
+	}
+};
+
+class Main_get_rig_bandwidth : public xmlrpc_c::method
+{
+public:
+	Main_get_rig_bandwidth()
+	{
+		_signature = "s:n";
+		_help = "Gets the name of the current transceiver bandwidth";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		if (progdefaults.docked_rig_control)
+			*retval = xmlrpc_c::value_string(qso_opBW->value());
+		else
+			*retval = xmlrpc_c::value_string(opBW->value());
+	}
+};
+
 
 // =============================================================================
 
@@ -1676,18 +1926,27 @@ public:
 	ELEM_(Main_rx, "main.rx")					\
 	ELEM_(Main_abort, "main.abort")					\
 									\
+	ELEM_(Main_get_trx_state, "main.get_trx_state")			\
+	ELEM_(Main_set_rig_name, "main.set_rig_name")			\
+	ELEM_(Main_set_rig_modes, "main.set_rig_modes")			\
+	ELEM_(Main_set_rig_mode, "main.set_rig_mode")			\
+	ELEM_(Main_get_rig_mode, "main.get_rig_mode")			\
+	ELEM_(Main_set_rig_bandwidths, "main.set_rig_bandwidths")	\
+	ELEM_(Main_set_rig_bandwidth, "main.set_rig_bandwidth")		\
+	ELEM_(Main_get_rig_bandwidth, "main.get_rig_bandwidth")		\
+									\
 	ELEM_(Main_run_macro, "main.run_macro")				\
 	ELEM_(Main_get_max_macro_id, "main.get_max_macro_id")		\
 									\
 	ELEM_(Log_get_freq, "log.get_frequency")			\
-	ELEM_(Log_get_time_on, "log.get_time_on")				\
-	ELEM_(Log_get_time_off, "log.get_time_off")				\
+	ELEM_(Log_get_time_on, "log.get_time_on")			\
+	ELEM_(Log_get_time_off, "log.get_time_off")			\
 	ELEM_(Log_get_call, "log.get_call")				\
 	ELEM_(Log_get_name, "log.get_name")				\
 	ELEM_(Log_get_rst_in, "log.get_rst_in")				\
 	ELEM_(Log_get_rst_out, "log.get_rst_out")			\
 	ELEM_(Log_get_serial_number, "log.get_serial_number")		\
-	ELEM_(Log_get_state, "log.get_state")			\
+	ELEM_(Log_get_state, "log.get_state")				\
 	ELEM_(Log_get_province, "log.get_province")			\
 	ELEM_(Log_get_country, "log.get_country")			\
 	ELEM_(Log_get_qth, "log.get_qth")				\

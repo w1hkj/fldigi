@@ -378,7 +378,7 @@ int cb_qso_opMODE()
 		rigCAT_setmode(qso_opMODE->value());
 	else if (progdefaults.chkUSEMEMMAPis)
 		rigMEM_setmode(qso_opMODE->value());
-	else
+	else if (!progdefaults.chkUSEXMLRPCis)
 		rigCAT_setmode(qso_opMODE->value());
 	return 0;
 }
@@ -391,7 +391,17 @@ void setBW()
 int cb_qso_opBW()
 {
 	if (!progdefaults.docked_rig_control) return 0;
-	rigCAT_setwidth (qso_opBW->value());
+// hamlib width not yet implemented in fldigi
+//#if USE_HAMLIB
+//	if (progdefaults.chkUSEHAMLIBis)
+//		hamlib_setwidth(qso_opBW->value());
+//	else
+//#endif
+//	if (progdefaults.chkUSERIGCATis || progdefaults.chkUSEMEMMAPis)
+//		rigCAT_setwidth(qso_opBW->value());
+//	else
+    if (!progdefaults.chkUSEXMLRPCis)
+		rigCAT_setwidth(qso_opBW->value());
 	return 0;
 }
 
@@ -404,8 +414,8 @@ void sendFreq(long int f)
 #endif
 	if (progdefaults.chkUSEMEMMAPis)
 		rigMEM_set_freq(f);
-	else if (progdefaults.chkUSERIGCATis)
-		rigCAT_setfreq(f);
+//	else if (progdefaults.chkUSERIGCATis)
+//		rigCAT_setfreq(f);
 	else
 		rigCAT_setfreq(f);
 }
