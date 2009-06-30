@@ -94,6 +94,17 @@ int Fl_Input2::handle(int event)
 		}
 	}
 		return Fl_Input::handle(event);
+	case FL_MOUSEWHEEL: {
+		if (!((type() & (FL_MULTILINE_INPUT | FL_MULTILINE_OUTPUT)) && Fl::event_inside(this)))
+			return Fl_Input::handle(event);
+		int d;
+		if (!((d = Fl::event_dy()) || (d = Fl::event_dx())))
+			return Fl_Input::handle(event);
+		if (Fl::focus() != this)
+			take_focus();
+		up_down_position(d + (d > 0 ? line_end(position()) : line_start(position())));
+		return 1;
+	}
 	case FL_PUSH:
 		if (Fl::event_button() == FL_RIGHT_MOUSE)
 			break;
