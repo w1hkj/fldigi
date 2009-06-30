@@ -94,20 +94,23 @@ bool re_t::match(const char* str, int eflags_)
 			      (nosub ? NULL : &suboffsets[0]), eflags_);
 	substrings.clear();
 	if (found && !nosub) {
-		for (vector<regmatch_t>::iterator i = suboffsets.begin(); i != suboffsets.end(); i++)
-			if (i->rm_so != -1)
-				substrings.push_back(string(str + i->rm_so, i->rm_eo - i->rm_so));
+		size_t n = suboffsets.size();
+		substrings.resize(n);
+		for (size_t i = 0; i < n; i++)
+			if (suboffsets[i].rm_so != -1)
+				substrings[i].assign(str + suboffsets[i].rm_so,
+						     suboffsets[i].rm_eo - suboffsets[i].rm_so);
 	}
 
 	return found;
 }
 
-const string& re_t::submatch(size_t n)
+const string& re_t::submatch(size_t n) const
 {
 	return substrings[n];
 }
 
-void re_t::suboff(size_t n, int* start, int* end)
+void re_t::suboff(size_t n, int* start, int* end) const
 {
 	if (n < nsub()) {
 		if (start) *start = suboffsets[n].rm_so;
@@ -117,6 +120,14 @@ void re_t::suboff(size_t n, int* start, int* end)
 		if (start) *start = -1;
 		if (end) *end = -1;
 	}
+}
+
+#include <tr1/functional>
+
+size_t re_t::hash(void) const
+{
+	size_t h = tr1::hash<string>()(pattern);
+	return h ^ (tr1::hash<int>()(cflags) + 0x9e3779b9 + (h << 6) + (h >> 2));
 }
 
 // ------------------------------------------------------------------------

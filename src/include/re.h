@@ -39,12 +39,19 @@ public:
 	~re_t();
 	re_t& operator=(const re_t& rhs);
 	re_t& operator=(const char* pattern_);
-	operator bool(void) { return !error; }
+	operator bool(void) const { return !error; }
+	bool operator==(const re_t& o) const { return o.cflags == cflags && o.pattern == pattern; }
 
 	bool match(const char* str, int eflags_ = 0);
-	const std::string& submatch(size_t n);
-	void suboff(size_t n, int* start, int* end);
-	size_t nsub(void) { return substrings.size(); }
+	const std::string& submatch(size_t n) const;
+	void suboff(size_t n, int* start, int* end) const;
+	const std::vector<regmatch_t>& suboff(void) const { return suboffsets; }
+
+	size_t nsub(void) const { return suboffsets.size(); }
+	const std::string& re(void) const { return pattern; }
+	int cf(void) const { return cflags; }
+
+	size_t hash(void) const;
 protected:
 	void compile(void);
 
@@ -54,20 +61,20 @@ protected:
 	std::vector<regmatch_t> suboffsets;
 	std::vector<std::string> substrings;
 	bool error;
+	bool need_substr;
 };
 
-class fre_t : private re_t
+//typedef re_t fre_t;
+class fre_t : public re_t
 {
 public:
 	fre_t(const char* pattern_, int cflags_ = 0);
-	operator bool(void) { return !error; }
-
 	bool match(const char* str, int eflags_ = 0);
-	const std::vector<regmatch_t>& suboff(void) { return suboffsets; }
-
-private:
-	fre_t(const fre_t& re);
-	fre_t& operator=(const fre_t& rhs);
 };
 
 #endif // RE_H_
+
+// Local Variables:
+// mode: c++
+// c-file-style: "linux"
+// End:
