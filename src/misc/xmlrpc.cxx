@@ -163,12 +163,17 @@ void* XML_RPC_Server::thread_func(void*)
 
 	// On POSIX we block indefinitely and are interrupted by a signal.
 	// On woe32 we block for a short time and test for cancellation.
+	int fd;
 	while (inst->run) {
 		try {
-#if defined(__CYGWIN__) || defined(__MINGW32__)
-			if (inst->server_socket->wait(0))
+#ifdef __CYGWIN__
+			if (inst->server_socket->wait(0)) {
 #endif
-				server.runConn(inst->server_socket->accept().fd());
+				server.runConn(fd = inst->server_socket->accept().fd());
+				close(fd);
+#ifdef __CYGWIN__
+			}
+#endif
 			TEST_THREAD_CANCEL();
 		}
 		catch (const SocketException& e) {
