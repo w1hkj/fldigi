@@ -166,14 +166,26 @@ void* XML_RPC_Server::thread_func(void*)
 
 	SET_THREAD_CANCEL();
 
+#define RUN_SERVER_(fd_) server.runConn(fd_ = inst->server_socket->accept().fd())
+
 	// On POSIX we block indefinitely and are interrupted by a signal.
 	// On woe32 we block for a short time and test for cancellation.
+	int fd;
 	while (inst->run) {
 		try {
 #ifdef __WOE32__
-			if (inst->server_socket->wait(0))
+			if (inst->server_socket->wait(0)) {
+				RUN_SERVER_(fd);
+#  ifdef __MINGW32__
+				closesocket(fd);
+#  else
+				close(fd);
+#  endif
+			}
+#else
+			RUN_SERVER_(fd);
+			close(fd);
 #endif
-				server.runConn(inst->server_socket->accept().fd());
 			TEST_THREAD_CANCEL();
 		}
 		catch (const SocketException& e) {

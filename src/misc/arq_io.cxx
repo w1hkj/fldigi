@@ -402,6 +402,7 @@ void arq_run(Socket s)
 
 void arq_stop()
 {
+	arqclient.close();
 	isSocketConnected = false;
 	arqmode = false;
 }
