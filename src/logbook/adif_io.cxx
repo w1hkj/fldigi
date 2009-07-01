@@ -5,6 +5,7 @@
 #include <string>
 #include <cstring>
 #include <cstdlib>
+#include <string>
 
 #include "adif_io.h"
 #include "config.h"
@@ -91,9 +92,7 @@ int fieldnbr (const char *s) {
 
 int findfield( char *p )
 {
-	int low = 0;
-	int high = numfields - 1;
-	int middle;
+	int m;
 	int test;
 	
     if (strncasecmp (p, "EOR>", 4) == 0)
@@ -107,19 +106,13 @@ int findfield( char *p )
 		return XCHG1;
 	if (strncasecmp (p, "MYXCHG>", 7) == 0)
 		return MYXCHG;
-    
-	while( low <= high ) {
-		middle = ( low  + high ) / 2;
-		if ( (test = strncasecmp( p, 
-                                  fields[middle].name, 
-                                  fields[middle].len ) ) == 0 ) { //match
-            if (fields[middle].type == COMMENT) return(NOTES);
-            return fields[middle].type;
-        }
-		else if( test < 0 )
-			high = middle - 1;		//search low end of array
-		else
-			low = middle + 1;		//search high end of array
+
+    string tststr;
+    for (m = 0; m < numfields; m++) {
+        tststr = fields[m].name;
+        tststr += ':';
+        if ( (test = strncasecmp( p, tststr.c_str(), tststr.length() )) == 0)
+            return fields[m].type;
 	}
 	return -2;		//search key not found
 }
