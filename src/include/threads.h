@@ -43,7 +43,7 @@ void linux_log_tid(void);
 #endif
 
 #if USE_TLS
-#       define THREAD_ID_TYPE __thread int
+#       define THREAD_ID_TYPE __thread intptr_t
 #       define CREATE_THREAD_ID() do { NP_THREAD_INIT(); thread_id_ = INVALID_TID; } while (0)
 #	define SET_THREAD_ID(x)   do { thread_id_ = (x); LOG_THREAD_ID(); } while (0)
 #	define GET_THREAD_ID()    thread_id_

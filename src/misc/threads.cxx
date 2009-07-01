@@ -87,6 +87,6 @@ void ptw32_init(void)
 #  include "debug.h"
 void linux_log_tid(void)
 {
-	LOG_DEBUG(PACKAGE_TARNAME " thread %d is LWP %ld", GET_THREAD_ID(), syscall(SYS_gettid));
+	LOG_DEBUG(PACKAGE_TARNAME " thread %" PRIdPTR " is LWP %ld", GET_THREAD_ID(), syscall(SYS_gettid));
 }
 #endif

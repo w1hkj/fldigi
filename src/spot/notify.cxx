@@ -1385,7 +1385,7 @@ static void notify_save(void)
 		ndata.set(Fl_Preferences::Name("%s/dup/ref", group), static_cast<int>(i->dup_ref));
 		ndata.set(Fl_Preferences::Name("%s/dup/when", group), static_cast<int>(i->dup.when));
 		ndata.set(Fl_Preferences::Name("%s/dup/band", group), i->dup.band);
-		ndata.set(Fl_Preferences::Name("%s/dup/mode", group), i->dup.mode);
+		ndata.set(Fl_Preferences::Name("%s/dup/mode", group), static_cast<int>(i->dup.mode));
 	}
 }
 
