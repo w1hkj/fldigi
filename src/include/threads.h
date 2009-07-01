@@ -25,7 +25,7 @@ enum { INVALID_TID = -1, TRX_TID, QRZ_TID, RIGCTL_TID, NORIGCTL_TID,
        NUM_QRUNNER_THREADS = NUM_THREADS - 1 };
 
 #if USE_TLS
-#       define THREAD_ID_TYPE __thread int
+#       define THREAD_ID_TYPE __thread intptr_t
 #	define CREATE_THREAD_ID() thread_id_ = INVALID_TID
 #	define SET_THREAD_ID(x)   thread_id_ = (x)
 #	define GET_THREAD_ID()    thread_id_
