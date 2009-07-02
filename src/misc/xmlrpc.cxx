@@ -850,12 +850,6 @@ void xmlrpc_set_qsy(long long rfc, long long fmid)
     show_frequency(rfc);
 }
 
-void xmlrpc_set_freq(long long rfc)
-{
-	wf->rfcarrier(rfc);
-    show_frequency(rfc);
-}
-
 class Main_set_freq : public xmlrpc_c::method
 {
 public:
@@ -867,8 +861,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		double rfc = wf->rfcarrier();
-        long long int fnew = (long long int)params.getDouble(0, 0.0);
-        REQ(xmlrpc_set_freq, fnew);
+		qsy((long long int)params.getDouble(0, 0.0));
 		*retval = xmlrpc_c::value_double(rfc);
 	}
 };
@@ -1308,6 +1301,28 @@ public:
 	{
 		REQ(set_new_name, params.getString(0));
 		*retval = xmlrpc_c::value_nil();
+	}
+};
+
+void xmlrpc_set_freq(long long rfc)
+{
+	wf->rfcarrier(rfc);
+    show_frequency(rfc);
+}
+
+class Main_set_rig_frequency : public xmlrpc_c::method{
+public:
+	Main_set_rig_frequency()
+	{
+		_signature = "d:d";
+		_help = "Sets the RF carrier frequency. Returns the old value.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		double rfc = wf->rfcarrier();
+        long long int fnew = (long long int)params.getDouble(0, 0.0);
+        REQ(xmlrpc_set_freq, fnew);
+		*retval = xmlrpc_c::value_double(rfc);
 	}
 };
 
@@ -1940,6 +1955,7 @@ public:
 									\
 	ELEM_(Main_get_trx_state, "main.get_trx_state")			\
 	ELEM_(Main_set_rig_name, "main.set_rig_name")			\
+	ELEM_(Main_set_rig_frequency, "main.set_rig_frequency")			\
 	ELEM_(Main_set_rig_modes, "main.set_rig_modes")			\
 	ELEM_(Main_set_rig_mode, "main.set_rig_mode")			\
 	ELEM_(Main_get_rig_mode, "main.get_rig_mode")			\
