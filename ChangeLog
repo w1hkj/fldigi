@@ -1,5 +1,21 @@
 Change Log:
 
+3.11.6
+
+2009-07-06  Stelios Bounanos  <vcs@enotty.net>
+
+	2964730: Fix compilation on glibc 2.10
+
+2009-07-01  David Freese  <w1hkj@w1hkj.com>
+
+	e2eff92: Logbook bug fix
+
+2009-07-01  Stelios Bounanos  <vcs@enotty.net>
+
+	c37b395: Fix socket fd leak
+	d977919: Fix compilation warnings on 64bit archs
+	5c963a1: Fix azimuth_long_path
+
 3.11.5
 
 2009-06-12  Stelios Bounanos  <vcs@enotty.net>
