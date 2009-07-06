@@ -25,6 +25,8 @@
 
 #include <config.h>
 
+#include <string>
+
 #include <time.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -381,18 +383,18 @@ int picbox::handle(int event)
 	}
 
 	// handle FL_PASTE
-	const char* text = Fl::event_text();
-	if (strstr(text, "file://"))
-		text += strlen("file://");
-	char* p;
-	if ((p = strchr(text, '\r')))
-		*p = '\0';
+	string text = Fl::event_text();
+	string::size_type p;
+	if ((p = text.find("file://")) != string::npos)
+		text.erase(0, p + strlen("file://"));
+	if ((p = text.find('\r')) != string::npos)
+		text.erase(p);
 
 	struct stat st;
-	if (stat(text, &st) == -1 || !S_ISREG(st.st_mode))
+	if (stat(text.c_str(), &st) == -1 || !S_ISREG(st.st_mode))
 		return 0;
 	extern void load_image(const char*);
-	load_image(text);
+	load_image(text.c_str());
 
 	return 1;
 }

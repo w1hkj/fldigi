@@ -766,7 +766,7 @@ int QRZ::FindRecord( char *field )
   return( ReadRec() );
 }
 
-static const char *empty = "";
+static char empty[] = { '\0' };
 
 
 int QRZ::ReadRec()

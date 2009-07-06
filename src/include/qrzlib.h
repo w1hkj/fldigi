@@ -181,20 +181,20 @@ class QRZ
     int           nextrec();
 	bool		  hasImage;
         
-    const char *Qcall;
-    const char *Qlname;
-    const char *Qfname;
-    const char *Qdob;
-    const char *Qefdate;
-    const char *Qexpdate;
-    const char *Qmail_str;
-    const char *Qmail_city;
-    const char *Qmail_st;
-    const char *Qmail_zip;
-    const char *Qopclass;
-    const char *Qp_call;
-    const char *Qimagefname;
-    const char *Qp_class;
+    char *Qcall;
+    char *Qlname;
+    char *Qfname;
+    char *Qdob;
+    char *Qefdate;
+    char *Qexpdate;
+    char *Qmail_str;
+    char *Qmail_city;
+    char *Qmail_st;
+    char *Qmail_zip;
+    char *Qopclass;
+    char *Qp_call;
+    char *Qimagefname;
+    char *Qp_class;
 
     int  QRZvalid;
         
