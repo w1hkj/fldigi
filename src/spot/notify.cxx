@@ -187,14 +187,24 @@ static Fl_Menu_Item notify_list_context_menu[] = {
 };
 
 enum {
-	NOTIFY_DXCC_SELECT_CONT, NOTIFY_DXCC_SELECT_CQ,
-	NOTIFY_DXCC_DESELECT_CONT, NOTIFY_DXCC_DESELECT_CQ
+	NOTIFY_DXCC_SELECT_CONT, NOTIFY_DXCC_SELECT_ITU,
+	NOTIFY_DXCC_SELECT_CQ, NOTIFY_DXCC_SELECT_ALL,
+	NOTIFY_DXCC_DESELECT_CONT, NOTIFY_DXCC_DESELECT_ITU,
+	NOTIFY_DXCC_DESELECT_CQ, NOTIFY_DXCC_DESELECT_ALL
 };
 static Fl_Menu_Item notify_dxcc_context_menu[] = {
-	{ _("Select continent"), 0, notify_filter_dxcc_select_cb, (void*)NOTIFY_DXCC_SELECT_CONT },
-	{ _("Select CQ zone"), 0, notify_filter_dxcc_select_cb, (void*)NOTIFY_DXCC_SELECT_CQ },
-	{ _("Deselect continent"), 0, notify_filter_dxcc_select_cb, (void*)NOTIFY_DXCC_DESELECT_CONT },
-	{ _("Deselect CQ zone"), 0, notify_filter_dxcc_select_cb, (void*)NOTIFY_DXCC_DESELECT_CQ },
+	{ _("Select"), 0, 0, 0, FL_SUBMENU },
+		{ _("Continent"), 0, notify_filter_dxcc_select_cb, (void*)NOTIFY_DXCC_SELECT_CONT },
+		{ _("ITU zone"), 0, notify_filter_dxcc_select_cb, (void*)NOTIFY_DXCC_SELECT_ITU },
+		{ _("CQ zone"), 0, notify_filter_dxcc_select_cb, (void*)NOTIFY_DXCC_SELECT_CQ, FL_MENU_DIVIDER },
+		{ _("All"), 0, notify_filter_dxcc_select_cb, (void*)NOTIFY_DXCC_SELECT_ALL },
+		{ 0 },
+	{ _("Deselect"), 0, 0, 0, FL_SUBMENU },
+		{ _("Continent"), 0, notify_filter_dxcc_select_cb, (void*)NOTIFY_DXCC_DESELECT_CONT },
+		{ _("ITU zone"), 0, notify_filter_dxcc_select_cb, (void*)NOTIFY_DXCC_DESELECT_ITU },
+		{ _("CQ zone"), 0, notify_filter_dxcc_select_cb, (void*)NOTIFY_DXCC_DESELECT_CQ, FL_MENU_DIVIDER },
+		{ _("All"), 0, notify_filter_dxcc_select_cb, (void*)NOTIFY_DXCC_DESELECT_ALL },
+		{ 0 },
 	{ 0 }
 };
 
@@ -214,7 +224,10 @@ static Fl_Menu_Item notify_dup_refs_menu[] = {
 	{ "Substring \\8" }, { "Substring \\9" }, { 0 }
 };
 
-enum { NOTIFY_DXCC_COL_SEL, NOTIFY_DXCC_COL_CN, NOTIFY_DXCC_COL_CT, NOTIFY_DXCC_COL_CQ };
+enum {
+	NOTIFY_DXCC_COL_SEL, NOTIFY_DXCC_COL_CN, NOTIFY_DXCC_COL_CT,
+	NOTIFY_DXCC_COL_ITU, NOTIFY_DXCC_COL_CQ, NOTIFY_DXCC_NUMCOL
+};
 
 
 template <typename T, typename U> static T& advli(T& i, int n) { advance(i, n); return i; }
@@ -277,7 +290,7 @@ void notify_dxcc_show(bool readonly)
 		btnNotifyDXCCDeselect->hide();
 		tblNotifyFilterDXCC->callback(Fl_Widget::default_callback);
 		tblNotifyFilterDXCC->menu(0);
-		notify_filter_dxcc_select_cb(btnNotifyDXCCDeselect, 0); // deselect all
+		btnNotifyDXCCDeselect->do_callback(); // deselect all
 		if (dxcc_window->shown())
 			dxcc_window->hide();
 		if (dxcc_window->modal())
@@ -355,7 +368,7 @@ static void notify_event_to_gui(const notify_t& n)
 	chkNotifyDupMode->value(n.dup.mode);
 
 	// filter
-	notify_filter_dxcc_select_cb(btnNotifyDXCCDeselect, 0); // deselect all
+	btnNotifyDXCCDeselect->do_callback(); // deselect all
 	if (!grpNotifyFilter->active())
 		return;
 	chkNotifyFilterCall->value(0);
@@ -482,21 +495,22 @@ static void notify_init_window(void)
 		set_icon_label(&notify_list_context_menu[i]);
 
 	w = (tblNotifyFilterDXCC->w() - Fl::box_dw(tblNotifyFilterDXCC->box()) -
-	     tblNotifyFilterDXCC->scrollbSize()) / 4;
-	col_info_t dcols[] = {
-		{ "", 25 }, { "Country", w + w - 25 },
-		{ "Continent", w }, { "CQ zone", w }
+	     tblNotifyFilterDXCC->scrollbSize()) / NOTIFY_DXCC_NUMCOL;
+	col_info_t dcols[NOTIFY_DXCC_NUMCOL] = {
+		{ "", 25 }, { _("Country"), w + w - 25 + 2*(w - 45) },
+		{ _("Continent"), w }, { "ITU", 45 }, { "CQ", 45 }
 	};
-	for (size_t i = 0; i < sizeof(dcols)/sizeof(*dcols); i++) {
+	for (size_t i = 0; i < NOTIFY_DXCC_NUMCOL; i++) {
 		tblNotifyFilterDXCC->addColumn(dcols[i].label, dcols[i].width,
 					       static_cast<Fl_Align>(FL_ALIGN_CENTER | FL_ALIGN_CLIP), strcmp);
 	}
+	tblNotifyFilterDXCC->columnAlign(NOTIFY_DXCC_COL_CN, static_cast<Fl_Align>(FL_ALIGN_LEFT | FL_ALIGN_CLIP));
 	tblNotifyFilterDXCC->rowSize(FL_NORMAL_SIZE);
 	tblNotifyFilterDXCC->headerSize(FL_NORMAL_SIZE);
 	tblNotifyFilterDXCC->when(FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED);
 	tblNotifyFilterDXCC->menu(notify_dxcc_context_menu);
-	btnNotifyDXCCSelect->callback(notify_filter_dxcc_select_cb);
-	btnNotifyDXCCDeselect->callback(notify_filter_dxcc_select_cb);
+	btnNotifyDXCCSelect->callback(notify_filter_dxcc_select_cb, (void*)NOTIFY_DXCC_SELECT_ALL);
+	btnNotifyDXCCDeselect->callback(notify_filter_dxcc_select_cb, (void*)NOTIFY_DXCC_DESELECT_ALL);
 	inpNotifyDXCCSearchCountry->callback(notify_filter_dxcc_search);
 	inpNotifyDXCCSearchCountry->when(FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED | FL_WHEN_ENTER_KEY);
 	inpNotifyDXCCSearchCallsign->callback(notify_filter_dxcc_search);
@@ -537,10 +551,12 @@ static void notify_init_window(void)
 
 	dxcc_list = dxcc_entity_list();
 	if (dxcc_list) {
-		char cq[5];
+		char cq[5], itu[5];
 		for (vector<dxcc*>::const_iterator i = dxcc_list->begin(); i != dxcc_list->end(); ++i) {
+			snprintf(itu, sizeof(itu), "%02d", (*i)->itu_zone);
 			snprintf(cq, sizeof(cq), "%02d", (*i)->cq_zone);
-			tblNotifyFilterDXCC->addRow(4, "[x]", (*i)->country, (*i)->continent, cq);
+			tblNotifyFilterDXCC->addRow(NOTIFY_DXCC_NUMCOL, "[x]", (*i)->country,
+						    (*i)->continent, itu, cq);
 		}
 	}
 	else {
@@ -1248,38 +1264,46 @@ static bool notify_dxcc_row_checked(int i)
 // the dxcc list select/deselect callback
 static void notify_filter_dxcc_select_cb(Fl_Widget* w, void* arg)
 {
-	if (w == btnNotifyDXCCSelect) {
+
+	bool val;
+	const char* str;
+	int row = tblNotifyFilterDXCC->value();
+	int col;
+
+	intptr_t iarg = (intptr_t)arg;
+	switch (iarg) {
+	case NOTIFY_DXCC_SELECT_CONT: case NOTIFY_DXCC_DESELECT_CONT:
+		str = tblNotifyFilterDXCC->valueAt(row, col = NOTIFY_DXCC_COL_CT);
+		val = (iarg == NOTIFY_DXCC_SELECT_CONT);
+		break;
+	case NOTIFY_DXCC_SELECT_ITU: case NOTIFY_DXCC_DESELECT_ITU:
+		str = tblNotifyFilterDXCC->valueAt(row, col = NOTIFY_DXCC_COL_ITU);
+		val = (iarg == NOTIFY_DXCC_SELECT_ITU);
+		break;
+	case NOTIFY_DXCC_SELECT_CQ: case NOTIFY_DXCC_DESELECT_CQ:
+		str = tblNotifyFilterDXCC->valueAt(row, col = NOTIFY_DXCC_COL_CQ);
+		val = (iarg == NOTIFY_DXCC_SELECT_CQ);
+		break;
+
+	case NOTIFY_DXCC_SELECT_ALL:
 		for (int i = 0; i < tblNotifyFilterDXCC->rows(); i++)
 			notify_dxcc_row_check(i);
-	}
-	else if (w == btnNotifyDXCCDeselect) {
+		goto redraw;
+	case NOTIFY_DXCC_DESELECT_ALL:
 		for (int i = 0; i < tblNotifyFilterDXCC->rows(); i++)
 			notify_dxcc_row_check(i, false);
-	}
-	else { // called by context menu
-		bool val;
-		const char* str;
-		int row = tblNotifyFilterDXCC->value();
-		int col;
+		goto redraw;
 
-		intptr_t iarg = (intptr_t)arg;
-		switch (iarg) {
-		case NOTIFY_DXCC_SELECT_CONT: case NOTIFY_DXCC_DESELECT_CONT:
-			str = tblNotifyFilterDXCC->valueAt(row, col = NOTIFY_DXCC_COL_CT);
-			val = (iarg == NOTIFY_DXCC_SELECT_CONT);
-			break;
-		case NOTIFY_DXCC_SELECT_CQ: case NOTIFY_DXCC_DESELECT_CQ:
-			str = tblNotifyFilterDXCC->valueAt(row, col = NOTIFY_DXCC_COL_CQ);
-			val = (iarg == NOTIFY_DXCC_SELECT_CQ);
-			break;
-		default:
-			return;
-		}
-		for (int i = 0; i < tblNotifyFilterDXCC->rows(); i++) {
-			if (!strcmp(tblNotifyFilterDXCC->valueAt(i, col), str))
-				notify_dxcc_row_check(i, val);
-		}
+	default:
+		return;
 	}
+
+	for (int i = 0; i < tblNotifyFilterDXCC->rows(); i++) {
+		if (!strcmp(tblNotifyFilterDXCC->valueAt(i, col), str))
+			notify_dxcc_row_check(i, val);
+	}
+
+redraw:
 	tblNotifyFilterDXCC->redraw();
 }
 
@@ -1316,7 +1340,7 @@ static void notify_dxcc_browse_cb(Fl_Widget* w, void* arg)
 {
 	int v = tblNotifyList->value();
 	if (v < 0) // no selection, uncheck all rows
-		notify_filter_dxcc_select_cb(btnNotifyDXCCDeselect, 0);
+		btnNotifyDXCCDeselect->do_callback();
 	else {
 		const notify_t& n = *advli(notify_list.begin(), v);
 		for (int i = 0; i < tblNotifyFilterDXCC->rows(); i++)
