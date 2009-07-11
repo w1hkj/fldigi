@@ -292,7 +292,7 @@ void hamlib_close(void)
 	if (rigcontrol)
 		rigcontrol->hide();
 	wf->USB(true);
-	wf->setQSY(0);
+//	wf->setQSY(0);
 }
 
 bool hamlib_active(void)

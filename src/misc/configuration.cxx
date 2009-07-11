@@ -632,6 +632,12 @@ void configuration::initInterface()
 #endif
 	} else if (chkUSEXMLRPCis) {
 		wf->setXMLRPC(1);
+		rigCAT_init(false);
+		if (docked_rig_control)
+			qsoFreqDisp->activate();
+		wf->USB(true);
+		wf->setQSY(1);
+		riginitOK = true;
 	}
 
 	if (riginitOK == false) {

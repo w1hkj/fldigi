@@ -1148,7 +1148,7 @@ static void *rigCAT_loop(void *args)
 	if (rigcontrol)
 		rigcontrol->hide();
 	wf->USB(true);
-	wf->setQSY(0);
+//	wf->setQSY(0);
 
 	pthread_mutex_lock(&rigCAT_mutex);
 		LOG_DEBUG("Exiting rigCAT loop, closing serial port");
