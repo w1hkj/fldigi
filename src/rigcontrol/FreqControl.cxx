@@ -218,13 +218,32 @@ void cFreqControl::value(long lv)
 	REQ(&cFreqControl::updatevalue, this);
 }
 
+void cFreqControl::cancel_kb_entry(void)
+{
+	Fl::remove_timeout((Fl_Timeout_Handler)blink_point, decbx);
+	val = oldval;
+	updatevalue();
+}
+
 int cFreqControl::handle(int event)
 {
-	if (!Fl::event_inside(this))
+	if (!Fl::event_inside(this) && event != FL_LEAVE)
 		return Fl_Group::handle(event);
 
+	static Fl_Widget* fw = NULL;
 	int d;
+
 	switch (event) {
+	case FL_ENTER:
+		fw = Fl::focus();
+		take_focus();
+		break;
+	case FL_LEAVE:
+		if (fw)
+			fw->take_focus();
+		if (Fl::has_timeout((Fl_Timeout_Handler)blink_point, decbx))
+			cancel_kb_entry();
+		break;
 	case FL_KEYBOARD:
 		switch (d = Fl::event_key()) {
 		case FL_Left:
@@ -248,9 +267,7 @@ int cFreqControl::handle(int event)
 		default:
 			if (Fl::has_timeout((Fl_Timeout_Handler)blink_point, decbx)) {
 				if (d == FL_Escape) {
-					Fl::remove_timeout((Fl_Timeout_Handler)blink_point, decbx);
-					val = oldval;
-					updatevalue();
+					cancel_kb_entry();
 					return 1;
 				}
 				else if (d == FL_Enter || d == FL_KP_Enter) { // append

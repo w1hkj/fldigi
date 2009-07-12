@@ -87,6 +87,7 @@ private:
 	void IncFreq(int n);
 	int (*cbFunc)();
 	static void freq_input_cb(Fl_Widget* input, void* arg);
+	void cancel_kb_entry(void);
 protected:
 	long val, oldval;
 };
