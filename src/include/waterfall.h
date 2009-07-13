@@ -362,6 +362,4 @@ private:
 	bool	reverse;
 };
 
-void note_qrg(bool check = true, char prefix = ' ', char suffix = ' ');
-
 #endif

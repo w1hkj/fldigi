@@ -38,7 +38,7 @@ public:
 	re_t(const re_t& re);
 	~re_t();
 	re_t& operator=(const re_t& rhs);
-	re_t& operator=(const char* pattern_);
+	void recompile(const char* pattern_);
 	operator bool(void) const { return !error; }
 	bool operator==(const re_t& o) const { return o.cflags == cflags && o.pattern == pattern; }
 
@@ -64,7 +64,6 @@ protected:
 	bool need_substr;
 };
 
-//typedef re_t fre_t;
 class fre_t : public re_t
 {
 public:

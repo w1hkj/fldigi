@@ -12,6 +12,7 @@
 #include "configuration.h"
 #include "confdialog.h"
 #include "qrunner.h"
+#include "notify.h"
 
 #include "rsid_fft.cxx"
 
@@ -398,6 +399,7 @@ void cRsId::search( const double *pSamples, int nSamples )
 
 void cRsId::apply(int iSymbol, int iBin)
 {
+	ENSURE_THREAD(TRX_TID);
 
 	double freq = (iBin + (RSID_NSYMBOLS - 1) * RSID_RESOL / 2) * 11025.0 / 2048.0;
 
@@ -407,8 +409,8 @@ void cRsId::apply(int iSymbol, int iBin)
 			mbin = rsid_ids[n].mode;
 			break;
 		}
-		
-	REQ(toggleRSID);
+	if (!progdefaults.rsid_notify_only)
+		REQ(toggleRSID);
 
 	if (mbin == NUM_MODES) return;
 
@@ -500,10 +502,14 @@ void cRsId::apply(int iSymbol, int iBin)
 
 //	REQ(&configuration::loadDefaults, &progdefaults);
 
-//	active_modem->set_freq(freq);
-	REQ(init_modem, mbin);
-	active_modem->set_freq(freq);
-	
+	if (progdefaults.rsid_mark && !progdefaults.rsid_notify_only) // mark current modem & freq
+		REQ(note_qrg, false, "\nBefore RSID: ", "\n",
+		    active_modem->get_mode(), 0LL, active_modem->get_freq());
+	REQ(notify_rsid, mbin, freq);
+	if (!progdefaults.rsid_notify_only) {
+		REQ(init_modem, mbin);
+		active_modem->set_freq(freq);
+	}
 }
 
 //=============================================================================

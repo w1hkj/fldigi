@@ -202,5 +202,7 @@ extern void setTabColors();
 
 void qsy(long long rfc, long long fmid = -1LL);
 
+void note_qrg(bool no_dup = true, const char* prefix = " ", const char* suffix = " ",
+	      trx_mode mode = NUM_MODES, long long rfc = 0LL, int afreq = 0);
 
 #endif

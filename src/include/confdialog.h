@@ -280,6 +280,8 @@ extern Fl_Check_Button *btnCWID;
 extern Fl_Value_Slider *sldrCWIDwpm;
 extern Fl_Check_Button *chkTransmitRSid;
 extern Fl_Check_Button *chkRSidWideSearch;
+extern Fl_Check_Button *chkRSidNotifyOnly;
+extern Fl_Check_Button *chkRSidMark;
 extern Fl_Group *tabMisc;
 extern Fl_Tabs *tabsMisc;
 extern Fl_Group *tabSweetSpot;

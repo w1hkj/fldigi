@@ -95,9 +95,9 @@ void spot_recv(char c, int decoder, int afreq)
 			for (list<callback_t*>::iterator j = i->second.begin();
 			     j != i->second.end() && (*j)->rcb; ++j) {
 				if (m.empty())
-					(*j)->rcb(afreq, search, NULL, 0, (*j)->data);
+					(*j)->rcb(last_mode, afreq, search, NULL, 0, (*j)->data);
 				else
-					(*j)->rcb(afreq, search, &m[0], m.size(), (*j)->data);
+					(*j)->rcb(last_mode, afreq, search, &m[0], m.size(), (*j)->data);
 			}
 		}
 	}

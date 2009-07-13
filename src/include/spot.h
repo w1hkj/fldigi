@@ -31,7 +31,7 @@
 #include <sys/time.h>
 #include "globals.h"
 
-typedef void (*spot_recv_cb_t)(int afreq, const char* str, const regmatch_t* sub, size_t len, void* data);
+typedef void (*spot_recv_cb_t)(trx_mode mode, int afreq, const char* str, const regmatch_t* sub, size_t len, void* data);
 typedef void (*spot_log_cb_t)(const char* call, const char* loc, long long freq,
 			      trx_mode mode, time_t rtime, void* data);
 

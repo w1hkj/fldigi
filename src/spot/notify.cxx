@@ -80,6 +80,7 @@ namespace __gnu_cxx {
 #include "main.h"
 #include "fl_digi.h"
 #include "waterfall.h"
+#include "globals.h"
 #include "trx.h"
 #include "gettext.h"
 #include "notifydialog.h"
@@ -90,6 +91,7 @@ using namespace std;
 struct notify_action_t
 {
 	string alert;
+	string rx_marker;
 	string macro;
 	string program;
 	time_t alert_timeout;
@@ -115,7 +117,7 @@ struct notify_dup_t
 };
 
 typedef MAP_TYPE<string, notify_dup_t> notify_seen_t;
-enum notify_event_t { NOTIFY_EVENT_MYCALL, NOTIFY_EVENT_STATION, NOTIFY_EVENT_CUSTOM };
+enum notify_event_t { NOTIFY_EVENT_MYCALL, NOTIFY_EVENT_STATION, NOTIFY_EVENT_CUSTOM, NOTIFY_EVENT_RSID };
 struct notify_t
 {
 	notify_event_t event;
@@ -123,6 +125,7 @@ struct notify_t
 	string re;
 	bool enabled;
 	int afreq;
+	trx_mode mode;
 
 	const char* match_string;
 	const regmatch_t* submatch_offsets;
@@ -153,6 +156,7 @@ static void notify_add_cb(Fl_Widget* w, void* arg);
 static void notify_remove_cb(Fl_Widget* w, void* arg);
 static void notify_update_cb(Fl_Widget* w, void* arg);
 static void notify_dialog_default_cb(Fl_Widget* w, void* arg);
+static void notify_rx_default_cb(Fl_Widget* w, void* arg);
 static void notify_macro_edit_cb(Fl_Widget* w, void* arg);
 static void notify_program_select_cb(Fl_Widget* w, void* arg);
 static void notify_dxcc_check_cb(Fl_Widget* w, void* arg);
@@ -161,6 +165,9 @@ static void notify_filter_dxcc_select_cb(Fl_Widget* w, void* arg);
 static void notify_filter_dxcc_search(Fl_Widget* w, void* arg);
 static void notify_dup_ignore_cb(Fl_Widget* w, void* arg);
 static void notify_re_cb(Fl_Widget* w, void* arg);
+
+static void notify_recv(trx_mode mode, int afreq, const char* str, const regmatch_t* sub, size_t len, void* data);
+static void notify_table_append(const notify_t& n);
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -173,6 +180,7 @@ static Fl_Menu_Item notify_event_menu[] = {
 	{ _("My callsign de CALL") },
 	{ _("Station heard twice") },
 	{ _("Custom text search") },
+	{ _("RSID reception") },
 	{ 0 }
 };
 
@@ -211,7 +219,15 @@ static Fl_Menu_Item notify_dxcc_context_menu[] = {
 static event_regex_t event_regex[] = {
 	{ "<MYCALL>.+de[[:space:]]+(<CALLSIGN_RE>)", 1 },
 	{ PSKREP_RE, PSKREP_RE_INDEX },
+	{ "", 0 },
 	{ "", 0 }
+};
+
+static const char* default_alert_text[] = {
+	"$CALLSIGN is calling you\n    $TEXT\nTime: %X %Z (%z)\nMode: $MODEM @ $RF_KHZ KHz",
+	"Heard $CALLSIGN ($COUNTRY)\n    $TEXT\nTime: %X %Z (%z)\nMode: $MODEM @ $RF_KHZ KHz",
+	"",
+	"RSID received\nMode: $MODEM @ $RF_KHZ KHz\nTime: %X %Z (%z)",
 };
 
 static Fl_Menu_Item notify_dup_callsign_menu[] = {
@@ -248,10 +264,8 @@ static Fl_Double_Window* dxcc_window;
 
 void notify_start(void)
 {
-	if (notify_window)
-		return;
-
-	notify_init_window();
+	if (!notify_window)
+		notify_init_window();
 
 	notify_load();
 	if (!notify_list.empty()) {
@@ -317,13 +331,47 @@ void notify_change_callsign(void)
 	}
 }
 
-static void notify_set_event_dup(const notify_t& n);
-static void notify_set_event_dup_menu(const char* re);
-static bool notify_dxcc_row_checked(int i);
+// called by the RSID decoder
+void notify_rsid(trx_mode mode, int afreq)
+{
+	const char* mode_name = mode_info[mode].name;
+	regmatch_t sub = { 0, strlen(mode_name) };
+	for (notify_list_t::iterator i = notify_list.begin(); i != notify_list.end(); ++i)
+		if (i->event == NOTIFY_EVENT_RSID)
+			notify_recv(mode, afreq, mode_name, &sub, 1, &*i);
+}
+
+// called by the config dialog when the "notifications only"
+// rsid option is selected
+void notify_create_rsid_event(bool val)
+{
+	if (!val)
+		return;
+	for (notify_list_t::iterator i = notify_list.begin(); i != notify_list.end(); ++i)
+		if (i->event == NOTIFY_EVENT_RSID)
+			return;
+
+	notify_t rsid_event = {
+		NOTIFY_EVENT_RSID, 0, "", true, 0, NUM_MODES, NULL, NULL, 0,
+		{ 0, NUM_BANDS, NUM_MODES }, false, 0
+	};
+	notify_action_t rsid_action = { default_alert_text[NOTIFY_EVENT_RSID], "", "", "", 30, 1 };
+	rsid_event.action = rsid_action;
+
+	notify_list.push_back(rsid_event);
+	notify_table_append(notify_list.back());
+	tblNotifyList->do_callback();
+	notify_save();
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // misc utility functions
 ////////////////////////////////////////////////////////////////////////////////
+
+static void notify_set_event_dup(const notify_t& n);
+static void notify_set_event_dup_menu(const char* re);
+static bool notify_dxcc_row_checked(int i);
 
 // return actual regular expression for event n
 static string notify_get_re(const notify_t& n)
@@ -354,6 +402,7 @@ static void notify_event_to_gui(const notify_t& n)
 
 	// action
 	inpNotifyActionDialog->value(n.action.alert.c_str());
+	inpNotifyActionRXMarker->value(n.action.rx_marker.c_str());
 	inpNotifyActionMacro->value(n.action.macro.c_str());
 	inpNotifyActionProgram->value(n.action.program.c_str());
 	cntNotifyActionLimit->value(n.action.trigger_limit);
@@ -409,6 +458,7 @@ static void notify_gui_to_event(notify_t& n)
 
 	// action
 	n.action.alert = inpNotifyActionDialog->value();
+	n.action.rx_marker = inpNotifyActionRXMarker->value();
 	n.action.macro = inpNotifyActionMacro->value();
 	n.action.program = inpNotifyActionProgram->value();
 	n.action.trigger_limit = cntNotifyActionLimit->value();
@@ -452,7 +502,12 @@ static void notify_init_window(void)
 		{ btnNotifyAdd, make_icon_label(_("Add"), plus_icon) },
 		{ btnNotifyRemove, make_icon_label(_("Remove"), minus_icon) },
 		{ btnNotifyUpdate, make_icon_label(_("Update"), refresh_icon) },
-		{ btnNotifyTest, make_icon_label(_("Test..."), applications_system_icon) }
+		{ btnNotifyTest, make_icon_label(_("Test..."), applications_system_icon) },
+		{ btnNotifyClose, make_icon_label(_("Close"), close_icon) },
+
+		{ btnNotifyDXCCSelect, make_icon_label(_("Select All"), edit_select_all_icon) },
+		{ btnNotifyDXCCDeselect, make_icon_label(_("Clear All"), edit_clear_icon) },
+		{ btnNotifyDXCCClose, make_icon_label(_("Close"), close_icon) },
 	};
 	for (size_t i = 0; i < sizeof(buttons)/sizeof(*buttons); i++) {
 		buttons[i].button->label(buttons[i].label);
@@ -462,6 +517,7 @@ static void notify_init_window(void)
 	struct { Fl_Button* button; const char** icon; } buttons2[] = {
 		{ btnNotifyFilterDXCC, text_editor_icon },
 		{ btnNotifyActionDialogDefault, text_icon },
+		{ btnNotifyActionMarkerDefault, text_icon },
 		{ btnNotifyActionMacro, text_editor_icon },
 		{ btnNotifyActionProgram, folder_open_icon }
 	};
@@ -518,6 +574,7 @@ static void notify_init_window(void)
 	inpNotifyDXCCSearchCallsign->textfont(FL_COURIER);
 
 	inpNotifyActionDialog->textfont(FL_COURIER);
+	inpNotifyActionRXMarker->textfont(FL_COURIER);
 	inpNotifyActionMacro->textfont(FL_COURIER);
 	inpNotifyActionProgram->textfont(FL_COURIER);
 	inpNotifyRE->textfont(FL_COURIER);
@@ -530,6 +587,7 @@ static void notify_init_window(void)
 	btnNotifyRemove->callback(notify_remove_cb);
 	btnNotifyUpdate->callback(notify_update_cb, (void*)NOTIFY_LIST_MENU_UPDATE);
 	btnNotifyActionDialogDefault->callback(notify_dialog_default_cb);
+	btnNotifyActionMarkerDefault->callback(notify_rx_default_cb);
 	btnNotifyActionProgram->callback(notify_program_select_cb);
 	btnNotifyActionMacro->callback(notify_macro_edit_cb);
 	btnNotifyTest->callback(notify_test_cb);
@@ -596,10 +654,15 @@ static void notify_table_append(const notify_t& n)
 
 	if (!n.action.alert.empty())
 		acol = "A";
+	if (!n.action.rx_marker.empty()) {
+		if (!acol.empty())
+			acol += ", ";
+		acol += "RX";
+	}
 	if (!n.action.macro.empty()) {
 		if (!acol.empty())
 			acol += ", ";
-		acol += "T";
+		acol += "TX";
 	}
 	if (!n.action.program.empty()) {
 		if (!acol.empty())
@@ -626,7 +689,18 @@ static void notify_table_reload(void)
 
 static void notify_goto_freq_cb(Fl_Widget* w, void* arg)
 {
-	active_modem->set_freq(reinterpret_cast<intptr_t>(arg));
+	const notify_t* n = static_cast<notify_t*>(arg);
+	if (active_modem->get_mode() != n->mode)
+		init_modem_sync(n->mode);
+	active_modem->set_freq(n->afreq);
+	if (n->event == NOTIFY_EVENT_RSID && btnRSID->value())
+		toggleRSID();
+}
+
+static void notify_alert_window_cb(Fl_Widget* w, void* arg)
+{
+	delete static_cast<notify_t*>(arg);
+	w->hide();
 }
 
 static void notify_show_alert(const notify_t& n, const char* msg)
@@ -637,7 +711,8 @@ static void notify_show_alert(const notify_t& n, const char* msg)
 		char label[32];
 		snprintf(label, sizeof(label), "Go to %d Hz", n.afreq);
 		goto_freq->copy_label(label);
-		goto_freq->callback(notify_goto_freq_cb, reinterpret_cast<void*>(n.afreq));
+		goto_freq->callback(notify_goto_freq_cb, new notify_t(n));
+		alert_window->callback(notify_alert_window_cb, goto_freq->user_data());
 	}
 
 	alert_window->notify(msg, n.action.alert_timeout, true);
@@ -653,7 +728,7 @@ struct replace_refs
 	{
 		switch (t) {
 		case REF_MODEM:
-			strncpy(str, mode_info[active_modem->get_mode()].sname, len);
+			strncpy(str, mode_info[n.mode].sname, len);
 			str[len - 1] = '\0';
 			break;
 		case REF_DF_HZ:
@@ -741,6 +816,19 @@ static void notify_notify(const notify_t& n)
 		}
 	}
 
+	// append to receive text
+	if (!n.action.rx_marker.empty()) {
+		string text = n.action.rx_marker;
+		replace_refs()(n, text);
+		string::size_type p;
+		if ((p = text.find("$RX_MARKER")) != string::npos) {
+			text[p] = '\0';
+			note_qrg(false, text.c_str(), text.c_str() + p + strlen("$RX_MARKER"), n.mode, 0LL, n.afreq);
+		}
+		else
+			ReceiveText->add(text.c_str());
+	}
+
 	// expand macros and append to transmit text
 	if (!n.action.macro.empty()) {
 		MACROTEXT m;
@@ -814,7 +902,7 @@ static bool notify_is_dup(notify_t& n, const char* str, const regmatch_t* sub, s
 	const regmatch_t& subidx = sub[n.dup_ref];
 	string dupstr(subidx.rm_eo - subidx.rm_so, '\0');
 	transform(str + subidx.rm_so, str + subidx.rm_eo, dupstr.begin(), static_cast<int (*)(int)>(toupper));
-	notify_dup_t dup = { now, band(wf->rfcarrier()), active_modem->get_mode() };
+	notify_dup_t dup = { now, band(wf->rfcarrier()), n.mode };
 	notify_seen_t::iterator i;
 	if ((i = n.last_seen.find(dupstr)) != n.last_seen.end() &&
 	    (dup.when - i->second.when < n.dup.when ||
@@ -836,8 +924,12 @@ static bool notify_is_dup(notify_t& n, const char* str, const regmatch_t* sub, s
 	return false;
 }
 
-// called by the spotter when an event's regular expression matches the decoded text
-static void notify_recv(int afreq, const char* str, const regmatch_t* sub, size_t len, void* data)
+static fre_t notify_filter_call_re("", REG_EXTENDED | REG_NOSUB | REG_ICASE);
+
+// Called by the spotter when an event's regular expression matches the decoded text.
+// Also called by notify_rsid for RSID recepction with: the frequency in afreq,
+// the mode name in str, the str bounds in the sub array, and len = 1.
+static void notify_recv(trx_mode mode, int afreq, const char* str, const regmatch_t* sub, size_t len, void* data)
 {
 	notify_t* n = reinterpret_cast<notify_t*>(data);
 	time_t now = time(0);
@@ -847,7 +939,7 @@ static void notify_recv(int afreq, const char* str, const regmatch_t* sub, size_
 		return;
 
 	switch (n->event) {
-	case NOTIFY_EVENT_MYCALL: case NOTIFY_EVENT_CUSTOM:
+	case NOTIFY_EVENT_MYCALL: case NOTIFY_EVENT_CUSTOM: case NOTIFY_EVENT_RSID:
 		break;
 	case NOTIFY_EVENT_STATION:
 		size_t re_idx = event_regex[n->event].index;
@@ -858,7 +950,9 @@ static void notify_recv(int afreq, const char* str, const regmatch_t* sub, size_
 			if (e) // remember the country name we found
 				n->filter.dxcc_last = e->country;
 			if (!n->filter.callsign.empty()) { // the callsign must match
-				if (strcasecmp(n->filter.callsign.c_str(), call.c_str()))
+				if (notify_filter_call_re.re() != n->filter.callsign) // compile new re
+					notify_filter_call_re.recompile(n->filter.callsign.c_str());
+				if (!notify_filter_call_re.match(call.c_str()))
 					return;
 			}
 			else { // check for nwb, lotw, eqsl
@@ -887,9 +981,12 @@ static void notify_recv(int afreq, const char* str, const regmatch_t* sub, size_
 		break;
 	}
 
-	if (!notify_is_dup(*n, str, sub, len, now)) {
+	// dup handling only for non-RSID notifications
+	bool dup = (n->event == NOTIFY_EVENT_RSID ? false : notify_is_dup(*n, str, sub, len, now));
+	if (!dup) {
 		n->last_trigger = now;
 		n->afreq = afreq;
+		n->mode = mode;
 		n->match_string = str;
 		n->submatch_offsets = sub;
 		n->submatch_length = min(len, (size_t)10); // whole string + up to 9 user-specified backrefs
@@ -912,13 +1009,15 @@ static void notify_set_qsodb_cache(void)
 // register event n with the spotter
 static void notify_register(notify_t& n)
 {
-	spot_register_recv(notify_recv, &n, notify_get_re(n).c_str(), REG_EXTENDED | REG_ICASE);
+	if (n.event != NOTIFY_EVENT_RSID)
+		spot_register_recv(notify_recv, &n, notify_get_re(n).c_str(), REG_EXTENDED | REG_ICASE);
 }
 
 // unregister event n
 static void notify_unregister(const notify_t& n)
 {
-	spot_unregister_recv(notify_recv, &n);
+	if (n.event != NOTIFY_EVENT_RSID)
+		spot_unregister_recv(notify_recv, &n);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1045,6 +1144,7 @@ static void notify_event_cb(Fl_Widget* w, void* arg)
 	notify_event_t e = static_cast<notify_event_t>(reinterpret_cast<Fl_Choice*>(w)->value());
 	switch (e) {
 	case NOTIFY_EVENT_MYCALL:
+		grpNotifyDup->activate();
 		grpNotifyFilter->deactivate();
 		chkNotifyFilterCall->value(0);
 		inpNotifyFilterCall->hide();
@@ -1058,6 +1158,7 @@ static void notify_event_cb(Fl_Widget* w, void* arg)
 		btnNotifyActionDialogDefault->show();
 		break;
 	case NOTIFY_EVENT_STATION:
+		grpNotifyDup->activate();
 		grpNotifyFilter->activate();
 		if (!chkNotifyFilterCall->value() && !chkNotifyFilterDXCC->value()) {
 			chkNotifyFilterCall->value(1);
@@ -1068,6 +1169,7 @@ static void notify_event_cb(Fl_Widget* w, void* arg)
 		btnNotifyActionDialogDefault->show();
 		break;
 	case NOTIFY_EVENT_CUSTOM:
+		grpNotifyDup->activate();
 		grpNotifyFilter->deactivate();
 		chkNotifyFilterCall->value(0);
 		inpNotifyFilterCall->hide();
@@ -1077,6 +1179,20 @@ static void notify_event_cb(Fl_Widget* w, void* arg)
 		chkNotifyFilterLOTW->value(0);
 		chkNotifyFilterEQSL->value(0);
 		inpNotifyRE->show();
+		break;
+	case NOTIFY_EVENT_RSID:
+		grpNotifyFilter->deactivate();
+		chkNotifyFilterCall->value(0);
+		inpNotifyFilterCall->hide();
+		chkNotifyFilterDXCC->value(0);
+		btnNotifyFilterDXCC->hide();
+		chkNotifyFilterNWB->value(0);
+		chkNotifyFilterLOTW->value(0);
+		chkNotifyFilterEQSL->value(0);
+		// no dup handling
+		chkNotifyDupIgnore->value(0);
+		chkNotifyDupIgnore->do_callback();
+		grpNotifyDup->deactivate();
 		break;
 	}
 
@@ -1093,12 +1209,11 @@ static void notify_program_select_cb(Fl_Widget* w, void* arg)
 	const char* fn = FSEL::select(_("Run program"), "", 0, 0);
 	if (fn) {
 		inpNotifyActionProgram->value(fn);
-#ifdef __MINGW32__
+		// quote program path
 		inpNotifyActionProgram->position(0);
 		inpNotifyActionProgram->insert("\"", 1);
 		inpNotifyActionProgram->position(inpNotifyActionProgram->size());
 		inpNotifyActionProgram->insert("\"", 1);
-#endif
 	}
 }
 
@@ -1106,6 +1221,14 @@ static void notify_program_select_cb(Fl_Widget* w, void* arg)
 static void notify_test_cb(Fl_Widget* w, void* arg)
 {
 	notify_gui_to_event(notify_tmp);
+
+	if (notify_tmp.event == NOTIFY_EVENT_RSID) {
+		notify_tmp.mode = active_modem->get_mode();
+		regmatch_t sub = { 0, strlen(mode_info[notify_tmp.mode].name) };
+		notify_recv(notify_tmp.mode, active_modem->get_freq(),
+			    mode_info[notify_tmp.mode].name, &sub, 1, &notify_tmp);
+		return;
+	}
 
 	string test_strings[3];
 	test_strings[NOTIFY_EVENT_MYCALL].assign(progdefaults.myCall).append(" de n0call");
@@ -1130,7 +1253,8 @@ static void notify_test_cb(Fl_Widget* w, void* arg)
 		fl_alert2(_("This event's regular expression is invalid."));
 	else if (re.match(test.c_str())) {
 		const vector<regmatch_t>& o = re.suboff();
-		notify_recv(active_modem->get_freq(), test.c_str(), &o[0], o.size(), &notify_tmp);
+		notify_recv(active_modem->get_mode(), active_modem->get_freq(),
+			    test.c_str(), &o[0], o.size(), &notify_tmp);
 	}
 	else
 		fl_message2(_("The test string did not match this event's search pattern."));
@@ -1145,13 +1269,9 @@ static void notify_macro_edit_cb(Fl_Widget* w, void* arg)
 // the insert default alert text button callback
 static void notify_dialog_default_cb(Fl_Widget* w, void* arg)
 {
-	static const char* default_text[] = {
-		"$CALLSIGN is calling you\n    $TEXT\nTime: %X %Z (%z)\nMode: $MODEM @ $RF_KHZ KHz",
-		"Heard $CALLSIGN ($COUNTRY)\n    $TEXT\nTime: %X %Z (%z)\nMode: $MODEM @ $RF_KHZ KHz",
-		""
-	};
-	size_t i = CLAMP((size_t)mnuNotifyEvent->value(), 0, sizeof(default_text)/sizeof(*default_text) - 1);
-	string s = default_text[i];
+	size_t i = CLAMP((size_t)mnuNotifyEvent->value(), 0,
+			 sizeof(default_alert_text)/sizeof(*default_alert_text) - 1);
+	string s = default_alert_text[i];
 	if (s.empty()) { // custom search; count and list refs
 		size_t nsub = min(fre_t(inpNotifyRE->value(), REG_EXTENDED | REG_ICASE).nsub(), (size_t)9);
 		if (nsub) {
@@ -1162,6 +1282,15 @@ static void notify_dialog_default_cb(Fl_Widget* w, void* arg)
 		}
 	}
 	inpNotifyActionDialog->value(s.c_str());
+}
+
+// the insert default RX text button callback
+static void notify_rx_default_cb(Fl_Widget* w, void* arg)
+{
+	if (mnuNotifyEvent->value() == NOTIFY_EVENT_RSID)
+		inpNotifyActionRXMarker->value("\nRSID: $RX_MARKER\n");
+	else
+		inpNotifyActionRXMarker->value("\n$RX_MARKER\n");
 }
 
 // the ignore duplicates check button callback
@@ -1234,6 +1363,8 @@ static void notify_set_event_dup(const notify_t& n)
 	case NOTIFY_EVENT_CUSTOM:
 		mnuNotifyDupWhich->menu(notify_dup_refs_menu);
 		notify_set_event_dup_menu(notify_get_re(n).c_str());
+		break;
+	case NOTIFY_EVENT_RSID:
 		break;
 	}
 }
@@ -1315,6 +1446,7 @@ static void notify_filter_dxcc_search(Fl_Widget* w, void* arg)
 		if (e) {
 			inpNotifyDXCCSearchCountry->value(e->country);
 			inpNotifyDXCCSearchCountry->do_callback();
+			inpNotifyDXCCSearchCountry->position(0);
 		}
 		return;
 	}
@@ -1387,6 +1519,7 @@ static void notify_save(void)
 		ndata.set(Fl_Preferences::Name("%s/enabled", group), i->enabled);
 
 		ndata.set(Fl_Preferences::Name("%s/action/alert", group), i->action.alert.c_str());
+		ndata.set(Fl_Preferences::Name("%s/action/rx_marker", group), i->action.rx_marker.c_str());
 		ndata.set(Fl_Preferences::Name("%s/action/macro", group), i->action.macro.c_str());
 		ndata.set(Fl_Preferences::Name("%s/action/program", group), i->action.program.c_str());
 		ndata.set(Fl_Preferences::Name("%s/action/trigger_limit", group),
@@ -1447,6 +1580,8 @@ static void notify_load(void)
 		nitem.action.alert = s;
 		ndata.get(Fl_Preferences::Name("%s/action/macro", group), s, "", sizeof(s)-1);
 		nitem.action.macro = s;
+		ndata.get(Fl_Preferences::Name("%s/action/rx_marker", group), s, "", sizeof(s)-1);
+		nitem.action.rx_marker = s;
 		ndata.get(Fl_Preferences::Name("%s/action/program", group), s, "", sizeof(s)-1);
 		nitem.action.program = s;
 		ndata.get(Fl_Preferences::Name("%s/action/trigger_limit", group), x, 0);

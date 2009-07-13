@@ -40,6 +40,9 @@
         ELEM_(bool, rsidWideSearch, "RSIDWIDESEARCH", false)                            \
         ELEM_(bool, rsid, "", false)                                                    \
         ELEM_(bool, TransmitRSid, "TRANSMITRSID", false)                                \
+        ELEM_(bool, rsid_mark, "RSIDMARK", true)                                        \
+        ELEM_(bool, rsid_notify_only, "RSIDNOTIFYONLY", false)                          \
+                                                                                        \
         ELEM_(bool, slowcpu, "SLOWCPU", true)                                           \
                                                                                         \
         ELEM_(bool, changed, "", false)                                                 \

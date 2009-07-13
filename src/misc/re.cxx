@@ -66,14 +66,12 @@ re_t& re_t::operator=(const re_t& rhs)
 	return *this;
 }
 
-re_t& re_t::operator=(const char* pattern_)
+void re_t::recompile(const char* pattern_)
 {
 	pattern = pattern_;
 	if (!error)
 		regfree(&preg);
 	compile();
-
-	return *this;
 }
 
 void re_t::compile(void)

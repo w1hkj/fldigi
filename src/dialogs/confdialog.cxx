@@ -1849,6 +1849,21 @@ static void cb_chkRSidWideSearch(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *chkRSidNotifyOnly=(Fl_Check_Button *)0;
+
+static void cb_chkRSidNotifyOnly(Fl_Check_Button* o, void*) {
+  progdefaults.rsid_notify_only = o->value();
+notify_create_rsid_event(progdefaults.rsid_notify_only);
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *chkRSidMark=(Fl_Check_Button *)0;
+
+static void cb_chkRSidMark(Fl_Check_Button* o, void*) {
+  progdefaults.rsid_mark = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabMisc=(Fl_Group *)0;
 
 Fl_Tabs *tabsMisc=(Fl_Tabs *)0;
@@ -4124,7 +4139,7 @@ l with your sound hardware."));
           } // Fl_Value_Slider* sldrCWIDwpm
           sld->end();
         } // Fl_Group* sld
-        { Fl_Group* o = new Fl_Group(5, 218, 490, 60, _("Reed-Solomon ID"));
+        { Fl_Group* o = new Fl_Group(5, 218, 490, 94, _("Reed-Solomon ID"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
           { Fl_Check_Button* o = chkTransmitRSid = new Fl_Check_Button(15, 246, 165, 20, _("Transmit mode RSID"));
@@ -4139,6 +4154,19 @@ l with your sound hardware."));
             chkRSidWideSearch->callback((Fl_Callback*)cb_chkRSidWideSearch);
             o->value(progdefaults.rsidWideSearch);
           } // Fl_Check_Button* chkRSidWideSearch
+          { chkRSidNotifyOnly = new Fl_Check_Button(15, 276, 155, 20, _("Notifications only"));
+            chkRSidNotifyOnly->tooltip(_("Check this to be notified when an RSID is received\nwithout changing modem an\
+d frequency"));
+            chkRSidNotifyOnly->down_box(FL_DOWN_BOX);
+            chkRSidNotifyOnly->callback((Fl_Callback*)cb_chkRSidNotifyOnly);
+            chkRSidNotifyOnly->value(progdefaults.rsid_notify_only);
+          } // Fl_Check_Button* chkRSidNotifyOnly
+          { chkRSidMark = new Fl_Check_Button(215, 276, 270, 20, _("Mark previous frequency and mode"));
+            chkRSidMark->tooltip(_("Insert RX text marker before\nchanging frequency and modem"));
+            chkRSidMark->down_box(FL_DOWN_BOX);
+            chkRSidMark->callback((Fl_Callback*)cb_chkRSidMark);
+            chkRSidMark->value(progdefaults.rsid_mark);
+          } // Fl_Check_Button* chkRSidMark
           o->end();
         } // Fl_Group* o
         tabID->end();

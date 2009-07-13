@@ -194,7 +194,7 @@ public:
 	       bool reg_auto, bool reg_log, bool reg_manual);
 	~pskrep();
 
-	static void recv(int afreq, const char* str, const regmatch_t* calls, size_t len, void* obj);
+	static void recv(trx_mode mode, int afreq, const char* str, const regmatch_t* calls, size_t len, void* obj);
 	static void log(const char* call, const char* loc, long long freq, trx_mode mode, time_t rtime, void* obj);
 	static void manual(const char* call, const char* loc, long long freq, trx_mode mode, time_t rtime, void* obj);
 	bool progress(void);
@@ -361,7 +361,7 @@ pskrep::~pskrep()
 }
 
 // This function is called by spot_recv() when its buffer matches our PSKREP_RE
-void pskrep::recv(int afreq, const char* str, const regmatch_t* calls, size_t len, void* obj)
+void pskrep::recv(trx_mode mode, int afreq, const char* str, const regmatch_t* calls, size_t len, void* obj)
 {
 	if (unlikely(calls[PSKREP_RE_INDEX].rm_so == -1 || calls[PSKREP_RE_INDEX].rm_eo == -1))
 		return;

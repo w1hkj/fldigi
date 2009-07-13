@@ -2271,7 +2271,7 @@ progdefaults.changed = true;}
         }
         Fl_Group {} {
           label {Reed-Solomon ID} open
-          xywh {5 218 490 60} box ENGRAVED_FRAME align 21
+          xywh {5 218 490 94} box ENGRAVED_FRAME align 21
         } {
           Fl_Check_Button chkTransmitRSid {
             label {Transmit mode RSID}
@@ -2287,6 +2287,23 @@ progdefaults.changed = true;}
             tooltip {ON - search over entire waterfall
 OFF - limit search to +/- 200 Hz} xywh {215 246 270 20} down_box DOWN_BOX
             code0 {o->value(progdefaults.rsidWideSearch);}
+          }
+          Fl_Check_Button chkRSidNotifyOnly {
+            label {Notifications only}
+            callback {progdefaults.rsid_notify_only = o->value();
+notify_create_rsid_event(progdefaults.rsid_notify_only);
+progdefaults.changed = true;}
+            tooltip {Check this to be notified when an RSID is received
+without changing modem and frequency} xywh {15 276 155 20} down_box DOWN_BOX
+            code0 {chkRSidNotifyOnly->value(progdefaults.rsid_notify_only);}
+          }
+          Fl_Check_Button chkRSidMark {
+            label {Mark previous frequency and mode}
+            callback {progdefaults.rsid_mark = o->value();
+progdefaults.changed = true;}
+            tooltip {Insert RX text marker before
+changing frequency and modem} xywh {215 276 270 20} down_box DOWN_BOX
+            code0 {chkRSidMark->value(progdefaults.rsid_mark);}
           }
         }
       }

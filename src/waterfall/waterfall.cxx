@@ -1488,43 +1488,6 @@ static void hide_cursor(void *w)
 		reinterpret_cast<Fl_Widget *>(w)->window()->cursor(cursor = FL_CURSOR_NONE);
 }
 
-map<string, qrg_mode_t> qsy_map;
-static qrg_mode_t last;
-
-void note_qrg(bool check, char prefix, char suffix)
-{
-	qrg_mode_t m;
-	m.rfcarrier = wf->rfcarrier();
-	m.carrier = active_modem->get_freq();
-	m.mode = active_modem->get_mode();
-	if (check && last == m)
-		return;
-	last = m;
-
-	char buf[64];
-
-	time_t t = time(NULL);
-	struct tm tm;
-	gmtime_r(&t, &tm);
-	size_t r1;
-	if ((r1 = strftime(buf, sizeof(buf), "<<%Y-%m-%dT%H:%MZ ", &tm)) == 0)
-		return;
-
-	size_t r2;
-	if (m.rfcarrier)
-		r2 = snprintf(buf+r1, sizeof(buf)-r1, "%s @ %lld%c%04d>>",
-			     mode_info[m.mode].name, m.rfcarrier, (wf->USB() ? '+' : '-'), m.carrier);
-	else
-		r2 = snprintf(buf+r1, sizeof(buf)-r1, "%s @ %04d>>", mode_info[m.mode].name, m.carrier);
-	if (r2 >= sizeof(buf)-r1)
-		return;
-
-	qsy_map[buf] = m;
-	ReceiveText->add(prefix);
-	ReceiveText->add(buf, FTextBase::QSY);
-	ReceiveText->add(suffix);
-}
-
 static void insert_text(bool check = false)
 {
 	if (check) {
@@ -1532,10 +1495,11 @@ static void insert_text(bool check = false)
 		m.rfcarrier = wf->rfcarrier();
 		m.carrier = active_modem->get_freq();
 		m.mode = active_modem->get_mode();
-		if (last.mode == m.mode && last.rfcarrier == m.rfcarrier &&
-		    abs(last.carrier - m.carrier) <= 16)
+		extern qrg_mode_t last_marked_qrg;
+		if (last_marked_qrg.mode == m.mode && last_marked_qrg.rfcarrier == m.rfcarrier &&
+		    abs(last_marked_qrg.carrier - m.carrier) <= 16)
 			return;
-		last = m;
+		last_marked_qrg = m;
 	}
 
 	string::size_type i;
@@ -1555,11 +1519,12 @@ static void find_signal_text(void)
 	int freq = active_modem->get_freq();
 	trx_mode mode = active_modem->get_mode();
 
+	extern map<string, qrg_mode_t> qrg_marks;
 	map<string, qrg_mode_t>::const_iterator i;
-	for (i = qsy_map.begin(); i != qsy_map.end(); ++i)
+	for (i = qrg_marks.begin(); i != qrg_marks.end(); ++i)
 		if (i->second.mode == mode && abs(i->second.carrier - freq) <= 20)
 			break;
-	if (i != qsy_map.end()) {
+	if (i != qrg_marks.end()) {
 		// Search backward from the current text cursor position, then
 		// try the other direction
 		int pos = ReceiveText->insert_position();
@@ -1683,7 +1648,7 @@ int WFdisp::handle(int event)
 				break;
 			if (!(Fl::event_state() & (FL_CTRL | FL_META | FL_ALT | FL_SHIFT))) {
 				if (Fl::event_clicks() == 1)
-					note_qrg(true, '\n', '\n');
+					note_qrg(true, "\n", "\n");
 				else
 					if (progdefaults.WaterfallClickInsert)
 						insert_text(true);

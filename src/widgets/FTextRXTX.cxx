@@ -83,7 +83,7 @@ Fl_Menu_Item FTextRX::menu[] = {
 	{ make_icon_label(_("&RST(r)"), enter_key_icon), 0, 0, 0,  FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ make_icon_label(_("Serial number"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(_("Exchange In"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
-	{ make_icon_label(_("Insert divider"), insert_link_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("Insert marker"), insert_link_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 
 	{ 0 }, // VIEW_MENU_COPY
 	{ 0 }, // VIEW_MENU_CLEAR
@@ -249,9 +249,9 @@ void FTextRX::handle_qsy(int start, int end)
 {
 	char* text = tbuf->text_range(start, end);
 
-	extern map<string, qrg_mode_t> qsy_map;
+	extern map<string, qrg_mode_t> qrg_marks;
 	map<string, qrg_mode_t>::const_iterator i;
-	if ((i = qsy_map.find(text)) != qsy_map.end()) {
+	if ((i = qrg_marks.find(text)) != qrg_marks.end()) {
 		const qrg_mode_t& m = i->second;
 		if (active_modem->get_mode() != m.mode)
 			init_modem_sync(m.mode);
@@ -378,7 +378,7 @@ void FTextRX::menu_cb(size_t item)
 		break;
 
 	case RX_MENU_DIV:
-		note_qrg(false, '\n', '\n');
+		note_qrg(false, "\n", "\n");
 		break;
 	case RX_MENU_COPY:
 		kf_copy(Fl::event_key(), this);

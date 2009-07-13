@@ -38,6 +38,7 @@
 #include <cstdarg>
 #include <string>
 #include <algorithm>
+#include <map>
 
 #include "gettext.h"
 #include "fl_digi.h"
@@ -3437,4 +3438,43 @@ void qsy(long long rfc, long long fmid)
 #endif
 	else
 		active_modem->set_freq(fmid);
+}
+
+map<string, qrg_mode_t> qrg_marks;
+qrg_mode_t last_marked_qrg;
+
+void note_qrg(bool no_dup, const char* prefix, const char* suffix, trx_mode mode, long long rfc, int afreq)
+{
+	qrg_mode_t m;
+	m.rfcarrier = (rfc ? rfc : wf->rfcarrier());
+	m.carrier = (afreq ? afreq : active_modem->get_freq());
+	m.mode = (mode < NUM_MODES ? mode : active_modem->get_mode());
+	if (no_dup && last_marked_qrg == m)
+		return;
+	last_marked_qrg = m;
+
+	char buf[64];
+
+	time_t t = time(NULL);
+	struct tm tm;
+	gmtime_r(&t, &tm);
+	size_t r1;
+	if ((r1 = strftime(buf, sizeof(buf), "<<%Y-%m-%dT%H:%MZ ", &tm)) == 0)
+		return;
+
+	size_t r2;
+	if (m.rfcarrier)
+		r2 = snprintf(buf+r1, sizeof(buf)-r1, "%s @ %lld%c%04d>>",
+			     mode_info[m.mode].name, m.rfcarrier, (wf->USB() ? '+' : '-'), m.carrier);
+	else
+		r2 = snprintf(buf+r1, sizeof(buf)-r1, "%s @ %04d>>", mode_info[m.mode].name, m.carrier);
+	if (r2 >= sizeof(buf)-r1)
+		return;
+
+	qrg_marks[buf] = m;
+	if (prefix && *prefix)
+		ReceiveText->add(prefix);
+	ReceiveText->add(buf, FTextBase::QSY);
+	if (suffix && *suffix)
+		ReceiveText->add(suffix);
 }
