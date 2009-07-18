@@ -1,4 +1,152 @@
-Change Log:
+3.12
+
+2009-07-13  Stelios Bounanos  <vcs@enotty.net>
+
+	3537f62: Add RSID notifications
+	2a4cd68: Improve frequency display kb entry
+
+2009-07-11  David Freese  <w1hkj@w1hkj.com>
+
+	9c291a8: Enable XMLRPC QSY capability
+
+2009-07-06  Stelios Bounanos  <vcs@enotty.net>
+
+	deea0f6: Add ITU zone to countries list
+	d54a2ca: Fix compilation on glibc 2.10
+
+2009-07-02  David Freese  <w1hkj@w1hkj.com>
+
+	9de9eb5: Xmlrpc mods
+	07a01b1: Logbook bug fix
+
+2009-07-01  Stelios Bounanos  <vcs@enotty.net>
+
+	42b638d: Fix socket fd leak
+	58c2f8b: Fix compilation error and warnings on 64bit archs
+	c07ec21: Add generic notifier
+	88bedac: Add dragging to table widget
+	757a8f8: Simplify RE classes
+	cbf0d87: Extend macro editor
+	53a2820: Improve dxcc, spot, pskrep performance
+	9648c30: Remove handling for REs without backref support
+	1b474a2: Fix config input field labels
+	d6d5974: Add Fl_Input2 mouse wheel handling
+	bf4cea4: Add automatic FText text_area resizing
+	e803fcd: Improve FText drag and drop
+	ec26eb6: Add band to RX text tooltip
+	8283833: Add string join and split functions
+	d70ea69: Print build info in crash handler
+	f25b5d1: Fix azimuth_long_path
+	d11f6fe: Add frequency display text paste support
+
+2009-06-30  David Freese  <w1hkj@w1hkj.com>
+
+	3bad2d4:     xmlrpc mods
+
+2009-06-12  Stelios Bounanos  <vcs@enotty.net>
+
+	419123c: Fix text echo functions
+	2a83da3: Remove FText text colour adjustment
+	7a87b0b: Always set the FText cursor colour
+
+2009-06-12  David Freese  <w1hkj@w1hkj.com>
+
+	a8dfa58: Logbook bug fix
+	9b7786f: RigCAT mods
+
+2009-06-01  Stelios Bounanos  <vcs@enotty.net>
+
+	9f7b002: Fix Contest Country Files callsign lookup
+
+2009-06-01  David Freese  <w1hkj@w1hkj.com>
+
+	b539c1c: ADIF_2.2.3 compliance
+	8fc582e: Cut number mod for CW
+
+2009-05-26  dave  <dave@linux-dev.(none)>
+
+	7690a1c: FLARQ
+
+2009-05-26  Stelios Bounanos  <vcs@enotty.net>
+
+	d4b1a03: Merge flarq
+	91a1425: Move setup_nls function
+	9543fa7: Move make_pixmap function
+	ada43f4: Add new FText classes
+	bf6a2c3: Add thread id logging
+	8207c62: Prefer ALSA default devices
+	d04b780: Fix initial window sizes
+	4f90ecf: Fix format strings
+
+2009-05-16  David Freese  <w1hkj@w1hkj.com>
+
+	6b6cad9: PSK search algorithm
+
+2009-05-12  Stelios Bounanos  <vcs@enotty.net>
+
+	b95b8e1: Add win32 installer support
+	d626273: Fix VPATH builds
+
+2009-05-05  David Freese  <w1hkj@w1hkj.com>
+
+	b4112de: Added <RSID:on|off|t>, <AFC:on:off|t> macro tags
+	7ae826f: RTTY pseudo output, corrected stop bit inversion
+
+2009-05-02  Stelios Bounanos  <vcs@enotty.net>
+
+	ae5b9ca: Add more PNG text comments
+	974e1ec: Remove JPEG write support
+	44eceae: Fix xmlrpc-c m4 macro
+
+2009-05-02  David Freese  <w1hkj@w1hkj.com>
+
+	b030b4b: Fix OS dependent compile error
+	abc11f7: Updated memory mapped rig contol
+
+2009-04-26  Stelios Bounanos  <vcs@enotty.net>
+
+	31e1902: Add missing includes
+	6b2260c: Macro changes
+	8f37399: Fix possible trx_startup deadlock
+	edca452: Fix Makefile DEBUG flag
+
+2009-04-25  David Freese  <w1hkj@w1hkj.com>
+
+	affae09: CW default WPM (numeric keypad *) bug fix
+
+2009-04-23  Stelios Bounanos  <vcs@enotty.net>
+
+	f7309ef: Make the combo box popup modal
+	ed0ae5c: Fix OS X native file selector
+	88b3fd7: Fix uHRouter and parport PTT
+	9c63531: Fix format string
+
+2009-04-23  David Freese  <w1hkj@w1hkj.com>
+
+	8944198: CW replay bug
+	fc50717: CW Farnsworth timing addition
+	63ccc2f: MinGW serial i/o, hamlib, rigcat mods
+
+2009-04-18  Stelios Bounanos  <vcs@enotty.net>
+
+	206f815: Fix build without hamlib
+
+2009-04-18  David Freese  <w1hkj@w1hkj.com>
+
+	a9c21e5: Escape key bug fix
+	d2674d5: Macro <XOUT> parse error fix
+
+2009-04-17  Stelios Bounanos  <vcs@enotty.net>
+
+	9e060b8: Update version output
+	77bc966: Use band functions in logbook
+	2124791: Add functions to set the socket buffer size
+	4b1292c: Improve logging and error notification
+	d73c8fd: Add OS X and MinGW stack tracing
+	e192d1d: Add preliminary support for MinGW
+	01fd3d9: Change set_log macro
+	9d56656: Clean up headers
+	b4bf47f: Distribute cr.sh test script
 
 3.11
     1)  FText changes - changed the FText tooltip display function to use a 
