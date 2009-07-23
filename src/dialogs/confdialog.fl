@@ -80,15 +80,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {326 139 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
+    xywh {536 199 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 505 372} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
-        xywh {0 25 500 345} when 1
+        callback {progdefaults.changed = true;} open
+        xywh {0 25 500 345} when 1 hide
       } {
         Fl_Group {} {
           label Station open
@@ -699,14 +699,14 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 500 345} hide
+        xywh {0 25 500 345}
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 500 345} selection_color 50 align 9
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 500 320} selection_color 50
@@ -830,14 +830,14 @@ progdefaults.changed = true;}
                     label {Dash to dot ratio}
                     callback {progdefaults.CWdash2dot=o->value();
 progdefaults.changed = true;}
-                    tooltip {Dash to dot ratio} xywh {240 114 64 20} type Simple align 8 minimum 2.5 maximum 4 step 0.1 value 3
+                    tooltip {Dash to dot ratio} xywh {240 114 64 20} type Simple align 8 minimum 2.5 maximum 4 value 3
                     code0 {o->value(progdefaults.CWdash2dot);}
                   }
                   Fl_Counter cntCWrisetime {
                     label {Edge timing}
                     callback {progdefaults.CWrisetime=o->value();
 progdefaults.changed = true;}
-                    tooltip {Leading and Trailing edge risetimes (msec)} xywh {240 145 65 20} type Simple align 8 minimum 0 maximum 15 step 0.1 value 4
+                    tooltip {Leading and Trailing edge risetimes (msec)} xywh {240 145 65 20} type Simple align 8 minimum 0 maximum 15 value 4
                     code0 {o->value(progdefaults.CWrisetime);}
                   }
                   Fl_Choice mnuQSKshape {
@@ -927,7 +927,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.DOMINOEX_BW = o->value();
 resetDOMEX();
 progdefaults.changed = true;}
-                tooltip {Filter bandwidth relative to signal width} xywh {156 141 63 20} type Simple align 8 minimum 1 maximum 2 step 0.1 value 1.5
+                tooltip {Filter bandwidth relative to signal width} xywh {156 141 63 20} type Simple align 8 minimum 1 maximum 2 value 1.5
                 code0 {o->value(progdefaults.DOMINOEX_BW);}
               }
               Fl_Check_Button chkDominoEX_FEC {
@@ -941,7 +941,7 @@ progdefaults.changed = true;}
                 label {CWI threshold}
                 callback {progdefaults.DomCWI = o->value();
 progdefaults.changed = true;}
-                tooltip {CWI detection and suppression} xywh {15 207 260 20} type Horizontal align 1 step 0.01 textsize 14
+                tooltip {CWI detection and suppression} xywh {15 207 260 20} type Horizontal align 1 textsize 14
                 code0 {o->value(progdefaults.DomCWI);}
               }
               Fl_Counter valDominoEX_PATHS {
@@ -1025,10 +1025,10 @@ progdefaults.changed = true;}
           }
           Fl_Group tabMT63 {
             label {MT-63} open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {open
-              xywh {5 60 490 85} box ENGRAVED_FRAME align 21
+              xywh {5 60 490 184} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnmt63_interleave {
                 label {64-bit (long) interleave}
@@ -1044,8 +1044,29 @@ progdefaults.changed = true;}
                 label {8-bit extended characters}
                 callback {progdefaults.mt63_8bit = o->value();
 progdefaults.changed = true;}
-                tooltip {Enable this for Latin-1 accented characters} xywh {150 113 205 20} down_box DOWN_BOX
+                tooltip {Enable this for Latin-1 accented characters} xywh {150 114 205 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.mt63_8bit);}
+              }
+              Fl_Check_Button btnMT63_rx_integration {
+                label {Long Rx Integration}
+                callback {progdefaults.mt63_rx_integration = o->value();
+progdefaults.changed = true;}
+                tooltip {Enable for very weak signals} xywh {150 151 167 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.mt63_rx_integration);}
+              }
+              Fl_Check_Button btnMT63_usetones {
+                label {Use start tones}
+                callback {progdefaults.mt63_usetones = o->value();
+progdefaults.changed = true;}
+                tooltip {Xmt startup tones in first / last frequency bins} xywh {150 183 133 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.mt63_usetones);}
+              }
+              Fl_Check_Button btnMT63_upper_lower {
+                label {Upper && Lower}
+                callback {progdefaults.mt63_twotones = o->value();
+progdefaults.changed = true;} selected
+                tooltip {Select for two / clear for only lower tone} xywh {150 215 136 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.mt63_twotones);}
               }
             }
           }
@@ -1402,7 +1423,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.THOR_BW = o->value();
 resetTHOR();
 progdefaults.changed = true;}
-                tooltip {Filter bandwidth relative to signal width} xywh {156 141 63 20} type Simple align 8 minimum 1 maximum 2 step 0.1 value 1.5
+                tooltip {Filter bandwidth relative to signal width} xywh {156 141 63 20} type Simple align 8 minimum 1 maximum 2 value 1.5
                 code0 {o->value(progdefaults.THOR_BW);}
               }
               Fl_Check_Button valTHOR_SOFT {
@@ -1416,7 +1437,7 @@ progdefaults.changed = true;}
                 label {CWI threshold}
                 callback {progdefaults.ThorCWI = o->value();
 progdefaults.changed = true;}
-                tooltip {CWI detection and suppression} xywh {15 218 260 20} type Horizontal align 1 step 0.01 textsize 14
+                tooltip {CWI detection and suppression} xywh {15 218 260 20} type Horizontal align 1 textsize 14
                 code0 {o->value(progdefaults.ThorCWI);}
               }
               Fl_Counter valTHOR_PATHS {
@@ -2191,7 +2212,7 @@ progdefaults.changed = true;}
                 label PCM
                 callback {setPCMvolume(o->value());
 progdefaults.changed = true;}
-                tooltip {Set the sound card PCM level} xywh {15 167 340 20} type Horizontal selection_color 15 align 8 step 0.01 value 0.8 textsize 14
+                tooltip {Set the sound card PCM level} xywh {15 167 340 20} type Horizontal selection_color 15 align 8 value 0.8 textsize 14
                 code0 {extern void setPCMvolume(double);}
               }
             }

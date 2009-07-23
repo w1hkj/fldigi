@@ -1,8 +1,8 @@
 /*
  *    mt63base.cc  --  MT63 transmitter and receiver in C++ for LINUX
- * 
+ *
  *    Copyright (c) 2007, 2008 Dave Freese, W1HKJ
- * 
+ *
  *    base class for use by fldigi
  *    modified from original
  *    excluded CW_ID which is a part of the base modem class for fldigi
@@ -52,22 +52,22 @@
 // MT63 transmitter code
 
 MT63tx::MT63tx()
-{ 
-    TxVect = NULL; 
-    dspPhaseCorr = NULL; 
+{
+    TxVect = NULL;
+    dspPhaseCorr = NULL;
 }
 
 MT63tx::~MT63tx()
-{ 
-    free(TxVect); 
-    free(dspPhaseCorr); 
+{
+    free(TxVect);
+    free(dspPhaseCorr);
 }
 
 void MT63tx::Free(void)
-{ 
+{
     free(TxVect);
     TxVect = NULL;
-    free(dspPhaseCorr); 
+    free(dspPhaseCorr);
     dspPhaseCorr = NULL;
     Encoder.Free();
     FFT.Free();
@@ -77,10 +77,10 @@ void MT63tx::Free(void)
 }
 
 int MT63tx::Preset(int BandWidth, int LongInterleave)
-{ 
+{
     int i, p, step, incr, mask;
 
-    switch(BandWidth) { 
+    switch(BandWidth) {
         case 500:
             FirstDataCarr = 256;
             AliasShapeI = Alias_k5_I;
@@ -102,7 +102,7 @@ int MT63tx::Preset(int BandWidth, int LongInterleave)
             AliasFilterLen = Alias_2k_Len;
             DecimateRatio = 2;
             break;
-          default: 
+          default:
               return -1;
     }
 
@@ -115,13 +115,13 @@ int MT63tx::Preset(int BandWidth, int LongInterleave)
     CarrMarkCode = 0x16918BBEL;
     CarrMarkdspAmpl = 0; // WindowLen/32;
 
-    if (LongInterleave) { 
-        DataInterleave = 64; 
-        InterleavePattern = LongIntlvPatt; 
+    if (LongInterleave) {
+        DataInterleave = 64;
+        InterleavePattern = LongIntlvPatt;
     }
-    else { 
-        DataInterleave = 32; 
-        InterleavePattern = ShortIntlvPatt; 
+    else {
+        DataInterleave = 32;
+        InterleavePattern = ShortIntlvPatt;
     }
 
     if (dspRedspAllocArray(&TxVect, DataCarriers))
@@ -147,27 +147,27 @@ int MT63tx::Preset(int BandWidth, int LongInterleave)
 // Here we only compute indexes to the FFT twiddle factors
 // so the actual vector is FFT.Twiddle[TxVect[i]]
 
-    for (step = 0, incr = 1, p = 0, i = 0; i < DataCarriers; i++) { 
-        TxVect[i] = p; 
-        step += incr; 
-        p = (p + step) & mask; 
+    for (step = 0, incr = 1, p = 0, i = 0; i < DataCarriers; i++) {
+        TxVect[i] = p;
+        step += incr;
+        p = (p + step) & mask;
     }
 
 // compute dspPhase correction between successive FFTs separated by SymbolSepar
 // Like above we compute indexes to the FFT.Twiddle[]
 
     incr = (SymbolSepar * DataCarrSepar) & mask;
-    for (p = (SymbolSepar * FirstDataCarr) & mask, i = 0; i < DataCarriers; i++) { 
-        dspPhaseCorr[i] = p; 
+    for (p = (SymbolSepar * FirstDataCarr) & mask, i = 0; i < DataCarriers; i++) {
+        dspPhaseCorr[i] = p;
         p = (p + incr) & mask;
     }
     return 0;
-Error: 
-    Free(); 
+Error:
+    Free();
     return -1;
 }
 
-int MT63tx::SendTune(void)
+int MT63tx::SendTune(bool twotones)
 {
     int i, c, r, mask;
     double dspAmpl;
@@ -178,7 +178,7 @@ int MT63tx::SendTune(void)
     for (i = 0; i < DataCarriers; i++)
         TxVect[i] = (TxVect[i] + dspPhaseCorr[i]) & mask;
 
-    for (i = 0; i < 2 * WindowLen; i++) 
+    for (i = 0; i < 2 * WindowLen; i++)
         WindowBuff.Data[i].im = WindowBuff.Data[i].re = 0.0;
 
     i = 0;
@@ -187,18 +187,19 @@ int MT63tx::SendTune(void)
     WindowBuff.Data[r].re = dspAmpl * FFT.Twiddle[TxVect[i]].re;
     WindowBuff.Data[r].im = (-dspAmpl) * FFT.Twiddle[TxVect[i]].im;
 
-    i = DataCarriers - 1;
-    c = FirstDataCarr + i * DataCarrSepar;
-    c &= mask;
-    r = WindowLen + FFT.BitRevIdx[c];
-    WindowBuff.Data[r].re = dspAmpl * FFT.Twiddle[TxVect[i]].re;
-    WindowBuff.Data[r].im = (-dspAmpl) * FFT.Twiddle[TxVect[i]].im;
-
-// inverse FFT: WindowBuff is already scrmabled
+    if (twotones) {
+        i = DataCarriers - 1;
+        c = FirstDataCarr + i * DataCarrSepar;
+        c &= mask;
+        r = WindowLen + FFT.BitRevIdx[c];
+        WindowBuff.Data[r].re = dspAmpl * FFT.Twiddle[TxVect[i]].re;
+        WindowBuff.Data[r].im = (-dspAmpl) * FFT.Twiddle[TxVect[i]].im;
+    }
+// inverse FFT: WindowBuff is already scrambled
     FFT.CoreProc(WindowBuff.Data);
     FFT.CoreProc(WindowBuff.Data + WindowLen);
 // negate the imaginary part for the IFFT
-    for (i = 0; i < 2 * WindowLen; i++) 
+    for (i = 0; i < 2 * WindowLen; i++)
         WindowBuff.Data[i].im *= (-1.0);
 
     Window.Process(&WindowBuff);
@@ -237,7 +238,7 @@ int MT63tx::SendChar(char ch)
 }
 
 int MT63tx::SendJam(void)
-{ 
+{
     int i,mask,left,right;
 
     mask = FFT.Size-1;
@@ -245,7 +246,7 @@ int MT63tx::SendJam(void)
     right = 3 * (FFT.Size / 4);
     for (i = 0; i < DataCarriers; i++) {
         if (rand() & 0x100) // turn left 90 degrees
-            TxVect[i] = (TxVect[i] + dspPhaseCorr[i] + left) & mask; 
+            TxVect[i] = (TxVect[i] + dspPhaseCorr[i] + left) & mask;
         else                // turn right 90 degrees
             TxVect[i] = (TxVect[i] + dspPhaseCorr[i] + right) & mask;
     }
@@ -255,33 +256,33 @@ int MT63tx::SendJam(void)
 }
 
 int MT63tx::ProcessTxVect(void)
-{ 
+{
     int i, c, r, mask;
 
      mask = FFT.Size - 1;
 
-    for (i = 0; i < 2 * WindowLen; i++) 
+    for (i = 0; i < 2 * WindowLen; i++)
         WindowBuff.Data[i].im = WindowBuff.Data[i].re = 0.0;
 
-    for ( c = FirstDataCarr, i = 0; 
-          i < DataCarriers; 
-          i += 2, c = (c + 2 * DataCarrSepar) & mask) { 
+    for ( c = FirstDataCarr, i = 0;
+          i < DataCarriers;
+          i += 2, c = (c + 2 * DataCarrSepar) & mask) {
         r = FFT.BitRevIdx[c];
         WindowBuff.Data[r].re = TxdspAmpl*FFT.Twiddle[TxVect[i]].re;
-        WindowBuff.Data[r].im = (-TxdspAmpl)*FFT.Twiddle[TxVect[i]].im; 
+        WindowBuff.Data[r].im = (-TxdspAmpl)*FFT.Twiddle[TxVect[i]].im;
     }
-    for ( c = FirstDataCarr + DataCarrSepar, i = 1; 
-          i < DataCarriers; 
+    for ( c = FirstDataCarr + DataCarrSepar, i = 1;
+          i < DataCarriers;
           i += 2, c = (c + 2 * DataCarrSepar) & mask) {
         r = WindowLen + FFT.BitRevIdx[c];
         WindowBuff.Data[r].re = TxdspAmpl * FFT.Twiddle[TxVect[i]].re;
-        WindowBuff.Data[r].im = (-TxdspAmpl) * FFT.Twiddle[TxVect[i]].im; 
+        WindowBuff.Data[r].im = (-TxdspAmpl) * FFT.Twiddle[TxVect[i]].im;
     }
     FFT.CoreProc(WindowBuff.Data);
     FFT.CoreProc(WindowBuff.Data + WindowLen);
 
 // negate the imaginary part for the IFFT
-    for (i = 0; i < 2 * WindowLen; i++) 
+    for (i = 0; i < 2 * WindowLen; i++)
         WindowBuff.Data[i].im *= (-1.0);
 
 // we could be faster by avoiding Scramble and using the FFT.RevIdx[]
@@ -294,7 +295,7 @@ int MT63tx::ProcessTxVect(void)
 }
 
 int MT63tx::SendSilence(void)
-{ 
+{
     Window.ProcessSilence(2);
     Comb.Process(&Window.Output);
     return 0;
@@ -304,7 +305,7 @@ int MT63tx::SendSilence(void)
 // Character encoder and block interleave for the MT63 modem
 
 MT63encoder::MT63encoder()
-{ 
+{
     IntlvPipe = NULL;
     WalshBuff = NULL;
     Output = NULL;
@@ -320,12 +321,12 @@ MT63encoder::~MT63encoder()
 }
 
 void MT63encoder::Free()
-{ 
+{
     free(IntlvPipe);
     free(WalshBuff);
     free(Output);
     free(IntlvPatt);
-    IntlvPipe = NULL; 
+    IntlvPipe = NULL;
     WalshBuff = NULL;
     Output = NULL;
     IntlvPatt = NULL;
@@ -341,10 +342,10 @@ int MT63encoder::Preset(int Carriers, int Intlv, int *Pattern, int PreFill)
     IntlvSize = IntlvLen * DataCarriers;
     if (IntlvLen) {
         if (dspRedspAllocArray(&IntlvPipe, IntlvSize)) goto Error;
-        if (PreFill) 
-            for (i = 0; i < IntlvSize; i++) 
+        if (PreFill)
+            for (i = 0; i < IntlvSize; i++)
                 IntlvPipe[i] = rand() & 1;
-        else 
+        else
             dspClearArray(IntlvPipe,IntlvSize);
         if (dspRedspAllocArray(&IntlvPatt, DataCarriers)) goto Error;
         IntlvPtr = 0;
@@ -360,21 +361,21 @@ int MT63encoder::Preset(int Carriers, int Intlv, int *Pattern, int PreFill)
     }
     return 0;
 
-Error: 
+Error:
     Free();
     return -1;
 }
 
 int MT63encoder::Process(char code) // encode an ASCII character "code"
-{ 
+{
     int i, k;
     code &= CodeMask;
-    for (i = 0; i < DataCarriers; i++) 
+    for (i = 0; i < DataCarriers; i++)
         WalshBuff[i] = 0;
-    if (code < DataCarriers) 
+    if (code < DataCarriers)
         WalshBuff[(int)code] = 1.0;
     else WalshBuff[code-DataCarriers] = (-1.0);
-    
+
     dspWalshInvTrans(WalshBuff, DataCarriers);
 
     if (IntlvLen) {
@@ -382,7 +383,7 @@ int MT63encoder::Process(char code) // encode an ASCII character "code"
             IntlvPipe[IntlvPtr + i] = (WalshBuff[i] < 0.0);
         for (i = 0; i < DataCarriers; i++) {
             k = IntlvPtr + IntlvPatt[i];
-            if (k >= IntlvSize) 
+            if (k >= IntlvSize)
                 k -= IntlvSize;
             Output[i] = IntlvPipe[k+i];
         }
@@ -390,7 +391,7 @@ int MT63encoder::Process(char code) // encode an ASCII character "code"
         if (IntlvPtr >= IntlvSize)
             IntlvPtr -= IntlvSize;
     } else
-        for (i = 0; i < DataCarriers; i++) 
+        for (i = 0; i < DataCarriers; i++)
             Output[i] = (WalshBuff[i] < 0.0);
 
     return 0;
@@ -402,7 +403,7 @@ int MT63encoder::Process(char code) // encode an ASCII character "code"
 // MT63 decoder and deinterleaver
 
 MT63decoder::MT63decoder()
-{ 
+{
     IntlvPipe = NULL;
     IntlvPatt = NULL;
     WalshBuff = NULL;
@@ -438,11 +439,11 @@ void MT63decoder::Free()
 }
 
 int MT63decoder::Preset(int Carriers, int Intlv, int *Pattern, int Margin, int Integ)
-{ 
+{
     int i,p;
 
     if (!dspPowerOf2(Carriers)) goto Error;
-    DataCarriers = Carriers; 
+    DataCarriers = Carriers;
     ScanLen = 2 * Margin + 1;
     ScanSize = DataCarriers + 2 * Margin;
 
@@ -458,7 +459,7 @@ int MT63decoder::Preset(int Carriers, int Intlv, int *Pattern, int Margin, int I
     for (p = 0, i = 0; i < DataCarriers; i++) {
         IntlvPatt[i] = p * ScanSize; // printf(" %2d",p);
         p += Pattern[i];
-        if (p >= IntlvLen) p -= IntlvLen; 
+        if (p >= IntlvLen) p -= IntlvLen;
     }
   // printf("\n");
 
@@ -497,13 +498,13 @@ int MT63decoder::Process(double *data)
         for (i = 0; i < DataCarriers; i++) {
             k = IntlvPtr - ScanSize - IntlvPatt[i];
             if (k < 0) k += IntlvSize;
-            if ((s & 1) && (i & 1)) { 
-                k += ScanSize; 
+            if ((s & 1) && (i & 1)) {
+                k += ScanSize;
                 if (k >= IntlvSize) k-=IntlvSize;
             }
-            WalshBuff[i] = IntlvPipe[k + s + i]; 
+            WalshBuff[i] = IntlvPipe[k + s + i];
 // printf(" %4d",k/ScanSize);
-        } 
+        }
 // printf("\n");
         dspWalshTrans(WalshBuff, DataCarriers);
         Min = dspFindMin(WalshBuff, DataCarriers, MinPos);
@@ -518,7 +519,7 @@ int MT63decoder::Process(double *data)
             WalshBuff[MinPos] = 0.0;
         }
         Noise = dspRMS(WalshBuff, DataCarriers);
-        if (Noise > 0.0) 
+        if (Noise > 0.0)
             SNR = Sig/Noise;
         else SNR = 0.0;
         dspLowPass2(SNR, DecodeSnrMid[s], DecodeSnrOut[s], W1, W2, W5);
@@ -529,7 +530,7 @@ int MT63decoder::Process(double *data)
     }
     IntlvPtr += ScanSize;
     if (IntlvPtr >= IntlvSize) IntlvPtr = 0;
-    DecodePtr += ScanLen; 
+    DecodePtr += ScanLen;
     if (DecodePtr >= DecodeSize) DecodePtr = 0;
     Max = dspFindMax(DecodeSnrOut, ScanLen, MaxPos);
     Output = DecodePipe[DecodePtr + MaxPos];
@@ -547,13 +548,13 @@ int MT63decoder::Process(double *data)
 // MT63 receiver code
 
 MT63rx::MT63rx()
-{ 
+{
     int s;
 
     FFTbuff = NULL;
     FFTbuff2 = NULL;
 
-    for (s = 0; s < 4; s++) 
+    for (s = 0; s < 4; s++)
         SyncPipe[s] = NULL;
     SyncPhCorr = NULL;
     for (s = 0; s < 4; s++) {
@@ -588,16 +589,16 @@ MT63rx::MT63rx()
 }
 
 MT63rx::~MT63rx()
-{ 
+{
     int s;
 
     free(FFTbuff);
     free(FFTbuff2);
 
-    for (s = 0; s < 4; s++) 
+    for (s = 0; s < 4; s++)
         free(SyncPipe[s]);
     free(SyncPhCorr);
-    for (s = 0; s < 4; s++) { 
+    for (s = 0; s < 4; s++) {
         free(CorrelMid[s]);
         free(CorrelOut[s]);
     }
@@ -631,7 +632,7 @@ MT63rx::~MT63rx()
 void MT63rx::Free(void)
 {
     int s;
-    FFT.Free(); 
+    FFT.Free();
     InpSplit.Free();
     TestOfs.Free();
     ProcLine.Free();
@@ -641,11 +642,11 @@ void MT63rx::Free(void)
     free(FFTbuff2);
     FFTbuff2 = NULL;
 
-    for (s = 0; s < 4; s++) { 
-        free(SyncPipe[s]); 
+    for (s = 0; s < 4; s++) {
+        free(SyncPipe[s]);
         SyncPipe[s] = NULL;
     }
-    free(SyncPhCorr); 
+    free(SyncPhCorr);
     SyncPhCorr = NULL;
     for (s = 0; s < 4; s++) {
         free(CorrelMid[s]);
@@ -700,13 +701,13 @@ void MT63rx::Free(void)
 
     Decoder.Free();
 
-    free(SpectradspPower); 
+    free(SpectradspPower);
     SpectradspPower = NULL;
 }
 
 int MT63rx::Preset(int BandWidth, int LongInterleave, int Integ,
            void (*Display)(double *Spectra, int Len))
-{ 
+{
     int err,s,i,c;
 
     switch(BandWidth) {
@@ -809,9 +810,9 @@ int MT63rx::Preset(int BandWidth, int LongInterleave, int Integ,
     SyncPtr = 0;
 
     if (dspRedspAllocArray(&SyncPhCorr, ScanLen)) goto Error;
-    
+
     for (c = (ScanFirst * SymbolSepar) & WindowLenMask, i = 0; i < ScanLen; i++) {
-        SyncPhCorr[i].re = FFT.Twiddle[c].re * FFT.Twiddle[c].re - 
+        SyncPhCorr[i].re = FFT.Twiddle[c].re * FFT.Twiddle[c].re -
                            FFT.Twiddle[c].im * FFT.Twiddle[c].im;
         SyncPhCorr[i].im = 2 * FFT.Twiddle[c].re * FFT.Twiddle[c].im;
         c = (c + SymbolSepar) & WindowLenMask;
@@ -915,7 +916,7 @@ int MT63rx::Preset(int BandWidth, int LongInterleave, int Integ,
     if (dspRedspAllocArray(&DatadspPhase, DataScanLen)) goto Error;
     if (dspRedspAllocArray(&DatadspPhase2, DataScanLen)) goto Error;
 
-    err = Decoder.Preset(DataCarriers, DataInterleave, 
+    err = Decoder.Preset(DataCarriers, DataInterleave,
                          InterleavePattern, DataScanMargin, IntegLen);
     if (err) goto Error;
 
@@ -935,7 +936,7 @@ Error:
 }
 
 int MT63rx::Process(double_buff *Input)
-{ 
+{
     int s1,s2;
 
 //  TestOfs.Omega+=(-0.005*(2.0*M_PI/512)); // simulate frequency drift
@@ -955,7 +956,7 @@ int MT63rx::Process(double_buff *Input)
 // printf("SyncSymbConf=%5.2f, SyncLock=%d, SyncProcPtr=%d, SyncPtr=%d, SymbPtr=%d, SyncSymbShift=%5.1f, SyncFreqOfs=%5.2f =>",
 //        SyncSymbConf,SyncLocked,SyncProcPtr,SyncPtr,SymbPtr,SyncSymbShift,SyncFreqOfs);
         if (SyncPtr == SymbPtr) {
-            s1 = SyncProcPtr - ProcdspDelay + 
+            s1 = SyncProcPtr - ProcdspDelay +
                  ((int)SyncSymbShift - SymbPtr * SyncStep);
         s2 = s1 + SymbolSepar / 2;
 //      printf(" SdspAmple at %d,%d (SyncProcPtr-%d), time diff.=%d\n",s1,s2,SyncProcPtr-s1,s1-DataProcPtr);
@@ -975,7 +976,7 @@ void MT63rx::DoCorrelSum(dspCmpx *Correl1, dspCmpx *Correl2, dspCmpx *Aver)
 {
     dspCmpx sx;
     int i, s, d;
-  
+
     s = 2 * DataCarrSepar;
     d = DataCarriers * DataCarrSepar;
     sx.re = sx.im = 0.0;
@@ -1027,8 +1028,8 @@ void MT63rx::SyncProcess(dspCmpx *Slice)
     FFT.CoreProc(FFTbuff);
 
     if (SpectraDisplay) {
-        for ( i = 0, 
-                j = FirstDataCarr + (DataCarriers / 2) * DataCarrSepar - 
+        for ( i = 0,
+                j = FirstDataCarr + (DataCarriers / 2) * DataCarrSepar -
                 WindowLen / 2;
               (i < WindowLen) && ( j <WindowLen); i++,j++)
             SpectradspPower[i] = dspPower(FFTbuff[j]);
@@ -1049,11 +1050,11 @@ void MT63rx::SyncProcess(dspCmpx *Slice)
         if (P > 0.0) {
             dI = (I * I - Q * Q) / A;
             dQ = (2 * I * Q) / A;
-        } else { 
+        } else {
             dI = dQ = 0.0;
         }
         dspLowPass2(P, dspPowerMid[i], dspPowerOut[i], W1p, W2p, W5p);
-        pI = PrevSlice[i].re * SyncPhCorr[i].re - 
+        pI = PrevSlice[i].re * SyncPhCorr[i].re -
              PrevSlice[i].im * SyncPhCorr[i].im;
         pQ = PrevSlice[i].re * SyncPhCorr[i].im +
              PrevSlice[i].im * SyncPhCorr[i].re;
@@ -1070,8 +1071,8 @@ void MT63rx::SyncProcess(dspCmpx *Slice)
             for (i = 0; i < ScanLen; i++) {
                 if (dspPowerOut[i] > 0.0) {
                     CorrelNorm[s][i].re = CorrelOut[s][i].re / dspPowerOut[i];
-                    CorrelNorm[s][i].im = CorrelOut[s][i].im / dspPowerOut[i]; 
-                } else 
+                    CorrelNorm[s][i].im = CorrelOut[s][i].im / dspPowerOut[i];
+                } else
                     CorrelNorm[s][i].im = CorrelNorm[s][i].re = 0.0;
             }
         }
@@ -1087,11 +1088,11 @@ void MT63rx::SyncProcess(dspCmpx *Slice)
           CorrelNorm[s][i].im=CorrelOut[s][i].im/P; }
       } else
       { for (s=0; s<SymbolDiv; s++)
-          CorrelNorm[s][i].re=CorrelNorm[s][i].im=0.0; }    
+          CorrelNorm[s][i].re=CorrelNorm[s][i].im=0.0; }
     }
 */
 // make a sum for each possible carrier positions
-        for (s = 0; s < SymbolDiv; s++) { 
+        for (s = 0; s < SymbolDiv; s++) {
             s2 = (s + SymbolDiv / 2) & (SymbolDiv - 1);
             for (k = 0; k < 2 * DataCarrSepar; k++)
                 DoCorrelSum( CorrelNorm[s] + k,
@@ -1100,9 +1101,9 @@ void MT63rx::SyncProcess(dspCmpx *Slice)
         }
 // symbol-shift dspPhase fitting
         for (i = 0; i < FitLen; i++)  {
-            SymbFit[i].re = dspAmpl(CorrelAver[0][i]) - 
+            SymbFit[i].re = dspAmpl(CorrelAver[0][i]) -
                             dspAmpl(CorrelAver[2][i]);
-            SymbFit[i].im = dspAmpl(CorrelAver[1][i]) - 
+            SymbFit[i].im = dspAmpl(CorrelAver[1][i]) -
                             dspAmpl(CorrelAver[3][i]);
         }
 
@@ -1112,13 +1113,13 @@ void MT63rx::SyncProcess(dspCmpx *Slice)
 //    printf("[%2d,%2d]",j,SymbFitPos);
         k = (j - SymbFitPos) / DataCarrSepar;
         if (k > 1)
-            j -= (k - 1) * DataCarrSepar; 
-        else if (k < (-1)) 
+            j -= (k - 1) * DataCarrSepar;
+        else if (k < (-1))
             j -= (k + 1) * DataCarrSepar;
         SymbFitPos = j;
 //    printf(" => %2d",j);
         if (P > 0.0) {
-            SymbConf = dspAmpl(SymbFit[j]) + 
+            SymbConf = dspAmpl(SymbFit[j]) +
                        0.5 * (dspAmpl(SymbFit[j + 1]) + dspAmpl(SymbFit[j - 1]));
             SymbConf *= 0.5;
             I = SymbFit[j].re + 0.5 * (SymbFit[j - 1].re + SymbFit[j + 1].re);
@@ -1158,13 +1159,13 @@ void MT63rx::SyncProcess(dspCmpx *Slice)
             F0 = i + dspPhase(I, Q) / (2.0 * M_PI) * A - FreqOfs;
             Fl = F0 - A;
             Fu = F0 + A;
-            if (fabs(Fl) < fabs(F0)) 
+            if (fabs(Fl) < fabs(F0))
                 FreqOfs += (fabs(Fu) < fabs(Fl)) ? Fu : Fl;
-            else 
+            else
                 FreqOfs += (fabs(Fu) < fabs(F0)) ? Fu : F0;
 //      printf(" => (%5.2f,%5.2f,%5.2f) => %5.2f",Fl,F0,Fu,FreqOfs);
 
-        } else { 
+        } else {
             SymbTime.re = SymbTime.im = 0.0;
             SymbConf = 0.0;
             SymbShift = 0.0;
@@ -1211,16 +1212,16 @@ void MT63rx::SyncProcess(dspCmpx *Slice)
             F0 = FreqOfs - FreqPipe[TrackPipePtr];
             Fl = F0 - A;
             Fu = F0 + A;
-            if (fabs(Fl) < fabs(F0)) 
+            if (fabs(Fl) < fabs(F0))
                 FreqOfs += (fabs(Fu) < fabs(Fl)) ? A : -A;
-            else 
+            else
                 FreqOfs += (fabs(Fu) < fabs(F0)) ? A : 0.0;
         }
 
 // printf(" => [%+5.2f,%+5.2f], %5.2f",SymbTime.re,SymbTime.im,FreqOfs);
 
         TrackPipePtr += 1;
-        if (TrackPipePtr >= TrackPipeLen) 
+        if (TrackPipePtr >= TrackPipeLen)
             TrackPipePtr -= TrackPipeLen;
         SymbPipe[TrackPipePtr] = SymbTime;  // put SymbTime and FreqOfs into pipes
         FreqPipe[TrackPipePtr] = FreqOfs;   // for averaging
@@ -1251,7 +1252,7 @@ void MT63rx::SyncProcess(dspCmpx *Slice)
         SyncFreqOfs = AverFreq;
         if (SymbConf > 0.0) {
             SymbShift = dspPhase(AverSymb) / (2 * M_PI) * SymbolSepar;
-            if (SymbShift < 0.0) 
+            if (SymbShift < 0.0)
                 SymbShift += SymbolSepar;
             SymbPtr = (int)floor((dspPhase(AverSymb) / (2 * M_PI)) * SymbolDiv);
             if (SymbPtr < 0)
@@ -1353,12 +1354,12 @@ void MT63rx::DataProcess(dspCmpx *EvenSlice, dspCmpx *OddSlice, double FreqOfs, 
 //    printf("%3d,%2d: [%8.5f,%8.5f] / %8.5f\n",
 //       c,i,FFTbuff[c].re,FFTbuff[c].im,DataPwrOut[i]);
         dspLowPass2( dspPower(FFTbuff[c]),
-                     DataPwrMid[i], 
+                     DataPwrMid[i],
                      DataPwrOut[i], dW1, dW2, dW5);
         RefDataSlice[i++] = FFTbuff[c];
         c = (c + DataCarrSepar) & WindowLenMask;
         p = (p + incr) & WindowLenMask;
-    
+
         Phas = FFT.Twiddle[p];
         CdspcmpxMultAxB(Dtmp, RefDataSlice[i], Phas);
         CdspcmpxMultAxBs(DataVect[i], FFTbuff2[c], Dtmp);
@@ -1374,7 +1375,7 @@ void MT63rx::DataProcess(dspCmpx *EvenSlice, dspCmpx *OddSlice, double FreqOfs, 
 
     P = (-TimeDist * 2 * M_PI * FreqOfs) / WindowLen;
     Freq.re = cos(P);
-    Freq.im = sin(P);   
+    Freq.im = sin(P);
     for (i = 0; i < DataScanLen; i++) {
         CdspcmpxMultAxB(Ftmp, DataVect[i], Freq);
 // dspLowPass2(dspPower(Ftmp),DataPwrMid[i],DataPwrOut[i],dW1,dW2,dW5);
@@ -1391,12 +1392,12 @@ void MT63rx::DataProcess(dspCmpx *EvenSlice, dspCmpx *OddSlice, double FreqOfs, 
     for (i = 0; i < DataScanLen; i++) {
         if (DataPwrOut[i] > 0.0) {
             P = DataVect[i].re / DataPwrOut[i];
-            if (P > 1.0) 
-                P = 1.0; 
-            else if (P < (-1.0)) 
+            if (P > 1.0)
+                P = 1.0;
+            else if (P < (-1.0))
                 P = (-1.0);
             DatadspPhase[i] = P;
-        } else 
+        } else
             DatadspPhase[i] = 0.0;
     }
     Decoder.Process(DatadspPhase);
@@ -1429,7 +1430,7 @@ void MT63rx::DataProcess(dspCmpx *EvenSlice, dspCmpx *OddSlice, double FreqOfs, 
 */
 }
 
-int MT63rx::SYNC_LockStatus(void) { 
+int MT63rx::SYNC_LockStatus(void) {
     return SyncLocked;
 }
 
@@ -1458,7 +1459,7 @@ int MT63rx::FEC_CarrOffset(void) {
 }
 
 double MT63rx::TotalFreqOffset(void) {
-    return ( SyncFreqOfs + DataCarrSepar * Decoder.CarrOfs) * 
+    return ( SyncFreqOfs + DataCarrSepar * Decoder.CarrOfs) *
            (8000.0 / DecimateRatio) / WindowLen;
 }
 

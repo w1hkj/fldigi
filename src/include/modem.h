@@ -22,7 +22,7 @@ class modem : public morse {
 protected:
 	trx_mode mode;
 	SoundBase	*scard;
-	
+
 	bool	stopflag;
 	int		fragmentsize;
 	int		samplerate;
@@ -57,7 +57,7 @@ protected:
 
 	bool	historyON;
 	Digiscope::scope_mode scopemode;
-	
+
 	int scptr;
 
 	unsigned cap;
@@ -76,7 +76,7 @@ public:
 	virtual void set1(int, int){};
 	virtual void set2(int, int){};
 	virtual void makeTxViewer(int W, int H){};
-	
+
 	virtual void	searchDown() {};
 	virtual void	searchUp() {};
 
@@ -109,12 +109,12 @@ public:
 	void		set_samplerate(int);
 	void		init_queues();
 	int			get_echo_char();
-	
+
 	void		ModulateXmtr(double *, int);
 	void		ModulateStereo(double *, double *, int);
-	
+
 	void		videoText();
-	
+
 	void		set_stopflag(bool b) { stopflag = b;};
 
 	unsigned	get_cap(void) { return cap; }
@@ -132,15 +132,15 @@ public:
 	virtual	void		incWPM() {};
 	virtual void		decWPM() {};
 	virtual void		toggleWPM() {};
-	
+
 // for waterfall id transmission
 private:
-	
+
 	static	int			wfid_mask[];
 	static  double		wfid_w[];
 	static  double		wfid_txpulse[];
 	static  double		wfid_outbuf[];
-	
+
 	void	wfid_make_pulse();
 	void	wfid_make_tones();
 	void	wfid_send(long int);
@@ -149,7 +149,7 @@ private:
 
 	void	wfid_sendchar(char c);
 	void	wfid_sendchars(std::string s);
-	
+
 	double  PTTnco();
 
 public:

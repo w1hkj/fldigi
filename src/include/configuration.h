@@ -143,6 +143,9 @@
 /* MT63 */                                                                              \
         ELEM_(bool, mt63_8bit, "MT638BIT", false)                                       \
         ELEM_(int, mt63_interleave, "MT63INTERLEAVE", 64) /* long interleave */         \
+        ELEM_(bool, mt63_rx_integration, "MT63INTEGRATION", false)                      \
+        ELEM_(bool, mt63_twotones, "MT63TWOTONES", true)                                \
+        ELEM_(bool, mt63_usetones, "MT63USETONES", true)                                \
 /* Waterfall & UI */                                                                    \
         ELEM_(uchar, red, "", 0)                                                        \
         ELEM_(uchar, green, "", 255)                                                    \
