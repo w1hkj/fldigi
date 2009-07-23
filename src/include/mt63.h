@@ -4,7 +4,7 @@
 // Copyright (C) 2006
 //		Dave Freese, W1HKJ
 //
-// This file is part of fldigi.  Adapted from code contained in gmfsk source code 
+// This file is part of fldigi.  Adapted from code contained in gmfsk source code
 // distribution.
 //	Copyright (C) 2005
 //	Tomi Manninen (oh2bns@sral.fi)
@@ -37,6 +37,7 @@ private:
 	int     Interleave;
 	int     flush;
 	int     escape;
+    bool    long_integral;
 
 	MT63tx  *Tx;
 	MT63rx  *Rx;
@@ -47,7 +48,7 @@ private:
 	bool            flushbuffer;
 	double          FEC_offset;
 	double          FEC_snr;
-		
+
 public:
 	mt63(trx_mode mode);
 	~mt63();
@@ -57,7 +58,7 @@ public:
 	void    restart();
 	int     rx_process(const double *buf, int len);
 	int     tx_process();
-	
+
 	void    rx_flush();
 };
 

@@ -1,25 +1,25 @@
 /*
- *    dsp.cc  --  various DSP algorithms
- * 
- *    based on mt63 code by Pawel Jalocha
- *    Copyright (C) 1999-2004 Pawel Jalocha, SP9VRC
- *    Copyright (c) 2007-2008 Dave Freese, W1HKJ
+ *	dsp.cc  --  various DSP algorithms
  *
- *    This file is part of fldigi.
+ *	based on mt63 code by Pawel Jalocha
+ *	Copyright (C) 1999-2004 Pawel Jalocha, SP9VRC
+ *	Copyright (c) 2007-2008 Dave Freese, W1HKJ
  *
- *    fldigi is free software; you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 2 of the License, or
- *    (at your option) any later version.
+ *	This file is part of fldigi.
  *
- *    fldigi is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty oF
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
+ *	fldigi is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
  *
- *    You should have received a copy of the GNU General Public License
- *    along with MT63; if not, write to the Free Software
- *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *	fldigi is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty oF
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with MT63; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
 
@@ -40,19 +40,19 @@
 double dspPower(double *X, int Len)
 { double Sum;
   for(Sum=0.0; Len; Len--,X++)
-    Sum+=(*X)*(*X);
+	Sum+=(*X)*(*X);
   return Sum; }
 
 double dspPower(double *I, double *Q, int Len)
 { double Sum;
   for(Sum=0.0; Len; Len--,I++,Q++)
-    Sum+=(*I)*(*I)+(*Q)*(*Q);
+	Sum+=(*I)*(*I)+(*Q)*(*Q);
   return Sum; }
 
 double dspPower(dspCmpx *X, int Len)
 { double Sum;
   for(Sum=0.0; Len; Len--,X++)
-    Sum+=(X->re)*(X->re)+(X->im)*(X->im);
+	Sum+=(X->re)*(X->re)+(X->im)*(X->im);
   return Sum; }
 
 // ----------------------------------------------------------------------------
@@ -87,10 +87,10 @@ double dspFitPoly1(double *Data, int Len, double &A, double &B)
 { double Sum; int i;
   A=(Data[Len-1]-Data[0])/(Len-1);
   for(Sum=0.0,i=0; i<Len; i++)
-    Sum+=Data[i]-A*i;
+	Sum+=Data[i]-A*i;
   B=Sum/Len;
   for(Sum=0.0,i=0; i<Len; i++)
-    Sum+=dspPower(Data[i]-(A*i+B));
+	Sum+=dspPower(Data[i]-(A*i+B));
   return sqrt(Sum/Len);
 }
 
@@ -101,14 +101,14 @@ double dspFitPoly2(double *Data, int Len, double &A, double &B, double &C)
 //  if(Len==2) { A=0.0; B=Data[1]-Data[0]; C=Data[0]; return 0; }
 //  if(Len==3)
 //  { C=Data[0]; A=(Data[0]-2*Data[1]+Data[2])/2; B-(Data[1]-Data[0])-A;
-//    return 0.0; }
+//	return 0.0; }
   A=((Data[Len-1]-Data[Len-2])-(Data[1]-Data[0]))/(Len-2)/2;
   B=(Data[Len-1]-A*(Len-1)*(Len-1)-Data[0])/(Len-1);
   for(Sum=0.0,i=0; i<Len; i++)
-    Sum+=Data[i]-(A*i*i+B*i);
+	Sum+=Data[i]-(A*i*i+B*i);
   C=Sum/Len;
   for(Sum=0.0,i=0; i<Len; i++)
-    Sum+=dspPower(Data[i]-(A*i*i+B*i+C));
+	Sum+=dspPower(Data[i]-(A*i*i+B*i+C));
   return sqrt(Sum/Len);
 }
 
@@ -136,27 +136,27 @@ double dspWindowBlackman3(double dspPhase) // from the Motorola BBS
 // FIR shape calculation for a flat response from FreqLow to FreqUpp
 
 void dspWinFirI(double LowOmega, double UppOmega,
-       double *Shape, int Len, double (*Window)(double), double shift)
+	   double *Shape, int Len, double (*Window)(double), double shift)
 { int i; double time,dspPhase,shape;
 // printf("dspWinFirI: %5.3f %5.3f %d\n",LowOmega,UppOmega,Len);
   for(i=0; i<Len; i++)
   { time=i+(1.0-shift)-(double)Len/2; dspPhase=2*M_PI*time/Len;
-    if(time==0) shape=UppOmega-LowOmega;
+	if(time==0) shape=UppOmega-LowOmega;
 	   else shape=(sin(UppOmega*time)-sin(LowOmega*time))/time;
 // printf("%2d %5.1f %5.2f %7.4f %7.4f\n",i,time,dspPhase,shape,(*Window)(dspPhase));
-    Shape[i]=shape*(*Window)(dspPhase)/M_PI; }
+	Shape[i]=shape*(*Window)(dspPhase)/M_PI; }
 }
 
 void WinFirQ(double LowOmega, double UppOmega,
-       double *Shape, int Len, double (*Window)(double), double shift)
+	   double *Shape, int Len, double (*Window)(double), double shift)
 { int i; double time,dspPhase,shape;
 // printf("WinFirQ: %5.3f %5.3f %d\n",LowOmega,UppOmega,Len);
   for(i=0; i<Len; i++)
   { time=i+(1.0-shift)-(double)Len/2; dspPhase=2*M_PI*time/Len;
-    if(time==0) shape=0.0;
+	if(time==0) shape=0.0;
 	   else shape=(-cos(UppOmega*time)+cos(LowOmega*time))/time;
 // printf("%2d %5.1f %5.2f %7.4f %7.4f\n",i,time,dspPhase,shape,(*Window)(dspPhase));
-    Shape[i]=(-shape)*(*Window)(dspPhase)/M_PI; }
+	Shape[i]=(-shape)*(*Window)(dspPhase)/M_PI; }
 } // we put minus for the Q-part because the FIR shapes must be placed
   // in reverse order for simpler indexing
 
@@ -172,9 +172,9 @@ int dspConvS16todouble(short int *dspS16, double_buff *dble, int Len, double Gai
 void dspConvdoubleTodspS16(double *dble, dspS16 *dspS16, int Len, double Gain)
 { double out; for(; Len; Len--)
   { out=(*dble++)*Gain;
-    if(out>32767.0) out=32767.0;
-    else if(out<(-32767.0)) out=(-32767.0);
-    (*dspS16++)=(short int)floor(out+0.5); }
+	if(out>32767.0) out=32767.0;
+	else if(out<(-32767.0)) out=(-32767.0);
+	(*dspS16++)=(short int)floor(out+0.5); }
 } // we could count the over/underflows ?
 
 void dspConvU8todouble(unsigned char *U8, double *dble, int Len, double Gain)
@@ -229,12 +229,12 @@ int dspPulseLimiter::Process(double *Inp, int InpLen, double *Out)
 { int i,o; double Lim;
   for(i=0; i<InpLen; i++)
   { PwrSum-=Tap[Ptr]*Tap[Ptr];
-    Tap[Ptr++]=Inp[i]; PwrSum+=Inp[i]*Inp[i];
-    if(Ptr>=Len) Ptr-=Len;
-    o=Ptr+(Len/2); if(o>=Len) o-=Len;
-    Lim=Thres*PwrSum/Len;
-    if(Tap[o]*Tap[o]<=Lim) Out[i]=Tap[o];
-    else { if(Tap[o]>0.0) Out[i]=sqrt(Lim); else Out[i]=(-sqrt(Lim)); }
+	Tap[Ptr++]=Inp[i]; PwrSum+=Inp[i]*Inp[i];
+	if(Ptr>=Len) Ptr-=Len;
+	o=Ptr+(Len/2); if(o>=Len) o-=Len;
+	Lim=Thres*PwrSum/Len;
+	if(Tap[o]*Tap[o]<=Lim) Out[i]=Tap[o];
+	else { if(Tap[o]>0.0) Out[i]=sqrt(Lim); else Out[i]=(-sqrt(Lim)); }
   }
   for(PwrSum=0.0, i=0; i<Len; i++) PwrSum+=Tap[i]*Tap[i];
   dspRMS=sqrt(PwrSum/Len);
@@ -294,13 +294,13 @@ int dspMixerAutoLevel::Process(double *Inp, int InpLen)
 
   if(AvedspRMS>MaxMS)
   { Level-=AdjStep; if(Level<MinLevel) Level=MinLevel;
-    Hold=0; return 1; }
+	Hold=0; return 1; }
 
   if(Hold<PeakHold) return 0;
 
   if(AvedspRMS<MinMS)
   { Level+=AdjStep; if(Level>MaxLevel) Level=MaxLevel;
-    Hold=0; return 1; }
+	Hold=0; return 1; }
 
   return 0;
 }
@@ -348,9 +348,9 @@ int dspPeriodLowPass2::Process(double *Inp, int InpLen, double *Out)
 { int i,batch;
   for(i=0; i<InpLen; )
   { for(batch=dspIntmin(InpLen-i,Len-TapPtr),i+=batch; batch; batch--)
-    { dspLowPass2(*Inp++,TapMid[TapPtr],TapOut[TapPtr],W1,W2,W5);
-      (*Out++)=TapOut[TapPtr++]; }
-    if(TapPtr>=Len) TapPtr=0; }
+	{ dspLowPass2(*Inp++,TapMid[TapPtr],TapOut[TapPtr],W1,W2,W5);
+	  (*Out++)=TapOut[TapPtr++]; }
+	if(TapPtr>=Len) TapPtr=0; }
   return 0;
 }
 
@@ -380,8 +380,8 @@ int dspBoxFilter::Process(double *Inp, int InpLen, double *Out)
 { int i,batch;
   for( i=0; i<InpLen; )
   { for(batch=dspIntmin(InpLen-i,Len-TapPtr), i+=batch; batch; batch--)
-    { Sum-=Tap[TapPtr]; Out[i]=(Sum+=Tap[TapPtr++]=Inp[i]); }
-    if(TapPtr>=Len) TapPtr=0; }
+	{ Sum-=Tap[TapPtr]; Out[i]=(Sum+=Tap[TapPtr++]=Inp[i]); }
+	if(TapPtr>=Len) TapPtr=0; }
   for(Sum=0, i=0; i<Len; i++) Sum+=Tap[i]; return InpLen;
 }
 
@@ -410,10 +410,10 @@ int dspCmpxBoxFilter::Process(dspCmpx *Inp, int InpLen, dspCmpx *Out)
 { int i,batch;
   for( i=0; i<InpLen; )
   { for(batch=dspIntmin(InpLen-i,Len-TapPtr), i+=batch; batch; batch--)
-    { Sum.re-=Tap[TapPtr].re; Sum.im-=Tap[TapPtr].im;
-      Tap[TapPtr]=Inp[i]; Sum.re+=Inp[i].re; Sum.im+=Inp[i].im;
-      Out[i].re=Sum.re; Out[i].im=Sum.im; }
-    if(TapPtr>=Len) TapPtr=0; }
+	{ Sum.re-=Tap[TapPtr].re; Sum.im-=Tap[TapPtr].im;
+	  Tap[TapPtr]=Inp[i]; Sum.re+=Inp[i].re; Sum.im+=Inp[i].im;
+	  Out[i].re=Sum.re; Out[i].im=Sum.im; }
+	if(TapPtr>=Len) TapPtr=0; }
   for(Sum.re=Sum.im=0.0, i=0; i<Len; i++)
   { Sum.re+=Tap[i].re; Sum.im+=Tap[i].im; }
   return InpLen;
@@ -459,25 +459,25 @@ int dspFirFilter::Process(double *Inp, int InpLen, double *Out)
 { int i,s,t; double Sum;
   if(InpLen<Len)
   { for(i=0; i<InpLen; i++)
-    { for(Sum=0.0,t=0,s=i; s<Len; s++)
+	{ for(Sum=0.0,t=0,s=i; s<Len; s++)
 	Sum+=Tap[s]*Shape[t++];
-      for(s-=Len; t<Len; s++)
+	  for(s-=Len; t<Len; s++)
 	Sum+=Inp[s]*Shape[t++];
-      Out[i]=Sum; }
-    memmove(Tap,Tap+InpLen,(Len-InpLen)*sizeof(double));
-    memcpy(Tap+(Len-InpLen),Inp,InpLen*sizeof(double));
+	  Out[i]=Sum; }
+	memmove(Tap,Tap+InpLen,(Len-InpLen)*sizeof(double));
+	memcpy(Tap+(Len-InpLen),Inp,InpLen*sizeof(double));
   } else
   { for(i=0; i<Len; i++)
-    { for(Sum=0.0,t=0,s=i; s<Len; s++)
+	{ for(Sum=0.0,t=0,s=i; s<Len; s++)
 	Sum+=Tap[s]*Shape[t++];
-      for(s-=Len; t<Len; s++)
+	  for(s-=Len; t<Len; s++)
 	Sum+=Inp[s]*Shape[t++];
-      Out[i]=Sum; }
-    for(; i<InpLen; i++)
-    { for(Sum=0.0,t=0,s=i-Len; t<Len; s++)
+	  Out[i]=Sum; }
+	for(; i<InpLen; i++)
+	{ for(Sum=0.0,t=0,s=i-Len; t<Len; s++)
 	Sum+=Inp[s]*Shape[t++];
-      Out[i]=Sum; }
-    memcpy(Tap,Inp+(InpLen-Len),Len*sizeof(double));
+	  Out[i]=Sum; }
+	memcpy(Tap,Inp+(InpLen-Len),Len*sizeof(double));
   }
   return InpLen;
 }
@@ -487,9 +487,9 @@ int dspFirFilter::Process(double *Inp, int InpLen, double *Out)
 { int i,s,t; double Sum;
   for(i=0; i<InpLen; i++)
   { Tap[TapPtr++]=(*Inp++); if(TapPtr>=Len) TapPtr=0;
-    for(Sum=0,s=0,t=TapPtr; t<Len; ) Sum+=Shape[s++]*Tap[t++];
-    for(t=0; t<TapPtr; ) Sum+=Shape[s++]*Tap[t++];
-    (*Out++)=Sum; }
+	for(Sum=0,s=0,t=TapPtr; t<Len; ) Sum+=Shape[s++]*Tap[t++];
+	for(t=0; t<TapPtr; ) Sum+=Shape[s++]*Tap[t++];
+	(*Out++)=Sum; }
   return InpLen;
 }
 */
@@ -515,8 +515,8 @@ void dspQuadrSplit::Free(void)
   Output.Free(); }
 
 int dspQuadrSplit::Preset(int FilterLen,
-		       double *FilterShape_I, double *FilterShape_Q,
-		       int DecimateRate)
+			   double *FilterShape_I, double *FilterShape_Q,
+			   int DecimateRate)
 { Len=FilterLen;
   if(!ExternShape) { free(ShapeI); free(ShapeQ); }
   ShapeI=FilterShape_I; ShapeQ=FilterShape_Q; ExternShape=1;
@@ -536,34 +536,34 @@ int dspQuadrSplit::ComputeShape(double LowOmega,double UppOmega,
   return 0; }
 
 int dspQuadrSplit::Process(double_buff *Input)
-{ 
-	int err,i,s,t,o,l; 
+{
+	int err,i,s,t,o,l;
 	double SumI,SumQ;
-	double *Inp; 
-	dspCmpx *Out; 
+	double *Inp;
+	dspCmpx *Out;
 	int InpLen;
-	
+
 	InpLen = Input->Len;
-	err = Tap.EnsureSpace(Tap.Len + InpLen); 
+	err = Tap.EnsureSpace(Tap.Len + InpLen);
 	if(err) return err;
 	dspCopyArray(Tap.Data+Tap.Len,Input->Data,InpLen);
 // printf("dspQuadrSplit: InpLen=%d, Tap.Len=%d",InpLen,Tap.Len);
-	Tap.Len += InpLen; 
+	Tap.Len += InpLen;
 	Inp = Tap.Data;
 // printf(" -> %d",Tap.Len);
-	err = Output.EnsureSpace( InpLen / Rate + 2); 
+	err = Output.EnsureSpace( InpLen / Rate + 2);
 	if(err) return err;
 	Out = Output.Data;
-	for(l = Tap.Len-Len,o = 0, i = 0; i < l; i += Rate) { 
-		for(SumI = SumQ = 0.0, s = i,t = 0; t < Len; t++,s++) { 
-			SumI += Inp[s] * ShapeI[t]; 
-			SumQ += Inp[s] * ShapeQ[t]; 
+	for(l = Tap.Len-Len,o = 0, i = 0; i < l; i += Rate) {
+		for(SumI = SumQ = 0.0, s = i,t = 0; t < Len; t++,s++) {
+			SumI += Inp[s] * ShapeI[t];
+			SumQ += Inp[s] * ShapeQ[t];
 		}
-    	Out[o].re=SumI;
-    	Out[o++].im=SumQ; 
-    }
-	Tap.Len -= i; 
-	dspMoveArray(Tap.Data,Tap.Data+i,Tap.Len); 
+		Out[o].re=SumI;
+		Out[o++].im=SumQ;
+	}
+	Tap.Len -= i;
+	dspMoveArray(Tap.Data,Tap.Data+i,Tap.Len);
 	Output.Len = o;
 // printf(" => Tap.Len=%d\n",Tap.Len);
 	return 0;
@@ -585,8 +585,8 @@ void dspQuadrComb::Free(void)
   Output.Free(); }
 
 int dspQuadrComb::Preset(int FilterLen,
-		      double *FilterShape_I, double *FilterShape_Q,
-		      int DecimateRate)
+			  double *FilterShape_I, double *FilterShape_Q,
+			  int DecimateRate)
 { int i;
   Len=FilterLen;
   if(dspRedspAllocArray(&Tap,Len)) return -1;
@@ -597,7 +597,7 @@ int dspQuadrComb::Preset(int FilterLen,
   return 0; }
 
 int dspQuadrComb::ComputeShape(double LowOmega,double UppOmega,
-			    double (*Window)(double))
+				double (*Window)(double))
 { if(ExternShape)
   { ShapeI=NULL; ShapeQ=NULL; ExternShape=0; }
   if(dspRedspAllocArray(&ShapeI,Len)) return -1;
@@ -614,15 +614,15 @@ int dspQuadrComb::Process(dspCmpx_buff *Input)
   Inp=Input->Data; Out=Output.Data; Output.Len=InpLen*Rate;
   for(o=0,i=0; i<InpLen; i++)
   { I=Inp[i].re; Q=Inp[i].im;
-    for(r=0,t=TapPtr; t<Len; t++,r++) Tap[t]+=I*ShapeI[r]+Q*ShapeQ[r];
-    for(    t=0;   t<TapPtr; t++,r++) Tap[t]+=I*ShapeI[r]+Q*ShapeQ[r];
-    len=Len-TapPtr;
-    if(len<Rate)
-    { for(r=0; r<len; r++) { Out[o++]=Tap[TapPtr]; Tap[TapPtr++]=0.0; }
-      TapPtr=0;
-      for( ; r<Rate; r++) { Out[o++]=Tap[TapPtr]; Tap[TapPtr++]=0.0; }
-    } else
-    { for(r=0; r<Rate; r++) { Out[o++]=Tap[TapPtr]; Tap[TapPtr++]=0.0; } }
+	for(r=0,t=TapPtr; t<Len; t++,r++) Tap[t]+=I*ShapeI[r]+Q*ShapeQ[r];
+	for(	t=0;   t<TapPtr; t++,r++) Tap[t]+=I*ShapeI[r]+Q*ShapeQ[r];
+	len=Len-TapPtr;
+	if(len<Rate)
+	{ for(r=0; r<len; r++) { Out[o++]=Tap[TapPtr]; Tap[TapPtr++]=0.0; }
+	  TapPtr=0;
+	  for( ; r<Rate; r++) { Out[o++]=Tap[TapPtr]; Tap[TapPtr++]=0.0; }
+	} else
+	{ for(r=0; r<Rate; r++) { Out[o++]=Tap[TapPtr]; Tap[TapPtr++]=0.0; } }
   } return 0;
 }
 
@@ -638,12 +638,12 @@ int dspCmpxMixer::Preset(double CarrierOmega)
 
 /*
 int dspCmpxMixer::Process(double *InpI, double *InpQ, int InpLen,
-		       double *OutI, double *OutQ)
+			   double *OutI, double *OutQ)
 { int i; double I,Q;
   for(i=0; i<InpLen; i++)
   { I=cos(dspPhase); Q=sin(dspPhase);
-    OutI[i]=I*InpI[i]+Q*InpQ[i]; OutQ[i]=I*InpQ[i]-Q*InpI[i];
-    dspPhase+=Omega; if(dspPhase>=2*M_PI) dspPhase-=2*M_PI; }
+	OutI[i]=I*InpI[i]+Q*InpQ[i]; OutQ[i]=I*InpQ[i]-Q*InpI[i];
+	dspPhase+=Omega; if(dspPhase>=2*M_PI) dspPhase-=2*M_PI; }
   return InpLen;
 }
 
@@ -654,7 +654,7 @@ int dspCmpxMixer::ProcessFast(double *InpI, double *InpQ, int InpLen,
   I=cos(dspPhase); Q=sin(dspPhase);
   for(i=0; i<InpLen; i++)
   { OutI[i]=I*InpI[i]+Q*InpQ[i]; OutQ[i]=I*InpQ[i]-Q*InpI[i];
-    nI=I*dI-Q*dQ; nQ=Q*dI+I*dQ; I=nI; Q=nQ; }
+	nI=I*dI-Q*dQ; nQ=Q*dI+I*dQ; I=nI; Q=nQ; }
   dspPhase+=InpLen*Omega; N=floor(dspPhase/(2*M_PI)); dspPhase-=N*2*M_PI;
   return InpLen;
 }
@@ -664,8 +664,8 @@ int dspCmpxMixer::Process(dspCmpx *Inp, int InpLen, dspCmpx *Out)
 { int i; double I,Q;
   for(i=0; i<InpLen; i++)
   { I=cos(dspPhase); Q=sin(dspPhase);
-    Out[i].re=I*Inp[i].re+Q*Inp[i].im; Out[i].im=I*Inp[i].im-Q*Inp[i].re;
-    dspPhase+=Omega; if(dspPhase>=2*M_PI) dspPhase-=2*M_PI; }
+	Out[i].re=I*Inp[i].re+Q*Inp[i].im; Out[i].im=I*Inp[i].im-Q*Inp[i].re;
+	dspPhase+=Omega; if(dspPhase>=2*M_PI) dspPhase-=2*M_PI; }
   return InpLen;
 }
 
@@ -675,7 +675,7 @@ int dspCmpxMixer::ProcessFast(dspCmpx *Inp, int InpLen, dspCmpx *Out)
   I=cos(dspPhase); Q=sin(dspPhase);
   for(i=0; i<InpLen; i++)
   { Out[i].re=I*Inp[i].re+Q*Inp[i].im; Out[i].im=I*Inp[i].im-Q*Inp[i].re;
-    nI=I*dI-Q*dQ; nQ=Q*dI+I*dQ; I=nI; Q=nQ; }
+	nI=I*dI-Q*dQ; nQ=Q*dI+I*dQ; I=nI; Q=nQ; }
   dspPhase+=InpLen*Omega; N=floor(dspPhase/(2*M_PI)); dspPhase-=N*2*M_PI;
   return InpLen;
 }
@@ -701,11 +701,11 @@ int dspFMdemod::Process(double *InpI, double *InpQ, int InpLen, double *Out)
 { int i; double dspPhase,dspPhaseDiff;
   for(i=0; i<InpLen; i++)
   { if((InpI[i]==0.0)&&(InpQ[i]==0.0)) dspPhase=0;
-      else dspPhase=atan2(InpQ[i],InpI[i]);
-    dspPhaseDiff=dspPhase-PrevdspPhase-RefOmega;
-    if(dspPhaseDiff>=M_PI) dspPhaseDiff-=2*M_PI;
-    else if(dspPhaseDiff<(-M_PI)) dspPhaseDiff+=2*M_PI;
-    Out[i]=dspPhaseDiff; PrevdspPhase=dspPhase;
+	  else dspPhase=atan2(InpQ[i],InpI[i]);
+	dspPhaseDiff=dspPhase-PrevdspPhase-RefOmega;
+	if(dspPhaseDiff>=M_PI) dspPhaseDiff-=2*M_PI;
+	else if(dspPhaseDiff<(-M_PI)) dspPhaseDiff+=2*M_PI;
+	Out[i]=dspPhaseDiff; PrevdspPhase=dspPhase;
   } return InpLen;
 }
 
@@ -713,11 +713,11 @@ int dspFMdemod::Process(dspCmpx *Inp, int InpLen, double *Out)
 { int i; double dspPhase,dspPhaseDiff;
   for(i=0; i<InpLen; i++)
   { if((Inp[i].re==0.0)&&(Inp[i].im==0.0)) dspPhase=PrevdspPhase;
-      else dspPhase=atan2(Inp[i].im,Inp[i].re);
-    dspPhaseDiff=dspPhase-PrevdspPhase-RefOmega;
-    if(dspPhaseDiff>=M_PI) dspPhaseDiff-=2*M_PI;
-    else if(dspPhaseDiff<(-M_PI)) dspPhaseDiff+=2*M_PI;
-    Out[i]=dspPhaseDiff; PrevdspPhase=dspPhase;
+	  else dspPhase=atan2(Inp[i].im,Inp[i].re);
+	dspPhaseDiff=dspPhase-PrevdspPhase-RefOmega;
+	if(dspPhaseDiff>=M_PI) dspPhaseDiff-=2*M_PI;
+	else if(dspPhaseDiff<(-M_PI)) dspPhaseDiff+=2*M_PI;
+	Out[i]=dspPhaseDiff; PrevdspPhase=dspPhase;
   } return InpLen;
 }
 
@@ -747,7 +747,7 @@ int dspRateConvLin::Process(double_buff *Input)
   { Out[o++]=Inp[0]*(1.0+OutdspPhase)-OutdspPhase*PrevSdspAmple; OutdspPhase+=OutStep; }
   for(i=0; i<(InpLen-1); )
   { if(OutdspPhase>=1.0) { OutdspPhase-=1.0; i++; }
-    else { Out[o++]=Inp[i]*(1.0-OutdspPhase)+Inp[i+1]*OutdspPhase;
+	else { Out[o++]=Inp[i]*(1.0-OutdspPhase)+Inp[i+1]*OutdspPhase;
 	   OutdspPhase+=OutStep; }
   } Output.Len=o; PrevSdspAmple=Inp[i]; OutdspPhase-=1.0;
   return 0;
@@ -770,13 +770,13 @@ int dspRateConvQuadr::Process(double *Inp, int InpLen,
 { int i,o,t; double Ref0,Ref1,Diff0,Diff1;
   for(o=i=0; (i<InpLen)&&(o<MaxOutLen); )
   { if(OutdspPhase>=1.0)
-    { Tap[TapPtr]=(*Inp++); i++; TapPtr=(TapPtr+1)&3; OutdspPhase-=1.0; }
-    else
-    { t=TapPtr; Diff0=(Tap[t^2]-Tap[t])/2; Ref1=Tap[t^2];
-      t=(t+1)&3; Diff1=(Tap[t^2]-Tap[t])/2; Ref0=Tap[t];
-      (*Out++)=Ref0*(1.0-OutdspPhase)+Ref1*OutdspPhase // linear piece
-	      -(Diff1-Diff0)*OutdspPhase*(1.0-OutdspPhase)/2; // quadr. piece
-      o++; OutdspPhase+=OutStep; }
+	{ Tap[TapPtr]=(*Inp++); i++; TapPtr=(TapPtr+1)&3; OutdspPhase-=1.0; }
+	else
+	{ t=TapPtr; Diff0=(Tap[t^2]-Tap[t])/2; Ref1=Tap[t^2];
+	  t=(t+1)&3; Diff1=(Tap[t^2]-Tap[t])/2; Ref0=Tap[t];
+	  (*Out++)=Ref0*(1.0-OutdspPhase)+Ref1*OutdspPhase // linear piece
+		  -(Diff1-Diff0)*OutdspPhase*(1.0-OutdspPhase)/2; // quadr. piece
+	  o++; OutdspPhase+=OutStep; }
   } (*OutLen)=o; return i;
 }
 
@@ -787,13 +787,13 @@ int dspRateConvQuadr::Process(double_buff *Input)
   Out=Output.Data;
   for(o=i=0; i<InpLen; )
   { if(OutdspPhase>=1.0)
-    { Tap[TapPtr]=(*Inp++); i++; TapPtr=(TapPtr+1)&3; OutdspPhase-=1.0; }
-    else
-    { t=TapPtr; Diff0=(Tap[t^2]-Tap[t])/2; Ref1=Tap[t^2];
-      t=(t+1)&3; Diff1=(Tap[t^2]-Tap[t])/2; Ref0=Tap[t];
-      (*Out++)=Ref0*(1.0-OutdspPhase)+Ref1*OutdspPhase // linear piece
-	      -(Diff1-Diff0)*OutdspPhase*(1.0-OutdspPhase)/2; // quadr. piece
-      o++; OutdspPhase+=OutStep; }
+	{ Tap[TapPtr]=(*Inp++); i++; TapPtr=(TapPtr+1)&3; OutdspPhase-=1.0; }
+	else
+	{ t=TapPtr; Diff0=(Tap[t^2]-Tap[t])/2; Ref1=Tap[t^2];
+	  t=(t+1)&3; Diff1=(Tap[t^2]-Tap[t])/2; Ref0=Tap[t];
+	  (*Out++)=Ref0*(1.0-OutdspPhase)+Ref1*OutdspPhase // linear piece
+		  -(Diff1-Diff0)*OutdspPhase*(1.0-OutdspPhase)/2; // quadr. piece
+	  o++; OutdspPhase+=OutStep; }
   } Output.Len=o;
   return 0;
 }
@@ -812,7 +812,7 @@ void dspRateConvBL::Free(void)
   free(Tap); Tap=NULL; if(ExternShape) return;
   if(Shape)
   { for(s=0; s<ShapeNum; s++) free(Shape[s]);
-    free(Shape); Shape=NULL; }
+	free(Shape); Shape=NULL; }
 }
 
 int dspRateConvBL::Preset(int FilterLen, double **FilterShape, int FilterShapeNum)
@@ -830,18 +830,18 @@ int dspRateConvBL::ComputeShape(double LowOmega, double UppOmega, double (*Windo
 { int idx;
   if(ExternShape)
   { if(dspAllocArray(&Shape,ShapeNum)) return -1;
-    for(idx=0; idx<ShapeNum; idx++)
-    { if(dspAllocArray(&Shape[idx],Len)) return -1; }
-    ExternShape=0; }
+	for(idx=0; idx<ShapeNum; idx++)
+	{ if(dspAllocArray(&Shape[idx],Len)) return -1; }
+	ExternShape=0; }
   for(idx=0; idx<ShapeNum; idx++)
-    dspWinFirI(LowOmega,UppOmega,Shape[idx],Len,Window,(double)idx/ShapeNum);
+	dspWinFirI(LowOmega,UppOmega,Shape[idx],Len,Window,(double)idx/ShapeNum);
 /*
   { int t,s; printf("Shape[][] dump:\n");
-    for(t=0; t<Len; t++)
-    { for(s=0; s<ShapeNum; s++)
+	for(t=0; t<Len; t++)
+	{ for(s=0; s<ShapeNum; s++)
 	printf(" %+6.4f",Shape[s][t]);
-      printf("\n");
-    }
+	  printf("\n");
+	}
   }
 */
   return 0; }
@@ -857,11 +857,11 @@ int dspRateConvBL::Process(double_buff *Input)
   Out=Output.Data;
   if((Len+InpLen)>TapSize)
   { Tap=(double*)realloc(Tap,(Len+InpLen)*sizeof(double)); if(Tap==NULL) return -1;
-    TapSize=Len+InpLen; }
+	TapSize=Len+InpLen; }
   memcpy(Tap+Len,Inp,InpLen*sizeof(double));
   for(o=i=0; i<InpLen; )
   { if(OutdspPhase>=1.0) { OutdspPhase-=1.0; i++; }
-    else { idx=(int)floor(OutdspPhase*ShapeNum); shape=Shape[idx];
+	else { idx=(int)floor(OutdspPhase*ShapeNum); shape=Shape[idx];
 	   for(Sum=0.0,t=0; t<Len; t++) Sum+=Tap[i+t]*shape[t];
 	   Out[o++]=Sum;
 	   OutdspPhase+=OutStep; }
@@ -879,11 +879,11 @@ int dspRateConvBL::ProcessLinI(double_buff *Input)
   Out=Output.Data;
   if((Len+InpLen)>TapSize)
   { Tap=(double*)realloc(Tap,(Len+InpLen)*sizeof(double)); if(Tap==NULL) return -1;
-    TapSize=Len+InpLen; }
+	TapSize=Len+InpLen; }
   memcpy(Tap+Len,Inp,InpLen*sizeof(double));
   for(o=i=0; i<InpLen; )
   { if(OutdspPhase>=1.0) { OutdspPhase-=1.0; i++; }
-    else { idx=(int)floor(OutdspPhase*ShapeNum); d=OutdspPhase*ShapeNum-idx;
+	else { idx=(int)floor(OutdspPhase*ShapeNum); d=OutdspPhase*ShapeNum-idx;
 	   shape=Shape[idx];
 	   for(Sum0=0.0,t=0; t<Len; t++) Sum0+=Tap[i+t]*shape[t];
 	   idx+=1; if(idx>=ShapeNum) { idx=0; i++; }
@@ -929,7 +929,7 @@ int dspCmpxSlideWindow::SetWindow(double (*NewWindow)(double dspPhase), double S
   if(ExternWindow) { Window=NULL; ExternWindow=0; }
   if(dspRedspAllocArray(&Window,Len)) return -1;
   for(idx=0; idx<Len; idx++)
-    Window[idx]=(*NewWindow)(2*M_PI*(idx-Len/2+0.5)/Len)*Scale;
+	Window[idx]=(*NewWindow)(2*M_PI*(idx-Len/2+0.5)/Len)*Scale;
   return 0;
 }
 
@@ -939,15 +939,15 @@ int dspCmpxSlideWindow::Process(dspCmpx_buff *Input)
   Output.Len=0;
   while(InpLen>0)
   { len=dspIntmin(Len-Ptr,InpLen);
-    memcpy(Buff+Ptr,Inp,len*sizeof(dspCmpx)); Ptr+=len; Inp+=len; InpLen-=len;
-    if(Ptr>=Len)
-    { len=Output.Len; err=Output.EnsureSpace(len+Len); if(err) return err;
-      if(Window==NULL) memcpy(Output.Data,Buff,Len*sizeof(dspCmpx));
-	     else for(i=0; i<Len; i++)
+	memcpy(Buff+Ptr,Inp,len*sizeof(dspCmpx)); Ptr+=len; Inp+=len; InpLen-=len;
+	if(Ptr>=Len)
+	{ len=Output.Len; err=Output.EnsureSpace(len+Len); if(err) return err;
+	  if(Window==NULL) memcpy(Output.Data,Buff,Len*sizeof(dspCmpx));
+		 else for(i=0; i<Len; i++)
 		  { Output.Data[len+i].re=Buff[i].re*Window[i];
-		    Output.Data[len+i].im=Buff[i].im*Window[i]; }
-      Output.Len+=Len;
-      memmove(Buff,Buff+Dist,(Len-Dist)*sizeof(dspCmpx)); Ptr-=Dist; }
+			Output.Data[len+i].im=Buff[i].im*Window[i]; }
+	  Output.Len+=Len;
+	  memmove(Buff,Buff+Dist,(Len-Dist)*sizeof(dspCmpx)); Ptr-=Dist; }
   } return 0;
 }
 
@@ -982,7 +982,7 @@ int dspCmpxOverlapWindow::SetWindow(double (*NewWindow)(double dspPhase), double
   if(ExternWindow) { Window=NULL; ExternWindow=0; }
   if(dspRedspAllocArray(&Window,Len)) return -1;
   for(idx=0; idx<Len; idx++)
-    Window[idx]=(*NewWindow)(2*M_PI*(idx-Len/2+0.5)/Len)*Scale;
+	Window[idx]=(*NewWindow)(2*M_PI*(idx-Len/2+0.5)/Len)*Scale;
   return 0;
 }
 
@@ -991,8 +991,8 @@ int dspCmpxOverlapWindow::Process(dspCmpx_buff *Input)
   Output.Len=0;
   for(i=0; i<Input->Len; i+=Len)
   { err=Output.EnsureSpace(Output.Len+Dist); if(err) return err;
-    Process(Input->Data+i,Output.Data+Output.Len);
-    Output.Len+=Dist; }
+	Process(Input->Data+i,Output.Data+Output.Len);
+	Output.Len+=Dist; }
   return 0;
 }
 
@@ -1008,25 +1008,25 @@ void dspCmpxOverlapWindow::Process(dspCmpx *Inp, dspCmpx *Out)
 { int i;
   if(Window==NULL)
   { for(i=0; i<Dist; i++)
-    { Out[i].re=Buff[i].re+Inp[i].re;
-      Out[i].im=Buff[i].im+Inp[i].im; }
-    for( ; i<Len-Dist; i++)
-    { Buff[i-Dist].re=Buff[i].re+Inp[i].re;
-      Buff[i-Dist].im=Buff[i].im+Inp[i].im; }
-    for( ; i<Len; i++)
-    { Buff[i-Dist].re=Inp[i].re;
-      Buff[i-Dist].im=Inp[i].im; }
-//    memcpy(Buff+i-Dist,Input+Dist,Dist*sizeof(dspCmpx));
+	{ Out[i].re=Buff[i].re+Inp[i].re;
+	  Out[i].im=Buff[i].im+Inp[i].im; }
+	for( ; i<Len-Dist; i++)
+	{ Buff[i-Dist].re=Buff[i].re+Inp[i].re;
+	  Buff[i-Dist].im=Buff[i].im+Inp[i].im; }
+	for( ; i<Len; i++)
+	{ Buff[i-Dist].re=Inp[i].re;
+	  Buff[i-Dist].im=Inp[i].im; }
+//	memcpy(Buff+i-Dist,Input+Dist,Dist*sizeof(dspCmpx));
   } else
   { for(i=0; i<Dist; i++)
-    { Out[i].re=Buff[i].re+Inp[i].re*Window[i];
-      Out[i].im=Buff[i].im+Inp[i].im*Window[i]; }
-    for( ; i<Len-Dist; i++)
-    { Buff[i-Dist].re=Buff[i].re+Inp[i].re*Window[i];
-      Buff[i-Dist].im=Buff[i].im+Inp[i].im*Window[i]; }
-    for( ; i<Len; i++)
-    { Buff[i-Dist].re=Inp[i].re*Window[i];
-      Buff[i-Dist].im=Inp[i].im*Window[i]; }
+	{ Out[i].re=Buff[i].re+Inp[i].re*Window[i];
+	  Out[i].im=Buff[i].im+Inp[i].im*Window[i]; }
+	for( ; i<Len-Dist; i++)
+	{ Buff[i-Dist].re=Buff[i].re+Inp[i].re*Window[i];
+	  Buff[i-Dist].im=Buff[i].im+Inp[i].im*Window[i]; }
+	for( ; i<Len; i++)
+	{ Buff[i-Dist].re=Inp[i].re*Window[i];
+	  Buff[i-Dist].im=Inp[i].im*Window[i]; }
   }
 }
 
@@ -1036,8 +1036,8 @@ int dspCmpxOverlapWindow::ProcessSilence(int Slides)
   Output.Len=0;
   for(slide=0; slide<Slides; slide++)
   { memcpy(Output.Data+Output.Len,Buff,Dist*sizeof(dspCmpx));
-    memcpy(Buff,Buff+Dist,(Len-Dist)*sizeof(dspCmpx));
-    Output.Len+=Dist; }
+	memcpy(Buff,Buff+Dist,(Len-Dist)*sizeof(dspCmpx));
+	Output.Len+=Dist; }
   return 0; }
 
 // ----------------------------------------------------------------------------
@@ -1056,7 +1056,7 @@ int dspFFT_TimeShift::Preset(int FFTlen, int Backwards)
   if(dspRedspAllocArray(&FreqTable,Len)) return -1;
   for(i=0; i<Len; i++)
   { p=(2*M_PI*i)/Len; if(Backwards) p=(-p);
-    FreqTable[i].re=cos(p); FreqTable[i].im=sin(p); }
+	FreqTable[i].re=cos(p); FreqTable[i].im=sin(p); }
   return 0;
 }
 
@@ -1065,9 +1065,9 @@ int dspFFT_TimeShift::Process(dspCmpx *Data, int Time)
   dspPhase=(dspPhase+Time)&LenMask;
   for(p=i=0; i<Len; i++)
   { nI=Data[i].re*FreqTable[i].re-Data[i].im*FreqTable[i].im;
-    nQ=Data[i].re*FreqTable[i].im+Data[i].im*FreqTable[i].re;
-    Data[i].re=nI; Data[i].im=nQ;
-    p=(p+dspPhase)&LenMask; }
+	nQ=Data[i].re*FreqTable[i].im+Data[i].im*FreqTable[i].re;
+	Data[i].re=nI; Data[i].im=nQ;
+	p=(p+dspPhase)&LenMask; }
   return 0;
 }
 
@@ -1091,35 +1091,35 @@ dspDiffBitSync4::~dspDiffBitSync4() { free(InpTap); }
 void dspDiffBitSync4::Free() { free(InpTap); InpTap=NULL; }
 
 int dspDiffBitSync4::Process(double *Inp, int InpLen,
-         double *BitOut, double *IbitOut,
-         int MaxOutLen, int *OutLen)
+		 double *BitOut, double *IbitOut,
+		 int MaxOutLen, int *OutLen)
 { int i,o,t,step; double diff; double Sum,SumI,SumQ,dspPhase;
   for(step=0,o=i=0; (i<InpLen)&&(o<MaxOutLen); i++)
   { diff=(-InpTap[InpTapPtr++]); if(InpTapPtr>=InpTapLen) InpTapPtr=0;
-    diff+=(InpTap[InpTapPtr]=(*Inp++)); DiffTapPtr=(DiffTapPtr+1)&3;
-    dspLowPass2(diff*diff,DiffInteg0[DiffTapPtr],DiffInteg[DiffTapPtr],W1,W2,W5);
-    if(DiffTapPtr==BitPtr)
-    { for(Sum=0,t=0; t<4; t++) Sum+=DiffInteg[t];
-      t=DiffTapPtr; SumI = DiffInteg[t]-DiffInteg[t^2];
-      t=(t+1)&3; SumQ = DiffInteg[t]-DiffInteg[t^2];
-      if((Sum==0.0)||((SyncConfid=(SumI*SumI+SumQ*SumQ)/(Sum*Sum))==0.0))
-      { (*BitOut++)=0; (*IbitOut++)=0; o++; continue; }
-      dspPhase=atan2(-SumQ,-SumI)*(4/(2*M_PI));
-      dspLowPass2(dspPhase-SyncdspPhase,SyncDrift0,SyncDrift,W1,W2,W5); SyncdspPhase=dspPhase;
-      if(dspPhase>0.52) { step=1; SyncdspPhase-=1.0; }
-       else if(dspPhase<(-0.52)) { step=(-1); SyncdspPhase+=1.0; }
+	diff+=(InpTap[InpTapPtr]=(*Inp++)); DiffTapPtr=(DiffTapPtr+1)&3;
+	dspLowPass2(diff*diff,DiffInteg0[DiffTapPtr],DiffInteg[DiffTapPtr],W1,W2,W5);
+	if(DiffTapPtr==BitPtr)
+	{ for(Sum=0,t=0; t<4; t++) Sum+=DiffInteg[t];
+	  t=DiffTapPtr; SumI = DiffInteg[t]-DiffInteg[t^2];
+	  t=(t+1)&3; SumQ = DiffInteg[t]-DiffInteg[t^2];
+	  if((Sum==0.0)||((SyncConfid=(SumI*SumI+SumQ*SumQ)/(Sum*Sum))==0.0))
+	  { (*BitOut++)=0; (*IbitOut++)=0; o++; continue; }
+	  dspPhase=atan2(-SumQ,-SumI)*(4/(2*M_PI));
+	  dspLowPass2(dspPhase-SyncdspPhase,SyncDrift0,SyncDrift,W1,W2,W5); SyncdspPhase=dspPhase;
+	  if(dspPhase>0.52) { step=1; SyncdspPhase-=1.0; }
+	   else if(dspPhase<(-0.52)) { step=(-1); SyncdspPhase+=1.0; }
 	else step=0;
 double Samp[5],bit,ibit,dx; int p;
-      p=InpTapPtr-4*IntegLen-2; if(p<0) p+=InpTapLen;
-      for(t=0; t<5; t++) { Samp[t]=InpTap[p++]; if(p>=InpTapLen) p=0; }
-      dx=dspPhase-0.5;
-      // bit=Samp[2]+dx*(Samp[2]-Samp[1]); // linear interpolation
-      bit=Samp[2]*(1.0+dx)-Samp[1]*dx // or quadratic
-      +((Samp[3]-Samp[1])-(Samp[2]-Samp[0]))/2*dx*(1.0+dx)/2;
-      ibit=Samp[4]+dx*(Samp[4]-Samp[3]); //linear interpolation is enough
-      (*BitOut++)=bit; (*IbitOut++)=ibit; o++;
-    } else if(DiffTapPtr==(BitPtr^2))
-    { BitPtr=(BitPtr+step)&3; step=0; }
+	  p=InpTapPtr-4*IntegLen-2; if(p<0) p+=InpTapLen;
+	  for(t=0; t<5; t++) { Samp[t]=InpTap[p++]; if(p>=InpTapLen) p=0; }
+	  dx=dspPhase-0.5;
+	  // bit=Samp[2]+dx*(Samp[2]-Samp[1]); // linear interpolation
+	  bit=Samp[2]*(1.0+dx)-Samp[1]*dx // or quadratic
+	  +((Samp[3]-Samp[1])-(Samp[2]-Samp[0]))/2*dx*(1.0+dx)/2;
+	  ibit=Samp[4]+dx*(Samp[4]-Samp[3]); //linear interpolation is enough
+	  (*BitOut++)=bit; (*IbitOut++)=ibit; o++;
+	} else if(DiffTapPtr==(BitPtr^2))
+	{ BitPtr=(BitPtr+step)&3; step=0; }
   } (*OutLen)=o; return i;
 }
 
@@ -1136,8 +1136,8 @@ dspBitSlicer::dspBitSlicer(int IntegBits)
   Tap=(double *)malloc(TapLen*sizeof(double));
   for(i=0; i<TapLen; i++) Tap[i]=0; TapPtr=0;
   for(i=0; i<2; i++)
-  { Sum[i]=Sum0[i]=0.0;     SumSq[i]=SumSq0[i]=0.0;
-    TimeAsym=TimeAsym0=0.0; dspAmplAsym=dspAmplAsym0=0.0; Noise[i]=0; }
+  { Sum[i]=Sum0[i]=0.0;	 SumSq[i]=SumSq0[i]=0.0;
+	TimeAsym=TimeAsym0=0.0; dspAmplAsym=dspAmplAsym0=0.0; Noise[i]=0; }
   dspLowPass2Coeff((double)IntegLen*2,W1,W2,W5);
   PrevBit=PrevIBit=0.0; OptimThres=0.0;
 }
@@ -1149,18 +1149,18 @@ int dspBitSlicer::Process(double *Bits, double *IBits, int InpLen, double *OutBi
 { int i,l; double Bit,soft;
   for(i=0; i<InpLen; i++)
   { Bit=Bits[i]; l=Bit>0;
-    dspLowPass2(Bit,Sum0[l],Sum[l],W1,W2,W5);
-    dspLowPass2(Bit*Bit,SumSq0[l],SumSq[l],W1,W2,W5);
-    Noise[l]=sqrt(SumSq[l]-Sum[l]*Sum[l]);
-    if(Noise[0]+Noise[1]<=0) OptimThres=0;
-    else OptimThres=(Sum[0]*Noise[1]+Sum[1]*Noise[0])/(Noise[0]+Noise[1]);
-    soft=Tap[TapPtr]-OptimThres; // we could do a better soft-decision
-    if(Bit*PrevBit<0)
-    { dspLowPass2(PrevIBit,dspAmplAsym0,dspAmplAsym,W1,W2,W5);
-      if(Bit>0) PrevIBit=(-PrevIBit);
-      dspLowPass2(PrevIBit,TimeAsym0,TimeAsym,W1,W2,W5); }
-    (*OutBits++)=soft; PrevBit=Bit; PrevIBit=IBits[i];
-    Tap[TapPtr]=Bit; TapPtr++; if(TapPtr>=TapLen) TapPtr=0;
+	dspLowPass2(Bit,Sum0[l],Sum[l],W1,W2,W5);
+	dspLowPass2(Bit*Bit,SumSq0[l],SumSq[l],W1,W2,W5);
+	Noise[l]=sqrt(SumSq[l]-Sum[l]*Sum[l]);
+	if(Noise[0]+Noise[1]<=0) OptimThres=0;
+	else OptimThres=(Sum[0]*Noise[1]+Sum[1]*Noise[0])/(Noise[0]+Noise[1]);
+	soft=Tap[TapPtr]-OptimThres; // we could do a better soft-decision
+	if(Bit*PrevBit<0)
+	{ dspLowPass2(PrevIBit,dspAmplAsym0,dspAmplAsym,W1,W2,W5);
+	  if(Bit>0) PrevIBit=(-PrevIBit);
+	  dspLowPass2(PrevIBit,TimeAsym0,TimeAsym,W1,W2,W5); }
+	(*OutBits++)=soft; PrevBit=Bit; PrevIBit=IBits[i];
+	Tap[TapPtr]=Bit; TapPtr++; if(TapPtr>=TapLen) TapPtr=0;
   } return InpLen;
 }
 
@@ -1179,7 +1179,7 @@ double dspBitSlicer::GetTimeAsym()
 // however it does not pass frames with non-complete bytes.
 
 dspHDLCdecoder::dspHDLCdecoder(int minlen, int maxlen, int diff, int invert,
-                         int chan, int (*handler)(int, char *, int))
+						 int chan, int (*handler)(int, char *, int))
 { MinLen=minlen; MaxLen=maxlen; RxDiff=diff; RxInvert=invert;
   ChanId=chan; FrameHandler=handler;
   Buff=(char *)malloc(MaxLen); Len=(-1);
@@ -1195,21 +1195,21 @@ int dspHDLCdecoder::Process(double *Inp, int InpLen)
 
   for(i=0; i<InpLen; i++)
   { lev=Inp[i]>0;
-    bit=(lev^(PrevLev&RxDiff))^RxInvert; PrevLev=lev;
-    ShiftReg=(ShiftReg>>1)|(bit<<7); BitCount+=1; Flag=0;
-    if(bit) Count1s+=1; else
-    { if(Count1s>=7) Len=(-1);
-      else if(Count1s==6) Flag=1;
-      else if(Count1s==5) { ShiftReg<<=1; BitCount-=1; }
-      Count1s=0; }
-    if(Flag)
-    { if((Len>=MinLen)&&(BitCount==8)) (*FrameHandler)(ChanId,Buff,Len);
-      Len=0; BitCount=0; }
-    else if(Len>=0)
-    { if(BitCount==8)
-      { if(Len<MaxLen) Buff[Len++]=(char)ShiftReg; else Len=(-1);
+	bit=(lev^(PrevLev&RxDiff))^RxInvert; PrevLev=lev;
+	ShiftReg=(ShiftReg>>1)|(bit<<7); BitCount+=1; Flag=0;
+	if(bit) Count1s+=1; else
+	{ if(Count1s>=7) Len=(-1);
+	  else if(Count1s==6) Flag=1;
+	  else if(Count1s==5) { ShiftReg<<=1; BitCount-=1; }
+	  Count1s=0; }
+	if(Flag)
+	{ if((Len>=MinLen)&&(BitCount==8)) (*FrameHandler)(ChanId,Buff,Len);
+	  Len=0; BitCount=0; }
+	else if(Len>=0)
+	{ if(BitCount==8)
+	  { if(Len<MaxLen) Buff[Len++]=(char)ShiftReg; else Len=(-1);
 	BitCount=0; }
-    }
+	}
   }
   return InpLen;
 }
@@ -1219,43 +1219,43 @@ int dspHDLCdecoder::Process(double *Inp, int InpLen)
 
 short unsigned int dspAX25CRCtable[256] = {
 	 0U,  4489U,  8978U, 12955U, 17956U, 22445U, 25910U, 29887U,
-     35912U, 40385U, 44890U, 48851U, 51820U, 56293U, 59774U, 63735U,
-      4225U,   264U, 13203U,  8730U, 22181U, 18220U, 30135U, 25662U,
-     40137U, 36160U, 49115U, 44626U, 56045U, 52068U, 63999U, 59510U,
-      8450U, 12427U,   528U,  5017U, 26406U, 30383U, 17460U, 21949U,
-     44362U, 48323U, 36440U, 40913U, 60270U, 64231U, 51324U, 55797U,
-     12675U,  8202U,  4753U,   792U, 30631U, 26158U, 21685U, 17724U,
-     48587U, 44098U, 40665U, 36688U, 64495U, 60006U, 55549U, 51572U,
-     16900U, 21389U, 24854U, 28831U,  1056U,  5545U, 10034U, 14011U,
-     52812U, 57285U, 60766U, 64727U, 34920U, 39393U, 43898U, 47859U,
-     21125U, 17164U, 29079U, 24606U,  5281U,  1320U, 14259U,  9786U,
-     57037U, 53060U, 64991U, 60502U, 39145U, 35168U, 48123U, 43634U,
-     25350U, 29327U, 16404U, 20893U,  9506U, 13483U,  1584U,  6073U,
-     61262U, 65223U, 52316U, 56789U, 43370U, 47331U, 35448U, 39921U,
-     29575U, 25102U, 20629U, 16668U, 13731U,  9258U,  5809U,  1848U,
-     65487U, 60998U, 56541U, 52564U, 47595U, 43106U, 39673U, 35696U,
-     33800U, 38273U, 42778U, 46739U, 49708U, 54181U, 57662U, 61623U,
-      2112U,  6601U, 11090U, 15067U, 20068U, 24557U, 28022U, 31999U,
-     38025U, 34048U, 47003U, 42514U, 53933U, 49956U, 61887U, 57398U,
-      6337U,  2376U, 15315U, 10842U, 24293U, 20332U, 32247U, 27774U,
-     42250U, 46211U, 34328U, 38801U, 58158U, 62119U, 49212U, 53685U,
-     10562U, 14539U,  2640U,  7129U, 28518U, 32495U, 19572U, 24061U,
-     46475U, 41986U, 38553U, 34576U, 62383U, 57894U, 53437U, 49460U,
-     14787U, 10314U,  6865U,  2904U, 32743U, 28270U, 23797U, 19836U,
-     50700U, 55173U, 58654U, 62615U, 32808U, 37281U, 41786U, 45747U,
-     19012U, 23501U, 26966U, 30943U,  3168U,  7657U, 12146U, 16123U,
-     54925U, 50948U, 62879U, 58390U, 37033U, 33056U, 46011U, 41522U,
-     23237U, 19276U, 31191U, 26718U,  7393U,  3432U, 16371U, 11898U,
-     59150U, 63111U, 50204U, 54677U, 41258U, 45219U, 33336U, 37809U,
-     27462U, 31439U, 18516U, 23005U, 11618U, 15595U,  3696U,  8185U,
-     63375U, 58886U, 54429U, 50452U, 45483U, 40994U, 37561U, 33584U,
-     31687U, 27214U, 22741U, 18780U, 15843U, 11370U,  7921U,  3960U } ;
+	 35912U, 40385U, 44890U, 48851U, 51820U, 56293U, 59774U, 63735U,
+	  4225U,   264U, 13203U,  8730U, 22181U, 18220U, 30135U, 25662U,
+	 40137U, 36160U, 49115U, 44626U, 56045U, 52068U, 63999U, 59510U,
+	  8450U, 12427U,   528U,  5017U, 26406U, 30383U, 17460U, 21949U,
+	 44362U, 48323U, 36440U, 40913U, 60270U, 64231U, 51324U, 55797U,
+	 12675U,  8202U,  4753U,   792U, 30631U, 26158U, 21685U, 17724U,
+	 48587U, 44098U, 40665U, 36688U, 64495U, 60006U, 55549U, 51572U,
+	 16900U, 21389U, 24854U, 28831U,  1056U,  5545U, 10034U, 14011U,
+	 52812U, 57285U, 60766U, 64727U, 34920U, 39393U, 43898U, 47859U,
+	 21125U, 17164U, 29079U, 24606U,  5281U,  1320U, 14259U,  9786U,
+	 57037U, 53060U, 64991U, 60502U, 39145U, 35168U, 48123U, 43634U,
+	 25350U, 29327U, 16404U, 20893U,  9506U, 13483U,  1584U,  6073U,
+	 61262U, 65223U, 52316U, 56789U, 43370U, 47331U, 35448U, 39921U,
+	 29575U, 25102U, 20629U, 16668U, 13731U,  9258U,  5809U,  1848U,
+	 65487U, 60998U, 56541U, 52564U, 47595U, 43106U, 39673U, 35696U,
+	 33800U, 38273U, 42778U, 46739U, 49708U, 54181U, 57662U, 61623U,
+	  2112U,  6601U, 11090U, 15067U, 20068U, 24557U, 28022U, 31999U,
+	 38025U, 34048U, 47003U, 42514U, 53933U, 49956U, 61887U, 57398U,
+	  6337U,  2376U, 15315U, 10842U, 24293U, 20332U, 32247U, 27774U,
+	 42250U, 46211U, 34328U, 38801U, 58158U, 62119U, 49212U, 53685U,
+	 10562U, 14539U,  2640U,  7129U, 28518U, 32495U, 19572U, 24061U,
+	 46475U, 41986U, 38553U, 34576U, 62383U, 57894U, 53437U, 49460U,
+	 14787U, 10314U,  6865U,  2904U, 32743U, 28270U, 23797U, 19836U,
+	 50700U, 55173U, 58654U, 62615U, 32808U, 37281U, 41786U, 45747U,
+	 19012U, 23501U, 26966U, 30943U,  3168U,  7657U, 12146U, 16123U,
+	 54925U, 50948U, 62879U, 58390U, 37033U, 33056U, 46011U, 41522U,
+	 23237U, 19276U, 31191U, 26718U,  7393U,  3432U, 16371U, 11898U,
+	 59150U, 63111U, 50204U, 54677U, 41258U, 45219U, 33336U, 37809U,
+	 27462U, 31439U, 18516U, 23005U, 11618U, 15595U,  3696U,  8185U,
+	 63375U, 58886U, 54429U, 50452U, 45483U, 40994U, 37561U, 33584U,
+	 31687U, 27214U, 22741U, 18780U, 15843U, 11370U,  7921U,  3960U } ;
 
 short unsigned int dspAX25CRC(char *Data, int Len)
 { int i,idx; short unsigned int CRC;
   for(CRC=0xFFFF, i=0; i<Len; i++)
   { idx=(unsigned char)CRC^(unsigned char)Data[i];
-    CRC=(CRC>>8)^dspAX25CRCtable[idx];
+	CRC=(CRC>>8)^dspAX25CRCtable[idx];
   } CRC^=0xFFFF;
   return CRC;
 }
@@ -1278,7 +1278,7 @@ void dsp_r2FFT::Free(void)
 // a radix-2 FFT bufferfly
 inline void dsp_r2FFT::FFTbf(dspCmpx &x0, dspCmpx &x1, dspCmpx &W)
 { dspCmpx x1W;
-  x1W.re=x1.re*W.re+x1.im*W.im;    // x1W.re=x1.re*W.re-x1.im*W.im;
+  x1W.re=x1.re*W.re+x1.im*W.im;	// x1W.re=x1.re*W.re-x1.im*W.im;
   x1W.im=(-x1.re*W.im)+x1.im*W.re; // x1W.im=x1.re*W.im+x1.im*W.re;
   x1.re=x0.re-x1W.re;
   x1.im=x0.im-x1W.im;
@@ -1322,8 +1322,8 @@ void dsp_r2FFT::Scramble(dspCmpx x[])
 { int idx,ridx; dspCmpx tmp;
   for(idx=0; idx<Size; idx++)
    if((ridx=BitRevIdx[idx])>idx)
-    { tmp=x[idx]; x[idx]=x[ridx]; x[ridx]=tmp;
-      /* printf("%d <=> %d\n",idx,ridx); */ }
+	{ tmp=x[idx]; x[idx]=x[ridx]; x[ridx]=tmp;
+	  /* printf("%d <=> %d\n",idx,ridx); */ }
 }
 
 // Preset for given processing size
@@ -1335,13 +1335,13 @@ int dsp_r2FFT::Preset(int size)
   err=dspRedspAllocArray(&Twiddle,Size); if(err) goto Error;
   for(idx=0; idx<Size; idx++)
   { dspPhase=(2*M_PI*idx)/Size;
-    Twiddle[idx].re=cos(dspPhase); Twiddle[idx].im=sin(dspPhase);
-    /* printf("%2d => %6.4f => %6.4f %6.4f\n",
+	Twiddle[idx].re=cos(dspPhase); Twiddle[idx].im=sin(dspPhase);
+	/* printf("%2d => %6.4f => %6.4f %6.4f\n",
 	idx,dspPhase,Twiddle[idx].re,Twiddle[idx].im); */ }
   for(ridx=0,idx=0; idx<Size; idx++)
   { for(ridx=0,mask=Size/2,rmask=1; mask; mask>>=1,rmask<<=1)
-    { if(idx&mask) ridx|=rmask; }
-    BitRevIdx[idx]=ridx; /* printf("%04x %04x\n",idx,ridx); */ }
+	{ if(idx&mask) ridx|=rmask; }
+	BitRevIdx[idx]=ridx; /* printf("%04x %04x\n",idx,ridx); */ }
 //  free(Window); Window=NULL; WinInpScale=1.0/Size; WinOutScale=0.5;
   return 0;
 
@@ -1359,9 +1359,9 @@ void dsp_r2FFT::CoreProc(dspCmpx x[])
   for(Bf=0; Bf<Size; Bf+=2) FFT2(x[Bf],x[Bf+1]); // first pass
   // for(Bf=0; Bf<Size; Bf+=4) FFT4(x[Bf],x[Bf+1],x[Bf+2],x[Bf+3]); // second
   for(Groups=HalfSize/2,GroupHalfSize=2; Groups; Groups>>=1, GroupHalfSize<<=1)
-    for(Group=0,Bf=0; Group<Groups; Group++,Bf+=GroupHalfSize)
-      for(TwidIdx=0; TwidIdx<HalfSize; TwidIdx+=Groups,Bf++)
-      { FFTbf(x[Bf],x[Bf+GroupHalfSize],Twiddle[TwidIdx]);
+	for(Group=0,Bf=0; Group<Groups; Group++,Bf+=GroupHalfSize)
+	  for(TwidIdx=0; TwidIdx<HalfSize; TwidIdx+=Groups,Bf++)
+	  { FFTbf(x[Bf],x[Bf+GroupHalfSize],Twiddle[TwidIdx]);
 	/* printf("%2d %2d %2d\n",Bf,Bf+GroupHalfSize,TwidIdx); */ }
 }
 
@@ -1371,17 +1371,17 @@ void dsp_r2FFT::CoreProc(dspCmpx x[])
 void dsp_r2FFT::SeparTwoReals(dspCmpx Buff[], dspCmpx Out0[], dspCmpx Out1[])
 { int idx,HalfSize=Size/2;
 //  for(idx=0; idx<Size; idx++)
-//    printf("%2d %9.5f %9.5f\n",idx,Buff[idx].re,Buff[idx].im);
+//	printf("%2d %9.5f %9.5f\n",idx,Buff[idx].re,Buff[idx].im);
   Out0[0].re=Buff[0].re; Out1[0].re=Buff[0].im;
   for(idx=1; idx<HalfSize; idx++)
   { Out0[idx].re=  Buff[idx].re +Buff[Size-idx].re;
-    Out0[idx].im=  Buff[idx].im -Buff[Size-idx].im;
-    Out1[idx].re=  Buff[idx].im +Buff[Size-idx].im;
-    Out1[idx].im=(-Buff[idx].re)+Buff[Size-idx].re;
+	Out0[idx].im=  Buff[idx].im -Buff[Size-idx].im;
+	Out1[idx].re=  Buff[idx].im +Buff[Size-idx].im;
+	Out1[idx].im=(-Buff[idx].re)+Buff[Size-idx].re;
   } Out0[0].im=Buff[HalfSize].re; Out1[0].im=Buff[HalfSize].im;
 //  for(idx=0; idx<HalfSize; idx++)
-//    printf("%2d  %9.5f %9.5f  %9.5f %9.5f\n",
-//      idx,Out0[idx].re,Out0[idx].im,Out1[idx].re,Out1[idx].im);
+//	printf("%2d  %9.5f %9.5f  %9.5f %9.5f\n",
+//	  idx,Out0[idx].re,Out0[idx].im,Out1[idx].re,Out1[idx].im);
 }
 
 // the oposite of SeparTwoReals()
@@ -1390,17 +1390,17 @@ void dsp_r2FFT::SeparTwoReals(dspCmpx Buff[], dspCmpx Out0[], dspCmpx Out1[])
 void dsp_r2FFT::JoinTwoReals(dspCmpx Inp0[], dspCmpx Inp1[], dspCmpx Buff[])
 { int idx,HalfSize=Size/2;
 //  for(idx=0; idx<HalfSize; idx++)
-//    printf("%2d  %9.5f %9.5f  %9.5f %9.5f\n",
-//      idx,Inp0[idx].re,Inp0[idx].im,Inp1[idx].re,Inp1[idx].im);
+//	printf("%2d  %9.5f %9.5f  %9.5f %9.5f\n",
+//	  idx,Inp0[idx].re,Inp0[idx].im,Inp1[idx].re,Inp1[idx].im);
   Buff[0].re=2*Inp0[0].re; Buff[0].im=(-2*Inp1[0].re);
   for(idx=1; idx<HalfSize; idx++)
-  { Buff[idx].re     =  Inp0[idx].re -Inp1[idx].im;
-    Buff[idx].im     =(-Inp0[idx].im)-Inp1[idx].re;
-    Buff[Size-idx].re=  Inp0[idx].re +Inp1[idx].im;
-    Buff[Size-idx].im=  Inp0[idx].im -Inp1[idx].re;
+  { Buff[idx].re	 =  Inp0[idx].re -Inp1[idx].im;
+	Buff[idx].im	 =(-Inp0[idx].im)-Inp1[idx].re;
+	Buff[Size-idx].re=  Inp0[idx].re +Inp1[idx].im;
+	Buff[Size-idx].im=  Inp0[idx].im -Inp1[idx].re;
   } Buff[HalfSize].re=2*Inp0[0].im; Buff[HalfSize].im=(-2*Inp1[0].im);
 //  for(idx=0; idx<Size; idx++)
-//    printf("%2d %9.5f %9.5f\n",idx,Buff[idx].re,Buff[idx].im);
+//	printf("%2d %9.5f %9.5f\n",idx,Buff[idx].re,Buff[idx].im);
 }
 
 // ----------------------------------------------------------------------------
@@ -1452,12 +1452,12 @@ int dspSlideWinFFT::SetWindow(double (*NewWindow)(double dspPhase), double Scale
   if(ExternWindow) { Window=NULL; ExternWindow=0; }
   err=dspRedspAllocArray(&Window,Size); if(err) return -1;
   for(idx=0; idx<Size; idx++)
-    Window[idx]=Scale*(*NewWindow)(2*M_PI*(idx-Size/2+0.5)/Size);
+	Window[idx]=Scale*(*NewWindow)(2*M_PI*(idx-Size/2+0.5)/Size);
   return 0;
 }
 
 int dspSlideWinFFT::Preset(int size, int step,
-      double (*NewWindow)(double dspPhase), double Scale)
+	  double (*NewWindow)(double dspPhase), double Scale)
 { int err;
   err=Preset(size,step,(double *)NULL); if(err) return -1;
   err=SetWindow(NewWindow,Scale);
@@ -1473,17 +1473,17 @@ int dspSlideWinFFT::Process(double_buff *Input)
   Inp=Input->Data; InpLen=Input->Len; Output.Len=0;
   while(InpLen)
   { for(i=len=dspIntmin(InpLen,Left); i; i--)
-    { SlideBuff[SlidePtr++]=(*Inp++); SlidePtr&=SizeMask; }
-    InpLen-=len; Left-=len;
-    if(Left==0)
-    { Slide^=1; Left=Dist;
-      if(Slide)
-      { for(t=0,i=SlidePtr; i<Size; t++,i++)
+	{ SlideBuff[SlidePtr++]=(*Inp++); SlidePtr&=SizeMask; }
+	InpLen-=len; Left-=len;
+	if(Left==0)
+	{ Slide^=1; Left=Dist;
+	  if(Slide)
+	  { for(t=0,i=SlidePtr; i<Size; t++,i++)
 	  FFTbuff[t].re=Window[t]*SlideBuff[i];
 	for(i=0; t<Size; t++,i++)
 	  FFTbuff[t].re=Window[t]*SlideBuff[i]; }
-      else
-      { for(t=0,i=SlidePtr; i<Size; t++,i++)
+	  else
+	  { for(t=0,i=SlidePtr; i<Size; t++,i++)
 	  FFTbuff[t].im=Window[t]*SlideBuff[i];
 	for(i=0; t<Size; t++,i++)
 	  FFTbuff[t].im=Window[t]*SlideBuff[i];
@@ -1492,8 +1492,8 @@ int dspSlideWinFFT::Process(double_buff *Input)
 	err=Output.EnsureSpace(len+Size); if(err) return -1;
 	FFT.SeparTwoReals(FFTbuff,Output.Data+len,Output.Data+len+Size/2);
 	Output.Len+=Size;
-      }
-    }
+	  }
+	}
   }
   return 0;
 }
@@ -1533,7 +1533,7 @@ void dspSlideWinFFTproc::Free(void)
   Output.Free(); }
 
 int dspSlideWinFFTproc::Preset(int size, int step,
-      void (*proc)(dspCmpx *Spectra, int Len), double *window)
+	  void (*proc)(dspCmpx *Spectra, int Len), double *window)
 { int err,i;
 
   Size=size; SizeMask=Size-1;
@@ -1562,8 +1562,8 @@ int dspSlideWinFFTproc::Preset(int size, int step,
 }
 
 int dspSlideWinFFTproc::Preset(int size, int step,
-      void (*proc)(dspCmpx *Spectra, int Len),
-      double (*NewWindow)(double dspPhase), double Scale)
+	  void (*proc)(dspCmpx *Spectra, int Len),
+	  double (*NewWindow)(double dspPhase), double Scale)
 { int err;
   err=Preset(size,step,proc,(double *)NULL); if(err) return -1;
   err=SetWindow(NewWindow,Scale);
@@ -1582,7 +1582,7 @@ int dspSlideWinFFTproc::SetWindow(double (*NewWindow)(double dspPhase), double S
   err=dspRedspAllocArray(&Window,Size); if(err) return -1;
   if(Scale==0.0) Scale=sqrt(0.5/Size);
   for(idx=0; idx<Size; idx++)
-    Window[idx]=Scale*(*NewWindow)(2*M_PI*(idx-Size/2+0.5)/Size);
+	Window[idx]=Scale*(*NewWindow)(2*M_PI*(idx-Size/2+0.5)/Size);
   return 0;
 }
 
@@ -1591,17 +1591,17 @@ int dspSlideWinFFTproc::Process(double_buff *Input)
   Inp=Input->Data; InpLen=Input->Len; Output.Len=0;
   while(InpLen)
   { for(i=len=dspIntmin(InpLen,Left); i; i--)
-    { SlideBuff[SlidePtr++]=(*Inp++); SlidePtr&=SizeMask; }
-    InpLen-=len; Left-=len;
-    if(Left==0)
-    { Slide^=1; Left=Dist;
-      if(Slide)
-      { for(t=0,i=SlidePtr; i<Size; t++,i++)
+	{ SlideBuff[SlidePtr++]=(*Inp++); SlidePtr&=SizeMask; }
+	InpLen-=len; Left-=len;
+	if(Left==0)
+	{ Slide^=1; Left=Dist;
+	  if(Slide)
+	  { for(t=0,i=SlidePtr; i<Size; t++,i++)
 	  FFTbuff[t].re=Window[t]*SlideBuff[i];
 	for(i=0; t<Size; t++,i++)
 	  FFTbuff[t].re=Window[t]*SlideBuff[i]; }
-      else
-      { for(t=0,i=SlidePtr; i<Size; t++,i++)
+	  else
+	  { for(t=0,i=SlidePtr; i<Size; t++,i++)
 	  FFTbuff[t].im=Window[t]*SlideBuff[i];
 	for(i=0; t<Size; t++,i++)
 	  FFTbuff[t].im=Window[t]*SlideBuff[i];
@@ -1634,8 +1634,8 @@ int dspSlideWinFFTproc::Process(double_buff *Input)
 		   OvlapBuff[OvlapPtr++]=0.0; OvlapPtr&=SizeMask; }
 
 	Output.Len+=2*Dist;
-      }
-    }
+	  }
+	}
   }
   return 0;
 }
@@ -1649,12 +1649,12 @@ void dspWalshTrans(double *Data, int Len)  // Len must be 2^N
 { int step, ptr, ptr2; double bit1, bit2;
   for(step=1; step<Len; step*=2)
   { for(ptr=0; ptr<Len; ptr+=2*step)
-    { for(ptr2=ptr; (ptr2-ptr)<step; ptr2+=1)
-      { bit1=Data[ptr2];  bit2=Data[ptr2+step];
+	{ for(ptr2=ptr; (ptr2-ptr)<step; ptr2+=1)
+	  { bit1=Data[ptr2];  bit2=Data[ptr2+step];
 //	Data[ptr2]=(bit1+bit2); Data[ptr2+step]=(bit1-bit2);
 	Data[ptr2]=(bit1+bit2); Data[ptr2+step]=(bit2-bit1);
-      }
-    }
+	  }
+	}
   }
 }
 
@@ -1662,12 +1662,12 @@ void dspWalshInvTrans(double *Data, int Len)  // Len must be 2^N
 { int step, ptr, ptr2; double bit1, bit2;
   for(step=Len/2; step; step/=2)
   { for(ptr=0; ptr<Len; ptr+=2*step)
-    { for(ptr2=ptr; (ptr2-ptr)<step; ptr2+=1)
-      { bit1=Data[ptr2];  bit2=Data[ptr2+step];
+	{ for(ptr2=ptr; (ptr2-ptr)<step; ptr2+=1)
+	  { bit1=Data[ptr2];  bit2=Data[ptr2+step];
 //	Data[ptr2]=(bit1+bit2); Data[ptr2+step]=(bit1-bit2);
 	Data[ptr2]=(bit1-bit2); Data[ptr2+step]=(bit1+bit2);
-      }
-    }
+	  }
+	}
   }
 }
 

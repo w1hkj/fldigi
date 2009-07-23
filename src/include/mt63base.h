@@ -2,7 +2,7 @@
  *    mt63base.h  --  MT63 transmitter and receiver in C++ for LINUX
  *
  *    Copyright (c) 2007, 2008 Dave Freese, W1HKJ
- * 
+ *
  *    base class for use by fldigi
  *    modified from original
  *    excluded CW_ID which is a part of the base modem class for fldigi
@@ -57,7 +57,7 @@ How to use this class:
 // Date: 05-NOV-1999
 
 class MT63encoder
-{ 
+{
 public:
     MT63encoder();
     ~MT63encoder();
@@ -180,7 +180,7 @@ public:
     ~MT63tx();
     void    Free(void);
     int     Preset(int BandWidth=1000, int LongInterleave=0);//, char *ID=NULL);
-    int     SendTune(void);
+    int     SendTune(bool twotones);
     int     SendChar(char ch);
     int     SendJam(void);
     int     SendSilence(void);
@@ -280,7 +280,7 @@ private:
     int     DecimateRatio;	// decimation/interpolation after/before filter
 
 // how the bits of one block are placed on data carriers
-    int     *InterleavePattern; 
+    int     *InterleavePattern;
     int DataInterleave;     // data interleave depth
 
     int     DataCarriers;	// number of carriers
@@ -308,9 +308,9 @@ private:
 
     dspCmpx *SyncPhCorr;    // dspPhase corrections for the sync. processor
 
-    dspCmpx *CorrelMid[4], 
+    dspCmpx *CorrelMid[4],
             *CorrelOut[4];	// correlation integrator
-    double  *dspPowerMid, 
+    double  *dspPowerMid,
             *dspPowerOut;	// carrier dspPower integrator
     dspCmpx *CorrelNorm[4];	// normalized correlation
     double  W1, W2, W5;		// correlation integrator weights
@@ -341,9 +341,9 @@ private:
     double  SyncSymbShift;  // current smoothed symbol time shift
 
 // here starts the data decoder
-    void    DataProcess( dspCmpx *EvenSlice, 
-                         dspCmpx *OddSlice, 
-                         double FreqOfs, 
+    void    DataProcess( dspCmpx *EvenSlice,
+                         dspCmpx *OddSlice,
+                         double FreqOfs,
                          int TimeDist);
 
     int     DataScanMargin; // +/- data carriers to scan for best FEC match
