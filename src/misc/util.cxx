@@ -313,8 +313,8 @@ const char* uint2bin(unsigned u, size_t len)
 void MilliSleep(long msecs)
 {
 #ifndef __MINGW32__
-	struct timespec tv = {0, msecs * 1000000L};
-	nanosleep(&tv, NULL);
+	struct timespec tv[2] = { {msecs / 1000L, msecs % 1000L * 1000000L} };
+	nanosleep(&tv[0], &tv[1]);
 #else
 	Sleep(msecs);
 #endif
