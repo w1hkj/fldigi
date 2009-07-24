@@ -255,6 +255,8 @@
         ELEM_(int, PortOutIndex, "PORTOUTINDEX", -1)                                    \
         ELEM_(int, PortFramesPerBuffer, "", 0)                                          \
         ELEM_(std::string, PulseServer, "PULSESERVER", "")                              \
+        ELEM_(int, in_channels, "INCHANNELS", 1)                                        \
+        ELEM_(int, out_channels, "OUTCHANNELS", 2)                                      \
         ELEM_(int, sample_rate, "SAMPLERATE", SAMPLE_RATE_UNSET)                        \
         ELEM_(int, in_sample_rate, "INSAMPLERATE", SAMPLE_RATE_UNSET)                   \
         ELEM_(int, out_sample_rate, "OUTSAMPLERATE", SAMPLE_RATE_UNSET)                 \

@@ -19,5 +19,6 @@ extern int sample_rate_converters[FLDIGI_NUM_SRC];
 void sound_init(void);
 void sound_close(void);
 void sound_update(unsigned idx);
+bool sound_check_right_channel(void);
 
 #endif // SOUNDCONF_H

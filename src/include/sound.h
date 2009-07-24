@@ -5,7 +5,7 @@
 // Copyright (C) 2006-2007
 //              Dave Freese, W1HKJ
 //
-// Copyright (C) 2007-2008
+// Copyright (C) 2007-2009
 //              Stelios Bounanos, M0GLD
 //
 // This file is part of fldigi.
@@ -28,33 +28,17 @@
 #ifndef _SOUND_H
 #define _SOUND_H
 
-#include <cstring>
 #include <string>
-#include <vector>
+#include <cstring>
+#include <climits>
+
 #if USE_SNDFILE
-	#include <sndfile.h>
+#  include <sndfile.h>
 #endif
-#if USE_PORTAUDIO
-	#include <portaudio.h>
-#endif
-#if USE_PULSEAUDIO
-	#include <pulse/simple.h>
-	#include <pulse/error.h>
-extern "C" { const char* pa_get_library_version(void); };
-#endif
+
 #include <samplerate.h>
-#include <semaphore.h>
-#include <limits.h>
 
-#include "ringbuffer.h"
-
-#define MAXSC 32767.0;
-#define maxsc 32000.0
-//#define maxsc 16384.0
 #define SCBLOCKSIZE 512
-
-#define	SND_BUF_LEN		65536
-//#define	SRC_BUF_LEN		(8*SND_BUF_LEN)
 
 
 class SndException : public std::exception
@@ -79,32 +63,6 @@ protected:
 	std::string	msg;
 };
 
-#if USE_PORTAUDIO
-class SndPortException : public SndException
-{
-public:
-	SndPortException(int err_ = 0)
-		: SndException(err_, std::string("PortAudio error: ") + err_to_str(err_))
-	{ }
-	SndPortException(const char* msg_) : SndException(msg_) { }
-protected:
-	const char* err_to_str(int e) { return Pa_GetErrorText(e); }
-};
-#endif
-
-#if USE_PULSEAUDIO
-class SndPulseException : public SndException
-{
-public:
-	SndPulseException(int err_ = 0)
-		: SndException(err_, std::string("PulseAudio error: ") + err_to_str(err_))
-	{ }
-	SndPulseException(const char* msg_) : SndException(msg_) { }
-protected:
-	const char* err_to_str(int e) { return pa_strerror(e); }
-};
-#endif
-
 
 class SoundBase {
 protected:
@@ -112,13 +70,9 @@ protected:
 	int		txppm;
 	int		rxppm;
 
-// for interface to the samplerate resampling library
+	// for interface to the samplerate resampling library
 	SRC_STATE	*tx_src_state;
-	SRC_DATA	*tx_src_data;
 	SRC_STATE	*rx_src_state;
-	SRC_DATA	*rx_src_data;
-	float		*snd_buffer;
-	float		*src_buffer;
 	double		*wrt_buffer;
 
 #if USE_SNDFILE
@@ -170,6 +124,11 @@ private:
 	bool	formatok;
 	unsigned char	*cbuff;
 
+	SRC_DATA	*rx_src_data;
+	SRC_DATA	*tx_src_data;
+	float		*snd_buffer;
+	float		*src_buffer;
+
 	void	getVersion();
 	void	getCapabilities();
 	void	getFormats();
@@ -208,8 +167,11 @@ private:
 
 
 #if USE_PORTAUDIO
-
-#include <pthread.h>
+#  include <pthread.h>
+#  include <semaphore.h>
+#  include <vector>
+#  include <portaudio.h>
+#  include "ringbuffer.h"
 
 class SoundPort : public SoundBase
 {
@@ -250,11 +212,12 @@ private:
         static PaStreamFinishedCallback stream_stopped;
 
 private:
-        enum { STREAM_IN, STREAM_OUT };
         static bool                             pa_init;
 	static std::vector<const PaDeviceInfo*> devs;
         double	 				req_sample_rate;
         float* 					fbuf;
+	float*					src_buffer;
+	SRC_DATA	*tx_src_data;
 
         enum {
                 spa_continue = paContinue, spa_complete = paComplete,
@@ -281,9 +244,24 @@ private:
         } sd[2];
 };
 
+class SndPortException : public SndException
+{
+public:
+	SndPortException(int err_ = 0)
+		: SndException(err_, std::string("PortAudio error: ") + err_to_str(err_))
+	{ }
+	SndPortException(const char* msg_) : SndException(msg_) { }
+protected:
+	const char* err_to_str(int e) { return Pa_GetErrorText(e); }
+};
+
 #endif // USE_PORTAUDIO
 
+
 #if USE_PULSEAUDIO
+#  include <pulse/simple.h>
+#  include <pulse/error.h>
+extern "C" { const char* pa_get_library_version(void); };
 
 class SoundPulse : public SoundBase
 {
@@ -313,7 +291,22 @@ private:
 		double		src_ratio;
 		size_t		blocksize;
 	} sd[2];
+
+	SRC_DATA* tx_src_data;
 	float* fbuf;
+	float* snd_buffer;
+	float* src_buffer;
+};
+
+class SndPulseException : public SndException
+{
+public:
+	SndPulseException(int err_ = 0)
+		: SndException(err_, std::string("PulseAudio error: ") + err_to_str(err_))
+	{ }
+	SndPulseException(const char* msg_) : SndException(msg_) { }
+protected:
+	const char* err_to_str(int e) { return pa_strerror(e); }
 };
 
 #endif // USE_PULSEAUDIO

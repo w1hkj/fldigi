@@ -255,14 +255,15 @@ extern Fl_Input2 *inpPulseServer;
 extern Fl_Group *AudioNull;
 extern Fl_Round_Button *btnAudioIO[4];
 extern Fl_Group *tabAudioOpt;
-extern Fl_Group *AudioSampleRate;
+extern Fl_Group *grpAudioSampleRate;
 extern Fl_Choice *menuInSampleRate;
+extern Fl_Choice *menuOutSampleRate;
 #include <FL/fl_ask.H>
 extern Fl_Choice *menuSampleConverter;
-extern Fl_Choice *menuOutSampleRate;
 extern Fl_Spinner *cntRxRateCorr;
 extern Fl_Spinner *cntTxRateCorr;
 extern Fl_Spinner *cntTxOffset;
+extern Fl_Check_Button *chkAudioStereoOut;
 extern Fl_Group *tabMixer;
 extern void resetMixerControls();
 extern Fl_Check_Button *btnMixer;

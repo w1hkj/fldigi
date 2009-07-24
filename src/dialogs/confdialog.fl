@@ -80,15 +80,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {536 199 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
+    xywh {271 321 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 505 372} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open
-        xywh {0 25 500 345} when 1 hide
+        callback {progdefaults.changed = true;} open selected
+        xywh {0 25 500 345} when 1
       } {
         Fl_Group {} {
           label Station open
@@ -699,14 +699,14 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 500 345}
+        xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 500 345} selection_color 50 align 9
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 500 320} selection_color 50
@@ -862,7 +862,11 @@ progdefaults.changed = true;}
                 } {
                   Fl_Check_Button btnQSK {
                     label {QSK on right audio channel}
-                    callback {progdefaults.QSK=o->value();
+                    callback {if (o->value() && !sound_check_right_channel()) {
+  o->value(0);
+  return;
+}
+progdefaults.QSK = o->value();
 progdefaults.changed = true;}
                     tooltip {Generate square wave signal on right channel} xywh {15 245 211 20} down_box DOWN_BOX
                     code0 {o->value(progdefaults.QSK);}
@@ -1025,10 +1029,10 @@ progdefaults.changed = true;}
           }
           Fl_Group tabMT63 {
             label {MT-63} open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
-              xywh {5 60 490 184} box ENGRAVED_FRAME align 21
+              xywh {5 60 490 85} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnmt63_interleave {
                 label {64-bit (long) interleave}
@@ -1044,29 +1048,8 @@ progdefaults.changed = true;}
                 label {8-bit extended characters}
                 callback {progdefaults.mt63_8bit = o->value();
 progdefaults.changed = true;}
-                tooltip {Enable this for Latin-1 accented characters} xywh {150 114 205 20} down_box DOWN_BOX
+                tooltip {Enable this for Latin-1 accented characters} xywh {150 113 205 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.mt63_8bit);}
-              }
-              Fl_Check_Button btnMT63_rx_integration {
-                label {Long Rx Integration}
-                callback {progdefaults.mt63_rx_integration = o->value();
-progdefaults.changed = true;}
-                tooltip {Enable for very weak signals} xywh {150 151 167 15} down_box DOWN_BOX
-                code0 {o->value(progdefaults.mt63_rx_integration);}
-              }
-              Fl_Check_Button btnMT63_usetones {
-                label {Use start tones}
-                callback {progdefaults.mt63_usetones = o->value();
-progdefaults.changed = true;}
-                tooltip {Xmt startup tones in first / last frequency bins} xywh {150 183 133 15} down_box DOWN_BOX
-                code0 {o->value(progdefaults.mt63_usetones);}
-              }
-              Fl_Check_Button btnMT63_upper_lower {
-                label {Upper && Lower}
-                callback {progdefaults.mt63_twotones = o->value();
-progdefaults.changed = true;} selected
-                tooltip {Select for two / clear for only lower tone} xywh {150 215 136 15} down_box DOWN_BOX
-                code0 {o->value(progdefaults.mt63_twotones);}
               }
             }
           }
@@ -1366,7 +1349,11 @@ progdefaults.changed = true;}
               }
               Fl_Check_Button chkPseudoFSK {
                 label {Pseudo-FSK on right audio channel}
-                callback {progdefaults.PseudoFSK = o->value();
+                callback {if (o->value() && !sound_check_right_channel()) {
+  o->value(0);
+  return;
+}
+progdefaults.PseudoFSK = o->value();
 progdefaults.changed = true;}
                 tooltip {Create square wave on right channel} xywh {15 254 270 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.PseudoFSK);}
@@ -1549,13 +1536,17 @@ progdefaults.changed = true;}
               }
             }
             Fl_Group {} {open
-              xywh {5 65 490 32} box ENGRAVED_FRAME
+              xywh {5 60 490 38} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnPTTrightchannel {
-                label {Enable right audio channel PTT tone}
-                callback {progdefaults.PTTrightchannel = o->value();
+                label {PTT tone on right audio channel }
+                callback {if (o->value() && !sound_check_right_channel()) {
+  o->value(0);
+  return;
+}
+progdefaults.PTTrightchannel = o->value();
 progdefaults.changed = true;}
-                tooltip {Can be used in lieu of or in addition to other PTT types} xywh {130 69 275 20} down_box DOWN_BOX
+                tooltip {Can be used in lieu of or in addition to other PTT types} xywh {130 69 250 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.PTTrightchannel);}
               }
             }
@@ -2084,19 +2075,31 @@ resetSoundCard();}
             label Settings open
             xywh {0 50 500 320} hide
           } {
-            Fl_Group AudioSampleRate {
+            Fl_Group grpAudioSampleRate {
               label {Sample rate} open
-              xywh {5 60 490 100} box ENGRAVED_FRAME align 21
+              xywh {5 60 490 90} box ENGRAVED_FRAME align 21
             } {
               Fl_Choice menuInSampleRate {
                 label Capture
                 callback {progdefaults.in_sample_rate = o->value() > 1 ? strtol(o->mvalue()->text, 0, 10) : o->value();
 resetSoundCard();
 progdefaults.changed = true;} open
-                tooltip {Force a specific sample rate. Select "Native" if "Auto" does not work well with your sound hardware.} xywh {15 89 99 25} down_box BORDER_BOX align 8
+                tooltip {Force a specific sample rate. Select "Native" if "Auto"
+does not work well with your audio device.} xywh {15 89 100 20} down_box BORDER_BOX align 8
                 code0 {//extern Fl_Menu_Item sample_rate_menu[];}
                 code1 {//o->menu(sample_rate_menu);}
                 code2 {o->clear_changed();}
+              } {}
+              Fl_Choice menuOutSampleRate {
+                label Playback
+                callback {progdefaults.out_sample_rate = o->value() > 1 ? strtol(o->mvalue()->text, 0, 10) : o->value();
+resetSoundCard();
+progdefaults.changed = true;} open
+                xywh {15 119 100 20} down_box BORDER_BOX align 8
+                code0 {//extern Fl_Menu_Item sample_rate_menu[];}
+                code1 {//o->menu(sample_rate_menu);}
+                code2 {o->clear_changed();}
+                code3 {o->tooltip(menuInSampleRate->tooltip());}
               } {}
               Fl_Choice menuSampleConverter {
                 label Converter
@@ -2106,29 +2109,19 @@ progdefaults.sample_converter = sample_rate_converters[o->value()];
 resetSoundCard();
 progdefaults.changed = true;
 o->tooltip(src_get_description(sample_rate_converters[o->value()]));} open
-                tooltip {Set the type of resampler used of offset correction} xywh {269 89 216 25} down_box BORDER_BOX align 1
+                tooltip {Set the type of resampler used of offset correction} xywh {269 89 216 20} down_box BORDER_BOX align 1
                 code0 {\#include <FL/fl_ask.H>}
-              } {}
-              Fl_Choice menuOutSampleRate {
-                label Playback
-                callback {progdefaults.out_sample_rate = o->value() > 1 ? strtol(o->mvalue()->text, 0, 10) : o->value();
-resetSoundCard();
-progdefaults.changed = true;} open
-                tooltip {Force a specific sample rate. Select "Native" if "Auto" does not work well with your sound hardware.} xywh {15 124 100 25} down_box BORDER_BOX align 8
-                code0 {//extern Fl_Menu_Item sample_rate_menu[];}
-                code1 {//o->menu(sample_rate_menu);}
-                code2 {o->clear_changed();}
               } {}
             }
             Fl_Group {} {
               label Corrections open
-              xywh {5 160 490 70} box ENGRAVED_FRAME align 21
+              xywh {5 150 490 62} box ENGRAVED_FRAME align 21
             } {
               Fl_Spinner cntRxRateCorr {
                 label {RX ppm}
                 callback {progdefaults.RX_corr = (int)o->value();
 progdefaults.changed = true;}
-                tooltip {RX sound card correction} xywh {15 191 85 25} align 8 value 1
+                tooltip {RX sound card correction} xywh {15 180 85 20} align 8 value 1
                 code0 {o->step(1);}
                 code1 {o->minimum(-50000);}
                 code2 {o->maximum(50000);}
@@ -2137,7 +2130,7 @@ progdefaults.changed = true;}
                 label {TX ppm}
                 callback {progdefaults.TX_corr = (int)o->value();
 progdefaults.changed = true;}
-                tooltip {TX sound card correction} xywh {176 191 85 25} align 8 value 1
+                tooltip {TX sound card correction} xywh {176 180 85 20} align 8 value 1
                 code0 {o->step(1);}
                 code1 {o->minimum(-50000);}
                 code2 {o->maximum(50000);}
@@ -2146,12 +2139,23 @@ progdefaults.changed = true;}
                 label {TX offset}
                 callback {progdefaults.TxOffset = (int)o->value();
 progdefaults.changed = true;}
-                tooltip {Difference between Rx & Tx freq (rig offset)} xywh {338 191 85 25} align 8 value 1
+                tooltip {Difference between Rx & Tx freq (rig offset)} xywh {338 180 85 20} align 8 value 1
                 code0 {o->value(progdefaults.TxOffset);}
                 code1 {o->step(1);}
                 code2 {o->minimum(-50);}
                 code3 {o->maximum(50);}
               }
+            }
+            Fl_Check_Button chkAudioStereoOut {
+              label {Enable right audio channel}
+              callback {if (!o->value() && (progdefaults.PseudoFSK || progdefaults.QSK || progdefaults.PTTrightchannel))
+    LOG_WARN("Disabling right audio channel while in use by the QSK, pseudo-FSK or audio PTT options");
+
+progdefaults.out_channels = o->value() + 1;
+resetSoundCard();
+progdefaults.changed = true;}
+              xywh {15 222 220 20} down_box DOWN_BOX
+              code0 {chkAudioStereoOut->value(progdefaults.out_channels == 2);}
             }
           }
           Fl_Group tabMixer {

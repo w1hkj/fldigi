@@ -666,7 +666,11 @@ progdefaults.changed = true;
 Fl_Check_Button *btnQSK=(Fl_Check_Button *)0;
 
 static void cb_btnQSK(Fl_Check_Button* o, void*) {
-  progdefaults.QSK=o->value();
+  if (o->value() && !sound_check_right_channel()) {
+  o->value(0);
+  return;
+}
+progdefaults.QSK = o->value();
 progdefaults.changed = true;
 }
 
@@ -1053,7 +1057,11 @@ progdefaults.changed = true;
 Fl_Check_Button *chkPseudoFSK=(Fl_Check_Button *)0;
 
 static void cb_chkPseudoFSK(Fl_Check_Button* o, void*) {
-  progdefaults.PseudoFSK = o->value();
+  if (o->value() && !sound_check_right_channel()) {
+  o->value(0);
+  return;
+}
+progdefaults.PseudoFSK = o->value();
 progdefaults.changed = true;
 }
 
@@ -1222,7 +1230,11 @@ progdefaults.changed = true;
 Fl_Check_Button *btnPTTrightchannel=(Fl_Check_Button *)0;
 
 static void cb_btnPTTrightchannel(Fl_Check_Button* o, void*) {
-  progdefaults.PTTrightchannel = o->value();
+  if (o->value() && !sound_check_right_channel()) {
+  o->value(0);
+  return;
+}
+progdefaults.PTTrightchannel = o->value();
 progdefaults.changed = true;
 }
 
@@ -1694,12 +1706,20 @@ resetSoundCard();
 
 Fl_Group *tabAudioOpt=(Fl_Group *)0;
 
-Fl_Group *AudioSampleRate=(Fl_Group *)0;
+Fl_Group *grpAudioSampleRate=(Fl_Group *)0;
 
 Fl_Choice *menuInSampleRate=(Fl_Choice *)0;
 
 static void cb_menuInSampleRate(Fl_Choice* o, void*) {
   progdefaults.in_sample_rate = o->value() > 1 ? strtol(o->mvalue()->text, 0, 10) : o->value();
+resetSoundCard();
+progdefaults.changed = true;
+}
+
+Fl_Choice *menuOutSampleRate=(Fl_Choice *)0;
+
+static void cb_menuOutSampleRate(Fl_Choice* o, void*) {
+  progdefaults.out_sample_rate = o->value() > 1 ? strtol(o->mvalue()->text, 0, 10) : o->value();
 resetSoundCard();
 progdefaults.changed = true;
 }
@@ -1713,14 +1733,6 @@ progdefaults.sample_converter = sample_rate_converters[o->value()];
 resetSoundCard();
 progdefaults.changed = true;
 o->tooltip(src_get_description(sample_rate_converters[o->value()]));
-}
-
-Fl_Choice *menuOutSampleRate=(Fl_Choice *)0;
-
-static void cb_menuOutSampleRate(Fl_Choice* o, void*) {
-  progdefaults.out_sample_rate = o->value() > 1 ? strtol(o->mvalue()->text, 0, 10) : o->value();
-resetSoundCard();
-progdefaults.changed = true;
 }
 
 Fl_Spinner *cntRxRateCorr=(Fl_Spinner *)0;
@@ -1741,6 +1753,17 @@ Fl_Spinner *cntTxOffset=(Fl_Spinner *)0;
 
 static void cb_cntTxOffset(Fl_Spinner* o, void*) {
   progdefaults.TxOffset = (int)o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *chkAudioStereoOut=(Fl_Check_Button *)0;
+
+static void cb_chkAudioStereoOut(Fl_Check_Button* o, void*) {
+  if (!o->value() && (progdefaults.PseudoFSK || progdefaults.QSK || progdefaults.PTTrightchannel))
+    LOG_WARN("Disabling right audio channel while in use by the QSK, pseudo-FSK or audio PTT options");
+
+progdefaults.out_channels = o->value() + 1;
+resetSoundCard();
 progdefaults.changed = true;
 }
 
@@ -3591,9 +3614,9 @@ an merging"));
               } // Fl_Round_Button* btnUseUHrouterPTT
               grpHWPTT->end();
             } // Fl_Group* grpHWPTT
-            { Fl_Group* o = new Fl_Group(5, 65, 490, 32);
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 38);
               o->box(FL_ENGRAVED_FRAME);
-              { Fl_Check_Button* o = btnPTTrightchannel = new Fl_Check_Button(130, 69, 275, 20, _("Enable right audio channel PTT tone"));
+              { Fl_Check_Button* o = btnPTTrightchannel = new Fl_Check_Button(130, 69, 250, 20, _("PTT tone on right audio channel "));
                 btnPTTrightchannel->tooltip(_("Can be used in lieu of or in addition to other PTT types"));
                 btnPTTrightchannel->down_box(FL_DOWN_BOX);
                 btnPTTrightchannel->callback((Fl_Callback*)cb_btnPTTrightchannel);
@@ -3993,12 +4016,12 @@ an merging"));
           } // Fl_Group* tabAudio
           { tabAudioOpt = new Fl_Group(0, 50, 500, 320, _("Settings"));
             tabAudioOpt->hide();
-            { AudioSampleRate = new Fl_Group(5, 60, 490, 100, _("Sample rate"));
-              AudioSampleRate->box(FL_ENGRAVED_FRAME);
-              AudioSampleRate->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Choice* o = menuInSampleRate = new Fl_Choice(15, 89, 99, 25, _("Capture"));
-                menuInSampleRate->tooltip(_("Force a specific sample rate. Select \"Native\" if \"Auto\" does not work wel\
-l with your sound hardware."));
+            { grpAudioSampleRate = new Fl_Group(5, 60, 490, 90, _("Sample rate"));
+              grpAudioSampleRate->box(FL_ENGRAVED_FRAME);
+              grpAudioSampleRate->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { Fl_Choice* o = menuInSampleRate = new Fl_Choice(15, 89, 100, 20, _("Capture"));
+                menuInSampleRate->tooltip(_("Force a specific sample rate. Select \"Native\" if \"Auto\"\ndoes not work we\
+ll with your audio device."));
                 menuInSampleRate->down_box(FL_BORDER_BOX);
                 menuInSampleRate->callback((Fl_Callback*)cb_menuInSampleRate);
                 menuInSampleRate->align(FL_ALIGN_RIGHT);
@@ -4006,28 +4029,27 @@ l with your sound hardware."));
                 //o->menu(sample_rate_menu);
                 o->clear_changed();
               } // Fl_Choice* menuInSampleRate
-              { menuSampleConverter = new Fl_Choice(269, 89, 216, 25, _("Converter"));
-                menuSampleConverter->tooltip(_("Set the type of resampler used of offset correction"));
-                menuSampleConverter->down_box(FL_BORDER_BOX);
-                menuSampleConverter->callback((Fl_Callback*)cb_menuSampleConverter);
-                menuSampleConverter->align(FL_ALIGN_TOP);
-              } // Fl_Choice* menuSampleConverter
-              { Fl_Choice* o = menuOutSampleRate = new Fl_Choice(15, 124, 100, 25, _("Playback"));
-                menuOutSampleRate->tooltip(_("Force a specific sample rate. Select \"Native\" if \"Auto\" does not work wel\
-l with your sound hardware."));
+              { Fl_Choice* o = menuOutSampleRate = new Fl_Choice(15, 119, 100, 20, _("Playback"));
                 menuOutSampleRate->down_box(FL_BORDER_BOX);
                 menuOutSampleRate->callback((Fl_Callback*)cb_menuOutSampleRate);
                 menuOutSampleRate->align(FL_ALIGN_RIGHT);
                 //extern Fl_Menu_Item sample_rate_menu[];
                 //o->menu(sample_rate_menu);
                 o->clear_changed();
+                o->tooltip(menuInSampleRate->tooltip());
               } // Fl_Choice* menuOutSampleRate
-              AudioSampleRate->end();
-            } // Fl_Group* AudioSampleRate
-            { Fl_Group* o = new Fl_Group(5, 160, 490, 70, _("Corrections"));
+              { menuSampleConverter = new Fl_Choice(269, 89, 216, 20, _("Converter"));
+                menuSampleConverter->tooltip(_("Set the type of resampler used of offset correction"));
+                menuSampleConverter->down_box(FL_BORDER_BOX);
+                menuSampleConverter->callback((Fl_Callback*)cb_menuSampleConverter);
+                menuSampleConverter->align(FL_ALIGN_TOP);
+              } // Fl_Choice* menuSampleConverter
+              grpAudioSampleRate->end();
+            } // Fl_Group* grpAudioSampleRate
+            { Fl_Group* o = new Fl_Group(5, 150, 490, 62, _("Corrections"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Spinner* o = cntRxRateCorr = new Fl_Spinner(15, 191, 85, 25, _("RX ppm"));
+              { Fl_Spinner* o = cntRxRateCorr = new Fl_Spinner(15, 180, 85, 20, _("RX ppm"));
                 cntRxRateCorr->tooltip(_("RX sound card correction"));
                 cntRxRateCorr->value(1);
                 cntRxRateCorr->callback((Fl_Callback*)cb_cntRxRateCorr);
@@ -4036,7 +4058,7 @@ l with your sound hardware."));
                 o->minimum(-50000);
                 o->maximum(50000);
               } // Fl_Spinner* cntRxRateCorr
-              { Fl_Spinner* o = cntTxRateCorr = new Fl_Spinner(176, 191, 85, 25, _("TX ppm"));
+              { Fl_Spinner* o = cntTxRateCorr = new Fl_Spinner(176, 180, 85, 20, _("TX ppm"));
                 cntTxRateCorr->tooltip(_("TX sound card correction"));
                 cntTxRateCorr->value(1);
                 cntTxRateCorr->callback((Fl_Callback*)cb_cntTxRateCorr);
@@ -4045,7 +4067,7 @@ l with your sound hardware."));
                 o->minimum(-50000);
                 o->maximum(50000);
               } // Fl_Spinner* cntTxRateCorr
-              { Fl_Spinner* o = cntTxOffset = new Fl_Spinner(338, 191, 85, 25, _("TX offset"));
+              { Fl_Spinner* o = cntTxOffset = new Fl_Spinner(338, 180, 85, 20, _("TX offset"));
                 cntTxOffset->tooltip(_("Difference between Rx & Tx freq (rig offset)"));
                 cntTxOffset->value(1);
                 cntTxOffset->callback((Fl_Callback*)cb_cntTxOffset);
@@ -4057,6 +4079,11 @@ l with your sound hardware."));
               } // Fl_Spinner* cntTxOffset
               o->end();
             } // Fl_Group* o
+            { chkAudioStereoOut = new Fl_Check_Button(15, 222, 220, 20, _("Enable right audio channel"));
+              chkAudioStereoOut->down_box(FL_DOWN_BOX);
+              chkAudioStereoOut->callback((Fl_Callback*)cb_chkAudioStereoOut);
+              chkAudioStereoOut->value(progdefaults.out_channels == 2);
+            } // Fl_Check_Button* chkAudioStereoOut
             tabAudioOpt->end();
           } // Fl_Group* tabAudioOpt
           { tabMixer = new Fl_Group(0, 50, 500, 320, _("Mixer"));

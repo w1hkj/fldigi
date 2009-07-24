@@ -444,3 +444,18 @@ void sound_update(unsigned idx)
 		break;
 	};
 }
+
+#include "icons.h"
+#include "gettext.h"
+
+bool sound_check_right_channel(void)
+{
+	if (progdefaults.out_channels != 2) {
+		if (!fl_choice2(_("The right audio channel is disabled. Enable it now?"), _("Cancel"), _("OK"), NULL))
+			return false;
+		chkAudioStereoOut->value(1);
+		chkAudioStereoOut->do_callback();
+	}
+
+	return true;
+}
