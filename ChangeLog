@@ -1,155 +1,165 @@
+3.12.1
+
+2009-07-24  Stelios Bounanos  <vcs@enotty.net>
+
+    762729f: Fix millisleep function
+
+2009-07-23  David Freese  <w1hkj@w1hkj.com>
+
+    e2b3340: MT63 transmit bug fix
+
 3.12
 
 2009-07-13  Stelios Bounanos  <vcs@enotty.net>
 
-	3537f62: Add RSID notifications
-	2a4cd68: Improve frequency display kb entry
+    3537f62: Add RSID notifications
+    2a4cd68: Improve frequency display kb entry
 
 2009-07-11  David Freese  <w1hkj@w1hkj.com>
 
-	9c291a8: Enable XMLRPC QSY capability
+    9c291a8: Enable XMLRPC QSY capability
 
 2009-07-06  Stelios Bounanos  <vcs@enotty.net>
 
-	deea0f6: Add ITU zone to countries list
-	d54a2ca: Fix compilation on glibc 2.10
+    deea0f6: Add ITU zone to countries list
+    d54a2ca: Fix compilation on glibc 2.10
 
 2009-07-02  David Freese  <w1hkj@w1hkj.com>
 
-	9de9eb5: Xmlrpc mods
-	07a01b1: Logbook bug fix
+    9de9eb5: Xmlrpc mods
+    07a01b1: Logbook bug fix
 
 2009-07-01  Stelios Bounanos  <vcs@enotty.net>
 
-	42b638d: Fix socket fd leak
-	58c2f8b: Fix compilation error and warnings on 64bit archs
-	c07ec21: Add generic notifier
-	88bedac: Add dragging to table widget
-	757a8f8: Simplify RE classes
-	cbf0d87: Extend macro editor
-	53a2820: Improve dxcc, spot, pskrep performance
-	9648c30: Remove handling for REs without backref support
-	1b474a2: Fix config input field labels
-	d6d5974: Add Fl_Input2 mouse wheel handling
-	bf4cea4: Add automatic FText text_area resizing
-	e803fcd: Improve FText drag and drop
-	ec26eb6: Add band to RX text tooltip
-	8283833: Add string join and split functions
-	d70ea69: Print build info in crash handler
-	f25b5d1: Fix azimuth_long_path
-	d11f6fe: Add frequency display text paste support
+    42b638d: Fix socket fd leak
+    58c2f8b: Fix compilation error and warnings on 64bit archs
+    c07ec21: Add generic notifier
+    88bedac: Add dragging to table widget
+    757a8f8: Simplify RE classes
+    cbf0d87: Extend macro editor
+    53a2820: Improve dxcc, spot, pskrep performance
+    9648c30: Remove handling for REs without backref support
+    1b474a2: Fix config input field labels
+    d6d5974: Add Fl_Input2 mouse wheel handling
+    bf4cea4: Add automatic FText text_area resizing
+    e803fcd: Improve FText drag and drop
+    ec26eb6: Add band to RX text tooltip
+    8283833: Add string join and split functions
+    d70ea69: Print build info in crash handler
+    f25b5d1: Fix azimuth_long_path
+    d11f6fe: Add frequency display text paste support
 
 2009-06-30  David Freese  <w1hkj@w1hkj.com>
 
-	3bad2d4:     xmlrpc mods
+    3bad2d4:     xmlrpc mods
 
 2009-06-12  Stelios Bounanos  <vcs@enotty.net>
 
-	419123c: Fix text echo functions
-	2a83da3: Remove FText text colour adjustment
-	7a87b0b: Always set the FText cursor colour
+    419123c: Fix text echo functions
+    2a83da3: Remove FText text colour adjustment
+    7a87b0b: Always set the FText cursor colour
 
 2009-06-12  David Freese  <w1hkj@w1hkj.com>
 
-	a8dfa58: Logbook bug fix
-	9b7786f: RigCAT mods
+    a8dfa58: Logbook bug fix
+    9b7786f: RigCAT mods
 
 2009-06-01  Stelios Bounanos  <vcs@enotty.net>
 
-	9f7b002: Fix Contest Country Files callsign lookup
+    9f7b002: Fix Contest Country Files callsign lookup
 
 2009-06-01  David Freese  <w1hkj@w1hkj.com>
 
-	b539c1c: ADIF_2.2.3 compliance
-	8fc582e: Cut number mod for CW
+    b539c1c: ADIF_2.2.3 compliance
+    8fc582e: Cut number mod for CW
 
 2009-05-26  dave  <dave@linux-dev.(none)>
 
-	7690a1c: FLARQ
+    7690a1c: FLARQ
 
 2009-05-26  Stelios Bounanos  <vcs@enotty.net>
 
-	d4b1a03: Merge flarq
-	91a1425: Move setup_nls function
-	9543fa7: Move make_pixmap function
-	ada43f4: Add new FText classes
-	bf6a2c3: Add thread id logging
-	8207c62: Prefer ALSA default devices
-	d04b780: Fix initial window sizes
-	4f90ecf: Fix format strings
+    d4b1a03: Merge flarq
+    91a1425: Move setup_nls function
+    9543fa7: Move make_pixmap function
+    ada43f4: Add new FText classes
+    bf6a2c3: Add thread id logging
+    8207c62: Prefer ALSA default devices
+    d04b780: Fix initial window sizes
+    4f90ecf: Fix format strings
 
 2009-05-16  David Freese  <w1hkj@w1hkj.com>
 
-	6b6cad9: PSK search algorithm
+    6b6cad9: PSK search algorithm
 
 2009-05-12  Stelios Bounanos  <vcs@enotty.net>
 
-	b95b8e1: Add win32 installer support
-	d626273: Fix VPATH builds
+    b95b8e1: Add win32 installer support
+    d626273: Fix VPATH builds
 
 2009-05-05  David Freese  <w1hkj@w1hkj.com>
 
-	b4112de: Added <RSID:on|off|t>, <AFC:on:off|t> macro tags
-	7ae826f: RTTY pseudo output, corrected stop bit inversion
+    b4112de: Added <RSID:on|off|t>, <AFC:on:off|t> macro tags
+    7ae826f: RTTY pseudo output, corrected stop bit inversion
 
 2009-05-02  Stelios Bounanos  <vcs@enotty.net>
 
-	ae5b9ca: Add more PNG text comments
-	974e1ec: Remove JPEG write support
-	44eceae: Fix xmlrpc-c m4 macro
+    ae5b9ca: Add more PNG text comments
+    974e1ec: Remove JPEG write support
+    44eceae: Fix xmlrpc-c m4 macro
 
 2009-05-02  David Freese  <w1hkj@w1hkj.com>
 
-	b030b4b: Fix OS dependent compile error
-	abc11f7: Updated memory mapped rig contol
+    b030b4b: Fix OS dependent compile error
+    abc11f7: Updated memory mapped rig contol
 
 2009-04-26  Stelios Bounanos  <vcs@enotty.net>
 
-	31e1902: Add missing includes
-	6b2260c: Macro changes
-	8f37399: Fix possible trx_startup deadlock
-	edca452: Fix Makefile DEBUG flag
+    31e1902: Add missing includes
+    6b2260c: Macro changes
+    8f37399: Fix possible trx_startup deadlock
+    edca452: Fix Makefile DEBUG flag
 
 2009-04-25  David Freese  <w1hkj@w1hkj.com>
 
-	affae09: CW default WPM (numeric keypad *) bug fix
+    affae09: CW default WPM (numeric keypad *) bug fix
 
 2009-04-23  Stelios Bounanos  <vcs@enotty.net>
 
-	f7309ef: Make the combo box popup modal
-	ed0ae5c: Fix OS X native file selector
-	88b3fd7: Fix uHRouter and parport PTT
-	9c63531: Fix format string
+    f7309ef: Make the combo box popup modal
+    ed0ae5c: Fix OS X native file selector
+    88b3fd7: Fix uHRouter and parport PTT
+    9c63531: Fix format string
 
 2009-04-23  David Freese  <w1hkj@w1hkj.com>
 
-	8944198: CW replay bug
-	fc50717: CW Farnsworth timing addition
-	63ccc2f: MinGW serial i/o, hamlib, rigcat mods
+    8944198: CW replay bug
+    fc50717: CW Farnsworth timing addition
+    63ccc2f: MinGW serial i/o, hamlib, rigcat mods
 
 2009-04-18  Stelios Bounanos  <vcs@enotty.net>
 
-	206f815: Fix build without hamlib
+    206f815: Fix build without hamlib
 
 2009-04-18  David Freese  <w1hkj@w1hkj.com>
 
-	a9c21e5: Escape key bug fix
-	d2674d5: Macro <XOUT> parse error fix
+    a9c21e5: Escape key bug fix
+    d2674d5: Macro <XOUT> parse error fix
 
 2009-04-17  Stelios Bounanos  <vcs@enotty.net>
 
-	9e060b8: Update version output
-	77bc966: Use band functions in logbook
-	2124791: Add functions to set the socket buffer size
-	4b1292c: Improve logging and error notification
-	d73c8fd: Add OS X and MinGW stack tracing
-	e192d1d: Add preliminary support for MinGW
-	01fd3d9: Change set_log macro
-	9d56656: Clean up headers
-	b4bf47f: Distribute cr.sh test script
+    9e060b8: Update version output
+    77bc966: Use band functions in logbook
+    2124791: Add functions to set the socket buffer size
+    4b1292c: Improve logging and error notification
+    d73c8fd: Add OS X and MinGW stack tracing
+    e192d1d: Add preliminary support for MinGW
+    01fd3d9: Change set_log macro
+    9d56656: Clean up headers
+    b4bf47f: Distribute cr.sh test script
 
 3.11
-    1)  FText changes - changed the FText tooltip display function to use a 
+    1)  FText changes - changed the FText tooltip display function to use a
         string stream
     2)  Update config UI
         Move rx text extraction and output options to the same tab
@@ -157,12 +167,12 @@
     3)  Add LoTW and eQSL hints to dxcc popup
         This uses the following files:
            http://www.hb9bza.net/lotw/lotw1.txt in ~/.fldigi/lotw1.txt
-           http://www.eqsl.cc/QSLCard/DownloadedFiles/AGMemberList.txt in 
+           http://www.eqsl.cc/QSLCard/DownloadedFiles/AGMemberList.txt in
                ~/.fldigi/AGMemberList.txt or ~/.fldigi/eqsl.txt
     5)  Add benchmark and batch decoding switches
-        This patch adds a new configure switch (--enable-benchmark) which 
+        This patch adds a new configure switch (--enable-benchmark) which
         builds a binary suitable for measuring the modems' decoding speed.
-        The new --benchmark-* switches can also be used to batch-decode audio 
+        The new --benchmark-* switches can also be used to batch-decode audio
         files if sndfile support is enabled.
     6)  Fix uhrouter support
         Add function to run the uhrouter program on OS X
@@ -172,34 +182,34 @@
     8)  Fix local strcasestr
     9)  Fix new version check; add new download URL
     10) Add PSK reporter activity text field
-        This patch adds a button and text field to the main window rig control 
-        frame that can be used to QSY to frequencies around which there have 
+        This patch adds a button and text field to the main window rig control
+        frame that can be used to QSY to frequencies around which there have
         been recent reception reports in a particular geographic area. The area
         is determined by the field text, which must be an IARU grid prefix. If
-        the field is empty, the first two characters of the operator's locator 
-        are used.  If the locator is unset, pskreporter.info uses (currently) 
+        the field is empty, the first two characters of the operator's locator
+        are used.  If the locator is unset, pskreporter.info uses (currently)
         IP geolocation to approximate it.
-    
-        A popup menu is displayed when the user clicks the button or presses 
-        Return inside the text field (which may be empty).  The popup shows 
-        frequencies sorted by a measure of activity that gives more weight to 
-        transmissions.  If rig control is enabled, a frequency can be sent to 
+
+        A popup menu is displayed when the user clicks the button or presses
+        Return inside the text field (which may be empty).  The popup shows
+        frequencies sorted by a measure of activity that gives more weight to
+        transmissions.  If rig control is enabled, a frequency can be sent to
         the rig by selecting it.
-    
+
         The data is retrieved from this URL:
             http://pskreporter.info/cgi-bin/psk-freq.pl
-    
+
         Or, with an non-empty text field:
             http://pskreporter.info/cgi-bin/psk-freq.pl?grid=TEXT
     11) Add new quick_choice popups
-    12) Add fetch_http_gui.  This is a new function to download data over HTTP 
+    12) Add fetch_http_gui.  This is a new function to download data over HTTP
         while keeping the UI up to date
     13) Update guide
             Add newlines
             Update references to menus
             Use html name for (C) symbol
             Add version number to footer
-    14) Update platform ifdefs. Merge patches for FreeBSD submitted by Diane 
+    14) Update platform ifdefs. Merge patches for FreeBSD submitted by Diane
         Bruce.
     15) Use POSIX paths on cygwin
     16) Fix open URL function
@@ -240,10 +250,10 @@
         Added DSP filter width adjustment to RTTY
     40) Bug fix for Feld FM modes
     41) Added FEC_snr and FEC_freq_offset displays to status bar
-    42) Cosmetic changes to mt63 source - increase white space for easier 
+    42) Cosmetic changes to mt63 source - increase white space for easier
         reading
-    43) Olivia decoder/encoder improvements removed all extraneous 
-        double/integer/double conversions added new signal/noise computation 
+    43) Olivia decoder/encoder improvements removed all extraneous
+        double/integer/double conversions added new signal/noise computation
         method
     44) Bug fix - PTT via rigCAT serial h/w
         RTS/DTR was inaccessible
@@ -254,7 +264,7 @@
             Notes ADIF field is multi-line character
             Converts all ADIF comment fields to Notes; backward compatibility
     45) Bug fix to recent rtty mods - excessive cpu usage
-    46) Olivia pulse shape changes.   
+    46) Olivia pulse shape changes.
         Transmit noise floor was < -55 dB; mod changes it to -85 dB
     47) Initialise hamlib's RTS +12 setting
     48) Improve font handling
@@ -273,10 +283,10 @@
           A warning message is emitted in either case to let the user know that
         we did this.
     50) Add locator tooltip
-          Change the FTextView string lookup code to recognise locator strings 
+          Change the FTextView string lookup code to recognise locator strings
         and display a QRB & QTE tooltip (thanks Thomas Osterried, DL9SAU).  The
         Control key can be held down to force a callsign lookup.
-          Also move FTextEdit menu/Clear to the end of the edit command group, 
+          Also move FTextEdit menu/Clear to the end of the edit command group,
         and simplify the FTextView menu handling for the Exchange field.
     51) Close PTT when exiting
     52) Bug fix ... error in extracting font_number from font_name
@@ -299,7 +309,7 @@
         Override Fl_Text_Display's textfont methods.
 
 3.1
-      1) Changes to irrxml functions; 
+      1) Changes to irrxml functions;
          added main.set_sideband <USB/LSB>
          added log.set_call <CALL>
       2) Change to macro timer implementation - bug fix for Windows
@@ -308,29 +318,29 @@
       5) Added end of transmit feedback to ARQ client when transmit is stopped
          from within fldigi (T/R button pressed).
       6) XML-RPC fixes & simplification of XML-RPC error handling.
-	  7) Added simple XML-RPC access control with three new switches
-  		     --xmlrpc-allow REGEX  only allow matching methods
+      7) Added simple XML-RPC access control with three new switches
+             --xmlrpc-allow REGEX  only allow matching methods
              --xmlrpc-deny REGEX   ignore matching methods
-             --xmlrpc-list         list methods
+             --xmlrpc-list       list methods
          For example: fldigi --xmlrpc-deny 'main.tx|main.run_macro' or the
          shorter 'main.(tx|run_macro)' will unregister those two methods.
          Add --xmlrpc-list after an allow or deny switch to verify the results.
-      8) Added thread signal handling with SIGUSR2 to stop the xmlrpc and 
+      8) Added thread signal handling with SIGUSR2 to stop the xmlrpc and
          arq-socket threads and avoid the socket accept/timeout loop.
       9) Removed fl_thread wrappers to direct pthread calls
       10) Added various Qrunner updates
       11) Added rig control freq entry.  Click on Frequency Control widget for
           focus.  Enter digits in kHz.kHz.  <Enter> to use new value, <Esc> to
           cancel.
-      12) Added qsy function.  Moved the hamlib/rigcat/etc qsy if/else block 
+      12) Added qsy function.  Moved the hamlib/rigcat/etc qsy if/else block
           into its own function and replaced all instances of that code.
       13) Add waterfall mouse options
             a) Added Mouse tab to the W-fall tab(s).
-            b) Added waterfall qsy option, which works well with rigcat and 
+            b) Added waterfall qsy option, which works well with rigcat and
                hamlib (direct and rpc.rigd).
-            c) Added text field whose contents are appended to the RX window 
+            c) Added text field whose contents are appended to the RX window
                when the frequency is changed via a waterfall left click.
-               The text will be printed by strftime if it contains any 
+               The text will be printed by strftime if it contains any
                % characters, so it's possible to specify something like
                "<=== %x %H:%M ====>" for the RX divider line.
       14) Deprecated the "rtty is USB" configuration item.  fldigi adjusts
@@ -340,7 +350,7 @@
       16) Reduced the minimum main window height.
       17) Added fldigi-shell time command
             Try this "stress test":
-            time eval for (1..50) 
+            time eval for (1..50)
             { execute("modem.set_by_name BPSK31"); \
               execute("modem.set_by_name RTTY"); }
       18) Added brief message to the opening Rx text area indicating which
@@ -352,41 +362,41 @@
           by Stephane F8CFE to change rig frequency via the mouse wheel.
       22) Added <IDLE>NNN macro tag; causes signal to idle for NNN seconds
           before sending macro text.  Use:
-          
+
           <TX><IDLE>05
           Now is the time for all good men
           <RX><TIMER>20
-          
+
           will generate 5 seconds of idle, the text, and repeat after 20 sec's.
       23) Added new configuration options to set the waterfall width and height
           These and the docked digiscope configuration option require a program
           restart to take effect.
       24) Added rig control widgets to the main dialog qso panel.
-      25) Added icons for many of the menu items.  The menus now have both an 
+      25) Added icons for many of the menu items.  The menus now have both an
           icon and a text where appropriate.
       26) Added a check box for "Nag me about log entries".
-      27) Added a double click on waterfall functionality.  This will write a 
+      27) Added a double click on waterfall functionality.  This will write a
           special string to the Rx text window such as:
 
           <<2008-10-30T23:25Z BPSK-31 @ 3580000+1474>>
 
-          This record is then accessible using the mouse in the Rx text window.  
-          You can then left click on the string and fldigi will change mode, 
+          This record is then accessible using the mouse in the Rx text window.
+          You can then left click on the string and fldigi will change mode,
           rf frequency (if CAT), and audio frequency to the saved record.
 
-          The text field associated with "Insert on left click" (W-fall/Mouse 
+          The text field associated with "Insert on left click" (W-fall/Mouse
           tab) allows you to modify this behavior.  You enter the following for
-          the left click insertion text: <FREQ> and the double click changes 
+          the left click insertion text: <FREQ> and the double click changes
           to a single left click.
-      28) Added QSO data mouse binding.  Binds Rx text mouse-2 (right mouse 
-          button) to a handler that enters QSO data into the log fields. A 
-          limited amount of pattern matching is done to recognize RST reports 
-          and IARU locator strings. The text is meant to be middle-clicked 
-          roughly in the order in which it tends to appear in QSOs: 
-          callsign RST name QTH locator.  The other shortcuts (menu items and 
+      28) Added QSO data mouse binding.  Binds Rx text mouse-2 (right mouse
+          button) to a handler that enters QSO data into the log fields. A
+          limited amount of pattern matching is done to recognize RST reports
+          and IARU locator strings. The text is meant to be middle-clicked
+          roughly in the order in which it tends to appear in QSOs:
+          callsign RST name QTH locator.  The other shortcuts (menu items and
           Shift-click work as before).
-      29) Fixed IZDT time format. The timezone only makes sense in ILDT. With 
-          IZDT, it is always +0000, so we should be using "Z". This applies to 
+      29) Fixed IZDT time format. The timezone only makes sense in ILDT. With
+          IZDT, it is always +0000, so we should be using "Z". This applies to
           macros which use the <ZDT> and <IZDT> tags.
       30) Added double click in the Rx text window.  Program parses the word to
           target CALL, NAME, LOC and RSTin.
@@ -406,13 +416,13 @@
           f. changed qso-log-time to an automated clock
       37) Added dup field, time-span in minutes
       38) Added <CLRRX> macro tag - clear Rx pane
-      39) Change fldigi.log to fldigiYYYYMMDD.log, always append to file, 
+      39) Change fldigi.log to fldigiYYYYMMDD.log, always append to file,
           YYYYMMDD in GMT
       40) Added Olivia Tones/BW display in status bar
       41) Split st/cnty into state county fields, added country field
       42) Added time_on to the logbook
       43) Change logbook text export to tab delimited format
-      44) Added ability to export selected records to ADIF / CSV with 
+      44) Added ability to export selected records to ADIF / CSV with
           fields specified
       45) Fixed bug in transfering frequency to logbook in Khz vice Mhz format.
       46) Modified the viewpsk search algorithm
@@ -423,14 +433,14 @@
       48) Fixed log timer
       50) Changed Olivia status fields:
              Added 8/250 to quick change menu and Op Mode submenu
-             Widened mode status field so that the BW/tones string will fit 
-             next to the modem name using update function put_MODEstatus() 
+             Widened mode status field so that the BW/tones string will fit
+             next to the modem name using update function put_MODEstatus()
              with variable arguments
              Restored frequency offset status field
-      51) Fixed mode status button; Clear button state when the popup is 
+      51) Fixed mode status button; Clear button state when the popup is
           dismissed. Restore focus to the TX text. Change AFC,SQL button labels
           Removed all empty labels
-      52) Added Fl_Input2 up/downcase key bindings.  Added shell/emacs 
+      52) Added Fl_Input2 up/downcase key bindings.  Added shell/emacs
           keybindings: M-u uppecase, M-l lowercase, M-c capitalise
       53) Added preliminary contest country file support
       54) Added FText country information tooltip.  Tooltip is displayed when
@@ -448,7 +458,7 @@
           Corrected logic.
       62) Logbook text i/o bug fixes.  Changed all logbook text out to use CRLF
           convention in MS.  Fixed "-30" bug in text output for comment field.
-      63) Fix logbook update.  Maintain scroll position when updating QSO log 
+      63) Fix logbook update.  Maintain scroll position when updating QSO log
           fields.
       64) Fix PSK browser crash
       65) Organize HomeDir contents.  HomeDir (~/.fldigi) (<user>/fldigi.files)
@@ -456,7 +466,7 @@
             rigs, scripts, palettes, logs, images, help, macros & temp
           correctly populated with the corresponding default files.
       66) Additional state variables.
-          Save & restore state of: ReceiveText quick entry, ReceiveText word 
+          Save & restore state of: ReceiveText quick entry, ReceiveText word
           wrap and TransmitText word wrap
       67) Fixed --config-dir failure on MS
       68) Changed qso clear to only clear the search field on logbook dialog
@@ -479,7 +489,7 @@
       82) Fixed hamlib's azimuth calculation.  Disabled conditional compilation
           for locator.c.
       83) Modified show callsign (hover over Rx text) behavior to use logbook
-          data if available.  Popup will then show Name, Last QSO Date 
+          data if available.  Popup will then show Name, Last QSO Date
           & Az/Dist based on logbook record.  Otherwise the data shown is based
           on the cty.dat file.
       84) Updated build system
@@ -523,13 +533,13 @@
       97) Suppressed clearing Country, Loc and Azimuth fields by a call sign
           database query when the db does not support those fields
       98) Added missing tooltips to all configuration items
-      99) Windows does not recognize '\2' reference tag in regular expression 
+      99) Windows does not recognize '\2' reference tag in regular expression
           defined in pskrep.cxx.  Changed to a combination of regexec and
           string find processing to obtain required spot parsing on Windows.
      100) Fix to KDE desktop refocus causing QSO fields to changed state.
      101) Memory leak fix
      102) KDE desktop / xdg-open fault
-     103) Cosmetic change to align Xchg fields.     
+     103) Cosmetic change to align Xchg fields.
 
 
 3.03
@@ -538,8 +548,8 @@
       3) Added QRZ cdrom / database location specifier with auto-search
       4) Bug fix for sound on OS X 10.4
       5) Bug fix for Socket Server. Added error checking for listen().
-      6) Update to build scripts.  Corrected compiler flags for building 
-         universal binary on OS X. Changed to a more reliable way of linking 
+      6) Update to build scripts.  Corrected compiler flags for building
+         universal binary on OS X. Changed to a more reliable way of linking
          hamlib statically.  Updated app bundling script.
       7) Set tooltip font - tooltip changed to use same font and size selected
          with the command line switch --font.  Set default font sizes on OS X.
@@ -583,7 +593,7 @@
           values ($NAME $QTH $LOC).
       29) Added "tlf", The Left Foot, contest program support.  fldigi accepts
           tx data and returns rx data to tlf. (Linux primarily).
-      
+
 3.02
       1) Added hamlib interface for rig control
       2) Improved rigCAT serial communications on Windows
@@ -591,7 +601,7 @@
 3.01
       1) Compile switch changes for OS-X
       2) Corrected serial port discovery on Windows
-      
+
 3.0   1) Added EXEC macro
       2) Added mousewheel over Macro buttons to move between macro button sets.
       3) Fixed bug in Olivia signal level display.
@@ -601,10 +611,10 @@
          Default is floating digiscope without the fixed scope
       6) Added save as png to mfsk-pic reception
       7) Added RTTY Baudot Unshift-On-Space configuration for Rx and Tx
-      8) Modified mouse wheel handler to accommodate horizontal or vertical 
+      8) Modified mouse wheel handler to accommodate horizontal or vertical
          squelch slider.
       9) Call scopeview->size_range when the floating digiscope changes mode;
-         so that the phase and crosshair rtty scope should maintain aspect 
+         so that the phase and crosshair rtty scope should maintain aspect
          ratio.
      10) Modified the Ctrl+Left/Right mouse button combo to not drag the marker.
      11) Deprecate the --resample switch in favour of the new menu in the Audio
@@ -649,23 +659,23 @@
      24) Use Fl_Preferences for the status
          The new status filename is ~/.fldigi/status to avoid breaking older
          versions.
-     25) Stacktrace updates - Some cosmetic changes to the output. Stack and 
+     25) Stacktrace updates - Some cosmetic changes to the output. Stack and
          version info no longer printed twice when a signal is caught.
-     26) Use PortAudio extensions - Probes for PortAudio extensions with 
+     26) Use PortAudio extensions - Probes for PortAudio extensions with
          dlopen. right now the only extension used is the one that changes the
          JACK client name.
      27) Updated PulseAudio code so that non-ppm resampling is performed by
          PulseAudio when that sound i/o system is used.
      28) Changed the capture resampling code for PortAudio and PulseAudio to
          use libsamplerate's callback API.
-     29) Use fileselect filter values.  Made the audio format independent of 
-         the filename suffix in the generate/capture/playback code; 
+     29) Use fileselect filter values.  Made the audio format independent of
+         the filename suffix in the generate/capture/playback code;
          uses the fileselector filter value instead.
      30) Update fileselector - Fileselector now remembers previous directory.
-     31) MFSK bug fixes. The "broken image transmit" was due to stopflag not 
+     31) MFSK bug fixes. The "broken image transmit" was due to stopflag not
          being initialised in the mfsk ctor. Image window processing changed
          to clearing the widget before redrawing the window.
-     32) Fix crash with missing mixer device - Call OpenMixer in a try block 
+     32) Fix crash with missing mixer device - Call OpenMixer in a try block
          and handle the exception.
      33) Changed DominoEX-FEC secondary char lookup to a std::map type.
      34) Corrected two coding errors which produced compile warnings in
@@ -677,11 +687,11 @@
      39) Added transmit & receive Reed Solomon mode identifier.  Automatic
          detection, mode change and frequency centering during receive.
          ID sent at beginning of each transmission (toggled on Misc tab).
-     40) Fixed bug in waterfall update method that could cause a seg fault 
+     40) Fixed bug in waterfall update method that could cause a seg fault
          under certain conditions.
      41) Change to PortAudio samplerate probing.
      42) Increased average power level in MT-63 mode.
-     43) Significantly decreased cpu usage with changes to qrunner and complex 
+     43) Significantly decreased cpu usage with changes to qrunner and complex
          classes.
      44) Forced audio-in channel on PortAudio and PulseAudio to 1 channel (left)
          to accommodate Vista MME interface.
@@ -692,8 +702,8 @@
       1) Bug fix for QRZ CDROM access
 2.10.1
       1) Fixed bug in MODEM macro that caused TX to hang
-      2) Fixed sound_init crash.  This would happen with an empty 
-         progdefaults.OSSdevice (e.g. new install) on a system without 
+      2) Fixed sound_init crash.  This would happen with an empty
+         progdefaults.OSSdevice (e.g. new install) on a system without
          OSS devices.
       3) Deleted local copy of libsamplerate as it was deprecated.
       4) Deleted the fast text widgets that were a part of the early versions
@@ -733,32 +743,32 @@
          libsndfile C API. Added .au support (32bit floats, host endianness)
 
 2.08  1) Changes to build process:
-	     a. Use PortAudio's C API; the C++ bindings are no longer required
+         a. Use PortAudio's C API; the C++ bindings are no longer required
          b. Boost is no longer required when std::(tr1::)bind is available,
             as is the case with g++ >= 4.0
          c. Autodetect TLS support
-         d. Use std::bind (or std::tr1::bind) if available. 
-         e. Add m4 macros for TLS autodetection (the --enable-tls/--disable-tls 
+         d. Use std::bind (or std::tr1::bind) if available.
+         e. Add m4 macros for TLS autodetection (the --enable-tls/--disable-tls
             switches are still supported).
          f. Minor changes to configure.ac
       2) qrunner cleanups
       3) New ringbuffer and other utility code
-      4) New item in the sample rate menu: "Native" selects the hardware's 
-         preferred sample rate. Breaks backward compatibility: saving this 
-         with fldigi-2.08 will result in an "invalid sample rate" message if 
-         the same fldigi_def.xml file is then used with 2.07 -- until "Auto" 
+      4) New item in the sample rate menu: "Native" selects the hardware's
+         preferred sample rate. Breaks backward compatibility: saving this
+         with fldigi-2.08 will result in an "invalid sample rate" message if
+         the same fldigi_def.xml file is then used with 2.07 -- until "Auto"
          or a specific value is selected again.
-      5) Correction to the waterfall's "casual tuning" feature: don't set the 
+      5) Correction to the waterfall's "casual tuning" feature: don't set the
          modem to SIGSEARCH when the right mouse button is released.
       6) Set locale only for LC_TIME
       7) Add .desktop, move icons to data/; for deb / rpm build compatibility
-      8) Exception trapping and print to stdout on program failure 
+      8) Exception trapping and print to stdout on program failure
       9) Fixes to modem class logic:
          a. Olivia  Corrected uninitialized variables.
          b. MFSK    Corrected uninitialized variables. Fixed memory leak.
-         c. CW      Corrected uinitialized variable. 
+         c. CW    Corrected uinitialized variable.
          d. Throb   Fix memory leak caused by using the wrong delete operator.
-         e. PSK     Corrected uninitialized variables.
+         e. PSK  Corrected uninitialized variables.
      10) Rigcat/Hamlib dialog.  Added mode, sideband, and current audio
          frequency to "saved" frequencies list.
 
@@ -795,7 +805,7 @@
          a) Throb modems failing to stop with t/r button
          b) Modem startup problem when switching modes.
          c) crlf fix for received characters
-         d) scrollbar fix for extended text widgets         	  
+         d) scrollbar fix for extended text widgets
 2.0   1) Increased TxPPM to +/- 50000 to match the RxPPM range
       2) Changed all audio i/o to separate 2 channel control (stereo)
       3) Added right channel CW QRQ signal
@@ -809,7 +819,7 @@
       10) Added "Test" capability to save Rx or Tx waveforms in ".wav"
           format and to play them back for testing modem decoders.
       11) Replaced text editing widgets with new widgets capable of cut,
-          copy and paste. 
+          copy and paste.
           ===> temporarily disabled pending resolution of cpu% problem
       12) Added new functions on text widget popup menus
       13) Added a QSY undo (right button press)
@@ -842,40 +852,40 @@
       24  Changes to several modem code structures associated with qrunner
           implementation.
       25) Text widgets support additional text styles:
-		  	 NATTR : FOREGROUND_COLOR
-			 XMIT  : FL_RED  - used in Rx widget to show Xmt'd text
-			 CTRL  : FL_DARK_RED - used in Rx/Tx widgets for control chars
-			 SKIP  : FL_BLUE - used in Rx/Tx for skipped chars (eg: Tx ON/OFF)
-			 ALTR  : FL_DARK_GREEN - used in Rx widget for quick view of signal
-			         when right-clicking on a waterfall signal
-      26) Added additional control/mode commands to the pskmail/ARQ SYSV 
+             NATTR : FOREGROUND_COLOR
+             XMIT  : FL_RED  - used in Rx widget to show Xmt'd text
+             CTRL  : FL_DARK_RED - used in Rx/Tx widgets for control chars
+             SKIP  : FL_BLUE - used in Rx/Tx for skipped chars (eg: Tx ON/OFF)
+             ALTR  : FL_DARK_GREEN - used in Rx widget for quick view of signal
+                     when right-clicking on a waterfall signal
+      26) Added additional control/mode commands to the pskmail/ARQ SYSV
           message queue processor.  Mode command strings are now:
-             CW          : <cmd><mode>CW</mode></cmd>
+             CW       : <cmd><mode>CW</mode></cmd>
              DOMINO EX4  : <cmd><mode>DOMINOEX4</mode></cmd>
              DOMINO EX5  : <cmd><mode>DOMINOEX5</mode></cmd>
              DOMINO EX8  : <cmd><mode>DOMINOEX8</mode></cmd>
              DOMINO EX11 : <cmd><mode>DOMINOEX11</mode></cmd>
              DOMINO EX16 : <cmd><mode>DOMINOEX16</mode></cmd>
              DOMINO EX22 : <cmd><mode>DOMINOEX22</mode></cmd>
-             MFSK8       : <cmd><mode>MFSK8</mode></cmd>
-             MFSK16      : <cmd><mode>MFSK8</mode></cmd>
-             PSK31       : <cmd><mode>PSK31</mode></cmd>
-             PSK63       : <cmd><mode>PSK63</mode></cmd>
-             PSK125      : <cmd><mode>PSK125</mode></cmd>
-             PSK250      : <cmd><mode>PSK250</mode></cmd>
-             RTTY        : <cmd><mode>RTTY</mode></cmd>
-             TUNE        : <cmd><mode>PTTTUNE</mode></cmd>
+             MFSK8     : <cmd><mode>MFSK8</mode></cmd>
+             MFSK16   : <cmd><mode>MFSK8</mode></cmd>
+             PSK31     : <cmd><mode>PSK31</mode></cmd>
+             PSK63     : <cmd><mode>PSK63</mode></cmd>
+             PSK125   : <cmd><mode>PSK125</mode></cmd>
+             PSK250   : <cmd><mode>PSK250</mode></cmd>
+             RTTY       : <cmd><mode>RTTY</mode></cmd>
+             TUNE       : <cmd><mode>PTTTUNE</mode></cmd>
                this will cause fldigi to enter the TUNE mode for a very brief
                100 milliseconds.
       27) Abandoned the original fldigi.def configuration file and changed to
-          an xml based configuration file.  New file is 
+          an xml based configuration file.  New file is
           $HOME/.fldigi/fldigi_def.xml
-          You may delete all occurances of 
+          You may delete all occurances of
               $HOME/.fldigi/fldigi.def, and
               $HOME/.fldigi/FLDIGI_XML.DEF
           Future changes to the configuration should never require deleting the
           old configuration file.
-          You will need to reconfigure and save the program configuration the 
+          You will need to reconfigure and save the program configuration the
           first time the new version of fldigi is executed.
       28) Added numerous command line switches which control the look and feel.
           use "fltk --help" from a terminal window to view the switch options.
@@ -891,23 +901,23 @@
          forms.
          The combo widget for the rig selection cannot be edited, but just
          selected from the pick list.
-         The combo widget for the frequency entry (no rig control) in the 
-         qso area can now be modified by direct keyboard entry and also 
+         The combo widget for the frequency entry (no rig control) in the
+         qso area can now be modified by direct keyboard entry and also
          from the pick list.  You still need to update the pick list via
          the $HOME/.fldigi/frequencies.def file.
       5) Modified pskmail to test for failure in reading gmfsk_autofile
       6) Wholesale replacement of font browser dialog to correct potential
          segfaults with some TT fonts.
       7) Modified pskmail-to-fldigi i/o schema to allow all control and
-         data files to be placed in either the 
-         	$HOME/pskmail.files or the 
-         	./ directory.
+         data files to be placed in either the
+            $HOME/pskmail.files or the
+            ./ directory.
          The control files are:
-         	PSKmailserver
-         	PSKmailclient
+            PSKmailserver
+            PSKmailclient
          The data files are:
-         	pskmail_out (formerly gmfsk_autofile)
-         	mail-io.log (formerly gMFSK.log)
+            pskmail_out (formerly gmfsk_autofile)
+            mail-io.log (formerly gMFSK.log)
 1.33  1) Modified Sound Card mixer dialog and interface code
       2) Modified CW decoder and morse speed tracking algorithm with a
          new CW configuration tab layout and new CW controls.
@@ -917,18 +927,18 @@
 1.32  1) Correct compile problem for 64 bit compiler
       2) Minor bug fix for Olivia initialization
 
-1.31  1) Correct problem with cpu% in CW modem during transmit idle 
+1.31  1) Correct problem with cpu% in CW modem during transmit idle
          (no keyboard activity)
 
 1.30  1) New macro definitions with built-in editor
       2) loadable waterfall palettes
-      3) all qso's saved to the log are appended to an ADIF file in the 
+      3) all qso's saved to the log are appended to an ADIF file in the
          $HOME/.fldigi folder
       4) significantly improved Psk decoder
-      5) significantly improved DominoEX decoder    capable of decoding signals 
+      5) significantly improved DominoEX decoder    capable of decoding signals
          anywhere within a 400 Hz bandwidth without AFC
 
-1.24  1) Bug fix for serial i/o to disable XON/XOFF protocol effected 
+1.24  1) Bug fix for serial i/o to disable XON/XOFF protocol effected
          rigs with binary i/o for rig control
 
 1.23  1) Bug fix for saving state of PTT selection between sessions
@@ -937,17 +947,17 @@
 
 1.21  1) Corrects bug in RigCtl dialog for PTT selection on serial line
 
-1.20  1) Improved rig control and rig control dialog. Now possible to 
-         control rig without using hamlib - this is a new paradigm and you 
-         should read the on-line help that explains how to use the rigCAT 
+1.20  1) Improved rig control and rig control dialog. Now possible to
+         control rig without using hamlib - this is a new paradigm and you
+         should read the on-line help that explains how to use the rigCAT
          control interface.  rigCAT extended markup language definition files
          can be downloaded from the xml archives
       2) improved WWV calibration procedure
-    
+
 1.11  1) Added items to saved configuration
             a. view transmit signal preference
             b. send ID preference
-      2) Corrected failure to properly change sound card selection after 
+      2) Corrected failure to properly change sound card selection after
          initial program settings
       3) Internal changes to improve rx/tx thread processing
 
@@ -956,7 +966,7 @@
       3) Added auto-logger macro reference to macro definitions
       4) Online and download help updated for current version
 
-1.04  1) Fixes a hamlib shutdown problem for some rigs transceiver should 
+1.04  1) Fixes a hamlib shutdown problem for some rigs transceiver should
          be ON and connected before starting fldigi and during fldigi shutdown
 
 1.03  1) Improvements to pskmail server operation
