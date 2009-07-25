@@ -64,10 +64,9 @@ int mt63::tx_process()
 
     if (startflag == true) {
         startflag = false;
-        for (int i = 0; i < Tx->DataInterleave; i++) Tx->SendChar(0);
         if (progdefaults.mt63_usetones) {
             double maxval = 0.0;
-            for (int i = 0; i < Tx->DataInterleave / 2; i++) {
+            for (int i = 0; i < (bandwidth * progdefaults.mt63_tone_duration / 96); i++) {
                 Tx->SendTune( progdefaults.mt63_twotones );
                 for (int i = 0; i < Tx->Comb.Output.Len; i++)
                     if (fabs(Tx->Comb.Output.Data[i]) > maxval)
@@ -77,6 +76,7 @@ int mt63::tx_process()
                 ModulateXmtr((Tx->Comb.Output.Data), Tx->Comb.Output.Len);
             }
         }
+        for (int i = 0; i < Tx->DataInterleave; i++) Tx->SendChar(0);
     }
 
 	c = get_tx_char();

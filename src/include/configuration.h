@@ -146,6 +146,7 @@
         ELEM_(bool, mt63_rx_integration, "MT63INTEGRATION", false)                      \
         ELEM_(bool, mt63_twotones, "MT63TWOTONES", true)                                \
         ELEM_(bool, mt63_usetones, "MT63USETONES", true)                                \
+        ELEM_(int, mt63_tone_duration, "MT63TONEDURATION", 4)                           \
 /* Waterfall & UI */                                                                    \
         ELEM_(uchar, red, "", 0)                                                        \
         ELEM_(uchar, green, "", 255)                                                    \
