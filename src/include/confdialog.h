@@ -142,6 +142,7 @@ extern Fl_Check_Button *btnMT63_8bit;
 extern Fl_Check_Button *btnMT63_rx_integration;
 extern Fl_Check_Button *btnMT63_usetones;
 extern Fl_Check_Button *btnMT63_upper_lower;
+extern Fl_Spinner *MT63_tone_duration;
 extern Fl_Group *tabOlivia;
 extern Fl_Choice *mnuOlivia_Bandwidth;
 extern Fl_Choice *mnuOlivia_Tones;

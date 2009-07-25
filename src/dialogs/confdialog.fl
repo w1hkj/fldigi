@@ -89,8 +89,8 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
-        xywh {0 25 500 345} when 1
+        callback {progdefaults.changed = true;} open
+        xywh {0 25 500 345} when 1 hide
       } {
         Fl_Group {} {
           label Station open
@@ -701,14 +701,14 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 500 345} hide
+        xywh {0 25 500 345}
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 500 345} selection_color 50 align 9
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 500 320} selection_color 50
@@ -1031,10 +1031,10 @@ progdefaults.changed = true;}
           }
           Fl_Group tabMT63 {
             label {MT-63} open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {open
-              xywh {5 60 490 170} box ENGRAVED_FRAME align 21
+              xywh {5 60 490 115} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnmt63_interleave {
                 label {64-bit (long) interleave}
@@ -1060,6 +1060,10 @@ progdefaults.changed = true;}
                 tooltip {Enable for very weak signals} xywh {150 138 190 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.mt63_rx_integration);}
               }
+            }
+            Fl_Group {} {open
+              xywh {6 176 490 100} box ENGRAVED_FRAME
+            } {
               Fl_Check_Button btnMT63_usetones {
                 label {Transmit lower start tone}
                 callback {progdefaults.mt63_usetones = o->value();
@@ -1071,16 +1075,23 @@ if (!o->value()) {
 else
     btnMT63_upper_lower->activate();
 progdefaults.changed = true;}
-                xywh {150 168 200 20} down_box DOWN_BOX
+                xywh {150 184 200 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.mt63_usetones);}
               }
               Fl_Check_Button btnMT63_upper_lower {
                 label {Transmit upper start tone}
                 callback {progdefaults.mt63_twotones = o->value();
 progdefaults.changed = true;}
-                xywh {150 198 200 20} down_box DOWN_BOX
+                xywh {150 214 200 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.mt63_twotones);}
                 code1 {if (!btnMT63_usetones->value()) o->deactivate();}
+              }
+              Fl_Spinner MT63_tone_duration {
+                label {Tone Duration (secs)}
+                callback {progdefaults.mt63_tone_duration=(int)o->value();
+progdefaults.changed = true;} selected
+                xywh {150 240 40 25} align 8 maximum 10 value 4
+                code0 {o->value(progdefaults.mt63_tone_duration);}
               }
             }
           }
