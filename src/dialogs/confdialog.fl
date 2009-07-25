@@ -51,6 +51,8 @@ decl {\#include "logsupport.h"} {}
 
 decl {\#include "notify.h"} {} 
 
+decl {\#include "debug.h"} {} 
+
 decl {\#if USE_HAMLIB
   \#include "hamlib.h"
 \#endif} {} 

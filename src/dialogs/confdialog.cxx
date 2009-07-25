@@ -17,6 +17,7 @@
 #include "pskrep.h"
 #include "logsupport.h"
 #include "notify.h"
+#include "debug.h"
 #if USE_HAMLIB
   #include "hamlib.h"
 #endif
