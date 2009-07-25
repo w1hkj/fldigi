@@ -80,7 +80,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {271 321 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
+    xywh {646 121 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 505 372} color 50 selection_color 50
@@ -1032,7 +1032,7 @@ progdefaults.changed = true;}
             xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
-              xywh {5 60 490 85} box ENGRAVED_FRAME align 21
+              xywh {5 60 490 170} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnmt63_interleave {
                 label {64-bit (long) interleave}
@@ -1041,15 +1041,44 @@ progdefaults.mt63_interleave = 64;
 else
 progdefaults.mt63_interleave = 32;
 progdefaults.changed = true;}
-                tooltip {Use Long interleave (default)} xywh {150 78 185 20} down_box DOWN_BOX value 1
+                xywh {150 78 185 20} down_box DOWN_BOX value 1
                 code0 {o->value(0);if (progdefaults.mt63_interleave == 64) o->value(1);}
               }
               Fl_Check_Button btnMT63_8bit {
                 label {8-bit extended characters}
                 callback {progdefaults.mt63_8bit = o->value();
 progdefaults.changed = true;}
-                tooltip {Enable this for Latin-1 accented characters} xywh {150 113 205 20} down_box DOWN_BOX
+                tooltip {Enable this for Latin-1 accented characters} xywh {150 108 205 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.mt63_8bit);}
+              }
+              Fl_Check_Button btnMT63_rx_integration {
+                label {Long receive integration}
+                callback {progdefaults.mt63_rx_integration = o->value();
+progdefaults.changed = true;}
+                tooltip {Enable for very weak signals} xywh {150 138 190 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.mt63_rx_integration);}
+              }
+              Fl_Check_Button btnMT63_usetones {
+                label {Transmit lower start tone}
+                callback {progdefaults.mt63_usetones = o->value();
+if (!o->value()) {
+    btnMT63_upper_lower->value(0);
+    btnMT63_upper_lower->do_callback();
+    btnMT63_upper_lower->deactivate();
+}
+else
+    btnMT63_upper_lower->activate();
+progdefaults.changed = true;}
+                xywh {150 168 200 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.mt63_usetones);}
+              }
+              Fl_Check_Button btnMT63_upper_lower {
+                label {Transmit upper start tone}
+                callback {progdefaults.mt63_twotones = o->value();
+progdefaults.changed = true;}
+                xywh {150 198 200 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.mt63_twotones);}
+                code1 {if (!btnMT63_usetones->value()) o->deactivate();}
               }
             }
           }

@@ -833,6 +833,13 @@ Fl_Check_Button *btnMT63_usetones=(Fl_Check_Button *)0;
 
 static void cb_btnMT63_usetones(Fl_Check_Button* o, void*) {
   progdefaults.mt63_usetones = o->value();
+if (!o->value()) {
+    btnMT63_upper_lower->value(0);
+    btnMT63_upper_lower->do_callback();
+    btnMT63_upper_lower->deactivate();
+}
+else
+    btnMT63_upper_lower->activate();
 progdefaults.changed = true;
 }
 
@@ -2167,7 +2174,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { tabOperator = new Fl_Group(0, 25, 500, 345, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2752,11 +2758,11 @@ an merging"));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 500, 345, _("Modems"));
+        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 500, 345);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
           { tabCW = new Fl_Group(0, 50, 500, 320, _("CW"));
-            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 500, 320);
               tabsCW->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
@@ -2900,7 +2906,6 @@ an merging"));
                 cntCWdash2dot->type(1);
                 cntCWdash2dot->minimum(2.5);
                 cntCWdash2dot->maximum(4);
-                cntCWdash2dot->step(0.1);
                 cntCWdash2dot->value(3);
                 cntCWdash2dot->callback((Fl_Callback*)cb_cntCWdash2dot);
                 cntCWdash2dot->align(FL_ALIGN_RIGHT);
@@ -2911,7 +2916,6 @@ an merging"));
                 cntCWrisetime->type(1);
                 cntCWrisetime->minimum(0);
                 cntCWrisetime->maximum(15);
-                cntCWrisetime->step(0.1);
                 cntCWrisetime->value(4);
                 cntCWrisetime->callback((Fl_Callback*)cb_cntCWrisetime);
                 cntCWrisetime->align(FL_ALIGN_RIGHT);
@@ -3015,7 +3019,6 @@ an merging"));
                 valDominoEX_BW->type(1);
                 valDominoEX_BW->minimum(1);
                 valDominoEX_BW->maximum(2);
-                valDominoEX_BW->step(0.1);
                 valDominoEX_BW->value(1.5);
                 valDominoEX_BW->callback((Fl_Callback*)cb_valDominoEX_BW);
                 valDominoEX_BW->align(FL_ALIGN_RIGHT);
@@ -3030,7 +3033,6 @@ an merging"));
               { Fl_Value_Slider* o = valDomCWI = new Fl_Value_Slider(15, 207, 260, 20, _("CWI threshold"));
                 valDomCWI->tooltip(_("CWI detection and suppression"));
                 valDomCWI->type(1);
-                valDomCWI->step(0.01);
                 valDomCWI->textsize(14);
                 valDomCWI->callback((Fl_Callback*)cb_valDomCWI);
                 valDomCWI->align(FL_ALIGN_TOP);
@@ -3121,39 +3123,38 @@ an merging"));
             tabFeld->end();
           } // Fl_Group* tabFeld
           { tabMT63 = new Fl_Group(0, 50, 500, 320, _("MT-63"));
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 184);
+            tabMT63->hide();
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 170);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
               { Fl_Check_Button* o = btnmt63_interleave = new Fl_Check_Button(150, 78, 185, 20, _("64-bit (long) interleave"));
-                btnmt63_interleave->tooltip(_("Use Long interleave (default)"));
                 btnmt63_interleave->down_box(FL_DOWN_BOX);
                 btnmt63_interleave->value(1);
                 btnmt63_interleave->callback((Fl_Callback*)cb_btnmt63_interleave);
                 o->value(0);if (progdefaults.mt63_interleave == 64) o->value(1);
               } // Fl_Check_Button* btnmt63_interleave
-              { Fl_Check_Button* o = btnMT63_8bit = new Fl_Check_Button(150, 114, 205, 20, _("8-bit extended characters"));
+              { Fl_Check_Button* o = btnMT63_8bit = new Fl_Check_Button(150, 108, 205, 20, _("8-bit extended characters"));
                 btnMT63_8bit->tooltip(_("Enable this for Latin-1 accented characters"));
                 btnMT63_8bit->down_box(FL_DOWN_BOX);
                 btnMT63_8bit->callback((Fl_Callback*)cb_btnMT63_8bit);
                 o->value(progdefaults.mt63_8bit);
               } // Fl_Check_Button* btnMT63_8bit
-              { Fl_Check_Button* o = btnMT63_rx_integration = new Fl_Check_Button(150, 151, 167, 15, _("Long Rx Integration"));
+              { Fl_Check_Button* o = btnMT63_rx_integration = new Fl_Check_Button(150, 138, 190, 20, _("Long receive integration"));
                 btnMT63_rx_integration->tooltip(_("Enable for very weak signals"));
                 btnMT63_rx_integration->down_box(FL_DOWN_BOX);
                 btnMT63_rx_integration->callback((Fl_Callback*)cb_btnMT63_rx_integration);
                 o->value(progdefaults.mt63_rx_integration);
               } // Fl_Check_Button* btnMT63_rx_integration
-              { Fl_Check_Button* o = btnMT63_usetones = new Fl_Check_Button(150, 183, 133, 15, _("Use start tones"));
-                btnMT63_usetones->tooltip(_("Xmt startup tones in first / last frequency bins"));
+              { Fl_Check_Button* o = btnMT63_usetones = new Fl_Check_Button(150, 168, 200, 20, _("Transmit lower start tone"));
                 btnMT63_usetones->down_box(FL_DOWN_BOX);
                 btnMT63_usetones->callback((Fl_Callback*)cb_btnMT63_usetones);
                 o->value(progdefaults.mt63_usetones);
               } // Fl_Check_Button* btnMT63_usetones
-              { Fl_Check_Button* o = btnMT63_upper_lower = new Fl_Check_Button(150, 215, 136, 15, _("Upper && Lower"));
-                btnMT63_upper_lower->tooltip(_("Select for two / clear for only lower tone"));
+              { Fl_Check_Button* o = btnMT63_upper_lower = new Fl_Check_Button(150, 198, 200, 20, _("Transmit upper start tone"));
                 btnMT63_upper_lower->down_box(FL_DOWN_BOX);
                 btnMT63_upper_lower->callback((Fl_Callback*)cb_btnMT63_upper_lower);
                 o->value(progdefaults.mt63_twotones);
+                if (!btnMT63_usetones->value()) o->deactivate();
               } // Fl_Check_Button* btnMT63_upper_lower
               o->end();
             } // Fl_Group* o
@@ -3521,7 +3522,6 @@ an merging"));
                 valTHOR_BW->type(1);
                 valTHOR_BW->minimum(1);
                 valTHOR_BW->maximum(2);
-                valTHOR_BW->step(0.1);
                 valTHOR_BW->value(1.5);
                 valTHOR_BW->callback((Fl_Callback*)cb_valTHOR_BW);
                 valTHOR_BW->align(FL_ALIGN_RIGHT);
@@ -3536,7 +3536,6 @@ an merging"));
               { Fl_Value_Slider* o = valThorCWI = new Fl_Value_Slider(15, 218, 260, 20, _("CWI threshold"));
                 valThorCWI->tooltip(_("CWI detection and suppression"));
                 valThorCWI->type(1);
-                valThorCWI->step(0.01);
                 valThorCWI->textsize(14);
                 valThorCWI->callback((Fl_Callback*)cb_valThorCWI);
                 valThorCWI->align(FL_ALIGN_TOP);
@@ -4115,7 +4114,6 @@ ll with your audio device."));
                 valPCMvolume->tooltip(_("Set the sound card PCM level"));
                 valPCMvolume->type(1);
                 valPCMvolume->selection_color(FL_SELECTION_COLOR);
-                valPCMvolume->step(0.01);
                 valPCMvolume->value(0.8);
                 valPCMvolume->textsize(14);
                 valPCMvolume->callback((Fl_Callback*)cb_valPCMvolume);
