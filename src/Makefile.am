@@ -542,6 +542,7 @@ flarq_SOURCES += \
 	include/re.h \
 	include/socket.h \
 	include/stacktrace.h \
+	include/threads.h \
 	include/table.h \
 	include/util.h \
 	fileselector/FL/Fl_Native_File_Chooser.H \
@@ -551,6 +552,8 @@ flarq_SOURCES += \
 	misc/ascii.cxx \
 	misc/debug.cxx \
 	misc/stacktrace.cxx \
+	misc/threads.cxx \
+	misc/timeops.cxx \
 	widgets/flinput2.cxx \
 	widgets/flmisc.cxx \
 	misc/icons.cxx \
