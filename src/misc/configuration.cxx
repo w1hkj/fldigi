@@ -720,7 +720,10 @@ void configuration::testCommPorts()
 #ifndef __WOE32__
 	struct stat st;
 #endif
+
+#ifndef __APPLE__
 	char ttyname[PATH_MAX + 1];
+#endif
 
 #ifdef __linux__
 	bool ret = false;
@@ -824,7 +827,7 @@ out:
 #  if USE_HAMLIB
 			inpRIGdev->add(gbuf.gl_pathv[j]);
 #  endif
-			inpXmlRigDevice->add(ttyname);
+			inpXmlRigDevice->add(gbuf.gl_pathv[j]);
 
 		}
 		globfree(&gbuf);
