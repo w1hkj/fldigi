@@ -108,11 +108,11 @@ SoundBase::~SoundBase()
 void SoundBase::get_file_params(const char* def_fname, const char** fname, int* format)
 {
 	std::string filters = "Waveform Audio Format\t*.wav\n" "AU\t*.{au,snd}\n";
-// FIXME: we shouldn't need this conditional
-# ifndef __WOE32__
-	if (format_supported(SF_FORMAT_FLAC | SF_FORMAT_PCM_16))
+	int nfilt = 2;
+	if (format_supported(SF_FORMAT_FLAC | SF_FORMAT_PCM_16)) {
 		filters += "Free Lossless Audio Codec\t*.flac";
-# endif
+		nfilt++;
+	}
 
 	int fsel;
 	if (strstr(def_fname, "playback"))
@@ -122,6 +122,8 @@ void SoundBase::get_file_params(const char* def_fname, const char** fname, int* 
 	if (!*fname)
 		return;
 
+	if (fsel >= nfilt) // "Default" save-as type on OS X
+		fsel = 0;
 	switch (fsel) {
 	case 0:
 		*format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
@@ -257,8 +259,15 @@ sf_count_t SoundBase::write_file(SNDFILE* file, double* buf, size_t count)
 bool SoundBase::format_supported(int format)
 {
 
-        SF_INFO fmt_test = { 0, sample_frequency, SNDFILE_CHANNELS, format, 0, 0 };
-        return sf_format_check(&fmt_test);
+	SF_INFO info = { 0, sample_frequency, SNDFILE_CHANNELS, format, 0, 0 };
+	FILE* f;
+	if ((f = tmpfile()) == NULL)
+		return false;
+	SNDFILE* sndf = sf_open_fd(fileno(f), SFM_WRITE, &info, SF_FALSE);
+	fclose(f);
+	if (sndf)
+		sf_close(sndf);
+	return sndf;
 }
 
 void SoundBase::tag_file(SNDFILE *sndfile, const char *title)
