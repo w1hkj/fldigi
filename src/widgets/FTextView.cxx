@@ -808,7 +808,7 @@ int FTextEdit::handle_dnd_drop(void)
 #endif
 
 	string text = Fl::event_text();
-#ifdef __WOE32__
+#if defined(__APPLE__) || defined(__WOE32__)
 	const char sep[] = "\n";
 	text += sep;
 #else
