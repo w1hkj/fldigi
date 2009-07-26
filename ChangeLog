@@ -1,3 +1,19 @@
+3.12.3
+
+2009-07-26  Stelios Bounanos  <vcs@enotty.net>
+
+	a7512b1: Fix DnD file insert on OS X
+	3873790: Fix sound file selector
+	08a7c86: Correctly populate RigCAT menu on OS X
+
+2009-07-26  Leigh L. Klotz, Jr  <Leigh@WA5ZNU.org>
+
+	eaa790f: Macro variable bug fix
+
+2009-07-25  David Freese  <w1hkj@w1hkj.com>
+
+	b4386bd: MT63 mod
+
 3.12.2
 
 2009-07-25  Stelios Bounanos  <vcs@enotty.net>
