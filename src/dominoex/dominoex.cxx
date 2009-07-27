@@ -597,7 +597,7 @@ int dominoex::get_secondary_char()
 {
 	static unsigned int cptr = 0;
 	char chr;
-	if (cptr > strSecXmtText.length()) cptr = 0;
+	if (cptr >= strSecXmtText.length()) cptr = 0;
 	chr = strSecXmtText[cptr++];
 	put_sec_char( chr );
 	return chr;

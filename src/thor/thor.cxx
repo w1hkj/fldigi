@@ -563,7 +563,7 @@ int thor::rx_process(const double *buf, int len)
 int thor::get_secondary_char()
 {
 	char chr;
-	if (cptr > strSecXmtText.length()) cptr = 0;
+	if (cptr >= strSecXmtText.length()) cptr = 0;
 	chr = strSecXmtText[cptr++];
 	put_sec_char( chr );
 	return chr;
