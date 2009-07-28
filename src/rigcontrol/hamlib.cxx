@@ -282,7 +282,7 @@ void hamlib_close(void)
 	while (!hamlib_closed) {
 		MilliSleep(50);
 		if (!count--) {
-			show_error(__func__, "Hamlib stuck, transceiver on fire");
+			show_error(__func__, "Hamlib thread not responding, forcing shutdown");
 			xcvr->close();
 			diediedie();
 		}
