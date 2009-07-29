@@ -701,7 +701,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 500 345}
+        xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 500 345} selection_color 50 align 9
@@ -1089,7 +1089,7 @@ progdefaults.changed = true;}
               Fl_Spinner MT63_tone_duration {
                 label {Tone Duration (secs)}
                 callback {progdefaults.mt63_tone_duration=(int)o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
                 xywh {150 240 40 25} align 8 maximum 10 value 4
                 code0 {o->value(progdefaults.mt63_tone_duration);}
               }
@@ -1483,7 +1483,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabRig {
         label Rig open
-        xywh {0 25 500 345} hide
+        xywh {0 25 500 345}
       } {
         Fl_Tabs tabsRig {open
           xywh {0 25 500 345} selection_color 50
@@ -1595,7 +1595,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label RigCAT open
-            tooltip {Rig Control using xml spec file} xywh {0 50 500 320} hide
+            tooltip {Rig Control using xml spec file} xywh {0 50 500 320}
           } {
             Fl_Check_Button chkUSERIGCAT {
               label {Use RigCAT}
@@ -1615,7 +1615,7 @@ btnInitRIGCAT->redraw();
 progdefaults.changed = true;}
               tooltip {RigCAT used for rig control} xywh {195 60 110 20} down_box DOWN_BOX
             }
-            Fl_Group grpRigCAT {open
+            Fl_Group grpRigCAT {open selected
               xywh {5 83 490 279} box ENGRAVED_FRAME
             } {
               Fl_Output txtXmlRigFilename {
@@ -1639,6 +1639,33 @@ progdefaults.changed = true;} open
                 tooltip {Serial device} xywh {341 107 144 22}
                 code0 {o->value(progdefaults.XmlRigDevice.c_str());}
               } {}
+              Fl_Value_Input cntRigCatRetries {
+                label Retries
+                callback {progdefaults.RigCatRetries = (int)o->value();
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw_label();
+progdefaults.changed = true;}
+                tooltip {\# retries before giving up} xywh {30 150 60 22} align 5
+                code0 {o->value(progdefaults.RigCatRetries);}
+              }
+              Fl_Value_Input cntRigCatTimeout {
+                label {Retry interval (ms)}
+                callback {progdefaults.RigCatTimeout = (int)o->value();
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw_label();
+progdefaults.changed = true;}
+                tooltip {Time between retires in msec} xywh {148 150 60 22} align 5
+                code0 {o->value(progdefaults.RigCatTimeout);}
+              }
+              Fl_Value_Input cntRigCatWait {
+                label {Write delay (ms)}
+                callback {progdefaults.RigCatWait = (int)o->value();
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw_label();
+progdefaults.changed = true;}
+                xywh {30 190 60 22} align 5
+                code0 {o->value(progdefaults.RigCatWait);}
+              }
               Fl_Choice mnuXmlRigBaudrate {
                 label {Baud rate:}
                 callback {progdefaults.XmlRigBaudrate = o->value();
@@ -1649,34 +1676,6 @@ progdefaults.changed = true;} open
                 code0 {o->add(szBaudRates);}
                 code1 {o->value(progdefaults.XmlRigBaudrate);}
               } {}
-              Fl_Counter cntRigCatRetries {
-                label Retries
-                callback {progdefaults.RigCatRetries = (int)o->value();
-btnInitRIGCAT->labelcolor(FL_RED);
-btnInitRIGCAT->redraw_label();
-progdefaults.changed = true;}
-                tooltip {Number of  times to resend
-command before giving up} xywh {15 150 75 20} type Simple align 1 minimum 1 maximum 10 step 1 value 5
-                code0 {o->value(progdefaults.RigCatRetries);}
-              }
-              Fl_Counter cntRigCatTimeout {
-                label {Retry interval (ms)}
-                callback {progdefaults.RigCatTimeout = (int)o->value();
-btnInitRIGCAT->labelcolor(FL_RED);
-btnInitRIGCAT->redraw_label();
-progdefaults.changed = true;}
-                tooltip {Time between retires is msec} xywh {153 155 75 20} type Simple align 1 minimum 2 maximum 200 step 1 value 10
-                code0 {o->value(progdefaults.RigCatTimeout);}
-              }
-              Fl_Counter cntRigCatWait {
-                label {Command interval (ms)}
-                callback {progdefaults.RigCatWait = (int)o->value();
-btnInitRIGCAT->labelcolor(FL_RED);
-btnInitRIGCAT->redraw_label();
-progdefaults.changed = true;}
-                tooltip {Millseconds between sequential commands} xywh {15 185 75 20} type Simple align 8 minimum 0 maximum 100 step 1 value 5
-                code0 {o->value(progdefaults.RigCatWait);}
-              }
               Fl_Button btnInitRIGCAT {
                 label Initialize
                 callback {progdefaults.initInterface();
@@ -1772,7 +1771,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabHamlib {
             label Hamlib open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Check_Button chkUSEHAMLIB {
               label {Use Hamlib}
@@ -1814,39 +1813,54 @@ btnInitHAMLIB->redraw_label();} open
                 tooltip {Serial port} xywh {340 93 144 22}
                 code0 {o->value(progdefaults.HamRigDevice.c_str());}
               } {}
+              Fl_Value_Input cntHamlibRetries {
+                label Retries
+                callback {progdefaults.HamlibRetries = (int)o->value();
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw_label();}
+                tooltip {\# times to resend command before giving up} xywh {30 137 70 24} align 5
+                code0 {o->value(progdefaults.HamlibRetries);}
+              }
+              Fl_Value_Input cntHamlibTimeout {
+                label {Retry Interval (ms)}
+                callback {progdefaults.HamlibTimeout = (int)o->value();
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw_label();}
+                tooltip {Msec's between retries} xywh {155 137 70 24} align 5
+                code0 {o->value(progdefaults.HamlibTimeout);}
+              }
+              Fl_Value_Input cntHamlibWriteDelay {
+                label {Write delay (ms)}
+                callback {progdefaults.HamlibWriteDelay = (int)o->value();
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw_label();}
+                tooltip {Msec's between sequential commands} xywh {30 183 70 24} align 5
+                code0 {o->value(progdefaults.HamlibWriteDelay);}
+              }
+              Fl_Value_Input cntHamlibWait {
+                label {Post write delay (ms)}
+                callback {progdefaults.HamlibWait = (int)o->value();
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw_label();}
+                tooltip {Wait interval (msecs) before reading response} xywh {156 182 70 24} align 5
+                code0 {o->value(progdefaults.HamlibWait);}
+              }
               Fl_Choice mnuBaudRate {
                 label {Baud rate:}
                 callback {progdefaults.HamRigBaudrate = o->value();
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();} open
-                tooltip {Serial port baud rate} xywh {385 139 99 22} down_box BORDER_BOX align 5
+                tooltip {Serial port baud rate} xywh {385 138 99 22} down_box BORDER_BOX align 5
                 code0 {o->add(szBaudRates);}
                 code1 {o->value(progdefaults.HamRigBaudrate);}
               } {}
-              Fl_Counter cntHamlibRetries {
-                label Retries
-                callback {progdefaults.HamlibRetries = (int)o->value();
-btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();}
-                tooltip {Number of  times to resend
-command before giving up} xywh {15 140 100 20} type Simple align 5 minimum 1 maximum 10 step 1 value 5
-                code0 {o->value(progdefaults.HamlibRetries);}
-              }
-              Fl_Counter cntHamlibTimeout {
+              Fl_Counter cntHamlibTimeout0 {
                 label {Retry interval (ms)}
                 callback {progdefaults.HamlibTimeout = (int)o->value();
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();}
-                tooltip {Msec's between retries} xywh {150 140 100 20} type Simple align 5 minimum 2 maximum 20000 step 1 value 10
+                tooltip {Msec's between retries} xywh {150 140 100 20} type Simple align 5 minimum 2 maximum 20000 step 1 value 10 hide
                 code0 {o->value(progdefaults.HamlibTimeout);}
-              }
-              Fl_Counter cntHamlibWait {
-                label {Post write delay (ms)}
-                callback {progdefaults.HamlibWait = (int)o->value();
-btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();}
-                tooltip {Msec's between sequential commands} xywh {150 186 100 20} type Simple align 5 minimum 0 maximum 100 step 1 value 5
-                code0 {o->value(progdefaults.HamlibWait);}
               }
               Fl_Input inpHamlibConfig {
                 label {Advanced configuration:}
@@ -1925,14 +1939,6 @@ btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();}
                 tooltip {Rig requires Xon/Xoff flow control} xywh {269 281 185 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.HamlibXONXOFFflow);}
-              }
-              Fl_Counter cntHamlibWriteDelay {
-                label {Write delay (ms)}
-                callback {progdefaults.HamlibWriteDelay = (int)o->value();
-btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();}
-                tooltip {Msec's between sequential commands} xywh {15 186 100 20} type Simple align 5 minimum 0 maximum 100 step 1
-                code0 {o->value(progdefaults.HamlibWriteDelay);}
               }
             }
           }

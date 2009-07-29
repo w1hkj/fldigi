@@ -211,6 +211,7 @@ bool hamlib_init(bool bPtt)
 
 	MilliSleep(500);
 
+    LOG_INFO("trying frequency request");
 	try {
 		need_freq = true;
 		freq = xcvr->getFreq();
@@ -225,7 +226,6 @@ bool hamlib_init(bool bPtt)
 		need_freq = false;
 	}
 
-	LOG_INFO("trying mode query");
 	try {
 		need_mode = true;
 		mode = xcvr->getMode(width);

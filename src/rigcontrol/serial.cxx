@@ -42,17 +42,17 @@ Cserial::Cserial() {
 }
 
 Cserial::~Cserial() {
-	ClosePort(); 
+	ClosePort();
 }
 
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::OpenPort
 // Description	    : Opens the port specified by strPortName
-// Return type		: BOOL 
+// Return type		: BOOL
 // Argument         : c_string strPortName
 ///////////////////////////////////////////////////////
 bool Cserial::OpenPort()  {
-	
+
 #ifdef __CYGWIN__
 	com_to_tty(device);
 #endif
@@ -63,7 +63,7 @@ bool Cserial::OpenPort()  {
 
 	tcgetattr (fd, &oldtio);
 	newtio = oldtio;
-	
+
 	newtio.c_cflag &= ~CSIZE;
 	newtio.c_cflag |= CS8 | CLOCAL | CREAD;
 
@@ -83,7 +83,7 @@ bool Cserial::OpenPort()  {
 	newtio.c_oflag &= ~OPOST;
 
     newtio.c_iflag &= ~IXON;
-	
+
  	switch(baud) {
  		case 300:
 			speed = B300;
@@ -119,7 +119,7 @@ bool Cserial::OpenPort()  {
 	cfsetospeed(&newtio, speed);
 
 	tcsetattr (fd, TCSANOW, &newtio);
-	
+
 	ioctl(fd, TIOCMGET, &status);
 	origstatus = status;
 
@@ -135,7 +135,7 @@ bool Cserial::OpenPort()  {
 			status &= ~TIOCM_RTS;		// clear the RTS bit
 	}
 	ioctl(fd, TIOCMSET, &status);
-	
+
 	return true;
 }
 
@@ -176,7 +176,7 @@ void Cserial::SetPTT(bool b)
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::ClosePort
 // Description	    : Closes the Port
-// Return type		: void 
+// Return type		: void
 ///////////////////////////////////////////////////////
 void Cserial::ClosePort()
 {
@@ -209,7 +209,7 @@ bool  Cserial::IOselect ()
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::ReadBuffer
 // Description	    : Reads upto nchars from the selected port
-// Return type		: # characters received 
+// Return type		: # characters received
 // Argument         : pointer to buffer; # chars to read
 ///////////////////////////////////////////////////////
 int  Cserial::ReadBuffer (unsigned char *buf, int nchars)
@@ -227,14 +227,14 @@ int  Cserial::ReadBuffer (unsigned char *buf, int nchars)
 			return nread;
 		nread += retnum;
 		nchars -= retnum;
-	}	
+	}
 	return nread;
 }
 
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::WriteBuffer
 // Description	    : Writes a string to the selected port
-// Return type		: BOOL 
+// Return type		: BOOL
 // Argument         : BYTE by
 ///////////////////////////////////////////////////////
 int Cserial::WriteBuffer(unsigned char *buff, int n)
@@ -251,7 +251,7 @@ int Cserial::WriteBuffer(unsigned char *buff, int n)
 ///////////////////////////////////////////////////////
 void Cserial::FlushBuffer()
 {
-	if (fd < 0) 
+	if (fd < 0)
 		return;
 	tcflush (fd, TCIFLUSH);
 }
@@ -263,7 +263,7 @@ using namespace std;
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::OpenPort
 // Description	    : Opens the port specified by strPortName
-// Return type		: BOOL 
+// Return type		: BOOL
 // Argument         : CString strPortName
 ///////////////////////////////////////////////////////
 BOOL Cserial::OpenPort()
@@ -286,6 +286,8 @@ BOOL Cserial::OpenPort()
 
 	ConfigurePort( baud, 8, FALSE, NOPARITY, ONESTOPBIT);
 
+    FlushBuffer();
+
 	return TRUE;
 }
 
@@ -293,7 +295,7 @@ BOOL Cserial::OpenPort()
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::ClosePort
 // Description	    : Closes the Port
-// Return type		: void 
+// Return type		: void
 ///////////////////////////////////////////////////////
 void Cserial::ClosePort()
 {
@@ -307,8 +309,8 @@ void Cserial::ClosePort()
 
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::GetBytesRead
-// Description	    : 
-// Return type		: DWORD 
+// Description	    :
+// Return type		: DWORD
 ///////////////////////////////////////////////////////
 DWORD Cserial::GetBytesRead()
 {
@@ -318,7 +320,7 @@ DWORD Cserial::GetBytesRead()
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::GetBytesWritten
 // Description	    : returns total number of bytes written to port
-// Return type		: DWORD 
+// Return type		: DWORD
 ///////////////////////////////////////////////////////
 DWORD Cserial::GetBytesWritten()
 {
@@ -329,7 +331,7 @@ DWORD Cserial::GetBytesWritten()
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::ReadByte
 // Description	    : Reads a byte from the selected port
-// Return type		: BOOL 
+// Return type		: BOOL
 // Argument         : BYTE& by
 ///////////////////////////////////////////////////////
 BOOL Cserial::ReadByte(UCHAR& by)
@@ -361,7 +363,7 @@ int Cserial::ReadChars (unsigned char *buf, int nchars, int msec)
 	if (msec) Sleep(msec);
 	return ReadData (buf, nchars);
 }
-	
+
 void Cserial::FlushBuffer()
 {
 	unsigned char c;
@@ -371,7 +373,7 @@ void Cserial::FlushBuffer()
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::WriteByte
 // Description	    : Writes a Byte to teh selected port
-// Return type		: BOOL 
+// Return type		: BOOL
 // Argument         : BYTE by
 ///////////////////////////////////////////////////////
 BOOL Cserial::WriteByte(UCHAR by)
@@ -386,12 +388,12 @@ BOOL Cserial::WriteByte(UCHAR by)
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::WriteBuffer
 // Description	    : Writes a string to the selected port
-// Return type		: BOOL 
+// Return type		: BOOL
 // Argument         : BYTE by
 ///////////////////////////////////////////////////////
 int Cserial::WriteBuffer(unsigned char *buff, int n)
 {
-	if (!hComm) 
+	if (!hComm)
 		return 0;
 //	busyflag = true;
 	WriteFile (hComm, buff, n, &nBytesWritten, NULL);
@@ -403,7 +405,7 @@ int Cserial::WriteBuffer(unsigned char *buff, int n)
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::SetCommunicationTimeouts
 // Description	    : Sets the timeout for the selected port
-// Return type		: BOOL 
+// Return type		: BOOL
 // Argument         : DWORD ReadIntervalTimeout
 // Argument         : DWORD ReadTotalTimeoutMultiplier
 // Argument         : DWORD ReadTotalTimeoutConstant
@@ -453,82 +455,82 @@ COMMTIMOUT Original values:\n\
 BOOL Cserial::SetCommTimeout() {
 /*
  * ReadIntervalTimeout
- * 
- * The maximum time allowed to elapse between the arrival of two bytes on the 
- * communications line, in milliseconds. During a ReadFile operation, the time 
- * period begins when the first byte is received. If the interval between the 
- * arrival of any two bytes exceeds this amount, the ReadFile operation is 
- * completed and any buffered data is returned. A value of zero indicates that 
+ *
+ * The maximum time allowed to elapse between the arrival of two bytes on the
+ * communications line, in milliseconds. During a ReadFile operation, the time
+ * period begins when the first byte is received. If the interval between the
+ * arrival of any two bytes exceeds this amount, the ReadFile operation is
+ * completed and any buffered data is returned. A value of zero indicates that
  * interval time-outs are not used.
- * 
- * A value of MAXDWORD, combined with zero values for both the 
- * ReadTotalTimeoutConstant and ReadTotalTimeoutMultiplier members, specifies 
- * that the read operation is to return immediately with the bytes that have 
+ *
+ * A value of MAXDWORD, combined with zero values for both the
+ * ReadTotalTimeoutConstant and ReadTotalTimeoutMultiplier members, specifies
+ * that the read operation is to return immediately with the bytes that have
  * already been received, even if no bytes have been received.
- * 
+ *
  * ReadTotalTimeoutMultiplier
- * 
- * The multiplier used to calculate the total time-out period for read 
- * operations, in milliseconds. For each read operation, this value is 
+ *
+ * The multiplier used to calculate the total time-out period for read
+ * operations, in milliseconds. For each read operation, this value is
  * multiplied by the requested number of bytes to be read.
- * 
+ *
  * ReadTotalTimeoutConstant
- * 
+ *
  * A constant used to calculate the total time-out period for read operations,
- * in milliseconds. For each read operation, this value is added to the product 
+ * in milliseconds. For each read operation, this value is added to the product
  * of the ReadTotalTimeoutMultiplier member and the requested number of bytes.
- * 
- * A value of zero for both the ReadTotalTimeoutMultiplier and 
- * ReadTotalTimeoutConstant members indicates that total time-outs are not 
+ *
+ * A value of zero for both the ReadTotalTimeoutMultiplier and
+ * ReadTotalTimeoutConstant members indicates that total time-outs are not
  * used for read operations.
- * 
+ *
  * WriteTotalTimeoutMultiplier
- * 
- * The multiplier used to calculate the total time-out period for write 
- * operations, in milliseconds. For each write operation, this value is 
+ *
+ * The multiplier used to calculate the total time-out period for write
+ * operations, in milliseconds. For each write operation, this value is
  * multiplied by the number of bytes to be written.
- * 
+ *
  * WriteTotalTimeoutConstant
- * 
- * A constant used to calculate the total time-out period for write operations, 
- * in milliseconds. For each write operation, this value is added to the product 
- * of the WriteTotalTimeoutMultiplier member and the number of bytes to be 
+ *
+ * A constant used to calculate the total time-out period for write operations,
+ * in milliseconds. For each write operation, this value is added to the product
+ * of the WriteTotalTimeoutMultiplier member and the number of bytes to be
  * written.
- * 
- * A value of zero for both the WriteTotalTimeoutMultiplier and 
- * WriteTotalTimeoutConstant members indicates that total time-outs are not 
+ *
+ * A value of zero for both the WriteTotalTimeoutMultiplier and
+ * WriteTotalTimeoutConstant members indicates that total time-outs are not
  * used for write operations.
- * 
+ *
  * Remarks
- * 
- * If an application sets ReadIntervalTimeout and ReadTotalTimeoutMultiplier to 
- * MAXDWORD and sets ReadTotalTimeoutConstant to a value greater than zero and 
- * less than MAXDWORD, one of the following occurs when the ReadFile function 
+ *
+ * If an application sets ReadIntervalTimeout and ReadTotalTimeoutMultiplier to
+ * MAXDWORD and sets ReadTotalTimeoutConstant to a value greater than zero and
+ * less than MAXDWORD, one of the following occurs when the ReadFile function
  * is called:
- * 
- * If there are any bytes in the input buffer, ReadFile returns immediately 
+ *
+ * If there are any bytes in the input buffer, ReadFile returns immediately
  * with the bytes in the buffer.
- * 
- * If there are no bytes in the input buffer, ReadFile waits until a byte 
+ *
+ * If there are no bytes in the input buffer, ReadFile waits until a byte
  * arrives and then returns immediately.
- * 
- * If no bytes arrive within the time specified by ReadTotalTimeoutConstant, 
+ *
+ * If no bytes arrive within the time specified by ReadTotalTimeoutConstant,
  * ReadFile times out.
 */
 //  return SetCommunicationTimeouts (0, 500L, 0L, 100L, 0L );
   return SetCommunicationTimeouts (
-    0L,    // Read Interval Timeout
-    50l,   // Read Total Timeout Multiplier
-    0l,    // Read Total Timeout Constant
-    50L,   // Write Total Timeout Constant
-    0L     // Write Total Timeout Multiplier
+    0, // 0L,    // Read Interval Timeout
+    0,        // 50l,   // Read Total Timeout Multiplier
+    200,        // 0l,    // Read Total Timeout Constant
+    50,        // 50L,   // Write Total Timeout Constant
+    0         // Write Total Timeout Multiplier
     );
   }
 
 ///////////////////////////////////////////////////////
 // Function name	: ConfigurePort
 // Description	    : Configures the Port
-// Return type		: BOOL 
+// Return type		: BOOL
 // Argument         : DWORD BaudRate
 // Argument         : BYTE ByteSize
 // Argument         : DWORD fParity
@@ -597,7 +599,7 @@ void Cserial::SetPTT(bool b)
 	}
 	if ( !(dtrptt || rtsptt) )
 		return;
-	LOG_INFO("PTT = %d, DTRptt = %d, DTR = %d, RTSptt = %d, RTS = %d", 
+	LOG_INFO("PTT = %d, DTRptt = %d, DTR = %d, RTSptt = %d, RTS = %d",
 		 b, dtrptt, dtr, rtsptt, rts);
 
 	if (b == true) {				// ptt enabled

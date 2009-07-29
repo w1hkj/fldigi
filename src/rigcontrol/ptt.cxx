@@ -79,7 +79,7 @@ void PTT::reset(ptt_t dev)
 {
 	close_all();
 
-	LOG_INFO("Setting PTT to %d", dev);
+//	LOG_INFO("Setting PTT to %d", dev);
 
 	switch (pttdev = dev) {
 #if HAVE_UHROUTER

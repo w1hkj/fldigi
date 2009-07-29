@@ -1293,37 +1293,37 @@ btnInitRIGCAT->redraw_label();
 progdefaults.changed = true;
 }
 
-Fl_Choice *mnuXmlRigBaudrate=(Fl_Choice *)0;
+Fl_Value_Input *cntRigCatRetries=(Fl_Value_Input *)0;
 
-static void cb_mnuXmlRigBaudrate(Fl_Choice* o, void*) {
-  progdefaults.XmlRigBaudrate = o->value();
-btnInitRIGCAT->labelcolor(FL_RED);
-btnInitRIGCAT->redraw_label();
-progdefaults.changed = true;
-}
-
-Fl_Counter *cntRigCatRetries=(Fl_Counter *)0;
-
-static void cb_cntRigCatRetries(Fl_Counter* o, void*) {
+static void cb_cntRigCatRetries(Fl_Value_Input* o, void*) {
   progdefaults.RigCatRetries = (int)o->value();
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 progdefaults.changed = true;
 }
 
-Fl_Counter *cntRigCatTimeout=(Fl_Counter *)0;
+Fl_Value_Input *cntRigCatTimeout=(Fl_Value_Input *)0;
 
-static void cb_cntRigCatTimeout(Fl_Counter* o, void*) {
+static void cb_cntRigCatTimeout(Fl_Value_Input* o, void*) {
   progdefaults.RigCatTimeout = (int)o->value();
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 progdefaults.changed = true;
 }
 
-Fl_Counter *cntRigCatWait=(Fl_Counter *)0;
+Fl_Value_Input *cntRigCatWait=(Fl_Value_Input *)0;
 
-static void cb_cntRigCatWait(Fl_Counter* o, void*) {
+static void cb_cntRigCatWait(Fl_Value_Input* o, void*) {
   progdefaults.RigCatWait = (int)o->value();
+btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw_label();
+progdefaults.changed = true;
+}
+
+Fl_Choice *mnuXmlRigBaudrate=(Fl_Choice *)0;
+
+static void cb_mnuXmlRigBaudrate(Fl_Choice* o, void*) {
+  progdefaults.XmlRigBaudrate = o->value();
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 progdefaults.changed = true;
@@ -1461,6 +1461,38 @@ btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 }
 
+Fl_Value_Input *cntHamlibRetries=(Fl_Value_Input *)0;
+
+static void cb_cntHamlibRetries(Fl_Value_Input* o, void*) {
+  progdefaults.HamlibRetries = (int)o->value();
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw_label();
+}
+
+Fl_Value_Input *cntHamlibTimeout=(Fl_Value_Input *)0;
+
+static void cb_cntHamlibTimeout(Fl_Value_Input* o, void*) {
+  progdefaults.HamlibTimeout = (int)o->value();
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw_label();
+}
+
+Fl_Value_Input *cntHamlibWriteDelay=(Fl_Value_Input *)0;
+
+static void cb_cntHamlibWriteDelay(Fl_Value_Input* o, void*) {
+  progdefaults.HamlibWriteDelay = (int)o->value();
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw_label();
+}
+
+Fl_Value_Input *cntHamlibWait=(Fl_Value_Input *)0;
+
+static void cb_cntHamlibWait(Fl_Value_Input* o, void*) {
+  progdefaults.HamlibWait = (int)o->value();
+btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw_label();
+}
+
 Fl_Choice *mnuBaudRate=(Fl_Choice *)0;
 
 static void cb_mnuBaudRate(Fl_Choice* o, void*) {
@@ -1469,26 +1501,10 @@ btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 }
 
-Fl_Counter *cntHamlibRetries=(Fl_Counter *)0;
+Fl_Counter *cntHamlibTimeout0=(Fl_Counter *)0;
 
-static void cb_cntHamlibRetries(Fl_Counter* o, void*) {
-  progdefaults.HamlibRetries = (int)o->value();
-btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();
-}
-
-Fl_Counter *cntHamlibTimeout=(Fl_Counter *)0;
-
-static void cb_cntHamlibTimeout(Fl_Counter* o, void*) {
+static void cb_cntHamlibTimeout0(Fl_Counter* o, void*) {
   progdefaults.HamlibTimeout = (int)o->value();
-btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();
-}
-
-Fl_Counter *cntHamlibWait=(Fl_Counter *)0;
-
-static void cb_cntHamlibWait(Fl_Counter* o, void*) {
-  progdefaults.HamlibWait = (int)o->value();
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 }
@@ -1565,14 +1581,6 @@ if (o->value() == 1) {
   chkHamlibRTSCTSflow->value(0);
   progdefaults.HamlibRTSCTSflow = false;
 }
-btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();
-}
-
-Fl_Counter *cntHamlibWriteDelay=(Fl_Counter *)0;
-
-static void cb_cntHamlibWriteDelay(Fl_Counter* o, void*) {
-  progdefaults.HamlibWriteDelay = (int)o->value();
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 }
@@ -2767,6 +2775,7 @@ an merging"));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 500, 345, _("Modems"));
+        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 500, 345);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
@@ -3586,7 +3595,6 @@ an merging"));
         tabModems->end();
       } // Fl_Group* tabModems
       { tabRig = new Fl_Group(0, 25, 500, 345, _("Rig"));
-        tabRig->hide();
         { tabsRig = new Fl_Tabs(0, 25, 500, 345);
           tabsRig->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hardware PTT"));
@@ -3652,7 +3660,6 @@ an merging"));
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("RigCAT"));
             o->tooltip(_("Rig Control using xml spec file"));
-            o->hide();
             { chkUSERIGCAT = new Fl_Check_Button(195, 60, 110, 20, _("Use RigCAT"));
               chkUSERIGCAT->tooltip(_("RigCAT used for rig control"));
               chkUSERIGCAT->down_box(FL_DOWN_BOX);
@@ -3675,6 +3682,23 @@ an merging"));
                 inpXmlRigDevice->callback((Fl_Callback*)cb_inpXmlRigDevice);
                 o->value(progdefaults.XmlRigDevice.c_str());
               } // Fl_Input_Choice* inpXmlRigDevice
+              { Fl_Value_Input* o = cntRigCatRetries = new Fl_Value_Input(30, 150, 60, 22, _("Retries"));
+                cntRigCatRetries->tooltip(_("# retries before giving up"));
+                cntRigCatRetries->callback((Fl_Callback*)cb_cntRigCatRetries);
+                cntRigCatRetries->align(FL_ALIGN_TOP_LEFT);
+                o->value(progdefaults.RigCatRetries);
+              } // Fl_Value_Input* cntRigCatRetries
+              { Fl_Value_Input* o = cntRigCatTimeout = new Fl_Value_Input(148, 150, 60, 22, _("Retry interval (ms)"));
+                cntRigCatTimeout->tooltip(_("Time between retires in msec"));
+                cntRigCatTimeout->callback((Fl_Callback*)cb_cntRigCatTimeout);
+                cntRigCatTimeout->align(FL_ALIGN_TOP_LEFT);
+                o->value(progdefaults.RigCatTimeout);
+              } // Fl_Value_Input* cntRigCatTimeout
+              { Fl_Value_Input* o = cntRigCatWait = new Fl_Value_Input(30, 190, 60, 22, _("Write delay (ms)"));
+                cntRigCatWait->callback((Fl_Callback*)cb_cntRigCatWait);
+                cntRigCatWait->align(FL_ALIGN_TOP_LEFT);
+                o->value(progdefaults.RigCatWait);
+              } // Fl_Value_Input* cntRigCatWait
               { Fl_Choice* o = mnuXmlRigBaudrate = new Fl_Choice(386, 154, 99, 22, _("Baud rate:"));
                 mnuXmlRigBaudrate->tooltip(_("Pick baud rate from list"));
                 mnuXmlRigBaudrate->down_box(FL_BORDER_BOX);
@@ -3682,39 +3706,6 @@ an merging"));
                 o->add(szBaudRates);
                 o->value(progdefaults.XmlRigBaudrate);
               } // Fl_Choice* mnuXmlRigBaudrate
-              { Fl_Counter* o = cntRigCatRetries = new Fl_Counter(15, 150, 75, 20, _("Retries"));
-                cntRigCatRetries->tooltip(_("Number of  times to resend\ncommand before giving up"));
-                cntRigCatRetries->type(1);
-                cntRigCatRetries->minimum(1);
-                cntRigCatRetries->maximum(10);
-                cntRigCatRetries->step(1);
-                cntRigCatRetries->value(5);
-                cntRigCatRetries->callback((Fl_Callback*)cb_cntRigCatRetries);
-                cntRigCatRetries->align(FL_ALIGN_TOP);
-                o->value(progdefaults.RigCatRetries);
-              } // Fl_Counter* cntRigCatRetries
-              { Fl_Counter* o = cntRigCatTimeout = new Fl_Counter(153, 155, 75, 20, _("Retry interval (ms)"));
-                cntRigCatTimeout->tooltip(_("Time between retires is msec"));
-                cntRigCatTimeout->type(1);
-                cntRigCatTimeout->minimum(2);
-                cntRigCatTimeout->maximum(200);
-                cntRigCatTimeout->step(1);
-                cntRigCatTimeout->value(10);
-                cntRigCatTimeout->callback((Fl_Callback*)cb_cntRigCatTimeout);
-                cntRigCatTimeout->align(FL_ALIGN_TOP);
-                o->value(progdefaults.RigCatTimeout);
-              } // Fl_Counter* cntRigCatTimeout
-              { Fl_Counter* o = cntRigCatWait = new Fl_Counter(15, 185, 75, 20, _("Command interval (ms)"));
-                cntRigCatWait->tooltip(_("Millseconds between sequential commands"));
-                cntRigCatWait->type(1);
-                cntRigCatWait->minimum(0);
-                cntRigCatWait->maximum(100);
-                cntRigCatWait->step(1);
-                cntRigCatWait->value(5);
-                cntRigCatWait->callback((Fl_Callback*)cb_cntRigCatWait);
-                cntRigCatWait->align(FL_ALIGN_RIGHT);
-                o->value(progdefaults.RigCatWait);
-              } // Fl_Counter* cntRigCatWait
               { btnInitRIGCAT = new Fl_Button(365, 321, 113, 24, _("Initialize"));
                 btnInitRIGCAT->tooltip(_("Initialize RigCAT interface"));
                 btnInitRIGCAT->callback((Fl_Callback*)cb_btnInitRIGCAT);
@@ -3767,6 +3758,7 @@ an merging"));
             o->end();
           } // Fl_Group* o
           { tabHamlib = new Fl_Group(0, 50, 500, 320, _("Hamlib"));
+            tabHamlib->hide();
             { chkUSEHAMLIB = new Fl_Check_Button(195, 60, 100, 20, _("Use Hamlib"));
               chkUSEHAMLIB->tooltip(_("Hamlib used for rig control"));
               chkUSEHAMLIB->down_box(FL_DOWN_BOX);
@@ -3794,7 +3786,31 @@ an merging"));
                 inpRIGdev->callback((Fl_Callback*)cb_inpRIGdev);
                 o->value(progdefaults.HamRigDevice.c_str());
               } // Fl_Input_Choice* inpRIGdev
-              { Fl_Choice* o = mnuBaudRate = new Fl_Choice(385, 139, 99, 22, _("Baud rate:"));
+              { Fl_Value_Input* o = cntHamlibRetries = new Fl_Value_Input(30, 137, 70, 24, _("Retries"));
+                cntHamlibRetries->tooltip(_("# times to resend command before giving up"));
+                cntHamlibRetries->callback((Fl_Callback*)cb_cntHamlibRetries);
+                cntHamlibRetries->align(FL_ALIGN_TOP_LEFT);
+                o->value(progdefaults.HamlibRetries);
+              } // Fl_Value_Input* cntHamlibRetries
+              { Fl_Value_Input* o = cntHamlibTimeout = new Fl_Value_Input(155, 137, 70, 24, _("Retry Interval (ms)"));
+                cntHamlibTimeout->tooltip(_("Msec\'s between retries"));
+                cntHamlibTimeout->callback((Fl_Callback*)cb_cntHamlibTimeout);
+                cntHamlibTimeout->align(FL_ALIGN_TOP_LEFT);
+                o->value(progdefaults.HamlibTimeout);
+              } // Fl_Value_Input* cntHamlibTimeout
+              { Fl_Value_Input* o = cntHamlibWriteDelay = new Fl_Value_Input(30, 183, 70, 24, _("Write delay (ms)"));
+                cntHamlibWriteDelay->tooltip(_("Msec\'s between sequential commands"));
+                cntHamlibWriteDelay->callback((Fl_Callback*)cb_cntHamlibWriteDelay);
+                cntHamlibWriteDelay->align(FL_ALIGN_TOP_LEFT);
+                o->value(progdefaults.HamlibWriteDelay);
+              } // Fl_Value_Input* cntHamlibWriteDelay
+              { Fl_Value_Input* o = cntHamlibWait = new Fl_Value_Input(156, 182, 70, 24, _("Post write delay (ms)"));
+                cntHamlibWait->tooltip(_("Wait interval (msecs) before reading response"));
+                cntHamlibWait->callback((Fl_Callback*)cb_cntHamlibWait);
+                cntHamlibWait->align(FL_ALIGN_TOP_LEFT);
+                o->value(progdefaults.HamlibWait);
+              } // Fl_Value_Input* cntHamlibWait
+              { Fl_Choice* o = mnuBaudRate = new Fl_Choice(385, 138, 99, 22, _("Baud rate:"));
                 mnuBaudRate->tooltip(_("Serial port baud rate"));
                 mnuBaudRate->down_box(FL_BORDER_BOX);
                 mnuBaudRate->callback((Fl_Callback*)cb_mnuBaudRate);
@@ -3802,39 +3818,18 @@ an merging"));
                 o->add(szBaudRates);
                 o->value(progdefaults.HamRigBaudrate);
               } // Fl_Choice* mnuBaudRate
-              { Fl_Counter* o = cntHamlibRetries = new Fl_Counter(15, 140, 100, 20, _("Retries"));
-                cntHamlibRetries->tooltip(_("Number of  times to resend\ncommand before giving up"));
-                cntHamlibRetries->type(1);
-                cntHamlibRetries->minimum(1);
-                cntHamlibRetries->maximum(10);
-                cntHamlibRetries->step(1);
-                cntHamlibRetries->value(5);
-                cntHamlibRetries->callback((Fl_Callback*)cb_cntHamlibRetries);
-                cntHamlibRetries->align(FL_ALIGN_TOP_LEFT);
-                o->value(progdefaults.HamlibRetries);
-              } // Fl_Counter* cntHamlibRetries
-              { Fl_Counter* o = cntHamlibTimeout = new Fl_Counter(150, 140, 100, 20, _("Retry interval (ms)"));
-                cntHamlibTimeout->tooltip(_("Msec\'s between retries"));
-                cntHamlibTimeout->type(1);
-                cntHamlibTimeout->minimum(2);
-                cntHamlibTimeout->maximum(20000);
-                cntHamlibTimeout->step(1);
-                cntHamlibTimeout->value(10);
-                cntHamlibTimeout->callback((Fl_Callback*)cb_cntHamlibTimeout);
-                cntHamlibTimeout->align(FL_ALIGN_TOP_LEFT);
+              { Fl_Counter* o = cntHamlibTimeout0 = new Fl_Counter(150, 140, 100, 20, _("Retry interval (ms)"));
+                cntHamlibTimeout0->tooltip(_("Msec\'s between retries"));
+                cntHamlibTimeout0->type(1);
+                cntHamlibTimeout0->minimum(2);
+                cntHamlibTimeout0->maximum(20000);
+                cntHamlibTimeout0->step(1);
+                cntHamlibTimeout0->value(10);
+                cntHamlibTimeout0->callback((Fl_Callback*)cb_cntHamlibTimeout0);
+                cntHamlibTimeout0->align(FL_ALIGN_TOP_LEFT);
+                cntHamlibTimeout0->hide();
                 o->value(progdefaults.HamlibTimeout);
-              } // Fl_Counter* cntHamlibTimeout
-              { Fl_Counter* o = cntHamlibWait = new Fl_Counter(150, 186, 100, 20, _("Post write delay (ms)"));
-                cntHamlibWait->tooltip(_("Msec\'s between sequential commands"));
-                cntHamlibWait->type(1);
-                cntHamlibWait->minimum(0);
-                cntHamlibWait->maximum(100);
-                cntHamlibWait->step(1);
-                cntHamlibWait->value(5);
-                cntHamlibWait->callback((Fl_Callback*)cb_cntHamlibWait);
-                cntHamlibWait->align(FL_ALIGN_TOP_LEFT);
-                o->value(progdefaults.HamlibWait);
-              } // Fl_Counter* cntHamlibWait
+              } // Fl_Counter* cntHamlibTimeout0
               { inpHamlibConfig = new Fl_Input2(20, 326, 320, 22, _("Advanced configuration:"));
                 inpHamlibConfig->tooltip(_("Optional configuration\nin format: param=val ..."));
                 inpHamlibConfig->box(FL_DOWN_BOX);
@@ -3891,16 +3886,6 @@ an merging"));
                 chkHamlibXONXOFFflow->callback((Fl_Callback*)cb_chkHamlibXONXOFFflow);
                 o->value(progdefaults.HamlibXONXOFFflow);
               } // Fl_Check_Button* chkHamlibXONXOFFflow
-              { Fl_Counter* o = cntHamlibWriteDelay = new Fl_Counter(15, 186, 100, 20, _("Write delay (ms)"));
-                cntHamlibWriteDelay->tooltip(_("Msec\'s between sequential commands"));
-                cntHamlibWriteDelay->type(1);
-                cntHamlibWriteDelay->minimum(0);
-                cntHamlibWriteDelay->maximum(100);
-                cntHamlibWriteDelay->step(1);
-                cntHamlibWriteDelay->callback((Fl_Callback*)cb_cntHamlibWriteDelay);
-                cntHamlibWriteDelay->align(FL_ALIGN_TOP_LEFT);
-                o->value(progdefaults.HamlibWriteDelay);
-              } // Fl_Counter* cntHamlibWriteDelay
               grpHamlib->end();
             } // Fl_Group* grpHamlib
             tabHamlib->end();
