@@ -90,7 +90,7 @@ void rx_extract_add(int c)
 			time_t t;
 			time(&t);
 	        gmtime_r(&t, &tim);
-			strftime(dttm, sizeof(dttm), "%Y%m%d-%H%M", &tim);
+			strftime(dttm, sizeof(dttm), "%Y%m%d-%H%M%S", &tim);
 			
 			string outfilename = WrapDir;
 			outfilename.append("extract-");
