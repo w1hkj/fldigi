@@ -85,12 +85,12 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     xywh {646 121 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
-      xywh {0 0 505 372} color 50 selection_color 50
+      xywh {0 0 517 372} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open
-        xywh {0 25 500 345} when 1 hide
+        callback {progdefaults.changed = true;} open selected
+        xywh {0 25 500 345} when 1
       } {
         Fl_Group {} {
           label Station open
@@ -701,10 +701,10 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 500 345} hide
+        xywh {0 25 517 345} hide
       } {
         Fl_Tabs tabsModems {open
-          xywh {0 25 500 345} selection_color 50 align 9
+          xywh {0 25 517 345} selection_color 50 align 9
         } {
           Fl_Group tabCW {
             label CW open
@@ -1031,7 +1031,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabMT63 {
             label {MT-63} open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {5 60 490 115} box ENGRAVED_FRAME align 21
@@ -1149,10 +1149,10 @@ progdefaults.changed = true;}
           }
           Fl_Group tabPSK {
             label PSK open
-            xywh {0 50 500 320} hide
+            xywh {0 50 517 320}
           } {
             Fl_Tabs tabsPSK {open
-              xywh {0 50 500 320} selection_color 50
+              xywh {0 50 517 320} selection_color 50
             } {
               Fl_Group {} {
                 label General open
@@ -1172,7 +1172,7 @@ progdefaults.changed = true;}
                   }
                   Fl_Counter cntACQsn {
                     label {Acquisition S/N (dB)}
-                    callback {progdefaults.ACQsn = (int)o->value();
+                    callback {progdefaults.ACQsn = o->value();
 progdefaults.changed = true;}
                     tooltip {Capture signals over this threshold} xywh {15 146 75 20} type Simple align 8 minimum 3 maximum 20 step 1 value 6
                     code0 {o->value(progdefaults.ACQsn);}
@@ -1201,25 +1201,49 @@ progdefaults.changed = true;}
               }
               Fl_Group {} {
                 label Mail open
-                xywh {0 75 500 295} align 5 hide
+                xywh {0 75 517 295} align 5 hide
               } {
-                Fl_Group {} {open
-                  xywh {5 85 490 80} box ENGRAVED_FRAME
+                Fl_Group {} {
+                  label {Mail Server Attributes} open
+                  xywh {7 87 490 174} box ENGRAVED_FRAME align 21
                 } {
-                  Fl_Check_Button btnPSKmailSweetSpot {
-                    label {Use sweetspot frequencies}
-                    callback {progdefaults.PSKmailSweetSpot = o->value();
+                  Fl_Counter cntServerCarrier {
+                    label {Carrier frequency (Hz)}
+                    callback {progdefaults.ServerCarrier = (int)o->value();
+wf->redraw_marker();
 progdefaults.changed = true;}
-                    tooltip {Return TX frequency to sweetspot} xywh {55 100 215 20} down_box DOWN_BOX value 1
-                    code0 {o->value(progdefaults.PSKmailSweetSpot);}
+                    tooltip {Default listen / transmit frequency} xywh {58 115 80 20} type Simple align 8 minimum 500 maximum 2500 step 25 value 1500
+                    code0 {o->value(progdefaults.ServerCarrier);}
                   }
                   Fl_Counter cntServerOffset {
-                    label {Server search range}
+                    label {Search range (Hz)}
                     callback {progdefaults.ServerOffset = (int)o->value();
 wf->redraw_marker();
 progdefaults.changed = true;}
-                    tooltip {Listen for signals within this range} xywh {55 129 80 20} type Simple align 8 minimum 10 maximum 500 step 10 value 200
+                    tooltip {Listen for signals within this range} xywh {58 152 80 20} type Simple align 8 minimum 10 maximum 500 step 10 value 100
                     code0 {o->value(progdefaults.SearchRange);}
+                  }
+                  Fl_Counter cntServerACQsn {
+                    label {Acquisition S/N (dB)}
+                    callback {progdefaults.ServerACQsn = o->value();
+progdefaults.changed = true;}
+                    tooltip {Capture signals over this threshold} xywh {58 189 80 20} type Simple align 8 minimum 3 maximum 20 step 1 value 6
+                    code0 {o->value(progdefaults.ServerACQsn);}
+                  }
+                  Fl_Counter cntServerAFCrange {
+                    label {AFC range (Hz)}
+                    callback {progdefaults.ServerAFCrange = (int)o->value();
+wf->redraw_marker();
+progdefaults.changed = true;}
+                    tooltip {Limit AFC movement to this range} xywh {58 226 80 20} type Simple align 8 minimum 10 maximum 500 step 10 value 25
+                    code0 {o->value(progdefaults.SearchRange);}
+                  }
+                  Fl_Check_Button btnPSKmailSweetSpot {
+                    label {Reset to Carrier}
+                    callback {progdefaults.PSKmailSweetSpot = o->value();
+progdefaults.changed = true;}
+                    tooltip {When no signal present} xywh {313 117 142 16} down_box DOWN_BOX value 1
+                    code0 {o->value(progdefaults.PSKmailSweetSpot);}
                   }
                 }
               }
@@ -1483,7 +1507,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabRig {
         label Rig open
-        xywh {0 25 500 345}
+        xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsRig {open
           xywh {0 25 500 345} selection_color 50
@@ -1615,7 +1639,7 @@ btnInitRIGCAT->redraw();
 progdefaults.changed = true;}
               tooltip {RigCAT used for rig control} xywh {195 60 110 20} down_box DOWN_BOX
             }
-            Fl_Group grpRigCAT {open selected
+            Fl_Group grpRigCAT {open
               xywh {5 83 490 279} box ENGRAVED_FRAME
             } {
               Fl_Output txtXmlRigFilename {

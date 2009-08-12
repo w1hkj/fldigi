@@ -315,7 +315,7 @@ void psk::searchDown()
 	while (srchfreq > minfreq) {
 		spwr = wf->powerDensity(srchfreq, bandwidth);
 		npwr = wf->powerDensity(srchfreq + bandwidth, bandwidth/2) + 1e-10;
-		if (spwr / npwr > SNTHRESHOLD) {
+		if (spwr / npwr > pow(10, progdefaults.ServerACQsn / 10)) {
 			frequency = srchfreq;
 			set_freq(frequency);
 			sigsearch = SIGSEARCH;
@@ -333,7 +333,7 @@ void psk::searchUp()
 	while (srchfreq < maxfreq) {
 		spwr = wf->powerDensity(srchfreq, bandwidth/2);
 		npwr = wf->powerDensity(srchfreq - bandwidth, bandwidth/2) + 1e-10;
-		if (spwr / npwr > SNTHRESHOLD) {
+		if (spwr / npwr > pow(10, progdefaults.ServerACQsn / 10)) {
 			frequency = srchfreq;
 			set_freq(frequency);
 			sigsearch = SIGSEARCH;
@@ -352,16 +352,21 @@ void psk::findsignal()
 	if (sigsearch > 0) {
 		sigsearch--;
 		if (mailserver) { // mail server search algorithm
-			f1 = (int)(frequency - progdefaults.ServerOffset);
-			f2 = (int)(frequency + progdefaults.ServerOffset);
-			if (evalpsk->sigpeak(ftest, f1, f2) > SNTHRESHOLD ) {
+			if (progdefaults.PSKmailSweetSpot) {
+				f1 = (int)(progdefaults.ServerCarrier - progdefaults.ServerOffset);
+				f2 = (int)(progdefaults.ServerCarrier + progdefaults.ServerOffset);
+			} else {
+				f1 = (int)(frequency - progdefaults.ServerOffset);
+				f2 = (int)(frequency + progdefaults.ServerOffset);
+			}
+			if (evalpsk->sigpeak(ftest, f1, f2) > pow(10, progdefaults.ServerACQsn / 10) ) {
 				if (progdefaults.PSKmailSweetSpot) {
-					if (fabs(ftest - progdefaults.PSKsweetspot) < progdefaults.ServerOffset) {
+					if (fabs(ftest - progdefaults.ServerCarrier) < progdefaults.ServerOffset) {
 						frequency = ftest;
 						set_freq(frequency);
 						freqerr = 0.0;
 					} else {
-						frequency = progdefaults.PSKsweetspot;
+						frequency = progdefaults.ServerCarrier;
 						set_freq(frequency);
 						freqerr = 0.0;
 					}
@@ -372,7 +377,7 @@ void psk::findsignal()
 				}
 			} else { // less than the detection threshold
 				if (progdefaults.PSKmailSweetSpot) {
-					frequency = progdefaults.PSKsweetspot;
+					frequency = progdefaults.ServerCarrier;
 					set_freq(frequency);
 					sigsearch = SIGSEARCH;
 				}
@@ -405,6 +410,12 @@ void psk::phaseafc()
 	if (fabs(error) < bandwidth) {
 		freqerr = decayavg( freqerr, error, AFCDECAYSLOW);
 		frequency -= freqerr;
+		if (mailserver) {
+			if (frequency < progdefaults.ServerCarrier - progdefaults.ServerAFCrange)
+				frequency = progdefaults.ServerCarrier - progdefaults.ServerAFCrange;
+			if (frequency > progdefaults.ServerCarrier + progdefaults.ServerAFCrange)
+				frequency = progdefaults.ServerCarrier + progdefaults.ServerAFCrange;
+		}
 		set_freq (frequency);
 	}
 	if (acquire) acquire--;

@@ -67,7 +67,10 @@
         ELEM_(bool, StatusDim, "STATUSDIM", true)                                       \
         ELEM_(double, StatusTimeout, "STATUSTIMEOUT", 15.0)                             \
         ELEM_(bool, PSKmailSweetSpot, "PSKMAILSWEETSPOT", false)                        \
-        ELEM_(int, ServerOffset, "PSKSERVEROFFSET", 40)                                 \
+        ELEM_(int, ServerOffset, "PSKSERVEROFFSET", 50)                                 \
+        ELEM_(int, ServerCarrier, "PSKSERVERCARRIER", 1500)                             \
+        ELEM_(int, ServerAFCrange, "PSKSERVERAFCRANGE", 25)                             \
+        ELEM_(double, ServerACQsn, "PSKSERVERACGSN", 6.0)                               \
 /* RTTY */                                                                              \
         ELEM_(int, rtty_shift, "RTTYSHIFT", 3) /* 170 */                                \
         ELEM_(int, rtty_baud, "RTTYBAUD", 0)   /* 45 */                                 \
