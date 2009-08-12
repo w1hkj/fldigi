@@ -912,7 +912,7 @@ progdefaults.changed = true;
 Fl_Counter *cntACQsn=(Fl_Counter *)0;
 
 static void cb_cntACQsn(Fl_Counter* o, void*) {
-  progdefaults.ACQsn = (int)o->value();
+  progdefaults.ACQsn = o->value();
 progdefaults.changed = true;
 }
 
@@ -928,10 +928,11 @@ static void cb_seconds(Fl_Counter* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *btnPSKmailSweetSpot=(Fl_Check_Button *)0;
+Fl_Counter *cntServerCarrier=(Fl_Counter *)0;
 
-static void cb_btnPSKmailSweetSpot(Fl_Check_Button* o, void*) {
-  progdefaults.PSKmailSweetSpot = o->value();
+static void cb_cntServerCarrier(Fl_Counter* o, void*) {
+  progdefaults.ServerCarrier = (int)o->value();
+wf->redraw_marker();
 progdefaults.changed = true;
 }
 
@@ -940,6 +941,28 @@ Fl_Counter *cntServerOffset=(Fl_Counter *)0;
 static void cb_cntServerOffset(Fl_Counter* o, void*) {
   progdefaults.ServerOffset = (int)o->value();
 wf->redraw_marker();
+progdefaults.changed = true;
+}
+
+Fl_Counter *cntServerACQsn=(Fl_Counter *)0;
+
+static void cb_cntServerACQsn(Fl_Counter* o, void*) {
+  progdefaults.ServerACQsn = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter *cntServerAFCrange=(Fl_Counter *)0;
+
+static void cb_cntServerAFCrange(Fl_Counter* o, void*) {
+  progdefaults.ServerAFCrange = (int)o->value();
+wf->redraw_marker();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnPSKmailSweetSpot=(Fl_Check_Button *)0;
+
+static void cb_btnPSKmailSweetSpot(Fl_Check_Button* o, void*) {
+  progdefaults.PSKmailSweetSpot = o->value();
 progdefaults.changed = true;
 }
 
@@ -2155,13 +2178,12 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     o->selection_color((Fl_Color)51);
     o->labelsize(18);
     o->align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE);
-    { tabsConfigure = new Fl_Tabs(0, 0, 505, 372);
+    { tabsConfigure = new Fl_Tabs(0, 0, 517, 372);
       tabsConfigure->color(FL_LIGHT1);
       tabsConfigure->selection_color(FL_LIGHT1);
       { tabOperator = new Fl_Group(0, 25, 500, 345, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2746,11 +2768,11 @@ an merging"));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 500, 345, _("Modems"));
+        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 500, 345);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
           { tabCW = new Fl_Group(0, 50, 500, 320, _("CW"));
-            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 500, 320);
               tabsCW->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
@@ -3115,6 +3137,7 @@ an merging"));
             tabFeld->end();
           } // Fl_Group* tabFeld
           { tabMT63 = new Fl_Group(0, 50, 500, 320, _("MT-63"));
+            tabMT63->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 115);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -3218,9 +3241,9 @@ an merging"));
             } // Fl_Group* o
             tabOlivia->end();
           } // Fl_Group* tabOlivia
-          { tabPSK = new Fl_Group(0, 50, 500, 320, _("PSK"));
+          { tabPSK = new Fl_Group(0, 50, 517, 320, _("PSK"));
             tabPSK->hide();
-            { tabsPSK = new Fl_Tabs(0, 50, 500, 320);
+            { tabsPSK = new Fl_Tabs(0, 50, 517, 320);
               tabsPSK->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
                 o->align(FL_ALIGN_TOP_LEFT);
@@ -3276,29 +3299,63 @@ an merging"));
                 } // Fl_Group* o
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("Mail"));
+              { Fl_Group* o = new Fl_Group(0, 75, 517, 295, _("Mail"));
                 o->align(FL_ALIGN_TOP_LEFT);
                 o->hide();
-                { Fl_Group* o = new Fl_Group(5, 85, 490, 80);
+                { Fl_Group* o = new Fl_Group(7, 87, 490, 174, _("Mail Server Attributes"));
                 o->box(FL_ENGRAVED_FRAME);
-                { Fl_Check_Button* o = btnPSKmailSweetSpot = new Fl_Check_Button(55, 100, 215, 20, _("Use sweetspot frequencies"));
-                btnPSKmailSweetSpot->tooltip(_("Return TX frequency to sweetspot"));
-                btnPSKmailSweetSpot->down_box(FL_DOWN_BOX);
-                btnPSKmailSweetSpot->value(1);
-                btnPSKmailSweetSpot->callback((Fl_Callback*)cb_btnPSKmailSweetSpot);
-                o->value(progdefaults.PSKmailSweetSpot);
-                } // Fl_Check_Button* btnPSKmailSweetSpot
-                { Fl_Counter* o = cntServerOffset = new Fl_Counter(55, 129, 80, 20, _("Server search range"));
+                o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+                { Fl_Counter* o = cntServerCarrier = new Fl_Counter(58, 115, 80, 20, _("Carrier frequency (Hz)"));
+                cntServerCarrier->tooltip(_("Default listen / transmit frequency"));
+                cntServerCarrier->type(1);
+                cntServerCarrier->minimum(500);
+                cntServerCarrier->maximum(2500);
+                cntServerCarrier->step(25);
+                cntServerCarrier->value(1500);
+                cntServerCarrier->callback((Fl_Callback*)cb_cntServerCarrier);
+                cntServerCarrier->align(FL_ALIGN_RIGHT);
+                o->value(progdefaults.ServerCarrier);
+                } // Fl_Counter* cntServerCarrier
+                { Fl_Counter* o = cntServerOffset = new Fl_Counter(58, 152, 80, 20, _("Search range (Hz)"));
                 cntServerOffset->tooltip(_("Listen for signals within this range"));
                 cntServerOffset->type(1);
                 cntServerOffset->minimum(10);
                 cntServerOffset->maximum(500);
                 cntServerOffset->step(10);
-                cntServerOffset->value(200);
+                cntServerOffset->value(100);
                 cntServerOffset->callback((Fl_Callback*)cb_cntServerOffset);
                 cntServerOffset->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.SearchRange);
                 } // Fl_Counter* cntServerOffset
+                { Fl_Counter* o = cntServerACQsn = new Fl_Counter(58, 189, 80, 20, _("Acquisition S/N (dB)"));
+                cntServerACQsn->tooltip(_("Capture signals over this threshold"));
+                cntServerACQsn->type(1);
+                cntServerACQsn->minimum(3);
+                cntServerACQsn->maximum(20);
+                cntServerACQsn->step(1);
+                cntServerACQsn->value(6);
+                cntServerACQsn->callback((Fl_Callback*)cb_cntServerACQsn);
+                cntServerACQsn->align(FL_ALIGN_RIGHT);
+                o->value(progdefaults.ServerACQsn);
+                } // Fl_Counter* cntServerACQsn
+                { Fl_Counter* o = cntServerAFCrange = new Fl_Counter(58, 226, 80, 20, _("AFC range (Hz)"));
+                cntServerAFCrange->tooltip(_("Limit AFC movement to this range"));
+                cntServerAFCrange->type(1);
+                cntServerAFCrange->minimum(10);
+                cntServerAFCrange->maximum(500);
+                cntServerAFCrange->step(10);
+                cntServerAFCrange->value(25);
+                cntServerAFCrange->callback((Fl_Callback*)cb_cntServerAFCrange);
+                cntServerAFCrange->align(FL_ALIGN_RIGHT);
+                o->value(progdefaults.SearchRange);
+                } // Fl_Counter* cntServerAFCrange
+                { Fl_Check_Button* o = btnPSKmailSweetSpot = new Fl_Check_Button(313, 117, 142, 16, _("Reset to Carrier"));
+                btnPSKmailSweetSpot->tooltip(_("When no signal present"));
+                btnPSKmailSweetSpot->down_box(FL_DOWN_BOX);
+                btnPSKmailSweetSpot->value(1);
+                btnPSKmailSweetSpot->callback((Fl_Callback*)cb_btnPSKmailSweetSpot);
+                o->value(progdefaults.PSKmailSweetSpot);
+                } // Fl_Check_Button* btnPSKmailSweetSpot
                 o->end();
                 } // Fl_Group* o
                 o->end();
