@@ -108,9 +108,9 @@ void parse_arqtext(string &toparse)
 
 	idxCmd = toparse.find("<cmd>");
 	idxCmdEnd = toparse.find("</cmd>");
-	
+
 	if ( idxCmd != string::npos && idxCmdEnd != string::npos && idxCmdEnd > idxCmd ) {
-		
+
 LOG_DEBUG("Command string: %s", toparse.substr(idxCmd, idxCmdEnd + 6).c_str());
 		strCmdText = toparse.substr(idxCmd + 5, idxCmdEnd - idxCmd - 5);
 		if (strCmdText == "server" && mailserver == false && mailclient == false) {
@@ -148,7 +148,7 @@ LOG_DEBUG("ARQ is reset to normal ops");
 		} else {
 			if ((idxSubCmd = strCmdText.find("<mode>")) != string::npos) {
 				idxSubCmdEnd = strCmdText.find("</mode>");
-				if (	idxSubCmdEnd != string::npos && 
+				if (	idxSubCmdEnd != string::npos &&
 						idxSubCmdEnd > idxSubCmd ) {
 					strSubCmd = strCmdText.substr(idxSubCmd + 6, idxSubCmdEnd - idxSubCmd - 6);
 					ParseMode(strSubCmd);
@@ -174,7 +174,7 @@ void process_msgque()
 {
 	memset(txmsgst.buffer, 0, ARQBUFSIZ);
 	int nbytes = msgrcv (txmsgid, (void *)&txmsgst, ARQBUFSIZ, 0, IPC_NOWAIT);
-	if (nbytes > 0) { 
+	if (nbytes > 0) {
 		txstring.append(txmsgst.buffer);
 		parse_arqtext(txstring);
 
@@ -208,8 +208,8 @@ bool SysV_arqRx()
 //-----------------------------------------------------------------------------
 // checkTLF
 // look for files named
-//    TLFfldigi ==> tlfio is true and
-//              ==> mailclient is true
+//	TLFfldigi ==> tlfio is true and
+//			  ==> mailclient is true
 // in $HOME
 
 void checkTLF() {
@@ -218,10 +218,10 @@ void checkTLF() {
 	ifstream testFile;
 
 	tlfio = mailserver = mailclient = false;
-	
-	TLFfile = PskMailDir;	
+
+	TLFfile = PskMailDir;
 	TLFfile += "TLFfldigi";
-	
+
 	testFile.open(TLFfile.c_str());
 	if (testFile.is_open()) {
 		testFile.close();
@@ -236,27 +236,27 @@ void checkTLF() {
 
 bool TLF_arqRx()
 {
-    time_t start_time, prog_time;
+	time_t start_time, prog_time;
 	static char mailline[1000];
-    string sAutoFile = PskMailDir;
+	string sAutoFile = PskMailDir;
 	sAutoFile += "gmfsk_autofile";
 
 	ifstream autofile(sAutoFile.c_str());
 	if(autofile) {
 		arqtext = "";
-        time(&start_time);
+		time(&start_time);
 		while (!autofile.eof()) {
 			memset(mailline,0,1000);
 			autofile.getline(mailline, 998); // leave space for "\n" and null byte
 			txstring.append(mailline);
 			txstring.append("\n");
-            time(&prog_time);
-            if (prog_time - start_time > TIMEOUT) {
+			time(&prog_time);
+			if (prog_time - start_time > TIMEOUT) {
 				LOG_ERROR("TLF file_i/o failure");
-                autofile.close();
-                std::remove (sAutoFile.c_str());
-                return false;
-            }
+				autofile.close();
+				std::remove (sAutoFile.c_str());
+				return false;
+			}
 		}
 		autofile.close();
 		std::remove (sAutoFile.c_str());
@@ -422,14 +422,14 @@ void WriteARQsocket(unsigned int data)
 bool Socket_arqRx()
 {
 	if (!isSocketConnected) return false;
-	
+
 	string instr;
 
 	try {
 		size_t n = arqclient.recv(instr);
 		if ( n > 0)
 			txstring.append(instr);
-			
+
 		if (progdefaults.rsid == true) {
 			send0x06();
 			arqtext.clear();
@@ -437,7 +437,7 @@ bool Socket_arqRx()
 			cmdstring.clear();
 			return true;
 		}
-	
+
 		if (arqtext.empty() && !txstring.empty()) {
 			arqtext = txstring;
 			parse_arqtext(arqtext);
@@ -510,23 +510,11 @@ void send0x06()
 	}
 }
 
-char arq_get_char()
-{
-	if (pText != arqtext.length()-1) //arqtext.end())
-		return arqtext[pText++];
-//		return *pText++;
-
-	arqtext.clear();
-	pText = 0;
-	bSend0x06 = true;
-//	arq_text_available = false;
-	return 0x03; // tells psk modem to return to rx
-}
-
 // ============================================================================
 // Implementation using thread vice the fldigi timeout facility
 // ============================================================================
 static pthread_t arq_thread;
+static pthread_mutex_t arq_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static void *arq_loop(void *args);
 
@@ -542,6 +530,8 @@ static void *arq_loop(void *args)
 		if (arq_exit)
 			break;
 
+		pthread_mutex_lock (&arq_mutex);
+
 		if (bSend0x06)
 			send0x06();
 
@@ -552,7 +542,9 @@ static void *arq_loop(void *args)
 #else
 		Socket_arqRx();
 #endif
+		pthread_mutex_unlock (&arq_mutex);
 		MilliSleep(50);
+
 	}
 // exit the arq thread
 	return NULL;
@@ -561,17 +553,17 @@ static void *arq_loop(void *args)
 void arq_init()
 {
 	arq_enabled = false;
-	
+
 	txstring.clear();
 	cmdstring.clear();
-	
+
 	if (!ARQ_SOCKET_Server::start( progdefaults.arq_address.c_str(), progdefaults.arq_port.c_str() ))
 		return;
 
 	if (pthread_create(&arq_thread, NULL, arq_loop, NULL) < 0) {
 		LOG_ERROR("arq init: pthread_create failed");
 		return;
-	} 
+	}
 
 	arq_enabled = true;
 }
@@ -591,3 +583,19 @@ void arq_close(void)
 
 	arq_exit = false;
 }
+
+char arq_get_char()
+{
+	char c = 0x03;
+	pthread_mutex_lock (&arq_mutex);
+	if (pText != arqtext.length()-1) {
+		c = arqtext[pText++];
+	} else {
+		arqtext.clear();
+		pText = 0;
+		bSend0x06 = true;
+	}
+	pthread_mutex_unlock (&arq_mutex);
+	return c;
+}
+
