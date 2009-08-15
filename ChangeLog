@@ -1,3 +1,21 @@
+3.12.4
+
+2009-08-15  Stelios Bounanos  <vcs@enotty.net>
+
+	dd7fa64: Fix notifier event checks
+	a18111a: Use bundled GNU regex on OS X
+	234b1d3: Fix PSK Browser RE search
+
+2009-08-14  David Freese  <w1hkj@w1hkj.com>
+
+	4bda8e2: arq_io seg fault bug fix
+	52f617d: Olivia 8/1000 standard mode
+	e784e62: PKS mailserver mod
+	5bca2dc: rigMEM modification
+	4e5eb44: WRAP file extract
+	22a3360: Hamlib exit message
+	2e51a81: Secondary text TX but in DominoEX-FEC and Thor
+
 3.12.3
 
 2009-07-26  Stelios Bounanos  <vcs@enotty.net>
