@@ -23,7 +23,7 @@
 #ifndef SPOT_H_
 #define SPOT_H_
 
-#ifdef HAVE_REGEX_H
+#if HAVE_REGEX_H
 #  include <regex.h>
 #else
 #  include "compat/regex.h"

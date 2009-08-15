@@ -23,7 +23,7 @@
 #ifndef RE_H_
 #define RE_H_
 
-#ifdef HAVE_REGEX_H
+#if HAVE_REGEX_H
 #  include <regex.h>
 #else
 #  include "compat/regex.h"
