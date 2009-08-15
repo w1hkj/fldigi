@@ -1066,20 +1066,22 @@ enum {
 // do some sanity checks on the widget values before adding/updating an event
 static bool notify_check(unsigned check)
 {
-	if (check & NOTIFY_CHECK_CUSTOM_RE_EMPTY) {
-		if (mnuNotifyEvent->value() == NOTIFY_EVENT_CUSTOM && !inpNotifyRE->size()) {
-			fl_alert2(_("The regular expression field must not be empty."));
-			return false;
+	if (mnuNotifyEvent->value() == NOTIFY_EVENT_CUSTOM) {
+		if (check & NOTIFY_CHECK_CUSTOM_RE_EMPTY) {
+			if (!inpNotifyRE->size()) {
+				fl_alert2(_("The regular expression field must not be empty."));
+				return false;
+			}
+		}
+		if (check & NOTIFY_CHECK_CUSTOM_RE_VALID) {
+			if (!fre_t(inpNotifyRE->value(), REG_EXTENDED | REG_ICASE)) {
+				fl_alert2(_("The regular expression must be valid."));
+				return false;
+			}
 		}
 	}
-	if (check & NOTIFY_CHECK_CUSTOM_RE_VALID) {
-		if (!fre_t(inpNotifyRE->value(), REG_EXTENDED | REG_ICASE)) {
-			fl_alert2(_("The regular expression must be valid."));
-			return false;
-		}
-	}
-	if (check & NOTIFY_CHECK_MYCALL_NOT_EMPTY) {
-		if (mnuNotifyEvent->value() == NOTIFY_EVENT_MYCALL && progdefaults.myCall.empty()) {
+	if ((check & NOTIFY_CHECK_MYCALL_NOT_EMPTY) && mnuNotifyEvent->value() == NOTIFY_EVENT_MYCALL) {
+		if (progdefaults.myCall.empty()) {
 			fl_alert2(_("Please set your callsign first."));
 			return false;
 		}
