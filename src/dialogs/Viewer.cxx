@@ -48,7 +48,7 @@ int labelwidth[VIEWER_LABEL_NTYPES];
 int sbarwidth = 16;
 int border = 4;
 
-re_t seek_re("", REG_EXTENDED | REG_ICASE | REG_NOSUB);
+fre_t seek_re("", REG_EXTENDED | REG_ICASE | REG_NOSUB);
 int re_eflags = REG_NOTBOL | REG_NOTEOL;
 
 //unsigned int nchars = 80;
@@ -258,7 +258,7 @@ static void cb_Seek(Fl_Input *, void *)
 {
 	static Fl_Color seek_color[2] = { FL_FOREGROUND_COLOR,
 					  adjust_color(FL_RED, FL_BACKGROUND2_COLOR) }; // invalid RE
-	seek_re = *inpSeek->value() ? inpSeek->value() : "[invalid";
+	seek_re.recompile(*inpSeek->value() ? inpSeek->value() : "[invalid");
 	if (inpSeek->textcolor() != seek_color[!seek_re]) {
 		inpSeek->textcolor(seek_color[!seek_re]);
 		inpSeek->redraw();
