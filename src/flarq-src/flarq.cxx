@@ -1541,7 +1541,7 @@ void dispState()
 				autobeacon = false;
 				break;
 			case WAITFORACK :
-				snprintf(statemsg, sizeof(statemsg), "CONNECTING: %d", digi_arq->getTimeLeft());
+				snprintf(statemsg, sizeof(statemsg), "WAITING FOR ACK   ");
 				txtState->value(statemsg);
 				txtState->redraw();
 				autobeacon = false;
