@@ -2992,14 +2992,6 @@ static void put_rx_char_flmain(unsigned int data)
 {
 	ENSURE_THREAD(FLMAIN_TID);
 
-#if BENCHMARK_MODE
-	if (!benchmark.output.empty()) {
-		if (unlikely(benchmark.buffer.length() + 16 > benchmark.buffer.capacity()))
-			benchmark.buffer.reserve(benchmark.buffer.capacity() + BUFSIZ);
-		benchmark.buffer += (char)data;
-	}
-	return;
-#endif
 	static unsigned int last = 0;
 	const char **asc = ascii;
 	trx_mode mode = active_modem->get_mode();
@@ -3050,7 +3042,15 @@ static void put_rx_char_flmain(unsigned int data)
 
 void put_rx_char(unsigned int data)
 {
+#if BENCHMARK_MODE
+	if (!benchmark.output.empty()) {
+		if (unlikely(benchmark.buffer.length() + 16 > benchmark.buffer.capacity()))
+			benchmark.buffer.reserve(benchmark.buffer.capacity() + BUFSIZ);
+		benchmark.buffer += (char)data;
+	}
+#else
 	REQ(put_rx_char_flmain, data);
+#endif
 }
 
 static string strSecText = "";
