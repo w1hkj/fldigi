@@ -16,6 +16,8 @@ unsigned quick_choice_menu(const char* title, unsigned sel, const Fl_Menu_Item* 
 unsigned quick_choice(const char* title, unsigned sel, ...);
 
 Fl_Color adjust_color(Fl_Color fg, Fl_Color bg);
+void adjust_color_inv(unsigned char& bg1r, unsigned char& bg1g, unsigned char& bg1b,
+		      Fl_Color bg2, Fl_Color def);
 
 #if !defined(__APPLE__) && !defined(__WOE32__)
 #  include <FL/x.H>

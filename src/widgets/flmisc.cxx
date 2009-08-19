@@ -74,6 +74,17 @@ Fl_Color adjust_color(Fl_Color fg, Fl_Color bg)
 	return fg;
 }
 
+// invert colour (bg1r, bg1g, bg1b); return def if new colour does not make
+// good contrast with bg2
+void adjust_color_inv(unsigned char& bg1r, unsigned char& bg1g, unsigned char& bg1b,
+		      Fl_Color bg2, Fl_Color def)
+{
+	bg1r = 255 - bg1r; bg1g = 255 - bg1g; bg1b = 255 - bg1b;
+	Fl_Color adj = fl_rgb_color(bg1r, bg1g, bg1b);
+	if (fl_contrast(adj, bg2) != adj)
+		Fl::get_color((def >= 0 ? def : adj), bg1r, bg1g, bg1b);
+}
+
 #if !defined(__APPLE__) && !defined(__WOE32__)
 #  include <FL/Fl_Window.H>
 #  include <FL/Fl_Pixmap.H>

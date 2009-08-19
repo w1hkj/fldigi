@@ -147,6 +147,7 @@ public:
 	void movetocenter();
 	void carrier(int cf);
 	int  carrier();
+	inline void makeMarker_(int width, const RGB* color, int freq, const RGB* clrMin, RGB* clrM, const RGB* clrMax);
 	void makeMarker();
 	void process_analog(double *sig, int len);
 	void processFFT();

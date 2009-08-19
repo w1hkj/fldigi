@@ -434,6 +434,7 @@ static void cb_btnBwTracksColor(Fl_Button* o, void*) {
   progdefaults.bwTrackRGBI.B) ) {
 o->color(fl_rgb_color(progdefaults.bwTrackRGBI.R,progdefaults.bwTrackRGBI.G,progdefaults.bwTrackRGBI.B));
 o->redraw();
+wf->redraw_marker();
 progdefaults.changed = true;
 };
 }

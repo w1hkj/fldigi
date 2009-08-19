@@ -65,6 +65,7 @@
 #include "macros.h"
 #include "arq_io.h"
 #include "confdialog.h"
+#include "flmisc.h"
 #include "gettext.h"
 
 using namespace std;
@@ -195,8 +196,29 @@ void WFdisp::initMarkers() {
 	memset(c2, 196, RGBwidth);
 }
 
+// draw a marker of specified width and colour centred at freq and clrM
+inline void WFdisp::makeMarker_(int width, const RGB* color, int freq, const RGB* clrMin, RGB* clrM, const RGB* clrMax)
+{
+	// clamp marker to image width
+	int bw_lower = -width, bw_upper = width;
+	if (bw_lower + static_cast<int>(freq+0.5) < 0)
+            bw_lower -= bw_lower + static_cast<int>(freq+0.5);
+	if (bw_upper + static_cast<int>(freq+0.5) > IMAGE_WIDTH)
+            bw_upper -= bw_upper + static_cast<int>(freq+0.5) - IMAGE_WIDTH;
+
+	// draw it
+	RGB* clrPos;
+	for (int y = 0; y < WFMARKER - 2; y++) {
+		for (int x = bw_lower; x < bw_upper; x++) {
+			clrPos = clrM + x + y * IMAGE_WIDTH;
+			if (clrPos > clrMin && clrPos < clrMax)
+				*clrPos = *color;
+		}
+	}
+}
+
 void WFdisp::makeMarker() {
-	RGB *clrMin, *clrMax, *clrM, *clrPos;
+	RGB *clrMin, *clrMax, *clrM;
 	clrMin = markerimage + IMAGE_WIDTH;
 	clrMax = clrMin + (WFMARKER - 2) * IMAGE_WIDTH;
 	memset(clrMin, 0, RGBwidth * (WFMARKER - 2));
@@ -219,19 +241,11 @@ void WFdisp::makeMarker() {
 	RGBmarker.G = progdefaults.bwTrackRGBI.G;
 	RGBmarker.B = progdefaults.bwTrackRGBI.B;
 
-	// clamp marker to image width
-	bw = marker_width;
-	int bw_lower = -bw, bw_upper = +bw;
-	if (bw_lower + static_cast<int>(carrierfreq+0.5) < 0)
-            bw_lower -= bw_lower + static_cast<int>(carrierfreq+0.5);
-	if (bw_upper + static_cast<int>(carrierfreq+0.5) > IMAGE_WIDTH)
-            bw_upper -= bw_upper + static_cast<int>(carrierfreq+0.5) - IMAGE_WIDTH;
-	for (int y = 0; y < WFMARKER - 2; y++) {
-		for (int i = bw_lower; i < bw_upper; i++) {
-			clrPos = clrM + i + y * IMAGE_WIDTH;
-			if (clrPos > clrMin && clrPos < clrMax)
-				*clrPos = RGBmarker;
-		}
+	makeMarker_(marker_width, &RGBmarker, carrierfreq, clrMin, clrM, clrMax);
+	if (unlikely(active_modem && active_modem->freqlocked())) {
+		int txfreq = active_modem->get_txfreq();
+		adjust_color_inv(RGBmarker.R, RGBmarker.G, RGBmarker.B, FL_BLACK, FL_RED);
+		makeMarker_(bandwidth, &RGBmarker, txfreq, clrMin, clrMin + (int)((double)txfreq + 0.5), clrMax);
 	}
 
 	if (!wantcursor) return;

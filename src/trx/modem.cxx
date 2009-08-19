@@ -140,9 +140,8 @@ void modem::set_freq(double freq)
 
 void modem::set_freqlock(bool on)
 {
-	if (on == false)
-		tx_frequency = frequency;
 	freqlock = on;
+	set_freq(frequency);
 }
 
 

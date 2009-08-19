@@ -557,6 +557,7 @@ progdefaults.changed = true;}
   progdefaults.bwTrackRGBI.B) ) {
 o->color(fl_rgb_color(progdefaults.bwTrackRGBI.R,progdefaults.bwTrackRGBI.G,progdefaults.bwTrackRGBI.B));
 o->redraw();
+wf->redraw_marker();
 progdefaults.changed = true;
 }}
                 tooltip {Change color} xywh {346 191 20 20} color 1 align 8
