@@ -79,6 +79,7 @@ void pRISETIME(string &, size_t &);
 void pPRE(string &, size_t &);
 void pPOST(string &, size_t &);
 void pAFC(string &, size_t &);
+void pLOCK(string &, size_t &);
 void pRSID(string &, size_t &);
 //void pMACROS(string &, size_t &);
 
@@ -128,6 +129,7 @@ MTAGS mtags[] = {
 {"<PRE:",       pPRE},
 {"<POST:",      pPOST},
 {"<AFC:",       pAFC},
+{"<LOCK:",      pLOCK},
 {"<RSID:",      pRSID},
 //{"<MACROS:",	pMACROS},
 {0, 0}
@@ -516,6 +518,24 @@ void pAFC(string &s, size_t &i)
       btnAFC->value(!btnAFC->value());
 
     btnAFC->do_callback();
+  }
+  s.replace(i, endbracket - i + 1, "");
+}
+
+void pLOCK(string &s, size_t &i)
+{
+  size_t endbracket = s.find('>',i);
+  string sVal = s.substr(i+6, endbracket - i - 6);
+  if (sVal.length() > 0) {
+    // sVal = on|off|t   [ON, OFF or Toggle]
+    if (sVal.compare(0,2,"on") == 0)
+      wf->xmtlock->value(1);
+    else if (sVal.compare(0,3,"off") == 0)
+      wf->xmtlock->value(0);
+    else if (sVal.compare(0,1,"t") == 0)
+      wf->xmtlock->value(!wf->xmtlock->value());
+
+    wf->xmtlock->damage();
   }
   s.replace(i, endbracket - i + 1, "");
 }

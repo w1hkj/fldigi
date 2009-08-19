@@ -101,6 +101,7 @@ void loadBrowser(Fl_Widget *widget) {
 	
 	w->add(LINE_SEP);
 	w->add("<AFC:on|off|t>\tAFC  on,off,toggle");
+	w->add("<LOCK:on|off|t>\tLOCK on,off,toggle");
 	w->add("<RSID:on|off|t>\tRSID on,off,toggle");
 
 	w->add(LINE_SEP);
