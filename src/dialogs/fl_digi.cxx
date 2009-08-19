@@ -1116,7 +1116,6 @@ void cb_mnuAboutURL(Fl_Widget*, void*)
 	help_dialog->value(szAbout);
 	help_dialog->resize(help_dialog->x(), help_dialog->y(), help_dialog->w(), 440);
 	help_dialog->show();
-	restoreFocus();
 }
 
 void fldigi_help(const string& theHelp)
@@ -1728,10 +1727,10 @@ bool clean_exit(void) {
 #define LOG_TO_FILE_MLABEL _("Log all RX/TX text")
 #define RIGCONTROL_MLABEL _("Rig Control")
 #define VIEW_MLABEL _("&View")
-#define MFSK_IMAGE_MLABEL _("MFSK Image")
+#define MFSK_IMAGE_MLABEL _("&MFSK Image")
 #define CONTEST_MLABEL _("Contest")
-#define CONTEST_FIELDS_MLABEL _("Contest fields")
-#define COUNTRIES_MLABEL _("Countries")
+#define CONTEST_FIELDS_MLABEL _("&Contest fields")
+#define COUNTRIES_MLABEL _("C&ountries")
 
 Fl_Menu_Item menu_[] = {
 {_("&File"), 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
@@ -1758,7 +1757,7 @@ Fl_Menu_Item menu_[] = {
 {_("Playback"),    0, (Fl_Callback*)cb_mnuPlayback, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 #endif
-{ make_icon_label(_("E&xit"), log_out_icon), 0,  (Fl_Callback*)cb_E, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("E&xit"), log_out_icon), 'x',  (Fl_Callback*)cb_E, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 {_("Op &Mode"), 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 
@@ -1876,12 +1875,12 @@ Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 { VIEW_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ make_icon_label(_("&Digiscope"), utilities_system_monitor_icon), 0, (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 0, (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(_("&PSK Browser")), 0, (Fl_Callback*)cb_mnuViewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("&Digiscope"), utilities_system_monitor_icon), 'd', (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("&PSK Browser")), 'p', (Fl_Callback*)cb_mnuViewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(RIGCONTROL_MLABEL, multimedia_player_icon), 0, (Fl_Callback*)cb_mnuRig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(_("&Logbook")), 0, (Fl_Callback*)cb_mnuShowLogbook, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(COUNTRIES_MLABEL), 0, (Fl_Callback*)cb_mnuShowCountries, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("&Logbook")), 'l', (Fl_Callback*)cb_mnuShowLogbook, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(COUNTRIES_MLABEL), 'o', (Fl_Callback*)cb_mnuShowCountries, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { CONTEST_FIELDS_MLABEL, 0, (Fl_Callback*)cb_mnuContest, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
@@ -1900,7 +1899,7 @@ Fl_Menu_Item menu_[] = {
 { make_icon_label(_("Build info"), executable_icon), 0, cb_mnuBuildInfo, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Event log"), dialog_information_icon), 0, cb_mnuDebug, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Check for updates..."), system_software_update_icon), 0, cb_mnuCheckUpdate, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(_("&About"), help_about_icon), 0, cb_mnuAboutURL, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("About"), help_about_icon), 0, cb_mnuAboutURL, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"  ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
