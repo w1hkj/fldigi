@@ -108,11 +108,12 @@ istream& operator>>(istream& in, RGBI& rgbi)
 class tag_base
 {
 public:
-	tag_base(const char* t) : tag(t) { }
+	tag_base(const char* t, const char* d = "") : tag(t), doc(d) { }
 	virtual void write(ostream& out) const = 0;
 	virtual void read(const char* data) = 0;
 	virtual ~tag_base() { }
 	const char* tag;
+	const char* doc;
 };
 
 // This will handle every type that has << and >> stream operators
@@ -120,10 +121,11 @@ template <typename T>
 class tag_elem : public tag_base
 {
 public:
-	tag_elem(const char* t, T& v) : tag_base(t), var(v) { }
+	tag_elem(const char* t, const char* d, T& v) : tag_base(t, d), var(v) { }
 	void write(ostream& out) const
         {
-		out << '<' << tag << '>' << var << "</" << tag << ">\n";
+		out << "<!-- " << doc << " -->\n"
+		    << '<' << tag << '>' << var << "</" << tag << ">\n\n";
 	}
 	void read(const char* data)
 	{
@@ -140,7 +142,7 @@ template <>
 class tag_elem<string> : public tag_base
 {
 public:
-	tag_elem(const char* t, string& s) : tag_base(t), str(s) { }
+	tag_elem(const char* t, const char* d, string& s) : tag_base(t, d), str(s) { }
 	void write(ostream& out) const
         {
 		string s = str;
@@ -159,7 +161,8 @@ public:
 		while ((i = s.find('\'')) != string::npos)
 			s.replace(i, 1, "&apos;");
 
-		out << '<' << tag << '>' << s << "</" << tag << ">\n";
+		out << "<!-- " << doc << " -->\n"
+		    << '<' << tag << '>' << s << "</" << tag << ">\n\n";
 	}
 	void read(const char* data) { str = data; }
 	string& str;
@@ -172,9 +175,11 @@ public:
 //    in configuration.h.
 // 2) Define progdefaults, the configuration struct that is initialised with
 //    fldigi's default options
-#define ELEM_PROGDEFAULTS(type_, var_, tag_, ...) __VA_ARGS__,
+#define ELEM_PROGDEFAULTS(type_, var_, tag_, doc_, ...) __VA_ARGS__,
 // 3) Define an array of tag element pointers
-#define ELEM_TAG_ARRAY(type_, var_, tag_, ...) (*tag_ ? new tag_elem<type_>(tag_, progdefaults.var_) : 0),
+#define ELEM_TAG_ARRAY(type_, var_, tag_, doc_, ...)                                             \
+        (*tag_ ? new tag_elem<type_>(tag_, "type: " #type_ "; default: " #__VA_ARGS__ "\n" doc_, \
+                                     progdefaults.var_) : 0),
 
 // First define the default config
 #undef ELEM_
@@ -203,7 +208,7 @@ void configuration::writeDefaultsXML()
 	tag_base* tag_list[] = { CONFIG_LIST };
 
 	// write all variables with non-empty tags to f
-	f << "<FLDIGI_DEFS>\n";
+	f << "<FLDIGI_DEFS>\n\n";
 	for (size_t i = 0; i < sizeof(tag_list)/sizeof(*tag_list); i++) {
 		if (tag_list[i]) {
 			tag_list[i]->write(f);

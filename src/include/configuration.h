@@ -27,344 +27,923 @@
 #endif
 
 
-// Format: ELEM_(TYPE, VARIABLE-NAME, TAG-STRING, DEFAULT-VALUE
-// Variables that are not saved to the xml file have an empty TAG-STRING
+// Format: ELEM_(TYPE, VARIABLE-NAME, TAG-STRING, DOC-STRING, DEFAULT-VALUE)
+// Variables that are not saved to the xml file have empty TAG-STRINGs and DOC-STRINGs
 //
 // No preprocessor directives or C++ comments inside this macro!
+// Indent with spaces only.
 
 #ifdef ELEM_
 #  error ELEM_ should not be defined at this point
 #endif
 
 #define CONFIG_LIST                                                                     \
-        ELEM_(bool, rsidWideSearch, "RSIDWIDESEARCH", false)                            \
-        ELEM_(bool, rsid, "", false)                                                    \
-        ELEM_(bool, TransmitRSid, "TRANSMITRSID", false)                                \
-        ELEM_(bool, rsid_mark, "RSIDMARK", true)                                        \
-        ELEM_(bool, rsid_notify_only, "RSIDNOTIFYONLY", false)                          \
+        ELEM_(bool, rsidWideSearch, "RSIDWIDESEARCH",                                   \
+              "RSID detector searches the entire passband",                             \
+              false)                                                                    \
+        ELEM_(bool, rsid, "", "",  false)                                               \
+        ELEM_(bool, TransmitRSid, "TRANSMITRSID",                                       \
+              "Send RSID at beginning and end of transmission",                         \
+              false)                                                                    \
+        ELEM_(bool, rsid_mark, "RSIDMARK",                                              \
+              "Append marker (for the previous modem and frequency) to the RX text\n"   \
+              "widget before changing to the new modem and/or frequency",               \
+              true)                                                                     \
+        ELEM_(bool, rsid_notify_only, "RSIDNOTIFYONLY",                                 \
+              "Trigger RSID notifications but do not change modem and frequency",       \
+              false)                                                                    \
                                                                                         \
-        ELEM_(bool, slowcpu, "SLOWCPU", true)                                           \
+        ELEM_(bool, slowcpu, "SLOWCPU",                                                 \
+              "Disable expensive processing in some decoders",                          \
+              true)                                                                     \
                                                                                         \
-        ELEM_(bool, changed, "", false)                                                 \
+        ELEM_(bool, changed, "", "",  false)                                            \
                                                                                         \
-        ELEM_(double, wfRefLevel, "WFREFLEVEL", -20.0)                                  \
-        ELEM_(double, wfAmpSpan, "WFAMPSPAN", 70.0)                                     \
-        ELEM_(int, LowFreqCutoff, "LOWFREQCUTOFF", 300)                                 \
-        ELEM_(double, CWsweetspot, "CWSWEETSPOT", 1000)                                 \
-        ELEM_(double, RTTYsweetspot, "RTTYSWEETSPOT", 1000)                             \
-        ELEM_(double, PSKsweetspot, "PSKSWEETSPOT", 1000)                               \
-        ELEM_(bool, StartAtSweetSpot, "STARTATSWEETSPOT", false)                        \
-        ELEM_(bool, WaterfallHistoryDefault, "WATERFALLHISTORYDEFAULT", false)          \
-        ELEM_(bool, WaterfallQSY, "WATERFALLQSY", false)                                \
-        ELEM_(bool, WaterfallClickInsert, "WATERFALLCLICKINSERT", false)                \
-        ELEM_(std::string, WaterfallClickText, "WATERFALLCLICKTEXT", "\n<FREQ>\n")      \
-        ELEM_(int, WaterfallWheelAction, "WATERFALLWHEELACTION", waterfall::WF_CARRIER) \
-/* PSK, filter can be 0, 1, 2, 3 or 4 */                                                \
-        ELEM_(int, PSK_filter, "PSKFILTER", 0)                                          \
-/* PSK / PSKmail interface */                                                           \
-        ELEM_(int, SearchRange, "PSKSEARCHRANGE", 200)                                  \
-        ELEM_(double, ACQsn, "ACQSN", 6.0)                                              \
-        ELEM_(bool, StatusDim, "STATUSDIM", true)                                       \
-        ELEM_(double, StatusTimeout, "STATUSTIMEOUT", 15.0)                             \
-        ELEM_(bool, PSKmailSweetSpot, "PSKMAILSWEETSPOT", false)                        \
-        ELEM_(int, ServerOffset, "PSKSERVEROFFSET", 50)                                 \
-        ELEM_(int, ServerCarrier, "PSKSERVERCARRIER", 1500)                             \
-        ELEM_(int, ServerAFCrange, "PSKSERVERAFCRANGE", 25)                             \
-        ELEM_(double, ServerACQsn, "PSKSERVERACGSN", 6.0)                               \
-/* RTTY */                                                                              \
-        ELEM_(int, rtty_shift, "RTTYSHIFT", 3) /* 170 */                                \
-        ELEM_(int, rtty_baud, "RTTYBAUD", 0)   /* 45 */                                 \
-        ELEM_(int, rtty_bits, "RTTYBITS", 0)   /* 5 */                                  \
-        ELEM_(int, rtty_parity, "RTTYPARITY", RTTY_PARITY_NONE)                         \
-        ELEM_(int, rtty_stop, "RTTYSTOP", 1)                                            \
-        ELEM_(bool, rtty_reverse, "RTTYREVERSE", false)                                 \
-        ELEM_(bool, rtty_msbfirst, "RTTYMSBFIRST", false)                               \
-        ELEM_(bool, rtty_crcrlf, "RTTYCRCLF", false)                                    \
-        ELEM_(bool, rtty_autocrlf, "RTTYAUTOCRLF", true)                                \
-        ELEM_(int, rtty_autocount, "RTTYAUTOCOUNT", 72)                                 \
-        ELEM_(int, rtty_afcspeed, "RTTYAFCSPEED", 1)                                    \
-        ELEM_(bool, useFSKkeyline, "", false)                                           \
-        ELEM_(bool, useFSKkeylineDTR, "", false)                                        \
-        ELEM_(bool, FSKisLSB, "", true)                                                 \
-        ELEM_(bool, useUART, "", false)                                                 \
-        ELEM_(bool, PreferXhairScope, "PREFERXHAIRSCOPE", false)                        \
-        ELEM_(bool, PseudoFSK, "PSEUDOFSK", false)                                      \
-        ELEM_(bool, UOSrx, "UOSRX", true)                                               \
-        ELEM_(bool, UOStx, "UOSTX", true)                                               \
-        ELEM_(bool, Xagc, "XAGC", false)                                                \
-        ELEM_(double, RTTY_BW, "RTTYBW", 400.0)                                         \
-/* CW */                                                                                \
-        ELEM_(bool, useCWkeylineRTS, "", false)                                         \
-        ELEM_(bool, useCWkeylineDTR, "", false)                                         \
-        ELEM_(int, CWweight, "CWWEIGHT", 50)                                            \
-        ELEM_(int, CWspeed, "CWSPEED", 18)                                              \
-        ELEM_(int, CWfarnsworth, "CWFARNSWORTH", 18)                                    \
-        ELEM_(bool, CWusefarnsworth, "CWUSEFARNSWORTH", false)                          \
-        ELEM_(int, defCWspeed, "CWDEFSPEED", 24)                                        \
-        ELEM_(int, CWbandwidth, "CWBANDWIDTH", 150)                                     \
-        ELEM_(bool, CWtrack, "CWTRACK", true)                                           \
-        ELEM_(int, CWrange, "CWRANGE", 10)                                              \
-        ELEM_(int, CWlowerlimit, "CWLOWERLIMIT", 5)                                     \
-        ELEM_(int, CWupperlimit, "CWUPPERLIMIT", 50)                                    \
-        ELEM_(double, CWrisetime, "CWRISETIME", 4.0)                                    \
-        ELEM_(double, CWdash2dot, "CWDASH2DOT", 3.0)                                    \
-        ELEM_(bool, QSK, "QSK", false)                                                  \
-        ELEM_(double, CWpre, "CWPRE", 4.0)                                              \
-        ELEM_(double, CWpost, "CWPOST", 4.0)                                            \
-        ELEM_(bool, CWid, "CWID", false)                                                \
-        ELEM_(int, CWIDwpm, "IDWPM", 18)                                                \
-        ELEM_(bool, QSKadjust, "QSKADJUST", false)                                      \
-        ELEM_(int, TestChar, "TESTCHAR", 0)                                             \
-        ELEM_(int, QSKshape, "QSKSHAPE", 0)                                             \
-        ELEM_(bool, CWnarrow, "CWNARROW", false)                                        \
-/* FELD HELL */                                                                         \
-        ELEM_(double, HELL_BW, "", 150.0)                                               \
-        ELEM_(bool, HellRcvWidth, "HELLRCVWIDTH", false)                                \
-        ELEM_(bool, HellBlackboard, "HELLBLACKBOARD", false)                            \
-        ELEM_(int, HellXmtWidth, "HELLXMTWIDTH", 1)                                     \
-        ELEM_(bool, HellXmtIdle, "HELLXMTIDLE", false)                                  \
-        ELEM_(bool, HellPulseFast, "HELLPULSEFAST", false)                              \
-/* OLIVIA */                                                                            \
-        ELEM_(int, oliviatones, "OLIVIATONES", 2) /* 8 */                               \
-        ELEM_(int, oliviabw, "OLIVIABW", 2)     /* 500 */                               \
-        ELEM_(int, oliviasmargin, "OLIVIASMARGIN", 8)                                   \
-        ELEM_(int, oliviasinteg, "OLIVIASINTEG", 4)                                     \
-        ELEM_(bool, olivia8bit, "OLIVIA8BIT", false)                                    \
-/* THOR */                                                                              \
-        ELEM_(double, THOR_BW, "THORBW", 2.0)                                           \
-        ELEM_(bool, THOR_FILTER, "THORFILTER", true)                                    \
-        ELEM_(std::string, THORsecText, "THORSECTEXT", "")                              \
-        ELEM_(int, THOR_PATHS, "THORPATHS", 5)                                          \
-        ELEM_(bool, THOR_SOFT, "THORSOFT", false)                                       \
-        ELEM_(double, ThorCWI, "THORCWI", 0.0)                                          \
-/* DOMINOEX */                                                                          \
-        ELEM_(double, DOMINOEX_BW, "DOMINOEXBW", 2.0)                                   \
-        ELEM_(bool, DOMINOEX_FILTER, "DOMINOEXFILTER", true)                            \
-        ELEM_(bool, DOMINOEX_FEC, "DOMINOEXFEC", false)                                 \
-        ELEM_(int, DOMINOEX_PATHS, "DOMINOEXPATHS", 5)                                  \
-        ELEM_(double, DomCWI, "DOMCWI", 0.0)                                            \
-/* MT63 */                                                                              \
-        ELEM_(bool, mt63_8bit, "MT638BIT", false)                                       \
-        ELEM_(int, mt63_interleave, "MT63INTERLEAVE", 64) /* long interleave */         \
-        ELEM_(bool, mt63_rx_integration, "MT63INTEGRATION", false)                      \
-        ELEM_(bool, mt63_twotones, "MT63TWOTONES", true)                                \
-        ELEM_(bool, mt63_usetones, "MT63USETONES", true)                                \
-        ELEM_(int, mt63_tone_duration, "MT63TONEDURATION", 4)                           \
-/* Waterfall & UI */                                                                    \
-        ELEM_(uchar, red, "", 0)                                                        \
-        ELEM_(uchar, green, "", 255)                                                    \
-        ELEM_(uchar, blue, "", 255)                                                     \
-        ELEM_(bool, MultiColorWF, "", false)                                            \
-        ELEM_(int, wfPreFilter, "WFPREFILTER", 1) /* Blackman */                        \
-        ELEM_(bool, WFaveraging, "WFAVERAGING", false)                                  \
-        ELEM_(int, latency, "LATENCY", 4)                                               \
-        ELEM_(bool, UseCursorLines, "USECURSORLINES", true)                             \
-        ELEM_(bool, UseCursorCenterLine, "USECURSORCENTERLINE", true)                   \
-        ELEM_(bool, UseBWTracks, "USEBWTRACKS", true)                                   \
-        ELEM_(RGBI, cursorLineRGBI, "CLCOLORS", {255, 255, 0, 255})                     \
-        ELEM_(RGBI, cursorCenterRGBI, "CCCOLORS", {255, 255, 255, 255})                 \
-        ELEM_(RGBI, bwTrackRGBI, "BWTCOLORS", {255, 0, 0, 255})                         \
-        ELEM_(int, feldfontnbr, "FELDFONTNBR", 4)                                       \
-        ELEM_(bool, viewXmtSignal, "VIEWXMTSIGNAL", false)                              \
-        ELEM_(bool, sendid, "SENDID", false)                                            \
-        ELEM_(bool, macroid, "MACROID", false)                                          \
-        ELEM_(bool, sendtextid, "SENDTEXTID", false)                                    \
-        ELEM_(std::string, strTextid, "STRTEXTID", "CQ")                                \
-        ELEM_(bool, macroCWid, "", false)                                               \
-        ELEM_(int, videowidth, "VIDEOWIDTH", 1)                                         \
-        ELEM_(bool, ID_SMALL, "IDSMALL", true)                                          \
-        ELEM_(bool, macrotextid, "", false)                                             \
-        ELEM_(bool, docked_scope, "DOCKEDSCOPE", false)                                 \
-        ELEM_(bool, docked_rig_control, "DOCKEDRIGCONTROL", true)                       \
-        ELEM_(int,  wfwidth, "WFWIDTH", 3000)                                           \
-        ELEM_(int,  wfheight, "WFHEIGHT", 125)                                          \
-        ELEM_(bool, tooltips, "TOOLTIPS", true)                                         \
-        ELEM_(bool, useCheckButtons, "USECHECKBUTTONS", false)                          \
-        ELEM_(bool, NagMe, "NAGME", false)                                              \
-        ELEM_(bool, ClearOnSave, "CLEARONSAVE", false)                                  \
-        ELEM_(bool, menuicons, "MENUICONS", true)                                       \
-        ELEM_(bool, rxtext_clicks_qso_data, "RXTEXTCLICKS", false)                      \
-        ELEM_(bool, rxtext_tooltips, "RXTEXTTOOLTIPS", false)                           \
-        ELEM_(bool, autofill_qso_fields, "AUTOFILLQSO", false)                          \
-        ELEM_(bool, calluppercase, "CALLUPPERCASE", false)                              \
-        ELEM_(bool, autoextract, "AUTOEXTRACT", false)                                  \
-        ELEM_(bool, speak, "SPEAK", false)                                              \
-/* QRZ */                                                                               \
-        ELEM_(int, QRZ, "QRZTYPE", QRZNONE)                                             \
-        ELEM_(std::string, QRZpathname, "QRZPATHNAME", "")                              \
-        ELEM_(std::string, QRZusername, "QRZUSER", "")                                  \
-        ELEM_(std::string, QRZuserpassword, "QRZPASSWORD", "")                          \
-        ELEM_(bool, QRZchanged, "", false)                                              \
-/* Rig control */                                                                       \
-        ELEM_(bool, btnusb, "BTNUSB", true)                                             \
-        ELEM_(bool, RTSptt, "RTSPTT", false)                                            \
-        ELEM_(bool, DTRptt, "DTRPTT", false)                                            \
-        ELEM_(bool, RTSplus, "RTSPLUS", false)                                          \
-        ELEM_(bool, DTRplus, "DTRPLUS", false)                                          \
-        ELEM_(bool, PTTrightchannel, "PTTRIGHTCHANNEL", false)                          \
-        ELEM_(int, chkUSEMEMMAPis, "CHKUSEMEMMAPIS", 0)                                 \
-        ELEM_(int, chkUSEHAMLIBis, "CHKUSEHAMLIBIS", 0)                                 \
-        ELEM_(int, chkUSERIGCATis, "CHKUSERIGCATIS", 0)                                 \
-        ELEM_(int, chkUSEXMLRPCis, "CHKUSEXMLRPCIS", 0)                                 \
-        ELEM_(std::string, PTTdev, "PTTDEV", DEFAULT_PTTDEV)                            \
-        ELEM_(std::string, CWFSKport, "", DEFAULT_CWFSKPORT)                            \
-        ELEM_(std::string, HamRigDevice, "HAMRIGDEVICE", DEFAULT_HAMRIGDEVICE)          \
-        ELEM_(std::string, HamRigName, "HAMRIGNAME", "")                                \
-        ELEM_(int, HamRigModel, "HAMRIGMODEL", 0)                                       \
-        ELEM_(std::string, HamConfig, "HAMCONFIG", "")                                  \
-        ELEM_(int, HamRigBaudrate, "HAMRIGBAUDRATE", 1) /* 600 baud */                  \
-        ELEM_(std::string, XmlRigFilename, "XMLRIGFILENAME", "")                        \
-        ELEM_(std::string, XmlRigDevice, "XMLRIGDEVICE", DEFAULT_HAMRIGDEVICE)          \
-        ELEM_(int, XmlRigBaudrate, "XMLRIGBAUDRATE", 1)                                 \
-        ELEM_(bool, TTYptt, "TTYPTT", false)                                            \
-        ELEM_(bool, HamlibCMDptt, "HAMLIBCMDPTT", false)                                \
-        ELEM_(bool, RigCatCMDptt, "RIGCATCMDPTT", false)                                \
-        ELEM_(bool, MEMMAPptt, "MEMMAPPTT", false)                                      \
-        ELEM_(bool, UseUHrouterPTT, "USEUHROUTERPTT", false)                            \
-        ELEM_(bool, UsePPortPTT, "USEPPORTPTT", false)                                  \
-/* RigCAT parameters */                                                                 \
-        ELEM_(bool, RigCatRTSplus, "RIGCATRTSPLUS", 0)                                  \
-        ELEM_(bool, RigCatDTRplus, "RIGCATDTRPLUS", 0)                                  \
-        ELEM_(bool, RigCatRTSptt, "RIGCATRTSPTT", 0)                                    \
-        ELEM_(bool, RigCatDTRptt, "RIGCATDTRPTT", 0)                                    \
-        ELEM_(bool, RigCatRTSCTSflow, "RIGCATRTSCTSFLOW", 0)                            \
-        ELEM_(int, RigCatRetries, "RIGCATRETRIES", 2)                                   \
-        ELEM_(int, RigCatTimeout, "RIGCATTIMEOUT", 10)                                  \
-        ELEM_(int, RigCatWait, "RIGCATWAIT", 50)                                        \
-        ELEM_(bool, RigCatECHO, "RIGCATECHO", 0)                                        \
-/* Hamlib parameters */                                                                 \
-        ELEM_(bool, HamlibRTSplus, "HAMLIBRTSPLUS", 0)                                  \
-        ELEM_(bool, HamlibDTRplus, "HAMLIBDTRPLUS", 0)                                  \
-        ELEM_(bool, HamlibRTSCTSflow, "HAMLIBRTSCTSFLOW", 0)                            \
-        ELEM_(bool, HamlibXONXOFFflow, "HAMLIBXONXOFFFLOW", 0)                          \
-        ELEM_(int, HamlibRetries, "HAMLIBRETRIES", 2)                                   \
-        ELEM_(int, HamlibTimeout, "HAMLIBTIMEOUT", 10)                                  \
-        ELEM_(int, HamlibWait, "HAMLIBWAIT", 5)                                         \
-        ELEM_(int, HamlibWriteDelay, "HAMLIBWRITEDELAY", 0)                             \
-        ELEM_(int, HamlibSideband, "HAMLIBSIDEBAND", 0) /* SIDEBAND_RIG */              \
-/* Operator */                                                                          \
-        ELEM_(std::string, myCall, "MYCALL", "")                                        \
-        ELEM_(std::string, myQth, "MYQTH", "")                                          \
-        ELEM_(std::string, myName, "MYNAME", "")                                        \
-        ELEM_(std::string, myLocator, "MYLOC", "")                                      \
-        ELEM_(std::string, secText, "SECONDARYTEXT", "")                                \
-        ELEM_(std::string, myAntenna, "MYANTENNA", "")                                  \
-/* Sound card */                                                                        \
-        ELEM_(int, btnAudioIOis, "AUDIOIO", SND_IDX_PORT)                               \
-        ELEM_(std::string, OSSdevice, "OSSDEVICE", "")                                  \
-        ELEM_(std::string, PAdevice, "PADEVICE", "")                                    \
-        ELEM_(std::string, PortInDevice, "PORTINDEVICE", "")                            \
-        ELEM_(int, PortInIndex, "PORTININDEX", -1)                                      \
-        ELEM_(std::string, PortOutDevice, "PORTOUTDEVICE", "")                          \
-        ELEM_(int, PortOutIndex, "PORTOUTINDEX", -1)                                    \
-        ELEM_(int, PortFramesPerBuffer, "", 0)                                          \
-        ELEM_(std::string, PulseServer, "PULSESERVER", "")                              \
-        ELEM_(int, in_channels, "INCHANNELS", 1)                                        \
-        ELEM_(int, out_channels, "OUTCHANNELS", 2)                                      \
-        ELEM_(int, sample_rate, "SAMPLERATE", SAMPLE_RATE_UNSET)                        \
-        ELEM_(int, in_sample_rate, "INSAMPLERATE", SAMPLE_RATE_UNSET)                   \
-        ELEM_(int, out_sample_rate, "OUTSAMPLERATE", SAMPLE_RATE_UNSET)                 \
-        ELEM_(int, sample_converter, "SAMPLECONVERTER", SRC_SINC_FASTEST)               \
-        ELEM_(int, RX_corr, "RXCORR", 0)                                                \
-        ELEM_(int, TX_corr, "TXCORR", 0)                                                \
-        ELEM_(int, TxOffset, "TXOFFSET", 0)                                             \
-/* Contest controls and Logbook */                                                      \
-        ELEM_(std::string, logbookfilename, "LOGBOOKFILENAME", "")                      \
-        ELEM_(bool, fixed599, "FIXED599", false)                                        \
-        ELEM_(bool, UseLeadingZeros, "USELEADINGZEROS", true)                           \
-        ELEM_(bool, cutnbrs, "CUTNBRS", false)                                          \
-        ELEM_(bool, EnableDupCheck, "ENABLEDUPCHECK", false)                            \
-        ELEM_(bool, dupmode, "DUPMODE", true)                                           \
-        ELEM_(bool, dupband, "DUPBAND", true)                                           \
-        ELEM_(bool, dupstate, "DUPSTATE", false)                                        \
-        ELEM_(bool, dupxchg1, "DUPXCHG1", false)                                        \
-        ELEM_(bool, duptimespan, "DUPTIMESPAN", false)                                  \
-        ELEM_(int, timespan, "TIMESPAN", 120)                                           \
-        ELEM_(int, ContestStart, "CONTESTSTART", 0)                                     \
-        ELEM_(int, ContestDigits, "CONTESTDIGITS", 4)                                   \
-        ELEM_(std::string, myXchg, "MYXCGH", "")                                        \
-        ELEM_(std::string, mytxpower, "TXPOWER", "")                                    \
-/* Macro controls */                                                                    \
-        ELEM_(bool, UseLastMacro, "USELASTMACRO", false)                                \
-        ELEM_(bool, DisplayMacroFilename, "DISPLAYMACROFILENAME", false)                \
-/* Mixer */                                                                             \
-        ELEM_(std::string, MXdevice, "MXDEVICE", "")                                    \
-        ELEM_(bool, MicIn, "MICIN", false)                                              \
-        ELEM_(bool, LineIn, "LINEIN", true)                                             \
-        ELEM_(bool, EnableMixer, "ENABLEMIXER", false)                                  \
-        ELEM_(double, PCMvolume, "PCMVOLUME", 0.8)                                      \
-        ELEM_(bool, MuteInput, "MUTEINPUT", true)                                       \
-        ELEM_(double, TxMonitorLevel, "TXMONITORLEVEL", 0.5)                            \
-/* Waterfall palette */                                                                 \
-	ELEM_(std::string, PaletteName, "PALETTENAME", "default.pal")                   \
-        ELEM_(RGB, cfgpal0, "PALETTE0", { 0,0,0 })                                      \
-        ELEM_(RGB, cfgpal1, "PALETTE1", { 0,0,136 })                                    \
-        ELEM_(RGB, cfgpal2, "PALETTE2", { 0,19,198 })                                   \
-        ELEM_(RGB, cfgpal3, "PALETTE3", { 0,32,239 })                                   \
-        ELEM_(RGB, cfgpal4, "PALETTE4", { 172,167,105 })                                \
-        ELEM_(RGB, cfgpal5, "PALETTE5", { 194,198,49 })                                 \
-        ELEM_(RGB, cfgpal6, "PALETTE6", { 225,228,107 })                                \
-        ELEM_(RGB, cfgpal7, "PALETTE7", { 255,255,0 })                                  \
-        ELEM_(RGB, cfgpal8, "PALETTE8", { 251,51,0 })                                   \
-/* Palettes for macro button groups */                                                  \
-        ELEM_(bool, useGroupColors, "USEGROUPCOLORS", true)                             \
-        ELEM_(RGB, btnGroup1, "FKEYGROUP1", { 80, 144, 144 })                           \
-        ELEM_(RGB, btnGroup2, "FKEYGROUP2", { 144, 80, 80 })                            \
-        ELEM_(RGB, btnGroup3, "FKEYGROUP3", { 80, 80, 144 })                            \
-        ELEM_(RGB, btnFkeyTextColor, "FKEYTEXTCOLOR", { 255, 255, 255 })                \
-/* RX / TX / Waterfall text widgets */                                                  \
-        ELEM_(std::string, RxFontName, "RXFONTNAME", "")                                \
-        ELEM_(bool, RxFontWarn, "RXFONTWARN", true)                                     \
-        ELEM_(Fl_Font, RxFontnbr, "RXFONTNBR", FL_COURIER)                              \
-        ELEM_(int, RxFontsize, "RXFONTSIZE", 16)                                        \
-        ELEM_(Fl_Color, RxFontcolor, "RXFNTCOLOR", FL_BLACK)                            \
-        ELEM_(std::string, TxFontName, "TXFONTNAME", "")                                \
-        ELEM_(bool, TxFontWarn, "TXFONTWARN", true)                                     \
-        ELEM_(Fl_Font, TxFontnbr, "TXFONTNBR", FL_COURIER)                              \
-        ELEM_(int, TxFontsize, "TXFONTSIZE", 16)                                        \
-        ELEM_(Fl_Color, TxFontcolor, "TXFNTCOLOR", FL_BLACK)                            \
-        ELEM_(RGB, RxColor, "RXFONTCOLOR", { 255, 242, 190 })                           \
-        ELEM_(RGB, TxColor, "TXFONTCOLOR", { 200, 235, 255 })                           \
-        ELEM_(Fl_Color, XMITcolor, "XMITCOLOR", FL_RED)                                 \
-        ELEM_(Fl_Color, CTRLcolor, "CTRLCOLOR", FL_DARK_GREEN)                          \
-        ELEM_(Fl_Color, SKIPcolor, "SKIPCOLOR", FL_BLUE)                                \
-        ELEM_(Fl_Color, ALTRcolor, "ALTRCOLOR", FL_DARK_MAGENTA)                        \
-        ELEM_(std::string, WaterfallFontName, "WATERFALLFONTNAME", "")                  \
-        ELEM_(Fl_Font, WaterfallFontnbr, "WATERFALLFONTNBR", FL_COURIER)                \
-        ELEM_(int, WaterfallFontsize, "WATERFALLFONTSIZE", 12)                          \
-        ELEM_(std::string, ui_scheme, "UISCHEME", "gtk+")                               \
-        ELEM_(bool, wf_audioscale, "WFAUDIOSCALE", false)				\
-/* Freq Display colors */                                                               \
-        ELEM_(RGB, FDbackground, "FDBACKGROUND", { 0, 0, 0 })                  		\
-        ELEM_(RGB, FDforeground, "FDFOREGROUND", { 0, 200, 0 })                     	\
-/* Tab selection color */                                                               \
-        ELEM_(Fl_Color, TabsColor, "TABSCOLOR", FL_BACKGROUND2_COLOR)                   \
-/* PSK Viewer */                                                                        \
-        ELEM_(bool, VIEWERmarquee, "VIEWERMARQUEE", true)                               \
-        ELEM_(int, VIEWERlabeltype, "VIEWERSHOWFREQ", VIEWER_LABEL_RF)                  \
-        ELEM_(int, VIEWERstart, "VIEWERSTART", 500)                                     \
-        ELEM_(int, VIEWERchannels, "VIEWERCHANNELS", 20)                                \
-        ELEM_(double, VIEWERsquelch, "VIEWERSQUELCH", 10.0)                             \
-        ELEM_(int, VIEWERtimeout, "VIEWERTIMEOUT", 15)                                  \
-        ELEM_(std::string, ViewerFontName, "VIEWERFONTNAME", "")                        \
-        ELEM_(Fl_Font, ViewerFontnbr, "VIEWERFONTNBR", FL_COURIER)                      \
-        ELEM_(int, ViewerFontsize, "VIEWERFONTSIZE", FL_NORMAL_SIZE)                    \
-/* XML-RPC/ARQ servers */                                                               \
-        ELEM_(std::string, xmlrpc_address, "", "127.0.0.1")                             \
-        ELEM_(std::string, xmlrpc_port, "", "7362")                                     \
-        ELEM_(std::string, xmlrpc_allow, "", "")                                        \
-        ELEM_(std::string, xmlrpc_deny, "", "")                                         \
-        ELEM_(int, rx_msgid, "", 9876)                                                  \
-        ELEM_(int, tx_msgid, "", 6789)                                                  \
-        ELEM_(std::string, arq_address, "", "127.0.0.1")                                \
-        ELEM_(std::string, arq_port, "", "7322")                                        \
-/* PSK reporter */                                                                      \
-        ELEM_(bool, usepskrep, "USEPSKREP", false)                                      \
-        ELEM_(bool, pskrep_auto, "PSKREPAUTO", false)                                   \
-        ELEM_(bool, pskrep_log, "PSKREPLOG", false)                                     \
-        ELEM_(bool, pskrep_qrg, "PSKREPQRG", false)                                     \
-        ELEM_(std::string, pskrep_host, "PSKREPHOST", "report.pskreporter.info")        \
-        ELEM_(std::string, pskrep_port, "PSKREPPORT", "4739")
+        ELEM_(double, wfRefLevel, "WFREFLEVEL",                                         \
+              "Waterfall reference level (dB)",                                         \
+              -20.0)                                                                    \
+        ELEM_(double, wfAmpSpan, "WFAMPSPAN",                                           \
+              "Waterfall amplitude span (dB)",                                          \
+              70.0)                                                                     \
+        ELEM_(int, LowFreqCutoff, "LOWFREQCUTOFF",                                      \
+              "Lowest frequency shown on waterfall (Hz)",                               \
+              300)                                                                      \
+        ELEM_(double, CWsweetspot, "CWSWEETSPOT",                                       \
+              "Default CW tracking point (Hz)",                                         \
+              1000)                                                                     \
+        ELEM_(double, RTTYsweetspot, "RTTYSWEETSPOT",                                   \
+              "Default RTTY tracking point (Hz)",                                       \
+              1000)                                                                     \
+        ELEM_(double, PSKsweetspot, "PSKSWEETSPOT",                                     \
+              "Default tracking point for all other modems (Hz)",                       \
+              1000)                                                                     \
+        ELEM_(bool, StartAtSweetSpot, "STARTATSWEETSPOT",                               \
+              "Always start new modems at sweet spot frequencies",                      \
+              false)                                                                    \
+        ELEM_(bool, WaterfallHistoryDefault, "WATERFALLHISTORYDEFAULT",                 \
+              "Replay audio history when changing frequency by clicking on\n"           \
+              "the waterfall",                                                          \
+              false)                                                                    \
+        ELEM_(bool, WaterfallQSY, "WATERFALLQSY",                                       \
+              "Change rig frequency by dragging the mouse cursor on the waterfall\n"    \
+              "frequency scale area",                                                   \
+              false)                                                                    \
+        ELEM_(bool, WaterfallClickInsert, "WATERFALLCLICKINSERT",                       \
+              "Insert text to the RX text widget when changing frequency by left\n"     \
+              "clicking on the waterfall",                                              \
+              false)                                                                    \
+        ELEM_(std::string, WaterfallClickText, "WATERFALLCLICKTEXT",                    \
+              "Waterfall left click text for WATERFALLCLICKINSERT",                     \
+              "\n<FREQ>\n")                                                             \
+        ELEM_(int, WaterfallWheelAction, "WATERFALLWHEELACTION",                        \
+              "Describes how waterfall mouse wheel events are handled\n"                \
+              "  0: do nothing; 1: change AFC width or decoder bandwidth;\n"            \
+              "  2: signal search; 3: change squelch level; 4: change modem carrier;\n" \
+              "  5: change modem; 6: scroll visible area.  The default is 4.",          \
+              waterfall::WF_CARRIER)                                                    \
+        /* PSK, filter can be 0, 1, 2, 3 or 4 */                                        \
+        ELEM_(int, PSK_filter, "PSKFILTER",                                             \
+              "Not configurable; must always be 0",                                     \
+              0)                                                                        \
+        /* PSK / PSKmail interface */                                                   \
+        ELEM_(int, SearchRange, "PSKSEARCHRANGE",                                       \
+              "PSK signal acquisition search range (Hz)",                               \
+              200)                                                                      \
+        ELEM_(double, ACQsn, "ACQSN",                                                   \
+              "PSK signal acquisition S/N (dB)",                                        \
+              6.0)                                                                      \
+        ELEM_(bool, StatusDim, "STATUSDIM",                                             \
+              "Behaviour of status (S/N and IMD) fields:\n"                             \
+              "  0: Clear after timeout\n"                                              \
+              "  1: Dim after timeout\n",                                               \
+              true)                                                                     \
+        ELEM_(double, StatusTimeout, "STATUSTIMEOUT",                                   \
+              "Dim or Clear timeout (seconds)",                                         \
+              15.0)                                                                     \
+        ELEM_(bool, PSKmailSweetSpot, "PSKMAILSWEETSPOT",                               \
+              "Reset to carrier when no signal is present",                             \
+              false)                                                                    \
+        ELEM_(int, ServerOffset, "PSKSERVEROFFSET",                                     \
+              "Listen for signals within this range (Hz)",                              \
+              50)                                                                       \
+        ELEM_(int, ServerCarrier, "PSKSERVERCARRIER",                                   \
+              "Default PSKMail listen / transmit frequency",                            \
+              1500)                                                                     \
+        ELEM_(int, ServerAFCrange, "PSKSERVERAFCRANGE",                                 \
+              "Limit AFC movement to this range (Hz)",                                  \
+              25)                                                                       \
+        ELEM_(double, ServerACQsn, "PSKSERVERACGSN",                                    \
+              "Acquisition S/N (dB)",                                                   \
+              6.0)                                                                      \
+        /* RTTY */                                                                      \
+        ELEM_(int, rtty_shift, "RTTYSHIFT",                                             \
+              "Carrier shift (Hz). Values are as follows:\n"                            \
+              "  0: 23; 1: 85; 2: 160; 3: 170; 4: 182; 5: 200; 6: 240; 7: 350;\n"       \
+              "  8: 425; 9: 850",                                                       \
+              3) /* 170 */                                                              \
+        ELEM_(int, rtty_baud, "RTTYBAUD",                                               \
+              "Carrier baud rate. Values are as follows:\n"                             \
+              "  0: 45; 1: 45.45; 2: 50; 3: 56; 4: 75; 5: 100; 6: 110; 7: 150; \n"      \
+              "  8: 200; 9: 300",                                                       \
+              0)   /* 45 */                                                             \
+        ELEM_(int, rtty_bits, "RTTYBITS",                                               \
+              "Bits per character. Values are as follows:\n"                            \
+              "  0: 5 (baudot); 1: 7 (ascii); 2: 8 (ascii)",                            \
+              0)   /* 5 */                                                              \
+        ELEM_(int, rtty_parity, "RTTYPARITY",                                           \
+              "Parity. Values are as folows:\n"                                         \
+              "  0: none; 1: even; 2: odd: 3: zero; 4: one",                            \
+              RTTY_PARITY_NONE)                                                         \
+        ELEM_(int, rtty_stop, "RTTYSTOP",                                               \
+              "Stop bits. Values are as folows:\n"                                      \
+              "  0: 1; 1: 1.5; 2: 2",                                                   \
+              1)   /* 1.5 */                                                            \
+        ELEM_(bool, rtty_reverse, "RTTYREVERSE",                                        \
+              "This setting is currently unused",                                       \
+              false)                                                                    \
+        ELEM_(bool, rtty_msbfirst, "RTTYMSBFIRST",                                      \
+              "This setting is currently unused",                                       \
+              false)                                                                    \
+        ELEM_(bool, rtty_crcrlf, "RTTYCRCLF",                                           \
+              "Use \"CR CR LF\" for \"CR LF\"",                                         \
+              false)                                                                    \
+        ELEM_(bool, rtty_autocrlf, "RTTYAUTOCRLF",                                      \
+              "Automatically add CRLF after `page width' characters",                   \
+              true)                                                                     \
+        ELEM_(int, rtty_autocount, "RTTYAUTOCOUNT",                                     \
+              "Page width for RTTYAUTOCRLF",                                            \
+              72)                                                                       \
+        ELEM_(int, rtty_afcspeed, "RTTYAFCSPEED",                                       \
+              "AFC tracking speed. Values are as follows:\n"                            \
+              "  0: slow; 1: normal; 2: fast",                                          \
+              1)   /* normal */                                                         \
+        ELEM_(bool, useFSKkeyline, "", "",  false)                                      \
+        ELEM_(bool, useFSKkeylineDTR, "", "",  false)                                   \
+        ELEM_(bool, FSKisLSB, "", "",  true)                                            \
+        ELEM_(bool, useUART, "", "",  false)                                            \
+        ELEM_(bool, PreferXhairScope, "PREFERXHAIRSCOPE",                               \
+              "Default to crosshair digiscope",                                         \
+              false)                                                                    \
+        ELEM_(bool, PseudoFSK, "PSEUDOFSK",                                             \
+              "Generate Pseudo-FSK signal on right audio channel",                      \
+              false)                                                                    \
+        ELEM_(bool, UOSrx, "UOSRX",                                                     \
+              "Revert to unshifted chars on a space (RX)",                              \
+              true)                                                                     \
+        ELEM_(bool, UOStx, "UOSTX",                                                     \
+              "Revert to unshifted chars on a space (TX)",                              \
+              true)                                                                     \
+        ELEM_(bool, Xagc, "XAGC",                                                       \
+              "This setting is currently unused",                                       \
+              false)                                                                    \
+        ELEM_(double, RTTY_BW, "RTTYBW",                                                \
+              "Receive filter bandwidth (Hz)",                                          \
+              400.0)                                                                    \
+        /* CW */                                                                        \
+        ELEM_(bool, useCWkeylineRTS, "", "",  false)                                    \
+        ELEM_(bool, useCWkeylineDTR, "", "",  false)                                    \
+        ELEM_(int, CWweight, "CWWEIGHT",                                                \
+              "Dot to dot-space ratio",                                                 \
+              50)                                                                       \
+        ELEM_(int, CWspeed, "CWSPEED",                                                  \
+              "Transmit speed (WPM)",                                                   \
+              18)                                                                       \
+        ELEM_(int, CWfarnsworth, "CWFARNSWORTH",                                        \
+              "Speed for Farnsworth timing (WPM)",                                      \
+              18)                                                                       \
+        ELEM_(bool, CWusefarnsworth, "CWUSEFARNSWORTH",                                 \
+              "Use Farnsworth timing",                                                  \
+              false)                                                                    \
+        ELEM_(int, defCWspeed, "CWDEFSPEED",                                            \
+              "Default speed (WPM)",                                                    \
+              24)                                                                       \
+        ELEM_(int, CWbandwidth, "CWBANDWIDTH",                                          \
+              "Filter bandwidth (Hz)",                                                  \
+              150)                                                                      \
+        ELEM_(bool, CWtrack, "CWTRACK",                                                 \
+              "Automatic receive speed tracking",                                       \
+              true)                                                                     \
+        ELEM_(int, CWrange, "CWRANGE",                                                  \
+              "Tracking range for CWTRACK (WPM)",                                       \
+              10)                                                                       \
+        ELEM_(int, CWlowerlimit, "CWLOWERLIMIT",                                        \
+              "Lower RX limit (WPM)",                                                   \
+              5)                                                                        \
+        ELEM_(int, CWupperlimit, "CWUPPERLIMIT",                                        \
+              "Upper TX limit (WPM)",                                                   \
+              50)                                                                       \
+        ELEM_(double, CWrisetime, "CWRISETIME",                                         \
+              "Leading and trailing edge rise times (milliseconds)",                    \
+              4.0)                                                                      \
+        ELEM_(double, CWdash2dot, "CWDASH2DOT",                                         \
+              "Dash to dot ratio",                                                      \
+              3.0)                                                                      \
+        ELEM_(bool, QSK, "QSK",                                                         \
+              "Generate QSK signal on right audio channel",                             \
+              false)                                                                    \
+        ELEM_(double, CWpre, "CWPRE",                                                   \
+              "Pre-keydown timing (milliseconds)",                                      \
+              4.0)                                                                      \
+        ELEM_(double, CWpost, "CWPOST",                                                 \
+              "Post-keydown timing (milliseconds)",                                     \
+              4.0)                                                                      \
+        ELEM_(bool, CWid, "CWID",                                                       \
+              "Send callsign in CW at the end of every transmission",                   \
+              false)                                                                    \
+        ELEM_(int, CWIDwpm, "IDWPM",                                                    \
+              "CW ID speed (WPM)",                                                      \
+              18)                                                                       \
+        ELEM_(bool, QSKadjust, "QSKADJUST",                                             \
+              "Send a continuous stream of test characters as the QSK signal",          \
+              false)                                                                    \
+        ELEM_(int, TestChar, "TESTCHAR",                                                \
+              "Test character for QSKADJUST (ASCII value)",                             \
+              0)                                                                        \
+        ELEM_(int, QSKshape, "QSKSHAPE",                                                \
+              "QSK edge shape. Values are as follows:\n"                                \
+              "  0: Hanning; 1: Blackman.\n"                                            \
+              "Raised cosine = Hanning.\n",                                             \
+              0)   /* Hanning */                                                        \
+        ELEM_(bool, CWnarrow, "CWNARROW",                                               \
+              "Weight decreases with increasing edge timing",                           \
+              false)                                                                    \
+        /* FELD HELL */                                                                 \
+        ELEM_(double, HELL_BW, "", "",  150.0)                                          \
+        ELEM_(bool, HellRcvWidth, "HELLRCVWIDTH",                                       \
+              "Halve receive width (compress RX in time)",                              \
+              false)                                                                    \
+        ELEM_(bool, HellBlackboard, "HELLBLACKBOARD",                                   \
+              "Display RX in reverse video",                                            \
+              false)                                                                    \
+        ELEM_(int, HellXmtWidth, "HELLXMTWIDTH",                                        \
+              "Transmit width (number of multiple scans per character line)",           \
+              1)                                                                        \
+        ELEM_(bool, HellXmtIdle, "HELLXMTIDLE",                                         \
+              "Transmit periods (.) when idle",                                         \
+              false)                                                                    \
+        ELEM_(bool, HellPulseFast, "HELLPULSEFAST",                                     \
+              "Raised cosine pulse shape factor. Values are as follows:\n"              \
+              "  0: slow (4 ms); 1: fast (2 ms).",                                      \
+              false)   /* slow */                                                       \
+        /* OLIVIA */                                                                    \
+        ELEM_(int, oliviatones, "OLIVIATONES",                                          \
+              "Number of tones. Values are as follows:\n"                               \
+              "  0: 2; 1: 4; 2: 8; 3: 16; 4: 32; 5: 64; 6: 128; 7: 256",                \
+              2)   /* 8 */                                                              \
+        ELEM_(int, oliviabw, "OLIVIABW",                                                \
+              "Bandwidth (Hz). Values are as follows:\n"                                \
+              "  0: 125; 1: 250; 2: 500; 3: 1000; 4: 2000.",                            \
+              2)   /* 500 */                                                            \
+        ELEM_(int, oliviasmargin, "OLIVIASMARGIN",                                      \
+              "Tune margin (tone frequency spacing)",                                   \
+              8)                                                                        \
+        ELEM_(int, oliviasinteg, "OLIVIASINTEG",                                        \
+              "Integration period (FEC blocks)",                                        \
+              4)                                                                        \
+        ELEM_(bool, olivia8bit, "OLIVIA8BIT",                                           \
+              "8-bit extended characters",                                              \
+              false)                                                                    \
+        /* THOR */                                                                      \
+        ELEM_(double, THOR_BW, "THORBW",                                                \
+              "Filter bandwidth factor (bandwidth relative to signal width)",           \
+              2.0)                                                                      \
+        ELEM_(bool, THOR_FILTER, "THORFILTER",                                          \
+              "Enable filtering before decoding",                                       \
+              true)                                                                     \
+        ELEM_(std::string, THORsecText, "THORSECTEXT",                                  \
+              "Secondary text (sent during keyboard idle times)",                       \
+              "")                                                                       \
+        ELEM_(int, THOR_PATHS, "THORPATHS",                                             \
+              "This setting is currently unused",                                       \
+              5)                                                                        \
+        ELEM_(bool, THOR_SOFT, "THORSOFT",                                              \
+              "Soft decoding (detector thresholds track S/N)",                          \
+              false)                                                                    \
+        ELEM_(double, ThorCWI, "THORCWI",                                               \
+              "CWI threshold (CWI detection and suppression)",                          \
+              0.0)                                                                      \
+        /* DOMINOEX */                                                                  \
+        ELEM_(double, DOMINOEX_BW, "DOMINOEXBW",                                        \
+              "Filter bandwidth factor (bandwidth relative to signal width)",           \
+              2.0)                                                                      \
+        ELEM_(std::string, secText, "SECONDARYTEXT",                                    \
+              "Secondary text (sent during keyboard idle times)",                       \
+              "")                                                                       \
+        ELEM_(bool, DOMINOEX_FILTER, "DOMINOEXFILTER",                                  \
+              "Enable filtering before decoding",                                       \
+              true)                                                                     \
+        ELEM_(bool, DOMINOEX_FEC, "DOMINOEXFEC",                                        \
+              "Enable MultiPSK-compatible FEC",                                         \
+              false)                                                                    \
+        ELEM_(int, DOMINOEX_PATHS, "DOMINOEXPATHS",                                     \
+              "This setting is currently unused",                                       \
+              5)                                                                        \
+        ELEM_(double, DomCWI, "DOMCWI",                                                 \
+              "CWI threshold (CWI detection and suppression)",                          \
+              0.0)                                                                      \
+        /* MT63 */                                                                      \
+        ELEM_(bool, mt63_8bit, "MT638BIT",                                              \
+              "8-bit extended characters",                                              \
+              false)                                                                    \
+        ELEM_(int, mt63_interleave, "MT63INTERLEAVE",                                   \
+              "64-bit (long) interleave.  Values are as follows:\n"                     \
+              "  0: short (32-bit); 1: long (64-bit).",                                 \
+              64) /* long interleave */                                                 \
+        ELEM_(bool, mt63_rx_integration, "MT63INTEGRATION",                             \
+              "Long receive integration",                                               \
+              false)                                                                    \
+        ELEM_(bool, mt63_twotones, "MT63TWOTONES",                                      \
+              "Also transmit upper start tone (only if MT63USETONES is enabled)",       \
+              true)                                                                     \
+        ELEM_(bool, mt63_usetones, "MT63USETONES",                                      \
+              "Transmit lower start tone",                                              \
+              true)                                                                     \
+        ELEM_(int, mt63_tone_duration, "MT63TONEDURATION",                              \
+              "Tone duration (seconds)",                                                \
+              4)                                                                        \
+        /* Waterfall & UI */                                                            \
+        ELEM_(uchar, red, "", "",  0)                                                   \
+        ELEM_(uchar, green, "", "",  255)                                               \
+        ELEM_(uchar, blue, "", "",  255)                                                \
+        ELEM_(bool, MultiColorWF, "", "",  false)                                       \
+        ELEM_(int, wfPreFilter, "WFPREFILTER",                                          \
+              "Waterfal FFT prefilter window function. Values are as follows:\n"        \
+              "  0: Rectangular; 1: Blackman; 2: Hamming; 3: Hanning; 4: Triangular",   \
+              1)   /* Blackman */                                                       \
+        ELEM_(bool, WFaveraging, "WFAVERAGING",                                         \
+              "Use FFT averaging to decrease waterfall noise",                          \
+              false)                                                                    \
+        ELEM_(int, latency, "LATENCY",                                                  \
+              "Waterfal FFT latency (scan merging)",                                    \
+              4)                                                                        \
+        ELEM_(bool, UseCursorLines, "USECURSORLINES",                                   \
+              "Draw cursor with vertical lines",                                        \
+              true)                                                                     \
+        ELEM_(bool, UseCursorCenterLine, "USECURSORCENTERLINE",                         \
+              "Draw cursor center line",                                                \
+              true)                                                                     \
+        ELEM_(bool, UseBWTracks, "USEBWTRACKS",                                         \
+              "Draw bandwidth marker with vertical lines",                              \
+              true)                                                                     \
+        ELEM_(RGBI, cursorLineRGBI, "CLCOLORS",                                         \
+              "Color of cursor lines (RGBI)",                                           \
+              {255, 255, 0, 255})                                                       \
+        ELEM_(RGBI, cursorCenterRGBI, "CCCOLORS",                                       \
+              "Color of cursor center line (RGBI)",                                     \
+              {255, 255, 255, 255})                                                     \
+        ELEM_(RGBI, bwTrackRGBI, "BWTCOLORS",                                           \
+              "Color of bandwidth marker (RGBI)",                                       \
+              {255, 0, 0, 255})                                                         \
+        ELEM_(int, feldfontnbr, "FELDFONTNBR",                                          \
+              "Index of raster font used for transmission",                             \
+              4)                                                                        \
+        ELEM_(bool, viewXmtSignal, "VIEWXMTSIGNAL",                                     \
+              "Show transmit signal on waterfall",                                      \
+              false)                                                                    \
+        ELEM_(bool, sendid, "SENDID",                                                   \
+              "Send video ID containing modem name",                                    \
+              false)                                                                    \
+        ELEM_(bool, macroid, "MACROID",                                                 \
+              "This setting is currently unused",                                       \
+              false)                                                                    \
+        ELEM_(bool, sendtextid, "SENDTEXTID",                                           \
+              "Send video ID containing arbitrary text",                                \
+              false)                                                                    \
+        ELEM_(std::string, strTextid, "STRTEXTID",                                      \
+              "Video ID text for SENDTEXTID (keep short!)",                             \
+              "CQ")                                                                     \
+        ELEM_(bool, macroCWid, "", "",  false)                                          \
+        ELEM_(int, videowidth, "VIDEOWIDTH",                                            \
+              "Video ID text width (characters per row)",                               \
+              1)                                                                        \
+        ELEM_(bool, ID_SMALL, "IDSMALL",                                                \
+              "Use small video ID font",                                                \
+              true)                                                                     \
+        ELEM_(bool, macrotextid, "", "",  false)                                        \
+        ELEM_(bool, docked_scope, "DOCKEDSCOPE",                                        \
+              "Docked digiscope",                                                       \
+              false)                                                                    \
+        ELEM_(bool, docked_rig_control, "DOCKEDRIGCONTROL",                             \
+              "Docked rig control",                                                     \
+              true)                                                                     \
+        ELEM_(int,  wfwidth, "WFWIDTH",                                                 \
+              "Waterfall width (Hz)",                                                   \
+              3000)                                                                     \
+        ELEM_(int,  wfheight, "WFHEIGHT",                                               \
+              "Waterfall height (pixels)",                                              \
+              125)                                                                      \
+        ELEM_(bool, tooltips, "TOOLTIPS",                                               \
+              "Show tooltips",                                                          \
+              true)                                                                     \
+        ELEM_(bool, useCheckButtons, "USECHECKBUTTONS",                                 \
+              "Use check buttons for AFC and SQL",                                      \
+              false)                                                                    \
+        ELEM_(bool, NagMe, "NAGME",                                                     \
+              "Prompt to save log",                                                     \
+              false)                                                                    \
+        ELEM_(bool, ClearOnSave, "CLEARONSAVE",                                         \
+              "Clear log fields on save",                                               \
+              false)                                                                    \
+        ELEM_(bool, menuicons, "MENUICONS",                                             \
+              "Show menu icons",                                                        \
+              true)                                                                     \
+        ELEM_(bool, rxtext_clicks_qso_data, "RXTEXTCLICKS",                             \
+              "Double-click on RX text enters QSO data",                                \
+              false)                                                                    \
+        ELEM_(bool, rxtext_tooltips, "RXTEXTTOOLTIPS",                                  \
+              "Show callsign tooltips in received text",                                \
+              false)                                                                    \
+        ELEM_(bool, autofill_qso_fields, "AUTOFILLQSO",                                 \
+              "Auto-fill Country and Azimuth QSO fields",                               \
+              false)                                                                    \
+        ELEM_(bool, calluppercase, "CALLUPPERCASE",                                     \
+              "Convert callsign field to upper case",                                   \
+              false)                                                                    \
+        ELEM_(bool, autoextract, "AUTOEXTRACT",                                         \
+              "Enable detection and extraction of \"wrapped\" text",                    \
+              false)                                                                    \
+        ELEM_(bool, speak, "SPEAK",                                                     \
+              "We'll do something useful with this setting one day",                    \
+              false)                                                                    \
+        /* QRZ */                                                                       \
+        ELEM_(int, QRZ, "QRZTYPE",                                                      \
+              "Callsign query type.  Values are as follows:\n"                          \
+              "  0: none; 1: QRZ (paid sub.); 2: QRZ cdrom; 3: HamCall (paid sub.);\n"  \
+              "  4: QRZ (web browser); 5: HamCall (web browser). The default is 0.",    \
+              QRZNONE)                                                                  \
+        ELEM_(std::string, QRZpathname, "QRZPATHNAME",                                  \
+              "QRZ cdrom path",                                                         \
+              "")                                                                       \
+        ELEM_(std::string, QRZusername, "QRZUSER",                                      \
+              "QRZ or HamCall subscriber username",                                     \
+              "")                                                                       \
+        ELEM_(std::string, QRZuserpassword, "QRZPASSWORD",                              \
+              "QRZ or HamCall subscriber password",                                     \
+              "")                                                                       \
+        ELEM_(bool, QRZchanged, "", "",  false)                                         \
+        /* Rig control */                                                               \
+        ELEM_(bool, btnusb, "BTNUSB",                                                   \
+              "This setting is currently unused",                                       \
+              true)                                                                     \
+        ELEM_(bool, RTSptt, "RTSPTT",                                                   \
+              "RTS is PTT signal line",                                                 \
+              false)                                                                    \
+        ELEM_(bool, DTRptt, "DTRPTT",                                                   \
+              "DTR is PTT signal line",                                                 \
+              false)                                                                    \
+        ELEM_(bool, RTSplus, "RTSPLUS",                                                 \
+              "Initial voltage on RTS is +V",                                           \
+              false)                                                                    \
+        ELEM_(bool, DTRplus, "DTRPLUS",                                                 \
+              "Initial voltage on DTR is +V",                                           \
+              false)                                                                    \
+        ELEM_(bool, PTTrightchannel, "PTTRIGHTCHANNEL",                                 \
+              "Generate PTT signal on right audio channel",                             \
+              false)                                                                    \
+        ELEM_(int, chkUSEMEMMAPis, "CHKUSEMEMMAPIS",                                    \
+              "Use MEMMAP rig control",                                                 \
+              0)                                                                        \
+        ELEM_(int, chkUSEHAMLIBis, "CHKUSEHAMLIBIS",                                    \
+              "Use Hamlib rig control",                                                 \
+              0)                                                                        \
+        ELEM_(int, chkUSERIGCATis, "CHKUSERIGCATIS",                                    \
+              "Use RigCAT rig control",                                                 \
+              0)                                                                        \
+        ELEM_(int, chkUSEXMLRPCis, "CHKUSEXMLRPCIS",                                    \
+              "Use XML-RPC rig control",                                                \
+              0)                                                                        \
+        ELEM_(std::string, PTTdev, "PTTDEV",                                            \
+              "PTT device",                                                             \
+              DEFAULT_PTTDEV)                                                           \
+        ELEM_(std::string, CWFSKport, "", "",  DEFAULT_CWFSKPORT)                       \
+        ELEM_(std::string, HamRigDevice, "HAMRIGDEVICE",                                \
+              "Hamlib rig device",                                                      \
+              DEFAULT_HAMRIGDEVICE)                                                     \
+        ELEM_(std::string, HamRigName, "HAMRIGNAME",                                    \
+              "Hamlib rig name",                                                        \
+              "")                                                                       \
+        ELEM_(int, HamRigModel, "HAMRIGMODEL",                                          \
+              "Hamlib rig model",                                                       \
+              0)                                                                        \
+        ELEM_(std::string, HamConfig, "HAMCONFIG",                                      \
+              "Hamlib configuration (param=val, ...)",                                  \
+              "")                                                                       \
+        ELEM_(int, HamRigBaudrate, "HAMRIGBAUDRATE",                                    \
+              "Hamlib rig baud rate. Values are as follows:\n"                          \
+              "  0: 300; 1: 600; 2: 1200; 3: 2400; 4: 4800; 5: 9600; 6: 19200;\n"       \
+              "  7: 38400; 8: 57600; 9: 115200; 10: 230400; 11: 460800.",               \
+              1)   /* 600 baud */                                                       \
+        ELEM_(std::string, XmlRigFilename, "XMLRIGFILENAME",                            \
+              "RigCAT XML file name",                                                   \
+              "")                                                                       \
+        ELEM_(std::string, XmlRigDevice, "XMLRIGDEVICE",                                \
+              "RigCAT device",                                                          \
+              DEFAULT_HAMRIGDEVICE)                                                     \
+        ELEM_(int, XmlRigBaudrate, "XMLRIGBAUDRATE",                                    \
+              "RigCAT rig baud rate.  See HAMRIGBAUDRATE.",                             \
+              1)   /* 600 baud */                                                       \
+        ELEM_(bool, TTYptt, "TTYPTT",                                                   \
+              "Use separate device for PTT",                                            \
+              false)                                                                    \
+        ELEM_(bool, HamlibCMDptt, "HAMLIBCMDPTT",                                       \
+              "PTT via Hamlib command",                                                 \
+              false)                                                                    \
+        ELEM_(bool, RigCatCMDptt, "RIGCATCMDPTT",                                       \
+              "PTT via RigCAT command",                                                 \
+              false)                                                                    \
+        ELEM_(bool, MEMMAPptt, "MEMMAPPTT",                                             \
+              "Use Memmap PTT",                                                         \
+              false)                                                                    \
+        ELEM_(bool, UseUHrouterPTT, "USEUHROUTERPTT",                                   \
+              "Use uHRouter PTT (OS X only)",                                           \
+              false)                                                                    \
+        ELEM_(bool, UsePPortPTT, "USEPPORTPTT",                                         \
+              "Use parallel port PTT",                                                  \
+              false)                                                                    \
+        /* RigCAT parameters */                                                         \
+        ELEM_(bool, RigCatRTSplus, "RIGCATRTSPLUS",                                     \
+              "Initial state of RTS",                                                   \
+              false)                                                                    \
+        ELEM_(bool, RigCatDTRplus, "RIGCATDTRPLUS",                                     \
+              "Initial state of DTR",                                                   \
+              false)                                                                    \
+        ELEM_(bool, RigCatRTSptt, "RIGCATRTSPTT",                                       \
+              "Toggle RTS for PTT",                                                     \
+              false)                                                                    \
+        ELEM_(bool, RigCatDTRptt, "RIGCATDTRPTT",                                       \
+              "Toggle DTR for PTT",                                                     \
+              false)                                                                    \
+        ELEM_(bool, RigCatRTSCTSflow, "RIGCATRTSCTSFLOW",                               \
+              "RTS/CTS flow control",                                                   \
+              false)                                                                    \
+        ELEM_(int, RigCatRetries, "RIGCATRETRIES",                                      \
+              "Number of retries before giving up",                                     \
+              2)                                                                        \
+        ELEM_(int, RigCatTimeout, "RIGCATTIMEOUT",                                      \
+              "Retry interval (milliseconds)",                                          \
+              10)                                                                       \
+        ELEM_(int, RigCatWait, "RIGCATWAIT",                                            \
+              "Write delay (milliseconds)",                                             \
+              50)                                                                       \
+        ELEM_(bool, RigCatECHO, "RIGCATECHO",                                           \
+              "Commands are echoed",                                                    \
+              false)                                                                    \
+        /* Hamlib parameters */                                                         \
+        ELEM_(bool, HamlibRTSplus, "HAMLIBRTSPLUS",                                     \
+              "RTS +12",                                                                \
+              false)                                                                    \
+        ELEM_(bool, HamlibDTRplus, "HAMLIBDTRPLUS",                                     \
+              "DTR +12",                                                                \
+              false)                                                                    \
+        ELEM_(bool, HamlibRTSCTSflow, "HAMLIBRTSCTSFLOW",                               \
+              "RTS/CTS flow control",                                                   \
+              false)                                                                    \
+        ELEM_(bool, HamlibXONXOFFflow, "HAMLIBXONXOFFFLOW",                             \
+              "XON/XOFF flow control",                                                  \
+              false)                                                                    \
+        ELEM_(int, HamlibRetries, "HAMLIBRETRIES",                                      \
+              "Number of times to resend command before giving up",                     \
+              2)                                                                        \
+        ELEM_(int, HamlibTimeout, "HAMLIBTIMEOUT",                                      \
+              "Retry interval (milliseconds)",                                          \
+              10)                                                                       \
+        ELEM_(int, HamlibWait, "HAMLIBWAIT",                                            \
+              "Wait interval before reading response (milliseconds)",                   \
+              5)                                                                        \
+        ELEM_(int, HamlibWriteDelay, "HAMLIBWRITEDELAY",                                \
+              "Write delay (milliseconds)",                                             \
+              0)                                                                        \
+        ELEM_(int, HamlibSideband, "HAMLIBSIDEBAND",                                    \
+              "Force the rig sideband (for the purpose of calculating frequencies).\n"  \
+              "Values are as follows: 0: as reported by rig; 1: LSB; 2: USB.",          \
+              0)   /* SIDEBAND_RIG */                                                   \
+        /* Operator */                                                                  \
+        ELEM_(std::string, myCall, "MYCALL",                                            \
+              "Operator callsign",                                                      \
+              "")                                                                       \
+        ELEM_(std::string, myQth, "MYQTH",                                              \
+              "Operator QTH",                                                           \
+              "")                                                                       \
+        ELEM_(std::string, myName, "MYNAME",                                            \
+              "Operator name",                                                          \
+              "")                                                                       \
+        ELEM_(std::string, myLocator, "MYLOC",                                          \
+              "Operator IARU locator",                                                  \
+              "")                                                                       \
+        ELEM_(std::string, myAntenna, "MYANTENNA",                                      \
+              "Antenna description (keep short!)",                                      \
+              "")                                                                       \
+        /* Sound card */                                                                \
+        ELEM_(int, btnAudioIOis, "AUDIOIO",                                             \
+              "Audio subsystem.  Values are as follows:\n"                              \
+              "  0: OSS; 1: PortAudio; 2: PulseAudio; 3: File I/O",                     \
+              SND_IDX_PORT)                                                             \
+        ELEM_(std::string, OSSdevice, "OSSDEVICE",                                      \
+              "OSS device name",                                                        \
+              "")                                                                       \
+        ELEM_(std::string, PAdevice, "PADEVICE",                                        \
+              "For compatibility with older versions",                                  \
+              "")                                                                       \
+        ELEM_(std::string, PortInDevice, "PORTINDEVICE",                                \
+              "PortAudio input device name",                                            \
+              "")                                                                       \
+        ELEM_(int, PortInIndex, "PORTININDEX",                                          \
+              "PortAudio input device index",                                           \
+              -1)                                                                       \
+        ELEM_(std::string, PortOutDevice, "PORTOUTDEVICE",                              \
+              "PortAudio input device name",                                            \
+              "")                                                                       \
+        ELEM_(int, PortOutIndex, "PORTOUTINDEX",                                        \
+              "PortAudio input device index",                                           \
+              -1)                                                                       \
+        ELEM_(int, PortFramesPerBuffer, "", "",  0)                                     \
+        ELEM_(std::string, PulseServer, "PULSESERVER",                                  \
+              "PulseAudio server string",                                               \
+              "")                                                                       \
+        ELEM_(int, in_channels, "INCHANNELS",                                           \
+              "Number of audio input channels",                                         \
+              1)                                                                        \
+        ELEM_(int, out_channels, "OUTCHANNELS",                                         \
+              "Number of audio output channels",                                        \
+              2)                                                                        \
+        ELEM_(int, sample_rate, "SAMPLERATE",                                           \
+              "For compatibility with older versions",                                  \
+              SAMPLE_RATE_UNSET)                                                        \
+        ELEM_(int, in_sample_rate, "INSAMPLERATE",                                      \
+              "Input sample rate",                                                      \
+              SAMPLE_RATE_UNSET)                                                        \
+        ELEM_(int, out_sample_rate, "OUTSAMPLERATE",                                    \
+              "Output sample rate",                                                     \
+              SAMPLE_RATE_UNSET)                                                        \
+        ELEM_(int, sample_converter, "SAMPLECONVERTER",                                 \
+              "Sample rate conversion type. Values are as follows:\n"                   \
+              "  0: Best SINC; 1: Medium SINC; 2: Fastest SINC; 3: ZOH; 4: Linear.\n"   \
+              "The default is 2.",                                                      \
+              SRC_SINC_FASTEST)                                                         \
+        ELEM_(int, RX_corr, "RXCORR",                                                   \
+              "Input (RX) sample rate correction (PPM)",                                \
+              0)                                                                        \
+        ELEM_(int, TX_corr, "TXCORR",                                                   \
+              "Output (TX) sample rate correction (PPM)",                               \
+              0)                                                                        \
+        ELEM_(int, TxOffset, "TXOFFSET",                                                \
+              "Difference between RX and TX freq (rig offset)",                         \
+              0)                                                                        \
+        /* Contest controls and Logbook */                                              \
+        ELEM_(std::string, logbookfilename, "LOGBOOKFILENAME",                          \
+              "Logbook file name",                                                      \
+              "")                                                                       \
+        ELEM_(bool, fixed599, "FIXED599",                                               \
+              "Force RST in/out to 599",                                                \
+              false)                                                                    \
+        ELEM_(bool, UseLeadingZeros, "USELEADINGZEROS",                                 \
+              "Insert leading zeros into transmitted serial number (contest)",          \
+              true)                                                                     \
+        ELEM_(bool, cutnbrs, "CUTNBRS",                                                 \
+              "Send CW cut numbers",                                                    \
+              false)                                                                    \
+        ELEM_(bool, EnableDupCheck, "ENABLEDUPCHECK",                                   \
+              "Check for duplicates (contest)",                                         \
+              false)                                                                    \
+        ELEM_(bool, dupmode, "DUPMODE",                                                 \
+              "Predicate for ENABLEDUPCHECK (mode must match)",                         \
+              true)                                                                     \
+        ELEM_(bool, dupband, "DUPBAND",                                                 \
+              "Predicate for ENABLEDUPCHECK (band must match)",                         \
+              true)                                                                     \
+        ELEM_(bool, dupstate, "DUPSTATE",                                               \
+              "Predicate for ENABLEDUPCHECK (state must match)",                        \
+              false)                                                                    \
+        ELEM_(bool, dupxchg1, "DUPXCHG1",                                               \
+              "Predicate for ENABLEDUPCHECK (exchange must match)",                     \
+              false)                                                                    \
+        ELEM_(bool, duptimespan, "DUPTIMESPAN",                                         \
+              "Predicate for ENABLEDUPCHECK (QSO inside timespan)",                     \
+              false)                                                                    \
+        ELEM_(int, timespan, "TIMESPAN",                                                \
+              "Time for DUPTIMESPAN (minutes)",                                         \
+              120)                                                                      \
+        ELEM_(int, ContestStart, "CONTESTSTART",                                        \
+              "Contest starting number",                                                \
+              0)                                                                        \
+        ELEM_(int, ContestDigits, "CONTESTDIGITS",                                      \
+              "Number of digits in serial number",                                      \
+              4)                                                                        \
+        ELEM_(std::string, myXchg, "MYXCGH",                                            \
+              "Free form exchange",                                                     \
+              "")                                                                       \
+        ELEM_(std::string, mytxpower, "TXPOWER",                                        \
+              "TX power used for logbook entries",                                      \
+              "")                                                                       \
+        /* Macro controls */                                                            \
+        ELEM_(bool, UseLastMacro, "USELASTMACRO",                                       \
+              "Load last used macro file on startup",                                   \
+              false)                                                                    \
+        ELEM_(bool, DisplayMacroFilename, "DISPLAYMACROFILENAME",                       \
+              "Display macro filename on startup",                                      \
+              false)                                                                    \
+        /* Mixer */                                                                     \
+        ELEM_(std::string, MXdevice, "MXDEVICE",                                        \
+              "Mixer device",                                                           \
+              "")                                                                       \
+        ELEM_(bool, MicIn, "MICIN",                                                     \
+              "Control the microphone mixer channel",                                   \
+              false)                                                                    \
+        ELEM_(bool, LineIn, "LINEIN",                                                   \
+              "Control the line-in mixer channel",                                      \
+              true)                                                                     \
+        ELEM_(bool, EnableMixer, "ENABLEMIXER",                                         \
+              "Enable mixer controls",                                                  \
+              false)                                                                    \
+        ELEM_(double, PCMvolume, "PCMVOLUME",                                           \
+              "PCM channel level",                                                      \
+              0.8)                                                                      \
+        ELEM_(bool, MuteInput, "MUTEINPUT",                                             \
+              "This setting is currently unused",                                       \
+              true)                                                                     \
+        ELEM_(double, TxMonitorLevel, "TXMONITORLEVEL",                                 \
+              "Level for monitored (on watrerfall) transmit signal",                    \
+              0.5)                                                                      \
+        /* Waterfall palette */                                                         \
+        ELEM_(std::string, PaletteName, "PALETTENAME",                                  \
+              "Waterfall color palette file name",                                      \
+              "default.pal")                                                            \
+        ELEM_(RGB, cfgpal0, "PALETTE0",                                                 \
+              "Custom palette 0",                                                       \
+              { 0,0,0 })                                                                \
+        ELEM_(RGB, cfgpal1, "PALETTE1",                                                 \
+              "Custom palette 1",                                                       \
+              { 0,0,136 })                                                              \
+        ELEM_(RGB, cfgpal2, "PALETTE2",                                                 \
+              "Custom palette 2",                                                       \
+              { 0,19,198 })                                                             \
+        ELEM_(RGB, cfgpal3, "PALETTE3",                                                 \
+              "Custom palette 3",                                                       \
+              { 0,32,239 })                                                             \
+        ELEM_(RGB, cfgpal4, "PALETTE4",                                                 \
+              "Custom palette 4",                                                       \
+              { 172,167,105 })                                                          \
+        ELEM_(RGB, cfgpal5, "PALETTE5",                                                 \
+              "Custom palette 5",                                                       \
+              { 194,198,49 })                                                           \
+        ELEM_(RGB, cfgpal6, "PALETTE6",                                                 \
+              "Custom palette 6",                                                       \
+              { 225,228,107 })                                                          \
+        ELEM_(RGB, cfgpal7, "PALETTE7",                                                 \
+              "Custom palette 7",                                                       \
+              { 255,255,0 })                                                            \
+        ELEM_(RGB, cfgpal8, "PALETTE8",                                                 \
+              "Custom palette 8",                                                       \
+              { 251,51,0 })                                                             \
+        /* Palettes for macro button groups */                                          \
+        ELEM_(bool, useGroupColors, "USEGROUPCOLORS",                                   \
+              "Use macro group colors",                                                 \
+              true)                                                                     \
+        ELEM_(RGB, btnGroup1, "FKEYGROUP1",                                             \
+              "Macro group 1 color",                                                    \
+              { 80, 144, 144 })                                                         \
+        ELEM_(RGB, btnGroup2, "FKEYGROUP2",                                             \
+              "Macro group 2 color",                                                    \
+              { 144, 80, 80 })                                                          \
+        ELEM_(RGB, btnGroup3, "FKEYGROUP3",                                             \
+              "Macro group 3 color",                                                    \
+              { 80, 80, 144 })                                                          \
+        ELEM_(RGB, btnFkeyTextColor, "FKEYTEXTCOLOR",                                   \
+              "Macro button foreground ",                                               \
+              { 255, 255, 255 })                                                        \
+        /* RX / TX / Waterfall text widgets */                                          \
+        ELEM_(std::string, RxFontName, "RXFONTNAME",                                    \
+              "RX text font name",                                                      \
+              "")                                                                       \
+        ELEM_(bool, RxFontWarn, "RXFONTWARN",                                           \
+              "Enable RX font warnings",                                                \
+              true)                                                                     \
+        ELEM_(Fl_Font, RxFontnbr, "RXFONTNBR",                                          \
+              "RX text font index",                                                     \
+              FL_COURIER)                                                               \
+        ELEM_(int, RxFontsize, "RXFONTSIZE",                                            \
+              "RX text font size",                                                      \
+              16)                                                                       \
+        ELEM_(Fl_Color, RxFontcolor, "RXFNTCOLOR",                                      \
+              "RX text font color",                                                     \
+              FL_BLACK)                                                                 \
+        ELEM_(std::string, TxFontName, "TXFONTNAME",                                    \
+              "TX text font name",                                                      \
+              "")                                                                       \
+        ELEM_(bool, TxFontWarn, "TXFONTWARN",                                           \
+              "Enable TX font warnings",                                                \
+              true)                                                                     \
+        ELEM_(Fl_Font, TxFontnbr, "TXFONTNBR",                                          \
+              "TX text font index",                                                     \
+              FL_COURIER)                                                               \
+        ELEM_(int, TxFontsize, "TXFONTSIZE",                                            \
+              "TX text font size",                                                      \
+              16)                                                                       \
+        ELEM_(Fl_Color, TxFontcolor, "TXFNTCOLOR",                                      \
+              "TX text font color",                                                     \
+              FL_BLACK)                                                                 \
+        ELEM_(RGB, RxColor, "RXFONTCOLOR",                                              \
+              "RX text font color (RGB)",                                               \
+              { 255, 242, 190 })                                                        \
+        ELEM_(RGB, TxColor, "TXFONTCOLOR",                                              \
+              "TX text font color (RGB)",                                               \
+              { 200, 235, 255 })                                                        \
+        ELEM_(Fl_Color, XMITcolor, "XMITCOLOR",                                         \
+              "Color for Transmit text style",                                          \
+              FL_RED)                                                                   \
+        ELEM_(Fl_Color, CTRLcolor, "CTRLCOLOR",                                         \
+              "Color for Control text style",                                           \
+              FL_DARK_GREEN)                                                            \
+        ELEM_(Fl_Color, SKIPcolor, "SKIPCOLOR",                                         \
+              "Color for Skipped text style",                                           \
+              FL_BLUE)                                                                  \
+        ELEM_(Fl_Color, ALTRcolor, "ALTRCOLOR",                                         \
+              "Color for Alternate text style",                                         \
+              FL_DARK_MAGENTA)                                                          \
+        ELEM_(std::string, WaterfallFontName, "WATERFALLFONTNAME",                      \
+              "Waterfall font name",                                                    \
+              "")                                                                       \
+        ELEM_(Fl_Font, WaterfallFontnbr, "WATERFALLFONTNBR",                            \
+              "Waterfall font number",                                                  \
+              FL_COURIER)                                                               \
+        ELEM_(int, WaterfallFontsize, "WATERFALLFONTSIZE",                              \
+              "Waterfall font size",                                                    \
+              12)                                                                       \
+        ELEM_(std::string, ui_scheme, "UISCHEME",                                       \
+              "FLTK UI scheme (none or base, gtk+, plastic)",                           \
+              "gtk+")                                                                   \
+        ELEM_(bool, wf_audioscale, "WFAUDIOSCALE",                                      \
+              "Always show audio frequencies on waterfall",                             \
+              false)                                                                    \
+        /* Freq Display colors */                                                       \
+        ELEM_(RGB, FDbackground, "FDBACKGROUND",                                        \
+              "Frequency display background color",                                     \
+              { 0, 0, 0 })                                                              \
+        ELEM_(RGB, FDforeground, "FDFOREGROUND",                                        \
+              "Frequency display foreground color",                                     \
+              { 0, 200, 0 })                                                            \
+        /* Tab selection color */                                                       \
+        ELEM_(Fl_Color, TabsColor, "TABSCOLOR",                                         \
+              "UI tabs color",                                                          \
+              FL_BACKGROUND2_COLOR)                                                     \
+        /* PSK Viewer */                                                                \
+        ELEM_(bool, VIEWERmarquee, "VIEWERMARQUEE",                                     \
+              "PSK Browser text continuous scrolling",                                  \
+              true)                                                                     \
+        ELEM_(int, VIEWERlabeltype, "VIEWERSHOWFREQ",                                   \
+              "PSK Browser row label type.  Values are as follows:\n"                   \
+              "  0: Audio frequency; 1: Radio frequency; 2: Channel number.",           \
+              VIEWER_LABEL_RF)                                                          \
+        ELEM_(int, VIEWERstart, "VIEWERSTART",                                          \
+              "PSK Browser lowest decode frequency",                                    \
+              500)                                                                      \
+        ELEM_(int, VIEWERchannels, "VIEWERCHANNELS",                                    \
+              "PSK Browser channels",                                                   \
+              20)                                                                       \
+        ELEM_(double, VIEWERsquelch, "VIEWERSQUELCH",                                   \
+              "PSK Browser squelch level (%)",                                          \
+              10.0)                                                                     \
+        ELEM_(int, VIEWERtimeout, "VIEWERTIMEOUT",                                      \
+              "PSK Browser inactivity timeout (to clear text)",                         \
+              15)                                                                       \
+        ELEM_(std::string, ViewerFontName, "VIEWERFONTNAME",                            \
+              "PSK Browser font name",                                                  \
+              "")                                                                       \
+        ELEM_(Fl_Font, ViewerFontnbr, "VIEWERFONTNBR",                                  \
+              "PSK Browser font index",                                                 \
+              FL_COURIER)                                                               \
+        ELEM_(int, ViewerFontsize, "VIEWERFONTSIZE",                                    \
+              "PSK Browser font size",                                                  \
+              FL_NORMAL_SIZE)                                                           \
+        /* XML-RPC/ARQ servers */                                                       \
+        ELEM_(std::string, xmlrpc_address, "", "",  "127.0.0.1")                        \
+        ELEM_(std::string, xmlrpc_port, "", "",  "7362")                                \
+        ELEM_(std::string, xmlrpc_allow, "", "",  "")                                   \
+        ELEM_(std::string, xmlrpc_deny, "", "",  "")                                    \
+        ELEM_(int, rx_msgid, "", "",  9876)                                             \
+        ELEM_(int, tx_msgid, "", "",  6789)                                             \
+        ELEM_(std::string, arq_address, "", "",  "127.0.0.1")                           \
+        ELEM_(std::string, arq_port, "", "",  "7322")                                   \
+        /* PSK reporter */                                                              \
+        ELEM_(bool, usepskrep, "USEPSKREP",                                             \
+              "(Set by fldigi)",                                                        \
+              false)                                                                    \
+        ELEM_(bool, pskrep_auto, "PSKREPAUTO",                                          \
+              "Report callsigns spotted in received text",                              \
+              false)                                                                    \
+        ELEM_(bool, pskrep_log, "PSKREPLOG",                                            \
+              "Report callsigns in logged QSOs",                                        \
+              false)                                                                    \
+        ELEM_(bool, pskrep_qrg, "PSKREPQRG",                                            \
+              "Include rig frequency in reception report",                              \
+              false)                                                                    \
+        ELEM_(std::string, pskrep_host, "PSKREPHOST",                                   \
+              "Reception report server address",                                        \
+              "report.pskreporter.info")                                                \
+        ELEM_(std::string, pskrep_port, "PSKREPPORT",                                   \
+              "Reception report server port",                                           \
+              "4739")
+
 
 // declare the struct
 #define ELEM_DECLARE_CONFIGURATION(type_, var_, tag_, ...) type_ var_;
