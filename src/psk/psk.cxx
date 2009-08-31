@@ -45,13 +45,6 @@
 
 extern waterfall *wf;
 
-//=====================================================================
-// Change the following constant to adjust the # of DCD symbols 
-// sent at the end of every transmission.  The DCD symbol is 0x02.
-// 32 is the # used in gMFSK and earlier versions of fldigi
-
-#define DCDOFF  32
-
 // Change the following for DCD low pass filter adjustment
 #define SQLCOEFF 0.01
 #define SQLDECAY 50
@@ -390,7 +383,7 @@ void psk::findsignal()
 				set_freq(frequency);
 				freqerr = 0.0;
 				sigsearch = 0;
-				acquire = DCDOFF;
+				acquire = dcdbits;
 			}
 		}
 	}
@@ -690,7 +683,7 @@ void psk::tx_flush()
 	}
 
 // DCD off sequence (unmodulated carrier)
-	for (int i = 0; i < DCDOFF; i++)
+	for (int i = 0; i < dcdbits; i++)
 		tx_symbol(2);
 }
 
