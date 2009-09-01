@@ -217,24 +217,26 @@ inline void WFdisp::makeMarker_(int width, const RGB* color, int freq, const RGB
 	}
 }
 
-void WFdisp::makeMarker() {
+void WFdisp::makeMarker()
+{
+	if (unlikely(!active_modem))
+		return;
+
 	RGB *clrMin, *clrMax, *clrM;
 	clrMin = markerimage + IMAGE_WIDTH;
 	clrMax = clrMin + (WFMARKER - 2) * IMAGE_WIDTH;
 	memset(clrMin, 0, RGBwidth * (WFMARKER - 2));
 	clrM = clrMin + (int)((double)carrierfreq + 0.5);
 
-	int bw, marker_width = bandwidth;
-	if (active_modem) {
-		int mode = active_modem->get_mode();
-		if (mode >= MODE_BPSK31 && mode <= MODE_QPSK250)
-			marker_width += mailserver ? progdefaults.ServerOffset :
-				progdefaults.SearchRange;
-		if (mode >= MODE_FELDHELL && mode <= MODE_HELL80)
-			marker_width = (int)progdefaults.HELL_BW;
-        if (mode == MODE_RTTY)
-            marker_width = (int)progdefaults.RTTY_BW;
-	}
+	int marker_width = bandwidth;
+	int mode = active_modem->get_mode();
+	if (mode >= MODE_BPSK31 && mode <= MODE_QPSK250)
+		marker_width += mailserver ? progdefaults.ServerOffset :
+			progdefaults.SearchRange;
+	else if (mode >= MODE_FELDHELL && mode <= MODE_HELL80)
+		marker_width = (int)progdefaults.HELL_BW;
+	else if (mode == MODE_RTTY)
+		marker_width = (int)progdefaults.RTTY_BW;
 	marker_width = (int)(marker_width / 2.0 + 1);
 
 	RGBmarker.R = progdefaults.bwTrackRGBI.R;
@@ -242,10 +244,11 @@ void WFdisp::makeMarker() {
 	RGBmarker.B = progdefaults.bwTrackRGBI.B;
 
 	makeMarker_(marker_width, &RGBmarker, carrierfreq, clrMin, clrM, clrMax);
-	if (unlikely(active_modem && active_modem->freqlocked())) {
+	if (unlikely(active_modem->freqlocked())) {
 		int txfreq = active_modem->get_txfreq();
 		adjust_color_inv(RGBmarker.R, RGBmarker.G, RGBmarker.B, FL_BLACK, FL_RED);
-		makeMarker_(bandwidth, &RGBmarker, txfreq, clrMin, clrMin + (int)((double)txfreq + 0.5), clrMax);
+		makeMarker_(bandwidth / 2.0 + 1, &RGBmarker, txfreq,
+			    clrMin, clrMin + (int)((double)txfreq + 0.5), clrMax);
 	}
 
 	if (!wantcursor) return;
@@ -266,7 +269,7 @@ void WFdisp::makeMarker() {
 	RGBcursor.G = progdefaults.cursorLineRGBI.G;
 	RGBcursor.B = progdefaults.cursorLineRGBI.B;
 
-	bw = marker_width;
+	int bw = marker_width;
 	for (int y = 0; y < WFMARKER - 2; y++) {
 		int incr = y * IMAGE_WIDTH;
 		int msize = (WFMARKER - 2 - y)*RGBsize*step/4;
