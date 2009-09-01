@@ -30,6 +30,7 @@
 #include <string>
 #include <cstdlib>
 #include <cerrno>
+#include <cstdio>
 
 #include "globals.h"
 #include "modem.h"
