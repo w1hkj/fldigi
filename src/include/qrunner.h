@@ -157,6 +157,7 @@ protected:
         fqueue *fifo;
         int pfd[2];
         bool attached;
+	bool inprog;
 public:
 	bool drop_flag;
 };
