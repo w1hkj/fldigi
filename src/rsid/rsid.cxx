@@ -677,9 +677,12 @@ bool cRsId::search_amp( int &SymbolOut,	int &BinOut)
 // transmit rsid code for current mode
 //=============================================================================
 
-void cRsId::send(bool postidle)
+void cRsId::send(bool preRSID)
 {
 	trx_mode mode = active_modem->get_mode();
+
+	if (!progdefaults.rsid_post && !preRSID) return;
+
 	unsigned char rmode = RSID_NONE;
 
 	switch (mode) {
@@ -780,8 +783,8 @@ void cRsId::send(bool postidle)
 		outbuf = new double[symlen];
 	}
 
-	// transmit 6 symbol periods of silence
-	if (!postidle) {
+	// transmit 6 symbol periods of silence at end of transmission
+	if (!preRSID) {
 		memset(outbuf, 0, symlen * sizeof(*outbuf));
 		for (int i = 0; i < 6; i++)
 			active_modem->ModulateXmtr(outbuf, symlen);
@@ -809,8 +812,8 @@ void cRsId::send(bool postidle)
 
 	}
 
-	// transmit 6 symbol periods of silence
-	if (postidle) {
+	// transmit 6 symbol periods of silence at beginning of transmission
+	if (preRSID) {
 		memset(outbuf, 0, symlen * sizeof(*outbuf));
 		for (int i = 0; i < 6; i++)
 			active_modem->ModulateXmtr(outbuf, symlen);

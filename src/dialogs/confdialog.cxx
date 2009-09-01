@@ -1926,17 +1926,24 @@ static void cb_sldrCWIDwpm(Fl_Value_Slider* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *chkTransmitRSid=(Fl_Check_Button *)0;
-
-static void cb_chkTransmitRSid(Fl_Check_Button* o, void*) {
-  progdefaults.TransmitRSid = o->value();
-progdefaults.changed = true;
-}
-
 Fl_Check_Button *chkRSidWideSearch=(Fl_Check_Button *)0;
 
 static void cb_chkRSidWideSearch(Fl_Check_Button* o, void*) {
   progdefaults.rsidWideSearch=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *chkRSidMark=(Fl_Check_Button *)0;
+
+static void cb_chkRSidMark(Fl_Check_Button* o, void*) {
+  progdefaults.rsid_mark = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *chkRSidAutoDisable=(Fl_Check_Button *)0;
+
+static void cb_chkRSidAutoDisable(Fl_Check_Button* o, void*) {
+  progdefaults.rsid_auto_disable = o->value();
 progdefaults.changed = true;
 }
 
@@ -1954,17 +1961,17 @@ else
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *chkRSidMark=(Fl_Check_Button *)0;
+Fl_Check_Button *chkTransmitRSid=(Fl_Check_Button *)0;
 
-static void cb_chkRSidMark(Fl_Check_Button* o, void*) {
-  progdefaults.rsid_mark = o->value();
+static void cb_chkTransmitRSid(Fl_Check_Button* o, void*) {
+  progdefaults.TransmitRSid = o->value();
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *chkRSidAutoDisable=(Fl_Check_Button *)0;
+Fl_Check_Button *chkRSidPost=(Fl_Check_Button *)0;
 
-static void cb_chkRSidAutoDisable(Fl_Check_Button* o, void*) {
-  progdefaults.rsid_auto_disable = o->value();
+static void cb_chkRSidPost(Fl_Check_Button* o, void*) {
+  progdefaults.rsid_post = o->value();
 progdefaults.changed = true;
 }
 
@@ -4288,32 +4295,19 @@ ll with your audio device."));
         { Fl_Group* o = new Fl_Group(5, 218, 490, 120, _("Reed-Solomon ID"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-          { Fl_Check_Button* o = chkTransmitRSid = new Fl_Check_Button(15, 246, 165, 20, _("Transmit mode RSID"));
-            chkTransmitRSid->tooltip(_("Transmit RSID at beginning & end of transmission"));
-            chkTransmitRSid->down_box(FL_DOWN_BOX);
-            chkTransmitRSid->callback((Fl_Callback*)cb_chkTransmitRSid);
-            o->value(progdefaults.TransmitRSid);
-          } // Fl_Check_Button* chkTransmitRSid
-          { Fl_Check_Button* o = chkRSidWideSearch = new Fl_Check_Button(215, 246, 270, 20, _("Detector searches entire passband"));
+          { Fl_Check_Button* o = chkRSidWideSearch = new Fl_Check_Button(18, 240, 270, 20, _("Detector searches entire passband"));
             chkRSidWideSearch->tooltip(_("ON - search over entire waterfall\nOFF - limit search to +/- 200 Hz"));
             chkRSidWideSearch->down_box(FL_DOWN_BOX);
             chkRSidWideSearch->callback((Fl_Callback*)cb_chkRSidWideSearch);
             o->value(progdefaults.rsidWideSearch);
           } // Fl_Check_Button* chkRSidWideSearch
-          { chkRSidNotifyOnly = new Fl_Check_Button(15, 276, 155, 20, _("Notifications only"));
-            chkRSidNotifyOnly->tooltip(_("Check this to be notified when an RSID is received\nwithout changing modem an\
-d frequency"));
-            chkRSidNotifyOnly->down_box(FL_DOWN_BOX);
-            chkRSidNotifyOnly->callback((Fl_Callback*)cb_chkRSidNotifyOnly);
-            chkRSidNotifyOnly->value(progdefaults.rsid_notify_only);
-          } // Fl_Check_Button* chkRSidNotifyOnly
-          { chkRSidMark = new Fl_Check_Button(215, 276, 270, 20, _("Mark previous frequency and mode"));
+          { chkRSidMark = new Fl_Check_Button(18, 263, 270, 20, _("Mark previous frequency and mode"));
             chkRSidMark->tooltip(_("Insert RX text marker before\nchanging frequency and modem"));
             chkRSidMark->down_box(FL_DOWN_BOX);
             chkRSidMark->callback((Fl_Callback*)cb_chkRSidMark);
             chkRSidMark->value(progdefaults.rsid_mark);
           } // Fl_Check_Button* chkRSidMark
-          { chkRSidAutoDisable = new Fl_Check_Button(15, 306, 200, 20, _("Reception disables detector"));
+          { chkRSidAutoDisable = new Fl_Check_Button(18, 286, 200, 20, _("Reception disables detector"));
             chkRSidAutoDisable->tooltip(_("Disable further detection when RSID is received"));
             chkRSidAutoDisable->down_box(FL_DOWN_BOX);
             chkRSidAutoDisable->callback((Fl_Callback*)cb_chkRSidAutoDisable);
@@ -4321,6 +4315,25 @@ d frequency"));
             chkRSidAutoDisable->value(progdefaults.rsid_auto_disable);
             if (progdefaults.rsid_notify_only) chkRSidAutoDisable->deactivate();
           } // Fl_Check_Button* chkRSidAutoDisable
+          { chkRSidNotifyOnly = new Fl_Check_Button(18, 310, 155, 20, _("Notifications only"));
+            chkRSidNotifyOnly->tooltip(_("Check this to be notified when an RSID is received\nwithout changing modem an\
+d frequency"));
+            chkRSidNotifyOnly->down_box(FL_DOWN_BOX);
+            chkRSidNotifyOnly->callback((Fl_Callback*)cb_chkRSidNotifyOnly);
+            chkRSidNotifyOnly->value(progdefaults.rsid_notify_only);
+          } // Fl_Check_Button* chkRSidNotifyOnly
+          { Fl_Check_Button* o = chkTransmitRSid = new Fl_Check_Button(313, 240, 165, 20, _("Transmit RSID"));
+            chkTransmitRSid->tooltip(_("RSID at beginning of transmission"));
+            chkTransmitRSid->down_box(FL_DOWN_BOX);
+            chkTransmitRSid->callback((Fl_Callback*)cb_chkTransmitRSid);
+            o->value(progdefaults.TransmitRSid);
+          } // Fl_Check_Button* chkTransmitRSid
+          { Fl_Check_Button* o = chkRSidPost = new Fl_Check_Button(314, 268, 129, 15, _("Add eot RSID"));
+            chkRSidPost->tooltip(_("Add RSID at end of transmission"));
+            chkRSidPost->down_box(FL_DOWN_BOX);
+            chkRSidPost->callback((Fl_Callback*)cb_chkRSidPost);
+            o->value(progdefaults.rsid_post);
+          } // Fl_Check_Button* chkRSidPost
           o->end();
         } // Fl_Group* o
         tabID->end();

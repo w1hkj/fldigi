@@ -2371,20 +2371,30 @@ progdefaults.changed = true;}
           label {Reed-Solomon ID} open
           xywh {5 218 490 120} box ENGRAVED_FRAME align 21
         } {
-          Fl_Check_Button chkTransmitRSid {
-            label {Transmit mode RSID}
-            callback {progdefaults.TransmitRSid = o->value();
-progdefaults.changed = true;}
-            tooltip {Transmit RSID at beginning & end of transmission} xywh {15 246 165 20} down_box DOWN_BOX
-            code0 {o->value(progdefaults.TransmitRSid);}
-          }
           Fl_Check_Button chkRSidWideSearch {
             label {Detector searches entire passband}
             callback {progdefaults.rsidWideSearch=o->value();
 progdefaults.changed = true;}
             tooltip {ON - search over entire waterfall
-OFF - limit search to +/- 200 Hz} xywh {215 246 270 20} down_box DOWN_BOX
+OFF - limit search to +/- 200 Hz} xywh {18 240 270 20} down_box DOWN_BOX
             code0 {o->value(progdefaults.rsidWideSearch);}
+          }
+          Fl_Check_Button chkRSidMark {
+            label {Mark previous frequency and mode}
+            callback {progdefaults.rsid_mark = o->value();
+progdefaults.changed = true;}
+            tooltip {Insert RX text marker before
+changing frequency and modem} xywh {18 263 270 20} down_box DOWN_BOX
+            code0 {chkRSidMark->value(progdefaults.rsid_mark);}
+          }
+          Fl_Check_Button chkRSidAutoDisable {
+            label {Reception disables detector}
+            callback {progdefaults.rsid_auto_disable = o->value();
+progdefaults.changed = true;}
+            tooltip {Disable further detection when RSID is received} xywh {18 286 200 20} down_box DOWN_BOX
+            code0 {if (progdefaults.rsid_notify_only) progdefaults.rsid_auto_disable = false;}
+            code1 {chkRSidAutoDisable->value(progdefaults.rsid_auto_disable);}
+            code2 {if (progdefaults.rsid_notify_only) chkRSidAutoDisable->deactivate();}
           }
           Fl_Check_Button chkRSidNotifyOnly {
             label {Notifications only}
@@ -2398,25 +2408,22 @@ else
     chkRSidAutoDisable->activate();
 progdefaults.changed = true;}
             tooltip {Check this to be notified when an RSID is received
-without changing modem and frequency} xywh {15 276 155 20} down_box DOWN_BOX
+without changing modem and frequency} xywh {18 310 155 20} down_box DOWN_BOX
             code0 {chkRSidNotifyOnly->value(progdefaults.rsid_notify_only);}
           }
-          Fl_Check_Button chkRSidMark {
-            label {Mark previous frequency and mode}
-            callback {progdefaults.rsid_mark = o->value();
+          Fl_Check_Button chkTransmitRSid {
+            label {Transmit RSID}
+            callback {progdefaults.TransmitRSid = o->value();
 progdefaults.changed = true;}
-            tooltip {Insert RX text marker before
-changing frequency and modem} xywh {215 276 270 20} down_box DOWN_BOX
-            code0 {chkRSidMark->value(progdefaults.rsid_mark);}
+            tooltip {RSID at beginning of transmission} xywh {313 240 165 20} down_box DOWN_BOX
+            code0 {o->value(progdefaults.TransmitRSid);}
           }
-          Fl_Check_Button chkRSidAutoDisable {
-            label {Reception disables detector}
-            callback {progdefaults.rsid_auto_disable = o->value();
+          Fl_Check_Button chkRSidPost {
+            label {Add eot RSID}
+            callback {progdefaults.rsid_post = o->value();
 progdefaults.changed = true;}
-            tooltip {Disable further detection when RSID is received} xywh {15 306 200 20} down_box DOWN_BOX
-            code0 {if (progdefaults.rsid_notify_only) progdefaults.rsid_auto_disable = false;}
-            code1 {chkRSidAutoDisable->value(progdefaults.rsid_auto_disable);}
-            code2 {if (progdefaults.rsid_notify_only) chkRSidAutoDisable->deactivate();}
+            tooltip {Add RSID at end of transmission} xywh {314 268 129 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.rsid_post);}
           }
         }
       }
