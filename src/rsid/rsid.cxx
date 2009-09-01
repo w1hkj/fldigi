@@ -77,7 +77,7 @@ enum {
 	RSID_THOR_11 = 143, RSID_THOR_16 = 138, RSID_THOR_22 = 145,
 };
 
-RSIDs cRsId::rsid_ids[] = {
+const RSIDs cRsId::rsid_ids[] = {
 	{ RSID_BPSK31, MODE_BPSK31 },
 	{ RSID_QPSK31, MODE_QPSK31 },
 	{ RSID_BPSK63, MODE_PSK63 },
@@ -203,7 +203,9 @@ RSIDs cRsId::rsid_ids[] = {
 	{ RSID_NONE, NUM_MODES }
 };
 
-const int cRsId::Squares[256] = {
+const int cRsId::rsid_ids_size = sizeof(rsid_ids)/sizeof(*rsid_ids) - 1;
+
+const int cRsId::Squares[] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,
 	0, 2, 4, 6, 8,10,12,14, 9,11,13,15, 1, 3, 5, 7,
@@ -228,55 +230,42 @@ const int cRsId::indices[] = {
 
 cRsId :: cRsId()
 {
-	memset (aInputSamples, 0, RSID_ARRAY_SIZE * sizeof(double));	
-	memset (aFFTReal, 0, RSID_ARRAY_SIZE * sizeof(double));	
-	memset (aFFTAmpl, 0, RSID_FFT_SIZE * sizeof(double));
-	memset (fftwindow, 0, RSID_ARRAY_SIZE * sizeof(double));
-	
-	memset (aHashTable1, 255, 256);
-	memset (aHashTable2, 255, 256);
-	
-// compute current size of rsid_ids
-	rsid_ids_size = 0;
-	while (rsid_ids[rsid_ids_size].rs) rsid_ids_size++;
+	reset();
 
-	pCodes = new uchar[rsid_ids_size * RSID_NSYMBOLS];
-	memset (pCodes, 0, rsid_ids_size * RSID_NSYMBOLS);
+	memset(aHashTable1, 255, sizeof(aHashTable1));
+	memset(aHashTable2, 255, sizeof(aHashTable2));
+	memset(fftwindow, 0, RSID_ARRAY_SIZE * sizeof(double));
+	BlackmanWindow(fftwindow, RSID_FFT_SIZE);
 
-// Initialization  of assigned mode/submode IDs.
-// HashTable is used for finding a code with lowest Hamming distance.
-	
+	pCodes = new unsigned char[rsid_ids_size * RSID_NSYMBOLS];
+	memset(pCodes, 0, rsid_ids_size * RSID_NSYMBOLS);
+
+	// Initialization  of assigned mode/submode IDs.
+	// HashTable is used for finding a code with lowest Hamming distance.
+	unsigned char* c;
+	int hash1, hash2;
 	for (int i = 0; i < rsid_ids_size; i++) {
-		uchar *c = pCodes + i * RSID_NSYMBOLS;
-		int    hash1;
-		int    hash2;
+		c = pCodes + i * RSID_NSYMBOLS;
 		Encode(rsid_ids[i].rs, c);
 		hash1 = c[11] | (c[12] << 4);
 		hash2 = c[13] | (c[14] << 4);
-
 		aHashTable1[hash1] = i;
 		aHashTable2[hash2] = i;
 	}
 
-	for (int i = 0; i < RSID_NTIMES; i++)
-		for (int j = 0; j < RSID_FFT_SIZE; j++)
-			aBuckets[i][j] = 0;
-
-	iPrevDistance = 99;
-
-	BlackmanWindow(fftwindow, RSID_FFT_SIZE);
-
 	nBinLow = RSID_RESOL + 1;
 	nBinHigh = RSID_FFT_SIZE - 32;
-	iTime = 0;
-	bPrevTimeSliceValid = false;
-	
+
 	_samplerate = 11025;
+
+	outbuf = 0;
+	symlen = 0;
 }
 
 cRsId::~cRsId()
 {
 	delete [] pCodes;
+	delete [] outbuf;
 }
 
 void cRsId::reset()
@@ -284,15 +273,13 @@ void cRsId::reset()
 	iPrevDistance = 99;
 	bPrevTimeSliceValid = false;
 	iTime = 0;
-	memset (aInputSamples, 0, RSID_ARRAY_SIZE * sizeof(double));	
-	memset (aFFTReal, 0, RSID_ARRAY_SIZE * sizeof(double));	
-	memset (aFFTAmpl, 0, RSID_FFT_SIZE * sizeof(double));
-	for (int i = 0; i < RSID_NTIMES; i++)
-		for (int j = 0; j < RSID_FFT_SIZE; j++)
-			aBuckets[i][j] = 0;
+	memset(aInputSamples, 0, sizeof(aInputSamples));
+	memset(aFFTReal, 0, sizeof(aFFTReal));
+	memset(aFFTAmpl, 0, sizeof(aFFTAmpl));
+	memset(aBuckets, 0, sizeof(aBuckets));
 }
 
-void cRsId::Encode(int code, uchar *rsid)
+void cRsId::Encode(int code, unsigned char *rsid)
 {
 	rsid[0] = code >> 8;
 	rsid[1] = (code >> 4) & 0x0f;
@@ -309,23 +296,24 @@ void cRsId::Encode(int code, uchar *rsid)
 
 void cRsId::CalculateBuckets(const double *pSpectrum, int iBegin, int iEnd)
 {
-	double   Amp = 0.0, AmpMax = 0.0;
-	int   iBucketMax = iBegin - RSID_RESOL;
-	int   i, j;
+	double Amp = 0.0, AmpMax = 0.0;
+	int iBucketMax = iBegin - RSID_RESOL;
+	int j;
 
-	for (i = iBegin; i < iEnd; i += RSID_RESOL) {
+	for (int i = iBegin; i < iEnd; i += RSID_RESOL) {
 		if (iBucketMax == i - RSID_RESOL) {
-			AmpMax		= pSpectrum[i];
-			iBucketMax	= i;
+			AmpMax = pSpectrum[i];
+			iBucketMax = i;
 			for (j = i + RSID_RESOL; j < i + RSID_NTIMES + RSID_RESOL; j += RSID_RESOL) {
 				Amp = pSpectrum[j];
 				if (Amp > AmpMax) {
-					AmpMax    = Amp;
+					AmpMax = Amp;
 					iBucketMax = j;
 				}
 			}
-		} else {
-			j    = i + RSID_NTIMES;
+		}
+		else {
+			j = i + RSID_NTIMES;
 			Amp = pSpectrum[j];
 			if (Amp > AmpMax) {
 				AmpMax    = Amp;
@@ -337,60 +325,50 @@ void cRsId::CalculateBuckets(const double *pSpectrum, int iBegin, int iEnd)
 }
 
 
-void cRsId::search( const double *pSamples, int nSamples )
+void cRsId::search(const double *pSamples, size_t nSamples)
 {
-	int i, ns;
-	bool bReverse = false;
-	double Real, Imag;
-	double centerfreq = active_modem->get_freq();
-
 	if (progdefaults.rsidWideSearch) {
 		nBinLow = RSID_RESOL + 1;
 		nBinHigh = RSID_FFT_SIZE - 32;
-	} else {
-		nBinLow = (int)((centerfreq  - 100.0 * RSID_RESOL) * 2048.0 / 11025.0);
-		nBinHigh = (int)((centerfreq  + 100.0 * RSID_RESOL) * 2048.0 / 11025.0);
 	}
- 	
- 	if (wf->Reverse() == true && wf->USB() == true) bReverse = true;
- 	if (wf->Reverse() == false && wf->USB() == false) bReverse = true;
- 	
- 	ns = nSamples;
- 	if (ns > RSID_ARRAY_SIZE / 4) {
- 		ns = RSID_ARRAY_SIZE / 4;
- 	}
-	
+	else {
+		double centerfreq = active_modem->get_freq();
+		nBinLow = (int)((centerfreq  - 100.0 * RSID_RESOL) * 2048.0 / RSID_SAMPLE_RATE);
+		nBinHigh = (int)((centerfreq  + 100.0 * RSID_RESOL) * 2048.0 / RSID_SAMPLE_RATE);
+	}
+
+	bool bReverse = !(wf->Reverse() ^ wf->USB());
 	if (bReverse) {
 		nBinLow  = RSID_FFT_SIZE - nBinHigh;
 		nBinHigh = RSID_FFT_SIZE - nBinLow;
 	}
 
-	memmove (aInputSamples, aInputSamples + ns, ns * sizeof(double));
-	memcpy  (aInputSamples + ns, pSamples, ns * sizeof(double));
-	
-	memset  (aFFTReal, 0, RSID_ARRAY_SIZE * sizeof(double));
-
+ 	size_t ns = nSamples;
+ 	if (ns > RSID_ARRAY_SIZE / 4) {
+ 		ns = RSID_ARRAY_SIZE / 4;
+ 	}
+	memmove(aInputSamples, aInputSamples + ns, ns * sizeof(double));
+	memcpy(aInputSamples + ns, pSamples, ns * sizeof(double));
 	for (int i = 0; i < RSID_FFT_SIZE; i++)
 		aFFTReal[i] = aInputSamples[i] * fftwindow[i];
+	memset(aFFTReal + RSID_FFT_SIZE, 0, RSID_FFT_SIZE * sizeof(double));
+	rsrfft(aFFTReal, 11);
 
-	rsrfft( aFFTReal, 11);
-
-	memset(aFFTAmpl, 0, RSID_FFT_SIZE * sizeof(double));
-	for (i = 1; i < RSID_FFT_SIZE; i++) {
-		if (bReverse) {
+	double Real, Imag;
+	for (int i = 1; i < RSID_FFT_SIZE; i++) {
+		if (unlikely(bReverse)) {
 			Real = aFFTReal[RSID_FFT_SIZE - i];
 			Imag = aFFTReal[RSID_FFT_SIZE + i];
-		} else {
+		}
+		else {
 			Real = aFFTReal[i];
 			Imag = aFFTReal[2 * RSID_FFT_SIZE - i];
 		}
 		aFFTAmpl[i] = Real * Real + Imag * Imag;
 	}
 
-	int SymbolOut = -1, 
-	    BinOut = -1;
-	
-	if (search_amp ( SymbolOut, BinOut ) ){
+	int SymbolOut = -1, BinOut = -1;
+	if (search_amp(SymbolOut, BinOut)) {
 		if (bReverse)
 			BinOut = 1024 - BinOut - 31;
 		apply(SymbolOut, BinOut);
@@ -401,7 +379,7 @@ void cRsId::apply(int iSymbol, int iBin)
 {
 	ENSURE_THREAD(TRX_TID);
 
-	double freq = (iBin + (RSID_NSYMBOLS - 1) * RSID_RESOL / 2) * 11025.0 / 2048.0;
+	double freq = (iBin + (RSID_NSYMBOLS - 1) * RSID_RESOL / 2) * RSID_SAMPLE_RATE / 2048.0;
 
 	int mbin = 0;
 	for (int n = 0; n < rsid_ids_size; n++)
@@ -516,7 +494,7 @@ void cRsId::apply(int iSymbol, int iBin)
 // search_amp routine #1
 //=============================================================================
 
-int cRsId::HammingDistance(int iBucket, uchar *p2)
+int cRsId::HammingDistance(int iBucket, unsigned char *p2)
 {
 	int dist = 0;
 	int j = iTime - RSID_NTIMES + 1; // first value
@@ -613,19 +591,8 @@ bool cRsId::search_amp( int &SymbolOut,	int &BinOut)
 
 void cRsId::send(bool postidle)
 {
-	int iTone;
-	uchar rsid[RSID_NSYMBOLS];
-	double phaseincr;
-	double freq, fr;
- 	double sr;
-	int symlen;
-	
-	sr = active_modem->get_samplerate();
-	symlen = (int)floor(RSID_SYMLEN * sr);
-	fr = 1.0 * active_modem->get_txfreq() - (11025.0 * 7 / 1024);
-	
 	trx_mode mode = active_modem->get_mode();
-	uchar rmode = RSID_NONE;
+	unsigned char rmode = RSID_NONE;
 
 	switch (mode) {
 	case MODE_RTTY :
@@ -712,27 +679,40 @@ void cRsId::send(bool postidle)
 	}
 	if (rmode == RSID_NONE)
 		return;
-		
+
+	unsigned char rsid[RSID_NSYMBOLS];
+
 	Encode(rmode, rsid);
 
-	outbuf = new double[symlen];
-		
-// transmit 6 symbol periods of silence
-    if (!postidle) {
-    	for (int j = 0; j < symlen; j++) outbuf[j] = 0.0;
-	    for (int i = 0; i < 6; i++) active_modem->ModulateXmtr(outbuf, symlen);
-    }
+	double sr = active_modem->get_samplerate();
+	size_t len = (size_t)floor(RSID_SYMLEN * sr);
+	if (unlikely(len != symlen)) {
+		symlen = len;
+		delete [] outbuf;
+		outbuf = new double[symlen];
+	}
 
-// transmit sequence of 15 symbols (tones)
-	phase = 0.0;
+	// transmit 6 symbol periods of silence
+	if (!postidle) {
+		memset(outbuf, 0, symlen * sizeof(*outbuf));
+		for (int i = 0; i < 6; i++)
+			active_modem->ModulateXmtr(outbuf, symlen);
+	}
+
+	// transmit sequence of 15 symbols (tones)
+	int iTone;
+	double freq, phaseincr;
+	double fr = 1.0 * active_modem->get_txfreq() - (RSID_SAMPLE_RATE * 7 / 1024);
+	double phase = 0.0;
+
 	for (int i = 0; i < 15; i++) {
 		iTone = rsid[i];
 		if (active_modem->get_reverse())
 			iTone = 15 - iTone;
-		freq = fr + iTone * 11025.0 / 1024;
+		freq = fr + iTone * RSID_SAMPLE_RATE / 1024;
 		phaseincr = 2.0 * M_PI * freq / sr;
 
-		for (int j = 0; j < symlen; j++) {
+		for (size_t j = 0; j < symlen; j++) {
 			phase += phaseincr;
 			if (phase > 2.0 * M_PI) phase -= 2.0 * M_PI;
 			outbuf[j] = sin(phase);
@@ -740,13 +720,12 @@ void cRsId::send(bool postidle)
 		active_modem->ModulateXmtr(outbuf, symlen);
 
 	}
-// transmit 6 symbol periods of silence
-    if (postidle) {
-    	for (int j = 0; j < symlen; j++) outbuf[j] = 0.0;
-	    for (int i = 0; i < 6; i++) active_modem->ModulateXmtr(outbuf, symlen);
-    }
-// clean up
 
-	delete [] outbuf;
+	// transmit 6 symbol periods of silence
+	if (postidle) {
+		memset(outbuf, 0, symlen * sizeof(*outbuf));
+		for (int i = 0; i < 6; i++)
+			active_modem->ModulateXmtr(outbuf, symlen);
+	}
 }
 

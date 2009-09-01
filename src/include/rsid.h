@@ -43,15 +43,18 @@
 #include "globals.h"
 #include "modem.h"
 
-#define RSID_FFT_SIZE	1024
-#define RSID_ARRAY_SIZE	(RSID_FFT_SIZE * 2)
+#define RSID_SAMPLE_RATE 11025.0
 
-#define RSID_NSYMBOLS   15
-#define RSID_RESOL		2
-#define RSID_NTIMES		(RSID_NSYMBOLS * RSID_RESOL)
+#define RSID_FFT_SIZE    1024
+#define RSID_ARRAY_SIZE	 (RSID_FFT_SIZE * 2)
+
+#define RSID_NSYMBOLS    15
+#define RSID_RESOL       2
+#define RSID_NTIMES      (RSID_NSYMBOLS * RSID_RESOL)
+#define RSID_HASH_LEN    256
 
 // each rsid symbol has a duration equal to 1024 samples at 11025 Hz smpl rate
-#define RSID_SYMLEN		(1024.0 / 11025.0) // 0.09288 // duration of each rsid symbol
+#define RSID_SYMLEN		(1024.0 / RSID_SAMPLE_RATE) // 0.09288 // duration of each rsid symbol
 
 enum {
 	RSID_BANDWIDTH_500 = 0,
@@ -59,20 +62,20 @@ enum {
 	RSID_BANDWIDTH_WIDE,
 };
 
-struct RSIDs { uchar rs; trx_mode mode; };
+struct RSIDs { unsigned char rs; trx_mode mode; };
 
 class cRsId {
 private:
 	int		_samplerate;
 	// Table of precalculated Reed Solomon symbols
-	uchar   *pCodes;
-		
-	static  RSIDs  rsid_ids[];
-	int		rsid_ids_size;
-	
+	unsigned char   *pCodes;
+
+	static const RSIDs  rsid_ids[];
+	static const int rsid_ids_size;
+
 	static const int Squares[];
 	static const int indices[];
-	
+
 // Span of FFT bins, in which the RSID will be searched for
 	int		nBinLow;
 	int		nBinHigh;
@@ -82,10 +85,10 @@ private:
 	double	aFFTAmpl[RSID_FFT_SIZE];
 
 	// Hashing tables
-	uchar	aHashTable1[256];
-	uchar	aHashTable2[256];
+	unsigned char	aHashTable1[RSID_HASH_LEN];
+	unsigned char	aHashTable2[RSID_HASH_LEN];
 
-	bool	bPrevTimeSliceValid;
+	bool		bPrevTimeSliceValid;
 	int		iPrevDistance;
 	int		iPrevBin;
 	int		iPrevSymbol;
@@ -96,25 +99,21 @@ private:
 	int		MetricsOut;
 
 // transmit
-	double	phase;
 	double	*outbuf;
-	
+	size_t  symlen;
 
 private:
-	void	Encode(int code, uchar *rsid);
-	int		HammingDistance(int iBucket, uchar *p2);
+	void	Encode(int code, unsigned char *rsid);
+	int		HammingDistance(int iBucket, unsigned char *p2);
 	void	CalculateBuckets(const double *pSpectrum, int iBegin, int iEnd);
 	bool	search_amp( int &pSymbolOut, int &pBinOut);
 public:
 	cRsId();
 	~cRsId();
 	void	reset();
-	void	search( const double *pSamples, int nSamples );
+	void	search(const double *pSamples, size_t nSamples);
 	void	apply (int iSymbol, int iBin);
 	void	send(bool postidle);
-	
-	int		samplerate() { return _samplerate;}
-	
 };
 
 #endif
