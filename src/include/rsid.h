@@ -2,8 +2,10 @@
 //
 //	rsid.h
 //
-// Copyright (C) 2006
+// Copyright (C) 2008, 2009
 //		Dave Freese, W1HKJ
+// Copyright (C) 2009
+//		Stelios Bounanos, M0GLD
 //
 // This file is part of fldigi.
 //
@@ -40,11 +42,15 @@
 #ifndef RSID_H
 #define RSID_H
 
+#include <samplerate.h>
+
+#include "ringbuffer.h"
 #include "globals.h"
 #include "modem.h"
 
 #define RSID_SAMPLE_RATE 11025.0
 
+#define RSID_FFT_SAMPLES 512
 #define RSID_FFT_SIZE    1024
 #define RSID_ARRAY_SIZE	 (RSID_FFT_SIZE * 2)
 
@@ -66,7 +72,6 @@ struct RSIDs { unsigned char rs; trx_mode mode; };
 
 class cRsId {
 private:
-	int		_samplerate;
 	// Table of precalculated Reed Solomon symbols
 	unsigned char   *pCodes;
 
@@ -79,7 +84,7 @@ private:
 // Span of FFT bins, in which the RSID will be searched for
 	int		nBinLow;
 	int		nBinHigh;
-	double	aInputSamples[RSID_ARRAY_SIZE];
+	float	aInputSamples[RSID_ARRAY_SIZE];
 	double	fftwindow[RSID_ARRAY_SIZE];
 	double  aFFTReal[RSID_ARRAY_SIZE];
 	double	aFFTAmpl[RSID_FFT_SIZE];
@@ -98,6 +103,12 @@ private:
 	int		DistanceOut;
 	int		MetricsOut;
 
+// resample
+	SRC_STATE* 	src_state;
+	SRC_DATA	src_data;
+	float*		inptr;
+	static long	src_callback(void* cb_data, float** data);
+
 // transmit
 	double	*outbuf;
 	size_t  symlen;
@@ -107,12 +118,13 @@ private:
 	int		HammingDistance(int iBucket, unsigned char *p2);
 	void	CalculateBuckets(const double *pSpectrum, int iBegin, int iEnd);
 	bool	search_amp( int &pSymbolOut, int &pBinOut);
+	void	search(void);
+	void	apply (int iSymbol, int iBin);
 public:
 	cRsId();
 	~cRsId();
 	void	reset();
-	void	search(const double *pSamples, size_t nSamples);
-	void	apply (int iSymbol, int iBin);
+	void	receive(const float* buf, size_t len);
 	void	send(bool postidle);
 };
 

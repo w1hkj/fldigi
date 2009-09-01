@@ -79,7 +79,8 @@ protected:
 	SNDFILE* ofCapture;
 	SNDFILE* ifPlayback;
 	SNDFILE* ofGenerate;
-	sf_count_t  read_file(SNDFILE* file, double* buf, size_t count);
+	sf_count_t  read_file(SNDFILE* file, float* buf, size_t count);
+	sf_count_t  write_file(SNDFILE* file, float* buf, size_t count);
 	sf_count_t  write_file(SNDFILE* file, double* buf, size_t count);
 	bool	 format_supported(int format);
 	void	 tag_file(SNDFILE *sndfile, const char *title);
@@ -97,7 +98,7 @@ public:
 	virtual void    Abort(unsigned dir = UINT_MAX) = 0;
 	virtual size_t	Write(double *, size_t) = 0;
 	virtual size_t	Write_stereo(double *, double *, size_t) = 0;
-	virtual size_t	Read(double *, size_t) = 0;
+	virtual size_t	Read(float *, size_t) = 0;
 	virtual void    flush(unsigned dir = UINT_MAX) = 0;
 	virtual bool	must_close(void) = 0;
 #if USE_SNDFILE
@@ -148,7 +149,7 @@ public:
 	void	Abort(unsigned dir = UINT_MAX) { Close(dir); }
 	size_t		Write(double *, size_t);
 	size_t		Write_stereo(double *, double *, size_t);
-	size_t		Read(double *, size_t);
+	size_t		Read(float *, size_t);
 	bool		must_close(void) { return true; }
 	void		flush(unsigned dir = UINT_MAX) { wait_till_finished(); }
 
@@ -191,7 +192,7 @@ public:
 	void 		Abort(unsigned dir = UINT_MAX);
 	size_t 		Write(double *buf, size_t count);
 	size_t		Write_stereo(double *bufleft, double *bufright, size_t count);
-	size_t 		Read(double *buf, size_t count);
+	size_t 		Read(float *buf, size_t count);
 	bool		must_close(void);
 	void		flush(unsigned dir = UINT_MAX);
 
@@ -274,7 +275,7 @@ public:
 	void    Abort(unsigned dir = UINT_MAX);
 	size_t	Write(double* buf, size_t count);
 	size_t	Write_stereo(double* bufleft, double* bufright, size_t count);
-	size_t	Read(double *buf, size_t count);
+	size_t	Read(float *buf, size_t count);
 	bool	must_close(void) { return false; }
 	void	flush(unsigned dir = UINT_MAX);
 
@@ -320,7 +321,7 @@ public:
 	void    Abort(unsigned) { }
 	size_t	Write(double* buf, size_t count);
 	size_t	Write_stereo(double* bufleft, double* bufright, size_t count);
-	size_t	Read(double *buf, size_t count);
+	size_t	Read(float *buf, size_t count);
 	bool	must_close(void) { return false; }
 	void	flush(unsigned) { }
 };

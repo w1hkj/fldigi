@@ -1116,12 +1116,60 @@ public:
 	Main_toggle_lock()
 	{
 		_signature = "b:n";
-		_help = "Toggles the Reverse Sideband state. Returns the new state.";
+		_help = "Toggles the Transmit Lock state. Returns the new state.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		bool v = !wf->xmtlock->value();
 		REQ(set_button, wf->xmtlock, v);
+		*retval = xmlrpc_c::value_boolean(v);
+	}
+};
+
+// =============================================================================
+
+class Main_get_rsid : public xmlrpc_c::method
+{
+public:
+	Main_get_rsid()
+	{
+		_signature = "b:n";
+		_help = "Returns the RSID state.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		*retval = xmlrpc_c::value_boolean(btnRSID->value());
+	}
+};
+
+class Main_set_rsid : public xmlrpc_c::method
+{
+public:
+	Main_set_rsid()
+	{
+		_signature = "b:b";
+		_help = "Sets the RSID state. Returns the old state.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		bool v = btnRSID->value();
+		REQ(set_button, btnRSID, params.getBoolean(0));
+		*retval = xmlrpc_c::value_boolean(v);
+	}
+};
+
+class Main_toggle_rsid : public xmlrpc_c::method
+{
+public:
+	Main_toggle_rsid()
+	{
+		_signature = "b:n";
+		_help = "Toggles the RSID state. Returns the new state.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		bool v = !btnRSID->value();
+		REQ(set_button, btnRSID, v);
 		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
@@ -1142,8 +1190,6 @@ public:
 			*retval = xmlrpc_c::value_string("tune");
 		else if (wf->xmtrcv->value())
 			*retval = xmlrpc_c::value_string("tx");
-		else if (btnRSID->value())
-			*retval = xmlrpc_c::value_string("rsid");
 		else
 			*retval = xmlrpc_c::value_string("rx");
 	}
@@ -1159,11 +1205,8 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		if (!wf->xmtrcv->value()) {
-			if (btnRSID->value())
-				REQ(set_button, btnRSID, false);
+		if (!wf->xmtrcv->value())
 			REQ(set_button, wf->xmtrcv, true);
-		}
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -1178,11 +1221,8 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		if (!btnTune->value()) {
-			if (btnRSID->value())
-				REQ(set_button, btnRSID, false);
+		if (!btnTune->value())
 			REQ(set_button, btnTune, !btnTune->value());
-		}
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -1199,8 +1239,6 @@ public:
         {
 		if (wf->xmtrcv->value())
 			REQ(set_button, wf->xmtrcv, false);
-		else if (btnRSID->value())
-			REQ(set_button, btnRSID, false);
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -1257,7 +1295,7 @@ public:
 	Main_rsid()
 	{
 		_signature = "n:n";
-		_help = "Waits for RSID.";
+		_help = "Deprecated; use main.{get,set,toggle}_rsid instead.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
@@ -1945,6 +1983,10 @@ public:
 	ELEM_(Main_get_lock, "main.get_lock")				\
 	ELEM_(Main_set_lock, "main.set_lock")				\
 	ELEM_(Main_toggle_lock, "main.toggle_lock")			\
+									\
+	ELEM_(Main_get_rsid, "main.get_rsid")				\
+	ELEM_(Main_set_rsid, "main.set_rsid")				\
+	ELEM_(Main_toggle_rsid, "main.toggle_rsid")			\
 									\
 	ELEM_(Main_get_trx_status, "main.get_trx_status")		\
 	ELEM_(Main_tx, "main.tx")					\

@@ -73,21 +73,20 @@ static int	_trx_tune;
 // Ringbuffer for the audio "history". A pointer into this buffer
 // is also passed to the waterfall signal drawing routines.
 #define NUMMEMBUFS 1024
-ringbuffer<double> trxrb(ceil2(NUMMEMBUFS * SCBLOCKSIZE));
+static ringbuffer<double> trxrb(ceil2(NUMMEMBUFS * SCBLOCKSIZE));
 // Vector used for direct access to the ringbuffer
-ringbuffer<double>::vector_type rbvec[2];
+static ringbuffer<double>::vector_type rbvec[2];
+static float fbuf[SCBLOCKSIZE];
 bool    bHistory = false;
 
 static bool trxrunning = false;
-
-static bool rsid_detecting = false;
 
 #include "tune.cxx"
 
 //=============================================================================
 void trx_trx_receive_loop()
 {
-	int  numread;
+	size_t  numread;
 	int  current_samplerate;
 	assert(powerof2(SCBLOCKSIZE));
 
@@ -126,56 +125,16 @@ void trx_trx_receive_loop()
 	active_modem->rx_init();
 
 	while (1) {
-		if (progdefaults.rsid == true && rsid_detecting == false) {
-			rsid_detecting = true;
-			try {
-				current_samplerate = RSID_SAMPLE_RATE;
-				scard->Open(O_RDONLY, current_samplerate);
-			}
-			catch (const SndException& e) {
-				LOG_ERROR("%s", e.what());
-				put_status(e.what(), 5);
-				scard->Close();
-				if (e.error() == EBUSY && progdefaults.btnAudioIOis == SND_IDX_PORT) {
-					sound_close();
-					sound_init();
-				}
-				MilliSleep(1000);
-				return;
-			}
-		}
-		if (progdefaults.rsid == false && rsid_detecting == true) {
-			rsid_detecting = false;
-			active_modem->rx_init();
-			try {
-				current_samplerate = active_modem->get_samplerate();
-				scard->Open(O_RDONLY, current_samplerate);
-			}
-			catch (const SndException& e) {
-				LOG_ERROR("%s", e.what());
-				put_status(e.what(), 5);
-				scard->Close();
-				if (e.error() == EBUSY && progdefaults.btnAudioIOis == SND_IDX_PORT) {
-					sound_close();
-					sound_init();
-				}
-				MilliSleep(1000);
-				return;
-			}
-		}
-		// If we change to an 8000Hz modem while RSID is on we'll never detect anything.
-		// Toggle rsid_detecting so that the audio device is reopened with the ReedSolomon
-		// samplerate in the next loop iteration.
-		if (progdefaults.rsid && rsid_detecting && current_samplerate != RSID_SAMPLE_RATE)
-			rsid_detecting = false;
-
 		try {
+			numread = 0;
+			while (numread < SCBLOCKSIZE && trx_state == STATE_RX)
+				numread += scard->Read(fbuf + numread, SCBLOCKSIZE - numread);
 			if (trxrb.write_space() == 0) // discard some old data
 				trxrb.read_advance(SCBLOCKSIZE);
 			trxrb.get_wv(rbvec);
-			numread = 0;
-			while (numread < SCBLOCKSIZE && trx_state == STATE_RX)
-				numread += scard->Read(rbvec[0].buf + numread, SCBLOCKSIZE - numread);
+			// convert to double and write to rb
+			for (size_t i = 0; i < numread; i++)
+				rbvec[0].buf[i] = fbuf[i];
 		}
 		catch (const SndException& e) {
 			scard->Close();
@@ -191,10 +150,9 @@ void trx_trx_receive_loop()
 		REQ(&waterfall::sig_data, wf, rbvec[0].buf, numread, current_samplerate);
 
 		if (!bHistory) {
-			if (rsid_detecting == true)
-				ReedSolomon->search(rbvec[0].buf, numread);
-			else
-				active_modem->rx_process(rbvec[0].buf, numread);
+			active_modem->rx_process(rbvec[0].buf, numread);
+			if (progdefaults.rsid)
+				ReedSolomon->receive(fbuf, numread);
 		}
 		else {
 			bool afc = progStatus.afconoff;
@@ -239,9 +197,9 @@ void trx_trx_transmit_loop()
 		push2talk->set(true);
 		active_modem->tx_init(scard);
 
-		if (progdefaults.TransmitRSid == true)
+		if (progdefaults.TransmitRSid)
 			ReedSolomon->send(true);
-		
+
 		while (trx_state == STATE_TX) {
 			try {
 				if (active_modem->tx_process() < 0)
@@ -256,10 +214,10 @@ void trx_trx_transmit_loop()
 			}
 		}
 
-		if (progdefaults.TransmitRSid == true)
+		if (progdefaults.TransmitRSid)
 			ReedSolomon->send(false);
-		
-        scard->flush();
+
+		scard->flush();
 		if (scard->must_close())
 			scard->Close();
 	} else

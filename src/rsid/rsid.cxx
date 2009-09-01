@@ -1,7 +1,35 @@
+// ----------------------------------------------------------------------------
+//
+//	rsid.cxx
+//
+// Copyright (C) 2008, 2009
+//		Dave Freese, W1HKJ
+// Copyright (C) 2009
+//		Stelios Bounanos, M0GLD
+//
+// This file is part of fldigi.
+//
+// fldigi is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// fldigi is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with fldigi; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+// ----------------------------------------------------------------------------
+
 #include <config.h>
 
 #include <cmath>
 #include <cstring>
+#include <float.h>
+#include <samplerate.h>
 
 #include "rsid.h"
 #include "filters.h"
@@ -13,6 +41,7 @@
 #include "confdialog.h"
 #include "qrunner.h"
 #include "notify.h"
+#include "debug.h"
 
 #include "rsid_fft.cxx"
 
@@ -228,8 +257,16 @@ const int cRsId::indices[] = {
 	2, 4, 8, 9, 11, 15, 7, 14, 5, 10, 13, 3 
 };
 
-cRsId :: cRsId()
+cRsId::cRsId()
 {
+	int error;
+	src_state = src_new(progdefaults.sample_converter, 1, &error);
+	if (error) {
+		LOG_ERROR("src_new error %d: %s", error, src_strerror(error));
+		abort();
+	}
+	src_data.end_of_input = 0;
+
 	reset();
 
 	memset(aHashTable1, 255, sizeof(aHashTable1));
@@ -256,8 +293,6 @@ cRsId :: cRsId()
 	nBinLow = RSID_RESOL + 1;
 	nBinHigh = RSID_FFT_SIZE - 32;
 
-	_samplerate = 11025;
-
 	outbuf = 0;
 	symlen = 0;
 }
@@ -266,6 +301,7 @@ cRsId::~cRsId()
 {
 	delete [] pCodes;
 	delete [] outbuf;
+	src_delete(src_state);
 }
 
 void cRsId::reset()
@@ -277,6 +313,12 @@ void cRsId::reset()
 	memset(aFFTReal, 0, sizeof(aFFTReal));
 	memset(aFFTAmpl, 0, sizeof(aFFTAmpl));
 	memset(aBuckets, 0, sizeof(aBuckets));
+
+	int error = src_reset(src_state);
+	if (error)
+		LOG_ERROR("src_reset error %d: %s", error, src_strerror(error));
+	src_data.src_ratio = 0.0;
+	inptr = aInputSamples + RSID_FFT_SAMPLES;
 }
 
 void cRsId::Encode(int code, unsigned char *rsid)
@@ -324,8 +366,50 @@ void cRsId::CalculateBuckets(const double *pSpectrum, int iBegin, int iEnd)
 	}
 }
 
+void cRsId::receive(const float* buf, size_t len)
+{
+	double src_ratio = RSID_SAMPLE_RATE / active_modem->get_samplerate();
+	bool resample = (fabs(src_ratio - 1.0) >= DBL_EPSILON);
+	size_t ns;
 
-void cRsId::search(const double *pSamples, size_t nSamples)
+	while (len) {
+		ns = inptr - aInputSamples;
+		if (ns >= RSID_FFT_SAMPLES) // inptr points to second half of aInputSamples
+			ns -= RSID_FFT_SAMPLES;
+		ns = RSID_FFT_SAMPLES - ns; // number of additional samples we need to call search()
+
+		if (resample) {
+			if (src_data.src_ratio != src_ratio)
+				src_set_ratio(src_state, src_data.src_ratio = src_ratio);
+			src_data.data_in = const_cast<float*>(buf);
+			src_data.input_frames = len;
+			src_data.data_out = inptr;
+			src_data.output_frames = ns;
+			src_data.input_frames_used = 0;
+			int error = src_process(src_state, &src_data);
+			if (unlikely(error)) {
+				LOG_ERROR("src_process error %d: %s", error, src_strerror(error));
+				return;
+			}
+			inptr += src_data.output_frames_gen;
+			buf += src_data.input_frames_used;
+			len -= src_data.input_frames_used;
+		}
+		else {
+			ns = MIN(ns, len);
+			memcpy(inptr, buf, ns * sizeof(*inptr));
+			inptr += ns;
+			buf += ns;
+			len -= ns;
+		}
+
+		ns = inptr - aInputSamples;
+		if (ns == RSID_FFT_SAMPLES || ns == RSID_FFT_SIZE)
+			search(); // will reset inptr if at end of input
+	}
+}
+
+void cRsId::search(void)
 {
 	if (progdefaults.rsidWideSearch) {
 		nBinLow = RSID_RESOL + 1;
@@ -343,14 +427,18 @@ void cRsId::search(const double *pSamples, size_t nSamples)
 		nBinHigh = RSID_FFT_SIZE - nBinLow;
 	}
 
- 	size_t ns = nSamples;
- 	if (ns > RSID_ARRAY_SIZE / 4) {
- 		ns = RSID_ARRAY_SIZE / 4;
- 	}
-	memmove(aInputSamples, aInputSamples + ns, ns * sizeof(double));
-	memcpy(aInputSamples + ns, pSamples, ns * sizeof(double));
-	for (int i = 0; i < RSID_FFT_SIZE; i++)
-		aFFTReal[i] = aInputSamples[i] * fftwindow[i];
+	if (inptr == aInputSamples + RSID_FFT_SIZE) {
+		for (int i = 0; i < RSID_FFT_SIZE; i++)
+			aFFTReal[i] = aInputSamples[i] * fftwindow[i];
+		inptr = aInputSamples;
+	}
+	else { // second half of aInputSamples is older
+		for (size_t i = RSID_FFT_SAMPLES; i < RSID_FFT_SIZE; i++)
+			aFFTReal[i - RSID_FFT_SAMPLES] = aInputSamples[i] * fftwindow[i - RSID_FFT_SAMPLES];
+		for (size_t i = 0; i < RSID_FFT_SAMPLES; i++)
+			aFFTReal[i + RSID_FFT_SAMPLES] = aInputSamples[i] * fftwindow[i + RSID_FFT_SAMPLES];
+	}
+
 	memset(aFFTReal + RSID_FFT_SIZE, 0, RSID_FFT_SIZE * sizeof(double));
 	rsrfft(aFFTReal, 11);
 
@@ -387,7 +475,7 @@ void cRsId::apply(int iSymbol, int iBin)
 			mbin = rsid_ids[n].mode;
 			break;
 		}
-	if (!progdefaults.rsid_notify_only)
+	if (!progdefaults.rsid_notify_only && progdefaults.rsid_auto_disable)
 		REQ(toggleRSID);
 
 	if (mbin == NUM_MODES) return;

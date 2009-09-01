@@ -1945,6 +1945,12 @@ Fl_Check_Button *chkRSidNotifyOnly=(Fl_Check_Button *)0;
 static void cb_chkRSidNotifyOnly(Fl_Check_Button* o, void*) {
   progdefaults.rsid_notify_only = o->value();
 notify_create_rsid_event(progdefaults.rsid_notify_only);
+if (progdefaults.rsid_notify_only) {
+    chkRSidAutoDisable->value(0);
+    chkRSidAutoDisable->deactivate();
+}
+else
+    chkRSidAutoDisable->activate();
 progdefaults.changed = true;
 }
 
@@ -1952,6 +1958,13 @@ Fl_Check_Button *chkRSidMark=(Fl_Check_Button *)0;
 
 static void cb_chkRSidMark(Fl_Check_Button* o, void*) {
   progdefaults.rsid_mark = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *chkRSidAutoDisable=(Fl_Check_Button *)0;
+
+static void cb_chkRSidAutoDisable(Fl_Check_Button* o, void*) {
+  progdefaults.rsid_auto_disable = o->value();
 progdefaults.changed = true;
 }
 
@@ -4272,7 +4285,7 @@ ll with your audio device."));
           } // Fl_Value_Slider* sldrCWIDwpm
           sld->end();
         } // Fl_Group* sld
-        { Fl_Group* o = new Fl_Group(5, 218, 490, 94, _("Reed-Solomon ID"));
+        { Fl_Group* o = new Fl_Group(5, 218, 490, 120, _("Reed-Solomon ID"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
           { Fl_Check_Button* o = chkTransmitRSid = new Fl_Check_Button(15, 246, 165, 20, _("Transmit mode RSID"));
@@ -4300,6 +4313,14 @@ d frequency"));
             chkRSidMark->callback((Fl_Callback*)cb_chkRSidMark);
             chkRSidMark->value(progdefaults.rsid_mark);
           } // Fl_Check_Button* chkRSidMark
+          { chkRSidAutoDisable = new Fl_Check_Button(15, 306, 200, 20, _("Reception disables detector"));
+            chkRSidAutoDisable->tooltip(_("Disable further detection when RSID is received"));
+            chkRSidAutoDisable->down_box(FL_DOWN_BOX);
+            chkRSidAutoDisable->callback((Fl_Callback*)cb_chkRSidAutoDisable);
+            if (progdefaults.rsid_notify_only) progdefaults.rsid_auto_disable = false;
+            chkRSidAutoDisable->value(progdefaults.rsid_auto_disable);
+            if (progdefaults.rsid_notify_only) chkRSidAutoDisable->deactivate();
+          } // Fl_Check_Button* chkRSidAutoDisable
           o->end();
         } // Fl_Group* o
         tabID->end();

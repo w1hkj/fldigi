@@ -81,7 +81,7 @@ SoundBase::SoundBase()
         : sample_frequency(0),
 	  txppm(progdefaults.TX_corr), rxppm(progdefaults.RX_corr),
           tx_src_state(0), rx_src_state(0),
-          wrt_buffer(new double [SND_BUF_LEN]),
+          wrt_buffer(new double[SND_BUF_LEN]),
 #if USE_SNDFILE
           ofCapture(0), ifPlayback(0), ofGenerate(0),
 #endif
@@ -129,7 +129,7 @@ void SoundBase::get_file_params(const char* def_fname, const char** fname, int* 
 		*format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
 		break;
 	case 1:
-		*format = SF_FORMAT_AU | SF_FORMAT_DOUBLE | SF_ENDIAN_CPU;
+		*format = SF_FORMAT_AU | SF_FORMAT_FLOAT | SF_ENDIAN_CPU;
 		break;
 	case 2:
 		*format = SF_FORMAT_FLAC | SF_FORMAT_PCM_16;
@@ -231,13 +231,13 @@ int SoundBase::Generate(bool val)
 	return 1;
 }
 
-sf_count_t SoundBase::read_file(SNDFILE* file, double* buf, size_t count)
+sf_count_t SoundBase::read_file(SNDFILE* file, float* buf, size_t count)
 {
-	sf_count_t r = sf_readf_double(file, buf, count);
+	sf_count_t r = sf_readf_float(file, buf, count);
 
 	while (r < (sf_count_t)count) {
 		sf_seek(file, 0, SEEK_SET);
-		r += sf_readf_double(file, buf + r, count - r);
+		r += sf_readf_float(file, buf + r, count - r);
                 if (r == 0)
                         break;
         }
@@ -245,16 +245,33 @@ sf_count_t SoundBase::read_file(SNDFILE* file, double* buf, size_t count)
 	return r;
 }
 
+#define WRITE_FILE(type_, file_, buf_, count_)					\
+	if (capture || !progdefaults.EnableMixer)				\
+		return sf_writef_ ## type_(file, buf, count);			\
+	/* generated audio; apply transmit mixer level */			\
+	size_t nw = count;							\
+	type_* wrtbuf = (type_*)wrt_buffer;					\
+	for (size_t n = MIN(SND_BUF_LEN, count); count; count -= n) {		\
+		for (size_t i = 0; i < n; i++)					\
+			wrtbuf[i] = buf[i] * progStatus.XmtMixer;		\
+		if (sf_writef_ ## type_(file, wrtbuf, n) != n) {		\
+			LOG_ERROR("sf_write error: %s", sf_strerror(file));	\
+			break;							\
+		}								\
+	}									\
+	return nw - count
+
+
+sf_count_t SoundBase::write_file(SNDFILE* file, float* buf, size_t count)
+{
+	WRITE_FILE(float, file, buf, count);
+}
+
 sf_count_t SoundBase::write_file(SNDFILE* file, double* buf, size_t count)
 {
-	if (capture || !progdefaults.EnableMixer)
-		return sf_writef_double(file, buf, count);
-	else {
-		for (size_t n = 0; n < count; n++)
-			wrt_buffer[n] = buf[n] * progStatus.XmtMixer;
-		return sf_write_double(file, wrt_buffer, count);
-	}
+	WRITE_FILE(double, file, buf, count);
 }
+
 
 bool SoundBase::format_supported(int format)
 {
@@ -298,7 +315,7 @@ void SoundBase::tag_file(SNDFILE *sndfile, const char *title)
 
 #if USE_OSS
 
-#define MAXSC 32767.0
+#define MAXSC 32767.0f
 #define maxsc 32000.0
 
 SoundOSS::SoundOSS(const char *dev ) {
@@ -505,7 +522,7 @@ bool SoundOSS::reset_device()
 	return 1; /* sounddevice has been reset */
 }
 
-size_t SoundOSS::Read(double *buffer, size_t buffersize)
+size_t SoundOSS::Read(float *buffer, size_t buffersize)
 {
 	short int *ibuff = (short int *)cbuff;
 	int numread;
@@ -952,7 +969,7 @@ void SoundPort::Abort(unsigned dir)
         } while (0)
 
 
-size_t SoundPort::Read(double *buf, size_t count)
+size_t SoundPort::Read(float *buf, size_t count)
 {
 #if USE_SNDFILE
         if (playback) {
@@ -1018,9 +1035,13 @@ size_t SoundPort::Read(double *buf, size_t count)
 		sd[0].advance = 0;
 	}
 
-	// convert to double
-	for (size_t i = 0; i < count; i++)
-		buf[i] = rbuf[sd[0].params.channelCount * i];
+	if (sd[0].params.channelCount == 1)
+		memcpy(buf, rbuf, count * sizeof(float));
+	else {
+		// write first channel
+		for (size_t i = 0; i < count; i++)
+			buf[i] = rbuf[sd[0].params.channelCount * i];
+	}
 
 #if USE_SNDFILE
 	if (capture)
@@ -1719,7 +1740,7 @@ long SoundPulse::src_read_cb(void* arg, float** data)
 	return p->sd[0].blocksize;
 }
 
-size_t SoundPulse::Read(double *buf, size_t count)
+size_t SoundPulse::Read(float *buf, size_t count)
 {
 #if USE_SNDFILE
 	if (playback) {
@@ -1744,19 +1765,16 @@ size_t SoundPulse::Read(double *buf, size_t count)
 		size_t n = 0;
 		sd[0].blocksize = SCBLOCKSIZE;
 		while (n < count) {
-			if ((r = src_callback_read(rx_src_state, sd[0].src_ratio, count - n, fbuf + n)) == 0)
+			if ((r = src_callback_read(rx_src_state, sd[0].src_ratio, count - n, buf + n)) == 0)
 				return n;
 			n += r;
 		}
         }
 	else {
 		int err;
-		if (pa_simple_read(sd[0].stream, fbuf, sizeof(float) * count, &err) == -1)
+		if (pa_simple_read(sd[0].stream, buf, sizeof(float) * count, &err) == -1)
 			throw SndPulseException(err);
 	}
-
-	for (size_t i = 0; i < count; i++)
-                buf[i] = fbuf[i];
 
 #if USE_SNDFILE
 	if (capture)
@@ -1815,7 +1833,7 @@ size_t SoundNull::Write_stereo(double* bufleft, double* bufright, size_t count)
 	return count;
 }
 
-size_t SoundNull::Read(double *buf, size_t count)
+size_t SoundNull::Read(float *buf, size_t count)
 {
 #if USE_SNDFILE
 	if (playback) {

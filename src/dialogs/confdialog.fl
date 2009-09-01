@@ -82,7 +82,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {646 121 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
+    xywh {646 129 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 517 372} color 50 selection_color 50
@@ -2369,7 +2369,7 @@ progdefaults.changed = true;}
         }
         Fl_Group {} {
           label {Reed-Solomon ID} open
-          xywh {5 218 490 94} box ENGRAVED_FRAME align 21
+          xywh {5 218 490 120} box ENGRAVED_FRAME align 21
         } {
           Fl_Check_Button chkTransmitRSid {
             label {Transmit mode RSID}
@@ -2390,6 +2390,12 @@ OFF - limit search to +/- 200 Hz} xywh {215 246 270 20} down_box DOWN_BOX
             label {Notifications only}
             callback {progdefaults.rsid_notify_only = o->value();
 notify_create_rsid_event(progdefaults.rsid_notify_only);
+if (progdefaults.rsid_notify_only) {
+    chkRSidAutoDisable->value(0);
+    chkRSidAutoDisable->deactivate();
+}
+else
+    chkRSidAutoDisable->activate();
 progdefaults.changed = true;}
             tooltip {Check this to be notified when an RSID is received
 without changing modem and frequency} xywh {15 276 155 20} down_box DOWN_BOX
@@ -2402,6 +2408,15 @@ progdefaults.changed = true;}
             tooltip {Insert RX text marker before
 changing frequency and modem} xywh {215 276 270 20} down_box DOWN_BOX
             code0 {chkRSidMark->value(progdefaults.rsid_mark);}
+          }
+          Fl_Check_Button chkRSidAutoDisable {
+            label {Reception disables detector}
+            callback {progdefaults.rsid_auto_disable = o->value();
+progdefaults.changed = true;}
+            tooltip {Disable further detection when RSID is received} xywh {15 306 200 20} down_box DOWN_BOX
+            code0 {if (progdefaults.rsid_notify_only) progdefaults.rsid_auto_disable = false;}
+            code1 {chkRSidAutoDisable->value(progdefaults.rsid_auto_disable);}
+            code2 {if (progdefaults.rsid_notify_only) chkRSidAutoDisable->deactivate();}
           }
         }
       }

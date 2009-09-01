@@ -1246,21 +1246,9 @@ void cbTune(Fl_Widget *w, void *) {
 	restoreFocus();
 }
 
-void cbRSID(Fl_Widget *w, void *) {
-	if (trx_state == STATE_TX || trx_state == STATE_TUNE) {
-		btnRSID->value(0);
-		return;
-	}
-	if (progdefaults.rsid == true) {
-		progdefaults.rsid = false;
-		wf->xmtrcv->activate();
-		btnTune->activate();
-	} else {
-		ReedSolomon->reset();
-		progdefaults.rsid = true;
-		wf->xmtrcv->deactivate();
-		btnTune->deactivate();
-	}
+void cbRSID(Fl_Widget *w, void *)
+{
+	progdefaults.rsid = btnRSID->value();
 	restoreFocus();
 }
 
@@ -3410,7 +3398,6 @@ void setReverse(int rev) {
 
 void start_tx()
 {
-	if (progdefaults.rsid == true) return;
 	trx_transmit();
 	REQ(&waterfall::set_XmtRcvBtn, wf, true);
 }
