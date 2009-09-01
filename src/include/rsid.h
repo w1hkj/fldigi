@@ -58,6 +58,7 @@
 #define RSID_RESOL       2
 #define RSID_NTIMES      (RSID_NSYMBOLS * RSID_RESOL)
 #define RSID_HASH_LEN    256
+#define RSID_PRECISION   2.7 // detected frequency precision in Hz
 
 // each rsid symbol has a duration equal to 1024 samples at 11025 Hz smpl rate
 #define RSID_SYMLEN		(1024.0 / RSID_SAMPLE_RATE) // 0.09288 // duration of each rsid symbol

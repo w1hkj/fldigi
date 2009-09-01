@@ -31,6 +31,7 @@
 #include <algorithm>
 #include <cstring>
 #include <cctype>
+#include <cstdlib>
 
 #if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)
 #  define MAP_TYPE std::tr1::unordered_map
@@ -82,6 +83,7 @@ namespace __gnu_cxx {
 #include "waterfall.h"
 #include "globals.h"
 #include "trx.h"
+#include "rsid.h"
 #include "gettext.h"
 #include "notifydialog.h"
 #include "notify.h"
@@ -114,6 +116,7 @@ struct notify_dup_t
 	time_t when;
 	band_t band;
 	trx_mode mode;
+	long long freq;
 };
 
 typedef MAP_TYPE<string, notify_dup_t> notify_seen_t;
@@ -220,7 +223,7 @@ static event_regex_t event_regex[] = {
 	{ "<MYCALL>.+de[[:space:]]+(<CALLSIGN_RE>)", 1 },
 	{ PSKREP_RE, PSKREP_RE_INDEX },
 	{ "", 0 },
-	{ "", 0 }
+	{ "", 1 }
 };
 
 static const char* default_alert_text[] = {
@@ -335,10 +338,11 @@ void notify_change_callsign(void)
 void notify_rsid(trx_mode mode, int afreq)
 {
 	const char* mode_name = mode_info[mode].name;
-	regmatch_t sub = { 0, strlen(mode_name) };
+	regmatch_t sub[2] = { { 0, strlen(mode_name) } };
+	sub[1] = sub[0];
 	for (notify_list_t::iterator i = notify_list.begin(); i != notify_list.end(); ++i)
 		if (i->event == NOTIFY_EVENT_RSID)
-			notify_recv(mode, afreq, mode_name, &sub, 1, &*i);
+			notify_recv(mode, afreq, mode_name, sub, 2, &*i);
 }
 
 // called by the config dialog when the "notifications only"
@@ -353,7 +357,7 @@ void notify_create_rsid_event(bool val)
 
 	notify_t rsid_event = {
 		NOTIFY_EVENT_RSID, 0, "", true, 0, NUM_MODES, NULL, NULL, 0,
-		{ 0, NUM_BANDS, NUM_MODES }, false, 0
+		{ 0, NUM_BANDS, NUM_MODES, 0LL }, false, 0
 	};
 	notify_action_t rsid_action = { default_alert_text[NOTIFY_EVENT_RSID], "", "", "", 30, 1 };
 	rsid_event.action = rsid_action;
@@ -887,7 +891,8 @@ static void notify_notify(const notify_t& n)
 }
 
 // return true if the event n is a dup
-static bool notify_is_dup(notify_t& n, const char* str, const regmatch_t* sub, size_t len, time_t now)
+static bool notify_is_dup(notify_t& n, const char* str, const regmatch_t* sub, size_t len,
+			  time_t now, int afreq, trx_mode mode)
 {
 	if (!n.dup_ignore)
 		return false;
@@ -899,15 +904,27 @@ static bool notify_is_dup(notify_t& n, const char* str, const regmatch_t* sub, s
 	const regmatch_t& subidx = sub[n.dup_ref];
 	string dupstr(subidx.rm_eo - subidx.rm_so, '\0');
 	transform(str + subidx.rm_so, str + subidx.rm_eo, dupstr.begin(), static_cast<int (*)(int)>(toupper));
-	notify_dup_t dup = { now, band(wf->rfcarrier()), n.mode };
+
+	notify_dup_t cur = { now, band(wf->rfcarrier()), mode };
+	if (n.event == NOTIFY_EVENT_RSID)
+		cur.freq = wf->rfcarrier() + (wf->USB() ? afreq : -afreq);
+
 	notify_seen_t::iterator i;
-	if ((i = n.last_seen.find(dupstr)) != n.last_seen.end() &&
-	    (dup.when - i->second.when < n.dup.when ||
-	     (n.dup.band && dup.band == i->second.band) ||
-	     (n.dup.mode && dup.mode == i->second.mode))) // duplicate
+	bool is_dup = false;
+	if ((i = n.last_seen.find(dupstr)) != n.last_seen.end()) {
+		const notify_dup_t& prev = i->second;
+		is_dup = (cur.when - prev.when < n.dup.when);
+		if (n.event == NOTIFY_EVENT_RSID)
+			is_dup = is_dup && llabs(cur.freq - prev.freq) <= ceil(RSID_PRECISION);
+		if (n.dup.band)
+			is_dup = is_dup && cur.band == prev.band;
+		if (n.dup.mode)
+			is_dup = is_dup && cur.mode == prev.mode;
+	}
+	if (is_dup)
 		return true;
 
-	n.last_seen[dupstr] = dup;
+	n.last_seen[dupstr] = cur;
 
 	if (n.last_seen.size() > 1) { // remove old data
 		for (i = n.last_seen.begin(); i != n.last_seen.end();) {
@@ -978,9 +995,7 @@ static void notify_recv(trx_mode mode, int afreq, const char* str, const regmatc
 		break;
 	}
 
-	// dup handling only for non-RSID notifications
-	bool dup = (n->event == NOTIFY_EVENT_RSID ? false : notify_is_dup(*n, str, sub, len, now));
-	if (!dup) {
+	if (!notify_is_dup(*n, str, sub, len, now, afreq, mode)) {
 		n->last_trigger = now;
 		n->afreq = afreq;
 		n->mode = mode;
@@ -1143,7 +1158,9 @@ static void notify_event_cb(Fl_Widget* w, void* arg)
 	notify_event_t e = static_cast<notify_event_t>(reinterpret_cast<Fl_Choice*>(w)->value());
 	switch (e) {
 	case NOTIFY_EVENT_MYCALL:
-		grpNotifyDup->activate();
+		mnuNotifyDupWhich->activate();
+		chkNotifyDupBand->activate();
+		chkNotifyDupMode->activate();
 		grpNotifyFilter->deactivate();
 		chkNotifyFilterCall->value(0);
 		inpNotifyFilterCall->hide();
@@ -1157,7 +1174,9 @@ static void notify_event_cb(Fl_Widget* w, void* arg)
 		btnNotifyActionDialogDefault->show();
 		break;
 	case NOTIFY_EVENT_STATION:
-		grpNotifyDup->activate();
+		mnuNotifyDupWhich->activate();
+		chkNotifyDupBand->activate();
+		chkNotifyDupMode->activate();
 		grpNotifyFilter->activate();
 		if (!chkNotifyFilterCall->value() && !chkNotifyFilterDXCC->value()) {
 			chkNotifyFilterCall->value(1);
@@ -1168,7 +1187,9 @@ static void notify_event_cb(Fl_Widget* w, void* arg)
 		btnNotifyActionDialogDefault->show();
 		break;
 	case NOTIFY_EVENT_CUSTOM:
-		grpNotifyDup->activate();
+		mnuNotifyDupWhich->activate();
+		chkNotifyDupBand->activate();
+		chkNotifyDupMode->activate();
 		grpNotifyFilter->deactivate();
 		chkNotifyFilterCall->value(0);
 		inpNotifyFilterCall->hide();
@@ -1188,10 +1209,15 @@ static void notify_event_cb(Fl_Widget* w, void* arg)
 		chkNotifyFilterNWB->value(0);
 		chkNotifyFilterLOTW->value(0);
 		chkNotifyFilterEQSL->value(0);
-		// no dup handling
-		chkNotifyDupIgnore->value(0);
-		chkNotifyDupIgnore->do_callback();
-		grpNotifyDup->deactivate();
+		inpNotifyRE->value(0);
+		inpNotifyRE->hide();
+		btnNotifyActionDialogDefault->show();
+		// limited dup handling
+		mnuNotifyDupWhich->deactivate();
+		chkNotifyDupBand->value(0);
+		chkNotifyDupBand->deactivate();
+		chkNotifyDupMode->value(1);
+		chkNotifyDupMode->deactivate();
 		break;
 	}
 
@@ -1223,9 +1249,10 @@ static void notify_test_cb(Fl_Widget* w, void* arg)
 
 	if (notify_tmp.event == NOTIFY_EVENT_RSID) {
 		notify_tmp.mode = active_modem->get_mode();
-		regmatch_t sub = { 0, strlen(mode_info[notify_tmp.mode].name) };
+		regmatch_t sub[2] = { { 0, strlen(mode_info[notify_tmp.mode].name) } };
+		sub[1] = sub[0];
 		notify_recv(notify_tmp.mode, active_modem->get_freq(),
-			    mode_info[notify_tmp.mode].name, &sub, 1, &notify_tmp);
+			    mode_info[notify_tmp.mode].name, sub, 2, &notify_tmp);
 		return;
 	}
 
@@ -1350,20 +1377,21 @@ static void notify_set_event_dup(const notify_t& n)
 		notify_dup_refs_menu[i].hide();
 
 	switch (n.event) {
-	case NOTIFY_EVENT_MYCALL: case NOTIFY_EVENT_STATION:
+	case NOTIFY_EVENT_MYCALL: case NOTIFY_EVENT_STATION: case NOTIFY_EVENT_RSID:
 		i = event_regex[n.event].index;
 		mnuNotifyDupWhich->menu(notify_dup_callsign_menu);
 		for (size_t j = 0; j < sizeof(notify_dup_callsign_menu)/sizeof(*notify_dup_callsign_menu) - 1; j++)
 			notify_dup_callsign_menu[j].hide();
 		notify_dup_callsign_menu[i].show();
-		notify_dup_callsign_menu[i].label(_("Callsign"));
+		if (n.event == NOTIFY_EVENT_RSID)
+			notify_dup_callsign_menu[i].label(_("Frequency"));
+		else
+			notify_dup_callsign_menu[i].label(_("Callsign"));
 		mnuNotifyDupWhich->value(i);
 		break;
 	case NOTIFY_EVENT_CUSTOM:
 		mnuNotifyDupWhich->menu(notify_dup_refs_menu);
 		notify_set_event_dup_menu(notify_get_re(n).c_str());
-		break;
-	case NOTIFY_EVENT_RSID:
 		break;
 	}
 }
