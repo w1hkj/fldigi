@@ -786,13 +786,10 @@ struct replace_refs
 		}
 		// replace \X refs with regex substrings
 		strcpy(buf, "\\0");
-		for (size_t i = 0; i < n.submatch_length; i++, buf[1]++) {
-			p = edit.find(buf);
-			if (p == string::npos)
-				continue;
-			edit.replace(p, 2, n.match_string + n.submatch_offsets[i].rm_so,
-				     n.submatch_offsets[i].rm_eo - n.submatch_offsets[i].rm_so);
-		}
+		for (size_t i = 0; i < n.submatch_length; i++, buf[1]++)
+			for (p = 0; (p = edit.find(buf, p)) != string::npos; p = 0)
+				edit.replace(p, 2, n.match_string + n.submatch_offsets[i].rm_so,
+					     n.submatch_offsets[i].rm_eo - n.submatch_offsets[i].rm_so);
 	}
 };
 
