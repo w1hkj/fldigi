@@ -46,7 +46,7 @@
 #endif
 
 qrunner::qrunner()
-        : attached(false), drop_flag(false)
+        : attached(false), inprog(false), drop_flag(false)
 {
         fifo = new fqueue(FIFO_SIZE);
 #ifndef __WOE32__
@@ -89,16 +89,24 @@ void qrunner::execute(int fd, void *arg)
 {
         qrunner *qr = reinterpret_cast<qrunner *>(arg);
 
-	switch (QRUNNER_READ(fd, rbuf, FIFO_SIZE)) {
+	if (qr->inprog)
+		return;
+	qr->inprog = true;
+
+	size_t n = QRUNNER_READ(fd, rbuf, FIFO_SIZE);
+	switch (n) {
 	case -1:
 		if (!QRUNNER_EAGAIN())
 			throw qexception(errno);
 		// else fall through
 	case 0:
-		return;
+		break;
 	default:
-		while (qr->fifo->execute());
+		while (n--)
+			qr->fifo->execute();
 	}
+
+	qr->inprog = false;
 }
 
 void qrunner::flush(void)
