@@ -483,7 +483,7 @@ int configuration::setDefaults()
 	selHellFont->value(feldfontnbr);
 	btnFeldHellIdle->value(HellXmtIdle);
 			
-	chkTransmitRSid->value(TransmitRSid);
+	btnTxRSID->value(TransmitRSid);
 	chkRSidWideSearch->value(rsidWideSearch);
 	chkSlowCpu->value(slowcpu);
 	

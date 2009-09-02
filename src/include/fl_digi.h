@@ -99,14 +99,15 @@ extern Fl_Value_Slider		*valRcvMixer;
 extern Fl_Value_Slider		*valXmtMixer;
 extern Fl_Button		*btnAFC;
 extern Fl_Button		*btnSQL;
-extern Fl_Light_Button  *btnRSID;
-extern Fl_Light_Button  *btnTune;
+extern Fl_Light_Button		*btnRSID;
+extern Fl_Light_Button		*btnTxRSID;
+extern Fl_Light_Button		*btnTune;
 
 extern Fl_Button		*btnAltMacros;
 extern Fl_Button		*btnMacroTimer;
 
-extern bool				useCheckButtons;
-extern int				altMacros;
+extern bool			useCheckButtons;
+extern int			altMacros;
 
 extern waterfall		*wf;
 extern Digiscope		*digiscope;

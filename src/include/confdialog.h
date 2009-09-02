@@ -291,7 +291,6 @@ extern Fl_Check_Button *chkRSidWideSearch;
 extern Fl_Check_Button *chkRSidMark;
 extern Fl_Check_Button *chkRSidAutoDisable;
 extern Fl_Check_Button *chkRSidNotifyOnly;
-extern Fl_Check_Button *chkTransmitRSid;
 extern Fl_Check_Button *chkRSidPost;
 extern Fl_Group *tabMisc;
 extern Fl_Tabs *tabsMisc;

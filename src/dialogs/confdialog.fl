@@ -2368,8 +2368,8 @@ progdefaults.changed = true;}
           }
         }
         Fl_Group {} {
-          label {Reed-Solomon ID} open
-          xywh {5 218 490 120} box ENGRAVED_FRAME align 21
+          label {Reed-Solomon ID Rx} open
+          xywh {5 218 295 120} box ENGRAVED_FRAME align 21
         } {
           Fl_Check_Button chkRSidWideSearch {
             label {Detector searches entire passband}
@@ -2411,18 +2411,16 @@ progdefaults.changed = true;}
 without changing modem and frequency} xywh {18 310 155 20} down_box DOWN_BOX
             code0 {chkRSidNotifyOnly->value(progdefaults.rsid_notify_only);}
           }
-          Fl_Check_Button chkTransmitRSid {
-            label {Transmit RSID}
-            callback {progdefaults.TransmitRSid = o->value();
-progdefaults.changed = true;}
-            tooltip {RSID at beginning of transmission} xywh {313 240 165 20} down_box DOWN_BOX
-            code0 {o->value(progdefaults.TransmitRSid);}
-          }
+        }
+        Fl_Group {} {
+          label {RSID Tx} open
+          xywh {300 218 195 120} box ENGRAVED_FRAME align 21
+        } {
           Fl_Check_Button chkRSidPost {
             label {Add eot RSID}
             callback {progdefaults.rsid_post = o->value();
 progdefaults.changed = true;}
-            tooltip {Add RSID at end of transmission} xywh {314 268 129 15} down_box DOWN_BOX
+            tooltip {Add RSID at end of transmission} xywh {315 239 129 21} down_box DOWN_BOX
             code0 {o->value(progdefaults.rsid_post);}
           }
         }

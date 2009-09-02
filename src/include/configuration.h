@@ -55,6 +55,9 @@
         ELEM_(bool, rsid_auto_disable, "RSIDAUTODISABLE",                               \
               "Disable RSID detection when changing modem and/or frequency",            \
               true)                                                                     \
+        ELEM_(bool, rsid_post, "RSIDPOST",                                              \
+              "Transmit an RSID signal when modem data is concluded",                   \
+              false)                                                                    \
                                                                                         \
         ELEM_(bool, slowcpu, "SLOWCPU",                                                 \
               "Disable expensive processing in some decoders",                          \

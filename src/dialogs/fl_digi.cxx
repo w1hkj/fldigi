@@ -149,6 +149,7 @@ Fl_Menu_Bar 		*mnu;
 Fl_Light_Button		*btnAutoSpot = (Fl_Light_Button *)0;
 Fl_Light_Button		*btnTune = (Fl_Light_Button *)0;
 Fl_Light_Button		*btnRSID = (Fl_Light_Button *)0;
+Fl_Light_Button		*btnTxRSID = (Fl_Light_Button *)0;
 Fl_Button		    *btnMacroTimer;
 
 Fl_Tile_Check			*TiledGroup = 0;
@@ -222,8 +223,8 @@ Fl_Value_Slider			*valXmtMixer;
 #define FREQHEIGHT 30
 #define BTNWIDTH 30
 int pad = 1;
-int x_qsoframe = BTNWIDTH;	
-			
+int x_qsoframe = BTNWIDTH;
+
 int w_inpFreq	= 80;
 int w_inpTime	= 40;
 int w_inpCall	= 120;
@@ -231,7 +232,7 @@ int w_inpName  	= 90;
 int w_inpRstIn	= 30;
 int w_inpRstOut = 30;
 int w_SerNo	= 40;
-int wf1 = pad + w_inpFreq + pad + 2*w_inpTime +  pad + w_inpCall + 
+int wf1 = pad + w_inpFreq + pad + 2*w_inpTime +  pad + w_inpCall +
           pad + w_inpName + pad + w_inpRstIn + pad + w_inpRstOut + pad;
 
 int w_fm1 		= 25;
@@ -256,7 +257,7 @@ int rig_control_width = FREQWIDTH + 4;
 int IMAGE_WIDTH;
 int Hwfall;
 int HNOM;
-// WNOM must be large enough to contain ALL of the horizontal widgets 
+// WNOM must be large enough to contain ALL of the horizontal widgets
 // when the main dialog is initially created.
 int WNOM = 650;//progStatus.mainW ? progStatus.mainW : WMIN;
 int Wwfall;
@@ -447,7 +448,7 @@ void cb_oliviaCustom(Fl_Widget *w, void *arg)
 	tabsConfigure->value(tabModems);
 	tabsModems->value(modem_config_tab);
 	dlgConfig->show();
-	cb_init_mode(w, arg);	
+	cb_init_mode(w, arg);
 }
 
 void set_rtty_tab_widgets()
@@ -467,7 +468,7 @@ void cb_rtty45(Fl_Widget *w, void *arg)
 	progdefaults.rtty_bits = 0;
 	progdefaults.rtty_shift = 3;
 	set_rtty_tab_widgets();
-	cb_init_mode(w, arg);	
+	cb_init_mode(w, arg);
 }
 
 void cb_rtty50(Fl_Widget *w, void *arg)
@@ -476,7 +477,7 @@ void cb_rtty50(Fl_Widget *w, void *arg)
 	progdefaults.rtty_bits = 0;
 	progdefaults.rtty_shift = 3;
 	set_rtty_tab_widgets();
-	cb_init_mode(w, arg);	
+	cb_init_mode(w, arg);
 }
 
 void cb_rtty75(Fl_Widget *w, void *arg)
@@ -485,7 +486,7 @@ void cb_rtty75(Fl_Widget *w, void *arg)
 	progdefaults.rtty_bits = 0;
 	progdefaults.rtty_shift = 9;
 	set_rtty_tab_widgets();
-	cb_init_mode(w, arg);	
+	cb_init_mode(w, arg);
 }
 
 void cb_rttyCustom(Fl_Widget *w, void *arg)
@@ -626,7 +627,7 @@ void init_modem(trx_mode mode)
 		break;
 
 	case MODE_THOR4: case MODE_THOR5: case MODE_THOR8:
-	case MODE_THOR11:case MODE_THOR16: case MODE_THOR22: 
+	case MODE_THOR11:case MODE_THOR16: case MODE_THOR22:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new thor(mode));
 		quick_change = quick_change_thor;
@@ -644,9 +645,9 @@ void init_modem(trx_mode mode)
 	case MODE_FELDHELL:
 	case MODE_SLOWHELL:
 	case MODE_HELLX5:
-	case MODE_HELLX9: 
-	case MODE_FSKHELL: 
-	case MODE_FSKH105: 
+	case MODE_HELLX9:
+	case MODE_FSKHELL:
+	case MODE_FSKH105:
 	case MODE_HELL80:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new feld(mode));
@@ -655,12 +656,12 @@ void init_modem(trx_mode mode)
 		break;
 
 	case MODE_MFSK4:
-	case MODE_MFSK11: 
+	case MODE_MFSK11:
 	case MODE_MFSK22:
 	case MODE_MFSK31:
 	case MODE_MFSK64:
-	case MODE_MFSK8: 
-	case MODE_MFSK16: 
+	case MODE_MFSK8:
+	case MODE_MFSK16:
 	case MODE_MFSK32:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new mfsk(mode));
@@ -729,12 +730,12 @@ void init_modem(trx_mode mode)
 
 	clear_StatusMessages();
 	progStatus.lastmode = mode;
-	
+
 	if (wf->xmtlock->value() == 1 && !mailserver) {
 		wf->xmtlock->value(0);
 		wf->xmtlock->damage();
 		active_modem->set_freqlock(false);
-	}		
+	}
 }
 
 void init_modem_sync(trx_mode m)
@@ -781,23 +782,23 @@ void macro_cb(Fl_Widget *w, void *v)
 	restoreFocus();
 }
 
-void colorize_macro(int i) 
+void colorize_macro(int i)
 {
 	if (progdefaults.useGroupColors == true) {
 		if (i < NUMKEYROWS){
 			btnMacro[i]->color(fl_rgb_color(
-				progdefaults.btnGroup1.R, 
-				progdefaults.btnGroup1.G, 
+				progdefaults.btnGroup1.R,
+				progdefaults.btnGroup1.G,
 				progdefaults.btnGroup1.B));
 		} else if (i < 8) {
 			btnMacro[i]->color(fl_rgb_color(
-				progdefaults.btnGroup2.R, 
-				progdefaults.btnGroup2.G, 
+				progdefaults.btnGroup2.R,
+				progdefaults.btnGroup2.G,
 				progdefaults.btnGroup2.B));
 		} else {
 			btnMacro[i]->color(fl_rgb_color(
-				progdefaults.btnGroup3.R, 
-				progdefaults.btnGroup3.G, 
+				progdefaults.btnGroup3.R,
+				progdefaults.btnGroup3.G,
 				progdefaults.btnGroup3.B));
 		}
 		btnMacro[i]->labelcolor(
@@ -1120,7 +1121,7 @@ void cb_mnuAboutURL(Fl_Widget*, void*)
 
 void fldigi_help(const string& theHelp)
 {
-	string htmlHelp = 
+	string htmlHelp =
 "<HTML>"
 "<HEAD>"
 "<TITLE>" PACKAGE " Help</TITLE>"
@@ -1143,7 +1144,7 @@ void fldigi_help(const string& theHelp)
 		} else
 			htmlHelp += theHelp[i];
 	}
-	htmlHelp += 
+	htmlHelp +=
 "</TT></P>"
 "</BODY>"
 "</HTML>";
@@ -1249,6 +1250,13 @@ void cbTune(Fl_Widget *w, void *) {
 void cbRSID(Fl_Widget *w, void *)
 {
 	progdefaults.rsid = btnRSID->value();
+	restoreFocus();
+}
+
+void cbTxRSID(Fl_Widget *w, void*)
+{
+	progdefaults.TransmitRSid = btnTxRSID->value();
+	progdefaults.changed = true;
 	restoreFocus();
 }
 
@@ -1358,7 +1366,7 @@ string new_call;
 
 void clearQSO()
 {
-	Fl_Input* in[] = { 
+	Fl_Input* in[] = {
 		inpCall, inpName, inpTimeOn, inpRstIn, inpRstOut,
 		inpQth, inpLoc, inpAZ, inpState, inpVEprov, inpCountry,
 		inpSerNo, outSerNo, inpXchgIn, inpNotes };
@@ -1416,13 +1424,13 @@ void cb_call(Fl_Widget* w, void*)
 		delete [] uc;
 	}
 	new_call = inpCall->value();
-	
+
 	if (old_call == new_call)
 		return restoreFocus(w);
-			
+
 	old_call = new_call;
 	oktoclear = false;
-	
+
 	inpTimeOn->value(inpTimeOff->value(), inpTimeOff->size());
 	sDate_on = zdate();
 	lblDup->hide();
@@ -1437,7 +1445,7 @@ void cb_call(Fl_Widget* w, void*)
 
 	if (inpAZ->value()[0])
 		return restoreFocus(w);
-		
+
 	if (!progdefaults.autofill_qso_fields)
 		return restoreFocus(w);
 	const struct dxcc* e = dxcc_lookup(inpCall->value());
@@ -1702,7 +1710,7 @@ bool clean_exit(void) {
 		delete cboHamlibRig;
 		delete dlgConfig;
 	}
-	
+
 #if USE_HAMLIB
 	if (xcvr) delete xcvr;
 #endif
@@ -1924,7 +1932,7 @@ void activate_rig_menu_item(bool b)
 	if (b) {
 		bSaveFreqList = true;
 		rig->show();
-		
+
 	} else {
 		rig->hide();
 		if (rigcontrol)
@@ -2210,16 +2218,16 @@ void create_fl_digi_main() {
 	Hwfall = progdefaults.wfheight;
 	HNOM = DEFAULT_HNOM;
 
-	if (progdefaults.docked_scope)	
+	if (progdefaults.docked_scope)
 		Wwfall = WNOM - 2 * BEZEL - Hwfall + 24;
 	else
 		Wwfall = WNOM - 2 * BEZEL - 2 * DEFAULT_SW;
-	
-    update_main_title();
-    fl_digi_main = new Fl_Double_Window(WNOM, HNOM, main_window_title.c_str());
-    
-    	mnuFrame = new Fl_Group(0,0,WNOM, Hmenu);
-			mnu = new Fl_Menu_Bar(0, 0, WNOM - 150, Hmenu);
+
+	update_main_title();
+	fl_digi_main = new Fl_Double_Window(WNOM, HNOM, main_window_title.c_str());
+
+		mnuFrame = new Fl_Group(0,0,WNOM, Hmenu);
+			mnu = new Fl_Menu_Bar(0, 0, WNOM - 250, Hmenu);
 			// do some more work on the menu
 			for (size_t i = 0; i < sizeof(menu_)/sizeof(menu_[0]); i++) {
 				// FL_NORMAL_SIZE may have changed; update the menu items
@@ -2232,27 +2240,25 @@ void create_fl_digi_main() {
 			}
 			mnu->menu(menu_);
 
-			// reset the message dialog font
-			fl_message_font(FL_HELVETICA, FL_NORMAL_SIZE);
-
-			// reset the tooltip font
-			Fl_Tooltip::font(FL_HELVETICA);
-			Fl_Tooltip::size(FL_NORMAL_SIZE);
-			Fl_Tooltip::enable(progdefaults.tooltips);
-
-			btnAutoSpot = new Fl_Light_Button(WNOM - 200 - pad, 0, 50, Hmenu, "Spot");
+			btnAutoSpot = new Fl_Light_Button(WNOM - 250 - pad, 0, 50, Hmenu, "Spot");
 			btnAutoSpot->selection_color(FL_GREEN);
 			btnAutoSpot->callback(cbAutoSpot, 0);
 			btnAutoSpot->hide();
 
-			btnRSID = new Fl_Light_Button(WNOM - 150 - pad, 0, 50, Hmenu, "RSID");
+			btnRSID = new Fl_Light_Button(WNOM - 200 - pad, 0, 50, Hmenu, "RxID");
 			btnRSID->selection_color(FL_GREEN);
+			btnRSID->tooltip("Receive RSID");
 			btnRSID->callback(cbRSID, 0);
-			
+
+			btnTxRSID = new Fl_Light_Button(WNOM - 150 - pad, 0, 50, Hmenu, "TxID");
+			btnTxRSID->selection_color(FL_RED);
+			btnTxRSID->tooltip("Transmit RSID");
+			btnTxRSID->callback(cbTxRSID, 0);
+
 			btnTune = new Fl_Light_Button(WNOM - 100 - pad, 0, 50, Hmenu, "TUNE");
 			btnTune->selection_color(FL_RED);
 			btnTune->callback(cbTune, 0);
-			
+
 			btnMacroTimer = new Fl_Button(WNOM - 50 - pad, 0, 50, Hmenu);
 			btnMacroTimer->labelcolor(FL_RED);
 			btnMacroTimer->callback(cbMacroTimerButton);
@@ -2260,7 +2266,15 @@ void create_fl_digi_main() {
 
 			mnuFrame->resizable(mnu);
 		mnuFrame->end();
-				
+
+		// reset the message dialog font
+		fl_message_font(FL_HELVETICA, FL_NORMAL_SIZE);
+
+		// reset the tooltip font
+		Fl_Tooltip::font(FL_HELVETICA);
+		Fl_Tooltip::size(FL_NORMAL_SIZE);
+		Fl_Tooltip::enable(progdefaults.tooltips);
+
 		Fl_Group *TopFrame = new Fl_Group(0, Hmenu, WNOM, Hqsoframe + Hnotes);
 
 		if (progdefaults.docked_rig_control) {
@@ -2272,7 +2286,7 @@ void create_fl_digi_main() {
 				txtRigName->align(FL_ALIGN_CENTER);
 				txtRigName->color(FL_BACKGROUND_COLOR);
 				txtRigName->label(_("No rig specified"));
-			
+
 				qsoFreqDisp = new cFreqControl(2, Hmenu + Hqsoframe - FREQHEIGHT,
 								FREQWIDTH, FREQHEIGHT, "");
 
@@ -2287,19 +2301,19 @@ void create_fl_digi_main() {
 				qsoFreqDisp->when(FL_WHEN_RELEASE);
 				qsoFreqDisp->setCallBack(qso_movFreq);
 				qsoFreqDisp->SetONOFFCOLOR(
-					fl_rgb_color(	progdefaults.FDforeground.R, 
-									progdefaults.FDforeground.G, 
+					fl_rgb_color(	progdefaults.FDforeground.R,
+									progdefaults.FDforeground.G,
 									progdefaults.FDforeground.B),
-					fl_rgb_color(	progdefaults.FDbackground.R, 
-									progdefaults.FDbackground.G, 
-									progdefaults.FDbackground.B));	
+					fl_rgb_color(	progdefaults.FDbackground.R,
+									progdefaults.FDbackground.G,
+									progdefaults.FDbackground.B));
 				qsoFreqDisp->value(145580000);
 
 				Y = Hmenu + Hqsoframe + 1;
 
 				int w_mng = BTNWIDTH;
 				int w_pmb = (FREQWIDTH - w_mng) / 2;
-			
+
 				qso_opMODE = new Fl_ComboBox(2, Hmenu + Hqsoframe + 1, w_pmb, Hnotes - 2);
 				qso_opMODE->box(FL_DOWN_BOX);
 				qso_opMODE->color(FL_BACKGROUND2_COLOR);
@@ -2334,39 +2348,39 @@ void create_fl_digi_main() {
 				qso_opPICK->callback(showOpBrowserView, 0);
 				qso_opPICK->tooltip(_("Open List"));
 			RigControlFrame->resizable(NULL);
-			
+
 			RigControlFrame->end();
 
 			int BV_h = Hqsoframe + Hnotes;
 			int opB_w = 280;
 			int qFV_w = opB_w + 2 * BTNWIDTH + 6;
-		
+
 			RigViewerFrame = new Fl_Group(rightof(RigControlFrame), Hmenu, qFV_w, BV_h);
-		
+
 				qso_btnSelFreq = new Fl_Button(
-									rightof(RigControlFrame), Hmenu + 1, 
+									rightof(RigControlFrame), Hmenu + 1,
 									20, Hnotes - 2);
 				qso_btnSelFreq->image(new Fl_Pixmap(left_arrow_icon));
 				qso_btnSelFreq->tooltip(_("Select"));
 				qso_btnSelFreq->callback((Fl_Callback*)cb_qso_btnSelFreq);
 
-   				qso_btnAddFreq = new Fl_Button(
-	 								rightof(qso_btnSelFreq) + pad, Hmenu + 1, 
-   									20, Hnotes - 2);
+				qso_btnAddFreq = new Fl_Button(
+									rightof(qso_btnSelFreq) + pad, Hmenu + 1,
+									20, Hnotes - 2);
 				qso_btnAddFreq->image(new Fl_Pixmap(plus_icon));
    				qso_btnAddFreq->tooltip(_("Add current frequency"));
 				qso_btnAddFreq->callback((Fl_Callback*)cb_qso_btnAddFreq);
 
 				qso_btnClearList = new Fl_Button(
-			   						rightof(RigControlFrame), Hmenu + qh + 1, 
-			   						20, Hnotes - 2);
+									rightof(RigControlFrame), Hmenu + qh + 1,
+									20, Hnotes - 2);
 				qso_btnClearList->image(new Fl_Pixmap(trash_icon));
 				qso_btnClearList->tooltip(_("Clear list"));
 				qso_btnClearList->callback((Fl_Callback*)cb_qso_btnClearList);
 
 				qso_btnDelFreq = new Fl_Button(
-				   					rightof(qso_btnClearList) + pad, Hmenu + qh + 1, 
-			   						20, Hnotes - 2);
+									rightof(qso_btnClearList) + pad, Hmenu + qh + 1,
+									20, Hnotes - 2);
 				qso_btnDelFreq->image(new Fl_Pixmap(minus_icon));
 				qso_btnDelFreq->tooltip(_("Delete from list"));
 				qso_btnDelFreq->callback((Fl_Callback*)cb_qso_btnDelFreq);
@@ -2390,7 +2404,7 @@ void create_fl_digi_main() {
 				qso_opBrowser->labelsize(12);
 				qso_opBrowser->textfont(4);
 				RigViewerFrame->resizable(NULL);
-			
+
 			RigViewerFrame->end();
 			RigViewerFrame->hide();
 
@@ -2403,13 +2417,13 @@ void create_fl_digi_main() {
 				btnQRZ->callback(cb_QRZ, 0);
 				btnQRZ->tooltip(_("QRZ"));
 
-				qsoClear = new Fl_Button(rightof(RigControlFrame) + pad, Hmenu + qh + 1, 
+				qsoClear = new Fl_Button(rightof(RigControlFrame) + pad, Hmenu + qh + 1,
 							BTNWIDTH - 2*pad, qh - pad);
 	 			qsoClear->image(new Fl_Pixmap(edit_clear_icon));
 				qsoClear->callback(qsoClear_cb, 0);
 				qsoClear->tooltip(_("Clear"));
- 
-				qsoSave = new Fl_Button(rightof(RigControlFrame) + pad, Hmenu + Hqsoframe + 1, 
+
+				qsoSave = new Fl_Button(rightof(RigControlFrame) + pad, Hmenu + Hqsoframe + 1,
 							BTNWIDTH - 2*pad, qh - pad);
 	 			qsoSave->image(new Fl_Pixmap(save_icon));
 				qsoSave->callback(qsoSave_cb, 0);
@@ -2425,28 +2439,28 @@ void create_fl_digi_main() {
 				btnQRZ->callback(cb_QRZ, 0);
 				btnQRZ->tooltip(_("QRZ"));
 
-				qsoClear = new Fl_Button(pad, Hmenu + qh + 1, 
+				qsoClear = new Fl_Button(pad, Hmenu + qh + 1,
 							BTNWIDTH - 2*pad, qh - pad);
 	 			qsoClear->image(new Fl_Pixmap(edit_clear_icon));
 				qsoClear->callback(qsoClear_cb, 0);
 				qsoClear->tooltip(_("Clear"));
- 
-				qsoSave = new Fl_Button(pad, Hmenu + Hqsoframe + 1, 
+
+				qsoSave = new Fl_Button(pad, Hmenu + Hqsoframe + 1,
 							BTNWIDTH - 2*pad, qh - pad);
 	 			qsoSave->image(new Fl_Pixmap(save_icon));
 				qsoSave->callback(qsoSave_cb, 0);
 				qsoSave->tooltip(_("Save"));
 			QsoButtonFrame->end();
 		}
-					
+
 		int y2 = Hmenu + qh + 1;
 		int y3 = Hmenu + Hqsoframe + 1;
 
-		QsoInfoFrame = new Fl_Group(x_qsoframe, Hmenu, 
+		QsoInfoFrame = new Fl_Group(x_qsoframe, Hmenu,
 						WNOM - rightof(QsoButtonFrame) - pad, Hqsoframe + Hnotes);
 
 			QsoInfoFrame1 = new Fl_Group(x_qsoframe, Hmenu, wf1, Hqsoframe + Hnotes);
-				
+
 				inpFreq = new Fl_Input2(x_qsoframe + pad, y2, w_inpFreq, qh - pad, _("QSO Freq"));
 				inpFreq->type(FL_NORMAL_OUTPUT);
 				inpFreq->tooltip("");
@@ -2456,7 +2470,7 @@ void create_fl_digi_main() {
 				inpTimeOn->tooltip("");
 				inpTimeOn->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 				inpTimeOn->type(FL_INT_INPUT);
-				
+
 				btnTimeOn = new Fl_Button(leftof(inpTimeOn), Hmenu + pad, w_inpTime, qh, _("On"));
 				btnTimeOn->align(FL_ALIGN_LEFT | FL_ALIGN_BOTTOM | FL_ALIGN_INSIDE);
 				btnTimeOn->tooltip(_("Press to update"));
@@ -2475,7 +2489,7 @@ void create_fl_digi_main() {
 				inpName = new Fl_Input2(rightof(inpCall) + pad, y2, w_inpName, qh - pad, _("Name"));
 				inpName->tooltip("");
 				inpName->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-			
+
 				inpRstIn = new Fl_Input2(rightof(inpName) + pad, y2, w_inpRstIn, qh - pad, _("In"));
 				inpRstIn->tooltip("");
 				inpRstIn->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
@@ -2483,18 +2497,18 @@ void create_fl_digi_main() {
 				inpRstOut = new Fl_Input2(rightof(inpRstIn) + pad, y2, w_inpRstOut, qh - pad, _("Out"));
 				inpRstOut->tooltip("");
 				inpRstOut->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-				
+
 				lblDup = new Fl_Box(rightof(inpCall) - w_inpCall/2 - 40, Hmenu + 1, 80, qh - pad, _("*** DUP ***"));
 				lblDup->labelcolor(FL_RED);
 				lblDup->hide();
-						
-				QsoInfoFrame1A = new Fl_Group (x_qsoframe, y3 - 1, wf1, Hnotes); 
+
+				QsoInfoFrame1A = new Fl_Group (x_qsoframe, y3 - 1, wf1, Hnotes);
 					Fl_Box *fm1box = new Fl_Box(x_qsoframe, y3, w_fm1, qh - pad, _("QTH"));
 					fm1box->align(FL_ALIGN_INSIDE);
 					inpQth = new Fl_Input2( rightof(fm1box), y3, w_inpQth, qh - pad, "");
 					inpQth->tooltip(_("City"));
 					inpQth->align(FL_ALIGN_INSIDE);
-					
+
 					Fl_Box *fm2box = new Fl_Box(rightof(inpQth), y3, w_fm2, qh - pad, _("St"));
 					fm2box->align(FL_ALIGN_INSIDE);
 					inpState = new Fl_Input2(rightof(fm2box), y3, w_inpState, qh - pad, "");
@@ -2512,7 +2526,7 @@ void create_fl_digi_main() {
 					inpCountry = new Fl_Input2(rightof(fm11box), y3, w_inpCountry, qh - pad, "");
 					inpCountry->tooltip(_("Country"));
 					inpCountry->align(FL_ALIGN_INSIDE);
-					
+
 					Fl_Box *fm4box = new Fl_Box(rightof(inpCountry), y3, w_fm4, qh - pad, _("Loc"));
 					fm4box->align(FL_ALIGN_INSIDE);
 					inpLoc = new Fl_Input2(rightof(fm4box), y3, w_inpLOC, qh - pad, "");
@@ -2521,14 +2535,14 @@ void create_fl_digi_main() {
 
 					Fl_Box *fm5box = new Fl_Box(rightof(inpLoc), y3, w_fm5, qh - pad, _("Az"));
 					fm5box->align(FL_ALIGN_INSIDE);
-					inpAZ = new Fl_Input2(rightof(fm5box), y3, 
+					inpAZ = new Fl_Input2(rightof(fm5box), y3,
 					    rightof(inpRstOut) - rightof(fm5box), qh - pad, "");
 					inpAZ->tooltip("");
 					inpAZ->align(FL_ALIGN_INSIDE);
-					
+
 				QsoInfoFrame1A->end();
-				
-				QsoInfoFrame1B = new Fl_Group (x_qsoframe, y3 - 1, wf1, Hnotes); 
+
+				QsoInfoFrame1B = new Fl_Group (x_qsoframe, y3 - 1, wf1, Hnotes);
 					Fl_Box *fm6box = new Fl_Box(x_qsoframe, y3, w_fm7, qh - pad, _("#Out"));
 					fm6box->align(FL_ALIGN_INSIDE);
 					outSerNo = new Fl_Input2(rightof(fm6box), y3, w_SerNo, qh - pad, "");
@@ -2544,35 +2558,35 @@ void create_fl_digi_main() {
 
 					Fl_Box *fm8box = new Fl_Box(rightof(inpSerNo) + pad, y3, w_fm7, qh - pad, _("Xchg"));
 					fm8box->align(FL_ALIGN_INSIDE);
-					inpXchgIn = new Fl_Input2(rightof(fm8box), y3, 
+					inpXchgIn = new Fl_Input2(rightof(fm8box), y3,
 					    rightof(inpRstOut) - rightof(fm8box), qh - pad, "");
 					inpXchgIn->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 					inpXchgIn->tooltip(_("Contest exchange in"));
-									
+
 				QsoInfoFrame1B->end();
 				QsoInfoFrame1B->hide();
-				
+
 				QsoInfoFrame1->resizable(NULL);
 			QsoInfoFrame1->end();
 
-			QsoInfoFrame2 = new Fl_Group(x_qsoframe + wf1 + pad, Hmenu, 
-				WNOM - rightof(QsoInfoFrame1) - 2*pad, Hqsoframe + Hnotes); 
-					
-				inpNotes = new Fl_Input2(x_qsoframe + wf1 + pad, y2, 
+			QsoInfoFrame2 = new Fl_Group(x_qsoframe + wf1 + pad, Hmenu,
+				WNOM - rightof(QsoInfoFrame1) - 2*pad, Hqsoframe + Hnotes);
+
+				inpNotes = new Fl_Input2(x_qsoframe + wf1 + pad, y2,
 					WNOM - rightof(QsoInfoFrame1) - 2*pad, qh + Hnotes - pad, _("Notes"));
 				inpNotes->type(FL_MULTILINE_INPUT);
 				inpNotes->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
 					Fl_Group::current()->resizable(inpNotes);
 			QsoInfoFrame2->end();
-		
+
 			Fl_Group::current()->resizable(QsoInfoFrame2);
 		QsoInfoFrame->end();
-			
+
 		Fl_Group::current()->resizable(QsoInfoFrame);
 
 	TopFrame->end();
-	
+
 		Y = Hmenu + Hqsoframe + Hnotes + pad;
 
 		Fl_Widget* logfields[] = { inpCall, inpName, inpTimeOn, inpTimeOff, inpRstIn, inpRstOut,
@@ -2623,7 +2637,7 @@ void create_fl_digi_main() {
 				fl_rgb_color(
 					progdefaults.RxColor.R,
 					progdefaults.RxColor.G,
-					progdefaults.RxColor.B));		
+					progdefaults.RxColor.B));
 
 
 
@@ -2635,7 +2649,7 @@ void create_fl_digi_main() {
 			ReceiveText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
 			ReceiveText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
 			showMacroSet();
-			
+
 			FHdisp = new Raster(sw, Y, WNOM-sw, minRxHeight);
 			FHdisp->hide();
 
@@ -2644,7 +2658,7 @@ void create_fl_digi_main() {
 				fl_rgb_color(
 					progdefaults.TxColor.R,
 					progdefaults.TxColor.G,
-					progdefaults.TxColor.B));		
+					progdefaults.TxColor.B));
 
 			TransmitText->setFont(progdefaults.TxFontnbr);
 			TransmitText->setFontSize(progdefaults.TxFontsize);
@@ -2659,7 +2673,7 @@ void create_fl_digi_main() {
 			TiledGroup->resizable(minbox);
 
 			Y += Htext;
-			
+
 		TiledGroup->end();
 		Fl_Group::current()->resizable(TiledGroup);
 
@@ -2689,7 +2703,7 @@ void create_fl_digi_main() {
 			btnAltMacros = new Fl_Button(WNOM-32, Y+2, 30, Hmacros - 4, "1");
 			btnAltMacros->callback(altmacro_cb, 0);
 			btnAltMacros->tooltip(_("Change macro set"));
-				
+
 		Y += Hmacros;
 
 		if (progdefaults.docked_scope) {
@@ -2706,15 +2720,15 @@ void create_fl_digi_main() {
 					wfscope = new Digiscope (
 						rightof(wf), Y,
 						Hwfall - 24, Hwfall - 24);
-		
+
 					pgrsSquelch = new Progress(
 						rightof(wf), Y + Hwfall - 24,
 						Hwfall - 24, 12,
 						"");
 					pgrsSquelch->color(FL_BACKGROUND2_COLOR, FL_DARK_GREEN);
-					sldrSquelch = new Fl_Slider( FL_HOR_NICE_SLIDER, 
+					sldrSquelch = new Fl_Slider( FL_HOR_NICE_SLIDER,
 						rightof(wf), Y + Hwfall - 12, Hwfall - 24, 12, "");
-							
+
 					sldrSquelch->minimum(0);
 					sldrSquelch->maximum(100);
 					sldrSquelch->step(1);
@@ -2732,17 +2746,17 @@ void create_fl_digi_main() {
 				wf = new waterfall(0, Y, Wwfall, Hwfall);
 				wf->end();
 
-				pgrsSquelch = new Progress( 
-					rightof(wf), Y + 4, 
-					DEFAULT_SW, Hwfall - 8, 
+				pgrsSquelch = new Progress(
+					rightof(wf), Y + 4,
+					DEFAULT_SW, Hwfall - 8,
 					"");
 				pgrsSquelch->color(FL_BACKGROUND2_COLOR, FL_DARK_GREEN);
 				pgrsSquelch->type(Progress::VERTICAL);
 				pgrsSquelch->tooltip(_("Detected signal level"));
 
-				sldrSquelch = new Fl_Slider( 
-					rightof(pgrsSquelch), Y + 4, 
-					DEFAULT_SW, Hwfall - 8, 
+				sldrSquelch = new Fl_Slider(
+					rightof(pgrsSquelch), Y + 4,
+					DEFAULT_SW, Hwfall - 8,
 					"");
 				sldrSquelch->minimum(100);
 				sldrSquelch->maximum(0);
@@ -2751,7 +2765,7 @@ void create_fl_digi_main() {
 				sldrSquelch->callback((Fl_Callback*)cb_sldrSquelch);
 				sldrSquelch->color(FL_INACTIVE_COLOR);
 				sldrSquelch->tooltip(_("Squelch level"));
-									
+
 				Fl_Group::current()->resizable(wf);
 			wfpack->end();
 		}
@@ -2771,49 +2785,49 @@ void create_fl_digi_main() {
 			Status1->box(FL_DOWN_BOX);
 			Status1->color(FL_BACKGROUND2_COLOR);
 			Status1->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
-			
+
 			Status2 = new Fl_Box(rightof(Status1), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Wimd, Hstatus, "");
 			Status2->box(FL_DOWN_BOX);
 			Status2->color(FL_BACKGROUND2_COLOR);
 			Status2->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 
 			StatusBar = new Fl_Box(
-                rightof(Status2), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
-                WNOM - bwSqlOnOff - bwAfcOnOff - Wwarn - rightof(Status2) - 2 * pad,// - 60, 
+                rightof(Status2), Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
+                WNOM - bwSqlOnOff - bwAfcOnOff - Wwarn - rightof(Status2) - 2 * pad,// - 60,
                 Hstatus, "");
 			StatusBar->box(FL_DOWN_BOX);
 			StatusBar->color(FL_BACKGROUND2_COLOR);
 			StatusBar->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
-			
+
 			WARNstatus = new Fl_Box(
-				rightof(StatusBar) + pad, Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
+				rightof(StatusBar) + pad, Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
                 Wwarn, Hstatus, "");
 			WARNstatus->box(FL_DIAMOND_DOWN_BOX);
 			WARNstatus->color(FL_BACKGROUND_COLOR);
 			WARNstatus->labelcolor(FL_RED);
 			WARNstatus->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE);
-				
+
 			int sql_width = bwSqlOnOff;
 #ifdef __APPLE__
 			sql_width -= 15; // leave room for resize handle
 #endif
 			if (progdefaults.useCheckButtons) {
 				btnAFC = new Fl_Check_Button(
-								WNOM - bwSqlOnOff - bwAfcOnOff, 
-								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
+								WNOM - bwSqlOnOff - bwAfcOnOff,
+								Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
 								bwAfcOnOff, Hstatus, "AFC");
 				btnSQL = new Fl_Check_Button(
-								WNOM - bwSqlOnOff, 
-								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
+								WNOM - bwSqlOnOff,
+								Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
 								sql_width, Hstatus, "SQL");
 			} else {
 				btnAFC = new Fl_Light_Button(
-								WNOM - bwSqlOnOff - bwAfcOnOff, 
-								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
+								WNOM - bwSqlOnOff - bwAfcOnOff,
+								Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
 								bwAfcOnOff, Hstatus, "AFC");
 				btnSQL = new Fl_Light_Button(
-								WNOM - bwSqlOnOff, 
-								Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
+								WNOM - bwSqlOnOff,
+								Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
 								sql_width, Hstatus, "SQL");
 			}
 			btnAFC->callback(cbAFC, 0);
@@ -2849,7 +2863,7 @@ void create_fl_digi_main() {
 	scopeview->resizable(digiscope);
 	scopeview->size_range(SCOPEWIN_MIN_WIDTH, SCOPEWIN_MIN_HEIGHT);
 	scopeview->end();
-	scopeview->hide();	
+	scopeview->hide();
 
 	if (progdefaults.docked_rig_control)
 		activate_rig_menu_item(false);
@@ -3103,7 +3117,7 @@ void put_Status2(const char *msg, double timeout, status_timeout action)
 	m[sizeof(m) - 1] = '\0';
 
 	info2msg = msg;
-	
+
 	REQ(put_status_msg, Status2, m, timeout, action);
 }
 
@@ -3114,7 +3128,7 @@ void put_Status1(const char *msg, double timeout, status_timeout action)
 	m[sizeof(m) - 1] = '\0';
 
 	info1msg = msg;
-	
+
 	REQ(put_status_msg, Status1, m, timeout, action);
 }
 
@@ -3182,7 +3196,7 @@ int get_tx_char(void)
 
     if (active_modem == cw_modem && progdefaults.QSKadjust)
         return szTestChar[2 * progdefaults.TestChar];
-        
+
 	int c;
 	static int pending = -1;
 	if (pending >= 0) {
@@ -3227,10 +3241,10 @@ int get_tx_char(void)
 void put_echo_char(unsigned int data)
 {
     if (progdefaults.QSKadjust) return;
-    
+
 	static unsigned int last = 0;
 	const char **asc = ascii;
-	
+
 	if (mailclient || mailserver || arqmode)
 		asc = ascii2;
 	if (active_modem->get_mode() == MODE_RTTY ||

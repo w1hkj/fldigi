@@ -1961,13 +1961,6 @@ else
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *chkTransmitRSid=(Fl_Check_Button *)0;
-
-static void cb_chkTransmitRSid(Fl_Check_Button* o, void*) {
-  progdefaults.TransmitRSid = o->value();
-progdefaults.changed = true;
-}
-
 Fl_Check_Button *chkRSidPost=(Fl_Check_Button *)0;
 
 static void cb_chkRSidPost(Fl_Check_Button* o, void*) {
@@ -4292,7 +4285,7 @@ ll with your audio device."));
           } // Fl_Value_Slider* sldrCWIDwpm
           sld->end();
         } // Fl_Group* sld
-        { Fl_Group* o = new Fl_Group(5, 218, 490, 120, _("Reed-Solomon ID"));
+        { Fl_Group* o = new Fl_Group(5, 218, 295, 120, _("Reed-Solomon ID Rx"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
           { Fl_Check_Button* o = chkRSidWideSearch = new Fl_Check_Button(18, 240, 270, 20, _("Detector searches entire passband"));
@@ -4322,13 +4315,12 @@ d frequency"));
             chkRSidNotifyOnly->callback((Fl_Callback*)cb_chkRSidNotifyOnly);
             chkRSidNotifyOnly->value(progdefaults.rsid_notify_only);
           } // Fl_Check_Button* chkRSidNotifyOnly
-          { Fl_Check_Button* o = chkTransmitRSid = new Fl_Check_Button(313, 240, 165, 20, _("Transmit RSID"));
-            chkTransmitRSid->tooltip(_("RSID at beginning of transmission"));
-            chkTransmitRSid->down_box(FL_DOWN_BOX);
-            chkTransmitRSid->callback((Fl_Callback*)cb_chkTransmitRSid);
-            o->value(progdefaults.TransmitRSid);
-          } // Fl_Check_Button* chkTransmitRSid
-          { Fl_Check_Button* o = chkRSidPost = new Fl_Check_Button(314, 268, 129, 15, _("Add eot RSID"));
+          o->end();
+        } // Fl_Group* o
+        { Fl_Group* o = new Fl_Group(300, 218, 195, 120, _("RSID Tx"));
+          o->box(FL_ENGRAVED_FRAME);
+          o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+          { Fl_Check_Button* o = chkRSidPost = new Fl_Check_Button(315, 239, 129, 21, _("Add eot RSID"));
             chkRSidPost->tooltip(_("Add RSID at end of transmission"));
             chkRSidPost->down_box(FL_DOWN_BOX);
             chkRSidPost->callback((Fl_Callback*)cb_chkRSidPost);
