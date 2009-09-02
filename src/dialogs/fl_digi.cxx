@@ -1559,7 +1559,7 @@ void startMacroTimer()
 {
 	ENSURE_THREAD(FLMAIN_TID);
 
-	btnMacroTimer->color(fl_rgb_color(255, 255, 100));
+	btnMacroTimer->color(fl_rgb_color(240, 240, 0));
 	btnMacroTimer->clear_output();
 	Fl::add_timeout(0.0, macro_timer);
 }
@@ -2170,10 +2170,10 @@ void show_spot(bool v)
 		if (oldval)
 			progStatus.spot_recv = true;
 		btnAutoSpot->value(progStatus.spot_recv);
-		btnAutoSpot->show();
+		btnAutoSpot->activate();
 	}
 	else {
-		btnAutoSpot->hide();
+		btnAutoSpot->deactivate();
 		oldval = btnAutoSpot->value();
 		btnAutoSpot->value(v);
 		btnAutoSpot->do_callback();
@@ -2227,7 +2227,7 @@ void create_fl_digi_main() {
 	fl_digi_main = new Fl_Double_Window(WNOM, HNOM, main_window_title.c_str());
 
 		mnuFrame = new Fl_Group(0,0,WNOM, Hmenu);
-			mnu = new Fl_Menu_Bar(0, 0, WNOM - 250, Hmenu);
+			mnu = new Fl_Menu_Bar(0, 0, WNOM - 250 - pad, Hmenu);
 			// do some more work on the menu
 			for (size_t i = 0; i < sizeof(menu_)/sizeof(menu_[0]); i++) {
 				// FL_NORMAL_SIZE may have changed; update the menu items
@@ -2241,9 +2241,9 @@ void create_fl_digi_main() {
 			mnu->menu(menu_);
 
 			btnAutoSpot = new Fl_Light_Button(WNOM - 250 - pad, 0, 50, Hmenu, "Spot");
-			btnAutoSpot->selection_color(FL_GREEN);
+			btnAutoSpot->selection_color(FL_YELLOW);
 			btnAutoSpot->callback(cbAutoSpot, 0);
-			btnAutoSpot->hide();
+			btnAutoSpot->deactivate();
 
 			btnRSID = new Fl_Light_Button(WNOM - 200 - pad, 0, 50, Hmenu, "RxID");
 			btnRSID->selection_color(FL_GREEN);
@@ -2251,7 +2251,7 @@ void create_fl_digi_main() {
 			btnRSID->callback(cbRSID, 0);
 
 			btnTxRSID = new Fl_Light_Button(WNOM - 150 - pad, 0, 50, Hmenu, "TxID");
-			btnTxRSID->selection_color(FL_RED);
+			btnTxRSID->selection_color(FL_BLUE);
 			btnTxRSID->tooltip("Transmit RSID");
 			btnTxRSID->callback(cbTxRSID, 0);
 
@@ -2260,7 +2260,7 @@ void create_fl_digi_main() {
 			btnTune->callback(cbTune, 0);
 
 			btnMacroTimer = new Fl_Button(WNOM - 50 - pad, 0, 50, Hmenu);
-			btnMacroTimer->labelcolor(FL_RED);
+			btnMacroTimer->labelcolor(FL_DARK_RED);
 			btnMacroTimer->callback(cbMacroTimerButton);
 			btnMacroTimer->set_output();
 
