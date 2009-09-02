@@ -4,10 +4,9 @@ following modes:
 
 BPSK and QPSK        31, 63, 125, and 250
 CW                   speeds from 5 to 200 wpm
-DEX                  4, 5, 8, 11, 16 and 22
-DominoEX             4, 5, 8, 11, 16 and 22
+DominoEX             4, 5, 8, 11, 16 and 22; also with FEC
 Hellschreiber        Feld Hell, Slow Hell, Hell x5/x9, FSKHell(-105) and Hell 80
-MFSK                 8 and 16; images can be sent and received in MFSK-16 mode
+MFSK                 4, 8, 11, 16, 22, 31, 32 and 64; most with image support
 MT63                 500, 1000 and 2000
 OLIVIA               various tones and bandwidths
 RTTY                 various baud rates, shifts, nbr. of data bits, etc.
@@ -17,7 +16,8 @@ WWV                  receive only - calibrate your sound card to WWV
 Frequency Analysis   receive only - measure the frequency of a carrier
 
 Fldigi can also control a transceiver using Hamlib or RigCAT I/O, perform online
-or cdrom QRZ queries, and log QSOs with fl_logbook or xlog.
+or cdrom QRZ queries, log QSOs with the built-in logbook or Xlog, and send
+reception reports to the PSK Automatic Propagation Reporter.
 
 
 The latest version can always be found at:
@@ -27,6 +27,41 @@ The latest version can always be found at:
 Visit this page for extensive documentation and an archive of XML files for
 transceivers supported by RigCAT.
 
-Join the linuxham Yahoo group for support, news and updates on W1HKJ software:
 
-  http://groups.yahoo.com/group/linuxham/join
+Fldigi's BerliOS project page can be found at:
+
+  http://developer.berlios.de/projects/fldigi/
+
+
+The GIT repository can be found at:
+
+  http://git.berlios.de/cgi-bin/gitweb.cgi?p=fldigi;a=summary
+
+
+For support, news and updates, join one or more of the following mailing lists
+and Yahoo groups.  Stable releases are announced to all lists and groups; test
+(alpha) releases are announced to fldigi-alpha and fldigi-announce.
+
+  * linuxham group
+    General discussion on fldigi, related software and other ham radio topics
+    http://groups.yahoo.com/group/linuxham/join
+
+  * win-fldigi group
+    For Windows users of fldigi
+    http://groups.yahoo.com/group/win-fldigi/
+
+  * NBEMSham group
+    Special focus on NBEMS operation
+    http://groups.yahoo.com/group/NBEMSham/
+
+  * fldigi-alpha list
+    Discussion of fldigi testing and related subjects
+    http://lists.berlios.de/mailman/listinfo/fldigi-alpha
+
+  * fldigi-devel list
+    Fldigi development topics
+    http://lists.berlios.de/mailman/listinfo/fldigi-devel
+
+  * fldigi-announce list
+    Fldigi announcements
+    http://lists.berlios.de/mailman/listinfo/fldigi-announce
