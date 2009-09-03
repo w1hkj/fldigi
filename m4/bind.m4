@@ -1,5 +1,4 @@
-dnl Look for a working std::bind or std::tr1::bind. If neither is present
-dnl we will need Boost >= 1.32.0, which provides boost::bind.
+dnl Look for a working std::bind or std::tr1::bind.
 
 AC_DEFUN([AC_FLDIGI_BIND], [
   AC_LANG_PUSH(C++)
@@ -31,11 +30,6 @@ AC_DEFUN([AC_FLDIGI_BIND], [
   AC_LANG_POP(C++)
 
   if test "x$ac_cv_std_bind" = "xno" && test "x$ac_cv_std_tr1_bind" = "xno"; then
-      AX_BOOST_BASE(1.32.0)
-      if test "x$want_boost" = "xno"; then
-          AC_MSG_ERROR([Boost is required])
-      fi
+      AC_MSG_ERROR([Could not find std::bind or std::tr1::bind])
   fi
-  AC_SUBST([BOOST_CPPFLAGS])
-  AC_SUBST([BOOST_LDFLAGS])
 ])

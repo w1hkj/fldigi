@@ -44,10 +44,7 @@ namespace qrbind {
     using std::tr1::bind;
 };
 #else
-#   include <boost/bind.hpp>
-namespace qrbind {
-    using boost::bind;
-};
+#   error need std::bind or std::tr1::bind
 #endif
 
 #include "threads.h"

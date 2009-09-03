@@ -4,8 +4,7 @@ Installation Instructions for fldigi
 To compile fldigi you will need:
 
   * A recent C++ compiler.  The GNU C++ compilers in the 4.x series are
-    known to work.  Building with g++ 3.x requires the development
-    headers for the Boost C++ library.
+    known to work.
 
   * Version 1.1.x of the Fast Light Tool Kit (FLTK), with its
     development library and headers.  Versions 1.1.7 to 1.1.9 are known
@@ -85,7 +84,7 @@ Refer to the list of library requirements and install the corresponding
 cygwin packages.  You will need at least the following:
 
   Base:     (all base packages)
-  Devel:    binutils boost-devel fltk-devel gcc-g++ make pkg-config
+  Devel:    binutils fltk-devel gcc-g++ make pkg-config
   Graphics: libjpeg-devel libpng12-devel
   Libs:     zlib
 
