@@ -1509,7 +1509,7 @@ void cb_QRZ(Fl_Widget *b, void *)
 		break;
 	case FL_RIGHT_MOUSE:
 		if (quick_choice(string("Spot \"").append(inpCall->value()).append("\"?").c_str(),
-				 2, "Confirm", "Cancel", NULL) == 1)
+				 2, _("Confirm"), _("Cancel"), NULL) == 1)
 			spot_manual(inpCall->value(), inpLoc->value());
 		break;
 	default:
@@ -2062,7 +2062,7 @@ void cb_qso_btnAddFreq(Fl_Widget *, void *)
 
 void cb_qso_btnClearList(Fl_Widget *, void *)
 {
-	if (quick_choice("Clear list?", 2, "Confirm", "Cancel", NULL) == 1)
+	if (quick_choice(_("Clear list?"), 2, _("Confirm"), _("Cancel"), NULL) == 1)
 		clearList();
 }
 

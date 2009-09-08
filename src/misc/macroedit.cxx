@@ -19,6 +19,7 @@
 #include "fl_lock.h"
 #include "fl_digi.h"
 #include "main.h"
+#include "gettext.h"
 #include "pixmaps.h"
 
 using namespace std;
@@ -42,71 +43,72 @@ static Fl_Input* iInput;
 
 void loadBrowser(Fl_Widget *widget) {
 	Fl_Browser *w = (Fl_Browser *)widget;
-	w->add("<MYCALL>\tmy call");
-	w->add("<MYLOC>\tmy locator");
-	w->add("<MYNAME>\tmy name");
-	w->add("<MYQTH>\tmy QTH");
-	w->add("<MYRST>\tmy RST");
+	/* Do not translate the tags lefthand-side */
+	w->add(_("<MYCALL>\tmy call"));
+	w->add(_("<MYLOC>\tmy locator"));
+	w->add(_("<MYNAME>\tmy name"));
+	w->add(_("<MYQTH>\tmy QTH"));
+	w->add(_("<MYRST>\tmy RST"));
 
 	w->add(LINE_SEP);
-	w->add("<CALL>\tother call");
-	w->add("<LOC>\tother locator");
-	w->add("<NAME>\tother name");
-	w->add("<QTH>\tother QTH");
-	w->add("<RST>\tother RST");
-	w->add("<INFO1>\tS/N etc.");
-	w->add("<INFO2>\tIMD etc.");
+	w->add(_("<CALL>\tother call"));
+	w->add(_("<LOC>\tother locator"));
+	w->add(_("<NAME>\tother name"));
+	w->add(_("<QTH>\tother QTH"));
+	w->add(_("<RST>\tother RST"));
+	w->add(_("<INFO1>\tS/N etc."));
+	w->add(_("<INFO2>\tIMD etc."));
 	
 	w->add(LINE_SEP);
-	w->add("<CLRRX>\tclear RX pane");
+	w->add(_("<CLRRX>\tclear RX pane"));
 	
 	w->add(LINE_SEP);
-	w->add("<GET>\ttext to NAME/QTH");
+	w->add(_("<GET>\ttext to NAME/QTH"));
 
 	w->add(LINE_SEP);
-	w->add("<FREQ>\tmy frequency");
-	w->add("<MODE>\tmode");
+	w->add(_("<FREQ>\tmy frequency"));
+	w->add(_("<MODE>\tmode"));
 
 	w->add(LINE_SEP);
-	w->add("<QSOTIME>\tQSO time (HHMM)");
-	w->add("<LDT>\tLocal datetime");
-	w->add("<ILDT>\tLDT in iso-8601 format");
-	w->add("<ZDT>\tUTC datetime");
-	w->add("<IZDT>\tZDT in iso-8601 format");
+	w->add(_("<QSOTIME>\tQSO time (HHMM))"));
+	w->add(_("<LDT>\tLocal datetime"));
+	w->add(_("<ILDT>\tLDT in iso-8601 format"));
+	w->add(_("<ZDT>\tUTC datetime"));
+	w->add(_("<IZDT>\tZDT in iso-8601 format"));
 
 	w->add(LINE_SEP);
-	w->add("<CNTR>\tcontest counter");
-	w->add("<DECR>\tdecrement counter");
-	w->add("<INCR>\tincrement counter");
-	w->add("<XOUT>\texchange out");
+	w->add(_("<CNTR>\tcontest counter"));
+	w->add(_("<DECR>\tdecrement counter"));
+	w->add(_("<INCR>\tincrement counter"));
+	w->add(_("<XOUT>\texchange out"));
 
 	w->add(LINE_SEP);
-	w->add("<ID>\tmode ID");
-	w->add("<TEXT>\tvideo text");
-	w->add("<CWID>\tCW identifier");
+	w->add(_("<ID>\tmode ID"));
+	w->add(_("<TEXT>\tvideo text"));
+	w->add(_("<CWID>\tCW identifier"));
 
 	w->add(LINE_SEP);
-	w->add("<RX>\treceive");
-	w->add("<TX>\ttransmit");
-	w->add("<LOG>\tsave QSO data");
-	w->add("<VER>\tFldigi version");
-	w->add("<TIMER:NN>\trepeat every NN sec");
-	w->add("<IDLE:NN>\tidle signal for NN sec");
+	w->add(_("<RX>\treceive"));
+	w->add(_("<TX>\ttransmit"));
+	w->add(_("<LOG>\tsave QSO data"));
+	w->add(_("<VER>\tFldigi version"));
+	w->add(_("<TIMER:NN>\trepeat every NN sec"));
+	w->add(_("<IDLE:NN>\tidle signal for NN sec"));
 	
 	w->add(LINE_SEP);
-	w->add("<WPM:NN>\tCW WPM");
-	w->add("<RISE:nn.n>\tCW rise time");
-	w->add("<PRE:nn.n>\tQSK pre-timing");
-	w->add("<POST:+/-nn.n>\tQSK post-timing");
+	w->add(_("<WPM:NN>\tCW WPM"));
+	w->add(_("<RISE:nn.n>\tCW rise time"));
+	w->add(_("<PRE:nn.n>\tQSK pre-timing"));
+	w->add(_("<POST:+/-nn.n>\tQSK post-timing"));
 	
 	w->add(LINE_SEP);
-	w->add("<AFC:on|off|t>\tAFC  on,off,toggle");
-	w->add("<LOCK:on|off|t>\tLOCK on,off,toggle");
-	w->add("<RSID:on|off|t>\tRSID on,off,toggle");
+	w->add(_("<AFC:on|off|t>\tAFC  on,off,toggle"));
+	w->add(_("<LOCK:on|off|t>\tLOCK on,off,toggle"));
+	w->add(_("<RSID:on|off|t>\tRSID on,off,toggle"));
 
 	w->add(LINE_SEP);
-	w->add("<FILE:>\tinsert text file");
-	w->add("<MACROS:>\tchange macro defs file");
+	w->add(_("<FILE:>\tinsert text file"));
+	w->add(_("<MACROS:>\tchange macro defs file"));
 
 	w->add(LINE_SEP);
 	char s[256];
@@ -172,7 +174,7 @@ void cbInsertMacro(Fl_Widget *, void *)
 		return;
 	if (text == "<FILE:>") {
 		string filters = "Text\t*." "txt";
-		const char* p = FSEL::select("Text file to insert", filters.c_str(),
+		const char* p = FSEL::select(_("Text file to insert"), filters.c_str(),
 					 "text." "txt");
 		if (p) {
 			text.insert(6, p);
@@ -180,7 +182,7 @@ void cbInsertMacro(Fl_Widget *, void *)
 			text = "";
 	} else if (text == "<MACROS:>") {
 		string filters = "Macrost\t*." "mdf";
-		const char* p = FSEL::select("Change to Macro file", filters.c_str(),
+		const char* p = FSEL::select(_("Change to Macro file"), filters.c_str(),
 					 "macros." "mdf");
 		if (p) {
 			text.insert(8, p);
@@ -194,16 +196,16 @@ void cbInsertMacro(Fl_Widget *, void *)
 Fl_Double_Window* make_macroeditor(void)
 {
 	Fl_Double_Window* w = new Fl_Double_Window(730, 230, "");
-	labeltext = new Fl_Input2(45, 15, 115, 25, "Label:");
+	labeltext = new Fl_Input2(45, 15, 115, 25, _("Label:"));
 	labeltext->textfont(FL_COURIER);
 
-	btnMacroEditOK = new Fl_Button(500, 15, 75, 25, "OK");
+	btnMacroEditOK = new Fl_Button(500, 15, 75, 25, _("OK"));
 	btnMacroEditOK->callback(cbMacroEditOK);
 
-	btnMacroEditCancel = new Fl_Button(600, 15, 75, 25, "Cancel");
+	btnMacroEditCancel = new Fl_Button(600, 15, 75, 25, _("Cancel"));
 	btnMacroEditCancel->callback(cbMacroEditOK);
 
-	macrotext = new Fl_Input2(5, 60, 450, 165, "Text:");
+	macrotext = new Fl_Input2(5, 60, 450, 165, _("Text:"));
 	macrotext->type(FL_MULTILINE_INPUT);
 	macrotext->textfont(FL_COURIER);
 	macrotext->align(FL_ALIGN_TOP_LEFT);
@@ -226,7 +228,7 @@ void editMacro(int n, int t, Fl_Input* in)
 		MacroEditDialog = make_macroeditor();
 	if (t == MACRO_EDIT_BUTTON) {
 		string editor_label;
-		editor_label.append("Macro editor - ").append(progStatus.LastMacroFile);
+		editor_label.append(_("Macro editor - ")).append(progStatus.LastMacroFile);
 		if (editor_label != MacroEditDialog->label())
 			MacroEditDialog->copy_label(editor_label.c_str());
 		macrotext->value(macros.text[n].c_str());

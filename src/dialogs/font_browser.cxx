@@ -40,6 +40,7 @@
 #include <FL/fl_draw.H>
 
 #include "font_browser.h"
+#include "gettext.h"
 
 using namespace std;
 
@@ -49,7 +50,7 @@ void Font_Browser::ColorSelect()
 {
     unsigned char r, g, b;
     Fl::get_color(fontcolor, r, g, b);
-    if (fl_color_chooser("Font color", r, g, b) == 0)
+    if (fl_color_chooser(_("Font color"), r, g, b) == 0)
 	    return;
     fontcolor = fl_rgb_color(r, g, b);
     btn_Color->color(fontcolor);
@@ -119,12 +120,12 @@ void Font_Browser::FontNameSelect()
 Font_Browser::Font_Browser(int x, int y, int w, int h, const char *lbl )
      : Fl_Window(x, y, w, h, lbl)
 {
-    lst_Font = new Fl_Browser(5, 15, 280, 125, "Font:");
+    lst_Font = new Fl_Browser(5, 15, 280, 125, _("Font:"));
     lst_Font->align(FL_ALIGN_TOP_LEFT);
     lst_Font->type(FL_HOLD_BROWSER);
     lst_Font->callback(fb_callback, this);
 
-    txt_Size = new Fl_Value_Input(290, 15, 50, 22, "Size:");
+    txt_Size = new Fl_Value_Input(290, 15, 50, 22, _("Size:"));
     txt_Size->align(FL_ALIGN_TOP_LEFT);
     txt_Size->range(1.0, 48.0);
     txt_Size->step(1.0);
@@ -134,22 +135,22 @@ Font_Browser::Font_Browser(int x, int y, int w, int h, const char *lbl )
     lst_Size->type(FL_HOLD_BROWSER);
     lst_Size->callback(fb_callback, this);
 
-    btn_OK = new Fl_Return_Button(345, 40, 50, 25, "&OK");
+    btn_OK = new Fl_Return_Button(345, 40, 50, 25, _("&OK"));
     btn_OK->shortcut(0x8006f);
     btn_OK->callback(fb_callback, this);
 
-    btn_Cancel = new Fl_Button(345, 70, 50, 25, "Cancel");
+    btn_Cancel = new Fl_Button(345, 70, 50, 25, _("Cancel"));
     btn_Cancel->labelsize(12);
     btn_Cancel->callback(fb_callback, this);
 
-    btn_Color = new Fl_Button(345, 100, 50, 25, "Color");
+    btn_Color = new Fl_Button(345, 100, 50, 25, _("Color"));
     btn_Color->down_box(FL_BORDER_BOX);
     btn_Color->color(FL_FOREGROUND_COLOR);
     btn_Color->callback(fb_callback, this);
 
-    box_Example = new Preview_Box(5, 145, 390, 75, "That crazy fox jumped over the dog again!\n"
+    box_Example = new Preview_Box(5, 145, 390, 75, _("That crazy fox jumped over the dog again!\n"
 				  "ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789\n"
-				  "!\"#$%&'()*+,-./:;<=>?@@[\\]^_`{|}~");
+				  "!\"#$%&'()*+,-./:;<=>?@@[\\]^_`{|}~"));
     box_Example->box(FL_DOWN_BOX);
     box_Example->align(FL_ALIGN_WRAP|FL_ALIGN_CLIP|FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
     resizable(box_Example);

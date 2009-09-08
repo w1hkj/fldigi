@@ -58,7 +58,7 @@ static void cb_btnDelFreq(Fl_Button*, void*) {
 Fl_Button *btnClearList=(Fl_Button *)0;
 
 static void cb_btnClearList(Fl_Button*, void*) {
-  if (quick_choice("Clear list?", 2, "Confirm", "Cancel", NULL) == 1)
+  if (quick_choice(_("Clear list?"), 2, _("Confirm"), _("Cancel"), NULL) == 1)
     clearList();
 }
 
