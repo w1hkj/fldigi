@@ -178,7 +178,7 @@ void process_msgque()
 		txstring.append(txmsgst.buffer);
 		parse_arqtext(txstring);
 
-		if (arqtext.empty() && !txstring.empty()) {
+		if (!bSend0x06 && arqtext.empty() && !txstring.empty()) {
 			arqtext = txstring;
 			if (mailserver && progdefaults.PSKmailSweetSpot)
 				active_modem->set_freq(progdefaults.PSKsweetspot);
@@ -430,15 +430,7 @@ bool Socket_arqRx()
 		if ( n > 0)
 			txstring.append(instr);
 
-		if (progdefaults.rsid == true) {
-			send0x06();
-			arqtext.clear();
-			txstring.clear();
-			cmdstring.clear();
-			return true;
-		}
-
-		if (arqtext.empty() && !txstring.empty()) {
+		if (!bSend0x06 && arqtext.empty() && !txstring.empty()) {
 			arqtext = txstring;
 			parse_arqtext(arqtext);
 			if (!arqtext.empty()) {
