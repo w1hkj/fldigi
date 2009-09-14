@@ -72,6 +72,7 @@ void thor::rx_init()
 	put_sec_char(0);
 	syncfilter->reset();
 	datashreg = 1;
+	sig = noise = 6;
 }
 
 void thor::reset_filters()
@@ -471,25 +472,24 @@ void thor::synchronize()
 
 void thor::eval_s2n()
 {
-	if (currsymbol != prev1symbol && prev1symbol != prev2symbol) {
-		sig = pipe[pipeptr].vector[currsymbol].mag();
-		noise = 0.0;
-		for (int i = 0; i < paths * numbins; i++) {
-			if (i != currsymbol)
-				noise += pipe[pipeptr].vector[i].mag();
-		}	
-		noise /= (paths * numbins - 1);
-	
-		if (noise)
-			s2n = decayavg( s2n, sig / noise, 32);
+	double s = pipe[pipeptr].vector[currsymbol].mag();
+	double n = pipe[(pipeptr + symlen) % twosym].vector[currsymbol].mag();
 
-		metric = 3.0 * (20*log10(s2n) - 9.0);
+	sig = decayavg( sig, s, abs( s - sig) > 4 ? 4 : 32);
+	noise = decayavg( noise, n, 64);
 
-		display_metric(metric);
+	if (noise)
+		s2n = 20*log10(sig / noise) - 6;
+	else
+		s2n = 0;
 
-		snprintf(thormsg, sizeof(thormsg), "s/n %3.0f dB", metric / 3.0);
-		put_Status1(thormsg);
-	}
+	metric = 4 * s2n;
+	metric = metric < 0 ? 0 : metric > 100 ? 100 : metric;
+
+	display_metric(metric);
+
+	snprintf(thormsg, sizeof(thormsg), "s/n %3.0f dB", s2n > 0 ? s2n : 0);
+	put_Status1(thormsg);
 }
 
 int thor::rx_process(const double *buf, int len)

@@ -57,7 +57,7 @@ void dominoex::tx_init(SoundBase *sc)
 	Mu_bitstate = 0;
 	counter = 0;
 	txphase = 0;
-	
+
 	strSecXmtText = progdefaults.secText;
 	if (strSecXmtText.length() == 0)
 		strSecXmtText = "fldigi "PACKAGE_VERSION" ";
@@ -81,19 +81,21 @@ void dominoex::rx_init()
 	syncfilter->reset();
 
 	Mu_datashreg = 1;
-	
+
 	staticburst = false;
+
+	sig = noise = 6;
 }
 
 void dominoex::reset_filters()
 {
 // fft filter at first IF frequency
 	fft->create_filter( (FIRSTIF - 0.5 * progdefaults.DOMINOEX_BW * bandwidth) / samplerate,
-	                    (FIRSTIF + 0.5 * progdefaults.DOMINOEX_BW * bandwidth)/ samplerate );
+						(FIRSTIF + 0.5 * progdefaults.DOMINOEX_BW * bandwidth)/ samplerate );
 
 	for (int i = 0; i < MAXFFTS; i++)
 		if (binsfft[i]) delete binsfft[i];
-		
+
 	if (slowcpu) {
 		extones = 4;
 		paths = 3;
@@ -101,7 +103,7 @@ void dominoex::reset_filters()
 		extones = NUMTONES / 2;
 		paths = 5;
 	}
-	
+
 	lotone = basetone - extones * doublespaced;
 	hitone = basetone + NUMTONES * doublespaced + extones * doublespaced;
 
@@ -110,7 +112,7 @@ void dominoex::reset_filters()
 	for (int i = 0; i < paths; i++)//MAXFFTS; i++)
 		binsfft[i] = new sfft (symlen, lotone, hitone);
 
-	filter_reset = false;               
+	filter_reset = false;
 }
 
 void dominoex::restart()
@@ -134,31 +136,31 @@ void dominoex::MuPsk_sec2pri_init(void)
 {
 	int chars[] = { 'A', 0xc0, 0xc1, 0xc2, 0xc3, 0xc4, 0xc5, // À, Á, Â, Ã, Ä, Å
 			0xe0, 0xe1, 0xe2, 0xe3, 0xe4, 0xe5, -1,  // à, á, â, ã, ä, å
-			'B', 0xdf, -1,                           // ß
-			'C', 0xc7, 0xe7, 0xa9, -1,               // Ç, ç, ©,
-			'D', 0xd0, 0xb0, -1,                     // Ð, °
+			'B', 0xdf, -1,						   // ß
+			'C', 0xc7, 0xe7, 0xa9, -1,			   // Ç, ç, ©,
+			'D', 0xd0, 0xb0, -1,					 // Ð, °
 			'E', 0xc6, 0xe6, 0xc8, 0xc9, 0xca, 0xcb, // Æ, æ, È, É, Ê, Ë
-			0xe8, 0xe9, 0xea, 0xeb, -1,              // è, é, ê, ë
-			'F', 0x192, -1,                          // ƒ
+			0xe8, 0xe9, 0xea, 0xeb, -1,			  // è, é, ê, ë
+			'F', 0x192, -1,						  // ƒ
 			'I', 0xcc, 0xcd, 0xce, 0xcf, 0xec, 0xed, // Ì, Í, Î, Ï, ì, í
-			0xee, 0xef, 0xa1, -1,                    // î, ï, ¡
-			'L', 0xa3, -1,                           // £
-			'N', 0xd1, 0xf1, -1,                     // Ñ, ñ
+			0xee, 0xef, 0xa1, -1,					// î, ï, ¡
+			'L', 0xa3, -1,						   // £
+			'N', 0xd1, 0xf1, -1,					 // Ñ, ñ
 			'O', 0xf4, 0xf6, 0xf2, 0xd6, 0xf3, 0xd3, // ô, ö, ò, Ö, ó, Ó
-			0xd4, 0xd2, 0xf5, 0xd5, -1,              // Ô, Ò, õ, Õ
-			'R', 0xae, -1,                           // ®
+			0xd4, 0xd2, 0xf5, 0xd5, -1,			  // Ô, Ò, õ, Õ
+			'R', 0xae, -1,						   // ®
 			'U', 0xd9, 0xda, 0xdb, 0xdc, 0xf9, 0xfa, // Ù, Ú, Û, Ü, ù, ú
-			0xfb, 0xfc, -1,                          // û, ü
-			'X', 0xd7, -1,                           // ×
-			'Y', 0xff, 0xfd, 0xdd, -1,               // ÿ, ý, Ý
-			'0', 0xd8, -1,                           // Ø
-			'1', 0xb9, -1,                           // ¹
-			'2', 0xb2, -1,                           // ²
-			'3', 0xb3, -1,                           // ³
-			'?', 0xbf, -1,                           // ¿
-			'!', 0xa1, -1,                           // ¡
-			'<', 0xab, -1,                           // «
-			'>', 0xbb, -1,                           // »
+			0xfb, 0xfc, -1,						  // û, ü
+			'X', 0xd7, -1,						   // ×
+			'Y', 0xff, 0xfd, 0xdd, -1,			   // ÿ, ý, Ý
+			'0', 0xd8, -1,						   // Ø
+			'1', 0xb9, -1,						   // ¹
+			'2', 0xb2, -1,						   // ²
+			'3', 0xb3, -1,						   // ³
+			'?', 0xbf, -1,						   // ¿
+			'!', 0xa1, -1,						   // ¡
+			'<', 0xab, -1,						   // «
+			'>', 0xbb, -1,						   // »
 			'{', '(', -1,
 			'}', ')', -1,
 			'|', '\\'
@@ -176,7 +178,7 @@ void dominoex::MuPsk_sec2pri_init(void)
 dominoex::~dominoex()
 {
 	if (hilbert) delete hilbert;
-	
+
 	for (int i = 0; i < paths; i++) {//MAXFFTS; i++) {
 		if (binsfft[i]) delete binsfft[i];
 	}
@@ -185,15 +187,15 @@ dominoex::~dominoex()
 		if (vidfilter[i]) delete vidfilter[i];
 	}
 	if (syncfilter) delete syncfilter;
-	
+
 	if (pipe) delete [] pipe;
 	if (fft) delete fft;
-	
+
 	if (MuPskRxinlv) delete MuPskRxinlv;
 	if (MuPskTxinlv) delete MuPskTxinlv;
 	if (MuPskDec) delete MuPskDec;
 	if (MuPskEnc) delete MuPskEnc;
-	
+
 }
 
 dominoex::dominoex(trx_mode md)
@@ -252,31 +254,31 @@ dominoex::dominoex(trx_mode md)
 
 // fft filter at first if frequency
 	fft = new fftfilt( (FIRSTIF - 0.5 * progdefaults.DOMINOEX_BW * bandwidth) / samplerate,
-	                   (FIRSTIF + 0.5 * progdefaults.DOMINOEX_BW * bandwidth)/ samplerate,
-	                   1024 );
+					   (FIRSTIF + 0.5 * progdefaults.DOMINOEX_BW * bandwidth)/ samplerate,
+					   1024 );
 
 	basetone = (int)floor(BASEFREQ * symlen / samplerate + 0.5);
 
 	slowcpu = progdefaults.slowcpu;
-	
+
 	for (int i = 0; i < MAXFFTS; i++)
 		binsfft[i] = 0;
-		
+
 	reset_filters();
-	
+
 	for (int i = 0; i < SCOPESIZE; i++)
 		vidfilter[i] = new Cmovavg(16);
-			
+
 	syncfilter = new Cmovavg(16);
 
 	twosym = 2 * symlen;
 	pipe = new domrxpipe[twosym];
-	
+
 	scopedata.alloc(SCOPESIZE);
 	videodata.alloc(MAXFFTS * numbins);
 
 	pipeptr = 0;
-	
+
 	symcounter = 0;
 	Mu_symcounter = 0;
 	metric = 0.0;
@@ -377,12 +379,12 @@ void dominoex::decodesymbol()
 	if (reverse) fdiff = -fdiff;
 	fdiff /= doublespaced;
 	fdiff /= paths;
-	
-//	if (fabs(fdiff) > 17) 
+
+//	if (fabs(fdiff) > 17)
 //		outofrange = true;
 //	else
 		outofrange = false;
-	
+
 	c = (int)floor(fdiff + .5) - 2;
 	if (c < 0) c += NUMTONES;
 
@@ -397,13 +399,13 @@ int dominoex::harddecode()
 	double avg = 0.0;
 	bool cwi[paths * numbins];
 	double cwmag;
-	
+
 	for (int i = 0; i < paths * numbins; i++)
 		avg += pipe[pipeptr].vector[i].mag();
 	avg /= (paths * numbins);
-			
+
 	if (avg < 1e-10) avg = 1e-10;
-	
+
 	int numtests = 10;
 	int count = 0;
 	for (int i = 0; i < paths * numbins; i++) {
@@ -417,7 +419,7 @@ int dominoex::harddecode()
 		}
 		cwi[i] = (count == numtests);
 	}
-					
+
 	for (int i = 0; i <  (paths * numbins); i++) {
 		if (cwi[i] == false) {
 			x = pipe[pipeptr].vector[i].mag();
@@ -483,7 +485,7 @@ void dominoex::synchronize()
 	double val, max = 0.0;
 
 	if (staticburst == true) return;
-	
+
 	if (currsymbol == prev1symbol)
 		return;
 	if (prev1symbol == prev2symbol)
@@ -497,35 +499,34 @@ void dominoex::synchronize()
 		}
 		j = (j + 1) % twosym;
 	}
-	
+
 	syn = syncfilter->run(syn);
 
 	synccounter += (int) floor(1.0 * (syn - symlen) / NUMTONES + 0.5);
-	
+
 	update_syncscope();
 }
 
-
 void dominoex::eval_s2n()
 {
-	if (currsymbol != prev1symbol && prev1symbol != prev2symbol) {
-		sig = pipe[pipeptr].vector[currsymbol].mag();
-		noise = 0.0;
-		for (int i = 0; i < paths * numbins; i++) {
-			if (i != currsymbol)
-				noise += pipe[pipeptr].vector[i].mag();
-		}	
-		noise /= (paths * numbins - 1);
-	
-		s2n = decayavg( s2n, sig / noise, 32);
+	double s = pipe[pipeptr].vector[currsymbol].mag();
+	double n = pipe[(pipeptr + symlen) % twosym].vector[currsymbol].mag();
 
-		metric = 3*(20*log10(s2n) - 9.0);
+	sig = decayavg( sig, s, abs( s - sig) > 4 ? 4 : 32);
+	noise = decayavg( noise, n, 64);
 
-		display_metric(metric);
+	if (noise)
+		s2n = 20*log10(sig / noise) - 6;
+	else
+		s2n = 0;
 
-		snprintf(dommsg, sizeof(dommsg), "s/n %3.0f dB", metric / 3.0 - 2.0);
-		put_Status1(dommsg);
-	}
+	metric = 4 * s2n;
+	metric = metric < 0 ? 0 : metric > 100 ? 100 : metric;
+
+	display_metric(metric);
+
+	snprintf(dommsg, sizeof(dommsg), "s/n %3.0f dB", s2n > 0 ? s2n : 0);
+	put_Status1(dommsg);
 }
 
 int dominoex::rx_process(const double *buf, int len)
@@ -540,13 +541,13 @@ int dominoex::rx_process(const double *buf, int len)
 		slowcpu = progdefaults.slowcpu;
 		reset_filters();
 	}
-	
+
 	while (len) {
 // create analytic signal at first IF
 		zref.re = zref.im = *buf++;
 		hilbert->run(zref, zref);
 		zref = mixer(0, zref);
-		
+
 		if (progdefaults.DOMINOEX_FILTER) {
 // filter using fft convolution
 			n = fft->run(zref, &zp);
@@ -555,7 +556,7 @@ int dominoex::rx_process(const double *buf, int len)
 			zp = zarray;
 			n = 1;
 		}
-		
+
 		if (n) {
 			for (int i = 0; i < n; i++) {
 // process MAXFFTS sets of sliding FFTs spaced at 1/MAXFFTS bin intervals each of which
@@ -572,7 +573,7 @@ int dominoex::rx_process(const double *buf, int len)
 				if (--synccounter <= 0) {
 					synccounter = symlen;
 					currsymbol = harddecode();
-        		    decodesymbol();
+					decodesymbol();
 					synchronize();
 //					update_syncscope();
 					eval_s2n();
@@ -586,7 +587,7 @@ int dominoex::rx_process(const double *buf, int len)
 		}
 		--len;
 	}
-			
+
 	return 0;
 }
 
@@ -625,10 +626,10 @@ void dominoex::sendsymbol(int sym)
 {
 //static int first = 0;
 	complex z;
-    int tone;
-	
+	int tone;
+
 	tone = (txprevtone + 2 + sym) % NUMTONES;
-    txprevtone = tone;
+	txprevtone = tone;
 	if (reverse)
 		tone = (NUMTONES - 1) - tone;
 	sendtone(tone, 1);
@@ -636,18 +637,18 @@ void dominoex::sendsymbol(int sym)
 
 void dominoex::sendchar(unsigned char c, int secondary)
 {
-	if (progdefaults.DOMINOEX_FEC) 
+	if (progdefaults.DOMINOEX_FEC)
 		sendMuPskEX(c, secondary);
 	else {
 		unsigned char *code = dominoex_varienc(c, secondary);
-    	sendsymbol(code[0]);
+		sendsymbol(code[0]);
 // Continuation nibbles all have the MSB set
-	    for (int sym = 1; sym < 3; sym++) {
-    	    if (code[sym] & 0x8) 
-        	    sendsymbol(code[sym]);
-        	else
-            	break;
-    	}
+		for (int sym = 1; sym < 3; sym++) {
+			if (code[sym] & 0x8)
+				sendsymbol(code[sym]);
+			else
+				break;
+		}
 	}
 	if (!secondary)
 		put_echo_char(c);
@@ -670,8 +671,8 @@ void dominoex::flushtx()
 //		MuPskFlushTx();
 //	else {
 // flush the varicode decoder at the receiver end
-	    for (int i = 0; i < 4; i++)
-    	    sendidle();
+		for (int i = 0; i < 4; i++)
+			sendidle();
 //	}
 }
 
@@ -683,7 +684,7 @@ int dominoex::tx_process()
 	case TX_STATE_PREAMBLE:
 		if (progdefaults.DOMINOEX_FEC)
 			MuPskClearbits();
-        sendidle();
+		sendidle();
 		txstate = TX_STATE_START;
 		break;
 	case TX_STATE_START:
@@ -748,7 +749,7 @@ unsigned char dominoex::MuPskSec2Pri(int c)
 	else if (c >= '=' && c <= '@') c = c - '=' + 153;
 	else if (c >= '[' && c <= ']') c = c - '[' + 157;
 	else c = '_';
-	
+
 	return c;
 }
 
@@ -781,7 +782,7 @@ void dominoex::decodeMuPskSymbol(unsigned char symbol)
 	Mu_symbolpair[1] = symbol;
 
 	Mu_symcounter = Mu_symcounter ? 0 : 1;
-	
+
 	if (Mu_symcounter) return;
 
 	c = MuPskDec->decode (Mu_symbolpair, &met);
@@ -805,7 +806,7 @@ void dominoex::decodeMuPskEX(int ch)
 {
 	unsigned char symbols[4];
 	int c = ch;
-	
+
 	for (int i = 0; i < 4; i++) {
 		if ((c & 1) == 1) symbols[3-i] = 255;
 		else symbols[3-i] = 1;//-255;
@@ -813,7 +814,7 @@ void dominoex::decodeMuPskEX(int ch)
 	}
 	if (staticburst == true || outofrange == true)
 		symbols[3] = symbols[2] = symbols[1] = symbols[0] = 0;
-		
+
 	MuPskRxinlv->symbols(symbols);
 
 	for (int i = 0; i < 4; i++) decodeMuPskSymbol(symbols[i]);
@@ -856,13 +857,13 @@ void dominoex::MuPskClearbits()
 void dominoex::sendMuPskEX(unsigned char c, int secondary)
 {
 	const char *code;
-	if (secondary == 1) 
+	if (secondary == 1)
 		c = MuPskSec2Pri(c);
 	else {
-		if (c == 10) 
+		if (c == 10)
 			return;
 		if ( (c >= 1 && c <= 7) || (c >= 9 && c <= 12) || (c >= 14 && c <= 31) ||
-		     (c >= 127 && c <= 159))
+			 (c >= 127 && c <= 159))
 		   c = '_';
 	}
 	code = varienc(c);
