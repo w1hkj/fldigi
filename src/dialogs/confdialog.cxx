@@ -1445,6 +1445,13 @@ btnInitRIGCAT->redraw_label();
 progdefaults.changed = true;
 }
 
+Fl_Value_Slider *valRigCatStopbits=(Fl_Value_Slider *)0;
+
+static void cb_valRigCatStopbits(Fl_Value_Slider* o, void*) {
+  progdefaults.RigCatStopbits = (int)o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabHamlib=(Fl_Group *)0;
 
 Fl_Check_Button *chkUSEHAMLIB=(Fl_Check_Button *)0;
@@ -1607,6 +1614,13 @@ if (o->value() == 1) {
 }
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
+}
+
+Fl_Value_Slider *valHamRigStopbits=(Fl_Value_Slider *)0;
+
+static void cb_valHamRigStopbits(Fl_Value_Slider* o, void*) {
+  progdefaults.HamRigStopbits = (int)o->value();
+progdefaults.changed = true;
 }
 
 Fl_Group *grpMemmap=(Fl_Group *)0;
@@ -2227,6 +2241,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { tabOperator = new Fl_Group(0, 25, 500, 345, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -3665,7 +3680,6 @@ an merging"));
         tabModems->end();
       } // Fl_Group* tabModems
       { tabRig = new Fl_Group(0, 25, 500, 345, _("Rig"));
-        tabRig->hide();
         { tabsRig = new Fl_Tabs(0, 25, 500, 345);
           tabsRig->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hardware PTT"));
@@ -3731,6 +3745,7 @@ an merging"));
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("RigCAT"));
             o->tooltip(_("Rig Control using xml spec file"));
+            o->hide();
             { chkUSERIGCAT = new Fl_Check_Button(195, 60, 110, 20, _("Use RigCAT"));
               chkUSERIGCAT->tooltip(_("RigCAT used for rig control"));
               chkUSERIGCAT->down_box(FL_DOWN_BOX);
@@ -3770,7 +3785,7 @@ an merging"));
                 cntRigCatWait->align(FL_ALIGN_TOP_LEFT);
                 o->value(progdefaults.RigCatWait);
               } // Fl_Value_Input* cntRigCatWait
-              { Fl_Choice* o = mnuXmlRigBaudrate = new Fl_Choice(386, 154, 99, 22, _("Baud rate:"));
+              { Fl_Choice* o = mnuXmlRigBaudrate = new Fl_Choice(386, 150, 99, 22, _("Baud rate:"));
                 mnuXmlRigBaudrate->tooltip(_("Pick baud rate from list"));
                 mnuXmlRigBaudrate->down_box(FL_BORDER_BOX);
                 mnuXmlRigBaudrate->callback((Fl_Callback*)cb_mnuXmlRigBaudrate);
@@ -3824,12 +3839,24 @@ an merging"));
                 chkRigCatRTSCTSflow->callback((Fl_Callback*)cb_chkRigCatRTSCTSflow);
                 o->value(progdefaults.RigCatRTSCTSflow);
               } // Fl_Check_Button* chkRigCatRTSCTSflow
+              { Fl_Value_Slider* o = valRigCatStopbits = new Fl_Value_Slider(425, 190, 60, 22, _("Stopbits"));
+                valRigCatStopbits->type(1);
+                valRigCatStopbits->color(FL_BACKGROUND2_COLOR);
+                valRigCatStopbits->selection_color((Fl_Color)40);
+                valRigCatStopbits->minimum(1);
+                valRigCatStopbits->maximum(2);
+                valRigCatStopbits->step(1);
+                valRigCatStopbits->value(2);
+                valRigCatStopbits->textsize(14);
+                valRigCatStopbits->callback((Fl_Callback*)cb_valRigCatStopbits);
+                valRigCatStopbits->align(FL_ALIGN_LEFT);
+                o->value(progdefaults.RigCatStopbits);
+              } // Fl_Value_Slider* valRigCatStopbits
               grpRigCAT->end();
             } // Fl_Group* grpRigCAT
             o->end();
           } // Fl_Group* o
           { tabHamlib = new Fl_Group(0, 50, 500, 320, _("Hamlib"));
-            tabHamlib->hide();
             { chkUSEHAMLIB = new Fl_Check_Button(195, 60, 100, 20, _("Use Hamlib"));
               chkUSEHAMLIB->tooltip(_("Hamlib used for rig control"));
               chkUSEHAMLIB->down_box(FL_DOWN_BOX);
@@ -3857,35 +3884,34 @@ an merging"));
                 inpRIGdev->callback((Fl_Callback*)cb_inpRIGdev);
                 o->value(progdefaults.HamRigDevice.c_str());
               } // Fl_Input_Choice* inpRIGdev
-              { Fl_Value_Input* o = cntHamlibRetries = new Fl_Value_Input(30, 137, 70, 24, _("Retries"));
+              { Fl_Value_Input* o = cntHamlibRetries = new Fl_Value_Input(30, 133, 70, 24, _("Retries"));
                 cntHamlibRetries->tooltip(_("# times to resend command before giving up"));
                 cntHamlibRetries->callback((Fl_Callback*)cb_cntHamlibRetries);
                 cntHamlibRetries->align(FL_ALIGN_TOP_LEFT);
                 o->value(progdefaults.HamlibRetries);
               } // Fl_Value_Input* cntHamlibRetries
-              { Fl_Value_Input* o = cntHamlibTimeout = new Fl_Value_Input(155, 137, 70, 24, _("Retry Interval (ms)"));
+              { Fl_Value_Input* o = cntHamlibTimeout = new Fl_Value_Input(155, 133, 70, 24, _("Retry Interval (ms)"));
                 cntHamlibTimeout->tooltip(_("Msec\'s between retries"));
                 cntHamlibTimeout->callback((Fl_Callback*)cb_cntHamlibTimeout);
                 cntHamlibTimeout->align(FL_ALIGN_TOP_LEFT);
                 o->value(progdefaults.HamlibTimeout);
               } // Fl_Value_Input* cntHamlibTimeout
-              { Fl_Value_Input* o = cntHamlibWriteDelay = new Fl_Value_Input(30, 183, 70, 24, _("Write delay (ms)"));
+              { Fl_Value_Input* o = cntHamlibWriteDelay = new Fl_Value_Input(30, 176, 70, 24, _("Write delay (ms)"));
                 cntHamlibWriteDelay->tooltip(_("Msec\'s between sequential commands"));
                 cntHamlibWriteDelay->callback((Fl_Callback*)cb_cntHamlibWriteDelay);
                 cntHamlibWriteDelay->align(FL_ALIGN_TOP_LEFT);
                 o->value(progdefaults.HamlibWriteDelay);
               } // Fl_Value_Input* cntHamlibWriteDelay
-              { Fl_Value_Input* o = cntHamlibWait = new Fl_Value_Input(156, 182, 70, 24, _("Post write delay (ms)"));
+              { Fl_Value_Input* o = cntHamlibWait = new Fl_Value_Input(156, 176, 70, 24, _("Post write delay (ms)"));
                 cntHamlibWait->tooltip(_("Wait interval (msecs) before reading response"));
                 cntHamlibWait->callback((Fl_Callback*)cb_cntHamlibWait);
                 cntHamlibWait->align(FL_ALIGN_TOP_LEFT);
                 o->value(progdefaults.HamlibWait);
               } // Fl_Value_Input* cntHamlibWait
-              { Fl_Choice* o = mnuBaudRate = new Fl_Choice(385, 138, 99, 22, _("Baud rate:"));
+              { Fl_Choice* o = mnuBaudRate = new Fl_Choice(385, 127, 99, 22, _("Baud rate:"));
                 mnuBaudRate->tooltip(_("Serial port baud rate"));
                 mnuBaudRate->down_box(FL_BORDER_BOX);
                 mnuBaudRate->callback((Fl_Callback*)cb_mnuBaudRate);
-                mnuBaudRate->align(FL_ALIGN_TOP_LEFT);
                 o->add(szBaudRates);
                 o->value(progdefaults.HamRigBaudrate);
               } // Fl_Choice* mnuBaudRate
@@ -3957,6 +3983,19 @@ an merging"));
                 chkHamlibXONXOFFflow->callback((Fl_Callback*)cb_chkHamlibXONXOFFflow);
                 o->value(progdefaults.HamlibXONXOFFflow);
               } // Fl_Check_Button* chkHamlibXONXOFFflow
+              { Fl_Value_Slider* o = valHamRigStopbits = new Fl_Value_Slider(424, 162, 60, 22, _("Stopbits"));
+                valHamRigStopbits->type(1);
+                valHamRigStopbits->color(FL_BACKGROUND2_COLOR);
+                valHamRigStopbits->selection_color((Fl_Color)40);
+                valHamRigStopbits->minimum(1);
+                valHamRigStopbits->maximum(2);
+                valHamRigStopbits->step(1);
+                valHamRigStopbits->value(2);
+                valHamRigStopbits->textsize(14);
+                valHamRigStopbits->callback((Fl_Callback*)cb_valHamRigStopbits);
+                valHamRigStopbits->align(FL_ALIGN_LEFT);
+                o->value(progdefaults.HamRigStopbits);
+              } // Fl_Value_Slider* valHamRigStopbits
               grpHamlib->end();
             } // Fl_Group* grpHamlib
             tabHamlib->end();

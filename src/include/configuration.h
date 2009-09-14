@@ -539,6 +539,9 @@
               "  0: 300; 1: 600; 2: 1200; 3: 2400; 4: 4800; 5: 9600; 6: 19200;\n"       \
               "  7: 38400; 8: 57600; 9: 115200; 10: 230400; 11: 460800.",               \
               1)   /* 600 baud */                                                       \
+        ELEM_(int, HamRigStopbits, "HAMRIGSTOPBITS",                                    \
+              "Hamlib stopbits <1/2>.",                                                 \
+              2)   /* 600 baud */                                                       \
         ELEM_(std::string, XmlRigFilename, "XMLRIGFILENAME",                            \
               "RigCAT XML file name",                                                   \
               "")                                                                       \
@@ -548,6 +551,9 @@
         ELEM_(int, XmlRigBaudrate, "XMLRIGBAUDRATE",                                    \
               "RigCAT rig baud rate.  See HAMRIGBAUDRATE.",                             \
               1)   /* 600 baud */                                                       \
+        ELEM_(int, RigCatStopbits, "RIGCATSTOPBITS",                                    \
+              "RigCAT stopbits. <1/2>",                                                 \
+              2)   /* 600 baud */                                                       \
         ELEM_(bool, TTYptt, "TTYPTT",                                                   \
               "Use separate device for PTT",                                            \
               false)                                                                    \

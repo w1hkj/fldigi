@@ -38,6 +38,7 @@ Cserial::Cserial() {
 	rtsptt = dtrptt = false;
 	rtscts = false;
 	status = 0;
+	stopbits = 2;
 	fd = -1;
 }
 
@@ -69,7 +70,7 @@ bool Cserial::OpenPort()  {
 
     newtio.c_cflag &= ~PARENB;
 
-	if (0)
+	if (stopbits == 1)
 		newtio.c_cflag &= ~CSTOPB; // 1 stop bit
 	else
 		newtio.c_cflag |= CSTOPB; // 2 stop bit
@@ -284,7 +285,7 @@ BOOL Cserial::OpenPort()
 	if(hComm == INVALID_HANDLE_VALUE)
 		return FALSE;
 
-	ConfigurePort( baud, 8, FALSE, NOPARITY, ONESTOPBIT);
+	ConfigurePort( baud, 8, FALSE, NOPARITY, stopbits);
 
     FlushBuffer();
 

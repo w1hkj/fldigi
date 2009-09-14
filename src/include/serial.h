@@ -20,43 +20,46 @@ public:
 
 //Methods
 	bool OpenPort();
-	
+
 	bool IsOpen() { return fd < 0 ? 0 : 1; };
 	void ClosePort();
 
 	void Device (std::string dev) { device = dev;};
 	std::string Device() { return device;};
-	
+
 	void Baud(int b) { baud = b;};
 	int  Baud() { return baud;};
-	
+
 	void Timeout(int tm) { timeout = tm;}
 	int  Timeout() { return timeout; }
-	
+
 	void Retries(int r) { retries = r;}
 	int  Retries() { return retries;}
-	
+
 	void RTS(bool r){rts = r;}
 	bool RTS(){return rts;}
-	
+
 	void RTSptt(bool b){rtsptt = b;}
 	bool RTSptt(){return rtsptt;}
-	
+
 	void DTR(bool d){dtr = d;}
 	bool DTR(){return dtr;}
-	
+
 	void DTRptt(bool b){dtrptt = b;}
 	bool DTRptt(){return dtrptt;}
-	
+
 	void RTSCTS(bool b){rtscts = b;}
 	bool RTSCTS(){return rtscts;}
 	void SetPTT(bool b);
-	
+
+	void Stopbits(int n) {stopbits = (n == 1 ? 1 : 2);}
+	int  Stopbits() { return stopbits;}
+
 	int  ReadBuffer (unsigned char *b, int nbr);
 	int  WriteBuffer(unsigned char *str, int nbr);
 	void FlushBuffer();
-	
-	
+
+
 private:
 //Members
 	std::string	device;
@@ -72,6 +75,7 @@ private:
 	bool	rts;
 	bool	rtsptt;
 	bool	rtscts;
+	int		stopbits;
 	char	bfr[2048];
 //Methods
 	bool	IOselect();
@@ -88,6 +92,7 @@ public:
 		rtsptt = dtrptt = false;
 		rtscts = false;
 		baud = CBR_9600;
+		stopbits = 2;
 	};
 	Cserial( std::string portname) {
 		device = portname;
@@ -125,28 +130,31 @@ public:
 
 	void Device (std::string dev) { device = dev;};
 	std::string Device() { return device;};
-	
+
 	void Baud(int b) { baud = b;};
 	int  Baud() { return baud;};
-	
+
 	void Retries(int r) { retries = r;}
 	int  Retries() { return retries;}
-	
+
 	void RTS(bool r){rts = r;}
 	bool RTS(){return rts;}
-	
+
 	void RTSptt(bool b){rtsptt = b;}
 	bool RTSptt(){return rtsptt;}
-	
+
 	void DTR(bool d){dtr = d;}
 	bool DTR(){return dtr;}
-	
+
 	void DTRptt(bool b){dtrptt = b;}
 	bool DTRptt(){return dtrptt;}
-	
+
 	void RTSCTS(bool b){rtscts = b;}
 	bool RTSCTS(){return rtscts;}
 	void SetPTT(bool b);
+
+	void Stopbits(int n) {stopbits = (n == 1 ? 1 : 2);}
+	int  Stopbits() { return stopbits;}
 
 //Members
 private:
@@ -161,7 +169,7 @@ private:
 
 	//Is the Port Ready?
 	BOOL			bPortReady;
-	
+
 	//Number of Bytes Written to port
 	DWORD			nBytesWritten;
 
@@ -176,13 +184,13 @@ private:
 
 	int		baud;
 	int		retries;
-	
+
 	bool	dtr;
 	bool	dtrptt;
 	bool	rts;
 	bool	rtsptt;
 	bool	rtscts;
-	
+	int		stopbits;
 };
 
 #endif // __MINGW32__

@@ -50,8 +50,8 @@ const struct rig_caps* Rig::getCaps(void)
 
 void Rig::open(void)
 {
-	int err;
-	if ((err = rig_open(rig)) != RIG_OK)
+	int err = rig_open(rig);
+	if (err != RIG_OK)
 		throw RigException(err);
 }
 
