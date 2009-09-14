@@ -352,7 +352,10 @@ bool QRZGetXML(string& xmlpage)
 	detail += "Connection: close\n";
 	detail += "\n";
 
-	return request_reply(qrzhost, "http", detail, xmlpage, 5.0);
+//	return request_reply(qrzhost, "http", detail, xmlpage, 5.0);
+	bool res = request_reply(qrzhost, "http", detail, xmlpage, 5.0);
+	LOG_DEBUG("result = %d", res);
+	return res;
 }
 
 void QRZ_disp_result()
@@ -447,6 +450,7 @@ void Lookup_init(void)
 		LOG_PERROR("pthread_create");
 		return;
 	}
+	MilliSleep(10);
 }
 
 void QRZclose(void)
@@ -478,15 +482,19 @@ void QRZAlert()
 {
 	ENSURE_THREAD(FLMAIN_TID);
 
-	// test alert first as QRZ.com requires it be shown
+	string qrznote;
 	if (!qrzalert.empty()) {
-		inpNotes->value(qrzalert.c_str());
+		qrznote.append("QRZ alert notice:\n");
+		qrznote.append(qrzalert);
+		qrznote.append("\n");
 		qrzalert.clear();
 	}
-	else if (!qrzerror.empty()) {
-		inpNotes->value(qrzerror.c_str());
+	if (!qrzerror.empty()) {
+		qrznote.append("QRZ error notice:\n");
+		qrznote.append(qrzalert);
 		qrzerror.clear();
 	}
+	inpNotes->value(qrznote.c_str());
 }
 
 bool QRZLogin(string& sessionpage)
@@ -496,8 +504,10 @@ bool QRZLogin(string& sessionpage)
 		ok = getSessionKey(sessionpage);
 		if (ok) ok = parseSessionKey(sessionpage);
 	}
-	if (!ok)
+	if (!ok) {
+		LOG_DEBUG("failed");
 		REQ(QRZAlert);
+	}
 
 	return ok;
 }
@@ -514,7 +524,7 @@ void QRZquery()
 		ok = QRZLogin(qrzpage);
 	if (ok)
 		ok = QRZGetXML(qrzpage);
-	if (ok) {
+	if (!ok) { // change to negative for MS not getting on first try
 		if (qrzSessionKey.empty())
 			ok = QRZLogin(qrzpage);
 		if (ok)
