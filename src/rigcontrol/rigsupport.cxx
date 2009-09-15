@@ -573,7 +573,7 @@ void setTitle()
 
 bool init_Xml_RigDialog()
 {
-LOG_DEBUG("xml rig");
+LOG_INFO("xml rig");
 	initOptionMenus();
 	clearList();
 	buildlist();

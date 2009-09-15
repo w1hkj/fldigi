@@ -48,9 +48,9 @@ Cserial::~Cserial() {
 
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::OpenPort
-// Description	    : Opens the port specified by strPortName
+// Description		: Opens the port specified by strPortName
 // Return type		: BOOL
-// Argument         : c_string strPortName
+// Argument		 : c_string strPortName
 ///////////////////////////////////////////////////////
 bool Cserial::OpenPort()  {
 
@@ -68,7 +68,7 @@ bool Cserial::OpenPort()  {
 	newtio.c_cflag &= ~CSIZE;
 	newtio.c_cflag |= CS8 | CLOCAL | CREAD;
 
-    newtio.c_cflag &= ~PARENB;
+	newtio.c_cflag &= ~PARENB;
 
 	if (stopbits == 1)
 		newtio.c_cflag &= ~CSTOPB; // 1 stop bit
@@ -83,36 +83,36 @@ bool Cserial::OpenPort()  {
 	newtio.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
 	newtio.c_oflag &= ~OPOST;
 
-    newtio.c_iflag &= ~IXON;
+	newtio.c_iflag &= ~IXON;
 
  	switch(baud) {
  		case 300:
 			speed = B300;
-    		break;
+			break;
   		case 1200:
 			speed = B1200;
-    		break;
+			break;
   		case 2400:
 			speed = B2400;
-    		break;
+			break;
   		case 4800:
 			speed = B4800;
-    		break;
+			break;
   		case 9600:
 			speed = B9600;
-    		break;
+			break;
   		case 19200:
 			speed = B19200;
-    		break;
+			break;
   		case 38400:
 			speed = B38400;
-    		break;
+			break;
 		case 57600:
 			speed = B57600;
-    		break;
+			break;
   		case 115200:
 			speed = B115200;
-    		break;
+			break;
   		default:
   			speed = B1200;
   	}
@@ -141,8 +141,8 @@ bool Cserial::OpenPort()  {
 }
 
 ///////////////////////////////////////////////////////
-// Function name    : Cserial::setPTT
-// Return type      : void
+// Function name	: Cserial::setPTT
+// Return type	  : void
 ///////////////////////////////////////////////////////
 void Cserial::SetPTT(bool b)
 {
@@ -151,32 +151,32 @@ void Cserial::SetPTT(bool b)
 		return;
 	}
 	if (dtrptt || rtsptt) {
-        ioctl(fd, TIOCMGET, &status);
-	    LOG_INFO("h/w ptt %d, Status %X", b, status);
-	    if (b == true) {                                  // ptt enabled
-		    if (dtrptt && dtr)  status &= ~TIOCM_DTR;     // toggle low
-		    if (dtrptt && !dtr) status |= TIOCM_DTR;      // toggle high
-            if (rtscts == false) {
-			    if (rtsptt && rts)  status &= ~TIOCM_RTS; // toggle low
-			    if (rtsptt && !rts) status |= TIOCM_RTS;  // toggle high
-		    }
-	    } else {                                          // ptt disabled
-		    if (dtrptt && dtr)  status |= TIOCM_DTR;      // toggle high
-		    if (dtrptt && !dtr) status &= ~TIOCM_DTR;     // toggle low
-		    if (rtscts == false) {
-			    if (rtsptt && rts)  status |= TIOCM_RTS;  // toggle high
-			    if (rtsptt && !rts) status &= ~TIOCM_RTS; // toggle low
-		    }
-	    }
-	    LOG_INFO("Status %02X, %s", status & 0xFF, uint2bin(status, 8));
-	    ioctl(fd, TIOCMSET, &status);
-    }
-    LOG_DEBUG("No ptt specified");
+		ioctl(fd, TIOCMGET, &status);
+		LOG_INFO("h/w ptt %d, Status %X", b, status);
+		if (b == true) {								  // ptt enabled
+			if (dtrptt && dtr)  status &= ~TIOCM_DTR;	 // toggle low
+			if (dtrptt && !dtr) status |= TIOCM_DTR;	  // toggle high
+			if (rtscts == false) {
+				if (rtsptt && rts)  status &= ~TIOCM_RTS; // toggle low
+				if (rtsptt && !rts) status |= TIOCM_RTS;  // toggle high
+			}
+		} else {										  // ptt disabled
+			if (dtrptt && dtr)  status |= TIOCM_DTR;	  // toggle high
+			if (dtrptt && !dtr) status &= ~TIOCM_DTR;	 // toggle low
+			if (rtscts == false) {
+				if (rtsptt && rts)  status |= TIOCM_RTS;  // toggle high
+				if (rtsptt && !rts) status &= ~TIOCM_RTS; // toggle low
+			}
+		}
+		LOG_INFO("Status %02X, %s", status & 0xFF, uint2bin(status, 8));
+		ioctl(fd, TIOCMSET, &status);
+	}
+	LOG_DEBUG("No ptt specified");
 }
 
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::ClosePort
-// Description	    : Closes the Port
+// Description		: Closes the Port
 // Return type		: void
 ///////////////////////////////////////////////////////
 void Cserial::ClosePort()
@@ -209,9 +209,9 @@ bool  Cserial::IOselect ()
 
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::ReadBuffer
-// Description	    : Reads upto nchars from the selected port
+// Description		: Reads upto nchars from the selected port
 // Return type		: # characters received
-// Argument         : pointer to buffer; # chars to read
+// Argument		 : pointer to buffer; # chars to read
 ///////////////////////////////////////////////////////
 int  Cserial::ReadBuffer (unsigned char *buf, int nchars)
 {
@@ -234,9 +234,9 @@ int  Cserial::ReadBuffer (unsigned char *buf, int nchars)
 
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::WriteBuffer
-// Description	    : Writes a string to the selected port
+// Description		: Writes a string to the selected port
 // Return type		: BOOL
-// Argument         : BYTE by
+// Argument		 : BYTE by
 ///////////////////////////////////////////////////////
 int Cserial::WriteBuffer(unsigned char *buff, int n)
 {
@@ -263,9 +263,9 @@ using namespace std;
 
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::OpenPort
-// Description	    : Opens the port specified by strPortName
+// Description		: Opens the port specified by strPortName
 // Return type		: BOOL
-// Argument         : CString strPortName
+// Argument		 : CString strPortName
 ///////////////////////////////////////////////////////
 BOOL Cserial::OpenPort()
 {
@@ -275,19 +275,26 @@ BOOL Cserial::OpenPort()
 	COMportname += device;
 
 	hComm = CreateFile(COMportname.c_str(),
-              GENERIC_READ | GENERIC_WRITE,
-              0,
-              0,
-              OPEN_EXISTING,
-              0,
-              0);
+			  GENERIC_READ | GENERIC_WRITE,
+			  0,
+			  0,
+			  OPEN_EXISTING,
+			  0,
+			  0);
 
-	if(hComm == INVALID_HANDLE_VALUE)
+	if(hComm == INVALID_HANDLE_VALUE) {
+		LOG_ERROR("Invalid handle");
 		return FALSE;
+	}
 
-	ConfigurePort( baud, 8, FALSE, NOPARITY, stopbits);
+	if (!ConfigurePort( baud, 8, FALSE, NOPARITY, stopbits)) {
+		CloseHandle(hComm);
+		hComm = INVALID_HANDLE_VALUE;
+		LOG_ERROR("Could not configure port");
+		return FALSE;
+	}
 
-    FlushBuffer();
+	FlushBuffer();
 
 	return TRUE;
 }
@@ -295,7 +302,7 @@ BOOL Cserial::OpenPort()
 
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::ClosePort
-// Description	    : Closes the Port
+// Description		: Closes the Port
 // Return type		: void
 ///////////////////////////////////////////////////////
 void Cserial::ClosePort()
@@ -303,6 +310,7 @@ void Cserial::ClosePort()
 	if (hComm) {
 		bPortReady = SetCommTimeouts (hComm, &CommTimeoutsSaved);
 		CloseHandle(hComm);
+		hComm = INVALID_HANDLE_VALUE;
 	}
 	return;
 }
@@ -310,7 +318,7 @@ void Cserial::ClosePort()
 
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::GetBytesRead
-// Description	    :
+// Description		:
 // Return type		: DWORD
 ///////////////////////////////////////////////////////
 DWORD Cserial::GetBytesRead()
@@ -320,7 +328,7 @@ DWORD Cserial::GetBytesRead()
 
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::GetBytesWritten
-// Description	    : returns total number of bytes written to port
+// Description		: returns total number of bytes written to port
 // Return type		: DWORD
 ///////////////////////////////////////////////////////
 DWORD Cserial::GetBytesWritten()
@@ -331,9 +339,9 @@ DWORD Cserial::GetBytesWritten()
 
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::ReadByte
-// Description	    : Reads a byte from the selected port
+// Description		: Reads a byte from the selected port
 // Return type		: BOOL
-// Argument         : BYTE& by
+// Argument		 : BYTE& by
 ///////////////////////////////////////////////////////
 BOOL Cserial::ReadByte(UCHAR& by)
 {
@@ -373,9 +381,9 @@ void Cserial::FlushBuffer()
 
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::WriteByte
-// Description	    : Writes a Byte to teh selected port
+// Description		: Writes a Byte to teh selected port
 // Return type		: BOOL
-// Argument         : BYTE by
+// Argument		 : BYTE by
 ///////////////////////////////////////////////////////
 BOOL Cserial::WriteByte(UCHAR by)
 {
@@ -388,9 +396,9 @@ BOOL Cserial::WriteByte(UCHAR by)
 
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::WriteBuffer
-// Description	    : Writes a string to the selected port
+// Description		: Writes a string to the selected port
 // Return type		: BOOL
-// Argument         : BYTE by
+// Argument		 : BYTE by
 ///////////////////////////////////////////////////////
 int Cserial::WriteBuffer(unsigned char *buff, int n)
 {
@@ -405,13 +413,13 @@ int Cserial::WriteBuffer(unsigned char *buff, int n)
 
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::SetCommunicationTimeouts
-// Description	    : Sets the timeout for the selected port
+// Description		: Sets the timeout for the selected port
 // Return type		: BOOL
-// Argument         : DWORD ReadIntervalTimeout
-// Argument         : DWORD ReadTotalTimeoutMultiplier
-// Argument         : DWORD ReadTotalTimeoutConstant
-// Argument         : DWORD WriteTotalTimeoutMultiplier
-// Argument         : DWORD WriteTotalTimeoutConstant
+// Argument		 : DWORD ReadIntervalTimeout
+// Argument		 : DWORD ReadTotalTimeoutMultiplier
+// Argument		 : DWORD ReadTotalTimeoutConstant
+// Argument		 : DWORD WriteTotalTimeoutMultiplier
+// Argument		 : DWORD WriteTotalTimeoutConstant
 ///////////////////////////////////////////////////////
 BOOL Cserial::SetCommunicationTimeouts(
 	DWORD ReadIntervalTimeout, // msec
@@ -424,33 +432,39 @@ BOOL Cserial::SetCommunicationTimeouts(
 	if((bPortReady = GetCommTimeouts (hComm, &CommTimeoutsSaved))==0)	{
 		return FALSE;
 	}
-    LOG_INFO("\n\
-COMMTIMOUT Original values:\n\
-    Read Interval Timeout............... %ld\n\
-    Read Total Timeout Multiplier....... %ld\n\
-    Read Total Timeout Constant Timeout. %ld\n\
-    Write Total Timeout Constant........ %ld\n\
-    Write Total Timeout Multiplier...... %ld",
-	     CommTimeoutsSaved.ReadIntervalTimeout,
-	     CommTimeoutsSaved.ReadTotalTimeoutMultiplier,
-	     CommTimeoutsSaved.ReadTotalTimeoutConstant,
-	     CommTimeoutsSaved.WriteTotalTimeoutConstant,
-	     CommTimeoutsSaved.WriteTotalTimeoutMultiplier);
 
-    CommTimeouts.ReadIntervalTimeout = ReadIntervalTimeout;
-    CommTimeouts.ReadTotalTimeoutMultiplier = ReadTotalTimeoutMultiplier;
-    CommTimeouts.ReadTotalTimeoutConstant = ReadTotalTimeoutConstant;
-    CommTimeouts.WriteTotalTimeoutConstant = WriteTotalTimeoutConstant;
-    CommTimeouts.WriteTotalTimeoutMultiplier = WriteTotalTimeoutMultiplier;
+	CommTimeouts.ReadIntervalTimeout = ReadIntervalTimeout;
+	CommTimeouts.ReadTotalTimeoutMultiplier = ReadTotalTimeoutMultiplier;
+	CommTimeouts.ReadTotalTimeoutConstant = ReadTotalTimeoutConstant;
+	CommTimeouts.WriteTotalTimeoutConstant = WriteTotalTimeoutConstant;
+	CommTimeouts.WriteTotalTimeoutMultiplier = WriteTotalTimeoutMultiplier;
 
-    bPortReady = SetCommTimeouts (hComm, &CommTimeouts);
+	LOG_INFO("\n\
+Read Interval Timeout............... %8ld %8ld\n\
+Read Total Timeout Multiplier....... %8ld %8ld\n\
+Read Total Timeout Constant Timeout. %8ld %8ld\n\
+Write Total Timeout Constant........ %8ld %8ld\n\
+Write Total Timeout Multiplier...... %8ld %8ld",
+		 CommTimeoutsSaved.ReadIntervalTimeout,
+		 CommTimeouts.ReadIntervalTimeout,
+		 CommTimeoutsSaved.ReadTotalTimeoutMultiplier,
+		 CommTimeouts.ReadTotalTimeoutMultiplier,
+		 CommTimeoutsSaved.ReadTotalTimeoutConstant,
+		 CommTimeouts.ReadTotalTimeoutConstant,
+		 CommTimeoutsSaved.WriteTotalTimeoutConstant,
+		 CommTimeouts.WriteTotalTimeoutConstant,
+		 CommTimeoutsSaved.WriteTotalTimeoutMultiplier,
+		 CommTimeouts.WriteTotalTimeoutMultiplier);
 
-    if(bPortReady ==0) {
-	    CloseHandle(hComm);
-	    return FALSE;
-    }
+	bPortReady = SetCommTimeouts (hComm, &CommTimeouts);
 
-    return TRUE;
+	if(bPortReady ==0) {
+		CloseHandle(hComm);
+		hComm = INVALID_HANDLE_VALUE;
+		return FALSE;
+	}
+
+	return TRUE;
 }
 
 BOOL Cserial::SetCommTimeout() {
@@ -518,51 +532,51 @@ BOOL Cserial::SetCommTimeout() {
  * If no bytes arrive within the time specified by ReadTotalTimeoutConstant,
  * ReadFile times out.
 */
-//  return SetCommunicationTimeouts (0, 500L, 0L, 100L, 0L );
-  return SetCommunicationTimeouts (
-    0, // 0L,    // Read Interval Timeout
-    0,        // 50l,   // Read Total Timeout Multiplier
-    200,        // 0l,    // Read Total Timeout Constant
-    50,        // 50L,   // Write Total Timeout Constant
-    0         // Write Total Timeout Multiplier
-    );
+	return SetCommunicationTimeouts (
+		0,   // Read Interval Timeout
+		0,   // Read Total Timeout Multiplier
+		50,  // Read Total Timeout Constant
+		50,  // Write Total Timeout Constant
+		0    // Write Total Timeout Multiplier
+	);
   }
 
 ///////////////////////////////////////////////////////
 // Function name	: ConfigurePort
-// Description	    : Configures the Port
+// Description		: Configures the Port
 // Return type		: BOOL
-// Argument         : DWORD BaudRate
-// Argument         : BYTE ByteSize
-// Argument         : DWORD fParity
-// Argument         : BYTE  Parity
-// Argument         : BYTE StopBits
+// Argument		 : DWORD BaudRate
+// Argument		 : BYTE ByteSize
+// Argument		 : DWORD fParity
+// Argument		 : BYTE  Parity
+// Argument		 : BYTE StopBits
 ///////////////////////////////////////////////////////
 BOOL Cserial::ConfigurePort(DWORD	BaudRate,
-			    BYTE	ByteSize,
-			    DWORD	dwParity,
-			    BYTE	Parity,
-			    BYTE	StopBits)
+				BYTE	ByteSize,
+				DWORD	dwParity,
+				BYTE	Parity,
+				BYTE	StopBits)
 {
 	if((bPortReady = GetCommState(hComm, &dcb))==0) {
 		LOG_ERROR("GetCommState Error on %s", device.c_str());
 		CloseHandle(hComm);
+		hComm = INVALID_HANDLE_VALUE;
 		return FALSE;
 	}
 
-	dcb.BaudRate            = BaudRate;
-	dcb.ByteSize            = ByteSize;
-	dcb.Parity              = Parity ;
-	dcb.StopBits            = StopBits;
-	dcb.fBinary             = TRUE;
-	dcb.fDsrSensitivity     = FALSE;
-	dcb.fParity             = dwParity;
-	dcb.fOutX               = FALSE;
-	dcb.fInX                = FALSE;
-	dcb.fNull               = FALSE;
-	dcb.fAbortOnError       = TRUE;
-	dcb.fOutxCtsFlow        = FALSE;
-	dcb.fOutxDsrFlow        = FALSE;
+	dcb.BaudRate			= BaudRate;
+	dcb.ByteSize			= ByteSize;
+	dcb.Parity				= Parity ;
+	dcb.StopBits			= (StopBits == 1 ? ONESTOPBIT : TWOSTOPBITS);
+	dcb.fBinary				= TRUE;
+	dcb.fDsrSensitivity		= FALSE;
+	dcb.fParity				= dwParity;
+	dcb.fOutX				= FALSE;
+	dcb.fInX				= FALSE;
+	dcb.fNull				= FALSE;
+	dcb.fAbortOnError		= TRUE;
+	dcb.fOutxCtsFlow		= FALSE;
+	dcb.fOutxDsrFlow		= FALSE;
 
 	if (dtr)
 		dcb.fDtrControl = DTR_CONTROL_ENABLE;
@@ -583,14 +597,16 @@ BOOL Cserial::ConfigurePort(DWORD	BaudRate,
 	bPortReady = SetCommState(hComm, &dcb);
 	if(bPortReady == 0) {
 		CloseHandle(hComm);
+		hComm = INVALID_HANDLE_VALUE;
+		LOG_ERROR("Port not available");
 		return FALSE;
 	}
 	return SetCommTimeout();
 }
 
 ///////////////////////////////////////////////////////
-// Function name    : Cserial::setPTT
-// Return type      : void
+// Function name	: Cserial::setPTT
+// Return type	  : void
 ///////////////////////////////////////////////////////
 void Cserial::SetPTT(bool b)
 {

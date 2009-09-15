@@ -44,8 +44,6 @@ static pthread_t		*rigCAT_thread = 0;
 static bool			 rigCAT_exit = false;
 static bool			 rigCAT_open = false;
 static bool			 rigCAT_bypass = false;
-static unsigned char	replybuff[200];
-static unsigned char	sendbuff[200];
 
 static string		   sRigWidth = "";
 static string		   sRigMode = "";
@@ -59,73 +57,36 @@ string noCATwidth = "";
 
 static void *rigCAT_loop(void *args);
 
-int  readtimeout, readwait;
+#define RXBUFFSIZE 2000
+static char replybuff[RXBUFFSIZE+1];
+static unsigned char retbuf[3];
 
-bool hexout(const string& s, int retnbr)
+bool sendCommand (string s, int retnbr)
 {
-	unsigned char retbuf[2];
 	int numread = 0;
 	int numwrite = (int)s.size();
+	int readafter = progdefaults.RigCatWait;
+	readafter += (int)(ceilf((retnbr + progdefaults.RigCatECHO ? numwrite : 0) *
+					8000.0 / rigio.Baud()));
 
-	for (int n = 0; n < progdefaults.RigCatRetries; n++) {
-		memset(sendbuff,0, 200);
-		for (unsigned int i = 0; i < s.length(); i++)
-			sendbuff[i] = s[i];
+	LOG_DEBUG("sent %s", str2hex(s.data(), s.length()));
 
-// write the command string
-		rigio.WriteBuffer(sendbuff, s.size());
-
-// read the echo if required
-		numread = 0;
-		if (progdefaults.RigCatECHO == true) {
-			memset(replybuff,0,200);
-			while (numread < numwrite) {
-				readwait = progdefaults.RigCatWait + 1;
-				memset(retbuf, 0, 2);
-				while (readwait && rigio.ReadBuffer(retbuf, 1) == 0) {
-					MilliSleep(1);
-					readwait--;
-				}
-				if (!readwait) break;
-				replybuff[numread] = retbuf[0];
-				numread++;
-			}
-
-			if (readwait == 0) {
-				return false; // could not read the echo
-			}
-		}
-
-// read the response if required
-		if (retnbr > 0) {
-			memset(replybuff,0,200);
-			numread = 0;
-			while (numread < retnbr) {
-				readwait = progdefaults.RigCatWait + 1;
-				memset(retbuf, 0, 2);
-				while (readwait && rigio.ReadBuffer(retbuf, 1) == 0) {
-					MilliSleep(1);
-					readwait--;
-				}
-				if (!readwait) break;
-				replybuff[numread] = retbuf[0];
-				numread++;
-			}
-			if (numread == retnbr) {
-				return true;
-			} else
-				LOG_ERROR("read fail, %d bytes, retry # %d", numread, n);
-		}
-		else // no response need
-			return true; // just return true
-
-	  if ((readtimeout = progdefaults.RigCatTimeout) > 0)
-		  while (readtimeout--)
-			  MilliSleep(1);
+	rigio.WriteBuffer((unsigned char *)s.c_str(), numwrite);
+	memset(replybuff, 0, RXBUFFSIZE + 1);
+	numread = 0;
+	MilliSleep( readafter );
+	while (numread < RXBUFFSIZE) {
+		memset(retbuf, 0, 2);
+		if (rigio.ReadBuffer(retbuf, 1) == 0) break;
+		replybuff[numread] = retbuf[0];
+		numread++;
 	}
-
-// failed to read in RigCatRetries
-	return false; // timed out
+	LOG_DEBUG("reply %s", str2hex(replybuff, numread));
+	if (numread > retnbr) {
+		memmove(replybuff, replybuff + numread - retnbr, retnbr);
+		numread = retnbr;
+	}
+	return (numread == retnbr);
 }
 
 string to_bcd_be(long long freq, int len)
@@ -163,7 +124,7 @@ long long fm_bcd (size_t p, int len)
 	if (len & 1) numchars ++;
 	for (i = 0; i < numchars; i++) {
 		f *=10;
-		f += replybuff[p + i] >> 4;
+		f += (replybuff[p + i] >> 4) & 0x0F;
 		f *= 10;
 		f += replybuff[p + i] & 0x0F;
 	}
@@ -301,26 +262,24 @@ long long fm_freqdata(DATA d, size_t p)
 	int num, den;
 	num = (int)(d.resolution * 100);
 	den = 100;
+	long long fret = 0;
 	if (d.dtype == "BCD") {
-		if (d.reverse == true) {
-			// LOG_INFO("BCD reverse");
-			return (long long int)(fm_bcd_be(p, d.size) * num / den);
-		} else {
-			// LOG_INFO("BCD normal");
-			return (long long int)(fm_bcd(p, d.size)  * num / den);
-		}
+		if (d.reverse == true)
+			fret = (long long int)(fm_bcd_be(p, d.size) * num / den);
+		else
+			fret = (long long int)(fm_bcd(p, d.size)  * num / den);
 	} else if (d.dtype == "BINARY") {
 		if (d.reverse == true)
-			return (long long int)(fm_binary_be(p, d.size)  * num / den);
+			fret = (long long int)(fm_binary_be(p, d.size)  * num / den);
 		else
-			return (long long int)(fm_binary(p, d.size)  * num / den);
+			fret = (long long int)(fm_binary(p, d.size)  * num / den);
 	} else if (d.dtype == "DECIMAL") {
 		if (d.reverse == true)
-			return (long long int)(fm_decimal_be(p, d.size)  * num / den);
+			fret = (long long int)(fm_decimal_be(p, d.size)  * num / den);
 		else
-			return (long long int)(fm_decimal(p, d.size)  * num / den);
+			fret = (long long int)(fm_decimal(p, d.size)  * num / den);
 	}
-	return 0;
+	return fret;
 }
 
 long long rigCAT_getfreq()
@@ -328,12 +287,12 @@ long long rigCAT_getfreq()
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
+	size_t p = 0, len = 0, pData = 0;
+	long long f = 0;
 
 	if (nonCATrig == true || noXMLfile) {
 		return noCATfreq;
 	}
-
-//	LOG_DEBUG("get frequency");
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -355,61 +314,60 @@ long long rigCAT_getfreq()
 	if (modeCmd.str2.empty() == false)
 		strCmd.append(modeCmd.str2);
 
-	if (modeCmd.info.size() == 0)
-		return 0;
+	if ( !modeCmd.info.size() ) return 0;
 
 	for (list<XMLIOS>::iterator preply = reply.begin(); preply != reply.end(); ++preply) {
 		if (preply->SYMBOL != modeCmd.info)
 			continue;
 
 		XMLIOS  rTemp = *preply;
-		size_t p = 0, pData = 0;
-		size_t len = rTemp.str1.size();
+		p = 0;
+		pData = 0;
+		len = rTemp.str1.size();
 
-		// send the command
-		if (hexout(strCmd, rTemp.size ) == false) {
-			LOG_ERROR("Hexout failed");
-			return -1;
-		}
-
-		// check the pre data string
-		if (len) {
-			for (size_t i = 0; i < len; i++) {
-				if ((char)rTemp.str1[i] != (char)replybuff[i]) {
-					LOG_WARN("failed pre data string test @ %" PRIuSZ, i);
-					return 0;
-				}
+		for (int n = 0; n < progdefaults.RigCatRetries; n++) {
+			if (n && progdefaults.RigCatTimeout > 0)
+				MilliSleep(progdefaults.RigCatTimeout);
+// send the command
+			if ( !sendCommand(strCmd, rTemp.size ) ) {
+				LOG_INFO("sendCommand failed");
+				goto retry_get_freq;
 			}
-			p = len;
-		}
-		if (rTemp.fill1) p += rTemp.fill1;
-		pData = p;
-		if (rTemp.data.dtype == "BCD") {
-			p += rTemp.data.size / 2;
-			if (rTemp.data.size & 1) p++;
-		} else
-			p += rTemp.data.size;
-		// check the post data string
-		len = rTemp.str2.size();
-		if (rTemp.fill2) p += rTemp.fill2;
-		if (len) {
-			for (size_t i = 0; i < len; i++)
-				if ((char)rTemp.str2[i] != (char)replybuff[p + i]) {
-					LOG_WARN("failed post data string test @ %" PRIuSZ, i);
-					return 0;
+// check the pre data string
+			if (len) {
+				for (size_t i = 0; i < len; i++) {
+					if ((char)rTemp.str1[i] != (char)replybuff[i]) {
+						LOG_INFO("failed pre data string test @ %" PRIuSZ, i);
+						goto retry_get_freq;
+					}
 				}
-		}
-		// convert the data field
-		long long f = fm_freqdata(rTemp.data, pData);
-		if ( f >= rTemp.data.min && f <= rTemp.data.max) {
-			return f;
-		}
-		else {
-			LOG_WARN("freq value failed %lld", f);
-			return 0;
+				p = len;
+			}
+			if (rTemp.fill1) p += rTemp.fill1;
+			pData = p;
+			if (rTemp.data.dtype == "BCD") {
+				p += rTemp.data.size / 2;
+				if (rTemp.data.size & 1) p++;
+			} else
+				p += rTemp.data.size;
+// check the post data string
+			len = rTemp.str2.size();
+			if (rTemp.fill2) p += rTemp.fill2;
+			if (len) {
+				for (size_t i = 0; i < len; i++)
+					if ((char)rTemp.str2[i] != (char)replybuff[p + i]) {
+						LOG_INFO("failed post data string test @ %" PRIuSZ, i);
+						goto retry_get_freq;
+					}
+			}
+// convert the data field
+			f = fm_freqdata(rTemp.data, pData);
+			if ( f >= rTemp.data.min && f <= rTemp.data.max)
+				return f;
+retry_get_freq: ;
 		}
 	}
-
+	LOG_WARN("Retries failed");
 	return 0;
 }
 
@@ -454,30 +412,40 @@ void rigCAT_setfreq(long long f)
 			if (preply->SYMBOL == modeCmd.ok) {
 				XMLIOS  rTemp = *preply;
 // send the command
-				pthread_mutex_lock(&rigCAT_mutex);
-					hexout(strCmd, rTemp.size);
-				pthread_mutex_unlock(&rigCAT_mutex);
+				bool ok = false;
+				for (int n = 0; n < progdefaults.RigCatRetries; n++) {
+					pthread_mutex_lock(&rigCAT_mutex);
+					ok = sendCommand(strCmd, rTemp.size);
+					pthread_mutex_unlock(&rigCAT_mutex);
+					if (ok) return;
+				}
 				return;
 			}
 			preply++;
 		}
 	} else {
-		pthread_mutex_lock(&rigCAT_mutex);
-			hexout(strCmd, 0);
-		pthread_mutex_unlock(&rigCAT_mutex);
+		bool ok = false;
+		for (int n = 0; n < progdefaults.RigCatRetries; n++) {
+			pthread_mutex_lock(&rigCAT_mutex);
+			ok = sendCommand(strCmd, 0);
+			pthread_mutex_unlock(&rigCAT_mutex);
+			if (ok) return;
+		}
 	}
+	LOG_WARN("Retries failed");
 }
 
 string rigCAT_getmode()
 {
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
-	string strCmd;
+	list<MODE>::iterator mode;
+	list<MODE> *pmode;
+	string strCmd, mData;
+	size_t len;
 
 	if (nonCATrig == true || noXMLfile)
 		return noCATmode;
-
-//	LOG_DEBUG("get mode");
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -495,71 +463,69 @@ string rigCAT_getmode()
 	if (modeCmd.str2.empty() == false)
 		strCmd.append(modeCmd.str2);
 
-	if (modeCmd.info.size()) {
-		list<XMLIOS>::iterator preply = reply.begin();
-		while (preply != reply.end()) {
-			if (preply->SYMBOL == modeCmd.info) {
-				XMLIOS  rTemp = *preply;
-				size_t p = 0, pData = 0;
-// send the command
-				if (hexout(strCmd, rTemp.size) == false) {
-					return "";
-				}
+	if (!modeCmd.info.size()) return "";
 
+	for (list<XMLIOS>::iterator preply = reply.begin(); preply != reply.end(); ++preply) {
+		if (preply->SYMBOL != modeCmd.info)
+			continue;
+
+		XMLIOS  rTemp = *preply;
+
+		for (int n = 0; n < progdefaults.RigCatRetries; n++) {
+			if (n && progdefaults.RigCatTimeout > 0)
+				MilliSleep(progdefaults.RigCatTimeout);
+			size_t p = 0, pData = 0;
+// send the command
+			if (!sendCommand(strCmd, rTemp.size)) goto retry_get_mode;
 // check the pre data string
-				size_t len = rTemp.str1.size();
-				if (len) {
-					for (size_t i = 0; i < len; i++)
-						if ((char)rTemp.str1[i] != (char)replybuff[i])
-							return "";
-					p = len;
-				}
-				if (rTemp.fill1) p += rTemp.fill1;
-				pData = p;
-// check the post data string
-				p += rTemp.data.size;
-				len = rTemp.str2.size();
-				if (rTemp.fill2) p += rTemp.fill2;
-				if (len) {
-					for (size_t i = 0; i < len; i++)
-						if ((char)rTemp.str2[i] != (char)replybuff[p + i])
-							return "";
-				}
-// convert the data field
-				string mData = "";
-				for (int i = 0; i < rTemp.data.size; i++)
-					mData += (char)replybuff[pData + i];
-// new for FT100 and the ilk that use bit fields
-				if (rTemp.data.size == 1) {
-					unsigned char d = mData[0];
-					if (rTemp.data.shiftbits)
-						d >>= rTemp.data.shiftbits;
-					d &= rTemp.data.andmask;
-					mData[0] = d;
-				}
-				list<MODE>::iterator mode;
-				list<MODE> *pmode;
-				if (lmodes.empty() == false)
-					pmode = &lmodes;
-				else if (lmodeREPLY.empty() == false)
-					pmode = &lmodeREPLY;
-				else
-					return "";
-				mode = pmode->begin();
-				while (mode != pmode->end()) {
-					if ((*mode).BYTES == mData)
-						break;
-					mode++;
-				}
-				if (mode != pmode->end())
-					return ((*mode).SYMBOL);
-				else
-					return "";
+			len = rTemp.str1.size();
+			if (len) {
+				for (size_t i = 0; i < len; i++)
+					if ((char)rTemp.str1[i] != (char)replybuff[i])
+						goto retry_get_mode;
+				p = len;
 			}
-			preply++;
+			if (rTemp.fill1) p += rTemp.fill1;
+			pData = p;
+// check the post data string
+			p += rTemp.data.size;
+			len = rTemp.str2.size();
+			if (rTemp.fill2) p += rTemp.fill2;
+			if (len) {
+				for (size_t i = 0; i < len; i++)
+					if ((char)rTemp.str2[i] != (char)replybuff[p + i])
+						goto retry_get_mode;
+			}
+// convert the data field
+			mData = "";
+			for (int i = 0; i < rTemp.data.size; i++)
+				mData += (char)replybuff[pData + i];
+// for FT100 and the ilk that use bit fields
+			if (rTemp.data.size == 1) {
+				unsigned char d = mData[0];
+				if (rTemp.data.shiftbits)
+					d >>= rTemp.data.shiftbits;
+				d &= rTemp.data.andmask;
+				mData[0] = d;
+			}
+			if (lmodes.empty() == false)
+					pmode = &lmodes;
+			else if (lmodeREPLY.empty() == false)
+				pmode = &lmodeREPLY;
+			else
+				goto retry_get_mode;
+			mode = pmode->begin();
+			while (mode != pmode->end()) {
+				if ((*mode).BYTES == mData)
+					break;
+				mode++;
+			}
+			if (mode != pmode->end())
+				return ((*mode).SYMBOL);
+retry_get_mode: ;
 		}
 	}
-
+	LOG_WARN("Retries failed");
 	return "";
 }
 
@@ -573,8 +539,6 @@ void rigCAT_setmode(const string& md)
 		noCATmode = md;
 		return;
 	}
-
-//	LOG_DEBUG("set mode %s", md.c_str());
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -614,30 +578,40 @@ void rigCAT_setmode(const string& md)
 			if (preply->SYMBOL == modeCmd.ok) {
 				XMLIOS  rTemp = *preply;
 // send the command
-				pthread_mutex_lock(&rigCAT_mutex);
-					hexout(strCmd, rTemp.size);
-				pthread_mutex_unlock(&rigCAT_mutex);
+				bool ok = false;
+				for (int n = 0; n < progdefaults.RigCatRetries; n++) {
+					pthread_mutex_lock(&rigCAT_mutex);
+					ok = sendCommand(strCmd, rTemp.size);
+					pthread_mutex_unlock(&rigCAT_mutex);
+					if (ok) return;
+				}
 				return;
 			}
 			preply++;
 		}
 	} else {
-		pthread_mutex_lock(&rigCAT_mutex);
-			hexout(strCmd, 0);
-		pthread_mutex_unlock(&rigCAT_mutex);
+		bool ok = false;
+		for (int n = 0; n < progdefaults.RigCatRetries; n++) {
+			pthread_mutex_lock(&rigCAT_mutex);
+			ok = sendCommand(strCmd, 0);
+			pthread_mutex_unlock(&rigCAT_mutex);
+			if (ok) return;
+		}
 	}
+	LOG_WARN("Retries failed");
 }
 
 string rigCAT_getwidth()
 {
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
-	string strCmd;
+	list<BW>::iterator bw;
+	list<BW> *pbw;
+	string strCmd, mData;
+	size_t len = 0, p = 0, pData = 0;
 
 	if (nonCATrig == true || noXMLfile)
 		return noCATwidth;
-
-//	LOG_DEBUG("get width");
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -655,71 +629,71 @@ string rigCAT_getwidth()
 	if (modeCmd.str2.empty() == false)
 		strCmd.append(modeCmd.str2);
 
-	if (modeCmd.info.size()) {
-		list<XMLIOS>::iterator preply = reply.begin();
-		while (preply != reply.end()) {
-			if (preply->SYMBOL == modeCmd.info) {
-				XMLIOS  rTemp = *preply;
-				size_t p = 0, pData = 0;
+	if (!modeCmd.info.size()) return "";
+
+	for (list<XMLIOS>::iterator preply = reply.begin(); preply != reply.end(); ++preply) {
+		if (preply->SYMBOL != modeCmd.info)
+			continue;
+
+		XMLIOS  rTemp = *preply;
+		for (int n = 0; n < progdefaults.RigCatRetries; n++) {
+			if (n && progdefaults.RigCatTimeout > 0)
+				MilliSleep(progdefaults.RigCatTimeout);
+
+			p = 0;
+			pData = 0;
 // send the command
-				if (hexout(strCmd, rTemp.size) == false) {
-					return "";
-				}
-
-
+			if ( !sendCommand(strCmd, rTemp.size) ) goto retry_get_width;
 // check the pre data string
-				size_t len = rTemp.str1.size();
-				if (len) {
-					for (size_t i = 0; i < len; i++)
-						if ((char)rTemp.str1[i] != (char)replybuff[i])
-							return "";
-					p = pData = len;
-				}
-				if (rTemp.fill1) p += rTemp.fill1;
-				pData = p;
-				p += rTemp.data.size;
-// check the post data string
-				if (rTemp.fill2) p += rTemp.fill2;
-				len = rTemp.str2.size();
-				if (len) {
-					for (size_t i = 0; i < len; i++)
-						if ((char)rTemp.str2[i] != (char)replybuff[p + i])
-							return "";
-				}
-// convert the data field
-				string mData = "";
-				for (int i = 0; i < rTemp.data.size; i++)
-					mData += (char)replybuff[pData + i];
-// new for FT100 and the ilk that use bit fields
-				if (rTemp.data.size == 1) {
-					unsigned char d = mData[0];
-					if (rTemp.data.shiftbits)
-						d >>= rTemp.data.shiftbits;
-					d &= rTemp.data.andmask;
-					mData[0] = d;
-				}
-				list<BW>::iterator bw;
-				list<BW> *pbw;
-				if (lbws.empty() == false)
-					pbw = &lbws;
-				else if (lbwREPLY.empty() == false)
-					pbw = &lbwREPLY;
-				else
-					return "";
-				bw = pbw->begin();
-				while (bw != pbw->end()) {
-					if ((*bw).BYTES == mData)
-						break;
-					bw++;
-				}
-				if (bw != pbw->end())
-					return ((*bw).SYMBOL);
-				else
-					return "";
+			len = rTemp.str1.size();
+			if (len) {
+				for (size_t i = 0; i < len; i++)
+					if ((char)rTemp.str1[i] != (char)replybuff[i])
+						goto retry_get_width;
+				p = pData = len;
 			}
-			preply++;
+			if (rTemp.fill1) p += rTemp.fill1;
+			pData = p;
+			p += rTemp.data.size;
+// check the post data string
+			if (rTemp.fill2) p += rTemp.fill2;
+			len = rTemp.str2.size();
+			if (len) {
+				for (size_t i = 0; i < len; i++)
+					if ((char)rTemp.str2[i] != (char)replybuff[p + i])
+						goto retry_get_width;
+			}
+// convert the data field
+			mData = "";
+			for (int i = 0; i < rTemp.data.size; i++)
+				mData += (char)replybuff[pData + i];
+// new for FT100 and the ilk that use bit fields
+			if (rTemp.data.size == 1) {
+				unsigned char d = mData[0];
+				if (rTemp.data.shiftbits)
+					d >>= rTemp.data.shiftbits;
+				d &= rTemp.data.andmask;
+				mData[0] = d;
+			}
+			if (lbws.empty() == false)
+				pbw = &lbws;
+			else if (lbwREPLY.empty() == false)
+				pbw = &lbwREPLY;
+			else
+				goto retry_get_width;
+			bw = pbw->begin();
+			while (bw != pbw->end()) {
+				if ((*bw).BYTES == mData)
+					break;
+				bw++;
+			}
+			if (bw != pbw->end())
+				return ((*bw).SYMBOL);
+retry_get_width: ;
 		}
+		preply++;
 	}
+	LOG_WARN("Retries failed");
 	return "";
 }
 
@@ -728,8 +702,6 @@ void rigCAT_setwidth(const string& w)
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
-
-//	LOG_DEBUG("set width");
 
 	if (noXMLfile) {
 		noCATwidth = w;
@@ -779,18 +751,26 @@ void rigCAT_setwidth(const string& w)
 			if (preply->SYMBOL == modeCmd.ok) {
 				XMLIOS  rTemp = *preply;
 // send the command
-				pthread_mutex_lock(&rigCAT_mutex);
-					hexout(strCmd, rTemp.size);
-				pthread_mutex_unlock(&rigCAT_mutex);
-				return;
+				bool ok = false;
+				for (int n = 0; n < progdefaults.RigCatRetries; n++) {
+					pthread_mutex_lock(&rigCAT_mutex);
+					ok = sendCommand(strCmd, rTemp.size);
+					pthread_mutex_unlock(&rigCAT_mutex);
+					if (ok) return;
+				}
 			}
 			preply++;
 		}
 	} else {
-		pthread_mutex_lock(&rigCAT_mutex);
-			hexout(strCmd, 0);
-		pthread_mutex_unlock(&rigCAT_mutex);
+		bool ok = false;
+		for (int n = 0; n < progdefaults.RigCatRetries; n++) {
+			pthread_mutex_lock(&rigCAT_mutex);
+			ok = sendCommand(strCmd, 0);
+			pthread_mutex_unlock(&rigCAT_mutex);
+			if (ok) return;
+		}
 	}
+	LOG_WARN("Retries failed");
 }
 
 void rigCAT_pttON()
@@ -798,8 +778,6 @@ void rigCAT_pttON()
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
-
-	LOG_INFO("ptt ON");
 
 	rigio.SetPTT(1); // always execute the h/w ptt if enabled
 
@@ -824,15 +802,27 @@ void rigCAT_pttON()
 			if (preply->SYMBOL == modeCmd.ok) {
 				XMLIOS  rTemp = *preply;
 // send the command
-				hexout(strCmd, rTemp.size);
+				bool ok = false;
+				for (int n = 0; n < progdefaults.RigCatRetries; n++) {
+					pthread_mutex_lock(&rigCAT_mutex);
+					ok = sendCommand(strCmd, rTemp.size);
+					pthread_mutex_unlock(&rigCAT_mutex);
+					if (ok) return;
+				}
 				return;
 			}
 			preply++;
 		}
 	} else {
-		hexout(strCmd, 0);
+		bool ok = false;
+		for (int n = 0; n < progdefaults.RigCatRetries; n++) {
+			pthread_mutex_lock(&rigCAT_mutex);
+			ok = sendCommand(strCmd, 0);
+			pthread_mutex_unlock(&rigCAT_mutex);
+			if (ok) return;
+		}
 	}
-
+	LOG_WARN("Retries failed");
 }
 
 void rigCAT_pttOFF()
@@ -840,8 +830,6 @@ void rigCAT_pttOFF()
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
-
-	LOG_INFO("ptt OFF");
 
 	rigio.SetPTT(0); // always execute the h/w ptt if enabled
 
@@ -866,14 +854,27 @@ void rigCAT_pttOFF()
 			if (preply->SYMBOL == modeCmd.ok) {
 				XMLIOS  rTemp = *preply;
 // send the command
-				hexout(strCmd, rTemp.size);
+				bool ok = false;
+				for (int n = 0; n < progdefaults.RigCatRetries; n++) {
+					pthread_mutex_lock(&rigCAT_mutex);
+					ok = sendCommand(strCmd, rTemp.size);
+					pthread_mutex_unlock(&rigCAT_mutex);
+					if (ok) return;
+				}
 				return;
 			}
 			preply++;
 		}
 	} else {
-		hexout(strCmd, 0);
+		bool ok = false;
+		for (int n = 0; n < progdefaults.RigCatRetries; n++) {
+			pthread_mutex_lock(&rigCAT_mutex);
+			ok = sendCommand(strCmd, 0);
+			pthread_mutex_unlock(&rigCAT_mutex);
+			if (ok) return;
+		}
 	}
+	LOG_WARN("Retries failed");
 }
 
 void rigCAT_sendINIT()
@@ -884,8 +885,6 @@ void rigCAT_sendINIT()
 
 	if (noXMLfile)
 		return;
-
-//	LOG_DEBUG("INIT rig");
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -908,18 +907,27 @@ void rigCAT_sendINIT()
 			if (preply->SYMBOL == modeCmd.ok) {
 				XMLIOS  rTemp = *preply;
 // send the command
-				pthread_mutex_lock(&rigCAT_mutex);
-					hexout(strCmd, rTemp.size);
-				pthread_mutex_unlock(&rigCAT_mutex);
+				bool ok = false;
+				for (int n = 0; n < progdefaults.RigCatRetries; n++) {
+					pthread_mutex_lock(&rigCAT_mutex);
+					ok = sendCommand(strCmd, rTemp.size);
+					pthread_mutex_unlock(&rigCAT_mutex);
+					if (ok) return;
+				}
 				return;
 			}
 			preply++;
 		}
 	} else {
-		pthread_mutex_lock(&rigCAT_mutex);
-			hexout(strCmd, 0);
-		pthread_mutex_unlock(&rigCAT_mutex);
+		bool ok = false;
+		for (int n = 0; n < progdefaults.RigCatRetries; n++) {
+			pthread_mutex_lock(&rigCAT_mutex);
+			ok = sendCommand(strCmd, 0);
+			pthread_mutex_unlock(&rigCAT_mutex);
+			if (ok) return;
+		}
 	}
+	LOG_WARN("Retries failed");
 }
 
 void rigCAT_defaults()
@@ -970,7 +978,6 @@ bool rigCAT_init(bool useXML)
 	noXMLfile = true;
 	sRigMode = "";
 	sRigWidth = "";
-	nonCATrig = true;
 
 	if (useXML == true) {
 		if (readRigXML() == false)
@@ -988,18 +995,18 @@ bool rigCAT_init(bool useXML)
 
 			LOG_INFO("\n\
 Serial port parameters:\n\
-device     : %s\n\
+device	 : %s\n\
 baudrate   : %d\n\
 stopbits   : %d\n\
-retries    : %d\n\
-timeout    : %d\n\
-wait       : %d\n\
+retries	: %d\n\
+timeout	: %d\n\
+wait	   : %d\n\
 initial rts: %+d\n\
 use rts ptt: %c\n\
 initial dtr: %+d\n\
 use dtr ptt: %c\n\
 flowcontrol: %c\n\
-echo       : %c\n",
+echo	   : %c\n",
 				rigio.Device().c_str(),
 				rigio.Baud(),
 				rigio.Stopbits(),
@@ -1013,6 +1020,8 @@ echo       : %c\n",
 
 			if (rigio.OpenPort() == false) {
 				LOG_ERROR("Cannot open serial port %s", rigio.Device().c_str());
+				nonCATrig = true;
+				init_NoRig_RigDialog();
 				return false;
 			}
 			sRigMode = "";
@@ -1023,14 +1032,19 @@ echo       : %c\n",
 			if (rigCAT_getfreq() == -1) { // will set nonCATrig to true if getfreq not spec'd
 				LOG_ERROR("Xcvr Freq request not answered");
 				rigio.ClosePort();
+				nonCATrig = true;
+				init_NoRig_RigDialog();
 				return false;
 			} else {
+				nonCATrig = false;
 				rigCAT_sendINIT();
 				init_Xml_RigDialog();
 			}
 		}
-	} else
+	} else {
+		nonCATrig = true;
 		init_NoRig_RigDialog();
+	}
 
 	llFreq = 0;
 	rigCAT_bypass = false;
@@ -1045,6 +1059,7 @@ echo       : %c\n",
 	}
 
 	rigCAT_open = true;
+
 	return true;
 }
 
@@ -1080,7 +1095,7 @@ void rigCAT_set_ptt(int ptt)
 {
 	if (rigCAT_open == false)
 		return;
-	pthread_mutex_lock(&rigCAT_mutex);
+//	pthread_mutex_lock(&rigCAT_mutex);
 		if (ptt) {
 			rigCAT_pttON();
 			rigCAT_bypass = true;
@@ -1088,7 +1103,7 @@ void rigCAT_set_ptt(int ptt)
 			rigCAT_pttOFF();
 			rigCAT_bypass = false;
 		}
-	pthread_mutex_unlock(&rigCAT_mutex);
+//	pthread_mutex_unlock(&rigCAT_mutex);
 }
 
 #ifndef RIGCATTEST

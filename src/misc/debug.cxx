@@ -242,6 +242,10 @@ static void src_menu_cb(Fl_Widget* w, void*)
 
 static void popup_message(void* msg)
 {
+	if (window->visible()) {
+		delete [] (char*)msg;
+		return;
+	}
 	if (!Fl::first_window() || !Fl::first_window()->visible()) // defer
 		return Fl::add_timeout(0.5, popup_message, msg);
 
