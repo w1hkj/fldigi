@@ -9,7 +9,7 @@ dnl major and minor must be integers; patch may
 dnl contain other characters or be empty
 m4_define(FLDIGI_MAJOR, [3])
 m4_define(FLDIGI_MINOR, [13])
-m4_define(FLDIGI_PATCH, [AF])
+m4_define(FLDIGI_PATCH, [AG])
 m4_define(FLARQ_MAJOR,  [4])
 m4_define(FLARQ_MINOR,  [2])
 m4_define(FLARQ_PATCH,  [.2])
