@@ -58,7 +58,7 @@ string noCATwidth = "";
 static void *rigCAT_loop(void *args);
 
 #define RXBUFFSIZE 2000
-static char replybuff[RXBUFFSIZE+1];
+static unsigned char replybuff[RXBUFFSIZE+1];
 static unsigned char retbuf[3];
 
 bool sendCommand (string s, int retnbr)
@@ -287,7 +287,7 @@ long long rigCAT_getfreq()
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
-	size_t p = 0, len = 0, pData = 0;
+	size_t p = 0, len1 = 0, len2 = 0, pData = 0;
 	long long f = 0;
 
 	if (nonCATrig == true || noXMLfile) {
@@ -321,9 +321,8 @@ long long rigCAT_getfreq()
 			continue;
 
 		XMLIOS  rTemp = *preply;
-		p = 0;
-		pData = 0;
-		len = rTemp.str1.size();
+		len1 = rTemp.str1.size();
+		len2 = rTemp.str2.size();
 
 		for (int n = 0; n < progdefaults.RigCatRetries; n++) {
 			if (n && progdefaults.RigCatTimeout > 0)
@@ -334,14 +333,16 @@ long long rigCAT_getfreq()
 				goto retry_get_freq;
 			}
 // check the pre data string
-			if (len) {
-				for (size_t i = 0; i < len; i++) {
+			p = 0;
+			pData = 0;
+			if (len1) {
+				for (size_t i = 0; i < len1; i++) {
 					if ((char)rTemp.str1[i] != (char)replybuff[i]) {
 						LOG_INFO("failed pre data string test @ %" PRIuSZ, i);
 						goto retry_get_freq;
 					}
 				}
-				p = len;
+				p = len1;
 			}
 			if (rTemp.fill1) p += rTemp.fill1;
 			pData = p;
@@ -351,10 +352,10 @@ long long rigCAT_getfreq()
 			} else
 				p += rTemp.data.size;
 // check the post data string
-			len = rTemp.str2.size();
 			if (rTemp.fill2) p += rTemp.fill2;
-			if (len) {
-				for (size_t i = 0; i < len; i++)
+
+			if (len2) {
+				for (size_t i = 0; i < len2; i++)
 					if ((char)rTemp.str2[i] != (char)replybuff[p + i]) {
 						LOG_INFO("failed post data string test @ %" PRIuSZ, i);
 						goto retry_get_freq;
@@ -364,6 +365,7 @@ long long rigCAT_getfreq()
 			f = fm_freqdata(rTemp.data, pData);
 			if ( f >= rTemp.data.min && f <= rTemp.data.max)
 				return f;
+			LOG_INFO("freq: %ld", f);
 retry_get_freq: ;
 		}
 	}
