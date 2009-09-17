@@ -365,7 +365,7 @@ long long rigCAT_getfreq()
 			f = fm_freqdata(rTemp.data, pData);
 			if ( f >= rTemp.data.min && f <= rTemp.data.max)
 				return f;
-			LOG_INFO("freq: %ld", f);
+			LOG_INFO("freq: %lld", f);
 retry_get_freq: ;
 		}
 	}
