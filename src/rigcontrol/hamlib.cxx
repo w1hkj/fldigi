@@ -190,8 +190,8 @@ bool hamlib_init(bool bPtt)
 				xcvr->setConf("serial_handshake", "XONXOFF");
 			else
 				xcvr->setConf("serial_handshake", "None");
+			xcvr->setConf("stop_bits", progdefaults.HamRigStopbits == 1 ? "1" : "2");
 		}
-		xcvr->setConf("stop_bits", progdefaults.HamRigStopbits == 1 ? "1" : "2");
 
 		string::size_type c = progdefaults.HamConfig.find('#');
 		if (c != string::npos)
