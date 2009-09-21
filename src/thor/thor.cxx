@@ -475,7 +475,7 @@ void thor::eval_s2n()
 	double s = pipe[pipeptr].vector[currsymbol].mag();
 	double n = pipe[(pipeptr + symlen) % twosym].vector[currsymbol].mag();
 
-	sig = decayavg( sig, s, abs( s - sig) > 4 ? 4 : 32);
+	sig = decayavg( sig, s, s - sig > 0 ? 4 : 20);
 	noise = decayavg( noise, n, 64);
 
 	if (noise)
