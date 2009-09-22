@@ -3,14 +3,23 @@ AC_DEFUN([AC_FLDIGI_RDYNAMIC], [
   LDFLAGS="$LDFLAGS -rdynamic"
 
   AC_MSG_CHECKING([whether $CC supports -rdynamic])
-  AC_TRY_LINK([], [], [ac_cv_rdynamic=yes], [ac_cv_rdynamic=no])
+  # don't try this on win32; it succeeds but emits a warning at link time
+  if test "x$target_win32" != "xyes"; then
+      AC_TRY_LINK([], [], [ac_cv_rdynamic=yes], [ac_cv_rdynamic=no])
+  else
+      ac_cv_rdynamic=no
+  fi
   AC_MSG_RESULT([$ac_cv_rdynamic])
 
   AC_LANG_PUSH(C++)
     AC_MSG_CHECKING([whether $CXX supports -rdynamic])
-    AC_TRY_LINK([], [], [ac_cv_rdynamic=yes], [ac_cv_rdynamic=no])
-    AC_MSG_RESULT([$ac_cv_rdynamic])
+    if test "x$target_win32" != "xyes"; then
+        AC_TRY_LINK([], [], [ac_cv_rdynamic=yes], [ac_cv_rdynamic=no])
+    else
+        ac_cv_rdynamic=no
+    fi
   AC_LANG_POP(C++)
+  AC_MSG_RESULT([$ac_cv_rdynamic])
 
   LDFLAGS="$LDFLAGS_saved"
 ])
