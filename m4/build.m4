@@ -87,3 +87,22 @@ $PULSEAUDIO_LIBS $HAMLIB_LIBS $PNG_LIBS $XMLRPC_LIBS $INTL_LIBS $PTW32_LIBS $BFD
       export LC_ALL
   fi
 ])
+
+
+# This macro defines SILENT_CMDS, which is @expanded@ in
+# {src,doc}/Makefile.am to define a function that generates custom build
+# command output depending on the values of the variables
+# $(AM_DEFAULT_VERBOSITY) and $(V).  These variables affect the custom
+# command output in the same way as they do for automake's build rules.
+AC_DEFUN([AC_FLDIGI_BUILD_RULES], [
+  m4_ifdef([AM_SUBST_NOTMAKE], [AM_SUBST_NOTMAKE([SILENT_CMDS])])
+  AC_SUBST([SILENT_CMDS],
+           ['silent_cmd = @echo "  $(1)" $(2);
+            ifeq ($(AM_DEFAULT_VERBOSITY),0)
+                silent = $(if $(subst 0,,$(V)),,$(silent_cmd))
+            else
+                ifeq ($(V),0)
+                    silent = $(silent_cmd)
+                endif
+            endif'])
+])

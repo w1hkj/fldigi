@@ -33,11 +33,14 @@ endif
 
 .SECONDEXPANSION:
 
+# Define the custom silent rule function
+@SILENT_CMDS@
+
 %.1: $$@.txt $(ASCIIDOC_CONF)
 if HAVE_ASCIIDOC
-	$(A2X) $(A2X_ARGS) $<
+	$(call silent,ADOC  ,$@)$(A2X) $(A2X_ARGS) $<
 else
-	echo '.TH "NOT-BUILT" "1" "" "" ""' > $@
+	$(call silent,ADOC  ,$@)echo '.TH "NOT-BUILT" "1" "" "" ""' > $@
 endif
 # Without .SECONDEXPANSION we would use something like this:
 #$(ASCIIDOC_MAN_INST): asciidoc.conf
@@ -59,7 +62,7 @@ ASCIIDOC_ARGS = --unsafe -a toc -a data-uri -a badges -a icons -a iconsdir=$(ASC
 	    echo "  ***   make ASCIIDOC_ICONS_DIR=/path/to/icons" >&2; \
 	    false; \
 	fi
-	$(ASCIIDOC) $(ASCIIDOC_ARGS) --out-file $@ $<
+	$(call silent,ADOC  ,$@)$(ASCIIDOC) $(ASCIIDOC_ARGS) --out-file $@ $<
 
 all-local: $(ASCIIDOC_MAN_DIST) $(ASCIIDOC_HTML)
 

@@ -47,6 +47,7 @@ AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 
 AM_INIT_AUTOMAKE([-Wall foreign std-options 1.9.6])
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 AM_MAINTAINER_MODE
 AC_CONFIG_SRCDIR([src/main.cxx])
 AC_CONFIG_HEADER([src/config.h])
@@ -271,6 +272,8 @@ AC_FLDIGI_DOCS
 # Define various build variables in config.h
 AC_FLDIGI_BUILD_INFO
 
+### silent build rules
+m4_ifdef([AM_SILENT_RULES], [AC_FLDIGI_BUILD_RULES])
 
 ### output
 AH_TOP([

@@ -89,6 +89,8 @@ FLARQ_VERSION_MINOR = @FLARQ_VERSION_MINOR@
 FLARQ_VERSION_PATCH = @FLARQ_VERSION_PATCH@
 FLARQ_VERSION = @FLARQ_VERSION@
 
+# Define the custom silent rule function
+@SILENT_CMDS@
 
 .EXPORT_ALL_VARIABLES: appbundle nsisinst hamlib-static
 
@@ -103,7 +105,7 @@ CLEAN_LOCAL =
 if WIN32
 if HAVE_WINDRES
 .rc.o:
-	$(WINDRES) -I$(srcdir)/include -I$(srcdir)/../data/win32 $< -O coff $@
+	$(call silent,WRES  ,$@)$(WINDRES) -I$(srcdir)/include -I$(srcdir)/../data/win32 $< -O coff $@
 fldigi_SOURCES += $(FLDIGI_WIN32_RES_SRC)
 flarq_SOURCES += $(FLARQ_WIN32_RES_SRC)
 endif
@@ -159,14 +161,14 @@ FLARQ_FL_SRC = flarq-src/arqdialogs.fl
 if HAVE_FLUID
 flgen: $(FLDIGI_FL_SRC) $(FLARQ_FL_SRC)
 if WANT_FLDIGI
-	(cd $(srcdir)/include; \
+	$(call silent,FLUID ,$(FLDIGI_FL_SRC))(cd $(srcdir)/include; \
 	for f in $(FLDIGI_FL_SRC); do \
 	    c=$${f%.fl}.cxx; h=$${f%.fl}.h; h=$${h##*/}; \
 	    $(FLUID) -c -o ../$$c -h $$h ../$$f; \
 	done)
 endif
 if WANT_FLARQ
-	(cd $(srcdir)/flarq-src/include; \
+	$(call silent,FLUID ,$(FLARQ_FL_SRC))(cd $(srcdir)/flarq-src/include; \
 	for f in $(FLARQ_FL_SRC); do \
 	    c=$${f%.fl}.cxx; h=$${f%.fl}.h; h=$${h##*/}; \
 	    $(FLUID) -c -o ../../$$c -h $$h ../../$$f; \
@@ -192,20 +194,20 @@ endif
 
 if DARWIN
 appbundle: $(bin_PROGRAMS)
-	sh $(srcdir)/../scripts/mkappbundle.sh "$(srcdir)/../data" .
+	$(call silent,APPB  ,$(APPBUNDLE_NOLIBS) $(APPBUNDLE))sh $(srcdir)/../scripts/mkappbundle.sh "$(srcdir)/../data" .
     CLEAN_LOCAL += $(APPBUNDLE_NOLIBS) $(APPBUNDLE) $(APPBUNDLE)*.dmg
 endif
 
 if HAVE_NSIS
 nsisinst: $(bin_PROGRAMS)
-	sh $(srcdir)/../scripts/mknsisinst.sh "$(srcdir)/../data" .
+	$(call silent,NSIS  ,$(INSTALLER_FILE))sh $(srcdir)/../scripts/mknsisinst.sh "$(srcdir)/../data" .
     CLEANFILES += $(INSTALLER_FILE)
 endif
 
 if WANT_FLDIGI
 if ENABLE_HAMLIB
 hamlib-static: $(fldigi_OBJECTS)
-	sh $(srcdir)/../scripts/mkhamlibstatic.sh fldigi
+	$(call silent,HLS   ,fldigi$(EXEEXT))sh $(srcdir)/../scripts/mkhamlibstatic.sh fldigi
 endif
 endif
 
@@ -213,11 +215,11 @@ TESTS = $(srcdir)/../scripts/tests/config-h.sh $(srcdir)/../scripts/tests/cr.sh
 
 if HAVE_ASCIIDOC
 $(builddir)/../doc/guide.html: $(builddir)/../doc/guide.txt
-	$(MAKE) -C $(builddir)/../doc $(AM_MAKEFLAGS) guide.html
+	@$(MAKE) -C $(builddir)/../doc $(AM_MAKEFLAGS) guide.html
 
 $(builddir)/dialogs/guide.cxx: $(builddir)/../doc/guide.html
-	mkdir -p $(builddir)/dialogs
-	sed 's/"/\\"/g; s/$$/\\n\\/g; 1 s/.*/const char* szBeginner = "&/; $$ s/.*/&n";/' $< > $@
+	@mkdir -p $(builddir)/dialogs
+	$(call silent,GUIDE ,$@)sed 's/"/\\"/g; s/$$/\\n\\/g; 1 s/.*/const char* szBeginner = "&/; $$ s/.*/&n";/' $< > $@
 dialogs/htmlstrings.cxx: $(builddir)/dialogs/guide.cxx
 
 distclean-local:
