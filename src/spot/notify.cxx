@@ -1266,7 +1266,7 @@ static void notify_test_cb(Fl_Widget* w, void* arg)
 	string msg;
 	msg.assign(_("Default test string is:\n  \"")).append(test_strings[notify_tmp.event]).append("\"\n")
 		.append(_("Enter test string or leave blank for default:"));
-        const char* s = fl_input2(msg.c_str(), test.c_str());
+        const char* s = fl_input2("%s", msg.c_str(), test.c_str());
 	if (s) {
 		if (test.assign(s).empty()) // empty input
 			test = test_strings[notify_tmp.event];

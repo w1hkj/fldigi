@@ -715,6 +715,8 @@ static bool open_serial(const char* dev)
 
 void configuration::testCommPorts()
 {
+	int retval;
+
 	inpTTYdev->clear();
 	inpRIGdev->clear();
 	inpXmlRigDevice->clear();
@@ -765,7 +767,7 @@ void configuration::testCommPorts()
 out:
 	if (sys)
 		closedir(sys);
-	chdir(cwd);
+	retval = chdir(cwd);
 	if (ret) // do we need to fall back to the probe code below?
 		return;
 #endif // __linux__

@@ -316,7 +316,7 @@ void selectTrafficOut(bool ComposerOnly)
 	if (dp == 0) {
 		string nfound = folder;
 		nfound += " not found";
-		fl_alert2(nfound.c_str());
+		fl_alert2("%s", nfound.c_str());
 		return;
 	}
 	folder += '/';
@@ -1866,7 +1866,7 @@ int main (int argc, char *argv[] )
 		else
 			errmsg.append("fldigi");
 		errmsg.append(" before flarq.");
-		fl_alert2(errmsg.c_str());
+		fl_alert2("%s", errmsg.c_str());
 		exit(EXIT_FAILURE);
 	}
 

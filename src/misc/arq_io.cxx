@@ -270,7 +270,7 @@ bool TLF_arqRx()
 			arq_text_available = true;
 			active_modem->set_stopflag(false);
 			start_tx();
-LOG_DEBUG(txstring.c_str());
+LOG_DEBUG("%s", txstring.c_str());
 			txstring.clear();
 		}
 
@@ -440,7 +440,7 @@ bool Socket_arqRx()
 				arq_text_available = true;
 				active_modem->set_stopflag(false);
 				start_tx();
-LOG_DEBUG(txstring.c_str());
+LOG_DEBUG("%s", txstring.c_str());
 			}
 			txstring.clear();
 		}
