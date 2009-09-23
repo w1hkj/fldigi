@@ -996,11 +996,17 @@ void cb_mnuVisitURL(Fl_Widget*, void* arg)
 	const char* url = reinterpret_cast<const char *>(arg);
 #ifndef __WOE32__
 	const char* browsers[] = {
-		getenv("FLDIGI_BROWSER"),
 #  ifdef __APPLE__
-		"open"
+		getenv("FLDIGI_BROWSER"), // valid for any OS - set by user
+		"open"                    // OS X
 #  else
-		"xdg-open", getenv("BROWSER"), "sensible-brower", "firefox", "mozilla"
+		"fl-xdg-open",            // Puppy Linux
+		"xdg-open",               // other Unix-Linux distros
+		getenv("FLDIGI_BROWSER"), // force use of spec'd browser
+		getenv("BROWSER"),        // most Linux distributions
+		"sensible-browser",
+		"firefox",
+		"mozilla"                 // must be something out there!
 #  endif
 	};
 	switch (fork()) {
