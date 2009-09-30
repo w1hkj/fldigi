@@ -94,7 +94,7 @@ $PULSEAUDIO_LIBS $HAMLIB_LIBS $PNG_LIBS $XMLRPC_LIBS $INTL_LIBS $PTW32_LIBS $BFD
 # command output depending on the values of the variables
 # $(AM_DEFAULT_VERBOSITY) and $(V).  These variables affect the custom
 # command output in the same way as they do for automake's build rules.
-AC_DEFUN([AC_FLDIGI_BUILD_RULES], [
+AC_DEFUN([AC_FLDIGI_BUILD_RULES_SILENT], [
   m4_ifdef([AM_SUBST_NOTMAKE], [AM_SUBST_NOTMAKE([SILENT_CMDS])])
   AC_SUBST([SILENT_CMDS],
            ['silent_cmd = @echo "  $(1)" $(2);
@@ -106,3 +106,7 @@ AC_DEFUN([AC_FLDIGI_BUILD_RULES], [
                 endif
             endif'])
 ])
+
+AC_DEFUN([AC_FLDIGI_BUILD_RULES],
+         [m4_ifdef([AM_SILENT_RULES], [AC_FLDIGI_BUILD_RULES_SILENT],
+                   [AC_SUBST([SILENT_CMDS], [])])])

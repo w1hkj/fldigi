@@ -273,7 +273,7 @@ AC_FLDIGI_DOCS
 AC_FLDIGI_BUILD_INFO
 
 ### silent build rules
-m4_ifdef([AM_SILENT_RULES], [AC_FLDIGI_BUILD_RULES])
+AC_FLDIGI_BUILD_RULES
 
 ### output
 AH_TOP([
