@@ -63,15 +63,23 @@ static unsigned char retbuf[3];
 
 bool sendCommand (string s, int retnbr)
 {
-	int numread = 0;
-	int numwrite = (int)s.size();
+	int numwrite = (int)s.length();
 	int readafter = progdefaults.RigCatWait;
-	readafter += (int)(ceilf((retnbr + progdefaults.RigCatECHO ? numwrite : 0) *
-					8000.0 / rigio.Baud()));
+	int numread;
+	int retval;
+	numread = retnbr;
+	if (progdefaults.RigCatECHO) numread += numwrite;
+	readafter =
+		progdefaults.RigCatWait + (int) ceilf (
+			numread * (9 + progdefaults.RigCatStopbits) *
+			1000.0 / rigio.Baud() );
 
-	LOG_DEBUG("sent %s", str2hex(s.data(), s.length()));
+	LOG_DEBUG("%s", str2hex(s.data(), s.length()));
 
-	rigio.WriteBuffer((unsigned char *)s.c_str(), numwrite);
+	retval = rigio.WriteBuffer((unsigned char *)s.c_str(), numwrite);
+	if (retval <= 0)
+		LOG_ERROR("Write error %d", retval);
+
 	memset(replybuff, 0, RXBUFFSIZE + 1);
 	numread = 0;
 	MilliSleep( readafter );
@@ -86,6 +94,7 @@ bool sendCommand (string s, int retnbr)
 		memmove(replybuff, replybuff + numread - retnbr, retnbr);
 		numread = retnbr;
 	}
+
 	return (numread == retnbr);
 }
 
@@ -328,7 +337,7 @@ long long rigCAT_getfreq()
 			if (n && progdefaults.RigCatTimeout > 0)
 				MilliSleep(progdefaults.RigCatTimeout);
 // send the command
-			if ( !sendCommand(strCmd, rTemp.size ) ) {
+			if ( !sendCommand(strCmd, rTemp.size) ) {
 				LOG_INFO("sendCommand failed");
 				goto retry_get_freq;
 			}
@@ -483,8 +492,10 @@ string rigCAT_getmode()
 			len = rTemp.str1.size();
 			if (len) {
 				for (size_t i = 0; i < len; i++)
-					if ((char)rTemp.str1[i] != (char)replybuff[i])
+					if ((char)rTemp.str1[i] != (char)replybuff[i]) {
+						LOG_INFO("failed pre data string test @ %" PRIuSZ, i);
 						goto retry_get_mode;
+					}
 				p = len;
 			}
 			if (rTemp.fill1) p += rTemp.fill1;
@@ -650,8 +661,10 @@ string rigCAT_getwidth()
 			len = rTemp.str1.size();
 			if (len) {
 				for (size_t i = 0; i < len; i++)
-					if ((char)rTemp.str1[i] != (char)replybuff[i])
+					if ((char)rTemp.str1[i] != (char)replybuff[i]) {
+						LOG_INFO("failed pre data string test @ %" PRIuSZ, i);
 						goto retry_get_width;
+					}
 				p = pData = len;
 			}
 			if (rTemp.fill1) p += rTemp.fill1;

@@ -315,62 +315,24 @@ void Cserial::ClosePort()
 	return;
 }
 
-
-///////////////////////////////////////////////////////
-// Function name	: Cserial::GetBytesRead
-// Description		:
-// Return type		: DWORD
-///////////////////////////////////////////////////////
-DWORD Cserial::GetBytesRead()
-{
-	return nBytesRead;
-}
-
-///////////////////////////////////////////////////////
-// Function name	: Cserial::GetBytesWritten
-// Description		: returns total number of bytes written to port
-// Return type		: DWORD
-///////////////////////////////////////////////////////
-DWORD Cserial::GetBytesWritten()
-{
-	return nBytesWritten;
-}
-
-
-///////////////////////////////////////////////////////
-// Function name	: Cserial::ReadByte
-// Description		: Reads a byte from the selected port
-// Return type		: BOOL
-// Argument		 : BYTE& by
-///////////////////////////////////////////////////////
-BOOL Cserial::ReadByte(UCHAR& by)
-{
-static	BYTE byResByte[1024];
-static	DWORD dwBytesTxD=0;
-
-	if (!hComm) return FALSE;
-	if (ReadFile (hComm, &byResByte[0], 1, &dwBytesTxD, 0))	{
-		if (dwBytesTxD == 1) {
-			by = (UCHAR)byResByte[0];
-			return TRUE;
-		}
-	}
-	by = 0;
-	return FALSE;
-}
-
 int  Cserial::ReadData (unsigned char *buf, int nchars)
 {
+	if (!hComm)
+	return FALSE;
+
 	DWORD dwRead = 0;
-	if (!ReadFile(hComm, buf, nchars, &dwRead, NULL))
-		return 0;
+	ReadFile(hComm, buf, nchars, &dwRead, NULL);
 	return (int) dwRead;
 }
 
-int Cserial::ReadChars (unsigned char *buf, int nchars, int msec)
+BOOL Cserial::ReadByte(unsigned char & by)
 {
-	if (msec) Sleep(msec);
-	return ReadData (buf, nchars);
+static	BYTE byResByte[2];
+	if (ReadData(byResByte, 1) == 1) {
+		by = byResByte[0];
+		return true;
+	}
+	return false;
 }
 
 void Cserial::FlushBuffer()
@@ -387,7 +349,9 @@ void Cserial::FlushBuffer()
 ///////////////////////////////////////////////////////
 BOOL Cserial::WriteByte(UCHAR by)
 {
-	if (!hComm) return FALSE;
+	if (!hComm)
+		return FALSE;
+
 	nBytesWritten = 0;
 	if (WriteFile(hComm,&by,1,&nBytesWritten,NULL)==0)
 		return FALSE;
@@ -403,10 +367,16 @@ BOOL Cserial::WriteByte(UCHAR by)
 int Cserial::WriteBuffer(unsigned char *buff, int n)
 {
 	if (!hComm)
-		return 0;
-//	busyflag = true;
+		return -1;
+
 	WriteFile (hComm, buff, n, &nBytesWritten, NULL);
-//	busyflag = false;
+	if (!nBytesWritten) {
+LOG_INFO("Reopen comm port");
+		ClosePort();
+		OpenPort();
+		WriteFile (hComm, buff, n, &nBytesWritten, NULL);
+	}
+
 	return nBytesWritten;
 }
 
@@ -429,10 +399,6 @@ BOOL Cserial::SetCommunicationTimeouts(
 	DWORD WriteTotalTimeoutConstant
 )
 {
-	if((bPortReady = GetCommTimeouts (hComm, &CommTimeoutsSaved))==0)	{
-		return FALSE;
-	}
-
 	CommTimeouts.ReadIntervalTimeout = ReadIntervalTimeout;
 	CommTimeouts.ReadTotalTimeoutMultiplier = ReadTotalTimeoutMultiplier;
 	CommTimeouts.ReadTotalTimeoutConstant = ReadTotalTimeoutConstant;
@@ -467,7 +433,6 @@ Write Total Timeout Multiplier...... %8ld %8ld",
 	return TRUE;
 }
 
-BOOL Cserial::SetCommTimeout() {
 /*
  * ReadIntervalTimeout
  *
@@ -532,12 +497,13 @@ BOOL Cserial::SetCommTimeout() {
  * If no bytes arrive within the time specified by ReadTotalTimeoutConstant,
  * ReadFile times out.
 */
+BOOL Cserial::SetCommTimeout() {
 	return SetCommunicationTimeouts (
-		0,   // Read Interval Timeout
-		0,   // Read Total Timeout Multiplier
-		50,  // Read Total Timeout Constant
-		50,  // Write Total Timeout Constant
-		0    // Write Total Timeout Multiplier
+		MAXDWORD, // Read Interval Timeout
+		MAXDWORD, // Read Total Timeout Multiplier
+		10,       // Read Total Timeout Constant
+		50,       // Write Total Timeout Constant
+		5         // Write Total Timeout Multiplier
 	);
   }
 
@@ -601,6 +567,10 @@ BOOL Cserial::ConfigurePort(DWORD	BaudRate,
 		LOG_ERROR("Port not available");
 		return FALSE;
 	}
+
+	if ( (bPortReady = GetCommTimeouts (hComm, &CommTimeoutsSaved) ) == 0)
+		return FALSE;
+
 	return SetCommTimeout();
 }
 

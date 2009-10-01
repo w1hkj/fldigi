@@ -108,20 +108,24 @@ public:
 
 	bool IsBusy() { return busyflag; };
 	void IsBusy(bool val) { busyflag = val; };
+	bool IsOpen() { return hComm == INVALID_HANDLE_VALUE ? 0 : 1; };
 
 	BOOL ReadByte(unsigned char &resp);
 	int  ReadData (unsigned char *b, int nbr);
 	int  ReadBuffer (unsigned char *b, int nbr) {
 	  return ReadData (b,nbr);
 	}
-	int  ReadChars (unsigned char *b, int nbr, int msec);
-	DWORD GetBytesRead();
 
 	BOOL WriteByte(unsigned char bybyte);
-	DWORD GetBytesWritten();
 	int WriteBuffer(unsigned char *str, int nbr);
 
-	BOOL SetCommunicationTimeouts(DWORD ReadIntervalTimeout,DWORD ReadTotalTimeoutMultiplier,DWORD ReadTotalTimeoutConstant,DWORD WriteTotalTimeoutMultiplier,DWORD WriteTotalTimeoutConstant);
+	BOOL SetCommunicationTimeouts(
+		DWORD ReadIntervalTimeout,
+		DWORD ReadTotalTimeoutMultiplier,
+		DWORD ReadTotalTimeoutConstant,
+		DWORD WriteTotalTimeoutMultiplier,
+		DWORD WriteTotalTimeoutConstant);
+
 	BOOL SetCommTimeout();
 
 	void Timeout(int tm) { timeout = tm; return; };
