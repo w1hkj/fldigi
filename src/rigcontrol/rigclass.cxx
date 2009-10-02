@@ -21,8 +21,6 @@ Rig::Rig() : rig(0) { }
 Rig::Rig(rig_model_t rig_model)
 {
 	rig = rig_init(rig_model);
-   	if (!rig)
-		throw RigException ("Could not initialize rig");
 }
 
 Rig::~Rig()
@@ -30,12 +28,16 @@ Rig::~Rig()
 	close();
 }
 
-void Rig::init(rig_model_t rig_model)
+bool Rig::init(rig_model_t rig_model)
 {
 	close();
-	if ((rig = rig_init(rig_model)) == NULL)
-		throw RigException ("Could not initialize rig");
-	LOG_INFO("Initialised rig model %d: %s", rig_model, getName());
+	rig = rig_init(rig_model);
+	if (rig) {
+		LOG_INFO("Initialised rig model %d: %s", rig_model, getName());
+		return true;
+	}
+	LOG_ERROR("Could not initialize rig");
+	return false;
 }
 
 const char *Rig::getName()
@@ -48,11 +50,9 @@ const struct rig_caps* Rig::getCaps(void)
 	return rig ? rig->caps : 0;
 }
 
-void Rig::open(void)
+bool Rig::open(void)
 {
-	int err = rig_open(rig);
-	if (err != RIG_OK)
-		throw RigException(err);
+	return (rig_open(rig) == RIG_OK);
 }
 
 void Rig::close(void)
@@ -64,95 +64,90 @@ void Rig::close(void)
 	}
 }
 
-void Rig::setFreq(freq_t freq, vfo_t vfo) 
+bool Rig::setFreq(freq_t freq, vfo_t vfo)
 {
-	int err;
+	err = 0;
 	for (int i = 0; i < NUMTRIES; i++) {
-		err = rig_set_freq(rig, vfo, freq);
-		if (err == RIG_OK)
-			return;
+		if ((err = rig_set_freq(rig, vfo, freq)) == RIG_OK);
+			return true;
 	}
-	throw RigException(err);
-}
+	return false;
+ }
 
-freq_t Rig::getFreq(vfo_t vfo)
+freq_t Rig::getFreq(bool & b, vfo_t vfo)
 {
+	err = 0;
 	freq_t freq = 0;
-	int i;
-	for (i = 0; i < NUMTRIES; i++)
-		if (rig_get_freq(rig, vfo, &freq) == RIG_OK)
+	for (int i = 0; i < NUMTRIES; i++)
+		if ((err = rig_get_freq(rig, vfo, &freq)) == RIG_OK)
 			break;
+	b = (err == RIG_OK);
 	return freq;
 }
 
-void Rig::setMode(rmode_t mode, pbwidth_t width, vfo_t vfo) 
+bool Rig::setMode(rmode_t mode, pbwidth_t width, vfo_t vfo)
 {
-	int err;
+	err = 0;
 	for (int i = 0; i < NUMTRIES; i++) {
 		if ((err = rig_set_mode(rig, vfo, mode, width)) == RIG_OK)
-			return;
+			return true;
 	}
-	throw RigException(err);
+	return false;
 }
 
-rmode_t Rig::getMode(pbwidth_t& width, vfo_t vfo) 
+rmode_t Rig::getMode( bool & b, pbwidth_t& width, vfo_t vfo)
 {
 	int err;
 	rmode_t mode;
-	for (int i = 0; i < NUMTRIES; i++) {
+	for (int i = 0; i < NUMTRIES; i++)
 		if ((err = rig_get_mode(rig, vfo, &mode, &width)) == RIG_OK)
-			return mode;
-	}
-	throw RigException(err);
+			break;
+	b = (err == RIG_OK);
+	return mode;
 }
 
-void Rig::setPTT(ptt_t ptt, vfo_t vfo)
+bool Rig::setPTT(ptt_t ptt, vfo_t vfo)
 {
-	int err;
-	for (int i = 0; i < NUMTRIES; i++) {
+	err = 0;
+	for (int i = 0; i < NUMTRIES; i++)
 		if ((err = rig_set_ptt(rig, vfo, ptt)) == RIG_OK)
-			return;
-	}
-	throw RigException(err);
+			return true;
+	return false;
 }
 
-ptt_t Rig::getPTT(vfo_t vfo)
+ptt_t Rig::getPTT(bool & b, vfo_t vfo)
 {
-	int err;
+	err = 0;
 	ptt_t ptt;
-	for (int i = 0; i < NUMTRIES; i++) {
+	for (int i = 0; i < NUMTRIES; i++)
 		if ((err = rig_get_ptt(rig, vfo, &ptt)) == RIG_OK)
-			return ptt;
-	}
-	throw RigException(err);
+			break;
+	b = (err == RIG_OK);
+	return ptt;
 }
 
-void Rig::setConf(token_t token, const char *val)
+bool Rig::setConf(token_t token, const char *val)
 {
-	int err = rig_set_conf(rig, token, val);
-	if (err != RIG_OK)
-		throw RigException(err);
-}
-void Rig::setConf(const char *name, const char *val)
-{
-	LOG_INFO("setting \"%s\" to \"%s\"", name, val);
-	int err = rig_set_conf(rig, tokenLookup(name), val);
-	if (err != RIG_OK)
-		throw RigException(name, err);
+	err = rig_set_conf(rig, token, val);
+	return (err == RIG_OK);
 }
 
-void Rig::getConf(token_t token, char *val)
+bool Rig::setConf(const char *name, const char *val)
 {
-	int err = rig_get_conf(rig, token, val);
-	if (err != RIG_OK)
-		throw RigException(err);
+	err = rig_set_conf(rig, tokenLookup(name), val);
+	return (err == RIG_OK);
 }
 
-void Rig::getConf(const char *name, char *val)
+bool Rig::getConf(token_t token, char *val)
 {
-	int err = rig_get_conf(rig, tokenLookup(name), val);
-	if (err != RIG_OK)
-		throw RigException(name, err);
+	err = rig_get_conf(rig, token, val);
+	return  (err == RIG_OK);
+}
+
+bool Rig::getConf(const char *name, char *val)
+{
+	err = rig_get_conf(rig, tokenLookup(name), val);
+	return (err == RIG_OK);
 }
 
 token_t Rig::tokenLookup(const char *name)
