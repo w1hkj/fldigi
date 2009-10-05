@@ -99,11 +99,11 @@ Fl_Menu_Item FTextRX::menu[] = {
 /// We remove \c Fl_Text_Display_mod::buffer_modified_cb from the list of callbacks
 /// because we want to scroll depending on the visibility of the last line; @see
 /// changed_cb.
-/// @param x 
-/// @param y 
-/// @param w 
-/// @param h 
-/// @param l 
+/// @param x
+/// @param y
+/// @param w
+/// @param h
+/// @param l
 FTextRX::FTextRX(int x, int y, int w, int h, const char *l)
         : FTextView(x, y, w, h, l), quick_entry(false)
 {
@@ -123,9 +123,9 @@ FTextRX::~FTextRX()
 /// pasting) and keyboard events (to make sure no text can be inserted).
 /// Everything else is passed to the base class handle().
 ///
-/// @param event 
+/// @param event
 ///
-/// @return 
+/// @return
 ///
 int FTextRX::handle(int event)
 {
@@ -334,7 +334,7 @@ void FTextRX::handle_context_menu(void)
 
 /// The context menu handler
 ///
-/// @param val 
+/// @param val
 ///
 void FTextRX::menu_cb(size_t item)
 {
@@ -566,9 +566,9 @@ FTextTX::FTextTX(int x, int y, int w, int h, const char *l)
 /// the popup menu. We also disallow mouse2 events in the transmitted text area.
 /// Everything else is passed to the base class handle().
 ///
-/// @param event 
+/// @param event
 ///
-/// @return 
+/// @return
 ///
 int FTextTX::handle(int event)
 {
@@ -648,9 +648,9 @@ void FTextTX::setFont(Fl_Font f, int attr)
 /// Handles keyboard events to override Fl_Text_Editor_mod's handling of some
 /// keystrokes.
 ///
-/// @param key 
+/// @param key
 ///
-/// @return 
+/// @return
 ///
 int FTextTX::handle_key(int key)
 {
@@ -771,23 +771,21 @@ int FTextTX::handle_key(int key)
 		break;
 	}
 
+	if (insert_position() < txpos)
+		return 1;
+
 // insert a macro
-	if (key >= FL_F && key <= FL_F_Last && insert_position() >= txpos)
+	if (key >= FL_F && key <= FL_F_Last)
 		return handle_key_macro(key);
 
 // read ctl-ddd, where d is a digit, as ascii characters (in base 10)
 // and insert verbatim; e.g. ctl-001 inserts a <soh>
-	if (Fl::event_state() & FL_CTRL && (isdigit(key) || isdigit(key - FL_KP)) &&
-		insert_position() >= txpos)
+	if (Fl::event_state() & FL_CTRL && (key >= FL_KP) && (key <= FL_KP + '9'))
 		return handle_key_ascii(key);
-	ascii_cnt = 0; // restart the numeric keypad entries.
+
+// restart the numeric keypad entries.
+	ascii_cnt = 0;
 	ascii_chr = 0;
-// do not insert printable characters in the transmitted text
-	if (insert_position() < txpos) {
-		int d;
-		if (Fl::compose(d))
-			return 1;
-	}
 
 	return 0;
 }
@@ -821,7 +819,7 @@ int FTextTX::handle_dnd_drag(int pos)
 
 /// Handles mouse-3 clicks by displaying the context menu
 ///
-/// @param val 
+/// @param val
 ///
 void FTextTX::handle_context_menu(void)
 {
@@ -863,7 +861,7 @@ void FTextTX::handle_context_menu(void)
 
 /// The context menu handler
 ///
-/// @param val 
+/// @param val
 ///
 void FTextTX::menu_cb(size_t item)
 {
