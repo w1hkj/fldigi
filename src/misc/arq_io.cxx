@@ -279,6 +279,48 @@ LOG_DEBUG("%s", txstring.c_str());
 }
 
 //-----------------------------------------------------------------------------
+// Auto transmit of file contained in WRAP_auto_dir
+//-----------------------------------------------------------------------------
+bool WRAP_auto_arqRx()
+{
+	time_t start_time, prog_time;
+	static char mailline[1000];
+	string sAutoFile = WRAP_auto_dir;
+	sAutoFile += "wrap_auto_file";
+
+	ifstream autofile(sAutoFile.c_str());
+	if(autofile) {
+		arqtext = "";
+		time(&start_time);
+		while (!autofile.eof()) {
+			memset(mailline,0,1000);
+			autofile.getline(mailline, 998); // leave space for "\n" and null byte
+			txstring.append(mailline);
+			txstring.append("\n");
+			time(&prog_time);
+			if (prog_time - start_time > TIMEOUT) {
+				LOG_ERROR("TLF file_i/o failure");
+				autofile.close();
+				std::remove (sAutoFile.c_str());
+				return false;
+			}
+		}
+		autofile.close();
+		std::remove (sAutoFile.c_str());
+
+		if (!txstring.empty()) {
+			arqtext = txstring;
+			pText = 0;
+			arq_text_available = true;
+			start_tx();
+LOG_INFO("%s", txstring.c_str());
+			txstring.clear();
+		}
+	}
+	return true;
+}
+
+//-----------------------------------------------------------------------------
 // Socket ARQ i/o used on all platforms
 //-----------------------------------------------------------------------------
 
@@ -528,11 +570,14 @@ static void *arq_loop(void *args)
 			send0x06();
 
 #if !defined(__WOE32__) && !defined(__APPLE__)
-		// order of precedence; Socket, SysV, GMFSKfile
-		if (!Socket_arqRx() && !SysV_arqRx() && tlfio)
-			TLF_arqRx();
+		// order of precedence; Socket, Wrap autofile, TLF autofile
+		if (!Socket_arqRx())
+			if (!SysV_arqRx())
+				if (!WRAP_auto_arqRx())
+					TLF_arqRx();
 #else
-		Socket_arqRx();
+		if (!Socket_arqRx())
+			WRAP_auto_arqRx();
 #endif
 		pthread_mutex_unlock (&arq_mutex);
 		MilliSleep(50);

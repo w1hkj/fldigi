@@ -124,6 +124,18 @@ string WrapDir;
 string TalkDir;
 string TempDir;
 string PskMailDir;
+string NBEMS_dir;
+string ARQ_dir;
+string ARQ_files_dir;
+string ARQ_recv_dir;
+string ARQ_send;
+string WRAP_dir;
+string WRAP_recv_dir;
+string WRAP_send_dir;
+string WRAP_auto_dir;
+string ICS_dir;
+string ICS_msg_dir;
+string ICS_tmp_dir;
 
 string PskMailFile;
 string ArqFilename;
@@ -185,12 +197,19 @@ int main(int argc, char ** argv)
 		char dirbuf[FL_PATH_MAX + 1];
 #ifdef __WOE32__
 		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$USERPROFILE/fldigi.files/");
+		HomeDir = dirbuf;
+		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$USERPROFILE/NBEMS.files/");
+		NBEMS_dir = dirbuf;
+		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$USERPROFILE/");
+		PskMailDir = dirbuf;
 #else
 		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$HOME/.fldigi/");
-#endif
 		HomeDir = dirbuf;
+		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$HOME/NBEMS.files/");
+		NBEMS_dir = dirbuf;
 		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$HOME/");
 		PskMailDir = dirbuf;
+#endif
 	}
 
 	set_platform_ui();
@@ -973,11 +992,12 @@ static void setup_signal_handlers(void)
 
 static void checkdirectories(void)
 {
-	struct {
+	struct DIRS {
 		string& dir;
 		const char* suffix;
 		void (*new_dir_func)(void);
-	} dirs[] = {
+	};
+	DIRS fldigi_dirs[] = {
 		{ HomeDir, 0, 0 },
 		{ RigsDir, "rigs", 0 },
 		{ ScriptsDir, "scripts", 0 },
@@ -991,17 +1011,45 @@ static void checkdirectories(void)
 		{ TempDir, "temp", 0 },
 	};
 
-	int r;
-	for (size_t i = 0; i < sizeof(dirs)/sizeof(*dirs); i++) {
-		if (dirs[i].suffix)
-			dirs[i].dir.assign(HomeDir).append(dirs[i].suffix).append(PATH_SEP);
+	DIRS NBEMS_dirs[] = {
+		{ NBEMS_dir,     0, 0 },
+		{ ARQ_dir,       "ARQ", 0 },
+		{ ARQ_files_dir, "ARQ/files", 0 },
+		{ ARQ_recv_dir,  "ARQ/recv", 0 },
+		{ ARQ_send,      "ARQ/send", 0 },
+		{ WRAP_dir,      "WRAP", 0 },
+		{ WRAP_recv_dir, "WRAP/recv", 0 },
+		{ WRAP_send_dir, "WRAP/send", 0 },
+		{ WRAP_auto_dir, "WRAP/auto", 0 },
+		{ ICS_dir,       "ICS", 0 },
+		{ ICS_msg_dir,   "ICS/messages", 0 },
+		{ ICS_tmp_dir,   "ICS/templates", 0 },
+	};
 
-		if ((r = mkdir(dirs[i].dir.c_str(), 0777)) == -1 && errno != EEXIST) {
-			cerr << _("Could not make directory") << ' ' << dirs[i].dir
+	int r;
+	for (size_t i = 0; i < sizeof(fldigi_dirs)/sizeof(*fldigi_dirs); i++) {
+		if (fldigi_dirs[i].suffix)
+			fldigi_dirs[i].dir.assign(HomeDir).append(fldigi_dirs[i].suffix).append(PATH_SEP);
+
+		if ((r = mkdir(fldigi_dirs[i].dir.c_str(), 0777)) == -1 && errno != EEXIST) {
+			cerr << _("Could not make directory") << ' ' << fldigi_dirs[i].dir
 			     << ": " << strerror(errno) << '\n';
 			exit(EXIT_FAILURE);
 		}
-		else if (r == 0 && dirs[i].new_dir_func)
-			dirs[i].new_dir_func();
+		else if (r == 0 && fldigi_dirs[i].new_dir_func)
+			fldigi_dirs[i].new_dir_func();
+	}
+
+	for (size_t i = 0; i < sizeof(NBEMS_dirs)/sizeof(*NBEMS_dirs); i++) {
+		if (NBEMS_dirs[i].suffix)
+			NBEMS_dirs[i].dir.assign(NBEMS_dir).append(NBEMS_dirs[i].suffix).append(PATH_SEP);
+
+		if ((r = mkdir(NBEMS_dirs[i].dir.c_str(), 0777)) == -1 && errno != EEXIST) {
+			cerr << _("Could not make directory") << ' ' << NBEMS_dirs[i].dir
+			     << ": " << strerror(errno) << '\n';
+			exit(EXIT_FAILURE);
+		}
+		else if (r == 0 && NBEMS_dirs[i].new_dir_func)
+			NBEMS_dirs[i].new_dir_func();
 	}
 }

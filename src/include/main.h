@@ -25,6 +25,18 @@ extern std::string		WrapDir;
 extern std::string		TalkDir;
 extern std::string		TempDir;
 extern std::string		PskMailDir;
+extern std::string		NBEMS_dir;
+extern std::string		ARQ_dir;
+extern std::string		ARQ_files_dir;
+extern std::string		ARQ_recv_dir;
+extern std::string		ARQ_send;
+extern std::string		WRAP_dir;
+extern std::string		WRAP_recv_dir;
+extern std::string		WRAP_send_dir;
+extern std::string		WRAP_auto_dir;
+extern std::string		ICS_dir;
+extern std::string		ICS_msg_dir;
+extern std::string		ICS_tmp_dir;
 
 extern std::string		xmlfname;
 
