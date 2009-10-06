@@ -274,7 +274,14 @@
               "Weight decreases with increasing edge timing",                           \
               false)                                                                    \
         /* FELD HELL */                                                                 \
-        ELEM_(double, HELL_BW, "", "",  150.0)                                          \
+        ELEM_(double, HELL_BW, "HELL_BW0", "Feld Hell working bandwidth",  245.0)       \
+        ELEM_(double, HELL_BW_FH, "HELL_BW1", "FH bandwidth",  245.0)                   \
+        ELEM_(double, HELL_BW_SH, "HELL_BW2", "Slow Hell bandwidth",  30.0)             \
+        ELEM_(double, HELL_BW_X5, "HELL_BW3", "X5 Hell bandwidth",  1225.)              \
+        ELEM_(double, HELL_BW_X9, "HELL_BW4", "X9 Hell bandwidth",  2205.0)             \
+        ELEM_(double, HELL_BW_FSK, "HELL_BW5", "FSK Hell bandwidth",  180.0)            \
+        ELEM_(double, HELL_BW_FSK105, "HELL_BW6", "FSK105 Hell bandwidth",  100.0)      \
+        ELEM_(double, HELL_BW_HELL80, "HELL_BW7", "HELL80 bandwidth",  450.0)           \
         ELEM_(bool, HellRcvWidth, "HELLRCVWIDTH",                                       \
               "Halve receive width (compress RX in time)",                              \
               false)                                                                    \
