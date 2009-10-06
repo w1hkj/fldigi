@@ -43,27 +43,22 @@ Save all received text, one character at a time to the following file:\n\n\
 
 string speakfname = "";
 ofstream speakout;
-bool speakOK = false;
-
-void speak_open()
-{
-    speakfname = TalkDir;
-    speakfname.append("textout.txt");
-    speakout.open(speakfname.c_str());
-    if (speakout) speakOK = true;
-}
-
-void speak_close()
-{
-    if (!speakOK) return;
-    speakout.close();
-    remove(speakfname.c_str());
-}
+string speakbuffer = "";
 
 void speak(int c)
 {
-    if (!speakOK) speak_open();
-	if (!c) return;
-	speakout.put((char)c);
+	if (speakfname.empty()) {
+		speakfname = TalkDir;
+		speakfname.append("textout.txt");
+	}
+	if (c < ' ' || c > 'z') c = ',';
+	speakbuffer += c;
+	speakout.open(speakfname.c_str(), ios::app | ios::binary);
+	if (!speakout) return;
+	for (size_t i = 0; i < speakbuffer.length(); i++)
+		speakout.put(speakbuffer[i]);
+	speakbuffer.clear();
 	speakout.flush();
+	speakout.close();
 }
+
