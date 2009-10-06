@@ -118,7 +118,14 @@
         ELEM_(int, QSKshape, "QSKSHAPE", 0)                                             \
         ELEM_(bool, CWnarrow, "CWNARROW", false)                                        \
 /* FELD HELL */                                                                         \
-        ELEM_(double, HELL_BW, "", 150.0)                                               \
+        ELEM_(double, HELL_BW, "HELL_BW0", 245.0)                                       \
+        ELEM_(double, HELL_BW_FH, "HELL_BW1", 245.0)                                    \
+        ELEM_(double, HELL_BW_SH, "HELL_BW2", 30.0)                                     \
+        ELEM_(double, HELL_BW_X5, "HELL_BW3", 1225.)                                    \
+        ELEM_(double, HELL_BW_X9, "HELL_BW4", 2205.0)                                   \
+        ELEM_(double, HELL_BW_FSK, "HELL_BW5", 180.0)                                   \
+        ELEM_(double, HELL_BW_FSK105, "HELL_BW6", 100.0)                                \
+        ELEM_(double, HELL_BW_HELL80, "HELL_BW7", 450.0)                                \
         ELEM_(bool, HellRcvWidth, "HELLRCVWIDTH", false)                                \
         ELEM_(bool, HellBlackboard, "HELLBLACKBOARD", false)                            \
         ELEM_(int, HellXmtWidth, "HELLXMTWIDTH", 1)                                     \
