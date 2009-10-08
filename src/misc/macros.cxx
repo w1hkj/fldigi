@@ -65,6 +65,7 @@ void pXOUT(string &, size_t &);
 void pLOG(string &, size_t &);
 void pTIMER(string &, size_t &);
 void pIDLE(string &, size_t &);
+void pTUNE(string &, size_t &);
 void pMODEM(string &, size_t &);
 void pEXEC(string &, size_t &);
 void pSTOP(string &, size_t &);
@@ -117,6 +118,7 @@ MTAGS mtags[] = {
 {"<LOG>",		pLOG},
 {"<TIMER:",		pTIMER},
 {"<IDLE:",		pIDLE},
+{"<TUNE:",		pTUNE},
 {"<MODEM>",		pMODEM},
 {"<EXEC>",		pEXEC},
 {"<STOP>",		pSTOP},
@@ -267,6 +269,21 @@ void pIDLE(string &s, size_t &i)
 	s.replace(i, endbracket - i + 1, "");
 }
 
+bool useTune = false;
+int  tuneTime = 0;
+
+void pTUNE(string &s, size_t &i)
+{
+	size_t endbracket = s.find('>',i);
+	int number;
+	string sTime = s.substr(i+6, endbracket - i - 6);
+	if (sTime.length() > 0) {
+		sscanf(sTime.c_str(), "%d", &number);
+		useTune = true;
+		tuneTime = number;
+	}
+	s.replace(i, endbracket - i + 1, "");
+}
 
 void pINFO1(string &s, size_t &i)
 {
@@ -482,7 +499,7 @@ void pLOG(string &s, size_t &i)
 
 void pMODEM(string &s, size_t &i)
 {
-	size_t	j, k, 
+	size_t	j, k,
 			len = s.length();
 	string name;
 
@@ -763,9 +780,9 @@ int MACROTEXT::loadMacros(const string& filename)
 	unsigned long int	   crlf; // 64 bit cpu's
 	char   szLine[4096];
 	bool   convert = false;
-	
+
 	ifstream mFile(filename.c_str());
-	
+
 	if (!mFile) {
 		create_new_macros();
 		for (int i = 0; i < 12; i++) {
@@ -774,7 +791,7 @@ int MACROTEXT::loadMacros(const string& filename)
 		}
 		return 0;
 	}
-	
+
 	mFile.getline(szLine, 4095);
 	mLine = szLine;
 	if (mLine.find("//fldigi macro definition file") != 0) {
@@ -784,7 +801,7 @@ int MACROTEXT::loadMacros(const string& filename)
 	if (mLine.find("extended") == string::npos) {
 		convert = true;
 		changed = true;
-	}		
+	}
 // clear all of the macros
 	for (int i = 0; i < MAXMACROS; i++) {
 		name[i] = "";
@@ -929,7 +946,7 @@ string MACROTEXT::expandMacro(int n)
 		GET = false;
 		return "";
 	}
-		
+
 	return expanded;
 }
 
@@ -941,22 +958,44 @@ void insertTextAfter(void *)
 	text2send.clear();
 }
 
-void MACROTEXT::execute(int n) 
+void finishTune(void *)
 {
-	text2send = expandMacro(n);
+	trx_receive();
 	if ( TransmitON ) {
 		active_modem->set_stopflag(false);
 		start_tx();
 		TransmitON = false;
+		if (useIdle && idleTime > 0) {
+			Fl::add_timeout(idleTime , insertTextAfter);
+		}
+		else {
+			TransmitText->add( text2send.c_str() );
+			text2send.clear();
+		}
+		useIdle = false;
 	}
-	if (useIdle && idleTime > 0) {
-		Fl::add_timeout(idleTime , insertTextAfter);
+}
+
+void MACROTEXT::execute(int n)
+{
+	text2send = expandMacro(n);
+	if (useTune && tuneTime > 0) {
+		trx_tune();
+		Fl::add_timeout(tuneTime, finishTune);
+		useTune = false;
+	} else if ( TransmitON ) {
+		active_modem->set_stopflag(false);
+		start_tx();
+		TransmitON = false;
+		if (useIdle && idleTime > 0) {
+			Fl::add_timeout(idleTime , insertTextAfter);
+		}
+		else {
+			TransmitText->add( text2send.c_str() );
+			text2send.clear();
+		}
+		useIdle = false;
 	}
-	else {
-		TransmitText->add( text2send.c_str() );
-		text2send.clear();
-	}
-	useIdle = false;
 }
 
 MACROTEXT::MACROTEXT()
@@ -971,7 +1010,7 @@ MACROTEXT::MACROTEXT()
 }
 
 
-string mtext = 
+string mtext =
 "//fldigi macro definition file extended\n\
 // This file defines the macro structe(s) for the digital modem program, fldigi\n\
 // It also serves as a basis for any macros that are written by the user\n\

@@ -58,10 +58,10 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<RST>\tother RST"));
 	w->add(_("<INFO1>\tS/N etc."));
 	w->add(_("<INFO2>\tIMD etc."));
-	
+
 	w->add(LINE_SEP);
 	w->add(_("<CLRRX>\tclear RX pane"));
-	
+
 	w->add(LINE_SEP);
 	w->add(_("<GET>\ttext to NAME/QTH"));
 
@@ -94,13 +94,14 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<VER>\tFldigi version"));
 	w->add(_("<TIMER:NN>\trepeat every NN sec"));
 	w->add(_("<IDLE:NN>\tidle signal for NN sec"));
-	
+	w->add(_("<TUNE:NN>\ttune signal for NN sec"));
+
 	w->add(LINE_SEP);
 	w->add(_("<WPM:NN>\tCW WPM"));
 	w->add(_("<RISE:nn.n>\tCW rise time"));
 	w->add(_("<PRE:nn.n>\tQSK pre-timing"));
 	w->add(_("<POST:+/-nn.n>\tQSK post-timing"));
-	
+
 	w->add(LINE_SEP);
 	w->add(_("<AFC:on|off|t>\tAFC  on,off,toggle"));
 	w->add(_("<LOCK:on|off|t>\tLOCK on,off,toggle"));
@@ -188,7 +189,7 @@ void cbInsertMacro(Fl_Widget *, void *)
 			text.insert(8, p);
 		} else
 			text = "";
-	} 
+	}
 	macrotext->insert(text.c_str());
 	macrotext->take_focus();
 }
