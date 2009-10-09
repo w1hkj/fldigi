@@ -967,12 +967,11 @@ void finishTune(void *)
 		TransmitON = false;
 		if (useIdle && idleTime > 0) {
 			Fl::add_timeout(idleTime , insertTextAfter);
+			useIdle = false;
 		}
-		else {
-			TransmitText->add( text2send.c_str() );
-			text2send.clear();
-		}
-		useIdle = false;
+	} else {
+		TransmitText->add( text2send.c_str() );
+		text2send.clear();
 	}
 }
 
@@ -989,12 +988,11 @@ void MACROTEXT::execute(int n)
 		TransmitON = false;
 		if (useIdle && idleTime > 0) {
 			Fl::add_timeout(idleTime , insertTextAfter);
+			useIdle = false;
 		}
-		else {
-			TransmitText->add( text2send.c_str() );
-			text2send.clear();
-		}
-		useIdle = false;
+	} else {
+		TransmitText->add( text2send.c_str() );
+		text2send.clear();
 	}
 }
 
