@@ -968,11 +968,11 @@ void finishTune(void *)
 		if (useIdle && idleTime > 0) {
 			Fl::add_timeout(idleTime , insertTextAfter);
 			useIdle = false;
+			return;
 		}
-	} else {
-		TransmitText->add( text2send.c_str() );
-		text2send.clear();
 	}
+	TransmitText->add( text2send.c_str() );
+	text2send.clear();
 }
 
 void MACROTEXT::execute(int n)
@@ -982,18 +982,20 @@ void MACROTEXT::execute(int n)
 		trx_tune();
 		Fl::add_timeout(tuneTime, finishTune);
 		useTune = false;
-	} else if ( TransmitON ) {
+		return;
+	}
+	if ( TransmitON ) {
 		active_modem->set_stopflag(false);
 		start_tx();
 		TransmitON = false;
 		if (useIdle && idleTime > 0) {
 			Fl::add_timeout(idleTime , insertTextAfter);
 			useIdle = false;
+			return;
 		}
-	} else {
-		TransmitText->add( text2send.c_str() );
-		text2send.clear();
 	}
+	TransmitText->add( text2send.c_str() );
+	text2send.clear();
 }
 
 MACROTEXT::MACROTEXT()
