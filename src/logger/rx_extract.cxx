@@ -38,12 +38,17 @@ using namespace std;
 
 const char *beg = "[WRAP:beg]";
 const char *end = "[WRAP:end]";
+#ifdef __WIN32__
 const char *txtWrapInfo = "\
 Detect the occurance of [WRAP:beg] and [WRAP:end]\n\
-Save tags and all enclosed text to date-time stamped files placed\n\
-in the folder 'wrap' located in the fldigi files folder, ie:\n\n\
-    fldigi.files\\wrap\\extract-20090127-0925.wrap (Windows)\n\
-    ~/.fldigi/wrap/extract-20090127-0925.wrap (Linux, OS X, Free BSD)"; 
+Save tags and all enclosed text to date-time stamped file, ie:\n\n\
+    NBEMS.files\\WRAP\\recv\\extract-20090127-092515.wrap";
+#else
+const char *txtWrapInfo = "\
+Detect the occurance of [WRAP:beg] and [WRAP:end]\n\
+Save tags and all enclosed text to date-time stamped file, ie:\n\n\
+    ~/NBEMS.files/WRAP/recv/extract-20090127-092515.wrap";
+#endif
 
 #define   bufsize  16
 char  rx_extract_buff[bufsize + 1];
@@ -65,11 +70,11 @@ void rx_extract_reset()
 void rx_extract_add(int c)
 {
 	if (!c) return;
-	
+
 	if (!bInit) {
 		rx_extract_reset();
 		bInit = true;
-	}	
+	}
 	char ch = (char)c;
 
 	memmove(rx_extract_buff, &rx_extract_buff[1], bufsize - 1);
@@ -78,9 +83,9 @@ void rx_extract_add(int c)
 	if ( strstr(rx_extract_buff, beg) != NULL ) {
 		rx_buff = rx_extract_buff;
 		rx_extract_msg = "Extracting";
-		
+
 		put_status(rx_extract_msg.c_str(), 60, STATUS_CLEAR);
-		
+
 		memset(rx_extract_buff, ' ', bufsize);
 		extracting = true;
 	} else if (extracting) {
@@ -91,19 +96,20 @@ void rx_extract_add(int c)
 			time(&t);
 	        gmtime_r(&t, &tim);
 			strftime(dttm, sizeof(dttm), "%Y%m%d-%H%M%S", &tim);
-			
-			string outfilename = WrapDir;
+
+			string outfilename = WRAP_recv_dir;
 			outfilename.append("extract-");
 			outfilename.append(dttm);
-			outfilename.append(".wrap");			
+			outfilename.append(".wrap");
 			ofstream extractstream(outfilename.c_str(), ios::binary);
 			if (extractstream) {
 				extractstream << rx_buff;
 				extractstream.close();
 			}
-			rx_extract_msg = "File saved in temp folder";
+			rx_extract_msg = "File saved in ";
+			rx_extract_msg.append(WRAP_recv_dir);
 			put_status(rx_extract_msg.c_str(), 20, STATUS_CLEAR);
-			
+
 			rx_extract_reset();
 		} else if (rx_buff.length() > 16384) {
 			rx_extract_msg = "Extract length exceeded 16384 bytes";
