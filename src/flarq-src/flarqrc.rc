@@ -1,5 +1,10 @@
-#include <windows.h> // include for version info constants
+#define BUILD_FLARQ 1
+#include "config.h"
 
 #define IDI_ICON 101
-
 IDI_ICON ICON DISCARDABLE "flarq.ico"
+
+#define RC_FILE_VERSION_QUAD FLARQ_VERSION_MAJOR,FLARQ_VERSION_MINOR,0,0
+#define RC_FILE_DESCRIPTION  "Fast Light ARQ Application"
+
+#include "common.rc"

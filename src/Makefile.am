@@ -105,7 +105,7 @@ CLEAN_LOCAL =
 if WIN32
 if HAVE_WINDRES
 .rc.o:
-	$(call silent,WRES  ,$@)$(WINDRES) -I$(srcdir)/include -I$(srcdir)/../data/win32 $< -O coff $@
+	$(call silent,WRES  ,$@)$(WINDRES) -DRC_BUILD_TIME=\\\"$(shell date +%s)\\\" -I$(srcdir) -I$(srcdir)/include -I$(srcdir)/../data/win32 $< -O coff $@
 fldigi_SOURCES += $(FLDIGI_WIN32_RES_SRC)
 flarq_SOURCES += $(FLARQ_WIN32_RES_SRC)
 endif
