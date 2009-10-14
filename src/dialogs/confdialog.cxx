@@ -2120,6 +2120,14 @@ static void cb_chkRxStream(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Group *grpTalker=(Fl_Group *)0;
+
+Fl_Button *btnConnectTalker=(Fl_Button *)0;
+
+static void cb_btnConnectTalker(Fl_Button*, void*) {
+  open_talker();
+}
+
 Fl_Group *tabQRZ=(Fl_Group *)0;
 
 Fl_Round_Button *btnQRZcdrom=(Fl_Round_Button *)0;
@@ -2241,7 +2249,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { tabOperator = new Fl_Group(0, 25, 500, 345, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2831,7 +2838,6 @@ an merging"));
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
           { tabCW = new Fl_Group(0, 50, 500, 320, _("CW"));
-            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 500, 320);
               tabsCW->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
@@ -3299,6 +3305,7 @@ an merging"));
             tabOlivia->end();
           } // Fl_Group* tabOlivia
           { tabPSK = new Fl_Group(0, 50, 517, 320, _("PSK"));
+            tabPSK->hide();
             { tabsPSK = new Fl_Tabs(0, 50, 517, 320);
               tabsPSK->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
@@ -3680,10 +3687,10 @@ an merging"));
         tabModems->end();
       } // Fl_Group* tabModems
       { tabRig = new Fl_Group(0, 25, 500, 345, _("Rig"));
+        tabRig->hide();
         { tabsRig = new Fl_Tabs(0, 25, 500, 345);
           tabsRig->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hardware PTT"));
-            o->hide();
             { grpHWPTT = new Fl_Group(5, 100, 490, 265);
               grpHWPTT->box(FL_ENGRAVED_FRAME);
               { inpTTYdev = new Fl_Input_Choice(200, 209, 160, 22, _("Device:"));
@@ -3857,6 +3864,7 @@ an merging"));
             o->end();
           } // Fl_Group* o
           { tabHamlib = new Fl_Group(0, 50, 500, 320, _("Hamlib"));
+            tabHamlib->hide();
             { chkUSEHAMLIB = new Fl_Check_Button(195, 60, 100, 20, _("Use Hamlib"));
               chkUSEHAMLIB->tooltip(_("Hamlib used for rig control"));
               chkUSEHAMLIB->down_box(FL_DOWN_BOX);
@@ -4517,36 +4525,47 @@ d frequency"));
           } // Fl_Group* tabCPUspeed
           { tabFileExtraction = new Fl_Group(0, 50, 500, 320, _("Text Capture"));
             tabFileExtraction->hide();
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 155, _("Auto Extract files from rx stream"));
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 119, _("Auto Extract files from rx stream"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = chkAutoExtract = new Fl_Check_Button(136, 184, 227, 20, _("Enable detection && extraction"));
+              { Fl_Check_Button* o = chkAutoExtract = new Fl_Check_Button(136, 141, 227, 20, _("Enable detection && extraction"));
                 chkAutoExtract->tooltip(_("Extract files for use with external \"wrap\" program"));
                 chkAutoExtract->down_box(FL_DOWN_BOX);
                 chkAutoExtract->callback((Fl_Callback*)cb_chkAutoExtract);
                 o->value(progdefaults.autoextract);
               } // Fl_Check_Button* chkAutoExtract
-              { Fl_Box* o = new Fl_Box(15, 85, 465, 92, _("0\n1\n2\n3\n4"));
+              { Fl_Box* o = new Fl_Box(13, 85, 467, 62, _("0\n1\n2"));
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
                 o->label(txtWrapInfo);
               } // Fl_Box* o
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(5, 218, 490, 144, _("Capture rx text to external file"));
+            { Fl_Group* o = new Fl_Group(5, 180, 490, 109, _("Capture rx text to external file"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = chkRxStream = new Fl_Check_Button(136, 330, 175, 20, _("Enable rx text stream"));
+              { Fl_Check_Button* o = chkRxStream = new Fl_Check_Button(136, 260, 175, 20, _("Enable rx text stream"));
                 chkRxStream->tooltip(_("Send rx text to file: textout.txt"));
                 chkRxStream->down_box(FL_DOWN_BOX);
                 chkRxStream->callback((Fl_Callback*)cb_chkRxStream);
                 o->value(progdefaults.speak);
               } // Fl_Check_Button* chkRxStream
-              { Fl_Box* o = new Fl_Box(20, 241, 465, 69, _("0\n1\n2\n3"));
+              { Fl_Box* o = new Fl_Box(20, 203, 465, 60, _("0\n1\n2"));
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
                 o->label(txtTalkInfo);
               } // Fl_Box* o
               o->end();
             } // Fl_Group* o
+            { grpTalker = new Fl_Group(5, 291, 490, 73, _("Talker Socket (MS only)"));
+              grpTalker->box(FL_ENGRAVED_FRAME);
+              grpTalker->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { btnConnectTalker = new Fl_Button(30, 319, 70, 20, _("Connect"));
+                btnConnectTalker->callback((Fl_Callback*)cb_btnConnectTalker);
+              } // Fl_Button* btnConnectTalker
+              { Fl_Box* o = new Fl_Box(109, 317, 368, 24, _("Connect to external Talker Program"));
+                o->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
+              } // Fl_Box* o
+              grpTalker->end();
+            } // Fl_Group* grpTalker
             tabFileExtraction->end();
           } // Fl_Group* tabFileExtraction
           tabsMisc->end();

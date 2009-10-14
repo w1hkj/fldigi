@@ -89,8 +89,8 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open
-        xywh {0 25 500 345} when 1 hide
+        callback {progdefaults.changed = true;} open selected
+        xywh {0 25 500 345} when 1
       } {
         Fl_Group {} {
           label Station open
@@ -709,7 +709,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 500 320} selection_color 50
@@ -1150,7 +1150,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabPSK {
             label PSK open
-            xywh {0 50 517 320}
+            xywh {0 50 517 320} hide
           } {
             Fl_Tabs tabsPSK {open
               xywh {0 50 517 320} selection_color 50
@@ -1508,14 +1508,14 @@ progdefaults.changed = true;}
       }
       Fl_Group tabRig {
         label Rig open
-        xywh {0 25 500 345}
+        xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsRig {open
           xywh {0 25 500 345} selection_color 50
         } {
           Fl_Group {} {
             label {Hardware PTT} open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group grpHWPTT {open
               xywh {5 100 490 265} box ENGRAVED_FRAME
@@ -1803,7 +1803,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabHamlib {
             label Hamlib open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Check_Button chkUSEHAMLIB {
               label {Use Hamlib}
@@ -1975,7 +1975,7 @@ btnInitHAMLIB->redraw_label();}
               Fl_Value_Slider valHamRigStopbits {
                 label Stopbits
                 callback {progdefaults.HamRigStopbits = (int)o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
                 xywh {424 162 60 22} type Horizontal color 7 selection_color 40 align 4 minimum 1 maximum 2 step 1 value 2 textsize 14
                 code0 {o->value(progdefaults.HamRigStopbits);}
               }
@@ -2607,45 +2607,57 @@ progdefaults.changed = true;}
           } {
             Fl_Group {} {
               label {Auto Extract files from rx stream} open
-              xywh {5 60 490 155} box ENGRAVED_FRAME align 21
+              xywh {5 60 490 119} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button chkAutoExtract {
                 label {Enable detection && extraction}
                 callback {progdefaults.autoextract = o->value();
 progdefaults.changed = true;}
-                tooltip {Extract files for use with external "wrap" program} xywh {136 184 227 20} down_box DOWN_BOX
+                tooltip {Extract files for use with external "wrap" program} xywh {136 141 227 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.autoextract);}
               }
               Fl_Box {} {
                 label {0
 1
-2
-3
-4}
-                xywh {15 85 465 92} align 21
+2}
+                xywh {13 85 467 62} align 21
                 code0 {o->label(txtWrapInfo);}
                 code1 {\#include "rx_extract.h"}
               }
             }
             Fl_Group {} {
               label {Capture rx text to external file} open
-              xywh {5 218 490 144} box ENGRAVED_FRAME align 21
+              xywh {5 180 490 109} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button chkRxStream {
                 label {Enable rx text stream}
                 callback {progdefaults.speak = o->value();
 progdefaults.changed = true;}
-                tooltip {Send rx text to file: textout.txt} xywh {136 330 175 20} down_box DOWN_BOX
+                tooltip {Send rx text to file: textout.txt} xywh {136 260 175 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.speak);}
               }
               Fl_Box {} {
                 label {0
 1
-2
-3}
-                xywh {20 241 465 69} align 21
+2}
+                xywh {20 203 465 60} align 21
                 code0 {o->label(txtTalkInfo);}
                 code1 {\#include "speak.h"}
+              }
+            }
+            Fl_Group grpTalker {
+              label {Talker Socket (MS only)} open
+              xywh {5 291 490 73} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Button btnConnectTalker {
+                label Connect
+                callback {open_talker();}
+                xywh {30 319 70 20}
+                code0 {extern void open_talker();}
+              }
+              Fl_Box {} {
+                label {Connect to external Talker Program}
+                xywh {109 317 368 24} align 20
               }
             }
           }

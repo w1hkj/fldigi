@@ -3015,7 +3015,7 @@ static void put_rx_char_flmain(unsigned int data)
 		style = FTextBase::ALTR;
 
 	if (progdefaults.autoextract == true) rx_extract_add(data);
-	if (progdefaults.speak == true) speak(data);
+	speak(data);
 
 	switch (data) {
 		case '\n':

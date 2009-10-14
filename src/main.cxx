@@ -347,6 +347,11 @@ int main(int argc, char ** argv)
 #endif
 
 	arq_init();
+#ifdef __WIN32__
+	open_talker();
+#else
+	grpTalker->hide();
+#endif
 
 #if USE_XMLRPC
 	XML_RPC_Server::start(progdefaults.xmlrpc_address.c_str(), progdefaults.xmlrpc_port.c_str());

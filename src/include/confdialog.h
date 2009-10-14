@@ -319,6 +319,9 @@ extern Fl_Check_Button *chkAutoExtract;
 #include "rx_extract.h"
 extern Fl_Check_Button *chkRxStream;
 #include "speak.h"
+extern Fl_Group *grpTalker;
+extern void open_talker();
+extern Fl_Button *btnConnectTalker;
 extern Fl_Group *tabQRZ;
 extern Fl_Round_Button *btnQRZcdrom;
 extern Fl_Input2 *txtQRZpathname;
