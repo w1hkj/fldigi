@@ -46,7 +46,6 @@ if test "x$ac_cv_want_ptw32" != "xno"; then
         ptw32_default_cflags="-I${ac_cv_want_ptw32}/include"
         ptw32_default_libs="-L${ac_cv_want_ptw32}/lib"
     fi
-    ptw32_default_cflags="-DPTW32_STATIC_LIB $ptw32_default_cflags"
     ptw32_default_libs="$ptw32_default_libs -lpthreadGC2 -lws2_32"
 
     # don't override the user-specified vars

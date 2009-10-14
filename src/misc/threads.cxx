@@ -65,19 +65,6 @@ bool thread_in_list(int id, const int* list)
 }
 #endif
 
-#ifdef __MINGW32__
-#include <stdlib.h>
-static void ptw32_cleanup(void)
-{
-       (void)pthread_win32_process_detach_np();
-}
-void ptw32_init(void)
-{
-       (void)pthread_win32_process_attach_np();
-       atexit(ptw32_cleanup);
-}
-#endif // __MINGW32__
-
 #ifdef __linux__
 #  ifndef _GNU_SOURCE
 #    define _GNU_SOURCE

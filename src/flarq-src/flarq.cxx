@@ -1787,8 +1787,6 @@ void cb_arqwin(Fl_Widget *, void*)
 
 int main (int argc, char *argv[] )
 {
-	NP_THREAD_INIT();
-
 	sscanf(VERSION, "%f", &version);
 
 	set_unexpected(handle_unexpected);

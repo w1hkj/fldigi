@@ -120,6 +120,7 @@ SectionEnd
         SectionIn RO
         SetOutPath $INSTDIR
         File "${FLDIGI_BINARY}"
+        File /nonfatal "${MINGWM_DLL}" "${PTW32_DLL}"
         StrCpy $WANT_FLDIGI "true"
     SectionEnd
 !endif
@@ -133,6 +134,9 @@ SectionEnd
         !endif
         SetOutPath $INSTDIR
         File "${FLARQ_BINARY}"
+!ifndef HAVE_FLDIGI
+        File /nonfatal "${MINGWM_DLL}" "${PTW32_DLL}"
+!endif
         StrCpy $WANT_FLARQ "true"
     SectionEnd
 !endif
@@ -179,7 +183,7 @@ SectionEnd
 Section /o "Quick Launch Shortcuts"
     !ifdef HAVE_FLDIGI
         ${If} $WANT_FLDIGI == 'true'
-            CreateShortCut "$QUICKLAUNCH\${FLDIGI_DESCRIPTION}}.lnk" "$INSTDIR\${FLDIGI_BINARY}" "" \
+            CreateShortCut "$QUICKLAUNCH\${FLDIGI_DESCRIPTION}.lnk" "$INSTDIR\${FLDIGI_BINARY}" "" \
                            "$INSTDIR\${FLDIGI_BINARY}" 0
         ${EndIf}
     !endif
@@ -204,6 +208,8 @@ Section "Uninstall"
     !ifdef HAVE_FLARQ
         Delete /REBOOTOK $INSTDIR\${FLARQ_BINARY}
     !endif
+    Delete /REBOOTOK $INSTDIR\${MINGWM_DLL}
+    Delete /REBOOTOK $INSTDIR\${PTW32_DLL}
     Delete /REBOOTOK $INSTDIR\uninstall.exe
 
     # Remove shortcuts, if any
