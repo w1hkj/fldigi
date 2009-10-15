@@ -150,7 +150,8 @@ Fl_Light_Button		*btnAutoSpot = (Fl_Light_Button *)0;
 Fl_Light_Button		*btnTune = (Fl_Light_Button *)0;
 Fl_Light_Button		*btnRSID = (Fl_Light_Button *)0;
 Fl_Light_Button		*btnTxRSID = (Fl_Light_Button *)0;
-Fl_Button		    *btnMacroTimer;
+Fl_Button		    *btnMacroTimer = (Fl_Button *)0;
+Fl_Button			*btnClearCall = (Fl_Button *)0;
 
 Fl_Tile_Check		*TiledGroup = 0;
 Fl_Box				*macroFrame = 0;
@@ -1431,6 +1432,7 @@ void cb_call(Fl_Widget* w, void*)
 		delete [] uc;
 	}
 	new_call = inpCall->value();
+	update_main_title();
 
 	if (old_call == new_call)
 		return restoreFocus(w);
@@ -1483,6 +1485,14 @@ void cb_log(Fl_Widget* w, void*)
 	restoreFocus(w);
 }
 
+void cbClearCall(Fl_Widget *b, void *)
+{
+	clearQSO();
+	oktoclear = true;
+	update_main_title();
+	restoreFocus();
+}
+
 void qsoClear_cb(Fl_Widget *b, void *)
 {
 	bool clearlog = true;
@@ -1492,6 +1502,7 @@ void qsoClear_cb(Fl_Widget *b, void *)
 		clearQSO();
 		oktoclear = true;
 	}
+	update_main_title();
 	restoreFocus();
 }
 
@@ -1501,6 +1512,7 @@ void qsoSave_cb(Fl_Widget *b, void *)
 	if (progdefaults.ClearOnSave)
 		clearQSO();
 	oktoclear = true;
+	update_main_title();
 	restoreFocus();
 }
 
@@ -1734,18 +1746,27 @@ void KISS()
 		int y2 = macroFrame->y();
 		int w1 = TiledGroup->w();
 		int w2 = TopFrame->w();
-		MixerFrame->resize(	0,
-							y1,
-							DEFAULT_SW,
-							y2 - y1);
-		MixerFrame->redraw();
-		TiledGroup->resize(	DEFAULT_SW,
-							y1,
-							w1,
-							y2 - y1);
-		TiledGroup->redraw();
+		if (MixerFrame->visible()) {
+			MixerFrame->resize(	0,
+								y1,
+								DEFAULT_SW,
+								y2 - y1);
+			MixerFrame->redraw();
+			TiledGroup->resize(	DEFAULT_SW,
+								y1,
+								w1,
+								y2 - y1);
+			TiledGroup->redraw();
+		} else {
+			TiledGroup->resize(	0,
+								y1,
+								w1,
+								y2 - y1);
+			TiledGroup->redraw();
+		}
 		TopFrame->size(w2, Hqsoframe + Hnotes);
 		TopFrame->show();
+		btnClearCall->hide();
 		btnAutoSpot->show();
 		fl_digi_main->init_sizes();
 	} else if (progStatus.KISS && progdefaults.KISSriglog) {
@@ -1755,17 +1776,26 @@ void KISS()
 		int w2 = TopFrame->w();
 		TopFrame->size(w2, 0);
 		TopFrame->hide();
-		MixerFrame->resize(	0,
-							y1,
-							DEFAULT_SW,
-							y2 - y1);
-		MixerFrame->redraw();
-		TiledGroup->resize(	DEFAULT_SW,
-							y1,
-							w1,
-							y2 - y1);
-		TiledGroup->redraw();
+		if (MixerFrame->visible()) {
+			MixerFrame->resize(	0,
+								y1,
+								DEFAULT_SW,
+								y2 - y1);
+			MixerFrame->redraw();
+			TiledGroup->resize(	DEFAULT_SW,
+								y1,
+								w1,
+								y2 - y1);
+			TiledGroup->redraw();
+		} else {
+			TiledGroup->resize(	0,
+								y1,
+								w1,
+								y2 - y1);
+			TiledGroup->redraw();
+		}
 		btnAutoSpot->hide();
+		btnClearCall->show();
 		fl_digi_main->init_sizes();
 	}
 
@@ -2075,6 +2105,9 @@ void update_main_title()
 {
 	main_window_title = PACKAGE_TARNAME " - ";
 	main_window_title += (progdefaults.myCall.empty() ? _("NO CALLSIGN SET") : progdefaults.myCall.c_str());
+	string urcall = "";
+	if (inpCall) urcall= inpCall->value();
+	if (!urcall.empty()) main_window_title.append(" < ").append(urcall).append(" >");
 	if (fl_digi_main != NULL)
 		fl_digi_main->label(main_window_title.c_str());
 }
@@ -2297,6 +2330,11 @@ void create_fl_digi_main() {
 					set_icon_label(&menu_[i]);
 			}
 			mnu->menu(menu_);
+
+			btnClearCall = new Fl_Button(WNOM - 250 - pad, 0, 50, Hmenu, "ClrCall");
+			btnClearCall->selection_color(FL_BLACK);
+			btnClearCall->callback(cbClearCall, 0);
+			btnClearCall->hide();
 
 			btnAutoSpot = new Fl_Light_Button(WNOM - 250 - pad, 0, 50, Hmenu, "Spot");
 			btnAutoSpot->selection_color(FL_YELLOW);
