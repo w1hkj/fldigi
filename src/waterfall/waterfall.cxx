@@ -134,14 +134,14 @@ WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 	wfft			= new Cfft(FFT_LEN);
     fftwindow       = new double[FFT_LEN * 2];
 	setPrefilter(progdefaults.wfPreFilter);
-	
+
 	for (int i = 0; i < FFT_LEN*2; i++)
 		circbuff[i] = fftout[i] = 0.0;
 
 	mag = 1;
 	step = 4;
 	dispcolor = true;
-	offset = 0;	
+	offset = 0;
 	sigoffset = 0;
 	ampspan = 75;
 	reflevel = -10;
@@ -252,14 +252,14 @@ void WFdisp::makeMarker()
 	}
 
 	if (!wantcursor) return;
-	
+
 	if (cursorpos > disp_width - bandwidth / 2 / step)
 		cursorpos = disp_width - bandwidth / 2 / step;
 	if (cursorpos >= (IMAGE_WIDTH - offset - bandwidth/2)/step)
 		cursorpos = (IMAGE_WIDTH - offset - bandwidth/2)/step - 1;
 	if (cursorpos < bandwidth / 2 / step)
 		cursorpos = bandwidth / 2 / step + 1;
-	
+
 // Create the cursor marker
 	double xp = offset + step * cursorpos;
 	if (xp < bandwidth / 2.0 || xp > (IMAGE_WIDTH - bandwidth / 2.0))
@@ -273,8 +273,8 @@ void WFdisp::makeMarker()
 	for (int y = 0; y < WFMARKER - 2; y++) {
 		int incr = y * IMAGE_WIDTH;
 		int msize = (WFMARKER - 2 - y)*RGBsize*step/4;
-		*(clrM + incr - 1)	= 
-		*(clrM + incr)		= 
+		*(clrM + incr - 1)	=
+		*(clrM + incr)		=
 		*(clrM + incr + 1)	= RGBcursor;
 
 		if (xp - (bw + msize) > 0)
@@ -330,8 +330,8 @@ void WFdisp::setcolors() {
 			r = palette[n].R + (int)(1.0 * i * (palette[n+1].R - palette[n].R) / 32.0);
 			g = palette[n].G + (int)(1.0 * i * (palette[n+1].G - palette[n].G) / 32.0);
 			b = palette[n].B + (int)(1.0 * i * (palette[n+1].B - palette[n].B) / 32.0);
-			mag2RGBI[i + 32*n].R = r; 
-			mag2RGBI[i + 32*n].G = g; 
+			mag2RGBI[i + 32*n].R = r;
+			mag2RGBI[i + 32*n].G = g;
 			mag2RGBI[i + 32*n].B = b;
 		}
 	}
@@ -346,7 +346,7 @@ void WFdisp::initmaps() {
 	memset (markerimage, 0, IMAGE_WIDTH * WFMARKER);
 	memset (fft_sig_img, 0, image_area);
 	memset (sig_img, 0, sig_image_area);
-	
+
 	memset (mag2RGBI, 0, sizeof(mag2RGBI));
 	initMarkers();
 	makeScale();
@@ -356,7 +356,7 @@ void WFdisp::initmaps() {
 int WFdisp::peakFreq(int f0, int delta)
 {
 	double threshold = 0.0;
-	int f1, fmin =	(int)((f0 - delta)), 
+	int f1, fmin =	(int)((f0 - delta)),
 		f2, fmax =	(int)((f0 + delta));
 	f1 = fmin; f2 = fmax;
 	if (fmin < 0 || fmax > IMAGE_WIDTH) return f0;
@@ -379,7 +379,7 @@ double WFdisp::powerDensity(double f0, double bw)
 	double pwrdensity = 0.0;
 	int flower = (int)((f0 - bw/2)),
 		fupper = (int)((f0 + bw/2));
-	if (flower < 0 || fupper > IMAGE_WIDTH) 
+	if (flower < 0 || fupper > IMAGE_WIDTH)
 		return 0.0;
 	for (int i = flower; i <= fupper; i++)
 		pwrdensity += pwr[i];
@@ -412,7 +412,7 @@ void WFdisp::processFFT() {
 	int    ptrSample;
 	if (prefilter != progdefaults.wfPreFilter)
 	    setPrefilter(progdefaults.wfPreFilter);
-	    
+
 	scale = (double)SC_SMPLRATE / srate;
     scale *= FFT_LEN / 2000.0;
 
@@ -423,9 +423,9 @@ void WFdisp::processFFT() {
             fftout[i] = fftwindow[i * 8 / progdefaults.latency] * circbuff[ptrSample];
             ptrSample = (ptrSample + 1) % (FFT_LEN *2);
         }
-        
+
 		wfft->rdft(fftout);
-FL_LOCK_D();		
+FL_LOCK_D();
 		double pw;
 		int ffth;
 		for (int i = 0; i < IMAGE_WIDTH; i++) {
@@ -520,7 +520,7 @@ void WFdisp::sig_data( double *sig, int len, int sr ) {
     double overval, peak = 0.0;
 	for (int i = 0; i < len; i++) {
 		overval = fabs(circbuff[ptrCB] = sig[i]);
-		ptrCB = (ptrCB + 1) % (FFT_LEN *2);	
+		ptrCB = (ptrCB + 1) % (FFT_LEN *2);
 		if (overval > peak) peak = overval;
 	}
 
@@ -530,17 +530,17 @@ void WFdisp::sig_data( double *sig, int len, int sr ) {
 		process_analog(circbuff, FFT_LEN * 2);
 	else
 		processFFT();
-		
+
 	put_WARNstatus(peakaudio);
 
 	static char szFrequency[14];
-	
+
 //	if (usebands)
 //		rfc = (long long)(atof(cboBand->value()) * 1000.0);
 	if (rfc != 0) { // use a boolean for the waterfall
 		if (usb)
 			dfreq = rfc + active_modem->get_txfreq();
-		else	
+		else
 			dfreq = rfc - active_modem->get_txfreq();
 		snprintf(szFrequency, sizeof(szFrequency), "%-.3f", dfreq / 1000.0);
 	} else {
@@ -653,23 +653,23 @@ void WFdisp::drawScale() {
 	static char szFreq[20];
 	double fr;
 	uchar *pixmap;
-	
+
 	if (progdefaults.wf_audioscale)
 		pixmap = (scaleimage + (int)offset);
 	else if (usb || !rfc)
 		pixmap = (scaleimage +  (int)((rfc % 1000 + offset)) );
 	else
 		pixmap = (scaleimage + (int)((1000 - rfc % 1000 + offset)));
-	
+
 	fl_draw_image_mono(
-		pixmap, 
-		x(), y() + WFTEXT, 
-		disp_width, WFSCALE, 
+		pixmap,
+		x(), y() + WFTEXT,
+		disp_width, WFSCALE,
 		step, scale_width);
-		
+
 	fl_color(FL_BLACK);
 	fl_rectf(x(), y(), disp_width, WFTEXT);
-	
+
 	fl_color(fl_rgb_color(228));
 	fl_font(progdefaults.WaterfallFontnbr, progdefaults.WaterfallFontsize);
 	for (int i = 1; i < 10; i++) {
@@ -689,10 +689,10 @@ void WFdisp::drawScale() {
 		if (progdefaults.wf_audioscale)
 			xchar = (int) (( (1000.0/step) * i - fw) / 2.0 - offset /step );
 		else if (usb)
-			xchar = (int) ( ( (1000.0/step) * i - fw) / 2.0 - 
+			xchar = (int) ( ( (1000.0/step) * i - fw) / 2.0 -
 							(offset + rfc % 500) /step );
 		else
-			xchar = (int) ( ( (1000.0/step) * i - fw) / 2.0 - 
+			xchar = (int) ( ( (1000.0/step) * i - fw) / 2.0 -
 							(offset + 500 - rfc % 500) /step );
 		if (xchar > 0 && (xchar + fw) < disp_width)
 			fl_draw(szFreq, x() + xchar, y() + 10 );
@@ -703,9 +703,9 @@ void WFdisp::drawMarker() {
 	if (mode == SCOPE) return;
 	uchar *pixmap = (uchar *)(markerimage + (int)(offset));
 	fl_draw_image(
-		pixmap, 
-		x(), y() + WFSCALE + WFTEXT, 
-		disp_width, WFMARKER, 
+		pixmap,
+		x(), y() + WFSCALE + WFTEXT,
+		disp_width, WFMARKER,
 		step * RGBsize, RGBwidth);
 }
 
@@ -718,7 +718,7 @@ void WFdisp::update_waterfall() {
 	p2 = p1;
 	p3 = fft_img;
 	p4 = p3;
-	
+
 	short* limit = tmp_fft_db + image_area - step + 1;
 
 	for (int row = 0; row < image_height; row++) {
@@ -737,7 +737,7 @@ void WFdisp::update_waterfall() {
 					p2 += step;
 					if (p2 > limit) break;
 				}
-			else 
+			else
 				for (int col = 0; col < disp_width; col++) {
 					*(p4++) = mag2RGBI[ *p2 ];
 					p2 += step;
@@ -756,7 +756,7 @@ void WFdisp::update_waterfall() {
 					p2 += step;
 					if (p2 > limit) break;
 				}
-			else 
+			else
 				for (int col = 0; col < disp_width; col++) {
 					*(p4++) = mag2RGBI[ *p2 ];
 					p2 += step;
@@ -802,8 +802,8 @@ void WFdisp::drawcolorWF() {
 	}
 
 	fl_draw_image(
-		pixmap, x(), y() + WFSCALE + WFMARKER + WFTEXT, 
-		disp_width, image_height, 
+		pixmap, x(), y() + WFSCALE + WFMARKER + WFTEXT,
+		disp_width, image_height,
 		sizeof(RGBI), disp_width * sizeof(RGBI) );
 	drawScale();
 }
@@ -831,9 +831,9 @@ void WFdisp::drawgrayWF() {
 	}
 
 	fl_draw_image_mono(
-		pixmap + 3, 
-		x(), y() + WFSCALE + WFMARKER + WFTEXT, 
-		disp_width, image_height, 
+		pixmap + 3,
+		x(), y() + WFSCALE + WFMARKER + WFTEXT,
+		disp_width, image_height,
 		sizeof(RGBI), disp_width * sizeof(RGBI));
 	drawScale();
 }
@@ -888,14 +888,14 @@ void WFdisp::drawspectrum() {
 			pos2 += IMAGE_WIDTH/step;
 		}
 	}
-	
+
 	fl_color(FL_BLACK);
 	fl_rectf(x() + disp_width, y(), w() - disp_width, h());
-	
+
 	fl_draw_image_mono(
-		pixmap, 
-		x(), y() + WFSCALE + WFMARKER + WFTEXT, 
-		disp_width, image_height, 
+		pixmap,
+		x(), y() + WFSCALE + WFMARKER + WFTEXT,
+		disp_width, image_height,
 		1, IMAGE_WIDTH / step);
 	drawScale();
 }
@@ -947,13 +947,13 @@ void slew_left(Fl_Widget *w, void * v) {
 	waterfall *wf = (waterfall *)w->parent();
 	wf->wfdisp->slew(-100);
 	restoreFocus();
-} 
+}
 
 void slew_right(Fl_Widget *w, void * v) {
 	waterfall *wf = (waterfall *)w->parent();
 	wf->wfdisp->slew(100);
 	restoreFocus();
-} 
+}
 
 
 void center_cb(Fl_Widget *w, void *v) {
@@ -1230,7 +1230,7 @@ void waterfall::opmode() {
 	if (wfdisp->carrier() > IMAGE_WIDTH - val/2)
 		wfdisp->carrier( IMAGE_WIDTH - val/2);
 	wfdisp->Bandwidth( val );
-	FL_LOCK_D();	
+	FL_LOCK_D();
 	wfcarrier->range(val/2, IMAGE_WIDTH - val/2-1);
 	FL_UNLOCK_D();
 }
@@ -1243,7 +1243,7 @@ void waterfall::carrier(int f) {
 	FL_UNLOCK_D();
 }
 
-int waterfall::Speed() { 
+int waterfall::Speed() {
 	return (int)wfdisp->Speed();
 }
 
@@ -1276,7 +1276,7 @@ int waterfall::Mag() {
 	return wfdisp->Mag();
 }
 
-void waterfall::Mag(int m) { 
+void waterfall::Mag(int m) {
 	FL_LOCK_D();
 	wfdisp->Mag(m);
 	if (m == MAG_1) x1->label("x1");
@@ -1301,7 +1301,7 @@ extern void viewer_redraw();
 	wfdisp->rfcarrier(cf);
 	viewer_redraw();
 }
-	
+
 long long waterfall::rfcarrier() {
 	return wfdisp->rfcarrier();
 }
@@ -1328,7 +1328,7 @@ void waterfall::USB(bool b) {
 extern void viewer_redraw();
 	viewer_redraw();
 }
-	
+
 bool waterfall::USB() {
 	return wfdisp->USB();
 }
@@ -1341,16 +1341,16 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 
 	buttonrow = h() + y() - BTN_HEIGHT - BEZEL;
 	bezel = new Fl_Box(
-				FL_DOWN_BOX, 
-				x(), 
-				y(), 
-				w(), 
+				FL_DOWN_BOX,
+				x(),
+				y(),
+				w(),
 				h() - BTN_HEIGHT - 2 * BEZEL, 0);
-	wfdisp = new WFdisp(x() + BEZEL, 
-			y() + BEZEL, 
+	wfdisp = new WFdisp(x() + BEZEL,
+			y() + BEZEL,
 			w() - 2 * BEZEL,
 			h() - BTN_HEIGHT - 4 * BEZEL);
-	
+
 	xpos = x() + wSpace;
 
 	mode = new Fl_Button(xpos, buttonrow, (int)(bwFFT*ratio), BTN_HEIGHT, "WF");
@@ -1449,8 +1449,76 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	xmtrcv->selection_color(FL_RED);
 	xmtrcv->value(0);
 	xmtrcv->tooltip(_("Transmit/Receive"));
-	
+
 	end();
+}
+
+void waterfall::KISS(bool on) {
+	if (on) {
+		if (progdefaults.KISSrev)
+			btnRev->hide(); else btnRev->show();
+		if (progdefaults.KISSwfcarrier)
+			wfcarrier->hide(); else wfcarrier->show();
+		if (progdefaults.KISSwfreflevel)
+			wfRefLevel->hide(); else wfRefLevel->show();
+		if (progdefaults.KISSwfampspan)
+			wfAmpSpan->hide(); else wfAmpSpan->show();
+		if (progdefaults.KISSxmtlock)
+			xmtlock->hide(); else xmtlock->show();
+		if (progdefaults.KISSqsy)
+			qsy->hide(); else qsy->show();
+		if (progdefaults.KISSwfmode)
+			mode->hide(); else mode->show();
+		if (progdefaults.KISSx1)
+			x1->hide(); else x1->show();
+		if (progdefaults.KISSwfshift) {
+			left->hide();
+			center->hide();
+			right->hide();
+		} else {
+			left->show();
+			center->show();
+			right->show();
+		}
+		if (progdefaults.KISSwfdrop)
+			wfrate->hide(); else wfrate->show();
+		if (progdefaults.KISSwfstore) {
+			btnMem->hide();
+			mbtnMem->hide();
+		} else {
+			btnMem->show();
+			mbtnMem->show();
+		}
+	} else {
+		btnRev->show();
+		wfcarrier->show();
+		wfRefLevel->show();
+		wfAmpSpan->show();
+		xmtlock->show();
+		qsy->show();
+		mode->show();
+		x1->show();
+		left->show();
+		center->show();
+		right->show();
+		wfrate->show();
+		btnMem->show();
+		mbtnMem->show();
+	}
+	btnRev->redraw();
+	wfcarrier->redraw();
+	wfRefLevel->redraw();
+	wfAmpSpan->redraw();
+	xmtlock->redraw();
+	qsy->redraw();
+	mode->redraw();
+	x1->redraw();
+	left->redraw();
+	center->redraw();
+	right->redraw();
+	wfrate->redraw();
+	btnMem->redraw();
+	mbtnMem->redraw();
 }
 
 int waterfall::handle(int event)
@@ -1591,7 +1659,7 @@ int WFdisp::handle(int event)
 		break;
 	case FL_DRAG: case FL_PUSH:
 		stopMacroTimer();
-	
+
 		switch (eb = Fl::event_button()) {
 		case FL_RIGHT_MOUSE:
 			wantcursor = false;
@@ -1679,7 +1747,7 @@ int WFdisp::handle(int event)
 	case FL_MOUSEWHEEL:
 	{
 		stopMacroTimer();
-	
+
 		int d;
 		if ( !((d = Fl::event_dy()) || (d = Fl::event_dx())) )
 			break;
@@ -1705,7 +1773,7 @@ int WFdisp::handle(int event)
 	case FL_KEYBOARD:
 	{
 		stopMacroTimer();
-	
+
 		int d = (Fl::event_state() & FL_CTRL) ? 10 : 1;
 		int k = Fl::event_key();
 		switch (k) {

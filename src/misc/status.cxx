@@ -42,9 +42,10 @@ status progStatus = {
 	MODE_BPSK31,		// trx_mode	lastmode;
 	50,					// int mainX;
 	50,					// int mainY;
-	0,				// int mainW;
-	0,				// int mainH;
-	0,				// int RxTextHeight;
+	0,					// int mainW;
+	0,					// int mainH;
+	false,				// bool KISS
+	0,					// int RxTextHeight;
 	false,				// bool rigShown;
 	50,					// int rigX;
 	50,					// int rigY;
@@ -70,12 +71,12 @@ status progStatus = {
 	false,				// bool	scopeVisible;
 	50,					// int	scopeW;
 	50,					// int	scopeH;
-	0,			// int timer
-	0,			// int timerMacro
+	0,					// int timer
+	0,					// int timerMacro
 	"macros.mdf",		// string LastMacroFile;
-	false,			// bool spot_recv
-	false,			// bool spot_log
-	false,			// bool contest
+	false,				// bool spot_recv
+	false,				// bool spot_log
+	false,				// bool contest
 
 	false,				// bool quick_entry
 	true,				// bool rx_word_wrap
@@ -166,6 +167,7 @@ void status::saveLastState()
 	spref.set("tx_mixer_level", XmtMixer);
 
 	spref.set("rx_text_height", RxTextHeight);
+
 	spref.set("log_enabled", LOGenabled);
 
 	spref.set("wf_carrier", carrier);
@@ -178,6 +180,7 @@ void status::saveLastState()
 	spref.set("main_y", mainY);
 	spref.set("main_w", mainW);
 	spref.set("main_h", mainH);
+	spref.set("kiss", KISS);
 
 	spref.set("rigctl_visible", rigShown);
 	spref.set("rigctl_x", rigX);
@@ -260,6 +263,7 @@ void status::loadLastState()
 	spref.get("main_y", mainY, mainY);
 	spref.get("main_w", mainW, mainW);
 	spref.get("main_h", mainH, mainH);
+	spref.get("kiss", i, i); KISS = i;
 
 	spref.get("rigctl_visible", i, i); rigShown = i;
 	spref.get("rigctl_x", rigX, rigX);

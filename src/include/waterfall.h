@@ -1,4 +1,4 @@
-/* 
+/*
  * Waterfall Spectrum Analyzer Widget
  * Copyright (C) 2006 Dave Freese, W1HKJ
  *
@@ -132,10 +132,10 @@ public:
 
 	WFspeed Speed() { return wfspeed;}
 	void Speed(WFspeed rate) { wfspeed = rate;}
-	
+
 	int Mag() { return mag;}
 	void Mag(int m) { setMag(m);}
-	
+
 	void initmaps();
 	void draw();
 //	void resize (int, int, int, int);
@@ -152,18 +152,18 @@ public:
 	void process_analog(double *sig, int len);
 	void processFFT();
 	void sig_data( double *sig, int len, int sr );
-	void rfcarrier(long long f) { 
+	void rfcarrier(long long f) {
 		rfc = f;
 	}
-	void USB(bool b) { 
+	void USB(bool b) {
 		usb = b;
 	}
 	bool USB() {return usb;};
 	long long rfcarrier() { return rfc;};
-	
+
 //	void useBands(bool b) { usebands = b;};
-	
-	void updateMarker() { 
+
+	void updateMarker() {
 		drawMarker();};
 	int peakFreq(int f0, int delta);
 	double powerDensity(double f0, double bw);
@@ -172,7 +172,7 @@ public:
 	double dFreq() {return dfreq;}
 	void redrawCursor();
 	void defaultColors();
-	
+
 private:
 	int disp_width;
 	int image_width;
@@ -216,7 +216,7 @@ private:
 	uchar	*fft_sig_img;
 	uchar	*sig_img;
 	uchar	*scline;
-	
+
 	short int	*fft_db;
 	int			ptrFFTbuff;
 	double	 	*circbuff;
@@ -238,7 +238,7 @@ private:
 	void drawgrayWF();
 	void drawspectrum();
 	void drawsignal();
-	
+
 
 protected:
 public:
@@ -256,8 +256,6 @@ public:
 
 class waterfall: public Fl_Group {
 	friend void x1_cb(Fl_Widget *w, void* v);
-	friend void bw_rsid_cb(Fl_Widget *w, void * v);
-	friend void bw_rsid_toggle(waterfall *);
 //	friend void slew_cb(Fl_Widget *w, void * v);
 	friend void slew_left(Fl_Widget *w, void * v);
 	friend void slew_right(Fl_Widget *w, void * v);
@@ -276,7 +274,7 @@ public:
 	void sig_data(double *sig, int len, int sr){
 		wfdisp->sig_data(sig, len, sr);
 	}
-	void Overload(bool ovr) { 
+	void Overload(bool ovr) {
 		wfdisp->Overload(ovr);
 	}
 	int carrier() {
@@ -314,12 +312,12 @@ public:
 	void movetocenter() { wfdisp->movetocenter();}
 	void redraw_marker() { wfdisp->makeMarker(); }
 	void setPrefilter(int v) {wfdisp->setPrefilter(v);}
-	
+
 	void setcolors() { wfdisp->setcolors(); }
 	void setRefLevel();
 	void setAmpSpan();
 	double dFreq() { return wfdisp->dFreq();}
-	
+
 	void setQSY(bool on) {
 		if (on)
 			qsy->activate();
@@ -330,8 +328,8 @@ public:
 	void setXMLRPC(bool on) {
 //		wfdisp->useBands(!on);
 	}
-	double Pwr(int i) { return wfdisp->Pwr(i); }	
-	
+	double Pwr(int i) { return wfdisp->Pwr(i); }
+
 	int handle(int event);
 
 	enum { WF_NOP, WF_AFC_BW, WF_SIGNAL_SEARCH, WF_SQUELCH,
@@ -347,13 +345,14 @@ public:
 	Fl_Light_Button *xmtlock;
 	Fl_Button	*qsy;
 
+	void KISS(bool);
+
 private:
 	Fl_Box		*bezel;
 	WFdisp		*wfdisp;
-	Fl_Button	*bw_rsid;
 	Fl_Button	*mode;
 	Fl_Button	*x1;
-	Fl_Button	*left; 
+	Fl_Button	*left;
 	Fl_Button	*center;
 	Fl_Button	*right;
 	Fl_Button	*wfrate;

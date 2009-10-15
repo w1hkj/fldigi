@@ -114,6 +114,8 @@ extern Digiscope		*digiscope;
 
 extern void toggleRSID();
 
+extern void KISS();
+
 extern void set_menus();
 extern void create_fl_digi_main();
 extern void update_main_title();

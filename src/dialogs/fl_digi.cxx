@@ -152,7 +152,8 @@ Fl_Light_Button		*btnRSID = (Fl_Light_Button *)0;
 Fl_Light_Button		*btnTxRSID = (Fl_Light_Button *)0;
 Fl_Button		    *btnMacroTimer;
 
-Fl_Tile_Check			*TiledGroup = 0;
+Fl_Tile_Check		*TiledGroup = 0;
+Fl_Box				*macroFrame = 0;
 FTextRX				*ReceiveText = 0;
 FTextTX				*TransmitText = 0;
 Raster				*FHdisp;
@@ -216,8 +217,8 @@ Fl_Input2			*qso_inpAct = 0;
 
 Fl_Button			*btnQRZ;
 Fl_Group			*MixerFrame;
-Fl_Value_Slider			*valRcvMixer;
-Fl_Value_Slider			*valXmtMixer;
+Fl_Value_Slider		*valRcvMixer;
+Fl_Value_Slider		*valXmtMixer;
 
 #define FREQWIDTH 172  // FREQWIDTH should be a multiple of 9 + 10
 #define FREQHEIGHT 30
@@ -1726,6 +1727,56 @@ bool clean_exit(void) {
 	return true;
 }
 
+void KISS()
+{
+	if (!progStatus.KISS || !progdefaults.KISSriglog) {
+		int y1 = Hmenu + Hqsoframe + Hnotes + pad;
+		int y2 = macroFrame->y();
+		int w1 = TiledGroup->w();
+		int w2 = TopFrame->w();
+		MixerFrame->resize(	0,
+							y1,
+							DEFAULT_SW,
+							y2 - y1);
+		MixerFrame->redraw();
+		TiledGroup->resize(	DEFAULT_SW,
+							y1,
+							w1,
+							y2 - y1);
+		TiledGroup->redraw();
+		TopFrame->size(w2, Hqsoframe + Hnotes);
+		TopFrame->show();
+		btnAutoSpot->show();
+		fl_digi_main->init_sizes();
+	} else if (progStatus.KISS && progdefaults.KISSriglog) {
+		int y1 = Hmenu + pad;
+		int y2 = macroFrame->y();
+		int w1 = TiledGroup->w();
+		int w2 = TopFrame->w();
+		TopFrame->size(w2, 0);
+		TopFrame->hide();
+		MixerFrame->resize(	0,
+							y1,
+							DEFAULT_SW,
+							y2 - y1);
+		MixerFrame->redraw();
+		TiledGroup->resize(	DEFAULT_SW,
+							y1,
+							w1,
+							y2 - y1);
+		TiledGroup->redraw();
+		btnAutoSpot->hide();
+		fl_digi_main->init_sizes();
+	}
+
+	wf->KISS(progStatus.KISS);
+}
+
+void cb_mnuKISS(Fl_Menu_*, void *) {
+	progStatus.KISS = progStatus.KISS ? false : true;
+	KISS();
+}
+
 #define LOG_TO_FILE_MLABEL _("Log all RX/TX text")
 #define RIGCONTROL_MLABEL _("Rig Control")
 #define VIEW_MLABEL _("&View")
@@ -1877,6 +1928,7 @@ Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 { VIEW_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ make_icon_label(_("KISS")), 0, (Fl_Callback*)cb_mnuKISS, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("&Digiscope"), utilities_system_monitor_icon), 'd', (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("&PSK Browser")), 'p', (Fl_Callback*)cb_mnuViewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
@@ -2281,7 +2333,7 @@ void create_fl_digi_main() {
 		Fl_Tooltip::size(FL_NORMAL_SIZE);
 		Fl_Tooltip::enable(progdefaults.tooltips);
 
-		Fl_Group *TopFrame = new Fl_Group(0, Hmenu, WNOM, Hqsoframe + Hnotes);
+		TopFrame = new Fl_Group(0, Hmenu, WNOM, Hqsoframe + Hnotes);
 
 		if (progdefaults.docked_rig_control) {
 
@@ -2686,7 +2738,7 @@ void create_fl_digi_main() {
 		Fl::add_handler(default_handler);
 
 		Fl_Box *bx;
-		Fl_Box *macroFrame = new Fl_Box(0, Y, WNOM, Hmacros);
+		macroFrame = new Fl_Box(0, Y, WNOM, Hmacros);
 			macroFrame->box(FL_ENGRAVED_FRAME);
 			int Wbtn = (WNOM - 30 - 8 - 4)/NUMMACKEYS;
 			int xpos = 2;
@@ -2899,6 +2951,8 @@ void create_fl_digi_main() {
 	}
 	if (!dxcc_is_open())
 		getMenuItem(COUNTRIES_MLABEL)->hide();
+
+	KISS();
 }
 
 void put_freq(double frequency)
