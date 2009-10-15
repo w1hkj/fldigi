@@ -4,12 +4,15 @@ header_name {.h}
 code_name {.cxx}
 decl {\#include <config.h>} {}
 
-decl {\#include <string>} {} 
+decl {\#include <string>} {}
 
-decl {\#include "flarq.h"} {} 
+decl {\#include "flarq.h"} {}
 
 decl {\#include "flinput2.h"} {public
-} 
+}
+
+decl {\#include "combo.h"} {public
+}
 
 Function {arq_dialog()} {} {
   Fl_Window {} {
@@ -178,182 +181,103 @@ Function {arq_dialog()} {} {
       }
     }
   }
-} 
+}
 
 Function {arq_configure()} {open
 } {
   Fl_Window {} {
     label {Configure flarq} open
-    xywh {519 621 625 195} type Double resizable visible
+    xywh {475 671 480 162} type Double resizable visible
   } {
-    Fl_Group {} {open
-      xywh {2 2 190 166} box ENGRAVED_FRAME
-    } {
-      Fl_Input txtMyCall {
-        label {My Call:}
-        callback {changeMyCall(o->value());}
-        xywh {5 22 100 24} align 5
-        code0 {o->value(MyCall.c_str());}
-        class Fl_Input2
-      }
-      Fl_Group {} {
-        label {Text/Binary Files} open
-        xywh {2 60 190 105} box ENGRAVED_FRAME align 17
-      } {
-        Fl_Input txtFolder {
-          label {In folder:}
-          callback {InFolder = o->value();}
-          tooltip {Folder (in $HOME) to store incoming files} xywh {6 96 180 24} align 5 when 1
-          code0 {o->value(InFolder.c_str());}
-          class Fl_Input2
-        }
-        Fl_Input txtOutputFolder {
-          label {Out folder:}
-          callback {OutFolder = o->value();}
-          tooltip {Folder (in $HOME)  to store outgoing files} xywh {6 138 180 24} align 5 when 1
-          code0 {o->value(OutFolder.c_str());}
-          class Fl_Input2
-        }
-      }
+    Fl_Input txtMyCall {
+      label {My Call:}
+      callback {changeMyCall(o->value());}
+      xywh {98 13 150 24}
+      code0 {o->value(MyCall.c_str());}
+      class Fl_Input2
     }
-    Fl_Group {} {
-      label {Mail Client Files} open
-      xywh {194 3 190 164} box ENGRAVED_FRAME align 17
-    } {
-      Fl_Input txtMail_IN {
-        label {Mail In:}
-        callback {MailInFolder = o->value();}
-        tooltip {Folder  to store incoming files} xywh {200 37 178 24} align 5 when 1
-        code0 {o->value(MailInFolder.c_str());}
-        class Fl_Input2
-      }
-      Fl_Input txtMail_OUT {
-        label {Mail Out:}
-        callback {MailOutFolder = o->value();}
-        tooltip {Folder  to store outgoing files} xywh {200 78 178 24} align 5 when 1
-        code0 {o->value(MailOutFolder.c_str());}
-        class Fl_Input2
-      }
-      Fl_Input txtMail_SENT {
-        label {Mail Sent:}
-        callback {MailSentFolder = o->value();}
-        tooltip {Folder to store outgoing files} xywh {200 119 178 24} align 5 when 1
-        code0 {o->value(MailSentFolder.c_str());}
-        class Fl_Input2
-      }
-      Fl_Check_Button btnSylpheedMail {
-        label {Sylpheed Mail Client}
-        callback {bSylpheedFolder = o->value();}
-        tooltip {Check ONLY if Sylpheed is used as mail client} xywh {200 146 175 15} down_box DOWN_BOX
-        code0 {o->value(bSylpheedFolder);}
-      }
-    }
-    Fl_Group {} {open selected
-      xywh {386 3 239 163} box ENGRAVED_FRAME
-    } {
-      Fl_Spinner spnExponent {
-        label {Exponent:}
-        callback {exponent = (int)o->value();
-switch (exponent) {
-case 4: txtBlockSize->value("16"); break;
-case 5: txtBlockSize->value("32"); break;
-case 6: txtBlockSize->value("64"); break;
-case 7: txtBlockSize->value("128"); break;
-case 8: txtBlockSize->value("256"); break;
-default:
-txtBlockSize->value("32");break;
-}
-cbSetConfig();}
-        tooltip {block size = 2^exponent} xywh {464 138 30 22} value 1
-        code0 {o->minimum(4);}
-        code1 {o->maximum(8);}
-        code2 {o->step(1);}
-        code3 {o->value(exponent);}
-      }
-      Fl_Spinner spnRetries {
-        label {Retries:}
-        callback {iretries = (int)o->value();
-cbSetConfig();}
-        tooltip {\# retries before connection declared down} xywh {570 6 45 22} value 1
-        code0 {o->minimum(2);}
-        code1 {o->maximum(20);}
-        code2 {o->step(1);}
-        code3 {o->value(iretries);}
-      }
-      Fl_Spinner spnWaitTime {
-        label {Wait time (sec):}
-        callback {iwaittime = (int)(1000 * o->value());
-cbSetConfig();}
-        tooltip {time between retries} xywh {545 32 70 22} value 1
-        code0 {o->minimum(10);}
-        code1 {o->maximum(30);}
-        code2 {o->step(5);}
-        code3 {o->value(iwaittime/1000);}
-      }
-      Fl_Spinner spnTimeout {
-        label {Timeout (sec):}
-        callback {itimeout = (int)(o->value() * 1000.0);
-cbSetConfig();}
-        tooltip {Time out for dead connection} xywh {545 58 70 22} value 1
-        code0 {o->minimum(30);}
-        code1 {o->maximum(300);}
-        code2 {o->step(15);}
-        code3 {o->value(itimeout / 1000);}
-      }
-      Fl_Spinner spnTxDelay {
-        label {Tx delay (msec):}
-        callback {txdelay = (int)o->value();
-cbSetConfig();}
-        tooltip {delay from Rx to Tx} xywh {545 84 70 22} value 1
-        code0 {o->minimum(200);}
-        code1 {o->maximum(2000);}
-        code2 {o->step(100);}
-        code3 {o->value(txdelay);}
-      }
-      Fl_Spinner spnBcnInterval {
-        label {Beacon int' (sec)}
-        callback {bcnInterval = (int)o->value();
-cbSetConfig();}
-        tooltip {Time between beacon transmissions} xywh {545 110 70 22} value 120
-        code0 {o->minimum(60); o->maximum(3600);}
-        code1 {o->step(30);}
-        code2 {o->value(bcnInterval);}
-      }
-      Fl_Output txtBlockSize {
-        label { = Blk Size}
-        xywh {575 136 40 24}
-        code0 {switch (exponent) {
-case 4: o->value("16"); break;
-case 5: o->value("32"); break;
-case 6: o->value("64"); break;
-case 7: o->value("128"); break;
-default:
-o->value("32");break;
-}
-o->type(FL_NORMAL_OUTPUT);}
-        class Fl_Input2
-      }
-    }
-    Fl_Button btnOK {
-      label Ok
-      callback {closeConfig();}
-      xywh {550 169 62 24}
+    Fl_Check_Button btnSylpheedMail {
+      label {Sylpheed Mail Client}
+      callback {bSylpheedFolder = o->value();} selected
+      tooltip {Check ONLY if Sylpheed is used as mail client} xywh {411 16 24 15} down_box DOWN_BOX align 4
+      code0 {o->value(bSylpheedFolder);}
     }
     Fl_Input txtBEACONTXT {
       label {Beacon Text}
       callback {changeBeaconText(o->value());}
-      tooltip {Text for the beacon 64 chars max} xywh {90 168 443 24} resizable
+      tooltip {Text for the beacon 64 chars max} xywh {98 42 370 24} resizable
       code0 {o->value(beacontext.c_str());}
       class Fl_Input2
     }
+    Fl_Spinner spnRetries {
+      label {Retries:}
+      callback {iretries = (int)o->value();
+cbSetConfig();}
+      tooltip {\# retries before connection declared down} xywh {146 71 45 22} value 1
+      code0 {o->minimum(2);}
+      code1 {o->maximum(20);}
+      code2 {o->step(1);}
+      code3 {o->value(iretries);}
+    }
+    Fl_Spinner spnWaitTime {
+      label {Wait time (sec):}
+      callback {iwaittime = (int)(1000 * o->value());
+cbSetConfig();}
+      tooltip {Time between retries} xywh {121 98 70 22} value 1
+      code0 {o->minimum(10);}
+      code1 {o->maximum(30);}
+      code2 {o->step(5);}
+      code3 {o->value(iwaittime/1000);}
+    }
+    Fl_Spinner spnTimeout {
+      label {Timeout (sec):}
+      callback {itimeout = (int)(o->value() * 1000.0);
+cbSetConfig();}
+      tooltip {Time out for dead connection} xywh {121 126 70 22} value 1
+      code0 {o->minimum(30);}
+      code1 {o->maximum(300);}
+      code2 {o->step(15);}
+      code3 {o->value(itimeout / 1000);}
+    }
+    Fl_Spinner spnTxDelay {
+      label {Tx delay (msec):}
+      callback {txdelay = (int)o->value();
+cbSetConfig();}
+      tooltip {delay from Rx to Tx} xywh {317 98 70 22} value 1
+      code0 {o->minimum(200);}
+      code1 {o->maximum(2000);}
+      code2 {o->step(100);}
+      code3 {o->value(txdelay);}
+    }
+    Fl_Spinner spnBcnInterval {
+      label {Beacon interval (sec)}
+      callback {bcnInterval = (int)o->value();
+cbSetConfig();}
+      tooltip {Time between beacon transmissions} xywh {398 71 70 22} value 120
+      code0 {o->minimum(60); o->maximum(3600);}
+      code1 {o->step(30);}
+      code2 {o->value(bcnInterval);}
+    }
+    Fl_Button btnOK {
+      label Ok
+      callback {closeConfig();}
+      xywh {406 126 62 24}
+    }
+    Fl_Group choiceBlockSize {
+      label {Block Size:}
+      callback {exponent = (int)o->index() + 4;
+cbSetConfig();} open
+      xywh {314 126 72 24} box DOWN_BOX color 7 align 4
+      class Fl_ComboBox
+    } {}
   }
-} 
+}
 
 Function {arq_SendSelect()} {open
 } {
   Fl_Window {} {
     label {Select Email} open
-    xywh {427 717 500 170} type Double resizable modal visible
+    xywh {427 717 500 170} type Double hide resizable modal
   } {
     Fl_Box tblOutgoing {
       xywh {0 3 500 140} box DOWN_BOX color 7 selection_color 246 align 16
@@ -373,13 +297,13 @@ Function {arq_SendSelect()} {open
       code0 {extern void sendOK();}
     }
   }
-} 
+}
 
 Function {arq_composer()} {open
 } {
   Fl_Window {} {
     label {Flarq Mail Composer} open
-    xywh {575 537 515 275} type Double resizable visible
+    xywh {575 537 515 275} type Double hide resizable
   } {
     Fl_Input inpMailTo {
       label {To:}
@@ -441,4 +365,4 @@ Function {arq_composer()} {open
       }
     }
   }
-} 
+}

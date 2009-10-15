@@ -278,56 +278,16 @@ static void cb_txtMyCall(Fl_Input2* o, void*) {
   changeMyCall(o->value());
 }
 
-Fl_Input2 *txtFolder=(Fl_Input2 *)0;
-
-static void cb_txtFolder(Fl_Input2* o, void*) {
-  InFolder = o->value();
-}
-
-Fl_Input2 *txtOutputFolder=(Fl_Input2 *)0;
-
-static void cb_txtOutputFolder(Fl_Input2* o, void*) {
-  OutFolder = o->value();
-}
-
-Fl_Input2 *txtMail_IN=(Fl_Input2 *)0;
-
-static void cb_txtMail_IN(Fl_Input2* o, void*) {
-  MailInFolder = o->value();
-}
-
-Fl_Input2 *txtMail_OUT=(Fl_Input2 *)0;
-
-static void cb_txtMail_OUT(Fl_Input2* o, void*) {
-  MailOutFolder = o->value();
-}
-
-Fl_Input2 *txtMail_SENT=(Fl_Input2 *)0;
-
-static void cb_txtMail_SENT(Fl_Input2* o, void*) {
-  MailSentFolder = o->value();
-}
-
 Fl_Check_Button *btnSylpheedMail=(Fl_Check_Button *)0;
 
 static void cb_btnSylpheedMail(Fl_Check_Button* o, void*) {
   bSylpheedFolder = o->value();
 }
 
-Fl_Spinner *spnExponent=(Fl_Spinner *)0;
+Fl_Input2 *txtBEACONTXT=(Fl_Input2 *)0;
 
-static void cb_spnExponent(Fl_Spinner* o, void*) {
-  exponent = (int)o->value();
-switch (exponent) {
-case 4: txtBlockSize->value("16"); break;
-case 5: txtBlockSize->value("32"); break;
-case 6: txtBlockSize->value("64"); break;
-case 7: txtBlockSize->value("128"); break;
-case 8: txtBlockSize->value("256"); break;
-default:
-txtBlockSize->value("32");break;
-}
-cbSetConfig();
+static void cb_txtBEACONTXT(Fl_Input2* o, void*) {
+  changeBeaconText(o->value());
 }
 
 Fl_Spinner *spnRetries=(Fl_Spinner *)0;
@@ -365,208 +325,44 @@ static void cb_spnBcnInterval(Fl_Spinner* o, void*) {
 cbSetConfig();
 }
 
-Fl_Input2 *txtBlockSize=(Fl_Input2 *)0;
-
 Fl_Button *btnOK=(Fl_Button *)0;
 
 static void cb_btnOK(Fl_Button*, void*) {
   closeConfig();
 }
 
-Fl_Input2 *txtBEACONTXT=(Fl_Input2 *)0;
+Fl_ComboBox *choiceBlockSize=(Fl_ComboBox *)0;
 
-static void cb_txtBEACONTXT(Fl_Input2* o, void*) {
-  changeBeaconText(o->value());
+static void cb_choiceBlockSize(Fl_ComboBox* o, void*) {
+  exponent = (int)o->index() + 4;
+cbSetConfig();
 }
 
 Fl_Double_Window* arq_configure() {
   Fl_Double_Window* w;
-  { Fl_Double_Window* o = new Fl_Double_Window(625, 195, "Configure flarq");
+  { Fl_Double_Window* o = new Fl_Double_Window(480, 162, "Configure flarq");
     w = o;
-    { Fl_Group* o = new Fl_Group(2, 2, 190, 166);
-      o->box(FL_ENGRAVED_FRAME);
-      { Fl_Input2* o = txtMyCall = new Fl_Input2(5, 22, 100, 24, "My Call:");
-        txtMyCall->box(FL_DOWN_BOX);
-        txtMyCall->color(FL_BACKGROUND2_COLOR);
-        txtMyCall->selection_color(FL_SELECTION_COLOR);
-        txtMyCall->labeltype(FL_NORMAL_LABEL);
-        txtMyCall->labelfont(0);
-        txtMyCall->labelsize(14);
-        txtMyCall->labelcolor(FL_FOREGROUND_COLOR);
-        txtMyCall->callback((Fl_Callback*)cb_txtMyCall);
-        txtMyCall->align(FL_ALIGN_TOP_LEFT);
-        txtMyCall->when(FL_WHEN_RELEASE);
-        o->value(MyCall.c_str());
-      } // Fl_Input2* txtMyCall
-      { Fl_Group* o = new Fl_Group(2, 60, 190, 105, "Text/Binary Files");
-        o->box(FL_ENGRAVED_FRAME);
-        o->align(FL_ALIGN_TOP|FL_ALIGN_INSIDE);
-        { Fl_Input2* o = txtFolder = new Fl_Input2(6, 96, 180, 24, "In folder:");
-          txtFolder->tooltip("Folder (in $HOME) to store incoming files");
-          txtFolder->box(FL_DOWN_BOX);
-          txtFolder->color(FL_BACKGROUND2_COLOR);
-          txtFolder->selection_color(FL_SELECTION_COLOR);
-          txtFolder->labeltype(FL_NORMAL_LABEL);
-          txtFolder->labelfont(0);
-          txtFolder->labelsize(14);
-          txtFolder->labelcolor(FL_FOREGROUND_COLOR);
-          txtFolder->callback((Fl_Callback*)cb_txtFolder);
-          txtFolder->align(FL_ALIGN_TOP_LEFT);
-          txtFolder->when(FL_WHEN_CHANGED);
-          o->value(InFolder.c_str());
-        } // Fl_Input2* txtFolder
-        { Fl_Input2* o = txtOutputFolder = new Fl_Input2(6, 138, 180, 24, "Out folder:");
-          txtOutputFolder->tooltip("Folder (in $HOME)  to store outgoing files");
-          txtOutputFolder->box(FL_DOWN_BOX);
-          txtOutputFolder->color(FL_BACKGROUND2_COLOR);
-          txtOutputFolder->selection_color(FL_SELECTION_COLOR);
-          txtOutputFolder->labeltype(FL_NORMAL_LABEL);
-          txtOutputFolder->labelfont(0);
-          txtOutputFolder->labelsize(14);
-          txtOutputFolder->labelcolor(FL_FOREGROUND_COLOR);
-          txtOutputFolder->callback((Fl_Callback*)cb_txtOutputFolder);
-          txtOutputFolder->align(FL_ALIGN_TOP_LEFT);
-          txtOutputFolder->when(FL_WHEN_CHANGED);
-          o->value(OutFolder.c_str());
-        } // Fl_Input2* txtOutputFolder
-        o->end();
-      } // Fl_Group* o
-      o->end();
-    } // Fl_Group* o
-    { Fl_Group* o = new Fl_Group(194, 3, 190, 164, "Mail Client Files");
-      o->box(FL_ENGRAVED_FRAME);
-      o->align(FL_ALIGN_TOP|FL_ALIGN_INSIDE);
-      { Fl_Input2* o = txtMail_IN = new Fl_Input2(200, 37, 178, 24, "Mail In:");
-        txtMail_IN->tooltip("Folder  to store incoming files");
-        txtMail_IN->box(FL_DOWN_BOX);
-        txtMail_IN->color(FL_BACKGROUND2_COLOR);
-        txtMail_IN->selection_color(FL_SELECTION_COLOR);
-        txtMail_IN->labeltype(FL_NORMAL_LABEL);
-        txtMail_IN->labelfont(0);
-        txtMail_IN->labelsize(14);
-        txtMail_IN->labelcolor(FL_FOREGROUND_COLOR);
-        txtMail_IN->callback((Fl_Callback*)cb_txtMail_IN);
-        txtMail_IN->align(FL_ALIGN_TOP_LEFT);
-        txtMail_IN->when(FL_WHEN_CHANGED);
-        o->value(MailInFolder.c_str());
-      } // Fl_Input2* txtMail_IN
-      { Fl_Input2* o = txtMail_OUT = new Fl_Input2(200, 78, 178, 24, "Mail Out:");
-        txtMail_OUT->tooltip("Folder  to store outgoing files");
-        txtMail_OUT->box(FL_DOWN_BOX);
-        txtMail_OUT->color(FL_BACKGROUND2_COLOR);
-        txtMail_OUT->selection_color(FL_SELECTION_COLOR);
-        txtMail_OUT->labeltype(FL_NORMAL_LABEL);
-        txtMail_OUT->labelfont(0);
-        txtMail_OUT->labelsize(14);
-        txtMail_OUT->labelcolor(FL_FOREGROUND_COLOR);
-        txtMail_OUT->callback((Fl_Callback*)cb_txtMail_OUT);
-        txtMail_OUT->align(FL_ALIGN_TOP_LEFT);
-        txtMail_OUT->when(FL_WHEN_CHANGED);
-        o->value(MailOutFolder.c_str());
-      } // Fl_Input2* txtMail_OUT
-      { Fl_Input2* o = txtMail_SENT = new Fl_Input2(200, 119, 178, 24, "Mail Sent:");
-        txtMail_SENT->tooltip("Folder to store outgoing files");
-        txtMail_SENT->box(FL_DOWN_BOX);
-        txtMail_SENT->color(FL_BACKGROUND2_COLOR);
-        txtMail_SENT->selection_color(FL_SELECTION_COLOR);
-        txtMail_SENT->labeltype(FL_NORMAL_LABEL);
-        txtMail_SENT->labelfont(0);
-        txtMail_SENT->labelsize(14);
-        txtMail_SENT->labelcolor(FL_FOREGROUND_COLOR);
-        txtMail_SENT->callback((Fl_Callback*)cb_txtMail_SENT);
-        txtMail_SENT->align(FL_ALIGN_TOP_LEFT);
-        txtMail_SENT->when(FL_WHEN_CHANGED);
-        o->value(MailSentFolder.c_str());
-      } // Fl_Input2* txtMail_SENT
-      { Fl_Check_Button* o = btnSylpheedMail = new Fl_Check_Button(200, 146, 175, 15, "Sylpheed Mail Client");
-        btnSylpheedMail->tooltip("Check ONLY if Sylpheed is used as mail client");
-        btnSylpheedMail->down_box(FL_DOWN_BOX);
-        btnSylpheedMail->callback((Fl_Callback*)cb_btnSylpheedMail);
-        o->value(bSylpheedFolder);
-      } // Fl_Check_Button* btnSylpheedMail
-      o->end();
-    } // Fl_Group* o
-    { Fl_Group* o = new Fl_Group(386, 3, 239, 163);
-      o->box(FL_ENGRAVED_FRAME);
-      { Fl_Spinner* o = spnExponent = new Fl_Spinner(464, 138, 30, 22, "Exponent:");
-        spnExponent->tooltip("block size = 2^exponent");
-        spnExponent->value(1);
-        spnExponent->callback((Fl_Callback*)cb_spnExponent);
-        o->minimum(4);
-        o->maximum(8);
-        o->step(1);
-        o->value(exponent);
-      } // Fl_Spinner* spnExponent
-      { Fl_Spinner* o = spnRetries = new Fl_Spinner(570, 6, 45, 22, "Retries:");
-        spnRetries->tooltip("# retries before connection declared down");
-        spnRetries->value(1);
-        spnRetries->callback((Fl_Callback*)cb_spnRetries);
-        o->minimum(2);
-        o->maximum(20);
-        o->step(1);
-        o->value(iretries);
-      } // Fl_Spinner* spnRetries
-      { Fl_Spinner* o = spnWaitTime = new Fl_Spinner(545, 32, 70, 22, "Wait time (sec):");
-        spnWaitTime->tooltip("time between retries");
-        spnWaitTime->value(1);
-        spnWaitTime->callback((Fl_Callback*)cb_spnWaitTime);
-        o->minimum(10);
-        o->maximum(30);
-        o->step(5);
-        o->value(iwaittime/1000);
-      } // Fl_Spinner* spnWaitTime
-      { Fl_Spinner* o = spnTimeout = new Fl_Spinner(545, 58, 70, 22, "Timeout (sec):");
-        spnTimeout->tooltip("Time out for dead connection");
-        spnTimeout->value(1);
-        spnTimeout->callback((Fl_Callback*)cb_spnTimeout);
-        o->minimum(30);
-        o->maximum(300);
-        o->step(15);
-        o->value(itimeout / 1000);
-      } // Fl_Spinner* spnTimeout
-      { Fl_Spinner* o = spnTxDelay = new Fl_Spinner(545, 84, 70, 22, "Tx delay (msec):");
-        spnTxDelay->tooltip("delay from Rx to Tx");
-        spnTxDelay->value(1);
-        spnTxDelay->callback((Fl_Callback*)cb_spnTxDelay);
-        o->minimum(200);
-        o->maximum(2000);
-        o->step(100);
-        o->value(txdelay);
-      } // Fl_Spinner* spnTxDelay
-      { Fl_Spinner* o = spnBcnInterval = new Fl_Spinner(545, 110, 70, 22, "Beacon int\' (sec)");
-        spnBcnInterval->tooltip("Time between beacon transmissions");
-        spnBcnInterval->value(120);
-        spnBcnInterval->callback((Fl_Callback*)cb_spnBcnInterval);
-        o->minimum(60); o->maximum(3600);
-        o->step(30);
-        o->value(bcnInterval);
-      } // Fl_Spinner* spnBcnInterval
-      { Fl_Input2* o = txtBlockSize = new Fl_Input2(575, 136, 40, 24, " = Blk Size");
-        txtBlockSize->box(FL_DOWN_BOX);
-        txtBlockSize->color(FL_BACKGROUND2_COLOR);
-        txtBlockSize->selection_color(FL_SELECTION_COLOR);
-        txtBlockSize->labeltype(FL_NORMAL_LABEL);
-        txtBlockSize->labelfont(0);
-        txtBlockSize->labelsize(14);
-        txtBlockSize->labelcolor(FL_FOREGROUND_COLOR);
-        txtBlockSize->align(FL_ALIGN_LEFT);
-        txtBlockSize->when(FL_WHEN_RELEASE);
-        switch (exponent) {
-case 4: o->value("16"); break;
-case 5: o->value("32"); break;
-case 6: o->value("64"); break;
-case 7: o->value("128"); break;
-default:
-o->value("32");break;
-}
-o->type(FL_NORMAL_OUTPUT);
-      } // Fl_Input2* txtBlockSize
-      o->end();
-    } // Fl_Group* o
-    { btnOK = new Fl_Button(550, 169, 62, 24, "Ok");
-      btnOK->callback((Fl_Callback*)cb_btnOK);
-    } // Fl_Button* btnOK
-    { Fl_Input2* o = txtBEACONTXT = new Fl_Input2(90, 168, 443, 24, "Beacon Text");
+    { Fl_Input2* o = txtMyCall = new Fl_Input2(98, 13, 150, 24, "My Call:");
+      txtMyCall->box(FL_DOWN_BOX);
+      txtMyCall->color(FL_BACKGROUND2_COLOR);
+      txtMyCall->selection_color(FL_SELECTION_COLOR);
+      txtMyCall->labeltype(FL_NORMAL_LABEL);
+      txtMyCall->labelfont(0);
+      txtMyCall->labelsize(14);
+      txtMyCall->labelcolor(FL_FOREGROUND_COLOR);
+      txtMyCall->callback((Fl_Callback*)cb_txtMyCall);
+      txtMyCall->align(FL_ALIGN_LEFT);
+      txtMyCall->when(FL_WHEN_RELEASE);
+      o->value(MyCall.c_str());
+    } // Fl_Input2* txtMyCall
+    { Fl_Check_Button* o = btnSylpheedMail = new Fl_Check_Button(411, 16, 24, 15, "Sylpheed Mail Client");
+      btnSylpheedMail->tooltip("Check ONLY if Sylpheed is used as mail client");
+      btnSylpheedMail->down_box(FL_DOWN_BOX);
+      btnSylpheedMail->callback((Fl_Callback*)cb_btnSylpheedMail);
+      btnSylpheedMail->align(FL_ALIGN_LEFT);
+      o->value(bSylpheedFolder);
+    } // Fl_Check_Button* btnSylpheedMail
+    { Fl_Input2* o = txtBEACONTXT = new Fl_Input2(98, 42, 370, 24, "Beacon Text");
       txtBEACONTXT->tooltip("Text for the beacon 64 chars max");
       txtBEACONTXT->box(FL_DOWN_BOX);
       txtBEACONTXT->color(FL_BACKGROUND2_COLOR);
@@ -581,6 +377,66 @@ o->type(FL_NORMAL_OUTPUT);
       Fl_Group::current()->resizable(txtBEACONTXT);
       o->value(beacontext.c_str());
     } // Fl_Input2* txtBEACONTXT
+    { Fl_Spinner* o = spnRetries = new Fl_Spinner(146, 71, 45, 22, "Retries:");
+      spnRetries->tooltip("# retries before connection declared down");
+      spnRetries->value(1);
+      spnRetries->callback((Fl_Callback*)cb_spnRetries);
+      o->minimum(2);
+      o->maximum(20);
+      o->step(1);
+      o->value(iretries);
+    } // Fl_Spinner* spnRetries
+    { Fl_Spinner* o = spnWaitTime = new Fl_Spinner(121, 98, 70, 22, "Wait time (sec):");
+      spnWaitTime->tooltip("Time between retries");
+      spnWaitTime->value(1);
+      spnWaitTime->callback((Fl_Callback*)cb_spnWaitTime);
+      o->minimum(10);
+      o->maximum(30);
+      o->step(5);
+      o->value(iwaittime/1000);
+    } // Fl_Spinner* spnWaitTime
+    { Fl_Spinner* o = spnTimeout = new Fl_Spinner(121, 126, 70, 22, "Timeout (sec):");
+      spnTimeout->tooltip("Time out for dead connection");
+      spnTimeout->value(1);
+      spnTimeout->callback((Fl_Callback*)cb_spnTimeout);
+      o->minimum(30);
+      o->maximum(300);
+      o->step(15);
+      o->value(itimeout / 1000);
+    } // Fl_Spinner* spnTimeout
+    { Fl_Spinner* o = spnTxDelay = new Fl_Spinner(317, 98, 70, 22, "Tx delay (msec):");
+      spnTxDelay->tooltip("delay from Rx to Tx");
+      spnTxDelay->value(1);
+      spnTxDelay->callback((Fl_Callback*)cb_spnTxDelay);
+      o->minimum(200);
+      o->maximum(2000);
+      o->step(100);
+      o->value(txdelay);
+    } // Fl_Spinner* spnTxDelay
+    { Fl_Spinner* o = spnBcnInterval = new Fl_Spinner(398, 71, 70, 22, "Beacon interval (sec)");
+      spnBcnInterval->tooltip("Time between beacon transmissions");
+      spnBcnInterval->value(120);
+      spnBcnInterval->callback((Fl_Callback*)cb_spnBcnInterval);
+      o->minimum(60); o->maximum(3600);
+      o->step(30);
+      o->value(bcnInterval);
+    } // Fl_Spinner* spnBcnInterval
+    { btnOK = new Fl_Button(406, 126, 62, 24, "Ok");
+      btnOK->callback((Fl_Callback*)cb_btnOK);
+    } // Fl_Button* btnOK
+    { choiceBlockSize = new Fl_ComboBox(314, 126, 72, 24, "Block Size:");
+      choiceBlockSize->box(FL_DOWN_BOX);
+      choiceBlockSize->color(FL_BACKGROUND2_COLOR);
+      choiceBlockSize->selection_color(FL_BACKGROUND_COLOR);
+      choiceBlockSize->labeltype(FL_NORMAL_LABEL);
+      choiceBlockSize->labelfont(0);
+      choiceBlockSize->labelsize(14);
+      choiceBlockSize->labelcolor(FL_FOREGROUND_COLOR);
+      choiceBlockSize->callback((Fl_Callback*)cb_choiceBlockSize);
+      choiceBlockSize->align(FL_ALIGN_LEFT);
+      choiceBlockSize->when(FL_WHEN_RELEASE);
+      choiceBlockSize->end();
+    } // Fl_ComboBox* choiceBlockSize
     o->end();
   } // Fl_Double_Window* o
   return w;

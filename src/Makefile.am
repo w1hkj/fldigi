@@ -547,6 +547,7 @@ flarq_SOURCES += \
 	include/threads.h \
 	include/table.h \
 	include/util.h \
+	combo/combo.cxx \
 	fileselector/FL/Fl_Native_File_Chooser.H \
 	fileselector/Fl_Native_File_Chooser.cxx \
 	fileselector/fileselect.cxx \

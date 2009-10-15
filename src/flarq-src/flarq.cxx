@@ -49,6 +49,7 @@
 #include "arq.h"
 #include "arqdialogs.h"
 #include "b64.h"
+#include "gettext.h"
 
 #define FLDIGI_port "7322"
 #define MPSK_port "3122"
@@ -63,6 +64,35 @@
 #define MPSK_ISRX 29
 #define MPSK_ISCMD 30
 #define MPSK_CMDEND 31
+
+// directory structures for all NBEMS applications
+static void checkdirectories(void);
+string NBEMS_dir;
+string ARQ_dir;
+string ARQ_files_dir;
+string ARQ_recv_dir;
+string ARQ_send_dir;
+string ARQ_mail_dir;
+string ARQ_mail_in_dir;
+string ARQ_mail_out_dir;
+string ARQ_mail_sent_dir;
+string WRAP_dir;
+string WRAP_recv_dir;
+string WRAP_send_dir;
+string WRAP_auto_dir;
+string ICS_dir;
+string ICS_msg_dir;
+string ICS_tmp_dir;
+
+string MailFileName = "";
+string MailSaveFileName = "";
+string Logfile;
+
+struct dirent *entry;
+DIR *dp;
+
+bool bSylpheedFolder = false;
+bool   SendingEmail = false;
 
 bool SHOWDEBUG = false;
 
@@ -80,7 +110,7 @@ Fl_Text_Display::Style_Table_Entry styletable[] = {     // Style table
   { FL_DARK_RED,   FL_SCREEN,        FL_NORMAL_SIZE }, // B - TX
   { FL_DARK_GREEN, FL_SCREEN,        FL_NORMAL_SIZE }, // C - DEBUG rx text
   { FL_MAGENTA,    FL_SCREEN,        FL_NORMAL_SIZE }  // D - DEBUG tx text
-};	
+};
 
 Fl_Double_Window *arqwin = 0;
 Fl_Double_Window *dlgconfig = 0;
@@ -109,46 +139,6 @@ string statusmsg;
 string MyCall;
 string beacontext;
 
-#ifdef __WOE32__
-
-char   szHomedir[120] = "c:/NBEMS";
-string str_homedir = "c:/NBEMS";
-string str_arqlog = "ARQXFR/arqlog.txt";
-string MailFolder = "Mail";
-string MailInFolder = "Mail/ARQin";
-string MailOutFolder = "Mail/ARQout";
-string MailSentFolder = "Mail/ARQsent";
-string InFolder  = "ARQrecv";
-string OutFolder = "ARQsend";
-string MailFileName = "";
-string MailSaveFileName = "";
-bool   bSylpheedFolder = false;
-bool   SendingEmail = false;
-struct dirent *entry;
-DIR *dp;
-
-#else
-
-char	szHomedir[120];
-string str_arqlog = "ARQfiles/logfile.txt";
-string MailFolder = "Mail";
-string MailInFolder = "Mail/ARQin";
-string MailOutFolder = "Mail/ARQout";
-string MailSentFolder = "Mail/ARQsent";
-string InFolder  = "ARQrecv";
-string OutFolder = "ARQsend";
-string ARQFolder = "ARQfiles";
-string MailFileName = "";
-string MailSaveFileName = "";
-bool   bSylpheedFolder = true;
-bool   SendingEmail = false;
-struct dirent *entry;
-DIR *dp;
-
-#endif
-
-string Logfile;
-
 #if !defined(__APPLE__) && !defined(__WOE32__)
 Pixmap flarq_icon_pixmap;
 #endif
@@ -166,7 +156,7 @@ bool isCmdChar = false;
 bool isTxChar = false;
 bool inLoop = false;
 
-int    exponent = 7;
+int    exponent = 5;
 int	   txdelay = 500;
 int    iretries = 5;
 long   iwaittime = 10000;
@@ -240,7 +230,7 @@ void cb_SortByDate()
 		tblOutgoing->sort(1, true);
 		datedir = 0;
 	}
-	tblOutgoing->redraw();	
+	tblOutgoing->redraw();
 }
 
 void cb_SortByTo()
@@ -251,8 +241,8 @@ void cb_SortByTo()
 	} else {
 		tblOutgoing->sort(2, true);
 		todir = 0;
-	}	
-	tblOutgoing->redraw();	
+	}
+	tblOutgoing->redraw();
 }
 
 void cb_SortBySubj()
@@ -263,8 +253,8 @@ void cb_SortBySubj()
 	} else {
 		tblOutgoing->sort(3, true);
 		subdir = 0;
-	}	
-	tblOutgoing->redraw();	
+	}
+	tblOutgoing->redraw();
 }
 
 void sendOK()
@@ -308,18 +298,9 @@ void selectTrafficOut(bool ComposerOnly)
 	string fline, fname, fdate, fto, fsubj;
 	char szline[10000];
 	size_t p;
-	string folder = szHomedir;
-	folder += '/';
-	folder.append(MailOutFolder);
-	dp = 0;
-	dp = opendir(folder.c_str());
-	if (dp == 0) {
-		string nfound = folder;
-		nfound += " not found";
-		fl_alert2("%s", nfound.c_str());
-		return;
-	}
-	folder += '/';
+
+	string folder = ARQ_mail_out_dir;
+
 	int nummails = 0;
 	while ((entry = readdir(dp)) != 0) {
 		if (entry->d_name[0] == '.')
@@ -363,7 +344,7 @@ void selectTrafficOut(bool ComposerOnly)
 		if ((!ComposerOnly && validlines >= 3) || (ComposerOnly && validlines == 4)) {
 			tblOutgoing->addRow (4, fname.c_str(), fdate.c_str(), fto.c_str(), fsubj.c_str());
 			nummails++;
-		}			
+		}
 	}
 	if (nummails) {
 		tblOutgoing->FirstRow();
@@ -414,7 +395,7 @@ void readComposedFile(string filename)
 				continue;
 			}
 			if (strlen(szline) == 0 && txtbuffComposer->length() == 0) continue;
-			txtbuffComposer->append(szline); 
+			txtbuffComposer->append(szline);
 			txtbuffComposer->append("\n");
 		}
 		textfile.close();
@@ -423,10 +404,7 @@ void readComposedFile(string filename)
 
 void cb_UseTemplate()
 {
-	string templatename = szHomedir;
-	templatename += '/';
-	templatename.append(MailOutFolder);
-	templatename += '/';
+	string templatename = ARQ_mail_out_dir;
 	const char *p = FSEL::select("Load Template file", "*.tpl", templatename.c_str());
 	if (p)
 		readComposedFile(p);
@@ -496,13 +474,9 @@ void SaveComposeMail()
 		strlen(inpMailSubj->value()) == 0)
 		return;
 	if (sendfilename.empty()) {
-		sendfilename = szHomedir;
-		sendfilename += '/';
-		sendfilename += MailOutFolder;
+		sendfilename = ARQ_mail_out_dir;
 #ifdef __WOE32__
-		sendfilename += "/flarqmail.eml";
-#else
-		sendfilename += "/";
+		sendfilename += "flarqmail.eml";
 #endif
 		sendfilename = nextEmailFile(sendfilename);
 	}
@@ -511,10 +485,7 @@ void SaveComposeMail()
 
 void SaveComposeTemplate()
 {
-	string templatename = szHomedir;
-	templatename += '/';
-	templatename.append(MailOutFolder);
-	templatename += '/';
+	string templatename = ARQ_mail_out_dir;
 	const char *p = FSEL::saveas("Save Template file", "*.tpl", templatename.c_str());
 	if (p)
 		saveComposedText(p);
@@ -533,7 +504,7 @@ void cb_OpenComposeMail()
 	sendfilename.clear();
 	selectTrafficOut(true);
 	if (sendfilename.empty())
-		return;	
+		return;
 	readComposedFile(sendfilename);
 }
 
@@ -549,7 +520,7 @@ void ComposeMail()
 	txtbuffComposer->text("");
 	inpMailTo->value("");
 	inpMailSubj->value("");
-	
+
 	composer->show();
 }
 
@@ -583,14 +554,14 @@ void initVals()
 	iwaittime = digi_arq->getWaitTime();
 	bcnInterval = 30;
 	beacontext = "";
-	cbMenuConfig();		
+	cbMenuConfig();
 	digi_arq->myCall(MyCall.c_str());
 
 }
 
 void testDirectory(string dir)
 {
-	string tstdir = szHomedir;
+	string tstdir = ARQ_dir;
 	tstdir += '/';
 	tstdir.append(dir);
 	ifstream test(tstdir.c_str());
@@ -603,12 +574,8 @@ void testDirectory(string dir)
 void readConfig()
 {
 	extern void cbMenuConfig();
-	string configfname = szHomedir;
-#ifndef __WOE32__
-	configfname.append("/.flarq");
-#else
-	configfname.append("/flarq.config");
-#endif
+	string configfname = ARQ_dir;
+	configfname.append("flarq.config");
 	ifstream configfile(configfname.c_str());
 	if (configfile) {
 		char tempstr[200];
@@ -618,11 +585,11 @@ void readConfig()
 			initVals();
 		else {
 			configfile >> MyCall;
-			configfile >> InFolder;
-			configfile >> OutFolder;
-			configfile >> MailInFolder;
-			configfile >> MailOutFolder;
-			configfile >> MailSentFolder;
+//			configfile >> ARQ_recv_dir;
+//			configfile >> ARQ_send_dir;
+//			configfile >> ARQ_mail_in_dir;
+//			configfile >> ARQ_mail_out_dir;
+//			configfile >> ARQ_mail_sent_dir;
 			configfile >> exponent;
 			configfile >> txdelay;
 			configfile >> iretries;
@@ -648,26 +615,12 @@ void readConfig()
 	} else
 		initVals();
 
-#ifndef __WOE32__
-	testDirectory(ARQFolder);
-#endif
-	testDirectory(InFolder);
-	testDirectory(OutFolder);
-	testDirectory(MailFolder);
-	testDirectory(MailInFolder);
-	testDirectory(MailOutFolder);
-	testDirectory(MailSentFolder);
-
 }
 
 void saveConfig()
 {
-	string configfname = szHomedir;
-#ifndef __WOE32__
-	configfname.append("/.flarq");
-#else
-	configfname.append("/flarq.config");
-#endif
+	string configfname = ARQ_dir;
+	configfname.append("flarq.config");
 	ofstream configfile(configfname.c_str());
 	if (configfile) {
 		int mainX = arqwin->x();
@@ -676,11 +629,11 @@ void saveConfig()
 		int mainH = arqwin->h();
 		configfile << VERSION << endl;
 		configfile << MyCall << endl;
-		configfile << InFolder << endl;
-		configfile << OutFolder << endl;
-		configfile << MailInFolder << endl;
-		configfile << MailOutFolder << endl;
-		configfile << MailSentFolder << endl;
+//		configfile << ARQ_recv_dir << endl;
+//		configfile << ARQ_send_dir << endl;
+//		configfile << ARQ_mail_in_dir << endl;
+//		configfile << ARQ_mail_out_dir << endl;
+//		configfile << ARQ_mail_sent_dir << endl;
 		configfile << exponent << endl;
 		configfile << txdelay << endl;
 		configfile << iretries << endl;
@@ -713,12 +666,22 @@ void closeConfig()
 	cbSetConfig();
 }
 
-void cbMenuConfig() 
+void cbMenuConfig()
 {
 	if (!dlgconfig) {
 		dlgconfig = arq_configure();
 		dlgconfig->xclass(PACKAGE_TARNAME);
+		choiceBlockSize->add("16");
+		choiceBlockSize->add("32");
+		choiceBlockSize->add("64");
+		choiceBlockSize->add("128");
+		choiceBlockSize->add("256");
+#ifdef __WIN32__
+		btnSylpheedMail->hide();
+#endif
 	}
+	choiceBlockSize->index(exponent - 4);
+	choiceBlockSize->redraw();
 	dlgconfig->show();
 }
 
@@ -907,7 +870,7 @@ void arqAutoBeacon(void *)
 			txtBeaconing->value("Beaconing");
 			btnBEACON->deactivate();
 			btnBEACON->redraw();
-			Fl::repeat_timeout(1.0, arqAutoBeacon);			
+			Fl::repeat_timeout(1.0, arqAutoBeacon);
 			return;
 		} else if (currstate == DOWN || currstate == TIMEDOUT) {
 			if (autobeaconcounter == 0) {
@@ -971,7 +934,7 @@ void arqCLOSE()
 	saveConfig();
 	exit(0);
 }
-	
+
 void clearText()
 {
 	txtarqload = "";
@@ -1046,7 +1009,7 @@ string nextFileName(string fname)
 		nuname.append(szNbr);
 		nuname.append(ext);
 	} while (fileExists(nuname));
-	
+
 	return nuname;
 }
 
@@ -1056,16 +1019,13 @@ void saveEmailFile()
 	static char szfnum[10];
 	int    fnum;
 	string tempname;
-	
+
 	time(&EndTime_t);
 	TransferTime = difftime(EndTime_t, StartTime_t);
 	snprintf(xfrmsg, sizeof(xfrmsg), "Transfer Completed in %4.0f sec's", TransferTime);
-	
-	string savetoname = szHomedir;
-	savetoname += '/';
-	savetoname.append(MailInFolder);
-	savetoname += '/';
-	
+
+	string savetoname = ARQ_mail_in_dir;
+
 	fnum = 1;
 	if (bSylpheedFolder) {
 		tempname = savetoname;
@@ -1085,13 +1045,13 @@ void saveEmailFile()
 		while (fileExists(savetoname))
 			savetoname = nextFileName(savetoname);
 	}
-		
+
 	ofstream tfile(savetoname.c_str(), ios::binary);
 	if (tfile) {
 		tfile << txtarqload;
 		tfile.close();
 	}
-	
+
 	txtStatus->value(xfrmsg);
 	rxfname = "";
 	txtarqload = "";
@@ -1104,11 +1064,8 @@ void saveRxFile()
 	time(&EndTime_t);
 	TransferTime = difftime(EndTime_t, StartTime_t);
 	snprintf(xfrmsg, sizeof(xfrmsg), "Transfer Completed in %4.0f sec's", TransferTime);
-	
-	string savetoname = szHomedir;
-	savetoname += '/';
-	savetoname.append(InFolder);
-	savetoname += '/';
+
+	string savetoname = ARQ_recv_dir;
 	savetoname.append(rxfname);
 	if (fileExists(savetoname))
 		savetoname = nextFileName(savetoname);
@@ -1118,7 +1075,7 @@ void saveRxFile()
 		tfile << txtarqload;
 		tfile.close();
 	}
-	
+
 	txtStatus->value(xfrmsg);
 	rxfname = "";
 	txtarqload = "";
@@ -1138,7 +1095,7 @@ void payloadText(string s)
 	txtARQ->redraw();
 
 	incomingText.append (s);
-	
+
 	if (!rxARQfile)
 		if ((startpos = incomingText.find(arqstart)) != string::npos) {
 			rxARQfile = true;
@@ -1238,17 +1195,14 @@ void moveEmailFile()
 	static char szfnum[10];
 	int    fnum = 1;
 	string tempname;
-	
+
 	if (MailFileName.empty()) return;
 	if (MailSaveFileName.empty()) return;
-	
+
 	ifstream infile(MailFileName.c_str(), ios::in | ios::binary);
-	
+
 	if (bSylpheedFolder) {
-		MailSaveFileName = szHomedir;
-		MailSaveFileName += '/';
-		MailSaveFileName.append(MailSentFolder);
-		MailSaveFileName += '/';
+		MailSaveFileName = ARQ_mail_sent_dir;
 		tempname = MailSaveFileName;
 		snprintf (szfnum, sizeof(szfnum),"%-d", fnum);
 		tempname += szfnum;
@@ -1293,24 +1247,21 @@ void sendEmailFile()
 	selectTrafficOut(false);
 
 	if (sendfilename.empty())
-		return;	
+		return;
 
 	char cin;
 	size_t txtsize;
 	string textin = "";
 	char sizemsg[40];
 	size_t p;
-	
+
 	ifstream textfile;
 	textfile.open(sendfilename.c_str(), ios::binary);
 	if (textfile) {
 		MailFileName = sendfilename;
 		TX.erase();
 		TX.append(arqfile);
-		MailSaveFileName = szHomedir;
-		MailSaveFileName += '/';
-		MailSaveFileName.append(MailSentFolder);
-		MailSaveFileName += '/';
+		MailSaveFileName = ARQ_mail_sent_dir;
 		p = sendfilename.find_last_of('/');
 		if (p != string::npos) p++;
 		MailSaveFileName.append(sendfilename.substr(p));
@@ -1319,7 +1270,7 @@ void sendEmailFile()
 		TX.append(arqemail);
 		while (textfile.get(cin))
 // only allow ASCII printable characters
-			if ((cin >= ' ' && cin <= '~') || 
+			if ((cin >= ' ' && cin <= '~') ||
 				(cin == 0x09 || (cin == 0x0a) || cin == 0x0d) )
 			textin += cin;
 		textfile.close();
@@ -1353,10 +1304,7 @@ void sendAsciiFile()
 		fl_alert2("Not connected");
 		return;
 	}
-	string readfromname = szHomedir;
-	readfromname += '/';
-	readfromname.append(OutFolder);
-	readfromname += '/';
+	string readfromname = ARQ_send_dir;
 	readfromname.append(rxfname);
 	const char *p = FSEL::select("ARQ text file", "*.txt\t*", readfromname.c_str());
 	char cin;
@@ -1553,7 +1501,7 @@ void dispState()
 				autobeacon = false;
 				break;
 			case WAITING :
-			case CONNECTED : 
+			case CONNECTED :
 				char szState[80];
 				snprintf(szState, sizeof(szState),"CONNECTED - Quality = %4.2f",
 					digi_arq->quality());
@@ -1582,7 +1530,7 @@ void dispState()
 				txtState->value("NOT CONNECTED");
 				txtStatus->value("");
 		}
-	
+
 	if (sendingfile == true) {
 		if (digi_arq->transferComplete()) {
 			time(&EndTime_t);
@@ -1649,22 +1597,22 @@ void mainloop(void *)
 void changeMyCall(const char *nucall)
 {
 	int currstate = digi_arq->state();
-	if (currstate != DOWN) 
+	if (currstate != DOWN)
 		return;
-		
+
 	MyCall = nucall;
 	for (size_t i = 0; i < MyCall.length(); i++)
 		MyCall[i] = toupper(MyCall[i]);
 
 	txtMyCall->value(MyCall.c_str());
 	digi_arq->myCall(MyCall.c_str());
-	
+
 	string title = "flarq ";
 	title.append(VERSION);
 	title.append(" - ");
 	title.append(MyCall);
 	arqwin->label(title.c_str());
-	
+
 }
 
 void changeBeaconText(const char *txt)
@@ -1793,19 +1741,20 @@ int main (int argc, char *argv[] )
 	set_terminate(diediedie);
 	setup_signal_handlers();
 
+	{
+		char dirbuf[FL_PATH_MAX + 1];
 #ifdef __WOE32__
-	// designate the arq home directory in Windows
-	// create if it does not exist
-	strcpy(szHomedir, str_homedir.c_str());
-	ifstream test(str_homedir.c_str());
-	if (!test)
-		mkdir(str_homedir.c_str(), 0777);
-	test.close();
+		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$USERPROFILE/NBEMS.files/");
+		NBEMS_dir = dirbuf;
 #else
-	fl_filename_expand(szHomedir, 119, "$HOME");
+		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$HOME/NBEMS.files/");
+		NBEMS_dir = dirbuf;
 #endif
-	Logfile = szHomedir;
-	Logfile.append("/").append(str_arqlog);
+	}
+	checkdirectories();
+
+	Logfile = ARQ_dir;
+	Logfile.append("/").append("arqlog.txt");
 
 	set_platform_ui();
 
@@ -1848,7 +1797,7 @@ int main (int argc, char *argv[] )
 	txtARQ->highlight_data(stylebufARQ, styletable,
                           sizeof(styletable) / sizeof(styletable[0]),
                           'A', style_unfinished_cb, 0);
-	
+
 	digi_arq = new arq();
 
 	try {
@@ -1896,7 +1845,7 @@ int main (int argc, char *argv[] )
 
 	digi_arq->start_arq();
 
-	readConfig();	
+	readConfig();
 
 	string title = "flarq ";
 	title.append(VERSION);
@@ -1922,4 +1871,47 @@ int main (int argc, char *argv[] )
 
 	arqwin->show(argc, argv);
 	return Fl::run();
+}
+
+static void checkdirectories(void)
+{
+	struct DIRS {
+		string& dir;
+		const char* suffix;
+		void (*new_dir_func)(void);
+	};
+
+	DIRS NBEMS_dirs[] = {
+		{ NBEMS_dir,         0, 0 },
+		{ ARQ_dir,           "ARQ", 0 },
+		{ ARQ_files_dir,     "ARQ/files", 0 },
+		{ ARQ_recv_dir,      "ARQ/recv", 0 },
+		{ ARQ_send_dir,      "ARQ/send", 0 },
+		{ ARQ_mail_dir,      "ARQ/mail", 0 },
+		{ ARQ_mail_in_dir,   "ARQ/mail/in", 0 },
+		{ ARQ_mail_out_dir,  "ARQ/mail/out", 0 },
+		{ ARQ_mail_sent_dir, "ARQ/mail/sent", 0 },
+		{ WRAP_dir,          "WRAP", 0 },
+		{ WRAP_recv_dir,     "WRAP/recv", 0 },
+		{ WRAP_send_dir,     "WRAP/send", 0 },
+		{ WRAP_auto_dir,     "WRAP/auto", 0 },
+		{ ICS_dir,           "ICS", 0 },
+		{ ICS_msg_dir,       "ICS/messages", 0 },
+		{ ICS_tmp_dir,       "ICS/templates", 0 },
+	};
+
+	int r;
+
+	for (size_t i = 0; i < sizeof(NBEMS_dirs)/sizeof(*NBEMS_dirs); i++) {
+		if (NBEMS_dirs[i].suffix)
+			NBEMS_dirs[i].dir.assign(NBEMS_dir).append(NBEMS_dirs[i].suffix).append(PATH_SEP);
+
+		if ((r = mkdir(NBEMS_dirs[i].dir.c_str(), 0777)) == -1 && errno != EEXIST) {
+			cerr << _("Could not make directory") << ' ' << NBEMS_dirs[i].dir
+			     << ": " << strerror(errno) << '\n';
+			exit(EXIT_FAILURE);
+		}
+		else if (r == 0 && NBEMS_dirs[i].new_dir_func)
+			NBEMS_dirs[i].new_dir_func();
+	}
 }
