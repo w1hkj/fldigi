@@ -314,7 +314,6 @@ LOG_INFO("rcvd %d, %s", (int)IOfreq, szmode);
 			qsy_f = IOfreq;
 			sb = (strcmp(szmode, "USB") == 0);
 			wf->USB(sb);
-			REQ (&Fl_ComboBox::put_value, opMODE, sb ? "USB" : "LSB");
 			REQ (&Fl_ComboBox::put_value, qso_opMODE, sb ? "USB" : "LSB");
 		}
 

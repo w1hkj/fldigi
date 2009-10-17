@@ -29,4 +29,3 @@ src/dialogs/colorsfonts.cxx
 src/dialogs/confdialog.cxx
 src/dialogs/notifydialog.cxx
 src/logbook/lgbook.cxx
-src/rigcontrol/rigdialog.cxx
