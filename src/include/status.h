@@ -12,6 +12,7 @@ struct status {
 	int		mainW;
 	int		mainH;
 	bool	WF_UI;
+	bool	NO_RIGLOG;
 	bool	Rig_Log_UI;
 
 	int		RxTextHeight;

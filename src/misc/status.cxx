@@ -45,6 +45,7 @@ status progStatus = {
 	0,					// int mainW;
 	0,					// int mainH;
 	true,				// bool WF_UI;
+	true,				// bool NO_RIGLOG;
 	true,				// bool Rig_Log_UI;
 	0,					// int RxTextHeight;
 	50,					// int rigX;
@@ -173,6 +174,7 @@ void status::saveLastState()
 	spref.set("main_h", mainH);
 	spref.set("wf_ui", WF_UI);
 	spref.set("riglog_ui", Rig_Log_UI);
+	spref.set("noriglog", NO_RIGLOG);
 
 	spref.set("rigctl_x", rigX);
 	spref.set("rigctl_y", rigY);
@@ -256,6 +258,7 @@ void status::loadLastState()
 	spref.get("main_h", mainH, mainH);
 	spref.get("wf_ui", i, i); WF_UI = i;
 	spref.get("riglog_ui", i, i); Rig_Log_UI = i;
+	spref.get("noriglog", i, i); NO_RIGLOG = i;
 
 	spref.get("rigctl_x", rigX, rigX);
 	spref.get("rigctl_y", rigY, rigY);

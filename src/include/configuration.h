@@ -72,41 +72,41 @@
               "Waterfall amplitude span (dB)",                                          \
               70.0)                                                                     \
         ELEM_(bool, WF_UIrev, "WF_UIREV",                                               \
-              "WF_UI - suppress reverse button",                                        \
-              true)                                                                     \
+              "WF_UI - enable reverse button",                                          \
+              false)                                                                    \
         ELEM_(bool, WF_UIx1, "WF_UIX1",                                                 \
-              "WF_UI - suppress scale multiplication button",                           \
-              true)                                                                     \
+              "WF_UI - enable scale multiplication button",                             \
+              false)                                                                    \
         ELEM_(bool, WF_UIwfcarrier, "WF_UIWFCARRIER",                                   \
-              "WF_UI - suppress wf carrier button",                                     \
-              true)                                                                     \
+              "WF_UI - enable wf carrier button",                                       \
+              false)                                                                    \
         ELEM_(bool, WF_UIwfshift, "WF_UIWFSHIFT",                                       \
-              "WF_UI - suppress wf shift buttons",                                      \
-              true)                                                                     \
+              "WF_UI - enable wf shift buttons",                                        \
+              false)                                                                    \
         ELEM_(bool, WF_UIwfreflevel, "WF_UIWFREFLEVEL",                                 \
-              "WF_UI - suppress rf level and range controls",                           \
-              true)                                                                     \
+              "WF_UI - enable rf level and range controls",                             \
+              false)                                                                    \
         ELEM_(bool, WF_UIwfdrop, "WF_UIWFDROP",                                         \
-              "WF_UI - suppress wf drop rate control",                                  \
-              true)                                                                     \
+              "WF_UI - enable wf drop rate control",                                    \
+              false)                                                                    \
         ELEM_(bool, WF_UIwfampspan, "WF_UIWFAMPSPAN",                                   \
-              "WF_UI - suppress wf amp span control",                                   \
-              true)                                                                     \
+              "WF_UI - enable wf amp span control",                                     \
+              false)                                                                    \
         ELEM_(bool, WF_UIwfstore, "WF_UIWFSTORE",                                       \
-              "WF_UI - suppress wf memory store button",                                \
-              true)                                                                     \
+              "WF_UI - enable wf memory store button",                                  \
+              false)                                                                    \
         ELEM_(bool, WF_UIwfmode, "WF_UIWFMODE",                                         \
-              "WF_UI - suppress wf mode control",                                       \
-              true)                                                                     \
+              "WF_UI - enable wf mode control",                                         \
+              false)                                                                    \
         ELEM_(bool, WF_UIqsy, "WF_UIQSY",                                               \
-              "WF_UI - suppress wf qsy button",                                         \
-              true)                                                                     \
+              "WF_UI - enable wf qsy button",                                           \
+              false)                                                                    \
         ELEM_(bool, WF_UIxmtlock, "WF_UIXMTLOCK",                                       \
-              "WF_UI - suppress wf transmit lock button",                               \
-              true)                                                                     \
+              "WF_UI - enable wf transmit lock button",                                 \
+              false)                                                                    \
         ELEM_(int, LowFreqCutoff, "LOWFREQCUTOFF",                                      \
               "Lowest frequency shown on waterfall (Hz)",                               \
-              300)                                                                      \
+              0)                                                                        \
         ELEM_(double, CWsweetspot, "CWSWEETSPOT",                                       \
               "Default CW tracking point (Hz)",                                         \
               1000)                                                                     \
@@ -147,10 +147,10 @@
         /* PSK / PSKmail interface */                                                   \
         ELEM_(int, SearchRange, "PSKSEARCHRANGE",                                       \
               "PSK signal acquisition search range (Hz)",                               \
-              200)                                                                      \
+              50)                                                                       \
         ELEM_(double, ACQsn, "ACQSN",                                                   \
               "PSK signal acquisition S/N (dB)",                                        \
-              6.0)                                                                      \
+              9.0)                                                                      \
         ELEM_(bool, StatusDim, "STATUSDIM",                                             \
               "Behaviour of status (S/N and IMD) fields:\n"                             \
               "  0: Clear after timeout\n"                                              \
@@ -173,7 +173,7 @@
               25)                                                                       \
         ELEM_(double, ServerACQsn, "PSKSERVERACGSN",                                    \
               "Acquisition S/N (dB)",                                                   \
-              6.0)                                                                      \
+              9.0)                                                                      \
         /* RTTY */                                                                      \
         ELEM_(int, rtty_shift, "RTTYSHIFT",                                             \
               "Carrier shift (Hz). Values are as follows:\n"                            \
@@ -926,7 +926,7 @@
               "gtk+")                                                                   \
         ELEM_(bool, wf_audioscale, "WFAUDIOSCALE",                                      \
               "Always show audio frequencies on waterfall",                             \
-              false)                                                                    \
+              true)                                                                     \
         /* Freq Display colors */                                                       \
         ELEM_(RGB, FDbackground, "FDBACKGROUND",                                        \
               "Frequency display background color",                                     \

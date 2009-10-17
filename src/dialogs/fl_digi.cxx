@@ -219,6 +219,8 @@ Fl_Button			*qsoSave2;
 Fl_Button			*btnQRZ2;
 Fl_Button			*qso_opPICK2;
 
+Fl_Input2			*inpCall3;
+
 Fl_Group			*TopFrame1 = (Fl_Group *)0;
 Fl_Group			*RigControlFrame = (Fl_Group *)0;
 Fl_Group			*RigViewerFrame = (Fl_Group *)0;
@@ -1465,8 +1467,16 @@ void cb_call(Fl_Widget* w, void*)
 	}
 	new_call = inpCall->value();
 
-	if (inpCall == inpCall1) inpCall2->value(inpCall->value());
-	else inpCall1->value(inpCall->value());
+	if (inpCall == inpCall1) {
+		inpCall2->value(new_call.c_str());
+		inpCall3->value(new_call.c_str());
+	} else if (inpCall == inpCall2) {
+		inpCall1->value(new_call.c_str());
+		inpCall3->value(new_call.c_str());
+	} else {
+		inpCall1->value(new_call.c_str());
+		inpCall2->value(new_call.c_str());
+	}
 
 	if (old_call == new_call)
 		return restoreFocus(w);
@@ -1784,6 +1794,28 @@ bool clean_exit(void) {
 
 void UI_select(bool minimized)
 {
+	if (progStatus.NO_RIGLOG) {
+		int y1 = TopFrame2->y();
+		int y2 = macroFrame->y();
+		int w = TopFrame1->w();
+		if (MixerFrame->visible()) {
+			MixerFrame->resize(0, y1, DEFAULT_SW, y2 - y1);
+			MixerFrame->redraw();
+			TiledGroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, y2 - y1);
+			TiledGroup->redraw();
+		} else {
+			TiledGroup->resize(0, y1, w, y2 - y1);
+			TiledGroup->redraw();
+		}
+		TopFrame1->hide();
+		TopFrame2->hide();
+		Status1->color(FL_BACKGROUND_COLOR);
+		Status2->hide();
+		inpCall3->show();
+		inpCall = inpCall3;
+		fl_digi_main->init_sizes();
+		return;
+	}
 	if (!minimized) {
 		int y1 = TopFrame1->y() + Hqsoframe;
 		int y2 = macroFrame->y();
@@ -1835,6 +1867,9 @@ void UI_select(bool minimized)
 		inpRstOut = inpRstOut2;
 		qsoFreqDisp = qsoFreqDisp2;
 	}
+	inpCall3->hide();
+	Status1->color(FL_BACKGROUND2_COLOR);
+	Status2->show();
 	fl_digi_main->init_sizes();
 }
 
@@ -1851,6 +1886,12 @@ void cb_mnu_riglog(Fl_Menu_* w, void *d) {
 	UI_select(progStatus.Rig_Log_UI);
 }
 
+void cb_mnu_riglog_none(Fl_Menu_* w, void *d) {
+	Fl_Menu_Item *m = getMenuItem(((Fl_Menu_*)w)->mvalue()->label());
+	progStatus.NO_RIGLOG = m->value();
+	UI_select(progStatus.Rig_Log_UI);
+}
+
 void WF_UI()
 {
 	wf->UI_select(progStatus.WF_UI);
@@ -1864,6 +1905,7 @@ void WF_UI()
 #define CONTEST_FIELDS_MLABEL _("&Contest fields")
 #define COUNTRIES_MLABEL _("C&ountries")
 #define UI_MLABEL _("&UI")
+#define RIGLOG_NONE_MLABEL _("No Rig-Log Controls")
 #define RIGLOG_MLABEL _("Min Rig-Log Controls")
 #define WF_MLABEL _("Min WF Controls")
 
@@ -2021,6 +2063,7 @@ Fl_Menu_Item menu_[] = {
 
 { UI_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { RIGLOG_MLABEL, 0, (Fl_Callback*)cb_mnu_riglog, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
+{ RIGLOG_NONE_MLABEL, 0, (Fl_Callback*)cb_mnu_riglog_none, 0, FL_MENU_TOGGLE | FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 { WF_MLABEL, 0, (Fl_Callback*)cb_mnu_wf_all, 0, FL_MENU_TOGGLE | FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 { _("Config WF controls"), 0,  (Fl_Callback*)cb_mnuConfigWFcontrols, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
@@ -3057,10 +3100,18 @@ void create_fl_digi_main() {
 			Status1->color(FL_BACKGROUND2_COLOR);
 			Status1->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 
+
 			Status2 = new Fl_Box(rightof(Status1), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Wimd, Hstatus, "");
 			Status2->box(FL_DOWN_BOX);
 			Status2->color(FL_BACKGROUND2_COLOR);
 			Status2->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
+
+			inpCall3 = new Fl_Input2(
+				rightof(Status1), Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
+				Wimd, Hstatus, "Callsign:");
+			inpCall3->align(FL_ALIGN_LEFT);
+			inpCall3->tooltip(_("Other call"));
+			inpCall3->hide();
 
 			StatusBar = new Fl_Box(
                 rightof(Status2), Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
@@ -3149,7 +3200,8 @@ void create_fl_digi_main() {
 		{ progStatus.LOGenabled, LOG_TO_FILE_MLABEL },
 		{ progStatus.contest, CONTEST_FIELDS_MLABEL },
 		{ progStatus.WF_UI, WF_MLABEL },
-		{ progStatus.Rig_Log_UI, RIGLOG_MLABEL }
+		{ progStatus.Rig_Log_UI, RIGLOG_MLABEL },
+		{ progStatus.NO_RIGLOG, RIGLOG_NONE_MLABEL }
 	};
 	Fl_Menu_Item* toggle;
 	for (size_t i = 0; i < sizeof(toggles)/sizeof(*toggles); i++) {
@@ -3401,7 +3453,7 @@ void put_Status1(const char *msg, double timeout, status_timeout action)
 	m[sizeof(m) - 1] = '\0';
 
 	info1msg = msg;
-
+	if (progStatus.NO_RIGLOG) return;
 	REQ(put_status_msg, Status1, m, timeout, action);
 }
 
