@@ -1453,25 +1453,25 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	end();
 }
 
-void waterfall::KISS(bool on) {
+void waterfall::UI_select(bool on) {
 	if (on) {
-		if (progdefaults.KISSrev)
+		if (!progdefaults.WF_UIrev)
 			btnRev->hide(); else btnRev->show();
-		if (progdefaults.KISSwfcarrier)
+		if (!progdefaults.WF_UIwfcarrier)
 			wfcarrier->hide(); else wfcarrier->show();
-		if (progdefaults.KISSwfreflevel)
+		if (!progdefaults.WF_UIwfreflevel)
 			wfRefLevel->hide(); else wfRefLevel->show();
-		if (progdefaults.KISSwfampspan)
+		if (!progdefaults.WF_UIwfampspan)
 			wfAmpSpan->hide(); else wfAmpSpan->show();
-		if (progdefaults.KISSxmtlock)
+		if (!progdefaults.WF_UIxmtlock)
 			xmtlock->hide(); else xmtlock->show();
-		if (progdefaults.KISSqsy)
+		if (!progdefaults.WF_UIqsy)
 			qsy->hide(); else qsy->show();
-		if (progdefaults.KISSwfmode)
+		if (!progdefaults.WF_UIwfmode)
 			mode->hide(); else mode->show();
-		if (progdefaults.KISSx1)
+		if (!progdefaults.WF_UIx1)
 			x1->hide(); else x1->show();
-		if (progdefaults.KISSwfshift) {
+		if (!progdefaults.WF_UIwfshift) {
 			left->hide();
 			center->hide();
 			right->hide();
@@ -1480,9 +1480,9 @@ void waterfall::KISS(bool on) {
 			center->show();
 			right->show();
 		}
-		if (progdefaults.KISSwfdrop)
+		if (!progdefaults.WF_UIwfdrop)
 			wfrate->hide(); else wfrate->show();
-		if (progdefaults.KISSwfstore) {
+		if (!progdefaults.WF_UIwfstore) {
 			btnMem->hide();
 			mbtnMem->hide();
 		} else {

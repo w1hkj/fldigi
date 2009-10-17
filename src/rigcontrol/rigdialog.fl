@@ -1,37 +1,37 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0107 
+version 1.0109
 i18n_type 1
 i18n_include "gettext.h"
 i18n_function _
-header_name {.h} 
+header_name {.h}
 code_name {.cxx}
-decl {\#include <config.h>} {} 
+decl {\#include <config.h>} {}
 
-decl {\#include <string>} {} 
+decl {\#include <string>} {}
 
-decl {\#include <FL/Fl_Box.H>} {} 
+decl {\#include <FL/Fl_Box.H>} {}
 
-decl {\#include "rigsupport.h"} {} 
+decl {\#include "rigsupport.h"} {}
 
-decl {\#include "fl_digi.h"} {} 
+decl {\#include "fl_digi.h"} {}
 
-decl {\#include "flmisc.h"} {} 
+decl {\#include "flmisc.h"} {}
 
-decl {using namespace std;} {} 
+decl {using namespace std;} {}
 
 Function {rig_dialog()} {open
 } {
   Fl_Window {} {
-    label {Rig Controller} open selected
+    label {Rig Controller} open
     xywh {667 300 560 80} type Double box DOWN_BOX
     code0 {\#include <stdlib.h>} visible
   } {
     Fl_Box FreqDisp {
-      label 9
+      label 9 selected
       xywh {4 31 253 44} box DOWN_BOX
       code0 {\#include "FreqControl.h"}
       code1 {extern int movFreq();}
-      code2 {o->setCallBack(movFreq);}
+      code2 {o->callback(movFreq);}
       code3 {o->SetONOFFCOLOR( FL_RED, FL_BLACK);}
       class cFreqControl
     }
@@ -68,23 +68,23 @@ Middle click to replace, Shift-left click to delete} xywh {278 5 280 70} type Ho
     Fl_Button btnAddFreq {
       label {@|>}
       callback {addFreq();}
-      tooltip {Add to list} xywh {257 5 20 20} box UP_BOX labelsize 10
+      tooltip {Add to list} xywh {257 5 20 20} labelsize 10
     }
     Fl_Button btnDelFreq {
       label {@-11+}
       callback {delFreq();}
-      tooltip {Delete from list} xywh {257 30 20 20} box UP_BOX labelsize 10
+      tooltip {Delete from list} xywh {257 30 20 20} labelsize 10
     }
     Fl_Button btnClearList {
       label {@-1square}
       callback {if (quick_choice(_("Clear list?"), 2, _("Confirm"), _("Cancel"), NULL) == 1)
     clearList();}
-      tooltip {Clear list} xywh {257 54 20 20} box UP_BOX labelsize 10
+      tooltip {Clear list} xywh {257 54 20 20} labelsize 10
     }
     Fl_Button btnRCclose {
       label Close
       callback {closeRigDialog();}
-      xywh {4 5 50 20} box UP_BOX 
+      xywh {4 5 50 20}
       code0 {extern void closeRigDialog();}
     }
   }
@@ -101,4 +101,4 @@ w->size_range(FreqDisp->x() + FreqDisp->w(), w->h());
 // get rid of the horizontal scrollbar, we will resize the window instead
 FreqSelect->has_scrollbar(Fl_Browser_::VERTICAL);
 }} {}
-} 
+}

@@ -304,102 +304,134 @@ static void cb_nbrTimeSpan(Fl_Value_Input* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Group *tabKISS=(Fl_Group *)0;
+Fl_Group *tabWF_UI=(Fl_Group *)0;
 
-Fl_Check_Button *btnKISSrev=(Fl_Check_Button *)0;
+Fl_Check_Button *btnWF_UIrev=(Fl_Check_Button *)0;
 
-static void cb_btnKISSrev(Fl_Check_Button* o, void*) {
-  progdefaults.KISSrev = o->value();
+static void cb_btnWF_UIrev(Fl_Check_Button* o, void*) {
+  progdefaults.WF_UIrev = o->value();
 progdefaults.changed = true;
-KISS();
+WF_UI();
 }
 
-Fl_Check_Button *btnKISSx1=(Fl_Check_Button *)0;
+Fl_Check_Button *btnWF_UIx1=(Fl_Check_Button *)0;
 
-static void cb_btnKISSx1(Fl_Check_Button* o, void*) {
-  progdefaults.KISSx1 = o->value();
+static void cb_btnWF_UIx1(Fl_Check_Button* o, void*) {
+  progdefaults.WF_UIx1 = o->value();
 progdefaults.changed = true;
-KISS();
+WF_UI();
 }
 
-Fl_Check_Button *btnKISSwfcarrier=(Fl_Check_Button *)0;
+Fl_Check_Button *btnWF_UIwfcarrier=(Fl_Check_Button *)0;
 
-static void cb_btnKISSwfcarrier(Fl_Check_Button* o, void*) {
-  progdefaults.KISSwfcarrier = o->value();
+static void cb_btnWF_UIwfcarrier(Fl_Check_Button* o, void*) {
+  progdefaults.WF_UIwfcarrier = o->value();
 progdefaults.changed = true;
-KISS();
+WF_UI();
 }
 
-Fl_Check_Button *btnKISSwfshift=(Fl_Check_Button *)0;
+Fl_Check_Button *btnWF_UIwfshift=(Fl_Check_Button *)0;
 
-static void cb_btnKISSwfshift(Fl_Check_Button* o, void*) {
-  progdefaults.KISSwfshift = o->value();
+static void cb_btnWF_UIwfshift(Fl_Check_Button* o, void*) {
+  progdefaults.WF_UIwfshift = o->value();
 progdefaults.changed = true;
-KISS();
+WF_UI();
 }
 
-Fl_Check_Button *btnKISSwfreflevel=(Fl_Check_Button *)0;
+Fl_Check_Button *btnWF_UIwfreflevel=(Fl_Check_Button *)0;
 
-static void cb_btnKISSwfreflevel(Fl_Check_Button* o, void*) {
-  progdefaults.KISSwfreflevel = o->value();
+static void cb_btnWF_UIwfreflevel(Fl_Check_Button* o, void*) {
+  progdefaults.WF_UIwfreflevel = o->value();
 progdefaults.changed = true;
-KISS();
+WF_UI();
 }
 
-Fl_Check_Button *btnKISSwfdrop=(Fl_Check_Button *)0;
+Fl_Check_Button *btnWF_UIwfdrop=(Fl_Check_Button *)0;
 
-static void cb_btnKISSwfdrop(Fl_Check_Button* o, void*) {
-  progdefaults.KISSwfdrop = o->value();
+static void cb_btnWF_UIwfdrop(Fl_Check_Button* o, void*) {
+  progdefaults.WF_UIwfdrop = o->value();
 progdefaults.changed = true;
-KISS();
+WF_UI();
 }
 
-Fl_Check_Button *btnKISSwfampspan=(Fl_Check_Button *)0;
+Fl_Check_Button *btnWF_UIwfampspan=(Fl_Check_Button *)0;
 
-static void cb_btnKISSwfampspan(Fl_Check_Button* o, void*) {
-  progdefaults.KISSwfampspan = o->value();
+static void cb_btnWF_UIwfampspan(Fl_Check_Button* o, void*) {
+  progdefaults.WF_UIwfampspan = o->value();
 progdefaults.changed = true;
-KISS();
+WF_UI();
 }
 
-Fl_Check_Button *btnKISSwfstore=(Fl_Check_Button *)0;
+Fl_Check_Button *btnWF_UIwfstore=(Fl_Check_Button *)0;
 
-static void cb_btnKISSwfstore(Fl_Check_Button* o, void*) {
-  progdefaults.KISSwfstore = o->value();
+static void cb_btnWF_UIwfstore(Fl_Check_Button* o, void*) {
+  progdefaults.WF_UIwfstore = o->value();
 progdefaults.changed = true;
-KISS();
+WF_UI();
 }
 
-Fl_Check_Button *btnKISSwfmode=(Fl_Check_Button *)0;
+Fl_Check_Button *btnWF_UIwfmode=(Fl_Check_Button *)0;
 
-static void cb_btnKISSwfmode(Fl_Check_Button* o, void*) {
-  progdefaults.KISSwfmode = o->value();
+static void cb_btnWF_UIwfmode(Fl_Check_Button* o, void*) {
+  progdefaults.WF_UIwfmode = o->value();
 progdefaults.changed = true;
-KISS();
+WF_UI();
 }
 
-Fl_Check_Button *btnKISSqsy=(Fl_Check_Button *)0;
+Fl_Check_Button *btnWF_UIqsy=(Fl_Check_Button *)0;
 
-static void cb_btnKISSqsy(Fl_Check_Button* o, void*) {
-  progdefaults.KISSqsy = o->value();
+static void cb_btnWF_UIqsy(Fl_Check_Button* o, void*) {
+  progdefaults.WF_UIqsy = o->value();
 progdefaults.changed = true;
-KISS();
+WF_UI();
 }
 
-Fl_Check_Button *btnKISSxmtlock=(Fl_Check_Button *)0;
+Fl_Check_Button *btnWF_UIxmtlock=(Fl_Check_Button *)0;
 
-static void cb_btnKISSxmtlock(Fl_Check_Button* o, void*) {
-  progdefaults.KISSxmtlock = o->value();
+static void cb_btnWF_UIxmtlock(Fl_Check_Button* o, void*) {
+  progdefaults.WF_UIxmtlock = o->value();
 progdefaults.changed = true;
-KISS();
+WF_UI();
 }
 
-Fl_Check_Button *btnHideRigLog=(Fl_Check_Button *)0;
+Fl_Button *btn_wf_enable_all=(Fl_Button *)0;
 
-static void cb_btnHideRigLog(Fl_Check_Button* o, void*) {
-  progdefaults.KISSriglog = o->value();
+static void cb_btn_wf_enable_all(Fl_Button*, void*) {
+  btnWF_UIrev->value(progdefaults.WF_UIrev = 1);
+btnWF_UIwfcarrier->value(progdefaults.WF_UIwfcarrier = 1);
+btnWF_UIwfreflevel->value(progdefaults.WF_UIwfreflevel = 1);
+btnWF_UIwfampspan->value(progdefaults.WF_UIwfampspan = 1);
+btnWF_UIwfmode->value(progdefaults.WF_UIwfmode = 1);
+
+btnWF_UIx1->value(progdefaults.WF_UIx1 = 1);
+btnWF_UIwfshift->value(progdefaults.WF_UIwfshift = 1);
+btnWF_UIwfdrop->value(progdefaults.WF_UIwfdrop = 1);
+btnWF_UIwfstore->value(progdefaults.WF_UIwfstore = 1);
+btnWF_UIqsy->value(progdefaults.WF_UIqsy = 1);
+btnWF_UIxmtlock->value(progdefaults.WF_UIxmtlock = 1);
+
 progdefaults.changed = true;
-KISS();
+WF_UI();
+}
+
+Fl_Button *btn_wf_disable_all=(Fl_Button *)0;
+
+static void cb_btn_wf_disable_all(Fl_Button*, void*) {
+  btnWF_UIrev->value(progdefaults.WF_UIrev = 0);
+btnWF_UIwfcarrier->value(progdefaults.WF_UIwfcarrier = 0);
+btnWF_UIwfreflevel->value(progdefaults.WF_UIwfreflevel = 0);
+btnWF_UIwfampspan->value(progdefaults.WF_UIwfampspan = 0);
+btnWF_UIwfmode->value(progdefaults.WF_UIwfmode = 0);
+
+btnWF_UIx1->value(progdefaults.WF_UIx1 = 0);
+btnWF_UIwfshift->value(progdefaults.WF_UIwfshift = 0);
+btnWF_UIwfdrop->value(progdefaults.WF_UIwfdrop = 0);
+btnWF_UIwfstore->value(progdefaults.WF_UIwfstore = 0);
+btnWF_UIqsy->value(progdefaults.WF_UIqsy = 0);
+btnWF_UIxmtlock->value(progdefaults.WF_UIxmtlock = 0);
+
+progdefaults.changed = true;
+WF_UI();
 }
 
 Fl_Group *tabWaterfall=(Fl_Group *)0;
@@ -2347,7 +2379,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       { tabOperator = new Fl_Group(0, 25, 500, 345, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2426,10 +2457,10 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         tabOperator->end();
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(-3, 25, 508, 345, _("UI"));
+        tabUI->hide();
         { tabsUI = new Fl_Tabs(-3, 25, 508, 345);
           tabsUI->selection_color(FL_LIGHT1);
           { tabUserInterface = new Fl_Group(0, 50, 500, 320, _("General"));
-            tabUserInterface->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 301);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(15, 70, 120, 20, _("Show tooltips"));
@@ -2554,6 +2585,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 btnDockedRigControl->down_box(FL_DOWN_BOX);
                 btnDockedRigControl->value(1);
                 btnDockedRigControl->callback((Fl_Callback*)cb_btnDockedRigControl);
+                btnDockedRigControl->hide();
                 o->value(progdefaults.docked_rig_control);
               } // Fl_Check_Button* btnDockedRigControl
               { Fl_Check_Button* o = btnCheckButtons = new Fl_Check_Button(15, 219, 275, 20, _("Use check buttons for AFC and SQL"));
@@ -2686,85 +2718,87 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             } // Fl_Group* o
             tabContest->end();
           } // Fl_Group* tabContest
-          { tabKISS = new Fl_Group(0, 50, 500, 320, _("KISS"));
-            { Fl_Check_Button* o = btnKISSrev = new Fl_Check_Button(56, 146, 150, 20, _("Reverse"));
-              btnKISSrev->down_box(FL_DOWN_BOX);
-              btnKISSrev->value(1);
-              btnKISSrev->callback((Fl_Callback*)cb_btnKISSrev);
-              o->value(progdefaults.KISSrev);
-            } // Fl_Check_Button* btnKISSrev
-            { Fl_Check_Button* o = btnKISSx1 = new Fl_Check_Button(275, 146, 162, 20, _("WF Magnification"));
-              btnKISSx1->down_box(FL_DOWN_BOX);
-              btnKISSx1->value(1);
-              btnKISSx1->callback((Fl_Callback*)cb_btnKISSx1);
-              o->value(progdefaults.KISSx1);
-            } // Fl_Check_Button* btnKISSx1
-            { Fl_Check_Button* o = btnKISSwfcarrier = new Fl_Check_Button(56, 184, 150, 20, _("WF carrier"));
-              btnKISSwfcarrier->down_box(FL_DOWN_BOX);
-              btnKISSwfcarrier->value(1);
-              btnKISSwfcarrier->callback((Fl_Callback*)cb_btnKISSwfcarrier);
-              o->value(progdefaults.KISSwfcarrier);
-            } // Fl_Check_Button* btnKISSwfcarrier
-            { Fl_Check_Button* o = btnKISSwfshift = new Fl_Check_Button(275, 184, 150, 20, _("WF Shift Controls"));
-              btnKISSwfshift->down_box(FL_DOWN_BOX);
-              btnKISSwfshift->value(1);
-              btnKISSwfshift->callback((Fl_Callback*)cb_btnKISSwfshift);
-              o->value(progdefaults.KISSwfshift);
-            } // Fl_Check_Button* btnKISSwfshift
-            { Fl_Check_Button* o = btnKISSwfreflevel = new Fl_Check_Button(56, 223, 150, 20, _("WF ref level"));
-              btnKISSwfreflevel->down_box(FL_DOWN_BOX);
-              btnKISSwfreflevel->value(1);
-              btnKISSwfreflevel->callback((Fl_Callback*)cb_btnKISSwfreflevel);
-              o->value(progdefaults.KISSwfreflevel);
-            } // Fl_Check_Button* btnKISSwfreflevel
-            { Fl_Check_Button* o = btnKISSwfdrop = new Fl_Check_Button(275, 223, 150, 20, _("WF drop rate"));
-              btnKISSwfdrop->down_box(FL_DOWN_BOX);
-              btnKISSwfdrop->value(1);
-              btnKISSwfdrop->callback((Fl_Callback*)cb_btnKISSwfdrop);
-              o->value(progdefaults.KISSwfdrop);
-            } // Fl_Check_Button* btnKISSwfdrop
-            { Fl_Check_Button* o = btnKISSwfampspan = new Fl_Check_Button(56, 261, 150, 20, _("WF amp span"));
-              btnKISSwfampspan->down_box(FL_DOWN_BOX);
-              btnKISSwfampspan->value(1);
-              btnKISSwfampspan->callback((Fl_Callback*)cb_btnKISSwfampspan);
-              o->value(progdefaults.KISSwfampspan);
-            } // Fl_Check_Button* btnKISSwfampspan
-            { Fl_Check_Button* o = btnKISSwfstore = new Fl_Check_Button(275, 261, 150, 20, _("WF Store"));
-              btnKISSwfstore->down_box(FL_DOWN_BOX);
-              btnKISSwfstore->value(1);
-              btnKISSwfstore->callback((Fl_Callback*)cb_btnKISSwfstore);
-              o->value(progdefaults.KISSwfstore);
-            } // Fl_Check_Button* btnKISSwfstore
-            { Fl_Check_Button* o = btnKISSwfmode = new Fl_Check_Button(56, 297, 150, 20, _("WF mode"));
-              btnKISSwfmode->down_box(FL_DOWN_BOX);
-              btnKISSwfmode->value(1);
-              btnKISSwfmode->callback((Fl_Callback*)cb_btnKISSwfmode);
-              o->value(progdefaults.KISSwfmode);
-            } // Fl_Check_Button* btnKISSwfmode
-            { Fl_Check_Button* o = btnKISSqsy = new Fl_Check_Button(275, 297, 150, 20, _("QSY"));
-              btnKISSqsy->down_box(FL_DOWN_BOX);
-              btnKISSqsy->value(1);
-              btnKISSqsy->callback((Fl_Callback*)cb_btnKISSqsy);
-              o->value(progdefaults.KISSqsy);
-            } // Fl_Check_Button* btnKISSqsy
-            { Fl_Check_Button* o = btnKISSxmtlock = new Fl_Check_Button(275, 333, 150, 20, _("XMT lock"));
-              btnKISSxmtlock->down_box(FL_DOWN_BOX);
-              btnKISSxmtlock->value(1);
-              btnKISSxmtlock->callback((Fl_Callback*)cb_btnKISSxmtlock);
-              o->value(progdefaults.KISSxmtlock);
-            } // Fl_Check_Button* btnKISSxmtlock
-            { Fl_Box* o = new Fl_Box(29, 117, 446, 25, _("Enable check box to hide each respective waterfall control"));
+          { tabWF_UI = new Fl_Group(0, 50, 500, 320, _("WF Controls"));
+            tabWF_UI->hide();
+            { Fl_Box* o = new Fl_Box(31, 65, 446, 25, _("Enable check box to show each respective waterfall control"));
               o->box(FL_FLAT_BOX);
               o->color((Fl_Color)53);
               o->align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
             } // Fl_Box* o
-            { Fl_Check_Button* o = btnHideRigLog = new Fl_Check_Button(56, 77, 184, 20, _("Hide Rig / Log Controls"));
-              btnHideRigLog->down_box(FL_DOWN_BOX);
-              btnHideRigLog->callback((Fl_Callback*)cb_btnHideRigLog);
-              o->value(progdefaults.KISSriglog);
-            } // Fl_Check_Button* btnHideRigLog
-            tabKISS->end();
-          } // Fl_Group* tabKISS
+            { Fl_Check_Button* o = btnWF_UIrev = new Fl_Check_Button(58, 98, 150, 20, _("Reverse"));
+              btnWF_UIrev->down_box(FL_DOWN_BOX);
+              btnWF_UIrev->value(1);
+              btnWF_UIrev->callback((Fl_Callback*)cb_btnWF_UIrev);
+              o->value(progdefaults.WF_UIrev);
+            } // Fl_Check_Button* btnWF_UIrev
+            { Fl_Check_Button* o = btnWF_UIx1 = new Fl_Check_Button(277, 98, 162, 20, _("WF Magnification"));
+              btnWF_UIx1->down_box(FL_DOWN_BOX);
+              btnWF_UIx1->value(1);
+              btnWF_UIx1->callback((Fl_Callback*)cb_btnWF_UIx1);
+              o->value(progdefaults.WF_UIx1);
+            } // Fl_Check_Button* btnWF_UIx1
+            { Fl_Check_Button* o = btnWF_UIwfcarrier = new Fl_Check_Button(58, 136, 150, 20, _("WF carrier"));
+              btnWF_UIwfcarrier->down_box(FL_DOWN_BOX);
+              btnWF_UIwfcarrier->value(1);
+              btnWF_UIwfcarrier->callback((Fl_Callback*)cb_btnWF_UIwfcarrier);
+              o->value(progdefaults.WF_UIwfcarrier);
+            } // Fl_Check_Button* btnWF_UIwfcarrier
+            { Fl_Check_Button* o = btnWF_UIwfshift = new Fl_Check_Button(277, 136, 150, 20, _("WF Shift Controls"));
+              btnWF_UIwfshift->down_box(FL_DOWN_BOX);
+              btnWF_UIwfshift->value(1);
+              btnWF_UIwfshift->callback((Fl_Callback*)cb_btnWF_UIwfshift);
+              o->value(progdefaults.WF_UIwfshift);
+            } // Fl_Check_Button* btnWF_UIwfshift
+            { Fl_Check_Button* o = btnWF_UIwfreflevel = new Fl_Check_Button(58, 175, 150, 20, _("WF ref level"));
+              btnWF_UIwfreflevel->down_box(FL_DOWN_BOX);
+              btnWF_UIwfreflevel->value(1);
+              btnWF_UIwfreflevel->callback((Fl_Callback*)cb_btnWF_UIwfreflevel);
+              o->value(progdefaults.WF_UIwfreflevel);
+            } // Fl_Check_Button* btnWF_UIwfreflevel
+            { Fl_Check_Button* o = btnWF_UIwfdrop = new Fl_Check_Button(277, 175, 150, 20, _("WF drop rate"));
+              btnWF_UIwfdrop->down_box(FL_DOWN_BOX);
+              btnWF_UIwfdrop->value(1);
+              btnWF_UIwfdrop->callback((Fl_Callback*)cb_btnWF_UIwfdrop);
+              o->value(progdefaults.WF_UIwfdrop);
+            } // Fl_Check_Button* btnWF_UIwfdrop
+            { Fl_Check_Button* o = btnWF_UIwfampspan = new Fl_Check_Button(58, 213, 150, 20, _("WF amp span"));
+              btnWF_UIwfampspan->down_box(FL_DOWN_BOX);
+              btnWF_UIwfampspan->value(1);
+              btnWF_UIwfampspan->callback((Fl_Callback*)cb_btnWF_UIwfampspan);
+              o->value(progdefaults.WF_UIwfampspan);
+            } // Fl_Check_Button* btnWF_UIwfampspan
+            { Fl_Check_Button* o = btnWF_UIwfstore = new Fl_Check_Button(277, 213, 150, 20, _("WF Store"));
+              btnWF_UIwfstore->down_box(FL_DOWN_BOX);
+              btnWF_UIwfstore->value(1);
+              btnWF_UIwfstore->callback((Fl_Callback*)cb_btnWF_UIwfstore);
+              o->value(progdefaults.WF_UIwfstore);
+            } // Fl_Check_Button* btnWF_UIwfstore
+            { Fl_Check_Button* o = btnWF_UIwfmode = new Fl_Check_Button(58, 249, 150, 20, _("WF mode"));
+              btnWF_UIwfmode->down_box(FL_DOWN_BOX);
+              btnWF_UIwfmode->value(1);
+              btnWF_UIwfmode->callback((Fl_Callback*)cb_btnWF_UIwfmode);
+              o->value(progdefaults.WF_UIwfmode);
+            } // Fl_Check_Button* btnWF_UIwfmode
+            { Fl_Check_Button* o = btnWF_UIqsy = new Fl_Check_Button(277, 249, 150, 20, _("QSY"));
+              btnWF_UIqsy->down_box(FL_DOWN_BOX);
+              btnWF_UIqsy->value(1);
+              btnWF_UIqsy->callback((Fl_Callback*)cb_btnWF_UIqsy);
+              o->value(progdefaults.WF_UIqsy);
+            } // Fl_Check_Button* btnWF_UIqsy
+            { Fl_Check_Button* o = btnWF_UIxmtlock = new Fl_Check_Button(277, 285, 150, 20, _("XMT lock"));
+              btnWF_UIxmtlock->down_box(FL_DOWN_BOX);
+              btnWF_UIxmtlock->value(1);
+              btnWF_UIxmtlock->callback((Fl_Callback*)cb_btnWF_UIxmtlock);
+              o->value(progdefaults.WF_UIxmtlock);
+            } // Fl_Check_Button* btnWF_UIxmtlock
+            { btn_wf_enable_all = new Fl_Button(102, 321, 88, 20, _("Enable all"));
+              btn_wf_enable_all->callback((Fl_Callback*)cb_btn_wf_enable_all);
+            } // Fl_Button* btn_wf_enable_all
+            { btn_wf_disable_all = new Fl_Button(301, 321, 88, 20, _("Disable all"));
+              btn_wf_disable_all->callback((Fl_Callback*)cb_btn_wf_disable_all);
+            } // Fl_Button* btn_wf_disable_all
+            tabWF_UI->end();
+          } // Fl_Group* tabWF_UI
           tabsUI->end();
         } // Fl_Tabs* tabsUI
         tabUI->end();
@@ -3016,6 +3050,7 @@ an merging"));
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
           { tabCW = new Fl_Group(0, 50, 500, 320, _("CW"));
+            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 500, 320);
               tabsCW->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
@@ -3483,7 +3518,6 @@ an merging"));
             tabOlivia->end();
           } // Fl_Group* tabOlivia
           { tabPSK = new Fl_Group(0, 50, 517, 320, _("PSK"));
-            tabPSK->hide();
             { tabsPSK = new Fl_Tabs(0, 50, 517, 320);
               tabsPSK->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));

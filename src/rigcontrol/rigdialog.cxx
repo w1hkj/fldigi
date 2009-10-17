@@ -83,7 +83,7 @@ Fl_Double_Window* rig_dialog() {
       FreqDisp->labelcolor(FL_FOREGROUND_COLOR);
       FreqDisp->align(FL_ALIGN_CENTER);
       FreqDisp->when(FL_WHEN_RELEASE);
-      o->setCallBack(movFreq);
+      o->callback(movFreq);
       o->SetONOFFCOLOR( FL_RED, FL_BLACK);
     } // cFreqControl* FreqDisp
     { FreqSelect = new Fl_Browser(278, 5, 280, 70);

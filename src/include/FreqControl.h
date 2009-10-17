@@ -66,8 +66,8 @@ public:
 			Fl::get_color(OFFCOLOR, r, g, b);
 	};
     void SetONOFFCOLOR( Fl_Color, Fl_Color);
-	void setCallBack (int (*cbf)() ){ cbFunc = cbf;};
-	void do_callback() { if (cbFunc) cbFunc(); }
+//	void setCallBack (int (*cbf)(Fl_Widget *, void *) ){ cbFunc = cbf;};
+//	void do_callback() { if (cbFunc) cbFunc(this, NULL); }
 	int handle(int event);
 private:
 	Fl_Repeat_Button      		*Digit[MAX_DIGITS];

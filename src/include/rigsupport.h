@@ -10,30 +10,34 @@
 	#include "hamlib.h"
 #endif
 
+// to be deprecated with rigcontrol retirement
+//=====================
 extern Fl_Double_Window *rigcontrol;
-extern std::string windowTitle;
-extern Cserial rigio;
-
-extern void initOptionMenus();
+extern Fl_Double_Window * createRigDialog();
 extern void setMode();
 extern void setBW();
 extern void selBW(int);
 extern void selFreq(long int);
-extern void clearList();
-extern void updateSelect();
-extern size_t addtoList(long val);
-extern void buildlist();
-extern int  movFreq();
-extern int  qso_movFreq();
-extern int	cb_qso_opMODE();
-extern int  cb_qso_opBW();
-extern void qso_setMode();
-extern void setTitle();
-
+extern void movFreq(Fl_Widget* w, void*);
 extern void selectFreq();
 extern void delFreq();
 extern void addFreq();
 extern void saveFreqList();
+//======================
+
+extern std::string windowTitle;
+extern Cserial rigio;
+
+extern void initOptionMenus();
+extern void clearList();
+extern void updateSelect();
+extern size_t addtoList(long val);
+extern void buildlist();
+extern void qso_movFreq(Fl_Widget* w, void*);
+extern int	cb_qso_opMODE();
+extern int  cb_qso_opBW();
+extern void qso_setMode();
+extern void setTitle();
 
 extern void qso_addFreq();
 extern void qso_delFreq();
@@ -51,7 +55,5 @@ extern bool init_Hamlib_RigDialog();
 extern void selMode(rmode_t m);
 extern std::string modeString(rmode_t m);
 #endif
-
-extern Fl_Double_Window * createRigDialog();
 
 #endif

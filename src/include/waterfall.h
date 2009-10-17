@@ -345,7 +345,7 @@ public:
 	Fl_Light_Button *xmtlock;
 	Fl_Button	*qsy;
 
-	void KISS(bool);
+	void UI_select(bool);
 
 private:
 	Fl_Box		*bezel;

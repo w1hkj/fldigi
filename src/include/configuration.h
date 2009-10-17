@@ -71,41 +71,38 @@
         ELEM_(double, wfAmpSpan, "WFAMPSPAN",                                           \
               "Waterfall amplitude span (dB)",                                          \
               70.0)                                                                     \
-        ELEM_(bool, KISSriglog, "KISSRIGLOG",                                           \
-              "KISS - hide rig and logbook panel",                                      \
+        ELEM_(bool, WF_UIrev, "WF_UIREV",                                               \
+              "WF_UI - suppress reverse button",                                        \
               true)                                                                     \
-        ELEM_(bool, KISSrev, "KISSREV",                                                 \
-              "KISS - suppress reverse button",                                         \
+        ELEM_(bool, WF_UIx1, "WF_UIX1",                                                 \
+              "WF_UI - suppress scale multiplication button",                           \
               true)                                                                     \
-        ELEM_(bool, KISSx1, "KISSX1",                                                   \
-              "KISS - suppress scale multiplication button",                            \
+        ELEM_(bool, WF_UIwfcarrier, "WF_UIWFCARRIER",                                   \
+              "WF_UI - suppress wf carrier button",                                     \
               true)                                                                     \
-        ELEM_(bool, KISSwfcarrier, "KISSWFCARRIER",                                     \
-              "KISS - suppress wf carrier button",                                      \
+        ELEM_(bool, WF_UIwfshift, "WF_UIWFSHIFT",                                       \
+              "WF_UI - suppress wf shift buttons",                                      \
               true)                                                                     \
-        ELEM_(bool, KISSwfshift, "KISSWFSHIFT",                                         \
-              "KISS - suppress wf shift buttons",                                       \
+        ELEM_(bool, WF_UIwfreflevel, "WF_UIWFREFLEVEL",                                 \
+              "WF_UI - suppress rf level and range controls",                           \
               true)                                                                     \
-        ELEM_(bool, KISSwfreflevel, "KISSWFREFLEVEL",                                   \
-              "KISS - suppress rf level and range controls",                            \
+        ELEM_(bool, WF_UIwfdrop, "WF_UIWFDROP",                                         \
+              "WF_UI - suppress wf drop rate control",                                  \
               true)                                                                     \
-        ELEM_(bool, KISSwfdrop, "KISSWFDROP",                                           \
-              "KISS - suppress wf drop rate control",                                   \
+        ELEM_(bool, WF_UIwfampspan, "WF_UIWFAMPSPAN",                                   \
+              "WF_UI - suppress wf amp span control",                                   \
               true)                                                                     \
-        ELEM_(bool, KISSwfampspan, "KISSWFAMPSPAN",                                     \
-              "KISS - suppress wf amp span control",                                    \
+        ELEM_(bool, WF_UIwfstore, "WF_UIWFSTORE",                                       \
+              "WF_UI - suppress wf memory store button",                                \
               true)                                                                     \
-        ELEM_(bool, KISSwfstore, "KISSWFSTORE",                                         \
-              "KISS - suppress wf memory store button",                                 \
+        ELEM_(bool, WF_UIwfmode, "WF_UIWFMODE",                                         \
+              "WF_UI - suppress wf mode control",                                       \
               true)                                                                     \
-        ELEM_(bool, KISSwfmode, "KISSWFMODE",                                           \
-              "KISS - suppress wf mode control",                                        \
+        ELEM_(bool, WF_UIqsy, "WF_UIQSY",                                               \
+              "WF_UI - suppress wf qsy button",                                         \
               true)                                                                     \
-        ELEM_(bool, KISSqsy, "KISSQSY",                                                 \
-              "KISS - suppress wf qsy button",                                          \
-              true)                                                                     \
-        ELEM_(bool, KISSxmtlock, "KISSXMTLOCK",                                         \
-              "KISS - suppress wf transmit lock button",                                \
+        ELEM_(bool, WF_UIxmtlock, "WF_UIXMTLOCK",                                       \
+              "WF_UI - suppress wf transmit lock button",                               \
               true)                                                                     \
         ELEM_(int, LowFreqCutoff, "LOWFREQCUTOFF",                                      \
               "Lowest frequency shown on waterfall (Hz)",                               \

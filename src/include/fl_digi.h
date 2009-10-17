@@ -81,6 +81,19 @@ extern Fl_Button		*qsoClear;
 extern Fl_Button		*qsoSave;
 extern Fl_Box			*txtRigName;
 
+extern cFreqControl		*qsoFreqDisp1;
+extern Fl_Input2		*inpFreq2;
+extern Fl_Input2		*inpTimeOff2;
+extern Fl_Input2		*inpTimeOn2;
+extern Fl_Button		*btnTimeOn2;
+extern Fl_Input2		*inpCall2;
+extern Fl_Input2		*inpName2;
+extern Fl_Input2		*inpRstIn2;
+extern Fl_Input2		*inpRstOut2;
+extern cFreqControl 	*qsoFreqDisp2;
+extern Fl_Button		*qsoClear2;
+extern Fl_Button		*qsoSave2;
+
 extern Fl_Group			*qsoFrameView;
 extern Fl_Group			*QsoButtonFrame;
 extern Fl_Group			*QsoInfoFrame;
@@ -93,7 +106,6 @@ extern Fl_Button		*qso_btnAddFreq;
 extern Fl_Button		*qso_btnSelFreq;
 extern Fl_Button		*qso_btnDelFreq;
 extern Fl_Button		*qso_btnClearList;
-
 
 extern Fl_Value_Slider		*valRcvMixer;
 extern Fl_Value_Slider		*valXmtMixer;
@@ -114,14 +126,13 @@ extern Digiscope		*digiscope;
 
 extern void toggleRSID();
 
-extern void KISS();
-
 extern void set_menus();
 extern void create_fl_digi_main();
 extern void update_main_title();
 extern void activate_rig_menu_item(bool b);
 extern void activate_test_menu_item(bool b);
 extern void activate_mfsk_image_item(bool b);
+extern void WF_UI();
 
 extern void cb_mnuVisitURL(Fl_Widget*, void* arg);
 

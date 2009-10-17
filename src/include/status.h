@@ -11,7 +11,8 @@ struct status {
 	int		mainY;
 	int		mainW;
 	int		mainH;
-	bool	KISS;
+	bool	WF_UI;
+	bool	Rig_Log_UI;
 
 	int		RxTextHeight;
 	bool	rigShown;

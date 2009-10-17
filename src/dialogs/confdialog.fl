@@ -89,8 +89,8 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open
-        xywh {0 25 500 345} when 1 hide
+        callback {progdefaults.changed = true;} open selected
+        xywh {0 25 500 345} when 1
       } {
         Fl_Group {} {
           label Station open
@@ -152,14 +152,14 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        xywh {-3 25 508 345}
+        xywh {-3 25 508 345} hide
       } {
         Fl_Tabs tabsUI {open
           xywh {-3 25 508 345} selection_color 50
         } {
           Fl_Group tabUserInterface {
             label General open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {open
               xywh {5 60 490 301} box ENGRAVED_FRAME
@@ -283,7 +283,7 @@ progdefaults.changed = true;}
                 label {Docked rig rontrol}
                 callback {progdefaults.docked_rig_control = o->value();
 progdefaults.changed = true;}
-                tooltip {Attach rig control to left of logbook} xywh {15 189 150 20} down_box DOWN_BOX value 1
+                tooltip {Attach rig control to left of logbook} xywh {15 189 150 20} down_box DOWN_BOX value 1 hide
                 code0 {o->value(progdefaults.docked_rig_control);}
               }
               Fl_Check_Button btnCheckButtons {
@@ -415,109 +415,139 @@ progdefaults.changed = true;}
               }
             }
           }
-          Fl_Group tabKISS {
-            label KISS open
-            xywh {0 50 500 320}
+          Fl_Group tabWF_UI {
+            label {WF Controls} open
+            xywh {0 50 500 320} hide
           } {
-            Fl_Check_Button btnKISSrev {
-              label Reverse
-              callback {progdefaults.KISSrev = o->value();
-progdefaults.changed = true;
-KISS();}
-              xywh {56 146 150 20} down_box DOWN_BOX value 1
-              code0 {o->value(progdefaults.KISSrev);}
-            }
-            Fl_Check_Button btnKISSx1 {
-              label {WF Magnification}
-              callback {progdefaults.KISSx1 = o->value();
-progdefaults.changed = true;
-KISS();}
-              xywh {275 146 162 20} down_box DOWN_BOX value 1
-              code0 {o->value(progdefaults.KISSx1);}
-            }
-            Fl_Check_Button btnKISSwfcarrier {
-              label {WF carrier}
-              callback {progdefaults.KISSwfcarrier = o->value();
-progdefaults.changed = true;
-KISS();}
-              xywh {56 184 150 20} down_box DOWN_BOX value 1
-              code0 {o->value(progdefaults.KISSwfcarrier);}
-            }
-            Fl_Check_Button btnKISSwfshift {
-              label {WF Shift Controls}
-              callback {progdefaults.KISSwfshift = o->value();
-progdefaults.changed = true;
-KISS();}
-              xywh {275 184 150 20} down_box DOWN_BOX value 1
-              code0 {o->value(progdefaults.KISSwfshift);}
-            }
-            Fl_Check_Button btnKISSwfreflevel {
-              label {WF ref level}
-              callback {progdefaults.KISSwfreflevel = o->value();
-progdefaults.changed = true;
-KISS();}
-              xywh {56 223 150 20} down_box DOWN_BOX value 1
-              code0 {o->value(progdefaults.KISSwfreflevel);}
-            }
-            Fl_Check_Button btnKISSwfdrop {
-              label {WF drop rate}
-              callback {progdefaults.KISSwfdrop = o->value();
-progdefaults.changed = true;
-KISS();}
-              xywh {275 223 150 20} down_box DOWN_BOX value 1
-              code0 {o->value(progdefaults.KISSwfdrop);}
-            }
-            Fl_Check_Button btnKISSwfampspan {
-              label {WF amp span}
-              callback {progdefaults.KISSwfampspan = o->value();
-progdefaults.changed = true;
-KISS();}
-              xywh {56 261 150 20} down_box DOWN_BOX value 1
-              code0 {o->value(progdefaults.KISSwfampspan);}
-            }
-            Fl_Check_Button btnKISSwfstore {
-              label {WF Store}
-              callback {progdefaults.KISSwfstore = o->value();
-progdefaults.changed = true;
-KISS();}
-              xywh {275 261 150 20} down_box DOWN_BOX value 1
-              code0 {o->value(progdefaults.KISSwfstore);}
-            }
-            Fl_Check_Button btnKISSwfmode {
-              label {WF mode}
-              callback {progdefaults.KISSwfmode = o->value();
-progdefaults.changed = true;
-KISS();}
-              xywh {56 297 150 20} down_box DOWN_BOX value 1
-              code0 {o->value(progdefaults.KISSwfmode);}
-            }
-            Fl_Check_Button btnKISSqsy {
-              label QSY
-              callback {progdefaults.KISSqsy = o->value();
-progdefaults.changed = true;
-KISS();}
-              xywh {275 297 150 20} down_box DOWN_BOX value 1
-              code0 {o->value(progdefaults.KISSqsy);}
-            }
-            Fl_Check_Button btnKISSxmtlock {
-              label {XMT lock}
-              callback {progdefaults.KISSxmtlock = o->value();
-progdefaults.changed = true;
-KISS();}
-              xywh {275 333 150 20} down_box DOWN_BOX value 1
-              code0 {o->value(progdefaults.KISSxmtlock);}
-            }
             Fl_Box {} {
-              label {Enable check box to hide each respective waterfall control}
-              xywh {29 117 446 25} box FLAT_BOX color 53 align 16
+              label {Enable check box to show each respective waterfall control}
+              xywh {31 65 446 25} box FLAT_BOX color 53 align 16
             }
-            Fl_Check_Button btnHideRigLog {
-              label {Hide Rig / Log Controls}
-              callback {progdefaults.KISSriglog = o->value();
+            Fl_Check_Button btnWF_UIrev {
+              label Reverse
+              callback {progdefaults.WF_UIrev = o->value();
 progdefaults.changed = true;
-KISS();} selected
-              xywh {56 77 184 20} down_box DOWN_BOX
-              code0 {o->value(progdefaults.KISSriglog);}
+WF_UI();}
+              xywh {58 98 150 20} down_box DOWN_BOX value 1
+              code0 {o->value(progdefaults.WF_UIrev);}
+            }
+            Fl_Check_Button btnWF_UIx1 {
+              label {WF Magnification}
+              callback {progdefaults.WF_UIx1 = o->value();
+progdefaults.changed = true;
+WF_UI();}
+              xywh {277 98 162 20} down_box DOWN_BOX value 1
+              code0 {o->value(progdefaults.WF_UIx1);}
+            }
+            Fl_Check_Button btnWF_UIwfcarrier {
+              label {WF carrier}
+              callback {progdefaults.WF_UIwfcarrier = o->value();
+progdefaults.changed = true;
+WF_UI();}
+              xywh {58 136 150 20} down_box DOWN_BOX value 1
+              code0 {o->value(progdefaults.WF_UIwfcarrier);}
+            }
+            Fl_Check_Button btnWF_UIwfshift {
+              label {WF Shift Controls}
+              callback {progdefaults.WF_UIwfshift = o->value();
+progdefaults.changed = true;
+WF_UI();}
+              xywh {277 136 150 20} down_box DOWN_BOX value 1
+              code0 {o->value(progdefaults.WF_UIwfshift);}
+            }
+            Fl_Check_Button btnWF_UIwfreflevel {
+              label {WF ref level}
+              callback {progdefaults.WF_UIwfreflevel = o->value();
+progdefaults.changed = true;
+WF_UI();}
+              xywh {58 175 150 20} down_box DOWN_BOX value 1
+              code0 {o->value(progdefaults.WF_UIwfreflevel);}
+            }
+            Fl_Check_Button btnWF_UIwfdrop {
+              label {WF drop rate}
+              callback {progdefaults.WF_UIwfdrop = o->value();
+progdefaults.changed = true;
+WF_UI();}
+              xywh {277 175 150 20} down_box DOWN_BOX value 1
+              code0 {o->value(progdefaults.WF_UIwfdrop);}
+            }
+            Fl_Check_Button btnWF_UIwfampspan {
+              label {WF amp span}
+              callback {progdefaults.WF_UIwfampspan = o->value();
+progdefaults.changed = true;
+WF_UI();}
+              xywh {58 213 150 20} down_box DOWN_BOX value 1
+              code0 {o->value(progdefaults.WF_UIwfampspan);}
+            }
+            Fl_Check_Button btnWF_UIwfstore {
+              label {WF Store}
+              callback {progdefaults.WF_UIwfstore = o->value();
+progdefaults.changed = true;
+WF_UI();}
+              xywh {277 213 150 20} down_box DOWN_BOX value 1
+              code0 {o->value(progdefaults.WF_UIwfstore);}
+            }
+            Fl_Check_Button btnWF_UIwfmode {
+              label {WF mode}
+              callback {progdefaults.WF_UIwfmode = o->value();
+progdefaults.changed = true;
+WF_UI();}
+              xywh {58 249 150 20} down_box DOWN_BOX value 1
+              code0 {o->value(progdefaults.WF_UIwfmode);}
+            }
+            Fl_Check_Button btnWF_UIqsy {
+              label QSY
+              callback {progdefaults.WF_UIqsy = o->value();
+progdefaults.changed = true;
+WF_UI();}
+              xywh {277 249 150 20} down_box DOWN_BOX value 1
+              code0 {o->value(progdefaults.WF_UIqsy);}
+            }
+            Fl_Check_Button btnWF_UIxmtlock {
+              label {XMT lock}
+              callback {progdefaults.WF_UIxmtlock = o->value();
+progdefaults.changed = true;
+WF_UI();}
+              xywh {277 285 150 20} down_box DOWN_BOX value 1
+              code0 {o->value(progdefaults.WF_UIxmtlock);}
+            }
+            Fl_Button btn_wf_enable_all {
+              label {Enable all}
+              callback {btnWF_UIrev->value(progdefaults.WF_UIrev = 1);
+btnWF_UIwfcarrier->value(progdefaults.WF_UIwfcarrier = 1);
+btnWF_UIwfreflevel->value(progdefaults.WF_UIwfreflevel = 1);
+btnWF_UIwfampspan->value(progdefaults.WF_UIwfampspan = 1);
+btnWF_UIwfmode->value(progdefaults.WF_UIwfmode = 1);
+
+btnWF_UIx1->value(progdefaults.WF_UIx1 = 1);
+btnWF_UIwfshift->value(progdefaults.WF_UIwfshift = 1);
+btnWF_UIwfdrop->value(progdefaults.WF_UIwfdrop = 1);
+btnWF_UIwfstore->value(progdefaults.WF_UIwfstore = 1);
+btnWF_UIqsy->value(progdefaults.WF_UIqsy = 1);
+btnWF_UIxmtlock->value(progdefaults.WF_UIxmtlock = 1);
+
+progdefaults.changed = true;
+WF_UI();}
+              xywh {102 321 88 20}
+            }
+            Fl_Button btn_wf_disable_all {
+              label {Disable all}
+              callback {btnWF_UIrev->value(progdefaults.WF_UIrev = 0);
+btnWF_UIwfcarrier->value(progdefaults.WF_UIwfcarrier = 0);
+btnWF_UIwfreflevel->value(progdefaults.WF_UIwfreflevel = 0);
+btnWF_UIwfampspan->value(progdefaults.WF_UIwfampspan = 0);
+btnWF_UIwfmode->value(progdefaults.WF_UIwfmode = 0);
+
+btnWF_UIx1->value(progdefaults.WF_UIx1 = 0);
+btnWF_UIwfshift->value(progdefaults.WF_UIwfshift = 0);
+btnWF_UIwfdrop->value(progdefaults.WF_UIwfdrop = 0);
+btnWF_UIwfstore->value(progdefaults.WF_UIwfstore = 0);
+btnWF_UIqsy->value(progdefaults.WF_UIqsy = 0);
+btnWF_UIxmtlock->value(progdefaults.WF_UIxmtlock = 0);
+
+progdefaults.changed = true;
+WF_UI();}
+              xywh {301 321 88 20}
             }
           }
         }
@@ -814,7 +844,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 500 320} selection_color 50
@@ -1255,7 +1285,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabPSK {
             label PSK open
-            xywh {0 50 517 320} hide
+            xywh {0 50 517 320}
           } {
             Fl_Tabs tabsPSK {open
               xywh {0 50 517 320} selection_color 50

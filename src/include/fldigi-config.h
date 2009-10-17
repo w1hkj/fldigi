@@ -70,14 +70,12 @@ extern int Hwfall;
 extern int HNOM;
 extern int WNOM;
 extern int Wwfall;
+extern int Haqsoframe;
+extern int Hmenu;
+extern int Hstatus;
+extern int Hmacros;
 
-#define Hmenu		22
-#define Hqsoframe	48
-#define Hnotes		24
-#define Hstatus		22
-#define Hmacros		22
-
-#define Htext		(DEFAULT_HNOM - 4 - Hwfall - Hmenu - Hstatus - Hmacros - Hqsoframe - Hnotes)
+#define Htext		(DEFAULT_HNOM - 4 - Hwfall - Hmenu - Hstatus - Hmacros - Hqsoframe)
 #define Hrcvtxt		(Htext) / 2
 #define Hxmttxt		(Htext - (Hrcvtxt))
 
