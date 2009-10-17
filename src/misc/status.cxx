@@ -125,11 +125,11 @@ void status::saveLastState()
 	logbook_col_3 = wBrowser->columnWidth(3);
 	logbook_col_4 = wBrowser->columnWidth(4);
 	logbook_col_5 = wBrowser->columnWidth(5);
-	
+
 	quick_entry = ReceiveText->get_quick_entry();
 	rx_word_wrap = ReceiveText->get_word_wrap();
 	tx_word_wrap = TransmitText->get_word_wrap();
-	
+
 	VIEWERvisible = false;
 	if (dlgViewer && dlgViewer->visible()) {
 		VIEWERxpos = dlgViewer->x();
@@ -217,9 +217,9 @@ void status::saveLastState()
 void status::loadLastState()
 {
 	Fl_Preferences spref(HomeDir.c_str(), "w1hkj.com", PACKAGE_TARNAME);
-	
+
 	char version[64]; version[sizeof(version)-1] = '\0';
-	
+
 	bLastStateRead = spref.get("version", version, "", sizeof(version)-1);
 	// Skip loading the rest of the status variables if we didn't read a
 	// version name/value pair; also clear everything to avoid creating
@@ -348,7 +348,7 @@ void status::initLastState()
 		qsodb.SortByDate();
 		loadBrowser();
 	}
-	
+
 	dlgLogbook->resize(logbook_x, logbook_y, logbook_w, logbook_h);
 	wBrowser->columnWidth(0, logbook_col_0);
 	wBrowser->columnWidth(1, logbook_col_1);
@@ -356,9 +356,9 @@ void status::initLastState()
 	wBrowser->columnWidth(3, logbook_col_3);
 	wBrowser->columnWidth(4, logbook_col_4);
 	wBrowser->columnWidth(5, logbook_col_5);
-	
+
 	ReceiveText->set_quick_entry(quick_entry);
 	ReceiveText->set_word_wrap(rx_word_wrap);
 	TransmitText->set_word_wrap(tx_word_wrap);
-	
+
 }

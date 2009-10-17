@@ -134,9 +134,9 @@
 
 using namespace std;
 
-Fl_Double_Window	*fl_digi_main=(Fl_Double_Window *)0;
-Fl_Help_Dialog 		*help_dialog = (Fl_Help_Dialog *)0;
-Fl_Double_Window	*scopeview = (Fl_Double_Window *)0;
+Fl_Double_Window	*fl_digi_main      = (Fl_Double_Window *)0;
+Fl_Help_Dialog 		*help_dialog       = (Fl_Help_Dialog *)0;
+Fl_Double_Window	*scopeview         = (Fl_Double_Window *)0;
 
 MixerBase* mixer = 0;
 
@@ -217,6 +217,7 @@ cFreqControl 		*qsoFreqDisp2 = (cFreqControl *)0;
 Fl_Button			*qsoClear2;
 Fl_Button			*qsoSave2;
 Fl_Button			*btnQRZ2;
+Fl_Button			*qso_opPICK2;
 
 Fl_Group			*TopFrame1 = (Fl_Group *)0;
 Fl_Group			*RigControlFrame = (Fl_Group *)0;
@@ -2148,6 +2149,8 @@ void update_main_title()
 		fl_digi_main->label(main_window_title.c_str());
 }
 
+bool restore_minimize = false;
+
 void showOpBrowserView(Fl_Widget *, void *)
 {
 	if (RigViewerFrame->visible())
@@ -2170,6 +2173,17 @@ void CloseQsoView()
 	qso_opPICK->image(addrbookpixmap);
 	qso_opPICK->redraw_label();
 	qso_opPICK->tooltip(_("Open List"));
+	if (restore_minimize) {
+		UI_select(true);
+		restore_minimize = false;
+	}
+}
+
+void showOpBrowserView2(Fl_Widget *w, void *)
+{
+	restore_minimize = true;
+	UI_select(false);
+	showOpBrowserView(w, NULL);
 }
 
 void cb_qso_btnSelFreq(Fl_Widget *, void *)
@@ -2266,26 +2280,17 @@ void cb_qso_opBrowser(Fl_Browser*, void*)
 
 void show_frequency(long long freq)
 {
-//	if (progdefaults.docked_rig_control)
-		qsoFreqDisp->value(freq);
-//	else
-//		FreqDisp->value(freq); // REQ is built in to the widget
+	qsoFreqDisp->value(freq);
 }
 
 void show_mode(const string& sMode)
 {
-//	if (progdefaults.docked_rig_control)
-		REQ_SYNC(&Fl_ComboBox::put_value, qso_opMODE, sMode.c_str());
-//	else
-//		REQ_SYNC(&Fl_ComboBox::put_value, opMODE, sMode.c_str());
+	REQ_SYNC(&Fl_ComboBox::put_value, qso_opMODE, sMode.c_str());
 }
 
 void show_bw(const string& sWidth)
 {
-//	if (progdefaults.docked_rig_control)
-		REQ_SYNC(&Fl_ComboBox::put_value, qso_opBW, sWidth.c_str());
-//	else
-//		REQ_SYNC(&Fl_ComboBox::put_value, opBW, sWidth.c_str());
+	REQ_SYNC(&Fl_ComboBox::put_value, qso_opBW, sWidth.c_str());
 }
 
 
@@ -2346,8 +2351,7 @@ void create_fl_digi_main() {
 
 	int Y = 0;
 
-//	if (progdefaults.docked_rig_control)
-		x_qsoframe += rig_control_width;
+	x_qsoframe += rig_control_width;
 
 	IMAGE_WIDTH = progdefaults.wfwidth;
 	Hwfall = progdefaults.wfheight;
@@ -2412,9 +2416,6 @@ void create_fl_digi_main() {
 
 		TopFrame1 = new Fl_Group(0, Hmenu, WNOM, Hqsoframe);
 
-//		if (progdefaults.docked_rig_control)
-
-		{
 		RigControlFrame = new Fl_Group(
 			0, Hmenu,
 			rig_control_width, Hqsoframe);
@@ -2489,120 +2490,97 @@ void create_fl_digi_main() {
 	 			qso_opPICK->image(addrbookpixmap);
 				qso_opPICK->callback(showOpBrowserView, 0);
 				qso_opPICK->tooltip(_("Open List"));
-			RigControlFrame->resizable(NULL);
+		RigControlFrame->resizable(NULL);
 
-			RigControlFrame->end();
+		RigControlFrame->end();
 
-			int opB_w = 280;
-			int qFV_w = opB_w + 2 * (Wbtn + pad) + pad;
+		int opB_w = 280;
+		int qFV_w = opB_w + 2 * (Wbtn + pad) + pad;
 
-			RigViewerFrame = new Fl_Group(rightof(RigControlFrame), Hmenu, qFV_w, Hqsoframe);
+		RigViewerFrame = new Fl_Group(rightof(RigControlFrame), Hmenu, qFV_w, Hqsoframe);
 
-				qso_btnSelFreq = new Fl_Button(
+			qso_btnSelFreq = new Fl_Button(
+				rightof(RigControlFrame), Hmenu + pad,
+				Wbtn, Hentry);
+			qso_btnSelFreq->image(new Fl_Pixmap(left_arrow_icon));
+			qso_btnSelFreq->tooltip(_("Select"));
+			qso_btnSelFreq->callback((Fl_Callback*)cb_qso_btnSelFreq);
+
+			qso_btnAddFreq = new Fl_Button(
+				rightof(qso_btnSelFreq) + pad, Hmenu + pad,
+				Wbtn, Hentry);
+			qso_btnAddFreq->image(new Fl_Pixmap(plus_icon));
+			qso_btnAddFreq->tooltip(_("Add current frequency"));
+			qso_btnAddFreq->callback((Fl_Callback*)cb_qso_btnAddFreq);
+
+			qso_btnClearList = new Fl_Button(
+				rightof(RigControlFrame), Hmenu + Hentry + 2 * pad,
+				Wbtn, Hentry);
+			qso_btnClearList->image(new Fl_Pixmap(trash_icon));
+			qso_btnClearList->tooltip(_("Clear list"));
+			qso_btnClearList->callback((Fl_Callback*)cb_qso_btnClearList);
+
+			qso_btnDelFreq = new Fl_Button(
+				rightof(qso_btnClearList) + pad, Hmenu + Hentry + 2 * pad,
+				Wbtn, Hentry);
+			qso_btnDelFreq->image(new Fl_Pixmap(minus_icon));
+			qso_btnDelFreq->tooltip(_("Delete from list"));
+			qso_btnDelFreq->callback((Fl_Callback*)cb_qso_btnDelFreq);
+
+			qso_btnAct = new Fl_Button(
+				rightof(RigControlFrame), Hmenu + 2*(Hentry + pad) + pad,
+				Wbtn, Hentry);
+			qso_btnAct->image(new Fl_Pixmap(chat_icon));
+			qso_btnAct->callback(cb_qso_inpAct);
+			qso_btnAct->tooltip("Show active frequencies");
+
+			qso_inpAct = new Fl_Input2(
+				rightof(qso_btnAct) + pad, Hmenu + 2*(Hentry + pad) + pad,
+				Wbtn, Hentry);
+			qso_inpAct->when(FL_WHEN_ENTER_KEY | FL_WHEN_NOT_CHANGED);
+			qso_inpAct->callback(cb_qso_inpAct);
+			qso_inpAct->tooltip("Grid prefix for activity list");
+
+			qso_opBrowser = new Fl_Browser(
+				rightof(qso_btnDelFreq) + pad,  Hmenu + pad,
+				opB_w, Hqsoframe - 2 * pad );
+			qso_opBrowser->tooltip(_("Select operating parameters"));
+			qso_opBrowser->callback((Fl_Callback*)cb_qso_opBrowser);
+			qso_opBrowser->type(2);
+			qso_opBrowser->box(FL_DOWN_BOX);
+			qso_opBrowser->labelfont(4);
+			qso_opBrowser->labelsize(12);
+			qso_opBrowser->textfont(4);
+			RigViewerFrame->resizable(NULL);
+
+		RigViewerFrame->end();
+		RigViewerFrame->hide();
+
+		QsoButtonFrame = new Fl_Group(rightof(
+				RigControlFrame), Hmenu,
+				Wbtn, Hqsoframe);
+			btnQRZ = new Fl_Button(
 					rightof(RigControlFrame), Hmenu + pad,
 					Wbtn, Hentry);
-				qso_btnSelFreq->image(new Fl_Pixmap(left_arrow_icon));
-				qso_btnSelFreq->tooltip(_("Select"));
-				qso_btnSelFreq->callback((Fl_Callback*)cb_qso_btnSelFreq);
+			btnQRZ->image(new Fl_Pixmap(net_icon));
+			btnQRZ->callback(cb_QRZ, 0);
+			btnQRZ->tooltip(_("QRZ"));
 
-				qso_btnAddFreq = new Fl_Button(
-					rightof(qso_btnSelFreq) + pad, Hmenu + pad,
+			qsoClear = new Fl_Button(
+					rightof(RigControlFrame), Hmenu + 2 * pad + Hentry,
 					Wbtn, Hentry);
-				qso_btnAddFreq->image(new Fl_Pixmap(plus_icon));
-   				qso_btnAddFreq->tooltip(_("Add current frequency"));
-				qso_btnAddFreq->callback((Fl_Callback*)cb_qso_btnAddFreq);
+			qsoClear->image(new Fl_Pixmap(edit_clear_icon));
+			qsoClear->callback(qsoClear_cb, 0);
+			qsoClear->tooltip(_("Clear"));
 
-				qso_btnClearList = new Fl_Button(
-					rightof(RigControlFrame), Hmenu + Hentry + 2 * pad,
+			qsoSave = new Fl_Button(
+					rightof(RigControlFrame), Hmenu + 2*(pad + Hentry) + pad,
 					Wbtn, Hentry);
-				qso_btnClearList->image(new Fl_Pixmap(trash_icon));
-				qso_btnClearList->tooltip(_("Clear list"));
-				qso_btnClearList->callback((Fl_Callback*)cb_qso_btnClearList);
-
-				qso_btnDelFreq = new Fl_Button(
-					rightof(qso_btnClearList) + pad, Hmenu + Hentry + 2 * pad,
-					Wbtn, Hentry);
-				qso_btnDelFreq->image(new Fl_Pixmap(minus_icon));
-				qso_btnDelFreq->tooltip(_("Delete from list"));
-				qso_btnDelFreq->callback((Fl_Callback*)cb_qso_btnDelFreq);
-
-				qso_btnAct = new Fl_Button(
-					rightof(RigControlFrame), Hmenu + 2*(Hentry + pad) + pad,
-					Wbtn, Hentry);
-				qso_btnAct->image(new Fl_Pixmap(chat_icon));
-				qso_btnAct->callback(cb_qso_inpAct);
-				qso_btnAct->tooltip("Show active frequencies");
-
-				qso_inpAct = new Fl_Input2(
-					rightof(qso_btnAct) + pad, Hmenu + 2*(Hentry + pad) + pad,
-					Wbtn, Hentry);
-				qso_inpAct->when(FL_WHEN_ENTER_KEY | FL_WHEN_NOT_CHANGED);
-				qso_inpAct->callback(cb_qso_inpAct);
-				qso_inpAct->tooltip("Grid prefix for activity list");
-
-				qso_opBrowser = new Fl_Browser(
-					rightof(qso_btnDelFreq) + pad,  Hmenu + pad,
-					opB_w, Hqsoframe - 2 * pad );
-			    qso_opBrowser->tooltip(_("Select operating parameters"));
-			    qso_opBrowser->callback((Fl_Callback*)cb_qso_opBrowser);
-				qso_opBrowser->type(2);
-				qso_opBrowser->box(FL_DOWN_BOX);
-				qso_opBrowser->labelfont(4);
-				qso_opBrowser->labelsize(12);
-				qso_opBrowser->textfont(4);
-				RigViewerFrame->resizable(NULL);
-
-			RigViewerFrame->end();
-			RigViewerFrame->hide();
-
-			QsoButtonFrame = new Fl_Group(rightof(
-					RigControlFrame), Hmenu,
-					Wbtn, Hqsoframe);
-				btnQRZ = new Fl_Button(
-						rightof(RigControlFrame), Hmenu + pad,
-						Wbtn, Hentry);
-	 			btnQRZ->image(new Fl_Pixmap(net_icon));
-				btnQRZ->callback(cb_QRZ, 0);
-				btnQRZ->tooltip(_("QRZ"));
-
-				qsoClear = new Fl_Button(
-						rightof(RigControlFrame), Hmenu + 2 * pad + Hentry,
-						Wbtn, Hentry);
-	 			qsoClear->image(new Fl_Pixmap(edit_clear_icon));
-				qsoClear->callback(qsoClear_cb, 0);
-				qsoClear->tooltip(_("Clear"));
-
-				qsoSave = new Fl_Button(
-						rightof(RigControlFrame), Hmenu + 2*(pad + Hentry) + pad,
-						Wbtn, Hentry);
-	 			qsoSave->image(new Fl_Pixmap(save_icon));
-				qsoSave->callback(qsoSave_cb, 0);
-				qsoSave->tooltip(_("Save"));
-			QsoButtonFrame->end();
-			QsoButtonFrame->resizable(NULL);
-		}
-//		 else {
-
-//			QsoButtonFrame = new Fl_Group(0, Hmenu, Wbtn, Hqsoframe + Hnotes);
-//				btnQRZ = new Fl_Button(pad, Hmenu + 1,
-//							Wbtn - 2*pad, qh - pad);
-//	 			btnQRZ->image(new Fl_Pixmap(net_icon));
-//				btnQRZ->callback(cb_QRZ, 0);
-//				btnQRZ->tooltip(_("QRZ"));
-
-//				qsoClear = new Fl_Button(pad, Hmenu + qh + 1,
-//							Wbtn - 2*pad, qh - pad);
-//	 			qsoClear->image(new Fl_Pixmap(edit_clear_icon));
-//				qsoClear->callback(qsoClear_cb, 0);
-//				qsoClear->tooltip(_("Clear"));
-
-//				qsoSave = new Fl_Button(pad, Hmenu + Hqsoframe + 1,
-//							Wbtn - 2*pad, qh - pad);
-//	 			qsoSave->image(new Fl_Pixmap(save_icon));
-//				qsoSave->callback(qsoSave_cb, 0);
-//				qsoSave->tooltip(_("Save"));
-//			QsoButtonFrame->end();
-//		}
+			qsoSave->image(new Fl_Pixmap(save_icon));
+			qsoSave->callback(qsoSave_cb, 0);
+			qsoSave->tooltip(_("Save"));
+		QsoButtonFrame->end();
+		QsoButtonFrame->resizable(NULL);
 
 		int y2 = Hmenu + Hentry + pad;
 		int y3 = Hmenu + 2 * (Hentry + pad) + pad;
@@ -2775,8 +2753,15 @@ void create_fl_digi_main() {
 								progdefaults.FDbackground.B));
 			qsoFreqDisp2->value(145580000);
 
+			qso_opPICK2 = new Fl_Button(
+				rightof(qsoFreqDisp2), y,
+				Wbtn, Hentry);
+			qso_opPICK2->image(addrbookpixmap);
+			qso_opPICK2->callback(showOpBrowserView2, 0);
+			qso_opPICK2->tooltip(_("Open List"));
+
 			btnQRZ2 = new Fl_Button(
-					pad + rightof(qsoFreqDisp2), y,
+					pad + rightof(qso_opPICK2), y,
 					Wbtn, Hentry);
 			btnQRZ2->image(new Fl_Pixmap(net_icon));
 			btnQRZ2->callback(cb_QRZ, 0);
