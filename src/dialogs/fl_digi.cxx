@@ -60,7 +60,6 @@
 #include "waterfall.h"
 #include "raster.h"
 #include "progress.h"
-#include "rigdialog.h"
 
 #include "main.h"
 #include "threads.h"
@@ -1326,12 +1325,6 @@ void cb_mnuDigiscope(Fl_Menu_ *w, void *d) {
 		scopeview->show();
 }
 
-void cb_mnuRig(Fl_Menu_ *, void *) {
-	if (!rigcontrol)
-		createRigDialog();
-	rigcontrol->show();
-}
-
 void cb_mnuViewer(Fl_Menu_ *, void *) {
 	openViewer();
 }
@@ -1357,10 +1350,6 @@ void cb_mnuPicViewer(Fl_Menu_ *, void *) {
 		picRx->redraw();
 		picRxWin->show();
 	}
-}
-
-void closeRigDialog() {
-	rigcontrol->hide();
 }
 
 void cb_sldrSquelch(Fl_Slider* o, void*) {
@@ -2023,7 +2012,6 @@ Fl_Menu_Item menu_[] = {
 { make_icon_label(_("&Digiscope"), utilities_system_monitor_icon), 'd', (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("&PSK Browser")), 'p', (Fl_Callback*)cb_mnuViewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(RIGCONTROL_MLABEL, multimedia_player_icon), 0, (Fl_Callback*)cb_mnuRig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("&Logbook")), 'l', (Fl_Callback*)cb_mnuShowLogbook, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(COUNTRIES_MLABEL), 'o', (Fl_Callback*)cb_mnuShowCountries, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { CONTEST_FIELDS_MLABEL, 0, (Fl_Callback*)cb_mnuContest, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
@@ -2078,23 +2066,6 @@ Fl_Menu_Item *getMenuItem(const char *caption, Fl_Menu_Item* submenu)
 	if (!item)
 		LOG_ERROR("FIXME: could not find menu \"%s\"", caption);
 	return item;
-}
-
-void activate_rig_menu_item(bool b)
-{
-	Fl_Menu_Item *rig = getMenuItem(RIGCONTROL_MLABEL, getMenuItem(VIEW_MLABEL));
-	if (!rig)
-		return;
-	if (b) {
-		bSaveFreqList = true;
-		rig->show();
-
-	} else {
-		rig->hide();
-		if (rigcontrol)
-			rigcontrol->hide();
-	}
-	mnu->redraw();
 }
 
 void activate_mfsk_image_item(bool b)
@@ -3179,9 +3150,6 @@ void create_fl_digi_main() {
 	scopeview->size_range(SCOPEWIN_MIN_WIDTH, SCOPEWIN_MIN_HEIGHT);
 	scopeview->end();
 	scopeview->hide();
-
-//	if (progdefaults.docked_rig_control)
-		activate_rig_menu_item(false);
 
 	if (!progdefaults.menuicons)
 		toggle_icon_labels();

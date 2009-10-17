@@ -17,9 +17,8 @@ decl {\#include "configuration.h"} {global
 decl {\#include "font_browser.h"} {public global
 } 
 
-decl {\#include "rigdialog.h"} {} 
-
 decl {\#include <FL/Fl_Color_Chooser.H>} {} 
+
 decl {\#include <FL/fl_show_colormap.H>} {} 
 
 Function {selectColorsFonts()} {open return_type void
@@ -109,7 +108,7 @@ Function {make_colorsfonts()} {open
 } {
   Fl_Window dlgColorFont {
     label {Colors and Fonts} open
-    xywh {577 755 375 220} type Double
+    xywh {502 90 375 220} type Double
     code0 {dlgColorFont->xclass(PACKAGE_TARNAME);} visible
   } {
     Fl_Button btnClrFntClose {
@@ -122,7 +121,7 @@ Function {make_colorsfonts()} {open
     } {
       Fl_Group {} {
         label {Freq Display} open
-        xywh {5 30 365 150} hide
+        xywh {5 30 365 150}
       } {
         Fl_Box FDdisplay {
           label 8
@@ -147,16 +146,6 @@ Function {make_colorsfonts()} {open
     FDdisplay->color(fl_rgb_color(r,g,b));
     FDdisplay->redraw();
     
-    if (FreqDisp) {
-        FreqDisp->SetONOFFCOLOR(
-          fl_rgb_color(	progdefaults.FDforeground.R,
-                        progdefaults.FDforeground.G,
-                        progdefaults.FDforeground.B),
-          fl_rgb_color(	progdefaults.FDbackground.R,
-                        progdefaults.FDbackground.G,
-                        progdefaults.FDbackground.B));
-        FreqDisp->redraw();
-    }
     if (qsoFreqDisp) {
         qsoFreqDisp->SetONOFFCOLOR(
           fl_rgb_color(	progdefaults.FDforeground.R,
@@ -188,16 +177,6 @@ Function {make_colorsfonts()} {open
     FDdisplay->labelcolor(fl_rgb_color(r,g,b));
     FDdisplay->redraw();
     
-    if (FreqDisp) {
-        FreqDisp->SetONOFFCOLOR(
-          fl_rgb_color(	progdefaults.FDforeground.R,
-                        progdefaults.FDforeground.G,
-                        progdefaults.FDforeground.B),
-          fl_rgb_color(	progdefaults.FDbackground.R,
-                        progdefaults.FDbackground.G,
-                        progdefaults.FDbackground.B));
-        FreqDisp->redraw();
-    }
     if (qsoFreqDisp) {
         qsoFreqDisp->SetONOFFCOLOR(
           fl_rgb_color(	progdefaults.FDforeground.R,
@@ -235,16 +214,6 @@ Function {make_colorsfonts()} {open
     progdefaults.FDforeground.G = g;
     progdefaults.FDforeground.B = b;
 
-    if (FreqDisp) {
-        FreqDisp->SetONOFFCOLOR(
-          fl_rgb_color(	progdefaults.FDforeground.R,
-                        progdefaults.FDforeground.G,
-                        progdefaults.FDforeground.B),
-          fl_rgb_color(	progdefaults.FDbackground.R,
-                        progdefaults.FDbackground.G,
-                        progdefaults.FDbackground.B));
-        FreqDisp->redraw();
-    }
     if (qsoFreqDisp) {
         qsoFreqDisp->SetONOFFCOLOR(
           fl_rgb_color(	progdefaults.FDforeground.R,
@@ -409,8 +378,8 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group {} {
-        label {Text Ctrls} open selected
-        xywh {5 30 365 150}
+        label {Text Ctrls} open
+        xywh {5 30 365 150} hide
       } {
         Fl_Input RxText {
           xywh {15 43 165 35}

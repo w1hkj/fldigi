@@ -25,7 +25,6 @@
 #include "main.h"
 #include "trx.h"
 #include "rigsupport.h"
-#include "rigdialog.h"
 
 #include "debug.h"
 
@@ -207,7 +206,6 @@ static void *rigMEM_loop(void *args)
 				wf->rfcarrier(freqflag->freq);
 			show_frequency(freqflag->freq);
 			wf->USB(sb);
-			REQ (&Fl_ComboBox::put_value, opMODE, sb ? "USB" : "LSB");
 			REQ (&Fl_ComboBox::put_value, qso_opMODE, sb ? "USB" : "LSB");
 		}
 	}

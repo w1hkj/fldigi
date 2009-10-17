@@ -69,7 +69,6 @@
 // required for flrig support
 #include "fl_digi.h"
 #include "rigsupport.h"
-#include "rigdialog.h"
 
 LOG_FILE_SOURCE(debug::LOG_RPC);
 
@@ -243,82 +242,50 @@ static void set_new_name(const string& name)
 
 static void set_new_modes(const vector<string>& modes)
 {
-	opMODE->clear();
-	if (progdefaults.docked_rig_control)
-		qso_opMODE->clear();
+	qso_opMODE->clear();
 
 	if (modes.empty()) {
-		opMODE->add("");
-		opMODE->index(0);
-		opMODE->deactivate();
-		if (progdefaults.docked_rig_control) {
-			qso_opMODE->add("");
-			qso_opMODE->index(0);
-			qso_opMODE->deactivate();
-		}
+		qso_opMODE->add("");
+		qso_opMODE->index(0);
+		qso_opMODE->deactivate();
 		return;
 	}
 
 	for (vector<string>::const_iterator i = modes.begin(); i != modes.end(); ++i) {
-		opMODE->add(i->c_str());
-		if (progdefaults.docked_rig_control)
-			qso_opMODE->add(i->c_str());
+		qso_opMODE->add(i->c_str());
 	}
 
-	opMODE->index(0);
-	opMODE->activate();
-	if (progdefaults.docked_rig_control) {
-		qso_opMODE->index(0);
-		qso_opMODE->activate();
-	}
+	qso_opMODE->index(0);
+	qso_opMODE->activate();
 }
 
 static void set_new_bandwidths(const vector<string>& bws)
 {
-	opBW->clear();
-	if (progdefaults.docked_rig_control)
-		qso_opBW->clear();
+	qso_opBW->clear();
 
 	if (bws.empty()) {
-		opBW->add("");
-		opBW->index(0);
-		opBW->deactivate();
-		if (progdefaults.docked_rig_control) {
-			qso_opBW->add("");
-			qso_opBW->index(0);
-			qso_opBW->deactivate();
-		}
+		qso_opBW->add("");
+		qso_opBW->index(0);
+		qso_opBW->deactivate();
 		return;
 	}
 
 	for (vector<string>::const_iterator i = bws.begin(); i != bws.end(); ++i) {
-		opBW->add(i->c_str());
-		if (progdefaults.docked_rig_control)
-			qso_opBW->add(i->c_str());
+		qso_opBW->add(i->c_str());
 	}
 
-	opBW->index(0);
-	opBW->activate();
-	if (progdefaults.docked_rig_control) {
-		qso_opBW->index(0);
-		qso_opBW->activate();
-	}
+	qso_opBW->index(0);
+	qso_opBW->activate();
 }
 
 static void set_rig_mode(const string& mode)
 {
-	if (progdefaults.docked_rig_control)
-		qso_opMODE->value(mode.c_str());
-	else
-		opMODE->value(mode.c_str());
+	qso_opMODE->value(mode.c_str());
 }
 
 static void set_rig_bandwidth(const string& bw)
 {
-	if (progdefaults.docked_rig_control)
-		qso_opBW->value(bw.c_str());
-	else
-		opBW->value(bw.c_str());
+	qso_opBW->value(bw.c_str());
 }
 
 // =============================================================================
@@ -1413,10 +1380,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-		if (progdefaults.docked_rig_control)
-			*retval = xmlrpc_c::value_string(qso_opMODE->value());
-		else
-			*retval = xmlrpc_c::value_string(opMODE->value());
+		*retval = xmlrpc_c::value_string(qso_opMODE->value());
 	}
 };
 
@@ -1469,10 +1433,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-		if (progdefaults.docked_rig_control)
-			*retval = xmlrpc_c::value_string(qso_opBW->value());
-		else
-			*retval = xmlrpc_c::value_string(opBW->value());
+		*retval = xmlrpc_c::value_string(qso_opBW->value());
 	}
 };
 

@@ -10,21 +10,6 @@
 	#include "hamlib.h"
 #endif
 
-// to be deprecated with rigcontrol retirement
-//=====================
-extern Fl_Double_Window *rigcontrol;
-extern Fl_Double_Window * createRigDialog();
-extern void setMode();
-extern void setBW();
-extern void selBW(int);
-extern void selFreq(long int);
-extern void movFreq(Fl_Widget* w, void*);
-extern void selectFreq();
-extern void delFreq();
-extern void addFreq();
-extern void saveFreqList();
-//======================
-
 extern std::string windowTitle;
 extern Cserial rigio;
 
@@ -44,6 +29,7 @@ extern void qso_delFreq();
 extern void qso_selectFreq();
 extern void qso_setFreq();
 extern void qso_clearList();
+extern void saveFreqList();
 
 extern bool readRigXML();
 extern bool init_Xml_RigDialog();

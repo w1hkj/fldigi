@@ -21,7 +21,6 @@
 #include "misc.h"
 
 #include "rigsupport.h"
-#include "rigdialog.h"
 
 #include "stacktrace.h"
 #ifdef __WOE32__
@@ -294,8 +293,6 @@ void hamlib_close(void)
 	}
 
 	xcvr->close();
-	if (rigcontrol)
-		rigcontrol->hide();
 	wf->USB(true);
 //	wf->setQSY(0);
 }

@@ -15,7 +15,6 @@ struct status {
 	bool	Rig_Log_UI;
 
 	int		RxTextHeight;
-	bool	rigShown;
 	int		rigX;
 	int		rigY;
 	int		rigW;

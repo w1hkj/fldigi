@@ -47,7 +47,6 @@ status progStatus = {
 	true,				// bool WF_UI;
 	true,				// bool Rig_Log_UI;
 	0,					// int RxTextHeight;
-	false,				// bool rigShown;
 	50,					// int rigX;
 	50,					// int rigY;
 	560,				// int rigW
@@ -138,15 +137,6 @@ void status::saveLastState()
 		VIEWERvisible = true;
 	}
 
-	rigShown = false;
-	if (rigcontrol && rigcontrol->visible()) {
-		rigX = rigcontrol->x();
-		rigY = rigcontrol->y();
-		rigW = rigcontrol->w();
-		rigH = rigcontrol->h();
-		rigShown = true;
-	}
-
 	scopeVisible = false;
 	if (scopeview && scopeview->visible()) {
 		scopeVisible = true;
@@ -184,7 +174,6 @@ void status::saveLastState()
 	spref.set("wf_ui", WF_UI);
 	spref.set("riglog_ui", Rig_Log_UI);
 
-	spref.set("rigctl_visible", rigShown);
 	spref.set("rigctl_x", rigX);
 	spref.set("rigctl_y", rigY);
 	spref.set("rigctl_w", rigW);
@@ -268,7 +257,6 @@ void status::loadLastState()
 	spref.get("wf_ui", i, i); WF_UI = i;
 	spref.get("riglog_ui", i, i); Rig_Log_UI = i;
 
-	spref.get("rigctl_visible", i, i); rigShown = i;
 	spref.get("rigctl_x", rigX, rigX);
 	spref.get("rigctl_y", rigY, rigY);
 	spref.get("rigctl_w", rigW, rigW);
@@ -346,12 +334,6 @@ void status::initLastState()
 		RxTextHeight = TiledGroup->h() / 3 * 2;
 	TiledGroup->position(0, TransmitText->y(), 0, TiledGroup->y() + RxTextHeight);
 
-	if (!progdefaults.docked_rig_control && rigShown == true) {
-		if (!rigcontrol)
-			createRigDialog();
-		rigcontrol->resize(rigX, rigY, rigW, rigH);
-		rigcontrol->show();
-	}
 	if (VIEWERvisible == true)
 		openViewer();
 

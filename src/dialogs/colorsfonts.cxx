@@ -5,7 +5,6 @@
 #include <config.h>
 #include "fl_digi.h"
 #include "configuration.h"
-#include "rigdialog.h"
 #include <FL/Fl_Color_Chooser.H>
 #include <FL/fl_show_colormap.H>
 
@@ -116,16 +115,6 @@ static void cb_btnBackgroundColor(Fl_Button*, void*) {
     FDdisplay->color(fl_rgb_color(r,g,b));
     FDdisplay->redraw();
     
-    if (FreqDisp) {
-        FreqDisp->SetONOFFCOLOR(
-          fl_rgb_color(	progdefaults.FDforeground.R,
-                        progdefaults.FDforeground.G,
-                        progdefaults.FDforeground.B),
-          fl_rgb_color(	progdefaults.FDbackground.R,
-                        progdefaults.FDbackground.G,
-                        progdefaults.FDbackground.B));
-        FreqDisp->redraw();
-    }
     if (qsoFreqDisp) {
         qsoFreqDisp->SetONOFFCOLOR(
           fl_rgb_color(	progdefaults.FDforeground.R,
@@ -158,16 +147,6 @@ static void cb_btnForegroundColor(Fl_Button*, void*) {
     FDdisplay->labelcolor(fl_rgb_color(r,g,b));
     FDdisplay->redraw();
     
-    if (FreqDisp) {
-        FreqDisp->SetONOFFCOLOR(
-          fl_rgb_color(	progdefaults.FDforeground.R,
-                        progdefaults.FDforeground.G,
-                        progdefaults.FDforeground.B),
-          fl_rgb_color(	progdefaults.FDbackground.R,
-                        progdefaults.FDbackground.G,
-                        progdefaults.FDbackground.B));
-        FreqDisp->redraw();
-    }
     if (qsoFreqDisp) {
         qsoFreqDisp->SetONOFFCOLOR(
           fl_rgb_color(	progdefaults.FDforeground.R,
@@ -206,16 +185,6 @@ static void cb_btnFD_SystemColor(Fl_Button*, void*) {
     progdefaults.FDforeground.G = g;
     progdefaults.FDforeground.B = b;
 
-    if (FreqDisp) {
-        FreqDisp->SetONOFFCOLOR(
-          fl_rgb_color(	progdefaults.FDforeground.R,
-                        progdefaults.FDforeground.G,
-                        progdefaults.FDforeground.B),
-          fl_rgb_color(	progdefaults.FDbackground.R,
-                        progdefaults.FDbackground.G,
-                        progdefaults.FDbackground.B));
-        FreqDisp->redraw();
-    }
     if (qsoFreqDisp) {
         qsoFreqDisp->SetONOFFCOLOR(
           fl_rgb_color(	progdefaults.FDforeground.R,
@@ -632,7 +601,6 @@ Fl_Double_Window* make_colorsfonts() {
     } // Fl_Button* btnClrFntClose
     { tabsColors = new Fl_Tabs(0, 5, 375, 179);
       { Fl_Group* o = new Fl_Group(5, 30, 365, 150, _("Freq Display"));
-        o->hide();
         { Fl_Box* o = FDdisplay = new Fl_Box(100, 45, 45, 67, _("8"));
           FDdisplay->box(FL_DOWN_BOX);
           FDdisplay->color((Fl_Color)55);
@@ -688,6 +656,7 @@ Fl_Double_Window* make_colorsfonts() {
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(5, 30, 365, 150, _("Text Ctrls"));
+        o->hide();
         { RxText = new Fl_Input(15, 43, 165, 35);
           RxText->value("Receive Text");
           RxText->color(fl_rgb_color(progdefaults.RxColor.R, progdefaults.RxColor.G, progdefaults.RxColor.B));

@@ -36,7 +36,6 @@
 #include "qrunner.h"
 
 #include "FreqControl.h"
-#include "rigdialog.h"
 #include "gettext.h"
 
 const char *cFreqControl::Label[10] = {

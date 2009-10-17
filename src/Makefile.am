@@ -155,7 +155,7 @@ if WANT_FLARQ
 endif
 
 FLDIGI_FL_SRC = dialogs/confdialog.fl dialogs/colorsfonts.fl \
-		rigcontrol/rigdialog.fl logbook/lgbook.fl dialogs/notifydialog.fl
+		logbook/lgbook.fl dialogs/notifydialog.fl
 FLARQ_FL_SRC = flarq-src/arqdialogs.fl
 
 if HAVE_FLUID
@@ -348,7 +348,6 @@ fldigi_SOURCES += \
 	include/re.h \
 	include/rigCAT.h \
 	include/rigMEM.h \
-	include/rigdialog.h \
 	include/rigio.h \
 	include/rigsupport.h \
 	include/rigxml.h \
@@ -449,7 +448,6 @@ fldigi_SOURCES += \
 	rigcontrol/FreqControl.cxx \
 	rigcontrol/ptt.cxx \
 	rigcontrol/rigMEM.cxx \
-	rigcontrol/rigdialog.cxx \
 	rigcontrol/rigio.cxx \
 	rigcontrol/rigsupport.cxx \
 	rigcontrol/rigxml.cxx \

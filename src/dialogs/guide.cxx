@@ -1676,7 +1676,7 @@ numeric keypad's 0-9 the sequence will be discarded.</p></div>\n\
 <div id=\"footer\">\n\
 <div id=\"footer-text\">\n\
 Version 3.11<br />\n\
-Last updated 2009-04-21 06:07:45 BST\n\
+Last updated 2009-10-17 07:11:38 CDT\n\
 </div>\n\
 <div id=\"footer-badges\">\n\
 <a href=\"http://validator.w3.org/check?uri=referer\">\n\

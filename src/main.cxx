@@ -237,7 +237,7 @@ int main(int argc, char ** argv)
 		debug::stop();
 	}
 
-	xmlfname = HomeDir; 
+	xmlfname = HomeDir;
 	xmlfname.append("rig.xml");
 
 #if !defined(__WOE32__) && !defined(__APPLE__)
@@ -251,11 +251,10 @@ int main(int argc, char ** argv)
 
 	Fl::lock();  // start the gui thread!!
 	Fl::visual(FL_RGB); // insure 24 bit color operation
-	
+
 	fl_register_images();
 	Fl::set_fonts(0);
-	
-	rigcontrol = createRigDialog();
+
 
 	if (!have_config) {
 		double speed = speed_test(SRC_SINC_FASTEST, 8);
@@ -323,7 +322,7 @@ int main(int argc, char ** argv)
 #if USE_HAMLIB
 	xcvr = new Rig();
 #endif
-	
+
 	push2talk = new PTT();
 
 	progdefaults.setDefaults();
@@ -556,8 +555,8 @@ int parse_args(int argc, char **argv, int& idx)
 	       OPT_BENCHMARK_SRC_RATIO, OPT_BENCHMARK_SRC_TYPE,
 #endif
 
-               OPT_FONT, OPT_WFALL_HEIGHT, OPT_WFALL_WIDTH, 
-               OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT, 
+               OPT_FONT, OPT_WFALL_HEIGHT, OPT_WFALL_WIDTH,
+               OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT,
 //               OPT_TOGGLE_CHECK,
 #if USE_PORTAUDIO
                OPT_FRAMES_PER_BUFFER,

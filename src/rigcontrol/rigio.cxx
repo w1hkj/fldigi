@@ -23,7 +23,6 @@
 #endif
 
 #include "rigsupport.h"
-#include "rigdialog.h"
 #include "rigxml.h"
 #include "trx.h"
 #include "serial.h"
@@ -1205,8 +1204,6 @@ static void *rigCAT_loop(void *args)
 		}
 	}
 
-	if (rigcontrol)
-		rigcontrol->hide();
 	wf->USB(true);
 //  wf->setQSY(0);
 
