@@ -3156,15 +3156,15 @@ void create_fl_digi_main() {
 				inpSerNo, outSerNo, inpXchgIn };
 		for (size_t i = 0; i < sizeof(logfields)/sizeof(*logfields); i++) {
 			logfields[i]->callback(cb_log);
-			logfields[i]->when(FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED | FL_WHEN_ENTER_KEY | FL_WHEN_RELEASE );
+			logfields[i]->when(FL_WHEN_CHANGED | FL_WHEN_ENTER_KEY | FL_WHEN_RELEASE );
 		}
 		// exceptions
 		inpCall1->callback(cb_call);
-		inpCall1->when(FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED | FL_WHEN_ENTER_KEY | FL_WHEN_RELEASE );
+		inpCall1->when(FL_WHEN_CHANGED | FL_WHEN_ENTER_KEY | FL_WHEN_RELEASE );
 		inpCall2->callback(cb_call);
-		inpCall2->when(FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED | FL_WHEN_ENTER_KEY | FL_WHEN_RELEASE );
+		inpCall2->when(FL_WHEN_CHANGED | FL_WHEN_ENTER_KEY | FL_WHEN_RELEASE );
 		inpCall3->callback(cb_call);
-		inpCall3->when(FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED | FL_WHEN_ENTER_KEY | FL_WHEN_RELEASE );
+		inpCall3->when(FL_WHEN_CHANGED | FL_WHEN_ENTER_KEY | FL_WHEN_RELEASE );
 		inpLoc->callback(cb_loc);
 		inpNotes->when(FL_WHEN_RELEASE);
 
