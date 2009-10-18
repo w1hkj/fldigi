@@ -422,8 +422,6 @@ void FTextRX::menu_cb(size_t item)
 		input->value(s);
 	input->do_callback();
 	free(s);
-	if (input == inpCall)
-		stopMacroTimer();
 }
 
 const char* FTextRX::dxcc_lookup_call(int x, int y)

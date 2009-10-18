@@ -1478,6 +1478,9 @@ void cb_call(Fl_Widget* w, void*)
 		inpCall2->value(new_call.c_str());
 	}
 
+	if (progStatus.timer)
+		stopMacroTimer();
+
 	if (old_call == new_call)
 		return restoreFocus(w);
 
