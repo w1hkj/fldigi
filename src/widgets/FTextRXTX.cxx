@@ -292,6 +292,7 @@ void FTextRX::handle_qso_data(int start, int end)
 	target->value(p);
 	target->do_callback();
 	free(s);
+	restoreFocus(NULL);
 }
 
 void FTextRX::handle_context_menu(void)
@@ -403,6 +404,8 @@ void FTextRX::menu_cb(size_t item)
 		set_word_wrap(!wrap);
 		break;
 	}
+
+	restoreFocus(NULL);
 
 	if (!input)
 		return;
