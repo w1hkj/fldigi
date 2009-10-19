@@ -256,28 +256,14 @@ progdefaults.changed = true;}
           } {
             Fl_Group {} {
               label {These changes take effect on next program startup} open
-              tooltip {Show me more or less waterfall} xywh {5 60 490 190} box ENGRAVED_FRAME align 17
+              tooltip {Show me more or less waterfall} xywh {5 60 490 107} box ENGRAVED_FRAME align 17
             } {
-              Fl_Counter cntrWfwidth {
-                label {Waterfall width in Hz}
-                callback {progdefaults.wfwidth = (int)(o->value());
-progdefaults.changed = true;}
-                tooltip {CPU usage increases with waterfall width} xywh {15 97 95 21} type Simple align 8 minimum 2400 maximum 4000 step 100 value 3000
-                code0 {o->value(progdefaults.wfwidth);}
-              }
               Fl_Counter cntrWfheight {
                 label {Waterfall height in pixels}
                 callback {progdefaults.wfheight = (int)o->value();
 progdefaults.changed = true;}
-                tooltip {CPU usage increases with waterfall height} xywh {15 128 95 21} type Simple align 8 minimum 100 maximum 160 step 5 value 120
+                tooltip {CPU usage increases with waterfall height} xywh {15 90 95 21} type Simple align 8 minimum 100 maximum 160 step 5 value 120
                 code0 {o->value(progdefaults.wfheight);}
-              }
-              Fl_Check_Button btnDockedScope {
-                label {Docked scope}
-                callback {progdefaults.docked_scope = o->value();
-progdefaults.changed = true;}
-                tooltip {Attach digiscope to right of waterfall} xywh {15 159 125 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.docked_scope);}
               }
               Fl_Check_Button btnDockedRigControl {
                 label {Docked rig rontrol}
@@ -290,7 +276,7 @@ progdefaults.changed = true;}
                 label {Use check buttons for AFC and SQL}
                 callback {progdefaults.useCheckButtons = o->value();
 progdefaults.changed = true;}
-                tooltip {Check buttons or default lighted switch} xywh {15 219 275 20} down_box DOWN_BOX
+                tooltip {Check buttons or default lighted switch} xywh {15 124 275 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.useCheckButtons);}
               }
             }

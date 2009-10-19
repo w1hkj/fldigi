@@ -195,6 +195,7 @@ Fl_Input2			*inpName;
 Fl_Input2			*inpRstIn;
 Fl_Input2			*inpRstOut;
 
+Fl_Group			*TopFrame1 = (Fl_Group *)0;
 Fl_Input2			*inpFreq1;
 Fl_Input2			*inpTimeOff1;
 Fl_Input2			*inpTimeOn1;
@@ -205,23 +206,6 @@ Fl_Input2			*inpRstIn1;
 Fl_Input2			*inpRstOut1;
 cFreqControl 		*qsoFreqDisp1 = (cFreqControl *)0;
 
-Fl_Input2			*inpFreq2;
-Fl_Input2			*inpTimeOff2;
-Fl_Input2			*inpTimeOn2;
-Fl_Button           *btnTimeOn2;
-Fl_Input2			*inpCall2;
-Fl_Input2			*inpName2;
-Fl_Input2			*inpRstIn2;
-Fl_Input2			*inpRstOut2;
-cFreqControl 		*qsoFreqDisp2 = (cFreqControl *)0;
-Fl_Button			*qsoClear2;
-Fl_Button			*qsoSave2;
-Fl_Button			*btnQRZ2;
-Fl_Button			*qso_opPICK2;
-
-Fl_Input2			*inpCall3;
-
-Fl_Group			*TopFrame1 = (Fl_Group *)0;
 Fl_Group			*RigControlFrame = (Fl_Group *)0;
 Fl_Group			*RigViewerFrame = (Fl_Group *)0;
 Fl_Group			*QsoInfoFrame = (Fl_Group *)0;
@@ -235,6 +219,29 @@ Fl_Group			*QsoInfoFrame2 = (Fl_Group *)0;
 Fl_Group			*QsoButtonFrame = (Fl_Group *)0;
 
 Fl_Group			*TopFrame2 = (Fl_Group *)0;
+cFreqControl 		*qsoFreqDisp2 = (cFreqControl *)0;
+Fl_Input2			*inpFreq2;
+Fl_Input2			*inpTimeOff2;
+Fl_Input2			*inpTimeOn2;
+Fl_Button           *btnTimeOn2;
+Fl_Input2			*inpCall2;
+Fl_Input2			*inpName2;
+Fl_Input2			*inpRstIn2;
+Fl_Input2			*inpRstOut2;
+Fl_Button			*qso_opPICK2;
+Fl_Button			*qsoClear2;
+Fl_Button			*qsoSave2;
+Fl_Button			*btnQRZ2;
+
+Fl_Group			*TopFrame3 = (Fl_Group *)0;
+cFreqControl 		*qsoFreqDisp3 = (cFreqControl *)0;
+Fl_Input2			*inpTimeOff3;
+Fl_Input2			*inpTimeOn3;
+Fl_Button           *btnTimeOn3;
+Fl_Input2			*inpCall3;
+Fl_Button			*qso_opPICK3;
+Fl_Button			*qsoClear3;
+Fl_Button			*qsoSave3;
 
 Fl_Browser			*qso_opBrowser = (Fl_Browser *)0;
 Fl_Button			*qso_btnAddFreq = (Fl_Button *)0;
@@ -307,7 +314,7 @@ string				strMacroName[NUMMACKEYS];
 
 waterfall			*wf = (waterfall *)0;
 Digiscope			*digiscope = (Digiscope *)0;
-Digiscope			*wfscope = (Digiscope *)0;
+//Digiscope			*wfscope = (Digiscope *)0;
 
 Fl_Slider			*sldrSquelch = (Fl_Slider *)0;
 Progress			*pgrsSquelch = (Progress *)0;
@@ -1529,11 +1536,31 @@ void cb_log(Fl_Widget* w, void*)
 	Fl_Input2 *inp = (Fl_Input2 *) w;
 
 	if (inp == inpName1) inpName2->value(inpName1->value());
-	else if (inp == inpName2) inpName1->value(inpName2->value());
-	else if (inp == inpRstIn1) inpRstIn2->value(inpRstIn1->value());
-	else if (inp == inpRstIn2) inpRstIn1->value(inpRstIn2->value());
-	else if (inp == inpRstOut1) inpRstOut2->value(inpRstOut1->value());
-	else if (inp == inpRstOut2) inpRstOut1->value(inpRstOut2->value());
+	if (inp == inpName2) inpName1->value(inpName2->value());
+	if (inp == inpRstIn1) inpRstIn2->value(inpRstIn1->value());
+	if (inp == inpRstIn2) inpRstIn1->value(inpRstIn2->value());
+	if (inp == inpRstOut1) inpRstOut2->value(inpRstOut1->value());
+	if (inp == inpRstOut2) inpRstOut1->value(inpRstOut2->value());
+
+	if (inp == inpTimeOn1) {
+		inpTimeOn2->value(inpTimeOn->value()); inpTimeOn3->value(inpTimeOn->value());
+	}
+	if (inp == inpTimeOn2) {
+		inpTimeOn1->value(inpTimeOn->value()); inpTimeOn3->value(inpTimeOn->value());
+	}
+	if (inp == inpTimeOn3) {
+		inpTimeOn1->value(inpTimeOn->value()); inpTimeOn2->value(inpTimeOn->value());
+	}
+
+	if (inp == inpTimeOff1) {
+		inpTimeOff2->value(inpTimeOff->value()); inpTimeOff3->value(inpTimeOff->value());
+	}
+	if (inp == inpTimeOff2) {
+		inpTimeOff1->value(inpTimeOff->value()); inpTimeOff3->value(inpTimeOff->value());
+	}
+	if (inp == inpTimeOff3) {
+		inpTimeOff1->value(inpTimeOff->value()); inpTimeOff2->value(inpTimeOff->value());
+	}
 
 	if (inp->value()[0])
 		oktoclear = false;
@@ -1895,6 +1922,12 @@ void cb_mnu_riglog_none(Fl_Menu_* w, void *d) {
 	UI_select(progStatus.Rig_Log_UI);
 }
 
+void cb_mnuDockedscope(Fl_Menu_ *w, void *d) {
+	Fl_Menu_Item *m = getMenuItem(((Fl_Menu_*)w)->mvalue()->label());
+	progStatus.DOCKEDSCOPE = m->value();
+	wf->show_scope(progStatus.DOCKEDSCOPE);
+}
+
 void WF_UI()
 {
 	wf->UI_select(progStatus.WF_UI);
@@ -1910,6 +1943,7 @@ void WF_UI()
 #define UI_MLABEL _("&UI")
 #define RIGLOG_NONE_MLABEL _("No Rig-Log Controls")
 #define RIGLOG_MLABEL _("Min Rig-Log Controls")
+#define DOCKEDSCOPE_MLABEL _("Docked scope")
 #define WF_MLABEL _("Min WF Controls")
 
 Fl_Menu_Item menu_[] = {
@@ -2055,19 +2089,16 @@ Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 { VIEW_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ make_icon_label(_("&Digiscope"), utilities_system_monitor_icon), 'd', (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("&Extern Scope"), utilities_system_monitor_icon), 'd', (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("&PSK Browser")), 'p', (Fl_Callback*)cb_mnuViewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("&Logbook")), 'l', (Fl_Callback*)cb_mnuShowLogbook, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(COUNTRIES_MLABEL), 'o', (Fl_Callback*)cb_mnuShowCountries, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ CONTEST_FIELDS_MLABEL, 0, (Fl_Callback*)cb_mnuContest, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
-{0,0,0,0,0,0,0,0,0},
-
-
-{ UI_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ make_icon_label(COUNTRIES_MLABEL), 'o', (Fl_Callback*)cb_mnuShowCountries, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { RIGLOG_MLABEL, 0, (Fl_Callback*)cb_mnu_riglog, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
-{ RIGLOG_NONE_MLABEL, 0, (Fl_Callback*)cb_mnu_riglog_none, 0, FL_MENU_TOGGLE | FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
-{ WF_MLABEL, 0, (Fl_Callback*)cb_mnu_wf_all, 0, FL_MENU_TOGGLE | FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ RIGLOG_NONE_MLABEL, 0, (Fl_Callback*)cb_mnu_riglog_none, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
+{ CONTEST_FIELDS_MLABEL, 0, (Fl_Callback*)cb_mnuContest, 0, FL_MENU_TOGGLE | FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ DOCKEDSCOPE_MLABEL, 0, (Fl_Callback*)cb_mnuDockedscope, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
+{ WF_MLABEL, 0, (Fl_Callback*)cb_mnu_wf_all, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 { _("Config WF controls"), 0,  (Fl_Callback*)cb_mnuConfigWFcontrols, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
@@ -2326,7 +2357,9 @@ void cb_qso_opBrowser(Fl_Browser*, void*)
 
 void show_frequency(long long freq)
 {
-	qsoFreqDisp->value(freq);
+	qsoFreqDisp1->value(freq);
+	qsoFreqDisp2->value(freq);
+	qsoFreqDisp3->value(freq);
 }
 
 void show_mode(const string& sMode)
@@ -2399,14 +2432,11 @@ void create_fl_digi_main() {
 
 	x_qsoframe += rig_control_width;
 
-	IMAGE_WIDTH = progdefaults.wfwidth;
+	IMAGE_WIDTH = 4000;//progdefaults.wfwidth;
 	Hwfall = progdefaults.wfheight;
 	HNOM = DEFAULT_HNOM;
 
-	if (progdefaults.docked_scope)
-		Wwfall = WNOM - 2 * BEZEL - Hwfall + 24;
-	else
-		Wwfall = WNOM - 2 * BEZEL - 2 * DEFAULT_SW;
+	Wwfall = WNOM - 2 * BEZEL - 2 * DEFAULT_SW;
 
 	update_main_title();
 	fl_digi_main = new Fl_Double_Window(WNOM, HNOM, main_window_title.c_str());
@@ -2838,10 +2868,15 @@ void create_fl_digi_main() {
 			inpFreq2->tooltip(_("QSO frequency (read only)"));
 
 			const char *label2 = _("On");
-			Fl_Box *bx2 = new Fl_Box(pad + rightof(inpFreq2), y,
+			btnTimeOn2 = new Fl_Button(
+				pad + rightof(inpFreq2), y,
 				fl_width(label2), h, label2);
+//			btnTimeOn2->align(FL_ALIGN_LEFT | FL_ALIGN_BOTTOM | FL_ALIGN_INSIDE);
+			btnTimeOn2->tooltip(_("Press to update"));
+			btnTimeOn2->box(FL_NO_BOX);
+			btnTimeOn2->callback(cb_btnTimeOn);
 			inpTimeOn2 = new Fl_Input2(
-				pad + bx2->x() + bx2->w(), y,
+				pad + btnTimeOn2->x() + btnTimeOn2->w(), y,
 				w_inpTime2, h, "");
 			inpTimeOn2->tooltip(_("Time On"));
 			inpTimeOn2->type(FL_INT_INPUT);
@@ -2891,6 +2926,96 @@ void create_fl_digi_main() {
 		TopFrame2->resizable(NULL);
 		TopFrame2->end();
 		TopFrame2->hide();
+
+		TopFrame3 = new Fl_Group(0, Hmenu, WNOM, Hentry + 2 * pad);
+		{
+			int y = Hmenu + pad;
+			int h = Hentry;
+			qsoFreqDisp3 = new cFreqControl(
+				pad, Hmenu,
+				freqwidth, freqheight, "");
+			qsoFreqDisp3->box(FL_DOWN_BOX);
+			qsoFreqDisp3->color(FL_BACKGROUND_COLOR);
+			qsoFreqDisp3->selection_color(FL_BACKGROUND_COLOR);
+			qsoFreqDisp3->labeltype(FL_NORMAL_LABEL);
+			qsoFreqDisp3->align(FL_ALIGN_CENTER);
+			qsoFreqDisp3->when(FL_WHEN_RELEASE);
+			qsoFreqDisp3->callback(qso_movFreq);
+			qsoFreqDisp3->SetONOFFCOLOR(
+				fl_rgb_color(	progdefaults.FDforeground.R,
+								progdefaults.FDforeground.G,
+								progdefaults.FDforeground.B),
+				fl_rgb_color(	progdefaults.FDbackground.R,
+								progdefaults.FDbackground.G,
+								progdefaults.FDbackground.B));
+			qsoFreqDisp3->value(145580000);
+
+			qso_opPICK3 = new Fl_Button(
+				rightof(qsoFreqDisp3), y,
+				Wbtn, Hentry);
+			qso_opPICK3->image(addrbookpixmap);
+			qso_opPICK3->callback(showOpBrowserView2, 0);
+			qso_opPICK3->tooltip(_("Open List"));
+
+			qsoClear3 = new Fl_Button(
+					pad + rightof(qso_opPICK3), y,
+					Wbtn, Hentry);
+			qsoClear3->image(new Fl_Pixmap(edit_clear_icon));
+			qsoClear3->callback(qsoClear_cb, 0);
+			qsoClear3->tooltip(_("Clear"));
+
+			qsoSave3 = new Fl_Button(
+					pad + rightof(qsoClear2), y,
+					Wbtn, Hentry);
+			qsoSave3->image(new Fl_Pixmap(save_icon));
+			qsoSave3->callback(qsoSave_cb, 0);
+			qsoSave3->tooltip(_("Save"));
+
+			fl_font(FL_HELVETICA, FL_NORMAL_SIZE);
+//			const char *label1a = _("Freq");
+//			Fl_Box *bx1a = new Fl_Box(pad + rightof(qsoSave2), y,
+//				fl_width(label1a), h, label1a);
+//			inpFreq3 = new Fl_Input2(
+//				pad + bx1a->x() + bx1a->w(), y,
+//				w_inpFreq, h, "");
+//			inpFreq3->type(FL_NORMAL_OUTPUT);
+//			inpFreq3->tooltip(_("QSO frequency (read only)"));
+
+			const char *label2a = _("On");
+			btnTimeOn3 = new Fl_Button(
+				pad + rightof(qsoSave3), y,
+				fl_width(label2a), h, label2a);
+//			btnTimeOn3->align(FL_ALIGN_LEFT | FL_ALIGN_BOTTOM | FL_ALIGN_INSIDE);
+			btnTimeOn3->tooltip(_("Press to update"));
+			btnTimeOn3->box(FL_NO_BOX);
+			btnTimeOn3->callback(cb_btnTimeOn);
+			inpTimeOn3 = new Fl_Input2(
+				pad + btnTimeOn3->x() + btnTimeOn3->w(), y,
+				w_inpTime, h, "");
+			inpTimeOn3->tooltip(_("Time On"));
+			inpTimeOn3->type(FL_INT_INPUT);
+
+			const char *label3a = _("Off");
+			Fl_Box *bx3a = new Fl_Box(pad + rightof(inpTimeOn3), y,
+				fl_width(label3a), h, label3a);
+			inpTimeOff3 = new Fl_Input2(
+				pad + bx3a->x() + bx3a->w(), y,
+				w_inpTime, h, "");
+			inpTimeOff3->tooltip(_("Time Off"));
+			inpTimeOff3->type(FL_NORMAL_OUTPUT);
+
+			const char *label4a = _("Call");
+			Fl_Box *bx4a = new Fl_Box(pad + rightof(inpTimeOff3), y,
+				fl_width(label4a), h, label4a);
+			inpCall3 = new Fl_Input2(
+				pad + bx4a->x() + bx4a->w(), y,
+				w_inpCall, h, "");
+			inpCall3->tooltip(_("Other call"));
+
+		}
+		TopFrame3->resizable(NULL);
+		TopFrame3->end();
+		TopFrame3->hide();
 
 		inpFreq = inpFreq1;
 		inpCall = inpCall1;
@@ -3006,70 +3131,33 @@ void create_fl_digi_main() {
 			btnAltMacros->tooltip(_("Change macro set"));
 
 		Y += Hmacros;
+		Fl_Pack *wfpack = new Fl_Pack(0, Y, WNOM, Hwfall);
+			wfpack->type(1);
 
-		if (progdefaults.docked_scope) {
-			Fl_Pack *wfpack = new Fl_Pack(0, Y, WNOM, Hwfall);
-				wfpack->type(1);
-				wf = new waterfall(0, Y, Wwfall, Hwfall);
-				wf->end();
-				Fl_Pack *ypack = new Fl_Pack(
-					rightof(wf), Y,
-					Hwfall - 24, Hwfall);
+			wf = new waterfall(0, Y, Wwfall, Hwfall);
+			wf->end();
 
-					ypack->type(0);
-
-					wfscope = new Digiscope (
-						rightof(wf), Y,
-						Hwfall - 24, Hwfall - 24);
-
-					pgrsSquelch = new Progress(
-						rightof(wf), Y + Hwfall - 24,
-						Hwfall - 24, 12,
-						"");
-					pgrsSquelch->color(FL_BACKGROUND2_COLOR, FL_DARK_GREEN);
-					sldrSquelch = new Fl_Slider( FL_HOR_NICE_SLIDER,
-						rightof(wf), Y + Hwfall - 12, Hwfall - 24, 12, "");
-
-					sldrSquelch->minimum(0);
-					sldrSquelch->maximum(100);
-					sldrSquelch->step(1);
-					sldrSquelch->value(progStatus.sldrSquelchValue);
-					sldrSquelch->callback((Fl_Callback*)cb_sldrSquelch);
-					sldrSquelch->color(FL_INACTIVE_COLOR);
-
-				ypack->end();
-				Fl_Group::current()->resizable(wf);
-			wfpack->end();
-		} else {
-			Fl_Pack *wfpack = new Fl_Pack(0, Y, WNOM, Hwfall);
-				wfpack->type(1);
-
-				wf = new waterfall(0, Y, Wwfall, Hwfall);
-				wf->end();
-
-				pgrsSquelch = new Progress(
-					rightof(wf), Y + 4,
-					DEFAULT_SW, Hwfall - 8,
-					"");
-				pgrsSquelch->color(FL_BACKGROUND2_COLOR, FL_DARK_GREEN);
-				pgrsSquelch->type(Progress::VERTICAL);
-				pgrsSquelch->tooltip(_("Detected signal level"));
-
+			pgrsSquelch = new Progress(
+				rightof(wf), Y + 4,
+				DEFAULT_SW, Hwfall - 8,
+				"");
+			pgrsSquelch->color(FL_BACKGROUND2_COLOR, FL_DARK_GREEN);
+			pgrsSquelch->type(Progress::VERTICAL);
+			pgrsSquelch->tooltip(_("Detected signal level"));
 				sldrSquelch = new Fl_Slider(
-					rightof(pgrsSquelch), Y + 4,
-					DEFAULT_SW, Hwfall - 8,
-					"");
-				sldrSquelch->minimum(100);
-				sldrSquelch->maximum(0);
-				sldrSquelch->step(1);
-				sldrSquelch->value(progStatus.sldrSquelchValue);
-				sldrSquelch->callback((Fl_Callback*)cb_sldrSquelch);
-				sldrSquelch->color(FL_INACTIVE_COLOR);
-				sldrSquelch->tooltip(_("Squelch level"));
-
+				rightof(pgrsSquelch), Y + 4,
+				DEFAULT_SW, Hwfall - 8,
+				"");
+			sldrSquelch->minimum(100);
+			sldrSquelch->maximum(0);
+			sldrSquelch->step(1);
+			sldrSquelch->value(progStatus.sldrSquelchValue);
+			sldrSquelch->callback((Fl_Callback*)cb_sldrSquelch);
+			sldrSquelch->color(FL_INACTIVE_COLOR);
+			sldrSquelch->tooltip(_("Squelch level"));
 				Fl_Group::current()->resizable(wf);
-			wfpack->end();
-		}
+		wfpack->end();
+
 		Y += (Hwfall + 2);
 
 		Fl_Pack *hpack = new Fl_Pack(0, Y, WNOM, Hstatus);
@@ -3153,7 +3241,8 @@ void create_fl_digi_main() {
 		Fl_Widget* logfields[] = { inpCall1, inpName1, inpTimeOn1, inpTimeOff1, inpRstIn1, inpRstOut1,
 				inpCall2, inpName2, inpTimeOn2, inpTimeOff2, inpRstIn2, inpRstOut2,
 				inpQth, inpState, inpVEprov, inpCountry, inpLoc, inpAZ, inpNotes,
-				inpSerNo, outSerNo, inpXchgIn };
+				inpSerNo, outSerNo, inpXchgIn,
+				inpCall3, inpTimeOn3, inpTimeOff3 };
 		for (size_t i = 0; i < sizeof(logfields)/sizeof(*logfields); i++) {
 			logfields[i]->callback(cb_log);
 			logfields[i]->when(FL_WHEN_CHANGED | FL_WHEN_ENTER_KEY | FL_WHEN_RELEASE );
@@ -3198,7 +3287,7 @@ void create_fl_digi_main() {
 	// ztimer must be run by FLTK's timeout handler
 	Fl::add_timeout(0.0, ztimer, (void*)true);
 
-	// Set the state of toggle menu items
+	// Set the state of checked toggle menu items
 	struct {
 		bool var; const char* label;
 	} toggles[] = {
@@ -3206,7 +3295,8 @@ void create_fl_digi_main() {
 		{ progStatus.contest, CONTEST_FIELDS_MLABEL },
 		{ progStatus.WF_UI, WF_MLABEL },
 		{ progStatus.Rig_Log_UI, RIGLOG_MLABEL },
-		{ progStatus.NO_RIGLOG, RIGLOG_NONE_MLABEL }
+		{ progStatus.NO_RIGLOG, RIGLOG_NONE_MLABEL },
+		{ progStatus.DOCKEDSCOPE, DOCKEDSCOPE_MLABEL }
 	};
 	Fl_Menu_Item* toggle;
 	for (size_t i = 0; i < sizeof(toggles)/sizeof(*toggles); i++) {
@@ -3275,48 +3365,54 @@ void set_scope_mode(Digiscope::scope_mode md)
 		REQ(&Fl_Window::size_range, scopeview, SCOPEWIN_MIN_WIDTH, SCOPEWIN_MIN_HEIGHT,
 		    0, 0, 0, 0, (md == Digiscope::PHASE || md == Digiscope::XHAIRS));
 	}
-	if (wfscope)
-		wfscope->mode(md);
+//	if (wfscope)
+//		wfscope->mode(md);
+	wf->wfscope->mode(md);
 }
 
 void set_scope(double *data, int len, bool autoscale)
 {
 	if (digiscope)
 		digiscope->data(data, len, autoscale);
-	if (wfscope)
-		wfscope->data(data, len, autoscale);
+//	if (wfscope)
+//		wfscope->data(data, len, autoscale);
+	wf->wfscope->data(data, len, autoscale);
 }
 
 void set_phase(double phase, double quality, bool highlight)
 {
 	if (digiscope)
 		digiscope->phase(phase, quality, highlight);
-	if (wfscope)
-		wfscope->phase(phase, quality, highlight);
+//	if (wfscope)
+//		wfscope->phase(phase, quality, highlight);
+	wf->wfscope->phase(phase, quality, highlight);
 }
 
 void set_rtty(double flo, double fhi, double amp)
 {
 	if (digiscope)
 		digiscope->rtty(flo, fhi, amp);
-	if (wfscope)
-		wfscope->rtty(flo, fhi, amp);
+//	if (wfscope)
+//		wfscope->rtty(flo, fhi, amp);
+	wf->wfscope->rtty(flo, fhi, amp);
 }
 
 void set_video(double *data, int len, bool dir)
 {
 	if (digiscope)
 		digiscope->video(data, len, dir);
-	if (wfscope)
-		wfscope->video(data, len, dir);
+//	if (wfscope)
+//		wfscope->video(data, len, dir);
+	wf->wfscope->video(data, len, dir);
 }
 
 void set_zdata(complex *zarray, int len)
 {
 	if (digiscope)
 		digiscope->zdata(zarray, len);
-	if (wfscope)
-		wfscope->zdata(zarray, len);
+//	if (wfscope)
+//		wfscope->zdata(zarray, len);
+	wf->wfscope->zdata(zarray, len);
 }
 
 static void put_rx_char_flmain(unsigned int data)

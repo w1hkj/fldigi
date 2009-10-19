@@ -37,9 +37,7 @@ extern Fl_Check_Button *btnCallUpperCase;
 extern Fl_Input2 *inpMyPower;
 extern Fl_Group *tabWfallRestart;
 #include <FL/Fl_Counter.H>
-extern Fl_Counter *cntrWfwidth;
 extern Fl_Counter *cntrWfheight;
-extern Fl_Check_Button *btnDockedScope;
 extern Fl_Check_Button *btnDockedRigControl;
 extern Fl_Check_Button *btnCheckButtons;
 extern Fl_Group *tabContest;

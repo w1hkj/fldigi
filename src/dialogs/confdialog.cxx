@@ -168,24 +168,10 @@ progdefaults.changed = true;
 
 Fl_Group *tabWfallRestart=(Fl_Group *)0;
 
-Fl_Counter *cntrWfwidth=(Fl_Counter *)0;
-
-static void cb_cntrWfwidth(Fl_Counter* o, void*) {
-  progdefaults.wfwidth = (int)(o->value());
-progdefaults.changed = true;
-}
-
 Fl_Counter *cntrWfheight=(Fl_Counter *)0;
 
 static void cb_cntrWfheight(Fl_Counter* o, void*) {
   progdefaults.wfheight = (int)o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnDockedScope=(Fl_Check_Button *)0;
-
-static void cb_btnDockedScope(Fl_Check_Button* o, void*) {
-  progdefaults.docked_scope = o->value();
 progdefaults.changed = true;
 }
 
@@ -2548,22 +2534,11 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           } // Fl_Group* tabUserInterface
           { tabWfallRestart = new Fl_Group(0, 50, 500, 320, _("Restart"));
             tabWfallRestart->hide();
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 190, _("These changes take effect on next program startup"));
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 107, _("These changes take effect on next program startup"));
               o->tooltip(_("Show me more or less waterfall"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP|FL_ALIGN_INSIDE);
-              { Fl_Counter* o = cntrWfwidth = new Fl_Counter(15, 97, 95, 21, _("Waterfall width in Hz"));
-                cntrWfwidth->tooltip(_("CPU usage increases with waterfall width"));
-                cntrWfwidth->type(1);
-                cntrWfwidth->minimum(2400);
-                cntrWfwidth->maximum(4000);
-                cntrWfwidth->step(100);
-                cntrWfwidth->value(3000);
-                cntrWfwidth->callback((Fl_Callback*)cb_cntrWfwidth);
-                cntrWfwidth->align(FL_ALIGN_RIGHT);
-                o->value(progdefaults.wfwidth);
-              } // Fl_Counter* cntrWfwidth
-              { Fl_Counter* o = cntrWfheight = new Fl_Counter(15, 128, 95, 21, _("Waterfall height in pixels"));
+              { Fl_Counter* o = cntrWfheight = new Fl_Counter(15, 90, 95, 21, _("Waterfall height in pixels"));
                 cntrWfheight->tooltip(_("CPU usage increases with waterfall height"));
                 cntrWfheight->type(1);
                 cntrWfheight->minimum(100);
@@ -2574,12 +2549,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 cntrWfheight->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.wfheight);
               } // Fl_Counter* cntrWfheight
-              { Fl_Check_Button* o = btnDockedScope = new Fl_Check_Button(15, 159, 125, 20, _("Docked scope"));
-                btnDockedScope->tooltip(_("Attach digiscope to right of waterfall"));
-                btnDockedScope->down_box(FL_DOWN_BOX);
-                btnDockedScope->callback((Fl_Callback*)cb_btnDockedScope);
-                o->value(progdefaults.docked_scope);
-              } // Fl_Check_Button* btnDockedScope
               { Fl_Check_Button* o = btnDockedRigControl = new Fl_Check_Button(15, 189, 150, 20, _("Docked rig rontrol"));
                 btnDockedRigControl->tooltip(_("Attach rig control to left of logbook"));
                 btnDockedRigControl->down_box(FL_DOWN_BOX);
@@ -2588,7 +2557,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 btnDockedRigControl->hide();
                 o->value(progdefaults.docked_rig_control);
               } // Fl_Check_Button* btnDockedRigControl
-              { Fl_Check_Button* o = btnCheckButtons = new Fl_Check_Button(15, 219, 275, 20, _("Use check buttons for AFC and SQL"));
+              { Fl_Check_Button* o = btnCheckButtons = new Fl_Check_Button(15, 124, 275, 20, _("Use check buttons for AFC and SQL"));
                 btnCheckButtons->tooltip(_("Check buttons or default lighted switch"));
                 btnCheckButtons->down_box(FL_DOWN_BOX);
                 btnCheckButtons->callback((Fl_Callback*)cb_btnCheckButtons);

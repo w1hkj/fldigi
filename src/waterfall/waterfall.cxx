@@ -694,7 +694,7 @@ void WFdisp::drawScale() {
 		else
 			xchar = (int) ( ( (1000.0/step) * i - fw) / 2.0 -
 							(offset + 500 - rfc % 500) /step );
-		if (xchar > 0 && (xchar + fw) < disp_width)
+		if (xchar > 0 && (xchar + fw) < w())
 			fl_draw(szFreq, x() + xchar, y() + 10 );
 	}
 }
@@ -1333,23 +1333,42 @@ bool waterfall::USB() {
 	return wfdisp->USB();
 }
 
+void waterfall::show_scope(bool on)
+{
+	if (on) {
+		wfscope->show();
+		wfscope->position(wf->x() + wf->w() - wf_dim - BEZEL, wf->y());
+		wfdisp->size( wf->w() - 2 * BEZEL - wf_dim, wf_dim - 2 * BEZEL);
+		rs1->init_sizes();
+	} else {
+		wfscope->hide();
+		wfscope->position(wf->x() + wf->w(), wf->y());
+		wfdisp->size( wf->w() - 2 * BEZEL, wf_dim - 2 * BEZEL);
+		rs1->init_sizes();
+	}
+}
+
 waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	Fl_Group(x0,y0,w0,h0,lbl) {
 	int xpos;
 	float ratio;// = w0 < 600 ? w0 / 600.0 : 1.0;
 	ratio = w0 * 1.0 / bwdths;
 
-	buttonrow = h() + y() - BTN_HEIGHT - BEZEL;
-	bezel = new Fl_Box(
-				FL_DOWN_BOX,
-				x(),
-				y(),
-				w(),
-				h() - BTN_HEIGHT - 2 * BEZEL, 0);
-	wfdisp = new WFdisp(x() + BEZEL,
+	wf_dim = h() - BTN_HEIGHT - 4;
+
+	buttonrow = h() + y() - BTN_HEIGHT - 1;
+
+	rs1 = new Fl_Group(x(), y(), w(), wf_dim);
+		rs1->box(FL_DOWN_BOX);
+		wfdisp = new WFdisp(
+			x() + BEZEL,
 			y() + BEZEL,
 			w() - 2 * BEZEL,
-			h() - BTN_HEIGHT - 4 * BEZEL);
+			wf_dim - 2 * BEZEL);
+		wfscope = new Digiscope (x() + w(), y(), wf_dim, wf_dim);
+		rs1->resizable(wfdisp);
+	rs1->end();
+	wfscope->hide();
 
 	xpos = x() + wSpace;
 
@@ -1449,7 +1468,6 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	xmtrcv->selection_color(FL_RED);
 	xmtrcv->value(0);
 	xmtrcv->tooltip(_("Transmit/Receive"));
-
 	end();
 }
 
@@ -1530,11 +1548,12 @@ int waterfall::handle(int event)
 	if ( !((d = Fl::event_dy()) || (d = Fl::event_dx())) )
 		return 1;
 
- 	Fl_Valuator* v[] = { sldrSquelch, wfcarrier, wfRefLevel, wfAmpSpan, valRcvMixer, valXmtMixer };
-  	for (size_t i = 0; i < sizeof(v)/sizeof(v[0]); i++) {
-  		if (Fl::event_inside(v[i])) {
- 			if ((v[i] == sldrSquelch && !progdefaults.docked_scope) ||
-			    v[i] == valRcvMixer || v[i] == valXmtMixer)
+	Fl_Valuator* v[] = { sldrSquelch, wfcarrier, wfRefLevel, wfAmpSpan, valRcvMixer, valXmtMixer };
+	for (size_t i = 0; i < sizeof(v)/sizeof(v[0]); i++) {
+		if (Fl::event_inside(v[i])) {
+			if (v[i] == sldrSquelch ||
+				v[i] == valRcvMixer ||
+				v[i] == valXmtMixer)
 				d = -d;
 			v[i]->value(v[i]->clamp(v[i]->increment(v[i]->value(), -d)));
 			v[i]->do_callback();
@@ -1852,8 +1871,7 @@ void waterfall::handle_mouse_wheel(int what, int d)
 		return;
 	case WF_SQUELCH:
 		val = sldrSquelch;
-		if (!progdefaults.docked_scope)
-			d = -d;
+		d = -d;
 		msg_fmt = "%s = %2.0f %%";
 		msg_label = "Squelch";
 		break;

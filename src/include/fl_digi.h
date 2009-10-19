@@ -82,6 +82,8 @@ extern Fl_Button		*qsoSave;
 extern Fl_Box			*txtRigName;
 
 extern cFreqControl		*qsoFreqDisp1;
+extern cFreqControl 	*qsoFreqDisp2;
+extern cFreqControl		*qsoFreqDisp3;
 extern Fl_Input2		*inpFreq2;
 extern Fl_Input2		*inpTimeOff2;
 extern Fl_Input2		*inpTimeOn2;
@@ -90,7 +92,6 @@ extern Fl_Input2		*inpCall2;
 extern Fl_Input2		*inpName2;
 extern Fl_Input2		*inpRstIn2;
 extern Fl_Input2		*inpRstOut2;
-extern cFreqControl 	*qsoFreqDisp2;
 extern Fl_Button		*qsoClear2;
 extern Fl_Button		*qsoSave2;
 

@@ -347,8 +347,16 @@ void qso_movFreq(Fl_Widget* w, void*)
 	cFreqControl *fc = (cFreqControl *)w;
 	long int f;
 	f = fc->value();
-	if (fc == qsoFreqDisp1) qsoFreqDisp2->value(f);
-	else qsoFreqDisp1->value(f);
+	if (fc == qsoFreqDisp1) {
+		qsoFreqDisp2->value(f);
+		qsoFreqDisp3->value(f);
+	} else if (fc == qsoFreqDisp2) {
+		qsoFreqDisp1->value(f);
+		qsoFreqDisp3->value(f);
+	} else {
+		qsoFreqDisp1->value(f);
+		qsoFreqDisp2->value(f);
+	}
 
 	sendFreq(f);
 	return;

@@ -14,6 +14,7 @@ struct status {
 	bool	WF_UI;
 	bool	NO_RIGLOG;
 	bool	Rig_Log_UI;
+	bool	DOCKEDSCOPE;
 
 	int		RxTextHeight;
 	int		rigX;
@@ -69,7 +70,7 @@ struct status {
 	void initLastState();
 	void saveLastState();
 	void loadLastState();
-	
+
 };
 
 extern status progStatus;

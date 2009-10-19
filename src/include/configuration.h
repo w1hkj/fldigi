@@ -466,9 +466,6 @@
               "Use small video ID font",                                                \
               true)                                                                     \
         ELEM_(bool, macrotextid, "", "",  false)                                        \
-        ELEM_(bool, docked_scope, "DOCKEDSCOPE",                                        \
-              "Docked digiscope",                                                       \
-              false)                                                                    \
         ELEM_(bool, docked_rig_control, "DOCKEDRIGCONTROL",                             \
               "Docked rig control",                                                     \
               true)                                                                     \

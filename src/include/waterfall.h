@@ -32,6 +32,7 @@
 
 #include "fft.h"
 #include "fldigi-config.h"
+#include "digiscope.h"
 
 enum {
 	WF_FFT_RECTANGULAR, WF_FFT_BLACKMAN, WF_FFT_HAMMING,
@@ -270,6 +271,7 @@ class waterfall: public Fl_Group {
 public:
 	waterfall(int x, int y, int w, int h, char *lbl= 0);
 	~waterfall(){};
+	void show_scope(bool on);
 	void opmode();
 	void sig_data(double *sig, int len, int sr){
 		wfdisp->sig_data(sig, len, sr);
@@ -347,9 +349,14 @@ public:
 
 	void UI_select(bool);
 
+	Digiscope	*wfscope;
+
 private:
+	bool		ishidden;
+	int			wf_dim;
 	Fl_Box		*bezel;
 	WFdisp		*wfdisp;
+	Fl_Group	*rs1, *rs2, *hidden;
 	Fl_Button	*mode;
 	Fl_Button	*x1;
 	Fl_Button	*left;
