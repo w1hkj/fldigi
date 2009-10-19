@@ -318,18 +318,29 @@ void FTextRX::handle_context_menu(void)
 	else
 		menu[RX_MENU_WRAP].clear();
 
-	if (progStatus.contest) {
-			menu[RX_MENU_SERIAL].show();
-			menu[RX_MENU_XCHG].show();
+	if (progStatus.Rig_Contest_UI ||
+		(progStatus.contest && !progStatus.NO_RIGLOG && ! progStatus.Rig_Log_UI)) {
+		menu[RX_MENU_QRZ_THIS].hide();
+		menu[RX_MENU_NAME].hide();
+		menu[RX_MENU_QTH].hide();
+		menu[RX_MENU_RST_IN].hide();
+		menu[RX_MENU_QUICK_ENTRY].hide();
+		menu[RX_MENU_SERIAL].show();
+		menu[RX_MENU_XCHG].show();
 	} else {
-			menu[RX_MENU_SERIAL].hide();
-			menu[RX_MENU_XCHG].hide();
+		menu[RX_MENU_QRZ_THIS].show();
+		menu[RX_MENU_NAME].show();
+		menu[RX_MENU_QTH].show();
+		menu[RX_MENU_RST_IN].show();
+		menu[RX_MENU_QUICK_ENTRY].show();
+		menu[RX_MENU_SERIAL].hide();
+		menu[RX_MENU_XCHG].hide();
+		if (progdefaults.QRZ != QRZNONE)
+			menu[RX_MENU_QRZ_THIS].show();
+		else
+			menu[RX_MENU_QRZ_THIS].hide();
 	}
 
-	if (progdefaults.QRZ != QRZNONE)
-		menu[RX_MENU_QRZ_THIS].show();
-	else
-		menu[RX_MENU_QRZ_THIS].hide();
 	show_context_menu();
 }
 
