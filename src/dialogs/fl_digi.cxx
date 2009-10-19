@@ -1938,8 +1938,6 @@ void UI_select()
 			inpRstIn = inpRstIn2;
 			inpRstOut = inpRstOut2;
 			qsoFreqDisp = qsoFreqDisp2;
-			fl_digi_main->init_sizes();
-			return;
 		} else if (progStatus.Rig_Contest_UI) {
 			TopFrame1->hide();
 			TopFrame2->hide();
@@ -1949,8 +1947,6 @@ void UI_select()
 			inpTimeOff = inpTimeOff3;
 			inpXchgIn = inpXchgIn2;
 			qsoFreqDisp = qsoFreqDisp3;
-			fl_digi_main->init_sizes();
-			return;
 		}
 	}
 	inpCall4->hide();
@@ -3120,7 +3116,7 @@ void create_fl_digi_main() {
 
 		Y = Hmenu + Hqsoframe + pad;
 
-		int Htext = (progStatus.mainH - Hwfall - Hmenu - Hstatus - Hmacros - Hqsoframe);// - 4);
+		int Htext = progStatus.mainH - Hwfall - Hmenu - Hstatus - Hmacros - Hqsoframe - 4;
 		int Hrcvtxt = (Htext) / 2;
 		int Hxmttxt = (Htext - (Hrcvtxt));
 		int sw = DEFAULT_SW;
