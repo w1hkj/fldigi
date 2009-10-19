@@ -42,12 +42,13 @@ status progStatus = {
 	MODE_BPSK31,		// trx_mode	lastmode;
 	50,					// int mainX;
 	50,					// int mainY;
-	0,					// int mainW;
-	0,					// int mainH;
+	WNOM,				// int mainW;
+	HNOM,				// int mainH;
 	true,				// bool WF_UI;
 	true,				// bool NO_RIGLOG;
-	true,				// bool Rig_Log_UI;
-	true,				// bool DOCKEDSCOPE;
+	false,				// bool Rig_Log_UI;
+	false,				// bool Rig_Contest_UI;
+	false,				// bool DOCKEDSCOPE;
 	0,					// int RxTextHeight;
 	50,					// int rigX;
 	50,					// int rigY;
@@ -175,6 +176,7 @@ void status::saveLastState()
 	spref.set("main_h", mainH);
 	spref.set("wf_ui", WF_UI);
 	spref.set("riglog_ui", Rig_Log_UI);
+	spref.set("rigcontest_ui", Rig_Contest_UI);
 	spref.set("noriglog", NO_RIGLOG);
 	spref.set("docked_scope", DOCKEDSCOPE);
 
@@ -260,6 +262,7 @@ void status::loadLastState()
 	spref.get("main_h", mainH, mainH);
 	spref.get("wf_ui", i, i); WF_UI = i;
 	spref.get("riglog_ui", i, i); Rig_Log_UI = i;
+	spref.get("rigcontest_ui", i, i); Rig_Contest_UI = i;
 	spref.get("noriglog", i, i); NO_RIGLOG = i;
 	spref.get("docked_scope", i, i); DOCKEDSCOPE = i;
 

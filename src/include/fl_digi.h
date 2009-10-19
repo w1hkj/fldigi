@@ -50,7 +50,7 @@ extern Fl_Double_Window *scopeview;
 extern FTextRX			*ReceiveText;
 extern FTextTX			*TransmitText;
 extern Raster			*FHdisp;
-extern Fl_Tile_Check		*TiledGroup;
+extern Fl_Tile_Check	*TiledGroup;
 extern Fl_Box			*StatusBar;
 extern Fl_Box			*Status2;
 extern Fl_Box			*Status1;

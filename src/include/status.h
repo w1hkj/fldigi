@@ -14,6 +14,7 @@ struct status {
 	bool	WF_UI;
 	bool	NO_RIGLOG;
 	bool	Rig_Log_UI;
+	bool	Rig_Contest_UI;
 	bool	DOCKEDSCOPE;
 
 	int		RxTextHeight;

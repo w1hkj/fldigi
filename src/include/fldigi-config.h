@@ -75,9 +75,9 @@ extern int Hmenu;
 extern int Hstatus;
 extern int Hmacros;
 
-#define Htext		(DEFAULT_HNOM - 4 - Hwfall - Hmenu - Hstatus - Hmacros - Hqsoframe)
-#define Hrcvtxt		(Htext) / 2
-#define Hxmttxt		(Htext - (Hrcvtxt))
+//#define Htext		(DEFAULT_HNOM - 4 - Hwfall - Hmenu - Hstatus - Hmacros - Hqsoframe)
+//#define Hrcvtxt		(Htext) / 2
+//#define Hxmttxt		(Htext - (Hrcvtxt))
 
 #define Wmode 		80
 #define Ws2n  		100

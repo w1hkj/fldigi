@@ -204,6 +204,9 @@ Fl_Input2			*inpCall1;
 Fl_Input2			*inpName1;
 Fl_Input2			*inpRstIn1;
 Fl_Input2			*inpRstOut1;
+Fl_Input2			*inpXchgIn1;
+Fl_Input2			*outSerNo1;
+Fl_Input2			*inpSerNo1;
 cFreqControl 		*qsoFreqDisp1 = (cFreqControl *)0;
 
 Fl_Group			*RigControlFrame = (Fl_Group *)0;
@@ -239,6 +242,9 @@ Fl_Input2			*inpTimeOff3;
 Fl_Input2			*inpTimeOn3;
 Fl_Button           *btnTimeOn3;
 Fl_Input2			*inpCall3;
+Fl_Input2			*outSerNo2;
+Fl_Input2			*inpSerNo2;
+Fl_Input2			*inpXchgIn2;
 Fl_Button			*qso_opPICK3;
 Fl_Button			*qsoClear3;
 Fl_Button			*qsoSave3;
@@ -303,7 +309,7 @@ int qh = Hqsoframe / 2;
 
 int IMAGE_WIDTH;
 int Hwfall;
-int HNOM;
+int HNOM = DEFAULT_HNOM;
 // WNOM must be large enough to contain ALL of the horizontal widgets
 // when the main dialog is initially created.
 int WNOM = 650;//progStatus.mainW ? progStatus.mainW : WMIN;
@@ -330,7 +336,7 @@ Pixmap				fldigi_icon_pixmap;
 #endif
 
 Fl_Menu_Item *getMenuItem(const char *caption, Fl_Menu_Item* submenu = 0);
-void UI_select(bool);
+void UI_select();
 bool clean_exit(void);
 
 void cb_init_mode(Fl_Widget *, void *arg);
@@ -1395,7 +1401,10 @@ void ztimer(void* first_call)
 	else
 		ztbuf[8] = '\0';
 
-	inpTimeOff->value(ztbuf + 9);
+	inpTimeOff1->value(ztbuf + 9);
+	inpTimeOff2->value(ztbuf + 9);
+	inpTimeOff3->value(ztbuf + 9);
+
 }
 
 
@@ -1407,9 +1416,12 @@ void updateOutSerNo()
 		char szcnt[10] = "";
 		contest_count.Format(progdefaults.ContestDigits, progdefaults.UseLeadingZeros);
 		snprintf(szcnt, sizeof(szcnt), contest_count.fmt.c_str(), contest_count.count);
-		outSerNo->value(szcnt);
-	} else
-		outSerNo->value("");
+		outSerNo1->value(szcnt);
+		outSerNo2->value(szcnt);
+	} else {
+		outSerNo1->value("");
+		outSerNo2->value("");
+	}
 }
 
 string old_call;
@@ -1418,14 +1430,21 @@ string new_call;
 void clearQSO()
 {
 	Fl_Input* in[] = {
-		inpCall, inpName, inpTimeOn, inpRstIn, inpRstOut,
+		inpCall1, inpCall2, inpCall3, inpCall4,
+		inpName1, inpName2,
+		inpTimeOn1, inpTimeOn2,
+		inpRstIn1, inpRstIn2,
+		inpRstOut1, inpRstIn2,
 		inpQth, inpLoc, inpAZ, inpState, inpVEprov, inpCountry,
-		inpSerNo, outSerNo, inpXchgIn, inpNotes };
+		inpSerNo1, inpSerNo2,
+		outSerNo1, outSerNo2,
+		inpXchgIn1, inpXchgIn2,
+		inpNotes };
 	for (size_t i = 0; i < sizeof(in)/sizeof(*in); i++)
 		in[i]->value("");
 	if (progdefaults.fixed599) {
-		inpRstIn->value("599");
-		inpRstOut->value("599");
+		inpRstIn1->value("599"); inpRstIn2->value("599");
+		inpRstOut1->value("599"); inpRstOut2->value("599");
 	}
 	updateOutSerNo();
 	inpSearchString->value ("");
@@ -1570,6 +1589,9 @@ void cb_log(Fl_Widget* w, void*)
 	if (inp == inpTimeOff3) {
 		inpTimeOff1->value(inpTimeOff->value()); inpTimeOff2->value(inpTimeOff->value());
 	}
+
+	if (inp == inpXchgIn1) inpXchgIn2->value(inpXchgIn1->value());
+	if (inp == inpXchgIn2) inpXchgIn1->value(inpXchgIn2->value());
 
 	if (inp->value()[0])
 		oktoclear = false;
@@ -1831,10 +1853,12 @@ bool clean_exit(void) {
 	return true;
 }
 
-void UI_select(bool minimized)
+bool restore_minimize = false;
+
+void UI_select()
 {
-	if (progStatus.NO_RIGLOG) {
-		int y1 = TopFrame2->y();
+	if (progStatus.NO_RIGLOG && !restore_minimize) {
+		int y1 = TopFrame1->y();
 		int y2 = macroFrame->y();
 		int w = TopFrame1->w();
 		if (MixerFrame->visible()) {
@@ -1848,6 +1872,7 @@ void UI_select(bool minimized)
 		}
 		TopFrame1->hide();
 		TopFrame2->hide();
+		TopFrame3->hide();
 		Status1->color(FL_BACKGROUND_COLOR);
 		Status2->hide();
 		inpCall4->show();
@@ -1855,7 +1880,9 @@ void UI_select(bool minimized)
 		fl_digi_main->init_sizes();
 		return;
 	}
-	if (!minimized) {
+
+	if ((!progStatus.Rig_Log_UI && ! progStatus.Rig_Contest_UI) ||
+			restore_minimize) {
 		int y1 = TopFrame1->y() + Hqsoframe;
 		int y2 = macroFrame->y();
 		int w = TopFrame1->w();
@@ -1873,6 +1900,7 @@ void UI_select(bool minimized)
 			inpNotes->w(), 2*Hentry + pad);
 		inpNotes->redraw();
 		TopFrame2->hide();
+		TopFrame3->hide();
 		TopFrame1->show();
 		inpFreq = inpFreq1;
 		inpCall = inpCall1;
@@ -1881,8 +1909,11 @@ void UI_select(bool minimized)
 		inpName = inpName1;
 		inpRstIn = inpRstIn1;
 		inpRstOut = inpRstOut1;
+		inpXchgIn = inpXchgIn1;
 		qsoFreqDisp = qsoFreqDisp1;
-	} else {
+		fl_digi_main->init_sizes();
+		return;
+	} else if (progStatus.Rig_Log_UI || progStatus.Rig_Contest_UI) {
 		int y1 = TopFrame2->y() + Hentry + 2 * pad;
 		int y2 = macroFrame->y();
 		int w = TopFrame1->w();
@@ -1895,16 +1926,32 @@ void UI_select(bool minimized)
 			TiledGroup->resize(0, y1, w, y2 - y1);
 			TiledGroup->redraw();
 		}
-		TopFrame1->hide();
-		TopFrame2->show();
-		inpFreq = inpFreq2;
-		inpCall = inpCall2;
-		inpTimeOn = inpTimeOn2;
-		inpTimeOff = inpTimeOff2;
-		inpName = inpName2;
-		inpRstIn = inpRstIn2;
-		inpRstOut = inpRstOut2;
-		qsoFreqDisp = qsoFreqDisp2;
+		if (progStatus.Rig_Log_UI) {
+			TopFrame1->hide();
+			TopFrame3->hide();
+			TopFrame2->show();
+			inpFreq = inpFreq2;
+			inpCall = inpCall2;
+			inpTimeOn = inpTimeOn2;
+			inpTimeOff = inpTimeOff2;
+			inpName = inpName2;
+			inpRstIn = inpRstIn2;
+			inpRstOut = inpRstOut2;
+			qsoFreqDisp = qsoFreqDisp2;
+			fl_digi_main->init_sizes();
+			return;
+		} else if (progStatus.Rig_Contest_UI) {
+			TopFrame1->hide();
+			TopFrame2->hide();
+			TopFrame3->show();
+			inpCall = inpCall3;
+			inpTimeOn = inpTimeOn3;
+			inpTimeOff = inpTimeOff3;
+			inpXchgIn = inpXchgIn2;
+			qsoFreqDisp = qsoFreqDisp3;
+			fl_digi_main->init_sizes();
+			return;
+		}
 	}
 	inpCall4->hide();
 	Status1->color(FL_BACKGROUND2_COLOR);
@@ -1912,23 +1959,53 @@ void UI_select(bool minimized)
 	fl_digi_main->init_sizes();
 }
 
+#define LOG_TO_FILE_MLABEL _("Log all RX/TX text")
+#define RIGCONTROL_MLABEL _("Rig Control")
+#define VIEW_MLABEL _("&View")
+#define MFSK_IMAGE_MLABEL _("&MFSK Image")
+#define CONTEST_MLABEL _("Contest")
+#define CONTEST_FIELDS_MLABEL _("&Contest fields")
+#define COUNTRIES_MLABEL _("C&ountries")
+#define UI_MLABEL _("&UI")
+#define RIGLOG_NONE_MLABEL _("No  Rig-Log")
+#define RIGLOG_MLABEL      _("Min Rig-Log")
+#define RIGCONTEST_MLABEL  _("Min Rig-Contest")
+#define DOCKEDSCOPE_MLABEL _("Docked scope")
+#define WF_MLABEL _("Min WF Controls")
+
 void cb_mnu_wf_all(Fl_Menu_* w, void *d)
 {
 	Fl_Menu_Item *m = getMenuItem(((Fl_Menu_*)w)->mvalue()->label());
-	progStatus.	WF_UI = m->value();
+	progStatus.WF_UI = m->value();
 	wf->UI_select(progStatus.WF_UI);
 }
 
 void cb_mnu_riglog(Fl_Menu_* w, void *d) {
 	Fl_Menu_Item *m = getMenuItem(((Fl_Menu_*)w)->mvalue()->label());
 	progStatus.Rig_Log_UI = m->value();
-	UI_select(progStatus.Rig_Log_UI);
+	if (progStatus.Rig_Log_UI) {
+		progStatus.Rig_Contest_UI = false;
+		Fl_Menu_Item *m2 = getMenuItem(RIGCONTEST_MLABEL);
+		m2->clear();
+	}
+	UI_select();
+}
+
+void cb_mnu_rigcontest(Fl_Menu_* w, void *d) {
+	Fl_Menu_Item *m = getMenuItem(((Fl_Menu_*)w)->mvalue()->label());
+	progStatus.Rig_Contest_UI = m->value();
+	if (progStatus.Rig_Contest_UI) {
+		progStatus.Rig_Log_UI = false;
+		Fl_Menu_Item *m2 = getMenuItem(RIGLOG_MLABEL);
+		m2->clear();
+	}
+	UI_select();
 }
 
 void cb_mnu_riglog_none(Fl_Menu_* w, void *d) {
 	Fl_Menu_Item *m = getMenuItem(((Fl_Menu_*)w)->mvalue()->label());
 	progStatus.NO_RIGLOG = m->value();
-	UI_select(progStatus.Rig_Log_UI);
+	UI_select();
 }
 
 void cb_mnuDockedscope(Fl_Menu_ *w, void *d) {
@@ -1941,19 +2018,6 @@ void WF_UI()
 {
 	wf->UI_select(progStatus.WF_UI);
 }
-
-#define LOG_TO_FILE_MLABEL _("Log all RX/TX text")
-#define RIGCONTROL_MLABEL _("Rig Control")
-#define VIEW_MLABEL _("&View")
-#define MFSK_IMAGE_MLABEL _("&MFSK Image")
-#define CONTEST_MLABEL _("Contest")
-#define CONTEST_FIELDS_MLABEL _("&Contest fields")
-#define COUNTRIES_MLABEL _("C&ountries")
-#define UI_MLABEL _("&UI")
-#define RIGLOG_NONE_MLABEL _("No Rig-Log Controls")
-#define RIGLOG_MLABEL _("Min Rig-Log Controls")
-#define DOCKEDSCOPE_MLABEL _("Docked scope")
-#define WF_MLABEL _("Min WF Controls")
 
 Fl_Menu_Item menu_[] = {
 {_("&File"), 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
@@ -2104,6 +2168,7 @@ Fl_Menu_Item menu_[] = {
 { make_icon_label(_("&Logbook")), 'l', (Fl_Callback*)cb_mnuShowLogbook, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(COUNTRIES_MLABEL), 'o', (Fl_Callback*)cb_mnuShowCountries, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { RIGLOG_MLABEL, 0, (Fl_Callback*)cb_mnu_riglog, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
+{ RIGCONTEST_MLABEL, 0, (Fl_Callback*)cb_mnu_rigcontest, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 { RIGLOG_NONE_MLABEL, 0, (Fl_Callback*)cb_mnu_riglog_none, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 { CONTEST_FIELDS_MLABEL, 0, (Fl_Callback*)cb_mnuContest, 0, FL_MENU_TOGGLE | FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 { DOCKEDSCOPE_MLABEL, 0, (Fl_Callback*)cb_mnuDockedscope, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
@@ -2235,8 +2300,6 @@ void update_main_title()
 		fl_digi_main->label(main_window_title.c_str());
 }
 
-bool restore_minimize = false;
-
 void showOpBrowserView(Fl_Widget *, void *)
 {
 	if (RigViewerFrame->visible())
@@ -2260,15 +2323,15 @@ void CloseQsoView()
 	qso_opPICK->redraw_label();
 	qso_opPICK->tooltip(_("Open List"));
 	if (restore_minimize) {
-		UI_select(true);
 		restore_minimize = false;
+		UI_select();
 	}
 }
 
 void showOpBrowserView2(Fl_Widget *w, void *)
 {
 	restore_minimize = true;
-	UI_select(false);
+	UI_select();
 	showOpBrowserView(w, NULL);
 }
 
@@ -2443,15 +2506,14 @@ void create_fl_digi_main() {
 
 	IMAGE_WIDTH = 4000;//progdefaults.wfwidth;
 	Hwfall = progdefaults.wfheight;
-	HNOM = DEFAULT_HNOM;
 
-	Wwfall = WNOM - 2 * BEZEL - 2 * DEFAULT_SW;
+	Wwfall = progStatus.mainW - 2 * DEFAULT_SW;
 
 	update_main_title();
-	fl_digi_main = new Fl_Double_Window(WNOM, HNOM, main_window_title.c_str());
+	fl_digi_main = new Fl_Double_Window(progStatus.mainW, progStatus.mainH, main_window_title.c_str());
 
-		mnuFrame = new Fl_Group(0,0,WNOM, Hmenu);
-			mnu = new Fl_Menu_Bar(0, 0, WNOM - 250 - pad, Hmenu);
+		mnuFrame = new Fl_Group(0,0,progStatus.mainW, Hmenu);
+			mnu = new Fl_Menu_Bar(0, 0, progStatus.mainW - 250 - pad, Hmenu);
 			// do some more work on the menu
 			for (size_t i = 0; i < sizeof(menu_)/sizeof(menu_[0]); i++) {
 				// FL_NORMAL_SIZE may have changed; update the menu items
@@ -2464,26 +2526,26 @@ void create_fl_digi_main() {
 			}
 			mnu->menu(menu_);
 
-			btnAutoSpot = new Fl_Light_Button(WNOM - 250 - pad, 0, 50, Hmenu, "Spot");
+			btnAutoSpot = new Fl_Light_Button(progStatus.mainW - 250 - pad, 0, 50, Hmenu, "Spot");
 			btnAutoSpot->selection_color(FL_YELLOW);
 			btnAutoSpot->callback(cbAutoSpot, 0);
 			btnAutoSpot->deactivate();
 
-			btnRSID = new Fl_Light_Button(WNOM - 200 - pad, 0, 50, Hmenu, "RxID");
+			btnRSID = new Fl_Light_Button(progStatus.mainW - 200 - pad, 0, 50, Hmenu, "RxID");
 			btnRSID->selection_color(FL_GREEN);
 			btnRSID->tooltip("Receive RSID");
 			btnRSID->callback(cbRSID, 0);
 
-			btnTxRSID = new Fl_Light_Button(WNOM - 150 - pad, 0, 50, Hmenu, "TxID");
+			btnTxRSID = new Fl_Light_Button(progStatus.mainW - 150 - pad, 0, 50, Hmenu, "TxID");
 			btnTxRSID->selection_color(FL_BLUE);
 			btnTxRSID->tooltip("Transmit RSID");
 			btnTxRSID->callback(cbTxRSID, 0);
 
-			btnTune = new Fl_Light_Button(WNOM - 100 - pad, 0, 50, Hmenu, "TUNE");
+			btnTune = new Fl_Light_Button(progStatus.mainW - 100 - pad, 0, 50, Hmenu, "TUNE");
 			btnTune->selection_color(FL_RED);
 			btnTune->callback(cbTune, 0);
 
-			btnMacroTimer = new Fl_Button(WNOM - 50 - pad, 0, 50, Hmenu);
+			btnMacroTimer = new Fl_Button(progStatus.mainW - 50 - pad, 0, 50, Hmenu);
 			btnMacroTimer->labelcolor(FL_DARK_RED);
 			btnMacroTimer->callback(cbMacroTimerButton);
 			btnMacroTimer->set_output();
@@ -2499,7 +2561,7 @@ void create_fl_digi_main() {
 		Fl_Tooltip::size(FL_NORMAL_SIZE);
 		Fl_Tooltip::enable(progdefaults.tooltips);
 
-		TopFrame1 = new Fl_Group(0, Hmenu, WNOM, Hqsoframe);
+		TopFrame1 = new Fl_Group(0, Hmenu, progStatus.mainW, Hqsoframe);
 
 		RigControlFrame = new Fl_Group(
 			0, Hmenu,
@@ -2671,7 +2733,7 @@ void create_fl_digi_main() {
 		int y3 = Hmenu + 2 * (Hentry + pad) + pad;
 
 		QsoInfoFrame = new Fl_Group(x_qsoframe, Hmenu,
-						WNOM - rightof(QsoButtonFrame) - pad, Hqsoframe);
+						progStatus.mainW - rightof(QsoButtonFrame) - pad, Hqsoframe);
 
 			QsoInfoFrame1 = new Fl_Group(x_qsoframe, Hmenu, wf1, Hqsoframe);
 
@@ -2763,32 +2825,32 @@ void create_fl_digi_main() {
 						x_qsoframe, y3 + pad,
 						w_fm7, Hentry, _("#Out"));
 					fm6box->align(FL_ALIGN_INSIDE);
-					outSerNo = new Fl_Input2(
+					outSerNo1 = new Fl_Input2(
 						rightof(fm6box), y3 + pad,
 						w_SerNo, Hentry, "");
-					outSerNo->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-					outSerNo->tooltip(_("Sent serial number (read only)"));
-					outSerNo->type(FL_NORMAL_OUTPUT);
+					outSerNo1->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+					outSerNo1->tooltip(_("Sent serial number (read only)"));
+					outSerNo1->type(FL_NORMAL_OUTPUT);
 
 					Fl_Box *fm7box = new Fl_Box(
-						rightof(outSerNo) + pad, y3 + pad,
+						rightof(outSerNo1) + pad, y3 + pad,
 						w_fm5, Hentry, _("#In"));
 					fm7box->align(FL_ALIGN_INSIDE);
-					inpSerNo = new Fl_Input2(
+					inpSerNo1 = new Fl_Input2(
 						rightof(fm7box), y3 + pad,
 						w_SerNo, Hentry, "");
-					inpSerNo->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-					inpSerNo->tooltip(_("Received serial number"));
+					inpSerNo1->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+					inpSerNo1->tooltip(_("Received serial number"));
 
 					Fl_Box *fm8box = new Fl_Box(
-						rightof(inpSerNo) + pad, y3 + pad,
+						rightof(inpSerNo1) + pad, y3 + pad,
 						w_fm7, Hentry, _("Xchg"));
 					fm8box->align(FL_ALIGN_INSIDE);
-					inpXchgIn = new Fl_Input2(
+					inpXchgIn1 = new Fl_Input2(
 						rightof(fm8box), y3 + pad,
 					    rightof(inpRstOut1) - rightof(fm8box), Hentry, "");
-					inpXchgIn->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-					inpXchgIn->tooltip(_("Contest exchange in"));
+					inpXchgIn1->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+					inpXchgIn1->tooltip(_("Contest exchange in"));
 
 				QsoInfoFrame1B->end();
 				QsoInfoFrame1B->hide();
@@ -2798,11 +2860,11 @@ void create_fl_digi_main() {
 
 			QsoInfoFrame2 = new Fl_Group(
 				x_qsoframe + wf1 + pad, Hmenu,
-				WNOM - rightof(QsoInfoFrame1) - 2*pad, Hqsoframe);
+				progStatus.mainW - rightof(QsoInfoFrame1) - 2*pad, Hqsoframe);
 
 				inpNotes = new Fl_Input2(
 					x_qsoframe + wf1 + pad, y2,
-					WNOM - rightof(QsoInfoFrame1) - 2*pad, 2*Hentry + pad, _("Notes"));
+					progStatus.mainW - rightof(QsoInfoFrame1) - 2*pad, 2*Hentry + pad, _("Notes"));
 				inpNotes->type(FL_MULTILINE_INPUT);
 				inpNotes->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
@@ -2815,7 +2877,7 @@ void create_fl_digi_main() {
 
 		TopFrame1->end();
 
-		TopFrame2 = new Fl_Group(0, Hmenu, WNOM, Hentry + 2 * pad);
+		TopFrame2 = new Fl_Group(0, Hmenu, progStatus.mainW, Hentry + 2 * pad);
 		{
 			int y = Hmenu + pad;
 			int h = Hentry;
@@ -2880,7 +2942,6 @@ void create_fl_digi_main() {
 			btnTimeOn2 = new Fl_Button(
 				pad + rightof(inpFreq2), y,
 				fl_width(label2), h, label2);
-//			btnTimeOn2->align(FL_ALIGN_LEFT | FL_ALIGN_BOTTOM | FL_ALIGN_INSIDE);
 			btnTimeOn2->tooltip(_("Press to update"));
 			btnTimeOn2->box(FL_NO_BOX);
 			btnTimeOn2->callback(cb_btnTimeOn);
@@ -2932,11 +2993,11 @@ void create_fl_digi_main() {
 			inpRstOut2->tooltip(_("Sent RST"));
 
 		}
-		TopFrame2->resizable(NULL);
+		TopFrame2->resizable(inpName2);
 		TopFrame2->end();
 		TopFrame2->hide();
 
-		TopFrame3 = new Fl_Group(0, Hmenu, WNOM, Hentry + 2 * pad);
+		TopFrame3 = new Fl_Group(0, Hmenu, progStatus.mainW, Hentry + 2 * pad);
 		{
 			int y = Hmenu + pad;
 			int h = Hentry;
@@ -2974,33 +3035,24 @@ void create_fl_digi_main() {
 			qsoClear3->tooltip(_("Clear"));
 
 			qsoSave3 = new Fl_Button(
-					pad + rightof(qsoClear2), y,
+					pad + rightof(qsoClear3), y,
 					Wbtn, Hentry);
 			qsoSave3->image(new Fl_Pixmap(save_icon));
 			qsoSave3->callback(qsoSave_cb, 0);
 			qsoSave3->tooltip(_("Save"));
 
 			fl_font(FL_HELVETICA, FL_NORMAL_SIZE);
-//			const char *label1a = _("Freq");
-//			Fl_Box *bx1a = new Fl_Box(pad + rightof(qsoSave2), y,
-//				fl_width(label1a), h, label1a);
-//			inpFreq3 = new Fl_Input2(
-//				pad + bx1a->x() + bx1a->w(), y,
-//				w_inpFreq, h, "");
-//			inpFreq3->type(FL_NORMAL_OUTPUT);
-//			inpFreq3->tooltip(_("QSO frequency (read only)"));
 
 			const char *label2a = _("On");
 			btnTimeOn3 = new Fl_Button(
 				pad + rightof(qsoSave3), y,
 				fl_width(label2a), h, label2a);
-//			btnTimeOn3->align(FL_ALIGN_LEFT | FL_ALIGN_BOTTOM | FL_ALIGN_INSIDE);
 			btnTimeOn3->tooltip(_("Press to update"));
 			btnTimeOn3->box(FL_NO_BOX);
 			btnTimeOn3->callback(cb_btnTimeOn);
 			inpTimeOn3 = new Fl_Input2(
 				pad + btnTimeOn3->x() + btnTimeOn3->w(), y,
-				w_inpTime, h, "");
+				w_inpTime - 2, h, "");
 			inpTimeOn3->tooltip(_("Time On"));
 			inpTimeOn3->type(FL_INT_INPUT);
 
@@ -3009,21 +3061,52 @@ void create_fl_digi_main() {
 				fl_width(label3a), h, label3a);
 			inpTimeOff3 = new Fl_Input2(
 				pad + bx3a->x() + bx3a->w(), y,
-				w_inpTime, h, "");
+				w_inpTime - 2, h, "");
 			inpTimeOff3->tooltip(_("Time Off"));
 			inpTimeOff3->type(FL_NORMAL_OUTPUT);
 
 			const char *label4a = _("Call");
-			Fl_Box *bx4a = new Fl_Box(pad + rightof(inpTimeOff3), y,
+			Fl_Box *bx4a = new Fl_Box(
+				pad + rightof(inpTimeOff3), y,
 				fl_width(label4a), h, label4a);
 			inpCall3 = new Fl_Input2(
 				pad + bx4a->x() + bx4a->w(), y,
-				w_inpCall, h, "");
+				w_inpCall - 10, h, "");
 			inpCall3->tooltip(_("Other call"));
 
+			const char *label5a = _("# S");
+			Fl_Box *bx5a = new Fl_Box(
+				pad + rightof(inpCall3), y,
+				fl_width(label5a), h, label5a);
+			bx5a->align(FL_ALIGN_INSIDE);
+			outSerNo2 = new Fl_Input2(
+				rightof(bx5a), y,
+				w_SerNo, h, "");
+			outSerNo2->tooltip(_("Sent serial number (read only)"));
+			outSerNo2->type(FL_NORMAL_OUTPUT);
+
+			const char *label6a = _("# R");
+			Fl_Box *bx6a = new Fl_Box(
+				rightof(outSerNo2), y,
+				fl_width(label6a), h, label6a);
+			bx6a->align(FL_ALIGN_INSIDE);
+			inpSerNo2 = new Fl_Input2(
+				rightof(bx6a), y,
+				w_SerNo, h, "");
+			inpSerNo2->tooltip(_("Received serial number"));
+
+			const char *label7a = _("Ex");
+			Fl_Box *bx7a = new Fl_Box(
+				rightof(inpSerNo2), y,
+				fl_width(label7a), h, label7a);
+			bx7a->align(FL_ALIGN_INSIDE);
+			inpXchgIn2 = new Fl_Input2(
+				rightof(bx7a), y,
+				progStatus.mainW - rightof(bx7a) - pad, h, "");
+			inpXchgIn2->tooltip(_("Contest exchange in"));
+			TopFrame3->end();
 		}
-		TopFrame3->resizable(NULL);
-		TopFrame3->end();
+		TopFrame3->resizable(inpXchgIn2);
 		TopFrame3->hide();
 
 		inpFreq = inpFreq1;
@@ -3037,6 +3120,9 @@ void create_fl_digi_main() {
 
 		Y = Hmenu + Hqsoframe + pad;
 
+		int Htext = (progStatus.mainH - Hwfall - Hmenu - Hstatus - Hmacros - Hqsoframe);// - 4);
+		int Hrcvtxt = (Htext) / 2;
+		int Hxmttxt = (Htext - (Hrcvtxt));
 		int sw = DEFAULT_SW;
 		MixerFrame = new Fl_Group(0,Y,sw, Hrcvtxt + Hxmttxt);
 			valRcvMixer = new Fl_Value_Slider(0, Y, sw, (Htext)/2, "");
@@ -3061,21 +3147,18 @@ void create_fl_digi_main() {
 			valXmtMixer->callback( (Fl_Callback *)cb_XmtMixer);
 		MixerFrame->end();
 
-		TiledGroup = new Fl_Tile_Check(sw, Y, WNOM-sw, Htext);
-            int minRxHeight = Hrcvtxt;
-            int minTxHeight;
-            if (minRxHeight < 66) minRxHeight = 66;
-            minTxHeight = Htext - minRxHeight;
+		TiledGroup = new Fl_Tile_Check(sw, Y, progStatus.mainW-sw, Htext);
+			int minRxHeight = Hrcvtxt;
+			int minTxHeight;
+			if (minRxHeight < 66) minRxHeight = 66;
+			minTxHeight = Htext - minRxHeight;
 
-			ReceiveText = new FTextRX(sw, Y, WNOM-sw, minRxHeight, "");
+			ReceiveText = new FTextRX(sw, Y, progStatus.mainW-sw, minRxHeight, "");
 			ReceiveText->color(
 				fl_rgb_color(
 					progdefaults.RxColor.R,
 					progdefaults.RxColor.G,
 					progdefaults.RxColor.B));
-
-
-
 			ReceiveText->setFont(progdefaults.RxFontnbr);
 			ReceiveText->setFontSize(progdefaults.RxFontsize);
 			ReceiveText->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
@@ -3083,18 +3166,16 @@ void create_fl_digi_main() {
 			ReceiveText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
 			ReceiveText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
 			ReceiveText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
-			showMacroSet();
 
-			FHdisp = new Raster(sw, Y, WNOM-sw, minRxHeight);
+			FHdisp = new Raster(sw, Y, progStatus.mainW-sw, minRxHeight);
 			FHdisp->hide();
 
-			TransmitText = new FTextTX(sw, Y + minRxHeight, WNOM-sw, minTxHeight);
+			TransmitText = new FTextTX(sw, Y + minRxHeight, progStatus.mainW-sw, minTxHeight);
 			TransmitText->color(
 				fl_rgb_color(
 					progdefaults.TxColor.R,
 					progdefaults.TxColor.G,
 					progdefaults.TxColor.B));
-
 			TransmitText->setFont(progdefaults.TxFontnbr);
 			TransmitText->setFontSize(progdefaults.TxFontsize);
 			TransmitText->setFontColor(progdefaults.TxFontcolor, FTextBase::RECV);
@@ -3103,8 +3184,9 @@ void create_fl_digi_main() {
 			TransmitText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
 			TransmitText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
 
-			Fl_Box *minbox = new Fl_Box(sw,Y + 66, WNOM-sw, Htext - 66 - 32);
+			Fl_Box *minbox = new Fl_Box(sw,Y + 66, progStatus.mainW-sw, Htext - 66 - 32);
 			minbox->hide();
+
 			TiledGroup->resizable(minbox);
 
 			Y += Htext;
@@ -3115,9 +3197,9 @@ void create_fl_digi_main() {
 		Fl::add_handler(default_handler);
 
 		Fl_Box *bx;
-		macroFrame = new Fl_Box(0, Y, WNOM, Hmacros);
+		macroFrame = new Fl_Box(0, Y, progStatus.mainW, Hmacros);
 			macroFrame->box(FL_ENGRAVED_FRAME);
-			int Wbtn = (WNOM - 30 - 8 - 4)/NUMMACKEYS;
+			int Wbtn = (progStatus.mainW - 30 - 8 - 4)/NUMMACKEYS;
 			int xpos = 2;
 			for (int i = 0; i < NUMMACKEYS; i++) {
 				if (i == 4 || i == 8) {
@@ -3132,15 +3214,15 @@ void create_fl_digi_main() {
 				colorize_macro(i);
 				xpos += Wbtn;
 			}
-			bx = new Fl_Box(xpos, Y+2, WNOM - 32 - xpos, Hmacros - 4);
+			bx = new Fl_Box(xpos, Y+2, progStatus.mainW - 32 - xpos, Hmacros - 4);
 			bx->box(FL_FLAT_BOX);
 			bx->color(FL_BLACK);
-			btnAltMacros = new Fl_Button(WNOM-32, Y+2, 30, Hmacros - 4, "1");
+			btnAltMacros = new Fl_Button(progStatus.mainW-32, Y+2, 30, Hmacros - 4, "1");
 			btnAltMacros->callback(altmacro_cb, 0);
 			btnAltMacros->tooltip(_("Change macro set"));
 
 		Y += Hmacros;
-		Fl_Pack *wfpack = new Fl_Pack(0, Y, WNOM, Hwfall);
+		Fl_Pack *wfpack = new Fl_Pack(0, Y, progStatus.mainW, Hwfall);
 			wfpack->type(1);
 
 			wf = new waterfall(0, Y, Wwfall, Hwfall);
@@ -3169,7 +3251,7 @@ void create_fl_digi_main() {
 
 		Y += (Hwfall + 2);
 
-		Fl_Pack *hpack = new Fl_Pack(0, Y, WNOM, Hstatus);
+		Fl_Pack *hpack = new Fl_Pack(0, Y, progStatus.mainW, Hstatus);
 			hpack->type(1);
 			MODEstatus = new Fl_Button(0,Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Wmode+30, Hstatus, "");
 			MODEstatus->box(FL_DOWN_BOX);
@@ -3199,7 +3281,7 @@ void create_fl_digi_main() {
 
 			StatusBar = new Fl_Box(
                 rightof(Status2), Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
-                WNOM - bwSqlOnOff - bwAfcOnOff - Wwarn - rightof(Status2) - 2 * pad,// - 60,
+                progStatus.mainW - bwSqlOnOff - bwAfcOnOff - Wwarn - rightof(Status2) - 2 * pad,// - 60,
                 Hstatus, "");
 			StatusBar->box(FL_DOWN_BOX);
 			StatusBar->color(FL_BACKGROUND2_COLOR);
@@ -3219,20 +3301,20 @@ void create_fl_digi_main() {
 #endif
 			if (progdefaults.useCheckButtons) {
 				btnAFC = new Fl_Check_Button(
-								WNOM - bwSqlOnOff - bwAfcOnOff,
+								progStatus.mainW - bwSqlOnOff - bwAfcOnOff,
 								Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
 								bwAfcOnOff, Hstatus, "AFC");
 				btnSQL = new Fl_Check_Button(
-								WNOM - bwSqlOnOff,
+								progStatus.mainW - bwSqlOnOff,
 								Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
 								sql_width, Hstatus, "SQL");
 			} else {
 				btnAFC = new Fl_Light_Button(
-								WNOM - bwSqlOnOff - bwAfcOnOff,
+								progStatus.mainW - bwSqlOnOff - bwAfcOnOff,
 								Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
 								bwAfcOnOff, Hstatus, "AFC");
 				btnSQL = new Fl_Light_Button(
-								WNOM - bwSqlOnOff,
+								progStatus.mainW - bwSqlOnOff,
 								Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
 								sql_width, Hstatus, "SQL");
 			}
@@ -3247,12 +3329,19 @@ void create_fl_digi_main() {
 			Fl_Group::current()->resizable(StatusBar);
 		hpack->end();
 
+		showMacroSet();
+
 #define CB_WHEN FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED | FL_WHEN_ENTER_KEY | FL_WHEN_RELEASE
-		Fl_Widget* logfields[] = { inpCall1, inpName1, inpTimeOn1, inpTimeOff1, inpRstIn1, inpRstOut1,
-				inpCall2, inpName2, inpTimeOn2, inpTimeOff2, inpRstIn2, inpRstOut2,
-				inpQth, inpState, inpVEprov, inpCountry, inpLoc, inpAZ, inpNotes,
-				inpSerNo, outSerNo, inpXchgIn,
-				inpCall3, inpTimeOn3, inpTimeOff3 };
+		Fl_Widget* logfields[] = {
+			inpName1, inpName1,
+			inpTimeOn1, inpTimeOn2, inpTimeOn3,
+			inpTimeOff1, inpTimeOff2, inpTimeOff3,
+			inpRstIn1, inpRstIn2,
+			inpRstOut1, inpRstOut2,
+			inpQth, inpState, inpVEprov, inpCountry, inpAZ, inpNotes,
+			inpSerNo1, inpSerNo2,
+			outSerNo1, outSerNo2,
+			inpXchgIn1, inpXchgIn2 };
 		for (size_t i = 0; i < sizeof(logfields)/sizeof(*logfields); i++) {
 			logfields[i]->callback(cb_log);
 			logfields[i]->when(CB_WHEN);
@@ -3268,6 +3357,8 @@ void create_fl_digi_main() {
 		inpCall4->when(CB_WHEN);
 
 		inpLoc->callback(cb_loc);
+		inpLoc->when(CB_WHEN);
+
 		inpNotes->when(FL_WHEN_RELEASE);
 
 	fl_digi_main->end();
@@ -3301,6 +3392,7 @@ void create_fl_digi_main() {
 	Fl::add_timeout(0.0, ztimer, (void*)true);
 
 	// Set the state of checked toggle menu items
+
 	struct {
 		bool var; const char* label;
 	} toggles[] = {
@@ -3308,6 +3400,7 @@ void create_fl_digi_main() {
 		{ progStatus.contest, CONTEST_FIELDS_MLABEL },
 		{ progStatus.WF_UI, WF_MLABEL },
 		{ progStatus.Rig_Log_UI, RIGLOG_MLABEL },
+		{ progStatus.Rig_Contest_UI, RIGCONTEST_MLABEL },
 		{ progStatus.NO_RIGLOG, RIGLOG_NONE_MLABEL },
 		{ progStatus.DOCKEDSCOPE, DOCKEDSCOPE_MLABEL }
 	};
@@ -3324,7 +3417,7 @@ void create_fl_digi_main() {
 	if (!dxcc_is_open())
 		getMenuItem(COUNTRIES_MLABEL)->hide();
 
-	UI_select(progStatus.Rig_Log_UI);
+	UI_select();
 	wf->UI_select(progStatus.WF_UI);
 }
 
