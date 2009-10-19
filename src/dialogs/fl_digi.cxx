@@ -243,6 +243,8 @@ Fl_Button			*qso_opPICK3;
 Fl_Button			*qsoClear3;
 Fl_Button			*qsoSave3;
 
+Fl_Input2			*inpCall4;
+
 Fl_Browser			*qso_opBrowser = (Fl_Browser *)0;
 Fl_Button			*qso_btnAddFreq = (Fl_Button *)0;
 Fl_Button			*qso_btnSelFreq = (Fl_Button *)0;
@@ -1477,12 +1479,19 @@ void cb_call(Fl_Widget* w, void*)
 	if (inpCall == inpCall1) {
 		inpCall2->value(new_call.c_str());
 		inpCall3->value(new_call.c_str());
+		inpCall4->value(new_call.c_str());
 	} else if (inpCall == inpCall2) {
 		inpCall1->value(new_call.c_str());
 		inpCall3->value(new_call.c_str());
+		inpCall4->value(new_call.c_str());
+	} else if (inpCall == inpCall3) {
+		inpCall1->value(new_call.c_str());
+		inpCall2->value(new_call.c_str());
+		inpCall4->value(new_call.c_str());
 	} else {
 		inpCall1->value(new_call.c_str());
 		inpCall2->value(new_call.c_str());
+		inpCall3->value(new_call.c_str());
 	}
 
 	if (progStatus.timer)
@@ -1841,8 +1850,8 @@ void UI_select(bool minimized)
 		TopFrame2->hide();
 		Status1->color(FL_BACKGROUND_COLOR);
 		Status2->hide();
-		inpCall3->show();
-		inpCall = inpCall3;
+		inpCall4->show();
+		inpCall = inpCall4;
 		fl_digi_main->init_sizes();
 		return;
 	}
@@ -1897,7 +1906,7 @@ void UI_select(bool minimized)
 		inpRstOut = inpRstOut2;
 		qsoFreqDisp = qsoFreqDisp2;
 	}
-	inpCall3->hide();
+	inpCall4->hide();
 	Status1->color(FL_BACKGROUND2_COLOR);
 	Status2->show();
 	fl_digi_main->init_sizes();
@@ -3181,12 +3190,12 @@ void create_fl_digi_main() {
 			Status2->color(FL_BACKGROUND2_COLOR);
 			Status2->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 
-			inpCall3 = new Fl_Input2(
+			inpCall4 = new Fl_Input2(
 				rightof(Status1), Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
 				Wimd, Hstatus, "Callsign:");
-			inpCall3->align(FL_ALIGN_LEFT);
-			inpCall3->tooltip(_("Other call"));
-			inpCall3->hide();
+			inpCall4->align(FL_ALIGN_LEFT);
+			inpCall4->tooltip(_("Other call"));
+			inpCall4->hide();
 
 			StatusBar = new Fl_Box(
                 rightof(Status2), Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
@@ -3238,6 +3247,7 @@ void create_fl_digi_main() {
 			Fl_Group::current()->resizable(StatusBar);
 		hpack->end();
 
+#define CB_WHEN FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED | FL_WHEN_ENTER_KEY | FL_WHEN_RELEASE
 		Fl_Widget* logfields[] = { inpCall1, inpName1, inpTimeOn1, inpTimeOff1, inpRstIn1, inpRstOut1,
 				inpCall2, inpName2, inpTimeOn2, inpTimeOff2, inpRstIn2, inpRstOut2,
 				inpQth, inpState, inpVEprov, inpCountry, inpLoc, inpAZ, inpNotes,
@@ -3245,15 +3255,18 @@ void create_fl_digi_main() {
 				inpCall3, inpTimeOn3, inpTimeOff3 };
 		for (size_t i = 0; i < sizeof(logfields)/sizeof(*logfields); i++) {
 			logfields[i]->callback(cb_log);
-			logfields[i]->when(FL_WHEN_CHANGED | FL_WHEN_ENTER_KEY | FL_WHEN_RELEASE );
+			logfields[i]->when(CB_WHEN);
 		}
 		// exceptions
 		inpCall1->callback(cb_call);
-		inpCall1->when(FL_WHEN_CHANGED | FL_WHEN_ENTER_KEY | FL_WHEN_RELEASE );
+		inpCall1->when(CB_WHEN);
 		inpCall2->callback(cb_call);
-		inpCall2->when(FL_WHEN_CHANGED | FL_WHEN_ENTER_KEY | FL_WHEN_RELEASE );
+		inpCall2->when(CB_WHEN);
 		inpCall3->callback(cb_call);
-		inpCall3->when(FL_WHEN_CHANGED | FL_WHEN_ENTER_KEY | FL_WHEN_RELEASE );
+		inpCall3->when(CB_WHEN);
+		inpCall4->callback(cb_call);
+		inpCall4->when(CB_WHEN);
+
 		inpLoc->callback(cb_loc);
 		inpNotes->when(FL_WHEN_RELEASE);
 
