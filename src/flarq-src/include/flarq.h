@@ -39,7 +39,6 @@ extern std::string	MailInFolder;
 extern std::string	MailOutFolder;
 extern std::string	MailSentFolder;
 extern std::string	Logfile;
-extern bool     	bSylpheedFolder;
 extern std::string	beacontext;
 extern int		exponent;
 extern int		txdelay;

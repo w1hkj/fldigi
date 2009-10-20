@@ -91,7 +91,6 @@ string Logfile;
 struct dirent *entry;
 DIR *dp;
 
-bool bSylpheedFolder = false;
 bool   SendingEmail = false;
 
 bool SHOWDEBUG = false;
@@ -289,8 +288,8 @@ void selectTrafficOut(bool ComposerOnly)
 		tblOutgoing->colcallback (3, cb_SortBySubj);
 		tblOutgoing->columnAlign(3, FL_ALIGN_LEFT);
 		tblOutgoing->allowSort(true);
-		tblOutgoing->rowSize (20);
-		tblOutgoing->headerSize (20);
+		tblOutgoing->rowSize (14);
+		tblOutgoing->headerSize (14);
 		tblOutgoing->allowResize (true);
 		tblOutgoing->gridEnabled (true);
 	}
@@ -300,16 +299,22 @@ void selectTrafficOut(bool ComposerOnly)
 	size_t p;
 
 	string folder = ARQ_mail_out_dir;
+	dp = 0;
+	dp = opendir(folder.c_str());
+	if (dp == 0) {
+		string nfound = folder;
+		nfound += " not found";
+		fl_message("%s", nfound.c_str());
+		return;
+	}
 
 	int nummails = 0;
 	while ((entry = readdir(dp)) != 0) {
 		if (entry->d_name[0] == '.')
 			continue;
 		fname = folder; fname.append(entry->d_name);
-#ifdef __WOE32__
 		if (fname.find(".eml") == string::npos)
 			continue;
-#endif
 		int validlines = 0;
 		ifstream emailtxt(fname.c_str());
 		while (!emailtxt.eof()) {
@@ -475,9 +480,7 @@ void SaveComposeMail()
 		return;
 	if (sendfilename.empty()) {
 		sendfilename = ARQ_mail_out_dir;
-#ifdef __WOE32__
 		sendfilename += "flarqmail.eml";
-#endif
 		sendfilename = nextEmailFile(sendfilename);
 	}
 	saveComposedText(sendfilename);
@@ -585,11 +588,6 @@ void readConfig()
 			initVals();
 		else {
 			configfile >> MyCall;
-//			configfile >> ARQ_recv_dir;
-//			configfile >> ARQ_send_dir;
-//			configfile >> ARQ_mail_in_dir;
-//			configfile >> ARQ_mail_out_dir;
-//			configfile >> ARQ_mail_sent_dir;
 			configfile >> exponent;
 			configfile >> txdelay;
 			configfile >> iretries;
@@ -602,7 +600,6 @@ void readConfig()
 			configfile >> mainH;
 			configfile.ignore();
 			configfile.getline(tempstr, 200);
-			configfile >> bSylpheedFolder;
 			beacontext = tempstr;
 			digi_arq->myCall(MyCall.c_str());
 			digi_arq->setExponent(exponent);
@@ -629,11 +626,6 @@ void saveConfig()
 		int mainH = arqwin->h();
 		configfile << VERSION << endl;
 		configfile << MyCall << endl;
-//		configfile << ARQ_recv_dir << endl;
-//		configfile << ARQ_send_dir << endl;
-//		configfile << ARQ_mail_in_dir << endl;
-//		configfile << ARQ_mail_out_dir << endl;
-//		configfile << ARQ_mail_sent_dir << endl;
 		configfile << exponent << endl;
 		configfile << txdelay << endl;
 		configfile << iretries << endl;
@@ -645,7 +637,6 @@ void saveConfig()
 		configfile << mainW << endl;
 		configfile << mainH << endl;
 		configfile << beacontext.c_str() << endl;
-		configfile << bSylpheedFolder;
 		configfile.close();
 	}
 }
@@ -676,9 +667,6 @@ void cbMenuConfig()
 		choiceBlockSize->add("64");
 		choiceBlockSize->add("128");
 		choiceBlockSize->add("256");
-#ifdef __WIN32__
-		btnSylpheedMail->hide();
-#endif
 	}
 	choiceBlockSize->index(exponent - 4);
 	choiceBlockSize->redraw();
@@ -1027,24 +1015,11 @@ void saveEmailFile()
 	string savetoname = ARQ_mail_in_dir;
 
 	fnum = 1;
-	if (bSylpheedFolder) {
-		tempname = savetoname;
-		snprintf (szfnum, sizeof(fnum),"%-d", fnum);
-		tempname += szfnum;
-		while (fileExists(tempname)) {
-			fnum++;
-			tempname = savetoname;
-			snprintf(szfnum, sizeof(fnum),"%-d", fnum);
-			tempname += szfnum;
-		}
-		savetoname = tempname;
-	} else {
-		if (rxfname.find(".eml") == string::npos)
-			rxfname.append(".eml");
-		savetoname.append(rxfname);
-		while (fileExists(savetoname))
-			savetoname = nextFileName(savetoname);
-	}
+	if (rxfname.find(".eml") == string::npos)
+		rxfname.append(".eml");
+	savetoname.append(rxfname);
+	while (fileExists(savetoname))
+		savetoname = nextFileName(savetoname);
 
 	ofstream tfile(savetoname.c_str(), ios::binary);
 	if (tfile) {
@@ -1201,24 +1176,10 @@ void moveEmailFile()
 
 	ifstream infile(MailFileName.c_str(), ios::in | ios::binary);
 
-	if (bSylpheedFolder) {
-		MailSaveFileName = ARQ_mail_sent_dir;
-		tempname = MailSaveFileName;
-		snprintf (szfnum, sizeof(szfnum),"%-d", fnum);
-		tempname += szfnum;
-		while (fileExists(tempname)) {
-			fnum++;
-			tempname = MailSaveFileName;
-			snprintf(szfnum, sizeof(fnum),"%-d", fnum);
-			tempname += szfnum;
-		}
-		MailSaveFileName = tempname;
-	} else {
-		if (MailSaveFileName.find(".eml") == string::npos)
-			MailSaveFileName.append(".eml");
-		while (fileExists(MailSaveFileName))
-			MailSaveFileName = nextFileName(MailSaveFileName);
-	}
+	if (MailSaveFileName.find(".eml") == string::npos)
+		MailSaveFileName.append(".eml");
+	while (fileExists(MailSaveFileName))
+		MailSaveFileName = nextFileName(MailSaveFileName);
 
 	ofstream outfile(MailSaveFileName.c_str(), ios::out | ios::binary);
 	char c;
@@ -1462,7 +1423,7 @@ void dispState()
 			btnCONNECT->label("Connect");
 		if (!autobeacon)
 			btnBEACON->activate();
-		mnuSend->deactivate();
+//		mnuSend->deactivate();
 		mnu->redraw();
 	}
 	else if (arqstate == CONNECTED || arqstate == WAITING) {

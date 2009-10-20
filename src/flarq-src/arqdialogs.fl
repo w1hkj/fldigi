@@ -1,18 +1,18 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0109
-header_name {.h}
+version 1.0109 
+header_name {.h} 
 code_name {.cxx}
-decl {\#include <config.h>} {}
+decl {\#include <config.h>} {} 
 
-decl {\#include <string>} {}
+decl {\#include <string>} {} 
 
-decl {\#include "flarq.h"} {}
+decl {\#include "flarq.h"} {} 
 
 decl {\#include "flinput2.h"} {public
-}
+} 
 
 decl {\#include "combo.h"} {public
-}
+} 
 
 Function {arq_dialog()} {} {
   Fl_Window {} {
@@ -181,12 +181,12 @@ Function {arq_dialog()} {} {
       }
     }
   }
-}
+} 
 
 Function {arq_configure()} {open
 } {
   Fl_Window {} {
-    label {Configure flarq} open
+    label {Configure flarq} open selected
     xywh {475 671 480 162} type Double resizable visible
   } {
     Fl_Input txtMyCall {
@@ -195,12 +195,6 @@ Function {arq_configure()} {open
       xywh {98 13 150 24}
       code0 {o->value(MyCall.c_str());}
       class Fl_Input2
-    }
-    Fl_Check_Button btnSylpheedMail {
-      label {Sylpheed Mail Client}
-      callback {bSylpheedFolder = o->value();} selected
-      tooltip {Check ONLY if Sylpheed is used as mail client} xywh {411 16 24 15} down_box DOWN_BOX align 4
-      code0 {o->value(bSylpheedFolder);}
     }
     Fl_Input txtBEACONTXT {
       label {Beacon Text}
@@ -271,7 +265,7 @@ cbSetConfig();} open
       class Fl_ComboBox
     } {}
   }
-}
+} 
 
 Function {arq_SendSelect()} {open
 } {
@@ -297,7 +291,7 @@ Function {arq_SendSelect()} {open
       code0 {extern void sendOK();}
     }
   }
-}
+} 
 
 Function {arq_composer()} {open
 } {
@@ -365,4 +359,4 @@ Function {arq_composer()} {open
       }
     }
   }
-}
+} 

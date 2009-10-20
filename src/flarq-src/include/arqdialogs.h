@@ -45,8 +45,6 @@ extern Fl_Menu_Item menu_mnu[];
 #define mnuHowTo (menu_mnu+12)
 #define mnuAbout (menu_mnu+13)
 extern Fl_Input2 *txtMyCall;
-#include <FL/Fl_Check_Button.H>
-extern Fl_Check_Button *btnSylpheedMail;
 extern Fl_Input2 *txtBEACONTXT;
 #include <FL/Fl_Spinner.H>
 extern Fl_Spinner *spnRetries;

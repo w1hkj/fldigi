@@ -278,12 +278,6 @@ static void cb_txtMyCall(Fl_Input2* o, void*) {
   changeMyCall(o->value());
 }
 
-Fl_Check_Button *btnSylpheedMail=(Fl_Check_Button *)0;
-
-static void cb_btnSylpheedMail(Fl_Check_Button* o, void*) {
-  bSylpheedFolder = o->value();
-}
-
 Fl_Input2 *txtBEACONTXT=(Fl_Input2 *)0;
 
 static void cb_txtBEACONTXT(Fl_Input2* o, void*) {
@@ -355,13 +349,6 @@ Fl_Double_Window* arq_configure() {
       txtMyCall->when(FL_WHEN_RELEASE);
       o->value(MyCall.c_str());
     } // Fl_Input2* txtMyCall
-    { Fl_Check_Button* o = btnSylpheedMail = new Fl_Check_Button(411, 16, 24, 15, "Sylpheed Mail Client");
-      btnSylpheedMail->tooltip("Check ONLY if Sylpheed is used as mail client");
-      btnSylpheedMail->down_box(FL_DOWN_BOX);
-      btnSylpheedMail->callback((Fl_Callback*)cb_btnSylpheedMail);
-      btnSylpheedMail->align(FL_ALIGN_LEFT);
-      o->value(bSylpheedFolder);
-    } // Fl_Check_Button* btnSylpheedMail
     { Fl_Input2* o = txtBEACONTXT = new Fl_Input2(98, 42, 370, 24, "Beacon Text");
       txtBEACONTXT->tooltip("Text for the beacon 64 chars max");
       txtBEACONTXT->box(FL_DOWN_BOX);
