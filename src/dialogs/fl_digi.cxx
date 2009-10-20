@@ -1909,6 +1909,8 @@ void UI_select()
 		inpName = inpName1;
 		inpRstIn = inpRstIn1;
 		inpRstOut = inpRstOut1;
+		inpSerNo = inpSerNo1;
+		outSerNo = outSerNo1;
 		inpXchgIn = inpXchgIn1;
 		qsoFreqDisp = qsoFreqDisp1;
 		fl_digi_main->init_sizes();
@@ -1935,6 +1937,8 @@ void UI_select()
 			inpTimeOn = inpTimeOn2;
 			inpTimeOff = inpTimeOff2;
 			inpName = inpName2;
+			inpSerNo = inpSerNo1;
+			outSerNo = outSerNo1;
 			inpRstIn = inpRstIn2;
 			inpRstOut = inpRstOut2;
 			qsoFreqDisp = qsoFreqDisp2;
@@ -1945,6 +1949,8 @@ void UI_select()
 			inpCall = inpCall3;
 			inpTimeOn = inpTimeOn3;
 			inpTimeOff = inpTimeOff3;
+			inpSerNo = inpSerNo2;
+			outSerNo = outSerNo2;
 			inpXchgIn = inpXchgIn2;
 			qsoFreqDisp = qsoFreqDisp3;
 		}
@@ -3113,6 +3119,9 @@ void create_fl_digi_main() {
 		inpRstIn = inpRstIn1;
 		inpRstOut = inpRstOut1;
 		qsoFreqDisp = qsoFreqDisp1;
+		inpSerNo = inpSerNo1;
+		outSerNo = outSerNo1;
+		inpXchgIn = inpXchgIn1;
 
 		Y = Hmenu + Hqsoframe + pad;
 
