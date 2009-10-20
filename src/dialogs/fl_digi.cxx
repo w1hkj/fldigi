@@ -1513,7 +1513,7 @@ void cb_call(Fl_Widget* w, void*)
 		inpCall3->value(new_call.c_str());
 	}
 
-	if (progStatus.timer)
+	if (progStatus.timer && (Fl::event() != FL_HIDE))
 		stopMacroTimer();
 
 	if (old_call == new_call)
