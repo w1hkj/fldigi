@@ -114,7 +114,7 @@ WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 	disp_width = w();
 	if (disp_width > IMAGE_WIDTH/4)
 		disp_width = IMAGE_WIDTH/4;
-	scale_width = IMAGE_WIDTH + 1000;
+	scale_width = IMAGE_WIDTH;// + 1000;
 	image_height = h() - WFTEXT - WFSCALE - WFMARKER;
     image_area      = IMAGE_WIDTH * image_height;
     sig_image_area  = IMAGE_WIDTH * h();
@@ -694,7 +694,7 @@ void WFdisp::drawScale() {
 		else
 			xchar = (int) ( ( (1000.0/step) * i - fw) / 2.0 -
 							(offset + 500 - rfc % 500) /step );
-		if (xchar > 0 && (xchar + fw) < w())
+		if (xchar > 0 && (xchar + fw) < disp_width)
 			fl_draw(szFreq, x() + xchar, y() + 10 );
 	}
 }
@@ -781,6 +781,8 @@ void WFdisp::update_waterfall() {
 
 void WFdisp::drawcolorWF() {
 	uchar *pixmap = (uchar *)fft_img;
+	fl_color(fl_rgb_color(palette[0].R, palette[0].G, palette[0].B));
+	fl_rectf(x(), y() + WFSCALE + WFMARKER + WFTEXT, disp_width, image_height);
 	fl_color(FL_BLACK);
 	fl_rectf(x() + disp_width, y(), w() - disp_width, h());
 	update_waterfall();

@@ -49,6 +49,9 @@ enum {
 */
 
 #define FFT_LEN		4096
+//8192
+//2048
+//4096
 
 #define SC_SMPLRATE	8000
 
