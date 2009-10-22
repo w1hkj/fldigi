@@ -1932,7 +1932,7 @@ void UI_select()
 			TopFrame1->hide();
 			TopFrame3->hide();
 			TopFrame2->show();
-			inpFreq = inpFreq2;
+//			inpFreq = inpFreq2;
 			inpCall = inpCall2;
 			inpTimeOn = inpTimeOn2;
 			inpTimeOff = inpTimeOff2;
@@ -2930,19 +2930,22 @@ void create_fl_digi_main() {
 			qsoSave2->callback(qsoSave_cb, 0);
 			qsoSave2->tooltip(_("Save"));
 
-			fl_font(FL_HELVETICA, FL_NORMAL_SIZE);
-			const char *label1 = _("Freq");
-			Fl_Box *bx1 = new Fl_Box(pad + rightof(qsoSave2), y,
-				fl_width(label1), h, label1);
-			inpFreq2 = new Fl_Input2(
-				pad + bx1->x() + bx1->w(), y,
-				w_inpFreq2, h, "");
-			inpFreq2->type(FL_NORMAL_OUTPUT);
-			inpFreq2->tooltip(_("QSO frequency (read only)"));
+//			fl_font(FL_HELVETICA, FL_NORMAL_SIZE);
+//			const char *label1 = _("Freq");
+//			Fl_Box *bx1 = new Fl_Box(pad + rightof(qsoSave2), y,
+//				fl_width(label1), h, label1);
+//			inpFreq2 = new Fl_Input2(
+//				pad + bx1->x() + bx1->w(), y,
+//				w_inpFreq2, h, "");
+//			inpFreq2->type(FL_NORMAL_OUTPUT);
+//			inpFreq2->tooltip(_("QSO frequency (read only)"));
+//			inpFreq2->hide();
+//			bx1->hide();
 
 			const char *label2 = _("On");
 			btnTimeOn2 = new Fl_Button(
-				pad + rightof(inpFreq2), y,
+				pad + rightof(qsoSave2), y,
+//				pad + rightof(inpFreq2), y,
 				fl_width(label2), h, label2);
 			btnTimeOn2->tooltip(_("Press to update"));
 			btnTimeOn2->box(FL_NO_BOX);
@@ -2970,16 +2973,8 @@ void create_fl_digi_main() {
 				w_inpCall2, h, "");
 			inpCall2->tooltip(_("Other call"));
 
-			const char *label5 = _("Name");
-			Fl_Box *bx5 = new Fl_Box(pad + rightof(inpCall2), y,
-				fl_width(label5), h, label5);
-			inpName2 = new Fl_Input2(
-				pad + bx5->x() + bx5->w(), y,
-				w_inpName2, h, "");
-			inpName2->tooltip(_("Other name"));
-
 			const char *label6 = _("In");
-			Fl_Box *bx6 = new Fl_Box(pad + rightof(inpName2), y,
+			Fl_Box *bx6 = new Fl_Box(pad + rightof(inpCall2), y,
 				fl_width(label6), h, label6);
 			inpRstIn2 = new Fl_Input2(
 				pad + bx6->x() + bx6->w(), y,
@@ -2993,6 +2988,15 @@ void create_fl_digi_main() {
 				pad + bx7->x() + bx7->w(), y,
 				w_inpRstOut2, h, "");
 			inpRstOut2->tooltip(_("Sent RST"));
+
+			const char *label5 = _("Nm");//_("Name");
+			Fl_Box *bx5 = new Fl_Box(pad + rightof(inpRstOut2), y,
+				fl_width(label5), h, label5);
+			int xn = pad + bx5->x() + bx5->w();
+			inpName2 = new Fl_Input2(
+				xn, y,
+				progStatus.mainW - xn - pad, h, "");
+			inpName2->tooltip(_("Other name"));
 
 		}
 		TopFrame2->resizable(inpName2);
