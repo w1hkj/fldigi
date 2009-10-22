@@ -72,15 +72,15 @@ using namespace std;
 static void show_font_warning(FTextBase* w);
 
 Fl_Menu_Item FTextRX::menu[] = {
-	{ make_icon_label(_("&Look up call"), net_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
-	{ make_icon_label(_("&Call"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("&Name"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("QT&H"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("&State"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("&Province"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("Countr&y"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("&Locator"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("&RST(r)"), enter_key_icon), 0, 0, 0,  FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ make_icon_label(_("Look up call"), net_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ make_icon_label(_("Call"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("Name"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("QTH"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("State"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("Province"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("Country"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("Locator"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("RST(r)"), enter_key_icon), 0, 0, 0,  FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ make_icon_label(_("Serial number"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(_("Exchange In"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ make_icon_label(_("Insert marker"), insert_link_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
@@ -318,27 +318,27 @@ void FTextRX::handle_context_menu(void)
 	else
 		menu[RX_MENU_WRAP].clear();
 
-	if (progStatus.Rig_Contest_UI ||
-		(progStatus.contest && !progStatus.NO_RIGLOG && ! progStatus.Rig_Log_UI)) {
-		menu[RX_MENU_QRZ_THIS].hide();
-		menu[RX_MENU_NAME].hide();
-		menu[RX_MENU_QTH].hide();
-		menu[RX_MENU_RST_IN].hide();
-		menu[RX_MENU_QUICK_ENTRY].hide();
-		menu[RX_MENU_SERIAL].show();
-		menu[RX_MENU_XCHG].show();
-	} else {
-		menu[RX_MENU_QRZ_THIS].show();
-		menu[RX_MENU_NAME].show();
-		menu[RX_MENU_QTH].show();
-		menu[RX_MENU_RST_IN].show();
-		menu[RX_MENU_QUICK_ENTRY].show();
-		menu[RX_MENU_SERIAL].hide();
-		menu[RX_MENU_XCHG].hide();
-		if (progdefaults.QRZ != QRZNONE)
-			menu[RX_MENU_QRZ_THIS].show();
-		else
+	if (!menu[RX_MENU_QUICK_ENTRY].value()) {
+		if (progStatus.Rig_Contest_UI ||
+			(progStatus.contest && !progStatus.NO_RIGLOG && ! progStatus.Rig_Log_UI)) {
 			menu[RX_MENU_QRZ_THIS].hide();
+			menu[RX_MENU_NAME].hide();
+			menu[RX_MENU_QTH].hide();
+			menu[RX_MENU_RST_IN].hide();
+			menu[RX_MENU_SERIAL].show();
+			menu[RX_MENU_XCHG].show();
+		} else {
+			menu[RX_MENU_QRZ_THIS].show();
+			menu[RX_MENU_NAME].show();
+			menu[RX_MENU_QTH].show();
+			menu[RX_MENU_RST_IN].show();
+			menu[RX_MENU_SERIAL].hide();
+			menu[RX_MENU_XCHG].hide();
+			if (progdefaults.QRZ != QRZNONE)
+				menu[RX_MENU_QRZ_THIS].show();
+			else
+				menu[RX_MENU_QRZ_THIS].hide();
+		}
 	}
 
 	show_context_menu();
@@ -541,10 +541,10 @@ void FTextRX::dxcc_tooltip(void* obj)
 
 
 Fl_Menu_Item FTextTX::menu[] = {
-	{ make_icon_label(_("&Transmit"), tx_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("&Receive"), rx_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("&Abort"), process_stop_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("Send &image..."), image_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ make_icon_label(_("Transmit"), tx_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("Receive"), rx_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("Abort"), process_stop_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("Send image..."), image_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 
 	{ 0 }, // EDIT_MENU_CUT
 	{ 0 }, // EDIT_MENU_COPY

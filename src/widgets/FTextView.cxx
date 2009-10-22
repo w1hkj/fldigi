@@ -419,11 +419,11 @@ void FTextBase::reset_styles(int set)
 // ----------------------------------------------------------------------------
 
 Fl_Menu_Item FTextView::menu[] = {
-	{ make_icon_label(_("&Copy"), edit_copy_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("C&lear"), edit_clear_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("Copy"), edit_copy_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("Clear"), edit_clear_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(_("Select All"), edit_select_all_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
-	{ make_icon_label(_("Save &as..."), save_as_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
-	{ _("Word &wrap"),       0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL },
+	{ make_icon_label(_("Save as..."), save_as_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ _("Word wrap"),       0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL },
 	{ 0 }
 };
 
@@ -629,12 +629,12 @@ loop:
 
 
 Fl_Menu_Item FTextEdit::menu[] = {
-	{ make_icon_label(_("Cu&t"), edit_cut_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("&Copy"), edit_copy_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("&Paste"), edit_paste_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("C&lear"), edit_clear_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
-	{ make_icon_label(_("Insert &file..."), file_open_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
-	{ _("Word &wrap"), 0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL } ,
+	{ make_icon_label(_("Cut"), edit_cut_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("Copy"), edit_copy_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("Paste"), edit_paste_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("Clear"), edit_clear_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ make_icon_label(_("Insert file..."), file_open_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ _("Word wrap"), 0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL } ,
 	{ 0 }
 };
 
