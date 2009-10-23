@@ -189,6 +189,13 @@ static void cb_btnCheckButtons(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Counter *cntrWfwidth=(Fl_Counter *)0;
+
+static void cb_cntrWfwidth(Fl_Counter* o, void*) {
+  progdefaults.wfwidth = (int)o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabContest=(Fl_Group *)0;
 
 Fl_Box *lblSend=(Fl_Box *)0;
@@ -2534,7 +2541,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           } // Fl_Group* tabUserInterface
           { tabWfallRestart = new Fl_Group(0, 50, 500, 320, _("Restart"));
             tabWfallRestart->hide();
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 107, _("These changes take effect on next program startup"));
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 149, _("These changes take effect on next program startup"));
               o->tooltip(_("Show me more or less waterfall"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP|FL_ALIGN_INSIDE);
@@ -2557,12 +2564,23 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 btnDockedRigControl->hide();
                 o->value(progdefaults.docked_rig_control);
               } // Fl_Check_Button* btnDockedRigControl
-              { Fl_Check_Button* o = btnCheckButtons = new Fl_Check_Button(15, 124, 275, 20, _("Use check buttons for AFC and SQL"));
+              { Fl_Check_Button* o = btnCheckButtons = new Fl_Check_Button(15, 167, 275, 20, _("Use check buttons for AFC and SQL"));
                 btnCheckButtons->tooltip(_("Check buttons or default lighted switch"));
                 btnCheckButtons->down_box(FL_DOWN_BOX);
                 btnCheckButtons->callback((Fl_Callback*)cb_btnCheckButtons);
                 o->value(progdefaults.useCheckButtons);
               } // Fl_Check_Button* btnCheckButtons
+              { Fl_Counter* o = cntrWfwidth = new Fl_Counter(15, 128, 95, 21, _("Waterfall width in Hertz"));
+                cntrWfwidth->tooltip(_("CPU usage increases with waterfall height"));
+                cntrWfwidth->type(1);
+                cntrWfwidth->minimum(2000);
+                cntrWfwidth->maximum(4000);
+                cntrWfwidth->step(100);
+                cntrWfwidth->value(3000);
+                cntrWfwidth->callback((Fl_Callback*)cb_cntrWfwidth);
+                cntrWfwidth->align(FL_ALIGN_RIGHT);
+                o->value(progdefaults.wfwidth);
+              } // Fl_Counter* cntrWfwidth
               o->end();
             } // Fl_Group* o
             tabWfallRestart->end();

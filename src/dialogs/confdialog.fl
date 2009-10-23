@@ -256,7 +256,7 @@ progdefaults.changed = true;}
           } {
             Fl_Group {} {
               label {These changes take effect on next program startup} open
-              tooltip {Show me more or less waterfall} xywh {5 60 490 107} box ENGRAVED_FRAME align 17
+              tooltip {Show me more or less waterfall} xywh {5 60 490 149} box ENGRAVED_FRAME align 17
             } {
               Fl_Counter cntrWfheight {
                 label {Waterfall height in pixels}
@@ -276,8 +276,15 @@ progdefaults.changed = true;}
                 label {Use check buttons for AFC and SQL}
                 callback {progdefaults.useCheckButtons = o->value();
 progdefaults.changed = true;}
-                tooltip {Check buttons or default lighted switch} xywh {15 124 275 20} down_box DOWN_BOX
+                tooltip {Check buttons or default lighted switch} xywh {15 167 275 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.useCheckButtons);}
+              }
+              Fl_Counter cntrWfwidth {
+                label {Waterfall width in Hertz}
+                callback {progdefaults.wfwidth = (int)o->value();
+progdefaults.changed = true;}
+                tooltip {CPU usage increases with waterfall height} xywh {15 128 95 21} type Simple align 8 minimum 2000 maximum 4000 step 100 value 3000
+                code0 {o->value(progdefaults.wfwidth);}
               }
             }
           }
