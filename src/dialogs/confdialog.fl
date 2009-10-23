@@ -250,44 +250,6 @@ progdefaults.changed = true;}
               }
             }
           }
-          Fl_Group tabWfallRestart {
-            label Restart open
-            xywh {0 50 500 320} hide
-          } {
-            Fl_Group {} {
-              label {These changes take effect on next program startup} open
-              tooltip {Show me more or less waterfall} xywh {5 60 490 149} box ENGRAVED_FRAME align 17
-            } {
-              Fl_Counter cntrWfheight {
-                label {Waterfall height in pixels}
-                callback {progdefaults.wfheight = (int)o->value();
-progdefaults.changed = true;}
-                tooltip {CPU usage increases with waterfall height} xywh {15 90 95 21} type Simple align 8 minimum 100 maximum 160 step 5 value 120
-                code0 {o->value(progdefaults.wfheight);}
-              }
-              Fl_Check_Button btnDockedRigControl {
-                label {Docked rig rontrol}
-                callback {progdefaults.docked_rig_control = o->value();
-progdefaults.changed = true;}
-                tooltip {Attach rig control to left of logbook} xywh {15 189 150 20} down_box DOWN_BOX value 1 hide
-                code0 {o->value(progdefaults.docked_rig_control);}
-              }
-              Fl_Check_Button btnCheckButtons {
-                label {Use check buttons for AFC and SQL}
-                callback {progdefaults.useCheckButtons = o->value();
-progdefaults.changed = true;}
-                tooltip {Check buttons or default lighted switch} xywh {15 167 275 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.useCheckButtons);}
-              }
-              Fl_Counter cntrWfwidth {
-                label {Waterfall width in Hertz}
-                callback {progdefaults.wfwidth = (int)o->value();
-progdefaults.changed = true;}
-                tooltip {CPU usage increases with waterfall height} xywh {15 128 95 21} type Simple align 8 minimum 2000 maximum 4000 step 100 value 3000
-                code0 {o->value(progdefaults.wfwidth);}
-              }
-            }
-          }
           Fl_Group tabContest {
             label Contest open
             xywh {0 50 500 320} hide
@@ -409,11 +371,11 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabWF_UI {
-            label {WF Controls} open
+            label {Oper' Controls} open
             xywh {0 50 500 320} hide
           } {
             Fl_Box {} {
-              label {Enable check box to show each respective waterfall control}
+              label {Enable check box to show each respective operator control}
               xywh {31 65 446 25} box FLAT_BOX color 53 align 16
             }
             Fl_Check_Button btnWF_UIrev {
@@ -543,6 +505,23 @@ WF_UI();}
               xywh {301 321 88 20}
             }
           }
+          Fl_Group tabWfallRestart {
+            label Restart open
+            xywh {0 50 500 320} hide
+          } {
+            Fl_Group {} {
+              label {Changes take effect on next program startup} open
+              tooltip {Show me more or less waterfall} xywh {5 63 490 70} box ENGRAVED_FRAME align 17
+            } {
+              Fl_Check_Button btnCheckButtons {
+                label {Use check buttons for AFC and SQL}
+                callback {progdefaults.useCheckButtons = o->value();
+progdefaults.changed = true;}
+                tooltip {Check buttons or default lighted switch} xywh {52 93 275 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.useCheckButtons);}
+              }
+            }
+          }
         }
       }
       Fl_Group tabWaterfall {
@@ -554,7 +533,7 @@ WF_UI();}
         } {
           Fl_Group {} {
             label Display open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {
               label {Colors and cursors} open
@@ -738,16 +717,16 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label {FFT Processing} open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {5 62 490 135} box ENGRAVED_FRAME
             } {
               Fl_Counter cntLowFreqCutoff {
-                label {Low frequency cutoff}
+                label {Lower limit}
                 callback {progdefaults.LowFreqCutoff=(int)(o->value());
 progdefaults.changed = true;}
-                tooltip {Suppress waterfall below this audio frequency} xywh {15 72 70 20} type Simple align 8 minimum 0 maximum 500 step 50 value 300
+                tooltip {Suppress waterfall below this audio frequency} xywh {50 72 70 20} type Simple align 8 minimum 0 maximum 500 step 50 value 300
                 code0 {o->value(progdefaults.LowFreqCutoff);}
               }
               Fl_Counter valLatency {
@@ -755,26 +734,45 @@ progdefaults.changed = true;}
                 callback {progdefaults.latency = (int)o->value();
 progdefaults.changed = true;}
                 tooltip {Latency increases frequency resolution,
-decreases time resolution. 1 = no scan merging} xywh {15 102 70 21} type Simple align 8 minimum 1 maximum 8 step 1 value 4
+decreases time resolution. 1 = no scan merging} xywh {50 102 70 21} type Simple align 8 minimum 1 maximum 8 step 1 value 4
                 code0 {o->value(progdefaults.latency);}
               }
               Fl_Check_Button btnWFaveraging {
                 label {FFT averaging}
                 callback {progdefaults.WFaveraging = o->value();
 progdefaults.changed = true;}
-                tooltip {Use averaging to decrease waterfall noise} xywh {15 133 120 20} down_box DOWN_BOX
+                tooltip {Use averaging to decrease waterfall noise} xywh {50 133 120 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.WFaveraging);}
               }
               Fl_Choice mnuFFTPrefilter {
                 label {FFT prefilter window function}
                 callback {progdefaults.wfPreFilter = o->value();
 progdefaults.changed = true;} open
-                tooltip {Select the type of FFT prefilter} xywh {15 163 120 25} down_box BORDER_BOX align 8
+                tooltip {Select the type of FFT prefilter} xywh {50 163 120 25} down_box BORDER_BOX align 8
                 code0 {mnuFFTPrefilter->add("Rectangular"); mnuFFTPrefilter->add("Blackman");}
                 code1 {mnuFFTPrefilter->add("Hamming"); mnuFFTPrefilter->add("Hanning");}
                 code2 {mnuFFTPrefilter->add("Triangular");}
                 code3 {mnuFFTPrefilter->value(progdefaults.wfPreFilter);}
               } {}
+              Fl_Counter cntrWfwidth {
+                label {Upper limit}
+                callback {progdefaults.wfwidth = (int)o->value();
+progdefaults.changed = true;}
+                tooltip {CPU usage increases with waterfall height} xywh {273 72 95 21} type Simple align 8 minimum 2000 maximum 4000 step 100 value 3000
+                code0 {o->value(progdefaults.wfwidth);}
+              }
+            }
+            Fl_Group {} {
+              label {Changes take effect on next program startup} open
+              tooltip {Show me more or less waterfall} xywh {5 212 490 80} box ENGRAVED_FRAME align 17
+            } {
+              Fl_Counter cntrWfheight {
+                label {Waterfall height in pixels}
+                callback {progdefaults.wfheight = (int)o->value();
+progdefaults.changed = true;}
+                tooltip {CPU usage increases with waterfall height} xywh {50 242 95 21} type Simple align 8 minimum 100 maximum 160 step 5 value 120
+                code0 {o->value(progdefaults.wfheight);}
+              }
             }
           }
           Fl_Group {} {

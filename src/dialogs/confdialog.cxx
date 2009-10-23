@@ -166,36 +166,6 @@ static void cb_inpMyPower(Fl_Input2* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Group *tabWfallRestart=(Fl_Group *)0;
-
-Fl_Counter *cntrWfheight=(Fl_Counter *)0;
-
-static void cb_cntrWfheight(Fl_Counter* o, void*) {
-  progdefaults.wfheight = (int)o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnDockedRigControl=(Fl_Check_Button *)0;
-
-static void cb_btnDockedRigControl(Fl_Check_Button* o, void*) {
-  progdefaults.docked_rig_control = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnCheckButtons=(Fl_Check_Button *)0;
-
-static void cb_btnCheckButtons(Fl_Check_Button* o, void*) {
-  progdefaults.useCheckButtons = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Counter *cntrWfwidth=(Fl_Counter *)0;
-
-static void cb_cntrWfwidth(Fl_Counter* o, void*) {
-  progdefaults.wfwidth = (int)o->value();
-progdefaults.changed = true;
-}
-
 Fl_Group *tabContest=(Fl_Group *)0;
 
 Fl_Box *lblSend=(Fl_Box *)0;
@@ -427,6 +397,15 @@ progdefaults.changed = true;
 WF_UI();
 }
 
+Fl_Group *tabWfallRestart=(Fl_Group *)0;
+
+Fl_Check_Button *btnCheckButtons=(Fl_Check_Button *)0;
+
+static void cb_btnCheckButtons(Fl_Check_Button* o, void*) {
+  progdefaults.useCheckButtons = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabWaterfall=(Fl_Group *)0;
 
 Fl_Tabs *tabsWaterfall=(Fl_Tabs *)0;
@@ -621,6 +600,20 @@ Fl_Choice *mnuFFTPrefilter=(Fl_Choice *)0;
 
 static void cb_mnuFFTPrefilter(Fl_Choice* o, void*) {
   progdefaults.wfPreFilter = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter *cntrWfwidth=(Fl_Counter *)0;
+
+static void cb_cntrWfwidth(Fl_Counter* o, void*) {
+  progdefaults.wfwidth = (int)o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter *cntrWfheight=(Fl_Counter *)0;
+
+static void cb_cntrWfheight(Fl_Counter* o, void*) {
+  progdefaults.wfheight = (int)o->value();
 progdefaults.changed = true;
 }
 
@@ -2539,52 +2532,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             } // Fl_Group* o
             tabUserInterface->end();
           } // Fl_Group* tabUserInterface
-          { tabWfallRestart = new Fl_Group(0, 50, 500, 320, _("Restart"));
-            tabWfallRestart->hide();
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 149, _("These changes take effect on next program startup"));
-              o->tooltip(_("Show me more or less waterfall"));
-              o->box(FL_ENGRAVED_FRAME);
-              o->align(FL_ALIGN_TOP|FL_ALIGN_INSIDE);
-              { Fl_Counter* o = cntrWfheight = new Fl_Counter(15, 90, 95, 21, _("Waterfall height in pixels"));
-                cntrWfheight->tooltip(_("CPU usage increases with waterfall height"));
-                cntrWfheight->type(1);
-                cntrWfheight->minimum(100);
-                cntrWfheight->maximum(160);
-                cntrWfheight->step(5);
-                cntrWfheight->value(120);
-                cntrWfheight->callback((Fl_Callback*)cb_cntrWfheight);
-                cntrWfheight->align(FL_ALIGN_RIGHT);
-                o->value(progdefaults.wfheight);
-              } // Fl_Counter* cntrWfheight
-              { Fl_Check_Button* o = btnDockedRigControl = new Fl_Check_Button(15, 189, 150, 20, _("Docked rig rontrol"));
-                btnDockedRigControl->tooltip(_("Attach rig control to left of logbook"));
-                btnDockedRigControl->down_box(FL_DOWN_BOX);
-                btnDockedRigControl->value(1);
-                btnDockedRigControl->callback((Fl_Callback*)cb_btnDockedRigControl);
-                btnDockedRigControl->hide();
-                o->value(progdefaults.docked_rig_control);
-              } // Fl_Check_Button* btnDockedRigControl
-              { Fl_Check_Button* o = btnCheckButtons = new Fl_Check_Button(15, 167, 275, 20, _("Use check buttons for AFC and SQL"));
-                btnCheckButtons->tooltip(_("Check buttons or default lighted switch"));
-                btnCheckButtons->down_box(FL_DOWN_BOX);
-                btnCheckButtons->callback((Fl_Callback*)cb_btnCheckButtons);
-                o->value(progdefaults.useCheckButtons);
-              } // Fl_Check_Button* btnCheckButtons
-              { Fl_Counter* o = cntrWfwidth = new Fl_Counter(15, 128, 95, 21, _("Waterfall width in Hertz"));
-                cntrWfwidth->tooltip(_("CPU usage increases with waterfall height"));
-                cntrWfwidth->type(1);
-                cntrWfwidth->minimum(2000);
-                cntrWfwidth->maximum(4000);
-                cntrWfwidth->step(100);
-                cntrWfwidth->value(3000);
-                cntrWfwidth->callback((Fl_Callback*)cb_cntrWfwidth);
-                cntrWfwidth->align(FL_ALIGN_RIGHT);
-                o->value(progdefaults.wfwidth);
-              } // Fl_Counter* cntrWfwidth
-              o->end();
-            } // Fl_Group* o
-            tabWfallRestart->end();
-          } // Fl_Group* tabWfallRestart
           { tabContest = new Fl_Group(0, 50, 500, 320, _("Contest"));
             tabContest->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 80, _("Exchanges"));
@@ -2705,9 +2652,9 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             } // Fl_Group* o
             tabContest->end();
           } // Fl_Group* tabContest
-          { tabWF_UI = new Fl_Group(0, 50, 500, 320, _("WF Controls"));
+          { tabWF_UI = new Fl_Group(0, 50, 500, 320, _("Oper\' Controls"));
             tabWF_UI->hide();
-            { Fl_Box* o = new Fl_Box(31, 65, 446, 25, _("Enable check box to show each respective waterfall control"));
+            { Fl_Box* o = new Fl_Box(31, 65, 446, 25, _("Enable check box to show each respective operator control"));
               o->box(FL_FLAT_BOX);
               o->color((Fl_Color)53);
               o->align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
@@ -2786,6 +2733,22 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             } // Fl_Button* btn_wf_disable_all
             tabWF_UI->end();
           } // Fl_Group* tabWF_UI
+          { tabWfallRestart = new Fl_Group(0, 50, 500, 320, _("Restart"));
+            tabWfallRestart->hide();
+            { Fl_Group* o = new Fl_Group(5, 63, 490, 70, _("Changes take effect on next program startup"));
+              o->tooltip(_("Show me more or less waterfall"));
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP|FL_ALIGN_INSIDE);
+              { Fl_Check_Button* o = btnCheckButtons = new Fl_Check_Button(52, 93, 275, 20, _("Use check buttons for AFC and SQL"));
+                btnCheckButtons->tooltip(_("Check buttons or default lighted switch"));
+                btnCheckButtons->down_box(FL_DOWN_BOX);
+                btnCheckButtons->callback((Fl_Callback*)cb_btnCheckButtons);
+                o->value(progdefaults.useCheckButtons);
+              } // Fl_Check_Button* btnCheckButtons
+              o->end();
+            } // Fl_Group* o
+            tabWfallRestart->end();
+          } // Fl_Group* tabWfallRestart
           tabsUI->end();
         } // Fl_Tabs* tabsUI
         tabUI->end();
@@ -2796,7 +2759,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           tabsWaterfall->color(FL_LIGHT1);
           tabsWaterfall->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Display"));
-            o->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 162, _("Colors and cursors"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2937,9 +2899,10 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("FFT Processing"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(5, 62, 490, 135);
               o->box(FL_ENGRAVED_FRAME);
-              { Fl_Counter* o = cntLowFreqCutoff = new Fl_Counter(15, 72, 70, 20, _("Low frequency cutoff"));
+              { Fl_Counter* o = cntLowFreqCutoff = new Fl_Counter(50, 72, 70, 20, _("Lower limit"));
                 cntLowFreqCutoff->tooltip(_("Suppress waterfall below this audio frequency"));
                 cntLowFreqCutoff->type(1);
                 cntLowFreqCutoff->minimum(0);
@@ -2950,7 +2913,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 cntLowFreqCutoff->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.LowFreqCutoff);
               } // Fl_Counter* cntLowFreqCutoff
-              { Fl_Counter* o = valLatency = new Fl_Counter(15, 102, 70, 21, _("FFT latency (scan merging)"));
+              { Fl_Counter* o = valLatency = new Fl_Counter(50, 102, 70, 21, _("FFT latency (scan merging)"));
                 valLatency->tooltip(_("Latency increases frequency resolution,\ndecreases time resolution. 1 = no sc\
 an merging"));
                 valLatency->type(1);
@@ -2962,13 +2925,13 @@ an merging"));
                 valLatency->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.latency);
               } // Fl_Counter* valLatency
-              { Fl_Check_Button* o = btnWFaveraging = new Fl_Check_Button(15, 133, 120, 20, _("FFT averaging"));
+              { Fl_Check_Button* o = btnWFaveraging = new Fl_Check_Button(50, 133, 120, 20, _("FFT averaging"));
                 btnWFaveraging->tooltip(_("Use averaging to decrease waterfall noise"));
                 btnWFaveraging->down_box(FL_DOWN_BOX);
                 btnWFaveraging->callback((Fl_Callback*)cb_btnWFaveraging);
                 o->value(progdefaults.WFaveraging);
               } // Fl_Check_Button* btnWFaveraging
-              { mnuFFTPrefilter = new Fl_Choice(15, 163, 120, 25, _("FFT prefilter window function"));
+              { mnuFFTPrefilter = new Fl_Choice(50, 163, 120, 25, _("FFT prefilter window function"));
                 mnuFFTPrefilter->tooltip(_("Select the type of FFT prefilter"));
                 mnuFFTPrefilter->down_box(FL_BORDER_BOX);
                 mnuFFTPrefilter->callback((Fl_Callback*)cb_mnuFFTPrefilter);
@@ -2978,6 +2941,34 @@ an merging"));
                 mnuFFTPrefilter->add("Triangular");
                 mnuFFTPrefilter->value(progdefaults.wfPreFilter);
               } // Fl_Choice* mnuFFTPrefilter
+              { Fl_Counter* o = cntrWfwidth = new Fl_Counter(273, 72, 95, 21, _("Upper limit"));
+                cntrWfwidth->tooltip(_("CPU usage increases with waterfall height"));
+                cntrWfwidth->type(1);
+                cntrWfwidth->minimum(2000);
+                cntrWfwidth->maximum(4000);
+                cntrWfwidth->step(100);
+                cntrWfwidth->value(3000);
+                cntrWfwidth->callback((Fl_Callback*)cb_cntrWfwidth);
+                cntrWfwidth->align(FL_ALIGN_RIGHT);
+                o->value(progdefaults.wfwidth);
+              } // Fl_Counter* cntrWfwidth
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(5, 212, 490, 80, _("Changes take effect on next program startup"));
+              o->tooltip(_("Show me more or less waterfall"));
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP|FL_ALIGN_INSIDE);
+              { Fl_Counter* o = cntrWfheight = new Fl_Counter(50, 242, 95, 21, _("Waterfall height in pixels"));
+                cntrWfheight->tooltip(_("CPU usage increases with waterfall height"));
+                cntrWfheight->type(1);
+                cntrWfheight->minimum(100);
+                cntrWfheight->maximum(160);
+                cntrWfheight->step(5);
+                cntrWfheight->value(120);
+                cntrWfheight->callback((Fl_Callback*)cb_cntrWfheight);
+                cntrWfheight->align(FL_ALIGN_RIGHT);
+                o->value(progdefaults.wfheight);
+              } // Fl_Counter* cntrWfheight
               o->end();
             } // Fl_Group* o
             o->end();

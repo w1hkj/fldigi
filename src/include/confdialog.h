@@ -35,12 +35,6 @@ extern Fl_Check_Button *btnClearOnSave;
 extern Fl_Check_Button *btnAutoFillQSO;
 extern Fl_Check_Button *btnCallUpperCase;
 extern Fl_Input2 *inpMyPower;
-extern Fl_Group *tabWfallRestart;
-#include <FL/Fl_Counter.H>
-extern Fl_Counter *cntrWfheight;
-extern Fl_Check_Button *btnDockedRigControl;
-extern Fl_Check_Button *btnCheckButtons;
-extern Fl_Counter *cntrWfwidth;
 extern Fl_Group *tabContest;
 #include <FL/Fl_Box.H>
 extern Fl_Box *lblSend;
@@ -75,6 +69,8 @@ extern Fl_Check_Button *btnWF_UIqsy;
 extern Fl_Check_Button *btnWF_UIxmtlock;
 extern Fl_Button *btn_wf_enable_all;
 extern Fl_Button *btn_wf_disable_all;
+extern Fl_Group *tabWfallRestart;
+extern Fl_Check_Button *btnCheckButtons;
 extern Fl_Group *tabWaterfall;
 extern Fl_Tabs *tabsWaterfall;
 #include "colorbox.h"
@@ -94,10 +90,13 @@ extern Fl_Button *btnWaterfallFont;
 extern Fl_Check_Button *btnViewXmtSignal;
 #include <FL/Fl_Value_Slider.H>
 extern Fl_Value_Slider *valTxMonitorLevel;
+#include <FL/Fl_Counter.H>
 extern Fl_Counter *cntLowFreqCutoff;
 extern Fl_Counter *valLatency;
 extern Fl_Check_Button *btnWFaveraging;
 extern Fl_Choice *mnuFFTPrefilter;
+extern Fl_Counter *cntrWfwidth;
+extern Fl_Counter *cntrWfheight;
 extern Fl_Check_Button *btnWaterfallHistoryDefault;
 extern Fl_Check_Button *btnWaterfallQSY;
 extern Fl_Check_Button *btnWaterfallClickInsert;
