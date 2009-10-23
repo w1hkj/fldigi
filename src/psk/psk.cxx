@@ -395,13 +395,10 @@ void psk::phaseafc()
 	if (afcmetric < 0.05) return;
 	
 	error = (phase - bits * M_PI / 2.0);
-	if (error < -M_PI/2.0)
-		error += TWOPI;
-	if (error > M_PI/2.0)
-		error -= TWOPI;
-	error *= ((samplerate / TWOPI) / (16.0 * symbollen));
-	if (fabs(error) < bandwidth) {
-		freqerr = decayavg( freqerr, error, AFCDECAYSLOW);
+	if (error < -M_PI / 2.0 || error > M_PI / 2.0) return;
+	error *= samplerate / (TWOPI * symbollen);
+	if (fabs(error) < bandwidth ) {
+		freqerr = error / dcdbits;
 		frequency -= freqerr;
 		if (mailserver) {
 			if (frequency < progdefaults.ServerCarrier - progdefaults.ServerAFCrange)
