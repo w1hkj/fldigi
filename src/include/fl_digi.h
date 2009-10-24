@@ -170,6 +170,7 @@ extern void show_mode(const std::string& mode);
 extern void show_bw(const std::string& sWidth);
 extern void show_spot(bool v);
 extern void showMacroSet();
+extern void setwfrange();
 
 extern void put_WARNstatus(double);
 

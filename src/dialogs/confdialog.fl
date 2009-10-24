@@ -725,8 +725,9 @@ progdefaults.changed = true;}
               Fl_Counter cntLowFreqCutoff {
                 label {Lower limit}
                 callback {progdefaults.LowFreqCutoff=(int)(o->value());
-progdefaults.changed = true;}
-                tooltip {Suppress waterfall below this audio frequency} xywh {50 72 70 20} type Simple align 8 minimum 0 maximum 500 step 50 value 300
+progdefaults.changed = true;
+setwfrange();}
+                tooltip {Low frequency limit in Hz} xywh {50 72 70 20} type Simple align 8 minimum 0 maximum 500 step 50 value 300
                 code0 {o->value(progdefaults.LowFreqCutoff);}
               }
               Fl_Counter valLatency {
@@ -756,10 +757,11 @@ progdefaults.changed = true;} open
               } {}
               Fl_Counter cntrWfwidth {
                 label {Upper limit}
-                callback {progdefaults.wfwidth = (int)o->value();
-progdefaults.changed = true;}
-                tooltip {CPU usage increases with waterfall height} xywh {273 72 95 21} type Simple align 8 minimum 2000 maximum 4000 step 100 value 3000
-                code0 {o->value(progdefaults.wfwidth);}
+                callback {progdefaults.HighFreqCutoff = (int)o->value();
+progdefaults.changed = true;
+setwfrange();}
+                tooltip {High frequency limit in Hz} xywh {273 72 95 21} type Simple align 8 minimum 2000 maximum 4000 step 100 value 3000
+                code0 {o->value(progdefaults.HighFreqCutoff);}
               }
             }
             Fl_Group {} {

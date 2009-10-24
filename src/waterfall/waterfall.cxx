@@ -112,8 +112,8 @@ short int *tmp_fft_db;
 WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 			  Fl_Widget(x0,y0,w0,h0,"") {
 	disp_width = w();
-	if (disp_width > progdefaults.wfwidth/4)
-		disp_width = progdefaults.wfwidth/4;
+	if (disp_width > progdefaults.HighFreqCutoff/4)
+		disp_width = progdefaults.HighFreqCutoff/4;
 	scale_width = IMAGE_WIDTH * 2;
 	image_height = h() - WFTEXT - WFSCALE - WFMARKER;
 	image_area      = IMAGE_WIDTH * image_height;
@@ -253,16 +253,16 @@ void WFdisp::makeMarker()
 
 	if (!wantcursor) return;
 
-	if (cursorpos > progdefaults.wfwidth - bandwidth / 2 / step)
-		cursorpos = progdefaults.wfwidth - bandwidth / 2 / step;
-	if (cursorpos >= (progdefaults.wfwidth - offset - bandwidth/2)/step)
-		cursorpos = (progdefaults.wfwidth - offset - bandwidth/2)/step - 1;
-	if (cursorpos < bandwidth / 2 / step)
-		cursorpos = bandwidth / 2 / step + 1;
+	if (cursorpos > progdefaults.HighFreqCutoff - bandwidth / 2 / step)
+		cursorpos = progdefaults.HighFreqCutoff - bandwidth / 2 / step;
+	if (cursorpos >= (progdefaults.HighFreqCutoff - offset - bandwidth/2)/step)
+		cursorpos = (progdefaults.HighFreqCutoff - offset - bandwidth/2)/step;
+	if (cursorpos < (progdefaults.LowFreqCutoff + bandwidth / 2) / step)
+		cursorpos = (progdefaults.LowFreqCutoff + bandwidth / 2) / step;
 
 // Create the cursor marker
 	double xp = offset + step * cursorpos;
-	if (xp < bandwidth / 2.0 || xp > (progdefaults.wfwidth - bandwidth / 2.0))
+	if (xp < bandwidth / 2.0 || xp > (progdefaults.HighFreqCutoff - bandwidth / 2.0))
 		return;
 	clrM = markerimage + scale_width + (int)(xp + 0.5);
 	RGBcursor.R = progdefaults.cursorLineRGBI.R;
@@ -564,8 +564,8 @@ void WFdisp::checkoffset() {
 		if (sigoffset > (IMAGE_WIDTH - disp_width))
 			sigoffset = IMAGE_WIDTH - disp_width;
 	} else {
-		if (offset > (int)(progdefaults.wfwidth - step * disp_width))
-			offset = (int)(progdefaults.wfwidth - step * disp_width);
+		if (offset > (int)(progdefaults.HighFreqCutoff - step * disp_width))
+			offset = (int)(progdefaults.HighFreqCutoff - step * disp_width);
 		if (offset < 0)
 			offset = 0;
 	}
@@ -603,11 +603,11 @@ void WFdisp::checkWidth()
 {
 	disp_width = w();
 	if (mag == MAG_1) step = 4;
-	if (mag == MAG_1 && disp_width > progdefaults.wfwidth/4)
-		disp_width = progdefaults.wfwidth/4;
+	if (mag == MAG_1 && disp_width > progdefaults.HighFreqCutoff/4)
+		disp_width = progdefaults.HighFreqCutoff/4;
 	if (mag == MAG_2) step = 2;
-	if (mag == MAG_2 && disp_width > progdefaults.wfwidth/2)
-		disp_width = progdefaults.wfwidth/2;
+	if (mag == MAG_2 && disp_width > progdefaults.HighFreqCutoff/2)
+		disp_width = progdefaults.HighFreqCutoff/2;
 	if (mag == MAG_4) step = 1;
 }
 
@@ -970,6 +970,7 @@ void carrier_cb(Fl_Widget *w, void *v) {
 	Fl_Counter *cntr = (Fl_Counter *)w;
 	waterfall *wf = (waterfall *)w->parent();
 	int selfreq = (int) cntr->value();
+	if (selfreq > progdefaults.HighFreqCutoff) selfreq = progdefaults.HighFreqCutoff - wf->wfdisp->Bandwidth() / 2;
 	stopMacroTimer();
 	active_modem->set_freq(selfreq);
 	wf->wfdisp->carrier(selfreq);
@@ -1228,13 +1229,14 @@ void btnMem_cb(Fl_Widget *, void *menu_event)
 
 void waterfall::opmode() {
 	int val = (int)active_modem->get_bandwidth();
-	if (wfdisp->carrier() < val/2)
-		wfdisp->carrier( val/2 );
-	if (wfdisp->carrier() > IMAGE_WIDTH - val/2)
-		wfdisp->carrier( IMAGE_WIDTH - val/2);
+	
+	wfdisp->carrier((int)CLAMP(
+		wfdisp->carrier(), 
+		progdefaults.LowFreqCutoff + val / 2 + 1, 
+		progdefaults.HighFreqCutoff - val / 2) - 1);
 	wfdisp->Bandwidth( val );
 	FL_LOCK_D();
-	wfcarrier->range(val/2, IMAGE_WIDTH - val/2-1);
+	wfcarrier->range(progdefaults.LowFreqCutoff + val/2, progdefaults.HighFreqCutoff - val/2 - 1);
 	FL_UNLOCK_D();
 }
 
@@ -1432,7 +1434,7 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	wfcarrier->step(1.0);
 	wfcarrier->lstep(10.0);
 	wfcarrier->precision(0);
-	wfcarrier->range(16.0, IMAGE_WIDTH - 16.0);
+	wfcarrier->range(16.0, progdefaults.HighFreqCutoff - 16.0);
 	wfcarrier->value(wfdisp->carrier());
 	wfcarrier->tooltip(_("Adjust cursor frequency"));
 
@@ -1722,7 +1724,10 @@ int WFdisp::handle(int event)
 			if (progdefaults.WaterfallHistoryDefault)
 				bHistory = true;
 			newcarrier = cursorFreq(xpos);
-			newcarrier = (int)CLAMP(newcarrier, wf->wfcarrier->minimum(), wf->wfcarrier->maximum());
+			newcarrier = (int)CLAMP(
+				newcarrier, 
+				progdefaults.LowFreqCutoff + active_modem->get_bandwidth() / 2, 
+				progdefaults.HighFreqCutoff - active_modem->get_bandwidth() / 2);
 			active_modem->set_freq(newcarrier);
 			if (!(Fl::event_state() & FL_SHIFT))
 				active_modem->set_sigsearch(SIGSEARCH);
@@ -1802,7 +1807,10 @@ int WFdisp::handle(int event)
 		case FL_Left: case FL_Right:
 			if (k == FL_Left)
 				d = -d;
-			oldcarrier = newcarrier = (int)CLAMP(carrier() + d, wf->wfcarrier->minimum(), wf->wfcarrier->maximum());
+			oldcarrier = newcarrier = (int)CLAMP(
+				carrier() + d, 
+				progdefaults.LowFreqCutoff + active_modem->get_bandwidth() / 2, 
+				progdefaults.HighFreqCutoff - active_modem->get_bandwidth() / 2);
 			active_modem->set_freq(newcarrier);
 			redrawCursor();
 			break;

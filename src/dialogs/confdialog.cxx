@@ -580,6 +580,7 @@ Fl_Counter *cntLowFreqCutoff=(Fl_Counter *)0;
 static void cb_cntLowFreqCutoff(Fl_Counter* o, void*) {
   progdefaults.LowFreqCutoff=(int)(o->value());
 progdefaults.changed = true;
+setwfrange();
 }
 
 Fl_Counter *valLatency=(Fl_Counter *)0;
@@ -606,8 +607,9 @@ progdefaults.changed = true;
 Fl_Counter *cntrWfwidth=(Fl_Counter *)0;
 
 static void cb_cntrWfwidth(Fl_Counter* o, void*) {
-  progdefaults.wfwidth = (int)o->value();
+  progdefaults.HighFreqCutoff = (int)o->value();
 progdefaults.changed = true;
+setwfrange();
 }
 
 Fl_Counter *cntrWfheight=(Fl_Counter *)0;
@@ -2903,7 +2905,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             { Fl_Group* o = new Fl_Group(5, 62, 490, 135);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Counter* o = cntLowFreqCutoff = new Fl_Counter(50, 72, 70, 20, _("Lower limit"));
-                cntLowFreqCutoff->tooltip(_("Suppress waterfall below this audio frequency"));
+                cntLowFreqCutoff->tooltip(_("Low frequency limit in Hz"));
                 cntLowFreqCutoff->type(1);
                 cntLowFreqCutoff->minimum(0);
                 cntLowFreqCutoff->maximum(500);
@@ -2942,7 +2944,7 @@ an merging"));
                 mnuFFTPrefilter->value(progdefaults.wfPreFilter);
               } // Fl_Choice* mnuFFTPrefilter
               { Fl_Counter* o = cntrWfwidth = new Fl_Counter(273, 72, 95, 21, _("Upper limit"));
-                cntrWfwidth->tooltip(_("CPU usage increases with waterfall height"));
+                cntrWfwidth->tooltip(_("High frequency limit in Hz"));
                 cntrWfwidth->type(1);
                 cntrWfwidth->minimum(2000);
                 cntrWfwidth->maximum(4000);
@@ -2950,7 +2952,7 @@ an merging"));
                 cntrWfwidth->value(3000);
                 cntrWfwidth->callback((Fl_Callback*)cb_cntrWfwidth);
                 cntrWfwidth->align(FL_ALIGN_RIGHT);
-                o->value(progdefaults.wfwidth);
+                o->value(progdefaults.HighFreqCutoff);
               } // Fl_Counter* cntrWfwidth
               o->end();
             } // Fl_Group* o

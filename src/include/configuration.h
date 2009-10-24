@@ -107,6 +107,9 @@
         ELEM_(int, LowFreqCutoff, "LOWFREQCUTOFF",                                      \
               "Lowest frequency shown on waterfall (Hz)",                               \
               0)                                                                        \
+        ELEM_(int,  HighFreqCutoff, "HIGHFREQCUTOFF",                                   \
+              "Highest frequency shown on waterfall (Hz)",                              \
+              3000)                                                                     \
         ELEM_(double, CWsweetspot, "CWSWEETSPOT",                                       \
               "Default CW tracking point (Hz)",                                         \
               1000)                                                                     \
@@ -469,9 +472,6 @@
         ELEM_(bool, docked_rig_control, "DOCKEDRIGCONTROL",                             \
               "Docked rig control",                                                     \
               true)                                                                     \
-        ELEM_(int,  wfwidth, "WFWIDTH",                                                 \
-              "Waterfall width (Hz)",                                                   \
-              3000)                                                                     \
         ELEM_(int,  wfheight, "WFHEIGHT",                                               \
               "Waterfall height (pixels)",                                              \
               125)                                                                      \

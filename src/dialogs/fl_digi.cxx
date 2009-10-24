@@ -1516,7 +1516,7 @@ void cb_call(Fl_Widget* w, void*)
 	if (progStatus.timer && (Fl::event() != FL_HIDE))
 		stopMacroTimer();
 
-	if (old_call == new_call)
+	if (old_call == new_call || new_call.empty())
 		return restoreFocus(w);
 
 	old_call = new_call;
@@ -2492,6 +2492,10 @@ void showMacroSet() {
 	}
 }
 
+void setwfrange() {
+	wf->opmode();
+}
+
 void create_fl_digi_main() {
 
 	int fnt = fl_font();
@@ -2506,7 +2510,7 @@ void create_fl_digi_main() {
 
 	x_qsoframe += rig_control_width;
 
-	IMAGE_WIDTH = 4000;//progdefaults.wfwidth;
+	IMAGE_WIDTH = 4000;//progdefaults.HighFreqCutoff;
 	Hwfall = progdefaults.wfheight;
 
 	Wwfall = progStatus.mainW - 2 * DEFAULT_SW;

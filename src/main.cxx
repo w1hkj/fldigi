@@ -555,7 +555,7 @@ int parse_args(int argc, char **argv, int& idx)
 	       OPT_BENCHMARK_SRC_RATIO, OPT_BENCHMARK_SRC_TYPE,
 #endif
 
-               OPT_FONT, OPT_WFALL_HEIGHT, OPT_WFALL_WIDTH,
+               OPT_FONT, OPT_WFALL_HEIGHT,
                OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT,
 //               OPT_TOGGLE_CHECK,
 #if USE_PORTAUDIO
@@ -600,7 +600,6 @@ int parse_args(int argc, char **argv, int& idx)
 
 		{ "font",	   1, 0, OPT_FONT },
 
-		{ "wfall-width",   1, 0, OPT_WFALL_WIDTH },
 		{ "wfall-height",  1, 0, OPT_WFALL_HEIGHT },
 		{ "window-width",  1, 0, OPT_WINDOW_WIDTH },
 		{ "window-height", 1, 0, OPT_WINDOW_HEIGHT },
@@ -740,10 +739,6 @@ int parse_args(int argc, char **argv, int& idx)
 			}
 		}
 			Fl::set_font(FL_HELVETICA, optarg);
-			break;
-
-		case OPT_WFALL_WIDTH:
-			progdefaults.wfwidth = strtol(optarg, NULL, 10);
 			break;
 
 		case OPT_WFALL_HEIGHT:
