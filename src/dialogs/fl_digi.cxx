@@ -1434,7 +1434,7 @@ void clearQSO()
 		inpName1, inpName2,
 		inpTimeOn1, inpTimeOn2,
 		inpRstIn1, inpRstIn2,
-		inpRstOut1, inpRstIn2,
+		inpRstOut1, inpRstOut2,
 		inpQth, inpLoc, inpAZ, inpState, inpVEprov, inpCountry,
 		inpSerNo1, inpSerNo2,
 		outSerNo1, outSerNo2,
