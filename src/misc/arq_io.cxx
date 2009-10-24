@@ -82,9 +82,9 @@ void ParseMode(string src)
 		int msecs = 100;
 		if (src.length() > 7)
 			sscanf( src.substr(7, src.length() - 7).c_str(), "%d", &msecs);
-		REQ_SYNC(&PTT::set, push2talk, true);//push2talk->set(true);
+		REQ_SYNC(&PTT::set, push2talk, true);
 		MilliSleep(msecs);
-		REQ_SYNC(&PTT::set, push2talk, false);//push2talk->set(false);
+		REQ_SYNC(&PTT::set, push2talk, false);
 LOG_DEBUG("ARQ ptt toggled");
 		return;
 	}
@@ -99,6 +99,33 @@ LOG_DEBUG("ARQ new modem set to %s", mode_info[i].pskmail_name);
 		}
 	}
 }
+
+//VK2ETA Start of "Control RSID"
+void ParseRSID(string src)
+{
+	if (src == "ON") {
+LOG_DEBUG("RsID turned ON");
+		REQ(set_button, btnRSID, 1);
+	}
+	if (src == "OFF") {
+LOG_DEBUG("RsID turned OFF");
+		REQ(set_button, btnRSID, 0);
+	}
+}
+
+
+void ParseTxRSID(string src)
+{
+	if (src == "ON") {
+LOG_DEBUG("TxRsID turned ON");
+		REQ(set_button, btnTxRSID, 1);
+	}
+	if (src == "OFF") {
+LOG_DEBUG("TxRsID turned OFF");
+		REQ(set_button, btnTxRSID, 0);
+	}
+}
+//VK2ETA End of "Control RSID"
 
 void parse_arqtext(string &toparse)
 {
@@ -145,16 +172,31 @@ LOG_DEBUG("ARQ is set to pskmail client");
 			REQ(set_button, wf->xmtlock, 0);
 			active_modem->set_freqlock(false);
 LOG_DEBUG("ARQ is reset to normal ops");
-		} else {
-			if ((idxSubCmd = strCmdText.find("<mode>")) != string::npos) {
-				idxSubCmdEnd = strCmdText.find("</mode>");
-				if (	idxSubCmdEnd != string::npos &&
-						idxSubCmdEnd > idxSubCmd ) {
-					strSubCmd = strCmdText.substr(idxSubCmd + 6, idxSubCmdEnd - idxSubCmd - 6);
-					ParseMode(strSubCmd);
-				}
+//VK2ETA Start of "Control RSID"
+//		} else {
+		} else if ((idxSubCmd = strCmdText.find("<mode>")) != string::npos) {
+			idxSubCmdEnd = strCmdText.find("</mode>");
+			if (	idxSubCmdEnd != string::npos &&
+					idxSubCmdEnd > idxSubCmd ) {
+				strSubCmd = strCmdText.substr(idxSubCmd + 6, idxSubCmdEnd - idxSubCmd - 6);
+				ParseMode(strSubCmd);
+			}
+		} else if ((idxSubCmd = strCmdText.find("<rsid>")) != string::npos) {
+			idxSubCmdEnd = strCmdText.find("</rsid>");
+			if (	idxSubCmdEnd != string::npos &&
+					idxSubCmdEnd > idxSubCmd ) {
+				strSubCmd = strCmdText.substr(idxSubCmd + 6, idxSubCmdEnd - idxSubCmd - 6);
+				ParseRSID(strSubCmd);
+			}
+		} else if ((idxSubCmd = strCmdText.find("<txrsid>")) != string::npos) {
+			idxSubCmdEnd = strCmdText.find("</txrsid>");
+			if (	idxSubCmdEnd != string::npos &&
+					idxSubCmdEnd > idxSubCmd ) {
+				strSubCmd = strCmdText.substr(idxSubCmd + 8, idxSubCmdEnd - idxSubCmd - 8);
+				ParseTxRSID(strSubCmd);
 			}
 		}
+//VK2ETA End of "Control RSID"
 		toparse.erase(idxCmd, idxCmdEnd - idxCmd + 6);
 		if (toparse.length() == 1 && toparse[0] == '\n')
 			toparse = "";
