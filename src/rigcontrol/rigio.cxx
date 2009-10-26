@@ -31,6 +31,7 @@
 #include "threads.h"
 #include "qrunner.h"
 #include "confdialog.h"
+#include "status.h"
 
 LOG_FILE_SOURCE(debug::LOG_RIGCONTROL);
 
@@ -50,9 +51,6 @@ static long long		llFreq = 0;
 
 static bool nonCATrig = false;
 static bool noXMLfile = false;
-long long  noCATfreq = 3580000L;
-string noCATmode = "USB";
-string noCATwidth = "";
 
 static void *rigCAT_loop(void *args);
 
@@ -299,7 +297,7 @@ long long rigCAT_getfreq()
 	long long f = 0;
 
 	if (nonCATrig == true || noXMLfile) {
-		return noCATfreq;
+		return progStatus.noCATfreq;
 	}
 
 	itrCmd = commands.begin();
@@ -310,7 +308,7 @@ long long rigCAT_getfreq()
 	}
 
 	if (itrCmd == commands.end()) {
-		return noCATfreq; // get_freq command is not defined!
+		return progStatus.noCATfreq; // get_freq command is not defined!
 	}
 
 	modeCmd = *itrCmd;
@@ -386,7 +384,7 @@ void rigCAT_setfreq(long long f)
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 
-	noCATfreq = f;
+	progStatus.noCATfreq = f;
 
 	if (noXMLfile || nonCATrig) {
 		return;
@@ -454,7 +452,7 @@ string rigCAT_getmode()
 	size_t len;
 
 	if (nonCATrig == true || noXMLfile)
-		return noCATmode;
+		return progStatus.noCATmode;
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -463,7 +461,7 @@ string rigCAT_getmode()
 		++itrCmd;
 	}
 	if (itrCmd == commands.end())
-		return noCATmode;
+		return progStatus.noCATmode;
 
 	modeCmd = *itrCmd;
 
@@ -547,7 +545,7 @@ void rigCAT_setmode(const string& md)
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 
-	noCATmode = md;
+	progStatus.noCATmode = md;
 
 	if (nonCATrig == true || noXMLfile) {
 		return;
@@ -624,7 +622,7 @@ string rigCAT_getwidth()
 	size_t len = 0, p = 0, pData = 0;
 
 	if (nonCATrig == true || noXMLfile)
-		return noCATwidth;
+		return progStatus.noCATwidth;
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -719,7 +717,7 @@ void rigCAT_setwidth(const string& w)
 	string strCmd;
 
 	if (noXMLfile) {
-		noCATwidth = w;
+		progStatus.noCATwidth = w;
 		return;
 	}
 
@@ -730,7 +728,7 @@ void rigCAT_setwidth(const string& w)
 		++itrCmd;
 	}
 	if (itrCmd == commands.end()) {
-		noCATwidth = w;
+		progStatus.noCATwidth = w;
 		return;
 	}
 	modeCmd = *itrCmd;

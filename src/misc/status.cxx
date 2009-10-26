@@ -55,6 +55,9 @@ status progStatus = {
 	560,				// int rigW
 	80,					// int rigH
 	1000,				// int carrier;
+	3580000,			// int noCATfreq;
+	"USB",				// string noCATmode;
+	"3000",				// string noCATwidth;
 	1,					// int mag;
 	NORMAL,				// WFdisp::WFspeed
 	-20,				// reflevel
@@ -169,6 +172,9 @@ void status::saveLastState()
 	spref.set("wf_speed", speed);
 	spref.set("wf_reflevel", reflevel);
 	spref.set("wf_ampspan", ampspan);
+	spref.set("noCATfreq", noCATfreq);
+	spref.set("noCATmode", noCATmode.c_str());
+	spref.set("noCATwidth", noCATwidth.c_str());
 
 	spref.set("main_x", mainX);
 	spref.set("main_y", mainY);
@@ -255,6 +261,16 @@ void status::loadLastState()
 	progdefaults.wfRefLevel = reflevel;
 	spref.get("wf_ampspan", ampspan, ampspan);
 	progdefaults.wfAmpSpan = ampspan;
+	
+	spref.get("noCATfreq", noCATfreq, noCATfreq);
+	char *defbuffer1;
+	spref.get("noCATmode", defbuffer1, "USB");
+	noCATmode = defbuffer1;
+	if (defbuffer1) free(defbuffer1);
+	char *defbuffer2;
+	spref.get("noCATwidth", defbuffer2, "3000");
+	noCATwidth = defbuffer2;
+	if (defbuffer2) free(defbuffer2);
 
 	spref.get("main_x", mainX, mainX);
 	spref.get("main_y", mainY, mainY);
@@ -282,10 +298,10 @@ void status::loadLastState()
 	spref.get("scope_w", scopeW, scopeW);
 	spref.get("scope_h", scopeH, scopeH);
 
-	char *defbuffer;
-	spref.get("last_macro_file", defbuffer, "macros.mdf");
-	LastMacroFile = defbuffer;
-	if (defbuffer) free(defbuffer);
+	char *defbuffer3;
+	spref.get("last_macro_file", defbuffer3, "macros.mdf");
+	LastMacroFile = defbuffer3;
+	if (defbuffer3) free(defbuffer3);
 
 	spref.get("spot_recv", i, i); spot_recv = i;
 	spref.get("spot_log", i, i); spot_log = i;

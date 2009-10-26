@@ -23,6 +23,9 @@ struct status {
 	int		rigW;
 	int		rigH;
 	int		carrier;
+	int		noCATfreq;
+	std::string	noCATmode;
+	std::string noCATwidth;
 	int		mag;
 	int		speed;
 	double	reflevel;
