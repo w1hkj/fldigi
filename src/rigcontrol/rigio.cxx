@@ -310,8 +310,7 @@ long long rigCAT_getfreq()
 	}
 
 	if (itrCmd == commands.end()) {
-		LOG_WARN("GET_FREQ not defined");
-		return -2; // get_freq command is not defined!
+		return noCATfreq; // get_freq command is not defined!
 	}
 
 	modeCmd = *itrCmd;
@@ -387,8 +386,9 @@ void rigCAT_setfreq(long long f)
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 
+	noCATfreq = f;
+
 	if (noXMLfile || nonCATrig) {
-		noCATfreq = f;
 		return;
 	}
 
@@ -402,7 +402,6 @@ void rigCAT_setfreq(long long f)
 	}
 	if (itrCmd == commands.end()) {
 		LOG_WARN("SET_FREQ not defined");
-		noCATfreq = f;
 		return;
 	}
 
@@ -464,7 +463,8 @@ string rigCAT_getmode()
 		++itrCmd;
 	}
 	if (itrCmd == commands.end())
-		return "";
+		return noCATmode;
+
 	modeCmd = *itrCmd;
 
 	if ( modeCmd.str1.empty() == false)
@@ -547,8 +547,9 @@ void rigCAT_setmode(const string& md)
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 
+	noCATmode = md;
+
 	if (nonCATrig == true || noXMLfile) {
-		noCATmode = md;
 		return;
 	}
 
