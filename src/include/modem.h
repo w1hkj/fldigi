@@ -201,6 +201,7 @@ extern modem *psk31_modem;
 extern modem *psk63_modem;
 extern modem *psk125_modem;
 extern modem *psk250_modem;
+extern modem *psk500_modem;
 
 extern modem *qpsk31_modem;
 extern modem *qpsk63_modem;

@@ -52,6 +52,7 @@ modem *psk31_modem = 0;
 modem *psk63_modem = 0;
 modem *psk125_modem = 0;
 modem *psk250_modem = 0;
+modem *psk500_modem = 0;
 
 modem *qpsk31_modem = 0;
 modem *qpsk63_modem = 0;

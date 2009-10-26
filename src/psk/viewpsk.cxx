@@ -113,6 +113,10 @@ void viewpsk::restart(trx_mode pskmode)
 		symbollen = 32;
 		dcdbits = 256;
 		break;
+	case MODE_PSK500:
+		symbollen = 16;
+		dcdbits = 512;
+		break;
 	default: // MODE_BPSK31;
 		symbollen = 256;
 		dcdbits = 32;

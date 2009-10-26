@@ -168,6 +168,11 @@ psk::psk(trx_mode pskmode) : modem()
 		dcdbits = 256;
 		cap |= CAP_REV;
 		break;
+	case MODE_PSK500:
+		symbollen = 16;
+		_qpsk = false;
+		dcdbits = 512;
+		break;
 	default:
 		mode = MODE_BPSK31;
 		symbollen = 256;

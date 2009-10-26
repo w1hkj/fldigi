@@ -361,6 +361,7 @@ Fl_Menu_Item quick_change_psk[] = {
 	{ mode_info[MODE_PSK63].name, 0, cb_init_mode, (void *)MODE_PSK63 },
 	{ mode_info[MODE_PSK125].name, 0, cb_init_mode, (void *)MODE_PSK125 },
 	{ mode_info[MODE_PSK250].name, 0, cb_init_mode, (void *)MODE_PSK250 },
+	{ mode_info[MODE_PSK500].name, 0, cb_init_mode, (void *)MODE_PSK500 },
 	{ 0 }
 };
 
@@ -588,7 +589,7 @@ void startup_modem(modem *m)
 	if (m == rtty_modem) {
 	    sldrRTTYbandwidth->value(progdefaults.RTTY_BW);
     }
-    if (m >= psk31_modem && m <= qpsk250_modem)
+    if (m >= psk31_modem && m <= psk500_modem)
         m->set_sigsearch(SIGSEARCH);
 
 	if (m->get_cap() & modem::CAP_AFC) {
@@ -729,7 +730,7 @@ void init_modem(trx_mode mode)
 		modem_config_tab = tabMT63;
 		break;
 
-	case MODE_BPSK31: case MODE_PSK63: case MODE_PSK125: case MODE_PSK250:
+	case MODE_BPSK31: case MODE_PSK63: case MODE_PSK125: case MODE_PSK250: case MODE_PSK500:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new psk(mode));
 		quick_change = quick_change_psk;
@@ -2106,6 +2107,7 @@ Fl_Menu_Item menu_[] = {
 { mode_info[MODE_QPSK125].name, 0, cb_init_mode, (void *)MODE_QPSK125, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_PSK250].name, 0, cb_init_mode, (void *)MODE_PSK250, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_QPSK250].name, 0, cb_init_mode, (void *)MODE_QPSK250, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_PSK500].name, 0, cb_init_mode, (void *)MODE_PSK500, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"RTTY", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
