@@ -1452,6 +1452,7 @@ void clearQSO()
 	lblDup->hide();
 	old_call.clear();
 	new_call.clear();
+	oktoclear = true;
 }
 
 void cb_ResetSerNbr()
@@ -1606,7 +1607,6 @@ void cb_log(Fl_Widget* w, void*)
 void cbClearCall(Fl_Widget *b, void *)
 {
 	clearQSO();
-	oktoclear = true;
 	restoreFocus();
 }
 
@@ -1617,7 +1617,6 @@ void qsoClear_cb(Fl_Widget *b, void *)
 		clearlog = (fl_choice2(_("Clear log fields?"), _("Cancel"), _("OK"), NULL) == 1);
 	if (clearlog) {
 		clearQSO();
-		oktoclear = true;
 	}
 	restoreFocus();
 }
@@ -1627,7 +1626,6 @@ void qsoSave_cb(Fl_Widget *b, void *)
 	submit_log();
 	if (progdefaults.ClearOnSave)
 		clearQSO();
-	oktoclear = true;
 	restoreFocus();
 }
 
