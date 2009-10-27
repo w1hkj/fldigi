@@ -1219,6 +1219,8 @@ void sendEmailFile()
 	ifstream textfile;
 	textfile.open(sendfilename.c_str(), ios::binary);
 	if (textfile) {
+		for (size_t i = 0; i < sendfilename.length(); i++)
+			if (sendfilename[i] == '\\') sendfilename[i] = '/';
 		MailFileName = sendfilename;
 		TX.erase();
 		TX.append(arqfile);
@@ -1865,7 +1867,7 @@ static void checkdirectories(void)
 
 	for (size_t i = 0; i < sizeof(NBEMS_dirs)/sizeof(*NBEMS_dirs); i++) {
 		if (NBEMS_dirs[i].suffix)
-			NBEMS_dirs[i].dir.assign(NBEMS_dir).append(NBEMS_dirs[i].suffix).append(PATH_SEP);
+			NBEMS_dirs[i].dir.assign(NBEMS_dir).append(NBEMS_dirs[i].suffix).append("/");
 
 		if ((r = mkdir(NBEMS_dirs[i].dir.c_str(), 0777)) == -1 && errno != EEXIST) {
 			cerr << _("Could not make directory") << ' ' << NBEMS_dirs[i].dir
