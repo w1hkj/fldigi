@@ -86,6 +86,8 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<ID>\tmode ID"));
 	w->add(_("<TEXT>\tvideo text"));
 	w->add(_("<CWID>\tCW identifier"));
+	w->add(_("<TXRSID:on|off|t>\tTx RSID on,off,toggle"));
+	w->add(_("<RXRSID:on|off|t>\tRx RSID on,off,toggle"));
 
 	w->add(LINE_SEP);
 	w->add(_("<RX>\treceive"));
@@ -105,7 +107,6 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(LINE_SEP);
 	w->add(_("<AFC:on|off|t>\tAFC  on,off,toggle"));
 	w->add(_("<LOCK:on|off|t>\tLOCK on,off,toggle"));
-	w->add(_("<RSID:on|off|t>\tRSID on,off,toggle"));
 
 	w->add(LINE_SEP);
 	w->add(_("<FILE:>\tinsert text file"));

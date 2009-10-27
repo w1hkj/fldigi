@@ -81,7 +81,8 @@ void pPRE(string &, size_t &);
 void pPOST(string &, size_t &);
 void pAFC(string &, size_t &);
 void pLOCK(string &, size_t &);
-void pRSID(string &, size_t &);
+void pRX_RSID(string &, size_t &);
+void pTX_RSID(string &, size_t &);
 //void pMACROS(string &, size_t &);
 
 MTAGS mtags[] = {
@@ -132,8 +133,8 @@ MTAGS mtags[] = {
 {"<POST:",      pPOST},
 {"<AFC:",       pAFC},
 {"<LOCK:",      pLOCK},
-{"<RSID:",      pRSID},
-//{"<MACROS:",	pMACROS},
+{"<RXRSID:",    pRX_RSID},
+{"<TXRSID:",    pTX_RSID},
 {0, 0}
 };
 
@@ -557,10 +558,28 @@ void pLOCK(string &s, size_t &i)
   s.replace(i, endbracket - i + 1, "");
 }
 
-void pRSID(string &s, size_t &i)
+void pTX_RSID(string &s, size_t &i)
 {
   size_t endbracket = s.find('>',i);
-  string sVal = s.substr(i+6, endbracket - i - 6);
+  string sVal = s.substr(i+8, endbracket - i - 8);
+  if (sVal.length() > 0) {
+    // sVal = on|off|t   [ON, OFF or Toggle]
+    if (sVal.compare(0,2,"on") == 0)
+      btnTxRSID->value(1);
+    else if (sVal.compare(0,3,"off") == 0)
+      btnTxRSID->value(0);
+    else if (sVal.compare(0,1,"t") == 0)
+      btnTxRSID->value(!btnTxRSID->value());
+
+    btnTxRSID->do_callback();
+  }
+  s.replace(i, endbracket - i + 1, "");
+}
+
+void pRX_RSID(string &s, size_t &i)
+{
+  size_t endbracket = s.find('>',i);
+  string sVal = s.substr(i+8, endbracket - i - 8);
   if (sVal.length() > 0) {
     // sVal = on|off|t   [ON, OFF or Toggle]
     if (sVal.compare(0,2,"on") == 0)
