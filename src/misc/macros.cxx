@@ -83,6 +83,7 @@ void pAFC(string &, size_t &);
 void pLOCK(string &, size_t &);
 void pRX_RSID(string &, size_t &);
 void pTX_RSID(string &, size_t &);
+void pWAIT(string&, size_t &);
 //void pMACROS(string &, size_t &);
 
 MTAGS mtags[] = {
@@ -120,6 +121,7 @@ MTAGS mtags[] = {
 {"<TIMER:",		pTIMER},
 {"<IDLE:",		pIDLE},
 {"<TUNE:",		pTUNE},
+{"<WAIT:",		pWAIT},
 {"<MODEM>",		pMODEM},
 {"<EXEC>",		pEXEC},
 {"<STOP>",		pSTOP},
@@ -282,6 +284,22 @@ void pTUNE(string &s, size_t &i)
 		sscanf(sTime.c_str(), "%d", &number);
 		useTune = true;
 		tuneTime = number;
+	}
+	s.replace(i, endbracket - i + 1, "");
+}
+
+bool useWait = false;
+int  waitTime = 0;
+
+void pWAIT(string &s, size_t &i)
+{
+	size_t endbracket = s.find('>',i);
+	int number;
+	string sTime = s.substr(i+6, endbracket - i - 6);
+	if (sTime.length() > 0) {
+		sscanf(sTime.c_str(), "%d", &number);
+		useWait = true;
+		waitTime = number;
 	}
 	s.replace(i, endbracket - i + 1, "");
 }
@@ -977,9 +995,37 @@ void insertTextAfter(void *)
 	text2send.clear();
 }
 
+void continueMacro(void *)
+{
+	if ( TransmitON ) {
+		active_modem->set_stopflag(false);
+		start_tx();
+		TransmitON = false;
+		if (useIdle && idleTime > 0) {
+			Fl::add_timeout(idleTime , insertTextAfter);
+			useIdle = false;
+			return;
+		}
+	}
+	TransmitText->add( text2send.c_str() );
+	text2send.clear();
+}
+
 void finishTune(void *)
 {
 	trx_receive();
+// delay to allow tx/rx loop to change state
+	Fl::add_timeout(0.5, continueMacro);
+}
+
+void finishWait(void *)
+{
+	if (useTune && tuneTime > 0) {
+		trx_tune();
+		Fl::add_timeout(tuneTime, finishTune);
+		useTune = false;
+		return;
+	}
 	if ( TransmitON ) {
 		active_modem->set_stopflag(false);
 		start_tx();
@@ -997,6 +1043,11 @@ void finishTune(void *)
 void MACROTEXT::execute(int n)
 {
 	text2send = expandMacro(n);
+	if (useWait && waitTime > 0) {
+		Fl::add_timeout(waitTime, finishWait);
+		useWait = false;
+		return;
+	}
 	if (useTune && tuneTime > 0) {
 		trx_tune();
 		Fl::add_timeout(tuneTime, finishTune);

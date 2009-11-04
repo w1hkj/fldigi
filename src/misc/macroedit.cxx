@@ -44,20 +44,23 @@ static Fl_Input* iInput;
 void loadBrowser(Fl_Widget *widget) {
 	Fl_Browser *w = (Fl_Browser *)widget;
 	/* Do not translate the tags lefthand-side */
+	w->add(_("<FREQ>\tmy frequency"));
+	w->add(_("<MODE>\tmode"));
 	w->add(_("<MYCALL>\tmy call"));
 	w->add(_("<MYLOC>\tmy locator"));
 	w->add(_("<MYNAME>\tmy name"));
 	w->add(_("<MYQTH>\tmy QTH"));
 	w->add(_("<MYRST>\tmy RST"));
+	w->add(_("<VER>\tFldigi version"));
 
 	w->add(LINE_SEP);
 	w->add(_("<CALL>\tother call"));
+	w->add(_("<INFO1>\tS/N etc."));
+	w->add(_("<INFO2>\tIMD etc."));
 	w->add(_("<LOC>\tother locator"));
 	w->add(_("<NAME>\tother name"));
 	w->add(_("<QTH>\tother QTH"));
 	w->add(_("<RST>\tother RST"));
-	w->add(_("<INFO1>\tS/N etc."));
-	w->add(_("<INFO2>\tIMD etc."));
 
 	w->add(LINE_SEP);
 	w->add(_("<CLRRX>\tclear RX pane"));
@@ -66,15 +69,14 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<GET>\ttext to NAME/QTH"));
 
 	w->add(LINE_SEP);
-	w->add(_("<FREQ>\tmy frequency"));
-	w->add(_("<MODE>\tmode"));
+	w->add(_("<LOG>\tsave QSO data"));
 
 	w->add(LINE_SEP);
 	w->add(_("<QSOTIME>\tQSO time (HHMM))"));
-	w->add(_("<LDT>\tLocal datetime"));
 	w->add(_("<ILDT>\tLDT in iso-8601 format"));
-	w->add(_("<ZDT>\tUTC datetime"));
+	w->add(_("<LDT>\tLocal datetime"));
 	w->add(_("<IZDT>\tZDT in iso-8601 format"));
+	w->add(_("<ZDT>\tUTC datetime"));
 
 	w->add(LINE_SEP);
 	w->add(_("<CNTR>\tcontest counter"));
@@ -83,33 +85,34 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<XOUT>\texchange out"));
 
 	w->add(LINE_SEP);
+	w->add(_("<RX>\treceive"));
+	w->add(_("<TX>\ttransmit"));
+
+	w->add(LINE_SEP);
+	w->add(_("<FILE:>\tinsert text file"));
+	w->add(_("<IDLE:NN>\tidle signal for NN sec"));
+	w->add(_("<TIMER:NN>\trepeat every NN sec"));
+	w->add(_("<TUNE:NN>\ttune signal for NN sec"));
+	w->add(_("<WAIT:NN>\tdelay xmt for NN sec"));
+
+	w->add(LINE_SEP);
+	w->add(_("<CWID>\tCW identifier"));
 	w->add(_("<ID>\tmode ID"));
 	w->add(_("<TEXT>\tvideo text"));
-	w->add(_("<CWID>\tCW identifier"));
 	w->add(_("<TXRSID:on|off|t>\tTx RSID on,off,toggle"));
 	w->add(_("<RXRSID:on|off|t>\tRx RSID on,off,toggle"));
 
 	w->add(LINE_SEP);
-	w->add(_("<RX>\treceive"));
-	w->add(_("<TX>\ttransmit"));
-	w->add(_("<LOG>\tsave QSO data"));
-	w->add(_("<VER>\tFldigi version"));
-	w->add(_("<TIMER:NN>\trepeat every NN sec"));
-	w->add(_("<IDLE:NN>\tidle signal for NN sec"));
-	w->add(_("<TUNE:NN>\ttune signal for NN sec"));
-
-	w->add(LINE_SEP);
-	w->add(_("<WPM:NN>\tCW WPM"));
+	w->add(_("<POST:+/-nn.n>\tCW QSK post-timing"));
+	w->add(_("<PRE:nn.n>\tCW QSK pre-timing"));
 	w->add(_("<RISE:nn.n>\tCW rise time"));
-	w->add(_("<PRE:nn.n>\tQSK pre-timing"));
-	w->add(_("<POST:+/-nn.n>\tQSK post-timing"));
+	w->add(_("<WPM:NN>\tCW WPM"));
 
 	w->add(LINE_SEP);
 	w->add(_("<AFC:on|off|t>\tAFC  on,off,toggle"));
 	w->add(_("<LOCK:on|off|t>\tLOCK on,off,toggle"));
 
 	w->add(LINE_SEP);
-	w->add(_("<FILE:>\tinsert text file"));
 	w->add(_("<MACROS:>\tchange macro defs file"));
 
 	w->add(LINE_SEP);
