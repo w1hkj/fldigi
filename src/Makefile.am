@@ -217,7 +217,7 @@ $(builddir)/../doc/guide.html: $(builddir)/../doc/guide.txt
 
 $(builddir)/dialogs/guide.cxx: $(builddir)/../doc/guide.html
 	mkdir -p $(builddir)/dialogs
-	sed 's/"/\\"/g; s/$$/\\n\\/g; 1 s/.*/const char* szBeginner = "&/; $$ s/.*/&n";/' $< > $@
+	sed 's/\\/\\\\/g; s/"/\\"/g; s/$$/\\n\\/g; 1 s/.*/const char* szBeginner = "&/; $$ s/.*/&n";/' $< > $@
 dialogs/htmlstrings.cxx: $(builddir)/dialogs/guide.cxx
 
 distclean-local:
