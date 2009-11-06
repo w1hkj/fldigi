@@ -87,6 +87,10 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(LINE_SEP);
 	w->add(_("<RX>\treceive"));
 	w->add(_("<TX>\ttransmit"));
+	w->add(_("<SRCHUP>\tsearch UP for signal"));
+	w->add(_("<SRCHDN>\tsearch DOWN for signal"));
+	w->add(_("<GOHOME>\treturn to sweet spot"));
+	w->add(_("<GOFREQ:NNNN>\tmove to freq NNNN"));
 
 	w->add(LINE_SEP);
 	w->add(_("<FILE:>\tinsert text file"));

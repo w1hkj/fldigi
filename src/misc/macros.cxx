@@ -84,6 +84,11 @@ void pLOCK(string &, size_t &);
 void pRX_RSID(string &, size_t &);
 void pTX_RSID(string &, size_t &);
 void pWAIT(string&, size_t &);
+void pSRCHUP(string&, size_t&);
+void pSRCHDN(string&, size_t&);
+void pGOHOME(string&, size_t&);
+void pGOFREQ(string&, size_t&);
+
 //void pMACROS(string &, size_t &);
 
 MTAGS mtags[] = {
@@ -137,6 +142,10 @@ MTAGS mtags[] = {
 {"<LOCK:",      pLOCK},
 {"<RXRSID:",    pRX_RSID},
 {"<TXRSID:",    pTX_RSID},
+{"<SRCHUP>",	pSRCHUP},
+{"<SRCHDN>",	pSRCHDN},
+{"<GOHOME>",	pGOHOME},
+{"<GOFREQ:",	pGOFREQ},
 {0, 0}
 };
 
@@ -611,6 +620,46 @@ void pRX_RSID(string &s, size_t &i)
   }
   s.replace(i, endbracket - i + 1, "");
 }
+
+void pSRCHUP(string &s, size_t &i)
+{
+	s.replace( i, 8, "");
+	active_modem->searchUp();
+}
+
+void pSRCHDN(string &s, size_t &i)
+{
+	s.replace( i, 8, "");
+	active_modem->searchDown();
+}
+
+void pGOHOME(string &s, size_t &i)
+{
+	s.replace( i, 8, "");
+	if (active_modem == cw_modem)
+		active_modem->set_freq(progdefaults.CWsweetspot);
+	else if (active_modem == rtty_modem)
+		active_modem->set_freq(progdefaults.RTTYsweetspot);
+	else
+		active_modem->set_freq(progdefaults.PSKsweetspot);
+}
+
+void pGOFREQ(string &s, size_t &i)
+{
+	size_t endbracket = s.find('>',i);
+	int number;
+	string sGoFreq = s.substr(i+8, endbracket - i - 8);
+	if (sGoFreq.length() > 0) {
+		sscanf(sGoFreq.c_str(), "%d", &number);
+		if (number < progdefaults.LowFreqCutoff)
+			number = progdefaults.LowFreqCutoff;
+		if (number > progdefaults.HighFreqCutoff)
+			number = progdefaults.HighFreqCutoff;
+		active_modem->set_freq(number);
+	}
+	s.replace(i, endbracket - i + 1, "");
+}
+
 
 void set_macro_env(void)
 {
