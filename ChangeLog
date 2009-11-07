@@ -1,3 +1,46 @@
+3.12.5
+
+2009-11-07  Stelios Bounanos  <vcs@enotty.net>
+
+	d31fd3e: Fix threads/exceptions bugs on mingw32
+	32933c0: Fix guide generation
+	e0888f6: Restrict FLTK API version check
+
+2009-10-23  David Freese  <w1hkj@w1hkj.com>
+
+	5e39669: PSK250-AFC
+	34fc880: Stop Timer Bug
+	f4b53ef: Feld Hell Mod
+	a451d6a: TX Control Code fix
+	9cc86ad: Browser Discovery
+
+2009-09-22  Stelios Bounanos  <vcs@enotty.net>
+
+	a2eb274: Do not use -rdynamic on win32
+
+2009-09-21  David Freese  <w1hkj@w1hkj.com>
+
+	fa277b9: Thor squelch mod
+	6ff8838: Dom/Thor mod
+	005cc4f: QRZ lookup
+
+2009-09-02  Stelios Bounanos  <vcs@enotty.net>
+
+	abe4784: Update README
+	9324725: Handle nested qrunner calls
+	2168f74: Fix notifier TX text handling
+	61bccfa: Fix log/manual spotting
+	c43efcc: Add missing include
+
+2009-08-31  David Freese  <w1hkj@w1hkj.com>
+
+	49bb77a: PSK post DCD signal
+	b3e1efa: flarq mod
+
+2009-08-18  Stelios Bounanos  <vcs@enotty.net>
+
+	92e7ec1: Fix benchmark mode output
+
 3.12.4
 
 2009-08-15  Stelios Bounanos  <vcs@enotty.net>

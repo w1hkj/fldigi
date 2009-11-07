@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: fldigi 3.12.4\n"
+"Project-Id-Version: fldigi 3.12.5\n"
 "Report-Msgid-Bugs-To: w1hkj AT w1hkj DOT com\n"
-"POT-Creation-Date: 2009-08-15 10:45+0100\n"
+"POT-Creation-Date: 2009-11-07 21:07+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,7 +34,7 @@ msgid "Could not make directory"
 msgstr ""
 
 #: src/dialogs/fl_digi.cxx:386 src/dialogs/fl_digi.cxx:394
-#: src/dialogs/fl_digi.cxx:1809 src/dialogs/fl_digi.cxx:1827
+#: src/dialogs/fl_digi.cxx:1818 src/dialogs/fl_digi.cxx:1836
 msgid "Custom..."
 msgstr ""
 
@@ -42,22 +42,22 @@ msgstr ""
 msgid "Save changed macros?"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:565 src/dialogs/fl_digi.cxx:1488
-#: src/dialogs/fl_digi.cxx:1648 src/dialogs/fl_digi.cxx:1660
-#: src/dialogs/fl_digi.cxx:1672 src/logbook/lgbook.cxx:371
+#: src/dialogs/fl_digi.cxx:565 src/dialogs/fl_digi.cxx:1497
+#: src/dialogs/fl_digi.cxx:1657 src/dialogs/fl_digi.cxx:1669
+#: src/dialogs/fl_digi.cxx:1681 src/logbook/lgbook.cxx:371
 #: src/logbook/lgbook.cxx:937
 msgid "Cancel"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:565 src/dialogs/fl_digi.cxx:1648
-#: src/dialogs/fl_digi.cxx:1660 src/dialogs/fl_digi.cxx:1672
-#: src/dialogs/fl_digi.cxx:2429 src/dialogs/fl_digi.cxx:2451
+#: src/dialogs/fl_digi.cxx:565 src/dialogs/fl_digi.cxx:1657
+#: src/dialogs/fl_digi.cxx:1669 src/dialogs/fl_digi.cxx:1681
+#: src/dialogs/fl_digi.cxx:2438 src/dialogs/fl_digi.cxx:2460
 #: src/dialogs/confdialog.cxx:4590
 msgid "Save"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:565 src/dialogs/fl_digi.cxx:1648
-#: src/dialogs/fl_digi.cxx:1660 src/dialogs/fl_digi.cxx:1672
+#: src/dialogs/fl_digi.cxx:565 src/dialogs/fl_digi.cxx:1657
+#: src/dialogs/fl_digi.cxx:1669 src/dialogs/fl_digi.cxx:1681
 msgid "Don't save"
 msgstr ""
 
@@ -65,7 +65,7 @@ msgstr ""
 msgid "Spotting disabled"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1017
+#: src/dialogs/fl_digi.cxx:1023
 #, c-format
 msgid ""
 "Could not run a web browser:\n"
@@ -75,25 +75,25 @@ msgid ""
 "%s"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1030
+#: src/dialogs/fl_digi.cxx:1036
 #, c-format
 msgid ""
 "Could not open url:\n"
 "%s\n"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1077
+#: src/dialogs/fl_digi.cxx:1083
 msgid "Checking for updates..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1092
+#: src/dialogs/fl_digi.cxx:1098
 #, c-format
 msgid ""
 "Could not check for updates:\n"
 "%s"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1096
+#: src/dialogs/fl_digi.cxx:1102
 #, c-format
 msgid ""
 "Version %s is available at\n"
@@ -103,474 +103,474 @@ msgid ""
 "What would you like to do?"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1097 src/dialogs/Viewer.cxx:313
+#: src/dialogs/fl_digi.cxx:1103 src/dialogs/Viewer.cxx:313
 #: src/misc/debug.cxx:248 src/mfsk/mfsk-pic.cxx:377
 #: src/dialogs/colorsfonts.cxx:630 src/dialogs/confdialog.cxx:4593
 #: src/rigcontrol/rigdialog.cxx:140
 msgid "Close"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1097
+#: src/dialogs/fl_digi.cxx:1103
 msgid "Visit URL"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1097
+#: src/dialogs/fl_digi.cxx:1103
 msgid "Copy URL"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1109
+#: src/dialogs/fl_digi.cxx:1115
 msgid "You are running the latest version"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1176
+#: src/dialogs/fl_digi.cxx:1182
 msgid "Sunspot creation underway!"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1183
+#: src/dialogs/fl_digi.cxx:1189
 msgid "Audio device information is only available for the PortAudio backend"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1192
+#: src/dialogs/fl_digi.cxx:1198
 msgid "Capture device"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1193
+#: src/dialogs/fl_digi.cxx:1199
 msgid "Playback device"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1197
+#: src/dialogs/fl_digi.cxx:1203
 msgid "Capture and playback devices"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1488
+#: src/dialogs/fl_digi.cxx:1497
 msgid "Clear log fields?"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1488 src/logbook/lgbook.cxx:368
+#: src/dialogs/fl_digi.cxx:1497 src/logbook/lgbook.cxx:368
 #: src/logbook/lgbook.cxx:934
 msgid "OK"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1647
+#: src/dialogs/fl_digi.cxx:1656
 msgid "Save changed configuration before exiting?"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1659
+#: src/dialogs/fl_digi.cxx:1668
 msgid "Save log before exiting?"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1671
+#: src/dialogs/fl_digi.cxx:1680
 msgid "Save changed macros before exiting?"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1728
+#: src/dialogs/fl_digi.cxx:1737
 msgid "Log all RX/TX text"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1729
+#: src/dialogs/fl_digi.cxx:1738
 msgid "Rig Control"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1730
+#: src/dialogs/fl_digi.cxx:1739
 msgid "&View"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1731
+#: src/dialogs/fl_digi.cxx:1740
 msgid "MFSK Image"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1732 src/dialogs/confdialog.cxx:2405
+#: src/dialogs/fl_digi.cxx:1741 src/dialogs/confdialog.cxx:2405
 msgid "Contest"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1733
+#: src/dialogs/fl_digi.cxx:1742
 msgid "Contest fields"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1734
+#: src/dialogs/fl_digi.cxx:1743
 msgid "Countries"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1737
+#: src/dialogs/fl_digi.cxx:1746
 msgid "&File"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1738
+#: src/dialogs/fl_digi.cxx:1747
 msgid "Open macros..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1739
+#: src/dialogs/fl_digi.cxx:1748
 msgid "Save macros..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1740
+#: src/dialogs/fl_digi.cxx:1749
 msgid "Show config"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1742
+#: src/dialogs/fl_digi.cxx:1751
 msgid "Logs"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1743
+#: src/dialogs/fl_digi.cxx:1752
 msgid "New logbook"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1744
+#: src/dialogs/fl_digi.cxx:1753
 msgid "Open logbook..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1745
+#: src/dialogs/fl_digi.cxx:1754
 msgid "Save logbook"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1746
+#: src/dialogs/fl_digi.cxx:1755
 msgid "Merge ADIF..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1747
+#: src/dialogs/fl_digi.cxx:1756
 msgid "Export ADIF"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1748
+#: src/dialogs/fl_digi.cxx:1757
 msgid "Export Text"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1749
+#: src/dialogs/fl_digi.cxx:1758
 msgid "Export CSV"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1750
+#: src/dialogs/fl_digi.cxx:1759
 msgid "Cabrillo Rpt"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1755 src/misc/debug.cxx:74
+#: src/dialogs/fl_digi.cxx:1764 src/misc/debug.cxx:74
 #: src/dialogs/confdialog.cxx:4002
 msgid "Audio"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1756
+#: src/dialogs/fl_digi.cxx:1765
 msgid "RX capture"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1757
+#: src/dialogs/fl_digi.cxx:1766
 msgid "TX generate"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1758 src/dialogs/confdialog.cxx:4100
+#: src/dialogs/fl_digi.cxx:1767 src/dialogs/confdialog.cxx:4100
 msgid "Playback"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1761
+#: src/dialogs/fl_digi.cxx:1770
 msgid "E&xit"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1763
+#: src/dialogs/fl_digi.cxx:1772
 msgid "Op &Mode"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1862
+#: src/dialogs/fl_digi.cxx:1871
 msgid "&Configure"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1863 src/dialogs/confdialog.cxx:2184
+#: src/dialogs/fl_digi.cxx:1872 src/dialogs/confdialog.cxx:2184
 msgid "Operator"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1864
+#: src/dialogs/fl_digi.cxx:1873
 msgid "Colors && Fonts"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1865
+#: src/dialogs/fl_digi.cxx:1874
 msgid "User Interface"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1866 src/dialogs/confdialog.cxx:2529
+#: src/dialogs/fl_digi.cxx:1875 src/dialogs/confdialog.cxx:2529
 msgid "Waterfall"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1867 src/dialogs/confdialog.cxx:2770
+#: src/dialogs/fl_digi.cxx:1876 src/dialogs/confdialog.cxx:2770
 msgid "Modems"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1869
+#: src/dialogs/fl_digi.cxx:1878
 msgid "Sound Card"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1870
+#: src/dialogs/fl_digi.cxx:1879
 msgid "IDs"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1871 src/dialogs/confdialog.cxx:4298
+#: src/dialogs/fl_digi.cxx:1880 src/dialogs/confdialog.cxx:4298
 msgid "Misc"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1872
+#: src/dialogs/fl_digi.cxx:1881
 msgid "Notifications"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1874 src/dialogs/fl_digi.cxx:2417
-#: src/dialogs/fl_digi.cxx:2439 src/dialogs/confdialog.cxx:4487
+#: src/dialogs/fl_digi.cxx:1883 src/dialogs/fl_digi.cxx:2426
+#: src/dialogs/fl_digi.cxx:2448 src/dialogs/confdialog.cxx:4487
 msgid "QRZ"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1875
+#: src/dialogs/fl_digi.cxx:1884
 msgid "Save Config"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1879
+#: src/dialogs/fl_digi.cxx:1888
 msgid "&Digiscope"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1881
+#: src/dialogs/fl_digi.cxx:1890
 msgid "&PSK Browser"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1883
+#: src/dialogs/fl_digi.cxx:1892
 msgid "&Logbook"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1889
+#: src/dialogs/fl_digi.cxx:1898
 msgid "&Help"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1892
+#: src/dialogs/fl_digi.cxx:1901
 msgid "Create sunspots"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1894
+#: src/dialogs/fl_digi.cxx:1903
 msgid "Beginners' Guide"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1895
+#: src/dialogs/fl_digi.cxx:1904
 msgid "Online documentation..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1896
+#: src/dialogs/fl_digi.cxx:1905
 msgid "Fldigi web site..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1897
+#: src/dialogs/fl_digi.cxx:1906
 msgid "Reception reports..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1898
+#: src/dialogs/fl_digi.cxx:1907
 msgid "Command line options"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1899
+#: src/dialogs/fl_digi.cxx:1908
 msgid "Audio device info"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1900
+#: src/dialogs/fl_digi.cxx:1909
 msgid "Build info"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1901 src/misc/debug.cxx:89
+#: src/dialogs/fl_digi.cxx:1910 src/misc/debug.cxx:89
 msgid "Event log"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1902
+#: src/dialogs/fl_digi.cxx:1911
 msgid "Check for updates..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1903
+#: src/dialogs/fl_digi.cxx:1912
 msgid "&About"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2024
+#: src/dialogs/fl_digi.cxx:2033
 msgid "NO CALLSIGN SET"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2039
+#: src/dialogs/fl_digi.cxx:2048
 msgid "Close List"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2050 src/dialogs/fl_digi.cxx:2348
+#: src/dialogs/fl_digi.cxx:2059 src/dialogs/fl_digi.cxx:2357
 msgid "Open List"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2103
+#: src/dialogs/fl_digi.cxx:2112
 msgid "report"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2103
+#: src/dialogs/fl_digi.cxx:2112
 msgid "reports"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2113
+#: src/dialogs/fl_digi.cxx:2122
 msgid "Recent activity for grid"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2287
+#: src/dialogs/fl_digi.cxx:2296
 msgid "No rig specified"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2363
+#: src/dialogs/fl_digi.cxx:2372
 msgid "Select"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2370
+#: src/dialogs/fl_digi.cxx:2379
 msgid "Add current frequency"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2377 src/rigcontrol/rigdialog.cxx:136
+#: src/dialogs/fl_digi.cxx:2386 src/rigcontrol/rigdialog.cxx:136
 msgid "Clear list"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2384 src/rigcontrol/rigdialog.cxx:131
+#: src/dialogs/fl_digi.cxx:2393 src/rigcontrol/rigdialog.cxx:131
 msgid "Delete from list"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2398
+#: src/dialogs/fl_digi.cxx:2407
 msgid "Select operating parameters"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2423 src/dialogs/fl_digi.cxx:2445
+#: src/dialogs/fl_digi.cxx:2432 src/dialogs/fl_digi.cxx:2454
 #: src/dialogs/Viewer.cxx:309 src/widgets/flinput2.cxx:25
 msgid "Clear"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2463
+#: src/dialogs/fl_digi.cxx:2472
 msgid "QSO Freq"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2473 src/logbook/lgbook.cxx:502
+#: src/dialogs/fl_digi.cxx:2482 src/logbook/lgbook.cxx:502
 msgid "On"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2475
+#: src/dialogs/fl_digi.cxx:2484
 msgid "Press to update"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2479 src/logbook/lgbook.cxx:514
+#: src/dialogs/fl_digi.cxx:2488 src/logbook/lgbook.cxx:514
 msgid "Off"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2484 src/logbook/lgbook.cxx:383
+#: src/dialogs/fl_digi.cxx:2493 src/logbook/lgbook.cxx:383
 #: src/logbook/lgbook.cxx:526 src/logbook/lgbook.cxx:956
 msgid "Call"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2488 src/logbook/lgbook.cxx:387
+#: src/dialogs/fl_digi.cxx:2497 src/logbook/lgbook.cxx:387
 #: src/logbook/lgbook.cxx:538 src/logbook/lgbook.cxx:906
 msgid "Name"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2492 src/logbook/lgbook.cxx:574
+#: src/dialogs/fl_digi.cxx:2501 src/logbook/lgbook.cxx:574
 msgid "In"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2496 src/logbook/lgbook.cxx:586
+#: src/dialogs/fl_digi.cxx:2505 src/logbook/lgbook.cxx:586
 msgid "Out"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2500
+#: src/dialogs/fl_digi.cxx:2509
 msgid "*** DUP ***"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2505
+#: src/dialogs/fl_digi.cxx:2514
 msgid "QTH"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2508
+#: src/dialogs/fl_digi.cxx:2517
 msgid "City"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2511 src/logbook/lgbook.cxx:610
+#: src/dialogs/fl_digi.cxx:2520 src/logbook/lgbook.cxx:610
 msgid "St"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2514
+#: src/dialogs/fl_digi.cxx:2523
 msgid "US State"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2517 src/logbook/lgbook.cxx:622
+#: src/dialogs/fl_digi.cxx:2526 src/logbook/lgbook.cxx:622
 msgid "Pr"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2520
+#: src/dialogs/fl_digi.cxx:2529
 msgid "Can. Province"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2523
+#: src/dialogs/fl_digi.cxx:2532
 msgid "Cnty"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2526 src/logbook/lgbook.cxx:437
+#: src/dialogs/fl_digi.cxx:2535 src/logbook/lgbook.cxx:437
 #: src/logbook/lgbook.cxx:634
 msgid "Country"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2529 src/logbook/lgbook.cxx:646
+#: src/dialogs/fl_digi.cxx:2538 src/logbook/lgbook.cxx:646
 msgid "Loc"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2535
+#: src/dialogs/fl_digi.cxx:2544
 msgid "Az"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2545
+#: src/dialogs/fl_digi.cxx:2554
 msgid "#Out"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2549
+#: src/dialogs/fl_digi.cxx:2558
 msgid "Sent serial number (read only)"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2552
+#: src/dialogs/fl_digi.cxx:2561
 msgid "#In"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2556
+#: src/dialogs/fl_digi.cxx:2565
 msgid "Received serial number"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2558
+#: src/dialogs/fl_digi.cxx:2567
 msgid "Xchg"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2563
+#: src/dialogs/fl_digi.cxx:2572
 msgid "Contest exchange in"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2575 src/logbook/lgbook.cxx:440
+#: src/dialogs/fl_digi.cxx:2584 src/logbook/lgbook.cxx:440
 #: src/logbook/lgbook.cxx:683
 msgid "Notes"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2695
+#: src/dialogs/fl_digi.cxx:2704
 msgid ""
 "Left Click - execute\n"
 "Right Click - edit"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2704
+#: src/dialogs/fl_digi.cxx:2713
 msgid "Change macro set"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2754
+#: src/dialogs/fl_digi.cxx:2763
 msgid "Detected signal level"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2766
+#: src/dialogs/fl_digi.cxx:2775
 msgid "Squelch level"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2781
+#: src/dialogs/fl_digi.cxx:2790
 msgid ""
 "Left click: change mode\n"
 "Right click: configure"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2834
+#: src/dialogs/fl_digi.cxx:2843
 msgid "Automatic Frequency Control"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2837
+#: src/dialogs/fl_digi.cxx:2846
 msgid "Squelch"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2859
+#: src/dialogs/fl_digi.cxx:2868
 msgid "Scope"
 msgstr ""
 
