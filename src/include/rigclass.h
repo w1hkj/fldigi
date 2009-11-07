@@ -35,6 +35,7 @@ protected:
 class Rig {
 protected:
 	RIG	*rig;  // Global ref. to the rig
+	freq_t fnull;
 public:
 	Rig();
 	Rig(rig_model_t rig_model);
@@ -52,12 +53,18 @@ public:
 
 	void setFreq(freq_t freq, vfo_t vfo = RIG_VFO_CURR);
 	freq_t getFreq(vfo_t vfo = RIG_VFO_CURR);
+	bool canSetFreq();
+	bool canGetFreq();
 
 	void setMode(rmode_t, pbwidth_t width = RIG_PASSBAND_NORMAL, vfo_t vfo = RIG_VFO_CURR);
 	rmode_t getMode(pbwidth_t&, vfo_t vfo = RIG_VFO_CURR);
+	bool canSetMode();
+	bool canGetMode();
 
 	void setPTT (ptt_t ptt, vfo_t vfo = RIG_VFO_CURR);
 	ptt_t getPTT (vfo_t vfo = RIG_VFO_CURR);
+	bool canSetPTT();
+	bool canGetPTT();
 
 	void setVFO(vfo_t);
 	vfo_t getVFO();

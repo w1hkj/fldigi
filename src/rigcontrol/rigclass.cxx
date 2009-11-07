@@ -21,6 +21,7 @@ Rig::Rig() : rig(0) { }
 Rig::Rig(rig_model_t rig_model)
 {
 	rig = rig_init(rig_model);
+	fnull = 3580.0;
    	if (!rig)
 		throw RigException ("Could not initialize rig");
 }
@@ -64,8 +65,42 @@ void Rig::close(void)
 	}
 }
 
+bool Rig::canSetFreq()
+{
+	return (rig->caps->set_freq != NULL);
+}
+
+bool Rig::canGetFreq()
+{
+	return (rig->caps->get_freq != NULL);
+}
+
+bool Rig::canSetMode()
+{
+	return (rig->caps->set_mode != NULL);
+}
+
+bool Rig::canGetMode()
+{
+	return (rig->caps->get_mode != NULL);
+}
+
+bool Rig::canSetPTT()
+{
+	return (rig->caps->set_ptt != NULL);
+}
+
+bool Rig::canGetPTT()
+{
+	return (rig->caps->get_ptt != NULL);
+}
+
 void Rig::setFreq(freq_t freq, vfo_t vfo) 
 {
+	fnull = freq;
+	if (!canSetFreq()) { // rig does not support set_freq
+		return;
+	}
 	int err;
 	for (int i = 0; i < NUMTRIES; i++) {
 		err = rig_set_freq(rig, vfo, freq);
@@ -77,7 +112,10 @@ void Rig::setFreq(freq_t freq, vfo_t vfo)
 
 freq_t Rig::getFreq(vfo_t vfo)
 {
-	freq_t freq = 0;
+	if (!canGetFreq()) { // rig does not support get_freq
+		return fnull;
+	}
+	freq_t freq = fnull;
 	int i;
 	for (i = 0; i < NUMTRIES; i++)
 		if (rig_get_freq(rig, vfo, &freq) == RIG_OK)
@@ -87,6 +125,8 @@ freq_t Rig::getFreq(vfo_t vfo)
 
 void Rig::setMode(rmode_t mode, pbwidth_t width, vfo_t vfo) 
 {
+	if (!canSetMode())
+		throw RigException(RIG_ENAVAIL);
 	int err;
 	for (int i = 0; i < NUMTRIES; i++) {
 		if ((err = rig_set_mode(rig, vfo, mode, width)) == RIG_OK)
@@ -97,6 +137,8 @@ void Rig::setMode(rmode_t mode, pbwidth_t width, vfo_t vfo)
 
 rmode_t Rig::getMode(pbwidth_t& width, vfo_t vfo) 
 {
+	if (!canGetMode())
+		throw RigException(RIG_ENAVAIL);
 	int err;
 	rmode_t mode;
 	for (int i = 0; i < NUMTRIES; i++) {
@@ -108,6 +150,8 @@ rmode_t Rig::getMode(pbwidth_t& width, vfo_t vfo)
 
 void Rig::setPTT(ptt_t ptt, vfo_t vfo)
 {
+	if (!canSetPTT())
+		throw RigException(RIG_ENAVAIL);
 	int err;
 	for (int i = 0; i < NUMTRIES; i++) {
 		if ((err = rig_set_ptt(rig, vfo, ptt)) == RIG_OK)
@@ -118,6 +162,8 @@ void Rig::setPTT(ptt_t ptt, vfo_t vfo)
 
 ptt_t Rig::getPTT(vfo_t vfo)
 {
+	if (!canGetPTT())
+		throw RigException(RIG_ENAVAIL);
 	int err;
 	ptt_t ptt;
 	for (int i = 0; i < NUMTRIES; i++) {
