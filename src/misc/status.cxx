@@ -49,7 +49,7 @@ status progStatus = {
 	false,				// bool Rig_Log_UI;
 	false,				// bool Rig_Contest_UI;
 	false,				// bool DOCKEDSCOPE;
-	0,					// int RxTextHeight;
+	200,				// int RxTextHeight;
 	50,					// int rigX;
 	50,					// int rigY;
 	560,				// int rigW
@@ -72,11 +72,11 @@ status progStatus = {
 	true,				// bool sqlonoff
 	1.0,				// double	RcvMixer;
 	1.0,				// double	XmtMixer;
-	0,					// int	scopeX;
-	0,					// int	scopeY;
+	50,					// int	scopeX;
+	50,					// int	scopeY;
 	false,				// bool	scopeVisible;
-	50,					// int	scopeW;
-	50,					// int	scopeH;
+	172,				// int	scopeW;
+	172,				// int	scopeH;
 	0,					// int timer
 	0,					// int timerMacro
 	"macros.mdf",		// string LastMacroFile;
@@ -163,8 +163,6 @@ void status::saveLastState()
 	spref.set("rx_mixer_level", RcvMixer);
 	spref.set("tx_mixer_level", XmtMixer);
 
-	spref.set("rx_text_height", RxTextHeight);
-
 	spref.set("log_enabled", LOGenabled);
 
 	spref.set("wf_carrier", carrier);
@@ -179,7 +177,10 @@ void status::saveLastState()
 	spref.set("main_x", mainX);
 	spref.set("main_y", mainY);
 	spref.set("main_w", mainW);
+if (!bWF_only) {
 	spref.set("main_h", mainH);
+	spref.set("rx_text_height", RxTextHeight);
+}
 	spref.set("wf_ui", WF_UI);
 	spref.set("riglog_ui", Rig_Log_UI);
 	spref.set("rigcontest_ui", Rig_Contest_UI);
@@ -349,15 +350,19 @@ void status::initLastState()
 		mainX = 20;
 	if (mainY > Fl::h())
 		mainY = 20;
-	if (mainW == 0 || mainW > Fl::w())
+	if (mainW < WMIN || mainW > Fl::w())
 		mainW = MAX(WMIN, Fl::w() / 2);
-	if (mainH == 0 || mainH > Fl::h())
+	if (mainH < HMIN || mainH > Fl::h())
 		mainH = MAX(HMIN, Fl::h() / 2);
-	fl_digi_main->resize(mainX, mainY, mainW, mainH);
 
+if (bWF_only) 
+	fl_digi_main->resize(mainX, mainY, mainW, Hmenu + Hwfall + Hstatus + 4);
+else {
+	fl_digi_main->resize(mainX, mainY, mainW, mainH);
 	if (!(RxTextHeight > 0 && RxTextHeight < TiledGroup->h()))
 		RxTextHeight = TiledGroup->h() / 3 * 2;
 	TiledGroup->position(0, TransmitText->y(), 0, TiledGroup->y() + RxTextHeight);
+}
 
 	if (VIEWERvisible == true)
 		openViewer();

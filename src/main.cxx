@@ -309,7 +309,7 @@ int main(int argc, char ** argv)
 
 	FSEL::create();
 
-	createConfig();
+//	createConfig();
 	make_colorsfonts();
 	setTabColors();
 
@@ -469,6 +469,9 @@ void generate_option_help(void) {
 	     << "    Default: " << benchmark.src_type << " (" << src_get_name(benchmark.src_type) << ")\n\n"
 #endif
 
+	     << "  --wo\n"
+	     << "    hide all controls but the waterfall\n\n"
+
 	     << "  --debug-level LEVEL\n"
 	     << "    Set the event log verbosity\n\n"
 
@@ -561,7 +564,7 @@ int parse_args(int argc, char **argv, int& idx)
 #if USE_PORTAUDIO
                OPT_FRAMES_PER_BUFFER,
 #endif
-	       OPT_DEBUG_LEVEL,
+	       OPT_WO, OPT_DEBUG_LEVEL,
                OPT_EXIT_AFTER,
                OPT_DEPRECATED, OPT_HELP, OPT_VERSION, OPT_BUILD_INFO };
 
@@ -610,6 +613,7 @@ int parse_args(int argc, char **argv, int& idx)
 #endif
 		{ "exit-after",    1, 0, OPT_EXIT_AFTER },
 
+		{ "wo", 0, 0, OPT_WO },
 		{ "debug-level",   1, 0, OPT_DEBUG_LEVEL },
 
 		{ "help",	   0, 0, OPT_HELP },
@@ -763,6 +767,9 @@ int parse_args(int argc, char **argv, int& idx)
 			Fl::add_timeout(strtod(optarg, 0), exit_cb);
 			break;
 
+		case OPT_WO:
+			bWF_only = true;
+			break;
 		case OPT_DEBUG_LEVEL:
 		{
 			int v = strtol(optarg, 0, 10);

@@ -119,6 +119,7 @@ extern Fl_Light_Button		*btnTune;
 extern Fl_Button		*btnAltMacros;
 extern Fl_Button		*btnMacroTimer;
 
+extern bool			bWF_only;
 extern bool			useCheckButtons;
 extern int			altMacros;
 

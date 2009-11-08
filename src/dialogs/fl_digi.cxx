@@ -134,6 +134,8 @@
 
 using namespace std;
 
+bool bWF_only = false;
+
 Fl_Double_Window	*fl_digi_main      = (Fl_Double_Window *)0;
 Fl_Help_Dialog 		*help_dialog       = (Fl_Help_Dialog *)0;
 Fl_Double_Window	*scopeview         = (Fl_Double_Window *)0;
@@ -583,8 +585,10 @@ void startup_modem(modem *m)
 		FHdisp->show();
 		sldrHellBW->value(progdefaults.HELL_BW);
 	} else {
+if(!bWF_only) {
 		ReceiveText->show();
 		FHdisp->hide();
+}
 	}
 	if (m == rtty_modem) {
 	    sldrRTTYbandwidth->value(progdefaults.RTTY_BW);
@@ -1430,6 +1434,7 @@ string new_call;
 
 void clearQSO()
 {
+if (bWF_only) return;
 	Fl_Input* in[] = {
 		inpCall1, inpCall2, inpCall3, inpCall4,
 		inpName1, inpName2,
@@ -1486,6 +1491,7 @@ void cb_loc(Fl_Widget* w, void*)
 
 void cb_call(Fl_Widget* w, void*)
 {
+if (bWF_only) return;
 	if (progdefaults.calluppercase) {
 		int pos = inpCall->position();
 		char* uc = new char[inpCall->size()];
@@ -1856,6 +1862,7 @@ bool restore_minimize = false;
 
 void UI_select()
 {
+if (bWF_only) return;
 	if (progStatus.NO_RIGLOG && !restore_minimize) {
 		int y1 = TopFrame1->y();
 		int y2 = macroFrame->y();
@@ -1915,7 +1922,7 @@ void UI_select()
 		fl_digi_main->init_sizes();
 		return;
 	} else if (progStatus.Rig_Log_UI || progStatus.Rig_Contest_UI) {
-		int y1 = TopFrame2->y() + Hentry + 2 * pad;
+		int y1 = TopFrame2->y() + Hentry + 3 * pad;
 		int y2 = macroFrame->y();
 		int w = TopFrame1->w();
 		if (MixerFrame->visible()) {
@@ -2012,6 +2019,7 @@ void cb_mnu_riglog_none(Fl_Menu_* w, void *d) {
 void cb_mnuDockedscope(Fl_Menu_ *w, void *d) {
 	Fl_Menu_Item *m = getMenuItem(((Fl_Menu_*)w)->mvalue()->label());
 	progStatus.DOCKEDSCOPE = m->value();
+printf("uhoh\n");
 	wf->show_scope(progStatus.DOCKEDSCOPE);
 }
 
@@ -2449,6 +2457,7 @@ void show_bw(const string& sWidth)
 
 void show_spot(bool v)
 {
+//if (bWF_only) return;
 	static bool oldval = false;
 	if (v) {
 		mnu->size(btnAutoSpot->x(), mnu->h());
@@ -2496,7 +2505,7 @@ void setwfrange() {
 	wf->opmode();
 }
 
-void create_fl_digi_main() {
+void create_fl_digi_main_primary() {
 
 	int fnt = fl_font();
 	int fsize = fl_size();
@@ -2511,6 +2520,8 @@ void create_fl_digi_main() {
 	x_qsoframe += rig_control_width;
 
 	IMAGE_WIDTH = 4000;//progdefaults.HighFreqCutoff;
+//	if (progStatus.mainH < HNOM) progStatus.mainH = HNOM;
+	
 	Hwfall = progdefaults.wfheight;
 
 	Wwfall = progStatus.mainW - 2 * DEFAULT_SW;
@@ -2934,22 +2945,9 @@ void create_fl_digi_main() {
 			qsoSave2->callback(qsoSave_cb, 0);
 			qsoSave2->tooltip(_("Save"));
 
-//			fl_font(FL_HELVETICA, FL_NORMAL_SIZE);
-//			const char *label1 = _("Freq");
-//			Fl_Box *bx1 = new Fl_Box(pad + rightof(qsoSave2), y,
-//				fl_width(label1), h, label1);
-//			inpFreq2 = new Fl_Input2(
-//				pad + bx1->x() + bx1->w(), y,
-//				w_inpFreq2, h, "");
-//			inpFreq2->type(FL_NORMAL_OUTPUT);
-//			inpFreq2->tooltip(_("QSO frequency (read only)"));
-//			inpFreq2->hide();
-//			bx1->hide();
-
 			const char *label2 = _("On");
 			btnTimeOn2 = new Fl_Button(
 				pad + rightof(qsoSave2), y,
-//				pad + rightof(inpFreq2), y,
 				fl_width(label2), h, label2);
 			btnTimeOn2->tooltip(_("Press to update"));
 			btnTimeOn2->box(FL_NO_BOX);
@@ -3432,6 +3430,482 @@ void create_fl_digi_main() {
 
 	UI_select();
 	wf->UI_select(progStatus.WF_UI);
+
+	createConfig();
+}
+
+void cb_mnuAltDockedscope(Fl_Menu_ *w, void *d);
+
+Fl_Menu_Item alt_menu_[] = {
+{_("&File"), 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ make_icon_label(_("Exit"), log_out_icon), 'x',  (Fl_Callback*)cb_E, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+{_("Op &Mode"), 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+
+{ mode_info[MODE_CW].name, 0, cb_init_mode, (void *)MODE_CW, 0, FL_NORMAL_LABEL, 0, 14, 0},
+
+{"DominoEX", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_DOMINOEX4].name, 0, cb_init_mode, (void *)MODE_DOMINOEX4, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_DOMINOEX5].name, 0, cb_init_mode, (void *)MODE_DOMINOEX5, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_DOMINOEX8].name, 0, cb_init_mode, (void *)MODE_DOMINOEX8, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_DOMINOEX11].name, 0, cb_init_mode, (void *)MODE_DOMINOEX11, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_DOMINOEX16].name, 0, cb_init_mode, (void *)MODE_DOMINOEX16, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_DOMINOEX22].name, 0, cb_init_mode, (void *)MODE_DOMINOEX22, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+{"MFSK", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK4].name, 0,  cb_init_mode, (void *)MODE_MFSK4, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK8].name, 0,  cb_init_mode, (void *)MODE_MFSK8, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK11].name, 0,  cb_init_mode, (void *)MODE_MFSK11, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK16].name, 0,  cb_init_mode, (void *)MODE_MFSK16, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK22].name, 0,  cb_init_mode, (void *)MODE_MFSK22, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK31].name, 0,  cb_init_mode, (void *)MODE_MFSK31, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK32].name, 0,  cb_init_mode, (void *)MODE_MFSK32, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK64].name, 0,  cb_init_mode, (void *)MODE_MFSK64, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+{"MT63", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MT63_500].name, 0,  cb_init_mode, (void *)MODE_MT63_500, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MT63_1000].name, 0,  cb_init_mode, (void *)MODE_MT63_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MT63_2000].name, 0,  cb_init_mode, (void *)MODE_MT63_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+{"Olivia", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ "8/250", 0, cb_oliviaA, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "8/500", 0, cb_oliviaB, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "16/500", 0, cb_oliviaC, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "8/1000", 0, cb_oliviaD, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "32/1000", 0, cb_oliviaE, (void *)MODE_OLIVIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ _("Custom..."), 0, cb_oliviaCustom, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+{"PSK", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_BPSK31].name, 0, cb_init_mode, (void *)MODE_BPSK31, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_QPSK31].name, 0, cb_init_mode, (void *)MODE_QPSK31, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_PSK63].name, 0, cb_init_mode, (void *)MODE_PSK63, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_QPSK63].name, 0, cb_init_mode, (void *)MODE_QPSK63, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_PSK125].name, 0, cb_init_mode, (void *)MODE_PSK125, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_QPSK125].name, 0, cb_init_mode, (void *)MODE_QPSK125, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_PSK250].name, 0, cb_init_mode, (void *)MODE_PSK250, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_QPSK250].name, 0, cb_init_mode, (void *)MODE_QPSK250, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_PSK500].name, 0, cb_init_mode, (void *)MODE_PSK500, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+{"RTTY", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ "RTTY-45", 0, cb_rtty45, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "RTTY-50", 0, cb_rtty50, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "RTTY-75", 0, cb_rtty75, (void *)MODE_RTTY, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ _("Custom..."), 0, cb_rttyCustom, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+{"THOR", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_THOR4].name, 0, cb_init_mode, (void *)MODE_THOR4, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_THOR5].name, 0, cb_init_mode, (void *)MODE_THOR5, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_THOR8].name, 0, cb_init_mode, (void *)MODE_THOR8, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_THOR11].name, 0, cb_init_mode, (void *)MODE_THOR11, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_THOR16].name, 0, cb_init_mode, (void *)MODE_THOR16, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_THOR22].name, 0, cb_init_mode, (void *)MODE_THOR22, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+{"Throb", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_THROB1].name, 0, cb_init_mode, (void *)MODE_THROB1, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_THROB2].name, 0, cb_init_mode, (void *)MODE_THROB2, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_THROB4].name, 0, cb_init_mode, (void *)MODE_THROB4, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_THROBX1].name, 0, cb_init_mode, (void *)MODE_THROBX1, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_THROBX2].name, 0, cb_init_mode, (void *)MODE_THROBX2, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_THROBX4].name, 0, cb_init_mode, (void *)MODE_THROBX4, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+{"NBEMS modes", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_DOMINOEX11].name, 0, cb_init_mode, (void *)MODE_DOMINOEX11, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_DOMINOEX22].name, 0, cb_init_mode, (void *)MODE_DOMINOEX22, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK16].name, 0,  cb_init_mode, (void *)MODE_MFSK16, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK32].name, 0,  cb_init_mode, (void *)MODE_MFSK32, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_PSK125].name, 0, cb_init_mode, (void *)MODE_PSK125, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_PSK250].name, 0, cb_init_mode, (void *)MODE_PSK250, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+{ mode_info[MODE_WWV].name, 0, cb_init_mode, (void *)MODE_WWV, 0, FL_NORMAL_LABEL, 0, 14, 0},
+
+{ mode_info[MODE_ANALYSIS].name, 0, cb_init_mode, (void *)MODE_ANALYSIS, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+{_("&Configure"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ make_icon_label(_("Waterfall"), waterfall_icon), 0,  (Fl_Callback*)cb_mnuConfigWaterfall, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(RIGCONTROL_MLABEL, multimedia_player_icon), 0, (Fl_Callback*)cb_mnuConfigRigCtrl, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("Sound Card"), audio_card_icon), 0, (Fl_Callback*)cb_mnuConfigSoundCard, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("Modems"), emblems_system_icon), 0, (Fl_Callback*)cb_mnuConfigModems, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("IDs")), 0,  (Fl_Callback*)cb_mnuConfigID, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("Notifications")), 0,  (Fl_Callback*)cb_mnuConfigNotify, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("Save Config"), save_icon), 0, (Fl_Callback*)cb_mnuSaveConfig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+{ VIEW_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+//{ make_icon_label(_("Extern Scope"), utilities_system_monitor_icon), 'd', (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("PSK Browser")), 'p', (Fl_Callback*)cb_mnuViewer, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ DOCKEDSCOPE_MLABEL, 0, (Fl_Callback*)cb_mnuAltDockedscope, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+{0,0,0,0,0,0,0,0,0},
+};
+
+void cb_mnuAltDockedscope(Fl_Menu_ *w, void *d) {
+	Fl_Menu_Item *m = getMenuItem(((Fl_Menu_*)w)->mvalue()->label(), alt_menu_);
+	progStatus.DOCKEDSCOPE = m->value();
+	wf->show_scope(progStatus.DOCKEDSCOPE);
+}
+
+
+#define defwidget 0, 0, 10, 10, ""
+
+void noop_controls() // create and then hide all controls not being used
+{
+	Fl_Double_Window *dummywindow = new Fl_Double_Window(0,0,100,100,"");
+
+	btnMacroTimer = new Fl_Button(defwidget); btnMacroTimer->hide();
+
+	ReceiveText = new FTextRX(0,0,100,100); ReceiveText->hide();
+	TransmitText = new FTextTX(0,0,100,100); TransmitText->hide();
+	FHdisp = new Raster(0,0,10,100); FHdisp->hide();
+
+	for (int i = 0; i < NUMMACKEYS; i++) {
+		btnMacro[i] = new Fl_Button(defwidget); btnMacro[i]->hide();
+	}
+	btnAltMacros = new Fl_Button(defwidget); btnAltMacros->hide();
+
+	inpQth = new Fl_Input2(defwidget); inpQth->hide();
+	inpLoc = new Fl_Input2(defwidget); inpLoc->hide();
+	inpState = new Fl_Input2(defwidget); inpState->hide();
+	inpCountry = new Fl_Input2(defwidget); inpCountry->hide();
+	inpSerNo = new Fl_Input2(defwidget); inpSerNo->hide();
+	outSerNo = new Fl_Input2(defwidget); outSerNo->hide();
+	inpXchgIn = new Fl_Input2(defwidget); inpXchgIn->hide();
+	lblDup = new Fl_Box(defwidget); lblDup->hide();
+	inpVEprov = new Fl_Input2(defwidget); inpVEprov->hide();
+	inpNotes = new Fl_Input2(defwidget); inpNotes->hide();
+	inpAZ = new Fl_Input2(defwidget); inpAZ->hide();
+
+	qsoTime = new Fl_Button(defwidget); qsoTime->hide();
+	btnQRZ = new Fl_Button(defwidget); btnQRZ->hide();
+	qsoClear = new Fl_Button(defwidget); qsoClear->hide();
+	qsoSave = new Fl_Button(defwidget); qsoSave->hide();
+
+	txtRigName = new Fl_Box(defwidget); txtRigName->hide();
+	qsoFreqDisp = new cFreqControl(0,0,100,10,""); qsoFreqDisp->hide();
+	qso_opMODE = new Fl_ComboBox(defwidget); qso_opMODE->hide();
+	qso_opBW = new Fl_ComboBox(defwidget); qso_opBW->hide();
+	qso_opPICK = new Fl_Button(defwidget); qso_opPICK->hide();
+
+	inpFreq = new Fl_Input2(defwidget); inpFreq->hide();
+	inpTimeOff = new Fl_Input2(defwidget); inpTimeOff->hide();
+	inpTimeOn = new Fl_Input2(defwidget); inpTimeOn->hide();
+	btnTimeOn = new Fl_Button(defwidget); btnTimeOn->hide();
+	inpCall = new Fl_Input2(defwidget); inpCall->hide();
+	inpName = new Fl_Input2(defwidget); inpName->hide();
+	inpRstIn = new Fl_Input2(defwidget); inpRstIn->hide();
+	inpRstOut = new Fl_Input2(defwidget); inpRstOut->hide();
+
+	inpFreq1 = new Fl_Input2(defwidget); inpFreq1->hide();
+	inpTimeOff1 = new Fl_Input2(defwidget); inpTimeOff1->hide();
+	inpTimeOn1 = new Fl_Input2(defwidget); inpTimeOn1->hide();
+	btnTimeOn1 = new Fl_Button(defwidget); btnTimeOn1->hide();
+	inpCall1 = new Fl_Input2(defwidget); inpCall1->hide();
+	inpName1 = new Fl_Input2(defwidget); inpName1->hide();
+	inpRstIn1 = new Fl_Input2(defwidget); inpRstIn1->hide();
+	inpRstOut1 = new Fl_Input2(defwidget); inpRstOut1->hide();
+	inpXchgIn1 = new Fl_Input2(defwidget); inpXchgIn1->hide();
+	outSerNo1 = new Fl_Input2(defwidget); outSerNo1->hide();
+	inpSerNo1 = new Fl_Input2(defwidget); inpSerNo1->hide();
+	qsoFreqDisp1 = new cFreqControl(defwidget); qsoFreqDisp1->hide();
+
+	inpFreq2 = new Fl_Input2(defwidget); inpFreq2->hide();
+	inpTimeOff2 = new Fl_Input2(defwidget); inpTimeOff2->hide();
+	inpTimeOn2 = new Fl_Input2(defwidget); inpTimeOn2->hide();
+	btnTimeOn2 = new Fl_Button(defwidget); btnTimeOn2->hide();
+	inpCall2 = new Fl_Input2(defwidget); inpCall2->hide();
+	inpName2 = new Fl_Input2(defwidget); inpName2->hide();
+	inpRstIn2 = new Fl_Input2(defwidget); inpRstIn2->hide();
+	inpRstOut2 = new Fl_Input2(defwidget); inpRstOut2->hide();
+	qsoFreqDisp2 = new cFreqControl(defwidget); qsoFreqDisp2->hide();
+
+	qso_opPICK2 = new Fl_Button(defwidget); qso_opPICK2->hide();
+	qsoClear2 = new Fl_Button(defwidget); qsoClear2->hide();
+	qsoSave2 = new Fl_Button(defwidget); qsoSave2->hide();
+	btnQRZ2 = new Fl_Button(defwidget); btnQRZ2->hide();
+
+	inpTimeOff3 = new Fl_Input2(defwidget); inpTimeOff3->hide();
+	inpTimeOn3 = new Fl_Input2(defwidget); inpTimeOn3->hide();
+	btnTimeOn3 = new Fl_Button(defwidget); btnTimeOn3->hide();
+	inpCall3 = new Fl_Input2(defwidget); inpCall3->hide();
+	outSerNo2 = new Fl_Input2(defwidget); outSerNo2->hide();
+	inpSerNo2 = new Fl_Input2(defwidget); inpSerNo2->hide();
+	inpXchgIn2 = new Fl_Input2(defwidget); inpXchgIn2->hide();
+	qsoFreqDisp3 = new cFreqControl(defwidget); qsoFreqDisp3->hide();
+
+	qso_opPICK3 = new Fl_Button(defwidget); qso_opPICK3->hide();
+	qsoClear3 = new Fl_Button(defwidget); qsoClear3->hide();
+	qsoSave3 = new Fl_Button(defwidget); qsoSave3->hide();
+
+	inpCall4 = new Fl_Input2(defwidget); inpCall4->hide();
+
+	qso_opBrowser = new Fl_Browser(defwidget); qso_opBrowser->hide();
+	qso_btnAddFreq = new Fl_Button(defwidget); qso_btnAddFreq->hide();
+	qso_btnSelFreq = new Fl_Button(defwidget); qso_btnSelFreq->hide();
+	qso_btnDelFreq = new Fl_Button(defwidget); qso_btnDelFreq->hide();
+	qso_btnClearList = new Fl_Button(defwidget); qso_btnClearList->hide();
+	qso_btnAct = new Fl_Button(defwidget); qso_btnAct->hide();
+	qso_inpAct = new Fl_Input2(defwidget); qso_inpAct->hide();
+
+	valRcvMixer = new Fl_Value_Slider(defwidget); valRcvMixer->hide();
+	valXmtMixer = new Fl_Value_Slider(defwidget); valXmtMixer->hide();
+
+	dummywindow->end();
+	dummywindow->hide();
+
+}
+
+void make_scopeviewer()
+{
+	scopeview = new Fl_Double_Window(0,0,140,140, _("Scope"));
+	scopeview->xclass(PACKAGE_NAME);
+	digiscope = new Digiscope (0, 0, 140, 140);
+	scopeview->resizable(digiscope);
+	scopeview->size_range(SCOPEWIN_MIN_WIDTH, SCOPEWIN_MIN_HEIGHT);
+	scopeview->end();
+	scopeview->hide();
+}
+
+void altTabs()
+{
+	tabsConfigure->remove(tabOperator);
+	tabsConfigure->remove(tabUI);
+	tabsConfigure->remove(tabFeld);
+	tabsConfigure->remove(tabMisc);
+	tabsConfigure->remove(tabQRZ);
+}
+
+void create_fl_digi_main_WF_only() {
+
+	int fnt = fl_font();
+	int fsize = fl_size();
+	int freqheight = Hentry + 2 * pad;
+	int Y = 0;
+	int nomH = 0;
+	
+	fl_font(fnt, freqheight);
+	fl_font(fnt, fsize);
+
+
+	IMAGE_WIDTH = 4000;//progdefaults.HighFreqCutoff;
+	Hwfall = progdefaults.wfheight;
+	Wwfall = progStatus.mainW - 2 * DEFAULT_SW - 2 * pad;
+	nomH = Hmenu + Hwfall + Hstatus + 4 * pad;
+
+	fl_digi_main = new Fl_Double_Window(
+			progStatus.mainW, nomH,
+			"fldigi - waterfall only mode");
+
+		mnuFrame = new Fl_Group(0,0,progStatus.mainW, Hmenu);
+
+			mnu = new Fl_Menu_Bar(0, 0, progStatus.mainW - 200 - pad, Hmenu);
+// do some more work on the menu
+			for (size_t i = 0; i < sizeof(alt_menu_)/sizeof(alt_menu_[0]); i++) {
+// FL_NORMAL_SIZE may have changed; update the menu items
+				if (alt_menu_[i].text) {
+					alt_menu_[i].labelsize_ = FL_NORMAL_SIZE;
+				}
+// set the icon label for items with the multi label type
+				if (alt_menu_[i].labeltype() == _FL_MULTI_LABEL)
+					set_icon_label(&alt_menu_[i]);
+			}
+			mnu->menu(alt_menu_);
+
+			btnAutoSpot = new Fl_Light_Button(progStatus.mainW - 200 - pad, 0, 50, Hmenu, "Spot");
+			btnAutoSpot->selection_color(FL_YELLOW);
+			btnAutoSpot->callback(cbAutoSpot, 0);
+			btnAutoSpot->deactivate();
+
+			btnRSID = new Fl_Light_Button(progStatus.mainW - 150 - pad, 0, 50, Hmenu, "RxID");
+			btnRSID->selection_color(FL_GREEN);
+			btnRSID->tooltip("Receive RSID");
+			btnRSID->callback(cbRSID, 0);
+
+			btnTxRSID = new Fl_Light_Button(progStatus.mainW - 100 - pad, 0, 50, Hmenu, "TxID");
+			btnTxRSID->selection_color(FL_BLUE);
+			btnTxRSID->tooltip("Transmit RSID");
+			btnTxRSID->callback(cbTxRSID, 0);
+
+			btnTune = new Fl_Light_Button(progStatus.mainW - 50 - pad, 0, 50, Hmenu, "TUNE");
+			btnTune->selection_color(FL_RED);
+			btnTune->callback(cbTune, 0);
+
+		mnuFrame->resizable(mnu);
+		mnuFrame->end();
+
+		Y = Hmenu + pad;
+
+		Fl_Pack *wfpack = new Fl_Pack(0, Y, progStatus.mainW, Hwfall);
+			wfpack->type(1);
+			wf = new waterfall(0, Y, Wwfall, Hwfall);
+			wf->end();
+
+			pgrsSquelch = new Progress(
+				rightof(wf), Y + pad,
+				DEFAULT_SW, Hwfall - 2 * pad,
+				"");
+			pgrsSquelch->color(FL_BACKGROUND2_COLOR, FL_DARK_GREEN);
+			pgrsSquelch->type(Progress::VERTICAL);
+			pgrsSquelch->tooltip(_("Detected signal level"));
+
+			sldrSquelch = new Fl_Slider(
+				rightof(pgrsSquelch), Y + pad,
+				DEFAULT_SW, Hwfall - 2 * pad,
+				"");
+			sldrSquelch->minimum(100);
+			sldrSquelch->maximum(0);
+			sldrSquelch->step(1);
+			sldrSquelch->value(progStatus.sldrSquelchValue);
+			sldrSquelch->callback((Fl_Callback*)cb_sldrSquelch);
+			sldrSquelch->color(FL_INACTIVE_COLOR);
+			sldrSquelch->tooltip(_("Squelch level"));
+			Fl_Group::current()->resizable(wf);
+		wfpack->end();
+
+		Y += (Hwfall + pad);
+
+		Fl_Pack *hpack = new Fl_Pack(0, Y, progStatus.mainW, Hstatus);
+			hpack->type(1);
+			MODEstatus = new Fl_Button(0, Y, Wmode+30, Hstatus, "");
+			MODEstatus->box(FL_DOWN_BOX);
+			MODEstatus->color(FL_BACKGROUND2_COLOR);
+			MODEstatus->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
+			MODEstatus->callback(status_cb, (void *)0);
+			MODEstatus->when(FL_WHEN_CHANGED);
+			MODEstatus->tooltip(_("Left click: change mode\nRight click: configure"));
+
+			Status1 = new Fl_Box(rightof(MODEstatus), Y, Ws2n, Hstatus, "");
+			Status1->box(FL_DOWN_BOX);
+			Status1->color(FL_BACKGROUND2_COLOR);
+			Status1->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
+
+			Status2 = new Fl_Box(rightof(Status1), Y, Wimd, Hstatus, "");
+			Status2->box(FL_DOWN_BOX);
+			Status2->color(FL_BACKGROUND2_COLOR);
+			Status2->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
+
+			StatusBar = new Fl_Box(
+				rightof(Status2), Y,
+				progStatus.mainW - bwSqlOnOff - bwAfcOnOff - Wwarn - rightof(Status2) - 2 * pad,// - 60,
+				Hstatus, "");
+			StatusBar->box(FL_DOWN_BOX);
+			StatusBar->color(FL_BACKGROUND2_COLOR);
+			StatusBar->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
+
+			WARNstatus = new Fl_Box(
+				rightof(StatusBar) + pad, Y,
+				Wwarn, Hstatus, "");
+			WARNstatus->box(FL_DIAMOND_DOWN_BOX);
+			WARNstatus->color(FL_BACKGROUND_COLOR);
+			WARNstatus->labelcolor(FL_RED);
+			WARNstatus->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE);
+
+			int sql_width = bwSqlOnOff;
+#ifdef __APPLE__
+			sql_width -= 15; // leave room for resize handle
+#endif
+			if (progdefaults.useCheckButtons) {
+				btnAFC = new Fl_Check_Button(
+					progStatus.mainW - bwSqlOnOff - bwAfcOnOff,
+					Y,
+					bwAfcOnOff, Hstatus, "AFC");
+				btnSQL = new Fl_Check_Button(
+					progStatus.mainW - bwSqlOnOff,
+					Y,
+					sql_width, Hstatus, "SQL");
+			} else {
+				btnAFC = new Fl_Light_Button(
+					progStatus.mainW - bwSqlOnOff - bwAfcOnOff,
+					Y,
+					bwAfcOnOff, Hstatus, "AFC");
+				btnSQL = new Fl_Light_Button(
+					progStatus.mainW - bwSqlOnOff,
+					Y,
+					sql_width, Hstatus, "SQL");
+			}
+			btnAFC->callback(cbAFC, 0);
+			btnAFC->value(1);
+			btnAFC->tooltip(_("Automatic Frequency Control"));
+			btnSQL->callback(cbSQL, 0);
+			btnSQL->value(1);
+			btnSQL->tooltip(_("Squelch"));
+
+			Fl_Group::current()->resizable(StatusBar);
+		hpack->end();
+
+	fl_digi_main->end();
+	fl_digi_main->callback(cb_wMain);
+	fl_digi_main->resizable(wf);
+
+	struct {
+		bool var; const char* label;
+	} toggles[] = {
+		{ progStatus.DOCKEDSCOPE, DOCKEDSCOPE_MLABEL }
+	};
+	Fl_Menu_Item* toggle;
+	for (size_t i = 0; i < sizeof(toggles)/sizeof(*toggles); i++) {
+		if (toggles[i].var && (toggle = getMenuItem(toggles[i].label, alt_menu_))) {
+			toggle->set();
+			if (toggle->callback()) {
+				mnu->value(toggle);
+				toggle->do_callback(reinterpret_cast<Fl_Widget*>(mnu));
+			}
+		}
+	}
+//---------------------------
+#if defined(__WOE32__)
+#  ifndef IDI_ICON
+#	define IDI_ICON 101
+#  endif
+	fl_digi_main->icon((char*)LoadIcon(fl_display, MAKEINTRESOURCE(IDI_ICON)));
+#elif !defined(__APPLE__)
+	make_pixmap(&fldigi_icon_pixmap, fldigi_icon);
+	fl_digi_main->icon((char *)fldigi_icon_pixmap);
+#endif
+
+	fl_digi_main->xclass(PACKAGE_NAME);
+	fl_digi_main->size_range(WMIN, nomH, 0, nomH);
+
+//--------------------------
+
+	make_scopeviewer();
+	noop_controls();
+
+	progdefaults.WF_UIwfcarrier =
+	progdefaults.WF_UIwfreflevel =
+	progdefaults.WF_UIwfampspan =
+	progdefaults.WF_UIwfmode =
+	progdefaults.WF_UIx1 =
+	progdefaults.WF_UIwfshift =
+	progdefaults.WF_UIwfdrop = true;
+	progdefaults.WF_UIrev =
+	progdefaults.WF_UIwfstore =
+	progdefaults.WF_UIxmtlock =
+	progdefaults.WF_UIqsy = false;
+	wf->UI_select(true);
+
+	createConfig();
+	altTabs();
+
+}
+
+
+void create_fl_digi_main() {
+	if (bWF_only)
+		create_fl_digi_main_WF_only();
+	else
+		create_fl_digi_main_primary();
 }
 
 void put_freq(double frequency)
@@ -3566,6 +4040,7 @@ static void put_rx_char_flmain(unsigned int data)
 		default:
 			ReceiveText->add(data, style);
 	}
+
 	last = data;
 
 	WriteARQ(data);
@@ -3785,6 +4260,7 @@ int get_tx_char(void)
 
 void put_echo_char(unsigned int data)
 {
+//if (bWF_only) return;
     if (progdefaults.QSKadjust) return;
 
 	static unsigned int last = 0;
@@ -3885,6 +4361,7 @@ ret:
 
 void enable_vol_sliders(bool val)
 {
+if (bWF_only) return;
         if (MixerFrame->visible()) {
                 if (val)
                         return;
@@ -3903,6 +4380,7 @@ void enable_vol_sliders(bool val)
 
 void resetMixerControls()
 {
+if (bWF_only) return;
     if (progdefaults.EnableMixer) {
 	    menuMix->activate();
 	    btnLineIn->activate();

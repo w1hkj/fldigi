@@ -1512,6 +1512,7 @@ void waterfall::UI_select(bool on) {
 			btnMem->show();
 			mbtnMem->show();
 		}
+//if (noUI) xmtrcv->hide();
 	} else {
 		btnRev->show();
 		wfcarrier->show();
