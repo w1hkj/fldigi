@@ -1597,6 +1597,7 @@ Fl_ComboBox *cboHamlibRig=(Fl_ComboBox *)0;
 static void cb_cboHamlibRig(Fl_ComboBox*, void*) {
   btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();
 #if USE_HAMLIB
 hamlib_get_defaults();
 #endif
@@ -1604,50 +1605,50 @@ hamlib_get_defaults();
 
 Fl_Input_Choice *inpRIGdev=(Fl_Input_Choice *)0;
 
-static void cb_inpRIGdev(Fl_Input_Choice* o, void*) {
-  progdefaults.HamRigDevice = o->value();
-btnInitHAMLIB->labelcolor(FL_RED);
+static void cb_inpRIGdev(Fl_Input_Choice*, void*) {
+  btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();
 }
 
 Fl_Value_Input *cntHamlibRetries=(Fl_Value_Input *)0;
 
-static void cb_cntHamlibRetries(Fl_Value_Input* o, void*) {
-  progdefaults.HamlibRetries = (int)o->value();
-btnInitHAMLIB->labelcolor(FL_RED);
+static void cb_cntHamlibRetries(Fl_Value_Input*, void*) {
+  btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();
 }
 
 Fl_Value_Input *cntHamlibTimeout=(Fl_Value_Input *)0;
 
-static void cb_cntHamlibTimeout(Fl_Value_Input* o, void*) {
-  progdefaults.HamlibTimeout = (int)o->value();
-btnInitHAMLIB->labelcolor(FL_RED);
+static void cb_cntHamlibTimeout(Fl_Value_Input*, void*) {
+  btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();
 }
 
 Fl_Value_Input *cntHamlibWriteDelay=(Fl_Value_Input *)0;
 
-static void cb_cntHamlibWriteDelay(Fl_Value_Input* o, void*) {
-  progdefaults.HamlibWriteDelay = (int)o->value();
-btnInitHAMLIB->labelcolor(FL_RED);
+static void cb_cntHamlibWriteDelay(Fl_Value_Input*, void*) {
+  btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();
 }
 
 Fl_Value_Input *cntHamlibWait=(Fl_Value_Input *)0;
 
-static void cb_cntHamlibWait(Fl_Value_Input* o, void*) {
-  progdefaults.HamlibWait = (int)o->value();
-btnInitHAMLIB->labelcolor(FL_RED);
+static void cb_cntHamlibWait(Fl_Value_Input*, void*) {
+  btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();
 }
 
 Fl_Choice *mnuBaudRate=(Fl_Choice *)0;
 
-static void cb_mnuBaudRate(Fl_Choice* o, void*) {
-  progdefaults.HamRigBaudrate = o->value();
-btnInitHAMLIB->labelcolor(FL_RED);
+static void cb_mnuBaudRate(Fl_Choice*, void*) {
+  btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();
 }
 
 Fl_Counter *cntHamlibTimeout0=(Fl_Counter *)0;
@@ -1660,10 +1661,10 @@ btnInitHAMLIB->redraw_label();
 
 Fl_Input2 *inpHamlibConfig=(Fl_Input2 *)0;
 
-static void cb_inpHamlibConfig(Fl_Input2* o, void*) {
-  progdefaults.HamConfig = o->value();
-btnInitHAMLIB->labelcolor(FL_RED);
+static void cb_inpHamlibConfig(Fl_Input2*, void*) {
+  btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();
 }
 
 Fl_Button *btnInitHAMLIB=(Fl_Button *)0;
@@ -1671,74 +1672,76 @@ Fl_Button *btnInitHAMLIB=(Fl_Button *)0;
 static void cb_btnInitHAMLIB(Fl_Button* o, void*) {
   progdefaults.initInterface();
 o->labelcolor(FL_FOREGROUND_COLOR);
+btnRevertHAMLIB->deactivate();
 progdefaults.changed = true;
 }
 
 Fl_Choice *mnuSideband=(Fl_Choice *)0;
 
-static void cb_mnuSideband(Fl_Choice* o, void*) {
-  progdefaults.HamlibSideband = o->value();
-progdefaults.changed = true;
-}
-
 Fl_Round_Button *btnHamlibCMDptt=(Fl_Round_Button *)0;
 
-static void cb_btnHamlibCMDptt(Fl_Round_Button* o, void*) {
-  progdefaults.HamlibCMDptt=o->value();
-
-btnInitHAMLIB->labelcolor(FL_RED);
+static void cb_btnHamlibCMDptt(Fl_Round_Button*, void*) {
+  btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();
 }
 
 Fl_Check_Button *btnHamlibDTRplus=(Fl_Check_Button *)0;
 
-static void cb_btnHamlibDTRplus(Fl_Check_Button* o, void*) {
-  progdefaults.HamlibDTRplus = o->value();
-btnInitHAMLIB->labelcolor(FL_RED);
+static void cb_btnHamlibDTRplus(Fl_Check_Button*, void*) {
+  btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();
 }
 
 Fl_Check_Button *chkHamlibRTSplus=(Fl_Check_Button *)0;
 
 static void cb_chkHamlibRTSplus(Fl_Check_Button* o, void*) {
-  progdefaults.HamlibRTSplus = o->value();
-if (o->value() == 1) {
-chkHamlibRTSCTSflow->value(0);
-}
+  if (o->value() == 1)
+  chkHamlibRTSCTSflow->value(0);
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();
 }
 
 Fl_Check_Button *chkHamlibRTSCTSflow=(Fl_Check_Button *)0;
 
 static void cb_chkHamlibRTSCTSflow(Fl_Check_Button* o, void*) {
-  progdefaults.HamlibRTSCTSflow = o->value();
-if (o->value() == 1) {
-  progdefaults.HamlibRTSplus = false;
+  if (o->value() == 1) {
   chkHamlibXONXOFFflow->value(0);
-  progdefaults.HamlibXONXOFFflow = false;
-}
+  chkHamlibRTSplus->deactivate();
+} else
+  chkHamlibRTSplus->activate();
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();
 }
 
 Fl_Check_Button *chkHamlibXONXOFFflow=(Fl_Check_Button *)0;
 
 static void cb_chkHamlibXONXOFFflow(Fl_Check_Button* o, void*) {
-  progdefaults.HamlibXONXOFFflow = o->value();
-if (o->value() == 1) {
+  if (o->value() == 1)
   chkHamlibRTSCTSflow->value(0);
-  progdefaults.HamlibRTSCTSflow = false;
-}
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();
 }
 
 Fl_Value_Slider *valHamRigStopbits=(Fl_Value_Slider *)0;
 
 static void cb_valHamRigStopbits(Fl_Value_Slider* o, void*) {
   progdefaults.HamRigStopbits = (int)o->value();
+btnRevertHAMLIB->activate();
+
 progdefaults.changed = true;
+}
+
+Fl_Button *btnRevertHAMLIB=(Fl_Button *)0;
+
+static void cb_btnRevertHAMLIB(Fl_Button*, void*) {
+  btnInitHAMLIB->labelcolor(FL_FOREGROUND_COLOR);
+btnInitHAMLIB->redraw_label();
+hamlib_restore_defaults();
 }
 
 Fl_Group *grpMemmap=(Fl_Group *)0;
@@ -4149,7 +4152,6 @@ an merging"));
               { mnuSideband = new Fl_Choice(340, 217, 144, 22, _("Sideband:"));
                 mnuSideband->tooltip(_("Force the rig sideband. Takes\neffect when rig mode changes."));
                 mnuSideband->down_box(FL_BORDER_BOX);
-                mnuSideband->callback((Fl_Callback*)cb_mnuSideband);
                 mnuSideband->align(FL_ALIGN_TOP_LEFT);
               } // Fl_Choice* mnuSideband
               { Fl_Round_Button* o = btnHamlibCMDptt = new Fl_Round_Button(45, 218, 200, 20, _("PTT via Hamlib command"));
@@ -4159,25 +4161,26 @@ an merging"));
                 btnHamlibCMDptt->callback((Fl_Callback*)cb_btnHamlibCMDptt);
                 o->value(progdefaults.HamlibCMDptt);
               } // Fl_Round_Button* btnHamlibCMDptt
-              { Fl_Check_Button* o = btnHamlibDTRplus = new Fl_Check_Button(45, 248, 90, 20, _("DTR +12"));
+              { Fl_Check_Button* o = btnHamlibDTRplus = new Fl_Check_Button(45, 243, 90, 20, _("DTR +12"));
                 btnHamlibDTRplus->tooltip(_("Initial state of DTR"));
                 btnHamlibDTRplus->down_box(FL_DOWN_BOX);
                 btnHamlibDTRplus->callback((Fl_Callback*)cb_btnHamlibDTRplus);
                 o->value(progdefaults.HamlibDTRplus);
               } // Fl_Check_Button* btnHamlibDTRplus
-              { Fl_Check_Button* o = chkHamlibRTSplus = new Fl_Check_Button(269, 248, 85, 20, _("RTS +12"));
+              { Fl_Check_Button* o = chkHamlibRTSplus = new Fl_Check_Button(269, 243, 85, 20, _("RTS +12"));
                 chkHamlibRTSplus->tooltip(_("Initial state of RTS"));
                 chkHamlibRTSplus->down_box(FL_DOWN_BOX);
                 chkHamlibRTSplus->callback((Fl_Callback*)cb_chkHamlibRTSplus);
                 o->value(progdefaults.HamlibRTSplus);
               } // Fl_Check_Button* chkHamlibRTSplus
-              { Fl_Check_Button* o = chkHamlibRTSCTSflow = new Fl_Check_Button(45, 281, 170, 20, _("RTS/CTS flow control"));
+              { Fl_Check_Button* o = chkHamlibRTSCTSflow = new Fl_Check_Button(45, 271, 170, 20, _("RTS/CTS flow control"));
                 chkHamlibRTSCTSflow->tooltip(_("Rig requires RTS/CTS flow control"));
                 chkHamlibRTSCTSflow->down_box(FL_DOWN_BOX);
                 chkHamlibRTSCTSflow->callback((Fl_Callback*)cb_chkHamlibRTSCTSflow);
                 o->value(progdefaults.HamlibRTSCTSflow);
+                if (o->value()) chkHamlibRTSplus->deactivate();
               } // Fl_Check_Button* chkHamlibRTSCTSflow
-              { Fl_Check_Button* o = chkHamlibXONXOFFflow = new Fl_Check_Button(269, 281, 185, 20, _("XON/XOFF flow control"));
+              { Fl_Check_Button* o = chkHamlibXONXOFFflow = new Fl_Check_Button(269, 271, 185, 20, _("XON/XOFF flow control"));
                 chkHamlibXONXOFFflow->tooltip(_("Rig requires Xon/Xoff flow control"));
                 chkHamlibXONXOFFflow->down_box(FL_DOWN_BOX);
                 chkHamlibXONXOFFflow->callback((Fl_Callback*)cb_chkHamlibXONXOFFflow);
@@ -4196,6 +4199,11 @@ an merging"));
                 valHamRigStopbits->align(FL_ALIGN_LEFT);
                 o->value(progdefaults.HamRigStopbits);
               } // Fl_Value_Slider* valHamRigStopbits
+              { btnRevertHAMLIB = new Fl_Button(371, 294, 113, 24, _("Revert"));
+                btnRevertHAMLIB->tooltip(_("Initialize hamlib interface"));
+                btnRevertHAMLIB->callback((Fl_Callback*)cb_btnRevertHAMLIB);
+                btnRevertHAMLIB->deactivate();
+              } // Fl_Button* btnRevertHAMLIB
               grpHamlib->end();
             } // Fl_Group* grpHamlib
             tabHamlib->end();

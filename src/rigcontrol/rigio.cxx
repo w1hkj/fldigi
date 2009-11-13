@@ -1078,25 +1078,20 @@ echo	   : %c\n",
 
 void rigCAT_close(void)
 {
-	int count = 200;
 	if (rigCAT_open == false)
 		return;
-	rigCAT_exit = true;
 
-	while (rigCAT_open == true) {
-		MilliSleep(50);
-		count--;
-		if (!count) {
-			LOG_ERROR("RigCAT stuck");
-			pthread_mutex_lock(&rigCAT_mutex);
-			rigio.ClosePort();
-			pthread_mutex_unlock(&rigCAT_mutex);
-			exit(0);
-		}
-	}
+	pthread_mutex_lock(&rigCAT_mutex);
+		rigCAT_exit = true;
+	pthread_mutex_unlock(&rigCAT_mutex);
+
+	pthread_join(*rigCAT_thread, NULL);
+
 	delete rigCAT_thread;
 	rigCAT_thread = 0;
-	LOG_DEBUG("RigCAT closed, count = %d", count);
+
+	rigio.ClosePort();
+	wf->USB(true);
 }
 
 bool rigCAT_active(void)

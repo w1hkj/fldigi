@@ -253,6 +253,7 @@ extern Fl_Check_Button *chkHamlibRTSplus;
 extern Fl_Check_Button *chkHamlibRTSCTSflow;
 extern Fl_Check_Button *chkHamlibXONXOFFflow;
 extern Fl_Value_Slider *valHamRigStopbits;
+extern Fl_Button *btnRevertHAMLIB;
 extern Fl_Group *grpMemmap;
 extern Fl_Check_Button *chkUSEMEMMAP;
 extern Fl_Round_Button *btnMEMMAPptt;

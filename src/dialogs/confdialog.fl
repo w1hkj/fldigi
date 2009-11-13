@@ -1957,6 +1957,7 @@ progdefaults.changed = true;}
                 label {Rig:}
                 callback {btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();
 \#if USE_HAMLIB
 hamlib_get_defaults();
 \#endif}
@@ -1967,49 +1968,49 @@ hamlib_get_defaults();
               }
               Fl_Input_Choice inpRIGdev {
                 label {Device:}
-                callback {progdefaults.HamRigDevice = o->value();
-btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();} open
+                callback {btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();} open
                 tooltip {Serial port} xywh {340 93 144 22}
                 code0 {o->value(progdefaults.HamRigDevice.c_str());}
               } {}
               Fl_Value_Input cntHamlibRetries {
                 label Retries
-                callback {progdefaults.HamlibRetries = (int)o->value();
-btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();}
+                callback {btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();}
                 tooltip {\# times to resend command before giving up} xywh {30 133 70 24} align 5
                 code0 {o->value(progdefaults.HamlibRetries);}
               }
               Fl_Value_Input cntHamlibTimeout {
                 label {Retry Interval (ms)}
-                callback {progdefaults.HamlibTimeout = (int)o->value();
-btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();}
+                callback {btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();}
                 tooltip {Msec's between retries} xywh {155 133 70 24} align 5
                 code0 {o->value(progdefaults.HamlibTimeout);}
               }
               Fl_Value_Input cntHamlibWriteDelay {
                 label {Write delay (ms)}
-                callback {progdefaults.HamlibWriteDelay = (int)o->value();
-btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();}
+                callback {btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();}
                 tooltip {Msec's between sequential commands} xywh {30 176 70 24} align 5
                 code0 {o->value(progdefaults.HamlibWriteDelay);}
               }
               Fl_Value_Input cntHamlibWait {
                 label {Post write delay (ms)}
-                callback {progdefaults.HamlibWait = (int)o->value();
-btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();}
+                callback {btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();}
                 tooltip {Wait interval (msecs) before reading response} xywh {156 176 70 24} align 5
                 code0 {o->value(progdefaults.HamlibWait);}
               }
               Fl_Choice mnuBaudRate {
                 label {Baud rate:}
-                callback {progdefaults.HamRigBaudrate = o->value();
-btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();} open
+                callback {btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();} open
                 tooltip {Serial port baud rate} xywh {385 127 99 22} down_box BORDER_BOX
                 code0 {o->add(szBaudRates);}
                 code1 {o->value(progdefaults.HamRigBaudrate);}
@@ -2024,9 +2025,9 @@ btnInitHAMLIB->redraw_label();}
               }
               Fl_Input inpHamlibConfig {
                 label {Advanced configuration:}
-                callback {progdefaults.HamConfig = o->value();
-btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();}
+                callback {btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();}
                 tooltip {Optional configuration
 in format: param=val ...} xywh {20 326 320 22} align 5
                 code0 {inpHamlibConfig->value(progdefaults.HamConfig.c_str());}
@@ -2037,75 +2038,80 @@ in format: param=val ...} xywh {20 326 320 22} align 5
                 label Initialize
                 callback {progdefaults.initInterface();
 o->labelcolor(FL_FOREGROUND_COLOR);
+btnRevertHAMLIB->deactivate();
 progdefaults.changed = true;}
                 tooltip {Initialize hamlib interface} xywh {371 325 113 24}
               }
               Fl_Choice mnuSideband {
-                label {Sideband:}
-                callback {progdefaults.HamlibSideband = o->value();
-progdefaults.changed = true;} open
+                label {Sideband:} open
                 tooltip {Force the rig sideband. Takes
 effect when rig mode changes.} xywh {340 217 144 22} down_box BORDER_BOX align 5
               } {}
               Fl_Round_Button btnHamlibCMDptt {
                 label {PTT via Hamlib command}
-                callback {progdefaults.HamlibCMDptt=o->value();
-
-btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();}
+                callback {btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();}
                 tooltip {PTT is a hamlib command} xywh {45 218 200 20} down_box DIAMOND_DOWN_BOX selection_color 1
                 code0 {o->value(progdefaults.HamlibCMDptt);}
               }
               Fl_Check_Button btnHamlibDTRplus {
                 label {DTR +12}
-                callback {progdefaults.HamlibDTRplus = o->value();
-btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();}
-                tooltip {Initial state of DTR} xywh {45 248 90 20} down_box DOWN_BOX
+                callback {btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();}
+                tooltip {Initial state of DTR} xywh {45 243 90 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.HamlibDTRplus);}
               }
               Fl_Check_Button chkHamlibRTSplus {
                 label {RTS +12}
-                callback {progdefaults.HamlibRTSplus = o->value();
-if (o->value() == 1) {
-chkHamlibRTSCTSflow->value(0);
-}
+                callback {if (o->value() == 1)
+  chkHamlibRTSCTSflow->value(0);
 btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();}
-                tooltip {Initial state of RTS} xywh {269 248 85 20} down_box DOWN_BOX
+btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();}
+                tooltip {Initial state of RTS} xywh {269 243 85 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.HamlibRTSplus);}
               }
               Fl_Check_Button chkHamlibRTSCTSflow {
                 label {RTS/CTS flow control}
-                callback {progdefaults.HamlibRTSCTSflow = o->value();
-if (o->value() == 1) {
-  progdefaults.HamlibRTSplus = false;
+                callback {if (o->value() == 1) {
   chkHamlibXONXOFFflow->value(0);
-  progdefaults.HamlibXONXOFFflow = false;
-}
+  chkHamlibRTSplus->deactivate();
+} else
+  chkHamlibRTSplus->activate();
 btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();}
-                tooltip {Rig requires RTS/CTS flow control} xywh {45 281 170 20} down_box DOWN_BOX
+btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();}
+                tooltip {Rig requires RTS/CTS flow control} xywh {45 271 170 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.HamlibRTSCTSflow);}
+                code1 {if (o->value()) chkHamlibRTSplus->deactivate();}
               }
               Fl_Check_Button chkHamlibXONXOFFflow {
                 label {XON/XOFF flow control}
-                callback {progdefaults.HamlibXONXOFFflow = o->value();
-if (o->value() == 1) {
+                callback {if (o->value() == 1)
   chkHamlibRTSCTSflow->value(0);
-  progdefaults.HamlibRTSCTSflow = false;
-}
 btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();}
-                tooltip {Rig requires Xon/Xoff flow control} xywh {269 281 185 20} down_box DOWN_BOX
+btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();}
+                tooltip {Rig requires Xon/Xoff flow control} xywh {269 271 185 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.HamlibXONXOFFflow);}
               }
               Fl_Value_Slider valHamRigStopbits {
                 label Stopbits
                 callback {progdefaults.HamRigStopbits = (int)o->value();
+btnRevertHAMLIB->activate();
+
 progdefaults.changed = true;}
                 xywh {424 162 60 22} type Horizontal color 7 selection_color 40 align 4 minimum 1 maximum 2 step 1 value 2 textsize 14
                 code0 {o->value(progdefaults.HamRigStopbits);}
+              }
+              Fl_Button btnRevertHAMLIB {
+                label Revert
+                callback {btnInitHAMLIB->labelcolor(FL_FOREGROUND_COLOR);
+btnInitHAMLIB->redraw_label();
+hamlib_restore_defaults();}
+                tooltip {Initialize hamlib interface} xywh {371 294 113 24} deactivate
               }
             }
           }

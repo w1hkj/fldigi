@@ -504,7 +504,7 @@ void cb_oliviaCustom(Fl_Widget *w, void *arg)
 	modem_config_tab = tabOlivia;
 	tabsConfigure->value(tabModems);
 	tabsModems->value(modem_config_tab);
-	dlgConfig->show();
+	hamlib_restore_defaults(); dlgConfig->show();
 	cb_init_mode(w, arg);
 }
 
@@ -551,7 +551,7 @@ void cb_rttyCustom(Fl_Widget *w, void *arg)
 	modem_config_tab = tabRTTY;
 	tabsConfigure->value(tabModems);
 	tabsModems->value(modem_config_tab);
-	dlgConfig->show();
+	hamlib_restore_defaults(); dlgConfig->show();
 	cb_init_mode(w, arg);
 }
 
@@ -905,31 +905,31 @@ void altmacro_cb(Fl_Widget *w, void *v)
 void cb_mnuConfigOperator(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabOperator);
-	dlgConfig->show();
+	hamlib_restore_defaults(); dlgConfig->show();
 }
 
 void cb_mnuConfigWaterfall(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabWaterfall);
-	dlgConfig->show();
+	hamlib_restore_defaults(); dlgConfig->show();
 }
 
 void cb_mnuConfigID(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabID);
-	dlgConfig->show();
+	hamlib_restore_defaults(); dlgConfig->show();
 }
 
 void cb_mnuConfigQRZ(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabQRZ);
-	dlgConfig->show();
+	hamlib_restore_defaults(); dlgConfig->show();
 }
 
 void cb_mnuConfigMisc(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabMisc);
-	dlgConfig->show();
+	hamlib_restore_defaults(); dlgConfig->show();
 }
 
 void cb_mnuConfigNotify(Fl_Menu_*, void*)
@@ -940,39 +940,39 @@ void cb_mnuConfigNotify(Fl_Menu_*, void*)
 void cb_mnuUI(Fl_Menu_*, void *) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabUI);
-	dlgConfig->show();
+	hamlib_restore_defaults(); dlgConfig->show();
 }
 
 void cb_mnuConfigContest(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabUI);
 	tabsUI->value(tabContest);
-	dlgConfig->show();
+	hamlib_restore_defaults(); dlgConfig->show();
 }
 
 void cb_mnuConfigRigCtrl(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabRig);
-	dlgConfig->show();
+	hamlib_restore_defaults(); dlgConfig->show();
 }
 
 void cb_mnuConfigSoundCard(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabSoundCard);
-	dlgConfig->show();
+	hamlib_restore_defaults(); dlgConfig->show();
 }
 
 void cb_mnuConfigModems(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabModems);
-	dlgConfig->show();
+	hamlib_restore_defaults(); dlgConfig->show();
 }
 
 void cb_mnuConfigWFcontrols(Fl_Menu_ *, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabUI);
 	tabsUI->value(tabWF_UI);
-	dlgConfig->show();
+	hamlib_restore_defaults(); dlgConfig->show();
 }
 
 void cb_logfile(Fl_Widget* w, void*)
@@ -1662,7 +1662,7 @@ void status_cb(Fl_Widget *b, void *arg)
    		progdefaults.loadDefaults();
         tabsConfigure->value(tabModems);
         tabsModems->value(modem_config_tab);
-        dlgConfig->show();
+        hamlib_restore_defaults(); dlgConfig->show();
     }
     else {
         if (!quick_change)
@@ -2019,7 +2019,6 @@ void cb_mnu_riglog_none(Fl_Menu_* w, void *d) {
 void cb_mnuDockedscope(Fl_Menu_ *w, void *d) {
 	Fl_Menu_Item *m = getMenuItem(((Fl_Menu_*)w)->mvalue()->label());
 	progStatus.DOCKEDSCOPE = m->value();
-printf("uhoh\n");
 	wf->show_scope(progStatus.DOCKEDSCOPE);
 }
 
