@@ -67,31 +67,37 @@ void Rig::close(void)
 
 bool Rig::canSetFreq()
 {
+	if (!rig) return false;
 	return (rig->caps->set_freq != NULL);
 }
 
 bool Rig::canGetFreq()
 {
+	if (!rig) return false;
 	return (rig->caps->get_freq != NULL);
 }
 
 bool Rig::canSetMode()
 {
+	if (!rig) return false;
 	return (rig->caps->set_mode != NULL);
 }
 
 bool Rig::canGetMode()
 {
+	if (!rig) return false;
 	return (rig->caps->get_mode != NULL);
 }
 
 bool Rig::canSetPTT()
 {
+	if (!rig) return false;
 	return (rig->caps->set_ptt != NULL);
 }
 
 bool Rig::canGetPTT()
 {
+	if (!rig) return false;
 	return (rig->caps->get_ptt != NULL);
 }
 
