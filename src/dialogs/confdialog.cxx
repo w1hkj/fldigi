@@ -1411,7 +1411,6 @@ static void cb_chkUSERIGCAT(Fl_Check_Button* o, void*) {
   }
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw();
-progdefaults.changed = true;
 }
 
 Fl_Group *grpRigCAT=(Fl_Group *)0;
@@ -1428,47 +1427,42 @@ selectRigXmlFilename();
 
 Fl_Input_Choice *inpXmlRigDevice=(Fl_Input_Choice *)0;
 
-static void cb_inpXmlRigDevice(Fl_Input_Choice* o, void*) {
-  progdefaults.XmlRigDevice = o->value();
-btnInitRIGCAT->labelcolor(FL_RED);
+static void cb_inpXmlRigDevice(Fl_Input_Choice*, void*) {
+  btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-progdefaults.changed = true;
+btnRevertRIGCAT->activate();
 }
 
 Fl_Value_Input *cntRigCatRetries=(Fl_Value_Input *)0;
 
-static void cb_cntRigCatRetries(Fl_Value_Input* o, void*) {
-  progdefaults.RigCatRetries = (int)o->value();
-btnInitRIGCAT->labelcolor(FL_RED);
+static void cb_cntRigCatRetries(Fl_Value_Input*, void*) {
+  btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-progdefaults.changed = true;
+btnRevertRIGCAT->activate();
 }
 
 Fl_Value_Input *cntRigCatTimeout=(Fl_Value_Input *)0;
 
-static void cb_cntRigCatTimeout(Fl_Value_Input* o, void*) {
-  progdefaults.RigCatTimeout = (int)o->value();
-btnInitRIGCAT->labelcolor(FL_RED);
+static void cb_cntRigCatTimeout(Fl_Value_Input*, void*) {
+  btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-progdefaults.changed = true;
+btnRevertRIGCAT->activate();
 }
 
 Fl_Value_Input *cntRigCatWait=(Fl_Value_Input *)0;
 
-static void cb_cntRigCatWait(Fl_Value_Input* o, void*) {
-  progdefaults.RigCatWait = (int)o->value();
-btnInitRIGCAT->labelcolor(FL_RED);
+static void cb_cntRigCatWait(Fl_Value_Input*, void*) {
+  btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-progdefaults.changed = true;
+btnRevertRIGCAT->activate();
 }
 
 Fl_Choice *mnuXmlRigBaudrate=(Fl_Choice *)0;
 
-static void cb_mnuXmlRigBaudrate(Fl_Choice* o, void*) {
-  progdefaults.XmlRigBaudrate = o->value();
-btnInitRIGCAT->labelcolor(FL_RED);
+static void cb_mnuXmlRigBaudrate(Fl_Choice*, void*) {
+  btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-progdefaults.changed = true;
+btnRevertRIGCAT->activate();
 }
 
 Fl_Button *btnInitRIGCAT=(Fl_Button *)0;
@@ -1481,93 +1475,90 @@ progdefaults.changed = true;
 
 Fl_Check_Button *btnRigCatEcho=(Fl_Check_Button *)0;
 
-static void cb_btnRigCatEcho(Fl_Check_Button* o, void*) {
-  progdefaults.RigCatECHO=o->value();
-btnInitRIGCAT->labelcolor(FL_RED);
+static void cb_btnRigCatEcho(Fl_Check_Button*, void*) {
+  btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 progdefaults.changed = true;
+btnRevertRIGCAT->activate();
 }
 
 Fl_Round_Button *btnRigCatCMDptt=(Fl_Round_Button *)0;
 
 static void cb_btnRigCatCMDptt(Fl_Round_Button* o, void*) {
-  progdefaults.RigCatCMDptt=o->value();
-if (o->value()== 1) {
+  if (o->value()== 1) {
   btnRigCatRTSptt->value(0);
   btnRigCatDTRptt->value(0);
-  progdefaults.RigCatRTSptt = false;
-  progdefaults.RigCatDTRptt = false;
 }
   
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw();
-progdefaults.changed = true;
+btnRevertRIGCAT->activate();
 }
 
 Fl_Round_Button *btnRigCatRTSptt=(Fl_Round_Button *)0;
 
 static void cb_btnRigCatRTSptt(Fl_Round_Button* o, void*) {
-  progdefaults.RigCatRTSptt = o->value();
-if (o->value() == 1) {
+  if (o->value() == 1) {
   btnRigCatDTRptt->value(0);
   btnRigCatCMDptt->value(0);
-  progdefaults.RigCatDTRptt = false;
-  progdefaults.RigCatCMDptt = false;
 }
 
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-progdefaults.changed = true;
+btnRevertRIGCAT->activate();
 }
 
 Fl_Round_Button *btnRigCatDTRptt=(Fl_Round_Button *)0;
 
 static void cb_btnRigCatDTRptt(Fl_Round_Button* o, void*) {
-  progdefaults.RigCatDTRptt=o->value();
-if (o->value() == 1) {
+  if (o->value() == 1) {
   btnRigCatRTSptt->value(0);
   btnRigCatCMDptt->value(0);
-  progdefaults.RigCatRTSptt = false;
-  progdefaults.RigCatCMDptt = false;
 }
 
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-progdefaults.changed = true;
+btnRevertRIGCAT->activate();
 }
 
 Fl_Check_Button *btnRigCatRTSplus=(Fl_Check_Button *)0;
 
-static void cb_btnRigCatRTSplus(Fl_Check_Button* o, void*) {
-  progdefaults.RigCatRTSplus = o->value();
-btnInitRIGCAT->labelcolor(FL_RED);
+static void cb_btnRigCatRTSplus(Fl_Check_Button*, void*) {
+  btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-progdefaults.changed = true;
+btnRevertRIGCAT->activate();
 }
 
 Fl_Check_Button *btnRigCatDTRplus=(Fl_Check_Button *)0;
 
-static void cb_btnRigCatDTRplus(Fl_Check_Button* o, void*) {
-  progdefaults.RigCatDTRplus = o->value();
-btnInitRIGCAT->labelcolor(FL_RED);
+static void cb_btnRigCatDTRplus(Fl_Check_Button*, void*) {
+  btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-progdefaults.changed = true;
+btnRevertRIGCAT->activate();
 }
 
 Fl_Check_Button *chkRigCatRTSCTSflow=(Fl_Check_Button *)0;
 
-static void cb_chkRigCatRTSCTSflow(Fl_Check_Button* o, void*) {
-  progdefaults.RigCatRTSCTSflow = o->value();
-btnInitRIGCAT->labelcolor(FL_RED);
+static void cb_chkRigCatRTSCTSflow(Fl_Check_Button*, void*) {
+  btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-progdefaults.changed = true;
+btnRevertRIGCAT->activate();
 }
 
 Fl_Value_Slider *valRigCatStopbits=(Fl_Value_Slider *)0;
 
-static void cb_valRigCatStopbits(Fl_Value_Slider* o, void*) {
-  progdefaults.RigCatStopbits = (int)o->value();
-progdefaults.changed = true;
+static void cb_valRigCatStopbits(Fl_Value_Slider*, void*) {
+  btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
+btnRevertRIGCAT->activate();
+}
+
+Fl_Button *btnRevertRIGCAT=(Fl_Button *)0;
+
+static void cb_btnRevertRIGCAT(Fl_Button*, void*) {
+  btnInitRIGCAT->labelcolor(FL_FOREGROUND_COLOR);
+btnInitRIGCAT->redraw_label();
+rigCAT_restore_defaults();
 }
 
 Fl_Group *tabHamlib=(Fl_Group *)0;
@@ -4054,6 +4045,11 @@ an merging"));
                 valRigCatStopbits->align(FL_ALIGN_LEFT);
                 o->value(progdefaults.RigCatStopbits);
               } // Fl_Value_Slider* valRigCatStopbits
+              { btnRevertRIGCAT = new Fl_Button(365, 289, 113, 24, _("Revert"));
+                btnRevertRIGCAT->tooltip(_("Initialize hamlib interface"));
+                btnRevertRIGCAT->callback((Fl_Callback*)cb_btnRevertRIGCAT);
+                btnRevertRIGCAT->deactivate();
+              } // Fl_Button* btnRevertRIGCAT
               grpRigCAT->end();
             } // Fl_Group* grpRigCAT
             o->end();

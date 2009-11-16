@@ -15,6 +15,8 @@
 #endif
 
 #include "rigMEM.h"
+#include "rigio.h"
+#include "rigxml.h"
 #include "debug.h"
 
 #include <FL/Fl_Tooltip.H>
@@ -415,6 +417,7 @@ int configuration::setDefaults()
 	} else if (chkUSERIGCATis) {
 		chkUSERIGCAT->value(1);
 		chkUSEMEMMAP->value(0); chkUSEHAMLIB->value(0); chkUSEXMLRPC->value(0);
+		readRigXML();
 	} else if (chkUSEXMLRPCis) {
 		chkUSEXMLRPC->value(1);
 		chkUSEMEMMAP->value(0); chkUSEHAMLIB->value(0); chkUSERIGCAT->value(0);
@@ -613,16 +616,12 @@ void configuration::initInterface()
 	if (chkUSEMEMMAPis) {// start the memory mapped i/o thread
 		if (rigMEM_init()) {
 			wf->setQSY(1);
-			if (docked_rig_control)
-				qsoFreqDisp->activate();
 			riginitOK = true;
 		}
 	} else if (chkUSERIGCATis) { // start the rigCAT thread
 		if (rigCAT_init(true)) {
 			wf->USB(true);
 			wf->setQSY(1);
-			if (docked_rig_control)
-				qsoFreqDisp->activate();
 			riginitOK = true;
 		}
 #if USE_HAMLIB
@@ -630,16 +629,12 @@ void configuration::initInterface()
 		if (hamlib_init(HamlibCMDptt)) {
 			wf->USB(true);
 			wf->setQSY(1);
-			if (docked_rig_control)
-				qsoFreqDisp->activate();
 			riginitOK = true;
 		}
 #endif
 	} else if (chkUSEXMLRPCis) {
 		wf->setXMLRPC(1);
 		rigCAT_init(false);
-		if (docked_rig_control)
-			qsoFreqDisp->activate();
 		wf->USB(true);
 		wf->setQSY(1);
 		riginitOK = true;
@@ -649,8 +644,6 @@ void configuration::initInterface()
 		rigCAT_init(false);
 		wf->USB(true);
 		wf->setQSY(0);
-		if (docked_rig_control)
-			qsoFreqDisp->activate();
 	}
 
 	if (HamlibCMDptt && chkUSEHAMLIBis)

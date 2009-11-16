@@ -54,6 +54,7 @@ void parsePOST_WRITE_DELAY(size_t &);
 void parseRETRIES(size_t &);
 void parseTIMEOUT(size_t &);
 void parseBAUDRATE(size_t &);
+void parseSTOPBITS(size_t &);
 void parseRTSCTS(size_t &);
 void parseCMDPTT(size_t &);
 void parseRTSPLUS(size_t &);
@@ -114,7 +115,7 @@ TAGS rigdeftags[] = {
 	{"<MODE-REPLY", parseMODEREPLY},
 	{"<TITLE",		parseTITLE},
 	{"<LSBMODES",	parseLSBMODES},
-	{"<!--",        parseCOMMENTS},
+	{"<!--",		parseCOMMENTS},
 	{"<PROGRAMMER", parseDISCARD},
 	{"<STATUS",		parseDISCARD},
 	{"<WRITE_DELAY", parseWRITE_DELAY},
@@ -129,6 +130,7 @@ TAGS rigdeftags[] = {
 	{"<DTRPTT", parseDTRPTT},
 	{"<ECHO", parseECHO},
 	{"<CMDPTT", parseCMDPTT},
+	{"<STOPBITS", parseSTOPBITS},
 	{0, 0} 
 };
 
@@ -492,43 +494,51 @@ void parseRIG(size_t &p0)
 
 void parseBAUDRATE(size_t &p0)
 {
-    string sVal = getElement(p0);
-    xmlrig.baud = progdefaults.nBaudRate(sVal.c_str());
+	string sVal = getElement(p0);
+	xmlrig.baud = progdefaults.nBaudRate(sVal.c_str());
+	size_t pend = tagEnd(p0);
+	p0 = pend;
+}
+
+void parseSTOPBITS(size_t &p0){
+	int val = getInt(p0);
+	if (val < 0 || val > 2) val = 2;
+	xmlrig.stopbits = val;
 	size_t pend = tagEnd(p0);
 	p0 = pend;
 }
 
 void parseWRITE_DELAY(size_t &p0){
-    int val = getInt(p0);
-    xmlrig.write_delay = val;
-    size_t pend = tagEnd(p0);
+	int val = getInt(p0);
+	xmlrig.write_delay = val;
+	size_t pend = tagEnd(p0);
 	p0 = pend;
 }
 
 void parsePOST_WRITE_DELAY(size_t &p0){
-    int val = getInt(p0);
-    xmlrig.post_write_delay = val;
+	int val = getInt(p0);
+	xmlrig.post_write_delay = val;
 	size_t pend = tagEnd(p0);
 	p0 = pend;
 }
 
 void parseRETRIES(size_t &p0){
-    int val = getInt(p0);
-    xmlrig.retries = val;
+	int val = getInt(p0);
+	xmlrig.retries = val;
 	size_t pend = tagEnd(p0);
 	p0 = pend;
 }
 
 void parseTIMEOUT(size_t &p0){
-    int val = getInt(p0);
-    xmlrig.timeout = val;
+	int val = getInt(p0);
+	xmlrig.timeout = val;
 	size_t pend = tagEnd(p0);
 	p0 = pend;
 }
 
 void parseRTSCTS(size_t &p0){
-    bool val = getBool(p0);
-    xmlrig.rtscts = val;
+	bool val = getBool(p0);
+	xmlrig.rtscts = val;
 	size_t pend = tagEnd(p0);
 	p0 = pend;
 }
@@ -566,17 +576,17 @@ void parseDTRPTT(size_t &p0)
 }
 
 void parseCMDPTT(size_t &p0) {
-    bool val = getBool(p0);
-    xmlrig.cmdptt = val;
-    size_t pend = tagEnd(p0);
-    p0 = pend;
+	bool val = getBool(p0);
+	xmlrig.cmdptt = val;
+	size_t pend = tagEnd(p0);
+	p0 = pend;
 }
 
 void parseECHO(size_t &p0) {
-    bool val = getBool(p0);
-    xmlrig.echo = val;
-    size_t pend = tagEnd(p0);
-    p0 = pend;
+	bool val = getBool(p0);
+	xmlrig.echo = val;
+	size_t pend = tagEnd(p0);
+	p0 = pend;
 }
 
 //---------------------------------------------------------------------
@@ -843,11 +853,13 @@ void selectRigXmlFilename()
 {
 	string deffilename;
 	deffilename = progdefaults.XmlRigFilename;
-    const char *p = FSEL::select("Open rig xml file", "Fldigi rig xml definition file\t*.xml", deffilename.c_str());
-    if (p) {
-   		progdefaults.XmlRigFilename = p;
-   		txtXmlRigFilename->value(fl_filename_name(p));
-   		readRigXML();
-   		rigCAT_defaults();
+	const char *p = FSEL::select("Open rig xml file", "Fldigi rig xml definition file\t*.xml", deffilename.c_str());
+	if (p) {
+		progdefaults.XmlRigFilename = p;
+		txtXmlRigFilename->value(fl_filename_name(p));
+		rigCAT_close();
+		readRigXML();
+		rigCAT_defaults();
 	}
 }
+

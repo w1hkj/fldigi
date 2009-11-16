@@ -945,39 +945,56 @@ void rigCAT_sendINIT()
 
 void rigCAT_defaults()
 {
-	progdefaults.XmlRigBaudrate = xmlrig.baud;
 	mnuXmlRigBaudrate->value(xmlrig.baud);
-
-	progdefaults.RigCatRTSplus = xmlrig.rts;
+	valRigCatStopbits->value(xmlrig.stopbits);
 	btnRigCatRTSplus->value(xmlrig.rts);
-
-	progdefaults.RigCatDTRplus = xmlrig.dtr;
 	btnRigCatDTRplus->value(xmlrig.dtr);
-
-	progdefaults.RigCatRTSptt = xmlrig.rtsptt;
 	btnRigCatRTSptt->value(xmlrig.rtsptt);
-
-	progdefaults.RigCatDTRptt = xmlrig.dtrptt;
 	btnRigCatDTRptt->value(xmlrig.dtrptt);
-
-	progdefaults.RigCatRTSCTSflow = xmlrig.rtscts;
 	chkRigCatRTSCTSflow->value(xmlrig.rtscts);
-
-	progdefaults.RigCatRetries = xmlrig.retries;
 	cntRigCatRetries->value(xmlrig.retries);
-
-	progdefaults.RigCatTimeout = xmlrig.timeout;
 	cntRigCatTimeout->value(xmlrig.timeout);
-
-	progdefaults.RigCatWait = xmlrig.write_delay;
 	cntRigCatWait->value(xmlrig.write_delay);
-
-	progdefaults.RigCatECHO = xmlrig.echo;
 	btnRigCatEcho->value(xmlrig.echo);
-
-	progdefaults.RigCatCMDptt = xmlrig.cmdptt;
 	btnRigCatCMDptt->value(xmlrig.cmdptt);
+}
 
+void rigCAT_restore_defaults()
+{
+	inpXmlRigDevice->value(progdefaults.XmlRigDevice.c_str());
+	mnuXmlRigBaudrate->value(progdefaults.XmlRigBaudrate);
+	valRigCatStopbits->value(progdefaults.RigCatStopbits);
+	btnRigCatRTSplus->value(progdefaults.RigCatRTSplus);
+	btnRigCatDTRplus->value(progdefaults.RigCatDTRplus);
+	btnRigCatRTSptt->value(progdefaults.RigCatRTSptt);
+	btnRigCatDTRptt->value(progdefaults.RigCatDTRptt);
+	chkRigCatRTSCTSflow->value(progdefaults.RigCatRTSCTSflow);
+	cntRigCatRetries->value(progdefaults.RigCatRetries);
+	cntRigCatTimeout->value(progdefaults.RigCatTimeout);
+	cntRigCatWait->value(progdefaults.RigCatWait);
+	btnRigCatEcho->value(progdefaults.RigCatECHO);
+	btnRigCatCMDptt->value(progdefaults.RigCatCMDptt);
+
+	btnInitRIGCAT->labelcolor(FL_FOREGROUND_COLOR);
+	btnRevertRIGCAT->deactivate();
+	dlgConfig->redraw();
+}
+
+void rigCAT_init_defaults()
+{
+	progdefaults.XmlRigDevice = inpXmlRigDevice->value();
+	progdefaults.XmlRigBaudrate = mnuXmlRigBaudrate->value();
+	progdefaults.RigCatStopbits = valRigCatStopbits->value();
+	progdefaults.RigCatRTSplus = btnRigCatRTSplus->value();
+	progdefaults.RigCatDTRplus = btnRigCatDTRplus->value();
+	progdefaults.RigCatRTSptt = btnRigCatRTSptt->value();
+	progdefaults.RigCatDTRptt = btnRigCatDTRptt->value();
+	progdefaults.RigCatRTSCTSflow = chkRigCatRTSCTSflow->value();
+	progdefaults.RigCatRetries = cntRigCatRetries->value();
+	progdefaults.RigCatTimeout = cntRigCatTimeout->value();
+	progdefaults.RigCatWait = cntRigCatWait->value();
+	progdefaults.RigCatECHO = btnRigCatEcho->value();
+	progdefaults.RigCatCMDptt = btnRigCatCMDptt->value();
 }
 
 bool rigCAT_init(bool useXML)
@@ -993,9 +1010,11 @@ bool rigCAT_init(bool useXML)
 	sRigWidth = "";
 
 	if (useXML == true) {
-		if (readRigXML() == false)
-			LOG_ERROR("No rig.xml file present");
-		else {
+		rigCAT_init_defaults();
+//		if (readRigXML() == false)
+//			LOG_ERROR("No rig.xml file present");
+//		else 
+		{
 			noXMLfile = false;
 			rigio.Device(progdefaults.XmlRigDevice);
 			rigio.Baud(progdefaults.BaudRate(progdefaults.XmlRigBaudrate));
@@ -1070,6 +1089,7 @@ echo	   : %c\n",
 		rigio.ClosePort();
 		return false;
 	}
+	LOG_INFO("New thread %p", rigCAT_thread);
 
 	rigCAT_open = true;
 
@@ -1087,6 +1107,7 @@ void rigCAT_close(void)
 
 	pthread_join(*rigCAT_thread, NULL);
 
+	LOG_INFO("Deleting thread %p", rigCAT_thread);
 	delete rigCAT_thread;
 	rigCAT_thread = 0;
 
@@ -1103,15 +1124,13 @@ void rigCAT_set_ptt(int ptt)
 {
 	if (rigCAT_open == false)
 		return;
-//	pthread_mutex_lock(&rigCAT_mutex);
-		if (ptt) {
-			rigCAT_pttON();
-			rigCAT_bypass = true;
-		} else{
-			rigCAT_pttOFF();
-			rigCAT_bypass = false;
-		}
-//	pthread_mutex_unlock(&rigCAT_mutex);
+	if (ptt) {
+		rigCAT_pttON();
+		rigCAT_bypass = true;
+	} else{
+		rigCAT_pttOFF();
+		rigCAT_bypass = false;
+	}
 }
 
 #ifndef RIGCATTEST
@@ -1199,7 +1218,6 @@ static void *rigCAT_loop(void *args)
 	}
 
 	wf->USB(true);
-//  wf->setQSY(0);
 
 	pthread_mutex_lock(&rigCAT_mutex);
 		LOG_DEBUG("Exiting rigCAT loop, closing serial port");

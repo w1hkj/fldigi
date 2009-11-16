@@ -82,7 +82,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {639 134 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
+    xywh {671 172 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {-3 0 520 372} color 50 selection_color 50
@@ -1764,8 +1764,7 @@ progdefaults.changed = true;}
   progdefaults.chkUSERIGCATis = false;
   }
 btnInitRIGCAT->labelcolor(FL_RED);
-btnInitRIGCAT->redraw();
-progdefaults.changed = true;}
+btnInitRIGCAT->redraw();}
               tooltip {RigCAT used for rig control} xywh {195 60 110 20} down_box DOWN_BOX
             }
             Fl_Group grpRigCAT {open
@@ -1785,46 +1784,41 @@ selectRigXmlFilename();}
               }
               Fl_Input_Choice inpXmlRigDevice {
                 label {Device:}
-                callback {progdefaults.XmlRigDevice = o->value();
-btnInitRIGCAT->labelcolor(FL_RED);
+                callback {btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-progdefaults.changed = true;} open
+btnRevertRIGCAT->activate();} open
                 tooltip {Serial device} xywh {341 107 144 22}
                 code0 {o->value(progdefaults.XmlRigDevice.c_str());}
               } {}
               Fl_Value_Input cntRigCatRetries {
                 label Retries
-                callback {progdefaults.RigCatRetries = (int)o->value();
-btnInitRIGCAT->labelcolor(FL_RED);
+                callback {btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-progdefaults.changed = true;}
+btnRevertRIGCAT->activate();}
                 tooltip {\# retries before giving up} xywh {30 150 60 22} align 5
                 code0 {o->value(progdefaults.RigCatRetries);}
               }
               Fl_Value_Input cntRigCatTimeout {
                 label {Retry interval (ms)}
-                callback {progdefaults.RigCatTimeout = (int)o->value();
-btnInitRIGCAT->labelcolor(FL_RED);
+                callback {btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-progdefaults.changed = true;}
+btnRevertRIGCAT->activate();}
                 tooltip {Time between retires in msec} xywh {148 150 60 22} align 5
                 code0 {o->value(progdefaults.RigCatTimeout);}
               }
               Fl_Value_Input cntRigCatWait {
                 label {Write delay (ms)}
-                callback {progdefaults.RigCatWait = (int)o->value();
-btnInitRIGCAT->labelcolor(FL_RED);
+                callback {btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-progdefaults.changed = true;}
+btnRevertRIGCAT->activate();}
                 xywh {30 190 60 22} align 5
                 code0 {o->value(progdefaults.RigCatWait);}
               }
               Fl_Choice mnuXmlRigBaudrate {
                 label {Baud rate:}
-                callback {progdefaults.XmlRigBaudrate = o->value();
-btnInitRIGCAT->labelcolor(FL_RED);
+                callback {btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-progdefaults.changed = true;} open
+btnRevertRIGCAT->activate();} open
                 tooltip {Pick baud rate from list} xywh {386 150 99 22} down_box BORDER_BOX
                 code0 {o->add(szBaudRates);}
                 code1 {o->value(progdefaults.XmlRigBaudrate);}
@@ -1838,94 +1832,91 @@ progdefaults.changed = true;}
               }
               Fl_Check_Button btnRigCatEcho {
                 label {Commands are echoed}
-                callback {progdefaults.RigCatECHO=o->value();
-btnInitRIGCAT->labelcolor(FL_RED);
+                callback {btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-progdefaults.changed = true;}
+progdefaults.changed = true;
+btnRevertRIGCAT->activate();}
                 tooltip {Rig or interface echos serial data} xywh {50 216 192 22} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RigCatECHO);}
               }
               Fl_Round_Button btnRigCatCMDptt {
                 label {CAT command for PTT}
-                callback {progdefaults.RigCatCMDptt=o->value();
-if (o->value()== 1) {
+                callback {if (o->value()== 1) {
   btnRigCatRTSptt->value(0);
   btnRigCatDTRptt->value(0);
-  progdefaults.RigCatRTSptt = false;
-  progdefaults.RigCatDTRptt = false;
 }
   
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw();
-progdefaults.changed = true;}
+btnRevertRIGCAT->activate();}
                 tooltip {PTT is a CAT command (not hardware)} xywh {256 217 207 20} down_box ROUND_DOWN_BOX selection_color 1
                 code0 {o->value(progdefaults.RigCatCMDptt);}
               }
               Fl_Round_Button btnRigCatRTSptt {
                 label {Toggle RTS for PTT}
-                callback {progdefaults.RigCatRTSptt = o->value();
-if (o->value() == 1) {
+                callback {if (o->value() == 1) {
   btnRigCatDTRptt->value(0);
   btnRigCatCMDptt->value(0);
-  progdefaults.RigCatDTRptt = false;
-  progdefaults.RigCatCMDptt = false;
 }
 
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-progdefaults.changed = true;}
+btnRevertRIGCAT->activate();}
                 tooltip {RTS is ptt line} xywh {50 250 160 20} down_box ROUND_DOWN_BOX
                 code0 {o->value(progdefaults.RigCatRTSptt);}
               }
               Fl_Round_Button btnRigCatDTRptt {
                 label {Toggle DTR for PTT}
-                callback {progdefaults.RigCatDTRptt=o->value();
-if (o->value() == 1) {
+                callback {if (o->value() == 1) {
   btnRigCatRTSptt->value(0);
   btnRigCatCMDptt->value(0);
-  progdefaults.RigCatRTSptt = false;
-  progdefaults.RigCatCMDptt = false;
 }
 
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-progdefaults.changed = true;}
+btnRevertRIGCAT->activate();}
                 tooltip {DTR is ptt line} xywh {256 250 160 20} down_box ROUND_DOWN_BOX
                 code0 {o->value(progdefaults.RigCatDTRptt);}
               }
               Fl_Check_Button btnRigCatRTSplus {
                 label {RTS +12 v}
-                callback {progdefaults.RigCatRTSplus = o->value();
-btnInitRIGCAT->labelcolor(FL_RED);
+                callback {btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-progdefaults.changed = true;}
+btnRevertRIGCAT->activate();}
                 tooltip {Initial state of RTS} xywh {50 285 100 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RigCatRTSplus);}
               }
               Fl_Check_Button btnRigCatDTRplus {
                 label {DTR +12 v}
-                callback {progdefaults.RigCatDTRplus = o->value();
-btnInitRIGCAT->labelcolor(FL_RED);
+                callback {btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-progdefaults.changed = true;}
+btnRevertRIGCAT->activate();}
                 tooltip {Initial state of DTR} xywh {256 285 100 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RigCatDTRplus);}
               }
               Fl_Check_Button chkRigCatRTSCTSflow {
                 label {RTS/CTS flow control}
-                callback {progdefaults.RigCatRTSCTSflow = o->value();
-btnInitRIGCAT->labelcolor(FL_RED);
+                callback {btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-progdefaults.changed = true;}
+btnRevertRIGCAT->activate();}
                 tooltip {Rig uses RTS/CTS handshake} xywh {50 320 170 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RigCatRTSCTSflow);}
               }
               Fl_Value_Slider valRigCatStopbits {
                 label Stopbits
-                callback {progdefaults.RigCatStopbits = (int)o->value();
-progdefaults.changed = true;}
+                callback {btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
+btnRevertRIGCAT->activate();}
                 xywh {425 190 60 22} type Horizontal color 7 selection_color 40 align 4 minimum 1 maximum 2 step 1 value 2 textsize 14
                 code0 {o->value(progdefaults.RigCatStopbits);}
+              }
+              Fl_Button btnRevertRIGCAT {
+                label Revert
+                callback {btnInitRIGCAT->labelcolor(FL_FOREGROUND_COLOR);
+btnInitRIGCAT->redraw_label();
+rigCAT_restore_defaults();}
+                tooltip {Initialize hamlib interface} xywh {365 289 113 24} deactivate
+                code0 {\#include "rigio.h"}
               }
             }
           }

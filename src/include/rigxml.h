@@ -67,6 +67,7 @@ struct TAGS { const char *tag; void (*fp)(size_t &);};
 struct XMLRIG {
 	std::string	port;
 	int		baud;
+	int		stopbits;
 	bool	dtr;
 	bool	dtrptt;
 	bool	rts;
@@ -81,6 +82,7 @@ struct XMLRIG {
 	void clear() {
 		port.clear();
 		baud = 1200;
+		stopbits = 2;
 		dtr = false;
 		dtrptt = false;
 		rts = false;
