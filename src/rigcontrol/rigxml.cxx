@@ -473,7 +473,7 @@ void parseBWREPLY(size_t &p0)
 void parseTITLE(size_t &p0)
 {
 	size_t pend = tagEnd(p0);
-	windowTitle = getElement(p0);
+	xmlrig.rigTitle = getElement(p0);
 	p0 = pend;
 }
 

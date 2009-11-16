@@ -417,7 +417,6 @@ int configuration::setDefaults()
 	} else if (chkUSERIGCATis) {
 		chkUSERIGCAT->value(1);
 		chkUSEMEMMAP->value(0); chkUSEHAMLIB->value(0); chkUSEXMLRPC->value(0);
-		readRigXML();
 	} else if (chkUSEXMLRPCis) {
 		chkUSEXMLRPC->value(1);
 		chkUSEMEMMAP->value(0); chkUSEHAMLIB->value(0); chkUSERIGCAT->value(0);
@@ -425,6 +424,7 @@ int configuration::setDefaults()
 		chkUSEMEMMAP->value(0); chkUSEHAMLIB->value(0); 
 		chkUSERIGCAT->value(0);	chkUSEHAMLIB->value(0); chkUSEXMLRPC->value(0);
 	}
+	if (!XmlRigFilename.empty()) readRigXML();
 
 	inpRIGdev->value(HamRigDevice.c_str());
 	mnuBaudRate->value(HamRigBaudrate);

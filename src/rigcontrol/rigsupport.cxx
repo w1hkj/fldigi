@@ -436,6 +436,7 @@ LOG_INFO("xml rig");
 	initOptionMenus();
 	clearList();
 	buildlist();
+	windowTitle = xmlrig.rigTitle;
 	setTitle();
 	return true;
 }

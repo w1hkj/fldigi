@@ -50,7 +50,6 @@ static string		   sRigMode = "";
 static long long		llFreq = 0;
 
 static bool nonCATrig = false;
-static bool noXMLfile = false;
 
 static void *rigCAT_loop(void *args);
 
@@ -296,7 +295,7 @@ long long rigCAT_getfreq()
 	size_t p = 0, len1 = 0, len2 = 0, pData = 0;
 	long long f = 0;
 
-	if (nonCATrig == true || noXMLfile) {
+	if (nonCATrig) {
 		return progStatus.noCATfreq;
 	}
 
@@ -386,7 +385,7 @@ void rigCAT_setfreq(long long f)
 
 	progStatus.noCATfreq = f;
 
-	if (noXMLfile || nonCATrig) {
+	if (nonCATrig) {
 		return;
 	}
 
@@ -451,7 +450,7 @@ string rigCAT_getmode()
 	string strCmd, mData;
 	size_t len;
 
-	if (nonCATrig == true || noXMLfile)
+	if (nonCATrig)
 		return progStatus.noCATmode;
 
 	itrCmd = commands.begin();
@@ -547,7 +546,7 @@ void rigCAT_setmode(const string& md)
 
 	progStatus.noCATmode = md;
 
-	if (nonCATrig == true || noXMLfile) {
+	if (nonCATrig) {
 		return;
 	}
 
@@ -621,7 +620,7 @@ string rigCAT_getwidth()
 	string strCmd, mData;
 	size_t len = 0, p = 0, pData = 0;
 
-	if (nonCATrig == true || noXMLfile)
+	if (nonCATrig)
 		return progStatus.noCATwidth;
 
 	itrCmd = commands.begin();
@@ -716,7 +715,7 @@ void rigCAT_setwidth(const string& w)
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 
-	if (noXMLfile) {
+	if (nonCATrig) {
 		progStatus.noCATwidth = w;
 		return;
 	}
@@ -794,6 +793,8 @@ void rigCAT_pttON()
 
 	rigio.SetPTT(1); // always execute the h/w ptt if enabled
 
+	if (nonCATrig) return;
+
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
 		if ((*itrCmd).SYMBOL == "PTTON")
@@ -845,6 +846,7 @@ void rigCAT_pttOFF()
 	string strCmd;
 
 	rigio.SetPTT(0); // always execute the h/w ptt if enabled
+	if (nonCATrig) return;
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -896,7 +898,7 @@ void rigCAT_sendINIT()
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 
-	if (noXMLfile)
+	if (nonCATrig)
 		return;
 
 	itrCmd = commands.begin();
@@ -1005,27 +1007,21 @@ bool rigCAT_init(bool useXML)
 		return false;
 	}
 
-	noXMLfile = true;
 	sRigMode = "";
 	sRigWidth = "";
 
 	if (useXML == true) {
 		rigCAT_init_defaults();
-//		if (readRigXML() == false)
-//			LOG_ERROR("No rig.xml file present");
-//		else 
-		{
-			noXMLfile = false;
-			rigio.Device(progdefaults.XmlRigDevice);
-			rigio.Baud(progdefaults.BaudRate(progdefaults.XmlRigBaudrate));
-			rigio.RTS(progdefaults.RigCatRTSplus);
-			rigio.DTR(progdefaults.RigCatDTRplus);
-			rigio.RTSptt(progdefaults.RigCatRTSptt);
-			rigio.DTRptt(progdefaults.RigCatDTRptt);
-			rigio.RTSCTS(progdefaults.RigCatRTSCTSflow);
-			rigio.Stopbits(progdefaults.RigCatStopbits);
+		rigio.Device(progdefaults.XmlRigDevice);
+		rigio.Baud(progdefaults.BaudRate(progdefaults.XmlRigBaudrate));
+		rigio.RTS(progdefaults.RigCatRTSplus);
+		rigio.DTR(progdefaults.RigCatDTRplus);
+		rigio.RTSptt(progdefaults.RigCatRTSptt);
+		rigio.DTRptt(progdefaults.RigCatDTRptt);
+		rigio.RTSCTS(progdefaults.RigCatRTSCTSflow);
+		rigio.Stopbits(progdefaults.RigCatStopbits);
 
-			LOG_INFO("\n\
+		LOG_INFO("\n\
 Serial port parameters:\n\
 device	 : %s\n\
 baudrate   : %d\n\
@@ -1039,39 +1035,38 @@ initial dtr: %+d\n\
 use dtr ptt: %c\n\
 flowcontrol: %c\n\
 echo	   : %c\n",
-				rigio.Device().c_str(),
-				rigio.Baud(),
-				rigio.Stopbits(),
-				progdefaults.RigCatRetries,
-				progdefaults.RigCatTimeout,
-				progdefaults.RigCatWait,
-				(rigio.RTS() ? +12 : -12), (rigio.RTSptt() ? 'T' : 'F'),
-				(rigio.DTR() ? +12 : -12), (rigio.DTRptt() ? 'T' : 'F'),
-				(rigio.RTSCTS() ? 'T' : 'F'),
-				progdefaults.RigCatECHO ? 'T' : 'F');
+		rigio.Device().c_str(),
+		rigio.Baud(),
+		rigio.Stopbits(),
+		progdefaults.RigCatRetries,
+		progdefaults.RigCatTimeout,
+		progdefaults.RigCatWait,
+			(rigio.RTS() ? +12 : -12), (rigio.RTSptt() ? 'T' : 'F'),
+			(rigio.DTR() ? +12 : -12), (rigio.DTRptt() ? 'T' : 'F'),
+			(rigio.RTSCTS() ? 'T' : 'F'),
+			progdefaults.RigCatECHO ? 'T' : 'F');
 
-			if (rigio.OpenPort() == false) {
-				LOG_ERROR("Cannot open serial port %s", rigio.Device().c_str());
-				nonCATrig = true;
-				init_NoRig_RigDialog();
-				return false;
-			}
-			sRigMode = "";
-			sRigWidth = "";
+		if (rigio.OpenPort() == false) {
+			LOG_ERROR("Cannot open serial port %s", rigio.Device().c_str());
+			nonCATrig = true;
+			init_NoRig_RigDialog();
+			return false;
+		}
+		sRigMode = "";
+		sRigWidth = "";
 
+		nonCATrig = false;
+
+		if (rigCAT_getfreq() == -1) { // will set nonCATrig to true if getfreq not spec'd
+			LOG_ERROR("Xcvr Freq request not answered");
+			rigio.ClosePort();
+			nonCATrig = true;
+			init_NoRig_RigDialog();
+			return false;
+		} else {
 			nonCATrig = false;
-
-			if (rigCAT_getfreq() == -1) { // will set nonCATrig to true if getfreq not spec'd
-				LOG_ERROR("Xcvr Freq request not answered");
-				rigio.ClosePort();
-				nonCATrig = true;
-				init_NoRig_RigDialog();
-				return false;
-			} else {
-				nonCATrig = false;
-				rigCAT_sendINIT();
-				init_Xml_RigDialog();
-			}
+			rigCAT_sendINIT();
+			init_Xml_RigDialog();
 		}
 	} else {
 		nonCATrig = true;
@@ -1155,7 +1150,7 @@ void rigCAT_set_qsy(long long f, long long fmid)
 
 bool ModeIsLSB(const string& s)
 {
-	if (noXMLfile) {
+	if (nonCATrig) {
 		if (s == "LSB")
 			return true;
 		return false;

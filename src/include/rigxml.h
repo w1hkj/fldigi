@@ -4,6 +4,8 @@
 #include <string>
 #include <list>
 
+using namespace std;
+
 struct MODE {
 	std::string SYMBOL;
 	std::string BYTES;
@@ -66,6 +68,7 @@ struct TAGS { const char *tag; void (*fp)(size_t &);};
 
 struct XMLRIG {
 	std::string	port;
+	string rigTitle;
 	int		baud;
 	int		stopbits;
 	bool	dtr;
@@ -94,6 +97,7 @@ struct XMLRIG {
 		post_write_delay = 50;
 		timeout = 200;
 		retries = 5;
+		rigTitle = "";
 	}
 };
 	

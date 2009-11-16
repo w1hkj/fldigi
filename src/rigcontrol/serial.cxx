@@ -580,12 +580,12 @@ BOOL Cserial::ConfigurePort(DWORD	BaudRate,
 ///////////////////////////////////////////////////////
 void Cserial::SetPTT(bool b)
 {
+	if ( !(dtrptt || rtsptt) )
+		return;
 	if(hComm == INVALID_HANDLE_VALUE) {
 		LOG_ERROR("Invalid handle");
 		return;
 	}
-	if ( !(dtrptt || rtsptt) )
-		return;
 	LOG_INFO("PTT = %d, DTRptt = %d, DTR = %d, RTSptt = %d, RTS = %d",
 		 b, dtrptt, dtr, rtsptt, rts);
 
