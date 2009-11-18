@@ -1732,7 +1732,9 @@ Fl_Button *btnRevertHAMLIB=(Fl_Button *)0;
 static void cb_btnRevertHAMLIB(Fl_Button*, void*) {
   btnInitHAMLIB->labelcolor(FL_FOREGROUND_COLOR);
 btnInitHAMLIB->redraw_label();
+#if USE_HAMLIB
 hamlib_restore_defaults();
+#endif
 }
 
 Fl_Group *grpMemmap=(Fl_Group *)0;

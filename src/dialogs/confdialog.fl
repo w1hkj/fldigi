@@ -82,7 +82,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {671 172 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
+    xywh {468 63 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {-3 0 520 372} color 50 selection_color 50
@@ -2101,7 +2101,9 @@ progdefaults.changed = true;}
                 label Revert
                 callback {btnInitHAMLIB->labelcolor(FL_FOREGROUND_COLOR);
 btnInitHAMLIB->redraw_label();
-hamlib_restore_defaults();}
+\#if USE_HAMLIB
+hamlib_restore_defaults();
+\#endif}
                 tooltip {Initialize hamlib interface} xywh {371 294 113 24} deactivate
               }
             }

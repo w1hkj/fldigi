@@ -504,7 +504,11 @@ void cb_oliviaCustom(Fl_Widget *w, void *arg)
 	modem_config_tab = tabOlivia;
 	tabsConfigure->value(tabModems);
 	tabsModems->value(modem_config_tab);
-	hamlib_restore_defaults(); dlgConfig->show();
+#if USE_HAMLIB
+	hamlib_restore_defaults();
+#endif
+	rigCAT_restore_defaults();;
+	dlgConfig->show();
 	cb_init_mode(w, arg);
 }
 
@@ -551,7 +555,12 @@ void cb_rttyCustom(Fl_Widget *w, void *arg)
 	modem_config_tab = tabRTTY;
 	tabsConfigure->value(tabModems);
 	tabsModems->value(modem_config_tab);
-	hamlib_restore_defaults(); dlgConfig->show();
+#if USE_HAMLIB
+	hamlib_restore_defaults();
+#endif
+	rigCAT_restore_defaults();
+	dlgConfig->show();
+
 	cb_init_mode(w, arg);
 }
 
@@ -905,31 +914,56 @@ void altmacro_cb(Fl_Widget *w, void *v)
 void cb_mnuConfigOperator(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabOperator);
-	hamlib_restore_defaults(); dlgConfig->show();
+#if USE_HAMLIB
+	hamlib_restore_defaults();
+#endif
+	rigCAT_restore_defaults();
+	dlgConfig->show();
+
 }
 
 void cb_mnuConfigWaterfall(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabWaterfall);
-	hamlib_restore_defaults(); dlgConfig->show();
+#if USE_HAMLIB
+	hamlib_restore_defaults();
+#endif
+	rigCAT_restore_defaults();
+	dlgConfig->show();
+
 }
 
 void cb_mnuConfigID(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabID);
-	hamlib_restore_defaults(); dlgConfig->show();
+#if USE_HAMLIB
+	hamlib_restore_defaults();
+#endif
+	rigCAT_restore_defaults();
+	dlgConfig->show();
+
 }
 
 void cb_mnuConfigQRZ(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabQRZ);
-	hamlib_restore_defaults(); dlgConfig->show();
+#if USE_HAMLIB
+	hamlib_restore_defaults();
+#endif
+	rigCAT_restore_defaults();
+	dlgConfig->show();
+
 }
 
 void cb_mnuConfigMisc(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabMisc);
-	hamlib_restore_defaults(); dlgConfig->show();
+#if USE_HAMLIB
+	hamlib_restore_defaults();
+#endif
+	rigCAT_restore_defaults();
+	dlgConfig->show();
+
 }
 
 void cb_mnuConfigNotify(Fl_Menu_*, void*)
@@ -940,39 +974,69 @@ void cb_mnuConfigNotify(Fl_Menu_*, void*)
 void cb_mnuUI(Fl_Menu_*, void *) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabUI);
-	hamlib_restore_defaults(); dlgConfig->show();
+#if USE_HAMLIB
+	hamlib_restore_defaults();
+#endif
+	rigCAT_restore_defaults();
+	dlgConfig->show();
+
 }
 
 void cb_mnuConfigContest(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabUI);
 	tabsUI->value(tabContest);
-	hamlib_restore_defaults(); dlgConfig->show();
+#if USE_HAMLIB
+	hamlib_restore_defaults();
+#endif
+	rigCAT_restore_defaults();
+	dlgConfig->show();
+
 }
 
 void cb_mnuConfigRigCtrl(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabRig);
-	hamlib_restore_defaults(); dlgConfig->show();
+#if USE_HAMLIB
+	hamlib_restore_defaults();
+#endif
+	rigCAT_restore_defaults();
+	dlgConfig->show();
+
 }
 
 void cb_mnuConfigSoundCard(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabSoundCard);
-	hamlib_restore_defaults(); dlgConfig->show();
+#if USE_HAMLIB
+	hamlib_restore_defaults();
+#endif
+	rigCAT_restore_defaults();
+	dlgConfig->show();
+
 }
 
 void cb_mnuConfigModems(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabModems);
-	hamlib_restore_defaults(); dlgConfig->show();
+#if USE_HAMLIB
+	hamlib_restore_defaults();
+#endif
+	rigCAT_restore_defaults();
+	dlgConfig->show();
+
 }
 
 void cb_mnuConfigWFcontrols(Fl_Menu_ *, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabUI);
 	tabsUI->value(tabWF_UI);
-	hamlib_restore_defaults(); dlgConfig->show();
+#if USE_HAMLIB
+	hamlib_restore_defaults();
+#endif
+	rigCAT_restore_defaults();
+	dlgConfig->show();
+
 }
 
 void cb_logfile(Fl_Widget* w, void*)
@@ -1658,19 +1722,23 @@ void cb_QRZ(Fl_Widget *b, void *)
 
 void status_cb(Fl_Widget *b, void *arg)
 {
-    if (Fl::event_button() == FL_RIGHT_MOUSE) {
-   		progdefaults.loadDefaults();
-        tabsConfigure->value(tabModems);
-        tabsModems->value(modem_config_tab);
-        hamlib_restore_defaults(); dlgConfig->show();
-    }
-    else {
-        if (!quick_change)
-            return;
-        const Fl_Menu_Item *m = quick_change->popup(Fl::event_x(), Fl::event_y());
-        if (m && m->callback())
-            m->do_callback(0);
-    }
+	if (Fl::event_button() == FL_RIGHT_MOUSE) {
+		progdefaults.loadDefaults();
+		tabsConfigure->value(tabModems);
+		tabsModems->value(modem_config_tab);
+#if USE_HAMLIB
+		hamlib_restore_defaults();
+#endif
+		rigCAT_restore_defaults();
+		dlgConfig->show();
+	}
+	else {
+		if (!quick_change)
+			return;
+		const Fl_Menu_Item *m = quick_change->popup(Fl::event_x(), Fl::event_y());
+		if (m && m->callback())
+		m->do_callback(0);
+	}
 	static_cast<Fl_Button*>(b)->clear();
 	restoreFocus();
 }
