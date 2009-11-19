@@ -1,3 +1,11 @@
+3.12.6
+
+2009-11-19  Stelios Bounanos  <vcs@enotty.net>
+
+	ef76d68: Fix LDFLAGS
+	d94417d: Fix custom pkg-config macro
+	5b527a7: Fix conditional pkg check
+
 3.12.5
 
 2009-11-07  Stelios Bounanos  <vcs@enotty.net>
