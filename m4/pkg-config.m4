@@ -13,6 +13,7 @@ m4_if([$3], [yes],
     ])
 m4_if([$4], [no], [ac_cv_want_[]$1=yes])
 
+test "x$ac_cv_want_[]$1" = "x" && ac_cv_want_[]$1="check"
 case "x$ac_cv_want_[]$1" in
     "xno")
             ac_cv_[]$1=no
