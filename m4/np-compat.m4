@@ -13,7 +13,7 @@ AC_DEFUN([AC_FLDIGI_NP_COMPAT], [
   if test "x$target_mingw32" = "xyes"; then
       sem_libs="pthreadGC2"
   else
-      sem_libs="rt"
+      sem_libs="pthread rt"
   fi
   other_libs=""
 

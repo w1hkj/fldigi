@@ -277,7 +277,7 @@ Fl_RGB_Image		*feld_image = 0;
 Fl_Pixmap 			*addrbookpixmap = 0;
 Fl_Pixmap 			*closepixmap = 0;
 
-#if !defined(__APPLE__) && !defined(__WOE32__)
+#if !defined(__APPLE__) && !defined(__WOE32__) && USE_X
 Pixmap				fldigi_icon_pixmap;
 #endif
 
@@ -2857,7 +2857,7 @@ void create_fl_digi_main() {
 #    define IDI_ICON 101
 #  endif
 	fl_digi_main->icon((char*)LoadIcon(fl_display, MAKEINTRESOURCE(IDI_ICON)));
-#elif !defined(__APPLE__)
+#elif !defined(__APPLE__) && USE_X
 	make_pixmap(&fldigi_icon_pixmap, fldigi_icon);
 	fl_digi_main->icon((char *)fldigi_icon_pixmap);
 #endif

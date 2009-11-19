@@ -74,7 +74,7 @@ Fl_Color adjust_color(Fl_Color fg, Fl_Color bg)
 	return fg;
 }
 
-#if !defined(__APPLE__) && !defined(__WOE32__)
+#if !defined(__APPLE__) && !defined(__WOE32__) && USE_X
 #  include <FL/Fl_Window.H>
 #  include <FL/Fl_Pixmap.H>
 #  include <FL/fl_draw.H>
