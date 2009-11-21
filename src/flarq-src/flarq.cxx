@@ -1004,7 +1004,6 @@ string nextFileName(string fname)
 void saveEmailFile()
 {
 	static char xfrmsg[80];
-	static char szfnum[10];
 	int    fnum;
 	string tempname;
 
@@ -1167,10 +1166,6 @@ void rxBeaconCallsign(string s)
 
 void moveEmailFile()
 {
-	static char szfnum[10];
-	int    fnum = 1;
-	string tempname;
-
 	if (MailFileName.empty()) return;
 	if (MailSaveFileName.empty()) return;
 
