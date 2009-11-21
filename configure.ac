@@ -14,7 +14,7 @@ m4_define(FLARQ_MAJOR,  [4])
 m4_define(FLARQ_MINOR,  [3])
 m4_define(FLARQ_PATCH,  [AC])
 
-AC_INIT([fldigi], FLDIGI_MAJOR.FLDIGI_MINOR[]FLDIGI_PATCH, [w1hkj AT w1hkj DOT com])
+AC_INIT([fldigi], FLDIGI_MAJOR.FLDIGI_MINOR[]FLDIGI_PATCH, [fldigi-devel@lists.berlios.de])
 
 # substitute in Makefiles
 AC_SUBST([FLDIGI_VERSION_MAJOR], [FLDIGI_MAJOR])
@@ -59,6 +59,7 @@ FLARQ_AUTHORS="Dave Freese"
 PACKAGE_HOME="http://www.w1hkj.com/Fldigi.html"
 PACKAGE_DL="http://www.w1hkj.com/Downloads.html"
 PACKAGE_PROJ="http://developer.berlios.de/project/showfiles.php?group_id=9149"
+PACKAGE_NEWBUG="https://fedorahosted.org/fldigi/newticket"
 PACKAGE_DOCS="http://www.w1hkj.com/FldigiHelp/index.html"
 PACKAGE_GUIDE="http://www.w1hkj.com/beginners.html"
 FLARQ_DOCS="http://www.w1hkj.com/FlarqHelpFiles/flarq.html"
@@ -67,6 +68,7 @@ AC_DEFINE_UNQUOTED([FLARQ_AUTHORS], ["$FLARQ_AUTHORS"], [Flarq authors])
 AC_DEFINE_UNQUOTED([PACKAGE_HOME], ["$PACKAGE_HOME"], [Home page])
 AC_DEFINE_UNQUOTED([PACKAGE_DL], ["$PACKAGE_DL"], [Download page])
 AC_DEFINE_UNQUOTED([PACKAGE_PROJ], ["$PACKAGE_PROJ"], [BerliOS page])
+AC_DEFINE_UNQUOTED([PACKAGE_NEWBUG], ["$PACKAGE_NEWBUG"], [Trac new ticket page])
 AC_DEFINE_UNQUOTED([PACKAGE_DOCS], ["$PACKAGE_DOCS"], [Docs index])
 AC_DEFINE_UNQUOTED([PACKAGE_GUIDE], ["$PACKAGE_GUIDE"], [Beginners guide])
 AC_DEFINE_UNQUOTED([FLARQ_DOCS], ["$FLARQ_DOCS"], [Flarq Docs index])
@@ -75,6 +77,7 @@ AC_SUBST([FLARQ_AUTHORS], [$FLARQ_AUTHORS])
 AC_SUBST([PACKAGE_HOME], [$PACKAGE_HOME])
 AC_SUBST([PACKAGE_DL], [$PACKAGE_DL])
 AC_SUBST([PACKAGE_PROJ], [$PACKAGE_PROJ])
+AC_SUBST([PACKAGE_NEWBUG], [$PACKAGE_NEWBUG])
 AC_SUBST([PACKAGE_DOCS], [$PACKAGE_DOCS])
 AC_SUBST([PACKAGE_GUIDE], [$PACKAGE_GUIDE])
 AC_SUBST([FLARQ_DOCS], [$FLARQ_DOCS])

@@ -57,11 +57,12 @@ void diediedie(void)
 	static bool print_trace = true;
 
 	if (!print_trace)
-		return abort();
+		exit(128 + (signum ? signum : SIGABRT));
 
-#define CRASH_HEADER "\nAborting " PACKAGE_TARNAME		\
-	" due to a fatal error. Please report this to "		\
-	PACKAGE_BUGREPORT ".\n\n****** Stack trace:\n"
+#define CRASH_HEADER "\nAborting " PACKAGE_TARNAME " due to a fatal error.\n" \
+        "Please report this to:   " PACKAGE_BUGREPORT                         \
+        "\nor file a bug report at: " PACKAGE_NEWBUG                          \
+        "\n\n****** Stack trace:\n"
 
 #ifndef __MINGW32__
 	if (isatty(STDERR_FILENO))
@@ -106,7 +107,7 @@ void diediedie(void)
 	}
 
 	print_trace = false;
-	abort();
+	exit(128 + (signum ? signum : SIGABRT));
 }
 
 
