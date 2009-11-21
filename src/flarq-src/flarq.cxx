@@ -138,7 +138,7 @@ string statusmsg;
 string MyCall;
 string beacontext;
 
-#if !defined(__APPLE__) && !defined(__WOE32__)
+#if !defined(__APPLE__) && !defined(__WOE32__) && USE_X
 Pixmap flarq_icon_pixmap;
 #endif
 
@@ -1827,7 +1827,7 @@ int main (int argc, char *argv[] )
 #    define IDI_ICON 101
 #  endif
 	arqwin->icon((char*)LoadIcon(fl_display, MAKEINTRESOURCE(IDI_ICON)));
-#elif !defined(__APPLE__)
+#elif !defined(__APPLE__) && USE_X
 	make_pixmap(&flarq_icon_pixmap, flarq_icon);
 	arqwin->icon((char *)flarq_icon_pixmap);
 #endif

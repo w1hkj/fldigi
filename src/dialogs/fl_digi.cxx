@@ -3936,7 +3936,7 @@ void create_fl_digi_main_WF_only() {
 #	define IDI_ICON 101
 #  endif
 	fl_digi_main->icon((char*)LoadIcon(fl_display, MAKEINTRESOURCE(IDI_ICON)));
-#elif !defined(__APPLE__)
+#elif !defined(__APPLE__) && USE_X
 	make_pixmap(&fldigi_icon_pixmap, fldigi_icon);
 	fl_digi_main->icon((char *)fldigi_icon_pixmap);
 #endif
