@@ -199,28 +199,28 @@ private:
 
 // status variables
 	int 	payloadlength;	// Average length of payload received
-	long	totalRx;		// total number of frames received
-	long	totalTx;		// total number of frames transmitted
-	long	nbrbadRx;		// number with crc errors
-	long	nbrbadTx;		// total number of repeats required
+	int	totalRx;		// total number of frames received
+	int	totalTx;		// total number of frames transmitted
+	int	nbrbadRx;		// number with crc errors
+	int	nbrbadTx;		// total number of repeats required
 //	int 	max_idle;		// Dynamic timing slot initial value
 	int		SessionNumber;
 	bool	PollOK;			// used for status handshake
 	bool	wrappedFlag;	// set true if missing blocks bit count
 							// has wrapped around
-	long	retrytime;
-	long	RetryTime;
-	long	retries;
-	long	Retries;
-	long	timeout;
-	long	Timeout;
-	long	tx2txdelay;
-	long	TxDelay;
-	long    loopcount;
+	int	retrytime;
+	int	RetryTime;
+	int	retries;
+	int	Retries;
+	int	timeout;
+	int	Timeout;
+	int	tx2txdelay;
+	int	TxDelay;
+	int    loopcount;
 	
-	long	baseRetryTime;
-	long	baseTimeout;
-	long	baseRetries;
+	int	baseRetryTime;
+	int	baseTimeout;
+	int	baseRetries;
 	
 	bool	immediate;
 	bool    primary;

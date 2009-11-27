@@ -268,7 +268,7 @@ void arq::connectFrame()
 	Payload += ' ';
 	Payload += MyBlockLengthChar;
 
-	snprintf(szGlobals, 23, " T%ldR%ldW%ld", Timeout/1000, Retries, RetryTime/1000);
+	snprintf(szGlobals, 23, " T%dR%dW%d", Timeout/1000, Retries, RetryTime/1000);
 	Payload.append(szGlobals);
 
 	Frame = Header + Payload;
@@ -637,18 +637,18 @@ void arq::parseCONREQ()
 			int n = 0;
 			while (rcvPayload[++p1] != 'R' && n < 6) num[n++] = rcvPayload[p1];
 			num[n] = 0;
-			sscanf(num, "%ld", &Timeout);
+			sscanf(num, "%d", &Timeout);
 			Timeout *= 1000;
 			if (p1 < rcvPayload.length() && rcvPayload[p1] == 'R') {
 				int n = 0;
 				while (rcvPayload[++p1] != 'W' && n < 6) num[n++] = rcvPayload[p1];
 				num[n] = 0;
-				sscanf(num, "%ld", &Retries);
+				sscanf(num, "%d", &Retries);
 				if (p1 < rcvPayload.length() && rcvPayload[p1] == 'W') {
 					int n = 0;
 					while (++p1 < rcvPayload.length() && n < 6) num[n++] = rcvPayload[p1];
 					num[n] = 0;
-					sscanf(num, "%ld", &RetryTime);
+					sscanf(num, "%d", &RetryTime);
 					RetryTime *= 1000;
 					Timeout += Retries * RetryTime;
 				}
@@ -656,11 +656,11 @@ void arq::parseCONREQ()
 /*			
 			char line[80];
 			string NewValues = "Temporary control parameters set to\n";
-			snprintf(line, 79, "  Retries   = %ld\n", Retries);
+			snprintf(line, 79, "  Retries   = %d\n", Retries);
 			NewValues.append(line);
-			snprintf(line, 79, "  Wait time = %ld secs\n", RetryTime / 1000);
+			snprintf(line, 79, "  Wait time = %d secs\n", RetryTime / 1000);
 			NewValues.append(line);
-			snprintf(line, 79, "  Timeout   = %ld secs\n", Timeout / 1000);
+			snprintf(line, 79, "  Timeout   = %d secs\n", Timeout / 1000);
 			NewValues.append(line);
 			printRX(NewValues);
 */
