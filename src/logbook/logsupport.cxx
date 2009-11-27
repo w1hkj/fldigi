@@ -117,7 +117,7 @@ void saveLogbook()
 {
 	if (!qsodb.isdirty()) return;
 	if (progdefaults.NagMe)
-		if (!fl_choice2(_("Save changed Logbook?"), _("No"), _("Yes"), NULL)) 
+		if (!fl_choice2(_("Save changed Logbook?"), _("No"), _("Yes"), NULL))
 			return;
 	if (adifFile.writeLog (logbook_filename.c_str(), &qsodb))
 		fl_alert2(_("Could not update file %s"), logbook_filename.c_str());
@@ -150,7 +150,7 @@ void cb_mnuOpenLogbook(Fl_Menu_* m, void* d)
 	if (p) {
 		saveLogbook();
 		qsodb.deleteRecs();
-		
+
 		logbook_filename = p;
 		progdefaults.logbookfilename = logbook_filename;
 		progdefaults.changed = true;
@@ -196,7 +196,7 @@ void cb_Export_log() {
 	for( int i = 0; i < qsodb.nbrRecs(); i++ ) {
 		rec = qsodb.getRec (i);
 		memset(line, 0, sizeof(line));
-		snprintf(line,sizeof(line),"%8s  %4s  %-10s  %10s  %-s",
+		snprintf(line,sizeof(line),"%8s  %4s  %-32s  %10s  %-s",
 			rec->getField(QSO_DATE),
 			rec->getField(TIME_OFF),
 			rec->getField(CALL),
@@ -232,7 +232,7 @@ enum State {VIEWREC, NEWREC};
 static State logState = VIEWREC;
 
 void activateButtons() {
-	
+
 	if (logState == NEWREC) {
 		bNewSave->label(_("Save"));
 		bUpdateCancel->label(_("Cancel"));
@@ -261,7 +261,7 @@ void cb_btnNewSave(Fl_Button* b, void* d) {
 		loadBrowser();
 		logState = VIEWREC;
 		activateButtons();
-	}	   
+	}
 }
 
 void cb_btnUpdateCancel(Fl_Button* b, void* d) {
@@ -330,7 +330,7 @@ void DupCheck()
 {
 	if (qsodb.duplicate(
 			inpCall->value(),
-			zdate(), ztime(), progdefaults.timespan, progdefaults.duptimespan, 
+			zdate(), ztime(), progdefaults.timespan, progdefaults.duptimespan,
 			inpFreq->value(), progdefaults.dupband,
 			inpState->value(), progdefaults.dupstate,
 			mode_info[active_modem->get_mode()].adif_name, progdefaults.dupmode,
@@ -490,10 +490,10 @@ cQsoRec rec;
 	rec.putField(CQZ, inpCQZ_log->value());
 	rec.putField(ITUZ, inpITUZ_log->value());
 	rec.putField(TX_PWR, inpTX_pwr_log->value());
-	
+
 	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
 	qsodb.isdirty(0);
-	
+
 	qsodb.qsoNewRec (&rec);
 	dxcc_entity_cache_add(&rec);
 }
@@ -545,14 +545,14 @@ void deleteRecord () {
 	qsodb.qsoDelRec(editNbr);
 	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
 	qsodb.isdirty(0);
-	
+
 	loadBrowser(true);
 }
 
 void EditRecord( int i )
 {
 	cQsoRec *editQSO = qsodb.getRec (i);
-	if( !editQSO ) 
+	if( !editQSO )
 		return;
 
 	inpCall_log->value (editQSO->getField(CALL));
@@ -600,7 +600,7 @@ void AddRecord ()
 		char Mhz[30];
 		snprintf(Mhz, sizeof(Mhz), "%-f", atof(inpFreq->value()) / 1000.0);
 		inpFreq_log->value(Mhz);
-	}		
+	}
 	inpMode_log->value (logmode);
 	inpState_log->value (inpState->value());
 	inpVE_Prov_log->value (inpVEprov->value());
@@ -616,19 +616,19 @@ void AddRecord ()
 	inpQSLrcvddate_log->value ("");
 	inpQSLsentdate_log->value ("");
 	inpNotes_log->value (inpNotes->value());
-	
+
 	inpTX_pwr_log->value (progdefaults.mytxpower.c_str());
 	inpIOTA_log->value("");
 	inpDXCC_log->value("");
 	inpCONT_log->value("");
 	inpCQZ_log->value("");
 	inpITUZ_log->value("");
-	
+
 	saveRecord();
 	qsodb.SortByDate();
 	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
 	qsodb.isdirty(0);
-	
+
 	loadBrowser();
 	logState = VIEWREC;
 	activateButtons();
@@ -638,7 +638,7 @@ void cb_browser (Fl_Widget *w, void *data )
 {
 	Table *table = (Table *)w;
 	editNbr = atoi(table->valueAt(-1,6));
-	EditRecord (editNbr);  
+	EditRecord (editNbr);
 }
 
 void loadBrowser(bool keep_pos)
@@ -681,32 +681,32 @@ void loadBrowser(bool keep_pos)
 // Cabrillo reporter
 //=============================================================================
 
-const char *contests[] = 
-{	"AP-SPRINT", 
+const char *contests[] =
+{	"AP-SPRINT",
 	"ARRL-10", "ARRL-160", "ARRL-DX-CW", "ARRL-DX-SSB", "ARRL-SS-CW",
-	"ARRL-SS-SSB", "ARRL-UHF-AUG", "ARRL-VHF-JAN", "ARRL-VHF-JUN", "ARRL-VHF-SEP", 
-	"ARRL-RTTY", 
+	"ARRL-SS-SSB", "ARRL-UHF-AUG", "ARRL-VHF-JAN", "ARRL-VHF-JUN", "ARRL-VHF-SEP",
+	"ARRL-RTTY",
 	"BARTG-RTTY", "BARTG-SPRINT",
-	"CQ-160-CW", "CQ-160-SSB", "CQ-WPX-CW", "CQ-WPX-RTTY", "CQ-WPX-SSB", "CQ-VHF", 
-	"CQ-WW-CW", "CQ-WW-RTTY", "CQ-WW-SSB", 
-	"DARC-WAEDC-CW", "DARC-WAEDC-RTTY", "DARC-WAEDC-SSB", 
-	"FCG-FQP", "IARU-HF", "JIDX-CW", "JIDX-SSB", 
+	"CQ-160-CW", "CQ-160-SSB", "CQ-WPX-CW", "CQ-WPX-RTTY", "CQ-WPX-SSB", "CQ-VHF",
+	"CQ-WW-CW", "CQ-WW-RTTY", "CQ-WW-SSB",
+	"DARC-WAEDC-CW", "DARC-WAEDC-RTTY", "DARC-WAEDC-SSB",
+	"FCG-FQP", "IARU-HF", "JIDX-CW", "JIDX-SSB",
 	"NAQP-CW", "NAQP-RTTY", "NAQP-SSB", "NA-SPRINT-CW", "NA-SPRINT-SSB", "NCCC-CQP",
 	"NEQP", "OCEANIA-DX-CW", "OCEANIA-DX-SSB", "RDXC", "RSGB-IOTA",
 	"SAC-CW", "SAC-SSB", "STEW-PERRY", "TARA-RTTY", 0 };
 
 enum icontest {
-	AP_SPRINT, 
+	AP_SPRINT,
 	ARRL_10, ARRL_160, ARRL_DX_CW, ARRL_DX_SSB, ARRL_SS_CW,
-	ARRL_SS_SSB, ARRL_UHF_AUG, ARRL_VHF_JAN, ARRL_VHF_JUN, ARRL_VHF_SEP, 
-	ARRL_RTTY, 
+	ARRL_SS_SSB, ARRL_UHF_AUG, ARRL_VHF_JAN, ARRL_VHF_JUN, ARRL_VHF_SEP,
+	ARRL_RTTY,
 	BARTG_RTTY, BARTG_SPRINT,
-	CQ_160_CW, CQ_160_SSB, CQ_WPX_CW, CQ_WPX_RTTY, CQ_WPX_SSB, CQ_VHF, 
-	CQ_WW_CW, CQ_WW_RTTY, CQ_WW_SSB, 
-	DARC_WAEDC_CW, DARC_WAEDC_RTTY, DARC_WAEDC_SSB, 
-	FCG_FQP, IARU_HF, JIDX_CW, JIDX_SSB, 
+	CQ_160_CW, CQ_160_SSB, CQ_WPX_CW, CQ_WPX_RTTY, CQ_WPX_SSB, CQ_VHF,
+	CQ_WW_CW, CQ_WW_RTTY, CQ_WW_SSB,
+	DARC_WAEDC_CW, DARC_WAEDC_RTTY, DARC_WAEDC_SSB,
+	FCG_FQP, IARU_HF, JIDX_CW, JIDX_SSB,
 	NAQP_CW, NAQP_RTTY, NAQP_SSB, NA_SPRINT_CW, NA_SPRINT_SSB, NCCC_CQP,
-	NEQP, OCEANIA_DX_CW, OCEANIA_DX_SSB, RDXC, RSGB_IOTA, 
+	NEQP, OCEANIA_DX_CW, OCEANIA_DX_SSB, RDXC, RSGB_IOTA,
 	SAC_CW, SAC_SSB, STEW_PERRY, TARA_RTTY
 };
 
@@ -717,55 +717,55 @@ void setContestType()
 {
     contestnbr = (icontest)cboContest->index();
 
-   	btnCabCall->value(true);	btnCabFreq->value(true);	btnCabMode->value(true);  
+   	btnCabCall->value(true);	btnCabFreq->value(true);	btnCabMode->value(true);
    	btnCabQSOdate->value(true); btnCabTimeOFF->value(true);	btnCabRSTsent->value(true);
-   	btnCabRSTrcvd->value(true);	btnCabSerialIN->value(true);btnCabSerialOUT->value(true); 
+   	btnCabRSTrcvd->value(true);	btnCabSerialIN->value(true);btnCabSerialOUT->value(true);
    	btnCabXchgIn->value(true);	btnCabMyXchg->value(true);
 
     switch (contestnbr) {
-    	case ARRL_SS_CW : 
+    	case ARRL_SS_CW :
     	case ARRL_SS_SSB :
     		btnCabRSTrcvd->value(false);
     		break;
-    	case BARTG_RTTY : 
+    	case BARTG_RTTY :
     	case BARTG_SPRINT :
     		break;
-    	case ARRL_UHF_AUG : 
-    	case ARRL_VHF_JAN : 
-    	case ARRL_VHF_JUN : 
+    	case ARRL_UHF_AUG :
+    	case ARRL_VHF_JAN :
+    	case ARRL_VHF_JUN :
     	case ARRL_VHF_SEP :
     	case CQ_VHF :
     		btnCabRSTrcvd->value(false);
 			btnCabSerialIN->value(false);
-			btnCabSerialOUT->value(false);    		
+			btnCabSerialOUT->value(false);
     		break;
-    	case AP_SPRINT : 
-    	case ARRL_10 : 
-    	case ARRL_160 : 
-		case ARRL_DX_CW : 
+    	case AP_SPRINT :
+    	case ARRL_10 :
+    	case ARRL_160 :
+		case ARRL_DX_CW :
 		case ARRL_DX_SSB :
-    	case CQ_160_CW : 
-    	case CQ_160_SSB : 
-    	case CQ_WPX_CW : 
-		case CQ_WPX_RTTY : 
+    	case CQ_160_CW :
+    	case CQ_160_SSB :
+    	case CQ_WPX_CW :
+		case CQ_WPX_RTTY :
 		case CQ_WPX_SSB :
-		case RDXC : 
-		case OCEANIA_DX_CW : 
+		case RDXC :
+		case OCEANIA_DX_CW :
 		case OCEANIA_DX_SSB :
     	    break;
-    	case DARC_WAEDC_CW : 
-    	case DARC_WAEDC_RTTY : 
+    	case DARC_WAEDC_CW :
+    	case DARC_WAEDC_RTTY :
     	case DARC_WAEDC_SSB :
     		break;
-    	case NAQP_CW : 
-    	case NAQP_RTTY : 
-    	case NAQP_SSB : 
-    	case NA_SPRINT_CW : 
+    	case NAQP_CW :
+    	case NAQP_RTTY :
+    	case NAQP_SSB :
+    	case NA_SPRINT_CW :
     	case NA_SPRINT_SSB :
     		break;
     	case RSGB_IOTA :
     		break;
-    	default : 
+    	default :
     		break;
 	}
 }
@@ -777,7 +777,7 @@ void cb_Export_Cabrillo(Fl_Menu_* m, void* d) {
 	int indx = 0;
 
 	if (bInitCombo) {
-		bInitCombo = false;	
+		bInitCombo = false;
 		while (contests[indx]) 	{
 			cboContest->add(contests[indx]);
 			indx++;
@@ -790,7 +790,7 @@ void cb_Export_Cabrillo(Fl_Menu_* m, void* d) {
 	for( int i = 0; i < qsodb.nbrRecs(); i++ ) {
 		rec = qsodb.getRec (i);
 		memset(line, 0, sizeof(line));
-		snprintf(line,sizeof(line),"%8s  %4s  %-10s  %10s  %-s",
+		snprintf(line,sizeof(line),"%8s  %4s  %-32s  %10s  %-s",
 			rec->getField(QSO_DATE),
 			rec->getField(TIME_OFF),
 			rec->getField(CALL),
@@ -809,40 +809,40 @@ void cabrillo_append_qso (FILE *fp, cQsoRec *rec)
 	int rst_len = 3;
 	int ifreq = 0;
 	size_t len = 0;
-			   
+
 	if (btnCabFreq->value()) {
 		ifreq = (int)(1000.0 * atof(rec->getField(FREQ)));
 		snprintf(freq, sizeof(freq), "%d", ifreq);
-		qsoline.append(freq); qsoline.append(" ");	
+		qsoline.append(freq); qsoline.append(" ");
 	}
 
 	if (btnCabMode->value()) {
 		mode = rec->getField(MODE);
-		if (mode.compare("USB") == 0 || mode.compare("LSB") == 0 || 
+		if (mode.compare("USB") == 0 || mode.compare("LSB") == 0 ||
 		    mode.compare("PH") == 0 ) mode = "PH";
 		else if (mode.compare("FM") == 0 || mode.compare("CW") == 0 ) ;
 		else mode = "RY";
 		if (mode.compare("PH") == 0 || mode.compare("FM") == 0 ) rst_len = 2;
 		qsoline.append(mode); qsoline.append(" ");
 	}
-	
+
 	if (btnCabQSOdate->value()) {
 		date = rec->getField(QSO_DATE);
 		date.insert(4,"-");
 		date.insert(7,"-");
 		qsoline.append(date); qsoline.append(" ");
 	}
-		
+
 	if (btnCabTimeOFF->value()) {
 		time = rec->getField(TIME_OFF);
 		qsoline.append(time); qsoline.append(" ");
 	}
-	
+
 	mycall = progdefaults.myCall;
 	if (mycall.length() > 13) mycall = mycall.substr(0,13);
 	if ((len = mycall.length()) < 13) mycall.append(13 - len, ' ');
 	qsoline.append(mycall); qsoline.append(" ");
-	
+
 	if (btnCabRSTsent->value()) {
 		rst_out = rec->getField(RST_SENT);
 		rst_out = rst_out.substr(0,rst_len);
@@ -862,18 +862,18 @@ void cabrillo_append_qso (FILE *fp, cQsoRec *rec)
 		exch_out.append(rec->getField(TIME_OFF));
 		exch_out.append(" ");
 	}
-		
+
 	if (exch_out.length() > 10) exch_out = exch_out.substr(0,10);
 	if ((len = exch_out.length()) < 10) exch_out.append(10 - len, ' ');
 	qsoline.append(exch_out); qsoline.append(" ");
-	
+
 	if (btnCabCall->value()) {
 		call = rec->getField(CALL);
 		if (call.length() > 13) call = call.substr(0,13);
 		if ((len = call.length()) < 13) call.append(13 - len, ' ');
 		qsoline.append(call); qsoline.append(" ");
 	}
-			
+
 	if (btnCabRSTrcvd->value()) {
 		rst_in = rec->getField(RST_RCVD);
 		rst_in = rst_in.substr(0,rst_len);
@@ -903,7 +903,7 @@ void WriteCabrillo()
 
 	string filters = "TEXT\t*.txt";
 	string strContest = "";
-	
+
 	const char* p = FSEL::saveas("Create cabrillo report", filters.c_str(),
 					 "contest.txt");
 	if (!p)
@@ -920,11 +920,11 @@ void WriteCabrillo()
     FILE *cabFile = fopen (p, "w");
     if (!cabFile)
         return;
-    
+
     strContest = cboContest->value();
     contestnbr = (icontest)cboContest->index();
-     
-	fprintf (cabFile, 
+
+	fprintf (cabFile,
 "START-OF-LOG: 3.0\n\
 CREATED-BY: %s %s\n\
 \n\
@@ -1001,7 +1001,7 @@ SOAPBOX: \n\n",
 		PACKAGE_NAME, PACKAGE_VERSION,
 		progdefaults.myCall.c_str(),
 		strContest.c_str() );
-        
+
 	qsodb.SortByDate();
     for (int i = 0; i < qsodb.nbrRecs(); i++) {
         rec = qsodb.getRec(i);

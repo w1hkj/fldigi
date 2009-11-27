@@ -30,7 +30,7 @@ FIELD fields[] = {
 	{AGE,        "AGE",        0,  3, NULL},                // contacted operators age in years
 	{ARRL_SECT,  "ARRL_SECT",  0, 12, NULL},                // contacted stations ARRL section
 	{BAND,       "BAND",       0,  6, &btnSelectBand},      // QSO band
-	{CALL,       "CALL",       0, 10, &btnSelectCall},      // contacted stations CALLSIGN
+	{CALL,       "CALL",       0, 32, &btnSelectCall},      // contacted stations CALLSIGN
 	{CNTY,       "CNTY",       0, 20, NULL},                // secondary political subdivision, ie: county
 	{COMMENT,    "COMMENT",    0, 80, NULL},                // comment field for QSO
 	{CONT,       "CONT",       0, 10, &btnSelectCONT},      // contacted stations continent
