@@ -36,6 +36,7 @@ unsigned int _CRT_fmode = _O_BINARY;
 
 /******************************************************************************/
 
+#if SNPRINTF_RETURNS_BOGUS
 /*
  * The size parameter specifies the available space, i.e. includes
  * the trailing NUL byte; but Windows's vsnprintf expects the
@@ -88,6 +89,7 @@ int git_snprintf(char *str, size_t maxsize, const char *format, ...)
 
 	return ret;
 }
+#endif /* SNPRINTF_RETURNS_BOGUS */
 
 unsigned sleep(unsigned seconds)
 {

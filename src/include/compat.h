@@ -37,6 +37,12 @@
 extern "C" {
 #endif
 
+#if defined(__WOE32__) && (!defined(__GNUC__) || __GNUC__ < 4)
+#  define SNPRINTF_RETURNS_BOGUS 1
+#else
+#  define SNPRINTF_RETURNS_BOGUS 0
+#endif
+
 #if SNPRINTF_RETURNS_BOGUS
 #define snprintf git_snprintf
 extern int git_snprintf(char *str, size_t maxsize,

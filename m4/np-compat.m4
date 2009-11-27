@@ -5,12 +5,6 @@ AC_DEFUN([AC_FLDIGI_NP_COMPAT], [
   AM_CONDITIONAL([COMPAT_REGEX], [test "x$ac_cv_header_regex_h" != "xyes"])
 
   if test "x$target_mingw32" = "xyes"; then
-      AC_DEFINE([SNPRINTF_RETURNS_BOGUS], 1, [Defined if snprintf returns -1 when out of buffer space])
-  else
-      AC_DEFINE([SNPRINTF_RETURNS_BOGUS], 0, [Defined if snprintf returns -1 when out of buffer space])
-  fi
-
-  if test "x$target_mingw32" = "xyes"; then
       sem_libs="pthreadGC2"
   else
       sem_libs="pthread rt"
