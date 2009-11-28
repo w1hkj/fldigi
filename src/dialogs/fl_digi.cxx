@@ -1386,6 +1386,7 @@ void cbTune(Fl_Widget *w, void *) {
 void cbRSID(Fl_Widget *w, void *)
 {
 	progdefaults.rsid = btnRSID->value();
+	progdefaults.changed = true;
 	restoreFocus();
 }
 

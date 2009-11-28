@@ -487,6 +487,7 @@ int configuration::setDefaults()
 	btnFeldHellIdle->value(HellXmtIdle);
 			
 	btnTxRSID->value(TransmitRSid);
+	btnRSID->value(rsid);
 	chkRSidWideSearch->value(rsidWideSearch);
 	chkSlowCpu->value(slowcpu);
 	

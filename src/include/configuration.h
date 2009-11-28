@@ -41,7 +41,9 @@
         ELEM_(bool, rsidWideSearch, "RSIDWIDESEARCH",                                   \
               "RSID detector searches the entire passband",                             \
               false)                                                                    \
-        ELEM_(bool, rsid, "", "",  false)                                               \
+        ELEM_(bool, rsid, "RECEIVERSID",                                                \
+              "Enable Reed Soloman ID decoding",                                        \
+              false)                                                                    \
         ELEM_(bool, TransmitRSid, "TRANSMITRSID",                                       \
               "Send RSID at beginning and end of transmission",                         \
               false)                                                                    \
