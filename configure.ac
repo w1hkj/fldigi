@@ -188,14 +188,6 @@ AC_FLDIGI_TLS
 # if falling back to Boost
 AC_FLDIGI_BIND
 
-### X11
-# Set ac_cv_x to yes/no
-# Define USE_X in config.h
-# Substitute X_CFLAGS and X_LIBS in Makefile
-if test "x$target_darwin" = "xno" && test "x$target_win32" = "xno"; then
-    AC_FLDIGI_PKG_CHECK([x], [x11], [no], [yes])
-fi
-
 ### FLTK
 # Substitute FLTK_CFLAGS and FLTK_LIBS in Makefile
 # Set FLUID variable
@@ -271,6 +263,14 @@ AC_FLDIGI_PKG_CHECK([hamlib], [hamlib >= 1.2.4], [yes], [yes],
 # or if it is version <= 1.2.9, which has a broken azimuth_long_path function
 AX_COMPARE_VERSION([$pkg_hamlib_version], [le], [1.2.9], [need_locator_c=yes], [need_locator_c=no])
 AM_CONDITIONAL([NEED_HAMLIB_LOCATOR], [test "$need_locator_c" = "yes"])
+
+### X11
+# Set ac_cv_x to yes/no
+# Define USE_X in config.h
+# Substitute X_CFLAGS and X_LIBS in Makefile
+if test "x$target_darwin" = "xno" && test "x$target_win32" = "xno"; then
+    AC_FLDIGI_PKG_CHECK([x], [x11], [no], [yes])
+fi
 
 ### libintl
 # Substitute INTL_CFLAGS in Makefile
