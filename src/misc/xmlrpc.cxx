@@ -82,9 +82,10 @@ struct rpc_method
 	const char* name;
 };
 typedef list<rpc_method> methods_t;
-methods_t* methods = 0;
+static methods_t* methods = 0;
 
-static pthread_t* server_thread = 0;
+static pthread_t* server_thread;
+static pthread_mutex_t* server_mutex;
 
 XML_RPC_Server* XML_RPC_Server::inst = 0;
 
@@ -93,6 +94,8 @@ XML_RPC_Server::XML_RPC_Server()
 	server_socket = new Socket;
 	add_methods();
 	server_thread = new pthread_t;
+	server_mutex = new pthread_mutex_t;
+	pthread_mutex_init(server_mutex, NULL);
 	run = true;
 }
 
@@ -121,12 +124,10 @@ void XML_RPC_Server::start(const char* node, const char* service)
 	try {
 		inst->server_socket->open(Address(node, service));
 		inst->server_socket->bind();
-#ifdef __WOE32__
-		inst->server_socket->listen();
-		inst->server_socket->set_timeout(0.1);
-#endif
+		if (pthread_create(server_thread, NULL, thread_func, NULL) != 0)
+			throw runtime_error(strerror(errno));
 	}
-	catch (const SocketException& e) {
+	catch (const exception& e) {
 		LOG_ERROR("Could not start XML-RPC server (%s)", e.what());
 		delete server_thread;
 		server_thread = 0;
@@ -134,16 +135,16 @@ void XML_RPC_Server::start(const char* node, const char* service)
 		inst = 0;
 		return;
 	}
-
-	pthread_create(server_thread, NULL, thread_func, NULL);
 }
 
 void XML_RPC_Server::stop(void)
 {
-	if (!inst)
-		return;
-	delete inst;
-	inst = 0;
+// FIXME: uncomment when we have an xmlrpc server that can be interrupted
+	// if (!inst)
+	// 	return;
+	// inst->server_socket->close();
+	// delete inst;
+	// inst = 0;
 }
 
 void* XML_RPC_Server::thread_func(void*)
@@ -157,6 +158,8 @@ void* XML_RPC_Server::thread_func(void*)
 	save_signals();
 	xmlrpc_c::serverAbyss server(xmlrpc_c::serverAbyss::constrOpt()
 				     .registryP(&reg)
+				     .keepaliveMaxConn(INT_MAX)
+				     .socketFd(inst->server_socket->fd())
 #ifndef NDEBUG
 				     .logFileName(HomeDir + "xmlrpc.log")
 #endif
@@ -164,40 +167,8 @@ void* XML_RPC_Server::thread_func(void*)
 	restore_signals();
 
 	SET_THREAD_CANCEL();
+	server.run();
 
-#define RUN_SERVER_(fd_) server.runConn(fd_ = inst->server_socket->accept().fd())
-
-	// On POSIX we block indefinitely and are interrupted by a signal.
-	// On woe32 we block for a short time and test for cancellation.
-	int fd;
-	while (inst->run) {
-		try {
-#ifdef __WOE32__
-			if (inst->server_socket->wait(0)) {
-				RUN_SERVER_(fd);
-#  ifdef __MINGW32__
-				closesocket(fd);
-#  else
-				close(fd);
-#  endif
-			}
-#else
-			RUN_SERVER_(fd);
-			close(fd);
-#endif
-			TEST_THREAD_CANCEL();
-		}
-		catch (const SocketException& e) {
-			if (e.error() != EINTR)
-				LOG_ERROR("%s", e.what());
-			break;
-		}
-		catch (...) {
-			break;
-		}
-	}
-
-	inst->server_socket->close();
 	return NULL;
 }
 
@@ -212,6 +183,24 @@ ostream& XML_RPC_Server::list_methods(ostream& out)
 
 	return out << setiosflags(f);
 }
+
+// =============================================================================
+// xmlrpc-specific qrunner macros
+#undef GET_THREAD_ID
+#define GET_THREAD_ID() XMLRPC_TID
+#define REQ_LOCK(...)                                   \
+        do {                                            \
+                pthread_mutex_lock(server_mutex);       \
+                REQ(__VA_ARGS__);                       \
+                pthread_mutex_unlock(server_mutex);     \
+        } while (0)
+
+#define REQ_SYNC_LOCK(...)                              \
+        do {                                            \
+                pthread_mutex_lock(server_mutex);       \
+                REQ_SYNC(__VA_ARGS__);                  \
+                pthread_mutex_unlock(server_mutex);     \
+        } while (0)
 
 // =============================================================================
 // generic helper functions
@@ -468,7 +457,7 @@ public:
 		string s = params.getString(0);
 		for (size_t i = 0; i < NUM_MODES; i++) {
 			if (s == mode_info[i].sname) {
-				REQ_SYNC(init_modem_sync, i);
+				REQ_SYNC_LOCK(init_modem_sync, i);
 				*retval = xmlrpc_c::value_string(cur);
 				return;
 			}
@@ -490,7 +479,7 @@ public:
 		int cur = active_modem->get_mode();
 
 		int i = params.getInt(0, 0, NUM_MODES-1);
-		REQ_SYNC(init_modem_sync, i);
+		REQ_SYNC_LOCK(init_modem_sync, i);
 
 		*retval = xmlrpc_c::value_int(cur);
 	}
@@ -580,7 +569,7 @@ public:
 			throw xmlrpc_c::fault("Operation not supported by modem");
 
 		int v = (int)(cntSearchRange->value());
-		REQ(set_valuator, cntSearchRange, params.getInt(0, (int)cntSearchRange->minimum(), (int)cntSearchRange->maximum()));
+		REQ_LOCK(set_valuator, cntSearchRange, params.getInt(0, (int)cntSearchRange->minimum(), (int)cntSearchRange->maximum()));
 		*retval = xmlrpc_c::value_int(v);
 	}
 };
@@ -599,7 +588,7 @@ public:
 			throw xmlrpc_c::fault("Operation not supported by modem");
 
 		int v = (int)(cntSearchRange->value() + params.getInt(0));
-		REQ(set_valuator, cntSearchRange, v);
+		REQ_LOCK(set_valuator, cntSearchRange, v);
 		*retval = xmlrpc_c::value_int(v);
 	}
 };
@@ -648,7 +637,7 @@ public:
         {
 		Fl_Valuator* val = get_bw_val();
 		int v = (int)(val->value());
-		REQ(set_valuator, val, params.getInt(0, (int)val->minimum(), (int)val->maximum()));
+		REQ_LOCK(set_valuator, val, params.getInt(0, (int)val->minimum(), (int)val->maximum()));
 		*retval = xmlrpc_c::value_int(v);
 	}
 };
@@ -665,7 +654,7 @@ public:
         {
 		Fl_Valuator* val = get_bw_val();
 		int v = (int)(val->value() + params.getInt(0));
-		REQ(set_valuator, val, v);
+		REQ_LOCK(set_valuator, val, v);
 		*retval = xmlrpc_c::value_int(v);
 	}
 };
@@ -696,7 +685,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		REQ(&modem::searchUp, active_modem);
+		REQ_LOCK(&modem::searchUp, active_modem);
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -711,7 +700,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		REQ(&modem::searchDown, active_modem);
+		REQ_LOCK(&modem::searchDown, active_modem);
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -781,8 +770,7 @@ public:
 			hamlib_setmode(s == "LSB" ? RIG_MODE_LSB : RIG_MODE_USB);
 #endif
 		else if (progdefaults.chkUSEXMLRPCis)
-//            REQ(xml_set_wf_USB, s == "USB");
-			REQ(static_cast<void (waterfall::*)(bool)>(&waterfall::USB), wf, s == "USB");
+			REQ_LOCK(static_cast<void (waterfall::*)(bool)>(&waterfall::USB), wf, s == "USB");
 
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -876,7 +864,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		bool v = btnAFC->value();
-		REQ(set_button, btnAFC, params.getBoolean(0));
+		REQ_LOCK(set_button, btnAFC, params.getBoolean(0));
 		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
@@ -892,7 +880,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		bool v = !btnAFC->value();
-		REQ(set_button, btnAFC, v);
+		REQ_LOCK(set_button, btnAFC, v);
 		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
@@ -924,7 +912,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		bool v = btnSQL->value();
-		REQ(set_button, btnSQL, params.getBoolean(0));
+		REQ_LOCK(set_button, btnSQL, params.getBoolean(0));
 		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
@@ -940,7 +928,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		bool v = !btnSQL->value();
-		REQ(set_button, btnSQL, v);
+		REQ_LOCK(set_button, btnSQL, v);
 		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
@@ -972,7 +960,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		double v = sldrSquelch->value();
-		REQ(set_valuator, sldrSquelch, params.getDouble(0, sldrSquelch->maximum(), sldrSquelch->minimum()));
+		REQ_LOCK(set_valuator, sldrSquelch, params.getDouble(0, sldrSquelch->maximum(), sldrSquelch->minimum()));
 		*retval = xmlrpc_c::value_double(v);
 	}
 };
@@ -988,7 +976,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		double v = sldrSquelch->value();
-		REQ(set_valuator, sldrSquelch, v + params.getDouble(0)); // FIXME: check range
+		REQ_LOCK(set_valuator, sldrSquelch, v + params.getDouble(0)); // FIXME: check range
 		*retval = xmlrpc_c::value_double(sldrSquelch->value());
 	}
 };
@@ -1020,7 +1008,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		bool v = wf->btnRev->value();
-		REQ(set_button, wf->btnRev, params.getBoolean(0));
+		REQ_LOCK(set_button, wf->btnRev, params.getBoolean(0));
 		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
@@ -1036,7 +1024,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		bool v = !wf->btnRev->value();
-		REQ(set_button, wf->btnRev, v);
+		REQ_LOCK(set_button, wf->btnRev, v);
 		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
@@ -1068,7 +1056,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		bool v = wf->xmtlock->value();
-		REQ(set_button, wf->xmtlock, params.getBoolean(0));
+		REQ_LOCK(set_button, wf->xmtlock, params.getBoolean(0));
 		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
@@ -1084,7 +1072,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		bool v = !wf->xmtlock->value();
-		REQ(set_button, wf->xmtlock, v);
+		REQ_LOCK(set_button, wf->xmtlock, v);
 		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
@@ -1116,7 +1104,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		bool v = btnRSID->value();
-		REQ(set_button, btnRSID, params.getBoolean(0));
+		REQ_LOCK(set_button, btnRSID, params.getBoolean(0));
 		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
@@ -1132,7 +1120,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		bool v = !btnRSID->value();
-		REQ(set_button, btnRSID, v);
+		REQ_LOCK(set_button, btnRSID, v);
 		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
@@ -1169,7 +1157,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		if (!wf->xmtrcv->value())
-			REQ(set_button, wf->xmtrcv, true);
+			REQ_LOCK(set_button, wf->xmtrcv, true);
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -1185,7 +1173,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		if (!btnTune->value())
-			REQ(set_button, btnTune, !btnTune->value());
+			REQ_LOCK(set_button, btnTune, !btnTune->value());
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -1201,7 +1189,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		if (wf->xmtrcv->value())
-			REQ(set_button, wf->xmtrcv, false);
+			REQ_LOCK(set_button, wf->xmtrcv, false);
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -1217,7 +1205,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		if (trx_state == STATE_TX || trx_state == STATE_TUNE)
-			REQ(abort_tx);
+			REQ_LOCK(abort_tx);
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -1232,7 +1220,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		REQ(&Main_run_macro::run_macro, params.getInt(0, 0, MAXMACROS-1));
+		REQ_LOCK(&Main_run_macro::run_macro, params.getInt(0, 0, MAXMACROS-1));
 		*retval = xmlrpc_c::value_nil();
 	}
 	static void run_macro(int i) { macros.execute(i); }
@@ -1263,7 +1251,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		if (!(wf->xmtrcv->value() || btnTune->value() || btnRSID->value()))
-			REQ(set_button, btnRSID, true);
+			REQ_LOCK(set_button, btnRSID, true);
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -1300,7 +1288,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-		REQ(set_new_name, params.getString(0));
+		REQ_LOCK(set_new_name, params.getString(0));
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -1321,8 +1309,8 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		double rfc = wf->rfcarrier();
-        long long int fnew = (long long int)params.getDouble(0, 0.0);
-        REQ(xmlrpc_set_freq, fnew);
+		long long int fnew = (long long int)params.getDouble(0, 0.0);
+		REQ_LOCK(xmlrpc_set_freq, fnew);
 		*retval = xmlrpc_c::value_double(rfc);
 	}
 };
@@ -1345,7 +1333,7 @@ public:
 		for (vector<xmlrpc_c::value>::const_iterator i = v.begin(); i != v.end(); ++i)
 			modes.push_back(static_cast<string>(xmlrpc_c::value_string(*i)));
 
-		REQ(set_new_modes, modes); // queue a set_new_modes call with a copy of smodes
+		REQ_LOCK(set_new_modes, modes); // queue a set_new_modes call with a copy of smodes
 
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -1361,7 +1349,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-		REQ(set_rig_mode, params.getString(0));
+		REQ_LOCK(set_rig_mode, params.getString(0));
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -1398,7 +1386,7 @@ public:
 		for (vector<xmlrpc_c::value>::const_iterator i = v.begin(); i != v.end(); ++i)
 			bws.push_back(static_cast<string>(xmlrpc_c::value_string(*i)));
 
-		REQ(set_new_bandwidths, bws);
+		REQ_LOCK(set_new_bandwidths, bws);
 
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -1414,7 +1402,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-		REQ(set_rig_bandwidth, params.getString(0));
+		REQ_LOCK(set_rig_bandwidth, params.getString(0));
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -1502,7 +1490,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		REQ(set_text, inpCall, params.getString(0));
+		REQ_LOCK(set_text, inpCall, params.getString(0));
 
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -1700,7 +1688,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-		REQ(clearQSO);
+		REQ_LOCK(clearQSO);
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -1738,9 +1726,9 @@ public:
 		int start = params.getInt(0, 0, len - 1);
 		int n = params.getInt(1, 0, len - start);
 
-		REQ_SYNC(&Fl_Text_Buffer::select, tbuf, start, start + n);
+		REQ_SYNC_LOCK(&Fl_Text_Buffer::select, tbuf, start, start + n);
 		char *text = tbuf->selection_text();
-		REQ(&Fl_Text_Buffer::unselect, tbuf);
+		REQ_LOCK(&Fl_Text_Buffer::unselect, tbuf);
 
 		vector<unsigned char> bytes(text, text + n);
 		*retval = xmlrpc_c::value_bytestring(bytes);
@@ -1758,7 +1746,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		REQ(&FTextBase::clear, ReceiveText);
+		REQ_LOCK(&FTextBase::clear, ReceiveText);
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -1773,7 +1761,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		REQ_SYNC(&FTextBase::addstr, TransmitText, params.getString(0).c_str(), FTextBase::RECV);
+		REQ_SYNC_LOCK(&FTextBase::addstr, TransmitText, params.getString(0).c_str(), FTextBase::RECV);
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -1790,7 +1778,7 @@ public:
         {
 		vector<unsigned char> bytes = params.getBytestring(0);
 		bytes.push_back(0);
-		REQ_SYNC(&FTextBase::addstr, TransmitText, (const char*)&bytes[0], FTextBase::RECV);
+		REQ_SYNC_LOCK(&FTextBase::addstr, TransmitText, (const char*)&bytes[0], FTextBase::RECV);
 
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -1806,7 +1794,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		REQ(&FTextBase::clear, TransmitText);
+		REQ_LOCK(&FTextBase::clear, TransmitText);
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -1840,7 +1828,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		bool v = btnAutoSpot->value();
-		REQ(set_button, btnAutoSpot, params.getBoolean(0));
+		REQ_LOCK(set_button, btnAutoSpot, params.getBoolean(0));
 		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
@@ -1856,7 +1844,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		bool v = !btnAutoSpot->value();
-		REQ(set_button, btnAutoSpot, v);
+		REQ_LOCK(set_button, btnAutoSpot, v);
 		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
