@@ -38,6 +38,12 @@
 #endif
 
 #define CONFIG_LIST                                                                     \
+        ELEM_(bool, noise, "NOISETEST",                                                 \
+              "Noise test on/off",                                                      \
+              false)                                                                    \
+        ELEM_(double, s2n, "SIGNAL2NOISE",                                              \
+              "Signal to Noise ratio for test",                                         \
+              +20.0)                                                                    \
         ELEM_(bool, rsidWideSearch, "RSIDWIDESEARCH",                                   \
               "RSID detector searches the entire passband",                             \
               false)                                                                    \

@@ -89,7 +89,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
+        callback {progdefaults.changed = true;} open
         xywh {0 25 500 345} when 1
       } {
         Fl_Group {} {
@@ -148,6 +148,23 @@ progdefaults.changed = true;}
           tooltip {Short description of antenna} xywh {110 132 320 24}
           code0 {inpMyAntenna->labelsize(FL_NORMAL_SIZE);}
           class Fl_Input2
+        }
+        Fl_Group grpNoise {
+          label {Test Signal - Do NOT use with transmitter} open selected
+          xywh {5 203 490 165} box ENGRAVED_FRAME align 21 hide
+        } {
+          Fl_Check_Button btnNoiseOn {
+            label {Noise on}
+            callback {progdefaults.noise = o->value();}
+            xywh {43 241 70 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.noise);}
+          }
+          Fl_Counter noiseDB {
+            label dB
+            callback {progdefaults.s2n = o->value();}
+            xywh {40 279 89 21} type Simple align 4 minimum -18 maximum 60 step 1 value 20
+            code0 {o->value(progdefaults.s2n);}
+          }
         }
       }
       Fl_Group tabUI {
@@ -533,7 +550,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label Display open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {
               label {Colors and cursors} open
@@ -717,7 +734,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label {FFT Processing} open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {open
               xywh {5 62 490 135} box ENGRAVED_FRAME
@@ -1643,7 +1660,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label {Hardware PTT} open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group grpHWPTT {open
               xywh {5 100 490 265} box ENGRAVED_FRAME
@@ -1922,7 +1939,7 @@ rigCAT_restore_defaults();}
           }
           Fl_Group tabHamlib {
             label Hamlib open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Check_Button chkUSEHAMLIB {
               label {Use Hamlib}
@@ -2203,7 +2220,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabAudio {
             label Devices open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group AudioOSS {open
               xywh {5 60 490 45} box ENGRAVED_FRAME
@@ -2374,7 +2391,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabMixer {
             label Mixer open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {
               label {OSS mixer} open
@@ -2575,7 +2592,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabSweetSpot {
             label {Sweet Spot} open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {5 60 490 75} box ENGRAVED_FRAME align 21
@@ -2730,7 +2747,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabFileExtraction {
             label {Text Capture} open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {
               label {Auto Extract files from rx stream} open

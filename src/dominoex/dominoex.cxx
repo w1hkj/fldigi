@@ -510,7 +510,7 @@ void dominoex::synchronize()
 void dominoex::eval_s2n()
 {
 	double s = pipe[pipeptr].vector[currsymbol].mag();
-	double n = pipe[(pipeptr + symlen) % twosym].vector[currsymbol].mag();
+	double n = (NUMTONES - 1 ) * pipe[(pipeptr + symlen) % twosym].vector[currsymbol].mag();
 
 	sig = decayavg( sig, s, abs( s - sig) > 4 ? 4 : 32);
 	noise = decayavg( noise, n, 64);
@@ -525,7 +525,7 @@ void dominoex::eval_s2n()
 
 	display_metric(metric);
 
-	snprintf(dommsg, sizeof(dommsg), "s/n %3.0f dB", s2n > 0 ? s2n : 0);
+	snprintf(dommsg, sizeof(dommsg), "s/n %3.0f dB", s2n );
 	put_Status1(dommsg);
 }
 

@@ -475,6 +475,9 @@ void generate_option_help(void) {
 	     << "  --debug-level LEVEL\n"
 	     << "    Set the event log verbosity\n\n"
 
+	     << "  --noise\n"
+	     << "    unhide controls for noise tests\n\n"
+
 	     << "  --version\n"
 	     << "    Print version information\n\n"
 
@@ -564,7 +567,7 @@ int parse_args(int argc, char **argv, int& idx)
 #if USE_PORTAUDIO
                OPT_FRAMES_PER_BUFFER,
 #endif
-	       OPT_WO, OPT_DEBUG_LEVEL,
+	       OPT_WO, OPT_NOISE, OPT_DEBUG_LEVEL,
                OPT_EXIT_AFTER,
                OPT_DEPRECATED, OPT_HELP, OPT_VERSION, OPT_BUILD_INFO };
 
@@ -614,6 +617,7 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "exit-after",    1, 0, OPT_EXIT_AFTER },
 
 		{ "wo", 0, 0, OPT_WO },
+		{ "noise", 0, 0, OPT_NOISE },
 		{ "debug-level",   1, 0, OPT_DEBUG_LEVEL },
 
 		{ "help",	   0, 0, OPT_HELP },
@@ -625,6 +629,8 @@ int parse_args(int argc, char **argv, int& idx)
 	int longindex;
 	optind = idx;
 	int c = getopt_long(argc, argv, shortopts, longopts, &longindex);
+	
+	withnoise = false;
 
 	switch (c) {
 		case -1:
@@ -770,6 +776,11 @@ int parse_args(int argc, char **argv, int& idx)
 		case OPT_WO:
 			bWF_only = true;
 			break;
+
+		case OPT_NOISE:
+			withnoise = true;
+			break;
+
 		case OPT_DEBUG_LEVEL:
 		{
 			int v = strtol(optarg, 0, 10);

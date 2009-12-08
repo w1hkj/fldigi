@@ -254,6 +254,84 @@ double modem::PTTnco()
 
 mbuffer<double, 512 * 2, 2> _mdm_scdbl;
 
+double modem::sigmaN (double es_ovr_n0)
+{
+	double sn_ratio, sigma;
+	double mode_factor = 0.707;
+	switch (mode) {
+	case MODE_CW:
+		mode_factor /= 0.44;
+		break;
+	case MODE_FELDHELL: case MODE_SLOWHELL:
+	case MODE_HELLX5: case MODE_HELLX9:
+		mode_factor /= 0.22;
+		break;
+	case MODE_MT63_500: case MODE_MT63_1000: case MODE_MT63_2000 :
+		mode_factor *= 3.0;
+		break;
+	case MODE_BPSK31: case MODE_PSK63: case MODE_PSK125: case MODE_PSK250: case MODE_PSK500:
+		mode_factor *= 16;
+		break;
+	case MODE_QPSK31: case MODE_QPSK63: case MODE_QPSK125: case MODE_QPSK250:
+		mode_factor *= 16;
+		break;
+	case MODE_THROB1: case MODE_THROB2: case MODE_THROB4:
+	case MODE_THROBX1: case MODE_THROBX2: case MODE_THROBX4:
+		mode_factor *= 6.0;
+		break;
+//	case MODE_RTTY:
+//	case MODE_OLIVIA:
+//	case MODE_DOMINOEX4: case MODE_DOMINOEX5: case MODE_DOMINOEX8:
+//	case MODE_DOMINOEX11: case MODE_DOMINOEX16: case MODE_DOMINOEX22:
+//	case MODE_MFSK4: case MODE_MFSK11: case MODE_MFSK22: case MODE_MFSK31:
+//	case MODE_MFSK64: case MODE_MFSK8: case MODE_MFSK16: case MODE_MFSK32:
+//	case MODE_THOR4: case MODE_THOR5: case MODE_THOR8:
+//	case MODE_THOR11:case MODE_THOR16: case MODE_THOR22:
+//	case MODE_FSKHELL: case MODE_FSKH105: case MODE_HELL80:
+	default: break;
+	}
+	if (trx_state == STATE_TUNE) mode_factor = 0.707;
+	
+	sn_ratio = pow(10, ( es_ovr_n0 / 10) );
+	sigma =  sqrt ( mode_factor / sn_ratio );
+	return sigma;
+}
+
+// A Rayleigh-distributed random variable R, with the probability
+// distribution 
+//    F(R) = 0 where R < 0 and 
+//    F(R) = 1 - exp(-R^2/2*sigma^2) where R >= 0, 
+// is related to a pair of Gaussian variables C and D 
+// through the transformation 
+//    C = R * cos(theta) and 
+//    D = R * sin(theta),
+// where theta is a uniformly distributed variable in the interval 
+// 0 to 2 * Pi.
+
+double modem::gauss(double sigma) {
+	double u, r;
+	u = 1.0 * rand() / RAND_MAX;
+	r = sigma * sqrt( 2.0 * log( 1.0 / (1.0 - u) ) );
+	u = 1.0 * rand() / RAND_MAX;
+	return r * cos(2 * M_PI * u);
+}
+
+// given the desired Es/No, calculate the standard deviation of the
+// additive white gaussian noise (AWGN). The standard deviation of
+// the AWGN will be used to generate Gaussian random variables
+// simulating the noise that is added to the signal.
+// return signal + noise, limiting value to +/- 1.0
+
+void modem::add_noise(double *buffer, int len)
+{
+	double sigma = sigmaN(progdefaults.s2n);
+	double sn = 0;
+	for (int n = 0; n < len; n++) {
+		sn = (buffer[n] + gauss(sigma)) / (1.0 + 3.0 * sigma);
+		buffer[n] = clamp(sn, -1.0, 1.0);
+	}
+}
+
 void modem::ModulateXmtr(double *buffer, int len) 
 {
     if (progdefaults.PTTrightchannel) {
@@ -262,6 +340,7 @@ void modem::ModulateXmtr(double *buffer, int len)
             ModulateStereo( buffer, PTTchannel, len);
         return;
     }
+	if (withnoise && progdefaults.noise) add_noise(buffer, len);
 	try {
 		unsigned n = 4;
 		while (scard->Write(buffer, len) == 0 && --n);
@@ -290,6 +369,7 @@ void modem::ModulateXmtr(double *buffer, int len)
 using namespace std;
 void modem::ModulateStereo(double *left, double *right, int len)
 {
+	if (withnoise && progdefaults.noise) add_noise(left, len);
 	try {
 		unsigned n = 4;
 		while (scard->Write_stereo(left, right, len) == 0 && --n);
@@ -312,8 +392,6 @@ void modem::ModulateStereo(double *left, double *right, int len)
 			_mdm_scdbl.next(); // change buffers
 		}
 	}
-//	for (int i = 0; i < len; i++)
-//	    std::cout << (left[i] + 1.0) << "," << (right[i] - 1.0) << std::endl;
 }
 
 

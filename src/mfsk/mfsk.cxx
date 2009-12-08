@@ -650,13 +650,10 @@ void mfsk::afc()
 void mfsk::eval_s2n()
 {
 	sig = pipe[pipeptr].vector[currsymbol].mag();
-	noise = 0.0;
-	for (int i = 0; i < numtones; i++) {
-		if (i != currsymbol)
-			noise += pipe[pipeptr].vector[i].mag();
-	}	
+	noise = (numtones -1) * pipe[pipeptr].vector[prev2symbol].mag();
 	if (noise > 0)
 		s2n = decayavg ( s2n, sig / noise, 64 );
+
 }
 
 int mfsk::rx_process(const double *buf, int len)

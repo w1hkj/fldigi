@@ -20,10 +20,14 @@ extern Fl_Input2 *inpMyName;
 extern Fl_Input2 *inpMyQth;
 extern Fl_Input2 *inpMyLocator;
 extern Fl_Input2 *inpMyAntenna;
+extern Fl_Group *grpNoise;
+#include <FL/Fl_Check_Button.H>
+extern Fl_Check_Button *btnNoiseOn;
+#include <FL/Fl_Counter.H>
+extern Fl_Counter *noiseDB;
 extern Fl_Group *tabUI;
 extern Fl_Tabs *tabsUI;
 extern Fl_Group *tabUserInterface;
-#include <FL/Fl_Check_Button.H>
 extern Fl_Check_Button *btnShowTooltips;
 extern Fl_Check_Button *chkMenuIcons;
 #include <FL/Fl_Choice.H>
@@ -90,7 +94,6 @@ extern Fl_Button *btnWaterfallFont;
 extern Fl_Check_Button *btnViewXmtSignal;
 #include <FL/Fl_Value_Slider.H>
 extern Fl_Value_Slider *valTxMonitorLevel;
-#include <FL/Fl_Counter.H>
 extern Fl_Counter *cntLowFreqCutoff;
 extern Fl_Counter *valLatency;
 extern Fl_Check_Button *btnWFaveraging;

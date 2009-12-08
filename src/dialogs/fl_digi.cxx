@@ -135,6 +135,7 @@
 using namespace std;
 
 bool bWF_only = false;
+bool withnoise = false;
 
 Fl_Double_Window	*fl_digi_main      = (Fl_Double_Window *)0;
 Fl_Help_Dialog 		*help_dialog       = (Fl_Help_Dialog *)0;
@@ -3500,6 +3501,8 @@ void create_fl_digi_main_primary() {
 	wf->UI_select(progStatus.WF_UI);
 
 	createConfig();
+	if (withnoise)
+		grpNoise->show();
 }
 
 void cb_mnuAltDockedscope(Fl_Menu_ *w, void *d);
@@ -3964,6 +3967,8 @@ void create_fl_digi_main_WF_only() {
 	wf->UI_select(true);
 
 	createConfig();
+	if (withnoise)
+		grpNoise->show();
 	altTabs();
 
 }

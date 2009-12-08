@@ -86,6 +86,20 @@ static void cb_inpMyAntenna(Fl_Input2* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Group *grpNoise=(Fl_Group *)0;
+
+Fl_Check_Button *btnNoiseOn=(Fl_Check_Button *)0;
+
+static void cb_btnNoiseOn(Fl_Check_Button* o, void*) {
+  progdefaults.noise = o->value();
+}
+
+Fl_Counter *noiseDB=(Fl_Counter *)0;
+
+static void cb_noiseDB(Fl_Counter* o, void*) {
+  progdefaults.s2n = o->value();
+}
+
 Fl_Group *tabUI=(Fl_Group *)0;
 
 Fl_Tabs *tabsUI=(Fl_Tabs *)0;
@@ -2438,6 +2452,27 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           inpMyAntenna->when(FL_WHEN_RELEASE);
           inpMyAntenna->labelsize(FL_NORMAL_SIZE);
         } // Fl_Input2* inpMyAntenna
+        { grpNoise = new Fl_Group(5, 203, 490, 165, _("Test Signal - Do NOT use with transmitter"));
+          grpNoise->box(FL_ENGRAVED_FRAME);
+          grpNoise->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+          grpNoise->hide();
+          { Fl_Check_Button* o = btnNoiseOn = new Fl_Check_Button(43, 241, 70, 15, _("Noise on"));
+            btnNoiseOn->down_box(FL_DOWN_BOX);
+            btnNoiseOn->callback((Fl_Callback*)cb_btnNoiseOn);
+            o->value(progdefaults.noise);
+          } // Fl_Check_Button* btnNoiseOn
+          { Fl_Counter* o = noiseDB = new Fl_Counter(40, 279, 89, 21, _("dB"));
+            noiseDB->type(1);
+            noiseDB->minimum(-18);
+            noiseDB->maximum(60);
+            noiseDB->step(1);
+            noiseDB->value(20);
+            noiseDB->callback((Fl_Callback*)cb_noiseDB);
+            noiseDB->align(FL_ALIGN_LEFT);
+            o->value(progdefaults.s2n);
+          } // Fl_Counter* noiseDB
+          grpNoise->end();
+        } // Fl_Group* grpNoise
         tabOperator->end();
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(-3, 25, 508, 345, _("UI"));
@@ -2757,6 +2792,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           tabsWaterfall->color(FL_LIGHT1);
           tabsWaterfall->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Display"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 162, _("Colors and cursors"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -2897,7 +2933,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("FFT Processing"));
-            o->hide();
             { Fl_Group* o = new Fl_Group(5, 62, 490, 135);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Counter* o = cntLowFreqCutoff = new Fl_Counter(50, 72, 70, 20, _("Lower limit"));
@@ -3879,6 +3914,7 @@ an merging"));
         { tabsRig = new Fl_Tabs(0, 25, 500, 345);
           tabsRig->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hardware PTT"));
+            o->hide();
             { grpHWPTT = new Fl_Group(5, 100, 490, 265);
               grpHWPTT->box(FL_ENGRAVED_FRAME);
               { inpTTYdev = new Fl_Input_Choice(200, 209, 160, 22, _("Device:"));
@@ -4057,7 +4093,6 @@ an merging"));
             o->end();
           } // Fl_Group* o
           { tabHamlib = new Fl_Group(0, 50, 500, 320, _("Hamlib"));
-            tabHamlib->hide();
             { chkUSEHAMLIB = new Fl_Check_Button(195, 60, 100, 20, _("Use Hamlib"));
               chkUSEHAMLIB->tooltip(_("Hamlib used for rig control"));
               chkUSEHAMLIB->down_box(FL_DOWN_BOX);
@@ -4267,6 +4302,7 @@ an merging"));
         { tabsSoundCard = new Fl_Tabs(0, 25, 500, 345);
           tabsSoundCard->selection_color(FL_LIGHT1);
           { tabAudio = new Fl_Group(0, 50, 500, 320, _("Devices"));
+            tabAudio->hide();
             { AudioOSS = new Fl_Group(5, 60, 490, 45);
               AudioOSS->box(FL_ENGRAVED_FRAME);
               { btnAudioIO[0] = new Fl_Round_Button(15, 70, 53, 25, _("OSS"));
@@ -4412,7 +4448,6 @@ ll with your audio device."));
             tabAudioOpt->end();
           } // Fl_Group* tabAudioOpt
           { tabMixer = new Fl_Group(0, 50, 500, 320, _("Mixer"));
-            tabMixer->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 145, _("OSS mixer"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -4580,6 +4615,7 @@ d frequency"));
         { tabsMisc = new Fl_Tabs(0, 25, 500, 345);
           tabsMisc->selection_color(FL_LIGHT1);
           { tabSweetSpot = new Fl_Group(0, 50, 500, 320, _("Sweet Spot"));
+            tabSweetSpot->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 75);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -4722,7 +4758,6 @@ d frequency"));
             tabCPUspeed->end();
           } // Fl_Group* tabCPUspeed
           { tabFileExtraction = new Fl_Group(0, 50, 500, 320, _("Text Capture"));
-            tabFileExtraction->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 119, _("Auto Extract files from rx stream"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);

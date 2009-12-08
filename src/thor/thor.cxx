@@ -473,13 +473,13 @@ void thor::synchronize()
 void thor::eval_s2n()
 {
 	double s = pipe[pipeptr].vector[currsymbol].mag();
-	double n = pipe[(pipeptr + symlen) % twosym].vector[currsymbol].mag();
+	double n = (THORNUMTONES - 1) * pipe[(pipeptr + symlen) % twosym].vector[currsymbol].mag();
 
 	sig = decayavg( sig, s, s - sig > 0 ? 4 : 20);
 	noise = decayavg( noise, n, 64);
 
 	if (noise)
-		s2n = 20*log10(sig / noise) - 6;
+		s2n = 20*log10(sig / noise);
 	else
 		s2n = 0;
 
@@ -488,7 +488,7 @@ void thor::eval_s2n()
 
 	display_metric(metric);
 
-	snprintf(thormsg, sizeof(thormsg), "s/n %3.0f dB", s2n > 0 ? s2n : 0);
+	snprintf(thormsg, sizeof(thormsg), "s/n %3.0f dB", s2n );
 	put_Status1(thormsg);
 }
 

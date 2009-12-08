@@ -120,6 +120,7 @@ extern Fl_Button		*btnAltMacros;
 extern Fl_Button		*btnMacroTimer;
 
 extern bool			bWF_only;
+extern bool			withnoise;
 extern bool			useCheckButtons;
 extern int			altMacros;
 

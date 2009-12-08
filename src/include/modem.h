@@ -170,6 +170,11 @@ public:
 	void	cwid_sendtext (const std::string& s);
 	void	cwid();
 
+// for noise tests
+private:
+	void	add_noise(double *, int);
+	double	sigmaN (double es_ovr_n0);
+	double	gauss(double sigma);
 };
 
 extern modem *cw_modem;
