@@ -263,6 +263,7 @@ static void cb_Seek(Fl_Input *, void *)
 		inpSeek->textcolor(seek_color[!seek_re]);
 		inpSeek->redraw();
 	}
+	progStatus.browser_search = inpSeek->value();
 }
 
 static void cb_Squelch(Fl_Slider *, void *)
@@ -291,9 +292,9 @@ Fl_Double_Window* createViewer() {
 	    	inpSeek = new Fl_Input2(50, 5, 200, 25, _("Find: ")); 
     		inpSeek->callback((Fl_Callback*)cb_Seek);
     		inpSeek->when(FL_WHEN_CHANGED);
-			inpSeek->textfont(FL_COURIER);
-    		inpSeek->value("CQ");
-//			chkBeep = new Fl_Light_Button(inpSeek->x() + border, inpSeek->y(), 60, inpSeek->h(), "Beep");
+		inpSeek->textfont(FL_COURIER);
+		inpSeek->value(progStatus.browser_search.c_str());
+//		chkBeep = new Fl_Light_Button(inpSeek->x() + border, inpSeek->y(), 60, inpSeek->h(), "Beep");
     		bx = new Fl_Box(250, 5, 200, 25);
     		p1->resizable(bx);
     	p1->end();

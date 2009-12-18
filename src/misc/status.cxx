@@ -100,6 +100,8 @@ status progStatus = {
 	120,				// int		logbook_browser_col_4;
 	90,					// int		logbook_browser_col_5;
 
+	"CQ",				// string browser_search;
+
 	false				// bool bLastStateRead;
 };
 
@@ -225,6 +227,7 @@ if (!bWF_only) {
 	spref.set("logbook_col_4", logbook_col_4);
 	spref.set("logbook_col_5", logbook_col_5);
 
+	spref.set("browser_search", browser_search.c_str());
 }
 
 void status::loadLastState()
@@ -232,6 +235,7 @@ void status::loadLastState()
 	Fl_Preferences spref(HomeDir.c_str(), "w1hkj.com", PACKAGE_TARNAME);
 
 	char version[64]; version[sizeof(version)-1] = '\0';
+	char* defbuffer;
 
 	bLastStateRead = spref.get("version", version, "", sizeof(version)-1);
 	// Skip loading the rest of the status variables if we didn't read a
@@ -264,14 +268,12 @@ void status::loadLastState()
 	progdefaults.wfAmpSpan = ampspan;
 	
 	spref.get("noCATfreq", noCATfreq, noCATfreq);
-	char *defbuffer1;
-	spref.get("noCATmode", defbuffer1, "USB");
-	noCATmode = defbuffer1;
-	if (defbuffer1) free(defbuffer1);
-	char *defbuffer2;
-	spref.get("noCATwidth", defbuffer2, "3000");
-	noCATwidth = defbuffer2;
-	if (defbuffer2) free(defbuffer2);
+	spref.get("noCATmode", defbuffer, "USB");
+	noCATmode = defbuffer;
+	free(defbuffer);
+	spref.get("noCATwidth", defbuffer, "3000");
+	noCATwidth = defbuffer;
+	free(defbuffer);
 
 	spref.get("main_x", mainX, mainX);
 	spref.get("main_y", mainY, mainY);
@@ -299,10 +301,9 @@ void status::loadLastState()
 	spref.get("scope_w", scopeW, scopeW);
 	spref.get("scope_h", scopeH, scopeH);
 
-	char *defbuffer3;
-	spref.get("last_macro_file", defbuffer3, "macros.mdf");
-	LastMacroFile = defbuffer3;
-	if (defbuffer3) free(defbuffer3);
+	spref.get("last_macro_file", defbuffer, "macros.mdf");
+	LastMacroFile = defbuffer;
+	free(defbuffer);
 
 	spref.get("spot_recv", i, i); spot_recv = i;
 	spref.get("spot_log", i, i); spot_log = i;
@@ -324,6 +325,9 @@ void status::loadLastState()
 	spref.get("logbook_col_4", logbook_col_4, logbook_col_4);
 	spref.get("logbook_col_5", logbook_col_5, logbook_col_5);
 
+	spref.get("browser_search", defbuffer, browser_search.c_str());
+	browser_search = defbuffer;
+	free(defbuffer);
 }
 
 void status::initLastState()

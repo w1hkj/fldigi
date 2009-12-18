@@ -69,6 +69,8 @@ struct status {
 	int		logbook_col_4;
 	int		logbook_col_5;
 
+	std::string	browser_search;
+
 	bool	bLastStateRead;
 
 	void initLastState();
