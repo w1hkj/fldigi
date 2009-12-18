@@ -381,6 +381,44 @@ public:
 	}
 };
 
+class Fldigi_terminate : public xmlrpc_c::method
+{
+public:
+	Fldigi_terminate()
+	{
+		_signature = "n:i";
+		_help = "Terminates fldigi. ``i'' is bitmask specifying data to save: 0=options; 1=log; 2=macros.";
+	}
+	enum {
+		TERM_SAVE_OPTIONS = 1 << 0,
+		TERM_SAVE_LOG = 1 << 1,
+		TERM_SAVE_MACROS = 1 << 2
+	};
+	static void terminate(int how)
+	{
+		if (how & TERM_SAVE_OPTIONS)
+			progdefaults.saveDefaults();
+		progdefaults.changed = false;
+
+		extern bool oktoclear;
+		if (how & TERM_SAVE_LOG && !oktoclear)
+			qsoSave->do_callback();
+		oktoclear = true;
+		progdefaults.NagMe = false;
+
+		if (how & TERM_SAVE_MACROS && macros.changed)
+			macros.saveMacroFile();
+		macros.changed = false;
+
+		fl_digi_main->do_callback();
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		REQ_LOCK(terminate, params.getInt(0));
+		*retval = xmlrpc_c::value_nil();
+	}
+};
+
 // =============================================================================
 
 class Modem_get_name : public xmlrpc_c::method
@@ -1511,6 +1549,22 @@ public:
 	}
 };
 
+class Log_set_name : public xmlrpc_c::method
+{
+public:
+	Log_set_name()
+	{
+		_signature = "n:s";
+		_help = "Sets the Name field contents.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		REQ_LOCK(set_text, inpName, params.getString(0));
+
+		*retval = xmlrpc_c::value_nil();
+	}
+};
+
 class Log_get_rst_in : public xmlrpc_c::method
 {
 public:
@@ -1550,6 +1604,64 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		*retval = xmlrpc_c::value_string(inpSerNo->value());
+	}
+};
+
+class Log_set_serial_number : public xmlrpc_c::method
+{
+public:
+	Log_set_serial_number()
+	{
+		_signature = "n:s";
+		_help = "Sets the serial number field contents.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		REQ_LOCK(set_text, inpSerNo, params.getString(0));
+		*retval = xmlrpc_c::value_nil();
+	}
+};
+
+class Log_get_serial_number_sent : public xmlrpc_c::method
+{
+public:
+	Log_get_serial_number_sent()
+	{
+		_signature = "s:n";
+		_help = "Returns the serial number (sent) field contents.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		*retval = xmlrpc_c::value_string(outSerNo->value());
+	}
+};
+
+class Log_get_exchange : public xmlrpc_c::method
+{
+public:
+	Log_get_exchange()
+	{
+		_signature = "s:n";
+		_help = "Returns the contest exchange field contents.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		*retval = xmlrpc_c::value_string(inpXchgIn->value());
+	}
+};
+
+class Log_set_exchange : public xmlrpc_c::method
+{
+public:
+	Log_set_exchange()
+	{
+		_signature = "n:s";
+		_help = "Sets the contest exchange field contents.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		REQ_LOCK(set_text, inpXchgIn, params.getString(0));
+		*retval = xmlrpc_c::value_nil();
 	}
 };
 
@@ -1902,6 +2014,7 @@ public:
 	ELEM_(Fldigi_version_string, "fldigi.version")			\
 	ELEM_(Fldigi_name_version, "fldigi.name_version")		\
 	ELEM_(Fldigi_config_dir, "fldigi.config_dir")			\
+	ELEM_(Fldigi_terminate, "fldigi.terminate")			\
 									\
 	ELEM_(Modem_get_name, "modem.get_name")				\
 	ELEM_(Modem_get_names, "modem.get_names")			\
@@ -1987,6 +2100,10 @@ public:
 	ELEM_(Log_get_rst_in, "log.get_rst_in")				\
 	ELEM_(Log_get_rst_out, "log.get_rst_out")			\
 	ELEM_(Log_get_serial_number, "log.get_serial_number")		\
+	ELEM_(Log_set_serial_number, "log.set_serial_number")           \
+	ELEM_(Log_get_serial_number_sent, "log.get_serial_number_sent")	\
+	ELEM_(Log_get_exchange, "log.get_exchange")                     \
+	ELEM_(Log_set_exchange, "log.set_exchange")                     \
 	ELEM_(Log_get_state, "log.get_state")				\
 	ELEM_(Log_get_province, "log.get_province")			\
 	ELEM_(Log_get_country, "log.get_country")			\
@@ -1998,6 +2115,7 @@ public:
 	ELEM_(Log_get_az, "log.get_az")					\
 	ELEM_(Log_clear, "log.clear")					\
 	ELEM_(Log_set_call, "log.set_call")				\
+	ELEM_(Log_set_name, "log.set_name")				\
 									\
 	ELEM_(Text_get_rx_length, "text.get_rx_length")			\
 	ELEM_(Text_get_rx, "text.get_rx")				\
