@@ -52,6 +52,8 @@ enum {
 	RSID_BPSK125 = 4, RSID_QPSK125 = 5, RSID_BPSK250 = 126, RSID_QPSK250 = 127,
 	RSID_BPSK500 = 173,
 
+	RSID_PSK125R = 183, RSID_PSK250R = 186, RSID_PSK500R = 187,
+
 	RSID_UNKNOWN_1 = 7, RSID_UNKNOWN_2 = 8,
 
 	RSID_MT63_500_LG = 9, RSID_MT63_500_ST = 10, RSID_MT63_500_VST = 11,
@@ -108,7 +110,7 @@ enum {
 };
 
 const RSIDs cRsId::rsid_ids[] = {
-	{ RSID_BPSK31, MODE_BPSK31 },
+	{ RSID_BPSK31, MODE_PSK31 },
 	{ RSID_QPSK31, MODE_QPSK31 },
 	{ RSID_BPSK63, MODE_PSK63 },
 	{ RSID_QPSK63, MODE_QPSK63 },
@@ -117,6 +119,11 @@ const RSIDs cRsId::rsid_ids[] = {
 	{ RSID_BPSK250, MODE_PSK250 },
 	{ RSID_QPSK250, MODE_QPSK250 },
 	{ RSID_BPSK500, MODE_PSK500 },
+	{ RSID_PSK125R, MODE_PSK125R },
+	{ RSID_PSK250R, MODE_PSK250R },
+	{ RSID_PSK500R, MODE_PSK500R },
+	{ RSID_PSK63F, MODE_PSK63F },
+
 
 	{ RSID_UNKNOWN_1, NUM_MODES },
 	{ RSID_UNKNOWN_2, NUM_MODES },
@@ -255,8 +262,8 @@ const int cRsId::Squares[] = {
 	0,15, 7, 8,14, 1, 9, 6, 5,10, 2,13,11, 4,12, 3
 };
 
-const int cRsId::indices[] = { 
-	2, 4, 8, 9, 11, 15, 7, 14, 5, 10, 13, 3 
+const int cRsId::indices[] = {
+	2, 4, 8, 9, 11, 15, 7, 14, 5, 10, 13, 3
 };
 
 cRsId::cRsId()
@@ -665,7 +672,7 @@ bool cRsId::search_amp( int &SymbolOut,	int &BinOut)
 		return false;
 	}
 
-	if (! bPrevTimeSliceValid || 
+	if (! bPrevTimeSliceValid ||
 		iDistanceMin <= iPrevDistance) {
 		iPrevSymbol		= iSymbol;
 		iPrevBin		= iBin;

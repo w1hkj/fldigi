@@ -282,22 +282,22 @@ void buildlist()
 	if (readFreqList() == true)
 		return;
 	Fl::lock();
-	updateList (1807000L, 1000, "USB", MODE_BPSK31 );
+	updateList (1807000L, 1000, "USB", MODE_PSK31 );
 	updateList (3505000L, 800, "USB", MODE_CW);
-	updateList (3580000L, 1000, "USB", MODE_BPSK31 );
+	updateList (3580000L, 1000, "USB", MODE_PSK31 );
 	updateList (1000500L, 800, "USB", MODE_CW);
-	updateList (10135000L, 1000, "USB", MODE_BPSK31 );
+	updateList (10135000L, 1000, "USB", MODE_PSK31 );
 	updateList (7005000L, 800, "USB", MODE_CW);
-	updateList (7030000L, 1000, "USB", MODE_BPSK31 );
-	updateList (7070000L, 1000, "USB", MODE_BPSK31 );
+	updateList (7030000L, 1000, "USB", MODE_PSK31 );
+	updateList (7070000L, 1000, "USB", MODE_PSK31 );
 	updateList (14005000L, 800, "USB", MODE_CW);
-	updateList (14070000L, 1000, "USB", MODE_BPSK31 );
-	updateList (18100000L, 1000, "USB", MODE_BPSK31 );
+	updateList (14070000L, 1000, "USB", MODE_PSK31 );
+	updateList (18100000L, 1000, "USB", MODE_PSK31 );
 	updateList (21005000L, 800, "USB", MODE_CW);
-	updateList (21070000L, 1000, "USB", MODE_BPSK31 );
-	updateList (24920000L, 1000, "USB", MODE_BPSK31 );
+	updateList (21070000L, 1000, "USB", MODE_PSK31 );
+	updateList (24920000L, 1000, "USB", MODE_PSK31 );
 	updateList (28005000L, 800, "USB", MODE_CW);
-	updateList (28120000, 1000, "USB", MODE_BPSK31 );
+	updateList (28120000, 1000, "USB", MODE_PSK31 );
 	updateSelect();
 	Fl::unlock();
 }

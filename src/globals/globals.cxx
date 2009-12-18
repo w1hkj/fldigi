@@ -5,7 +5,7 @@
 // Copyright (C) 2006
 //		Dave Freese, W1HKJ
 //
-// This file is part of fldigi.  Adapted in part from code contained in gmfsk 
+// This file is part of fldigi.  Adapted in part from code contained in gmfsk
 // source code distribution.
 //
 // fldigi is free software; you can redistribute it and/or modify
@@ -40,7 +40,7 @@ using namespace std;
 // Elements are in enum trx_mode order. Mode name video-id uses the
 // first string (sname), so its length should be a multiple of 2.
 const struct mode_info_t mode_info[NUM_MODES] = {
-    { MODE_CW, &cw_modem, "CW", "CW", "CW", "CW" }, 
+    { MODE_CW, &cw_modem, "CW", "CW", "CW", "CW" },
 
 	{ MODE_DOMINOEX4, &dominoex4_modem, "DomEX4", "DominoEX 4", "DOMINOEX4", "DOMINO" },
 	{ MODE_DOMINOEX5, &dominoex5_modem, "DomEX5", "DominoEX 5", "DOMINOEX5", "DOMINO" },
@@ -52,7 +52,7 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_FELDHELL, &feld_modem, "FELDHELL", "Feld Hell", "", "HELL" },
 	{ MODE_SLOWHELL, &feld_slowmodem, "SLOWHELL", "Slow Hell", "", "HELL" }, // Not sure about these after the first one
 	{ MODE_HELLX5, &feld_x5modem, "HELLX5", "Feld Hell X5", "", "HELL" },
-	{ MODE_HELLX9, &feld_x9modem, "HELLX9", "Feld Hell X9", "", "HELL"},	
+	{ MODE_HELLX9, &feld_x9modem, "HELLX9", "Feld Hell X9", "", "HELL"},
 	{ MODE_FSKHELL, &feld_FMmodem, "FSK-HELL", "FSK Hell", "", "FMHELL" },
 	{ MODE_FSKH105, &feld_FM105modem, "FSK-H105", "FSK Hell-105", "", "FMHELL" },
 	{ MODE_HELL80, &feld_80modem, "HELL80", "Hell 80", "", "HELL80" },
@@ -72,15 +72,20 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_MT63_1000, &mt63_1000_modem, "MT63-1XX", "MT63-1000", "MT63-1XX", "MT63" },
 	{ MODE_MT63_2000, &mt63_2000_modem, "MT63-2XX", "MT63-2000", "MT63-2XX", "MT63" },
 
-	{ MODE_BPSK31, &psk31_modem, "BPSK31", "BPSK-31", "PSK31", "PSK31" },
-	{ MODE_QPSK31, &qpsk31_modem, "QPSK31", "QPSK-31", "QPSK31", "QPSK31" },
+	{ MODE_PSK31, &psk31_modem, "BPSK31", "BPSK-31", "PSK31", "PSK31" },
 	{ MODE_PSK63, &psk63_modem, "BPSK63", "BPSK-63", "PSK63", "PSK63" },
-	{ MODE_QPSK63, &qpsk63_modem, "QPSK63", "QPSK-63", "QPSK63", "QPSK63" },
+	{ MODE_PSK63F, &psk63f_modem, "BPSK63F", "BPSK-63F", "PSK63F", "PSK63F" },
 	{ MODE_PSK125, &psk125_modem, "BPSK125", "BPSK-125", "PSK125", "PSK125" },
-	{ MODE_QPSK125, &qpsk125_modem, "QPSK125", "QPSK-125", "QPSK125", "QPSK125" },
 	{ MODE_PSK250, &psk250_modem, "BPSK250", "BPSK-250", "PSK250", "PSK250" },
-	{ MODE_QPSK250, &qpsk250_modem, "QPSK250", "QPSK-250", "QPSK250", "QPSK250" },
 	{ MODE_PSK500, &psk500_modem, "BPSK500", "BPSK-500", "PSK500", "PSK500" },
+	{ MODE_QPSK31, &qpsk31_modem, "QPSK31", "QPSK-31", "QPSK31", "QPSK31" },
+	{ MODE_QPSK63, &qpsk63_modem, "QPSK63", "QPSK-63", "QPSK63", "QPSK63" },
+	{ MODE_QPSK125, &qpsk125_modem, "QPSK125", "QPSK-125", "QPSK125", "QPSK125" },
+	{ MODE_QPSK250, &qpsk250_modem, "QPSK250", "QPSK-250", "QPSK250", "QPSK250" },
+	{ MODE_QPSK500, &qpsk500_modem, "QPSK500", "QPSK-500", "QPSK500", "QPSK500" },
+	{ MODE_PSK125R, &psk125r_modem, "PSK125R", "PSK-125R", "PSK125R", "PSK125R" },
+	{ MODE_PSK250R, &psk250r_modem, "PSK250R", "PSK-250R", "PSK250R", "PSK250R" },
+	{ MODE_PSK500R, &psk500r_modem, "PSK500R", "PSK-500R", "PSK500R", "PSK500R" },
 
 	{ MODE_OLIVIA, &olivia_modem, "OLIVIA", "Olivia", "", "OLIVIA" },
 
@@ -121,7 +126,7 @@ std::istream& operator>>(std::istream& s, qrg_mode_t& m)
 		m.mode = mnbr;
 		return s;
 	}
-	m.mode = MODE_BPSK31;
+	m.mode = MODE_PSK31;
 	for (mnbr = MODE_CW; mnbr < NUM_MODES; mnbr++)
 		if (sMode == mode_info[mnbr].sname) {
 			m.mode = mnbr;

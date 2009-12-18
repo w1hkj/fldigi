@@ -39,7 +39,7 @@
 #define STATUS_FILENAME "status"
 
 status progStatus = {
-	MODE_BPSK31,		// trx_mode	lastmode;
+	MODE_PSK31,		// trx_mode	lastmode;
 	50,					// int mainX;
 	50,					// int mainY;
 	WNOM,				// int mainW;

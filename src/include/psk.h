@@ -34,6 +34,10 @@
 #include "pskvaricode.h"
 #include "viewpsk.h"
 #include "pskeval.h"
+#include "interleave.h"
+
+//MFSK varicode instead of psk for PSKR modes
+#include "mfskvaricode.h"
 
 //=====================================================================
 #define	PskSampleRate	(8000)
@@ -52,15 +56,19 @@ private:
 // tx & rx
 	int				symbollen;
 	bool			_qpsk;
+	bool			_pskr;
 	double			phaseacc;
 	complex			prevsymbol;
-	unsigned int	shreg;
+	unsigned int		shreg;
+	//FEC: 2nd stream
+	unsigned int		shreg2;
+	int			numinterleavers; //interleaver size (speed dependant)
 
 // rx variables & functions
 
-	C_FIR_filter	*fir1;
-	C_FIR_filter	*fir2;
-//	C_FIR_filter	*fir3;
+	C_FIR_filter		*fir1;
+	C_FIR_filter		*fir2;
+//	C_FIR_filter		*fir3;
 	double			*fir1c;
 	double			*fir2c;
 	Cmovavg			*snfilt;
@@ -77,25 +85,42 @@ private:
 
 	encoder 		*enc;
 	viterbi 		*dec;
+	//PSKR modes - 2nd Viterbi decoder and 2 receive de-interleaver for comparison
+	viterbi 		*dec2;
+	interleave		*Rxinlv;
+	interleave		*Rxinlv2;
+	interleave		*Txinlv;
+	unsigned int 		bitshreg;
+	int 			rxbitstate;
+	//PSKR modes - Soft decoding
+	unsigned char		symbolpair[2];
+	int			fecmet;
+	int			fecmet2;
+
 	double			phase;
 	double			freqerr;
 	int				bits;
 	double 			bitclk;
 	double 			syncbuf[16];
 	double 			scope_pipe[2*PipeLen];//[PipeLen];
-	unsigned int 	pipeptr;
-	unsigned int	dcdshreg;
+	unsigned int 		pipeptr;
+	unsigned int		dcdshreg;
+	//PSKR modes - 2nd stream
+	unsigned int		dcdshreg2;
+
 	int 			dcd;
-	int				dcdbits;
+	int			dcdbits;
 	complex			quality;
-	int				acquire;
+	int			acquire;
 
 	viewpsk*		pskviewer;
 	pskeval*		evalpsk;
 
 	void			rx_symbol(complex symbol);
 	void 			rx_bit(int bit);
+	void 			rx_bit2(int bit);
 	void			rx_qpsk(int bits);
+	void			rx_pskr(unsigned char symbol);
 	double 			scopedata[16];
 // IMD & s/n variables
 	double			k0, k1, k2;
@@ -103,6 +128,12 @@ private:
 	double			snratio, s2n, imdratio, imd;
 	double			E1, E2, E3;
 	double			afcmetric;
+	
+	//PSKR modes
+	bool			firstbit;
+	bool			startpreamble;
+
+
 	
 //	complex thirdorder;
 // tx variables & functions
@@ -122,6 +153,8 @@ private:
 	void			initSN_IMD();
 	void			resetSN_IMD();
 	void			calcSN_IMD(complex z);
+	//PSKR modes - for Tx interleaver priming
+	void 			clearbits();
 	
 public:
 	psk(trx_mode mode);

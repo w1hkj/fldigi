@@ -230,7 +230,7 @@ void WFdisp::makeMarker()
 
 	int marker_width = bandwidth;
 	int mode = active_modem->get_mode();
-	if (mode >= MODE_BPSK31 && mode <= MODE_PSK500)
+	if (mode >= MODE_PSK_FIRST && mode <= MODE_PSK_LAST)
 		marker_width += mailserver ? progdefaults.ServerOffset :
 			progdefaults.SearchRange;
 	else if (mode >= MODE_FELDHELL && mode <= MODE_HELL80)

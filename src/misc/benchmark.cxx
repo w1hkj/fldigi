@@ -54,7 +54,7 @@
 
 using namespace std;
 
-struct benchmark_params benchmark = { MODE_BPSK31, 1000, false, false, 0.0, 1.0, SRC_SINC_FASTEST };
+struct benchmark_params benchmark = { MODE_PSK31, 1000, false, false, 0.0, 1.0, SRC_SINC_FASTEST };
 
 
 int setup_benchmark(void)

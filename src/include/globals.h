@@ -5,7 +5,7 @@
 // Copyright (C) 2006
 //		Dave Freese, W1HKJ
 //
-// This file is part of fldigi.  Adapted in part from code contained in gmfsk 
+// This file is part of fldigi.  Adapted in part from code contained in gmfsk
 // source code distribution.
 //
 // fldigi is free software; you can redistribute it and/or modify
@@ -87,17 +87,22 @@ enum {
 	MODE_MT63_FIRST = MODE_MT63_500,
 	MODE_MT63_LAST = MODE_MT63_2000,
 
-	MODE_BPSK31,
-	MODE_QPSK31,
+	MODE_PSK31,
 	MODE_PSK63,
-	MODE_QPSK63,
+	MODE_PSK63F,
 	MODE_PSK125,
-	MODE_QPSK125,
 	MODE_PSK250,
-	MODE_QPSK250,
 	MODE_PSK500,
-	MODE_PSK_FIRST = MODE_BPSK31,
-	MODE_PSK_LAST = MODE_PSK500,
+	MODE_QPSK31,
+	MODE_QPSK63,
+	MODE_QPSK125,
+	MODE_QPSK250,
+	MODE_QPSK500,
+	MODE_PSK125R,
+	MODE_PSK250R,
+	MODE_PSK500R,
+	MODE_PSK_FIRST = MODE_PSK31,
+	MODE_PSK_LAST = MODE_PSK500R,
 
 	MODE_OLIVIA,
 

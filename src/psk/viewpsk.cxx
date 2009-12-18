@@ -97,7 +97,7 @@ void viewpsk::restart(trx_mode pskmode)
 	double			fir2c[64];
 
 	switch (viewmode) {
-	case MODE_BPSK31:
+	case MODE_PSK31:
 		symbollen = 256;
 		dcdbits = 32;
 		break;
@@ -117,7 +117,7 @@ void viewpsk::restart(trx_mode pskmode)
 		symbollen = 16;
 		dcdbits = 512;
 		break;
-	default: // MODE_BPSK31;
+	default: // MODE_PSK31;
 		symbollen = 256;
 		dcdbits = 32;
 	}
