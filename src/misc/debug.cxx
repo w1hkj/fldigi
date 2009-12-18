@@ -26,6 +26,8 @@
 #  include "compat.h"
 #endif
 
+#include <sstream>
+
 #include <cstdio>
 #include <cstring>
 #include <cstdarg>
@@ -79,11 +81,32 @@ Fl_Menu_Item src_menu[] = {
 	{ _("Other"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
 	{ 0 }
 };
+#include <iostream>
+void debug::rotate_log(const char* filename)
+{
+	const int n = 5; // rename existing log files to keep up to 5 old versions
+	ostringstream oldfn, newfn;
+	ostringstream::streampos p;
+
+	oldfn << filename << '.';
+	newfn << filename << '.';
+	p = oldfn.tellp();
+
+	for (int i = n - 1; i > 0; i--) {
+		oldfn.seekp(p);
+		newfn.seekp(p);
+		oldfn << i;
+		newfn << i + 1;
+		rename(oldfn.str().c_str(), newfn.str().c_str());
+	}
+	rename(filename, oldfn.str().c_str());
+}
 
 void debug::start(const char* filename)
 {
 	if (debug::inst)
 		return;
+	rotate_log(filename);
 	inst = new debug(filename);
 
 	window = new Fl_Double_Window(512, 256, _("Event log"));

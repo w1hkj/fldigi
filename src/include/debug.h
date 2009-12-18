@@ -38,6 +38,7 @@ public:
 	static void log(level_e level, const char* func, const char* srcf, int line,
 			const char* format, ...) format__(printf, 5, 6);
 	static void elog(const char* func, const char* srcf, int line, const char* text);
+	static void rotate_log(const char* filename);
 	static void show(void);
 	static level_e level;
 	static uint32_t mask;
