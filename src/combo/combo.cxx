@@ -208,7 +208,7 @@ void Fl_ComboBox::value( const char *s )
 		}
     }
 	if ( i < listsize)
-		Output->value(datalist[i]->s);
+		Output->value(datalist[idx = i]->s);
 }
 
 void Fl_ComboBox::put_value(const char *s)
@@ -322,5 +322,7 @@ void Fl_ComboBox::textsize (uchar n)
   Output->textsize (n);
 }
 
-
-
+int Fl_ComboBox::size()
+{
+  return listsize;
+}

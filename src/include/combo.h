@@ -115,7 +115,7 @@ class Fl_ComboBox : public Fl_Group  {
     void textfont (int);
     void textsize (uchar);
     void readonly();
-
+    int size();
 };
 
 
