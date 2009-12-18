@@ -69,7 +69,7 @@ enum {
 	RSID_BANDWIDTH_WIDE,
 };
 
-struct RSIDs { unsigned char rs; trx_mode mode; };
+struct RSIDs { unsigned char rs; trx_mode mode; const char* name; };
 
 class cRsId {
 private:

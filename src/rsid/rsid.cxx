@@ -43,204 +43,179 @@
 #include "notify.h"
 #include "debug.h"
 
-#include "rsid_fft.cxx"
+LOG_FILE_SOURCE(debug::LOG_MODEM);
 
-enum {
-	RSID_NONE = 0,
+// Syntax: ELEM_(rsid_code, rsid_tag, fldigi_mode)
+// fldigi_mode is NUM_MODES if mode is not available in fldigi,
+// otherwise one of the tags defined in globals.h.
+// rsid_tag is stringified and may be shown to the user.
+#undef ELEM_
+#define RSID_LIST                                       \
+        ELEM_(1, BPSK31, MODE_PSK31)                    \
+        ELEM_(110, QPSK31, MODE_QPSK31)                 \
+        ELEM_(2, BPSK63, MODE_PSK63)                    \
+        ELEM_(3, QPSK63, MODE_QPSK63)                   \
+        ELEM_(4, BPSK125, MODE_PSK125)                  \
+        ELEM_(5, QPSK125, MODE_QPSK125)                 \
+        ELEM_(126, BPSK250, MODE_PSK250)                \
+        ELEM_(127, QPSK250, MODE_QPSK250)               \
+        ELEM_(173, BPSK500, MODE_PSK500)                \
+                                                        \
+        ELEM_(183, PSK125R, MODE_PSK125R)               \
+        ELEM_(186, PSK250R, MODE_PSK250R)               \
+        ELEM_(187, PSK500R, MODE_PSK500R)               \
+                                                        \
+        ELEM_(7, PSKFEC31, NUM_MODES)                   \
+        ELEM_(8, PSK10, NUM_MODES)                      \
+                                                        \
+        ELEM_(9, MT63_500_LG, MODE_MT63_500)            \
+        ELEM_(10, MT63_500_ST, MODE_MT63_500)           \
+        ELEM_(11, MT63_500_VST, MODE_MT63_500)          \
+        ELEM_(12, MT63_1000_LG, MODE_MT63_1000)         \
+        ELEM_(13, MT63_1000_ST, MODE_MT63_1000)         \
+        ELEM_(14, MT63_1000_VST, MODE_MT63_1000)        \
+        ELEM_(15, MT63_2000_LG, MODE_MT63_2000)         \
+        ELEM_(17, MT63_2000_ST, MODE_MT63_2000)         \
+        ELEM_(18, MT63_2000_VST, MODE_MT63_2000)        \
+                                                        \
+        ELEM_(19, PSKAM10, NUM_MODES)                   \
+        ELEM_(20, PSKAM31, NUM_MODES)                   \
+        ELEM_(21, PSKAM50, NUM_MODES)                   \
+                                                        \
+        ELEM_(22, PSK63F, MODE_PSK63F)                  \
+        ELEM_(23, PSK220F, NUM_MODES)                   \
+                                                        \
+        ELEM_(24, CHIP64, NUM_MODES)                    \
+        ELEM_(25, CHIP128, NUM_MODES)                   \
+                                                        \
+        ELEM_(26, CW, MODE_CW)                          \
+                                                        \
+        ELEM_(27, CCW_OOK_12, NUM_MODES)                \
+        ELEM_(28, CCW_OOK_24, NUM_MODES)                \
+        ELEM_(29, CCW_OOK_48, NUM_MODES)                \
+        ELEM_(30, CCW_FSK_12, NUM_MODES)                \
+        ELEM_(31, CCW_FSK_24, NUM_MODES)                \
+        ELEM_(33, CCW_FSK_48, NUM_MODES)                \
+                                                        \
+        ELEM_(34, PACTOR1_FEC, NUM_MODES)               \
+                                                        \
+        ELEM_(113, PACKET_110, NUM_MODES)               \
+        ELEM_(35, PACKET_300, NUM_MODES)                \
+        ELEM_(36, PACKET_1200, NUM_MODES)               \
+                                                        \
+        ELEM_(37, RTTY_ASCII_7, MODE_RTTY)              \
+        ELEM_(38, RTTY_ASCII_8, MODE_RTTY)              \
+        ELEM_(39, RTTY_45, MODE_RTTY)                   \
+        ELEM_(40, RTTY_50, MODE_RTTY)                   \
+        ELEM_(41, RTTY_75, MODE_RTTY)                   \
+                                                        \
+        ELEM_(42, AMTOR_FEC, NUM_MODES)                 \
+                                                        \
+        ELEM_(43, THROB_1, MODE_THROB1)                 \
+        ELEM_(44, THROB_2, MODE_THROB2)                 \
+        ELEM_(45, THROB_4, MODE_THROB4)                 \
+        ELEM_(46, THROBX_1, MODE_THROBX1)               \
+        ELEM_(47, THROBX_2, MODE_THROBX2)               \
+        ELEM_(146, THROBX_4, MODE_THROBX4)              \
+                                                        \
+        ELEM_(49, CONTESTIA_8_250, NUM_MODES)           \
+        ELEM_(50, CONTESTIA_16_500, NUM_MODES)          \
+        ELEM_(51, CONTESTIA_32_1000, NUM_MODES)         \
+        ELEM_(52, CONTESTIA_8_500, NUM_MODES)           \
+        ELEM_(53, CONTESTIA_16_1000, NUM_MODES)         \
+        ELEM_(54, CONTESTIA_4_500, NUM_MODES)           \
+        ELEM_(55, CONTESTIA_4_250, NUM_MODES)           \
+        ELEM_(117, CONTESTIA_8_1000, NUM_MODES)         \
+        ELEM_(169, CONTESTIA_8_125, NUM_MODES)          \
+                                                        \
+        ELEM_(56, VOICE, NUM_MODES)                     \
+                                                        \
+        ELEM_(60, MFSK8, MODE_MFSK8)                    \
+        ELEM_(57, MFSK16, MODE_MFSK16)                  \
+        ELEM_(147, MFSK32, MODE_MFSK32)                 \
+        ELEM_(148, MFSK11, MODE_MFSK11)                 \
+        ELEM_(152, MFSK22, MODE_MFSK22)                 \
+                                                        \
+        ELEM_(61, RTTYM_8_250, NUM_MODES)               \
+        ELEM_(62, RTTYM_16_500, NUM_MODES)              \
+        ELEM_(63, RTTYM_32_1000, NUM_MODES)             \
+        ELEM_(65, RTTYM_8_500, NUM_MODES)               \
+        ELEM_(66, RTTYM_16_1000, NUM_MODES)             \
+        ELEM_(67, RTTYM_4_500, NUM_MODES)               \
+        ELEM_(68, RTTYM_4_250, NUM_MODES)               \
+        ELEM_(119, RTTYM_8_1000, NUM_MODES)             \
+        ELEM_(170, RTTYM_8_125, NUM_MODES)              \
+                                                        \
+        ELEM_(69, OLIVIA_8_250, MODE_OLIVIA)            \
+        ELEM_(70, OLIVIA_16_500, MODE_OLIVIA)           \
+        ELEM_(71, OLIVIA_32_1000, MODE_OLIVIA)          \
+        ELEM_(72, OLIVIA_8_500, MODE_OLIVIA)            \
+        ELEM_(73, OLIVIA_16_1000, MODE_OLIVIA)          \
+        ELEM_(74, OLIVIA_4_500, MODE_OLIVIA)            \
+        ELEM_(75, OLIVIA_4_250, MODE_OLIVIA)            \
+        ELEM_(116, OLIVIA_8_1000, MODE_OLIVIA)          \
+        ELEM_(163, OLIVIA_8_125, MODE_OLIVIA)           \
+                                                        \
+        ELEM_(76, PAX, NUM_MODES)                       \
+        ELEM_(77, PAX2, NUM_MODES)                      \
+        ELEM_(78, DOMINOF, NUM_MODES)                   \
+        ELEM_(79, FAX, NUM_MODES)                       \
+        ELEM_(81, SSTV, NUM_MODES)                      \
+                                                        \
+        ELEM_(84, DOMINOEX_4, MODE_DOMINOEX4)           \
+        ELEM_(85, DOMINOEX_5, MODE_DOMINOEX5)           \
+        ELEM_(86, DOMINOEX_8, MODE_DOMINOEX8)           \
+        ELEM_(87, DOMINOEX_11, MODE_DOMINOEX11)         \
+        ELEM_(88, DOMINOEX_16, MODE_DOMINOEX16)         \
+        ELEM_(90, DOMINOEX_22, MODE_DOMINOEX22)         \
+        ELEM_(92, DOMINOEX_4_FEC, MODE_DOMINOEX4)       \
+        ELEM_(93, DOMINOEX_5_FEC, MODE_DOMINOEX5)       \
+        ELEM_(97, DOMINOEX_8_FEC, MODE_DOMINOEX8)       \
+        ELEM_(98, DOMINOEX_11_FEC, MODE_DOMINOEX11)     \
+        ELEM_(99, DOMINOEX_16_FEC, MODE_DOMINOEX16)     \
+        ELEM_(101, DOMINOEX_22_FEC, MODE_DOMINOEX22)    \
+                                                        \
+        ELEM_(104, FELD_HELL, MODE_FELDHELL)            \
+        ELEM_(105, PSK_HELL, NUM_MODES)                 \
+        ELEM_(106, HELL_80, MODE_HELL80)                \
+        ELEM_(107, FM_HELL_105, MODE_FSKH105)           \
+        ELEM_(108, FM_HELL_245, NUM_MODES)              \
+                                                        \
+        ELEM_(114, 141A, NUM_MODES)                     \
+        ELEM_(123, DTMF, NUM_MODES)                     \
+        ELEM_(125, ALE400, NUM_MODES)                   \
+        ELEM_(131, FDMDV, NUM_MODES)                    \
+                                                        \
+        ELEM_(132, JT65_A, NUM_MODES)                   \
+        ELEM_(134, JT65_B, NUM_MODES)                   \
+        ELEM_(135, JT65_C, NUM_MODES)                   \
+                                                        \
+        ELEM_(136, THOR_4, MODE_THOR4)                  \
+        ELEM_(137, THOR_8, MODE_THOR8)                  \
+        ELEM_(138, THOR_16, MODE_THOR16)                \
+        ELEM_(139, THOR_5, MODE_THOR5)                  \
+        ELEM_(143, THOR_11, MODE_THOR11)                \
+        ELEM_(145, THOR_22, MODE_THOR22)                \
+                                                        \
+        ELEM_(153, CALL_ID, NUM_MODES)                  \
+                                                        \
+        ELEM_(155, PACKET_PSK1200, NUM_MODES)           \
+        ELEM_(156, PACKET_PSK250, NUM_MODES)            \
+        ELEM_(159, PACKET_PSK63, NUM_MODES)             \
+                                                        \
+        ELEM_(172, 188_110A_8N1, NUM_MODES)             \
+                                                        \
+        /* NONE must be the last element */             \
+        ELEM_(0, NONE, NUM_MODES)
 
-	RSID_BPSK31 = 1, RSID_QPSK31 = 110, RSID_BPSK63 = 2, RSID_QPSK63 = 3,
-	RSID_BPSK125 = 4, RSID_QPSK125 = 5, RSID_BPSK250 = 126, RSID_QPSK250 = 127,
-	RSID_BPSK500 = 173,
 
-	RSID_PSK125R = 183, RSID_PSK250R = 186, RSID_PSK500R = 187,
+#define ELEM_(code_, tag_, mode_) RSID_ ## tag_ = code_,
+enum { RSID_LIST };
+#undef ELEM_
 
-	RSID_UNKNOWN_1 = 7, RSID_UNKNOWN_2 = 8,
-
-	RSID_MT63_500_LG = 9, RSID_MT63_500_ST = 10, RSID_MT63_500_VST = 11,
-	RSID_MT63_1000_LG = 12, RSID_MT63_1000_ST = 13, RSID_MT63_1000_VST = 14,
-	RSID_MT63_2000_LG = 15, RSID_MT63_2000_ST = 17, RSID_MT63_2000_VST = 18,
-
-	RSID_PSKAM10 = 19, RSID_PSKAM31 = 20, RSID_PSKAM50 = 21, RSID_PSK63F = 22,
-	RSID_PSK220F = 23, RSID_CHIP64 = 24, RSID_CHIP128 = 25,
-
-	RSID_CW = 26,
-
-	RSID_CCW_OOK_12 = 27, RSID_CCW_OOK_24 = 28, RSID_CCW_OOK_48 = 29,
-	RSID_CCW_FSK_12 = 30, RSID_CCW_FSK_24 = 31, RSID_CCW_FSK_48 = 33,
-
-	RSID_PACTOR1_FEC = 34, RSID_PACKET_300 = 35, RSID_PACKET_1200 = 36,
-
-	RSID_RTTY_ASCII_7 = 37, RSID_RTTY_ASCII_8 = 38, RSID_RTTY_45 = 39,
-	RSID_RTTY_50 = 40, RSID_RTTY_75 = 41,
-
-	RSID_AMTOR_FEC = 42,
-
-	RSID_THROB_1 = 43, RSID_THROB_2 = 44, RSID_THROB_4 = 45,
-	RSID_THROBX_1 = 46, RSID_THROBX_2 = 47, RSID_THROBX_4 = 146,
-
-	RSID_CONTESTIA_8_250 = 49, RSID_CONTESTIA_16_500 = 50, RSID_CONTESTIA_32_1000 = 51,
-	RSID_CONTESTIA_8_500 = 52, RSID_CONTESTIA_16_1000 = 53, RSID_CONTESTIA_4_500 = 54,
-	RSID_CONTESTIA_4_250 = 55,
-
-	RSID_VOICE = 56,
-
-	RSID_MFSK8 = 60, RSID_MFSK16 = 57, RSID_MFSK32 = 147,
-	RSID_MFSK11 = 148, RSID_MFSK22 = 152,
-
-	RSID_RTTYM_8_250 = 61, RSID_RTTYM_16_500 = 62, RSID_RTTYM_32_1000 = 63,
-	RSID_RTTYM_8_500 = 65, RSID_RTTYM_16_1000 = 66, RSID_RTTYM_4_500 = 67,
-	RSID_RTTYM_4_250 = 68,
-
-	RSID_OLIVIA_8_250 = 69, RSID_OLIVIA_16_500 = 70, RSID_OLIVIA_32_1000 = 71,
-	RSID_OLIVIA_8_500 = 72, RSID_OLIVIA_16_1000 = 73, RSID_OLIVIA_4_500 = 74,
-	RSID_OLIVIA_4_250 = 75,
-
-	RSID_PAX = 76, RSID_PAX2 = 77, RSID_DOMINOF = 78, RSID_FAX = 79, RSID_SSTV = 81,
-
-	RSID_DOMINOEX_4 = 84, RSID_DOMINOEX_5 = 85, RSID_DOMINOEX_8 = 86,
-	RSID_DOMINOEX_11 = 87, RSID_DOMINOEX_16 = 88, RSID_DOMINOEX_22 = 90,
-	RSID_DOMINOEX_4_FEC = 92, RSID_DOMINOEX_5_FEC = 93, RSID_DOMINOEX_8_FEC = 97,
-	RSID_DOMINOEX_11_FEC = 98, RSID_DOMINOEX_16_FEC = 99, RSID_DOMINOEX_22_FEC = 101,
-
-	RSID_FELD_HELL = 104, RSID_PSK_HELL = 105, RSID_HELL_80 = 106,
-	RSID_FM_HELL_105 = 107, RSID_FM_HELL_245 = 108,
-
-	RSID_THOR_4 = 136, RSID_THOR_5 = 139, RSID_THOR_8 = 137,
-	RSID_THOR_11 = 143, RSID_THOR_16 = 138, RSID_THOR_22 = 145,
-};
-
-const RSIDs cRsId::rsid_ids[] = {
-	{ RSID_BPSK31, MODE_PSK31 },
-	{ RSID_QPSK31, MODE_QPSK31 },
-	{ RSID_BPSK63, MODE_PSK63 },
-	{ RSID_QPSK63, MODE_QPSK63 },
-	{ RSID_BPSK125, MODE_PSK125 },
-	{ RSID_QPSK125, MODE_QPSK125 },
-	{ RSID_BPSK250, MODE_PSK250 },
-	{ RSID_QPSK250, MODE_QPSK250 },
-	{ RSID_BPSK500, MODE_PSK500 },
-	{ RSID_PSK125R, MODE_PSK125R },
-	{ RSID_PSK250R, MODE_PSK250R },
-	{ RSID_PSK500R, MODE_PSK500R },
-	{ RSID_PSK63F, MODE_PSK63F },
-
-
-	{ RSID_UNKNOWN_1, NUM_MODES },
-	{ RSID_UNKNOWN_2, NUM_MODES },
-
-	{ RSID_MT63_500_LG, MODE_MT63_500 },
-	{ RSID_MT63_500_ST, MODE_MT63_500 },
-	{ RSID_MT63_500_VST, MODE_MT63_500 },
-	{ RSID_MT63_1000_LG, MODE_MT63_1000 },
-	{ RSID_MT63_1000_ST, MODE_MT63_1000 },
-	{ RSID_MT63_1000_VST, MODE_MT63_1000 },
-	{ RSID_MT63_2000_LG, MODE_MT63_2000 },
-	{ RSID_MT63_2000_ST, MODE_MT63_2000 },
-	{ RSID_MT63_2000_VST, MODE_MT63_2000 },
-
-	{ RSID_PSKAM10,  NUM_MODES },
-	{ RSID_PSKAM31, NUM_MODES },
-	{ RSID_PSKAM50, NUM_MODES },
-	{ RSID_PSK63F, NUM_MODES },
-	{ RSID_PSK220F, NUM_MODES },
-	{ RSID_CHIP64, NUM_MODES },
-	{ RSID_CHIP128, NUM_MODES },
-
-	{ RSID_CW, MODE_CW },
-
-	{ RSID_CCW_OOK_12, NUM_MODES },
-	{ RSID_CCW_OOK_24, NUM_MODES },
-	{ RSID_CCW_OOK_48, NUM_MODES },
-	{ RSID_CCW_FSK_12, NUM_MODES },
-	{ RSID_CCW_FSK_24, NUM_MODES },
-	{ RSID_CCW_FSK_48, NUM_MODES },
-
-	{ RSID_PACTOR1_FEC, NUM_MODES },
-	{ RSID_PACKET_300, NUM_MODES },
-	{ RSID_PACKET_1200, NUM_MODES },
-
-	{ RSID_RTTY_ASCII_7, MODE_RTTY },
-	{ RSID_RTTY_ASCII_8, MODE_RTTY },
-	{ RSID_RTTY_45, MODE_RTTY },
-	{ RSID_RTTY_50 , MODE_RTTY },
-	{ RSID_RTTY_75 , MODE_RTTY },
-
-	{ RSID_AMTOR_FEC, NUM_MODES },
-
-	{ RSID_THROB_1, MODE_THROB1 },
-	{ RSID_THROB_2, MODE_THROB2 },
-	{ RSID_THROB_4, MODE_THROB4 },
-	{ RSID_THROBX_1, MODE_THROBX1 },
-	{ RSID_THROBX_2, MODE_THROBX2 },
-	{ RSID_THROBX_4, MODE_THROBX4 },
-
-	{ RSID_CONTESTIA_8_250, NUM_MODES },
-	{ RSID_CONTESTIA_16_500, NUM_MODES },
-	{ RSID_CONTESTIA_32_1000, NUM_MODES },
-	{ RSID_CONTESTIA_8_500, NUM_MODES },
-	{ RSID_CONTESTIA_16_1000, NUM_MODES },
-	{ RSID_CONTESTIA_4_500, NUM_MODES },
-	{ RSID_CONTESTIA_4_250, NUM_MODES },
-
-	{ RSID_VOICE, NUM_MODES },
-
-	{ RSID_MFSK8, MODE_MFSK8 },
-	{ RSID_MFSK16, MODE_MFSK16 },
-	{ RSID_MFSK32, MODE_MFSK32 },
-	{ RSID_MFSK11, MODE_MFSK11 },
-	{ RSID_MFSK22, MODE_MFSK22 },
-
-	{ RSID_RTTYM_8_250, NUM_MODES },
-	{ RSID_RTTYM_16_500, NUM_MODES },
-	{ RSID_RTTYM_32_1000, NUM_MODES },
-	{ RSID_RTTYM_8_500, NUM_MODES },
-	{ RSID_RTTYM_16_1000, NUM_MODES },
-	{ RSID_RTTYM_4_500, NUM_MODES },
-	{ RSID_RTTYM_4_250, NUM_MODES },
-
-	{ RSID_OLIVIA_8_250, MODE_OLIVIA },
-	{ RSID_OLIVIA_16_500, MODE_OLIVIA },
-	{ RSID_OLIVIA_32_1000, MODE_OLIVIA },
-	{ RSID_OLIVIA_8_500, MODE_OLIVIA },
-	{ RSID_OLIVIA_16_1000, MODE_OLIVIA },
-	{ RSID_OLIVIA_4_500, MODE_OLIVIA },
-	{ RSID_OLIVIA_4_250, MODE_OLIVIA },
-
-	{ RSID_PAX, NUM_MODES },
-	{ RSID_PAX2, NUM_MODES },
-	{ RSID_DOMINOF, NUM_MODES },
-	{ RSID_FAX, NUM_MODES },
-	{ RSID_SSTV, NUM_MODES },
-
-	{ RSID_DOMINOEX_4, MODE_DOMINOEX4 },
-	{ RSID_DOMINOEX_5, MODE_DOMINOEX5 },
-	{ RSID_DOMINOEX_8, MODE_DOMINOEX8 },
-	{ RSID_DOMINOEX_11, MODE_DOMINOEX11 },
-	{ RSID_DOMINOEX_16, MODE_DOMINOEX16 },
-	{ RSID_DOMINOEX_22, MODE_DOMINOEX22 },
-	{ RSID_DOMINOEX_4_FEC, MODE_DOMINOEX4 },
-	{ RSID_DOMINOEX_5_FEC, MODE_DOMINOEX5 },
-	{ RSID_DOMINOEX_8_FEC, MODE_DOMINOEX8 },
-	{ RSID_DOMINOEX_11_FEC, MODE_DOMINOEX11 },
-	{ RSID_DOMINOEX_16_FEC, MODE_DOMINOEX16 },
-	{ RSID_DOMINOEX_22_FEC, MODE_DOMINOEX22 },
-
-	{ RSID_FELD_HELL, MODE_FELDHELL },
-	{ RSID_PSK_HELL, NUM_MODES },
-	{ RSID_HELL_80 , MODE_HELL80 },
-	{ RSID_FM_HELL_105, MODE_FSKH105 },
-	{ RSID_FM_HELL_245, NUM_MODES },
-
-	{ RSID_THOR_4, MODE_THOR4 },
-	{ RSID_THOR_8, MODE_THOR8 },
-	{ RSID_THOR_16, MODE_THOR16 },
-	{ RSID_THOR_5, MODE_THOR5 },
-	{ RSID_THOR_11, MODE_THOR11 },
-	{ RSID_THOR_22, MODE_THOR22 },
-
-	{ RSID_NONE, NUM_MODES }
-};
-
+#define ELEM_(code_, tag_, mode_) { RSID_ ## tag_, mode_, #tag_ },
+const RSIDs cRsId::rsid_ids[] = { RSID_LIST };
+#undef ELEM_
 const int cRsId::rsid_ids_size = sizeof(rsid_ids)/sizeof(*rsid_ids) - 1;
 
 const int cRsId::Squares[] = {
@@ -418,6 +393,8 @@ void cRsId::receive(const float* buf, size_t len)
 	}
 }
 
+#include "rsid_fft.cxx"
+
 void cRsId::search(void)
 {
 	if (progdefaults.rsidWideSearch) {
@@ -478,16 +455,28 @@ void cRsId::apply(int iSymbol, int iBin)
 
 	double freq = (iBin + (RSID_NSYMBOLS - 1) * RSID_RESOL / 2) * RSID_SAMPLE_RATE / 2048.0;
 
-	int mbin = 0;
-	for (int n = 0; n < rsid_ids_size; n++)
+	int n, mbin = NUM_MODES;
+	for (n = 0; n < rsid_ids_size; n++) {
 		if (rsid_ids[n].rs == iSymbol) {
 			mbin = rsid_ids[n].mode;
 			break;
 		}
+	}
+	if (mbin == NUM_MODES) {
+		char msg[50];
+		if (n < rsid_ids_size) // RSID known but unimplemented
+			snprintf(msg, sizeof(msg), "RSID: %s unimplemented", rsid_ids[n].name);
+		else // RSID unknown; shouldn't  happen
+			snprintf(msg, sizeof(msg), "RSID: code %d unknown", iSymbol);
+		put_status(msg, 4.0);
+		LOG_INFO("%s", msg);
+		return;
+	}
+	else
+		LOG_INFO("RSID: %s @ %0.0f Hz", rsid_ids[n].name, freq);
+
 	if (!progdefaults.rsid_notify_only && progdefaults.rsid_auto_disable)
 		REQ(toggleRSID);
-
-	if (mbin == NUM_MODES) return;
 
 	switch (iSymbol) {
 	// rtty parameters
@@ -560,6 +549,16 @@ void cRsId::apply(int iSymbol, int iBin)
 	case RSID_OLIVIA_4_250:
 		progdefaults.oliviatones = 1;
 		progdefaults.oliviabw = 1;
+		REQ(&set_olivia_tab_widgets);
+		break;
+	case RSID_OLIVIA_8_1000:
+		progdefaults.oliviatones = 2;
+		progdefaults.oliviabw = 3;
+		REQ(&set_olivia_tab_widgets);
+		break;
+	case RSID_OLIVIA_8_125:
+		progdefaults.oliviatones = 2;
+		progdefaults.oliviabw = 0;
 		REQ(&set_olivia_tab_widgets);
 		break;
 	// mt63
@@ -725,6 +724,10 @@ void cRsId::send(bool preRSID)
 			rmode = RSID_OLIVIA_4_500;
 		else if (progdefaults.oliviatones == 1 && progdefaults.oliviabw == 1)
 			rmode = RSID_OLIVIA_4_250;
+		else if (progdefaults.oliviatones == 2 && progdefaults.oliviabw == 3)
+			rmode = RSID_OLIVIA_8_1000;
+		else if (progdefaults.oliviatones == 2 && progdefaults.oliviabw == 0)
+			rmode = RSID_OLIVIA_8_125;
 		else
 			rmode = RSID_OLIVIA_16_500;
 		break;
