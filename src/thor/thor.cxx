@@ -1,8 +1,8 @@
 //
 // thor.cxx  --  thor modem
 //
-// Copyright (C) 2008
-//		David Freese (w1hkj@w1hkj.com)
+// Copyright (C) 2008, 2009
+//   David Freese <w1hkj@w1hkj.com>
 //
 // fldigi is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -482,8 +482,11 @@ void thor::eval_s2n()
 		s2n = 20*log10(sig / noise);
 	else
 		s2n = 0;
+	// To partially offset the increase of noise by (THORNUMTONES -1)
+	// in the noise calculation above, 
+	// add 15*log10(THORNUMTONES -1) = 18.4, and multiply by 6
+	metric = 6 * (s2n + 18.4);
 
-	metric = 4 * s2n;
 	metric = metric < 0 ? 0 : metric > 100 ? 100 : metric;
 
 	display_metric(metric);
