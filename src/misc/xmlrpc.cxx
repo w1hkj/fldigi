@@ -40,6 +40,7 @@
 #include <signal.h>
 
 #include <xmlrpc-c/base.hpp>
+#include <xmlrpc-c/girerr.hpp>
 #include <xmlrpc-c/registry.hpp>
 #include <xmlrpc-c/server_abyss.hpp>
 
@@ -1717,20 +1718,45 @@ public:
 		_signature = "6:ii";
 		_help = "Returns a range of characters (start, length) from the RX text widget.";
 	}
+	static void get_rx_text_range(const xmlrpc_c::paramList* params, xmlrpc_c::fault** err,
+				      char** text, int* size)
+	{
+		// the get* methods may throw but this function is not allowed to do so
+		try {
+			params->verifyEnd(2);
+
+			Fl_Text_Buffer* tbuf = ReceiveText->buffer();
+			int len = tbuf->length();
+			int start = params->getInt(0, 0, len - 1);
+			int n = params->getInt(1, -1, len - start);
+			if (n == -1)
+				n = len; // we can request more text than is available
+
+			*text = tbuf->text_range(start, start + n);
+			*size = n;
+		}
+		catch (const xmlrpc_c::fault& f) {
+			*err = new xmlrpc_c::fault(f);
+		}
+		catch (const exception& e) {
+			*err = new xmlrpc_c::fault(e.what(), xmlrpc_c::fault::CODE_INTERNAL);
+		}
+	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		params.verifyEnd(2);
+		xmlrpc_c::fault* err = NULL;
+		char* text;
+		int size;
 
-		Fl_Text_Buffer* tbuf = ReceiveText->buffer();
-		int len = tbuf->length();
-		int start = params.getInt(0, 0, len - 1);
-		int n = params.getInt(1, 0, len - start);
+		REQ_SYNC_LOCK(get_rx_text_range, &params, &err, &text, &size);
+		if (unlikely(err)) {
+			xmlrpc_c::fault f(*err);
+			delete err;
+			throw f;
+		}
 
-		REQ_SYNC_LOCK(&Fl_Text_Buffer::select, tbuf, start, start + n);
-		char *text = tbuf->selection_text();
-		REQ_LOCK(&Fl_Text_Buffer::unselect, tbuf);
-
-		vector<unsigned char> bytes(text, text + n);
+		vector<unsigned char> bytes(size);
+		memcpy(&bytes[0], text, size);
 		*retval = xmlrpc_c::value_bytestring(bytes);
 		free(text);
 	}
