@@ -311,12 +311,10 @@ int cb_qso_opMODE()
 		hamlib_setmode(mode_nums[qso_opMODE->value()]);
 	else
 #endif
-	if (progdefaults.chkUSERIGCATis)
+	if (progdefaults.chkUSERIGCATis || progdefaults.chkUSEXMLRPCis)
 		rigCAT_setmode(qso_opMODE->value());
 	else if (progdefaults.chkUSEMEMMAPis)
 		rigMEM_setmode(qso_opMODE->value());
-	else if (!progdefaults.chkUSEXMLRPCis)
-		rigCAT_setmode(qso_opMODE->value());
 	return 0;
 }
 
