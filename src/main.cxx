@@ -267,7 +267,7 @@ int main(int argc, char ** argv)
 			progdefaults.slowcpu = false;
 			progdefaults.sample_converter = SRC_SINC_MEDIUM_QUALITY;
 		}
-		else if (speed > 20.0) { // slow
+		else if (speed > 15.0) { // slow
 			progdefaults.slowcpu = true;
 			progdefaults.sample_converter = SRC_SINC_FASTEST;
 		}
@@ -939,6 +939,7 @@ void set_platform_ui(void)
 // Pentium 4 2.8GHz:     70
 // Pentium 3 550MHz:     13
 // UltraSparc II 270MHz: 3.5
+// Atom N280 1.66GHz:    17.7
 #define IN_RATE 48000
 #define OUT_RATE 8000
 double speed_test(int converter, unsigned repeat)
