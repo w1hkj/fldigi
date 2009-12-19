@@ -81,7 +81,7 @@ void rx_extract_add(int c)
 	rx_extract_buff[bufsize - 1] = ch;
 
 	if ( strstr(rx_extract_buff, beg) != NULL ) {
-		rx_buff = rx_extract_buff;
+		rx_buff = beg;
 		rx_extract_msg = "Extracting";
 
 		put_status(rx_extract_msg.c_str(), 60, STATUS_CLEAR);
