@@ -857,6 +857,12 @@ void xmlrpc_set_qsy(long long rfc, long long fmid)
     show_frequency(rfc);
 }
 
+void xmlrpc_set_freq(long long rfc)
+{
+	wf->rfcarrier(rfc);
+	show_frequency(rfc);
+}
+
 class Main_set_freq : public xmlrpc_c::method
 {
 public:
@@ -868,7 +874,8 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		double rfc = wf->rfcarrier();
-		qsy((long long int)params.getDouble(0, 0.0));
+		long long int fnew = (long long int)params.getDouble(0, 0.0);
+		REQ_LOCK(xmlrpc_set_freq, fnew);
 		*retval = xmlrpc_c::value_double(rfc);
 	}
 };
@@ -883,8 +890,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		double rfc = wf->rfcarrier() + params.getDouble(0);
-		qsy((long long int)rfc);
+		double rfc = wf->rfcarrier();
+		long long int fnew = rfc + (long long int)params.getDouble(0, 0.0);
+		REQ_LOCK(xmlrpc_set_freq, fnew);
 		*retval = xmlrpc_c::value_double(rfc);
 	}
 };
@@ -1349,12 +1357,6 @@ public:
 		*retval = xmlrpc_c::value_nil();
 	}
 };
-
-void xmlrpc_set_freq(long long rfc)
-{
-	wf->rfcarrier(rfc);
-	show_frequency(rfc);
-}
 
 class Main_set_rig_frequency : public xmlrpc_c::method{
 public:
