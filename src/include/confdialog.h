@@ -199,7 +199,6 @@ extern Fl_Group *tabTHOR;
 extern Fl_Input2 *txtTHORSecondary;
 extern Fl_Check_Button *valTHOR_FILTER;
 extern Fl_Counter *valTHOR_BW;
-extern Fl_Check_Button *valTHOR_SOFT;
 extern Fl_Value_Slider *valThorCWI;
 extern Fl_Counter *valTHOR_PATHS;
 extern Fl_Group *tabRig;

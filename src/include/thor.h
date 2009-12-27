@@ -111,7 +111,6 @@ protected:
 	double sig;
 	double noise;
 	double s2n;
-	double avgsig;
 
 	int synccounter;
 

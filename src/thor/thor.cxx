@@ -65,7 +65,7 @@ void thor::rx_init()
 	counter = 0;
 	phase[0] = 0.0;
 	currmag = prev1mag = prev2mag = 0.0;
-	avgsig = 1e-20;
+//	avgsig = 1e-20;
 	for (int i = 0; i < THORMAXFFTS; i++)
 		phase[i+1] = 0.0;
 	put_MODEstatus(mode);
@@ -316,7 +316,7 @@ void thor::decodePairs(unsigned char symbol)
 void thor::decodesymbol()
 {
 	int c;
-	double fdiff, softmag;
+	double fdiff;//, softmag;
 	unsigned char symbols[4];
 	bool outofrange = false;
 
@@ -332,26 +332,15 @@ void thor::decodesymbol()
 
 	c = (int)floor(fdiff + .5) - 2;
 	if (c < 0) c += THORNUMTONES;
-	
-	if (avgsig < 1e-20) avgsig = 1e-20;
-	
-	avgsig = decayavg( avgsig, currmag, 16);
-	
-	softmag = clamp(255.0 * currmag / avgsig, 0.0, 255.0);
 
 	if (staticburst == true || outofrange == true) // puncture the code
 		symbols[3] = symbols[2] = symbols[1] = symbols[0] = 0;	
-	else if (progdefaults.THOR_SOFT == false) {
+	else {
 		symbols[3] = (c & 1) == 1 ? 255 : 0; c /= 2;
 		symbols[2] = (c & 1) == 1 ? 255 : 0; c /= 2;
 		symbols[1] = (c & 1) == 1 ? 255 : 0; c /= 2;
 		symbols[0] = (c & 1) == 1 ? 255 : 0; c /= 2;
-	} else {
-		symbols[3] = (int)((c & 1) == 1 ? softmag : 0); c /= 2;
-		symbols[2] = (int)((c & 1) == 1 ? softmag : 0); c /= 2;
-		symbols[1] = (int)((c & 1) == 1 ? softmag : 0); c /= 2;
-		symbols[0] = (int)((c & 1) == 1 ? softmag : 0); c /= 2;
-	}
+	} 
 
 	Rxinlv->symbols(symbols);
 

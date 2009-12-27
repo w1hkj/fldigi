@@ -1281,13 +1281,6 @@ resetTHOR();
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *valTHOR_SOFT=(Fl_Check_Button *)0;
-
-static void cb_valTHOR_SOFT(Fl_Check_Button* o, void*) {
-  progdefaults.THOR_SOFT = o->value();
-progdefaults.changed = true;
-}
-
 Fl_Value_Slider *valThorCWI=(Fl_Value_Slider *)0;
 
 static void cb_valThorCWI(Fl_Value_Slider* o, void*) {
@@ -3061,7 +3054,6 @@ an merging"));
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
           { tabCW = new Fl_Group(0, 50, 500, 320, _("CW"));
-            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 500, 320);
               tabsCW->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
@@ -3529,6 +3521,7 @@ an merging"));
             tabOlivia->end();
           } // Fl_Group* tabOlivia
           { tabPSK = new Fl_Group(0, 50, 517, 320, _("PSK"));
+            tabPSK->hide();
             { tabsPSK = new Fl_Tabs(0, 50, 517, 320);
               tabsPSK->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
@@ -3840,7 +3833,7 @@ an merging"));
           } // Fl_Group* tabRTTY
           { tabTHOR = new Fl_Group(0, 50, 500, 320, _("Thor"));
             tabTHOR->hide();
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 190);
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 170);
               o->box(FL_ENGRAVED_FRAME);
               { txtTHORSecondary = new Fl_Input2(15, 87, 360, 40, _("Secondary Text"));
                 txtTHORSecondary->tooltip(_("Text to send during keyboard idle times"));
@@ -3875,13 +3868,7 @@ an merging"));
                 valTHOR_BW->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.THOR_BW);
               } // Fl_Counter* valTHOR_BW
-              { Fl_Check_Button* o = valTHOR_SOFT = new Fl_Check_Button(15, 171, 120, 20, _("Soft decoding"));
-                valTHOR_SOFT->tooltip(_("Detector thresholds track S/N"));
-                valTHOR_SOFT->down_box(FL_DOWN_BOX);
-                valTHOR_SOFT->callback((Fl_Callback*)cb_valTHOR_SOFT);
-                o->value(progdefaults.THOR_SOFT);
-              } // Fl_Check_Button* valTHOR_SOFT
-              { Fl_Value_Slider* o = valThorCWI = new Fl_Value_Slider(15, 218, 260, 20, _("CWI threshold"));
+              { Fl_Value_Slider* o = valThorCWI = new Fl_Value_Slider(15, 194, 260, 20, _("CWI threshold"));
                 valThorCWI->tooltip(_("CWI detection and suppression"));
                 valThorCWI->type(1);
                 valThorCWI->step(0.01);
@@ -3890,7 +3877,7 @@ an merging"));
                 valThorCWI->align(FL_ALIGN_TOP);
                 o->value(progdefaults.ThorCWI);
               } // Fl_Value_Slider* valThorCWI
-              { Fl_Counter* o = valTHOR_PATHS = new Fl_Counter(353, 217, 75, 21, _("Paths (hidden)"));
+              { Fl_Counter* o = valTHOR_PATHS = new Fl_Counter(353, 193, 75, 21, _("Paths (hidden)"));
                 valTHOR_PATHS->type(1);
                 valTHOR_PATHS->minimum(4);
                 valTHOR_PATHS->maximum(8);

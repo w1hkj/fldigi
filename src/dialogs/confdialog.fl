@@ -89,7 +89,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open
+        callback {progdefaults.changed = true;} open selected
         xywh {0 25 500 345} when 1
       } {
         Fl_Group {} {
@@ -150,7 +150,7 @@ progdefaults.changed = true;}
           class Fl_Input2
         }
         Fl_Group grpNoise {
-          label {Test Signal - Do NOT use with transmitter} open selected
+          label {Test Signal - Do NOT use with transmitter} open
           xywh {5 203 490 165} box ENGRAVED_FRAME align 21 hide
         } {
           Fl_Check_Button btnNoiseOn {
@@ -854,7 +854,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 500 320} selection_color 50
@@ -1295,7 +1295,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabPSK {
             label PSK open
-            xywh {0 50 517 320}
+            xywh {0 50 517 320} hide
           } {
             Fl_Tabs tabsPSK {open
               xywh {0 50 517 320} selection_color 50
@@ -1599,7 +1599,7 @@ progdefaults.changed = true;}
             xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
-              xywh {5 60 490 190} box ENGRAVED_FRAME
+              xywh {5 60 490 170} box ENGRAVED_FRAME
             } {
               Fl_Input txtTHORSecondary {
                 label {Secondary Text}
@@ -1625,25 +1625,18 @@ progdefaults.changed = true;}
                 tooltip {Filter bandwidth relative to signal width} xywh {156 141 63 20} type Simple align 8 minimum 1 maximum 2 value 1.5
                 code0 {o->value(progdefaults.THOR_BW);}
               }
-              Fl_Check_Button valTHOR_SOFT {
-                label {Soft decoding}
-                callback {progdefaults.THOR_SOFT = o->value();
-progdefaults.changed = true;}
-                tooltip {Detector thresholds track S/N} xywh {15 171 120 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.THOR_SOFT);}
-              }
               Fl_Value_Slider valThorCWI {
                 label {CWI threshold}
                 callback {progdefaults.ThorCWI = o->value();
 progdefaults.changed = true;}
-                tooltip {CWI detection and suppression} xywh {15 218 260 20} type Horizontal align 1 textsize 14
+                tooltip {CWI detection and suppression} xywh {15 194 260 20} type Horizontal align 1 textsize 14
                 code0 {o->value(progdefaults.ThorCWI);}
               }
               Fl_Counter valTHOR_PATHS {
                 label {Paths (hidden)}
                 callback {progdefaults.THOR_PATHS = (int)o->value();
 progdefaults.changed = true;}
-                xywh {353 217 75 21} type Simple align 1 minimum 4 maximum 8 step 1 value 5
+                xywh {353 193 75 21} type Simple align 1 minimum 4 maximum 8 step 1 value 5
                 code0 {o->value(progdefaults.THOR_PATHS);}
                 code1 {o->hide();}
               }

@@ -373,9 +373,6 @@
         ELEM_(int, THOR_PATHS, "THORPATHS",                                             \
               "This setting is currently unused",                                       \
               5)                                                                        \
-        ELEM_(bool, THOR_SOFT, "THORSOFT",                                              \
-              "Soft decoding (detector thresholds track S/N)",                          \
-              false)                                                                    \
         ELEM_(double, ThorCWI, "THORCWI",                                               \
               "CWI threshold (CWI detection and suppression)",                          \
               0.0)                                                                      \
