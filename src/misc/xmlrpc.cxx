@@ -760,7 +760,7 @@ public:
 	Main_get_sb()
 	{
 		_signature = "s:n";
-		_help = "[DEPRECATED] Returns the current waterfall sideband.";
+		_help = "[DEPRECATED; use main.get_wf_sideband and/or rig.get_mode]";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
@@ -774,7 +774,7 @@ public:
 	Main_set_sb()
 	{
 		_signature = "n:s";
-		_help = "[DEPRECATED] Sets the rig or waterfall sideband to USB or LSB.";
+		_help = "[DEPRECATED; use main.set_wf_sideband and/or rig.set_mode]";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
@@ -854,7 +854,7 @@ void xmlrpc_set_qsy(long long rfc, long long fmid)
 		active_modem->set_freq((int)fmid);
 	wf->rfcarrier(rfc);
 	wf->movetocenter();
-    show_frequency(rfc);
+	show_frequency(rfc);
 }
 
 class Main_set_freq : public xmlrpc_c::method
@@ -1298,7 +1298,7 @@ public:
 	Main_rsid()
 	{
 		_signature = "n:n";
-		_help = "Deprecated; use main.{get,set,toggle}_rsid instead.";
+		_help = "[DEPRECATED; use main.{get,set,toggle}_rsid]";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
@@ -1330,10 +1330,10 @@ public:
 	}
 };
 
-class Main_set_rig_name : public xmlrpc_c::method
+class Rig_set_name : public xmlrpc_c::method
 {
 public:
-	Main_set_rig_name()
+	Rig_set_name()
 	{
 		_signature = "n:s";
 		_help = "Sets the rig name for xmlrpc rig";
@@ -1350,32 +1350,32 @@ public:
 	}
 };
 
-void xmlrpc_set_freq(long long rfc)
+class Rig_set_frequency : public xmlrpc_c::method
 {
-	wf->rfcarrier(rfc);
-	show_frequency(rfc);
-}
-
-class Main_set_rig_frequency : public xmlrpc_c::method{
 public:
-	Main_set_rig_frequency()
+	Rig_set_frequency()
 	{
 		_signature = "d:d";
 		_help = "Sets the RF carrier frequency. Returns the old value.";
+	}
+	static void set_frequency(long long rfc)
+	{
+		wf->rfcarrier(rfc);
+		show_frequency(rfc);
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		double rfc = wf->rfcarrier();
 		long long int fnew = (long long int)params.getDouble(0, 0.0);
-		REQ_LOCK(xmlrpc_set_freq, fnew);
+		REQ_LOCK(set_frequency, fnew);
 		*retval = xmlrpc_c::value_double(rfc);
 	}
 };
 
-class Main_set_rig_modes : public xmlrpc_c::method
+class Rig_set_modes : public xmlrpc_c::method
 {
 public:
-	Main_set_rig_modes()
+	Rig_set_modes()
 	{
 		_signature = "n:A";
 		_help = "Sets the list of available rig modes";
@@ -1396,13 +1396,13 @@ public:
 	}
 };
 
-class Main_set_rig_mode : public xmlrpc_c::method
+class Rig_set_mode : public xmlrpc_c::method
 {
 public:
-	Main_set_rig_mode()
+	Rig_set_mode()
 	{
 		_signature = "n:s";
-		_help = "Sets a mode previously designated by main.set_rig_modes";
+		_help = "Selects a mode previously added by rig.set_modes";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
@@ -1411,10 +1411,10 @@ public:
 	}
 };
 
-class Main_get_rig_modes : public xmlrpc_c::method
+class Rig_get_modes : public xmlrpc_c::method
 {
 public:
-	Main_get_rig_modes()
+	Rig_get_modes()
 	{
 		_signature = "A:n";
 		_help = "Returns the list of available rig modes";
@@ -1428,10 +1428,10 @@ public:
 	}
 };
 
-class Main_get_rig_mode : public xmlrpc_c::method
+class Rig_get_mode : public xmlrpc_c::method
 {
 public:
-	Main_get_rig_mode()
+	Rig_get_mode()
 	{
 		_signature = "s:n";
 		_help = "Returns the name of the current transceiver mode";
@@ -1443,10 +1443,10 @@ public:
 };
 
 
-class Main_set_rig_bandwidths : public xmlrpc_c::method
+class Rig_set_bandwidths : public xmlrpc_c::method
 {
 public:
-	Main_set_rig_bandwidths()
+	Rig_set_bandwidths()
 	{
 		_signature = "n:A";
 		_help = "Sets the list of available rig bandwidths";
@@ -1466,13 +1466,13 @@ public:
 	}
 };
 
-class Main_set_rig_bandwidth : public xmlrpc_c::method
+class Rig_set_bandwidth : public xmlrpc_c::method
 {
 public:
-	Main_set_rig_bandwidth()
+	Rig_set_bandwidth()
 	{
 		_signature = "n:s";
-		_help = "Sets a bandwidth previously added by main.set_rig_bandwidths";
+		_help = "Selects a bandwidth previously added by rig.set_bandwidths";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
@@ -1481,10 +1481,10 @@ public:
 	}
 };
 
-class Main_get_rig_bandwidths : public xmlrpc_c::method
+class Rig_get_bandwidths : public xmlrpc_c::method
 {
 public:
-	Main_get_rig_bandwidths()
+	Rig_get_bandwidths()
 	{
 		_signature = "A:n";
 		_help = "Returns the list of available rig bandwidths";
@@ -1498,10 +1498,10 @@ public:
 	}
 };
 
-class Main_get_rig_bandwidth : public xmlrpc_c::method
+class Rig_get_bandwidth : public xmlrpc_c::method
 {
 public:
-	Main_get_rig_bandwidth()
+	Rig_get_bandwidth()
 	{
 		_signature = "s:n";
 		_help = "Returns the name of the current transceiver bandwidth";
@@ -1510,6 +1510,59 @@ public:
 	{
 		*retval = xmlrpc_c::value_string(qso_opBW->value());
 	}
+};
+
+// =============================================================================
+
+class Main_set_rig_name : public Rig_set_name
+{
+public:
+	Main_set_rig_name() { _help = "[DEPRECATED; use rig.set_name]"; }
+};
+class Main_set_rig_frequency : public Rig_set_frequency
+{
+public:
+	Main_set_rig_frequency() { _help = "[DEPRECATED; use rig.set_frequency]"; }
+};
+class Main_set_rig_modes : public Rig_set_modes
+{
+public:
+	Main_set_rig_modes() { _help = "[DEPRECATED; use rig.set_modes"; }
+};
+class Main_set_rig_mode : public Rig_set_mode
+{
+public:
+	Main_set_rig_mode() { _help = "[DEPRECATED; use rig.set_mode"; }
+};
+class Main_get_rig_modes : public Rig_get_modes
+{
+public:
+	Main_get_rig_modes() { _help = "[DEPRECATED; use rig.get_modes]"; }
+};
+class Main_get_rig_mode : public Rig_get_mode
+{
+public:
+	Main_get_rig_mode() { _help = "[DEPRECATED; use rig.get_mode]"; }
+};
+class Main_set_rig_bandwidths : public Rig_set_bandwidths
+{
+public:
+	Main_set_rig_bandwidths() { _help = "[DEPRECATED; use rig.set_bandwidths]"; }
+};
+class Main_set_rig_bandwidth : public Rig_set_bandwidth
+{
+public:
+	Main_set_rig_bandwidth() { _help = "[DEPRECATED; use rig.set_bandwidth]"; }
+};
+class Main_get_rig_bandwidths : public Rig_set_bandwidths
+{
+public:
+	Main_get_rig_bandwidths() { _help = "[DEPRECATED; use rig.get_bandwidths]"; }
+};
+class Main_get_rig_bandwidth : public Rig_get_bandwidth
+{
+public:
+	Main_get_rig_bandwidth() { _help = "[DEPRECATED; use rig.get_bandwidth]"; }
 };
 
 // =============================================================================
@@ -1611,6 +1664,38 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		REQ_LOCK(set_text, inpName, params.getString(0));
+
+		*retval = xmlrpc_c::value_nil();
+	}
+};
+
+class Log_set_qth : public xmlrpc_c::method
+{
+public:
+	Log_set_qth()
+	{
+		_signature = "n:s";
+		_help = "Sets the QTH field contents.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		REQ_LOCK(set_text, inpQth, params.getString(0));
+
+		*retval = xmlrpc_c::value_nil();
+	}
+};
+
+class Log_set_locator : public xmlrpc_c::method
+{
+public:
+	Log_set_locator()
+	{
+		_signature = "n:s";
+		_help = "Sets the Locator field contents.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		REQ_LOCK(set_text, inpLoc, params.getString(0));
 
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -1786,18 +1871,10 @@ public:
 	}
 };
 
-class Log_get_sb : public xmlrpc_c::method
+class Log_get_sb : public Main_get_wf_sideband
 {
 public:
-	Log_get_sb()
-	{
-		_signature = "s:n";
-		_help = "Returns the current sideband.";
-	}
-	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
-		*retval = xmlrpc_c::value_string(wf->USB() ? "USB" : "LSB");
-	}
+	Log_get_sb() { _help = "[DEPRECATED; use main.get_wf_sideband]"; }
 };
 
 class Log_get_notes : public xmlrpc_c::method
@@ -2147,6 +2224,17 @@ public:
 	ELEM_(Main_run_macro, "main.run_macro")				\
 	ELEM_(Main_get_max_macro_id, "main.get_max_macro_id")		\
 									\
+	ELEM_(Rig_set_name, "rig.set_name")				\
+	ELEM_(Rig_set_frequency, "rig.set_frequency")			\
+	ELEM_(Rig_set_modes, "rig.set_modes")				\
+	ELEM_(Rig_set_mode, "rig.set_mode")				\
+	ELEM_(Rig_get_modes, "rig.get_modes")				\
+	ELEM_(Rig_get_mode, "rig.get_mode")				\
+	ELEM_(Rig_set_bandwidths, "rig.set_bandwidths")			\
+	ELEM_(Rig_set_bandwidth, "rig.set_bandwidth")			\
+	ELEM_(Rig_get_bandwidth, "rig.get_bandwidth")			\
+	ELEM_(Rig_get_bandwidths, "rig.get_bandwidths")			\
+									\
 	ELEM_(Log_get_freq, "log.get_frequency")			\
 	ELEM_(Log_get_time_on, "log.get_time_on")			\
 	ELEM_(Log_get_time_off, "log.get_time_off")			\
@@ -2171,6 +2259,8 @@ public:
 	ELEM_(Log_clear, "log.clear")					\
 	ELEM_(Log_set_call, "log.set_call")				\
 	ELEM_(Log_set_name, "log.set_name")				\
+	ELEM_(Log_set_qth, "log.set_qth")                               \
+	ELEM_(Log_set_locator, "log.set_locator")                       \
 									\
 	ELEM_(Text_get_rx_length, "text.get_rx_length")			\
 	ELEM_(Text_get_rx, "text.get_rx")				\
