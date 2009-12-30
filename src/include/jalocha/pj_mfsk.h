@@ -2788,10 +2788,11 @@ private:
 
             int Dist = (int)BlockPhase - (int)SyncBestBlockPhase;
             if (Dist < 0) Dist += BlockPhases;
+
             if (Dist == (int)(BlockPhases / 2)) {
                 Type BestNoise = sqrt( NoiseEnergyPtr->Output);
-                if (BestNoise <= 0) BestNoise = 0.0001;
-                SyncSNR = SyncBestSignal / BestNoise;
+                if (BestNoise == 0) SyncSNR = 0;
+                else SyncSNR = SyncBestSignal / BestNoise;
 //                printf(
 //                "%d, %6.3f/%6.3f = %5.2f\n", 
 //                    SyncBestFreqOffset,
@@ -2809,7 +2810,9 @@ private:
                         Block >>= 8; 
                     }
                 }
+                if (SyncSNR > 100) SyncSNR = 0.0;
             }
+
             BlockPhase++;
         }
         if (BlockPhase >= BlockPhases) BlockPhase -= BlockPhases;

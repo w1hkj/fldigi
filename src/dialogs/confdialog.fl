@@ -1251,6 +1251,7 @@ progdefaults.changed = true;}
               Fl_Choice mnuOlivia_Bandwidth {
                 label Bandwidth
                 callback {progdefaults.oliviabw = o->value();
+set_olivia_default_integ();
 resetOLIVIA();
 progdefaults.changed = true;} open
                 tooltip {Select bandwidth} xywh {60 80 85 20} down_box BORDER_BOX align 8
@@ -1260,6 +1261,7 @@ progdefaults.changed = true;} open
               Fl_Choice mnuOlivia_Tones {
                 label Tones
                 callback {progdefaults.oliviatones = o->value();
+set_olivia_default_integ();
 resetOLIVIA();
 progdefaults.changed = true;} open
                 tooltip {Select number of tones} xywh {321 80 70 20} down_box BORDER_BOX align 8

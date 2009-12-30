@@ -463,10 +463,29 @@ Fl_Menu_Item quick_change_rtty[] = {
 	{ 0 }
 };
 
+inline int minmax(int val, int min, int max)
+{
+	val = val < max ? val : max;
+	return val > min ? val : min;
+}
+
+void set_olivia_default_integ()
+{
+	int tones = progdefaults.oliviatones;
+	int bw = progdefaults.oliviabw;
+
+	if (tones < 1) tones = 1;
+	int depth = minmax( (8 * (1 << bw)) / (1 << tones), 4, 4 * (1 << bw));
+
+	progdefaults.oliviasinteg = depth;
+	cntOlivia_sinteg->value(depth);
+}
+
 void set_olivia_tab_widgets()
 {
 	mnuOlivia_Bandwidth->value(progdefaults.oliviabw);
 	mnuOlivia_Tones->value(progdefaults.oliviatones);
+	set_olivia_default_integ();
 }
 
 void cb_oliviaA(Fl_Widget *w, void *arg)

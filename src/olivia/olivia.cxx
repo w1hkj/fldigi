@@ -233,9 +233,8 @@ int olivia::rx_process(const double *buf, int len)
 {
 	int c;
 	unsigned char ch = 0;
-//	double snr;
-	static char msg1[20];
-//	static char msg2[20];
+	static double snr = 0;
+	static char msg2[20];
 
 	if (tones	!= progdefaults.oliviatones ||
 		bw 		!= progdefaults.oliviabw ||
@@ -256,44 +255,34 @@ int olivia::rx_process(const double *buf, int len)
 		Rx->Preset();
 	}
 
-	Rx->SyncThreshold = progStatus.sqlonoff ? progStatus.sldrSquelchValue / 2.0 : 0.0;
+	Rx->SyncThreshold = progStatus.sqlonoff ? 
+		clamp(progStatus.sldrSquelchValue / 5.0 + 3.0, 0, 90.0) : 0.0;
 
     Rx->Process(buf, len);
 
-	
-//	bool gotchar = false;
+	double noisepwr1 = 0, noisepwr2 = 0, noisepwr = 0, sigpwr = 0;
+	noisepwr1 = wf->powerDensity((1.0 * frequency - Rx->Bandwidth / 2.0 - 100.0), 50.0);
+	noisepwr2 = wf->powerDensity((1.0 * frequency + Rx->Bandwidth / 2.0 + 100.0), 50.0);
+	sigpwr   = wf->powerDensity(1.0 * frequency, 1.0 * Rx->Bandwidth);
+	noisepwr = noisepwr1 < noisepwr ? noisepwr1 : noisepwr2;
+	if (noisepwr == 0) noisepwr = 1.0e-10;
+	snr = decayavg( snr, sigpwr / noisepwr, 8);
+	metric = clamp( 5.0 * (Rx->SignalToNoiseRatio() - 3.0), 0, 100);
+	if (metric < 99)
+	display_metric(metric);
+
+	bool gotchar = false;
 	while (Rx->GetChar(ch) > 0) {
 		if ((c = unescape(ch)) != -1 && c > 7) {
-    		put_rx_char(c);
-//            gotchar = true;
-        }
-		metric = clamp( 4 * Rx->SignalToNoiseRatio(), 0, 100);
-		display_metric(metric);
-	    snprintf(msg1, sizeof(msg1), "f/o %+4.1f Hz", Rx->FrequencyOffset());
-        put_Status1(msg1, 5, STATUS_CLEAR);
+			put_rx_char(c);
+			gotchar = true;
+		}
     }
-//    if (gotchar) {
-//        float noisepwr1 = wf->powerDensity((1.0 * frequency - Rx->Bandwidth / 2.0 - 100.0), 1.0*bw/tones),
-//               noisepwr2 = wf->powerDensity((1.0 * frequency + Rx->Bandwidth / 2.0 + 100.0), 1.0*bw/tones),
-//               noisepwr = 0,
-//               sigpwr   = wf->powerDensity(1.0 * frequency, 1.0 * Rx->Bandwidth) / tones;
+	if (gotchar) {
+		snprintf(msg2, sizeof(msg2), "f/o %+4.1f Hz", Rx->FrequencyOffset());
+		put_Status2(msg2, 5, STATUS_CLEAR);
+	}
 
-//       noisepwr = noisepwr1 < noisepwr2 ? noisepwr1 : noisepwr2;
-//		if (noisepwr <= 0) noisepwr = 1e-9;
-//        if (noisepwr > 0)
-//			metric = decayavg( metric, sigpwr / noisepwr, 16);
-
-//	    snprintf(msg1, sizeof(msg1), "s/n %4.1f dB", 10.0 * log10(metric));
-//	    put_Status1(msg1, 5, STATUS_CLEAR);
-
-//	    snprintf(msg2, sizeof(msg2), "f/o %+4.1f Hz", Rx->FrequencyOffset());
-//        put_Status2(msg2, 5, STATUS_CLEAR);
-
-//    	snr = 4 * Rx->SignalToNoiseRatio();
-//	    display_metric(snr > 100.0 ? 100.0 : snr );
-//	    display_metric(clamp(4*Rx->SignalToNoiseRatio(), 0, 100);
-//    }
-    
 	return 0;
 }
 
@@ -334,7 +323,8 @@ void olivia::restart()
 	Rx->Bandwidth = Tx->Bandwidth;
 	Rx->SyncMargin = smargin;
 	Rx->SyncIntegLen = sinteg;
-	Rx->SyncThreshold = progStatus.sqlonoff ? progStatus.sldrSquelchValue : 0.0;
+	Rx->SyncThreshold = progStatus.sqlonoff ? 
+		clamp(progStatus.sldrSquelchValue / 5.0 + 3.0, 0, 90.0) : 0.0;
 
 	Rx->SampleRate = samplerate;
 	Rx->InputSampleRate = samplerate;

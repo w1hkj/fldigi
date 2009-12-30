@@ -997,6 +997,7 @@ Fl_Choice *mnuOlivia_Bandwidth=(Fl_Choice *)0;
 
 static void cb_mnuOlivia_Bandwidth(Fl_Choice* o, void*) {
   progdefaults.oliviabw = o->value();
+set_olivia_default_integ();
 resetOLIVIA();
 progdefaults.changed = true;
 }
@@ -1005,6 +1006,7 @@ Fl_Choice *mnuOlivia_Tones=(Fl_Choice *)0;
 
 static void cb_mnuOlivia_Tones(Fl_Choice* o, void*) {
   progdefaults.oliviatones = o->value();
+set_olivia_default_integ();
 resetOLIVIA();
 progdefaults.changed = true;
 }
