@@ -361,6 +361,7 @@ int main(int argc, char ** argv)
 			LOG_ERROR("Could not start PSK reporter: %s", pskrep_error());
 
 	notify_start();
+	mode_browser = new Mode_Browser;
 
 	int ret = Fl::run();
 

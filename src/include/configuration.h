@@ -66,6 +66,12 @@
         ELEM_(bool, rsid_post, "RSIDPOST",                                              \
               "Transmit an RSID signal when modem data is concluded",                   \
               false)                                                                    \
+        ELEM_(mode_set_t, rsid_rx_modes, "RSIDRXMODESEXCLUDE",                          \
+              "Mode names for which RSID reception is disabled",                        \
+              mode_set_t())                                                             \
+        ELEM_(mode_set_t, rsid_tx_modes, "RSIDTXMODESEXCLUDE",                          \
+              "Mode names for which RSID transmission is disabled",                     \
+              mode_set_t())                                                             \
                                                                                         \
         ELEM_(bool, slowcpu, "SLOWCPU",                                                 \
               "Disable expensive processing in some decoders",                          \
@@ -303,6 +309,9 @@
         ELEM_(int, CWIDwpm, "IDWPM",                                                    \
               "CW ID speed (WPM)",                                                      \
               18)                                                                       \
+        ELEM_(mode_set_t, cwid_modes, "CWIDMODESEXCLUDE",                               \
+              "Mode names for which CWID transmission is disabled",                     \
+              mode_set_t())                                                             \
         ELEM_(bool, QSKadjust, "QSKADJUST",                                             \
               "Send a continuous stream of test characters as the QSK signal",          \
               false)                                                                    \
@@ -473,6 +482,9 @@
         ELEM_(bool, ID_SMALL, "IDSMALL",                                                \
               "Use small video ID font",                                                \
               true)                                                                     \
+        ELEM_(mode_set_t, videoid_modes, "VIDEOIDMODESEXCLUDE",                         \
+              "Mode names for which Video ID transmission is disabled",                 \
+              mode_set_t())                                                             \
         ELEM_(bool, macrotextid, "", "",  false)                                        \
         ELEM_(bool, docked_rig_control, "DOCKEDRIGCONTROL",                             \
               "Docked rig control",                                                     \
@@ -495,6 +507,9 @@
         ELEM_(bool, menuicons, "MENUICONS",                                             \
               "Show menu icons",                                                        \
               true)                                                                     \
+        ELEM_(mode_set_t, visible_modes, "VISIBLEMODES",                                \
+              "Modes that are not shown in the opmodes menu",                           \
+              mode_set_t())                                                             \
         ELEM_(bool, rxtext_clicks_qso_data, "RXTEXTCLICKS",                             \
               "Double-click on RX text enters QSO data",                                \
               false)                                                                    \

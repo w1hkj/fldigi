@@ -217,3 +217,96 @@ void notify_dialog::notify(const char* msg, double timeout, bool delete_on_hide_
 	button.take_focus();
 	show();
 }
+
+// =============================================================================
+
+#ifdef BUILD_FLDIGI
+
+#include "icons.h"
+#include "gettext.h"
+
+Mode_Browser::Mode_Browser(void)
+	: Fl_Double_Window(170, 460), changed_cb(NULL), changed_args(NULL)
+{
+	int bw = 80, bh = 20, pad = 2;
+
+	modes = new Fl_Check_Browser(pad, pad, w() - pad, h() - 2 * (bh + 2 * pad));
+	for (int i = 0; i < NUM_RXTX_MODES; i++)
+		modes->add(mode_info[i].name);
+	modes->callback(modes_cb, this);
+	modes->when(FL_WHEN_CHANGED);
+
+	all_button = new Fl_Button(modes->x(), modes->y() + modes->h() + pad,
+				   bw, bh, _("Select All"));
+	all_button->callback(button_cb, this);
+
+	none_button = new Fl_Button(all_button->x(), all_button->y() + all_button->h() + pad,
+				    all_button->w(), all_button->h(), _("Clear All"));
+	none_button->callback(button_cb, this);
+
+	close_button = new Fl_Button(w() - none_button->w() - pad, none_button->y(),
+				     none_button->w(), none_button->h(),
+				     make_icon_label(_("Close"), close_icon));
+	set_icon_label(close_button);
+	close_button->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
+	close_button->callback(button_cb, this);
+
+	end();
+	resizable(modes);
+	xclass(PACKAGE_TARNAME);
+}
+
+Mode_Browser::~Mode_Browser(void)
+{
+	free_icon_label(close_button);
+	delete close_button;
+	delete all_button;
+	delete none_button;
+	delete modes;
+}
+
+void Mode_Browser::show(mode_set_t* b)
+{
+	store = b;
+	modes->check_none();
+	for (size_t i = 0; i < b->size(); i++)
+		modes->checked(i + 1, store->test(i));
+	modes->position(0);
+	Fl_Double_Window::show();
+}
+
+void Mode_Browser::callback(Fl_Callback* cb, void* args)
+{
+	changed_cb = cb;
+	changed_args = args;
+}
+
+void Mode_Browser::modes_cb(Fl_Widget* w, void* arg)
+{
+	Mode_Browser* m = static_cast<Mode_Browser*>(arg);
+	int sel = m->modes->value();
+	m->store->set(sel - 1, m->modes->checked(sel));
+	if (m->changed_cb)
+		m->changed_cb(m, m->changed_args);
+}
+
+void Mode_Browser::button_cb(Fl_Widget* w, void* arg)
+{
+	Mode_Browser* m = static_cast<Mode_Browser*>(arg);
+	if (w == m->close_button)
+		m->hide();
+	else {
+		if (w == m->all_button) {
+			m->store->set();
+			m->modes->check_all();
+		}
+		else {
+			m->store->reset();
+			m->modes->check_none();
+		}
+		if (m->changed_cb)
+			m->changed_cb(m, m->changed_args);
+	}
+}
+
+#endif // BUILD_FLDIGI

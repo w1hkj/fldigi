@@ -170,6 +170,42 @@ public:
 	string& str;
 };
 
+#include "re.h"
+
+// Special handling for mode bitsets
+template <>
+class tag_elem<mode_set_t> : public tag_base
+{
+public:
+	tag_elem(const char* t, const char* d, mode_set_t& m) : tag_base(t, d), modes(m) { }
+	void write(ostream& out) const
+        {
+		out << "<!-- " << doc << " -->\n" << '<' << tag << '>';
+		for (size_t i = 0; i < modes.size(); i++)
+			if (!modes.test(i))
+				out << mode_info[i].name << ',';
+		out << ",</" << tag << ">\n\n";
+	}
+	void read(const char* data)
+	{
+		re_t mode_name_re("([^,]+)", REG_EXTENDED);
+		int end;
+
+		modes.set();
+		while (mode_name_re.match(data)) {
+			const char* name = mode_name_re.submatch(1).c_str();
+			for (size_t i = 0; i < modes.size(); i++) {
+				if (!strcmp(mode_info[i].name, name)) {
+					modes.set(i, 0);
+					break;
+				}
+			}
+			mode_name_re.suboff(0, NULL, &end);
+			data += end;
+		}
+	}
+	mode_set_t& modes;
+};
 
 // By redefining the ELEM_ macro, we can control what the CONFIG_LIST macro
 // will expand to, and accomplish several things:
@@ -223,6 +259,16 @@ void configuration::writeDefaultsXML()
 
 bool configuration::readDefaultsXML()
 {
+	// Decode all RSID modes
+	rsid_rx_modes.set();
+	// Don't transmit RSID or VideoID for CW, PSK31, RTTY
+	rsid_tx_modes.set().reset(MODE_CW).reset(MODE_PSK31).reset(MODE_RTTY);
+	videoid_modes = rsid_tx_modes;
+	// Don't transmit CWID for CW
+	cwid_modes.set().reset(MODE_CW);
+	// Show all op modes
+	visible_modes.set();
+
 	string deffname = HomeDir;
 	deffname.append("fldigi_def.xml");
 	ifstream f(deffname.c_str());

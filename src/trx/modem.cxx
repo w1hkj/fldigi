@@ -411,11 +411,13 @@ void modem::videoText()
 		wfid_text(progdefaults.strTextid);
 		progdefaults.macrotextid = false;
 	}
-	if (progdefaults.sendid == true) {
-		wfid_text(mode_info[mode].sname);
-	} else if (progdefaults.macroid == true) {
-		wfid_text(mode_info[mode].sname);
-		progdefaults.macroid = false;
+	if (progdefaults.videoid_modes.test(mode)) {
+		if (progdefaults.sendid == true) {
+			wfid_text(mode_info[mode].sname);
+		} else if (progdefaults.macroid == true) {
+			wfid_text(mode_info[mode].sname);
+			progdefaults.macroid = false;
+		}
 	}
 }
 
@@ -549,7 +551,8 @@ void modem::cwid_sendtext (const string& s)
 
 void modem::cwid()
 {
-	if (progdefaults.CWid == true || progdefaults.macroCWid == true) {
+	if (progdefaults.cwid_modes.test(mode) &&
+	    (progdefaults.CWid || progdefaults.macroCWid)) {
 		string tosend = " DE ";
 		tosend += progdefaults.myCall;
 		cwid_sendtext(tosend);

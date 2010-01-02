@@ -45,4 +45,33 @@ private:
 	int newx;
 };
 
+
+#ifdef BUILD_FLDIGI
+
+#include <FL/Fl_Double_Window.H>
+#include <FL/Fl_Button.H>
+#include <FL/Fl_Check_Browser.H>
+#include "globals.h"
+
+class Mode_Browser : public Fl_Double_Window
+{
+public:
+	Mode_Browser(void);
+	~Mode_Browser(void);
+
+	void show(mode_set_t* b);
+	void callback(Fl_Callback* cb, void* args = 0);
+private:
+	Fl_Button *close_button, *all_button, *none_button;
+	Fl_Check_Browser* modes;
+	mode_set_t* store;
+	Fl_Callback* changed_cb;
+	void* changed_args;
+
+	static void modes_cb(Fl_Widget* w, void* arg);
+	static void button_cb(Fl_Widget* w, void* arg);
+};
+
+#endif // BUILD_FLDIGI
+
 #endif // fl_misc_h_

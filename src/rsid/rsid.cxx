@@ -472,6 +472,10 @@ void cRsId::apply(int iSymbol, int iBin)
 		LOG_INFO("%s", msg);
 		return;
 	}
+	else if (!progdefaults.rsid_rx_modes.test(mbin)) {
+		LOG_DEBUG("Ignoring RSID: %s @ %0.0f Hz", rsid_ids[n].name, freq);
+		return;
+	}
 	else
 		LOG_INFO("RSID: %s @ %0.0f Hz", rsid_ids[n].name, freq);
 
@@ -689,7 +693,13 @@ void cRsId::send(bool preRSID)
 {
 	trx_mode mode = active_modem->get_mode();
 
-	if (!progdefaults.rsid_post && !preRSID) return;
+	if (!progdefaults.rsid_tx_modes.test(mode)) {
+		LOG_DEBUG("Mode %s excluded, not sending RSID", mode_info[mode].sname);
+		return;
+	}
+
+	if (!progdefaults.rsid_post && !preRSID)
+		return;
 
 	unsigned char rmode = RSID_NONE;
 

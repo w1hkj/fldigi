@@ -2074,6 +2074,11 @@ if (bWF_only) return;
 
 #define LOG_TO_FILE_MLABEL _("Log all RX/TX text")
 #define RIGCONTROL_MLABEL _("Rig Control")
+#define OPMODES_MLABEL _("Op &Mode")
+#define OPMODES_FEWER _("Show fewer modes")
+#define OPMODES_ALL _("Show all modes")
+#define OLIVIA_MLABEL "Olivia"
+#define RTTY_MLABEL "RTTY"
 #define VIEW_MLABEL _("&View")
 #define MFSK_IMAGE_MLABEL _("&MFSK Image")
 #define CONTEST_MLABEL _("Contest")
@@ -2132,6 +2137,8 @@ void WF_UI()
 	wf->UI_select(progStatus.WF_UI);
 }
 
+static void cb_opmode_show(Fl_Widget* w, void*);
+
 Fl_Menu_Item menu_[] = {
 {_("&File"), 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { make_icon_label(_("Open macros..."), file_open_icon), 0,  (Fl_Callback*)cb_mnuOpenMacro, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
@@ -2159,7 +2166,7 @@ Fl_Menu_Item menu_[] = {
 #endif
 { make_icon_label(_("Exit"), log_out_icon), 'x',  (Fl_Callback*)cb_E, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
-{_("Op &Mode"), 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ OPMODES_MLABEL, 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 
 { mode_info[MODE_CW].name, 0, cb_init_mode, (void *)MODE_CW, 0, FL_NORMAL_LABEL, 0, 14, 0},
 
@@ -2199,7 +2206,7 @@ Fl_Menu_Item menu_[] = {
 { mode_info[MODE_MT63_2000].name, 0,  cb_init_mode, (void *)MODE_MT63_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
-{"Olivia", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ OLIVIA_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { "8/250", 0, cb_oliviaA, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "8/500", 0, cb_oliviaB, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "16/500", 0, cb_oliviaC, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -2231,7 +2238,7 @@ Fl_Menu_Item menu_[] = {
 { mode_info[MODE_PSK500R].name, 0, cb_init_mode, (void *)MODE_PSK500R, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
-{"RTTY", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ RTTY_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { "RTTY-45", 0, cb_rtty45, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "RTTY-50", 0, cb_rtty50, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "RTTY-75", 0, cb_rtty75, (void *)MODE_RTTY, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
@@ -2268,6 +2275,7 @@ Fl_Menu_Item menu_[] = {
 { mode_info[MODE_WWV].name, 0, cb_init_mode, (void *)MODE_WWV, 0, FL_NORMAL_LABEL, 0, 14, 0},
 
 { mode_info[MODE_ANALYSIS].name, 0, cb_init_mode, (void *)MODE_ANALYSIS, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ OPMODES_FEWER, 0, cb_opmode_show, 0, FL_MENU_INVISIBLE, FL_NORMAL_LABEL, FL_HELVETICA_ITALIC, 14, 0 },
 {0,0,0,0,0,0,0,0,0},
 
 {_("&Configure"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
@@ -2323,6 +2331,91 @@ Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 };
 
+static int count_visible_items(Fl_Menu_Item* menu)
+{
+	int n = 0;
+	if (menu->flags & FL_SUBMENU)
+		menu++;
+	while (menu->label()) {
+		if (menu->visible())
+			n++;
+		menu++;
+	}
+	return n;
+}
+
+static bool modes_hidden;
+static void cb_opmode_show(Fl_Widget* w, void*)
+{
+	Fl_Menu_* m = (Fl_Menu_*)w;
+	const char* label = m->mvalue()->label();
+
+	Fl_Menu_Item *item, *opmodes = getMenuItem(OPMODES_MLABEL);
+	if (!strcmp(label, OPMODES_ALL)) {
+		int n = opmodes->size();
+		for (int i = 0; i < n; i++) {
+			item = opmodes + i;
+			if (item->label())
+				item->show();
+		}
+		menu_[m->value()].label(OPMODES_FEWER);
+		modes_hidden = false;
+	}
+	else {
+		int n = opmodes->size() - 1;
+		for (int i = 0; i < n; i++) {
+			item = opmodes + i;
+			if (item->label() && item->callback() == cb_init_mode) {
+				intptr_t mode = (intptr_t)item->user_data();
+				if (mode < NUM_RXTX_MODES) {
+					if (progdefaults.visible_modes.test(mode))
+						item->show();
+					else
+						item->hide();
+				}
+			}
+		}
+		for (int i = 0; i < n; i++) {
+			item = opmodes + i;
+			if (item->flags & FL_SUBMENU) {
+				if (count_visible_items(item))
+					item->show();
+				else
+					item->hide();
+			}
+		}
+		if (progdefaults.visible_modes.test(MODE_OLIVIA))
+			getMenuItem("Olivia")->show();
+		else
+			getMenuItem("Olivia")->hide();
+		if (progdefaults.visible_modes.test(MODE_RTTY))
+			getMenuItem("RTTY")->show();
+		else
+			getMenuItem("RTTY")->hide();
+		menu_[m->value()].label(OPMODES_ALL);
+		modes_hidden = true;
+	}
+	m->redraw();
+}
+
+void toggle_visible_modes(Fl_Widget*, void*)
+{
+	Fl_Menu_Item* show_modes = modes_hidden ? getMenuItem(OPMODES_ALL) : getMenuItem(OPMODES_FEWER);
+
+	if (!(~progdefaults.visible_modes).none()) { // some modes disabled
+		show_modes->label(OPMODES_FEWER);
+		show_modes->show();
+		(show_modes - 1)->flags |= FL_MENU_DIVIDER;
+		mnu->value(show_modes);
+		show_modes->do_callback(mnu, (void*)0);
+	}
+	else {
+		mnu->value(show_modes);
+		show_modes->do_callback(mnu, (void*)0);
+		show_modes->hide();
+		(show_modes - 1)->flags &= ~FL_MENU_DIVIDER;
+	}
+}
 
 Fl_Menu_Item *getMenuItem(const char *caption, Fl_Menu_Item* submenu)
 {
@@ -2657,6 +2750,7 @@ void create_fl_digi_main_primary() {
 					set_icon_label(&menu_[i]);
 			}
 			mnu->menu(menu_);
+			toggle_visible_modes(NULL, NULL);
 
 			btnAutoSpot = new Fl_Light_Button(progStatus.mainW - 250 - pad, 0, 50, Hmenu, "Spot");
 			btnAutoSpot->selection_color(FL_YELLOW);

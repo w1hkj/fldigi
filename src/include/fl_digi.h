@@ -219,6 +219,8 @@ const char* ztime(void);
 
 extern void setTabColors();
 
+extern void toggle_visible_modes(Fl_Widget*, void*);
+
 void qsy(long long rfc, long long fmid = -1LL);
 
 void note_qrg(bool no_dup = true, const char* prefix = " ", const char* suffix = " ",

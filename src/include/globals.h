@@ -130,7 +130,8 @@ enum {
 	MODE_WWV,
 	MODE_ANALYSIS,
 
-	NUM_MODES
+	NUM_MODES,
+	NUM_RXTX_MODES = NUM_MODES - 2
 };
 
 typedef intptr_t trx_mode;
@@ -170,6 +171,8 @@ public:
 std::ostream& operator<<(std::ostream& s, const qrg_mode_t& m);
 std::istream& operator>>(std::istream& s, qrg_mode_t& m);
 
+#include <bitset>
+class mode_set_t : public std::bitset<NUM_RXTX_MODES> { };
 
 enum band_t {
 	BAND_160M, BAND_80M, BAND_75M, BAND_60M, BAND_40M, BAND_30M, BAND_20M,
