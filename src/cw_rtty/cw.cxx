@@ -335,7 +335,7 @@ int cw::rx_process(const double *buf, int len)
 // Compute a variable threshold value for tone 
 // detection. Fast attack and slow decay.
 			if (value > agc_peak)
-				agc_peak = decayavg(agc_peak, value, 10.0);
+				agc_peak = decayavg(agc_peak, value, 80.0);
 			else
 				agc_peak = decayavg(agc_peak, value, 800.0);
 
@@ -356,12 +356,13 @@ int cw::rx_process(const double *buf, int len)
 			if (handle_event(CW_QUERY_EVENT, &c) == CW_SUCCESS) {
 				while (*c)
 					put_rx_char(*c++);
-                update_syncscope();
-    			display_metric(metric);
-            }
+				update_syncscope();
+//				display_metric(metric);
+			}
 		}
 	}
-    clear_syncscope();
+	clear_syncscope();
+	display_metric(metric);
 
 	return 0;
 }
