@@ -204,30 +204,35 @@ psk::psk(trx_mode pskmode) : modem()
 		_qpsk = true;
 		_pskr = false;
 		dcdbits = 32;
+		cap |= CAP_REV;
 		break;
 	case MODE_QPSK63:
 		symbollen = 128;
 		_qpsk = true;
 		_pskr = false;
 		dcdbits = 64;
+		cap |= CAP_REV;
 		break;
 	case MODE_QPSK125:
 		symbollen = 64;
 		_qpsk = true;
 		_pskr = false;
 		dcdbits = 128;
+		cap |= CAP_REV;
 		break;
 	case MODE_QPSK250:
 		symbollen = 32;
 		_qpsk = true;
 		_pskr = false;
 		dcdbits = 256;
+		cap |= CAP_REV;
 		break;
 	case MODE_QPSK500:
 		symbollen = 16;
 		_qpsk = true;
 		_pskr = false;
 		dcdbits = 512;
+		cap |= CAP_REV;
 		break;
 
 	case MODE_PSK63F:  // As per Multipsk (BPSK63 + FEC + MFSK Varicode)
