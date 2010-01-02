@@ -1234,11 +1234,10 @@ void arq::abort()
 	LinkState = ABORT;
 }
 
-
 void arq::sendBeacon (string txt)
 {
 	string deText = "<<< FLARQ Beacon >>> de ";
-	deText += MyCall;
+	deText.append(MyCall);
 	TxTextQueue.clear();//erase();
 	addToTxQue(deText);
 	beaconFrame(txt);

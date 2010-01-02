@@ -4,7 +4,8 @@
 // support for ARQ server/client system such as pskmail and fl_arq
 //
 // Copyright (C) 2006
-//		Dave Freese, W1HKJ
+//		Dave Freese, W1HKJ, 2006, 2007, 2008, 2009, 2010
+//		John Douyere, VK2ETA, 2009, 2010
 //
 // This file is part of fldigi.
 //
@@ -60,6 +61,54 @@
 
 using namespace std;
 
+//======================================================================
+// test code for pskmail eol issues
+
+const char *asc[256] = {
+	"<NUL>", "<SOH>", "<STX>", "<ETX>",
+	"<EOT>", "<ENQ>", "<ACK>", "<BEL>",
+	"<BS>",  "<TAB>", "<LF>",  "<VT>", 
+	"<FF>",  "<CR>",  "<SO>",  "<SI>",
+	"<DLE>", "<DC1>", "<DC2>", "<DC3>",
+	"<DC4>", "<NAK>", "<SYN>", "<ETB>",
+	"<CAN>", "<EM>",  "<SUB>", "<ESC>",
+	"<FS>",  "<GS>",  "<RS>",  "<US>",
+	" ",     "!",     "\"",    "#",    
+	"$",     "%",     "&",     "\'",   
+	"(",     ")",     "*",     "+",    
+	",",     "-",     ".",     "/",   
+	"0",     "1",     "2",     "3",    
+	"4",     "5",     "6",     "7",   
+	"8",     "9",     ":",     ";",    
+	"<",     "=",     ">",     "?",   
+	"@",     "A",     "B",     "C",    
+	"D",     "E",     "F",     "G",   
+	"H",     "I",     "J",     "K",    
+	"L",     "M",     "N",     "O",   
+	"P",     "Q",     "R",     "S",    
+	"T",     "U",     "V",     "W",   
+	"X",     "Y",     "Z",     "[",    
+	"\\",    "]",     "^",     "_",   
+	"`",     "a",     "b",     "c",    
+	"d",     "e",     "f",     "g",   
+	"h",     "i",     "j",     "k",    
+	"l",     "m",     "n",     "o",   
+	"p",     "q",     "r",     "s",    
+	"t",     "u",     "v",     "w",   
+	"x",     "y",     "z",     "{",    
+	"|",     "}",     "~",     "<DEL>"
+};
+
+string noctrl(string src)
+{
+	static string retstr;
+	retstr.clear();
+	for (size_t i = 0; i < src.length(); i++) retstr.append(asc[(int)src[i]]);
+	return retstr;
+}
+
+//======================================================================
+
 static string arqtext;
 //string::iterator pText;
 size_t pText;
@@ -85,7 +134,7 @@ void ParseMode(string src)
 		REQ_SYNC(&PTT::set, push2talk, true);
 		MilliSleep(msecs);
 		REQ_SYNC(&PTT::set, push2talk, false);
-LOG_DEBUG("ARQ ptt toggled");
+LOG_INFO("%s","ARQ ptt toggled");
 		return;
 	}
 	for (size_t i = 0; i < NUM_MODES; ++i) {
@@ -93,7 +142,7 @@ LOG_DEBUG("ARQ ptt toggled");
 			if (src == mode_info[i].pskmail_name) {
 				while (trx_state != STATE_RX) MilliSleep(50);
 				REQ_SYNC(init_modem_sync, mode_info[i].mode);
-LOG_DEBUG("ARQ new modem set to %s", mode_info[i].pskmail_name);
+LOG_INFO("ARQ new modem set to %s", mode_info[i].pskmail_name);
 				break;
 			}
 		}
@@ -104,11 +153,11 @@ LOG_DEBUG("ARQ new modem set to %s", mode_info[i].pskmail_name);
 void ParseRSID(string src)
 {
 	if (src == "ON") {
-LOG_DEBUG("RsID turned ON");
+LOG_INFO("%s","RsID turned ON");
 		REQ(set_button, btnRSID, 1);
 	}
 	if (src == "OFF") {
-LOG_DEBUG("RsID turned OFF");
+LOG_INFO("%s","RsID turned OFF");
 		REQ(set_button, btnRSID, 0);
 	}
 }
@@ -117,11 +166,11 @@ LOG_DEBUG("RsID turned OFF");
 void ParseTxRSID(string src)
 {
 	if (src == "ON") {
-LOG_DEBUG("TxRsID turned ON");
+LOG_INFO("%s","TxRsID turned ON");
 		REQ(set_button, btnTxRSID, 1);
 	}
 	if (src == "OFF") {
-LOG_DEBUG("TxRsID turned OFF");
+LOG_INFO("%s","TxRsID turned OFF");
 		REQ(set_button, btnTxRSID, 0);
 	}
 }
@@ -133,12 +182,14 @@ void parse_arqtext(string &toparse)
 	string strSubCmd;
 	unsigned long int idxCmd, idxCmdEnd, idxSubCmd, idxSubCmdEnd;
 
+LOG_INFO("Arq text: %s", noctrl(toparse).c_str());
+
 	idxCmd = toparse.find("<cmd>");
 	idxCmdEnd = toparse.find("</cmd>");
 
-	if ( idxCmd != string::npos && idxCmdEnd != string::npos && idxCmdEnd > idxCmd ) {
+	while ( idxCmd != string::npos && idxCmdEnd != string::npos && idxCmdEnd > idxCmd ) {
 
-LOG_DEBUG("Command string: %s", toparse.substr(idxCmd, idxCmdEnd + 6).c_str());
+LOG_INFO("Cmd text: %s", toparse.substr(idxCmd, idxCmdEnd + 6).c_str());
 		strCmdText = toparse.substr(idxCmd + 5, idxCmdEnd - idxCmd - 5);
 		if (strCmdText == "server" && mailserver == false && mailclient == false) {
 			mailserver = true;
@@ -151,7 +202,7 @@ LOG_DEBUG("Command string: %s", toparse.substr(idxCmd, idxCmdEnd + 6).c_str());
 			if (progdefaults.PSKmailSweetSpot)
 				active_modem->set_freq(progdefaults.PSKsweetspot);
 			active_modem->set_freqlock(true);
-LOG_DEBUG("ARQ is set to pskmail server");
+LOG_INFO("%s","ARQ is set to pskmail server");
 		} else if (strCmdText == "client" && mailclient == false && mailserver == false) {
 			mailclient = true;
 			mailserver = false;
@@ -161,7 +212,7 @@ LOG_DEBUG("ARQ is set to pskmail server");
 			Maillogfile->log_to_file_start();
 			REQ(set_button, wf->xmtlock, 0);
 			active_modem->set_freqlock(false);
-LOG_DEBUG("ARQ is set to pskmail client");
+LOG_INFO("%s","ARQ is set to pskmail client");
 		} else if (strCmdText == "normal") {
 			mailserver = false;
 			mailclient = false;
@@ -171,9 +222,8 @@ LOG_DEBUG("ARQ is set to pskmail client");
 			}
 			REQ(set_button, wf->xmtlock, 0);
 			active_modem->set_freqlock(false);
-LOG_DEBUG("ARQ is reset to normal ops");
+LOG_INFO("%s","ARQ is reset to normal ops");
 //VK2ETA Start of "Control RSID"
-//		} else {
 		} else if ((idxSubCmd = strCmdText.find("<mode>")) != string::npos) {
 			idxSubCmdEnd = strCmdText.find("</mode>");
 			if (	idxSubCmdEnd != string::npos &&
@@ -198,8 +248,10 @@ LOG_DEBUG("ARQ is reset to normal ops");
 		}
 //VK2ETA End of "Control RSID"
 		toparse.erase(idxCmd, idxCmdEnd - idxCmd + 6);
-		if (toparse.length() == 1 && toparse[0] == '\n')
-			toparse = "";
+		while (toparse[0] == '\n' || toparse[0] == '\r') toparse.erase(0, 1);
+
+		idxCmd = toparse.find("<cmd>");
+		idxCmdEnd = toparse.find("</cmd>");
 	}
 }
 
@@ -227,8 +279,8 @@ void process_msgque()
 			pText = 0;
 			arq_text_available = true;
 			active_modem->set_stopflag(false);
+			LOG_INFO("SYSV ARQ string: %s", arqtext.c_str());
 			start_tx();
-			LOG_DEBUG("SYSV ARQ string: %s", txstring.c_str());
 			txstring.clear();
 		}
 	}
@@ -311,8 +363,8 @@ bool TLF_arqRx()
 			pText = 0;
 			arq_text_available = true;
 			active_modem->set_stopflag(false);
+			LOG_INFO("%s", arqtext.c_str());
 			start_tx();
-LOG_DEBUG("%s", txstring.c_str());
 			txstring.clear();
 		}
 
@@ -354,8 +406,8 @@ bool WRAP_auto_arqRx()
 			arqtext = txstring;
 			pText = 0;
 			arq_text_available = true;
+			LOG_INFO("%s", arqtext.c_str());
 			start_tx();
-LOG_INFO("%s", txstring.c_str());
 			txstring.clear();
 		}
 	}
@@ -523,8 +575,8 @@ bool Socket_arqRx()
 				pText = 0;//arqtext.begin();
 				arq_text_available = true;
 				active_modem->set_stopflag(false);
+				LOG_INFO("%s", arqtext.c_str());
 				start_tx();
-LOG_DEBUG("%s", txstring.c_str());
 			}
 			txstring.clear();
 		}
