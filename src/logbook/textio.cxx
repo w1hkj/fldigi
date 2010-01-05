@@ -40,32 +40,32 @@ static char time[6];
 
 void cTextFile::writeCSVHeader(FILE *txtFile)
 {
-	if (btnSelectQSOdate->value())   fprintf (txtFile, "%s", "DATE\t");
-	if (btnSelectTimeON->value())    fprintf (txtFile, "%s", "ON\t");
-	if (btnSelectTimeOFF->value())   fprintf (txtFile, "%s", "OFF\t");
-	if (btnSelectCall->value())      fprintf (txtFile, "%s", "CALL\t");
-	if (btnSelectName->value())      fprintf (txtFile, "%s", "NAME\t");
-	if (btnSelectBand->value())      fprintf (txtFile, "%s", "BAND\t");
-	if (btnSelectFreq->value())      fprintf (txtFile, "%s", "FREQ\t");
-	if (btnSelectMode->value())      fprintf (txtFile, "%s", "MODE\t");
-	if (btnSelectTX_pwr->value())    fprintf (txtFile, "%s", "TX_PWR\t");
-	if (btnSelectRSTsent->value())   fprintf (txtFile, "%s", "RSTSENT\t");
-	if (btnSelectRSTrcvd->value())   fprintf (txtFile, "%s", "RSTRCVD\t");
-	if (btnSelectQth->value())       fprintf (txtFile, "%s", "QTH\t");
-	if (btnSelectState->value())     fprintf (txtFile, "%s", "ST\t");
-	if (btnSelectProvince->value())  fprintf (txtFile, "%s", "PR\t");
-	if (btnSelectCountry->value())   fprintf (txtFile, "%s", "CNTRY\t");
-	if (btnSelectDXCC->value())      fprintf (txtFile, "%s", "DXCC\t");
-	if (btnSelectIOTA->value())      fprintf (txtFile, "%s", "IOTA\t");
-	if (btnSelectCONT->value())      fprintf (txtFile, "%s", "CONT\t");
-	if (btnSelectITUZ->value())      fprintf (txtFile, "%s", "ITUZ\t");
-	if (btnSelectQSLrcvd->value())   fprintf (txtFile, "%s", "QSL_RCVD\t");
-	if (btnSelectQSLsent->value())   fprintf (txtFile, "%s", "QSL_SENT\t");
-	if (btnSelectNotes->value())     fprintf (txtFile, "%s", "NOTES\t");
-	if (btnSelectSerialIN->value())  fprintf (txtFile, "%s", "SERIAL RCVD\t");
-	if (btnSelectSerialOUT->value()) fprintf (txtFile, "%s", "SERIAL_SENT\t");
-	if (btnSelectXchgIn->value())    fprintf (txtFile, "%s", "XCHG1\t");
-	if (btnSelectMyXchg->value())    fprintf (txtFile, "%s", "MYXCHG");
+	if (btnSelectQSOdate->value())   fprintf (txtFile, "%s", "\"DATE\"");
+	if (btnSelectTimeON->value())    fprintf (txtFile, "%s", ",\"ON\"");
+	if (btnSelectTimeOFF->value())   fprintf (txtFile, "%s", ",\"OFF\"");
+	if (btnSelectCall->value())      fprintf (txtFile, "%s", ",\"CALL\"");
+	if (btnSelectName->value())      fprintf (txtFile, "%s", ",\"NAME\"");
+	if (btnSelectBand->value())      fprintf (txtFile, "%s", ",\"BAND\"");
+	if (btnSelectFreq->value())      fprintf (txtFile, "%s", ",\"FREQ\"");
+	if (btnSelectMode->value())      fprintf (txtFile, "%s", ",\"MODE\"");
+	if (btnSelectTX_pwr->value())    fprintf (txtFile, "%s", ",\"TX_PWR\"");
+	if (btnSelectRSTsent->value())   fprintf (txtFile, "%s", ",\"RSTSENT\"");
+	if (btnSelectRSTrcvd->value())   fprintf (txtFile, "%s", ",\"RSTRCVD\"");
+	if (btnSelectQth->value())       fprintf (txtFile, "%s", ",\"QTH\"");
+	if (btnSelectState->value())     fprintf (txtFile, "%s", ",\"ST\"");
+	if (btnSelectProvince->value())  fprintf (txtFile, "%s", ",\"PR\"");
+	if (btnSelectCountry->value())   fprintf (txtFile, "%s", ",\"CNTRY\"");
+	if (btnSelectDXCC->value())      fprintf (txtFile, "%s", ",\"DXCC\"");
+	if (btnSelectIOTA->value())      fprintf (txtFile, "%s", ",\"IOTA\"");
+	if (btnSelectCONT->value())      fprintf (txtFile, "%s", ",\"CONT\"");
+	if (btnSelectITUZ->value())      fprintf (txtFile, "%s", ",\"ITUZ\"");
+	if (btnSelectQSLrcvd->value())   fprintf (txtFile, "%s", ",\"QSL_RCVD\"");
+	if (btnSelectQSLsent->value())   fprintf (txtFile, "%s", ",\"QSL_SENT\"");
+	if (btnSelectNotes->value())     fprintf (txtFile, "%s", ",\"NOTES\"");
+	if (btnSelectSerialIN->value())  fprintf (txtFile, "%s", ",\"SERIAL RCVD\"");
+	if (btnSelectSerialOUT->value()) fprintf (txtFile, "%s", ",\"SERIAL_SENT\"");
+	if (btnSelectXchgIn->value())    fprintf (txtFile, "%s", ",\"XCHG1\"");
+	if (btnSelectMyXchg->value())    fprintf (txtFile, "%s", ",\"MYXCHG");
 	fprintf (txtFile, "%s", szEOL);
 }
 
@@ -80,61 +80,61 @@ int cTextFile::writeCSVFile (const char *fname, cQsoDb *db) {
 			pRec = db->getRec(i);
 			if (pRec->getField(EXPORT)[0] == 'E') {
 				if (btnSelectQSOdate->value())
-					fprintf (txtFile, "%s\t", pRec->getField(QSO_DATE));
+					fprintf (txtFile, "\"%s\"", pRec->getField(QSO_DATE));
 				if (btnSelectTimeON->value())
-					fprintf (txtFile, "%s\t", pRec->getField(TIME_ON));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(TIME_ON));
 				if (btnSelectTimeOFF->value())
-					fprintf (txtFile, "%s\t", pRec->getField(TIME_OFF));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(TIME_OFF));
 				if (btnSelectCall->value())
-					fprintf (txtFile, "%s\t", pRec->getField(CALL));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(CALL));
 				if (btnSelectName->value())
-					fprintf (txtFile, "%s\t", pRec->getField(NAME));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(NAME));
 				if (btnSelectBand->value())
-					fprintf (txtFile, "%s\t", pRec->getField(BAND));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(BAND));
 				if (btnSelectFreq->value())
-					fprintf (txtFile, "%s\t", pRec->getField(FREQ));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(FREQ));
 				if (btnSelectMode->value())
-					fprintf (txtFile, "%s\t", pRec->getField(MODE));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(MODE));
 				if (btnSelectTX_pwr->value())
-					fprintf (txtFile, "%s\t", pRec->getField(TX_PWR));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(TX_PWR));
 				if (btnSelectRSTsent->value())
-					fprintf (txtFile, "%s\t", pRec->getField(RST_SENT));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(RST_SENT));
 				if (btnSelectRSTrcvd->value())
-					fprintf (txtFile, "%s\t", pRec->getField(RST_RCVD));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(RST_RCVD));
 				if (btnSelectQth->value())
-					fprintf (txtFile, "%s\t", pRec->getField(QTH));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(QTH));
 				if (btnSelectState->value())
-					fprintf (txtFile, "%s\t", pRec->getField(STATE));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(STATE));
 				if (btnSelectProvince->value())
-					fprintf (txtFile, "%s\t", pRec->getField(VE_PROV));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(VE_PROV));
 				if (btnSelectCountry->value())
-					fprintf (txtFile, "%s\t", pRec->getField(COUNTRY));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(COUNTRY));
 				if (btnSelectDXCC->value())
-					fprintf (txtFile, "%s\t", pRec->getField(DXCC));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(DXCC));
 				if (btnSelectIOTA->value())
-					fprintf (txtFile, "%s\t", pRec->getField(IOTA));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(IOTA));
 				if (btnSelectCONT->value())
-					fprintf (txtFile, "%s\t", pRec->getField(CONT));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(CONT));
 				if (btnSelectITUZ->value())
-					fprintf (txtFile, "%s\t", pRec->getField(ITUZ));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(ITUZ));
 				if (btnSelectQSLrcvd->value())
-					fprintf (txtFile, "%s\t", pRec->getField(QSL_RCVD));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(QSL_RCVD));
 				if (btnSelectQSLsent->value())
-					fprintf (txtFile, "%s\t", pRec->getField(QSL_SENT));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(QSL_SENT));
 				if (btnSelectNotes->value()) {
 					string temp = pRec->getField(NOTES);
-    				for (size_t n = 0; n < temp.length(); n++)
-	    				if (temp[n] == '\n') temp[n] = ';';
-		    			fprintf (txtFile, "%s\t", temp.c_str());
+					for (size_t n = 0; n < temp.length(); n++)
+						if (temp[n] == '\r' || temp[n] == '\n') temp[n] = '-';
+					fprintf (txtFile, ",\"%s\"", temp.c_str());
 				}
 				if (btnSelectSerialIN->value())
-					fprintf (txtFile, "%s\t", pRec->getField(SRX));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(SRX));
 				if (btnSelectSerialOUT->value())
-					fprintf (txtFile, "%s\t", pRec->getField(STX));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(STX));
 				if (btnSelectXchgIn->value())
-					fprintf (txtFile, "%s\t", pRec->getField(XCHG1));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(XCHG1));
 				if (btnSelectMyXchg->value())
-					fprintf (txtFile, "%s", pRec->getField(MYXCHG));
+					fprintf (txtFile, ",\"%s", pRec->getField(MYXCHG));
 				fprintf (txtFile, "%s", szEOL);
 				pRec->putField(EXPORT,"");
 				db->qsoUpdRec(i, pRec);
