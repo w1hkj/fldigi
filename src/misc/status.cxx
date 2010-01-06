@@ -368,8 +368,10 @@ else {
 	TiledGroup->position(0, TransmitText->y(), 0, TiledGroup->y() + RxTextHeight);
 }
 
-	if (VIEWERvisible == true)
+	if (VIEWERvisible && lastmode >= MODE_PSK_FIRST && lastmode <= MODE_PSK_LAST)
 		openViewer();
+	else
+		VIEWERvisible = false;
 
 	if (scopeview) {
 		scopeview->resize(scopeX, scopeY, scopeW, scopeH);
