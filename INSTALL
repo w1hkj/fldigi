@@ -40,9 +40,12 @@ should be sufficient to compile fldigi and install it under /usr/local:
   make
   make install    (you may need superuser privileges for installation)
 
-The `install' target installs the executable, an icon, and a .desktop
-file.  After installation, an fldigi launcher should appear somewhere in
-your applications menu.
+The `install' target installs the executables, icons, .desktop files and
+manual pages.  After installation, an fldigi launcher should appear
+somewhere in your applications menu.
+
+If you are building a GIT snapshot (see README), you will need to run
+`autoreconf' to generate the configure script.
 
 
 Mac OS X installation notes
@@ -68,15 +71,22 @@ binaries.  Pass the following additional arguments to enable it:
 
   --enable-mac-universal --disable-dependency-tracking
 
-Fldigi has not been well tested on OS X. Any feedback, suggestions, or
-patches will be very welcome.
+See this page for more information:
+
+  https://fedorahosted.org/fldigi/wiki/Documentation/HOWTO/BuildOnOSX
 
 
 Windows installation notes
 **************************
 
-As of version 3.0, fldigi supports win32 systems via the Cygwin POSIX
-environment.  To install cygwin, use the following installer link:
+As of version 3.12, Cygwin is not required to build or run fldigi.
+Refer to this page for Mingw32 build information:
+
+  https://fedorahosted.org/fldigi/wiki/Documentation/HOWTO/BuildOnMinGW
+
+
+Building under Cygwin should still work but is not supported.  To
+install Cygwin, use the following installer link:
 
   http://www.cygwin.com/setup.exe
 
