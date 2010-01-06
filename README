@@ -2,7 +2,8 @@ Fldigi is a software modem for Amateur Radio use. It is a sound card based
 program that is used for both transmitting and receiving data in any of the
 following modes:
 
-BPSK and QPSK        31, 63, 125, and 250
+BPSK and QPSK        31, 63, 125, 250 (both), and 63F and 500 (BPSK only)
+PSKR                 125, 250, and 500
 CW                   speeds from 5 to 200 wpm
 DominoEX             4, 5, 8, 11, 16 and 22; also with FEC
 Hellschreiber        Feld Hell, Slow Hell, Hell x5/x9, FSKHell(-105) and Hell 80
@@ -26,6 +27,12 @@ The latest version can always be found at:
 
 Visit this page for extensive documentation and an archive of XML files for
 transceivers supported by RigCAT.
+
+
+The wiki page contains FAQs and HOWTOs, as well as links to all Fldigi
+resources:
+
+  https://fedorahosted.org/fldigi/
 
 
 Fldigi's BerliOS project page can be found at:
