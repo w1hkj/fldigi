@@ -1825,6 +1825,9 @@ int WFdisp::handle(int event)
 		case FL_Tab:
 			restoreFocus();
 			break;
+		default:
+			restoreFocus();
+			return TransmitText->handle(event);
 		}
 		break;
 	}
