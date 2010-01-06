@@ -2955,7 +2955,7 @@ void create_fl_digi_main_primary() {
 		QsoButtonFrame->end();
 		QsoButtonFrame->resizable(NULL);
 
-		int y2 = Hmenu + Hentry + pad;
+		int y2 = Hmenu + Hentry + 2 * pad;
 		int y3 = Hmenu + 2 * (Hentry + pad) + pad;
 
 		QsoInfoFrame = new Fl_Group(x_qsoframe, Hmenu,
@@ -3048,32 +3048,32 @@ void create_fl_digi_main_primary() {
 						x_qsoframe, y3,
 						wf1, Hentry + pad);
 					Fl_Box *fm6box = new Fl_Box(
-						x_qsoframe, y3 + pad,
+						x_qsoframe, y3,
 						w_fm7, Hentry, _("#Out"));
 					fm6box->align(FL_ALIGN_INSIDE);
 					outSerNo1 = new Fl_Input2(
-						rightof(fm6box), y3 + pad,
+						rightof(fm6box), y3,
 						w_SerNo, Hentry, "");
 					outSerNo1->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 					outSerNo1->tooltip(_("Sent serial number (read only)"));
 					outSerNo1->type(FL_NORMAL_OUTPUT);
 
 					Fl_Box *fm7box = new Fl_Box(
-						rightof(outSerNo1) + pad, y3 + pad,
+						rightof(outSerNo1) + pad, y3,
 						w_fm5, Hentry, _("#In"));
 					fm7box->align(FL_ALIGN_INSIDE);
 					inpSerNo1 = new Fl_Input2(
-						rightof(fm7box), y3 + pad,
+						rightof(fm7box), y3,
 						w_SerNo, Hentry, "");
 					inpSerNo1->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 					inpSerNo1->tooltip(_("Received serial number"));
 
 					Fl_Box *fm8box = new Fl_Box(
-						rightof(inpSerNo1) + pad, y3 + pad,
+						rightof(inpSerNo1) + pad, y3,
 						w_fm7, Hentry, _("Xchg"));
 					fm8box->align(FL_ALIGN_INSIDE);
 					inpXchgIn1 = new Fl_Input2(
-						rightof(fm8box), y3 + pad,
+						rightof(fm8box), y3,
 					    rightof(inpRstOut1) - rightof(fm8box), Hentry, "");
 					inpXchgIn1->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 					inpXchgIn1->tooltip(_("Contest exchange in"));
@@ -3090,7 +3090,7 @@ void create_fl_digi_main_primary() {
 
 				inpNotes = new Fl_Input2(
 					x_qsoframe + wf1 + pad, y2,
-					progStatus.mainW - rightof(QsoInfoFrame1) - 2*pad, 2*Hentry + pad, _("Notes"));
+					progStatus.mainW - rightof(QsoInfoFrame1) - pad, 2*Hentry + pad, _("Notes"));
 				inpNotes->type(FL_MULTILINE_INPUT);
 				inpNotes->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
