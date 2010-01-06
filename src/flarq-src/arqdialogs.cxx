@@ -59,9 +59,9 @@ Fl_Menu_Item menu_mnu[] = {
  {0,0,0,0,0,0,0,0,0},
  {"Compose", 0,  (Fl_Callback*)cb_mnuCompose, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
  {"&Config", 0,  (Fl_Callback*)cb_mnuConfig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
- {"Help", 0,  0, 0, 64, FL_NORMAL_LABEL, 0, 14, 0},
+ {"&Help", 0,  0, 0, 64, FL_NORMAL_LABEL, 0, 14, 0},
  {"How To", 0,  (Fl_Callback*)cb_mnuHowTo, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
- {"About", 0,  (Fl_Callback*)cb_mnuAbout, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+ {"&About", 0,  (Fl_Callback*)cb_mnuAbout, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
  {0,0,0,0,0,0,0,0,0},
  {0,0,0,0,0,0,0,0,0}
 };

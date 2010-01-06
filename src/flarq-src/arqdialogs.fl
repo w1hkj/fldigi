@@ -71,7 +71,7 @@ Function {arq_dialog()} {} {
         code0 {extern void cbMenuConfig();}
       }
       Submenu mnuHelp {
-        label Help open
+        label {&Help} open
         xywh {0 0 62 20}
       } {
         MenuItem mnuHowTo {
@@ -80,7 +80,7 @@ Function {arq_dialog()} {} {
           xywh {0 0 30 20}
         }
         MenuItem mnuAbout {
-          label About
+          label {&About}
           callback {cbMenuAbout();}
           xywh {5 5 36 21}
           code0 {extern void cbMenuAbout();}

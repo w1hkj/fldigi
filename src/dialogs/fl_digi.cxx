@@ -1215,7 +1215,6 @@ void html_help( const string &Html)
 		help_dialog = new Fl_Help_Dialog;
 	help_dialog->value(Html.c_str());
 	help_dialog->show();
-	restoreFocus();
 }
 
 void cb_mnuBeginnersURL(Fl_Widget*, void*)
@@ -2303,7 +2302,7 @@ Fl_Menu_Item menu_[] = {
 { RIGLOG_MLABEL, 0, (Fl_Callback*)cb_mnu_riglog, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 { RIGCONTEST_MLABEL, 0, (Fl_Callback*)cb_mnu_rigcontest, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 { RIGLOG_NONE_MLABEL, 0, (Fl_Callback*)cb_mnu_riglog_none, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
-{ CONTEST_FIELDS_MLABEL, 0, (Fl_Callback*)cb_mnuContest, 0, FL_MENU_TOGGLE | FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ CONTEST_FIELDS_MLABEL, 'c', (Fl_Callback*)cb_mnuContest, 0, FL_MENU_TOGGLE | FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 { DOCKEDSCOPE_MLABEL, 0, (Fl_Callback*)cb_mnuDockedscope, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 { WF_MLABEL, 0, (Fl_Callback*)cb_mnu_wf_all, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 { _("Config WF controls"), 0,  (Fl_Callback*)cb_mnuConfigWFcontrols, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -2324,7 +2323,7 @@ Fl_Menu_Item menu_[] = {
 { make_icon_label(_("Build info"), executable_icon), 0, cb_mnuBuildInfo, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Event log"), dialog_information_icon), 0, cb_mnuDebug, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Check for updates..."), system_software_update_icon), 0, cb_mnuCheckUpdate, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(_("About"), help_about_icon), 0, cb_mnuAboutURL, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("&About"), help_about_icon), 'a', cb_mnuAboutURL, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"  ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
