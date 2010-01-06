@@ -134,7 +134,7 @@ int cTextFile::writeCSVFile (const char *fname, cQsoDb *db) {
 				if (btnSelectXchgIn->value())
 					fprintf (txtFile, ",\"%s\"", pRec->getField(XCHG1));
 				if (btnSelectMyXchg->value())
-					fprintf (txtFile, ",\"%s", pRec->getField(MYXCHG));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(MYXCHG));
 				fprintf (txtFile, "%s", szEOL);
 				pRec->putField(EXPORT,"");
 				db->qsoUpdRec(i, pRec);
