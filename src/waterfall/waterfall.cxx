@@ -1570,7 +1570,14 @@ int waterfall::handle(int event)
 	// this does not belong here, but we don't have access to this widget's
 	// handle method (or its parent's)
 	if (Fl::event_inside(MODEstatus)) {
-		init_modem(d > 0 ? MODE_NEXT : MODE_PREV);
+		trx_mode mode = active_modem->get_mode();
+		for (;;) {
+			mode = WCLAMP(mode + d, 0, NUM_MODES - 1);
+			if ((mode >= NUM_RXTX_MODES && mode < NUM_MODES) ||
+			    progdefaults.visible_modes.test(mode))
+				break;
+		}
+		init_modem(mode);
 		return 1;
 	}
 
