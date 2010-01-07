@@ -65,7 +65,7 @@ void cTextFile::writeCSVHeader(FILE *txtFile)
 	if (btnSelectSerialIN->value())  fprintf (txtFile, "%s", ",\"SERIAL RCVD\"");
 	if (btnSelectSerialOUT->value()) fprintf (txtFile, "%s", ",\"SERIAL_SENT\"");
 	if (btnSelectXchgIn->value())    fprintf (txtFile, "%s", ",\"XCHG1\"");
-	if (btnSelectMyXchg->value())    fprintf (txtFile, "%s", ",\"MYXCHG");
+	if (btnSelectMyXchg->value())    fprintf (txtFile, "%s", ",\"MYXCHG\"");
 	fprintf (txtFile, "%s", szEOL);
 }
 
