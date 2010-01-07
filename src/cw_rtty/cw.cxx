@@ -136,7 +136,7 @@ cw::cw() : modem()
 	makeshape();
 	sync_parameters();
 	wf->Bandwidth ((int)bandwidth);
-	init();
+//	init();
 
 }
 

@@ -387,7 +387,7 @@ psk::psk(trx_mode pskmode) : modem()
 	evalpsk = new pskeval;
 	::pskviewer = pskviewer = new viewpsk(evalpsk, mode);
 
-	init();
+//	init();
 }
 
 //=============================================================================

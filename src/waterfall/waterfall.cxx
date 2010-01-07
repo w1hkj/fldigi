@@ -588,6 +588,7 @@ void WFdisp::movetocenter() {
 }
 
 void WFdisp::carrier(int cf) {
+printf("carrier = %d\n", cf);
 	if (cf >= bandwidth / 2 && cf < (IMAGE_WIDTH - bandwidth / 2)) {
 		carrierfreq = cf;
 		makeMarker();
@@ -973,6 +974,7 @@ void carrier_cb(Fl_Widget *w, void *v) {
 	if (selfreq > progdefaults.HighFreqCutoff) selfreq = progdefaults.HighFreqCutoff - wf->wfdisp->Bandwidth() / 2;
 	stopMacroTimer();
 	active_modem->set_freq(selfreq);
+printf("selfreq %d\n", selfreq);
 	wf->wfdisp->carrier(selfreq);
 	restoreFocus();
 }
@@ -1229,11 +1231,12 @@ void btnMem_cb(Fl_Widget *, void *menu_event)
 
 void waterfall::opmode() {
 	int val = (int)active_modem->get_bandwidth();
-	
+
 	wfdisp->carrier((int)CLAMP(
 		wfdisp->carrier(), 
 		progdefaults.LowFreqCutoff + val / 2 + 1, 
-		progdefaults.HighFreqCutoff - val / 2) - 1);
+		progdefaults.HighFreqCutoff - val / 2 - 1));
+
 	wfdisp->Bandwidth( val );
 	FL_LOCK_D();
 	wfcarrier->range(progdefaults.LowFreqCutoff + val/2, progdefaults.HighFreqCutoff - val/2 - 1);

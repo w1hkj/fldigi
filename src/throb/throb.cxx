@@ -239,7 +239,7 @@ throb::throb(trx_mode throb_mode) : modem()
 	for (int i = 0; i < MAX_RX_SYMLEN; i++)
 		syncbuf[i] = dispbuf[i] = 0.0;
 	
-	init();
+//	init();
 }
 
 //=====================================================================

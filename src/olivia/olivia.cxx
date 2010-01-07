@@ -367,7 +367,7 @@ olivia::olivia()
 
 	mode = MODE_OLIVIA;
 	lastfreq = 0;
-	init();
+//	init();
 }
 
 olivia::~olivia()

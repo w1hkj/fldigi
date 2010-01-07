@@ -89,7 +89,7 @@ BLANK::BLANK(trx_mode BLANK_mode) : modem()
 	out_buf		= new double [SYMLEN];
 	in_buf		= new double [BUFLEN];
 
-	init();
+//	init();
 }
 
 //=====================================================================

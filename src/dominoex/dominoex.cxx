@@ -298,7 +298,7 @@ dominoex::dominoex(trx_mode md)
 	Mu_bitstate = 0;
 	Mu_symbolpair[0] = Mu_symbolpair[1] = 0;
 	Mu_datashreg = 1;
-	init();
+//	init();
 }
 
 //=====================================================================

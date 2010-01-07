@@ -267,7 +267,7 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 	afcmetric = 0.0;
 	datashreg = 1;
 
-	init();
+//	init();
 
 }
 

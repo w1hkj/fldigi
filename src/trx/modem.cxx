@@ -110,6 +110,7 @@ modem::modem()
 	historyON = false;
 	cap = 0;
 	PTTphaseacc = 0.0;
+	frequency = 1000.0;
 }
 
 void modem::init()

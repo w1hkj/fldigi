@@ -316,7 +316,7 @@ mt63::mt63 (trx_mode mt63_mode) : modem()
 	samplerate = 8000;
 	fragmentsize = 1024;
 
-	init();
+//	init();
 }
 
 mt63::~mt63()

@@ -244,7 +244,7 @@ thor::thor(trx_mode md)
 	symbolpair[0] = symbolpair[1] = 0;
 	datashreg = 1;
 
-	init();
+//	init();
 }
 
 //=====================================================================
