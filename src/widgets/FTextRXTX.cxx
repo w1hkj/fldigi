@@ -426,7 +426,8 @@ void FTextRX::menu_cb(size_t item)
 
 	if (item == RX_MENU_XCHG) { // append
 		input->position(input->size());
-		input->insert(" ", 1);
+		if (input->size())
+			input->insert(" ", 1);
 		input->insert(s);
 	}
 	else
