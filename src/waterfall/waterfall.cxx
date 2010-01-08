@@ -1232,12 +1232,12 @@ void waterfall::opmode() {
 
 	wfdisp->carrier((int)CLAMP(
 		wfdisp->carrier(), 
-		progdefaults.LowFreqCutoff + val / 2 + 1, 
-		progdefaults.HighFreqCutoff - val / 2 - 1));
+		progdefaults.LowFreqCutoff + val / 2,
+		progdefaults.HighFreqCutoff - val / 2));
 
 	wfdisp->Bandwidth( val );
 	FL_LOCK_D();
-	wfcarrier->range(progdefaults.LowFreqCutoff + val/2, progdefaults.HighFreqCutoff - val/2 - 1);
+	wfcarrier->range(progdefaults.LowFreqCutoff + val/2, progdefaults.HighFreqCutoff - val/2);
 	FL_UNLOCK_D();
 }
 

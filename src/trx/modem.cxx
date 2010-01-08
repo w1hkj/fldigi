@@ -141,8 +141,8 @@ void modem::set_freq(double freq)
 {
 	frequency = CLAMP(
 		freq,
-		progdefaults.LowFreqCutoff + bandwidth / 2 + 1,
-		progdefaults.HighFreqCutoff - bandwidth / 2 - 1);
+		progdefaults.LowFreqCutoff + bandwidth / 2,
+		progdefaults.HighFreqCutoff - bandwidth / 2);
 	if (freqlock == false)
 		tx_frequency = frequency;
 	REQ(put_freq, frequency);
