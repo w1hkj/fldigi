@@ -44,8 +44,8 @@ status progStatus = {
 	50,					// int mainY;
 	WNOM,				// int mainW;
 	HNOM,				// int mainH;
-	true,				// bool WF_UI;
-	true,				// bool NO_RIGLOG;
+	false,				// bool WF_UI;
+	false,				// bool NO_RIGLOG;
 	false,				// bool Rig_Log_UI;
 	false,				// bool Rig_Contest_UI;
 	false,				// bool DOCKEDSCOPE;
