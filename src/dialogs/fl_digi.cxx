@@ -1962,11 +1962,47 @@ bool clean_exit(void) {
 	return true;
 }
 
+
+#define LOG_TO_FILE_MLABEL _("Log all RX/TX text")
+#define RIGCONTROL_MLABEL _("Rig control")
+#define OPMODES_MLABEL _("Op &Mode")
+#define OPMODES_FEWER _("Show fewer modes")
+#define OPMODES_ALL _("Show all modes")
+#define OLIVIA_MLABEL "Olivia"
+#define RTTY_MLABEL "RTTY"
+#define VIEW_MLABEL _("&View")
+#define MFSK_IMAGE_MLABEL _("&MFSK image")
+#define CONTEST_MLABEL _("Contest")
+#define CONTEST_FIELDS_MLABEL _("&Contest fields")
+#define COUNTRIES_MLABEL _("C&ountries")
+#define UI_MLABEL _("&UI")
+#define RIGLOG_FULL_MLABEL _("Full")
+#define RIGLOG_NONE_MLABEL _("None")
+#define RIGLOG_MLABEL      _("Rig control and logging")
+#define RIGCONTEST_MLABEL  _("Rig control and contest")
+#define DOCKEDSCOPE_MLABEL _("Docked scope")
+#define WF_MLABEL _("Minimal controls")
+
+
 bool restore_minimize = false;
 
 void UI_select()
 {
-if (bWF_only) return;
+	if (bWF_only)
+		return;
+
+	Fl_Menu_Item* cf = getMenuItem(CONTEST_FIELDS_MLABEL);
+	if (progStatus.NO_RIGLOG || progStatus.Rig_Contest_UI || progStatus.Rig_Log_UI) {
+		cf->clear();
+		cf->deactivate();
+	}
+	else {
+		cf->activate();
+		if (progStatus.contest)
+			cf->set();
+		getMenuItem(RIGLOG_FULL_MLABEL)->setonly();
+	}
+
 	if (progStatus.NO_RIGLOG && !restore_minimize) {
 		int y1 = TopFrame1->y();
 		int y2 = macroFrame->y();
@@ -2071,64 +2107,44 @@ if (bWF_only) return;
 	fl_digi_main->init_sizes();
 }
 
-#define LOG_TO_FILE_MLABEL _("Log all RX/TX text")
-#define RIGCONTROL_MLABEL _("Rig Control")
-#define OPMODES_MLABEL _("Op &Mode")
-#define OPMODES_FEWER _("Show fewer modes")
-#define OPMODES_ALL _("Show all modes")
-#define OLIVIA_MLABEL "Olivia"
-#define RTTY_MLABEL "RTTY"
-#define VIEW_MLABEL _("&View")
-#define MFSK_IMAGE_MLABEL _("&MFSK Image")
-#define CONTEST_MLABEL _("Contest")
-#define CONTEST_FIELDS_MLABEL _("&Contest fields")
-#define COUNTRIES_MLABEL _("C&ountries")
-#define UI_MLABEL _("&UI")
-#define RIGLOG_NONE_MLABEL _("No  Rig-Log")
-#define RIGLOG_MLABEL      _("Min Rig-Log")
-#define RIGCONTEST_MLABEL  _("Min Rig-Contest")
-#define DOCKEDSCOPE_MLABEL _("Docked scope")
-#define WF_MLABEL _("Min WF Controls")
-
 void cb_mnu_wf_all(Fl_Menu_* w, void *d)
 {
-	Fl_Menu_Item *m = getMenuItem(((Fl_Menu_*)w)->mvalue()->label());
-	progStatus.WF_UI = m->value();
-	wf->UI_select(progStatus.WF_UI);
+	wf->UI_select(progStatus.WF_UI = w->mvalue()->value());
 }
 
-void cb_mnu_riglog(Fl_Menu_* w, void *d) {
-	Fl_Menu_Item *m = getMenuItem(((Fl_Menu_*)w)->mvalue()->label());
-	progStatus.Rig_Log_UI = m->value();
-	if (progStatus.Rig_Log_UI) {
-		progStatus.Rig_Contest_UI = false;
-		Fl_Menu_Item *m2 = getMenuItem(RIGCONTEST_MLABEL);
-		m2->clear();
-	}
+void cb_mnu_riglog(Fl_Menu_* w, void *d)
+{
+	getMenuItem(w->mvalue()->label())->setonly();
+	progStatus.Rig_Log_UI = true;
+	progStatus.Rig_Contest_UI = false;
 	UI_select();
 }
 
-void cb_mnu_rigcontest(Fl_Menu_* w, void *d) {
-	Fl_Menu_Item *m = getMenuItem(((Fl_Menu_*)w)->mvalue()->label());
-	progStatus.Rig_Contest_UI = m->value();
-	if (progStatus.Rig_Contest_UI) {
-		progStatus.Rig_Log_UI = false;
-		Fl_Menu_Item *m2 = getMenuItem(RIGLOG_MLABEL);
-		m2->clear();
-	}
+void cb_mnu_rigcontest(Fl_Menu_* w, void *d)
+{
+	getMenuItem(w->mvalue()->label())->setonly();
+	progStatus.Rig_Contest_UI = true;
+	progStatus.Rig_Log_UI = false;
 	UI_select();
 }
 
-void cb_mnu_riglog_none(Fl_Menu_* w, void *d) {
-	Fl_Menu_Item *m = getMenuItem(((Fl_Menu_*)w)->mvalue()->label());
-	progStatus.NO_RIGLOG = m->value();
+void cb_mnu_riglog_all(Fl_Menu_* w, void *d)
+{
+	getMenuItem(w->mvalue()->label())->setonly();
+	progStatus.NO_RIGLOG = progStatus.Rig_Log_UI = progStatus.Rig_Contest_UI = false;
 	UI_select();
 }
 
-void cb_mnuDockedscope(Fl_Menu_ *w, void *d) {
-	Fl_Menu_Item *m = getMenuItem(((Fl_Menu_*)w)->mvalue()->label());
-	progStatus.DOCKEDSCOPE = m->value();
-	wf->show_scope(progStatus.DOCKEDSCOPE);
+void cb_mnu_riglog_none(Fl_Menu_* w, void *d)
+{
+	getMenuItem(w->mvalue()->label())->setonly();
+	progStatus.NO_RIGLOG = true;
+	UI_select();
+}
+
+void cb_mnuDockedscope(Fl_Menu_ *w, void *d)
+{
+	wf->show_scope(progStatus.DOCKEDSCOPE = w->mvalue()->value());
 }
 
 void WF_UI()
@@ -2281,7 +2297,8 @@ Fl_Menu_Item menu_[] = {
 { make_icon_label(_("Operator"), system_users_icon), 0, (Fl_Callback*)cb_mnuConfigOperator, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Colors && Fonts"), preferences_desktop_font_icon), 0, (Fl_Callback*)cb_mnuConfigFonts, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("User Interface")), 0,  (Fl_Callback*)cb_mnuUI, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(_("Waterfall"), waterfall_icon), 0,  (Fl_Callback*)cb_mnuConfigWaterfall, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("Waterfall"), waterfall_icon), 0,  (Fl_Callback*)cb_mnuConfigWaterfall, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("Waterfall controls")), 0,  (Fl_Callback*)cb_mnuConfigWFcontrols, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Modems"), emblems_system_icon), 0, (Fl_Callback*)cb_mnuConfigModems, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(RIGCONTROL_MLABEL, multimedia_player_icon), 0, (Fl_Callback*)cb_mnuConfigRigCtrl, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Sound Card"), audio_card_icon), 0, (Fl_Callback*)cb_mnuConfigSoundCard, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
@@ -2294,18 +2311,25 @@ Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 { VIEW_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ make_icon_label(_("Extern Scope"), utilities_system_monitor_icon), 'd', (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("Floating scope"), utilities_system_monitor_icon), 'd', (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(_("PSK Browser")), 'p', (Fl_Callback*)cb_mnuViewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("PSK browser")), 'p', (Fl_Callback*)cb_mnuViewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Logbook")), 'l', (Fl_Callback*)cb_mnuShowLogbook, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(COUNTRIES_MLABEL), 'o', (Fl_Callback*)cb_mnuShowCountries, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
-{ RIGLOG_MLABEL, 0, (Fl_Callback*)cb_mnu_riglog, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
-{ RIGCONTEST_MLABEL, 0, (Fl_Callback*)cb_mnu_rigcontest, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
-{ RIGLOG_NONE_MLABEL, 0, (Fl_Callback*)cb_mnu_riglog_none, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
+
+{ make_icon_label(_("Controls")), 0, 0, 0, FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
+{ RIGLOG_FULL_MLABEL, 0, (Fl_Callback*)cb_mnu_riglog_all, 0, FL_MENU_RADIO, FL_NORMAL_LABEL, 0, 14, 0},
+{ RIGLOG_MLABEL, 0, (Fl_Callback*)cb_mnu_riglog, 0, FL_MENU_RADIO, FL_NORMAL_LABEL, 0, 14, 0},
+{ RIGCONTEST_MLABEL, 0, (Fl_Callback*)cb_mnu_rigcontest, 0, FL_MENU_RADIO, FL_NORMAL_LABEL, 0, 14, 0},
+{ RIGLOG_NONE_MLABEL, 0, (Fl_Callback*)cb_mnu_riglog_none, 0, FL_MENU_RADIO, FL_NORMAL_LABEL, 0, 14, 0},
 { CONTEST_FIELDS_MLABEL, 'c', (Fl_Callback*)cb_mnuContest, 0, FL_MENU_TOGGLE | FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+{ make_icon_label(_("Waterfall")), 0, 0, 0, FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
 { DOCKEDSCOPE_MLABEL, 0, (Fl_Callback*)cb_mnuDockedscope, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 { WF_MLABEL, 0, (Fl_Callback*)cb_mnu_wf_all, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
-{ _("Config WF controls"), 0,  (Fl_Callback*)cb_mnuConfigWFcontrols, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
 {0,0,0,0,0,0,0,0,0},
 
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
