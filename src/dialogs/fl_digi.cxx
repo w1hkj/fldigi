@@ -252,6 +252,7 @@ Fl_Button			*qso_opPICK3;
 Fl_Button			*qsoClear3;
 Fl_Button			*qsoSave3;
 
+Fl_Box				*StatusSpace = (Fl_Box *)0;
 Fl_Input2			*inpCall4;
 
 Fl_Browser			*qso_opBrowser = (Fl_Browser *)0;
@@ -2019,8 +2020,9 @@ void UI_select()
 		TopFrame1->hide();
 		TopFrame2->hide();
 		TopFrame3->hide();
-		Status1->color(FL_BACKGROUND_COLOR);
+		Status1->hide();
 		Status2->hide();
+		StatusSpace->show();
 		inpCall4->show();
 		inpCall = inpCall4;
 		fl_digi_main->init_sizes();
@@ -2060,7 +2062,6 @@ void UI_select()
 		inpXchgIn = inpXchgIn1;
 		qsoFreqDisp = qsoFreqDisp1;
 		fl_digi_main->init_sizes();
-		return;
 	} else if (progStatus.Rig_Log_UI || progStatus.Rig_Contest_UI) {
 		int y1 = TopFrame2->y() + Hentry + 3 * pad;
 		int y2 = macroFrame->y();
@@ -2078,7 +2079,6 @@ void UI_select()
 			TopFrame1->hide();
 			TopFrame3->hide();
 			TopFrame2->show();
-//			inpFreq = inpFreq2;
 			inpCall = inpCall2;
 			inpTimeOn = inpTimeOn2;
 			inpTimeOff = inpTimeOff2;
@@ -2101,8 +2101,9 @@ void UI_select()
 			qsoFreqDisp = qsoFreqDisp3;
 		}
 	}
+	StatusSpace->hide();
 	inpCall4->hide();
-	Status1->color(FL_BACKGROUND2_COLOR);
+	Status1->show();
 	Status2->show();
 	fl_digi_main->init_sizes();
 }
@@ -2117,6 +2118,7 @@ void cb_mnu_riglog(Fl_Menu_* w, void *d)
 	getMenuItem(w->mvalue()->label())->setonly();
 	progStatus.Rig_Log_UI = true;
 	progStatus.Rig_Contest_UI = false;
+	progStatus.NO_RIGLOG = false;
 	UI_select();
 }
 
@@ -2125,6 +2127,7 @@ void cb_mnu_rigcontest(Fl_Menu_* w, void *d)
 	getMenuItem(w->mvalue()->label())->setonly();
 	progStatus.Rig_Contest_UI = true;
 	progStatus.Rig_Log_UI = false;
+	progStatus.NO_RIGLOG = false;
 	UI_select();
 }
 
@@ -2322,7 +2325,7 @@ Fl_Menu_Item menu_[] = {
 { RIGLOG_MLABEL, 0, (Fl_Callback*)cb_mnu_riglog, 0, FL_MENU_RADIO, FL_NORMAL_LABEL, 0, 14, 0},
 { RIGCONTEST_MLABEL, 0, (Fl_Callback*)cb_mnu_rigcontest, 0, FL_MENU_RADIO, FL_NORMAL_LABEL, 0, 14, 0},
 { RIGLOG_NONE_MLABEL, 0, (Fl_Callback*)cb_mnu_riglog_none, 0, FL_MENU_RADIO, FL_NORMAL_LABEL, 0, 14, 0},
-{ CONTEST_FIELDS_MLABEL, 'c', (Fl_Callback*)cb_mnuContest, 0, FL_MENU_TOGGLE | FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ CONTEST_FIELDS_MLABEL, 'c', (Fl_Callback*)cb_mnuContest, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 { make_icon_label(_("Waterfall")), 0, 0, 0, FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
@@ -3509,6 +3512,10 @@ void create_fl_digi_main_primary() {
 			Status1->color(FL_BACKGROUND2_COLOR);
 			Status1->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 
+			StatusSpace = new Fl_Box(rightof(MODEstatus), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Ws2n, Hstatus, "");
+			StatusSpace->box(FL_DOWN_BOX);
+			StatusSpace->color(FL_BACKGROUND2_COLOR);
+			StatusSpace->hide();
 
 			Status2 = new Fl_Box(rightof(Status1), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Wimd, Hstatus, "");
 			Status2->box(FL_DOWN_BOX);
