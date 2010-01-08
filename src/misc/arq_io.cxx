@@ -393,7 +393,7 @@ bool WRAP_auto_arqRx()
 			txstring.append("\n");
 			time(&prog_time);
 			if (prog_time - start_time > TIMEOUT) {
-				LOG_ERROR("TLF file_i/o failure");
+				LOG_ERROR("autowrap file_i/o failure");
 				autofile.close();
 				std::remove (sAutoFile.c_str());
 				return false;
@@ -403,7 +403,9 @@ bool WRAP_auto_arqRx()
 		std::remove (sAutoFile.c_str());
 
 		if (!txstring.empty()) {
-			arqtext = txstring;
+			arqtext.append("\n....start\n");
+			arqtext.append(txstring);
+			arqtext.append("\n......end\n");
 			pText = 0;
 			arq_text_available = true;
 			LOG_INFO("%s", arqtext.c_str());
@@ -719,7 +721,7 @@ char arq_get_char()
 {
 	char c = 0x03;
 	pthread_mutex_lock (&arq_mutex);
-	if (pText != arqtext.length()-1) {
+	if (pText != arqtext.length()) {
 		c = arqtext[pText++];
 	} else {
 		arqtext.clear();
