@@ -1129,20 +1129,13 @@ void rigCAT_set_ptt(int ptt)
 }
 
 #ifndef RIGCATTEST
-void rigCAT_set_qsy(long long f, long long fmid)
+void rigCAT_set_qsy(long long f)
 {
 	if (rigCAT_open == false)
 		return;
 
 	// send new freq to rig
 	rigCAT_setfreq(f);
-
-	if (active_modem->freqlocked() == true) {
-		active_modem->set_freqlock(false);
-		active_modem->set_freq((int)fmid);
-		active_modem->set_freqlock(true);
-	} else
-		active_modem->set_freq((int)fmid);
 	wf->rfcarrier(f);
 	wf->movetocenter();
 }

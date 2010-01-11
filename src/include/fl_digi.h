@@ -221,7 +221,7 @@ extern void setTabColors();
 
 extern void toggle_visible_modes(Fl_Widget*, void*);
 
-void qsy(long long rfc, long long fmid = -1LL);
+void qsy(long long rfc, int fmid = -1);
 
 void note_qrg(bool no_dup = true, const char* prefix = " ", const char* suffix = " ",
 	      trx_mode mode = NUM_MODES, long long rfc = 0LL, int afreq = 0);

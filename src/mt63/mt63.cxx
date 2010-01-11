@@ -137,17 +137,14 @@ int mt63::rx_process(const double *buf, int len)
 	static char msg1[20];
 	static char msg2[20];
 
-	if (get_freq() != (500.0 + bandwidth / 2.0))
-	    set_freq(500.0 + bandwidth / 2.0);
-
 	if (Interleave != progdefaults.mt63_interleave) {
 		Interleave = progdefaults.mt63_interleave;
 		restart();
 	}
-    if (long_integral != progdefaults.mt63_rx_integration) {
-        long_integral = progdefaults.mt63_rx_integration;
-        restart();
-    }
+	if (long_integral != progdefaults.mt63_rx_integration) {
+		long_integral = progdefaults.mt63_rx_integration;
+		restart();
+	}
 
 	if (InpBuff->EnsureSpace(len) == -1) {
 		fprintf(stderr, "mt63_rxprocess: buffer error\n");
@@ -326,4 +323,9 @@ mt63::~mt63()
 
 	if (InpLevel) delete InpLevel;
 	if (InpBuff) delete InpBuff;
+}
+
+void mt63::set_freq(double)
+{
+	modem::set_freq(500.0 + bandwidth / 2.0);
 }

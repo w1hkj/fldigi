@@ -16,7 +16,7 @@ extern void hamlib_get_rig_str(int (*func)(const char*));
 extern void hamlib_close();
 extern bool hamlib_init(bool bPtt);
 extern void hamlib_set_ptt(int);
-extern void hamlib_set_qsy(long long f, long long fmid);
+extern void hamlib_set_qsy(long long f);
 extern int	hamlib_setfreq(long int);
 extern int	hamlib_setmode(rmode_t);
 extern rmode_t hamlib_getmode();

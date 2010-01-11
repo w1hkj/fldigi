@@ -375,7 +375,7 @@ void hamlib_set_ptt(int ptt)
 	pthread_mutex_unlock(&hamlib_mutex);
 }
 
-void hamlib_set_qsy(long long f, long long fmid)
+void hamlib_set_qsy(long long f)
 {
 	if (xcvr->isOnLine() == false)
 		return;
@@ -384,12 +384,6 @@ void hamlib_set_qsy(long long f, long long fmid)
 	hamlib_qsy = false;
 	try {
 		xcvr->setFreq(fdbl);
-		if (active_modem->freqlocked() == true) {
-			active_modem->set_freqlock(false);
-			active_modem->set_freq((int)fmid);
-			active_modem->set_freqlock(true);
-		} else
-			active_modem->set_freq((int)fmid);
 		wf->rfcarrier(f);
 		wf->movetocenter();
 	}

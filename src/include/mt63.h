@@ -60,6 +60,7 @@ public:
 	int     tx_process();
 
 	void    rx_flush();
+	void	set_freq(double);
 };
 
 

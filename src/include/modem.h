@@ -91,8 +91,8 @@ public:
 //	void		set_state(state_t);
 //	void		set_state_wait(state_t);
 //	state_t		get_state();
-	void		set_freq(double);
-	int			get_freq();
+	virtual void	set_freq(double);
+	int		get_freq();
 	void		init_freqlock();
 	void		set_freqlock(bool);
 	void		set_sigsearch(int n) { sigsearch = n; freqerr = 0.0;};

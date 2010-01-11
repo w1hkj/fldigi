@@ -25,6 +25,6 @@ private:
 	Socket* server_socket;
 };
 
-void xmlrpc_set_qsy(long long rfc, long long fmid);
+void xmlrpc_set_qsy(long long rfc);
 
 #endif // XMLRPC_H

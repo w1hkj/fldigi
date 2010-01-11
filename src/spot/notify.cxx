@@ -128,6 +128,7 @@ struct notify_t
 	string re;
 	bool enabled;
 	int afreq;
+	long long rfreq;
 	trx_mode mode;
 
 	const char* match_string;
@@ -356,7 +357,7 @@ void notify_create_rsid_event(bool val)
 			return;
 
 	notify_t rsid_event = {
-		NOTIFY_EVENT_RSID, 0, "", true, 0, NUM_MODES, NULL, NULL, 0,
+		NOTIFY_EVENT_RSID, 0, "", true, 0, 0LL, NUM_MODES, NULL, NULL, 0,
 		{ 0, NUM_BANDS, NUM_MODES, 0LL }, false, 0
 	};
 	notify_action_t rsid_action = { default_alert_text[NOTIFY_EVENT_RSID], "", "", "", 30, 1 };
@@ -456,6 +457,7 @@ static void notify_gui_to_event(notify_t& n)
 		n.re = event_regex[n.event].regex;
 	n.enabled = btnNotifyEnabled->value();
 	n.afreq = 0;
+	n.rfreq = 0;
 	n.match_string = 0;
 	n.submatch_offsets = 0;
 	n.submatch_length = 0;
@@ -696,8 +698,9 @@ static void notify_goto_freq_cb(Fl_Widget* w, void* arg)
 	const notify_t* n = static_cast<notify_t*>(arg);
 	if (active_modem->get_mode() != n->mode)
 		init_modem_sync(n->mode);
-	active_modem->set_freq(n->afreq);
-	if (n->event == NOTIFY_EVENT_RSID && btnRSID->value())
+	qsy(n->rfreq, n->afreq);
+	if (n->event == NOTIFY_EVENT_RSID && btnRSID->value() &&
+	    progdefaults.rsid_auto_disable && progdefaults.rsid_notify_only)
 		toggleRSID();
 }
 
@@ -998,6 +1001,7 @@ static void notify_recv(trx_mode mode, int afreq, const char* str, const regmatc
 	if (!notify_is_dup(*n, str, sub, len, now, afreq, mode)) {
 		n->last_trigger = now;
 		n->afreq = afreq;
+		n->rfreq = wf->rfcarrier();
 		n->mode = mode;
 		n->match_string = str;
 		n->submatch_offsets = sub;

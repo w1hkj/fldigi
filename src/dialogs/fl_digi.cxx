@@ -4703,29 +4703,42 @@ void abort_tx()
 		trx_start_modem(active_modem);
 }
 
-void qsy(long long rfc, long long fmid)
+void qsy(long long rfc, int fmid)
 {
-	if (fmid < 0LL)
-		fmid = (long long)active_modem->get_freq();
-	if (rfc == 0LL || rfc == wf->rfcarrier()) {
-		active_modem->set_freq(fmid);
-		return;
+	if (rfc <= 0LL)
+		rfc = wf->rfcarrier();
+
+	if (fmid > 0) {
+		if (active_modem->freqlocked()) {
+			active_modem->set_freqlock(false);
+			active_modem->set_freq(fmid);
+			active_modem->set_freqlock(true);
+		}
+		else
+			active_modem->set_freq(fmid);
+		// required for modems that will not change their freq (e.g. mt63)
+		int adj = active_modem->get_freq() - fmid;
+		if (adj)
+			rfc += (wf->USB() ? adj : -adj);
 	}
 
+	if (rfc == wf->rfcarrier())
+		return;
+
 	if (progdefaults.chkUSERIGCATis)
-		REQ(rigCAT_set_qsy, rfc, fmid);
+		REQ(rigCAT_set_qsy, rfc);
 	else if (progdefaults.chkUSEMEMMAPis)
-		REQ(rigMEM_set_qsy, rfc, fmid);
+		REQ(rigMEM_set_qsy, rfc);
 #if USE_HAMLIB
 	else if (progdefaults.chkUSEHAMLIBis)
-		REQ(hamlib_set_qsy, rfc, fmid);
+		REQ(hamlib_set_qsy, rfc);
 #endif
 #if USE_XMLRPC
 	else if (progdefaults.chkUSEXMLRPCis)
-		REQ(xmlrpc_set_qsy, rfc, fmid);
+		REQ(xmlrpc_set_qsy, rfc);
 #endif
 	else
-		active_modem->set_freq(fmid);
+		LOG_INFO("Ignoring rfcarrier change request (no rig control)");
 }
 
 map<string, qrg_mode_t> qrg_marks;

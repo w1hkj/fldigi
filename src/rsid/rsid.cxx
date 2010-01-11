@@ -449,6 +449,12 @@ void cRsId::search(void)
 	}
 }
 
+static void apply_(trx_mode mode, int freq)
+{
+	init_modem_sync(mode);
+	qsy(0LL, freq);
+}
+
 void cRsId::apply(int iSymbol, int iBin)
 {
 	ENSURE_THREAD(TRX_TID);
@@ -584,10 +590,8 @@ void cRsId::apply(int iSymbol, int iBin)
 		REQ(note_qrg, false, "\nBefore RSID: ", "\n",
 		    active_modem->get_mode(), 0LL, active_modem->get_freq());
 	REQ(notify_rsid, mbin, freq);
-	if (!progdefaults.rsid_notify_only) {
-		REQ(init_modem, mbin);
-		active_modem->set_freq(freq);
-	}
+	if (!progdefaults.rsid_notify_only)
+		REQ(apply_, mbin, freq);
 }
 
 //=============================================================================

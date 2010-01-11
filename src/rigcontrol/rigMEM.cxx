@@ -352,17 +352,11 @@ void setrigMEM_PTT (bool on)
   TogglePTT = true;
 }
 
-void rigMEM_set_qsy(long long f, long long fmid)
+void rigMEM_set_qsy(long long f)
 {
 	if (!rigMEM_enabled)
 		return;
 
-	if (active_modem->freqlocked() == true) {
-		active_modem->set_freqlock(false);
-		active_modem->set_freq(fmid);
-		active_modem->set_freqlock(true);
-	} else
-		active_modem->set_freq(fmid);
 	wf->rfcarrier(f);
 	wf->movetocenter();
 

@@ -852,15 +852,8 @@ public:
 	}
 };
 
-void xmlrpc_set_qsy(long long rfc, long long fmid)
+void xmlrpc_set_qsy(long long rfc)
 {
-	if (active_modem->freqlocked()) {
-		active_modem->set_freqlock(false);
-		active_modem->set_freq((int)fmid);
-		active_modem->set_freqlock(true);
-	}
-	else
-		active_modem->set_freq((int)fmid);
 	wf->rfcarrier(rfc);
 	wf->movetocenter();
 	show_frequency(rfc);
