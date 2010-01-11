@@ -173,6 +173,8 @@ double speed_test(int converter, unsigned repeat);
 static void setup_signal_handlers(void);
 static void checkdirectories(void);
 
+#define SHOW_WIZARD_BEFORE_MAIN_WINDOW 1
+
 int main(int argc, char ** argv)
 {
 	appname = argv[0];
@@ -333,6 +335,15 @@ int main(int argc, char ** argv)
 
 	progdefaults.initInterface();
 
+#if SHOW_WIZARD_BEFORE_MAIN_WINDOW
+	if (!have_config) {
+		show_wizard(argc, argv);
+		Fl_Window* w;
+		while ((w = Fl::first_window()) && w->visible())
+			Fl::wait();
+	}
+#endif
+
 // OS X will prevent the main window from being resized if we change its
 // size *after* it has been shown. With some X11 window managers, OTOH,
 // the main window will not be restored at its exact saved position if
@@ -362,6 +373,11 @@ int main(int argc, char ** argv)
 
 	notify_start();
 	mode_browser = new Mode_Browser;
+
+#if !SHOW_WIZARD_BEFORE_MAIN_WINDOW
+	if (!have_config)
+		show_wizard();
+#endif
 
 	int ret = Fl::run();
 

@@ -51,6 +51,7 @@ extern const char *audio_card_icon[];
 extern const char *help_about_icon[];
 extern const char *insert_link_icon[];
 extern const char *close_icon[];
+extern const char *apply_icon[];
 extern const char *enter_key_icon[];
 extern const char *dialog_question_48_icon[];
 extern const char *clear_sq_icon[];

@@ -1,3 +1,27 @@
+// ----------------------------------------------------------------------------
+//
+// 	newinstall.cxx
+//
+// Copyright (C) 2007-2009 Dave Freese, W1HKJ
+// Copyright (C) 2009 Stelios Bounanos, M0GLD
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Library General Public
+// License as published by the Free Software Foundation; either
+// version 2 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Library General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+// USA.
+//
+// ----------------------------------------------------------------------------
+
 #include <config.h>
 
 #include "macros.h"
@@ -289,3 +313,228 @@ void create_new_macros()
 	macros.saveMacros(Filename);
 }
 
+// =============================================================================
+
+#include <vector>
+#include <sstream>
+
+#include <FL/Fl_Window.H>
+#include <FL/Fl_Wizard.H>
+#include <FL/Fl_Button.H>
+#include <FL/Fl_Box.H>
+#include <FL/fl_draw.H>
+
+#include "configuration.h"
+#include "confdialog.h"
+#include "icons.h"
+#include "gettext.h"
+
+class Wizard : public Fl_Window
+{
+public:
+	struct wizard_tab {
+		Fl_Group* tab;
+		Fl_Group* parent;
+		int position;
+		int x, y, w, h;
+	};
+
+	Wizard(int w, int h, const char* l = 0)
+		: Fl_Window(w, h, l), pad(4)
+	{ create_wizard(); }
+
+	~Wizard() { destroy_wizard(); }
+
+private:
+	void create_wizard(void);
+	Fl_Group* make_intro(void);
+	void destroy_wizard(void);
+	void place_buttons(void);
+
+	static void wizard_cb(Fl_Widget* w, void* arg);
+
+	int pad;
+	Fl_Wizard *wizard;
+	Fl_Button *cancel, *prev, *next, *done;
+	typedef vector<wizard_tab> tab_t;
+	tab_t tabs;
+	Fl_Group* header;
+	Fl_Box* title;
+};
+
+void Wizard::create_wizard(void)
+{
+	callback(wizard_cb, this);
+	xclass(PACKAGE_TARNAME);
+
+	int btn_w = 100, btn_h = 22, icon_pad = 16;
+
+	wizard = new Fl_Wizard(0, 0, w(), h() - btn_h - 2 * pad);
+	wizard->end();
+
+	// create the buttons
+	fl_font(FL_HELVETICA, FL_NORMAL_SIZE);
+	struct {
+		Fl_Button** button;
+		const char* label;
+		int align;
+	} buttons[] = {
+		{ &done, make_icon_label(_("Finish"), apply_icon), FL_ALIGN_LEFT },
+		{ &next, make_icon_label(_("Next "), right_arrow_icon), FL_ALIGN_RIGHT },
+		{ &prev, make_icon_label(_("Back"), left_arrow_icon), FL_ALIGN_LEFT },
+		// { &cancel, make_icon_label(_("Cancel"), process_stop_icon), FL_ALIGN_LEFT }
+		{ &cancel, make_icon_label(_("Close"), close_icon), FL_ALIGN_LEFT }
+	};
+	for (size_t i = 0; i < sizeof(buttons)/sizeof(*buttons); i++) {
+		Fl_Button* b = *buttons[i].button = new Fl_Button(0, wizard->y() + wizard->h() + pad,
+								  btn_w, btn_h, buttons[i].label);
+		b->callback(wizard_cb, this);
+		set_icon_label(b);
+		b->align(buttons[i].align | FL_ALIGN_INSIDE);
+		b->size(fl_width(get_icon_label_text(b)) + icon_pad * 2, b->h());
+	}
+	set_active(prev, false);
+	done->hide();
+	place_buttons();
+
+	end();
+	position(MAX(0, fl_digi_main->x() + (fl_digi_main->w() - w()) / 2),
+		 MAX(0, fl_digi_main->y() + (fl_digi_main->h() - h()) / 2));
+
+	// populate the Fl_Wizard group
+	struct wizard_tab tabs_[] = {
+		{ NULL },
+		{ tabOperator },
+		{ tabSoundCard },
+		{ tabRig },
+		{ tabQRZ }
+	};
+	tabs.resize(sizeof(tabs_)/sizeof(*tabs_));
+	memcpy(&tabs[0], tabs_, sizeof(tabs_));
+
+	for (tab_t::iterator i = tabs.begin() + 1; i != tabs.end(); ++i) {
+		i->parent = i->tab->parent();
+		i->position = i->parent->find(i->tab);
+		i->x = i->tab->x();
+		i->y = i->tab->y();
+		i->w = i->tab->w();
+		i->h = i->tab->h();
+	}
+
+	tabs[0].tab = make_intro();
+	for (tab_t::iterator i = tabs.begin(); i != tabs.end(); ++i)
+		wizard->add(i->tab);
+	wizard->value(tabs[0].tab);
+}
+
+void Wizard::destroy_wizard(void)
+{
+	// re-parent tabs
+	for (tab_t::const_iterator i = tabs.begin() + 1; i != tabs.end(); ++i) {
+		i->parent->insert(*i->tab, i->position);
+		i->tab->resize(i->x, i->y, i->w, i->h);
+		i->parent->init_sizes();
+	}
+
+	Fl_Button* b[] = { cancel, prev, next, done };
+	for (size_t i = 0; i < sizeof(b)/sizeof(*b); i++)
+		free_icon_label(b[i]);
+
+	header->parent()->remove(header);
+	delete header;
+}
+
+void Wizard::place_buttons(void)
+{
+	Fl_Button* buttons[] = { next->visible() ? next : done, prev, cancel };
+	int x = wizard->x() + wizard->w();
+	for (size_t i = 0; i < sizeof(buttons)/sizeof(*buttons); i++) {
+		buttons[i]->position(x - buttons[i]->w() - pad, buttons[i]->y());
+		x = buttons[i]->x();
+	}
+}
+
+void Wizard::wizard_cb(Fl_Widget* w, void* arg)
+{
+	Wizard* wiz = static_cast<Wizard*>(arg);
+
+	if (w == wiz || w == wiz->cancel || w == wiz->done) {
+		delete wiz;
+		return;
+	}
+
+	if (w == wiz->prev)
+		wiz->wizard->prev();
+	else if (w == wiz->next)
+		wiz->wizard->next();
+
+	Fl_Group* cur = static_cast<Fl_Group*>(wiz->wizard->value());
+
+	// insert header group in current tab, relabel title
+	cur->insert(*wiz->header, 0);
+	const char* text = cur->tooltip();
+	if (!text || !*text)
+		text = cur->label();
+	wiz->title->label(text);
+
+	// modify buttons
+	if (cur == wiz->tabs[0].tab)
+		set_active(wiz->prev, false);
+	else if (cur == wiz->tabs[1].tab)
+		set_active(wiz->prev, true);
+	else if (cur == wiz->tabs.back().tab) {
+		wiz->done->show();
+		wiz->next->hide();
+		wiz->place_buttons();
+	}
+	else {
+		wiz->done->hide();
+		wiz->next->show();
+		wiz->place_buttons();
+	}
+}
+
+Fl_Group* Wizard::make_intro(void)
+{
+	int hdr_h = 20, ttl_w = 300, ttl_y = 2, hlp_h = 200;
+
+	Fl_Group* intro = new Fl_Group(wizard->x(), wizard->y(),
+				       wizard->w(), wizard->h(), label());
+
+	header = new Fl_Group(0, 0, wizard->w(), hdr_h);
+	title = new Fl_Box(0, ttl_y, ttl_w, header->h());
+	title->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
+	title->labelfont(FL_HELVETICA_BOLD);
+	title->labelsize(FL_NORMAL_SIZE + 1);
+	title->label(intro->label());
+	header->end();
+
+	ostringstream help_;
+	help_ << '\n' << _("The wizard will guide you through the basic fldigi settings") << ":\n\n";
+	for (tab_t::const_iterator i = tabs.begin() + 1; i != tabs.end(); ++i)
+		help_ << "\t- " << i->tab->tooltip() << '\n';
+	help_ << '\n' << _("Feel free to skip any pages or exit the wizard at any time") << ". "
+	      << _("All settings shown here can be changed later via the Configure menu") << '.';
+
+	Fl_Box* help = new Fl_Box(pad, header->y() + header->h() + pad,
+				  intro->w() - 2 * pad, hlp_h);
+	help->align(FL_ALIGN_TOP_LEFT | FL_ALIGN_INSIDE | FL_ALIGN_WRAP);
+	help->copy_label(help_.str().c_str());
+
+	intro->end();
+
+	return intro;
+}
+
+
+void show_wizard(int argc, char** argv)
+{
+	Wizard* w = new Wizard(dlgConfig->w(), dlgConfig->h(), "Fldigi configuration wizard");
+
+	if (argc && argv)
+		w->show(argc, argv);
+	else {
+		w->show();
+		w->set_modal();
+	}
+}

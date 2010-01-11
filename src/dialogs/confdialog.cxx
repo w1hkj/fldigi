@@ -2416,6 +2416,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
       tabsConfigure->color((Fl_Color)FL_LIGHT1);
       tabsConfigure->selection_color((Fl_Color)FL_LIGHT1);
       { tabOperator = new Fl_Group(0, 25, 500, 345, _("Operator"));
+        tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
@@ -3938,6 +3939,7 @@ an merging"));
         tabModems->end();
       } // Fl_Group* tabModems
       { tabRig = new Fl_Group(0, 25, 500, 345, _("Rig"));
+        tabRig->tooltip(_("Transceiver control"));
         tabRig->hide();
         { tabsRig = new Fl_Tabs(0, 25, 500, 345);
           tabsRig->selection_color((Fl_Color)FL_LIGHT1);
@@ -4326,6 +4328,7 @@ an merging"));
         tabRig->end();
       } // Fl_Group* tabRig
       { tabSoundCard = new Fl_Group(0, 25, 500, 345, _("Audio"));
+        tabSoundCard->tooltip(_("Audio devices"));
         tabSoundCard->hide();
         { tabsSoundCard = new Fl_Tabs(0, 25, 500, 345);
           tabsSoundCard->selection_color((Fl_Color)FL_LIGHT1);
@@ -4842,6 +4845,7 @@ d frequency"));
         tabMisc->end();
       } // Fl_Group* tabMisc
       { tabQRZ = new Fl_Group(0, 25, 500, 345, _("Callsign DB"));
+        tabQRZ->tooltip(_("Callsign database"));
         tabQRZ->hide();
         { Fl_Group* o = new Fl_Group(5, 180, 490, 75, _("CDROM"));
           o->box(FL_ENGRAVED_FRAME);
