@@ -682,7 +682,7 @@ void configuration::initInterface()
 		wf->setXMLRPC(1);
 		rigCAT_init(false);
 		wf->USB(true);
-		wf->setQSY(1);
+		wf->setQSY(0);
 		riginitOK = true;
 	}
 

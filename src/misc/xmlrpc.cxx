@@ -71,6 +71,8 @@
 #include "fl_digi.h"
 #include "rigsupport.h"
 
+#include "confdialog.h"
+
 LOG_FILE_SOURCE(debug::LOG_RPC);
 
 using namespace std;
@@ -1541,6 +1543,76 @@ public:
 	}
 };
 
+static int rig_control_counter;
+
+static void set_rig_control(bool xmlrpc)
+{
+	struct rcb_t {
+		Fl_Button *toggle, *init;
+	};
+	static struct rcb_t prev_rigcontrol;
+
+	if (xmlrpc) {
+		rcb_t b[] = {
+			{ chkUSERIGCAT, btnInitRIGCAT }, { chkUSEHAMLIB, btnInitHAMLIB },
+			{ chkUSEMEMMAP, btnInitMEMMAP }, { chkUSEXMLRPC, btnInitXMLRPC }
+		};
+		for (size_t i = 0; i < sizeof(b)/sizeof(*b); i++) {
+			if (b[i].toggle->value()) {
+				prev_rigcontrol = b[i];
+				break;
+			}
+		}
+		if (!prev_rigcontrol.toggle) {
+			prev_rigcontrol.toggle = chkUSEXMLRPC;
+			prev_rigcontrol.init = btnInitXMLRPC;
+		}
+		chkUSEXMLRPC->value(1);
+		chkUSEXMLRPC->do_callback();
+		btnInitXMLRPC->do_callback();
+		wf->setQSY(true);
+	}
+	else {
+		prev_rigcontrol.toggle->value(1);
+		prev_rigcontrol.toggle->do_callback();
+		prev_rigcontrol.init->do_callback();
+	}
+}
+
+class Rig_take_control : public xmlrpc_c::method
+{
+public:
+	Rig_take_control()
+	{
+		_signature = "n:n";
+		_help = "Switches rig control to XML-RPC";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		XMLRPC_LOCK;
+		if (++rig_control_counter == 1)
+			REQ_SYNC(set_rig_control, true);
+		*retval = xmlrpc_c::value_nil();
+	}
+};
+
+class Rig_release_control : public xmlrpc_c::method
+{
+public:
+	Rig_release_control()
+	{
+		_signature = "n:n";
+		_help = "Switches rig control to previous setting";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		XMLRPC_LOCK;
+		if (rig_control_counter && !--rig_control_counter)
+			REQ_SYNC(set_rig_control, false);
+		*retval = xmlrpc_c::value_nil();
+	}
+};
+
 // =============================================================================
 
 class Main_set_rig_name : public Rig_set_name
@@ -2277,6 +2349,8 @@ public:
 	ELEM_(Rig_set_bandwidth, "rig.set_bandwidth")			\
 	ELEM_(Rig_get_bandwidth, "rig.get_bandwidth")			\
 	ELEM_(Rig_get_bandwidths, "rig.get_bandwidths")			\
+	ELEM_(Rig_take_control, "rig.take_control")			\
+	ELEM_(Rig_release_control, "rig.release_control")		\
 									\
 	ELEM_(Log_get_freq, "log.get_frequency")			\
 	ELEM_(Log_get_time_on, "log.get_time_on")			\
