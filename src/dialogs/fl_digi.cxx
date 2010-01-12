@@ -4709,11 +4709,8 @@ void qsy(long long rfc, int fmid)
 		rfc = wf->rfcarrier();
 
 	if (fmid > 0) {
-		if (active_modem->freqlocked()) {
+		if (active_modem->freqlocked())
 			active_modem->set_freqlock(false);
-			active_modem->set_freq(fmid);
-			active_modem->set_freqlock(true);
-		}
 		else
 			active_modem->set_freq(fmid);
 		// required for modems that will not change their freq (e.g. mt63)
