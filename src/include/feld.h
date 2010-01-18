@@ -53,6 +53,7 @@ protected:
 	double rxdelta;
 	double rxcounter;
 	double agc;
+	double peakval;
 	double peakhold;
 	double minhold;
 	
@@ -66,6 +67,7 @@ protected:
 	fftfilt			*bpfilt;
 	Cmovavg			*bbfilt;
 	Cmovavg			*minmaxfilt;
+	Cmovavg			*average;
 //tx
 	FELD_STATE	tx_state;
 	double txphacc;

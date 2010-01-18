@@ -195,6 +195,7 @@ feld::feld(trx_mode m)
 	bpfilt = new fftfilt(0, lp, 1024);
 
 	bbfilt = new Cmovavg(8);
+	average = new Cmovavg( 500 / downsampleinc);
 
 	minmaxfilt = new Cmovavg(120);
 
@@ -232,15 +233,24 @@ void feld::FSKHELL_rx(complex z)
 {
 	double f;
 	double vid;
+	double avg;
 
 	f = (prev % z).arg() * phi2freq;
 	prev = z;
 	f = bbfilt->run(f);
-	rxcounter += downsampleinc;
+	avg = average->run(z.mag());
 
+	rxcounter += downsampleinc;
 	if (rxcounter < 1.0)
 		return;
 	rxcounter -= 1.0;
+
+	if (avg > agc)
+		agc = avg;
+	else
+		agc *= (1.0 - 0.01 / RxColumnLen);
+	metric = CLAMP(1000*agc, 0.0, 100.0);
+	display_metric(metric);
 
 	vid = f + 0.5;
 	vid = CLAMP(vid, 0.0, 1.0);
@@ -254,42 +264,44 @@ void feld::FSKHELL_rx(complex z)
 	col_data[col_pointer + RxColumnLen] = (int)(vid * 255.0);
 	col_pointer++;
 	if (col_pointer == RxColumnLen) {
-		REQ(put_rx_data, col_data, col_data.size());
-		if (!halfwidth)
+		if (metric > progStatus.sldrSquelchValue || progStatus.sqlonoff == false) {
 			REQ(put_rx_data, col_data, col_data.size());
+			if (!halfwidth)
+				REQ(put_rx_data, col_data, col_data.size());
+		}
 		col_pointer = 0;
 		for (int i = 0; i < RxColumnLen; i++)
 			col_data[i] = col_data[i + RxColumnLen];
 	}
-
 }
 
 void feld::rx(complex z)
 {
-	double x;
+	double x, avg;
 
-	x = bbfilt->run(z.mag());
+	x = z.mag();
+	if (x > peakval) peakval = x;
+	avg = average->run(x);
 
 	rxcounter += downsampleinc;
 	if (rxcounter < 1.0)
 		return;
-
 	rxcounter -= 1.0;
 
+	x = peakval;
+	peakval = 0;
 	if (x > peakhold)
 		peakhold = x;
 	else
-	peakhold *= (1 - 0.02 / RxColumnLen);
-	if (x < minhold)
-		minhold = x;
+		peakhold *= (1.0 - 0.02 / RxColumnLen);
+	x = x / peakhold;
+	x = CLAMP (x, 0.0, 1.0);
+
+	if (avg > agc)
+		agc = avg;
 	else
-		minhold *= (1 - 0.02 / RxColumnLen);
-
-	x = CLAMP (x / peakhold, 0.0, 1.0);
-
-	agc = minmaxfilt->run(peakhold - minhold);
-
-	metric = CLAMP(200*agc, 0.0, 100.0);
+		agc *= (1.0 - 0.01 / RxColumnLen);
+	metric = CLAMP(1000*agc, 0.0, 100.0);
 	display_metric(metric);
 
 	if (blackboard)
