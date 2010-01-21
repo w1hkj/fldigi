@@ -95,6 +95,10 @@ private:
 	Cmovavg *bitfilt;
 	fftfilt *bpfilt;
 
+	int bflen;
+	double bp_filt_lo;
+	double bp_filt_hi;
+
 	double *pipe;
 	double *dsppipe;
 	int pipeptr;

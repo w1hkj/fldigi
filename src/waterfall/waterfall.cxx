@@ -67,6 +67,7 @@
 #include "confdialog.h"
 #include "flmisc.h"
 #include "gettext.h"
+#include "rtty.h"
 
 using namespace std;
 
@@ -199,13 +200,46 @@ void WFdisp::initMarkers() {
 // draw a marker of specified width and colour centred at freq and clrM
 inline void WFdisp::makeMarker_(int width, const RGB* color, int freq, const RGB* clrMin, RGB* clrM, const RGB* clrMax)
 {
-	// clamp marker to image width
+	if (active_modem->get_mode() == MODE_RTTY) {
+	// rtty has two bandwidth indicators on the waterfall
+	// upper and lower frequency
+		int bw_limit_hi = (int)((_SHIFT[progdefaults.rtty_shift]/2 + progdefaults.RTTY_BW));
+		int bw_limit_lo = (int)((_SHIFT[progdefaults.rtty_shift]/2 - progdefaults.RTTY_BW));
+		int bw_freq = static_cast<int>(freq + 0.5);
+		int bw_lower1 = -bw_limit_hi;
+		int bw_upper1 = -bw_limit_lo;
+		int bw_lower2 = bw_limit_lo;
+		int bw_upper2 = bw_limit_hi;
+		if (bw_lower1 + bw_freq < 0) 
+			bw_lower1 -= bw_lower1 + bw_freq;
+		if (bw_upper1 + bw_freq < 0)
+			bw_lower2 -= bw_lower2 + bw_freq;
+		if (bw_upper2 + bw_freq > scale_width)
+			bw_upper2 -= bw_upper2 + bw_freq - scale_width;
+		if (bw_lower2 + bw_freq > scale_width)
+			bw_lower2 -= bw_lower2 + bw_freq - scale_width;
+	// draw it
+		RGB* clrPos;
+		for (int y = 0; y < WFMARKER - 2; y++) {
+			for (int x = bw_lower1; x < bw_upper1; x++) {
+				clrPos = clrM + x + y * scale_width;
+				if (clrPos > clrMin && clrPos < clrMax)
+					*clrPos = *color;
+			}
+			for (int x = bw_lower2; x < bw_upper2; x++) {
+				clrPos = clrM + x + y * scale_width;
+				if (clrPos > clrMin && clrPos < clrMax)
+					*clrPos = *color;
+			}
+		}
+		return;
+	}
+
 	int bw_lower = -width, bw_upper = width;
 	if (bw_lower + static_cast<int>(freq+0.5) < 0)
 		bw_lower -= bw_lower + static_cast<int>(freq+0.5);
 	if (bw_upper + static_cast<int>(freq+0.5) > scale_width)
 		bw_upper -= bw_upper + static_cast<int>(freq+0.5) - scale_width;
-
 	// draw it
 	RGB* clrPos;
 	for (int y = 0; y < WFMARKER - 2; y++) {
@@ -236,7 +270,7 @@ void WFdisp::makeMarker()
 	else if (mode >= MODE_FELDHELL && mode <= MODE_HELL80)
 		marker_width = (int)progdefaults.HELL_BW;
 	else if (mode == MODE_RTTY)
-		marker_width = (int)progdefaults.RTTY_BW;
+		marker_width = (int)_SHIFT[progdefaults.rtty_shift];
 	marker_width = (int)(marker_width / 2.0 + 1);
 
 	RGBmarker.R = progdefaults.bwTrackRGBI.R;
@@ -244,6 +278,7 @@ void WFdisp::makeMarker()
 	RGBmarker.B = progdefaults.bwTrackRGBI.B;
 
 	makeMarker_(marker_width, &RGBmarker, carrierfreq, clrMin, clrM, clrMax);
+
 	if (unlikely(active_modem->freqlocked())) {
 		int txfreq = active_modem->get_txfreq();
 		adjust_color_inv(RGBmarker.R, RGBmarker.G, RGBmarker.B, FL_BLACK, FL_RED);

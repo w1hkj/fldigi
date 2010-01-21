@@ -1605,7 +1605,7 @@ progdefaults.changed = true;}
               Fl_Value_Slider sldrRTTYbandwidth {
                 label {Receive filter bandwidth}
                 callback {progdefaults.RTTY_BW = o->value();}
-                tooltip {Adjust the DSP bandwidth} xywh {100 295 300 20} type Horizontal align 5 minimum 50 maximum 1200 step 5 value 400 textsize 14
+                tooltip {Adjust the DSP bandwidth} xywh {100 295 300 20} type Horizontal align 5 minimum 5 maximum 200 step 1 value 25 textsize 14
                 code0 {o->value(progdefaults.RTTY_BW);}
               }
             }

@@ -4,7 +4,7 @@
 // Copyright (C) 2006
 //		Dave Freese, W1HKJ
 //
-// This file is part of fldigi.  Adapted from code contained in gmfsk source code 
+// This file is part of fldigi.  Adapted from code contained in gmfsk source code
 // distribution.
 //  gmfsk Copyright (C) 2001, 2002, 2003
 //  Tomi Manninen (oh2bns@sral.fi)
@@ -120,9 +120,9 @@ void rtty::init()
 	modem::init();
 	rx_init();
 	put_MODEstatus(mode);
-	snprintf(msg1, sizeof(msg1), "Shft %-4.0f", rtty_shift); 
+	snprintf(msg1, sizeof(msg1), "Shft %-4.0f", rtty_shift);
 	put_Status1(msg1);
-	snprintf(msg2, sizeof(msg2), "Baud %-4.1f", rtty_baud); 
+	snprintf(msg2, sizeof(msg2), "Baud %-4.1f", rtty_baud);
 	put_Status2(msg2);
 	if (progdefaults.PreferXhairScope)
 		set_scope_mode(Digiscope::XHAIRS);
@@ -142,7 +142,7 @@ rtty::~rtty()
 void rtty::restart()
 {
 	double stl;
-	
+
 	rtty_shift = shift = _SHIFT[progdefaults.rtty_shift];
 	rtty_baud = _BAUD[progdefaults.rtty_baud];
 	nbits = rtty_bits = _BITS[progdefaults.rtty_bits];
@@ -163,22 +163,27 @@ void rtty::restart()
 	rxmode = LETTERS;
 	symbollen = (int) (samplerate / rtty_baud + 0.5);
 	set_bandwidth(shift);
-	
-    rtty_BW = shift + 3*rtty_baud;
+
+	rtty_BW = 0.75 * rtty_baud;
 	progdefaults.RTTY_BW = rtty_BW;
 	sldrRTTYbandwidth->value(rtty_BW);
-	
+
 	wf->redraw_marker();
 
-	if (bpfilt) 
-		bpfilt->create_filter(0, rtty_BW / samplerate / 2.0);
-	else
-		bpfilt = new fftfilt(0, rtty_BW / samplerate / 2.0, 1024);
+	bp_filt_lo = (shift/2.0 - rtty_BW) / samplerate;
+	if (bp_filt_lo < 0) bp_filt_lo = 0;
+	bp_filt_hi = (shift/2.0 + rtty_BW) / samplerate;
 
-	if (bitfilt)
-		bitfilt->setLength(symbollen / 8);//4);
+	if (bpfilt)
+		bpfilt->create_filter(bp_filt_lo, bp_filt_hi);
 	else
-		bitfilt = new Cmovavg(symbollen / 8);//4);
+		bpfilt = new fftfilt(bp_filt_lo, bp_filt_hi, 1024);
+
+	bflen = symbollen/2;
+	if (bitfilt)
+		bitfilt->setLength(bflen);
+	else
+		bitfilt = new Cmovavg(bflen);
 
 // stop length = 1, 1.5 or 2 bits
 	rtty_stop = progdefaults.rtty_stop;
@@ -191,12 +196,12 @@ void rtty::restart()
 	pipeptr = 0;
 	poscnt = negcnt = 0;
 	posfreq = negfreq = 0.0;
-	
+
 	metric = 0.0;
 
-	snprintf(msg1, sizeof(msg1), "Shft %-4.0f", rtty_shift); 
+	snprintf(msg1, sizeof(msg1), "Shft %-4.0f", rtty_shift);
 	put_Status1(msg1);
-	snprintf(msg2, sizeof(msg2), "Baud %-4.1f", rtty_baud); 
+	snprintf(msg2, sizeof(msg2), "Baud %-4.1f", rtty_baud);
 	put_Status2(msg2);
 	put_MODEstatus(mode);
 	for (int i = 0; i < 1024; i++) QI[i].re = QI[i].im = 0.0;
@@ -205,7 +210,7 @@ void rtty::restart()
 	freqerrlo = freqerrhi = 0.0;
 	sigsearch = 0;
 	dspcnt = 2*(nbits + 2);//nbits + 2; //2 * symbollen * (nbits + 2);
-	
+
 	clear_zdata = true;
 }
 
@@ -216,18 +221,18 @@ rtty::rtty(trx_mode tty_mode)
 	mode = tty_mode;
 
 	samplerate = RTTY_SampleRate;
-	fragmentsize = 256;
-	
+//	fragmentsize = 256; // not needed in any modem implementation for fldigi
+
 	bpfilt = (fftfilt *)0;
-	
+
 	bitfilt = (Cmovavg *)0;
-	
+
 	hilbert = new C_FIR_filter();
 	hilbert->init_hilbert(37, 1);
 
 	pipe = new double[MAXPIPE];
 	dsppipe = new double [MAXPIPE];
-		
+
 	restart();
 }
 
@@ -255,9 +260,9 @@ complex rtty::mixer(complex in)
 	z = z * in;
 
 	phaseacc -= TWOPI * frequency / samplerate;
-	if (phaseacc > M_PI) 
+	if (phaseacc > M_PI)
 		phaseacc -= TWOPI;
-	else if (phaseacc < M_PI) 
+	else if (phaseacc < M_PI)
 		phaseacc += TWOPI;
 
 	return z;
@@ -381,7 +386,7 @@ int rtty::rx(bool bit)
 	case RTTY_RX_STATE_STOP:
 		if (--counter == 0) {
 			if (bit) {
-				if ((metric >= progStatus.sldrSquelchValue && progStatus.sqlonoff)|| !progStatus.sqlonoff) {				
+				if ((metric >= progStatus.sldrSquelchValue && progStatus.sqlonoff)|| !progStatus.sqlonoff) {
 					c = decode_char();
 					if ( c != 0 )
 						put_rx_char(c);
@@ -467,16 +472,19 @@ int rtty::rx_process(const double *buf, int len)
 
 	if (progdefaults.RTTY_BW != rtty_BW) {
 		rtty_BW = progdefaults.RTTY_BW;
-		bpfilt->create_filter(0, rtty_BW / samplerate / 2.0);
+		bp_filt_lo = (shift/2.0 - rtty_BW) / samplerate;
+		if (bp_filt_lo < 0) bp_filt_lo = 0;
+		bp_filt_hi = (shift/2.0 + rtty_BW) / samplerate;
+		bpfilt->create_filter(bp_filt_lo, bp_filt_hi);
 		wf->redraw_marker();
 	}
 
 	Metric();
 
 	while (len-- > 0) {
-		
+
 // create analytic signal from sound card input samples
-		
+
 		z.re = z.im = *buf++;
 		hilbert->run(z, z);
 
@@ -489,18 +497,18 @@ int rtty::rx_process(const double *buf, int len)
 		n = bpfilt->run(z, &zp);
 		if (n) {
 			for (int i = 0; i < n; i++) {
-			
+
 // measure phase difference between successive samples to determine
 // the frequency of the baseband signal (+rtty_baud or -rtty_baud)
 // see class complex definiton for operator %
-			
+
 				fin = (prevsmpl % zp[i]).arg() * samplerate / TWOPI;
 				prevsmpl = zp[i];
 
 // filter the result with a moving average filter
-			
+
 				f = bitfilt->run(fin);
-			
+
 // track the + and - frequency excursions separately to derive an afc signal
 
                 rotate = -4.0 * M_PI * freqerr / rtty_shift;
@@ -512,7 +520,7 @@ int rtty::rx_process(const double *buf, int len)
 					posfreq += fin;
 					QI[i].re = zp[i].re;
 					QI[i].im = xmix * zp[i].im;
-				} 
+				}
 				if (fin < 0.0) {
 					negcnt++;
 					negfreq += fin;
@@ -520,25 +528,28 @@ int rtty::rx_process(const double *buf, int len)
 					QI[i].im = zp[i].re;
 				}
 				QI[i] = QI[i] * complex(cos(rotate), sin(rotate));
-                avgsig = decayavg(avgsig, 1.25 * zp[i].mag(), 64);
-				
-				if (avgsig > 0) 
+                avgsig = decayavg(avgsig, 1.25 * zp[i].mag(), 128);//64);
+
+				if (avgsig > 0)
 				    QI[i] = QI[i] / avgsig;
 
 //	hysterisis dead zone in frequency discriminator bit detector
-
-				if (dspcnt && (--dspcnt % (nbits + 2) == 0)) {
-					pipe[pipeptr] = f / shift; // display filtered signal		
-					pipeptr = (pipeptr + 1) % symbollen;
-				}
 
 				if (f > deadzone )
 					bit = true;
 				if (f < -deadzone)
 					bit = false;
+
+				if (dspcnt && (--dspcnt % (nbits + 2) == 0)) {
+//					pipe[pipeptr] = bit ? .5 : -.5;
+					pipe[pipeptr] = f / shift;
+//					pipe[pipeptr] = fin / shift;//f / shift; // display filtered signal
+					pipeptr = (pipeptr + 1) % symbollen;
+				}
+
 //				if (!progdefaults.RTTY_USB)
 //					bit = !bit;
-	
+
 				rxflag = rx (reverse ? !bit : bit);
 
 				if (rxflag == 2) {
@@ -547,7 +558,7 @@ int rtty::rx_process(const double *buf, int len)
 					if (poscnt && negcnt) {
 						poserr = posfreq/poscnt;
 						negerr = negfreq/negcnt;
-						
+
 // compute the frequency error as the median of + and - relative freq's
 						if (sigsearch) sigsearch--;
 
@@ -618,7 +629,7 @@ double rtty::FSKnco()
 void rtty::send_symbol(int symbol)
 {
 	double freq;
-	
+
 	if (reverse)
 		symbol = !symbol;
 
@@ -626,7 +637,7 @@ void rtty::send_symbol(int symbol)
 		freq = get_txfreq_woffset() + shift / 2.0;
 	else
 		freq = get_txfreq_woffset() - shift / 2.0;
-    
+
 	for (int i = 0; i < symbollen; i++) {
 		outbuf[i] = nco(freq);
 		if (symbol)
@@ -645,7 +656,7 @@ void rtty::send_stop()
 {
 	double freq;
 	bool invert = reverse;
-	
+
 	if (invert)
 		freq = get_txfreq_woffset() - shift / 2.0;
 	else
@@ -693,7 +704,7 @@ void rtty::send_char(int c)
 			c = letters[c];
 		else
 			c = figures[c];
-		if (c) 
+		if (c)
 			put_echo_char(c);
 	}
 }
@@ -800,7 +811,7 @@ int rtty::tx_process()
 		return 0;
 
 // switch case if necessary
-	
+
 	if ((c & 0x300) != txmode) {// == 0) {
 		if (txmode == FIGURES) {
 			send_char(LETTERS);
