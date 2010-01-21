@@ -253,11 +253,16 @@ cRsId::cRsId()
 
 	reset();
 
+	rsfft = new Cfft(RSID_FFT_SIZE);
+
 	memset(aHashTable1, 255, sizeof(aHashTable1));
 	memset(aHashTable2, 255, sizeof(aHashTable2));
 	memset(fftwindow, 0, RSID_ARRAY_SIZE * sizeof(double));
-	BlackmanWindow(fftwindow, RSID_FFT_SIZE);
-
+//	BlackmanWindow(fftwindow, RSID_FFT_SIZE);
+//	HammingWindow(fftwindow, RSID_FFT_SIZE);
+//	HanningWindow(fftwindow, RSID_FFT_SIZE);
+	RectWindow(fftwindow, RSID_FFT_SIZE);
+	
 	pCodes = new unsigned char[rsid_ids_size * RSID_NSYMBOLS];
 	memset(pCodes, 0, rsid_ids_size * RSID_NSYMBOLS);
 
@@ -380,6 +385,7 @@ void cRsId::receive(const float* buf, size_t len)
 			len -= src_data.input_frames_used;
 		}
 		else {
+
 			ns = MIN(ns, len);
 			memcpy(inptr, buf, ns * sizeof(*inptr));
 			inptr += ns;
@@ -392,8 +398,6 @@ void cRsId::receive(const float* buf, size_t len)
 			search(); // will reset inptr if at end of input
 	}
 }
-
-#include "rsid_fft.cxx"
 
 void cRsId::search(void)
 {
@@ -415,30 +419,30 @@ void cRsId::search(void)
 
 	if (inptr == aInputSamples + RSID_FFT_SIZE) {
 		for (int i = 0; i < RSID_FFT_SIZE; i++)
-			aFFTReal[i] = aInputSamples[i] * fftwindow[i];
+			aFFTReal[i] = aInputSamples[i];
 		inptr = aInputSamples;
 	}
 	else { // second half of aInputSamples is older
 		for (size_t i = RSID_FFT_SAMPLES; i < RSID_FFT_SIZE; i++)
-			aFFTReal[i - RSID_FFT_SAMPLES] = aInputSamples[i] * fftwindow[i - RSID_FFT_SAMPLES];
+			aFFTReal[i - RSID_FFT_SAMPLES] = aInputSamples[i];
 		for (size_t i = 0; i < RSID_FFT_SAMPLES; i++)
-			aFFTReal[i + RSID_FFT_SAMPLES] = aInputSamples[i] * fftwindow[i + RSID_FFT_SAMPLES];
+			aFFTReal[i + RSID_FFT_SAMPLES] = aInputSamples[i];
 	}
 
+	for (int i = 0; i < RSID_FFT_SIZE; i++) aFFTReal[i] *= fftwindow[i];
 	memset(aFFTReal + RSID_FFT_SIZE, 0, RSID_FFT_SIZE * sizeof(double));
-	rsrfft(aFFTReal, 11);
 
+	rsfft->rdft(aFFTReal);
+
+	memset(aFFTAmpl, 0, RSID_FFT_SIZE * sizeof(double));
 	double Real, Imag;
-	for (int i = 1; i < RSID_FFT_SIZE; i++) {
-		if (unlikely(bReverse)) {
-			Real = aFFTReal[RSID_FFT_SIZE - i];
-			Imag = aFFTReal[RSID_FFT_SIZE + i];
-		}
-		else {
-			Real = aFFTReal[i];
-			Imag = aFFTReal[2 * RSID_FFT_SIZE - i];
-		}
-		aFFTAmpl[i] = Real * Real + Imag * Imag;
+	for (int i = 0; i < RSID_FFT_SIZE; i++) {
+		Real = aFFTReal[2*i];
+		Imag = aFFTReal[2*i + 1];
+		if (unlikely(bReverse))
+			aFFTAmpl[RSID_FFT_SIZE - 1 - i] = Real * Real + Imag * Imag;
+		else
+			aFFTAmpl[i] = Real * Real + Imag * Imag;
 	}
 
 	int SymbolOut = -1, BinOut = -1;

@@ -513,8 +513,6 @@ EXTRA_fldigi_SOURCES += \
 	mt63/alias_k5.dat \
 	mt63/mt63intl.dat \
 	trx/tune.cxx \
-	rsid/rsid_fft.cxx \
-	rsid/rsid_fft.h \
 	dialogs/guide.cxx
 
 flarq_SOURCES += \

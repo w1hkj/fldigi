@@ -47,6 +47,7 @@
 #include "ringbuffer.h"
 #include "globals.h"
 #include "modem.h"
+#include "fft.h"
 
 #define RSID_SAMPLE_RATE 11025.0
 
@@ -89,6 +90,7 @@ private:
 	double	fftwindow[RSID_ARRAY_SIZE];
 	double  aFFTReal[RSID_ARRAY_SIZE];
 	double	aFFTAmpl[RSID_FFT_SIZE];
+	Cfft	*rsfft;
 
 	// Hashing tables
 	unsigned char	aHashTable1[RSID_HASH_LEN];
