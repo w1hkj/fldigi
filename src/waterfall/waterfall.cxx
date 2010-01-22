@@ -203,8 +203,8 @@ inline void WFdisp::makeMarker_(int width, const RGB* color, int freq, const RGB
 	if (active_modem->get_mode() == MODE_RTTY) {
 	// rtty has two bandwidth indicators on the waterfall
 	// upper and lower frequency
-		int bw_limit_hi = (int)((_SHIFT[progdefaults.rtty_shift]/2 + progdefaults.RTTY_BW));
-		int bw_limit_lo = (int)((_SHIFT[progdefaults.rtty_shift]/2 - progdefaults.RTTY_BW));
+		int bw_limit_hi = (int)((_SHIFT[progdefaults.rtty_shift]/2 + progdefaults.RTTY_BW / 2.0));
+		int bw_limit_lo = (int)((_SHIFT[progdefaults.rtty_shift]/2 - progdefaults.RTTY_BW / 2.0));
 		int bw_freq = static_cast<int>(freq + 0.5);
 		int bw_lower1 = -bw_limit_hi;
 		int bw_upper1 = -bw_limit_lo;

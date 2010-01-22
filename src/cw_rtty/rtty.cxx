@@ -164,22 +164,22 @@ void rtty::restart()
 	symbollen = (int) (samplerate / rtty_baud + 0.5);
 	set_bandwidth(shift);
 
-	rtty_BW = 0.75 * rtty_baud;
+	rtty_BW = 1.5 * rtty_baud;
 	progdefaults.RTTY_BW = rtty_BW;
 	sldrRTTYbandwidth->value(rtty_BW);
 
 	wf->redraw_marker();
 
-	bp_filt_lo = (shift/2.0 - rtty_BW) / samplerate;
+	bp_filt_lo = (shift/2.0 - rtty_BW/2.0) / samplerate;
 	if (bp_filt_lo < 0) bp_filt_lo = 0;
-	bp_filt_hi = (shift/2.0 + rtty_BW) / samplerate;
+	bp_filt_hi = (shift/2.0 + rtty_BW/2.0) / samplerate;
 
 	if (bpfilt)
 		bpfilt->create_filter(bp_filt_lo, bp_filt_hi);
 	else
 		bpfilt = new fftfilt(bp_filt_lo, bp_filt_hi, 1024);
 
-	bflen = symbollen/2;
+	bflen = symbollen/3;///2;
 	if (bitfilt)
 		bitfilt->setLength(bflen);
 	else
@@ -408,16 +408,25 @@ int rtty::rx(bool bit)
 	return flag;
 }
 
+char snrmsg[80];
 void rtty::Metric()
 {
-	double delta = rtty_baud/4.0;
-	noisepwr = wf->powerDensity(frequency - shift * 1.5, delta) +
-	 		   wf->powerDensity(frequency + shift * 1.5, delta) + 1e-10;
-	sigpwr = wf->powerDensity(frequency - shift/2, delta) +
-			 wf->powerDensity(frequency + shift/2, delta) + 1e-10;
-    double snr = sigpwr / noisepwr;
-    metric = decayavg( metric, snr, 8);//16);
-    metric = CLAMP(metric, 0.0, 100.0);
+	double delta = rtty_baud/2.0;
+	double np = 
+		wf->powerDensity(frequency - shift * 1.5, delta) +
+	 	wf->powerDensity(frequency + shift * 1.5, delta) + 1e-10;
+	double sp =
+		wf->powerDensity(frequency - shift/2, delta) +
+		wf->powerDensity(frequency + shift/2, delta) + 1e-10;
+	double snr = 0;
+
+	sigpwr = decayavg( sigpwr, sp, sp - sigpwr > 0 ? 4 : 16);
+	noisepwr = decayavg( noisepwr, np, 64 );
+	snr = 10*log10(sigpwr / ( noisepwr * (2400 / (2*delta))));
+
+	snprintf(snrmsg, sizeof(snrmsg), "s/n %3.0f dB", snr);
+	put_Status1(snrmsg);
+	metric = CLAMP(4 * sigpwr/noisepwr, 0.0, 100.0);
 	display_metric(metric);
 }
 
@@ -472,9 +481,9 @@ int rtty::rx_process(const double *buf, int len)
 
 	if (progdefaults.RTTY_BW != rtty_BW) {
 		rtty_BW = progdefaults.RTTY_BW;
-		bp_filt_lo = (shift/2.0 - rtty_BW) / samplerate;
+		bp_filt_lo = (shift/2.0 - rtty_BW/2.0) / samplerate;
 		if (bp_filt_lo < 0) bp_filt_lo = 0;
-		bp_filt_hi = (shift/2.0 + rtty_BW) / samplerate;
+		bp_filt_hi = (shift/2.0 + rtty_BW/2.0) / samplerate;
 		bpfilt->create_filter(bp_filt_lo, bp_filt_hi);
 		wf->redraw_marker();
 	}

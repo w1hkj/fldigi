@@ -520,7 +520,12 @@ void dominoex::eval_s2n()
 	else
 		s2n = 0;
 
-	metric = 4 * s2n;
+//	metric = 4 * s2n;
+	// To partially offset the increase of noise by (THORNUMTONES -1)
+	// in the noise calculation above, 
+	// add 15*log10(THORNUMTONES -1) = 18.4, and multiply by 6
+	metric = 6 * (s2n + 18.4);
+
 	metric = metric < 0 ? 0 : metric > 100 ? 100 : metric;
 
 	display_metric(metric);
