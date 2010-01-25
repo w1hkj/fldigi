@@ -118,6 +118,7 @@ private:
 
 	double prevsymbol;
 	complex prevsmpl;
+	complex *samples;
 	
 	complex QI[1024];
 	int QIptr;
@@ -141,7 +142,7 @@ private:
 	unsigned char bitreverse(unsigned char in, int n);
 	int decode_char();
 	int rttyparity(unsigned int);
-	int rx(bool bit);
+	bool rx(bool bit);
 // transmit	
 	double nco(double freq);
 	void send_symbol(int symbol);

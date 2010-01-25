@@ -120,10 +120,8 @@ void rtty::init()
 	modem::init();
 	rx_init();
 	put_MODEstatus(mode);
-	snprintf(msg1, sizeof(msg1), "Shft %-4.0f", rtty_shift);
+	snprintf(msg1, sizeof(msg1), "%-4.1f / %-4.0f", rtty_baud, rtty_shift);
 	put_Status1(msg1);
-	snprintf(msg2, sizeof(msg2), "Baud %-4.1f", rtty_baud);
-	put_Status2(msg2);
 	if (progdefaults.PreferXhairScope)
 		set_scope_mode(Digiscope::XHAIRS);
 	else
@@ -164,7 +162,7 @@ void rtty::restart()
 	symbollen = (int) (samplerate / rtty_baud + 0.5);
 	set_bandwidth(shift);
 
-	rtty_BW = 1.5 * rtty_baud;
+	rtty_BW = 1.3 * rtty_baud;
 	progdefaults.RTTY_BW = rtty_BW;
 	sldrRTTYbandwidth->value(rtty_BW);
 
@@ -179,7 +177,7 @@ void rtty::restart()
 	else
 		bpfilt = new fftfilt(bp_filt_lo, bp_filt_hi, 1024);
 
-	bflen = symbollen/3;///2;
+	bflen = symbollen/3;
 	if (bitfilt)
 		bitfilt->setLength(bflen);
 	else
@@ -199,17 +197,15 @@ void rtty::restart()
 
 	metric = 0.0;
 
-	snprintf(msg1, sizeof(msg1), "Shft %-4.0f", rtty_shift);
+	snprintf(msg1, sizeof(msg1), "%-4.1f / %-4.0f", rtty_baud, rtty_shift);
 	put_Status1(msg1);
-	snprintf(msg2, sizeof(msg2), "Baud %-4.1f", rtty_baud);
-	put_Status2(msg2);
 	put_MODEstatus(mode);
 	for (int i = 0; i < 1024; i++) QI[i].re = QI[i].im = 0.0;
 	sigpwr = 0.0;
 	noisepwr = 0.0;
 	freqerrlo = freqerrhi = 0.0;
 	sigsearch = 0;
-	dspcnt = 2*(nbits + 2);//nbits + 2; //2 * symbollen * (nbits + 2);
+	dspcnt = 2*(nbits + 2);
 
 	clear_zdata = true;
 }
@@ -221,7 +217,6 @@ rtty::rtty(trx_mode tty_mode)
 	mode = tty_mode;
 
 	samplerate = RTTY_SampleRate;
-//	fragmentsize = 256; // not needed in any modem implementation for fldigi
 
 	bpfilt = (fftfilt *)0;
 
@@ -232,6 +227,8 @@ rtty::rtty(trx_mode tty_mode)
 
 	pipe = new double[MAXPIPE];
 	dsppipe = new double [MAXPIPE];
+
+	samples = new complex[8];
 
 	restart();
 }
@@ -330,9 +327,9 @@ int rtty::decode_char()
 	return data;
 }
 
-int rtty::rx(bool bit)
+bool rtty::rx(bool bit)
 {
-	int flag = 0;
+	bool flag = false;
 	unsigned char c;
 
 	switch (rxstate) {
@@ -350,18 +347,17 @@ int rtty::rx(bool bit)
 				counter = symbollen;
 				bitcntr = 0;
 				rxdata = 0;
-				flag = 1;
 			} else {
 				rxstate = RTTY_RX_STATE_IDLE;
 			}
-		}
+		} else
+			if (bit) rxstate = RTTY_RX_STATE_IDLE;
 		break;
 
 	case RTTY_RX_STATE_DATA:
 		if (--counter == 0) {
 			rxdata |= bit << bitcntr++;
 			counter = symbollen;
-			flag = 1;
 		}
 
 		if (bitcntr == nbits) {
@@ -379,7 +375,6 @@ int rtty::rx(bool bit)
 			rxstate = RTTY_RX_STATE_STOP;
 			rxdata |= bit << bitcntr++;
 			counter = symbollen;
-			flag = 1;
 		}
 		break;
 
@@ -391,7 +386,7 @@ int rtty::rx(bool bit)
 					if ( c != 0 )
 						put_rx_char(c);
 				}
-				flag = 2;
+				flag = true;
 			}
 			rxstate = RTTY_RX_STATE_STOP2;
 			counter = symbollen / 2;
@@ -420,13 +415,13 @@ void rtty::Metric()
 		wf->powerDensity(frequency + shift/2, delta) + 1e-10;
 	double snr = 0;
 
-	sigpwr = decayavg( sigpwr, sp, sp - sigpwr > 0 ? 4 : 16);
-	noisepwr = decayavg( noisepwr, np, 64 );
-	snr = 10*log10(sigpwr / ( noisepwr * (2400 / (2*delta))));
+	sigpwr = decayavg( sigpwr, sp, sp - sigpwr > 0 ? 2 : 8);
+	noisepwr = decayavg( noisepwr, np, 32 );
+	snr = 10*log10(sigpwr / ( noisepwr * (1500 / delta))); // 3000 Hz noise bw
 
 	snprintf(snrmsg, sizeof(snrmsg), "s/n %3.0f dB", snr);
-	put_Status1(snrmsg);
-	metric = CLAMP(4 * sigpwr/noisepwr, 0.0, 100.0);
+	put_Status2(snrmsg);
+	metric = CLAMP(sigpwr/noisepwr, 0.0, 100.0);
 	display_metric(metric);
 }
 
@@ -473,9 +468,9 @@ int rtty::rx_process(const double *buf, int len)
 	complex z, *zp;
 	double f = 0.0;
 	double fin;
-	static bool bit = true;//false;
-	int n = 0, rxflag;
-	double deadzone = shift/8;
+	static bool bit = true;
+	int n = 0;
+	double deadzone = shift/4;
 	double rotate;
 	double ferr = 0;
 
@@ -514,8 +509,9 @@ int rtty::rx_process(const double *buf, int len)
 				fin = (prevsmpl % zp[i]).arg() * samplerate / TWOPI;
 				prevsmpl = zp[i];
 
-// filter the result with a moving average filter
+				fin = CLAMP(fin, - rtty_shift, rtty_shift);
 
+// filter the result with a moving average filter
 				f = bitfilt->run(fin);
 
 // track the + and - frequency excursions separately to derive an afc signal
@@ -550,18 +546,11 @@ int rtty::rx_process(const double *buf, int len)
 					bit = false;
 
 				if (dspcnt && (--dspcnt % (nbits + 2) == 0)) {
-//					pipe[pipeptr] = bit ? .5 : -.5;
 					pipe[pipeptr] = f / shift;
-//					pipe[pipeptr] = fin / shift;//f / shift; // display filtered signal
 					pipeptr = (pipeptr + 1) % symbollen;
 				}
 
-//				if (!progdefaults.RTTY_USB)
-//					bit = !bit;
-
-				rxflag = rx (reverse ? !bit : bit);
-
-				if (rxflag == 2) {
+				if ( rx( reverse ? !bit : bit ) ) {
 					dspcnt = symbollen * (nbits + 2);
 
 					if (poscnt && negcnt) {
@@ -625,7 +614,6 @@ double rtty::nco(double freq)
 double rtty::FSKnco()
 {
 	FSKphaseacc += TWOPI * 1000 / samplerate;
-//	FSKphaseacc += TWOPI * 440 / samplerate;
 
 	if (FSKphaseacc > M_PI)
 
