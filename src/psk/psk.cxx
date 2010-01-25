@@ -710,6 +710,7 @@ static double averageamp;
 
 	imdValid = false;
 	switch (dcdshreg) {
+
 	case 0xAAAAAAAA:	// DCD on by preamble
 		dcd = true;
 		acquire = 0;
@@ -717,10 +718,19 @@ static double averageamp;
 		imdValid = true;
 		break;
 
-	case 0:			// DCD off by postamble
-		dcd = false;
+	case 0xA0A0A0A0:	// DCD on by preamble for PSKR modes ("11001100" sequence sent as preamble)
+		dcd = true;
 		acquire = 0;
-		quality = complex (0.0, 0.0);
+		quality = complex (1.0, 0.0);
+		imdValid = true;
+		break;
+
+	case 0:			// DCD off by postamble. Not for PSKR modes as this is not unique to postamble. 
+		if (!_pskr) {
+			dcd = false;
+			acquire = 0;
+			quality = complex (0.0, 0.0);
+		}
 		break;
 	default:
 		if (metric > progStatus.sldrSquelchValue || progStatus.sqlonoff == false) {
