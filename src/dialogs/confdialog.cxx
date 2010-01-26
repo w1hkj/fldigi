@@ -1484,6 +1484,14 @@ btnInitRIGCAT->redraw_label();
 btnRevertRIGCAT->activate();
 }
 
+Fl_Counter *valRigCatStopbits=(Fl_Counter *)0;
+
+static void cb_valRigCatStopbits(Fl_Counter*, void*) {
+  btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw();
+btnRevertRIGCAT->activate();
+}
+
 Fl_Button *btnInitRIGCAT=(Fl_Button *)0;
 
 static void cb_btnInitRIGCAT(Fl_Button* o, void*) {
@@ -1561,14 +1569,6 @@ Fl_Check_Button *chkRigCatRTSCTSflow=(Fl_Check_Button *)0;
 static void cb_chkRigCatRTSCTSflow(Fl_Check_Button*, void*) {
   btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-btnRevertRIGCAT->activate();
-}
-
-Fl_Value_Slider *valRigCatStopbits=(Fl_Value_Slider *)0;
-
-static void cb_valRigCatStopbits(Fl_Value_Slider*, void*) {
-  btnInitRIGCAT->labelcolor(FL_RED);
-btnInitRIGCAT->redraw();
 btnRevertRIGCAT->activate();
 }
 
@@ -1661,6 +1661,14 @@ btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();
 }
 
+Fl_Counter *valHamRigStopbits=(Fl_Counter *)0;
+
+static void cb_valHamRigStopbits(Fl_Counter* o, void*) {
+  progdefaults.HamRigStopbits = (int)o->value();
+btnRevertHAMLIB->activate();
+progdefaults.changed = true;
+}
+
 Fl_Counter *cntHamlibTimeout0=(Fl_Counter *)0;
 
 static void cb_cntHamlibTimeout0(Fl_Counter* o, void*) {
@@ -1735,15 +1743,6 @@ static void cb_chkHamlibXONXOFFflow(Fl_Check_Button* o, void*) {
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();
-}
-
-Fl_Value_Slider *valHamRigStopbits=(Fl_Value_Slider *)0;
-
-static void cb_valHamRigStopbits(Fl_Value_Slider* o, void*) {
-  progdefaults.HamRigStopbits = (int)o->value();
-btnRevertHAMLIB->activate();
-
-progdefaults.changed = true;
 }
 
 Fl_Button *btnRevertHAMLIB=(Fl_Button *)0;
@@ -2522,6 +2521,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         { tabsUI = new Fl_Tabs(-3, 25, 508, 345);
           tabsUI->selection_color((Fl_Color)FL_LIGHT1);
           { tabUserInterface = new Fl_Group(0, 50, 500, 320, _("General"));
+            tabUserInterface->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 301);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(15, 70, 120, 20, _("Show tooltips"));
@@ -2812,7 +2812,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             tabWF_UI->end();
           } // Fl_Group* tabWF_UI
           { tabWfallRestart = new Fl_Group(0, 50, 500, 320, _("Restart"));
-            tabWfallRestart->hide();
             { Fl_Group* o = new Fl_Group(5, 63, 490, 70, _("Changes take effect on next program startup"));
               o->tooltip(_("Show me more or less waterfall"));
               o->box(FL_ENGRAVED_FRAME);
@@ -3950,9 +3949,9 @@ an merging"));
         { tabsRig = new Fl_Tabs(0, 25, 500, 345);
           tabsRig->selection_color((Fl_Color)FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hardware PTT"));
-            o->hide();
-            { grpHWPTT = new Fl_Group(5, 100, 490, 265);
+            { grpHWPTT = new Fl_Group(5, 100, 490, 265, _("h/w ptt device-pin"));
               grpHWPTT->box(FL_ENGRAVED_FRAME);
+              grpHWPTT->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
               { inpTTYdev = new Fl_Input_Choice(200, 209, 160, 22, _("Device:"));
                 inpTTYdev->tooltip(_("Select serial port"));
                 inpTTYdev->callback((Fl_Callback*)cb_inpTTYdev);
@@ -3982,17 +3981,20 @@ an merging"));
                 btnInitHWPTT->callback((Fl_Callback*)cb_btnInitHWPTT);
               } // Fl_Button* btnInitHWPTT
               { btnTTYptt = new Fl_Round_Button(145, 110, 220, 20, _("Use separate serial port PTT"));
-                btnTTYptt->down_box(FL_DIAMOND_DOWN_BOX);
+                btnTTYptt->box(FL_DOWN_BOX);
+                btnTTYptt->down_box(FL_DOWN_BOX);
                 btnTTYptt->selection_color((Fl_Color)1);
                 btnTTYptt->callback((Fl_Callback*)cb_btnTTYptt);
               } // Fl_Round_Button* btnTTYptt
               { btnUsePPortPTT = new Fl_Round_Button(145, 140, 170, 20, _("Use parallel port PTT"));
-                btnUsePPortPTT->down_box(FL_DIAMOND_DOWN_BOX);
+                btnUsePPortPTT->box(FL_DOWN_BOX);
+                btnUsePPortPTT->down_box(FL_DOWN_BOX);
                 btnUsePPortPTT->selection_color((Fl_Color)1);
                 btnUsePPortPTT->callback((Fl_Callback*)cb_btnUsePPortPTT);
               } // Fl_Round_Button* btnUsePPortPTT
               { btnUseUHrouterPTT = new Fl_Round_Button(145, 170, 170, 20, _("Use uHRouter PTT"));
-                btnUseUHrouterPTT->down_box(FL_DIAMOND_DOWN_BOX);
+                btnUseUHrouterPTT->box(FL_DOWN_BOX);
+                btnUseUHrouterPTT->down_box(FL_DOWN_BOX);
                 btnUseUHrouterPTT->selection_color((Fl_Color)1);
                 btnUseUHrouterPTT->callback((Fl_Callback*)cb_btnUseUHrouterPTT);
               } // Fl_Round_Button* btnUseUHrouterPTT
@@ -4059,6 +4061,16 @@ an merging"));
                 o->add(szBaudRates);
                 o->value(progdefaults.XmlRigBaudrate);
               } // Fl_Choice* mnuXmlRigBaudrate
+              { Fl_Counter* o = valRigCatStopbits = new Fl_Counter(388, 184, 95, 21, _("Stopbits"));
+                valRigCatStopbits->type(1);
+                valRigCatStopbits->minimum(1);
+                valRigCatStopbits->maximum(2);
+                valRigCatStopbits->step(1);
+                valRigCatStopbits->value(1);
+                valRigCatStopbits->callback((Fl_Callback*)cb_valRigCatStopbits);
+                valRigCatStopbits->align(FL_ALIGN_LEFT);
+                o->value(progdefaults.RigCatStopbits);
+              } // Fl_Counter* valRigCatStopbits
               { btnInitRIGCAT = new Fl_Button(365, 321, 113, 24, _("Initialize"));
                 btnInitRIGCAT->tooltip(_("Initialize RigCAT interface"));
                 btnInitRIGCAT->callback((Fl_Callback*)cb_btnInitRIGCAT);
@@ -4071,20 +4083,23 @@ an merging"));
               } // Fl_Check_Button* btnRigCatEcho
               { Fl_Round_Button* o = btnRigCatCMDptt = new Fl_Round_Button(256, 217, 207, 20, _("CAT command for PTT"));
                 btnRigCatCMDptt->tooltip(_("PTT is a CAT command (not hardware)"));
-                btnRigCatCMDptt->down_box(FL_ROUND_DOWN_BOX);
+                btnRigCatCMDptt->box(FL_DOWN_BOX);
+                btnRigCatCMDptt->down_box(FL_DOWN_BOX);
                 btnRigCatCMDptt->selection_color((Fl_Color)1);
                 btnRigCatCMDptt->callback((Fl_Callback*)cb_btnRigCatCMDptt);
                 o->value(progdefaults.RigCatCMDptt);
               } // Fl_Round_Button* btnRigCatCMDptt
               { Fl_Round_Button* o = btnRigCatRTSptt = new Fl_Round_Button(50, 250, 160, 20, _("Toggle RTS for PTT"));
                 btnRigCatRTSptt->tooltip(_("RTS is ptt line"));
-                btnRigCatRTSptt->down_box(FL_ROUND_DOWN_BOX);
+                btnRigCatRTSptt->box(FL_DOWN_BOX);
+                btnRigCatRTSptt->down_box(FL_DOWN_BOX);
                 btnRigCatRTSptt->callback((Fl_Callback*)cb_btnRigCatRTSptt);
                 o->value(progdefaults.RigCatRTSptt);
               } // Fl_Round_Button* btnRigCatRTSptt
               { Fl_Round_Button* o = btnRigCatDTRptt = new Fl_Round_Button(256, 250, 160, 20, _("Toggle DTR for PTT"));
                 btnRigCatDTRptt->tooltip(_("DTR is ptt line"));
-                btnRigCatDTRptt->down_box(FL_ROUND_DOWN_BOX);
+                btnRigCatDTRptt->box(FL_DOWN_BOX);
+                btnRigCatDTRptt->down_box(FL_DOWN_BOX);
                 btnRigCatDTRptt->callback((Fl_Callback*)cb_btnRigCatDTRptt);
                 o->value(progdefaults.RigCatDTRptt);
               } // Fl_Round_Button* btnRigCatDTRptt
@@ -4106,19 +4121,6 @@ an merging"));
                 chkRigCatRTSCTSflow->callback((Fl_Callback*)cb_chkRigCatRTSCTSflow);
                 o->value(progdefaults.RigCatRTSCTSflow);
               } // Fl_Check_Button* chkRigCatRTSCTSflow
-              { Fl_Value_Slider* o = valRigCatStopbits = new Fl_Value_Slider(425, 190, 60, 22, _("Stopbits"));
-                valRigCatStopbits->type(1);
-                valRigCatStopbits->color((Fl_Color)FL_BACKGROUND2_COLOR);
-                valRigCatStopbits->selection_color((Fl_Color)40);
-                valRigCatStopbits->minimum(1);
-                valRigCatStopbits->maximum(2);
-                valRigCatStopbits->step(1);
-                valRigCatStopbits->value(2);
-                valRigCatStopbits->textsize(14);
-                valRigCatStopbits->callback((Fl_Callback*)cb_valRigCatStopbits);
-                valRigCatStopbits->align(FL_ALIGN_LEFT);
-                o->value(progdefaults.RigCatStopbits);
-              } // Fl_Value_Slider* valRigCatStopbits
               { btnRevertRIGCAT = new Fl_Button(365, 289, 113, 24, _("Revert"));
                 btnRevertRIGCAT->tooltip(_("Initialize hamlib interface"));
                 btnRevertRIGCAT->callback((Fl_Callback*)cb_btnRevertRIGCAT);
@@ -4129,6 +4131,7 @@ an merging"));
             o->end();
           } // Fl_Group* o
           { tabHamlib = new Fl_Group(0, 50, 500, 320, _("Hamlib"));
+            tabHamlib->hide();
             { chkUSEHAMLIB = new Fl_Check_Button(195, 60, 100, 20, _("Use Hamlib"));
               chkUSEHAMLIB->tooltip(_("Hamlib used for rig control"));
               chkUSEHAMLIB->down_box(FL_DOWN_BOX);
@@ -4187,6 +4190,16 @@ an merging"));
                 o->add(szBaudRates);
                 o->value(progdefaults.HamRigBaudrate);
               } // Fl_Choice* mnuBaudRate
+              { Fl_Counter* o = valHamRigStopbits = new Fl_Counter(389, 163, 95, 21, _("Stopbits"));
+                valHamRigStopbits->type(1);
+                valHamRigStopbits->minimum(1);
+                valHamRigStopbits->maximum(2);
+                valHamRigStopbits->step(1);
+                valHamRigStopbits->value(1);
+                valHamRigStopbits->callback((Fl_Callback*)cb_valHamRigStopbits);
+                valHamRigStopbits->align(FL_ALIGN_LEFT);
+                o->value(progdefaults.HamRigStopbits);
+              } // Fl_Counter* valHamRigStopbits
               { Fl_Counter* o = cntHamlibTimeout0 = new Fl_Counter(150, 140, 100, 20, _("Retry interval (ms)"));
                 cntHamlibTimeout0->tooltip(_("Msec\'s between retries"));
                 cntHamlibTimeout0->type(1);
@@ -4225,7 +4238,8 @@ an merging"));
               } // Fl_Choice* mnuSideband
               { Fl_Round_Button* o = btnHamlibCMDptt = new Fl_Round_Button(45, 218, 200, 20, _("PTT via Hamlib command"));
                 btnHamlibCMDptt->tooltip(_("PTT is a hamlib command"));
-                btnHamlibCMDptt->down_box(FL_DIAMOND_DOWN_BOX);
+                btnHamlibCMDptt->box(FL_DOWN_BOX);
+                btnHamlibCMDptt->down_box(FL_DOWN_BOX);
                 btnHamlibCMDptt->selection_color((Fl_Color)1);
                 btnHamlibCMDptt->callback((Fl_Callback*)cb_btnHamlibCMDptt);
                 o->value(progdefaults.HamlibCMDptt);
@@ -4255,19 +4269,6 @@ an merging"));
                 chkHamlibXONXOFFflow->callback((Fl_Callback*)cb_chkHamlibXONXOFFflow);
                 o->value(progdefaults.HamlibXONXOFFflow);
               } // Fl_Check_Button* chkHamlibXONXOFFflow
-              { Fl_Value_Slider* o = valHamRigStopbits = new Fl_Value_Slider(424, 162, 60, 22, _("Stopbits"));
-                valHamRigStopbits->type(1);
-                valHamRigStopbits->color((Fl_Color)FL_BACKGROUND2_COLOR);
-                valHamRigStopbits->selection_color((Fl_Color)40);
-                valHamRigStopbits->minimum(1);
-                valHamRigStopbits->maximum(2);
-                valHamRigStopbits->step(1);
-                valHamRigStopbits->value(2);
-                valHamRigStopbits->textsize(14);
-                valHamRigStopbits->callback((Fl_Callback*)cb_valHamRigStopbits);
-                valHamRigStopbits->align(FL_ALIGN_LEFT);
-                o->value(progdefaults.HamRigStopbits);
-              } // Fl_Value_Slider* valHamRigStopbits
               { btnRevertHAMLIB = new Fl_Button(371, 294, 113, 24, _("Revert"));
                 btnRevertHAMLIB->tooltip(_("Initialize hamlib interface"));
                 btnRevertHAMLIB->callback((Fl_Callback*)cb_btnRevertHAMLIB);
@@ -4294,7 +4295,8 @@ an merging"));
                 o->value(progdefaults.chkUSEMEMMAPis);
               } // Fl_Check_Button* chkUSEMEMMAP
               { btnMEMMAPptt = new Fl_Round_Button(160, 177, 150, 20, _("Use Memmap PTT"));
-                btnMEMMAPptt->down_box(FL_DIAMOND_DOWN_BOX);
+                btnMEMMAPptt->box(FL_DOWN_BOX);
+                btnMEMMAPptt->down_box(FL_DOWN_BOX);
                 btnMEMMAPptt->selection_color((Fl_Color)1);
                 btnMEMMAPptt->callback((Fl_Callback*)cb_btnMEMMAPptt);
               } // Fl_Round_Button* btnMEMMAPptt
