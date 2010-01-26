@@ -1730,7 +1730,10 @@ void qsoClear_cb(Fl_Widget *b, void *)
 
 void qsoSave_cb(Fl_Widget *b, void *)
 {
-	submit_log();
+	string havecall = inpCall->value();
+	while (!havecall.empty() && havecall[0] == ' ') havecall.erase(0,1);
+	if (!havecall.empty())
+		submit_log();
 	if (progdefaults.ClearOnSave)
 		clearQSO();
 	restoreFocus();
