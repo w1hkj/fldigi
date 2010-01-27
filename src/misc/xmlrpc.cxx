@@ -1567,15 +1567,19 @@ static void set_rig_control(bool xmlrpc)
 			prev_rigcontrol.toggle = chkUSEXMLRPC;
 			prev_rigcontrol.init = btnInitXMLRPC;
 		}
+		bool changed = progdefaults.changed;
 		chkUSEXMLRPC->value(1);
 		chkUSEXMLRPC->do_callback();
 		btnInitXMLRPC->do_callback();
 		wf->setQSY(true);
+		progdefaults.changed = changed;
 	}
 	else {
+		bool changed = progdefaults.changed;
 		prev_rigcontrol.toggle->value(1);
 		prev_rigcontrol.toggle->do_callback();
 		prev_rigcontrol.init->do_callback();
+		progdefaults.changed = changed;
 	}
 }
 
