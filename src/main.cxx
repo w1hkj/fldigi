@@ -106,6 +106,9 @@
 	#include "benchmark.h"
 #endif
 
+#include "icons.h"
+
+
 using namespace std;
 
 string appname;
@@ -173,6 +176,7 @@ void set_platform_ui(void);
 double speed_test(int converter, unsigned repeat);
 static void setup_signal_handlers(void);
 static void checkdirectories(void);
+static void arg_error(const char* name, const char* arg, bool missing) noreturn__;
 
 // TODO: find out why fldigi crashes on OS X if the wizard window is
 // shown before fldigi_main.
@@ -226,12 +230,8 @@ int main(int argc, char ** argv)
 	generate_option_help();
 	generate_version_text();
 	int arg_idx;
-	if (Fl::args(argc, argv, arg_idx, parse_args) != argc) {
-	    cerr << PACKAGE_NAME << ": bad option `" << argv[arg_idx]
-		 << "'\nTry `" << PACKAGE_NAME
-		 << " --help' for more information.\n";
-	    exit(EXIT_FAILURE);
-	}
+	if (Fl::args(argc, argv, arg_idx, parse_args) != argc)
+		arg_error(argv[0], NULL, false);
 
 	checkdirectories();
 	bool have_config = progdefaults.readDefaultsXML();
@@ -440,10 +440,6 @@ void generate_option_help(void) {
 	     << "    Set the ARQ TCP server port\n"
 	     << "    The default is: " << progdefaults.arq_port << "\n\n"
 
-	     << "  --cpu-speed-test\n"
-	     << "    Perform the CPU speed test, show results in the event log\n"
-	     << "    and possibly change options.\n\n"
-
 #if USE_XMLRPC
 	     << "  --xmlrpc-server-address HOSTNAME\n"
 	     << "    Set the XML-RPC server address\n"
@@ -498,14 +494,18 @@ void generate_option_help(void) {
 	     << "    Default: " << benchmark.src_type << " (" << src_get_name(benchmark.src_type) << ")\n\n"
 #endif
 
-	     << "  --wo\n"
-	     << "    hide all controls but the waterfall\n\n"
+	     << "  --cpu-speed-test\n"
+	     << "    Perform the CPU speed test, show results in the event log\n"
+	     << "    and possibly change options.\n\n"
+
+	     << "  --noise\n"
+	     << "    Unhide controls for noise tests\n\n"
+
+	     << "  --wfall-only\n"
+	     << "    Hide all controls but the waterfall\n\n"
 
 	     << "  --debug-level LEVEL\n"
 	     << "    Set the event log verbosity\n\n"
-
-	     << "  --noise\n"
-	     << "    unhide controls for noise tests\n\n"
 
 	     << "  --version\n"
 	     << "    Print version information\n\n"
@@ -592,23 +592,21 @@ int parse_args(int argc, char **argv, int& idx)
 #endif
 
                OPT_FONT, OPT_WFALL_HEIGHT,
-               OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT,
-//               OPT_TOGGLE_CHECK,
+               OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT, OPT_WFALL_ONLY,
 #if USE_PORTAUDIO
                OPT_FRAMES_PER_BUFFER,
 #endif
-	       OPT_WO, OPT_NOISE, OPT_DEBUG_LEVEL,
+	       OPT_NOISE, OPT_DEBUG_LEVEL,
                OPT_EXIT_AFTER,
                OPT_DEPRECATED, OPT_HELP, OPT_VERSION, OPT_BUILD_INFO };
 
-	const char shortopts[] = "+";
+	const char shortopts[] = ":";
 	static struct option longopts[] = {
 #ifndef __WOE32__
 		{ "rx-ipc-key",	   1, 0, OPT_RX_IPC_KEY },
 		{ "tx-ipc-key",	   1, 0, OPT_TX_IPC_KEY },
 #endif
 		{ "config-dir",	   1, 0, OPT_CONFIG_DIR },
-		{ "experimental",  0, 0, OPT_DEPRECATED },
 
 		{ "arq-server-address", 1, 0, OPT_ARQ_ADDRESS },
 		{ "arq-server-port",    1, 0, OPT_ARQ_PORT },
@@ -616,7 +614,6 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "cpu-speed-test", 0, 0, OPT_SHOW_CPU_CHECK },
 
 #if USE_XMLRPC
-		{ "xmlrpc-server",         0, 0, OPT_DEPRECATED },
 		{ "xmlrpc-server-address", 1, 0, OPT_CONFIG_XMLRPC_ADDRESS },
 		{ "xmlrpc-server-port",    1, 0, OPT_CONFIG_XMLRPC_PORT },
 		{ "xmlrpc-allow",          1, 0, OPT_CONFIG_XMLRPC_ALLOW },
@@ -641,14 +638,14 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "wfall-height",  1, 0, OPT_WFALL_HEIGHT },
 		{ "window-width",  1, 0, OPT_WINDOW_WIDTH },
 		{ "window-height", 1, 0, OPT_WINDOW_HEIGHT },
-		{ "twoscopes",     0, 0, OPT_DEPRECATED },
+		{ "wfall-only",    0, 0, OPT_WFALL_ONLY },
+		{ "wo",            0, 0, OPT_WFALL_ONLY },
 
 #if USE_PORTAUDIO
-		{ "frames-per-buf",1, 0, OPT_FRAMES_PER_BUFFER },
+		{ "frames-per-buffer",1, 0, OPT_FRAMES_PER_BUFFER },
 #endif
 		{ "exit-after",    1, 0, OPT_EXIT_AFTER },
 
-		{ "wo", 0, 0, OPT_WO },
 		{ "noise", 0, 0, OPT_NOISE },
 		{ "debug-level",   1, 0, OPT_DEBUG_LEVEL },
 
@@ -660,9 +657,8 @@ int parse_args(int argc, char **argv, int& idx)
 
 	int longindex;
 	optind = idx;
+	opterr = 0;
 	int c = getopt_long(argc, argv, shortopts, longopts, &longindex);
-	
-	withnoise = false;
 
 	switch (c) {
 		case -1:
@@ -805,7 +801,7 @@ int parse_args(int argc, char **argv, int& idx)
 			Fl::add_timeout(strtod(optarg, 0), exit_cb);
 			break;
 
-		case OPT_WO:
+		case OPT_WFALL_ONLY:
 			bWF_only = true;
 			break;
 
@@ -841,9 +837,8 @@ int parse_args(int argc, char **argv, int& idx)
 			cout << build_text;
 			exit(EXIT_SUCCESS);
 
-		case '?': default:
-			cerr << "Try `" << PACKAGE_NAME << " --help' for more information.\n";
-			exit(EXIT_FAILURE);
+		case '?': case ':': default:
+			arg_error(argv[0], argv[idx], (c == ':'));
 	}
 
 	// Increment idx by the number of args we used and return that number.
@@ -1106,4 +1101,41 @@ static void checkdirectories(void)
 		else if (r == 0 && NBEMS_dirs[i].new_dir_func)
 			NBEMS_dirs[i].new_dir_func();
 	}
+}
+
+// Print an error message and exit. If stderr is not a terminal
+// show an error dialog instead. On win32 we always use Fl::fatal,
+// which displays its own error window.
+static void arg_error(const char* name, const char* arg, bool missing)
+{
+	ostringstream msg;
+	msg << name << ": ";
+	if (arg && *arg) {
+		if (missing)
+			msg << "option '" << arg << "' requires an argument\n";
+		else
+			msg << "unrecognized option '" << arg << "'\n";
+	}
+	else
+		msg << "error while parsing command line\n";
+
+#ifdef __WOE32__
+	bool woe32 = true;
+#else
+	bool woe32 = false;
+#endif
+	bool tty = isatty(STDERR_FILENO);
+
+	if (tty && !woe32)
+		msg << "Try `" << name << " --help' for more information.";
+	else
+		msg << "See command line help for more information.";
+	if (tty || woe32)
+		Fl::fatal("%s", msg.str().c_str());
+	else {
+		fl_message_font(FL_HELVETICA, FL_NORMAL_SIZE);
+		fl_alert2("%s", msg.str().c_str());
+	}
+
+	exit(EXIT_FAILURE);
 }
