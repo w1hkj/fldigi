@@ -995,7 +995,7 @@ void Table::PrevRow()
 {
   int newpos, oldpos;
   if (nRows == 0) return;
-  selected = (selected > 0) ? --selected : 0;
+  selected = (selected > 0) ? selected - 1 : 0;
   oldpos = vScroll->value();
   newpos = rowHeight * selected;
   if (newpos - oldpos > 0)
@@ -1009,7 +1009,7 @@ void Table::NextRow()
   int newpos, oldpos, lastrow;
   if (nRows == 0 || selected == (nRows - 1)) return;
   lastrow = nRows -1;
-  selected = (selected < lastrow) ? ++selected : lastrow;
+  selected = (selected < lastrow) ? selected + 1 : lastrow;
   oldpos = vScroll->value();
   newpos = rowHeight *(selected + 1) - iH;
   if (newpos - oldpos < 0)
