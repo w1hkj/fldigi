@@ -87,7 +87,6 @@ int dspcnt = 0;
 
 
 static char msg1[20];
-static char msg2[20];
 
 double _SHIFT[] = {23, 85, 160, 170, 182, 200, 240, 350, 425, 850};
 double _BAUD[] = {45, 45.45, 50, 56, 75, 100, 110, 150, 200, 300};
@@ -162,7 +161,7 @@ void rtty::restart()
 	symbollen = (int) (samplerate / rtty_baud + 0.5);
 	set_bandwidth(shift);
 
-	rtty_BW = 1.3 * rtty_baud;
+	rtty_BW = 1.5 * rtty_baud;
 	progdefaults.RTTY_BW = rtty_BW;
 	sldrRTTYbandwidth->value(rtty_BW);
 
@@ -499,6 +498,7 @@ int rtty::rx_process(const double *buf, int len)
 // bandpass filter using Windowed Sinc - Overlap-Add convolution filter
 
 		n = bpfilt->run(z, &zp);
+
 		if (n) {
 			for (int i = 0; i < n; i++) {
 
@@ -509,10 +509,6 @@ int rtty::rx_process(const double *buf, int len)
 				fin = (prevsmpl % zp[i]).arg() * samplerate / TWOPI;
 				prevsmpl = zp[i];
 
-				fin = CLAMP(fin, - rtty_shift, rtty_shift);
-
-// filter the result with a moving average filter
-				f = bitfilt->run(fin);
 
 // track the + and - frequency excursions separately to derive an afc signal
 
@@ -538,8 +534,10 @@ int rtty::rx_process(const double *buf, int len)
 				if (avgsig > 0)
 				    QI[i] = QI[i] / avgsig;
 
+				fin = CLAMP(fin, - rtty_shift, rtty_shift);
+// filter the result with a moving average filter
+				f = bitfilt->run(fin);
 //	hysterisis dead zone in frequency discriminator bit detector
-
 				if (f > deadzone )
 					bit = true;
 				if (f < -deadzone)
