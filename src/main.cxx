@@ -152,6 +152,7 @@ cLogfile	*Maillogfile = (cLogfile *)0;
 FILE	*server;
 FILE	*client;
 bool	mailserver = false, mailclient = false, arqmode = false;
+static bool show_cpucheck = false;
 
 RXMSGSTRUC rxmsgst;
 int		rxmsgid = -1;
@@ -264,7 +265,7 @@ int main(int argc, char ** argv)
 	Fl::set_fonts(0);
 
 
-	if (!have_config) {
+	if (!have_config || show_cpucheck) {
 		double speed = speed_test(SRC_SINC_FASTEST, 8);
 
 		if (speed > 150.0) {      // fast
@@ -439,6 +440,10 @@ void generate_option_help(void) {
 	     << "    Set the ARQ TCP server port\n"
 	     << "    The default is: " << progdefaults.arq_port << "\n\n"
 
+	     << "  --cpu-speed-test\n"
+	     << "    Perform the CPU speed test, show results in the event log\n"
+	     << "    and possibly change options.\n\n"
+
 #if USE_XMLRPC
 	     << "  --xmlrpc-server-address HOSTNAME\n"
 	     << "    Set the XML-RPC server address\n"
@@ -574,6 +579,7 @@ int parse_args(int argc, char **argv, int& idx)
 #endif
 	       OPT_CONFIG_DIR,
 	       OPT_ARQ_ADDRESS, OPT_ARQ_PORT,
+	       OPT_SHOW_CPU_CHECK,
 #if USE_XMLRPC
 	       OPT_CONFIG_XMLRPC_ADDRESS, OPT_CONFIG_XMLRPC_PORT,
 	       OPT_CONFIG_XMLRPC_ALLOW, OPT_CONFIG_XMLRPC_DENY, OPT_CONFIG_XMLRPC_LIST,
@@ -606,6 +612,8 @@ int parse_args(int argc, char **argv, int& idx)
 
 		{ "arq-server-address", 1, 0, OPT_ARQ_ADDRESS },
 		{ "arq-server-port",    1, 0, OPT_ARQ_PORT },
+
+		{ "cpu-speed-test", 0, 0, OPT_SHOW_CPU_CHECK },
 
 #if USE_XMLRPC
 		{ "xmlrpc-server",         0, 0, OPT_DEPRECATED },
@@ -803,6 +811,10 @@ int parse_args(int argc, char **argv, int& idx)
 
 		case OPT_NOISE:
 			withnoise = true;
+			break;
+
+		case OPT_SHOW_CPU_CHECK:
+			show_cpucheck = true;
 			break;
 
 		case OPT_DEBUG_LEVEL:
