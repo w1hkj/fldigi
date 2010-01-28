@@ -4740,7 +4740,7 @@ void qsy(long long rfc, int fmid)
 		REQ(xmlrpc_set_qsy, rfc);
 #endif
 	else
-		LOG_INFO("Ignoring rfcarrier change request (no rig control)");
+		LOG_VERBOSE("Ignoring rfcarrier change request (no rig control)");
 }
 
 map<string, qrg_mode_t> qrg_marks;

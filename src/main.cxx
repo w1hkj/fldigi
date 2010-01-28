@@ -284,8 +284,9 @@ int main(int argc, char ** argv)
 			progdefaults.sample_converter = SRC_LINEAR;
 		}
 
-		LOG_INFO("speed factor=%f, slowcpu=%d, sample_converter=\"%s\"", speed,
-			 progdefaults.slowcpu, src_get_name(progdefaults.sample_converter));
+		LOG_INFO("CPU speed factor=%f: setting slowcpu=%s, sample_converter=\"%s\"", speed,
+			 progdefaults.slowcpu ? "true" : "false",
+			 src_get_name(progdefaults.sample_converter));
 	}
 	if (progdefaults.XmlRigFilename.empty())
 		progdefaults.XmlRigFilename = xmlfname;

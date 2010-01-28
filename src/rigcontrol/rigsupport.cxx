@@ -430,7 +430,7 @@ void setTitle()
 
 bool init_Xml_RigDialog()
 {
-LOG_INFO("xml rig");
+	LOG_DEBUG("xml rig");
 	initOptionMenus();
 	clearList();
 	buildlist();
@@ -441,7 +441,7 @@ LOG_INFO("xml rig");
 
 bool init_NoRig_RigDialog()
 {
-LOG_DEBUG("no rig");
+	LOG_DEBUG("no rig");
 	qso_opBW->deactivate();
 	qso_opMODE->clear();
 
@@ -468,7 +468,7 @@ LOG_DEBUG("no rig");
 
 bool init_rigMEM_RigDialog()
 {
-LOG_DEBUG("Mem Mapped rig");
+	LOG_DEBUG("Mem Mapped rig");
 
 	qso_opBW->deactivate();
 	qso_opMODE->clear();
@@ -492,7 +492,7 @@ LOG_DEBUG("Mem Mapped rig");
 #if USE_HAMLIB
 bool init_Hamlib_RigDialog()
 {
-LOG_DEBUG("hamlib");
+	LOG_DEBUG("hamlib");
 
 	qso_opBW->deactivate();
 	qso_opMODE->clear();

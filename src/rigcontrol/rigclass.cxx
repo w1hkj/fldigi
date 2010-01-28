@@ -36,7 +36,7 @@ void Rig::init(rig_model_t rig_model)
 	close();
 	if ((rig = rig_init(rig_model)) == NULL)
 		throw RigException ("Could not initialize rig");
-	LOG_INFO("Initialised rig model %d: %s", rig_model, getName());
+	LOG_VERBOSE("Initialised rig model %d: %s", rig_model, getName());
 }
 
 const char *Rig::getName()
@@ -187,7 +187,7 @@ void Rig::setConf(token_t token, const char *val)
 }
 void Rig::setConf(const char *name, const char *val)
 {
-	LOG_INFO("setting \"%s\" to \"%s\"", name, val);
+	LOG_VERBOSE("setting \"%s\" to \"%s\"", name, val);
 	int err = rig_set_conf(rig, tokenLookup(name), val);
 	if (err != RIG_OK)
 		throw RigException(name, err);

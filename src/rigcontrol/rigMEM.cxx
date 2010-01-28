@@ -92,12 +92,12 @@ bool rigMEM_init(void)
 	shmid = shmget ((key_t)1234, sizeof(ST_SHMEM), 0666 | IPC_CREAT);
 
 	if (shmid < 0) {
-		LOG_ERROR("shmget failed");
+		LOG_PERROR("shmget");
 		 return false;
 	}
  	shared_memory = shmat (shmid, (void *)0, 0);
  	if (shared_memory == (void *)-1) {
-		LOG_ERROR("shmat failed");
+		LOG_PERROR("shmat");
 		return false;
  	}
 	freqflag = (struct ST_SHMEM *) shared_memory;
@@ -116,7 +116,7 @@ bool rigMEM_init(void)
 	show_frequency(freqflag->freq);
 
 	if (pthread_create(&rigMEM_thread, NULL, rigMEM_loop, NULL) < 0) {
-		LOG_ERROR("rigMEM init: pthread_create failed");
+		LOG_PERROR("rigMEM init: pthread_create failed");
 		return false;
 	}
 
@@ -286,10 +286,10 @@ static void *rigMEM_loop(void *args)
 		if (TogglePTT || rig_qsy || change_mode) {
 			IOout = fopen("c:/RIGCTL/ptt", "w");
 			if (IOout) {
-LOG_INFO("sent %d, %c, %s",
-	(int)qsy_f,
-	rigMEM_PTT == PTT_ON ? 'X' : 'R',
-	szmode);
+				LOG_VERBOSE("sent %d, %c, %s",
+					 (int)qsy_f,
+					 rigMEM_PTT == PTT_ON ? 'X' : 'R',
+					 szmode);
 				fprintf(IOout,"%c\n", rigMEM_PTT == PTT_ON ? 'X' : 'R');
 				fprintf(IOout,"%d\n", (int)qsy_f);
 				fprintf(IOout,"%s\n", szmode);
@@ -307,7 +307,7 @@ LOG_INFO("sent %d, %c, %s",
 			fscanf(IOin, "%s", szmode);
 			fclose(IOin);
 			remove("c:/RIGCTL/rig");
-LOG_INFO("rcvd %d, %s", (int)IOfreq, szmode);
+			LOG_VERBOSE("rcvd %d, %s", (int)IOfreq, szmode);
 
 			wf->rfcarrier(IOfreq);
 			show_frequency(IOfreq);

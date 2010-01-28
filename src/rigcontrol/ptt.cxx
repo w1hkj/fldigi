@@ -79,7 +79,7 @@ void PTT::reset(ptt_t dev)
 {
 	close_all();
 
-//	LOG_INFO("Setting PTT to %d", dev);
+//	LOG_VERBOSE("Setting PTT to %d", dev);
 
 	switch (pttdev = dev) {
 #if HAVE_UHROUTER
@@ -310,7 +310,7 @@ void PTT::open_parport(void)
 #endif
 
 	if (!isparport) {
-		LOG_INFO("%s: not a supported parallel port device", progdefaults.PTTdev.c_str());
+		LOG_VERBOSE("%s: not a supported parallel port device", progdefaults.PTTdev.c_str());
 		close_parport();
 		pttfd = -1;
 	}
@@ -506,7 +506,7 @@ void PTT::open_uhrouter(void)
 			}
 		}
 	}
-	LOG_INFO("Will try %s", (start == end ? keyers[start].name : "all keyers"));
+	LOG_VERBOSE("Will try %s", (start == end ? keyers[start].name : "all keyers"));
 
 	int uhrfd[2];
 	uhrfd[0] = uhrfd[1] = uhkfd[0] = uhkfd[1] = uhfd[0] = uhfd[1] = -1;
@@ -527,7 +527,7 @@ void PTT::open_uhrouter(void)
 	for (size_t i = start; i < end; i++) {
 		// open keyer
 		if (!get_fifos(uhrfd, &keyers[i].keyer, 1, fifo_name, len) || *fifo_name == '\0') {
-			LOG_INFO("Keyer \"%s\" not found", keyers[i].name);
+			LOG_VERBOSE("Keyer \"%s\" not found", keyers[i].name);
 			continue;
 		}
 
@@ -536,7 +536,7 @@ void PTT::open_uhrouter(void)
 			LOG_ERROR("Could not open keyer %s", keyers[i].name);
 			continue;
 		}
-		LOG_INFO("Opened keyer %s", keyers[i].name);
+		LOG_VERBOSE("Opened keyer %s", keyers[i].name);
 
 		unsigned char port = OPENPTT;
 		if (!get_fifos(uhkfd, &port, 1, fifo_name, len)) {
@@ -548,7 +548,7 @@ void PTT::open_uhrouter(void)
 			continue;
 		}
 
-		LOG_INFO("Successfully opened PTT port of keyer %s", keyers[i].name);
+		LOG_VERBOSE("Successfully opened PTT port of keyer %s", keyers[i].name);
 		break;
 	}
 
@@ -579,7 +579,7 @@ void PTT::set_uhrouter(bool ptt)
 
 	// send command
 	*buf = '0' + ptt;
-	LOG_INFO("Sending PTT=%uc", *buf);
+	LOG_VERBOSE("Sending PTT=%uc", *buf);
 	struct timeval t = { 2, 0 };
 	if (tm_write(uhfd[1], buf, 1, &t) != 1) {
 		LOG_ERROR("Could not set PTT: %s", strerror(errno));
@@ -596,7 +596,7 @@ void PTT::set_uhrouter(bool ptt)
 		LOG_ERROR("No reply to PTT command within %jd seconds", (intmax_t)t.tv_sec);
 		break;
 	default:
-		LOG_INFO("Received \"%s\"", str2hex(buf, n));
+		LOG_VERBOSE("Received \"%s\"", str2hex(buf, n));
 		// last received char should be '1'(?)
 		break;
 	}

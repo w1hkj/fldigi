@@ -479,7 +479,7 @@ void cRsId::apply(int iSymbol, int iBin)
 		else // RSID unknown; shouldn't  happen
 			snprintf(msg, sizeof(msg), "RSID: code %d unknown", iSymbol);
 		put_status(msg, 4.0);
-		LOG_INFO("%s", msg);
+		LOG_VERBOSE("%s", msg);
 		return;
 	}
 	else if (!progdefaults.rsid_rx_modes.test(mbin)) {

@@ -63,16 +63,19 @@ static Fl_Double_Window* window;
 static FTextView* text;
 
 debug* debug::inst = 0;
-debug::level_e debug::level = debug::WARN_LEVEL;
+debug::level_e debug::level = debug::INFO_LEVEL;
 uint32_t debug::mask = ~0u;
 
-const char* prefix[] = { _("Quiet"), _("Error"), _("Warning"), _("Info"), _("Debug") };
+static const char* prefix[] = {
+	_("Quiet"), _("Error"), _("Warning"), _("Info"), _("Verbose"), _("Debug")
+};
 
 static void slider_cb(Fl_Widget* w, void*);
 static void src_menu_cb(Fl_Widget* w, void*);
 static void popup_message(void*);
 
 Fl_Menu_Item src_menu[] = {
+	{ _("ARQ control"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
 	{ _("Audio"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
 	{ _("Modem"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
 	{ _("Rig control"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },

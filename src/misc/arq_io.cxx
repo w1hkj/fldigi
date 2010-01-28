@@ -59,6 +59,8 @@
 #include <FL/Fl.H>
 #include <FL/fl_ask.H>
 
+LOG_FILE_SOURCE(debug::LOG_ARQCONTROL);
+
 using namespace std;
 
 //======================================================================
@@ -134,7 +136,7 @@ void ParseMode(string src)
 		REQ_SYNC(&PTT::set, push2talk, true);
 		MilliSleep(msecs);
 		REQ_SYNC(&PTT::set, push2talk, false);
-LOG_INFO("%s","ARQ ptt toggled");
+		LOG_VERBOSE("%s", "ARQ ptt toggled");
 		return;
 	}
 	for (size_t i = 0; i < NUM_MODES; ++i) {
@@ -149,15 +151,14 @@ LOG_INFO("ARQ new modem set to %s", mode_info[i].pskmail_name);
 	}
 }
 
-//VK2ETA Start of "Control RSID"
 void ParseRSID(string src)
 {
 	if (src == "ON") {
-LOG_INFO("%s","RsID turned ON");
+		LOG_VERBOSE("%s", "RsID turned ON");
 		REQ(set_button, btnRSID, 1);
 	}
 	if (src == "OFF") {
-LOG_INFO("%s","RsID turned OFF");
+		LOG_VERBOSE("%s", "RsID turned OFF");
 		REQ(set_button, btnRSID, 0);
 	}
 }
@@ -166,15 +167,14 @@ LOG_INFO("%s","RsID turned OFF");
 void ParseTxRSID(string src)
 {
 	if (src == "ON") {
-LOG_INFO("%s","TxRsID turned ON");
+		LOG_VERBOSE("%s", "TxRsID turned ON");
 		REQ(set_button, btnTxRSID, 1);
 	}
 	if (src == "OFF") {
-LOG_INFO("%s","TxRsID turned OFF");
+		LOG_VERBOSE("%s", "TxRsID turned OFF");
 		REQ(set_button, btnTxRSID, 0);
 	}
 }
-//VK2ETA End of "Control RSID"
 
 void parse_arqtext(string &toparse)
 {
@@ -182,14 +182,14 @@ void parse_arqtext(string &toparse)
 	string strSubCmd;
 	unsigned long int idxCmd, idxCmdEnd, idxSubCmd, idxSubCmdEnd;
 
-LOG_INFO("Arq text: %s", noctrl(toparse).c_str());
+	LOG_DEBUG("Arq text: %s", noctrl(toparse).c_str());
 
 	idxCmd = toparse.find("<cmd>");
 	idxCmdEnd = toparse.find("</cmd>");
 
 	while ( idxCmd != string::npos && idxCmdEnd != string::npos && idxCmdEnd > idxCmd ) {
 
-LOG_INFO("Cmd text: %s", toparse.substr(idxCmd, idxCmdEnd + 6).c_str());
+		LOG_DEBUG("Cmd text: %s", toparse.substr(idxCmd, idxCmdEnd + 6).c_str());
 		strCmdText = toparse.substr(idxCmd + 5, idxCmdEnd - idxCmd - 5);
 		if (strCmdText == "server" && mailserver == false && mailclient == false) {
 			mailserver = true;
@@ -202,7 +202,7 @@ LOG_INFO("Cmd text: %s", toparse.substr(idxCmd, idxCmdEnd + 6).c_str());
 			if (progdefaults.PSKmailSweetSpot)
 				active_modem->set_freq(progdefaults.PSKsweetspot);
 			active_modem->set_freqlock(true);
-LOG_INFO("%s","ARQ is set to pskmail server");
+			LOG_DEBUG("%s", "ARQ is set to pskmail server");
 		} else if (strCmdText == "client" && mailclient == false && mailserver == false) {
 			mailclient = true;
 			mailserver = false;
@@ -212,7 +212,7 @@ LOG_INFO("%s","ARQ is set to pskmail server");
 			Maillogfile->log_to_file_start();
 			REQ(set_button, wf->xmtlock, 0);
 			active_modem->set_freqlock(false);
-LOG_INFO("%s","ARQ is set to pskmail client");
+			LOG_DEBUG("%s", "ARQ is set to pskmail client");
 		} else if (strCmdText == "normal") {
 			mailserver = false;
 			mailclient = false;
@@ -222,8 +222,7 @@ LOG_INFO("%s","ARQ is set to pskmail client");
 			}
 			REQ(set_button, wf->xmtlock, 0);
 			active_modem->set_freqlock(false);
-LOG_INFO("%s","ARQ is reset to normal ops");
-//VK2ETA Start of "Control RSID"
+			LOG_DEBUG("%s", "ARQ is reset to normal ops");
 		} else if ((idxSubCmd = strCmdText.find("<mode>")) != string::npos) {
 			idxSubCmdEnd = strCmdText.find("</mode>");
 			if (	idxSubCmdEnd != string::npos &&
@@ -246,7 +245,7 @@ LOG_INFO("%s","ARQ is reset to normal ops");
 				ParseTxRSID(strSubCmd);
 			}
 		}
-//VK2ETA End of "Control RSID"
+
 		toparse.erase(idxCmd, idxCmdEnd - idxCmd + 6);
 		while (toparse[0] == '\n' || toparse[0] == '\r') toparse.erase(0, 1);
 
@@ -279,7 +278,7 @@ void process_msgque()
 			pText = 0;
 			arq_text_available = true;
 			active_modem->set_stopflag(false);
-			LOG_INFO("SYSV ARQ string: %s", arqtext.c_str());
+			LOG_DEBUG("SYSV ARQ string: %s", arqtext.c_str());
 			start_tx();
 			txstring.clear();
 		}
@@ -340,13 +339,13 @@ bool TLF_arqRx()
 		arqtext = "";
 		time(&start_time);
 		while (!autofile.eof()) {
-			memset(mailline,0,1000);
+			memset(mailline, 0, sizeof(mailline));
 			autofile.getline(mailline, 998); // leave space for "\n" and null byte
 			txstring.append(mailline);
 			txstring.append("\n");
 			time(&prog_time);
 			if (prog_time - start_time > TIMEOUT) {
-				LOG_ERROR("TLF file_i/o failure");
+				LOG_ERROR("TLF file I/O failure");
 				autofile.close();
 				std::remove (sAutoFile.c_str());
 				return false;
@@ -363,7 +362,7 @@ bool TLF_arqRx()
 			pText = 0;
 			arq_text_available = true;
 			active_modem->set_stopflag(false);
-			LOG_INFO("%s", arqtext.c_str());
+			LOG_DEBUG("%s", arqtext.c_str());
 			start_tx();
 			txstring.clear();
 		}
@@ -393,7 +392,7 @@ bool WRAP_auto_arqRx()
 			txstring.append("\n");
 			time(&prog_time);
 			if (prog_time - start_time > TIMEOUT) {
-				LOG_ERROR("autowrap file_i/o failure");
+				LOG_ERROR("autowrap file I/O failure");
 				autofile.close();
 				std::remove (sAutoFile.c_str());
 				return false;
@@ -408,7 +407,7 @@ bool WRAP_auto_arqRx()
 			arqtext.append("\n......end\n");
 			pText = 0;
 			arq_text_available = true;
-			LOG_INFO("%s", arqtext.c_str());
+			LOG_DEBUG("%s", arqtext.c_str());
 			start_tx();
 			txstring.clear();
 		}
@@ -577,7 +576,7 @@ bool Socket_arqRx()
 				pText = 0;//arqtext.begin();
 				arq_text_available = true;
 				active_modem->set_stopflag(false);
-				LOG_INFO("%s", arqtext.c_str());
+				LOG_DEBUG("%s", arqtext.c_str());
 				start_tx();
 			}
 			txstring.clear();

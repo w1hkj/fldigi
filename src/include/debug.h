@@ -28,10 +28,14 @@
 class debug
 {
 public:
-	enum level_e { QUIET_LEVEL, ERROR_LEVEL, WARN_LEVEL, INFO_LEVEL, DEBUG_LEVEL, LOG_NLEVELS };
+	enum level_e {
+		QUIET_LEVEL, ERROR_LEVEL, WARN_LEVEL, INFO_LEVEL,
+		VERBOSE_LEVEL, DEBUG_LEVEL, LOG_NLEVELS
+	};
 	enum source_e {
-		LOG_AUDIO = 1 << 0, LOG_MODEM = 1 << 1, LOG_RIGCONTROL = 1 << 2,
-		LOG_RPC = 1 << 3, LOG_SPOTTER = 1 << 4, LOG_OTHER = 1 << 5
+		LOG_ARQCONTROL = 1 << 0, LOG_AUDIO = 1 << 1, LOG_MODEM = 1 << 2,
+		LOG_RIGCONTROL = 1 << 3, LOG_RPC = 1 << 4, LOG_SPOTTER = 1 << 5,
+		LOG_OTHER = 1 << 6
 	};
 	static void start(const char* filename);
 	static void stop(void);
@@ -58,6 +62,7 @@ private:
 	} while (0)
 
 #define LOG_DEBUG(...) LOG(debug::DEBUG_LEVEL, log_source_, __VA_ARGS__)
+#define LOG_VERBOSE(...) LOG(debug::VERBOSE_LEVEL, log_source_, __VA_ARGS__)
 #define LOG_INFO(...) LOG(debug::INFO_LEVEL, log_source_, __VA_ARGS__)
 #define LOG_WARN(...) LOG(debug::WARN_LEVEL, log_source_, __VA_ARGS__)
 #define LOG_ERROR(...) LOG(debug::ERROR_LEVEL, log_source_, __VA_ARGS__)

@@ -55,7 +55,7 @@
                                 LOG_WARN("flrun lock");			\
                                 break;                                  \
                         default:                                        \
-                                LOG_INFO("lock");			\
+                                LOG_VERBOSE("lock");			\
                         }                                               \
                         pstack_maybe();                                 \
                         Fl::lock(x);                                    \

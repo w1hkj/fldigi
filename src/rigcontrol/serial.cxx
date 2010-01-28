@@ -147,20 +147,20 @@ bool Cserial::OpenPort()  {
 void Cserial::SetPTT(bool b)
 {
 	if (fd < 0) {
-		LOG_DEBUG("ptt fd < 0");
+		LOG_DEBUG("PTT fd < 0");
 		return;
 	}
 	if (dtrptt || rtsptt) {
 		ioctl(fd, TIOCMGET, &status);
-		LOG_INFO("h/w ptt %d, Status %X", b, status);
-		if (b == true) {								  // ptt enabled
+		LOG_DEBUG("H/W PTT %d, status %X", b, status);
+		if (b == true) {					  // ptt enabled
 			if (dtrptt && dtr)  status &= ~TIOCM_DTR;	 // toggle low
 			if (dtrptt && !dtr) status |= TIOCM_DTR;	  // toggle high
 			if (rtscts == false) {
 				if (rtsptt && rts)  status &= ~TIOCM_RTS; // toggle low
 				if (rtsptt && !rts) status |= TIOCM_RTS;  // toggle high
 			}
-		} else {										  // ptt disabled
+		} else {						  // ptt disabled
 			if (dtrptt && dtr)  status |= TIOCM_DTR;	  // toggle high
 			if (dtrptt && !dtr) status &= ~TIOCM_DTR;	 // toggle low
 			if (rtscts == false) {
@@ -168,10 +168,10 @@ void Cserial::SetPTT(bool b)
 				if (rtsptt && !rts) status &= ~TIOCM_RTS; // toggle low
 			}
 		}
-		LOG_INFO("Status %02X, %s", status & 0xFF, uint2bin(status, 8));
+		LOG_DEBUG("Status %02X, %s", status & 0xFF, uint2bin(status, 8));
 		ioctl(fd, TIOCMSET, &status);
 	}
-	LOG_DEBUG("No ptt specified");
+	LOG_DEBUG("No PTT specified");
 }
 
 ///////////////////////////////////////////////////////
@@ -182,7 +182,7 @@ void Cserial::SetPTT(bool b)
 void Cserial::ClosePort()
 {
 	if (fd < 0) return;
-	LOG_INFO("Serial port closed, fd = %d", fd);
+	LOG_DEBUG("Serial port closed, fd = %d", fd);
 	ioctl(fd, TIOCMSET, &origstatus);
 	tcsetattr (fd, TCSANOW, &oldtio);
 	close(fd);
@@ -371,7 +371,7 @@ int Cserial::WriteBuffer(unsigned char *buff, int n)
 
 	WriteFile (hComm, buff, n, &nBytesWritten, NULL);
 	if (!nBytesWritten) {
-LOG_INFO("Reopen comm port");
+		LOG_DEBUG("Reopening comm port");
 		ClosePort();
 		OpenPort();
 		WriteFile (hComm, buff, n, &nBytesWritten, NULL);
@@ -405,7 +405,7 @@ BOOL Cserial::SetCommunicationTimeouts(
 	CommTimeouts.WriteTotalTimeoutConstant = WriteTotalTimeoutConstant;
 	CommTimeouts.WriteTotalTimeoutMultiplier = WriteTotalTimeoutMultiplier;
 
-	LOG_INFO("\n\
+	LOG_DEBUG("\n\
 Read Interval Timeout............... %8ld %8ld\n\
 Read Total Timeout Multiplier....... %8ld %8ld\n\
 Read Total Timeout Constant Timeout. %8ld %8ld\n\
@@ -524,7 +524,7 @@ BOOL Cserial::ConfigurePort(DWORD	BaudRate,
 				BYTE	StopBits)
 {
 	if((bPortReady = GetCommState(hComm, &dcb))==0) {
-		LOG_ERROR("GetCommState Error on %s", device.c_str());
+		LOG_ERROR("GetCommState error on %s", device.c_str());
 		CloseHandle(hComm);
 		hComm = INVALID_HANDLE_VALUE;
 		return FALSE;
@@ -586,8 +586,8 @@ void Cserial::SetPTT(bool b)
 		LOG_ERROR("Invalid handle");
 		return;
 	}
-	LOG_INFO("PTT = %d, DTRptt = %d, DTR = %d, RTSptt = %d, RTS = %d",
-		 b, dtrptt, dtr, rtsptt, rts);
+	LOG_DEBUG("PTT = %d, DTRptt = %d, DTR = %d, RTSptt = %d, RTS = %d",
+		  b, dtrptt, dtr, rtsptt, rts);
 
 	if (b == true) {				// ptt enabled
 		if (dtrptt && dtr)

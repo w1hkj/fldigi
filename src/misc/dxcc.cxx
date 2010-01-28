@@ -43,7 +43,7 @@ bool dxcc_open(const char* filename)
 
 	ifstream in(filename);
 	if (!in) {
-		LOG_INFO("Could not read contest country file \"%s\"", filename);
+		LOG_VERBOSE("Could not read contest country file \"%s\"", filename);
 		return false;
 	}
 
@@ -97,7 +97,7 @@ bool dxcc_open(const char* filename)
 		in >> ws; // cr/lf after ';'
 	}
 
-	LOG_INFO("Loaded %" PRIuSZ " prefixes for %u countries", cmap->size(), nrec);
+	LOG_VERBOSE("Loaded %" PRIuSZ " prefixes for %u countries", cmap->size(), nrec);
 	return true;
 }
 
@@ -233,8 +233,8 @@ bool qsl_open(const char* filename, qsl_t qsl_type)
 		(*qsl_calls)[s] |= (1 << qsl_type);
 	}
 
-	LOG_INFO("Added %" PRIuSZ " %s callsigns from \"%s\"",
-		 qsl_calls->size() - n, qsl_names[qsl_type], filename);
+	LOG_VERBOSE("Added %" PRIuSZ " %s callsigns from \"%s\"",
+		    qsl_calls->size() - n, qsl_names[qsl_type], filename);
 
 	qsl_open_ |= (1 << qsl_type);
 	return true;

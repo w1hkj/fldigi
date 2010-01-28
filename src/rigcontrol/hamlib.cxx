@@ -261,7 +261,7 @@ bool hamlib_init(bool bPtt)
 		return false;
 	}
 
-	LOG_INFO("trying frequency request");
+	LOG_DEBUG("trying frequency request");
 	try {
 		if ( !xcvr->canGetFreq() ) need_freq = true; // getFreq will return setFreq value
 		else {
@@ -293,7 +293,7 @@ bool hamlib_init(bool bPtt)
 
 	try {
 		if (hamlib_ptt == true) {
-			LOG_INFO("trying PTT");
+			LOG_VERBOSE("trying PTT");
 			if (!xcvr->canSetPTT())
 				hamlib_ptt = false;
 			else
@@ -307,7 +307,7 @@ bool hamlib_init(bool bPtt)
 
 	if (need_freq == false && need_mode == false && hamlib_ptt == false ) {
 		xcvr->close();
-		LOG_INFO("Failed freq/mode/ptt");
+		LOG_VERBOSE("Failed freq/mode/ptt");
 		return false;
 	}
 

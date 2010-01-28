@@ -180,7 +180,7 @@ void print(size_t &p0, int indent)
 #ifdef DEBUGXML
 	std::string istr(indent, '\t');
 	size_t tend = strXML.find(">", p0);
-	LOG_INFO("%s%s", istr.c_str(), strXML.substr(p0, tend - p0 + 1).c_str());
+	LOG_VERBOSE("%s%s", istr.c_str(), strXML.substr(p0, tend - p0 + 1).c_str());
 #endif
 }
 

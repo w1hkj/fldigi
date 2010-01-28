@@ -291,7 +291,7 @@ void SoundBase::tag_file(SNDFILE *sndfile, const char *title)
 {
 	int err;
 	if ((err = sf_set_string(sndfile, SF_STR_TITLE, title)) != 0) {
-		LOG_ERROR("sf_set_string STR_TITLE: %s", sf_error_number(err));
+		LOG_INFO("sf_set_string STR_TITLE: %s", sf_error_number(err));
 		return;
 	}
 
@@ -1330,9 +1330,10 @@ void SoundPort::init_stream(unsigned dir)
 		LOG_DEBUG("%s: resampling %f <=> %f", dir_str[dir],
 			  sd[dir].dev_sample_rate, req_sample_rate);
 
-        if (progdefaults.PortFramesPerBuffer > 0)
+        if (progdefaults.PortFramesPerBuffer > 0) {
                 sd[dir].frames_per_buffer = progdefaults.PortFramesPerBuffer;
-	LOG_DEBUG("%s: frames_per_buffer=%u", dir_str[dir], sd[dir].frames_per_buffer);
+		LOG_DEBUG("%s: frames_per_buffer=%u", dir_str[dir], sd[dir].frames_per_buffer);
+	}
 }
 
 void SoundPort::start_stream(unsigned dir)
@@ -1537,7 +1538,7 @@ void SoundPort::init_hostapi_ext(void)
 		set_jack_client_name(PACKAGE_TARNAME);
 #  ifndef NDEBUG
         else
-		LOG_INFO("dlsym(PaJack_SetClientName) error: %s", err);
+		LOG_VERBOSE("dlsym(PaJack_SetClientName) error: %s", err);
 #  endif
 #endif
 }

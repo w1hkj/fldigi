@@ -333,7 +333,7 @@ long long rigCAT_getfreq()
 				MilliSleep(progdefaults.RigCatTimeout);
 // send the command
 			if ( !sendCommand(strCmd, rTemp.size) ) {
-				LOG_INFO("sendCommand failed");
+				LOG_VERBOSE("sendCommand failed");
 				goto retry_get_freq;
 			}
 // check the pre data string
@@ -342,7 +342,7 @@ long long rigCAT_getfreq()
 			if (len1) {
 				for (size_t i = 0; i < len1; i++) {
 					if ((char)rTemp.str1[i] != (char)replybuff[i]) {
-						LOG_INFO("failed pre data string test @ %" PRIuSZ, i);
+						LOG_VERBOSE("failed pre data string test @ %" PRIuSZ, i);
 						goto retry_get_freq;
 					}
 				}
@@ -361,7 +361,7 @@ long long rigCAT_getfreq()
 			if (len2) {
 				for (size_t i = 0; i < len2; i++)
 					if ((char)rTemp.str2[i] != (char)replybuff[p + i]) {
-						LOG_INFO("failed post data string test @ %" PRIuSZ, i);
+						LOG_VERBOSE("failed post data string test @ %" PRIuSZ, i);
 						goto retry_get_freq;
 					}
 			}
@@ -369,7 +369,7 @@ long long rigCAT_getfreq()
 			f = fm_freqdata(rTemp.data, pData);
 			if ( f >= rTemp.data.min && f <= rTemp.data.max)
 				return f;
-			LOG_INFO("freq: %lld", f);
+			LOG_VERBOSE("freq: %lld", f);
 retry_get_freq: ;
 		}
 	}
@@ -489,7 +489,7 @@ string rigCAT_getmode()
 			if (len) {
 				for (size_t i = 0; i < len; i++)
 					if ((char)rTemp.str1[i] != (char)replybuff[i]) {
-						LOG_INFO("failed pre data string test @ %" PRIuSZ, i);
+						LOG_VERBOSE("failed pre data string test @ %" PRIuSZ, i);
 						goto retry_get_mode;
 					}
 				p = len;
@@ -659,7 +659,7 @@ string rigCAT_getwidth()
 			if (len) {
 				for (size_t i = 0; i < len; i++)
 					if ((char)rTemp.str1[i] != (char)replybuff[i]) {
-						LOG_INFO("failed pre data string test @ %" PRIuSZ, i);
+						LOG_VERBOSE("failed pre data string test @ %" PRIuSZ, i);
 						goto retry_get_width;
 					}
 				p = pData = len;
@@ -1021,7 +1021,7 @@ bool rigCAT_init(bool useXML)
 		rigio.RTSCTS(progdefaults.RigCatRTSCTSflow);
 		rigio.Stopbits(progdefaults.RigCatStopbits);
 
-		LOG_INFO("\n\
+		LOG_VERBOSE("\n\
 Serial port parameters:\n\
 device	 : %s\n\
 baudrate   : %d\n\
@@ -1084,7 +1084,7 @@ echo	   : %c\n",
 		rigio.ClosePort();
 		return false;
 	}
-	LOG_INFO("New thread %p", rigCAT_thread);
+	LOG_VERBOSE("New thread %p", rigCAT_thread);
 
 	rigCAT_open = true;
 
@@ -1102,7 +1102,7 @@ void rigCAT_close(void)
 
 	pthread_join(*rigCAT_thread, NULL);
 
-	LOG_INFO("Deleting thread %p", rigCAT_thread);
+	LOG_VERBOSE("Deleting thread %p", rigCAT_thread);
 	delete rigCAT_thread;
 	rigCAT_thread = 0;
 

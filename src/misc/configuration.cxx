@@ -400,7 +400,7 @@ int configuration::setDefaults()
 	hamlib_get_rig_str(fill_hamlib_menu);
 	if (HamRigModel == 0 && !HamRigName.empty()) { // compatibility with < 3.04
 		HamRigModel = hamlib_get_rig_model_compat(HamRigName.c_str());
-		LOG_INFO("Found rig model %d for \"%s\"", HamRigModel, HamRigName.c_str());
+		LOG_VERBOSE("Found rig model %d for \"%s\"", HamRigModel, HamRigName.c_str());
 	}
 #endif
 
