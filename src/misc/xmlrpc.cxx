@@ -1375,6 +1375,20 @@ public:
 	}
 };
 
+class Rig_get_name : public xmlrpc_c::method
+{
+public:
+	Rig_get_name()
+	{
+		_signature = "s:n";
+		_help = "Returns the rig name previously set via rig.set_name";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		*retval = xmlrpc_c::value_string(windowTitle);
+	}
+};
+
 class Rig_set_frequency : public xmlrpc_c::method
 {
 public:
@@ -2344,6 +2358,7 @@ public:
 	ELEM_(Main_get_max_macro_id, "main.get_max_macro_id")		\
 									\
 	ELEM_(Rig_set_name, "rig.set_name")				\
+	ELEM_(Rig_get_name, "rig.get_name")				\
 	ELEM_(Rig_set_frequency, "rig.set_frequency")			\
 	ELEM_(Rig_set_modes, "rig.set_modes")				\
 	ELEM_(Rig_set_mode, "rig.set_mode")				\
