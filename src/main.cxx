@@ -173,7 +173,13 @@ double speed_test(int converter, unsigned repeat);
 static void setup_signal_handlers(void);
 static void checkdirectories(void);
 
-#define SHOW_WIZARD_BEFORE_MAIN_WINDOW 1
+// TODO: find out why fldigi crashes on OS X if the wizard window is
+// shown before fldigi_main.
+#ifndef __APPLE__
+#  define SHOW_WIZARD_BEFORE_MAIN_WINDOW 1
+#else
+#  define SHOW_WIZARD_BEFORE_MAIN_WINDOW 0
+#endif
 
 int main(int argc, char ** argv)
 {
