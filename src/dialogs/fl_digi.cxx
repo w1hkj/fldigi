@@ -333,7 +333,6 @@ Progress			*pgrsSquelch = (Progress *)0;
 
 Fl_RGB_Image		*feld_image = 0;
 Fl_Pixmap 			*addrbookpixmap = 0;
-Fl_Pixmap 			*closepixmap = 0;
 
 #if !defined(__APPLE__) && !defined(__WOE32__) && USE_X
 Pixmap				fldigi_icon_pixmap;
@@ -1859,12 +1858,11 @@ int default_handler(int event)
 	if (event != FL_SHORTCUT)
 		return 0;
 
-    if (RigViewerFrame)
-    	if (Fl::event_key() == FL_Escape &&
-	        Fl::event_inside(RigViewerFrame) && RigViewerFrame->visible()) {
-		    CloseQsoView();
-		    return 1;
-	    }
+	if (RigViewerFrame && Fl::event_key() == FL_Escape &&
+	    RigViewerFrame->visible() && Fl::event_inside(RigViewerFrame)) {
+		CloseQsoView();
+		return 1;
+	}
 
 	Fl_Widget* w = Fl::focus();
 
@@ -2555,8 +2553,8 @@ void showOpBrowserView(Fl_Widget *, void *)
 	QsoInfoFrame2->hide();
 	QsoButtonFrame->hide();
 	RigViewerFrame->show();
-	qso_opPICK->image(closepixmap);
-	qso_opPICK->redraw_label();
+	qso_opPICK->box(FL_DOWN_BOX);
+	qso_opBrowser->take_focus();
 	qso_opPICK->tooltip(_("Close List"));
 }
 
@@ -2566,8 +2564,7 @@ void CloseQsoView()
 	QsoInfoFrame1->show();
 	QsoInfoFrame2->show();
 	QsoButtonFrame->show();
-	qso_opPICK->image(addrbookpixmap);
-	qso_opPICK->redraw_label();
+	qso_opPICK->box(FL_UP_BOX);
 	qso_opPICK->tooltip(_("Open List"));
 	if (restore_minimize) {
 		restore_minimize = false;
@@ -2652,24 +2649,30 @@ void cb_qso_inpAct(Fl_Widget*, void*)
 
 void cb_qso_opBrowser(Fl_Browser*, void*)
 {
-	if (!qso_opBrowser->value())
+	int i = qso_opBrowser->value();
+	if (!i)
 		return;
 
-	switch (Fl::event_button()) {
-	case FL_LEFT_MOUSE:
-		if (Fl::event_clicks()) { // double click
-			qso_selectFreq();
-			CloseQsoView();
-		}
+	// This makes the multi browser behave more like a hold browser,
+	// but with the ability to invoke the callback via space/return.
+	qso_opBrowser->deselect();
+	qso_opBrowser->select(i);
+
+	switch (i = Fl::event_key()) {
+	case FL_Enter: case FL_KP_Enter: case FL_Button + FL_LEFT_MOUSE:
+		if (i == FL_Button + FL_LEFT_MOUSE && !Fl::event_clicks())
+			break;
+		qso_selectFreq();
+		CloseQsoView();
 		break;
-	case FL_RIGHT_MOUSE:
+	case ' ': case FL_Button + FL_RIGHT_MOUSE:
 		qso_setFreq();
 		break;
-	case FL_MIDDLE_MOUSE:
+	case FL_Button + FL_MIDDLE_MOUSE:
+		i = qso_opBrowser->value();
 		qso_delFreq();
 		qso_addFreq();
-		break;
-	default:
+		qso_opBrowser->select(i);
 		break;
 	}
 }
@@ -2888,7 +2891,6 @@ void create_fl_digi_main_primary() {
 					rightof(qso_opBW), Hmenu + 2 * (Hentry + pad) + pad,
 					Wbtn, Hentry);
 				addrbookpixmap = new Fl_Pixmap(address_book_icon);
-				closepixmap = new Fl_Pixmap(close_icon);
 	 			qso_opPICK->image(addrbookpixmap);
 				qso_opPICK->callback(showOpBrowserView, 0);
 				qso_opPICK->tooltip(_("Open List"));
@@ -2948,7 +2950,7 @@ void create_fl_digi_main_primary() {
 				opB_w, Hqsoframe - 2 * pad );
 			qso_opBrowser->tooltip(_("Select operating parameters"));
 			qso_opBrowser->callback((Fl_Callback*)cb_qso_opBrowser);
-			qso_opBrowser->type(2);
+			qso_opBrowser->type(FL_MULTI_BROWSER);
 			qso_opBrowser->box(FL_DOWN_BOX);
 			qso_opBrowser->labelfont(4);
 			qso_opBrowser->labelsize(12);
