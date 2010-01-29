@@ -606,6 +606,11 @@ void WFdisp::checkoffset() {
 	}
 }
 
+void WFdisp::setOffset(int v) {
+	offset = v;
+	checkoffset();
+}
+
 void WFdisp::slew(int dir) {
 	if (mode == SCOPE)
 		sigoffset += dir;
@@ -1324,6 +1329,16 @@ void waterfall::Mag(int m) {
 	if (m == MAG_2) x1->label("x2");
 	if (m == MAG_4) x1->label("x4");
 	x1->redraw_label();
+	FL_UNLOCK_D();
+}
+
+int waterfall::Offset() {
+	return wfdisp->Offset();
+}
+
+void waterfall::Offset(int v) {
+	FL_LOCK_D();
+	wfdisp->Offset(v);
 	FL_UNLOCK_D();
 }
 

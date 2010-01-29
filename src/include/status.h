@@ -27,6 +27,7 @@ struct status {
 	std::string	noCATmode;
 	std::string noCATwidth;
 	int		mag;
+	int		offset;
 	int		speed;
 	double	reflevel;
 	double	ampspan;

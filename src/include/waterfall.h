@@ -92,6 +92,7 @@ public:
 	~WFdisp ();
 	int wfmag();
 	int setMag(int m);
+	void setOffset(int v);
 
 	void Mode(WFmode M) {
 		mode = M;
@@ -139,6 +140,8 @@ public:
 
 	int Mag() { return mag;}
 	void Mag(int m) { setMag(m);}
+	int Offset() { return offset;}
+	void Offset(int v) { setOffset(v);}
 
 	void initmaps();
 	void draw();
@@ -311,6 +314,8 @@ public:
 	void Speed(int rate);
 	int Mag();
 	void Mag(int m);
+	int Offset();
+	void Offset(int v);
 	int Carrier();
 	void Carrier(int f);
 

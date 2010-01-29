@@ -59,6 +59,7 @@ status progStatus = {
 	"USB",				// string noCATmode;
 	"3000",				// string noCATwidth;
 	1,					// int mag;
+	0,					// int offset;
 	NORMAL,				// WFdisp::WFspeed
 	-20,				// reflevel
 	-70,				// ampspan
@@ -118,6 +119,7 @@ void status::saveLastState()
 	RxTextHeight = ReceiveText->h();
 	carrier = wf->Carrier();
 	mag = wf->Mag();
+	offset = wf->Offset();
 	speed = wf->Speed();
 	reflevel = progdefaults.wfRefLevel;
 	ampspan = progdefaults.wfAmpSpan;
@@ -169,6 +171,7 @@ void status::saveLastState()
 
 	spref.set("wf_carrier", carrier);
 	spref.set("wf_mag", mag);
+	spref.set("wf_offset", offset);
 	spref.set("wf_speed", speed);
 	spref.set("wf_reflevel", reflevel);
 	spref.set("wf_ampspan", ampspan);
@@ -261,6 +264,7 @@ void status::loadLastState()
 
 	spref.get("wf_carrier", carrier, carrier);
 	spref.get("wf_mag", mag, mag);
+	spref.get("wf_offset", offset, offset);
 	spref.get("wf_speed", speed, speed);
 	spref.get("wf_reflevel", reflevel, reflevel);
 	progdefaults.wfRefLevel = reflevel;
@@ -339,10 +343,10 @@ void status::initLastState()
 
  	wf->opmode();
 	wf->Mag(mag);
+	wf->Offset(offset);
 	wf->Speed(speed);
 	wf->setRefLevel();
 	wf->setAmpSpan();
-	wf->movetocenter();
 
 	btnAFC->value(afconoff);
 	btnSQL->value(sqlonoff);
