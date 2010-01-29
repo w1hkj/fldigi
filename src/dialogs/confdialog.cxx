@@ -2521,7 +2521,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         { tabsUI = new Fl_Tabs(-3, 25, 508, 345);
           tabsUI->selection_color((Fl_Color)FL_LIGHT1);
           { tabUserInterface = new Fl_Group(0, 50, 500, 320, _("General"));
-            tabUserInterface->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 301);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(15, 70, 120, 20, _("Show tooltips"));
@@ -2812,6 +2811,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             tabWF_UI->end();
           } // Fl_Group* tabWF_UI
           { tabWfallRestart = new Fl_Group(0, 50, 500, 320, _("Restart"));
+            tabWfallRestart->hide();
             { Fl_Group* o = new Fl_Group(5, 63, 490, 70, _("Changes take effect on next program startup"));
               o->tooltip(_("Show me more or less waterfall"));
               o->box(FL_ENGRAVED_FRAME);
@@ -4345,7 +4345,7 @@ an merging"));
               AudioOSS->box(FL_ENGRAVED_FRAME);
               { btnAudioIO[0] = new Fl_Round_Button(15, 70, 53, 25, _("OSS"));
                 btnAudioIO[0]->tooltip(_("Use OSS audio server"));
-                btnAudioIO[0]->down_box(FL_DIAMOND_DOWN_BOX);
+                btnAudioIO[0]->down_box(FL_DOWN_BOX);
                 btnAudioIO[0]->selection_color((Fl_Color)1);
                 btnAudioIO[0]->callback((Fl_Callback*)cb_btnAudioIO);
               } // Fl_Round_Button* btnAudioIO[0]
@@ -4360,7 +4360,7 @@ an merging"));
               AudioPort->box(FL_ENGRAVED_FRAME);
               { btnAudioIO[1] = new Fl_Round_Button(15, 133, 95, 25, _("PortAudio"));
                 btnAudioIO[1]->tooltip(_("Use Port Audio server"));
-                btnAudioIO[1]->down_box(FL_DIAMOND_DOWN_BOX);
+                btnAudioIO[1]->down_box(FL_DOWN_BOX);
                 btnAudioIO[1]->selection_color((Fl_Color)1);
                 btnAudioIO[1]->callback((Fl_Callback*)cb_btnAudioIO1);
               } // Fl_Round_Button* btnAudioIO[1]
@@ -4380,7 +4380,7 @@ an merging"));
               AudioPulse->box(FL_ENGRAVED_FRAME);
               { btnAudioIO[2] = new Fl_Round_Button(15, 196, 100, 25, _("PulseAudio"));
                 btnAudioIO[2]->tooltip(_("Use Pulse Audio server"));
-                btnAudioIO[2]->down_box(FL_DIAMOND_DOWN_BOX);
+                btnAudioIO[2]->down_box(FL_DOWN_BOX);
                 btnAudioIO[2]->selection_color((Fl_Color)1);
                 btnAudioIO[2]->callback((Fl_Callback*)cb_btnAudioIO2);
               } // Fl_Round_Button* btnAudioIO[2]
@@ -4405,7 +4405,7 @@ an merging"));
               AudioNull->box(FL_ENGRAVED_FRAME);
               { btnAudioIO[3] = new Fl_Round_Button(16, 240, 100, 25, _("File I/O only"));
                 btnAudioIO[3]->tooltip(_("NO AUDIO DEVICE AVAILABLE (or testing)"));
-                btnAudioIO[3]->down_box(FL_DIAMOND_DOWN_BOX);
+                btnAudioIO[3]->down_box(FL_DOWN_BOX);
                 btnAudioIO[3]->selection_color((Fl_Color)1);
                 btnAudioIO[3]->callback((Fl_Callback*)cb_btnAudioIO3);
               } // Fl_Round_Button* btnAudioIO[3]
@@ -4861,7 +4861,7 @@ d frequency"));
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
           { Fl_Round_Button* o = btnQRZcdrom = new Fl_Round_Button(25, 215, 70, 20, _("QRZ"));
             btnQRZcdrom->tooltip(_("Use CD or hard drive CD image"));
-            btnQRZcdrom->down_box(FL_ROUND_DOWN_BOX);
+            btnQRZcdrom->down_box(FL_DOWN_BOX);
             btnQRZcdrom->callback((Fl_Callback*)cb_btnQRZcdrom);
             o->value(progdefaults.QRZ == QRZCD);
           } // Fl_Round_Button* btnQRZcdrom
@@ -4887,13 +4887,13 @@ d frequency"));
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
           { Fl_Round_Button* o = btnQRZsub = new Fl_Round_Button(25, 291, 90, 20, _("QRZ.com"));
             btnQRZsub->tooltip(_("You need a paid QRZ online\nsubscription to access"));
-            btnQRZsub->down_box(FL_ROUND_DOWN_BOX);
+            btnQRZsub->down_box(FL_DOWN_BOX);
             btnQRZsub->callback((Fl_Callback*)cb_btnQRZsub);
             o->value(progdefaults.QRZ == QRZNET);
           } // Fl_Round_Button* btnQRZsub
           { Fl_Round_Button* o = btnHamcall = new Fl_Round_Button(25, 321, 105, 20, _("Hamcall.net"));
             btnHamcall->tooltip(_("You need a paid Hamcall online\nsubscription to access"));
-            btnHamcall->down_box(FL_ROUND_DOWN_BOX);
+            btnHamcall->down_box(FL_DOWN_BOX);
             btnHamcall->callback((Fl_Callback*)cb_btnHamcall);
             o->value(progdefaults.QRZ == HAMCALLNET);
           } // Fl_Round_Button* btnHamcall
@@ -4939,20 +4939,20 @@ d frequency"));
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
           { Fl_Round_Button* o = btnQRZonline = new Fl_Round_Button(25, 75, 300, 20, _("QRZ online via default Internet Browser"));
             btnQRZonline->tooltip(_("Visit QRZ web site"));
-            btnQRZonline->down_box(FL_ROUND_DOWN_BOX);
+            btnQRZonline->down_box(FL_DOWN_BOX);
             btnQRZonline->callback((Fl_Callback*)cb_btnQRZonline);
             o->value(progdefaults.QRZ == QRZHTML);
           } // Fl_Round_Button* btnQRZonline
           { Fl_Round_Button* o = btnQRZnotavailable = new Fl_Round_Button(25, 45, 110, 20, _("Not available"));
             btnQRZnotavailable->tooltip(_("Do not use callsign database"));
-            btnQRZnotavailable->down_box(FL_ROUND_DOWN_BOX);
+            btnQRZnotavailable->down_box(FL_DOWN_BOX);
             btnQRZnotavailable->value(1);
             btnQRZnotavailable->callback((Fl_Callback*)cb_btnQRZnotavailable);
             o->value(progdefaults.QRZ == QRZNONE);
           } // Fl_Round_Button* btnQRZnotavailable
           { Fl_Round_Button* o = btnHAMCALLonline = new Fl_Round_Button(25, 105, 300, 20, _("HamCall online via default Internet Browser"));
             btnHAMCALLonline->tooltip(_("Vist Hamcall web site"));
-            btnHAMCALLonline->down_box(FL_ROUND_DOWN_BOX);
+            btnHAMCALLonline->down_box(FL_DOWN_BOX);
             btnHAMCALLonline->callback((Fl_Callback*)cb_btnHAMCALLonline);
             o->value(progdefaults.QRZ == HAMCALLHTML);
           } // Fl_Round_Button* btnHAMCALLonline

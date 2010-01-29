@@ -596,11 +596,16 @@ int configuration::setDefaults()
 
 void configuration::resetDefaults(void)
 {
-	if (!fl_choice2(_("Reset all options to their default values?"), _("OK"), _("Cancel"), NULL) &&
-	    Fl::event_key() != FL_Escape) {
-		fl_message2(_("Reset options will take effect at the next start"));
-		reset();
-		atexit(reset);
+	if (!fl_choice2(_("\
+Reset all options to their default values?\n\n\
+Reset options will take effect at the next start\n\
+Files: fldigi_def.xml and fldigi.prefs will be deleted!\n"), _("OK"), _("Cancel"), NULL) &&
+			Fl::event_key() != FL_Escape) {
+		if (!fl_choice2(_("Confirm RESET"), _("Yes"), _("No"), NULL) && 
+			Fl::event_key() != FL_Escape) {
+			reset();
+			atexit(reset);
+		}
 	}
 }
 
