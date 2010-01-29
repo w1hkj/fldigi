@@ -72,7 +72,6 @@ extern Fl_Input2		*inpCountry;
 extern Fl_Input2		*inpSerNo;
 extern Fl_Input2		*outSerNo;
 extern Fl_Input2		*inpXchgIn;
-extern Fl_Box			*lblDup;
 extern Fl_Input2		*inpVEprov;
 extern Fl_Input2		*inpLoc;
 extern Fl_Input2		*inpNotes;
@@ -88,12 +87,16 @@ extern Fl_Input2		*inpFreq2;
 extern Fl_Input2		*inpTimeOff2;
 extern Fl_Input2		*inpTimeOn2;
 extern Fl_Button		*btnTimeOn2;
-extern Fl_Input2		*inpCall2;
 extern Fl_Input2		*inpName2;
 extern Fl_Input2		*inpRstIn2;
 extern Fl_Input2		*inpRstOut2;
 extern Fl_Button		*qsoClear2;
 extern Fl_Button		*qsoSave2;
+
+extern Fl_Input2		*inpCall1;
+extern Fl_Input2		*inpCall2;
+extern Fl_Input2		*inpCall3;
+extern Fl_Input2		*inpCall4;
 
 extern Fl_Group			*qsoFrameView;
 extern Fl_Group			*QsoButtonFrame;

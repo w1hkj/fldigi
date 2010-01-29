@@ -291,6 +291,22 @@ static void cb_nbrTimeSpan(Fl_Value_Input* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Button *btnDupColor=(Fl_Button *)0;
+
+static void cb_btnDupColor(Fl_Button* o, void*) {
+  fl_color_chooser("Dup Check", 
+  progdefaults.dup_color.R, 
+  progdefaults.dup_color.G, 
+  progdefaults.dup_color.B);
+o->color(
+  fl_rgb_color(
+    progdefaults.dup_color.R,
+    progdefaults.dup_color.G,
+    progdefaults.dup_color.B));
+o->redraw();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabWF_UI=(Fl_Group *)0;
 
 Fl_Check_Button *btnWF_UIrev=(Fl_Check_Button *)0;
@@ -2725,6 +2741,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 nbrTimeSpan->align(FL_ALIGN_RIGHT);
                 o->value(progdefaults.timespan);
               } // Fl_Value_Input* nbrTimeSpan
+              { Fl_Button* o = btnDupColor = new Fl_Button(15, 282, 90, 22, _("Dup Color"));
+                btnDupColor->tooltip(_("Left click to select dup color"));
+                btnDupColor->box(FL_DOWN_BOX);
+                btnDupColor->down_box(FL_DOWN_BOX);
+                btnDupColor->color((Fl_Color)FL_BACKGROUND2_COLOR);
+                btnDupColor->selection_color((Fl_Color)FL_BACKGROUND2_COLOR);
+                btnDupColor->callback((Fl_Callback*)cb_btnDupColor);
+                o->color(fl_rgb_color(progdefaults.dup_color.R, progdefaults.dup_color.G, progdefaults.dup_color.B));
+              } // Fl_Button* btnDupColor
               o->end();
             } // Fl_Group* o
             tabContest->end();

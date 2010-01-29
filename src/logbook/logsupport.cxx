@@ -328,6 +328,7 @@ void cb_SortByFreq (void) {
 
 void DupCheck()
 {
+	Fl_Color call_clr = FL_BACKGROUND2_COLOR;
 	if (qsodb.duplicate(
 			inpCall->value(),
 			zdate(), ztime(), progdefaults.timespan, progdefaults.duptimespan,
@@ -335,8 +336,20 @@ void DupCheck()
 			inpState->value(), progdefaults.dupstate,
 			mode_info[active_modem->get_mode()].adif_name, progdefaults.dupmode,
 			inpXchgIn->value(), progdefaults.dupxchg1 ) ) {
-		lblDup->show();
+		call_clr = fl_rgb_color(
+			progdefaults.dup_color.R,
+			progdefaults.dup_color.G,
+			progdefaults.dup_color.B);
 	}
+
+	inpCall1->color(call_clr);
+	inpCall2->color(call_clr);
+	inpCall3->color(call_clr);
+	inpCall4->color(call_clr);
+	inpCall1->redraw();
+	inpCall2->redraw();
+	inpCall3->redraw();
+	inpCall4->redraw();
 }
 
 cQsoRec* SearchLog(const char *callsign)

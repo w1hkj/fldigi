@@ -771,6 +771,9 @@
         ELEM_(bool, cutnbrs, "CUTNBRS",                                                 \
               "Send CW cut numbers",                                                    \
               false)                                                                    \
+        ELEM_(RGB, dup_color, "dupcolor",                                               \
+              "Callsign background color when duplicate detected",                      \
+              {255, 110, 180})                                                          \
         ELEM_(bool, EnableDupCheck, "ENABLEDUPCHECK",                                   \
               "Check for duplicates (contest)",                                         \
               false)                                                                    \

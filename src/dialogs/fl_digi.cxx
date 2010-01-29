@@ -175,7 +175,6 @@ Fl_Input2			*inpCountry;
 Fl_Input2			*inpSerNo;
 Fl_Input2			*outSerNo;
 Fl_Input2			*inpXchgIn;
-Fl_Box				*lblDup;
 Fl_Input2			*inpVEprov;
 Fl_Input2			*inpNotes;
 Fl_Input2			*inpAZ;	// WA5ZNU
@@ -1552,9 +1551,16 @@ if (bWF_only) return;
 		inpRstIn1->value("599"); inpRstIn2->value("599");
 		inpRstOut1->value("599"); inpRstOut2->value("599");
 	}
+	inpCall1->color(FL_BACKGROUND2_COLOR);
+	inpCall2->color(FL_BACKGROUND2_COLOR);
+	inpCall3->color(FL_BACKGROUND2_COLOR);
+	inpCall4->color(FL_BACKGROUND2_COLOR);
+	inpCall1->redraw();
+	inpCall2->redraw();
+	inpCall3->redraw();
+	inpCall4->redraw();
 	updateOutSerNo();
 	inpSearchString->value ("");
-	lblDup->hide();
 	old_call.clear();
 	new_call.clear();
 	oktoclear = true;
@@ -1601,6 +1607,7 @@ if (bWF_only) return;
 		inpCall->position(pos);
 		delete [] uc;
 	}
+
 	new_call = inpCall->value();
 
 	if (inpCall == inpCall1) {
@@ -1620,6 +1627,16 @@ if (bWF_only) return;
 		inpCall2->value(new_call.c_str());
 		inpCall3->value(new_call.c_str());
 	}
+	if (inpCall->value()[0] == 0) {
+		inpCall1->color(FL_BACKGROUND2_COLOR);
+		inpCall2->color(FL_BACKGROUND2_COLOR);
+		inpCall3->color(FL_BACKGROUND2_COLOR);
+		inpCall4->color(FL_BACKGROUND2_COLOR);
+		inpCall1->redraw();
+		inpCall2->redraw();
+		inpCall3->redraw();
+		inpCall4->redraw();
+	}
 
 	if (progStatus.timer && (Fl::event() != FL_HIDE))
 		stopMacroTimer();
@@ -1636,11 +1653,9 @@ if (bWF_only) return;
 	else inpTimeOn1->value(inpTimeOn->value());
 
 	sDate_on = zdate();
-	lblDup->hide();
 
 	if (progdefaults.EnableDupCheck) {
-		if (!lblDup->visible())
-			DupCheck();
+		DupCheck();
 		return restoreFocus(w);
 	}
 
@@ -1704,7 +1719,6 @@ void cb_log(Fl_Widget* w, void*)
 	if (inp->value()[0])
 		oktoclear = false;
 	if (progdefaults.EnableDupCheck) {
-		lblDup->hide();
 		DupCheck();
 	}
 	restoreFocus(w);
@@ -3031,10 +3045,6 @@ void create_fl_digi_main_primary() {
 				inpRstOut1->tooltip("");
 				inpRstOut1->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
 
-				lblDup = new Fl_Box(rightof(inpCall1) - w_inpCall/2 - 40, Hmenu + 1, 80, Hentry, _("*** DUP ***"));
-				lblDup->labelcolor(FL_RED);
-				lblDup->hide();
-
 				QsoInfoFrame1A = new Fl_Group (x_qsoframe, y3, wf1, Hentry + pad);
 					Fl_Box *fm1box = new Fl_Box(x_qsoframe, y3, w_fm1, Hentry, _("QTH"));
 					fm1box->align(FL_ALIGN_INSIDE);
@@ -3839,7 +3849,6 @@ void noop_controls() // create and then hide all controls not being used
 	inpSerNo = new Fl_Input2(defwidget); inpSerNo->hide();
 	outSerNo = new Fl_Input2(defwidget); outSerNo->hide();
 	inpXchgIn = new Fl_Input2(defwidget); inpXchgIn->hide();
-	lblDup = new Fl_Box(defwidget); lblDup->hide();
 	inpVEprov = new Fl_Input2(defwidget); inpVEprov->hide();
 	inpNotes = new Fl_Input2(defwidget); inpNotes->hide();
 	inpAZ = new Fl_Input2(defwidget); inpAZ->hide();

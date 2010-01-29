@@ -62,6 +62,8 @@ extern Fl_Check_Button *btnDupState;
 extern Fl_Check_Button *btnDupXchg1;
 extern Fl_Check_Button *btnDupTimeSpan;
 extern Fl_Value_Input *nbrTimeSpan;
+#include <FL/Fl_Color_Chooser.H>
+extern Fl_Button *btnDupColor;
 extern Fl_Group *tabWF_UI;
 extern Fl_Check_Button *btnWF_UIrev;
 extern Fl_Check_Button *btnWF_UIx1;
@@ -86,7 +88,6 @@ extern Fl_Button *btnColor[9];
 extern Fl_Button *btnLoadPalette;
 extern Fl_Button *btnSavePalette;
 extern Fl_Check_Button *btnUseCursorLines;
-#include <FL/Fl_Color_Chooser.H>
 extern Fl_Button *btnCursorBWcolor;
 extern Fl_Check_Button *btnUseCursorCenterLine;
 extern Fl_Button *btnCursorCenterLineColor;
