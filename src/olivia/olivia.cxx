@@ -233,7 +233,8 @@ int olivia::rx_process(const double *buf, int len)
 {
 	int c;
 	unsigned char ch = 0;
-	static double snr = 0;
+	static double snr = 1e-3;
+	static char msg1[20];
 	static char msg2[20];
 
 	if (tones	!= progdefaults.oliviatones ||
@@ -259,16 +260,17 @@ int olivia::rx_process(const double *buf, int len)
 		clamp(progStatus.sldrSquelchValue / 5.0 + 3.0, 0, 90.0) : 0.0;
 
     Rx->Process(buf, len);
+	sp = 0;
+	for (int i = frequency - Rx->Bandwidth/2; i < frequency - 1 + Rx->Bandwidth/2; i++)
+		if (wf->Pwr(i) > sp)
+			sp = wf->Pwr(i);
+	np = wf->Pwr(frequency + Rx->Bandwidth/2 + 2*Rx->Bandwidth/tones);
+	if (np == 0) np = sp + 1e-8;
+	sigpwr = decayavg( sigpwr, sp, 10);
+	noisepwr = decayavg( noisepwr, np, 50);
+	snr = CLAMP(sigpwr / noisepwr, 0.001, 100000);
 
-	double noisepwr1 = 0, noisepwr2 = 0, noisepwr = 0, sigpwr = 0;
-	noisepwr1 = wf->powerDensity((1.0 * frequency - Rx->Bandwidth / 2.0 - 100.0), 50.0);
-	noisepwr2 = wf->powerDensity((1.0 * frequency + Rx->Bandwidth / 2.0 + 100.0), 50.0);
-	sigpwr   = wf->powerDensity(1.0 * frequency, 1.0 * Rx->Bandwidth);
-	noisepwr = noisepwr1 < noisepwr ? noisepwr1 : noisepwr2;
-	if (noisepwr == 0) noisepwr = 1.0e-10;
-	snr = decayavg( snr, sigpwr / noisepwr, 8);
 	metric = clamp( 5.0 * (Rx->SignalToNoiseRatio() - 3.0), 0, 100);
-	if (metric < 99)
 	display_metric(metric);
 
 	bool gotchar = false;
@@ -279,6 +281,8 @@ int olivia::rx_process(const double *buf, int len)
 		}
     }
 	if (gotchar) {
+		snprintf(msg1, sizeof(msg1), "s/n: %4.1f dB", 10*log10(snr) - 20);
+		put_Status1(msg1, 5, STATUS_CLEAR);
 		snprintf(msg2, sizeof(msg2), "f/o %+4.1f Hz", Rx->FrequencyOffset());
 		put_Status2(msg2, 5, STATUS_CLEAR);
 	}
@@ -346,6 +350,10 @@ void olivia::restart()
 
 	put_MODEstatus("%s %" PRIuSZ "/%" PRIuSZ "", get_mode_name(), Tx->Tones, Tx->Bandwidth);
 	metric = 0;
+
+	sigpwr = 1e-10; noisepwr = 1e-8;
+
+//	Rx->PrintParameters();
 }
 
 void olivia::init()

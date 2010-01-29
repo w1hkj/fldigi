@@ -45,6 +45,11 @@ private:
 	int			preamble;
 	unsigned int	shreg;
 
+	double		np;
+	double		sp;
+	double		sigpwr;
+	double		noisepwr;
+	
 	int			escape;
 	int			smargin;
 	int			sinteg;
