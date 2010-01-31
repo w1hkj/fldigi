@@ -264,7 +264,7 @@ int olivia::rx_process(const double *buf, int len)
 	for (int i = frequency - Rx->Bandwidth/2; i < frequency - 1 + Rx->Bandwidth/2; i++)
 		if (wf->Pwr(i) > sp)
 			sp = wf->Pwr(i);
-	np = wf->Pwr(frequency + Rx->Bandwidth/2 + 2*Rx->Bandwidth/tones);
+	np = wf->Pwr(frequency + Rx->Bandwidth/2 + 2*Rx->Bandwidth/Rx->Tones);
 	if (np == 0) np = sp + 1e-8;
 	sigpwr = decayavg( sigpwr, sp, 10);
 	noisepwr = decayavg( noisepwr, np, 50);
