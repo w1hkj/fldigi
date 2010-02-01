@@ -1745,7 +1745,7 @@ progdefaults.UseUHrouterPTT = false;
 btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;}
-                xywh {145 110 220 20} box DOWN_BOX down_box DOWN_BOX selection_color 1
+                xywh {145 110 220 20} down_box DOWN_BOX selection_color 1
               }
               Fl_Round_Button btnUsePPortPTT {
                 label {Use parallel port PTT}
@@ -1758,7 +1758,7 @@ progdefaults.UseUHrouterPTT = false;
 btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;}
-                xywh {145 140 170 20} box DOWN_BOX down_box DOWN_BOX selection_color 1
+                xywh {145 140 170 20} down_box DOWN_BOX selection_color 1
               }
               Fl_Round_Button btnUseUHrouterPTT {
                 label {Use uHRouter PTT}
@@ -1771,7 +1771,7 @@ progdefaults.UseUHrouterPTT = o->value();
 btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;}
-                xywh {145 170 170 20} box DOWN_BOX down_box DOWN_BOX selection_color 1
+                xywh {145 170 170 20} down_box DOWN_BOX selection_color 1
               }
             }
             Fl_Group {} {open
@@ -1901,7 +1901,7 @@ btnRevertRIGCAT->activate();}
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw();
 btnRevertRIGCAT->activate();}
-                tooltip {PTT is a CAT command (not hardware)} xywh {256 217 207 20} box DOWN_BOX down_box DOWN_BOX selection_color 1
+                tooltip {PTT is a CAT command (not hardware)} xywh {256 217 207 20} down_box DOWN_BOX selection_color 1
                 code0 {o->value(progdefaults.RigCatCMDptt);}
               }
               Fl_Round_Button btnRigCatRTSptt {
@@ -1914,7 +1914,7 @@ btnRevertRIGCAT->activate();}
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 btnRevertRIGCAT->activate();}
-                tooltip {RTS is ptt line} xywh {50 250 160 20} box DOWN_BOX down_box DOWN_BOX
+                tooltip {RTS is ptt line} xywh {50 250 160 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RigCatRTSptt);}
               }
               Fl_Round_Button btnRigCatDTRptt {
@@ -1927,7 +1927,7 @@ btnRevertRIGCAT->activate();}
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 btnRevertRIGCAT->activate();}
-                tooltip {DTR is ptt line} xywh {256 250 160 20} box DOWN_BOX down_box DOWN_BOX
+                tooltip {DTR is ptt line} xywh {256 250 160 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RigCatDTRptt);}
               }
               Fl_Check_Button btnRigCatRTSplus {
@@ -2095,7 +2095,7 @@ effect when rig mode changes.} xywh {340 217 144 22} down_box BORDER_BOX align 5
                 callback {btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();}
-                tooltip {PTT is a hamlib command} xywh {45 218 200 20} box DOWN_BOX down_box DOWN_BOX selection_color 1
+                tooltip {PTT is a hamlib command} xywh {45 218 200 20} down_box DOWN_BOX selection_color 1
                 code0 {o->value(progdefaults.HamlibCMDptt);}
               }
               Fl_Check_Button btnHamlibDTRplus {
@@ -2187,7 +2187,7 @@ progdefaults.changed = true;}
 btnInitMEMMAP->labelcolor(FL_RED);
 btnInitMEMMAP->redraw_label();
 progdefaults.changed = true;}
-                xywh {160 177 150 20} box DOWN_BOX down_box DOWN_BOX selection_color 1
+                xywh {160 177 150 20} down_box DOWN_BOX selection_color 1
               }
               Fl_Button btnInitMEMMAP {
                 label Initialize

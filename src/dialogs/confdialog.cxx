@@ -4006,19 +4006,16 @@ an merging"));
                 btnInitHWPTT->callback((Fl_Callback*)cb_btnInitHWPTT);
               } // Fl_Button* btnInitHWPTT
               { btnTTYptt = new Fl_Round_Button(145, 110, 220, 20, _("Use separate serial port PTT"));
-                btnTTYptt->box(FL_DOWN_BOX);
                 btnTTYptt->down_box(FL_DOWN_BOX);
                 btnTTYptt->selection_color((Fl_Color)1);
                 btnTTYptt->callback((Fl_Callback*)cb_btnTTYptt);
               } // Fl_Round_Button* btnTTYptt
               { btnUsePPortPTT = new Fl_Round_Button(145, 140, 170, 20, _("Use parallel port PTT"));
-                btnUsePPortPTT->box(FL_DOWN_BOX);
                 btnUsePPortPTT->down_box(FL_DOWN_BOX);
                 btnUsePPortPTT->selection_color((Fl_Color)1);
                 btnUsePPortPTT->callback((Fl_Callback*)cb_btnUsePPortPTT);
               } // Fl_Round_Button* btnUsePPortPTT
               { btnUseUHrouterPTT = new Fl_Round_Button(145, 170, 170, 20, _("Use uHRouter PTT"));
-                btnUseUHrouterPTT->box(FL_DOWN_BOX);
                 btnUseUHrouterPTT->down_box(FL_DOWN_BOX);
                 btnUseUHrouterPTT->selection_color((Fl_Color)1);
                 btnUseUHrouterPTT->callback((Fl_Callback*)cb_btnUseUHrouterPTT);
@@ -4108,7 +4105,6 @@ an merging"));
               } // Fl_Check_Button* btnRigCatEcho
               { Fl_Round_Button* o = btnRigCatCMDptt = new Fl_Round_Button(256, 217, 207, 20, _("CAT command for PTT"));
                 btnRigCatCMDptt->tooltip(_("PTT is a CAT command (not hardware)"));
-                btnRigCatCMDptt->box(FL_DOWN_BOX);
                 btnRigCatCMDptt->down_box(FL_DOWN_BOX);
                 btnRigCatCMDptt->selection_color((Fl_Color)1);
                 btnRigCatCMDptt->callback((Fl_Callback*)cb_btnRigCatCMDptt);
@@ -4116,14 +4112,12 @@ an merging"));
               } // Fl_Round_Button* btnRigCatCMDptt
               { Fl_Round_Button* o = btnRigCatRTSptt = new Fl_Round_Button(50, 250, 160, 20, _("Toggle RTS for PTT"));
                 btnRigCatRTSptt->tooltip(_("RTS is ptt line"));
-                btnRigCatRTSptt->box(FL_DOWN_BOX);
                 btnRigCatRTSptt->down_box(FL_DOWN_BOX);
                 btnRigCatRTSptt->callback((Fl_Callback*)cb_btnRigCatRTSptt);
                 o->value(progdefaults.RigCatRTSptt);
               } // Fl_Round_Button* btnRigCatRTSptt
               { Fl_Round_Button* o = btnRigCatDTRptt = new Fl_Round_Button(256, 250, 160, 20, _("Toggle DTR for PTT"));
                 btnRigCatDTRptt->tooltip(_("DTR is ptt line"));
-                btnRigCatDTRptt->box(FL_DOWN_BOX);
                 btnRigCatDTRptt->down_box(FL_DOWN_BOX);
                 btnRigCatDTRptt->callback((Fl_Callback*)cb_btnRigCatDTRptt);
                 o->value(progdefaults.RigCatDTRptt);
@@ -4263,7 +4257,6 @@ an merging"));
               } // Fl_Choice* mnuSideband
               { Fl_Round_Button* o = btnHamlibCMDptt = new Fl_Round_Button(45, 218, 200, 20, _("PTT via Hamlib command"));
                 btnHamlibCMDptt->tooltip(_("PTT is a hamlib command"));
-                btnHamlibCMDptt->box(FL_DOWN_BOX);
                 btnHamlibCMDptt->down_box(FL_DOWN_BOX);
                 btnHamlibCMDptt->selection_color((Fl_Color)1);
                 btnHamlibCMDptt->callback((Fl_Callback*)cb_btnHamlibCMDptt);
@@ -4320,7 +4313,6 @@ an merging"));
                 o->value(progdefaults.chkUSEMEMMAPis);
               } // Fl_Check_Button* chkUSEMEMMAP
               { btnMEMMAPptt = new Fl_Round_Button(160, 177, 150, 20, _("Use Memmap PTT"));
-                btnMEMMAPptt->box(FL_DOWN_BOX);
                 btnMEMMAPptt->down_box(FL_DOWN_BOX);
                 btnMEMMAPptt->selection_color((Fl_Color)1);
                 btnMEMMAPptt->callback((Fl_Callback*)cb_btnMEMMAPptt);
