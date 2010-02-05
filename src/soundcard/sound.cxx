@@ -1126,6 +1126,8 @@ size_t SoundPort::resample_write(float* buf, size_t count)
 		int r;
                 if ((r = src_process(tx_src_state, tx_src_data)) != 0)
                        throw SndException(src_strerror(r));
+		if (tx_src_data->output_frames_gen == 0) // input was too small
+			return count;
 
                 count = tx_src_data->output_frames_gen;
                 if (wbuf == vec[0].buf) { // advance write pointer and return
@@ -1556,6 +1558,13 @@ SoundPulse::SoundPulse(const char *dev)
 	sd[0].stream_params.channels = progdefaults.in_channels;
 	sd[1].stream_params.channels = progdefaults.out_channels;
 
+	sd[0].buffer_attrs.maxlength = sd[0].buffer_attrs.minreq = sd[0].buffer_attrs.prebuf =
+		sd[0].buffer_attrs.tlength = (uint32_t)-1;
+	sd[1].buffer_attrs.fragsize = sd[1].buffer_attrs.maxlength = sd[1].buffer_attrs.minreq =
+		sd[1].buffer_attrs.prebuf = (uint32_t)-1;
+	sd[0].buffer_attrs.fragsize = SCBLOCKSIZE * sizeof(float);
+	sd[1].buffer_attrs.tlength = SCBLOCKSIZE * sizeof(float);
+
 	tx_src_data = new SRC_DATA;
 
 	snd_buffer = new float[sd[0].stream_params.channels * SND_BUF_LEN];
@@ -1600,8 +1609,10 @@ int SoundPulse::Open(int mode, int freq)
 
 		sd[i].stream_params.rate = freq;
 		snprintf(sname, sizeof(sname), "%s (%u)", (i ? "playback" : "capture"), getpid());
+		setenv("PULSE_PROP_application.icon_name", PACKAGE_TARNAME, 1);
 		sd[i].stream = pa_simple_new(server, PACKAGE_TARNAME, sd[i].dir, NULL,
-					     sname, &sd[i].stream_params, NULL, NULL, &err);
+					     sname, &sd[i].stream_params, NULL,
+					     &sd[i].buffer_attrs, &err);
 		if (!sd[i].stream)
 			throw SndPulseException(err);
 	}
@@ -1611,20 +1622,9 @@ int SoundPulse::Open(int mode, int freq)
 
 void SoundPulse::Close(unsigned dir)
 {
-        unsigned start, end;
-        if (dir == UINT_MAX) {
-                start = 0;
-                end = 1;
-        }
-        else
-                start = end = dir;
-
-        for (unsigned i = start; i <= end; i++) {
-                if (sd[i].stream) {
-                        flush(i);
-                        Abort(i);
-                }
-	}
+	if (dir == 1 || dir == UINT_MAX)
+		flush(1);
+	Abort(dir);
 }
 
 void SoundPulse::Abort(unsigned dir)
@@ -1648,22 +1648,32 @@ void SoundPulse::Abort(unsigned dir)
 
 void SoundPulse::flush(unsigned dir)
 {
-        unsigned start, end;
-        if (dir == UINT_MAX) {
-                start = 0;
-                end = 1;
-        }
-        else
-                start = end = dir;
-
 	int err = PA_OK;
-        for (unsigned i = start; i <= end; i++) {
-                if (!sd[i].stream)
-                        continue;
-                pa_simple_drain(sd[i].stream, &err);
-		if (err != PA_OK)
-			LOG_ERROR("%s", pa_strerror(err));
-        }
+	if ((dir == 1 || dir == UINT_MAX) && sd[1].stream) {
+		// wait for audio to finish playing
+		pa_simple_drain(sd[1].stream, &err);
+	}
+
+	if ((dir == 0 || dir == UINT_MAX) && sd[0].stream) {
+		// We need to flush the captured audio that PA has been
+		// buffering for us while we were transmitting.  We will use
+		// pa_simple_get_latency() which, contrary to the docs, also
+		// works for capture streams.  It tells us how much earlier the
+		// data that would be returned by pa_simple_read() was actually
+		// captured, and we read and discard all that data.
+		pa_usec_t t = pa_simple_get_latency(sd[0].stream, &err);
+		if (t && err == PA_OK) {
+			size_t bytes = pa_usec_to_bytes(t, &sd[0].stream_params);
+			while (bytes > SND_BUF_LEN) {
+				pa_simple_read(sd[0].stream, snd_buffer, SND_BUF_LEN, &err);
+				if (err != PA_OK)
+					break;
+				bytes -= SND_BUF_LEN;
+			}
+			if (bytes)
+				pa_simple_read(sd[0].stream, snd_buffer, bytes, &err);
+		}
+	}
 }
 
 size_t SoundPulse::Write(double* buf, size_t count)
@@ -1715,6 +1725,8 @@ size_t SoundPulse::resample_write(float* buf, size_t count)
                 tx_src_data->end_of_input = 0;
                 if ((err = src_process(tx_src_state, tx_src_data)) != 0)
 			throw SndException(src_strerror(err));
+		if (tx_src_data->output_frames_gen == 0) // input was too small
+			return count;
 
                 wbuf = tx_src_data->data_out;
                 count = tx_src_data->output_frames_gen;
@@ -1750,6 +1762,7 @@ size_t SoundPulse::Read(float *buf, size_t count)
 			for (size_t i = 0; i < count; i++)
 				buf[i] *= progStatus.RcvMixer;
 		if (!capture) {
+			flush(0);
 			MilliSleep((long)ceil((1e3 * count) / sample_frequency));
 			return count;
 		}

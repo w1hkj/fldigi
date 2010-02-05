@@ -288,6 +288,7 @@ private:
 	struct stream_data {
 		pa_simple*	stream;
 		pa_sample_spec	stream_params;
+		pa_buffer_attr  buffer_attrs;
 		pa_stream_direction_t dir;
 		double		src_ratio;
 		size_t		blocksize;
