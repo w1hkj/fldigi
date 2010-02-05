@@ -232,6 +232,8 @@ int main(int argc, char ** argv)
 	int arg_idx;
 	if (Fl::args(argc, argv, arg_idx, parse_args) != argc)
 		arg_error(argv[0], NULL, false);
+	if (main_window_title.empty())
+		main_window_title = PACKAGE_TARNAME;
 
 	checkdirectories();
 	bool have_config = progdefaults.readDefaultsXML();
@@ -363,6 +365,7 @@ int main(int argc, char ** argv)
 	progStatus.initLastState();
 	fl_digi_main->show(argc, argv);
 #endif
+	update_main_title();
 
 	arq_init();
 #ifdef __WIN32__
@@ -570,8 +573,14 @@ void exit_cb(void*) { fl_digi_main->do_callback(); }
 int parse_args(int argc, char **argv, int& idx)
 {
 	// Only handle long options
-	if ( !(strlen(argv[idx]) >= 2 && strncmp(argv[idx], "--", 2) == 0) )
+	if (!(strlen(argv[idx]) >= 2 && strncmp(argv[idx], "--", 2) == 0)) {
+		// Store the window title. We may need this early in the initialisation
+		// process, before FLTK uses it to set the main window title.
+		if (main_window_title.empty() && argc > idx &&
+		    (!strcmp(argv[idx], "-ti") || !strcmp(argv[idx], "-title")))
+			main_window_title = argv[idx + 1];
 		return 0;
+	}
 
         enum { OPT_ZERO,
 #ifndef __WOE32__

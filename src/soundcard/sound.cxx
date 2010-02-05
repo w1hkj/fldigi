@@ -1537,7 +1537,7 @@ void SoundPort::init_hostapi_ext(void)
 	const char* err = dlerror();
 	set_jack_client_name = (PaError (*)(const char*))dlsym(handle, "PaJack_SetClientName");
 	if (!(err = dlerror()))
-		set_jack_client_name(PACKAGE_TARNAME);
+		set_jack_client_name(main_window_title.c_str());
 #  ifndef NDEBUG
         else
 		LOG_VERBOSE("dlsym(PaJack_SetClientName) error: %s", err);
@@ -1610,7 +1610,7 @@ int SoundPulse::Open(int mode, int freq)
 		sd[i].stream_params.rate = freq;
 		snprintf(sname, sizeof(sname), "%s (%u)", (i ? "playback" : "capture"), getpid());
 		setenv("PULSE_PROP_application.icon_name", PACKAGE_TARNAME, 1);
-		sd[i].stream = pa_simple_new(server, PACKAGE_TARNAME, sd[i].dir, NULL,
+		sd[i].stream = pa_simple_new(server, main_window_title.c_str(), sd[i].dir, NULL,
 					     sname, &sd[i].stream_params, NULL,
 					     &sd[i].buffer_attrs, &err);
 		if (!sd[i].stream)

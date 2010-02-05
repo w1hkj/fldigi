@@ -2553,10 +2553,14 @@ int below(Fl_Widget* w)
 string main_window_title;
 void update_main_title()
 {
-	main_window_title = PACKAGE_TARNAME " - ";
-	main_window_title += (progdefaults.myCall.empty() ? _("NO CALLSIGN SET") : progdefaults.myCall.c_str());
-	if (fl_digi_main != NULL)
-		fl_digi_main->label(main_window_title.c_str());
+	string buf = main_window_title;
+	buf.append(" - ");
+	if (bWF_only)
+		buf.append(_("waterfall-only mode"));
+	else
+		buf.append(progdefaults.myCall.empty() ? _("NO CALLSIGN SET") : progdefaults.myCall.c_str());
+	if (fl_digi_main)
+		fl_digi_main->copy_label(buf.c_str());
 }
 
 void showOpBrowserView(Fl_Widget *, void *)
@@ -2780,8 +2784,7 @@ void create_fl_digi_main_primary() {
 
 	Wwfall = progStatus.mainW - 2 * DEFAULT_SW;
 
-	update_main_title();
-	fl_digi_main = new Fl_Double_Window(progStatus.mainW, progStatus.mainH, main_window_title.c_str());
+	fl_digi_main = new Fl_Double_Window(progStatus.mainW, progStatus.mainH);
 
 		mnuFrame = new Fl_Group(0,0,progStatus.mainW, Hmenu);
 			mnu = new Fl_Menu_Bar(0, 0, progStatus.mainW - 250 - pad, Hmenu);
@@ -3969,9 +3972,7 @@ void create_fl_digi_main_WF_only() {
 	Wwfall = progStatus.mainW - 2 * DEFAULT_SW - 2 * pad;
 	nomH = Hmenu + Hwfall + Hstatus + 4 * pad;
 
-	fl_digi_main = new Fl_Double_Window(
-			progStatus.mainW, nomH,
-			"fldigi - waterfall only mode");
+	fl_digi_main = new Fl_Double_Window(progStatus.mainW, nomH);
 
 		mnuFrame = new Fl_Group(0,0,progStatus.mainW, Hmenu);
 

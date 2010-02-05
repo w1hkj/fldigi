@@ -130,6 +130,8 @@ extern int			altMacros;
 extern waterfall		*wf;
 extern Digiscope		*digiscope;
 
+extern std::string		main_window_title;
+
 extern void toggleRSID();
 
 extern void set_menus();
