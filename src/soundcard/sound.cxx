@@ -254,7 +254,7 @@ sf_count_t SoundBase::read_file(SNDFILE* file, float* buf, size_t count)
 	for (size_t n = MIN(SND_BUF_LEN, count); count; count -= n) {		\
 		for (size_t i = 0; i < n; i++)					\
 			wrtbuf[i] = buf[i] * progStatus.XmtMixer;		\
-		if (sf_writef_ ## type_(file, wrtbuf, n) != n) {		\
+		if (sf_writef_ ## type_(file, wrtbuf, n) != (sf_count_t)n) {	\
 			LOG_ERROR("sf_write error: %s", sf_strerror(file));	\
 			break;							\
 		}								\

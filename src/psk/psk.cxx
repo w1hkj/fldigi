@@ -651,7 +651,7 @@ void psk::afc()
 void psk::rx_symbol(complex symbol)
 {
 	int n;
-	unsigned char softbit;
+	unsigned char softbit = 0;
 	double softangle;
 	double softamp;
 	double sigamp = symbol.norm();
