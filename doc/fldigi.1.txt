@@ -70,10 +70,23 @@ support.
   List all available XML-RPC methods and exit. May be preceded by the
   '--xmlrpc-allow' or '--xmlrpc-deny' options to verify their effect.
 
+*--cpu-speed-test*::
+  Perform the CPU speed test that is normally done when fldigi is run without an
+  existing configuration directory.  Results are shown in the event log and
+  options may be changed to the recommended values for the measured CPU speed.
+
+*--noise*::
+  Unhide controls for adding noise to the transmitted signal.
+
+*--wfall-only*::
+  Hide all main window widgets except the menu bar and waterfall (with its
+  associated controls). Meant to be used with external programs that control
+  fldigi with XML-RPC.
+
 *--debug-level* 'LEVEL'::
-  Set the event log verbosity. 'LEVEL' is clamped to the range [0,4]; for
-  'Quiet', 'Error', 'Warning', 'Info', and 'Debug'.  Defaults to ``2''
-  ('Warning').
+  Set the event log verbosity. 'LEVEL' is clamped to the range [0,5]; for
+  'Quiet', 'Error', 'Warning', 'Info', 'Verbose' and 'Debug'.  Defaults to ``3''
+  ('Info').
 
 *--version*::
   Print version information and exit.
@@ -181,32 +194,42 @@ altogether in a future version.*
 *--exit-after* 'SECONDS'::
   Run for approximately 'SECONDS' seconds.
 
-*--frames-per-buf* 'FRAMES'::
+*--frames-per-buffer* 'FRAMES'::
   Set frames per buffer option to 'FRAMES' when creating PortAudio
   streams. Defaults to ``0'' (let PortAudio choose).
 
-*--pskr-test-str* 'STRING'::
-  Test the PSK reporter client pattern matching. UTSL!
-
 
 == ENVIRONMENT ==
-Fldigi uses several environment variables:
+Fldigi uses several environment variables, mainly set for child processes
+created by the <EXEC> macro and the notifier.
+
+=== General variables ===
 
 FLDIGI_BROWSER::
   The web browser to use for http and file URIs. Overrides +$BROWSER+ and
   +xdg-open(1)+.
 
-[NOTE]
-================================================================================
+=== Macro variables ===
 The following variables are created in the environment of the child process that
 is forked by the '<EXEC>' macro.  They are empty if values are not available.
-================================================================================
 
 FLDIGI_RX_IPC_KEY::
   The receive message queue key.
 
 FLDIGI_TX_IPC_KEY::
   The transmit message queue key.
+
+FLDIGI_XMLRPC_ADDRESS::
+  The XML-RPC server address string.
+
+FLDIGI_XMLRPC_PORT::
+  The XML-RPC server port string.
+
+FLDIGI_ARQ_ADDRESS::
+  The ARQ server address string.
+
+FLDIGI_ARQ_PORT::
+  The ARQ server port string.
 
 FLDIGI_VERSION::
   The version string.
@@ -275,17 +298,37 @@ FLDIGI_LOG_NOTES::
 FLDIGI_AZ::
   The text (azimuth in degrees to other station) contained in the 'Az' log field.
 
-[NOTE]
-================================================================================
+=== Notifier variables ===
+
+The following variables are created in the environment of child processes
+created by the notifier.
+
+FLDIGI_NOTIFY_STRi::
+  These variables (i in [0,9]) contain substrings matched by capturing groups in
+  the event's regular expression. 0 contains the whole matched text.
+
+FLDIGI_NOTIFY_STR_NUM::
+  The number of substrings available.
+
+FLDIGI_NOTIFY_CALLSIGN::
+  Builtin event types that match callsigns will place the callsign in this
+  variable.
+
+FLDIGI_NOTIFY_TEXT::
+  The complete string that matched the event's regular expression.
+
+FLDIGI_NOTIFY_AUDIO_FREQUENCY::
+  The modem frequency.
+
+FLDIGI_NOTIFY_EVENT::
+  The event type.
+
+FLDIGI_NOTIFY_COUNTRY::
+  The station's country name (for events of type "station heard twice").
+
+=== Debugging variables ===
 The following variables are only used if fldigi was built with debugging support
 ('--enable-debug'), or they are only useful when debugging specific modules.
-================================================================================
-
-FLDIGI_PSKRTEST_COLOR::
-  Forces colour output even if stdout is not a terminal.
-
-FLDIGI_PSKRTEST_NOTEOL::
-  Forces EOL matching. UTSL!
 
 FLDIGI_NO_EXEC::
   If set, this variable disables glibc's malloc debugging, which fldigi enables
@@ -389,9 +432,7 @@ AGMemberList.txt or eqsl.txt::
 
 
 == BUGS ==
-* Batch decoding requires a connection to the X server even though no window is displayed.
-* There is no batch encoding mode.
-* Probably a few more.
+Yes.
 
 
 == SEE ALSO ==
@@ -404,8 +445,10 @@ Main web site: http://www.w1hkj.com/Fldigi.html
 
 BerliOS project page: http://developer.berlios.de/projects/fldigi/
 
+Wiki and bug tracker: https://fedorahosted.org/fldigi/
+
 More information on MFSK16, DominoEX and other digital modes can be found at
-http://www.qsl.net/zl1bpu/
+http://www.qsl.net/zl1bpu/ and http://www.w1hkj.com/FldigiHelp/Modes/index.htm
 
 The PSK Automatic Propagation Reporter site can be found at
 http://www.pskreporter.info/
