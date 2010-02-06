@@ -506,9 +506,9 @@ int SoundOSS::BufferSize( int seconds )
 
 bool SoundOSS::wait_till_finished()
 {
-	if (ioctl(device_fd, SNDCTL_DSP_POST, 1) == -1 )
+	if (ioctl(device_fd, SNDCTL_DSP_POST, (void*)1) == -1 )
 		return false;
-	if (ioctl(device_fd, SNDCTL_DSP_SYNC, 0) == -1)
+	if (ioctl(device_fd, SNDCTL_DSP_SYNC, (void*)0) == -1)
 		return false; /* format (or ioctl()) not supported by device */
 	return true; /* all sound has been played */
 }
