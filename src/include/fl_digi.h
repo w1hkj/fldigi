@@ -135,7 +135,7 @@ extern std::string		main_window_title;
 extern void toggleRSID();
 
 extern void set_menus();
-extern void create_fl_digi_main();
+extern void create_fl_digi_main(int argc, char** argv);
 extern void update_main_title();
 extern void activate_rig_menu_item(bool b);
 extern void activate_test_menu_item(bool b);

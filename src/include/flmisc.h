@@ -21,7 +21,7 @@ void adjust_color_inv(unsigned char& bg1r, unsigned char& bg1g, unsigned char& b
 
 #if !defined(__APPLE__) && !defined(__WOE32__)
 #  include <FL/x.H>
-void make_pixmap(Pixmap *xpm, const char **data);
+void make_pixmap(Pixmap *xpm, const char **data, int argc, char** argv);
 #endif
 
 class notify_dialog : public Fl_Window

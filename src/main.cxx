@@ -156,6 +156,7 @@ FILE	*server;
 FILE	*client;
 bool	mailserver = false, mailclient = false, arqmode = false;
 static bool show_cpucheck = false;
+static bool iconified = false;
 
 RXMSGSTRUC rxmsgst;
 int		rxmsgid = -1;
@@ -313,7 +314,7 @@ int main(int argc, char ** argv)
 
 	Fl::scheme(progdefaults.ui_scheme.c_str());
 	progdefaults.initFonts();
-	create_fl_digi_main();
+	create_fl_digi_main(argc, argv);
 
 #if BENCHMARK_MODE
 	return setup_benchmark();
@@ -365,6 +366,9 @@ int main(int argc, char ** argv)
 	progStatus.initLastState();
 	fl_digi_main->show(argc, argv);
 #endif
+	if (iconified)
+		for (Fl_Window* w = Fl::first_window(); w; w = Fl::next_window(w))
+			w->iconize();
 	update_main_title();
 
 	arq_init();
@@ -579,6 +583,8 @@ int parse_args(int argc, char **argv, int& idx)
 		if (main_window_title.empty() && argc > idx &&
 		    (!strcmp(argv[idx], "-ti") || !strcmp(argv[idx], "-title")))
 			main_window_title = argv[idx + 1];
+		else if (!strcmp(argv[idx], "-i") || !strcmp(argv[idx], "-iconic"))
+			iconified = true;
 		return 0;
 	}
 

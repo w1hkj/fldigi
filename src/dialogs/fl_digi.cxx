@@ -3632,19 +3632,6 @@ void create_fl_digi_main_primary() {
 	fl_digi_main->end();
 	fl_digi_main->callback(cb_wMain);
 
-#if defined(__WOE32__)
-#  ifndef IDI_ICON
-#    define IDI_ICON 101
-#  endif
-	fl_digi_main->icon((char*)LoadIcon(fl_display, MAKEINTRESOURCE(IDI_ICON)));
-#elif !defined(__APPLE__) && USE_X
-	make_pixmap(&fldigi_icon_pixmap, fldigi_icon);
-	fl_digi_main->icon((char *)fldigi_icon_pixmap);
-#endif
-
-	fl_digi_main->xclass(PACKAGE_NAME);
-	fl_digi_main->size_range(WMIN, HMIN);
-
 	scopeview = new Fl_Double_Window(0,0,140,140, _("Scope"));
 	scopeview->xclass(PACKAGE_NAME);
 	digiscope = new Digiscope (0, 0, 140, 140);
@@ -4130,21 +4117,6 @@ void create_fl_digi_main_WF_only() {
 			}
 		}
 	}
-//---------------------------
-#if defined(__WOE32__)
-#  ifndef IDI_ICON
-#	define IDI_ICON 101
-#  endif
-	fl_digi_main->icon((char*)LoadIcon(fl_display, MAKEINTRESOURCE(IDI_ICON)));
-#elif !defined(__APPLE__) && USE_X
-	make_pixmap(&fldigi_icon_pixmap, fldigi_icon);
-	fl_digi_main->icon((char *)fldigi_icon_pixmap);
-#endif
-
-	fl_digi_main->xclass(PACKAGE_NAME);
-	fl_digi_main->size_range(WMIN, nomH, 0, nomH);
-
-//--------------------------
 
 	make_scopeviewer();
 	noop_controls();
@@ -4170,11 +4142,25 @@ void create_fl_digi_main_WF_only() {
 }
 
 
-void create_fl_digi_main() {
+void create_fl_digi_main(int argc, char** argv)
+{
 	if (bWF_only)
 		create_fl_digi_main_WF_only();
 	else
 		create_fl_digi_main_primary();
+
+#if defined(__WOE32__)
+#  ifndef IDI_ICON
+#    define IDI_ICON 101
+#  endif
+	fl_digi_main->icon((char*)LoadIcon(fl_display, MAKEINTRESOURCE(IDI_ICON)));
+#elif !defined(__APPLE__) && USE_X
+	make_pixmap(&fldigi_icon_pixmap, fldigi_icon, argc, argv);
+	fl_digi_main->icon((char *)fldigi_icon_pixmap);
+#endif
+
+	fl_digi_main->xclass(PACKAGE_NAME);
+	fl_digi_main->size_range(WMIN, HMIN);
 }
 
 void put_freq(double frequency)

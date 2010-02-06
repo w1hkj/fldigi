@@ -1823,7 +1823,7 @@ int main (int argc, char *argv[] )
 #  endif
 	arqwin->icon((char*)LoadIcon(fl_display, MAKEINTRESOURCE(IDI_ICON)));
 #elif !defined(__APPLE__) && USE_X
-	make_pixmap(&flarq_icon_pixmap, flarq_icon);
+	make_pixmap(&flarq_icon_pixmap, flarq_icon, argc, argv);
 	arqwin->icon((char *)flarq_icon_pixmap);
 #endif
 

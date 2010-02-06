@@ -89,13 +89,13 @@ void adjust_color_inv(unsigned char& bg1r, unsigned char& bg1g, unsigned char& b
 #  include <FL/Fl_Window.H>
 #  include <FL/Fl_Pixmap.H>
 #  include <FL/fl_draw.H>
-void make_pixmap(Pixmap *xpm, const char **data)
+void make_pixmap(Pixmap *xpm, const char **data, int argc, char** argv)
 {
 	// We need a displayed window to provide a GC for X_CreatePixmap
 	Fl_Window w(0, 0, PACKAGE_NAME);
 	w.xclass(PACKAGE_NAME);
 	w.border(0);
-	w.show();
+	w.show(argc, argv);
 
 	Fl_Pixmap icon(data);
 	int maxd = MAX(icon.w(), icon.h());
