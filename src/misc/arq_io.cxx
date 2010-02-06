@@ -613,19 +613,6 @@ void WriteARQ( unsigned int data)
 #endif
 }
 
-// following function used if the T/R button is pressed to stop a transmission
-// that is servicing the ARQ text buffer.  It allows the ARQ client to reset
-// itself properly
-
-void AbortARQ() {
-	if (arq_text_available) {
-		arqtext.clear();
-		pText = 0;//arqtext.begin();
-		arq_text_available = false;
-		WriteARQ(0x06);
-	}
-}
-
 //-----------------------------------------------------------------------------
 // Write End of Transmit character to ARQ client
 //-----------------------------------------------------------------------------
@@ -634,7 +621,6 @@ void send0x06()
 {
 	if (trx_state == STATE_RX) {
 		bSend0x06 = false;
-		arq_text_available = false;
 		WriteARQ(0x06);
 	}
 }
@@ -720,14 +706,28 @@ char arq_get_char()
 {
 	char c = 0x03;
 	pthread_mutex_lock (&arq_mutex);
-	if (pText != arqtext.length()) {
+	if (!arqtext.empty() && (pText != arqtext.length())) {
 		c = arqtext[pText++];
 	} else {
 		arqtext.clear();
 		pText = 0;
 		bSend0x06 = true;
+		arq_text_available = false;
 	}
 	pthread_mutex_unlock (&arq_mutex);
 	return c;
+}
+
+// following function used if the T/R button is pressed to stop a transmission
+// that is servicing the ARQ text buffer.  It allows the ARQ client to reset
+// itself properly
+
+void AbortARQ() {
+	pthread_mutex_lock (&arq_mutex);
+	arqtext.clear();
+	pText = 0;
+	arq_text_available = false;
+	bSend0x06 = true;
+	pthread_mutex_unlock (&arq_mutex);
 }
 
