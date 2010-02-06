@@ -102,16 +102,21 @@ ret_def:
 	return dir == 0 ? Pa_GetDefaultInputDevice() : Pa_GetDefaultOutputDevice();
 }
 
+#include <cerrno>
+
 static void init_portaudio(void)
 {
 	try {
 		SoundPort::initialize();
 	}
-	catch (const SndPortException& e) {
+	catch (const SndException& e) {
+		if (e.error() == ENODEV) // don't complain if there are no devices
+			return;
 		LOG_ERROR("%s", e.what());
 	       	AudioPort->deactivate();
 		btnAudioIO[SND_IDX_PORT]->deactivate();
-		progdefaults.btnAudioIOis = SND_IDX_NULL;
+		if (progdefaults.btnAudioIOis == SND_IDX_PORT)
+			progdefaults.btnAudioIOis = SND_IDX_NULL;
 		return;
 	}
 
@@ -320,6 +325,47 @@ static void sound_init_options(void)
 	cntTxOffset->value(progdefaults.TxOffset);
 }
 
+#if USE_PULSEAUDIO
+#  include <pulse/context.h>
+#  include <pulse/mainloop.h>
+#  include <pulse/version.h>
+
+#  if PA_API_VERSION < 12
+static inline int PA_CONTEXT_IS_GOOD(pa_context_state_t x) {
+	return  x == PA_CONTEXT_CONNECTING || x == PA_CONTEXT_AUTHORIZING ||
+		x == PA_CONTEXT_SETTING_NAME || x == PA_CONTEXT_READY;
+}
+#  endif
+
+static bool probe_pulseaudio(void)
+{
+	pa_mainloop* loop = pa_mainloop_new();
+	if (!loop)
+		return false;
+
+	bool ok = false;
+	pa_context* context = pa_context_new(pa_mainloop_get_api(loop), PACKAGE_TARNAME);
+	if (context && pa_context_connect(context, NULL, PA_CONTEXT_NOAUTOSPAWN, NULL) >= 0) {
+		pa_context_state_t state;
+		do { // iterate main loop until the context connection fails or becomes ready
+			if (!(ok = (pa_mainloop_iterate(loop, 1, NULL) >= 0 &&
+				    PA_CONTEXT_IS_GOOD(state = pa_context_get_state(context)))))
+				break;
+		} while (state != PA_CONTEXT_READY);
+	}
+
+	if (context) {
+		pa_context_disconnect(context);
+		pa_context_unref(context);
+	}
+	pa_mainloop_free(loop);
+
+	return ok;
+}
+#else
+static bool probe_pulseaudio(void) { return false; }
+#endif // USE_PULSEAUDIO
+
 void sound_init(void)
 {
 	init_oss();
@@ -341,9 +387,14 @@ void sound_init(void)
 #endif
 	if (progdefaults.btnAudioIOis == SND_IDX_UNKNOWN ||
 	    !btnAudioIO[progdefaults.btnAudioIOis]->active()) { // or saved sound api now disabled
-		for (size_t i = 0; i < sizeof(btnAudioIO)/sizeof(*btnAudioIO); i++) {
+		int io[4] = { SND_IDX_PORT, SND_IDX_PULSE, SND_IDX_OSS, SND_IDX_NULL };
+		if (probe_pulseaudio()) { // prefer pulseaudio
+			io[0] = SND_IDX_PULSE;
+			io[1] = SND_IDX_PORT;
+		}
+		for (size_t i = 0; i < sizeof(io)/sizeof(io); i++) {
 			if (btnAudioIO[i]->active()) {
-				progdefaults.btnAudioIOis = i;
+				progdefaults.btnAudioIOis = io[i];
 				break;
 			}
 		}

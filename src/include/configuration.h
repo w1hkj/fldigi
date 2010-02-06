@@ -706,7 +706,7 @@
         ELEM_(int, btnAudioIOis, "AUDIOIO",                                             \
               "Audio subsystem.  Values are as follows:\n"                              \
               "  0: OSS; 1: PortAudio; 2: PulseAudio; 3: File I/O",                     \
-              SND_IDX_PORT)                                                             \
+              SND_IDX_UNKNOWN)                                                          \
         ELEM_(std::string, OSSdevice, "OSSDEVICE",                                      \
               "OSS device name",                                                        \
               "")                                                                       \

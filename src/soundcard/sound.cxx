@@ -734,7 +734,7 @@ void SoundPort::initialize(void)
         if ((ndev = Pa_GetDeviceCount()) < 0)
                 throw SndPortException(ndev);
         if (ndev == 0)
-                throw SndPortException("No available audio devices");
+                throw SndException(ENODEV, "No available audio devices");
 
         devs.reserve(ndev);
         for (PaDeviceIndex i = 0; i < ndev; i++)
