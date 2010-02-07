@@ -4437,6 +4437,8 @@ void clear_StatusMessages()
 	StatusBar->label("");
 	Status1->label("");
 	Status2->label("");
+	info1msg = "";
+	info2msg = "";
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }
