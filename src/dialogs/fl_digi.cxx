@@ -3942,13 +3942,14 @@ void altTabs()
 	tabsConfigure->remove(tabQRZ);
 }
 
+int WF_only_height = 0;
+
 void create_fl_digi_main_WF_only() {
 
 	int fnt = fl_font();
 	int fsize = fl_size();
 	int freqheight = Hentry + 2 * pad;
 	int Y = 0;
-	int nomH = 0;
 
 	fl_font(fnt, freqheight);
 	fl_font(fnt, fsize);
@@ -3957,9 +3958,9 @@ void create_fl_digi_main_WF_only() {
 	IMAGE_WIDTH = 4000;//progdefaults.HighFreqCutoff;
 	Hwfall = progdefaults.wfheight;
 	Wwfall = progStatus.mainW - 2 * DEFAULT_SW - 2 * pad;
-	nomH = Hmenu + Hwfall + Hstatus + 4 * pad;
+	WF_only_height = Hmenu + Hwfall + Hstatus + 4 * pad;
 
-	fl_digi_main = new Fl_Double_Window(progStatus.mainW, nomH);
+	fl_digi_main = new Fl_Double_Window(progStatus.mainW, WF_only_height);
 
 		mnuFrame = new Fl_Group(0,0,progStatus.mainW, Hmenu);
 
@@ -4160,7 +4161,10 @@ void create_fl_digi_main(int argc, char** argv)
 #endif
 
 	fl_digi_main->xclass(PACKAGE_NAME);
-	fl_digi_main->size_range(WMIN, HMIN);
+
+	fl_digi_main->size_range(
+		WMIN, bWF_only ? WF_only_height : HMIN,
+		0, bWF_only ? WF_only_height : 0);
 }
 
 void put_freq(double frequency)
