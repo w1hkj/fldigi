@@ -392,8 +392,8 @@ void sound_init(void)
 			io[0] = SND_IDX_PULSE;
 			io[1] = SND_IDX_PORT;
 		}
-		for (size_t i = 0; i < sizeof(io)/sizeof(io); i++) {
-			if (btnAudioIO[i]->active()) {
+		for (size_t i = 0; i < sizeof(io)/sizeof(*io); i++) {
+			if (btnAudioIO[io[i]]->active()) {
 				progdefaults.btnAudioIOis = io[i];
 				break;
 			}
