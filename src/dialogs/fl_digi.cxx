@@ -3935,7 +3935,6 @@ void make_scopeviewer()
 
 void altTabs()
 {
-	tabsConfigure->remove(tabOperator);
 	tabsConfigure->remove(tabUI);
 	tabsConfigure->remove(tabFeld);
 	tabsConfigure->remove(tabMisc);

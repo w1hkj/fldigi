@@ -238,6 +238,7 @@ int main(int argc, char ** argv)
 
 	checkdirectories();
 	bool have_config = progdefaults.readDefaultsXML();
+
 	try {
 		debug::start(string(HomeDir).append("status_log.txt").c_str());
 		time_t t = time(NULL);
@@ -266,6 +267,10 @@ int main(int argc, char ** argv)
 
 	fl_register_images();
 	Fl::set_fonts(0);
+
+	Fl::scheme(progdefaults.ui_scheme.c_str());
+	progdefaults.initFonts();
+	create_fl_digi_main(argc, argv);
 
 
 	if (!have_config || show_cpucheck) {
@@ -312,9 +317,9 @@ int main(int argc, char ** argv)
 	if (!qsl_open(string(HomeDir).append("eqsl.txt").c_str(), QSL_EQSL))
 		qsl_open(string(HomeDir).append("AGMemberList.txt").c_str(), QSL_EQSL);
 
-	Fl::scheme(progdefaults.ui_scheme.c_str());
-	progdefaults.initFonts();
-	create_fl_digi_main(argc, argv);
+//	Fl::scheme(progdefaults.ui_scheme.c_str());
+//	progdefaults.initFonts();
+//	create_fl_digi_main(argc, argv);
 
 #if BENCHMARK_MODE
 	return setup_benchmark();
@@ -342,9 +347,9 @@ int main(int argc, char ** argv)
 
 	atexit(sound_close);
 	sound_init();
-	trx_start();
 
 	progdefaults.initInterface();
+	trx_start();
 
 #if SHOW_WIZARD_BEFORE_MAIN_WINDOW
 	if (!have_config) {
@@ -354,6 +359,9 @@ int main(int argc, char ** argv)
 			Fl::wait();
 	}
 #endif
+
+//	progdefaults.initInterface();
+//	trx_start();
 
 // OS X will prevent the main window from being resized if we change its
 // size *after* it has been shown. With some X11 window managers, OTOH,
@@ -366,6 +374,7 @@ int main(int argc, char ** argv)
 	progStatus.initLastState();
 	fl_digi_main->show(argc, argv);
 #endif
+
 	if (iconified)
 		for (Fl_Window* w = Fl::first_window(); w; w = Fl::next_window(w))
 			w->iconize();

@@ -407,8 +407,8 @@ void Wizard::create_wizard(void)
 		{ tabOperator },
 		{ tabSoundCard },
 		{ tabRig },
-		{ tabQRZ }
 	};
+
 	tabs.resize(sizeof(tabs_)/sizeof(*tabs_));
 	memcpy(&tabs[0], tabs_, sizeof(tabs_));
 
