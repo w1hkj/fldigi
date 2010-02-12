@@ -458,15 +458,21 @@ double feld::nco(double freq)
 void feld::send_symbol(int currsymb, int nextsymb)
 {
 	double tone = get_txfreq_woffset();
-	double Amp;
+	double tone2 = 0;
+	double Amp = 1.0;
+	double ncoval = 0;
 	int outlen = 0;
 
-	Amp = 1.0;
-	if (mode >= MODE_FSKHELL && mode <= MODE_HELL80)
-		tone += (reverse ? -1 : 1) * (currsymb ? -1 : 1) * bandwidth / 2.0;
+	if (mode >= MODE_FSKHELL && mode <= MODE_HELL80) {
+		tone += (reverse ? -1 : 1) * (prevsymb ? -1 : 1) * bandwidth / 2.0;
+		tone2 += (reverse ? -1 : 1) * (currsymb ? -1 : 1) * bandwidth / 2.0;
+	}
 	for (;;) {
 		switch (mode) {
+			ncoval = nco(tone);
 			case MODE_FSKHELL : case MODE_FSKH105 : case MODE_HELL80 :
+				if ((tone2 != tone) && ((1.0 - fabs(ncoval)) < .001)) 
+					tone = tone2;
 				break;
 			case MODE_HELLX5 : case MODE_HELLX9 :
 				Amp = currsymb;
