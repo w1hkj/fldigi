@@ -270,8 +270,14 @@ int main(int argc, char ** argv)
 
 	Fl::scheme(progdefaults.ui_scheme.c_str());
 	progdefaults.initFonts();
-	create_fl_digi_main(argc, argv);
 
+	dxcc_open(string(HomeDir).append("cty.dat").c_str());
+	qsl_open(string(HomeDir).append("lotw1.txt").c_str(), QSL_LOTW);
+	if (!qsl_open(string(HomeDir).append("eqsl.txt").c_str(), QSL_EQSL))
+		qsl_open(string(HomeDir).append("AGMemberList.txt").c_str(), QSL_EQSL);
+
+	progStatus.loadLastState();
+	create_fl_digi_main(argc, argv);
 
 	if (!have_config || show_cpucheck) {
 		double speed = speed_test(SRC_SINC_FASTEST, 8);
@@ -300,8 +306,6 @@ int main(int argc, char ** argv)
 	if (progdefaults.XmlRigFilename.empty())
 		progdefaults.XmlRigFilename = xmlfname;
 
-	progStatus.loadLastState();
-
 	if (progStatus.LOGenabled == true) {
     	Date tdy;
 	    string lfname = HomeDir;
@@ -312,22 +316,12 @@ int main(int argc, char ** argv)
 	    logfile->log_to_file_start();
 	}
 
-	dxcc_open(string(HomeDir).append("cty.dat").c_str());
-	qsl_open(string(HomeDir).append("lotw1.txt").c_str(), QSL_LOTW);
-	if (!qsl_open(string(HomeDir).append("eqsl.txt").c_str(), QSL_EQSL))
-		qsl_open(string(HomeDir).append("AGMemberList.txt").c_str(), QSL_EQSL);
-
-//	Fl::scheme(progdefaults.ui_scheme.c_str());
-//	progdefaults.initFonts();
-//	create_fl_digi_main(argc, argv);
-
 #if BENCHMARK_MODE
 	return setup_benchmark();
 #endif
 
 	FSEL::create();
 
-//	createConfig();
 	make_colorsfonts();
 	setTabColors();
 
