@@ -622,6 +622,16 @@ void FTextTX::clear_sent(void)
 	PauseBreak = false;
 }
 
+/// Returns boolean <eot> end of text
+///
+/// true if empty buffer
+/// false if characters remain
+///
+bool FTextTX::eot(void)
+{
+	return (insert_position() == txpos);
+}
+
 /// Returns the next character to be transmitted.
 ///
 /// @return The next character, or ETX if the transmission has been paused, or

@@ -4497,12 +4497,22 @@ int get_tx_char(void)
 			break;
 		state = STATE_CTRL;
 		return -1;
-	case 'r': case 'R':
+	case 'r':
 		if (state != STATE_CTRL)
 			break;
 		REQ_SYNC(&FTextTX::clear_sent, TransmitText);
 		state = STATE_CHAR;
 		c = 3; // ETX
+		break;
+	case 'R':
+		if (state != STATE_CTRL)
+			break;
+		state = STATE_CHAR;
+		if (TransmitText->eot()) {
+			REQ_SYNC(&FTextTX::clear_sent, TransmitText);
+			c = 3; // ETX
+		} else
+			c = -1;
 		break;
 	case -1:
 		break;

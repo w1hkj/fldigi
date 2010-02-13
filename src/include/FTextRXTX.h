@@ -63,7 +63,8 @@ public:
 
 	void		clear(void);
 	void		clear_sent(void);
-	int		nextChar(void);
+	int			nextChar(void);
+	bool		eot(void);
 
 	void		setFont(Fl_Font f, int attr = NATTR);
 
