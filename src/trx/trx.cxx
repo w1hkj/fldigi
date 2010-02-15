@@ -324,7 +324,8 @@ void *trx_loop(void *args)
 }
 
 //=============================================================================
-modem* new_modem;
+static modem* new_modem;
+static int new_freq;
 
 void trx_start_modem_loop()
 {
@@ -338,6 +339,8 @@ void trx_start_modem_loop()
 
 	new_modem->init();
 	active_modem = new_modem;
+	if (new_freq > 0)
+		active_modem->set_freq(new_freq);
 	trx_state = STATE_RX;
 	REQ(&waterfall::opmode, wf);
 
@@ -348,9 +351,10 @@ void trx_start_modem_loop()
 }
 
 //=============================================================================
-void trx_start_modem(modem *m)
+void trx_start_modem(modem* m, int f)
 {
 	new_modem = m;
+	new_freq = f;
 	trx_state = STATE_NEW_MODEM;
 }
 

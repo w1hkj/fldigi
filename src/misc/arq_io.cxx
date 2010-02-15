@@ -143,7 +143,7 @@ void ParseMode(string src)
 		if (strlen(mode_info[i].pskmail_name) > 0) {
 			if (src == mode_info[i].pskmail_name) {
 				while (trx_state != STATE_RX) MilliSleep(50);
-				REQ_SYNC(init_modem_sync, mode_info[i].mode);
+				REQ_SYNC(init_modem_sync, mode_info[i].mode, 0);
 LOG_INFO("ARQ new modem set to %s", mode_info[i].pskmail_name);
 				break;
 			}

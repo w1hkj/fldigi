@@ -601,37 +601,30 @@ static void default_cursor(void*)
 	Fl::first_window()->cursor(FL_CURSOR_DEFAULT);
 }
 
-void startup_modem(modem *m)
+void startup_modem(modem* m, int f)
 {
-	trx_start_modem(m);
+	trx_start_modem(m, f);
 #if BENCHMARK_MODE
 	return;
 #endif
 
 	restoreFocus();
 
-	FL_LOCK_D();
-	if (m == feld_modem ||
-		m == feld_slowmodem ||
-		m == feld_x5modem ||
-		m == feld_x9modem ||
-		m == feld_FMmodem ||
-		m == feld_FM105modem ||
-		m == feld_80modem ) {
+	trx_mode id = m->get_mode();
+	if (id >= MODE_HELL_FIRST && id <= MODE_HELL_LAST) {
 		ReceiveText->hide();
 		FHdisp->show();
 		sldrHellBW->value(progdefaults.HELL_BW);
-	} else {
-if(!bWF_only) {
+	}
+	else if (!bWF_only) {
 		ReceiveText->show();
 		FHdisp->hide();
-}
 	}
-	if (m == rtty_modem) {
+
+	if (id == MODE_RTTY)
 	    sldrRTTYbandwidth->value(progdefaults.RTTY_BW);
-    }
-    if (m >= psk31_modem && m <= psk500_modem)
-        m->set_sigsearch(SIGSEARCH);
+	else if (id >= MODE_PSK_FIRST && id <= MODE_PSK_LAST)
+		m->set_sigsearch(SIGSEARCH);
 
 	if (m->get_cap() & modem::CAP_AFC) {
 		btnAFC->value(progStatus.afconoff);
@@ -642,7 +635,6 @@ if(!bWF_only) {
 		btnAFC->deactivate();
 	}
 
-	wf->btnRev->value(wf->Reverse());
 	if (m->get_cap() & modem::CAP_REV) {
 		wf->btnRev->value(wf->Reverse());
 		wf->btnRev->activate();
@@ -651,10 +643,6 @@ if(!bWF_only) {
 		wf->btnRev->value(0);
 		wf->btnRev->deactivate();
 	}
-
-	FL_UNLOCK_D();
-	FL_AWAKE_D();
-
 }
 
 void cb_mnuOpenMacro(Fl_Menu_*, void*) {
@@ -697,7 +685,7 @@ void cb_wMain(Fl_Widget*, void*)
 	fl_digi_main->hide();
 }
 
-void init_modem(trx_mode mode)
+void init_modem(trx_mode mode, int freq)
 {
 	ENSURE_THREAD(FLMAIN_TID);
 
@@ -710,22 +698,22 @@ void init_modem(trx_mode mode)
 	case MODE_NEXT:
 		if ((mode = active_modem->get_mode() + 1) == NUM_MODES)
 			mode = 0;
-		return init_modem(mode);
+		return init_modem(mode, freq);
 	case MODE_PREV:
 		if ((mode = active_modem->get_mode() - 1) < 0)
 			mode = NUM_MODES - 1;
-		return init_modem(mode);
+		return init_modem(mode, freq);
 
 	case MODE_CW:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new cw);
+			      *mode_info[mode].modem = new cw, freq);
 		modem_config_tab = tabCW;
 		break;
 
 	case MODE_THOR4: case MODE_THOR5: case MODE_THOR8:
 	case MODE_THOR11:case MODE_THOR16: case MODE_THOR22:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new thor(mode));
+			      *mode_info[mode].modem = new thor(mode), freq);
 		quick_change = quick_change_thor;
 		modem_config_tab = tabTHOR;
 		break;
@@ -733,7 +721,7 @@ void init_modem(trx_mode mode)
 	case MODE_DOMINOEX4: case MODE_DOMINOEX5: case MODE_DOMINOEX8:
 	case MODE_DOMINOEX11: case MODE_DOMINOEX16: case MODE_DOMINOEX22:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new dominoex(mode));
+			      *mode_info[mode].modem = new dominoex(mode), freq);
 		quick_change = quick_change_domino;
 		modem_config_tab = tabDomEX;
 		break;
@@ -746,7 +734,7 @@ void init_modem(trx_mode mode)
 	case MODE_FSKH105:
 	case MODE_HELL80:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new feld(mode));
+			      *mode_info[mode].modem = new feld(mode), freq);
 		quick_change = quick_change_feld;
 		modem_config_tab = tabFeld;
 		break;
@@ -760,13 +748,13 @@ void init_modem(trx_mode mode)
 	case MODE_MFSK16:
 	case MODE_MFSK32:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new mfsk(mode));
+			      *mode_info[mode].modem = new mfsk(mode), freq);
 		quick_change = quick_change_mfsk;
 		break;
 
 	case MODE_MT63_500: case MODE_MT63_1000: case MODE_MT63_2000 :
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new mt63(mode));
+			      *mode_info[mode].modem = new mt63(mode), freq);
 		quick_change = quick_change_mt63;
 		modem_config_tab = tabMT63;
 		break;
@@ -774,33 +762,33 @@ void init_modem(trx_mode mode)
 	case MODE_PSK31: case MODE_PSK63: case MODE_PSK63F:
 	case MODE_PSK125: case MODE_PSK250: case MODE_PSK500:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new psk(mode));
+			      *mode_info[mode].modem = new psk(mode), freq);
 		quick_change = quick_change_psk;
 		modem_config_tab = tabPSK;
 		break;
 	case MODE_QPSK31: case MODE_QPSK63: case MODE_QPSK125: case MODE_QPSK250: case MODE_QPSK500:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new psk(mode));
+			      *mode_info[mode].modem = new psk(mode), freq);
 		quick_change = quick_change_qpsk;
 		modem_config_tab = tabPSK;
 		break;
 	case MODE_PSK125R: case MODE_PSK250R: case MODE_PSK500R:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new psk(mode));
+			      *mode_info[mode].modem = new psk(mode), freq);
 		quick_change = quick_change_pskr;
 		modem_config_tab = tabPSK;
 		break;
 
 	case MODE_OLIVIA:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new olivia);
+			      *mode_info[mode].modem = new olivia, freq);
 		modem_config_tab = tabOlivia;
 		quick_change = quick_change_olivia;
 		break;
 
 	case MODE_RTTY:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new rtty(mode));
+			      *mode_info[mode].modem = new rtty(mode), freq);
 		modem_config_tab = tabRTTY;
 		quick_change = quick_change_rtty;
 		break;
@@ -808,23 +796,23 @@ void init_modem(trx_mode mode)
 	case MODE_THROB1: case MODE_THROB2: case MODE_THROB4:
 	case MODE_THROBX1: case MODE_THROBX2: case MODE_THROBX4:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new throb(mode));
+			      *mode_info[mode].modem = new throb(mode), freq);
 		quick_change = quick_change_throb;
 		break;
 
 	case MODE_WWV:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new wwv);
+			      *mode_info[mode].modem = new wwv, freq);
 		break;
 
 	case MODE_ANALYSIS:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new anal);
+			      *mode_info[mode].modem = new anal, freq);
 		break;
 
 	default:
 		LOG_ERROR("Unknown mode: %" PRIdPTR, mode);
-		return init_modem(MODE_PSK31);
+		return init_modem(MODE_PSK31, freq);
 	}
 
 #if BENCHMARK_MODE
@@ -841,14 +829,14 @@ void init_modem(trx_mode mode)
 	}
 }
 
-void init_modem_sync(trx_mode m)
+void init_modem_sync(trx_mode m, int f)
 {
 	ENSURE_THREAD(FLMAIN_TID);
 
 	if (trx_state != STATE_RX)
 		TRX_WAIT(STATE_RX, abort_tx());
 
-	TRX_WAIT(STATE_RX, init_modem(m));
+	TRX_WAIT(STATE_RX, init_modem(m, f));
 	REQ_FLUSH(TRX_TID);
 }
 

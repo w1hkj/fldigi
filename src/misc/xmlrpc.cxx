@@ -476,7 +476,7 @@ public:
 		string s = params.getString(0);
 		for (size_t i = 0; i < NUM_MODES; i++) {
 			if (s == mode_info[i].sname) {
-				REQ_SYNC(init_modem_sync, i);
+				REQ_SYNC(init_modem_sync, i, 0);
 				*retval = xmlrpc_c::value_string(cur);
 				return;
 			}
@@ -499,7 +499,7 @@ public:
 		int cur = active_modem->get_mode();
 
 		int i = params.getInt(0, 0, NUM_MODES-1);
-		REQ_SYNC(init_modem_sync, i);
+		REQ_SYNC(init_modem_sync, i, 0);
 
 		*retval = xmlrpc_c::value_int(cur);
 	}

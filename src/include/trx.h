@@ -33,7 +33,7 @@
 
 // ----------------------------------------------------------------------------
 
-extern	void	trx_start_modem(modem *);
+extern	void	trx_start_modem(modem* m, int f = 0);
 extern	void	trx_start(void);
 extern	void	trx_close();
 
