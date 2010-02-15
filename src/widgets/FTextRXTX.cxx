@@ -297,49 +297,59 @@ void FTextRX::handle_qso_data(int start, int end)
 
 void FTextRX::handle_context_menu(void)
 {
-	// toggle visibility of quick entry items
+	bool contest_ui = progStatus.Rig_Contest_UI ||
+		(progStatus.contest && !progStatus.NO_RIGLOG && !progStatus.Rig_Log_UI);
+
+	unsigned shown = 0;
+
+#define show_item(x_) (shown |=  (1 << x_))
+#define hide_item(x_) (shown &= ~(1 << x_))
+#define test_item(x_) (shown &   (1 << x_))
+
+	show_item(RX_MENU_CALL);
+
+	if (contest_ui || (progStatus.contest && !progStatus.NO_RIGLOG && !progStatus.Rig_Log_UI)) {
+		show_item(RX_MENU_SERIAL);
+		show_item(RX_MENU_XCHG);
+	}
+	else if (progdefaults.QRZ != QRZNONE) // "Look up call" shown only in non-contest mode
+		show_item(RX_MENU_QRZ_THIS);
+
 	if (menu[RX_MENU_QUICK_ENTRY].value()) {
-		menu[RX_MENU_CALL].flags &= ~FL_MENU_DIVIDER;
 		for (size_t i = RX_MENU_NAME; i <= RX_MENU_RST_IN; i++)
-			menu[i].show();
+			show_item(i);
+		menu[RX_MENU_CALL].flags &= ~FL_MENU_DIVIDER;
 	}
 	else {
+		if (!contest_ui && !progStatus.contest) {
+			show_item(RX_MENU_NAME);
+			show_item(RX_MENU_QTH);
+			show_item(RX_MENU_RST_IN);
+		}
 		menu[RX_MENU_CALL].flags |= FL_MENU_DIVIDER;
-		for (size_t i = RX_MENU_NAME; i <= (progStatus.contest ? RX_MENU_LOC : RX_MENU_RST_IN); i++)
+	}
+
+	for (size_t i = RX_MENU_QRZ_THIS; i <= RX_MENU_XCHG; i++) {
+		if (test_item(i))
+			menu[i].show();
+		else
 			menu[i].hide();
 	}
 
+#undef show_item
+#undef hide_item
+#undef test_item
+
+	// availability of editing items depend on buffer state
 	set_active(&menu[RX_MENU_COPY], tbuf->selected());
 	set_active(&menu[RX_MENU_CLEAR], tbuf->length());
 	set_active(&menu[RX_MENU_SELECT_ALL], tbuf->length());
 	set_active(&menu[RX_MENU_SAVE], tbuf->length());
+
 	if (wrap)
 		menu[RX_MENU_WRAP].set();
 	else
 		menu[RX_MENU_WRAP].clear();
-
-	if (!menu[RX_MENU_QUICK_ENTRY].value()) {
-		if (progStatus.Rig_Contest_UI ||
-			(progStatus.contest && !progStatus.NO_RIGLOG && ! progStatus.Rig_Log_UI)) {
-			menu[RX_MENU_QRZ_THIS].hide();
-			menu[RX_MENU_NAME].hide();
-			menu[RX_MENU_QTH].hide();
-			menu[RX_MENU_RST_IN].hide();
-			menu[RX_MENU_SERIAL].show();
-			menu[RX_MENU_XCHG].show();
-		} else {
-			menu[RX_MENU_QRZ_THIS].show();
-			menu[RX_MENU_NAME].show();
-			menu[RX_MENU_QTH].show();
-			menu[RX_MENU_RST_IN].show();
-			menu[RX_MENU_SERIAL].hide();
-			menu[RX_MENU_XCHG].hide();
-			if (progdefaults.QRZ != QRZNONE)
-				menu[RX_MENU_QRZ_THIS].show();
-			else
-				menu[RX_MENU_QRZ_THIS].hide();
-		}
-	}
 
 	show_context_menu();
 }
@@ -409,6 +419,8 @@ void FTextRX::menu_cb(size_t item)
 	case RX_MENU_QUICK_ENTRY:
 		menu[item].flags ^= FL_MENU_VALUE;
 		quick_entry = menu[item].value();
+		if (quick_entry)
+			handle_context_menu();
 		break;
 
 	case RX_MENU_WRAP:

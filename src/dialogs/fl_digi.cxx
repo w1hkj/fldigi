@@ -2145,6 +2145,8 @@ void cb_mnu_riglog_none(Fl_Menu_* w, void *d)
 {
 	getMenuItem(w->mvalue()->label())->setonly();
 	progStatus.NO_RIGLOG = true;
+	progStatus.Rig_Log_UI = false;
+	progStatus.Rig_Contest_UI = false;
 	UI_select();
 }
 
