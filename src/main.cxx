@@ -237,8 +237,6 @@ int main(int argc, char ** argv)
 		main_window_title = PACKAGE_TARNAME;
 
 	checkdirectories();
-	bool have_config = progdefaults.readDefaultsXML();
-
 	try {
 		debug::start(string(HomeDir).append("status_log.txt").c_str());
 		time_t t = time(NULL);
@@ -249,6 +247,8 @@ int main(int argc, char ** argv)
 		cerr << error << '\n';
 		debug::stop();
 	}
+
+	bool have_config = progdefaults.readDefaultsXML();
 
 	xmlfname = HomeDir;
 	xmlfname.append("rig.xml");

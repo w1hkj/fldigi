@@ -257,6 +257,34 @@ void configuration::writeDefaultsXML()
 	f.close();
 }
 
+static void log_excluded_modes(void)
+{
+	struct {
+		mode_set_t* modes;
+		const char* msgstr;
+	} excluded[] = {
+		{ &progdefaults.rsid_rx_modes, "RSID (rx)" },
+		{ &progdefaults.rsid_tx_modes, "RSID (tx)" },
+		{ &progdefaults.cwid_modes, "CWID" },
+		{ &progdefaults.videoid_modes, "VIDEOID" }
+	};
+	string buf;
+	for (size_t i = 0; i < sizeof(excluded)/sizeof(*excluded); i++) {
+		size_t n = excluded[i].modes->size();
+		if (excluded[i].modes->count() == n)
+			continue;
+		buf.erase();
+		for (size_t j = 0; j < n; j++) {
+			if (!excluded[i].modes->test(j)) {
+				if (!buf.empty())
+					buf += ' ';
+				buf += mode_info[j].sname;
+			}
+		}
+		LOG(debug::QUIET_LEVEL, debug::LOG_OTHER, "%-10s: %s", excluded[i].msgstr, buf.c_str());
+	}
+}
+
 bool configuration::readDefaultsXML()
 {
 	// Decode all RSID modes
@@ -322,6 +350,8 @@ bool configuration::readDefaultsXML()
 	// delete the tag objects
 	for (size_t i = 0; i < sizeof(tag_list)/sizeof(*tag_list); i++)
 		delete tag_list[i];
+
+	log_excluded_modes();
 
 	return true;
 }
