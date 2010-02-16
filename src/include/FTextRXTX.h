@@ -16,6 +16,8 @@ public:
 
 	void		set_quick_entry(bool b);
 	bool		get_quick_entry(void) { return quick_entry; }
+	void		mark(FTextBase::TEXT_ATTR attr = CLICK_START);
+	void		clear(void);
 
 	void		setFont(Fl_Font f, int attr = NATTR);
 

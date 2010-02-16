@@ -57,7 +57,7 @@ public:
 
 	virtual int	handle(int event);
 	virtual void	handle_context_menu(void) { }
-	void		clear(void) { tbuf->text(""); sbuf->text(""); }
+	virtual void	clear(void) { tbuf->text(""); sbuf->text(""); }
 
 	void		set_word_wrap(bool b);
 	bool		get_word_wrap(void) { return wrap; }

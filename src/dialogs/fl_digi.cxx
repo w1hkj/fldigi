@@ -1737,6 +1737,7 @@ void qsoSave_cb(Fl_Widget *b, void *)
 		submit_log();
 	if (progdefaults.ClearOnSave)
 		clearQSO();
+	ReceiveText->mark(FTextBase::XMIT);
 	restoreFocus();
 }
 
@@ -4779,6 +4780,7 @@ void note_qrg(bool no_dup, const char* prefix, const char* suffix, trx_mode mode
 	if (prefix && *prefix)
 		ReceiveText->add(prefix);
 	ReceiveText->add(buf, FTextBase::QSY);
+	ReceiveText->mark();
 	if (suffix && *suffix)
 		ReceiveText->add(suffix);
 }

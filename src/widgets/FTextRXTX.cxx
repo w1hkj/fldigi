@@ -69,6 +69,29 @@
 
 using namespace std;
 
+
+// Fl_Scrollbar wrapper to draw marks on the slider background.
+// Currently only implemented for a vertical scrollbar.
+class MVScrollbar : public Fl_Scrollbar
+{
+	struct mark_t {
+		double pos;
+		Fl_Color color;
+		mark_t(double pos_, Fl_Color color_) : pos(pos_), color(color_) { }
+	};
+
+public:
+	MVScrollbar(int X, int Y, int W, int H, const char* l = 0)
+		: Fl_Scrollbar(X, Y, W, H, l) { }
+
+	void draw(void);
+	void mark(Fl_Color c) { marks.push_back(mark_t(maximum() - 1.0, c)); }
+	void clear(void) { marks.clear(); }
+
+private:
+	vector<mark_t> marks;
+};
+
 static void show_font_warning(FTextBase* w);
 
 Fl_Menu_Item FTextRX::menu[] = {
@@ -111,6 +134,14 @@ FTextRX::FTextRX(int x, int y, int w, int h, const char *l)
 	context_menu = menu;
 	init_context_menu();
 	menu[RX_MENU_QUICK_ENTRY].clear();
+
+	// Replace the scrollbar widget
+	MVScrollbar* mvsb = new MVScrollbar(mVScrollBar->x(), mVScrollBar->y(),
+					    mVScrollBar->w(), mVScrollBar->h(), NULL);
+	mvsb->callback(mVScrollBar->callback(), mVScrollBar->user_data());
+	remove(mVScrollBar);
+	delete mVScrollBar;
+	Fl_Group::add(mVScrollBar = mvsb);
 }
 
 FTextRX::~FTextRX()
@@ -208,6 +239,19 @@ void FTextRX::set_quick_entry(bool b)
 		menu[RX_MENU_QUICK_ENTRY].set();
 	else
 		menu[RX_MENU_QUICK_ENTRY].clear();
+}
+
+void FTextRX::mark(FTextBase::TEXT_ATTR attr)
+{
+	if (attr == NATTR)
+		attr = CLICK_START;
+	static_cast<MVScrollbar*>(mVScrollBar)->mark(styles[attr].color);
+}
+
+void FTextRX::clear(void)
+{
+	FTextBase::clear();
+	static_cast<MVScrollbar*>(mVScrollBar)->clear();
 }
 
 void FTextRX::setFont(Fl_Font f, int attr)
@@ -1048,5 +1092,47 @@ static void show_font_warning(FTextBase* w)
 		w->add("Line wrapping with a variable width font may be\n"
 		       "too slow. Consider using a fixed width font.\n\n", FTextBase::XMIT);
 		*warn = false;
+	}
+}
+
+
+// ----------------------------------------------------------------------------
+
+
+void MVScrollbar::draw(void)
+{
+	Fl_Scrollbar::draw();
+
+	if (marks.empty())
+		return;
+
+	assert((type() & FL_HOR_SLIDER) == 0);
+
+	// Calculate the slider knob position and height.  For a vertical scrollbar,
+	// the scroll buttons' height is the scrollbar width and the minimum knob
+	// height is half that.
+	int H = h() - Fl::box_dh(box()) - 2 * w(); // internal height (minus buttons)
+	int slider_h = (int)(slider_size() * H + 0.5);
+	int min_h = (w() - Fl::box_dw(box())) / 2 + 1;
+	if (slider_h < min_h)
+		slider_h = min_h;
+	double val = (Fl_Slider::value() - minimum()) / (maximum() - minimum());
+	int slider_y = (int)(val * (H - slider_h) + 0.5) + w(); // relative to y()
+	// This would draw a green rectangle around the slider knob:
+	// fl_color(FL_GREEN);
+	// fl_rect(x(), y() + slider_y, w() - Fl::box_dw(box()), slider_h);
+
+	int x1 = x() + Fl::box_dx(box()), x2 = x1 + w() - Fl::box_dw(box()) - 1, ypos;
+	// Convert stored scrollbar values to vertical positions and draw
+	// lines inside the widget if they don't overlap with the knob area.
+	for (vector<mark_t>::const_iterator i = marks.begin(); i != marks.end(); ++i) {
+		ypos = w() + H * i->pos / maximum();
+		// Don't draw over slider knob
+		if ((ypos > slider_y && ypos < slider_y + slider_h) ||
+		    (ypos < slider_y + slider_h && ypos > slider_y))
+			continue;
+		ypos += y();
+		fl_color(i->color);
+		fl_line(x1, ypos, x2, ypos);
 	}
 }
