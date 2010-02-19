@@ -1246,7 +1246,6 @@ long SoundPort::src_read_cb(void* arg, float** data)
 void SoundPort::init_stream(unsigned dir)
 {
 	const char* dir_str[2] = { "input", "output" };
-	PaDeviceIndex conf_idx[2] = { progdefaults.PortInIndex, progdefaults.PortOutIndex };
 	PaDeviceIndex idx = paNoDevice;
 
 	LOG_DEBUG("looking for device \"%s\"", sd[dir].device.c_str());
@@ -1254,8 +1253,7 @@ void SoundPort::init_stream(unsigned dir)
         for (sd[dir].idev = devs.begin(); sd[dir].idev != devs.end(); ++sd[dir].idev) {
                 if (sd[dir].device == (*sd[dir].idev)->name) {
 			idx = sd[dir].idev - devs.begin(); // save this device index
-			if (idx == conf_idx[dir]) // found it
-				break;
+			break;
 		}
 	}
         if (idx == paNoDevice) { // no match
