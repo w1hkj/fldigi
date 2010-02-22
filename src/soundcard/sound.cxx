@@ -860,7 +860,19 @@ int SoundPort::Open(int mode, int freq)
 	// do we need to (re)initialise the streams?
 	int ret = 0;
 	int sr[2] = { progdefaults.in_sample_rate, progdefaults.out_sample_rate };
-	for (size_t i = 0; i < 2; i++) {
+
+	// initialize stream if it is a JACK device, regardless of mode
+	device_iterator idev;
+	if (mode == O_WRONLY && (idev = name_to_device(sd[0].device)) != devs.end() &&
+	    Pa_GetHostApiInfo((*idev)->hostApi)->type == paJACK)
+		mode = O_RDWR;
+	if (mode == O_RDONLY && (idev = name_to_device(sd[1].device)) != devs.end() &&
+	    Pa_GetHostApiInfo((*idev)->hostApi)->type == paJACK)
+		mode = O_RDWR;
+
+	size_t start = (mode == O_RDONLY || mode == O_RDWR) ? 0 : 1,
+		end = (mode == O_WRONLY || mode == O_RDWR) ? 1 : 0;
+	for (size_t i = start; i <= end; i++) {
 		if ( !(stream_active(i) && (Pa_GetHostApiInfo((*sd[i].idev)->hostApi)->type == paJACK ||
 					    old_sample_rate == freq ||
 					    sr[i] != SAMPLE_RATE_AUTO)) ) {
@@ -1243,6 +1255,15 @@ long SoundPort::src_read_cb(void* arg, float** data)
         return vec[0].len / sd[0].params.channelCount;
 }
 
+SoundPort::device_iterator SoundPort::name_to_device(const string& name)
+{
+	device_iterator i;
+	for (i = devs.begin(); i != devs.end(); ++i)
+		if (name == (*i)->name)
+			break;
+	return i;
+}
+
 void SoundPort::init_stream(unsigned dir)
 {
 	const char* dir_str[2] = { "input", "output" };
@@ -1250,12 +1271,8 @@ void SoundPort::init_stream(unsigned dir)
 
 	LOG_DEBUG("looking for device \"%s\"", sd[dir].device.c_str());
 
-        for (sd[dir].idev = devs.begin(); sd[dir].idev != devs.end(); ++sd[dir].idev) {
-                if (sd[dir].device == (*sd[dir].idev)->name) {
-			idx = sd[dir].idev - devs.begin(); // save this device index
-			break;
-		}
-	}
+	if ((sd[dir].idev = name_to_device(sd[dir].device)) != devs.end())
+		idx = sd[dir].idev - devs.begin();
         if (idx == paNoDevice) { // no match
 		LOG_ERROR("Could not find device \"%s\", using default device", sd[dir].device.c_str());
 		PaDeviceIndex def = (dir == 0 ? Pa_GetDefaultInputDevice() : Pa_GetDefaultOutputDevice());
@@ -1450,9 +1467,9 @@ bool SoundPort::full_duplex_device(const PaDeviceInfo* dev)
         return dev->maxInputChannels > 0 && dev->maxOutputChannels > 0;
 }
 
-bool SoundPort::must_close(void)
+bool SoundPort::must_close(int dir)
 {
-        return false;
+	return Pa_GetHostApiInfo((*sd[dir].idev)->hostApi)->type != paJACK;
 }
 
 // Determine the sample rate that we will use. We try the modem's rate

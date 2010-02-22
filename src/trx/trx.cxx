@@ -170,6 +170,8 @@ void trx_trx_receive_loop()
 			active_modem->HistoryON(false);
 		}
 	}
+	if (scard->must_close(O_RDONLY))
+		scard->Close(O_RDONLY);
 }
 
 
@@ -218,8 +220,9 @@ void trx_trx_transmit_loop()
 			ReedSolomon->send(false);
 
 		scard->flush();
-		if (scard->must_close())
-			scard->Close();
+		if (scard->must_close(O_WRONLY))
+			scard->Close(O_WRONLY);
+
 	} else
 		MilliSleep(10);
 
@@ -269,8 +272,9 @@ void trx_tune_loop()
 			return;
 		}
 		scard->flush();
-		if (scard->must_close())
-			scard->Close();
+		if (scard->must_close(O_WRONLY))
+			scard->Close(O_WRONLY);
+
 		_trx_tune = 0;
 	} else
 		MilliSleep(10);

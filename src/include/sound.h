@@ -100,7 +100,7 @@ public:
 	virtual size_t	Write_stereo(double *, double *, size_t) = 0;
 	virtual size_t	Read(float *, size_t) = 0;
 	virtual void    flush(unsigned dir = UINT_MAX) = 0;
-	virtual bool	must_close(void) = 0;
+	virtual bool	must_close(int dir = 0) = 0;
 #if USE_SNDFILE
 	void		get_file_params(const char* def_fname, const char** fname, int* format);
 	int		Capture(bool val);
@@ -150,7 +150,7 @@ public:
 	size_t		Write(double *, size_t);
 	size_t		Write_stereo(double *, double *, size_t);
 	size_t		Read(float *, size_t);
-	bool		must_close(void) { return true; }
+	bool		must_close(int dir = 0) { return true; }
 	void		flush(unsigned dir = UINT_MAX) { wait_till_finished(); }
 
 private:
@@ -193,13 +193,14 @@ public:
 	size_t 		Write(double *buf, size_t count);
 	size_t		Write_stereo(double *bufleft, double *bufright, size_t count);
 	size_t 		Read(float *buf, size_t count);
-	bool		must_close(void);
+	bool		must_close(int dir = 0);
 	void		flush(unsigned dir = UINT_MAX);
 
 private:
         void		src_data_reset(unsigned dir);
         static long	src_read_cb(void* arg, float** data);
         size_t          resample_write(float* buf, size_t count);
+	device_iterator name_to_device(const std::string& name);
         void 		init_stream(unsigned dir);
         void 		start_stream(unsigned dir);
         void 		pause_stream(unsigned dir);
@@ -276,7 +277,7 @@ public:
 	size_t	Write(double* buf, size_t count);
 	size_t	Write_stereo(double* bufleft, double* bufright, size_t count);
 	size_t	Read(float *buf, size_t count);
-	bool	must_close(void) { return false; }
+	bool	must_close(int dir = 0) { return false; }
 	void	flush(unsigned dir = UINT_MAX);
 
 private:
@@ -323,7 +324,7 @@ public:
 	size_t	Write(double* buf, size_t count);
 	size_t	Write_stereo(double* bufleft, double* bufright, size_t count);
 	size_t	Read(float *buf, size_t count);
-	bool	must_close(void) { return false; }
+	bool	must_close(int dir = 0) { return false; }
 	void	flush(unsigned) { }
 };
 
