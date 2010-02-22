@@ -279,7 +279,7 @@ int picture::save_png(const char* filename)
 		return -1;
 	}
 	if ((info = png_create_info_struct(png)) == NULL) {
-		png_destroy_write_struct(&png, png_infopp_NULL);
+		png_destroy_write_struct(&png, NULL);
 		fclose(fp);
 		return -1;
 	}
