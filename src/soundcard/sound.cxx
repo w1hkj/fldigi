@@ -863,10 +863,10 @@ int SoundPort::Open(int mode, int freq)
 
 	// initialize stream if it is a JACK device, regardless of mode
 	device_iterator idev;
-	if (mode == O_WRONLY && (idev = name_to_device(sd[0].device)) != devs.end() &&
+	if (mode == O_WRONLY && (idev = name_to_device(sd[0].device, 0)) != devs.end() &&
 	    Pa_GetHostApiInfo((*idev)->hostApi)->type == paJACK)
 		mode = O_RDWR;
-	if (mode == O_RDONLY && (idev = name_to_device(sd[1].device)) != devs.end() &&
+	if (mode == O_RDONLY && (idev = name_to_device(sd[1].device, 1)) != devs.end() &&
 	    Pa_GetHostApiInfo((*idev)->hostApi)->type == paJACK)
 		mode = O_RDWR;
 
@@ -1255,11 +1255,11 @@ long SoundPort::src_read_cb(void* arg, float** data)
         return vec[0].len / sd[0].params.channelCount;
 }
 
-SoundPort::device_iterator SoundPort::name_to_device(const string& name)
+SoundPort::device_iterator SoundPort::name_to_device(const string& name, unsigned dir)
 {
 	device_iterator i;
 	for (i = devs.begin(); i != devs.end(); ++i)
-		if (name == (*i)->name)
+		if (name == (*i)->name && (dir ? (*i)->maxOutputChannels : (*i)->maxInputChannels))
 			break;
 	return i;
 }
@@ -1271,7 +1271,7 @@ void SoundPort::init_stream(unsigned dir)
 
 	LOG_DEBUG("looking for device \"%s\"", sd[dir].device.c_str());
 
-	if ((sd[dir].idev = name_to_device(sd[dir].device)) != devs.end())
+	if ((sd[dir].idev = name_to_device(sd[dir].device, dir)) != devs.end())
 		idx = sd[dir].idev - devs.begin();
         if (idx == paNoDevice) { // no match
 		LOG_ERROR("Could not find device \"%s\", using default device", sd[dir].device.c_str());

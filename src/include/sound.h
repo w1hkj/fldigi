@@ -200,7 +200,7 @@ private:
         void		src_data_reset(unsigned dir);
         static long	src_read_cb(void* arg, float** data);
         size_t          resample_write(float* buf, size_t count);
-	device_iterator name_to_device(const std::string& name);
+	device_iterator name_to_device(const std::string& name, unsigned dir);
         void 		init_stream(unsigned dir);
         void 		start_stream(unsigned dir);
         void 		pause_stream(unsigned dir);
