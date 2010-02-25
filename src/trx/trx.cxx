@@ -334,6 +334,8 @@ static int new_freq;
 void trx_start_modem_loop()
 {
 	if (new_modem == active_modem) {
+		if (new_freq > 0)
+			active_modem->set_freq(new_freq);
 		active_modem->restart();
 		trx_state = STATE_RX;
 		return;
