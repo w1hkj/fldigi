@@ -61,7 +61,7 @@ extern char			arq_get_char();
 // ARQ mail implementation
 extern void			arq_init();
 extern void			arq_close();
-extern void			WriteARQ(unsigned int);
+extern void			WriteARQ(unsigned char);
 extern void			checkTLF();
 
 #define ARQBUFSIZ 8192

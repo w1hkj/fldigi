@@ -3,7 +3,7 @@
 
 class Socket;
 
-extern void WriteARQsocket(unsigned int data);
+extern void WriteARQsocket(unsigned char* data, size_t len);
 extern bool Socket_arqRx();
 extern void AbortARQ();
 

@@ -544,12 +544,11 @@ void arq_stop()
 	arqmode = false;
 }
 
-void WriteARQsocket(unsigned int data)
+void WriteARQsocket(unsigned char* data, size_t len)
 {
 	if (!isSocketConnected) return;
-	char c = data;
 	try {
-		arqclient.send(&c, 1);
+		arqclient.send(data, len);
 	}
 	catch (const SocketException& e) {
 		arq_stop();
@@ -594,7 +593,7 @@ bool Socket_arqRx()
 // Send ARQ characters to ARQ client
 //-----------------------------------------------------------------------------
 #if !defined(__WOE32__) && !defined(__APPLE__)
-void WriteARQSysV(unsigned int data)
+void WriteARQSysV(unsigned char data)
 {
 	rxmsgid = msgget( (key_t) progdefaults.rx_msgid, 0666);
 	if ( rxmsgid != -1) {
@@ -605,9 +604,9 @@ void WriteARQSysV(unsigned int data)
 }
 #endif
 
-void WriteARQ( unsigned int data)
+void WriteARQ(unsigned char data)
 {
-	WriteARQsocket(data);
+	WriteARQsocket(&data, 1);
 #if !defined(__WOE32__) && !defined(__APPLE__)
 	WriteARQSysV(data);
 #endif
