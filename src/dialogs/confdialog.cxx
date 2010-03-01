@@ -132,6 +132,15 @@ static void cb_mnuScheme(Fl_Choice* o, void*) {
     progdefaults.changed = true;
 }
 
+Fl_Button *bVisibleModes=(Fl_Button *)0;
+
+static void cb_bVisibleModes(Fl_Button* o, void*) {
+  mode_browser->label(o->label());
+mode_browser->callback(toggle_visible_modes);
+mode_browser->show(&progdefaults.visible_modes);
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *btnRXClicks=(Fl_Check_Button *)0;
 
 static void cb_btnRXClicks(Fl_Check_Button* o, void*) {
@@ -146,12 +155,10 @@ static void cb_btnRXTooltips(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Button *bVisibleModes=(Fl_Button *)0;
+Fl_Input2 *inpNonword=(Fl_Input2 *)0;
 
-static void cb_bVisibleModes(Fl_Button* o, void*) {
-  mode_browser->label(o->label());
-mode_browser->callback(toggle_visible_modes);
-mode_browser->show(&progdefaults.visible_modes);
+static void cb_inpNonword(Fl_Input2* o, void*) {
+  progdefaults.nonwordchars = o->value();
 progdefaults.changed = true;
 }
 
@@ -2570,51 +2577,72 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
                 mnuScheme->add("plastic");
                 mnuScheme->value(mnuScheme->find_item(progdefaults.ui_scheme.c_str()));
               } // Fl_Choice* mnuScheme
-              { Fl_Check_Button* o = btnRXClicks = new Fl_Check_Button(15, 295, 305, 20, _("Double-click on RX text enters QSO data"));
-                btnRXClicks->tooltip(_("I like to double click in Rx panel"));
+              { bVisibleModes = new Fl_Button(250, 100, 120, 20, _("Visible modes"));
+                bVisibleModes->callback((Fl_Callback*)cb_bVisibleModes);
+              } // Fl_Button* bVisibleModes
+              { Fl_Group* o = new Fl_Group(9, 277, 481, 80, _("Text Capture"));
+                o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+                { Fl_Check_Button* o = btnRXClicks = new Fl_Check_Button(125, 314, 305, 20, _("Double-click on RX text enters QSO data"));
+                btnRXClicks->tooltip(_("Enable if you cannot use the middle mouse button"));
                 btnRXClicks->down_box(FL_DOWN_BOX);
                 btnRXClicks->callback((Fl_Callback*)cb_btnRXClicks);
                 o->value(progdefaults.rxtext_clicks_qso_data);
-              } // Fl_Check_Button* btnRXClicks
-              { Fl_Check_Button* o = btnRXTooltips = new Fl_Check_Button(15, 325, 282, 20, _("Show callsign tooltips in received text"));
+                } // Fl_Check_Button* btnRXClicks
+                { Fl_Check_Button* o = btnRXTooltips = new Fl_Check_Button(125, 336, 282, 20, _("Show callsign tooltips in received text"));
                 btnRXTooltips->tooltip(_("Popup info after a 2 second hover on a callsign"));
                 btnRXTooltips->down_box(FL_DOWN_BOX);
                 btnRXTooltips->callback((Fl_Callback*)cb_btnRXTooltips);
                 o->value(progdefaults.rxtext_tooltips);
-              } // Fl_Check_Button* btnRXTooltips
-              { bVisibleModes = new Fl_Button(250, 100, 120, 20, _("Visible modes"));
-                bVisibleModes->callback((Fl_Callback*)cb_bVisibleModes);
-              } // Fl_Button* bVisibleModes
+                } // Fl_Check_Button* btnRXTooltips
+                { Fl_Input2* o = inpNonword = new Fl_Input2(125, 285, 75, 24, _("Word delimiters"));
+                inpNonword->tooltip(_("RX text QSO data entry is bounded by the non-word characters\ndefined here. T\
+ab and newline are automatically included."));
+                inpNonword->box(FL_DOWN_BOX);
+                inpNonword->color((Fl_Color)FL_BACKGROUND2_COLOR);
+                inpNonword->selection_color((Fl_Color)FL_SELECTION_COLOR);
+                inpNonword->labeltype(FL_NORMAL_LABEL);
+                inpNonword->labelfont(0);
+                inpNonword->labelsize(14);
+                inpNonword->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                inpNonword->textfont(4);
+                inpNonword->callback((Fl_Callback*)cb_inpNonword);
+                inpNonword->align(FL_ALIGN_RIGHT);
+                inpNonword->when(FL_WHEN_RELEASE);
+                o->value(progdefaults.nonwordchars.c_str());
+                o->labelsize(FL_NORMAL_SIZE);
+                } // Fl_Input2* inpNonword
+                o->end();
+              } // Fl_Group* o
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(15, 130, 470, 160, _("QSO logging"));
+            { Fl_Group* o = new Fl_Group(8, 130, 484, 146, _("QSO logging"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(25, 155, 155, 20, _("Prompt to save log"));
+              { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(125, 139, 155, 20, _("Prompt to save log"));
                 btnNagMe->tooltip(_("Bug me about saving log entries"));
                 btnNagMe->down_box(FL_DOWN_BOX);
                 btnNagMe->callback((Fl_Callback*)cb_btnNagMe);
                 o->value(progdefaults.NagMe);
               } // Fl_Check_Button* btnNagMe
-              { Fl_Check_Button* o = btnClearOnSave = new Fl_Check_Button(25, 180, 125, 20, _("Clear on save"));
+              { Fl_Check_Button* o = btnClearOnSave = new Fl_Check_Button(125, 164, 125, 20, _("Clear on save"));
                 btnClearOnSave->tooltip(_("Clear log entries after saving or using macro <LOG>"));
                 btnClearOnSave->down_box(FL_DOWN_BOX);
                 btnClearOnSave->callback((Fl_Callback*)cb_btnClearOnSave);
                 o->value(progdefaults.ClearOnSave);
               } // Fl_Check_Button* btnClearOnSave
-              { Fl_Check_Button* o = btnAutoFillQSO = new Fl_Check_Button(25, 205, 225, 20, _("Auto-fill Country and Azimuth"));
+              { Fl_Check_Button* o = btnAutoFillQSO = new Fl_Check_Button(125, 189, 225, 20, _("Auto-fill Country and Azimuth"));
                 btnAutoFillQSO->tooltip(_("Fill in Country / Azimuth using cty.dat information"));
                 btnAutoFillQSO->down_box(FL_DOWN_BOX);
                 btnAutoFillQSO->callback((Fl_Callback*)cb_btnAutoFillQSO);
                 o->value(progdefaults.autofill_qso_fields);
               } // Fl_Check_Button* btnAutoFillQSO
-              { Fl_Check_Button* o = btnCallUpperCase = new Fl_Check_Button(25, 230, 282, 20, _("Convert callsign field to upper case"));
+              { Fl_Check_Button* o = btnCallUpperCase = new Fl_Check_Button(125, 214, 282, 20, _("Convert callsign field to upper case"));
                 btnCallUpperCase->tooltip(_("Force callsign field to UPPERCASE"));
                 btnCallUpperCase->down_box(FL_DOWN_BOX);
                 btnCallUpperCase->callback((Fl_Callback*)cb_btnCallUpperCase);
                 o->value(progdefaults.calluppercase);
               } // Fl_Check_Button* btnCallUpperCase
-              { Fl_Input2* o = inpMyPower = new Fl_Input2(25, 256, 50, 24, _("Transmit Power"));
+              { Fl_Input2* o = inpMyPower = new Fl_Input2(125, 240, 50, 24, _("Transmit Power"));
                 inpMyPower->tooltip(_("Tx power used for logbook entries"));
                 inpMyPower->box(FL_DOWN_BOX);
                 inpMyPower->color((Fl_Color)FL_BACKGROUND2_COLOR);

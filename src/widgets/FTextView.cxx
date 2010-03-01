@@ -330,7 +330,7 @@ void FTextBase::saveFile(void)
 ///
 /// @return The selection, or the word text at (x,y). <b>Must be freed by the caller</b>.
 ///
-char* FTextBase::get_word(int x, int y, bool ontext)
+char* FTextBase::get_word(int x, int y, const char* nwchars, bool ontext)
 {
 	int p = xy_to_position(x + this->x(), y + this->y(), Fl_Text_Display_mod::CURSOR_POS);
 	int start, end;
@@ -342,11 +342,13 @@ char* FTextBase::get_word(int x, int y, bool ontext)
 			return tbuf->selection_text();
 	}
 
-	if (!tbuf->findchars_backward(p, " \t\n", &start))
+	string nonword = nwchars;
+	nonword.append(" \t\n");
+	if (!tbuf->findchars_backward(p, nonword.c_str(), &start))
 		start = 0;
 	else
 		start++;
-	if (!tbuf->findchars_forward(p, " .,;|\t\n", &end))
+	if (!tbuf->findchars_forward(p, nonword.c_str(), &end))
 		end = tbuf->length();
 
 	if (ontext && (p < start || p >= end))

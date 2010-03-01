@@ -25,6 +25,7 @@
 
 #include <config.h>
 
+#include <string>
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>
@@ -311,7 +312,7 @@ static fre_t call("([[:alnum:]]?[[:alpha:]/]+[[:digit:]]+[[:alnum:]/]+)", REG_EX
 
 void FTextRX::handle_qso_data(int start, int end)
 {
-	char* s = get_word(start, end);
+	char* s = get_word(start, end, progdefaults.nonwordchars.c_str());
 	if (!s)
 		return;
 	char* p = s;
@@ -476,7 +477,7 @@ void FTextRX::menu_cb(size_t item)
 
 	if (!input)
 		return;
-	char* s = get_word(popx, popy);
+	char* s = get_word(popx, popy, progdefaults.nonwordchars.c_str());
 	if (!s)
 		return;
 
@@ -494,7 +495,7 @@ void FTextRX::menu_cb(size_t item)
 
 const char* FTextRX::dxcc_lookup_call(int x, int y)
 {
-	char* s = get_word(x - this->x(), y - this->y());
+	char* s = get_word(x - this->x(), y - this->y(), progdefaults.nonwordchars.c_str());
 	char* mem = s;
 	if (!(s && *s && call.match(s))) {
 		free(s);

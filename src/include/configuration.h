@@ -804,6 +804,9 @@
         ELEM_(int, ContestDigits, "CONTESTDIGITS",                                      \
               "Number of digits in serial number",                                      \
               4)                                                                        \
+        ELEM_(std::string, nonwordchars, "NONWORDCHARS",                                \
+              "Additional characters used to delimit WORDS",                            \
+              "*,-.;")                                                                  \
         ELEM_(std::string, myXchg, "MYXCGH",                                            \
               "Free form exchange",                                                     \
               "")                                                                       \

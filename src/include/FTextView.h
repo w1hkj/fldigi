@@ -81,7 +81,7 @@ protected:
 				  int set = SET_FONT | SET_SIZE | SET_COLOR);
 	int		readFile(const char* fn = 0);
 	void		saveFile(void);
-	char*		get_word(int x, int y, bool ontext = true);
+	char*		get_word(int x, int y, const char* nwchars = "", bool ontext = true);
 	void		init_context_menu(void);
 	void		show_context_menu(void);
 	virtual void	menu_cb(size_t item) { }

@@ -34,10 +34,11 @@ extern Fl_Check_Button *btnShowTooltips;
 extern Fl_Check_Button *chkMenuIcons;
 #include <FL/Fl_Choice.H>
 extern Fl_Choice *mnuScheme;
-extern Fl_Check_Button *btnRXClicks;
-extern Fl_Check_Button *btnRXTooltips;
 #include <FL/Fl_Button.H>
 extern Fl_Button *bVisibleModes;
+extern Fl_Check_Button *btnRXClicks;
+extern Fl_Check_Button *btnRXTooltips;
+extern Fl_Input2 *inpNonword;
 extern Fl_Check_Button *btnNagMe;
 extern Fl_Check_Button *btnClearOnSave;
 extern Fl_Check_Button *btnAutoFillQSO;
