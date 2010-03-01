@@ -14,6 +14,7 @@
 #include "status.h"
 #include "trx.h"
 #include "modem.h"
+#include "qrunner.h"
 
 #include <FL/Fl.H>
 #include <FL/filename.H>
@@ -519,10 +520,14 @@ void pXOUT(string &s, size_t &i)
 
 void pLOG(string &s, size_t &i)
 {
-	submit_log();
+//	string havecall = inpCall->value();
+//	while (!havecall.empty() && havecall[0] == ' ') havecall.erase(0,1);
+//	if (!havecall.empty())
+//		submit_log();
+//	if (progdefaults.ClearOnSave)
+//		clearQSO();
+	qsoSave_cb(0, 0);
 	s.replace(i, 5, "");
-	if (progdefaults.ClearOnSave)
-		clearQSO();
 }
 
 void pMODEM(string &s, size_t &i)
