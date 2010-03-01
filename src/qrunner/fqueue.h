@@ -1,7 +1,7 @@
 // ----------------------------------------------------------------------------
 //	fqueue.h
 //
-// Copyright (C) 2007
+// Copyright (C) 2007-2008
 //		Stelios Bounanos, M0GLD
 //
 // This file is part of fldigi.

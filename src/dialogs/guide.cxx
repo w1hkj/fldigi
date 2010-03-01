@@ -1671,7 +1671,7 @@ numeric keypad's 0-9 the sequence will be discarded.</p></div>\n\
 <div class=\"para\"><p>Copyright &#169; 2008 Murray Greenman, <tt>ZL1BPU</tt>.</p></div>\n\
 <div class=\"para\"><p>Copyright &#169; 2008-2009 David Freese, <tt>W1HKJ</tt>.</p></div>\n\
 <div class=\"para\"><p>Copyright &#169; 2009 Stelios Bounanos, <tt>M0GLD</tt>.</p></div>\n\
-<div class=\"para\"><p>License GPLv2+: <a href=\"http://www.gnu.org/licenses/gpl-2.0.html\">GNU GPL version 2 or later</a>.</p></div>\n\
+<div class=\"para\"><p>License GPLv3+: <a href=\"http://www.gnu.org/licenses/gpl.html\">GNU GPL version 3 or later</a>.</p></div>\n\
 </div>\n\
 <div id=\"footer\">\n\
 <div id=\"footer-text\">\n\

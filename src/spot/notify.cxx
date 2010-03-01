@@ -1,7 +1,7 @@
 // ----------------------------------------------------------------------------
 //      notify.cxx
 //
-// Copyright (C) 2009
+// Copyright (C) 2009-2010
 //              Stelios Bounanos, M0GLD
 //
 // Generic notifier

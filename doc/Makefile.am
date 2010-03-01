@@ -1,4 +1,5 @@
 # Copyright (C) 2009 Stelios Bounanos, M0GLD (m0gld AT enotty DOT net)
+# License: GPLv3+: GNU GPL version 3 or later.
 
 ASCIIDOC_CONF = asciidoc.conf
 

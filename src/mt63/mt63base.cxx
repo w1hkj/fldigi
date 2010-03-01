@@ -1,7 +1,8 @@
 /*
- *    mt63base.cc  --  MT63 transmitter and receiver in C++ for LINUX
+ *    mt63base.cxx  --  MT63 transmitter and receiver in C++ for LINUX
  *
- *    Copyright (c) 2007, 2008 Dave Freese, W1HKJ
+ *    Copyright (C) 1999-2004 Pawel Jalocha, SP9VRC
+ *    Copyright (c) 2007-2008 Dave Freese, W1HKJ
  *
  *    base class for use by fldigi
  *    modified from original
@@ -10,24 +11,21 @@
  *    changed from int* to double* for all sound card buffer transfers
  *
  *    based on mt63 code by Pawel Jalocha
- *    Copyright (C) 1999-2004 Pawel Jalocha, SP9VRC
- *    Copyright (c) 2007-2008 Dave Freese, W1HKJ
  *
  *    This file is part of fldigi.
  *
- *    fldigi is free software; you can redistribute it and/or modify
+ *    Fldigi is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 2 of the License, or
+ *    the Free Software Foundation, either version 3 of the License, or
  *    (at your option) any later version.
  *
- *    fldigi is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty oF
+ *    Fldigi is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with MT63; if not, write to the Free Software
- *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *    along with fldigi.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 

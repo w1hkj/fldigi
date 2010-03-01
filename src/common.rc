@@ -24,7 +24,7 @@ BEGIN
             VALUE "OriginalFilename", PACKAGE_TARNAME ".exe\0"
             VALUE "CompanyName", "\0"
             VALUE "LegalCopyright", PACKAGE_AUTHORS "\0"
-            VALUE "Licence", "GPLv2+\0"
+            VALUE "Licence", "GPLv3+\0"
             VALUE "Info", "http://www.w1hkj.com/\0"
         END
     END

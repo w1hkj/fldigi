@@ -1,10 +1,10 @@
 // ----------------------------------------------------------------------------
 //      FTextRXTX.cxx
 //
-// Copyright (C) 2007-2008
+// Copyright (C) 2007-2010
 //              Stelios Bounanos, M0GLD
 //
-// Copyright (C) 2008
+// Copyright (C) 2008-2010
 //              Dave Freese, W1HKJ
 //
 // This file is part of fldigi.

@@ -1,7 +1,7 @@
 // ----------------------------------------------------------------------------
 //      pskrep.cxx
 //
-// Copyright (C) 2008
+// Copyright (C) 2008-2009
 //              Stelios Bounanos, M0GLD
 //
 // This is a client for N1DQ's PSK Automatic Propagation Reporter

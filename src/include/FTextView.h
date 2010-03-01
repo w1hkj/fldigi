@@ -1,10 +1,8 @@
 // ----------------------------------------------------------------------------
 //      FTextView.h
 //
-// Copyright (C) 2007
+// Copyright (C) 2007-2009
 //              Stelios Bounanos, M0GLD
-//
-// Interface based on the text widgets by Dave Freese, W1HKJ.
 //
 // This file is part of fldigi.
 //

@@ -1,8 +1,10 @@
 // ----------------------------------------------------------------------------
 //      xmlrpc.cxx
 //
-// Copyright (C) 2008
+// Copyright (C) 2008-2010
 //              Stelios Bounanos, M0GLD
+// Copyright (C) 2008-2010
+//              Dave Freese, W1HKJ
 //
 // See EOF for a list of method names. Run "fldigi --xmlrpc-list"
 // to see a list of method names, signatures and descriptions.

@@ -1,26 +1,24 @@
-// "$Id: FreqControl.cpp,v  2006/02/26"
-//
+// ----------------------------------------------------------------------------
 // Frequency Control Widget for the Fast Light Tool Kit (Fltk)
 //
-// Copyright 2005-2006, Dave Freese W1HKJ
+// Copyright 2005-2009, Dave Freese W1HKJ
+// Copyright 2007-2009, Stelios Bounanos, M0GLD
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Library General Public
-// License as published by the Free Software Foundation; either
-// version 2 of the License, or (at your option) any later version.
+// This file is part of fldigi.
 //
-// This library is distributed in the hope that it will be useful,
+// Fldigi is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Fldigi is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Library General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Library General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
-// USA.
-//
-// Please report all bugs and problems to "w1hkj@w1hkj.com".
-//
+// You should have received a copy of the GNU General Public License
+// along with fldigi.  If not, see <http://www.gnu.org/licenses/>.
+// ----------------------------------------------------------------------------
 
 #include <config.h>
 

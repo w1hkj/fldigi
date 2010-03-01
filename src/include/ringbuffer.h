@@ -1,7 +1,7 @@
 // ----------------------------------------------------------------------------
 //	ringbuffer.h
 //
-// Copyright (C) 2007
+// Copyright (C) 2007-2009
 //		Stelios Bounanos, M0GLD
 //
 // C++ version of PortAudio's ringbuffer code. The copying read/write methods

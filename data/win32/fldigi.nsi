@@ -2,6 +2,7 @@
 
 # NSIS installer script based on example2.nsi from the nsis-2.44 distribution.
 # Copyright (c) 2009 Stelios Bounanos, M0GLD.
+# License: GPLv3+: GNU GPL version 3 or later.
 
 
 # Variables

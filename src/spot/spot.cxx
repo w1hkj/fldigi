@@ -1,7 +1,7 @@
 // ----------------------------------------------------------------------------
 //      spot.cxx
 //
-// Copyright (C) 2008
+// Copyright (C) 2008-2009
 //              Stelios Bounanos, M0GLD
 //
 // This file is part of fldigi.

@@ -1,25 +1,26 @@
-//
+// ----------------------------------------------------------------------------
 // Digital Modem Program for the Fast Light Toolkit
 //
-// Copyright W1HKJ, Dave Freese 2006
+// Copyright 2006-2010, Dave Freese, W1HKJ
+// Copyright 2007-2010, Stelios Bounanos, M0GLD
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Library General Public
-// License as published by the Free Software Foundation; either
-// version 2 of the License, or (at your option) any later version.
+// This file is part of fldigi.
 //
-// This library is distributed in the hope that it will be useful,
+// Fldigi is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Fldigi is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Library General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Library General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
-// USA.
+// You should have received a copy of the GNU General Public License
+// along with fldigi.  If not, see <http://www.gnu.org/licenses/>.
 //
-// Please report all bugs and problems to "w1hkj@w1hkj.com".
-//
+// Please report all bugs and problems to fldigi-devel@lists.berlios.de.
+// ----------------------------------------------------------------------------
 
 #include <config.h>
 
@@ -875,9 +876,9 @@ int parse_args(int argc, char **argv, int& idx)
 
 void generate_version_text(void)
 {
-	version_text.assign(PACKAGE_STRING "\nCopyright (C) 2008, 2009 " PACKAGE_AUTHORS ".\n");
-	version_text.append(_("License GPLv2+: GNU GPL version 2 or later "
-			      "<http://www.gnu.org/licenses/gpl-2.0.html>\n"
+	version_text.assign(PACKAGE_STRING "\nCopyright (C) 2007-2010 " PACKAGE_AUTHORS ".\n");
+	version_text.append(_("License GPLv3+: GNU GPL version 3 or later "
+			      "<http://www.gnu.org/licenses/gpl-3.0.html>\n"
 			      "This is free software: you are free to change and redistribute it.\n"
 			      "There is NO WARRANTY, to the extent permitted by law.\n"));
 

@@ -160,7 +160,7 @@ void do_benchmark(void)
 		 speed, speed / active_modem->get_samplerate());
 }
 
-// -----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 static size_t do_rx(struct rusage ru[2], struct timespec wall_time[2])
 {

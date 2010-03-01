@@ -1,5 +1,6 @@
-# Copyright (C) 2007-2009 Stelios Bounanos, M0GLD (m0gld AT enotty DOT net)
+## Copyright (C) 2007-2009 Stelios Bounanos, M0GLD (m0gld AT enotty DOT net)
 # Copyright (c) 2008 Dave Freese, W1HKJ (w1hkj AT w1hkj DOT com)
+# License: GPLv3+: GNU GPL version 3 or later.
 
 bin_PROGRAMS =
 if WANT_FLDIGI

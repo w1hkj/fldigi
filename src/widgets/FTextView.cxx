@@ -4,7 +4,7 @@
 // Copyright (C) 2007-2009
 //              Stelios Bounanos, M0GLD
 //
-// Copyright (C) 2008
+// Copyright (C) 2008-2009
 //              Dave Freese, W1HKJ
 //
 // This file is part of fldigi.

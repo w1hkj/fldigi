@@ -476,7 +476,7 @@ This manual page was written by Stelios Bounanos <sb[at]enotty(dot)net>.
 
 
 == COPYING ==
-License GPLv2+: GNU GPL version 2 or later.
+License GPLv3+: GNU GPL version 3 or later.
 
 ////////////////////////////////////////////////////////////////////////////////
 // Emacs settings
