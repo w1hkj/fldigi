@@ -551,6 +551,7 @@ void WriteARQsocket(unsigned char* data, size_t len)
 		arqclient.send(data, len);
 	}
 	catch (const SocketException& e) {
+		LOG_ERROR("%s", e.what());
 		arq_stop();
 	}
 }
@@ -730,3 +731,36 @@ void AbortARQ() {
 	pthread_mutex_unlock (&arq_mutex);
 }
 
+// Special notification for PSKMAIL: new mode marked only, in following
+// format: "<DC2><Mode:newmode>", with <DC2> = '0x12'.
+void pskmail_notify_rsid(trx_mode mode)
+{
+	char buf[64];
+	int n = snprintf(buf, sizeof(buf), "%c<Mode:%s>\n", 0x12, mode_info[mode].name);
+	if (n > 0 && n < (int)sizeof(buf)) {
+		WriteARQsocket((unsigned char*)buf, n);
+#if !defined(__WOE32__) && !defined(__APPLE__)
+		for (int ii=0; ii < n; ii++)
+			WriteARQSysV((unsigned char)buf[ii]);
+#endif
+		ReceiveText->add(buf, FTextBase::CTRL);
+	}
+}
+
+// Special notification for PSKMAIL: signal to noise measured by decoder
+// format "<DC2><s2n: CC, A.a, D.d>"
+// where CC = count, A.a = average s/n, D.d = Std dev of s/n
+void pskmail_notify_s2n(double s2n_ncount, double s2n_avg, double s2n_stddev)
+{
+	char buf[64];
+	int n = snprintf(buf, sizeof(buf), "%c<s2n: %1.0f, %1.1f, %1.1f>",
+			 0x12, s2n_ncount, s2n_avg, s2n_stddev);
+	if (n > 0 && n < (int)sizeof(buf)) {
+		WriteARQsocket((unsigned char*)buf, n);
+#if !defined(__WOE32__) && !defined(__APPLE__)
+		for (int ii=0; ii < n; ii++)
+			WriteARQSysV((unsigned char)buf[ii]);
+#endif
+		ReceiveText->add(buf, FTextBase::CTRL);
+	}
+}

@@ -155,7 +155,10 @@ private:
 	void			calcSN_IMD(complex z);
 	//PSKR modes - for Tx interleaver priming
 	void 			clearbits();
-	
+
+protected:
+	void			s2nreport(void);
+
 public:
 	psk(trx_mode mode);
 	~psk();

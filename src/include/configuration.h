@@ -168,6 +168,9 @@
         ELEM_(double, ACQsn, "ACQSN",                                                   \
               "PSK signal acquisition S/N (dB)",                                        \
               9.0)                                                                      \
+        ELEM_(bool, Pskmails2nreport, "PSKMAILS2NREPORT",                               \
+              "Send s2n report to pskmail client/server",                               \
+              false)                                                                    \
         ELEM_(bool, StatusDim, "STATUSDIM",                                             \
               "Behaviour of status (S/N and IMD) fields:\n"                             \
               "  0: Clear after timeout\n"                                              \

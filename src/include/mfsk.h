@@ -226,6 +226,9 @@ protected:
 	void	clearbits();
 	void	sendpic(unsigned char *data, int len);
 	bool	check_picture_header(char c);
+
+	void	s2nreport(void);
+
 public:
 	mfsk (trx_mode md);
 	~mfsk ();

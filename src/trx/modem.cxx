@@ -13,6 +13,7 @@
 #include "trx.h"
 #include "fl_digi.h"
 #include "main.h"
+#include "arq_io.h"
 #include "configuration.h"
 #include "waterfall.h"
 #include "qrunner.h"
@@ -111,6 +112,8 @@ modem::modem()
 	cap = 0;
 	PTTphaseacc = 0.0;
 	frequency = 1000.0;
+	s2n_ncount = s2n_sum = s2n_sum2 = s2n_metric = 0.0;
+	s2n_valid = false;
 }
 
 void modem::init()
@@ -337,6 +340,14 @@ void modem::add_noise(double *buffer, int len)
 		sn = (buffer[n] + gauss(sigma)) / (1.0 + 3.0 * sigma);
 		buffer[n] = clamp(sn, -1.0, 1.0);
 	}
+}
+
+void modem::s2nreport(void)
+{
+	double s2n_avg = s2n_sum / s2n_ncount;
+	double s2n_stddev = sqrt((s2n_sum2 / s2n_ncount) - (s2n_avg * s2n_avg));
+
+	REQ(pskmail_notify_s2n, s2n_ncount, s2n_avg, s2n_stddev);
 }
 
 void modem::ModulateXmtr(double *buffer, int len)

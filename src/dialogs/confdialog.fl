@@ -88,7 +88,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {468 103 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
+    xywh {468 111 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {-3 0 520 372} color 50 selection_color 50
@@ -885,7 +885,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 500 320} selection_color 50
@@ -1328,7 +1328,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabPSK {
             label PSK open
-            xywh {0 50 517 320} hide
+            xywh {0 50 517 320}
           } {
             Fl_Tabs tabsPSK {open
               xywh {0 50 517 320} selection_color 50
@@ -1375,54 +1375,6 @@ progdefaults.changed = true;} open
 progdefaults.changed = true;}
                     tooltip {Will occur after this time in seconds} xywh {156 214 75 20} type Simple align 8 minimum 0 maximum 30 step 1
                     code0 {o->value(progdefaults.StatusTimeout);}
-                  }
-                }
-              }
-              Fl_Group {} {
-                label Mail open
-                xywh {0 75 517 295} align 5 hide
-              } {
-                Fl_Group {} {
-                  label {Mail Server Attributes} open
-                  xywh {7 87 490 174} box ENGRAVED_FRAME align 21
-                } {
-                  Fl_Counter cntServerCarrier {
-                    label {Carrier frequency (Hz)}
-                    callback {progdefaults.ServerCarrier = (int)o->value();
-wf->redraw_marker();
-progdefaults.changed = true;}
-                    tooltip {Default listen / transmit frequency} xywh {58 115 80 20} type Simple align 8 minimum 500 maximum 2500 step 25 value 1500
-                    code0 {o->value(progdefaults.ServerCarrier);}
-                  }
-                  Fl_Counter cntServerOffset {
-                    label {Search range (Hz)}
-                    callback {progdefaults.ServerOffset = (int)o->value();
-wf->redraw_marker();
-progdefaults.changed = true;}
-                    tooltip {Listen for signals within this range} xywh {58 152 80 20} type Simple align 8 minimum 10 maximum 500 step 10 value 100
-                    code0 {o->value(progdefaults.SearchRange);}
-                  }
-                  Fl_Counter cntServerACQsn {
-                    label {Acquisition S/N (dB)}
-                    callback {progdefaults.ServerACQsn = o->value();
-progdefaults.changed = true;}
-                    tooltip {Capture signals over this threshold} xywh {58 189 80 20} type Simple align 8 minimum 3 maximum 20 step 1 value 6
-                    code0 {o->value(progdefaults.ServerACQsn);}
-                  }
-                  Fl_Counter cntServerAFCrange {
-                    label {AFC range (Hz)}
-                    callback {progdefaults.ServerAFCrange = (int)o->value();
-wf->redraw_marker();
-progdefaults.changed = true;}
-                    tooltip {Limit AFC movement to this range} xywh {58 226 80 20} type Simple align 8 minimum 10 maximum 500 step 10 value 25
-                    code0 {o->value(progdefaults.SearchRange);}
-                  }
-                  Fl_Check_Button btnPSKmailSweetSpot {
-                    label {Reset to Carrier}
-                    callback {progdefaults.PSKmailSweetSpot = o->value();
-progdefaults.changed = true;}
-                    tooltip {When no signal present} xywh {313 117 142 16} down_box DOWN_BOX value 1
-                    code0 {o->value(progdefaults.PSKmailSweetSpot);}
                   }
                 }
               }
@@ -2860,6 +2812,65 @@ progdefaults.changed = true;}
               Fl_Box {} {
                 label {Connect to external Talker Program}
                 xywh {109 317 368 24} align 20
+              }
+            }
+          }
+          Fl_Group tabPskmail {
+            label Pskmail open
+            xywh {0 50 500 320} align 5 hide
+          } {
+            Fl_Group {} {
+              label {Mail Server Attributes} open
+              xywh {5 58 490 174} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Counter cntServerCarrier {
+                label {Carrier frequency (Hz)}
+                callback {progdefaults.ServerCarrier = (int)o->value();
+wf->redraw_marker();
+progdefaults.changed = true;}
+                tooltip {Default listen / transmit frequency} xywh {56 86 80 20} type Simple align 8 minimum 500 maximum 2500 step 25 value 1500
+                code0 {o->value(progdefaults.ServerCarrier);}
+              }
+              Fl_Counter cntServerOffset {
+                label {Search range (Hz)}
+                callback {progdefaults.ServerOffset = (int)o->value();
+wf->redraw_marker();
+progdefaults.changed = true;}
+                tooltip {Listen for signals within this range} xywh {56 123 80 20} type Simple align 8 minimum 10 maximum 500 step 10 value 100
+                code0 {o->value(progdefaults.SearchRange);}
+              }
+              Fl_Counter cntServerACQsn {
+                label {Acquisition S/N (dB)}
+                callback {progdefaults.ServerACQsn = o->value();
+progdefaults.changed = true;}
+                tooltip {Capture signals over this threshold} xywh {56 160 80 20} type Simple align 8 minimum 3 maximum 20 step 1 value 6
+                code0 {o->value(progdefaults.ServerACQsn);}
+              }
+              Fl_Counter cntServerAFCrange {
+                label {AFC range (Hz)}
+                callback {progdefaults.ServerAFCrange = (int)o->value();
+wf->redraw_marker();
+progdefaults.changed = true;}
+                tooltip {Limit AFC movement to this range} xywh {56 197 80 20} type Simple align 8 minimum 10 maximum 500 step 10 value 25
+                code0 {o->value(progdefaults.SearchRange);}
+              }
+              Fl_Check_Button btnPSKmailSweetSpot {
+                label {Reset to Carrier}
+                callback {progdefaults.PSKmailSweetSpot = o->value();
+progdefaults.changed = true;}
+                tooltip {When no signal present} xywh {311 86 142 20} down_box DOWN_BOX value 1
+                code0 {o->value(progdefaults.PSKmailSweetSpot);}
+              }
+            }
+            Fl_Group {} {
+              label General open
+              xywh {5 234 490 131} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Check_Button btn_arq_s2n_report {
+                label {Report ARQ frames average S/N}
+                callback {progdefaults.Pskmails2nreport=o->value();}
+                xywh {30 259 250 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.Pskmails2nreport);}
               }
             }
           }

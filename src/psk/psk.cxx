@@ -46,6 +46,7 @@
 #include "status.h"
 #include "viewpsk.h"
 #include "pskeval.h"
+#include "ascii.h"
 
 extern waterfall *wf;
 
@@ -63,8 +64,6 @@ extern waterfall *wf;
 #define PSKR_K		7
 #define PSKR_POLY1	0x6d
 #define PSKR_POLY2	0x4f
-
-#define EOT 0x04   // EOT ascii character
 
 char pskmsg[80];
 viewpsk *pskviewer = (viewpsk *)0;
@@ -394,6 +393,13 @@ psk::psk(trx_mode pskmode) : modem()
 //=========================== psk31 receive routines ==========================
 //=============================================================================
 
+
+void psk::s2nreport(void)
+{
+	modem::s2nreport();
+	s2n_sum = s2n_sum2 = s2n_ncount = 0.0;
+}
+
 void psk::rx_bit(int bit)
 {
 	int c;
@@ -407,6 +413,13 @@ void psk::rx_bit(int bit)
 			if (fecmet >= fecmet2) {
 				if ((c != -1) && (c != 0) && (dcd == true)) {
 					put_rx_char(c);
+					if (progdefaults.Pskmails2nreport && (mailserver || mailclient)) {
+						s2n_sum += s2n_metric;
+						s2n_sum2 += (s2n_metric * s2n_metric);
+						s2n_ncount ++;
+						if (c == EOT)
+							s2nreport();
+					}
 				}
 			}
 			shreg = 1;
@@ -416,6 +429,13 @@ void psk::rx_bit(int bit)
 			c = psk_varicode_decode(shreg >> 2);
 			if ((c != -1) && (dcd == true)) {
 				put_rx_char(c);
+				if (progdefaults.Pskmails2nreport && (mailserver || mailclient)) {
+					s2n_sum += s2n_metric;
+					s2n_sum2 += (s2n_metric * s2n_metric);
+					s2n_ncount++;
+					if (c == EOT)
+						s2nreport();
+				}
 			}
 			shreg = 0;
 		}
@@ -437,6 +457,13 @@ void psk::rx_bit2(int bit)
 		if (fecmet < fecmet2) {
 			if ((c != -1) && (c != 0) && (dcd == true)) {
 				put_rx_char(c);
+				if (progdefaults.Pskmails2nreport && (mailserver || mailclient)) {
+					s2n_sum += s2n_metric;
+					s2n_sum2 += (s2n_metric * s2n_metric);
+					s2n_ncount++;
+					if (c == EOT)
+						s2nreport();
+				}
 			}
 		}
 		shreg2 = 1;
@@ -697,12 +724,23 @@ static double averageamp;
 
 	metric = 100.0 * quality.norm();
 
+	if (progdefaults.Pskmails2nreport && (mailserver || mailclient)) {
+		//s2n reporting: rescale depending on mode, clip after scaling
+		if (_pskr)
+			s2n_metric = metric * 1.5 + 8;
+		else
+			s2n_metric = metric;
+		s2n_metric = CLAMP(s2n_metric, 0.0, 100.0);
+	}
+
 	// FEC: adjust squelch for extra sensitivity.
 	// Otherwise we miss good characters
 	if (_pskr) {
 		metric = metric * 4;
-		if (metric > 100)	metric = 100;
 	}
+
+	if (metric > 100)
+		metric = 100;
 
 	afcmetric = decayavg(afcmetric, quality.norm(), 50);
 
@@ -711,18 +749,26 @@ static double averageamp;
 	imdValid = false;
 	switch (dcdshreg) {
 
-	case 0xAAAAAAAA:	// DCD on by preamble
-		dcd = true;
-		acquire = 0;
-		quality = complex (1.0, 0.0);
-		imdValid = true;
+	case 0xAAAAAAAA:	// DCD on by preamble for psk modes
+		if (!_pskr) {
+			dcd = true;
+			acquire = 0;
+			quality = complex (1.0, 0.0);
+			imdValid = true;
+			if (progdefaults.Pskmails2nreport && (mailserver || mailclient))
+				s2n_sum = s2n_sum2 = s2n_ncount = 0.0;
+		}
 		break;
 
 	case 0xA0A0A0A0:	// DCD on by preamble for PSKR modes ("11001100" sequence sent as preamble)
-		dcd = true;
-		acquire = 0;
-		quality = complex (1.0, 0.0);
-		imdValid = true;
+		if (_pskr) {
+			dcd = true;
+			acquire = 0;
+			quality = complex (1.0, 0.0);
+			imdValid = true;
+			if (progdefaults.Pskmails2nreport && (mailserver || mailclient))
+				s2n_sum = s2n_sum2 = s2n_ncount = 0.0;
+		}
 		break;
 
 	case 0:			// DCD off by postamble. Not for PSKR modes as this is not unique to postamble. 

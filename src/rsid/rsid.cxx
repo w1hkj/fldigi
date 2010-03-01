@@ -43,6 +43,9 @@
 #include "notify.h"
 #include "debug.h"
 
+#include "main.h"
+#include "arq_io.h"
+
 LOG_FILE_SOURCE(debug::LOG_MODEM);
 
 // Syntax: ELEM_(rsid_code, rsid_tag, fldigi_mode)
@@ -583,6 +586,9 @@ void cRsId::apply(int iSymbol, int iBin)
 	}
 
 //	REQ(&configuration::loadDefaults, &progdefaults);
+
+	if (mailclient || mailserver)
+		REQ(pskmail_notify_rsid, mbin);
 
 	if (progdefaults.rsid_mark && !progdefaults.rsid_notify_only) // mark current modem & freq
 		REQ(note_qrg, false, "\nBefore RSID: ", "\n",

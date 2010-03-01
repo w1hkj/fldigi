@@ -37,6 +37,9 @@
 #include "sound.h"
 #include "thorvaricode.h"
 
+#include "ascii.h"
+#include "main.h"
+
 using namespace std;
 
 char thormsg[80];
@@ -73,6 +76,8 @@ void thor::rx_init()
 	syncfilter->reset();
 	datashreg = 1;
 	sig = noise = 6;
+
+	s2n_valid = false;
 }
 
 void thor::reset_filters()
@@ -272,14 +277,35 @@ complex thor::mixer(int n, const complex& in)
 	return z;
 }
 
+void thor::s2nreport(void)
+{
+	modem::s2nreport();
+	s2n_valid = false;
+}
+
 void thor::recvchar(int c)
 {
 	if (c == -1)
 		return;
 	if (c & 0x100)
 		put_sec_char(c & 0xFF);
-	else
+	else {
 		put_rx_char(c & 0xFF);
+		if (progdefaults.Pskmails2nreport && (mailserver || mailclient)) {
+			if (((c & 0xFF) == SOH) && !s2n_valid) {
+				// starts collecting s2n from first SOH in stream (since start of RX)
+				s2n_valid = true;
+				s2n_sum = s2n_sum2 = s2n_ncount = 0.0;
+			}
+			if (s2n_valid) {
+				s2n_sum += s2n_metric;
+				s2n_sum2 += (s2n_metric * s2n_metric);
+				s2n_ncount++;
+				if ((c & 0xFF) == EOT)
+					s2nreport();
+			}
+		}
+	}
 }
 
 //=============================================================================
@@ -475,6 +501,12 @@ void thor::eval_s2n()
 	// in the noise calculation above, 
 	// add 15*log10(THORNUMTONES -1) = 18.4, and multiply by 6
 	metric = 6 * (s2n + 18.4);
+
+	if (progdefaults.Pskmails2nreport && (mailserver || mailclient)) {
+		// s2n reporting: re-calibrate
+		s2n_metric = metric * 2.5 - 70;
+		s2n_metric = CLAMP(s2n_metric, 0.0, 100.0);
+	}
 
 	metric = metric < 0 ? 0 : metric > 100 ? 100 : metric;
 

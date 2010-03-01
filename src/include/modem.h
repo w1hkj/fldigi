@@ -60,6 +60,10 @@ protected:
 
 	int scptr;
 
+	// extended s/n reporting
+	double s2n_ncount, s2n_sum, s2n_sum2, s2n_metric;
+	bool s2n_valid;
+
 	unsigned cap;
 public:
 	modem();
@@ -175,6 +179,9 @@ private:
 	void	add_noise(double *, int);
 	double	sigmaN (double es_ovr_n0);
 	double	gauss(double sigma);
+
+protected:
+	virtual void s2nreport(void);
 };
 
 extern modem *cw_modem;

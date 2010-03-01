@@ -160,7 +160,10 @@ private:
 	void	sendsecondary();
 	void	flushtx();
 	void	Clearbits();
-			
+
+protected:
+	void	s2nreport(void);
+
 public:
 	thor (trx_mode md);
 	~thor ();
