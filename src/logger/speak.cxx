@@ -86,6 +86,24 @@ void close_talker()
 
 void speak(int c)
 {
+	if (!progdefaults.speak)
+		return;
+
+	if (speakfname.empty()) {
+		speakfname = TalkDir;
+		speakfname.append("textout.txt");
+	}
+
+	speakbuffer += (char)c;
+// Windows is not able to handle continuously open/close of the append file
+// the file might or might not be written to.
+	if (!speakout) speakout.open(speakfname.c_str(), ios::app);
+	if (speakout) {
+		for (size_t i = 0; i < speakbuffer.length(); i++)
+			speakout.put(speakbuffer[i]);
+		speakbuffer.clear();
+	}
+
 	if (can_talk && !talker_tcpip) open_talker();
 	if (!talker_tcpip)
 		return;
@@ -103,11 +121,11 @@ void speak(int c)
 		can_talk = false;
 	}
 	talkbuffer.clear();
+}
 #else
 
 void speak(int c)
 {
-#endif
 	if (!progdefaults.speak)
 		return;
 
@@ -118,7 +136,7 @@ void speak(int c)
 
 	speakbuffer += c;
 
-	speakout.open(speakfname.c_str(), ios::app | ios::binary);
+	speakout.open(speakfname.c_str(), ios::app);
 	if (!speakout) return;
 
 	for (size_t i = 0; i < speakbuffer.length(); i++)
@@ -127,3 +145,5 @@ void speak(int c)
 	speakout.flush();
 	speakout.close();
 }
+
+#endif
