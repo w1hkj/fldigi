@@ -1,0 +1,67 @@
+= Fldigi 3.20 release notes =
+
+== Modems ==
+
+ * Added new PSK-500 mode
+ * Added "robust PSK" modes: PSK-125R, PSK-250R, PSK-500R
+ * Added PSK63F mode, compatible with MultiPsk PSK63FEC
+ * Added MT63 modem preamble tones to aid signal acquisition
+ * Added selectable filter widths for Hellschreiber modes
+ * Added AGC and S/N detector for FM-HELL modes
+ * Added Olivia noise estimator
+
+ * Improved THOR and DominoEX squelch responsiveness
+ * Improved Olivia squelch detection
+ * Improved Feldhell AGC and S/N detector
+ * Improved RTTY decoder
+
+ * Removed THOR soft decoding
+ * RSID now works at the same time as modem decoding
+ * The HELL-80 tone spacing was changed to 300 Hz
+
+== Macros ==
+
+ * Added <LOCK:on|off|t> macro to enable/disable/toggle the transmit lock
+ * Added <TUNE:nn> macro to transmit tuning tone for ''nn'' seconds
+ * Added <RXRSID:on|off|t> and <TXRSID:on|off|t> macros
+ * Added <WAIT:nn> macro to delay macro expansion by ''nn'' seconds
+ * Added <SRCHUP>, <SRCHDN>, <GOHOME>, <GOFREQ:nnnn> macros to search for a
+   signal up and down in frequency, go to the "sweet spot frequency", and
+   set the current modem frequency to ''nnnn''
+
+== User interface ==
+
+ * The main window's QSO and waterfall toolbar are now much more configurable
+ * The QSO toolbar can now be set to Contest mode, Minimal mode, Full mode,
+   and some combinations thereof
+ * The docked digiscope can be hidden and shown without a restart
+ * Is is now possible to select the modes for which to transmit RSID, VideoID
+   and CWID
+ * The Op Modes menu can now be customised
+ * Removed the floating rig control window
+ * Removed various Alt-<key> shortcuts
+ * Added a simple "wizard" for first-time users
+ * Added a waterfall-only mode; enabled with --wf-only
+
+== Other changes ==
+
+ * The XML-RPC server now supports HTTP/1.1 keep-alive connections
+ * Added several new XML-RPC methods
+ * Renamed various main.set_rig_NNN XML-RPC methods to rig.set_NNN
+ * Removed obsolete command line switches: --twoscopes, --experimental
+ * Improved support for PulseAudio, now also the default backend on Linux
+ * The ^R string is no longer treated like ^r; it is now ignored unless at the
+   end of the text to be transmitted
+ * The Portaudio playback stream is no longer kept open in receive mode; this
+   fixes a problem with certain rig interfaces that generate a PTT signal even
+   when the audio is complete silence
+ * Improved win32 serial port support
+
+== Bug fixes ==
+
+ * The MT63 transmit buffer is now correctly initialized
+ * Fixed random exceptions-related crashes on win32
+ * Stabilized AFC for all PSK baud rates
+ * Improved sensitivity of RSID implementation
+
+ Many more small (and a couple not so small) bug fixes all over the tree
