@@ -1739,8 +1739,12 @@ void qsoSave_cb(Fl_Widget *b, void *)
 {
 	string havecall = inpCall->value();
 	while (!havecall.empty() && havecall[0] == ' ') havecall.erase(0,1);
-	if (!havecall.empty())
-		submit_log();
+	if (havecall.empty()) {
+		fl_message2(_("Enter a CALL !"));
+		restoreFocus();
+		return;
+	}
+	submit_log();
 	if (progdefaults.ClearOnSave)
 		clearQSO();
 	ReceiveText->mark(FTextBase::XMIT);
