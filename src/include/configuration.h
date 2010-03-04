@@ -539,7 +539,7 @@
               mode_set_t())                                                             \
         ELEM_(bool, rxtext_clicks_qso_data, "RXTEXTCLICKS",                             \
               "Double-click on RX text enters QSO data",                                \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, rxtext_tooltips, "RXTEXTTOOLTIPS",                                  \
               "Show callsign tooltips in received text",                                \
               false)                                                                    \
@@ -548,12 +548,12 @@
               false)                                                                    \
         ELEM_(bool, calluppercase, "CALLUPPERCASE",                                     \
               "Convert callsign field to upper case",                                   \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, autoextract, "AUTOEXTRACT",                                         \
               "Enable detection and extraction of \"wrapped\" text",                    \
               false)                                                                    \
         ELEM_(bool, speak, "SPEAK",                                                     \
-              "We'll do something useful with this setting one day",                    \
+              "Capture text to file 'talk/textout.txt'",                                \
               false)                                                                    \
         /* QRZ */                                                                       \
         ELEM_(int, QRZ, "QRZTYPE",                                                      \
