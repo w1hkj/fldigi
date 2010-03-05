@@ -234,6 +234,53 @@ out:
 	return FTextView::handle(event);
 }
 
+/// Adds a char to the buffer
+///
+/// @param c The character
+/// @param attr The attribute (@see enum text_attr_e); RECV if omitted.
+///
+void FTextRX::add(unsigned char c, int attr)
+{
+	if (c == '\r')
+		return;
+
+	// The user may have moved the cursor by selecting text or
+	// scrolling. Place it at the end of the buffer.
+	if (mCursorPos != tbuf->length())
+		insert_position(tbuf->length());
+
+	switch (c) {
+	case '\b':
+		// we don't call kf_backspace because it kills selected text
+		tbuf->remove(tbuf->length() - 1, tbuf->length());
+		sbuf->remove(sbuf->length() - 1, sbuf->length());
+		break;
+	case '\n':
+		// maintain the scrollback limit, if we have one
+		if (max_lines > 0 && tbuf->count_lines(0, tbuf->length()) >= max_lines) {
+			int le = tbuf->line_end(0) + 1; // plus 1 for the newline
+			tbuf->remove(0, le);
+			sbuf->remove(0, le);
+		}
+		// fall-through
+	default:
+		char s[] = { '\0', '\0', FTEXT_DEF + attr, '\0' };
+		const char *cp;
+
+		if ((c < ' ' || c == 127) && attr != CTRL) // look it up
+			cp = ascii[(unsigned char)c];
+		else { // insert verbatim
+			s[0] = c;
+			cp = &s[0];
+		}
+
+		for (int i = 0; cp[i]; ++i)
+			sbuf->append(s + 2);
+		insert(cp);
+		break;
+	}
+}
+
 void FTextRX::set_quick_entry(bool b)
 {
 	if ((quick_entry = b))

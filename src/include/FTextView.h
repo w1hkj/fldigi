@@ -48,8 +48,8 @@ public:
 	FTextBase(int x, int y, int w, int h, const char *l = 0);
 	virtual ~FTextBase() { delete tbuf; delete sbuf; }
 
-	virtual void	add(const char *text, int attr = RECV) = 0;
-	virtual void	add(unsigned char c, int attr = RECV) = 0;
+	virtual void	add(const char *text, int attr = RECV);
+	virtual void	add(unsigned char c, int attr = RECV);
 	void	     	addstr(const char *text, int attr = RECV) { add(text, attr); }
 	void	     	addchr(unsigned char c, int attr = RECV) { add(c, attr); }
 
@@ -117,12 +117,6 @@ public:
         ~FTextView() { }
 
 	virtual int	handle(int event);
-	virtual void	add(unsigned char c, int attr = RECV);
-	virtual	void	add(const char *s, int attr = RECV)
-        {
-                while (*s)
-                        add(*s++, attr);
-        }
 
 protected:
 	enum {
@@ -155,9 +149,6 @@ public:
 	FTextEdit(int x, int y, int w, int h, const char *l = 0);
 
 	virtual int	handle(int event);
-
-	virtual void	add(const char *s, int attr = RECV);
-	virtual void	add(unsigned char c, int attr = RECV);
 
 protected:
 	enum {

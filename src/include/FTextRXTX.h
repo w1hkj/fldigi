@@ -36,6 +36,13 @@ public:
 
 	virtual int	handle(int event);
 
+	virtual void	add(unsigned char c, int attr = RECV);
+	virtual	void	add(const char *s, int attr = RECV)
+        {
+                while (*s)
+                        add(*s++, attr);
+        }
+
 	void		set_quick_entry(bool b);
 	bool		get_quick_entry(void) { return quick_entry; }
 	void		mark(FTextBase::TEXT_ATTR attr = CLICK_START);
