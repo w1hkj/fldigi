@@ -195,6 +195,7 @@ extern Fl_Check_Button *chkPseudoFSK;
 extern Fl_Choice *mnuRTTYAFCSpeed;
 extern Fl_Check_Button *chkXagc;
 extern Fl_Value_Slider *sldrRTTYbandwidth;
+extern Fl_Counter *selCustomShift;
 extern Fl_Group *tabTHOR;
 extern Fl_Input2 *txtTHORSecondary;
 extern Fl_Check_Button *valTHOR_FILTER;

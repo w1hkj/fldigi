@@ -77,7 +77,7 @@ for (size_t i = 0; i < sizeof(qrzb)/sizeof(*qrzb); i++)
 
 Function {ConfigureDialog()} {open
 } {
-  code {static const char szShifts[]  = "23|85|160|170|182|200|240|350|425|850";
+  code {static const char szShifts[]  = "23|85|160|170|182|200|240|350|425|_850|Custom";
 static const char szBauds[]  = "45|45.45|50|56|75|100|110|150|200|300";
 static const char szSelBits[] = "5 (baudot)|7 (ascii)|8 (ascii)";
 static const char szParity[]  = "none|even|odd|zero|one";
@@ -88,7 +88,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {490 127 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
+    xywh {169 113 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {-3 0 520 372} color 50 selection_color 50
@@ -1461,11 +1461,17 @@ progdefaults.changed = true;} open
             xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
-              xywh {5 60 490 270} box ENGRAVED_FRAME
+              xywh {5 60 490 300} box ENGRAVED_FRAME
             } {
               Fl_Choice selShift {
                 label {Carrier shift}
                 callback {progdefaults.rtty_shift = o->value();
+if (progdefaults.rtty_shift == o->size() - 2) {
+    progdefaults.rtty_shift = -1;
+    selCustomShift->activate();
+}
+else
+    selCustomShift->deactivate();
 resetRTTY();
 progdefaults.changed = true;} open
                 tooltip {Select carrier shift} xywh {15 70 100 20} down_box BORDER_BOX align 8 when 1
@@ -1476,14 +1482,14 @@ progdefaults.changed = true;} open
                 callback {progdefaults.rtty_baud = o->value();
 resetRTTY();
 progdefaults.changed = true;} open
-                tooltip {Select carrier baudrate} xywh {15 100 100 20} down_box BORDER_BOX align 8 when 1
+                tooltip {Select carrier baudrate} xywh {15 130 100 20} down_box BORDER_BOX align 8 when 1
                 code0 {o->add(szBauds);}
               } {}
               Fl_Choice selBits {
                 label {Bits per character}
                 callback {progdefaults.rtty_bits = o->value();
 selParity->do_callback();} open
-                tooltip {Select \# bits / char} xywh {15 130 100 20} down_box BORDER_BOX align 8 when 1
+                tooltip {Select \# bits / char} xywh {15 160 100 20} down_box BORDER_BOX align 8 when 1
                 code0 {o->add(szSelBits);}
               } {}
               Fl_Choice selParity {
@@ -1494,7 +1500,7 @@ else
   progdefaults.rtty_parity = o->value();
 resetRTTY();
 progdefaults.changed = true;} open
-                tooltip {Select parity} xywh {15 160 100 20} down_box BORDER_BOX align 8 when 1
+                tooltip {Select parity} xywh {15 190 100 20} down_box BORDER_BOX align 8 when 1
                 code0 {o->add(szParity);}
               } {}
               Fl_Choice selStopBits {
@@ -1502,7 +1508,7 @@ progdefaults.changed = true;} open
                 callback {progdefaults.rtty_stop = o->value();
 resetRTTY();
 progdefaults.changed = true;} open
-                tooltip {Select \# stop bits} xywh {15 190 100 20} down_box BORDER_BOX align 8 when 1
+                tooltip {Select \# stop bits} xywh {15 220 100 20} down_box BORDER_BOX align 8 when 1
                 code0 {o->add(szStopBits);}
               } {}
               Fl_Group {} {open
@@ -1556,7 +1562,7 @@ progdefaults.changed = true;}
                 label {Use cross hair scope}
                 callback {progdefaults.PreferXhairScope=o->value();
 progdefaults.changed = true;}
-                tooltip {Default to cross hair digiscope} xywh {15 224 165 20} down_box DOWN_BOX
+                tooltip {Default to cross hair digiscope} xywh {15 254 165 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.PreferXhairScope);}
               }
               Fl_Check_Button chkPseudoFSK {
@@ -1567,7 +1573,7 @@ progdefaults.changed = true;}
 }
 progdefaults.PseudoFSK = o->value();
 progdefaults.changed = true;}
-                tooltip {Create square wave on right channel} xywh {15 254 270 20} down_box DOWN_BOX
+                tooltip {Create square wave on right channel} xywh {15 284 270 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.PseudoFSK);}
               }
               Fl_Choice mnuRTTYAFCSpeed {
@@ -1589,8 +1595,16 @@ progdefaults.changed = true;}
               Fl_Value_Slider sldrRTTYbandwidth {
                 label {Receive filter bandwidth}
                 callback {progdefaults.RTTY_BW = o->value();}
-                tooltip {Adjust the DSP bandwidth} xywh {100 295 300 20} type Horizontal align 5 minimum 5 maximum 200 step 1 value 25 textsize 14
+                tooltip {Adjust the DSP bandwidth} xywh {100 325 300 20} type Horizontal align 5 minimum 5 maximum 200 step 1 value 25 textsize 14
                 code0 {o->value(progdefaults.RTTY_BW);}
+              }
+              Fl_Counter selCustomShift {
+                label {Custom shift}
+                callback {progdefaults.rtty_custom_shift = o->value();
+resetRTTY();
+progdefaults.changed = true;}
+                code0 {o->lstep(10.0);}
+                tooltip {Input carrier shift} xywh {15 100 100 20} align 8 minimum 10 maximum 1000 step 1 value 450
               }
             }
           }

@@ -385,7 +385,14 @@ bool configuration::readDefaultsXML()
 void configuration::loadDefaults()
 {
 // RTTY
-	selShift->value(rtty_shift);
+	if (rtty_shift > 0) {
+		selShift->value(rtty_shift);
+		selCustomShift->deactivate();
+	}
+	else { // Custom shift
+		selShift->value(selShift->size() - 2);
+		selShift->activate();
+	}
 	selBaud->value(rtty_baud);
 	selBits->value(rtty_bits);
 	selParity->value(rtty_parity);

@@ -1142,6 +1142,12 @@ Fl_Choice *selShift=(Fl_Choice *)0;
 
 static void cb_selShift(Fl_Choice* o, void*) {
   progdefaults.rtty_shift = o->value();
+if (progdefaults.rtty_shift == o->size() - 2) {
+    progdefaults.rtty_shift = -1;
+    selCustomShift->activate();
+}
+else
+    selCustomShift->deactivate();
 resetRTTY();
 progdefaults.changed = true;
 }
@@ -1251,6 +1257,14 @@ Fl_Value_Slider *sldrRTTYbandwidth=(Fl_Value_Slider *)0;
 
 static void cb_sldrRTTYbandwidth(Fl_Value_Slider* o, void*) {
   progdefaults.RTTY_BW = o->value();
+}
+
+Fl_Counter *selCustomShift=(Fl_Counter *)0;
+
+static void cb_selCustomShift(Fl_Counter* o, void*) {
+  progdefaults.rtty_custom_shift = o->value();
+resetRTTY();
+progdefaults.changed = true;
 }
 
 Fl_Group *tabTHOR=(Fl_Group *)0;
@@ -2428,7 +2442,7 @@ progdefaults.changed = false;
 
 Fl_Double_Window* ConfigureDialog() {
   Fl_Double_Window* w;
-  static const char szShifts[]  = "23|85|160|170|182|200|240|350|425|850";
+  static const char szShifts[]  = "23|85|160|170|182|200|240|350|425|_850|Custom";
 static const char szBauds[]  = "45|45.45|50|56|75|100|110|150|200|300";
 static const char szSelBits[] = "5 (baudot)|7 (ascii)|8 (ascii)";
 static const char szParity[]  = "none|even|odd|zero|one";
@@ -3743,7 +3757,7 @@ an merging"));
           } // Fl_Group* tabPSK
           { tabRTTY = new Fl_Group(0, 50, 500, 320, _("RTTY"));
             tabRTTY->hide();
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 270);
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Choice* o = selShift = new Fl_Choice(15, 70, 100, 20, _("Carrier shift"));
                 selShift->tooltip(_("Select carrier shift"));
@@ -3753,7 +3767,7 @@ an merging"));
                 selShift->when(FL_WHEN_CHANGED);
                 o->add(szShifts);
               } // Fl_Choice* selShift
-              { Fl_Choice* o = selBaud = new Fl_Choice(15, 100, 100, 20, _("Baud rate"));
+              { Fl_Choice* o = selBaud = new Fl_Choice(15, 130, 100, 20, _("Baud rate"));
                 selBaud->tooltip(_("Select carrier baudrate"));
                 selBaud->down_box(FL_BORDER_BOX);
                 selBaud->callback((Fl_Callback*)cb_selBaud);
@@ -3761,7 +3775,7 @@ an merging"));
                 selBaud->when(FL_WHEN_CHANGED);
                 o->add(szBauds);
               } // Fl_Choice* selBaud
-              { Fl_Choice* o = selBits = new Fl_Choice(15, 130, 100, 20, _("Bits per character"));
+              { Fl_Choice* o = selBits = new Fl_Choice(15, 160, 100, 20, _("Bits per character"));
                 selBits->tooltip(_("Select # bits / char"));
                 selBits->down_box(FL_BORDER_BOX);
                 selBits->callback((Fl_Callback*)cb_selBits);
@@ -3769,7 +3783,7 @@ an merging"));
                 selBits->when(FL_WHEN_CHANGED);
                 o->add(szSelBits);
               } // Fl_Choice* selBits
-              { Fl_Choice* o = selParity = new Fl_Choice(15, 160, 100, 20, _("Parity"));
+              { Fl_Choice* o = selParity = new Fl_Choice(15, 190, 100, 20, _("Parity"));
                 selParity->tooltip(_("Select parity"));
                 selParity->down_box(FL_BORDER_BOX);
                 selParity->callback((Fl_Callback*)cb_selParity);
@@ -3777,7 +3791,7 @@ an merging"));
                 selParity->when(FL_WHEN_CHANGED);
                 o->add(szParity);
               } // Fl_Choice* selParity
-              { Fl_Choice* o = selStopBits = new Fl_Choice(15, 190, 100, 20, _("Stop bits"));
+              { Fl_Choice* o = selStopBits = new Fl_Choice(15, 220, 100, 20, _("Stop bits"));
                 selStopBits->tooltip(_("Select # stop bits"));
                 selStopBits->down_box(FL_BORDER_BOX);
                 selStopBits->callback((Fl_Callback*)cb_selStopBits);
@@ -3832,13 +3846,13 @@ an merging"));
                 } // Fl_Check_Button* chkUOStx
                 o->end();
               } // Fl_Group* o
-              { Fl_Check_Button* o = btnPreferXhairScope = new Fl_Check_Button(15, 224, 165, 20, _("Use cross hair scope"));
+              { Fl_Check_Button* o = btnPreferXhairScope = new Fl_Check_Button(15, 254, 165, 20, _("Use cross hair scope"));
                 btnPreferXhairScope->tooltip(_("Default to cross hair digiscope"));
                 btnPreferXhairScope->down_box(FL_DOWN_BOX);
                 btnPreferXhairScope->callback((Fl_Callback*)cb_btnPreferXhairScope);
                 o->value(progdefaults.PreferXhairScope);
               } // Fl_Check_Button* btnPreferXhairScope
-              { Fl_Check_Button* o = chkPseudoFSK = new Fl_Check_Button(15, 254, 270, 20, _("Pseudo-FSK on right audio channel"));
+              { Fl_Check_Button* o = chkPseudoFSK = new Fl_Check_Button(15, 284, 270, 20, _("Pseudo-FSK on right audio channel"));
                 chkPseudoFSK->tooltip(_("Create square wave on right channel"));
                 chkPseudoFSK->down_box(FL_DOWN_BOX);
                 chkPseudoFSK->callback((Fl_Callback*)cb_chkPseudoFSK);
@@ -3858,7 +3872,7 @@ an merging"));
                 o->value(progdefaults.Xagc);
                 o->hide();
               } // Fl_Check_Button* chkXagc
-              { Fl_Value_Slider* o = sldrRTTYbandwidth = new Fl_Value_Slider(100, 295, 300, 20, _("Receive filter bandwidth"));
+              { Fl_Value_Slider* o = sldrRTTYbandwidth = new Fl_Value_Slider(100, 325, 300, 20, _("Receive filter bandwidth"));
                 sldrRTTYbandwidth->tooltip(_("Adjust the DSP bandwidth"));
                 sldrRTTYbandwidth->type(1);
                 sldrRTTYbandwidth->minimum(5);
@@ -3870,6 +3884,16 @@ an merging"));
                 sldrRTTYbandwidth->align(FL_ALIGN_TOP_LEFT);
                 o->value(progdefaults.RTTY_BW);
               } // Fl_Value_Slider* sldrRTTYbandwidth
+              { Fl_Counter* o = selCustomShift = new Fl_Counter(15, 100, 100, 20, _("Custom shift"));
+                selCustomShift->tooltip(_("Input carrier shift"));
+                selCustomShift->minimum(10);
+                selCustomShift->maximum(1000);
+                selCustomShift->step(1);
+                selCustomShift->value(450);
+                selCustomShift->callback((Fl_Callback*)cb_selCustomShift);
+                selCustomShift->align(FL_ALIGN_RIGHT);
+                o->lstep(10.0);
+              } // Fl_Counter* selCustomShift
               o->end();
             } // Fl_Group* o
             tabRTTY->end();

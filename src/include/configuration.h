@@ -222,8 +222,11 @@
         ELEM_(int, rtty_shift, "RTTYSHIFT",                                             \
               "Carrier shift (Hz). Values are as follows:\n"                            \
               "  0: 23; 1: 85; 2: 160; 3: 170; 4: 182; 5: 200; 6: 240; 7: 350;\n"       \
-              "  8: 425; 9: 850",                                                       \
+              "  8: 425; 9: 850; -1: custom",                                           \
               3) /* 170 */                                                              \
+        ELEM_(int, rtty_custom_shift, "RTTYCUSTOMSHIFT",                                \
+              "Custom shift (Hz)",                                                      \
+              450)                                                                      \
         ELEM_(int, rtty_baud, "RTTYBAUD",                                               \
               "Carrier baud rate. Values are as follows:\n"                             \
               "  0: 45; 1: 45.45; 2: 50; 3: 56; 4: 75; 5: 100; 6: 110; 7: 150; \n"      \

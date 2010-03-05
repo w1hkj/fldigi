@@ -139,7 +139,8 @@ void rtty::restart()
 {
 	double stl;
 
-	rtty_shift = shift = _SHIFT[progdefaults.rtty_shift];
+	rtty_shift = shift = (progdefaults.rtty_shift >= 0 ?
+			      _SHIFT[progdefaults.rtty_shift] : progdefaults.rtty_custom_shift);
 	rtty_baud = _BAUD[progdefaults.rtty_baud];
 	nbits = rtty_bits = _BITS[progdefaults.rtty_bits];
 	if (rtty_bits == 5)
