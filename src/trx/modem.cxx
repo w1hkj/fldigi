@@ -395,6 +395,7 @@ void modem::ModulateXmtr(double *buffer, int len)
 		_mdm_scdbl[scptr] = buffer[i] * progdefaults.TxMonitorLevel;
 		scptr++;
 		if (scptr == 512) {
+//for (int i = 0; i < 512; i++) printf("%f\n", _mdm_scdbl[i]);
 			REQ(&waterfall::sig_data, wf, _mdm_scdbl.c_array(), 512, samplerate );
 			scptr = 0;
 			_mdm_scdbl.next(); // change buffers

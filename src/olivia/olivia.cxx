@@ -89,7 +89,7 @@ void olivia::tx_init(SoundBase *sc)
 void olivia::send_preamble()
 {
 	double freqa, freqb;
-    int i, j, sr4 = samplerate / 4;
+    int i, j, sr4 = 8192 / 4;
     double ampshape[sr4];
     
     for (int i = 0; i < sr4; i++) ampshape[i] = 1.0;
@@ -112,13 +112,15 @@ void olivia::send_preamble()
 		outbuf[i] = nco(freqa) * ampshape[j];
 	for (i = 3*sr4, j = 0; i < samplerate; i++, j++)
 		outbuf[i] = nco(freqb) * ampshape[j];
-	ModulateXmtr(outbuf, samplerate);
+
+	for (j = 0; j < 8192; j += 512)
+		ModulateXmtr(&outbuf[j], 512);
 }
 
 void olivia::send_postamble()
 {
 	double freqa, freqb;
-	int i, j, sr4 = samplerate / 4;
+	int i, j, sr4 = 8192 / 4;
     double ampshape[sr4];
     
     for (int i = 0; i < sr4; i++) ampshape[i] = 1.0;
@@ -141,7 +143,9 @@ void olivia::send_postamble()
 		outbuf[i] = nco(freqa) * ampshape[j];
 	for (i = 3*sr4, j = 0; i < samplerate; i++, j++)
 		outbuf[i] = nco(freqb) * ampshape[j];
-	ModulateXmtr(outbuf, samplerate);
+
+	for (j = 0; j < 8192; j += 512)
+		ModulateXmtr(&outbuf[j], 512);
 }
 
 void olivia::rx_init()
