@@ -808,12 +808,15 @@ void WFdisp::update_waterfall() {
 	if (progdefaults.UseBWTracks) {
 		RGBI  *pos1 = fft_img + (carrierfreq - offset - bandwidth/2) / step;
 		RGBI  *pos2 = fft_img + (carrierfreq - offset + bandwidth/2) / step;
-		if (pos1 >= fft_img && pos2 < fft_img + disp_width)
+		if (unlikely(pos2 == fft_img + disp_width))
+			pos2--;
+		if (likely(pos1 >= fft_img && pos2 < fft_img + disp_width)) {
 			for (int y = 0; y < image_height; y ++) {
 				*pos1 = *pos2 = progdefaults.bwTrackRGBI;
 				pos1 += disp_width;
 				pos2 += disp_width;
 			}
+		}
 	}
 }
 
