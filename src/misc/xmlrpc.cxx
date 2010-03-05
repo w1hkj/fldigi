@@ -735,6 +735,121 @@ public:
 	}
 };
 
+class Modem_olivia_set_bandwidth : public xmlrpc_c::method
+{
+public:
+	Modem_olivia_set_bandwidth()
+	{
+		_signature = "n:i";
+		_help = "Sets the Olivia bandwidth.";
+	}
+	static void set_olivia_bw(int bw)
+	{
+		int i;
+		if (bw == 125)
+			i = 0;
+		else if (bw == 250)
+			i = 1;
+		else if (bw == 500)
+			i = 2;
+		else if (bw == 1000)
+			i = 3;
+		else
+			i = 4;
+		bool changed = progdefaults.changed;
+		mnuOlivia_Bandwidth->value(i);
+		mnuOlivia_Bandwidth->do_callback();
+		progdefaults.changed = changed;
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		int bw;
+		switch (bw = params.getInt(0)) {
+		case 125: case 250: case 500: case 1000: case 2000:
+		{
+			XMLRPC_LOCK;
+			REQ_SYNC(set_olivia_bw, bw);
+			*retval = xmlrpc_c::value_nil();
+		}
+			break;
+		default:
+			throw xmlrpc_c::fault("Invalid Olivia bandwidth");
+		}
+	}
+};
+
+class Modem_olivia_get_bandwidth : public xmlrpc_c::method
+{
+public:
+	Modem_olivia_get_bandwidth()
+	{
+		_signature = "i:n";
+		_help = "Returns the Olivia bandwidth.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		int bw, v = mnuOlivia_Bandwidth->value();
+
+		if (v == 0)
+			bw = 125;
+		else if (v == 1)
+			bw = 250;
+		else if (v == 2)
+			bw = 500;
+		else if (v == 3)
+			bw = 1000;
+		else
+			bw = 2000;
+
+		*retval = xmlrpc_c::value_int(bw);
+	}
+};
+
+class Modem_olivia_set_tones : public xmlrpc_c::method
+{
+public:
+	Modem_olivia_set_tones()
+	{
+		_signature = "n:i";
+		_help = "Sets the Olivia tones.";
+	}
+	static void set_olivia_tones(int tones)
+	{
+		unsigned i = 0;
+		while (tones >>= 1)
+			i++;
+		bool changed = progdefaults.changed;
+		mnuOlivia_Tones->value(i - 1);
+		mnuOlivia_Tones->do_callback();
+		progdefaults.changed = changed;
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		int tones = params.getInt(0, 2, 256);
+		if (powerof2(tones)) {
+			XMLRPC_LOCK;
+			REQ_SYNC(set_olivia_tones, tones);
+			*retval = xmlrpc_c::value_nil();
+		}
+		else
+			throw xmlrpc_c::fault("Invalid Olivia tones");
+	}
+};
+
+class Modem_olivia_get_tones : public xmlrpc_c::method
+{
+public:
+	Modem_olivia_get_tones()
+	{
+		_signature = "i:n";
+		_help = "Returns the Olivia tones.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		*retval = xmlrpc_c::value_int(1 << (mnuOlivia_Tones->value() + 1));
+	}
+};
+
 // =============================================================================
 
 class Main_get_status1 : public xmlrpc_c::method
@@ -2301,6 +2416,11 @@ public:
 	ELEM_(Modem_get_quality, "modem.get_quality")			\
 	ELEM_(Modem_search_up, "modem.search_up")			\
 	ELEM_(Modem_search_down, "modem.search_down")			\
+									\
+	ELEM_(Modem_olivia_set_bandwidth, "modem.olivia.set_bandwidth") \
+	ELEM_(Modem_olivia_get_bandwidth, "modem.olivia.get_bandwidth") \
+	ELEM_(Modem_olivia_set_tones, "modem.olivia.set_tones")		\
+	ELEM_(Modem_olivia_get_tones, "modem.olivia.get_tones")		\
 									\
 	ELEM_(Main_get_status1, "main.get_status1")			\
 	ELEM_(Main_get_status2, "main.get_status2")			\
