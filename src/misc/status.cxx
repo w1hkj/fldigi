@@ -279,15 +279,15 @@ void status::loadLastState()
 
 	int i;
 
-	spref.get("mode", i, i);  lastmode = (trx_mode) i;
-	spref.get("squelch_enabled", i, i); sqlonoff = i;
+	spref.get("mode", i, lastmode);  lastmode = (trx_mode) i;
+	spref.get("squelch_enabled", i, sqlonoff); sqlonoff = i;
 	spref.get("squelch_level", sldrSquelchValue, sldrSquelchValue);
-	spref.get("afc_enabled", i, i); afconoff = i;
+	spref.get("afc_enabled", i, afconoff); afconoff = i;
 	spref.get("rx_mixer_level", RcvMixer, RcvMixer);
 	spref.get("tx_mixer_level", XmtMixer, XmtMixer);
 
 	spref.get("rx_text_height", RxTextHeight, RxTextHeight);
-	spref.get("log_enabled", i, i); LOGenabled = i;
+	spref.get("log_enabled", i, LOGenabled); LOGenabled = i;
 
 	spref.get("wf_carrier", carrier, carrier);
 	spref.get("wf_mag", mag, mag);
@@ -310,23 +310,23 @@ void status::loadLastState()
 	spref.get("main_y", mainY, mainY);
 	spref.get("main_w", mainW, mainW);
 	spref.get("main_h", mainH, mainH);
-	spref.get("wf_ui", i, i); WF_UI = i;
-	spref.get("riglog_ui", i, i); Rig_Log_UI = i;
-	spref.get("rigcontest_ui", i, i); Rig_Contest_UI = i;
-	spref.get("noriglog", i, i); NO_RIGLOG = i;
-	spref.get("docked_scope", i, i); DOCKEDSCOPE = i;
+	spref.get("wf_ui", i, WF_UI); WF_UI = i;
+	spref.get("riglog_ui", i, Rig_Log_UI); Rig_Log_UI = i;
+	spref.get("rigcontest_ui", i, Rig_Contest_UI); Rig_Contest_UI = i;
+	spref.get("noriglog", i, NO_RIGLOG); NO_RIGLOG = i;
+	spref.get("docked_scope", i, DOCKEDSCOPE); DOCKEDSCOPE = i;
 
 	spref.get("rigctl_x", rigX, rigX);
 	spref.get("rigctl_y", rigY, rigY);
 	spref.get("rigctl_w", rigW, rigW);
 	spref.get("rigctl_h", rigH, rigH);
 
-	spref.get("viewer_visible", i, i); VIEWERvisible = i;
-	spref.get("viewer_x", i, i); VIEWERxpos = i;
-	spref.get("viewer_y", i, i); VIEWERypos = i;
-	spref.get("viewer_nchars", i, i); VIEWERnchars = i;
+	spref.get("viewer_visible", i, VIEWERvisible); VIEWERvisible = i;
+	spref.get("viewer_x", i, VIEWERxpos); VIEWERxpos = i;
+	spref.get("viewer_y", i, VIEWERypos); VIEWERypos = i;
+	spref.get("viewer_nchars", i, VIEWERnchars); VIEWERnchars = i;
 
-	spref.get("scope_visible", i, i); scopeVisible = i;
+	spref.get("scope_visible", i, scopeVisible); scopeVisible = i;
 	spref.get("scope_x", scopeX, scopeX);
 	spref.get("scope_y", scopeY, scopeY);
 	spref.get("scope_w", scopeW, scopeW);
@@ -336,20 +336,20 @@ void status::loadLastState()
 	LastMacroFile = defbuffer;
 	free(defbuffer);
 
-	spref.get("spot_recv", i, i); spot_recv = i;
-	spref.get("spot_log", i, i); spot_log = i;
+	spref.get("spot_recv", i, spot_recv); spot_recv = i;
+	spref.get("spot_log", i, spot_log); spot_log = i;
 
-	spref.get("contest", i, i); contest = i;
-	spref.get("quick_entry", i, i); quick_entry = i;
+	spref.get("contest", i, contest); contest = i;
+	spref.get("quick_entry", i, quick_entry); quick_entry = i;
 	spref.get("rx_scroll_hints", i, rx_scroll_hints); rx_scroll_hints = i;
-	spref.get("rx_word_wrap", i, i); rx_word_wrap = i;
-	spref.get("tx_word_wrap", i, i); tx_word_wrap = i;
+	spref.get("rx_word_wrap", i, rx_word_wrap); rx_word_wrap = i;
+	spref.get("tx_word_wrap", i, tx_word_wrap); tx_word_wrap = i;
 
 	spref.get("logbook_x", logbook_x, logbook_x);
 	spref.get("logbook_y", logbook_y, logbook_y);
 	spref.get("logbook_w", logbook_w, logbook_w);
 	spref.get("logbook_h", logbook_h, logbook_h);
-	spref.get("logbook_reverse", i, i); logbook_reverse = i;
+	spref.get("logbook_reverse", i, logbook_reverse); logbook_reverse = i;
 	spref.get("logbook_col_0", logbook_col_0, logbook_col_0);
 	spref.get("logbook_col_1", logbook_col_1, logbook_col_1);
 	spref.get("logbook_col_2", logbook_col_2, logbook_col_2);
