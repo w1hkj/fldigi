@@ -28,6 +28,7 @@
 
 #include "macros.h"
 
+#include "gettext.h"
 #include "main.h"
 
 #include "fl_digi.h"
@@ -973,7 +974,7 @@ void MACROTEXT::openMacroFile()
 {
 	string deffilename = MacrosDir;
 	deffilename.append(progStatus.LastMacroFile);
-    const char *p = FSEL::select("Open macro file", "Fldigi macro definition file\t*.mdf", deffilename.c_str());
+    const char *p = FSEL::select(_("Open macro file"), _("Fldigi macro definition file\t*.mdf"), deffilename.c_str());
     if (p) {
 		loadMacros(p);
 		progStatus.LastMacroFile = fl_filename_name(p);
@@ -985,7 +986,7 @@ void MACROTEXT::saveMacroFile()
 {
 	string deffilename = MacrosDir;
 	deffilename.append(progStatus.LastMacroFile);
-    const char *p = FSEL::saveas("Save macro file", "Fldigi macro definition file\t*.mdf", deffilename.c_str());
+    const char *p = FSEL::saveas(_("Save macro file"), _("Fldigi macro definition file\t*.mdf"), deffilename.c_str());
     if (p) {
 		saveMacros(p);
 		progStatus.LastMacroFile = fl_filename_name(p);

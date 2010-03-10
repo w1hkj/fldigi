@@ -497,9 +497,9 @@ int configuration::setDefaults()
 	btnUseUHrouterPTT->value(progdefaults.UseUHrouterPTT);
 
 #if USE_HAMLIB
-	mnuSideband->add("Rig mode");
-	mnuSideband->add("Always LSB");
-	mnuSideband->add("Always USB");
+	mnuSideband->add(_("Rig mode"));
+	mnuSideband->add(_("Always LSB"));
+	mnuSideband->add(_("Always USB"));
 	mnuSideband->value(HamlibSideband);
     btnHamlibCMDptt->value(HamlibCMDptt);
     inpRIGdev->show();

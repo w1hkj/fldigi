@@ -25,6 +25,7 @@
 #include <string>
 #include <FL/Fl_Color_Chooser.H>
 
+#include "gettext.h"
 #include "colorbox.h"
 #include "waterfall.h"
 #include "confdialog.h"
@@ -83,7 +84,7 @@ void loadPalette()
 		palfilename = PalettesDir;
 		palfilename.append ("fldigi.pal");
 	}
-    const char *p = FSEL::select("Open palette", "Fldigi palette\t*.pal", palfilename.c_str());
+    const char *p = FSEL::select(_("Open palette"), _("Fldigi palette\t*.pal"), palfilename.c_str());
 	if (!p) return;
 	if ((clrfile = fopen(p, "r")) != NULL) {
 		for (int i = 0; i < 9; i++) {
@@ -106,7 +107,7 @@ void loadPalette()
 		palLabelStr = p;
 		size_t pos = palLabelStr.find_last_of('/');
 		if (pos != string::npos) palLabelStr.erase(0, pos+1);
-		palLabelStr = "Palette: " + palLabelStr;
+		palLabelStr = _("Palette: ") + palLabelStr;
 		WF_Palette->label(palLabelStr.c_str());
 		WF_Palette->redraw();
 		progdefaults.PaletteName = palLabelStr;
@@ -120,7 +121,7 @@ void savePalette()
 		palfilename = PalettesDir;
 		palfilename.append ("fldigi.pal");
 	}
-	const char *p = FSEL::saveas("Save palette", "Fldigi palette\t*.pal", palfilename.c_str());
+	const char *p = FSEL::saveas(_("Save palette"), _("Fldigi palette\t*.pal"), palfilename.c_str());
 	if (!p) return;
 	if ((clrfile = fopen(p, "w")) != NULL) {
 		for (int i = 0; i < 9; i++) {
@@ -131,7 +132,7 @@ void savePalette()
 		palLabelStr = p;
 		size_t pos = palLabelStr.find_last_of('/');
 		if (pos != string::npos) palLabelStr.erase(0, pos+1);
-		palLabelStr = "Palette: " + palLabelStr;
+		palLabelStr = _("Palette: ") + palLabelStr;
 		WF_Palette->label(palLabelStr.c_str());
 		WF_Palette->redraw();
 		progdefaults.PaletteName = palLabelStr;

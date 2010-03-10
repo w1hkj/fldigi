@@ -1,9 +1,8 @@
-#: src/rigcontrol/rigsupport.cxx:440
 msgid ""
 msgstr ""
 "Project-Id-Version: FLDigi 3.11\n"
 "Report-Msgid-Bugs-To: w1hkj AT w1hkj DOT com\n"
-"POT-Creation-Date: 2010-03-05 08:26-0600\n"
+"POT-Creation-Date: 2010-03-06 12:53+0100\n"
 "PO-Revision-Date: 2009-03-11 15:20+0100\n"
 "Last-Translator: OK2WO <jklimosz@gmail.com>\n"
 "Language-Team: OK2WO <jklimosz@gmail.com>\n"
@@ -839,6 +838,11 @@ msgstr "Exportovat CSV"
 msgid "Export to fixed field text file"
 msgstr ""
 
+#: src/logbook/logsupport.cxx:115
+#, fuzzy
+msgid "Export to ADIF file"
+msgstr "Exportovat CSV"
+
 #: src/logbook/logsupport.cxx:144
 #, fuzzy
 msgid "Save changed Logbook?"
@@ -895,6 +899,24 @@ msgstr "Aktualizace"
 #: src/logbook/logsupport.cxx:577
 #, c-format
 msgid "Really delete record for \"%s\"?"
+msgstr ""
+
+#: src/logbook/logsupport.cxx:944
+#, fuzzy
+msgid "Create cabrillo report"
+msgstr "Cabrillo rep."
+
+#: src/misc/configuration.cxx:500
+#, fuzzy
+msgid "Rig mode"
+msgstr "Prijem"
+
+#: src/misc/configuration.cxx:501
+msgid "Always LSB"
+msgstr ""
+
+#: src/misc/configuration.cxx:502
+msgid "Always USB"
 msgstr ""
 
 #: src/misc/configuration.cxx:662
@@ -1201,6 +1223,20 @@ msgstr ""
 msgid "Macro editor - "
 msgstr ""
 
+#: src/misc/macros.cxx:977
+#, fuzzy
+msgid "Open macro file"
+msgstr "Otevrit makra..."
+
+#: src/misc/macros.cxx:977 src/misc/macros.cxx:989
+msgid "Fldigi macro definition file\t*.mdf"
+msgstr ""
+
+#: src/misc/macros.cxx:989
+#, fuzzy
+msgid "Save macro file"
+msgstr "Ulozit makra..."
+
 #: src/misc/network.cxx:143
 msgid "Aborted"
 msgstr "Zrusen"
@@ -1334,6 +1370,30 @@ msgstr "Rig nespecifikovan"
 msgid "Memory Mapped Rig"
 msgstr "Rig s mapovanim pameti"
 
+#: src/rigcontrol/rigxml.cxx:869
+#, fuzzy
+msgid "Open rig xml file"
+msgstr "Otevrit makra..."
+
+#: src/rigcontrol/rigxml.cxx:869
+msgid "Fldigi rig xml definition file\t*.xml"
+msgstr ""
+
+#: src/soundcard/sound.cxx:110
+msgid ""
+"Waveform Audio Format\t*.wav\n"
+"AU\t*.{au,snd}\n"
+msgstr ""
+
+#: src/soundcard/sound.cxx:113
+msgid "Free Lossless Audio Codec\t*.flac"
+msgstr ""
+
+#: src/soundcard/sound.cxx:119 src/soundcard/sound.cxx:121
+#, fuzzy
+msgid "Audio file"
+msgstr "Info o zvuk. zarizeni"
+
 #: src/soundcard/soundconf.cxx:527
 msgid "The right audio channel is disabled. Enable it now?"
 msgstr ""
@@ -1456,6 +1516,24 @@ msgstr "Kmitocet"
 #: src/logbook/lgbook.cxx:904
 msgid "Callsign"
 msgstr "Volaci znak"
+
+#: src/waterfall/colorbox.cxx:87
+#, fuzzy
+msgid "Open palette"
+msgstr "Ulozit paletu"
+
+#: src/waterfall/colorbox.cxx:87 src/waterfall/colorbox.cxx:124
+msgid "Fldigi palette\t*.pal"
+msgstr ""
+
+#: src/waterfall/colorbox.cxx:110 src/waterfall/colorbox.cxx:135
+msgid "Palette: "
+msgstr ""
+
+#: src/waterfall/colorbox.cxx:124
+#, fuzzy
+msgid "Save palette"
+msgstr "Ulozit paletu"
 
 #: src/widgets/FTextRXTX.cxx:99
 #, fuzzy
@@ -4295,12 +4373,6 @@ msgstr "Kontest:"
 #, fuzzy
 #~ msgid "Min Rig-Contest"
 #~ msgstr "Ovladani rigu"
-
-#~ msgid "Open macros..."
-#~ msgstr "Otevrit makra..."
-
-#~ msgid "Save macros..."
-#~ msgstr "Ulozit makra..."
 
 #~ msgid "Show config"
 #~ msgstr "Zobrazit nastaveni"

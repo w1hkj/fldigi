@@ -54,6 +54,7 @@
 #  include <dlfcn.h>
 #endif
 
+#include "gettext.h"
 #include "sound.h"
 #include "configuration.h"
 #include "status.h"
@@ -106,18 +107,18 @@ SoundBase::~SoundBase()
 #if USE_SNDFILE
 void SoundBase::get_file_params(const char* def_fname, const char** fname, int* format)
 {
-	std::string filters = "Waveform Audio Format\t*.wav\n" "AU\t*.{au,snd}\n";
+	std::string filters = _("Waveform Audio Format\t*.wav\n" "AU\t*.{au,snd}\n");
 	int nfilt = 2;
 	if (format_supported(SF_FORMAT_FLAC | SF_FORMAT_PCM_16)) {
-		filters += "Free Lossless Audio Codec\t*.flac";
+		filters += _("Free Lossless Audio Codec\t*.flac");
 		nfilt++;
 	}
 
 	int fsel;
 	if (strstr(def_fname, "playback"))
-		*fname = FSEL::select("Audio file", filters.c_str(), def_fname, &fsel);
+		*fname = FSEL::select(_("Audio file"), filters.c_str(), def_fname, &fsel);
 	else
-		*fname = FSEL::saveas("Audio file", filters.c_str(), def_fname, &fsel);
+		*fname = FSEL::saveas(_("Audio file"), filters.c_str(), def_fname, &fsel);
 	if (!*fname)
 		return;
 
