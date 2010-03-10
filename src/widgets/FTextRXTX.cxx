@@ -83,14 +83,17 @@ class MVScrollbar : public Fl_Scrollbar
 
 public:
 	MVScrollbar(int X, int Y, int W, int H, const char* l = 0)
-		: Fl_Scrollbar(X, Y, W, H, l) { }
+		: Fl_Scrollbar(X, Y, W, H, l), draw_marks(false) { }
 
 	void draw(void);
-	void mark(Fl_Color c) { marks.push_back(mark_t(maximum() - 1.0, c)); }
-	void clear(void) { marks.clear(); }
+	void mark(Fl_Color c) { marks.push_back(mark_t(maximum() - 1.0, c)); redraw(); }
+	bool has_marks(void) { return !marks.empty(); }
+	void show_marks(bool b) { draw_marks = b; redraw(); }
+	void clear(void) { marks.clear(); redraw(); }
 
 private:
 	vector<mark_t> marks;
+	bool draw_marks;
 };
 
 static void show_font_warning(FTextBase* w);
@@ -116,6 +119,7 @@ Fl_Menu_Item FTextRX::menu[] = {
 	{ 0 }, // VIEW_MENU_WRAP
 
 	{ _("Quick entry"),      0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL },
+	{ _("Scroll hints"),      0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL },
 	{ 0 }
 };
 
@@ -129,16 +133,18 @@ Fl_Menu_Item FTextRX::menu[] = {
 /// @param h
 /// @param l
 FTextRX::FTextRX(int x, int y, int w, int h, const char *l)
-        : FTextView(x, y, w, h, l), quick_entry(false)
+        : FTextView(x, y, w, h, l)
 {
 	memcpy(menu + RX_MENU_COPY, FTextView::menu, (FTextView::menu->size() - 1) * sizeof(*FTextView::menu));
 	context_menu = menu;
 	init_context_menu();
 	menu[RX_MENU_QUICK_ENTRY].clear();
+	menu[RX_MENU_SCROLL_HINTS].clear();
 
 	// Replace the scrollbar widget
 	MVScrollbar* mvsb = new MVScrollbar(mVScrollBar->x(), mVScrollBar->y(),
 					    mVScrollBar->w(), mVScrollBar->h(), NULL);
+	mvsb->show_marks(false);
 	mvsb->callback(mVScrollBar->callback(), mVScrollBar->user_data());
 	remove(mVScrollBar);
 	delete mVScrollBar;
@@ -283,10 +289,19 @@ void FTextRX::add(unsigned char c, int attr)
 
 void FTextRX::set_quick_entry(bool b)
 {
-	if ((quick_entry = b))
+	if (b)
 		menu[RX_MENU_QUICK_ENTRY].set();
 	else
 		menu[RX_MENU_QUICK_ENTRY].clear();
+}
+
+void FTextRX::set_scroll_hints(bool b)
+{
+	if (b)
+		menu[RX_MENU_SCROLL_HINTS].set();
+	else
+		menu[RX_MENU_SCROLL_HINTS].clear();
+	static_cast<MVScrollbar*>(mVScrollBar)->show_marks(b);
 }
 
 void FTextRX::mark(FTextBase::TEXT_ATTR attr)
@@ -421,6 +436,11 @@ void FTextRX::handle_context_menu(void)
 		menu[RX_MENU_CALL].flags |= FL_MENU_DIVIDER;
 	}
 
+	if (static_cast<MVScrollbar*>(mVScrollBar)->has_marks())
+		menu[RX_MENU_SCROLL_HINTS].show();
+	else
+		menu[RX_MENU_SCROLL_HINTS].hide();
+
 	for (size_t i = RX_MENU_QRZ_THIS; i <= RX_MENU_XCHG; i++) {
 		if (test_item(i))
 			menu[i].show();
@@ -510,13 +530,17 @@ void FTextRX::menu_cb(size_t item)
 
 	case RX_MENU_QUICK_ENTRY:
 		menu[item].flags ^= FL_MENU_VALUE;
-		quick_entry = menu[item].value();
-		if (quick_entry)
+		if (menu[item].value())
 			handle_context_menu();
 		break;
 
 	case RX_MENU_WRAP:
 		set_word_wrap(!wrap);
+		break;
+
+	case RX_MENU_SCROLL_HINTS:
+		menu[item].flags ^= FL_MENU_VALUE;
+		static_cast<MVScrollbar*>(mVScrollBar)->show_marks(menu[item].value());
 		break;
 	}
 
@@ -1151,7 +1175,7 @@ void MVScrollbar::draw(void)
 {
 	Fl_Scrollbar::draw();
 
-	if (marks.empty())
+	if (marks.empty() || !draw_marks)
 		return;
 
 	assert((type() & FL_HOR_SLIDER) == 0);

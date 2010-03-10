@@ -44,7 +44,9 @@ public:
         }
 
 	void		set_quick_entry(bool b);
-	bool		get_quick_entry(void) { return quick_entry; }
+	bool		get_quick_entry(void) { return menu[RX_MENU_QUICK_ENTRY].value(); }
+	void		set_scroll_hints(bool b);
+	bool		get_scroll_hints(void) { return menu[RX_MENU_SCROLL_HINTS].value(); }
 	void		mark(FTextBase::TEXT_ATTR attr = CLICK_START);
 	void		clear(void);
 
@@ -56,7 +58,7 @@ protected:
 		RX_MENU_STATE, RX_MENU_PROVINCE,RX_MENU_COUNTRY, RX_MENU_LOC,
 		RX_MENU_RST_IN, RX_MENU_SERIAL, RX_MENU_XCHG,
 		RX_MENU_DIV, RX_MENU_COPY, RX_MENU_CLEAR, RX_MENU_SELECT_ALL,
-		RX_MENU_SAVE, RX_MENU_WRAP, RX_MENU_QUICK_ENTRY
+		RX_MENU_SAVE, RX_MENU_WRAP, RX_MENU_QUICK_ENTRY, RX_MENU_SCROLL_HINTS
 	};
 
 	void		handle_clickable(int x, int y);
@@ -71,7 +73,6 @@ protected:
 private:
 	FTextRX();
 	FTextRX(const FTextRX &t);
-	bool	quick_entry;
 
 protected:
 	static Fl_Menu_Item menu[];

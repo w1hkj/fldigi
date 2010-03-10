@@ -55,6 +55,7 @@ struct status {
 	bool	spot_log;
 	bool	contest;
 	bool	quick_entry;
+	bool	rx_scroll_hints;
 	bool	rx_word_wrap;
 	bool	tx_word_wrap;
 

@@ -110,6 +110,7 @@ status progStatus = {
 	false,				// bool contest
 
 	false,				// bool quick_entry
+	true,				// bool rx_scroll_hints;
 	true,				// bool rx_word_wrap
 	true,				// bool tx_word_wrap
 
@@ -161,6 +162,7 @@ void status::saveLastState()
 	logbook_col_5 = wBrowser->columnWidth(5);
 
 	quick_entry = ReceiveText->get_quick_entry();
+	rx_scroll_hints = ReceiveText->get_scroll_hints();
 	rx_word_wrap = ReceiveText->get_word_wrap();
 	tx_word_wrap = TransmitText->get_word_wrap();
 
@@ -239,6 +241,7 @@ if (!bWF_only) {
 
 	spref.set("contest", contest);
 	spref.set("quick_entry", quick_entry);
+	spref.set("rx_scroll_hints", rx_scroll_hints);
 	spref.set("rx_word_wrap", rx_word_wrap);
 	spref.set("tx_word_wrap", tx_word_wrap);
 
@@ -338,6 +341,7 @@ void status::loadLastState()
 
 	spref.get("contest", i, i); contest = i;
 	spref.get("quick_entry", i, i); quick_entry = i;
+	spref.get("rx_scroll_hints", i, rx_scroll_hints); rx_scroll_hints = i;
 	spref.get("rx_word_wrap", i, i); rx_word_wrap = i;
 	spref.get("tx_word_wrap", i, i); tx_word_wrap = i;
 
@@ -422,6 +426,7 @@ else {
 	wBrowser->columnWidth(5, logbook_col_5);
 
 	ReceiveText->set_quick_entry(quick_entry);
+	ReceiveText->set_scroll_hints(rx_scroll_hints);
 	ReceiveText->set_word_wrap(rx_word_wrap);
 	TransmitText->set_word_wrap(tx_word_wrap);
 
