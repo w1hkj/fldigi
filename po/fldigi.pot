@@ -3,13 +3,12 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#: src/rigcontrol/rigsupport.cxx:440
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: fldigi 3.20.0b2\n"
+"Project-Id-Version: fldigi 3.20.0b3\n"
 "Report-Msgid-Bugs-To: w1hkj AT w1hkj DOT com\n"
-"POT-Creation-Date: 2010-03-05 08:26-0600\n"
+"POT-Creation-Date: 2010-03-06 12:53+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -777,6 +776,10 @@ msgstr ""
 msgid "Export to fixed field text file"
 msgstr ""
 
+#: src/logbook/logsupport.cxx:115
+msgid "Export to ADIF file"
+msgstr ""
+
 #: src/logbook/logsupport.cxx:144
 msgid "Save changed Logbook?"
 msgstr ""
@@ -825,6 +828,22 @@ msgstr ""
 #: src/logbook/logsupport.cxx:577
 #, c-format
 msgid "Really delete record for \"%s\"?"
+msgstr ""
+
+#: src/logbook/logsupport.cxx:944
+msgid "Create cabrillo report"
+msgstr ""
+
+#: src/misc/configuration.cxx:500
+msgid "Rig mode"
+msgstr ""
+
+#: src/misc/configuration.cxx:501
+msgid "Always LSB"
+msgstr ""
+
+#: src/misc/configuration.cxx:502
+msgid "Always USB"
 msgstr ""
 
 #: src/misc/configuration.cxx:662
@@ -1119,6 +1138,18 @@ msgstr ""
 msgid "Macro editor - "
 msgstr ""
 
+#: src/misc/macros.cxx:977
+msgid "Open macro file"
+msgstr ""
+
+#: src/misc/macros.cxx:977 src/misc/macros.cxx:989
+msgid "Fldigi macro definition file\t*.mdf"
+msgstr ""
+
+#: src/misc/macros.cxx:989
+msgid "Save macro file"
+msgstr ""
+
 #: src/misc/network.cxx:143
 msgid "Aborted"
 msgstr ""
@@ -1244,6 +1275,28 @@ msgstr ""
 msgid "Memory Mapped Rig"
 msgstr ""
 
+#: src/rigcontrol/rigxml.cxx:869
+msgid "Open rig xml file"
+msgstr ""
+
+#: src/rigcontrol/rigxml.cxx:869
+msgid "Fldigi rig xml definition file\t*.xml"
+msgstr ""
+
+#: src/soundcard/sound.cxx:110
+msgid ""
+"Waveform Audio Format\t*.wav\n"
+"AU\t*.{au,snd}\n"
+msgstr ""
+
+#: src/soundcard/sound.cxx:113
+msgid "Free Lossless Audio Codec\t*.flac"
+msgstr ""
+
+#: src/soundcard/sound.cxx:119 src/soundcard/sound.cxx:121
+msgid "Audio file"
+msgstr ""
+
 #: src/soundcard/soundconf.cxx:527
 msgid "The right audio channel is disabled. Enable it now?"
 msgstr ""
@@ -1357,6 +1410,22 @@ msgstr ""
 #: src/spot/notify.cxx:1393 src/dialogs/notifydialog.cxx:131
 #: src/logbook/lgbook.cxx:904
 msgid "Callsign"
+msgstr ""
+
+#: src/waterfall/colorbox.cxx:87
+msgid "Open palette"
+msgstr ""
+
+#: src/waterfall/colorbox.cxx:87 src/waterfall/colorbox.cxx:124
+msgid "Fldigi palette\t*.pal"
+msgstr ""
+
+#: src/waterfall/colorbox.cxx:110 src/waterfall/colorbox.cxx:135
+msgid "Palette: "
+msgstr ""
+
+#: src/waterfall/colorbox.cxx:124
+msgid "Save palette"
 msgstr ""
 
 #: src/widgets/FTextRXTX.cxx:99

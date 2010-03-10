@@ -437,7 +437,7 @@ void setTitle()
 		txtRigName->label(windowTitle.c_str());
 		txtRigName->redraw_label();
 	} else {
-		txtRigName->label(_(""));
+		txtRigName->label();
 		txtRigName->redraw_label();
 	}
 }

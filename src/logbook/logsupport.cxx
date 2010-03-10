@@ -112,7 +112,7 @@ void Export_ADIF()
 	cQsoRec *rec;
 
 	string filters = "ADIF\t*." ADIF_SUFFIX;
-	const char* p = FSEL::saveas("Export to ADIF file", filters.c_str(),
+	const char* p = FSEL::saveas(_("Export to ADIF file"), filters.c_str(),
 					 "export." ADIF_SUFFIX);
 	if (!p)
 		return;
@@ -941,7 +941,7 @@ void WriteCabrillo()
 	string filters = "TEXT\t*.txt";
 	string strContest = "";
 
-	const char* p = FSEL::saveas("Create cabrillo report", filters.c_str(),
+	const char* p = FSEL::saveas(_("Create cabrillo report"), filters.c_str(),
 					 "contest.txt");
 	if (!p)
 		return;

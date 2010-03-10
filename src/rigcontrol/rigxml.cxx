@@ -28,6 +28,7 @@
 
 #include <FL/filename.H>
 
+#include "gettext.h"
 #include "rigio.h"
 #include "rigxml.h"
 #include "rigsupport.h"
@@ -865,7 +866,7 @@ void selectRigXmlFilename()
 {
 	string deffilename;
 	deffilename = progdefaults.XmlRigFilename;
-	const char *p = FSEL::select("Open rig xml file", "Fldigi rig xml definition file\t*.xml", deffilename.c_str());
+	const char *p = FSEL::select(_("Open rig xml file"), _("Fldigi rig xml definition file\t*.xml"), deffilename.c_str());
 	if (p) {
 		progdefaults.XmlRigFilename = p;
 		txtXmlRigFilename->value(fl_filename_name(p));
