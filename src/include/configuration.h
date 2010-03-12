@@ -1020,6 +1020,38 @@
         ELEM_(int, ViewerFontsize, "VIEWERFONTSIZE",                                    \
               "PSK Browser font size",                                                  \
               FL_NORMAL_SIZE)                                                           \
+                                                                                        \
+        ELEM_(Fl_Color, Sql1Color, "SQL1COLOR",                                         \
+              "UI SQL button select color 1",                                           \
+              FL_YELLOW)                                                                \
+        ELEM_(Fl_Color, Sql2Color, "SQL2COLOR",                                         \
+              "UI SQL button select color 2",                                           \
+              FL_GREEN)                                                                 \
+        ELEM_(Fl_Color, AfcColor, "AFCCOLOR",                                           \
+              "UI AFC button select color",                                             \
+              FL_GREEN)                                                                 \
+        ELEM_(Fl_Color, LkColor, "LKCOLOR",                                             \
+              "UI Lk xmt frequ select color",                                           \
+              FL_GREEN)                                                                 \
+        ELEM_(Fl_Color, RevColor, "REVCOLOR",                                           \
+              "UI Rev select color",                                                    \
+              FL_GREEN)                                                                 \
+        ELEM_(Fl_Color, XmtColor, "XMTCOLOR",                                           \
+              "UI T/R select color",                                                    \
+              FL_RED)                                                                   \
+        ELEM_(Fl_Color, SpotColor, "SPOTCOLOR",                                         \
+              "UI Spot select color",                                                   \
+              FL_GREEN)                                                                 \
+        ELEM_(Fl_Color, RxIDColor, "RXIDCOLOR",                                         \
+              "UI RxID select color",                                                   \
+              FL_GREEN)                                                                 \
+        ELEM_(Fl_Color, TxIDColor, "TXIDCOLOR",                                         \
+              "UI TxID select color",                                                   \
+              FL_GREEN)                                                                 \
+        ELEM_(Fl_Color, TuneColor, "TUNECOLOR",                                         \
+              "UI Tune select color",                                                   \
+              FL_RED)                                                                   \
+                                                                                        \
         /* XML-RPC/ARQ servers */                                                       \
         ELEM_(std::string, xmlrpc_address, "", "",  "127.0.0.1")                        \
         ELEM_(std::string, xmlrpc_port, "", "",  "7362")                                \

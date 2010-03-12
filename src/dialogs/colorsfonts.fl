@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0109 
+version 1.0110 
 i18n_type 1 
 i18n_include "gettext.h" 
 i18n_function _ 
@@ -108,7 +108,7 @@ Function {make_colorsfonts()} {open
 } {
   Fl_Window dlgColorFont {
     label {Colors and Fonts} open
-    xywh {502 90 375 220} type Double
+    xywh {496 117 375 220} type Double
     code0 {dlgColorFont->xclass(PACKAGE_TARNAME);} visible
   } {
     Fl_Button btnClrFntClose {
@@ -117,10 +117,10 @@ Function {make_colorsfonts()} {open
       xywh {296 190 75 25}
     }
     Fl_Tabs tabsColors {open
-      xywh {0 5 375 179}
+      xywh {0 5 375 185}
     } {
       Fl_Group {} {
-        label {Freq Display} open
+        label {Freq Disp} open selected
         xywh {5 30 365 150}
       } {
         Fl_Box FDdisplay {
@@ -378,7 +378,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group {} {
-        label {Text Ctrls} open
+        label {Rx/Tx txt} open
         xywh {5 30 365 150} hide
       } {
         Fl_Input RxText {
@@ -627,7 +627,7 @@ b->show();}
         }
       }
       Fl_Group {} {
-        label {Tab Colors} open
+        label Tabs open
         xywh {0 30 365 150} hide
       } {
         Fl_Button btnTabColor {
@@ -643,6 +643,145 @@ progdefaults.changed = true;}
 setTabColors();    
 progdefaults.changed = true;}
           xywh {215 75 75 20}
+        }
+      }
+      Fl_Group {} {
+        label Buttons open
+        xywh {0 30 365 150} hide
+      } {
+        Fl_Button btnSpotColor {
+          label Spot
+          callback {progdefaults.SpotColor = fl_show_colormap(progdefaults.SpotColor);
+spotcolor->color(progdefaults.SpotColor);
+spotcolor->redraw();
+spot_selection_color();
+progdefaults.changed = true;}
+          xywh {46 50 70 20}
+        }
+        Fl_Button btnRxIDColor {
+          label RxID
+          callback {progdefaults.RxIDColor = fl_show_colormap(progdefaults.RxIDColor);
+rxidcolor->color(progdefaults.RxIDColor);
+rxidcolor->redraw();
+rxid_selection_color();
+progdefaults.changed = true;}
+          xywh {46 84 70 20}
+        }
+        Fl_Button btnTxIDColor {
+          label TxID
+          callback {progdefaults.TxIDColor = fl_show_colormap(progdefaults.TxIDColor);
+txidcolor->color(progdefaults.TxIDColor);
+txidcolor->redraw();
+txid_selection_color();
+progdefaults.changed = true;}
+          xywh {46 119 70 20}
+        }
+        Fl_Button btnTuneColor {
+          label Tune
+          callback {progdefaults.TuneColor = fl_show_colormap(progdefaults.TuneColor);
+tunecolor->color(progdefaults.TuneColor);
+tunecolor->redraw();
+tune_selection_color();
+progdefaults.changed = true;}
+          xywh {46 154 70 20}
+        }
+        Fl_Button btnLkColor {
+          label Lk
+          callback {progdefaults.LkColor = fl_show_colormap(progdefaults.LkColor);
+lockcolor->color(progdefaults.LkColor);
+lockcolor->redraw();
+xmtlock_selection_color();
+progdefaults.changed = true;}
+          xywh {157 50 70 20}
+        }
+        Fl_Button btnRevColor {
+          label Rev
+          callback {progdefaults.RevColor = fl_show_colormap(progdefaults.RevColor);
+revcolor->color(progdefaults.RevColor);
+revcolor->redraw();
+rev_selection_color();
+progdefaults.changed = true;}
+          xywh {157 84 70 20}
+        }
+        Fl_Button btnXmtColor {
+          label {T/R}
+          callback {progdefaults.XmtColor = fl_show_colormap(progdefaults.XmtColor);
+xmtcolor->color(progdefaults.XmtColor);
+xmtcolor->redraw();
+xmtrcv_selection_color();
+progdefaults.changed = true;}
+          xywh {157 118 70 20}
+        }
+        Fl_Button btnAfcColor {
+          label AFC
+          callback {progdefaults.AfcColor = fl_show_colormap(progdefaults.AfcColor);
+afccolor->color(progdefaults.AfcColor);
+afccolor->redraw();
+afc_selection_color();
+progdefaults.changed = true;}
+          xywh {272 49 70 20}
+        }
+        Fl_Button btnSql1Color {
+          label {SQL-1}
+          callback {progdefaults.Sql1Color = fl_show_colormap(progdefaults.Sql1Color);
+sql1color->color(progdefaults.Sql1Color);
+sql1color->redraw();
+sql_selection_color();
+progdefaults.changed = true;}
+          xywh {272 85 70 20}
+        }
+        Fl_Button btnSql2Color {
+          label {SQL-2}
+          callback {progdefaults.Sql2Color = fl_show_colormap(progdefaults.Sql2Color);
+sql2color->color(progdefaults.Sql2Color);
+sql2color->redraw();
+sql_selection_color();
+progdefaults.changed = true;}
+          xywh {272 119 70 20}
+        }
+        Fl_Box spotcolor {
+          xywh {27 51 18 18} box THIN_DOWN_BOX color 3
+          code0 {o->color(progdefaults.SpotColor);}
+        }
+        Fl_Box rxidcolor {
+          xywh {27 85 18 18} box THIN_DOWN_BOX
+          code0 {o->color(progdefaults.RxIDColor);}
+        }
+        Fl_Box txidcolor {
+          xywh {27 120 18 18} box THIN_DOWN_BOX
+          code0 {o->color(progdefaults.TxIDColor);}
+        }
+        Fl_Box tunecolor {
+          xywh {27 155 18 18} box THIN_DOWN_BOX
+          code0 {o->color(progdefaults.TuneColor);}
+        }
+        Fl_Box lockcolor {
+          xywh {137 50 18 18} box THIN_DOWN_BOX color 3
+          code0 {o->color(progdefaults.LkColor);}
+        }
+        Fl_Box revcolor {
+          xywh {137 85 18 18} box THIN_DOWN_BOX
+          code0 {o->color(progdefaults.RevColor);}
+        }
+        Fl_Box xmtcolor {
+          xywh {137 119 18 18} box THIN_DOWN_BOX
+          code0 {o->color(progdefaults.XmtColor);}
+        }
+        Fl_Box afccolor {
+          xywh {252 51 18 18} box THIN_DOWN_BOX color 3
+          code0 {o->color(progdefaults.AfcColor);}
+        }
+        Fl_Box sql1color {
+          xywh {252 86 18 18} box THIN_DOWN_BOX
+          code0 {o->color(progdefaults.Sql1Color);}
+        }
+        Fl_Box sql2color {
+          xywh {252 120 18 18} box THIN_DOWN_BOX
+          code0 {o->color(progdefaults.Sql2Color);}
+        }
+        Fl_Box {} {
+          label {Lighted button enabled colors}
+          xywh {135 154 220 19} align 21
         }
       }
     }

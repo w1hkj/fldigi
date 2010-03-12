@@ -297,6 +297,11 @@ public:
 	bool USB();
 	void Reverse( bool v) { reverse = v;}
 	bool Reverse() { return reverse;}
+
+	void xmtrcv_selection_color(Fl_Color clr) {xmtrcv->selection_color(clr);}
+	void reverse_selection_color(Fl_Color clr) {btnRev->selection_color(clr);}
+	void xmtlock_selection_color(Fl_Color clr) {xmtlock->selection_color(clr);}
+
 	void Bandwidth(int bw)
 	{
 		wfdisp->Bandwidth(bw);

@@ -178,6 +178,16 @@ extern void show_spot(bool v);
 extern void showMacroSet();
 extern void setwfrange();
 
+extern void xmtrcv_selection_color();
+extern void rev_selection_color();
+extern void xmtlock_selection_color();
+extern void sql_selection_color();
+extern void afc_selection_color();
+extern void rxid_selection_color();
+extern void txid_selection_color();
+extern void tune_selection_color();
+extern void spot_selection_color();
+
 extern void put_WARNstatus(double);
 
 extern void qsoSave_cb(Fl_Widget *b, void *);

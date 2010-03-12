@@ -2812,22 +2812,22 @@ void create_fl_digi_main_primary() {
 			toggle_visible_modes(NULL, NULL);
 
 			btnAutoSpot = new Fl_Light_Button(progStatus.mainW - 250 - pad, 0, 50, Hmenu, "Spot");
-			btnAutoSpot->selection_color(FL_YELLOW);
+			btnAutoSpot->selection_color(progdefaults.SpotColor);
 			btnAutoSpot->callback(cbAutoSpot, 0);
 			btnAutoSpot->deactivate();
 
 			btnRSID = new Fl_Light_Button(progStatus.mainW - 200 - pad, 0, 50, Hmenu, "RxID");
-			btnRSID->selection_color(FL_GREEN);
+			btnRSID->selection_color(progdefaults.RxIDColor);
 			btnRSID->tooltip("Receive RSID");
 			btnRSID->callback(cbRSID, 0);
 
 			btnTxRSID = new Fl_Light_Button(progStatus.mainW - 150 - pad, 0, 50, Hmenu, "TxID");
-			btnTxRSID->selection_color(FL_BLUE);
+			btnTxRSID->selection_color(progdefaults.TxIDColor);
 			btnTxRSID->tooltip("Transmit RSID");
 			btnTxRSID->callback(cbTxRSID, 0);
 
 			btnTune = new Fl_Light_Button(progStatus.mainW - 100 - pad, 0, 50, Hmenu, "TUNE");
-			btnTune->selection_color(FL_RED);
+			btnTune->selection_color(progdefaults.TuneColor);
 			btnTune->callback(cbTune, 0);
 
 			btnMacroTimer = new Fl_Button(progStatus.mainW - 50 - pad, 0, 50, Hmenu);
@@ -3987,22 +3987,22 @@ void create_fl_digi_main_WF_only() {
 			mnu->menu(alt_menu_);
 
 			btnAutoSpot = new Fl_Light_Button(progStatus.mainW - 200 - pad, 0, 50, Hmenu, "Spot");
-			btnAutoSpot->selection_color(FL_YELLOW);
+			btnAutoSpot->selection_color(progdefaults.SpotColor);
 			btnAutoSpot->callback(cbAutoSpot, 0);
 			btnAutoSpot->deactivate();
 
 			btnRSID = new Fl_Light_Button(progStatus.mainW - 150 - pad, 0, 50, Hmenu, "RxID");
-			btnRSID->selection_color(FL_GREEN);
+			btnRSID->selection_color(progdefaults.RxIDColor);
 			btnRSID->tooltip("Receive RSID");
 			btnRSID->callback(cbRSID, 0);
 
 			btnTxRSID = new Fl_Light_Button(progStatus.mainW - 100 - pad, 0, 50, Hmenu, "TxID");
-			btnTxRSID->selection_color(FL_BLUE);
+			btnTxRSID->selection_color(progdefaults.TxIDColor);
 			btnTxRSID->tooltip("Transmit RSID");
 			btnTxRSID->callback(cbTxRSID, 0);
 
 			btnTune = new Fl_Light_Button(progStatus.mainW - 50 - pad, 0, 50, Hmenu, "TUNE");
-			btnTune->selection_color(FL_RED);
+			btnTune->selection_color(progdefaults.TuneColor);
 			btnTune->callback(cbTune, 0);
 
 		mnuFrame->resizable(mnu);
@@ -4093,10 +4093,12 @@ void create_fl_digi_main_WF_only() {
 					progStatus.mainW - bwSqlOnOff - bwAfcOnOff,
 					Y,
 					bwAfcOnOff, Hstatus, "AFC");
+				btnAFC->selection_color(progdefaults.AfcColor);
 				btnSQL = new Fl_Light_Button(
 					progStatus.mainW - bwSqlOnOff,
 					Y,
 					sql_width, Hstatus, "SQL");
+				btnSQL->selection_color(progdefaults.Sql1Color);
 			}
 			btnAFC->callback(cbAFC, 0);
 			btnAFC->value(1);
@@ -4189,13 +4191,12 @@ void put_Bandwidth(int bandwidth)
 static void set_metric(double metric)
 {
 	pgrsSquelch->value(metric);
-	static Fl_Color sqlcol = btnSQL->selection_color();
 	if (!progStatus.sqlonoff)
 		return;
 	if (metric < progStatus.sldrSquelchValue)
-		btnSQL->selection_color(sqlcol);
+		btnSQL->selection_color(progdefaults.Sql1Color);
 	else
-	        btnSQL->selection_color(FL_GREEN);
+		btnSQL->selection_color(progdefaults.Sql2Color);
 	btnSQL->redraw_label();
 }
 
@@ -4803,3 +4804,58 @@ void note_qrg(bool no_dup, const char* prefix, const char* suffix, trx_mode mode
 	if (suffix && *suffix)
 		ReceiveText->add(suffix);
 }
+
+void xmtrcv_selection_color()
+{
+	wf->xmtrcv_selection_color(progdefaults.XmtColor);
+	wf->redraw();
+}
+
+void rev_selection_color()
+{
+	wf->reverse_selection_color(progdefaults.RevColor);
+	wf->redraw();
+}
+
+void xmtlock_selection_color()
+{
+	wf->xmtlock_selection_color(progdefaults.LkColor);
+	wf->redraw();
+}
+
+void sql_selection_color()
+{
+	btnSQL->selection_color(progdefaults.Sql1Color);
+	btnSQL->redraw();
+}
+
+void afc_selection_color()
+{
+	btnAFC->selection_color(progdefaults.AfcColor);
+	btnAFC->redraw();
+}
+
+void rxid_selection_color()
+{
+	btnRSID->selection_color(progdefaults.RxIDColor);
+	btnRSID->redraw();
+}
+
+void txid_selection_color()
+{
+	btnTxRSID->selection_color(progdefaults.TxIDColor);
+	btnTxRSID->redraw();
+}
+
+void tune_selection_color()
+{
+	btnTune->selection_color(progdefaults.TuneColor);
+	btnTune->redraw();
+}
+
+void spot_selection_color()
+{
+	btnAutoSpot->selection_color(progdefaults.SpotColor);
+	btnAutoSpot->redraw();
+}
+

@@ -1512,21 +1512,21 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	xmtlock = new Fl_Light_Button(xpos, buttonrow, (int)(bwXmtLock*ratio), BTN_HEIGHT, "Lk");
 	xmtlock->callback(xmtlock_cb, 0);
 	xmtlock->value(0);
-	xmtlock->selection_color(FL_RED);
+	xmtlock->selection_color(progdefaults.LkColor);
 	xmtlock->tooltip(_("Lock transmit frequency"));
 
 	xpos = xpos + (int)(bwXmtLock*ratio) + wSpace;
 	btnRev = new Fl_Light_Button(xpos, buttonrow, (int)(bwRev*ratio), BTN_HEIGHT, "Rv");
 	btnRev->callback(btnRev_cb, 0);
 	btnRev->value(0);
-	btnRev->selection_color(FL_GREEN);
+	btnRev->selection_color(progdefaults.RevColor);
 	btnRev->tooltip(_("Reverse"));
 	reverse = false;
 
 	xpos = w() - (int)(bwXmtRcv*ratio) - wSpace;
 	xmtrcv = new Fl_Light_Button(xpos, buttonrow, (int)(bwXmtRcv*ratio) - BEZEL, BTN_HEIGHT, "T/R");
 	xmtrcv->callback(xmtrcv_cb, 0);
-	xmtrcv->selection_color(FL_RED);
+	xmtrcv->selection_color(progdefaults.XmtColor);
 	xmtrcv->value(0);
 	xmtrcv->tooltip(_("Transmit/Receive"));
 	end();
