@@ -111,6 +111,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(LINE_SEP);
 	w->add(_("<RX>\treceive"));
 	w->add(_("<TX>\ttransmit"));
+	w->add(_("<TX/RX>\ttoggle T/R"));
 	w->add(_("<SRCHUP>\tsearch UP for signal"));
 	w->add(_("<SRCHDN>\tsearch DOWN for signal"));
 	w->add(_("<GOHOME>\treturn to sweet spot"));

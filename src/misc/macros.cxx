@@ -42,6 +42,7 @@
 #include "trx.h"
 #include "modem.h"
 #include "qrunner.h"
+#include "waterfall.h"
 
 #include <FL/Fl.H>
 #include <FL/filename.H>
@@ -59,6 +60,7 @@ using namespace std;
 MACROTEXT macros;
 CONTESTCNTR contest_count;
 static bool TransmitON = false;
+static bool ToggleTXRX = false;
 int mNbr;
 
 struct MTAGS { const char *mTAG; void (*fp)(string &, size_t &);};
@@ -85,6 +87,7 @@ void pTEXT(string &, size_t &);
 void pCWID(string &, size_t &);
 void pRX(string &, size_t &);
 void pTX(string &, size_t &);
+void pTXRX(string &, size_t &);
 void pVER(string &, size_t &);
 void pCNTR(string &, size_t &);
 void pDECR(string &, size_t &);
@@ -144,6 +147,7 @@ MTAGS mtags[] = {
 {"<CWID>",		pCWID},
 {"<RX>",		pRX},
 {"<TX>",		pTX},
+{"<TX/RX>",		pTXRX},
 {"<VER>",		pVER},
 {"<CNTR>",		pCNTR},
 {"<DECR>",		pDECR},
@@ -500,6 +504,13 @@ void pTX(string &s, size_t &i)
 	s.erase(i, 4);
 	TransmitON = true;
 }
+
+void pTXRX(string &s, size_t &i)
+{
+	s.erase(i, 6);
+	ToggleTXRX = true;
+}
+
 
 void pVER(string &s, size_t &i)
 {
@@ -1010,6 +1021,7 @@ string MACROTEXT::expandMacro(int n)
 	size_t idx = 0;
 	expand = true;
 	TransmitON = false;
+	ToggleTXRX = false;
 	mNbr = n;
 	expanded = text[n];
 	MTAGS *pMtags;
@@ -1115,9 +1127,23 @@ void finishWait(void *)
 	text2send.clear();
 }
 
+static void set_button(Fl_Button* button, bool value)
+{
+	button->value(value);
+	button->do_callback();
+}
+
 void MACROTEXT::execute(int n)
 {
 	text2send = expandMacro(n);
+	if (ToggleTXRX) {
+		text2send.clear();
+		if (!wf->xmtrcv->value())
+			REQ(set_button, wf->xmtrcv, true);
+		else
+			REQ(set_button, wf->xmtrcv, false);
+		return;
+	}
 	if (useWait && waitTime > 0) {
 		Fl::add_timeout(waitTime, finishWait);
 		useWait = false;

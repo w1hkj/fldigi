@@ -70,14 +70,14 @@ tnx fer QSO <NAME>, 73, God bless.\n\
 <ZDT> <CALL> de <MYCALL> sk\n\
 <RX>";
 
-label[5] = "Me";
-text[5] = " my name is <MYNAME> <MYNAME> ";
+label[5] = "Me/Qth";
+text[5] = "\n\
+my name ... <MYNAME> <MYNAME>\n\
+my QTH .... <MYQTH>\n\
+my LOC .... <MYLOC>\n";
 
-label[6] = "QTH";
-text[6] = " my QTH is <MYQTH>, loc: <MYLOC> ";
-
-label[7] = "Brag";
-text[7] = "\n\
+label[6] = "Brag";
+text[6] = "\n\
 << <MYCALL>, <MYNAME> >>\n\
 Age:   \n\
 Rig:   \n\
@@ -88,17 +88,22 @@ Soft:  <VER>\n\
 Web:   \n\
 Email: ";
 
-label[8] = "Tx @>>";
-text[8] = "<TX>";
+label[7] = "";
+text[7] = "";
 
-label[9] = "Rx @||";
-text[9] = "<RX>";
+label[8] = "T/R";
+text[8] = "<TX/RX>";
 
-label[10] = "";
-text[10] = "";
+label[9] = "Tx @>>";
+text[9] = "<TX>";
 
-label[11] = "";
-text[11] = "";
+label[10] = "Rx @||";
+text[10] = "<RX>";
+
+label[11] = "TX @>|";
+text[11] = "<TX>\n\
+de <MYCALL> k\n\
+<RX>";
 
 label[12] = "C Ans @>|";
 text[12] = "<TX>de <MYCALL> <MYCALL><RX>";
