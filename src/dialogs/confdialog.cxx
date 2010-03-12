@@ -2508,7 +2508,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
             inpMyQth->when(FL_WHEN_RELEASE);
             inpMyQth->labelsize(FL_NORMAL_SIZE);
           } // Fl_Input2* inpMyQth
-          { inpMyLocator = new Fl_Input2(110, 166, 85, 24, _("Locator:"));
+          { inpMyLocator = new Fl_Input2(110, 133, 85, 24, _("Locator:"));
             inpMyLocator->tooltip(_("Maidenhead locator as in EM64qv"));
             inpMyLocator->box(FL_DOWN_BOX);
             inpMyLocator->color((Fl_Color)FL_BACKGROUND2_COLOR);
@@ -2524,7 +2524,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
           } // Fl_Input2* inpMyLocator
           o->end();
         } // Fl_Group* o
-        { inpMyAntenna = new Fl_Input2(110, 132, 320, 24, _("Antenna:"));
+        { inpMyAntenna = new Fl_Input2(110, 167, 320, 24, _("Antenna:"));
           inpMyAntenna->tooltip(_("Short description of antenna"));
           inpMyAntenna->box(FL_DOWN_BOX);
           inpMyAntenna->color((Fl_Color)FL_BACKGROUND2_COLOR);

@@ -88,18 +88,18 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {169 113 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
+    xywh {446 346 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {-3 0 520 372} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
+        callback {progdefaults.changed = true;} open
         tooltip {Operator information} xywh {0 25 500 345} when 1
       } {
         Fl_Group {} {
-          label Station open
+          label Station open selected
           xywh {5 35 490 165} box ENGRAVED_FRAME align 21
         } {
           Fl_Input inpMyCallsign {
@@ -142,7 +142,7 @@ progdefaults.changed = true;}
             label {Locator:}
             callback {progdefaults.myLocator = o->value();
 progdefaults.changed = true;}
-            tooltip {Maidenhead locator as in EM64qv} xywh {110 166 85 24}
+            tooltip {Maidenhead locator as in EM64qv} xywh {110 133 85 24}
             code0 {inpMyLocator->labelsize(FL_NORMAL_SIZE);}
             class Fl_Input2
           }
@@ -151,7 +151,7 @@ progdefaults.changed = true;}
           label {Antenna:}
           callback {progdefaults.myAntenna = o->value();
 progdefaults.changed = true;}
-          tooltip {Short description of antenna} xywh {110 132 320 24}
+          tooltip {Short description of antenna} xywh {110 167 320 24}
           code0 {inpMyAntenna->labelsize(FL_NORMAL_SIZE);}
           class Fl_Input2
         }
@@ -1603,8 +1603,8 @@ progdefaults.changed = true;}
                 callback {progdefaults.rtty_custom_shift = o->value();
 resetRTTY();
 progdefaults.changed = true;}
-                code0 {o->lstep(10.0);}
                 tooltip {Input carrier shift} xywh {15 100 100 20} align 8 minimum 10 maximum 1000 step 1 value 450
+                code0 {o->lstep(10.0);}
               }
             }
           }
