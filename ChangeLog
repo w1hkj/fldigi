@@ -1,6 +1,21 @@
-2010-03-05  David Freese  <w1hkj@w1hkj.com>
+2010-03-12  David Freese  <w1hkj@w1hkj.com>
 
-	c4f3cb3: Version 3.20.0b3
+	b1702af: User Config Tab
+	6639fef: <TX/RX> macro
+	48552e1: Light Button Colors
+
+2010-03-10  Stelios Bounanos  <vcs@enotty.net>
+
+	f7d5af9: Fix status load
+	97c65e1: Add scroll hints menu item
+
+2010-03-10  Stephane Fillod  <fillods@users.sf.net>
+
+	7369f44: Update i18n
+
+2010-03-09  David Freese  <w1hkj@w1hkj.com>
+
+	e9ec047: DigiTalk
 
 2010-03-05  Сергей И. Королев  <exception0x0d@gmail.com>
 
@@ -17,12 +32,10 @@
 	82eaead: Olivia Pre/Postamble visibility on waterfall
 	a454879: Empty Call Nag
 	e3c7a76: Initial Configuration
-	7b89984: Version 3.20.0b2
 	551d118: Textout.txt on MS
 
 2010-03-02  Stelios Bounanos  <vcs@enotty.net>
 
-	95eef63: Version 3.20.0b1
 	2f48f07: Add release notes
 	cc957f3: Update copyright headers
 	a9b976a: Delete unused code
@@ -44,15 +57,10 @@
 2010-02-25  David Freese  <w1hkj@w1hkj.com>
 
 	5a3d0ab: RSID detect
-	a6769cb: Version 3.13CA
 
 2010-02-24  Stelios Bounanos  <vcs@enotty.net>
 
 	df7caff: Fix name_to_device
-
-2010-02-23  David Freese  <w1hkj@w1hkj.com>
-
-	1c18ad2: Version 3.13BZ
 
 2010-02-22  Vitaliy Berdinskikh  <ur6lad@i.ua>
 
@@ -71,12 +79,10 @@
 	0459067: Log excluded ID modes
 	b3eda45: Add init_modem frequency argument
 
-2010-02-14  David Freese  <w1hkj@w1hkj.com>
+2010-02-13  David Freese  <w1hkj@w1hkj.com>
 
-	164c42b: Version 3.13BY
 	51700d7: TX ^r ^R parsing
 	b1c5fa9: Startup Fix
-	ead3514: Version 3.13BX
 	3f3ddc0: FELD improvement
 	3acb7f2: Wizard Fix
 
@@ -88,7 +94,6 @@
 
 	872f52c: WF_ONLY height fix
 	64b1921: <INFO1><INFO2> fix
-	e0ff1f2: Version 3.13BW
 	617f459: ARQ abort
 
 2010-02-06  Stelios Bounanos  <vcs@enotty.net>
@@ -106,13 +111,6 @@
 
 	c5ca09a: Configure Dialog
 	03eedc4: Olivia Divide by Zero Error
-
-2010-01-30  Stelios Bounanos  <vcs@enotty.net>
-
-	0a10fee: Version 3.13BV
-
-2010-01-29  David Freese  <w1hkj@w1hkj.com>
-
 	3333585: DUP indicator
 	b895c1a: Olivia Noise Estimator
 	d4540c0: Waterfall Offset
@@ -137,12 +135,10 @@
 
 2010-01-27  David Freese  <w1hkj@w1hkj.com>
 
-	be9dc0a: Version 3.13BU
 	6b40f6b: RTTY demodulator
 	eb9a385: Rig control changes
 	e87b9df: Logbook empty record
 	29e891e: Config Dialog Cosmetics
-	9b6a313: Version 3.13BT
 	6354484: RTTY mods
 
 2010-01-25  John Douyere  <vk2eta@gmail.com>
@@ -151,13 +147,10 @@
 
 2010-01-22  David Freese  <w1hkj@w1hkj.com>
 
-	7956fbb: Version 3.13BS
 	a06bf93: S/N evaluators
-	070f84d: Version 3.13BR
 	d84b060: RTTY decoder mods
 	93bedef: RSID fft processing
 	afd3adc: HELL AGC improvement
-	b9e25d9: Version 3.13BQ
 
 2010-01-12  Stelios Bounanos  <vcs@enotty.net>
 
@@ -168,7 +161,6 @@
 
 2010-01-08  David Freese  <w1hkj@w1hkj.com>
 
-	fd18603: Version 3.13BP
 	86bbd55: Initial UI
 	56610a9: NOLOG alternate Callsign entry
 
@@ -180,14 +172,11 @@
 
 	276e769: Xchg In capture
 	4cd90d3: WF freq limit
-	5a37ed9: Version 3.13BO
 	eea0287: Auto file transmit
 	c762969: CSV Export
 	75be29e: Debug code removal
-	ab7dd93: Version 3.13BN
 	ddc5790: Modem Initialization
 	6552c16: CSV Export
-	4f52b1f: Version 3.13BM
 
 2010-01-06  Stelios Bounanos  <vcs@enotty.net>
 
@@ -207,7 +196,6 @@
 2010-01-06  David Freese  <w1hkj@w1hkj.com>
 
 	9f9e738: UI adjustments
-	afcf313: Version 3.13BL
 	ca0e9a8: MS Excel compatibility
 
 2010-01-02  Stelios Bounanos  <vcs@enotty.net>
@@ -219,7 +207,6 @@
 	4bf78c6: CW Squelch
 	d494b8a: QPSK Reverse
 	5d4ac2d: ARQ parser
-	93a4fb5: Version 3.13BK
 	afc5861: Olivia Mods
 
 2009-12-30  Stelios Bounanos  <vcs@enotty.net>
@@ -231,11 +218,8 @@
 
 	6bb2a5c: Revert "XMLRPC set_freq bug fix"
 	b751b9d: THOR soft decoding
-	b2fa58f: Version 3.13BJ
 	087b4aa: XMLRPC set_freq bug fix
-	90b15d1: Version 3.13BI
 	8e8b418: Auto Extraction bug fix
-	58148c6: Version 3.13BH
 
 2009-12-18  Stelios Bounanos  <vcs@enotty.net>
 
@@ -254,10 +238,6 @@
 	645b74c: THOR squelch adjustment
 	58d86f6: PSKR - PSK63F - new modem types
 
-2009-12-09  David Freese  <w1hkj@w1hkj.com>
-
-	6cf1831: Version 3.13BG
-
 2009-12-08  Stelios Bounanos  <vcs@enotty.net>
 
 	d4e0a6d: Add support for persistent xmlrpc connections
@@ -265,7 +245,6 @@
 2009-12-08  David Freese  <w1hkj@w1hkj.com>
 
 	f5d3e46: Gaussian Noise Generator
-	d721d87: Version 3.13BF
 
 2009-11-29  Stelios Bounanos  <vcs@enotty.net>
 
@@ -274,20 +253,12 @@
 2009-11-28  David Freese  <w1hkj@w1hkj.com>
 
 	69cb512: RxID Save
-	1070537: Version 3.13BE
 	b4dba6f: Callsign field size mod
 
 2009-11-27  Stelios Bounanos  <vcs@enotty.net>
 
 	53a1e6b: Change arq class member types
 	78d5e4d: Disable win32 snprintf workaround
-
-2009-11-23  David Freese  <w1hkj@w1hkj.com>
-
-	2962ede: Version 3.13BD
-
-2009-11-21  Stelios Bounanos  <vcs@enotty.net>
-
 	aaaef29: Remove unused variables
 	ab0d77f: Add missing USE_X checks
 	b3d0265: Update crash handler
@@ -298,7 +269,6 @@
 2009-11-18  David Freese  <w1hkj@w1hkj.com>
 
 	c226978: Hamlib build fix
-	f7acb91: Version 3.13BC
 	04992b1: Rig CAT mods
 	72959b6: RigCat Mods
 	53659c4: Hamlib mod fix
@@ -313,7 +283,6 @@
 
 2009-11-05  David Freese  <w1hkj@w1hkj.com>
 
-	2d95d82: Version 3.13BB
 	04a9bfc: Macro Tags
 
 2009-11-05  Stelios Bounanos  <vcs@enotty.net>
@@ -322,12 +291,9 @@
 
 2009-11-04  David Freese  <w1hkj@w1hkj.com>
 
-	ec7ef1e: Version 3.13BA
 	ade6427: WAIT macro
-	2cfe7fc: Version 3.13AZ
 	d02a3c8: RSID Macro Tags
 	18f4af1: Flarq email folder
-	9a8fe75: Version 3.13AY
 	d60d6d9: Macro Save Log
 	b99366d: No Rig Save
 
@@ -341,30 +307,23 @@
 
 2009-10-24  David Freese  <w1hkj@w1hkj.com>
 
-	e4c5e85: Version 3.13AX
 	65f70cd: WF Limits
 	4fa12df: ARQ RSID controls
 	6e4737d: RST Out clear bug
-	f19e6d2: Version 3.13AW
 	55168db: wfdisp-mod
 	05a62fa: PSK250-AFC
-	9ec650c: Version 3.13AV
 	856b5ed: Rx/Tx Menu
 	abedc7c: Waterfall background
 	df226c9: Min-Rig-Log Panel
-	cfd526d: Version 3.13AU
 	c9560ea: Macro Timer
 	ff7d941: Flarq mods
-	824d658: Version 3.13AT
 	2625212: Log save bug
-	5f8da67: Version 3.13AS
 	d1fe543: GUI adjustment
 	c092d62: Rx Contest Popup Menu
 	3d9952e: Contest Logging
 	e62b52f: ENTER bug fix
 	3e464b8: Docked Scope
 	0ecc899: Macro Timer
-	13acee8: Version 3.13AR
 	11b82cd: Stop Timer Bug
 	5333ee2: Focus Mod
 	45239f4: Internationalization
@@ -372,12 +331,9 @@
 	273622c: UI - minimized
 	7163ecb: RigCAT dialog
 	bc78904: KISS update
-	15d4954: Version 3.13AQ
 	159ba1e: KISS update
-	1d2ad5e: Version 3.13AP
 	6440fa5: KISS
 	9faebb1: Flarq Directory Structure
-	3aa8c1e: Version 3.13AO
 	9d9d56b: Talker Socket
 
 2009-10-14  Stelios Bounanos  <vcs@enotty.net>
@@ -388,19 +344,13 @@
 
 2009-10-09  David Freese  <w1hkj@w1hkj.com>
 
-	a4ecf8e: Version 3.13AN
 	526c222: Macro bug fix
-	4975fcd: Version 3.13AM
 	5733c10: Macro bug
-	1d7021c: Version 3.13AL
 	d6fc376: Wrap Extract
 	536e251: Macro TUNE
-	985239d: Version 3.13AK
 	ab565fb: Feld Hell Mod
 	615dd34: Text file out
-	3d45835: Version 3.11AJ
 	a5e17e8: Logbook read bug
-	8c010b3: Version 3.11AI
 	e0f86c7: TX Control Code fix
 	05ff91e: NBEMS
 	8a97f6b: Hamlib Exception Handling
@@ -432,20 +382,11 @@
 
 2009-09-16  David Freese  <w1hkj@w1hkj.com>
 
-	8aad147: Version 3.13AH
 	60ca5f0: rigCAT bug fix
-	1ed88a2: Version 3.13AG
 	4e19f03: rigCAT mods
 	f9423b4: Serial i/o Stopbits
 	765c6d9: Dom/Thor mod
 	fbcd160: QRZ lookup
-
-2009-09-10  Stelios Bounanos  <vcs@enotty.net>
-
-	4f25a4e: Version 3.13AF
-
-2009-09-09  David Freese  <w1hkj@w1hkj.com>
-
 	d36b5de: ARQ / RSID mod
 
 2009-09-08  Stephane Fillod  <fillods@users.sf.net>
@@ -477,9 +418,7 @@
 
 2009-08-31  David Freese  <w1hkj@w1hkj.com>
 
-	db84e7f: Version 3.13AE
 	779bf23: PSK post DCD signal
-	ac1e686: Version 3.13AD
 
 2009-08-20  Stelios Bounanos  <vcs@enotty.net>
 
@@ -512,7 +451,6 @@
 	62608ea: PKS mailserver mod
 	bf164eb: rigMEM modification
 	3e6a5c4: WRAP file extract
-	09e4a16: Version 3.13AC
 	f2b29cb: RigCAT bug fix
 	5897cf7: Hamlib exit message
 	eba91ff: Secondary text TX but in DominoEX-FEC and Thor
@@ -529,7 +467,6 @@
 
 2009-07-25  David Freese  <w1hkj@w1hkj.com>
 
-	15c6553: Version 3.13AB
 	b72cfd5: MT63 mod
 
 2009-07-25  Stelios Bounanos  <vcs@enotty.net>
@@ -537,15 +474,16 @@
 	4fff116: Add missing include
 	d1c206b: Restore MT-63 options
 	dfab290: Initialise pthreads/win32 in flarq
-	4fdba00: Version 3.13AA
 	ecf1f10: Restore two channel capture
 	a8a734c: Fix millisleep function
 
 2009-07-23  David Freese  <w1hkj@w1hkj.com>
 
 	cf4c671: MT63 transmit bug fix
-	52fb02e: Version 3.12
-	44f869c: Version 3.12AO
+
+
+=Version 3.12=
+
 
 2009-07-13  Stelios Bounanos  <vcs@enotty.net>
 
@@ -563,22 +501,13 @@
 
 2009-07-02  David Freese  <w1hkj@w1hkj.com>
 
-	b83eea4: Version 3.12AN
 	9de9eb5: Xmlrpc mods
-	84fb2eb: Version 3.12AM
 	07a01b1: Logbook bug fix
 
 2009-07-01  Stelios Bounanos  <vcs@enotty.net>
 
 	42b638d: Fix socket fd leak
 	58c2f8b: Fix compilation error and warnings on 64bit archs
-
-2009-06-30  David Freese  <w1hkj@w1hkj.com>
-
-	2cb3874: Version 3.12AL
-
-2009-06-30  Stelios Bounanos  <vcs@enotty.net>
-
 	c07ec21: Add generic notifier
 	88bedac: Add dragging to table widget
 	757a8f8: Simplify RE classes
@@ -598,7 +527,6 @@
 2009-06-30  David Freese  <w1hkj@w1hkj.com>
 
 	3bad2d4:     xmlrpc mods
-	3c53fe5: Version 3.12AK
 
 2009-06-12  Stelios Bounanos  <vcs@enotty.net>
 
@@ -608,11 +536,8 @@
 
 2009-06-12  David Freese  <w1hkj@w1hkj.com>
 
-	b20e2b9: Version 3.12AJ
 	a8dfa58: Logbook bug fix
-	b5ca5f1: Version 3.12AI
 	9b7786f: RigCAT mods
-	ef8b126: Version 3.12AH
 
 2009-06-01  Stelios Bounanos  <vcs@enotty.net>
 
@@ -625,7 +550,6 @@
 
 2009-05-26  dave  <dave@linux-dev.(none)>
 
-	f0d43fe: Version 3.12AG
 	7690a1c: FLARQ
 
 2009-05-26  Stelios Bounanos  <vcs@enotty.net>
@@ -641,7 +565,6 @@
 
 2009-05-16  David Freese  <w1hkj@w1hkj.com>
 
-	f4686cd: Version 3.12AF
 	6b6cad9: PSK search algorithm
 
 2009-05-12  Stelios Bounanos  <vcs@enotty.net>
@@ -652,7 +575,6 @@
 2009-05-05  David Freese  <w1hkj@w1hkj.com>
 
 	b4112de: Added <RSID:on|off|t>, <AFC:on:off|t> macro tags
-	5a3132e: Version 3.12AE
 	7ae826f: RTTY pseudo output, corrected stop bit inversion
 
 2009-05-02  Stelios Bounanos  <vcs@enotty.net>
@@ -663,9 +585,7 @@
 
 2009-05-02  David Freese  <w1hkj@w1hkj.com>
 
-	7b6f999: Version 3.12AD
 	b030b4b: Fix OS dependent compile error
-	c58dcb1: Version 3.12AC
 	abc11f7: Updated memory mapped rig contol
 
 2009-04-26  Stelios Bounanos  <vcs@enotty.net>
@@ -678,7 +598,6 @@
 2009-04-25  David Freese  <w1hkj@w1hkj.com>
 
 	affae09: CW default WPM (numeric keypad *) bug fix
-	7ca417c: Version 3.12AB
 
 2009-04-23  Stelios Bounanos  <vcs@enotty.net>
 
@@ -690,7 +609,6 @@
 2009-04-23  David Freese  <w1hkj@w1hkj.com>
 
 	8944198: CW replay bug
-	0f9793b: Version 3.12AA
 	fc50717: CW Farnsworth timing addition
 	63ccc2f: MinGW serial i/o, hamlib, rigcat mods
 
