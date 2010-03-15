@@ -119,7 +119,7 @@ void loadBrowser(Fl_Widget *widget) {
 
 	w->add(LINE_SEP);
 	w->add(_("<FILE:>\tinsert text file"));
-	w->add(_("<IDLE:NN>\tidle signal for NN sec"));
+	w->add(_("<IDLE:NN.nn>\tidle signal for NN.nn sec"));
 	w->add(_("<TIMER:NN>\trepeat every NN sec"));
 	w->add(_("<TUNE:NN>\ttune signal for NN sec"));
 	w->add(_("<WAIT:NN>\tdelay xmt for NN sec"));
@@ -229,28 +229,31 @@ void cbInsertMacro(Fl_Widget *, void *)
 
 Fl_Double_Window* make_macroeditor(void)
 {
-	Fl_Double_Window* w = new Fl_Double_Window(730, 230, "");
-	labeltext = new Fl_Input2(45, 15, 115, 25, _("Label:"));
-	labeltext->textfont(FL_COURIER);
+	Fl_Double_Window* w = new Fl_Double_Window(768, 190, "");
 
-	btnMacroEditOK = new Fl_Button(500, 15, 75, 25, _("OK"));
-	btnMacroEditOK->callback(cbMacroEditOK);
-
-	btnMacroEditCancel = new Fl_Button(600, 15, 75, 25, _("Cancel"));
-	btnMacroEditCancel->callback(cbMacroEditOK);
-
-	macrotext = new Fl_Input2(5, 60, 450, 165, _("Text:"));
+	macrotext = new Fl_Input2(2, 22, 450, 140, _("Text:"));
 	macrotext->type(FL_MULTILINE_INPUT);
 	macrotext->textfont(FL_COURIER);
 	macrotext->align(FL_ALIGN_TOP_LEFT);
 
-	btnInsertMacro = new Fl_Button(460, 125, 25, 25);
+	btnInsertMacro = new Fl_Button(454, 86, 20, 20);
 	btnInsertMacro->image(new Fl_Pixmap(left_arrow_icon));
 	btnInsertMacro->callback(cbInsertMacro);
 
-	macroDefs = new Fl_Hold_Browser(490, 60, 235, 165);
+	macroDefs = new Fl_Hold_Browser(476, 22, 290, 140, _("Select Tags:"));
 	macroDefs->column_widths(widths);
+	macroDefs->align(FL_ALIGN_TOP_LEFT);
 	loadBrowser(macroDefs);
+
+	labeltext = new Fl_Input2(2 + 450 - 115, 164, 115, 24, _("Macro Button Label:"));
+	labeltext->textfont(FL_COURIER);
+
+	btnMacroEditOK = new Fl_Button(476 + 145 - 80 - 1, 164, 80, 24, _("OK"));
+	btnMacroEditOK->callback(cbMacroEditOK);
+
+	btnMacroEditCancel = new Fl_Button(476 + 145 + 1 , 164, 80, 24, _("Cancel"));
+	btnMacroEditCancel->callback(cbMacroEditOK);
+
 	w->end();
 	w->xclass(PACKAGE_NAME);
 	return w;

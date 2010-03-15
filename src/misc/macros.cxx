@@ -297,17 +297,17 @@ void pPOST(string &s, size_t &i)
 	s.replace(i, endbracket - i + 1, "");
 }
 
-bool useIdle = false;
-int  idleTime = 0;
+bool macro_idle_on = false;
+float  idleTime = 0;
 
 void pIDLE(string &s, size_t &i)
 {
 	size_t endbracket = s.find('>',i);
-	int number;
+	float number;
 	string sTime = s.substr(i+6, endbracket - i - 6);
 	if (sTime.length() > 0) {
-		sscanf(sTime.c_str(), "%d", &number);
-		useIdle = true;
+		sscanf(sTime.c_str(), "%f", &number);
+		macro_idle_on = true;
 		idleTime = number;
 	}
 	s.replace(i, endbracket - i + 1, "");
@@ -1076,23 +1076,19 @@ string MACROTEXT::expandMacro(int n)
 
 string text2send = "";
 
-void insertTextAfter(void *)
+void idleTimer(void *)
 {
-	TransmitText->add( text2send.c_str() );
-	text2send.clear();
+	macro_idle_on = false;
 }
 
 void continueMacro(void *)
 {
 	if ( TransmitON ) {
 		active_modem->set_stopflag(false);
+		if (macro_idle_on && idleTime > 0)
+			Fl::add_timeout(idleTime, idleTimer);
 		start_tx();
 		TransmitON = false;
-		if (useIdle && idleTime > 0) {
-			Fl::add_timeout(idleTime , insertTextAfter);
-			useIdle = false;
-			return;
-		}
 	}
 	TransmitText->add( text2send.c_str() );
 	text2send.clear();
@@ -1115,13 +1111,10 @@ void finishWait(void *)
 	}
 	if ( TransmitON ) {
 		active_modem->set_stopflag(false);
+		if (macro_idle_on && idleTime > 0)
+			Fl::add_timeout(idleTime, idleTimer);
 		start_tx();
 		TransmitON = false;
-		if (useIdle && idleTime > 0) {
-			Fl::add_timeout(idleTime , insertTextAfter);
-			useIdle = false;
-			return;
-		}
 	}
 	TransmitText->add( text2send.c_str() );
 	text2send.clear();
@@ -1138,9 +1131,11 @@ void MACROTEXT::execute(int n)
 	text2send = expandMacro(n);
 	if (ToggleTXRX) {
 		text2send.clear();
-		if (!wf->xmtrcv->value())
+		if (!wf->xmtrcv->value()) {
 			REQ(set_button, wf->xmtrcv, true);
-		else
+			if (macro_idle_on && idleTime > 0)
+				Fl::add_timeout(idleTime, idleTimer);
+		} else
 			REQ(set_button, wf->xmtrcv, false);
 		return;
 	}
@@ -1156,14 +1151,12 @@ void MACROTEXT::execute(int n)
 		return;
 	}
 	if ( TransmitON ) {
+		if (macro_idle_on && idleTime > 0)
+			Fl::add_timeout(idleTime, idleTimer);
+
 		active_modem->set_stopflag(false);
 		start_tx();
 		TransmitON = false;
-		if (useIdle && idleTime > 0) {
-			Fl::add_timeout(idleTime , insertTextAfter);
-			useIdle = false;
-			return;
-		}
 	}
 	TransmitText->add( text2send.c_str() );
 	text2send.clear();

@@ -4479,9 +4479,13 @@ void put_rx_data(int *data, int len)
  	FHdisp->data(data, len);
 }
 
+extern bool macro_idle_on;
+
 char szTestChar[] = "E|I|S|T|M|O|A|V";
 int get_tx_char(void)
 {
+	if (macro_idle_on) return -1;
+
 	if (arq_text_available)
 		return arq_get_char();
 
