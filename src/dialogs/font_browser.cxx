@@ -40,6 +40,8 @@
 
 using namespace std;
 
+Font_Browser* font_browser;
+
 // Font Color selected
 
 void Font_Browser::ColorSelect()
@@ -172,11 +174,12 @@ Font_Browser::Font_Browser(int x, int y, int w, int h, const char *lbl )
     fontnbr = FL_HELVETICA;;
     fontsize = FL_NORMAL_SIZE; // Font Size to be used
     fontcolor = FL_FOREGROUND_COLOR;
+    filter = ALL_TYPES;
 
     lst_Font->value(1);
     FontNameSelect();
 
-    Fl::focus(lst_Font);
+//!    Fl::focus(lst_Font);
 
     xclass(PACKAGE_NAME);
 }
@@ -232,6 +235,86 @@ bool Font_Browser::fixed_width(Fl_Font f)
 	return fl_width('X') == fl_width('i');
 }
 
+#include <vector>
+#include <FL/Fl_Double_Window.H>
+#include <FL/Fl_Progress.H>
+
+class Progress_Window : public Fl_Double_Window
+{
+public:
+	Progress_Window(float min = 0.0f, float max = 100.0f, const char* l = 0)
+		: Fl_Double_Window(200, 34), ps(5, 5, 190, 24, l)
+	{
+		end();
+
+		range(min, max);
+		ps.align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE);
+		ps.selection_color(FL_SELECTION_COLOR);
+		set_modal();
+		callback(nop);
+
+		if (l && *l) {
+			fl_font(FL_HELVETICA, FL_NORMAL_SIZE);
+			int s = (int)(fl_width(l) + fl_width('W'));
+			if (s > ps.w()) {
+				ps.size(s, ps.h());
+				size(ps.w() + 10, h());
+			}
+		}
+		position(Fl::event_x_root() - w() / 2, Fl::event_y_root() - h());
+
+		xclass(PACKAGE_TARNAME);
+		show();
+	}
+	void range(float min, float max) { ps.minimum(min); ps.maximum(max); }
+	void value(float val) { ps.value(val); }
+	static void nop(Fl_Widget*, void*) { }
+private:
+	Fl_Progress ps;
+};
+
+void Font_Browser::fontFilter(filter_t filter)
+{
+	if (this->filter == filter)
+		return;
+
+	int s = lst_Font->size();
+
+	static vector<bool> fixed;
+	if (fixed.empty()) {
+		Progress_Window pw(1, s, _("Reading fonts..."));
+		fixed.resize(s);
+		for (int i = 1; i < s; i++) {
+			fixed[i] = fixed_width((Fl_Font)(intptr_t)(lst_Font->data(i)));
+			pw.value(i);
+			Fl::check();
+		}
+	}
+
+	switch (this->filter = filter) {
+	case FIXED_WIDTH:
+		for (int i = 1; i < s; i++) {
+			if (fixed[i])
+				lst_Font->show(i);
+			else
+				lst_Font->hide(i);
+		}
+		break;
+	case VARIABLE_WIDTH:
+		for (int i = 1; i < s; i++) {
+			if (!fixed[i])
+				lst_Font->show(i);
+			else
+				lst_Font->hide(i);
+		}
+		break;
+	case ALL_TYPES:
+		for (int i = 1; i < s; i++)
+			lst_Font->show(i);
+		break;
+	}
+	lst_Font->topline(lst_Font->value());
+}
 
 //////////////////////////////////////////////////////////////////////
 

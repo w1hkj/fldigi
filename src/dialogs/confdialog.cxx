@@ -598,14 +598,12 @@ progdefaults.changed = true;
 Fl_Button *btnWaterfallFont=(Fl_Button *)0;
 
 static void cb_btnWaterfallFont(Fl_Button*, void*) {
-  static Font_Browser *b = (Font_Browser *)0;
-if (!b) {
-b = new Font_Browser;
-b->fontNumber(progdefaults.WaterfallFontnbr);
-b->fontSize(progdefaults.WaterfallFontsize);
-}
-b->callback((Fl_Callback*)cbWaterfallFontBrowser, (void*)(b));
-b->show();
+  font_browser->fontNumber(progdefaults.WaterfallFontnbr);
+font_browser->fontSize(progdefaults.WaterfallFontsize);
+font_browser->fontColor(FL_FOREGROUND_COLOR);
+font_browser->fontFilter(Font_Browser::ALL_TYPES);
+font_browser->callback((Fl_Callback*)cbWaterfallFontBrowser);
+font_browser->show();
 }
 
 Fl_Check_Button *btnViewXmtSignal=(Fl_Check_Button *)0;

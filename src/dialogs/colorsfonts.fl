@@ -41,12 +41,11 @@ Function {adjust_label(Fl_Widget* w)} {open private return_type void
   code {w->labelcolor(fl_contrast(w->labelcolor(), w->color()));} {}
 } 
 
-Function {cbRxFontBrowser(Fl_Widget* w, void* arg)} {open private return_type void
+Function {cbRxFontBrowser(Fl_Widget*, void*)} {open private return_type void
 } {
-  code {Font_Browser *fb= (Font_Browser*)w;
-    Fl_Font font = fb->fontNumber();
-    int size = fb->fontSize();
-    Fl_Color color = fb->fontColor();
+  code {Fl_Font font = font_browser->fontNumber();
+    int size = font_browser->fontSize();
+    Fl_Color color = font_browser->fontColor();
 
     RxText->textfont(font);
     RxText->textsize(size);
@@ -61,17 +60,16 @@ Function {cbRxFontBrowser(Fl_Widget* w, void* arg)} {open private return_type vo
     ReceiveText->setFontSize(size);
     ReceiveText->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
 
-    fb->hide();
+    font_browser->hide();
 
     progdefaults.changed = true;} {}
 } 
 
-Function {cbTxFontBrowser(Fl_Widget* w, void* arg)} {open private return_type void
+Function {cbTxFontBrowser(Fl_Widget*, void*)} {open private return_type void
 } {
-  code {Font_Browser *fb= (Font_Browser*)w;
-    Fl_Font font = fb->fontNumber();
-    int size = fb->fontSize();
-    Fl_Color color = fb->fontColor();
+  code {Fl_Font font = font_browser->fontNumber();
+    int size = font_browser->fontSize();
+    Fl_Color color = font_browser->fontColor();
 
     TxText->textfont(font);
     TxText->textsize(size);
@@ -86,29 +84,29 @@ Function {cbTxFontBrowser(Fl_Widget* w, void* arg)} {open private return_type vo
     TransmitText->setFontSize(size);
     TransmitText->setFontColor(progdefaults.TxFontcolor, FTextBase::RECV);
 
-    fb->hide();
+    font_browser->hide();
 
     progdefaults.changed = true;} {}
 } 
 
-Function {cbWaterfallFontBrowser(Font_Browser*, void* v)} {open return_type void
+Function {cbWaterfallFontBrowser(Fl_Widget*, void*)} {open return_type void
 } {
-  code {Font_Browser *ft= (Font_Browser*)v;
-    Fl_Font fnt = ft->fontNumber();
-    int size = ft->fontSize();
+  code {Fl_Font fnt = font_browser->fontNumber();
+    int size = font_browser->fontSize();
 
     progdefaults.WaterfallFontnbr = fnt;
     progdefaults.WaterfallFontsize = size;
     progdefaults.changed = true;
 
-    ft->hide();} {}
+    font_browser->hide();} {}
 } 
 
 Function {make_colorsfonts()} {open
 } {
+  code {font_browser = new Font_Browser;} {}
   Fl_Window dlgColorFont {
-    label {Colors and Fonts} open
-    xywh {496 117 375 220} type Double
+    label {Colors and Fonts} open selected
+    xywh {496 125 375 220} type Double
     code0 {dlgColorFont->xclass(PACKAGE_TARNAME);} visible
   } {
     Fl_Button btnClrFntClose {
@@ -120,7 +118,7 @@ Function {make_colorsfonts()} {open
       xywh {0 5 375 185}
     } {
       Fl_Group {} {
-        label {Freq Disp} open selected
+        label {Freq Disp} open
         xywh {5 30 365 150}
       } {
         Fl_Box FDdisplay {
@@ -439,28 +437,22 @@ progdefaults.changed = true;}
         }
         Fl_Button btnRxFont {
           label {Rx font}
-          callback {static Font_Browser* b = 0;
-if (!b) {
-    b = new Font_Browser;
-    b->fontNumber(progdefaults.RxFontnbr);
-    b->fontSize(progdefaults.RxFontsize);
-    b->fontColor(progdefaults.RxFontcolor);
-    b->callback(cbRxFontBrowser);
-}
-b->show();}
+          callback {font_browser->fontNumber(progdefaults.RxFontnbr);
+    font_browser->fontSize(progdefaults.RxFontsize);
+    font_browser->fontColor(progdefaults.RxFontcolor);
+    font_browser->fontFilter(Font_Browser::ALL_TYPES);
+    font_browser->callback(cbRxFontBrowser);
+font_browser->show();}
           xywh {275 50 75 20}
         }
         Fl_Button btnTxFont {
           label {Tx font}
-          callback {static Font_Browser* b = 0;
-    if (!b) {
-        b = new Font_Browser;
-        b->fontNumber(progdefaults.TxFontnbr);
-        b->fontSize(progdefaults.TxFontsize);
-        b->fontColor(progdefaults.TxFontcolor);
-        b->callback(cbTxFontBrowser);
-    }
-    b->show();}
+          callback {font_browser->fontNumber(progdefaults.TxFontnbr);
+    font_browser->fontSize(progdefaults.TxFontsize);
+    font_browser->fontColor(progdefaults.TxFontcolor);
+    font_browser->fontFilter(Font_Browser::ALL_TYPES);
+    font_browser->callback(cbTxFontBrowser);
+    font_browser->show();}
           xywh {275 90 75 20}
         }
         Fl_Button btnXMIT {

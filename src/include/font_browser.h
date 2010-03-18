@@ -51,11 +51,15 @@ public:
 // Font browser widget
 class Font_Browser : public Fl_Window
 {
+public:
+    enum filter_t { FIXED_WIDTH, VARIABLE_WIDTH, ALL_TYPES };
+
 private:
     int		numfonts;
     Fl_Font	fontnbr;
     int		fontsize;
-    Fl_Color fontcolor;
+    Fl_Color	fontcolor;
+    filter_t	filter;
     void	*data_;
 
     Fl_Browser	*lst_Font;
@@ -88,6 +92,9 @@ public:
     void fontName(const char* n);
 
     static bool fixed_width(Fl_Font f);
+    void fontFilter(filter_t filter);
 };
+
+extern Font_Browser* font_browser;
 
 #endif
