@@ -5,6 +5,7 @@
 #include <config.h>
 #include "fl_digi.h"
 #include "configuration.h"
+#include "Viewer.h"
 #include <FL/Fl_Color_Chooser.H>
 #include <FL/fl_show_colormap.H>
 
@@ -77,6 +78,15 @@ void cbWaterfallFontBrowser(Fl_Widget*, void*) {
 
     progdefaults.WaterfallFontnbr = fnt;
     progdefaults.WaterfallFontsize = size;
+    progdefaults.changed = true;
+
+    font_browser->hide();
+}
+
+void cbViewerFontBrowser(Fl_Widget*, void*) {
+  progdefaults.ViewerFontnbr = font_browser->fontNumber();
+    progdefaults.ViewerFontsize = font_browser->fontSize();
+    initViewer();
     progdefaults.changed = true;
 
     font_browser->hide();

@@ -91,18 +91,18 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {446 346 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
+    xywh {471 88 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {-3 0 520 372} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open
+        callback {progdefaults.changed = true;} open selected
         tooltip {Operator information} xywh {0 25 500 345} when 1
       } {
         Fl_Group {} {
-          label Station open selected
+          label Station open
           xywh {5 35 490 165} box ENGRAVED_FRAME align 21
         } {
           Fl_Input inpMyCallsign {
@@ -1444,7 +1444,7 @@ OFF - Clear & restart} xywh {212 125 165 20} down_box DOWN_BOX
                     label Channels
                     callback {progdefaults.VIEWERchannels = (int)(o->value());
 initViewer();}
-                    tooltip {Change \# of psk viewer channels} xywh {15 95 39 20} align 8
+                    tooltip {Change \# of psk viewer channels} xywh {15 95 50 20} align 8
                     code0 {o->minimum(5);}
                     code1 {o->maximum(30);}
                     code2 {o->step(1);}
@@ -1480,12 +1480,22 @@ progdefaults.changed = true;}
                     callback {progdefaults.VIEWERlabeltype = o->value();
 initViewer();
 progdefaults.changed = true;} open
-                    tooltip {Appearance of label on each channel} xywh {15 155 150 25} down_box BORDER_BOX align 8
+                    tooltip {Appearance of label on each channel} xywh {212 155 150 24} down_box BORDER_BOX align 8
                     code0 {mnuViewerLabel->add("Audio frequency");}
                     code1 {mnuViewerLabel->add("Radio frequency");}
                     code2 {mnuViewerLabel->add("Channel number");}
                     code3 {mnuViewerLabel->value(progdefaults.VIEWERlabeltype);}
                   } {}
+                  Fl_Button btnViewerFont {
+                    label {Font...}
+                    callback {font_browser->fontNumber(progdefaults.ViewerFontnbr);
+font_browser->fontSize(progdefaults.ViewerFontsize);
+font_browser->fontColor(FL_FOREGROUND_COLOR);
+font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+font_browser->callback(cbViewerFontBrowser);
+font_browser->show();}
+                    xywh {15 155 70 24}
+                  }
                 }
               }
             }

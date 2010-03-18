@@ -1134,6 +1134,17 @@ initViewer();
 progdefaults.changed = true;
 }
 
+Fl_Button *btnViewerFont=(Fl_Button *)0;
+
+static void cb_btnViewerFont(Fl_Button*, void*) {
+  font_browser->fontNumber(progdefaults.ViewerFontnbr);
+font_browser->fontSize(progdefaults.ViewerFontsize);
+font_browser->fontColor(FL_FOREGROUND_COLOR);
+font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+font_browser->callback(cbViewerFontBrowser);
+font_browser->show();
+}
+
 Fl_Group *tabRTTY=(Fl_Group *)0;
 
 Fl_Choice *selShift=(Fl_Choice *)0;
@@ -3949,7 +3960,7 @@ an merging"));
                 btnMarquee->callback((Fl_Callback*)cb_btnMarquee);
                 o->value(progdefaults.VIEWERmarquee);
                 } // Fl_Check_Button* btnMarquee
-                { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(15, 95, 39, 20, _("Channels"));
+                { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(15, 95, 50, 20, _("Channels"));
                 cntChannels->tooltip(_("Change # of psk viewer channels"));
                 cntChannels->box(FL_NO_BOX);
                 cntChannels->color((Fl_Color)FL_BACKGROUND_COLOR);
@@ -4000,7 +4011,7 @@ an merging"));
                 o->step(1);
                 o->value(progdefaults.VIEWERtimeout);
                 } // Fl_Spinner2* cntTimeout
-                { mnuViewerLabel = new Fl_Choice(15, 155, 150, 25, _("Channel label"));
+                { mnuViewerLabel = new Fl_Choice(212, 155, 150, 24, _("Channel label"));
                 mnuViewerLabel->tooltip(_("Appearance of label on each channel"));
                 mnuViewerLabel->down_box(FL_BORDER_BOX);
                 mnuViewerLabel->callback((Fl_Callback*)cb_mnuViewerLabel);
@@ -4010,6 +4021,9 @@ an merging"));
                 mnuViewerLabel->add("Channel number");
                 mnuViewerLabel->value(progdefaults.VIEWERlabeltype);
                 } // Fl_Choice* mnuViewerLabel
+                { btnViewerFont = new Fl_Button(15, 155, 70, 24, _("Font..."));
+                btnViewerFont->callback((Fl_Callback*)cb_btnViewerFont);
+                } // Fl_Button* btnViewerFont
                 o->end();
                 } // Fl_Group* o
                 o->end();

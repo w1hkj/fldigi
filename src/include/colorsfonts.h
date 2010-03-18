@@ -6,6 +6,7 @@
 #include "font_browser.h"
 void selectColorsFonts();
 void cbWaterfallFontBrowser(Fl_Widget*, void*);
+void cbViewerFontBrowser(Fl_Widget*, void*);
 #include <FL/Fl_Double_Window.H>
 extern Fl_Double_Window *dlgColorFont;
 #include <FL/Fl_Button.H>

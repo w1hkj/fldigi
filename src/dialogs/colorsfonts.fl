@@ -14,6 +14,9 @@ decl {\#include "fl_digi.h"} {global
 decl {\#include "configuration.h"} {global
 } 
 
+decl {\#include "Viewer.h"} {global
+} 
+
 decl {\#include "font_browser.h"} {public global
 } 
 
@@ -96,6 +99,16 @@ Function {cbWaterfallFontBrowser(Fl_Widget*, void*)} {open return_type void
 
     progdefaults.WaterfallFontnbr = fnt;
     progdefaults.WaterfallFontsize = size;
+    progdefaults.changed = true;
+
+    font_browser->hide();} {}
+} 
+
+Function {cbViewerFontBrowser(Fl_Widget*, void*)} {open return_type void
+} {
+  code {progdefaults.ViewerFontnbr = font_browser->fontNumber();
+    progdefaults.ViewerFontsize = font_browser->fontSize();
+    initViewer();
     progdefaults.changed = true;
 
     font_browser->hide();} {}

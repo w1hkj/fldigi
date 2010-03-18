@@ -34,6 +34,7 @@
 #include "main.h"
 #include "viewpsk.h"
 #include "configuration.h"
+#include "confdialog.h"
 #include "status.h"
 #include "waterfall.h"
 #include "fl_digi.h"
@@ -87,13 +88,11 @@ static string freqformat(int i)
 		break;
 	}
 
-	fline = "@f";
 	fline += bkselect;
 	fline += white;
 	fline += szLine;
   	fline += '\t';
 	fline += bkgnd[i % 2];
-	fline += "@f";
 
 	return fline;
 }
@@ -174,9 +173,9 @@ static void make_colors()
 	bkgnd[1] = tempstr;
 }
 
-static void evalcwidth()
+static void evalcwidth(Fl_Font font, int size)
 {
-	fl_font(FL_COURIER, FL_NORMAL_SIZE);
+	fl_font(font, size);
 	cwidth = (int)fl_width("W");
 	cheight = fl_height();
 	labelwidth[VIEWER_LABEL_AF] = 6 * cwidth;
@@ -199,8 +198,10 @@ static void ClearViewer()
 	if (pskviewer)
 		pskviewer->init();
   	for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
-  		if (pskviewer) freq = pskviewer->get_freq(progdefaults.VIEWERchannels - 1 - i);
-  		else 		   freq = progdefaults.VIEWERstart + 100 * (progdefaults.VIEWERchannels - 1 - i);
+  		if (pskviewer)
+			freq = pskviewer->get_freq(progdefaults.VIEWERchannels - 1 - i);
+  		else
+			freq = progdefaults.VIEWERstart + 100 * (progdefaults.VIEWERchannels - 1 - i);
 
 		bline = freqformat(i);
   		bwsrline[i].clear();
@@ -212,11 +213,16 @@ static void ClearViewer()
 
 void initViewer()
 {
-	if (!pskviewer) return;
-	if (!dlgViewer) return;
-	pskviewer->init();
+	if (!pskviewer || !dlgViewer)
+		return;
+
+	brwsViewer->textfont(progdefaults.ViewerFontnbr);
+	brwsViewer->textsize(progdefaults.ViewerFontsize);
+
+	evalcwidth(progdefaults.ViewerFontnbr, progdefaults.ViewerFontsize);
 	ClearViewer();
-	dlgViewer->size(dlgViewer->w(), cheight * progdefaults.VIEWERchannels + 50 + border);
+	dlgViewer->size(dlgViewer->w(), dlgViewer->h() - brwsViewer->h() +
+			cheight * progdefaults.VIEWERchannels + 4);
 }
 
 // i in [1, progdefaults.VIEWERchannels]
@@ -283,16 +289,17 @@ static void cb_Squelch(Fl_Slider *, void *)
 Fl_Double_Window* createViewer(void)
 {
 	make_colors();
-	evalcwidth();
+	evalcwidth(progdefaults.ViewerFontnbr, progdefaults.ViewerFontsize);
 	cols[0] = labelwidth[progdefaults.VIEWERlabeltype];
 
 	int viewerwidth = (progStatus.VIEWERnchars * cwidth) + cols[0] + sbarwidth + border;
-	int viewerheight = 50 + cheight * progdefaults.VIEWERchannels + border;
-	int pad = 2;
+	int viewerheight = 40 + cheight * progdefaults.VIEWERchannels;
+	int pad = border/2;
 
 	Fl_Double_Window* w = new Fl_Double_Window(progStatus.VIEWERxpos, progStatus.VIEWERypos,
-				 viewerwidth + 2 * border, viewerheight + 2 * border,
-				 _("PSK Browser"));
+						   viewerwidth + 2 * border,
+						   viewerheight + 2 * (border + pad) + 4,
+						   _("PSK Browser"));
 
 	Fl_Group* g = new Fl_Group(border, border, 200, 20);
 	// search field
@@ -308,10 +315,12 @@ Fl_Double_Window* createViewer(void)
 	g->end();
 
 	// browser
-    	brwsViewer = new pskBrowser(border, inpSeek->y() + inpSeek->h() + pad,
-				    viewerwidth, viewerheight - 2 * g->h() - border);
+    	brwsViewer = new pskBrowser(border, inpSeek->y() + inpSeek->h() + pad, viewerwidth,
+				    cheight * progdefaults.VIEWERchannels + 4);
     	brwsViewer->callback((Fl_Callback*)cb_brwsViewer);
     	brwsViewer->column_widths(cols);
+	brwsViewer->textfont(progdefaults.ViewerFontnbr);
+	brwsViewer->textsize(progdefaults.ViewerFontsize);
 
 	g = new Fl_Group(border, brwsViewer->y() + brwsViewer->h() + pad, viewerwidth, 20);
 	// close button
@@ -347,6 +356,7 @@ Fl_Double_Window* createViewer(void)
 	w->end();
 	w->callback((Fl_Callback*)cb_btnCloseViewer);
 	w->resizable(brwsViewer);
+	w->size_range(w->w(), w->h() - brwsViewer->h() + 20);
 	w->xclass(PACKAGE_NAME);
 
 	return w;
@@ -387,6 +397,8 @@ void viewaddchr(int ch, int freq, char c)
 	string bline;
 
 	int index = progdefaults.VIEWERchannels - 1 - ch;
+	if (index < 0 || index >= MAXCHANNELS)
+		return;
 	if (progdefaults.VIEWERmarquee) {
 		if (bwsrline[index].length() > progStatus.VIEWERnchars ) {
 			bwsrline[index].erase(0,1);
