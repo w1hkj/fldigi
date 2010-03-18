@@ -91,7 +91,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
   code {} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {471 88 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
+    xywh {350 148 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {-3 0 520 372} color 50 selection_color 50
@@ -186,7 +186,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabUserInterface {
             label General open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {5 60 490 301} box ENGRAVED_FRAME
@@ -442,11 +442,11 @@ progdefaults.changed = true;}
           }
           Fl_Group tabWF_UI {
             label {Oper' Controls} open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Box {} {
               label {Enable check box to show each respective operator control}
-              xywh {31 65 446 25} box FLAT_BOX color 53 align 16
+              xywh {31 65 446 25} box FLAT_BOX align 16
             }
             Fl_Check_Button btnWF_UIrev {
               label Reverse
@@ -780,6 +780,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {Set level for good viewing} xywh {270 315 200 20} type Horizontal align 1 step 0.05 value 0.5 textsize 14
                 code0 {o->value(progdefaults.TxMonitorLevel);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Slider2
               }
             }
@@ -798,6 +799,7 @@ progdefaults.changed = true;
 setwfrange();}
                 tooltip {Low frequency limit in Hz} xywh {50 72 70 20} type Simple align 8 minimum 0 maximum 500 step 50 value 300
                 code0 {o->value(progdefaults.LowFreqCutoff);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
               }
               Fl_Counter valLatency {
@@ -807,6 +809,7 @@ progdefaults.changed = true;}
                 tooltip {Latency increases frequency resolution,
 decreases time resolution. 1 = no scan merging} xywh {50 102 70 21} type Simple align 8 minimum 1 maximum 8 step 1 value 4
                 code0 {o->value(progdefaults.latency);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
               }
               Fl_Check_Button btnWFaveraging {
@@ -833,6 +836,7 @@ progdefaults.changed = true;
 setwfrange();}
                 tooltip {High frequency limit in Hz} xywh {273 72 95 21} type Simple align 8 minimum 2000 maximum 4000 step 100 value 3000
                 code0 {o->value(progdefaults.HighFreqCutoff);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
               }
             }
@@ -846,6 +850,7 @@ setwfrange();}
 progdefaults.changed = true;}
                 tooltip {CPU usage increases with waterfall height} xywh {50 242 95 21} type Simple align 8 minimum 100 maximum 160 step 5 value 120
                 code0 {o->value(progdefaults.wfheight);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
               }
             }
@@ -929,6 +934,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
 progdefaults.changed = true;}
                     tooltip {CW dsp filter bandwidth} xywh {40 115 290 20} type Horizontal align 8 minimum 10 maximum 500 step 10 value 150 textsize 14
                     code0 {o->value(progdefaults.CWbandwidth);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Value_Slider2
                   }
                   Fl_Check_Button btnCWrcvTrack {
@@ -944,6 +950,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                     tooltip {Range +/- wpm} xywh {225 150 65 20} type Simple align 8 minimum 5 maximum 25 step 1 value 10
                     code0 {o->value(progdefaults.CWrange);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
                   }
                   Fl_Value_Output valCWrcvWPM {
@@ -971,6 +978,7 @@ sldrCWfarnsworth->value(o->value());
 progdefaults.changed = true;}
                     tooltip {My transmit CW WPM} xywh {20 240 400 20} type Horizontal align 8 minimum 5 maximum 100 step 1 value 20 textsize 14
                     code0 {o->value(progdefaults.CWspeed);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Value_Slider2
                   }
                   Fl_Counter cntCWdefWPM {
@@ -979,6 +987,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                     tooltip {The default CW speed} xywh {40 281 64 20} type Simple align 1 minimum 5 maximum 200 step 1 value 18
                     code0 {o->value(progdefaults.defCWspeed);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
                   }
                   Fl_Counter cntCWlowerlimit {
@@ -991,6 +1000,7 @@ sldrCWxmtWPM->redraw();
 cntCWupperlimit->minimum(o->value()+20);}
                     tooltip {No slower than this} xywh {197 281 65 20} type Simple align 1 minimum 5 maximum 20 step 5 value 10
                     code0 {o->value(progdefaults.CWlowerlimit);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
                   }
                   Fl_Counter cntCWupperlimit {
                     label {Upper limit}
@@ -1002,6 +1012,7 @@ sldrCWxmtWPM->redraw();
 cntCWlowerlimit->maximum(o->value()-20);}
                     tooltip {No faster than this} xywh {355 281 65 20} type Simple align 1 minimum 25 maximum 200 step 5 value 100
                     code0 {o->value(progdefaults.CWupperlimit);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
                   }
                   Fl_Value_Slider sldrCWfarnsworth {
                     label {F-WPM}
@@ -1009,6 +1020,7 @@ cntCWlowerlimit->maximum(o->value()-20);}
 progdefaults.changed = true;}
                     tooltip {My transmit CW WPM} xywh {20 335 400 20} type Horizontal align 8 minimum 5 maximum 100 step 1 value 20 textsize 14
                     code0 {o->value(progdefaults.CWfarnsworth);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Value_Slider2
                   }
                   Fl_Check_Button btnCWusefarnsworth {
@@ -1034,6 +1046,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                     tooltip {Dot to dot-space ratio} xywh {15 114 65 20} type Simple align 8 minimum 20 maximum 80 step 1 value 50
                     code0 {o->value(progdefaults.CWweight);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
                   }
                   Fl_Counter cntCWdash2dot {
@@ -1042,6 +1055,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                     tooltip {Dash to dot ratio} xywh {240 114 64 20} type Simple align 8 minimum 2.5 maximum 4 value 3
                     code0 {o->value(progdefaults.CWdash2dot);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
                   }
                   Fl_Counter cntCWrisetime {
@@ -1050,6 +1064,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                     tooltip {Leading and Trailing edge risetimes (msec)} xywh {240 145 65 20} type Simple align 8 minimum 0 maximum 15 value 4
                     code0 {o->value(progdefaults.CWrisetime);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
                   }
                   Fl_Choice mnuQSKshape {
@@ -1059,6 +1074,7 @@ progdefaults.changed = true;} open
                     tooltip {Raised cosine = Hanning} xywh {15 144 112 20} down_box BORDER_BOX align 8
                     code0 {o->add("Hanning|Blackman");}
                     code1 {o->value(progdefaults.QSKshape);}
+                    code2 {o->labelsize(FL_NORMAL_SIZE);}
                   } {}
                   Fl_Check_Button btnCWnarrow {
                     label {Edge decreases pulse width}
@@ -1089,6 +1105,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                     tooltip {Msec pre-keydown (+ is earlier in time)} xywh {15 275 64 20} type Simple align 8 minimum 0 maximum 20 step 0.5
                     code0 {o->value(progdefaults.CWpre);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
                   }
                   Fl_Counter cntPostTiming {
@@ -1097,6 +1114,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                     tooltip {Msec post-keydown (+ is earlier in time)} xywh {15 305 64 20} type Simple align 8 minimum -20 maximum 20 step 0.5
                     code0 {o->value(progdefaults.CWpre);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
                   }
                   Fl_Check_Button btnQSKadjust {
@@ -1147,6 +1165,7 @@ resetDOMEX();
 progdefaults.changed = true;}
                 tooltip {Filter bandwidth relative to signal width} xywh {156 141 63 20} type Simple align 8 minimum 1 maximum 2 value 1.5
                 code0 {o->value(progdefaults.DOMINOEX_BW);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
               }
               Fl_Check_Button chkDominoEX_FEC {
@@ -1162,6 +1181,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {CWI detection and suppression} xywh {15 207 260 20} type Horizontal align 1 textsize 14
                 code0 {o->value(progdefaults.DomCWI);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Slider2
               }
               Fl_Counter valDominoEX_PATHS {
@@ -1170,7 +1190,8 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 xywh {339 194 63 20} type Simple minimum 4 maximum 8 step 1 value 5
                 code0 {o->value(progdefaults.DOMINOEX_PATHS);}
-                code1 {o->hide();}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
+                code2 {o->hide();}
                 class Fl_Counter2
               }
             }
@@ -1204,6 +1225,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {\# of multiple scans / character line} xywh {15 100 40 20} align 8 maximum 3
                 code0 {o->value(progdefaults.HellXmtWidth);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Spinner2
               }
               Fl_Check_Button btnHellRcvWidth {
@@ -1227,6 +1249,7 @@ progdefaults.changed = true;} open
                 callback {progdefaults.HELL_BW = sldrHellBW->value();}
                 tooltip {Adjust the DSP bandwidth} xywh {206 147 246 20} type Horizontal align 5 minimum 10 maximum 2400 step 5 value 400 textsize 14
                 code0 {o->value(progdefaults.HELL_BW);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Slider2
               }
               Fl_Check_Button btnFeldHellIdle {
@@ -1307,8 +1330,9 @@ progdefaults.changed = true;}
                 label {Tone Duration (secs)}
                 callback {progdefaults.mt63_tone_duration=(int)o->value();
 progdefaults.changed = true;}
-                xywh {150 240 40 25} align 8 maximum 10 value 4
+                xywh {150 240 40 20} align 8 maximum 10 value 4
                 code0 {o->value(progdefaults.mt63_tone_duration);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Spinner2
               }
             }
@@ -1350,6 +1374,7 @@ progdefaults.changed = true;} open
 resetOLIVIA();
 progdefaults.changed = true;}
                   tooltip {Change ONLY to experiment} xywh {80 150 70 20} type Simple align 8 minimum 2 maximum 128 step 1 value 8
+                  code0 {o->labelsize(FL_NORMAL_SIZE);}
                   class Fl_Counter2
                 }
                 Fl_Counter cntOlivia_sinteg {
@@ -1358,6 +1383,7 @@ progdefaults.changed = true;}
 resetOLIVIA();
 progdefaults.changed = true;}
                   tooltip {Change ONLY to experiment} xywh {80 180 70 20} type Simple align 8 minimum 2 maximum 128 step 1 value 4
+                  code0 {o->labelsize(FL_NORMAL_SIZE);}
                   class Fl_Counter2
                 }
               }
@@ -1391,6 +1417,7 @@ wf->redraw_marker();
 progdefaults.changed = true;}
                     tooltip {Capture signals within this frequency range} xywh {15 117 75 20} type Simple align 8 minimum 10 maximum 500 step 10 value 200
                     code0 {o->value(progdefaults.SearchRange);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
                   }
                   Fl_Counter cntACQsn {
@@ -1399,6 +1426,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                     tooltip {Capture signals over this threshold} xywh {15 146 75 20} type Simple align 8 minimum 3 maximum 20 step 1 value 6
                     code0 {o->value(progdefaults.ACQsn);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
                   }
                 }
@@ -1420,6 +1448,7 @@ progdefaults.changed = true;} open
 progdefaults.changed = true;}
                     tooltip {Will occur after this time in seconds} xywh {156 214 75 20} type Simple align 8 minimum 0 maximum 30 step 1
                     code0 {o->value(progdefaults.StatusTimeout);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
                   }
                 }
@@ -1445,10 +1474,9 @@ OFF - Clear & restart} xywh {212 125 165 20} down_box DOWN_BOX
                     callback {progdefaults.VIEWERchannels = (int)(o->value());
 initViewer();}
                     tooltip {Change \# of psk viewer channels} xywh {15 95 50 20} align 8
-                    code0 {o->minimum(5);}
-                    code1 {o->maximum(30);}
-                    code2 {o->step(1);}
-                    code3 {o->value(progdefaults.VIEWERchannels);}
+                    code0 {o->minimum(5); o->maximum(30); o->step(1);}
+                    code1 {o->value(progdefaults.VIEWERchannels);}
+                    code2 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Spinner2
                   }
                   Fl_Spinner cntStartFrequency {
@@ -1457,10 +1485,9 @@ initViewer();}
 progdefaults.changed = true;
 initViewer();}
                     tooltip {Start decoding at this frequency} xywh {15 125 50 20} align 8
-                    code0 {o->minimum(200);}
-                    code1 {o->maximum(1000);}
-                    code2 {o->step(100);}
-                    code3 {o->value(progdefaults.VIEWERstart);}
+                    code0 {o->minimum(200); o->maximum(1000); o->step(100);}
+                    code1 {o->value(progdefaults.VIEWERstart);}
+                    code2 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Spinner2
                   }
                   Fl_Spinner cntTimeout {
@@ -1469,10 +1496,9 @@ initViewer();}
 progdefaults.changed = true;}
                     tooltip {Clear channel text after
 \# seconds of inactivity} xywh {212 95 50 20} align 8
-                    code0 {o->minimum(1);}
-                    code1 {o->maximum(180);}
-                    code2 {o->step(1);}
-                    code3 {o->value(progdefaults.VIEWERtimeout);}
+                    code0 {o->minimum(1); o->maximum(180); o->step(1);}
+                    code1 {o->value(progdefaults.VIEWERtimeout);}
+                    code2 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Spinner2
                   }
                   Fl_Choice mnuViewerLabel {
@@ -1625,7 +1651,7 @@ progdefaults.changed = true;}
                 label {AFC speed}
                 callback {progdefaults.rtty_afcspeed = o->value();
 progdefaults.changed = true;} open
-                tooltip {AFC tracking speed} xywh {326 254 80 20} down_box BORDER_BOX align 8
+                tooltip {AFC tracking speed} xywh {320 254 80 20} down_box BORDER_BOX align 8
                 code0 {o->add("Slow"); o->add("Normal"); o->add("Fast");}
                 code1 {o->value(progdefaults.rtty_afcspeed);}
               } {}
@@ -1642,6 +1668,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.RTTY_BW = o->value();}
                 tooltip {Adjust the DSP bandwidth} xywh {100 325 300 20} type Horizontal align 5 minimum 5 maximum 200 step 1 value 25 textsize 14
                 code0 {o->value(progdefaults.RTTY_BW);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Slider2
               }
               Fl_Counter selCustomShift {
@@ -1685,6 +1712,7 @@ resetTHOR();
 progdefaults.changed = true;}
                 tooltip {Filter bandwidth relative to signal width} xywh {156 141 63 20} type Simple align 8 minimum 1 maximum 2 value 1.5
                 code0 {o->value(progdefaults.THOR_BW);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
               }
               Fl_Value_Slider valThorCWI {
@@ -1693,6 +1721,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {CWI detection and suppression} xywh {15 194 260 20} type Horizontal align 1 textsize 14
                 code0 {o->value(progdefaults.ThorCWI);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Slider2
               }
               Fl_Counter valTHOR_PATHS {
@@ -1701,7 +1730,8 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 xywh {353 193 75 21} type Simple align 1 minimum 4 maximum 8 step 1 value 5
                 code0 {o->value(progdefaults.THOR_PATHS);}
-                code1 {o->hide();}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
+                code2 {o->hide();}
                 class Fl_Counter2
               }
             }
@@ -1717,7 +1747,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label {Hardware PTT} open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group grpHWPTT {
               label {h/w ptt device-pin} open
@@ -1872,6 +1902,7 @@ btnInitRIGCAT->redraw_label();
 btnRevertRIGCAT->activate();}
                 tooltip {\# retries before giving up} xywh {30 150 60 22} align 5 maximum 1000 step 1
                 code0 {o->value(progdefaults.RigCatRetries);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Input2
               }
               Fl_Value_Input cntRigCatTimeout {
@@ -1881,6 +1912,7 @@ btnInitRIGCAT->redraw_label();
 btnRevertRIGCAT->activate();}
                 tooltip {Time between retires in msec} xywh {148 150 60 22} align 5 maximum 10000 step 1
                 code0 {o->value(progdefaults.RigCatTimeout);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Input2
               }
               Fl_Value_Input cntRigCatWait {
@@ -1890,6 +1922,7 @@ btnInitRIGCAT->redraw_label();
 btnRevertRIGCAT->activate();}
                 xywh {30 190 60 22} align 5 maximum 10000 step 1
                 code0 {o->value(progdefaults.RigCatWait);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Input2
               }
               Fl_Choice mnuXmlRigBaudrate {
@@ -1908,6 +1941,7 @@ btnInitRIGCAT->redraw();
 btnRevertRIGCAT->activate();}
                 xywh {388 184 95 21} type Simple align 4 minimum 1 maximum 2 step 1 value 1
                 code0 {o->value(progdefaults.RigCatStopbits);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
               }
               Fl_Button btnInitRIGCAT {
@@ -2001,7 +2035,7 @@ rigCAT_restore_defaults();}
           }
           Fl_Group tabHamlib {
             label Hamlib open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Check_Button chkUSEHAMLIB {
               label {Use Hamlib}
@@ -2051,6 +2085,7 @@ btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();}
                 tooltip {\# times to resend command before giving up} xywh {30 133 70 24} align 5 maximum 1000 step 1
                 code0 {o->value(progdefaults.HamlibRetries);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Input2
               }
               Fl_Value_Input cntHamlibTimeout {
@@ -2060,6 +2095,7 @@ btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();}
                 tooltip {Msec's between retries} xywh {155 133 70 24} align 5 maximum 10000 step 1
                 code0 {o->value(progdefaults.HamlibTimeout);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Input2
               }
               Fl_Value_Input cntHamlibWriteDelay {
@@ -2069,6 +2105,7 @@ btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();}
                 tooltip {Msec's between sequential commands} xywh {30 176 70 24} align 5 maximum 10000 step 1
                 code0 {o->value(progdefaults.HamlibWriteDelay);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Input2
               }
               Fl_Value_Input cntHamlibWait {
@@ -2078,6 +2115,7 @@ btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();}
                 tooltip {Wait interval (msecs) before reading response} xywh {156 176 70 24} align 5 maximum 10000 step 1
                 code0 {o->value(progdefaults.HamlibWait);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Input2
               }
               Fl_Choice mnuBaudRate {
@@ -2096,6 +2134,7 @@ btnRevertHAMLIB->activate();
 progdefaults.changed = true;}
                 xywh {389 163 95 21} type Simple align 4 minimum 1 maximum 2 step 1 value 1
                 code0 {o->value(progdefaults.HamRigStopbits);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
               }
               Fl_Counter cntHamlibTimeout0 {
@@ -2423,6 +2462,7 @@ progdefaults.changed = true;}
                 code0 {o->step(1);}
                 code1 {o->minimum(-50000);}
                 code2 {o->maximum(50000);}
+                code3 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Spinner2
               }
               Fl_Spinner cntTxRateCorr {
@@ -2433,6 +2473,7 @@ progdefaults.changed = true;}
                 code0 {o->step(1);}
                 code1 {o->minimum(-50000);}
                 code2 {o->maximum(50000);}
+                code3 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Spinner2
               }
               Fl_Spinner cntTxOffset {
@@ -2442,8 +2483,8 @@ progdefaults.changed = true;}
                 tooltip {Difference between Rx & Tx freq (rig offset)} xywh {338 180 85 20} align 8
                 code0 {o->value(progdefaults.TxOffset);}
                 code1 {o->step(1);}
-                code2 {o->minimum(-50);}
-                code3 {o->maximum(50);}
+                code2 {o->minimum(-50); o->maximum(50);}
+                code3 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Spinner2
               }
             }
@@ -2519,6 +2560,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {Set the sound card PCM level} xywh {15 167 340 20} type Horizontal selection_color 15 align 8 value 0.8 textsize 14
                 code0 {extern void setPCMvolume(double);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Slider2
               }
             }
@@ -2575,6 +2617,7 @@ progdefaults.changed = true;}
             tooltip {Set the number of characters per row} xywh {365 127 120 20} type Horizontal align 4 minimum 1 maximum 4 step 1 value 1 textsize 14
             code0 {o->value(progdefaults.videowidth);}
             code1 {if (progdefaults.ID_SMALL) o->deactivate();}
+            code2 {o->labelsize(FL_NORMAL_SIZE);}
             class Fl_Value_Slider2
           }
           Fl_Button bVideoIDModes {
@@ -2603,6 +2646,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
             tooltip {Send at this WPM} xywh {165 185 180 20} type Horizontal align 1 minimum 15 maximum 40 step 1 value 18 textsize 14
             code0 {o->value(progdefaults.CWIDwpm);}
+            code1 {o->labelsize(FL_NORMAL_SIZE);}
             class Fl_Value_Slider2
           }
           Fl_Button bCWIDModes {
@@ -2708,6 +2752,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {Default CW tracking point} xywh {42 71 65 20} minimum 200 maximum 4000 step 1 value 1000
                 code0 {o->value(progdefaults.CWsweetspot);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Input2
               }
               Fl_Value_Input valRTTYsweetspot {
@@ -2716,6 +2761,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {Default RTTY tracking point} xywh {220 71 65 20} minimum 200 maximum 4000 step 1 value 1000
                 code0 {o->value(progdefaults.RTTYsweetspot);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Input2
               }
               Fl_Value_Input valPSKsweetspot {
@@ -2724,6 +2770,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {Default for all other modems} xywh {420 71 65 20} minimum 200 maximum 4000 step 1 value 1000
                 code0 {o->value(progdefaults.PSKsweetspot);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Input2
               }
               Fl_Check_Button btnStartAtSweetSpot {
@@ -2928,6 +2975,7 @@ wf->redraw_marker();
 progdefaults.changed = true;}
                 tooltip {Default listen / transmit frequency} xywh {56 86 80 20} type Simple align 8 minimum 500 maximum 2500 step 25 value 1500
                 code0 {o->value(progdefaults.ServerCarrier);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
               }
               Fl_Counter cntServerOffset {
@@ -2937,6 +2985,7 @@ wf->redraw_marker();
 progdefaults.changed = true;}
                 tooltip {Listen for signals within this range} xywh {56 123 80 20} type Simple align 8 minimum 10 maximum 500 step 10 value 100
                 code0 {o->value(progdefaults.SearchRange);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
               }
               Fl_Counter cntServerACQsn {
@@ -2945,6 +2994,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {Capture signals over this threshold} xywh {56 160 80 20} type Simple align 8 minimum 3 maximum 20 step 1 value 6
                 code0 {o->value(progdefaults.ServerACQsn);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
               }
               Fl_Counter cntServerAFCrange {
@@ -2954,6 +3004,7 @@ wf->redraw_marker();
 progdefaults.changed = true;}
                 tooltip {Limit AFC movement to this range} xywh {56 197 80 20} type Simple align 8 minimum 10 maximum 500 step 10 value 25
                 code0 {o->value(progdefaults.SearchRange);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
               }
               Fl_Check_Button btnPSKmailSweetSpot {

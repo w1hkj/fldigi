@@ -2583,6 +2583,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         { tabsUI = new Fl_Tabs(-3, 25, 508, 345);
           tabsUI->selection_color((Fl_Color)FL_LIGHT1);
           { tabUserInterface = new Fl_Group(0, 50, 500, 320, _("General"));
+            tabUserInterface->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 301);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(15, 70, 120, 20, _("Show tooltips"));
@@ -2846,10 +2847,8 @@ ab and newline are automatically included."));
             tabContest->end();
           } // Fl_Group* tabContest
           { tabWF_UI = new Fl_Group(0, 50, 500, 320, _("Oper\' Controls"));
-            tabWF_UI->hide();
             { Fl_Box* o = new Fl_Box(31, 65, 446, 25, _("Enable check box to show each respective operator control"));
               o->box(FL_FLAT_BOX);
-              o->color((Fl_Color)53);
               o->align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
             } // Fl_Box* o
             { Fl_Check_Button* o = btnWF_UIrev = new Fl_Check_Button(58, 98, 150, 20, _("Reverse"));
@@ -3094,6 +3093,7 @@ ab and newline are automatically included."));
                 valTxMonitorLevel->align(FL_ALIGN_TOP);
                 valTxMonitorLevel->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.TxMonitorLevel);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Value_Slider2* valTxMonitorLevel
               o->end();
             } // Fl_Group* o
@@ -3121,6 +3121,7 @@ ab and newline are automatically included."));
                 cntLowFreqCutoff->align(FL_ALIGN_RIGHT);
                 cntLowFreqCutoff->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.LowFreqCutoff);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Counter2* cntLowFreqCutoff
               { Fl_Counter2* o = valLatency = new Fl_Counter2(50, 102, 70, 21, _("FFT latency (scan merging)"));
                 valLatency->tooltip(_("Latency increases frequency resolution,\ndecreases time resolution. 1 = no sc\
@@ -3141,6 +3142,7 @@ an merging"));
                 valLatency->align(FL_ALIGN_RIGHT);
                 valLatency->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.latency);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Counter2* valLatency
               { Fl_Check_Button* o = btnWFaveraging = new Fl_Check_Button(50, 133, 120, 20, _("FFT averaging"));
                 btnWFaveraging->tooltip(_("Use averaging to decrease waterfall noise"));
@@ -3176,6 +3178,7 @@ an merging"));
                 cntrWfwidth->align(FL_ALIGN_RIGHT);
                 cntrWfwidth->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.HighFreqCutoff);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Counter2* cntrWfwidth
               o->end();
             } // Fl_Group* o
@@ -3201,6 +3204,7 @@ an merging"));
                 cntrWfheight->align(FL_ALIGN_RIGHT);
                 cntrWfheight->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.wfheight);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Counter2* cntrWfheight
               o->end();
             } // Fl_Group* o
@@ -3288,6 +3292,7 @@ an merging"));
                 sldrCWbandwidth->align(FL_ALIGN_RIGHT);
                 sldrCWbandwidth->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.CWbandwidth);
+                o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Value_Slider2* sldrCWbandwidth
                 { Fl_Check_Button* o = btnCWrcvTrack = new Fl_Check_Button(40, 150, 80, 20, _("Tracking"));
                 btnCWrcvTrack->tooltip(_("Automatic Rx speed tracking"));
@@ -3314,6 +3319,7 @@ an merging"));
                 cntCWrange->align(FL_ALIGN_RIGHT);
                 cntCWrange->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.CWrange);
+                o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntCWrange
                 { valCWrcvWPM = new Fl_Value_Output(70, 185, 35, 20);
                 valCWrcvWPM->color((Fl_Color)FL_BACKGROUND2_COLOR);
@@ -3352,6 +3358,7 @@ an merging"));
                 sldrCWxmtWPM->align(FL_ALIGN_RIGHT);
                 sldrCWxmtWPM->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.CWspeed);
+                o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Value_Slider2* sldrCWxmtWPM
                 { Fl_Counter2* o = cntCWdefWPM = new Fl_Counter2(40, 281, 64, 20, _("Default"));
                 cntCWdefWPM->tooltip(_("The default CW speed"));
@@ -3371,6 +3378,7 @@ an merging"));
                 cntCWdefWPM->align(FL_ALIGN_TOP);
                 cntCWdefWPM->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.defCWspeed);
+                o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntCWdefWPM
                 { Fl_Counter* o = cntCWlowerlimit = new Fl_Counter(197, 281, 65, 20, _("Lower limit"));
                 cntCWlowerlimit->tooltip(_("No slower than this"));
@@ -3382,6 +3390,7 @@ an merging"));
                 cntCWlowerlimit->callback((Fl_Callback*)cb_cntCWlowerlimit);
                 cntCWlowerlimit->align(FL_ALIGN_TOP);
                 o->value(progdefaults.CWlowerlimit);
+                o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter* cntCWlowerlimit
                 { Fl_Counter* o = cntCWupperlimit = new Fl_Counter(355, 281, 65, 20, _("Upper limit"));
                 cntCWupperlimit->tooltip(_("No faster than this"));
@@ -3393,6 +3402,7 @@ an merging"));
                 cntCWupperlimit->callback((Fl_Callback*)cb_cntCWupperlimit);
                 cntCWupperlimit->align(FL_ALIGN_TOP);
                 o->value(progdefaults.CWupperlimit);
+                o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter* cntCWupperlimit
                 { Fl_Value_Slider2* o = sldrCWfarnsworth = new Fl_Value_Slider2(20, 335, 400, 20, _("F-WPM"));
                 sldrCWfarnsworth->tooltip(_("My transmit CW WPM"));
@@ -3413,6 +3423,7 @@ an merging"));
                 sldrCWfarnsworth->align(FL_ALIGN_RIGHT);
                 sldrCWfarnsworth->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.CWfarnsworth);
+                o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Value_Slider2* sldrCWfarnsworth
                 { Fl_Check_Button* o = btnCWusefarnsworth = new Fl_Check_Button(40, 312, 180, 15, _("Use Farnsworth timing"));
                 btnCWusefarnsworth->down_box(FL_DOWN_BOX);
@@ -3447,6 +3458,7 @@ an merging"));
                 cntCWweight->align(FL_ALIGN_RIGHT);
                 cntCWweight->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.CWweight);
+                o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntCWweight
                 { Fl_Counter2* o = cntCWdash2dot = new Fl_Counter2(240, 114, 64, 20, _("Dash to dot ratio"));
                 cntCWdash2dot->tooltip(_("Dash to dot ratio"));
@@ -3465,6 +3477,7 @@ an merging"));
                 cntCWdash2dot->align(FL_ALIGN_RIGHT);
                 cntCWdash2dot->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.CWdash2dot);
+                o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntCWdash2dot
                 { Fl_Counter2* o = cntCWrisetime = new Fl_Counter2(240, 145, 65, 20, _("Edge timing"));
                 cntCWrisetime->tooltip(_("Leading and Trailing edge risetimes (msec)"));
@@ -3483,6 +3496,7 @@ an merging"));
                 cntCWrisetime->align(FL_ALIGN_RIGHT);
                 cntCWrisetime->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.CWrisetime);
+                o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntCWrisetime
                 { Fl_Choice* o = mnuQSKshape = new Fl_Choice(15, 144, 112, 20, _("Edge shape"));
                 mnuQSKshape->tooltip(_("Raised cosine = Hanning"));
@@ -3491,6 +3505,7 @@ an merging"));
                 mnuQSKshape->align(FL_ALIGN_RIGHT);
                 o->add("Hanning|Blackman");
                 o->value(progdefaults.QSKshape);
+                o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Choice* mnuQSKshape
                 { Fl_Check_Button* o = btnCWnarrow = new Fl_Check_Button(15, 175, 225, 15, _("Edge decreases pulse width"));
                 btnCWnarrow->tooltip(_("Weight decreases with increasing edge timing"));
@@ -3526,6 +3541,7 @@ an merging"));
                 cntPreTiming->align(FL_ALIGN_RIGHT);
                 cntPreTiming->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.CWpre);
+                o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntPreTiming
                 { Fl_Counter2* o = cntPostTiming = new Fl_Counter2(15, 305, 64, 20, _("Post-keydown timing (ms)"));
                 cntPostTiming->tooltip(_("Msec post-keydown (+ is earlier in time)"));
@@ -3544,6 +3560,7 @@ an merging"));
                 cntPostTiming->align(FL_ALIGN_RIGHT);
                 cntPostTiming->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.CWpre);
+                o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntPostTiming
                 { Fl_Check_Button* o = btnQSKadjust = new Fl_Check_Button(290, 275, 150, 20, _("Send continuous"));
                 btnQSKadjust->tooltip(_("Send a continuous stream of test characters"));
@@ -3610,6 +3627,7 @@ an merging"));
                 valDominoEX_BW->align(FL_ALIGN_RIGHT);
                 valDominoEX_BW->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.DOMINOEX_BW);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Counter2* valDominoEX_BW
               { Fl_Check_Button* o = chkDominoEX_FEC = new Fl_Check_Button(15, 171, 51, 20, _("FEC"));
                 chkDominoEX_FEC->tooltip(_("Enable MultiPSK-compatible FEC"));
@@ -3632,6 +3650,7 @@ an merging"));
                 valDomCWI->align(FL_ALIGN_TOP);
                 valDomCWI->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.DomCWI);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Value_Slider2* valDomCWI
               { Fl_Counter2* o = valDominoEX_PATHS = new Fl_Counter2(339, 194, 63, 20, _("Paths (hidden)"));
                 valDominoEX_PATHS->type(1);
@@ -3650,6 +3669,7 @@ an merging"));
                 valDominoEX_PATHS->align(FL_ALIGN_BOTTOM);
                 valDominoEX_PATHS->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.DOMINOEX_PATHS);
+                o->labelsize(FL_NORMAL_SIZE);
                 o->hide();
               } // Fl_Counter2* valDominoEX_PATHS
               o->end();
@@ -3688,6 +3708,7 @@ an merging"));
                 valHellXmtWidth->align(FL_ALIGN_RIGHT);
                 valHellXmtWidth->when(FL_WHEN_RELEASE);
                 o->value(progdefaults.HellXmtWidth);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Spinner2* valHellXmtWidth
               { Fl_Check_Button* o = btnHellRcvWidth = new Fl_Check_Button(300, 100, 155, 20, _("Halve receive width"));
                 btnHellRcvWidth->tooltip(_("Compress Rx in time"));
@@ -3723,6 +3744,7 @@ an merging"));
                 sldrHellBW->align(FL_ALIGN_TOP_LEFT);
                 sldrHellBW->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.HELL_BW);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Value_Slider2* sldrHellBW
               { Fl_Check_Button* o = btnFeldHellIdle = new Fl_Check_Button(15, 177, 230, 20, _("Transmit periods (.) when idle"));
                 btnFeldHellIdle->tooltip(_("Transmits a diddle dot when no keyboard activity"));
@@ -3779,7 +3801,7 @@ an merging"));
                 o->value(progdefaults.mt63_twotones);
                 if (!btnMT63_usetones->value()) o->deactivate();
               } // Fl_Check_Button* btnMT63_upper_lower
-              { Fl_Spinner2* o = MT63_tone_duration = new Fl_Spinner2(150, 240, 40, 25, _("Tone Duration (secs)"));
+              { Fl_Spinner2* o = MT63_tone_duration = new Fl_Spinner2(150, 240, 40, 20, _("Tone Duration (secs)"));
                 MT63_tone_duration->box(FL_NO_BOX);
                 MT63_tone_duration->color((Fl_Color)FL_BACKGROUND_COLOR);
                 MT63_tone_duration->selection_color((Fl_Color)FL_BACKGROUND_COLOR);
@@ -3793,6 +3815,7 @@ an merging"));
                 MT63_tone_duration->align(FL_ALIGN_RIGHT);
                 MT63_tone_duration->when(FL_WHEN_RELEASE);
                 o->value(progdefaults.mt63_tone_duration);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Spinner2* MT63_tone_duration
               o->end();
             } // Fl_Group* o
@@ -3821,7 +3844,7 @@ an merging"));
               { Fl_Group* o = new Fl_Group(60, 119, 379, 100, _("Receive synchronizer"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-                { cntOlivia_smargin = new Fl_Counter2(80, 150, 70, 20, _("Tune margin (tone frequency spacing)"));
+                { Fl_Counter2* o = cntOlivia_smargin = new Fl_Counter2(80, 150, 70, 20, _("Tune margin (tone frequency spacing)"));
                 cntOlivia_smargin->tooltip(_("Change ONLY to experiment"));
                 cntOlivia_smargin->type(1);
                 cntOlivia_smargin->box(FL_UP_BOX);
@@ -3838,8 +3861,9 @@ an merging"));
                 cntOlivia_smargin->callback((Fl_Callback*)cb_cntOlivia_smargin);
                 cntOlivia_smargin->align(FL_ALIGN_RIGHT);
                 cntOlivia_smargin->when(FL_WHEN_CHANGED);
+                o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntOlivia_smargin
-                { cntOlivia_sinteg = new Fl_Counter2(80, 180, 70, 20, _("Integration period (FEC blocks)"));
+                { Fl_Counter2* o = cntOlivia_sinteg = new Fl_Counter2(80, 180, 70, 20, _("Integration period (FEC blocks)"));
                 cntOlivia_sinteg->tooltip(_("Change ONLY to experiment"));
                 cntOlivia_sinteg->type(1);
                 cntOlivia_sinteg->box(FL_UP_BOX);
@@ -3856,6 +3880,7 @@ an merging"));
                 cntOlivia_sinteg->callback((Fl_Callback*)cb_cntOlivia_sinteg);
                 cntOlivia_sinteg->align(FL_ALIGN_RIGHT);
                 cntOlivia_sinteg->when(FL_WHEN_CHANGED);
+                o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntOlivia_sinteg
                 o->end();
               } // Fl_Group* o
@@ -3894,6 +3919,7 @@ an merging"));
                 cntSearchRange->align(FL_ALIGN_RIGHT);
                 cntSearchRange->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.SearchRange);
+                o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntSearchRange
                 { Fl_Counter2* o = cntACQsn = new Fl_Counter2(15, 146, 75, 20, _("Acquisition S/N (dB)"));
                 cntACQsn->tooltip(_("Capture signals over this threshold"));
@@ -3913,6 +3939,7 @@ an merging"));
                 cntACQsn->align(FL_ALIGN_RIGHT);
                 cntACQsn->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.ACQsn);
+                o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntACQsn
                 o->end();
                 } // Fl_Group* o
@@ -3944,6 +3971,7 @@ an merging"));
                 o->align(FL_ALIGN_RIGHT);
                 o->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.StatusTimeout);
+                o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* o
                 o->end();
                 } // Fl_Group* o
@@ -3972,10 +4000,9 @@ an merging"));
                 cntChannels->callback((Fl_Callback*)cb_cntChannels);
                 cntChannels->align(FL_ALIGN_RIGHT);
                 cntChannels->when(FL_WHEN_RELEASE);
-                o->minimum(5);
-                o->maximum(30);
-                o->step(1);
+                o->minimum(5); o->maximum(30); o->step(1);
                 o->value(progdefaults.VIEWERchannels);
+                o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Spinner2* cntChannels
                 { Fl_Spinner2* o = cntStartFrequency = new Fl_Spinner2(15, 125, 50, 20, _("Start frequency"));
                 cntStartFrequency->tooltip(_("Start decoding at this frequency"));
@@ -3989,10 +4016,9 @@ an merging"));
                 cntStartFrequency->callback((Fl_Callback*)cb_cntStartFrequency);
                 cntStartFrequency->align(FL_ALIGN_RIGHT);
                 cntStartFrequency->when(FL_WHEN_RELEASE);
-                o->minimum(200);
-                o->maximum(1000);
-                o->step(100);
+                o->minimum(200); o->maximum(1000); o->step(100);
                 o->value(progdefaults.VIEWERstart);
+                o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Spinner2* cntStartFrequency
                 { Fl_Spinner2* o = cntTimeout = new Fl_Spinner2(212, 95, 50, 20, _("Inactivity timeout"));
                 cntTimeout->tooltip(_("Clear channel text after\n# seconds of inactivity"));
@@ -4006,10 +4032,9 @@ an merging"));
                 cntTimeout->callback((Fl_Callback*)cb_cntTimeout);
                 cntTimeout->align(FL_ALIGN_RIGHT);
                 cntTimeout->when(FL_WHEN_RELEASE);
-                o->minimum(1);
-                o->maximum(180);
-                o->step(1);
+                o->minimum(1); o->maximum(180); o->step(1);
                 o->value(progdefaults.VIEWERtimeout);
+                o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Spinner2* cntTimeout
                 { mnuViewerLabel = new Fl_Choice(212, 155, 150, 24, _("Channel label"));
                 mnuViewerLabel->tooltip(_("Appearance of label on each channel"));
@@ -4143,7 +4168,7 @@ an merging"));
                 chkPseudoFSK->callback((Fl_Callback*)cb_chkPseudoFSK);
                 o->value(progdefaults.PseudoFSK);
               } // Fl_Check_Button* chkPseudoFSK
-              { Fl_Choice* o = mnuRTTYAFCSpeed = new Fl_Choice(326, 254, 80, 20, _("AFC speed"));
+              { Fl_Choice* o = mnuRTTYAFCSpeed = new Fl_Choice(320, 254, 80, 20, _("AFC speed"));
                 mnuRTTYAFCSpeed->tooltip(_("AFC tracking speed"));
                 mnuRTTYAFCSpeed->down_box(FL_BORDER_BOX);
                 mnuRTTYAFCSpeed->callback((Fl_Callback*)cb_mnuRTTYAFCSpeed);
@@ -4176,6 +4201,7 @@ an merging"));
                 sldrRTTYbandwidth->align(FL_ALIGN_TOP_LEFT);
                 sldrRTTYbandwidth->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.RTTY_BW);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Value_Slider2* sldrRTTYbandwidth
               { Fl_Counter2* o = selCustomShift = new Fl_Counter2(15, 100, 100, 20, _("Custom shift"));
                 selCustomShift->tooltip(_("Input carrier shift"));
@@ -4242,6 +4268,7 @@ an merging"));
                 valTHOR_BW->align(FL_ALIGN_RIGHT);
                 valTHOR_BW->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.THOR_BW);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Counter2* valTHOR_BW
               { Fl_Value_Slider2* o = valThorCWI = new Fl_Value_Slider2(15, 194, 260, 20, _("CWI threshold"));
                 valThorCWI->tooltip(_("CWI detection and suppression"));
@@ -4258,6 +4285,7 @@ an merging"));
                 valThorCWI->align(FL_ALIGN_TOP);
                 valThorCWI->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.ThorCWI);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Value_Slider2* valThorCWI
               { Fl_Counter2* o = valTHOR_PATHS = new Fl_Counter2(353, 193, 75, 21, _("Paths (hidden)"));
                 valTHOR_PATHS->type(1);
@@ -4276,6 +4304,7 @@ an merging"));
                 valTHOR_PATHS->align(FL_ALIGN_TOP);
                 valTHOR_PATHS->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.THOR_PATHS);
+                o->labelsize(FL_NORMAL_SIZE);
                 o->hide();
               } // Fl_Counter2* valTHOR_PATHS
               o->end();
@@ -4292,6 +4321,7 @@ an merging"));
         { tabsRig = new Fl_Tabs(0, 25, 500, 345);
           tabsRig->selection_color((Fl_Color)FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hardware PTT"));
+            o->hide();
             { grpHWPTT = new Fl_Group(5, 100, 490, 265, _("h/w ptt device-pin"));
               grpHWPTT->box(FL_ENGRAVED_FRAME);
               grpHWPTT->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -4392,6 +4422,7 @@ an merging"));
                 cntRigCatRetries->align(FL_ALIGN_TOP_LEFT);
                 cntRigCatRetries->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.RigCatRetries);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Value_Input2* cntRigCatRetries
               { Fl_Value_Input2* o = cntRigCatTimeout = new Fl_Value_Input2(148, 150, 60, 22, _("Retry interval (ms)"));
                 cntRigCatTimeout->tooltip(_("Time between retires in msec"));
@@ -4408,6 +4439,7 @@ an merging"));
                 cntRigCatTimeout->align(FL_ALIGN_TOP_LEFT);
                 cntRigCatTimeout->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.RigCatTimeout);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Value_Input2* cntRigCatTimeout
               { Fl_Value_Input2* o = cntRigCatWait = new Fl_Value_Input2(30, 190, 60, 22, _("Write delay (ms)"));
                 cntRigCatWait->box(FL_DOWN_BOX);
@@ -4423,6 +4455,7 @@ an merging"));
                 cntRigCatWait->align(FL_ALIGN_TOP_LEFT);
                 cntRigCatWait->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.RigCatWait);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Value_Input2* cntRigCatWait
               { Fl_Choice* o = mnuXmlRigBaudrate = new Fl_Choice(386, 150, 99, 22, _("Baud rate:"));
                 mnuXmlRigBaudrate->tooltip(_("Pick baud rate from list"));
@@ -4448,6 +4481,7 @@ an merging"));
                 valRigCatStopbits->align(FL_ALIGN_LEFT);
                 valRigCatStopbits->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.RigCatStopbits);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Counter2* valRigCatStopbits
               { btnInitRIGCAT = new Fl_Button(365, 321, 113, 24, _("Initialize"));
                 btnInitRIGCAT->tooltip(_("Initialize RigCAT interface"));
@@ -4506,7 +4540,6 @@ an merging"));
             o->end();
           } // Fl_Group* o
           { tabHamlib = new Fl_Group(0, 50, 500, 320, _("Hamlib"));
-            tabHamlib->hide();
             { chkUSEHAMLIB = new Fl_Check_Button(195, 60, 100, 20, _("Use Hamlib"));
               chkUSEHAMLIB->tooltip(_("Hamlib used for rig control"));
               chkUSEHAMLIB->down_box(FL_DOWN_BOX);
@@ -4549,6 +4582,7 @@ an merging"));
                 cntHamlibRetries->align(FL_ALIGN_TOP_LEFT);
                 cntHamlibRetries->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.HamlibRetries);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Value_Input2* cntHamlibRetries
               { Fl_Value_Input2* o = cntHamlibTimeout = new Fl_Value_Input2(155, 133, 70, 24, _("Retry Interval (ms)"));
                 cntHamlibTimeout->tooltip(_("Msec\'s between retries"));
@@ -4565,6 +4599,7 @@ an merging"));
                 cntHamlibTimeout->align(FL_ALIGN_TOP_LEFT);
                 cntHamlibTimeout->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.HamlibTimeout);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Value_Input2* cntHamlibTimeout
               { Fl_Value_Input2* o = cntHamlibWriteDelay = new Fl_Value_Input2(30, 176, 70, 24, _("Write delay (ms)"));
                 cntHamlibWriteDelay->tooltip(_("Msec\'s between sequential commands"));
@@ -4581,6 +4616,7 @@ an merging"));
                 cntHamlibWriteDelay->align(FL_ALIGN_TOP_LEFT);
                 cntHamlibWriteDelay->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.HamlibWriteDelay);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Value_Input2* cntHamlibWriteDelay
               { Fl_Value_Input2* o = cntHamlibWait = new Fl_Value_Input2(156, 176, 70, 24, _("Post write delay (ms)"));
                 cntHamlibWait->tooltip(_("Wait interval (msecs) before reading response"));
@@ -4597,6 +4633,7 @@ an merging"));
                 cntHamlibWait->align(FL_ALIGN_TOP_LEFT);
                 cntHamlibWait->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.HamlibWait);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Value_Input2* cntHamlibWait
               { Fl_Choice* o = mnuBaudRate = new Fl_Choice(385, 127, 99, 22, _("Baud rate:"));
                 mnuBaudRate->tooltip(_("Serial port baud rate"));
@@ -4622,6 +4659,7 @@ an merging"));
                 valHamRigStopbits->align(FL_ALIGN_LEFT);
                 valHamRigStopbits->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.HamRigStopbits);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Counter2* valHamRigStopbits
               { Fl_Counter2* o = cntHamlibTimeout0 = new Fl_Counter2(150, 140, 100, 20, _("Retry interval (ms)"));
                 cntHamlibTimeout0->tooltip(_("Msec\'s between retries"));
@@ -4892,6 +4930,7 @@ ll with your audio device."));
                 o->step(1);
                 o->minimum(-50000);
                 o->maximum(50000);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Spinner2* cntRxRateCorr
               { Fl_Spinner2* o = cntTxRateCorr = new Fl_Spinner2(176, 180, 85, 20, _("TX ppm"));
                 cntTxRateCorr->tooltip(_("TX sound card correction"));
@@ -4908,6 +4947,7 @@ ll with your audio device."));
                 o->step(1);
                 o->minimum(-50000);
                 o->maximum(50000);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Spinner2* cntTxRateCorr
               { Fl_Spinner2* o = cntTxOffset = new Fl_Spinner2(338, 180, 85, 20, _("TX offset"));
                 cntTxOffset->tooltip(_("Difference between Rx & Tx freq (rig offset)"));
@@ -4923,8 +4963,8 @@ ll with your audio device."));
                 cntTxOffset->when(FL_WHEN_RELEASE);
                 o->value(progdefaults.TxOffset);
                 o->step(1);
-                o->minimum(-50);
-                o->maximum(50);
+                o->minimum(-50); o->maximum(50);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Spinner2* cntTxOffset
               o->end();
             } // Fl_Group* o
@@ -4960,7 +5000,7 @@ ll with your audio device."));
                 btnLineIn->selection_color((Fl_Color)3);
                 btnLineIn->callback((Fl_Callback*)cb_btnLineIn);
               } // Fl_Light_Button* btnLineIn
-              { valPCMvolume = new Fl_Value_Slider2(15, 167, 340, 20, _("PCM"));
+              { Fl_Value_Slider2* o = valPCMvolume = new Fl_Value_Slider2(15, 167, 340, 20, _("PCM"));
                 valPCMvolume->tooltip(_("Set the sound card PCM level"));
                 valPCMvolume->type(1);
                 valPCMvolume->box(FL_DOWN_BOX);
@@ -4975,6 +5015,7 @@ ll with your audio device."));
                 valPCMvolume->callback((Fl_Callback*)cb_valPCMvolume);
                 valPCMvolume->align(FL_ALIGN_RIGHT);
                 valPCMvolume->when(FL_WHEN_CHANGED);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Value_Slider2* valPCMvolume
               o->end();
             } // Fl_Group* o
@@ -5042,6 +5083,7 @@ ll with your audio device."));
             sldrVideowidth->when(FL_WHEN_CHANGED);
             o->value(progdefaults.videowidth);
             if (progdefaults.ID_SMALL) o->deactivate();
+            o->labelsize(FL_NORMAL_SIZE);
           } // Fl_Value_Slider2* sldrVideowidth
           { bVideoIDModes = new Fl_Button(365, 67, 120, 20, _("Video ID modes"));
             bVideoIDModes->callback((Fl_Callback*)cb_bVideoIDModes);
@@ -5076,6 +5118,7 @@ ll with your audio device."));
             sldrCWIDwpm->align(FL_ALIGN_TOP);
             sldrCWIDwpm->when(FL_WHEN_CHANGED);
             o->value(progdefaults.CWIDwpm);
+            o->labelsize(FL_NORMAL_SIZE);
           } // Fl_Value_Slider2* sldrCWIDwpm
           { bCWIDModes = new Fl_Button(365, 185, 120, 20, _("CW ID modes"));
             bCWIDModes->callback((Fl_Callback*)cb_bCWIDModes);
@@ -5158,6 +5201,7 @@ d frequency"));
                 valCWsweetspot->align(FL_ALIGN_LEFT);
                 valCWsweetspot->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.CWsweetspot);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Value_Input2* valCWsweetspot
               { Fl_Value_Input2* o = valRTTYsweetspot = new Fl_Value_Input2(220, 71, 65, 20, _("RTTY"));
                 valRTTYsweetspot->tooltip(_("Default RTTY tracking point"));
@@ -5176,6 +5220,7 @@ d frequency"));
                 valRTTYsweetspot->align(FL_ALIGN_LEFT);
                 valRTTYsweetspot->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.RTTYsweetspot);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Value_Input2* valRTTYsweetspot
               { Fl_Value_Input2* o = valPSKsweetspot = new Fl_Value_Input2(420, 71, 65, 20, _("PSK et al."));
                 valPSKsweetspot->tooltip(_("Default for all other modems"));
@@ -5194,6 +5239,7 @@ d frequency"));
                 valPSKsweetspot->align(FL_ALIGN_LEFT);
                 valPSKsweetspot->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.PSKsweetspot);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Value_Input2* valPSKsweetspot
               { Fl_Check_Button* o = btnStartAtSweetSpot = new Fl_Check_Button(15, 101, 348, 20, _("Always start new modems at these frequencies"));
                 btnStartAtSweetSpot->tooltip(_("ON - start at default\nOFF - keep current wf cursor position"));
@@ -5375,6 +5421,7 @@ d frequency"));
                 cntServerCarrier->align(FL_ALIGN_RIGHT);
                 cntServerCarrier->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.ServerCarrier);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Counter2* cntServerCarrier
               { Fl_Counter2* o = cntServerOffset = new Fl_Counter2(56, 123, 80, 20, _("Search range (Hz)"));
                 cntServerOffset->tooltip(_("Listen for signals within this range"));
@@ -5394,6 +5441,7 @@ d frequency"));
                 cntServerOffset->align(FL_ALIGN_RIGHT);
                 cntServerOffset->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.SearchRange);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Counter2* cntServerOffset
               { Fl_Counter2* o = cntServerACQsn = new Fl_Counter2(56, 160, 80, 20, _("Acquisition S/N (dB)"));
                 cntServerACQsn->tooltip(_("Capture signals over this threshold"));
@@ -5413,6 +5461,7 @@ d frequency"));
                 cntServerACQsn->align(FL_ALIGN_RIGHT);
                 cntServerACQsn->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.ServerACQsn);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Counter2* cntServerACQsn
               { Fl_Counter2* o = cntServerAFCrange = new Fl_Counter2(56, 197, 80, 20, _("AFC range (Hz)"));
                 cntServerAFCrange->tooltip(_("Limit AFC movement to this range"));
@@ -5432,6 +5481,7 @@ d frequency"));
                 cntServerAFCrange->align(FL_ALIGN_RIGHT);
                 cntServerAFCrange->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.SearchRange);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Counter2* cntServerAFCrange
               { Fl_Check_Button* o = btnPSKmailSweetSpot = new Fl_Check_Button(311, 86, 142, 20, _("Reset to Carrier"));
                 btnPSKmailSweetSpot->tooltip(_("When no signal present"));
