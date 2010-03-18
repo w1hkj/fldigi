@@ -1159,7 +1159,7 @@ void rigCAT_set_qsy(long long f)
 bool ModeIsLSB(const string& s)
 {
 	if (nonCATrig) {
-		if (s == "LSB")
+		if (s == "LSB" || s == "PKTLSB" || s == "CW" || s == "RTTY")
 			return true;
 		return false;
 	}
