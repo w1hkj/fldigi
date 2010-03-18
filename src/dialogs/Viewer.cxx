@@ -4,7 +4,7 @@
 //
 // Copyright (C) 2008-2009
 //		David Freese, W1HKJ
-// Copyright (C) 2008
+// Copyright (C) 2008-2010
 //		Stelios Bounanos, M0GLD
 //
 // This file is part of fldigi.
@@ -25,6 +25,10 @@
 
 #include <config.h>
 
+#include <string>
+
+#include <FL/Enumerations.H>
+
 #include "Viewer.h"
 #include "trx.h"
 #include "main.h"
@@ -39,44 +43,26 @@
 #include "flinput2.h"
 #include "flslider2.h"
 #include "spot.h"
-
-#include <FL/Enumerations.H>
-#include <FL/Fl_Pack.H>
-
-#include <string>
+#include "icons.h"
 
 using namespace std;
 
 
-string bwsrfreq;
-string bwsrline[MAXCHANNELS];
+static string bwsrfreq, bwsrline[MAXCHANNELS];
 
-static int  brwsFreq[MAXCHANNELS];
-static int  freq;
+static int freq, brwsFreq[MAXCHANNELS];
 
 static long long rfc;
 static bool usb;
 
-string dkred;
-string dkblue;
-string dkgreen;
-string bkselect;
-string white;
-string bkgnd[2];
+static string dkred, dkblue, dkgreen, bkselect, white, bkgnd[2];
 
-int cols[] = {100, 0};
-int cwidth;
-int cheight;
-int labelwidth[VIEWER_LABEL_NTYPES];
-int sbarwidth = 16;
-int border = 4;
+static int cols[] = {100, 0}, cwidth, cheight, labelwidth[VIEWER_LABEL_NTYPES],
+	sbarwidth = 16, border = 4;
 
-fre_t seek_re("", REG_EXTENDED | REG_ICASE | REG_NOSUB);
-int re_eflags = REG_NOTBOL | REG_NOTEOL;
+static fre_t seek_re("", REG_EXTENDED | REG_ICASE | REG_NOSUB);
 
-//unsigned int nchars = 80;
-
-string freqformat(int i)
+static string freqformat(int i)
 {
 	static char szLine[32];
 	string fline;
@@ -112,7 +98,8 @@ string freqformat(int i)
 	return fline;
 }
 
-void pskBrowser::resize(int x, int y, int w, int h) {
+void pskBrowser::resize(int x, int y, int w, int h)
+{
 	unsigned int nuchars = (w - cols[0] - (sbarwidth + border)) / cwidth;
 	string bline;
 	if (nuchars < progStatus.VIEWERnchars) {
@@ -122,7 +109,7 @@ void pskBrowser::resize(int x, int y, int w, int h) {
 			if (len > nuchars)
 				bwsrline[i] = bwsrline[i].substr(len - nuchars);
 			bline = freqformat(i);
-			if (seek_re.match(bwsrline[i].c_str(), re_eflags))
+			if (seek_re.match(bwsrline[i].c_str(), REG_NOTBOL | REG_NOTEOL))
 				bline.append(dkred);
 			else if (!progdefaults.myCall.empty() &&
 					strcasestr(bwsrline[i].c_str(), progdefaults.myCall.c_str()))
@@ -135,16 +122,15 @@ void pskBrowser::resize(int x, int y, int w, int h) {
 	progStatus.VIEWERxpos = dlgViewer->x();
 	progStatus.VIEWERypos = dlgViewer->y();
 	Fl_Hold_Browser::resize(x,y,w,h);
-}		
+}
 
-Fl_Double_Window *dlgViewer = (Fl_Double_Window *)0;
+Fl_Double_Window *dlgViewer = 0;
 
-Fl_Button *btnCloseViewer=(Fl_Button *)0;
-Fl_Button *btnClearViewer=(Fl_Button *)0;
-pskBrowser *brwsViewer=(pskBrowser *)0;
-Fl_Input2  *inpSeek = (Fl_Input2 *)0;
-Fl_Value_Slider2 *sldrViewerSquelch = (Fl_Value_Slider2 *)0;
-//Fl_Light_Button *chkBeep = 0;
+static Fl_Button *btnCloseViewer;
+static Fl_Button *btnClearViewer;
+static pskBrowser *brwsViewer;
+static Fl_Input2  *inpSeek;
+static Fl_Value_Slider2 *sldrViewerSquelch;
 
 static void make_colors()
 {
@@ -204,7 +190,8 @@ static void cb_btnCloseViewer(Fl_Button*, void*) {
 	dlgViewer->hide();
 }
 
-void ClearViewer() {
+static void ClearViewer()
+{
   	brwsViewer->clear();
   	usb = wf->USB();
   	rfc = wf->rfcarrier();
@@ -229,9 +216,7 @@ void initViewer()
 	if (!dlgViewer) return;
 	pskviewer->init();
 	ClearViewer();
-	dlgViewer->resize(dlgViewer->x(), dlgViewer->y(),
-	                  progStatus.VIEWERnchars * cwidth + cols[0] + (sbarwidth + border),
-	                  cheight * progdefaults.VIEWERchannels + 50 + border);
+	dlgViewer->size(dlgViewer->w(), cheight * progdefaults.VIEWERchannels + 50 + border);
 }
 
 // i in [1, progdefaults.VIEWERchannels]
@@ -295,66 +280,80 @@ static void cb_Squelch(Fl_Slider *, void *)
 	progdefaults.changed = true;
 }
 
-Fl_Double_Window* createViewer() {
-	Fl_Double_Window* w;
-	Fl_Pack *p;
-
+Fl_Double_Window* createViewer(void)
+{
 	make_colors();
 	evalcwidth();
 	cols[0] = labelwidth[progdefaults.VIEWERlabeltype];
 
-	static int viewerwidth = (progStatus.VIEWERnchars * cwidth) + cols[0] + sbarwidth + border;
-	static int viewerheight = 50 + cheight * progdefaults.VIEWERchannels + border;
+	int viewerwidth = (progStatus.VIEWERnchars * cwidth) + cols[0] + sbarwidth + border;
+	int viewerheight = 50 + cheight * progdefaults.VIEWERchannels + border;
+	int pad = 2;
 
-	w = new Fl_Double_Window(progStatus.VIEWERxpos, progStatus.VIEWERypos, viewerwidth, viewerheight, _("PSK Browser"));
-	w->xclass(PACKAGE_NAME);
-	p = new Fl_Pack(0,0,viewerwidth, viewerheight);
-		Fl_Pack *p1 = new Fl_Pack(0, 0, viewerwidth, 25);
-			p1->type(1);
-			Fl_Box *bx = new Fl_Box(0,0,50, 25);
-	    	inpSeek = new Fl_Input2(50, 5, 200, 25, _("Find: ")); 
-    		inpSeek->callback((Fl_Callback*)cb_Seek);
-    		inpSeek->when(FL_WHEN_CHANGED);
-		inpSeek->textfont(FL_COURIER);
-		inpSeek->value(progStatus.browser_search.c_str());
-//		chkBeep = new Fl_Light_Button(inpSeek->x() + border, inpSeek->y(), 60, inpSeek->h(), "Beep");
-    		bx = new Fl_Box(250, 5, 200, 25);
-    		p1->resizable(bx);
-    	p1->end();
+	Fl_Double_Window* w = new Fl_Double_Window(progStatus.VIEWERxpos, progStatus.VIEWERypos,
+				 viewerwidth + 2 * border, viewerheight + 2 * border,
+				 _("PSK Browser"));
+
+	Fl_Group* g = new Fl_Group(border, border, 200, 20);
+	// search field
+	const char* label = _("Find: ");
+	fl_font(FL_HELVETICA, FL_NORMAL_SIZE);
+	inpSeek = new Fl_Input2(2 * border + fl_width(label), border, 200, g->h(), label);
+	inpSeek->callback((Fl_Callback*)cb_Seek);
+	inpSeek->when(FL_WHEN_CHANGED);
+	inpSeek->textfont(FL_COURIER);
+	inpSeek->value(progStatus.browser_search.c_str());
     	inpSeek->do_callback();
+	g->resizable(0);
+	g->end();
 
-    	brwsViewer = new pskBrowser(2, 25, viewerwidth, viewerheight - 50);
+	// browser
+    	brwsViewer = new pskBrowser(border, inpSeek->y() + inpSeek->h() + pad,
+				    viewerwidth, viewerheight - 2 * g->h() - border);
     	brwsViewer->callback((Fl_Callback*)cb_brwsViewer);
     	brwsViewer->column_widths(cols);
-		
-		Fl_Pack *p2 = new Fl_Pack(0, viewerheight - 25, viewerwidth, 25);
-			p2->type(1);
-			bx = new Fl_Box(0,viewerheight - 25, 10, 25);
-    		btnClearViewer = new Fl_Button(10, viewerheight - 25, 65, 25, _("Clear"));
-    		btnClearViewer->callback((Fl_Callback*)cb_btnClearViewer);
-		btnClearViewer->tooltip(_("Left click to clear text\nRight click to reset frequencies"));
-    		bx = new Fl_Box(75, viewerheight - 25, 10, 25);
-	    	btnCloseViewer = new Fl_Button(85, viewerheight - 25, 65, 25, _("Close"));
-    		btnCloseViewer->callback((Fl_Callback*)cb_btnCloseViewer);
-    		bx = new Fl_Box(140, viewerheight - 25, 5, 25);
-    		sldrViewerSquelch = new Fl_Value_Slider2(145, viewerheight - 25, 200, 25);
-    		sldrViewerSquelch->tooltip(_("Set Viewer Squelch"));
-    		sldrViewerSquelch->type(FL_HOR_NICE_SLIDER);
-    		sldrViewerSquelch->range(0.0, 100.0);
-    		sldrViewerSquelch->value(progdefaults.VIEWERsquelch);
-    		sldrViewerSquelch->callback((Fl_Callback*)cb_Squelch);
-    		bx = new Fl_Box(345, viewerheight - 25, 25, 25);
-    		p2->resizable(bx);
-		p2->end();
-		p->resizable(brwsViewer);
-	p->end();
-	w->resizable(p);
-    w->end();
-    w->callback((Fl_Callback*)cb_btnCloseViewer);
+
+	g = new Fl_Group(border, brwsViewer->y() + brwsViewer->h() + pad, viewerwidth, 20);
+	// close button
+	btnCloseViewer = new Fl_Button(g->w() + border - 65, g->y(), 65, g->h(),
+				       make_icon_label(_("Close"), close_icon));
+	btnCloseViewer->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
+	set_icon_label(btnCloseViewer);
+	btnCloseViewer->callback((Fl_Callback*)cb_btnCloseViewer);
+
+	// clear button
+	btnClearViewer = new Fl_Button(btnCloseViewer->x() - btnCloseViewer->w() - pad,
+				       btnCloseViewer->y(), btnCloseViewer->w(), btnCloseViewer->h(),
+				       make_icon_label(_("Clear"), edit_clear_icon));
+	btnClearViewer->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
+	set_icon_label(btnClearViewer);
+	btnClearViewer->callback((Fl_Callback*)cb_btnClearViewer);
+	btnClearViewer->tooltip(_("Left click to clear text\nRight click to reset frequencies"));
+
+	// squelch
+	sldrViewerSquelch = new Fl_Value_Slider2(border, g->y(),
+						 btnClearViewer->x() - border - pad, g->h());
+	sldrViewerSquelch->align(FL_ALIGN_RIGHT);
+	sldrViewerSquelch->tooltip(_("Set Viewer Squelch"));
+	sldrViewerSquelch->type(FL_HOR_NICE_SLIDER);
+	sldrViewerSquelch->range(0.0, 100.0);
+	sldrViewerSquelch->step(1.0);
+	sldrViewerSquelch->value(progdefaults.VIEWERsquelch);
+	sldrViewerSquelch->callback((Fl_Callback*)cb_Squelch);
+
+	g->resizable(sldrViewerSquelch);
+	g->end();
+
+	w->end();
+	w->callback((Fl_Callback*)cb_btnCloseViewer);
+	w->resizable(brwsViewer);
+	w->xclass(PACKAGE_NAME);
+
 	return w;
 }
 
-void openViewer() {
+void openViewer()
+{
 	if (!dlgViewer) {
 		dlgViewer = createViewer();
 		ClearViewer();
@@ -375,7 +374,8 @@ void viewer_redraw()
 	brwsViewer->column_widths(cols);
 }
 
-void viewaddchr(int ch, int freq, char c) {
+void viewaddchr(int ch, int freq, char c)
+{
 	if (!dlgViewer) return;
 
 	if (progStatus.spot_recv)
@@ -406,17 +406,11 @@ void viewaddchr(int ch, int freq, char c) {
 			bwsrline[index].clear();
 	}
 	nuline = freqformat(index);
-	if (seek_re.match(bwsrline[index].c_str(), re_eflags)) {
+	if (seek_re.match(bwsrline[index].c_str(), REG_NOTBOL | REG_NOTEOL))
 		nuline.append(dkred);
-//		if (chkBeep->value())
-//			fl_beep();
-	}
 	else if (!progdefaults.myCall.empty() &&
-		 strcasestr(bwsrline[index].c_str(), progdefaults.myCall.c_str())) {
+		 strcasestr(bwsrline[index].c_str(), progdefaults.myCall.c_str()))
 		nuline.append(dkgreen);
-//		if (chkBeep->value())
-//			fl_beep();
-	}
 	nuline.append("@.").append(bwsrline[index]);
 	brwsViewer->text(1 + index, nuline.c_str());
 	brwsViewer->redraw();

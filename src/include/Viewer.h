@@ -16,9 +16,6 @@ public:
 };
 
 extern Fl_Double_Window *dlgViewer;
-extern Fl_Button *btnCloseViewer;
-extern Fl_Button *btnClearViewer;
-extern pskBrowser *brwsViewer;
 
 extern Fl_Double_Window* createViewer();
 
