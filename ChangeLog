@@ -1,5 +1,15 @@
-2010-03-12  David Freese  <w1hkj@w1hkj.com>
+2010-03-18  Stelios Bounanos  <vcs@enotty.net>
 
+	2715366: Fix label sizes
+	4ed6c1c: Add PSK browser font change support
+	735dba2: Cosmetic changes the PSK browser
+	5a1cf7d: Add font browser filter
+	bdcca8c: Add mouse wheel handling
+
+2010-03-17  David Freese  <w1hkj@w1hkj.com>
+
+	b66e456: LSB modes - no rig
+	40ae07f: Macro Idle
 	b1702af: User Config Tab
 	6639fef: <TX/RX> macro
 	48552e1: Light Button Colors
