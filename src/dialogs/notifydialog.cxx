@@ -55,7 +55,7 @@ Fl_Check_Button *chkNotifyDupIgnore=(Fl_Check_Button *)0;
 
 Fl_Choice *mnuNotifyDupWhich=(Fl_Choice *)0;
 
-Fl_Spinner *cntNotifyDupTime=(Fl_Spinner *)0;
+Fl_Spinner2 *cntNotifyDupTime=(Fl_Spinner2 *)0;
 
 Fl_Check_Button *chkNotifyDupBand=(Fl_Check_Button *)0;
 
@@ -63,13 +63,13 @@ Fl_Check_Button *chkNotifyDupMode=(Fl_Check_Button *)0;
 
 Fl_Group *grpNotifyAction=(Fl_Group *)0;
 
-Fl_Spinner *cntNotifyActionLimit=(Fl_Spinner *)0;
+Fl_Spinner2 *cntNotifyActionLimit=(Fl_Spinner2 *)0;
 
 Fl_Input2 *inpNotifyActionDialog=(Fl_Input2 *)0;
 
 Fl_Button *btnNotifyActionDialogDefault=(Fl_Button *)0;
 
-Fl_Spinner *cntNotifyActionDialogTimeout=(Fl_Spinner *)0;
+Fl_Spinner2 *cntNotifyActionDialogTimeout=(Fl_Spinner2 *)0;
 
 Fl_Input2 *inpNotifyActionRXMarker=(Fl_Input2 *)0;
 
@@ -170,11 +170,20 @@ Fl_Double_Window* make_notify_window() {
       { mnuNotifyDupWhich = new Fl_Choice(33, 367, 120, 20, _("in:"));
         mnuNotifyDupWhich->down_box(FL_BORDER_BOX);
       } // Fl_Choice* mnuNotifyDupWhich
-      { cntNotifyDupTime = new Fl_Spinner(77, 397, 60, 20, _("Time (s):"));
+      { cntNotifyDupTime = new Fl_Spinner2(77, 397, 60, 20, _("Time (s):"));
+        cntNotifyDupTime->box(FL_NO_BOX);
+        cntNotifyDupTime->color((Fl_Color)FL_BACKGROUND_COLOR);
+        cntNotifyDupTime->selection_color((Fl_Color)FL_BACKGROUND_COLOR);
+        cntNotifyDupTime->labeltype(FL_NORMAL_LABEL);
+        cntNotifyDupTime->labelfont(0);
+        cntNotifyDupTime->labelsize(14);
+        cntNotifyDupTime->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
         cntNotifyDupTime->minimum(0);
         cntNotifyDupTime->maximum(97200);
         cntNotifyDupTime->value(600);
-      } // Fl_Spinner* cntNotifyDupTime
+        cntNotifyDupTime->align(FL_ALIGN_LEFT);
+        cntNotifyDupTime->when(FL_WHEN_RELEASE);
+      } // Fl_Spinner2* cntNotifyDupTime
       { chkNotifyDupBand = new Fl_Check_Button(12, 427, 65, 20, _("Band"));
         chkNotifyDupBand->down_box(FL_DOWN_BOX);
       } // Fl_Check_Button* chkNotifyDupBand
@@ -186,11 +195,20 @@ Fl_Double_Window* make_notify_window() {
     { grpNotifyAction = new Fl_Group(222, 2, 276, 394, _("Action"));
       grpNotifyAction->box(FL_ENGRAVED_FRAME);
       grpNotifyAction->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-      { cntNotifyActionLimit = new Fl_Spinner(343, 31, 52, 20, _("Trigger limit (s):"));
+      { cntNotifyActionLimit = new Fl_Spinner2(343, 31, 52, 20, _("Trigger limit (s):"));
         cntNotifyActionLimit->tooltip(_("Minimum time between events"));
+        cntNotifyActionLimit->box(FL_NO_BOX);
+        cntNotifyActionLimit->color((Fl_Color)FL_BACKGROUND_COLOR);
+        cntNotifyActionLimit->selection_color((Fl_Color)FL_BACKGROUND_COLOR);
+        cntNotifyActionLimit->labeltype(FL_NORMAL_LABEL);
+        cntNotifyActionLimit->labelfont(0);
+        cntNotifyActionLimit->labelsize(14);
+        cntNotifyActionLimit->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
         cntNotifyActionLimit->minimum(0);
         cntNotifyActionLimit->maximum(3600);
-      } // Fl_Spinner* cntNotifyActionLimit
+        cntNotifyActionLimit->align(FL_ALIGN_LEFT);
+        cntNotifyActionLimit->when(FL_WHEN_RELEASE);
+      } // Fl_Spinner2* cntNotifyActionLimit
       { Fl_Input2* o = inpNotifyActionDialog = new Fl_Input2(232, 78, 218, 60, _("Show alert window:"));
         inpNotifyActionDialog->type(4);
         inpNotifyActionDialog->box(FL_DOWN_BOX);
@@ -207,11 +225,20 @@ Fl_Double_Window* make_notify_window() {
       { btnNotifyActionDialogDefault = new Fl_Button(460, 96, 28, 23);
         btnNotifyActionDialogDefault->tooltip(_("Insert default text"));
       } // Fl_Button* btnNotifyActionDialogDefault
-      { cntNotifyActionDialogTimeout = new Fl_Spinner(383, 148, 52, 20, _("Hide window after (s):"));
+      { cntNotifyActionDialogTimeout = new Fl_Spinner2(383, 148, 52, 20, _("Hide window after (s):"));
+        cntNotifyActionDialogTimeout->box(FL_NO_BOX);
+        cntNotifyActionDialogTimeout->color((Fl_Color)FL_BACKGROUND_COLOR);
+        cntNotifyActionDialogTimeout->selection_color((Fl_Color)FL_BACKGROUND_COLOR);
+        cntNotifyActionDialogTimeout->labeltype(FL_NORMAL_LABEL);
+        cntNotifyActionDialogTimeout->labelfont(0);
+        cntNotifyActionDialogTimeout->labelsize(14);
+        cntNotifyActionDialogTimeout->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
         cntNotifyActionDialogTimeout->minimum(0);
         cntNotifyActionDialogTimeout->maximum(3600);
         cntNotifyActionDialogTimeout->value(5);
-      } // Fl_Spinner* cntNotifyActionDialogTimeout
+        cntNotifyActionDialogTimeout->align(FL_ALIGN_LEFT);
+        cntNotifyActionDialogTimeout->when(FL_WHEN_RELEASE);
+      } // Fl_Spinner2* cntNotifyActionDialogTimeout
       { Fl_Input2* o = inpNotifyActionRXMarker = new Fl_Input2(232, 195, 218, 60, _("Append to RX text:"));
         inpNotifyActionRXMarker->type(4);
         inpNotifyActionRXMarker->box(FL_DOWN_BOX);

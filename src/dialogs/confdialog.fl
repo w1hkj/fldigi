@@ -47,6 +47,9 @@ decl {\#include "pskrep.h"} {global
 decl {\#include "flinput2.h"} {public
 } 
 
+decl {\#include "flslider2.h"} {public
+} 
+
 decl {\#include "flmisc.h"} {public
 } 
 
@@ -170,6 +173,7 @@ progdefaults.changed = true;}
             callback {progdefaults.s2n = o->value();}
             xywh {40 279 89 21} type Simple align 4 minimum -18 maximum 60 step 1 value 20
             code0 {o->value(progdefaults.s2n);}
+            class Fl_Counter2
           }
         }
       }
@@ -348,12 +352,14 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {Starting number} xywh {221 176 45 20} align 1 maximum 10000 step 1
                 code0 {o->value(progdefaults.ContestStart);}
+                class Fl_Value_Input2
               }
               Fl_Value_Input nbrContestDigits {
                 label Digits
                 callback {progdefaults.ContestDigits = (int)o->value();
 progdefaults.changed = true;}
                 tooltip {Number of digits in serial number} xywh {303 175 45 20} align 1 minimum 1 maximum 5 step 1 value 3
+                class Fl_Value_Input2
               }
               Fl_Button btnResetSerNbr {
                 label Reset
@@ -413,6 +419,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {Enter time span in minutes} xywh {285 313 53 20} align 8 maximum 1440 step 1 value 120
                 code0 {o->value(progdefaults.timespan);}
+                class Fl_Value_Input2
               }
               Fl_Button btnDupColor {
                 label {Dup Color}
@@ -775,6 +782,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {Set level for good viewing} xywh {270 315 200 20} type Horizontal align 1 step 0.05 value 0.5 textsize 14
                 code0 {o->value(progdefaults.TxMonitorLevel);}
+                class Fl_Value_Slider2
               }
             }
           }
@@ -792,6 +800,7 @@ progdefaults.changed = true;
 setwfrange();}
                 tooltip {Low frequency limit in Hz} xywh {50 72 70 20} type Simple align 8 minimum 0 maximum 500 step 50 value 300
                 code0 {o->value(progdefaults.LowFreqCutoff);}
+                class Fl_Counter2
               }
               Fl_Counter valLatency {
                 label {FFT latency (scan merging)}
@@ -800,6 +809,7 @@ progdefaults.changed = true;}
                 tooltip {Latency increases frequency resolution,
 decreases time resolution. 1 = no scan merging} xywh {50 102 70 21} type Simple align 8 minimum 1 maximum 8 step 1 value 4
                 code0 {o->value(progdefaults.latency);}
+                class Fl_Counter2
               }
               Fl_Check_Button btnWFaveraging {
                 label {FFT averaging}
@@ -825,6 +835,7 @@ progdefaults.changed = true;
 setwfrange();}
                 tooltip {High frequency limit in Hz} xywh {273 72 95 21} type Simple align 8 minimum 2000 maximum 4000 step 100 value 3000
                 code0 {o->value(progdefaults.HighFreqCutoff);}
+                class Fl_Counter2
               }
             }
             Fl_Group {} {
@@ -837,6 +848,7 @@ setwfrange();}
 progdefaults.changed = true;}
                 tooltip {CPU usage increases with waterfall height} xywh {50 242 95 21} type Simple align 8 minimum 100 maximum 160 step 5 value 120
                 code0 {o->value(progdefaults.wfheight);}
+                class Fl_Counter2
               }
             }
           }
@@ -919,6 +931,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
 progdefaults.changed = true;}
                     tooltip {CW dsp filter bandwidth} xywh {40 115 290 20} type Horizontal align 8 minimum 10 maximum 500 step 10 value 150 textsize 14
                     code0 {o->value(progdefaults.CWbandwidth);}
+                    class Fl_Value_Slider2
                   }
                   Fl_Check_Button btnCWrcvTrack {
                     label Tracking
@@ -933,6 +946,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                     tooltip {Range +/- wpm} xywh {225 150 65 20} type Simple align 8 minimum 5 maximum 25 step 1 value 10
                     code0 {o->value(progdefaults.CWrange);}
+                    class Fl_Counter2
                   }
                   Fl_Value_Output valCWrcvWPM {
                     callback {progdefaults.changed = true;}
@@ -959,6 +973,7 @@ sldrCWfarnsworth->value(o->value());
 progdefaults.changed = true;}
                     tooltip {My transmit CW WPM} xywh {20 240 400 20} type Horizontal align 8 minimum 5 maximum 100 step 1 value 20 textsize 14
                     code0 {o->value(progdefaults.CWspeed);}
+                    class Fl_Value_Slider2
                   }
                   Fl_Counter cntCWdefWPM {
                     label Default
@@ -966,6 +981,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                     tooltip {The default CW speed} xywh {40 281 64 20} type Simple align 1 minimum 5 maximum 200 step 1 value 18
                     code0 {o->value(progdefaults.defCWspeed);}
+                    class Fl_Counter2
                   }
                   Fl_Counter cntCWlowerlimit {
                     label {Lower limit}
@@ -995,6 +1011,7 @@ cntCWlowerlimit->maximum(o->value()-20);}
 progdefaults.changed = true;}
                     tooltip {My transmit CW WPM} xywh {20 335 400 20} type Horizontal align 8 minimum 5 maximum 100 step 1 value 20 textsize 14
                     code0 {o->value(progdefaults.CWfarnsworth);}
+                    class Fl_Value_Slider2
                   }
                   Fl_Check_Button btnCWusefarnsworth {
                     label {Use Farnsworth timing}
@@ -1019,6 +1036,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                     tooltip {Dot to dot-space ratio} xywh {15 114 65 20} type Simple align 8 minimum 20 maximum 80 step 1 value 50
                     code0 {o->value(progdefaults.CWweight);}
+                    class Fl_Counter2
                   }
                   Fl_Counter cntCWdash2dot {
                     label {Dash to dot ratio}
@@ -1026,6 +1044,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                     tooltip {Dash to dot ratio} xywh {240 114 64 20} type Simple align 8 minimum 2.5 maximum 4 value 3
                     code0 {o->value(progdefaults.CWdash2dot);}
+                    class Fl_Counter2
                   }
                   Fl_Counter cntCWrisetime {
                     label {Edge timing}
@@ -1033,6 +1052,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                     tooltip {Leading and Trailing edge risetimes (msec)} xywh {240 145 65 20} type Simple align 8 minimum 0 maximum 15 value 4
                     code0 {o->value(progdefaults.CWrisetime);}
+                    class Fl_Counter2
                   }
                   Fl_Choice mnuQSKshape {
                     label {Edge shape}
@@ -1071,6 +1091,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                     tooltip {Msec pre-keydown (+ is earlier in time)} xywh {15 275 64 20} type Simple align 8 minimum 0 maximum 20 step 0.5
                     code0 {o->value(progdefaults.CWpre);}
+                    class Fl_Counter2
                   }
                   Fl_Counter cntPostTiming {
                     label {Post-keydown timing (ms)}
@@ -1078,6 +1099,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                     tooltip {Msec post-keydown (+ is earlier in time)} xywh {15 305 64 20} type Simple align 8 minimum -20 maximum 20 step 0.5
                     code0 {o->value(progdefaults.CWpre);}
+                    class Fl_Counter2
                   }
                   Fl_Check_Button btnQSKadjust {
                     label {Send continuous}
@@ -1127,6 +1149,7 @@ resetDOMEX();
 progdefaults.changed = true;}
                 tooltip {Filter bandwidth relative to signal width} xywh {156 141 63 20} type Simple align 8 minimum 1 maximum 2 value 1.5
                 code0 {o->value(progdefaults.DOMINOEX_BW);}
+                class Fl_Counter2
               }
               Fl_Check_Button chkDominoEX_FEC {
                 label FEC
@@ -1141,6 +1164,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {CWI detection and suppression} xywh {15 207 260 20} type Horizontal align 1 textsize 14
                 code0 {o->value(progdefaults.DomCWI);}
+                class Fl_Value_Slider2
               }
               Fl_Counter valDominoEX_PATHS {
                 label {Paths (hidden)}
@@ -1149,6 +1173,7 @@ progdefaults.changed = true;}
                 xywh {339 194 63 20} type Simple minimum 4 maximum 8 step 1 value 5
                 code0 {o->value(progdefaults.DOMINOEX_PATHS);}
                 code1 {o->hide();}
+                class Fl_Counter2
               }
             }
           }
@@ -1181,6 +1206,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {\# of multiple scans / character line} xywh {15 100 40 20} align 8 maximum 3
                 code0 {o->value(progdefaults.HellXmtWidth);}
+                class Fl_Spinner2
               }
               Fl_Check_Button btnHellRcvWidth {
                 label {Halve receive width}
@@ -1203,6 +1229,7 @@ progdefaults.changed = true;} open
                 callback {progdefaults.HELL_BW = sldrHellBW->value();}
                 tooltip {Adjust the DSP bandwidth} xywh {206 147 246 20} type Horizontal align 5 minimum 10 maximum 2400 step 5 value 400 textsize 14
                 code0 {o->value(progdefaults.HELL_BW);}
+                class Fl_Value_Slider2
               }
               Fl_Check_Button btnFeldHellIdle {
                 label {Transmit periods (.) when idle}
@@ -1284,6 +1311,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 xywh {150 240 40 25} align 8 maximum 10 value 4
                 code0 {o->value(progdefaults.mt63_tone_duration);}
+                class Fl_Spinner2
               }
             }
           }
@@ -1324,6 +1352,7 @@ progdefaults.changed = true;} open
 resetOLIVIA();
 progdefaults.changed = true;}
                   tooltip {Change ONLY to experiment} xywh {80 150 70 20} type Simple align 8 minimum 2 maximum 128 step 1 value 8
+                  class Fl_Counter2
                 }
                 Fl_Counter cntOlivia_sinteg {
                   label {Integration period (FEC blocks)}
@@ -1331,6 +1360,7 @@ progdefaults.changed = true;}
 resetOLIVIA();
 progdefaults.changed = true;}
                   tooltip {Change ONLY to experiment} xywh {80 180 70 20} type Simple align 8 minimum 2 maximum 128 step 1 value 4
+                  class Fl_Counter2
                 }
               }
               Fl_Check_Button btnOlivia_8bit {
@@ -1363,6 +1393,7 @@ wf->redraw_marker();
 progdefaults.changed = true;}
                     tooltip {Capture signals within this frequency range} xywh {15 117 75 20} type Simple align 8 minimum 10 maximum 500 step 10 value 200
                     code0 {o->value(progdefaults.SearchRange);}
+                    class Fl_Counter2
                   }
                   Fl_Counter cntACQsn {
                     label {Acquisition S/N (dB)}
@@ -1370,6 +1401,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                     tooltip {Capture signals over this threshold} xywh {15 146 75 20} type Simple align 8 minimum 3 maximum 20 step 1 value 6
                     code0 {o->value(progdefaults.ACQsn);}
+                    class Fl_Counter2
                   }
                 }
                 Fl_Group {} {
@@ -1390,6 +1422,7 @@ progdefaults.changed = true;} open
 progdefaults.changed = true;}
                     tooltip {Will occur after this time in seconds} xywh {156 214 75 20} type Simple align 8 minimum 0 maximum 30 step 1
                     code0 {o->value(progdefaults.StatusTimeout);}
+                    class Fl_Counter2
                   }
                 }
               }
@@ -1418,6 +1451,7 @@ initViewer();}
                     code1 {o->maximum(30);}
                     code2 {o->step(1);}
                     code3 {o->value(progdefaults.VIEWERchannels);}
+                    class Fl_Spinner2
                   }
                   Fl_Spinner cntStartFrequency {
                     label {Start frequency}
@@ -1429,6 +1463,7 @@ initViewer();}
                     code1 {o->maximum(1000);}
                     code2 {o->step(100);}
                     code3 {o->value(progdefaults.VIEWERstart);}
+                    class Fl_Spinner2
                   }
                   Fl_Spinner cntTimeout {
                     label {Inactivity timeout}
@@ -1440,6 +1475,7 @@ progdefaults.changed = true;}
                     code1 {o->maximum(180);}
                     code2 {o->step(1);}
                     code3 {o->value(progdefaults.VIEWERtimeout);}
+                    class Fl_Spinner2
                   }
                   Fl_Choice mnuViewerLabel {
                     label {Channel label}
@@ -1533,6 +1569,7 @@ progdefaults.changed = true;}
                   callback {progdefaults.rtty_autocount = (int)o->value();
 progdefaults.changed = true;}
                   tooltip {Set page width} xywh {335 118 65 20} type Simple align 8 minimum 68 maximum 80 step 1 value 72
+                  class Fl_Counter2
                 }
                 Fl_Box {} {
                   label {after:}
@@ -1597,6 +1634,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.RTTY_BW = o->value();}
                 tooltip {Adjust the DSP bandwidth} xywh {100 325 300 20} type Horizontal align 5 minimum 5 maximum 200 step 1 value 25 textsize 14
                 code0 {o->value(progdefaults.RTTY_BW);}
+                class Fl_Value_Slider2
               }
               Fl_Counter selCustomShift {
                 label {Custom shift}
@@ -1605,6 +1643,7 @@ resetRTTY();
 progdefaults.changed = true;}
                 tooltip {Input carrier shift} xywh {15 100 100 20} align 8 minimum 10 maximum 1000 step 1 value 450
                 code0 {o->lstep(10.0);}
+                class Fl_Counter2
               }
             }
           }
@@ -1638,6 +1677,7 @@ resetTHOR();
 progdefaults.changed = true;}
                 tooltip {Filter bandwidth relative to signal width} xywh {156 141 63 20} type Simple align 8 minimum 1 maximum 2 value 1.5
                 code0 {o->value(progdefaults.THOR_BW);}
+                class Fl_Counter2
               }
               Fl_Value_Slider valThorCWI {
                 label {CWI threshold}
@@ -1645,6 +1685,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {CWI detection and suppression} xywh {15 194 260 20} type Horizontal align 1 textsize 14
                 code0 {o->value(progdefaults.ThorCWI);}
+                class Fl_Value_Slider2
               }
               Fl_Counter valTHOR_PATHS {
                 label {Paths (hidden)}
@@ -1653,6 +1694,7 @@ progdefaults.changed = true;}
                 xywh {353 193 75 21} type Simple align 1 minimum 4 maximum 8 step 1 value 5
                 code0 {o->value(progdefaults.THOR_PATHS);}
                 code1 {o->hide();}
+                class Fl_Counter2
               }
             }
           }
@@ -1820,24 +1862,27 @@ btnRevertRIGCAT->activate();} open
                 callback {btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 btnRevertRIGCAT->activate();}
-                tooltip {\# retries before giving up} xywh {30 150 60 22} align 5
+                tooltip {\# retries before giving up} xywh {30 150 60 22} align 5 maximum 1000 step 1
                 code0 {o->value(progdefaults.RigCatRetries);}
+                class Fl_Value_Input2
               }
               Fl_Value_Input cntRigCatTimeout {
                 label {Retry interval (ms)}
                 callback {btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 btnRevertRIGCAT->activate();}
-                tooltip {Time between retires in msec} xywh {148 150 60 22} align 5
+                tooltip {Time between retires in msec} xywh {148 150 60 22} align 5 maximum 10000 step 1
                 code0 {o->value(progdefaults.RigCatTimeout);}
+                class Fl_Value_Input2
               }
               Fl_Value_Input cntRigCatWait {
                 label {Write delay (ms)}
                 callback {btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 btnRevertRIGCAT->activate();}
-                xywh {30 190 60 22} align 5
+                xywh {30 190 60 22} align 5 maximum 10000 step 1
                 code0 {o->value(progdefaults.RigCatWait);}
+                class Fl_Value_Input2
               }
               Fl_Choice mnuXmlRigBaudrate {
                 label {Baud rate:}
@@ -1855,6 +1900,7 @@ btnInitRIGCAT->redraw();
 btnRevertRIGCAT->activate();}
                 xywh {388 184 95 21} type Simple align 4 minimum 1 maximum 2 step 1 value 1
                 code0 {o->value(progdefaults.RigCatStopbits);}
+                class Fl_Counter2
               }
               Fl_Button btnInitRIGCAT {
                 label Initialize
@@ -1995,32 +2041,36 @@ btnRevertHAMLIB->activate();} open
                 callback {btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();}
-                tooltip {\# times to resend command before giving up} xywh {30 133 70 24} align 5
+                tooltip {\# times to resend command before giving up} xywh {30 133 70 24} align 5 maximum 1000 step 1
                 code0 {o->value(progdefaults.HamlibRetries);}
+                class Fl_Value_Input2
               }
               Fl_Value_Input cntHamlibTimeout {
                 label {Retry Interval (ms)}
                 callback {btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();}
-                tooltip {Msec's between retries} xywh {155 133 70 24} align 5
+                tooltip {Msec's between retries} xywh {155 133 70 24} align 5 maximum 10000 step 1
                 code0 {o->value(progdefaults.HamlibTimeout);}
+                class Fl_Value_Input2
               }
               Fl_Value_Input cntHamlibWriteDelay {
                 label {Write delay (ms)}
                 callback {btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();}
-                tooltip {Msec's between sequential commands} xywh {30 176 70 24} align 5
+                tooltip {Msec's between sequential commands} xywh {30 176 70 24} align 5 maximum 10000 step 1
                 code0 {o->value(progdefaults.HamlibWriteDelay);}
+                class Fl_Value_Input2
               }
               Fl_Value_Input cntHamlibWait {
                 label {Post write delay (ms)}
                 callback {btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();}
-                tooltip {Wait interval (msecs) before reading response} xywh {156 176 70 24} align 5
+                tooltip {Wait interval (msecs) before reading response} xywh {156 176 70 24} align 5 maximum 10000 step 1
                 code0 {o->value(progdefaults.HamlibWait);}
+                class Fl_Value_Input2
               }
               Fl_Choice mnuBaudRate {
                 label {Baud rate:}
@@ -2038,6 +2088,7 @@ btnRevertHAMLIB->activate();
 progdefaults.changed = true;}
                 xywh {389 163 95 21} type Simple align 4 minimum 1 maximum 2 step 1 value 1
                 code0 {o->value(progdefaults.HamRigStopbits);}
+                class Fl_Counter2
               }
               Fl_Counter cntHamlibTimeout0 {
                 label {Retry interval (ms)}
@@ -2046,6 +2097,7 @@ btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();}
                 tooltip {Msec's between retries} xywh {150 140 100 20} type Simple align 5 minimum 2 maximum 20000 step 1 value 10 hide
                 code0 {o->value(progdefaults.HamlibTimeout);}
+                class Fl_Counter2
               }
               Fl_Input inpHamlibConfig {
                 label {Advanced configuration:}
@@ -2363,6 +2415,7 @@ progdefaults.changed = true;}
                 code0 {o->step(1);}
                 code1 {o->minimum(-50000);}
                 code2 {o->maximum(50000);}
+                class Fl_Spinner2
               }
               Fl_Spinner cntTxRateCorr {
                 label {TX ppm}
@@ -2372,6 +2425,7 @@ progdefaults.changed = true;}
                 code0 {o->step(1);}
                 code1 {o->minimum(-50000);}
                 code2 {o->maximum(50000);}
+                class Fl_Spinner2
               }
               Fl_Spinner cntTxOffset {
                 label {TX offset}
@@ -2382,6 +2436,7 @@ progdefaults.changed = true;}
                 code1 {o->step(1);}
                 code2 {o->minimum(-50);}
                 code3 {o->maximum(50);}
+                class Fl_Spinner2
               }
             }
             Fl_Check_Button chkAudioStereoOut {
@@ -2456,6 +2511,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {Set the sound card PCM level} xywh {15 167 340 20} type Horizontal selection_color 15 align 8 value 0.8 textsize 14
                 code0 {extern void setPCMvolume(double);}
+                class Fl_Value_Slider2
               }
             }
           }
@@ -2511,6 +2567,7 @@ progdefaults.changed = true;}
             tooltip {Set the number of characters per row} xywh {365 127 120 20} type Horizontal align 4 minimum 1 maximum 4 step 1 value 1 textsize 14
             code0 {o->value(progdefaults.videowidth);}
             code1 {if (progdefaults.ID_SMALL) o->deactivate();}
+            class Fl_Value_Slider2
           }
           Fl_Button bVideoIDModes {
             label {Video ID modes}
@@ -2538,6 +2595,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
             tooltip {Send at this WPM} xywh {165 185 180 20} type Horizontal align 1 minimum 15 maximum 40 step 1 value 18 textsize 14
             code0 {o->value(progdefaults.CWIDwpm);}
+            class Fl_Value_Slider2
           }
           Fl_Button bCWIDModes {
             label {CW ID modes}
@@ -2642,6 +2700,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {Default CW tracking point} xywh {42 71 65 20} minimum 200 maximum 4000 step 1 value 1000
                 code0 {o->value(progdefaults.CWsweetspot);}
+                class Fl_Value_Input2
               }
               Fl_Value_Input valRTTYsweetspot {
                 label RTTY
@@ -2649,6 +2708,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {Default RTTY tracking point} xywh {220 71 65 20} minimum 200 maximum 4000 step 1 value 1000
                 code0 {o->value(progdefaults.RTTYsweetspot);}
+                class Fl_Value_Input2
               }
               Fl_Value_Input valPSKsweetspot {
                 label {PSK et al.}
@@ -2656,6 +2716,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {Default for all other modems} xywh {420 71 65 20} minimum 200 maximum 4000 step 1 value 1000
                 code0 {o->value(progdefaults.PSKsweetspot);}
+                class Fl_Value_Input2
               }
               Fl_Check_Button btnStartAtSweetSpot {
                 label {Always start new modems at these frequencies}
@@ -2859,6 +2920,7 @@ wf->redraw_marker();
 progdefaults.changed = true;}
                 tooltip {Default listen / transmit frequency} xywh {56 86 80 20} type Simple align 8 minimum 500 maximum 2500 step 25 value 1500
                 code0 {o->value(progdefaults.ServerCarrier);}
+                class Fl_Counter2
               }
               Fl_Counter cntServerOffset {
                 label {Search range (Hz)}
@@ -2867,6 +2929,7 @@ wf->redraw_marker();
 progdefaults.changed = true;}
                 tooltip {Listen for signals within this range} xywh {56 123 80 20} type Simple align 8 minimum 10 maximum 500 step 10 value 100
                 code0 {o->value(progdefaults.SearchRange);}
+                class Fl_Counter2
               }
               Fl_Counter cntServerACQsn {
                 label {Acquisition S/N (dB)}
@@ -2874,6 +2937,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {Capture signals over this threshold} xywh {56 160 80 20} type Simple align 8 minimum 3 maximum 20 step 1 value 6
                 code0 {o->value(progdefaults.ServerACQsn);}
+                class Fl_Counter2
               }
               Fl_Counter cntServerAFCrange {
                 label {AFC range (Hz)}
@@ -2882,6 +2946,7 @@ wf->redraw_marker();
 progdefaults.changed = true;}
                 tooltip {Limit AFC movement to this range} xywh {56 197 80 20} type Simple align 8 minimum 10 maximum 500 step 10 value 25
                 code0 {o->value(progdefaults.SearchRange);}
+                class Fl_Counter2
               }
               Fl_Check_Button btnPSKmailSweetSpot {
                 label {Reset to Carrier}

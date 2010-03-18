@@ -294,6 +294,7 @@ fldigi_SOURCES += \
 	include/fldigi-config.h \
 	include/flinput2.h \
 	include/flmisc.h \
+	include/flslider2.h \
 	include/flstring.h \
 	include/font_browser.h \
 	include/fontdef.h \
@@ -473,6 +474,7 @@ fldigi_SOURCES += \
 	widgets/Fl_Tile_Check.cxx \
 	widgets/flinput2.cxx \
 	widgets/flmisc.cxx \
+	widgets/flslider2.cxx \
 	widgets/picture.cxx \
 	widgets/progress.cxx \
 	wwv/analysis.cxx \
@@ -534,6 +536,7 @@ flarq_SOURCES += \
 	include/fileselect.h \
 	include/flinput2.h \
 	include/flmisc.h \
+	include/flslider2.h \
 	include/font_browser.h \
 	include/icons.h \
 	include/pixmaps.h \
@@ -555,6 +558,7 @@ flarq_SOURCES += \
 	misc/timeops.cxx \
 	widgets/flinput2.cxx \
 	widgets/flmisc.cxx \
+	widgets/flslider2.cxx \
 	misc/icons.cxx \
 	misc/pixmaps.cxx \
 	misc/re.cxx \

@@ -35,6 +35,7 @@
 #include <FL/fl_draw.H>
 
 #include "font_browser.h"
+#include "flslider2.h"
 #include "gettext.h"
 
 using namespace std;
@@ -120,7 +121,7 @@ Font_Browser::Font_Browser(int x, int y, int w, int h, const char *lbl )
     lst_Font->type(FL_HOLD_BROWSER);
     lst_Font->callback(fb_callback, this);
 
-    txt_Size = new Fl_Value_Input(290, 15, 50, 22, _("Size:"));
+    txt_Size = new Fl_Value_Input2(290, 15, 50, 22, _("Size:"));
     txt_Size->align(FL_ALIGN_TOP_LEFT);
     txt_Size->range(1.0, 48.0);
     txt_Size->step(1.0);

@@ -5,6 +5,7 @@
 #include <FL/Fl.H>
 #include "table.h"
 #include "flinput2.h"
+#include "flslider2.h"
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Group.H>
 extern Fl_Group *grpNotifyEvent;
@@ -27,15 +28,14 @@ extern Fl_Check_Button *chkNotifyFilterEQSL;
 extern Fl_Group *grpNotifyDup;
 extern Fl_Check_Button *chkNotifyDupIgnore;
 extern Fl_Choice *mnuNotifyDupWhich;
-#include <FL/Fl_Spinner.H>
-extern Fl_Spinner *cntNotifyDupTime;
+extern Fl_Spinner2 *cntNotifyDupTime;
 extern Fl_Check_Button *chkNotifyDupBand;
 extern Fl_Check_Button *chkNotifyDupMode;
 extern Fl_Group *grpNotifyAction;
-extern Fl_Spinner *cntNotifyActionLimit;
+extern Fl_Spinner2 *cntNotifyActionLimit;
 extern Fl_Input2 *inpNotifyActionDialog;
 extern Fl_Button *btnNotifyActionDialogDefault;
-extern Fl_Spinner *cntNotifyActionDialogTimeout;
+extern Fl_Spinner2 *cntNotifyActionDialogTimeout;
 extern Fl_Input2 *inpNotifyActionRXMarker;
 extern Fl_Button *btnNotifyActionMarkerDefault;
 extern Fl_Input2 *inpNotifyActionMacro;

@@ -30,9 +30,9 @@
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Widget.H>
 #include <FL/Fl_Browser.H>
-#include <FL/Fl_Value_Input.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Return_Button.H>
+#include "flslider2.h"
 
 // Preview box for showing font
 class Preview_Box : public Fl_Widget
@@ -60,7 +60,7 @@ private:
 
     Fl_Browser	*lst_Font;
     Fl_Browser	*lst_Size;
-    Fl_Value_Input *txt_Size;
+    Fl_Value_Input2 *txt_Size;
     Fl_Return_Button *btn_OK;
     Fl_Button	*btn_Cancel;
     Fl_Button	*btn_Color;

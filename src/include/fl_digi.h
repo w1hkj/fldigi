@@ -26,8 +26,6 @@
 
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Browser.H>
-#include <FL/Fl_Value_Slider.H>
-#include <FL/Fl_Input.H>
 
 #include "combo.h"
 #include "Fl_Tile_Check.h"
@@ -40,7 +38,7 @@
 #include "progress.h"
 #include "FreqControl.h"
 #include "flinput2.h"
-
+#include "flslider2.h"
 
 extern Fl_Double_Window *fl_digi_main;
 extern Fl_Double_Window *scopeview;
@@ -55,7 +53,7 @@ extern Fl_Box			*Status2;
 extern Fl_Box			*Status1;
 extern Fl_Box			*WARNstatus;
 extern Fl_Button		*MODEstatus;
-extern Fl_Slider		*sldrSquelch;
+extern Fl_Slider2		*sldrSquelch;
 extern Progress			*pgrsSquelch;
 extern Fl_Button 		*btnMacro[];
 extern Fl_Input2		*inpFreq;
@@ -110,8 +108,8 @@ extern Fl_Button		*qso_btnSelFreq;
 extern Fl_Button		*qso_btnDelFreq;
 extern Fl_Button		*qso_btnClearList;
 
-extern Fl_Value_Slider		*valRcvMixer;
-extern Fl_Value_Slider		*valXmtMixer;
+extern Fl_Value_Slider2		*valRcvMixer;
+extern Fl_Value_Slider2		*valXmtMixer;
 extern Fl_Button		*btnAFC;
 extern Fl_Button		*btnSQL;
 extern Fl_Light_Button		*btnRSID;

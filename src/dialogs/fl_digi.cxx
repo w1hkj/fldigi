@@ -264,8 +264,8 @@ Fl_Button			*qso_btnAct = 0;
 Fl_Input2			*qso_inpAct = 0;
 
 Fl_Group			*MixerFrame;
-Fl_Value_Slider		*valRcvMixer;
-Fl_Value_Slider		*valXmtMixer;
+Fl_Value_Slider2		*valRcvMixer;
+Fl_Value_Slider2		*valXmtMixer;
 
 int pad = 1;
 int Hentry		= 24;
@@ -328,7 +328,7 @@ waterfall			*wf = (waterfall *)0;
 Digiscope			*digiscope = (Digiscope *)0;
 //Digiscope			*wfscope = (Digiscope *)0;
 
-Fl_Slider			*sldrSquelch = (Fl_Slider *)0;
+Fl_Slider2			*sldrSquelch = (Fl_Slider2 *)0;
 Progress			*pgrsSquelch = (Progress *)0;
 
 Fl_RGB_Image		*feld_image = 0;
@@ -3399,7 +3399,7 @@ void create_fl_digi_main_primary() {
 		int Hxmttxt = (Htext - (Hrcvtxt));
 		int sw = DEFAULT_SW;
 		MixerFrame = new Fl_Group(0,Y,sw, Hrcvtxt + Hxmttxt);
-			valRcvMixer = new Fl_Value_Slider(0, Y, sw, (Htext)/2, "");
+			valRcvMixer = new Fl_Value_Slider2(0, Y, sw, (Htext)/2, "");
 			valRcvMixer->type(FL_VERT_NICE_SLIDER);
 			valRcvMixer->color(fl_rgb_color(0,110,30));
 			valRcvMixer->labeltype(FL_ENGRAVED_LABEL);
@@ -3409,7 +3409,7 @@ void create_fl_digi_main_primary() {
 			valRcvMixer->value(100.0);
 			valRcvMixer->step(1.0);
 			valRcvMixer->callback( (Fl_Callback *)cb_RcvMixer);
-			valXmtMixer = new Fl_Value_Slider(0, Y + (Htext)/2, sw, (Htext)/2, "");
+			valXmtMixer = new Fl_Value_Slider2(0, Y + (Htext)/2, sw, (Htext)/2, "");
 			valXmtMixer->type(FL_VERT_NICE_SLIDER);
 			valXmtMixer->color(fl_rgb_color(110,0,30));
 			valXmtMixer->labeltype(FL_ENGRAVED_LABEL);
@@ -3509,7 +3509,7 @@ void create_fl_digi_main_primary() {
 			pgrsSquelch->color(FL_BACKGROUND2_COLOR, FL_DARK_GREEN);
 			pgrsSquelch->type(Progress::VERTICAL);
 			pgrsSquelch->tooltip(_("Detected signal level"));
-				sldrSquelch = new Fl_Slider(
+				sldrSquelch = new Fl_Slider2(
 				rightof(pgrsSquelch), Y + 4,
 				DEFAULT_SW, Hwfall - 8,
 				"");
@@ -3924,8 +3924,8 @@ void noop_controls() // create and then hide all controls not being used
 	qso_btnAct = new Fl_Button(defwidget); qso_btnAct->hide();
 	qso_inpAct = new Fl_Input2(defwidget); qso_inpAct->hide();
 
-	valRcvMixer = new Fl_Value_Slider(defwidget); valRcvMixer->hide();
-	valXmtMixer = new Fl_Value_Slider(defwidget); valXmtMixer->hide();
+	valRcvMixer = new Fl_Value_Slider2(defwidget); valRcvMixer->hide();
+	valXmtMixer = new Fl_Value_Slider2(defwidget); valXmtMixer->hide();
 
 	dummywindow->end();
 	dummywindow->hide();
@@ -4023,7 +4023,7 @@ void create_fl_digi_main_WF_only() {
 			pgrsSquelch->type(Progress::VERTICAL);
 			pgrsSquelch->tooltip(_("Detected signal level"));
 
-			sldrSquelch = new Fl_Slider(
+			sldrSquelch = new Fl_Slider2(
 				rightof(pgrsSquelch), Y + pad,
 				DEFAULT_SW, Hwfall - 2 * pad,
 				"");

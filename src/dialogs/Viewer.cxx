@@ -37,10 +37,10 @@
 #include "gettext.h"
 #include "flmisc.h"
 #include "flinput2.h"
+#include "flslider2.h"
 #include "spot.h"
 
 #include <FL/Enumerations.H>
-#include <FL/Fl_Slider.H>
 #include <FL/Fl_Pack.H>
 
 #include <string>
@@ -143,7 +143,7 @@ Fl_Button *btnCloseViewer=(Fl_Button *)0;
 Fl_Button *btnClearViewer=(Fl_Button *)0;
 pskBrowser *brwsViewer=(pskBrowser *)0;
 Fl_Input2  *inpSeek = (Fl_Input2 *)0;
-Fl_Slider *sldrViewerSquelch = (Fl_Slider *)0;
+Fl_Value_Slider2 *sldrViewerSquelch = (Fl_Value_Slider2 *)0;
 //Fl_Light_Button *chkBeep = 0;
 
 static void make_colors()
@@ -337,7 +337,7 @@ Fl_Double_Window* createViewer() {
 	    	btnCloseViewer = new Fl_Button(85, viewerheight - 25, 65, 25, _("Close"));
     		btnCloseViewer->callback((Fl_Callback*)cb_btnCloseViewer);
     		bx = new Fl_Box(140, viewerheight - 25, 5, 25);
-    		sldrViewerSquelch = new Fl_Slider(145, viewerheight - 25, 200, 25);
+    		sldrViewerSquelch = new Fl_Value_Slider2(145, viewerheight - 25, 200, 25);
     		sldrViewerSquelch->tooltip(_("Set Viewer Squelch"));
     		sldrViewerSquelch->type(FL_HOR_NICE_SLIDER);
     		sldrViewerSquelch->range(0.0, 100.0);

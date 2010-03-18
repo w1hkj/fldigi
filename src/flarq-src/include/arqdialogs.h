@@ -4,6 +4,7 @@
 #define arqdialogs_h
 #include <FL/Fl.H>
 #include "flinput2.h"
+#include "flslider2.h"
 #include "combo.h"
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Menu_Bar.H>
@@ -46,12 +47,11 @@ extern Fl_Menu_Item menu_mnu[];
 #define mnuAbout (menu_mnu+13)
 extern Fl_Input2 *txtMyCall;
 extern Fl_Input2 *txtBEACONTXT;
-#include <FL/Fl_Spinner.H>
-extern Fl_Spinner *spnRetries;
-extern Fl_Spinner *spnWaitTime;
-extern Fl_Spinner *spnTimeout;
-extern Fl_Spinner *spnTxDelay;
-extern Fl_Spinner *spnBcnInterval;
+extern Fl_Spinner2 *spnRetries;
+extern Fl_Spinner2 *spnWaitTime;
+extern Fl_Spinner2 *spnTimeout;
+extern Fl_Spinner2 *spnTxDelay;
+extern Fl_Spinner2 *spnBcnInterval;
 extern Fl_Button *btnOK;
 extern Fl_ComboBox *choiceBlockSize;
 Fl_Double_Window* arq_configure();

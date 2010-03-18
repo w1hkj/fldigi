@@ -13,6 +13,9 @@ decl {\#include "table.h"} {public global
 decl {\#include "flinput2.h"} {public global
 } 
 
+decl {\#include "flslider2.h"} {public global
+} 
+
 decl {\#include "notify.h"} {} 
 
 Function {make_notify_window()} {open
@@ -100,6 +103,7 @@ chkNotifyFilterCall->value(0);}
       Fl_Spinner cntNotifyDupTime {
         label {Time (s):}
         xywh {77 397 60 20} minimum 0 maximum 97200 value 600
+        class Fl_Spinner2
       }
       Fl_Check_Button chkNotifyDupBand {
         label Band
@@ -117,6 +121,7 @@ chkNotifyFilterCall->value(0);}
       Fl_Spinner cntNotifyActionLimit {
         label {Trigger limit (s):}
         tooltip {Minimum time between events} xywh {343 31 52 20} minimum 0 maximum 3600 value 1
+        class Fl_Spinner2
       }
       Fl_Input inpNotifyActionDialog {
         label {Show alert window:}
@@ -130,6 +135,7 @@ chkNotifyFilterCall->value(0);}
       Fl_Spinner cntNotifyActionDialogTimeout {
         label {Hide window after (s):}
         xywh {383 148 52 20} minimum 0 maximum 3600 value 5
+        class Fl_Spinner2
       }
       Fl_Input inpNotifyActionRXMarker {
         label {Append to RX text:}

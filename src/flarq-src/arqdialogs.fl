@@ -11,6 +11,9 @@ decl {\#include "flarq.h"} {}
 decl {\#include "flinput2.h"} {public
 } 
 
+decl {\#include "flslider2.h"} {public
+} 
+
 decl {\#include "combo.h"} {public
 } 
 
@@ -212,6 +215,7 @@ cbSetConfig();}
       code1 {o->maximum(20);}
       code2 {o->step(1);}
       code3 {o->value(iretries);}
+      class Fl_Spinner2
     }
     Fl_Spinner spnWaitTime {
       label {Wait time (sec):}
@@ -222,6 +226,7 @@ cbSetConfig();}
       code1 {o->maximum(30);}
       code2 {o->step(5);}
       code3 {o->value(iwaittime/1000);}
+      class Fl_Spinner2
     }
     Fl_Spinner spnTimeout {
       label {Timeout (sec):}
@@ -232,6 +237,7 @@ cbSetConfig();}
       code1 {o->maximum(300);}
       code2 {o->step(15);}
       code3 {o->value(itimeout / 1000);}
+      class Fl_Spinner2
     }
     Fl_Spinner spnTxDelay {
       label {Tx delay (msec):}
@@ -242,6 +248,7 @@ cbSetConfig();}
       code1 {o->maximum(2000);}
       code2 {o->step(100);}
       code3 {o->value(txdelay);}
+      class Fl_Spinner2
     }
     Fl_Spinner spnBcnInterval {
       label {Beacon interval (sec)}
@@ -251,6 +258,7 @@ cbSetConfig();}
       code0 {o->minimum(60); o->maximum(3600);}
       code1 {o->step(30);}
       code2 {o->value(bcnInterval);}
+      class Fl_Spinner2
     }
     Fl_Button btnOK {
       label Ok

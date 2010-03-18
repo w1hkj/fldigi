@@ -284,37 +284,37 @@ static void cb_txtBEACONTXT(Fl_Input2* o, void*) {
   changeBeaconText(o->value());
 }
 
-Fl_Spinner *spnRetries=(Fl_Spinner *)0;
+Fl_Spinner2 *spnRetries=(Fl_Spinner2 *)0;
 
-static void cb_spnRetries(Fl_Spinner* o, void*) {
+static void cb_spnRetries(Fl_Spinner2* o, void*) {
   iretries = (int)o->value();
 cbSetConfig();
 }
 
-Fl_Spinner *spnWaitTime=(Fl_Spinner *)0;
+Fl_Spinner2 *spnWaitTime=(Fl_Spinner2 *)0;
 
-static void cb_spnWaitTime(Fl_Spinner* o, void*) {
+static void cb_spnWaitTime(Fl_Spinner2* o, void*) {
   iwaittime = (int)(1000 * o->value());
 cbSetConfig();
 }
 
-Fl_Spinner *spnTimeout=(Fl_Spinner *)0;
+Fl_Spinner2 *spnTimeout=(Fl_Spinner2 *)0;
 
-static void cb_spnTimeout(Fl_Spinner* o, void*) {
+static void cb_spnTimeout(Fl_Spinner2* o, void*) {
   itimeout = (int)(o->value() * 1000.0);
 cbSetConfig();
 }
 
-Fl_Spinner *spnTxDelay=(Fl_Spinner *)0;
+Fl_Spinner2 *spnTxDelay=(Fl_Spinner2 *)0;
 
-static void cb_spnTxDelay(Fl_Spinner* o, void*) {
+static void cb_spnTxDelay(Fl_Spinner2* o, void*) {
   txdelay = (int)o->value();
 cbSetConfig();
 }
 
-Fl_Spinner *spnBcnInterval=(Fl_Spinner *)0;
+Fl_Spinner2 *spnBcnInterval=(Fl_Spinner2 *)0;
 
-static void cb_spnBcnInterval(Fl_Spinner* o, void*) {
+static void cb_spnBcnInterval(Fl_Spinner2* o, void*) {
   bcnInterval = (int)o->value();
 cbSetConfig();
 }
@@ -364,46 +364,91 @@ Fl_Double_Window* arq_configure() {
       Fl_Group::current()->resizable(txtBEACONTXT);
       o->value(beacontext.c_str());
     } // Fl_Input2* txtBEACONTXT
-    { Fl_Spinner* o = spnRetries = new Fl_Spinner(146, 71, 45, 22, "Retries:");
+    { Fl_Spinner2* o = spnRetries = new Fl_Spinner2(146, 71, 45, 22, "Retries:");
       spnRetries->tooltip("# retries before connection declared down");
+      spnRetries->box(FL_NO_BOX);
+      spnRetries->color((Fl_Color)FL_BACKGROUND_COLOR);
+      spnRetries->selection_color((Fl_Color)FL_BACKGROUND_COLOR);
+      spnRetries->labeltype(FL_NORMAL_LABEL);
+      spnRetries->labelfont(0);
+      spnRetries->labelsize(14);
+      spnRetries->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
       spnRetries->callback((Fl_Callback*)cb_spnRetries);
+      spnRetries->align(FL_ALIGN_LEFT);
+      spnRetries->when(FL_WHEN_RELEASE);
       o->minimum(2);
       o->maximum(20);
       o->step(1);
       o->value(iretries);
-    } // Fl_Spinner* spnRetries
-    { Fl_Spinner* o = spnWaitTime = new Fl_Spinner(121, 98, 70, 22, "Wait time (sec):");
+    } // Fl_Spinner2* spnRetries
+    { Fl_Spinner2* o = spnWaitTime = new Fl_Spinner2(121, 98, 70, 22, "Wait time (sec):");
       spnWaitTime->tooltip("Time between retries");
+      spnWaitTime->box(FL_NO_BOX);
+      spnWaitTime->color((Fl_Color)FL_BACKGROUND_COLOR);
+      spnWaitTime->selection_color((Fl_Color)FL_BACKGROUND_COLOR);
+      spnWaitTime->labeltype(FL_NORMAL_LABEL);
+      spnWaitTime->labelfont(0);
+      spnWaitTime->labelsize(14);
+      spnWaitTime->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
       spnWaitTime->callback((Fl_Callback*)cb_spnWaitTime);
+      spnWaitTime->align(FL_ALIGN_LEFT);
+      spnWaitTime->when(FL_WHEN_RELEASE);
       o->minimum(10);
       o->maximum(30);
       o->step(5);
       o->value(iwaittime/1000);
-    } // Fl_Spinner* spnWaitTime
-    { Fl_Spinner* o = spnTimeout = new Fl_Spinner(121, 126, 70, 22, "Timeout (sec):");
+    } // Fl_Spinner2* spnWaitTime
+    { Fl_Spinner2* o = spnTimeout = new Fl_Spinner2(121, 126, 70, 22, "Timeout (sec):");
       spnTimeout->tooltip("Time out for dead connection");
+      spnTimeout->box(FL_NO_BOX);
+      spnTimeout->color((Fl_Color)FL_BACKGROUND_COLOR);
+      spnTimeout->selection_color((Fl_Color)FL_BACKGROUND_COLOR);
+      spnTimeout->labeltype(FL_NORMAL_LABEL);
+      spnTimeout->labelfont(0);
+      spnTimeout->labelsize(14);
+      spnTimeout->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
       spnTimeout->callback((Fl_Callback*)cb_spnTimeout);
+      spnTimeout->align(FL_ALIGN_LEFT);
+      spnTimeout->when(FL_WHEN_RELEASE);
       o->minimum(30);
       o->maximum(300);
       o->step(15);
       o->value(itimeout / 1000);
-    } // Fl_Spinner* spnTimeout
-    { Fl_Spinner* o = spnTxDelay = new Fl_Spinner(317, 98, 70, 22, "Tx delay (msec):");
+    } // Fl_Spinner2* spnTimeout
+    { Fl_Spinner2* o = spnTxDelay = new Fl_Spinner2(317, 98, 70, 22, "Tx delay (msec):");
       spnTxDelay->tooltip("delay from Rx to Tx");
+      spnTxDelay->box(FL_NO_BOX);
+      spnTxDelay->color((Fl_Color)FL_BACKGROUND_COLOR);
+      spnTxDelay->selection_color((Fl_Color)FL_BACKGROUND_COLOR);
+      spnTxDelay->labeltype(FL_NORMAL_LABEL);
+      spnTxDelay->labelfont(0);
+      spnTxDelay->labelsize(14);
+      spnTxDelay->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
       spnTxDelay->callback((Fl_Callback*)cb_spnTxDelay);
+      spnTxDelay->align(FL_ALIGN_LEFT);
+      spnTxDelay->when(FL_WHEN_RELEASE);
       o->minimum(200);
       o->maximum(2000);
       o->step(100);
       o->value(txdelay);
-    } // Fl_Spinner* spnTxDelay
-    { Fl_Spinner* o = spnBcnInterval = new Fl_Spinner(398, 71, 70, 22, "Beacon interval (sec)");
+    } // Fl_Spinner2* spnTxDelay
+    { Fl_Spinner2* o = spnBcnInterval = new Fl_Spinner2(398, 71, 70, 22, "Beacon interval (sec)");
       spnBcnInterval->tooltip("Time between beacon transmissions");
+      spnBcnInterval->box(FL_NO_BOX);
+      spnBcnInterval->color((Fl_Color)FL_BACKGROUND_COLOR);
+      spnBcnInterval->selection_color((Fl_Color)FL_BACKGROUND_COLOR);
+      spnBcnInterval->labeltype(FL_NORMAL_LABEL);
+      spnBcnInterval->labelfont(0);
+      spnBcnInterval->labelsize(14);
+      spnBcnInterval->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
       spnBcnInterval->value(120);
       spnBcnInterval->callback((Fl_Callback*)cb_spnBcnInterval);
+      spnBcnInterval->align(FL_ALIGN_LEFT);
+      spnBcnInterval->when(FL_WHEN_RELEASE);
       o->minimum(60); o->maximum(3600);
       o->step(30);
       o->value(bcnInterval);
-    } // Fl_Spinner* spnBcnInterval
+    } // Fl_Spinner2* spnBcnInterval
     { btnOK = new Fl_Button(406, 126, 62, 24, "Ok");
       btnOK->callback((Fl_Callback*)cb_btnOK);
     } // Fl_Button* btnOK

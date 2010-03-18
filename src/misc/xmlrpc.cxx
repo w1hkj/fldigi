@@ -46,8 +46,6 @@
 #include <xmlrpc-c/registry.hpp>
 #include <xmlrpc-c/server_abyss.hpp>
 
-#include <FL/Fl_Value_Slider.H>
-
 #include "globals.h"
 #include "socket.h"
 #include "threads.h"
@@ -559,9 +557,6 @@ public:
 
 // =============================================================================
 
-class Fl_Counter;
-extern Fl_Counter* cntSearchRange; // FIXME: export in header
-
 class Modem_get_afc_sr : public xmlrpc_c::method
 {
 public:
@@ -621,8 +616,6 @@ public:
 
 // =============================================================================
 
-extern Fl_Value_Slider* sldrHellBW; // FIXME: export in header
-extern Fl_Value_Slider* sldrCWbandwidth; // FIXME: export in header
 static Fl_Valuator* get_bw_val(void)
 {
 	if (!(active_modem->get_cap() & modem::CAP_BW))
