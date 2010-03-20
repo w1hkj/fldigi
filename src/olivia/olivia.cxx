@@ -66,6 +66,8 @@ void olivia::tx_init(SoundBase *sc)
 	postamblesent = 0;
 	txbasefreq = get_txfreq_woffset();
 
+	if (last_txbasefreq != txbasefreq) create_tones();
+
 	Rx->Flush();
 
 	while (Rx->GetChar(c) > 0)
@@ -86,16 +88,11 @@ void olivia::tx_init(SoundBase *sc)
 	escape = 0;
 }
 
-void olivia::send_preamble()
+void olivia::create_tones()
 {
 	double freqa, freqb;
-    int i, j, sr4 = 8192 / 4;
-    double ampshape[sr4];
-    
-    for (int i = 0; i < sr4; i++) ampshape[i] = 1.0;
-    for (int i = 0; i < sr4 / 4; i++)
-        ampshape[i] = ampshape[sr4 - 1 - i] = 0.5 * (1.0 - cos(M_PI * i / (sr4/4)));
-        
+    int i, j;
+
 	if (reverse) { 
 		freqa = txbasefreq + (bandwidth / 2.0); 
 		freqb = txbasefreq - (bandwidth / 2.0); 
@@ -104,48 +101,17 @@ void olivia::send_preamble()
 		freqb = txbasefreq + (bandwidth / 2.0); 
 	}
 
-	for (i = 0, j = 0; i < sr4; i++, j++)
-		outbuf[i] = nco(freqa) * ampshape[j];
-	for (i = sr4, j = 0; i < 2*sr4; i++, j++)
-		outbuf[i] = nco(freqb) * ampshape[j];
-	for (i = 2*sr4, j = 0; i < 3*sr4; i++, j++)
-		outbuf[i] = nco(freqa) * ampshape[j];
-	for (i = 3*sr4, j = 0; i < samplerate; i++, j++)
-		outbuf[i] = nco(freqb) * ampshape[j];
+	for (i = 0, j = 0; i < SR4; i++, j++)
+		tonebuff[2*SR4 + j] = tonebuff[i] = nco(freqa) * ampshape[j];
+	for (i = SR4, j = 0; i < 2*SR4; i++, j++)
+		tonebuff[3*SR4 + j] = tonebuff[i] = nco(freqb) * ampshape[j];
 
-	for (j = 0; j < 8192; j += 512)
-		ModulateXmtr(&outbuf[j], 512);
 }
 
-void olivia::send_postamble()
+void olivia::send_tones()
 {
-	double freqa, freqb;
-	int i, j, sr4 = 8192 / 4;
-    double ampshape[sr4];
-    
-    for (int i = 0; i < sr4; i++) ampshape[i] = 1.0;
-    for (int i = 0; i < sr4 / 8; i++)
-        ampshape[i] = ampshape[sr4 - 1 - i] = 0.5 * (1.0 - cos(M_PI * i / (sr4/8)));
-        
-	if (reverse) { 
-		freqa = txbasefreq + (bandwidth / 2.0); 
-		freqb = txbasefreq - (bandwidth / 2.0); 
-	} else { 
-		freqa = txbasefreq - (bandwidth / 2.0); 
-		freqb = txbasefreq + (bandwidth / 2.0); 
-	}
-
-	for (i = 0, j = 0; i < sr4; i++, j++)
-		outbuf[i] = nco(freqa) * ampshape[j];
-	for (i = sr4, j = 0; i < 2*sr4; i++, j++)
-		outbuf[i] = nco(freqb) * ampshape[j];
-	for (i = 2*sr4, j = 0; i < 3*sr4; i++, j++)
-		outbuf[i] = nco(freqa) * ampshape[j];
-	for (i = 3*sr4, j = 0; i < samplerate; i++, j++)
-		outbuf[i] = nco(freqb) * ampshape[j];
-
-	for (j = 0; j < 8192; j += 512)
-		ModulateXmtr(&outbuf[j], 512);
+	for (int j = 0; j < 8192; j += 512)
+		ModulateXmtr(&tonebuff[j], 512);
 }
 
 void olivia::rx_init()
@@ -184,7 +150,7 @@ int olivia::tx_process()
 			restart();
 
 	if (preamblesent != 1) { 
-		send_preamble(); 
+		send_tones(); 
 		preamblesent = 1; 
 	}
 
@@ -221,7 +187,7 @@ int olivia::tx_process()
 	if (stopflag && Tx->DoPostambleYet() == 1 && postamblesent != 1) {
 		postamblesent = 1; 
 		preamblephase = Tx->GetSymbolPhase(); 
-		send_postamble();
+		send_tones();
 	}
 
 	if (!Tx->Running()) {
@@ -247,13 +213,13 @@ int olivia::rx_process(const double *buf, int len)
 		sinteg	!= progdefaults.oliviasinteg )
 			restart();
 
-	if ((lastfreq != frequency || Rx->Reverse != 0) && !reverse) {
+	if ((lastfreq != frequency || Rx->Reverse) && !reverse) {
 		Rx->FirstCarrierMultiplier = (frequency - (Rx->Bandwidth / 2)) / 500; 
 		Rx->Reverse = 0;
 		lastfreq = frequency;
 		Rx->Preset();
 	}
-	else if ((lastfreq != frequency || Rx->Reverse != 1) && reverse) {
+	else if ((lastfreq != frequency || !Rx->Reverse) && reverse) {
 		Rx->FirstCarrierMultiplier = (frequency + (Rx->Bandwidth / 2)) / 500; 
 		Rx->Reverse = 1;
 		lastfreq = frequency;
@@ -308,6 +274,8 @@ void olivia::restart()
 	Tx->SampleRate = samplerate;
 	Tx->OutputSampleRate = samplerate;
     txbasefreq = get_txfreq_woffset();
+	last_txbasefreq = txbasefreq;
+	create_tones();
 
 	if (reverse) { 
 		Tx->FirstCarrierMultiplier = (txbasefreq + (Tx->Bandwidth / 2)) / 500; 
@@ -379,7 +347,11 @@ olivia::olivia()
 
 	mode = MODE_OLIVIA;
 	lastfreq = 0;
-//	init();
+
+    for (int i = 0; i < SR4; i++) ampshape[i] = 1.0;
+    for (int i = 0; i < SR4 / 8; i++)
+        ampshape[i] = ampshape[SR4 - 1 - i] = 0.5 * (1.0 - cos(M_PI * i / (SR4/8)));
+
 }
 
 olivia::~olivia()
