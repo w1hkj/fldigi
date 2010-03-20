@@ -520,7 +520,18 @@ cQsoRec rec;
 	rec.putField(SRX, inpSerNoIn_log->value());
 	rec.putField(STX, inpSerNoOut_log->value());
 	rec.putField(XCHG1, inpXchgIn_log->value());
-	rec.putField(MYXCHG, inpMyXchg_log->value());
+	if (!qso_exchange.empty()) {
+		rec.putField(MYXCHG, qso_exchange.c_str());
+		qso_exchange.clear();
+		qso_time.clear();
+	} else if (!qso_time.empty()) {
+		string myexch = inpMyXchg_log->value();
+		myexch.append(" ").append(qso_time);
+		rec.putField(MYXCHG, myexch.c_str());
+		qso_time.clear();
+	} else {
+		rec.putField(MYXCHG, inpMyXchg_log->value());
+	}
 	rec.putField(IOTA, inpIOTA_log->value());
 	rec.putField(DXCC, inpDXCC_log->value());
 	rec.putField(CONT, inpCONT_log->value());

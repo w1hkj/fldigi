@@ -63,6 +63,10 @@ static bool TransmitON = false;
 static bool ToggleTXRX = false;
 int mNbr;
 
+std::string qso_time = "";
+std::string qso_exchange = "";
+bool save_xchg;
+
 struct MTAGS { const char *mTAG; void (*fp)(string &, size_t &);};
 
 void pCALL(string &, size_t &);
@@ -93,6 +97,7 @@ void pCNTR(string &, size_t &);
 void pDECR(string &, size_t &);
 void pINCR(string &, size_t &);
 void pXOUT(string &, size_t &);
+void pSAVEXCHG(string &, size_t &);
 void pLOG(string &, size_t &);
 void pTIMER(string &, size_t &);
 void pIDLE(string &, size_t &);
@@ -153,7 +158,8 @@ MTAGS mtags[] = {
 {"<DECR>",		pDECR},
 {"<INCR>",		pINCR},
 {"<X1>",		pXOUT},
-{"<XOUT>",      pXOUT},
+{"<XOUT>",		pXOUT},
+{"<SAVEXCHG>",	pSAVEXCHG},
 {"<LOG>",		pLOG},
 {"<TIMER:",		pTIMER},
 {"<IDLE:",		pIDLE},
@@ -166,14 +172,14 @@ MTAGS mtags[] = {
 {"<GET>",		pGET},
 {"<CLRRX>",		pCLRRX},
 {"<FILE:",		pFILE},
-{"<WPM:",       pWPM},
-{"<RISE:",      pRISETIME},
-{"<PRE:",       pPRE},
-{"<POST:",      pPOST},
-{"<AFC:",       pAFC},
-{"<LOCK:",      pLOCK},
-{"<RXRSID:",    pRX_RSID},
-{"<TXRSID:",    pTX_RSID},
+{"<WPM:",		pWPM},
+{"<RISE:",		pRISETIME},
+{"<PRE:",		pPRE},
+{"<POST:",		pPOST},
+{"<AFC:",		pAFC},
+{"<LOCK:",		pLOCK},
+{"<RXRSID:",	pRX_RSID},
+{"<TXRSID:",	pTX_RSID},
 {"<SRCHUP>",	pSRCHUP},
 {"<SRCHDN>",	pSRCHDN},
 {"<GOHOME>",	pGOHOME},
@@ -399,7 +405,9 @@ void pQTH(string &s, size_t &i)
 
 void pQSOTIME(string &s, size_t &i)
 {
-	s.replace( i, 9, inpTimeOff->value() );
+	if (qso_time.empty())
+		qso_time = inpTimeOff->value();
+	s.replace( i, 9, qso_time.c_str() );
 }
 
 void pRST(string &s, size_t &i)
@@ -554,6 +562,12 @@ void pINCR(string &s, size_t &i)
 void pXOUT(string &s, size_t &i)
 {
 	s.replace( i, 6, cutstring(progdefaults.myXchg.c_str()));
+}
+
+void pSAVEXCHG(string &s, size_t &i)
+{
+	save_xchg = true;
+	s.replace( i, 10, "");
 }
 
 void pLOG(string &s, size_t &i)
@@ -1069,6 +1083,11 @@ string MACROTEXT::expandMacro(int n)
 		}
 		GET = false;
 		return "";
+	}
+
+	if (save_xchg) {
+		qso_exchange = expanded;
+		save_xchg = false;
 	}
 
 	return expanded;

@@ -1558,6 +1558,8 @@ if (bWF_only) return;
 	inpSearchString->value ("");
 	old_call.clear();
 	new_call.clear();
+	qso_time.clear();
+	qso_exchange.clear();
 	oktoclear = true;
 }
 

@@ -48,6 +48,8 @@ extern CONTESTCNTR contest_count;
 
 extern std::string info1msg;
 extern std::string info2msg;
+extern std::string qso_time;
+extern std::string qso_exchange;
 
 void set_macro_env(void);
 
