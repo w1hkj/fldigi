@@ -4867,3 +4867,77 @@ void spot_selection_color()
 	btnAutoSpot->redraw();
 }
 
+void set_olivia_bw(int bw)
+{
+	int i;
+	if (bw == 125)
+		i = 0;
+	else if (bw == 250)
+		i = 1;
+	else if (bw == 500)
+		i = 2;
+	else if (bw == 1000)
+		i = 3;
+	else
+		i = 4;
+	bool changed = progdefaults.changed;
+	mnuOlivia_Bandwidth->value(i);
+	mnuOlivia_Bandwidth->do_callback();
+	progdefaults.changed = changed;
+}
+
+void set_olivia_tones(int tones)
+{
+	unsigned i = 0;
+	while (tones >>= 1)
+		i++;
+	bool changed = progdefaults.changed;
+	mnuOlivia_Tones->value(i - 1);
+	mnuOlivia_Tones->do_callback();
+	progdefaults.changed = changed;
+}
+
+void set_rtty_shift(int shift)
+{
+	if (shift < selCustomShift->minimum() || shift > selCustomShift->maximum())
+		return;
+
+	const int shifts[] = { 23, 85, 160, 170, 182, 200, 240, 350, 425, 850 };
+	size_t i;
+	for (i = 0; i < sizeof(shifts)/sizeof(*shifts); i++)
+		if (shifts[i] == shift)
+			break;
+	selShift->value(i);
+	selShift->do_callback();
+	if (i == sizeof(shifts)/sizeof(*shifts)) {
+		selCustomShift->value(shift);
+		selCustomShift->do_callback();
+	}
+}
+
+void set_rtty_baud(float baud)
+{
+	const float bauds[] = {
+		45.0f, 45.45f, 50.0f, 56.0f, 75.0f,
+		100.0f, 110.0f, 150.0f, 200.0f, 300.0f
+	};
+	for (size_t i = 0; i < sizeof(bauds)/sizeof(*bauds); i++) {
+		if (bauds[i] == baud) {
+			selBaud->value(i);
+			selBaud->do_callback();
+			break;
+		}
+	}
+}
+
+void set_rtty_bits(int bits)
+{
+	const int bits_[] = { 5, 7, 8 };
+	for (size_t i = 0; i < sizeof(bits_)/sizeof(*bits_); i++) {
+		if (bits_[i] == bits) {
+			selBits->value(i);
+			selBits->do_callback();
+			break;
+		}
+	}
+}

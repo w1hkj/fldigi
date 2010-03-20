@@ -240,4 +240,9 @@ void qsy(long long rfc, int fmid = -1);
 void note_qrg(bool no_dup = true, const char* prefix = " ", const char* suffix = " ",
 	      trx_mode mode = NUM_MODES, long long rfc = 0LL, int afreq = 0);
 
+void set_olivia_bw(int bw);
+void set_olivia_tones(int tones);
+void set_rtty_shift(int shift);
+void set_rtty_baud(float baud);
+void set_rtty_bits(int bits);
 #endif

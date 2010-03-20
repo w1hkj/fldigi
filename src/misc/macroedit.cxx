@@ -32,6 +32,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <cstring>
+#include <cassert>
 
 #include <FL/Fl_Pixmap.H>
 
@@ -146,9 +147,30 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<MACROS:>\tchange macro defs file"));
 
 	w->add(LINE_SEP);
+	assert(MODE_OLIVIA < MODE_RTTY);
 	char s[256];
-	for (size_t i = 0; i < NUM_MODES; i++) {
-		snprintf(s, sizeof(s), "<MODEM>%s", mode_info[i].sname);
+	for (trx_mode i = 0; i <= MODE_OLIVIA; i++) {
+		snprintf(s, sizeof(s), "<MODEM:%s>", mode_info[i].sname);
+		w->add(s);
+	}
+	// add some Olivia macros
+	const char* olivia[] = { "250:8", "500:8", "500:16", "1000:8", "1000:32" };
+	for (size_t i = 0; i < sizeof(olivia)/sizeof(*olivia); i++) {
+		snprintf(s, sizeof(s), "<MODEM:%s:%s>", mode_info[MODE_OLIVIA].sname, olivia[i]);
+		w->add(s);
+	}
+	for (trx_mode i = MODE_OLIVIA + 1; i <= MODE_RTTY; i++) {
+		snprintf(s, sizeof(s), "<MODEM:%s>", mode_info[i].sname);
+		w->add(s);
+	}
+	// add some RTTY macros
+	const char* rtty[] = { "170:45.45:5", "170:50:5", "850:75:5" };
+	for (size_t i = 0; i < sizeof(rtty)/sizeof(*rtty); i++) {
+		snprintf(s, sizeof(s), "<MODEM:%s:%s>", mode_info[MODE_RTTY].sname, rtty[i]);
+		w->add(s);
+	}
+	for (trx_mode i = MODE_RTTY + 1; i < NUM_MODES; i++) {
+		snprintf(s, sizeof(s), "<MODEM:%s>", mode_info[i].sname);
 		w->add(s);
 	}
 

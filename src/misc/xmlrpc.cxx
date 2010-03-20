@@ -736,24 +736,6 @@ public:
 		_signature = "n:i";
 		_help = "Sets the Olivia bandwidth.";
 	}
-	static void set_olivia_bw(int bw)
-	{
-		int i;
-		if (bw == 125)
-			i = 0;
-		else if (bw == 250)
-			i = 1;
-		else if (bw == 500)
-			i = 2;
-		else if (bw == 1000)
-			i = 3;
-		else
-			i = 4;
-		bool changed = progdefaults.changed;
-		mnuOlivia_Bandwidth->value(i);
-		mnuOlivia_Bandwidth->do_callback();
-		progdefaults.changed = changed;
-	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		int bw;
@@ -805,16 +787,6 @@ public:
 	{
 		_signature = "n:i";
 		_help = "Sets the Olivia tones.";
-	}
-	static void set_olivia_tones(int tones)
-	{
-		unsigned i = 0;
-		while (tones >>= 1)
-			i++;
-		bool changed = progdefaults.changed;
-		mnuOlivia_Tones->value(i - 1);
-		mnuOlivia_Tones->do_callback();
-		progdefaults.changed = changed;
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
