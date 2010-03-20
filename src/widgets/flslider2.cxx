@@ -33,7 +33,8 @@ inline static int handle_scroll(Fl_Valuator* w, int event)
 	if ((d = Fl::event_dy()) || (d = Fl::event_dx())) {
 		if (Fl::event_state() & FL_SHIFT)
 			d *= 10.0;
-		if (!dynamic_cast<Fl_Value_Input*>(w) && !(w->type() & FL_HOR_SLIDER))
+		if (!dynamic_cast<Fl_Value_Input*>(w) && !dynamic_cast<Fl_Counter*>(w) &&
+		    !(w->type() & FL_HOR_SLIDER))
 			d = -d;
 		w->value(w->clamp(w->increment(w->value(), -d)));
 		w->do_callback();

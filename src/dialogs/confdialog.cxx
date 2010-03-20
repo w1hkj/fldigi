@@ -4220,6 +4220,7 @@ an merging"));
                 selCustomShift->align(FL_ALIGN_RIGHT);
                 selCustomShift->when(FL_WHEN_CHANGED);
                 o->lstep(10.0);
+                o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Counter2* selCustomShift
               o->end();
             } // Fl_Group* o

@@ -1678,6 +1678,7 @@ resetRTTY();
 progdefaults.changed = true;}
                 tooltip {Input carrier shift} xywh {15 100 100 20} align 8 minimum 10 maximum 1000 step 1 value 450
                 code0 {o->lstep(10.0);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
               }
             }

@@ -33,6 +33,7 @@
 #include "fft.h"
 #include "fldigi-config.h"
 #include "digiscope.h"
+#include "flslider2.h"
 
 enum {
 	WF_FFT_RECTANGULAR, WF_FFT_BLACKMAN, WF_FFT_HAMMING,
@@ -353,9 +354,9 @@ public:
 	void handle_mouse_wheel(int what, int d);
 
 	Fl_Button	*btnRev;
-	Fl_Counter	*wfcarrier;
-	Fl_Counter	*wfRefLevel;
-	Fl_Counter	*wfAmpSpan;
+	Fl_Counter2	*wfcarrier;
+	Fl_Counter2	*wfRefLevel;
+	Fl_Counter2	*wfAmpSpan;
 	Fl_Light_Button	*xmtrcv;
 	Fl_Light_Button *xmtlock;
 	Fl_Button	*qsy;
