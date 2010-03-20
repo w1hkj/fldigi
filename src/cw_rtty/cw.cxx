@@ -421,6 +421,7 @@ int cw::handle_event(int cw_event, const char **c)
 // save the timestamp
 		cw_rr_start_timestamp = smpl_ctr;
 // Set state to indicate we are inside a tone.
+		old_cw_receive_state = cw_receive_state;
 		cw_receive_state = RS_IN_TONE;
 		return CW_ERROR;
 		break;
@@ -437,8 +438,10 @@ int cw::handle_event(int cw_event, const char **c)
 // If the tone length is shorter than any noise cancelling 
 // threshold that has been set, then ignore this tone.
 		if (cw_noise_spike_threshold > 0
-		    && element_usec < cw_noise_spike_threshold)
-			return CW_ERROR;
+		    && element_usec < cw_noise_spike_threshold) {
+			cw_receive_state = old_cw_receive_state;
+ 			return CW_ERROR;
+		}
 
 // Set up to track speed on dot-dash or dash-dot pairs for this test to work, we need a dot dash pair or a 
 // dash dot pair to validate timing from and force the speed tracking in the right direction. This method 

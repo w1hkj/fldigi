@@ -99,6 +99,7 @@ protected:
 	int bitfilterlen;
 
 	CW_RX_STATE		cw_receive_state;	// Indicates receive state 
+	CW_RX_STATE		old_cw_receive_state;
 	CW_EVENT		cw_event;			// functions used by cw process routine 
 	 
 	double pipe[CWMaxSymLen];			// storage for sync scope data
