@@ -108,6 +108,8 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<DECR>\tdecrement counter"));
 	w->add(_("<INCR>\tincrement counter"));
 	w->add(_("<XOUT>\texchange out"));
+	w->add(_("<XBEG>\texchange begin"));
+	w->add(_("<XEND>\texchange end"));
 	w->add(_("<SAVEXCHG>\tsave contest out"));
 
 	w->add(LINE_SEP);

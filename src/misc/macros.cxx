@@ -66,6 +66,7 @@ int mNbr;
 std::string qso_time = "";
 std::string qso_exchange = "";
 bool save_xchg;
+size_t  xbeg = 0, xend = 0;
 
 struct MTAGS { const char *mTAG; void (*fp)(string &, size_t &);};
 
@@ -98,6 +99,8 @@ void pDECR(string &, size_t &);
 void pINCR(string &, size_t &);
 void pXOUT(string &, size_t &);
 void pSAVEXCHG(string &, size_t &);
+void pXBEG(string &, size_t &);
+void pXEND(string &, size_t &);
 void pLOG(string &, size_t &);
 void pTIMER(string &, size_t &);
 void pIDLE(string &, size_t &);
@@ -160,6 +163,8 @@ MTAGS mtags[] = {
 {"<INCR>",		pINCR},
 {"<X1>",		pXOUT},
 {"<XOUT>",		pXOUT},
+{"<XBEG>",		pXBEG},
+{"<XEND>",		pXEND},
 {"<SAVEXCHG>",	pSAVEXCHG},
 {"<LOG>",		pLOG},
 {"<TIMER:",		pTIMER},
@@ -564,6 +569,18 @@ void pINCR(string &s, size_t &i)
 void pXOUT(string &s, size_t &i)
 {
 	s.replace( i, 6, cutstring(progdefaults.myXchg.c_str()));
+}
+
+void pXBEG(string &s, size_t &i)
+{
+	s.replace( i, 6, "");
+	xbeg = i;
+}
+
+void pXEND(string &s, size_t &i)
+{
+	s.replace( i, 6, "");
+	xend = i;
 }
 
 void pSAVEXCHG(string &s, size_t &i)
@@ -1114,6 +1131,9 @@ string MACROTEXT::expandMacro(int n)
 	expanded = text[n];
 	MTAGS *pMtags;
 
+	xbeg = xend = -1;
+	save_xchg = false;
+
 	while ((idx = expanded.find('<', idx)) != string::npos) {
 		if (expanded.find("<MACROS:",idx) == idx) {
 			loadnewMACROS(expanded, idx);
@@ -1159,7 +1179,9 @@ string MACROTEXT::expandMacro(int n)
 		return "";
 	}
 
-	if (save_xchg) {
+	if (xbeg != string::npos && xend != string::npos && xend > xbeg) {
+		qso_exchange = expanded.substr(xbeg, xend - xbeg);
+	} else if (save_xchg) {
 		qso_exchange = expanded;
 		save_xchg = false;
 	}
