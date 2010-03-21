@@ -1,7 +1,21 @@
 2010-03-20  David Freese  <w1hkj@w1hkj.com>
 
-	693ae03: AFC-SQL Lighted button
-	67640c8: QSOTIME
+	3b63d8f: XBEG-XEND macro tags
+
+2010-03-20  Giuseppe Ciaccio  <ciaccio@disi.unige.it>
+
+	1fb42ac: CW Decoder improvement
+
+2010-03-20  Stelios Bounanos  <vcs@enotty.net>
+
+	e0c62c2: Add new modem macro
+	cdd4457: Fix counter widgets
+	cff6112: Fix Olivia pre/postamble
+
+2010-03-20  David Freese  <w1hkj@w1hkj.com>
+
+	269152e: AFC-SQL Lighted button
+	8766979: QSOTIME
 
 2010-03-18  Stelios Bounanos  <vcs@enotty.net>
 
