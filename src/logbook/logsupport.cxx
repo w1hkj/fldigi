@@ -858,6 +858,8 @@ void cabrillo_append_qso (FILE *fp, cQsoRec *rec)
 	int ifreq = 0;
 	size_t len = 0;
 
+	exch_out.clear();
+
 	if (btnCabFreq->value()) {
 		ifreq = (int)(1000.0 * atof(rec->getField(FREQ)));
 		snprintf(freq, sizeof(freq), "%d", ifreq);
@@ -894,26 +896,25 @@ void cabrillo_append_qso (FILE *fp, cQsoRec *rec)
 	if (btnCabRSTsent->value()) {
 		rst_out = rec->getField(RST_SENT);
 		rst_out = rst_out.substr(0,rst_len);
-		qsoline.append(rst_out); qsoline.append(" ");
+		exch_out.append(rst_out).append(" ");
 	}
 
 	if (btnCabSerialOUT->value()) {
-		exch_out = rec->getField(STX);
-		if (exch_out.length())
-			exch_out += ' ';
-	}
-	if (btnCabMyXchg->value()) {
-		exch_out.append(rec->getField(MYXCHG));
-		exch_out.append(" ");
-	}
-	if (contestnbr == BARTG_RTTY) {
-		exch_out.append(rec->getField(TIME_OFF));
-		exch_out.append(" ");
+		exch_out.append(rec->getField(STX)).append(" ");
 	}
 
-	if (exch_out.length() > 10) exch_out = exch_out.substr(0,10);
-	if ((len = exch_out.length()) < 10) exch_out.append(10 - len, ' ');
-	qsoline.append(exch_out); qsoline.append(" ");
+	if (btnCabMyXchg->value()) {
+		exch_out.append(rec->getField(MYXCHG)).append(" ");
+	}
+
+	if (contestnbr == BARTG_RTTY && exch_out.length() < 11) {
+		exch_out.append(rec->getField(TIME_OFF)).append(" ");
+	}
+
+	if (exch_out.length() > 14) exch_out = exch_out.substr(0,14);
+	if ((len = exch_out.length()) < 14) exch_out.append(14 - len, ' ');
+
+	qsoline.append(exch_out).append(" ");
 
 	if (btnCabCall->value()) {
 		call = rec->getField(CALL);
@@ -935,8 +936,8 @@ void cabrillo_append_qso (FILE *fp, cQsoRec *rec)
 	}
 	if (btnCabXchgIn->value())
 		exch_in.append(rec->getField(XCHG1));
-	if (exch_in.length() > 10) exch_in = exch_in.substr(0,10);
-	if ((len = exch_in.length()) < 10) exch_in.append(10 - len, ' ');
+	if (exch_in.length() > 14) exch_in = exch_in.substr(0,14);
+	if ((len = exch_in.length()) < 14) exch_in.append(14 - len, ' ');
 	qsoline.append(exch_in);
 
 	fprintf (fp, "%s\n", qsoline.c_str());
