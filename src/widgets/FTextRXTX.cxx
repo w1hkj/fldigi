@@ -108,8 +108,8 @@ Fl_Menu_Item FTextRX::menu[] = {
 	{ make_icon_label(_("Country"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(_("Locator"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ make_icon_label(_("RST(r)"), enter_key_icon), 0, 0, 0,  FL_MENU_DIVIDER, _FL_MULTI_LABEL },
-	{ make_icon_label(_("Serial number"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("Exchange In"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ make_icon_label(_("Exchange In"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ make_icon_label(_("Serial number"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ make_icon_label(_("Insert marker"), insert_link_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 
 	{ 0 }, // VIEW_MENU_COPY
