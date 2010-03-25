@@ -766,3 +766,4 @@ void pskmail_notify_s2n(double s2n_ncount, double s2n_avg, double s2n_stddev)
 		ReceiveText->add(buf, FTextBase::CTRL);
 	}
 }
+

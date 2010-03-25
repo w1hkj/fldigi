@@ -23,4 +23,5 @@ public:
 	int writeLog (const char *, cQsoDb *);
 };
 
+
 #endif

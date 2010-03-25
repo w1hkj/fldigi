@@ -1727,7 +1727,7 @@ int main (int argc, char *argv[] )
 		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$USERPROFILE/NBEMS.files/");
 		NBEMS_dir = dirbuf;
 #else
-		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$HOME/NBEMS.files/");
+		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$HOME/.nbems/");
 		NBEMS_dir = dirbuf;
 #endif
 	}

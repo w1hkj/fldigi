@@ -40,6 +40,7 @@
 #include <string>
 #include <algorithm>
 #include <map>
+#include <dirent.h>
 
 #include "gettext.h"
 #include "fl_digi.h"
@@ -1408,6 +1409,14 @@ void cb_ShowConfig(Fl_Widget*, void*)
 
 void cb_ShowNBEMS(Fl_Widget*, void*)
 {
+	DIR *nbems_dir;
+	nbems_dir = opendir(NBEMS_dir.c_str());
+	if (!nbems_dir) {
+		int ans = fl_choice2(_("Do not exist, create?"), _("No"), _("Yes"), 0);
+		if (!ans) return;
+		check_nbems_dirs();
+	}
+	closedir(nbems_dir);
 	cb_mnuVisitURL(0, (void*)NBEMS_dir.c_str());
 }
 

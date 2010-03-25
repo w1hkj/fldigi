@@ -220,7 +220,7 @@ int main(int argc, char ** argv)
 #else
 		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$HOME/.fldigi/");
 		HomeDir = dirbuf;
-		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$HOME/NBEMS.files/");
+		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$HOME/.nbems/");
 		NBEMS_dir = dirbuf;
 		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$HOME/");
 		PskMailDir = dirbuf;
@@ -1079,6 +1079,33 @@ static void checkdirectories(void)
 		{ TempDir, "temp", 0 },
 	};
 
+	int r;
+	for (size_t i = 0; i < sizeof(fldigi_dirs)/sizeof(*fldigi_dirs); i++) {
+		if (fldigi_dirs[i].suffix)
+			fldigi_dirs[i].dir.assign(HomeDir).append(fldigi_dirs[i].suffix).append(PATH_SEP);
+
+		if ((r = mkdir(fldigi_dirs[i].dir.c_str(), 0777)) == -1 && errno != EEXIST) {
+			cerr << _("Could not make directory") << ' ' << fldigi_dirs[i].dir
+			     << ": " << strerror(errno) << '\n';
+			exit(EXIT_FAILURE);
+		}
+		else if (r == 0 && fldigi_dirs[i].new_dir_func)
+			fldigi_dirs[i].new_dir_func();
+	}
+
+}
+
+bool nbems_dirs_checked = false;
+
+void check_nbems_dirs(void)
+{
+	if (nbems_dirs_checked) return;
+
+	struct DIRS {
+		string& dir;
+		const char* suffix;
+		void (*new_dir_func)(void);
+	};
 	DIRS NBEMS_dirs[] = {
 		{ NBEMS_dir,     0, 0 },
 		{ ARQ_dir,       "ARQ", 0 },
@@ -1095,19 +1122,6 @@ static void checkdirectories(void)
 	};
 
 	int r;
-	for (size_t i = 0; i < sizeof(fldigi_dirs)/sizeof(*fldigi_dirs); i++) {
-		if (fldigi_dirs[i].suffix)
-			fldigi_dirs[i].dir.assign(HomeDir).append(fldigi_dirs[i].suffix).append(PATH_SEP);
-
-		if ((r = mkdir(fldigi_dirs[i].dir.c_str(), 0777)) == -1 && errno != EEXIST) {
-			cerr << _("Could not make directory") << ' ' << fldigi_dirs[i].dir
-			     << ": " << strerror(errno) << '\n';
-			exit(EXIT_FAILURE);
-		}
-		else if (r == 0 && fldigi_dirs[i].new_dir_func)
-			fldigi_dirs[i].new_dir_func();
-	}
-
 	for (size_t i = 0; i < sizeof(NBEMS_dirs)/sizeof(*NBEMS_dirs); i++) {
 		if (NBEMS_dirs[i].suffix)
 			NBEMS_dirs[i].dir.assign(NBEMS_dir).append(NBEMS_dirs[i].suffix).append(PATH_SEP);
@@ -1120,6 +1134,7 @@ static void checkdirectories(void)
 		else if (r == 0 && NBEMS_dirs[i].new_dir_func)
 			NBEMS_dirs[i].new_dir_func();
 	}
+	nbems_dirs_checked = true;
 }
 
 // Print an error message and exit. If stderr is not a terminal
