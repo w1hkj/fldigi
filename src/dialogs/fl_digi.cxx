@@ -1547,7 +1547,7 @@ if (bWF_only) return;
 	Fl_Input* in[] = {
 		inpCall1, inpCall2, inpCall3, inpCall4,
 		inpName1, inpName2,
-		inpTimeOn1, inpTimeOn2,
+		inpTimeOn1, inpTimeOn2, inpTimeOn3,
 		inpRstIn1, inpRstIn2,
 		inpRstOut1, inpRstOut2,
 		inpQth, inpLoc, inpAZ, inpState, inpVEprov, inpCountry,
@@ -3351,68 +3351,80 @@ void create_fl_digi_main_primary() {
 			qsoSave3->tooltip(_("Save"));
 
 			fl_font(FL_HELVETICA, FL_NORMAL_SIZE);
-
 			const char *label2a = _("On");
-			btnTimeOn3 = new Fl_Button(
+			const char *label3a = _("Off");
+			const char *label4a = _("Call");
+			const char *label5a = _("# S");
+			const char *label6a = _("# R");
+			const char *label7a = _("Ex");
+			const char *xData = "00000";
+			const char *xCall = "WW8WWW/WWWW";
+			int   wData = fl_width(xData);
+			int   wCall = fl_width(xCall);
+
+			Fl_Box *bx4a = new Fl_Box(
 				pad + rightof(qsoSave3), y,
+				fl_width(label4a), h, label4a);
+			inpCall3 = new Fl_Input2(
+				pad + bx4a->x() + bx4a->w(), y,
+				wCall, h, "");
+			inpCall3->align(FL_ALIGN_INSIDE);
+			inpCall3->tooltip(_("Other call"));
+
+			Fl_Box *bx7a = new Fl_Box(
+				rightof(inpCall3), y,
+				fl_width(label7a), h, label7a);
+			bx7a->align(FL_ALIGN_INSIDE);
+			inpXchgIn2 = new Fl_Input2(
+				rightof(bx7a), y,
+				progStatus.mainW 
+				- rightof(bx7a) - pad
+				- fl_width(label6a) - wData - pad
+				- fl_width(label5a) - wData - pad
+				- fl_width(label2a) - wData - pad
+				- fl_width(label3a) - wData - pad, 
+				h, "");
+			inpXchgIn2->tooltip(_("Contest exchange in"));
+
+			Fl_Box *bx6a = new Fl_Box(
+				rightof(inpXchgIn2), y,
+				fl_width(label6a), h, label6a);
+			bx6a->align(FL_ALIGN_INSIDE);
+			inpSerNo2 = new Fl_Input2(
+				rightof(bx6a) + pad, y,
+				wData, h, "");
+			inpSerNo2->tooltip(_("Received serial number"));
+
+			Fl_Box *bx5a = new Fl_Box(
+				rightof(inpSerNo2), y,
+				fl_width(label5a), h, label5a);
+			bx5a->align(FL_ALIGN_INSIDE);
+			outSerNo2 = new Fl_Input2(
+				rightof(bx5a) + pad, y,
+				wData, h, "");
+			outSerNo2->tooltip(_("Sent serial number (read only)"));
+			outSerNo2->type(FL_NORMAL_OUTPUT);
+
+			btnTimeOn3 = new Fl_Button(
+				rightof(outSerNo2), y,
 				fl_width(label2a), h, label2a);
 			btnTimeOn3->tooltip(_("Press to update"));
 			btnTimeOn3->box(FL_NO_BOX);
 			btnTimeOn3->callback(cb_btnTimeOn);
 			inpTimeOn3 = new Fl_Input2(
-				pad + btnTimeOn3->x() + btnTimeOn3->w(), y,
-				w_inpTime - 2, h, "");
+				btnTimeOn3->x() + btnTimeOn3->w() + pad, y,
+				wData - 2, h, "");
 			inpTimeOn3->tooltip(_("Time On"));
 			inpTimeOn3->type(FL_INT_INPUT);
 
-			const char *label3a = _("Off");
 			Fl_Box *bx3a = new Fl_Box(pad + rightof(inpTimeOn3), y,
 				fl_width(label3a), h, label3a);
 			inpTimeOff3 = new Fl_Input2(
-				pad + bx3a->x() + bx3a->w(), y,
-				w_inpTime - 2, h, "");
+				bx3a->x() + bx3a->w() + pad, y,
+				wData, h, "");
 			inpTimeOff3->tooltip(_("Time Off"));
 			inpTimeOff3->type(FL_NORMAL_OUTPUT);
 
-			const char *label4a = _("Call");
-			Fl_Box *bx4a = new Fl_Box(
-				pad + rightof(inpTimeOff3), y,
-				fl_width(label4a), h, label4a);
-			inpCall3 = new Fl_Input2(
-				pad + bx4a->x() + bx4a->w(), y,
-				w_inpCall - 10, h, "");
-			inpCall3->tooltip(_("Other call"));
-
-			const char *label5a = _("# S");
-			Fl_Box *bx5a = new Fl_Box(
-				pad + rightof(inpCall3), y,
-				fl_width(label5a), h, label5a);
-			bx5a->align(FL_ALIGN_INSIDE);
-			outSerNo2 = new Fl_Input2(
-				rightof(bx5a), y,
-				w_SerNo, h, "");
-			outSerNo2->tooltip(_("Sent serial number (read only)"));
-			outSerNo2->type(FL_NORMAL_OUTPUT);
-
-			const char *label6a = _("# R");
-			Fl_Box *bx6a = new Fl_Box(
-				rightof(outSerNo2), y,
-				fl_width(label6a), h, label6a);
-			bx6a->align(FL_ALIGN_INSIDE);
-			inpSerNo2 = new Fl_Input2(
-				rightof(bx6a), y,
-				w_SerNo, h, "");
-			inpSerNo2->tooltip(_("Received serial number"));
-
-			const char *label7a = _("Ex");
-			Fl_Box *bx7a = new Fl_Box(
-				rightof(inpSerNo2), y,
-				fl_width(label7a), h, label7a);
-			bx7a->align(FL_ALIGN_INSIDE);
-			inpXchgIn2 = new Fl_Input2(
-				rightof(bx7a), y,
-				progStatus.mainW - rightof(bx7a) - pad, h, "");
-			inpXchgIn2->tooltip(_("Contest exchange in"));
 			TopFrame3->end();
 		}
 		TopFrame3->resizable(inpXchgIn2);
