@@ -66,8 +66,6 @@ void olivia::tx_init(SoundBase *sc)
 	postamblesent = 0;
 	txbasefreq = get_txfreq_woffset();
 
-	if (last_txbasefreq != txbasefreq) create_tones();
-
 	Rx->Flush();
 
 	while (Rx->GetChar(c) > 0)
@@ -88,30 +86,30 @@ void olivia::tx_init(SoundBase *sc)
 	escape = 0;
 }
 
-void olivia::create_tones()
-{
-	double freqa, freqb;
-    int i, j;
-
-	if (reverse) { 
-		freqa = txbasefreq + (bandwidth / 2.0); 
-		freqb = txbasefreq - (bandwidth / 2.0); 
-	} else { 
-		freqa = txbasefreq - (bandwidth / 2.0); 
-		freqb = txbasefreq + (bandwidth / 2.0); 
-	}
-
-	for (i = 0, j = 0; i < SR4; i++, j++)
-		tonebuff[2*SR4 + j] = tonebuff[i] = nco(freqa) * ampshape[j];
-	for (i = SR4, j = 0; i < 2*SR4; i++, j++)
-		tonebuff[3*SR4 + j] = tonebuff[i] = nco(freqb) * ampshape[j];
-
-}
-
 void olivia::send_tones()
 {
-	for (int j = 0; j < 8192; j += 512)
-		ModulateXmtr(&tonebuff[j], 512);
+	if (tone_midfreq != txbasefreq || tone_bw != bandwidth) {
+		double freqa, freqb;
+		tone_bw = bandwidth;
+		tone_midfreq = txbasefreq;
+		if (reverse) { 
+			freqa = tone_midfreq + (tone_bw / 2.0); 
+			freqb = tone_midfreq - (tone_bw / 2.0); 
+		} else { 
+			freqa = tone_midfreq - (tone_bw / 2.0); 
+			freqb = tone_midfreq + (tone_bw / 2.0); 
+		}
+		preamblephase = 0;
+		for (int i = 0; i < SR4; i++)
+			tonebuff[2*SR4 + i] = tonebuff[i] = nco(freqa) * ampshape[i];
+
+		preamblephase = 0;
+		for (int i = 0; i < SR4; i++)
+			tonebuff[3*SR4 + i] = tonebuff[SR4 + i] = nco(freqb) * ampshape[i];
+	}
+	for (int j = 0; j < TONE_DURATION; j += SCBLOCKSIZE)
+		ModulateXmtr(&tonebuff[j], SCBLOCKSIZE);
+
 }
 
 void olivia::rx_init()
@@ -151,14 +149,15 @@ int olivia::tx_process()
 
 	if (preamblesent != 1) { 
 		send_tones(); 
-		preamblesent = 1; 
+		preamblesent = 1;
+		// Olivia Transmitter class requires at least character
+		Tx->PutChar(0);
 	}
 
 // The encoder works with BitsPerSymbol length blocks. If the
 // modem already has that many characters buffered, don't try
 // to read any more. If stopflag is set, we will always read 
 // whatever there is.
-
 	if (stopflag || (Tx->GetReadReady() < Tx->BitsPerSymbol)) {
 		if ((c = get_tx_char()) == 0x03 || stopflag ) {
 			stopflag = true;
@@ -186,7 +185,6 @@ int olivia::tx_process()
 
 	if (stopflag && Tx->DoPostambleYet() == 1 && postamblesent != 1) {
 		postamblesent = 1; 
-		preamblephase = Tx->GetSymbolPhase(); 
 		send_tones();
 	}
 
@@ -274,8 +272,6 @@ void olivia::restart()
 	Tx->SampleRate = samplerate;
 	Tx->OutputSampleRate = samplerate;
     txbasefreq = get_txfreq_woffset();
-	last_txbasefreq = txbasefreq;
-	create_tones();
 
 	if (reverse) { 
 		Tx->FirstCarrierMultiplier = (txbasefreq + (Tx->Bandwidth / 2)) / 500; 
@@ -324,7 +320,6 @@ void olivia::restart()
 	metric = 0;
 
 	sigpwr = 1e-10; noisepwr = 1e-8;
-
 //	Rx->PrintParameters();
 }
 
@@ -348,10 +343,14 @@ olivia::olivia()
 	mode = MODE_OLIVIA;
 	lastfreq = 0;
 
-    for (int i = 0; i < SR4; i++) ampshape[i] = 1.0;
-    for (int i = 0; i < SR4 / 8; i++)
-        ampshape[i] = ampshape[SR4 - 1 - i] = 0.5 * (1.0 - cos(M_PI * i / (SR4/8)));
+	for (int i = 0; i < SR4; i++) ampshape[i] = 1.0;
+	for (int i = 0; i < SR4 / 8; i++)
+		ampshape[i] = ampshape[SR4 - 1 - i] = 0.5 * (1.0 - cos(M_PI * i / (SR4/8)));
 
+	for (int i = 0; i < TONE_DURATION; i++) tonebuff[i] = 0;
+
+	tone_bw = -1;
+	tone_midfreq = -1;
 }
 
 olivia::~olivia()

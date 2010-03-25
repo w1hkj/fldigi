@@ -30,8 +30,9 @@
 
 #include "modem.h"
 #include "jalocha/pj_mfsk.h"
+#include "sound.h"
 
-#define TONE_DURATION 8192
+#define TONE_DURATION (SCBLOCKSIZE * 16)
 #define SR4 ((TONE_DURATION) / 4)
 
 class olivia : public modem {
@@ -58,21 +59,21 @@ private:
 	int			sinteg;
 	int			tones;
 	int			bw;
+	double		tone_bw;
 
 	int			preamblesent;
 	int			postamblesent;
 	double		preamblephase;
 
 	double		txbasefreq;
-	double		last_txbasefreq;
+	double		tone_midfreq;
 	double		lastfreq;
 
-	double		ampshape[TONE_DURATION / 4];
+	double		ampshape[SR4];
 	double		tonebuff[TONE_DURATION];
 
 	double		nco(double freq);
 	void		send_tones();
-	void		create_tones();
 	
 public:
 	olivia();
