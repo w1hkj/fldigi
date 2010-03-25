@@ -4,7 +4,7 @@
 // Copyright (C) 2006-2010
 //		Dave Freese, W1HKJ
 //
-// This file is part of fldigi.  Adapted from code contained in gmfsk source code 
+// This file is part of fldigi.  Adapted from code contained in gmfsk source code
 // distribution.
 //  gmfsk Copyright (C) 2001, 2002, 2003
 //  Tomi Manninen (oh2bns@sral.fi)
@@ -54,12 +54,12 @@ void cw::tx_init(SoundBase *sc)
 
 void cw::rx_init()
 {
-	cw_receive_state = RS_IDLE;	
-	smpl_ctr = 0;				
-	cw_rr_current = 0;			
-	agc_peak = 0;	
+	cw_receive_state = RS_IDLE;
+	smpl_ctr = 0;
+	cw_rr_current = 0;
+	agc_peak = 0;
     set_scope_mode(Digiscope::SCOPE);
-	put_MODEstatus(mode);
+	update_Status();
 	usedefaultWPM = false;
 	scope_clear = true;
 }
@@ -96,13 +96,13 @@ cw::cw() : modem()
 	tx_frequency = get_txfreq_woffset();
 	risetime = progdefaults.CWrisetime;
 	QSKshape = progdefaults.QSKshape;
-	
+
 	samplerate = CWSampleRate;
 	fragmentsize = CWMaxSymLen;
 
 	cw_speed  = progdefaults.CWspeed;
 	bandwidth = progdefaults.CWbandwidth;
-	
+
 	cw_send_speed = cw_speed;
 	cw_receive_speed = cw_speed;
 	cw_adaptive_receive_threshold = 2 * DOT_MAGIC / cw_speed;
@@ -111,7 +111,7 @@ cw::cw() : modem()
 	cw_send_dash_length = 3 * cw_send_dot_length;
 	symbollen = (int)(samplerate * 1.2 / progdefaults.CWspeed);
 	fsymlen = (int)((50*(samplerate * 1.2 / progdefaults.CWfarnsworth) - 41*symbollen)/9);
-	
+
 	memset(rx_rep_buf, 0, sizeof(rx_rep_buf));
 
 // block of variables that get updated each time speed changes
@@ -124,7 +124,7 @@ cw::cw() : modem()
 	lp = 0.5 * bandwidth / samplerate;
 	cwfilter = new C_FIR_filter();
 	cwfilter->init_lowpass (CW_FIRLEN, DEC_RATIO, lp);
-	
+
 	bitfilter = new Cmovavg(8);
 	bitfilterlen = (int)(samplerate / frequency / 4);
 	bitfilterlen = bitfilterlen < 2 ? 2 : bitfilterlen;
@@ -135,6 +135,7 @@ cw::cw() : modem()
 	makeshape();
 	sync_parameters();
 	wf->Bandwidth ((int)bandwidth);
+	update_Status();
 //	init();
 
 }
@@ -142,29 +143,29 @@ cw::cw() : modem()
 // sync_parameters()
 // Synchronize the dot, dash, end of element, end of character, and end
 // of word timings and ranges to new values of Morse speed, or receive tolerance.
- 
+
 void cw::sync_parameters()
 {
 	int lowerwpm, upperwpm, nusymbollen, nufsymlen;
 
     int wpm = usedefaultWPM ? progdefaults.defCWspeed : progdefaults.CWspeed;
     int fwpm = usedefaultWPM ? progdefaults.defCWspeed : progdefaults.CWfarnsworth;
-    
+
     cw_send_dot_length = DOT_MAGIC / progdefaults.CWspeed;
-        
+
 //	if (usedefaultWPM == false)
 //		cw_send_dot_length = DOT_MAGIC / progdefaults.CWspeed;
 //	else
 //		cw_send_dot_length = DOT_MAGIC / progdefaults.defCWspeed;
-		
+
 	cw_send_dash_length = 3 * cw_send_dot_length;
-	
+
 	nusymbollen = (int)(samplerate * 1.2 / wpm);
     nufsymlen = (int)((50*(samplerate * 1.2 / fwpm) - 41*symbollen)/9);
 //	nusymbollen = (int)(samplerate * 1.2 / progdefaults.CWspeed);
 //    nufsymlen = (int)((50*(samplerate * 1.2 / progdefaults.CWfarnsworth) - 41*symbollen)/9);
 
-	if (symbollen != nusymbollen || 
+	if (symbollen != nusymbollen ||
 	    nufsymlen != fsymlen ||
         risetime  != progdefaults.CWrisetime ||
 	    QSKshape  != progdefaults.QSKshape ) {
@@ -180,7 +181,7 @@ void cw::sync_parameters()
 		bitfilterlen = len;
 		bitfilter->setLength(bitfilterlen);
 	}
-	
+
 // check if user changed the tracking or the cw default speed
 	if ((cwTrack != progdefaults.CWtrack) ||
 		(cw_send_speed != progdefaults.CWspeed)) {
@@ -190,13 +191,13 @@ void cw::sync_parameters()
 	}
 	cwTrack = progdefaults.CWtrack;
 	cw_send_speed = progdefaults.CWspeed;
-	
+
 // Receive parameters:
 	lowerwpm = cw_send_speed - progdefaults.CWrange;
 	upperwpm = cw_send_speed + progdefaults.CWrange;
 	if (lowerwpm < progdefaults.CWlowerlimit)
 		lowerwpm = progdefaults.CWlowerlimit;
-	if (upperwpm > progdefaults.CWupperlimit) 
+	if (upperwpm > progdefaults.CWupperlimit)
 		upperwpm = progdefaults.CWupperlimit;
 	cw_lower_limit = 2 * DOT_MAGIC / upperwpm;
 	cw_upper_limit = 2 * DOT_MAGIC / lowerwpm;
@@ -207,7 +208,7 @@ void cw::sync_parameters()
 		cw_receive_speed = cw_send_speed;
 		cw_adaptive_receive_threshold = 2 * cw_send_dot_length;
 	}
-		
+
 	cw_receive_dot_length = DOT_MAGIC / cw_receive_speed;
 
 	cw_receive_dash_length = 3 * cw_receive_dot_length;
@@ -235,7 +236,7 @@ void cw::update_tracking(int idot, int idash)
 		dash = idash;
 	else
 		dash = cw_send_dash_length;
-	
+
 	cw_adaptive_receive_threshold = (long int)trackingfilter->run((dash + dot) / 2);
 	sync_parameters();
 }
@@ -248,15 +249,7 @@ void cw::update_tracking(int idot, int idash)
 
 void cw::update_Status()
 {
-	static char RXmsg[20];
-	static char TXmsg[20];
-	snprintf(RXmsg, sizeof(RXmsg), "Rx %d", cw_receive_speed);
-	if (usedefaultWPM)
-		snprintf(TXmsg, sizeof(TXmsg), "Tx %d **", progdefaults.defCWspeed);
-	else
-		snprintf(TXmsg, sizeof(TXmsg), "Tx %d", progdefaults.CWspeed);
-	put_Status1(RXmsg);
-	put_Status2(TXmsg);	
+	put_MODEstatus("CW %s Rx %d", usedefaultWPM ? "*" : " ", cw_receive_speed);
 }
 
 //=======================================================================
@@ -313,25 +306,25 @@ int cw::rx_process(const double *buf, int len)
 		wf->Bandwidth ((int)bandwidth);
 	}
 
-// compute phase increment expected at our specific rx tone freq 
+// compute phase increment expected at our specific rx tone freq
 	delta = 2.0 * M_PI * frequency / samplerate;
 
 	while (len-- > 0) {
-		// Mix with the internal NCO 
+		// Mix with the internal NCO
 		z = complex ( *buf * cos(phaseacc), *buf * sin(phaseacc) );
 		buf++;
 		phaseacc += delta;
 		if (phaseacc > M_PI)
 			phaseacc -= 2.0 * M_PI;
 		if (cwfilter->run ( z, z )) {
-		
-// update the basic sample counter used for morse timing 
+
+// update the basic sample counter used for morse timing
 			smpl_ctr += DEC_RATIO;
-// demodulate 
+// demodulate
 			value = z.mag();
-			
+
 			value = bitfilter->run(value);
-// Compute a variable threshold value for tone 
+// Compute a variable threshold value for tone
 // detection. Fast attack and slow decay.
 			if (value > agc_peak)
 				agc_peak = decayavg(agc_peak, value, 80.0);
@@ -339,16 +332,16 @@ int cw::rx_process(const double *buf, int len)
 				agc_peak = decayavg(agc_peak, value, 800.0);
 
 			metric = clamp(agc_peak * 1000.0 , 0.0, 100.0);
-			
+
 // save correlation amplitude value for the sync scope
 			pipe[pipeptr] = value;
 			pipeptr = (pipeptr + 1) % pipesize;
 
 			if (!progStatus.sqlonoff || metric > progStatus.sldrSquelchValue ) {
-// upward trend means tone starting 
+// upward trend means tone starting
 				if ((value > 0.66 * agc_peak) && (cw_receive_state != RS_IN_TONE))
 					handle_event(CW_KEYDOWN_EVENT, NULL);
-// downward trend means tone stopping 
+// downward trend means tone stopping
 				if ((value < 0.33 * agc_peak) && (cw_receive_state == RS_IN_TONE))
 					handle_event(CW_KEYUP_EVENT, NULL);
 			}
@@ -366,10 +359,10 @@ int cw::rx_process(const double *buf, int len)
 	return 0;
 }
 
-// ---------------------------------------------------------------------- 
+// ----------------------------------------------------------------------
 
 // Compare two timestamps, and return the difference between them in usecs.
- 
+
 int cw::usec_diff(unsigned int earlier, unsigned int later)
 {
 // Compare the timestamps.
@@ -385,10 +378,10 @@ int cw::usec_diff(unsigned int earlier, unsigned int later)
 //=======================================================================
 // handle_event()
 //    high level cw decoder... gets called with keyup, keydown, reset and
-//    query commands. 
+//    query commands.
 //   Keyup/down influences decoding logic.
 //    Reset starts everything out fresh.
-//    The query command returns CW_SUCCESS and the character that has 
+//    The query command returns CW_SUCCESS and the character that has
 //    been decoded (may be '*',' ' or [a-z,0-9] or a few others)
 //    If there is no data ready, CW_ERROR is returned.
 //=======================================================================
@@ -429,13 +422,13 @@ int cw::handle_event(int cw_event, const char **c)
 // The receive state is expected to be inside a tone.
 		if (cw_receive_state != RS_IN_TONE)
 			return CW_ERROR;
-// Save the current timestamp 
+// Save the current timestamp
 		cw_rr_end_timestamp = smpl_ctr;
 		element_usec = usec_diff(cw_rr_start_timestamp, cw_rr_end_timestamp);
-							 
+
 // make sure our timing values are up to date
 		sync_parameters();
-// If the tone length is shorter than any noise cancelling 
+// If the tone length is shorter than any noise cancelling
 // threshold that has been set, then ignore this tone.
 		if (cw_noise_spike_threshold > 0
 		    && element_usec < cw_noise_spike_threshold) {
@@ -443,13 +436,13 @@ int cw::handle_event(int cw_event, const char **c)
  			return CW_ERROR;
 		}
 
-// Set up to track speed on dot-dash or dash-dot pairs for this test to work, we need a dot dash pair or a 
-// dash dot pair to validate timing from and force the speed tracking in the right direction. This method 
+// Set up to track speed on dot-dash or dash-dot pairs for this test to work, we need a dot dash pair or a
+// dash dot pair to validate timing from and force the speed tracking in the right direction. This method
 // is fundamentally different than the method in the unix cw project. Great ideas come from staring at the
-// screen long enough!. Its kind of simple really ... when you have no idea how fast or slow the cw is... 
+// screen long enough!. Its kind of simple really ... when you have no idea how fast or slow the cw is...
 // the only way to get a threshold is by having both code elements and setting the threshold between them
-// knowing that one is supposed to be 3 times longer than the other. with straight key code... this gets 
-// quite variable, but with most faster cw sent with electronic keyers, this is one relationship that is 
+// knowing that one is supposed to be 3 times longer than the other. with straight key code... this gets
+// quite variable, but with most faster cw sent with electronic keyers, this is one relationship that is
 // quite reliable. Lawrence Glaister (ve7it@shaw.ca)
 		if (last_element > 0) {
 // check for dot dash sequence (current should be 3 x last)
@@ -472,7 +465,7 @@ int cw::handle_event(int cw_event, const char **c)
 // a dash is anything longer than 2 dot times
 			rx_rep_buf[cw_rr_current++] = CW_DASH_REPRESENTATION;
 		}
-// We just added a representation to the receive buffer.  
+// We just added a representation to the receive buffer.
 // If it's full, then reset everything as it probably noise
 		if (cw_rr_current == RECEIVE_CAPACITY - 1) {
 			cw_receive_state = RS_IDLE;
@@ -496,14 +489,14 @@ int cw::handle_event(int cw_event, const char **c)
 		if (c == NULL) {
 // else we had no place to put character...
 			cw_receive_state = RS_IDLE;
-			cw_rr_current = 0;	
+			cw_rr_current = 0;
 // reset decoding pointer
 			return CW_ERROR;
 		}
 // compute length of silence so far
 		sync_parameters();
 		element_usec = usec_diff(cw_rr_end_timestamp, smpl_ctr);
-		
+
 // SHORT time since keyup... nothing to do yet
 		if (element_usec < (2 * cw_receive_dot_length))
 			return CW_ERROR;
@@ -513,7 +506,7 @@ int cw::handle_event(int cw_event, const char **c)
 		if (element_usec >= (2 * cw_receive_dot_length) &&
 		    element_usec <= (4 * cw_receive_dot_length) &&
 		    cw_receive_state == RS_AFTER_TONE) {
-// Look up the representation 
+// Look up the representation
 			*c = morse::rx_lookup(rx_rep_buf);
 			if (*c == NULL)
 // invalid decode... let user see error
@@ -526,7 +519,7 @@ int cw::handle_event(int cw_event, const char **c)
 // LONG time since keyup... check for a word space
 // FARNSWOTH MOD HERE -->
 		if ((element_usec > (4 * cw_receive_dot_length)) && !space_sent) {
-			*c = " "; 
+			*c = " ";
 			space_sent = true;
 			return CW_SUCCESS;
 		}
@@ -540,8 +533,8 @@ int cw::handle_event(int cw_event, const char **c)
 
 //===========================================================================
 // cw transmit routines
-// Define the amplitude envelop for key down events (32 samples long)      
-// this is 1/2 cycle of a raised cosine                                    
+// Define the amplitude envelop for key down events (32 samples long)
+// this is 1/2 cycle of a raised cosine
 //===========================================================================
 
 double keyshape[KNUM];
@@ -554,11 +547,11 @@ void cw::makeshape()
 	if (knum >= symbollen)
 		knum = symbollen - 1;
 
-	if (knum > KNUM) 
+	if (knum > KNUM)
 		knum = KNUM;
 
     switch (QSKshape) {
-        case 1: // blackman 
+        case 1: // blackman
             for (int i = 0; i < knum; i++)
                 keyshape[i] = (0.42 - 0.50 * cos(M_PI * i/ knum) + 0.08 * cos(2 * M_PI * i / knum));
             break;
@@ -619,7 +612,7 @@ void cw::send_symbol(int bits, int len)
 	int symlen = 0;
 	float dsymlen = 0.0;
 	int currsym = bits & 1;
-	
+
 	freq = get_txfreq_woffset();
 
     delta = (int) (len * (progdefaults.CWweight - 50) / 100.0);
@@ -651,12 +644,12 @@ void cw::send_symbol(int bits, int len)
         kpost = keydown + (int)(progdefaults.CWpost * 8);
 
 	if (kpost < 0) kpost = 0;
-	
+
 	if (firstelement) {
 	    firstelement = false;
 	    return;
     }
-	
+
     if (currsym == 1) { // keydown
         sample = 0;
         if (lastsym == 1) {
@@ -736,7 +729,7 @@ void cw::send_symbol(int bits, int len)
             }
             while (sample < duration)
                 outbuf[sample++] = 0 * nco(freq);
-                
+
             q_carryover = 0;
             qsample = 0;
 
@@ -758,7 +751,7 @@ void cw::send_symbol(int bits, int len)
 	    else
 		    ModulateXmtr(outbuf, duration);
 	}
-	
+
 	lastsym = currsym;
 	firstelement = false;
 }
@@ -775,8 +768,8 @@ void cw::send_ch(int ch)
 	int flen;
 
 	sync_parameters();
-// handle word space separately (7 dots spacing) 
-// last char already had 3 elements of inter-character spacing 
+// handle word space separately (7 dots spacing)
+// last char already had 3 elements of inter-character spacing
 
 	if ((chout == ' ') || (chout == '\n')) {
 		firstelement = false;
@@ -793,7 +786,7 @@ void cw::send_ch(int ch)
 		return;
 	}
 
-// convert character code to a morse representation 
+// convert character code to a morse representation
 	if ((chout < 256) && (chout >= 0)) {
 		code = tx_lookup(chout); //cw_tx_lookup(ch);
 		firstelement = true;
@@ -802,7 +795,7 @@ void cw::send_ch(int ch)
 		firstelement = false;
 	}
 
-// loop sending out binary bits of cw character 
+// loop sending out binary bits of cw character
 	while (code > 1) {
 		send_symbol(code, symbollen);// & 1);
 		code = code >> 1;
@@ -816,9 +809,9 @@ void cw::send_ch(int ch)
         flen -= symbollen;
     }
     if (flen) send_symbol(0, flen);
-    
+
     FL_AWAKE();
-    
+
 	if (ch != -1)
 		put_echo_char(ch);
 }
@@ -833,7 +826,7 @@ int cw::tx_process()
 {
 	int c;
 	c = get_tx_char();
-	if (c == 0x03 || stopflag) {			
+	if (c == 0x03 || stopflag) {
 		send_symbol(0, symbollen);
 		stopflag = false;
 			return -1;
@@ -847,6 +840,7 @@ void	cw::incWPM()
 	if (usedefaultWPM) return;
 	if (progdefaults.CWspeed < progdefaults.CWupperlimit) {
 		progdefaults.CWspeed++;
+		sync_parameters();
 		set_CWwpm();
 		update_Status();
 	}
@@ -858,6 +852,7 @@ void	cw::decWPM()
 	if (progdefaults.CWspeed > progdefaults.CWlowerlimit) {
 		progdefaults.CWspeed--;
 		set_CWwpm();
+		sync_parameters();
 		update_Status();
 	}
 }

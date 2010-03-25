@@ -744,10 +744,12 @@ Fl_Value_Slider2 *sldrCWxmtWPM=(Fl_Value_Slider2 *)0;
 
 static void cb_sldrCWxmtWPM(Fl_Value_Slider2* o, void*) {
   progdefaults.CWspeed = (int)o->value();
-sldrCWfarnsworth->maximum(o->value());
-if (sldrCWfarnsworth->value() > o->value())
-sldrCWfarnsworth->value(o->value());
+cntCW_WPM->value(progdefaults.CWspeed);
+sldrCWfarnsworth->maximum(progdefaults.CWspeed);
+if (sldrCWfarnsworth->value() > progdefaults.CWspeed)
+sldrCWfarnsworth->value(progdefaults.CWspeed);
 progdefaults.changed = true;
+sync_cw_parameters();
 }
 
 Fl_Counter2 *cntCWdefWPM=(Fl_Counter2 *)0;
@@ -762,10 +764,11 @@ Fl_Counter *cntCWlowerlimit=(Fl_Counter *)0;
 static void cb_cntCWlowerlimit(Fl_Counter* o, void*) {
   progdefaults.CWlowerlimit = (int)o->value();
 progdefaults.changed = true;
-sldrCWxmtWPM->minimum(o->value());
+sldrCWxmtWPM->minimum(progdefaults.CWlowerlimit);
 sldrCWxmtWPM->value(progdefaults.CWspeed);
 sldrCWxmtWPM->redraw();
-cntCWupperlimit->minimum(o->value()+20);
+cntCWupperlimit->minimum(progdefaults.CWlowerlimit+20);
+cntCW_WPM->minimum(progdefaults.CWlowerlimit);
 }
 
 Fl_Counter *cntCWupperlimit=(Fl_Counter *)0;
@@ -773,10 +776,11 @@ Fl_Counter *cntCWupperlimit=(Fl_Counter *)0;
 static void cb_cntCWupperlimit(Fl_Counter* o, void*) {
   progdefaults.CWupperlimit = (int)o->value();
 progdefaults.changed = true;
-sldrCWxmtWPM->maximum(o->value());
+sldrCWxmtWPM->maximum(progdefaults.CWupperlimit);
 sldrCWxmtWPM->value(progdefaults.CWspeed);
 sldrCWxmtWPM->redraw();
-cntCWlowerlimit->maximum(o->value()-20);
+cntCWlowerlimit->maximum(progdefaults.CWupperlimit-20);
+cntCW_WPM->maximum(progdefaults.CWupperlimit);
 }
 
 Fl_Value_Slider2 *sldrCWfarnsworth=(Fl_Value_Slider2 *)0;
@@ -3265,7 +3269,6 @@ an merging"));
           tabsModems->selection_color((Fl_Color)FL_LIGHT1);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
           { tabCW = new Fl_Group(0, 50, 500, 320, _("CW"));
-            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 500, 320);
               tabsCW->selection_color((Fl_Color)FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
@@ -3472,6 +3475,7 @@ an merging"));
                 cntCWdash2dot->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
                 cntCWdash2dot->minimum(2.5);
                 cntCWdash2dot->maximum(4);
+                cntCWdash2dot->step(0.1);
                 cntCWdash2dot->value(3);
                 cntCWdash2dot->callback((Fl_Callback*)cb_cntCWdash2dot);
                 cntCWdash2dot->align(FL_ALIGN_RIGHT);
@@ -3491,6 +3495,7 @@ an merging"));
                 cntCWrisetime->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
                 cntCWrisetime->minimum(0);
                 cntCWrisetime->maximum(15);
+                cntCWrisetime->step(0.1);
                 cntCWrisetime->value(4);
                 cntCWrisetime->callback((Fl_Callback*)cb_cntCWrisetime);
                 cntCWrisetime->align(FL_ALIGN_RIGHT);
@@ -3622,6 +3627,7 @@ an merging"));
                 valDominoEX_BW->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
                 valDominoEX_BW->minimum(1);
                 valDominoEX_BW->maximum(2);
+                valDominoEX_BW->step(0.1);
                 valDominoEX_BW->value(1.5);
                 valDominoEX_BW->callback((Fl_Callback*)cb_valDominoEX_BW);
                 valDominoEX_BW->align(FL_ALIGN_RIGHT);
@@ -3645,6 +3651,7 @@ an merging"));
                 valDomCWI->labelfont(0);
                 valDomCWI->labelsize(14);
                 valDomCWI->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                valDomCWI->step(0.01);
                 valDomCWI->textsize(14);
                 valDomCWI->callback((Fl_Callback*)cb_valDomCWI);
                 valDomCWI->align(FL_ALIGN_TOP);
@@ -3894,6 +3901,7 @@ an merging"));
             tabOlivia->end();
           } // Fl_Group* tabOlivia
           { tabPSK = new Fl_Group(0, 50, 517, 320, _("PSK"));
+            tabPSK->hide();
             { tabsPSK = new Fl_Tabs(0, 50, 517, 320);
               tabsPSK->selection_color((Fl_Color)FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
@@ -4264,6 +4272,7 @@ an merging"));
                 valTHOR_BW->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
                 valTHOR_BW->minimum(1);
                 valTHOR_BW->maximum(2);
+                valTHOR_BW->step(0.1);
                 valTHOR_BW->value(1.5);
                 valTHOR_BW->callback((Fl_Callback*)cb_valTHOR_BW);
                 valTHOR_BW->align(FL_ALIGN_RIGHT);
@@ -4281,6 +4290,7 @@ an merging"));
                 valThorCWI->labelfont(0);
                 valThorCWI->labelsize(14);
                 valThorCWI->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                valThorCWI->step(0.01);
                 valThorCWI->textsize(14);
                 valThorCWI->callback((Fl_Callback*)cb_valThorCWI);
                 valThorCWI->align(FL_ALIGN_TOP);
@@ -5011,6 +5021,7 @@ ll with your audio device."));
                 valPCMvolume->labelfont(0);
                 valPCMvolume->labelsize(14);
                 valPCMvolume->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                valPCMvolume->step(0.01);
                 valPCMvolume->value(0.8);
                 valPCMvolume->textsize(14);
                 valPCMvolume->callback((Fl_Callback*)cb_valPCMvolume);

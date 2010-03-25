@@ -136,6 +136,8 @@ public:
 	virtual	void		incWPM() {};
 	virtual void		decWPM() {};
 	virtual void		toggleWPM() {};
+	virtual void		sync_parameters() {};
+	virtual void		update_Status() {};
 
 // for waterfall id transmission
 private:

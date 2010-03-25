@@ -103,8 +103,6 @@
 
 #include "icons.h"
 
-#include "status.h"
-
 #include "rigsupport.h"
 
 #include "qrunner.h"
@@ -144,6 +142,11 @@ Fl_Double_Window	*scopeview         = (Fl_Double_Window *)0;
 
 MixerBase* mixer = 0;
 
+int rightof(Fl_Widget* w);
+int leftof(Fl_Widget* w);
+int above(Fl_Widget* w);
+int below(Fl_Widget* w);
+
 //bool	useCheckButtons;
 
 Fl_Group			*mnuFrame;
@@ -163,6 +166,8 @@ Raster				*FHdisp;
 Fl_Box				*StatusBar = (Fl_Box *)0;
 Fl_Box				*Status2 = (Fl_Box *)0;
 Fl_Box				*Status1 = (Fl_Box *)0;
+Fl_Counter2			*cntCW_WPM=(Fl_Counter2 *)0;
+Fl_Button			*btnCW_Default=(Fl_Button *)0;
 Fl_Box				*WARNstatus = (Fl_Box *)0;
 Fl_Button			*MODEstatus = (Fl_Button *)0;
 Fl_Button 			*btnMacro[NUMMACKEYS];
@@ -252,7 +257,6 @@ Fl_Button			*qso_opPICK3;
 Fl_Button			*qsoClear3;
 Fl_Button			*qsoSave3;
 
-Fl_Box				*StatusSpace = (Fl_Box *)0;
 Fl_Input2			*inpCall4;
 
 Fl_Browser			*qso_opBrowser = (Fl_Browser *)0;
@@ -613,6 +617,17 @@ void startup_modem(modem* m, int f)
 	restoreFocus();
 
 	trx_mode id = m->get_mode();
+
+	if (id == MODE_CW) {
+		cntCW_WPM->show();
+		btnCW_Default->show();
+		Status1->hide();
+	} else {
+		cntCW_WPM->hide();
+		btnCW_Default->hide();
+		Status1->show();
+	}
+
 	if (id >= MODE_HELL_FIRST && id <= MODE_HELL_LAST) {
 		ReceiveText->hide();
 		FHdisp->show();
@@ -2037,9 +2052,7 @@ void UI_select()
 		TopFrame1->hide();
 		TopFrame2->hide();
 		TopFrame3->hide();
-		Status1->hide();
 		Status2->hide();
-		StatusSpace->show();
 		inpCall4->show();
 		inpCall = inpCall4;
 		fl_digi_main->init_sizes();
@@ -2118,9 +2131,7 @@ void UI_select()
 			qsoFreqDisp = qsoFreqDisp3;
 		}
 	}
-	StatusSpace->hide();
 	inpCall4->hide();
-	Status1->show();
 	Status2->show();
 	fl_digi_main->init_sizes();
 }
@@ -2775,6 +2786,32 @@ void setwfrange() {
 	wf->opmode();
 }
 
+void sync_cw_parameters()
+{
+	active_modem->sync_parameters();
+	active_modem->update_Status();
+}
+
+void cb_cntCW_WPM(Fl_Widget * w, void *v)
+{
+	Fl_Counter2 *cnt = (Fl_Counter2 *) w;
+	progdefaults.CWspeed = (int)cnt->value();
+	sldrCWxmtWPM->value(progdefaults.CWspeed);
+	if (sldrCWfarnsworth->value() > progdefaults.CWspeed)
+		sldrCWfarnsworth->value(progdefaults.CWspeed);
+	sldrCWfarnsworth->maximum(progdefaults.CWspeed);
+	progdefaults.changed = true;
+	sync_cw_parameters();
+	restoreFocus();
+}
+
+void cb_btnCW_Default(Fl_Widget *w, void *v)
+{
+	active_modem->toggleWPM();
+	restoreFocus();
+}
+
+
 void create_fl_digi_main_primary() {
 
 	int fnt = fl_font();
@@ -2789,8 +2826,7 @@ void create_fl_digi_main_primary() {
 
 	x_qsoframe += rig_control_width;
 
-	IMAGE_WIDTH = 4000;//progdefaults.HighFreqCutoff;
-//	if (progStatus.mainH < HNOM) progStatus.mainH = HNOM;
+	IMAGE_WIDTH = 4000;
 
 	Hwfall = progdefaults.wfheight;
 
@@ -3537,15 +3573,27 @@ void create_fl_digi_main_primary() {
 			MODEstatus->when(FL_WHEN_CHANGED);
 			MODEstatus->tooltip(_("Left click: change mode\nRight click: configure"));
 
+			cntCW_WPM = new Fl_Counter2(rightof(MODEstatus), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
+				Ws2n - Hstatus, Hstatus, "");
+			cntCW_WPM->callback(cb_cntCW_WPM);
+			cntCW_WPM->minimum(progdefaults.CWlowerlimit);
+			cntCW_WPM->maximum(progdefaults.CWupperlimit);
+			cntCW_WPM->value(progdefaults.CWspeed);
+			cntCW_WPM->type(1);
+			cntCW_WPM->step(1);
+			cntCW_WPM->tooltip(_("CW transmit WPM"));
+			cntCW_WPM->hide();
+
+			btnCW_Default = new Fl_Button(rightof(cntCW_WPM), Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
+				Hstatus, Hstatus, "*");
+			btnCW_Default->callback(cb_btnCW_Default);
+			btnCW_Default->tooltip(_("Default WPM"));
+			btnCW_Default->hide();
+
 			Status1 = new Fl_Box(rightof(MODEstatus), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Ws2n, Hstatus, "");
 			Status1->box(FL_DOWN_BOX);
 			Status1->color(FL_BACKGROUND2_COLOR);
 			Status1->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
-
-			StatusSpace = new Fl_Box(rightof(MODEstatus), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Ws2n, Hstatus, "");
-			StatusSpace->box(FL_DOWN_BOX);
-			StatusSpace->color(FL_BACKGROUND2_COLOR);
-			StatusSpace->hide();
 
 			Status2 = new Fl_Box(rightof(Status1), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Wimd, Hstatus, "");
 			Status2->box(FL_DOWN_BOX);
@@ -3554,7 +3602,7 @@ void create_fl_digi_main_primary() {
 
 			inpCall4 = new Fl_Input2(
 				rightof(Status1), Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
-				Wimd, Hstatus, "Callsign:");
+				Wimd, Hstatus, "");//"Callsign:");
 			inpCall4->align(FL_ALIGN_LEFT);
 			inpCall4->tooltip(_("Other call"));
 			inpCall4->hide();
@@ -4053,6 +4101,21 @@ void create_fl_digi_main_WF_only() {
 			MODEstatus->when(FL_WHEN_CHANGED);
 			MODEstatus->tooltip(_("Left click: change mode\nRight click: configure"));
 
+			cntCW_WPM = new Fl_Counter2(rightof(MODEstatus), Y, Ws2n - Hstatus, Hstatus, "");
+			cntCW_WPM->callback(cb_cntCW_WPM);
+			cntCW_WPM->minimum(progdefaults.CWlowerlimit);
+			cntCW_WPM->maximum(progdefaults.CWupperlimit);
+			cntCW_WPM->value(progdefaults.CWspeed);
+			cntCW_WPM->tooltip(_("CW transmit WPM"));
+			cntCW_WPM->type(1);
+			cntCW_WPM->step(1);
+			cntCW_WPM->hide();
+
+			btnCW_Default = new Fl_Button(rightof(cntCW_WPM), Y, Hstatus, Hstatus, "*");
+			btnCW_Default->callback(cb_btnCW_Default);
+			btnCW_Default->tooltip(_("Default WPM"));
+			btnCW_Default->hide();
+
 			Status1 = new Fl_Box(rightof(MODEstatus), Y, Ws2n, Hstatus, "");
 			Status1->box(FL_DOWN_BOX);
 			Status1->color(FL_BACKGROUND2_COLOR);
@@ -4446,6 +4509,7 @@ void set_CWwpm()
 {
 	FL_LOCK_D();
 	sldrCWxmtWPM->value(progdefaults.CWspeed);
+	cntCW_WPM->value(progdefaults.CWspeed);
 	FL_UNLOCK_D();
 }
 
@@ -4941,3 +5005,5 @@ void set_rtty_bits(int bits)
 		}
 	}
 }
+
+
