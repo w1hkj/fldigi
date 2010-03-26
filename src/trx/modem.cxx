@@ -36,7 +36,6 @@
 #include "configuration.h"
 #include "waterfall.h"
 #include "qrunner.h"
-#include "mbuffer.h"
 
 #include "status.h"
 #include "debug.h"
@@ -281,8 +280,6 @@ double modem::PTTnco()
 	return sin(PTTphaseacc);
 }
 
-mbuffer<double, 512 * 2, 2> _mdm_scdbl;
-
 double modem::sigmaN (double es_ovr_n0)
 {
 	double sn_ratio, sigma;
@@ -389,18 +386,8 @@ void modem::ModulateXmtr(double *buffer, int len)
 		return;
 	}
 
-	if (!progdefaults.viewXmtSignal)
-		return;
-	for (int i = 0; i < len; i++) {
-		_mdm_scdbl[scptr] = buffer[i] * progdefaults.TxMonitorLevel;
-		scptr++;
-		if (scptr == 512) {
-//for (int i = 0; i < 512; i++) printf("%f\n", _mdm_scdbl[i]);
-			REQ(&waterfall::sig_data, wf, _mdm_scdbl.c_array(), 512, samplerate );
-			scptr = 0;
-			_mdm_scdbl.next(); // change buffers
-		}
-	}
+	if (progdefaults.viewXmtSignal)
+		trx_xmit_wfall_queue(samplerate, buffer, (size_t)len);
 }
 
 #include <iostream>
@@ -419,17 +406,8 @@ void modem::ModulateStereo(double *left, double *right, int len)
 		return;
 	}
 
-	if (!progdefaults.viewXmtSignal)
-		return;
-	for (int i = 0; i < len; i++) {
-		_mdm_scdbl[scptr] = left[i] * progdefaults.TxMonitorLevel;
-		scptr++;
-		if (scptr == 512) {
-			REQ(&waterfall::sig_data, wf, _mdm_scdbl.c_array(), 512, samplerate);
-			scptr = 0;
-			_mdm_scdbl.next(); // change buffers
-		}
-	}
+	if (progdefaults.viewXmtSignal)
+		trx_xmit_wfall_queue(samplerate, left, (size_t)len);
 }
 
 

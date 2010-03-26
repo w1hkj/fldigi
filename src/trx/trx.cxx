@@ -75,8 +75,6 @@ static int	_trx_tune;
 // is also passed to the waterfall signal drawing routines.
 #define NUMMEMBUFS 1024
 static ringbuffer<double> trxrb(ceil2(NUMMEMBUFS * SCBLOCKSIZE));
-// Vector used for direct access to the ringbuffer
-static ringbuffer<double>::vector_type rbvec[2];
 static float fbuf[SCBLOCKSIZE];
 bool    bHistory = false;
 
@@ -85,6 +83,101 @@ static bool trxrunning = false;
 #include "tune.cxx"
 
 //=============================================================================
+
+// Draws the xmit data one WFBLOCKSIZE-sized block at a time
+static void trx_xmit_wfall_draw(int samplerate)
+{
+	ENSURE_THREAD(FLMAIN_TID);
+
+	ringbuffer<double>::vector_type rv[2];
+
+#define block_read_(vec_)						\
+	while (vec_.len >= WFBLOCKSIZE) {				\
+		wf->sig_data(vec_.buf, WFBLOCKSIZE, samplerate);	\
+		vec_.len -= WFBLOCKSIZE;				\
+		vec_.buf += WFBLOCKSIZE;				\
+		trxrb.read_advance(WFBLOCKSIZE);				\
+	}
+
+	trxrb.get_rv(rv);
+	block_read_(rv[0]); // read blocks from the first vector
+
+	if (rv[0].len + rv[1].len < WFBLOCKSIZE)
+		return;
+	if (rv[0].len == 0)
+		block_read_(rv[1]);
+#undef block_read_
+
+	// read non-contiguous data into tmp buffer so that we can
+	// still draw it one block at a time
+	if (unlikely(trxrb.read_space() >= WFBLOCKSIZE)) {
+		double buf[WFBLOCKSIZE];
+		do {
+			trxrb.read(buf, WFBLOCKSIZE);
+			wf->sig_data(buf, WFBLOCKSIZE, samplerate);
+		} while (trxrb.read_space() >= WFBLOCKSIZE);
+	}
+}
+
+// Called by trx_trx_transmit_loop() to handle data that may be left in the
+// ringbuffer when we stop transmitting. Will pad with zeroes to a multiple of
+// WFBLOCKSIZE.
+static void trx_xmit_wfall_end(int samplerate)
+{
+	ENSURE_THREAD(TRX_TID);
+
+	size_t pad = WFBLOCKSIZE - trxrb.read_space() % WFBLOCKSIZE;
+	if (pad == WFBLOCKSIZE) // rb empty or multiple of WFBLOCKSIZE
+		return;
+
+	ringbuffer<double>::vector_type wv[2];
+	trxrb.get_wv(wv, pad);
+	assert(wv[0].len + wv[1].len == pad);
+
+	if (likely(wv[0].len)) { // fill first vector, write rest to second vector
+		memset(wv[0].buf, 0, wv[0].len * sizeof(*wv[0].buf));
+		if (pad > wv[0].len)
+			memset(wv[1].buf, 0, (pad - wv[0].len) * sizeof(*wv[1].buf));
+	}
+	else // all write space is in the second write vector
+		memset(wv[1].buf, 0, pad * sizeof(*wv[1].buf));
+
+	trxrb.write_advance(pad);
+
+	REQ(trx_xmit_wfall_draw, samplerate);
+}
+
+// Copy buf to the ringbuffer if it has enough space. Queue a waterfall
+// request whenever there are at least WFBLOCKSIZE samples to draw.
+void trx_xmit_wfall_queue(int samplerate, const double* buf, size_t len)
+{
+	ENSURE_THREAD(TRX_TID);
+
+	ringbuffer<double>::vector_type wv[2];
+	trxrb.get_wv(wv, len);
+	if (unlikely(wv[0].len + wv[1].len < len)) // not enough space
+		return;
+
+#define write_(vec_, len_)					\
+	for (size_t i = 0; i < len_; i++)			\
+		vec_[i] = buf[i] * progdefaults.TxMonitorLevel;
+
+	size_t n = MIN(wv[0].len, len);
+	write_(wv[0].buf, n);
+	if (len > n) { // write the rest to the second vector
+		buf += n;
+		n = len - n;
+		write_(wv[1].buf, n);
+	}
+#undef write_
+
+	trxrb.write_advance(len);
+	if (trxrb.read_space() >= WFBLOCKSIZE)
+		REQ(trx_xmit_wfall_draw, samplerate);
+}
+
+//=============================================================================
+
 void trx_trx_receive_loop()
 {
 	size_t  numread;
@@ -124,6 +217,8 @@ void trx_trx_receive_loop()
 		return;
 	}
 	active_modem->rx_init();
+
+	ringbuffer<double>::vector_type rbvec[2];
 
 	while (1) {
 		try {
@@ -217,6 +312,8 @@ void trx_trx_transmit_loop()
 			}
 		}
 
+		trx_xmit_wfall_end(current_samplerate);
+
 		if (progdefaults.TransmitRSid)
 			ReedSolomon->send(false);
 
@@ -294,6 +391,8 @@ void *trx_loop(void *args)
 	for (;;) {
 		if (unlikely(old_state != trx_state)) {
 			old_state = trx_state;
+			if (trx_state == STATE_TX || trx_state == STATE_TUNE)
+				trxrb.reset();
 			trx_signal_state();
 		}
 		switch (trx_state) {

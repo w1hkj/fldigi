@@ -55,6 +55,7 @@ enum {
 //4096
 
 #define SC_SMPLRATE	8000
+#define WFBLOCKSIZE	512
 
 struct RGB {
 	uchar R;
