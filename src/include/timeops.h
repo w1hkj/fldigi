@@ -11,8 +11,6 @@
 #if !HAVE_CLOCK_GETTIME
 enum clockid_t { CLOCK_REALTIME, CLOCK_MONOTONIC };
 int clock_gettime(clockid_t clock_id, struct timespec* tp);
-#elif !defined(CLOCK_MONOTONIC) // cygwin 1.5
-#  define CLOCK_MONOTONIC CLOCK_REALTIME
 #endif
 
 struct timespec operator+(const struct timespec &t0, const double &t);

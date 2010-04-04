@@ -34,12 +34,24 @@
 #  include <errno.h>
 int clock_gettime(clockid_t clock_id, struct timespec* tp)
 {
-	struct timeval t;
-	if (gettimeofday(&t, NULL) != 0)
+	if (clock_id == CLOCK_REALTIME) {
+		struct timeval t;
+		if (unlikely(gettimeofday(&t, NULL) != 0))
+			return -1;
+		tp->tv_sec = t.tv_sec;
+		tp->tv_nsec = t.tv_usec * 1000;
+	}
+#ifdef __WOE32__
+	else if (clock_id == CLOCK_MONOTONIC) {
+		int32_t msec = GetTickCount();
+		tp->tv_sec = msec / 1000;
+		tp->tv_nsec = (msec % 1000) * 1000000;
+	}
+#endif
+	else {
+		errno = EINVAL;
 		return -1;
-
-	tp->tv_sec = t.tv_sec;
-	tp->tv_nsec = t.tv_usec * 1000;
+	}
 
 	return 0;
 }
