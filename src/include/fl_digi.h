@@ -197,6 +197,7 @@ extern int  get_secondary_char();
 extern void put_echo_char(unsigned int data);
 extern void resetRTTY();
 extern void resetOLIVIA();
+extern void resetCONTESTIA();
 extern void resetTHOR();
 extern void resetDOMEX();
 extern void resetSoundCard();
@@ -224,6 +225,9 @@ extern void set_rtty_tab_widgets();
 extern void set_olivia_tab_widgets();
 extern void set_olivia_default_integ();
 
+extern void set_contestia_tab_widgets();
+extern void set_contestia_default_integ();
+
 extern void startMacroTimer();
 extern void stopMacroTimer();
 extern void cb_ResetSerNbr();
@@ -243,6 +247,10 @@ void note_qrg(bool no_dup = true, const char* prefix = " ", const char* suffix =
 
 void set_olivia_bw(int bw);
 void set_olivia_tones(int tones);
+
+void set_contestia_bw(int bw);
+void set_contestia_tones(int tones);
+
 void set_rtty_shift(int shift);
 void set_rtty_baud(float baud);
 void set_rtty_bits(int bits);

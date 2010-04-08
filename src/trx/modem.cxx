@@ -85,6 +85,7 @@ modem *psk250r_modem = 0;
 modem *psk500r_modem = 0;
 
 modem *olivia_modem = 0;
+modem *contestia_modem = 0;
 
 modem *rtty_modem = 0;
 

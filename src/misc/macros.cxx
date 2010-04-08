@@ -673,6 +673,12 @@ void pMODEM(string &s, size_t &i)
 			if (args.at(2) != DBL_MIN)
 				set_rtty_bits((int)args[2]);
 			break;
+		case MODE_CONTESTIA: // bandwidth, tones
+			if (args.at(0) != DBL_MIN)
+				set_contestia_bw((int)args[0]);
+			if (args.at(1) != DBL_MIN)
+				set_contestia_tones((int)args[1]);
+			break;
 		case MODE_OLIVIA: // bandwidth, tones
 			if (args.at(0) != DBL_MIN)
 				set_olivia_bw((int)args[0]);

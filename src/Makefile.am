@@ -239,6 +239,7 @@ fldigi_SOURCES += \
 	cw_rtty/cw.cxx \
 	cw_rtty/morse.cxx \
 	cw_rtty/rtty.cxx \
+	contestia/contestia.cxx \
 	dialogs/colorsfonts.cxx \
 	dialogs/confdialog.cxx \
 	dialogs/fl_digi.cxx \
@@ -277,6 +278,7 @@ fldigi_SOURCES += \
 	include/combo.h \
 	include/complex.h \
 	include/configuration.h \
+	include/contestia.h \
 	include/cw.h \
 	include/debug.h \
 	include/digiscope.h \

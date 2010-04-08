@@ -416,6 +416,13 @@ void configuration::loadDefaults()
 	cntOlivia_sinteg->value(oliviasinteg);
 	btnOlivia_8bit->value(olivia8bit);
 
+// CONTESTIA
+	mnuContestia_Tones->value(contestiatones);
+	mnuContestia_Bandwidth->value(contestiabw);
+	cntContestia_smargin->value(contestiasmargin);
+	cntContestia_sinteg->value(contestiasinteg);
+	btnContestia_8bit->value(contestia8bit);
+
 	chkDominoEX_FEC->value(DOMINOEX_FEC);
 
 	btnmt63_interleave->value(mt63_interleave == 64);

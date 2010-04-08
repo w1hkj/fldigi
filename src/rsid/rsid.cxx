@@ -120,15 +120,15 @@ LOG_FILE_SOURCE(debug::LOG_MODEM);
         ELEM_(47, THROBX_2, MODE_THROBX2)               \
         ELEM_(146, THROBX_4, MODE_THROBX4)              \
                                                         \
-        ELEM_(49, CONTESTIA_8_250, NUM_MODES)           \
-        ELEM_(50, CONTESTIA_16_500, NUM_MODES)          \
-        ELEM_(51, CONTESTIA_32_1000, NUM_MODES)         \
-        ELEM_(52, CONTESTIA_8_500, NUM_MODES)           \
-        ELEM_(53, CONTESTIA_16_1000, NUM_MODES)         \
-        ELEM_(54, CONTESTIA_4_500, NUM_MODES)           \
-        ELEM_(55, CONTESTIA_4_250, NUM_MODES)           \
-        ELEM_(117, CONTESTIA_8_1000, NUM_MODES)         \
-        ELEM_(169, CONTESTIA_8_125, NUM_MODES)          \
+        ELEM_(49, CONTESTIA_8_250, MODE_CONTESTIA)      \
+        ELEM_(50, CONTESTIA_16_500, MODE_CONTESTIA)     \
+        ELEM_(51, CONTESTIA_32_1000, MODE_CONTESTIA)    \
+        ELEM_(52, CONTESTIA_8_500, MODE_CONTESTIA)      \
+        ELEM_(53, CONTESTIA_16_1000, MODE_CONTESTIA)    \
+        ELEM_(54, CONTESTIA_4_500, MODE_CONTESTIA)      \
+        ELEM_(55, CONTESTIA_4_250, MODE_CONTESTIA)      \
+        ELEM_(117, CONTESTIA_8_1000, MODE_CONTESTIA)    \
+        ELEM_(169, CONTESTIA_8_125, MODE_CONTESTIA)     \
                                                         \
         ELEM_(56, VOICE, NUM_MODES)                     \
                                                         \
@@ -571,6 +571,52 @@ void cRsId::apply(int iSymbol, int iBin)
 		progdefaults.oliviabw = 0;
 		REQ(&set_olivia_tab_widgets);
 		break;
+	// contestia parameters
+	case RSID_CONTESTIA_8_125:
+		progdefaults.contestiatones = 2;
+		progdefaults.contestiabw = 0;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_4_250:
+		progdefaults.contestiatones = 1;
+		progdefaults.contestiabw = 1;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_8_250:
+		progdefaults.contestiatones = 2;
+		progdefaults.contestiabw = 1;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_4_500:
+		progdefaults.contestiatones = 1;
+		progdefaults.contestiabw = 2;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_8_500:
+		progdefaults.contestiatones = 2;
+		progdefaults.contestiabw = 2;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_16_500:
+		progdefaults.contestiatones = 3;
+		progdefaults.contestiabw = 2;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_8_1000:
+		progdefaults.contestiatones = 2;
+		progdefaults.contestiabw = 3;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_16_1000:
+		progdefaults.contestiatones = 3;
+		progdefaults.contestiabw = 3;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_32_1000:
+		progdefaults.contestiatones = 4;
+		progdefaults.contestiabw = 3;
+		REQ(&set_contestia_tab_widgets);
+		break;
 	// mt63
 	case RSID_MT63_500_LG: case RSID_MT63_1000_LG: case RSID_MT63_2000_LG:
 		progdefaults.mt63_interleave = 64;
@@ -747,6 +793,29 @@ void cRsId::send(bool preRSID)
 			rmode = RSID_OLIVIA_8_125;
 		else
 			rmode = RSID_OLIVIA_16_500;
+		break;
+
+	case MODE_CONTESTIA:
+		if (progdefaults.contestiatones == 2 && progdefaults.contestiabw == 1)
+			rmode = RSID_CONTESTIA_8_250;
+		else if (progdefaults.contestiatones == 3 && progdefaults.contestiabw == 2)
+			rmode = RSID_CONTESTIA_16_500;
+		else if (progdefaults.contestiatones == 4 && progdefaults.contestiabw == 3)
+			rmode = RSID_CONTESTIA_32_1000;
+		else if (progdefaults.contestiatones == 2 && progdefaults.contestiabw == 2)
+			rmode = RSID_CONTESTIA_8_500;
+		else if (progdefaults.contestiatones == 3 && progdefaults.contestiabw == 3)
+			rmode = RSID_CONTESTIA_16_1000;
+		else if (progdefaults.contestiatones == 1 && progdefaults.contestiabw == 2)
+			rmode = RSID_CONTESTIA_4_500;
+		else if (progdefaults.contestiatones == 1 && progdefaults.contestiabw == 1)
+			rmode = RSID_CONTESTIA_4_250;
+		else if (progdefaults.contestiatones == 2 && progdefaults.contestiabw == 3)
+			rmode = RSID_CONTESTIA_8_1000;
+		else if (progdefaults.contestiatones == 2 && progdefaults.contestiabw == 0)
+			rmode = RSID_CONTESTIA_8_125;
+		else
+			rmode = RSID_CONTESTIA_16_500;
 		break;
 
 	case MODE_DOMINOEX4:

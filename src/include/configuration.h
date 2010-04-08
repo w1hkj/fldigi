@@ -399,6 +399,24 @@
         ELEM_(bool, olivia8bit, "OLIVIA8BIT",                                           \
               "8-bit extended characters",                                              \
               false)                                                                    \
+        /* CONTESTIA */                                                                 \
+        ELEM_(int, contestiatones, "CONTESTIATONES",                                    \
+              "Number of tones. Values are as follows:\n"                               \
+              "  0: 2; 1: 4; 2: 8; 3: 16; 4: 32; 5: 64; 6: 128; 7: 256",                \
+              2)   /* 8 */                                                              \
+        ELEM_(int, contestiabw, "CONTESTIABW",                                          \
+              "Bandwidth (Hz). Values are as follows:\n"                                \
+              "  0: 125; 1: 250; 2: 500; 3: 1000; 4: 2000.",                            \
+              2)   /* 500 */                                                            \
+        ELEM_(int, contestiasmargin, "CONTESTIASMARGIN",                                \
+              "Tune margin (tone frequency spacing)",                                   \
+              8)                                                                        \
+        ELEM_(int, contestiasinteg, "CONTESTIASINTEG",                                  \
+              "Integration period (FEC blocks)",                                        \
+              4)                                                                        \
+        ELEM_(bool, contestia8bit, "CONTESTIA8BIT",                                     \
+              "8-bit extended characters",                                              \
+              false)                                                                    \
         /* THOR */                                                                      \
         ELEM_(double, THOR_BW, "THORBW",                                                \
               "Filter bandwidth factor (bandwidth relative to signal width)",           \

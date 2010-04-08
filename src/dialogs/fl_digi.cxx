@@ -78,6 +78,7 @@
 #include "mt63.h"
 #include "rtty.h"
 #include "olivia.h"
+#include "contestia.h"
 #include "thor.h"
 #include "dominoex.h"
 #include "feld.h"
@@ -357,6 +358,16 @@ void cb_oliviaD(Fl_Widget *w, void *arg);
 void cb_oliviaE(Fl_Widget *w, void *arg);
 void cb_oliviaCustom(Fl_Widget *w, void *arg);
 
+void cb_contestiaA(Fl_Widget *w, void *arg);
+void cb_contestiaB(Fl_Widget *w, void *arg);
+void cb_contestiaC(Fl_Widget *w, void *arg);
+void cb_contestiaD(Fl_Widget *w, void *arg);
+void cb_contestiaE(Fl_Widget *w, void *arg);
+void cb_contestiaF(Fl_Widget *w, void *arg);
+void cb_contestiaG(Fl_Widget *w, void *arg);
+void cb_contestiaH(Fl_Widget *w, void *arg);
+void cb_contestiaCustom(Fl_Widget *w, void *arg);
+
 void cb_rtty45(Fl_Widget *w, void *arg);
 void cb_rtty50(Fl_Widget *w, void *arg);
 void cb_rtty75(Fl_Widget *w, void *arg);
@@ -461,6 +472,19 @@ Fl_Menu_Item quick_change_olivia[] = {
 	{ 0 }
 };
 
+Fl_Menu_Item quick_change_contestia[] = {
+	{ "4/250", 0, cb_contestiaA, (void *)MODE_CONTESTIA },
+	{ "8/250", 0, cb_contestiaB, (void *)MODE_CONTESTIA },
+	{ "4/500", 0, cb_contestiaC, (void *)MODE_CONTESTIA },
+	{ "8/500", 0, cb_contestiaD, (void *)MODE_CONTESTIA },
+	{ "16/500", 0, cb_contestiaE, (void *)MODE_CONTESTIA },
+	{ "8/1000", 0, cb_contestiaF, (void *)MODE_CONTESTIA },
+	{ "16/1000", 0, cb_contestiaG, (void *)MODE_CONTESTIA },
+	{ "32/1000", 0, cb_contestiaH, (void *)MODE_CONTESTIA },
+	{ _("Custom..."), 0, cb_contestiaCustom, (void *)MODE_CONTESTIA },
+	{ 0 }
+};
+
 Fl_Menu_Item quick_change_rtty[] = {
 	{ "RTTY-45", 0, cb_rtty45, (void *)MODE_RTTY },
 	{ "RTTY-50", 0, cb_rtty50, (void *)MODE_RTTY },
@@ -475,6 +499,7 @@ inline int minmax(int val, int min, int max)
 	return val > min ? val : min;
 }
 
+// Olivia
 void set_olivia_default_integ()
 {
 	int tones = progdefaults.oliviatones;
@@ -546,6 +571,105 @@ void cb_oliviaCustom(Fl_Widget *w, void *arg)
 	dlgConfig->show();
 	cb_init_mode(w, arg);
 }
+
+// Contestia
+void set_contestia_default_integ()
+{
+	int tones = progdefaults.contestiatones;
+	int bw = progdefaults.contestiabw;
+
+	if (tones < 1) tones = 1;
+	int depth = minmax( (8 * (1 << bw)) / (1 << tones), 4, 4 * (1 << bw));
+
+	progdefaults.contestiasinteg = depth;
+	cntContestia_sinteg->value(depth);
+}
+
+void set_contestia_tab_widgets()
+{
+	mnuContestia_Bandwidth->value(progdefaults.contestiabw);
+	mnuContestia_Tones->value(progdefaults.contestiatones);
+	set_contestia_default_integ();
+}
+
+void cb_contestiaA(Fl_Widget *w, void *arg)
+{
+	progdefaults.contestiatones = 1;
+	progdefaults.contestiabw = 1;
+	set_contestia_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
+void cb_contestiaB(Fl_Widget *w, void *arg)
+{
+	progdefaults.contestiatones = 2;
+	progdefaults.contestiabw = 1;
+	set_contestia_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
+void cb_contestiaC(Fl_Widget *w, void *arg)
+{
+	progdefaults.contestiatones = 1;
+	progdefaults.contestiabw = 2;
+	set_contestia_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
+void cb_contestiaD(Fl_Widget *w, void *arg)
+{
+	progdefaults.contestiatones = 2;
+	progdefaults.contestiabw = 2;
+	set_contestia_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
+void cb_contestiaE(Fl_Widget *w, void *arg)
+{
+	progdefaults.contestiatones = 3;
+	progdefaults.contestiabw = 2;
+	set_contestia_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
+void cb_contestiaF(Fl_Widget *w, void *arg)
+{
+	progdefaults.contestiatones = 2;
+	progdefaults.contestiabw = 3;
+	set_contestia_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
+void cb_contestiaG(Fl_Widget *w, void *arg)
+{
+	progdefaults.contestiatones = 3;
+	progdefaults.contestiabw = 3;
+	set_contestia_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
+void cb_contestiaH(Fl_Widget *w, void *arg)
+{
+	progdefaults.contestiatones = 4;
+	progdefaults.contestiabw = 3;
+	set_contestia_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
+void cb_contestiaCustom(Fl_Widget *w, void *arg)
+{
+	modem_config_tab = tabContestia;
+	tabsConfigure->value(tabModems);
+	tabsModems->value(modem_config_tab);
+#if USE_HAMLIB
+	hamlib_restore_defaults();
+#endif
+	rigCAT_restore_defaults();;
+	dlgConfig->show();
+	cb_init_mode(w, arg);
+}
+
+//
 
 void set_rtty_tab_widgets()
 {
@@ -803,6 +927,13 @@ void init_modem(trx_mode mode, int freq)
 			      *mode_info[mode].modem = new olivia, freq);
 		modem_config_tab = tabOlivia;
 		quick_change = quick_change_olivia;
+		break;
+
+	case MODE_CONTESTIA:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new contestia, freq);
+		modem_config_tab = tabContestia;
+		quick_change = quick_change_contestia;
 		break;
 
 	case MODE_RTTY:
@@ -2012,6 +2143,7 @@ bool clean_exit(void) {
 #define OPMODES_FEWER _("Show fewer modes")
 #define OPMODES_ALL _("Show all modes")
 #define OLIVIA_MLABEL "Olivia"
+#define CONTESTIA_MLABEL "Contestia"
 #define RTTY_MLABEL "RTTY"
 #define VIEW_MLABEL _("&View")
 #define MFSK_IMAGE_MLABEL _("&MFSK image")
@@ -2235,6 +2367,18 @@ Fl_Menu_Item menu_[] = {
 { OPMODES_MLABEL, 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 
 { mode_info[MODE_CW].name, 0, cb_init_mode, (void *)MODE_CW, 0, FL_NORMAL_LABEL, 0, 14, 0},
+
+{ CONTESTIA_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ "4/250", 0, cb_contestiaA, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "8/250", 0, cb_contestiaB, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ "4/500", 0, cb_contestiaC, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "8/500", 0, cb_contestiaD, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "16/500", 0, cb_contestiaE, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ "8/1000", 0, cb_contestiaF, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "16/1000", 0, cb_contestiaG, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "32/1000", 0, cb_contestiaH, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ _("Custom..."), 0, cb_contestiaCustom, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
 
 {"DominoEX", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DOMINOEX4].name, 0, cb_init_mode, (void *)MODE_DOMINOEX4, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -2462,6 +2606,10 @@ static void cb_opmode_show(Fl_Widget* w, void*)
 			getMenuItem("Olivia")->show();
 		else
 			getMenuItem("Olivia")->hide();
+		if (progdefaults.visible_modes.test(MODE_CONTESTIA))
+			getMenuItem("Contestia")->show();
+		else
+			getMenuItem("Contestia")->hide();
 		if (progdefaults.visible_modes.test(MODE_RTTY))
 			getMenuItem("RTTY")->show();
 		else
@@ -3775,6 +3923,18 @@ Fl_Menu_Item alt_menu_[] = {
 
 { mode_info[MODE_CW].name, 0, cb_init_mode, (void *)MODE_CW, 0, FL_NORMAL_LABEL, 0, 14, 0},
 
+{"Contestia", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ "4/250", 0, cb_contestiaA, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "8/250", 0, cb_contestiaB, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ "4/500", 0, cb_contestiaC, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "8/500", 0, cb_contestiaD, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "16/500", 0, cb_contestiaE, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ "8/1000", 0, cb_contestiaF, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "16/1000", 0, cb_contestiaG, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "32/1000", 0, cb_contestiaH, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ _("Custom..."), 0, cb_contestiaCustom, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
 {"DominoEX", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DOMINOEX4].name, 0, cb_init_mode, (void *)MODE_DOMINOEX4, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DOMINOEX5].name, 0, cb_init_mode, (void *)MODE_DOMINOEX5, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -4675,6 +4835,11 @@ void resetOLIVIA() {
 		trx_start_modem(active_modem);
 }
 
+void resetCONTESTIA() {
+	if (active_modem->get_mode() == MODE_CONTESTIA)
+		trx_start_modem(active_modem);
+}
+
 void resetTHOR() {
 	trx_mode md = active_modem->get_mode();
 	if (md == MODE_THOR4 || md == MODE_THOR5 || md == MODE_THOR8 ||
@@ -4953,6 +5118,7 @@ void spot_selection_color()
 	btnAutoSpot->redraw();
 }
 
+// Olivia
 void set_olivia_bw(int bw)
 {
 	int i;
@@ -4982,6 +5148,38 @@ void set_olivia_tones(int tones)
 	mnuOlivia_Tones->do_callback();
 	progdefaults.changed = changed;
 }
+
+//Contestia
+void set_contestia_bw(int bw)
+{
+	int i;
+	if (bw == 125)
+		i = 0;
+	else if (bw == 250)
+		i = 1;
+	else if (bw == 500)
+		i = 2;
+	else if (bw == 1000)
+		i = 3;
+	else
+		i = 4;
+	bool changed = progdefaults.changed;
+	mnuContestia_Bandwidth->value(i);
+	mnuContestia_Bandwidth->do_callback();
+	progdefaults.changed = changed;
+}
+
+void set_contestia_tones(int tones)
+{
+	unsigned i = 0;
+	while (tones >>= 1)
+		i++;
+	bool changed = progdefaults.changed;
+	mnuContestia_Tones->value(i - 1);
+	mnuContestia_Tones->do_callback();
+	progdefaults.changed = changed;
+}
+
 
 void set_rtty_shift(int shift)
 {

@@ -149,12 +149,23 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<MACROS:>\tchange macro defs file"));
 
 	w->add(LINE_SEP);
-	assert(MODE_OLIVIA < MODE_RTTY);
+	assert(MODE_CONTESTIA < MODE_OLIVIA);
 	char s[256];
-	for (trx_mode i = 0; i <= MODE_OLIVIA; i++) {
+	for (trx_mode i = 0; i <= MODE_CONTESTIA; i++) {
 		snprintf(s, sizeof(s), "<MODEM:%s>", mode_info[i].sname);
 		w->add(s);
 	}
+	// add some Contestia macros
+	const char* contestia[] = { "250:8", "500:8", "500:16", "1000:8", "1000:16" };
+	for (size_t i = 0; i < sizeof(contestia)/sizeof(*contestia); i++) {
+		snprintf(s, sizeof(s), "<MODEM:%s:%s>", mode_info[MODE_CONTESTIA].sname, contestia[i]);
+		w->add(s);
+	}
+	for (trx_mode i = MODE_CONTESTIA + 1; i <= MODE_OLIVIA; i++) {
+		snprintf(s, sizeof(s), "<MODEM:%s>", mode_info[i].sname);
+		w->add(s);
+	}
+	assert(MODE_OLIVIA < MODE_RTTY);
 	// add some Olivia macros
 	const char* olivia[] = { "250:8", "500:8", "500:16", "1000:8", "1000:32" };
 	for (size_t i = 0; i < sizeof(olivia)/sizeof(*olivia); i++) {
