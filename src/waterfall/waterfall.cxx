@@ -544,26 +544,28 @@ void WFdisp::redrawCursor()
 //	cursormoved = true;
 }
 
-void WFdisp::sig_data( double *sig, int len, int sr ) {
+void WFdisp::sig_data( double *sig, int len, int sr )
+{
 	if (wfspeed == PAUSE)
-		return;
+		goto update_freq;
 
-//if sound card sampling rate changed reset the waterfall buffer
+	// if sound card sampling rate changed reset the waterfall buffer
 	if (srate != sr) {
 		srate = sr;
 		memset (circbuff, 0, FFT_LEN * 2 * sizeof(double));
 		ptrCB = 0;
 	}
 
-	overload = false;
-    double overval, peak = 0.0;
-	for (int i = 0; i < len; i++) {
-		overval = fabs(circbuff[ptrCB] = sig[i]);
-		ptrCB = (ptrCB + 1) % (FFT_LEN *2);
-		if (overval > peak) peak = overval;
+	{
+		overload = false;
+		double overval, peak = 0.0;
+		for (int i = 0; i < len; i++) {
+			overval = fabs(circbuff[ptrCB] = sig[i]);
+			ptrCB = (ptrCB + 1) % (FFT_LEN *2);
+			if (overval > peak) peak = overval;
+		}
+		peakaudio = 0.1 * peak + 0.9 * peakaudio;
 	}
-
-    peakaudio = 0.1 * peak + 0.9 * peakaudio;
 
 	if (mode == SCOPE)
 		process_analog(circbuff, FFT_LEN * 2);
@@ -572,10 +574,8 @@ void WFdisp::sig_data( double *sig, int len, int sr ) {
 
 	put_WARNstatus(peakaudio);
 
+update_freq:
 	static char szFrequency[14];
-
-//	if (usebands)
-//		rfc = (long long)(atof(cboBand->value()) * 1000.0);
 	if (rfc != 0) { // use a boolean for the waterfall
 		if (usb)
 			dfreq = rfc + active_modem->get_txfreq();
@@ -586,11 +586,7 @@ void WFdisp::sig_data( double *sig, int len, int sr ) {
 		dfreq = active_modem->get_txfreq();
 		snprintf(szFrequency, sizeof(szFrequency), "%-.0f", dfreq);
 	}
-	FL_LOCK_D();
 	inpFreq->value(szFrequency);
-	FL_UNLOCK_D();
-
-	return;
 }
 
 
