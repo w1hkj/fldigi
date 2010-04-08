@@ -364,6 +364,7 @@ fldigi_SOURCES += \
 	include/sound.h \
 	include/soundconf.h \
 	include/spot.h \
+	include/ssb.h \
 	include/stacktrace.h \
 	include/status.h \
 	include/strutil.h \
@@ -462,6 +463,7 @@ fldigi_SOURCES += \
 	spot/notify.cxx \
 	spot/pskrep.cxx \
 	spot/spot.cxx \
+	ssb/ssb.cxx \
 	throb/throb.cxx \
 	trx/modem.cxx \
 	trx/trx.cxx \

@@ -113,6 +113,7 @@ modem *throbx4_modem = 0;
 
 modem *wwv_modem = 0;
 modem *anal_modem = 0;
+modem *ssb_modem = 0;
 
 trx_mode modem::get_mode()
 {
@@ -184,7 +185,9 @@ bool modem::freqlocked()
 
 double modem::get_txfreq(void)
 {
-	if (mailserver && progdefaults.PSKmailSweetSpot)
+	if (unlikely(!(cap & CAP_TX)))
+		return 0;
+	else if (mailserver && progdefaults.PSKmailSweetSpot)
 		return progdefaults.PSKsweetspot;
 	return tx_frequency;
 }

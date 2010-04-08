@@ -108,8 +108,8 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_THROBX2, &throbx2_modem, "THRBX2", "ThrobX 2", "", "THRBX" },
 	{ MODE_THROBX4, &throbx4_modem, "THRBX4", "ThrobX 4", "", "THRBX" },
 
+	{ MODE_SSB, &ssb_modem, "SSB", "SSB", "", "SSB" },
 	{ MODE_WWV, &wwv_modem, "WWV", "WWV", "", "" },
-
 	{ MODE_ANALYSIS, &anal_modem, "ANALYSIS", "Freq Analysis", "", "" }
 };
 
