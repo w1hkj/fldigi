@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0109 
+version 1.0110 
 i18n_type 1 
 i18n_include "gettext.h" 
 i18n_function _ 
@@ -20,7 +20,7 @@ Function {create_logbook_dialogs()} {open return_type void
 } {
   Fl_Window wExport {
     label {Export Setup} open
-    xywh {537 92 655 365} type Double hide modal
+    xywh {506 538 655 365} type Double modal visible
   } {
     Fl_Group {} {
       label {Select Records to Export} open
@@ -52,7 +52,7 @@ Export_log();}
       xywh {405 340 100 20}
     }
     Fl_Group {} {
-      label {Select Fields to Export}
+      label {Select Fields to Export} open
       xywh {392 4 258 330} box ENGRAVED_FRAME align 21
     } {
       Fl_Button btnClearAllFields {
@@ -143,8 +143,8 @@ btnSelectNotes->value(1);}
         xywh {412 122 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectTimeON {
-        label {Time ON}
-        xywh {412 142 70 15} down_box DOWN_BOX
+        label {Time ON} selected
+        xywh {412 142 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectTimeOFF {
         label {Time OFF}
@@ -238,7 +238,7 @@ btnSelectFreq->value(1);
 btnSelectBand->value(1);
 btnSelectMode->value(1);
 btnSelectQSOdate->value(1);
-btnSelectTimeON->value(0);
+btnSelectTimeON->value(1);
 btnSelectTimeOFF->value(1);
 btnSelectQth->value(0);
 btnSelectLOC->value(1);
@@ -262,10 +262,10 @@ btnSelectTX_pwr->value(0);}
     }
   }
   Fl_Window dlgLogbook {
-    label Logbook open
+    label Logbook
     xywh {540 120 570 350} type Double color 47 resizable visible
   } {
-    Fl_Group editGroup {open selected
+    Fl_Group editGroup {open
       xywh {2 2 565 228} box ENGRAVED_FRAME color 52
     } {
       Fl_Input inpDate_log {

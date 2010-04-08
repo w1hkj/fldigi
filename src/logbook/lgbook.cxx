@@ -166,7 +166,7 @@ btnSelectFreq->value(1);
 btnSelectBand->value(1);
 btnSelectMode->value(1);
 btnSelectQSOdate->value(1);
-btnSelectTimeON->value(0);
+btnSelectTimeON->value(1);
 btnSelectTimeOFF->value(1);
 btnSelectQth->value(0);
 btnSelectLOC->value(1);
@@ -405,6 +405,7 @@ void create_logbook_dialogs() {
       } // Fl_Check_Button* btnSelectQSOdate
       { btnSelectTimeON = new Fl_Check_Button(412, 142, 70, 15, _("Time ON"));
         btnSelectTimeON->down_box(FL_DOWN_BOX);
+        btnSelectTimeON->value(1);
       } // Fl_Check_Button* btnSelectTimeON
       { btnSelectTimeOFF = new Fl_Check_Button(412, 162, 70, 15, _("Time OFF"));
         btnSelectTimeOFF->down_box(FL_DOWN_BOX);
