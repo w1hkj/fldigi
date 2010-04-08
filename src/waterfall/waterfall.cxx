@@ -1028,6 +1028,9 @@ void qsy_cb(Fl_Widget *w, void *v)
 	static vector<qrg_mode_t> qsy_stack;
 	qrg_mode_t m;
 
+	wf->xmtlock->value(0);
+	wf->xmtlock->do_callback();
+
 	if (Fl::event_button() != FL_RIGHT_MOUSE) {
 // store
 		m.rfcarrier = wf->rfcarrier();
