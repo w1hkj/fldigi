@@ -125,8 +125,8 @@ void psk::restart()
 
 void psk::init()
 {
-	modem::init();
 	restart();
+	modem::init();
 	set_scope_mode(Digiscope::PHASE);
 	initSN_IMD();
 	snratio = 1.0;

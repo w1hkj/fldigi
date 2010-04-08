@@ -115,7 +115,20 @@ void rtty::rx_init()
 
 void rtty::init()
 {
-	modem::init();
+	bool wfrev = wf->Reverse();
+	bool wfsb = wf->USB();
+	reverse = wfrev ^ !wfsb;
+
+	if (progdefaults.StartAtSweetSpot)
+		set_freq(progdefaults.RTTYsweetspot);
+	else if (progStatus.carrier != 0) {
+		set_freq(progStatus.carrier);
+#if !BENCHMARK_MODE
+		progStatus.carrier = 0;
+#endif
+	} else
+		set_freq(wf->Carrier());
+
 	rx_init();
 	put_MODEstatus(mode);
 	snprintf(msg1, sizeof(msg1), "%-4.1f / %-4.0f", rtty_baud, rtty_shift);

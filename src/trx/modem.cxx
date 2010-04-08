@@ -136,6 +136,7 @@ modem::modem()
 	s2n_valid = false;
 }
 
+// modem types CW and RTTY do not use the base init()
 void modem::init()
 {
 	bool wfrev = wf->Reverse();
@@ -143,14 +144,7 @@ void modem::init()
 	reverse = wfrev ^ !wfsb;
 
 	if (progdefaults.StartAtSweetSpot) {
-//		if (active_modem == cw_modem)
-		if (this == cw_modem)
-			set_freq(progdefaults.CWsweetspot);
-//		else if (active_modem == rtty_modem)
-		else if (this == rtty_modem)
-			set_freq(progdefaults.RTTYsweetspot);
-		else
-			set_freq(progdefaults.PSKsweetspot);
+		set_freq(progdefaults.PSKsweetspot);
 	} else if (progStatus.carrier != 0) {
 		set_freq(progStatus.carrier);
 #if !BENCHMARK_MODE

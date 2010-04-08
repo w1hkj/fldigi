@@ -66,7 +66,20 @@ void cw::rx_init()
 
 void cw::init()
 {
-	modem::init();
+	bool wfrev = wf->Reverse();
+	bool wfsb = wf->USB();
+	reverse = wfrev ^ !wfsb;
+
+	if (progdefaults.StartAtSweetSpot)
+		set_freq(progdefaults.CWsweetspot);
+	else if (progStatus.carrier != 0) {
+		set_freq(progStatus.carrier);
+#if !BENCHMARK_MODE
+		progStatus.carrier = 0;
+#endif
+	} else
+		set_freq(wf->Carrier());
+
 	trackingfilter->reset();
 	cw_adaptive_receive_threshold = (long int)trackingfilter->run(2 * cw_send_dot_length);
 	put_cwRcvWPM(cw_send_speed);
