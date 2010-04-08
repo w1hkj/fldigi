@@ -543,9 +543,6 @@
         ELEM_(bool, tooltips, "TOOLTIPS",                                               \
               "Show tooltips",                                                          \
               true)                                                                     \
-        ELEM_(bool, useCheckButtons, "USECHECKBUTTONS",                                 \
-              "Use check buttons for AFC and SQL",                                      \
-              false)                                                                    \
         ELEM_(bool, NagMe, "NAGME",                                                     \
               "Prompt to save log",                                                     \
               false)                                                                    \

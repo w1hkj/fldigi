@@ -111,8 +111,8 @@ extern Fl_Button		*qso_btnClearList;
 
 extern Fl_Value_Slider2		*valRcvMixer;
 extern Fl_Value_Slider2		*valXmtMixer;
-extern Fl_Button		*btnAFC;
-extern Fl_Button		*btnSQL;
+extern Fl_Button			*btnAFC;
+extern Fl_Button			*btnSQL;
 extern Fl_Light_Button		*btnRSID;
 extern Fl_Light_Button		*btnTxRSID;
 extern Fl_Light_Button		*btnTune;
@@ -122,7 +122,6 @@ extern Fl_Button		*btnMacroTimer;
 
 extern bool			bWF_only;
 extern bool			withnoise;
-extern bool			useCheckButtons;
 extern int			altMacros;
 
 extern waterfall		*wf;

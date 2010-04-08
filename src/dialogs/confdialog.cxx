@@ -444,15 +444,6 @@ progdefaults.changed = true;
 WF_UI();
 }
 
-Fl_Group *tabWfallRestart=(Fl_Group *)0;
-
-Fl_Check_Button *btnCheckButtons=(Fl_Check_Button *)0;
-
-static void cb_btnCheckButtons(Fl_Check_Button* o, void*) {
-  progdefaults.useCheckButtons = o->value();
-progdefaults.changed = true;
-}
-
 Fl_Group *tabWaterfall=(Fl_Group *)0;
 
 Fl_Tabs *tabsWaterfall=(Fl_Tabs *)0;
@@ -2632,7 +2623,6 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         { tabsUI = new Fl_Tabs(-3, 25, 508, 345);
           tabsUI->selection_color((Fl_Color)FL_LIGHT1);
           { tabUserInterface = new Fl_Group(0, 50, 500, 320, _("General"));
-            tabUserInterface->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 301);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(15, 70, 120, 20, _("Show tooltips"));
@@ -2975,21 +2965,6 @@ ab and newline are automatically included."));
             } // Fl_Button* btn_wf_disable_all
             tabWF_UI->end();
           } // Fl_Group* tabWF_UI
-          { tabWfallRestart = new Fl_Group(0, 50, 500, 320, _("Restart"));
-            { Fl_Group* o = new Fl_Group(5, 63, 490, 70, _("Changes take effect on next program startup"));
-              o->tooltip(_("Show me more or less waterfall"));
-              o->box(FL_ENGRAVED_FRAME);
-              o->align(FL_ALIGN_TOP|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = btnCheckButtons = new Fl_Check_Button(52, 93, 275, 20, _("Use check buttons for AFC and SQL"));
-                btnCheckButtons->tooltip(_("Check buttons or default lighted switch"));
-                btnCheckButtons->down_box(FL_DOWN_BOX);
-                btnCheckButtons->callback((Fl_Callback*)cb_btnCheckButtons);
-                o->value(progdefaults.useCheckButtons);
-              } // Fl_Check_Button* btnCheckButtons
-              o->end();
-            } // Fl_Group* o
-            tabWfallRestart->end();
-          } // Fl_Group* tabWfallRestart
           tabsUI->end();
         } // Fl_Tabs* tabsUI
         tabUI->end();

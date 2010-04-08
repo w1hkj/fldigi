@@ -180,7 +180,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabUI {
-        label UI
+        label UI open
         xywh {-3 25 500 345} hide
       } {
         Fl_Tabs tabsUI {open
@@ -188,7 +188,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabUserInterface {
             label General open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {open
               xywh {5 60 490 301} box ENGRAVED_FRAME
@@ -575,23 +575,6 @@ btnWF_UIxmtlock->value(progdefaults.WF_UIxmtlock = 0);
 progdefaults.changed = true;
 WF_UI();}
               xywh {301 321 88 20}
-            }
-          }
-          Fl_Group tabWfallRestart {
-            label Restart open
-            xywh {0 50 500 320}
-          } {
-            Fl_Group {} {
-              label {Changes take effect on next program startup} open
-              tooltip {Show me more or less waterfall} xywh {5 63 490 70} box ENGRAVED_FRAME align 17
-            } {
-              Fl_Check_Button btnCheckButtons {
-                label {Use check buttons for AFC and SQL}
-                callback {progdefaults.useCheckButtons = o->value();
-progdefaults.changed = true;}
-                tooltip {Check buttons or default lighted switch} xywh {52 93 275 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.useCheckButtons);}
-              }
             }
           }
         }
