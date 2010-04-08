@@ -24,7 +24,7 @@
 #define _anal_H
 
 #include <string>
-#include <fstream>
+#include <ctime>
 
 #include "complex.h"
 #include "filters.h"
@@ -47,29 +47,33 @@ private:
 	fftfilt *bpfilt;
 	Cmovavg *ffilt;
 	Cmovavg *favg;
-	
+
 	mbuffer<double, analMaxSymLen, 2> pipe;
 	int pipeptr;
 
 	double prevsymbol;
 	complex prevsmpl;
 	int	symbollen;
-	
+
+	int restart_count;
+
 	double		fout_1;
 	double		fout_2;
+	long		wf_freq;
+
+	struct timespec start_time;
 
 	double sum;
-	
+
 	void clear_syncscope();
 	inline complex mixer(complex in);
 	int rx(bool bit);
 
 	double nco(double freq);
 	void writeFile();
-	
-	std::ofstream	analysisFile;
+
 	std::string	analysisFilename;
-	
+
 public:
 	anal();
 	~anal();

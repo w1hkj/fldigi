@@ -38,6 +38,7 @@
 #include <cstdlib>
 #include <cstdarg>
 #include <string>
+#include <fstream>
 #include <algorithm>
 #include <map>
 #include <dirent.h>

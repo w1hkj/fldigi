@@ -22,10 +22,9 @@
 
 #include <config.h>
 
-#include <iosfwd>
-#include <fstream>
 #include <string>
 #include <cstdio>
+#include <ctime>
 
 #include "analysis.h"
 #include "modem.h"
@@ -36,6 +35,9 @@
 #include "waterfall.h"
 #include "main.h"
 #include "fl_digi.h"
+
+#include "timeops.h"
+#include "debug.h"
 
 using namespace std;
 
@@ -70,24 +72,49 @@ anal::~anal()
 
 void anal::restart()
 {
-	double fhi;
-	double flo;
-	
-	symbollen = analMaxSymLen;
-	set_bandwidth(anal_BW);
-
-	fhi = anal_BW * 1.1 / samplerate;
-	flo = 0.0;
-	if (bpfilt) 
+	double fhi = anal_BW * 1.1 / samplerate;
+	double flo = 0.0;
+	if (bpfilt)
 		bpfilt->create_filter(flo, fhi);
 	else
 		bpfilt = new fftfilt(flo, fhi, 2048);
 
+	symbollen = analMaxSymLen;
+	set_bandwidth(anal_BW);
+
 	ffilt->setLength(4000); // average over last 1/2 second of samples
 	favg->setLength(120);    // average over last minute of samples
-	
+
 	sum = 0.0;
 	fout_1 = fout_2 = 0.0;
+	restart_count = 64;
+	wf_freq = frequency;
+
+	if (clock_gettime(CLOCK_REALTIME, &start_time) == -1) {
+		LOG_PERROR("clock_gettime");
+		abort();
+	}
+	struct tm tm;
+	gmtime_r(&start_time.tv_sec, &tm);
+
+	FILE* out = fopen(analysisFilename.c_str(), "a");
+	if (unlikely(!out)) {
+		LOG_PERROR("fopen");
+		goto ret;
+	}
+	fprintf(out, "Time,Clock,Track,Freq\n"
+		",,,,rf track frequency:    %" PRIdMAX "   %s\n"
+		",,,,audio track frequency: %.0f\n"
+		",,,,%02d-%02d-%02d\n",
+		(intmax_t)wf->rfcarrier(), (wf->USB() ? "USB" : "LSB"),
+		frequency, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
+	fclose(out);
+
+ret:
+	if (clock_gettime(CLOCK_MONOTONIC, &start_time) == -1) {
+		LOG_PERROR("clock_gettime");
+		abort();
+	}
 }
 
 anal::anal()
@@ -104,7 +131,7 @@ anal::anal()
 	
 	analysisFilename = HomeDir;
 	analysisFilename.append("freqanalysis.csv");
-	
+
 	pipeptr = 0;
 	restart();
 }
@@ -132,9 +159,31 @@ complex anal::mixer(complex in)
 
 void anal::writeFile()
 {
-	analysisFile.open(analysisFilename.c_str(), ios::app);
-	analysisFile << wf->rfcarrier() << ", " << frequency << ", " << fout_2 << endl;
-	analysisFile.close();
+	struct timespec elapsed, now;
+	// calculate elapsed time using the monotonic clock
+	if (clock_gettime(CLOCK_MONOTONIC, &now) == -1) {
+		LOG_PERROR("clock_gettime");
+		abort();
+	}
+	elapsed = now - start_time;
+	// calculate wall clock time using the realtime clock
+	if (clock_gettime(CLOCK_REALTIME, &now) == -1) {
+		LOG_PERROR("clock_gettime");
+		abort();
+	}
+	struct tm tm;
+	gmtime_r(&now.tv_sec, &tm);
+
+	FILE* out = fopen(analysisFilename.c_str(), "a");
+	if (unlikely(!out)) {
+		LOG_PERROR("fopen");
+		return;
+	}
+	fprintf(out, "%02d:%02d:%02d, %" PRIdMAX ".%03" PRIdMAX ", %f, %12.4f\n",
+		tm.tm_hour, tm.tm_min, tm.tm_sec, (intmax_t)elapsed.tv_sec,
+		(intmax_t)(elapsed.tv_nsec / 1000000), fout_2,
+		(wf->rfcarrier() + (wf->USB() ? 1.0 : -1.0) * (frequency + fout_2)));
+	fclose(out);
 }
 
 int anal::rx_process(const double *buf, int len)
@@ -144,6 +193,8 @@ int anal::rx_process(const double *buf, int len)
 	int n;
 	static int dspcnt = symbollen;
 
+	if (wf_freq != frequency) restart();
+
 	while (len-- > 0) {
 // create analytic signal from sound card input samples
 		z.re = z.im = *buf++;
@@ -152,32 +203,36 @@ int anal::rx_process(const double *buf, int len)
 		z = mixer(z);
 // low pass filter using Windowed Sinc - Overlap-Add convolution filter
 		n = bpfilt->run(z, &zp);
-		for (int i = 0; i < n; i++) {
+
+		if (n) for (int i = 0; i < n; i++) {
 // measure phase difference between successive samples to determine
 // the frequency of the baseband signal (+anal_baud or -anal_baud)
 // see class complex definiton for operator %
 			fin = (prevsmpl % zp[i]).arg() * samplerate / TWOPI;
 			prevsmpl = zp[i];
+			if (restart_count) restart_count--;
+			else {
 // filter using moving average filter
-			fout_1 = ffilt->run(fin);
+				fout_1 = ffilt->run(fin);
 // the values in the pipe are +/- 2 Hz ==> +/- 1.0			
-			pipe[pipeptr] = fout_1 / 4;
-			pipeptr = (pipeptr + 1) % symbollen;
-			dspcnt--;
-			if (dspcnt == 0) {
-				set_scope(pipe, symbollen, false);
-				pipe.next(); // change buffers
+				pipe[pipeptr] = fout_1 / 4;
+				pipeptr = (pipeptr + 1) % symbollen;
+				dspcnt--;
+				if (dspcnt == 0) {
+					set_scope(pipe, symbollen, false);
+					pipe.next(); // change buffers
 // filter using second moving average filter & display the result
-				fout_2 = favg->run(fout_1);
-				if (wf->USB())
-					snprintf(msg1, sizeof(msg1), "Freq: %12.2f", wf->rfcarrier() + frequency + fout_2 ); 
-				else
-					snprintf(msg1, sizeof(msg1), "Freq: %12.2f", wf->rfcarrier() - frequency - fout_2 );
-				put_status(msg1);
-				writeFile();
+					fout_2 = favg->run(fout_1);
+					if (wf->USB())
+						snprintf(msg1, sizeof(msg1), "Freq: %12.2f", wf->rfcarrier() + frequency + fout_2 ); 
+					else
+						snprintf(msg1, sizeof(msg1), "Freq: %12.2f", wf->rfcarrier() - frequency - fout_2 );
+					put_status(msg1);
+					writeFile();
 // reset the display counter & the pipe pointer
-				dspcnt = symbollen;
-				pipeptr = 0;
+					dspcnt = symbollen;
+					pipeptr = 0;
+				}
 			}
 		}
 	}
