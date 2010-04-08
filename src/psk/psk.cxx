@@ -1018,20 +1018,20 @@ void psk::tx_char(unsigned char c)
 
 void psk::tx_flush()
 {
+	if (_pskr) {
+		for (int i = 0; i < dcdbits; i++)
+		tx_bit(0);
+	}
 	// QPSK - flush the encoder
 	if (_qpsk) {
 		for (int i = 0; i < dcdbits; i++)
 		tx_bit(0);
 	// FEC : replace unmodulated carrier by an encoded sequence of zeros
-	} else if (_pskr) {
-		for (int i = 0; i < dcdbits; i++)
-		tx_bit(0);
-	} else {
-		// Standard BPSK postamble
-		// DCD off sequence (unmodulated carrier)
-		for (int i = 0; i < dcdbits; i++)
-			tx_symbol(2);
 	}
+	// Standard BPSK postamble
+	// DCD off sequence (unmodulated carrier)
+	for (int i = 0; i < dcdbits; i++)
+		tx_symbol(2);
 }
 
 // Necessary to clear the interleaver before we start sending
