@@ -160,7 +160,7 @@ psk::~psk()
 
 psk::psk(trx_mode pskmode) : modem()
 {
-	cap = CAP_AFC | CAP_AFC_SR;
+	cap |= CAP_AFC | CAP_AFC_SR;
 
 	mode = pskmode;
 

@@ -1095,6 +1095,11 @@ void xmtrcv_cb(Fl_Widget *w, void *vi)
 	Fl_Light_Button *b = (Fl_Light_Button *)w;
 	int v = b->value();
 	FL_UNLOCK_D();
+	if (!(active_modem->get_cap() & modem::CAP_TX)) {
+		b->value(0);
+		restoreFocus();
+		return;
+	}
 	if (v == 1) {
 		stopMacroTimer();
 		active_modem->set_stopflag(false);

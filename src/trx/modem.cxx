@@ -128,7 +128,7 @@ modem::modem()
 	bool wfsb = wf->USB();
 	reverse = wfrev ^ !wfsb;
 	historyON = false;
-	cap = 0;
+	cap = CAP_RX | CAP_TX;
 	PTTphaseacc = 0.0;
 	frequency = 1000.0;
 	s2n_ncount = s2n_sum = s2n_sum2 = s2n_metric = 0.0;

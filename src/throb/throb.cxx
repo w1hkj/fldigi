@@ -119,7 +119,7 @@ void throb::reset_syms() //call when switching from TX to RX or vice versa
 
 throb::throb(trx_mode throb_mode) : modem()
 {
-	cap = CAP_AFC | CAP_REV;
+	cap |= CAP_AFC | CAP_REV;
 
 	double bw;
 	double *fp = 0;

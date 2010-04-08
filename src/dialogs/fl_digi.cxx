@@ -1554,7 +1554,7 @@ void cb_ShowNBEMS(Fl_Widget*, void*)
 
 void cbTune(Fl_Widget *w, void *) {
 	Fl_Button *b = (Fl_Button *)w;
-	if (active_modem == wwv_modem || active_modem == anal_modem) {
+	if (!(active_modem->get_cap() & modem::CAP_TX)) {
 		b->value(0);
 		return;
 	}
@@ -4975,6 +4975,8 @@ void setReverse(int rev) {
 
 void start_tx()
 {
+	if (!(active_modem->get_cap() & modem::CAP_TX))
+		return;
 	trx_transmit();
 	REQ(&waterfall::set_XmtRcvBtn, wf, true);
 }

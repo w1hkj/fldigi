@@ -88,6 +88,7 @@ wwv::wwv() : modem()
 	
 	vidfilter = new Cmovavg(16);
 	
+	cap &= ~CAP_TX;
 }
 
 

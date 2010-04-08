@@ -133,6 +133,7 @@ anal::anal()
 	analysisFilename.append("freqanalysis.csv");
 
 	pipeptr = 0;
+	cap &= ~CAP_TX;
 	restart();
 }
 

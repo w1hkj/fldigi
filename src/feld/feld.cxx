@@ -103,7 +103,7 @@ feld::feld(trx_mode m)
 	mode = m;
 	samplerate = FeldSampleRate;
 
-	cap = CAP_BW;
+	cap |= CAP_BW;
 
  	switch (mode) {
 // Amplitude modulation modes
@@ -153,7 +153,7 @@ feld::feld(trx_mode m)
 			hell_bandwidth = 122.5;
 			phi2freq = samplerate / M_PI / (hell_bandwidth / 2.0);
 			filter_bandwidth = progdefaults.HELL_BW_FSK;
-			cap = CAP_REV;
+			cap |= CAP_REV;
 			break;
 		case MODE_FSKH105:
 			feldcolumnrate = 17.5;
@@ -164,7 +164,7 @@ feld::feld(trx_mode m)
 			hell_bandwidth = 55;
 			phi2freq = samplerate / M_PI / (hell_bandwidth / 2.0);
 			filter_bandwidth = progdefaults.HELL_BW_FSK105;
-			cap = CAP_REV;
+			cap |= CAP_REV;
 			break;
 		case MODE_HELL80:
 			feldcolumnrate = 35;
@@ -175,7 +175,7 @@ feld::feld(trx_mode m)
 			hell_bandwidth = 300;
 			phi2freq = samplerate / M_PI / (hell_bandwidth / 2.0);
 			filter_bandwidth = progdefaults.HELL_BW_HELL80;
-			cap = CAP_REV;
+			cap |= CAP_REV;
 			break;
 		default :
 			feldcolumnrate = 17.5;

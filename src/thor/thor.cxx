@@ -151,7 +151,7 @@ thor::~thor()
 
 thor::thor(trx_mode md)
 {
-	cap = CAP_REV;
+	cap |= CAP_REV;
 
 	mode = md;
 

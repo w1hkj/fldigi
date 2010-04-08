@@ -332,7 +332,7 @@ void olivia::init()
 
 olivia::olivia()
 {
-	cap = CAP_REV;
+	cap |= CAP_REV;
 
 	txfbuffer = 0;
 	samplerate = 8000;

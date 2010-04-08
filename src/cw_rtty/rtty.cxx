@@ -211,7 +211,7 @@ void rtty::restart()
 
 rtty::rtty(trx_mode tty_mode)
 {
-	cap = CAP_AFC | CAP_REV;
+	cap |= CAP_AFC | CAP_REV;
 
 	mode = tty_mode;
 
