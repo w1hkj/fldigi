@@ -266,9 +266,10 @@ void olivia::restart()
 	sinteg	= progdefaults.oliviasinteg;
 	
 	samplerate = 8000;
-	
+	bandwidth = 125 * (1 << bw);
+
 	Tx->Tones = 2 * (1 << tones);
-	Tx->Bandwidth = 125 * (1 << bw);
+	Tx->Bandwidth = bandwidth;
 	Tx->SampleRate = samplerate;
 	Tx->OutputSampleRate = samplerate;
     txbasefreq = get_txfreq_woffset();
@@ -292,7 +293,7 @@ void olivia::restart()
 	txfbuffer = new double[txbufferlen];
 
 	Rx->Tones = Tx->Tones;
-	Rx->Bandwidth = Tx->Bandwidth;
+	Rx->Bandwidth = bandwidth;
 	Rx->SyncMargin = smargin;
 	Rx->SyncIntegLen = sinteg;
 	Rx->SyncThreshold = progStatus.sqlonoff ? 
@@ -320,13 +321,13 @@ void olivia::restart()
 	metric = 0;
 
 	sigpwr = 1e-10; noisepwr = 1e-8;
-//	Rx->PrintParameters();
+	LOG_INFO("\nOlivia Rx parameters:\n%s", Rx->PrintParameters());
 }
 
 void olivia::init()
 {
-	modem::init();
 	restart();
+	modem::init();
 	set_scope_mode(Digiscope::BLANK);
 }
 

@@ -69,6 +69,7 @@
 #include "gettext.h"
 #include "rtty.h"
 #include "flslider2.h"
+#include "debug.h"
 
 using namespace std;
 

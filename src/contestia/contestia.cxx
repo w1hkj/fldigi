@@ -266,9 +266,10 @@ void contestia::restart()
 	sinteg	= progdefaults.contestiasinteg;
 	
 	samplerate = 8000;
-	
+	bandwidth = 125 * (1 << bw);
+
 	Tx->Tones = 2 * (1 << tones);
-	Tx->Bandwidth = 125 * (1 << bw);
+	Tx->Bandwidth = bandwidth;
 	Tx->SampleRate = samplerate;
 	Tx->OutputSampleRate = samplerate;
     txbasefreq = get_txfreq_woffset();
@@ -293,7 +294,7 @@ void contestia::restart()
 	txfbuffer = new double[txbufferlen];
 
 	Rx->Tones = Tx->Tones;
-	Rx->Bandwidth = Tx->Bandwidth;
+	Rx->Bandwidth = bandwidth;
 	Rx->SyncMargin = smargin;
 	Rx->SyncIntegLen = sinteg;
 	Rx->SyncThreshold = progStatus.sqlonoff ? 
@@ -327,8 +328,8 @@ void contestia::restart()
 
 void contestia::init()
 {
-	modem::init();
 	restart();
+	modem::init();
 	set_scope_mode(Digiscope::BLANK);
 }
 
