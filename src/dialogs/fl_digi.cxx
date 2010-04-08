@@ -3672,7 +3672,7 @@ void create_fl_digi_main_primary() {
 			TransmitText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
 			TransmitText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
 
-			Fl_Box *minbox = new Fl_Box(sw,Y + 66, progStatus.mainW-sw, Htext - 66 - 32);
+			Fl_Box *minbox = new Fl_Box(sw,Y + 66, progStatus.mainW-sw, Htext - 66 - 66);
 			minbox->hide();
 
 			TiledGroup->resizable(minbox);
