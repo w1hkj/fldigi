@@ -443,7 +443,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabWF_UI {
-            label {Oper' Controls} open
+            label {Operator Controls} open
             xywh {0 50 500 320} hide
           } {
             Fl_Box {} {
@@ -599,6 +599,7 @@ WF_UI();}
                 xywh {15 98 260 24} box DOWN_BOX color 0 labelsize 12 align 5
                 code0 {\#include "colorbox.h"}
                 code1 {o->label(progdefaults.PaletteName.c_str());}
+                code2 {o->labelsize(FL_NORMAL_SIZE);}
                 class colorbox
               }
               Fl_Button {btnColor[0]} {
@@ -765,7 +766,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {Set level for good viewing} xywh {270 315 200 20} type Horizontal align 1 step 0.05 value 0.5 textsize 14
                 code0 {o->value(progdefaults.TxMonitorLevel);}
-                code1 {o->labelsize(FL_NORMAL_SIZE);}
+                code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Slider2
               }
             }
@@ -919,7 +920,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
 progdefaults.changed = true;}
                     tooltip {CW dsp filter bandwidth} xywh {40 115 290 20} type Horizontal align 8 minimum 10 maximum 500 step 10 value 150 textsize 14
                     code0 {o->value(progdefaults.CWbandwidth);}
-                    code1 {o->labelsize(FL_NORMAL_SIZE);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
                     class Fl_Value_Slider2
                   }
                   Fl_Check_Button btnCWrcvTrack {
@@ -965,7 +966,7 @@ progdefaults.changed = true;
 sync_cw_parameters();}
                     tooltip {My transmit CW WPM} xywh {20 240 400 20} type Horizontal align 8 minimum 5 maximum 100 step 1 value 20 textsize 14
                     code0 {o->value(progdefaults.CWspeed);}
-                    code1 {o->labelsize(FL_NORMAL_SIZE);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
                     class Fl_Value_Slider2
                   }
                   Fl_Counter cntCWdefWPM {
@@ -1009,7 +1010,7 @@ cntCW_WPM->maximum(progdefaults.CWupperlimit);}
 progdefaults.changed = true;}
                     tooltip {My transmit CW WPM} xywh {20 335 400 20} type Horizontal align 8 minimum 5 maximum 100 step 1 value 20 textsize 14
                     code0 {o->value(progdefaults.CWfarnsworth);}
-                    code1 {o->labelsize(FL_NORMAL_SIZE);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
                     class Fl_Value_Slider2
                   }
                   Fl_Check_Button btnCWusefarnsworth {
@@ -1170,7 +1171,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {CWI detection and suppression} xywh {15 207 260 20} type Horizontal align 1 textsize 14
                 code0 {o->value(progdefaults.DomCWI);}
-                code1 {o->labelsize(FL_NORMAL_SIZE);}
+                code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Slider2
               }
               Fl_Counter valDominoEX_PATHS {
@@ -1238,7 +1239,7 @@ progdefaults.changed = true;} open
                 callback {progdefaults.HELL_BW = sldrHellBW->value();}
                 tooltip {Adjust the DSP bandwidth} xywh {206 147 246 20} type Horizontal align 5 minimum 10 maximum 2400 step 5 value 400 textsize 14
                 code0 {o->value(progdefaults.HELL_BW);}
-                code1 {o->labelsize(FL_NORMAL_SIZE);}
+                code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Slider2
               }
               Fl_Check_Button btnFeldHellIdle {
@@ -1650,6 +1651,7 @@ progdefaults.changed = true;}
                   callback {progdefaults.rtty_autocount = (int)o->value();
 progdefaults.changed = true;}
                   tooltip {Set page width} xywh {335 118 65 20} type Simple align 8 minimum 68 maximum 80 step 1 value 72
+                  code0 {o->labelsize(FL_NORMAL_SIZE);}
                   class Fl_Counter2
                 }
                 Fl_Box {} {
@@ -1715,7 +1717,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.RTTY_BW = o->value();}
                 tooltip {Adjust the DSP bandwidth} xywh {100 325 300 20} type Horizontal align 5 minimum 5 maximum 200 step 1 value 25 textsize 14
                 code0 {o->value(progdefaults.RTTY_BW);}
-                code1 {o->labelsize(FL_NORMAL_SIZE);}
+                code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Slider2
               }
               Fl_Counter selCustomShift {
@@ -1769,7 +1771,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {CWI detection and suppression} xywh {15 194 260 20} type Horizontal align 1 textsize 14
                 code0 {o->value(progdefaults.ThorCWI);}
-                code1 {o->labelsize(FL_NORMAL_SIZE);}
+                code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Slider2
               }
               Fl_Counter valTHOR_PATHS {
@@ -2608,7 +2610,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {Set the sound card PCM level} xywh {15 167 340 20} type Horizontal selection_color 15 align 8 value 0.8 textsize 14
                 code0 {extern void setPCMvolume(double);}
-                code1 {o->labelsize(FL_NORMAL_SIZE);}
+                code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Slider2
               }
             }
@@ -2665,7 +2667,7 @@ progdefaults.changed = true;}
             tooltip {Set the number of characters per row} xywh {365 127 120 20} type Horizontal align 4 minimum 1 maximum 4 step 1 value 1 textsize 14
             code0 {o->value(progdefaults.videowidth);}
             code1 {if (progdefaults.ID_SMALL) o->deactivate();}
-            code2 {o->labelsize(FL_NORMAL_SIZE);}
+            code2 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
             class Fl_Value_Slider2
           }
           Fl_Button bVideoIDModes {
@@ -2694,7 +2696,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
             tooltip {Send at this WPM} xywh {165 185 180 20} type Horizontal align 1 minimum 15 maximum 40 step 1 value 18 textsize 14
             code0 {o->value(progdefaults.CWIDwpm);}
-            code1 {o->labelsize(FL_NORMAL_SIZE);}
+            code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
             class Fl_Value_Slider2
           }
           Fl_Button bCWIDModes {

@@ -2885,7 +2885,7 @@ ab and newline are automatically included."));
             } // Fl_Group* o
             tabContest->end();
           } // Fl_Group* tabContest
-          { tabWF_UI = new Fl_Group(0, 50, 500, 320, _("Oper\' Controls"));
+          { tabWF_UI = new Fl_Group(0, 50, 500, 320, _("Operator Controls"));
             tabWF_UI->hide();
             { Fl_Box* o = new Fl_Box(31, 65, 446, 25, _("Enable check box to show each respective operator control"));
               o->box(FL_FLAT_BOX);
@@ -2991,6 +2991,7 @@ ab and newline are automatically included."));
                 WF_Palette->align(FL_ALIGN_TOP_LEFT);
                 WF_Palette->when(FL_WHEN_RELEASE);
                 o->label(progdefaults.PaletteName.c_str());
+                o->labelsize(FL_NORMAL_SIZE);
               } // colorbox* WF_Palette
               { btnColor[0] = new Fl_Button(15, 128, 20, 24);
                 btnColor[0]->tooltip(_("Change color"));
@@ -3118,7 +3119,7 @@ ab and newline are automatically included."));
                 valTxMonitorLevel->align(FL_ALIGN_TOP);
                 valTxMonitorLevel->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.TxMonitorLevel);
-                o->labelsize(FL_NORMAL_SIZE);
+                o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
               } // Fl_Value_Slider2* valTxMonitorLevel
               o->end();
             } // Fl_Group* o
@@ -3315,7 +3316,7 @@ an merging"));
                 sldrCWbandwidth->align(FL_ALIGN_RIGHT);
                 sldrCWbandwidth->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.CWbandwidth);
-                o->labelsize(FL_NORMAL_SIZE);
+                o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
                 } // Fl_Value_Slider2* sldrCWbandwidth
                 { Fl_Check_Button* o = btnCWrcvTrack = new Fl_Check_Button(40, 150, 80, 20, _("Tracking"));
                 btnCWrcvTrack->tooltip(_("Automatic Rx speed tracking"));
@@ -3381,7 +3382,7 @@ an merging"));
                 sldrCWxmtWPM->align(FL_ALIGN_RIGHT);
                 sldrCWxmtWPM->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.CWspeed);
-                o->labelsize(FL_NORMAL_SIZE);
+                o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
                 } // Fl_Value_Slider2* sldrCWxmtWPM
                 { Fl_Counter2* o = cntCWdefWPM = new Fl_Counter2(40, 281, 64, 20, _("Default"));
                 cntCWdefWPM->tooltip(_("The default CW speed"));
@@ -3446,9 +3447,9 @@ an merging"));
                 sldrCWfarnsworth->align(FL_ALIGN_RIGHT);
                 sldrCWfarnsworth->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.CWfarnsworth);
-                o->labelsize(FL_NORMAL_SIZE);
+                o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
                 } // Fl_Value_Slider2* sldrCWfarnsworth
-                { Fl_Check_Button* o = btnCWusefarnsworth = new Fl_Check_Button(40, 312, 180, 15, _("Use Farnsworth timing"));
+                { Fl_Check_Button* o = btnCWusefarnsworth = new Fl_Check_Button(40, 312, 180, 20, _("Use Farnsworth timing"));
                 btnCWusefarnsworth->down_box(FL_DOWN_BOX);
                 btnCWusefarnsworth->callback((Fl_Callback*)cb_btnCWusefarnsworth);
                 o->value(progdefaults.CWusefarnsworth);
@@ -3677,7 +3678,7 @@ an merging"));
                 valDomCWI->align(FL_ALIGN_TOP);
                 valDomCWI->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.DomCWI);
-                o->labelsize(FL_NORMAL_SIZE);
+                o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
               } // Fl_Value_Slider2* valDomCWI
               { Fl_Counter2* o = valDominoEX_PATHS = new Fl_Counter2(339, 194, 63, 20, _("Paths (hidden)"));
                 valDominoEX_PATHS->type(1);
@@ -3771,7 +3772,7 @@ an merging"));
                 sldrHellBW->align(FL_ALIGN_TOP_LEFT);
                 sldrHellBW->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.HELL_BW);
-                o->labelsize(FL_NORMAL_SIZE);
+                o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
               } // Fl_Value_Slider2* sldrHellBW
               { Fl_Check_Button* o = btnFeldHellIdle = new Fl_Check_Button(15, 177, 230, 20, _("Transmit periods (.) when idle"));
                 btnFeldHellIdle->tooltip(_("Transmits a diddle dot when no keyboard activity"));
@@ -4217,7 +4218,7 @@ an merging"));
                 btnCRCRLF->when(FL_WHEN_RELEASE_ALWAYS);
                 o->value(progdefaults.rtty_crcrlf);
                 } // Fl_Check_Button* btnCRCRLF
-                { cntrAUTOCRLF = new Fl_Counter2(335, 118, 65, 20, _("characters"));
+                { Fl_Counter2* o = cntrAUTOCRLF = new Fl_Counter2(335, 118, 65, 20, _("characters"));
                 cntrAUTOCRLF->tooltip(_("Set page width"));
                 cntrAUTOCRLF->type(1);
                 cntrAUTOCRLF->box(FL_UP_BOX);
@@ -4234,6 +4235,7 @@ an merging"));
                 cntrAUTOCRLF->callback((Fl_Callback*)cb_cntrAUTOCRLF);
                 cntrAUTOCRLF->align(FL_ALIGN_RIGHT);
                 cntrAUTOCRLF->when(FL_WHEN_CHANGED);
+                o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntrAUTOCRLF
                 { Fl_Box* o = new Fl_Box(265, 118, 60, 20, _("after:"));
                 o->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
@@ -4302,7 +4304,7 @@ an merging"));
                 sldrRTTYbandwidth->align(FL_ALIGN_TOP_LEFT);
                 sldrRTTYbandwidth->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.RTTY_BW);
-                o->labelsize(FL_NORMAL_SIZE);
+                o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
               } // Fl_Value_Slider2* sldrRTTYbandwidth
               { Fl_Counter2* o = selCustomShift = new Fl_Counter2(15, 100, 100, 20, _("Custom shift"));
                 selCustomShift->tooltip(_("Input carrier shift"));
@@ -4389,7 +4391,7 @@ an merging"));
                 valThorCWI->align(FL_ALIGN_TOP);
                 valThorCWI->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.ThorCWI);
-                o->labelsize(FL_NORMAL_SIZE);
+                o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
               } // Fl_Value_Slider2* valThorCWI
               { Fl_Counter2* o = valTHOR_PATHS = new Fl_Counter2(353, 193, 75, 21, _("Paths (hidden)"));
                 valTHOR_PATHS->type(1);
@@ -5120,7 +5122,7 @@ ll with your audio device."));
                 valPCMvolume->callback((Fl_Callback*)cb_valPCMvolume);
                 valPCMvolume->align(FL_ALIGN_RIGHT);
                 valPCMvolume->when(FL_WHEN_CHANGED);
-                o->labelsize(FL_NORMAL_SIZE);
+                o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
               } // Fl_Value_Slider2* valPCMvolume
               o->end();
             } // Fl_Group* o
@@ -5188,7 +5190,7 @@ ll with your audio device."));
             sldrVideowidth->when(FL_WHEN_CHANGED);
             o->value(progdefaults.videowidth);
             if (progdefaults.ID_SMALL) o->deactivate();
-            o->labelsize(FL_NORMAL_SIZE);
+            o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
           } // Fl_Value_Slider2* sldrVideowidth
           { bVideoIDModes = new Fl_Button(365, 67, 120, 20, _("Video ID modes"));
             bVideoIDModes->callback((Fl_Callback*)cb_bVideoIDModes);
@@ -5223,7 +5225,7 @@ ll with your audio device."));
             sldrCWIDwpm->align(FL_ALIGN_TOP);
             sldrCWIDwpm->when(FL_WHEN_CHANGED);
             o->value(progdefaults.CWIDwpm);
-            o->labelsize(FL_NORMAL_SIZE);
+            o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
           } // Fl_Value_Slider2* sldrCWIDwpm
           { bCWIDModes = new Fl_Button(365, 185, 120, 20, _("CW ID modes"));
             bCWIDModes->callback((Fl_Callback*)cb_bCWIDModes);

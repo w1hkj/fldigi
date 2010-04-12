@@ -103,6 +103,7 @@ chkNotifyFilterCall->value(0);}
       Fl_Spinner cntNotifyDupTime {
         label {Time (s):}
         xywh {77 397 60 20} minimum 0 maximum 97200 value 600
+        code0 {o->labelsize(FL_NORMAL_SIZE);}
         class Fl_Spinner2
       }
       Fl_Check_Button chkNotifyDupBand {
@@ -121,6 +122,7 @@ chkNotifyFilterCall->value(0);}
       Fl_Spinner cntNotifyActionLimit {
         label {Trigger limit (s):}
         tooltip {Minimum time between events} xywh {343 31 52 20} minimum 0 maximum 3600 value 1
+        code0 {o->labelsize(FL_NORMAL_SIZE);}
         class Fl_Spinner2
       }
       Fl_Input inpNotifyActionDialog {
@@ -135,6 +137,7 @@ chkNotifyFilterCall->value(0);}
       Fl_Spinner cntNotifyActionDialogTimeout {
         label {Hide window after (s):}
         xywh {383 148 52 20} minimum 0 maximum 3600 value 5
+        code0 {o->labelsize(FL_NORMAL_SIZE);}
         class Fl_Spinner2
       }
       Fl_Input inpNotifyActionRXMarker {
