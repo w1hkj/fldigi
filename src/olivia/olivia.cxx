@@ -159,10 +159,11 @@ int olivia::tx_process()
 // to read any more. If stopflag is set, we will always read 
 // whatever there is.
 	if (stopflag || (Tx->GetReadReady() < Tx->BitsPerSymbol)) {
-		if ((c = get_tx_char()) == 0x03 || stopflag ) {
+		if (!stopflag && (c = get_tx_char()) == 0x03)
 			stopflag = true;
+		if (stopflag)
 			Tx->Stop();
-		} else {
+		else {
 			/* Replace un-representable characters with a dot */
 			if (c == -1)
                 c = 0;
@@ -190,6 +191,7 @@ int olivia::tx_process()
 
 	if (!Tx->Running()) {
 		cwid();
+		stopflag = false;
 		return -1;
 	}
  
