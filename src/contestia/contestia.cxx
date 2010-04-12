@@ -178,7 +178,7 @@ int contestia::tx_process()
 
 	if (Tx->GetChar(ch) > 0)
 		if ((c = unescape(ch)) != -1)
-			put_echo_char(toupper(c));
+			put_echo_char(progdefaults.rx_lowercase ? tolower(c) : toupper(c));
 
     if ((len = Tx->Output(txfbuffer)) > 0)
 		ModulateXmtr(txfbuffer, len);
@@ -244,7 +244,7 @@ int contestia::rx_process(const double *buf, int len)
 	bool gotchar = false;
 	while (Rx->GetChar(ch) > 0) {
 		if ((c = unescape(ch)) != -1 && c > 7) {
-			put_rx_char(c);
+			put_rx_char(progdefaults.rx_lowercase ? tolower(c) : c);
 			gotchar = true;
 		}
     }

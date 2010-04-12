@@ -78,6 +78,7 @@ extern Fl_Check_Button *btnWF_UIqsy;
 extern Fl_Check_Button *btnWF_UIxmtlock;
 extern Fl_Button *btn_wf_enable_all;
 extern Fl_Button *btn_wf_disable_all;
+extern Fl_Check_Button *btn_rx_lowercase;
 extern Fl_Group *tabWaterfall;
 extern Fl_Tabs *tabsWaterfall;
 #include "colorbox.h"

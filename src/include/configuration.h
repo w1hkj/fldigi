@@ -181,6 +181,9 @@
               "  2: signal search; 3: change squelch level; 4: change modem carrier;\n" \
               "  5: change modem; 6: scroll visible area.  The default is 4.",          \
               waterfall::WF_CARRIER)                                                    \
+        ELEM_(bool, rx_lowercase, "RX_LOWERCASE",                                       \
+              "Print Rx in lowercase for CW, RTTY, CONTESTIA and THROB",                \
+              false)                                                                    \
         /* PSK, filter can be 0, 1, 2, 3 or 4 */                                        \
         ELEM_(int, PSK_filter, "PSKFILTER",                                             \
               "Not configurable; must always be 0",                                     \

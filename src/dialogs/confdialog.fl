@@ -181,13 +181,13 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        xywh {-3 25 500 345} hide
+        xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsUI {open
           xywh {-3 25 508 345} selection_color 50
         } {
           Fl_Group tabUserInterface {
-            label General open
+            label General
             xywh {0 50 500 320}
           } {
             Fl_Group {} {open
@@ -303,7 +303,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabContest {
-            label Contest open
+            label Contest
             xywh {0 50 500 320} hide
           } {
             Fl_Group {} {
@@ -443,7 +443,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabWF_UI {
-            label {Operator Controls} open
+            label {Operator Controls}
             xywh {0 50 500 320} hide
           } {
             Fl_Box {} {
@@ -575,6 +575,18 @@ btnWF_UIxmtlock->value(progdefaults.WF_UIxmtlock = 0);
 progdefaults.changed = true;
 WF_UI();}
               xywh {301 321 88 20}
+            }
+          }
+          Fl_Group {} {
+            label {Rx Text} open
+            xywh {0 50 500 320} hide
+          } {
+            Fl_Check_Button btn_rx_lowercase {
+              label {print CW / RTTY / THROB / CONTESTIA in lowercase}
+              callback {progdefaults.rx_lowercase = o->value();
+progdefaults.changed = true;}
+              xywh {25 75 389 15} down_box DOWN_BOX
+              code0 {o->value(progdefaults.rx_lowercase);}
             }
           }
         }

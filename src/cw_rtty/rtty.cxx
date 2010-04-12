@@ -396,7 +396,7 @@ bool rtty::rx(bool bit)
 				if ((metric >= progStatus.sldrSquelchValue && progStatus.sqlonoff)|| !progStatus.sqlonoff) {
 					c = decode_char();
 					if ( c != 0 )
-						put_rx_char(c);
+						put_rx_char(progdefaults.rx_lowercase ? tolower(c) : c);
 				}
 				flag = true;
 			}
@@ -713,7 +713,7 @@ void rtty::send_char(int c)
 		else
 			c = figures[c];
 		if (c)
-			put_echo_char(c);
+			put_echo_char(progdefaults.rx_lowercase ? tolower(c) : c);
 	}
 }
 

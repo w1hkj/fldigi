@@ -360,7 +360,7 @@ int cw::rx_process(const double *buf, int len)
 			}
 			if (handle_event(CW_QUERY_EVENT, &c) == CW_SUCCESS) {
 				while (*c)
-					put_rx_char(*c++);
+					put_rx_char(progdefaults.rx_lowercase ? tolower(*c++) : *c++);
 				update_syncscope();
 //				display_metric(metric);
 			}
@@ -795,7 +795,7 @@ void cw::send_ch(int ch)
 		    flen -= symbollen;
         }
         if (flen) send_symbol(0, flen);
-		put_echo_char(ch);
+		put_echo_char(progdefaults.rx_lowercase ? tolower(ch) : ch);
 		return;
 	}
 

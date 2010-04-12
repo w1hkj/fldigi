@@ -444,6 +444,13 @@ progdefaults.changed = true;
 WF_UI();
 }
 
+Fl_Check_Button *btn_rx_lowercase=(Fl_Check_Button *)0;
+
+static void cb_btn_rx_lowercase(Fl_Check_Button* o, void*) {
+  progdefaults.rx_lowercase = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabWaterfall=(Fl_Group *)0;
 
 Fl_Tabs *tabsWaterfall=(Fl_Tabs *)0;
@@ -2618,7 +2625,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         } // Fl_Group* grpNoise
         tabOperator->end();
       } // Fl_Group* tabOperator
-      { tabUI = new Fl_Group(-3, 25, 500, 345, _("UI"));
+      { tabUI = new Fl_Group(0, 25, 500, 345, _("UI"));
         tabUI->hide();
         { tabsUI = new Fl_Tabs(-3, 25, 508, 345);
           tabsUI->selection_color((Fl_Color)FL_LIGHT1);
@@ -2965,6 +2972,15 @@ ab and newline are automatically included."));
             } // Fl_Button* btn_wf_disable_all
             tabWF_UI->end();
           } // Fl_Group* tabWF_UI
+          { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Rx Text"));
+            o->hide();
+            { Fl_Check_Button* o = btn_rx_lowercase = new Fl_Check_Button(25, 75, 389, 15, _("print CW / RTTY / THROB / CONTESTIA in lowercase"));
+              btn_rx_lowercase->down_box(FL_DOWN_BOX);
+              btn_rx_lowercase->callback((Fl_Callback*)cb_btn_rx_lowercase);
+              o->value(progdefaults.rx_lowercase);
+            } // Fl_Check_Button* btn_rx_lowercase
+            o->end();
+          } // Fl_Group* o
           tabsUI->end();
         } // Fl_Tabs* tabsUI
         tabUI->end();
@@ -3449,7 +3465,7 @@ an merging"));
                 o->value(progdefaults.CWfarnsworth);
                 o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
                 } // Fl_Value_Slider2* sldrCWfarnsworth
-                { Fl_Check_Button* o = btnCWusefarnsworth = new Fl_Check_Button(40, 312, 180, 20, _("Use Farnsworth timing"));
+                { Fl_Check_Button* o = btnCWusefarnsworth = new Fl_Check_Button(40, 312, 180, 15, _("Use Farnsworth timing"));
                 btnCWusefarnsworth->down_box(FL_DOWN_BOX);
                 btnCWusefarnsworth->callback((Fl_Callback*)cb_btnCWusefarnsworth);
                 o->value(progdefaults.CWusefarnsworth);
