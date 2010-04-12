@@ -1198,7 +1198,7 @@ void MVScrollbar::draw(void)
 	// Convert stored scrollbar values to vertical positions and draw
 	// lines inside the widget if they don't overlap with the knob area.
 	for (vector<mark_t>::const_iterator i = marks.begin(); i != marks.end(); ++i) {
-		ypos = w() + H * i->pos / maximum();
+		ypos = static_cast<int>(w() + H * i->pos / maximum());
 		// Don't draw over slider knob
 		if ((ypos > slider_y && ypos < slider_y + slider_h) ||
 		    (ypos < slider_y + slider_h && ypos > slider_y))

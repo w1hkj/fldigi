@@ -3413,7 +3413,7 @@ void create_fl_digi_main_primary() {
 			const char *label2 = _("On");
 			btnTimeOn2 = new Fl_Button(
 				pad + rightof(qsoSave2), y,
-				fl_width(label2), h, label2);
+				static_cast<int>(fl_width(label2)), h, label2);
 			btnTimeOn2->tooltip(_("Press to update"));
 			btnTimeOn2->box(FL_NO_BOX);
 			btnTimeOn2->callback(cb_btnTimeOn);
@@ -3425,7 +3425,7 @@ void create_fl_digi_main_primary() {
 
 			const char *label3 = _("Off");
 			Fl_Box *bx3 = new Fl_Box(pad + rightof(inpTimeOn2), y,
-				fl_width(label3), h, label3);
+				static_cast<int>(fl_width(label3)), h, label3);
 			inpTimeOff2 = new Fl_Input2(
 				pad + bx3->x() + bx3->w(), y,
 				w_inpTime2, h, "");
@@ -3434,7 +3434,7 @@ void create_fl_digi_main_primary() {
 
 			const char *label4 = _("Call");
 			Fl_Box *bx4 = new Fl_Box(pad + rightof(inpTimeOff2), y,
-				fl_width(label4), h, label4);
+				static_cast<int>(fl_width(label4)), h, label4);
 			inpCall2 = new Fl_Input2(
 				pad + bx4->x() + bx4->w(), y,
 				w_inpCall2, h, "");
@@ -3442,7 +3442,7 @@ void create_fl_digi_main_primary() {
 
 			const char *label6 = _("In");
 			Fl_Box *bx6 = new Fl_Box(pad + rightof(inpCall2), y,
-				fl_width(label6), h, label6);
+				static_cast<int>(fl_width(label6)), h, label6);
 			inpRstIn2 = new Fl_Input2(
 				pad + bx6->x() + bx6->w(), y,
 				w_inpRstIn2, h, "");
@@ -3450,7 +3450,7 @@ void create_fl_digi_main_primary() {
 
 			const char *label7 = _("Out");
 			Fl_Box *bx7 = new Fl_Box(pad + rightof(inpRstIn2), y,
-				fl_width(label7), h, label7);
+				static_cast<int>(fl_width(label7)), h, label7);
 			inpRstOut2 = new Fl_Input2(
 				pad + bx7->x() + bx7->w(), y,
 				w_inpRstOut2, h, "");
@@ -3458,7 +3458,7 @@ void create_fl_digi_main_primary() {
 
 			const char *label5 = _("Nm");//_("Name");
 			Fl_Box *bx5 = new Fl_Box(pad + rightof(inpRstOut2), y,
-				fl_width(label5), h, label5);
+				static_cast<int>(fl_width(label5)), h, label5);
 			int xn = pad + bx5->x() + bx5->w();
 			inpName2 = new Fl_Input2(
 				xn, y,
@@ -3523,12 +3523,12 @@ void create_fl_digi_main_primary() {
 			const char *label7a = _("Ex");
 			const char *xData = "00000";
 			const char *xCall = "WW8WWW/WWWW";
-			int   wData = fl_width(xData);
-			int   wCall = fl_width(xCall);
+			int   wData = static_cast<int>(fl_width(xData));
+			int   wCall = static_cast<int>(fl_width(xCall));
 
 			Fl_Box *bx4a = new Fl_Box(
 				pad + rightof(qsoSave3), y,
-				fl_width(label4a), h, label4a);
+				static_cast<int>(fl_width(label4a)), h, label4a);
 			inpCall3 = new Fl_Input2(
 				pad + bx4a->x() + bx4a->w(), y,
 				wCall, h, "");
@@ -3537,22 +3537,22 @@ void create_fl_digi_main_primary() {
 
 			Fl_Box *bx7a = new Fl_Box(
 				rightof(inpCall3), y,
-				fl_width(label7a), h, label7a);
+				static_cast<int>(fl_width(label7a)), h, label7a);
 			bx7a->align(FL_ALIGN_INSIDE);
 			inpXchgIn2 = new Fl_Input2(
 				rightof(bx7a), y,
-				progStatus.mainW 
+				static_cast<int>(progStatus.mainW 
 				- rightof(bx7a) - pad
 				- fl_width(label6a) - wData - pad
 				- fl_width(label5a) - wData - pad
 				- fl_width(label2a) - wData - pad
-				- fl_width(label3a) - wData - pad, 
+				- fl_width(label3a) - wData - pad), 
 				h, "");
 			inpXchgIn2->tooltip(_("Contest exchange in"));
 
 			Fl_Box *bx6a = new Fl_Box(
 				rightof(inpXchgIn2), y,
-				fl_width(label6a), h, label6a);
+				static_cast<int>(fl_width(label6a)), h, label6a);
 			bx6a->align(FL_ALIGN_INSIDE);
 			inpSerNo2 = new Fl_Input2(
 				rightof(bx6a) + pad, y,
@@ -3561,7 +3561,7 @@ void create_fl_digi_main_primary() {
 
 			Fl_Box *bx5a = new Fl_Box(
 				rightof(inpSerNo2), y,
-				fl_width(label5a), h, label5a);
+				static_cast<int>(fl_width(label5a)), h, label5a);
 			bx5a->align(FL_ALIGN_INSIDE);
 			outSerNo2 = new Fl_Input2(
 				rightof(bx5a) + pad, y,
@@ -3571,7 +3571,7 @@ void create_fl_digi_main_primary() {
 
 			btnTimeOn3 = new Fl_Button(
 				rightof(outSerNo2), y,
-				fl_width(label2a), h, label2a);
+				static_cast<int>(fl_width(label2a)), h, label2a);
 			btnTimeOn3->tooltip(_("Press to update"));
 			btnTimeOn3->box(FL_NO_BOX);
 			btnTimeOn3->callback(cb_btnTimeOn);
@@ -3582,7 +3582,7 @@ void create_fl_digi_main_primary() {
 			inpTimeOn3->type(FL_INT_INPUT);
 
 			Fl_Box *bx3a = new Fl_Box(pad + rightof(inpTimeOn3), y,
-				fl_width(label3a), h, label3a);
+				static_cast<int>(fl_width(label3a)), h, label3a);
 			inpTimeOff3 = new Fl_Input2(
 				bx3a->x() + bx3a->w() + pad, y,
 				wData, h, "");

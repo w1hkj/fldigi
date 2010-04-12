@@ -395,7 +395,7 @@ void Wizard::create_wizard(void)
 		b->callback(wizard_cb, this);
 		set_icon_label(b);
 		b->align(buttons[i].align | FL_ALIGN_INSIDE);
-		b->size(fl_width(get_icon_label_text(b)) + icon_pad * 2, b->h());
+		b->size(static_cast<int>(fl_width(get_icon_label_text(b)) + icon_pad * 2), b->h());
 	}
 	set_active(prev, false);
 	done->hide();

@@ -1001,15 +1001,15 @@ void rigCAT_init_defaults()
 {
 	progdefaults.XmlRigDevice = inpXmlRigDevice->value();
 	progdefaults.XmlRigBaudrate = mnuXmlRigBaudrate->value();
-	progdefaults.RigCatStopbits = valRigCatStopbits->value();
+	progdefaults.RigCatStopbits = static_cast<int>(valRigCatStopbits->value());
 	progdefaults.RigCatRTSplus = btnRigCatRTSplus->value();
 	progdefaults.RigCatDTRplus = btnRigCatDTRplus->value();
 	progdefaults.RigCatRTSptt = btnRigCatRTSptt->value();
 	progdefaults.RigCatDTRptt = btnRigCatDTRptt->value();
 	progdefaults.RigCatRTSCTSflow = chkRigCatRTSCTSflow->value();
-	progdefaults.RigCatRetries = cntRigCatRetries->value();
-	progdefaults.RigCatTimeout = cntRigCatTimeout->value();
-	progdefaults.RigCatWait = cntRigCatWait->value();
+	progdefaults.RigCatRetries = static_cast<int>(cntRigCatRetries->value());
+	progdefaults.RigCatTimeout = static_cast<int>(cntRigCatTimeout->value());
+	progdefaults.RigCatWait = static_cast<int>(cntRigCatWait->value());
 	progdefaults.RigCatECHO = btnRigCatEcho->value();
 	progdefaults.RigCatCMDptt = btnRigCatCMDptt->value();
 }

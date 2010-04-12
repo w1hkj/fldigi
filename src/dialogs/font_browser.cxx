@@ -71,7 +71,7 @@ void Font_Browser::fb_callback(Fl_Widget* w, void* arg)
     else {
 	if (w == fb->lst_Size)
 	    fb->txt_Size->value(strtol(fb->lst_Size->text(fb->lst_Size->value()), NULL, 10));
-	fb->fontsize = fb->txt_Size->value();
+	fb->fontsize = static_cast<int>(fb->txt_Size->value());
     }
     fb->box_Example->SetFont(fb->fontnbr, fb->fontsize, fb->fontcolor);
 }

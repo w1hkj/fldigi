@@ -194,7 +194,7 @@ feld::feld(trx_mode m)
 	bpfilt = new fftfilt(0, lp, 1024);
 
 	bbfilt = new Cmovavg(8);
-	average = new Cmovavg( 500 / downsampleinc);
+	average = new Cmovavg( static_cast<int>(500 / downsampleinc));
 
 	minmaxfilt = new Cmovavg(120);
 

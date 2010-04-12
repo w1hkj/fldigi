@@ -179,17 +179,17 @@ void hamlib_init_defaults()
 {
 	progdefaults.HamRigModel = hamlib_get_rig_model(cboHamlibRig->index());
 	progdefaults.HamRigDevice = inpRIGdev->value();
-	progdefaults.HamlibRetries = cntHamlibRetries->value();
-	progdefaults.HamlibTimeout = cntHamlibTimeout->value();
-	progdefaults.HamlibWriteDelay = cntHamlibWriteDelay->value();
-	progdefaults.HamlibWait = cntHamlibWait->value();
+	progdefaults.HamlibRetries = static_cast<int>(cntHamlibRetries->value());
+	progdefaults.HamlibTimeout = static_cast<int>(cntHamlibTimeout->value());
+	progdefaults.HamlibWriteDelay = static_cast<int>(cntHamlibWriteDelay->value());
+	progdefaults.HamlibWait = static_cast<int>(cntHamlibWait->value());
 	progdefaults.HamlibCMDptt = btnHamlibCMDptt->value();
 	progdefaults.HamlibDTRplus = btnHamlibDTRplus->value();
 	progdefaults.HamlibRTSCTSflow = chkHamlibRTSCTSflow->value();
 	progdefaults.HamlibRTSplus = chkHamlibRTSplus->value();
 	progdefaults.HamlibXONXOFFflow = chkHamlibXONXOFFflow->value();
 	progdefaults.HamlibSideband = mnuSideband->value();
-	progdefaults.HamRigStopbits = valHamRigStopbits->value();
+	progdefaults.HamRigStopbits = static_cast<int>(valHamRigStopbits->value());
 	progdefaults.HamRigBaudrate = mnuBaudRate->value();
 	progdefaults.HamlibCMDptt = btnHamlibCMDptt->value();
 	progdefaults.HamConfig = inpHamlibConfig->value();

@@ -467,8 +467,8 @@ static void notify_gui_to_event(notify_t& n)
 	n.action.rx_marker = inpNotifyActionRXMarker->value();
 	n.action.macro = inpNotifyActionMacro->value();
 	n.action.program = inpNotifyActionProgram->value();
-	n.action.trigger_limit = cntNotifyActionLimit->value();
-	n.action.alert_timeout = cntNotifyActionDialogTimeout->value();
+	n.action.trigger_limit = static_cast<time_t>(cntNotifyActionLimit->value());
+	n.action.alert_timeout = static_cast<time_t>(cntNotifyActionDialogTimeout->value());
 
 	// filter
 	if (chkNotifyFilterCall->value()) {
@@ -491,7 +491,7 @@ static void notify_gui_to_event(notify_t& n)
 	// dup
 	n.dup_ignore = chkNotifyDupIgnore->value();
 	n.dup_ref = mnuNotifyDupWhich->value();
-	n.dup.when = cntNotifyDupTime->value();
+	n.dup.when = static_cast<time_t>(cntNotifyDupTime->value());
 	n.dup.band = chkNotifyDupBand->value() ? NUM_BANDS : static_cast<band_t>(0);
 	n.dup.mode = chkNotifyDupMode->value() ? NUM_MODES : static_cast<trx_mode>(0);
 }

@@ -205,7 +205,7 @@ inline void WFdisp::makeMarker_(int width, const RGB* color, int freq, const RGB
 	if (active_modem->get_mode() == MODE_RTTY) {
 	// rtty has two bandwidth indicators on the waterfall
 	// upper and lower frequency
-		int shift = (progdefaults.rtty_shift >= 0 ?
+		int shift = static_cast<int>(progdefaults.rtty_shift >= 0 ?
 			     _SHIFT[progdefaults.rtty_shift] : progdefaults.rtty_custom_shift);
 		int bw_limit_hi = (int)(shift / 2 + progdefaults.RTTY_BW / 2.0);
 		int bw_limit_lo = (int)(shift / 2 - progdefaults.RTTY_BW / 2.0);
@@ -284,10 +284,11 @@ void WFdisp::makeMarker()
 	makeMarker_(marker_width, &RGBmarker, carrierfreq, clrMin, clrM, clrMax);
 
 	if (unlikely(active_modem->freqlocked())) {
-		int txfreq = active_modem->get_txfreq();
+		int txfreq = static_cast<int>(active_modem->get_txfreq());
 		adjust_color_inv(RGBmarker.R, RGBmarker.G, RGBmarker.B, FL_BLACK, FL_RED);
-		makeMarker_(bandwidth / 2.0 + 1, &RGBmarker, txfreq,
-			    clrMin, clrMin + (int)((double)txfreq + 0.5), clrMax);
+		makeMarker_( static_cast<int>(bandwidth / 2.0 + 1),
+					 &RGBmarker, txfreq,
+					 clrMin, clrMin + (int)((double)txfreq + 0.5), clrMax);
 	}
 
 	if (!wantcursor) return;

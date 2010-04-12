@@ -36,7 +36,7 @@ inline static int handle_scroll(Fl_Valuator* w, int event)
 		if (!dynamic_cast<Fl_Value_Input*>(w) && !dynamic_cast<Fl_Counter*>(w) &&
 		    !(w->type() & FL_HOR_SLIDER))
 			d = -d;
-		w->value(w->clamp(w->increment(w->value(), -d)));
+		w->value(w->clamp(w->increment(w->value(), static_cast<int>(-d))));
 		w->do_callback();
 	}
 	return 1;
