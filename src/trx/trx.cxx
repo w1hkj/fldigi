@@ -183,7 +183,6 @@ void trx_trx_receive_loop()
 	size_t  numread;
 	int  current_samplerate;
 	assert(powerof2(SCBLOCKSIZE));
-	int time_out_count = 5;
 
 	if (unlikely(!active_modem)) {
 		MilliSleep(10);
@@ -222,8 +221,6 @@ void trx_trx_receive_loop()
 	ringbuffer<double>::vector_type rbvec[2];
 
 	while (1) {
-		if (trx_state != STATE_RX)
-			break;
 		try {
 			numread = 0;
 			while (numread < SCBLOCKSIZE && trx_state == STATE_RX)
@@ -234,39 +231,39 @@ void trx_trx_receive_loop()
 			// convert to double and write to rb
 			for (size_t i = 0; i < numread; i++)
 				rbvec[0].buf[i] = fbuf[i];
-
-			trxrb.write_advance(numread);
-			REQ(&waterfall::sig_data, wf, rbvec[0].buf, numread, current_samplerate);
-
-			if (!bHistory) {
-				active_modem->rx_process(rbvec[0].buf, numread);
-				if (progdefaults.rsid)
-					ReedSolomon->receive(fbuf, numread);
-			}
-			else {
-				bool afc = progStatus.afconoff;
-				progStatus.afconoff = false;
-				QRUNNER_DROP(true);
-				active_modem->HistoryON(true);
-				trxrb.get_rv(rbvec);
-				if (rbvec[0].len)
-					active_modem->rx_process(rbvec[0].buf, rbvec[0].len);
-				if (rbvec[1].len)
-					active_modem->rx_process(rbvec[1].buf, rbvec[1].len);
-				QRUNNER_DROP(false);
-				progStatus.afconoff = afc;
-				bHistory = false;
-				active_modem->HistoryON(false);
-			}
 		}
 		catch (const SndException& e) {
-			if (e.error() != ETIMEDOUT || time_out_count-- == 0) {
-				LOG_ERROR("%s", e.what());
-				put_status(e.what(), 5);
-				scard->Close(O_RDONLY);
-				MilliSleep(10);
-				return;
-			}
+			scard->Close();
+			LOG_ERROR("%s", e.what());
+			put_status(e.what(), 5);
+			MilliSleep(10);
+			return;
+		}
+		if (trx_state != STATE_RX)
+			break;
+
+		trxrb.write_advance(numread);
+		REQ(&waterfall::sig_data, wf, rbvec[0].buf, numread, current_samplerate);
+
+		if (!bHistory) {
+			active_modem->rx_process(rbvec[0].buf, numread);
+			if (progdefaults.rsid)
+				ReedSolomon->receive(fbuf, numread);
+		}
+		else {
+			bool afc = progStatus.afconoff;
+			progStatus.afconoff = false;
+			QRUNNER_DROP(true);
+			active_modem->HistoryON(true);
+			trxrb.get_rv(rbvec);
+			if (rbvec[0].len)
+				active_modem->rx_process(rbvec[0].buf, rbvec[0].len);
+			if (rbvec[1].len)
+				active_modem->rx_process(rbvec[1].buf, rbvec[1].len);
+			QRUNNER_DROP(false);
+			progStatus.afconoff = afc;
+			bHistory = false;
+			active_modem->HistoryON(false);
 		}
 	}
 	if (scard->must_close(O_RDONLY))
