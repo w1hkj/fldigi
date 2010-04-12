@@ -89,12 +89,12 @@ private:
 	interleave		*Rxinlv;
 	interleave		*Rxinlv2;
 	interleave		*Txinlv;
-	unsigned int 		bitshreg;
+	unsigned int 	bitshreg;
 	int 			rxbitstate;
 	//PSKR modes - Soft decoding
 	unsigned char		symbolpair[2];
-	int			fecmet;
-	int			fecmet2;
+	double			fecmet;
+	double			fecmet2;
 
 	double			phase;
 	double			freqerr;
@@ -102,15 +102,15 @@ private:
 	double 			bitclk;
 	double 			syncbuf[16];
 	double 			scope_pipe[2*PipeLen];//[PipeLen];
-	unsigned int 		pipeptr;
-	unsigned int		dcdshreg;
+	unsigned int 	pipeptr;
+	unsigned int	dcdshreg;
 	//PSKR modes - 2nd stream
 	unsigned int		dcdshreg2;
 
 	int 			dcd;
-	int			dcdbits;
+	int				dcdbits;
 	complex			quality;
-	int			acquire;
+	int				acquire;
 
 	viewpsk*		pskviewer;
 	pskeval*		evalpsk;

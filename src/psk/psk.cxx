@@ -113,6 +113,7 @@ void psk::rx_init()
 	afcmetric = 0.0;
 	// interleaver, split incoming bit stream into two, one late by one bit
 	rxbitstate = 0;
+	fecmet = fecmet2 = 0;
 
 }
 
