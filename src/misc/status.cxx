@@ -87,7 +87,7 @@ status progStatus = {
 	NORMAL,				// WFdisp::WFspeed
 	-20,				// reflevel
 	-70,				// ampspan
-	40,					// uint	VIEWERnchars
+	30,					// uint	VIEWERnchars
 	50,					// uint	VIEWERxpos
 	50,					// uint	VIEWERypos
 	false,				// bool VIEWERvisible

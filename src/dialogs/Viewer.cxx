@@ -293,6 +293,7 @@ Fl_Double_Window* createViewer(void)
 	cols[0] = labelwidth[progdefaults.VIEWERlabeltype];
 
 	int viewerwidth = (progStatus.VIEWERnchars * cwidth) + cols[0] + sbarwidth + border;
+	int minwidth = (30 * cwidth) + cols[0] + sbarwidth + border;
 	int viewerheight = 40 + cheight * progdefaults.VIEWERchannels;
 	int pad = border/2;
 
@@ -356,7 +357,7 @@ Fl_Double_Window* createViewer(void)
 	w->end();
 	w->callback((Fl_Callback*)cb_btnCloseViewer);
 	w->resizable(brwsViewer);
-	w->size_range(w->w(), w->h() - brwsViewer->h() + 20);
+	w->size_range(minwidth, w->h() - brwsViewer->h() + 20);
 	w->xclass(PACKAGE_NAME);
 
 	return w;
