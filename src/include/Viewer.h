@@ -20,7 +20,7 @@ extern Fl_Double_Window *dlgViewer;
 extern Fl_Double_Window* createViewer();
 
 extern void openViewer();
-extern void viewaddchr(int ch, int freq, char c);
+extern void viewaddchr(int ch, int freq, char c, int md);
 extern void initViewer();
 extern void viewclearchannel(int ch);
 extern void viewer_paste_freq(int freq);

@@ -385,12 +385,12 @@ void viewer_redraw()
 	brwsViewer->column_widths(cols);
 }
 
-void viewaddchr(int ch, int freq, char c)
+void viewaddchr(int ch, int freq, char c, int md)
 {
 	if (!dlgViewer) return;
 
 	if (progStatus.spot_recv)
-		spot_recv(c, ch, freq);
+		spot_recv(c, ch, freq, md);
 
 	if (rfc != wf->rfcarrier() || usb != wf->USB()) viewer_redraw();
 		

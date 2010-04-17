@@ -151,7 +151,7 @@ void viewpsk::rx_bit(int ch, int bit)
 		shreg[ch] = 0;
 		if (c == '\n' || c == '\r') c = ' ';
 		if (isprint(c)) {
-			REQ(&viewaddchr, ch, (int)frequency[ch], c);
+			REQ(&viewaddchr, ch, (int)frequency[ch], c, viewmode);
 			timeout[ch] = now + progdefaults.VIEWERtimeout;
 		}
 	}

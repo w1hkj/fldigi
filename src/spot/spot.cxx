@@ -66,15 +66,19 @@ static tr1::unordered_map<int, string> buffers;
 static cblist_t cblist;
 static rcblist_t rcblist;
 
-void spot_recv(char c, int decoder, int afreq)
+void spot_recv(char c, int decoder, int afreq, int md)
 {
 	static trx_mode last_mode = NUM_MODES + 1;
 
-	if (decoder == -1) // mode without multiple decoders
+	if (decoder == -1) { // mode without multiple decoders
 		decoder = active_modem->get_mode();
-	if (last_mode != active_modem->get_mode()) {
+		if (last_mode != active_modem->get_mode()) {
+			buffers.clear();
+			last_mode = active_modem->get_mode();
+		}
+	} else if (last_mode != md) {
 		buffers.clear();
-		last_mode = active_modem->get_mode();
+		last_mode = md;
 	}
 	if (afreq == 0)
 		afreq = active_modem->get_freq();
