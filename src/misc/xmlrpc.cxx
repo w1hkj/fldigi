@@ -2173,7 +2173,7 @@ public:
 		try {
 			params->verifyEnd(2);
 
-			Fl_Text_Buffer* tbuf = ReceiveText->buffer();
+			Fl_Text_Buffer_mod* tbuf = ReceiveText->buffer();
 			int len = tbuf->length();
 			int start = params->getInt(0, 0, len - 1);
 			int n = params->getInt(1, -1, len - start);

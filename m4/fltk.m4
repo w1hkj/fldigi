@@ -22,14 +22,19 @@ AC_DEFUN([AC_FLDIGI_FLTK], [
       if test $? -ne 0; then
           AC_MSG_ERROR([$FLTK_CONFIG failed])
       fi
-      if test "x$FLTK_API_VERSION" = "x1.1"; then
+      if test -n "$(expr $FLTK_API_VERSION : '1\.1[3]')"; then
           HAVE_FLTK_API_VERSION=yes
       fi
+      FLDIGI_FLTK_API_MAJOR=${FLTK_API_VERSION%%.*}
+      FLDIGI_FLTK_API_MINOR=${FLTK_API_VERSION#*.}; FLDIGI_FLTK_API_MINOR=${FLDIGI_FLTK_API_MINOR%%.*}
       if test "${HAVE_FLTK_API_VERSION}" = "no"; then
           AC_MSG_ERROR([
   *** The version of FLTK found on your system provides API version $FLTK_API_VERSION.
-  *** To build $PACKAGE you need a FLTK version that provides API 1.1.
+  *** To build $PACKAGE you need a FLTK version that provides API 1.1, 1.2 or 1.3.
           ])
+      fi
+      if test $FLDIGI_FLTK_API_MINOR -gt 1; then
+          AC_MSG_WARN([$PACKAGE_TARNAME may not work with FLTK $FLTK_API_VERSION])
       fi
       FLTK_CFLAGS=`$FLTK_CONFIG --cxxflags`
       if test "x$ac_cv_static" != "xyes"; then
@@ -43,6 +48,8 @@ AC_DEFUN([AC_FLDIGI_FLTK], [
   AC_SUBST([FLTK_CFLAGS])
   AC_SUBST([FLTK_LIBS])
   AC_DEFINE_UNQUOTED([FLTK_BUILD_VERSION], ["`$FLTK_CONFIG --version`"], [FLTK version])
+  AC_DEFINE_UNQUOTED([FLDIGI_FLTK_API_MAJOR], [$FLDIGI_FLTK_API_MAJOR], [FLTK API major version])
+  AC_DEFINE_UNQUOTED([FLDIGI_FLTK_API_MINOR], [$FLDIGI_FLTK_API_MINOR], [FLTK API minor version])
 
   AC_ARG_VAR([FLUID], [Fast Light User-Interface Designer])
   AC_CHECK_PROG([FLUID], [fluid], [fluid])

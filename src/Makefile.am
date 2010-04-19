@@ -267,6 +267,7 @@ fldigi_SOURCES += \
 	include/FTextView.h \
 	include/FTextRXTX.h \
 	include/fileselect.h \
+	include/Fl_Text_Buffer_mod.H \
 	include/Fl_Text_Display_mod.H \
 	include/Fl_Text_Editor_mod.H \
 	include/Fl_Tile_Check.h \
@@ -473,6 +474,7 @@ fldigi_SOURCES += \
 	waterfall/waterfall.cxx \
 	widgets/FTextView.cxx \
 	widgets/FTextRXTX.cxx \
+	widgets/Fl_Text_Buffer_mod.cxx \
 	widgets/Fl_Text_Display_mod.cxx \
 	widgets/Fl_Text_Editor_mod.cxx \
 	widgets/Fl_Tile_Check.cxx \
@@ -510,6 +512,12 @@ EXTRA_fldigi_SOURCES += \
 	feld/FeldStyl-14.cxx \
 	feld/FeldVert-14.cxx \
 	feld/FeldWide-14.cxx \
+	include/Fl_Text_Buffer_mod_1_1.H \
+	include/Fl_Text_Buffer_mod_1_3.H \
+	include/Fl_Text_Display_mod_1_1.H \
+	include/Fl_Text_Display_mod_1_3.H \
+	include/Fl_Text_Editor_mod_1_1.H \
+	include/Fl_Text_Editor_mod_1_3.H \
 	mfsk/mfsk-pic.cxx \
 	mt63/alias_1k.dat \
 	mt63/alias_2k.dat \
@@ -518,7 +526,14 @@ EXTRA_fldigi_SOURCES += \
 	mt63/alias_k5.dat \
 	mt63/mt63intl.dat \
 	trx/tune.cxx \
-	dialogs/guide.cxx
+	dialogs/guide.cxx \
+	widgets/Fl_Text_Buffer_mod_1_1.cxx \
+	widgets/Fl_Text_Buffer_mod_1_3.cxx \
+	widgets/Fl_Text_Display_mod_1_1.cxx \
+	widgets/Fl_Text_Display_mod_1_3.cxx \
+	widgets/Fl_Text_Editor_mod_1_1.cxx \
+	widgets/Fl_Text_Editor_mod_1_3.cxx
+
 
 flarq_SOURCES += \
 	dialogs/font_browser.cxx \
@@ -568,6 +583,7 @@ flarq_SOURCES += \
 	misc/re.cxx \
 	misc/socket.cxx \
 	misc/util.cxx \
+	widgets/Fl_Text_Buffer_mod.cxx \
 	widgets/Fl_Text_Display_mod.cxx \
 	widgets/Fl_Text_Editor_mod.cxx \
 	widgets/FTextView.cxx

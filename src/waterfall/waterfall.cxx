@@ -690,7 +690,7 @@ int WFdisp::wfmag() {
 
 
 void WFdisp::drawScale() {
-	int fw = 60, xchar;
+	int fw = 60, xoff;
 	static char szFreq[20];
 	double fr;
 	uchar *pixmap;
@@ -725,16 +725,16 @@ void WFdisp::drawScale() {
 			snprintf(szFreq, sizeof(szFreq), "%7.1f", fr);
 		fw = (int)fl_width(szFreq);
 		if (progdefaults.wf_audioscale)
-			xchar = (int) (( (1000.0/step) * i - fw) / 2.0 - offset /step );
+			xoff = (int) (( (1000.0/step) * i - fw) / 2.0 - offset /step );
 		else if (usb)
-			xchar = (int) ( ( (1000.0/step) * i - fw) / 2.0 -
+			xoff = (int) ( ( (1000.0/step) * i - fw) / 2.0 -
 							(offset + rfc % 500) /step );
 		else
-			xchar = (int) ( ( (1000.0/step) * i - fw) / 2.0 -
+			xoff = (int) ( ( (1000.0/step) * i - fw) / 2.0 -
 							(offset + 500 - rfc % 500) /step );
-		if (xchar > 0 && xchar < w() - fw)
-			fl_draw(szFreq, x() + xchar, y() + 10 );
-		if (xchar > w() - fw) break;
+		if (xoff > 0 && xoff < w() - fw)
+			fl_draw(szFreq, x() + xoff, y() + 10 );
+		if (xoff > w() - fw) break;
 	}
 }
 

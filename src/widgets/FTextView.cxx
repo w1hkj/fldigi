@@ -67,12 +67,12 @@ FTextBase::FTextBase(int x, int y, int w, int h, const char *l)
 	textsize(FL_NORMAL_SIZE);
 	textcolor(FL_FOREGROUND_COLOR);
 
-	tbuf = new Fl_Text_Buffer;
-	sbuf = new Fl_Text_Buffer;
+	tbuf = new Fl_Text_Buffer_mod;
+	sbuf = new Fl_Text_Buffer_mod;
 
-	cursor_style(Fl_Text_Editor_mod::NORMAL_CURSOR);
 	buffer(tbuf);
 	highlight_data(sbuf, styles, NATTR, FTEXT_DEF, 0, 0);
+	cursor_style(Fl_Text_Editor_mod::NORMAL_CURSOR);
 
 	wrap_mode(wrap, wrap_col);
 

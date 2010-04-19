@@ -92,8 +92,8 @@ private:
 protected:
 	enum { FTEXT_DEF = 'A' };
 	enum set_style_op_e { SET_FONT = 1 << 0, SET_SIZE = 1 << 1, SET_COLOR = 1 << 2 };
-	Fl_Text_Buffer				*tbuf;	///< text buffer
-	Fl_Text_Buffer				*sbuf;	///< style buffer
+	Fl_Text_Buffer_mod			*tbuf;	///< text buffer
+	Fl_Text_Buffer_mod			*sbuf;	///< style buffer
 	Fl_Text_Display_mod::Style_Table_Entry	styles[NATTR];
 	Fl_Menu_Item				*context_menu;
 	int					popx, popy;
