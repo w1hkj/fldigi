@@ -177,7 +177,7 @@ const char* str2hex(const unsigned* str, size_t len);
 
 const char* uint2bin(unsigned u, size_t len);
 
-#if !defined(NDEBUG) && defined(deprecated__) && defined(__GNUC__) && !defined(__MINGW32__)
+#if 0 && !defined(NDEBUG) && defined(deprecated__) && defined(__GNUC__) && !defined(__MINGW32__)
 #include <stdio.h>
 #include <string.h>
 deprecated__ typeof(sprintf) sprintf;
