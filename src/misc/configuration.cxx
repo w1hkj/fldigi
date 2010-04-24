@@ -449,6 +449,7 @@ void configuration::saveDefaults()
 	TxFontName = Fl::get_font_name(TxFontnbr);
 	WaterfallFontName = Fl::get_font_name(WaterfallFontnbr);
 	ViewerFontName = Fl::get_font_name(ViewerFontnbr);
+	FreqControlFontName = Fl::get_font_name(FreqControlFontnbr);
 
 	writeDefaultsXML();
 	changed = false;
@@ -983,5 +984,7 @@ void configuration::initFonts(void)
 		WaterfallFontnbr = font_number(WaterfallFontName.c_str());
 	if (!ViewerFontName.empty())
 		ViewerFontnbr = font_number(ViewerFontName.c_str());
+	if (!FreqControlFontName.empty())
+		FreqControlFontnbr = font_number(FreqControlFontName.c_str());
 
 }

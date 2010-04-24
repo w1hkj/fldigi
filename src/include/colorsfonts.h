@@ -7,6 +7,7 @@
 void selectColorsFonts();
 void cbWaterfallFontBrowser(Fl_Widget*, void*);
 void cbViewerFontBrowser(Fl_Widget*, void*);
+void cbFreqControlFontBrowser(Fl_Widget*, void*);
 #include <FL/Fl_Double_Window.H>
 extern Fl_Double_Window *dlgColorFont;
 #include <FL/Fl_Button.H>
@@ -16,6 +17,7 @@ extern Fl_Tabs *tabsColors;
 #include <FL/Fl_Group.H>
 #include <FL/Fl_Box.H>
 extern Fl_Box *FDdisplay;
+extern Fl_Button *btn_freq_control_font;
 extern Fl_Button *btnBackgroundColor;
 extern Fl_Button *btnForegroundColor;
 extern Fl_Button *btnFD_SystemColor;

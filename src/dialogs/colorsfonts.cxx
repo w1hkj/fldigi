@@ -92,6 +92,23 @@ void cbViewerFontBrowser(Fl_Widget*, void*) {
     font_browser->hide();
 }
 
+void cbFreqControlFontBrowser(Fl_Widget*, void*) {
+  Fl_Font fnt = font_browser->fontNumber();
+    progdefaults.FreqControlFontnbr = fnt;
+    progdefaults.changed = true;
+
+    FDdisplay->labelfont(progdefaults.FreqControlFontnbr);
+    FDdisplay->redraw();
+    qsoFreqDisp1->font(progdefaults.FreqControlFontnbr);
+    qsoFreqDisp2->font(progdefaults.FreqControlFontnbr);
+    qsoFreqDisp3->font(progdefaults.FreqControlFontnbr);
+    qsoFreqDisp1->redraw();
+    qsoFreqDisp2->redraw();
+    qsoFreqDisp3->redraw();
+    
+    font_browser->hide();
+}
+
 Fl_Double_Window *dlgColorFont=(Fl_Double_Window *)0;
 
 Fl_Button *btnClrFntClose=(Fl_Button *)0;
@@ -103,6 +120,18 @@ static void cb_btnClrFntClose(Fl_Button* o, void*) {
 Fl_Tabs *tabsColors=(Fl_Tabs *)0;
 
 Fl_Box *FDdisplay=(Fl_Box *)0;
+
+Fl_Button *btn_freq_control_font=(Fl_Button *)0;
+
+static void cb_btn_freq_control_font(Fl_Button*, void*) {
+  font_browser->fontNumber(progdefaults.FreqControlFontnbr);
+    font_browser->fontSize(14);
+    font_browser->fontColor(FL_FOREGROUND_COLOR);
+    font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+    font_browser->fontFilter(Font_Browser::ALL_TYPES);
+    font_browser->callback(cbFreqControlFontBrowser);
+font_browser->show();
+}
 
 Fl_Button *btnBackgroundColor=(Fl_Button *)0;
 
@@ -723,21 +752,25 @@ Fl_Double_Window* make_colorsfonts() {
     } // Fl_Button* btnClrFntClose
     { tabsColors = new Fl_Tabs(0, 5, 375, 185);
       { Fl_Group* o = new Fl_Group(5, 30, 365, 150, _("Freq Disp"));
-        { Fl_Box* o = FDdisplay = new Fl_Box(100, 45, 45, 67, _("8"));
+        { Fl_Box* o = FDdisplay = new Fl_Box(65, 43, 235, 45, _("14070.150"));
           FDdisplay->box(FL_DOWN_BOX);
           FDdisplay->color((Fl_Color)55);
           FDdisplay->labelfont(4);
-          FDdisplay->labelsize(48);
+          FDdisplay->labelsize(40);
           o->color(fl_rgb_color(progdefaults.FDbackground.R,progdefaults.FDbackground.G,progdefaults.FDbackground.B));
           o->labelcolor(fl_rgb_color(progdefaults.FDforeground.R,progdefaults.FDforeground.G,progdefaults.FDforeground.B));
+          o->labelfont(progdefaults.FreqControlFontnbr);
         } // Fl_Box* FDdisplay
-        { btnBackgroundColor = new Fl_Button(165, 45, 100, 30, _("Background"));
+        { btn_freq_control_font = new Fl_Button(144, 96, 87, 24, _("Font"));
+          btn_freq_control_font->callback((Fl_Callback*)cb_btn_freq_control_font);
+        } // Fl_Button* btn_freq_control_font
+        { btnBackgroundColor = new Fl_Button(35, 131, 87, 24, _("Bg Color"));
           btnBackgroundColor->callback((Fl_Callback*)cb_btnBackgroundColor);
         } // Fl_Button* btnBackgroundColor
-        { btnForegroundColor = new Fl_Button(165, 85, 100, 30, _("Foreground"));
+        { btnForegroundColor = new Fl_Button(144, 131, 87, 24, _("Digit Color"));
           btnForegroundColor->callback((Fl_Callback*)cb_btnForegroundColor);
         } // Fl_Button* btnForegroundColor
-        { btnFD_SystemColor = new Fl_Button(165, 125, 100, 30, _("System"));
+        { btnFD_SystemColor = new Fl_Button(259, 131, 87, 24, _("Sys Colors"));
           btnFD_SystemColor->callback((Fl_Callback*)cb_btnFD_SystemColor);
         } // Fl_Button* btnFD_SystemColor
         o->end();

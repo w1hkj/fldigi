@@ -114,11 +114,29 @@ Function {cbViewerFontBrowser(Fl_Widget*, void*)} {open return_type void
     font_browser->hide();} {}
 } 
 
+Function {cbFreqControlFontBrowser(Fl_Widget*, void*)} {open return_type void
+} {
+  code {Fl_Font fnt = font_browser->fontNumber();
+    progdefaults.FreqControlFontnbr = fnt;
+    progdefaults.changed = true;
+
+    FDdisplay->labelfont(progdefaults.FreqControlFontnbr);
+    FDdisplay->redraw();
+    qsoFreqDisp1->font(progdefaults.FreqControlFontnbr);
+    qsoFreqDisp2->font(progdefaults.FreqControlFontnbr);
+    qsoFreqDisp3->font(progdefaults.FreqControlFontnbr);
+    qsoFreqDisp1->redraw();
+    qsoFreqDisp2->redraw();
+    qsoFreqDisp3->redraw();
+    
+    font_browser->hide();} {}
+} 
+
 Function {make_colorsfonts()} {open
 } {
   code {font_browser = new Font_Browser;} {}
   Fl_Window dlgColorFont {
-    label {Colors and Fonts} open selected
+    label {Colors and Fonts} open
     xywh {496 125 375 220} type Double
     code0 {dlgColorFont->xclass(PACKAGE_TARNAME);} visible
   } {
@@ -135,13 +153,25 @@ Function {make_colorsfonts()} {open
         xywh {5 30 365 150}
       } {
         Fl_Box FDdisplay {
-          label 8
-          xywh {100 45 45 67} box DOWN_BOX color 55 labelfont 4 labelsize 48
+          label {14070.150} selected
+          xywh {65 43 235 45} box DOWN_BOX color 55 labelfont 4 labelsize 40
           code0 {o->color(fl_rgb_color(progdefaults.FDbackground.R,progdefaults.FDbackground.G,progdefaults.FDbackground.B));}
           code1 {o->labelcolor(fl_rgb_color(progdefaults.FDforeground.R,progdefaults.FDforeground.G,progdefaults.FDforeground.B));}
+          code2 {o->labelfont(progdefaults.FreqControlFontnbr);}
+        }
+        Fl_Button btn_freq_control_font {
+          label Font
+          callback {font_browser->fontNumber(progdefaults.FreqControlFontnbr);
+    font_browser->fontSize(14);
+    font_browser->fontColor(FL_FOREGROUND_COLOR);
+    font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+    font_browser->fontFilter(Font_Browser::ALL_TYPES);
+    font_browser->callback(cbFreqControlFontBrowser);
+font_browser->show();}
+          xywh {144 96 87 24}
         }
         Fl_Button btnBackgroundColor {
-          label Background
+          label {Bg Color}
           callback {uchar r, g, b;
     r = progdefaults.FDbackground.R;
     g = progdefaults.FDbackground.G;
@@ -169,10 +199,10 @@ Function {make_colorsfonts()} {open
     }
 
     progdefaults.changed = true;}
-          xywh {165 45 100 30}
+          xywh {35 131 87 24}
         }
         Fl_Button btnForegroundColor {
-          label Foreground
+          label {Digit Color}
           callback {uchar r, g, b;
     r = progdefaults.FDforeground.R;
     g = progdefaults.FDforeground.G;
@@ -200,10 +230,10 @@ Function {make_colorsfonts()} {open
     }
 
     progdefaults.changed = true;}
-          xywh {165 85 100 30}
+          xywh {144 131 87 24}
         }
         Fl_Button btnFD_SystemColor {
-          label System
+          label {Sys Colors}
           callback {uchar r, g, b;
     Fl_Color clr = FL_BACKGROUND2_COLOR;
 
@@ -237,7 +267,7 @@ Function {make_colorsfonts()} {open
     }
          
     progdefaults.changed = true;}
-          xywh {165 125 100 30}
+          xywh {259 131 87 24}
         }
       }
       Fl_Group {} {

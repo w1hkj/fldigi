@@ -992,6 +992,12 @@
         ELEM_(int, WaterfallFontsize, "WATERFALLFONTSIZE",                              \
               "Waterfall font size",                                                    \
               12)                                                                       \
+        ELEM_(std::string, FreqControlFontName, "FREQCONTROLFONTNAME",                  \
+              "Frequency Control font name",                                            \
+              "")                                                                       \
+        ELEM_(Fl_Font, FreqControlFontnbr, "FREQCONTROLFONTNBR",                        \
+              "Frequency Control font number",                                          \
+              FL_COURIER)                                                               \
         ELEM_(std::string, ui_scheme, "UISCHEME",                                       \
               "FLTK UI scheme (none or base, gtk+, plastic)",                           \
               "gtk+")                                                                   \

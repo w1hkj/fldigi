@@ -3067,7 +3067,7 @@ void create_fl_digi_main_primary() {
 			qsoFreqDisp1->color(FL_BACKGROUND_COLOR);
 			qsoFreqDisp1->selection_color(FL_BACKGROUND_COLOR);
 			qsoFreqDisp1->labeltype(FL_NORMAL_LABEL);
-			qsoFreqDisp1->labelfont(0);
+			qsoFreqDisp1->font(progdefaults.FreqControlFontnbr);
 			qsoFreqDisp1->labelsize(12);
 			qsoFreqDisp1->labelcolor(FL_FOREGROUND_COLOR);
 			qsoFreqDisp1->align(FL_ALIGN_CENTER);
@@ -3373,6 +3373,7 @@ void create_fl_digi_main_primary() {
 			qsoFreqDisp2->align(FL_ALIGN_CENTER);
 			qsoFreqDisp2->when(FL_WHEN_RELEASE);
 			qsoFreqDisp2->callback(qso_movFreq);
+			qsoFreqDisp2->font(progdefaults.FreqControlFontnbr);
 			qsoFreqDisp2->SetONOFFCOLOR(
 				fl_rgb_color(	progdefaults.FDforeground.R,
 								progdefaults.FDforeground.G,
@@ -3484,6 +3485,7 @@ void create_fl_digi_main_primary() {
 			qsoFreqDisp3->align(FL_ALIGN_CENTER);
 			qsoFreqDisp3->when(FL_WHEN_RELEASE);
 			qsoFreqDisp3->callback(qso_movFreq);
+			qsoFreqDisp3->font(progdefaults.FreqControlFontnbr);
 			qsoFreqDisp3->SetONOFFCOLOR(
 				fl_rgb_color(	progdefaults.FDforeground.R,
 								progdefaults.FDforeground.G,
