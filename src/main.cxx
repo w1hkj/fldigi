@@ -178,6 +178,7 @@ void set_platform_ui(void);
 double speed_test(int converter, unsigned repeat);
 static void setup_signal_handlers(void);
 static void checkdirectories(void);
+
 static void arg_error(const char* name, const char* arg, bool missing) noreturn__;
 
 // TODO: find out why fldigi crashes on OS X if the wizard window is
@@ -238,6 +239,8 @@ int main(int argc, char ** argv)
 		main_window_title = PACKAGE_TARNAME;
 
 	checkdirectories();
+	check_nbems_dirs();
+
 	try {
 		debug::start(string(HomeDir).append("status_log.txt").c_str());
 		time_t t = time(NULL);

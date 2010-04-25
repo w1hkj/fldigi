@@ -412,9 +412,10 @@ bool WRAP_auto_arqRx()
 			LOG_DEBUG("%s", arqtext.c_str());
 			start_tx();
 			txstring.clear();
+			return true;
 		}
 	}
-	return true;
+	return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -582,9 +583,11 @@ bool Socket_arqRx()
 				start_tx();
 			}
 			txstring.clear();
+			cmdstring.clear();
+			return true;
 		}
 		cmdstring.clear();
-		return true;
+		return false;
 	}
 	catch (const SocketException& e) {
 		arq_stop();
