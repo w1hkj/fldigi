@@ -128,6 +128,7 @@ void pSRCHUP(string&, size_t&);
 void pSRCHDN(string&, size_t&);
 void pGOHOME(string&, size_t&);
 void pGOFREQ(string&, size_t&);
+void pMAPIT(string&, size_t&);
 
 //void pMACROS(string &, size_t &);
 
@@ -191,6 +192,7 @@ MTAGS mtags[] = {
 {"<SRCHDN>",	pSRCHDN},
 {"<GOHOME>",	pGOHOME},
 {"<GOFREQ:",	pGOFREQ},
+{"<MAPIT>",		pMAPIT},
 {0, 0}
 };
 
@@ -991,6 +993,32 @@ void pEXEC(string& s, size_t& i)
 	LOG_WARN("Ignoring unimplemented EXEC macro");
 }
 #endif // !__MINGW32__
+
+void pMAPIT(string &s, size_t &i)
+{
+	s.erase(i, s.find('>', i) + 1 - i);
+	expand = false;
+	string sCALL = inpCall->value();
+	string sLOC = inpLoc->value();
+	if (sCALL.empty() || sLOC.empty()) return;
+	if (sLOC.length() < 4) return;
+	if (sLOC.length() < 6) sLOC.append("00");
+	string url = "http://maps.google.com/maps?q=";
+	double lat = -90, lon = -180;
+	lon +=	(toupper(sLOC[0]) - 'A') * 20 +
+			(sLOC[2] - '0') * 2 +
+			(toupper(sLOC[4]) - 'A' + 0.5) / 12;
+	lat +=	(toupper(sLOC[1]) - 'A') * 10 +
+            (sLOC[3] - '0') +
+            (toupper(sLOC[5]) - 'A' + 0.5) / 24;
+	char sdata[20];
+	snprintf(sdata, sizeof(sdata),"%10.6f", lat);
+	url.append(sdata).append(",");
+	snprintf(sdata, sizeof(sdata),"%10.6f", lon);
+	url.append(sdata);
+	url.append("(").append(sCALL.c_str()).append(")&t=p&z=4");
+	cb_mnuVisitURL(NULL, (void*)url.c_str());
+}
 
 void pSTOP(string &s, size_t &i)
 {

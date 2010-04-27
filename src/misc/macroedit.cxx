@@ -86,6 +86,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<NAME>\tother name"));
 	w->add(_("<QTH>\tother QTH"));
 	w->add(_("<RST>\tother RST"));
+	w->add(_("<MAPIT>\tmap LOC on google"));
 
 	w->add(LINE_SEP);
 	w->add(_("<CLRRX>\tclear RX pane"));
