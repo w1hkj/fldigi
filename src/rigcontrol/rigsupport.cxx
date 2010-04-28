@@ -392,7 +392,9 @@ void qso_selectFreq()
 	}
 // transceiver frequency
 	if (freqlist[n].rfcarrier > 0) {
-		qsoFreqDisp->value(freqlist[n].rfcarrier);
+		qsoFreqDisp1->value(freqlist[n].rfcarrier);
+		qsoFreqDisp2->value(freqlist[n].rfcarrier);
+		qsoFreqDisp3->value(freqlist[n].rfcarrier);
 		sendFreq(freqlist[n].rfcarrier);
 	}
 // modem type & audio sub carrier
