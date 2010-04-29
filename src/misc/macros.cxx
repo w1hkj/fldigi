@@ -731,6 +731,7 @@ void pLOCK(string &s, size_t &i)
       wf->xmtlock->value(!wf->xmtlock->value());
 
     wf->xmtlock->damage();
+    wf->xmtlock->do_callback();
   }
   s.replace(i, endbracket - i + 1, "");
 }
