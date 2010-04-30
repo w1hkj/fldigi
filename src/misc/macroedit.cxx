@@ -56,7 +56,7 @@ Fl_Button	*btnMacroEditCancel = (Fl_Button *)0;
 Fl_Button	*btnInsertMacro = (Fl_Button *)0;
 Fl_Input2	*macrotext = (Fl_Input2 *)0;
 Fl_Input2	*labeltext = (Fl_Input2 *)0;
-static int widths[] = {110, 0};
+static int widths[] = {130, 0};
 
 Fl_Hold_Browser *macroDefs=(Fl_Hold_Browser *)0;
 
@@ -86,8 +86,9 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<NAME>\tother name"));
 	w->add(_("<QTH>\tother QTH"));
 	w->add(_("<RST>\tother RST"));
-	w->add(_("<MAPIT>\tmap LOC on google"));
-
+	w->add(_("<MAPIT>\tmap on google"));
+	w->add(_("<MAPIT:adr/lat/loc>\tmap by value"));
+ 
 	w->add(LINE_SEP);
 	w->add(_("<CLRRX>\tclear RX pane"));
 

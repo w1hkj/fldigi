@@ -1895,6 +1895,7 @@ void qsoClear_cb(Fl_Widget *b, void *)
 	if (clearlog) {
 		clearQSO();
 	}
+	clear_Lookup();
 	restoreFocus();
 }
 

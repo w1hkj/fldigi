@@ -192,6 +192,7 @@ MTAGS mtags[] = {
 {"<SRCHDN>",	pSRCHDN},
 {"<GOHOME>",	pGOHOME},
 {"<GOFREQ:",	pGOFREQ},
+{"<MAPIT:",		pMAPIT},
 {"<MAPIT>",		pMAPIT},
 {0, 0}
 };
@@ -995,30 +996,69 @@ void pEXEC(string& s, size_t& i)
 }
 #endif // !__MINGW32__
 
-void pMAPIT(string &s, size_t &i)
+void MAPIT(int how)
 {
-	s.erase(i, s.find('>', i) + 1 - i);
-	expand = false;
+	float lat = 0, lon = 0;
 	string sCALL = inpCall->value();
 	string sLOC = inpLoc->value();
-	if (sCALL.empty() || sLOC.empty()) return;
-	if (sLOC.length() < 4) return;
-	if (sLOC.length() < 6) sLOC.append("00");
+
 	string url = "http://maps.google.com/maps?q=";
-	double lat = -90, lon = -180;
-	lon +=	(toupper(sLOC[0]) - 'A') * 20 +
-			(sLOC[2] - '0') * 2 +
-			(toupper(sLOC[4]) - 'A' + 0.5) / 12;
-	lat +=	(toupper(sLOC[1]) - 'A') * 10 +
-            (sLOC[3] - '0') +
-            (toupper(sLOC[5]) - 'A' + 0.5) / 24;
-	char sdata[20];
-	snprintf(sdata, sizeof(sdata),"%10.6f", lat);
-	url.append(sdata).append(",");
-	snprintf(sdata, sizeof(sdata),"%10.6f", lon);
-	url.append(sdata);
-	url.append("(").append(sCALL.c_str()).append(")&t=p&z=4");
+
+//	if (lookup_addr1.empty() && lookup_addr2.empty() &&
+//		lookup_state.empty() && lookup_country.empty()) {
+	if (how > 1 && !lookup_country.empty()) {
+		url.append(lookup_addr1).append(",").append(lookup_addr2).append(",");
+		url.append(lookup_state).append(",").append(lookup_country);
+	} else {
+		if (how > 0 && (!lookup_latd.empty() && !lookup_lond.empty())) {
+			url.append(lookup_latd).append(",");
+			url.append(lookup_lond);
+		} else {
+			if (sLOC.empty()) return;
+			if (sLOC.length() < 4) return;
+			if (sLOC.length() < 6) sLOC.append("aa");
+			for (size_t i = 0; i < 6; i++) sLOC[i] = toupper(sLOC[i]);
+			if (sLOC[0] -'A' > 17 || sLOC[4] - 'A' > 23 ||
+				sLOC[1] -'A' > 17 || sLOC[5] - 'A' > 23 ||
+				!isdigit(sLOC[2]) || !isdigit(sLOC[3])) return;
+			lon =	-180.0 + 
+					(sLOC[0] - 'A') * 20 +
+					(sLOC[2] - '0') * 2 +
+					(sLOC[4] - 'A' + 0.5) / 12;
+			lat = -90.0 + 
+					(sLOC[1] - 'A') * 10 +
+					(sLOC[3] - '0') +
+					(sLOC[5] - 'A' + 0.5) / 24;
+			char sdata[20];
+			snprintf(sdata, sizeof(sdata),"%10.6f", lat);
+			url.append(sdata).append(",");
+			snprintf(sdata, sizeof(sdata),"%10.6f", lon);
+			url.append(sdata);
+		}
+	}
+	if (!sCALL.empty()) url.append("(").append(sCALL).append(")");
+	else url.append("(nocall)");
+	url.append("&t=p&z=10");
 	cb_mnuVisitURL(NULL, (void*)url.c_str());
+}
+
+void pMAPIT(string &s, size_t &i)
+{
+	size_t endbracket = s.find('>',i);
+	string sVal = s.substr(i + 7, endbracket - i - 7);
+	if (sVal.length() > 0) {
+		if (sVal.compare(0,3,"adr") == 0)
+			REQ(MAPIT,2);
+		else if (sVal.compare(0,6,"latlon") == 0)
+			REQ(MAPIT,1);
+		else if (sVal.compare(0,3,"loc") == 0)
+			REQ(MAPIT,0);
+		else
+			REQ(MAPIT,2);
+	} else
+		REQ(MAPIT,2);
+	s.erase(i, s.find('>', i) + 1 - i);
+	expand = false;
 }
 
 void pSTOP(string &s, size_t &i)

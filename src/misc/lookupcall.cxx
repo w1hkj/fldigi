@@ -193,6 +193,7 @@ bool parseSessionKey(const string& sessionpage)
 
 bool parse_xml(const string& xmlpage)
 {
+//printf("%s\n", xmlpage.c_str());
 	IrrXMLReader* xml = createIrrXMLReader(new IIrrXMLStringReader(xmlpage));
 
 // If we got any result back, clear the session key so that it will be 
@@ -204,20 +205,7 @@ bool parse_xml(const string& xmlpage)
 		qrzerror.clear();
 		clear_Lookup();
 	}
-// strings for storing the data we want to get out of the file
-	string	call, 
-			fname, 
-			name, 
-			addr1, 
-			addr2, 
-			state, 
-			zip, 
-			country, 
-			latd, 
-			lond, 
-			grid, 
-			dob;
-			
+
 	TAG tag = QRZ_IGNORE;
 	
 // parse the file until end reached
@@ -230,7 +218,6 @@ bool parse_xml(const string& xmlpage)
 					case QRZ_IGNORE:
 						break;
 					case QRZ_CALL:
-						call = xml->getNodeData();
 						break;
 					case QRZ_FNAME:
 						lookup_fname =  xml->getNodeData();
@@ -239,8 +226,13 @@ bool parse_xml(const string& xmlpage)
 						lookup_name =  xml->getNodeData();
 						break;
 					case QRZ_ADDR1:
+						{
 						lookup_addr1 =  xml->getNodeData();
+						size_t apt = lookup_addr1.find("#");
+						if (apt != string::npos)
+							lookup_addr1.erase(apt, lookup_addr1.length() - apt);
 						break;
+						}
 					case QRZ_ADDR2:
 						lookup_addr2 =  xml->getNodeData();
 						break;
@@ -293,8 +285,8 @@ bool parse_xml(const string& xmlpage)
 				else if (!strcmp("state", nodeName)) 	tag = QRZ_STATE;
 				else if (!strcmp("zip", nodeName)) 		tag = QRZ_ZIP;
 				else if (!strcmp("country", nodeName))	tag = QRZ_COUNTRY;
-				else if (!strcmp("latd", nodeName)) 	tag = QRZ_LATD;
-				else if (!strcmp("lond", nodeName)) 	tag = QRZ_LOND;
+				else if (!strcmp("lat", nodeName)) 		tag = QRZ_LATD;
+				else if (!strcmp("lon", nodeName)) 		tag = QRZ_LOND;
 				else if (!strcmp("grid", nodeName)) 	tag = QRZ_GRID;
 				else if (!strcmp("dob", nodeName)) 		tag = QRZ_DOB;
 				else if (!strcmp("Alert", nodeName)) 	tag = QRZ_ALERT;
