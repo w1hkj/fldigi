@@ -1,5 +1,8 @@
-2010-04-27  David Freese  <w1hkj@w1hkj.com>
+2010-04-30  David Freese  <w1hkj@w1hkj.com>
 
+	55eec2a: MAP macro update
+	e17ccfb: LOCK macro
+	917b5bd: Freq Browser Select
 	4474bd4: MAP macro
 	2da1e55: ARQ auto file
 	54a0569: Freq Control Font
