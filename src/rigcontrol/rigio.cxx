@@ -1199,7 +1199,7 @@ static void *rigCAT_loop(void *args)
 			sMode = rigCAT_getmode();
 		pthread_mutex_unlock(&rigCAT_mutex);
 
-		if ((freq > 0) && (freq != llFreq)) {
+		if ((freq >= 0) && (freq != llFreq)) {
 			llFreq = freq;
 			show_frequency(freq);
 			wf->rfcarrier(freq);

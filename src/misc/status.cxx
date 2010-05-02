@@ -79,7 +79,7 @@ status progStatus = {
 	560,				// int rigW
 	80,					// int rigH
 	1000,				// int carrier;
-	3580000,			// int noCATfreq;
+	0,					// int noCATfreq;
 	"USB",				// string noCATmode;
 	"3000",				// string noCATwidth;
 	1,					// int mag;

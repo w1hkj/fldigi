@@ -481,7 +481,7 @@ bool init_NoRig_RigDialog()
 	clearList();
 	buildlist();
 
-	windowTitle = _("Rig Not Specified");
+	windowTitle = _("Enter Xcvr Freq");
 	setTitle();
 
 	return true;

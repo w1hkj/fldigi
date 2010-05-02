@@ -3081,7 +3081,7 @@ void create_fl_digi_main_primary() {
 				fl_rgb_color(	progdefaults.FDbackground.R,
 								progdefaults.FDbackground.G,
 								progdefaults.FDbackground.B));
-			qsoFreqDisp1->value(145580000);
+			qsoFreqDisp1->value(0);
 
 			Y = Hmenu + 2 * (Hentry + pad);
 
@@ -3382,7 +3382,7 @@ void create_fl_digi_main_primary() {
 				fl_rgb_color(	progdefaults.FDbackground.R,
 								progdefaults.FDbackground.G,
 								progdefaults.FDbackground.B));
-			qsoFreqDisp2->value(145580000);
+			qsoFreqDisp2->value(0);
 
 			qso_opPICK2 = new Fl_Button(
 				rightof(qsoFreqDisp2), y,
@@ -3494,7 +3494,7 @@ void create_fl_digi_main_primary() {
 				fl_rgb_color(	progdefaults.FDbackground.R,
 								progdefaults.FDbackground.G,
 								progdefaults.FDbackground.B));
-			qsoFreqDisp3->value(145580000);
+			qsoFreqDisp3->value(0);
 
 			qso_opPICK3 = new Fl_Button(
 				rightof(qsoFreqDisp3), y,
