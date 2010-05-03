@@ -70,6 +70,9 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_MFSK31, &mfsk31_modem, "MFSK-31", "MFSK-31", "MFSK31", "MFSK31" },
 	{ MODE_MFSK64, &mfsk64_modem, "MFSK-64", "MFSK-64", "MFSK64", "MFSK64" },
 
+	{ MODE_WEFAX_576, &wefax576, "WEFAX-IOC576", "WEFAX-IOC576", "WEFAXIOC576", "WEFAXIOC576" },
+	{ MODE_WEFAX_288, &wefax288, "WEFAX-IOC288", "WEFAX-IOC288", "WEFAXIOC288", "WEFAXIOC288" },
+
 	{ MODE_MT63_500, &mt63_500_modem, "MT63-500", "MT63-500", "MT63-500", "MT63" },
 	{ MODE_MT63_1000, &mt63_1000_modem, "MT63-1XX", "MT63-1000", "MT63-1XX", "MT63" },
 	{ MODE_MT63_2000, &mt63_2000_modem, "MT63-2XX", "MT63-2000", "MT63-2XX", "MT63" },

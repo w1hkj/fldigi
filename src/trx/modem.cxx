@@ -54,6 +54,9 @@ modem *mfsk22_modem = 0;
 modem *mfsk31_modem = 0;
 modem *mfsk64_modem = 0;
 
+modem *wefax576 = 0;
+modem *wefax288 = 0;
+
 modem *mt63_500_modem = 0;
 modem *mt63_1000_modem = 0;
 modem *mt63_2000_modem = 0;
@@ -419,13 +422,11 @@ void modem::videoText()
 		wfid_text(progdefaults.strTextid);
 		progdefaults.macrotextid = false;
 	}
-	if (progdefaults.videoid_modes.test(mode)) {
-		if (progdefaults.sendid == true) {
-			wfid_text(mode_info[mode].sname);
-		} else if (progdefaults.macroid == true) {
-			wfid_text(mode_info[mode].sname);
-			progdefaults.macroid = false;
-		}
+	if (progdefaults.sendid == true) {
+		wfid_text(mode_info[mode].sname);
+	} else if (progdefaults.macroid == true) {
+		wfid_text(mode_info[mode].sname);
+		progdefaults.macroid = false;
 	}
 }
 
@@ -559,8 +560,7 @@ void modem::cwid_sendtext (const string& s)
 
 void modem::cwid()
 {
-	if (progdefaults.cwid_modes.test(mode) &&
-	    (progdefaults.CWid || progdefaults.macroCWid)) {
+	if (progdefaults.CWid == true || progdefaults.macroCWid == true) {
 		string tosend = " DE ";
 		tosend += progdefaults.myCall;
 		cwid_sendtext(tosend);

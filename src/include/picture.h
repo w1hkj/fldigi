@@ -40,9 +40,12 @@ private:
 	int slantdir;
 	void slant_corr(int x, int y);
 	void slant_undo();
-
+	int zoom ;
+	int background ;
+	static void draw_cb(void *data, int x, int y, int w, uchar *buf);
+	void	resize_zoom(int, int, int, int);
 public:
-	picture(int, int, int, int);
+	picture(int, int, int, int, int bg_col = 0);
 	~picture();
 	void	video(unsigned char *, int);
 	void	pixel(unsigned char, int);
@@ -52,7 +55,20 @@ public:
 	void	clear();
 	void	image(Fl_Image *img) {Fl_Widget::image(img);}
 	void	resize(int, int, int, int);
-	int	save_png(const char *);
+	void    resize_height(int new_height, bool clear_img);
+	void    shift_horizontal_center(int hShift);
+	void    stretch(double the_ratio);
+	int	save_png(const char * filename, const char * extra_comments = NULL);
+	void    set_zoom(int the_zoom);
+	int     pix_width(void) const {
+		return width ;
+	}
+	int     pix_height(void) const {
+		return height ;
+	}
+	const unsigned char * buffer(void) const {
+		return vidbuf;
+	}
 };
 
 class picbox : public Fl_Box

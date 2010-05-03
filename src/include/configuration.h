@@ -1103,7 +1103,20 @@
               "report.pskreporter.info")                                                \
         ELEM_(std::string, pskrep_port, "PSKREPPORT",                                   \
               "Reception report server port",                                           \
-              "4739")
+              "4739")                                                                   \
+       /* WEFAX configuration items */                                                  \
+       ELEM_(double, wefax_slant, "WEFAXSLANT",                                         \
+             "Slant correction for wefax Rx",                                           \
+             0.0)                                                                       \
+       ELEM_(std::string, wefax_save_dir, "WEFAXSAVEDIR",                               \
+             "Target directory for storing automatically received images storage",      \
+             "")                                                                        \
+       ELEM_(std::string, wefax_load_dir, "WEFAXLOADDIR",                               \
+             "Source directory for sending images",                                     \
+             "")                                                                        \
+       ELEM_(int, wefax_filter, "WEFAXFILTER",                                          \
+             "Input filter for image reception",                                        \
+             0)
 
 
 // declare the struct

@@ -200,6 +200,9 @@ extern modem *mfsk22_modem;
 extern modem *mfsk31_modem;
 extern modem *mfsk64_modem;
 
+extern modem *wefax576;
+extern modem *wefax288;
+
 extern modem *mt63_500_modem;
 extern modem *mt63_1000_modem;
 extern modem *mt63_2000_modem;

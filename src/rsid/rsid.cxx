@@ -138,6 +138,9 @@ LOG_FILE_SOURCE(debug::LOG_MODEM);
         ELEM_(148, MFSK11, MODE_MFSK11)                 \
         ELEM_(152, MFSK22, MODE_MFSK22)                 \
                                                         \
+        ELEM_(180, WEFAX_576, MODE_WEFAX_576)           \
+        ELEM_(181, WEFAX_288, MODE_WEFAX_288)           \
+                                                        \
         ELEM_(61, RTTYM_8_250, NUM_MODES)               \
         ELEM_(62, RTTYM_16_500, NUM_MODES)              \
         ELEM_(63, RTTYM_32_1000, NUM_MODES)             \
@@ -478,10 +481,6 @@ void cRsId::apply(int iSymbol, int iBin)
 		LOG_VERBOSE("%s", msg);
 		return;
 	}
-	else if (!progdefaults.rsid_rx_modes.test(mbin)) {
-		LOG_DEBUG("Ignoring RSID: %s @ %0.0f Hz", rsid_ids[n].name, freq);
-		return;
-	}
 	else
 		LOG_INFO("RSID: %s @ %0.0f Hz", rsid_ids[n].name, freq);
 
@@ -746,13 +745,7 @@ void cRsId::send(bool preRSID)
 {
 	trx_mode mode = active_modem->get_mode();
 
-	if (!progdefaults.rsid_tx_modes.test(mode)) {
-		LOG_DEBUG("Mode %s excluded, not sending RSID", mode_info[mode].sname);
-		return;
-	}
-
-	if (!progdefaults.rsid_post && !preRSID)
-		return;
+	if (!progdefaults.rsid_post && !preRSID) return;
 
 	unsigned char rmode = RSID_NONE;
 

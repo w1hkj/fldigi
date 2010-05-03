@@ -52,7 +52,7 @@
 
 using namespace std;
 
-picture::picture (int X, int Y, int W, int H) :
+picture::picture (int X, int Y, int W, int H, int bg_col) :
 	Fl_Widget (X, Y, W, H) 
 {
 	width = W;
@@ -62,7 +62,9 @@ picture::picture (int X, int Y, int W, int H) :
 	numcol = 0;
 	slantdir = 0;
 	vidbuf = new unsigned char[bufsize];
-	memset( vidbuf, 0, bufsize );	
+	background = bg_col ;
+	memset( vidbuf, background, bufsize );	
+	zoom = 0 ;
 }
 
 picture::~picture()
@@ -81,7 +83,10 @@ void picture::video(unsigned char *data, int len )
 
 void picture::pixel(unsigned char data, int pos)
 {
-	if (pos < 0 || pos >= bufsize) return;
+	if (pos < 0 || pos >= bufsize) {
+		LOG_ERROR("Image overflow pos=%d bufsize=%d", pos, bufsize );
+		return ;
+	}
 	FL_LOCK_D();
 	vidbuf[pos] = data;
 	if (pos % (width * 3) == 0)
@@ -98,11 +103,24 @@ unsigned char picture::pixel(int pos)
 void picture::clear()
 {
 	FL_LOCK_D();
-	memset(vidbuf, 0, bufsize);
+	memset(vidbuf, background, bufsize);
 	redraw();
 	FL_UNLOCK_D();
 }
 
+
+void picture::resize_zoom(int x, int y, int w, int h)
+{
+	if( zoom < 0 ) {
+		int stride = -zoom + 1 ;
+		Fl_Widget::resize(x,y,w/stride,h/stride);
+	} else if( zoom > 0 ) {
+		int stride = zoom + 1 ;
+		Fl_Widget::resize(x,y,w*stride,h*stride);
+	} else {
+		Fl_Widget::resize(x,y,w,h);
+	}
+}
 
 void picture::resize(int x, int y, int w, int h)
 {
@@ -112,15 +130,215 @@ void picture::resize(int x, int y, int w, int h)
 	delete [] vidbuf;
 	bufsize = depth * w * h;
 	vidbuf = new unsigned char[bufsize];
-	memset( vidbuf, 0, bufsize );
-	Fl_Widget::resize(x,y,w,h);
+	memset( vidbuf, background, bufsize );
+	resize_zoom(x,y,w,h);
+
 	FL_UNLOCK_D();
+}
+
+/// No data destruction. Used when the received image grows more than expected.
+/// Beware that this is not protected by a mutex.
+void picture::resize_height(int new_height, bool clear_img)
+{
+	int new_bufsize = width * new_height * depth;
+
+	/// If the allocation fails, std::bad_alloc is thrown.
+	unsigned char * new_vidbuf = new unsigned char[new_bufsize];
+	if( clear_img )
+	{
+		/// Sets to zero the complete image.
+		memset( new_vidbuf, background, new_bufsize );
+	}
+	else
+	{
+		if( new_height <= height )
+		{
+			memcpy( new_vidbuf, vidbuf, new_bufsize );
+		}
+		else
+		{
+			memcpy( new_vidbuf, vidbuf, bufsize );
+			memset( new_vidbuf + bufsize, background, new_bufsize - bufsize );
+		}
+	}
+	delete [] vidbuf ;
+	vidbuf = new_vidbuf ;
+	bufsize = new_bufsize ;
+	height = new_height;
+	resize_zoom( x(), y(), width, height );
+	redraw();
+}
+
+void picture::stretch(double the_ratio)
+{
+
+	/// We do not change the width but the height
+	int new_height = height * the_ratio + 0.5 ;
+	int new_bufsize = width * new_height * depth;
+
+	/// If the allocation fails, std::bad_alloc is thrown.
+	unsigned char * new_vidbuf = new unsigned char[new_bufsize];
+
+	/// No interpolation, it takes the nearest pixel.
+	for( int ix_out = 0 ; ix_out < new_bufsize ; ++ix_out ) {
+
+		/// TODO: ix_out could be double to qvoid this conversion.
+		int ix_in = ( double )ix_out * the_ratio + 0.5 ;
+		if( ix_in >= bufsize ) {
+			/// Grey value as a filler to indicate the end. For debugging.
+			memset( new_vidbuf + ix_out, 128, new_bufsize - ix_out );
+			break ;
+		}
+		/// TODO: It might not properly work with color images !!!!
+		new_vidbuf[ ix_out ] = vidbuf[ ix_in ];
+	};
+
+	delete [] vidbuf ;
+	vidbuf = new_vidbuf ;
+	bufsize = new_bufsize ;
+	height = new_height;
+	resize_zoom( x(), y(), width, height );
+	redraw();
+}
+
+/// Change the horizontal center of the image by shifting the pixels.
+/// Beware that it is not protected by FL_LOCK_D/FL_UNLOCK_D
+void picture::shift_horizontal_center(int horizontal_shift)
+{
+	if( horizontal_shift < -bufsize ) {
+		horizontal_shift = -bufsize ;
+	}
+
+	if( horizontal_shift > 0 ) {
+		/// Here we lose a couple of pixels at the end of the buffer 
+		/// if there is not a line enough. It should not be a lot.
+		memmove( vidbuf + horizontal_shift, vidbuf, bufsize - horizontal_shift );
+		memset( vidbuf, background, horizontal_shift );
+	} else {
+		/// Here, it is not necessary to reduce the buffer'size.
+		memmove( vidbuf, vidbuf - horizontal_shift, bufsize + horizontal_shift );
+		memset( vidbuf + bufsize + horizontal_shift, background, -horizontal_shift );
+	}
+
+	redraw();
+}
+
+void picture::set_zoom( int the_zoom )
+{
+	zoom = the_zoom ;
+	/// The size of the displayed bitmap is changed.
+	resize_zoom( x(), y(), width, height );
+}
+
+// in 	data 	                     user data passed to function
+// in 	x_screen,y_screen,wid_screen position and width of scan line in image
+// out 	buf 	                     buffer for generated image data.
+// Must copy wid_screen pixels from scanline y_screen, starting at pixel x_screen to this buffer. 
+void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, uchar *buf) 
+{
+	const picture * ptr_pic = ( const picture * ) data ;
+	static const int dpth=3 ;
+	int img_width = ptr_pic->width ;
+	const unsigned char * in_ptr = ptr_pic->vidbuf ;
+	const int max_buf_offset = ptr_pic->bufsize - dpth ;
+	/// Should not happen because tested before. This ensures that memcpy is OK.
+	if( ptr_pic->zoom == 0 ) {
+		int in_offset = img_width * y_screen + x_screen ;
+		memcpy( buf, in_ptr + in_offset * dpth, dpth * wid_screen );
+		return ;
+	}
+
+	/// One pixel out of (zoom+1)
+	if( ptr_pic->zoom < 0 ) {
+		int stride = -ptr_pic->zoom + 1 ;
+		int in_offset = ( img_width * y_screen + x_screen ) * stride ;
+		if( y_screen > ptr_pic->h() - 1 ) {
+			LOG_WARN(
+				"Overflow1 y_screen=%d h=%d y_screen*stride=%d height=%d stride=%d\n",
+				y_screen,
+				ptr_pic->h(),
+				(y_screen*stride),
+				ptr_pic->height,
+				stride );
+			return ;
+		}
+		int dpth_in_offset = dpth * in_offset ;
+		for( int ix_w = 0, max_w = wid_screen * dpth; ix_w < max_w ; ix_w += dpth ) {
+			if( dpth_in_offset >= max_buf_offset ) {
+				LOG_WARN(
+					"Boom1 y_sc=%d h=%d w=%d ix_w=%d wd_sc=%d wdt=%d strd=%d off=%d prd=%d mbo=%d\n",
+					y_screen,
+					ptr_pic->h(),
+					ptr_pic->w(),
+					ix_w,
+					wid_screen,
+					img_width,
+					stride,
+					in_offset,
+					( dpth_in_offset + dpth ),
+					max_buf_offset );
+				break ;
+			}
+			buf[ ix_w     ] = in_ptr[ dpth_in_offset     ];
+			buf[ ix_w + 1 ] = in_ptr[ dpth_in_offset + 1 ];
+			buf[ ix_w + 2 ] = in_ptr[ dpth_in_offset + 2 ];
+			dpth_in_offset += dpth * stride ;
+		}
+		return ;
+	}
+
+	/// Reads each input pixel (-zoom+1) times.
+	if( ptr_pic->zoom > 0 ) {
+		int stride = ptr_pic->zoom + 1 ;
+		int in_offset = img_width * ( y_screen / stride ) + x_screen / stride ;
+		if( y_screen / stride >= ptr_pic->h() )
+		{
+			LOG_WARN(
+				"Overflow2 y_screen=%d h=%d y_screen*stride=%d height=%d stride=%d\n",
+				y_screen,
+				ptr_pic->h(),
+				(y_screen/stride),
+				ptr_pic->height,
+				stride );
+			return ;
+		}
+		/// TODO: Will not properly work for color images.
+		int dpth_in_offset = dpth * in_offset ;
+		for( int ix_w = 0, max_w = wid_screen * dpth; ix_w < max_w ; ix_w += dpth ) {
+			if( dpth_in_offset >= max_buf_offset ) {
+				LOG_WARN(
+					"Boom2 y_sc=%d h=%d w=%d ix_w=%d wd_sc=%d wdth=%d strd=%d in_off=%d mbo=%d\n",
+					y_screen,
+					ptr_pic->h(),
+					ptr_pic->w(),
+					ix_w,
+					wid_screen,
+					img_width,
+					stride,
+					in_offset,
+					max_buf_offset );
+				break ;
+			}
+			buf[ ix_w     ] = in_ptr[ dpth_in_offset     ];
+			buf[ ix_w + 1 ] = in_ptr[ dpth_in_offset + 1 ];
+			buf[ ix_w + 2 ] = in_ptr[ dpth_in_offset + 2 ];
+			if( ( ix_w % ( dpth * stride ) ) == 0 ) {
+				dpth_in_offset += dpth ;
+			}
+		}
+		return ;
+	}
 }
 
 void picture::draw()
 {
-//	draw_box();
-	fl_draw_image( vidbuf, x(), y(), w(), h() );
+	if( zoom == 0 ) {
+		/// No scaling, this is faster.
+		fl_draw_image( vidbuf, x(), y(), w(), h() );
+	} else {
+		fl_draw_image( draw_cb, this, x(), y(), w(), h() );
+		redraw();
+	}
 }
 
 void picture::slant_undo()
@@ -264,7 +482,7 @@ static FILE* open_file(const char* name, const char* suffix)
 	return fp;
 }
 
-int picture::save_png(const char* filename)
+int picture::save_png(const char* filename, const char *extra_comments)
 {
 	FILE* fp;
 	if ((fp = open_file(filename, ".png")) == NULL)
@@ -309,6 +527,9 @@ int picture::save_png(const char* filename)
 		<< "Received: " << z << '\n'
 		<< "Modem: " << mode_info[active_modem->get_mode()].name << '\n'
 		<< "Frequency: " << inpFreq->value() << '\n';
+	if( extra_comments ) {
+		comment << extra_comments ;
+	}
 	if (inpCall->size())
 		comment << "Log call: " << inpCall->value() << '\n';
 
@@ -321,6 +542,11 @@ int picture::save_png(const char* filename)
 
 	// write header
 	png_write_info(png, info);
+
+	// Extra check for debugging.
+	if( height * width * depth != bufsize ) {
+		LOG_ERROR("Buffer inconsistency h=%d w=%d b=%d", height, width, bufsize );
+	}
 
 	// write image
 	png_bytep row;
