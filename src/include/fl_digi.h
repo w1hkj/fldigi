@@ -224,6 +224,7 @@ extern void colorize_macros();
 extern void set_rtty_tab_widgets();
 extern void set_olivia_tab_widgets();
 extern void set_olivia_default_integ();
+extern void set_dominoex_tab_widgets();
 
 extern void set_contestia_tab_widgets();
 extern void set_contestia_default_integ();
