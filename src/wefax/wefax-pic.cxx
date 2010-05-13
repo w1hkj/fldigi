@@ -30,6 +30,8 @@
 #include <sstream>
 #include <iomanip>
 
+#include <time.h>
+
 #include <FL/Fl_Widget.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Round_Button.H>
@@ -456,12 +458,21 @@ static void add_to_files_list( const std::string & the_fil_nam )
 	/// This window is hidden/shown to signal that a file was added.
 	static const int nb_blink = 5 ;
 	for( int ix_blink = 0 ; ix_blink < nb_blink ; ++ix_blink ) {
+#ifdef __MINGW32__
+		wefax_browse_rx_events->hide();
+		wefax_browse_rx_events->redraw();
+		MilliSleep(1);
+		wefax_browse_rx_events->show();
+		wefax_browse_rx_events->redraw();
+		MilliSleep(1);
+#else
 		wefax_browse_rx_events->hide();
 		wefax_browse_rx_events->redraw();
 		usleep(100000);
 		wefax_browse_rx_events->show();
 		wefax_browse_rx_events->redraw();
 		usleep(100000);
+#endif
 	}
 };
 
