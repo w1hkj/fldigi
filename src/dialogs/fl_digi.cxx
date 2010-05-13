@@ -723,6 +723,11 @@ void cb_rttyCustom(Fl_Widget *w, void *arg)
 	cb_init_mode(w, arg);
 }
 
+void set_dominoex_tab_widgets()
+{
+	chkDominoEX_FEC->value(progdefaults.DOMINOEX_FEC);
+}
+
 static void busy_cursor(void*)
 {
 	Fl::first_window()->cursor(FL_CURSOR_WAIT);

@@ -489,8 +489,7 @@ void cRsId::apply(int iSymbol, int iBin)
 		REQ(toggleRSID);
 
 	switch (iSymbol) {
-	// rtty parameters
-	case RSID_RTTY_ASCII_7:
+ 	case RSID_RTTY_ASCII_7:
 		progdefaults.rtty_baud = 5;
 		progdefaults.rtty_bits = 1;
 		progdefaults.rtty_shift = 9;
@@ -520,10 +519,16 @@ void cRsId::apply(int iSymbol, int iBin)
 		progdefaults.rtty_shift = 9;
 		REQ(&set_rtty_tab_widgets);
 		break;
-	// special MultiPsk FEC modes
+	// DominoEX / FEC
+	case RSID_DOMINOEX_4: case RSID_DOMINOEX_5: case RSID_DOMINOEX_8:
+	case RSID_DOMINOEX_11: case RSID_DOMINOEX_16: case RSID_DOMINOEX_22:
+		progdefaults.DOMINOEX_FEC = false;
+		REQ(&set_dominoex_tab_widgets);
+		break;
 	case RSID_DOMINOEX_4_FEC: case RSID_DOMINOEX_5_FEC: case RSID_DOMINOEX_8_FEC:
 	case RSID_DOMINOEX_11_FEC: case RSID_DOMINOEX_16_FEC: case RSID_DOMINOEX_22_FEC:
 		progdefaults.DOMINOEX_FEC = true;
+		REQ(&set_dominoex_tab_widgets);
 		break;
 	// olivia parameters
 	case RSID_OLIVIA_8_250:
