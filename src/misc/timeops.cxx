@@ -28,6 +28,9 @@
 #endif
 
 #if !HAVE_CLOCK_GETTIME
+#  ifdef __APPLE__
+#    include <mach/mach_time.h>
+#  endif
 #  if TIME_WITH_SYS_TIME
 #    include <sys/time.h>
 #  endif
@@ -41,13 +44,20 @@ int clock_gettime(clockid_t clock_id, struct timespec* tp)
 		tp->tv_sec = t.tv_sec;
 		tp->tv_nsec = t.tv_usec * 1000;
 	}
-#ifdef __WOE32__
 	else if (clock_id == CLOCK_MONOTONIC) {
+#if defined(__WOE32__)
 		int32_t msec = GetTickCount();
 		tp->tv_sec = msec / 1000;
 		tp->tv_nsec = (msec % 1000) * 1000000;
-	}
+#elif defined(__APPLE__)
+		static mach_timebase_info_data_t info = { 0, 0 };
+		if (unlikely(info.denom == 0))
+			mach_timebase_info(&info);
+		uint64_t t = mach_absolute_time() * info.numer / info.denom;
+		tp->tv_sec = t / 1000000000;
+		tp->tv_nsec = t % 1000000000;
 #endif
+	}
 	else {
 		errno = EINVAL;
 		return -1;
