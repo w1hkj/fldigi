@@ -114,8 +114,8 @@ static wefax *wefax_serviceme = 0;
 /// TODO: This should be hidden in the class picture. It is in wefax too.
 static const int bytes_per_pix = 3 ;
 
-/// Initial size of the reception image.
-static const int curr_pix_h_default = 200 ;
+/// Initial size of the reception image. A typical fax has about 1300 lines.
+static const int curr_pix_h_default = 300 ;
 
 /// Always reset before loading a new image.
 static volatile int curr_pix_height = curr_pix_h_default ;
@@ -885,7 +885,7 @@ void wefax_pic::create_rx_viewer(void)
 
 	static const char * title_filter = "FIR" ;
 	wid_offset_up += wid_btn_margin + wid_btn_curr + fl_width( title_filter ) ;
-	wid_btn_curr = 75 ;
+	wid_btn_curr = 80 ;
 	wefax_choice_rx_filter = new Fl_Choice(wid_offset_up, hei_off_up, wid_btn_curr, height_btn, title_filter );
 	wefax_choice_rx_filter->callback( wefax_cb_rx_set_filter, 0 );
 	wefax_choice_rx_filter->align(FL_ALIGN_LEFT);
@@ -919,7 +919,7 @@ void wefax_pic::create_rx_viewer(void)
 
 	static const char * title_max = "Max row" ;
 	wid_offset_up += fl_width( title_max );
-	wid_btn_curr = 60 ;
+	wid_btn_curr = 50 ;
 	wefax_int_rx_max = new Fl_Int_Input(wid_offset_up, hei_off_up, wid_btn_curr, height_btn, _(title_max));
 	wefax_int_rx_max->align(FL_ALIGN_LEFT);
 	wefax_int_rx_max->callback(wefax_cb_pic_max_lines, 0);
