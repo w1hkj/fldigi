@@ -74,6 +74,9 @@ public:
 
 	/// Returns a filename matching current image properties.
 	std::string suggested_filename(void) const ;
+
+	/// Logs a new file reception/transmission in the log book.
+	void update_logbook(const std::string &file_name) const ;
 };
 
 #endif

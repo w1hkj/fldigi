@@ -125,7 +125,12 @@ static volatile double rx_slant_ratio = 0.0 ;
 
 /// This transforms the user slant ratio (Small number around 0.0)
 /// into a ratio used to stretch the image (Very very small mantissa added to 1.0).
-static double slant_factor( double ratio_percent = 0.0 )
+static double slant_factor_default(void)
+{
+	return 100.0 / ( rx_slant_ratio + 100.0 );
+}
+
+static double slant_factor_with_ratio( double ratio_percent )
 {
 	return ( ratio_percent + 100.0 ) / ( rx_slant_ratio + 100.0 );
 }
@@ -238,21 +243,12 @@ int wefax_pic::update_rx_pic_col(unsigned char data, int pix_pos )
 	static const int curr_pix_incr_height = 100 ;
 
 	/// Maybe there is a slant.
-	pix_pos = ( double )pix_pos * slant_factor() + 0.5 ;
+	pix_pos = ( double )pix_pos * slant_factor_default() + 0.5 ;
 
 	/// Three ints per pixel. It is safer to recalculate the 
 	/// row index to avoid any buffer overflow, because the given
 	/// row is invalid if the image was horizontally moved.
 	int row_number = 1 + ( pix_pos / ( wefax_pic_rx_picture->pix_width() * bytes_per_pix ) );
-
-	/// Prints the row number sometimes only, to save CPU.
-	if( ( pix_pos % 1000 ) == 0 )
-	{
-		char row_num_buffer[20];
-		snprintf( row_num_buffer, sizeof(row_num_buffer),
-			"%d", row_number );
-		wefax_out_rx_row_num->value( row_num_buffer );
-	}
 
 	/// Maybe we must increase the image height.
 	if( curr_pix_height <= row_number )
@@ -384,6 +380,15 @@ void wefax_pic::update_rx_pic_bw(unsigned char data, int pix_pos )
 	                 update_rx_pic_col(data, pix_pos);
 	                 update_rx_pic_col(data, pix_pos + 1);
 	int row_number = update_rx_pic_col(data, pix_pos + 2);
+
+	/// Prints the row number sometimes only, to save CPU.
+	if( ( pix_pos % 1000 ) == 0 )
+	{
+		char row_num_buffer[20];
+		snprintf( row_num_buffer, sizeof(row_num_buffer),
+			"%d", row_number );
+		wefax_out_rx_row_num->value( row_num_buffer );
+	}
 
 	/// Maybe we restarted an image or maybe went back because of recentering.
 	if( last_row_number > row_number ) {
@@ -551,6 +556,7 @@ static void wefax_cb_pic_rx_save( Fl_Widget *, void *)
 	/// Beware that no extra comments are saved here.
 	if (fn) {
 		wefax_pic_rx_picture->save_png(fn);
+		wefax_serviceme->update_logbook( fn );
 		/// Next time, image will be saved at the same place.
 		default_dir_set( progdefaults.wefax_save_dir, fn );
 		add_to_files_list( fn );
@@ -663,7 +669,7 @@ static void wefax_cb_pic_ratio( Fl_Widget *, void * )
 {
 	if (wefax_serviceme != active_modem) return;
 	double ratio_percent = wefax_cnt_rx_ratio->value();
-	double current_ratio = slant_factor( ratio_percent );
+	double current_ratio = slant_factor_with_ratio( ratio_percent );
 	wefax_pic_rx_picture->stretch( current_ratio );
 	rx_slant_ratio = ratio_percent ;
 
@@ -1060,12 +1066,15 @@ void wefax_pic::save_image(const std::string & fil_name, const std::string & ext
 	local_comments << "Center:" << global_auto_center << "\n" ;
 	wefax_pic_rx_picture->save_png(dfname.c_str(), local_comments.str().c_str());
 	add_to_files_list( fil_name );
+	wefax_serviceme->update_logbook( fil_name );
 }
 
 static void wefax_load_image(const char *fil_name)
 {
 	if (wefax_serviceme != active_modem) return;
 	
+	wefax_serviceme->update_logbook( fil_name );
+
 	if (wefax_shared_tx_img) {
 		wefax_shared_tx_img->release();
 		wefax_shared_tx_img = 0;

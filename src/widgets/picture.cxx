@@ -343,7 +343,7 @@ void picture::draw()
 		fl_draw_image( vidbuf, x(), y(), w(), h() );
 	} else {
 		fl_draw_image( draw_cb, this, x(), y(), w(), h() );
-		redraw();
+		// redraw();
 	}
 }
 

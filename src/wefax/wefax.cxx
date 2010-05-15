@@ -34,7 +34,6 @@
 #include <cmath>
 #include <cstddef>
 #include <libgen.h>
-#include <sys/timeb.h>
 
 #include "debug.h"
 #include "wefax.h"
@@ -46,6 +45,8 @@
 #include "configuration.h"
 #include "status.h"
 #include "filters.h"
+#include "logsupport.h"
+
 #include "wefax-pic.h"
 
 #include "ascii.h"
@@ -597,7 +598,7 @@ private:
 		void refresh(void)
 		{
 			/// Value does not change very often.
-			static const int validity = 50 ;
+			static const int validity = 100 ;
 
 			/// Calculated at least the first time.
 			if( ( _cnt % validity ) == 0 ) {
@@ -617,7 +618,7 @@ private:
 		void display(void) const
 		{
 			// Protected with REQ or REQ_SYNC, otherwise will segfault.
-			REQ_SYNC( wefax_pic::power,
+			REQ( wefax_pic::power,
 				_apt_start,
 				_phasing,
 				_image,
@@ -890,7 +891,7 @@ std::string fax_implementation::generate_filename( const char *extra_msg ) const
 	localtime_r( &tmp_time, &tmp_tm );
 
 	char buf_fil_nam[256] ;
-	long long tmpFL = wf->rfcarrier() ;
+	long long tmp_fl = wf->rfcarrier() ;
 	snprintf( buf_fil_nam, sizeof(buf_fil_nam),
 		"wefax_%04d%02d%02d_%02d%02d%02d_%lld_%s.png",
 		1900 + tmp_tm.tm_year,
@@ -899,7 +900,7 @@ std::string fax_implementation::generate_filename( const char *extra_msg ) const
 		tmp_tm.tm_hour,
 		tmp_tm.tm_min,
 		tmp_tm.tm_sec,
-		tmpFL,
+		tmp_fl,
 		extra_msg );
 
 	return buf_fil_nam ;
@@ -1015,25 +1016,11 @@ void fax_implementation::decode_phasing(int x, const fax_signal & the_signal )
 		 	(nb_tested_phasing_lines >= 30) &&
 			( (m_phasing_calls_nb % smpl_per_lin_int) == 0 ) ) {
 			switch( the_signal.state() ) {
-			/*
-			case RXAPTSTART :
-				LOG_INFO("Strong APT start signal when phasing" );
-				// save_automatic("phasing");
-				end_rx();
-				skip_apt_rx();
-				break ;
-			*/
 			case RXIMAGE :
 				LOG_INFO( "Strong image signal when phasing, starting to receive" );
 				skip_phasing_to_image(true);
 				break ;
 			/// If RXPHASING, we stay in phasing mode.
-			/*
-			case RXPHASING :
-				LOG_INFO("Strong phasing signal. Skipping to reception" );
-				skip_phasing_to_image(true);
-				break ;
-			*/
 			case RXAPTSTOP :
 				LOG_INFO("Strong APT stop signal when phasing" );
 				end_rx();
@@ -1048,13 +1035,10 @@ bool fax_implementation::decode_image(int x)
 {
 	/// TODO: Put this in the class because it it used at many other places.
 	double smpl_per_lin = samples_per_line();
-	int curr_col=static_cast<int>( m_img_width * std::fmod(m_img_sample,smpl_per_lin) / smpl_per_lin );
-	int current_row=static_cast<int>(m_img_sample / smpl_per_lin );
 
-	if( (m_last_col < 0 ) || ( m_last_col >= m_img_width ) ) {
-		LOG_WARN("Inconsistency m_last_col=%d", m_last_col );
-		return false ;
-	}
+	double current_row_dbl = m_img_sample / smpl_per_lin ;
+	int current_row = current_row_dbl ;
+	int curr_col= m_img_width * (current_row_dbl - current_row) ;
 
 	if(curr_col==m_last_col) {
 		m_pixel_val+=x;
@@ -1162,7 +1146,7 @@ void fax_implementation::skip_phasing_rx(bool auto_center)
 void fax_implementation::end_rx(void)
 {
 	/// Synchronized otherwise there might be a crash if something tries to access the data.
-	REQ_SYNC(wefax_pic::abort_rx_viewer );
+	REQ(wefax_pic::abort_rx_viewer );
 	m_rx_state=RXAPTSTART;
 	reset_counters();
 }
@@ -1171,7 +1155,8 @@ void fax_implementation::end_rx(void)
 void fax_implementation::rx_new_samples(const double* audio_ptr, int audio_sz)
 {
 	int demod[audio_sz];
-	const double ratio_sam_devi = static_cast<double>(m_sample_rate)/fm_deviation;
+	static const double half_255 = 255.0 * 0.5 ;
+	const double ratio_sam_devi = half_255 * static_cast<double>(m_sample_rate)/fm_deviation;
 
 	/// The reception filter may have been changed by the GUI.
 	C_FIR_filter & ref_fir_filt_pair = m_rx_filters[ m_ix_filt ];
@@ -1215,7 +1200,7 @@ void fax_implementation::rx_new_samples(const double* audio_ptr, int audio_sz)
 				/// TODO: y might be rounded with more accuracy: (int)(Y+0.5)
 				double x = ratio_sam_devi * m_dbl_arc_sine[static_cast<size_t>(y)];
 
-				int scaled_x = (x+1.0)*255.0 * 0.5;
+				int scaled_x = x + half_255 ;
 				if(scaled_x < 0) {
 					scaled_x=0;
 				} else if(scaled_x > 255) {
@@ -1286,6 +1271,7 @@ void fax_implementation::modulate(const double* buffer, int number)
 /// Returns the number of pixels written from the image.
 void fax_implementation::trx_do_next(void)
 {
+
 	LOG_DEBUG("m_xmt_bytes=%d m_lpm_img=%f", m_xmt_bytes, m_lpm_img );
 
 	/// The number of samples sent for one line. The LPM is given by the GUI.
@@ -1305,6 +1291,7 @@ void fax_implementation::trx_do_next(void)
 		if( disp_msg ) {
 			modulate( buf, num_bytes_to_write);
 
+			/// TODO: Should be multiplied by 3 when sending in BW ?
 			if( m_ptr_wefax->is_tx_finished(curr_sample_idx, nb_samples_to_send, curr_status_msg ) ) {
 				end_of_loop = true ;
 				continue ;
@@ -1531,7 +1518,8 @@ wefax::~wefax()
 
 wefax::wefax(trx_mode wefax_mode) : modem()
 {
-	modem::cap = CAP_AFC | CAP_REV | CAP_IMG ;
+	/// Beware that it is already set by modem::modem
+	modem::cap |= CAP_AFC | CAP_REV | CAP_IMG ;
 	LOG_DEBUG("wefax_mode=%d", (int)wefax_mode);
 
 	wefax::mode = wefax_mode;
@@ -1566,6 +1554,9 @@ wefax::wefax(trx_mode wefax_mode) : modem()
 // receive processing
 //=====================================================================
 
+#ifdef __linux__
+
+#include <sys/timeb.h>
 /// This must return the current time in seconds with high precision.
 static double current_time(void)
 {
@@ -1574,6 +1565,18 @@ static double current_time(void)
 
 	return (double)tmp_timb.time + tmp_timb.millitm / 1000.0 ;
 }
+
+#else
+/// This is much less accurate.
+static double current_time(void)
+{
+	struct time tmp_tim ;
+	time( &tmp_timb );
+
+	return tmp_timeb ;
+}
+#endif
+
 
 /// Callback continuously called by fldigi modem class.
 int wefax::rx_process(const double *buf, int len)
@@ -1614,33 +1617,25 @@ int wefax::rx_process(const double *buf, int len)
 		double estim_smpl_rate = (double)total_len / total_tim ;
 
 		/// If too far from what it should be, it means that pixels were lost.
-		if( estim_smpl_rate < 0.90 * WEFAXSampleRate ) {
+		if( estim_smpl_rate < 0.95 * WEFAXSampleRate ) {
 			int expected_samples = (int)( WEFAXSampleRate * total_tim + 0.5 );
-			int missing = expected_samples - total_len ;
+			int missing_samples = expected_samples - total_len ;
 			static const int chunk_sz = 512 ;
 
 			LOG_WARN("Lost %f * %d samples idx=%d estim_smpl_rate=%f total_tim=%f total_len=%d",
-				(double)missing / chunk_sz,
+				(double)missing_samples / chunk_sz,
 				chunk_sz,
 				idx,
 				estim_smpl_rate,
 				total_tim,
 				total_len );
-			if( missing <= 0 ) {
+			
+			if( missing_samples <= 0 ) {
 				/// This should practically never happen.
 				LOG_WARN("Cannot compensate");
 			} else {
 				/// Adjust the number of received pixels.
-				buf_len[idx_mod] += missing ;
-
-				/// This fills the lost part with grey pixels (Not accurate)
-				double filler[chunk_sz];
-				std::fill( filler, filler + chunk_sz, 0.5 );
-				do {
-					int sub_len = ( missing > chunk_sz ) ? chunk_sz : missing ;
-					m_impl->rx_new_samples( filler, sub_len );
-					missing -= sub_len ;
-				} while( missing > 0 );
+				buf_len[idx_mod] += missing_samples ;
 			}
 		}
 	}
@@ -1746,7 +1741,11 @@ bool wefax::is_tx_finished( int ix_sample, int nb_sample, const char * msg ) con
 			tm_left % 60 );
 	put_status(wefaxmsg);
 
-	return (modem::stopflag || m_abortxmt);
+	bool is_finished = modem::stopflag || m_abortxmt ;
+	if( is_finished ) {
+		LOG_INFO("Transmit finished");
+	}
+	return is_finished ;
 }
 
 /// This returns the names of the possible reception filters.
@@ -1765,3 +1764,71 @@ std::string wefax::suggested_filename(void) const
 {
 	return m_impl->generate_filename( "gui" );
 };
+
+/// TODO: Note the on/off time.
+void wefax::update_logbook( const std::string & file_name ) const
+{
+	cQsoRec rec ;
+
+	/// Ideally we should find out the name of the fax station.
+	rec.putField(CALL, "Wefax");
+	rec.putField(NAME, "Weather fax");
+	rec.putField(NOTES,file_name.c_str() );
+
+	time_t tmp_time = time(NULL);
+	struct tm tmp_tm ;
+	localtime_r( &tmp_time, &tmp_tm );
+
+	char buf_date[64] ;
+	snprintf( buf_date, sizeof(buf_date),
+		"%04d%02d%02d",
+		1900 + tmp_tm.tm_year,
+		1 + tmp_tm.tm_mon,
+		tmp_tm.tm_mday );
+	rec.putField(QSO_DATE, buf_date);
+	// rec.putField(TIME_ON, inpTimeOn_log->value());
+
+	char buf_timeoff[64] ;
+	snprintf( buf_timeoff, sizeof(buf_timeoff),
+		"%02d%02d",
+		tmp_tm.tm_hour,
+		tmp_tm.tm_min );
+	rec.putField(TIME_OFF, buf_timeoff);
+
+	long long tmp_fl = wf->rfcarrier() ;
+	double freq_dbl = tmp_fl / 1000000.0 ;
+	char buf_freq[64];
+	snprintf( buf_freq, sizeof(buf_freq), "%lf", freq_dbl );
+	rec.putField(FREQ, buf_freq );
+
+	/// The method get_mode should be const.
+	rec.putField(MODE, mode_info[ const_cast<wefax*>(this)->get_mode()].adif_name );
+
+	// rec.putField(QTH, inpQth_log->value());
+	// rec.putField(STATE, inpState_log->value());
+	// rec.putField(VE_PROV, inpVE_Prov_log->value());
+	// rec.putField(COUNTRY, inpCountry_log->value());
+	// rec.putField(GRIDSQUARE, inpLoc_log->value());
+	// rec.putField(NOTES, inpNotes_log->value());
+	// rec.putField(QSLRDATE, inpQSLrcvddate_log->value());
+	// rec.putField(QSLSDATE, inpQSLsentdate_log->value());
+	// rec.putField(RST_RCVD, inpRstR_log->value ());
+	// rec.putField(RST_SENT, inpRstS_log->value ());
+	// rec.putField(SRX, inpSerNoIn_log->value());
+	// rec.putField(STX, inpSerNoOut_log->value());
+	// rec.putField(XCHG1, inpXchgIn_log->value());
+	// rec.putField(MYXCHG, inpMyXchg_log->value());
+	// rec.putField(IOTA, inpIOTA_log->value());
+	// rec.putField(DXCC, inpDXCC_log->value());
+	// rec.putField(CONT, inpCONT_log->value());
+	// rec.putField(CQZ, inpCQZ_log->value());
+	// rec.putField(ITUZ, inpITUZ_log->value());
+	// rec.putField(TX_PWR, inpTX_pwr_log->value());
+
+	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
+	qsodb.isdirty(0);
+
+	qsodb.qsoNewRec (&rec);
+	// dxcc_entity_cache_add(&rec);
+	LOG_INFO("Updating log book %s", logbook_filename.c_str() );
+}
