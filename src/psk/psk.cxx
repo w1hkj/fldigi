@@ -107,6 +107,7 @@ void psk::rx_init()
 	bitclk = 0;
 	freqerr = 0.0;
 	if (mailserver && progdefaults.PSKmailSweetSpot) sigsearch = SIGSEARCH;
+	else sigsearch = 0;
 	put_MODEstatus(mode);
 	resetSN_IMD();
 	imdValid = false;
