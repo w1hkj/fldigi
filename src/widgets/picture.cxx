@@ -5,12 +5,14 @@
 //		Dave Freese, W1HKJ
 // Copyright (C) 2008-2009
 //		Stelios Bounanos, M0GLD
+// Copyright (C) 2010
+//		Remi Chateauneu, F4ECW
 //
-// This file is part of fldigi.
+// This file is part of fldigi.  
 //
-// Fldigi is free software: you can redistribute it and/or modify
+// fldigi is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
+// the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
 // Fldigi is distributed in the hope that it will be useful,
@@ -19,7 +21,8 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with fldigi.  If not, see <http://www.gnu.org/licenses/>.
+// along with fldigi.  If not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ----------------------------------------------------------------------------
 
 #include <config.h>
@@ -263,22 +266,23 @@ void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, u
 			return ;
 		}
 		int dpth_in_offset = dpth * in_offset ;
+
+		/// Check the latest offset.
+		if( dpth_in_offset + dpth * stride * wid_screen >= max_buf_offset ) {
+			LOG_WARN(
+				"Boom1 y_sc=%d h=%d w=%d wd_sc=%d wdt=%d strd=%d off=%d prd=%d mbo=%d\n",
+				y_screen,
+				ptr_pic->h(),
+				ptr_pic->w(),
+				wid_screen,
+				img_width,
+				stride,
+				in_offset,
+				( dpth_in_offset + dpth ),
+				max_buf_offset );
+			return ;
+		}
 		for( int ix_w = 0, max_w = wid_screen * dpth; ix_w < max_w ; ix_w += dpth ) {
-			if( dpth_in_offset >= max_buf_offset ) {
-				LOG_WARN(
-					"Boom1 y_sc=%d h=%d w=%d ix_w=%d wd_sc=%d wdt=%d strd=%d off=%d prd=%d mbo=%d\n",
-					y_screen,
-					ptr_pic->h(),
-					ptr_pic->w(),
-					ix_w,
-					wid_screen,
-					img_width,
-					stride,
-					in_offset,
-					( dpth_in_offset + dpth ),
-					max_buf_offset );
-				break ;
-			}
 			buf[ ix_w     ] = in_ptr[ dpth_in_offset     ];
 			buf[ ix_w + 1 ] = in_ptr[ dpth_in_offset + 1 ];
 			buf[ ix_w + 2 ] = in_ptr[ dpth_in_offset + 2 ];
@@ -305,6 +309,7 @@ void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, u
 		/// TODO: Will not properly work for color images.
 		int dpth_in_offset = dpth * in_offset ;
 		for( int ix_w = 0, max_w = wid_screen * dpth; ix_w < max_w ; ix_w += dpth ) {
+#ifndef NDEBUG
 			if( dpth_in_offset >= max_buf_offset ) {
 				LOG_WARN(
 					"Boom2 y_sc=%d h=%d w=%d ix_w=%d wd_sc=%d wdth=%d strd=%d in_off=%d mbo=%d\n",
@@ -319,6 +324,7 @@ void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, u
 					max_buf_offset );
 				break ;
 			}
+#endif
 			buf[ ix_w     ] = in_ptr[ dpth_in_offset     ];
 			buf[ ix_w + 1 ] = in_ptr[ dpth_in_offset + 1 ];
 			buf[ ix_w + 2 ] = in_ptr[ dpth_in_offset + 2 ];

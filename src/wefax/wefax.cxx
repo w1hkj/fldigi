@@ -34,6 +34,7 @@
 #include <cmath>
 #include <cstddef>
 #include <libgen.h>
+#include <sys/timeb.h>
 
 #include "debug.h"
 #include "wefax.h"
@@ -69,6 +70,93 @@ using namespace std;
 // Core of the code taken from Hamfax.
 //=============================================================================
 
+/// No reasonable FIR filter should have more coefficients than that.
+#define MAX_FILT_SIZE 256
+
+struct fir_coeffs
+{
+	const char * _name ;
+	int          _size ;
+	const double _coefs[MAX_FILT_SIZE];
+};
+
+// Narrow, middle and wide fir low pass filter from ACfax
+static const fir_coeffs input_filters[] = {
+	{ "Narrow", 17,
+		{ -7,-18,-15, 11, 56,116,177,223,240,223,177,116, 56, 11,-15,-18, -7}
+	},
+	{ "Middle", 17,
+		{  0,-18,-38,-39,  0, 83,191,284,320,284,191, 83,  0,-39,-38,-18,  0}
+	},
+	{ "Wide",   17,
+		{  6, 20,  7,-42,-74,-12,159,353,440,353,159,-12,-74,-42,  7, 20,  6}
+	},
+	{ "Blackman", 17,
+		{
+			-2.7756e-15,
+			2.9258e+00,
+			1.3289e+01,
+			3.4418e+01,
+			6.8000e+01,
+			1.1095e+02,
+			1.5471e+02,
+			1.8770e+02,
+			2.0000e+02,
+			1.8770e+02,
+			1.5471e+02,
+			1.1095e+02,
+			6.8000e+01,
+			3.4418e+01,
+			1.3289e+01,
+			2.9258e+00,
+			-2.7756e-15
+		}
+	},
+	{ "Hanning", 17,
+		{
+     			0.00000,
+     			7.61205,
+    			29.28932,
+    			61.73166,
+   			100.00000,
+   			138.26834,
+   			170.71068,
+   			192.38795,
+   			200.00000,
+   			192.38795,
+   			170.71068,
+   			138.26834,
+   			100.00000,
+    			61.73166,
+    			29.28932,
+     			7.61205,
+     			0.00000
+		}
+	},
+	{ "Hamming", 17,
+		{
+			16.000,
+			23.003,
+			42.946,
+			72.793,
+			108.000,
+			143.207,
+			173.054,
+			192.997,
+			200.000,
+			192.997,
+			173.054,
+			143.207,
+			108.000,
+			72.793,
+			42.946,
+			23.003,
+			16.000
+		}
+	}
+};
+static const size_t nb_filters = sizeof(input_filters)/sizeof(input_filters[0]); ;
+
 /// This contains all possible reception filters.
 class fir_filter_pair_set : public std::vector< C_FIR_filter >
 {
@@ -76,36 +164,32 @@ class fir_filter_pair_set : public std::vector< C_FIR_filter >
 	fir_filter_pair_set(const fir_filter_pair_set &);
 	fir_filter_pair_set & operator=(const fir_filter_pair_set &);
 public:
-	/// Names of filters for displaying in wefax-pic.
 	static const char ** filters_list(void)
 	{
-		static const char * stt_filters[] = {
-			"Narrow",
-			"Middle",
-			"Wide",
-			NULL };
+		/// There will be a small memory leak when leaving. No problem at all.
+		static const char ** stt_filters = NULL ;
+		if( stt_filters == NULL ) {
+			stt_filters = new const char * [nb_filters + 1];
+			for( size_t ix_filt = 0 ; ix_filt < nb_filters ; ++ix_filt ) {
+				stt_filters[ix_filt] = input_filters[ix_filt]._name ;
+			}
+			stt_filters[nb_filters] = NULL ;
+		}
 		return stt_filters ;
 	}
 
 	fir_filter_pair_set()
 	{
-		static const size_t nb_coefs = 17 ;
-		// Narrow, middle and wide fir low pass filter from ACfax
-		static const double lpf[][nb_coefs]={
-			{ -7,-18,-15, 11, 56,116,177,223,240,223,177,116, 56, 11,-15,-18, -7},
-			{  0,-18,-38,-39,  0, 83,191,284,320,284,191, 83,  0,-39,-38,-18,  0},
-			{  6, 20,  7,-42,-74,-12,159,353,440,353,159,-12,-74,-42,  7, 20,  6}};
-		static const size_t nb_filters = sizeof(lpf)/sizeof(lpf[0]); ;
-
 		/// Beware that C_FIR_filter cannot be copied with its content.
 		resize( nb_filters );
 		for( size_t ix_filt = 0 ; ix_filt < nb_filters ; ++ix_filt )
 		{
 			// Same filter for real and imaginary.
+			const fir_coeffs * ptr_filt = input_filters + ix_filt ;
 			// init() should take const double pointers.
-			operator[]( ix_filt ).init( 17, 1,
-					const_cast< double * >( lpf[ix_filt] ),
-					const_cast< double * >( lpf[ix_filt] ) );
+			operator[]( ix_filt ).init( ptr_filt->_size, 1,
+					const_cast< double * >( ptr_filt->_coefs ),
+					const_cast< double * >( ptr_filt->_coefs ) );
 		}
 	}
 }; // fir_filter_pair_set
@@ -155,7 +239,7 @@ public:
 		return m_table[m_next];
 	}
 
-	size_t size(void)
+	size_t size(void) const
 	{
 		return m_table_size;
 	}
@@ -425,13 +509,16 @@ private:
 
 	/// This evaluates the signal/noise ratio for some specific bandwidths.
 	class fax_signal {
-		double _apt_start ;
-		double _phasing ;
-		double _image ;
-		double _black ;
-		double _apt_stop ;
+		const fax_implementation * _ptr_fax ;
+		int                        _cnt ; /// The value can be reused a couple of times.
 
-		fax_state _state ;
+		double                     _apt_start ;
+		double                     _phasing ;
+		double                     _image ;
+		double                     _black ;
+		double                     _apt_stop ;
+
+		fax_state                  _state ;
 
 		/// Finer tests can be added.
 		/// TODO: Adds a learning mode using the Hamfax detector to train the signal-based one.
@@ -488,20 +575,39 @@ private:
 				_state = RXAPTSTOP ;
 			}
 		}
-		public:
-		fax_signal( const fax_implementation * ptr_fax)
+
+		void recalc(void)
 		{
 			/// Adds a small value to avoid division by zero.
-			double noise = ptr_fax->power_usb_noise() + 1e-10 ;
+			double noise = _ptr_fax->power_usb_noise() + 1e-10 ;
 
-			_apt_start = ptr_fax->power_usb_apt_start() / noise ;
-			_phasing = ptr_fax->power_usb_phasing() / noise ;
-			_image = ptr_fax->power_usb_image() / noise ;
-			_black = ptr_fax->power_usb_black() / noise ;
-			_apt_stop = ptr_fax->power_usb_apt_stop() / noise ;
+			/// Multiplications are faster than divisions.
+			double inv_noise = 1.0 / noise ;
+
+			_apt_start = _ptr_fax->power_usb_apt_start() * inv_noise ;
+			_phasing   = _ptr_fax->power_usb_phasing()   * inv_noise ;
+			_image     = _ptr_fax->power_usb_image()     * inv_noise ;
+			_black     = _ptr_fax->power_usb_black()     * inv_noise ;
+			_apt_stop  = _ptr_fax->power_usb_apt_stop()  * inv_noise ;
 
 			set_state();
 		}
+
+		public:
+		void refresh(void)
+		{
+			/// Value does not change very often.
+			static const int validity = 50 ;
+
+			/// Calculated at least the first time.
+			if( ( _cnt % validity ) == 0 ) {
+				recalc();
+			}
+			++_cnt ;
+		}
+
+		fax_signal( const fax_implementation * ptr_fax)
+			: _ptr_fax(ptr_fax), _cnt(0) {}
 
 		fax_state state(void) const { return _state ; }
 
@@ -510,8 +616,7 @@ private:
 		/// This updates a Fl_Chart widget.
 		void display(void) const
 		{
-			// It has to be protected with REQ or REQ_SYNC, otherwise segfault
-			// after some time.
+			// Protected with REQ or REQ_SYNC, otherwise will segfault.
 			REQ_SYNC( wefax_pic::power,
 				_apt_start,
 				_phasing,
@@ -636,17 +741,18 @@ void fax_implementation::init_rx(int the_smpl_rat)
 }
 
 /// Values are between 0 and 255.
-void fax_implementation::decode(const int* buf, int n)
+void fax_implementation::decode(const int* buf, int nb_samples)
 {
-	if(n==0)
+	if(nb_samples==0)
 	{
 		LOG_WARN("Empty buffer.");
 		end_rx();
 	}
-	for(int i=0; i<n; i++) {
+	fax_signal my_signal(this);
+	for(int i=0; i<nb_samples; i++) {
 		int crr_val = buf[i];
+		my_signal.refresh();
 		m_current_value = crr_val;
-		fax_signal my_signal(this);
 
 		{
 			static int n = 0 ;
@@ -705,7 +811,6 @@ void fax_implementation::decode_apt(int x, const fax_signal & the_signal )
 	        snprintf(snr_buffer, sizeof(snr_buffer), "s/n %3.0f dB", 20.0 * log10(tmp_snr));
        		put_Status1(snr_buffer);
 
-		LOG_DEBUG("curr_freq=%d m_apt_trans=%d m_apt_count=%d", curr_freq, m_apt_trans, m_apt_count );
 		m_apt_count=m_apt_trans=0;
 
 		if(m_rx_state==RXAPTSTART) {
@@ -804,7 +909,7 @@ std::string fax_implementation::generate_filename( const char *extra_msg ) const
 void fax_implementation::save_automatic(const char * extra_msg)
 {
 	/// Minimum pixel numbers for a valid image.
-	static const int max_fax_pix_num = 150000 ;
+	static const int max_fax_pix_num = 200000 ;
 	if( m_fax_pix_num < max_fax_pix_num )
 	{
 		LOG_INFO( "Do not save small image (%d bytes). Manual=%d", m_fax_pix_num, m_manual_mode );
@@ -879,16 +984,6 @@ void fax_implementation::decode_phasing(int x, const fax_signal & the_signal )
 				LOG_INFO("Skipping to reception: m_phase_lines=%d m_num_phase_lines=%d. LPM=%f",
 					m_phase_lines, m_num_phase_lines, m_lpm_img );
 				skip_phasing_to_image(false);
-			} else {
-				if( ( m_curr_phase_len >= 1 ) 
-		 		&& ( 0 == ( m_curr_phase_len % 10 ) ) ) {
-					/*
-					std::cout << "Missed phasingC : " << m_curr_phase_len
-							<< " m_phase_lines=" << m_phase_lines
-							<< " m_num_phase_lines=" << m_num_phase_lines
-							<< "??\n" ;
-					*/
-				}
 			}
 		} else if(m_phase_lines>0 && ++m_num_phase_lines>=5) {
 			/// TODO: Compare with m_tx_phasing_lin which indicates the number of phasing
@@ -902,16 +997,6 @@ void fax_implementation::decode_phasing(int x, const fax_signal & the_signal )
 			PUT_STATUS( state_rx_str() << ". Decoding phasing line, resetting." );
 		} else {
 			/// Here, if no phasing is detected. Must be very fast.
-			if( ( m_curr_phase_len >= 10000 ) 
-	 		&& ( 0 == ( m_curr_phase_len % 1000 ) ) ) {
-				/*
-				std::cout << "Missed phasingA : "
-					<< m_curr_phase_len
-					<< " m_phase_lines=" << m_phase_lines
-					<< " m_num_phase_lines=" << m_num_phase_lines
-					<< "??\n" ;
-				*/
-			}
 		}
 		PUT_STATUS( state_rx_str() << ". Decoding phasing line, reset." );
 		m_curr_phase_len=m_curr_phase_high=0;
@@ -981,6 +1066,12 @@ bool fax_implementation::decode_image(int x)
 			/// TODO: Put m_fax_pix_num in wefax_pic so that the saving of an image
 			/// will only be the number of added pixels. And it will hide
 			/// the storage of B/W pixels in three contiguous ones.
+			//
+			// TODO: If the machine is heavily loaded, it loses a couple of pixel.
+			// The consequence is that the image is shifted.
+			// We could use the local clock to deduce where the pixel must be written:
+			// - Store the first pixel reception time.
+			// - Compute m_fax_pix_num = (reception_time * LPM * image_width)
 			REQ( wefax_pic::update_rx_pic_bw, m_pixel_val, m_fax_pix_num );
 			m_fax_pix_num += bytes_per_pixel ;
 		}
@@ -1080,10 +1171,13 @@ void fax_implementation::end_rx(void)
 void fax_implementation::rx_new_samples(const double* audio_ptr, int audio_sz)
 {
 	int demod[audio_sz];
-	double ratio_sam_devi = static_cast<double>(m_sample_rate)/fm_deviation;
+	const double ratio_sam_devi = static_cast<double>(m_sample_rate)/fm_deviation;
 
-	/// Thereception filter may have been changed by the GUI.
+	/// The reception filter may have been changed by the GUI.
 	C_FIR_filter & ref_fir_filt_pair = m_rx_filters[ m_ix_filt ];
+
+	const double half_arc_sine_size = m_dbl_arc_sine.size() / 2.0 ;
+
 	for(int i=0; i<audio_sz; i++) {
 		double idx_aux = audio_ptr[i] ;
 
@@ -1098,7 +1192,6 @@ void fax_implementation::rx_new_samples(const double* audio_ptr, int audio_sz)
 
 		if(m_freq_mod ) {
 			/// Normalize values.
-			/// TODO: Try to replace this by ifirout=icosine( audio_ptr[i]/fabs(audio_ptr[i])
 			double abs=std::sqrt(qfirout*qfirout+ifirout*ifirout);
 			/// cosine(a)
 			ifirout/=abs;
@@ -1112,12 +1205,12 @@ void fax_implementation::rx_new_samples(const double* audio_ptr, int audio_sz)
 				/// It makes something like sine(a-b).
 				/// Maybe the derivative of the phase, that is,
 				/// the instantaneous frequency ?
-				double y=m_q_fir_old*ifirout-m_i_fir_old*qfirout;
+				double y = m_q_fir_old * ifirout - m_i_fir_old * qfirout ;
 
 				/// Mapped to the interval [0 .. size]
 				/// m_dbl_arc_sine[i] = asin(2*i/m_dbl_arc_sine.size-1)/2/Pi.
 				/// TODO: Therefore it could be simplified ?
-				y=(y+1.0)/2.0*m_dbl_arc_sine.size();
+				y = ( y + 1.0 ) * half_arc_sine_size;
 
 				/// TODO: y might be rounded with more accuracy: (int)(Y+0.5)
 				double x = ratio_sam_devi * m_dbl_arc_sine[static_cast<size_t>(y)];
@@ -1145,12 +1238,16 @@ void fax_implementation::rx_new_samples(const double* audio_ptr, int audio_sz)
 	}
 	decode( demod, audio_sz);
 
+#ifdef WEFAX_DISPLAY_SCOPE
+	/// Nothing really meaningful to display.
+	/// Beware that some pixels are lost if too many things are displayed
 	double scope_demod[ audio_sz ];
 	/// TODO: Do this in the loop, it will avoid conversions.
 	for( int i = 0 ; i < audio_sz ; ++i ) {
 		scope_demod[ i ] = demod[i];
 	}
 	set_scope( (double *)scope_demod, audio_sz , true );
+#endif // WEFAX_DISPLAY_SCOPE
 }
 
 // Init transmission. Called once only.
@@ -1286,22 +1383,6 @@ void fax_implementation::trx_do_next(void)
 							curr_sample_idx, smpl_per_lin, fax_rows_nb,
 							ratio_img_to_fax, nb_samples_to_send );
 					exit(EXIT_FAILURE);
-				}
-
-				/// Printed sometimes only to save CPU.
-				if( 0 == ( curr_sample_idx % 1000 ) ) 
-				{
-					LOG_DEBUG(
-						"smpl=%d nb_smpl_snd=%d img_col=%d ln_smpl=%d img_tx=%d tmp_rw=%d "
-						"m_img_tx_cols=%d tmp_col=%d",
-						curr_sample_idx,
-						nb_samples_to_send,
-						m_img_color,
-						smpl_per_lin,
-						m_img_tx_rows,
-						tmp_row,
-						m_img_tx_cols,
-						tmp_col );
 				}
 
 				int image_offset = tmp_row * m_img_tx_cols + tmp_col ;
@@ -1485,6 +1566,15 @@ wefax::wefax(trx_mode wefax_mode) : modem()
 // receive processing
 //=====================================================================
 
+/// This must return the current time in seconds with high precision.
+static double current_time(void)
+{
+	struct timeb tmp_timb ;
+	ftime( &tmp_timb );
+
+	return (double)tmp_timb.time + tmp_timb.millitm / 1000.0 ;
+}
+
 /// Callback continuously called by fldigi modem class.
 int wefax::rx_process(const double *buf, int len)
 {
@@ -1493,6 +1583,69 @@ int wefax::rx_process(const double *buf, int len)
 		return 0 ;
 	}
 
+	static const int avg_buf_size = 256 ;
+
+	static int idx = 0 ;
+
+	static double buf_tim[avg_buf_size];
+	static int    buf_len[avg_buf_size];
+
+	int idx_mod = idx % avg_buf_size ;
+
+	/// Here we estimate the average number of pixels per second.
+	buf_tim[idx_mod] = current_time();
+	buf_len[idx_mod] = len ;
+
+	++idx ;
+
+	/// Wait some seconds otherwise not significant.
+	if( idx >= avg_buf_size ) {
+		if( idx == avg_buf_size ) {
+			LOG_INFO("Starting samples loss control avg_buf_size=%d", avg_buf_size);
+		}
+		int idx_mod_first = idx % avg_buf_size ;
+		double total_tim = buf_tim[idx_mod] - buf_tim[idx_mod_first];
+		int total_len = 0 ;
+		for( int ix = 0 ; ix < avg_buf_size ; ++ix ) {
+			total_len += buf_len[ix] ;
+		}
+
+		/// Estimate the real sample rate.
+		double estim_smpl_rate = (double)total_len / total_tim ;
+
+		/// If too far from what it should be, it means that pixels were lost.
+		if( estim_smpl_rate < 0.90 * WEFAXSampleRate ) {
+			int expected_samples = (int)( WEFAXSampleRate * total_tim + 0.5 );
+			int missing = expected_samples - total_len ;
+			static const int chunk_sz = 512 ;
+
+			LOG_WARN("Lost %f * %d samples idx=%d estim_smpl_rate=%f total_tim=%f total_len=%d",
+				(double)missing / chunk_sz,
+				chunk_sz,
+				idx,
+				estim_smpl_rate,
+				total_tim,
+				total_len );
+			if( missing <= 0 ) {
+				/// This should practically never happen.
+				LOG_WARN("Cannot compensate");
+			} else {
+				/// Adjust the number of received pixels.
+				buf_len[idx_mod] += missing ;
+
+				/// This fills the lost part with grey pixels (Not accurate)
+				double filler[chunk_sz];
+				std::fill( filler, filler + chunk_sz, 0.5 );
+				do {
+					int sub_len = ( missing > chunk_sz ) ? chunk_sz : missing ;
+					m_impl->rx_new_samples( filler, sub_len );
+					missing -= sub_len ;
+				} while( missing > 0 );
+			}
+		}
+	}
+
+	/// Back to normal processing.
 	m_impl->rx_new_samples( buf, len );
 	return 0;
 }
