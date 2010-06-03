@@ -774,7 +774,7 @@ void cRsId::send(bool preRSID)
 		else if (progdefaults.rtty_baud == 4 && progdefaults.rtty_bits == 0 && progdefaults.rtty_shift == 9)
 			rmode = RSID_RTTY_75;
 		else
-			rmode = RSID_RTTY_45;; // 45 baud Baudot, shift 170
+			return;
 		break;
 
 	case MODE_OLIVIA:
@@ -797,7 +797,7 @@ void cRsId::send(bool preRSID)
 		else if (progdefaults.oliviatones == 2 && progdefaults.oliviabw == 0)
 			rmode = RSID_OLIVIA_8_125;
 		else
-			rmode = RSID_OLIVIA_16_500;
+			return;
 		break;
 
 	case MODE_CONTESTIA:
@@ -820,7 +820,7 @@ void cRsId::send(bool preRSID)
 		else if (progdefaults.contestiatones == 2 && progdefaults.contestiabw == 0)
 			rmode = RSID_CONTESTIA_8_125;
 		else
-			rmode = RSID_CONTESTIA_16_500;
+			return;
 		break;
 
 	case MODE_DOMINOEX4:
