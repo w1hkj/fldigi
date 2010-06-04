@@ -643,8 +643,12 @@ void cRsId::apply(int iSymbol, int iBin)
 		REQ(note_qrg, false, "\nBefore RSID: ", "\n",
 		    active_modem->get_mode(), 0LL, active_modem->get_freq());
 	REQ(notify_rsid, mbin, freq);
-	if (!progdefaults.rsid_notify_only)
-		REQ(init_modem, mbin, freq);
+	if (!progdefaults.rsid_notify_only) {
+		if (progdefaults.rsid_squelch)
+			REQ(init_modem_squelch, mbin, freq);
+		else
+			REQ(init_modem, mbin, freq);
+	}
 }
 
 //=============================================================================

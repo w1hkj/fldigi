@@ -318,6 +318,7 @@ extern Fl_Check_Button *chkRSidMark;
 extern Fl_Check_Button *chkRSidAutoDisable;
 extern Fl_Check_Button *chkRSidNotifyOnly;
 extern Fl_Button *bRSIDRxModes;
+extern Fl_Value_Slider2 *sldrRSIDsquelch;
 extern Fl_Check_Button *chkRSidPost;
 extern Fl_Button *bRSIDTxModes;
 extern Fl_Group *tabMisc;
