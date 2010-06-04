@@ -1,8 +1,12 @@
+2010-06-04  David Freese  <w1hkj@w1hkj.com>
+
+	e3f6f9b: TX Wrap disable
+	9464c4b: RSID squelch
+	a34b1e0: RSID tx suppression
+	439627c: Change Log
 
 
 =Version 3.20.12=
-
-2010-05-15  David Freese  <w1hkj@w1hkj.com>
 
 	2f3aa34: Pulse audio
 	d8a519e: PSK RSID
