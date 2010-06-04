@@ -213,6 +213,7 @@ extern bool QuerySqlOnOff();
 
 extern void init_modem(trx_mode mode, int freq = 0);
 extern void init_modem_sync(trx_mode mode, int freq = 0);
+extern void init_modem_squelch(trx_mode mode, int freq = 0);
 
 extern void start_tx();
 extern void abort_tx();

@@ -832,6 +832,23 @@ void cb_wMain(Fl_Widget*, void*)
 	fl_digi_main->hide();
 }
 
+int squelch_val;
+void rsid_squelch_timer(void*)
+{
+	progStatus.sqlonoff = squelch_val;
+	if (progStatus.sqlonoff)
+		btnSQL->value(1);
+}
+
+void init_modem_squelch(trx_mode mode, int freq)
+{
+	squelch_val = progStatus.sqlonoff;
+	progStatus.sqlonoff = 0;
+	btnSQL->value(0);
+	Fl::add_timeout(progdefaults.rsid_squelch, rsid_squelch_timer);
+	init_modem(mode, freq);
+}
+
 void init_modem(trx_mode mode, int freq)
 {
 	ENSURE_THREAD(FLMAIN_TID);

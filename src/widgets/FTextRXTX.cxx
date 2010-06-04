@@ -536,6 +536,7 @@ void FTextRX::menu_cb(size_t item)
 
 	case RX_MENU_WRAP:
 		set_word_wrap(!wrap);
+		restore_wrap = wrap;
 		break;
 
 	case RX_MENU_SCROLL_HINTS:
@@ -748,6 +749,7 @@ void FTextTX::clear_sent(void)
 	txpos = 0;
 	bkspaces = 0;
 	PauseBreak = false;
+	set_word_wrap(restore_wrap);
 }
 
 /// Returns boolean <eot> end of text
@@ -962,8 +964,9 @@ int FTextTX::handle_key_macro(int key)
 
 int FTextTX::handle_dnd_drag(int pos)
 {
-	if (pos >= txpos)
+	if (pos >= txpos) {
 		return FTextEdit::handle_dnd_drag(pos);
+	}
 	else // refuse drop inside transmitted text
 		return 0;
 }
@@ -1050,11 +1053,15 @@ void FTextTX::menu_cb(size_t item)
 	case TX_MENU_PASTE:
 		kf_paste(0, this);
 		break;
-	case TX_MENU_READ:
+	case TX_MENU_READ: {
+		restore_wrap = wrap;
+		set_word_wrap(false);
 		readFile();
 		break;
+	}
 	case TX_MENU_WRAP:
 		set_word_wrap(!wrap);
+		restore_wrap = wrap;
 		break;
 	}
 }
