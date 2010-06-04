@@ -71,6 +71,9 @@
         ELEM_(bool, rsidWideSearch, "RSIDWIDESEARCH",                                   \
               "RSID detector searches the entire passband",                             \
               false)                                                                    \
+        ELEM_(int, rsid_squelch, "RSIDSQUELCH",                                         \
+              "RSID detection opens squelch for nn seconds",                            \
+              5)                                                                        \
         ELEM_(bool, rsid, "RECEIVERSID",                                                \
               "Enable Reed Soloman ID decoding",                                        \
               false)                                                                    \
@@ -401,7 +404,7 @@
               4)                                                                        \
         ELEM_(bool, olivia8bit, "OLIVIA8BIT",                                           \
               "8-bit extended characters",                                              \
-              false)                                                                    \
+              true)                                                                     \
         /* CONTESTIA */                                                                 \
         ELEM_(int, contestiatones, "CONTESTIATONES",                                    \
               "Number of tones. Values are as follows:\n"                               \
@@ -419,7 +422,7 @@
               4)                                                                        \
         ELEM_(bool, contestia8bit, "CONTESTIA8BIT",                                     \
               "8-bit extended characters",                                              \
-              false)                                                                    \
+              true)                                                                     \
         /* THOR */                                                                      \
         ELEM_(double, THOR_BW, "THORBW",                                                \
               "Filter bandwidth factor (bandwidth relative to signal width)",           \
@@ -458,7 +461,7 @@
         /* MT63 */                                                                      \
         ELEM_(bool, mt63_8bit, "MT638BIT",                                              \
               "8-bit extended characters",                                              \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(int, mt63_interleave, "MT63INTERLEAVE",                                   \
               "64-bit (long) interleave.  Values are as follows:\n"                     \
               "  0: short (32-bit); 1: long (64-bit).",                                 \
@@ -572,7 +575,7 @@
               true)                                                                     \
         ELEM_(bool, autoextract, "AUTOEXTRACT",                                         \
               "Enable detection and extraction of \"wrapped\" text",                    \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, speak, "SPEAK",                                                     \
               "Capture text to file 'talk/textout.txt'",                                \
               false)                                                                    \
