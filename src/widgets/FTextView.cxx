@@ -75,11 +75,20 @@ FTextBase::FTextBase(int x, int y, int w, int h, const char *l)
 	cursor_style(Fl_Text_Editor_mod::NORMAL_CURSOR);
 
 	wrap_mode(wrap, wrap_col);
+	restore_wrap = wrap;
+//	wrap_restore = true;
 
 	// Do we want narrower scrollbars? The default width is 16.
 	// scrollbar_width((int)floor(scrollbar_width() * 3.0/4.0));
 
 	reset_styles(SET_FONT | SET_SIZE | SET_COLOR);
+}
+
+void FTextBase::clear()
+{
+	tbuf->text("");
+	sbuf->text("");
+	set_word_wrap(restore_wrap);
 }
 
 int FTextBase::handle(int event)
@@ -558,6 +567,7 @@ void FTextView::menu_cb(size_t item)
 		break;
 	case VIEW_MENU_WRAP:
 		set_word_wrap(!wrap);
+		restore_wrap = wrap;
 		break;
 	}
 }
@@ -754,6 +764,9 @@ int FTextEdit::handle_dnd_drag(int pos)
 /// @return 1 or FTextBase::handle(FL_PASTE)
 int FTextEdit::handle_dnd_drop(void)
 {
+	restore_wrap = wrap;
+	set_word_wrap(false);
+
 	if (Fl::event_shift())
 		return FTextBase::handle(FL_PASTE);
 
@@ -831,6 +844,7 @@ void FTextEdit::menu_cb(size_t item)
 		break;
 	case EDIT_MENU_WRAP:
 		set_word_wrap(!wrap);
+		restore_wrap = wrap;
 		break;
 	}
 }
