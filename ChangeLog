@@ -1,3 +1,33 @@
+2010-06-04  David Freese  <w1hkj@w1hkj.com>
+
+	6e617cf: TX Wrap disable
+	d46b8a4: RSID squelch
+	03f1ba7: RSID tx suppression
+	0790350: Pulse audio
+
+2010-05-15  Remi Chateauneu  <rchateau@DuoLnx.(none)>
+
+	f6f0ea9: WEFAX bug fixes
+	669ee37: WEFAX additions
+	e9d7520: WEFAX image size
+
+2010-05-15  David Freese  <w1hkj@w1hkj.com>
+
+	d7d19f0: PSK RSID
+	c3fbd31: RSID DomEX-FEC
+
+2010-05-13  Stelios Bounanos  <vcs@enotty.net>
+
+	e36afb0: Implement CLOCK_MONOTONIC on OS X
+
+2010-05-13  David Freese  <w1hkj@w1hkj.com>
+
+	1387fbe: WEFAX MINGW32
+
 2010-05-03  Remi Chateauneu  <rchateau@DuoLnx.(none)>
 
-	c80aea0: WEFAX addition
+	2508852: WEFAX addition
+
+2010-05-02  David Freese  <w1hkj@w1hkj.com>
+
+	ed574fb: Configure.ac update
