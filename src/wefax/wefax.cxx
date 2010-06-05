@@ -1567,13 +1567,13 @@ static double current_time(void)
 }
 
 #else
+#include <ctime>
 /// This is much less accurate.
 static double current_time(void)
 {
-	struct time tmp_tim ;
-	time( &tmp_timb );
+	clock_t clks = clock();
 
-	return tmp_timeb ;
+	return clks * 1.0 / CLOCKS_PER_SEC;
 }
 #endif
 
