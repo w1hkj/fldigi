@@ -1,5 +1,7 @@
-2010-06-04  David Freese  <w1hkj@w1hkj.com>
+2010-06-05  David Freese  <w1hkj@w1hkj.com>
 
+	a7f6d85: RSID new codes
+	870bfa6: WEFAX time
 	6e617cf: TX Wrap disable
 	d46b8a4: RSID squelch
 	03f1ba7: RSID tx suppression
