@@ -1665,8 +1665,10 @@ void SoundPulse::flush(unsigned dir)
 {
 	int err = PA_OK;
 	if ((dir == 1 || dir == UINT_MAX) && sd[1].stream) {
-		// wait for audio to finish playing - deprecated
-		return;
+		// wait for audio to finish playing
+//		pa_simple_drain(sd[1].stream, &err);
+		MilliSleep(SCBLOCKSIZE * 1000 / sd[1].stream_params.rate);
+		pa_simple_flush(sd[1].stream, &err);
 	}
 
 	if ((dir == 0 || dir == UINT_MAX) && sd[0].stream) {
