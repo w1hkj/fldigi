@@ -167,6 +167,15 @@ const dxcc* dxcc_lookup(const char* callsign)
 	// erase the '=' and do a longest prefix search
 	sstr.erase(0, 1);
 	size_t len = sstr.length();
+// accomodate special case for KG4... calls
+// all two letter suffix KG4 calls are Guantanamo
+// all others are US non Guantanamo
+	if (sstr.find("KG4") != string::npos) {
+		if (len == 4 || len == 6) {
+			sstr = "K";
+			len = 1;
+		}
+	}
 	do {
 		sstr.resize(len--);
 		if ((entry = cmap->find(sstr)) != cmap->end())
