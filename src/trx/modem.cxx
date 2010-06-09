@@ -422,11 +422,13 @@ void modem::videoText()
 		wfid_text(progdefaults.strTextid);
 		progdefaults.macrotextid = false;
 	}
-	if (progdefaults.sendid == true) {
-		wfid_text(mode_info[mode].sname);
-	} else if (progdefaults.macroid == true) {
-		wfid_text(mode_info[mode].sname);
-		progdefaults.macroid = false;
+	if (progdefaults.videoid_modes.test(mode)) {
+		if (progdefaults.sendid == true) {
+			wfid_text(mode_info[mode].sname);
+		} else if (progdefaults.macroid == true) {
+			wfid_text(mode_info[mode].sname);
+			progdefaults.macroid = false;
+		}
 	}
 }
 
