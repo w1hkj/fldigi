@@ -562,7 +562,8 @@ void modem::cwid_sendtext (const string& s)
 
 void modem::cwid()
 {
-	if (progdefaults.CWid == true || progdefaults.macroCWid == true) {
+	if (progdefaults.cwid_modes.test(mode) &&
+		(progdefaults.CWid == true || progdefaults.macroCWid == true)) {
 		string tosend = " DE ";
 		tosend += progdefaults.myCall;
 		cwid_sendtext(tosend);
