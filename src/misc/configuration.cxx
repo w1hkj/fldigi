@@ -335,7 +335,7 @@ bool configuration::readDefaultsXML()
 	xmlbuf.reserve(f.tellg()); // reserve some space to avoid reallocations
 	f.seekg(0, ios::beg);
 
-	char line[BUFSIZ];
+	char line[2048];
 	while (f.getline(line, sizeof(line)))
 		xmlbuf.append(line).append("\n");
 	f.close();
