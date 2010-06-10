@@ -369,7 +369,8 @@ void cb_contestiaCustom(Fl_Widget *w, void *arg);
 
 void cb_rtty45(Fl_Widget *w, void *arg);
 void cb_rtty50(Fl_Widget *w, void *arg);
-void cb_rtty75(Fl_Widget *w, void *arg);
+void cb_rtty75N(Fl_Widget *w, void *arg);
+void cb_rtty75W(Fl_Widget *w, void *arg);
 void cb_rttyCustom(Fl_Widget *w, void *arg);
 
 Fl_Widget *modem_config_tab;
@@ -487,7 +488,8 @@ Fl_Menu_Item quick_change_contestia[] = {
 Fl_Menu_Item quick_change_rtty[] = {
 	{ "RTTY-45", 0, cb_rtty45, (void *)MODE_RTTY },
 	{ "RTTY-50", 0, cb_rtty50, (void *)MODE_RTTY },
-	{ "RTTY-75", 0, cb_rtty75, (void *)MODE_RTTY },
+	{ "RTTY-75N", 0, cb_rtty75N, (void *)MODE_RTTY },
+	{ "RTTY-75W", 0, cb_rtty75W, (void *)MODE_RTTY },
 	{ _("Custom..."), 0, cb_rttyCustom, (void *)MODE_RTTY },
 	{ 0 }
 };
@@ -700,7 +702,16 @@ void cb_rtty50(Fl_Widget *w, void *arg)
 	cb_init_mode(w, arg);
 }
 
-void cb_rtty75(Fl_Widget *w, void *arg)
+void cb_rtty75N(Fl_Widget *w, void *arg)
+{
+	progdefaults.rtty_baud = 4;
+	progdefaults.rtty_bits = 0;
+	progdefaults.rtty_shift = 3;
+	set_rtty_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
+void cb_rtty75W(Fl_Widget *w, void *arg)
 {
 	progdefaults.rtty_baud = 4;
 	progdefaults.rtty_bits = 0;
@@ -2478,7 +2489,8 @@ Fl_Menu_Item menu_[] = {
 { RTTY_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { "RTTY-45", 0, cb_rtty45, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "RTTY-50", 0, cb_rtty50, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ "RTTY-75", 0, cb_rtty75, (void *)MODE_RTTY, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ "RTTY-75N", 0, cb_rtty75N, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "RTTY-75W", 0, cb_rtty75W, (void *)MODE_RTTY, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 { _("Custom..."), 0, cb_rttyCustom, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
@@ -4017,7 +4029,8 @@ Fl_Menu_Item alt_menu_[] = {
 {"RTTY", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { "RTTY-45", 0, cb_rtty45, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "RTTY-50", 0, cb_rtty50, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ "RTTY-75", 0, cb_rtty75, (void *)MODE_RTTY, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ "RTTY-75N", 0, cb_rtty75N, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "RTTY-75W", 0, cb_rtty75W, (void *)MODE_RTTY, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 { _("Custom..."), 0, cb_rttyCustom, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
