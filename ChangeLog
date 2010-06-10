@@ -1,4 +1,10 @@
-2010-06-08  David Freese  <w1hkj@w1hkj.com>
+2010-06-10  David Freese  <w1hkj@w1hkj.com>
+
+	caff457: RTTY 75 baud
+	52dc87d: Read Config
+
+
+=Version 3.20.14=
 
 	e718eba: CTY.DAT-KG4
 	2c914bd: RSID new codes
