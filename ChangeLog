@@ -1,5 +1,10 @@
-2010-06-06  David Freese  <w1hkj@w1hkj.com>
+2010-06-10  David Freese  <w1hkj@w1hkj.com>
 
+	e37116b: RTTY 75 baud
+	edf6b4b: Read Config
+	629a404: VIDEO ID
+	d9a2e53: CTY.DAT-KG4
+	e5d8785: PA flush
 	c5f12bb: RSID code base
 	a7f6d85: RSID new codes
 	870bfa6: WEFAX time
