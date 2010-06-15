@@ -59,7 +59,7 @@
 using namespace std;
 
 
-string qrzhost = "online.qrz.com";
+string qrzhost = "xml.qrz.com"; //"online.qrz.com";
 string qrzSessionKey;
 string qrzalert;
 string qrzerror;
