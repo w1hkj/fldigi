@@ -869,7 +869,7 @@ void cabrillo_append_qso (FILE *fp, cQsoRec *rec)
 	if (btnCabMode->value()) {
 		mode = rec->getField(MODE);
 		if (mode.compare("USB") == 0 || mode.compare("LSB") == 0 ||
-		    mode.compare("PH") == 0 ) mode = "PH";
+			mode.compare("SSB") == 0 || mode.compare("PH") == 0 ) mode = "PH";
 		else if (mode.compare("FM") == 0 || mode.compare("CW") == 0 ) ;
 		else mode = "RY";
 		if (mode.compare("PH") == 0 || mode.compare("FM") == 0 ) rst_len = 2;
