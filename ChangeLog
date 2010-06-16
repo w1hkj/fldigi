@@ -1,5 +1,8 @@
-2010-06-10  David Freese  <w1hkj@w1hkj.com>
+2010-06-15  David Freese  <w1hkj@w1hkj.com>
 
+	4d1c449: PH Cabrillo report
+	fd7ca52: QRZ xml service
+	5c0eea9: CWID
 	e37116b: RTTY 75 baud
 	edf6b4b: Read Config
 	629a404: VIDEO ID
@@ -35,7 +38,3 @@
 2010-05-03  Remi Chateauneu  <rchateau@DuoLnx.(none)>
 
 	2508852: WEFAX addition
-
-2010-05-02  David Freese  <w1hkj@w1hkj.com>
-
-	ed574fb: Configure.ac update
