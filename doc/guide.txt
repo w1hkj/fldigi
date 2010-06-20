@@ -412,7 +412,7 @@ information about the program.
 
 [[ref-rsid]]
 .RSID
-This button turns on the receive RSID (automatic mode detection and tuning)
+The RxID button turns on the receive RSID (automatic mode detection and tuning)
 feature. When in use, the button turns yellow and no text reception is possible
 until a signal is identified, or the feature is turned off again. If you plan to
 use the RSID feature on receive, you must leave the 'Start New Modem at Sweet
@@ -477,7 +477,7 @@ frequency (typically, the centre of the transceiver's passband). The Store
 button allows you to store or recall the current frequency and mode. See the
 {docs} for details on these functions.
 
-The +Lk+ button locks the transmit frequency (fixes the red cursors), and the
+The +Lk+ button locks the transmit frequency (and illuminates a green marker), and the
 +Rv+ button turns the signal decoding upside down (some modes are sideband
 sensitive, and if they are the wrong way up, can't be received
 correctly). Remember to turn this one off when you're done, or you won't receive
