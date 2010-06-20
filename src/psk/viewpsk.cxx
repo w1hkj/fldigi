@@ -100,24 +100,29 @@ void viewpsk::restart(trx_mode pskmode)
 		dcdbits = 32;
 		break;
 	case MODE_PSK63:
+	case MODE_PSK63F:
 		symbollen = 128;
 		dcdbits = 64;
 		break;
 	case MODE_PSK125:
+	case MODE_PSK125R:
 		symbollen = 64;
 		dcdbits = 128;
 		break;
 	case MODE_PSK250:
+	case MODE_PSK250R:
 		symbollen = 32;
 		dcdbits = 256;
 		break;
 	case MODE_PSK500:
+	case MODE_PSK500R:
 		symbollen = 16;
 		dcdbits = 512;
 		break;
-	default: // MODE_PSK31;
-		symbollen = 256;
+	default: // punt! mode not one of the above.
+		symbollen = 512;
 		dcdbits = 32;
+		break;
 	}
 
 	wsincfilt(fir1c, 1.0 / symbollen, true);	// creates fir1c matched sin(x)/x filter w blackman
