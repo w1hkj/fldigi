@@ -61,13 +61,15 @@ enum RTTY_PARITY {
 	RTTY_PARITY_ONE
 };
 
-extern double _SHIFT[];
-extern double _BAUD[];
-extern int _BITS[];
 
 //enum TTY_MODE { LETTERS, FIGURES };
 
 class rtty : public modem {
+public:
+	static const double SHIFT[];
+	static const double BAUD[];
+	static const int    BITS[];
+
 private:
 
 	double shift;

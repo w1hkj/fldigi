@@ -440,8 +440,8 @@ void modem::videoText()
 			break;
 		case MODE_RTTY:
 			snprintf(idtxt, TLEN, "%s-%d/%d", mode_info[mode].vid_name,
-				(int)_BAUD[progdefaults.rtty_baud],
-				_BITS[progdefaults.rtty_bits]);
+				static_cast<int>(rtty::BAUD[progdefaults.rtty_baud]),
+				rtty::BITS[progdefaults.rtty_bits]);
 			break;
 		case MODE_DOMINOEX4: case MODE_DOMINOEX5: case MODE_DOMINOEX8:
 		case MODE_DOMINOEX11: case MODE_DOMINOEX16: case MODE_DOMINOEX22:
