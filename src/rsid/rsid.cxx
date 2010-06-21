@@ -120,16 +120,25 @@ LOG_FILE_SOURCE(debug::LOG_MODEM);
         ELEM_(47, THROBX_2, MODE_THROBX2)               \
         ELEM_(146, THROBX_4, MODE_THROBX4)              \
                                                         \
-        ELEM_(55, CONTESTIA_4_250, MODE_CONTESTIA)      \
-        ELEM_(54, CONTESTIA_4_500, MODE_CONTESTIA)      \
+        ELEM_(204, CONTESTIA_4_125, MODE_CONTESTIA)     \
+        ELEM_(55,  CONTESTIA_4_250, MODE_CONTESTIA)     \
+        ELEM_(54,  CONTESTIA_4_500, MODE_CONTESTIA)     \
+        ELEM_(255, CONTESTIA_4_1000, MODE_CONTESTIA)    \
+        ELEM_(254, CONTESTIA_4_2000, MODE_CONTESTIA)    \
+                                                        \
         ELEM_(169, CONTESTIA_8_125, MODE_CONTESTIA)     \
-        ELEM_(49, CONTESTIA_8_250, MODE_CONTESTIA)      \
-        ELEM_(52, CONTESTIA_8_500, MODE_CONTESTIA)      \
+        ELEM_(49,  CONTESTIA_8_250, MODE_CONTESTIA)     \
+        ELEM_(52,  CONTESTIA_8_500, MODE_CONTESTIA)     \
         ELEM_(117, CONTESTIA_8_1000, MODE_CONTESTIA)    \
-        ELEM_(50, CONTESTIA_16_500, MODE_CONTESTIA)     \
-        ELEM_(53, CONTESTIA_16_1000, MODE_CONTESTIA)    \
-        ELEM_(51, CONTESTIA_32_1000, MODE_CONTESTIA)    \
+        ELEM_(247, CONTESTIA_8_2000, MODE_CONTESTIA)    \
+                                                        \
+        ELEM_(50,  CONTESTIA_16_500, MODE_CONTESTIA)    \
+        ELEM_(53,  CONTESTIA_16_1000, MODE_CONTESTIA)   \
+        ELEM_(259, CONTESTIA_16_2000, MODE_CONTESTIA)   \
+                                                        \
+        ELEM_(51,  CONTESTIA_32_1000, MODE_CONTESTIA)   \
         ELEM_(201, CONTESTIA_32_2000, MODE_CONTESTIA)   \
+                                                        \
         ELEM_(194, CONTESTIA_64_500, MODE_CONTESTIA)    \
         ELEM_(193, CONTESTIA_64_1000, MODE_CONTESTIA)   \
         ELEM_(191, CONTESTIA_64_2000, MODE_CONTESTIA)   \
@@ -152,15 +161,22 @@ LOG_FILE_SOURCE(debug::LOG_MODEM);
         ELEM_(119, RTTYM_8_1000, NUM_MODES)             \
         ELEM_(170, RTTYM_8_125, NUM_MODES)              \
                                                         \
-        ELEM_(69, OLIVIA_8_250, MODE_OLIVIA)            \
-        ELEM_(70, OLIVIA_16_500, MODE_OLIVIA)           \
-        ELEM_(71, OLIVIA_32_1000, MODE_OLIVIA)          \
-        ELEM_(72, OLIVIA_8_500, MODE_OLIVIA)            \
-        ELEM_(73, OLIVIA_16_1000, MODE_OLIVIA)          \
-        ELEM_(74, OLIVIA_4_500, MODE_OLIVIA)            \
-        ELEM_(75, OLIVIA_4_250, MODE_OLIVIA)            \
-        ELEM_(116, OLIVIA_8_1000, MODE_OLIVIA)          \
+        ELEM_(203, OLIVIA_4_125, MODE_OLIVIA)           \
+        ELEM_(75,  OLIVIA_4_250, MODE_OLIVIA)           \
+        ELEM_(74,  OLIVIA_4_500, MODE_OLIVIA)           \
+        ELEM_(229, OLIVIA_4_1000, MODE_OLIVIA)          \
+        ELEM_(238, OLIVIA_4_2000, MODE_OLIVIA)          \
         ELEM_(163, OLIVIA_8_125, MODE_OLIVIA)           \
+        ELEM_(69,  OLIVIA_8_250, MODE_OLIVIA)           \
+        ELEM_(72,  OLIVIA_8_500, MODE_OLIVIA)           \
+        ELEM_(116, OLIVIA_8_1000, MODE_OLIVIA)          \
+        ELEM_(214, OLIVIA_8_2000, MODE_OLIVIA)          \
+        ELEM_(70,  OLIVIA_16_500, MODE_OLIVIA)          \
+        ELEM_(73,  OLIVIA_16_1000, MODE_OLIVIA)         \
+        ELEM_(234, OLIVIA_16_2000, MODE_OLIVIA)         \
+        ELEM_(71,  OLIVIA_32_1000, MODE_OLIVIA)         \
+        ELEM_(221, OLIVIA_32_2000, MODE_OLIVIA)         \
+        ELEM_(211, OLIVIA_64_2000, MODE_OLIVIA)         \
                                                         \
         ELEM_(76, PAX, NUM_MODES)                       \
         ELEM_(77, PAX2, NUM_MODES)                      \
