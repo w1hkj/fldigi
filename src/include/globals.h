@@ -147,6 +147,7 @@ struct mode_info_t {
 	const char *name;
 	const char *pskmail_name;
 	const char *adif_name;
+	const char *vid_name;
 };
 extern const struct mode_info_t mode_info[NUM_MODES];
 

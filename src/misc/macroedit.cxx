@@ -132,7 +132,7 @@ void loadBrowser(Fl_Widget *widget) {
 
 	w->add(LINE_SEP);
 	w->add(_("<CWID>\tCW identifier"));
-	w->add(_("<ID>\tmode ID"));
+	w->add(_("<ID>\tsend mode ID in video text"));
 	w->add(_("<TEXT>\tvideo text"));
 	w->add(_("<TXRSID:on|off|t>\tTx RSID on,off,toggle"));
 	w->add(_("<RXRSID:on|off|t>\tRx RSID on,off,toggle"));

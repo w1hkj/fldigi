@@ -2651,11 +2651,11 @@ progdefaults.changed = true;}
             code0 {o->value(progdefaults.sendtextid);}
           }
           Fl_Input valVideotext {
-            label {Video text:}
+            label {:}
             callback {progdefaults.strTextid = o->value();
 progdefaults.changed = true;}
             tooltip {Limit to a few characters,
-as in CQEM or IOTA etc.} xywh {365 82 120 20}
+as in CQEM or IOTA etc.} xywh {182 83 161 20}
             code0 {o->value(progdefaults.strTextid.c_str());}
             code1 {valVideotext->labelsize(FL_NORMAL_SIZE);}
             class Fl_Input2
@@ -2663,24 +2663,33 @@ as in CQEM or IOTA etc.} xywh {365 82 120 20}
           Fl_Check_Button chkID_SMALL {
             label {Use small font}
             callback {progdefaults.ID_SMALL=o->value();
-if (o->value() == 1)
-sldrVideowidth->deactivate();
-else
-sldrVideowidth->activate();
 progdefaults.changed = true;}
             tooltip {ON - small font
 OFF - large font} xywh {15 109 120 20} down_box DOWN_BOX value 1
             code0 {o->value(progdefaults.ID_SMALL);}
           }
           Fl_Value_Slider sldrVideowidth {
-            label {Video row width:}
+            label {Chars/Row:}
             callback {progdefaults.videowidth = (int)o->value();
 progdefaults.changed = true;}
-            tooltip {Set the number of characters per row} xywh {365 109 120 20} type Horizontal align 4 minimum 1 maximum 4 step 1 value 1 textsize 14
+            tooltip {Set the number of characters per row} xywh {243 109 100 20} type Horizontal align 4 minimum 1 maximum 8 step 1 value 4 textsize 14
             code0 {o->value(progdefaults.videowidth);}
-            code1 {if (progdefaults.ID_SMALL) o->deactivate();}
             code2 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
             class Fl_Value_Slider2
+          }
+          Fl_Check_Button btn_vidlimit {
+            label {500 Hz limit}
+            callback {progdefaults.vidlimit=o->value();
+progdefaults.changed = true;}
+            xywh {352 85 110 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.vidlimit);}
+          }
+          Fl_Check_Button btn_vidmodelimit {
+            label {Mode width limit}
+            callback {progdefaults.vidmodelimit=o->value();
+progdefaults.changed=true;}
+            xywh {352 111 110 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.vidmodelimit);}
           }
           Fl_Button bVideoIDModes {
             label {Video ID modes}
@@ -2688,7 +2697,7 @@ progdefaults.changed = true;}
 mode_browser->callback(0);
 mode_browser->show(&progdefaults.videoid_modes);
 progdefaults.changed = true;}
-            xywh {365 58 120 20}
+            xywh {223 58 120 20}
           }
         }
         Fl_Group sld {

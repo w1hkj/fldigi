@@ -308,6 +308,8 @@ extern Fl_Check_Button *btnsendvideotext;
 extern Fl_Input2 *valVideotext;
 extern Fl_Check_Button *chkID_SMALL;
 extern Fl_Value_Slider2 *sldrVideowidth;
+extern Fl_Check_Button *btn_vidlimit;
+extern Fl_Check_Button *btn_vidmodelimit;
 extern Fl_Button *bVideoIDModes;
 extern Fl_Group *sld;
 extern Fl_Check_Button *btnCWID;

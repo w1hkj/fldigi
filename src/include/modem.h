@@ -144,18 +144,15 @@ public:
 // for waterfall id transmission
 private:
 
-	static	int			wfid_mask[];
 	static  double		wfid_w[];
-	static  double		wfid_txpulse[];
 	static  double		wfid_outbuf[];
+	int		vidwidth;
 
-	void	wfid_make_pulse();
-	void	wfid_make_tones();
-	void	wfid_send(long int);
-	double	peakval(int symbol, int mask);
-	int 	findmask(int symbol);
+	void	wfid_make_tones(int numchars);
+	void	wfid_send(int numchars);
+//	double	peakval(int symbol, int mask);
+//	int 	findmask(int symbol);
 
-	void	wfid_sendchar(char c);
 	void	wfid_sendchars(std::string s);
 
 	double  PTTnco();

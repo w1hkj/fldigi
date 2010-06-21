@@ -533,6 +533,12 @@
         ELEM_(int, videowidth, "VIDEOWIDTH",                                            \
               "Video ID text width (characters per row)",                               \
               1)                                                                        \
+        ELEM_(bool, vidlimit, "VIDLIMIT",                                               \
+              "Limit video width to 500 Hz",                                            \
+              true)                                                                     \
+        ELEM_(bool, vidmodelimit, "VIDMODELIMIT",                                       \
+              "Limit video width to mode bandwidth",                                    \
+              true)                                                                     \
         ELEM_(bool, ID_SMALL, "IDSMALL",                                                \
               "Use small video ID font",                                                \
               true)                                                                     \
@@ -1106,7 +1112,7 @@
               "report.pskreporter.info")                                                \
         ELEM_(std::string, pskrep_port, "PSKREPPORT",                                   \
               "Reception report server port",                                           \
-              "4739")
+              "4739")                                                                   \
 
 
 // declare the struct

@@ -2095,10 +2095,6 @@ Fl_Check_Button *chkID_SMALL=(Fl_Check_Button *)0;
 
 static void cb_chkID_SMALL(Fl_Check_Button* o, void*) {
   progdefaults.ID_SMALL=o->value();
-if (o->value() == 1)
-sldrVideowidth->deactivate();
-else
-sldrVideowidth->activate();
 progdefaults.changed = true;
 }
 
@@ -2107,6 +2103,20 @@ Fl_Value_Slider2 *sldrVideowidth=(Fl_Value_Slider2 *)0;
 static void cb_sldrVideowidth(Fl_Value_Slider2* o, void*) {
   progdefaults.videowidth = (int)o->value();
 progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_vidlimit=(Fl_Check_Button *)0;
+
+static void cb_btn_vidlimit(Fl_Check_Button* o, void*) {
+  progdefaults.vidlimit=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_vidmodelimit=(Fl_Check_Button *)0;
+
+static void cb_btn_vidmodelimit(Fl_Check_Button* o, void*) {
+  progdefaults.vidmodelimit=o->value();
+progdefaults.changed=true;
 }
 
 Fl_Button *bVideoIDModes=(Fl_Button *)0;
@@ -5171,7 +5181,7 @@ ll with your audio device."));
             btnsendvideotext->callback((Fl_Callback*)cb_btnsendvideotext);
             o->value(progdefaults.sendtextid);
           } // Fl_Check_Button* btnsendvideotext
-          { Fl_Input2* o = valVideotext = new Fl_Input2(365, 82, 120, 20, _("Video text:"));
+          { Fl_Input2* o = valVideotext = new Fl_Input2(182, 83, 161, 20, _(":"));
             valVideotext->tooltip(_("Limit to a few characters,\nas in CQEM or IOTA etc."));
             valVideotext->box(FL_DOWN_BOX);
             valVideotext->color((Fl_Color)FL_BACKGROUND2_COLOR);
@@ -5193,7 +5203,7 @@ ll with your audio device."));
             chkID_SMALL->callback((Fl_Callback*)cb_chkID_SMALL);
             o->value(progdefaults.ID_SMALL);
           } // Fl_Check_Button* chkID_SMALL
-          { Fl_Value_Slider2* o = sldrVideowidth = new Fl_Value_Slider2(365, 109, 120, 20, _("Video row width:"));
+          { Fl_Value_Slider2* o = sldrVideowidth = new Fl_Value_Slider2(243, 109, 100, 20, _("Chars/Row:"));
             sldrVideowidth->tooltip(_("Set the number of characters per row"));
             sldrVideowidth->type(1);
             sldrVideowidth->box(FL_DOWN_BOX);
@@ -5204,18 +5214,27 @@ ll with your audio device."));
             sldrVideowidth->labelsize(14);
             sldrVideowidth->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
             sldrVideowidth->minimum(1);
-            sldrVideowidth->maximum(4);
+            sldrVideowidth->maximum(8);
             sldrVideowidth->step(1);
-            sldrVideowidth->value(1);
+            sldrVideowidth->value(4);
             sldrVideowidth->textsize(14);
             sldrVideowidth->callback((Fl_Callback*)cb_sldrVideowidth);
             sldrVideowidth->align(FL_ALIGN_LEFT);
             sldrVideowidth->when(FL_WHEN_CHANGED);
             o->value(progdefaults.videowidth);
-            if (progdefaults.ID_SMALL) o->deactivate();
             o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
           } // Fl_Value_Slider2* sldrVideowidth
-          { bVideoIDModes = new Fl_Button(365, 58, 120, 20, _("Video ID modes"));
+          { Fl_Check_Button* o = btn_vidlimit = new Fl_Check_Button(352, 85, 110, 15, _("500 Hz limit"));
+            btn_vidlimit->down_box(FL_DOWN_BOX);
+            btn_vidlimit->callback((Fl_Callback*)cb_btn_vidlimit);
+            o->value(progdefaults.vidlimit);
+          } // Fl_Check_Button* btn_vidlimit
+          { Fl_Check_Button* o = btn_vidmodelimit = new Fl_Check_Button(352, 111, 110, 15, _("Mode width limit"));
+            btn_vidmodelimit->down_box(FL_DOWN_BOX);
+            btn_vidmodelimit->callback((Fl_Callback*)cb_btn_vidmodelimit);
+            o->value(progdefaults.vidmodelimit);
+          } // Fl_Check_Button* btn_vidmodelimit
+          { bVideoIDModes = new Fl_Button(223, 58, 120, 20, _("Video ID modes"));
             bVideoIDModes->callback((Fl_Callback*)cb_bVideoIDModes);
           } // Fl_Button* bVideoIDModes
           o->end();
