@@ -89,19 +89,19 @@ static const char szOliviaTones[] = "2|4|8|16|32|64|128|256";
 static const char szOliviaBandwidth[] = "125|250|500|1000|2000";
 static const char szContestiaTones[] = "2|4|8|16|32|64|128|256";
 static const char szContestiaBandwidth[] = "125|250|500|1000|2000";
-static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600|115200|230400|460800";} {}
-  code {} {}
+static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600|115200|230400|460800";
+static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {569 72 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
+    xywh {740 84 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {-3 0 520 372} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} selected
-        tooltip {Operator information} xywh {0 25 500 345} when 1
+        callback {progdefaults.changed = true;}
+        tooltip {Operator information} xywh {0 25 500 345} when 1 hide
       } {
         Fl_Group {} {
           label Station open
@@ -187,7 +187,7 @@ progdefaults.changed = true;}
           xywh {-3 25 508 345} selection_color 50
         } {
           Fl_Group tabUserInterface {
-            label General
+            label General open
             xywh {0 50 500 320}
           } {
             Fl_Group {} {open
@@ -905,22 +905,22 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
         }
       }
       Fl_Group tabModems {
-        label Modems
-        xywh {0 25 517 345} hide
+        label Modems open
+        xywh {0 25 517 345}
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 517 345} selection_color 50 align 9
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 500 320}
+            xywh {0 50 504 320}
           } {
             Fl_Tabs tabsCW {open
-              xywh {0 50 500 320} selection_color 50
+              xywh {0 50 504 320} selection_color 50
             } {
               Fl_Group {} {
                 label General open
-                xywh {0 75 500 295} align 5
+                xywh {0 75 500 295} align 5 hide
               } {
                 Fl_Group {} {
                   label Receive open
@@ -1134,6 +1134,175 @@ progdefaults.changed = true;}
                     code2 {o->value(progdefaults.TestChar);}
                   } {}
                 }
+              }
+              Fl_Group {} {
+                label Prosigns open
+                xywh {0 75 500 295} align 5
+              } {
+                Fl_Group {} {open
+                  xywh {4 81 492 283} box ENGRAVED_FRAME
+                } {
+                  Fl_Check_Button btnCW_use_paren {
+                    label {Use '(' paren not KN}
+                    callback {progdefaults.CW_use_paren=o->value();
+progdefaults.changed = true;}
+                    xywh {235 236 68 15} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.CW_use_paren);}
+                  }
+                }
+                Fl_Choice {mnu_prosign[0]} {
+                  label {<BT>}
+                  callback {int c = o->value();
+for (int i = 0; i < 9; i++)
+  if (mnu_prosign[i]->value() == c) {
+    mnu_prosign[i]->value(11);
+    progdefaults.CW_prosigns[i] = ' ';
+  }
+o->value(c);
+char ps[] = "~%&+={}<>[] ";
+progdefaults.CW_prosigns[0] = ps[c];
+progdefaults.changed = true;} open selected
+                  xywh {167 94 47 22} down_box BORDER_BOX color 52
+                  code0 {o->add(szProsigns);}
+                  code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[0];}
+                  code2 {o->value(o->find_item(s));}
+                } {}
+                Fl_Choice {mnu_prosign[1]} {
+                  label {<AA>}
+                  callback {int c = o->value();
+for (int i = 0; i < 9; i++)
+  if (mnu_prosign[i]->value() == c) {
+    mnu_prosign[i]->value(11);
+    progdefaults.CW_prosigns[i] = ' ';
+  }
+o->value(c); 
+char ps[] = "~%&+={}<>[] ";
+progdefaults.CW_prosigns[1] = ps[c];
+progdefaults.changed = true;} open
+                  xywh {167 121 47 22} down_box BORDER_BOX color 52
+                  code0 {o->add(szProsigns);}
+                  code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[1];}
+                  code2 {o->value(o->find_item(s));}
+                } {}
+                Fl_Choice {mnu_prosign[2]} {
+                  label {<AS>}
+                  callback {int c = o->value();
+for (int i = 0; i < 9; i++)
+  if (mnu_prosign[i]->value() == c) {
+    mnu_prosign[i]->value(11);
+    progdefaults.CW_prosigns[i] = ' ';
+  }
+o->value(c);
+char ps[] = "~%&+={}<>[] ";
+progdefaults.CW_prosigns[2] = ps[c];
+progdefaults.changed = true;} open
+                  xywh {167 149 47 22} down_box BORDER_BOX color 52
+                  code0 {o->add(szProsigns);}
+                  code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[2];}
+                  code2 {o->value(o->find_item(s));}
+                } {}
+                Fl_Choice {mnu_prosign[3]} {
+                  label {<AR>}
+                  callback {int c = o->value();
+for (int i = 0; i < 9; i++)
+  if (mnu_prosign[i]->value() == c) {
+    mnu_prosign[i]->value(11);
+    progdefaults.CW_prosigns[i] = ' ';
+  }
+o->value(c);
+char ps[] = "~%&+={}<>[] ";
+progdefaults.CW_prosigns[3] = ps[c];
+progdefaults.changed = true;} open
+                  xywh {167 176 47 22} down_box BORDER_BOX color 52
+                  code0 {o->add(szProsigns);}
+                  code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[3];}
+                  code2 {o->value(o->find_item(s));}
+                } {}
+                Fl_Choice {mnu_prosign[4]} {
+                  label {<SK>}
+                  callback {int c = o->value();
+for (int i = 0; i < 9; i++)
+  if (mnu_prosign[i]->value() == c) {
+    mnu_prosign[i]->value(11);
+    progdefaults.CW_prosigns[i] = ' ';
+  }
+o->value(c);
+char ps[] = "~%&+={}<>[] ";
+progdefaults.CW_prosigns[4] = ps[c];
+progdefaults.changed = true;} open
+                  xywh {167 204 47 22} down_box BORDER_BOX color 52
+                  code0 {o->add(szProsigns);}
+                  code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[4];}
+                  code2 {o->value(o->find_item(s));}
+                } {}
+                Fl_Choice {mnu_prosign[5]} {
+                  label {<KN>}
+                  callback {int c = o->value();
+for (int i = 0; i < 9; i++)
+  if (mnu_prosign[i]->value() == c) {
+    mnu_prosign[i]->value(11);
+    progdefaults.CW_prosigns[i] = ' ';
+  }
+o->value(c);
+char ps[] = "~%&+={}<>[] ";
+progdefaults.CW_prosigns[5] = ps[c];
+progdefaults.changed = true;} open
+                  xywh {167 232 47 22} down_box BORDER_BOX color 52
+                  code0 {o->add(szProsigns);}
+                  code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[5];}
+                  code2 {o->value(o->find_item(s));}
+                } {}
+                Fl_Choice {mnu_prosign[6]} {
+                  label {<INT>}
+                  callback {int c = o->value();
+for (int i = 0; i < 9; i++)
+  if (mnu_prosign[i]->value() == c) {
+    mnu_prosign[i]->value(11);
+    progdefaults.CW_prosigns[i] = ' ';
+  }
+o->value(c);
+char ps[] = "~%&+={}<>[] ";
+progdefaults.CW_prosigns[6] = ps[c];
+progdefaults.changed = true;} open
+                  xywh {167 259 47 22} down_box BORDER_BOX color 52
+                  code0 {o->add(szProsigns);}
+                  code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[6];}
+                  code2 {o->value(o->find_item(s));}
+                } {}
+                Fl_Choice {mnu_prosign[7]} {
+                  label {<HM>}
+                  callback {int c = o->value();
+for (int i = 0; i < 9; i++)
+  if (mnu_prosign[i]->value() == c) {
+    mnu_prosign[i]->value(11);
+    progdefaults.CW_prosigns[i] = ' ';
+  }
+o->value(c);
+char ps[] = "~%&+={}<>[] ";
+progdefaults.CW_prosigns[7] = ps[c];
+progdefaults.changed = true;} open
+                  xywh {167 287 47 22} down_box BORDER_BOX color 52
+                  code0 {o->add(szProsigns);}
+                  code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[7];}
+                  code2 {o->value(o->find_item(s));}
+                } {}
+                Fl_Choice {mnu_prosign[8]} {
+                  label {<VE>}
+                  callback {int c = o->value();
+for (int i = 0; i < 9; i++)
+  if (mnu_prosign[i]->value() == c) {
+    mnu_prosign[i]->value(11);
+    progdefaults.CW_prosigns[i] = ' ';
+  }
+o->value(c);
+char ps[] = "~%&+={}<>[] ";
+progdefaults.CW_prosigns[8] = ps[c];
+progdefaults.changed = true;} open
+                  xywh {167 315 47 22} down_box BORDER_BOX color 52
+                  code0 {o->add(szProsigns);}
+                  code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[8];}
+                  code2 {o->value(o->find_item(s));}
+                } {}
               }
             }
           }
@@ -2630,7 +2799,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabID {
-        label ID open
+        label ID
         xywh {0 25 500 345} hide
       } {
         Fl_Group {} {
