@@ -175,8 +175,9 @@ public:
 	void write(ostream& out) const
         {
 		string s = str;
-		string::size_type i = s.find('&');
+		string s2 = doc;
 
+		string::size_type i = s.find('&');
 		while (i != string::npos) {
 			s.replace(i, 1, "&amp;");
 			i = s.find('&', i + 1);
@@ -190,7 +191,21 @@ public:
 		while ((i = s.find('\'')) != string::npos)
 			s.replace(i, 1, "&apos;");
 
-		out << "<!-- " << doc << " -->\n"
+		i = s2.find('&');
+		while (i != string::npos) {
+			s2.replace(i, 1, "&amp;");
+			i = s2.find('&', i + 1);
+		}
+		while ((i = s2.find('<')) != string::npos)
+			s2.replace(i, 1, "&lt;");
+		while ((i = s2.find('>')) != string::npos)
+			s2.replace(i, 1, "&gt;");
+		while ((i = s2.find('"')) != string::npos)
+			s2.replace(i, 1, "&quot;");
+		while ((i = s2.find('\'')) != string::npos)
+			s2.replace(i, 1, "&apos;");
+
+		out << "<!-- " << s2 << " -->\n"
 		    << '<' << tag << '>' << s << "</" << tag << ">\n\n";
 	}
 	void read(const char* data) { str = data; }
@@ -331,6 +346,7 @@ bool configuration::readDefaultsXML()
 		return false;
 
 	string xmlbuf;
+
 	f.seekg(0, ios::end);
 	xmlbuf.reserve(f.tellg()); // reserve some space to avoid reallocations
 	f.seekg(0, ios::beg);

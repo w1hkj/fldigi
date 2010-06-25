@@ -867,6 +867,132 @@ static void cb_mnuTestChar(Fl_Choice* o, void*) {
   progdefaults.TestChar = o->value();
 }
 
+Fl_Check_Button *btnCW_use_paren=(Fl_Check_Button *)0;
+
+static void cb_btnCW_use_paren(Fl_Check_Button* o, void*) {
+  progdefaults.CW_use_paren=o->value();
+progdefaults.changed = true;
+}
+
+static void cb_mnu_prosign(Fl_Choice* o, void*) {
+  int c = o->value();
+for (int i = 0; i < 9; i++)
+  if (mnu_prosign[i]->value() == c) {
+    mnu_prosign[i]->value(11);
+    progdefaults.CW_prosigns[i] = ' ';
+  }
+o->value(c);
+char ps[] = "~%&+={}<>[] ";
+progdefaults.CW_prosigns[0] = ps[c];
+progdefaults.changed = true;
+}
+
+static void cb_mnu_prosign1(Fl_Choice* o, void*) {
+  int c = o->value();
+for (int i = 0; i < 9; i++)
+  if (mnu_prosign[i]->value() == c) {
+    mnu_prosign[i]->value(11);
+    progdefaults.CW_prosigns[i] = ' ';
+  }
+o->value(c); 
+char ps[] = "~%&+={}<>[] ";
+progdefaults.CW_prosigns[1] = ps[c];
+progdefaults.changed = true;
+}
+
+static void cb_mnu_prosign2(Fl_Choice* o, void*) {
+  int c = o->value();
+for (int i = 0; i < 9; i++)
+  if (mnu_prosign[i]->value() == c) {
+    mnu_prosign[i]->value(11);
+    progdefaults.CW_prosigns[i] = ' ';
+  }
+o->value(c);
+char ps[] = "~%&+={}<>[] ";
+progdefaults.CW_prosigns[2] = ps[c];
+progdefaults.changed = true;
+}
+
+static void cb_mnu_prosign3(Fl_Choice* o, void*) {
+  int c = o->value();
+for (int i = 0; i < 9; i++)
+  if (mnu_prosign[i]->value() == c) {
+    mnu_prosign[i]->value(11);
+    progdefaults.CW_prosigns[i] = ' ';
+  }
+o->value(c);
+char ps[] = "~%&+={}<>[] ";
+progdefaults.CW_prosigns[3] = ps[c];
+progdefaults.changed = true;
+}
+
+static void cb_mnu_prosign4(Fl_Choice* o, void*) {
+  int c = o->value();
+for (int i = 0; i < 9; i++)
+  if (mnu_prosign[i]->value() == c) {
+    mnu_prosign[i]->value(11);
+    progdefaults.CW_prosigns[i] = ' ';
+  }
+o->value(c);
+char ps[] = "~%&+={}<>[] ";
+progdefaults.CW_prosigns[4] = ps[c];
+progdefaults.changed = true;
+}
+
+static void cb_mnu_prosign5(Fl_Choice* o, void*) {
+  int c = o->value();
+for (int i = 0; i < 9; i++)
+  if (mnu_prosign[i]->value() == c) {
+    mnu_prosign[i]->value(11);
+    progdefaults.CW_prosigns[i] = ' ';
+  }
+o->value(c);
+char ps[] = "~%&+={}<>[] ";
+progdefaults.CW_prosigns[5] = ps[c];
+progdefaults.changed = true;
+}
+
+static void cb_mnu_prosign6(Fl_Choice* o, void*) {
+  int c = o->value();
+for (int i = 0; i < 9; i++)
+  if (mnu_prosign[i]->value() == c) {
+    mnu_prosign[i]->value(11);
+    progdefaults.CW_prosigns[i] = ' ';
+  }
+o->value(c);
+char ps[] = "~%&+={}<>[] ";
+progdefaults.CW_prosigns[6] = ps[c];
+progdefaults.changed = true;
+}
+
+static void cb_mnu_prosign7(Fl_Choice* o, void*) {
+  int c = o->value();
+for (int i = 0; i < 9; i++)
+  if (mnu_prosign[i]->value() == c) {
+    mnu_prosign[i]->value(11);
+    progdefaults.CW_prosigns[i] = ' ';
+  }
+o->value(c);
+char ps[] = "~%&+={}<>[] ";
+progdefaults.CW_prosigns[7] = ps[c];
+progdefaults.changed = true;
+}
+
+Fl_Choice *mnu_prosign[9]={(Fl_Choice *)0};
+
+static void cb_mnu_prosign8(Fl_Choice* o, void*) {
+  int c = o->value();
+for (int i = 0; i < 9; i++)
+  if (mnu_prosign[i]->value() == c) {
+    mnu_prosign[i]->value(11);
+    progdefaults.CW_prosigns[i] = ' ';
+  }
+o->value(c);
+char ps[] = "~%&+={}<>[] ";
+progdefaults.CW_prosigns[8] = ps[c];
+progdefaults.changed = true;
+}
+
 Fl_Group *tabDomEX=(Fl_Group *)0;
 
 Fl_Input2 *txtSecondary=(Fl_Input2 *)0;
@@ -2523,6 +2649,7 @@ static const char szOliviaBandwidth[] = "125|250|500|1000|2000";
 static const char szContestiaTones[] = "2|4|8|16|32|64|128|256";
 static const char szContestiaBandwidth[] = "125|250|500|1000|2000";
 static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600|115200|230400|460800";
+static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";
   { Fl_Double_Window* o = new Fl_Double_Window(500, 400, _("Fldigi configuration"));
     w = o;
     o->color((Fl_Color)FL_DARK2);
@@ -2536,6 +2663,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -3318,15 +3446,15 @@ an merging"));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 517, 345, _("Modems"));
-        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 517, 345);
           tabsModems->selection_color((Fl_Color)FL_LIGHT1);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
-          { tabCW = new Fl_Group(0, 50, 500, 320, _("CW"));
-            { tabsCW = new Fl_Tabs(0, 50, 500, 320);
+          { tabCW = new Fl_Group(0, 50, 504, 320, _("CW"));
+            { tabsCW = new Fl_Tabs(0, 50, 504, 320);
               tabsCW->selection_color((Fl_Color)FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
                 o->align(FL_ALIGN_TOP_LEFT);
+                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 130, _("Receive"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -3637,6 +3765,91 @@ an merging"));
                 } // Fl_Choice* mnuTestChar
                 o->end();
                 } // Fl_Group* o
+                o->end();
+              } // Fl_Group* o
+              { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("Prosigns"));
+                o->align(FL_ALIGN_TOP_LEFT);
+                { Fl_Group* o = new Fl_Group(4, 81, 492, 283);
+                o->box(FL_ENGRAVED_FRAME);
+                { Fl_Check_Button* o = btnCW_use_paren = new Fl_Check_Button(235, 236, 68, 15, _("Use \'(\' paren not KN"));
+                btnCW_use_paren->down_box(FL_DOWN_BOX);
+                btnCW_use_paren->callback((Fl_Callback*)cb_btnCW_use_paren);
+                o->value(progdefaults.CW_use_paren);
+                } // Fl_Check_Button* btnCW_use_paren
+                o->end();
+                } // Fl_Group* o
+                { Fl_Choice* o = mnu_prosign[0] = new Fl_Choice(167, 94, 47, 22, _("<BT>"));
+                mnu_prosign[0]->down_box(FL_BORDER_BOX);
+                mnu_prosign[0]->color((Fl_Color)FL_LIGHT2);
+                mnu_prosign[0]->callback((Fl_Callback*)cb_mnu_prosign);
+                o->add(szProsigns);
+                char s[2] = " "; s[0] = progdefaults.CW_prosigns[0];
+                o->value(o->find_item(s));
+                } // Fl_Choice* mnu_prosign[0]
+                { Fl_Choice* o = mnu_prosign[1] = new Fl_Choice(167, 121, 47, 22, _("<AA>"));
+                mnu_prosign[1]->down_box(FL_BORDER_BOX);
+                mnu_prosign[1]->color((Fl_Color)FL_LIGHT2);
+                mnu_prosign[1]->callback((Fl_Callback*)cb_mnu_prosign1);
+                o->add(szProsigns);
+                char s[2] = " "; s[0] = progdefaults.CW_prosigns[1];
+                o->value(o->find_item(s));
+                } // Fl_Choice* mnu_prosign[1]
+                { Fl_Choice* o = mnu_prosign[2] = new Fl_Choice(167, 149, 47, 22, _("<AS>"));
+                mnu_prosign[2]->down_box(FL_BORDER_BOX);
+                mnu_prosign[2]->color((Fl_Color)FL_LIGHT2);
+                mnu_prosign[2]->callback((Fl_Callback*)cb_mnu_prosign2);
+                o->add(szProsigns);
+                char s[2] = " "; s[0] = progdefaults.CW_prosigns[2];
+                o->value(o->find_item(s));
+                } // Fl_Choice* mnu_prosign[2]
+                { Fl_Choice* o = mnu_prosign[3] = new Fl_Choice(167, 176, 47, 22, _("<AR>"));
+                mnu_prosign[3]->down_box(FL_BORDER_BOX);
+                mnu_prosign[3]->color((Fl_Color)FL_LIGHT2);
+                mnu_prosign[3]->callback((Fl_Callback*)cb_mnu_prosign3);
+                o->add(szProsigns);
+                char s[2] = " "; s[0] = progdefaults.CW_prosigns[3];
+                o->value(o->find_item(s));
+                } // Fl_Choice* mnu_prosign[3]
+                { Fl_Choice* o = mnu_prosign[4] = new Fl_Choice(167, 204, 47, 22, _("<SK>"));
+                mnu_prosign[4]->down_box(FL_BORDER_BOX);
+                mnu_prosign[4]->color((Fl_Color)FL_LIGHT2);
+                mnu_prosign[4]->callback((Fl_Callback*)cb_mnu_prosign4);
+                o->add(szProsigns);
+                char s[2] = " "; s[0] = progdefaults.CW_prosigns[4];
+                o->value(o->find_item(s));
+                } // Fl_Choice* mnu_prosign[4]
+                { Fl_Choice* o = mnu_prosign[5] = new Fl_Choice(167, 232, 47, 22, _("<KN>"));
+                mnu_prosign[5]->down_box(FL_BORDER_BOX);
+                mnu_prosign[5]->color((Fl_Color)FL_LIGHT2);
+                mnu_prosign[5]->callback((Fl_Callback*)cb_mnu_prosign5);
+                o->add(szProsigns);
+                char s[2] = " "; s[0] = progdefaults.CW_prosigns[5];
+                o->value(o->find_item(s));
+                } // Fl_Choice* mnu_prosign[5]
+                { Fl_Choice* o = mnu_prosign[6] = new Fl_Choice(167, 259, 47, 22, _("<INT>"));
+                mnu_prosign[6]->down_box(FL_BORDER_BOX);
+                mnu_prosign[6]->color((Fl_Color)FL_LIGHT2);
+                mnu_prosign[6]->callback((Fl_Callback*)cb_mnu_prosign6);
+                o->add(szProsigns);
+                char s[2] = " "; s[0] = progdefaults.CW_prosigns[6];
+                o->value(o->find_item(s));
+                } // Fl_Choice* mnu_prosign[6]
+                { Fl_Choice* o = mnu_prosign[7] = new Fl_Choice(167, 287, 47, 22, _("<HM>"));
+                mnu_prosign[7]->down_box(FL_BORDER_BOX);
+                mnu_prosign[7]->color((Fl_Color)FL_LIGHT2);
+                mnu_prosign[7]->callback((Fl_Callback*)cb_mnu_prosign7);
+                o->add(szProsigns);
+                char s[2] = " "; s[0] = progdefaults.CW_prosigns[7];
+                o->value(o->find_item(s));
+                } // Fl_Choice* mnu_prosign[7]
+                { Fl_Choice* o = mnu_prosign[8] = new Fl_Choice(167, 315, 47, 22, _("<VE>"));
+                mnu_prosign[8]->down_box(FL_BORDER_BOX);
+                mnu_prosign[8]->color((Fl_Color)FL_LIGHT2);
+                mnu_prosign[8]->callback((Fl_Callback*)cb_mnu_prosign8);
+                o->add(szProsigns);
+                char s[2] = " "; s[0] = progdefaults.CW_prosigns[8];
+                o->value(o->find_item(s));
+                } // Fl_Choice* mnu_prosign[8]
                 o->end();
               } // Fl_Group* o
               tabsCW->end();

@@ -155,7 +155,7 @@ extern void set_video(double *, int, bool = true);
 extern void set_zdata(complex *, int);
 
 extern void set_CWwpm();
-extern void put_rx_char(unsigned int data);
+extern void put_rx_char(unsigned int data, int style = FTextBase::RECV);
 extern void put_sec_char( char chr );
 
 enum status_timeout {
@@ -194,7 +194,7 @@ extern void qsoSave_cb(Fl_Widget *b, void *);
 extern void put_rx_data(int *data, int len);
 extern int get_tx_char();
 extern int  get_secondary_char();
-extern void put_echo_char(unsigned int data);
+extern void put_echo_char(unsigned int data, int style = FTextBase::XMIT);
 extern void resetRTTY();
 extern void resetOLIVIA();
 extern void resetCONTESTIA();

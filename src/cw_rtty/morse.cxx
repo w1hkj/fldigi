@@ -31,6 +31,7 @@
 #include <cstring>
 
 #include "morse.h"
+#include "configuration.h"
 
 /* ---------------------------------------------------------------------- */
 
@@ -41,98 +42,91 @@
  * with a NULL entry.
  *
  * This is the main table from which the other tables are computed.
+ * 
+ * The Prosigns are also defined in the configuration.h file
+ * The user can specify the character which substitutes for the prosign
  */
 
-
 static CW_TABLE cw_table[] = {
+	/* Prosigns */
+	{'=',	"<BT>",   "-...-"	}, // 0
+	{'~',	"<AA>",   ".-.-"	}, // 1
+	{'%',	"<AS>",   ".-..."	}, // 2
+	{'+',	"<AR>",   ".-.-."	}, // 3
+	{'>',	"<SK>",   "...-.-"	}, // 4
+	{'<',	"<KN>",   "-.--."	}, // 5
+	{'&',	"<INT>",  "..-.-"	}, // 6
+	{'}',	"<HM>",   "....--"	}, // 7
+	{'{',	"<VE>",   "...-."	}, // 8
 	/* ASCII 7bit letters */
-	{"Aa",		".-",		CW_ENTRY_NORMAL},
-	{"Bb",		"-...",		CW_ENTRY_NORMAL},
-	{"Cc",		"-.-.",		CW_ENTRY_NORMAL},
-	{"Dd",		"-..",		CW_ENTRY_NORMAL},
-	{"Ee",		".",		CW_ENTRY_NORMAL},
-	{"Ff",		"..-.",		CW_ENTRY_NORMAL},
-	{"Gg",		"--.",		CW_ENTRY_NORMAL},
-	{"Hh",		"....",		CW_ENTRY_NORMAL},
-	{"Ii",		"..",		CW_ENTRY_NORMAL},
-	{"Jj",		".---",		CW_ENTRY_NORMAL},
-	{"Kk",		"-.-",		CW_ENTRY_NORMAL},
-	{"Ll",		".-..",		CW_ENTRY_NORMAL},
-	{"Mm",		"--",		CW_ENTRY_NORMAL},
-	{"Nn",		"-.",		CW_ENTRY_NORMAL},
-	{"Oo",		"---",		CW_ENTRY_NORMAL},
-	{"Pp",		".--.",		CW_ENTRY_NORMAL},
-	{"Qq",		"--.-",		CW_ENTRY_NORMAL},
-	{"Rr",		".-.",		CW_ENTRY_NORMAL},
-	{"Ss",		"...",		CW_ENTRY_NORMAL},
-	{"Tt",		"-",		CW_ENTRY_NORMAL},
-	{"Uu",		"..-",		CW_ENTRY_NORMAL},
-	{"Vv",		"...-",		CW_ENTRY_NORMAL},
-	{"Ww",		".--",		CW_ENTRY_NORMAL},
-	{"Xx",		"-..-",		CW_ENTRY_NORMAL},
-	{"Yy",		"-.--",		CW_ENTRY_NORMAL},
-	{"Zz",		"--..",		CW_ENTRY_NORMAL},
+	{'A',	"A",	".-"	},
+	{'B',	"B",	"-..."	},
+	{'C',	"C",	"-.-."	},
+	{'D',	"D",	"-.."	},
+	{'E',	"E",	"."		},
+	{'F',	"F",	"..-."	},
+	{'G',	"G",	"--."	},
+	{'H',	"H",	"...."	},
+	{'I',	"I",	".."	},
+	{'J',	"J",	".---"	},
+	{'K',	"K",	"-.-"	},
+	{'L',	"L",	".-.."	},
+	{'M',	"M",	"--"	},
+	{'N',	"N",	"-."	},
+	{'O',	"O",	"---"	},
+	{'P',	"P",	".--."	},
+	{'Q',	"Q",	"--.-"	},
+	{'R',	"R",	".-."	},
+	{'S',	"S",	"..."	},
+	{'T',	"T",	"-"		},
+	{'U',	"U",	"..-"	},
+	{'V',	"V",	"...-"	},
+	{'W',	"W",	".--"	},
+	{'X',	"X",	"-..-"	},
+	{'Y',	"Y",	"-.--"	},
+	{'Z',	"Z",	"--.."	},
 	/* Numerals */
-	{"0",		"-----",	CW_ENTRY_NORMAL},
-	{"1",		".----",	CW_ENTRY_NORMAL},
-	{"2",		"..---",	CW_ENTRY_NORMAL},
-	{"3",		"...--",	CW_ENTRY_NORMAL},
-	{"4",		"....-",	CW_ENTRY_NORMAL},
-	{"5",		".....",	CW_ENTRY_NORMAL},
-	{"6",		"-....",	CW_ENTRY_NORMAL},
-	{"7",		"--...",	CW_ENTRY_NORMAL},
-	{"8",		"---..",	CW_ENTRY_NORMAL},
-	{"9",		"----.",	CW_ENTRY_NORMAL},
+	{'0',	"0",	"-----"	},
+	{'1',	"1",	".----"	},
+	{'2',	"2",	"..---"	},
+	{'3',	"3",	"...--"	},
+	{'4',	"4",	"....-"	},
+	{'5',	"5",	"....."	},
+	{'6',	"6",	"-...."	},
+	{'7',	"7",	"--..."	},
+	{'8',	"8",	"---.."	},
+	{'9',	"9",	"----."	},
 	/* Punctuation */
-	{"\"",		".-..-.",	CW_ENTRY_NORMAL},
-	{"'",		".----.",	CW_ENTRY_NORMAL},
-	{"$",		"...-..-",	CW_ENTRY_NORMAL},
-	{"(",		"-.--.",	CW_ENTRY_NORMAL},
-	{")",		"-.--.-",	CW_ENTRY_NORMAL},
-//	{"+",		".-.-.",	CW_ENTRY_NORMAL},
-	{",",		"--..--",	CW_ENTRY_NORMAL},
-	{"-",		"-....-",	CW_ENTRY_NORMAL},
-	{".",		".-.-.-",	CW_ENTRY_NORMAL},
-	{"/",		"-..-.",	CW_ENTRY_NORMAL},
-	{":",		"---...",	CW_ENTRY_NORMAL},
-	{";",		"-.-.-.",	CW_ENTRY_NORMAL},
-	{"=",		"-...-",	CW_ENTRY_NORMAL},
-	{"?",		"..--..",	CW_ENTRY_NORMAL},
-	{"_",		"..--.-",	CW_ENTRY_NORMAL},
-	{"@",		".--.-.",	CW_ENTRY_NORMAL},
-	{"!",		"-.-.--",	CW_ENTRY_NORMAL},
-	/* special characters */
-	{"~",     ".-.-",       CW_ENTRY_NORMAL},
-	{"<AA>",  ".-.-",       CW_ENTRY_EXTENDED},
-	{"%",     ".-...",      CW_ENTRY_NORMAL},
-	{"<AS>",  ".-...",      CW_ENTRY_EXTENDED},
-	{"^",     "....--",     CW_ENTRY_NORMAL},
-	{"<HM>",  "....--",     CW_ENTRY_EXTENDED},
-	{"&",     "..-.-",      CW_ENTRY_NORMAL},
-	{"<INT>", "..-.-",      CW_ENTRY_EXTENDED},
-	{">",     "...-.-", 	CW_ENTRY_NORMAL},
-	{"<SK>",  "...-.-",     CW_ENTRY_EXTENDED},
-//	{"<",     "-.--.",  	CW_ENTRY_NORMAL},
-//	{"<KN>",	"-.--.",	CW_ENTRY_EXTENDED},
-	{"}",     ".-.-.",  	CW_ENTRY_NORMAL},
-	{"<AR>",	".-.-.",	CW_ENTRY_EXTENDED},
-	{"{",     "...-.",  	CW_ENTRY_NORMAL},
-	{"<VE>",	"...-.",	CW_ENTRY_EXTENDED},
-	/* Sentinel end of table value */
-	{NULL, NULL, 0}
+	{'\\',	"\\",	".-..-."	},
+	{'\'',	"'",	".----."	},
+	{'$',	"$",	"...-..-"	},
+	{'(',	"(",	"-.--."		},
+	{')',	")",	"-.--.-"	},
+	{',',	",",	"--..--"	},
+	{'-',	"-",	"-....-"	},
+	{'.',	".",	".-.-.-"	},
+	{'/',	"/",	"-..-."		},
+	{':',	":",	"---..."	},
+	{';',	";",	"-.-.-."	},
+	{'?',	"?",	"..--.."	},
+	{'_',	"_",	"..--.-"	},
+	{'@',	"@",	".--.-."	},
+	{'!',	"!",	"-.-.--"	},
+	{0, NULL, NULL}
 };
-	/* ISO 8859-1 accented characters */
-//	{"\334\374",	"..--",	CW_ENTRY_NORMAL},  /* U diaeresis */
-//	{"\304\344",	".-.-",	CW_ENTRY_NORMAL},  /* A diaeresis */
-//	{"\307\347",	"-.-..",CW_ENTRY_NORMAL},  /* C cedilla */
-//	{"\326\366",	"---.",	CW_ENTRY_NORMAL},  /* O diaeresis */
-//	{"\311\351",	"..-..",CW_ENTRY_NORMAL},  /* E acute */
-//	{"\310\350",	".-..-",CW_ENTRY_NORMAL},  /* E grave */
-//	{"\305\345",	".--.-",CW_ENTRY_NORMAL},  /* A ring */
-//	{"\321\361",	"--.--",CW_ENTRY_NORMAL},  /* N tilde */
-	/* ISO 8859-2 accented characters */
-//	{"\252",	"----", 	CW_ENTRY_NORMAL},  /* S cedilla */
-//	{"\256",	"--..-",	CW_ENTRY_NORMAL},  /* Z dot above */
+
+// ISO 8859-1 accented characters
+//	{"\334\374",	"\334\374",	"..--"},	// U diaeresis
+//	{"\304\344",	"\304\344",	".-.-"},	// A diaeresis
+//	{"\307\347",	"\307\347",	"-.-.."},	// C cedilla 
+//	{"\326\366",	"\325\366",	"---."},	// O diaeresis
+//	{"\311\351",	"\311\351",	"..-.."},	// E acute
+//	{"\310\350",	"\310\350",".-..-"},	// E grave
+//	{"\305\345",	"\305\345",	".--.-"},	// A ring
+//	{"\321\361",	"\321\361",	"--.--"},	// N tilde
+//	ISO 8859-2 accented characters
+//	{"\252",		"\252",		"----" },	// S cedilla
+//	{"\256",		"\256",		"--..-"},	// Z dot above
 
 
 /**
@@ -190,33 +184,36 @@ unsigned int morse::tokenize_representation(const char *representation)
 
 /* ---------------------------------------------------------------------- */
 
-bool morse::init()
+void morse::init()
 {
 	CW_TABLE *cw;	/* Pointer to table entry */
 	unsigned int i;
-	const char *p;
 	long code;
 	int len;
-
-	// Clear the RX & TX tables
+// Update the char / prosign relationship
+	if (progdefaults.CW_prosigns.length() == 9) {
+		for (int i = 0; i < 9; i++) {
+			cw_table[i].chr = progdefaults.CW_prosigns[i];
+		}
+	}
+// Clear the RX & TX tables
 	for (i = 0; i < MorseTableSize; i++) {
-		cw_tx_lookup[i] = 0x04;
+		cw_tx_lookup[i].code = 0x04;
+		cw_tx_lookup[i].prt = 0;
 		cw_rx_lookup[i] = 0;
 	}
-
 // For each main table entry, create a token entry.
-	for (cw = cw_table; cw->chr != NULL; cw++) {
+	for (cw = cw_table; cw->chr != 0; cw++) {
+		if ((cw->chr == '(') && !progdefaults.CW_use_paren) continue;
+		if ((cw->chr == '<') && progdefaults.CW_use_paren) continue;
 		i = tokenize_representation(cw->rpr);
 		if (i != 0)
 			cw_rx_lookup[i] = cw;
-//		else
-//			return false;
 	}
-
 // Build TX table 
-	for (cw = cw_table; cw->chr != NULL; cw++) {
-		if (cw->type == CW_ENTRY_EXTENDED)
-			continue;
+	for (cw = cw_table; cw->chr != 0; cw++) {
+		if ((cw->chr == '(') && !progdefaults.CW_use_paren) continue;
+		if ((cw->chr == '<') && progdefaults.CW_use_paren) continue;
 		len = strlen(cw->rpr);
 		code = 0x04;
 		while (len-- > 0) {
@@ -228,17 +225,15 @@ bool morse::init()
 				code = (code << 1) | 1;
 			code <<= 1;
 		}
-		for (p = cw->chr; *p != 0; p++)
-			cw_tx_lookup[(int)*p] = code;
+		cw_tx_lookup[(int)cw->chr].code = code;
+		cw_tx_lookup[(int)cw->chr].prt = cw->prt;
 	}
-	return true;
 }
 
 const char *morse::rx_lookup(char *r)
 {
-	static char chr[2];	/* FIXME */
 	int			token;
-	CW_TABLE *cw;		/* Pointer to table entry */
+	CW_TABLE *cw;
 
 	if ((token = tokenize_representation(r)) == 0)
 		return NULL;
@@ -246,19 +241,22 @@ const char *morse::rx_lookup(char *r)
 	if ((cw = cw_rx_lookup[token]) == NULL)
 		return NULL;
 
-	if (cw->type == CW_ENTRY_EXTENDED)
-		return cw->chr;
+	return cw->prt;
+}
 
-	chr[0] = cw->chr[0];
-	chr[1] = 0;
-
-	return chr;
+const char *morse::tx_print(int c)
+{
+	if (cw_tx_lookup[toupper(c)].prt)
+		return cw_tx_lookup[toupper(c)].prt;
+	else
+		return "";
 }
 
 unsigned long morse::tx_lookup(int c)
 {
-	return cw_tx_lookup[c];
+	return cw_tx_lookup[toupper(c)].code;
 }
+
 
 /* ---------------------------------------------------------------------- */
 

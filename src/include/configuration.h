@@ -362,6 +362,12 @@
         ELEM_(bool, CWnarrow, "CWNARROW",                                               \
               "Weight decreases with increasing edge timing",                           \
               false)                                                                    \
+        ELEM_(bool, CW_use_paren, "CWUSEPAREN",                                         \
+              "Use open paren character; typically used in MARS ops",                   \
+              false)                                                                    \
+        ELEM_(std::string, CW_prosigns, "CWPROSIGNS",                                   \
+              "CW prosigns BT AA AS AR SK KN INT HM VE",                                \
+              "=~<>%+&{}")                                                              \
         /* FELD HELL */                                                                 \
         ELEM_(double, HELL_BW, "HELL_BW0", "Feld Hell working bandwidth",  245.0)       \
         ELEM_(double, HELL_BW_FH, "HELL_BW1", "FH bandwidth",  245.0)                   \

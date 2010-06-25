@@ -83,7 +83,6 @@ enum CW_EVENT {
 	CW_QUERY_EVENT
 };
 
-//class cw : public morse, public modem {
 class cw : public modem {
 protected:
 	int				symbollen;		// length of a dot in sound samples (tx)

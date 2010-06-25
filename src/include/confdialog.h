@@ -136,6 +136,8 @@ extern Fl_Counter2 *cntPostTiming;
 extern Fl_Check_Button *btnQSKadjust;
 extern char szTestChar[];
 extern Fl_Choice *mnuTestChar;
+extern Fl_Check_Button *btnCW_use_paren;
+extern Fl_Choice *mnu_prosign[9];
 extern Fl_Group *tabDomEX;
 extern Fl_Input2 *txtSecondary;
 extern Fl_Check_Button *valDominoEX_FILTER;

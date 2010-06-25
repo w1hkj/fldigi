@@ -32,35 +32,36 @@
 
 #define	MorseTableSize	256
  
-#define CW_ENTRY_NULL		0
-#define	CW_ENTRY_NORMAL		1
-#define	CW_ENTRY_EXTENDED	2
 #define	CW_DOT_REPRESENTATION	'.'
 #define	CW_DASH_REPRESENTATION	'-'
 
 
-struct CW_TABLE{
-	const char *chr;	/* The character(s) represented */
+struct CW_TABLE {
+	char chr;	/* The character(s) represented */
+	const char *prt;	/* The printable representation of the character */
 	const char *rpr;	/* Dot-dash shape of the character */
-	int type;	       	/* Type of the entry */
+};
+
+struct CW_XMT_TABLE {
+	unsigned long code;
+	const    char *prt;
 };
 
 class morse {
 private:
-//	static CW_TABLE		cw_table[];
-	CW_TABLE 			*cw_rx_lookup[256];
-	unsigned long 		cw_tx_lookup[256];
+	CW_TABLE 		*cw_rx_lookup[256];
+	CW_XMT_TABLE 	cw_tx_lookup[256];
 	unsigned int 	tokenize_representation(const char *representation);
-	bool init();
 public:
 	morse() { 
 		init(); 
 	}
 	~morse() {
 	}
+	void init();
 	const char	*rx_lookup(char *r);
 	unsigned long	tx_lookup(int c);
+	const char *tx_print(int c);
 };
-
 
 #endif

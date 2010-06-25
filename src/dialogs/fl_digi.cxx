@@ -4598,7 +4598,7 @@ void set_zdata(complex *zarray, int len)
 	wf->wfscope->zdata(zarray, len);
 }
 
-static void put_rx_char_flmain(unsigned int data)
+static void put_rx_char_flmain(unsigned int data, int style)
 {
 	ENSURE_THREAD(FLMAIN_TID);
 
@@ -4611,7 +4611,6 @@ static void put_rx_char_flmain(unsigned int data)
 	if (mode == MODE_RTTY || mode == MODE_CW)
 		asc = ascii;
 
-	int style = FTextBase::RECV;
 	if (asc == ascii2 && iscntrl(data))
 		style = FTextBase::CTRL;
 	if (wf->tmp_carrier())
@@ -4651,7 +4650,7 @@ static void put_rx_char_flmain(unsigned int data)
 		logfile->log_to_file(cLogfile::LOG_RX, s);
 }
 
-void put_rx_char(unsigned int data)
+void put_rx_char(unsigned int data, int style)
 {
 #if BENCHMARK_MODE
 	if (!benchmark.output.empty()) {
@@ -4660,7 +4659,7 @@ void put_rx_char(unsigned int data)
 		benchmark.buffer += (char)data;
 	}
 #else
-	REQ(put_rx_char_flmain, data);
+	REQ(put_rx_char_flmain, data, style);
 #endif
 }
 
@@ -4865,7 +4864,7 @@ int get_tx_char(void)
 	return c;
 }
 
-void put_echo_char(unsigned int data)
+void put_echo_char(unsigned int data, int style)
 {
 //if (bWF_only) return;
     if (progdefaults.QSKadjust) return;
@@ -4884,7 +4883,6 @@ void put_echo_char(unsigned int data)
 
 	last = data;
 
-	int style = FTextBase::XMIT;
 	if (asc == ascii2 && iscntrl(data))
 		style = FTextBase::CTRL;
 	REQ(&FTextBase::addchr, ReceiveText, data, style);

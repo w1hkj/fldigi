@@ -29,6 +29,7 @@
 #include <config.h>
 
 #include <cstring>
+#include <string>
 
 #include "digiscope.h"
 #include "waterfall.h"
@@ -40,9 +41,15 @@
 #include "configuration.h"
 #include "status.h"
 #include "debug.h"
+#include "FTextRXTX.h"
 
 #define	DEC_RATIO	16
 #define CW_FIRLEN   64
+
+using namespace std;
+
+static bool use_paren;
+string prosigns;
 
 void cw::tx_init(SoundBase *sc)
 {
@@ -86,6 +93,8 @@ void cw::init()
 	for (int i = 0; i < OUTBUFSIZE; i++)
 		outbuf[i] = qskbuf[i] = 0.0;
 	rx_init();
+	use_paren = progdefaults.CW_use_paren;
+	prosigns = progdefaults.CW_prosigns;
 }
 
 cw::~cw() {
@@ -149,8 +158,7 @@ cw::cw() : modem()
 	sync_parameters();
 	wf->Bandwidth ((int)bandwidth);
 	update_Status();
-//	init();
-
+//printf("%s\n", progdefaults.CW_prosigns.c_str());
 }
 
 // sync_parameters()
@@ -303,7 +311,7 @@ void cw::clear_syncscope()
 //=====================================================================
 // cw_rxprocess()
 // Called with a block (512 samples) of audio.
-//=======================================================================
+//======================================================================
 
 int cw::rx_process(const double *buf, int len)
 {
@@ -311,6 +319,13 @@ int cw::rx_process(const double *buf, int len)
 	double delta;
 	double value;
 	const char *c;
+
+	if (use_paren != progdefaults.CW_use_paren ||
+		prosigns != progdefaults.CW_prosigns) {
+		use_paren = progdefaults.CW_use_paren;
+		prosigns = progdefaults.CW_prosigns;
+		morse::init();
+	}
 
 // check if user changed filter bandwidth
 	if (bandwidth != progdefaults.CWbandwidth) {
@@ -359,10 +374,11 @@ int cw::rx_process(const double *buf, int len)
 					handle_event(CW_KEYUP_EVENT, NULL);
 			}
 			if (handle_event(CW_QUERY_EVENT, &c) == CW_SUCCESS) {
-				while (*c)
-					put_rx_char(progdefaults.rx_lowercase ? tolower(*c++) : *c++);
+				if (strlen(c) == 1)
+					put_rx_char(progdefaults.rx_lowercase ? tolower(*c) : *c);
+				else while (*c)
+					put_rx_char(progdefaults.rx_lowercase ? tolower(*c++) : *c++, FTextBase::CTRL);
 				update_syncscope();
-//				display_metric(metric);
 			}
 		}
 	}
@@ -825,8 +841,14 @@ void cw::send_ch(int ch)
 
     FL_AWAKE();
 
-	if (ch != -1)
-		put_echo_char(ch);
+	if (ch != -1) {
+		string prtstr = tx_print(ch);
+		if (prtstr.length() == 1)
+			put_echo_char(progdefaults.rx_lowercase ? tolower(prtstr[0]) : prtstr[0]);
+		else
+			for (size_t n = 0; n < prtstr.length(); n++)
+				put_echo_char(progdefaults.rx_lowercase ? tolower(prtstr[n]) : prtstr[n], FTextBase::CTRL);
+	}
 }
 
 //=====================================================================
@@ -838,6 +860,14 @@ void cw::send_ch(int ch)
 int cw::tx_process()
 {
 	int c;
+
+	if (use_paren != progdefaults.CW_use_paren ||
+		prosigns != progdefaults.CW_prosigns) {
+		use_paren = progdefaults.CW_use_paren;
+		prosigns = progdefaults.CW_prosigns;
+		morse::init();
+	}
+
 	c = get_tx_char();
 	if (c == 0x03 || stopflag) {
 		send_symbol(0, symbollen);
