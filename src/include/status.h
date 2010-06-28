@@ -7,6 +7,7 @@
 
 struct status {
 	trx_mode	lastmode;
+	std::string	mode_name;
 	int		mainX;
 	int		mainY;
 	int		mainW;
@@ -70,6 +71,40 @@ struct status {
 	int		logbook_col_3;
 	int		logbook_col_4;
 	int		logbook_col_5;
+	
+// Contestia, Olivia, RTTY state values
+	int		contestiatones;
+	int		contestiabw;
+	int		contestiamargin;
+	int		contestiainteg;
+	bool	contestia8bit;
+
+	int		oliviatones;
+	int		oliviabw;
+	int		oliviamargin;
+	int		oliviainteg;
+	bool	olivia8bit;
+
+	int		rtty_shift;
+	int		rtty_custom_shift;
+	int		rtty_baud;
+	int		rtty_bits;
+	int		rtty_parity;
+	int		rtty_stop;
+	bool	rtty_reverse;
+	bool	rtty_crcrlf;
+	bool	rtty_autocrlf;
+	int		rtty_autocount;
+	int		rtty_afcspeed;
+	bool	useFSKkeyline;
+	bool	useFSKkeylineDTR;
+	bool	FSKisLSB;
+	bool	useUART;
+	bool	PreferXhairScope;
+	bool	PseudoFSK;
+	bool	UOSrx;
+	bool	UOStx;
+// end Contestia, Olivia, RTTY state values
 
 	std::string	browser_search;
 

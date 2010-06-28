@@ -36,6 +36,7 @@
 
 #include "status.h"
 #include "configuration.h"
+#include "confdialog.h"
 #include "fl_digi.h"
 
 #include "waterfall.h"
@@ -63,7 +64,8 @@
 #define STATUS_FILENAME "status"
 
 status progStatus = {
-	MODE_PSK31,		// trx_mode	lastmode;
+	MODE_PSK31,			// trx_mode	lastmode;
+	mode_info[MODE_PSK31].sname,	// lastmode_name
 	50,					// int mainX;
 	50,					// int mainY;
 	WNOM,				// int mainW;
@@ -126,6 +128,38 @@ status progStatus = {
 	120,				// int		logbook_browser_col_4;
 	90,					// int		logbook_browser_col_5;
 
+	progdefaults.contestiatones,
+	progdefaults.contestiabw,
+	progdefaults.contestiasmargin,
+	progdefaults.contestiasinteg,
+	progdefaults.contestia8bit,
+
+	progdefaults.oliviatones,
+	progdefaults.oliviabw,
+	progdefaults.oliviasmargin,
+	progdefaults.oliviasinteg,
+	progdefaults.olivia8bit,
+
+	progdefaults.rtty_shift,
+	progdefaults.rtty_custom_shift,
+	progdefaults.rtty_baud,
+	progdefaults.rtty_bits,
+	progdefaults.rtty_parity,
+	progdefaults.rtty_stop,
+	progdefaults.rtty_reverse,
+	progdefaults.rtty_crcrlf,
+	progdefaults.rtty_autocrlf,
+	progdefaults.rtty_autocount,
+	progdefaults.rtty_afcspeed,
+	progdefaults.useFSKkeyline,
+	progdefaults.useFSKkeylineDTR,
+	progdefaults.FSKisLSB,
+	progdefaults.useUART,
+	progdefaults.PreferXhairScope,
+	progdefaults.PseudoFSK,
+	progdefaults.UOSrx,
+	progdefaults.UOStx,
+
 	"CQ",				// string browser_search;
 
 	false				// bool bLastStateRead;
@@ -182,11 +216,43 @@ void status::saveLastState()
 		scopeH = scopeview->h();
 	}
 
+	contestiatones = progdefaults.contestiatones;
+	contestiabw = progdefaults.contestiabw;
+	contestiamargin = progdefaults.contestiasmargin;
+	contestiainteg = progdefaults.contestiasinteg;
+	contestia8bit = progdefaults.contestia8bit;
+
+	oliviatones = progdefaults.oliviatones;
+	oliviabw = progdefaults.oliviabw;
+	oliviamargin = progdefaults.oliviasmargin;
+	oliviainteg = progdefaults.oliviasinteg;
+	olivia8bit = progdefaults.olivia8bit;
+
+	rtty_shift = progdefaults.rtty_shift;
+	rtty_custom_shift = progdefaults.rtty_custom_shift;
+	rtty_baud = progdefaults.rtty_baud;
+	rtty_bits = progdefaults.rtty_bits;
+	rtty_parity = progdefaults.rtty_parity;
+	rtty_stop = progdefaults.rtty_stop;
+	rtty_reverse = progdefaults.rtty_reverse;
+	rtty_crcrlf = progdefaults.rtty_crcrlf;
+	rtty_autocrlf = progdefaults.rtty_autocrlf;
+	rtty_autocount = progdefaults.rtty_autocount;
+	rtty_afcspeed = progdefaults.rtty_afcspeed;
+	useFSKkeyline = progdefaults.useFSKkeyline;
+	useFSKkeylineDTR = progdefaults.useFSKkeylineDTR;
+	FSKisLSB = progdefaults.FSKisLSB;
+	useUART = progdefaults.useUART;
+	PreferXhairScope = progdefaults.PreferXhairScope;
+	PseudoFSK = progdefaults.PseudoFSK;
+	UOSrx = progdefaults.UOSrx;
+	UOStx = progdefaults.UOStx;
+
 	Fl_Preferences spref(HomeDir.c_str(), "w1hkj.com", PACKAGE_TARNAME);
 
 	spref.set("version", PACKAGE_VERSION);
 
-	spref.set("mode", (int)lastmode);
+	spref.set("mode_name", mode_info[lastmode].sname);
 	spref.set("squelch_enabled", sqlonoff);
 	spref.set("squelch_level", sldrSquelchValue);
 	spref.set("afc_enabled", afconoff);
@@ -257,6 +323,38 @@ if (!bWF_only) {
 	spref.set("logbook_col_4", logbook_col_4);
 	spref.set("logbook_col_5", logbook_col_5);
 
+	spref.set("contestiatones", contestiatones);
+	spref.set("contestiabw", contestiabw);
+	spref.set("contestiamargin", contestiamargin);
+	spref.set("contestiainteg", contestiainteg);
+	spref.set("contestia8bit", contestia8bit);
+
+	spref.set("oliviaiatones", oliviatones);
+	spref.set("oliviaiabw", oliviabw);
+	spref.set("oliviaiamargin", oliviamargin);
+	spref.set("oliviaiainteg", oliviainteg);
+	spref.set("oliviaia8bit", olivia8bit);
+
+	spref.set("rtty_shift", rtty_shift);
+	spref.set("rtty_custom_shift", rtty_custom_shift);
+	spref.set("rtty_baud", rtty_baud);
+	spref.set("rtty_bits", rtty_bits);
+	spref.set("rtty_parity", rtty_parity);
+	spref.set("rtty_stop", rtty_stop);
+	spref.set("rtty_reverse", rtty_reverse);
+	spref.set("rtty_crcrlf", rtty_crcrlf);
+	spref.set("rtty_autocrlf", rtty_autocrlf);
+	spref.set("rtty_autocount", rtty_autocount);
+	spref.set("rtty_afcspeed", rtty_afcspeed);
+	spref.set("rtty_useFSKkeyline", useFSKkeyline);
+	spref.set("rtty_useFSK_DTR", useFSKkeylineDTR);
+	spref.set("rtty_FSKisLSB", FSKisLSB);
+	spref.set("rtty_useUART", useUART);
+	spref.set("preferxhairscope", PreferXhairScope);
+	spref.set("psaudofsk", PseudoFSK);
+	spref.set("uosrx", UOSrx);
+	spref.set("uostx", UOStx);
+
 	spref.set("browser_search", browser_search.c_str());
 }
 
@@ -279,7 +377,16 @@ void status::loadLastState()
 
 	int i;
 
-	spref.get("mode", i, lastmode);  lastmode = (trx_mode) i;
+	spref.get("mode_name", defbuffer, mode_info[MODE_PSK31].sname);
+	mode_name = defbuffer;
+	lastmode = MODE_PSK31;
+	for (i = 0; i < NUM_MODES;i++) {
+		if (mode_name == mode_info[i].sname) {
+			lastmode = (trx_mode) i;
+			break;
+		}
+	}
+
 	spref.get("squelch_enabled", i, sqlonoff); sqlonoff = i;
 	spref.get("squelch_level", sldrSquelchValue, sldrSquelchValue);
 	spref.get("afc_enabled", i, afconoff); afconoff = i;
@@ -357,6 +464,38 @@ void status::loadLastState()
 	spref.get("logbook_col_4", logbook_col_4, logbook_col_4);
 	spref.get("logbook_col_5", logbook_col_5, logbook_col_5);
 
+	spref.get("contestiatones", contestiatones, contestiatones);
+	spref.get("contestiabw", contestiabw, contestiabw);
+	spref.get("contestiamargin", contestiamargin, contestiamargin);
+	spref.get("contestiainteg", contestiainteg, contestiainteg);
+	spref.get("contestia8bit", i, contestia8bit); contestia8bit = i;
+
+	spref.get("oliviaiatones", oliviatones, oliviatones);
+	spref.get("oliviaiabw", oliviabw, oliviabw);
+	spref.get("oliviaiamargin", oliviamargin, oliviamargin);
+	spref.get("oliviaiainteg", oliviainteg, oliviainteg);
+	spref.get("oliviaia8bit", i, olivia8bit); olivia8bit = i;
+
+	spref.get("rtty_shift", rtty_shift, rtty_shift);
+	spref.get("rtty_custom_shift", rtty_custom_shift, rtty_custom_shift);
+	spref.get("rtty_baud", rtty_baud, rtty_baud);
+	spref.get("rtty_bits", rtty_bits, rtty_bits);
+	spref.get("rtty_parity", rtty_parity, rtty_parity);
+	spref.get("rtty_stop", rtty_stop, rtty_stop);
+	spref.get("rtty_reverse", i, rtty_reverse); rtty_reverse = i;
+	spref.get("rtty_crcrlf", i, rtty_crcrlf); rtty_crcrlf = i;
+	spref.get("rtty_autocrlf", i, rtty_autocrlf); rtty_autocrlf = i;
+	spref.get("rtty_autocount", rtty_autocount, rtty_autocount);
+	spref.get("rtty_afcspeed", rtty_afcspeed, rtty_afcspeed);
+	spref.get("rtty_useFSKkeyline", i, useFSKkeyline); useFSKkeyline = i;
+	spref.get("rtty_useFSK_DTR", i, useFSKkeylineDTR); useFSKkeylineDTR = i;
+	spref.get("rtty_FSKisLSB", i, FSKisLSB); FSKisLSB = i;
+	spref.get("rtty_useUART", i, useUART); useUART = i;
+	spref.get("preferxhairscope", i, PreferXhairScope); PreferXhairScope = i;
+	spref.get("psaudofsk", i, PseudoFSK); PseudoFSK = i;
+	spref.get("uosrx", i, UOSrx); UOSrx = i;
+	spref.get("uostx", i, UOStx); UOStx = i;
+
 	spref.get("browser_search", defbuffer, browser_search.c_str());
 	browser_search = defbuffer;
 	free(defbuffer);
@@ -367,9 +506,53 @@ void status::initLastState()
 	if (!bLastStateRead)
 		loadLastState();
 
+// RTTY
+	if (lastmode == MODE_RTTY ) {
+		if (rtty_shift > 0) {
+			progdefaults.rtty_shift = rtty_shift;
+			selShift->value(rtty_shift);
+			selCustomShift->deactivate();
+		}
+		else { // Custom shift
+			selShift->value(selShift->size() - 2);
+			selShift->activate();
+		}
+		selBaud->value(progdefaults.rtty_baud = rtty_baud);
+		selBits->value(progdefaults.rtty_bits = rtty_bits);
+		selParity->value(progdefaults.rtty_parity = rtty_parity);
+		selStopBits->value(progdefaults.rtty_stop = rtty_stop);
+		btnCRCRLF->value(progdefaults.rtty_crcrlf = rtty_crcrlf);
+		btnAUTOCRLF->value(progdefaults.rtty_autocrlf = rtty_autocrlf);
+		cntrAUTOCRLF->value(progdefaults.rtty_autocount = rtty_autocount);
+		chkPseudoFSK->value(progdefaults.PseudoFSK = PseudoFSK);
+		chkUOSrx->value(progdefaults.UOSrx = UOSrx);
+		chkUOStx->value(progdefaults.UOStx = UOStx);
+//		chkXagc->value(progdefaults.Xagc = Xagc);
+		mnuRTTYAFCSpeed->value(progdefaults.rtty_afcspeed = rtty_afcspeed);
+		btnPreferXhairScope->value(progdefaults.PreferXhairScope = PreferXhairScope);
+	}
+
+// OLIVIA
+	if (lastmode == MODE_OLIVIA) {
+		mnuOlivia_Tones->value(progdefaults.oliviatones = oliviatones);
+		mnuOlivia_Bandwidth->value(progdefaults.oliviabw = oliviabw);
+		cntOlivia_smargin->value(progdefaults.oliviasmargin = oliviamargin);
+		cntOlivia_sinteg->value(progdefaults.oliviasinteg = oliviainteg);
+		btnOlivia_8bit->value(progdefaults.olivia8bit = olivia8bit);
+	}
+
+// CONTESTIA
+	if (lastmode == MODE_CONTESTIA) {
+		mnuContestia_Tones->value(progdefaults.contestiatones = contestiatones);
+		mnuContestia_Bandwidth->value(progdefaults.contestiabw = contestiabw);
+		cntContestia_smargin->value(progdefaults.contestiasmargin = contestiamargin);
+		cntContestia_sinteg->value(progdefaults.contestiasinteg = contestiainteg);
+		btnContestia_8bit->value(progdefaults.contestia8bit = contestia8bit);
+	}
+
 	init_modem_sync(lastmode);
 
- 	wf->opmode();
+	wf->opmode();
 	wf->Mag(mag);
 	wf->Offset(offset);
 	wf->Speed(speed);

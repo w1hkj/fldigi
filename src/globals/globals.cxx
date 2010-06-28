@@ -37,8 +37,8 @@
 
 using namespace std;
 
-// Elements are in enum trx_mode order. Mode name video-id uses the
-// first string (sname), so its length should be a multiple of 2.
+// Elements are in enum trx_mode order.
+
 const struct mode_info_t mode_info[NUM_MODES] = {
     { MODE_CW, &cw_modem, "CW", "CW", "CW", "CW", "CW" },
 
