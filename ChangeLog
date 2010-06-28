@@ -1,19 +1,25 @@
 
 
+=Version 3.20.18=
+
+2010-06-28  David Freese  <w1hkj@w1hkj.com>
+
+	800eac7: Mode prefs
+	f21cbca: Morse Prosigns
+
+
 =Version 3.20.17=
 
-2010-06-21  David Freese  <w1hkj@w1hkj.com>
+	c8ea4df: RSID code additions
 
-	18046e1: RSID code additions
+2010-06-21  Chris Sylvain  <kb3cs@arrl.net>
+
+	1c1f059: PSK Browser modes
+	2c94158: Beginners Guide update
 
 2010-06-21  Chris Sylvain kb3cs@arrl.net, David Freese  <w1hkj@w1hkj.com>
 
 	fde3cce: <ID> video text mod
-
-2010-06-20  Chris Sylvain  <kb3cs@arrl.net>
-
-	858d5cd: PSK Browser modes
-	c48b987: Beginners Guide update
 
 2010-06-15  David Freese  <w1hkj@w1hkj.com>
 
