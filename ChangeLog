@@ -1,5 +1,8 @@
-2010-06-28  David Freese  <w1hkj@w1hkj.com>
+2010-07-02  David Freese  <w1hkj@w1hkj.com>
 
+	0faeecb: RX-TX Select
+	e1cfec0: RTS-DTR ptt
+	9064f15: REPEAT Macro
 	e2ec239: Mode prefs
 	6e6b672: Morse Prosigns
 
