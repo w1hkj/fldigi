@@ -104,6 +104,8 @@ status progStatus = {
 	false,				// bool	scopeVisible;
 	172,				// int	scopeW;
 	172,				// int	scopeH;
+	-1,					// int	repeatMacro;
+	0,					// float	repeatIdleTime;
 	0,					// int timer
 	0,					// int timerMacro
 	"macros.mdf",		// string LastMacroFile;

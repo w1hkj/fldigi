@@ -2039,6 +2039,7 @@ void stopMacroTimer()
 	ENSURE_THREAD(FLMAIN_TID);
 
 	progStatus.timer = 0;
+	progStatus.repeatMacro = -1;
 	Fl::remove_timeout(macro_timer);
 
 	btnMacroTimer->label(0);
@@ -4801,6 +4802,16 @@ void put_rx_data(int *data, int len)
 }
 
 extern bool macro_idle_on;
+extern string text2repeat;
+extern size_t repeatchar;
+
+bool idling = false;
+
+void get_tx_char_idle(void *)
+{
+	idling = false;
+	progStatus.repeatIdleTime = 0;
+}
 
 char szTestChar[] = "E|I|S|T|M|O|A|V";
 int get_tx_char(void)
@@ -4823,6 +4834,23 @@ int get_tx_char(void)
 
 	enum { STATE_CHAR, STATE_CTRL };
 	static int state = STATE_CHAR;
+
+	if ( progStatus.repeatMacro && progStatus.repeatIdleTime > 0 &&
+		 !idling ) {
+		Fl::add_timeout(progStatus.repeatIdleTime, get_tx_char_idle);
+		idling = true;
+	}
+	if (idling) return -1;
+
+	if (progStatus.repeatMacro > -1 && text2repeat.length()) {
+		c = text2repeat[repeatchar];
+		repeatchar++;
+		if (repeatchar == text2repeat.length()) {
+			text2repeat.clear();
+			macros.repeat(progStatus.repeatMacro);
+		}
+		return c;
+	}
 
 	switch (c = TransmitText->nextChar()) {
 	case '\n':

@@ -129,6 +129,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<TIMER:NN>\trepeat every NN sec"));
 	w->add(_("<TUNE:NN>\ttune signal for NN sec"));
 	w->add(_("<WAIT:NN>\tdelay xmt for NN sec"));
+	w->add(_("<REPEAT>\trepeat macro continuously"));
 
 	w->add(LINE_SEP);
 	w->add(_("<CWID>\tCW identifier"));
