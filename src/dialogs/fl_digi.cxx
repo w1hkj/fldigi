@@ -3725,7 +3725,8 @@ void create_fl_digi_main_primary() {
 				fl_rgb_color(
 					progdefaults.RxColor.R,
 					progdefaults.RxColor.G,
-					progdefaults.RxColor.B));
+					progdefaults.RxColor.B),
+				progdefaults.RxTxSelectcolor);
 			ReceiveText->setFont(progdefaults.RxFontnbr);
 			ReceiveText->setFontSize(progdefaults.RxFontsize);
 			ReceiveText->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
@@ -3742,7 +3743,8 @@ void create_fl_digi_main_primary() {
 				fl_rgb_color(
 					progdefaults.TxColor.R,
 					progdefaults.TxColor.G,
-					progdefaults.TxColor.B));
+					progdefaults.TxColor.B),
+				progdefaults.RxTxSelectcolor);
 			TransmitText->setFont(progdefaults.TxFontnbr);
 			TransmitText->setFontSize(progdefaults.TxFontsize);
 			TransmitText->setFontColor(progdefaults.TxFontcolor, FTextBase::RECV);

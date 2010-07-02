@@ -137,7 +137,7 @@ Function {make_colorsfonts()} {open
   code {font_browser = new Font_Browser;} {}
   Fl_Window dlgColorFont {
     label {Colors and Fonts} open
-    xywh {496 125 375 220} type Double
+    xywh {592 194 375 220} type Double
     code0 {dlgColorFont->xclass(PACKAGE_TARNAME);} visible
   } {
     Fl_Button btnClrFntClose {
@@ -150,10 +150,10 @@ Function {make_colorsfonts()} {open
     } {
       Fl_Group {} {
         label {Freq Disp} open
-        xywh {5 30 365 150}
+        xywh {5 30 365 150} hide
       } {
         Fl_Box FDdisplay {
-          label {14070.150} selected
+          label {14070.150}
           xywh {65 43 235 45} box DOWN_BOX color 55 labelfont 4 labelsize 40
           code0 {o->color(fl_rgb_color(progdefaults.FDbackground.R,progdefaults.FDbackground.G,progdefaults.FDbackground.B));}
           code1 {o->labelcolor(fl_rgb_color(progdefaults.FDforeground.R,progdefaults.FDforeground.G,progdefaults.FDforeground.B));}
@@ -420,7 +420,7 @@ progdefaults.changed = true;}
       }
       Fl_Group {} {
         label {Rx/Tx txt} open
-        xywh {5 30 365 150} hide
+        xywh {5 30 366 150}
       } {
         Fl_Input RxText {
           xywh {15 43 165 35}
@@ -502,46 +502,72 @@ font_browser->show();}
           label XMIT
           callback {choose_color(progdefaults.XMITcolor);
     btnXMIT->color( progdefaults.XMITcolor );
+    btnXMIT->redraw();
     TransmitText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
     ReceiveText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
 
-    progdefaults.changed = true;}
-          tooltip {Sent chars in Rx/Tx pane} xywh {15 130 40 20} align 2
+    progdefaults.changed = true;} selected
+          tooltip {Sent chars in Rx/Tx pane} xywh {5 130 40 20} align 2
           code0 {btnXMIT->color(progdefaults.XMITcolor);}
         }
         Fl_Button btnCTRL {
           label CTRL
           callback {choose_color(progdefaults.CTRLcolor);
     btnCTRL->color( progdefaults.CTRLcolor );
+    btnCTRL->redraw();
     TransmitText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
     ReceiveText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
 
     progdefaults.changed = true;}
-          tooltip {Control chars in Rx/Tx pane} xywh {66 130 40 20} align 2
+          tooltip {Control chars in Rx/Tx pane} xywh {48 130 40 20} align 2
           code0 {btnCTRL->color(progdefaults.CTRLcolor);}
         }
         Fl_Button btnSKIP {
           label SKIP
           callback {choose_color(progdefaults.SKIPcolor);
     btnSKIP->color( progdefaults.SKIPcolor );
+    btnSKIP->redraw();
     TransmitText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
     ReceiveText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
 
     progdefaults.changed = true;}
           tooltip {Skipped chars in Tx pane
-(Tx on/off in CW)} xywh {118 130 40 20} align 2
+(Tx on/off in CW)} xywh {92 130 40 20} align 2
           code0 {btnSKIP->color(progdefaults.SKIPcolor);}
         }
         Fl_Button btnALTR {
           label ALTR
           callback {choose_color(progdefaults.ALTRcolor);
     btnALTR->color( progdefaults.ALTRcolor );
+    btnALTR->redraw();
     TransmitText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
     ReceiveText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
 
     progdefaults.changed = true;}
-          tooltip {Quick view chars in Rx pane} xywh {170 130 40 20} align 2
+          tooltip {Alternate character color in Rx panelr} xywh {135 130 40 20} align 2
           code0 {btnALTR->color(progdefaults.ALTRcolor);}
+        }
+        Fl_Button btnSEL {
+          label SEL
+          callback {choose_color(progdefaults.RxTxSelectcolor);
+btnSEL->color( progdefaults.RxTxSelectcolor );
+btnSEL->redraw();
+ReceiveText->color(
+  fl_rgb_color(
+    progdefaults.RxColor.R,
+    progdefaults.RxColor.G,
+    progdefaults.RxColor.B),
+    progdefaults.RxTxSelectcolor);
+TransmitText->color(
+  fl_rgb_color(
+    progdefaults.TxColor.R,
+    progdefaults.TxColor.G,
+    progdefaults.TxColor.B),
+    progdefaults.RxTxSelectcolor);
+    
+progdefaults.changed = true;}
+          tooltip {Selection background color in Rx Tx panels} xywh {179 130 40 20} align 2
+          code0 {btnSEL->color(progdefaults.RxTxSelectcolor);}
         }
         Fl_Button btnNoTextColor {
           label System
@@ -599,7 +625,7 @@ font_browser->show();}
     TransmitText->redraw();
 
     progdefaults.changed = true;}
-          xywh {219 130 70 20}
+          xywh {227 130 70 20}
         }
         Fl_Button btnTextDefaults {
           label Defaults
@@ -658,7 +684,7 @@ font_browser->show();}
     TransmitText->redraw();
 
     progdefaults.changed = true;}
-          xywh {296 130 70 20}
+          xywh {301 130 70 20}
         }
       }
       Fl_Group {} {

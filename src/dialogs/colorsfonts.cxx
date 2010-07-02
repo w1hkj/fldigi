@@ -450,6 +450,7 @@ Fl_Button *btnXMIT=(Fl_Button *)0;
 static void cb_btnXMIT(Fl_Button*, void*) {
   choose_color(progdefaults.XMITcolor);
     btnXMIT->color( progdefaults.XMITcolor );
+    btnXMIT->redraw();
     TransmitText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
     ReceiveText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
 
@@ -461,6 +462,7 @@ Fl_Button *btnCTRL=(Fl_Button *)0;
 static void cb_btnCTRL(Fl_Button*, void*) {
   choose_color(progdefaults.CTRLcolor);
     btnCTRL->color( progdefaults.CTRLcolor );
+    btnCTRL->redraw();
     TransmitText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
     ReceiveText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
 
@@ -472,6 +474,7 @@ Fl_Button *btnSKIP=(Fl_Button *)0;
 static void cb_btnSKIP(Fl_Button*, void*) {
   choose_color(progdefaults.SKIPcolor);
     btnSKIP->color( progdefaults.SKIPcolor );
+    btnSKIP->redraw();
     TransmitText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
     ReceiveText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
 
@@ -483,10 +486,33 @@ Fl_Button *btnALTR=(Fl_Button *)0;
 static void cb_btnALTR(Fl_Button*, void*) {
   choose_color(progdefaults.ALTRcolor);
     btnALTR->color( progdefaults.ALTRcolor );
+    btnALTR->redraw();
     TransmitText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
     ReceiveText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
 
     progdefaults.changed = true;
+}
+
+Fl_Button *btnSEL=(Fl_Button *)0;
+
+static void cb_btnSEL(Fl_Button*, void*) {
+  choose_color(progdefaults.RxTxSelectcolor);
+btnSEL->color( progdefaults.RxTxSelectcolor );
+btnSEL->redraw();
+ReceiveText->color(
+  fl_rgb_color(
+    progdefaults.RxColor.R,
+    progdefaults.RxColor.G,
+    progdefaults.RxColor.B),
+    progdefaults.RxTxSelectcolor);
+TransmitText->color(
+  fl_rgb_color(
+    progdefaults.TxColor.R,
+    progdefaults.TxColor.G,
+    progdefaults.TxColor.B),
+    progdefaults.RxTxSelectcolor);
+    
+progdefaults.changed = true;
 }
 
 Fl_Button *btnNoTextColor=(Fl_Button *)0;
@@ -752,6 +778,7 @@ Fl_Double_Window* make_colorsfonts() {
     } // Fl_Button* btnClrFntClose
     { tabsColors = new Fl_Tabs(0, 5, 375, 185);
       { Fl_Group* o = new Fl_Group(5, 30, 365, 150, _("Freq Disp"));
+        o->hide();
         { Fl_Box* o = FDdisplay = new Fl_Box(65, 43, 235, 45, _("14070.150"));
           FDdisplay->box(FL_DOWN_BOX);
           FDdisplay->color((Fl_Color)55);
@@ -810,8 +837,7 @@ Fl_Double_Window* make_colorsfonts() {
         } // Fl_Button* btnFkeyDEfaults
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(5, 30, 365, 150, _("Rx/Tx txt"));
-        o->hide();
+      { Fl_Group* o = new Fl_Group(5, 30, 366, 150, _("Rx/Tx txt"));
         { RxText = new Fl_Input(15, 43, 165, 35);
           RxText->value("Receive Text");
           RxText->color(fl_rgb_color(progdefaults.RxColor.R, progdefaults.RxColor.G, progdefaults.RxColor.B));
@@ -836,34 +862,40 @@ Fl_Double_Window* make_colorsfonts() {
         { btnTxFont = new Fl_Button(275, 90, 75, 20, _("Tx font"));
           btnTxFont->callback((Fl_Callback*)cb_btnTxFont);
         } // Fl_Button* btnTxFont
-        { btnXMIT = new Fl_Button(15, 130, 40, 20, _("XMIT"));
+        { btnXMIT = new Fl_Button(5, 130, 40, 20, _("XMIT"));
           btnXMIT->tooltip(_("Sent chars in Rx/Tx pane"));
           btnXMIT->callback((Fl_Callback*)cb_btnXMIT);
           btnXMIT->align(FL_ALIGN_BOTTOM);
           btnXMIT->color(progdefaults.XMITcolor);
         } // Fl_Button* btnXMIT
-        { btnCTRL = new Fl_Button(66, 130, 40, 20, _("CTRL"));
+        { btnCTRL = new Fl_Button(48, 130, 40, 20, _("CTRL"));
           btnCTRL->tooltip(_("Control chars in Rx/Tx pane"));
           btnCTRL->callback((Fl_Callback*)cb_btnCTRL);
           btnCTRL->align(FL_ALIGN_BOTTOM);
           btnCTRL->color(progdefaults.CTRLcolor);
         } // Fl_Button* btnCTRL
-        { btnSKIP = new Fl_Button(118, 130, 40, 20, _("SKIP"));
+        { btnSKIP = new Fl_Button(92, 130, 40, 20, _("SKIP"));
           btnSKIP->tooltip(_("Skipped chars in Tx pane\n(Tx on/off in CW)"));
           btnSKIP->callback((Fl_Callback*)cb_btnSKIP);
           btnSKIP->align(FL_ALIGN_BOTTOM);
           btnSKIP->color(progdefaults.SKIPcolor);
         } // Fl_Button* btnSKIP
-        { btnALTR = new Fl_Button(170, 130, 40, 20, _("ALTR"));
-          btnALTR->tooltip(_("Quick view chars in Rx pane"));
+        { btnALTR = new Fl_Button(135, 130, 40, 20, _("ALTR"));
+          btnALTR->tooltip(_("Alternate character color in Rx panelr"));
           btnALTR->callback((Fl_Callback*)cb_btnALTR);
           btnALTR->align(FL_ALIGN_BOTTOM);
           btnALTR->color(progdefaults.ALTRcolor);
         } // Fl_Button* btnALTR
-        { btnNoTextColor = new Fl_Button(219, 130, 70, 20, _("System"));
+        { btnSEL = new Fl_Button(179, 130, 40, 20, _("SEL"));
+          btnSEL->tooltip(_("Selection background color in Rx Tx panels"));
+          btnSEL->callback((Fl_Callback*)cb_btnSEL);
+          btnSEL->align(FL_ALIGN_BOTTOM);
+          btnSEL->color(progdefaults.RxTxSelectcolor);
+        } // Fl_Button* btnSEL
+        { btnNoTextColor = new Fl_Button(227, 130, 70, 20, _("System"));
           btnNoTextColor->callback((Fl_Callback*)cb_btnNoTextColor);
         } // Fl_Button* btnNoTextColor
-        { btnTextDefaults = new Fl_Button(296, 130, 70, 20, _("Defaults"));
+        { btnTextDefaults = new Fl_Button(301, 130, 70, 20, _("Defaults"));
           btnTextDefaults->callback((Fl_Callback*)cb_btnTextDefaults);
         } // Fl_Button* btnTextDefaults
         o->end();

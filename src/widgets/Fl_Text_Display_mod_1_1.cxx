@@ -1674,11 +1674,10 @@ void Fl_Text_Display_mod::draw_string( int style, int X, int Y, int toX,
 
     if (style & (HIGHLIGHT_MASK | PRIMARY_MASK)) {
       if (Fl::focus() == this) background = selection_color();
-      else background = fl_color_average(color(), selection_color(), 0.5f);
-    } else background = color();
-
-    // foreground = fl_contrast(styleRec->color, background);
-    foreground = styleRec->color;
+      else background = fl_color_average(color(), selection_color(), 0.8f);
+    } else
+      background = color();
+    foreground = fl_contrast(styleRec->color, background);
   } else if (style & (HIGHLIGHT_MASK | PRIMARY_MASK)) {
     if (Fl::focus() == this) background = selection_color();
     else background = fl_color_average(color(), selection_color(), 0.5f);

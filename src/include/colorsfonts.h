@@ -39,6 +39,7 @@ extern Fl_Button *btnXMIT;
 extern Fl_Button *btnCTRL;
 extern Fl_Button *btnSKIP;
 extern Fl_Button *btnALTR;
+extern Fl_Button *btnSEL;
 extern Fl_Button *btnNoTextColor;
 extern Fl_Button *btnTextDefaults;
 extern Fl_Button *btnTabColor;

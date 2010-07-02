@@ -965,6 +965,9 @@
         ELEM_(Fl_Color, RxFontcolor, "RXFNTCOLOR",                                      \
               "RX text font color",                                                     \
               FL_BLACK)                                                                 \
+        ELEM_(Fl_Color, RxTxSelectcolor, "RXTXSELCOLOR",                                \
+              "RX/TX text select color",                                                \
+              FL_MAGENTA)                                                               \
         ELEM_(std::string, TxFontName, "TXFONTNAME",                                    \
               "TX text font name",                                                      \
               "")                                                                       \
