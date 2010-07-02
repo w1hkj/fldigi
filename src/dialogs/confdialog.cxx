@@ -1705,7 +1705,7 @@ Fl_Round_Button *btnRigCatRTSptt=(Fl_Round_Button *)0;
 
 static void cb_btnRigCatRTSptt(Fl_Round_Button* o, void*) {
   if (o->value() == 1) {
-  btnRigCatDTRptt->value(0);
+//  btnRigCatDTRptt->value(0);
   btnRigCatCMDptt->value(0);
 }
 
@@ -1718,7 +1718,7 @@ Fl_Round_Button *btnRigCatDTRptt=(Fl_Round_Button *)0;
 
 static void cb_btnRigCatDTRptt(Fl_Round_Button* o, void*) {
   if (o->value() == 1) {
-  btnRigCatRTSptt->value(0);
+//  btnRigCatRTSptt->value(0);
   btnRigCatCMDptt->value(0);
 }
 
@@ -2663,7 +2663,6 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -3446,6 +3445,7 @@ an merging"));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 517, 345, _("Modems"));
+        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 517, 345);
           tabsModems->selection_color((Fl_Color)FL_LIGHT1);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
@@ -3454,7 +3454,6 @@ an merging"));
               tabsCW->selection_color((Fl_Color)FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
                 o->align(FL_ALIGN_TOP_LEFT);
-                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 130, _("Receive"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -3769,6 +3768,7 @@ an merging"));
               } // Fl_Group* o
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("Prosigns"));
                 o->align(FL_ALIGN_TOP_LEFT);
+                o->hide();
                 { Fl_Group* o = new Fl_Group(4, 81, 492, 283);
                 o->box(FL_ENGRAVED_FRAME);
                 { Fl_Check_Button* o = btnCW_use_paren = new Fl_Check_Button(235, 236, 68, 15, _("Use \'(\' paren not KN"));
