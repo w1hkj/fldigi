@@ -48,6 +48,8 @@ struct status {
 	int		scopeW;
 	int		scopeH;
 
+	int		repeatMacro;
+	float	repeatIdleTime;
 	int		timer;
 	int		timerMacro;
 	std::string	LastMacroFile;

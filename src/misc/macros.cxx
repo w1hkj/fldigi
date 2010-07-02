@@ -68,6 +68,11 @@ std::string qso_exchange = "";
 bool save_xchg;
 size_t  xbeg = 0, xend = 0;
 
+string text2send = "";
+string text2repeat = "";
+string text2save = "";
+size_t repeatchar = 0;
+
 struct MTAGS { const char *mTAG; void (*fp)(string &, size_t &);};
 
 void pCALL(string &, size_t &);
@@ -129,6 +134,7 @@ void pSRCHDN(string&, size_t&);
 void pGOHOME(string&, size_t&);
 void pGOFREQ(string&, size_t&);
 void pMAPIT(string&, size_t&);
+void pREPEAT(string&, size_t&);
 
 //void pMACROS(string &, size_t &);
 
@@ -194,6 +200,7 @@ MTAGS mtags[] = {
 {"<GOFREQ:",	pGOFREQ},
 {"<MAPIT:",		pMAPIT},
 {"<MAPIT>",		pMAPIT},
+{"<REPEAT>",	pREPEAT},
 {0, 0}
 };
 
@@ -251,6 +258,16 @@ void pTIMER(string &s, size_t &i)
 		progStatus.timerMacro = mNbr;
 	}
 	s.replace(i, endbracket - i + 1, "");
+}
+
+void pREPEAT(string &s, size_t &i)
+{
+	size_t endbracket = s.find('>',i);
+	progStatus.repeatMacro = mNbr;
+	s.replace(i, endbracket - i + 1, "");
+	text2repeat = s;
+	repeatchar = 0;
+	s.insert(i, "[REPEAT]");
 }
 
 void pWPM(string &s, size_t &i)
@@ -1208,6 +1225,11 @@ string MACROTEXT::expandMacro(int n)
 
 	xbeg = xend = -1;
 	save_xchg = false;
+	progStatus.repeatMacro = -1;
+	text2repeat.clear();
+	idleTime = 0;
+	waitTime = 0;
+	tuneTime = 0;
 
 	while ((idx = expanded.find('<', idx)) != string::npos) {
 		if (expanded.find("<MACROS:",idx) == idx) {
@@ -1264,8 +1286,6 @@ string MACROTEXT::expandMacro(int n)
 	return expanded;
 }
 
-string text2send = "";
-
 void idleTimer(void *)
 {
 	macro_idle_on = false;
@@ -1280,7 +1300,6 @@ void continueMacro(void *)
 		start_tx();
 		TransmitON = false;
 	}
-	TransmitText->add( text2send.c_str() );
 	text2send.clear();
 }
 
@@ -1306,8 +1325,6 @@ void finishWait(void *)
 		start_tx();
 		TransmitON = false;
 	}
-	TransmitText->add( text2send.c_str() );
-	text2send.clear();
 }
 
 static void set_button(Fl_Button* button, bool value)
@@ -1318,7 +1335,21 @@ static void set_button(Fl_Button* button, bool value)
 
 void MACROTEXT::execute(int n)
 {
-	text2send = expandMacro(n);
+	text2save = text2send = expandMacro(n);
+
+	if (progStatus.repeatMacro == -1)
+		TransmitText->add( text2send.c_str() );
+	else {
+		size_t p = string::npos;
+		text2send = text[n];
+		while ((p = text2send.find('<')) != string::npos)
+			text2send[p] = '[';
+		while ((p = text2send.find('>')) != string::npos)
+			text2send[p] = ']';
+		TransmitText->add( text2send.c_str() );
+	}
+	text2send.clear();
+
 	if (ToggleTXRX) {
 		text2send.clear();
 		if (!wf->xmtrcv->value()) {
@@ -1348,8 +1379,14 @@ void MACROTEXT::execute(int n)
 		start_tx();
 		TransmitON = false;
 	}
-	TransmitText->add( text2send.c_str() );
-	text2send.clear();
+}
+
+void MACROTEXT::repeat(int n)
+{
+	expandMacro(n);
+printf("%s\n",text2repeat.c_str());
+	macro_idle_on = false;
+	if (idleTime) progStatus.repeatIdleTime = idleTime;
 }
 
 MACROTEXT::MACROTEXT()
