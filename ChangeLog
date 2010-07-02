@@ -1,8 +1,15 @@
 
 
-=Version 3.20.18=
+=Version 3.20.19=
 
-2010-06-28  David Freese  <w1hkj@w1hkj.com>
+2010-07-02  David Freese  <w1hkj@w1hkj.com>
+
+	357f3b1: RX-TX Select
+	8d15561: REPEAT Macro
+	7f5b55f: RTS-DTR PTT
+
+
+=Version 3.20.18=
 
 	800eac7: Mode prefs
 	f21cbca: Morse Prosigns
