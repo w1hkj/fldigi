@@ -1705,7 +1705,7 @@ Fl_Round_Button *btnRigCatRTSptt=(Fl_Round_Button *)0;
 
 static void cb_btnRigCatRTSptt(Fl_Round_Button* o, void*) {
   if (o->value() == 1) {
-  btnRigCatDTRptt->value(0);
+//  btnRigCatDTRptt->value(0);
   btnRigCatCMDptt->value(0);
 }
 
@@ -1718,7 +1718,7 @@ Fl_Round_Button *btnRigCatDTRptt=(Fl_Round_Button *)0;
 
 static void cb_btnRigCatDTRptt(Fl_Round_Button* o, void*) {
   if (o->value() == 1) {
-  btnRigCatRTSptt->value(0);
+//  btnRigCatRTSptt->value(0);
   btnRigCatCMDptt->value(0);
 }
 
@@ -3446,6 +3446,7 @@ an merging"));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 517, 345, _("Modems"));
+        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 517, 345);
           tabsModems->selection_color((Fl_Color)FL_LIGHT1);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
@@ -4669,10 +4670,10 @@ an merging"));
       } // Fl_Group* tabModems
       { tabRig = new Fl_Group(0, 25, 500, 345, _("Rig"));
         tabRig->tooltip(_("Transceiver control"));
-        tabRig->hide();
         { tabsRig = new Fl_Tabs(0, 25, 500, 345);
           tabsRig->selection_color((Fl_Color)FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hardware PTT"));
+            o->hide();
             { grpHWPTT = new Fl_Group(5, 100, 490, 265, _("h/w ptt device-pin"));
               grpHWPTT->box(FL_ENGRAVED_FRAME);
               grpHWPTT->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -4735,7 +4736,6 @@ an merging"));
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("RigCAT"));
             o->tooltip(_("Rig Control using xml spec file"));
-            o->hide();
             { chkUSERIGCAT = new Fl_Check_Button(195, 60, 110, 20, _("Use RigCAT"));
               chkUSERIGCAT->tooltip(_("RigCAT used for rig control"));
               chkUSERIGCAT->down_box(FL_DOWN_BOX);

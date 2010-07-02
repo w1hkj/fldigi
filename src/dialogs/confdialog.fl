@@ -906,7 +906,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 517 345}
+        xywh {0 25 517 345} hide
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 517 345} selection_color 50 align 9
@@ -1161,7 +1161,7 @@ for (int i = 0; i < 9; i++)
 o->value(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[0] = ps[c];
-progdefaults.changed = true;} open selected
+progdefaults.changed = true;} open
                   xywh {167 94 47 22} down_box BORDER_BOX color 52
                   code0 {o->add(szProsigns);}
                   code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[0];}
@@ -1970,15 +1970,15 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabRig {
-        label Rig
-        tooltip {Transceiver control} xywh {0 25 500 345} hide
+        label Rig open
+        tooltip {Transceiver control} xywh {0 25 500 345}
       } {
         Fl_Tabs tabsRig {open
           xywh {0 25 500 345} selection_color 50
         } {
           Fl_Group {} {
             label {Hardware PTT} open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group grpHWPTT {
               label {h/w ptt device-pin} open
@@ -2084,7 +2084,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label RigCAT open
-            tooltip {Rig Control using xml spec file} xywh {0 50 500 320} hide
+            tooltip {Rig Control using xml spec file} xywh {0 50 500 320}
           } {
             Fl_Check_Button chkUSERIGCAT {
               label {Use RigCAT}
@@ -2207,7 +2207,7 @@ btnRevertRIGCAT->activate();}
               Fl_Round_Button btnRigCatRTSptt {
                 label {Toggle RTS for PTT}
                 callback {if (o->value() == 1) {
-  btnRigCatDTRptt->value(0);
+//  btnRigCatDTRptt->value(0);
   btnRigCatCMDptt->value(0);
 }
 
@@ -2220,13 +2220,13 @@ btnRevertRIGCAT->activate();}
               Fl_Round_Button btnRigCatDTRptt {
                 label {Toggle DTR for PTT}
                 callback {if (o->value() == 1) {
-  btnRigCatRTSptt->value(0);
+//  btnRigCatRTSptt->value(0);
   btnRigCatCMDptt->value(0);
 }
 
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-btnRevertRIGCAT->activate();}
+btnRevertRIGCAT->activate();} selected
                 tooltip {DTR is ptt line} xywh {256 250 160 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RigCatDTRptt);}
               }
