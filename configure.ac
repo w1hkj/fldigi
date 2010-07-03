@@ -57,7 +57,7 @@ AC_CONFIG_MACRO_DIR([m4])
 FLDIGI_AUTHORS="Dave Freese, Stelios Bounanos, Leigh Klotz, and others"
 FLARQ_AUTHORS="Dave Freese"
 PACKAGE_HOME="http://www.w1hkj.com/Fldigi.html"
-PACKAGE_DL="http://www.w1hkj.com/Downloads.html"
+PACKAGE_DL="http://www.w1hkj.com/download.html"
 PACKAGE_PROJ="http://developer.berlios.de/project/showfiles.php?group_id=9149"
 PACKAGE_NEWBUG="https://fedorahosted.org/fldigi/newticket"
 PACKAGE_DOCS="http://www.w1hkj.com/FldigiHelp/index.html"
