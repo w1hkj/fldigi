@@ -107,6 +107,7 @@ void pSAVEXCHG(string &, size_t &);
 void pXBEG(string &, size_t &);
 void pXEND(string &, size_t &);
 void pLOG(string &, size_t &);
+void pLNW(string &, size_t &);
 void pTIMER(string &, size_t &);
 void pIDLE(string &, size_t &);
 void pTUNE(string &, size_t &);
@@ -174,6 +175,7 @@ MTAGS mtags[] = {
 {"<XEND>",		pXEND},
 {"<SAVEXCHG>",	pSAVEXCHG},
 {"<LOG>",		pLOG},
+{"<LNW>",		pLNW},
 {"<TIMER:",		pTIMER},
 {"<IDLE:",		pIDLE},
 {"<TUNE:",		pTUNE},
@@ -613,6 +615,11 @@ void pLOG(string &s, size_t &i)
 {
 	qsoSave_cb(0, 0);
 	s.replace(i, 5, "");
+}
+
+void pLNW(string &s, size_t &i)
+{
+	s.replace(i, 5, "^L");
 }
 
 void pMODEM_compat(string &s, size_t &i)
@@ -1281,6 +1288,12 @@ string MACROTEXT::expandMacro(int n)
 	} else if (save_xchg) {
 		qso_exchange = expanded;
 		save_xchg = false;
+	}
+
+// force "^r" to be last tag in the expanded string
+	if ((idx = expanded.find("^r")) != string::npos) {
+		expanded.erase(idx, 2);
+		expanded.append("^r");
 	}
 
 	return expanded;
