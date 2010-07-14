@@ -539,11 +539,15 @@ cQsoRec rec;
 	rec.putField(ITUZ, inpITUZ_log->value());
 	rec.putField(TX_PWR, inpTX_pwr_log->value());
 
+	qsodb.qsoNewRec (&rec);
+	dxcc_entity_cache_add(&rec);
+
 	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
 	qsodb.isdirty(0);
 
-	qsodb.qsoNewRec (&rec);
-	dxcc_entity_cache_add(&rec);
+	loadBrowser(true);
+	logState = VIEWREC;
+	activateButtons();
 }
 
 void updateRecord() {
@@ -673,13 +677,6 @@ void AddRecord ()
 	inpITUZ_log->value("");
 
 	saveRecord();
-	qsodb.SortByDate();
-	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
-	qsodb.isdirty(0);
-
-	loadBrowser();
-	logState = VIEWREC;
-	activateButtons();
 }
 
 void cb_browser (Fl_Widget *w, void *data )
