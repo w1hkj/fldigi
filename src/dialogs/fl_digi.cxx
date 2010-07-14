@@ -1948,6 +1948,20 @@ void qsoSave_cb(Fl_Widget *b, void *)
 	restoreFocus();
 }
 
+void qso_save_now()
+{
+	string havecall = inpCall->value();
+	while (!havecall.empty() && havecall[0] == ' ') havecall.erase(0,1);
+	if (havecall.empty())
+		return;
+
+	submit_log();
+	if (progdefaults.ClearOnSave)
+		clearQSO();
+//	ReceiveText->mark(FTextBase::XMIT);
+}
+
+
 void cb_QRZ(Fl_Widget *b, void *)
 {
 	if (!*inpCall->value())
@@ -4831,6 +4845,13 @@ int get_tx_char(void)
 			c = 3; // ETX
 		} else
 			c = -1;
+		break;
+	case 'L':
+		if (state != STATE_CTRL)
+			break;
+		state = STATE_CHAR;
+		c = -1;
+		REQ(qso_save_now);
 		break;
 	case -1:
 		break;
