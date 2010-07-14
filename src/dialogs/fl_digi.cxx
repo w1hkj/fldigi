@@ -4820,15 +4820,16 @@ int get_tx_char(void)
 		return c;
 	}
 
-	switch (c = TransmitText->nextChar()) {
+	c = TransmitText->nextChar();
+	if (c == '^' && state == STATE_CHAR) {
+		state = STATE_CTRL;
+		c = TransmitText->nextChar();
+	}
+	switch (c) {
+	case -1: break; // no character available
 	case '\n':
 		pending = '\n';
 		return '\r';
-	case '^':
-		if (state == STATE_CTRL)
-			break;
-		state = STATE_CTRL;
-		return -1;
 	case 'r':
 		if (state != STATE_CTRL)
 			break;
@@ -4853,7 +4854,8 @@ int get_tx_char(void)
 		c = -1;
 		REQ(qso_save_now);
 		break;
-	case -1:
+	case '^':
+		state = STATE_CHAR;
 		break;
 	default:
 		if (state == STATE_CTRL) {
