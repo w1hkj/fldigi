@@ -323,7 +323,7 @@ void olivia::restart()
 	metric = 0;
 
 	sigpwr = 1e-10; noisepwr = 1e-8;
-	LOG_INFO("\nOlivia Rx parameters:\n%s", Rx->PrintParameters());
+	LOG_DEBUG("\nOlivia Rx parameters:\n%s", Rx->PrintParameters());
 }
 
 void olivia::init()
