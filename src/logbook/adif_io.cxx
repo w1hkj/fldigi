@@ -12,6 +12,7 @@
 #include "lgbook.h"
 #include "icons.h"
 #include "gettext.h"
+#include "debug.h"
 
 using namespace std;
 
@@ -158,6 +159,12 @@ void cAdifIO::readFile (const char *fname, cQsoDb *db) {
 // determine its size for buffer creation
 	fseek (adiFile, 0, SEEK_END);
 	filesize = ftell (adiFile);
+
+	if (filesize == 0) {
+	fl_alert2(_("Empty ADIF logbook file"));
+	return;
+	}
+
 	buff = new char[filesize + 1];
 // read the entire file into the buffer
 	fseek (adiFile, 0, SEEK_SET);
@@ -165,28 +172,37 @@ void cAdifIO::readFile (const char *fname, cQsoDb *db) {
 	fclose (adiFile);
 
 // relaxed file integrity test to all importing from non conforming log programs
-	if (filesize == 0) {
-	fl_alert2(_("Empty ADIF logbook file"));
-	return;
-	}
 	if ((strcasestr(buff, "<ADIF_VER:") != 0) &&
-	(strcasestr(buff, "<CALL:") == 0)) {
-	fl_alert2(_("No records in ADIF logbook file"));
+		(strcasestr(buff, "<CALL:") == 0)) {
+		fl_alert2(_("No records in ADIF logbook file"));
+		delete [] buff;
 		return;
 	}
 	if (strcasestr(buff, "<CALL:") == 0) {
-	fl_alert2(_("Not an ADIF file"));
+		fl_alert2(_("Not an ADIF file"));
+		delete [] buff;
 		return;
+	}
+	char *p = strcasestr(buff, "<DATA CHECKSUM:");
+	if (p) {
+		p = strchr(p + 1, '>');
+		if (p) {
+			p++;
+			file_checksum.clear();
+			for (int i = 0; i < 4; i++, p++) file_checksum += *p;
+		}
 	}
 
 	char *p1 = buff, *p2;
-// is there a header?
-	if (*p1 != '<') { // yes find the start of the records
+	if (*p1 != '<') { // yes, skip over header to start of records
 		p1 = strchr(buff, '<');
 		while (strncasecmp (p1+1,"EOH>", 4) != 0) {
 			p1 = strchr(p1+1, '<'); // find next <> field
 		}
-		if (!p1) return;	 // must not be an ADIF compliant file
+		if (!p1) {
+			delete [] buff;
+			return;	 // must not be an ADIF compliant file
+		}
 		p1 += 1;
 	}
 
@@ -194,8 +210,7 @@ void cAdifIO::readFile (const char *fname, cQsoDb *db) {
 	adifqso.clearRec();
 
 	while (p2) {
-		found = findfield(p2+1); // -2 ==> not found; -1 <eor> 0 ...N field #
-//		if (found == -2 ) return; // unknown field
+		found = findfield(p2+1);
 		if (found > -1)
 			fillfield (found, p2+1);
 		else if (found == -1) { // <eor> reached; add this record to db
@@ -211,14 +226,18 @@ void cAdifIO::readFile (const char *fname, cQsoDb *db) {
 		p2 = strchr(p1,'<');
 	}
 
+	log_checksum = file_checksum;
 	db->SortByDate();
 	delete [] buff;
 }
 
-string ADIFHEADER = "";
+static const char *adifmt = "<%s:%d>%s";
 
-static void make_adif_header()
+// write ALL or SELECTED records to the designated file
+
+int cAdifIO::writeFile (const char *fname, cQsoDb *db)
 {
+	string ADIFHEADER;
 	ADIFHEADER = "File: %s";
 	ADIFHEADER.append(szEOL);
 	ADIFHEADER.append("<ADIF_VER:%d>%s");
@@ -229,16 +248,6 @@ static void make_adif_header()
 	ADIFHEADER.append(szEOL);
 	ADIFHEADER.append("<EOH>");
 	ADIFHEADER.append(szEOL);
-}
-
-static const char *adifmt = "<%s:%d>%s";
-
-// write ALL or SELECTED records to the designated file
-
-
-int cAdifIO::writeFile (const char *fname, cQsoDb *db)
-{
-	if (ADIFHEADER.empty()) make_adif_header();
 // open the adif file
 	cQsoRec *rec;
 	char *szFld;
@@ -276,31 +285,121 @@ int cAdifIO::writeFile (const char *fname, cQsoDb *db)
 // write ALL records to the common log
 
 int cAdifIO::writeLog (const char *fname, cQsoDb *db) {
-	if (ADIFHEADER.empty()) make_adif_header();
+
+	string ADIFHEADER;
+	ADIFHEADER = "File: %s";
+	ADIFHEADER.append(szEOL);
+	ADIFHEADER.append("<ADIF_VER:%d>%s");
+	ADIFHEADER.append(szEOL);
+	ADIFHEADER.append("<PROGRAMID:%d>%s");
+	ADIFHEADER.append(szEOL);
+	ADIFHEADER.append("<PROGRAMVERSION:%d>%s");
+	ADIFHEADER.append(szEOL);
+	ADIFHEADER.append("<DATA CHECKSUM:%d>%s");
+	ADIFHEADER.append(szEOL);
+	ADIFHEADER.append("<EOH>");
+	ADIFHEADER.append(szEOL);
+
 // open the adif file
 	char *szFld;
 	cQsoRec *rec;
+	Ccrc16 checksum;
+	string s_checksum;
+
 	adiFile = fopen (fname, "w");
 	if (!adiFile)
 		return 1;
-	fprintf (adiFile, ADIFHEADER.c_str(),
-			 fl_filename_name(fname),
-			 strlen(ADIF_VERS), ADIF_VERS,
-			 strlen(PACKAGE_NAME), PACKAGE_NAME,
-			 strlen(PACKAGE_VERSION), PACKAGE_VERSION);
-//	db->SortByDate();
+
+	string records;
+	string record;
+	char recfield[200];
+
+	records.clear();
 	for (int i = 0; i < db->nbrRecs(); i++) {
 		rec = db->getRec(i);
+		record.clear();
 		for (int j = 0; j < numfields; j++) {
 			szFld = rec->getField(j);
-			if (strlen(szFld))
-				fprintf(adiFile, adifmt,
+			if (strlen(szFld)) {
+				snprintf(recfield, sizeof(recfield), adifmt,
 					fields[j].name, strlen(szFld), szFld);
+				record.append(recfield);
+			}
 		}
+		record.append(szEOR);
+		record.append(szEOL);
+		records.append(record);
 		db->qsoUpdRec(i, rec);
-		fprintf(adiFile, "%s", szEOR);
-		fprintf(adiFile, "%s", szEOL);
 	}
+
+	s_checksum = checksum.scrc16(records);
+
+	fprintf (adiFile, ADIFHEADER.c_str(),
+		 fl_filename_name(fname),
+		 strlen(ADIF_VERS), ADIF_VERS,
+		 strlen(PACKAGE_NAME), PACKAGE_NAME,
+		 strlen(PACKAGE_VERSION), PACKAGE_VERSION,
+		 s_checksum.length(), s_checksum.c_str()
+		);
+	fprintf (adiFile, "%s", records.c_str());
+
 	fclose (adiFile);
+	log_checksum = s_checksum;
+
 	return 0;
+}
+
+void cAdifIO::do_checksum(cQsoDb &db)
+{
+	Ccrc16 checksum;
+	char *szFld;
+	cQsoRec *rec;
+	string records;
+	string record;
+	char recfield[200];
+
+	records.clear();
+	for (int i = 0; i < db.nbrRecs(); i++) {
+		rec = db.getRec(i);
+		record.clear();
+		for (int j = 0; j < numfields; j++) {
+			szFld = rec->getField(j);
+			if (strlen(szFld)) {
+				snprintf(recfield, sizeof(recfield), adifmt,
+					fields[j].name, strlen(szFld), szFld);
+				record.append(recfield);
+			}
+		}
+		record.append(szEOR);
+		record.append(szEOL);
+		records.append(record);
+	}
+	log_checksum = checksum.scrc16(records);
+//	LOG_WARN("checksum %s", log_checksum.c_str());
+}
+
+bool cAdifIO::log_changed (const char *fname)
+{
+	int retval;
+// open the adif file
+	FILE *adiFile = fopen (fname, "r");
+	if (!adiFile)
+		return false;
+
+// read first 2048 chars
+	char buff[2048];
+	retval = fread (buff, 2048, 1, adiFile);
+	fclose (adiFile);
+
+	if (retval) {
+		string sbuff = buff;
+		size_t p = sbuff.find("<DATA CHECKSUM:");
+		if (p == string::npos) return false;
+		p = sbuff.find(">", p);
+		if (p == string::npos) return false;
+		p++;
+		if (log_checksum != sbuff.substr(p, 4))
+			return true;
+	}
+	return  false;
 }

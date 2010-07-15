@@ -36,12 +36,10 @@
 #include "date.h"
 
 #include "adif_io.h"
-
-#include "logsupport.h"
 #include "textio.h"
+#include "logbook.h"
 
 #include "logger.h"
-#include "lgbook.h"
 #include "fl_digi.h"
 #include "fileselect.h"
 #include "configuration.h"
@@ -143,9 +141,16 @@ void saveLogbook()
 	if (progdefaults.NagMe)
 		if (!fl_choice2(_("Save changed Logbook?"), _("No"), _("Yes"), NULL))
 			return;
-	if (adifFile.writeLog (logbook_filename.c_str(), &qsodb))
-		fl_alert2(_("Could not update file %s"), logbook_filename.c_str());
+
+	cQsoDb::reverse = false;
+	qsodb.SortByDate();
+
+	pthread_mutex_lock (&logbook_mutex);
+	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
+	pthread_mutex_unlock (&logbook_mutex);
+
 	qsodb.isdirty(0);
+	restore_sort();
 }
 
 static void dxcc_entity_cache_clear(void);
@@ -178,6 +183,7 @@ void cb_mnuOpenLogbook(Fl_Menu_* m, void* d)
 		logbook_filename = p;
 		progdefaults.logbookfilename = logbook_filename;
 		progdefaults.changed = true;
+
 		adifFile.readFile (logbook_filename.c_str(), &qsodb);
 		dxcc_entity_cache_clear();
 		dxcc_entity_cache_add(qsodb);
@@ -193,9 +199,16 @@ void cb_mnuSaveLogbook(Fl_Menu_*m, void* d) {
 	if (p) {
 		logbook_filename = p;
 		dlgLogbook->label(fl_filename_name(logbook_filename.c_str()));
-		if (adifFile.writeLog (p, &qsodb))
-			fl_alert2(_("Could not write to %s"), p);
+
+		cQsoDb::reverse = false;
+		qsodb.SortByDate();
+
+		pthread_mutex_lock (&logbook_mutex);
+		adifFile.writeLog (logbook_filename.c_str(), &qsodb);
+		pthread_mutex_unlock (&logbook_mutex);
+
 		qsodb.isdirty(0);
+		restore_sort();
 	}
 }
 
@@ -305,47 +318,78 @@ void cb_btnDelete(Fl_Button* b, void* d) {
 
 enum sorttype {NONE, SORTCALL, SORTDATE, SORTFREQ, SORTMODE};
 sorttype lastsort = SORTDATE;
+bool callfwd = true;
+bool datefwd = true;
+bool modefwd = true;
+bool freqfwd = true;
+
+void restore_sort()
+{
+	switch (lastsort) {
+	case SORTCALL :
+		cQsoDb::reverse = callfwd;
+		qsodb.SortByCall();
+		break;
+	case SORTDATE :
+		cQsoDb::reverse = datefwd;
+		qsodb.SortByDate();
+		break;
+	case SORTFREQ :
+		cQsoDb::reverse = freqfwd;
+		qsodb.SortByFreq();
+		break;
+	case SORTMODE :
+		cQsoDb::reverse = modefwd;
+		qsodb.SortByMode();
+		break;
+	default: break;
+	}
+}
 
 void cb_SortByCall (void) {
 	if (lastsort == SORTCALL)
-		cQsoDb::reverse = !cQsoDb::reverse;
+		callfwd = !callfwd;
 	else {
-		cQsoDb::reverse = false;
+		callfwd = false;
 		lastsort = SORTCALL;
 	}
+	cQsoDb::reverse = callfwd;
 	qsodb.SortByCall();
 	loadBrowser();
 }
 
 void cb_SortByDate (void) {
 	if (lastsort == SORTDATE)
-		cQsoDb::reverse = !cQsoDb::reverse;
+		datefwd = !datefwd;
 	else {
-		cQsoDb::reverse = false;
+		datefwd = false;
 		lastsort = SORTDATE;
 	}
+	cQsoDb::reverse = datefwd;
 	qsodb.SortByDate();
 	loadBrowser();
 }
 
 void cb_SortByMode (void) {
 	if (lastsort == SORTMODE)
-		cQsoDb::reverse = !cQsoDb::reverse;
+		modefwd = !modefwd;
 	else {
-		cQsoDb::reverse = false;
+		modefwd = false;
 		lastsort = SORTMODE;
 	}
+	cQsoDb::reverse = modefwd;
 	qsodb.SortByMode();
 	loadBrowser();
 }
 
 void cb_SortByFreq (void) {
 	if (lastsort == SORTFREQ)
-		cQsoDb::reverse = !cQsoDb::reverse;
+		freqfwd = !freqfwd;
 	else {
-		cQsoDb::reverse = false;
+		freqfwd = false;
 		lastsort = SORTFREQ;
 	}
+	cQsoDb::reverse = freqfwd;
 	qsodb.SortByFreq();
 	loadBrowser();
 }
@@ -499,7 +543,7 @@ void clearRecord() {
 }
 
 void saveRecord() {
-cQsoRec rec;
+	cQsoRec rec;
 	rec.putField(CALL, inpCall_log->value());
 	rec.putField(NAME, inpName_log->value());
 	rec.putField(QSO_DATE, inpDate_log->value());
@@ -542,8 +586,15 @@ cQsoRec rec;
 	qsodb.qsoNewRec (&rec);
 	dxcc_entity_cache_add(&rec);
 
+	cQsoDb::reverse = false;
+	qsodb.SortByDate();
+
+	pthread_mutex_lock (&logbook_mutex);
 	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
+	pthread_mutex_unlock (&logbook_mutex);
+
 	qsodb.isdirty(0);
+	restore_sort();
 
 	loadBrowser(true);
 	logState = VIEWREC;
@@ -583,8 +634,17 @@ cQsoRec rec;
 	dxcc_entity_cache_rm(qsodb.getRec(editNbr));
 	qsodb.qsoUpdRec (editNbr, &rec);
 	dxcc_entity_cache_add(&rec);
+
+	cQsoDb::reverse = false;
+	qsodb.SortByDate();
+
+	pthread_mutex_lock (&logbook_mutex);
 	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
+	pthread_mutex_unlock (&logbook_mutex);
+
 	qsodb.isdirty(0);
+	restore_sort();
+
 	loadBrowser(true);
 }
 
@@ -595,8 +655,16 @@ void deleteRecord () {
 
 	dxcc_entity_cache_rm(qsodb.getRec(editNbr));
 	qsodb.qsoDelRec(editNbr);
+
+	cQsoDb::reverse = false;
+	qsodb.SortByDate();
+
+	pthread_mutex_lock (&logbook_mutex);
 	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
+	pthread_mutex_unlock (&logbook_mutex);
+
 	qsodb.isdirty(0);
+	restore_sort();
 
 	loadBrowser(true);
 }
