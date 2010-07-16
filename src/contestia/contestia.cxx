@@ -325,7 +325,7 @@ void contestia::restart()
 	metric = 0;
 
 	sigpwr = 1e-10; noisepwr = 1e-8;
-	LOG_INFO("\nContestia Rx parameters:\n%s", Rx->PrintParameters());
+	LOG_DEBUG("\nContestia Rx parameters:\n%s", Rx->PrintParameters());
 }
 
 void contestia::init()
