@@ -1,8 +1,26 @@
 
 
-=Version 3.20.19=
+=Version 3.20.20=
 
-2010-07-02  David Freese  <w1hkj@w1hkj.com>
+2010-07-17  David Freese  <w1hkj@w1hkj.com>
+
+	779a7b1: MultiUser Logbook
+	444aea6: ThrobX
+	37e5c82: Post RsID
+	306d195: Contestia Olivia info
+	581a16c: Logbook Save
+	7b8f585: '^' Parser
+
+2010-07-13  Fer Maresca, LU2DFM  <lu2dfm@gmail.com>
+
+	9fedb61: <LOG> change
+
+2010-07-03  David Freese  <w1hkj@w1hkj.com>
+
+	0e72fea: Update check
+
+
+=Version 3.20.19=
 
 	357f3b1: RX-TX Select
 	8d15561: REPEAT Macro
@@ -806,4 +824,3 @@
 	e192d1d: Add preliminary support for MinGW
 	01fd3d9: Change set_log macro
 	9d56656: Clean up headers
-	b4bf47f: Distribute cr.sh test script
