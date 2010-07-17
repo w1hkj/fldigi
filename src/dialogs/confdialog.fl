@@ -1971,7 +1971,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabRig {
         label Rig open
-        tooltip {Transceiver control} xywh {0 25 500 345}
+        tooltip {Transceiver control} xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsRig {open
           xywh {0 25 500 345} selection_color 50
@@ -2226,7 +2226,7 @@ btnRevertRIGCAT->activate();}
 
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-btnRevertRIGCAT->activate();} selected
+btnRevertRIGCAT->activate();}
                 tooltip {DTR is ptt line} xywh {256 250 160 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RigCatDTRptt);}
               }
@@ -2799,8 +2799,8 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabID {
-        label ID
-        xywh {0 25 500 345} hide
+        label ID open
+        xywh {0 25 500 345}
       } {
         Fl_Group {} {
           label {Video Preamble ID} open
@@ -2967,8 +2967,8 @@ progdefaults.changed = true;}
           Fl_Check_Button chkRSidPost {
             label {Send at EOT}
             callback {progdefaults.rsid_post = o->value();
-progdefaults.changed = true;}
-            tooltip {Send RSID at end of transmission} xywh {310 247 120 20} down_box DOWN_BOX
+progdefaults.changed = true;} selected
+            tooltip {Send RSID at end of transmission} xywh {310 247 120 20} down_box DOWN_BOX hide
             code0 {o->value(progdefaults.rsid_post);}
           }
           Fl_Button bRSIDTxModes {
