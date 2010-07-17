@@ -314,8 +314,8 @@ void trx_trx_transmit_loop()
 
 		trx_xmit_wfall_end(current_samplerate);
 
-		if (progdefaults.TransmitRSid)
-			ReedSolomon->send(false);
+//		if (progdefaults.TransmitRSid)
+//			ReedSolomon->send(false);
 
 		scard->flush();
 		if (scard->must_close(O_WRONLY))

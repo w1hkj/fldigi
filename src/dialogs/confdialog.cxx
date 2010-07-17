@@ -5379,7 +5379,6 @@ ll with your audio device."));
         tabSoundCard->end();
       } // Fl_Group* tabSoundCard
       { tabID = new Fl_Group(0, 25, 500, 345, _("ID"));
-        tabID->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 103, _("Video Preamble ID"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -5548,6 +5547,7 @@ d frequency"));
             chkRSidPost->tooltip(_("Send RSID at end of transmission"));
             chkRSidPost->down_box(FL_DOWN_BOX);
             chkRSidPost->callback((Fl_Callback*)cb_chkRSidPost);
+            chkRSidPost->hide();
             o->value(progdefaults.rsid_post);
           } // Fl_Check_Button* chkRSidPost
           { bRSIDTxModes = new Fl_Button(310, 224, 130, 20, _("Transmit modes"));
