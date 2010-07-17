@@ -5,7 +5,7 @@
 //		Dave Freese, W1HKJ
 // ThrobX additions by Joe Veldhuis, KD8ATU
 //
-// This file is part of fldigi.  Adapted from code contained in gmfsk source code 
+// This file is part of fldigi.  Adapted from code contained in gmfsk source code
 // distribution.
 //  gmfsk Copyright (C) 2001, 2002, 2003
 //  Tomi Manninen (oh2bns@sral.fi)
@@ -58,6 +58,7 @@ void  throb::rx_init()
 	symptr = 0;
 	shift = 0;
 	lastchar = '\0';
+	reset_syms();
 	put_MODEstatus(mode);
 }
 
@@ -179,7 +180,7 @@ throb::throb(trx_mode throb_mode) : modem()
                         freqs[i] = ThrobXToneFreqsNar[i];
                 bw = 47.0 / THROB_SAMPLE_RATE;
 		break;
-	
+
         case MODE_THROBX2:
                 symlen = SYMLEN_2;
                 txpulse = mk_semi_pulse(symlen);
@@ -206,7 +207,7 @@ throb::throb(trx_mode throb_mode) : modem()
                 bw = 94.0 / THROB_SAMPLE_RATE;
                 break;
 	}
-	
+
 	outbuf = new double[symlen];
 
 	rxsymlen = symlen / DOWN_SAMPLE;
@@ -219,7 +220,7 @@ throb::throb(trx_mode throb_mode) : modem()
 	syncfilt = new C_FIR_filter();
 	syncfilt->init(symlen / DOWN_SAMPLE, 1, fp, NULL);
 	delete [] fp;
-	
+
 	snfilter = new Cmovavg(16);
 
 	for (int i = 0; i < num_tones; i++)
@@ -232,14 +233,14 @@ throb::throb(trx_mode throb_mode) : modem()
 	syncpos = 0.5;
 
 	scope_data	= new double [SCOPE_DATA_LEN];
-	
+
 	phaseacc = 0.0;
 	metric = 0.0;
 	symptr = 0;
 
 	for (int i = 0; i < MAX_RX_SYMLEN; i++)
 		syncbuf[i] = dispbuf[i] = 0.0;
-	
+
 //	init();
 }
 
@@ -324,7 +325,7 @@ int throb::findtones(complex *word, int &tone1, int &tone2)
 		tone1 = tone2;
 		tone2 = i;
 	}
-	
+
 	signal = noise = 0.0;
 	for (i = 0; i < num_tones; i++) {
 		if ( i == tone1 || i == tone2)
@@ -334,9 +335,9 @@ int throb::findtones(complex *word, int &tone1, int &tone2)
 	}
 
 	metric = snfilter->run( signal / (noise + 1e-6));
-	
+
 	s2n = CLAMP( 10.0*log10( metric ) - 3.0, 0.0, 100.0);
-	
+
 	return maxtone;
 }
 
@@ -353,54 +354,57 @@ void throb::decodechar(int tone1, int tone2)
 	case MODE_THROB1:
 	case MODE_THROB2:
 	case MODE_THROB4:
-	if (shift == true) {
-		if (tone1 == 0 && tone2 == 8)
-			show_char('?');
+		if (shift == true) {
+			if (tone1 == 0 && tone2 == 8)
+				show_char('?');
 
-		if (tone1 == 1 && tone2 == 7)
-			show_char('@');
+			if (tone1 == 1 && tone2 == 7)
+				show_char('@');
 
-		if (tone1 == 2 && tone2 == 6)
-			show_char('=');
+			if (tone1 == 2 && tone2 == 6)
+				show_char('=');
 
-		if (tone1 == 4 && tone2 == 4)
-			show_char('\n');
+			if (tone1 == 4 && tone2 == 4)
+				show_char('\n');
 
-		shift = false;
-		return;
-	}
-
-	if (tone1 == 3 && tone2 == 5) {
-		shift = true;
-		return;
-	}
-
-	for (i = 0; i < num_chars; i++) {
-		if (ThrobTonePairs[i][0] == tone1 + 1 && 
-		    ThrobTonePairs[i][1] == tone2 + 1) {
-			show_char(ThrobCharSet[i]);
-			break;
+			shift = false;
+			return;
 		}
-	}
-	break;
-	default: //ThrobX mode. No shifted case, but idle and space symbols alternate so we must handle that.
-        for (i = 0; i < num_chars; i++) {
-                if (ThrobXTonePairs[i][0] == tone1 + 1 &&
-                    ThrobXTonePairs[i][1] == tone2 + 1) {
-			if (i == spacesym || i == idlesym) {
-				if (lastchar != '\0' && lastchar != ' ') { show_char(ThrobXCharSet[1]); lastchar = ' '; } //FIXME: idle/space sync not perfect, this is a bandaid
-				//if (i == spacesym) { show_char(ThrobXCharSet[1]); }
-				else { lastchar = '\0'; }
-				flip_syms();
-			} else {
-                        	show_char(ThrobXCharSet[i]);
-				lastchar = ThrobXCharSet[i];
-			}
-                }
-        }
-	break;
-	}
 
+		if (tone1 == 3 && tone2 == 5) {
+			shift = true;
+			return;
+		}
+
+		for (i = 0; i < num_chars; i++) {
+			if (ThrobTonePairs[i][0] == tone1 + 1 &&
+				ThrobTonePairs[i][1] == tone2 + 1) {
+				show_char(ThrobCharSet[i]);
+				break;
+			}
+		}
+		break;
+//ThrobX mode. No shifted case, but idle and space symbols alternate
+	default:
+		for (i = 0; i < num_chars; i++) {
+			if (ThrobXTonePairs[i][0] == tone1 + 1 && ThrobXTonePairs[i][1] == tone2 + 1) {
+				if (i == spacesym || i == idlesym) {
+					if (lastchar != '\0' && lastchar != ' ') {
+						show_char(ThrobXCharSet[1]);
+						lastchar = ' ';
+					}
+					else {
+						lastchar = '\0';
+					}
+					flip_syms();
+				} else {
+					show_char(ThrobXCharSet[i]);
+					lastchar = ThrobXCharSet[i];
+				}
+			}
+		}
+	break;
+	}
 	return;
 }
 
@@ -435,7 +439,7 @@ void throb::rx(complex in)
 		z2 = cmac(rxtone[maxtone], symbol, symptr + 2, rxsymlen);
 
 		f = (z1 % z2).arg() / (2 * DOWN_SAMPLE * M_PI / THROB_SAMPLE_RATE);
-		
+
 		f -= freqs[maxtone];
 
 		set_freq(frequency + f / (num_tones - 1));
@@ -597,7 +601,7 @@ void throb::send(int symbol)
 	w2 = 2.0 * M_PI * (get_txfreq_woffset() + freqs[tone2]) / THROB_SAMPLE_RATE;
 
 	for (i = 0; i < symlen; i++)
-		outbuf[i] = txpulse[i] * 
+		outbuf[i] = txpulse[i] *
 				 (sin(w1 * i) + sin(w2 * i)) / 2.0;
 
 	ModulateXmtr(outbuf, symlen);
@@ -619,7 +623,7 @@ int throb::tx_process()
 // end of transmission
 	if (c == 0x03 || stopflag) {
 		send(idlesym);
-		reset_syms(); //prepare RX. idle/space syms always start as 0 and 1, respectively.
+//		reset_syms(); //prepare RX. idle/space syms always start as 0 and 1, respectively.
 		cwid();
 		return -1;
 	}
@@ -627,7 +631,7 @@ int throb::tx_process()
 // TX buffer empty
 	if (c == -1) {
 		send(idlesym);	/* send idle throbs */
-		flip_syms(); //FIXME: syms don't flip here, dunno why
+		flip_syms();
 		return 0;
 	}
 
@@ -692,15 +696,10 @@ int throb::tx_process()
                 break;
 	}
 
-	/* handle spaces for throbx */
+// send a space for unknown chars
+	if (sym == -1) c = ' ';
+// handle spaces for throbx
 	if (c == ' ') {
-		sym = spacesym;
-		flip_syms();
-	}
-
-	/* send a space for unknown chars */
-	if (sym == -1) {
-		c = ' ';
 		sym = spacesym;
 		flip_syms();
 	}
