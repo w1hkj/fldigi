@@ -2175,18 +2175,20 @@ FEC block: %d char. => %d x %d bits, %3.1f sec\n\
 Audio band: %3.1f - %3.1f Hz, %3.1f Hz total\n\
 Tuning tolerance = +/- %3.1f Hz\n\
 Sync. S/N threshold = %3.1f\n",
-		Demodulator.Carriers,
+		(int)Demodulator.Carriers,
 		FreqBin*Demodulator.CarrierSepar,
 		FreqBin*Demodulator.CarrierSepar*Demodulator.Carriers,
-		Demodulator.BitsPerSymbol,
+		(int)Demodulator.BitsPerSymbol,
 		SampleRate/Demodulator.SymbolSepar,
-		RefDecoder.BitsPerSymbol,
-		RefDecoder.BitsPerSymbol, RefDecoder.SymbolsPerBlock,
+		(int)RefDecoder.BitsPerSymbol,
+		(int)RefDecoder.BitsPerSymbol, 
+		(int)RefDecoder.SymbolsPerBlock,
 		(SymbolsPerBlock*Demodulator.SymbolSepar)/SampleRate,
 		FreqBin * Demodulator.FirstCarrier,
 		FreqBin * (Demodulator.FirstCarrier + Demodulator.CarrierSepar * Demodulator.Carriers),
 		FreqBin * Demodulator.CarrierSepar * Demodulator.Carriers,
-		FreqBin * SyncMargin, SyncThreshold );
+		FreqBin * SyncMargin, 
+		SyncThreshold );
 		return szParams;
 	}
 
