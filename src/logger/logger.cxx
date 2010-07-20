@@ -94,39 +94,39 @@ void putadif(int num, const char *s)
         adif.append(tempstr);
 }
 
-void submit_ADIF(void)
+void submit_ADIF(cQsoRec &rec)
 {
 	adif.erase();
 	
-	putadif(QSO_DATE, inpDate_log->value());//logdate); 
-	putadif(TIME_ON, inpTimeOn_log->value());
-	putadif(TIME_OFF, inpTimeOff_log->value());
-	putadif(CALL, inpCall_log->value());
-	putadif(FREQ, inpFreq_log->value());
-	putadif(MODE, logmode);
-	putadif(RST_SENT, inpRstS_log->value());
-	putadif(RST_RCVD, inpRstR_log->value());
-	putadif(TX_PWR, inpTX_pwr_log->value());
-	putadif(NAME, inpName_log->value());
-	putadif(QTH, inpQth_log->value());
-	putadif(STATE, inpState_log->value());
-	putadif(VE_PROV, inpVE_Prov_log->value());
-	putadif(COUNTRY, inpCountry_log->value());
-	putadif(GRIDSQUARE, inpLoc_log->value());
-	putadif(STX, inpSerNoOut_log->value());
-	putadif(SRX, inpSerNoIn_log->value());
-	putadif(XCHG1, inpXchgIn_log->value());
-	putadif(MYXCHG, inpMyXchg_log->value());
-	notes = inpNotes_log->value();
+	putadif(QSO_DATE, rec.getField(QSO_DATE)); 
+	putadif(TIME_ON, rec.getField(TIME_ON));
+	putadif(TIME_OFF, rec.getField(TIME_OFF));
+	putadif(CALL, rec.getField(CALL));
+	putadif(FREQ, rec.getField(FREQ));
+	putadif(MODE, rec.getField(MODE));
+	putadif(RST_SENT, rec.getField(RST_SENT));
+	putadif(RST_RCVD, rec.getField(RST_RCVD));
+	putadif(TX_PWR, rec.getField(TX_PWR));
+	putadif(NAME, rec.getField(NAME));
+	putadif(QTH, rec.getField(QTH));
+	putadif(STATE, rec.getField(STATE));
+	putadif(VE_PROV, rec.getField(VE_PROV));
+	putadif(COUNTRY, rec.getField(COUNTRY));
+	putadif(GRIDSQUARE, rec.getField(GRIDSQUARE));
+	putadif(STX, rec.getField(STX));
+	putadif(SRX, rec.getField(SRX));
+	putadif(XCHG1, rec.getField(XCHG1));
+	putadif(MYXCHG, rec.getField(MYXCHG));
+	notes = rec.getField(NOTES);
 	for (size_t i = 0; i < notes.length(); i++)
 	    if (notes[i] == '\n') notes[i] = ';';
 	putadif(NOTES, notes.c_str());
 // these fields will always be blank unless they are added to the main
 // QSO log area.
-	putadif(IOTA, inpIOTA_log->value());
-	putadif(DXCC, inpDXCC_log->value());
-	putadif(QSLRDATE, inpQSLrcvddate_log->value());
-	putadif(QSLSDATE, inpQSLsentdate_log->value());
+	putadif(IOTA, rec.getField(IOTA));
+	putadif(DXCC, rec.getField(DXCC));
+	putadif(QSLRDATE, rec.getField(QSLRDATE));
+	putadif(QSLSDATE, rec.getField(QSLSDATE));
 
 	writeADIF();
 }
@@ -141,7 +141,7 @@ void submit_ADIF(void)
 
 #define addtomsg(x, y)	log_msg = log_msg + (x) + (y) + LOG_MSEPARATOR
 
-static void send_IPC_log(void)
+static void send_IPC_log(cQsoRec &rec)
 {
 	msgtype msgbuf;
 	const char   LOG_MSEPARATOR[2] = {1,0};
@@ -151,27 +151,27 @@ static void send_IPC_log(void)
 	log_msg = log_msg + "program:"	+ PACKAGE_NAME + " v " 	+ PACKAGE_VERSION + LOG_MSEPARATOR;
 	addtomsg("version:",	LOG_MVERSION);
 	addtomsg("date:",		logdate);
-	addtomsg("time:", 		inpTimeOn_log->value());
-	addtomsg("endtime:", 	inpTimeOff_log->value());
-	addtomsg("call:",		inpCall_log->value());
-	addtomsg("mhz:",		inpFreq_log->value());
-	addtomsg("mode:",		logmode);
-	addtomsg("tx:",			inpRstS_log->value());
-	addtomsg("rx:",			inpRstR_log->value());
-	addtomsg("name:",		inpName_log->value());
-	addtomsg("qth:",		inpQth_log->value());
-	addtomsg("state:",		inpState_log->value());
-	addtomsg("province:",	inpVE_Prov_log->value());
-	addtomsg("country:",	inpCountry_log->value());
-	addtomsg("locator:",	inpLoc_log->value());
-	addtomsg("serialout:",	inpSerNoOut_log->value());
-	addtomsg("serialin:",	inpSerNoIn_log->value());
-	addtomsg("free1:",		inpXchgIn_log->value());
-	notes = inpNotes_log->value();
+	addtomsg("time:", 		rec.getField(TIME_ON));
+	addtomsg("endtime:", 	rec.getField(TIME_OFF));
+	addtomsg("call:",		rec.getField(CALL));
+	addtomsg("mhz:",		rec.getField(FREQ));
+	addtomsg("mode:",		rec.getField(MODE));
+	addtomsg("tx:",			rec.getField(RST_SENT));
+	addtomsg("rx:",			rec.getField(RST_RCVD));
+	addtomsg("name:",		rec.getField(NAME));
+	addtomsg("qth:",		rec.getField(QTH));
+	addtomsg("state:",		rec.getField(STATE));
+	addtomsg("province:",	rec.getField(VE_PROV));
+	addtomsg("country:",	rec.getField(COUNTRY));
+	addtomsg("locator:",	rec.getField(GRIDSQUARE));
+	addtomsg("serialout:",	rec.getField(STX));
+	addtomsg("serialin:",	rec.getField(SRX));
+	addtomsg("free1:",		rec.getField(XCHG1));
+	notes = rec.getField(NOTES);
 	for (size_t i = 0; i < notes.length(); i++)
 	    if (notes[i] == '\n') notes[i] = ';';
 	addtomsg("notes:",		notes.c_str());
-	addtomsg("power:",		inpTX_pwr_log->value());
+	addtomsg("power:",		rec.getField(TX_PWR));
 	
 	strncpy(msgbuf.mtext, log_msg.c_str(), sizeof(msgbuf.mtext));
 	msgbuf.mtext[sizeof(msgbuf.mtext) - 1] = '\0';
@@ -187,6 +187,15 @@ static void send_IPC_log(void)
 }
 
 #endif
+
+void submit_record(cQsoRec &rec)
+{
+#if !defined(__WOE32__) && !defined(__APPLE__)
+	send_IPC_log(rec);
+#else
+	submit_ADIF(rec);
+#endif
+}
 
 //---------------------------------------------------------------------
 
@@ -205,12 +214,6 @@ void submit_log(void)
 	logmode = mode_info[active_modem->get_mode()].adif_name;
 
 	AddRecord();
-
-#if !defined(__WOE32__) && !defined(__APPLE__)
-	send_IPC_log();
-#else
-	submit_ADIF();
-#endif
 
 }
 

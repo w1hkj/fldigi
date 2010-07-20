@@ -541,13 +541,10 @@ cQsoRec rec;
 
 	qsodb.qsoNewRec (&rec);
 	dxcc_entity_cache_add(&rec);
+	submit_record(rec);
 
 	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
 	qsodb.isdirty(0);
-
-	loadBrowser(true);
-	logState = VIEWREC;
-	activateButtons();
 }
 
 void updateRecord() {
@@ -677,6 +674,11 @@ void AddRecord ()
 	inpITUZ_log->value("");
 
 	saveRecord();
+
+	qsodb.SortByDate();
+	loadBrowser();
+	logState = VIEWREC;
+	activateButtons();
 }
 
 void cb_browser (Fl_Widget *w, void *data )
