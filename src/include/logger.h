@@ -30,12 +30,15 @@
 
 #define	LOG_MSG_LEN	1024
 
+#include "qso_db.h"
+
 typedef struct {
 	long mtype;
 	char mtext[LOG_MSG_LEN];
 } msgtype;
 
 extern void submit_log();
+extern void submit_record(cQsoRec &);
 
 extern	char logdate[];
 extern  char logtime[];

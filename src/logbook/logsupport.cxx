@@ -585,6 +585,7 @@ void saveRecord() {
 
 	qsodb.qsoNewRec (&rec);
 	dxcc_entity_cache_add(&rec);
+	submit_record(rec);
 
 	cQsoDb::reverse = false;
 	qsodb.SortByDate();
@@ -594,11 +595,6 @@ void saveRecord() {
 	pthread_mutex_unlock (&logbook_mutex);
 
 	qsodb.isdirty(0);
-	restore_sort();
-
-	loadBrowser(true);
-	logState = VIEWREC;
-	activateButtons();
 }
 
 void updateRecord() {
@@ -745,6 +741,11 @@ void AddRecord ()
 	inpITUZ_log->value("");
 
 	saveRecord();
+
+	qsodb.SortByDate();
+	loadBrowser();
+	logState = VIEWREC;
+	activateButtons();
 }
 
 void cb_browser (Fl_Widget *w, void *data )
