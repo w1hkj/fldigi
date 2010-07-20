@@ -1,10 +1,15 @@
 
 
+=Version 3.20.21=
+
+2010-07-20  David Freese  <w1hkj@w1hkj.com>
+
+	56c0527: Logger
+	390aee7: Compile Warnings
+
+
 =Version 3.20.20=
 
-2010-07-17  David Freese  <w1hkj@w1hkj.com>
-
-	779a7b1: MultiUser Logbook
 	444aea6: ThrobX
 	37e5c82: Post RsID
 	306d195: Contestia Olivia info
@@ -823,4 +828,3 @@
 	d73c8fd: Add OS X and MinGW stack tracing
 	e192d1d: Add preliminary support for MinGW
 	01fd3d9: Change set_log macro
-	9d56656: Clean up headers
