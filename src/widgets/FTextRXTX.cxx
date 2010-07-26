@@ -792,6 +792,26 @@ int FTextTX::nextChar(void)
 	return c;
 }
 
+void FTextTX::add_text(const char *s)
+{
+	while (*s) {
+		if (*s == '\b') {
+			int ipos = insert_position();
+			if (tbuf->length()) {
+				if (ipos > 0 && txpos == ipos) {
+					bkspaces++;
+					txpos--;
+				}
+				tbuf->remove(tbuf->length() - 1, tbuf->length());
+				sbuf->remove(sbuf->length() - 1, sbuf->length());
+				redraw();
+			}
+			s++;
+		} else
+			add(*s++, RECV);
+	}
+}
+
 void FTextTX::setFont(Fl_Font f, int attr)
 {
 	FTextBase::setFont(f, attr);

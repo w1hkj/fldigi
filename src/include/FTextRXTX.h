@@ -97,6 +97,7 @@ public:
 	void		clear_sent(void);
 	int			nextChar(void);
 	bool		eot(void);
+	void		add_text(const char *s);
 
 	void		setFont(Fl_Font f, int attr = NATTR);
 
