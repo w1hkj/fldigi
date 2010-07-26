@@ -365,6 +365,7 @@ void cb_contestiaE(Fl_Widget *w, void *arg);
 void cb_contestiaF(Fl_Widget *w, void *arg);
 void cb_contestiaG(Fl_Widget *w, void *arg);
 void cb_contestiaH(Fl_Widget *w, void *arg);
+void cb_contestiaI(Fl_Widget *w, void *arg);
 void cb_contestiaCustom(Fl_Widget *w, void *arg);
 
 void cb_rtty45(Fl_Widget *w, void *arg);
@@ -473,6 +474,7 @@ Fl_Menu_Item quick_change_olivia[] = {
 };
 
 Fl_Menu_Item quick_change_contestia[] = {
+	{ "4/125", 0, cb_contestiaI, (void *)MODE_CONTESTIA },
 	{ "4/250", 0, cb_contestiaA, (void *)MODE_CONTESTIA },
 	{ "8/250", 0, cb_contestiaB, (void *)MODE_CONTESTIA },
 	{ "4/500", 0, cb_contestiaC, (void *)MODE_CONTESTIA },
@@ -653,6 +655,14 @@ void cb_contestiaH(Fl_Widget *w, void *arg)
 {
 	progdefaults.contestiatones = 4;
 	progdefaults.contestiabw = 3;
+	set_contestia_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
+void cb_contestiaI(Fl_Widget *w, void *arg)
+{
+	progdefaults.contestiatones = 1;
+	progdefaults.contestiabw = 0;
 	set_contestia_tab_widgets();
 	cb_init_mode(w, arg);
 }
@@ -2421,6 +2431,7 @@ Fl_Menu_Item menu_[] = {
 { mode_info[MODE_CW].name, 0, cb_init_mode, (void *)MODE_CW, 0, FL_NORMAL_LABEL, 0, 14, 0},
 
 { CONTESTIA_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ "4/125", 0, cb_contestiaI, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 { "4/250", 0, cb_contestiaA, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "8/250", 0, cb_contestiaB, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 { "4/500", 0, cb_contestiaC, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -3973,6 +3984,7 @@ Fl_Menu_Item alt_menu_[] = {
 { mode_info[MODE_CW].name, 0, cb_init_mode, (void *)MODE_CW, 0, FL_NORMAL_LABEL, 0, 14, 0},
 
 {"Contestia", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ "4/125", 0, cb_contestiaI, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 { "4/250", 0, cb_contestiaA, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "8/250", 0, cb_contestiaB, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 { "4/500", 0, cb_contestiaC, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
