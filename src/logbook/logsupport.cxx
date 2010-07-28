@@ -702,7 +702,7 @@ void loadBrowser(bool keep_pos)
 		snprintf(sNbr,sizeof(sNbr),"%d",i);
 		wBrowser->addRow (7,
 			rec->getField(QSO_DATE),
-			rec->getField(TIME_OFF),
+			rec->getField(TIME_ON),
 			rec->getField(CALL),
 			rec->getField(NAME),
 			rec->getField(FREQ),
