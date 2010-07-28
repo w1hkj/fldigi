@@ -195,6 +195,10 @@ extern void put_rx_data(int *data, int len);
 extern int get_tx_char();
 extern int  get_secondary_char();
 extern void put_echo_char(unsigned int data, int style = FTextBase::XMIT);
+extern char *get_rxtx_data();
+extern char *get_rx_data();
+extern char *get_tx_data(); 
+
 extern void resetRTTY();
 extern void resetOLIVIA();
 extern void resetCONTESTIA();
