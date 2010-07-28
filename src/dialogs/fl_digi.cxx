@@ -4579,6 +4579,85 @@ void set_zdata(complex *zarray, int len)
 	wf->wfscope->zdata(zarray, len);
 }
 
+// raw buffer functions can ONLY be called by FLMAIN_TID
+
+//======================================================================
+#define RAW_BUFF_LEN 256
+
+static char rxtx_raw_chars[RAW_BUFF_LEN+1] = "";
+static char rxtx_raw_buff[RAW_BUFF_LEN+1] = "";
+static int  rxtx_raw_len = 0;
+
+char *get_rxtx_data()
+{
+	ENSURE_THREAD(FLMAIN_TID);
+	memset(rxtx_raw_chars, 0, RAW_BUFF_LEN+1);
+	strncpy(rxtx_raw_chars, rxtx_raw_buff, RAW_BUFF_LEN);
+	memset(rxtx_raw_buff, 0, RAW_BUFF_LEN+1);
+	rxtx_raw_len = 0;
+	return rxtx_raw_chars;
+}
+
+void add_rxtx_char(int data)
+{
+	if (rxtx_raw_len == RAW_BUFF_LEN) {
+		memset(rxtx_raw_buff, 0, RAW_BUFF_LEN+1);
+		rxtx_raw_len = 0;
+	}
+	rxtx_raw_buff[rxtx_raw_len++] = (unsigned char)data;
+}
+
+//======================================================================
+static char rx_raw_chars[RAW_BUFF_LEN+1] = "";
+static char rx_raw_buff[RAW_BUFF_LEN+1] = "";
+static int  rx_raw_len = 0;
+
+char *get_rx_data()
+{
+	ENSURE_THREAD(FLMAIN_TID);
+	memset(rx_raw_chars, 0, RAW_BUFF_LEN+1);
+	strncpy(rx_raw_chars, rx_raw_buff, RAW_BUFF_LEN);
+	memset(rx_raw_buff, 0, RAW_BUFF_LEN+1);
+	rx_raw_len = 0;
+	return rx_raw_chars;
+}
+
+void add_rx_char(int data)
+{
+	add_rxtx_char(data);
+	if (rx_raw_len == RAW_BUFF_LEN) {
+		memset(rx_raw_buff, 0, RAW_BUFF_LEN+1);
+		rx_raw_len = 0;
+	}
+	rx_raw_buff[rx_raw_len++] = (unsigned char)data;
+}
+
+//======================================================================
+static char tx_raw_chars[RAW_BUFF_LEN+1] = "";
+static char tx_raw_buff[RAW_BUFF_LEN+1] = "";
+static int  tx_raw_len = 0;
+
+char *get_tx_data()
+{
+	ENSURE_THREAD(FLMAIN_TID);
+	memset(tx_raw_chars, 0, RAW_BUFF_LEN+1);
+	strncpy(tx_raw_chars, tx_raw_buff, RAW_BUFF_LEN);
+	memset(tx_raw_buff, 0, RAW_BUFF_LEN+1);
+	tx_raw_len = 0;
+	return tx_raw_chars;
+}
+
+void add_tx_char(int data)
+{
+	add_rxtx_char(data);
+	if (tx_raw_len == RAW_BUFF_LEN) {
+		memset(tx_raw_buff, 0, RAW_BUFF_LEN+1);
+		tx_raw_len = 0;
+	}
+	tx_raw_buff[tx_raw_len++] = (unsigned char)data;
+}
+
+//======================================================================
 static void put_rx_char_flmain(unsigned int data, int style)
 {
 	ENSURE_THREAD(FLMAIN_TID);
@@ -4600,6 +4679,8 @@ static void put_rx_char_flmain(unsigned int data, int style)
 	if (progdefaults.autoextract == true) rx_extract_add(data);
 	speak(data);
 
+	add_rx_char(data);
+
 	switch (data) {
 		case '\n':
 			if (last == '\r')
@@ -4608,6 +4689,7 @@ static void put_rx_char_flmain(unsigned int data, int style)
 			ReceiveText->add('\n', style);
 			break;
 		default:
+
 			ReceiveText->add(data, style);
 	}
 
@@ -4888,6 +4970,8 @@ void put_echo_char(unsigned int data, int style)
 
 	static unsigned int last = 0;
 	const char **asc = ascii;
+
+	add_tx_char(data);
 
 	if (mailclient || mailserver || arqmode)
 		asc = ascii2;

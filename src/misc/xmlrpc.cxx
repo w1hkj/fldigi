@@ -2280,6 +2280,93 @@ public:
 
 // =============================================================================
 
+class RXTX_get_data : public xmlrpc_c::method
+{
+public:
+	RXTX_get_data()
+	{
+		_signature = "6:n";
+		_help = "Returns all RXTX combined data since last query.";
+	}
+	static void get_rxtx(char **text, int *size)
+	{
+		// the get* methods may throw but this function is not allowed to do so
+		*text = get_rxtx_data();
+		*size = strlen(*text);
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		XMLRPC_LOCK;
+		char *text;
+		int size;
+		REQ_SYNC(get_rxtx, &text, &size);
+
+		vector<unsigned char> bytes(size);
+		memcpy(&bytes[0], text, size);
+		*retval = xmlrpc_c::value_bytestring(bytes);
+	}
+};
+
+// =============================================================================
+
+class RX_get_data : public xmlrpc_c::method
+{
+public:
+	RX_get_data()
+	{
+		_signature = "6:n";
+		_help = "Returns all RX data received since last query.";
+	}
+	static void get_rx(char **text, int *size)
+	{
+		// the get* methods may throw but this function is not allowed to do so
+		*text = get_rx_data();
+		*size = strlen(*text);
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		XMLRPC_LOCK;
+		char *text;
+		int size;
+		REQ_SYNC(get_rx, &text, &size);
+
+		vector<unsigned char> bytes(size);
+		memcpy(&bytes[0], text, size);
+		*retval = xmlrpc_c::value_bytestring(bytes);
+	}
+};
+
+// =============================================================================
+
+class TX_get_data : public xmlrpc_c::method
+{
+public:
+	TX_get_data()
+	{
+		_signature = "6:n";
+		_help = "Returns all TX data transmitted since last query.";
+	}
+	static void get_tx(char **text, int *size)
+	{
+		// the get* methods may throw but this function is not allowed to do so
+		*text = get_tx_data();
+		*size = strlen(*text);
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		XMLRPC_LOCK;
+		char *text;
+		int size;
+		REQ_SYNC(get_tx, &text, &size);
+
+		vector<unsigned char> bytes(size);
+		memcpy(&bytes[0], text, size);
+		*retval = xmlrpc_c::value_bytestring(bytes);
+	}
+};
+
+// =============================================================================
+
 extern Fl_Button* btnAutoSpot; // FIXME: export in fl_digi.h
 
 class Spot_get_auto : public xmlrpc_c::method
@@ -2350,151 +2437,155 @@ public:
 
 // method list: ELEM_(class_name, "method_name")
 #undef ELEM_
-#define METHOD_LIST							\
-	ELEM_(Fldigi_list, "fldigi.list")				\
-	ELEM_(Fldigi_name, "fldigi.name")				\
-	ELEM_(Fldigi_version_struct, "fldigi.version_struct")		\
-	ELEM_(Fldigi_version_string, "fldigi.version")			\
-	ELEM_(Fldigi_name_version, "fldigi.name_version")		\
-	ELEM_(Fldigi_config_dir, "fldigi.config_dir")			\
-	ELEM_(Fldigi_terminate, "fldigi.terminate")			\
-									\
-	ELEM_(Modem_get_name, "modem.get_name")				\
-	ELEM_(Modem_get_names, "modem.get_names")			\
-	ELEM_(Modem_get_id, "modem.get_id")				\
-	ELEM_(Modem_get_max_id, "modem.get_max_id")			\
-	ELEM_(Modem_set_by_name, "modem.set_by_name")			\
-	ELEM_(Modem_set_by_id, "modem.set_by_id")			\
-									\
-	ELEM_(Modem_set_carrier, "modem.set_carrier")			\
-	ELEM_(Modem_inc_carrier, "modem.inc_carrier")			\
-	ELEM_(Modem_get_carrier, "modem.get_carrier")			\
-									\
-	ELEM_(Modem_get_afc_sr, "modem.get_afc_search_range")		\
-	ELEM_(Modem_set_afc_sr, "modem.set_afc_search_range")		\
-	ELEM_(Modem_inc_afc_sr, "modem.inc_afc_search_range")		\
-									\
-	ELEM_(Modem_get_bw, "modem.get_bandwidth")			\
-	ELEM_(Modem_set_bw, "modem.set_bandwidth")			\
-	ELEM_(Modem_inc_bw, "modem.inc_bandwidth")			\
-									\
-	ELEM_(Modem_get_quality, "modem.get_quality")			\
-	ELEM_(Modem_search_up, "modem.search_up")			\
-	ELEM_(Modem_search_down, "modem.search_down")			\
-									\
-	ELEM_(Modem_olivia_set_bandwidth, "modem.olivia.set_bandwidth") \
-	ELEM_(Modem_olivia_get_bandwidth, "modem.olivia.get_bandwidth") \
-	ELEM_(Modem_olivia_set_tones, "modem.olivia.set_tones")		\
-	ELEM_(Modem_olivia_get_tones, "modem.olivia.get_tones")		\
-									\
-	ELEM_(Main_get_status1, "main.get_status1")			\
-	ELEM_(Main_get_status2, "main.get_status2")			\
-									\
-	ELEM_(Main_get_sb, "main.get_sideband")				\
-	ELEM_(Main_set_sb, "main.set_sideband")				\
-	ELEM_(Main_get_wf_sideband, "main.get_wf_sideband")		\
-	ELEM_(Main_set_wf_sideband, "main.set_wf_sideband")		\
-	ELEM_(Main_get_freq, "main.get_frequency")			\
-	ELEM_(Main_set_freq, "main.set_frequency")			\
-	ELEM_(Main_inc_freq, "main.inc_frequency")			\
-									\
-	ELEM_(Main_get_afc, "main.get_afc")				\
-	ELEM_(Main_set_afc, "main.set_afc")				\
-	ELEM_(Main_toggle_afc, "main.toggle_afc")			\
-									\
-	ELEM_(Main_get_sql, "main.get_squelch")				\
-	ELEM_(Main_set_sql, "main.set_squelch")				\
-	ELEM_(Main_toggle_sql, "main.toggle_squelch")			\
-									\
-	ELEM_(Main_get_sql_level, "main.get_squelch_level")		\
-	ELEM_(Main_set_sql_level, "main.set_squelch_level")		\
-	ELEM_(Main_inc_sql_level, "main.inc_squelch_level")		\
-									\
-	ELEM_(Main_get_rev, "main.get_reverse")				\
-	ELEM_(Main_set_rev, "main.set_reverse")				\
-	ELEM_(Main_toggle_rev, "main.toggle_reverse")			\
-									\
-	ELEM_(Main_get_lock, "main.get_lock")				\
-	ELEM_(Main_set_lock, "main.set_lock")				\
-	ELEM_(Main_toggle_lock, "main.toggle_lock")			\
-									\
-	ELEM_(Main_get_rsid, "main.get_rsid")				\
-	ELEM_(Main_set_rsid, "main.set_rsid")				\
-	ELEM_(Main_toggle_rsid, "main.toggle_rsid")			\
-									\
-	ELEM_(Main_get_trx_status, "main.get_trx_status")		\
-	ELEM_(Main_tx, "main.tx")					\
-	ELEM_(Main_tune, "main.tune")					\
-	ELEM_(Main_rsid, "main.rsid")					\
-	ELEM_(Main_rx, "main.rx")					\
-	ELEM_(Main_abort, "main.abort")					\
-									\
-	ELEM_(Main_get_trx_state, "main.get_trx_state")			\
-	ELEM_(Main_set_rig_name, "main.set_rig_name")			\
-	ELEM_(Main_set_rig_frequency, "main.set_rig_frequency")		\
-	ELEM_(Main_set_rig_modes, "main.set_rig_modes")			\
-	ELEM_(Main_set_rig_mode, "main.set_rig_mode")			\
-	ELEM_(Main_get_rig_modes, "main.get_rig_modes")			\
-	ELEM_(Main_get_rig_mode, "main.get_rig_mode")			\
-	ELEM_(Main_set_rig_bandwidths, "main.set_rig_bandwidths")	\
-	ELEM_(Main_set_rig_bandwidth, "main.set_rig_bandwidth")		\
-	ELEM_(Main_get_rig_bandwidth, "main.get_rig_bandwidth")		\
-	ELEM_(Main_get_rig_bandwidths, "main.get_rig_bandwidths")	\
-									\
-	ELEM_(Main_run_macro, "main.run_macro")				\
-	ELEM_(Main_get_max_macro_id, "main.get_max_macro_id")		\
-									\
-	ELEM_(Rig_set_name, "rig.set_name")				\
-	ELEM_(Rig_get_name, "rig.get_name")				\
-	ELEM_(Rig_set_frequency, "rig.set_frequency")			\
-	ELEM_(Rig_set_modes, "rig.set_modes")				\
-	ELEM_(Rig_set_mode, "rig.set_mode")				\
-	ELEM_(Rig_get_modes, "rig.get_modes")				\
-	ELEM_(Rig_get_mode, "rig.get_mode")				\
-	ELEM_(Rig_set_bandwidths, "rig.set_bandwidths")			\
-	ELEM_(Rig_set_bandwidth, "rig.set_bandwidth")			\
-	ELEM_(Rig_get_bandwidth, "rig.get_bandwidth")			\
-	ELEM_(Rig_get_bandwidths, "rig.get_bandwidths")			\
-	ELEM_(Rig_take_control, "rig.take_control")			\
-	ELEM_(Rig_release_control, "rig.release_control")		\
-									\
-	ELEM_(Log_get_freq, "log.get_frequency")			\
-	ELEM_(Log_get_time_on, "log.get_time_on")			\
-	ELEM_(Log_get_time_off, "log.get_time_off")			\
-	ELEM_(Log_get_call, "log.get_call")				\
-	ELEM_(Log_get_name, "log.get_name")				\
-	ELEM_(Log_get_rst_in, "log.get_rst_in")				\
-	ELEM_(Log_get_rst_out, "log.get_rst_out")			\
-	ELEM_(Log_get_serial_number, "log.get_serial_number")		\
-	ELEM_(Log_set_serial_number, "log.set_serial_number")           \
+#define METHOD_LIST													\
+	ELEM_(Fldigi_list, "fldigi.list")								\
+	ELEM_(Fldigi_name, "fldigi.name")								\
+	ELEM_(Fldigi_version_struct, "fldigi.version_struct")			\
+	ELEM_(Fldigi_version_string, "fldigi.version")					\
+	ELEM_(Fldigi_name_version, "fldigi.name_version")				\
+	ELEM_(Fldigi_config_dir, "fldigi.config_dir")					\
+	ELEM_(Fldigi_terminate, "fldigi.terminate")						\
+																	\
+	ELEM_(Modem_get_name, "modem.get_name")							\
+	ELEM_(Modem_get_names, "modem.get_names")						\
+	ELEM_(Modem_get_id, "modem.get_id")								\
+	ELEM_(Modem_get_max_id, "modem.get_max_id")						\
+	ELEM_(Modem_set_by_name, "modem.set_by_name")					\
+	ELEM_(Modem_set_by_id, "modem.set_by_id")						\
+																	\
+	ELEM_(Modem_set_carrier, "modem.set_carrier")					\
+	ELEM_(Modem_inc_carrier, "modem.inc_carrier")					\
+	ELEM_(Modem_get_carrier, "modem.get_carrier")					\
+																	\
+	ELEM_(Modem_get_afc_sr, "modem.get_afc_search_range")			\
+	ELEM_(Modem_set_afc_sr, "modem.set_afc_search_range")			\
+	ELEM_(Modem_inc_afc_sr, "modem.inc_afc_search_range")			\
+																	\
+	ELEM_(Modem_get_bw, "modem.get_bandwidth")						\
+	ELEM_(Modem_set_bw, "modem.set_bandwidth")						\
+	ELEM_(Modem_inc_bw, "modem.inc_bandwidth")						\
+																	\
+	ELEM_(Modem_get_quality, "modem.get_quality")					\
+	ELEM_(Modem_search_up, "modem.search_up")						\
+	ELEM_(Modem_search_down, "modem.search_down")					\
+																	\
+	ELEM_(Modem_olivia_set_bandwidth, "modem.olivia.set_bandwidth")	\
+	ELEM_(Modem_olivia_get_bandwidth, "modem.olivia.get_bandwidth")	\
+	ELEM_(Modem_olivia_set_tones, "modem.olivia.set_tones")			\
+	ELEM_(Modem_olivia_get_tones, "modem.olivia.get_tones")			\
+																	\
+	ELEM_(Main_get_status1, "main.get_status1")						\
+	ELEM_(Main_get_status2, "main.get_status2")						\
+																	\
+	ELEM_(Main_get_sb, "main.get_sideband")							\
+	ELEM_(Main_set_sb, "main.set_sideband")							\
+	ELEM_(Main_get_wf_sideband, "main.get_wf_sideband")				\
+	ELEM_(Main_set_wf_sideband, "main.set_wf_sideband")				\
+	ELEM_(Main_get_freq, "main.get_frequency")						\
+	ELEM_(Main_set_freq, "main.set_frequency")						\
+	ELEM_(Main_inc_freq, "main.inc_frequency")						\
+																	\
+	ELEM_(Main_get_afc, "main.get_afc")								\
+	ELEM_(Main_set_afc, "main.set_afc")								\
+	ELEM_(Main_toggle_afc, "main.toggle_afc")						\
+																	\
+	ELEM_(Main_get_sql, "main.get_squelch")							\
+	ELEM_(Main_set_sql, "main.set_squelch")							\
+	ELEM_(Main_toggle_sql, "main.toggle_squelch")					\
+																	\
+	ELEM_(Main_get_sql_level, "main.get_squelch_level")				\
+	ELEM_(Main_set_sql_level, "main.set_squelch_level")				\
+	ELEM_(Main_inc_sql_level, "main.inc_squelch_level")				\
+																	\
+	ELEM_(Main_get_rev, "main.get_reverse")							\
+	ELEM_(Main_set_rev, "main.set_reverse")							\
+	ELEM_(Main_toggle_rev, "main.toggle_reverse")					\
+																	\
+	ELEM_(Main_get_lock, "main.get_lock")							\
+	ELEM_(Main_set_lock, "main.set_lock")							\
+	ELEM_(Main_toggle_lock, "main.toggle_lock")						\
+																	\
+	ELEM_(Main_get_rsid, "main.get_rsid")							\
+	ELEM_(Main_set_rsid, "main.set_rsid")							\
+	ELEM_(Main_toggle_rsid, "main.toggle_rsid")						\
+																	\
+	ELEM_(Main_get_trx_status, "main.get_trx_status")				\
+	ELEM_(Main_tx, "main.tx")										\
+	ELEM_(Main_tune, "main.tune")									\
+	ELEM_(Main_rsid, "main.rsid")									\
+	ELEM_(Main_rx, "main.rx")										\
+	ELEM_(Main_abort, "main.abort")									\
+																	\
+	ELEM_(Main_get_trx_state, "main.get_trx_state")					\
+	ELEM_(Main_set_rig_name, "main.set_rig_name")					\
+	ELEM_(Main_set_rig_frequency, "main.set_rig_frequency")			\
+	ELEM_(Main_set_rig_modes, "main.set_rig_modes")					\
+	ELEM_(Main_set_rig_mode, "main.set_rig_mode")					\
+	ELEM_(Main_get_rig_modes, "main.get_rig_modes")					\
+	ELEM_(Main_get_rig_mode, "main.get_rig_mode")					\
+	ELEM_(Main_set_rig_bandwidths, "main.set_rig_bandwidths")		\
+	ELEM_(Main_set_rig_bandwidth, "main.set_rig_bandwidth")			\
+	ELEM_(Main_get_rig_bandwidth, "main.get_rig_bandwidth")			\
+	ELEM_(Main_get_rig_bandwidths, "main.get_rig_bandwidths")		\
+																	\
+	ELEM_(Main_run_macro, "main.run_macro")							\
+	ELEM_(Main_get_max_macro_id, "main.get_max_macro_id")			\
+																	\
+	ELEM_(Rig_set_name, "rig.set_name")								\
+	ELEM_(Rig_get_name, "rig.get_name")								\
+	ELEM_(Rig_set_frequency, "rig.set_frequency")					\
+	ELEM_(Rig_set_modes, "rig.set_modes")							\
+	ELEM_(Rig_set_mode, "rig.set_mode")								\
+	ELEM_(Rig_get_modes, "rig.get_modes")							\
+	ELEM_(Rig_get_mode, "rig.get_mode")								\
+	ELEM_(Rig_set_bandwidths, "rig.set_bandwidths")					\
+	ELEM_(Rig_set_bandwidth, "rig.set_bandwidth")					\
+	ELEM_(Rig_get_bandwidth, "rig.get_bandwidth")					\
+	ELEM_(Rig_get_bandwidths, "rig.get_bandwidths")					\
+	ELEM_(Rig_take_control, "rig.take_control")						\
+	ELEM_(Rig_release_control, "rig.release_control")				\
+																	\
+	ELEM_(Log_get_freq, "log.get_frequency")						\
+	ELEM_(Log_get_time_on, "log.get_time_on")						\
+	ELEM_(Log_get_time_off, "log.get_time_off")						\
+	ELEM_(Log_get_call, "log.get_call")								\
+	ELEM_(Log_get_name, "log.get_name")								\
+	ELEM_(Log_get_rst_in, "log.get_rst_in")							\
+	ELEM_(Log_get_rst_out, "log.get_rst_out")						\
+	ELEM_(Log_get_serial_number, "log.get_serial_number")			\
+	ELEM_(Log_set_serial_number, "log.set_serial_number")			\
 	ELEM_(Log_get_serial_number_sent, "log.get_serial_number_sent")	\
-	ELEM_(Log_get_exchange, "log.get_exchange")                     \
-	ELEM_(Log_set_exchange, "log.set_exchange")                     \
-	ELEM_(Log_get_state, "log.get_state")				\
-	ELEM_(Log_get_province, "log.get_province")			\
-	ELEM_(Log_get_country, "log.get_country")			\
-	ELEM_(Log_get_qth, "log.get_qth")				\
-	ELEM_(Log_get_band, "log.get_band")				\
-	ELEM_(Log_get_sb, "log.get_sideband")				\
-	ELEM_(Log_get_notes, "log.get_notes")				\
-	ELEM_(Log_get_locator, "log.get_locator")			\
-	ELEM_(Log_get_az, "log.get_az")					\
-	ELEM_(Log_clear, "log.clear")					\
-	ELEM_(Log_set_call, "log.set_call")				\
-	ELEM_(Log_set_name, "log.set_name")				\
-	ELEM_(Log_set_qth, "log.set_qth")                               \
-	ELEM_(Log_set_locator, "log.set_locator")                       \
-									\
-	ELEM_(Text_get_rx_length, "text.get_rx_length")			\
-	ELEM_(Text_get_rx, "text.get_rx")				\
-	ELEM_(Text_clear_rx, "text.clear_rx")				\
-	ELEM_(Text_add_tx, "text.add_tx")				\
-	ELEM_(Text_add_tx_bytes, "text.add_tx_bytes")			\
-	ELEM_(Text_clear_tx, "text.clear_tx")				\
-									\
-	ELEM_(Spot_get_auto, "spot.get_auto")				\
-	ELEM_(Spot_set_auto, "spot.set_auto")				\
-	ELEM_(Spot_toggle_auto, "spot.toggle_auto")			\
+	ELEM_(Log_get_exchange, "log.get_exchange")						\
+	ELEM_(Log_set_exchange, "log.set_exchange")						\
+	ELEM_(Log_get_state, "log.get_state")							\
+	ELEM_(Log_get_province, "log.get_province")						\
+	ELEM_(Log_get_country, "log.get_country")						\
+	ELEM_(Log_get_qth, "log.get_qth")								\
+	ELEM_(Log_get_band, "log.get_band")								\
+	ELEM_(Log_get_sb, "log.get_sideband")							\
+	ELEM_(Log_get_notes, "log.get_notes")							\
+	ELEM_(Log_get_locator, "log.get_locator")						\
+	ELEM_(Log_get_az, "log.get_az")									\
+	ELEM_(Log_clear, "log.clear")									\
+	ELEM_(Log_set_call, "log.set_call")								\
+	ELEM_(Log_set_name, "log.set_name")								\
+	ELEM_(Log_set_qth, "log.set_qth")								\
+	ELEM_(Log_set_locator, "log.set_locator")						\
+																	\
+	ELEM_(Text_get_rx_length, "text.get_rx_length")					\
+	ELEM_(Text_get_rx, "text.get_rx")								\
+	ELEM_(Text_clear_rx, "text.clear_rx")							\
+	ELEM_(Text_add_tx, "text.add_tx")								\
+	ELEM_(Text_add_tx_bytes, "text.add_tx_bytes")					\
+	ELEM_(Text_clear_tx, "text.clear_tx")							\
+																	\
+	ELEM_(RXTX_get_data, "rxtx.get_data")							\
+	ELEM_(RX_get_data, "rx.get_data")								\
+	ELEM_(TX_get_data, "tx.get_data")								\
+																	\
+	ELEM_(Spot_get_auto, "spot.get_auto")							\
+	ELEM_(Spot_set_auto, "spot.set_auto")							\
+	ELEM_(Spot_toggle_auto, "spot.toggle_auto")						\
 	ELEM_(Spot_pskrep_get_count, "spot.pskrep.get_count")
 
 
