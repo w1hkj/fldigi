@@ -120,7 +120,7 @@ const cQsoRec &cQsoRec::operator=(const cQsoRec &right) {
 }
 
 int compareTimes (const cQsoRec &r1, const cQsoRec &r2) {
-  return  strcmp (r1.qsofield[TIME_OFF], r2.qsofield[TIME_OFF]);
+  return  strcmp (r1.qsofield[TIME_ON], r2.qsofield[TIME_ON]);
 }
 
 int compareDates (const cQsoRec &r1, const cQsoRec &r2) {
