@@ -36,6 +36,8 @@
 #include <algorithm>
 #include <iomanip>
 
+#include <string>
+
 #include <FL/Fl_Tooltip.H>
 
 #include "flmisc.h"
@@ -276,6 +278,9 @@ void FTextBase::set_style(int attr, Fl_Font f, int s, Fl_Color c, int set)
 }
 
 /// Reads a file and inserts its contents.
+/// change all occurrences of ^ to ^^ to prevent get_tx_char from
+/// treating the carat as a control sequence, ie: ^r ^R ^t ^T ^L
+/// get_tx_char passes ^^ as a single ^
 ///
 /// @return 0 on success, -1 on error
 int FTextBase::readFile(const char* fn)
@@ -287,41 +292,47 @@ int FTextBase::readFile(const char* fn)
 
 #ifdef __WOE32__
 	FILE* tfile = fopen(fn, "rt");
+#else
+	FILE* tfile = fopen(fn, "r");
+#endif
 	if (!tfile)
 		return -1;
 	char buf[BUFSIZ+1];
+	std::string newbuf;
+	size_t p;
+	memset(buf, 0, BUFSIZ+1);
 	if (pos == tbuf->length()) { // optimise for append
-		while (fgets(buf, sizeof(buf), tfile))
-			tbuf->append(buf);
+		while (fgets(buf, sizeof(buf), tfile)) {
+			newbuf = buf;
+			p = 0;
+			while ((p = newbuf.find('^',p)) != string::npos) {
+				newbuf.insert(p, "^");
+				p += 2;
+			}
+			tbuf->append(newbuf.c_str());
+			memset(buf, 0, BUFSIZ+1);
+		}
 		if (ferror(tfile))
 			ret = -1;
 		pos = tbuf->length();
 	}
 	else {
 		while (fgets(buf, sizeof(buf), tfile)) {
-			tbuf->insert(pos, buf);
+			newbuf = buf;
+			p = 0;
+			while ((p = newbuf.find('^',p)) != string::npos) {
+				newbuf.insert(p, "^");
+				p += 2;
+			}
+			tbuf->insert(pos, newbuf.c_str());
 			pos += strlen(buf);
+			memset(buf, 0, BUFSIZ+1);
 		}
 		if (ferror(tfile))
 			ret = -1;
 	}
 	fclose(tfile);
-#else
-	if (pos == tbuf->length()) { // optimise for append
-		if (tbuf->appendfile(fn) != 0)
-			ret = -1;
-		pos = tbuf->length();
-	}
-	else {
-		if (tbuf->insertfile(fn, pos) == 0) {
-			struct stat st;
-			if (stat(fn, &st) == 0)
-				pos += st.st_size;
-		}
-		else
-			ret = -1;
-	}
-#endif
+
 	insert_position(pos);
 	show_insert_position();
 
