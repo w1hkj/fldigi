@@ -1,5 +1,15 @@
-2010-07-15  David Freese  <w1hkj@w1hkj.com>
+2010-07-30  David Freese  <w1hkj@w1hkj.com>
 
+	bea2d29: TX file insertion
+	6c6f6e0: RsID
+	b24fe85: Xmlrpc Raw data
+	a9815cd: Log Sort
+	1110fe4: Xmlrpc BS char
+	9e6d0f3: Logger
+	bc70438: Compile Warnings
+	a7ee2af: ThrobX
+	dd0d489: Post RsID
+	809b218: Revert "RSID silence period"
 	2a95796: MultiUser Logbook
 	4a77c03: Contestia Olivia info
 	7f7aeab: RSID silence period
@@ -61,7 +71,3 @@
 2010-05-13  David Freese  <w1hkj@w1hkj.com>
 
 	1387fbe: WEFAX MINGW32
-
-2010-05-03  Remi Chateauneu  <rchateau@DuoLnx.(none)>
-
-	2508852: WEFAX addition
