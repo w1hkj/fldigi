@@ -1,8 +1,17 @@
 
 
-=Version 3.20.21=
+=Version 3.20.22=
 
-2010-07-20  David Freese  <w1hkj@w1hkj.com>
+2010-07-30  David Freese  <w1hkj@w1hkj.com>
+
+	9717eb5: TX file insertion
+	90ff2b5: Xmlrpc Raw data
+	95e7367: Log Sort
+	42be5c7: Xmlrpc BS char
+	fff8410: RsID
+
+
+=Version 3.20.21=
 
 	56c0527: Logger
 	390aee7: Compile Warnings
@@ -826,5 +835,3 @@
 	2124791: Add functions to set the socket buffer size
 	4b1292c: Improve logging and error notification
 	d73c8fd: Add OS X and MinGW stack tracing
-	e192d1d: Add preliminary support for MinGW
-	01fd3d9: Change set_log macro
