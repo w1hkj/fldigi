@@ -120,16 +120,25 @@ LOG_FILE_SOURCE(debug::LOG_MODEM);
         ELEM_(47, THROBX_2, MODE_THROBX2)               \
         ELEM_(146, THROBX_4, MODE_THROBX4)              \
                                                         \
-        ELEM_(55, CONTESTIA_4_250, MODE_CONTESTIA)      \
-        ELEM_(54, CONTESTIA_4_500, MODE_CONTESTIA)      \
+        ELEM_(204, CONTESTIA_4_125, MODE_CONTESTIA)     \
+        ELEM_(55,  CONTESTIA_4_250, MODE_CONTESTIA)     \
+        ELEM_(54,  CONTESTIA_4_500, MODE_CONTESTIA)     \
+        ELEM_(255, CONTESTIA_4_1000, MODE_CONTESTIA)    \
+        ELEM_(254, CONTESTIA_4_2000, MODE_CONTESTIA)    \
+                                                        \
         ELEM_(169, CONTESTIA_8_125, MODE_CONTESTIA)     \
-        ELEM_(49, CONTESTIA_8_250, MODE_CONTESTIA)      \
-        ELEM_(52, CONTESTIA_8_500, MODE_CONTESTIA)      \
+        ELEM_(49,  CONTESTIA_8_250, MODE_CONTESTIA)     \
+        ELEM_(52,  CONTESTIA_8_500, MODE_CONTESTIA)     \
         ELEM_(117, CONTESTIA_8_1000, MODE_CONTESTIA)    \
-        ELEM_(50, CONTESTIA_16_500, MODE_CONTESTIA)     \
-        ELEM_(53, CONTESTIA_16_1000, MODE_CONTESTIA)    \
-        ELEM_(51, CONTESTIA_32_1000, MODE_CONTESTIA)    \
+        ELEM_(247, CONTESTIA_8_2000, MODE_CONTESTIA)    \
+                                                        \
+        ELEM_(50,  CONTESTIA_16_500, MODE_CONTESTIA)    \
+        ELEM_(53,  CONTESTIA_16_1000, MODE_CONTESTIA)   \
+        ELEM_(259, CONTESTIA_16_2000, MODE_CONTESTIA)   \
+                                                        \
+        ELEM_(51,  CONTESTIA_32_1000, MODE_CONTESTIA)   \
         ELEM_(201, CONTESTIA_32_2000, MODE_CONTESTIA)   \
+                                                        \
         ELEM_(194, CONTESTIA_64_500, MODE_CONTESTIA)    \
         ELEM_(193, CONTESTIA_64_1000, MODE_CONTESTIA)   \
         ELEM_(191, CONTESTIA_64_2000, MODE_CONTESTIA)   \
@@ -152,15 +161,26 @@ LOG_FILE_SOURCE(debug::LOG_MODEM);
         ELEM_(119, RTTYM_8_1000, NUM_MODES)             \
         ELEM_(170, RTTYM_8_125, NUM_MODES)              \
                                                         \
-        ELEM_(69, OLIVIA_8_250, MODE_OLIVIA)            \
-        ELEM_(70, OLIVIA_16_500, MODE_OLIVIA)           \
-        ELEM_(71, OLIVIA_32_1000, MODE_OLIVIA)          \
-        ELEM_(72, OLIVIA_8_500, MODE_OLIVIA)            \
-        ELEM_(73, OLIVIA_16_1000, MODE_OLIVIA)          \
-        ELEM_(74, OLIVIA_4_500, MODE_OLIVIA)            \
-        ELEM_(75, OLIVIA_4_250, MODE_OLIVIA)            \
-        ELEM_(116, OLIVIA_8_1000, MODE_OLIVIA)          \
+        ELEM_(203, OLIVIA_4_125, MODE_OLIVIA)           \
+        ELEM_(75,  OLIVIA_4_250, MODE_OLIVIA)           \
+        ELEM_(74,  OLIVIA_4_500, MODE_OLIVIA)           \
+        ELEM_(229, OLIVIA_4_1000, MODE_OLIVIA)          \
+        ELEM_(238, OLIVIA_4_2000, MODE_OLIVIA)          \
+                                                        \
         ELEM_(163, OLIVIA_8_125, MODE_OLIVIA)           \
+        ELEM_(69,  OLIVIA_8_250, MODE_OLIVIA)           \
+        ELEM_(72,  OLIVIA_8_500, MODE_OLIVIA)           \
+        ELEM_(116, OLIVIA_8_1000, MODE_OLIVIA)          \
+        ELEM_(214, OLIVIA_8_2000, MODE_OLIVIA)          \
+                                                        \
+        ELEM_(70,  OLIVIA_16_500, MODE_OLIVIA)          \
+        ELEM_(73,  OLIVIA_16_1000, MODE_OLIVIA)         \
+        ELEM_(234, OLIVIA_16_2000, MODE_OLIVIA)         \
+                                                        \
+        ELEM_(71,  OLIVIA_32_1000, MODE_OLIVIA)         \
+        ELEM_(221, OLIVIA_32_2000, MODE_OLIVIA)         \
+                                                        \
+        ELEM_(211, OLIVIA_64_2000, MODE_OLIVIA)         \
                                                         \
         ELEM_(76, PAX, NUM_MODES)                       \
         ELEM_(77, PAX2, NUM_MODES)                      \
@@ -187,7 +207,7 @@ LOG_FILE_SOURCE(debug::LOG_MODEM);
         ELEM_(107, FM_HELL_105, MODE_FSKH105)           \
         ELEM_(108, FM_HELL_245, NUM_MODES)              \
                                                         \
-        ELEM_(114, 141A, NUM_MODES)                     \
+        ELEM_(114, MODE_141A, NUM_MODES)                \
         ELEM_(123, DTMF, NUM_MODES)                     \
         ELEM_(125, ALE400, NUM_MODES)                   \
         ELEM_(131, FDMDV, NUM_MODES)                    \
@@ -209,11 +229,10 @@ LOG_FILE_SOURCE(debug::LOG_MODEM);
         ELEM_(156, PACKET_PSK250, NUM_MODES)            \
         ELEM_(159, PACKET_PSK63, NUM_MODES)             \
                                                         \
-        ELEM_(172, 188_110A_8N1, NUM_MODES)             \
+        ELEM_(172, MODE_188_110A_8N1, NUM_MODES)        \
                                                         \
         /* NONE must be the last element */             \
         ELEM_(0, NONE, NUM_MODES)
-
 
 #define ELEM_(code_, tag_, mode_) RSID_ ## tag_ = code_,
 enum { RSID_LIST };
@@ -535,23 +554,58 @@ void cRsId::apply(int iSymbol, int iBin)
 		REQ(&set_dominoex_tab_widgets);
 		break;
 	// olivia parameters
+	case RSID_OLIVIA_4_125:
+		progdefaults.oliviatones = 1;
+		progdefaults.oliviabw = 0;
+		REQ(&set_olivia_tab_widgets);
+		break;
+	case RSID_OLIVIA_4_250:
+		progdefaults.oliviatones = 1;
+		progdefaults.oliviabw = 1;
+		REQ(&set_olivia_tab_widgets);
+		break;
+	case RSID_OLIVIA_4_500:
+		progdefaults.oliviatones = 1;
+		progdefaults.oliviabw = 2;
+		REQ(&set_olivia_tab_widgets);
+		break;
+	case RSID_OLIVIA_4_1000:
+		progdefaults.oliviatones = 1;
+		progdefaults.oliviabw = 3;
+		REQ(&set_olivia_tab_widgets);
+		break;
+	case RSID_OLIVIA_4_2000:
+		progdefaults.oliviatones = 1;
+		progdefaults.oliviabw = 4;
+		REQ(&set_olivia_tab_widgets);
+		break;
+	case RSID_OLIVIA_8_125:
+		progdefaults.oliviatones = 2;
+		progdefaults.oliviabw = 0;
+		REQ(&set_olivia_tab_widgets);
+		break;
 	case RSID_OLIVIA_8_250:
 		progdefaults.oliviatones = 2;
 		progdefaults.oliviabw = 1;
 		REQ(&set_olivia_tab_widgets);
 		break;
-	case RSID_OLIVIA_16_500:
-		progdefaults.oliviatones = 3;
+	case RSID_OLIVIA_8_500:
+		progdefaults.oliviatones = 2;
 		progdefaults.oliviabw = 2;
 		REQ(&set_olivia_tab_widgets);
 		break;
-	case RSID_OLIVIA_32_1000:
-		progdefaults.oliviatones = 4;
+	case RSID_OLIVIA_8_1000:
+		progdefaults.oliviatones = 2;
 		progdefaults.oliviabw = 3;
 		REQ(&set_olivia_tab_widgets);
 		break;
-	case RSID_OLIVIA_8_500:
+	case RSID_OLIVIA_8_2000:
 		progdefaults.oliviatones = 2;
+		progdefaults.oliviabw = 4;
+		REQ(&set_olivia_tab_widgets);
+		break;
+	case RSID_OLIVIA_16_500:
+		progdefaults.oliviatones = 3;
 		progdefaults.oliviabw = 2;
 		REQ(&set_olivia_tab_widgets);
 		break;
@@ -560,29 +614,29 @@ void cRsId::apply(int iSymbol, int iBin)
 		progdefaults.oliviabw = 3;
 		REQ(&set_olivia_tab_widgets);
 		break;
-	case RSID_OLIVIA_4_500:
-		progdefaults.oliviatones = 1;
-		progdefaults.oliviabw = 2;
+	case RSID_OLIVIA_16_2000:
+		progdefaults.oliviatones = 3;
+		progdefaults.oliviabw = 4;
 		REQ(&set_olivia_tab_widgets);
 		break;
-	case RSID_OLIVIA_4_250:
-		progdefaults.oliviatones = 1;
-		progdefaults.oliviabw = 1;
-		REQ(&set_olivia_tab_widgets);
-		break;
-	case RSID_OLIVIA_8_1000:
-		progdefaults.oliviatones = 2;
+	case RSID_OLIVIA_32_1000:
+		progdefaults.oliviatones = 4;
 		progdefaults.oliviabw = 3;
 		REQ(&set_olivia_tab_widgets);
 		break;
-	case RSID_OLIVIA_8_125:
-		progdefaults.oliviatones = 2;
-		progdefaults.oliviabw = 0;
+	case RSID_OLIVIA_32_2000:
+		progdefaults.oliviatones = 4;
+		progdefaults.oliviabw = 4;
+		REQ(&set_olivia_tab_widgets);
+		break;
+	case RSID_OLIVIA_64_2000:
+		progdefaults.oliviatones = 5;
+		progdefaults.oliviabw = 4;
 		REQ(&set_olivia_tab_widgets);
 		break;
 	// contestia parameters
-	case RSID_CONTESTIA_8_125:
-		progdefaults.contestiatones = 2;
+	case RSID_CONTESTIA_4_125:
+		progdefaults.contestiatones = 1;
 		progdefaults.contestiabw = 0;
 		REQ(&set_contestia_tab_widgets);
 		break;
@@ -591,23 +645,33 @@ void cRsId::apply(int iSymbol, int iBin)
 		progdefaults.contestiabw = 1;
 		REQ(&set_contestia_tab_widgets);
 		break;
-	case RSID_CONTESTIA_8_250:
-		progdefaults.contestiatones = 2;
-		progdefaults.contestiabw = 1;
-		REQ(&set_contestia_tab_widgets);
-		break;
 	case RSID_CONTESTIA_4_500:
 		progdefaults.contestiatones = 1;
 		progdefaults.contestiabw = 2;
 		REQ(&set_contestia_tab_widgets);
 		break;
-	case RSID_CONTESTIA_8_500:
-		progdefaults.contestiatones = 2;
-		progdefaults.contestiabw = 2;
+	case RSID_CONTESTIA_4_1000:
+		progdefaults.contestiatones = 1;
+		progdefaults.contestiabw = 3;
 		REQ(&set_contestia_tab_widgets);
 		break;
-	case RSID_CONTESTIA_16_500:
-		progdefaults.contestiatones = 3;
+	case RSID_CONTESTIA_4_2000:
+		progdefaults.contestiatones = 1;
+		progdefaults.contestiabw = 4;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_8_125:
+		progdefaults.contestiatones = 2;
+		progdefaults.contestiabw = 0;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_8_250:
+		progdefaults.contestiatones = 2;
+		progdefaults.contestiabw = 1;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_8_500:
+		progdefaults.contestiatones = 2;
 		progdefaults.contestiabw = 2;
 		REQ(&set_contestia_tab_widgets);
 		break;
@@ -616,9 +680,24 @@ void cRsId::apply(int iSymbol, int iBin)
 		progdefaults.contestiabw = 3;
 		REQ(&set_contestia_tab_widgets);
 		break;
+	case RSID_CONTESTIA_8_2000:
+		progdefaults.contestiatones = 2;
+		progdefaults.contestiabw = 4;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_16_500:
+		progdefaults.contestiatones = 3;
+		progdefaults.contestiabw = 2;
+		REQ(&set_contestia_tab_widgets);
+		break;
 	case RSID_CONTESTIA_16_1000:
 		progdefaults.contestiatones = 3;
 		progdefaults.contestiabw = 3;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_16_2000:
+		progdefaults.contestiatones = 3;
+		progdefaults.contestiabw = 4;
 		REQ(&set_contestia_tab_widgets);
 		break;
 	case RSID_CONTESTIA_32_1000:
@@ -787,7 +866,7 @@ void cRsId::send(bool preRSID)
 	if (!progdefaults.rsid_post && !preRSID)
 		return;
 
-	unsigned char rmode = RSID_NONE;
+	unsigned short rmode = RSID_NONE;
 
 	switch (mode) {
 	case MODE_RTTY :
@@ -806,55 +885,91 @@ void cRsId::send(bool preRSID)
 		break;
 
 	case MODE_OLIVIA:
-		if (progdefaults.oliviatones == 2 && progdefaults.oliviabw == 1)
-			rmode = RSID_OLIVIA_8_250;
-		else if (progdefaults.oliviatones == 3 && progdefaults.oliviabw == 2)
-			rmode = RSID_OLIVIA_16_500;
-		else if (progdefaults.oliviatones == 4 && progdefaults.oliviabw == 3)
-			rmode = RSID_OLIVIA_32_1000;
-		else if (progdefaults.oliviatones == 2 && progdefaults.oliviabw == 2)
-			rmode = RSID_OLIVIA_8_500;
-		else if (progdefaults.oliviatones == 3 && progdefaults.oliviabw == 3)
-			rmode = RSID_OLIVIA_16_1000;
-		else if (progdefaults.oliviatones == 1 && progdefaults.oliviabw == 2)
-			rmode = RSID_OLIVIA_4_500;
+
+		if (progdefaults.oliviatones == 1 && progdefaults.oliviabw == 0)
+			rmode = RSID_OLIVIA_4_125;
 		else if (progdefaults.oliviatones == 1 && progdefaults.oliviabw == 1)
 			rmode = RSID_OLIVIA_4_250;
-		else if (progdefaults.oliviatones == 2 && progdefaults.oliviabw == 3)
-			rmode = RSID_OLIVIA_8_1000;
+		else if (progdefaults.oliviatones == 1 && progdefaults.oliviabw == 2)
+			rmode = RSID_OLIVIA_4_500;
+		else if (progdefaults.oliviatones == 1 && progdefaults.oliviabw == 3)
+			rmode = RSID_OLIVIA_4_1000;
+		else if (progdefaults.oliviatones == 1 && progdefaults.oliviabw == 4)
+			rmode = RSID_OLIVIA_4_2000;
+
 		else if (progdefaults.oliviatones == 2 && progdefaults.oliviabw == 0)
 			rmode = RSID_OLIVIA_8_125;
+		else if (progdefaults.oliviatones == 2 && progdefaults.oliviabw == 1)
+			rmode = RSID_OLIVIA_8_250;
+		else if (progdefaults.oliviatones == 2 && progdefaults.oliviabw == 2)
+			rmode = RSID_OLIVIA_8_500;
+		else if (progdefaults.oliviatones == 2 && progdefaults.oliviabw == 3)
+			rmode = RSID_OLIVIA_8_1000;
+		else if (progdefaults.oliviatones == 2 && progdefaults.oliviabw == 4)
+			rmode = RSID_OLIVIA_8_2000;
+
+		else if (progdefaults.oliviatones == 3 && progdefaults.oliviabw == 2)
+			rmode = RSID_OLIVIA_16_500;
+		else if (progdefaults.oliviatones == 3 && progdefaults.oliviabw == 3)
+			rmode = RSID_OLIVIA_16_1000;
+		else if (progdefaults.oliviatones == 3 && progdefaults.oliviabw == 4)
+			rmode = RSID_OLIVIA_16_2000;
+
+		else if (progdefaults.oliviatones == 4 && progdefaults.oliviabw == 3)
+			rmode = RSID_OLIVIA_32_1000;
+		else if (progdefaults.oliviatones == 4 && progdefaults.oliviabw == 4)
+			rmode = RSID_OLIVIA_32_2000;
+
+		else if (progdefaults.oliviatones == 5 && progdefaults.oliviabw == 4)
+			rmode = RSID_OLIVIA_64_2000;
+
 		else
 			return;
 		break;
 
 	case MODE_CONTESTIA:
-		if (progdefaults.contestiatones == 2 && progdefaults.contestiabw == 1)
-			rmode = RSID_CONTESTIA_8_250;
-		else if (progdefaults.contestiatones == 3 && progdefaults.contestiabw == 2)
-			rmode = RSID_CONTESTIA_16_500;
-		else if (progdefaults.contestiatones == 4 && progdefaults.contestiabw == 3)
-			rmode = RSID_CONTESTIA_32_1000;
-		else if (progdefaults.contestiatones == 2 && progdefaults.contestiabw == 2)
-			rmode = RSID_CONTESTIA_8_500;
-		else if (progdefaults.contestiatones == 3 && progdefaults.contestiabw == 3)
-			rmode = RSID_CONTESTIA_16_1000;
-		else if (progdefaults.contestiatones == 1 && progdefaults.contestiabw == 2)
-			rmode = RSID_CONTESTIA_4_500;
+
+		if (progdefaults.contestiatones == 1 && progdefaults.contestiabw == 0)
+			rmode = RSID_CONTESTIA_4_125;
 		else if (progdefaults.contestiatones == 1 && progdefaults.contestiabw == 1)
 			rmode = RSID_CONTESTIA_4_250;
-		else if (progdefaults.contestiatones == 2 && progdefaults.contestiabw == 3)
-			rmode = RSID_CONTESTIA_8_1000;
+		else if (progdefaults.contestiatones == 1 && progdefaults.contestiabw == 2)
+			rmode = RSID_CONTESTIA_4_500;
+		else if (progdefaults.contestiatones == 1 && progdefaults.contestiabw == 3)
+			rmode = RSID_CONTESTIA_4_1000;
+		else if (progdefaults.contestiatones == 1 && progdefaults.contestiabw == 4)
+			rmode = RSID_CONTESTIA_4_2000;
+
 		else if (progdefaults.contestiatones == 2 && progdefaults.contestiabw == 0)
 			rmode = RSID_CONTESTIA_8_125;
+		else if (progdefaults.contestiatones == 2 && progdefaults.contestiabw == 1)
+			rmode = RSID_CONTESTIA_8_250;
+		else if (progdefaults.contestiatones == 2 && progdefaults.contestiabw == 2)
+			rmode = RSID_CONTESTIA_8_500;
+		else if (progdefaults.contestiatones == 2 && progdefaults.contestiabw == 3)
+			rmode = RSID_CONTESTIA_8_1000;
+		else if (progdefaults.contestiatones == 2 && progdefaults.contestiabw == 4)
+			rmode = RSID_CONTESTIA_8_2000;
+
+		else if (progdefaults.contestiatones == 3 && progdefaults.contestiabw == 2)
+			rmode = RSID_CONTESTIA_16_500;
+		else if (progdefaults.contestiatones == 3 && progdefaults.contestiabw == 3)
+			rmode = RSID_CONTESTIA_16_1000;
+		else if (progdefaults.contestiatones == 3 && progdefaults.contestiabw == 4)
+			rmode = RSID_CONTESTIA_16_2000;
+
+		else if (progdefaults.contestiatones == 4 && progdefaults.contestiabw == 3)
+			rmode = RSID_CONTESTIA_32_1000;
 		else if (progdefaults.contestiatones == 4 && progdefaults.contestiabw == 4)
 			rmode = RSID_CONTESTIA_32_2000;
+
 		else if (progdefaults.contestiatones == 5 && progdefaults.contestiabw == 2)
 			rmode = RSID_CONTESTIA_64_500;
 		else if (progdefaults.contestiatones == 5 && progdefaults.contestiabw == 3)
 			rmode = RSID_CONTESTIA_64_1000;
 		else if (progdefaults.contestiatones == 5 && progdefaults.contestiabw == 4)
 			rmode = RSID_CONTESTIA_64_2000;
+
 		else
 			return;
 		break;
