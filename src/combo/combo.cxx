@@ -25,6 +25,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <FL/Fl.H>
+#include <FL/fl_draw.H>
 
 #include "combo.h"
 #include "debug.h"
@@ -77,7 +78,7 @@ void Fl_PopBrowser::sort()
 void Fl_PopBrowser::popshow (int x, int y)
 {
   int nRows = popbrwsr->size();
-  int height = (nRows > 12 ? 12 : nRows)*hRow;// + 4;
+  int height = (nRows > 12 ? 12 : nRows)* fl_height() + 4;
 
   if (nRows == 0) return;
   popbrwsr->resize (0, 0, wRow, height);
@@ -94,7 +95,7 @@ void Fl_PopBrowser::popshow (int x, int y)
   }
 
   show ();
-  popbrwsr->topline (i+1);
+  popbrwsr->topline (i);
 
   Fl::grab(this);
 }
