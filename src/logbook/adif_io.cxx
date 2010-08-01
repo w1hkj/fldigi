@@ -58,7 +58,7 @@ FIELD fields[] = {
 	{QSL_SENT,       "QSL_SENT",       0,  1, NULL},                // QSL sent status
 	{QSL_VIA,        "QSL_VIA",        0, 30, NULL},
 	{QSO_DATE,       "QSO_DATE",       0,  8, &btnSelectQSOdateOn}, // QSO date ON 
-	{QSO_DATE_OFF,   "QSO_DATE_OFF",   0,  8, &btnSelectQSOdateOff},// QSO data OFF, according to ADIF 2.2.6
+	{QSO_DATE_OFF,   "QSO_DATE_OFF",   0,  8, &btnSelectQSOdateOff},// QSO date OFF, according to ADIF 2.2.6
 	{QTH,            "QTH",            0, 30, &btnSelectQth},       // contacted stations city
 	{RST_RCVD,       "RST_RCVD",       0,  3, &btnSelectRSTrcvd},   // received signal report
 	{RST_SENT,       "RST_SENT",       0,  3, &btnSelectRSTsent},   // sent signal report
@@ -129,9 +129,9 @@ void cAdifIO::fillfield (int fieldnum, char *buff){
 const char *p = buff;
 int n, fldsize;
 	n = 0;
-	while (*p != ':' && n < 11) {p++; n++;}
-	if (n == 11) return; // bad ADIF specifier ---> no ':' after field name
-// found first ':'
+	while (*p != ':' && n <= FieldLabelMaxLen) {p++; n++;}
+	if (n == FieldLabelMaxLen +1) return; // bad ADIF specifier ---> no ':' after FieldLabelMaxLen +1
+                                          // chars name found first ':'
 	p++;
 	n = 0;
 	fldsize = 0;
@@ -162,8 +162,8 @@ void cAdifIO::readFile (const char *fname, cQsoDb *db) {
 	filesize = ftell (adiFile);
 
 	if (filesize == 0) {
-	fl_alert2(_("Empty ADIF logbook file"));
-	return;
+	    fl_alert2(_("Empty ADIF logbook file"));
+    	return;
 	}
 
 	buff = new char[filesize + 1];
