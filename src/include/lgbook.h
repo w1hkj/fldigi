@@ -23,7 +23,8 @@ extern Fl_Check_Button *btnSelectName;
 extern Fl_Check_Button *btnSelectFreq;
 extern Fl_Check_Button *btnSelectBand;
 extern Fl_Check_Button *btnSelectMode;
-extern Fl_Check_Button *btnSelectQSOdate;
+extern Fl_Check_Button *btnSelectQSOdateOn;
+extern Fl_Check_Button *btnSelectQSOdateOff;
 extern Fl_Check_Button *btnSelectTimeON;
 extern Fl_Check_Button *btnSelectTimeOFF;
 extern Fl_Check_Button *btnSelectTX_pwr;
@@ -50,6 +51,8 @@ extern Fl_Button *btnSetFieldDefaults;
 extern Fl_Double_Window *dlgLogbook;
 extern Fl_Group *editGroup;
 #include "calendar.h"
+extern Fl_DateInput *inpDate_log;
+extern Fl_DateInput *inpDateOff_log;
 extern Fl_DateInput *inpDate_log;
 extern Fl_Input2 *inpTimeOn_log;
 extern Fl_Input2 *inpTimeOff_log;
