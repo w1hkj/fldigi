@@ -1,8 +1,14 @@
 
 
-=Version 3.20.22=
+=Version 3.20.23=
 
-2010-07-30  David Freese  <w1hkj@w1hkj.com>
+2010-08-11  David Freese  <w1hkj@w1hkj.com>
+
+	d513ee8: Macro Mode Change
+	b7b3eb3: Combo Widget
+
+
+=Version 3.20.22=
 
 	9717eb5: TX file insertion
 	90ff2b5: Xmlrpc Raw data
@@ -834,4 +840,3 @@
 	77bc966: Use band functions in logbook
 	2124791: Add functions to set the socket buffer size
 	4b1292c: Improve logging and error notification
-	d73c8fd: Add OS X and MinGW stack tracing
