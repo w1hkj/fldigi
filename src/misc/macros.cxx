@@ -639,7 +639,7 @@ void pMODEM_compat(string &s, size_t &i)
 	for (int m = 0; m < NUM_MODES; m++) {
 		if (name == mode_info[m].sname) {
 			if (active_modem->get_mode() != mode_info[m].mode)
-				init_modem_sync(mode_info[m].mode);
+				init_modem(mode_info[m].mode);
 			break;
 		}
 	}
@@ -669,7 +669,7 @@ void pMODEM(string &s, size_t &i)
 	// do we have arguments and a valid modem?
 	if (o.size() == 2 || m == NUM_MODES) {
 		if (m < NUM_MODES && active_modem->get_mode() != mode_info[m].mode)
-			init_modem_sync(mode_info[m].mode);
+			init_modem(mode_info[m].mode);
 		s.erase(i, o[0].rm_eo - i);
 		return;
 	}
@@ -719,7 +719,7 @@ void pMODEM(string &s, size_t &i)
 	catch (const exception& e) { }
 
 	if (active_modem->get_mode() != mode_info[m].mode)
-		init_modem_sync(mode_info[m].mode);
+		init_modem(mode_info[m].mode);
 
 	s.erase(i, o[0].rm_eo - i);
 }
