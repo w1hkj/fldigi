@@ -23,11 +23,16 @@ void start_logbook ()
 		logbook_filename = progdefaults.logbookfilename;
 
 	adifFile.readFile (logbook_filename.c_str(), &qsodb);
+	if (qsodb.nbrRecs() == 0)
+		adifFile.writeFile(logbook_filename.c_str(), &qsodb);
+
 	string label = "Logbook - ";
 	label.append(fl_filename_name(logbook_filename.c_str()));
 	dlgLogbook->copy_label(label.c_str());
+
 	loadBrowser();
 	qsodb.isdirty(0);
+	activateButtons();
 
 }
 

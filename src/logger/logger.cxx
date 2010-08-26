@@ -81,17 +81,16 @@ void writeADIF () {
 
 void putadif(int num, const char *s)
 {
-        char tempstr[100];
-        int slen = strlen(s);
-        if (slen > fields[num].size) slen = fields[num].size;
-        int n = snprintf(tempstr, sizeof(tempstr), "<%s:%d>", fields[num].name, slen);
-        if (n == -1) {
+	char tempstr[100];
+	int slen = strlen(s);
+	int n = snprintf(tempstr, sizeof(tempstr), "<%s:%d>", fields[num].name, slen);
+	if (n == -1) {
 		LOG_PERROR("snprintf");
-                return;
-        }
-        memcpy(tempstr + n, s, slen);
-        tempstr[n + slen] = '\0';
-        adif.append(tempstr);
+		return;
+	}
+	memcpy(tempstr + n, s, slen);
+	tempstr[n + slen] = '\0';
+	adif.append(tempstr);
 }
 
 void submit_ADIF(cQsoRec &rec)
