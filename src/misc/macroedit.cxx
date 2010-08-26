@@ -105,6 +105,10 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<LDT>\tLocal datetime"));
 	w->add(_("<IZDT>\tZDT in iso-8601 format"));
 	w->add(_("<ZDT>\tUTC datetime"));
+	w->add(_("<LT>\tlocal time HHMM"));
+	w->add(_("<ZT>\tzulu time HHMMZ"));
+	w->add(_("<LD>\tlocal date YYYY-MM-DD"));
+	w->add(_("<ZD>\tzulu date YYYY-MM-DD Z"));
 
 	w->add(LINE_SEP);
 	w->add(_("<CNTR>\tcontest counter"));
