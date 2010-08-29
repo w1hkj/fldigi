@@ -83,7 +83,7 @@ void putadif(int num, const char *s)
 {
 	char tempstr[100];
 	int slen = strlen(s);
-	int n = snprintf(tempstr, sizeof(tempstr), "<%s:%d>", fields[num].name, slen);
+	int n = snprintf(tempstr, sizeof(tempstr), "<%s:%d>", fields[num].name->c_str(), slen);
 	if (n == -1) {
 		LOG_PERROR("snprintf");
 		return;
