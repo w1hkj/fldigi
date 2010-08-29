@@ -56,12 +56,11 @@ int cQsoRec::validRec() {
 }
 
 void cQsoRec::checkBand() {
-	size_t flen = qsofield[FREQ].length(),
-		   blen = qsofield[BAND].length();
+	size_t flen = qsofield[FREQ].length(), blen = qsofield[BAND].length();
 	if (flen == 0 && blen != 0)
-		qsofield[FREQ] = qsofield[BAND];
+		qsofield[FREQ] =  band_freq(qsofield[BAND].c_str());
 	else if (blen == 0 && flen != 0)
-		qsofield[BAND] = qsofield[FREQ];
+		qsofield[BAND] =  band_name(qsofield[FREQ].c_str());
 }
 
 void cQsoRec::putField (int n, const char *s){
