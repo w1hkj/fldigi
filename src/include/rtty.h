@@ -31,6 +31,7 @@
 #include "globals.h"
 #include "filters.h"
 #include "fftfilt.h"
+#include "digiscope.h"
 
 #define	RTTY_SampleRate	8000
 //#define RTTY_SampleRate 11025
@@ -121,7 +122,7 @@ private:
 	complex prevsmpl;
 	complex *samples;
 	
-	complex QI[1024];
+	complex QI[MAX_ZLEN];
 	int QIptr;
 	bool   clear_zdata;
 	double sigpwr;
