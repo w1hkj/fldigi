@@ -92,6 +92,10 @@ void pLDT(string &, size_t &);
 void pILDT(string &, size_t &);
 void pZDT(string &, size_t &);
 void pIZDT(string &, size_t &);
+void pZT(string &, size_t &);
+void pLT(string &, size_t &);
+void pLD(string &, size_t &);
+void pZD(string &, size_t &);
 void pID(string &, size_t &);
 void pTEXT(string &, size_t &);
 void pCWID(string &, size_t &);
@@ -159,6 +163,10 @@ MTAGS mtags[] = {
 {"<ILDT>",		pILDT},
 {"<ZDT>",		pZDT},
 {"<IZDT>",		pIZDT},
+{"<LT>",		pLT},
+{"<ZT>",		pZT},
+{"<LD>",		pLD},
+{"<ZD>",		pZD},
 {"<ID>",		pID},
 {"<TEXT>",		pTEXT},
 {"<CWID>",		pCWID},
@@ -434,8 +442,7 @@ void pQTH(string &s, size_t &i)
 
 void pQSOTIME(string &s, size_t &i)
 {
-	if (qso_time.empty())
-		qso_time = inpTimeOff->value();
+	qso_time = inpTimeOff->value();
 	s.replace( i, 9, qso_time.c_str() );
 }
 
@@ -511,6 +518,50 @@ void pIZDT(string &s, size_t &i)
 	gmtime_r(&tmptr, &sTime);
 	mystrftime(szDt, 79, "%Y-%m-%d %H:%MZ", &sTime);
 	s.replace( i, 6, szDt);
+}
+
+void pLT(string &s, size_t &i)
+{
+	char szDt[80];
+	time_t tmptr;
+	tm sTime;
+	time (&tmptr);
+	localtime_r(&tmptr, &sTime);
+	mystrftime(szDt, 79, "%H%M", &sTime);
+	s.replace( i, 4, szDt);
+}
+
+void pZT(string &s, size_t &i)
+{
+	char szDt[80];
+	time_t tmptr;
+	tm sTime;
+	time (&tmptr);
+	gmtime_r(&tmptr, &sTime);
+	mystrftime(szDt, 79, "%H%MZ", &sTime);
+	s.replace( i, 4, szDt);
+}
+
+void pLD(string &s, size_t &i)
+{
+	char szDt[80];
+	time_t tmptr;
+	tm sTime;
+	time (&tmptr);
+	localtime_r(&tmptr, &sTime);
+	mystrftime(szDt, 79, "%Y-%m-%d", &sTime);
+	s.replace( i, 4, szDt);
+}
+
+void pZD(string &s, size_t &i)
+{
+	char szDt[80];
+	time_t tmptr;
+	tm sTime;
+	time (&tmptr);
+	gmtime_r(&tmptr, &sTime);
+	mystrftime(szDt, 79, "%Y-%m-%d", &sTime);
+	s.replace( i, 4, szDt);
 }
 
 void pID(string &s, size_t &i)
