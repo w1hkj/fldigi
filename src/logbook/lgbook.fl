@@ -143,7 +143,7 @@ btnSelectNotes->value(1);}
         xywh {412 122 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectTimeON {
-        label {Time ON} selected
+        label {Time ON}
         xywh {412 142 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectTimeOFF {
@@ -223,7 +223,7 @@ btnSelectNotes->value(1);}
         xywh {521 240 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectIOTA {
-        label IOTA
+        label IOTA selected
         xywh {521 260 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectITUZ {
@@ -262,7 +262,7 @@ btnSelectTX_pwr->value(0);}
     }
   }
   Fl_Window dlgLogbook {
-    label Logbook
+    label Logbook open
     xywh {540 120 570 350} type Double color 47 resizable visible
   } {
     Fl_Group editGroup {open
@@ -353,7 +353,7 @@ btnSelectTX_pwr->value(0);}
       }
       Fl_Input inpNotes_log {
         label Notes
-        tooltip {Interesting notes (80 chars max)} xywh {5 93 455 35} type Multiline labelsize 12 align 5
+        tooltip {Interesting notes} xywh {5 93 455 35} type Multiline labelsize 12 align 5
         class Fl_Input2
       }
       Fl_Input inpQSLsentdate_log {

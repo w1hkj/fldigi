@@ -682,7 +682,7 @@ void create_logbook_dialogs() {
         o->format(2);
       } // Fl_DateInput* inpQSLrcvddate_log
       { inpNotes_log = new Fl_Input2(5, 93, 455, 35, _("Notes"));
-        inpNotes_log->tooltip(_("Interesting notes (80 chars max)"));
+        inpNotes_log->tooltip(_("Interesting notes"));
         inpNotes_log->type(4);
         inpNotes_log->box(FL_DOWN_BOX);
         inpNotes_log->color((Fl_Color)FL_BACKGROUND2_COLOR);

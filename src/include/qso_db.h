@@ -2,8 +2,12 @@
 #define QSO_DB
 
 #include <iosfwd>
+#include <string>
+#include <cstring>
 
 #include "adif_def.h"
+
+using namespace std;
 
 enum COMPTYPE {COMPTIME, COMPDATE, COMPCALL, COMPFREQ, COMPMODE};
 
@@ -18,7 +22,7 @@ friend std::ostream &operator<<( std::ostream &, const cQsoRec &);
 friend std::istream &operator>>( std::istream &, cQsoRec & );
 
 private:
-	char *qsofield[NUMFIELDS];
+	string qsofield[NUMFIELDS];
 	bool normal; // sort ordering
 public:
 	cQsoRec ();
@@ -26,7 +30,7 @@ public:
 	void putField (int, const char *);
 	void putField (int, const char *, int);
 	void addtoField (int, const char *);
-	char *getField (int);
+	const char *getField (int);
 	void trimFields();
 	void clearRec ();
 	int  validRec();
