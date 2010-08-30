@@ -1,10 +1,16 @@
 
 
+=Version 3.20.26=
+
+2010-08-30  David Freese  <w1hkj@w1hkj.com>
+
+	e293a33: CONFIG dialog
+	e9c6fe8: BAND field
+
+
 =Version 3.20.25=
 
-2010-08-29  David Freese  <w1hkj@w1hkj.com>
-
-	e1c0802: DXKEEPER bug fix
+	dd7ff81: DXKEEPER bug fix
 
 
 =Version 3.20.24=
