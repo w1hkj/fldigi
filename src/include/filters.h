@@ -141,7 +141,8 @@ public:
 class goertzel {
 private:
 	double SR;
-	int K;
+	double FREQ;
+	double K;
 	int N;
 	int count;
 	double Q0;
@@ -151,7 +152,7 @@ private:
 	double k2;
 	double k3;
 public:
-	goertzel(double sr, int n, int k);
+	goertzel(int n, double freq, double sr);
 	~goertzel();
 	void reset();
 	bool run(double v);
