@@ -1,8 +1,13 @@
 
 
-=Version 3.20.26=
+=Version 3.20.27=
 
-2010-08-30  David Freese  <w1hkj@w1hkj.com>
+2010-09-01  David Freese  <w1hkj@w1hkj.com>
+
+	c25a352: Abort ARQ
+
+
+=Version 3.20.26=
 
 	e293a33: CONFIG dialog
 	e9c6fe8: BAND field
