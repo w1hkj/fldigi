@@ -92,8 +92,8 @@ static const char szContestiaBandwidth[] = "125|250|500|1000|2000";
 static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600|115200|230400|460800";
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
-    label {Fldigi configuration} open
-    xywh {740 84 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 visible
+    label {Fldigi configuration} open selected
+    xywh {740 84 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {-3 0 520 372} color 50 selection_color 50
@@ -101,7 +101,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
       Fl_Group tabOperator {
         label Operator
         callback {progdefaults.changed = true;}
-        tooltip {Operator information} xywh {0 25 500 345} when 1 hide
+        tooltip {Operator information} xywh {0 25 500 345} when 1
       } {
         Fl_Group {} {
           label Station open
@@ -2800,7 +2800,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabID {
         label ID open
-        xywh {0 25 500 345}
+        xywh {0 25 500 345} hide
       } {
         Fl_Group {} {
           label {Video Preamble ID} open
@@ -2967,7 +2967,7 @@ progdefaults.changed = true;}
           Fl_Check_Button chkRSidPost {
             label {Send at EOT}
             callback {progdefaults.rsid_post = o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
             tooltip {Send RSID at end of transmission} xywh {310 247 120 20} down_box DOWN_BOX hide
             code0 {o->value(progdefaults.rsid_post);}
           }
