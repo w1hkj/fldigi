@@ -120,6 +120,7 @@ public:
 	void		videoText();
 
 	void		set_stopflag(bool b) { stopflag = b;};
+	bool		get_stopflag() { return stopflag; };
 
 	unsigned	get_cap(void) { return cap; }
 	enum { CAP_AFC = 1 << 0, CAP_AFC_SR = 1 << 1, CAP_REV = 1 << 2,

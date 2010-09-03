@@ -137,6 +137,8 @@
 #include "speak.h"
 #include "flmisc.h"
 
+#include "arq_io.h"
+
 using namespace std;
 
 bool bWF_only = false;
@@ -5205,9 +5207,11 @@ void abort_tx()
 	if (trx_state == STATE_TUNE) {
 		btnTune->value(0);
 		btnTune->do_callback();
+		return;
 	}
-	else if (trx_state == STATE_TX)
+	if (trx_state == STATE_TX) {
 		trx_start_modem(active_modem);
+	}
 }
 
 void qsy(long long rfc, int fmid)

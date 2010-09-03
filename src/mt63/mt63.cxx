@@ -274,6 +274,7 @@ void mt63::restart()
 	if (err)
 		fprintf(stderr, "mt63_rxinit: init failed\n");
 	InpLevel->Preset(64.0, 0.75);
+	stopflag = false;
 }
 
 void mt63::init()

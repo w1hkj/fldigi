@@ -1108,12 +1108,12 @@ void xmtrcv_cb(Fl_Widget *w, void *vi)
 			btnTune->do_callback();
 		}
 		else {
-			active_modem->set_stopflag(true);
 			TransmitText->clear();
 			if (arq_text_available)
 				AbortARQ();
 			if (progStatus.timer)
 				progStatus.timer = 0;
+			active_modem->set_stopflag(true);
 		}
 	}
 	restoreFocus();
