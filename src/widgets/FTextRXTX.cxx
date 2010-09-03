@@ -64,6 +64,7 @@
 #include "logsupport.h"
 #include "status.h"
 #include "gettext.h"
+#include "arq_io.h"
 
 #include "debug.h"
 
@@ -833,15 +834,20 @@ int FTextTX::handle_key(int key)
 		static time_t t[2] = { 0, 0 };
 		static unsigned char i = 0;
 		if (t[i] == time(&t[!i])) { // two presses in a second: abort transmission
-			menu_cb(TX_MENU_ABORT);
+			if (trx_state == STATE_TX)
+				menu_cb(TX_MENU_ABORT);
 			t[i = !i] = 0;
 			return 1;
 		}
 		i = !i;
 	}
-		clear();
-		active_modem->set_stopflag(true);
-		stopMacroTimer();
+		if (trx_state == STATE_TX && active_modem->get_stopflag() == false) {
+			clear();
+			if (arq_text_available)
+				AbortARQ();
+			active_modem->set_stopflag(true);
+			stopMacroTimer();
+		}
 		return 1;
 	case 't': // transmit for C-t
 		if (trx_state == STATE_RX && Fl::event_state() & FL_CTRL) {
@@ -1045,9 +1051,9 @@ void FTextTX::menu_cb(size_t item)
 		start_tx();
 		break;
 	case TX_MENU_ABORT:
-#ifndef NDEBUG
-		put_status("Don't panic!", 1.0);
-#endif
+		char panic[200];
+		snprintf(panic, sizeof(panic), "*** Don't panic *** %s", progdefaults.myName.c_str());
+		put_status(panic, 5.0);
 		abort_tx();
   		break;
   	case TX_MENU_RX:

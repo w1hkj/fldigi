@@ -152,6 +152,7 @@ void modem::init()
 #endif
 	} else
 		set_freq(wf->Carrier());
+	stopflag = false;
 }
 
 void modem::set_freq(double freq)

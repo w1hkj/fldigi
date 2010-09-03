@@ -385,7 +385,7 @@ bool WRAP_auto_arqRx()
 
 	ifstream autofile(sAutoFile.c_str());
 	if(autofile) {
-		arqtext = "";
+		txstring.clear();
 		time(&start_time);
 		while (!autofile.eof()) {
 			memset(mailline,0,1000);
@@ -404,7 +404,7 @@ bool WRAP_auto_arqRx()
 		std::remove (sAutoFile.c_str());
 
 		if (!txstring.empty()) {
-			arqtext.append("\n....start\n");
+			arqtext = "\n....start\n";
 			arqtext.append(txstring);
 			arqtext.append("\n......end\n");
 			pText = 0;
@@ -709,15 +709,18 @@ void arq_close(void)
 
 char arq_get_char()
 {
-	char c = 0x03;
+	char c = 0;
 	pthread_mutex_lock (&arq_mutex);
-	if (!arqtext.empty() && (pText != arqtext.length())) {
-		c = arqtext[pText++];
-	} else {
-		arqtext.clear();
-		pText = 0;
-		bSend0x06 = true;
-		arq_text_available = false;
+	if (arq_text_available) {
+		if (pText != arqtext.length())
+			c = arqtext[pText++];
+		else {
+			arqtext.clear();
+			pText = 0;
+			bSend0x06 = true;
+			arq_text_available = false;
+			c = 0x03;
+		}
 	}
 	pthread_mutex_unlock (&arq_mutex);
 	return c;
