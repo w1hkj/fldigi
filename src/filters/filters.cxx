@@ -479,6 +479,22 @@ complex *sfft::run(const complex& input)
 
 goertzel::goertzel(int n, double freq, double sr)
 {
+	reset(n, freq, sr);
+}
+
+goertzel::~goertzel()
+{
+}
+
+void goertzel::reset()
+{
+	Q0 = Q1 = Q2 = 0.0;
+	count = N;
+	isvalid = false;
+}
+
+void goertzel::reset(int n, double freq, double sr)
+{
 	double w;
 	SR = sr;
 	FREQ = freq;
@@ -490,41 +506,32 @@ goertzel::goertzel(int n, double freq, double sr)
 	k3 = 2.0 * k1;
 	Q0 = Q1 = Q2 = 0.0;
 	count = N;
-}
-
-goertzel::~goertzel()
-{
-}
-
-void goertzel::reset()
-{
-	Q0 = Q1 = Q2 = 0.0;
-	count = N;
+	isvalid = false;
 }
 
 bool goertzel::run(double sample)
 {
-    Q0 = sample + k3*Q1 - Q2;
-    Q2 = Q1;
-    Q1 = Q0;
-    if (--count == 0) {
-	count = N;
-	return true;
-    }
-    return false;
+	Q0 = sample + k3*Q1 - Q2;
+	Q2 = Q1;
+	Q1 = Q0;
+	if (!isvalid && --count == 0) {
+//		count = N;
+		isvalid = true;
+	}
+	return isvalid;
 }
 
 double goertzel::real()
 {
-    return ((0.5*k3*Q1 - Q2)/N);
+	return ((0.5*k3*Q1 - Q2)/N);
 }
 
 double goertzel::imag()
 {
-    return ((k2*Q1)/N);
+	return ((k2*Q1)/N);
 }
 
 double goertzel::mag()
 {
-    return (Q2*Q2 + Q1*Q1 - k3*Q2*Q1);
+	return (Q2*Q2 + Q1*Q1 - k3*Q2*Q1);
 }

@@ -151,10 +151,12 @@ private:
 	double k1;
 	double k2;
 	double k3;
+	bool isvalid;
 public:
 	goertzel(int n, double freq, double sr);
 	~goertzel();
 	void reset();
+	void reset(int n, double freq, double sr);
 	bool run(double v);
 	double real();
 	double imag();
