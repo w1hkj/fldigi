@@ -718,7 +718,6 @@ string rigCAT_getwidth()
 				return ((*bw).SYMBOL);
 retry_get_width: ;
 		}
-		preply++;
 	}
 	LOG_WARN("Retries failed");
 	return "";
