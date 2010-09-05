@@ -285,11 +285,11 @@ bool hamlib_init(bool bPtt)
 
 	LOG_DEBUG("trying frequency request");
 	try {
-		if ( !xcvr->canGetFreq() ) need_freq = true; // getFreq will return setFreq value
+		if ( !xcvr->canGetFreq() ) need_freq = false; // getFreq will return setFreq value
 		else {
 			need_freq = true;
 			freq = xcvr->getFreq();
-			if (freq == 0) {
+			if (freq <= 0) {
 				xcvr->close();
 				show_error(__func__, "Rig not responding");
 				return false;
@@ -300,7 +300,13 @@ bool hamlib_init(bool bPtt)
 		show_error("Get Freq", Ex.what());
 		need_freq = false;
 	}
+	if (!need_freq) {
+		xcvr->close();
+		LOG_VERBOSE("Failed freq test");
+		return false;
+	}
 
+	LOG_DEBUG("trying mode request");
 	try {
 		if ( !xcvr->canGetMode() ) need_mode = false;
 		else {
@@ -325,12 +331,6 @@ bool hamlib_init(bool bPtt)
 	catch (const RigException& Ex) {
 		show_error("Set Ptt", Ex.what());
 		hamlib_ptt = false;
-	}
-
-	if (need_freq == false && need_mode == false && hamlib_ptt == false ) {
-		xcvr->close();
-		LOG_VERBOSE("Failed freq/mode/ptt");
-		return false;
 	}
 
 	hamlib_freq = 0;
