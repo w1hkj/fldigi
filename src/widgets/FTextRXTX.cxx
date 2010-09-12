@@ -843,13 +843,18 @@ int FTextTX::handle_key(int key)
 		}
 		i = !i;
 	}
+
 		if (trx_state == STATE_TX && active_modem->get_stopflag() == false) {
 			clear();
 			if (arq_text_available)
 				AbortARQ();
 			active_modem->set_stopflag(true);
-			stopMacroTimer();
 		}
+
+		if (trx_state == STATE_TUNE)
+			abort_tx();
+
+		stopMacroTimer();
 		return 1;
 	case 't': // transmit for C-t
 		if (trx_state == STATE_RX && Fl::event_state() & FL_CTRL) {
