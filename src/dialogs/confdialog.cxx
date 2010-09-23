@@ -2477,6 +2477,13 @@ static void cb_chkAutoExtract(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *chkStartFlmsg=(Fl_Check_Button *)0;
+
+static void cb_chkStartFlmsg(Fl_Check_Button* o, void*) {
+  progdefaults.open_flmsg = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *chkRxStream=(Fl_Check_Button *)0;
 
 static void cb_chkRxStream(Fl_Check_Button* o, void*) {
@@ -2663,6 +2670,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -5559,10 +5567,10 @@ d frequency"));
         tabID->end();
       } // Fl_Group* tabID
       { tabMisc = new Fl_Group(0, 25, 500, 345, _("Misc"));
-        tabMisc->hide();
         { tabsMisc = new Fl_Tabs(0, 25, 500, 345);
           tabsMisc->selection_color((Fl_Color)FL_LIGHT1);
           { tabSweetSpot = new Fl_Group(0, 50, 500, 320, _("Sweet Spot"));
+            tabSweetSpot->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 75);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -5735,20 +5743,25 @@ d frequency"));
             tabCPUspeed->end();
           } // Fl_Group* tabCPUspeed
           { tabFileExtraction = new Fl_Group(0, 50, 500, 320, _("Text Capture"));
-            tabFileExtraction->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 119, _("Auto Extract files from rx stream"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = chkAutoExtract = new Fl_Check_Button(136, 141, 227, 20, _("Enable detection && extraction"));
+              { Fl_Box* o = new Fl_Box(13, 80, 467, 60, _("0\n1\n2"));
+                o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+                o->label(txtWrapInfo);
+              } // Fl_Box* o
+              { Fl_Check_Button* o = chkAutoExtract = new Fl_Check_Button(19, 145, 227, 20, _("Enable detection && extraction"));
                 chkAutoExtract->tooltip(_("Extract files for use with external \"wrap\" program"));
                 chkAutoExtract->down_box(FL_DOWN_BOX);
                 chkAutoExtract->callback((Fl_Callback*)cb_chkAutoExtract);
                 o->value(progdefaults.autoextract);
               } // Fl_Check_Button* chkAutoExtract
-              { Fl_Box* o = new Fl_Box(13, 85, 467, 62, _("0\n1\n2"));
-                o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-                o->label(txtWrapInfo);
-              } // Fl_Box* o
+              { Fl_Check_Button* o = chkStartFlmsg = new Fl_Check_Button(261, 145, 227, 20, _("auto open wrap folder"));
+                chkStartFlmsg->tooltip(_("Autostart flmsg upon detection of compatible file"));
+                chkStartFlmsg->down_box(FL_DOWN_BOX);
+                chkStartFlmsg->callback((Fl_Callback*)cb_chkStartFlmsg);
+                o->value(progdefaults.open_flmsg);
+              } // Fl_Check_Button* chkStartFlmsg
               o->end();
             } // Fl_Group* o
             { Fl_Group* o = new Fl_Group(5, 180, 490, 109, _("Capture rx text to external file"));

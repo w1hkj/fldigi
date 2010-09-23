@@ -1405,6 +1405,11 @@ void cb_mnuVisitURL(Fl_Widget*, void* arg)
 #endif
 }
 
+void open_recv_folder(const char *folder)
+{
+	cb_mnuVisitURL(0, (void*)folder);
+}
+
 void cb_mnuVisitPSKRep(Fl_Widget*, void*)
 {
 	cb_mnuVisitURL(0, (void*)string("http://pskreporter.info/pskmap?").append(progdefaults.myCall).c_str());
@@ -2132,6 +2137,7 @@ int default_handler(int event)
 
 	return 0;
 }
+
 
 bool clean_exit(void) {
 	if (progdefaults.changed) {
