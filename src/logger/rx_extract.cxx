@@ -35,6 +35,8 @@ using namespace std;
 
 const char *beg = "[WRAP:beg]";
 const char *end = "[WRAP:end]";
+const char *flmsg = "<flmsg>";
+
 #ifdef __WIN32__
 const char *txtWrapInfo = "\
 Detect the occurance of [WRAP:beg] and [WRAP:end]\n\
@@ -107,6 +109,10 @@ void rx_extract_add(int c)
 			rx_extract_msg = "File saved in ";
 			rx_extract_msg.append(WRAP_recv_dir);
 			put_status(rx_extract_msg.c_str(), 20, STATUS_CLEAR);
+
+			if ((progdefaults.open_flmsg) && 
+				(rx_buff.find(flmsg) != string::npos))
+				open_recv_folder(WRAP_recv_dir.c_str());
 
 			rx_extract_reset();
 		} else if (rx_buff.length() > 16384) {
