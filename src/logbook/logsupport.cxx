@@ -528,6 +528,7 @@ void clearRecord() {
 	inpCall_log->value ("");
 	inpName_log->value ("");
 	inpDate_log->value (tdy.szDate(2));
+	inpDateOff_log->value (tdy.szDate(2));
 	inpTimeOn_log->value ("");
 	inpTimeOff_log->value ("");
 	inpRstR_log->value ("");
@@ -561,6 +562,7 @@ void saveRecord() {
 	rec.putField(CALL, inpCall_log->value());
 	rec.putField(NAME, inpName_log->value());
 	rec.putField(QSO_DATE, inpDate_log->value());
+	rec.putField(QSO_DATE_OFF, inpDateOff_log->value());
 	rec.putField(TIME_ON, inpTimeOn_log->value());
 	rec.putField(TIME_OFF, inpTimeOff_log->value());
 	rec.putField(FREQ, inpFreq_log->value());
@@ -617,6 +619,7 @@ cQsoRec rec;
 	rec.putField(CALL, inpCall_log->value());
 	rec.putField(NAME, inpName_log->value());
 	rec.putField(QSO_DATE, inpDate_log->value());
+	rec.putField(QSO_DATE_OFF, inpDateOff_log->value());
 	rec.putField(TIME_ON, inpTimeOn_log->value());
 	rec.putField(TIME_OFF, inpTimeOff_log->value());
 	rec.putField(FREQ, inpFreq_log->value());
@@ -688,6 +691,7 @@ void EditRecord( int i )
 	inpCall_log->value (editQSO->getField(CALL));
 	inpName_log->value (editQSO->getField(NAME));
 	inpDate_log->value (editQSO->getField(QSO_DATE));
+	inpDateOff_log->value (editQSO->getField(QSO_DATE_OFF));
 	inpTimeOn_log->value (editQSO->getField(TIME_ON));
 	inpTimeOff_log->value (editQSO->getField(TIME_OFF));
 	inpRstR_log->value (editQSO->getField(RST_RCVD));
@@ -716,6 +720,7 @@ void EditRecord( int i )
 }
 
 std::string sDate_on = "";
+std::string sDate_off = "";
 
 void AddRecord ()
 {
@@ -724,6 +729,7 @@ void AddRecord ()
 	inpTimeOn_log->value (inpTimeOn->value());
 	inpTimeOff_log->value (ztime());
     inpDate_log->value(sDate_on.c_str());
+    inpDateOff_log->value(sDate_off.c_str());
 	inpRstR_log->value (inpRstIn->value());
 	inpRstS_log->value (inpRstOut->value());
 	{
