@@ -8,9 +8,11 @@
 #include "modem.h"
 #include "filters.h"
 #include "mbuffer.h"
+#include "logbook.h"
 
 #define WEFAXSampleRate 11025
 // #define WEFAXSampleRate 8000
+
 
 /// Forward definition.
 class fax_implementation ;
@@ -21,10 +23,14 @@ class wefax : public modem {
 	
 	bool	m_abortxmt;
 
+	// Tells whether received or transmit images are logged to Adif file.
+	bool    m_adif_log ;
 
+	/// For updating the logbook when loading/saving an image file.
+	cQsoRec m_qso_rec ;
 public:
 	wefax (trx_mode md);
-	~wefax ();
+	virtual ~wefax ();
 	void init();
 	void rx_init();
 	void tx_init(SoundBase *sc);
@@ -75,8 +81,28 @@ public:
 	/// Returns a filename matching current image properties.
 	std::string suggested_filename(void) const ;
 
-	/// Logs a new file reception/transmission in the log book.
-	void update_logbook(const std::string &file_name) const ;
+	cQsoRec & qso_rec(void)
+	{
+		return m_qso_rec ;
+	}
+
+	/// Called before loading/sending an image.
+	void qso_rec_init(void);
+
+	/// Called when transmitting/receiving is finished.
+	void qso_rec_save(void);
+
+	void set_freq(double);
+
+	bool get_adif_log(void) const
+	{
+		return m_adif_log ;
+	}
+
+	void set_adif_log(bool the_flag)
+	{
+		m_adif_log = the_flag ;
+	}
 };
 
 #endif
