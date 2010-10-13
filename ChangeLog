@@ -1,5 +1,14 @@
-2010-09-03  David Freese  <w1hkj@w1hkj.com>
+2010-09-23  Remi Chateauneu  <rchateau@DuoLnx.(none)>
 
+	3270080:   * Received and transmit files optionaly logged to adif file.
+
+2010-09-23  David Freese  <w1hkj@w1hkj.com>
+
+	c5ea3ce: FLMSG open NBEMS/WRAP/recv folder
+	f46016f: ESC action restore
+	0ac873f: Hamlib Tests
+	e645b56: RigCat Width
+	0f52da3: Goertzel filter update
 	1ad7f16: CONFIG dialog
 	aa4bee2: Abort ARQ
 

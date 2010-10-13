@@ -5,6 +5,7 @@
 
 #include "combo.h"
 #include "debug.h"
+#include "config.h"
 
 void popbrwsr_cb (Fl_Widget *v, long d);
 
