@@ -33,6 +33,7 @@ enum ADIF_FIELD_POS {
     QSL_SENT, 
     QSL_VIA, 
     QSO_DATE,
+    QSO_DATE_OFF,
     QTH, 
     RST_RCVD, 
     RST_SENT,

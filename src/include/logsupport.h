@@ -21,6 +21,7 @@ extern cQsoDb        qsodb;
 extern cAdifIO       adifFile;
 extern std::string logbook_filename;
 extern std::string sDate_on;
+extern std::string sDate_off;
 
 extern void loadBrowser(bool keep_pos = false);
 

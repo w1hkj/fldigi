@@ -1713,7 +1713,6 @@ void ztimer(void* first_call)
 	inpTimeOff1->value(ztbuf + 9);
 	inpTimeOff2->value(ztbuf + 9);
 	inpTimeOff3->value(ztbuf + 9);
-
 }
 
 
@@ -1782,7 +1781,7 @@ void cb_ResetSerNbr()
 void cb_btnTimeOn(Fl_Widget* w, void*)
 {
 	inpTimeOn->value(inpTimeOff->value(), inpTimeOff->size());
-	sDate_on = zdate();
+	sDate_on = sDate_off = zdate();
 	restoreFocus();
 }
 
@@ -1859,7 +1858,7 @@ if (bWF_only) return;
 	if (inpTimeOn == inpTimeOn1) inpTimeOn2->value(inpTimeOn->value());
 	else inpTimeOn1->value(inpTimeOn->value());
 
-	sDate_on = zdate();
+	sDate_on = sDate_off = zdate();
 
 	if (progdefaults.EnableDupCheck) {
 		DupCheck();
@@ -1958,6 +1957,7 @@ void qsoSave_cb(Fl_Widget *b, void *)
 		restoreFocus();
 		return;
 	}
+	sDate_off = zdate();
 	submit_log();
 	if (progdefaults.ClearOnSave)
 		clearQSO();
@@ -1972,6 +1972,7 @@ void qso_save_now()
 	if (havecall.empty())
 		return;
 
+	sDate_off = zdate();
 	submit_log();
 	if (progdefaults.ClearOnSave)
 		clearQSO();
