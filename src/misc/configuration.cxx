@@ -644,6 +644,9 @@ int configuration::setDefaults()
 	case HAMCALLHTML:
 		qrzb = btnHAMCALLonline;
 		break;
+	case CALLOOK:
+		qrzb = btnCALLOOK;
+		break;
 	default :
 		break;
 	}

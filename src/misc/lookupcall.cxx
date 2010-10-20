@@ -551,9 +551,81 @@ void QRZquery()
 	}
 }
 
-// ----------------------------------------------------------------------------
+// ---------------------------------------------------------------------
+// HTTP:://callook.info queries
+// ---------------------------------------------------------------------
+
+string node_data(const string &xmlpage, const string nodename)
+{
+	size_t pos1, pos2;
+	pos1 = xmlpage.find(string("<").append(nodename).append(">"));
+	if (pos1 == string::npos) return "";
+	pos2 = xmlpage.find(string("</").append(nodename).append(">"));
+	if (pos2 == string::npos) return "";
+	pos1 += (string("<").append(nodename).append(">")).length();
+	return xmlpage.substr(pos1, pos2 - pos1);
+}
+
+void parse_callook(string& xmlpage)
+{
+	string nodestr;
+	nodestr = node_data(xmlpage, "current");
+	if (nodestr.empty()) {
+		lookup_notes = "no data from callook.info";
+		return;
+	}
+	xmlpage = xmlpage.substr(xmlpage.find("</trustee>"));
+	lookup_fname = node_data(xmlpage, "name");
+	nodestr = node_data(xmlpage, "address");
+	if (!nodestr.empty()) {
+		lookup_addr1 = node_data(nodestr, "line1");
+		lookup_addr2 = node_data(nodestr, "line2");
+	}
+	nodestr = node_data(xmlpage, "location");
+	if (!nodestr.empty()) {
+		lookup_lond = node_data(nodestr, "longitude");
+		lookup_latd = node_data(nodestr, "latitude");
+		lookup_grid = node_data(nodestr, "gridsquare");
+	}
+	size_t p;
+	p = lookup_addr2.find(",");
+	if (p != string::npos) {
+		lookup_qth = lookup_addr2.substr(0, p);
+		lookup_addr2.erase(0, p+2);
+		p = lookup_addr2.find(" ");
+		if (p != string::npos)
+			lookup_state = lookup_addr2.substr(0, p);
+	}
+}
+
+bool CALLOOKGetXML(string& xmlpage)
+{
+	string url = string("http://callook.info/").append(callsign).append("/xml");
+	bool res = fetch_http(url, xmlpage, 5.0);
+	LOG_DEBUG("result = %d", res);
+	return res;
+}
+
+void CALLOOKquery()
+{
+	ENSURE_THREAD(QRZ_TID);
+
+	bool ok = true;
+
+	string CALLOOKpage;
+
+	clear_Lookup();
+	ok = CALLOOKGetXML(CALLOOKpage);
+	if (!ok) // change to negative for MS not getting on first try
+		ok = CALLOOKGetXML(CALLOOKpage);
+	if (ok)
+		parse_callook(CALLOOKpage);
+	REQ(QRZ_disp_result);
+}
+
+// ---------------------------------------------------------------------
 // Hamcall specific functions
-// ----------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 
 #define HAMCALL_CALL 181
 #define HAMCALL_FIRST 184
@@ -671,6 +743,9 @@ static void *LOOKUP_loop(void *args)
 		case HAMCALLHTML :
 			HAMCALL_DETAILS_query();
 			break;
+		case CALLOOK:
+			CALLOOKquery();
+			break;
 		case QRZ_EXIT:
 			return NULL;
 		default:
@@ -720,6 +795,9 @@ void CALLSIGNquery()
 			DB_query = QRZNONE;
 			return;
 		}
+		break;
+	case CALLOOK:
+		inpNotes->value("Request sent to\nhttp://callook.info...");
 		break;
 	default:
 		LOG_ERROR("Bad query type %d", DB_query);
