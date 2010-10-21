@@ -369,9 +369,10 @@ extern Fl_Round_Button *btnHamcall;
 extern Fl_Input2 *inpQRZusername;
 extern Fl_Input2 *inpQRZuserpassword;
 extern Fl_Button *btnQRZpasswordShow;
-extern Fl_Round_Button *btnQRZonline;
 extern Fl_Round_Button *btnQRZnotavailable;
+extern Fl_Round_Button *btnQRZonline;
 extern Fl_Round_Button *btnHAMCALLonline;
+extern Fl_Round_Button *btnCALLOOK;
 extern Fl_Button *btnSaveConfig;
 #include <FL/Fl_Return_Button.H>
 extern Fl_Return_Button *btnCloseConfig;

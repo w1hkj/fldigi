@@ -72,7 +72,8 @@ decl {Mode_Browser* mode_browser;} {public
 Function {set_qrz_buttons(Fl_Button* b)} {open return_type void
 } {
   code {Fl_Button* qrzb[] = { btnQRZnotavailable, btnQRZcdrom, btnQRZonline,
-                              btnQRZsub, btnHamcall, btnHAMCALLonline};
+                              btnQRZsub, btnHamcall, btnHAMCALLonline,
+                              btnCALLOOK};
 
 for (size_t i = 0; i < sizeof(qrzb)/sizeof(*qrzb); i++)
 	qrzb[i]->value(b == qrzb[i]);} {}
@@ -2983,7 +2984,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabMisc {
         label Misc open
-        xywh {0 25 500 345}
+        xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsMisc {open
           xywh {0 25 500 345} selection_color 50
@@ -3175,7 +3176,7 @@ progdefaults.changed = true;}
               Fl_Check_Button chkStartFlmsg {
                 label {auto open wrap folder}
                 callback {progdefaults.open_flmsg = o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
                 tooltip {Autostart flmsg upon detection of compatible file} xywh {261 145 227 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.open_flmsg);}
               }
@@ -3286,8 +3287,8 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabQRZ {
-        label {Callsign DB}
-        tooltip {Callsign database} xywh {0 25 500 345} hide
+        label {Callsign DB} open
+        tooltip {Callsign database} xywh {0 25 500 345}
       } {
         Fl_Group {} {
           label CDROM open
@@ -3365,29 +3366,37 @@ o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");}
         Fl_Group {} {open
           xywh {5 35 490 140} box ENGRAVED_FRAME align 21
         } {
-          Fl_Round_Button btnQRZonline {
-            label {QRZ online via default Internet Browser}
-            callback {set_qrz_buttons(o);
-progdefaults.QRZ = QRZHTML;
-progdefaults.changed = true;}
-            tooltip {Visit QRZ web site} xywh {25 75 300 20} down_box DOWN_BOX
-            code0 {o->value(progdefaults.QRZ == QRZHTML);}
-          }
           Fl_Round_Button btnQRZnotavailable {
             label {Not available}
             callback {set_qrz_buttons(o);
 progdefaults.QRZ = QRZNONE;
 progdefaults.changed = true;}
-            tooltip {Do not use callsign database} xywh {25 45 110 20} down_box DOWN_BOX value 1
+            tooltip {Do not use callsign database} xywh {25 45 337 20} down_box DOWN_BOX value 1
             code0 {o->value(progdefaults.QRZ == QRZNONE);}
+          }
+          Fl_Round_Button btnQRZonline {
+            label {QRZ online via default Internet Browser}
+            callback {set_qrz_buttons(o);
+progdefaults.QRZ = QRZHTML;
+progdefaults.changed = true;}
+            tooltip {Visit QRZ web site} xywh {25 75 337 20} down_box DOWN_BOX
+            code0 {o->value(progdefaults.QRZ == QRZHTML);}
           }
           Fl_Round_Button btnHAMCALLonline {
             label {HamCall online via default Internet Browser}
             callback {set_qrz_buttons(o);
 progdefaults.QRZ = HAMCALLHTML;
 progdefaults.changed = true;}
-            tooltip {Vist Hamcall web site} xywh {25 105 300 20} down_box DOWN_BOX
+            tooltip {Vist Hamcall web site} xywh {25 106 337 20} down_box DOWN_BOX
             code0 {o->value(progdefaults.QRZ == HAMCALLHTML);}
+          }
+          Fl_Round_Button btnCALLOOK {
+            label {Callook.info lookup (US callsigns only)}
+            callback {set_qrz_buttons(o);
+progdefaults.QRZ = CALLOOK;
+progdefaults.changed = true;} selected
+            tooltip {Vist Hamcall web site} xywh {25 137 337 20} down_box DOWN_BOX
+            code0 {o->value(progdefaults.QRZ == CALLOOK);}
           }
         }
       }
