@@ -1,9 +1,24 @@
 
 
+=Version 3.20.29=
+
+2010-10-20  David Freese  <w1hkj@w1hkj.com>
+
+	7f4a3fa: CALLOOK lookup
+
+2010-10-18  Fernando M. Maresca  <fmaresca@gmail.com>
+
+	0ddd046: QSO_DATE_OFF field implementation
+
+2010-09-23  David Freese  <w1hkj@w1hkj.com>
+
+	02dc29d: FLMSG open NBEMS/WRAP/recv folder
+	1b1deeb: ESC action restore
+
+
 =Version 3.20.28=
 
-2010-09-05  David Freese  <w1hkj@w1hkj.com>
-
+	8c0d3e0: Hamlib Tests
 	75b832a: RigCat Width
 
 
@@ -981,8 +996,8 @@
 2009-02-25  David Freese  <w1hkj@w1hkj.com>
 
 	afc4e0b: Added right audio channel PTT signal
-	5417cf2: Restore pre 1/29
-	529cd68: Cosmetic change to font_browser
+	5417cf2: Restore pre 1/29    FTextView.cxx,    Fl_Text_Display_mod .cxx,    Fl_Text_Dislay_mod.H
+	529cd68: Cosmetic change to font_browser Exception handling fix for portaudio Thread shutdown bug fix for win32 Cosmetic change to colorsfonts dialog Change to FTextView family   revert to character counting for proportional fonts
 
 2009-02-19  Stelios Bounanos  <vcs@enotty.net>
 
@@ -1017,14 +1032,14 @@
 
 2009-02-14  David Freese  <w1hkj@w1hkj.com>
 
-	5299567: Added RTTY x-y scope extinguish on loss of signal
+	5299567: Added RTTY x-y scope extinguish on loss of signal Added PSK modes set_sigsearch(...) on modem change to any psk mode.
 	c8d68a7: Added DSP filter width adjustment to RTTY
 	396a51e: Bug fix for Feld FM modes
 	8a8317e: Added FEC_snr and FEC_freq_offset displays to status bar
-	e5bdb1a: Cosmetic changes to mt63 source - increase white space for easier
-	5f22454: Olivia decoder/encoder improvements
-	8c8f59c: Bug fix - PTT via rigCAT serial h/w
-	bef4f92: Added sub-directores "wrap" and "talk" to the files directory
+	e5bdb1a: Cosmetic changes to mt63 source - increase white space for easier reading
+	5f22454: Olivia decoder/encoder improvements   removed all extraneous double/integer/double conversions   added new signal/noise computation method
+	8c8f59c: Bug fix - PTT via rigCAT serial h/w   RTS/DTR was inaccessible Bug fix - Xlog stream; suppress newlines in Notes field Added binary string format to display bit fields, ie: RTS / DTR state Changed 'Comments' to 'Notes' in all references re: logbook   Comments ADIF field is single line character   Notes ADIF field is multi-line character   Converts all ADIF comment fields to Notes; backward compatibility
+	bef4f92: Added sub-directores "wrap" and "talk" to the files directory Fixed missing quick-pick pop up menus
 	edeb401: Fix hamlib RTTY/RTTYR sideband inversion
 
 2009-02-04  Stelios Bounanos  <vcs@enotty.net>
@@ -1046,7 +1061,7 @@
 2009-02-03  David Freese  <w1hkj@w1hkj.com>
 
 	cc880d9: Bug fix to wf_audioscale waterfall scale changes
-	23d8c7b: Added Rx text output to temporary text file.
+	23d8c7b: Added Rx text output to temporary text file.   Intended use: text to speech conversion for blind operators
 	069099f: Deleted all references to afcIND
 	995d471: Changed waterfall event behavior for disabling <TIMER:nn> operation
 	b89635e: Fixed PSKnnn ADIF naming convention to comply with adif 2.0 spec
@@ -1054,28 +1069,20 @@
 	4f307c7: Added Cabrillo field defaults per Contest selection
 	e28d1d8: Modified Cabrillo report line QSO: format
 	184ce5a: Bug fix, Cabrillo report generator
-	ca5bb8c: Modified contest exchange fill-in; appends if field partially filled
-	af6b8dc: Added Cabrillo report writer for logbook / contest use
-	39721ce: Added rx stream file extraction
+	ca5bb8c: Modified contest exchange fill-in; appends if field partially filled Reversed #Out and #In fields for contest log
+	af6b8dc: Added Cabrillo report writer for logbook / contest use   Removed free form Exchange fields #2 and #3   Renamed Exchange field #1 to Exchange Out   Added Exchange In field to the logbook
+	39721ce: Added rx stream file extraction   Extracts all text between and including [WRAP:beg]...[WRAP:end]
 	01b916c: Add stop macro timer to all waterfall events
 	40dc198: Corrected adif strings for modes BPSK31...QPSK250
 	c6f5d65: Bug fix to correct rig xml <PORT dependency
-	c899981: Bug fix for rigCAT_init Event Log output
-	e184117: Bug fix for DxKeeper adif file output
-
-
-=Version 3.10=
-
+	c899981: Bug fix for rigCAT_init Event Log output Bug fix for cursor position in QSO Call field
+	e184117: Bug fix for DxKeeper adif file output   Changed date format to YYYYMMDD
 	eddd24f: Update i18n
-	71ebd5d: Expanded open logbook message error message:
-	ea1eeeb: Correct seg fault on Vista when audio overdriven
+	71ebd5d: Expanded open logbook message error message:   "Empty ADIF logbook file"   "No records in ADIF logbook file" or   "Not an ADIF file"
+	ea1eeeb: Correct seg fault on Vista when audio overdriven   condition observed on Vista notebook with microphone input
 	e2777f6: Correct invalid parameters in memset calls
-
-
-=Version 3.1=
-
 	e6cfebe: Update i18n
-	1c5e662: KDE / xdg-open problem - cosmetics
+	1c5e662: KDE / xdg-open problem - cosmetics   KDE - xdg-open call causes seg fault on some revs of KDE desktop     This fix does not fix all occurances - user may need to set     environment FL_BROWSER to default browser before executing fldigi   Cosmetic change to align xchg fields in contest panel
 	a2239b1: update i18n
 
 2009-01-12  Stelios Bounanos  <vcs@enotty.net>
@@ -1086,7 +1093,7 @@
 2009-01-09  David Freese  <w1hkj@w1hkj.com>
 
 	993e74e: Update i18n
-	689d679: KDE refocus to QSO logging widgets
+	689d679: KDE refocus to QSO logging widgets   Moving between desktops on KDE caused all QSO log widgets to be   refocused.  Caused QSO log to appear as changed when no change   had occured.
 
 2009-01-09  Stelios Bounanos  <vcs@enotty.net>
 
@@ -1098,9 +1105,9 @@
 2009-01-08  David Freese  <w1hkj@w1hkj.com>
 
 	615ff4a: Update to i18n
-	fbca004: Changes to spotting regex parsing
-	495ac85: ADIF import
-	dbfc72f: ARQ and Logbook changes
+	fbca004: Changes to spotting regex parsing   Windows does not recognize '\2' reference tag in regular   expression defined in pskrep.cxx.  Changed to combination   of regexec and string find processing for required result.   Added modem frequency to spotting call when logging or   forcing a spot report.
+	495ac85: ADIF import   Relaxed the test for accepting adi/adif file as valid ADIF     too many other logbook programs not in compliance.     Minimal test is for file to contain at least one adif field     as "<call:", case insignificant
+	dbfc72f: ARQ and Logbook changes   Removed all MultiPsk compatibilty code from arq_io.cxx     Simplified ARQ data stream to be compatible with flarq.4.x     Changed default ARQ socket port to 7322   Added clear DXCC field when saving QSO data to logbook   Fixed QSO field erasure when user changed desktops
 
 2009-01-05  Stelios Bounanos  <vcs@enotty.net>
 
@@ -1110,13 +1117,13 @@
 2009-01-03  David Freese  <w1hkj@w1hkj.com>
 
 	c826c1a: Update i18n
-	9b18d81: Clean up preparation for release 3.1
+	9b18d81: Clean up preparation for release 3.1   Added "Echo" configuration item for rigCAT     removed <ECHO>...</ECHO> parsing of rig.xml files   Suppressed clearing Country, Loc and Azimuth fields by a call sign     database query when the db does not support those fields   Added missing tooltips to all configuration items
 	da55bec: Update i18n
-	d134214: Added missing fields to log.adi export (Windows only)
+	d134214: Added missing fields to log.adi export (Windows only) Corrected logic associated with duplicate checking.
 	7e4c4b7: Update i18n
-	e322799: Various bug fixes
+	e322799: Various bug fixes   Restore fldigi.adif Windows logger file   Fix missing <string.h> in util.h   Fix missing Country field fill-in in lookupcall   Fix logic errors in keyboard / auto entry of callsign in qso log field
 	444633d: Update i18n
-	a193eba: MT63 receiver buffer flush
+	a193eba: MT63 receiver buffer flush Added rx_flush to MT63 modem class.  Allows immediate transition from Rx to Tx after remote station ceases transmission.  No loss in Rx characters
 
 2009-01-01  Stelios Bounanos  <vcs@enotty.net>
 
@@ -1133,13 +1140,13 @@
 
 2009-01-01  David Freese  <w1hkj@w1hkj.com>
 
-	435b937: Remove logbook font number/size specifiers
-	6e5b077: Restore MT63 cursor
-	122653e: Remove AFC indicator
-	68fd702: Olivia bug fix
+	435b937: Remove logbook font number/size specifiers Allows system font specificatin via command line switch
+	6e5b077: Restore MT63 cursor Force MT63 wf cursor to fixed tracking points; 750, 1000, 1500 for MT63-500/1000/2000 respectively
+	122653e: Remove AFC indicator Commented all lines in fl_digi.cxx relevant to AFCindicator This is a control that is useful during modem decoder development but no for the casual user
+	68fd702: Olivia bug fix Changed bandwidth, preamble, postamble tones to be consistent with other popular Olivia implementations, ie: MultiPsk
 	ec65205: Update i18n
-	3daf3d9: Changed show callsign behavior
-	fccba5c: Bug fix IOTA not clearing
+	3daf3d9: Changed show callsign behavior Popup now shows the Name, Last QSO date, Azimuth & Distance based on logbook record if the station was previously worked Otherwise the cty.dat file is used if present.
+	fccba5c: Bug fix IOTA not clearing Added clear IOTA field when QSO log saved to logbook Added comments to locator.c
 
 2008-12-29  Dave Freese  <w1hkj@w1hkj.com>
 
@@ -1148,31 +1155,31 @@
 2008-12-27  David Freese  <w1hkj@w1hkj.com>
 
 	e50a5ae: Update i18n
-	fba9fb2: Macro tag modification
-	4468f10: Increased average Olivia power
+	fba9fb2: Macro tag modification Changed <TIMER>nn AND <IDLE>nn to <TIMER:NN> and <IDLE:NN> respectively
+	4468f10: Increased average Olivia power Balanced tone power between pre/post amble tones and the mfsk tones
 	8e40296: update i18n
 	fa90e92: Delete last log entry bug fix
 	60e909b: Update i18n
-	1ec4341: Add missing qso fields to adif export
+	1ec4341: Add missing qso fields to adif export TX_PWR, COUNTRY missing from export Simplified the export function
 	eb09b3f: Update i18n
-	b126409: Restored log IPC output to xlog etal.
+	b126409: Restored log IPC output to xlog etal. Added additional fields now supported by internal fldigi logbook Added configuration item for Tx Power
 	a8b7043: update i18n
-	4b5b4f6: Rx text quick pick menu change
+	4b5b4f6: Rx text quick pick menu change Moved Call from quick pick to normal menu listing
 	46d15d0: Additional fix for TimeOn logic
 	36c3ab3: update i18n
-	edda7b0: New logbook fields
-	79f61b5: Update Rx/Tx popup menus
+	edda7b0: New logbook fields added TX_PWR, DXCC and IOTA to logbook renamed Notes to Comment to be consistent between main dialog and logbook dialog
+	79f61b5: Update Rx/Tx popup menus Changed logic for restoring Rx/Tx menu status to status.cxx
 	e187ecc: update i18n
-	179e8de: Bug fix - TimeOn
+	179e8de: Bug fix - TimeOn TimeOn was being reset every time fl_digi received focus Fixed in fl_digi.cxx
 	6595e7f: Fix compile warning in confdialog.cxx
 	9c0a78b: update i18n
-	bd1cf1c: Additional state variables
-	b5933cd: Bug fixes - 3.04BM
+	bd1cf1c: Additional state variables Save & restore state of: ReceiveText quick entry, ReceiveText word wrap and TransmitText word wrap
+	b5933cd: Bug fixes - 3.04BM Fixed --config-dir failure on MS Changed qso clear to only clear the search field on logbook dialog
 	12011e6: Update i18n
-	5391018: Organize HomeDir contents
-	63c9f94: Fix qso clear button bug
+	5391018: Organize HomeDir contents Create HomeDir Create HomeDir/rigs Create HomeDir/scripts Create HomeDir/palettes Create HomeDir/logs Create HomeDir/images Create HomeDir/help Create HomeDir/macros Create HomeDir/temp and populate with default files.
+	63c9f94: Fix qso clear button bug Clear would only work with NagMe set.  Corrected logic
 	a821c17: Merge commit 'berlios/pu/sb'
-	0d8f8bf: Logbook text i/o bug fixes
+	0d8f8bf: Logbook text i/o bug fixes Changed all logbook text out to use CRLF convention in MS Fixed "-30" bug in text output for comment field
 
 2008-12-22  Stelios Bounanos  <vcs@enotty.net>
 
@@ -1182,14 +1189,14 @@
 
 2008-12-21  David Freese  <w1hkj@w1hkj.com>
 
-	b931124: Clear logbook fields with clear qso fields
-	eeb334c: Display Macro-Loaded message
-	75096a9: QSO log focus fixes
-	554d5e1: Logbook browser focus
-	37022f7: Save modified Macros
-	75b3a5a: RTTY bug fix
+	b931124: Clear logbook fields with clear qso fields Clear both qso fields & logbook fields when the clear button is pressed.
+	eeb334c: Display Macro-Loaded message Modified the Load Macro message behavior to display whenever a Macro file is loaded or a new one created - dependent on the state of the associated configuration item
+	75096a9: QSO log focus fixes Fixed Enter refocus inhibit for Loc field Fixed refocus inhibit under certain conditions for Call field
+	554d5e1: Logbook browser focus Restore focus to the logbook dialog browser whenever a button control on that dialog is pressed.
+	37022f7: Save modified Macros Added test to save modified macros before opening a new file
+	75b3a5a: RTTY bug fix Fixed improper echo of Unshift-On-Space characters
 	3cb0709: Correct logbook-table-widget focus
-	2afd96a: Fix restore focus from log fields
+	2afd96a: Fix restore focus from log fields Create configuration item for upper case call field
 
 2008-12-18  Stelios Bounanos  <vcs@enotty.net>
 
@@ -1321,13 +1328,13 @@
 	7d2ea0d: Merge with upstream
 	09b75d7: Upstream version 3.04AL
 	e8ecf2a: Update ChangeLog
-	0c5b18c: Add log format check
+	0c5b18c: Add log format check Fix some LOG calls that were passing the wrong type/number of args
 	dd121fc: Rewrite xml config
 	00af730: Add scope dock option
-	c41749c: Handle deprecated args better
-	731c7a5: Fix signal handling
-	e9ddc8f: Add licence notices
-	62b901f: Rewrite change_modem_param
+	c41749c: Handle deprecated args better Also remove unused --experimental switch
+	731c7a5: Fix signal handling * Add generic functions to save and restore the disposition of all   signals, and use these to remove the handlers installed by xmlrpc's   abyss server.
+	e9ddc8f: Add licence notices (thanks to Stephance F8CFE for the reminder) Tweak About dialog html
+	62b901f: Rewrite change_modem_param Add new config menu for waterfall mouse-1 handling
 	09fde4d: Add default qsy arg
 	b4a7e32: Add mode group ids
 	61f04d6: Merge with upstream
@@ -1337,13 +1344,13 @@
 	f0195d4: Unclutter title bar
 	cd5a338: Reduce min window height
 	ec83b17: Add thread checks
-	1c9f450: Fix log clear
+	1c9f450: Fix log clear Ask confirmation when trying to exit without saving the log
 	629014d: Fix wfall cursor freq
 	dae8995: Change winapi precedence
 	5e3df23: Add update check
 	aa7d7bf: Fix XML-RPC error handling
 	5553466: Add HTTP URL fetching
-	0bc58ae: Fix re_t substring matching
+	0bc58ae: Fix re_t substring matching Delete extra copy of adjust_port() Remove includes from serial.h
 	9e71ac0: Merge with upstream
 	b446088: Upstream version 3.04AI
 	8421e49: Upstream version 3.04AH
@@ -1356,12 +1363,12 @@
 	2d67994: Add rig control freq entry
 	322af76: Merge with upstream
 	af5d499: Upstream version 3.04AC
-	e759dc7: Qrunner updates
+	e759dc7: Qrunner updates Read from pipe/socket before executing queued callbacks; improves performance and avoids some recursive dequeueing with REQ_FLUSH Change REQ_FLUSH to take a thread argument Flush the trx thread in init_modem_sync
 	e944abb: Remove fl_thread wrappers
-	667f672: Add thread signal handling
-	3c560ae: Add simple XML-RPC access control
+	667f672: Add thread signal handling Send SIGUSR2 to interrupt xmlrpc and arq_socket threads Restore the default signal disposition for various signals handled by xmlrpc-c's abyss server
+	3c560ae: Add simple XML-RPC access control Also add --xmlrpc-list switch
 	84b1052: Simplify XML-RPC error handling
-	5332a87: XML-RPC fixes
+	5332a87: XML-RPC fixes Use REQ in Main_set_sb and Log_set_call
 	e23803a: Merge with upstream
 	5476c0e: Upstream version 3.04AB
 	9cfa079: Upstream version 3.04AA
@@ -1395,7 +1402,7 @@
 	82296f1: Disable mouse cursor hiding
 	f3d895e: Increase default window width
 	d70089b: Use fl_open_uri
-	bcbd701: Update build system
+	bcbd701: Update build system Rename OS X app bundle directories Use correct ld switch to link hamlib statically on Linux
 	1d42855: Use REQ in start_tx
 	4b41ce0: Merge with upstream
 	eab55d5: Upstream version 3.03AI
@@ -1404,13 +1411,13 @@
 	0508eb7: Use regex class in PSK viewer
 	c862e82: Update regex class
 	4c1620c: Save MT63 settings
-	70faa12: Minor sound fixes
+	70faa12: Minor sound fixes Fix "device not found" message On Linux, a PortAudio device has zero channels if it's busy; omit that check for other platforms.
 	efe8140: Merge with upstream
 	db64583: Upstream version 3.03AG
 	67bec3d: Upstream version 3.03AF
 	ba3a9ea: Fix FTextLog menu handler
 	581aad2: Display mixer slider values
-	b653a7b: Redo colours/fonts dialog
+	b653a7b: Redo colours/fonts dialog Add colorsfonts.fl Change font browser to use colour chooser Correctly set text attributes to handle dark backgrounds
 	05fecac: Merge with upstream
 	fba29c0: Upstream version 3.03AE
 	6af1a4b: Upstream version 3.03AD
@@ -1431,17 +1438,17 @@
 	a0418bc: Upstream version 3.02
 	8137b8b: Upstream version 3.02AC
 	61bfa81: Upstream version 3.02AB
-	a7f4c61: Fix OS X help menu
+	a7f4c61: Fix OS X help menu Also set font used by fl_message
 	e0e49d0: Convert serial port names on win32
 	49c2876: Add simple regex class
-	8edc6a5: Update build scripts
+	8edc6a5: Update build scripts Add a script and Makefile target to relink fldigi with a static hamlib
 	c725580: Merge with upstream
 	594e70d: Upstream version 3.02AA
-	05dc247: XMLRPC updates
+	05dc247: XMLRPC updates Add an rpc method to call macros Add the fldigi-shell Perl client
 	c6c32aa: Replace some sem calls
 	e4a45ba: Merge with upstream
 	2c52ee8: Upstream version 3.01
-	b615c8a: OS X compatibility
+	b615c8a: OS X compatibility Use 127.0.0.1 instead of localhost Define AI_NUMERICSERV to 0 if undefined Do not use the non-POSIX MSG_NOSIGNAL send flag
 	20689b8: Merge with upstream
 	3f7b2d6: Upstream version 3.0
 	95d5786: FText updates
@@ -1459,7 +1466,7 @@
 	3238fc4: Socket fixes
 	c9cbbf5: Switch to Socket
 	1c69e51: Add new socket class
-	a890242: Add fake sem_timedwait
+	a890242: Add fake sem_timedwait Also, use named semaphores on OS X
 	9444527: Add fake clock_gettime
 	49097a5: Add new search_libs m4 macro
 	d8ac507: OS X build fixes
@@ -1471,7 +1478,7 @@
 	e08fd30: Upstream version 3.0preZ
 	325bdde: Upstream version 3.0preY
 	45294ab: Upstream version 3.0preX
-	e3fe8af: Improve clock_gettime detection
+	e3fe8af: Improve clock_gettime detection Also use the monotonic clock, if available, in the samplerate speed test function.
 	6e7ea86: Merge with upstream
 	29d5fe6: Upstream version 3.0preW
 	ba91adf: Upstream version 3.0preV
@@ -1479,7 +1486,7 @@
 	d92e346: MFSK fixes
 	e30e06c: Merge with upstream
 	b15f821: Upstream version 3.0preU
-	7675123: Add image drag/drop support
+	7675123: Add image drag/drop support Also fix a couple of memory allocation bugs
 	64a30ca: Merge with upstream
 	697650a: Upstream version 3.0preT
 	467a057: FText drag/drop
@@ -1535,7 +1542,7 @@
 	5654250: Upstream version 3.0preF
 	3a76af9: Upstream version 3.0preE
 	8fdb1e2: Upstream version 3.0preD
-	b9a4d5e: Warn about invalid REs
+	b9a4d5e: Warn about invalid REs Colour the Find field text red if the pattern is not a valid regular expression
 	6f36cdc: Merge with upstream
 	21d352f: Upstream version 3.0preC
 	4cc73f0: Upstream version 3.0preB
@@ -1550,19 +1557,19 @@
 	7237b89: Merge with upstream
 	92ebc3e: Upstream version 2.11AU
 	f1c4906: Add status dimming
-	838fd3f: Safely resize audio buffers
-	4baeaff: Correctly handle audio timeouts
+	838fd3f: Safely resize audio buffers Add a pause state for the stream_process, and also rewrite its state handling code
+	4baeaff: Correctly handle audio timeouts The samplerate API specifies that the read callback must return 0 to indicate that there are no more frames, but it seems that the frames pointer must also be set to NULL.
 	f8fcb0e: Delete redundant sound_update calls
 	021237f: Default to PortAudio
 	b33829f: Simplify the status timeout callbacks
 	306ad44: Fix generation of html audio info
-	5208be6: Fix mode status cycle order
-	3f3e3a0: Arg handling fixes
+	5208be6: Fix mode status cycle order Move THOR mode_info definition below RTTY in order to be consistent with the Op Mode menu. Comment out TSOR enum to restore correct cycle order in both directions.
+	3f3e3a0: Arg handling fixes Correctly check for the option argument being part of the option name. Gracefully shut down when --exit-after is given. Remove string_wrap, which is no longer required.
 	7dd4259: Merge with upstream
 	04962dd: Upstream version 2.11AT
 	7f835d1: Upstream version 2.11AS
 	411e1c8: Upstream version 2.11AR
-	416670d: Fix sample rate probing
+	416670d: Fix sample rate probing It seems that PortAudio/ALSA streams may misbehave when Pa_IsFormatSupported is called for a device that has already been opened for I/O.  Probe for supported sample rates in both directions for each device and cache the results.
 	ca7f9c3: Merge with upstream
 	e1bdfc5: Upstream version 2.11AQ
 	7e4a7f5: Upstream version 2.11AP
@@ -1579,12 +1586,12 @@
 	cdb43fa: Make PortAudio the default backend
 	ee5471d: Use conditionals for audio backends
 	699c2dc: Default to medium src converter
-	e5a7193: Improve audio device info
+	e5a7193: Improve audio device info Show supported sample rates in Audio device info help text Only show supported rates in sample rate menus
 	6203c6f: Add audio info help
 	ea25978: Fix mfsk error w/o jpeg support
 	852f585: More XML-RPC fixes
-	2b9d738: Update XML-RPC
-	f43b23c: Update m4 macros
+	2b9d738: Update XML-RPC Check for bind errors and don't try to start the server if the address is already in use. Call REQ directly inside methods to avoid two REQ calls. Add a modem.get_names method.
+	f43b23c: Update m4 macros Simplify pkg-config.m4 and make sure that pkg-config can be overridden by setting CFLAGS & LIBS variables. Likewise for xmlrpc.m4. Also add static switches around xmlrpc linker flags when --enable-static has been specified.
 	ba1dcae: Merge with upstream
 	713f7e1: Upstream version 2.11AI
 	3de19b6: Undo Thor damage
@@ -1593,8 +1600,8 @@
 	e3ab3bd: Add xml-rpc support
 	63bc32a: Update README
 	7ecc8de: Save rigctl window size
-	e48851b: FText CR/LF fixes
-	29b7147: Update file selector
+	e48851b: FText CR/LF fixes Add CRs to saved files on win32. Use a more efficient way of stripping CRs when loading a file.
+	29b7147: Update file selector Allocate File Chooser object on the heap to get the right font size. Use a new thread on win32 to avoid blocking FLTK.
 	2eaf504: Retouch confirmation dialogs
 	58a1021: Remember phasescope mode
 	a96e72a: Merge with upstream
@@ -1607,16 +1614,16 @@
 	66da44c: Upstream version 2.11AC
 	ffc692c: Upstream version 2.11AB
 	625e8b0: Fix crash with missing mixer device
-	b202135: MFSK fixes
-	850524f: Fix DominoEX/DEX warnings
+	b202135: MFSK fixes Initialise stopflag. Clear txpic widget before loading a new picture.
+	850524f: Fix DominoEX/DEX warnings Also use std::map for MuPskSec2Pri lookup
 	9fa0823: Merge with upstream
 	7c2464d: Upstream version 2.11AA
-	6958a88: Update fileselector
+	6958a88: Update fileselector Remember, and default to, directory of previous open/saveas call.
 	8f0239b: Use fileselect filter values
 	709afd2: Use the src callback API
 	632e1f4: Update PulseAudio code
 	713c493: Use PortAudio extensions
-	f9e1da5: Stacktrace updates
+	f9e1da5: Stacktrace updates Don't print the stack and version information twice when a signal is caught. Cosmetic changes to the output text.
 	c013c16: Use Fl_Preferences for the status
 	4828cbc: Merge tags
 	34adb84: Add tags
@@ -1627,7 +1634,7 @@
 	6e4a8be: Upstream version 2.11W
 	717adb3: Upstream version 2.11V
 	6f2d342: End all threads before exiting
-	ed339d9: Use unnamed semaphores
+	ed339d9: Use unnamed semaphores Also check for zoh/linear converters by enum name
 	92fa4ad: Merge with upstream
 	fb87343: Upstream version 2.11U
 	967748d: Upstream version 2.11T
@@ -1666,7 +1673,7 @@
 	fd4a644: Upstream version 2.11F
 	0ffc020: Sound file i/o fixes
 	00add72: trx/sound fixes
-	8764fa6: Add check for jpeg header
+	8764fa6: Add check for jpeg header Also update the INSTALL file
 	ceb418c: New file chooser
 	19514d3: Merge updates
 	674a4c4: Merge with upstream
@@ -1676,14 +1683,14 @@
 	897e3fa: Add cygwin support
 	43f3252: Merge with upstream
 	ecb383b: Upstream version 2.11D
-	b58de4f: Update EXEC macro
+	b58de4f: Update EXEC macro Delete the trailing new line of the external program's output Add the scripts dir to the front of PATH
 	7cd2cdd: Add macro bar mwheel handling
 	23a8a17: Merge with upstream
 	3c662b8: Upstream version 2.11C
 	ccaf1c4: Delete fast text widgets
 	a0e78c0: Delete libsamplerate
-	48ec6e1: Fix sound_init crash
-	2088a09: Fix MODEM macro hang in tx
+	48ec6e1: Fix sound_init crash This would happen with an empty progdefaults.OSSdevice (e.g. new install) on a system without OSS devices.
+	2088a09: Fix MODEM macro hang in tx Also remove unnecessary REQ_FLUSH in btnMem_cb()
 	ab887ad: Add EXEC macro
 	2865170: Merge with upstream
 	d725f09: Upstream version 2.11B
@@ -1691,12 +1698,12 @@
 	cf7ed30: Correctly calculate src_ratio
 	267e0cc: Merge with upstream
 	6d97a4e: Upstream version 2.10
-	5bf735c: Sound fixes
+	5bf735c: Sound fixes Call Close() before returning from trx receive exception handler Use same code to calculate receive src_ratio in resample() and src_data_reset()
 	9988143: Merge with upstream
 	122cac9: Upstream version 2.10Z
 	78fc915: Upstream version 2.10Y
 	fbf2bf4: Add shortcut to cancel xmit
-	3b1e084: MODEM macro fix
+	3b1e084: MODEM macro fix Add REQ_FLUSH call to make sure that waterfall::opmode has been run before returning from init_modem_sync.
 	dc33a16: Use region in rx menu
 	dbc40df: Merge with upstream
 	cdb15b0: Merge with upstream
@@ -1709,11 +1716,11 @@
 	d2855a2: Merge with upstream
 	86956a2: Upstream version 2.10U
 	08792eb: Wfall/viewer freq paste
-	659331f: RMB audio history playback
+	659331f: RMB audio history playback Also prevent playback when dragging, and restore kb focus to the transmit text widget
 	f1da5bb: Adjust FText styles
 	f7bc45e: Correct Olivia defaults
 	080d1be: Enable extended chars
-	4030253: Sound init error checking
+	4030253: Sound init error checking Also restore Close() calls for OSS
 	0bd5796: Hide mixer frame correctly
 	eead0fc: Viewer freq paste shortcuts
 	e039251: Merge with upstream
@@ -1730,21 +1737,21 @@
 	91c260f: Upstream version 2.10Q
 	6f162db: Merge with upstream
 	cdcdc6c: Upstream version 2.10P
-	45138e9: Add missing config.h include
+	45138e9: Add missing config.h include Also add a missing xclass call and test script
 	0d2312d: Fix arg parsing
 	bc04b07: Merge with upstream
 	63c4ec3: Upstream version 2.10o
 	7d8684b: Merge with upstream
 	2b68f11: Upstream version 2.10N
 	cce24a1: Stream init fixes
-	18007fe: Add OS X app bundling support
+	18007fe: Add OS X app bundling support Also add support for building OS X universal binaries, define version macros and variables, and update the INSTALL file.
 	f4f7fd0: Merge with upstream
 	b4bd006: Upstream version 2.10M
 	9cb9881: Merge with upstream
 	b295c0f: Upstream version 2.10L
 	8bd46f1: Merge with upstream
 	2871823: Upstream version 2.10K
-	e5476cb: Separate in/out snd dev support
+	e5476cb: Separate in/out snd dev support Also add a SoundNull backend and rework sound configuration
 	c6d01b5: Callsign query clean-ups
 	018d0a7: Merge with upstream
 	ac64df5: Upstream version 2.10J
@@ -1761,24 +1768,24 @@
 	3dce149: Refactor configure.ac
 	6bea093: Add PulseAudio support
 	501fa5e: Add REQ_DROP
-	bc4ff95: Use default audio dev
+	bc4ff95: Use default audio dev Also remove the deprecated --sample-rate switch
 	8a755f9: Merge with upstream
 	2e12ab4: Upstream version 2.10E
 	352a2cb: Merge with upstream
 	a458af5: Upstream version 2.10D
-	923a0b0: Add macro to change modem
+	923a0b0: Add macro to change modem Also rearrange the macro list in the editor into groups and add separator lines.
 	d5934f0: Merge with upstream
 	7e3d8b2: Merge with upstream
 	66bbde2: Upstream version 2.10C
 	ccd970f: Upstream version 2.10B
-	d91b591: Add check for -rdynamic support
+	d91b591: Add check for -rdynamic support Also add calls for the build, target, host macros.
 	38eb18d: Correctly calculate number of samples
-	ea32601: Resolve name clashes on OSX (2)
+	ea32601: Resolve name clashes on OSX (2) Rename sound classes to avoid a conflict with an enum named cSound and defined in a system header on OSX: cSound -> SoundBase, cSoundOSS -> SoundOSS, cSoundPA -> SoundPort cMixer -> MixerBase, cMixerOSS -> MixerOSS Also enable MixerBase ctor & virtual dtor, and delete some old comments in the SoundPort declaration.
 	f8a2c08: Resolve name clashes on OSX (1)
-	de23739: Rename Config files
+	de23739: Rename Config files Config.{fl,h,cxx} -> confdialog{fl,h,cxx}. This ensures that there will be no ambiguity between Config.h and the autogenerated config.h on case-insensitive but case-preserving filesystems.
 	7b5254d: Add fluid target
 	2fc3659: Disable pixmap icon on OSX
-	fc9477a: Make OSS optional
+	fc9477a: Make OSS optional Split cMixer into base class and OSS implementation. Add configure.ac macros to detect OSS and disable cMixerOSS and cSoundOSS. Hide volume sliders if OSS is disabled, or if we are not managing the mixer.
 	cffd639: Use HAVE_REGEX_H in psk viewer
 	d8304ae: Use a rb for audio history
 	3248b76: Merge with upstream
@@ -1787,7 +1794,7 @@
 	a915633: Upstream version 2.09
 	575c17f: Upstream version 2.09K
 	83a8d00: Upstream version 2.09J
-	12b1d68: Fix argument handling
+	12b1d68: Fix argument handling Long arguments without a space (--opt=arg) now work correctly. Also, move sound initialisation to a separate function, add an undocumented --exit-after SECONDS argument, and update mkversions.sh to include CXXFLAGS in the --version output.
 	795ac21: Merge with upstream
 	e2083f2: Upstream version 2.09I
 	1c8dac9: Merge with upstream
@@ -1797,37 +1804,37 @@
 	a60ca6e: Merge with upstream
 	c836b73: Upstream version 2.09F
 	4c06b83: Merge with upstream
-	c57b411: Add regex support
-	ad9f2d6: sprintf considered harmful
+	c57b411: Add regex support Add a beep button. Insert "@." when resizing Set inpSeek to constant width font Extend character range to include { | } ~
+	ad9f2d6: sprintf considered harmful Also fix a bug in putadif() where strings longer than the max field size would be truncated to one less than that size. Add a configure-time check for snprintf and vsnprintf because flstring.h looks for HAVE_SNPRINTF and HAVE_VSNPRINTF
 	c40dccc: Upstream version 2.09E
-	58839a1: Adjust PSK Viewer colours
+	58839a1: Adjust PSK Viewer colours Also set window class and insert end-of-formatting char
 	2eecd2e: Upstream version 2.09D
 	41e003e: Merge with upstream
-	bcecfe4: Use sndfile C API
+	bcecfe4: Use sndfile C API Also add .au support
 	ead061f: Fix unchecked retval warnings
-	c3d55a6: Fix for sync AM rig modes
+	c3d55a6: Fix for sync AM rig modes These are new in hamlib 1.2.6. We could require >= 1.2.6 in configure.ac, but then we would make packaging difficult on Debian stable (etch) for no good reason.
 	c5a7064: Upstream version 2.09C
 	f558295: Upstream version 2.09B
 	b18ab16: Upstream version 2.09A
 	2736cb7: Upstream version 2.09 (alpha)
 	d4ad637: Upstream version 2.08
-	398f3a3: Enable std-options
+	398f3a3: Enable std-options With this automake option, "make distcheck" will also require the binary to write text to stdout and exit with code 0 when called with --version and --help. This way we get a free (but fairly basic) runtime check. Also, use the AC_COPYRIGHT macro instead of a comment.
 	9d5187b: HTML/cmdline help changes
-	0bb60b2: Makefile freebsd compat.
+	0bb60b2: Makefile freebsd compat. On FreeBSD include files for portaudio-1 are in /usr/local/include/portaudio include files for portaudio-2 are in /usr/local/portaudio2 similarly for the libs.
 	4d72d2b: Merge with upstream
 	34f68be: Upstream version 2.08G
 	1d0eee3: Remove freqlist hscrollbar
-	bd87ef5: Rigdialog changes
+	bd87ef5: Rigdialog changes Make the window shrinkable, and also add a mouse shortcut to replace items in the frequency list. Update tooltip.
 	ed02583: Clean up min/max macros
 	70de915: Merge with upstream
 	3756b2e: Upstream version 2.08F
 	c410ff8: Remove .desktop Encoding
-	5055180: Fix freq/mode selection
+	5055180: Fix freq/mode selection Setting some rig modes may also change the frequency; set the rig mode first
 	c2f7689: Retry PA/OSS errors
-	67c2c69: Audio playback fix
-	0a0e322: Rig dialog changes
-	2ecb922: DominoEX bug fix
-	86d89d0: Use correct check for OSS
+	67c2c69: Audio playback fix Do not apply the receive mixer volume to the audio samples read from files when the mixer is disabled.
+	0a0e322: Rig dialog changes Display saved rig mode, digital mode, and wfall carrier in the rigcontrol window frequency list
+	2ecb922: DominoEX bug fix Fix a decodesymbol() loop that was accessing memory below the start of symbolbuf
+	86d89d0: Use correct check for OSS This only affects error printing when PortAudio/OSS returns with an "Unanticipated Host Error"
 	c77b1e6: Add some help items
 	8d87607: Cosmetic changes to rx menu
 	3f10b9f: Squeeze wfall controls
@@ -1839,21 +1846,21 @@
 	580cc21: Upstream version 2.08d
 	73fde2a: Use execvp
 	4cbfa4b: Add Olivia settings
-	ba64201: PSK bug fix
-	99c0d57: Throb bug fix
-	e6a0caa: CW fix
-	220c41f: MFSK bug fixes
-	a30e84f: Olivia bug fixes
+	ba64201: PSK bug fix Initialise s/n and imd variables
+	99c0d57: Throb bug fix Plug a memory leak caused by using the wrong delete operator
+	e6a0caa: CW fix Initialise usedefaultWPM in ctor to avoid valgrind warning about conditional jump depending on access to uninitialised memory
+	220c41f: MFSK bug fixes Set some variables to avoid accessing uninitialised memory. Initialise interleave table with 0s; the original gmfsk code used g_new0 to do this. This avoids another access to random bits. Fix memory leak by creating the small syms array on the stack. Initialise symbolpair[] with 0s in ctor to avoid vargrind warnings
+	a30e84f: Olivia bug fixes Set smargin and sinteg to avoid access to uninitialised memory Also set lastfreq to 0 in ctor to avoid valgrind warnings
 	d3ff0ad: Fix key bindings loop
 	642e636: Add debug_exec
 	8cb6ccb: Print host API errors
-	0d934ee: Stacktrace updates
+	0d934ee: Stacktrace updates Kill a newline in Aborting... message Skip pstack's own frame when printing stack trace
 	904e7f4: Add selectFreq delay
 	f2bdf7a: Add #if USE_PORTAUDIO check
 	5f4ea06: Merge with upstream
 	60d3b3d: Upstream version 2.08c
 	e1e2307: Mention Native sample rate
-	09e2589: Add .desktop, move icons to data/
+	09e2589: Add .desktop, move icons to data/ configure.ac updates Thanks to Steve Conklin for the .desktop file and the Makefile.am patch
 	8a89e64: Set locale only for LC_TIME
 	37cddb3: Update README
 	fb86586: Set default cursor for popup
@@ -1872,7 +1879,7 @@
 	635f3d1: Add TLS autodetection
 	3f0701c: Upstream version 2.07
 	6843d69: Merge with upstream
-	0a1dab2: qrunner updates
+	0a1dab2: qrunner updates Rename QUEUE to REQ and delete CMP_CB
 	7ed4274: Merge with upstream
 	93ded34: Upstream version 2.06
 	cda31bd: Merge with upstream
@@ -1906,14 +1913,14 @@
 	131f09c: Upstream version 2.05
 	4aba0d5: Upstream version 2.05d
 	13f5c88: Add M clear shortcut
-	4b322bc: More status button tweaks
+	4b322bc: More status button tweaks The mouse wheel now cycles through the modems in the same order as they appear in the main Op Mode menu
 	5b44ca2: Analysis: put_MODEstatus in rx_init
 	caa3e3e: Merge with upstream
 	e229f28: Upstream version 2.05c
 	161112b: Fix btnMem mouse2 handling
-	72099f4: Fix waterfall marker drawing
-	614e601: Add a sample rate config menu
-	e5549c5: Add a waterfall Mem button
+	72099f4: Fix waterfall marker drawing The markers may wrap around the other end of the waterfall if the AFC search range is large enough Also narrow the AFC search range and reduce the squelch threshold when the mouse wheel is scrolled down
+	614e601: Add a sample rate config menu Change get_best_srate to try the modem sample rate and device sample rate only Print exception messages to the status bar
+	e5549c5: Add a waterfall Mem button Also add a mode_info structure and hence delete the modem init functions. Add a new init_modem_sync and QUEUE_FLUSH. Tweak the status button menu.
 	85173b9: Get rid of CRs
 	90ee5d5: Fix FText event handler
 	c068900: Add an INSTALL file
@@ -1937,7 +1944,7 @@
 	ea37d30: FLAC and sndfile comments
 	53b6c20: Keep the audio stream open
 	aa71760: More waterfall hacks
-	4cf9874: Add clear_sent method
+	4cf9874: Add clear_sent method Use this instead of clear when encountering a ^r
 	434634e: Merge with upstream
 	11af060: Upstream version 2.04e
 	7580a6e: Use pkg-config where possible
