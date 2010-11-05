@@ -723,6 +723,9 @@
         ELEM_(bool, RigCatECHO, "RIGCATECHO",                                           \
               "Commands are echoed",                                                    \
               false)                                                                    \
+        ELEM_(bool, RigCatVSP, "RIGCATVSP",                                             \
+              "VSP support enabled",                                                    \
+              false)                                                                    \
         /* Hamlib parameters */                                                         \
         ELEM_(bool, HamlibRTSplus, "HAMLIBRTSPLUS",                                     \
               "RTS +12",                                                                \

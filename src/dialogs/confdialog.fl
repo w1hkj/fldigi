@@ -101,8 +101,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;}
-        tooltip {Operator information} xywh {0 25 500 345} when 1 hide
+        callback {progdefaults.changed = true;} selected
+        tooltip {Operator information} xywh {0 25 500 345} when 1
       } {
         Fl_Group {} {
           label Station open
@@ -601,7 +601,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label Display open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {
               label {Colors and cursors} open
@@ -856,7 +856,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label Mouse open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {5 62 490 170} box ENGRAVED_FRAME
@@ -1971,7 +1971,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabRig {
-        label Rig
+        label Rig open
         tooltip {Transceiver control} xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsRig {open
@@ -2262,6 +2262,14 @@ btnInitRIGCAT->redraw_label();
 rigCAT_restore_defaults();}
                 tooltip {Initialize hamlib interface} xywh {365 289 113 24} deactivate
                 code0 {\#include "rigio.h"}
+              }
+              Fl_Check_Button chkRigCatVSP {
+                label {VSP Enable}
+                callback {btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw_label();
+btnRevertRIGCAT->activate();}
+                tooltip {Virtual Serial Port Emulator - suppress WARNINGS} xywh {256 315 100 25} down_box DOWN_BOX
+                code0 {o->value(progdefaults.RigCatVSP);}
               }
             }
           }
@@ -2991,7 +2999,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabSweetSpot {
             label {Sweet Spot}
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {open
               xywh {5 60 490 75} box ENGRAVED_FRAME align 21
@@ -3152,7 +3160,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabFileExtraction {
             label {Text Capture} open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {
               label {Auto Extract files from rx stream} open
@@ -3288,7 +3296,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabQRZ {
         label {Callsign DB} open
-        tooltip {Callsign database} xywh {0 25 500 345}
+        tooltip {Callsign database} xywh {0 25 500 345} hide
       } {
         Fl_Group {} {
           label CDROM open
@@ -3394,7 +3402,7 @@ progdefaults.changed = true;}
             label {Callook.info lookup (US callsigns only)}
             callback {set_qrz_buttons(o);
 progdefaults.QRZ = CALLOOK;
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
             tooltip {Vist Hamcall web site} xywh {25 137 337 20} down_box DOWN_BOX
             code0 {o->value(progdefaults.QRZ == CALLOOK);}
           }
