@@ -244,6 +244,7 @@ extern Fl_Check_Button *btnRigCatDTRplus;
 extern Fl_Check_Button *chkRigCatRTSCTSflow;
 #include "rigio.h"
 extern Fl_Button *btnRevertRIGCAT;
+extern Fl_Check_Button *chkRigCatVSP;
 extern Fl_Group *tabHamlib;
 extern Fl_Check_Button *chkUSEHAMLIB;
 extern Fl_Group *grpHamlib;

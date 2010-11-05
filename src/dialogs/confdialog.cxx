@@ -1760,6 +1760,14 @@ btnInitRIGCAT->redraw_label();
 rigCAT_restore_defaults();
 }
 
+Fl_Check_Button *chkRigCatVSP=(Fl_Check_Button *)0;
+
+static void cb_chkRigCatVSP(Fl_Check_Button*, void*) {
+  btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw_label();
+btnRevertRIGCAT->activate();
+}
+
 Fl_Group *tabHamlib=(Fl_Group *)0;
 
 Fl_Check_Button *chkUSEHAMLIB=(Fl_Check_Button *)0;
@@ -2679,7 +2687,6 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -3152,7 +3159,6 @@ ab and newline are automatically included."));
           tabsWaterfall->color((Fl_Color)FL_LIGHT1);
           tabsWaterfall->selection_color((Fl_Color)FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Display"));
-            o->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 162, _("Colors and cursors"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -3414,6 +3420,7 @@ an merging"));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Mouse"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(5, 62, 490, 170);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnWaterfallHistoryDefault = new Fl_Check_Button(15, 76, 340, 20, _("Left or right click always replays audio history"));
@@ -4903,6 +4910,12 @@ an merging"));
                 btnRevertRIGCAT->callback((Fl_Callback*)cb_btnRevertRIGCAT);
                 btnRevertRIGCAT->deactivate();
               } // Fl_Button* btnRevertRIGCAT
+              { Fl_Check_Button* o = chkRigCatVSP = new Fl_Check_Button(256, 315, 100, 25, _("VSP Enable"));
+                chkRigCatVSP->tooltip(_("Virtual Serial Port Emulator - suppress WARNINGS"));
+                chkRigCatVSP->down_box(FL_DOWN_BOX);
+                chkRigCatVSP->callback((Fl_Callback*)cb_chkRigCatVSP);
+                o->value(progdefaults.RigCatVSP);
+              } // Fl_Check_Button* chkRigCatVSP
               grpRigCAT->end();
             } // Fl_Group* grpRigCAT
             o->end();
@@ -5580,7 +5593,6 @@ d frequency"));
         { tabsMisc = new Fl_Tabs(0, 25, 500, 345);
           tabsMisc->selection_color((Fl_Color)FL_LIGHT1);
           { tabSweetSpot = new Fl_Group(0, 50, 500, 320, _("Sweet Spot"));
-            tabSweetSpot->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 75);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -5753,6 +5765,7 @@ d frequency"));
             tabCPUspeed->end();
           } // Fl_Group* tabCPUspeed
           { tabFileExtraction = new Fl_Group(0, 50, 500, 320, _("Text Capture"));
+            tabFileExtraction->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 119, _("Auto Extract files from rx stream"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -5915,6 +5928,7 @@ d frequency"));
       } // Fl_Group* tabMisc
       { tabQRZ = new Fl_Group(0, 25, 500, 345, _("Callsign DB"));
         tabQRZ->tooltip(_("Callsign database"));
+        tabQRZ->hide();
         { Fl_Group* o = new Fl_Group(5, 180, 490, 75, _("CDROM"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);

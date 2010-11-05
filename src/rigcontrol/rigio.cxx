@@ -60,9 +60,9 @@ static bool			 rigCAT_exit = false;
 static bool			 rigCAT_open = false;
 static bool			 rigCAT_bypass = false;
 
-static string		   sRigWidth = "";
-static string		   sRigMode = "";
-static long long		llFreq = 0;
+static string		sRigWidth = "";
+static string		sRigMode = "";
+static long long	llFreq = 0;
 
 static bool nonCATrig = false;
 
@@ -388,7 +388,8 @@ long long rigCAT_getfreq()
 retry_get_freq: ;
 		}
 	}
-	LOG_WARN("Retries failed");
+	if (progdefaults.RigCatVSP == false)
+		LOG_WARN("Retries failed");
 	return 0;
 }
 
@@ -453,7 +454,8 @@ void rigCAT_setfreq(long long f)
 			if (ok) return;
 		}
 	}
-	LOG_WARN("Retries failed");
+	if (progdefaults.RigCatVSP == false)
+		LOG_WARN("Retries failed");
 }
 
 string rigCAT_getmode()
@@ -549,7 +551,8 @@ string rigCAT_getmode()
 retry_get_mode: ;
 		}
 	}
-	LOG_WARN("Retries failed");
+	if (progdefaults.RigCatVSP == false)
+		LOG_WARN("Retries failed");
 	return "";
 }
 
@@ -623,7 +626,8 @@ void rigCAT_setmode(const string& md)
 			if (ok) return;
 		}
 	}
-	LOG_WARN("Retries failed");
+	if (progdefaults.RigCatVSP == false)
+		LOG_WARN("Retries failed");
 }
 
 string rigCAT_getwidth()
@@ -719,7 +723,8 @@ string rigCAT_getwidth()
 retry_get_width: ;
 		}
 	}
-	LOG_WARN("Retries failed");
+	if (progdefaults.RigCatVSP == false)
+		LOG_WARN("Retries failed");
 	return "";
 }
 
@@ -990,6 +995,7 @@ void rigCAT_restore_defaults()
 	cntRigCatWait->value(progdefaults.RigCatWait);
 	btnRigCatEcho->value(progdefaults.RigCatECHO);
 	btnRigCatCMDptt->value(progdefaults.RigCatCMDptt);
+	chkRigCatVSP->value(progdefaults.RigCatVSP);
 
 	btnInitRIGCAT->labelcolor(FL_FOREGROUND_COLOR);
 	btnRevertRIGCAT->deactivate();
@@ -1011,6 +1017,7 @@ void rigCAT_init_defaults()
 	progdefaults.RigCatWait = static_cast<int>(cntRigCatWait->value());
 	progdefaults.RigCatECHO = btnRigCatEcho->value();
 	progdefaults.RigCatCMDptt = btnRigCatCMDptt->value();
+	progdefaults.RigCatVSP = chkRigCatVSP->value();
 }
 
 bool rigCAT_init(bool useXML)
@@ -1198,7 +1205,7 @@ static void *rigCAT_loop(void *args)
 			sMode = rigCAT_getmode();
 		pthread_mutex_unlock(&rigCAT_mutex);
 
-		if ((freq >= 0) && (freq != llFreq)) {
+		if ((freq > 0) && (freq != llFreq)) {
 			llFreq = freq;
 			show_frequency(freq);
 			wf->rfcarrier(freq);
