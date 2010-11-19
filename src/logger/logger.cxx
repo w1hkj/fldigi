@@ -51,8 +51,6 @@ using namespace std;
 
 //---------------------------------------------------------------------
 const char *logmode;
-char logdate[32];
-char logtime[32];
 
 static string log_msg;
 static string errmsg;
@@ -97,7 +95,7 @@ void submit_ADIF(cQsoRec &rec)
 {
 	adif.erase();
 	
-	putadif(QSO_DATE, rec.getField(QSO_DATE)); 
+	putadif(QSO_DATE, rec.getField(QSO_DATE_OFF));
 	putadif(TIME_ON, rec.getField(TIME_ON));
 	putadif(TIME_OFF, rec.getField(TIME_OFF));
 	putadif(CALL, rec.getField(CALL));
@@ -149,7 +147,7 @@ static void send_IPC_log(cQsoRec &rec)
 	log_msg = "";
 	log_msg = log_msg + "program:"	+ PACKAGE_NAME + " v " 	+ PACKAGE_VERSION + LOG_MSEPARATOR;
 	addtomsg("version:",	LOG_MVERSION);
-	addtomsg("date:",		logdate);
+	addtomsg("date:",		rec.getField(QSO_DATE_OFF));
 	addtomsg("time:", 		rec.getField(TIME_ON));
 	addtomsg("endtime:", 	rec.getField(TIME_OFF));
 	addtomsg("call:",		rec.getField(CALL));
@@ -205,13 +203,6 @@ void submit_log(void)
 	if (progStatus.spot_log)
 		spot_log(inpCall->value(), inpLoc->value());
 
-	struct tm *tm;
-	time_t t;
-
-	time(&t);
-        tm = gmtime(&t);
-		strftime(logdate, sizeof(logdate), "%d %b %Y", tm);
-		strftime(logtime, sizeof(logtime), "%H%M", tm);
 	logmode = mode_info[active_modem->get_mode()].adif_name;
 
 	if (progStatus.xml_logbook)

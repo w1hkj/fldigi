@@ -35,6 +35,7 @@ using namespace std;
 // class cQsoRec
 
 static int compby = COMPDATE;
+static bool date_off = true;
 
 bool cQsoDb::reverse = false;
 
@@ -119,18 +120,32 @@ const cQsoRec &cQsoRec::operator=(const cQsoRec &right) {
 }
 
 int compareTimes (const cQsoRec &r1, const cQsoRec &r2) {
-	if (r1.qsofield[TIME_ON] < r2.qsofield[TIME_ON])
-		return -1;
-	if (r1.qsofield[TIME_ON] > r2.qsofield[TIME_ON])
-		return 1;
+	if (date_off) {
+		if (r1.qsofield[TIME_OFF] < r2.qsofield[TIME_OFF])
+			return -1;
+		if (r1.qsofield[TIME_OFF] > r2.qsofield[TIME_OFF])
+			return 1;
+	} else {
+		if (r1.qsofield[TIME_ON] < r2.qsofield[TIME_ON])
+			return -1;
+		if (r1.qsofield[TIME_ON] > r2.qsofield[TIME_ON])
+			return 1;
+	}
 	return 0;
 }
 
 int compareDates (const cQsoRec &r1, const cQsoRec &r2) {
-	if (r1.qsofield[QSO_DATE] < r2.qsofield[QSO_DATE])
-		return -1;
-	if (r1.qsofield[QSO_DATE] > r2.qsofield[QSO_DATE])
-		return 1;
+	if (date_off) {
+		if (r1.qsofield[QSO_DATE_OFF] < r2.qsofield[QSO_DATE_OFF])
+			return -1;
+		if (r1.qsofield[QSO_DATE_OFF] > r2.qsofield[QSO_DATE_OFF])
+			return 1;
+	} else {
+		if (r1.qsofield[QSO_DATE] < r2.qsofield[QSO_DATE])
+			return -1;
+		if (r1.qsofield[QSO_DATE] > r2.qsofield[QSO_DATE])
+			return 1;
+	}
 	return compareTimes (r1,r2);
 }
 
@@ -310,7 +325,8 @@ void cQsoDb::qsoUpdRec (int rnbr, cQsoRec *updrec) {
   return;
 }
 
-void cQsoDb::SortByDate () {
+void cQsoDb::SortByDate (bool how) {
+  date_off = how;
   compby = COMPDATE;
   qsort (qsorec, nbrrecs, sizeof (cQsoRec), compareqsos);
 }
@@ -365,7 +381,7 @@ char buff[256];
     inprec.clearRec();
   }
   inQsoFile.close();
-  SortByDate();
+  SortByDate(date_off);
   return 0;
 }
 

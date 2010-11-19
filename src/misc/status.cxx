@@ -604,7 +604,7 @@ else {
 
 	cQsoDb::reverse = logbook_reverse;
 	if (cQsoDb::reverse) {
-		qsodb.SortByDate();
+		qsodb.SortByDate(progdefaults.sort_date_time_off);
 		loadBrowser();
 	}
 

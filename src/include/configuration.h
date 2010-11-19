@@ -567,6 +567,12 @@
         ELEM_(bool, ClearOnSave, "CLEARONSAVE",                                         \
               "Clear log fields on save",                                               \
               false)                                                                    \
+        ELEM_(bool, sort_date_time_off, "SORTDATEOFF",                                  \
+              "Sort log by date/time off",                                              \
+              true)                                                                     \
+        ELEM_(bool, force_date_time, "FORCEDATETIME",                                   \
+              "Force date/time ON == OFF",                                              \
+              false)                                                                    \
         ELEM_(bool, menuicons, "MENUICONS",                                             \
               "Show menu icons",                                                        \
               true)                                                                     \

@@ -63,6 +63,8 @@ cTextFile	txtFile;
 
 string		logbook_filename;
 
+void restore_sort();
+
 void Export_CSV()
 {
 	if (chkExportBrowser->nchecked() == 0) return;
@@ -147,7 +149,7 @@ void saveLogbook()
 			return;
 
 	cQsoDb::reverse = false;
-	qsodb.SortByDate();
+	qsodb.SortByDate(progdefaults.sort_date_time_off);
 
 //	pthread_mutex_lock (&logbook_mutex);
 	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
@@ -206,7 +208,7 @@ void cb_mnuSaveLogbook(Fl_Menu_*m, void* d) {
 		dlgLogbook->label(fl_filename_name(logbook_filename.c_str()));
 
 		cQsoDb::reverse = false;
-		qsodb.SortByDate();
+		qsodb.SortByDate(progdefaults.sort_date_time_off);
 
 //		pthread_mutex_lock (&logbook_mutex);
 		adifFile.writeLog (logbook_filename.c_str(), &qsodb);
@@ -239,8 +241,8 @@ void cb_Export_log() {
 		rec = qsodb.getRec (i);
 		memset(line, 0, sizeof(line));
 		snprintf(line,sizeof(line),"%8s  %4s  %-32s  %10s  %-s",
-			rec->getField(QSO_DATE),
-			rec->getField(TIME_OFF),
+			rec->getField(progdefaults.sort_date_time_off ? QSO_DATE_OFF : QSO_DATE),
+			rec->getField(progdefaults.sort_date_time_off ? TIME_OFF : TIME_ON),
 			rec->getField(CALL),
 			rec->getField(FREQ),
 			rec->getField(MODE) );
@@ -308,7 +310,7 @@ void cb_btnNewSave(Fl_Button* b, void* d) {
 		activateButtons();
 	} else {
 		saveRecord();
-		qsodb.SortByDate();
+		qsodb.SortByDate(progdefaults.sort_date_time_off);
 		loadBrowser();
 		logState = VIEWREC;
 		activateButtons();
@@ -346,7 +348,7 @@ void restore_sort()
 		break;
 	case SORTDATE :
 		cQsoDb::reverse = datefwd;
-		qsodb.SortByDate();
+		qsodb.SortByDate(progdefaults.sort_date_time_off);
 		break;
 	case SORTFREQ :
 		cQsoDb::reverse = freqfwd;
@@ -380,7 +382,13 @@ void cb_SortByDate (void) {
 		lastsort = SORTDATE;
 	}
 	cQsoDb::reverse = datefwd;
-	qsodb.SortByDate();
+	qsodb.SortByDate(progdefaults.sort_date_time_off);
+	loadBrowser();
+}
+
+void reload_browser()
+{
+	qsodb.SortByDate(progdefaults.sort_date_time_off);
 	loadBrowser();
 }
 
@@ -616,7 +624,7 @@ void saveRecord() {
 	submit_record(rec);
 
 	cQsoDb::reverse = false;
-	qsodb.SortByDate();
+	qsodb.SortByDate(progdefaults.sort_date_time_off);
 
 //	pthread_mutex_lock (&logbook_mutex);
 	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
@@ -661,7 +669,7 @@ cQsoRec rec;
 	dxcc_entity_cache_add(&rec);
 
 	cQsoDb::reverse = false;
-	qsodb.SortByDate();
+	qsodb.SortByDate(progdefaults.sort_date_time_off);
 
 //	pthread_mutex_lock (&logbook_mutex);
 	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
@@ -682,7 +690,7 @@ void deleteRecord () {
 	qsodb.qsoDelRec(editNbr);
 
 	cQsoDb::reverse = false;
-	qsodb.SortByDate();
+	qsodb.SortByDate(progdefaults.sort_date_time_off);
 
 //	pthread_mutex_lock (&logbook_mutex);
 	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
@@ -738,10 +746,16 @@ void AddRecord ()
 {
 	inpCall_log->value(inpCall->value());
 	inpName_log->value (inpName->value());
-	inpTimeOn_log->value (inpTimeOn->value());
-	inpTimeOff_log->value (ztime());
-    inpDate_log->value(sDate_on.c_str());
-    inpDateOff_log->value(sDate_off.c_str());
+	if (progdefaults.force_date_time) {
+		inpDate_log->value(sDate_off.c_str());
+		inpTimeOn_log->value (inpTimeOff->value());
+	} else {
+		inpDate_log->value(sDate_on.c_str());
+		inpTimeOn_log->value (inpTimeOn->value());
+	}
+	inpDateOff_log->value(sDate_off.c_str());
+	inpTimeOff_log->value (inpTimeOff->value());
+
 	inpRstR_log->value (inpRstIn->value());
 	inpRstS_log->value (inpRstOut->value());
 	{
@@ -774,7 +788,7 @@ void AddRecord ()
 
 	saveRecord();
 
-	qsodb.SortByDate();
+	qsodb.SortByDate(progdefaults.sort_date_time_off);
 	loadBrowser();
 	logState = VIEWREC;
 	activateButtons();
@@ -800,8 +814,8 @@ void loadBrowser(bool keep_pos)
 		rec = qsodb.getRec (i);
 		snprintf(sNbr,sizeof(sNbr),"%d",i);
 		wBrowser->addRow (7,
-			rec->getField(QSO_DATE),
-			rec->getField(TIME_ON),
+			rec->getField(progdefaults.sort_date_time_off ? QSO_DATE_OFF : QSO_DATE),
+			rec->getField(progdefaults.sort_date_time_off ? TIME_OFF : TIME_ON),
 			rec->getField(CALL),
 			rec->getField(NAME),
 			rec->getField(FREQ),
@@ -937,8 +951,8 @@ void cb_Export_Cabrillo(Fl_Menu_* m, void* d) {
 		rec = qsodb.getRec (i);
 		memset(line, 0, sizeof(line));
 		snprintf(line,sizeof(line),"%8s  %4s  %-32s  %10s  %-s",
-			rec->getField(QSO_DATE),
-			rec->getField(TIME_OFF),
+			rec->getField(progdefaults.sort_date_time_off ? QSO_DATE_OFF : QSO_DATE),
+			rec->getField(progdefaults.sort_date_time_off ? TIME_OFF : TIME_ON),
 			rec->getField(CALL),
 			rec->getField(FREQ),
 			rec->getField(MODE) );
@@ -975,14 +989,14 @@ void cabrillo_append_qso (FILE *fp, cQsoRec *rec)
 	}
 
 	if (btnCabQSOdate->value()) {
-		date = rec->getField(QSO_DATE);
+		date = rec->getField(progdefaults.sort_date_time_off ? QSO_DATE_OFF : QSO_DATE);
 		date.insert(4,"-");
 		date.insert(7,"-");
 		qsoline.append(date); qsoline.append(" ");
 	}
 
 	if (btnCabTimeOFF->value()) {
-		time = rec->getField(TIME_OFF);
+		time = rec->getField(progdefaults.sort_date_time_off ? TIME_OFF : TIME_ON);
 		qsoline.append(time); qsoline.append(" ");
 	}
 
@@ -1149,7 +1163,7 @@ SOAPBOX: \n\n",
 		progdefaults.myCall.c_str(),
 		strContest.c_str() );
 
-	qsodb.SortByDate();
+	qsodb.SortByDate(progdefaults.sort_date_time_off);
     for (int i = 0; i < qsodb.nbrRecs(); i++) {
         rec = qsodb.getRec(i);
         if (rec->getField(EXPORT)[0] == 'E') {
