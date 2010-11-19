@@ -48,9 +48,9 @@ ofstream speakout;
 string speakbuffer = "";
 
 #ifndef __WIN32__
-void open_talker()
-{
-}
+void open_talker() {}
+void close_talker() {}
+void toggle_talker() {}
 #endif
 
 #ifdef __WIN32__
@@ -68,13 +68,14 @@ void open_talker()
 		talker_tcpip = new Socket(Address(talker_address.c_str(), talker_port.c_str()));
 		talker_tcpip->set_timeout(0.01);
 		talker_tcpip->connect();
-		btnConnectTalker->labelcolor(FL_FOREGROUND_COLOR);
-		btnConnectTalker->redraw_label();
+		btnConnectTalker->value(1);
+		btnConnectTalker->redraw();
+		can_talk = true;
 	}
 	catch (const SocketException& e) {
 		LOG_INFO("Talker Server not available");
-		btnConnectTalker->labelcolor(FL_RED);
-		btnConnectTalker->redraw_label();
+		btnConnectTalker->value(0);
+		btnConnectTalker->redraw();
 		can_talk = false;
 	}
 }
@@ -82,6 +83,17 @@ void open_talker()
 void close_talker()
 {
 	talker_tcpip->close();
+	btnConnectTalker->value(0);
+	btnConnectTalker->redraw();
+	can_talk = false;
+}
+
+void toggle_talker()
+{
+	if (can_talk)
+		close_talker();
+	else
+		open_talker();
 }
 
 void speak(int c)

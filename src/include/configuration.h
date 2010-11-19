@@ -594,6 +594,9 @@
         ELEM_(bool, speak, "SPEAK",                                                     \
               "Capture text to file 'talk/textout.txt'",                                \
               false)                                                                    \
+        ELEM_(bool, auto_talk, "AUTO_TALK",                                             \
+              "Connect to Digitalk socket server during program initialization",        \
+              false)                                                                    \
         /* QRZ */                                                                       \
         ELEM_(int, QRZ, "QRZTYPE",                                                      \
               "Callsign query type.  Values are as follows:\n"                          \

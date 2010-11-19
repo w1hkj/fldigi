@@ -379,8 +379,9 @@ int main(int argc, char ** argv)
 	update_main_title();
 
 	arq_init();
+
 #ifdef __WIN32__
-	open_talker();
+	if (progdefaults.auto_talk) open_talker();
 #else
 	grpTalker->hide();
 #endif
