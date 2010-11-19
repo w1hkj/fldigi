@@ -112,6 +112,7 @@ void pXBEG(string &, size_t &);
 void pXEND(string &, size_t &);
 void pLOG(string &, size_t &);
 void pLNW(string &, size_t &);
+void pCLRLOG(string &, size_t &);
 void pTIMER(string &, size_t &);
 void pIDLE(string &, size_t &);
 void pTUNE(string &, size_t &);
@@ -184,6 +185,7 @@ MTAGS mtags[] = {
 {"<SAVEXCHG>",	pSAVEXCHG},
 {"<LOG>",		pLOG},
 {"<LNW>",		pLNW},
+{"<CLRLOG>",	pCLRLOG},
 {"<TIMER:",		pTIMER},
 {"<IDLE:",		pIDLE},
 {"<TUNE:",		pTUNE},
@@ -671,6 +673,11 @@ void pLOG(string &s, size_t &i)
 void pLNW(string &s, size_t &i)
 {
 	s.replace(i, 5, "^L");
+}
+
+void pCLRLOG(string &s, size_t &i)
+{
+	s.replace(i, 10, "^C");
 }
 
 void pMODEM_compat(string &s, size_t &i)

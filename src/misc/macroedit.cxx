@@ -98,6 +98,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(LINE_SEP);
 	w->add(_("<LOG>\tsave QSO data"));
 	w->add(_("<LNW>\tlog at xmt time"));
+	w->add(_("<CLRLOG>\tclear log fields"));
 
 	w->add(LINE_SEP);
 	w->add(_("<QSOTIME>\tQSO time (HHMM))"));
