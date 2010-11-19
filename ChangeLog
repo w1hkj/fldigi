@@ -1,6 +1,21 @@
 
 
+=Version 3.20.30=
+
+2010-11-17  David Freese  <w1hkj@w1hkj.com>
+
+	2481a63: DATE_TIME sorting
+	f3dd160: DigiTalk
+	96bb736: QSO_DB sort order
+	99d90b4: Macros
+
+
 =Version 3.20.29=
+
+
+2010-11-05  Terry Embry  <mrtembry@yahoo.com>
+
+	4bde1df: VSP patch
 
 2010-10-20  David Freese  <w1hkj@w1hkj.com>
 
