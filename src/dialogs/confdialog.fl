@@ -101,7 +101,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} selected
+        callback {progdefaults.changed = true;} open selected
         tooltip {Operator information} xywh {0 25 500 345} when 1
       } {
         Fl_Group {} {
@@ -1971,7 +1971,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabRig {
-        label Rig open
+        label Rig
         tooltip {Transceiver control} xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsRig {open
@@ -3213,15 +3213,23 @@ progdefaults.changed = true;}
               label {Talker Socket (MS only)} open
               xywh {5 291 490 73} box ENGRAVED_FRAME align 21
             } {
-              Fl_Button btnConnectTalker {
-                label Connect
-                callback {open_talker();}
-                xywh {30 319 70 20}
+              Fl_Light_Button btnConnectTalker {
+                label Talker
+                callback {if (o->value()) open_talker();
+else close_talker();}
+                xywh {31 311 74 20} selection_color 60
                 code0 {extern void open_talker();}
+                code1 {extern void close_talker();}
               }
               Fl_Box {} {
-                label {Connect to external Talker Program}
-                xywh {109 317 368 24} align 20
+                label {Connect/disconnect to Talker sockt server}
+                xywh {110 311 345 20} align 20
+              }
+              Fl_Check_Button btn_auto_talk {
+                label {Auto connect when fldigi opens (server must be up)}
+                callback {progdefaults.auto_talk = o->value();}
+                xywh {30 339 391 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.auto_talk);}
               }
             }
           }

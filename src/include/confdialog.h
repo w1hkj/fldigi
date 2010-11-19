@@ -354,7 +354,9 @@ extern Fl_Check_Button *chkRxStream;
 #include "speak.h"
 extern Fl_Group *grpTalker;
 extern void open_talker();
-extern Fl_Button *btnConnectTalker;
+extern void close_talker();
+extern Fl_Light_Button *btnConnectTalker;
+extern Fl_Check_Button *btn_auto_talk;
 extern Fl_Group *tabPskmail;
 extern Fl_Counter2 *cntServerCarrier;
 extern Fl_Counter2 *cntServerOffset;

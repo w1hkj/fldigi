@@ -24,8 +24,9 @@
 
 extern const char *txtTalkInfo;
 
-void speak_open();
-void speak_close();
+void open_talker();
+void close_talker();
+void toggle_talker();
 void speak(int c);
 
 #endif

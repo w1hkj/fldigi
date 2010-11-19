@@ -2502,10 +2502,17 @@ progdefaults.changed = true;
 
 Fl_Group *grpTalker=(Fl_Group *)0;
 
-Fl_Button *btnConnectTalker=(Fl_Button *)0;
+Fl_Light_Button *btnConnectTalker=(Fl_Light_Button *)0;
 
-static void cb_btnConnectTalker(Fl_Button*, void*) {
-  open_talker();
+static void cb_btnConnectTalker(Fl_Light_Button* o, void*) {
+  if (o->value()) open_talker();
+else close_talker();
+}
+
+Fl_Check_Button *btn_auto_talk=(Fl_Check_Button *)0;
+
+static void cb_btn_auto_talk(Fl_Check_Button* o, void*) {
+  progdefaults.auto_talk = o->value();
 }
 
 Fl_Group *tabPskmail=(Fl_Group *)0;
@@ -5805,12 +5812,18 @@ d frequency"));
             { grpTalker = new Fl_Group(5, 291, 490, 73, _("Talker Socket (MS only)"));
               grpTalker->box(FL_ENGRAVED_FRAME);
               grpTalker->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { btnConnectTalker = new Fl_Button(30, 319, 70, 20, _("Connect"));
+              { btnConnectTalker = new Fl_Light_Button(31, 311, 74, 20, _("Talker"));
+                btnConnectTalker->selection_color((Fl_Color)FL_DARK_GREEN);
                 btnConnectTalker->callback((Fl_Callback*)cb_btnConnectTalker);
-              } // Fl_Button* btnConnectTalker
-              { Fl_Box* o = new Fl_Box(109, 317, 368, 24, _("Connect to external Talker Program"));
+              } // Fl_Light_Button* btnConnectTalker
+              { Fl_Box* o = new Fl_Box(110, 311, 345, 20, _("Connect/disconnect to Talker sockt server"));
                 o->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
               } // Fl_Box* o
+              { Fl_Check_Button* o = btn_auto_talk = new Fl_Check_Button(30, 339, 391, 15, _("Auto connect when fldigi opens (server must be up)"));
+                btn_auto_talk->down_box(FL_DOWN_BOX);
+                btn_auto_talk->callback((Fl_Callback*)cb_btn_auto_talk);
+                o->value(progdefaults.auto_talk);
+              } // Fl_Check_Button* btn_auto_talk
               grpTalker->end();
             } // Fl_Group* grpTalker
             tabFileExtraction->end();
