@@ -488,7 +488,35 @@ fldigi_SOURCES += \
 	widgets/picture.cxx \
 	widgets/progress.cxx \
 	wwv/analysis.cxx \
-	wwv/wwv.cxx
+	wwv/wwv.cxx \
+	xmlrpcpp/XmlRpc.h \
+	xmlrpcpp/XmlRpcClient.cpp \
+	xmlrpcpp/XmlRpcClient.h \
+	xmlrpcpp/XmlRpcDispatch.cpp \
+	xmlrpcpp/XmlRpcDispatch.h \
+	xmlrpcpp/XmlRpcException.h \
+	xmlrpcpp/XmlRpcMutex.cpp \
+	xmlrpcpp/XmlRpcMutex.h \
+	xmlrpcpp/XmlRpcServer.cpp \
+	xmlrpcpp/XmlRpcServer.h \
+	xmlrpcpp/XmlRpcServerConnection.cpp \
+	xmlrpcpp/XmlRpcServerConnection.h \
+	xmlrpcpp/XmlRpcServerMethod.cpp \
+	xmlrpcpp/XmlRpcServerMethod.h \
+	xmlrpcpp/XmlRpcSocket.cpp \
+	xmlrpcpp/XmlRpcSocket.h \
+	xmlrpcpp/XmlRpcSource.cpp \
+	xmlrpcpp/XmlRpcSource.h \
+	xmlrpcpp/XmlRpcThread.cpp \
+	xmlrpcpp/XmlRpcThread.h \
+	xmlrpcpp/XmlRpcThreadedServer.cpp \
+	xmlrpcpp/XmlRpcThreadedServer.h \
+	xmlrpcpp/XmlRpcUtil.cpp \
+	xmlrpcpp/XmlRpcUtil.h \
+	xmlrpcpp/XmlRpcValue.cpp \
+	xmlrpcpp/XmlRpcValue.h \
+	xmlrpcpp/base64.h
+
 
 # Sources that are part of the distribution but are not compiled directly
 EXTRA_fldigi_SOURCES += \

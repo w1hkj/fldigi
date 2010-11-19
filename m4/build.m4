@@ -6,7 +6,7 @@ AC_DEFUN([AC_FLDIGI_BUILD_INFO], [
 # Define build flags and substitute in Makefile.in
 # CPPFLAGS
   FLDIGI_BUILD_CPPFLAGS="-I\$(srcdir) -I\$(srcdir)/include -I\$(srcdir)/irrxml \
--I\$(srcdir)/fileselector"
+-I\$(srcdir)/fileselector -I\$(srcdir)/xmlrpcpp"
 # CXXFLAGS
   FLDIGI_BUILD_CXXFLAGS="$PORTAUDIO_CFLAGS $FLTK_CFLAGS $X_CFLAGS $SNDFILE_CFLAGS $SAMPLERATE_CFLAGS \
 $PULSEAUDIO_CFLAGS $HAMLIB_CFLAGS $PNG_CFLAGS $XMLRPC_CFLAGS $MAC_UNIVERSAL_CFLAGS \
