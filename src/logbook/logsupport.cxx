@@ -149,9 +149,9 @@ void saveLogbook()
 	cQsoDb::reverse = false;
 	qsodb.SortByDate();
 
-	pthread_mutex_lock (&logbook_mutex);
+//	pthread_mutex_lock (&logbook_mutex);
 	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
-	pthread_mutex_unlock (&logbook_mutex);
+//	pthread_mutex_unlock (&logbook_mutex);
 
 	qsodb.isdirty(0);
 	restore_sort();
@@ -208,9 +208,9 @@ void cb_mnuSaveLogbook(Fl_Menu_*m, void* d) {
 		cQsoDb::reverse = false;
 		qsodb.SortByDate();
 
-		pthread_mutex_lock (&logbook_mutex);
+//		pthread_mutex_lock (&logbook_mutex);
 		adifFile.writeLog (logbook_filename.c_str(), &qsodb);
-		pthread_mutex_unlock (&logbook_mutex);
+//		pthread_mutex_unlock (&logbook_mutex);
 
 		qsodb.isdirty(0);
 		restore_sort();
@@ -606,9 +606,9 @@ void saveRecord() {
 	cQsoDb::reverse = false;
 	qsodb.SortByDate();
 
-	pthread_mutex_lock (&logbook_mutex);
+//	pthread_mutex_lock (&logbook_mutex);
 	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
-	pthread_mutex_unlock (&logbook_mutex);
+//	pthread_mutex_unlock (&logbook_mutex);
 
 	qsodb.isdirty(0);
 }
@@ -651,9 +651,9 @@ cQsoRec rec;
 	cQsoDb::reverse = false;
 	qsodb.SortByDate();
 
-	pthread_mutex_lock (&logbook_mutex);
+//	pthread_mutex_lock (&logbook_mutex);
 	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
-	pthread_mutex_unlock (&logbook_mutex);
+//	pthread_mutex_unlock (&logbook_mutex);
 
 	qsodb.isdirty(0);
 	restore_sort();
@@ -672,9 +672,9 @@ void deleteRecord () {
 	cQsoDb::reverse = false;
 	qsodb.SortByDate();
 
-	pthread_mutex_lock (&logbook_mutex);
+//	pthread_mutex_lock (&logbook_mutex);
 	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
-	pthread_mutex_unlock (&logbook_mutex);
+//	pthread_mutex_unlock (&logbook_mutex);
 
 	qsodb.isdirty(0);
 	restore_sort();

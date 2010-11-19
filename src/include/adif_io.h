@@ -19,8 +19,8 @@ private:
 	cQsoRec adifqso;
 	FILE *adiFile;
 	void fillfield(int, char *);
-	std::string log_checksum;
-	std::string file_checksum;
+//	std::string log_checksum;
+//	std::string file_checksum;
 public:
 	cAdifIO ();
 	~cAdifIO () {};
@@ -30,10 +30,10 @@ public:
 	int writeFile (const char *, cQsoDb *);
 	int writeLog (const char *, cQsoDb *);
 	bool log_changed(const char *fname);
-	std::string get_checksum() { return log_checksum; }
-	void set_checksum( std::string s ) { log_checksum = s; }
-	std::string get_file_checksum() { return file_checksum; }
-	void do_checksum(cQsoDb &);
+//	std::string get_checksum() { return log_checksum; }
+//	void set_checksum( std::string s ) { log_checksum = s; }
+//	std::string get_file_checksum() { return file_checksum; }
+//	void do_checksum(cQsoDb &);
 };
 
 // crc 16 cycle redundancy check sum

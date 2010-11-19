@@ -94,18 +94,6 @@ void initfields()
 		fields[i].name = new string(fieldnames[i]);
 }
 
-/*
-int fieldnbr (const char *s) {
-	for (int i = 0;  i < NUMFIELDS; i++)
-		if (fields[i].name == s) {
-//		if (strncasecmp( fields[i].name, s, fields[i].size) == 0) {
-			if (fields[i].type == COMMENT) return(NOTES);
-			return fields[i].type;
-		}
-	return -1;
-}
-*/
-
 int findfield( char *p )
 {
 	int m;
@@ -186,7 +174,6 @@ void cAdifIO::readFile (const char *fname, cQsoDb *db) {
 // relaxed file integrity test to all importing from non conforming log programs
 	if ((strcasestr(buff, "<ADIF_VER:") != 0) &&
 		(strcasestr(buff, "<CALL:") == 0)) {
-//		fl_alert2(_("No records in ADIF logbook file"));
 		delete [] buff;
 		return;
 	}
@@ -194,15 +181,6 @@ void cAdifIO::readFile (const char *fname, cQsoDb *db) {
 		fl_alert2(_("Not an ADIF file"));
 		delete [] buff;
 		return;
-	}
-	char *p = strcasestr(buff, "<DATA CHECKSUM:");
-	if (p) {
-		p = strchr(p + 1, '>');
-		if (p) {
-			p++;
-			file_checksum.clear();
-			for (int i = 0; i < 4; i++, p++) file_checksum += *p;
-		}
 	}
 
 	char *p1 = buff, *p2;
@@ -238,7 +216,6 @@ void cAdifIO::readFile (const char *fname, cQsoDb *db) {
 		p2 = strchr(p1,'<');
 	}
 
-	log_checksum = file_checksum;
 	db->SortByDate();
 	delete [] buff;
 }
@@ -360,61 +337,7 @@ int cAdifIO::writeLog (const char *fname, cQsoDb *db) {
 	fprintf (adiFile, "%s", records.c_str());
 
 	fclose (adiFile);
-	log_checksum = s_checksum;
 
 	return 0;
 }
 
-void cAdifIO::do_checksum(cQsoDb &db)
-{
-	Ccrc16 checksum;
-	string sFld;
-	cQsoRec *rec;
-	string records;
-	string record;
-	char recfield[200];
-
-	records.clear();
-	for (int i = 0; i < db.nbrRecs(); i++) {
-		rec = db.getRec(i);
-		record.clear();
-		for (int j = 0; j < NUMFIELDS; j++) {
-			sFld = rec->getField(j);
-			if (!sFld.empty()) {
-				snprintf(recfield, sizeof(recfield), adifmt,
-					fields[j].name->c_str(), sFld.length());
-				record.append(recfield).append(sFld);
-			}
-		}
-		record.append(szEOR);
-		record.append(szEOL);
-		records.append(record);
-	}
-	log_checksum = checksum.scrc16(records);
-}
-
-bool cAdifIO::log_changed (const char *fname)
-{
-	int retval;
-// open the adif file
-	FILE *adiFile = fopen (fname, "r");
-	if (!adiFile)
-		return false;
-
-// read first 2048 chars
-	char buff[2048];
-	retval = fread (buff, 2048, 1, adiFile);
-	fclose (adiFile);
-
-	if (retval) {
-		string sbuff = buff;
-		size_t p = sbuff.find("<DATA CHECKSUM:");
-		if (p == string::npos) return false;
-		p = sbuff.find(">", p);
-		if (p == string::npos) return false;
-		p++;
-		if (log_checksum != sbuff.substr(p, 4))
-			return true;
-	}
-	return  false;
-}
