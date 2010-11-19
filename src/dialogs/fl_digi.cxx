@@ -1953,10 +1953,10 @@ void cbClearCall(Fl_Widget *b, void *)
 
 void qsoClear_cb(Fl_Widget *b, void *)
 {
-	bool clearlog = true;
+	bool CLEARLOG = true;
 	if (progdefaults.NagMe && !oktoclear)
-		clearlog = (fl_choice2(_("Clear log fields?"), _("Cancel"), _("OK"), NULL) == 1);
-	if (clearlog) {
+		CLEARLOG = (fl_choice2(_("Clear log fields?"), _("Cancel"), _("OK"), NULL) == 1);
+	if (CLEARLOG) {
 		clearQSO();
 	}
 	clear_Lookup();
@@ -5004,6 +5004,13 @@ int get_tx_char(void)
 		state = STATE_CHAR;
 		c = -1;
 		REQ(qso_save_now);
+		break;
+	case 'C':
+		if (state != STATE_CTRL)
+			break;
+		state = STATE_CHAR;
+		c = -1;
+		REQ(clearQSO);
 		break;
 	case '^':
 		state = STATE_CHAR;

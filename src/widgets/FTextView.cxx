@@ -279,7 +279,7 @@ void FTextBase::set_style(int attr, Fl_Font f, int s, Fl_Color c, int set)
 
 /// Reads a file and inserts its contents.
 /// change all occurrences of ^ to ^^ to prevent get_tx_char from
-/// treating the carat as a control sequence, ie: ^r ^R ^t ^T ^L
+/// treating the carat as a control sequence, ie: ^r ^R ^t ^T ^L ^C
 /// get_tx_char passes ^^ as a single ^
 ///
 /// @return 0 on success, -1 on error
