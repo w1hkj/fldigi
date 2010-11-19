@@ -239,6 +239,12 @@ extern void stopMacroTimer();
 extern void cb_ResetSerNbr();
 extern void updateOutSerNo();
 
+extern void connect_to_log_server();
+extern void set_server_label(bool);
+extern void activate_menu_item(const char *caption, bool val);
+extern bool xml_check_dup();
+extern bool xml_get_record(const char *);
+
 const char* zdate(void);
 const char* ztime(void);
 

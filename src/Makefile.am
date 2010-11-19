@@ -25,7 +25,7 @@ flarq_LDADD = @FLARQ_BUILD_LDADD@
 
 
 HAMLIB_SRC = include/hamlib.h rigcontrol/hamlib.cxx include/rigclass.h rigcontrol/rigclass.cxx
-XMLRPC_SRC = include/xmlrpc.h misc/xmlrpc.cxx
+XMLRPC_SRC = include/xml_rpc.h misc/xmlrpc.cxx
 FLDIGI_WIN32_RES_SRC = fldigirc.rc
 FLARQ_WIN32_RES_SRC = flarq-src/flarqrc.rc
 COMMON_WIN32_RES_SRC = common.rc
@@ -489,6 +489,7 @@ fldigi_SOURCES += \
 	widgets/progress.cxx \
 	wwv/analysis.cxx \
 	wwv/wwv.cxx \
+	logbook/xmlrpc_log.cxx \
 	xmlrpcpp/XmlRpc.h \
 	xmlrpcpp/XmlRpcClient.cpp \
 	xmlrpcpp/XmlRpcClient.h \
@@ -516,7 +517,6 @@ fldigi_SOURCES += \
 	xmlrpcpp/XmlRpcValue.cpp \
 	xmlrpcpp/XmlRpcValue.h \
 	xmlrpcpp/base64.h
-
 
 # Sources that are part of the distribution but are not compiled directly
 EXTRA_fldigi_SOURCES += \

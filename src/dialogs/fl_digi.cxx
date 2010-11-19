@@ -139,6 +139,29 @@
 
 #include "arq_io.h"
 
+#define LOG_TO_FILE_MLABEL _("Log all RX/TX text")
+#define RIGCONTROL_MLABEL _("Rig control")
+#define OPMODES_MLABEL _("Op &Mode")
+#define OPMODES_FEWER _("Show fewer modes")
+#define OPMODES_ALL _("Show all modes")
+#define OLIVIA_MLABEL "Olivia"
+#define CONTESTIA_MLABEL "Contestia"
+#define RTTY_MLABEL "RTTY"
+#define VIEW_MLABEL _("&View")
+#define MFSK_IMAGE_MLABEL _("&MFSK Image")
+#define WEFAX_IMAGE_MLABEL _("&Weather Fax Image")
+#define CONTEST_MLABEL _("Contest")
+#define CONTEST_FIELDS_MLABEL _("&Contest fields")
+#define COUNTRIES_MLABEL _("C&ountries")
+#define UI_MLABEL _("&UI")
+#define RIGLOG_FULL_MLABEL _("Full")
+#define RIGLOG_NONE_MLABEL _("None")
+#define RIGLOG_MLABEL      _("Rig control and logging")
+#define RIGCONTEST_MLABEL  _("Rig control and contest")
+#define DOCKEDSCOPE_MLABEL _("Docked scope")
+#define WF_MLABEL _("Minimal controls")
+#define LOG_CONNECT_SERVER _("Connect to server")
+
 using namespace std;
 
 bool bWF_only = false;
@@ -1294,6 +1317,19 @@ void cb_logfile(Fl_Widget* w, void*)
     }
 }
 
+void cb_log_server(Fl_Widget* w, void*)
+{
+	progStatus.xml_logbook = reinterpret_cast<Fl_Menu_*>(w)->mvalue()->value();
+	connect_to_log_server();
+}
+
+void set_server_label(bool val)
+{
+	Fl_Menu_Item *m = getMenuItem(LOG_CONNECT_SERVER);
+	if (val) m->set();
+	else m->clear();
+}
+
 #if USE_SNDFILE
 bool capval = false;
 bool genval = false;
@@ -2223,7 +2259,6 @@ bool clean_exit(void) {
 	return true;
 }
 
-
 #define LOG_TO_FILE_MLABEL _("Log all RX/TX text")
 #define RIGCONTROL_MLABEL _("Rig control")
 #define OPMODES_MLABEL _("Op &Mode")
@@ -2245,7 +2280,6 @@ bool clean_exit(void) {
 #define RIGCONTEST_MLABEL  _("Rig control and contest")
 #define DOCKEDSCOPE_MLABEL _("Docked scope")
 #define WF_MLABEL _("Minimal controls")
-
 
 bool restore_minimize = false;
 
@@ -2420,35 +2454,27 @@ static void cb_opmode_show(Fl_Widget* w, void*);
 Fl_Menu_Item menu_[] = {
 {_("&File"), 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 
-#if USE_SNDFILE
-{ make_icon_label(_("Audio")), 0, 0, 0, FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
-{_("RX capture"),  0, (Fl_Callback*)cb_mnuCapture,  0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
-{_("TX generate"), 0, (Fl_Callback*)cb_mnuGenerate, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
-{_("Playback"),    0, (Fl_Callback*)cb_mnuPlayback, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
-{0,0,0,0,0,0,0,0,0},
-#endif
-
 { make_icon_label(_("Folders")), 0, 0, 0, FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Fldigi config..."), folder_open_icon), 0, cb_ShowConfig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("NBEMS files..."), folder_open_icon), 0, cb_ShowNBEMS, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{0,0,0,0,0,0,0,0,0},
-
-{ make_icon_label(_("Logs")), 0, 0, 0, FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(_("New logbook")), 0, (Fl_Callback*)cb_mnuNewLogbook, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(_("Open logbook...")), 0, (Fl_Callback*)cb_mnuOpenLogbook, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(_("Save logbook")), 0, (Fl_Callback*)cb_mnuSaveLogbook, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(_("Merge ADIF...")), 0, (Fl_Callback*)cb_mnuMergeADIF_log, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(_("Export ADIF")), 0, (Fl_Callback*)cb_mnuExportADIF_log, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(_("Export Text")), 0, (Fl_Callback*)cb_mnuExportTEXT_log, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(_("Export CSV")), 0, (Fl_Callback*)cb_mnuExportCSV_log, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(_("Cabrillo Rpt")), 0, (Fl_Callback*)cb_Export_Cabrillo, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
-{ LOG_TO_FILE_MLABEL, 0, cb_logfile, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 { make_icon_label(_("Macros")), 0, 0, 0, FL_MENU_DIVIDER | FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Open ..."), file_open_icon), 0,  (Fl_Callback*)cb_mnuOpenMacro, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Save ..."), save_as_icon), 0,  (Fl_Callback*)cb_mnuSaveMacro, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
+
+{ make_icon_label(_("Text Capture")), 0, 0, 0, FL_MENU_DIVIDER | FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
+{ LOG_TO_FILE_MLABEL, 0, cb_logfile, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+#if USE_SNDFILE
+{ make_icon_label(_("Audio")), 0, 0, 0, FL_MENU_DIVIDER | FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
+{_("RX capture"),  0, (Fl_Callback*)cb_mnuCapture,  0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
+{_("TX generate"), 0, (Fl_Callback*)cb_mnuGenerate, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
+{_("Playback"),    0, (Fl_Callback*)cb_mnuPlayback, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+#endif
 
 { make_icon_label(_("Exit"), log_out_icon), 'x',  (Fl_Callback*)cb_E, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
@@ -2607,7 +2633,6 @@ Fl_Menu_Item menu_[] = {
 { make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(WEFAX_IMAGE_MLABEL, image_icon), 'w', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("PSK browser")), 'p', (Fl_Callback*)cb_mnuViewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(_("Logbook")), 'l', (Fl_Callback*)cb_mnuShowLogbook, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(COUNTRIES_MLABEL), 'o', (Fl_Callback*)cb_mnuShowCountries, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 
 { make_icon_label(_("Controls")), 0, 0, 0, FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
@@ -2623,6 +2648,19 @@ Fl_Menu_Item menu_[] = {
 { WF_MLABEL, 0, (Fl_Callback*)cb_mnu_wf_all, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
+{0,0,0,0,0,0,0,0,0},
+
+{_("&Logs"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ LOG_CONNECT_SERVER, 0, cb_log_server, 0, FL_MENU_TOGGLE | FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ make_icon_label(_("Logbook")), 'l', (Fl_Callback*)cb_mnuShowLogbook, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("New logbook")), 0, (Fl_Callback*)cb_mnuNewLogbook, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("Open logbook...")), 0, (Fl_Callback*)cb_mnuOpenLogbook, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("Save logbook")), 0, (Fl_Callback*)cb_mnuSaveLogbook, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("Merge ADIF...")), 0, (Fl_Callback*)cb_mnuMergeADIF_log, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("Export ADIF")), 0, (Fl_Callback*)cb_mnuExportADIF_log, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("Export Text")), 0, (Fl_Callback*)cb_mnuExportTEXT_log, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("Export CSV")), 0, (Fl_Callback*)cb_mnuExportCSV_log, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("Cabrillo Rpt")), 0, (Fl_Callback*)cb_Export_Cabrillo, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
@@ -2756,6 +2794,12 @@ Fl_Menu_Item *getMenuItem(const char *caption, Fl_Menu_Item* submenu)
 	if (!item)
 		LOG_ERROR("FIXME: could not find menu \"%s\"", caption);
 	return item;
+}
+
+void activate_menu_item(const char *caption, bool val)
+{
+	Fl_Menu_Item *m = getMenuItem(caption);
+	set_active(m, val);
 }
 
 void activate_mfsk_image_item(bool b)

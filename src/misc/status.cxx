@@ -163,6 +163,8 @@ status progStatus = {
 	progdefaults.UOStx,
 
 	"CQ",				// string browser_search;
+	
+	false, // xml_logbook
 
 	false				// bool bLastStateRead;
 };
@@ -358,6 +360,8 @@ if (!bWF_only) {
 	spref.set("uostx", UOStx);
 
 	spref.set("browser_search", browser_search.c_str());
+
+	spref.set("xml_logbook", xml_logbook);
 }
 
 void status::loadLastState()
@@ -501,6 +505,8 @@ void status::loadLastState()
 	spref.get("browser_search", defbuffer, browser_search.c_str());
 	browser_search = defbuffer;
 	free(defbuffer);
+
+	spref.get("xml_logbook", i, xml_logbook); xml_logbook = i;
 }
 
 void status::initLastState()
@@ -615,4 +621,5 @@ else {
 	ReceiveText->set_word_wrap(rx_word_wrap);
 	TransmitText->set_word_wrap(tx_word_wrap);
 
+	set_server_label(xml_logbook);
 }

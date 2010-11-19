@@ -14,6 +14,7 @@
 #include "gettext.h"
 #include "debug.h"
 #include "util.h"
+#include "date.h"
 
 #ifdef __WOE32__
 static const char *szEOL = "\r\n";
@@ -128,11 +129,10 @@ cAdifIO::cAdifIO ()
 
 void cAdifIO::fillfield (int fieldnum, char *buff){
 const char *p = buff;
-int n, fldsize;
-	n = 0;
-	while (*p != ':' && n <= FieldLabelMaxLen) {p++; n++;}
-	if (n == FieldLabelMaxLen +1) return; // bad ADIF specifier ---> no ':' after FieldLabelMaxLen +1
-                                          // chars name found first ':'
+int fldsize;
+	while (*p != ':' && *p != '>') p++;
+	if (*p == '>') return; // bad ADIF specifier ---> no ':' after field name
+// found first ':'
 	p++;
 	fldsize = 0;
 	const char *p2 = strchr(buff,'>');
@@ -207,8 +207,24 @@ void cAdifIO::readFile (const char *fname, cQsoDb *db) {
 //update fields for older db
 			if (adifqso.getField(TIME_OFF)[0] == 0)
 				adifqso.putField(TIME_OFF, adifqso.getField(TIME_ON));
+
 			if (adifqso.getField(TIME_ON)[0] == 0)
 				adifqso.putField(TIME_ON, adifqso.getField(TIME_OFF));
+
+			if ((strlen(adifqso.getField(QSO_DATE)) > 7) && 
+				(adifqso.getField(QSO_DATE_OFF)[0] == 0)) {
+				char d_str[20];
+				int d, m, y, t_on, t_off;
+				strcpy(d_str, adifqso.getField(QSO_DATE));
+				d = atoi(&d_str[6]); d_str[6] = 0;
+				m = atoi(&d_str[4]); d_str[4] = 0;
+				y = atoi(d_str);
+				t_on = atoi(adifqso.getField(TIME_ON));
+				t_off = atoi(adifqso.getField(TIME_OFF));
+				Date dt(m, d, y);
+				if (t_off < t_on) dt++;
+				adifqso.putField(QSO_DATE_OFF, dt.szDate(2));
+			}
 			db->qsoNewRec (&adifqso);
 			adifqso.clearRec();
 		}

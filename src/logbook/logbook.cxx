@@ -15,7 +15,7 @@ using namespace std;
 
 void start_logbook ()
 {
-	create_logbook_dialogs();
+//	create_logbook_dialogs();
 
 	if (progdefaults.logbookfilename.empty()) {
 		logbook_filename = LogsDir;
@@ -24,6 +24,8 @@ void start_logbook ()
 		progdefaults.changed = true;
 	} else
 		logbook_filename = progdefaults.logbookfilename;
+
+	qsodb.deleteRecs();
 
 	adifFile.readFile (logbook_filename.c_str(), &qsodb);
 	if (qsodb.nbrRecs() == 0)

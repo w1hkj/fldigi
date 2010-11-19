@@ -60,8 +60,8 @@ static char time[6];
 
 void cTextFile::writeCSVHeader(FILE *txtFile)
 {
-	if (btnSelectQSOdateOn->value())   fprintf (txtFile, "%s", "\"DATE\"");
-	if (btnSelectQSOdateOff->value())  fprintf (txtFile, "%s", "\"DATE_OFF\"");
+	if (btnSelectQSOdateOn->value()) fprintf (txtFile, "%s", "\"DATE_ON\"");
+	if (btnSelectQSOdateOff->value())fprintf (txtFile, "%s", "\"DATE_OFF\"");
 	if (btnSelectTimeON->value())    fprintf (txtFile, "%s", ",\"ON\"");
 	if (btnSelectTimeOFF->value())   fprintf (txtFile, "%s", ",\"OFF\"");
 	if (btnSelectCall->value())      fprintf (txtFile, "%s", ",\"CALL\"");
@@ -171,8 +171,8 @@ int cTextFile::writeCSVFile (const char *fname, cQsoDb *db) {
 // text file in fixed fields
 void cTextFile::writeTXTHeader(FILE *txtFile)
 {
-	if (btnSelectQSOdateOn->value()) fprintf (txtFile, "%-10s", "DATE");
-	if (btnSelectQSOdateOff->value()) fprintf (txtFile, "%-10s", "DATE_OFF");
+	if (btnSelectQSOdateOn->value()) fprintf (txtFile, "%-10s", "DATE_ON");
+	if (btnSelectQSOdateOff->value())fprintf (txtFile, "%-10s", "DATE_OFF");
 	if (btnSelectTimeON->value())    fprintf (txtFile, "%-6s", "ON");
 	if (btnSelectTimeOFF->value())   fprintf (txtFile, "%-6s", "OFF");
 	if (btnSelectCall->value())      fprintf (txtFile, "%-10s", "CALL");

@@ -411,7 +411,13 @@ void cb_SortByFreq (void) {
 void DupCheck()
 {
 	Fl_Color call_clr = FL_BACKGROUND2_COLOR;
-	if (qsodb.duplicate(
+	if (progStatus.xml_logbook)
+		if (xml_check_dup())
+			call_clr = fl_rgb_color(
+				progdefaults.dup_color.R,
+				progdefaults.dup_color.G,
+				progdefaults.dup_color.B);
+	if (!progStatus.xml_logbook && qsodb.duplicate(
 			inpCall->value(),
 			zdate(), ztime(), progdefaults.timespan, progdefaults.duptimespan,
 			inpFreq->value(), progdefaults.dupband,
@@ -447,8 +453,14 @@ cQsoRec* SearchLog(const char *callsign)
 void SearchLastQSO(const char *callsign)
 {
 	size_t len = strlen(callsign);
-	if (!len)
+	if (len < 3)
 		return;
+	if (progStatus.xml_logbook) {
+		if(xml_get_record(callsign))
+			return;
+	}
+	Fl::focus(inpCall);
+
 	char* re = new char[len + 3];
 	snprintf(re, len + 3, "^%s$", callsign);
 

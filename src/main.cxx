@@ -329,7 +329,7 @@ int main(int argc, char ** argv)
 	make_colorsfonts();
 	setTabColors();
 
-	start_logbook();
+//	start_logbook();
 
 	progdefaults.testCommPorts();
 
@@ -358,6 +358,9 @@ int main(int argc, char ** argv)
 	}
 #endif
 
+//	connect_to_log_server();
+	create_logbook_dialogs();
+	connect_to_log_server();
 //	progdefaults.initInterface();
 //	trx_start();
 
@@ -401,6 +404,7 @@ int main(int argc, char ** argv)
 	if (!have_config)
 		show_wizard();
 #endif
+//	connect_to_log_server();
 
 	int ret = Fl::run();
 

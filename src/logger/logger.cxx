@@ -198,6 +198,8 @@ void submit_record(cQsoRec &rec)
 
 //---------------------------------------------------------------------
 
+extern void xml_add_record();
+
 void submit_log(void)
 {
 	if (progStatus.spot_log)
@@ -212,7 +214,10 @@ void submit_log(void)
 		strftime(logtime, sizeof(logtime), "%H%M", tm);
 	logmode = mode_info[active_modem->get_mode()].adif_name;
 
-	AddRecord();
+	if (progStatus.xml_logbook)
+		xml_add_record();
+	else
+		AddRecord();
 
 }
 
