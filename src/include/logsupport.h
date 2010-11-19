@@ -55,6 +55,7 @@ extern cQsoRec* SearchLog(const char *callsign);
 extern void DupCheck();
 extern void cb_search(Fl_Widget* w, void*);
 extern int log_search_handler(int);
+extern void reload_browser();
 
 extern void cb_doExport();
 

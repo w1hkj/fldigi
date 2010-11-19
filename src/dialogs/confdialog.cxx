@@ -191,6 +191,21 @@ static void cb_btnCallUpperCase(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnDateTimeSort=(Fl_Check_Button *)0;
+
+static void cb_btnDateTimeSort(Fl_Check_Button* o, void*) {
+  progdefaults.sort_date_time_off = o->value();
+progdefaults.changed = true;
+reload_browser();
+}
+
+Fl_Check_Button *btndate_time_force=(Fl_Check_Button *)0;
+
+static void cb_btndate_time_force(Fl_Check_Button* o, void*) {
+  progdefaults.force_date_time = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Input2 *inpMyPower=(Fl_Input2 *)0;
 
 static void cb_inpMyPower(Fl_Input2* o, void*) {
@@ -2871,31 +2886,43 @@ ab and newline are automatically included."));
             { Fl_Group* o = new Fl_Group(8, 130, 484, 146, _("QSO logging"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(125, 139, 155, 20, _("Prompt to save log"));
+              { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(21, 158, 238, 20, _("Prompt to save log"));
                 btnNagMe->tooltip(_("Bug me about saving log entries"));
                 btnNagMe->down_box(FL_DOWN_BOX);
                 btnNagMe->callback((Fl_Callback*)cb_btnNagMe);
                 o->value(progdefaults.NagMe);
               } // Fl_Check_Button* btnNagMe
-              { Fl_Check_Button* o = btnClearOnSave = new Fl_Check_Button(125, 164, 125, 20, _("Clear on save"));
+              { Fl_Check_Button* o = btnClearOnSave = new Fl_Check_Button(21, 183, 238, 20, _("Clear on save"));
                 btnClearOnSave->tooltip(_("Clear log entries after saving or using macro <LOG>"));
                 btnClearOnSave->down_box(FL_DOWN_BOX);
                 btnClearOnSave->callback((Fl_Callback*)cb_btnClearOnSave);
                 o->value(progdefaults.ClearOnSave);
               } // Fl_Check_Button* btnClearOnSave
-              { Fl_Check_Button* o = btnAutoFillQSO = new Fl_Check_Button(125, 189, 225, 20, _("Auto-fill Country and Azimuth"));
+              { Fl_Check_Button* o = btnAutoFillQSO = new Fl_Check_Button(21, 208, 238, 20, _("Auto-fill Country and Azimuth"));
                 btnAutoFillQSO->tooltip(_("Fill in Country / Azimuth using cty.dat information"));
                 btnAutoFillQSO->down_box(FL_DOWN_BOX);
                 btnAutoFillQSO->callback((Fl_Callback*)cb_btnAutoFillQSO);
                 o->value(progdefaults.autofill_qso_fields);
               } // Fl_Check_Button* btnAutoFillQSO
-              { Fl_Check_Button* o = btnCallUpperCase = new Fl_Check_Button(125, 214, 282, 20, _("Convert callsign field to upper case"));
+              { Fl_Check_Button* o = btnCallUpperCase = new Fl_Check_Button(21, 233, 238, 20, _("Convert callsign to upper case"));
                 btnCallUpperCase->tooltip(_("Force callsign field to UPPERCASE"));
                 btnCallUpperCase->down_box(FL_DOWN_BOX);
                 btnCallUpperCase->callback((Fl_Callback*)cb_btnCallUpperCase);
                 o->value(progdefaults.calluppercase);
               } // Fl_Check_Button* btnCallUpperCase
-              { Fl_Input2* o = inpMyPower = new Fl_Input2(125, 240, 50, 24, _("Transmit Power"));
+              { Fl_Check_Button* o = btnDateTimeSort = new Fl_Check_Button(275, 183, 191, 20, _("Sort by Date/Time OFF"));
+                btnDateTimeSort->tooltip(_("Sort by date/time OFF - effects all ADIF/Cabrillo reports"));
+                btnDateTimeSort->down_box(FL_DOWN_BOX);
+                btnDateTimeSort->callback((Fl_Callback*)cb_btnDateTimeSort);
+                o->value(progdefaults.sort_date_time_off);
+              } // Fl_Check_Button* btnDateTimeSort
+              { Fl_Check_Button* o = btndate_time_force = new Fl_Check_Button(275, 208, 191, 20, _("Date time ON == OFF"));
+                btndate_time_force->tooltip(_("Force date/time ON == date/time OFF"));
+                btndate_time_force->down_box(FL_DOWN_BOX);
+                btndate_time_force->callback((Fl_Callback*)cb_btndate_time_force);
+                o->value(progdefaults.force_date_time);
+              } // Fl_Check_Button* btndate_time_force
+              { Fl_Input2* o = inpMyPower = new Fl_Input2(275, 154, 50, 24, _("Transmit Power"));
                 inpMyPower->tooltip(_("Tx power used for logbook entries"));
                 inpMyPower->box(FL_DOWN_BOX);
                 inpMyPower->color((Fl_Color)FL_BACKGROUND2_COLOR);

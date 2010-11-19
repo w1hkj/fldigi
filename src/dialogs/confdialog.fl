@@ -181,7 +181,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabUI {
-        label UI
+        label UI open
         xywh {-3 25 508 345} hide
       } {
         Fl_Tabs tabsUI {open
@@ -268,35 +268,50 @@ defined here. Tab and newline are automatically included.} xywh {125 285 75 24} 
                 label {Prompt to save log}
                 callback {progdefaults.NagMe=o->value();
 progdefaults.changed = true;}
-                tooltip {Bug me about saving log entries} xywh {125 139 155 20} down_box DOWN_BOX
+                tooltip {Bug me about saving log entries} xywh {21 158 238 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.NagMe);}
               }
               Fl_Check_Button btnClearOnSave {
                 label {Clear on save}
                 callback {progdefaults.ClearOnSave=o->value();
 progdefaults.changed = true;}
-                tooltip {Clear log entries after saving or using macro <LOG>} xywh {125 164 125 20} down_box DOWN_BOX
+                tooltip {Clear log entries after saving or using macro <LOG>} xywh {21 183 238 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.ClearOnSave);}
               }
               Fl_Check_Button btnAutoFillQSO {
                 label {Auto-fill Country and Azimuth}
                 callback {progdefaults.autofill_qso_fields = o->value();
 progdefaults.changed = true;}
-                tooltip {Fill in Country / Azimuth using cty.dat information} xywh {125 189 225 20} down_box DOWN_BOX
+                tooltip {Fill in Country / Azimuth using cty.dat information} xywh {21 208 238 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.autofill_qso_fields);}
               }
               Fl_Check_Button btnCallUpperCase {
-                label {Convert callsign field to upper case}
+                label {Convert callsign to upper case}
                 callback {progdefaults.calluppercase = o->value();
 progdefaults.changed = true;}
-                tooltip {Force callsign field to UPPERCASE} xywh {125 214 282 20} down_box DOWN_BOX
+                tooltip {Force callsign field to UPPERCASE} xywh {21 233 238 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.calluppercase);}
+              }
+              Fl_Check_Button btnDateTimeSort {
+                label {Sort by Date/Time OFF}
+                callback {progdefaults.sort_date_time_off = o->value();
+progdefaults.changed = true;
+reload_browser();}
+                tooltip {Sort by date/time OFF - effects all ADIF/Cabrillo reports} xywh {275 183 191 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.sort_date_time_off);}
+              }
+              Fl_Check_Button btndate_time_force {
+                label {Date time ON == OFF}
+                callback {progdefaults.force_date_time = o->value();
+progdefaults.changed = true;}
+                tooltip {Force date/time ON == date/time OFF} xywh {275 208 191 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.force_date_time);}
               }
               Fl_Input inpMyPower {
                 label {Transmit Power}
                 callback {progdefaults.mytxpower = o->value();
 progdefaults.changed = true;}
-                tooltip {Tx power used for logbook entries} xywh {125 240 50 24} align 8
+                tooltip {Tx power used for logbook entries} xywh {275 154 50 24} align 8
                 code0 {o->value(progdefaults.mytxpower.c_str());}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
@@ -2991,7 +3006,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabMisc {
-        label Misc open
+        label Misc
         xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsMisc {open

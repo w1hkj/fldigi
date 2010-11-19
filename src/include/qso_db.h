@@ -80,7 +80,7 @@ public:
 	bool qsoIsValidFile(const char *);
 	int qsoReadFile (const char *);
 	int qsoWriteFile (const char *);
-	void SortByDate();
+	void SortByDate(bool);
 	void SortByCall ();
 	void SortByMode ();
 	void SortByFreq ();

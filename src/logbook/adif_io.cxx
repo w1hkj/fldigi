@@ -9,6 +9,7 @@
 
 #include "adif_io.h"
 #include "config.h"
+#include "configuration.h"
 #include "lgbook.h"
 #include "icons.h"
 #include "gettext.h"
@@ -239,7 +240,7 @@ void cAdifIO::readFile (const char *fname, cQsoDb *db) {
 	}
 
 	log_checksum = file_checksum;
-	db->SortByDate();
+	db->SortByDate(progdefaults.sort_date_time_off);
 	delete [] buff;
 }
 
@@ -271,7 +272,7 @@ int cAdifIO::writeFile (const char *fname, cQsoDb *db)
 			 strlen(ADIF_VERS), ADIF_VERS,
 			 strlen(PACKAGE_NAME), PACKAGE_NAME,
 			 strlen(PACKAGE_VERSION), PACKAGE_VERSION);
-//	db->SortByDate();
+
 	for (int i = 0; i < db->nbrRecs(); i++) {
 		rec = db->getRec(i);
 		if (rec->getField(EXPORT)[0] == 'E') {
