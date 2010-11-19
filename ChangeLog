@@ -1,3 +1,19 @@
+2010-11-19  David Freese  <w1hkj@w1hkj.com>
+
+	49cae5f: DATE_TIME sorting
+	a5f2f7f: Log Client
+
+2010-11-19  Stelios Bounanos  <vcs@enotty.net>
+
+	ca7d30f: Embed xmlrpc++
+
+2010-11-19  David Freese  <w1hkj@w1hkj.com>
+
+	f2b39b1: Reversion of commit 2a957966c1ebda93647a789a75f83aba6af5f98a
+	afeccbb: DigiTalk
+	ef188fd: QSO_DB sort order
+	c372640: Macros
+
 2010-11-05  Terry Embry  <mrtembry@yahoo.com>
 
 	9c8e837: VSP patch

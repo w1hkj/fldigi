@@ -25,7 +25,7 @@ flarq_LDADD = @FLARQ_BUILD_LDADD@
 
 
 HAMLIB_SRC = include/hamlib.h rigcontrol/hamlib.cxx include/rigclass.h rigcontrol/rigclass.cxx
-XMLRPC_SRC = include/xml_rpc.h misc/xmlrpc.cxx
+XMLRPC_SRC = include/xmlrpc.h misc/xmlrpc.cxx
 FLDIGI_WIN32_RES_SRC = fldigirc.rc
 FLARQ_WIN32_RES_SRC = flarq-src/flarqrc.rc
 COMMON_WIN32_RES_SRC = common.rc
