@@ -143,6 +143,8 @@ LOG_FILE_SOURCE(debug::LOG_MODEM);
         ELEM_(193, CONTESTIA_64_1000, MODE_CONTESTIA)   \
         ELEM_(191, CONTESTIA_64_2000, MODE_CONTESTIA)   \
                                                         \
+        ELEM_(261, CONTESTIA_128_2000, MODE_CONTESTIA)  \
+                                                        \
         ELEM_(56, VOICE, NUM_MODES)                     \
                                                         \
         ELEM_(60, MFSK8, MODE_MFSK8)                    \
@@ -725,6 +727,11 @@ void cRsId::apply(int iSymbol, int iBin)
 		progdefaults.contestiabw = 4;
 		REQ(&set_contestia_tab_widgets);
 		break;
+	case RSID_CONTESTIA_128_2000:
+		progdefaults.contestiatones = 6;
+		progdefaults.contestiabw = 4;
+		REQ(&set_contestia_tab_widgets);
+		break;
 	// mt63
 	case RSID_MT63_500_LG: case RSID_MT63_1000_LG: case RSID_MT63_2000_LG:
 		progdefaults.mt63_interleave = 64;
@@ -969,6 +976,9 @@ void cRsId::send(bool preRSID)
 			rmode = RSID_CONTESTIA_64_1000;
 		else if (progdefaults.contestiatones == 5 && progdefaults.contestiabw == 4)
 			rmode = RSID_CONTESTIA_64_2000;
+
+		else if (progdefaults.contestiatones == 6 && progdefaults.contestiabw == 4)
+			rmode = RSID_CONTESTIA_128_2000;
 
 		else
 			return;
