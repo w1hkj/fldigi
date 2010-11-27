@@ -67,15 +67,15 @@ bool test_connection(bool info = false)
 
 void activate_log_menus(bool val)
 {
-	activate_menu_item(_("Logbook"), val);
-	activate_menu_item(_("New logbook"), val);
-	activate_menu_item(_("Open logbook..."),val);
-	activate_menu_item(_("Save logbook"), val);
-	activate_menu_item(_("Merge ADIF..."), val);
-	activate_menu_item(_("Export ADIF"), val);
-	activate_menu_item(_("Export Text"), val);
-	activate_menu_item(_("Export CSV"), val);
-	activate_menu_item(_("Cabrillo Rpt"), val);
+	activate_menu_item(_("View"), val);
+	activate_menu_item(_("New"), val);
+	activate_menu_item(_("Open..."), val);
+	activate_menu_item(_("Save"), val);
+	activate_menu_item(_("Merge..."), val);
+	activate_menu_item(_("Export..."), val);
+	activate_menu_item(_("Text..."), val);
+	activate_menu_item(_("CSV..."), val);
+	activate_menu_item(_("Cabrillo..."), val);
 }
 
 string get_field(string &adifline, int field)
