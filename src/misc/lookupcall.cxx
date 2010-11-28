@@ -350,11 +350,24 @@ bool QRZGetXML(string& xmlpage)
 	return res;
 }
 
+void camel_case(string &s)
+{
+	bool first_letter = true;
+	for (size_t n = 0; n < s.length(); n++) {
+		if (s[n] == ' ') first_letter = true;
+		else if (first_letter) {
+			s[n] = toupper(s[n]);
+			first_letter = false;
+		} else s[n] = tolower(s[n]);
+	}
+}
+
 void QRZ_disp_result()
 {
 	ENSURE_THREAD(FLMAIN_TID);
 
 	if (lookup_fname.length() > 0) {
+		camel_case(lookup_fname);
 		string::size_type spacePos = lookup_fname.find(" ");
 		//    if fname is "ABC" then display "ABC"
 		// or if fname is "A BCD" then display "A BCD"
@@ -414,6 +427,7 @@ void QRZ_CD_query()
 
 	if( qCall->FindRecord( srch ) == 1) {
 		lookup_fname = qCall->GetFname();
+		camel_case(lookup_fname);
 		snip = lookup_fname.find(' ');
 		if (snip != string::npos)
 			lookup_fname.erase(snip, lookup_fname.length() - snip);
@@ -576,6 +590,7 @@ void parse_callook(string& xmlpage)
 	}
 	xmlpage = xmlpage.substr(xmlpage.find("</trustee>"));
 	lookup_fname = node_data(xmlpage, "name");
+	camel_case(lookup_fname);
 	nodestr = node_data(xmlpage, "address");
 	if (!nodestr.empty()) {
 		lookup_addr1 = node_data(nodestr, "line1");
@@ -644,6 +659,7 @@ void parse_html(const string& htmlpage)
 		p++;
 		while ((uchar)htmlpage[p] < 128 && p < htmlpage.length() )
 			lookup_fname += htmlpage[p++];
+			camel_case(lookup_fname);
 	}
 	if ((p = htmlpage.find(HAMCALL_CITY)) != string::npos) { 
 		p++;
