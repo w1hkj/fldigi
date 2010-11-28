@@ -201,6 +201,7 @@ void submit_log(void)
 	if (progStatus.spot_log)
 		spot_log(inpCall->value(), inpLoc->value());
 
+	logmode = mode_info[active_modem->get_mode()].adif_name;
 	AddRecord();
 
 }
