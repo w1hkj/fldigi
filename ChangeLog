@@ -1,13 +1,20 @@
 
 
+=Version 3.20.31=
+
+2010-11-28  David Freese  <w1hkj@w1hkj.com>
+
+	9a32593: Call Lookup
+	734ddfd: MODE logging
+	29f6fd9: RSID new mode
+
+
 =Version 3.20.30=
 
-2010-11-17  David Freese  <w1hkj@w1hkj.com>
-
-	2481a63: DATE_TIME sorting
-	f3dd160: DigiTalk
-	96bb736: QSO_DB sort order
-	99d90b4: Macros
+	8ae9ddd: DATE_TIME sorting
+	9258c10: DigiTalk
+	3a51cef: QSO_DB sort order
+	36aa191: Macros
 
 
 =Version 3.20.29=
