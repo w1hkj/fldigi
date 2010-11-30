@@ -2354,19 +2354,19 @@ static void cb_sldrRSIDsquelch(Fl_Value_Slider2* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *chkRSidPost=(Fl_Check_Button *)0;
-
-static void cb_chkRSidPost(Fl_Check_Button* o, void*) {
-  progdefaults.rsid_post = o->value();
-progdefaults.changed = true;
-}
-
 Fl_Button *bRSIDTxModes=(Fl_Button *)0;
 
 static void cb_bRSIDTxModes(Fl_Button* o, void*) {
   mode_browser->label(o->label());
 mode_browser->callback(0);
 mode_browser->show(&progdefaults.rsid_tx_modes);
+progdefaults.changed = true;
+}
+
+Fl_Counter *val_pretone=(Fl_Counter *)0;
+
+static void cb_val_pretone(Fl_Counter* o, void*) {
+  progdefaults.pretone = o->value();
 progdefaults.changed = true;
 }
 
@@ -5442,7 +5442,7 @@ ll with your audio device."));
         } // Fl_Tabs* tabsSoundCard
         tabSoundCard->end();
       } // Fl_Group* tabSoundCard
-      { tabID = new Fl_Group(0, 25, 500, 345, _("ID"));
+      { tabID = new Fl_Group(0, 25, 500, 346, _("ID"));
         tabID->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 103, _("Video Preamble ID"));
           o->box(FL_ENGRAVED_FRAME);
@@ -5605,19 +5605,25 @@ d frequency"));
           } // Fl_Value_Slider2* sldrRSIDsquelch
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(300, 198, 195, 167, _("Reed-Solomon ID (Tx)"));
+        { Fl_Group* o = new Fl_Group(300, 198, 195, 85, _("Reed-Solomon ID (Tx)"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-          { Fl_Check_Button* o = chkRSidPost = new Fl_Check_Button(310, 247, 120, 20, _("Send at EOT"));
-            chkRSidPost->tooltip(_("Send RSID at end of transmission"));
-            chkRSidPost->down_box(FL_DOWN_BOX);
-            chkRSidPost->callback((Fl_Callback*)cb_chkRSidPost);
-            chkRSidPost->hide();
-            o->value(progdefaults.rsid_post);
-          } // Fl_Check_Button* chkRSidPost
-          { bRSIDTxModes = new Fl_Button(310, 224, 130, 20, _("Transmit modes"));
+          { bRSIDTxModes = new Fl_Button(328, 233, 130, 20, _("Transmit modes"));
             bRSIDTxModes->callback((Fl_Callback*)cb_bRSIDTxModes);
           } // Fl_Button* bRSIDTxModes
+          o->end();
+        } // Fl_Group* o
+        { Fl_Group* o = new Fl_Group(300, 284, 195, 80, _("Pre-Signal Tone"));
+          o->box(FL_ENGRAVED_FRAME);
+          o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+          { Fl_Counter* o = val_pretone = new Fl_Counter(323, 310, 140, 21, _("Seconds"));
+            val_pretone->tooltip(_("Use for triggering amplifier carrier detect"));
+            val_pretone->minimum(0);
+            val_pretone->maximum(10);
+            val_pretone->step(0.1);
+            val_pretone->callback((Fl_Callback*)cb_val_pretone);
+            o->value(progdefaults.pretone);
+          } // Fl_Counter* val_pretone
           o->end();
         } // Fl_Group* o
         tabID->end();

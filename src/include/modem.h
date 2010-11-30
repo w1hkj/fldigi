@@ -118,6 +118,7 @@ public:
 	void		ModulateStereo(double *, double *, int);
 
 	void		videoText();
+	void		pretone();
 
 	void		set_stopflag(bool b) { stopflag = b;};
 	bool		get_stopflag() { return stopflag; };
