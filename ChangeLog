@@ -1,8 +1,14 @@
 
 
-=Version 3.20.31=
+=Version 3.20.32=
 
-2010-11-28  David Freese  <w1hkj@w1hkj.com>
+2010-11-30  David Freese  <w1hkj@w1hkj.com>
+
+	58cdf97: DATE_OFF update
+	e72ec18: Carrier Squelch
+
+
+=Version 3.20.31=
 
 	9a32593: Call Lookup
 	734ddfd: MODE logging
