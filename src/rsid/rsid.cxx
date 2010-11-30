@@ -1047,18 +1047,20 @@ void cRsId::send(bool preRSID)
 		outbuf = new double[symlen];
 	}
 
+/*
 	// transmit 6 symbol periods of silence at end of transmission
 	if (!preRSID) {
 		memset(outbuf, 0, symlen * sizeof(*outbuf));
 		for (int i = 0; i < 6; i++)
 			active_modem->ModulateXmtr(outbuf, symlen);
 	}
-
+*/
 	// transmit sequence of 15 symbols (tones)
 	int iTone;
 	double freq, phaseincr;
 	double fr = 1.0 * active_modem->get_txfreq() - (RSID_SAMPLE_RATE * 7 / 1024);
 	double phase = 0.0;
+
 
 	for (int i = 0; i < 15; i++) {
 		iTone = rsid[i];
@@ -1075,12 +1077,16 @@ void cRsId::send(bool preRSID)
 		active_modem->ModulateXmtr(outbuf, symlen);
 
 	}
-
+// one symbol period of silence
+	memset(outbuf, 0, symlen * sizeof(*outbuf));
+	active_modem->ModulateXmtr(outbuf, symlen);
+/*
 	// transmit 6 symbol periods of silence at beginning of transmission
 	if (preRSID) {
 		memset(outbuf, 0, symlen * sizeof(*outbuf));
 		for (int i = 0; i < 6; i++)
 			active_modem->ModulateXmtr(outbuf, symlen);
 	}
+*/
 }
 

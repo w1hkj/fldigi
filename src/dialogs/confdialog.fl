@@ -2823,8 +2823,8 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabID {
-        label ID
-        xywh {0 25 500 345} hide
+        label ID open
+        xywh {0 25 500 346} hide
       } {
         Fl_Group {} {
           label {Video Preamble ID} open
@@ -2986,22 +2986,27 @@ progdefaults.changed = true;}
         }
         Fl_Group {} {
           label {Reed-Solomon ID (Tx)} open
-          xywh {300 198 195 167} box ENGRAVED_FRAME align 21
+          xywh {300 198 195 85} box ENGRAVED_FRAME align 21
         } {
-          Fl_Check_Button chkRSidPost {
-            label {Send at EOT}
-            callback {progdefaults.rsid_post = o->value();
-progdefaults.changed = true;}
-            tooltip {Send RSID at end of transmission} xywh {310 247 120 20} down_box DOWN_BOX hide
-            code0 {o->value(progdefaults.rsid_post);}
-          }
           Fl_Button bRSIDTxModes {
             label {Transmit modes}
             callback {mode_browser->label(o->label());
 mode_browser->callback(0);
 mode_browser->show(&progdefaults.rsid_tx_modes);
 progdefaults.changed = true;}
-            xywh {310 224 130 20}
+            xywh {328 233 130 20}
+          }
+        }
+        Fl_Group {} {
+          label {Pre-Signal Tone} open
+          xywh {300 284 195 80} box ENGRAVED_FRAME align 21
+        } {
+          Fl_Counter val_pretone {
+            label Seconds
+            callback {progdefaults.pretone = o->value();
+progdefaults.changed = true;}
+            tooltip {Use for triggering amplifier carrier detect} xywh {323 310 140 21} minimum 0 maximum 10
+            code0 {o->value(progdefaults.pretone);}
           }
         }
       }

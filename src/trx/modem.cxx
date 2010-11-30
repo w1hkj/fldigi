@@ -417,6 +417,10 @@ void modem::videoText()
 {
 	if (trx_state == STATE_TUNE)
 		return;
+
+	if (progdefaults.pretone > 0.2)
+		pretone();
+
 	if (progdefaults.sendtextid == true) {
 		wfid_text(progdefaults.strTextid);
 	} else if (progdefaults.macrotextid == true) {
@@ -695,6 +699,44 @@ void modem::wfid_sendchars(string s)
 		if (stopflag)
 			return;
 	}
+}
+
+void modem::pretone()
+{
+	int sr = active_modem->get_samplerate();
+	int symlen = sr / 10;
+	double phaseincr = 2.0 * M_PI * active_modem->get_txfreq() / sr;
+	double phase = 0.0;
+	double outbuf[symlen];
+
+printf("pretone symlen = %d\nduration = %4.1f\n", symlen, progdefaults.pretone);
+
+	for (int j = 0; j < symlen; j++) {
+		outbuf[j] = (0.5 * (1.0 - cos (M_PI * j / symlen)))*sin(phase);
+		phase += phaseincr;
+		if (phase > 2.0 * M_PI) phase -= 2.0 * M_PI;
+	}
+	active_modem->ModulateXmtr(outbuf, symlen);
+
+	for (int i = 0; i < progdefaults.pretone * 10 - 2; i++) {
+		for (int j = 0; j < symlen; j++) {
+			outbuf[j] = sin(phase);
+			phase += phaseincr;
+			if (phase > 2.0 * M_PI) phase -= 2.0 * M_PI;
+		}
+		active_modem->ModulateXmtr(outbuf, symlen);
+	}
+
+	for (int j = 0; j < symlen; j++) {
+		outbuf[j] = (0.5 * (1.0 - cos (M_PI * (symlen - j) / symlen)))*sin(phase);
+		phase += phaseincr;
+		if (phase > 2.0 * M_PI) phase -= 2.0 * M_PI;
+	}
+	active_modem->ModulateXmtr(outbuf, symlen);
+
+	memset(outbuf, 0, symlen * sizeof(*outbuf));
+	active_modem->ModulateXmtr(outbuf, symlen);
+
 }
 
 void modem::wfid_text(const string& s)
