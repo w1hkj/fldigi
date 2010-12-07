@@ -341,7 +341,7 @@ Fl_Double_Window* make_dxcc_window() {
     w = o;
     { tblNotifyFilterDXCC = new Table(2, 2, 432, 370);
       tblNotifyFilterDXCC->box(FL_UP_FRAME);
-      tblNotifyFilterDXCC->color((Fl_Color)FL_BACKGROUND_COLOR);
+      tblNotifyFilterDXCC->color((Fl_Color)FL_BACKGROUND2_COLOR);
       tblNotifyFilterDXCC->selection_color((Fl_Color)FL_SELECTION_COLOR);
       tblNotifyFilterDXCC->labeltype(FL_NORMAL_LABEL);
       tblNotifyFilterDXCC->labelfont(0);

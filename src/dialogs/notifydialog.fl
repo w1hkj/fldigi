@@ -1,8 +1,8 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0109 
-i18n_type 1
-i18n_include "gettext.h"
-i18n_function _
+version 1.0110 
+i18n_type 1 
+i18n_include "gettext.h" 
+i18n_function _ 
 header_name {.h} 
 code_name {.cxx}
 decl {\#include <config.h>} {} 
@@ -18,11 +18,10 @@ decl {\#include "flslider2.h"} {public global
 
 decl {\#include "notify.h"} {} 
 
-Function {make_notify_window()} {open
-} {
+Function {make_notify_window()} {} {
   Fl_Window {} {
-    label Notifications open selected
-    xywh {590 124 500 550} type Double resizable size_range {500 550 0 0} visible
+    label Notifications open
+    xywh {590 124 500 550} type Double hide resizable size_range {500 550 0 0}
   } {
     Fl_Group grpNotifyEvent {
       label Event open
@@ -121,7 +120,7 @@ chkNotifyFilterCall->value(0);}
     } {
       Fl_Spinner cntNotifyActionLimit {
         label {Trigger limit (s):}
-        tooltip {Minimum time between events} xywh {343 31 52 20} minimum 0 maximum 3600 value 1
+        tooltip {Minimum time between events} xywh {343 31 52 20} minimum 0 maximum 3600
         code0 {o->labelsize(FL_NORMAL_SIZE);}
         class Fl_Spinner2
       }
@@ -195,10 +194,10 @@ Function {make_dxcc_window()} {open
 } {
   Fl_Window {} {
     label {DXCC entities} open
-    xywh {351 228 435 450} type Double hide resizable size_range {300 400 0 0}
+    xywh {618 139 435 450} type Double resizable size_range {300 400 0 0} visible
   } {
-    Fl_Box tblNotifyFilterDXCC {
-      xywh {2 2 432 370} box UP_FRAME selection_color 15 resizable
+    Fl_Box tblNotifyFilterDXCC {selected
+      xywh {2 2 432 370} box UP_FRAME color 7 selection_color 15 resizable
       class Table
     }
     Fl_Input inpNotifyDXCCSearchCountry {
