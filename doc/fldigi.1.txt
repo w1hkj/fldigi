@@ -247,7 +247,7 @@ FLDIGI_MY_NAME::
   The operator's name.
 
 FLDIGI_MY_LOCATOR::
-  The operator's IARU locator.
+  The operator's IARU (Maidenhead) locator.
 
 FLDIGI_MODEM::
   The short modem name.
@@ -290,7 +290,7 @@ FLDIGI_LOG_QTH::
   The text (other station's QTH) contained in the 'QTH' log field.
 
 FLDIGI_LOG_LOCATOR::
-  The text (other station's IARU locator) contained in the 'Loc' log field.
+  The text (other station's Maidenhead locator) contained in the 'Loc' log field.
 
 FLDIGI_LOG_NOTES::
   The text (free-form notes) contained in the 'Notes' log field.
