@@ -101,7 +101,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
+        callback {progdefaults.changed = true;} selected
         tooltip {Operator information} xywh {0 25 500 345} when 1
       } {
         Fl_Group {} {
@@ -181,7 +181,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabUI {
-        label UI open
+        label UI
         xywh {-3 25 508 345} hide
       } {
         Fl_Tabs tabsUI {open
@@ -2823,7 +2823,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabID {
-        label ID open
+        label ID
         xywh {0 25 500 346} hide
       } {
         Fl_Group {} {
@@ -3011,7 +3011,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabMisc {
-        label Misc
+        label Misc open
         xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsMisc {open
@@ -3062,7 +3062,7 @@ OFF - keep current wf cursor position} xywh {15 101 348 20} down_box DOWN_BOX va
             }
           }
           Fl_Group tabSpot {
-            label Spotting
+            label Spotting open
             xywh {0 50 500 320} hide
           } {
             Fl_Group {} {
@@ -3132,13 +3132,13 @@ progdefaults.changed = true;}
               }
               Fl_Box boxPSKRepMsg {
                 label {<PSK Reporter error message>}
-                xywh {30 236 300 24} labelfont 2
+                xywh {15 220 300 48} labelfont 2
                 code0 {boxPSKRepMsg->label(0);}
               }
             }
           }
           Fl_Group tabMacros {
-            label Macros open
+            label Macros
             xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
@@ -3323,7 +3323,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabQRZ {
-        label {Callsign DB} open
+        label {Callsign DB}
         tooltip {Callsign database} xywh {0 25 500 345} hide
       } {
         Fl_Group {} {

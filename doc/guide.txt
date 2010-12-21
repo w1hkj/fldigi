@@ -330,10 +330,11 @@ It is generally not possible to distinguish between Operator and QTH names.  For
 this reason, Fldigi will use the first non-Call and non-Locator word to fill the
 'Name' field, and subsequent clicks will send text to the 'QTH' field.
 Likewise, a text string may be both a valid callsign and a valid
-http://en.wikipedia.org/wiki/Maidenhead_Locator_System[IARU locator].  For best
-results, you should attempt to fill the log fields in the order in which they
-appear on the main window, and clear the log fields after logging the QSO.  Of
-course, text can always be manually typed or pasted into any of the log fields!
+http://en.wikipedia.org/wiki/Maidenhead_Locator_System[IARU (Maidenhead) locator].
+For best results, you should attempt to fill the log fields in the order in
+which they appear on the main window, and clear the log fields after logging the
+QSO.  Of course, text can always be manually typed or pasted into any of the log
+fields!
 
 You can query online and local (e.g. CD) database systems for data regarding a
 callsign.  You make the query by either clicking on the globe button, or

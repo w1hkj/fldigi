@@ -778,7 +778,7 @@
               "Operator name",                                                          \
               "")                                                                       \
         ELEM_(std::string, myLocator, "MYLOC",                                          \
-              "Operator IARU locator",                                                  \
+              "Operator Maidenhead locator",                                                  \
               "")                                                                       \
         ELEM_(std::string, myAntenna, "MYANTENNA",                                      \
               "Antenna description (keep short!)",                                      \

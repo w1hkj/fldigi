@@ -907,7 +907,7 @@ then use some simple heuristics to decide which log field will receive the text.
 this reason, Fldigi will use the first non-Call and non-Locator word to fill the\n\
 <em>Name</em> field, and subsequent clicks will send text to the <em>QTH</em> field.\n\
 Likewise, a text string may be both a valid callsign and a valid\n\
-<a href=\"http://en.wikipedia.org/wiki/Maidenhead_Locator_System\">IARU locator</a>.  For best\n\
+<a href=\"http://en.wikipedia.org/wiki/Maidenhead_Locator_System\">IARU (Maidenhead) locator</a>.  For best\n\
 results, you should attempt to fill the log fields in the order in which they\n\
 appear on the main window, and clear the log fields after logging the QSO.  Of\n\
 course, text can always be manually typed or pasted into any of the log fields!</p></div>\n\

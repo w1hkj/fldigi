@@ -245,7 +245,7 @@ static bool pskrep_check(void)
 		}
 	}
 	if (!pskrep::locator_re.match(progdefaults.myLocator.c_str())) {
-		error_string = "Error: bad IARU locator";
+		error_string = "Error: bad Maidenhead locator\ncheck Configure->Operator->Locator";
 		return false;
 	}
 
