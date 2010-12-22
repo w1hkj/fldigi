@@ -18,6 +18,7 @@
 #include "logsupport.h"
 #include "notify.h"
 #include "debug.h"
+#include "status.h"
 #if USE_HAMLIB
   #include "hamlib.h"
 #endif
@@ -1330,6 +1331,13 @@ font_browser->fontColor(FL_FOREGROUND_COLOR);
 font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
 font_browser->callback(cbViewerFontBrowser);
 font_browser->show();
+}
+
+Fl_Input2 *txtInpSeek=(Fl_Input2 *)0;
+
+static void cb_txtInpSeek(Fl_Input2* o, void*) {
+  progStatus.browser_search = o->value();
+seek_re.recompile(o->value() ? o->value() : "[invalid");
 }
 
 Fl_Group *tabRTTY=(Fl_Group *)0;
@@ -4304,6 +4312,7 @@ an merging"));
               tabsPSK->selection_color((Fl_Color)FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
                 o->align(FL_ALIGN_TOP_LEFT);
+                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 98, _("AFC behavior"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -4385,7 +4394,6 @@ an merging"));
               } // Fl_Group* o
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("Viewer"));
                 o->align(FL_ALIGN_TOP_LEFT);
-                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 110);
                 o->box(FL_ENGRAVED_FRAME);
                 { Fl_Check_Button* o = btnMarquee = new Fl_Check_Button(212, 125, 165, 20, _("Continuous scrolling"));
@@ -4447,14 +4455,33 @@ an merging"));
                 mnuViewerLabel->down_box(FL_BORDER_BOX);
                 mnuViewerLabel->callback((Fl_Callback*)cb_mnuViewerLabel);
                 mnuViewerLabel->align(FL_ALIGN_RIGHT);
-                mnuViewerLabel->add("Audio frequency");
-                mnuViewerLabel->add("Radio frequency");
-                mnuViewerLabel->add("Channel number");
+                mnuViewerLabel->add("None"); mnuViewerLabel->add("Audio frequency");
+                mnuViewerLabel->add("Radio frequency"); mnuViewerLabel->add("Channel number");
                 mnuViewerLabel->value(progdefaults.VIEWERlabeltype);
                 } // Fl_Choice* mnuViewerLabel
                 { btnViewerFont = new Fl_Button(15, 155, 70, 24, _("Font..."));
                 btnViewerFont->callback((Fl_Callback*)cb_btnViewerFont);
                 } // Fl_Button* btnViewerFont
+                o->end();
+                } // Fl_Group* o
+                { Fl_Group* o = new Fl_Group(5, 197, 490, 81, _("Channel Viewer"));
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+                { Fl_Input2* o = txtInpSeek = new Fl_Input2(30, 243, 360, 20, _("Seek Regular Expression"));
+                txtInpSeek->tooltip(_("Search for reg-exp in viewer text(s)"));
+                txtInpSeek->box(FL_DOWN_BOX);
+                txtInpSeek->color((Fl_Color)FL_BACKGROUND2_COLOR);
+                txtInpSeek->selection_color((Fl_Color)FL_SELECTION_COLOR);
+                txtInpSeek->labeltype(FL_NORMAL_LABEL);
+                txtInpSeek->labelfont(0);
+                txtInpSeek->labelsize(14);
+                txtInpSeek->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                txtInpSeek->callback((Fl_Callback*)cb_txtInpSeek);
+                txtInpSeek->align(FL_ALIGN_TOP_LEFT);
+                txtInpSeek->when(FL_WHEN_CHANGED);
+                o->labelsize(FL_NORMAL_SIZE);
+                o->value(progStatus.browser_search.c_str());
+                } // Fl_Input2* txtInpSeek
                 o->end();
                 } // Fl_Group* o
                 o->end();

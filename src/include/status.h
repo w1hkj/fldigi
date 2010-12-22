@@ -19,6 +19,9 @@ struct status {
 	bool	DOCKEDSCOPE;
 
 	int		RxTextHeight;
+	int		tiled_group_x;
+	bool	show_channels;
+
 	int		rigX;
 	int		rigY;
 	int		rigW;

@@ -198,4 +198,7 @@ const char* band_name(const char* freq_mhz);
 const char* band_freq(band_t b);
 const char* band_freq(const char* band_name);
 
+// psk_browser enums
+enum { VIEWER_LABEL_OFF, VIEWER_LABEL_AF, VIEWER_LABEL_RF, VIEWER_LABEL_CH, VIEWER_LABEL_NTYPES };
+
 #endif

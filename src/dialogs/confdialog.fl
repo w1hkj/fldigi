@@ -59,6 +59,8 @@ decl {\#include "notify.h"} {}
 
 decl {\#include "debug.h"} {} 
 
+decl {\#include "status.h"} {} 
+
 decl {\#if USE_HAMLIB
   \#include "hamlib.h"
 \#endif} {} 
@@ -921,7 +923,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
         }
       }
       Fl_Group tabModems {
-        label Modems
+        label Modems open
         xywh {0 25 517 345} hide
       } {
         Fl_Tabs tabsModems {open
@@ -1649,7 +1651,7 @@ progdefaults.changed = true;}
             } {
               Fl_Group {} {
                 label General open
-                xywh {0 75 500 295} align 5
+                xywh {0 75 500 295} align 5 hide
               } {
                 Fl_Group {} {
                   label {AFC behavior} open
@@ -1700,7 +1702,7 @@ progdefaults.changed = true;}
               }
               Fl_Group {} {
                 label Viewer open
-                xywh {0 75 500 295} align 5 hide
+                xywh {0 75 500 295} align 5
               } {
                 Fl_Group {} {open
                   xywh {5 85 490 110} box ENGRAVED_FRAME
@@ -1752,9 +1754,8 @@ progdefaults.changed = true;}
 initViewer();
 progdefaults.changed = true;} open
                     tooltip {Appearance of label on each channel} xywh {212 155 150 24} down_box BORDER_BOX align 8
-                    code0 {mnuViewerLabel->add("Audio frequency");}
-                    code1 {mnuViewerLabel->add("Radio frequency");}
-                    code2 {mnuViewerLabel->add("Channel number");}
+                    code0 {mnuViewerLabel->add("None"); mnuViewerLabel->add("Audio frequency");}
+                    code1 {mnuViewerLabel->add("Radio frequency"); mnuViewerLabel->add("Channel number");}
                     code3 {mnuViewerLabel->value(progdefaults.VIEWERlabeltype);}
                   } {}
                   Fl_Button btnViewerFont {
@@ -1766,6 +1767,20 @@ font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
 font_browser->callback(cbViewerFontBrowser);
 font_browser->show();}
                     xywh {15 155 70 24}
+                  }
+                }
+                Fl_Group {} {
+                  label {Channel Viewer} open
+                  xywh {5 197 490 81} box ENGRAVED_FRAME align 21
+                } {
+                  Fl_Input txtInpSeek {
+                    label {Seek Regular Expression}
+                    callback {progStatus.browser_search = o->value();
+seek_re.recompile(o->value() ? o->value() : "[invalid");}
+                    tooltip {Search for reg-exp in viewer text(s)} xywh {30 243 360 20} align 5 when 1
+                    code0 {o->labelsize(FL_NORMAL_SIZE);}
+                    code1 {o->value(progStatus.browser_search.c_str());}
+                    class Fl_Input2
                   }
                 }
               }

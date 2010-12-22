@@ -76,6 +76,8 @@ status progStatus = {
 	false,				// bool Rig_Contest_UI;
 	false,				// bool DOCKEDSCOPE;
 	200,				// int RxTextHeight;
+	WNOM / 2,			// int tiled_group_x;
+	false,				// bool show_channels;
 	50,					// int rigX;
 	50,					// int rigY;
 	560,				// int rigW
@@ -180,6 +182,7 @@ void status::saveLastState()
 	mainW = fl_digi_main->w();
 	mainH = fl_digi_main->h();
 	RxTextHeight = ReceiveText->h();
+
 	carrier = wf->Carrier();
 	mag = wf->Mag();
 	offset = wf->Offset();
@@ -205,6 +208,9 @@ void status::saveLastState()
 	tx_word_wrap = TransmitText->get_word_wrap();
 
 	VIEWERvisible = false;
+	if (dlgViewer) {
+		VIEWERnchars = (brwsViewer->w() - pskBrowser::sbarwidth) /pskBrowser::cwidth;
+	}
 	if (dlgViewer && dlgViewer->visible()) {
 		VIEWERxpos = dlgViewer->x();
 		VIEWERypos = dlgViewer->y();
@@ -281,6 +287,8 @@ void status::saveLastState()
 if (!bWF_only) {
 	spref.set("main_h", mainH);
 	spref.set("rx_text_height", RxTextHeight);
+	spref.set("tiled_group_x", tiled_group_x);
+	spref.set("show_channels", show_channels);
 }
 	spref.set("wf_ui", WF_UI);
 	spref.set("riglog_ui", Rig_Log_UI);
@@ -400,6 +408,9 @@ void status::loadLastState()
 	spref.get("tx_mixer_level", XmtMixer, XmtMixer);
 
 	spref.get("rx_text_height", RxTextHeight, RxTextHeight);
+	spref.get("tiled_group_x", tiled_group_x, tiled_group_x);
+	spref.get("show_channels", i, show_channels); show_channels = i;
+
 	spref.get("log_enabled", i, LOGenabled); LOGenabled = i;
 
 	spref.get("wf_carrier", carrier, carrier);
@@ -586,9 +597,17 @@ if (bWF_only)
 	fl_digi_main->resize(mainX, mainY, mainW, Hmenu + Hwfall + Hstatus + 4);
 else {
 	fl_digi_main->resize(mainX, mainY, mainW, mainH);
-	if (!(RxTextHeight > 0 && RxTextHeight < TiledGroup->h()))
-		RxTextHeight = TiledGroup->h() / 3 * 2;
-	TiledGroup->position(0, TransmitText->y(), 0, TiledGroup->y() + RxTextHeight);
+	fl_digi_main->init_sizes();
+	if (!(RxTextHeight > 0 && RxTextHeight < VTgroup->h()))
+		RxTextHeight = VTgroup->h() / 3 * 2;
+//	if (show_channels) {
+//printf("xpos = %d\n", tiled_group_x);
+//		HTgroup->position(tiled_group_x, 0, tiled_group_x, ReceiveText->y());
+//	} else {
+//		HTgroup->position(100, 0, 0, ReceiveText->y());
+//	}
+//show_channels = true;
+	VTgroup->position(0, ReceiveText->y() + 66, VTgroup->x(), ReceiveText->y() + RxTextHeight);
 }
 
 	if (VIEWERvisible && lastmode >= MODE_PSK_FIRST && lastmode <= MODE_PSK_LAST)
@@ -622,4 +641,5 @@ else {
 	TransmitText->set_word_wrap(tx_word_wrap);
 
 	set_server_label(xml_logbook);
+
 }

@@ -39,6 +39,7 @@
 #include "FreqControl.h"
 #include "flinput2.h"
 #include "flslider2.h"
+#include "psk_browser.h"
 
 extern Fl_Double_Window *fl_digi_main;
 extern Fl_Double_Window *scopeview;
@@ -46,8 +47,14 @@ extern Fl_Double_Window *scopeview;
 
 extern FTextRX			*ReceiveText;
 extern FTextTX			*TransmitText;
+extern pskBrowser		*mainViewer;
+extern Fl_Box			*hideViewer;
 extern Raster			*FHdisp;
-extern Fl_Tile_Check	*TiledGroup;
+//extern Fl_Tile_Check	*TiledGroup;
+
+extern Fl_Tile_Check	*VTgroup;
+extern Fl_Tile_Check	*HTgroup;
+
 extern Fl_Box			*StatusBar;
 extern Fl_Box			*Status2;
 extern Fl_Box			*Status1;

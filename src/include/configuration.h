@@ -30,7 +30,7 @@
 #include "rtty.h"
 #include "waterfall.h"
 #include "lookupcall.h"
-#include "Viewer.h"
+#include "psk_browser.h"
 
 #if defined(__linux__)
 #  define DEFAULT_PTTDEV "/dev/ttyS0"

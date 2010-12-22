@@ -23,11 +23,20 @@
 #ifndef Fl_Tile_Check_h_
 #define Fl_Tile_Check_h_
 
-#include <FL/Fl_Tile.H>
+#include <FL/Fl_Group.H>
+
+class Tile_ : public Fl_Group {
+public:
+  int handle(int);
+  Tile_(int X,int Y,int W,int H,const char*l=0) : Fl_Group(X,Y,W,H,l) {}
+  void resize(int, int, int, int);
+  void position(int, int, int, int);
+  void newx(int);
+};
 
 /// A version of Fl_Tile that runs check callbacks and moves the boundary
 /// between its child widgets only all resize checks return true.
-class Fl_Tile_Check : public Fl_Tile
+class Fl_Tile_Check : public Tile_
 {
 public:
 	typedef bool (*resize_check_func)(void *, int, int);

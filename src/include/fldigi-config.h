@@ -50,7 +50,7 @@
 #define WFMARKER     6
 #define BTN_HEIGHT	20
 
-#define DEFAULT_SW 15
+#define DEFAULT_SW 16
 //#define DEFAULT_HWFALL 144
 #define DEFAULT_HWFALL 124
 #define DEFAULT_HNOM 500

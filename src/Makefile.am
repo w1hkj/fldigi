@@ -393,6 +393,7 @@ fldigi_SOURCES += \
 	include/qso_db.h \
 	include/table.h \
 	include/textio.h \
+	include/psk_browser.h \
 	irrxml/CXMLReaderImpl.h \
 	irrxml/fast_atof.h \
 	irrxml/heapsort.h \
@@ -487,6 +488,7 @@ fldigi_SOURCES += \
 	widgets/flslider2.cxx \
 	widgets/picture.cxx \
 	widgets/progress.cxx \
+	widgets/psk_browser.cxx \
 	wwv/analysis.cxx \
 	wwv/wwv.cxx \
 	logbook/xmlrpc_log.cxx \

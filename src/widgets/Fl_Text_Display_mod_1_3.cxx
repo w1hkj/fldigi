@@ -95,7 +95,8 @@ Fl_Text_Display_mod::Fl_Text_Display_mod(int X, int Y, int W, int H,  const char
   shortcut_ = 0;
 
   color(FL_BACKGROUND2_COLOR, FL_SELECTION_COLOR);
-  box(FL_DOWN_FRAME);
+//  box(FL_DOWN_FRAME);
+  box(FL_DOWN_BOX);  // DO NOT USE FRAME OR TILED GROUP WILL NOT CORRECTLY DRAW THE BORDERS !!
   textsize(FL_NORMAL_SIZE);
   textcolor(FL_FOREGROUND_COLOR);
   textfont(FL_HELVETICA);
@@ -1391,7 +1392,9 @@ int Fl_Text_Display_mod::position_to_line( int pos, int *lineNum ) const {
     if ( empty_vlines() ) {
       if ( mLastChar < mBuffer->length() ) {
         if ( !position_to_line( mLastChar, lineNum ) ) {
+#ifdef DEBUG
           Fl::error("Fl_Text_Display_mod::position_to_line(): Consistency check ptvl failed");
+#endif
           return 0;
         }
         return ++( *lineNum ) <= mNVisibleLines - 1;

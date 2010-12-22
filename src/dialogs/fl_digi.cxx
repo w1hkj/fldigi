@@ -139,28 +139,29 @@
 
 #include "arq_io.h"
 
-#define LOG_TO_FILE_MLABEL _("Log all RX/TX text")
-#define RIGCONTROL_MLABEL _("Rig control")
-#define OPMODES_MLABEL _("Op &Mode")
-#define OPMODES_FEWER _("Show fewer modes")
-#define OPMODES_ALL _("Show all modes")
-#define OLIVIA_MLABEL "Olivia"
-#define CONTESTIA_MLABEL "Contestia"
-#define RTTY_MLABEL "RTTY"
-#define VIEW_MLABEL _("&View")
-#define MFSK_IMAGE_MLABEL _("&MFSK Image")
-#define WEFAX_IMAGE_MLABEL _("&Weather Fax Image")
-#define CONTEST_MLABEL _("Contest")
-#define CONTEST_FIELDS_MLABEL _("&Contest fields")
-#define COUNTRIES_MLABEL _("C&ountries")
-#define UI_MLABEL _("&UI")
-#define RIGLOG_FULL_MLABEL _("Full")
-#define RIGLOG_NONE_MLABEL _("None")
-#define RIGLOG_MLABEL      _("Rig control and logging")
-#define RIGCONTEST_MLABEL  _("Rig control and contest")
-#define DOCKEDSCOPE_MLABEL _("Docked scope")
-#define WF_MLABEL _("Minimal controls")
-#define LOG_CONNECT_SERVER _("Connect to server")
+#define LOG_TO_FILE_MLABEL     _("Log all RX/TX text")
+#define RIGCONTROL_MLABEL      _("Rig control")
+#define OPMODES_MLABEL         _("Op &Mode")
+#define OPMODES_FEWER          _("Show fewer modes")
+#define OPMODES_ALL            _("Show all modes")
+#define OLIVIA_MLABEL            "Olivia"
+#define CONTESTIA_MLABEL         "Contestia"
+#define RTTY_MLABEL              "RTTY"
+#define VIEW_MLABEL            _("&View")
+#define MFSK_IMAGE_MLABEL      _("&MFSK Image")
+#define WEFAX_IMAGE_MLABEL     _("&Weather Fax Image")
+#define CONTEST_MLABEL         _("Contest")
+#define CONTEST_FIELDS_MLABEL  _("&Contest fields")
+#define COUNTRIES_MLABEL       _("C&ountries")
+#define UI_MLABEL              _("&UI")
+#define RIGLOG_FULL_MLABEL     _("Full")
+#define RIGLOG_NONE_MLABEL     _("None")
+#define RIGLOG_MLABEL          _("Rig control and logging")
+#define RIGCONTEST_MLABEL      _("Rig control and contest")
+#define DOCKEDSCOPE_MLABEL     _("Docked scope")
+#define WF_MLABEL              _("Minimal controls")
+#define LOG_CONNECT_SERVER     _("Connect to server")
+#define SHOW_CHANNELS          _("Show channels")
 
 using namespace std;
 
@@ -187,11 +188,15 @@ Fl_Light_Button		*btnRSID = (Fl_Light_Button *)0;
 Fl_Light_Button		*btnTxRSID = (Fl_Light_Button *)0;
 Fl_Button		    *btnMacroTimer = (Fl_Button *)0;
 
-Fl_Tile_Check		*TiledGroup = 0;
+Fl_Tile_Check		*VTgroup = 0;
+Fl_Tile_Check		*HTgroup = 0;
 Fl_Box				*macroFrame = 0;
 FTextRX				*ReceiveText = 0;
 FTextTX				*TransmitText = 0;
 Raster				*FHdisp;
+
+pskBrowser			*mainViewer = (pskBrowser *)0;
+
 Fl_Box				*StatusBar = (Fl_Box *)0;
 Fl_Box				*Status2 = (Fl_Box *)0;
 Fl_Box				*Status1 = (Fl_Box *)0;
@@ -1330,6 +1335,22 @@ void set_server_label(bool val)
 	else m->clear();
 }
 
+void cb_tiled_group(Fl_Widget* w, void*)
+{
+	int X = ReceiveText->x();
+	if (X >= 100)
+		progStatus.tiled_group_x = X;
+}
+
+void cb_view_hide_channels(Fl_Menu_ *w, void *d)
+{
+	if (mainViewer->w() == 0) {
+		HTgroup->newx( progStatus.tiled_group_x );
+	} else
+		HTgroup->newx( HTgroup->x() );
+	return;
+}
+
 #if USE_SNDFILE
 bool capval = false;
 bool genval = false;
@@ -2307,11 +2328,11 @@ void UI_select()
 		if (MixerFrame->visible()) {
 			MixerFrame->resize(0, y1, DEFAULT_SW, y2 - y1);
 			MixerFrame->redraw();
-			TiledGroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, y2 - y1);
-			TiledGroup->redraw();
+			HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, y2 - y1);
+//			HTgroup->redraw();
 		} else {
-			TiledGroup->resize(0, y1, w, y2 - y1);
-			TiledGroup->redraw();
+			HTgroup->resize(0, y1, w, y2 - y1);
+//			HTgroup->redraw();
 		}
 		TopFrame1->hide();
 		TopFrame2->hide();
@@ -2331,11 +2352,11 @@ void UI_select()
 		if (MixerFrame->visible()) {
 			MixerFrame->resize(0, y1, DEFAULT_SW, y2 - y1);
 			MixerFrame->redraw();
-			TiledGroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, y2 - y1);
-			TiledGroup->redraw();
+			HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, y2 - y1);
+//			HTgroup->redraw();
 		} else {
-			TiledGroup->resize(0, y1, w, y2 - y1);
-			TiledGroup->redraw();
+			HTgroup->resize(0, y1, w, y2 - y1);
+//			HTgroup->redraw();
 		}
 		inpNotes->resize(
 			inpNotes->x(), inpNotes->y(),
@@ -2363,11 +2384,11 @@ void UI_select()
 		if (MixerFrame->visible()) {
 			MixerFrame->resize(0, y1, DEFAULT_SW, y2 - y1);
 			MixerFrame->redraw();
-			TiledGroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, y2 - y1);
-			TiledGroup->redraw();
+			HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, y2 - y1);
+//			HTgroup->redraw();
 		} else {
-			TiledGroup->resize(0, y1, w, y2 - y1);
-			TiledGroup->redraw();
+			HTgroup->resize(0, y1, w, y2 - y1);
+//			HTgroup->redraw();
 		}
 		if (progStatus.Rig_Log_UI) {
 			TopFrame1->hide();
@@ -2629,6 +2650,9 @@ Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 { VIEW_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+
+{"View/Hide Channels", 'v', (Fl_Callback*)cb_view_hide_channels, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+
 { make_icon_label(_("Floating scope"), utilities_system_monitor_icon), 'd', (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(WEFAX_IMAGE_MLABEL, image_icon), 'w', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
@@ -3137,6 +3161,38 @@ void cb_btnCW_Default(Fl_Widget *w, void *v)
 	restoreFocus();
 }
 
+static void set_mainViewerFreq(int i, int freq)
+{
+	if (freq == 0) // reset
+		freq = progdefaults.VIEWERstart + 100 * (progdefaults.VIEWERchannels - i);
+
+	pskviewer->set_freq(progdefaults.VIEWERchannels - i, freq);
+	mainViewer->set_freq(i, freq);
+}
+
+static void cb_mainViewer(Fl_Hold_Browser*, void*) {
+	int sel = mainViewer->value();
+	if (sel == 0 || sel > progdefaults.VIEWERchannels)
+		return;
+
+	switch (Fl::event_button()) {
+	case FL_LEFT_MOUSE:
+		if (!pskviewer) break;
+		ReceiveText->addchr('\n', FTextBase::ALTR);
+		ReceiveText->addstr(mainViewer->line(sel).c_str(), FTextBase::ALTR);
+		active_modem->set_freq(mainViewer->freq(sel));
+		break;
+	case FL_MIDDLE_MOUSE: // copy from modem
+//		set_mainViewerFreq(sel, active_modem->get_freq());
+		break;
+	case FL_RIGHT_MOUSE: // reset
+		if (pskviewer) set_mainViewerFreq(sel, 0);
+		mainViewer->clear();
+		break;
+	default:
+		break;
+	}
+}
 
 void create_fl_digi_main_primary() {
 
@@ -3775,10 +3831,12 @@ void create_fl_digi_main_primary() {
 		int Htext = progStatus.mainH - Hwfall - Hmenu - Hstatus - Hmacros - Hqsoframe - 4;
 		int Hrcvtxt = (Htext) / 2;
 		int Hxmttxt = (Htext - (Hrcvtxt));
+
 		int sw = DEFAULT_SW;
 		MixerFrame = new Fl_Group(0,Y,sw, Hrcvtxt + Hxmttxt);
+			MixerFrame->box(FL_FLAT_BOX);
 			valRcvMixer = new Fl_Value_Slider2(0, Y, sw, (Htext)/2, "");
-			valRcvMixer->type(FL_VERT_NICE_SLIDER);
+			valRcvMixer->type(FL_VERT_SLIDER);//NICE_SLIDER);
 			valRcvMixer->color(fl_rgb_color(0,110,30));
 			valRcvMixer->labeltype(FL_ENGRAVED_LABEL);
 			valRcvMixer->selection_color(fl_rgb_color(255,255,0));
@@ -3788,7 +3846,7 @@ void create_fl_digi_main_primary() {
 			valRcvMixer->step(1.0);
 			valRcvMixer->callback( (Fl_Callback *)cb_RcvMixer);
 			valXmtMixer = new Fl_Value_Slider2(0, Y + (Htext)/2, sw, (Htext)/2, "");
-			valXmtMixer->type(FL_VERT_NICE_SLIDER);
+			valXmtMixer->type(FL_VERT_SLIDER);//NICE_SLIDER);
 			valXmtMixer->color(fl_rgb_color(110,0,30));
 			valXmtMixer->labeltype(FL_ENGRAVED_LABEL);
 			valXmtMixer->selection_color(fl_rgb_color(255,255,0));
@@ -3799,13 +3857,27 @@ void create_fl_digi_main_primary() {
 			valXmtMixer->callback( (Fl_Callback *)cb_XmtMixer);
 		MixerFrame->end();
 
-		TiledGroup = new Fl_Tile_Check(sw, Y, progStatus.mainW-sw, Htext);
-			int minRxHeight = Hrcvtxt;
-			int minTxHeight;
-			if (minRxHeight < 66) minRxHeight = 66;
-			minTxHeight = Htext - minRxHeight;
+		int HTwidth = progStatus.mainW / 4;
+		int VTwidth = progStatus.mainW - sw - HTwidth;
 
-			ReceiveText = new FTextRX(sw, Y, progStatus.mainW-sw, minRxHeight, "");
+		HTgroup = new Fl_Tile_Check(sw, Y, progStatus.mainW - sw, Htext);
+		HTgroup->callback(cb_tiled_group);
+
+		mainViewer = new pskBrowser(HTgroup->x(), HTgroup->y(), HTwidth, Htext, "");
+		mainViewer->has_scrollbar(Fl_Browser_::VERTICAL);//_ALWAYS);//BOTH_ALWAYS);
+		mainViewer->callback((Fl_Callback*)cb_mainViewer);
+		mainViewer->setfont(progdefaults.ViewerFontnbr, progdefaults.ViewerFontsize);
+		mainViewer->tooltip(_("Left click - select\nRight click - clear all"));
+		mainViewer->seek_re = &seek_re;
+
+		VTgroup = new Fl_Tile_Check(HTgroup->x() + HTwidth, HTgroup->y(), VTwidth, Htext);
+
+			int minRxHeight = Hrcvtxt;
+			if (minRxHeight < 66) minRxHeight = 66; // dictated by feld hell raster viewer
+
+			int minTxHeight = Htext - minRxHeight;
+
+			ReceiveText = new FTextRX(VTgroup->x(), VTgroup->y(), VTgroup->w(), minRxHeight, "");
 			ReceiveText->color(
 				fl_rgb_color(
 					progdefaults.RxColor.R,
@@ -3820,10 +3892,11 @@ void create_fl_digi_main_primary() {
 			ReceiveText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
 			ReceiveText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
 
-			FHdisp = new Raster(sw, Y, progStatus.mainW-sw, minRxHeight);
+			FHdisp = new Raster(VTgroup->x(), VTgroup->y(), VTgroup->w(), minRxHeight);
+			FHdisp->align(FL_ALIGN_CLIP);
 			FHdisp->hide();
 
-			TransmitText = new FTextTX(sw, Y + minRxHeight, progStatus.mainW-sw, minTxHeight);
+			TransmitText = new FTextTX(VTgroup->x(), VTgroup->y() + ReceiveText->h(), VTgroup->w(), minTxHeight);
 			TransmitText->color(
 				fl_rgb_color(
 					progdefaults.TxColor.R,
@@ -3837,16 +3910,25 @@ void create_fl_digi_main_primary() {
 			TransmitText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
 			TransmitText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
 			TransmitText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
+			TransmitText->align(FL_ALIGN_CLIP);
 
-			Fl_Box *minbox = new Fl_Box(sw,Y + 66, progStatus.mainW-sw, Htext - 66 - 66);
-			minbox->hide();
+			int ysmall = VTgroup->y() + 66;
+			int yheight = Htext - 66 - 40;
 
-			TiledGroup->resizable(minbox);
+			Fl_Box *minVTbox = new Fl_Box(
+				VTgroup->x(), ysmall, fl_digi_main->w() - VTgroup->x(), yheight);
+			minVTbox->hide();
 
-			Y += Htext;
+		VTgroup->end();
+		VTgroup->resizable(minVTbox);
 
-		TiledGroup->end();
-		Fl_Group::current()->resizable(TiledGroup);
+		Fl_Box *minHTbox = new Fl_Box(sw, HTgroup->y(), progStatus.mainW - 300, HTgroup->h());
+		minHTbox->hide();
+
+		HTgroup->end();
+		HTgroup->resizable(minHTbox);
+
+		Y += Htext;
 
 		Fl::add_handler(default_handler);
 
@@ -4024,6 +4106,7 @@ void create_fl_digi_main_primary() {
 		inpNotes->when(FL_WHEN_RELEASE);
 
 	fl_digi_main->end();
+	fl_digi_main->resizable(HTgroup);
 	fl_digi_main->callback(cb_wMain);
 
 	scopeview = new Fl_Double_Window(0,0,140,140, _("Scope"));
@@ -4498,7 +4581,7 @@ void create_fl_digi_main_WF_only() {
 
 			int sql_width = bwSqlOnOff;
 #ifdef __APPLE__
-			sql_width -= 15; // leave room for resize handle
+			sql_width -= 15; // leave room for resize handleresize
 #endif
 			btnAFC = new Fl_Light_Button(
 				progStatus.mainW - bwSqlOnOff - bwAfcOnOff,
@@ -5187,21 +5270,17 @@ ret:
 
 void enable_vol_sliders(bool val)
 {
-if (bWF_only) return;
-        if (MixerFrame->visible()) {
-                if (val)
-                        return;
+	if (bWF_only) return;
+	if (MixerFrame->visible()) {
+		if (val) return;
 		MixerFrame->hide();
-		TiledGroup->resize(TiledGroup->x() - MixerFrame->w(), TiledGroup->y(),
-				   TiledGroup->w() + MixerFrame->w(), TiledGroup->h());
-        }
-        else {
-                if (!val)
-                        return;
-		TiledGroup->resize(TiledGroup->x() + MixerFrame->w(), TiledGroup->y(),
-				   TiledGroup->w() - MixerFrame->w(), TiledGroup->h());
+		HTgroup->resize(0, HTgroup->y(),fl_digi_main->w(), HTgroup->h());
+	} else {
+		if (!val) return;
 		MixerFrame->show();
-        }
+		HTgroup->resize(DEFAULT_SW, HTgroup->y(), fl_digi_main->w() - DEFAULT_SW, HTgroup->h());
+	}
+	fl_digi_main->init_sizes();
 }
 
 void resetMixerControls()
