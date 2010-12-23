@@ -25,6 +25,8 @@
 
 #include "fl_digi.h"
 #include "pskeval.h"
+#include "configuration.h"
+#include "misc.h"
 
 using namespace std;
 //=============================================================================
@@ -39,39 +41,36 @@ pskeval::pskeval() {
 pskeval::~pskeval() {
 }
 
+int countdown = 500;
+
 void pskeval::sigdensity() {
-// restore the 3.03 algorithm for finding the signal density
-    static double alpha = 0.125;
 	double sig = 0.0;
 	double val;
-	int ihbw = (int)(bw / 2 + 0.5) + 1;
+	int ihbw = (int)(bw / 2 + 0.5);
 	int ibw = 2 * ihbw;
-	int fstart = FLOWER + ibw;
-	double *vals = new double[ibw + 1];
-	for (int i = 0; i < ibw + 1; i++) vals[i] = 0.0;
+	int fstart = progdefaults.LowFreqCutoff + ihbw;
+	double *vals = new double[ibw];
+	for (int i = 0; i < ibw; i++) vals[i] = 0.0;
 	int j = -1;
 	sigavg = 0.0;
-	for (int i = FLOWER; i < IMAGE_WIDTH; i++) {
-		j++;
-		if (j == ibw + 1) j = 0;
+	for (int i = progdefaults.LowFreqCutoff; i < progdefaults.HighFreqCutoff; i++) {
+		if (++j == ibw) j = 0;
 		val = wf->Pwr(i);
 		if (i >= fstart) {
-			sigpwr[i - ihbw - 1] = (1-alpha)*sigpwr[i - ihbw - 1] + alpha * sig;
+			sigpwr[i - ihbw] = decayavg(sigpwr[i - ihbw], sig, 64);
 			sig -= vals[j];
 		}
 		vals[j] = val;
 		sig += val;
 		sigavg += val;
 	}		
-	sigavg /= (FFT_LEN - FLOWER);
+	sigavg /= (progdefaults.HighFreqCutoff - progdefaults.LowFreqCutoff);
 	if (sigavg == 0) sigavg = 1e-20;
 	delete [] vals;
 }
 
-double pskeval::sigpeak(int &f, int f1, int f2)
+double pskeval::sigpeak(int &f, int f1, int f2, int w)
 {
-// restore the 3.03 algorithm for finding the signal peak
-// and frequency at which the peak occurs
 	double peak = 0;
 	f = (f1 + f2) / 2;
 	for (int i = f1; i <= f2; i++)
@@ -80,6 +79,46 @@ double pskeval::sigpeak(int &f, int f1, int f2)
 			f = i;
 		}
 	return peak / sigavg / bw;
+}
+
+
+double pskeval::peak(int &f0, int f1, int f2, double val)
+{
+	double peak = 0;
+	double testval = val * sigavg * bw;
+	int fa = f2, fb = f1;
+	for (int i = 0; i < (f2 - f1); i++) {
+		if (sigpwr[f1+i] > testval) fb = f1 + i;
+		if (sigpwr[f2-i] > testval) fa = f2 - i;
+		if (sigpwr[f1+i] > peak) peak = sigpwr[f1+i];
+	}
+	if (fb > fa) {
+		f0 = (fa + fb) / 2;
+		return peak / sigavg / bw;
+	} else
+		return 0;
+//	int f1 = f0 - bw;
+//	int f2 = f0 + bw;
+//	f1 = f1 < bw ? bw : f1;
+//	return sigpeak(f0, f1, f2, bw);
+/*
+	double amp = 0;
+	int f = f0;
+	if ((amp = sigpeak(f, f1, f2, bw))) {
+		if (f <= 0) { return 0; }
+		f1 = f - bw;
+		f2 = f + bw;
+			if ((amp = sigpeak(f, f1, f2, bw))) {
+				if (f <= 0) { f = f1; return 0; }
+				f1 = f - bw;
+				f2 = f + bw;
+				amp = sigpeak(f, f1, f2, bw);
+			}
+		}
+	if (f <= 0) { return 0; }
+	f0 = f;
+	return amp;
+*/
 }
 
 void pskeval::clear() {

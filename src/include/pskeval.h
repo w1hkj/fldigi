@@ -34,7 +34,6 @@
 class pskeval {
 private:
 	double	sigpwr[FFT_LEN];
-	double	integral[FFT_LEN];
 	double	sigavg;
 	double	bw;
 public:
@@ -43,7 +42,9 @@ public:
 	void	clear();
 	void	setbw(double w) { bw = w;}
 	void	sigdensity();
-	double	sigpeak(int &f, int f1, int f2);
+	double	sigpeak(int &f, int f1, int f2, int bw);
+	double	peak(int &f, int f1, int f2, double val);
+	double	power(int f1, int f2);
 };
 
 #endif

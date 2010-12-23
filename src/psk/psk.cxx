@@ -607,7 +607,7 @@ void psk::findsignal()
 				f1 = (int)(frequency - progdefaults.ServerOffset);
 				f2 = (int)(frequency + progdefaults.ServerOffset);
 			}
-			if (evalpsk->sigpeak(ftest, f1, f2) > pow(10, progdefaults.ServerACQsn / 10) ) {
+			if (evalpsk->sigpeak(ftest, f1, f2, bandwidth) > pow(10, progdefaults.ServerACQsn / 10) ) {
 				if (progdefaults.PSKmailSweetSpot) {
 					if (fabs(ftest - progdefaults.ServerCarrier) < progdefaults.ServerOffset) {
 						frequency = ftest;
@@ -633,7 +633,7 @@ void psk::findsignal()
 		} else { // normal signal search algorithm
 			f1 = (int)(frequency - progdefaults.SearchRange/2);
 			f2 = (int)(frequency + progdefaults.SearchRange/2);
-			if (evalpsk->sigpeak(ftest, f1, f2) > pow(10, progdefaults.ACQsn / 10.0) ) {
+			if (evalpsk->sigpeak(ftest, f1, f2, bandwidth) > pow(10, progdefaults.ACQsn / 10.0) ) {
 				frequency = ftest;
 				set_freq(frequency);
 				freqerr = 0.0;
@@ -651,9 +651,9 @@ void psk::phaseafc()
 
 	error = (phase - bits * M_PI / 2.0);
 	if (error < -M_PI / 2.0 || error > M_PI / 2.0) return;
-	error *= samplerate / (TWOPI * symbollen);
+	error *= ((samplerate / (TWOPI * symbollen)) / 16);
 	if (fabs(error) < bandwidth ) {
-		freqerr = error / dcdbits;
+//		freqerr = error / dcdbits;
 		frequency -= freqerr;
 		if (mailserver) {
 			if (frequency < progdefaults.ServerCarrier - progdefaults.ServerAFCrange)

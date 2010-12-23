@@ -116,6 +116,7 @@ extern Fl_Button		*qso_btnSelFreq;
 extern Fl_Button		*qso_btnDelFreq;
 extern Fl_Button		*qso_btnClearList;
 
+extern Fl_Value_Slider2		*mvsquelch;
 extern Fl_Value_Slider2		*valRcvMixer;
 extern Fl_Value_Slider2		*valXmtMixer;
 extern Fl_Button			*btnAFC;

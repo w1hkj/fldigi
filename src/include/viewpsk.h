@@ -36,46 +36,63 @@
 #define VSEARCHWIDTH 70
 #define VSIGSEARCH 5
 #define VWAITCOUNT 4
+#define NULLFREQ 1e6
 //=====================================================================
+
+struct CHANNEL {
+	double			phaseacc;
+	complex			prevsymbol;
+	complex			quality;
+	unsigned int	shreg;
+	double			metric;
+
+	double			frequency;
+	double			freqerr;
+	double			phase;
+	double			syncbuf[16];
+
+	C_FIR_filter	*fir1;
+	C_FIR_filter	*fir2;
+	
+	int				bits;
+	double 			bitclk;
+	unsigned int	dcdshreg;
+	int 			dcd;
+	int				waitcount;
+	time_t			timeout;
+	bool			reset;
+
+};
 
 class viewpsk {
 private:
-	trx_mode viewmode;
+	trx_mode	viewmode;
 
-	int				symbollen;
-	double			phaseacc[MAXCHANNELS];
-	complex			prevsymbol[MAXCHANNELS];
-	complex			quality[MAXCHANNELS];
-	unsigned int	shreg[MAXCHANNELS];
-	double			metric[MAXCHANNELS];
-	
-	double			frequency[MAXCHANNELS];
-	int				nomfreq[MAXCHANNELS];
-	double			freqerr[MAXCHANNELS];
-	double			phase[MAXCHANNELS];
-	double			bandwidth;
+	int			symbollen;
+	double		bandwidth;
+	int			dcdbits;
 
-	C_FIR_filter	*fir1[MAXCHANNELS];
-	C_FIR_filter	*fir2[MAXCHANNELS];
-	
-	int				bits[MAXCHANNELS];
-	double 			bitclk[MAXCHANNELS];
-	double 			syncbuf[MAXCHANNELS * 16];
-	unsigned int	dcdshreg[MAXCHANNELS];
-	int 			dcd[MAXCHANNELS];
-	int				dcdbits;
-	int				waitcount[MAXCHANNELS];
-	time_t			now;
-	time_t			timeout[MAXCHANNELS];
+	int			fa;
+	int			fb;
+	int			ftest;
+	double		test_peak_amp;
+	time_t		now;
+	bool		reset_all;
+	bool		tracked;
+	bool		browser_changed;
 
-	pskeval*		evalpsk;
+	CHANNEL		channel[MAXCHANNELS];
 
-	void			rx_symbol(int ch, complex symbol);
-	void 			rx_bit(int ch, int bit);
+	pskeval*	evalpsk;
 
-	void			findsignal(int);
-	void			afc(int);
-	
+	void		rx_symbol(int ch, complex symbol);
+	void 		rx_bit(int ch, int bit);
+	void		findsignal(int);
+	void		afc(int);
+
+	inline void		timeout_check();
+	inline void		insert();
+
 public:
 	viewpsk(pskeval* eval, trx_mode mode);
 	~viewpsk();
@@ -85,8 +102,12 @@ public:
 	void tx_init(SoundBase *sc){};
 	void restart() {};
 	int rx_process(const double *buf, int len);
-	int get_freq(int n) { return (int)frequency[n];}
-	void set_freq(int n, double f) { frequency[n] = f; nomfreq[n] = (int)f; }
+	int get_freq(int n) { return (int)channel[n].frequency;}
+	void set_freq(int n, double f) { channel[n].frequency = f; }
+	void findsignals();
+	void clearch(int n);
+	void clear();
+
 };
 
 extern viewpsk *pskviewer;

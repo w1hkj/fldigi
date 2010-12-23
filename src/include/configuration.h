@@ -1055,6 +1055,12 @@
         ELEM_(bool, VIEWERmarquee, "VIEWERMARQUEE",                                     \
               "PSK Browser text continuous scrolling",                                  \
               true)                                                                     \
+        ELEM_(bool, VIEWERsort, "VIEWERSORT",                                           \
+              "PSK Browser sort after channel changes",                                 \
+              false)                                                                    \
+        ELEM_(bool, VIEWERfixed, "VIEWERfixed",                                         \
+              "PSK Browser data displayed on fixed 100 Hz intervals",                   \
+              true)                                                                     \
         ELEM_(int, VIEWERlabeltype, "VIEWERSHOWFREQ",                                   \
               "PSK Browser row label type.  Values are as follows:\n"                   \
               "  0: Audio frequency; 1: Radio frequency; 2: Channel number.",           \
@@ -1067,7 +1073,7 @@
               20)                                                                       \
         ELEM_(double, VIEWERsquelch, "VIEWERSQUELCH",                                   \
               "PSK Browser squelch level (%)",                                          \
-              10.0)                                                                     \
+              6.0)                                                                      \
         ELEM_(int, VIEWERtimeout, "VIEWERTIMEOUT",                                      \
               "PSK Browser inactivity timeout (to clear text)",                         \
               15)                                                                       \

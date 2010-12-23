@@ -261,6 +261,7 @@ void status::saveLastState()
 	Fl_Preferences spref(HomeDir.c_str(), "w1hkj.com", PACKAGE_TARNAME);
 
 	spref.set("version", PACKAGE_VERSION);
+	spref.set("dual_channels", "YES");
 
 	spref.set("mode_name", mode_info[lastmode].sname);
 	spref.set("squelch_enabled", sqlonoff);
@@ -379,15 +380,15 @@ void status::loadLastState()
 	char version[64]; version[sizeof(version)-1] = '\0';
 	char* defbuffer;
 
-	bLastStateRead = spref.get("version", version, "", sizeof(version)-1);
 	// Skip loading the rest of the status variables if we didn't read a
-	// version name/value pair; also clear everything to avoid creating
-	// entries out of existing file contents.
-	if (!bLastStateRead) {
-//		while (spref.entries())
-//			spref.deleteEntry(spref.entry(0));
+	// version name/value pair; or this is not a file that supports dual
+	// channel browsers.
+	bLastStateRead = spref.get("version", version, "", sizeof(version)-1);
+	if (!bLastStateRead)
 		return;
-	}
+	bLastStateRead = spref.get("dual_channels", version, "", sizeof(version) - 1);
+	if (!bLastStateRead)
+		return;
 
 	int i;
 
@@ -600,13 +601,15 @@ else {
 	fl_digi_main->init_sizes();
 	if (!(RxTextHeight > 0 && RxTextHeight < VTgroup->h()))
 		RxTextHeight = VTgroup->h() / 3 * 2;
-//	if (show_channels) {
-//printf("xpos = %d\n", tiled_group_x);
-//		HTgroup->position(tiled_group_x, 0, tiled_group_x, ReceiveText->y());
-//	} else {
-//		HTgroup->position(100, 0, 0, ReceiveText->y());
-//	}
-//show_channels = true;
+
+	if (show_channels) {
+		HTgroup->newx( progStatus.tiled_group_x );
+		progStatus.show_channels = true;
+	} else {
+		HTgroup->newx( HTgroup->x() );
+		progStatus.show_channels = false;
+	}
+
 	VTgroup->position(0, ReceiveText->y() + 66, VTgroup->x(), ReceiveText->y() + RxTextHeight);
 }
 

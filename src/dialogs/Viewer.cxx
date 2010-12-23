@@ -39,7 +39,6 @@
 #include "gettext.h"
 #include "flmisc.h"
 #include "flinput2.h"
-#include "flslider2.h"
 #include "spot.h"
 #include "icons.h"
 
@@ -49,64 +48,22 @@ extern pskBrowser *mainViewer;
 
 using namespace std;
 
-//static int freq; 
+//
+// External viewer dialog
+// 
+
+Fl_Double_Window *dlgViewer = 0;
+static Fl_Button *btnCloseViewer;
+static Fl_Button *btnClearViewer;
+
+Fl_Value_Slider2 *sldrViewerSquelch;
+
+pskBrowser *brwsViewer;
 
 static long long rfc;
 static bool usb;
 
 fre_t seek_re("CQ", REG_EXTENDED | REG_ICASE | REG_NOSUB);
-
-Fl_Double_Window *dlgViewer = 0;
-
-static Fl_Button *btnCloseViewer;
-static Fl_Button *btnClearViewer;
-
-pskBrowser *brwsViewer;
-
-static string brwsViewer_freqformat(int i)
-{
-	long freq;
-	if (pskviewer)
-		freq = pskviewer->get_freq(progdefaults.VIEWERchannels - 1 - i);
-	else
-		freq = progdefaults.VIEWERstart + 100 * (progdefaults.VIEWERchannels - 1 - i);
-	return brwsViewer->freqformat(i, freq);
-}
-
-static string mainViewer_freqformat(int i)
-{
-	if (!mainViewer) return "";
-	long freq;
-	if (pskviewer)
-		freq = pskviewer->get_freq(progdefaults.VIEWERchannels - 1 - i);
-	else
-		freq = progdefaults.VIEWERstart + 100 * (progdefaults.VIEWERchannels - 1 - i);
-	return mainViewer->freqformat(i, freq);
-}
-
-static void cb_btnCloseViewer(Fl_Button*, void*) {
-	progStatus.VIEWERxpos = dlgViewer->x();
-	progStatus.VIEWERypos = dlgViewer->y();
-	dlgViewer->hide();
-}
-
-static void ClearViewer()
-{
-	usb = wf->USB();
-	rfc = wf->rfcarrier();
-	if (pskviewer)
-		pskviewer->init();
-	if (brwsViewer) {
-		brwsViewer->usb = usb;
-		brwsViewer->rfc = rfc;
-		brwsViewer->clear();
-	}
-	if (mainViewer) {
-		mainViewer->usb = usb;
-		mainViewer->rfc = rfc;
-		mainViewer->clear();
-	}
-}
 
 void initViewer()
 {
@@ -122,6 +79,7 @@ void initViewer()
 	if (dlgViewer) {
 		brwsViewer->usb = usb;
 		brwsViewer->rfc = rfc;
+		sldrViewerSquelch->value(progdefaults.VIEWERsquelch);
 		brwsViewer->setfont(progdefaults.ViewerFontnbr, progdefaults.ViewerFontsize);
 		dlgViewer->size(dlgViewer->w(), dlgViewer->h() - brwsViewer->h() +
 			pskBrowser::cheight * progdefaults.VIEWERchannels + 4);
@@ -129,46 +87,103 @@ void initViewer()
 	}
 }
 
-// i in [1, progdefaults.VIEWERchannels]
-static void set_freq(int i, int freq)
+void viewaddchr(int ch, int freq, char c, int md)
 {
-	if (freq == 0) // reset
-		freq = progdefaults.VIEWERstart + 100 * (progdefaults.VIEWERchannels - i);
+	if (mainViewer->rfc != wf->rfcarrier() || mainViewer->usb != wf->USB()) {
+		mainViewer->rfc = wf->rfcarrier();
+		mainViewer->usb = wf->USB();
+		mainViewer->redraw();
+	}
+	mainViewer->addchr(ch, freq, c, md);
 
-	pskviewer->set_freq(progdefaults.VIEWERchannels - i, freq);
-	if (brwsViewer) brwsViewer->set_freq(i, freq);
-	if (mainViewer) mainViewer->set_freq(i, freq);
+	if (dlgViewer) {
+		if (brwsViewer->rfc != wf->rfcarrier() || brwsViewer->usb != wf->USB()) {
+			brwsViewer->rfc = wf->rfcarrier();
+			brwsViewer->usb = wf->USB();
+			brwsViewer->redraw();
+		}
+		brwsViewer->addchr(ch, freq, c, md);
+	}
+
+	if (progStatus.spot_recv && freq != NULLFREQ)
+		spot_recv(c, ch, freq, md);
+}
+
+void viewclearchannel(int ch)
+{
+	mainViewer->clearch(ch + 1, NULLFREQ);
+	if (dlgViewer)
+		brwsViewer->clearch(ch + 1, NULLFREQ);
+}
+
+void viewerswap(int i, int j)
+{
+	mainViewer->swap(i,j);
+	if (dlgViewer)
+		brwsViewer->swap(i,j);
+}
+
+void viewer_redraw()
+{
+	usb = wf->USB();
+	rfc = wf->rfcarrier();
+
+	mainViewer->usb = usb;
+	mainViewer->rfc = rfc;
+	mainViewer->resize(mainViewer->x(), mainViewer->y(), mainViewer->w(), mainViewer->h());
+
+	if (dlgViewer) {
+		brwsViewer->usb = usb;
+		brwsViewer->rfc = rfc;
+		brwsViewer->resize(
+			brwsViewer->x(), brwsViewer->y(), brwsViewer->w(), brwsViewer->h());
+		dlgViewer->redraw();
+	}
+}
+
+static void cb_btnCloseViewer(Fl_Button*, void*) {
+	progStatus.VIEWERxpos = dlgViewer->x();
+	progStatus.VIEWERypos = dlgViewer->y();
+	dlgViewer->hide();
 }
 
 static void cb_btnClearViewer(Fl_Button*, void*) {
-	if (Fl::event_button() == FL_LEFT_MOUSE)
-		brwsViewer->clear();
-	else
-		for (int i = 1; i <= progdefaults.VIEWERchannels; i++)
-			set_freq(i, 0);
+	brwsViewer->clear();
 }
 
 static void cb_brwsViewer(Fl_Hold_Browser*, void*) {
+	if (!pskviewer) return;
 	int sel = brwsViewer->value();
 	if (sel == 0 || sel > progdefaults.VIEWERchannels)
 		return;
 
 	switch (Fl::event_button()) {
 	case FL_LEFT_MOUSE:
-		ReceiveText->addchr('\n', FTextBase::ALTR);
-		ReceiveText->addstr(brwsViewer->line(sel).c_str(), FTextBase::ALTR);
-		active_modem->set_freq(brwsViewer->freq(sel));
+		if (brwsViewer->freq(sel) != NULLFREQ) {
+			ReceiveText->addchr('\n', FTextBase::ALTR);
+			ReceiveText->addstr(brwsViewer->line(sel).c_str(), FTextBase::ALTR);
+			active_modem->set_freq(brwsViewer->freq(sel));
+			active_modem->set_sigsearch(SIGSEARCH);
+		}
 		break;
 	case FL_MIDDLE_MOUSE: // copy from modem
-		set_freq(sel, active_modem->get_freq());
+//		set_freq(sel, active_modem->get_freq());
 		break;
 	case FL_RIGHT_MOUSE: // reset
-		set_freq(sel, 0);
-		break;
+		pskviewer->clearch(sel-1);
+		brwsViewer->deselect();
 	default:
 		break;
 	}
 }
+
+static void cb_Squelch(Fl_Slider *, void *)
+{
+	progdefaults.VIEWERsquelch = sldrViewerSquelch->value();
+	mvsquelch->value(progdefaults.VIEWERsquelch);
+	progdefaults.changed = true;
+}
+
 
 Fl_Double_Window* createViewer(void)
 {
@@ -192,22 +207,35 @@ Fl_Double_Window* createViewer(void)
 
 	Fl_Group *g = new Fl_Group(BWSR_BORDER, brwsViewer->y() + brwsViewer->h() + pad, viewerwidth, 20);
 	// close button
-	btnCloseViewer = new Fl_Button(BWSR_BORDER, g->y(), 65, g->h(),
+	btnCloseViewer = new Fl_Button(g->w() + BWSR_BORDER - 65, g->y(), 65, g->h(),
 				       make_icon_label(_("Close"), close_icon));
 	btnCloseViewer->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
 	set_icon_label(btnCloseViewer);
 	btnCloseViewer->callback((Fl_Callback*)cb_btnCloseViewer);
 
 	// clear button
-	btnClearViewer = new Fl_Button(btnCloseViewer->x() + 65 + pad,
-				       btnCloseViewer->y(), 65, btnCloseViewer->h(),
+	btnClearViewer = new Fl_Button(btnCloseViewer->x() - btnCloseViewer->w() - pad,
+				       btnCloseViewer->y(), btnCloseViewer->w(), btnCloseViewer->h(),
 				       make_icon_label(_("Clear"), edit_clear_icon));
 	btnClearViewer->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
 	set_icon_label(btnClearViewer);
 	btnClearViewer->callback((Fl_Callback*)cb_btnClearViewer);
 	btnClearViewer->tooltip(_("Left click to clear text\nRight click to reset frequencies"));
 
-	g->resizable(0); // do not resize the buttons
+	// squelch
+	sldrViewerSquelch = new Fl_Value_Slider2(BWSR_BORDER, g->y(),
+						 btnClearViewer->x() - BWSR_BORDER - pad, g->h());
+	sldrViewerSquelch->align(FL_ALIGN_RIGHT);
+	sldrViewerSquelch->tooltip(_("Set Viewer Squelch"));
+	sldrViewerSquelch->type(FL_HOR_NICE_SLIDER);
+	sldrViewerSquelch->range(-6.0, 20.0);
+	sldrViewerSquelch->step(0.5);
+	sldrViewerSquelch->value(progdefaults.VIEWERsquelch);
+	sldrViewerSquelch->callback((Fl_Callback*)cb_Squelch);
+	sldrViewerSquelch->color((Fl_Color)246);
+	sldrViewerSquelch->selection_color((Fl_Color)4);
+
+	g->resizable(sldrViewerSquelch);
 	g->end();
 
 	w->end();
@@ -227,92 +255,18 @@ void openViewer()
 		dlgViewer = createViewer();
 		initViewer();
 	}
-	ClearViewer();
+	initViewer();
 	dlgViewer->show();
 	dlgViewer->redraw();
 }
 
-void viewer_redraw()
-{
-	usb = wf->USB();
-	rfc = wf->rfcarrier();
-
-	if (mainViewer) {
-		mainViewer->usb = usb;
-		mainViewer->rfc = rfc;
-		for (int i = 0; i < progdefaults.VIEWERchannels; i++)
-			mainViewer->text(i + 1, mainViewer_freqformat(i).c_str() );
-	}
-	if (dlgViewer) {
-		brwsViewer->usb = usb;
-		brwsViewer->rfc = rfc;
-		for (int i = 0; i < progdefaults.VIEWERchannels; i++)
-			brwsViewer->text(i + 1, brwsViewer_freqformat(i).c_str() );
-	}
-}
-
-void viewaddchr(int ch, int freq, char c, int md)
-{
-	if (mainViewer) {
-		if (mainViewer->rfc != wf->rfcarrier() || mainViewer->usb != wf->USB()) {
-			mainViewer->rfc = wf->rfcarrier();
-			mainViewer->usb = wf->USB();
-			mainViewer->redraw();
-		}
-		mainViewer->addchr(ch, freq, c, md);
-	}
-
-	if (progStatus.spot_recv)
-		spot_recv(c, ch, freq, md);
-
-	if (!dlgViewer) return;
-	if (rfc != wf->rfcarrier() || usb != wf->USB()) viewer_redraw();
-	brwsViewer->addchr(ch, freq, c, md);
-}
-
-void viewclearchannel(int ch)
-{
-	int index = progdefaults.VIEWERchannels - 1 - ch;
-	string nuline;
-	if (mainViewer) {
-		nuline = mainViewer_freqformat(index);
-		mainViewer->clearline(index);
-		mainViewer->text( 1 + index, nuline.c_str());
-		mainViewer->redraw();
-	}
-	if (dlgViewer) {
-		nuline = brwsViewer_freqformat(index);
-		brwsViewer->clearline(index);
-		brwsViewer->text( 1 + index, nuline.c_str());
-		brwsViewer->redraw();
-	}
-}
-
 void viewer_paste_freq(int freq)
 {
-	if (dlgViewer) {
-		int sel = 1, n = brwsViewer->size();
-		for (int i = 0; i < n; i++) {
-			if (brwsViewer->selected(i)) {
-				brwsViewer->select(i, false);
-				sel = i;
-				break;
-			}
-		}
-		set_freq(sel, freq);
-		brwsViewer->select(WCLAMP(sel+1, 1, n));
-	}
-	if (mainViewer) {
-		int sel = 1, n = mainViewer->size();
-		for (int i = 0; i < n; i++) {
-			if (mainViewer->selected(i)) {
-				mainViewer->select(i, false);
-				sel = i;
-				break;
-			}
-		}
-		set_freq(sel, freq);
-		mainViewer->select(WCLAMP(sel+1, 1, n));
-	}
+	int ch = (freq - progdefaults.LowFreqCutoff) / 100;
 
+	mainViewer->select(WCLAMP(0, progdefaults.VIEWERchannels, ch));
+	if (dlgViewer)
+		brwsViewer->select(WCLAMP(0, progdefaults.VIEWERchannels, ch));
 }
+
+

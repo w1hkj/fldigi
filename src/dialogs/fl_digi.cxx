@@ -302,8 +302,11 @@ Fl_Button			*qso_btnAct = 0;
 Fl_Input2			*qso_inpAct = 0;
 
 Fl_Group			*MixerFrame;
-Fl_Value_Slider2		*valRcvMixer;
-Fl_Value_Slider2		*valXmtMixer;
+Fl_Value_Slider2	*valRcvMixer = (Fl_Value_Slider2 *)0;
+Fl_Value_Slider2	*valXmtMixer = (Fl_Value_Slider2 *)0;
+
+Fl_Value_Slider2	*mvsquelch = (Fl_Value_Slider2 *)0;
+Fl_Button			*btnClearMViewer = 0;
 
 int pad = 1;
 int Hentry		= 24;
@@ -1346,8 +1349,11 @@ void cb_view_hide_channels(Fl_Menu_ *w, void *d)
 {
 	if (mainViewer->w() == 0) {
 		HTgroup->newx( progStatus.tiled_group_x );
-	} else
+		progStatus.show_channels = true;
+	} else {
 		HTgroup->newx( HTgroup->x() );
+		progStatus.show_channels = false;
+	}
 	return;
 }
 
@@ -2168,6 +2174,19 @@ void cb_XmtMixer(Fl_Widget *w, void *d)
 	mixer->setXmtLevel(progStatus.XmtMixer);
 }
 
+void cb_mvsquelch(Fl_Widget *w, void *d)
+{
+	progdefaults.VIEWERsquelch = mvsquelch->value();
+	if (sldrViewerSquelch)
+		sldrViewerSquelch->value(progdefaults.VIEWERsquelch);
+	progdefaults.changed = true;
+}
+
+void cb_btnClearMViewer(Fl_Widget *w, void *d)
+{
+	pskviewer->clear();
+}
+
 int default_handler(int event)
 {
 	if (event != FL_SHORTCUT)
@@ -2656,7 +2675,9 @@ Fl_Menu_Item menu_[] = {
 { make_icon_label(_("Floating scope"), utilities_system_monitor_icon), 'd', (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(WEFAX_IMAGE_MLABEL, image_icon), 'w', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(_("PSK browser")), 'p', (Fl_Callback*)cb_mnuViewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+
+{ make_icon_label(_("Signal browser")), 's', (Fl_Callback*)cb_mnuViewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+
 { make_icon_label(COUNTRIES_MLABEL), 'o', (Fl_Callback*)cb_mnuShowCountries, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 
 { make_icon_label(_("Controls")), 0, 0, 0, FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
@@ -3161,33 +3182,28 @@ void cb_btnCW_Default(Fl_Widget *w, void *v)
 	restoreFocus();
 }
 
-static void set_mainViewerFreq(int i, int freq)
-{
-	if (freq == 0) // reset
-		freq = progdefaults.VIEWERstart + 100 * (progdefaults.VIEWERchannels - i);
-
-	pskviewer->set_freq(progdefaults.VIEWERchannels - i, freq);
-	mainViewer->set_freq(i, freq);
-}
-
 static void cb_mainViewer(Fl_Hold_Browser*, void*) {
+	if (!pskviewer) return;
 	int sel = mainViewer->value();
 	if (sel == 0 || sel > progdefaults.VIEWERchannels)
 		return;
 
 	switch (Fl::event_button()) {
 	case FL_LEFT_MOUSE:
-		if (!pskviewer) break;
-		ReceiveText->addchr('\n', FTextBase::ALTR);
-		ReceiveText->addstr(mainViewer->line(sel).c_str(), FTextBase::ALTR);
-		active_modem->set_freq(mainViewer->freq(sel));
-		break;
-	case FL_MIDDLE_MOUSE: // copy from modem
-//		set_mainViewerFreq(sel, active_modem->get_freq());
+		if (mainViewer->freq(sel) != NULLFREQ) {
+			ReceiveText->addchr('\n', FTextBase::ALTR);
+			ReceiveText->addstr(mainViewer->line(sel).c_str(), FTextBase::ALTR);
+			active_modem->set_freq(mainViewer->freq(sel));
+			active_modem->set_sigsearch(SIGSEARCH);
+		}
 		break;
 	case FL_RIGHT_MOUSE: // reset
-		if (pskviewer) set_mainViewerFreq(sel, 0);
-		mainViewer->clear();
+//		if (Fl::event_state(FL_SHIFT)) {
+//			pskviewer->clear();
+//		} else {
+			pskviewer->clearch(sel-1);
+			mainViewer->deselect();
+//		}
 		break;
 	default:
 		break;
@@ -3863,12 +3879,39 @@ void create_fl_digi_main_primary() {
 		HTgroup = new Fl_Tile_Check(sw, Y, progStatus.mainW - sw, Htext);
 		HTgroup->callback(cb_tiled_group);
 
-		mainViewer = new pskBrowser(HTgroup->x(), HTgroup->y(), HTwidth, Htext, "");
+		Fl_Group *mvgroup = new Fl_Group(HTgroup->x(), HTgroup->y(), HTwidth, Htext, "");
+		mvgroup->box(FL_DOWN_BOX);
+
+		mainViewer = new pskBrowser(HTgroup->x(), HTgroup->y(), HTwidth, Htext-20, "");
 		mainViewer->has_scrollbar(Fl_Browser_::VERTICAL);//_ALWAYS);//BOTH_ALWAYS);
 		mainViewer->callback((Fl_Callback*)cb_mainViewer);
 		mainViewer->setfont(progdefaults.ViewerFontnbr, progdefaults.ViewerFontsize);
-		mainViewer->tooltip(_("Left click - select\nRight click - clear all"));
+		mainViewer->tooltip(_("Left click - select\nRight click - clear line"));
 		mainViewer->seek_re = &seek_re;
+
+		Fl_Group *g = new Fl_Group(HTgroup->x(), HTgroup->y() + Htext - 20, mainViewer->w(), 20);
+	// clear button
+		btnClearMViewer = new Fl_Button(g->x() + g->w() - 65, g->y(), 65, g->h(),
+							make_icon_label(_("Clear"), edit_clear_icon));
+		btnClearMViewer->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
+		set_icon_label(btnClearMViewer);
+		btnClearMViewer->callback((Fl_Callback*)cb_btnClearMViewer);
+
+	// squelch
+		mvsquelch = new Fl_Value_Slider2(g->x(), g->y(), g->w() - 65 - pad, g->h());
+		mvsquelch->type(FL_HOR_NICE_SLIDER);
+		mvsquelch->range(-6.0, 20.0);
+		mvsquelch->value(progdefaults.VIEWERsquelch);
+		mvsquelch->step(0.5);
+		mvsquelch->color((Fl_Color)246);
+		mvsquelch->selection_color((Fl_Color)4);
+		mvsquelch->callback( (Fl_Callback *)cb_mvsquelch);
+
+		g->resizable(mvsquelch);
+		g->end();
+
+		mvgroup->resizable(mainViewer);
+		mvgroup->end();
 
 		VTgroup = new Fl_Tile_Check(HTgroup->x() + HTwidth, HTgroup->y(), VTwidth, Htext);
 
@@ -4300,7 +4343,9 @@ Fl_Menu_Item alt_menu_[] = {
 //{ make_icon_label(_("Extern Scope"), utilities_system_monitor_icon), 'd', (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(WEFAX_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(_("PSK Browser")), 'p', (Fl_Callback*)cb_mnuViewer, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+
+{ make_icon_label(_("Signal Browser")), 's', (Fl_Callback*)cb_mnuViewer, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+
 { DOCKEDSCOPE_MLABEL, 0, (Fl_Callback*)cb_mnuAltDockedscope, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
@@ -4893,8 +4938,9 @@ static void put_rx_char_flmain(unsigned int data, int style)
 		s = ascii2[data & 0x7F];
 	else {
 		s += data;
-		bool viewer = (mode >= MODE_PSK_FIRST && mode <= MODE_PSK_LAST && dlgViewer && dlgViewer->visible());
-		if (progStatus.spot_recv && !viewer)
+//		bool viewer = (mode >= MODE_PSK_FIRST && mode <= MODE_PSK_LAST && dlgViewer && dlgViewer->visible());
+//		if (progStatus.spot_recv && !viewer)
+		if (mode >= MODE_PSK_FIRST && mode <= MODE_PSK_LAST && progStatus.spot_recv)
 			spot_recv(data);
 	}
 	if (Maillogfile)

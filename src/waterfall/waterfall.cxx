@@ -1367,7 +1367,7 @@ void waterfall::Carrier(int f)
 extern void viewer_redraw();
 void waterfall::rfcarrier(long long cf) {
 	wfdisp->rfcarrier(cf);
-	REQ(&viewer_redraw);
+//	REQ(&viewer_redraw);
 }
 
 long long waterfall::rfcarrier() {
@@ -1786,6 +1786,7 @@ int WFdisp::handle(int event)
 				progdefaults.LowFreqCutoff + active_modem->get_bandwidth() / 2, 
 				progdefaults.HighFreqCutoff - active_modem->get_bandwidth() / 2);
 			active_modem->set_freq(newcarrier);
+			viewer_paste_freq(newcarrier);
 			if (!(Fl::event_state() & FL_SHIFT))
 				active_modem->set_sigsearch(SIGSEARCH);
 			redrawCursor();
@@ -1794,12 +1795,12 @@ int WFdisp::handle(int event)
 		case FL_MIDDLE_MOUSE:
 			if (event == FL_DRAG)
 				break;
-			if (Fl::event_state() & FL_CTRL)
-				viewer_paste_freq(cursorFreq(xpos));
-			else {
+//			if (Fl::event_state() & FL_CTRL)
+//				viewer_paste_freq(cursorFreq(xpos));
+//			else {
 				btnAFC->value(!btnAFC->value());
 				btnAFC->do_callback();
-			}
+//			}
 		}
 		break;
 	case FL_RELEASE:
