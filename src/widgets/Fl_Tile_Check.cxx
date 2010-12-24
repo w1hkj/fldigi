@@ -36,6 +36,7 @@
 
 void Tile_::position(int oix, int oiy, int newx, int newy) {
 	Fl_Widget* const* a = array();
+//	Fl_Widget *o;
 	short* p = sizes();
 	p += 8; // skip group & resizable's saved size
 	for (int i=children(); i--; p += 4) {
@@ -66,16 +67,16 @@ void Tile_::newx( int newx )
 {
 	Fl_Widget* const* a = array();
 	short* p = sizes();
-	Fl_Widget *o = *a;
+//	Fl_Widget *o;// = *a;
 	int gX = x(), gW = w();
 	p += 8; // skip group & resizable's saved size
 
 	for (int i=children(); i--; p += 4) {
-		Fl_Widget* o = *a++;
+		Fl_Widget *o = *a++;
 		if (o == resizable())
 			continue;
 		int X = o->x();
-		int R = X + o->w();
+//		int R = X + o->w();
 		int Y = o->y();
 		int H = o->h();
 

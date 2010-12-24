@@ -1203,12 +1203,12 @@ int MACROTEXT::loadMacros(const string& filename)
 
 	if (!mFile) {
 		create_new_macros();
-		for (int i = 0; i < 12; i++) {
-			btnMacro[i]->label( name[i].c_str());
-			btnMacro[i]->redraw_label();
-		}
-		return 0;
-	}
+//		for (int i = 0; i < 12; i++) {
+//			btnMacro[i]->label( name[i].c_str());
+//			btnMacro[i]->redraw_label();
+//		}
+//		return 0;
+	} else {
 
 	mFile.getline(szLine, 4095);
 	mLine = szLine;
@@ -1252,9 +1252,14 @@ int MACROTEXT::loadMacros(const string& filename)
 		text[mNumber] = text[mNumber] + mLine;
 	}
 	mFile.close();
-	altMacros = 0;
-	btnAltMacros->label("1");
-	btnAltMacros->redraw_label();
+}
+
+	for (int row = 0; row < NUMKEYROWS; row++) {
+		for (int i = 0; i < NUMMACKEYS; i++) {
+			btnMacro[row * NUMMACKEYS + i]->label(macros.name[(NUMKEYROWS - row - 1)*NUMMACKEYS + i].c_str());
+			btnMacro[row * NUMMACKEYS + i]->redraw_label();
+		}
+	}
 	return 0;
 }
 

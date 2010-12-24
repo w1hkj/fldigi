@@ -183,17 +183,17 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabUI {
-        label UI
+        label UI open
         xywh {-3 25 508 345} hide
       } {
         Fl_Tabs tabsUI {open
           xywh {-3 25 508 345} selection_color 50
         } {
           Fl_Group tabUserInterface {
-            label General open
+            label General
             xywh {0 50 500 320}
           } {
-            Fl_Group {} {open
+            Fl_Group {} {
               xywh {5 60 490 301} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnShowTooltips {
@@ -263,7 +263,7 @@ defined here. Tab and newline are automatically included.} xywh {125 285 75 24} 
               }
             }
             Fl_Group {} {
-              label {QSO logging} open
+              label {QSO logging}
               xywh {8 130 484 146} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnNagMe {
@@ -461,104 +461,107 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabWF_UI {
-            label {Operator Controls}
+            label {Operator Controls} open
             xywh {0 50 500 320} hide
           } {
-            Fl_Box {} {
-              label {Enable check box to show each respective operator control}
-              xywh {31 65 446 25} box FLAT_BOX align 16
-            }
-            Fl_Check_Button btnWF_UIrev {
-              label Reverse
-              callback {progdefaults.WF_UIrev = o->value();
+            Fl_Group {} {open
+              xywh {2 58 496 253} box ENGRAVED_BOX
+            } {
+              Fl_Box {} {
+                label {Enable check box to show each respective operator control}
+                xywh {31 65 446 25} box FLAT_BOX align 16
+              }
+              Fl_Check_Button btnWF_UIrev {
+                label Reverse
+                callback {progdefaults.WF_UIrev = o->value();
 progdefaults.changed = true;
 WF_UI();}
-              xywh {58 98 150 20} down_box DOWN_BOX value 1
-              code0 {o->value(progdefaults.WF_UIrev);}
-            }
-            Fl_Check_Button btnWF_UIx1 {
-              label {WF Magnification}
-              callback {progdefaults.WF_UIx1 = o->value();
+                xywh {58 98 150 20} down_box DOWN_BOX value 1
+                code0 {o->value(progdefaults.WF_UIrev);}
+              }
+              Fl_Check_Button btnWF_UIx1 {
+                label {WF Magnification}
+                callback {progdefaults.WF_UIx1 = o->value();
 progdefaults.changed = true;
 WF_UI();}
-              xywh {277 98 162 20} down_box DOWN_BOX value 1
-              code0 {o->value(progdefaults.WF_UIx1);}
-            }
-            Fl_Check_Button btnWF_UIwfcarrier {
-              label {WF carrier}
-              callback {progdefaults.WF_UIwfcarrier = o->value();
+                xywh {277 98 162 20} down_box DOWN_BOX value 1
+                code0 {o->value(progdefaults.WF_UIx1);}
+              }
+              Fl_Check_Button btnWF_UIwfcarrier {
+                label {WF carrier}
+                callback {progdefaults.WF_UIwfcarrier = o->value();
 progdefaults.changed = true;
 WF_UI();}
-              xywh {58 136 150 20} down_box DOWN_BOX value 1
-              code0 {o->value(progdefaults.WF_UIwfcarrier);}
-            }
-            Fl_Check_Button btnWF_UIwfshift {
-              label {WF Shift Controls}
-              callback {progdefaults.WF_UIwfshift = o->value();
+                xywh {58 129 150 20} down_box DOWN_BOX value 1
+                code0 {o->value(progdefaults.WF_UIwfcarrier);}
+              }
+              Fl_Check_Button btnWF_UIwfshift {
+                label {WF Shift Controls}
+                callback {progdefaults.WF_UIwfshift = o->value();
 progdefaults.changed = true;
 WF_UI();}
-              xywh {277 136 150 20} down_box DOWN_BOX value 1
-              code0 {o->value(progdefaults.WF_UIwfshift);}
-            }
-            Fl_Check_Button btnWF_UIwfreflevel {
-              label {WF ref level}
-              callback {progdefaults.WF_UIwfreflevel = o->value();
+                xywh {277 129 150 20} down_box DOWN_BOX value 1
+                code0 {o->value(progdefaults.WF_UIwfshift);}
+              }
+              Fl_Check_Button btnWF_UIwfreflevel {
+                label {WF ref level}
+                callback {progdefaults.WF_UIwfreflevel = o->value();
 progdefaults.changed = true;
 WF_UI();}
-              xywh {58 175 150 20} down_box DOWN_BOX value 1
-              code0 {o->value(progdefaults.WF_UIwfreflevel);}
-            }
-            Fl_Check_Button btnWF_UIwfdrop {
-              label {WF drop rate}
-              callback {progdefaults.WF_UIwfdrop = o->value();
+                xywh {58 161 150 20} down_box DOWN_BOX value 1
+                code0 {o->value(progdefaults.WF_UIwfreflevel);}
+              }
+              Fl_Check_Button btnWF_UIwfdrop {
+                label {WF drop rate}
+                callback {progdefaults.WF_UIwfdrop = o->value();
 progdefaults.changed = true;
 WF_UI();}
-              xywh {277 175 150 20} down_box DOWN_BOX value 1
-              code0 {o->value(progdefaults.WF_UIwfdrop);}
-            }
-            Fl_Check_Button btnWF_UIwfampspan {
-              label {WF amp span}
-              callback {progdefaults.WF_UIwfampspan = o->value();
+                xywh {277 161 150 20} down_box DOWN_BOX value 1
+                code0 {o->value(progdefaults.WF_UIwfdrop);}
+              }
+              Fl_Check_Button btnWF_UIwfampspan {
+                label {WF amp span}
+                callback {progdefaults.WF_UIwfampspan = o->value();
 progdefaults.changed = true;
 WF_UI();}
-              xywh {58 213 150 20} down_box DOWN_BOX value 1
-              code0 {o->value(progdefaults.WF_UIwfampspan);}
-            }
-            Fl_Check_Button btnWF_UIwfstore {
-              label {WF Store}
-              callback {progdefaults.WF_UIwfstore = o->value();
+                xywh {58 193 150 20} down_box DOWN_BOX value 1
+                code0 {o->value(progdefaults.WF_UIwfampspan);}
+              }
+              Fl_Check_Button btnWF_UIwfstore {
+                label {WF Store}
+                callback {progdefaults.WF_UIwfstore = o->value();
 progdefaults.changed = true;
 WF_UI();}
-              xywh {277 213 150 20} down_box DOWN_BOX value 1
-              code0 {o->value(progdefaults.WF_UIwfstore);}
-            }
-            Fl_Check_Button btnWF_UIwfmode {
-              label {WF mode}
-              callback {progdefaults.WF_UIwfmode = o->value();
+                xywh {277 193 150 20} down_box DOWN_BOX value 1
+                code0 {o->value(progdefaults.WF_UIwfstore);}
+              }
+              Fl_Check_Button btnWF_UIwfmode {
+                label {WF mode}
+                callback {progdefaults.WF_UIwfmode = o->value();
 progdefaults.changed = true;
 WF_UI();}
-              xywh {58 249 150 20} down_box DOWN_BOX value 1
-              code0 {o->value(progdefaults.WF_UIwfmode);}
-            }
-            Fl_Check_Button btnWF_UIqsy {
-              label QSY
-              callback {progdefaults.WF_UIqsy = o->value();
+                xywh {58 225 150 20} down_box DOWN_BOX value 1
+                code0 {o->value(progdefaults.WF_UIwfmode);}
+              }
+              Fl_Check_Button btnWF_UIqsy {
+                label QSY
+                callback {progdefaults.WF_UIqsy = o->value();
 progdefaults.changed = true;
 WF_UI();}
-              xywh {277 249 150 20} down_box DOWN_BOX value 1
-              code0 {o->value(progdefaults.WF_UIqsy);}
-            }
-            Fl_Check_Button btnWF_UIxmtlock {
-              label {XMT lock}
-              callback {progdefaults.WF_UIxmtlock = o->value();
+                xywh {277 225 150 20} down_box DOWN_BOX value 1
+                code0 {o->value(progdefaults.WF_UIqsy);}
+              }
+              Fl_Check_Button btnWF_UIxmtlock {
+                label {XMT lock}
+                callback {progdefaults.WF_UIxmtlock = o->value();
 progdefaults.changed = true;
 WF_UI();}
-              xywh {277 285 150 20} down_box DOWN_BOX value 1
-              code0 {o->value(progdefaults.WF_UIxmtlock);}
-            }
-            Fl_Button btn_wf_enable_all {
-              label {Enable all}
-              callback {btnWF_UIrev->value(progdefaults.WF_UIrev = 1);
+                xywh {277 257 150 20} down_box DOWN_BOX value 1
+                code0 {o->value(progdefaults.WF_UIxmtlock);}
+              }
+              Fl_Button btn_wf_enable_all {
+                label {Enable all}
+                callback {btnWF_UIrev->value(progdefaults.WF_UIrev = 1);
 btnWF_UIwfcarrier->value(progdefaults.WF_UIwfcarrier = 1);
 btnWF_UIwfreflevel->value(progdefaults.WF_UIwfreflevel = 1);
 btnWF_UIwfampspan->value(progdefaults.WF_UIwfampspan = 1);
@@ -573,11 +576,11 @@ btnWF_UIxmtlock->value(progdefaults.WF_UIxmtlock = 1);
 
 progdefaults.changed = true;
 WF_UI();}
-              xywh {102 321 88 20}
-            }
-            Fl_Button btn_wf_disable_all {
-              label {Disable all}
-              callback {btnWF_UIrev->value(progdefaults.WF_UIrev = 0);
+                xywh {102 280 88 20}
+              }
+              Fl_Button btn_wf_disable_all {
+                label {Disable all}
+                callback {btnWF_UIrev->value(progdefaults.WF_UIrev = 0);
 btnWF_UIwfcarrier->value(progdefaults.WF_UIwfcarrier = 0);
 btnWF_UIwfreflevel->value(progdefaults.WF_UIwfreflevel = 0);
 btnWF_UIwfampspan->value(progdefaults.WF_UIwfampspan = 0);
@@ -592,11 +595,12 @@ btnWF_UIxmtlock->value(progdefaults.WF_UIxmtlock = 0);
 
 progdefaults.changed = true;
 WF_UI();}
-              xywh {301 321 88 20}
+                xywh {301 280 88 20}
+              }
             }
           }
           Fl_Group {} {
-            label {Rx Text} open
+            label {Rx Text}
             xywh {0 50 500 320} hide
           } {
             Fl_Check_Button btn_rx_lowercase {
@@ -923,7 +927,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
         }
       }
       Fl_Group tabModems {
-        label Modems open
+        label Modems
         xywh {-4 25 521 347} hide
       } {
         Fl_Tabs tabsModems {open
@@ -3029,7 +3033,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabMisc {
-        label Misc open
+        label Misc
         xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsMisc {open

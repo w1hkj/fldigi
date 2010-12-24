@@ -190,10 +190,14 @@ Fl_Button		    *btnMacroTimer = (Fl_Button *)0;
 
 Fl_Tile_Check		*VTgroup = 0;
 Fl_Tile_Check		*HTgroup = 0;
-Fl_Box				*macroFrame = 0;
+//Fl_Box				*macroFrame = 0;
+//Fl_Box				*macroFrame2 = 0;
+Fl_Group			*macroFrame = 0;
+Fl_Group			*macroFrame2 = 0;
 FTextRX				*ReceiveText = 0;
 FTextTX				*TransmitText = 0;
 Raster				*FHdisp;
+Fl_Box				*minVTbox;
 
 pskBrowser			*mainViewer = (pskBrowser *)0;
 
@@ -204,8 +208,7 @@ Fl_Counter2			*cntCW_WPM=(Fl_Counter2 *)0;
 Fl_Button			*btnCW_Default=(Fl_Button *)0;
 Fl_Box				*WARNstatus = (Fl_Box *)0;
 Fl_Button			*MODEstatus = (Fl_Button *)0;
-Fl_Button 			*btnMacro[NUMMACKEYS];
-Fl_Button			*btnAltMacros;
+Fl_Button 			*btnMacro[NUMMACKEYS * NUMKEYROWS];
 Fl_Button			*btnAFC;
 Fl_Button			*btnSQL;
 Fl_Input2			*inpQth;
@@ -304,6 +307,9 @@ Fl_Input2			*qso_inpAct = 0;
 Fl_Group			*MixerFrame;
 Fl_Value_Slider2	*valRcvMixer = (Fl_Value_Slider2 *)0;
 Fl_Value_Slider2	*valXmtMixer = (Fl_Value_Slider2 *)0;
+
+Fl_Pack 			*wfpack = (Fl_Pack *)0;
+Fl_Pack				*hpack = (Fl_Pack *)0;
 
 Fl_Value_Slider2	*mvsquelch = (Fl_Value_Slider2 *)0;
 Fl_Button			*btnClearMViewer = 0;
@@ -1107,7 +1113,12 @@ void restoreFocus(Fl_Widget* w)
 void macro_cb(Fl_Widget *w, void *v)
 {
 	int b = (int)(reinterpret_cast<long> (v));
-	b += altMacros * NUMMACKEYS;
+
+	if (progStatus.two_macro_rows && b >= NUMMACKEYS)
+		b += (altMacros - 1) * NUMMACKEYS;
+	if (!progStatus.two_macro_rows)
+		b += altMacros * NUMMACKEYS;
+
 	int mouse = Fl::event_button();
 	if (mouse == FL_LEFT_MOUSE && !macros.text[b].empty()) {
 		stopMacroTimer();
@@ -1120,13 +1131,14 @@ void macro_cb(Fl_Widget *w, void *v)
 
 void colorize_macro(int i)
 {
+	int j = i % NUMMACKEYS;
 	if (progdefaults.useGroupColors == true) {
-		if (i < NUMKEYROWS){
+		if (j < 4) {
 			btnMacro[i]->color(fl_rgb_color(
 				progdefaults.btnGroup1.R,
 				progdefaults.btnGroup1.G,
 				progdefaults.btnGroup1.B));
-		} else if (i < 8) {
+		} else if (j < 8) {
 			btnMacro[i]->color(fl_rgb_color(
 				progdefaults.btnGroup2.R,
 				progdefaults.btnGroup2.G,
@@ -1151,32 +1163,11 @@ void colorize_macro(int i)
 void colorize_macros()
 {
 	FL_LOCK_D();
-	for (int i = 0; i < NUMMACKEYS; i++) {
+	for (int i = 0; i < NUMMACKEYS * NUMKEYROWS; i++) {
 		colorize_macro(i);
 		btnMacro[i]->redraw_label();
 	}
 	FL_UNLOCK_D();
-}
-
-void altmacro_cb(Fl_Widget *w, void *v)
-{
-	static char alt_text[NUMKEYROWS];
-
-	intptr_t arg = reinterpret_cast<intptr_t>(v);
-	if (arg)
-		altMacros += arg;
-	else
-		altMacros = altMacros + (Fl::event_button() == FL_RIGHT_MOUSE ? -1 : 1);
-	altMacros = WCLAMP(altMacros, 0, 3);
-
-	snprintf(alt_text, sizeof(alt_text), "%d", altMacros + 1);
-	FL_LOCK_D();
-	for (int i = 0; i < NUMMACKEYS; i++)
-		btnMacro[i]->label(macros.name[i + (altMacros * NUMMACKEYS)].c_str());
-	btnAltMacros->label(alt_text);
-	btnAltMacros->redraw_label();
-	FL_UNLOCK_D();
-	restoreFocus();
 }
 
 void cb_mnuConfigOperator(Fl_Menu_*, void*) {
@@ -1750,6 +1741,30 @@ void cb_mnuContest(Fl_Menu_ *m, void *) {
 	progStatus.contest = m->mvalue()->value();
 }
 
+void set_macroLabels()
+{
+	if (progStatus.two_macro_rows) {
+		altMacros = 1;
+		for (int i = 0; i < NUMMACKEYS; i++) {
+			btnMacro[NUMMACKEYS + i]->label(
+				macros.name[(altMacros * NUMMACKEYS) + i].c_str());
+			btnMacro[NUMMACKEYS + i]->redraw_label();
+		}
+	} else
+		altMacros = 0;
+	for (int i = 0; i < NUMMACKEYS; i++) {
+		btnMacro[i]->label(macros.name[i].c_str());
+		btnMacro[i]->redraw_label();
+	}
+}
+
+void cb_mnuMacroRows(Fl_Menu_ *m, void*)
+{
+	progStatus.two_macro_rows = m->mvalue()->value();
+	set_macroLabels();
+	UI_select();
+}
+
 void cb_mnuPicViewer(Fl_Menu_ *, void *) {
 	if (picRxWin) {
 		picRx->redraw();
@@ -2202,7 +2217,8 @@ int default_handler(int event)
 
 	if (w == fl_digi_main || w->window() == fl_digi_main) {
 		int key = Fl::event_key();
-		if (key == FL_Escape || (key >= FL_F && key <= FL_F_Last)) {
+		if (key == FL_Escape || (key >= FL_F && key <= FL_F_Last) ||
+			((key == '1' || key == '2' || key == '3' || key == '4') && Fl::event_alt())) {
 			TransmitText->take_focus();
 			TransmitText->handle(FL_KEYBOARD);
 			w->take_focus(); // remove this to leave tx text focused
@@ -2320,6 +2336,7 @@ bool clean_exit(void) {
 #define RIGCONTEST_MLABEL  _("Rig control and contest")
 #define DOCKEDSCOPE_MLABEL _("Docked scope")
 #define WF_MLABEL _("Minimal controls")
+#define MACRO_ROWS_LABEL _("Two macro button bars")
 
 bool restore_minimize = false;
 
@@ -2329,6 +2346,13 @@ void UI_select()
 		return;
 
 	Fl_Menu_Item* cf = getMenuItem(CONTEST_FIELDS_MLABEL);
+	Fl_Menu_Item* mr = getMenuItem(MACRO_ROWS_LABEL);
+
+	if (!progStatus.two_macro_rows)
+		mr->clear();
+	else
+		mr->set();
+
 	if (progStatus.NO_RIGLOG || progStatus.Rig_Contest_UI || progStatus.Rig_Log_UI) {
 		cf->clear();
 		cf->deactivate();
@@ -2342,6 +2366,16 @@ void UI_select()
 
 	if (progStatus.NO_RIGLOG && !restore_minimize) {
 		int y1 = TopFrame1->y();
+		if (progStatus.two_macro_rows) {
+			macroFrame2->size(macroFrame2->w(), Hmacros);
+			macroFrame2->position(macroFrame2->x(), y1);
+			macroFrame2->show();
+			y1 += macroFrame2->h();
+		} else {
+			macroFrame2->size(macroFrame2->w(), 0);
+			macroFrame2->position(macroFrame2->x(), y1);
+			macroFrame2->hide();
+		}
 		int y2 = macroFrame->y();
 		int w = TopFrame1->w();
 		if (MixerFrame->visible()) {
@@ -2366,6 +2400,16 @@ void UI_select()
 	if ((!progStatus.Rig_Log_UI && ! progStatus.Rig_Contest_UI) ||
 			restore_minimize) {
 		int y1 = TopFrame1->y() + Hqsoframe;
+		if (progStatus.two_macro_rows) {
+			macroFrame2->size(macroFrame2->w(), Hmacros);
+			macroFrame2->position(macroFrame2->x(), y1);
+			macroFrame2->show();
+			y1 += macroFrame2->h();
+		} else {
+			macroFrame2->size(macroFrame2->w(), 0);
+			macroFrame2->position(macroFrame2->x(), y1);
+			macroFrame2->hide();
+		}
 		int y2 = macroFrame->y();
 		int w = TopFrame1->w();
 		if (MixerFrame->visible()) {
@@ -2396,8 +2440,19 @@ void UI_select()
 		inpXchgIn = inpXchgIn1;
 		qsoFreqDisp = qsoFreqDisp1;
 		fl_digi_main->init_sizes();
+
 	} else if (progStatus.Rig_Log_UI || progStatus.Rig_Contest_UI) {
 		int y1 = TopFrame2->y() + Hentry + 3 * pad;
+		if (progStatus.two_macro_rows) {
+			macroFrame2->size(macroFrame2->w(), Hmacros);
+			macroFrame2->position(macroFrame2->x(), y1);
+			macroFrame2->show();
+			y1 += macroFrame2->h();
+		} else {
+			macroFrame2->size(macroFrame2->w(), 0);
+			macroFrame2->position(macroFrame2->x(), y1);
+			macroFrame2->hide();
+		}
 		int y2 = macroFrame->y();
 		int w = TopFrame1->w();
 		if (MixerFrame->visible()) {
@@ -2670,7 +2725,8 @@ Fl_Menu_Item menu_[] = {
 
 { VIEW_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 
-{"View/Hide Channels", 'v', (Fl_Callback*)cb_view_hide_channels, 0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{"View/Hide Channels", 'v', (Fl_Callback*)cb_view_hide_channels, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ MACRO_ROWS_LABEL, 'r', (Fl_Callback*)cb_mnuMacroRows, 0, FL_MENU_TOGGLE | FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 
 { make_icon_label(_("Floating scope"), utilities_system_monitor_icon), 'd', (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
@@ -3198,12 +3254,8 @@ static void cb_mainViewer(Fl_Hold_Browser*, void*) {
 		}
 		break;
 	case FL_RIGHT_MOUSE: // reset
-//		if (Fl::event_state(FL_SHIFT)) {
-//			pskviewer->clear();
-//		} else {
-			pskviewer->clearch(sel-1);
-			mainViewer->deselect();
-//		}
+		pskviewer->clearch(sel-1);
+		mainViewer->deselect();
 		break;
 	default:
 		break;
@@ -3211,6 +3263,13 @@ static void cb_mainViewer(Fl_Hold_Browser*, void*) {
 }
 
 void create_fl_digi_main_primary() {
+// bx used as a temporary spacer
+	Fl_Box *bx;
+	int Wmacrobtn;
+	int Hmacrobtn;
+	int xpos;
+	int ypos;
+	int wblank;
 
 	int fnt = fl_font();
 	int fsize = fl_size();
@@ -3844,7 +3903,31 @@ void create_fl_digi_main_primary() {
 
 		Y = Hmenu + Hqsoframe + pad;
 
-		int Htext = progStatus.mainH - Hwfall - Hmenu - Hstatus - Hmacros - Hqsoframe - 4;
+		macroFrame2 = new Fl_Group(0, Y, progStatus.mainW, Hmacros);
+			macroFrame2->box(FL_ENGRAVED_BOX);
+			Wmacrobtn = (macroFrame2->w() - 4) / NUMMACKEYS;
+			Hmacrobtn = (macroFrame2->h() - 4);
+			wblank = (macroFrame2->w() - 4 - NUMMACKEYS * Wmacrobtn) / 2;
+			xpos = 2;
+			ypos = macroFrame2->y() + 2;
+			for (int i = 0; i < NUMMACKEYS; i++) {
+				if (i == 4 || i == 8) {
+					bx = new Fl_Box(xpos, ypos, wblank, Hmacrobtn);
+					bx->box(FL_FLAT_BOX);
+					xpos += wblank;
+				}
+				btnMacro[NUMMACKEYS + i] = new Fl_Button(xpos, ypos, Wmacrobtn, Hmacrobtn, 
+					macros.name[NUMMACKEYS + i].c_str());
+				btnMacro[NUMMACKEYS + i]->callback(macro_cb, (void *)(NUMMACKEYS + i));
+				btnMacro[NUMMACKEYS + i]->tooltip(
+					_("Left Click - execute\nShift-Fkey - execute\nRight Click - edit"));
+				colorize_macro(NUMMACKEYS + i);
+				xpos += Wmacrobtn;
+			}
+		macroFrame2->end();
+		Y += Hmacros;
+
+		int Htext = progStatus.mainH - Hwfall - Hmenu - Hstatus - Hmacros*NUMKEYROWS - Hqsoframe - 4;
 		int Hrcvtxt = (Htext) / 2;
 		int Hxmttxt = (Htext - (Hrcvtxt));
 
@@ -3958,7 +4041,7 @@ void create_fl_digi_main_primary() {
 			int ysmall = VTgroup->y() + 66;
 			int yheight = Htext - 66 - 40;
 
-			Fl_Box *minVTbox = new Fl_Box(
+			minVTbox = new Fl_Box(
 				VTgroup->x(), ysmall, fl_digi_main->w() - VTgroup->x(), yheight);
 			minVTbox->hide();
 
@@ -3975,33 +4058,30 @@ void create_fl_digi_main_primary() {
 
 		Fl::add_handler(default_handler);
 
-		Fl_Box *bx;
-		macroFrame = new Fl_Box(0, Y, progStatus.mainW, Hmacros);
-			macroFrame->box(FL_ENGRAVED_FRAME);
-			int Wbtn = (progStatus.mainW - 30 - 8 - 4)/NUMMACKEYS;
-			int xpos = 2;
+		macroFrame = new Fl_Group(0, Y, progStatus.mainW, Hmacros);
+			macroFrame->box(FL_ENGRAVED_BOX);
+			Wmacrobtn = (macroFrame->w() - 4) / NUMMACKEYS;
+			Hmacrobtn = (macroFrame->h() - 4);
+			wblank = (macroFrame->w() - 4 - NUMMACKEYS * Wmacrobtn) / 2;
+			xpos = 2;
+			ypos = macroFrame->y() + 2;// + row*Hbtn;
 			for (int i = 0; i < NUMMACKEYS; i++) {
 				if (i == 4 || i == 8) {
-					bx = new Fl_Box(xpos, Y+2, 5, Hmacros - 4);
+					bx = new Fl_Box(xpos, ypos, wblank, Hmacrobtn);
 					bx->box(FL_FLAT_BOX);
-					bx->color(FL_BLACK);
-					xpos += 4;
+					xpos += wblank;
 				}
-				btnMacro[i] = new Fl_Button(xpos, Y+2, Wbtn, Hmacros - 4, macros.name[i].c_str());
-				btnMacro[i]->callback(macro_cb, (void *)i);
-				btnMacro[i]->tooltip(_("Left Click - execute\nRight Click - edit"));
+				btnMacro[i] = new Fl_Button(xpos, ypos, Wmacrobtn, Hmacrobtn, 
+					macros.name[i].c_str());
+				btnMacro[i]->callback(macro_cb, (void *)(i));
+				btnMacro[i]->tooltip(_("Left Click - execute\nFkey - execute\nRight Click - edit"));
 				colorize_macro(i);
-				xpos += Wbtn;
+				xpos += Wmacrobtn;
 			}
-			bx = new Fl_Box(xpos, Y+2, progStatus.mainW - 32 - xpos, Hmacros - 4);
-			bx->box(FL_FLAT_BOX);
-			bx->color(FL_BLACK);
-			btnAltMacros = new Fl_Button(progStatus.mainW-32, Y+2, 30, Hmacros - 4, "1");
-			btnAltMacros->callback(altmacro_cb, 0);
-			btnAltMacros->tooltip(_("Change macro set"));
-
+		macroFrame->end();
 		Y += Hmacros;
-		Fl_Pack *wfpack = new Fl_Pack(0, Y, progStatus.mainW, Hwfall);
+
+		wfpack = new Fl_Pack(0, Y, progStatus.mainW, Hwfall);
 			wfpack->type(1);
 
 			wf = new waterfall(0, Y, Wwfall, Hwfall);
@@ -4030,7 +4110,7 @@ void create_fl_digi_main_primary() {
 
 		Y += (Hwfall + 2);
 
-		Fl_Pack *hpack = new Fl_Pack(0, Y, progStatus.mainW, Hstatus);
+		hpack = new Fl_Pack(0, Y, progStatus.mainW, Hstatus);
 			hpack->type(1);
 			MODEstatus = new Fl_Button(0,Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Wmode+30, Hstatus, "");
 			MODEstatus->box(FL_DOWN_BOX);
@@ -4115,6 +4195,7 @@ void create_fl_digi_main_primary() {
 
 			Fl_Group::current()->resizable(StatusBar);
 		hpack->end();
+		Y += hpack->h();
 
 		showMacroSet();
 
@@ -4371,10 +4452,9 @@ void noop_controls() // create and then hide all controls not being used
 	TransmitText = new FTextTX(0,0,100,100); TransmitText->hide();
 	FHdisp = new Raster(0,0,10,100); FHdisp->hide();
 
-	for (int i = 0; i < NUMMACKEYS; i++) {
+	for (int i = 0; i < NUMMACKEYS * NUMKEYROWS; i++) {
 		btnMacro[i] = new Fl_Button(defwidget); btnMacro[i]->hide();
 	}
-	btnAltMacros = new Fl_Button(defwidget); btnAltMacros->hide();
 
 	inpQth = new Fl_Input2(defwidget); inpQth->hide();
 	inpLoc = new Fl_Input2(defwidget); inpLoc->hide();
@@ -4573,7 +4653,7 @@ void create_fl_digi_main_WF_only() {
 
 		Y += (Hwfall + pad);
 
-		Fl_Pack *hpack = new Fl_Pack(0, Y, progStatus.mainW, Hstatus);
+		hpack = new Fl_Pack(0, Y, progStatus.mainW, Hstatus);
 			hpack->type(1);
 			MODEstatus = new Fl_Button(0, Y, Wmode+30, Hstatus, "");
 			MODEstatus->box(FL_DOWN_BOX);

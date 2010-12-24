@@ -3112,82 +3112,86 @@ ab and newline are automatically included."));
           } // Fl_Group* tabContest
           { tabWF_UI = new Fl_Group(0, 50, 500, 320, _("Operator Controls"));
             tabWF_UI->hide();
-            { Fl_Box* o = new Fl_Box(31, 65, 446, 25, _("Enable check box to show each respective operator control"));
-              o->box(FL_FLAT_BOX);
-              o->align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
-            } // Fl_Box* o
-            { Fl_Check_Button* o = btnWF_UIrev = new Fl_Check_Button(58, 98, 150, 20, _("Reverse"));
-              btnWF_UIrev->down_box(FL_DOWN_BOX);
-              btnWF_UIrev->value(1);
-              btnWF_UIrev->callback((Fl_Callback*)cb_btnWF_UIrev);
-              o->value(progdefaults.WF_UIrev);
-            } // Fl_Check_Button* btnWF_UIrev
-            { Fl_Check_Button* o = btnWF_UIx1 = new Fl_Check_Button(277, 98, 162, 20, _("WF Magnification"));
-              btnWF_UIx1->down_box(FL_DOWN_BOX);
-              btnWF_UIx1->value(1);
-              btnWF_UIx1->callback((Fl_Callback*)cb_btnWF_UIx1);
-              o->value(progdefaults.WF_UIx1);
-            } // Fl_Check_Button* btnWF_UIx1
-            { Fl_Check_Button* o = btnWF_UIwfcarrier = new Fl_Check_Button(58, 136, 150, 20, _("WF carrier"));
-              btnWF_UIwfcarrier->down_box(FL_DOWN_BOX);
-              btnWF_UIwfcarrier->value(1);
-              btnWF_UIwfcarrier->callback((Fl_Callback*)cb_btnWF_UIwfcarrier);
-              o->value(progdefaults.WF_UIwfcarrier);
-            } // Fl_Check_Button* btnWF_UIwfcarrier
-            { Fl_Check_Button* o = btnWF_UIwfshift = new Fl_Check_Button(277, 136, 150, 20, _("WF Shift Controls"));
-              btnWF_UIwfshift->down_box(FL_DOWN_BOX);
-              btnWF_UIwfshift->value(1);
-              btnWF_UIwfshift->callback((Fl_Callback*)cb_btnWF_UIwfshift);
-              o->value(progdefaults.WF_UIwfshift);
-            } // Fl_Check_Button* btnWF_UIwfshift
-            { Fl_Check_Button* o = btnWF_UIwfreflevel = new Fl_Check_Button(58, 175, 150, 20, _("WF ref level"));
-              btnWF_UIwfreflevel->down_box(FL_DOWN_BOX);
-              btnWF_UIwfreflevel->value(1);
-              btnWF_UIwfreflevel->callback((Fl_Callback*)cb_btnWF_UIwfreflevel);
-              o->value(progdefaults.WF_UIwfreflevel);
-            } // Fl_Check_Button* btnWF_UIwfreflevel
-            { Fl_Check_Button* o = btnWF_UIwfdrop = new Fl_Check_Button(277, 175, 150, 20, _("WF drop rate"));
-              btnWF_UIwfdrop->down_box(FL_DOWN_BOX);
-              btnWF_UIwfdrop->value(1);
-              btnWF_UIwfdrop->callback((Fl_Callback*)cb_btnWF_UIwfdrop);
-              o->value(progdefaults.WF_UIwfdrop);
-            } // Fl_Check_Button* btnWF_UIwfdrop
-            { Fl_Check_Button* o = btnWF_UIwfampspan = new Fl_Check_Button(58, 213, 150, 20, _("WF amp span"));
-              btnWF_UIwfampspan->down_box(FL_DOWN_BOX);
-              btnWF_UIwfampspan->value(1);
-              btnWF_UIwfampspan->callback((Fl_Callback*)cb_btnWF_UIwfampspan);
-              o->value(progdefaults.WF_UIwfampspan);
-            } // Fl_Check_Button* btnWF_UIwfampspan
-            { Fl_Check_Button* o = btnWF_UIwfstore = new Fl_Check_Button(277, 213, 150, 20, _("WF Store"));
-              btnWF_UIwfstore->down_box(FL_DOWN_BOX);
-              btnWF_UIwfstore->value(1);
-              btnWF_UIwfstore->callback((Fl_Callback*)cb_btnWF_UIwfstore);
-              o->value(progdefaults.WF_UIwfstore);
-            } // Fl_Check_Button* btnWF_UIwfstore
-            { Fl_Check_Button* o = btnWF_UIwfmode = new Fl_Check_Button(58, 249, 150, 20, _("WF mode"));
-              btnWF_UIwfmode->down_box(FL_DOWN_BOX);
-              btnWF_UIwfmode->value(1);
-              btnWF_UIwfmode->callback((Fl_Callback*)cb_btnWF_UIwfmode);
-              o->value(progdefaults.WF_UIwfmode);
-            } // Fl_Check_Button* btnWF_UIwfmode
-            { Fl_Check_Button* o = btnWF_UIqsy = new Fl_Check_Button(277, 249, 150, 20, _("QSY"));
-              btnWF_UIqsy->down_box(FL_DOWN_BOX);
-              btnWF_UIqsy->value(1);
-              btnWF_UIqsy->callback((Fl_Callback*)cb_btnWF_UIqsy);
-              o->value(progdefaults.WF_UIqsy);
-            } // Fl_Check_Button* btnWF_UIqsy
-            { Fl_Check_Button* o = btnWF_UIxmtlock = new Fl_Check_Button(277, 285, 150, 20, _("XMT lock"));
-              btnWF_UIxmtlock->down_box(FL_DOWN_BOX);
-              btnWF_UIxmtlock->value(1);
-              btnWF_UIxmtlock->callback((Fl_Callback*)cb_btnWF_UIxmtlock);
-              o->value(progdefaults.WF_UIxmtlock);
-            } // Fl_Check_Button* btnWF_UIxmtlock
-            { btn_wf_enable_all = new Fl_Button(102, 321, 88, 20, _("Enable all"));
-              btn_wf_enable_all->callback((Fl_Callback*)cb_btn_wf_enable_all);
-            } // Fl_Button* btn_wf_enable_all
-            { btn_wf_disable_all = new Fl_Button(301, 321, 88, 20, _("Disable all"));
-              btn_wf_disable_all->callback((Fl_Callback*)cb_btn_wf_disable_all);
-            } // Fl_Button* btn_wf_disable_all
+            { Fl_Group* o = new Fl_Group(2, 58, 496, 253);
+              o->box(FL_ENGRAVED_BOX);
+              { Fl_Box* o = new Fl_Box(31, 65, 446, 25, _("Enable check box to show each respective operator control"));
+                o->box(FL_FLAT_BOX);
+                o->align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
+              } // Fl_Box* o
+              { Fl_Check_Button* o = btnWF_UIrev = new Fl_Check_Button(58, 98, 150, 20, _("Reverse"));
+                btnWF_UIrev->down_box(FL_DOWN_BOX);
+                btnWF_UIrev->value(1);
+                btnWF_UIrev->callback((Fl_Callback*)cb_btnWF_UIrev);
+                o->value(progdefaults.WF_UIrev);
+              } // Fl_Check_Button* btnWF_UIrev
+              { Fl_Check_Button* o = btnWF_UIx1 = new Fl_Check_Button(277, 98, 162, 20, _("WF Magnification"));
+                btnWF_UIx1->down_box(FL_DOWN_BOX);
+                btnWF_UIx1->value(1);
+                btnWF_UIx1->callback((Fl_Callback*)cb_btnWF_UIx1);
+                o->value(progdefaults.WF_UIx1);
+              } // Fl_Check_Button* btnWF_UIx1
+              { Fl_Check_Button* o = btnWF_UIwfcarrier = new Fl_Check_Button(58, 129, 150, 20, _("WF carrier"));
+                btnWF_UIwfcarrier->down_box(FL_DOWN_BOX);
+                btnWF_UIwfcarrier->value(1);
+                btnWF_UIwfcarrier->callback((Fl_Callback*)cb_btnWF_UIwfcarrier);
+                o->value(progdefaults.WF_UIwfcarrier);
+              } // Fl_Check_Button* btnWF_UIwfcarrier
+              { Fl_Check_Button* o = btnWF_UIwfshift = new Fl_Check_Button(277, 129, 150, 20, _("WF Shift Controls"));
+                btnWF_UIwfshift->down_box(FL_DOWN_BOX);
+                btnWF_UIwfshift->value(1);
+                btnWF_UIwfshift->callback((Fl_Callback*)cb_btnWF_UIwfshift);
+                o->value(progdefaults.WF_UIwfshift);
+              } // Fl_Check_Button* btnWF_UIwfshift
+              { Fl_Check_Button* o = btnWF_UIwfreflevel = new Fl_Check_Button(58, 161, 150, 20, _("WF ref level"));
+                btnWF_UIwfreflevel->down_box(FL_DOWN_BOX);
+                btnWF_UIwfreflevel->value(1);
+                btnWF_UIwfreflevel->callback((Fl_Callback*)cb_btnWF_UIwfreflevel);
+                o->value(progdefaults.WF_UIwfreflevel);
+              } // Fl_Check_Button* btnWF_UIwfreflevel
+              { Fl_Check_Button* o = btnWF_UIwfdrop = new Fl_Check_Button(277, 161, 150, 20, _("WF drop rate"));
+                btnWF_UIwfdrop->down_box(FL_DOWN_BOX);
+                btnWF_UIwfdrop->value(1);
+                btnWF_UIwfdrop->callback((Fl_Callback*)cb_btnWF_UIwfdrop);
+                o->value(progdefaults.WF_UIwfdrop);
+              } // Fl_Check_Button* btnWF_UIwfdrop
+              { Fl_Check_Button* o = btnWF_UIwfampspan = new Fl_Check_Button(58, 193, 150, 20, _("WF amp span"));
+                btnWF_UIwfampspan->down_box(FL_DOWN_BOX);
+                btnWF_UIwfampspan->value(1);
+                btnWF_UIwfampspan->callback((Fl_Callback*)cb_btnWF_UIwfampspan);
+                o->value(progdefaults.WF_UIwfampspan);
+              } // Fl_Check_Button* btnWF_UIwfampspan
+              { Fl_Check_Button* o = btnWF_UIwfstore = new Fl_Check_Button(277, 193, 150, 20, _("WF Store"));
+                btnWF_UIwfstore->down_box(FL_DOWN_BOX);
+                btnWF_UIwfstore->value(1);
+                btnWF_UIwfstore->callback((Fl_Callback*)cb_btnWF_UIwfstore);
+                o->value(progdefaults.WF_UIwfstore);
+              } // Fl_Check_Button* btnWF_UIwfstore
+              { Fl_Check_Button* o = btnWF_UIwfmode = new Fl_Check_Button(58, 225, 150, 20, _("WF mode"));
+                btnWF_UIwfmode->down_box(FL_DOWN_BOX);
+                btnWF_UIwfmode->value(1);
+                btnWF_UIwfmode->callback((Fl_Callback*)cb_btnWF_UIwfmode);
+                o->value(progdefaults.WF_UIwfmode);
+              } // Fl_Check_Button* btnWF_UIwfmode
+              { Fl_Check_Button* o = btnWF_UIqsy = new Fl_Check_Button(277, 225, 150, 20, _("QSY"));
+                btnWF_UIqsy->down_box(FL_DOWN_BOX);
+                btnWF_UIqsy->value(1);
+                btnWF_UIqsy->callback((Fl_Callback*)cb_btnWF_UIqsy);
+                o->value(progdefaults.WF_UIqsy);
+              } // Fl_Check_Button* btnWF_UIqsy
+              { Fl_Check_Button* o = btnWF_UIxmtlock = new Fl_Check_Button(277, 257, 150, 20, _("XMT lock"));
+                btnWF_UIxmtlock->down_box(FL_DOWN_BOX);
+                btnWF_UIxmtlock->value(1);
+                btnWF_UIxmtlock->callback((Fl_Callback*)cb_btnWF_UIxmtlock);
+                o->value(progdefaults.WF_UIxmtlock);
+              } // Fl_Check_Button* btnWF_UIxmtlock
+              { btn_wf_enable_all = new Fl_Button(102, 280, 88, 20, _("Enable all"));
+                btn_wf_enable_all->callback((Fl_Callback*)cb_btn_wf_enable_all);
+              } // Fl_Button* btn_wf_enable_all
+              { btn_wf_disable_all = new Fl_Button(301, 280, 88, 20, _("Disable all"));
+                btn_wf_disable_all->callback((Fl_Callback*)cb_btn_wf_disable_all);
+              } // Fl_Button* btn_wf_disable_all
+              o->end();
+            } // Fl_Group* o
             tabWF_UI->end();
           } // Fl_Group* tabWF_UI
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Rx Text"));

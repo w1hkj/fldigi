@@ -61,6 +61,8 @@
 #include "logsupport.h"
 #include "qso_db.h"
 
+#include "misc.h"
+
 #define STATUS_FILENAME "status"
 
 status progStatus = {
@@ -74,6 +76,7 @@ status progStatus = {
 	false,				// bool NO_RIGLOG;
 	false,				// bool Rig_Log_UI;
 	false,				// bool Rig_Contest_UI;
+	true,				// bool two_macro_rows
 	false,				// bool DOCKEDSCOPE;
 	200,				// int RxTextHeight;
 	WNOM / 2,			// int tiled_group_x;
@@ -295,6 +298,7 @@ if (!bWF_only) {
 	spref.set("riglog_ui", Rig_Log_UI);
 	spref.set("rigcontest_ui", Rig_Contest_UI);
 	spref.set("noriglog", NO_RIGLOG);
+	spref.set("two_macro_rows", two_macro_rows);
 	spref.set("docked_scope", DOCKEDSCOPE);
 
 	spref.set("rigctl_x", rigX);
@@ -438,6 +442,7 @@ void status::loadLastState()
 	spref.get("wf_ui", i, WF_UI); WF_UI = i;
 	spref.get("riglog_ui", i, Rig_Log_UI); Rig_Log_UI = i;
 	spref.get("rigcontest_ui", i, Rig_Contest_UI); Rig_Contest_UI = i;
+	spref.get("two_macro_rows", i, two_macro_rows); two_macro_rows = i;
 	spref.get("noriglog", i, NO_RIGLOG); NO_RIGLOG = i;
 	spref.get("docked_scope", i, DOCKEDSCOPE); DOCKEDSCOPE = i;
 
@@ -598,7 +603,18 @@ if (bWF_only)
 	fl_digi_main->resize(mainX, mainY, mainW, Hmenu + Hwfall + Hstatus + 4);
 else {
 	fl_digi_main->resize(mainX, mainY, mainW, mainH);
+
+	int rty = ReceiveText->y();
+	int xty = TransmitText->y();
+
+	minVTbox->resize(
+		VTgroup->x(), VTgroup->y() + 66, 
+		fl_digi_main->w() - VTgroup->x(), VTgroup->h() - 66 - 40);
+
+	set_macroLabels();
+	UI_select();
 	fl_digi_main->init_sizes();
+
 	if (!(RxTextHeight > 0 && RxTextHeight < VTgroup->h()))
 		RxTextHeight = VTgroup->h() / 3 * 2;
 
@@ -609,8 +625,9 @@ else {
 		HTgroup->newx( HTgroup->x() );
 		progStatus.show_channels = false;
 	}
-
-	VTgroup->position(0, ReceiveText->y() + 66, VTgroup->x(), ReceiveText->y() + RxTextHeight);
+//	RxTextHeight = CLAMP(RxTextHeight, 66, ReceiveText->h() - 32);
+//	VTgroup->position(-1, ReceiveText->y() + 66, VTgroup->x(), ReceiveText->y() + RxTextHeight);
+	VTgroup->position(-1, xty, VTgroup->x(), rty + RxTextHeight);
 }
 
 	if (VIEWERvisible && lastmode >= MODE_PSK_FIRST && lastmode <= MODE_PSK_LAST)

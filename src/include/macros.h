@@ -4,8 +4,9 @@
 #include <string>
 
 #define NUMMACKEYS 12
-#define NUMKEYROWS 4
-#define MAXMACROS (NUMKEYROWS * NUMMACKEYS)
+#define NUMKEYROWS 2
+#define MAXKEYROWS 4
+#define MAXMACROS (MAXKEYROWS * NUMMACKEYS)
 
 struct CONTESTCNTR {
 	int count;

@@ -53,6 +53,7 @@ extern Raster			*FHdisp;
 //extern Fl_Tile_Check	*TiledGroup;
 
 extern Fl_Tile_Check	*VTgroup;
+extern Fl_Box			*minVTbox;
 extern Fl_Tile_Check	*HTgroup;
 
 extern Fl_Box			*StatusBar;
@@ -125,7 +126,6 @@ extern Fl_Light_Button		*btnRSID;
 extern Fl_Light_Button		*btnTxRSID;
 extern Fl_Light_Button		*btnTune;
 
-extern Fl_Button		*btnAltMacros;
 extern Fl_Button		*btnMacroTimer;
 
 extern bool			bWF_only;
@@ -147,6 +147,9 @@ extern void activate_test_menu_item(bool b);
 extern void activate_mfsk_image_item(bool b);
 extern void activate_wefax_image_item(bool b);
 extern void WF_UI();
+
+extern void set_macroLabels();
+extern void UI_select();
 
 extern void cb_mnuVisitURL(Fl_Widget*, void* arg);
 

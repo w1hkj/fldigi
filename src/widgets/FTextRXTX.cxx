@@ -937,19 +937,27 @@ int FTextTX::handle_key(int key)
 		}
 		return 0;
 	}
-// alt - 1 through alt - 4 changes macro sets
+// alt - 1 / 2 changes macro sets
 	case '1':
 	case '2':
 	case '3':
 	case '4':
 		if (Fl::event_state() & FL_ALT) {
 			altMacros = key - '1';
-			for (int i = 0; i < 12; i++)
-				btnMacro[i]->label(macros.name[i + (altMacros * NUMMACKEYS)].c_str());
-			static char alt_text[4];
-			snprintf(alt_text, sizeof(alt_text), "%d", altMacros + 1);
-			btnAltMacros->label(alt_text);
-			btnAltMacros->redraw_label();
+			if (progStatus.two_macro_rows) {
+				if (!altMacros) altMacros = 1;
+				for (int i = 0; i < NUMMACKEYS; i++) {
+					btnMacro[NUMMACKEYS + i]->label(
+						macros.name[(altMacros * NUMMACKEYS) + i].c_str());
+					btnMacro[NUMMACKEYS + i]->redraw_label();
+				}
+			} else {
+				for (int i = 0; i < NUMMACKEYS; i++) {
+					btnMacro[i]->label(
+						macros.name[(altMacros * NUMMACKEYS) + i].c_str());
+					btnMacro[i]->redraw_label();
+				}
+			}
 			return 1;
 		}
 		break;
@@ -988,7 +996,12 @@ int FTextTX::handle_key_macro(int key)
 	if (key > 11)
 		return 0;
 
-	key += altMacros * NUMMACKEYS;
+	if (progStatus.two_macro_rows) {
+		if (Fl::event_state(FL_SHIFT))
+			key += altMacros * NUMMACKEYS;
+	} else {
+		key += altMacros * NUMMACKEYS;
+	}
 	if (!(macros.text[key]).empty())
 		macros.execute(key);
 

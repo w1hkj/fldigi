@@ -1630,19 +1630,6 @@ int waterfall::handle(int event)
 		return 1;
 	}
 
-	// as above; handle wheel events for the macro bar
-	extern void altmacro_cb(Fl_Widget *w, void *v);
-	for (int i = 0; i < NUMMACKEYS; i++) {
-		if (Fl::event_inside(btnMacro[i])) {
-			altmacro_cb(btnAltMacros, reinterpret_cast<void *>(d));
-			return 1;
-		}
-	}
-	if (Fl::event_inside(btnAltMacros)) {
-		altmacro_cb(btnAltMacros, reinterpret_cast<void *>(d));
-		return 1;
-	}
-
 	return Fl_Group::handle(event);
 }
 
