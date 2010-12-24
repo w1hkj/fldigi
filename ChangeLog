@@ -1,5 +1,19 @@
-2010-11-27  David Freese  <w1hkj@w1hkj.com>
+2010-12-23  David Freese  <w1hkj@w1hkj.com>
 
+	99f977c: Dual Macro Bar
+	685ffc3: PSK browser detection
+	425c6bf: pskBrowser class
+
+2010-12-21  Dan Ankers  <md1clv@md1clv.com>
+
+	09c9569: IARU Maidenhead
+
+2010-12-07  David Freese  <w1hkj@w1hkj.com>
+
+	fa165cc: Countries List
+	9b8fdd8: Check for updates
+	81ebe81: Carrier Squelch
+	eb0afbb: Call Lookup
 	d6583d8: RSID new mode
 	1f8a59f: Logbook Menu
 	49cae5f: DATE_TIME sorting
