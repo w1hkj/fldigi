@@ -42,7 +42,7 @@ using namespace std;
 const struct mode_info_t mode_info[NUM_MODES] = {
     { MODE_CW, &cw_modem, "CW", "CW", "CW", "CW", "CW" },
 
-	{ MODE_CONTESTIA, &contestia_modem, "CTSTIA", "Contestia", "", "CONTESTIA", "CT" },
+	{ MODE_CONTESTIA, &contestia_modem, "CTSTIA", "Contestia", "", "CONTESTI", "CT" },
 
 	{ MODE_DOMINOEX4, &dominoex4_modem, "DOMEX4", "DominoEX 4", "DOMINOEX4", "DOMINO", "DM 4" },
 	{ MODE_DOMINOEX5, &dominoex5_modem, "DOMEX5", "DominoEX 5", "DOMINOEX5", "DOMINO", "DM 5" },
