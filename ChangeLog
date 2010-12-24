@@ -1,8 +1,21 @@
 
 
-=Version 3.20.32=
+=Version 3.20.33=
+
+2010-12-24  David Freese  <w1hkj@w1hkj.com>
+
+	51cca17: CONTESTIA
+
+2010-12-21  Dan Ankers  <md1clv@md1clv.com>
+
+	db26f97: IARU Maidenhead
 
 2010-11-30  David Freese  <w1hkj@w1hkj.com>
+
+	6f64b13: Check for updates
+
+
+=Version 3.20.32=
 
 	58cdf97: DATE_OFF update
 	e72ec18: Carrier Squelch
