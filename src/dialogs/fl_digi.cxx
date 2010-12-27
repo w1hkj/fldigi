@@ -78,7 +78,7 @@
 #include "wefax.h"
 #include "wefax-pic.h"
 #include "mt63.h"
-#include "rtty.h"
+#include "view_rtty.h"
 #include "olivia.h"
 #include "contestia.h"
 #include "thor.h"
@@ -2242,7 +2242,11 @@ void cb_mvsquelch(Fl_Widget *w, void *d)
 
 void cb_btnClearMViewer(Fl_Widget *w, void *d)
 {
-	pskviewer->clear();
+	if (brwsViewer)
+		brwsViewer->clear();
+	mainViewer->clear();
+	if (pskviewer) pskviewer->clear();
+	if (rttyviewer) rttyviewer->clear();
 }
 
 int default_handler(int event)
@@ -3288,7 +3292,7 @@ void cb_btnCW_Default(Fl_Widget *w, void *v)
 }
 
 static void cb_mainViewer(Fl_Hold_Browser*, void*) {
-	if (!pskviewer) return;
+	if (!pskviewer && !rttyviewer) return;
 	int sel = mainViewer->value();
 	if (sel == 0 || sel > progdefaults.VIEWERchannels)
 		return;
@@ -3300,11 +3304,14 @@ static void cb_mainViewer(Fl_Hold_Browser*, void*) {
 			ReceiveText->addstr(mainViewer->line(sel).c_str(), FTextBase::ALTR);
 			active_modem->set_freq(mainViewer->freq(sel));
 			active_modem->set_sigsearch(SIGSEARCH);
+			if (brwsViewer) brwsViewer->select(sel);
 		}
 		break;
 	case FL_RIGHT_MOUSE: // reset
-		pskviewer->clearch(sel-1);
+		if (pskviewer) pskviewer->clearch(sel-1);
+		if (rttyviewer) rttyviewer->clearch(sel-1);
 		mainViewer->deselect();
+		if (brwsViewer) brwsViewer->deselect();
 		break;
 	default:
 		break;

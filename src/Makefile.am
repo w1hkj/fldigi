@@ -239,6 +239,7 @@ fldigi_SOURCES += \
 	cw_rtty/cw.cxx \
 	cw_rtty/morse.cxx \
 	cw_rtty/rtty.cxx \
+	cw_rtty/view_rtty.cxx \
 	contestia/contestia.cxx \
 	dialogs/colorsfonts.cxx \
 	dialogs/confdialog.cxx \
@@ -360,6 +361,7 @@ fldigi_SOURCES += \
 	include/ringbuffer.h \
 	include/rsid.h \
 	include/rtty.h \
+	include/view_rtty.h \
 	include/rx_extract.h \
 	include/speak.h \
 	include/serial.h \

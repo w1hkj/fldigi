@@ -27,7 +27,7 @@
 #include <iostream>
 using namespace std;
 
-#include "rtty.h"
+#include "view_rtty.h"
 #include "fl_digi.h"
 #include "digiscope.h"
 #include "misc.h"
@@ -36,6 +36,9 @@ using namespace std;
 #include "configuration.h"
 #include "status.h"
 #include "digiscope.h"
+#include "trx.h"
+
+view_rtty *rttyviewer = (view_rtty *)0;
 
 //=====================================================================
 // Baudot support
@@ -220,6 +223,9 @@ void rtty::restart()
 	dspcnt = 2*(nbits + 2);
 
 	clear_zdata = true;
+
+	rttyviewer->restart();
+
 }
 
 rtty::rtty(trx_mode tty_mode)
@@ -241,6 +247,8 @@ rtty::rtty(trx_mode tty_mode)
 	dsppipe = new double [MAXPIPE];
 
 	samples = new complex[8];
+
+	::rttyviewer = new view_rtty(mode);
 
 	restart();
 }
@@ -494,6 +502,8 @@ int rtty::rx_process(const double *buf, int len)
 		bpfilt->create_filter(bp_filt_lo, bp_filt_hi);
 		wf->redraw_marker();
 	}
+
+	if (rttyviewer && !bHistory) rttyviewer->rx_process(buf, len);
 
 	Metric();
 

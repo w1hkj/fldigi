@@ -43,6 +43,7 @@
 #include "icons.h"
 
 #include "psk_browser.h"
+#include "view_rtty.h"
 
 extern pskBrowser *mainViewer;
 
@@ -67,7 +68,7 @@ fre_t seek_re("CQ", REG_EXTENDED | REG_ICASE | REG_NOSUB);
 
 void initViewer()
 {
-	if (!pskviewer) return;
+//	if (!pskviewer) return;
 	usb = wf->USB();
 	rfc = wf->rfcarrier();
 	if (mainViewer) {
@@ -149,10 +150,13 @@ static void cb_btnCloseViewer(Fl_Button*, void*) {
 
 static void cb_btnClearViewer(Fl_Button*, void*) {
 	brwsViewer->clear();
+	mainViewer->clear();
+	if (pskviewer) pskviewer->clear();
+	if (rttyviewer) rttyviewer->clear();
 }
 
 static void cb_brwsViewer(Fl_Hold_Browser*, void*) {
-	if (!pskviewer) return;
+	if (!pskviewer && !rttyviewer) return;
 	int sel = brwsViewer->value();
 	if (sel == 0 || sel > progdefaults.VIEWERchannels)
 		return;
@@ -164,14 +168,17 @@ static void cb_brwsViewer(Fl_Hold_Browser*, void*) {
 			ReceiveText->addstr(brwsViewer->line(sel).c_str(), FTextBase::ALTR);
 			active_modem->set_freq(brwsViewer->freq(sel));
 			active_modem->set_sigsearch(SIGSEARCH);
+			mainViewer->select(sel);
 		}
 		break;
 	case FL_MIDDLE_MOUSE: // copy from modem
 //		set_freq(sel, active_modem->get_freq());
 		break;
 	case FL_RIGHT_MOUSE: // reset
-		pskviewer->clearch(sel-1);
+		if (pskviewer) pskviewer->clearch(sel-1);
+		if (rttyviewer) rttyviewer->clearch(sel-1);
 		brwsViewer->deselect();
+		mainViewer->deselect();
 	default:
 		break;
 	}
@@ -199,7 +206,7 @@ Fl_Double_Window* createViewer(void)
 	Fl_Double_Window* w = new Fl_Double_Window(progStatus.VIEWERxpos, progStatus.VIEWERypos,
 						   viewerwidth + 2 * BWSR_BORDER,
 						   viewerheight + 2 * BWSR_BORDER + pad + 20,
-						   _("PSK Browser"));
+						   _("Signal Browser"));
 	brwsViewer = new pskBrowser(BWSR_BORDER, BWSR_BORDER, viewerwidth, viewerheight);
 	brwsViewer->callback((Fl_Callback*)cb_brwsViewer);
 	brwsViewer->setfont(progdefaults.ViewerFontnbr, progdefaults.ViewerFontsize);
@@ -262,11 +269,18 @@ void openViewer()
 
 void viewer_paste_freq(int freq)
 {
-	int ch = (freq - progdefaults.LowFreqCutoff) / 100;
-
-	mainViewer->select(WCLAMP(0, progdefaults.VIEWERchannels, ch));
-	if (dlgViewer)
-		brwsViewer->select(WCLAMP(0, progdefaults.VIEWERchannels, ch));
+	if (pskviewer) {
+		for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
+			if (fabs(pskviewer->get_freq(i) - freq) <= 50) {
+				mainViewer->select(i+1);
+				if (dlgViewer)
+					brwsViewer->select(i+1);
+				return;
+			}
+		}
+	}
+	if (rttyviewer) {
+	}
 }
 
 

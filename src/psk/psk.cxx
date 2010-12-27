@@ -148,10 +148,12 @@ psk::~psk()
 	if (fir2) delete fir2;
 	if (snfilt) delete snfilt;
 	if (imdfilt) delete imdfilt;
-	if (::pskviewer == pskviewer)
-		::pskviewer = 0;
+//	if (::pskviewer == pskviewer)
+//		::pskviewer = 0;
 	delete pskviewer;
+	pskviewer = 0;
 	delete evalpsk;
+	evalpsk = 0;
 
 	// Interleaver
 	if (Rxinlv) delete Rxinlv;
@@ -383,8 +385,8 @@ psk::psk(trx_mode pskmode) : modem()
 	E1 = E2 = E3 = 0.0;
 	acquire = 0;
 
-	evalpsk = new pskeval;
-	::pskviewer = pskviewer = new viewpsk(evalpsk, mode);
+	if (!evalpsk) evalpsk = new pskeval;
+	if (!pskviewer) pskviewer = new viewpsk(evalpsk, mode);
 
 //	init();
 }
