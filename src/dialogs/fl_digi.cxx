@@ -209,6 +209,8 @@ Fl_Button			*btnCW_Default=(Fl_Button *)0;
 Fl_Box				*WARNstatus = (Fl_Box *)0;
 Fl_Button			*MODEstatus = (Fl_Button *)0;
 Fl_Button 			*btnMacro[NUMMACKEYS * NUMKEYROWS];
+Fl_Button			*btnAltMacros1 = (Fl_Button *)0;
+Fl_Button			*btnAltMacros2 = (Fl_Button *)0;
 Fl_Button			*btnAFC;
 Fl_Button			*btnSQL;
 Fl_Input2			*inpQth;
@@ -1170,6 +1172,40 @@ void colorize_macros()
 	FL_UNLOCK_D();
 }
 
+void altmacro_cb(Fl_Widget *w, void *v)
+{
+	static char alt_text[2] = "1";
+
+	intptr_t arg = reinterpret_cast<intptr_t>(v);
+	if (arg)
+		altMacros += arg;
+	else
+		altMacros = altMacros + (Fl::event_button() == FL_RIGHT_MOUSE ? -1 : 1);
+
+	if (progStatus.two_macro_rows) {
+// alternate set
+		altMacros = WCLAMP(altMacros, 1, 3);
+		alt_text[0] = '1' + altMacros;
+		for (int i = 0; i < NUMMACKEYS; i++) {
+			btnMacro[i + NUMMACKEYS]->label(macros.name[i + (altMacros * NUMMACKEYS)].c_str());
+			btnMacro[i + NUMMACKEYS]->redraw_label();
+		}
+		btnAltMacros2->label(alt_text);
+		btnAltMacros2->redraw_label();
+	} else {
+// primary set
+		altMacros = WCLAMP(altMacros, 0, 3);
+		alt_text[0] = '1' + altMacros;
+		for (int i = 0; i < NUMMACKEYS; i++) {
+			btnMacro[i]->label(macros.name[i + (altMacros * NUMMACKEYS)].c_str());
+			btnMacro[i]->redraw_label();
+		}
+		btnAltMacros1->label(alt_text);
+		btnAltMacros1->redraw_label();
+	}
+	restoreFocus();
+}
+
 void cb_mnuConfigOperator(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabOperator);
@@ -1750,8 +1786,15 @@ void set_macroLabels()
 				macros.name[(altMacros * NUMMACKEYS) + i].c_str());
 			btnMacro[NUMMACKEYS + i]->redraw_label();
 		}
-	} else
+		btnAltMacros1->label("1");
+		btnAltMacros1->redraw_label();
+		btnAltMacros2->label("2");
+		btnAltMacros2->redraw_label();
+	} else {
 		altMacros = 0;
+		btnAltMacros1->label("1");
+		btnAltMacros1->redraw_label();
+	}
 	for (int i = 0; i < NUMMACKEYS; i++) {
 		btnMacro[i]->label(macros.name[i].c_str());
 		btnMacro[i]->redraw_label();
@@ -2370,10 +2413,12 @@ void UI_select()
 			macroFrame2->size(macroFrame2->w(), Hmacros);
 			macroFrame2->position(macroFrame2->x(), y1);
 			macroFrame2->show();
+			btnAltMacros1->deactivate();
 			y1 += macroFrame2->h();
 		} else {
 			macroFrame2->size(macroFrame2->w(), 0);
 			macroFrame2->position(macroFrame2->x(), y1);
+			btnAltMacros1->activate();
 			macroFrame2->hide();
 		}
 		int y2 = macroFrame->y();
@@ -2404,10 +2449,12 @@ void UI_select()
 			macroFrame2->size(macroFrame2->w(), Hmacros);
 			macroFrame2->position(macroFrame2->x(), y1);
 			macroFrame2->show();
+			btnAltMacros1->deactivate();
 			y1 += macroFrame2->h();
 		} else {
 			macroFrame2->size(macroFrame2->w(), 0);
 			macroFrame2->position(macroFrame2->x(), y1);
+			btnAltMacros1->activate();
 			macroFrame2->hide();
 		}
 		int y2 = macroFrame->y();
@@ -2447,11 +2494,13 @@ void UI_select()
 			macroFrame2->size(macroFrame2->w(), Hmacros);
 			macroFrame2->position(macroFrame2->x(), y1);
 			macroFrame2->show();
+			btnAltMacros1->deactivate();
 			y1 += macroFrame2->h();
 		} else {
 			macroFrame2->size(macroFrame2->w(), 0);
 			macroFrame2->position(macroFrame2->x(), y1);
 			macroFrame2->hide();
+			btnAltMacros1->activate();
 		}
 		int y2 = macroFrame->y();
 		int w = TopFrame1->w();
@@ -3905,11 +3954,12 @@ void create_fl_digi_main_primary() {
 
 		macroFrame2 = new Fl_Group(0, Y, progStatus.mainW, Hmacros);
 			macroFrame2->box(FL_ENGRAVED_BOX);
-			Wmacrobtn = (macroFrame2->w() - 4) / NUMMACKEYS;
-			Hmacrobtn = (macroFrame2->h() - 4);
-			wblank = (macroFrame2->w() - 4 - NUMMACKEYS * Wmacrobtn) / 2;
+			Fl_Group *btngroup2 = new Fl_Group(0, Y, progStatus.mainW - Hmacros + 4, Hmacros);
+			Wmacrobtn = (btngroup2->w() - 4) / NUMMACKEYS;
+			Hmacrobtn = (btngroup2->h() - 4);
+			wblank = (btngroup2->w() - 4 - NUMMACKEYS * Wmacrobtn) / 2;
 			xpos = 2;
-			ypos = macroFrame2->y() + 2;
+			ypos = btngroup2->y() + 2;
 			for (int i = 0; i < NUMMACKEYS; i++) {
 				if (i == 4 || i == 8) {
 					bx = new Fl_Box(xpos, ypos, wblank, Hmacrobtn);
@@ -3924,6 +3974,11 @@ void create_fl_digi_main_primary() {
 				colorize_macro(NUMMACKEYS + i);
 				xpos += Wmacrobtn;
 			}
+			btngroup2->end();
+			btnAltMacros2 = new Fl_Button(progStatus.mainW - Hmacrobtn - 2, ypos, Hmacrobtn, Hmacrobtn, "2");
+			btnAltMacros2->callback(altmacro_cb, 0);
+			btnAltMacros2->tooltip(_("Shift-key macro set"));
+			macroFrame2->resizable(btngroup2);
 		macroFrame2->end();
 		Y += Hmacros;
 
@@ -4060,11 +4115,12 @@ void create_fl_digi_main_primary() {
 
 		macroFrame = new Fl_Group(0, Y, progStatus.mainW, Hmacros);
 			macroFrame->box(FL_ENGRAVED_BOX);
-			Wmacrobtn = (macroFrame->w() - 4) / NUMMACKEYS;
-			Hmacrobtn = (macroFrame->h() - 4);
-			wblank = (macroFrame->w() - 4 - NUMMACKEYS * Wmacrobtn) / 2;
+			Fl_Group *btngroup1 = new Fl_Group(0, Y, progStatus.mainW - Hmacros + 4, Hmacros);
+			Wmacrobtn = (btngroup1->w() - 4) / NUMMACKEYS;
+			Hmacrobtn = (btngroup1->h() - 4);
+			wblank = (btngroup1->w() - 4 - NUMMACKEYS * Wmacrobtn) / 2;
 			xpos = 2;
-			ypos = macroFrame->y() + 2;// + row*Hbtn;
+			ypos = btngroup1->y() + 2;// + row*Hbtn;
 			for (int i = 0; i < NUMMACKEYS; i++) {
 				if (i == 4 || i == 8) {
 					bx = new Fl_Box(xpos, ypos, wblank, Hmacrobtn);
@@ -4078,6 +4134,11 @@ void create_fl_digi_main_primary() {
 				colorize_macro(i);
 				xpos += Wmacrobtn;
 			}
+			btngroup1->end();
+			btnAltMacros1 = new Fl_Button(progStatus.mainW - Hmacrobtn - 2, ypos, Hmacrobtn, Hmacrobtn, "1");
+			btnAltMacros1->callback(altmacro_cb, 0);
+			btnAltMacros1->tooltip(_("Primary macro set"));
+			macroFrame2->resizable(btngroup1);
 		macroFrame->end();
 		Y += Hmacros;
 

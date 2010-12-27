@@ -943,6 +943,7 @@ int FTextTX::handle_key(int key)
 	case '3':
 	case '4':
 		if (Fl::event_state() & FL_ALT) {
+			static char lbl[2] = "1";
 			altMacros = key - '1';
 			if (progStatus.two_macro_rows) {
 				if (!altMacros) altMacros = 1;
@@ -951,12 +952,18 @@ int FTextTX::handle_key(int key)
 						macros.name[(altMacros * NUMMACKEYS) + i].c_str());
 					btnMacro[NUMMACKEYS + i]->redraw_label();
 				}
+				lbl[0] = key;
+				btnAltMacros2->label(lbl);
+				btnAltMacros2->redraw_label();
 			} else {
 				for (int i = 0; i < NUMMACKEYS; i++) {
 					btnMacro[i]->label(
 						macros.name[(altMacros * NUMMACKEYS) + i].c_str());
 					btnMacro[i]->redraw_label();
 				}
+				lbl[0] = key;
+				btnAltMacros1->label(lbl);
+				btnAltMacros1->redraw_label();
 			}
 			return 1;
 		}

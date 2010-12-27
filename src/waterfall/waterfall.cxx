@@ -1629,6 +1629,21 @@ int waterfall::handle(int event)
 		init_modem(mode);
 		return 1;
 	}
+	// as above; handle wheel events for the macro bar
+	extern void altmacro_cb(Fl_Widget *w, void *v);
+	if (progdefaults.macro_wheel) {
+		if (progStatus.two_macro_rows) {
+			if (Fl::event_inside(macroFrame2)) {
+				altmacro_cb(btnAltMacros2, reinterpret_cast<void *>(d));
+				return 1;
+			}
+		} else {
+			if (Fl::event_inside(macroFrame)) {
+				altmacro_cb(btnAltMacros1, reinterpret_cast<void *>(d));
+				return 1;
+			}
+		}
+	}
 
 	return Fl_Group::handle(event);
 }

@@ -143,27 +143,6 @@ mode_browser->show(&progdefaults.visible_modes);
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *btnRXClicks=(Fl_Check_Button *)0;
-
-static void cb_btnRXClicks(Fl_Check_Button* o, void*) {
-  progdefaults.rxtext_clicks_qso_data = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnRXTooltips=(Fl_Check_Button *)0;
-
-static void cb_btnRXTooltips(Fl_Check_Button* o, void*) {
-  progdefaults.rxtext_tooltips = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Input2 *inpNonword=(Fl_Input2 *)0;
-
-static void cb_inpNonword(Fl_Input2* o, void*) {
-  progdefaults.nonwordchars = o->value();
-progdefaults.changed = true;
-}
-
 Fl_Check_Button *btnNagMe=(Fl_Check_Button *)0;
 
 static void cb_btnNagMe(Fl_Check_Button* o, void*) {
@@ -212,6 +191,98 @@ Fl_Input2 *inpMyPower=(Fl_Input2 *)0;
 static void cb_inpMyPower(Fl_Input2* o, void*) {
   progdefaults.mytxpower = o->value();
 progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnRXClicks=(Fl_Check_Button *)0;
+
+static void cb_btnRXClicks(Fl_Check_Button* o, void*) {
+  progdefaults.rxtext_clicks_qso_data = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnRXTooltips=(Fl_Check_Button *)0;
+
+static void cb_btnRXTooltips(Fl_Check_Button* o, void*) {
+  progdefaults.rxtext_tooltips = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Input2 *inpNonword=(Fl_Input2 *)0;
+
+static void cb_inpNonword(Fl_Input2* o, void*) {
+  progdefaults.nonwordchars = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnMacroMouseWheel=(Fl_Check_Button *)0;
+
+static void cb_btnMacroMouseWheel(Fl_Check_Button* o, void*) {
+  progdefaults.macro_wheel = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnMarquee=(Fl_Check_Button *)0;
+
+static void cb_btnMarquee(Fl_Check_Button* o, void*) {
+  progdefaults.VIEWERmarquee = o->value();
+progdefaults.changed = true;
+initViewer();
+}
+
+Fl_Spinner2 *cntChannels=(Fl_Spinner2 *)0;
+
+static void cb_cntChannels(Fl_Spinner2* o, void*) {
+  progdefaults.VIEWERchannels = (int)(o->value());
+initViewer();
+}
+
+Fl_Spinner2 *cntStartFrequency=(Fl_Spinner2 *)0;
+
+static void cb_cntStartFrequency(Fl_Spinner2* o, void*) {
+  progdefaults.VIEWERstart = (int)(o->value());
+progdefaults.changed = true;
+initViewer();
+}
+
+Fl_Spinner2 *cntTimeout=(Fl_Spinner2 *)0;
+
+static void cb_cntTimeout(Fl_Spinner2* o, void*) {
+  progdefaults.VIEWERtimeout = (int)(o->value());
+progdefaults.changed = true;
+}
+
+Fl_Choice *mnuViewerLabel=(Fl_Choice *)0;
+
+static void cb_mnuViewerLabel(Fl_Choice* o, void*) {
+  progdefaults.VIEWERlabeltype = o->value();
+initViewer();
+progdefaults.changed = true;
+}
+
+Fl_Button *btnViewerFont=(Fl_Button *)0;
+
+static void cb_btnViewerFont(Fl_Button*, void*) {
+  font_browser->fontNumber(progdefaults.ViewerFontnbr);
+font_browser->fontSize(progdefaults.ViewerFontsize);
+font_browser->fontColor(FL_FOREGROUND_COLOR);
+font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+font_browser->callback(cbViewerFontBrowser);
+font_browser->show();
+}
+
+Fl_Input2 *txtInpSeek=(Fl_Input2 *)0;
+
+static void cb_txtInpSeek(Fl_Input2* o, void*) {
+  progStatus.browser_search = o->value();
+seek_re.recompile(o->value() ? o->value() : "[invalid");
+}
+
+Fl_Check_Button *btnFixedIntervals=(Fl_Check_Button *)0;
+
+static void cb_btnFixedIntervals(Fl_Check_Button* o, void*) {
+  progdefaults.VIEWERfixed = o->value();
+progdefaults.changed = true;
+initViewer();
 }
 
 Fl_Group *tabContest=(Fl_Group *)0;
@@ -1282,70 +1353,6 @@ progdefaults.changed = true;
 static void cb_seconds(Fl_Counter2* o, void*) {
   progdefaults.StatusTimeout = (int)(o->value());
 progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnMarquee=(Fl_Check_Button *)0;
-
-static void cb_btnMarquee(Fl_Check_Button* o, void*) {
-  progdefaults.VIEWERmarquee = o->value();
-progdefaults.changed = true;
-initViewer();
-}
-
-Fl_Spinner2 *cntChannels=(Fl_Spinner2 *)0;
-
-static void cb_cntChannels(Fl_Spinner2* o, void*) {
-  progdefaults.VIEWERchannels = (int)(o->value());
-initViewer();
-}
-
-Fl_Spinner2 *cntStartFrequency=(Fl_Spinner2 *)0;
-
-static void cb_cntStartFrequency(Fl_Spinner2* o, void*) {
-  progdefaults.VIEWERstart = (int)(o->value());
-progdefaults.changed = true;
-initViewer();
-}
-
-Fl_Spinner2 *cntTimeout=(Fl_Spinner2 *)0;
-
-static void cb_cntTimeout(Fl_Spinner2* o, void*) {
-  progdefaults.VIEWERtimeout = (int)(o->value());
-progdefaults.changed = true;
-}
-
-Fl_Choice *mnuViewerLabel=(Fl_Choice *)0;
-
-static void cb_mnuViewerLabel(Fl_Choice* o, void*) {
-  progdefaults.VIEWERlabeltype = o->value();
-initViewer();
-progdefaults.changed = true;
-}
-
-Fl_Button *btnViewerFont=(Fl_Button *)0;
-
-static void cb_btnViewerFont(Fl_Button*, void*) {
-  font_browser->fontNumber(progdefaults.ViewerFontnbr);
-font_browser->fontSize(progdefaults.ViewerFontsize);
-font_browser->fontColor(FL_FOREGROUND_COLOR);
-font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
-font_browser->callback(cbViewerFontBrowser);
-font_browser->show();
-}
-
-Fl_Input2 *txtInpSeek=(Fl_Input2 *)0;
-
-static void cb_txtInpSeek(Fl_Input2* o, void*) {
-  progStatus.browser_search = o->value();
-seek_re.recompile(o->value() ? o->value() : "[invalid");
-}
-
-Fl_Check_Button *btnFixedIntervals=(Fl_Check_Button *)0;
-
-static void cb_btnFixedIntervals(Fl_Check_Button* o, void*) {
-  progdefaults.VIEWERfixed = o->value();
-progdefaults.changed = true;
-initViewer();
 }
 
 Fl_Group *tabRTTY=(Fl_Group *)0;
@@ -2831,27 +2838,27 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";
         } // Fl_Group* grpNoise
         tabOperator->end();
       } // Fl_Group* tabOperator
-      { tabUI = new Fl_Group(-3, 25, 508, 345, _("UI"));
+      { tabUI = new Fl_Group(0, 25, 500, 346, _("UI"));
         tabUI->hide();
-        { tabsUI = new Fl_Tabs(-3, 25, 508, 345);
+        { tabsUI = new Fl_Tabs(0, 25, 500, 346);
           tabsUI->selection_color((Fl_Color)FL_LIGHT1);
           { tabUserInterface = new Fl_Group(0, 50, 500, 320, _("General"));
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 301);
+            { Fl_Group* o = new Fl_Group(1, 55, 497, 313);
               o->box(FL_ENGRAVED_FRAME);
-              { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(15, 70, 120, 20, _("Show tooltips"));
+              { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(20, 61, 120, 20, _("Show tooltips"));
                 btnShowTooltips->tooltip(_("Enable / disable tooltips"));
                 btnShowTooltips->down_box(FL_DOWN_BOX);
                 btnShowTooltips->value(1);
                 btnShowTooltips->callback((Fl_Callback*)cb_btnShowTooltips);
                 o->value(progdefaults.tooltips);
               } // Fl_Check_Button* btnShowTooltips
-              { Fl_Check_Button* o = chkMenuIcons = new Fl_Check_Button(15, 100, 150, 20, _("Show menu icons"));
+              { Fl_Check_Button* o = chkMenuIcons = new Fl_Check_Button(20, 87, 150, 20, _("Show menu icons"));
                 chkMenuIcons->tooltip(_("Enable / disable icons on menus"));
                 chkMenuIcons->down_box(FL_DOWN_BOX);
                 chkMenuIcons->callback((Fl_Callback*)cb_chkMenuIcons);
                 o->value(progdefaults.menuicons);
               } // Fl_Check_Button* chkMenuIcons
-              { mnuScheme = new Fl_Choice(250, 70, 80, 20, _("UI scheme"));
+              { mnuScheme = new Fl_Choice(250, 61, 80, 20, _("UI scheme"));
                 mnuScheme->tooltip(_("Change application look and feel"));
                 mnuScheme->down_box(FL_BORDER_BOX);
                 mnuScheme->callback((Fl_Callback*)cb_mnuScheme);
@@ -2861,84 +2868,52 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";
                 mnuScheme->add("plastic");
                 mnuScheme->value(mnuScheme->find_item(progdefaults.ui_scheme.c_str()));
               } // Fl_Choice* mnuScheme
-              { bVisibleModes = new Fl_Button(250, 100, 120, 20, _("Visible modes"));
+              { bVisibleModes = new Fl_Button(250, 87, 120, 20, _("Visible modes"));
+                bVisibleModes->tooltip(_("Select modes for menu access"));
                 bVisibleModes->callback((Fl_Callback*)cb_bVisibleModes);
               } // Fl_Button* bVisibleModes
-              { Fl_Group* o = new Fl_Group(9, 277, 481, 80, _("Text Capture"));
-                o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-                { Fl_Check_Button* o = btnRXClicks = new Fl_Check_Button(125, 314, 305, 20, _("Double-click on RX text enters QSO data"));
-                btnRXClicks->tooltip(_("Enable if you cannot use the middle mouse button"));
-                btnRXClicks->down_box(FL_DOWN_BOX);
-                btnRXClicks->callback((Fl_Callback*)cb_btnRXClicks);
-                o->value(progdefaults.rxtext_clicks_qso_data);
-                } // Fl_Check_Button* btnRXClicks
-                { Fl_Check_Button* o = btnRXTooltips = new Fl_Check_Button(125, 336, 282, 20, _("Show callsign tooltips in received text"));
-                btnRXTooltips->tooltip(_("Popup info after a 2 second hover on a callsign"));
-                btnRXTooltips->down_box(FL_DOWN_BOX);
-                btnRXTooltips->callback((Fl_Callback*)cb_btnRXTooltips);
-                o->value(progdefaults.rxtext_tooltips);
-                } // Fl_Check_Button* btnRXTooltips
-                { Fl_Input2* o = inpNonword = new Fl_Input2(125, 285, 75, 24, _("Word delimiters"));
-                inpNonword->tooltip(_("RX text QSO data entry is bounded by the non-word characters\ndefined here. T\
-ab and newline are automatically included."));
-                inpNonword->box(FL_DOWN_BOX);
-                inpNonword->color((Fl_Color)FL_BACKGROUND2_COLOR);
-                inpNonword->selection_color((Fl_Color)FL_SELECTION_COLOR);
-                inpNonword->labeltype(FL_NORMAL_LABEL);
-                inpNonword->labelfont(0);
-                inpNonword->labelsize(14);
-                inpNonword->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
-                inpNonword->textfont(4);
-                inpNonword->callback((Fl_Callback*)cb_inpNonword);
-                inpNonword->align(FL_ALIGN_RIGHT);
-                inpNonword->when(FL_WHEN_RELEASE);
-                o->value(progdefaults.nonwordchars.c_str());
-                o->labelsize(FL_NORMAL_SIZE);
-                } // Fl_Input2* inpNonword
-                o->end();
-              } // Fl_Group* o
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(8, 130, 484, 146, _("QSO logging"));
+            { Fl_Group* o = new Fl_Group(2, 114, 496, 110, _("QSO logging"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(21, 158, 238, 20, _("Prompt to save log"));
+              { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(20, 136, 236, 20, _("Prompt to save log"));
                 btnNagMe->tooltip(_("Bug me about saving log entries"));
                 btnNagMe->down_box(FL_DOWN_BOX);
                 btnNagMe->callback((Fl_Callback*)cb_btnNagMe);
                 o->value(progdefaults.NagMe);
               } // Fl_Check_Button* btnNagMe
-              { Fl_Check_Button* o = btnClearOnSave = new Fl_Check_Button(21, 183, 238, 20, _("Clear on save"));
+              { Fl_Check_Button* o = btnClearOnSave = new Fl_Check_Button(20, 156, 236, 20, _("Clear on save"));
                 btnClearOnSave->tooltip(_("Clear log entries after saving or using macro <LOG>"));
                 btnClearOnSave->down_box(FL_DOWN_BOX);
                 btnClearOnSave->callback((Fl_Callback*)cb_btnClearOnSave);
                 o->value(progdefaults.ClearOnSave);
               } // Fl_Check_Button* btnClearOnSave
-              { Fl_Check_Button* o = btnAutoFillQSO = new Fl_Check_Button(21, 208, 238, 20, _("Auto-fill Country and Azimuth"));
+              { Fl_Check_Button* o = btnAutoFillQSO = new Fl_Check_Button(20, 177, 236, 20, _("Auto-fill Country and Azimuth"));
                 btnAutoFillQSO->tooltip(_("Fill in Country / Azimuth using cty.dat information"));
                 btnAutoFillQSO->down_box(FL_DOWN_BOX);
                 btnAutoFillQSO->callback((Fl_Callback*)cb_btnAutoFillQSO);
                 o->value(progdefaults.autofill_qso_fields);
               } // Fl_Check_Button* btnAutoFillQSO
-              { Fl_Check_Button* o = btnCallUpperCase = new Fl_Check_Button(21, 233, 238, 20, _("Convert callsign to upper case"));
+              { Fl_Check_Button* o = btnCallUpperCase = new Fl_Check_Button(20, 198, 236, 20, _("Convert callsign to upper case"));
                 btnCallUpperCase->tooltip(_("Force callsign field to UPPERCASE"));
                 btnCallUpperCase->down_box(FL_DOWN_BOX);
                 btnCallUpperCase->callback((Fl_Callback*)cb_btnCallUpperCase);
                 o->value(progdefaults.calluppercase);
               } // Fl_Check_Button* btnCallUpperCase
-              { Fl_Check_Button* o = btnDateTimeSort = new Fl_Check_Button(275, 183, 191, 20, _("Sort by Date/Time OFF"));
+              { Fl_Check_Button* o = btnDateTimeSort = new Fl_Check_Button(273, 136, 190, 20, _("Sort by Date/Time OFF"));
                 btnDateTimeSort->tooltip(_("Sort by date/time OFF - effects all ADIF/Cabrillo reports"));
                 btnDateTimeSort->down_box(FL_DOWN_BOX);
                 btnDateTimeSort->callback((Fl_Callback*)cb_btnDateTimeSort);
                 o->value(progdefaults.sort_date_time_off);
               } // Fl_Check_Button* btnDateTimeSort
-              { Fl_Check_Button* o = btndate_time_force = new Fl_Check_Button(275, 208, 191, 20, _("Date time ON == OFF"));
+              { Fl_Check_Button* o = btndate_time_force = new Fl_Check_Button(273, 156, 190, 20, _("Date time ON == OFF"));
                 btndate_time_force->tooltip(_("Force date/time ON == date/time OFF"));
                 btndate_time_force->down_box(FL_DOWN_BOX);
                 btndate_time_force->callback((Fl_Callback*)cb_btndate_time_force);
                 o->value(progdefaults.force_date_time);
               } // Fl_Check_Button* btndate_time_force
-              { Fl_Input2* o = inpMyPower = new Fl_Input2(275, 154, 50, 24, _("Transmit Power"));
+              { Fl_Input2* o = inpMyPower = new Fl_Input2(273, 179, 50, 24, _("Transmit Power"));
                 inpMyPower->tooltip(_("Tx power used for logbook entries"));
                 inpMyPower->box(FL_DOWN_BOX);
                 inpMyPower->color((Fl_Color)FL_BACKGROUND2_COLOR);
@@ -2955,8 +2930,149 @@ ab and newline are automatically included."));
               } // Fl_Input2* inpMyPower
               o->end();
             } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(2, 224, 496, 100, _("Text Capture"));
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { Fl_Check_Button* o = btnRXClicks = new Fl_Check_Button(20, 277, 313, 20, _("Double-click on RX text enters QSO data"));
+                btnRXClicks->tooltip(_("Enable if you cannot use the middle mouse button"));
+                btnRXClicks->down_box(FL_DOWN_BOX);
+                btnRXClicks->callback((Fl_Callback*)cb_btnRXClicks);
+                o->value(progdefaults.rxtext_clicks_qso_data);
+              } // Fl_Check_Button* btnRXClicks
+              { Fl_Check_Button* o = btnRXTooltips = new Fl_Check_Button(20, 299, 313, 20, _("Show callsign tooltips in received text"));
+                btnRXTooltips->tooltip(_("Popup info after a 2 second hover on a callsign"));
+                btnRXTooltips->down_box(FL_DOWN_BOX);
+                btnRXTooltips->callback((Fl_Callback*)cb_btnRXTooltips);
+                o->value(progdefaults.rxtext_tooltips);
+              } // Fl_Check_Button* btnRXTooltips
+              { Fl_Input2* o = inpNonword = new Fl_Input2(20, 245, 340, 24, _("Word delimiters"));
+                inpNonword->tooltip(_("RX text QSO data entry is bounded by the non-word characters\ndefined here. T\
+ab and newline are automatically included."));
+                inpNonword->box(FL_DOWN_BOX);
+                inpNonword->color((Fl_Color)FL_BACKGROUND2_COLOR);
+                inpNonword->selection_color((Fl_Color)FL_SELECTION_COLOR);
+                inpNonword->labeltype(FL_NORMAL_LABEL);
+                inpNonword->labelfont(0);
+                inpNonword->labelsize(14);
+                inpNonword->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                inpNonword->textfont(4);
+                inpNonword->callback((Fl_Callback*)cb_inpNonword);
+                inpNonword->align(FL_ALIGN_RIGHT);
+                inpNonword->when(FL_WHEN_RELEASE);
+                o->value(progdefaults.nonwordchars.c_str());
+                o->labelsize(FL_NORMAL_SIZE);
+              } // Fl_Input2* inpNonword
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(2, 324, 496, 44);
+              o->box(FL_ENGRAVED_FRAME);
+              { Fl_Check_Button* o = btnMacroMouseWheel = new Fl_Check_Button(20, 333, 317, 20, _("Mouse wheel active on macro button bars"));
+                btnMacroMouseWheel->down_box(FL_DOWN_BOX);
+                btnMacroMouseWheel->callback((Fl_Callback*)cb_btnMacroMouseWheel);
+                o->value(progdefaults.macro_wheel);
+              } // Fl_Check_Button* btnMacroMouseWheel
+              o->end();
+            } // Fl_Group* o
             tabUserInterface->end();
           } // Fl_Group* tabUserInterface
+          { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Browser"));
+            o->hide();
+            { Fl_Group* o = new Fl_Group(2, 59, 496, 300);
+              o->box(FL_ENGRAVED_FRAME);
+              { Fl_Check_Button* o = btnMarquee = new Fl_Check_Button(208, 105, 165, 20, _("Continuous scrolling"));
+                btnMarquee->tooltip(_("ON - Marquee style\nOFF - Clear & restart"));
+                btnMarquee->down_box(FL_DOWN_BOX);
+                btnMarquee->callback((Fl_Callback*)cb_btnMarquee);
+                o->value(progdefaults.VIEWERmarquee);
+              } // Fl_Check_Button* btnMarquee
+              { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(9, 69, 50, 20, _("Channels"));
+                cntChannels->tooltip(_("Change # of psk viewer channels"));
+                cntChannels->box(FL_NO_BOX);
+                cntChannels->color((Fl_Color)FL_BACKGROUND_COLOR);
+                cntChannels->selection_color((Fl_Color)FL_BACKGROUND_COLOR);
+                cntChannels->labeltype(FL_NORMAL_LABEL);
+                cntChannels->labelfont(0);
+                cntChannels->labelsize(14);
+                cntChannels->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                cntChannels->callback((Fl_Callback*)cb_cntChannels);
+                cntChannels->align(FL_ALIGN_RIGHT);
+                cntChannels->when(FL_WHEN_RELEASE);
+                o->minimum(5); o->maximum(30); o->step(1);
+                o->value(progdefaults.VIEWERchannels);
+                o->labelsize(FL_NORMAL_SIZE);
+              } // Fl_Spinner2* cntChannels
+              { Fl_Spinner2* o = cntStartFrequency = new Fl_Spinner2(9, 105, 50, 20, _("Start frequency"));
+                cntStartFrequency->tooltip(_("Start decoding at this frequency"));
+                cntStartFrequency->box(FL_NO_BOX);
+                cntStartFrequency->color((Fl_Color)FL_BACKGROUND_COLOR);
+                cntStartFrequency->selection_color((Fl_Color)FL_BACKGROUND_COLOR);
+                cntStartFrequency->labeltype(FL_NORMAL_LABEL);
+                cntStartFrequency->labelfont(0);
+                cntStartFrequency->labelsize(14);
+                cntStartFrequency->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                cntStartFrequency->callback((Fl_Callback*)cb_cntStartFrequency);
+                cntStartFrequency->align(FL_ALIGN_RIGHT);
+                cntStartFrequency->when(FL_WHEN_RELEASE);
+                o->minimum(200); o->maximum(1000); o->step(100);
+                o->value(progdefaults.VIEWERstart);
+                o->labelsize(FL_NORMAL_SIZE);
+              } // Fl_Spinner2* cntStartFrequency
+              { Fl_Spinner2* o = cntTimeout = new Fl_Spinner2(208, 69, 50, 20, _("Inactivity timeout"));
+                cntTimeout->tooltip(_("Clear channel text after\n# seconds of inactivity"));
+                cntTimeout->box(FL_NO_BOX);
+                cntTimeout->color((Fl_Color)FL_BACKGROUND_COLOR);
+                cntTimeout->selection_color((Fl_Color)FL_BACKGROUND_COLOR);
+                cntTimeout->labeltype(FL_NORMAL_LABEL);
+                cntTimeout->labelfont(0);
+                cntTimeout->labelsize(14);
+                cntTimeout->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                cntTimeout->value(10);
+                cntTimeout->callback((Fl_Callback*)cb_cntTimeout);
+                cntTimeout->align(FL_ALIGN_RIGHT);
+                cntTimeout->when(FL_WHEN_RELEASE);
+                o->minimum(1); o->maximum(180); o->step(1);
+                o->value(progdefaults.VIEWERtimeout);
+                o->labelsize(FL_NORMAL_SIZE);
+              } // Fl_Spinner2* cntTimeout
+              { mnuViewerLabel = new Fl_Choice(9, 145, 150, 24, _("Channel label"));
+                mnuViewerLabel->tooltip(_("Appearance of label on each channel"));
+                mnuViewerLabel->down_box(FL_BORDER_BOX);
+                mnuViewerLabel->callback((Fl_Callback*)cb_mnuViewerLabel);
+                mnuViewerLabel->align(FL_ALIGN_RIGHT);
+                mnuViewerLabel->add("None"); mnuViewerLabel->add("Audio frequency");
+                mnuViewerLabel->add("Radio frequency"); mnuViewerLabel->add("Channel number");
+                mnuViewerLabel->value(progdefaults.VIEWERlabeltype);
+              } // Fl_Choice* mnuViewerLabel
+              { btnViewerFont = new Fl_Button(9, 187, 70, 24, _("Font..."));
+                btnViewerFont->callback((Fl_Callback*)cb_btnViewerFont);
+              } // Fl_Button* btnViewerFont
+              { Fl_Input2* o = txtInpSeek = new Fl_Input2(9, 238, 360, 20, _("Seek Regular Expression"));
+                txtInpSeek->tooltip(_("Search for reg-exp in viewer text(s)"));
+                txtInpSeek->box(FL_DOWN_BOX);
+                txtInpSeek->color((Fl_Color)FL_BACKGROUND2_COLOR);
+                txtInpSeek->selection_color((Fl_Color)FL_SELECTION_COLOR);
+                txtInpSeek->labeltype(FL_NORMAL_LABEL);
+                txtInpSeek->labelfont(0);
+                txtInpSeek->labelsize(14);
+                txtInpSeek->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                txtInpSeek->callback((Fl_Callback*)cb_txtInpSeek);
+                txtInpSeek->align(FL_ALIGN_TOP_LEFT);
+                txtInpSeek->when(FL_WHEN_CHANGED);
+                o->labelsize(FL_NORMAL_SIZE);
+                o->value(progStatus.browser_search.c_str());
+              } // Fl_Input2* txtInpSeek
+              { Fl_Check_Button* o = btnFixedIntervals = new Fl_Check_Button(208, 131, 165, 20, _("Fixed Intervals"));
+                btnFixedIntervals->tooltip(_("Force channel spacing to even 100 Hz increments"));
+                btnFixedIntervals->down_box(FL_DOWN_BOX);
+                btnFixedIntervals->value(1);
+                btnFixedIntervals->callback((Fl_Callback*)cb_btnFixedIntervals);
+                btnFixedIntervals->hide();
+                o->value(progdefaults.VIEWERfixed);
+              } // Fl_Check_Button* btnFixedIntervals
+              o->end();
+            } // Fl_Group* o
+            o->end();
+          } // Fl_Group* o
           { tabContest = new Fl_Group(0, 50, 500, 320, _("Contest"));
             tabContest->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 80, _("Exchanges"));
@@ -3110,7 +3226,7 @@ ab and newline are automatically included."));
             } // Fl_Group* o
             tabContest->end();
           } // Fl_Group* tabContest
-          { tabWF_UI = new Fl_Group(0, 50, 500, 320, _("Operator Controls"));
+          { tabWF_UI = new Fl_Group(0, 50, 500, 320, _("WF Controls"));
             tabWF_UI->hide();
             { Fl_Group* o = new Fl_Group(2, 58, 496, 253);
               o->box(FL_ENGRAVED_BOX);
@@ -3528,11 +3644,11 @@ an merging"));
           tabsModems->selection_color((Fl_Color)FL_LIGHT1);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
           { tabCW = new Fl_Group(0, 50, 504, 320, _("CW"));
+            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 504, 320);
               tabsCW->selection_color((Fl_Color)FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
                 o->align(FL_ALIGN_TOP_LEFT);
-                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 130, _("Receive"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -3847,6 +3963,7 @@ an merging"));
               } // Fl_Group* o
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("Prosigns"));
                 o->align(FL_ALIGN_TOP_LEFT);
+                o->hide();
                 { Fl_Group* o = new Fl_Group(4, 81, 492, 283);
                 o->box(FL_ENGRAVED_FRAME);
                 { Fl_Check_Button* o = btnCW_use_paren = new Fl_Check_Button(235, 236, 68, 15, _("Use \'(\' paren not KN"));
@@ -4319,7 +4436,6 @@ an merging"));
             tabContestia->end();
           } // Fl_Group* tabContestia
           { tabPSK = new Fl_Group(-4, 50, 521, 322, _("PSK"));
-            tabPSK->hide();
             { tabsPSK = new Fl_Tabs(-4, 50, 521, 322);
               tabsPSK->selection_color((Fl_Color)FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
@@ -4399,105 +4515,6 @@ an merging"));
                 o->value(progdefaults.StatusTimeout);
                 o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* o
-                o->end();
-                } // Fl_Group* o
-                o->end();
-              } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(-4, 77, 502, 295, _("Viewer"));
-                o->align(FL_ALIGN_TOP_LEFT);
-                o->hide();
-                { Fl_Group* o = new Fl_Group(2, 87, 496, 279);
-                o->box(FL_ENGRAVED_FRAME);
-                { Fl_Check_Button* o = btnMarquee = new Fl_Check_Button(208, 133, 165, 20, _("Continuous scrolling"));
-                btnMarquee->tooltip(_("ON - Marquee style\nOFF - Clear & restart"));
-                btnMarquee->down_box(FL_DOWN_BOX);
-                btnMarquee->callback((Fl_Callback*)cb_btnMarquee);
-                o->value(progdefaults.VIEWERmarquee);
-                } // Fl_Check_Button* btnMarquee
-                { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(9, 97, 50, 20, _("Channels"));
-                cntChannels->tooltip(_("Change # of psk viewer channels"));
-                cntChannels->box(FL_NO_BOX);
-                cntChannels->color((Fl_Color)FL_BACKGROUND_COLOR);
-                cntChannels->selection_color((Fl_Color)FL_BACKGROUND_COLOR);
-                cntChannels->labeltype(FL_NORMAL_LABEL);
-                cntChannels->labelfont(0);
-                cntChannels->labelsize(14);
-                cntChannels->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
-                cntChannels->callback((Fl_Callback*)cb_cntChannels);
-                cntChannels->align(FL_ALIGN_RIGHT);
-                cntChannels->when(FL_WHEN_RELEASE);
-                o->minimum(5); o->maximum(30); o->step(1);
-                o->value(progdefaults.VIEWERchannels);
-                o->labelsize(FL_NORMAL_SIZE);
-                } // Fl_Spinner2* cntChannels
-                { Fl_Spinner2* o = cntStartFrequency = new Fl_Spinner2(9, 133, 50, 20, _("Start frequency"));
-                cntStartFrequency->tooltip(_("Start decoding at this frequency"));
-                cntStartFrequency->box(FL_NO_BOX);
-                cntStartFrequency->color((Fl_Color)FL_BACKGROUND_COLOR);
-                cntStartFrequency->selection_color((Fl_Color)FL_BACKGROUND_COLOR);
-                cntStartFrequency->labeltype(FL_NORMAL_LABEL);
-                cntStartFrequency->labelfont(0);
-                cntStartFrequency->labelsize(14);
-                cntStartFrequency->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
-                cntStartFrequency->callback((Fl_Callback*)cb_cntStartFrequency);
-                cntStartFrequency->align(FL_ALIGN_RIGHT);
-                cntStartFrequency->when(FL_WHEN_RELEASE);
-                o->minimum(200); o->maximum(1000); o->step(100);
-                o->value(progdefaults.VIEWERstart);
-                o->labelsize(FL_NORMAL_SIZE);
-                } // Fl_Spinner2* cntStartFrequency
-                { Fl_Spinner2* o = cntTimeout = new Fl_Spinner2(208, 97, 50, 20, _("Inactivity timeout"));
-                cntTimeout->tooltip(_("Clear channel text after\n# seconds of inactivity"));
-                cntTimeout->box(FL_NO_BOX);
-                cntTimeout->color((Fl_Color)FL_BACKGROUND_COLOR);
-                cntTimeout->selection_color((Fl_Color)FL_BACKGROUND_COLOR);
-                cntTimeout->labeltype(FL_NORMAL_LABEL);
-                cntTimeout->labelfont(0);
-                cntTimeout->labelsize(14);
-                cntTimeout->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
-                cntTimeout->value(10);
-                cntTimeout->callback((Fl_Callback*)cb_cntTimeout);
-                cntTimeout->align(FL_ALIGN_RIGHT);
-                cntTimeout->when(FL_WHEN_RELEASE);
-                o->minimum(1); o->maximum(180); o->step(1);
-                o->value(progdefaults.VIEWERtimeout);
-                o->labelsize(FL_NORMAL_SIZE);
-                } // Fl_Spinner2* cntTimeout
-                { mnuViewerLabel = new Fl_Choice(9, 173, 150, 24, _("Channel label"));
-                mnuViewerLabel->tooltip(_("Appearance of label on each channel"));
-                mnuViewerLabel->down_box(FL_BORDER_BOX);
-                mnuViewerLabel->callback((Fl_Callback*)cb_mnuViewerLabel);
-                mnuViewerLabel->align(FL_ALIGN_RIGHT);
-                mnuViewerLabel->add("None"); mnuViewerLabel->add("Audio frequency");
-                mnuViewerLabel->add("Radio frequency"); mnuViewerLabel->add("Channel number");
-                mnuViewerLabel->value(progdefaults.VIEWERlabeltype);
-                } // Fl_Choice* mnuViewerLabel
-                { btnViewerFont = new Fl_Button(9, 215, 70, 24, _("Font..."));
-                btnViewerFont->callback((Fl_Callback*)cb_btnViewerFont);
-                } // Fl_Button* btnViewerFont
-                { Fl_Input2* o = txtInpSeek = new Fl_Input2(9, 266, 360, 20, _("Seek Regular Expression"));
-                txtInpSeek->tooltip(_("Search for reg-exp in viewer text(s)"));
-                txtInpSeek->box(FL_DOWN_BOX);
-                txtInpSeek->color((Fl_Color)FL_BACKGROUND2_COLOR);
-                txtInpSeek->selection_color((Fl_Color)FL_SELECTION_COLOR);
-                txtInpSeek->labeltype(FL_NORMAL_LABEL);
-                txtInpSeek->labelfont(0);
-                txtInpSeek->labelsize(14);
-                txtInpSeek->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
-                txtInpSeek->callback((Fl_Callback*)cb_txtInpSeek);
-                txtInpSeek->align(FL_ALIGN_TOP_LEFT);
-                txtInpSeek->when(FL_WHEN_CHANGED);
-                o->labelsize(FL_NORMAL_SIZE);
-                o->value(progStatus.browser_search.c_str());
-                } // Fl_Input2* txtInpSeek
-                { Fl_Check_Button* o = btnFixedIntervals = new Fl_Check_Button(208, 159, 165, 20, _("Fixed Intervals"));
-                btnFixedIntervals->tooltip(_("Force channel spacing to even 100 Hz increments"));
-                btnFixedIntervals->down_box(FL_DOWN_BOX);
-                btnFixedIntervals->value(1);
-                btnFixedIntervals->callback((Fl_Callback*)cb_btnFixedIntervals);
-                btnFixedIntervals->hide();
-                o->value(progdefaults.VIEWERfixed);
-                } // Fl_Check_Button* btnFixedIntervals
                 o->end();
                 } // Fl_Group* o
                 o->end();
@@ -5814,7 +5831,7 @@ d frequency"));
           } // Fl_Group* tabSpot
           { tabMacros = new Fl_Group(0, 50, 500, 320, _("Macros"));
             tabMacros->hide();
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 75);
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 76);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnUseLastMacro = new Fl_Check_Button(15, 70, 274, 20, _("Load last used macro file on startup"));
                 btnUseLastMacro->tooltip(_("ON - use last set of macros\nOFF - use default set"));
@@ -5822,7 +5839,7 @@ d frequency"));
                 btnUseLastMacro->callback((Fl_Callback*)cb_btnUseLastMacro);
                 o->value(progdefaults.UseLastMacro);
               } // Fl_Check_Button* btnUseLastMacro
-              { Fl_Check_Button* o = btnDisplayMacroFilename = new Fl_Check_Button(15, 100, 274, 20, _("Display macro filename on startup"));
+              { Fl_Check_Button* o = btnDisplayMacroFilename = new Fl_Check_Button(15, 99, 274, 20, _("Display macro filename on startup"));
                 btnDisplayMacroFilename->tooltip(_("The filename is written to the RX text area"));
                 btnDisplayMacroFilename->down_box(FL_DOWN_BOX);
                 btnDisplayMacroFilename->callback((Fl_Callback*)cb_btnDisplayMacroFilename);

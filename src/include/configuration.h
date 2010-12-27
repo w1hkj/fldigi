@@ -898,6 +898,9 @@
         ELEM_(bool, DisplayMacroFilename, "DISPLAYMACROFILENAME",                       \
               "Display macro filename on startup",                                      \
               false)                                                                    \
+        ELEM_(bool, macro_wheel, "MACROWHEEL",                                          \
+              "Enable mouse wheel rotation to control visible macro set",               \
+              false)                                                                    \
         /* Mixer */                                                                     \
         ELEM_(std::string, MXdevice, "MXDEVICE",                                        \
               "Mixer device",                                                           \

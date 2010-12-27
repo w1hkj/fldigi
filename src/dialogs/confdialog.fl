@@ -96,7 +96,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {740 84 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {578 60 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {-4 0 521 372} color 50 selection_color 50
@@ -184,24 +184,24 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        xywh {-3 25 508 345} hide
+        xywh {0 25 500 346} hide
       } {
         Fl_Tabs tabsUI {open
-          xywh {-3 25 508 345} selection_color 50
+          xywh {0 25 500 346} selection_color 50
         } {
           Fl_Group tabUserInterface {
-            label General
+            label General open
             xywh {0 50 500 320}
           } {
-            Fl_Group {} {
-              xywh {5 60 490 301} box ENGRAVED_FRAME
+            Fl_Group {} {open
+              xywh {1 55 497 313} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnShowTooltips {
                 label {Show tooltips}
                 callback {progdefaults.tooltips = o->value();
 Fl_Tooltip::enable(progdefaults.tooltips);
 progdefaults.changed = true;}
-                tooltip {Enable / disable tooltips} xywh {15 70 120 20} down_box DOWN_BOX value 1
+                tooltip {Enable / disable tooltips} xywh {20 61 120 20} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.tooltips);}
               }
               Fl_Check_Button chkMenuIcons {
@@ -209,7 +209,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.menuicons = o->value();
 toggle_icon_labels();
 progdefaults.changed = true;}
-                tooltip {Enable / disable icons on menus} xywh {15 100 150 20} down_box DOWN_BOX
+                tooltip {Enable / disable icons on menus} xywh {20 87 150 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.menuicons);}
               }
               Fl_Choice mnuScheme {
@@ -218,7 +218,7 @@ progdefaults.changed = true;}
     Fl::scheme(progdefaults.ui_scheme.c_str());
 
     progdefaults.changed = true;} open
-                tooltip {Change application look and feel} xywh {250 70 80 20} down_box BORDER_BOX align 8
+                tooltip {Change application look and feel} xywh {250 61 80 20} down_box BORDER_BOX align 8
                 code0 {mnuScheme->add("base");}
                 code1 {mnuScheme->add("gtk+");}
                 code2 {mnuScheme->add("plastic");}
@@ -230,68 +230,39 @@ progdefaults.changed = true;}
 mode_browser->callback(toggle_visible_modes);
 mode_browser->show(&progdefaults.visible_modes);
 progdefaults.changed = true;}
-                xywh {250 100 120 20}
-              }
-              Fl_Group {} {
-                label {Text Capture} open
-                xywh {9 277 481 80} align 21
-              } {
-                Fl_Check_Button btnRXClicks {
-                  label {Double-click on RX text enters QSO data}
-                  callback {progdefaults.rxtext_clicks_qso_data = o->value();
-progdefaults.changed = true;}
-                  tooltip {Enable if you cannot use the middle mouse button} xywh {125 314 305 20} down_box DOWN_BOX
-                  code0 {o->value(progdefaults.rxtext_clicks_qso_data);}
-                }
-                Fl_Check_Button btnRXTooltips {
-                  label {Show callsign tooltips in received text}
-                  callback {progdefaults.rxtext_tooltips = o->value();
-progdefaults.changed = true;}
-                  tooltip {Popup info after a 2 second hover on a callsign} xywh {125 336 282 20} down_box DOWN_BOX
-                  code0 {o->value(progdefaults.rxtext_tooltips);}
-                }
-                Fl_Input inpNonword {
-                  label {Word delimiters}
-                  callback {progdefaults.nonwordchars = o->value();
-progdefaults.changed = true;}
-                  tooltip {RX text QSO data entry is bounded by the non-word characters
-defined here. Tab and newline are automatically included.} xywh {125 285 75 24} align 8 textfont 4
-                  code0 {o->value(progdefaults.nonwordchars.c_str());}
-                  code1 {o->labelsize(FL_NORMAL_SIZE);}
-                  class Fl_Input2
-                }
+                tooltip {Select modes for menu access} xywh {250 87 120 20}
               }
             }
             Fl_Group {} {
-              label {QSO logging}
-              xywh {8 130 484 146} box ENGRAVED_FRAME align 21
+              label {QSO logging} open
+              xywh {2 114 496 110} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnNagMe {
                 label {Prompt to save log}
                 callback {progdefaults.NagMe=o->value();
 progdefaults.changed = true;}
-                tooltip {Bug me about saving log entries} xywh {21 158 238 20} down_box DOWN_BOX
+                tooltip {Bug me about saving log entries} xywh {20 136 236 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.NagMe);}
               }
               Fl_Check_Button btnClearOnSave {
                 label {Clear on save}
                 callback {progdefaults.ClearOnSave=o->value();
 progdefaults.changed = true;}
-                tooltip {Clear log entries after saving or using macro <LOG>} xywh {21 183 238 20} down_box DOWN_BOX
+                tooltip {Clear log entries after saving or using macro <LOG>} xywh {20 156 236 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.ClearOnSave);}
               }
               Fl_Check_Button btnAutoFillQSO {
                 label {Auto-fill Country and Azimuth}
                 callback {progdefaults.autofill_qso_fields = o->value();
 progdefaults.changed = true;}
-                tooltip {Fill in Country / Azimuth using cty.dat information} xywh {21 208 238 20} down_box DOWN_BOX
+                tooltip {Fill in Country / Azimuth using cty.dat information} xywh {20 177 236 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.autofill_qso_fields);}
               }
               Fl_Check_Button btnCallUpperCase {
                 label {Convert callsign to upper case}
                 callback {progdefaults.calluppercase = o->value();
 progdefaults.changed = true;}
-                tooltip {Force callsign field to UPPERCASE} xywh {21 233 238 20} down_box DOWN_BOX
+                tooltip {Force callsign field to UPPERCASE} xywh {20 198 236 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.calluppercase);}
               }
               Fl_Check_Button btnDateTimeSort {
@@ -299,24 +270,151 @@ progdefaults.changed = true;}
                 callback {progdefaults.sort_date_time_off = o->value();
 progdefaults.changed = true;
 reload_browser();}
-                tooltip {Sort by date/time OFF - effects all ADIF/Cabrillo reports} xywh {275 183 191 20} down_box DOWN_BOX
+                tooltip {Sort by date/time OFF - effects all ADIF/Cabrillo reports} xywh {273 136 190 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.sort_date_time_off);}
               }
               Fl_Check_Button btndate_time_force {
                 label {Date time ON == OFF}
                 callback {progdefaults.force_date_time = o->value();
 progdefaults.changed = true;}
-                tooltip {Force date/time ON == date/time OFF} xywh {275 208 191 20} down_box DOWN_BOX
+                tooltip {Force date/time ON == date/time OFF} xywh {273 156 190 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.force_date_time);}
               }
               Fl_Input inpMyPower {
                 label {Transmit Power}
                 callback {progdefaults.mytxpower = o->value();
 progdefaults.changed = true;}
-                tooltip {Tx power used for logbook entries} xywh {275 154 50 24} align 8
+                tooltip {Tx power used for logbook entries} xywh {273 179 50 24} align 8
                 code0 {o->value(progdefaults.mytxpower.c_str());}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
+              }
+            }
+            Fl_Group {} {
+              label {Text Capture} open
+              xywh {2 224 496 100} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Check_Button btnRXClicks {
+                label {Double-click on RX text enters QSO data}
+                callback {progdefaults.rxtext_clicks_qso_data = o->value();
+progdefaults.changed = true;}
+                tooltip {Enable if you cannot use the middle mouse button} xywh {20 277 313 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.rxtext_clicks_qso_data);}
+              }
+              Fl_Check_Button btnRXTooltips {
+                label {Show callsign tooltips in received text}
+                callback {progdefaults.rxtext_tooltips = o->value();
+progdefaults.changed = true;}
+                tooltip {Popup info after a 2 second hover on a callsign} xywh {20 299 313 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.rxtext_tooltips);}
+              }
+              Fl_Input inpNonword {
+                label {Word delimiters}
+                callback {progdefaults.nonwordchars = o->value();
+progdefaults.changed = true;}
+                tooltip {RX text QSO data entry is bounded by the non-word characters
+defined here. Tab and newline are automatically included.} xywh {20 245 340 24} align 8 textfont 4
+                code0 {o->value(progdefaults.nonwordchars.c_str());}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
+                class Fl_Input2
+              }
+            }
+            Fl_Group {} {open
+              xywh {2 324 496 44} box ENGRAVED_FRAME
+            } {
+              Fl_Check_Button btnMacroMouseWheel {
+                label {Mouse wheel active on macro button bars}
+                callback {progdefaults.macro_wheel = o->value();
+progdefaults.changed = true;}
+                xywh {20 333 317 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.macro_wheel);}
+              }
+            }
+          }
+          Fl_Group {} {
+            label Browser open
+            xywh {0 50 500 320} hide
+          } {
+            Fl_Group {} {open
+              xywh {2 59 496 300} box ENGRAVED_FRAME
+            } {
+              Fl_Check_Button btnMarquee {
+                label {Continuous scrolling}
+                callback {progdefaults.VIEWERmarquee = o->value();
+progdefaults.changed = true;
+initViewer();}
+                tooltip {ON - Marquee style
+OFF - Clear & restart} xywh {208 105 165 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.VIEWERmarquee);}
+              }
+              Fl_Spinner cntChannels {
+                label Channels
+                callback {progdefaults.VIEWERchannels = (int)(o->value());
+initViewer();}
+                tooltip {Change \# of psk viewer channels} xywh {9 69 50 20} align 8
+                code0 {o->minimum(5); o->maximum(30); o->step(1);}
+                code1 {o->value(progdefaults.VIEWERchannels);}
+                code2 {o->labelsize(FL_NORMAL_SIZE);}
+                class Fl_Spinner2
+              }
+              Fl_Spinner cntStartFrequency {
+                label {Start frequency}
+                callback {progdefaults.VIEWERstart = (int)(o->value());
+progdefaults.changed = true;
+initViewer();}
+                tooltip {Start decoding at this frequency} xywh {9 105 50 20} align 8
+                code0 {o->minimum(200); o->maximum(1000); o->step(100);}
+                code1 {o->value(progdefaults.VIEWERstart);}
+                code2 {o->labelsize(FL_NORMAL_SIZE);}
+                class Fl_Spinner2
+              }
+              Fl_Spinner cntTimeout {
+                label {Inactivity timeout}
+                callback {progdefaults.VIEWERtimeout = (int)(o->value());
+progdefaults.changed = true;}
+                tooltip {Clear channel text after
+\# seconds of inactivity} xywh {208 69 50 20} align 8 value 10
+                code0 {o->minimum(1); o->maximum(180); o->step(1);}
+                code1 {o->value(progdefaults.VIEWERtimeout);}
+                code2 {o->labelsize(FL_NORMAL_SIZE);}
+                class Fl_Spinner2
+              }
+              Fl_Choice mnuViewerLabel {
+                label {Channel label}
+                callback {progdefaults.VIEWERlabeltype = o->value();
+initViewer();
+progdefaults.changed = true;} open
+                tooltip {Appearance of label on each channel} xywh {9 145 150 24} down_box BORDER_BOX align 8
+                code0 {mnuViewerLabel->add("None"); mnuViewerLabel->add("Audio frequency");}
+                code1 {mnuViewerLabel->add("Radio frequency"); mnuViewerLabel->add("Channel number");}
+                code3 {mnuViewerLabel->value(progdefaults.VIEWERlabeltype);}
+              } {}
+              Fl_Button btnViewerFont {
+                label {Font...}
+                callback {font_browser->fontNumber(progdefaults.ViewerFontnbr);
+font_browser->fontSize(progdefaults.ViewerFontsize);
+font_browser->fontColor(FL_FOREGROUND_COLOR);
+font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+font_browser->callback(cbViewerFontBrowser);
+font_browser->show();}
+                xywh {9 187 70 24}
+              }
+              Fl_Input txtInpSeek {
+                label {Seek Regular Expression}
+                callback {progStatus.browser_search = o->value();
+seek_re.recompile(o->value() ? o->value() : "[invalid");}
+                tooltip {Search for reg-exp in viewer text(s)} xywh {9 238 360 20} align 5 when 1
+                code0 {o->labelsize(FL_NORMAL_SIZE);}
+                code1 {o->value(progStatus.browser_search.c_str());}
+                class Fl_Input2
+              }
+              Fl_Check_Button btnFixedIntervals {
+                label {Fixed Intervals}
+                callback {progdefaults.VIEWERfixed = o->value();
+progdefaults.changed = true;
+initViewer();}
+                tooltip {Force channel spacing to even 100 Hz increments} xywh {208 131 165 20} down_box DOWN_BOX value 1 hide
+                code0 {o->value(progdefaults.VIEWERfixed);}
               }
             }
           }
@@ -461,10 +559,10 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabWF_UI {
-            label {Operator Controls} open
+            label {WF Controls}
             xywh {0 50 500 320} hide
           } {
-            Fl_Group {} {open
+            Fl_Group {} {
               xywh {2 58 496 253} box ENGRAVED_BOX
             } {
               Fl_Box {} {
@@ -600,7 +698,7 @@ WF_UI();}
             }
           }
           Fl_Group {} {
-            label {Rx Text}
+            label {Rx Text} open
             xywh {0 50 500 320} hide
           } {
             Fl_Check_Button btn_rx_lowercase {
@@ -927,22 +1025,22 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
         }
       }
       Fl_Group tabModems {
-        label Modems
+        label Modems open
         xywh {-4 25 521 347} hide
       } {
         Fl_Tabs tabsModems {open
           xywh {-4 25 521 347} selection_color 50 align 9
         } {
           Fl_Group tabCW {
-            label CW open
-            xywh {0 50 504 320}
+            label CW
+            xywh {0 50 504 320} hide
           } {
-            Fl_Tabs tabsCW {open
+            Fl_Tabs tabsCW {
               xywh {0 50 504 320} selection_color 50
             } {
               Fl_Group {} {
                 label General open
-                xywh {0 75 500 295} align 5 hide
+                xywh {0 75 500 295} align 5
               } {
                 Fl_Group {} {
                   label Receive open
@@ -1159,7 +1257,7 @@ progdefaults.changed = true;}
               }
               Fl_Group {} {
                 label Prosigns open
-                xywh {0 75 500 295} align 5
+                xywh {0 75 500 295} align 5 hide
               } {
                 Fl_Group {} {open
                   xywh {4 81 492 283} box ENGRAVED_FRAME
@@ -1329,7 +1427,7 @@ progdefaults.changed = true;} open
             }
           }
           Fl_Group tabDomEX {
-            label DomEX open
+            label DomEX
             xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
@@ -1390,7 +1488,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabFeld {
-            label Feldhell open
+            label Feldhell
             xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
@@ -1463,7 +1561,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabMT63 {
-            label {MT-63} open
+            label {MT-63}
             xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
@@ -1531,7 +1629,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabOlivia {
-            label Olivia open
+            label Olivia
             xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
@@ -1648,7 +1746,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabPSK {
             label PSK open
-            xywh {-4 50 521 322} hide
+            xywh {-4 50 521 322}
           } {
             Fl_Tabs tabsPSK {open
               xywh {-4 50 521 322} selection_color 50
@@ -1701,93 +1799,6 @@ progdefaults.changed = true;}
                     code0 {o->value(progdefaults.StatusTimeout);}
                     code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
-                  }
-                }
-              }
-              Fl_Group {} {
-                label Viewer open
-                xywh {-4 77 502 295} align 5 hide
-              } {
-                Fl_Group {} {open
-                  xywh {2 87 496 279} box ENGRAVED_FRAME
-                } {
-                  Fl_Check_Button btnMarquee {
-                    label {Continuous scrolling}
-                    callback {progdefaults.VIEWERmarquee = o->value();
-progdefaults.changed = true;
-initViewer();}
-                    tooltip {ON - Marquee style
-OFF - Clear & restart} xywh {208 133 165 20} down_box DOWN_BOX
-                    code0 {o->value(progdefaults.VIEWERmarquee);}
-                  }
-                  Fl_Spinner cntChannels {
-                    label Channels
-                    callback {progdefaults.VIEWERchannels = (int)(o->value());
-initViewer();}
-                    tooltip {Change \# of psk viewer channels} xywh {9 97 50 20} align 8
-                    code0 {o->minimum(5); o->maximum(30); o->step(1);}
-                    code1 {o->value(progdefaults.VIEWERchannels);}
-                    code2 {o->labelsize(FL_NORMAL_SIZE);}
-                    class Fl_Spinner2
-                  }
-                  Fl_Spinner cntStartFrequency {
-                    label {Start frequency}
-                    callback {progdefaults.VIEWERstart = (int)(o->value());
-progdefaults.changed = true;
-initViewer();}
-                    tooltip {Start decoding at this frequency} xywh {9 133 50 20} align 8
-                    code0 {o->minimum(200); o->maximum(1000); o->step(100);}
-                    code1 {o->value(progdefaults.VIEWERstart);}
-                    code2 {o->labelsize(FL_NORMAL_SIZE);}
-                    class Fl_Spinner2
-                  }
-                  Fl_Spinner cntTimeout {
-                    label {Inactivity timeout}
-                    callback {progdefaults.VIEWERtimeout = (int)(o->value());
-progdefaults.changed = true;}
-                    tooltip {Clear channel text after
-\# seconds of inactivity} xywh {208 97 50 20} align 8 value 10
-                    code0 {o->minimum(1); o->maximum(180); o->step(1);}
-                    code1 {o->value(progdefaults.VIEWERtimeout);}
-                    code2 {o->labelsize(FL_NORMAL_SIZE);}
-                    class Fl_Spinner2
-                  }
-                  Fl_Choice mnuViewerLabel {
-                    label {Channel label}
-                    callback {progdefaults.VIEWERlabeltype = o->value();
-initViewer();
-progdefaults.changed = true;} open
-                    tooltip {Appearance of label on each channel} xywh {9 173 150 24} down_box BORDER_BOX align 8
-                    code0 {mnuViewerLabel->add("None"); mnuViewerLabel->add("Audio frequency");}
-                    code1 {mnuViewerLabel->add("Radio frequency"); mnuViewerLabel->add("Channel number");}
-                    code3 {mnuViewerLabel->value(progdefaults.VIEWERlabeltype);}
-                  } {}
-                  Fl_Button btnViewerFont {
-                    label {Font...}
-                    callback {font_browser->fontNumber(progdefaults.ViewerFontnbr);
-font_browser->fontSize(progdefaults.ViewerFontsize);
-font_browser->fontColor(FL_FOREGROUND_COLOR);
-font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
-font_browser->callback(cbViewerFontBrowser);
-font_browser->show();}
-                    xywh {9 215 70 24}
-                  }
-                  Fl_Input txtInpSeek {
-                    label {Seek Regular Expression}
-                    callback {progStatus.browser_search = o->value();
-seek_re.recompile(o->value() ? o->value() : "[invalid");}
-                    tooltip {Search for reg-exp in viewer text(s)} xywh {9 266 360 20} align 5 when 1
-                    code0 {o->labelsize(FL_NORMAL_SIZE);}
-                    code1 {o->value(progStatus.browser_search.c_str());}
-                    class Fl_Input2
-                  }
-                  Fl_Check_Button btnFixedIntervals {
-                    label {Fixed Intervals}
-                    callback {progdefaults.VIEWERfixed = o->value();
-progdefaults.changed = true;
-initViewer();}
-                    tooltip {Force channel spacing to even 100 Hz increments} xywh {208 159 165 20} down_box DOWN_BOX value 1 hide
-                    code0 {o->value(progdefaults.VIEWERfixed);}
                   }
                 }
               }
@@ -3033,7 +3044,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabMisc {
-        label Misc
+        label Misc open
         xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsMisc {open
@@ -3160,11 +3171,11 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabMacros {
-            label Macros
+            label Macros open
             xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
-              xywh {5 60 490 75} box ENGRAVED_FRAME
+              xywh {5 60 490 76} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnUseLastMacro {
                 label {Load last used macro file on startup}
@@ -3179,7 +3190,7 @@ OFF - use default set} xywh {15 70 274 20} down_box DOWN_BOX
                 label {Display macro filename on startup}
                 callback {progdefaults.DisplayMacroFilename = o->value();
 progdefaults.changed = true;}
-                tooltip {The filename is written to the RX text area} xywh {15 100 274 20} down_box DOWN_BOX
+                tooltip {The filename is written to the RX text area} xywh {15 99 274 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.DisplayMacroFilename);}
               }
             }

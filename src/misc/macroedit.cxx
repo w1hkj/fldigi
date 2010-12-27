@@ -233,10 +233,20 @@ void cbMacroEditOK(Fl_Widget *w, void *)
 	if (iType == MACRO_EDIT_BUTTON) {
 		macros.text[iMacro] = macrotext->value();
 		macros.name[iMacro] = labeltext->value();
-		int n = iMacro;
-		while (n >= 12)
-			n-= 12;
-		btnMacro[n]->label(macros.name[iMacro].c_str());
+
+		if (progStatus.two_macro_rows) {
+			if (iMacro < NUMMACKEYS) {
+				btnMacro[iMacro % NUMMACKEYS]->label( macros.name[iMacro].c_str() );
+				btnMacro[iMacro % NUMMACKEYS]->redraw_label();
+			} else {
+				btnMacro[(iMacro % NUMMACKEYS) + NUMMACKEYS]->label( macros.name[iMacro].c_str() );
+				btnMacro[(iMacro % NUMMACKEYS) + NUMMACKEYS]->redraw_label();
+			}
+		} else {
+			btnMacro[iMacro % NUMMACKEYS]->label( macros.name[iMacro].c_str() );
+			btnMacro[iMacro % NUMMACKEYS]->redraw_label();
+		}
+
 		macros.changed = true;
 	}
 	else if (iType == MACRO_EDIT_INPUT)
