@@ -43,7 +43,7 @@ public:
 	void	setbw(double w) { bw = w;}
 	void	sigdensity();
 	double	sigpeak(int &f, int f1, int f2, int bw);
-	double	peak(int &f, int f1, int f2, double val);
+	double	peak(int &f, int f1, int f2, double level);
 	double	power(int f1, int f2);
 };
 

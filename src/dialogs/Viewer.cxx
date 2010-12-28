@@ -90,13 +90,14 @@ void initViewer()
 
 void viewaddchr(int ch, int freq, char c, int md)
 {
-	if (mainViewer->rfc != wf->rfcarrier() || mainViewer->usb != wf->USB()) {
-		mainViewer->rfc = wf->rfcarrier();
-		mainViewer->usb = wf->USB();
-		mainViewer->redraw();
+	if (mainViewer) {
+		if (mainViewer->rfc != wf->rfcarrier() || mainViewer->usb != wf->USB()) {
+			mainViewer->rfc = wf->rfcarrier();
+			mainViewer->usb = wf->USB();
+			mainViewer->redraw();
+		}
+		mainViewer->addchr(ch, freq, c, md);
 	}
-	mainViewer->addchr(ch, freq, c, md);
-
 	if (dlgViewer) {
 		if (brwsViewer->rfc != wf->rfcarrier() || brwsViewer->usb != wf->USB()) {
 			brwsViewer->rfc = wf->rfcarrier();
@@ -112,14 +113,16 @@ void viewaddchr(int ch, int freq, char c, int md)
 
 void viewclearchannel(int ch)
 {
-	mainViewer->clearch(ch + 1, NULLFREQ);
+	if (mainViewer)
+		mainViewer->clearch(ch + 1, NULLFREQ);
 	if (dlgViewer)
 		brwsViewer->clearch(ch + 1, NULLFREQ);
 }
 
 void viewerswap(int i, int j)
 {
-	mainViewer->swap(i,j);
+	if (mainViewer)
+		mainViewer->swap(i,j);
 	if (dlgViewer)
 		brwsViewer->swap(i,j);
 }
@@ -128,11 +131,11 @@ void viewer_redraw()
 {
 	usb = wf->USB();
 	rfc = wf->rfcarrier();
-
-	mainViewer->usb = usb;
-	mainViewer->rfc = rfc;
-	mainViewer->resize(mainViewer->x(), mainViewer->y(), mainViewer->w(), mainViewer->h());
-
+	if (mainViewer) {
+		mainViewer->usb = usb;
+		mainViewer->rfc = rfc;
+		mainViewer->resize(mainViewer->x(), mainViewer->y(), mainViewer->w(), mainViewer->h());
+	}
 	if (dlgViewer) {
 		brwsViewer->usb = usb;
 		brwsViewer->rfc = rfc;
@@ -150,7 +153,8 @@ static void cb_btnCloseViewer(Fl_Button*, void*) {
 
 static void cb_btnClearViewer(Fl_Button*, void*) {
 	brwsViewer->clear();
-	mainViewer->clear();
+	if (mainViewer)
+		mainViewer->clear();
 	if (pskviewer) pskviewer->clear();
 	if (rttyviewer) rttyviewer->clear();
 }
@@ -168,7 +172,8 @@ static void cb_brwsViewer(Fl_Hold_Browser*, void*) {
 			ReceiveText->addstr(brwsViewer->line(sel).c_str(), FTextBase::ALTR);
 			active_modem->set_freq(brwsViewer->freq(sel));
 			active_modem->set_sigsearch(SIGSEARCH);
-			mainViewer->select(sel);
+			if (mainViewer)
+				mainViewer->select(sel);
 		}
 		break;
 	case FL_MIDDLE_MOUSE: // copy from modem
@@ -178,7 +183,8 @@ static void cb_brwsViewer(Fl_Hold_Browser*, void*) {
 		if (pskviewer) pskviewer->clearch(sel-1);
 		if (rttyviewer) rttyviewer->clearch(sel-1);
 		brwsViewer->deselect();
-		mainViewer->deselect();
+		if (mainViewer)
+			mainViewer->deselect();
 	default:
 		break;
 	}
@@ -187,7 +193,8 @@ static void cb_brwsViewer(Fl_Hold_Browser*, void*) {
 static void cb_Squelch(Fl_Slider *, void *)
 {
 	progdefaults.VIEWERsquelch = sldrViewerSquelch->value();
-	mvsquelch->value(progdefaults.VIEWERsquelch);
+	if (mainViewer)
+		mvsquelch->value(progdefaults.VIEWERsquelch);
 	progdefaults.changed = true;
 }
 
@@ -272,7 +279,8 @@ void viewer_paste_freq(int freq)
 	if (pskviewer) {
 		for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
 			if (fabs(pskviewer->get_freq(i) - freq) <= 50) {
-				mainViewer->select(i+1);
+				if (mainViewer)
+					mainViewer->select(i+1);
 				if (dlgViewer)
 					brwsViewer->select(i+1);
 				return;

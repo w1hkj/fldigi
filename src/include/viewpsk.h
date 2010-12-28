@@ -61,6 +61,7 @@ struct CHANNEL {
 	int				waitcount;
 	time_t			timeout;
 	bool			reset;
+	int				acquire;
 
 };
 

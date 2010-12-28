@@ -233,23 +233,15 @@ void pskBrowser::addchr(int ch, int freq, char c, int md)
 	if (index < 0 || index > (MAXCHANNELS - 1))//index >= MAXCHANNELS)
 		return;
 	bwsrfreq[index] = freq;
-	if (progdefaults.VIEWERmarquee) {
-		if (bwsrline[index].length() >= nchars ) {
-			bwsrline[index].erase(0,1);
-		}
-		if (c >= ' ' && c <= '~') {
-			bwsrline[index] += c;
+	if (c >= ' ' && c <= '~') {
+		if (progdefaults.VIEWERmarquee) {
+			if (bwsrline[index].length() >= nchars )
+				bwsrline[index].erase(0,1);
 		} else {
-			bwsrline[index] += ' ';
+			if (bwsrline[index].length() >= nchars)
+				bwsrline[index].clear();
 		}
-	} else {
-		if (c >= ' ' && c <= '~') {
-			bwsrline[index] += c;
-		} else {
-			bwsrline[index] += ' ';
-		}
-		if (bwsrline[index].length() >= nchars)
-			bwsrline[index].clear();
+		bwsrline[index] += c;
 	}
 	nuline = freqformat(index, bwsrfreq[index]);
 	if (seek_re) {
