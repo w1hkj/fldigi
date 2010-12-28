@@ -1,5 +1,9 @@
-2010-12-23  David Freese  <w1hkj@w1hkj.com>
+2010-12-27  David Freese  <w1hkj@w1hkj.com>
 
+	a2156e3: PSK browser update
+	e24e7e5: RTTY viewer
+	78158ed: Macro Button Bars
+	dc6a6b1: CONTESTIA
 	99f977c: Dual Macro Bar
 	685ffc3: PSK browser detection
 	425c6bf: pskBrowser class
