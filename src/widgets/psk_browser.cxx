@@ -222,6 +222,8 @@ void pskBrowser::addchr(int ch, int freq, char c, int md)
 {
 	static string nuline;
 	string bline;
+	size_t chars = (w() - cols[0] - (sbarwidth + 2 * BWSR_BORDER)) / cwidth;
+	chars = chars < 1 ? 1 : chars; 
 
 	int index = ch;//progdefaults.VIEWERchannels - 1 - ch;
 	if (index < 0 || index > (MAXCHANNELS - 1))//index >= MAXCHANNELS)
@@ -229,10 +231,10 @@ void pskBrowser::addchr(int ch, int freq, char c, int md)
 	bwsrfreq[index] = freq;
 	if (c >= ' ' && c <= '~') {
 		if (progdefaults.VIEWERmarquee) {
-			if (bwsrline[index].length() >= nchars )
+			if (bwsrline[index].length() >= chars )
 				bwsrline[index].erase(0,1);
 		} else {
-			if (bwsrline[index].length() >= nchars)
+			if (bwsrline[index].length() >= chars)
 				bwsrline[index].clear();
 		}
 		bwsrline[index] += c;
