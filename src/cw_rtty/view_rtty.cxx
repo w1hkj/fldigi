@@ -375,7 +375,11 @@ void view_rtty::find_signals()
 			spwrlo = wf->powerDensity(chf - shift/2, rtty_baud) / 2;
 			spwrhi = wf->powerDensity(chf + shift/2, rtty_baud) / 2;
 			npwr = wf->powerDensity(chf, rtty_baud / 2) + 1e-10;
-			if ((spwrlo / npwr > level) && (spwrhi / npwr > level)) {
+			if ((spwrlo / npwr > level) && 
+				(spwrhi / npwr > level) &&
+				(i && channel[i-1].state == IDLE) &&
+				(i > 2 && channel[i-2].state == IDLE) &&
+				((i < (progdefaults.VIEWERchannels - 2)) && channel[i+1].state == IDLE)) {
 				channel[i].frequency = chf;
 				channel[i].sigsearch = SIGSEARCH;
 				channel[i].state = SEARCHING;

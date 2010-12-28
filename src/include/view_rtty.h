@@ -146,6 +146,7 @@ public:
 	void find_signals();
 	void clearch(int ch);
 	void clear();
+	int get_freq(int n) { return (int)channel[n].frequency;}
 
 };
 

@@ -288,6 +288,15 @@ void viewer_paste_freq(int freq)
 		}
 	}
 	if (rttyviewer) {
+		for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
+			if (fabs(rttyviewer->get_freq(i) - freq) <= 50) {
+				if (mainViewer)
+					mainViewer->select(i+1);
+				if (dlgViewer)
+					brwsViewer->select(i+1);
+				return;
+			}
+		}
 	}
 }
 
