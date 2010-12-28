@@ -86,9 +86,7 @@ void putadif(int num, const char *s)
 		LOG_PERROR("snprintf");
 		return;
 	}
-	memcpy(tempstr + n, s, slen);
-	tempstr[n + slen] = '\0';
-	adif.append(tempstr);
+	adif.append(tempstr).append(s);
 }
 
 void submit_ADIF(cQsoRec &rec)
