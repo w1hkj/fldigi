@@ -112,7 +112,7 @@ private:
 	complex			quality;
 	int				acquire;
 
-//	viewpsk*		pskviewer;
+	viewpsk*		pskviewer;
 	pskeval*		evalpsk;
 
 	void			rx_symbol(complex symbol);

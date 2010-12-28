@@ -45,7 +45,7 @@ int countdown = 8;
 int rows = 0;
 
 void pskeval::sigdensity() {
-	int ihbw = (int)(1.5*bw);
+	int ihbw = (int)(0.6*bw);
 	int ibw = 2 * ihbw;
 
 	double *vals = new double[ibw];
@@ -58,34 +58,23 @@ void pskeval::sigdensity() {
 	if (high > FFT_LEN - ihbw) high = FFT_LEN - ihbw;
 	int nbr = high - low;
 
-	sigavg = 0.0;
+	sigmin = 1e6;
 
 	for (int i = 0; i < ibw; i++) {
 		val = vals[i] = wf->Pwr(i + low - ihbw);
 		sig += val;
 	}
 	for (int i = 0, j = 0; i < nbr; i++) {
-		sigpwr[i + low] = decayavg(sigpwr[i + low], sig, 64);
+		sigpwr[i + low] = decayavg(sigpwr[i + low], sig, 32);
 		sig -= vals[j];
 		val = vals[j] = wf->Pwr(i + ihbw + low);
 		sig += val;
 		if (++j == ibw) j = 0;
-		sigavg += val;
+		if (sig < sigmin) sigmin = sig;
 	}
-	sigavg /= nbr;
-	if (sigavg == 0) sigavg = 1e-5;
+
+	if (sigmin < 1e-8) sigmin = 1e-8;
 	delete [] vals;
-/*
-	if (!rows++) {
-		for (int i = low; i < high-2; i++) printf("%d,",i);
-		printf("%d\n", high - 1);
-	}
-	if (!countdown--) {
-		countdown = 8;
-		for (int i = low; i < high-2; i++) printf("%d,", (int)(1000*sigpwr[i]/sigavg/bw));
-		printf("%d\n", (int)(1000*sigpwr[high - 1]/sigavg/bw));
-	}
-*/
 }
 
 double pskeval::sigpeak(int &f, int f1, int f2, int w)
@@ -98,10 +87,6 @@ double pskeval::sigpeak(int &f, int f1, int f2, int w)
 
 	int fa = f2, fb = f1;
 
-
-//	for (int i = (int)(f1-bw); i < (int)(f2+bw); i++)
-//		printf("%d, %f\n", i, sigpwr[i]/ sigavg / bw);
-
 	for (int i = f1; i < f2; i++) if (sigpwr[i] > peak) peak = sigpwr[i];
 	if (!peak) return 0;
 	for (int i = f1; i < f2; i++)
@@ -110,25 +95,30 @@ double pskeval::sigpeak(int &f, int f1, int f2, int w)
 		if (sigpwr[i] > peak*0.75) fa = i;
 	if (fa > fb) return 0;
 	f = (fa + fb) / 2;
-	return peak / sigavg / bw;
+	return peak / sigmin / bw;
 }
 
-double pskeval::peak(int &f0, int f1, int f2, double level)
+double pskeval::peak(int &f0, int f1, int f2, double db)
 {
 	double peak = 0;
 
 	int fa = f2, fb = f1;
+	double level = pow(10, (10 + db) / 10.0);
 
 //step 1
 	for (int i = f1; i < f2; i++) if (sigpwr[i] > peak) peak = sigpwr[i];
-//	if (!peak) return 0;
-	if (peak < level*sigavg) return 0;
+
+	if (((peak-sigmin) / sigmin ) < level) {
+		return 0;
+	}
 
 	for (int i = f1; i < f2; i++)
 		if (sigpwr[i] > peak*0.75) fb = i;
 	for (int i = f2; i > f1; i--)
 		if (sigpwr[i] > peak*0.75) fa = i;
-	if (fa > fb) return 0;
+	if (fa > fb) {
+		return 0;
+	}
 	f0 = (fa + fb) / 2;
 //step 2
 	fb = f1 = f0 - 1.5*bw;
@@ -139,13 +129,15 @@ double pskeval::peak(int &f0, int f1, int f2, double level)
 		if (sigpwr[i] > peak*0.75) fb = i;
 	for (int i = f2; i > f1; i--)
 		if (sigpwr[i] > peak*0.75) fa = i;
-	if (fa > fb) return 0;
+	if (fa > fb) {
+		return 0;
+	}
 	f0 = (fa + fb) / 2;
-
-//	for (int i = (int)(fa); i < (int)(fb); i++)
-//		printf("%d, %f\n", i, sigpwr[i]/ sigavg );
-
-	return peak / sigavg / bw;
+//	printf("freq,s/n,f0,fa,fb,test,s/n,min\n");
+//	printf(",,%6d,%6d,%6d,%8f,%8f,%8f\n", f0, fa, fb, level, peak/sigmin, sigmin);
+//	for (int i = progdefaults.LowFreqCutoff; i < progdefaults.HighFreqCutoff; i++)
+//		printf("%d,%f\n", i, (sigpwr[i]-sigmin) / sigmin);
+	return (peak - sigmin) / sigmin ;
 }
 
 void pskeval::clear() {

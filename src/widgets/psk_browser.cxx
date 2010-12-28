@@ -68,16 +68,10 @@ pskBrowser::pskBrowser(int x, int y, int w, int h, const char *l)
 	evalcwidth();
 	makecolors();
 
-	long freq;
 	string bline;
 	for (int i = 0; i < MAXCHANNELS; i++) {
-		if (pskviewer)
-			freq = pskviewer->get_freq(progdefaults.VIEWERchannels - 1 - i);
-		else
-			freq = 1e6;
-//			freq = progdefaults.VIEWERstart + 100 * (progdefaults.VIEWERchannels - 1 - i);
 		bwsrline[i] = "";
-		bline = freqformat(i, freq);
+		bline = freqformat(i, NULLFREQ);
 		if ( i < progdefaults.VIEWERchannels) add(bline.c_str());
 	}
 	szLine[0] = 0;

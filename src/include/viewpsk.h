@@ -59,7 +59,7 @@ struct CHANNEL {
 	unsigned int	dcdshreg;
 	int 			dcd;
 	int				waitcount;
-	time_t			timeout;
+	int				timeout;
 	bool			reset;
 	int				acquire;
 

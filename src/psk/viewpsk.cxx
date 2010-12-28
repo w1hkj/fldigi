@@ -89,10 +89,9 @@ void viewpsk::init()
 		for (int j = 0; j < 16; j++)
 			channel[i].syncbuf[j] = 0.0;
 	}
-	for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
+	for (int i = 0; i < progdefaults.VIEWERchannels; i++)
 		REQ(&viewclearchannel, i);
-		REQ(&viewaddchr, i, NULLFREQ, ' ', viewmode);
-	}
+
 	evalpsk->clear();
 	reset_all = false;
 }
@@ -168,14 +167,14 @@ void viewpsk::rx_bit(int ch, int bit)
 		if (c == '\n' || c == '\r') c = ' ';
 		if (isprint(c)) {
 			REQ(&viewaddchr, ch, (int)channel[ch].frequency, c, viewmode);
-			channel[ch].timeout = progdefaults.VIEWERtimeout * VPSKSAMPLERATE / 1024;
+			channel[ch].timeout = progdefaults.VIEWERtimeout * VPSKSAMPLERATE / WFBLOCKSIZE;
 		}
 	}
 }
 
 void viewpsk::afc(int ch)
 {
-	if (channel[ch].dcd == true || channel[ch].acquire) {//timeout) {
+	if (channel[ch].dcd == true || channel[ch].acquire) {
 		double error;
 		double lower_bound = (progdefaults.LowFreqCutoff + ch * 100) - bandwidth;
 		if (lower_bound < bandwidth) lower_bound = bandwidth;
@@ -190,10 +189,11 @@ void viewpsk::afc(int ch)
 //			channel[ch].frequency -= channel[ch].freqerr;
 //			channel[ch].frequency -= error;
 			channel[ch].frequency = CLAMP(channel[ch].frequency - error, lower_bound, upper_bound);
+//			if (channel[ch].dcd)
+//				REQ(&viewaddchr, ch, channel[ch].frequency, 0, viewmode);
 		}
-//		REQ(&viewaddchr, ch, channel[ch].frequency, 0, viewmode);
-		if (channel[ch].acquire) channel[ch].acquire--;
 	}
+	if (channel[ch].acquire) channel[ch].acquire--;
 }
 
 void viewpsk::clearch(int n)
@@ -216,21 +216,53 @@ inline void viewpsk::timeout_check()
 		if (channel[ch].reset || 
 			(!channel[ch].timeout && channel[ch].frequency != NULLFREQ)) {
 			channel[ch].reset = false;
-			REQ( &viewclearchannel, ch);
 			channel[ch].dcd = 0;
 			channel[ch].frequency = NULLFREQ;
-			browser_changed = true;
+			REQ(&viewclearchannel, ch);
+			REQ(&viewaddchr, ch, NULLFREQ, 0, viewmode);
 		}
 	}
 }
 
+#if 1
+
+void viewpsk::findsignals()
+{
+	if (!evalpsk) return;
+	double level = progdefaults.VIEWERsquelch;
+	int nomfreq = 0;
+	int ftest;
+	int f1, f2;
+	double testlevel;
+
+	timeout_check();
+
+	for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
+		if (!channel[i].dcd && !channel[i].timeout) {
+			channel[i].frequency = NULLFREQ;
+			nomfreq = progdefaults.VIEWERstart + 100 * i;
+			f1 = nomfreq - bandwidth;
+			f2 = nomfreq + 100 + bandwidth;
+			ftest = (f1 + f2) / 2;
+			if ((testlevel = evalpsk->peak(ftest, f1, f2, level))) {
+				channel[i].frequency = ftest;
+				channel[i].freqerr = 0.0;
+				channel[i].metric = 0.0;
+				channel[i].acquire = dcdbits;
+				channel[i].timeout = progdefaults.VIEWERtimeout * VPSKSAMPLERATE / WFBLOCKSIZE;
+				REQ(&viewaddchr, i, channel[i].frequency, 0, viewmode);
+			}
+		}
+	}
+}
+
+#else
+
 inline void viewpsk::insert()
 {
 	int ch = (ftest - progdefaults.LowFreqCutoff) / 100;
-	if (ch < 0 || ch >= progdefaults.VIEWERchannels) {
-printf("."); fflush(stdout);
+	if (ch < 0 || ch >= progdefaults.VIEWERchannels)
 		return;
-}
 
 	if (channel[ch].frequency == NULLFREQ) {
 //		if (!ch || 
@@ -238,26 +270,21 @@ printf("."); fflush(stdout);
 //			((ch < progdefaults.VIEWERchannels - 1) && (fabs(channel[ch+1].frequency - ftest) > 1.5 * bandwidth)) )
 //			) {
 			channel[ch].frequency = ftest;
-			channel[ch].timeout = progdefaults.VIEWERtimeout * VPSKSAMPLERATE / 1024;
+//			channel[ch].timeout = progdefaults.VIEWERtimeout * VPSKSAMPLERATE / 1024;
 			channel[ch].freqerr = 0.0;
 			channel[ch].metric = 0.0;
 			REQ(&viewaddchr, ch, ftest, 0, viewmode);
-			browser_changed = true;
 			fa = ftest + bandwidth;
 //			return;
 //		}
 	}
 }
 
-#if 0
-
 void viewpsk::findsignals()
 {
 	if (!evalpsk) return;
 
 	double level = pow(10, progdefaults.VIEWERsquelch / 10.0);
-
-	browser_changed = false;
 
 	timeout_check();
 
@@ -266,7 +293,6 @@ void viewpsk::findsignals()
 	fb = progdefaults.HighFreqCutoff;
 	int iwidth = 2*bandwidth;
 
-	test_peak_amp = 0;
 	while (fa < fb) {
 		ftest = fa;
 		if (evalpsk->peak(ftest, ftest, ftest + iwidth, level))
@@ -274,39 +300,6 @@ void viewpsk::findsignals()
 		fa += 10;//bandwidth / 8;
 	}
 
-}
-
-#else
-
-void viewpsk::findsignals()
-{
-	if (!evalpsk) return;
-	double level = pow(10, progdefaults.VIEWERsquelch / 10.0);
-	int nomfreq = 0;
-	int ftest;
-	int f1, f2;
-
-	timeout_check();
-	browser_changed = false;
-
-	for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
-//		if (channel[i].waitcount) { channel[i].waitcount--; continue; }
-		if (channel[i].dcd) continue;
-//		channel[i].frequency = NULLFREQ;
-		nomfreq = progdefaults.VIEWERstart + 100 * i;
-		f1 = nomfreq;
-		f2 = nomfreq + 100;
-		if (evalpsk->peak(ftest, f1 - bandwidth, f2 + bandwidth, level)) {
-			channel[i].frequency = ftest;
-			channel[i].timeout = progdefaults.VIEWERtimeout * VPSKSAMPLERATE / 1024;
-			channel[i].freqerr = 0.0;
-			channel[i].metric = 0.0;
-			REQ(&viewaddchr, i, ftest, 0, viewmode);
-			channel[i].waitcount = VWAITCOUNT;
-			browser_changed = true;
-			channel[i].acquire = dcdbits;
-		}
-	}
 }
 
 #endif
@@ -328,13 +321,12 @@ void viewpsk::rx_symbol(int ch, complex symbol)
 
 	switch (channel[ch].dcdshreg) {
 	case 0xAAAAAAAA:	/* DCD on by preamble */
-		if (!channel[ch].dcd) {
-			REQ(&viewaddchr, ch, (int)channel[ch].frequency, ' ', viewmode);
-		}
+		if (!channel[ch].dcd)
+			REQ(&viewaddchr, ch, (int)channel[ch].frequency, 0, viewmode);
 		channel[ch].dcd = true;
 		channel[ch].quality = complex (1.0, 0.0);
 		channel[ch].metric = 100;
-		channel[ch].timeout = progdefaults.VIEWERtimeout * VPSKSAMPLERATE / 1024;
+		channel[ch].timeout = progdefaults.VIEWERtimeout * VPSKSAMPLERATE / WFBLOCKSIZE;
 		channel[ch].acquire = 0;
 		break;
 
@@ -347,15 +339,14 @@ void viewpsk::rx_symbol(int ch, complex symbol)
 
 	default:
 		channel[ch].quality.re = 
-			decayavg(channel[ch].quality.re, cos(n*channel[ch].phase), SQLDECAY);//_pskr ? SQLDECAY * 5 : SQLDECAY);
+			decayavg(channel[ch].quality.re, cos(n*channel[ch].phase), SQLDECAY);
 		channel[ch].quality.im = 
-			decayavg(channel[ch].quality.im, sin(n*channel[ch].phase), SQLDECAY);//_pskr ? SQLDECAY * 5 : SQLDECAY);
-		channel[ch].metric = 100.0 * channel[ch].quality.norm();
-		if (channel[ch].metric > progStatus.sldrSquelchValue) {// || progStatus.sqlonoff == false) {
+			decayavg(channel[ch].quality.im, sin(n*channel[ch].phase), SQLDECAY);
+		channel[ch].metric = channel[ch].quality.norm();
+		if (channel[ch].metric > (progdefaults.VIEWERsquelch + 6.0)/26.0) {
 			channel[ch].dcd = true;
 		} else {
 			channel[ch].dcd = false;
-			channel[ch].timeout = 0;
 		}
 	}
 
