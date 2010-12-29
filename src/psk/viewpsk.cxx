@@ -72,6 +72,9 @@ viewpsk::~viewpsk()
 
 void viewpsk::init()
 {
+	nchannels = progdefaults.VIEWERchannels;
+	lowfreq = progdefaults.VIEWERstart;
+
 	for (int i = 0; i < MAXCHANNELS; i++) {
 		channel[i].phaseacc = 0;
 		channel[i].prevsymbol = complex (1.0, 0.0);
@@ -89,7 +92,7 @@ void viewpsk::init()
 		for (int j = 0; j < 16; j++)
 			channel[i].syncbuf[j] = 0.0;
 	}
-	for (int i = 0; i < progdefaults.VIEWERchannels; i++)
+	for (int i = 0; i < nchannels; i++)
 		REQ(&viewclearchannel, i);
 
 	evalpsk->clear();
@@ -167,7 +170,6 @@ void viewpsk::rx_bit(int ch, int bit)
 		if (c == '\n' || c == '\r') c = ' ';
 		if (isprint(c)) {
 			REQ(&viewaddchr, ch, (int)channel[ch].frequency, c, viewmode);
-			channel[ch].timeout = progdefaults.VIEWERtimeout * VPSKSAMPLERATE / WFBLOCKSIZE;
 		}
 	}
 }
@@ -176,21 +178,19 @@ void viewpsk::afc(int ch)
 {
 	if (channel[ch].dcd == true || channel[ch].acquire) {
 		double error;
-		double lower_bound = (progdefaults.LowFreqCutoff + ch * 100) - bandwidth;
+		double lower_bound = (lowfreq + ch * 100) - bandwidth;
 		if (lower_bound < bandwidth) lower_bound = bandwidth;
-		double upper_bound = progdefaults.LowFreqCutoff + (ch+1)*100 + bandwidth;
+		double upper_bound = lowfreq + (ch+1)*100 + bandwidth;
 
 		error = (channel[ch].phase - channel[ch].bits * M_PI / 2);
 		if (error < -M_PI / 2 || error > M_PI / 2) return;
 		error *= ((VPSKSAMPLERATE / (symbollen * 2 * M_PI)) /16);
 
 		if (fabs(error) < bandwidth) {
-//			channel[ch].freqerr = decayavg( channel[ch].freqerr, error, VAFCDECAY);
-//			channel[ch].frequency -= channel[ch].freqerr;
-//			channel[ch].frequency -= error;
-			channel[ch].frequency = CLAMP(channel[ch].frequency - error, lower_bound, upper_bound);
-//			if (channel[ch].dcd)
-//				REQ(&viewaddchr, ch, channel[ch].frequency, 0, viewmode);
+			channel[ch].freqerr = decayavg( channel[ch].freqerr, error, VAFCDECAY);
+			channel[ch].frequency -= channel[ch].freqerr;
+			channel[ch].frequency -= error;
+			channel[ch].frequency = CLAMP(channel[ch].frequency, lower_bound, upper_bound);
 		}
 	}
 	if (channel[ch].acquire) channel[ch].acquire--;
@@ -204,14 +204,14 @@ void viewpsk::clearch(int n)
 
 void viewpsk::clear()
 {
-	for (int i = 0; i < progdefaults.VIEWERchannels; i++)
+	for (int i = 0; i < nchannels; i++)
 		channel[i].reset = true;
 	evalpsk->clear();
 }
 
 inline void viewpsk::timeout_check()
 {
-	for (int ch = 0; ch < progdefaults.VIEWERchannels; ch++) {
+	for (int ch = 0; ch < nchannels; ch++) {
 		if (channel[ch].timeout) channel[ch].timeout--;
 		if (channel[ch].reset || 
 			(!channel[ch].timeout && channel[ch].frequency != NULLFREQ)) {
@@ -224,8 +224,6 @@ inline void viewpsk::timeout_check()
 	}
 }
 
-#if 1
-
 void viewpsk::findsignals()
 {
 	if (!evalpsk) return;
@@ -237,72 +235,30 @@ void viewpsk::findsignals()
 
 	timeout_check();
 
-	for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
+	for (int i = 0; i < nchannels; i++) {
 		if (!channel[i].dcd && !channel[i].timeout) {
 			channel[i].frequency = NULLFREQ;
-			nomfreq = progdefaults.VIEWERstart + 100 * i;
+			nomfreq = lowfreq + 100 * i;
 			f1 = nomfreq - bandwidth;
 			f2 = nomfreq + 100 + bandwidth;
 			ftest = (f1 + f2) / 2;
 			if ((testlevel = evalpsk->peak(ftest, f1, f2, level))) {
+				if (i && 
+					(channel[i-1].timeout) && 
+					fabs(channel[i-1].frequency - ftest) < bandwidth) goto nexti;
+				if ((i < nchannels - 1) &&
+					(channel[i+1].timeout) &&
+					fabs(channel[i+1].frequency - ftest) < bandwidth) goto nexti;
 				channel[i].frequency = ftest;
 				channel[i].freqerr = 0.0;
 				channel[i].metric = 0.0;
 				channel[i].acquire = dcdbits;
-				channel[i].timeout = progdefaults.VIEWERtimeout * VPSKSAMPLERATE / WFBLOCKSIZE;
-				REQ(&viewaddchr, i, channel[i].frequency, 0, viewmode);
+				channel[i].timeout = 2;
 			}
 		}
+nexti: ;
 	}
 }
-
-#else
-
-inline void viewpsk::insert()
-{
-	int ch = (ftest - progdefaults.LowFreqCutoff) / 100;
-	if (ch < 0 || ch >= progdefaults.VIEWERchannels)
-		return;
-
-	if (channel[ch].frequency == NULLFREQ) {
-//		if (!ch || 
-//			((ch && (fabs(channel[ch-1].frequency - ftest) > 1.5 * bandwidth)) &&
-//			((ch < progdefaults.VIEWERchannels - 1) && (fabs(channel[ch+1].frequency - ftest) > 1.5 * bandwidth)) )
-//			) {
-			channel[ch].frequency = ftest;
-//			channel[ch].timeout = progdefaults.VIEWERtimeout * VPSKSAMPLERATE / 1024;
-			channel[ch].freqerr = 0.0;
-			channel[ch].metric = 0.0;
-			REQ(&viewaddchr, ch, ftest, 0, viewmode);
-			fa = ftest + bandwidth;
-//			return;
-//		}
-	}
-}
-
-void viewpsk::findsignals()
-{
-	if (!evalpsk) return;
-
-	double level = pow(10, progdefaults.VIEWERsquelch / 10.0);
-
-	timeout_check();
-
-	fa = progdefaults.LowFreqCutoff;
-	if (fa == 0) fa = 100;
-	fb = progdefaults.HighFreqCutoff;
-	int iwidth = 2*bandwidth;
-
-	while (fa < fb) {
-		ftest = fa;
-		if (evalpsk->peak(ftest, ftest, ftest + iwidth, level))
-			insert();
-		fa += 10;//bandwidth / 8;
-	}
-
-}
-
-#endif
 
 void viewpsk::rx_symbol(int ch, complex symbol)
 {
@@ -351,6 +307,7 @@ void viewpsk::rx_symbol(int ch, complex symbol)
 	}
 
 	if (channel[ch].dcd == true) {
+		channel[ch].timeout = progdefaults.VIEWERtimeout * VPSKSAMPLERATE / WFBLOCKSIZE;
 		rx_bit(ch, !channel[ch].bits);
 	}
 }
@@ -362,8 +319,11 @@ int viewpsk::rx_process(const double *buf, int len)
 	int idx;
 	complex z, z2;
 
+	if (nchannels != progdefaults.VIEWERchannels || lowfreq != progdefaults.VIEWERstart)
+		init();
+
 // process all channels
-	for (int ch = 0; ch < progdefaults.VIEWERchannels; ch++) {
+	for (int ch = 0; ch < nchannels; ch++) {
 		if (channel[ch].frequency == NULLFREQ) continue;
 		for (int ptr = 0; ptr < len; ptr++) {
 // Mix with the internal NCO for each channel

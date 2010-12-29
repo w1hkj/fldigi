@@ -83,6 +83,8 @@ private:
 	bool		browser_changed;
 
 	CHANNEL		channel[MAXCHANNELS];
+	int			nchannels;
+	int			lowfreq;
 
 	pskeval*	evalpsk;
 

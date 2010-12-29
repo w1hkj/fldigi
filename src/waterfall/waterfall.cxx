@@ -459,11 +459,9 @@ void WFdisp::processFFT() {
 	if (dispcnt == 0) {
 		memset (fftout, 0, FFT_LEN*2*sizeof(double));
 		ptrSample = ptrCB;
-		for (int i = 0; i < FFT_LEN * 2 * progdefaults.latency / 8; i++) {
-			fftout[i] = fftwindow[i * 8 / progdefaults.latency] * circbuff[ptrSample];
-			ptrSample = (ptrSample + 1) % (FFT_LEN *2);
-		}
-
+		int step = 8 / progdefaults.latency;
+		for (int i = 0; i < FFT_LEN * 2 / step; i++)
+			fftout[i] = fftwindow[i * step] * circbuff[i] * step;
 		wfft->rdft(fftout);
 FL_LOCK_D();
 		double pw;
@@ -560,14 +558,18 @@ void WFdisp::sig_data( double *sig, int len, int sr )
 	{
 		overload = false;
 		double overval, peak = 0.0;
+		memmove((void*)circbuff,
+				(void*)(circbuff + len), 
+				(size_t)((FFT_LEN *2 - len)*sizeof(double)));
+		memmove((void*)(circbuff + (FFT_LEN*2-len)),
+				(void*)sig,
+				(size_t)(len*sizeof(double)));
 		for (int i = 0; i < len; i++) {
-			overval = fabs(circbuff[ptrCB] = sig[i]);
-			ptrCB = (ptrCB + 1) % (FFT_LEN *2);
+			overval = fabs(sig[i]);
 			if (overval > peak) peak = overval;
 		}
 		peakaudio = 0.1 * peak + 0.9 * peakaudio;
 	}
-
 	if (mode == SCOPE)
 		process_analog(circbuff, FFT_LEN * 2);
 	else
@@ -589,8 +591,6 @@ update_freq:
 	}
 	inpFreq->value(szFrequency);
 }
-
-
 
 // Check the display offset & limit to 0 to max IMAGE_WIDTH displayed
 void WFdisp::checkoffset() {
