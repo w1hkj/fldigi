@@ -4627,10 +4627,13 @@ void make_scopeviewer()
 
 void altTabs()
 {
-	tabsConfigure->remove(tabUI);
-	tabsConfigure->remove(tabFeld);
 	tabsConfigure->remove(tabMisc);
 	tabsConfigure->remove(tabQRZ);
+	tabsUI->remove(tabUserInterface);
+	tabsUI->remove(tabContest);
+	tabsUI->remove(tabWF_UI);
+	tabsUI->remove(tabRxText);
+	tabsModems->remove(tabFeld);
 }
 
 int WF_only_height = 0;

@@ -221,6 +221,8 @@ static void cb_btnMacroMouseWheel(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Group *tabBrowser=(Fl_Group *)0;
+
 Fl_Check_Button *btnMarquee=(Fl_Check_Button *)0;
 
 static void cb_btnMarquee(Fl_Check_Button* o, void*) {
@@ -531,6 +533,8 @@ btnWF_UIxmtlock->value(progdefaults.WF_UIxmtlock = 0);
 progdefaults.changed = true;
 WF_UI();
 }
+
+Fl_Group *tabRxText=(Fl_Group *)0;
 
 Fl_Check_Button *btn_rx_lowercase=(Fl_Check_Button *)0;
 
@@ -2725,7 +2729,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";
     o->selection_color((Fl_Color)51);
     o->labelsize(18);
     o->align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE);
-    { tabsConfigure = new Fl_Tabs(-4, 0, 521, 372);
+    { tabsConfigure = new Fl_Tabs(0, 0, 500, 372);
       tabsConfigure->color((Fl_Color)FL_LIGHT1);
       tabsConfigure->selection_color((Fl_Color)FL_LIGHT1);
       { tabOperator = new Fl_Group(0, 25, 500, 345, _("Operator"));
@@ -2975,8 +2979,8 @@ ab and newline are automatically included."));
             } // Fl_Group* o
             tabUserInterface->end();
           } // Fl_Group* tabUserInterface
-          { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Browser"));
-            o->hide();
+          { tabBrowser = new Fl_Group(0, 50, 500, 320, _("Browser"));
+            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(2, 59, 496, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnMarquee = new Fl_Check_Button(208, 105, 165, 20, _("Continuous scrolling"));
@@ -3071,8 +3075,8 @@ ab and newline are automatically included."));
               } // Fl_Check_Button* btnFixedIntervals
               o->end();
             } // Fl_Group* o
-            o->end();
-          } // Fl_Group* o
+            tabBrowser->end();
+          } // Fl_Group* tabBrowser
           { tabContest = new Fl_Group(0, 50, 500, 320, _("Contest"));
             tabContest->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 80, _("Exchanges"));
@@ -3310,15 +3314,15 @@ ab and newline are automatically included."));
             } // Fl_Group* o
             tabWF_UI->end();
           } // Fl_Group* tabWF_UI
-          { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Rx Text"));
-            o->hide();
+          { tabRxText = new Fl_Group(0, 50, 500, 320, _("Rx Text"));
+            tabRxText->hide();
             { Fl_Check_Button* o = btn_rx_lowercase = new Fl_Check_Button(25, 75, 389, 15, _("print CW / RTTY / THROB / CONTESTIA in lowercase"));
               btn_rx_lowercase->down_box(FL_DOWN_BOX);
               btn_rx_lowercase->callback((Fl_Callback*)cb_btn_rx_lowercase);
               o->value(progdefaults.rx_lowercase);
             } // Fl_Check_Button* btn_rx_lowercase
-            o->end();
-          } // Fl_Group* o
+            tabRxText->end();
+          } // Fl_Group* tabRxText
           tabsUI->end();
         } // Fl_Tabs* tabsUI
         tabUI->end();
@@ -3644,7 +3648,6 @@ an merging"));
           tabsModems->selection_color((Fl_Color)FL_LIGHT1);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
           { tabCW = new Fl_Group(0, 50, 504, 320, _("CW"));
-            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 504, 320);
               tabsCW->selection_color((Fl_Color)FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
@@ -4436,6 +4439,7 @@ an merging"));
             tabContestia->end();
           } // Fl_Group* tabContestia
           { tabPSK = new Fl_Group(-4, 50, 521, 322, _("PSK"));
+            tabPSK->hide();
             { tabsPSK = new Fl_Tabs(-4, 50, 521, 322);
               tabsPSK->selection_color((Fl_Color)FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
