@@ -370,16 +370,16 @@ void view_rtty::find_signals()
 	for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
 		if (channel[i].state != IDLE) continue;
 		int cf = progdefaults.LowFreqCutoff + 100 * i;
-		if (!i) cf += shift;
 		for (int chf = cf; chf < cf + 100; chf += 5) {
+			if (chf < shift) continue;
 			spwrlo = wf->powerDensity(chf - shift/2, rtty_baud) / 2;
 			spwrhi = wf->powerDensity(chf + shift/2, rtty_baud) / 2;
 			npwr = wf->powerDensity(chf, rtty_baud / 2) + 1e-10;
-			if ((spwrlo / npwr > level) && 
-				(spwrhi / npwr > level) &&
-				(i && channel[i-1].state == IDLE) &&
-				(i > 2 && channel[i-2].state == IDLE) &&
-				((i < (progdefaults.VIEWERchannels - 2)) && channel[i+1].state == IDLE)) {
+			if ((spwrlo / npwr > level) && (spwrhi / npwr > level)) {
+				if (!i && channel[i+1].state != IDLE) break;
+				if ((i == (progdefaults.VIEWERchannels -2)) && channel[i+1].state != IDLE) break;
+				if (i && (channel[i-1].state != IDLE)) break;
+				if (i > 3 && (channel[i-2].state != IDLE)) break;
 				channel[i].frequency = chf;
 				channel[i].sigsearch = SIGSEARCH;
 				channel[i].state = SEARCHING;

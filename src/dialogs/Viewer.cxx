@@ -278,7 +278,9 @@ void viewer_paste_freq(int freq)
 {
 	if (pskviewer) {
 		for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
-			if (fabs(pskviewer->get_freq(i) - freq) <= 50) {
+			int ftest = pskviewer->get_freq(i);
+			if (ftest == NULLFREQ) continue;
+			if (fabs(ftest - freq) <= 50) {
 				if (mainViewer)
 					mainViewer->select(i+1);
 				if (dlgViewer)
@@ -289,7 +291,9 @@ void viewer_paste_freq(int freq)
 	}
 	if (rttyviewer) {
 		for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
-			if (fabs(rttyviewer->get_freq(i) - freq) <= 50) {
+			int ftest = rttyviewer->get_freq(i);
+			if (ftest == NULLFREQ) continue;
+			if (fabs(ftest - freq) <= 50) {
 				if (mainViewer)
 					mainViewer->select(i+1);
 				if (dlgViewer)
