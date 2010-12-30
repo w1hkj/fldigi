@@ -183,15 +183,11 @@ void viewpsk::afc(int ch)
 		double upper_bound = lowfreq + (ch+1)*100 + bandwidth;
 
 		error = (channel[ch].phase - channel[ch].bits * M_PI / 2);
-		if (error < -M_PI / 2 || error > M_PI / 2) return;
-		error *= ((VPSKSAMPLERATE / (symbollen * 2 * M_PI)) /16);
-
-		if (fabs(error) < bandwidth) {
-			channel[ch].freqerr = decayavg( channel[ch].freqerr, error, VAFCDECAY);
-			channel[ch].frequency -= channel[ch].freqerr;
-			channel[ch].frequency -= error;
-			channel[ch].frequency = CLAMP(channel[ch].frequency, lower_bound, upper_bound);
-		}
+		if (error < M_PI / 2.0) error += 2 * M_PI;
+		if (error > M_PI / 2.0) error -= 2 * M_PI;
+		error *= (VPSKSAMPLERATE / (symbollen * 2 * M_PI))/16.0;
+		channel[ch].frequency -= error;
+		channel[ch].frequency = CLAMP(channel[ch].frequency, lower_bound, upper_bound);
 	}
 	if (channel[ch].acquire) channel[ch].acquire--;
 }

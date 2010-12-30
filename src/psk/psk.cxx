@@ -653,19 +653,20 @@ void psk::phaseafc()
 	if (afcmetric < 0.05) return;
 
 	error = (phase - bits * M_PI / 2.0);
-	if (error < -M_PI / 2.0 || error > M_PI / 2.0) return;
-	error *= ((samplerate / (TWOPI * symbollen)) / 16);
-	if (fabs(error) < bandwidth ) {
-//		freqerr = error / dcdbits;
-		frequency -= freqerr;
-		if (mailserver) {
-			if (frequency < progdefaults.ServerCarrier - progdefaults.ServerAFCrange)
-				frequency = progdefaults.ServerCarrier - progdefaults.ServerAFCrange;
-			if (frequency > progdefaults.ServerCarrier + progdefaults.ServerAFCrange)
-				frequency = progdefaults.ServerCarrier + progdefaults.ServerAFCrange;
-		}
-		set_freq (frequency);
+	if (error < M_PI / 2.0) error += 2 * M_PI;
+	if (error > M_PI / 2.0) error -= 2 * M_PI;
+
+	error *= (samplerate / (TWOPI * symbollen))/16.0; // the count between symbols
+	frequency -= error;
+
+	if (mailserver) {
+		if (frequency < progdefaults.ServerCarrier - progdefaults.ServerAFCrange)
+			frequency = progdefaults.ServerCarrier - progdefaults.ServerAFCrange;
+		if (frequency > progdefaults.ServerCarrier + progdefaults.ServerAFCrange)
+			frequency = progdefaults.ServerCarrier + progdefaults.ServerAFCrange;
 	}
+	set_freq (frequency);
+
 	if (acquire) acquire--;
 }
 
