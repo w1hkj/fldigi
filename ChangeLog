@@ -1,5 +1,8 @@
 2010-12-30  David Freese  <w1hkj@w1hkj.com>
 
+	f51f2b6: RTTY visible timeout
+	6975bd1: Browser start frequency
+	724fcb7: Macro Bar Configure
 	0c66bd7: RTTY adjacenies
 	3b55c69: PSK AFC
 	0c5e8a3: PSK Browser-WF data
