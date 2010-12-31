@@ -68,6 +68,7 @@ void view_rtty::rx_init()
 		channel[ch].rxstate = RTTY_RX_STATE_IDLE;
 		channel[ch].rxmode = LETTERS;
 		channel[ch].phaseacc = 0;
+		channel[ch].timeout = 0;
 		channel[ch].frequency = NULLFREQ;
 		for (int i = 0; i < RTTYMaxSymLen; i++ ) {
 			channel[ch].bbfilter[i] = 0.0;
@@ -136,6 +137,7 @@ void view_rtty::restart()
 			channel[ch].bitfilt = new Cmovavg(bflen);
 		}
 		channel[ch].state = IDLE;
+		channel[ch].timeout = 0;
 		channel[ch].freqerr = 0.0;
 		channel[ch].filterptr = 0;
 		channel[ch].poscnt = 0;
@@ -312,7 +314,7 @@ bool view_rtty::rx(int ch, bool bit)
 	case RTTY_RX_STATE_STOP:
 		if (--channel[ch].counter == 0) {
 			if (bit) {
-				if (channel[ch].metric >= progStatus.sldrSquelchValue) {
+				if (channel[ch].metric > rtty_squelch) {
 					c = decode_char(ch);
 // print this RTTY_CHANNEL
 					if ( c != 0 )
@@ -338,7 +340,6 @@ bool view_rtty::rx(int ch, bool bit)
 
 void view_rtty::Metric(int ch)
 {
-	double level = pow(10, progdefaults.VIEWERsquelch / 10.0);
 	double delta = rtty_baud/2.0;
 	double np =
 		wf->powerDensity(channel[ch].frequency - shift * 1.5, delta) +
@@ -354,19 +355,27 @@ void view_rtty::Metric(int ch)
 	channel[ch].metric = CLAMP(channel[ch].sigpwr/channel[ch].noisepwr, 0.0, 100.0);
 
 	if (channel[ch].state == RCVNG)
-		if (channel[ch].metric < level) {
+		if (channel[ch].metric < rtty_squelch) {
+			channel[ch].timeout = progdefaults.VIEWERtimeout * samplerate / WFBLOCKSIZE;
+			channel[ch].state = WAITING;
+		}
+
+	if (channel[ch].timeout) {
+		channel[ch].timeout--;
+		if (!channel[ch].timeout) {
 			channel[ch].frequency = NULLFREQ;
 			channel[ch].metric = 0;
 			channel[ch].freqerr = 0;
 			channel[ch].state = IDLE;
 			REQ(&viewclearchannel, ch);
 		}
+	}
 }
 
 void view_rtty::find_signals()
 {
 	double spwrhi = 0.0, spwrlo = 0.0, npwr = 0.0;
-	double level = pow(10, progdefaults.VIEWERsquelch / 10.0);
+	double rtty_squelch = pow(10, progdefaults.VIEWERsquelch / 10.0);
 	for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
 		if (channel[i].state != IDLE) continue;
 		int cf = progdefaults.LowFreqCutoff + 100 * i;
@@ -376,14 +385,15 @@ void view_rtty::find_signals()
 			spwrlo = wf->powerDensity(chf - shift/2, rtty_baud) / 2;
 			spwrhi = wf->powerDensity(chf + shift/2, rtty_baud) / 2;
 			npwr = wf->powerDensity(chf, rtty_baud / 2) + 1e-10;
-			if ((spwrlo / npwr > level) && (spwrhi / npwr > level)) {
-				if (!i && channel[i+1].state != IDLE) break;
-				if ((i == (progdefaults.VIEWERchannels -2)) && channel[i+1].state != IDLE) break;
-				if (i && (channel[i-1].state != IDLE)) break;
-				if (i > 3 && (channel[i-2].state != IDLE)) break;
+			if ((spwrlo / npwr > rtty_squelch) && (spwrhi / npwr > rtty_squelch)) {
+				if (!i && (channel[i+1].state == SRCHG || channel[i+1].state == RCVNG)) break;
+				if ((i == (progdefaults.VIEWERchannels -2)) && 
+					(channel[i+1].state == SRCHG || channel[i+1].state == RCVNG)) break;
+				if (i && (channel[i-1].state == SRCHG || channel[i-1].state == RCVNG)) break;
+				if (i > 3 && (channel[i-2].state == SRCHG || channel[i-2].state == RCVNG)) break;
 				channel[i].frequency = chf;
 				channel[i].sigsearch = SIGSEARCH;
-				channel[i].state = SEARCHING;
+				channel[i].state = SRCHG;
 				REQ(&viewaddchr, i, (int)channel[i].frequency, 0, mode);
 				break;
 			}
@@ -440,6 +450,7 @@ int view_rtty::rx_process(const double *buf, int buflen)
 		for (int ch = 0; ch < MAX_CHANNELS; ch++)
 			channel[ch].bpfilt->create_filter(bp_filt_lo, bp_filt_hi);
 	}
+	rtty_squelch = pow(10, progdefaults.VIEWERsquelch / 10.0);
 
 	for (int ch = 0; ch < progdefaults.VIEWERchannels; ch++) {
 		if (channel[ch].state == IDLE)
@@ -448,7 +459,7 @@ int view_rtty::rx_process(const double *buf, int buflen)
 			channel[ch].sigsearch--;
 			if (!channel[ch].sigsearch)
 				channel[ch].state = RCVNG;
-					}
+		}
 		for (int len = 0; len < buflen; len++) {
 			z.re = z.im = buf[len];
 			hilbert->run(z, z);
@@ -483,7 +494,7 @@ int view_rtty::rx_process(const double *buf, int buflen)
 								channel[ch].poserr = channel[ch].posfreq / channel[ch].poscnt;
 								channel[ch].negerr = channel[ch].negfreq / channel[ch].negcnt;
 
-								ferr = -(channel[ch].poserr + channel[ch].negerr) / 
+								ferr = -(channel[ch].poserr + channel[ch].negerr) /
 												(2*(SIGSEARCH - channel[ch].sigsearch + 1));
 
 								int fs = progdefaults.rtty_afcspeed;
@@ -502,12 +513,12 @@ int view_rtty::rx_process(const double *buf, int buflen)
 		}
 
 		Metric(ch);
-		if (channel[ch].metric > progStatus.sldrSquelchValue)
+		if (channel[ch].metric > pow(10, progdefaults.VIEWERsquelch / 10.0))
 			channel[ch].frequency -= ferr;
 	}
 
 	find_signals();
-	
+
 	return 0;
 }
 

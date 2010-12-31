@@ -40,7 +40,7 @@
 
 #define MAX_CHANNELS 30
 
-enum CHANNEL_STATE {IDLE, SEARCHING, RCVNG};
+enum CHANNEL_STATE {IDLE, SRCHG, RCVNG, WAITING};
 
 struct RTTY_CHANNEL {
 
@@ -71,6 +71,7 @@ struct RTTY_CHANNEL {
 	double			negerr;
 	int				poscnt;
 	int				negcnt;
+	int				timeout;
 
 	double			sigpwr;
 	double			noisepwr;
