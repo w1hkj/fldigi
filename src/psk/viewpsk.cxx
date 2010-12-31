@@ -73,7 +73,7 @@ viewpsk::~viewpsk()
 void viewpsk::init()
 {
 	nchannels = progdefaults.VIEWERchannels;
-	lowfreq = progdefaults.VIEWERstart;
+	lowfreq = progdefaults.LowFreqCutoff;
 
 	for (int i = 0; i < MAXCHANNELS; i++) {
 		channel[i].phaseacc = 0;
@@ -236,6 +236,7 @@ void viewpsk::findsignals()
 			channel[i].frequency = NULLFREQ;
 			nomfreq = lowfreq + 100 * i;
 			f1 = nomfreq - bandwidth;
+			if (f1 < 2 * bandwidth) f1 = 2 * bandwidth;
 			f2 = nomfreq + 100 + bandwidth;
 			ftest = (f1 + f2) / 2;
 			if ((testlevel = evalpsk->peak(ftest, f1, f2, level))) {
@@ -315,7 +316,7 @@ int viewpsk::rx_process(const double *buf, int len)
 	int idx;
 	complex z, z2;
 
-	if (nchannels != progdefaults.VIEWERchannels || lowfreq != progdefaults.VIEWERstart)
+	if (nchannels != progdefaults.VIEWERchannels || lowfreq != progdefaults.LowFreqCutoff)
 		init();
 
 // process all channels

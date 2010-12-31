@@ -337,23 +337,12 @@ OFF - Clear & restart} xywh {208 105 165 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.VIEWERmarquee);}
               }
               Fl_Spinner cntChannels {
-                label Channels
+                label {Channels, first channel starts at waterfall lower limit}
                 callback {progdefaults.VIEWERchannels = (int)(o->value());
 initViewer();}
-                tooltip {Change \# of psk viewer channels} xywh {9 69 50 20} align 8
+                tooltip {Change \# of psk viewer channels} xywh {9 69 50 24} align 8
                 code0 {o->minimum(5); o->maximum(30); o->step(1);}
                 code1 {o->value(progdefaults.VIEWERchannels);}
-                code2 {o->labelsize(FL_NORMAL_SIZE);}
-                class Fl_Spinner2
-              }
-              Fl_Spinner cntStartFrequency {
-                label {Start frequency}
-                callback {progdefaults.VIEWERstart = (int)(o->value());
-progdefaults.changed = true;
-initViewer();}
-                tooltip {Start decoding at this frequency} xywh {9 105 50 20} align 8
-                code0 {o->minimum(200); o->maximum(1000); o->step(100);}
-                code1 {o->value(progdefaults.VIEWERstart);}
                 code2 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Spinner2
               }
@@ -362,7 +351,7 @@ initViewer();}
                 callback {progdefaults.VIEWERtimeout = (int)(o->value());
 progdefaults.changed = true;}
                 tooltip {Clear channel text after
-\# seconds of inactivity} xywh {208 69 50 20} align 8 value 10
+\# seconds of inactivity} xywh {9 107 50 24} align 8 value 10
                 code0 {o->minimum(1); o->maximum(180); o->step(1);}
                 code1 {o->value(progdefaults.VIEWERtimeout);}
                 code2 {o->labelsize(FL_NORMAL_SIZE);}
@@ -386,13 +375,13 @@ font_browser->fontColor(FL_FOREGROUND_COLOR);
 font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
 font_browser->callback(cbViewerFontBrowser);
 font_browser->show();}
-                xywh {9 187 70 24}
+                tooltip {select browser font} xywh {275 145 70 24}
               }
               Fl_Input txtInpSeek {
                 label {Seek Regular Expression}
                 callback {progStatus.browser_search = o->value();
 seek_re.recompile(o->value() ? o->value() : "[invalid");}
-                tooltip {Search for reg-exp in viewer text(s)} xywh {9 238 360 20} align 5 when 1
+                tooltip {Search for reg-exp in browser text(s)} xywh {9 195 360 20} align 5 when 1
                 code0 {o->labelsize(FL_NORMAL_SIZE);}
                 code1 {o->value(progStatus.browser_search.c_str());}
                 class Fl_Input2
@@ -762,7 +751,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label Display open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {
               label {Colors and cursors} open
@@ -947,7 +936,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label {FFT Processing} open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {open
               xywh {5 62 490 135} box ENGRAVED_FRAME

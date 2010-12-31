@@ -370,6 +370,7 @@ void view_rtty::find_signals()
 	for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
 		if (channel[i].state != IDLE) continue;
 		int cf = progdefaults.LowFreqCutoff + 100 * i;
+		if (cf < shift) cf = shift;
 		for (int chf = cf; chf < cf + 100; chf += 5) {
 			if (chf < shift) continue;
 			spwrlo = wf->powerDensity(chf - shift/2, rtty_baud) / 2;

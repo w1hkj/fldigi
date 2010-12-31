@@ -49,7 +49,6 @@ extern Fl_Input2 *inpNonword;
 extern Fl_Group *tabBrowser;
 extern Fl_Check_Button *btnMarquee;
 extern Fl_Spinner2 *cntChannels;
-extern Fl_Spinner2 *cntStartFrequency;
 extern Fl_Spinner2 *cntTimeout;
 extern Fl_Choice *mnuViewerLabel;
 extern Fl_Button *btnViewerFont;

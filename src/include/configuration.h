@@ -1071,9 +1071,6 @@
               "PSK Browser row label type.  Values are as follows:\n"                   \
               "  0: Audio frequency; 1: Radio frequency; 2: Channel number.",           \
               VIEWER_LABEL_RF)                                                          \
-        ELEM_(int, VIEWERstart, "VIEWERSTART",                                          \
-              "PSK Browser lowest decode frequency",                                    \
-              500)                                                                      \
         ELEM_(int, VIEWERchannels, "VIEWERCHANNELS",                                    \
               "PSK Browser channels",                                                   \
               20)                                                                       \

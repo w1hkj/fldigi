@@ -231,14 +231,6 @@ static void cb_cntChannels(Fl_Spinner2* o, void*) {
 initViewer();
 }
 
-Fl_Spinner2 *cntStartFrequency=(Fl_Spinner2 *)0;
-
-static void cb_cntStartFrequency(Fl_Spinner2* o, void*) {
-  progdefaults.VIEWERstart = (int)(o->value());
-progdefaults.changed = true;
-initViewer();
-}
-
 Fl_Spinner2 *cntTimeout=(Fl_Spinner2 *)0;
 
 static void cb_cntTimeout(Fl_Spinner2* o, void*) {
@@ -9394,7 +9386,7 @@ ab and newline are automatically included."));
                 btnMarquee->callback((Fl_Callback*)cb_btnMarquee);
                 o->value(progdefaults.VIEWERmarquee);
               } // Fl_Check_Button* btnMarquee
-              { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(9, 69, 50, 20, _("Channels"));
+              { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(9, 69, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
                 cntChannels->tooltip(_("Change # of psk viewer channels"));
                 cntChannels->box(FL_NO_BOX);
                 cntChannels->color((Fl_Color)FL_BACKGROUND_COLOR);
@@ -9410,23 +9402,7 @@ ab and newline are automatically included."));
                 o->value(progdefaults.VIEWERchannels);
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Spinner2* cntChannels
-              { Fl_Spinner2* o = cntStartFrequency = new Fl_Spinner2(9, 105, 50, 20, _("Start frequency"));
-                cntStartFrequency->tooltip(_("Start decoding at this frequency"));
-                cntStartFrequency->box(FL_NO_BOX);
-                cntStartFrequency->color((Fl_Color)FL_BACKGROUND_COLOR);
-                cntStartFrequency->selection_color((Fl_Color)FL_BACKGROUND_COLOR);
-                cntStartFrequency->labeltype(FL_NORMAL_LABEL);
-                cntStartFrequency->labelfont(0);
-                cntStartFrequency->labelsize(14);
-                cntStartFrequency->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
-                cntStartFrequency->callback((Fl_Callback*)cb_cntStartFrequency);
-                cntStartFrequency->align(FL_ALIGN_RIGHT);
-                cntStartFrequency->when(FL_WHEN_RELEASE);
-                o->minimum(200); o->maximum(1000); o->step(100);
-                o->value(progdefaults.VIEWERstart);
-                o->labelsize(FL_NORMAL_SIZE);
-              } // Fl_Spinner2* cntStartFrequency
-              { Fl_Spinner2* o = cntTimeout = new Fl_Spinner2(208, 69, 50, 20, _("Inactivity timeout"));
+              { Fl_Spinner2* o = cntTimeout = new Fl_Spinner2(9, 107, 50, 24, _("Inactivity timeout"));
                 cntTimeout->tooltip(_("Clear channel text after\n# seconds of inactivity"));
                 cntTimeout->box(FL_NO_BOX);
                 cntTimeout->color((Fl_Color)FL_BACKGROUND_COLOR);
@@ -9452,11 +9428,12 @@ ab and newline are automatically included."));
                 mnuViewerLabel->add("Radio frequency"); mnuViewerLabel->add("Channel number");
                 mnuViewerLabel->value(progdefaults.VIEWERlabeltype);
               } // Fl_Choice* mnuViewerLabel
-              { btnViewerFont = new Fl_Button(9, 187, 70, 24, _("Font..."));
+              { btnViewerFont = new Fl_Button(275, 145, 70, 24, _("Font..."));
+                btnViewerFont->tooltip(_("select browser font"));
                 btnViewerFont->callback((Fl_Callback*)cb_btnViewerFont);
               } // Fl_Button* btnViewerFont
-              { Fl_Input2* o = txtInpSeek = new Fl_Input2(9, 238, 360, 20, _("Seek Regular Expression"));
-                txtInpSeek->tooltip(_("Search for reg-exp in viewer text(s)"));
+              { Fl_Input2* o = txtInpSeek = new Fl_Input2(9, 195, 360, 20, _("Seek Regular Expression"));
+                txtInpSeek->tooltip(_("Search for reg-exp in browser text(s)"));
                 txtInpSeek->box(FL_DOWN_BOX);
                 txtInpSeek->color((Fl_Color)FL_BACKGROUND2_COLOR);
                 txtInpSeek->selection_color((Fl_Color)FL_SELECTION_COLOR);
@@ -9773,6 +9750,7 @@ ab and newline are automatically included."));
           tabsWaterfall->color((Fl_Color)FL_LIGHT1);
           tabsWaterfall->selection_color((Fl_Color)FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Display"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 162, _("Colors and cursors"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -9923,7 +9901,6 @@ ab and newline are automatically included."));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("FFT Processing"));
-            o->hide();
             { Fl_Group* o = new Fl_Group(5, 62, 490, 135);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Counter2* o = cntLowFreqCutoff = new Fl_Counter2(50, 72, 70, 20, _("Lower limit"));

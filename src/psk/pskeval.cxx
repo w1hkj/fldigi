@@ -121,8 +121,10 @@ double pskeval::peak(int &f0, int f1, int f2, double db)
 	}
 	f0 = (fa + fb) / 2;
 //step 2
-	fb = f1 = f0 - 1.5*bw;
-	fa = f2 = f0 + 1.5*bw;
+	f1 = f0 - 1.5*bw;
+	if (f1 < bw) f1 = bw;
+	f2 = f0 + 1.5*bw;
+	fb = f1; fa = f2;
 	peak = 0;
 	for (int i = f1; i < f2; i++) if (sigpwr[i] > peak) peak = sigpwr[i];
 	for (int i = f1; i < f2; i++)
@@ -133,10 +135,6 @@ double pskeval::peak(int &f0, int f1, int f2, double db)
 		return 0;
 	}
 	f0 = (fa + fb) / 2;
-//	printf("freq,s/n,f0,fa,fb,test,s/n,min\n");
-//	printf(",,%6d,%6d,%6d,%8f,%8f,%8f\n", f0, fa, fb, level, peak/sigmin, sigmin);
-//	for (int i = progdefaults.LowFreqCutoff; i < progdefaults.HighFreqCutoff; i++)
-//		printf("%d,%f\n", i, (sigpwr[i]-sigmin) / sigmin);
 	return (peak - sigmin) / sigmin ;
 }
 

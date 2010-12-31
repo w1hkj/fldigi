@@ -265,8 +265,6 @@ void pskBrowser::clear()
 	long freq;
 	Fl_Hold_Browser::clear();
 	for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
-//		freq = progdefaults.VIEWERstart + 100 * (progdefaults.VIEWERchannels - 1 - i);
-//		freq = progdefaults.VIEWERstart + 100 * (i + 1);
 		freq = 1e6;
 		bwsrline[i] = "";
 		bwsrfreq[i] = freq;
