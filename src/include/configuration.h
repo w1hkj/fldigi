@@ -901,6 +901,9 @@
         ELEM_(bool, macro_wheel, "MACROWHEEL",                                          \
               "Enable mouse wheel rotation to control visible macro set",               \
               false)                                                                    \
+        ELEM_(int, mbar2_pos, "MBAR2POS",                                               \
+              "Position second macro button above data stream panesl",                  \
+              0)                                                                        \
         /* Mixer */                                                                     \
         ELEM_(std::string, MXdevice, "MXDEVICE",                                        \
               "Mixer device",                                                           \

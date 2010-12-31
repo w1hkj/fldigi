@@ -16,7 +16,6 @@ struct status {
 	bool	NO_RIGLOG;
 	bool	Rig_Log_UI;
 	bool	Rig_Contest_UI;
-	bool	two_macro_rows;
 	bool	DOCKEDSCOPE;
 
 	int		RxTextHeight;

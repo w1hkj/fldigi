@@ -76,7 +76,6 @@ status progStatus = {
 	false,				// bool NO_RIGLOG;
 	false,				// bool Rig_Log_UI;
 	false,				// bool Rig_Contest_UI;
-	true,				// bool two_macro_rows
 	false,				// bool DOCKEDSCOPE;
 	200,				// int RxTextHeight;
 	WNOM / 2,			// int tiled_group_x;
@@ -298,7 +297,6 @@ if (!bWF_only) {
 	spref.set("riglog_ui", Rig_Log_UI);
 	spref.set("rigcontest_ui", Rig_Contest_UI);
 	spref.set("noriglog", NO_RIGLOG);
-	spref.set("two_macro_rows", two_macro_rows);
 	spref.set("docked_scope", DOCKEDSCOPE);
 
 	spref.set("rigctl_x", rigX);
@@ -442,7 +440,6 @@ void status::loadLastState()
 	spref.get("wf_ui", i, WF_UI); WF_UI = i;
 	spref.get("riglog_ui", i, Rig_Log_UI); Rig_Log_UI = i;
 	spref.get("rigcontest_ui", i, Rig_Contest_UI); Rig_Contest_UI = i;
-	spref.get("two_macro_rows", i, two_macro_rows); two_macro_rows = i;
 	spref.get("noriglog", i, NO_RIGLOG); NO_RIGLOG = i;
 	spref.get("docked_scope", i, DOCKEDSCOPE); DOCKEDSCOPE = i;
 

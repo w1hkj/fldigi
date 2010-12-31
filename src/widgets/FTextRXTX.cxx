@@ -945,7 +945,7 @@ int FTextTX::handle_key(int key)
 		if (Fl::event_state() & FL_ALT) {
 			static char lbl[2] = "1";
 			altMacros = key - '1';
-			if (progStatus.two_macro_rows) {
+			if (progdefaults.mbar2_pos) {
 				if (!altMacros) altMacros = 1;
 				for (int i = 0; i < NUMMACKEYS; i++) {
 					btnMacro[NUMMACKEYS + i]->label(
@@ -1003,7 +1003,7 @@ int FTextTX::handle_key_macro(int key)
 	if (key > 11)
 		return 0;
 
-	if (progStatus.two_macro_rows) {
+	if (progdefaults.mbar2_pos) {
 		if (Fl::event_state(FL_SHIFT))
 			key += altMacros * NUMMACKEYS;
 	} else {

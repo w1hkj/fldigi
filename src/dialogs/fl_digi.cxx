@@ -190,9 +190,7 @@ Fl_Button		    *btnMacroTimer = (Fl_Button *)0;
 
 Fl_Tile_Check		*VTgroup = 0;
 Fl_Tile_Check		*HTgroup = 0;
-//Fl_Box				*macroFrame = 0;
-//Fl_Box				*macroFrame2 = 0;
-Fl_Group			*macroFrame = 0;
+Fl_Group			*macroFrame1 = 0;
 Fl_Group			*macroFrame2 = 0;
 FTextRX				*ReceiveText = 0;
 FTextTX				*TransmitText = 0;
@@ -1116,9 +1114,9 @@ void macro_cb(Fl_Widget *w, void *v)
 {
 	int b = (int)(reinterpret_cast<long> (v));
 
-	if (progStatus.two_macro_rows && b >= NUMMACKEYS)
+	if (progdefaults.mbar2_pos && b >= NUMMACKEYS)
 		b += (altMacros - 1) * NUMMACKEYS;
-	if (!progStatus.two_macro_rows)
+	if (!progdefaults.mbar2_pos)
 		b += altMacros * NUMMACKEYS;
 
 	int mouse = Fl::event_button();
@@ -1182,7 +1180,7 @@ void altmacro_cb(Fl_Widget *w, void *v)
 	else
 		altMacros = altMacros + (Fl::event_button() == FL_RIGHT_MOUSE ? -1 : 1);
 
-	if (progStatus.two_macro_rows) {
+	if (progdefaults.mbar2_pos) {
 // alternate set
 		altMacros = WCLAMP(altMacros, 1, 3);
 		alt_text[0] = '1' + altMacros;
@@ -1779,7 +1777,7 @@ void cb_mnuContest(Fl_Menu_ *m, void *) {
 
 void set_macroLabels()
 {
-	if (progStatus.two_macro_rows) {
+	if (progdefaults.mbar2_pos) {
 		altMacros = 1;
 		for (int i = 0; i < NUMMACKEYS; i++) {
 			btnMacro[NUMMACKEYS + i]->label(
@@ -1801,13 +1799,6 @@ void set_macroLabels()
 	}
 }
 
-void cb_mnuMacroRows(Fl_Menu_ *m, void*)
-{
-	progStatus.two_macro_rows = m->mvalue()->value();
-	set_macroLabels();
-	UI_select();
-}
-
 void cb_mnuPicViewer(Fl_Menu_ *, void *) {
 	if (picRxWin) {
 		picRx->redraw();
@@ -1819,7 +1810,6 @@ void cb_sldrSquelch(Fl_Slider* o, void*) {
 	progStatus.sldrSquelchValue = o->value();
 	restoreFocus();
 }
-
 
 static char ztbuf[14];
 
@@ -2383,7 +2373,6 @@ bool clean_exit(void) {
 #define RIGCONTEST_MLABEL  _("Rig control and contest")
 #define DOCKEDSCOPE_MLABEL _("Docked scope")
 #define WF_MLABEL _("Minimal controls")
-#define MACRO_ROWS_LABEL _("Two macro button bars")
 
 bool restore_minimize = false;
 
@@ -2393,12 +2382,6 @@ void UI_select()
 		return;
 
 	Fl_Menu_Item* cf = getMenuItem(CONTEST_FIELDS_MLABEL);
-	Fl_Menu_Item* mr = getMenuItem(MACRO_ROWS_LABEL);
-
-	if (!progStatus.two_macro_rows)
-		mr->clear();
-	else
-		mr->set();
 
 	if (progStatus.NO_RIGLOG || progStatus.Rig_Contest_UI || progStatus.Rig_Log_UI) {
 		cf->clear();
@@ -2411,30 +2394,94 @@ void UI_select()
 		getMenuItem(RIGLOG_FULL_MLABEL)->setonly();
 	}
 
+	int x = macroFrame1->x();
+	int y1 = TopFrame1->y();
+	int w = TopFrame1->w();
+	int HTh = fl_digi_main->h() - wfpack->h() - hpack->h() - Hmacros - Hstatus;
 	if (progStatus.NO_RIGLOG && !restore_minimize) {
-		int y1 = TopFrame1->y();
-		if (progStatus.two_macro_rows) {
-			macroFrame2->size(macroFrame2->w(), Hmacros);
-			macroFrame2->position(macroFrame2->x(), y1);
+		switch (progdefaults.mbar2_pos) {
+		case 1:
+			HTh -= Hmacros;
+			macroFrame2->size(w, Hmacros);
+			macroFrame2->position(x, y1);
 			macroFrame2->show();
 			btnAltMacros1->deactivate();
-			y1 += macroFrame2->h();
-		} else {
+			y1 += Hmacros;
+			if (MixerFrame->visible()) {
+				MixerFrame->resize(0, y1, DEFAULT_SW, HTh);
+				MixerFrame->redraw();
+				HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, HTh);
+			} else {
+				HTgroup->resize(0, y1, w, HTh);
+			}
+			y1 += HTh;
+			macroFrame1->position(x, y1);
+			y1 += Hmacros;
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			hpack->position(x, y1);
+			break;
+		case 2:
+			HTh -= Hmacros;
+			if (MixerFrame->visible()) {
+				MixerFrame->resize(0, y1, DEFAULT_SW, HTh);
+				MixerFrame->redraw();
+				HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, HTh);
+			} else {
+				HTgroup->resize(0, y1, w, HTh);
+			}
+			y1 += HTh;
+			macroFrame2->size(w, Hmacros);
+			macroFrame2->position(x, y1);
+			macroFrame2->show();
+			btnAltMacros1->deactivate();
+			y1 += Hmacros;
+			macroFrame1->position(x, y1);
+			y1 += Hmacros;
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			hpack->position(x, y1);
+			break;
+		case 3:
+			HTh -= Hmacros;
+			if (MixerFrame->visible()) {
+				MixerFrame->resize(0, y1, DEFAULT_SW, HTh);
+				MixerFrame->redraw();
+				HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, HTh);
+			} else {
+				HTgroup->resize(0, y1, w, HTh);
+			}
+			y1 += HTh;
+			macroFrame1->position(x, y1);
+			y1 += Hmacros;
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			macroFrame2->size(w, Hmacros);
+			macroFrame2->position(x, y1);
+			macroFrame2->show();
+			y1 += Hmacros;
+			hpack->position(x, y1);
+			btnAltMacros1->deactivate();
+			break;
+		case 0:
+		default:
 			macroFrame2->size(macroFrame2->w(), 0);
-			macroFrame2->position(macroFrame2->x(), y1);
-			btnAltMacros1->activate();
 			macroFrame2->hide();
-		}
-		int y2 = macroFrame->y();
-		int w = TopFrame1->w();
-		if (MixerFrame->visible()) {
-			MixerFrame->resize(0, y1, DEFAULT_SW, y2 - y1);
-			MixerFrame->redraw();
-			HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, y2 - y1);
-//			HTgroup->redraw();
-		} else {
-			HTgroup->resize(0, y1, w, y2 - y1);
-//			HTgroup->redraw();
+			btnAltMacros1->activate();
+			if (MixerFrame->visible()) {
+				MixerFrame->resize(0, y1, DEFAULT_SW, HTh);
+				MixerFrame->redraw();
+				HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, HTh);
+			} else {
+				HTgroup->resize(0, y1, w, HTh);
+			}
+			y1 += HTh;
+			macroFrame1->position(x, y1);
+			y1 += Hmacros;
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			hpack->position(x, y1);
+			break;
 		}
 		TopFrame1->hide();
 		TopFrame2->hide();
@@ -2443,34 +2490,97 @@ void UI_select()
 		inpCall4->show();
 		inpCall = inpCall4;
 		fl_digi_main->init_sizes();
+		fl_digi_main->redraw();
 		return;
 	}
 
 	if ((!progStatus.Rig_Log_UI && ! progStatus.Rig_Contest_UI) ||
 			restore_minimize) {
-		int y1 = TopFrame1->y() + Hqsoframe;
-		if (progStatus.two_macro_rows) {
-			macroFrame2->size(macroFrame2->w(), Hmacros);
-			macroFrame2->position(macroFrame2->x(), y1);
+		y1 += (TopFrame1->h());
+		HTh -= (TopFrame1->h());
+		switch (progdefaults.mbar2_pos) {
+		case 1:
+			HTh -= Hmacros;
+			macroFrame2->size(w, Hmacros);
+			macroFrame2->position(x, y1);
 			macroFrame2->show();
 			btnAltMacros1->deactivate();
-			y1 += macroFrame2->h();
-		} else {
+			y1 += Hmacros;
+			if (MixerFrame->visible()) {
+				MixerFrame->resize(0, y1, DEFAULT_SW, HTh);
+				MixerFrame->redraw();
+				HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, HTh);
+			} else {
+				HTgroup->resize(0, y1, w, HTh);
+			}
+			y1 += HTh;
+			macroFrame1->position(x, y1);
+			y1 += Hmacros;
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			hpack->position(x, y1);
+			break;
+		case 2:
+			HTh -= Hmacros;
+			if (MixerFrame->visible()) {
+				MixerFrame->resize(0, y1, DEFAULT_SW, HTh);
+				MixerFrame->redraw();
+				HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, HTh);
+			} else {
+				HTgroup->resize(0, y1, w, HTh);
+			}
+			y1 += HTh;
+			macroFrame2->size(w, Hmacros);
+			macroFrame2->position(x, y1);
+			macroFrame2->show();
+			btnAltMacros1->deactivate();
+			y1 += Hmacros;
+			macroFrame1->position(x, y1);
+			y1 += Hmacros;
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			hpack->position(x, y1);
+			break;
+		case 3:
+			HTh -= Hmacros;
+			if (MixerFrame->visible()) {
+				MixerFrame->resize(0, y1, DEFAULT_SW, HTh);
+				MixerFrame->redraw();
+				HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, HTh);
+			} else {
+				HTgroup->resize(0, y1, w, HTh);
+			}
+			y1 += HTh;
+			macroFrame1->position(x, y1);
+			y1 += Hmacros;
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			macroFrame2->size(w, Hmacros);
+			macroFrame2->position(x, y1);
+			macroFrame2->show();
+			y1 += Hmacros;
+			hpack->position(x, y1);
+			btnAltMacros1->deactivate();
+			break;
+		case 0:
+		default:
 			macroFrame2->size(macroFrame2->w(), 0);
-			macroFrame2->position(macroFrame2->x(), y1);
-			btnAltMacros1->activate();
 			macroFrame2->hide();
-		}
-		int y2 = macroFrame->y();
-		int w = TopFrame1->w();
-		if (MixerFrame->visible()) {
-			MixerFrame->resize(0, y1, DEFAULT_SW, y2 - y1);
-			MixerFrame->redraw();
-			HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, y2 - y1);
-//			HTgroup->redraw();
-		} else {
-			HTgroup->resize(0, y1, w, y2 - y1);
-//			HTgroup->redraw();
+			btnAltMacros1->activate();
+			if (MixerFrame->visible()) {
+				MixerFrame->resize(0, y1, DEFAULT_SW, HTh);
+				MixerFrame->redraw();
+				HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, HTh);
+			} else {
+				HTgroup->resize(0, y1, w, HTh);
+			}
+			y1 += HTh;
+			macroFrame1->position(x, y1);
+			y1 += Hmacros;
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			hpack->position(x, y1);
+			break;
 		}
 		inpNotes->resize(
 			inpNotes->x(), inpNotes->y(),
@@ -2490,32 +2600,96 @@ void UI_select()
 		outSerNo = outSerNo1;
 		inpXchgIn = inpXchgIn1;
 		qsoFreqDisp = qsoFreqDisp1;
-		fl_digi_main->init_sizes();
 
-	} else if (progStatus.Rig_Log_UI || progStatus.Rig_Contest_UI) {
-		int y1 = TopFrame2->y() + Hentry + 3 * pad;
-		if (progStatus.two_macro_rows) {
-			macroFrame2->size(macroFrame2->w(), Hmacros);
-			macroFrame2->position(macroFrame2->x(), y1);
+		fl_digi_main->init_sizes();
+		fl_digi_main->redraw();
+
+	}  else if (progStatus.Rig_Log_UI || progStatus.Rig_Contest_UI) {
+		y1 += TopFrame2->h();
+		HTh -= TopFrame2->h();
+		switch (progdefaults.mbar2_pos) {
+		case 1:
+			HTh -= Hmacros;
+			macroFrame2->size(w, Hmacros);
+			macroFrame2->position(x, y1);
 			macroFrame2->show();
 			btnAltMacros1->deactivate();
-			y1 += macroFrame2->h();
-		} else {
+			y1 += Hmacros;
+			if (MixerFrame->visible()) {
+				MixerFrame->resize(0, y1, DEFAULT_SW, HTh);
+				MixerFrame->redraw();
+				HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, HTh);
+			} else {
+				HTgroup->resize(0, y1, w, HTh);
+			}
+			y1 += HTh;
+			macroFrame1->position(x, y1);
+			y1 += Hmacros;
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			hpack->position(x, y1);
+			break;
+		case 2:
+			HTh -= Hmacros;
+			if (MixerFrame->visible()) {
+				MixerFrame->resize(0, y1, DEFAULT_SW, HTh);
+				MixerFrame->redraw();
+				HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, HTh);
+			} else {
+				HTgroup->resize(0, y1, w, HTh);
+			}
+			y1 += HTh;
+			macroFrame2->size(w, Hmacros);
+			macroFrame2->position(x, y1);
+			macroFrame2->show();
+			btnAltMacros1->deactivate();
+			y1 += Hmacros;
+			macroFrame1->position(x, y1);
+			y1 += Hmacros;
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			hpack->position(x, y1);
+			break;
+		case 3:
+			HTh -= Hmacros;
+			if (MixerFrame->visible()) {
+				MixerFrame->resize(0, y1, DEFAULT_SW, HTh);
+				MixerFrame->redraw();
+				HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, HTh);
+			} else {
+				HTgroup->resize(0, y1, w, HTh);
+			}
+			y1 += HTh;
+			macroFrame1->position(x, y1);
+			y1 += Hmacros;
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			macroFrame2->size(w, Hmacros);
+			macroFrame2->position(x, y1);
+			macroFrame2->show();
+			y1 += Hmacros;
+			hpack->position(x, y1);
+			btnAltMacros1->deactivate();
+			break;
+		case 0:
+		default:
 			macroFrame2->size(macroFrame2->w(), 0);
-			macroFrame2->position(macroFrame2->x(), y1);
 			macroFrame2->hide();
 			btnAltMacros1->activate();
-		}
-		int y2 = macroFrame->y();
-		int w = TopFrame1->w();
-		if (MixerFrame->visible()) {
-			MixerFrame->resize(0, y1, DEFAULT_SW, y2 - y1);
-			MixerFrame->redraw();
-			HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, y2 - y1);
-//			HTgroup->redraw();
-		} else {
-			HTgroup->resize(0, y1, w, y2 - y1);
-//			HTgroup->redraw();
+			if (MixerFrame->visible()) {
+				MixerFrame->resize(0, y1, DEFAULT_SW, HTh);
+				MixerFrame->redraw();
+				HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, HTh);
+			} else {
+				HTgroup->resize(0, y1, w, HTh);
+			}
+			y1 += HTh;
+			macroFrame1->position(x, y1);
+			y1 += Hmacros;
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			hpack->position(x, y1);
+			break;
 		}
 		if (progStatus.Rig_Log_UI) {
 			TopFrame1->hide();
@@ -2546,6 +2720,7 @@ void UI_select()
 	inpCall4->hide();
 	Status2->show();
 	fl_digi_main->init_sizes();
+	fl_digi_main->redraw();
 }
 
 void cb_mnu_wf_all(Fl_Menu_* w, void *d)
@@ -2779,14 +2954,11 @@ Fl_Menu_Item menu_[] = {
 { VIEW_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 
 {"View/Hide Channels", 'v', (Fl_Callback*)cb_view_hide_channels, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ MACRO_ROWS_LABEL, 'r', (Fl_Callback*)cb_mnuMacroRows, 0, FL_MENU_TOGGLE | FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 
 { make_icon_label(_("Floating scope"), utilities_system_monitor_icon), 'd', (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(WEFAX_IMAGE_MLABEL, image_icon), 'w', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
-
 { make_icon_label(_("Signal browser")), 's', (Fl_Callback*)cb_mnuViewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-
 { make_icon_label(COUNTRIES_MLABEL), 'o', (Fl_Callback*)cb_mnuShowCountries, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 
 { make_icon_label(_("Controls")), 0, 0, 0, FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
@@ -3988,7 +4160,6 @@ void create_fl_digi_main_primary() {
 			macroFrame2->resizable(btngroup2);
 		macroFrame2->end();
 		Y += Hmacros;
-
 		int Htext = progStatus.mainH - Hwfall - Hmenu - Hstatus - Hmacros*NUMKEYROWS - Hqsoframe - 4;
 		int Hrcvtxt = (Htext) / 2;
 		int Hxmttxt = (Htext - (Hrcvtxt));
@@ -4120,8 +4291,8 @@ void create_fl_digi_main_primary() {
 
 		Fl::add_handler(default_handler);
 
-		macroFrame = new Fl_Group(0, Y, progStatus.mainW, Hmacros);
-			macroFrame->box(FL_ENGRAVED_BOX);
+		macroFrame1 = new Fl_Group(0, Y, progStatus.mainW, Hmacros);
+			macroFrame1->box(FL_ENGRAVED_BOX);
 			Fl_Group *btngroup1 = new Fl_Group(0, Y, progStatus.mainW - Hmacros + 4, Hmacros);
 			Wmacrobtn = (btngroup1->w() - 4) / NUMMACKEYS;
 			Hmacrobtn = (btngroup1->h() - 4);
@@ -4145,8 +4316,8 @@ void create_fl_digi_main_primary() {
 			btnAltMacros1 = new Fl_Button(progStatus.mainW - Hmacrobtn - 2, ypos, Hmacrobtn, Hmacrobtn, "1");
 			btnAltMacros1->callback(altmacro_cb, 0);
 			btnAltMacros1->tooltip(_("Primary macro set"));
-			macroFrame2->resizable(btngroup1);
-		macroFrame->end();
+			macroFrame1->resizable(btngroup1);
+		macroFrame1->end();
 		Y += Hmacros;
 
 		wfpack = new Fl_Pack(0, Y, progStatus.mainW, Hwfall);
@@ -4633,6 +4804,7 @@ void altTabs()
 	tabsUI->remove(tabContest);
 	tabsUI->remove(tabWF_UI);
 	tabsUI->remove(tabRxText);
+	tabsUI->remove(tabMBars);
 	tabsModems->remove(tabFeld);
 }
 

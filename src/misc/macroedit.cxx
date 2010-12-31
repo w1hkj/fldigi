@@ -46,6 +46,7 @@
 #include "main.h"
 #include "gettext.h"
 #include "pixmaps.h"
+#include "configuration.h"
 
 using namespace std;
 
@@ -234,7 +235,7 @@ void cbMacroEditOK(Fl_Widget *w, void *)
 		macros.text[iMacro] = macrotext->value();
 		macros.name[iMacro] = labeltext->value();
 
-		if (progStatus.two_macro_rows) {
+		if (progdefaults.mbar2_pos) {
 			if (iMacro < NUMMACKEYS) {
 				btnMacro[iMacro % NUMMACKEYS]->label( macros.name[iMacro].c_str() );
 				btnMacro[iMacro % NUMMACKEYS]->redraw_label();
