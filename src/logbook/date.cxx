@@ -267,6 +267,11 @@ char *Date::szDate (int fmt)
       szMonth[3] = 0; 
       snprintf (temp, sizeof(temp), "%s %2d, %4d", szMonth, day, year);
       break;
+    case 5 :
+      strcpy (szMonth, month_name [month - 1]);
+      szMonth[3] = 0; 
+      snprintf (temp, sizeof(temp), "%02d %s %4d", day, szMonth, year);
+      break;
     case 0 :
     default :
       snprintf (temp, sizeof(temp), "%02d/%02d/%04d",
