@@ -3432,6 +3432,7 @@ void showMacroSet() {
 		Macroset.append(" Loaded =====>>>\n");
 		ReceiveText->add(Macroset.c_str());
 	}
+	set_macroLabels();
 }
 
 void setwfrange() {

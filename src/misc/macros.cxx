@@ -1238,11 +1238,6 @@ int MACROTEXT::loadMacros(const string& filename)
 				break;
 			if (convert && mNumber > 9) mNumber += 2;
             name[mNumber] = mLine.substr(idx+1);
-			if (mNumber < 12) {
-				FL_LOCK_D();
-				btnMacro[mNumber]->label( (name[mNumber]).c_str());
-				FL_UNLOCK_D();
-			}
 			continue;
 		}
 		while ((crlf = mLine.find("\\n")) != string::npos) {
@@ -1254,12 +1249,6 @@ int MACROTEXT::loadMacros(const string& filename)
 	mFile.close();
 }
 
-	for (int row = 0; row < NUMKEYROWS; row++) {
-		for (int i = 0; i < NUMMACKEYS; i++) {
-			btnMacro[row * NUMMACKEYS + i]->label(macros.name[(NUMKEYROWS - row - 1)*NUMMACKEYS + i].c_str());
-			btnMacro[row * NUMMACKEYS + i]->redraw_label();
-		}
-	}
 	return 0;
 }
 
