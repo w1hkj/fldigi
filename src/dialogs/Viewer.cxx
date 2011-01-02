@@ -77,7 +77,7 @@ void initViewer()
 		mainViewer->setfont(progdefaults.ViewerFontnbr, progdefaults.ViewerFontsize);
 		mainViewer->clear();
 	}
-	if (dlgViewer) {
+	if (brwsViewer) {
 		brwsViewer->usb = usb;
 		brwsViewer->rfc = rfc;
 		sldrViewerSquelch->value(progdefaults.VIEWERsquelch);
@@ -86,6 +86,8 @@ void initViewer()
 			pskBrowser::cheight * progdefaults.VIEWERchannels + 4);
 		brwsViewer->clear();
 	}
+	if (pskviewer) pskviewer->clear();
+	if (rttyviewer) rttyviewer->clear();
 }
 
 void viewaddchr(int ch, int freq, char c, int md)
@@ -111,12 +113,12 @@ void viewaddchr(int ch, int freq, char c, int md)
 		spot_recv(c, ch, freq, md);
 }
 
-void viewclearchannel(int ch)
+void viewclearchannel(int ch) // 0 < ch < channels - 1
 {
 	if (mainViewer)
-		mainViewer->clearch(ch + 1, NULLFREQ);
+		mainViewer->clearch(ch, NULLFREQ);
 	if (dlgViewer)
-		brwsViewer->clearch(ch + 1, NULLFREQ);
+		brwsViewer->clearch(ch, NULLFREQ);
 }
 
 void viewerswap(int i, int j)
@@ -174,17 +176,20 @@ static void cb_brwsViewer(Fl_Hold_Browser*, void*) {
 			active_modem->set_sigsearch(SIGSEARCH);
 			if (mainViewer)
 				mainViewer->select(sel);
-		}
+		} else
+			brwsViewer->deselect();
 		break;
 	case FL_MIDDLE_MOUSE: // copy from modem
 //		set_freq(sel, active_modem->get_freq());
 		break;
 	case FL_RIGHT_MOUSE: // reset
-		if (pskviewer) pskviewer->clearch(sel-1);
-		if (rttyviewer) rttyviewer->clearch(sel-1);
+		{
+		int ch = progdefaults.VIEWERascend ? progdefaults.VIEWERchannels - sel : sel - 1;
+		if (pskviewer) pskviewer->clearch(ch);
+		if (rttyviewer) rttyviewer->clearch(ch);
 		brwsViewer->deselect();
-		if (mainViewer)
-			mainViewer->deselect();
+		if (mainViewer) mainViewer->deselect();
+		}
 	default:
 		break;
 	}
@@ -281,10 +286,13 @@ void viewer_paste_freq(int freq)
 			int ftest = pskviewer->get_freq(i);
 			if (ftest == NULLFREQ) continue;
 			if (fabs(ftest - freq) <= 50) {
+				if (progdefaults.VIEWERascend)
+					i = (progdefaults.VIEWERchannels - i);
+				else i++;
 				if (mainViewer)
-					mainViewer->select(i+1);
-				if (dlgViewer)
-					brwsViewer->select(i+1);
+					mainViewer->select(i);
+				if (brwsViewer)
+					brwsViewer->select(i);
 				return;
 			}
 		}
@@ -294,10 +302,13 @@ void viewer_paste_freq(int freq)
 			int ftest = rttyviewer->get_freq(i);
 			if (ftest == NULLFREQ) continue;
 			if (fabs(ftest - freq) <= 50) {
+				if (progdefaults.VIEWERascend)
+					i = (progdefaults.VIEWERchannels - i);
+				else i++;
 				if (mainViewer)
-					mainViewer->select(i+1);
-				if (dlgViewer)
-					brwsViewer->select(i+1);
+					mainViewer->select(i);
+				if (brwsViewer)
+					brwsViewer->select(i);
 				return;
 			}
 		}

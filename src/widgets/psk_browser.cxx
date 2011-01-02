@@ -74,7 +74,6 @@ pskBrowser::pskBrowser(int x, int y, int w, int h, const char *l)
 		bline = freqformat(i, NULLFREQ);
 		if ( i < progdefaults.VIEWERchannels) add(bline.c_str());
 	}
-	szLine[0] = 0;
 	nchars = (w - cols[0] - (sbarwidth + 2*BWSR_BORDER)) / cwidth;
 	nchars = nchars < 1 ? 1 : nchars;
 }
@@ -93,37 +92,44 @@ void pskBrowser::evalcwidth()
 	columns(labelwidth[progdefaults.VIEWERlabeltype]);
 }
 
-string pskBrowser::freqformat(int i, int freq)
+string pskBrowser::freqformat(int i, int freq) // 0 < i < channels
 {
+	string highlight;
+//	if (progdefaults.VIEWERascend)
+//		highlight = bkgnd[(progdefaults.VIEWERchannels - i - 1) % 2];
+//	else
+		highlight = bkgnd[i % 2];
+
+	fline.clear();
+
 	if (progdefaults.VIEWERlabeltype == VIEWER_LABEL_OFF) {
-		fline.clear();
-		fline.append(" \t");
-		fline += bkgnd[i % 2];
+		fline.append(" \t").append(highlight);
 		return fline;
 	}
-	fline.clear();
+
 	bwsrfreq[i] = freq;
-	if (freq == 1e6) strcpy(szLine, " ");
-	else
-		switch (progdefaults.VIEWERlabeltype) {
+
+	switch (progdefaults.VIEWERlabeltype) {
 		case VIEWER_LABEL_AF:
-			snprintf(szLine, sizeof(szLine), "% 5d", freq);
+			if (freq == NULLFREQ) strcpy(szLine, " ");
+			else snprintf(szLine, sizeof(szLine), "% 5d", freq);
 			break;
 		case VIEWER_LABEL_RF:
-			snprintf(szLine, sizeof(szLine), "%9.2f", (rfc + (usb ? freq : -freq)) / 1000.0f);
+			if (freq == NULLFREQ) strcpy(szLine, " ");
+			else snprintf(szLine, sizeof(szLine), "%9.2f", (rfc + (usb ? freq : -freq)) / 1000.0f);
 			break;
 		case VIEWER_LABEL_CH:
-			snprintf(szLine, sizeof(szLine), "%3d", i + 1);//progdefaults.VIEWERchannels - i);
+			snprintf(szLine, sizeof(szLine), "%3d", i + 1);
 			break;
 		default:
 			break;
-		}
+	}
 
 	fline += bkselect;
 	fline += white;
 	fline += szLine;
   	fline += '\t';
-	fline += bkgnd[i % 2];
+  	fline += highlight;
 
 	return fline;
 }
@@ -155,22 +161,22 @@ void pskBrowser::resize(int x, int y, int w, int h)
 	size_t nuchars = (w - cols[0] - (sbarwidth + 2 * BWSR_BORDER)) / cwidth;
 	nuchars = nuchars < 1 ? 1 : nuchars; 
 	string bline;
-	if (nuchars < nchars) {
-		Fl_Hold_Browser::clear();
-		for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
-			size_t len = bwsrline[i].length();
-			if (len > nuchars)
-				bwsrline[i] = bwsrline[i].substr(len - nuchars);
-			bline = freqformat(i, bwsrfreq[i]);
-			if (seek_re) {
-				if (seek_re->match(bwsrline[i].c_str(), REG_NOTBOL | REG_NOTEOL))
-					bline.append(dkred);
-			} else if (!progdefaults.myCall.empty() &&
-					strcasestr(bwsrline[i].c_str(), progdefaults.myCall.c_str()))
-				bline.append(dkgreen);
-			bline.append("@.").append(bwsrline[i]);
-			Fl_Hold_Browser::add(bline.c_str());
-		}
+	Fl_Hold_Browser::clear();
+	for (int i = 0, j = 0; i < progdefaults.VIEWERchannels; i++) {
+		if (progdefaults.VIEWERascend) j = progdefaults.VIEWERchannels - 1 - i;
+		else j = i;
+		size_t len = bwsrline[j].length();
+		if (len > nuchars)
+			bwsrline[j] = bwsrline[j].substr(len - nuchars);
+		bline = freqformat(j, bwsrfreq[j]);
+		if (seek_re) {
+			if (seek_re->match(bwsrline[j].c_str(), REG_NOTBOL | REG_NOTEOL))
+				bline.append(dkred);
+		} else if (!progdefaults.myCall.empty() &&
+				strcasestr(bwsrline[j].c_str(), progdefaults.myCall.c_str()))
+			bline.append(dkgreen);
+		bline.append("@.").append(bwsrline[j]);
+		Fl_Hold_Browser::add(bline.c_str());
 	}
 	nchars = nuchars;
 	evalcwidth();
@@ -220,16 +226,18 @@ void pskBrowser::makecolors()
 	bkgnd[1] = tempstr;
 }
 
-void pskBrowser::addchr(int ch, int freq, char c, int md)
+void pskBrowser::addchr(int ch, int freq, char c, int md) // 0 < ch < channels
 {
 	static string nuline;
 	string bline;
 	size_t chars = (w() - cols[0] - (sbarwidth + 2 * BWSR_BORDER)) / cwidth;
 	chars = chars < 1 ? 1 : chars; 
 
-	int index = ch;//progdefaults.VIEWERchannels - 1 - ch;
-	if (index < 0 || index > (MAXCHANNELS - 1))//index >= MAXCHANNELS)
+	int index = ch;
+
+	if (index < 0 || index >= MAXCHANNELS)
 		return;
+
 	bwsrfreq[index] = freq;
 	if (c >= ' ' && c <= '~') {
 		if (progdefaults.VIEWERmarquee) {
@@ -249,38 +257,55 @@ void pskBrowser::addchr(int ch, int freq, char c, int md)
 		 strcasestr(bwsrline[index].c_str(), progdefaults.myCall.c_str()))
 		nuline.append(dkgreen);
 	nuline.append("@.").append(bwsrline[index]);
-	text(1 + index, nuline.c_str());
+
+	if (progdefaults.VIEWERascend)
+		text(progdefaults.VIEWERchannels - index, nuline.c_str());
+	else
+		text(index + 1, nuline.c_str());
 	redraw();
 }
 
-void pskBrowser::set_freq(int i, int freq)
+void pskBrowser::set_freq(int i, int freq) // 0 < i < channels
 {
-	string new_line;
+	string new_line = "";
 
-	bwsrfreq[i-1] = freq;
-	new_line.append(freqformat(i - 1, freq)).append("@.").append(bwsrline[i - 1]);
-	replace(i, new_line.c_str());
+	bwsrfreq[i] = freq;
+	new_line.append(freqformat(i, freq)).append("@.").append(bwsrline[i]);
+	if (progdefaults.VIEWERascend)
+		replace(progdefaults.VIEWERchannels - i, new_line.c_str());
+	else
+		replace(i + 1, new_line.c_str());
 }
 
 void pskBrowser::clear()
 {
 	long freq;
 	Fl_Hold_Browser::clear();
-	for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
-		freq = 1e6;
-		bwsrline[i] = "";
-		bwsrfreq[i] = freq;
-		fline = freqformat(i, freq);
+	for (int i = 0, j = 0; i < progdefaults.VIEWERchannels; i++) {
+		if (progdefaults.VIEWERascend) j = progdefaults.VIEWERchannels - 1 - i;
+		else j = i;
+		freq = NULLFREQ;
+		bwsrline[j].clear();
+		bwsrfreq[j] = freq;
+		fline = freqformat(j, freq);
 		add(fline.c_str());
 	}
-	szLine[0] = 0;
 	deselect();
 	redraw();
 }
 
-void pskBrowser::clearch(int n, int freq)
+void pskBrowser::clearch(int n, int freq) // 0 < n < channels
 {
-	clearline(n-1);
+	bwsrline[n].clear();
 	set_freq(n, freq);
+}
+
+int pskBrowser::freq(int i) { // 1 < i < progdefaults.VIEWERchannels
+	if (progdefaults.VIEWERascend)
+		return (
+			i < 1 ? 0 : 
+			i > progdefaults.VIEWERchannels ? 0 : bwsrfreq[progdefaults.VIEWERchannels - i]); 
+	else
+		return (i < 1 ? 0 : i > MAXCHANNELS ? 0 : bwsrfreq[i - 1]); 
 }
 

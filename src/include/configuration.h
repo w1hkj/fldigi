@@ -1058,6 +1058,9 @@
               "UI tabs color",                                                          \
               FL_BACKGROUND2_COLOR)                                                     \
         /* PSK Viewer */                                                                \
+        ELEM_(bool, VIEWERascend, "VIEWERASCEND",                                       \
+              "Low frequency on bottm of viewer",                                       \
+              true)                                                                     \
         ELEM_(bool, VIEWERmarquee, "VIEWERMARQUEE",                                     \
               "PSK Browser text continuous scrolling",                                  \
               true)                                                                     \

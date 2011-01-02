@@ -3478,14 +3478,21 @@ static void cb_mainViewer(Fl_Hold_Browser*, void*) {
 			active_modem->set_freq(mainViewer->freq(sel));
 			active_modem->set_sigsearch(SIGSEARCH);
 			if (brwsViewer) brwsViewer->select(sel);
-		}
+		} else
+			mainViewer->deselect();
+		break;
+	case FL_MIDDLE_MOUSE: // copy from modem
+//		set_freq(sel, active_modem->get_freq());
 		break;
 	case FL_RIGHT_MOUSE: // reset
-		if (pskviewer) pskviewer->clearch(sel-1);
-		if (rttyviewer) rttyviewer->clearch(sel-1);
+		{
+		int ch = progdefaults.VIEWERascend ? progdefaults.VIEWERchannels - sel : sel - 1;
+		if (pskviewer) pskviewer->clearch(ch);
+		if (rttyviewer) rttyviewer->clearch(ch);
 		mainViewer->deselect();
 		if (brwsViewer) brwsViewer->deselect();
 		break;
+		}
 	default:
 		break;
 	}

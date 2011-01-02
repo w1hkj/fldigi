@@ -103,7 +103,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;}
+        callback {progdefaults.changed = true;} selected
         tooltip {Operator information} xywh {0 25 500 345} when 1
       } {
         Fl_Group {} {
@@ -321,26 +321,17 @@ defined here. Tab and newline are automatically included.} xywh {20 245 340 24} 
             }
           }
           Fl_Group tabBrowser {
-            label Browser
+            label Browser open
             xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {2 59 496 300} box ENGRAVED_FRAME
             } {
-              Fl_Check_Button btnMarquee {
-                label {Continuous scrolling}
-                callback {progdefaults.VIEWERmarquee = o->value();
-progdefaults.changed = true;
-initViewer();}
-                tooltip {ON - Marquee style
-OFF - Clear & restart} xywh {208 105 165 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.VIEWERmarquee);}
-              }
               Fl_Spinner cntChannels {
                 label {Channels, first channel starts at waterfall lower limit}
                 callback {progdefaults.VIEWERchannels = (int)(o->value());
 initViewer();}
-                tooltip {Change \# of psk viewer channels} xywh {9 69 50 24} align 8
+                tooltip {Change \# of psk viewer channels} xywh {18 69 50 24} align 8
                 code0 {o->minimum(5); o->maximum(30); o->step(1);}
                 code1 {o->value(progdefaults.VIEWERchannels);}
                 code2 {o->labelsize(FL_NORMAL_SIZE);}
@@ -351,7 +342,7 @@ initViewer();}
                 callback {progdefaults.VIEWERtimeout = (int)(o->value());
 progdefaults.changed = true;}
                 tooltip {Clear channel text after
-\# seconds of inactivity} xywh {9 107 50 24} align 8 value 10
+\# seconds of inactivity} xywh {18 107 50 24} align 8 value 10
                 code0 {o->minimum(1); o->maximum(180); o->step(1);}
                 code1 {o->value(progdefaults.VIEWERtimeout);}
                 code2 {o->labelsize(FL_NORMAL_SIZE);}
@@ -362,7 +353,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.VIEWERlabeltype = o->value();
 initViewer();
 progdefaults.changed = true;} open
-                tooltip {Appearance of label on each channel} xywh {9 145 150 24} down_box BORDER_BOX align 8
+                tooltip {Appearance of label on each channel} xywh {18 145 150 24} down_box BORDER_BOX align 8
                 code0 {mnuViewerLabel->add("None"); mnuViewerLabel->add("Audio frequency");}
                 code1 {mnuViewerLabel->add("Radio frequency"); mnuViewerLabel->add("Channel number");}
                 code3 {mnuViewerLabel->value(progdefaults.VIEWERlabeltype);}
@@ -375,13 +366,13 @@ font_browser->fontColor(FL_FOREGROUND_COLOR);
 font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
 font_browser->callback(cbViewerFontBrowser);
 font_browser->show();}
-                tooltip {select browser font} xywh {275 145 70 24}
+                tooltip {select browser font} xywh {304 145 70 24}
               }
               Fl_Input txtInpSeek {
                 label {Seek Regular Expression}
                 callback {progStatus.browser_search = o->value();
 seek_re.recompile(o->value() ? o->value() : "[invalid");}
-                tooltip {Search for reg-exp in browser text(s)} xywh {9 195 360 20} align 5 when 1
+                tooltip {Search for reg-exp in browser text(s)} xywh {18 195 360 20} align 5 when 1
                 code0 {o->labelsize(FL_NORMAL_SIZE);}
                 code1 {o->value(progStatus.browser_search.c_str());}
                 class Fl_Input2
@@ -394,10 +385,27 @@ initViewer();}
                 tooltip {Force channel spacing to even 100 Hz increments} xywh {208 131 165 20} down_box DOWN_BOX value 1 hide
                 code0 {o->value(progdefaults.VIEWERfixed);}
               }
+              Fl_Check_Button btnMarquee {
+                label {Continuous scrolling}
+                callback {progdefaults.VIEWERmarquee = o->value();
+progdefaults.changed = true;
+initViewer();}
+                tooltip {ON - Marquee style
+OFF - Clear & restart} xywh {18 234 165 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.VIEWERmarquee);}
+              }
+              Fl_Check_Button btnAscend {
+                label {Lowest freq on bottom of viewer}
+                callback {progdefaults.VIEWERascend = o->value();
+progdefaults.changed = true;
+initViewer();}
+                tooltip {Change positions of low to high channels} xywh {18 271 253 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.VIEWERascend);}
+              }
             }
           }
           Fl_Group tabMBars {
-            label Macros open selected
+            label Macros open
             xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open

@@ -59,7 +59,7 @@ public:
 	void set_freq(int i, int freq);
 	void clearline(int i) { bwsrline[i] = ""; }
 	std::string line(int i) { return (i < 1 ? "" : i > MAXCHANNELS ? "" : bwsrline[i - 1]); }
-	int freq(int i) { return (i < 1 ? 0 : i > MAXCHANNELS ? 0 : bwsrfreq[i - 1]); }
+	int  freq(int i);
 	void clear();
 	void clearch(int n, int freq);
 	void swap(int, int);

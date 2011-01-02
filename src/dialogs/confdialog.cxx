@@ -216,14 +216,6 @@ progdefaults.changed = true;
 
 Fl_Group *tabBrowser=(Fl_Group *)0;
 
-Fl_Check_Button *btnMarquee=(Fl_Check_Button *)0;
-
-static void cb_btnMarquee(Fl_Check_Button* o, void*) {
-  progdefaults.VIEWERmarquee = o->value();
-progdefaults.changed = true;
-initViewer();
-}
-
 Fl_Spinner2 *cntChannels=(Fl_Spinner2 *)0;
 
 static void cb_cntChannels(Fl_Spinner2* o, void*) {
@@ -268,6 +260,22 @@ Fl_Check_Button *btnFixedIntervals=(Fl_Check_Button *)0;
 
 static void cb_btnFixedIntervals(Fl_Check_Button* o, void*) {
   progdefaults.VIEWERfixed = o->value();
+progdefaults.changed = true;
+initViewer();
+}
+
+Fl_Check_Button *btnMarquee=(Fl_Check_Button *)0;
+
+static void cb_btnMarquee(Fl_Check_Button* o, void*) {
+  progdefaults.VIEWERmarquee = o->value();
+progdefaults.changed = true;
+initViewer();
+}
+
+Fl_Check_Button *btnAscend=(Fl_Check_Button *)0;
+
+static void cb_btnAscend(Fl_Check_Button* o, void*) {
+  progdefaults.VIEWERascend = o->value();
 progdefaults.changed = true;
 initViewer();
 }
@@ -9380,13 +9388,7 @@ ab and newline are automatically included."));
             tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(2, 59, 496, 300);
               o->box(FL_ENGRAVED_FRAME);
-              { Fl_Check_Button* o = btnMarquee = new Fl_Check_Button(208, 105, 165, 20, _("Continuous scrolling"));
-                btnMarquee->tooltip(_("ON - Marquee style\nOFF - Clear & restart"));
-                btnMarquee->down_box(FL_DOWN_BOX);
-                btnMarquee->callback((Fl_Callback*)cb_btnMarquee);
-                o->value(progdefaults.VIEWERmarquee);
-              } // Fl_Check_Button* btnMarquee
-              { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(9, 69, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
+              { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(18, 69, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
                 cntChannels->tooltip(_("Change # of psk viewer channels"));
                 cntChannels->box(FL_NO_BOX);
                 cntChannels->color((Fl_Color)FL_BACKGROUND_COLOR);
@@ -9402,7 +9404,7 @@ ab and newline are automatically included."));
                 o->value(progdefaults.VIEWERchannels);
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Spinner2* cntChannels
-              { Fl_Spinner2* o = cntTimeout = new Fl_Spinner2(9, 107, 50, 24, _("Inactivity timeout"));
+              { Fl_Spinner2* o = cntTimeout = new Fl_Spinner2(18, 107, 50, 24, _("Inactivity timeout"));
                 cntTimeout->tooltip(_("Clear channel text after\n# seconds of inactivity"));
                 cntTimeout->box(FL_NO_BOX);
                 cntTimeout->color((Fl_Color)FL_BACKGROUND_COLOR);
@@ -9419,7 +9421,7 @@ ab and newline are automatically included."));
                 o->value(progdefaults.VIEWERtimeout);
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Spinner2* cntTimeout
-              { mnuViewerLabel = new Fl_Choice(9, 145, 150, 24, _("Channel label"));
+              { mnuViewerLabel = new Fl_Choice(18, 145, 150, 24, _("Channel label"));
                 mnuViewerLabel->tooltip(_("Appearance of label on each channel"));
                 mnuViewerLabel->down_box(FL_BORDER_BOX);
                 mnuViewerLabel->callback((Fl_Callback*)cb_mnuViewerLabel);
@@ -9428,11 +9430,11 @@ ab and newline are automatically included."));
                 mnuViewerLabel->add("Radio frequency"); mnuViewerLabel->add("Channel number");
                 mnuViewerLabel->value(progdefaults.VIEWERlabeltype);
               } // Fl_Choice* mnuViewerLabel
-              { btnViewerFont = new Fl_Button(275, 145, 70, 24, _("Font..."));
+              { btnViewerFont = new Fl_Button(304, 145, 70, 24, _("Font..."));
                 btnViewerFont->tooltip(_("select browser font"));
                 btnViewerFont->callback((Fl_Callback*)cb_btnViewerFont);
               } // Fl_Button* btnViewerFont
-              { Fl_Input2* o = txtInpSeek = new Fl_Input2(9, 195, 360, 20, _("Seek Regular Expression"));
+              { Fl_Input2* o = txtInpSeek = new Fl_Input2(18, 195, 360, 20, _("Seek Regular Expression"));
                 txtInpSeek->tooltip(_("Search for reg-exp in browser text(s)"));
                 txtInpSeek->box(FL_DOWN_BOX);
                 txtInpSeek->color((Fl_Color)FL_BACKGROUND2_COLOR);
@@ -9455,6 +9457,18 @@ ab and newline are automatically included."));
                 btnFixedIntervals->hide();
                 o->value(progdefaults.VIEWERfixed);
               } // Fl_Check_Button* btnFixedIntervals
+              { Fl_Check_Button* o = btnMarquee = new Fl_Check_Button(18, 234, 165, 20, _("Continuous scrolling"));
+                btnMarquee->tooltip(_("ON - Marquee style\nOFF - Clear & restart"));
+                btnMarquee->down_box(FL_DOWN_BOX);
+                btnMarquee->callback((Fl_Callback*)cb_btnMarquee);
+                o->value(progdefaults.VIEWERmarquee);
+              } // Fl_Check_Button* btnMarquee
+              { Fl_Check_Button* o = btnAscend = new Fl_Check_Button(18, 271, 253, 20, _("Lowest freq on bottom of viewer"));
+                btnAscend->tooltip(_("Change positions of low to high channels"));
+                btnAscend->down_box(FL_DOWN_BOX);
+                btnAscend->callback((Fl_Callback*)cb_btnAscend);
+                o->value(progdefaults.VIEWERascend);
+              } // Fl_Check_Button* btnAscend
               o->end();
             } // Fl_Group* o
             tabBrowser->end();
