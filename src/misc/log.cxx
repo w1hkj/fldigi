@@ -36,6 +36,8 @@
 #include <cstring>
 
 #include "log.h"
+#include "trx.h"
+#include "fl_digi.h"
 
 using namespace std;
 
@@ -71,7 +73,13 @@ void cLogfile::log_to_file(log_t type, const string& s)
 			time(&t);
 			gmtime_r(&t, &tm);
 			strftime(timestr, sizeof(timestr), "%Y-%m-%d %H:%MZ", &tm);
-			fprintf(logfile, "%s (%s): ", lognames[type], timestr);
+			char freq[20];
+			snprintf(freq, sizeof(freq), "%lld", wf->rfcarrier() + (wf->USB()
+										? active_modem->get_freq()
+										: -active_modem->get_freq()));
+			const char *logmode = mode_info[active_modem->get_mode()].adif_name;
+
+			fprintf(logfile, "%s %s : %s (%s): ", lognames[type], freq, logmode, timestr);
 		}
 		for (size_t i = 0; i < s.length(); i++)
 			if (s[i] == '\n' || s[i] >= ' ') fprintf(logfile, "%c", s[i]);
