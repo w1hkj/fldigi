@@ -1,8 +1,17 @@
-2010-12-30  David Freese  <w1hkj@w1hkj.com>
+2011-01-02  Pierfrancesco Caci  <ik5pvx@gmail.com>
 
-	f51f2b6: RTTY visible timeout
-	6975bd1: Browser start frequency
-	724fcb7: Macro Bar Configure
+	4c318ce: RX-TX log file
+
+2011-01-02  David Freese  <w1hkj@w1hkj.com>
+
+	98b4cb0: PSK detector mod
+	0dd1249: Browser Channel Order
+	c33a85d: Tile_Check fix
+	30d8c58: IPC Date report
+	03390bb: Load Macros
+	3b967fd: RTTY visible timeout
+	bce4760: Browser start frequency
+	8e76296: Macro Bar Configure
 	0c66bd7: RTTY adjacenies
 	3b55c69: PSK AFC
 	0c5e8a3: PSK Browser-WF data
