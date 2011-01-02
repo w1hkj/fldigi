@@ -1,8 +1,9 @@
 // ----------------------------------------------------------------------------
 // Fl_Tile_Check.cxx
 //
-// Copyright (C) 2007-2009
+// Copyright (C) 2007-2011
 //		Stelios Bounanos, M0GLD
+//		Dave Freese, W1HKJ
 //
 // This file is part of fldigi.
 //
@@ -36,7 +37,6 @@
 
 void Tile_::position(int oix, int oiy, int newx, int newy) {
 	Fl_Widget* const* a = array();
-//	Fl_Widget *o;
 	short* p = sizes();
 	p += 8; // skip group & resizable's saved size
 	for (int i=children(); i--; p += 4) {
@@ -67,7 +67,6 @@ void Tile_::newx( int newx )
 {
 	Fl_Widget* const* a = array();
 	short* p = sizes();
-//	Fl_Widget *o;// = *a;
 	int gX = x(), gW = w();
 	p += 8; // skip group & resizable's saved size
 
@@ -76,7 +75,6 @@ void Tile_::newx( int newx )
 		if (o == resizable())
 			continue;
 		int X = o->x();
-//		int R = X + o->w();
 		int Y = o->y();
 		int H = o->h();
 
@@ -96,8 +94,6 @@ void Tile_::newx( int newx )
 
 // move the lower-right corner (sort of):
 void Tile_::resize(int X,int Y,int W,int H) {
-	//Fl_Group::resize(X, Y, W, H);
-	//return;
 	// remember how much to move the child widgets:
 	int dx = X-x();
 	int dy = Y-y();

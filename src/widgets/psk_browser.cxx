@@ -151,6 +151,7 @@ void pskBrowser::swap(int i, int j)
 
 void pskBrowser::resize(int x, int y, int w, int h)
 {
+	if (w) {
 	size_t nuchars = (w - cols[0] - (sbarwidth + 2 * BWSR_BORDER)) / cwidth;
 	nuchars = nuchars < 1 ? 1 : nuchars; 
 	string bline;
@@ -173,6 +174,7 @@ void pskBrowser::resize(int x, int y, int w, int h)
 	}
 	nchars = nuchars;
 	evalcwidth();
+	}
 	Fl_Hold_Browser::resize(x,y,w,h);
 }
 
