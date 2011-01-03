@@ -95,10 +95,8 @@ void pskBrowser::evalcwidth()
 string pskBrowser::freqformat(int i, int freq) // 0 < i < channels
 {
 	string highlight;
-//	if (progdefaults.VIEWERascend)
-//		highlight = bkgnd[(progdefaults.VIEWERchannels - i - 1) % 2];
-//	else
-		highlight = bkgnd[i % 2];
+
+	highlight = bkgnd[i % 2];
 
 	fline.clear();
 
@@ -111,19 +109,19 @@ string pskBrowser::freqformat(int i, int freq) // 0 < i < channels
 
 	switch (progdefaults.VIEWERlabeltype) {
 		case VIEWER_LABEL_AF:
-			if (freq == NULLFREQ) //strcpy(szLine, " ");
-				snprintf(szLine, sizeof(szLine), "ch %2d", i + 1);
+			if (freq == NULLFREQ)
+				strcpy(szLine, " ");
 			else
 				snprintf(szLine, sizeof(szLine), "% 5d", freq);
 			break;
 		case VIEWER_LABEL_RF:
-			if (freq == NULLFREQ) //strcpy(szLine, " ");
-				snprintf(szLine, sizeof(szLine), "ch %2d", i + 1);
+			if (freq == NULLFREQ)
+				strcpy(szLine, " ");
 			else
-				snprintf(szLine, sizeof(szLine), "%9.2f", (rfc + (usb ? freq : -freq)) / 1000.0f);
+				snprintf(szLine, sizeof(szLine), " %9.2f", (rfc + (usb ? freq : -freq)) / 1000.0f);
 			break;
 		case VIEWER_LABEL_CH:
-			snprintf(szLine, sizeof(szLine), "ch %2d", i + 1);
+			snprintf(szLine, sizeof(szLine), " %2d", i + 1);
 			break;
 		default:
 			break;
