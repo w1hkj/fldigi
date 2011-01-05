@@ -79,7 +79,6 @@ void Tile_::newx( int newx )
 		int X = o->x();
 		int Y = o->y();
 		int H = o->h();
-		int W = o->w();
 
 		if (newx == gX) {
 			if (X == gX) {
