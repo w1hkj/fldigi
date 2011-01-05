@@ -226,6 +226,8 @@ void viewpsk::findsignals()
 	if (!evalpsk) return;
 	double level = progdefaults.VIEWERsquelch;
 	int nomfreq = 0;
+	int lfreq = 0;
+	int hfreq = 0;
 	int ftest;
 	int f1, f2;
 
@@ -233,6 +235,8 @@ void viewpsk::findsignals()
 
 	for (int i = 0; i < nchannels; i++) {
 		nomfreq = lowfreq + 100 * i;
+		lfreq = nomfreq - 20;
+		hfreq = nomfreq + 120; // suppress detection outside of this range
 		if (!channel[i].dcd && !channel[i].timeout) {
 			if (!channel[i].acquire) {
 				channel[i].frequency = NULLFREQ;
@@ -241,6 +245,8 @@ void viewpsk::findsignals()
 				f2 = f1 + 100;
 				ftest = (f1 + f2) / 2;
 			} else {
+				if (channel[i].frequency < lfreq || channel[i].frequency >= hfreq) 
+					channel[i].frequency = nomfreq + 50;
 				ftest = channel[i].frequency;
 				f1 = ftest - bandwidth;
 				f2 = ftest + bandwidth;
@@ -250,9 +256,11 @@ void viewpsk::findsignals()
 				}
 			}
 			if (evalpsk->peak(ftest, f1, f2, level)) {
+				if (ftest < lfreq || ftest >= hfreq) goto nexti;
 				f1 = ftest - bandwidth;
 				f2 = ftest + bandwidth;
 				if (evalpsk->peak(ftest, f1, f2, level)) {
+					if (ftest < lfreq || ftest >= hfreq) goto nexti;
 					if (i && 
 						(channel[i-1].dcd || channel[i-1].acquire) && 
 						fabs(channel[i-1].frequency - ftest) < bandwidth) goto nexti;
@@ -263,7 +271,7 @@ void viewpsk::findsignals()
 					channel[i].freqerr = 0.0;
 					channel[i].metric = 0.0;
 					if (!channel[i].acquire)
-						channel[i].acquire = dcdbits;
+						channel[i].acquire = 2 * 8000 / 512;
 				}
 			}
 		}
