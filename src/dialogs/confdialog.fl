@@ -194,7 +194,7 @@ progdefaults.changed = true;}
             xywh {0 50 500 320}
           } {
             Fl_Group {} {open
-              xywh {1 55 497 313} box ENGRAVED_FRAME
+              xywh {2 55 496 59} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnShowTooltips {
                 label {Show tooltips}
@@ -235,34 +235,34 @@ progdefaults.changed = true;}
             }
             Fl_Group {} {
               label {QSO logging} open
-              xywh {2 114 496 110} box ENGRAVED_FRAME align 21
+              xywh {2 114 496 150} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnNagMe {
                 label {Prompt to save log}
                 callback {progdefaults.NagMe=o->value();
 progdefaults.changed = true;}
-                tooltip {Bug me about saving log entries} xywh {20 136 236 20} down_box DOWN_BOX
+                tooltip {Bug me about saving log entries} xywh {19 136 236 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.NagMe);}
               }
               Fl_Check_Button btnClearOnSave {
                 label {Clear on save}
                 callback {progdefaults.ClearOnSave=o->value();
 progdefaults.changed = true;}
-                tooltip {Clear log entries after saving or using macro <LOG>} xywh {20 156 236 20} down_box DOWN_BOX
+                tooltip {Clear log entries after saving or using macro <LOG>} xywh {19 159 236 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.ClearOnSave);}
               }
               Fl_Check_Button btnAutoFillQSO {
                 label {Auto-fill Country and Azimuth}
                 callback {progdefaults.autofill_qso_fields = o->value();
 progdefaults.changed = true;}
-                tooltip {Fill in Country / Azimuth using cty.dat information} xywh {20 177 236 20} down_box DOWN_BOX
+                tooltip {Fill in Country / Azimuth using cty.dat information} xywh {19 182 236 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.autofill_qso_fields);}
               }
               Fl_Check_Button btnCallUpperCase {
                 label {Convert callsign to upper case}
                 callback {progdefaults.calluppercase = o->value();
 progdefaults.changed = true;}
-                tooltip {Force callsign field to UPPERCASE} xywh {20 198 236 20} down_box DOWN_BOX
+                tooltip {Force callsign field to UPPERCASE} xywh {19 205 236 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.calluppercase);}
               }
               Fl_Check_Button btnDateTimeSort {
@@ -270,42 +270,49 @@ progdefaults.changed = true;}
                 callback {progdefaults.sort_date_time_off = o->value();
 progdefaults.changed = true;
 reload_browser();}
-                tooltip {Sort by date/time OFF - effects all ADIF/Cabrillo reports} xywh {273 136 190 20} down_box DOWN_BOX
+                tooltip {Sort by date/time OFF - effects all ADIF/Cabrillo reports} xywh {272 136 190 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.sort_date_time_off);}
               }
               Fl_Check_Button btndate_time_force {
                 label {Date time ON == OFF}
                 callback {progdefaults.force_date_time = o->value();
 progdefaults.changed = true;}
-                tooltip {Force date/time ON == date/time OFF} xywh {273 156 190 20} down_box DOWN_BOX
+                tooltip {Force date/time ON == date/time OFF} xywh {272 159 190 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.force_date_time);}
               }
               Fl_Input inpMyPower {
                 label {Transmit Power}
                 callback {progdefaults.mytxpower = o->value();
 progdefaults.changed = true;}
-                tooltip {Tx power used for logbook entries} xywh {273 179 50 24} align 8
+                tooltip {Tx power used for logbook entries} xywh {272 182 50 24} align 8
                 code0 {o->value(progdefaults.mytxpower.c_str());}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
               }
+              Fl_Check_Button btnRSTdefault {
+                label {Default RST out to 599}
+                callback {progdefaults.RSTdefault = o->value();
+progdefaults.changed = true;}
+                tooltip {Force callsign field to UPPERCASE} xywh {19 228 236 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.RSTdefault);}
+              }
             }
             Fl_Group {} {
               label {Text Capture} open
-              xywh {2 224 496 100} box ENGRAVED_FRAME align 21
+              xywh {2 265 496 100} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnRXClicks {
                 label {Double-click on RX text enters QSO data}
                 callback {progdefaults.rxtext_clicks_qso_data = o->value();
 progdefaults.changed = true;}
-                tooltip {Enable if you cannot use the middle mouse button} xywh {20 277 313 20} down_box DOWN_BOX
+                tooltip {Enable if you cannot use the middle mouse button} xywh {19 318 313 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.rxtext_clicks_qso_data);}
               }
               Fl_Check_Button btnRXTooltips {
                 label {Show callsign tooltips in received text}
                 callback {progdefaults.rxtext_tooltips = o->value();
 progdefaults.changed = true;}
-                tooltip {Popup info after a 2 second hover on a callsign} xywh {20 299 313 20} down_box DOWN_BOX
+                tooltip {Popup info after a 2 second hover on a callsign} xywh {19 340 313 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.rxtext_tooltips);}
               }
               Fl_Input inpNonword {
@@ -313,7 +320,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.nonwordchars = o->value();
 progdefaults.changed = true;}
                 tooltip {RX text QSO data entry is bounded by the non-word characters
-defined here. Tab and newline are automatically included.} xywh {20 245 340 24} align 8 textfont 4
+defined here. Tab and newline are automatically included.} xywh {19 286 340 24} align 8 textfont 4
                 code0 {o->value(progdefaults.nonwordchars.c_str());}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
@@ -1845,6 +1852,19 @@ progdefaults.changed = true;}
                     code0 {o->value(progdefaults.StatusTimeout);}
                     code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
+                  }
+                }
+                Fl_Group {} {
+                  label {Multi-Channel Signal Processing
+Disable on very slow CPUs or Browser not used} open
+                  xywh {6 250 490 98} box ENGRAVED_FRAME align 17
+                } {
+                  Fl_Check_Button btnEnablePSKbrowsing {
+                    label {Multi-channel detector}
+                    callback {progdefaults.pskbrowser_on = o->value();
+progdefaults.changed = true;}
+                    xywh {67 299 70 15} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.pskbrowser_on);}
                   }
                 }
               }

@@ -191,6 +191,9 @@
         ELEM_(int, PSK_filter, "PSKFILTER",                                             \
               "Not configurable; must always be 0",                                     \
               0)                                                                        \
+        ELEM_(bool, pskbrowser_on, "PSKBROWSER_ON",                                     \
+              "Enable psk multi-channel detector - disable for very slow cpus",         \
+              true)                                                                     \
         /* PSK / PSKmail interface */                                                   \
         ELEM_(int, SearchRange, "PSKSEARCHRANGE",                                       \
               "PSK signal acquisition search range (Hz)",                               \
@@ -594,6 +597,9 @@
         ELEM_(bool, calluppercase, "CALLUPPERCASE",                                     \
               "Convert callsign field to upper case",                                   \
               true)                                                                     \
+        ELEM_(bool, RSTdefault, "RSTDEFAULT",                                           \
+              "Default outgoing RST to 599",                                            \
+              false)                                                                    \
         ELEM_(bool, autoextract, "AUTOEXTRACT",                                         \
               "Enable detection and extraction of \"wrapped\" text",                    \
               true)                                                                     \
@@ -1057,7 +1063,7 @@
         ELEM_(Fl_Color, TabsColor, "TABSCOLOR",                                         \
               "UI tabs color",                                                          \
               FL_BACKGROUND2_COLOR)                                                     \
-        /* PSK Viewer */                                                                \
+        /* Signal Viewer */                                                             \
         ELEM_(bool, VIEWERascend, "VIEWERASCEND",                                       \
               "Low frequency on bottm of viewer",                                       \
               true)                                                                     \

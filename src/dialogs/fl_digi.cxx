@@ -1878,10 +1878,11 @@ if (bWF_only) return;
 		inpNotes };
 	for (size_t i = 0; i < sizeof(in)/sizeof(*in); i++)
 		in[i]->value("");
-	if (progdefaults.fixed599) {
+	if (progdefaults.fixed599 && progStatus.contest) {
 		inpRstIn1->value("599"); inpRstIn2->value("599");
 		inpRstOut1->value("599"); inpRstOut2->value("599");
-	}
+	} else if (progdefaults.RSTdefault)
+		inpRstOut1->value("599");
 	inpCall1->color(FL_BACKGROUND2_COLOR);
 	inpCall2->color(FL_BACKGROUND2_COLOR);
 	inpCall3->color(FL_BACKGROUND2_COLOR);
@@ -1891,7 +1892,8 @@ if (bWF_only) return;
 	inpCall3->redraw();
 	inpCall4->redraw();
 	updateOutSerNo();
-	inpSearchString->value ("");
+	if (inpSearchString)
+		inpSearchString->value ("");
 	old_call.clear();
 	new_call.clear();
 	qso_time.clear();
@@ -4507,6 +4509,8 @@ void create_fl_digi_main_primary() {
 
 	UI_select();
 	wf->UI_select(progStatus.WF_UI);
+
+	clearQSO(); 
 
 	createConfig();
 	if (withnoise)

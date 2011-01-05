@@ -848,7 +848,8 @@ int psk::rx_process(const double *buf, int len)
 	double delta;
 	complex z, z2;
 
-	if (pskviewer && !bHistory) pskviewer->rx_process(buf, len);
+	if (pskviewer && !bHistory && progdefaults.pskbrowser_on)
+		pskviewer->rx_process(buf, len);
 	if (evalpsk) evalpsk->sigdensity();
 
 	delta = TWOPI * frequency / samplerate;

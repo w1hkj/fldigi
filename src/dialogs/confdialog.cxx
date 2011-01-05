@@ -193,6 +193,13 @@ static void cb_inpMyPower(Fl_Input2* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnRSTdefault=(Fl_Check_Button *)0;
+
+static void cb_btnRSTdefault(Fl_Check_Button* o, void*) {
+  progdefaults.RSTdefault = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *btnRXClicks=(Fl_Check_Button *)0;
 
 static void cb_btnRXClicks(Fl_Check_Button* o, void*) {
@@ -7780,6 +7787,13 @@ static void cb_seconds(Fl_Counter2* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnEnablePSKbrowsing=(Fl_Check_Button *)0;
+
+static void cb_btnEnablePSKbrowsing(Fl_Check_Button* o, void*) {
+  progdefaults.pskbrowser_on = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabRTTY=(Fl_Group *)0;
 
 Fl_Choice *selShift=(Fl_Choice *)0;
@@ -9268,7 +9282,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";
         { tabsUI = new Fl_Tabs(0, 25, 502, 346);
           tabsUI->selection_color((Fl_Color)FL_LIGHT1);
           { tabUserInterface = new Fl_Group(0, 50, 500, 320, _("General"));
-            { Fl_Group* o = new Fl_Group(1, 55, 497, 313);
+            { Fl_Group* o = new Fl_Group(2, 55, 496, 59);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(20, 61, 120, 20, _("Show tooltips"));
                 btnShowTooltips->tooltip(_("Enable / disable tooltips"));
@@ -9299,46 +9313,46 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";
               } // Fl_Button* bVisibleModes
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(2, 114, 496, 110, _("QSO logging"));
+            { Fl_Group* o = new Fl_Group(2, 114, 496, 150, _("QSO logging"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(20, 136, 236, 20, _("Prompt to save log"));
+              { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(19, 136, 236, 20, _("Prompt to save log"));
                 btnNagMe->tooltip(_("Bug me about saving log entries"));
                 btnNagMe->down_box(FL_DOWN_BOX);
                 btnNagMe->callback((Fl_Callback*)cb_btnNagMe);
                 o->value(progdefaults.NagMe);
               } // Fl_Check_Button* btnNagMe
-              { Fl_Check_Button* o = btnClearOnSave = new Fl_Check_Button(20, 156, 236, 20, _("Clear on save"));
+              { Fl_Check_Button* o = btnClearOnSave = new Fl_Check_Button(19, 159, 236, 20, _("Clear on save"));
                 btnClearOnSave->tooltip(_("Clear log entries after saving or using macro <LOG>"));
                 btnClearOnSave->down_box(FL_DOWN_BOX);
                 btnClearOnSave->callback((Fl_Callback*)cb_btnClearOnSave);
                 o->value(progdefaults.ClearOnSave);
               } // Fl_Check_Button* btnClearOnSave
-              { Fl_Check_Button* o = btnAutoFillQSO = new Fl_Check_Button(20, 177, 236, 20, _("Auto-fill Country and Azimuth"));
+              { Fl_Check_Button* o = btnAutoFillQSO = new Fl_Check_Button(19, 182, 236, 20, _("Auto-fill Country and Azimuth"));
                 btnAutoFillQSO->tooltip(_("Fill in Country / Azimuth using cty.dat information"));
                 btnAutoFillQSO->down_box(FL_DOWN_BOX);
                 btnAutoFillQSO->callback((Fl_Callback*)cb_btnAutoFillQSO);
                 o->value(progdefaults.autofill_qso_fields);
               } // Fl_Check_Button* btnAutoFillQSO
-              { Fl_Check_Button* o = btnCallUpperCase = new Fl_Check_Button(20, 198, 236, 20, _("Convert callsign to upper case"));
+              { Fl_Check_Button* o = btnCallUpperCase = new Fl_Check_Button(19, 205, 236, 20, _("Convert callsign to upper case"));
                 btnCallUpperCase->tooltip(_("Force callsign field to UPPERCASE"));
                 btnCallUpperCase->down_box(FL_DOWN_BOX);
                 btnCallUpperCase->callback((Fl_Callback*)cb_btnCallUpperCase);
                 o->value(progdefaults.calluppercase);
               } // Fl_Check_Button* btnCallUpperCase
-              { Fl_Check_Button* o = btnDateTimeSort = new Fl_Check_Button(273, 136, 190, 20, _("Sort by Date/Time OFF"));
+              { Fl_Check_Button* o = btnDateTimeSort = new Fl_Check_Button(272, 136, 190, 20, _("Sort by Date/Time OFF"));
                 btnDateTimeSort->tooltip(_("Sort by date/time OFF - effects all ADIF/Cabrillo reports"));
                 btnDateTimeSort->down_box(FL_DOWN_BOX);
                 btnDateTimeSort->callback((Fl_Callback*)cb_btnDateTimeSort);
                 o->value(progdefaults.sort_date_time_off);
               } // Fl_Check_Button* btnDateTimeSort
-              { Fl_Check_Button* o = btndate_time_force = new Fl_Check_Button(273, 156, 190, 20, _("Date time ON == OFF"));
+              { Fl_Check_Button* o = btndate_time_force = new Fl_Check_Button(272, 159, 190, 20, _("Date time ON == OFF"));
                 btndate_time_force->tooltip(_("Force date/time ON == date/time OFF"));
                 btndate_time_force->down_box(FL_DOWN_BOX);
                 btndate_time_force->callback((Fl_Callback*)cb_btndate_time_force);
                 o->value(progdefaults.force_date_time);
               } // Fl_Check_Button* btndate_time_force
-              { Fl_Input2* o = inpMyPower = new Fl_Input2(273, 179, 50, 24, _("Transmit Power"));
+              { Fl_Input2* o = inpMyPower = new Fl_Input2(272, 182, 50, 24, _("Transmit Power"));
                 inpMyPower->tooltip(_("Tx power used for logbook entries"));
                 inpMyPower->box(FL_DOWN_BOX);
                 inpMyPower->color((Fl_Color)FL_BACKGROUND2_COLOR);
@@ -9353,24 +9367,30 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";
                 o->value(progdefaults.mytxpower.c_str());
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Input2* inpMyPower
+              { Fl_Check_Button* o = btnRSTdefault = new Fl_Check_Button(19, 228, 236, 20, _("Default RST out to 599"));
+                btnRSTdefault->tooltip(_("Force callsign field to UPPERCASE"));
+                btnRSTdefault->down_box(FL_DOWN_BOX);
+                btnRSTdefault->callback((Fl_Callback*)cb_btnRSTdefault);
+                o->value(progdefaults.RSTdefault);
+              } // Fl_Check_Button* btnRSTdefault
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(2, 224, 496, 100, _("Text Capture"));
+            { Fl_Group* o = new Fl_Group(2, 265, 496, 100, _("Text Capture"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = btnRXClicks = new Fl_Check_Button(20, 277, 313, 20, _("Double-click on RX text enters QSO data"));
+              { Fl_Check_Button* o = btnRXClicks = new Fl_Check_Button(19, 318, 313, 20, _("Double-click on RX text enters QSO data"));
                 btnRXClicks->tooltip(_("Enable if you cannot use the middle mouse button"));
                 btnRXClicks->down_box(FL_DOWN_BOX);
                 btnRXClicks->callback((Fl_Callback*)cb_btnRXClicks);
                 o->value(progdefaults.rxtext_clicks_qso_data);
               } // Fl_Check_Button* btnRXClicks
-              { Fl_Check_Button* o = btnRXTooltips = new Fl_Check_Button(20, 299, 313, 20, _("Show callsign tooltips in received text"));
+              { Fl_Check_Button* o = btnRXTooltips = new Fl_Check_Button(19, 340, 313, 20, _("Show callsign tooltips in received text"));
                 btnRXTooltips->tooltip(_("Popup info after a 2 second hover on a callsign"));
                 btnRXTooltips->down_box(FL_DOWN_BOX);
                 btnRXTooltips->callback((Fl_Callback*)cb_btnRXTooltips);
                 o->value(progdefaults.rxtext_tooltips);
               } // Fl_Check_Button* btnRXTooltips
-              { Fl_Input2* o = inpNonword = new Fl_Input2(20, 245, 340, 24, _("Word delimiters"));
+              { Fl_Input2* o = inpNonword = new Fl_Input2(19, 286, 340, 24, _("Word delimiters"));
                 inpNonword->tooltip(_("RX text QSO data entry is bounded by the non-word characters\ndefined here. T\
 ab and newline are automatically included."));
                 inpNonword->box(FL_DOWN_BOX);
@@ -10965,6 +10985,17 @@ an merging"));
                 o->value(progdefaults.StatusTimeout);
                 o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* o
+                o->end();
+                } // Fl_Group* o
+                { Fl_Group* o = new Fl_Group(6, 250, 490, 98, _("Multi-Channel Signal Processing\nDisable on very slow CPUs or Browser not use\
+d"));
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(FL_ALIGN_TOP|FL_ALIGN_INSIDE);
+                { Fl_Check_Button* o = btnEnablePSKbrowsing = new Fl_Check_Button(67, 299, 70, 15, _("Multi-channel detector"));
+                btnEnablePSKbrowsing->down_box(FL_DOWN_BOX);
+                btnEnablePSKbrowsing->callback((Fl_Callback*)cb_btnEnablePSKbrowsing);
+                o->value(progdefaults.pskbrowser_on);
+                } // Fl_Check_Button* btnEnablePSKbrowsing
                 o->end();
                 } // Fl_Group* o
                 o->end();
