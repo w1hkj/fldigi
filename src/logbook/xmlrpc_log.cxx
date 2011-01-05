@@ -36,6 +36,7 @@
 
 using namespace XmlRpc;
 
+/*
 XmlRpcClient log_client("localhost", 8421);
 
 bool test_connection(bool info = false)
@@ -215,24 +216,26 @@ bool xml_check_dup()
 	}
 	return false;
 }
+*/
 
 void connect_to_log_server()
 {
-	if (progStatus.xml_logbook) {
-		if (test_connection(true)) {
-			close_logbook();
-			if (dlgLogbook) dlgLogbook->hide();
-			activate_log_menus(false);
-		} else {
-			progStatus.xml_logbook = false;
-			set_server_label(false);
-			activate_log_menus(true);
+//	if (progStatus.xml_logbook) {
+//		if (test_connection(true)) {
+//			close_logbook();
+//			if (dlgLogbook) dlgLogbook->hide();
+//			activate_log_menus(false);
+//		} else {
+//			progStatus.xml_logbook = false;
+//			set_server_label(false);
+//			activate_log_menus(true);
 			start_logbook();
-		}
-	} else {
-		close_logbook();
-		set_server_label(false);
-		activate_log_menus(true);
-		start_logbook();
-	}
+//		}
+//	} else {
+//		close_logbook();
+//		set_server_label(false);
+//		activate_log_menus(true);
+//		start_logbook();
+//	}
 }
+

@@ -168,7 +168,7 @@ status progStatus = {
 
 	"CQ",				// string browser_search;
 	
-	false, // xml_logbook
+//	false, // xml_logbook
 
 	false				// bool bLastStateRead;
 };
@@ -372,7 +372,7 @@ if (!bWF_only) {
 
 	spref.set("browser_search", browser_search.c_str());
 
-	spref.set("xml_logbook", xml_logbook);
+//	spref.set("xml_logbook", xml_logbook);
 }
 
 void status::loadLastState()
@@ -520,7 +520,7 @@ void status::loadLastState()
 	browser_search = defbuffer;
 	free(defbuffer);
 
-	spref.get("xml_logbook", i, xml_logbook); xml_logbook = i;
+//	spref.get("xml_logbook", i, xml_logbook); xml_logbook = i;
 }
 
 void status::initLastState()
@@ -657,6 +657,6 @@ else {
 	ReceiveText->set_word_wrap(rx_word_wrap);
 	TransmitText->set_word_wrap(tx_word_wrap);
 
-	set_server_label(xml_logbook);
+//	set_server_label(xml_logbook);
 
 }

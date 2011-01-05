@@ -358,11 +358,9 @@ int main(int argc, char ** argv)
 	}
 #endif
 
-//	connect_to_log_server();
 	create_logbook_dialogs();
 	connect_to_log_server();
-//	progdefaults.initInterface();
-//	trx_start();
+
 
 // OS X will prevent the main window from being resized if we change its
 // size *after* it has been shown. With some X11 window managers, OTOH,

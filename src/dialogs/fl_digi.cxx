@@ -160,8 +160,11 @@
 #define RIGCONTEST_MLABEL      _("Rig control and contest")
 #define DOCKEDSCOPE_MLABEL     _("Docked scope")
 #define WF_MLABEL              _("Minimal controls")
-#define LOG_CONNECT_SERVER     _("Connect to server")
 #define SHOW_CHANNELS          _("Show channels")
+
+// logbook server interface is commented out pending completion of
+// fllog development
+//#define LOG_CONNECT_SERVER     _("Connect to server")
 
 using namespace std;
 
@@ -1351,6 +1354,8 @@ void cb_logfile(Fl_Widget* w, void*)
     }
 }
 
+/*
+// LOGBOOK server connect
 void cb_log_server(Fl_Widget* w, void*)
 {
 	progStatus.xml_logbook = reinterpret_cast<Fl_Menu_*>(w)->mvalue()->value();
@@ -1363,6 +1368,7 @@ void set_server_label(bool val)
 	if (val) m->set();
 	else m->clear();
 }
+*/
 
 void cb_tiled_group(Fl_Widget* w, void*)
 {
@@ -2958,7 +2964,7 @@ Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 {_("&Logbook"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ LOG_CONNECT_SERVER, 0, cb_log_server, 0, FL_MENU_TOGGLE | FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+//{ LOG_CONNECT_SERVER, 0, cb_log_server, 0, FL_MENU_TOGGLE | FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 { make_icon_label(_("View")), 'l', (Fl_Callback*)cb_mnuShowLogbook, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("New")), 0, (Fl_Callback*)cb_mnuNewLogbook, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Open...")), 0, (Fl_Callback*)cb_mnuOpenLogbook, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
