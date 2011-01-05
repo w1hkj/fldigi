@@ -331,7 +331,7 @@ defined here. Tab and newline are automatically included.} xywh {20 245 340 24} 
                 label {Channels, first channel starts at waterfall lower limit}
                 callback {progdefaults.VIEWERchannels = (int)(o->value());
 initViewer();}
-                tooltip {Change \# of psk viewer channels} xywh {18 69 50 24} align 8
+                tooltip {Change \# of psk viewer channels} xywh {18 69 50 24} align 8 maximum 30 value 30
                 code0 {o->minimum(5); o->maximum(30); o->step(1);}
                 code1 {o->value(progdefaults.VIEWERchannels);}
                 code2 {o->labelsize(FL_NORMAL_SIZE);}
@@ -401,6 +401,13 @@ progdefaults.changed = true;
 initViewer();}
                 tooltip {Change positions of low to high channels} xywh {18 271 253 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.VIEWERascend);}
+              }
+              Fl_Check_Button btnBrowserHistory {
+                label {Play back history when active channel selected}
+                callback {progdefaults.VIEWERhistory = o->value();
+progdefaults.changed = true;}
+                tooltip {Change positions of low to high channels} xywh {18 307 356 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.VIEWERhistory);}
               }
             }
           }

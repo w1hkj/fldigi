@@ -3452,13 +3452,13 @@ static void cb_mainViewer(Fl_Hold_Browser*, void*) {
 	switch (Fl::event_button()) {
 	case FL_LEFT_MOUSE:
 		if (mainViewer->freq(sel) != NULLFREQ) {
-//			if (progdefaults.VIEWERhistory){
-//				ReceiveText->addchr('\n', FTextBase::RECV);
-//				bHistory = true;
-//			} else {
+			if (progdefaults.VIEWERhistory){
+				ReceiveText->addchr('\n', FTextBase::RECV);
+				bHistory = true;
+			} else {
 				ReceiveText->addchr('\n', FTextBase::ALTR);
 				ReceiveText->addstr(mainViewer->line(sel).c_str(), FTextBase::ALTR);
-//			}
+			}
 			active_modem->set_freq(mainViewer->freq(sel));
 			active_modem->set_sigsearch(SIGSEARCH);
 			if (brwsViewer) brwsViewer->select(sel);

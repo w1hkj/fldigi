@@ -280,6 +280,13 @@ progdefaults.changed = true;
 initViewer();
 }
 
+Fl_Check_Button *btnBrowserHistory=(Fl_Check_Button *)0;
+
+static void cb_btnBrowserHistory(Fl_Check_Button* o, void*) {
+  progdefaults.VIEWERhistory = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabMBars=(Fl_Group *)0;
 
 Fl_Check_Button *btnMacroMouseWheel=(Fl_Check_Button *)0;
@@ -9397,6 +9404,8 @@ ab and newline are automatically included."));
                 cntChannels->labelfont(0);
                 cntChannels->labelsize(14);
                 cntChannels->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                cntChannels->maximum(30);
+                cntChannels->value(30);
                 cntChannels->callback((Fl_Callback*)cb_cntChannels);
                 cntChannels->align(FL_ALIGN_RIGHT);
                 cntChannels->when(FL_WHEN_RELEASE);
@@ -9469,6 +9478,12 @@ ab and newline are automatically included."));
                 btnAscend->callback((Fl_Callback*)cb_btnAscend);
                 o->value(progdefaults.VIEWERascend);
               } // Fl_Check_Button* btnAscend
+              { Fl_Check_Button* o = btnBrowserHistory = new Fl_Check_Button(18, 307, 356, 20, _("Play back history when active channel selected"));
+                btnBrowserHistory->tooltip(_("Change positions of low to high channels"));
+                btnBrowserHistory->down_box(FL_DOWN_BOX);
+                btnBrowserHistory->callback((Fl_Callback*)cb_btnBrowserHistory);
+                o->value(progdefaults.VIEWERhistory);
+              } // Fl_Check_Button* btnBrowserHistory
               o->end();
             } // Fl_Group* o
             tabBrowser->end();

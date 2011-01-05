@@ -1062,35 +1062,38 @@
               "Low frequency on bottm of viewer",                                       \
               true)                                                                     \
         ELEM_(bool, VIEWERmarquee, "VIEWERMARQUEE",                                     \
-              "PSK Browser text continuous scrolling",                                  \
+              "Signal Viewer text continuous scrolling",                                \
               true)                                                                     \
         ELEM_(bool, VIEWERsort, "VIEWERSORT",                                           \
-              "PSK Browser sort after channel changes",                                 \
+              "Signal Viewer sort after channel changes",                               \
+              false)                                                                    \
+        ELEM_(bool, VIEWERhistory, "VIEWERHISTORY",                                     \
+              "Signal Viewer playback history on select",                               \
               false)                                                                    \
         ELEM_(bool, VIEWERfixed, "VIEWERfixed",                                         \
-              "PSK Browser data displayed on fixed 100 Hz intervals",                   \
+              "Signal Viewer data displayed on fixed 100 Hz intervals",                 \
               true)                                                                     \
         ELEM_(int, VIEWERlabeltype, "VIEWERSHOWFREQ",                                   \
-              "PSK Browser row label type.  Values are as follows:\n"                   \
-              "  0: Audio frequency; 1: Radio frequency; 2: Channel number.",           \
+              "Signal Viewer label type.  Values are as follows:\n"                     \
+              "  0: None; 1: Audio freq; 2: Radio freq; 2: Channel #.",                 \
               VIEWER_LABEL_RF)                                                          \
         ELEM_(int, VIEWERchannels, "VIEWERCHANNELS",                                    \
-              "PSK Browser channels",                                                   \
-              20)                                                                       \
+              "Number of Signal Viewer Channels",                                       \
+              30)                                                                       \
         ELEM_(double, VIEWERsquelch, "VIEWERSQUELCH",                                   \
-              "PSK Browser squelch level (%)",                                          \
+              "Signal Viewerer squelch level (%)",                                      \
               6.0)                                                                      \
         ELEM_(int, VIEWERtimeout, "VIEWERTIMEOUT",                                      \
-              "PSK Browser inactivity timeout (to clear text)",                         \
+              "Signal Viewer inactivity timeout (to clear text)",                       \
               15)                                                                       \
         ELEM_(std::string, ViewerFontName, "VIEWERFONTNAME",                            \
-              "PSK Browser font name",                                                  \
+              "Signal Viewer font name",                                                \
               "")                                                                       \
         ELEM_(Fl_Font, ViewerFontnbr, "VIEWERFONTNBR",                                  \
-              "PSK Browser font index",                                                 \
+              "Signal Viewer font index",                                               \
               FL_COURIER)                                                               \
         ELEM_(int, ViewerFontsize, "VIEWERFONTSIZE",                                    \
-              "PSK Browser font size",                                                  \
+              "Signal Viewer font size",                                                \
               FL_NORMAL_SIZE)                                                           \
                                                                                         \
         ELEM_(Fl_Color, Sql1Color, "SQL1COLOR",                                         \
