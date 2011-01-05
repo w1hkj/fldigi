@@ -27,11 +27,13 @@
 
 class Tile_ : public Fl_Group {
 public:
-  int handle(int);
-  Tile_(int X,int Y,int W,int H,const char*l=0) : Fl_Group(X,Y,W,H,l) {}
-  void resize(int, int, int, int);
-  void position(int, int, int, int);
-  void newx(int);
+	int handle(int);
+	Tile_(int X,int Y,int W,int H,const char*l=0) : Fl_Group(X,Y,W,H,l) {
+		clip_children(true);
+	}
+	void resize(int, int, int, int);
+	void position(int, int, int, int);
+	void newx(int);
 };
 
 /// A version of Fl_Tile that runs check callbacks and moves the boundary

@@ -170,8 +170,13 @@ static void cb_brwsViewer(Fl_Hold_Browser*, void*) {
 	switch (Fl::event_button()) {
 	case FL_LEFT_MOUSE:
 		if (brwsViewer->freq(sel) != NULLFREQ) {
-			ReceiveText->addchr('\n', FTextBase::ALTR);
-			ReceiveText->addstr(brwsViewer->line(sel).c_str(), FTextBase::ALTR);
+//			if (progdefaults.VIEWERhistory) {
+//				ReceiveText->addchr('\n', FTextBase::RECV);
+//				bHistory = true;
+//			} else {
+				ReceiveText->addchr('\n', FTextBase::ALTR);
+				ReceiveText->addstr(brwsViewer->line(sel).c_str(), FTextBase::ALTR);
+//			}
 			active_modem->set_freq(brwsViewer->freq(sel));
 			active_modem->set_sigsearch(SIGSEARCH);
 			if (mainViewer)

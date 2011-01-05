@@ -329,6 +329,7 @@ int w_inpName  	= 90;
 int w_inpRstIn	= 30;
 int w_inpRstOut = 30;
 int w_SerNo		= 40;
+int sw = 18 + 2 * pad;//DEFAULT_SW;
 
 int wf1 = pad + w_inpFreq + pad + 2*w_inpTime +  pad + w_inpCall +
           pad + w_inpName + pad + w_inpRstIn + pad + w_inpRstOut + pad;
@@ -2407,13 +2408,11 @@ void UI_select()
 			macroFrame2->show();
 			btnAltMacros1->deactivate();
 			y1 += Hmacros;
-			if (MixerFrame->visible()) {
-				MixerFrame->resize(0, y1, DEFAULT_SW, HTh);
-				MixerFrame->redraw();
-				HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, HTh);
-			} else {
-				HTgroup->resize(0, y1, w, HTh);
-			}
+			if (progdefaults.EnableMixer)
+				MixerFrame->resize(pad, y1, sw, HTh);
+			else
+				MixerFrame->resize(0, y1, 0, HTh);
+			HTgroup->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
 			macroFrame1->position(x, y1);
 			y1 += Hmacros;
@@ -2423,13 +2422,11 @@ void UI_select()
 			break;
 		case 2:
 			HTh -= Hmacros;
-			if (MixerFrame->visible()) {
-				MixerFrame->resize(0, y1, DEFAULT_SW, HTh);
-				MixerFrame->redraw();
-				HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, HTh);
-			} else {
-				HTgroup->resize(0, y1, w, HTh);
-			}
+			if (progdefaults.EnableMixer)
+				MixerFrame->resize(pad, y1, sw, HTh);
+			else
+				MixerFrame->resize(0, y1, 0, HTh);
+			HTgroup->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
 			macroFrame2->size(w, Hmacros);
 			macroFrame2->position(x, y1);
@@ -2444,13 +2441,11 @@ void UI_select()
 			break;
 		case 3:
 			HTh -= Hmacros;
-			if (MixerFrame->visible()) {
-				MixerFrame->resize(0, y1, DEFAULT_SW, HTh);
-				MixerFrame->redraw();
-				HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, HTh);
-			} else {
-				HTgroup->resize(0, y1, w, HTh);
-			}
+			if (progdefaults.EnableMixer)
+				MixerFrame->resize(pad, y1, sw, HTh);
+			else
+				MixerFrame->resize(0, y1, 0, HTh);
+			HTgroup->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
 			macroFrame1->position(x, y1);
 			y1 += Hmacros;
@@ -2468,13 +2463,11 @@ void UI_select()
 			macroFrame2->size(macroFrame2->w(), 0);
 			macroFrame2->hide();
 			btnAltMacros1->activate();
-			if (MixerFrame->visible()) {
-				MixerFrame->resize(0, y1, DEFAULT_SW, HTh);
-				MixerFrame->redraw();
-				HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, HTh);
-			} else {
-				HTgroup->resize(0, y1, w, HTh);
-			}
+			if (progdefaults.EnableMixer)
+				MixerFrame->resize(pad, y1, sw, HTh);
+			else
+				MixerFrame->resize(0, y1, 0, HTh);
+			HTgroup->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
 			macroFrame1->position(x, y1);
 			y1 += Hmacros;
@@ -2489,6 +2482,7 @@ void UI_select()
 		Status2->hide();
 		inpCall4->show();
 		inpCall = inpCall4;
+
 		fl_digi_main->init_sizes();
 		fl_digi_main->redraw();
 		return;
@@ -2506,13 +2500,11 @@ void UI_select()
 			macroFrame2->show();
 			btnAltMacros1->deactivate();
 			y1 += Hmacros;
-			if (MixerFrame->visible()) {
-				MixerFrame->resize(0, y1, DEFAULT_SW, HTh);
-				MixerFrame->redraw();
-				HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, HTh);
-			} else {
-				HTgroup->resize(0, y1, w, HTh);
-			}
+			if (progdefaults.EnableMixer)
+				MixerFrame->resize(pad, y1, sw, HTh);
+			else
+				MixerFrame->resize(0, y1, 0, HTh);
+			HTgroup->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
 			macroFrame1->position(x, y1);
 			y1 += Hmacros;
@@ -2522,13 +2514,11 @@ void UI_select()
 			break;
 		case 2:
 			HTh -= Hmacros;
-			if (MixerFrame->visible()) {
-				MixerFrame->resize(0, y1, DEFAULT_SW, HTh);
-				MixerFrame->redraw();
-				HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, HTh);
-			} else {
-				HTgroup->resize(0, y1, w, HTh);
-			}
+			if (progdefaults.EnableMixer)
+				MixerFrame->resize(pad, y1, sw, HTh);
+			else
+				MixerFrame->resize(0, y1, 0, HTh);
+			HTgroup->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
 			macroFrame2->size(w, Hmacros);
 			macroFrame2->position(x, y1);
@@ -2543,13 +2533,11 @@ void UI_select()
 			break;
 		case 3:
 			HTh -= Hmacros;
-			if (MixerFrame->visible()) {
-				MixerFrame->resize(0, y1, DEFAULT_SW, HTh);
-				MixerFrame->redraw();
-				HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, HTh);
-			} else {
-				HTgroup->resize(0, y1, w, HTh);
-			}
+			if (progdefaults.EnableMixer)
+				MixerFrame->resize(pad, y1, sw, HTh);
+			else
+				MixerFrame->resize(0, y1, 0, HTh);
+			HTgroup->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
 			macroFrame1->position(x, y1);
 			y1 += Hmacros;
@@ -2567,13 +2555,11 @@ void UI_select()
 			macroFrame2->size(macroFrame2->w(), 0);
 			macroFrame2->hide();
 			btnAltMacros1->activate();
-			if (MixerFrame->visible()) {
-				MixerFrame->resize(0, y1, DEFAULT_SW, HTh);
-				MixerFrame->redraw();
-				HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, HTh);
-			} else {
-				HTgroup->resize(0, y1, w, HTh);
-			}
+			if (progdefaults.EnableMixer)
+				MixerFrame->resize(pad, y1, sw, HTh);
+			else
+				MixerFrame->resize(0, y1, 0, HTh);
+			HTgroup->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
 			macroFrame1->position(x, y1);
 			y1 += Hmacros;
@@ -2615,13 +2601,11 @@ void UI_select()
 			macroFrame2->show();
 			btnAltMacros1->deactivate();
 			y1 += Hmacros;
-			if (MixerFrame->visible()) {
-				MixerFrame->resize(0, y1, DEFAULT_SW, HTh);
-				MixerFrame->redraw();
-				HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, HTh);
-			} else {
-				HTgroup->resize(0, y1, w, HTh);
-			}
+			if (progdefaults.EnableMixer)
+				MixerFrame->resize(pad, y1, sw, HTh);
+			else
+				MixerFrame->resize(0, y1, 0, HTh);
+			HTgroup->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
 			macroFrame1->position(x, y1);
 			y1 += Hmacros;
@@ -2631,13 +2615,11 @@ void UI_select()
 			break;
 		case 2:
 			HTh -= Hmacros;
-			if (MixerFrame->visible()) {
-				MixerFrame->resize(0, y1, DEFAULT_SW, HTh);
-				MixerFrame->redraw();
-				HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, HTh);
-			} else {
-				HTgroup->resize(0, y1, w, HTh);
-			}
+			if (progdefaults.EnableMixer)
+				MixerFrame->resize(pad, y1, sw, HTh);
+			else
+				MixerFrame->resize(0, y1, 0, HTh);
+			HTgroup->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
 			macroFrame2->size(w, Hmacros);
 			macroFrame2->position(x, y1);
@@ -2652,13 +2634,11 @@ void UI_select()
 			break;
 		case 3:
 			HTh -= Hmacros;
-			if (MixerFrame->visible()) {
-				MixerFrame->resize(0, y1, DEFAULT_SW, HTh);
-				MixerFrame->redraw();
-				HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, HTh);
-			} else {
-				HTgroup->resize(0, y1, w, HTh);
-			}
+			if (progdefaults.EnableMixer)
+				MixerFrame->resize(pad, y1, sw, HTh);
+			else
+				MixerFrame->resize(0, y1, 0, HTh);
+			HTgroup->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
 			macroFrame1->position(x, y1);
 			y1 += Hmacros;
@@ -2676,13 +2656,11 @@ void UI_select()
 			macroFrame2->size(macroFrame2->w(), 0);
 			macroFrame2->hide();
 			btnAltMacros1->activate();
-			if (MixerFrame->visible()) {
-				MixerFrame->resize(0, y1, DEFAULT_SW, HTh);
-				MixerFrame->redraw();
-				HTgroup->resize(DEFAULT_SW, y1, w - DEFAULT_SW, HTh);
-			} else {
-				HTgroup->resize(0, y1, w, HTh);
-			}
+			if (progdefaults.EnableMixer)
+				MixerFrame->resize(pad, y1, sw, HTh);
+			else
+				MixerFrame->resize(0, y1, 0, HTh);
+			HTgroup->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
 			macroFrame1->position(x, y1);
 			y1 += Hmacros;
@@ -2719,6 +2697,7 @@ void UI_select()
 	}
 	inpCall4->hide();
 	Status2->show();
+
 	fl_digi_main->init_sizes();
 	fl_digi_main->redraw();
 }
@@ -3473,8 +3452,13 @@ static void cb_mainViewer(Fl_Hold_Browser*, void*) {
 	switch (Fl::event_button()) {
 	case FL_LEFT_MOUSE:
 		if (mainViewer->freq(sel) != NULLFREQ) {
-			ReceiveText->addchr('\n', FTextBase::ALTR);
-			ReceiveText->addstr(mainViewer->line(sel).c_str(), FTextBase::ALTR);
+//			if (progdefaults.VIEWERhistory){
+//				ReceiveText->addchr('\n', FTextBase::RECV);
+//				bHistory = true;
+//			} else {
+				ReceiveText->addchr('\n', FTextBase::ALTR);
+				ReceiveText->addstr(mainViewer->line(sel).c_str(), FTextBase::ALTR);
+//			}
 			active_modem->set_freq(mainViewer->freq(sel));
 			active_modem->set_sigsearch(SIGSEARCH);
 			if (brwsViewer) brwsViewer->select(sel);
@@ -4169,38 +4153,39 @@ void create_fl_digi_main_primary() {
 		macroFrame2->end();
 		Y += Hmacros;
 		int Htext = progStatus.mainH - Hwfall - Hmenu - Hstatus - Hmacros*NUMKEYROWS - Hqsoframe - 4;
-		int Hrcvtxt = (Htext) / 2;
-		int Hxmttxt = (Htext - (Hrcvtxt));
+		int Hrcvtxt = Htext / 2;
+		int Hxmttxt = Htext - Hrcvtxt;
 
-		int sw = DEFAULT_SW;
-		MixerFrame = new Fl_Group(0,Y,sw, Hrcvtxt + Hxmttxt);
-			MixerFrame->box(FL_FLAT_BOX);
-			valRcvMixer = new Fl_Value_Slider2(0, Y, sw, (Htext)/2, "");
-			valRcvMixer->type(FL_VERT_SLIDER);//NICE_SLIDER);
+		MixerFrame = new Fl_Group(0, Y, sw, Htext);
+		{
+			int Hrcvmixer = (Htext - 3 * pad) / 2;
+			int Hxmtmixer = Htext - Hrcvmixer - 3*pad;
+			MixerFrame->box(FL_DOWN_BOX);//FLAT_BOX);
+			valRcvMixer = new Fl_Value_Slider2(pad, Y + pad, sw - 2*pad, Hrcvmixer, "");
+			valRcvMixer->type(FL_VERT_NICE_SLIDER);
 			valRcvMixer->color(fl_rgb_color(0,110,30));
-			valRcvMixer->labeltype(FL_ENGRAVED_LABEL);
 			valRcvMixer->selection_color(fl_rgb_color(255,255,0));
 			valRcvMixer->textcolor(FL_WHITE);
 			valRcvMixer->range(100.0,0.0);
 			valRcvMixer->value(100.0);
 			valRcvMixer->step(1.0);
 			valRcvMixer->callback( (Fl_Callback *)cb_RcvMixer);
-			valXmtMixer = new Fl_Value_Slider2(0, Y + (Htext)/2, sw, (Htext)/2, "");
-			valXmtMixer->type(FL_VERT_SLIDER);//NICE_SLIDER);
+			valXmtMixer = new Fl_Value_Slider2(pad, Y + 2*pad + Hrcvmixer, sw - 2*pad, Hxmtmixer, "");
+			valXmtMixer->type(FL_VERT_NICE_SLIDER);
 			valXmtMixer->color(fl_rgb_color(110,0,30));
-			valXmtMixer->labeltype(FL_ENGRAVED_LABEL);
 			valXmtMixer->selection_color(fl_rgb_color(255,255,0));
 			valXmtMixer->textcolor(FL_WHITE);
 			valXmtMixer->range(100.0,0.0);
 			valXmtMixer->value(100.0);
 			valXmtMixer->step(1.0);
 			valXmtMixer->callback( (Fl_Callback *)cb_XmtMixer);
+		}
 		MixerFrame->end();
 
 		int HTwidth = progStatus.mainW / 4;
 		int VTwidth = progStatus.mainW - sw - HTwidth;
 
-		HTgroup = new Fl_Tile_Check(sw, Y, progStatus.mainW - sw, Htext);
+		HTgroup = new Fl_Tile_Check(sw, Y, progStatus.mainW - sw - pad, Htext);
 		HTgroup->callback(cb_tiled_group);
 
 		Fl_Group *mvgroup = new Fl_Group(HTgroup->x(), HTgroup->y(), HTwidth, Htext, "");
@@ -4214,13 +4199,6 @@ void create_fl_digi_main_primary() {
 		mainViewer->seek_re = &seek_re;
 
 		Fl_Group *g = new Fl_Group(HTgroup->x(), HTgroup->y() + Htext - 20, mainViewer->w(), 20);
-	// clear button
-		btnClearMViewer = new Fl_Button(g->x() + g->w() - 65, g->y(), 65, g->h(),
-							make_icon_label(_("Clear"), edit_clear_icon));
-		btnClearMViewer->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
-		set_icon_label(btnClearMViewer);
-		btnClearMViewer->callback((Fl_Callback*)cb_btnClearMViewer);
-
 	// squelch
 		mvsquelch = new Fl_Value_Slider2(g->x(), g->y(), g->w() - 65 - pad, g->h());
 		mvsquelch->type(FL_HOR_NICE_SLIDER);
@@ -4230,6 +4208,13 @@ void create_fl_digi_main_primary() {
 		mvsquelch->color((Fl_Color)246);
 		mvsquelch->selection_color((Fl_Color)4);
 		mvsquelch->callback( (Fl_Callback *)cb_mvsquelch);
+
+	// clear button
+		btnClearMViewer = new Fl_Button(mvsquelch->x() + mvsquelch->w() + pad, g->y(), 65, g->h(),
+							make_icon_label(_("Clear"), edit_clear_icon));
+		btnClearMViewer->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
+		set_icon_label(btnClearMViewer);
+		btnClearMViewer->callback((Fl_Callback*)cb_btnClearMViewer);
 
 		g->resizable(mvsquelch);
 		g->end();
@@ -5648,16 +5633,16 @@ ret:
 void enable_vol_sliders(bool val)
 {
 	if (bWF_only) return;
-	if (MixerFrame->visible()) {
-		if (val) return;
-		MixerFrame->hide();
-		HTgroup->resize(0, HTgroup->y(),fl_digi_main->w(), HTgroup->h());
-	} else {
-		if (!val) return;
-		MixerFrame->show();
-		HTgroup->resize(DEFAULT_SW, HTgroup->y(), fl_digi_main->w() - DEFAULT_SW, HTgroup->h());
-	}
-	fl_digi_main->init_sizes();
+	UI_select();
+//	if (MixerFrame->visible()) {
+//		if (val) return;
+//		MixerFrame->hide();
+//		UI_select();
+//	} else {
+//		if (!val) return;
+//		MixerFrame->show();
+//		UI_select();
+//	}
 }
 
 void resetMixerControls()

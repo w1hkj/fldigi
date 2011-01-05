@@ -43,9 +43,11 @@ void Tile_::position(int oix, int oiy, int newx, int newy) {
 		Fl_Widget* o = *a++;
 		if (o == resizable()) continue;
 		int X = o->x();
-		int R = X+o->w();
 		int Y = o->y();
-		int B = Y+o->h();
+		int W = o->w();
+		int H = o->h();
+		int R = X + W;
+		int B = Y + H;
 		if (oix > -1) {
 			int t = p[0];
 			if ((t == oix) || (t>oix && X<newx) || (t<oix && X>newx)) X = newx;
@@ -58,7 +60,7 @@ void Tile_::position(int oix, int oiy, int newx, int newy) {
 			t = p[3];
 			if ((t == oiy) || (t>oiy && B<newy) || (t<oiy && B>newy)) B = newy;
 		}
-		o->damage_resize(X,Y,R-X,B-Y);
+		o->damage_resize(X, Y, R-X, B-Y);
 	}
 }
 
@@ -77,12 +79,14 @@ void Tile_::newx( int newx )
 		int X = o->x();
 		int Y = o->y();
 		int H = o->h();
+		int W = o->w();
 
 		if (newx == gX) {
-			if (X == gX)
+			if (X == gX) {
 				o->damage_resize(gX, Y, 0, H);
-			else
+			} else {
 				o->damage_resize(gX, Y, gW, H);
+			}
 		} else {
 			if (newx > o->w())
 				o->damage_resize(gX, Y, newx - gX, H);
