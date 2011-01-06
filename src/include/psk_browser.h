@@ -55,7 +55,7 @@ public:
 	void columns(int a) { cols[0] = a; cols[1] = 0; column_widths(cols); }
 	void resize(int x, int y, int w, int h);
 	void addchr(int ch, int freq, char c, int md);
-	std::string freqformat (int i, int f);
+	std::string freqformat (int i);
 	void set_freq(int i, int freq);
 	void clearline(int i) { bwsrline[i] = ""; }
 	std::string line(int i) { return (i < 1 ? "" : i > MAXCHANNELS ? "" : bwsrline[i - 1]); }
