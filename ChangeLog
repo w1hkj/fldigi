@@ -1,5 +1,10 @@
-2011-01-05  David Freese  <w1hkj@w1hkj.com>
+2011-01-06  David Freese  <w1hkj@w1hkj.com>
 
+	1412187: Signal Browser Cosmetic
+	12f0f4b: Logbook Server Connection Disabled
+	9ec791a: PSK browser mod
+	6a24e15: Code cleanup
+	f97218b: Convenience features
 	2907405: Signal Viewer History
 	3bc947b: Mixer Frame
 	8093389: Channel Number
