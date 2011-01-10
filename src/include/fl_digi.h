@@ -26,6 +26,7 @@
 
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Browser.H>
+#include <FL/Fl_Pack.H>
 
 #include "combo.h"
 #include "Fl_Tile_Check.h"
@@ -52,9 +53,14 @@ extern Fl_Box			*hideViewer;
 extern Raster			*FHdisp;
 //extern Fl_Tile_Check	*TiledGroup;
 
-extern Fl_Tile_Check	*VTgroup;
+//extern Fl_Tile_Check	*VTgroup;
+extern Fl_Tile			*VTgroup;
 extern Fl_Box			*minVTbox;
-extern Fl_Tile_Check	*HTgroup;
+//extern Fl_Tile_Check	*HTgroup;
+extern Fl_Group			*HTgroup;
+extern Fl_Box			*minHTbox;
+extern Fl_Group			*MixerFrame;
+extern int				oix;
 
 extern Fl_Box			*StatusBar;
 extern Fl_Box			*Status2;

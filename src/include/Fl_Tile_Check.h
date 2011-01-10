@@ -33,7 +33,7 @@ public:
 	}
 	void resize(int, int, int, int);
 	void position(int, int, int, int);
-	void newx(int);
+	void newx(int, int);
 };
 
 /// A version of Fl_Tile that runs check callbacks and moves the boundary

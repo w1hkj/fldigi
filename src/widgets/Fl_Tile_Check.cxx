@@ -38,6 +38,9 @@
 void Tile_::position(int oix, int oiy, int newx, int newy) {
 	Fl_Widget* const* a = array();
 	short* p = sizes();
+//int gX = x(), gW = w();
+//printf("gX %d, gW %d\n", gX, gW);
+//printf("oix %d, oiy %d, newx %d, newy %d\n", oix, oiy, newx, newy);
 	p += 8; // skip group & resizable's saved size
 	for (int i=children(); i--; p += 4) {
 		Fl_Widget* o = *a++;
@@ -48,6 +51,13 @@ void Tile_::position(int oix, int oiy, int newx, int newy) {
 		int H = o->h();
 		int R = X + W;
 		int B = Y + H;
+//printf("Child %d : %p : x %d, y %d, w %d, h %d",
+//	i, o, X, Y, W, H);
+//		if (o == resizable()) {
+//printf(" ... resizable\n");
+//			continue;
+//} else
+//printf("\n");
 		if (oix > -1) {
 			int t = p[0];
 			if ((t == oix) || (t>oix && X<newx) || (t<oix && X>newx)) X = newx;
@@ -65,51 +75,38 @@ void Tile_::position(int oix, int oiy, int newx, int newy) {
 }
 
 
-void Tile_::newx( int newx )
+void Tile_::newx( int oix, int newx )
 {
-	Fl_Widget* const* a = array();
+//	Fl_Widget* const* a = array();
 	short* p = sizes();
 	int gX = x(), gW = w();
-	p += 8; // skip group & resizable's saved size
-
-	for (int i=children(); i--; p += 4) {
-		Fl_Widget *o = *a++;
-		if (o == resizable())
-			continue;
-		int X = o->x();
-		int Y = o->y();
-		int H = o->h();
-
-		if (newx == gX) {
-			if (X == gX) {
-				o->damage_resize(gX, Y, 0, H);
-			} else {
-				o->damage_resize(gX, Y, gW, H);
-			}
-		} else {
-			if (newx > o->w())
-				o->damage_resize(gX, Y, newx - gX, H);
-			else
-				o->damage_resize(newx, Y, gW + gX - newx, H);
-		}
+printf("gX %d, gW %d; newx %d\n", gX, gW, newx);
+	if (newx > p[5]) {
+printf("p[5] = %d\n", p[5]);
+		newx = p[5] - 1;
 	}
+	position(oix, -1, newx, -1);
 }
 
 // move the lower-right corner (sort of):
 void Tile_::resize(int X,int Y,int W,int H) {
 	// remember how much to move the child widgets:
+	short* p = sizes();
 	int dx = X-x();
 	int dy = Y-y();
 	int dw = W-w();
 	int dh = H-h();
-	short* p = sizes();
+//	int OGR = p[1];
+//	int OGB = p[3];
+//	int OW = w();
+//	int OH = h();
 	// resize this (skip the Fl_Group resize):
 	Fl_Widget::resize(X,Y,W,H);
-	// find bottom-right of resiable:
+	// find bottom-right of resizable:
 	int OR = p[5];
-	int NR = X+W-(p[1]-OR);
+	int NR = X + W - (p[1]-OR);
 	int OB = p[7];
-	int NB = Y+H-(p[3]-OB);
+	int NB = Y + H - (p[3]-OB);
 	// move everything to be on correct side of new resizable:
 	Fl_Widget*const* a = array();
 	p += 8;
@@ -117,13 +114,18 @@ void Tile_::resize(int X,int Y,int W,int H) {
 		Fl_Widget* o = *a++;
 		int xx = o->x()+dx;
 		int R = xx+o->w();
-		if (*p++ >= OR) xx += dw; else if (xx > NR) xx = NR;
-		if (*p++ >= OR) R += dw; else if (R > NR) R = NR;
+		// left
+		if (p[0] >= OR) xx += dw; else if (xx > NR) xx = NR;
+		// right
+		if (p[1] >= OR) R += dw; else if (R > NR) R = NR;
 		int yy = o->y()+dy;
 		int B = yy+o->h();
-		if (*p++ >= OB) yy += dh; else if (yy > NB) yy = NB;
-		if (*p++ >= OB) B += dh; else if (B > NB) B = NB;
+		// top
+		if (p[2] >= OB) yy += dh; else if (yy > NB) yy = NB;
+		// bottom
+		if (p[3] >= OB) B += dh; else if (B > NB) B = NB;
 		o->resize(xx,yy,R-xx,B-yy);
+		p += 4; // next child sizes array
 		// do *not* call o->redraw() here! If you do, and the tile is inside a 
 		// scroll, it'll set the damage areas wrong for all children!
 	}
@@ -207,14 +209,14 @@ int Tile_::handle(int event) {
 		if (sdrag&DRAGH) {
 			newx = Fl::event_x()-sdx;
 			if (newx < r->x()) newx = r->x();
-			else if (newx > r->x()+r->w()) newx = r->x()+r->w();
+			else if (newx >= r->x()+r->w()) newx = r->x()+r->w();
 		} else
 			newx = sx;
 		int newy;
 		if (sdrag&DRAGV) {
 			newy = Fl::event_y()-sdy;
 			if (newy < r->y()) newy = r->y();
-			else if (newy > r->y()+r->h()) newy = r->y()+r->h();
+			else if (newy >= r->y()+r->h()) newy = r->y()+r->h();
 		} else
 			newy = sy;
 		position(sx,sy,newx,newy);

@@ -601,30 +601,10 @@ if (bWF_only)
 else {
 	fl_digi_main->resize(mainX, mainY, mainW, mainH);
 
-	int rty = ReceiveText->y();
-	int xty = TransmitText->y();
-
-	minVTbox->resize(
-		VTgroup->x(), VTgroup->y() + 66, 
-		fl_digi_main->w() - VTgroup->x(), VTgroup->h() - 66 - 40);
-
 	set_macroLabels();
+
 	UI_select();
-	fl_digi_main->init_sizes();
-
-	if (!(RxTextHeight > 0 && RxTextHeight < VTgroup->h()))
-		RxTextHeight = VTgroup->h() / 3 * 2;
-
-	if (show_channels) {
-		HTgroup->newx( progStatus.tiled_group_x );
-		progStatus.show_channels = true;
-	} else {
-		HTgroup->newx( HTgroup->x() );
-		progStatus.show_channels = false;
-	}
-//	RxTextHeight = CLAMP(RxTextHeight, 66, ReceiveText->h() - 32);
-//	VTgroup->position(-1, ReceiveText->y() + 66, VTgroup->x(), ReceiveText->y() + RxTextHeight);
-	VTgroup->position(-1, xty, VTgroup->x(), rty + RxTextHeight);
+		
 }
 
 	if (VIEWERvisible && lastmode >= MODE_PSK_FIRST && lastmode <= MODE_PSK_LAST)
