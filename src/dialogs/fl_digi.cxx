@@ -4213,8 +4213,14 @@ void create_fl_digi_main_primary() {
 		mvsquelch->range(-6.0, 20.0);
 		mvsquelch->value(progdefaults.VIEWERsquelch);
 		mvsquelch->step(0.5);
-		mvsquelch->color((Fl_Color)246);
-		mvsquelch->selection_color((Fl_Color)4);
+		mvsquelch->color( fl_rgb_color(
+			progdefaults.bwsrSliderColor.R, 
+			progdefaults.bwsrSliderColor.G,
+			progdefaults.bwsrSliderColor.B));
+		mvsquelch->selection_color( fl_rgb_color(
+			progdefaults.bwsrSldrSelColor.R, 
+			progdefaults.bwsrSldrSelColor.G,
+			progdefaults.bwsrSldrSelColor.B));
 		mvsquelch->callback( (Fl_Callback *)cb_mvsquelch);
 
 	// clear button

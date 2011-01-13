@@ -88,6 +88,7 @@
 #include "logbook.h"
 #include "dxcc.h"
 #include "newinstall.h"
+#include "Viewer.h"
 
 #if USE_HAMLIB
 	#include "rigclass.h"
@@ -358,6 +359,7 @@ int main(int argc, char ** argv)
 	}
 #endif
 
+	dlgViewer = createViewer();
 	create_logbook_dialogs();
 	connect_to_log_server();
 

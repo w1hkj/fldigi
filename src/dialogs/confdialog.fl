@@ -398,7 +398,7 @@ initViewer();}
 progdefaults.changed = true;
 initViewer();}
                 tooltip {ON - Marquee style
-OFF - Clear & restart} xywh {18 234 165 20} down_box DOWN_BOX
+OFF - Clear & restart} xywh {18 225 165 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.VIEWERmarquee);}
               }
               Fl_Check_Button btnAscend {
@@ -406,15 +406,66 @@ OFF - Clear & restart} xywh {18 234 165 20} down_box DOWN_BOX
                 callback {progdefaults.VIEWERascend = o->value();
 progdefaults.changed = true;
 initViewer();}
-                tooltip {Change positions of low to high channels} xywh {18 271 253 20} down_box DOWN_BOX
+                tooltip {Change positions of low to high channels} xywh {18 249 253 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.VIEWERascend);}
               }
               Fl_Check_Button btnBrowserHistory {
                 label {Play back history when active channel selected}
                 callback {progdefaults.VIEWERhistory = o->value();
 progdefaults.changed = true;}
-                tooltip {Change positions of low to high channels} xywh {18 307 356 20} down_box DOWN_BOX
+                tooltip {Change positions of low to high channels} xywh {18 274 356 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.VIEWERhistory);}
+              }
+              Fl_Group {} {
+                label {Detection Level Colors} open
+                xywh {20 294 219 60} box ENGRAVED_FRAME align 17
+              } {
+                Fl_Button bwsrSliderColor {
+                  label Backgnd
+                  callback {uchar r, g, b;
+    r = progdefaults.bwsrSliderColor.R;
+    g = progdefaults.bwsrSliderColor.G;
+    b = progdefaults.bwsrSliderColor.B;
+
+    if (fl_color_chooser("Slider Color", r, g, b) == 0)
+        return;
+    progdefaults.bwsrSliderColor.R = r;
+    progdefaults.bwsrSliderColor.G = g;
+    progdefaults.bwsrSliderColor.B = b;
+    o->color(fl_rgb_color(r,g,b));
+    o->redraw();
+    sldrViewerSquelch->color(fl_rgb_color(r,g,b));
+    sldrViewerSquelch->redraw();
+    mvsquelch->color(fl_rgb_color(r,g,b));
+    mvsquelch->redraw();
+    
+    progdefaults.changed = true;}
+                  tooltip {Background color for Function key group 1} xywh {43 317 80 24}
+                  code0 {bwsrSliderColor->color(fl_rgb_color(progdefaults.bwsrSliderColor.R, progdefaults.bwsrSliderColor.G,progdefaults.bwsrSliderColor.B));}
+                }
+                Fl_Button bwsrSldrSelColor {
+                  label Button
+                  callback {uchar r, g, b;
+    r = progdefaults.bwsrSldrSelColor.R;
+    g = progdefaults.bwsrSldrSelColor.G;
+    b = progdefaults.bwsrSldrSelColor.B;
+
+    if (fl_color_chooser("Button Color", r, g, b) == 0)
+        return;
+    progdefaults.bwsrSldrSelColor.R = r;
+    progdefaults.bwsrSldrSelColor.G = g;
+    progdefaults.bwsrSldrSelColor.B = b;
+    o->color(fl_rgb_color(r,g,b));
+    o->redraw();
+    sldrViewerSquelch->selection_color(fl_rgb_color(r,g,b));
+    sldrViewerSquelch->redraw();
+    mvsquelch->selection_color(fl_rgb_color(r,g,b));
+    mvsquelch->redraw();
+    
+    progdefaults.changed = true;}
+                  tooltip {Background color for Function key group 1} xywh {135 317 80 24}
+                  code0 {bwsrSldrSelColor->color(fl_rgb_color(progdefaults.bwsrSldrSelColor.R, progdefaults.bwsrSldrSelColor.G,progdefaults.bwsrSliderColor.B));}
+                }
               }
             }
           }

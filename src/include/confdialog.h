@@ -57,6 +57,8 @@ extern Fl_Check_Button *btnFixedIntervals;
 extern Fl_Check_Button *btnMarquee;
 extern Fl_Check_Button *btnAscend;
 extern Fl_Check_Button *btnBrowserHistory;
+extern Fl_Button *bwsrSliderColor;
+extern Fl_Button *bwsrSldrSelColor;
 extern Fl_Group *tabMBars;
 extern Fl_Check_Button *btnMacroMouseWheel;
 extern Fl_Button *btn_one_bar;

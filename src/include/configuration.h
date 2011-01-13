@@ -858,6 +858,12 @@
         ELEM_(bool, cutnbrs, "CUTNBRS",                                                 \
               "Send CW cut numbers",                                                    \
               false)                                                                    \
+        ELEM_(RGB, bwsrSliderColor, "BWSRSLIDERCOLOR",                                  \
+              "Background color of signal browser detect level",                        \
+              {185, 211, 238})                                                          \
+        ELEM_(RGB, bwsrSldrSelColor,"BWSRSLDRSELCOLOR",                                 \
+              "Button highlight color, signal browser detect level",                    \
+              {54, 100, 139})                                                           \
         ELEM_(RGB, dup_color, "dupcolor",                                               \
               "Callsign background color when duplicate detected",                      \
               {255, 110, 180})                                                          \

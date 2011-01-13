@@ -256,8 +256,14 @@ Fl_Double_Window* createViewer(void)
 	sldrViewerSquelch->step(0.5);
 	sldrViewerSquelch->value(progdefaults.VIEWERsquelch);
 	sldrViewerSquelch->callback((Fl_Callback*)cb_Squelch);
-	sldrViewerSquelch->color((Fl_Color)246);
-	sldrViewerSquelch->selection_color((Fl_Color)4);
+	sldrViewerSquelch->color( fl_rgb_color(
+		progdefaults.bwsrSliderColor.R, 
+		progdefaults.bwsrSliderColor.G,
+		progdefaults.bwsrSliderColor.B));
+	sldrViewerSquelch->selection_color( fl_rgb_color(
+		progdefaults.bwsrSldrSelColor.R, 
+		progdefaults.bwsrSldrSelColor.G,
+		progdefaults.bwsrSldrSelColor.B));
 
 	g->resizable(sldrViewerSquelch);
 	g->end();

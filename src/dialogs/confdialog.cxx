@@ -294,6 +294,52 @@ static void cb_btnBrowserHistory(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Button *bwsrSliderColor=(Fl_Button *)0;
+
+static void cb_bwsrSliderColor(Fl_Button* o, void*) {
+  uchar r, g, b;
+    r = progdefaults.bwsrSliderColor.R;
+    g = progdefaults.bwsrSliderColor.G;
+    b = progdefaults.bwsrSliderColor.B;
+
+    if (fl_color_chooser("Slider Color", r, g, b) == 0)
+        return;
+    progdefaults.bwsrSliderColor.R = r;
+    progdefaults.bwsrSliderColor.G = g;
+    progdefaults.bwsrSliderColor.B = b;
+    o->color(fl_rgb_color(r,g,b));
+    o->redraw();
+    sldrViewerSquelch->color(fl_rgb_color(r,g,b));
+    sldrViewerSquelch->redraw();
+    mvsquelch->color(fl_rgb_color(r,g,b));
+    mvsquelch->redraw();
+    
+    progdefaults.changed = true;
+}
+
+Fl_Button *bwsrSldrSelColor=(Fl_Button *)0;
+
+static void cb_bwsrSldrSelColor(Fl_Button* o, void*) {
+  uchar r, g, b;
+    r = progdefaults.bwsrSldrSelColor.R;
+    g = progdefaults.bwsrSldrSelColor.G;
+    b = progdefaults.bwsrSldrSelColor.B;
+
+    if (fl_color_chooser("Button Color", r, g, b) == 0)
+        return;
+    progdefaults.bwsrSldrSelColor.R = r;
+    progdefaults.bwsrSldrSelColor.G = g;
+    progdefaults.bwsrSldrSelColor.B = b;
+    o->color(fl_rgb_color(r,g,b));
+    o->redraw();
+    sldrViewerSquelch->selection_color(fl_rgb_color(r,g,b));
+    sldrViewerSquelch->redraw();
+    mvsquelch->selection_color(fl_rgb_color(r,g,b));
+    mvsquelch->redraw();
+    
+    progdefaults.changed = true;
+}
+
 Fl_Group *tabMBars=(Fl_Group *)0;
 
 Fl_Check_Button *btnMacroMouseWheel=(Fl_Check_Button *)0;
@@ -9486,24 +9532,39 @@ ab and newline are automatically included."));
                 btnFixedIntervals->hide();
                 o->value(progdefaults.VIEWERfixed);
               } // Fl_Check_Button* btnFixedIntervals
-              { Fl_Check_Button* o = btnMarquee = new Fl_Check_Button(18, 234, 165, 20, _("Continuous scrolling"));
+              { Fl_Check_Button* o = btnMarquee = new Fl_Check_Button(18, 225, 165, 20, _("Continuous scrolling"));
                 btnMarquee->tooltip(_("ON - Marquee style\nOFF - Clear & restart"));
                 btnMarquee->down_box(FL_DOWN_BOX);
                 btnMarquee->callback((Fl_Callback*)cb_btnMarquee);
                 o->value(progdefaults.VIEWERmarquee);
               } // Fl_Check_Button* btnMarquee
-              { Fl_Check_Button* o = btnAscend = new Fl_Check_Button(18, 271, 253, 20, _("Lowest freq on bottom of viewer"));
+              { Fl_Check_Button* o = btnAscend = new Fl_Check_Button(18, 249, 253, 20, _("Lowest freq on bottom of viewer"));
                 btnAscend->tooltip(_("Change positions of low to high channels"));
                 btnAscend->down_box(FL_DOWN_BOX);
                 btnAscend->callback((Fl_Callback*)cb_btnAscend);
                 o->value(progdefaults.VIEWERascend);
               } // Fl_Check_Button* btnAscend
-              { Fl_Check_Button* o = btnBrowserHistory = new Fl_Check_Button(18, 307, 356, 20, _("Play back history when active channel selected"));
+              { Fl_Check_Button* o = btnBrowserHistory = new Fl_Check_Button(18, 274, 356, 20, _("Play back history when active channel selected"));
                 btnBrowserHistory->tooltip(_("Change positions of low to high channels"));
                 btnBrowserHistory->down_box(FL_DOWN_BOX);
                 btnBrowserHistory->callback((Fl_Callback*)cb_btnBrowserHistory);
                 o->value(progdefaults.VIEWERhistory);
               } // Fl_Check_Button* btnBrowserHistory
+              { Fl_Group* o = new Fl_Group(20, 294, 219, 60, _("Detection Level Colors"));
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(FL_ALIGN_TOP|FL_ALIGN_INSIDE);
+                { bwsrSliderColor = new Fl_Button(43, 317, 80, 24, _("Backgnd"));
+                bwsrSliderColor->tooltip(_("Background color for Function key group 1"));
+                bwsrSliderColor->callback((Fl_Callback*)cb_bwsrSliderColor);
+                bwsrSliderColor->color(fl_rgb_color(progdefaults.bwsrSliderColor.R, progdefaults.bwsrSliderColor.G,progdefaults.bwsrSliderColor.B));
+                } // Fl_Button* bwsrSliderColor
+                { bwsrSldrSelColor = new Fl_Button(135, 317, 80, 24, _("Button"));
+                bwsrSldrSelColor->tooltip(_("Background color for Function key group 1"));
+                bwsrSldrSelColor->callback((Fl_Callback*)cb_bwsrSldrSelColor);
+                bwsrSldrSelColor->color(fl_rgb_color(progdefaults.bwsrSldrSelColor.R, progdefaults.bwsrSldrSelColor.G,progdefaults.bwsrSliderColor.B));
+                } // Fl_Button* bwsrSldrSelColor
+                o->end();
+              } // Fl_Group* o
               o->end();
             } // Fl_Group* o
             tabBrowser->end();
