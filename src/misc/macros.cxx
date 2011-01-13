@@ -612,7 +612,7 @@ void pTX(string &s, size_t &i)
 
 void pTXRX(string &s, size_t &i)
 {
-	s.erase(i, 6);
+	s.erase(i, 7);
 	ToggleTXRX = true;
 }
 
