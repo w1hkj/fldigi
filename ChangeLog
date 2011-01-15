@@ -1,5 +1,9 @@
-2011-01-10  David Freese  <w1hkj@w1hkj.com>
+2011-01-15  David Freese  <w1hkj@w1hkj.com>
 
+	70b57ff: Viewer Width adjuster
+	e78f3e0: Viewer status
+	5d8e050: View slider color
+	949a112: Macro <RX/TX>
 	bdb3ea6: Maximize window error
 	1412187: Signal Browser Cosmetic
 	12f0f4b: Logbook Server Connection Disabled
