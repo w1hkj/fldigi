@@ -2226,10 +2226,9 @@ void cb_XmtMixer(Fl_Widget *w, void *d)
 
 void cb_mvsquelch(Fl_Widget *w, void *d)
 {
-	progdefaults.VIEWERsquelch = mvsquelch->value();
+	progStatus.VIEWERsquelch = mvsquelch->value();
 	if (sldrViewerSquelch)
-		sldrViewerSquelch->value(progdefaults.VIEWERsquelch);
-	progdefaults.changed = true;
+		sldrViewerSquelch->value(progStatus.VIEWERsquelch);
 }
 
 void cb_btnClearMViewer(Fl_Widget *w, void *d)
@@ -4211,7 +4210,7 @@ void create_fl_digi_main_primary() {
 		mvsquelch = new Fl_Value_Slider2(g->x(), g->y(), g->w() - 65 - pad, g->h());
 		mvsquelch->type(FL_HOR_NICE_SLIDER);
 		mvsquelch->range(-6.0, 20.0);
-		mvsquelch->value(progdefaults.VIEWERsquelch);
+		mvsquelch->value(progStatus.VIEWERsquelch);
 		mvsquelch->step(0.5);
 		mvsquelch->color( fl_rgb_color(
 			progdefaults.bwsrSliderColor.R, 

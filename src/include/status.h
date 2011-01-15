@@ -38,6 +38,9 @@ struct status {
 	unsigned int	VIEWERnchars;
 	unsigned int	VIEWERxpos;
 	unsigned int	VIEWERypos;
+	unsigned int	VIEWERwidth;
+	unsigned int	VIEWERheight;
+	double	VIEWERsquelch;
 	bool	VIEWERvisible;
 	bool	LOGenabled;
 	double  sldrSquelchValue;

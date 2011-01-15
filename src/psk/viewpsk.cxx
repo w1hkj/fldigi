@@ -224,7 +224,7 @@ inline void viewpsk::timeout_check()
 void viewpsk::findsignals()
 {
 	if (!evalpsk) return;
-	double level = progdefaults.VIEWERsquelch;
+	double level = progStatus.VIEWERsquelch;
 	int nomfreq = 0;
 	int lfreq = 0;
 	int hfreq = 0;
@@ -319,7 +319,7 @@ void viewpsk::rx_symbol(int ch, complex symbol)
 		channel[ch].quality.im = 
 			decayavg(channel[ch].quality.im, sin(n*channel[ch].phase), SQLDECAY);
 		channel[ch].metric = channel[ch].quality.norm();
-		if (channel[ch].metric > (progdefaults.VIEWERsquelch + 6.0)/26.0) {
+		if (channel[ch].metric > (progStatus.VIEWERsquelch + 6.0)/26.0) {
 			channel[ch].dcd = true;
 		} else {
 			channel[ch].dcd = false;

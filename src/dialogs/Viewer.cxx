@@ -80,7 +80,7 @@ void initViewer()
 	if (brwsViewer) {
 		brwsViewer->usb = usb;
 		brwsViewer->rfc = rfc;
-		sldrViewerSquelch->value(progdefaults.VIEWERsquelch);
+		sldrViewerSquelch->value(progStatus.VIEWERsquelch);
 		brwsViewer->setfont(progdefaults.ViewerFontnbr, progdefaults.ViewerFontsize);
 		dlgViewer->size(dlgViewer->w(), dlgViewer->h() - brwsViewer->h() +
 			pskBrowser::cheight * progdefaults.VIEWERchannels + 4);
@@ -150,6 +150,8 @@ void viewer_redraw()
 static void cb_btnCloseViewer(Fl_Button*, void*) {
 	progStatus.VIEWERxpos = dlgViewer->x();
 	progStatus.VIEWERypos = dlgViewer->y();
+	progStatus.VIEWERwidth = dlgViewer->w();
+	progStatus.VIEWERheight = dlgViewer->h();
 	dlgViewer->hide();
 }
 
@@ -202,10 +204,9 @@ static void cb_brwsViewer(Fl_Hold_Browser*, void*) {
 
 static void cb_Squelch(Fl_Slider *, void *)
 {
-	progdefaults.VIEWERsquelch = sldrViewerSquelch->value();
+	progStatus.VIEWERsquelch = sldrViewerSquelch->value();
 	if (mainViewer)
-		mvsquelch->value(progdefaults.VIEWERsquelch);
-	progdefaults.changed = true;
+		mvsquelch->value(progStatus.VIEWERsquelch);
 }
 
 
@@ -216,14 +217,19 @@ Fl_Double_Window* createViewer(void)
 	pskBrowser::cheight = fl_height();
 
 	progStatus.VIEWERnchars = progStatus.VIEWERnchars > 30 ? progStatus.VIEWERnchars : 30;
-	int viewerwidth = 
-		(progStatus.VIEWERnchars * pskBrowser::cwidth) + pskBrowser::sbarwidth;
-	int viewerheight = pskBrowser::cheight * progdefaults.VIEWERchannels;
+
 	int pad = BWSR_BORDER / 2;
+
+	int viewerwidth = progStatus.VIEWERwidth - 2*BWSR_BORDER;
+//		(progStatus.VIEWERnchars * pskBrowser::cwidth) + pskBrowser::sbarwidth;
+	int viewerheight = progStatus.VIEWERheight - 2 * BWSR_BORDER - pad - 20;
+//		pskBrowser::cheight * progdefaults.VIEWERchannels;
+
 	Fl_Double_Window* w = new Fl_Double_Window(progStatus.VIEWERxpos, progStatus.VIEWERypos,
 						   viewerwidth + 2 * BWSR_BORDER,
 						   viewerheight + 2 * BWSR_BORDER + pad + 20,
 						   _("Signal Browser"));
+
 	brwsViewer = new pskBrowser(BWSR_BORDER, BWSR_BORDER, viewerwidth, viewerheight);
 	brwsViewer->callback((Fl_Callback*)cb_brwsViewer);
 	brwsViewer->setfont(progdefaults.ViewerFontnbr, progdefaults.ViewerFontsize);
@@ -254,7 +260,7 @@ Fl_Double_Window* createViewer(void)
 	sldrViewerSquelch->type(FL_HOR_NICE_SLIDER);
 	sldrViewerSquelch->range(-6.0, 20.0);
 	sldrViewerSquelch->step(0.5);
-	sldrViewerSquelch->value(progdefaults.VIEWERsquelch);
+	sldrViewerSquelch->value(progStatus.VIEWERsquelch);
 	sldrViewerSquelch->callback((Fl_Callback*)cb_Squelch);
 	sldrViewerSquelch->color( fl_rgb_color(
 		progdefaults.bwsrSliderColor.R, 
@@ -276,6 +282,7 @@ Fl_Double_Window* createViewer(void)
 		5 * pskBrowser::cheight + 20 + 2 * BWSR_BORDER + pad);
 	w->xclass(PACKAGE_NAME);
 
+	w->hide();
 	return w;
 }
 

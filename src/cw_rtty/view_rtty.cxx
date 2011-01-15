@@ -375,7 +375,7 @@ void view_rtty::Metric(int ch)
 void view_rtty::find_signals()
 {
 	double spwrhi = 0.0, spwrlo = 0.0, npwr = 0.0;
-	double rtty_squelch = pow(10, progdefaults.VIEWERsquelch / 10.0);
+	double rtty_squelch = pow(10, progStatus.VIEWERsquelch / 10.0);
 	for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
 		if (channel[i].state != IDLE) continue;
 		int cf = progdefaults.LowFreqCutoff + 100 * i;
@@ -450,7 +450,7 @@ int view_rtty::rx_process(const double *buf, int buflen)
 		for (int ch = 0; ch < MAX_CHANNELS; ch++)
 			channel[ch].bpfilt->create_filter(bp_filt_lo, bp_filt_hi);
 	}
-	rtty_squelch = pow(10, progdefaults.VIEWERsquelch / 10.0);
+	rtty_squelch = pow(10, progStatus.VIEWERsquelch / 10.0);
 
 	for (int ch = 0; ch < progdefaults.VIEWERchannels; ch++) {
 		if (channel[ch].state == IDLE)
@@ -513,7 +513,7 @@ int view_rtty::rx_process(const double *buf, int buflen)
 		}
 
 		Metric(ch);
-		if (channel[ch].metric > pow(10, progdefaults.VIEWERsquelch / 10.0))
+		if (channel[ch].metric > pow(10, progStatus.VIEWERsquelch / 10.0))
 			channel[ch].frequency -= ferr;
 	}
 

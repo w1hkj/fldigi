@@ -96,6 +96,9 @@ status progStatus = {
 	30,					// uint	VIEWERnchars
 	50,					// uint	VIEWERxpos
 	50,					// uint	VIEWERypos
+	200,				// uint VIEWERwidth
+	400,				// uint VIEDWERheight
+	3.0,				// uint VIEWERsquelch
 	false,				// bool VIEWERvisible
 	false,				// bool LOGenabled
 	5.0,				// double sldrSquelchValue
@@ -209,14 +212,13 @@ void status::saveLastState()
 	rx_word_wrap = ReceiveText->get_word_wrap();
 	tx_word_wrap = TransmitText->get_word_wrap();
 
-	VIEWERvisible = false;
-	if (dlgViewer) {
-		VIEWERnchars = (brwsViewer->w() - pskBrowser::sbarwidth) /pskBrowser::cwidth;
-	}
-	if (dlgViewer && dlgViewer->visible()) {
+	VIEWERvisible = dlgViewer->visible();
+	VIEWERnchars = brwsViewer->numchars();
+	if (VIEWERvisible) {
 		VIEWERxpos = dlgViewer->x();
 		VIEWERypos = dlgViewer->y();
-		VIEWERvisible = true;
+		VIEWERwidth = dlgViewer->w();
+		VIEWERheight = dlgViewer->h();
 	}
 
 	scopeVisible = false;
@@ -307,6 +309,9 @@ if (!bWF_only) {
 	spref.set("viewer_visible", VIEWERvisible);
 	spref.set("viewer_x", static_cast<int>(VIEWERxpos));
 	spref.set("viewer_y", static_cast<int>(VIEWERypos));
+	spref.set("viewer_w", static_cast<int>(VIEWERwidth));
+	spref.set("viewer_h", static_cast<int>(VIEWERheight));
+	spref.set("viewer_squelch", VIEWERsquelch);
 	spref.set("viewer_nchars", static_cast<int>(VIEWERnchars));
 
 	spref.set("scope_visible", scopeVisible);
@@ -451,6 +456,9 @@ void status::loadLastState()
 	spref.get("viewer_visible", i, VIEWERvisible); VIEWERvisible = i;
 	spref.get("viewer_x", i, VIEWERxpos); VIEWERxpos = i;
 	spref.get("viewer_y", i, VIEWERypos); VIEWERypos = i;
+	spref.get("viewer_w", i, VIEWERwidth); VIEWERwidth = i;
+	spref.get("viewer_h", i, VIEWERheight); VIEWERheight = i;
+	spref.get("viewer_squelch", VIEWERsquelch, VIEWERsquelch);
 	spref.get("viewer_nchars", i, VIEWERnchars); VIEWERnchars = i;
 
 	spref.get("scope_visible", i, scopeVisible); scopeVisible = i;
@@ -607,10 +615,13 @@ else {
 		
 }
 
-	if (VIEWERvisible && lastmode >= MODE_PSK_FIRST && lastmode <= MODE_PSK_LAST)
+//	if (VIEWERvisible && 
+//		((lastmode >= MODE_PSK_FIRST && lastmode <= MODE_PSK_LAST) ||
+//		 lastmode == MODE_RTTY))
+	if (VIEWERvisible)
 		openViewer();
-	else
-		VIEWERvisible = false;
+//	else
+//		VIEWERvisible = false;
 
 	if (scopeview) {
 		scopeview->resize(scopeX, scopeY, scopeW, scopeH);

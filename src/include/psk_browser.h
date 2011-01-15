@@ -63,6 +63,7 @@ public:
 	void clear();
 	void clearch(int n, int freq);
 	void swap(int, int);
+	int  numchars() { return nchars; }
 };
 
 #endif

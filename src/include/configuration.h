@@ -1092,9 +1092,6 @@
         ELEM_(int, VIEWERchannels, "VIEWERCHANNELS",                                    \
               "Number of Signal Viewer Channels",                                       \
               30)                                                                       \
-        ELEM_(double, VIEWERsquelch, "VIEWERSQUELCH",                                   \
-              "Signal Viewerer squelch level (%)",                                      \
-              6.0)                                                                      \
         ELEM_(int, VIEWERtimeout, "VIEWERTIMEOUT",                                      \
               "Signal Viewer inactivity timeout (to clear text)",                       \
               15)                                                                       \
