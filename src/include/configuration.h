@@ -1092,6 +1092,9 @@
         ELEM_(int, VIEWERchannels, "VIEWERCHANNELS",                                    \
               "Number of Signal Viewer Channels",                                       \
               30)                                                                       \
+        ELEM_(int, VIEWERwidth, "VIEWERWIDTH",                                          \
+              "Width of viewer (% of full panel width)",                                \
+              25)                                                                       \
         ELEM_(int, VIEWERtimeout, "VIEWERTIMEOUT",                                      \
               "Signal Viewer inactivity timeout (to clear text)",                       \
               15)                                                                       \

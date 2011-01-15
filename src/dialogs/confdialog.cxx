@@ -340,6 +340,14 @@ static void cb_bwsrSldrSelColor(Fl_Button* o, void*) {
     progdefaults.changed = true;
 }
 
+Fl_Spinner2 *cntViewerWidth=(Fl_Spinner2 *)0;
+
+static void cb_cntViewerWidth(Fl_Spinner2* o, void*) {
+  progdefaults.VIEWERwidth = (int)(o->value());
+UI_select();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabMBars=(Fl_Group *)0;
 
 Fl_Check_Button *btnMacroMouseWheel=(Fl_Check_Button *)0;
@@ -9479,7 +9487,7 @@ ab and newline are automatically included."));
                 o->value(progdefaults.VIEWERchannels);
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Spinner2* cntChannels
-              { Fl_Spinner2* o = cntTimeout = new Fl_Spinner2(18, 107, 50, 24, _("Inactivity timeout"));
+              { Fl_Spinner2* o = cntTimeout = new Fl_Spinner2(303, 105, 50, 24, _("Inactivity timeout"));
                 cntTimeout->tooltip(_("Clear channel text after\n# seconds of inactivity"));
                 cntTimeout->box(FL_NO_BOX);
                 cntTimeout->color((Fl_Color)FL_BACKGROUND_COLOR);
@@ -9505,7 +9513,7 @@ ab and newline are automatically included."));
                 mnuViewerLabel->add("Radio frequency"); mnuViewerLabel->add("Channel number");
                 mnuViewerLabel->value(progdefaults.VIEWERlabeltype);
               } // Fl_Choice* mnuViewerLabel
-              { btnViewerFont = new Fl_Button(304, 145, 70, 24, _("Font..."));
+              { btnViewerFont = new Fl_Button(303, 145, 70, 24, _("Font..."));
                 btnViewerFont->tooltip(_("select browser font"));
                 btnViewerFont->callback((Fl_Callback*)cb_btnViewerFont);
               } // Fl_Button* btnViewerFont
@@ -9565,6 +9573,26 @@ ab and newline are automatically included."));
                 } // Fl_Button* bwsrSldrSelColor
                 o->end();
               } // Fl_Group* o
+              { Fl_Spinner2* o = cntViewerWidth = new Fl_Spinner2(18, 105, 50, 24, _("Width (% of panel)"));
+                cntViewerWidth->tooltip(_("Adjust viewer width as % of panel width"));
+                cntViewerWidth->box(FL_NO_BOX);
+                cntViewerWidth->color((Fl_Color)FL_BACKGROUND_COLOR);
+                cntViewerWidth->selection_color((Fl_Color)FL_BACKGROUND_COLOR);
+                cntViewerWidth->labeltype(FL_NORMAL_LABEL);
+                cntViewerWidth->labelfont(0);
+                cntViewerWidth->labelsize(14);
+                cntViewerWidth->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                cntViewerWidth->minimum(20);
+                cntViewerWidth->maximum(80);
+                cntViewerWidth->step(5);
+                cntViewerWidth->value(25);
+                cntViewerWidth->callback((Fl_Callback*)cb_cntViewerWidth);
+                cntViewerWidth->align(FL_ALIGN_RIGHT);
+                cntViewerWidth->when(FL_WHEN_RELEASE);
+                o->minimum(20); o->maximum(80); o->step(5);
+                o->value(progdefaults.VIEWERwidth);
+                o->labelsize(FL_NORMAL_SIZE);
+              } // Fl_Spinner2* cntViewerWidth
               o->end();
             } // Fl_Group* o
             tabBrowser->end();

@@ -2695,8 +2695,12 @@ void UI_select()
 
 UI_return:
 	if (progStatus.show_channels) {
-		mvgroup->resize(HTgroup->x(), HTgroup->y(), HTgroup->w()/2, HTgroup->h());
-		VTgroup->resize(HTgroup->x() + HTgroup->w()/2, HTgroup->y(), HTgroup->w()/2, HTgroup->h());
+		mvgroup->resize(
+			HTgroup->x(), HTgroup->y(), 
+			HTgroup->w() * progdefaults.VIEWERwidth / 100, HTgroup->h());
+		VTgroup->resize(
+			HTgroup->x() + HTgroup->w() * progdefaults.VIEWERwidth / 100, HTgroup->y(),
+			HTgroup->w() - HTgroup->w() * progdefaults.VIEWERwidth / 100, HTgroup->h());
 		mvgroup->show();
 	} else {
 		mvgroup->resize(HTgroup->x(), HTgroup->y(), 0, HTgroup->h());
@@ -4194,7 +4198,9 @@ void create_fl_digi_main_primary() {
 		HTgroup = new Fl_Group(sw, Y, HTwidth, Htext);
 		HTgroup->box(FL_DOWN_BOX);//FLAT_BOX);
 
-		mvgroup = new Fl_Group(HTgroup->x(), HTgroup->y(), HTgroup->w()/2, Htext, "");
+		mvgroup = new Fl_Group(
+			HTgroup->x(), HTgroup->y(),
+			HTgroup->w() * progdefaults.VIEWERwidth / 100, Htext, "");
 		mvgroup->box(FL_FLAT_BOX);
 
 		mainViewer = new pskBrowser(mvgroup->x(), mvgroup->y(), mvgroup->w(), Htext-20, "");
