@@ -90,6 +90,8 @@ static void trx_xmit_wfall_draw(int samplerate)
 	ENSURE_THREAD(FLMAIN_TID);
 
 	ringbuffer<double>::vector_type rv[2];
+	rv[0].buf = 0;
+	rv[1].buf = 0;
 
 #define block_read_(vec_)						\
 	while (vec_.len >= WFBLOCKSIZE) {				\
@@ -131,6 +133,8 @@ static void trx_xmit_wfall_end(int samplerate)
 		return;
 
 	ringbuffer<double>::vector_type wv[2];
+	wv[0].buf = wv[1].buf = 0;
+
 	trxrb.get_wv(wv, pad);
 	assert(wv[0].len + wv[1].len == pad);
 
@@ -154,6 +158,8 @@ void trx_xmit_wfall_queue(int samplerate, const double* buf, size_t len)
 	ENSURE_THREAD(TRX_TID);
 
 	ringbuffer<double>::vector_type wv[2];
+	wv[0].buf = wv[1].buf = 0;
+
 	trxrb.get_wv(wv, len);
 	if (unlikely(wv[0].len + wv[1].len < len)) // not enough space
 		return;
@@ -219,6 +225,7 @@ void trx_trx_receive_loop()
 	active_modem->rx_init();
 
 	ringbuffer<double>::vector_type rbvec[2];
+	rbvec[0].buf = rbvec[1].buf = 0;
 
 	while (1) {
 		try {
