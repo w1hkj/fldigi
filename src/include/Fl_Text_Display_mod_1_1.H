@@ -163,7 +163,7 @@ class Fl_Text_Display_mod: public Fl_Group {
 
     void calc_last_char();
 
-    int position_to_line( int pos, int* lineNum );
+    int position_to_line( size_t pos, int* lineNum);//int pos, int* lineNum );
     int string_width(const char* string, int length, int style);
 
     static void scroll_timer_cb(void*);

@@ -1408,12 +1408,13 @@ void Fl_Text_Display_mod::reset_absolute_top_line_number() {
 ** Find the line number of position "pos" relative to the first line of
 ** displayed text. Returns 0 if the line is not displayed.
 */
-int Fl_Text_Display_mod::position_to_line( int pos, int *lineNum ) {
+//int Fl_Text_Display_mod::position_to_line( int pos, int *lineNum ) {
+int Fl_Text_Display_mod::position_to_line( size_t pos, int *lineNum ) {
   int i;
 
   *lineNum = 0;
-  if ( pos < mFirstChar ) return 0;
-  if ( pos > mLastChar ) {
+  if ( pos < (unsigned int)mFirstChar ) return 0;
+  if ( pos > (unsigned int)mLastChar ) {
     if ( empty_vlines() ) {
       if ( mLastChar < mBuffer->length() ) {
         if ( !position_to_line( mLastChar, lineNum ) ) {
@@ -1432,7 +1433,7 @@ int Fl_Text_Display_mod::position_to_line( int pos, int *lineNum ) {
   }
 
   for ( i = mNVisibleLines - 1; i >= 0; i-- ) {
-    if ( mLineStarts[ i ] != -1 && pos >= mLineStarts[ i ] ) {
+    if ( mLineStarts[ i ] != -1 && pos >= (unsigned int)mLineStarts[ i ] ) {
       *lineNum = i;
       return 1;
     }
