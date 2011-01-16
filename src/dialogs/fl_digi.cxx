@@ -204,6 +204,7 @@ Raster				*FHdisp;
 Fl_Box				*minVTbox;
 Fl_Box				*minHTbox;
 int					oix;
+int					minRxHeight;
 
 pskBrowser			*mainViewer = (pskBrowser *)0;
 
@@ -2707,6 +2708,9 @@ UI_return:
 		VTgroup->resize(HTgroup->x(), HTgroup->y(), HTgroup->w(), HTgroup->h());
 		mvgroup->hide();
 	}
+	VTgroup->position(
+		-1, VTgroup->y() + minRxHeight, 
+		-1, VTgroup->y() + progStatus.RxTextHeight * HTgroup->h() / 100);
 	VTgroup->init_sizes();
 	HTgroup->init_sizes();
 	fl_digi_main->init_sizes();
@@ -4241,12 +4245,13 @@ void create_fl_digi_main_primary() {
 		mvgroup->resizable(mainViewer);
 		mvgroup->end();
 
-		VTgroup = new Fl_Tile(HTgroup->x() + HTwidth/2, HTgroup->y(), HTwidth / 2, Htext);
+		VTgroup = new Fl_Tile(HTgroup->x() + mvgroup->w(), HTgroup->y(), HTgroup->w() - mvgroup->w(), Htext);
 
 			int ysmall = VTgroup->y() + 66;
 			int yheight = Htext - 66 - 40;
-			int minRxHeight = progStatus.RxTextHeight;
-			minRxHeight = CLAMP(minRxHeight, ysmall, yheight);
+			minRxHeight = progStatus.RxTextHeight * VTgroup->h() / 100;
+			minRxHeight = CLAMP(minRxHeight, 66, yheight);
+			progStatus.RxTextHeight = minRxHeight * 100 / VTgroup->h();
 			int minTxHeight = Htext - minRxHeight;
 
 			minVTbox = new Fl_Box(VTgroup->x(), ysmall, VTgroup->x(), yheight);

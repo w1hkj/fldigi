@@ -77,7 +77,7 @@ status progStatus = {
 	false,				// bool Rig_Log_UI;
 	false,				// bool Rig_Contest_UI;
 	false,				// bool DOCKEDSCOPE;
-	200,				// int RxTextHeight;
+	50,					// int RxTextHeight;
 	WNOM / 2,			// int tiled_group_x;
 	false,				// bool show_channels;
 	50,					// int rigX;
@@ -186,7 +186,7 @@ void status::saveLastState()
     }
 	mainW = fl_digi_main->w();
 	mainH = fl_digi_main->h();
-	RxTextHeight = ReceiveText->h();
+	RxTextHeight = (ReceiveText->h() * 100) / VTgroup->h();
 
 	carrier = wf->Carrier();
 	mag = wf->Mag();
@@ -604,24 +604,16 @@ void status::initLastState()
 	if (mainH < HMIN || mainH > Fl::h())
 		mainH = MAX(HMIN, Fl::h() / 2);
 
-if (bWF_only) 
-	fl_digi_main->resize(mainX, mainY, mainW, Hmenu + Hwfall + Hstatus + 4);
-else {
-	fl_digi_main->resize(mainX, mainY, mainW, mainH);
+	if (bWF_only) 
+		fl_digi_main->resize(mainX, mainY, mainW, Hmenu + Hwfall + Hstatus + 4);
+	else {
+		fl_digi_main->resize(mainX, mainY, mainW, mainH);
+		set_macroLabels();
+		UI_select();
+	}
 
-	set_macroLabels();
-
-	UI_select();
-		
-}
-
-//	if (VIEWERvisible && 
-//		((lastmode >= MODE_PSK_FIRST && lastmode <= MODE_PSK_LAST) ||
-//		 lastmode == MODE_RTTY))
 	if (VIEWERvisible)
 		openViewer();
-//	else
-//		VIEWERvisible = false;
 
 	if (scopeview) {
 		scopeview->resize(scopeX, scopeY, scopeW, scopeH);
