@@ -349,7 +349,7 @@ initViewer();}
                 callback {progdefaults.VIEWERtimeout = (int)(o->value());
 progdefaults.changed = true;}
                 tooltip {Clear channel text after
-\# seconds of inactivity} xywh {303 105 50 24} align 8 value 10
+\# seconds of inactivity} xywh {18 105 50 24} align 8 value 10
                 code0 {o->minimum(1); o->maximum(180); o->step(1);}
                 code1 {o->value(progdefaults.VIEWERtimeout);}
                 code2 {o->labelsize(FL_NORMAL_SIZE);}
@@ -440,7 +440,7 @@ progdefaults.changed = true;}
     mvsquelch->redraw();
     
     progdefaults.changed = true;}
-                  tooltip {Background color for Function key group 1} xywh {43 317 80 24}
+                  tooltip {Background color of signal viewer squelch control} xywh {43 317 80 24}
                   code0 {bwsrSliderColor->color(fl_rgb_color(progdefaults.bwsrSliderColor.R, progdefaults.bwsrSliderColor.G,progdefaults.bwsrSliderColor.B));}
                 }
                 Fl_Button bwsrSldrSelColor {
@@ -463,20 +463,9 @@ progdefaults.changed = true;}
     mvsquelch->redraw();
     
     progdefaults.changed = true;}
-                  tooltip {Background color for Function key group 1} xywh {135 317 80 24}
+                  tooltip {Slider hilite color of signal viewer squelch control} xywh {135 317 80 24}
                   code0 {bwsrSldrSelColor->color(fl_rgb_color(progdefaults.bwsrSldrSelColor.R, progdefaults.bwsrSldrSelColor.G,progdefaults.bwsrSliderColor.B));}
                 }
-              }
-              Fl_Spinner cntViewerWidth {
-                label {Width (% of panel)}
-                callback {progdefaults.VIEWERwidth = (int)(o->value());
-UI_select();
-progdefaults.changed = true;}
-                tooltip {Adjust viewer width as % of panel width} xywh {18 105 50 24} align 8 minimum 20 maximum 80 step 5 value 25
-                code0 {o->minimum(20); o->maximum(80); o->step(5);}
-                code1 {o->value(progdefaults.VIEWERwidth);}
-                code2 {o->labelsize(FL_NORMAL_SIZE);}
-                class Fl_Spinner2
               }
             }
           }

@@ -50,7 +50,7 @@
 #include <FL/fl_ask.H>
 #include <FL/Fl_Pixmap.H>
 #include <FL/Fl_Image.H>
-#include <FL/Fl_Tile.H>
+//#include <FL/Fl_Tile.H>
 #include <FL/x.H>
 #include <FL/Fl_Help_Dialog.H>
 #include <FL/Fl_Progress.H>
@@ -63,6 +63,7 @@
 #include "waterfall.h"
 #include "raster.h"
 #include "progress.h"
+#include "Panel.h"
 
 #include "main.h"
 #include "threads.h"
@@ -93,7 +94,7 @@
 #include "globals.h"
 #include "misc.h"
 #include "FTextRXTX.h"
-#include "Fl_Tile_Check.h"
+//#include "Fl_Tile_Check.h"
 
 #include "confdialog.h"
 #include "configuration.h"
@@ -191,18 +192,15 @@ Fl_Light_Button		*btnRSID = (Fl_Light_Button *)0;
 Fl_Light_Button		*btnTxRSID = (Fl_Light_Button *)0;
 Fl_Button		    *btnMacroTimer = (Fl_Button *)0;
 
-Fl_Tile				*VTgroup = 0;
-Fl_Group			*HTgroup = 0;
+Panel				*text_panel = 0;
 Fl_Group			*mvgroup = 0;
-//Fl_Tile_Check		*VTgroup = 0;
-//Fl_Tile_Check		*HTgroup = 0;
+
 Fl_Group			*macroFrame1 = 0;
 Fl_Group			*macroFrame2 = 0;
 FTextRX				*ReceiveText = 0;
 FTextTX				*TransmitText = 0;
 Raster				*FHdisp;
-Fl_Box				*minVTbox;
-Fl_Box				*minHTbox;
+Fl_Box				*minbox;
 int					oix;
 int					minRxHeight;
 
@@ -1378,6 +1376,15 @@ void set_server_label(bool val)
 
 void cb_view_hide_channels(Fl_Menu_ *w, void *d)
 {
+	if (text_panel->w() != ReceiveText->w()) {
+		progStatus.tile_x = mvgroup->w();
+		progStatus.tile_w = text_panel->w();
+		progStatus.tile_y = ReceiveText->h();
+		progStatus.tile_h = text_panel->h();
+		if (!progStatus.show_channels) progStatus.show_channels = true;
+	} else
+		if (progStatus.show_channels) progStatus.show_channels = false;
+
 	progStatus.show_channels = !progStatus.show_channels;
 	UI_select();
 	return;
@@ -2413,7 +2420,7 @@ void UI_select()
 				MixerFrame->resize(0, y1, sw, HTh);
 			else
 				MixerFrame->resize(0, y1, 0, HTh);
-			HTgroup->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
+			text_panel->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
 			macroFrame1->position(x, y1);
 			y1 += Hmacros;
@@ -2427,7 +2434,7 @@ void UI_select()
 				MixerFrame->resize(0, y1, sw, HTh);
 			else
 				MixerFrame->resize(0, y1, 0, HTh);
-			HTgroup->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
+			text_panel->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
 			macroFrame2->size(w, Hmacros);
 			macroFrame2->position(x, y1);
@@ -2446,7 +2453,7 @@ void UI_select()
 				MixerFrame->resize(0, y1, sw, HTh);
 			else
 				MixerFrame->resize(0, y1, 0, HTh);
-			HTgroup->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
+			text_panel->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
 			macroFrame1->position(x, y1);
 			y1 += Hmacros;
@@ -2468,7 +2475,7 @@ void UI_select()
 				MixerFrame->resize(0, y1, sw, HTh);
 			else
 				MixerFrame->resize(0, y1, 0, HTh);
-			HTgroup->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
+			text_panel->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
 			macroFrame1->position(x, y1);
 			y1 += Hmacros;
@@ -2502,7 +2509,7 @@ void UI_select()
 				MixerFrame->resize(0, y1, sw, HTh);
 			else
 				MixerFrame->resize(0, y1, 0, HTh);
-			HTgroup->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
+			text_panel->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
 			macroFrame1->position(x, y1);
 			y1 += Hmacros;
@@ -2516,7 +2523,7 @@ void UI_select()
 				MixerFrame->resize(0, y1, sw, HTh);
 			else
 				MixerFrame->resize(0, y1, 0, HTh);
-			HTgroup->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
+			text_panel->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
 			macroFrame2->size(w, Hmacros);
 			macroFrame2->position(x, y1);
@@ -2535,7 +2542,7 @@ void UI_select()
 				MixerFrame->resize(0, y1, sw, HTh);
 			else
 				MixerFrame->resize(0, y1, 0, HTh);
-			HTgroup->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
+			text_panel->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
 			macroFrame1->position(x, y1);
 			y1 += Hmacros;
@@ -2557,7 +2564,7 @@ void UI_select()
 				MixerFrame->resize(0, y1, sw, HTh);
 			else
 				MixerFrame->resize(0, y1, 0, HTh);
-			HTgroup->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
+			text_panel->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
 			macroFrame1->position(x, y1);
 			y1 += Hmacros;
@@ -2601,7 +2608,7 @@ void UI_select()
 				MixerFrame->resize(0, y1, sw, HTh);
 			else
 				MixerFrame->resize(0, y1, 0, HTh);
-			HTgroup->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
+			text_panel->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
 			macroFrame1->position(x, y1);
 			y1 += Hmacros;
@@ -2615,7 +2622,7 @@ void UI_select()
 				MixerFrame->resize(0, y1, sw, HTh);
 			else
 				MixerFrame->resize(0, y1, 0, HTh);
-			HTgroup->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
+			text_panel->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
 			macroFrame2->size(w, Hmacros);
 			macroFrame2->position(x, y1);
@@ -2634,7 +2641,7 @@ void UI_select()
 				MixerFrame->resize(0, y1, sw, HTh);
 			else
 				MixerFrame->resize(0, y1, 0, HTh);
-			HTgroup->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
+			text_panel->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
 			macroFrame1->position(x, y1);
 			y1 += Hmacros;
@@ -2656,7 +2663,7 @@ void UI_select()
 				MixerFrame->resize(0, y1, sw, HTh);
 			else
 				MixerFrame->resize(0, y1, 0, HTh);
-			HTgroup->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
+			text_panel->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
 			macroFrame1->position(x, y1);
 			y1 += Hmacros;
@@ -2695,24 +2702,16 @@ void UI_select()
 	Status2->show();
 
 UI_return:
-	if (progStatus.show_channels) {
-		mvgroup->resize(
-			HTgroup->x(), HTgroup->y(), 
-			HTgroup->w() * progdefaults.VIEWERwidth / 100, HTgroup->h());
-		VTgroup->resize(
-			HTgroup->x() + HTgroup->w() * progdefaults.VIEWERwidth / 100, HTgroup->y(),
-			HTgroup->w() - HTgroup->w() * progdefaults.VIEWERwidth / 100, HTgroup->h());
-		mvgroup->show();
-	} else {
-		mvgroup->resize(HTgroup->x(), HTgroup->y(), 0, HTgroup->h());
-		VTgroup->resize(HTgroup->x(), HTgroup->y(), HTgroup->w(), HTgroup->h());
-		mvgroup->hide();
-	}
-	VTgroup->position(
-		-1, VTgroup->y() + minRxHeight, 
-		-1, VTgroup->y() + progStatus.RxTextHeight * HTgroup->h() / 100);
-	VTgroup->init_sizes();
-	HTgroup->init_sizes();
+	if (progStatus.show_channels)
+		text_panel->position(
+			text_panel->orgx(), text_panel->orgy(), 
+			text_panel->x() + (int)(1.0*text_panel->w()*progStatus.tile_x/progStatus.tile_w + 0.5), 
+			text_panel->y() + (int)(1.0*text_panel->h()*progStatus.tile_y/progStatus.tile_h + 0.5));
+	 else
+		text_panel->position(
+			text_panel->orgx(), text_panel->orgy(), 
+			text_panel->x(), 
+			text_panel->y() + (int)(1.0*text_panel->h()*progStatus.tile_y/progStatus.tile_h + 0.5));
 	fl_digi_main->init_sizes();
 	fl_digi_main->redraw();
 }
@@ -4199,65 +4198,55 @@ void create_fl_digi_main_primary() {
 
 		int HTwidth = progStatus.mainW - sw;
 
-		HTgroup = new Fl_Group(sw, Y, HTwidth, Htext);
-		HTgroup->box(FL_DOWN_BOX);//FLAT_BOX);
+		text_panel = new Panel(sw, Y, HTwidth, Htext);
+		text_panel->box(FL_UP_BOX);//FLAT_BOX);
 
-		mvgroup = new Fl_Group(
-			HTgroup->x(), HTgroup->y(),
-			HTgroup->w() * progdefaults.VIEWERwidth / 100, Htext, "");
-		mvgroup->box(FL_FLAT_BOX);
+			mvgroup = new Fl_Group(
+				text_panel->x(), text_panel->y(),
+				text_panel->w()/2, Htext, "");
+			mvgroup->box(FL_FLAT_BOX);
 
-		mainViewer = new pskBrowser(mvgroup->x(), mvgroup->y(), mvgroup->w(), Htext-20, "");
-		mainViewer->has_scrollbar(Fl_Browser_::VERTICAL);//_ALWAYS);//BOTH_ALWAYS);
-		mainViewer->callback((Fl_Callback*)cb_mainViewer);
-		mainViewer->setfont(progdefaults.ViewerFontnbr, progdefaults.ViewerFontsize);
-		mainViewer->tooltip(_("Left click - select\nRight click - clear line"));
-		mainViewer->seek_re = &seek_re;
+				mainViewer = new pskBrowser(mvgroup->x(), mvgroup->y(), mvgroup->w(), Htext-20, "");
+				mainViewer->has_scrollbar(Fl_Browser_::VERTICAL);//_ALWAYS);//BOTH_ALWAYS);
+				mainViewer->callback((Fl_Callback*)cb_mainViewer);
+				mainViewer->setfont(progdefaults.ViewerFontnbr, progdefaults.ViewerFontsize);
+				mainViewer->tooltip(_("Left click - select\nRight click - clear line"));
+				mainViewer->seek_re = &seek_re;
 
-		Fl_Group *g = new Fl_Group(mvgroup->x(), mvgroup->y() + Htext - 20, mvgroup->w(), 20);
-		g->box(FL_FLAT_BOX);
-	// squelch
-		mvsquelch = new Fl_Value_Slider2(g->x(), g->y(), g->w() - 65 - pad, g->h());
-		mvsquelch->type(FL_HOR_NICE_SLIDER);
-		mvsquelch->range(-6.0, 20.0);
-		mvsquelch->value(progStatus.VIEWERsquelch);
-		mvsquelch->step(0.5);
-		mvsquelch->color( fl_rgb_color(
-			progdefaults.bwsrSliderColor.R, 
-			progdefaults.bwsrSliderColor.G,
-			progdefaults.bwsrSliderColor.B));
-		mvsquelch->selection_color( fl_rgb_color(
-			progdefaults.bwsrSldrSelColor.R, 
-			progdefaults.bwsrSldrSelColor.G,
-			progdefaults.bwsrSldrSelColor.B));
-		mvsquelch->callback( (Fl_Callback *)cb_mvsquelch);
+				Fl_Group *g = new Fl_Group(mvgroup->x(), mvgroup->y() + Htext - 20, mvgroup->w(), 20);
+					g->box(FL_FLAT_BOX);
+					// squelch
+					mvsquelch = new Fl_Value_Slider2(g->x(), g->y(), g->w() - 65 - pad, g->h());
+					mvsquelch->type(FL_HOR_NICE_SLIDER);
+					mvsquelch->range(-6.0, 20.0);
+					mvsquelch->value(progStatus.VIEWERsquelch);
+					mvsquelch->step(0.5);
+					mvsquelch->color( fl_rgb_color(
+						progdefaults.bwsrSliderColor.R, 
+						progdefaults.bwsrSliderColor.G,
+						progdefaults.bwsrSliderColor.B));
+					mvsquelch->selection_color( fl_rgb_color(
+						progdefaults.bwsrSldrSelColor.R, 
+						progdefaults.bwsrSldrSelColor.G,
+						progdefaults.bwsrSldrSelColor.B));
+					mvsquelch->callback( (Fl_Callback *)cb_mvsquelch);
 
-	// clear button
-		btnClearMViewer = new Fl_Button(mvsquelch->x() + mvsquelch->w() + pad, g->y(), 65, g->h(),
-							make_icon_label(_("Clear"), edit_clear_icon));
-		btnClearMViewer->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
-		set_icon_label(btnClearMViewer);
-		btnClearMViewer->callback((Fl_Callback*)cb_btnClearMViewer);
+					// clear button
+					btnClearMViewer = new Fl_Button(mvsquelch->x() + mvsquelch->w() + pad, g->y(), 65, g->h(),
+										make_icon_label(_("Clear"), edit_clear_icon));
+					btnClearMViewer->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
+					set_icon_label(btnClearMViewer);
+					btnClearMViewer->callback((Fl_Callback*)cb_btnClearMViewer);
 
-		g->resizable(mvsquelch);
-		g->end();
+					g->resizable(mvsquelch);
+				g->end();
 
-		mvgroup->resizable(mainViewer);
-		mvgroup->end();
+				mvgroup->resizable(mainViewer);
+			mvgroup->end();
 
-		VTgroup = new Fl_Tile(HTgroup->x() + mvgroup->w(), HTgroup->y(), HTgroup->w() - mvgroup->w(), Htext);
-
-			int ysmall = VTgroup->y() + 66;
-			int yheight = Htext - 66 - 40;
-			minRxHeight = progStatus.RxTextHeight * VTgroup->h() / 100;
-			minRxHeight = CLAMP(minRxHeight, 66, yheight);
-			progStatus.RxTextHeight = minRxHeight * 100 / VTgroup->h();
-			int minTxHeight = Htext - minRxHeight;
-
-			minVTbox = new Fl_Box(VTgroup->x(), ysmall, VTgroup->x(), yheight);
-			minVTbox->hide();
-
-			ReceiveText = new FTextRX(VTgroup->x(), VTgroup->y(), VTgroup->w(), minRxHeight, "");
+			ReceiveText = new FTextRX(
+				text_panel->x() + mvgroup->w(), text_panel->y(), 
+				text_panel->w() - mvgroup->w(), text_panel->h()/2, "");
 			ReceiveText->color(
 				fl_rgb_color(
 					progdefaults.RxColor.R,
@@ -4272,11 +4261,15 @@ void create_fl_digi_main_primary() {
 			ReceiveText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
 			ReceiveText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
 
-			FHdisp = new Raster(VTgroup->x(), VTgroup->y(), VTgroup->w(), minRxHeight);
+			FHdisp = new Raster(
+				text_panel->x() + mvgroup->w(), text_panel->y(), 
+				text_panel->w() - mvgroup->w(), text_panel->h()/2);
 			FHdisp->align(FL_ALIGN_CLIP);
 			FHdisp->hide();
 
-			TransmitText = new FTextTX(VTgroup->x(), VTgroup->y() + ReceiveText->h(), VTgroup->w(), minTxHeight);
+			TransmitText = new FTextTX(
+				text_panel->x() + mvgroup->w(), text_panel->y() + ReceiveText->h(), 
+				text_panel->w() - mvgroup->w(), text_panel->h() - ReceiveText->h());
 			TransmitText->color(
 				fl_rgb_color(
 					progdefaults.TxColor.R,
@@ -4292,10 +4285,13 @@ void create_fl_digi_main_primary() {
 			TransmitText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
 			TransmitText->align(FL_ALIGN_CLIP);
 
-		VTgroup->end();
-		VTgroup->resizable(minVTbox);
+			Fl_Box *minbox = new Fl_Box(
+				text_panel->x(), text_panel->y() + 66, 
+				text_panel->w() - 100, text_panel->h() - 66 - 80);
+			minbox->hide();
 
-		HTgroup->end();
+			text_panel->resizable(minbox);
+		text_panel->end();
 
 		Y += Htext;
 
@@ -4479,7 +4475,7 @@ void create_fl_digi_main_primary() {
 		inpNotes->when(FL_WHEN_RELEASE);
 
 	fl_digi_main->end();
-	fl_digi_main->resizable(HTgroup);
+	fl_digi_main->resizable(text_panel);
 	fl_digi_main->callback(cb_wMain);
 
 	scopeview = new Fl_Double_Window(0,0,140,140, _("Scope"));

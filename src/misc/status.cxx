@@ -100,6 +100,10 @@ status progStatus = {
 	400,				// uint VIEDWERheight
 	3.0,				// uint VIEWERsquelch
 	false,				// bool VIEWERvisible
+	100,				// int		tile_x
+	200,				// int		tile_w;
+	50,					// int		tile_y;
+	100,				// int		tile_h;
 	false,				// bool LOGenabled
 	5.0,				// double sldrSquelchValue
 	true,				// bool afconoff
@@ -186,7 +190,7 @@ void status::saveLastState()
     }
 	mainW = fl_digi_main->w();
 	mainH = fl_digi_main->h();
-	RxTextHeight = (ReceiveText->h() * 100) / VTgroup->h();
+	RxTextHeight = (ReceiveText->h() * 100) / text_panel->h();//VTgroup->h();
 
 	carrier = wf->Carrier();
 	mag = wf->Mag();
@@ -229,6 +233,14 @@ void status::saveLastState()
 		scopeW = scopeview->w();
 		scopeH = scopeview->h();
 	}
+
+
+	tile_w = text_panel->w();
+	tile_y = ReceiveText->h();
+	tile_h = text_panel->h();
+	if (text_panel->w() != ReceiveText->w())
+		tile_x = text_panel->x() + text_panel->w() - ReceiveText->w();
+
 
 	contestiatones = progdefaults.contestiatones;
 	contestiabw = progdefaults.contestiabw;
@@ -313,6 +325,11 @@ if (!bWF_only) {
 	spref.set("viewer_h", static_cast<int>(VIEWERheight));
 	spref.set("viewer_squelch", VIEWERsquelch);
 	spref.set("viewer_nchars", static_cast<int>(VIEWERnchars));
+
+	spref.set("tile_x", tile_x);
+	spref.set("tile_y", tile_y);
+	spref.set("tile_w", tile_w);
+	spref.set("tile_h", tile_h);
 
 	spref.set("scope_visible", scopeVisible);
 	spref.set("scope_x", scopeX);
@@ -461,6 +478,11 @@ void status::loadLastState()
 	spref.get("viewer_squelch", VIEWERsquelch, VIEWERsquelch);
 	spref.get("viewer_nchars", i, VIEWERnchars); VIEWERnchars = i;
 
+	spref.get("tile_x", tile_x, tile_x);
+	spref.get("tile_y", tile_y, tile_y);
+	spref.get("tile_w", tile_w, tile_w);
+	spref.get("tile_h", tile_h, tile_h);
+
 	spref.get("scope_visible", i, scopeVisible); scopeVisible = i;
 	spref.get("scope_x", scopeX, scopeX);
 	spref.get("scope_y", scopeY, scopeY);
@@ -608,7 +630,9 @@ void status::initLastState()
 		fl_digi_main->resize(mainX, mainY, mainW, Hmenu + Hwfall + Hstatus + 4);
 	else {
 		fl_digi_main->resize(mainX, mainY, mainW, mainH);
+
 		set_macroLabels();
+
 		UI_select();
 	}
 

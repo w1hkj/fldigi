@@ -29,7 +29,8 @@
 #include <FL/Fl_Pack.H>
 
 #include "combo.h"
-#include "Fl_Tile_Check.h"
+//#include "Fl_Tile_Check.h"
+#include "Panel.h"
 #include "FTextRXTX.h"
 #include "raster.h"
 #include "waterfall.h"
@@ -53,12 +54,8 @@ extern Fl_Box			*hideViewer;
 extern Raster			*FHdisp;
 //extern Fl_Tile_Check	*TiledGroup;
 
-//extern Fl_Tile_Check	*VTgroup;
-extern Fl_Tile			*VTgroup;
-extern Fl_Box			*minVTbox;
-//extern Fl_Tile_Check	*HTgroup;
-extern Fl_Group			*HTgroup;
-extern Fl_Box			*minHTbox;
+extern Panel			*text_panel;
+extern Fl_Box			*minbox;
 extern Fl_Group			*MixerFrame;
 extern int				oix;
 

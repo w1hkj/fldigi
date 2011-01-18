@@ -340,14 +340,6 @@ static void cb_bwsrSldrSelColor(Fl_Button* o, void*) {
     progdefaults.changed = true;
 }
 
-Fl_Spinner2 *cntViewerWidth=(Fl_Spinner2 *)0;
-
-static void cb_cntViewerWidth(Fl_Spinner2* o, void*) {
-  progdefaults.VIEWERwidth = (int)(o->value());
-UI_select();
-progdefaults.changed = true;
-}
-
 Fl_Group *tabMBars=(Fl_Group *)0;
 
 Fl_Check_Button *btnMacroMouseWheel=(Fl_Check_Button *)0;
@@ -9487,7 +9479,7 @@ ab and newline are automatically included."));
                 o->value(progdefaults.VIEWERchannels);
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Spinner2* cntChannels
-              { Fl_Spinner2* o = cntTimeout = new Fl_Spinner2(303, 105, 50, 24, _("Inactivity timeout"));
+              { Fl_Spinner2* o = cntTimeout = new Fl_Spinner2(18, 105, 50, 24, _("Inactivity timeout"));
                 cntTimeout->tooltip(_("Clear channel text after\n# seconds of inactivity"));
                 cntTimeout->box(FL_NO_BOX);
                 cntTimeout->color((Fl_Color)FL_BACKGROUND_COLOR);
@@ -9562,37 +9554,17 @@ ab and newline are automatically included."));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP|FL_ALIGN_INSIDE);
                 { bwsrSliderColor = new Fl_Button(43, 317, 80, 24, _("Backgnd"));
-                bwsrSliderColor->tooltip(_("Background color for Function key group 1"));
+                bwsrSliderColor->tooltip(_("Background color of signal viewer squelch control"));
                 bwsrSliderColor->callback((Fl_Callback*)cb_bwsrSliderColor);
                 bwsrSliderColor->color(fl_rgb_color(progdefaults.bwsrSliderColor.R, progdefaults.bwsrSliderColor.G,progdefaults.bwsrSliderColor.B));
                 } // Fl_Button* bwsrSliderColor
                 { bwsrSldrSelColor = new Fl_Button(135, 317, 80, 24, _("Button"));
-                bwsrSldrSelColor->tooltip(_("Background color for Function key group 1"));
+                bwsrSldrSelColor->tooltip(_("Slider hilite color of signal viewer squelch control"));
                 bwsrSldrSelColor->callback((Fl_Callback*)cb_bwsrSldrSelColor);
                 bwsrSldrSelColor->color(fl_rgb_color(progdefaults.bwsrSldrSelColor.R, progdefaults.bwsrSldrSelColor.G,progdefaults.bwsrSliderColor.B));
                 } // Fl_Button* bwsrSldrSelColor
                 o->end();
               } // Fl_Group* o
-              { Fl_Spinner2* o = cntViewerWidth = new Fl_Spinner2(18, 105, 50, 24, _("Width (% of panel)"));
-                cntViewerWidth->tooltip(_("Adjust viewer width as % of panel width"));
-                cntViewerWidth->box(FL_NO_BOX);
-                cntViewerWidth->color((Fl_Color)FL_BACKGROUND_COLOR);
-                cntViewerWidth->selection_color((Fl_Color)FL_BACKGROUND_COLOR);
-                cntViewerWidth->labeltype(FL_NORMAL_LABEL);
-                cntViewerWidth->labelfont(0);
-                cntViewerWidth->labelsize(14);
-                cntViewerWidth->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
-                cntViewerWidth->minimum(20);
-                cntViewerWidth->maximum(80);
-                cntViewerWidth->step(5);
-                cntViewerWidth->value(25);
-                cntViewerWidth->callback((Fl_Callback*)cb_cntViewerWidth);
-                cntViewerWidth->align(FL_ALIGN_RIGHT);
-                cntViewerWidth->when(FL_WHEN_RELEASE);
-                o->minimum(20); o->maximum(80); o->step(5);
-                o->value(progdefaults.VIEWERwidth);
-                o->labelsize(FL_NORMAL_SIZE);
-              } // Fl_Spinner2* cntViewerWidth
               o->end();
             } // Fl_Group* o
             tabBrowser->end();

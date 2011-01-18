@@ -42,6 +42,10 @@ struct status {
 	unsigned int	VIEWERheight;
 	double	VIEWERsquelch;
 	bool	VIEWERvisible;
+	int		tile_x;
+	int		tile_w;
+	int		tile_y;
+	int		tile_h;
 	bool	LOGenabled;
 	double  sldrSquelchValue;
 	bool	afconoff;
