@@ -328,7 +328,7 @@ int x_qsoframe	= Wbtn;
 int Hmenu		= 22;
 int Hqsoframe	= pad + 3 * (Hentry + pad);
 int Hstatus		= 22;
-int Hmacros		= 22;
+int Hmacros		= 20;
 int w_inpFreq	= 80;
 int w_inpTime	= 40;
 int w_inpCall	= 120;
@@ -336,7 +336,7 @@ int w_inpName  	= 90;
 int w_inpRstIn	= 30;
 int w_inpRstOut = 30;
 int w_SerNo		= 40;
-int sw = 18 + 2 * pad;//DEFAULT_SW;
+int sw			= 22;
 
 int wf1 = pad + w_inpFreq + pad + 2*w_inpTime +  pad + w_inpCall +
           pad + w_inpName + pad + w_inpRstIn + pad + w_inpRstOut + pad;
@@ -3984,7 +3984,7 @@ void create_fl_digi_main_primary() {
 				w_inpRstOut2, h, "");
 			inpRstOut2->tooltip(_("Sent RST"));
 
-			const char *label5 = _("Nm");//_("Name");
+			const char *label5 = _("Nm");
 			Fl_Box *bx5 = new Fl_Box(pad + rightof(inpRstOut2), y,
 				static_cast<int>(fl_width(label5)), h, label5);
 			int xn = pad + bx5->x() + bx5->w();
@@ -4138,13 +4138,13 @@ void create_fl_digi_main_primary() {
 		Y = Hmenu + Hqsoframe + pad;
 
 		macroFrame2 = new Fl_Group(0, Y, progStatus.mainW, Hmacros);
-			macroFrame2->box(FL_DOWN_BOX);//FLAT_BOX);//ENGRAVED_BOX);
-			Fl_Group *btngroup2 = new Fl_Group(0, Y, progStatus.mainW - Hmacros + 4, Hmacros);
-			Wmacrobtn = (btngroup2->w() - 4) / NUMMACKEYS;
-			Hmacrobtn = (btngroup2->h() - 4);
-			wblank = (btngroup2->w() - 4 - NUMMACKEYS * Wmacrobtn) / 2;
-			xpos = 2;
-			ypos = btngroup2->y() + 2;
+			macroFrame2->box(FL_FLAT_BOX);
+			Fl_Group *btngroup2 = new Fl_Group(0, Y, progStatus.mainW - Hmacros, Hmacros);
+			Wmacrobtn = (btngroup2->w()) / NUMMACKEYS;
+			Hmacrobtn = (btngroup2->h());
+			wblank = (btngroup2->w() - NUMMACKEYS * Wmacrobtn) / 2;
+			xpos = 0;
+			ypos = btngroup2->y();
 			for (int i = 0; i < NUMMACKEYS; i++) {
 				if (i == 4 || i == 8) {
 					bx = new Fl_Box(xpos, ypos, wblank, Hmacrobtn);
@@ -4160,7 +4160,7 @@ void create_fl_digi_main_primary() {
 				xpos += Wmacrobtn;
 			}
 			btngroup2->end();
-			btnAltMacros2 = new Fl_Button(progStatus.mainW - Hmacrobtn - 2, ypos, Hmacrobtn, Hmacrobtn, "2");
+			btnAltMacros2 = new Fl_Button(progStatus.mainW - Hmacrobtn, ypos, Hmacrobtn, Hmacrobtn, "2");
 			btnAltMacros2->callback(altmacro_cb, 0);
 			btnAltMacros2->tooltip(_("Shift-key macro set"));
 			macroFrame2->resizable(btngroup2);
@@ -4172,10 +4172,9 @@ void create_fl_digi_main_primary() {
 
 		MixerFrame = new Fl_Group(0, Y, sw, Htext);
 		{
-			int Hrcvmixer = (Htext - 3 * pad) / 2;
-			int Hxmtmixer = Htext - Hrcvmixer - 3*pad;
-			MixerFrame->box(FL_FLAT_BOX);
-			valRcvMixer = new Fl_Value_Slider2(pad, Y + pad, sw - 2*pad, Hrcvmixer, "");
+			int Hrcvmixer = Htext / 2;
+			int Hxmtmixer = Htext - Hrcvmixer;
+			valRcvMixer = new Fl_Value_Slider2(MixerFrame->x(), Y, sw, Hrcvmixer, "");
 			valRcvMixer->type(FL_VERT_NICE_SLIDER);
 			valRcvMixer->color(fl_rgb_color(0,110,30));
 			valRcvMixer->selection_color(fl_rgb_color(255,255,0));
@@ -4184,7 +4183,7 @@ void create_fl_digi_main_primary() {
 			valRcvMixer->value(100.0);
 			valRcvMixer->step(1.0);
 			valRcvMixer->callback( (Fl_Callback *)cb_RcvMixer);
-			valXmtMixer = new Fl_Value_Slider2(pad, Y + 2*pad + Hrcvmixer, sw - 2*pad, Hxmtmixer, "");
+			valXmtMixer = new Fl_Value_Slider2(MixerFrame->x(), Y + Hrcvmixer, sw, Hxmtmixer, "");
 			valXmtMixer->type(FL_VERT_NICE_SLIDER);
 			valXmtMixer->color(fl_rgb_color(110,0,30));
 			valXmtMixer->selection_color(fl_rgb_color(255,255,0));
@@ -4199,24 +4198,23 @@ void create_fl_digi_main_primary() {
 		int HTwidth = progStatus.mainW - sw;
 
 		text_panel = new Panel(sw, Y, HTwidth, Htext);
-		text_panel->box(FL_UP_BOX);//FLAT_BOX);
 
 			mvgroup = new Fl_Group(
 				text_panel->x(), text_panel->y(),
 				text_panel->w()/2, Htext, "");
-			mvgroup->box(FL_FLAT_BOX);
 
-				mainViewer = new pskBrowser(mvgroup->x(), mvgroup->y(), mvgroup->w(), Htext-20, "");
-				mainViewer->has_scrollbar(Fl_Browser_::VERTICAL);//_ALWAYS);//BOTH_ALWAYS);
+				mainViewer = new pskBrowser(mvgroup->x(), mvgroup->y(), mvgroup->w(), Htext-22, "");
+				mainViewer->box(FL_DOWN_BOX);
+				mainViewer->has_scrollbar(Fl_Browser_::VERTICAL);
 				mainViewer->callback((Fl_Callback*)cb_mainViewer);
 				mainViewer->setfont(progdefaults.ViewerFontnbr, progdefaults.ViewerFontsize);
 				mainViewer->tooltip(_("Left click - select\nRight click - clear line"));
 				mainViewer->seek_re = &seek_re;
 
-				Fl_Group *g = new Fl_Group(mvgroup->x(), mvgroup->y() + Htext - 20, mvgroup->w(), 20);
-					g->box(FL_FLAT_BOX);
+				Fl_Group *g = new Fl_Group(mvgroup->x(), mvgroup->y() + Htext - 22, mvgroup->w(), 22);
+					g->box(FL_DOWN_BOX);
 					// squelch
-					mvsquelch = new Fl_Value_Slider2(g->x(), g->y(), g->w() - 65 - pad, g->h());
+					mvsquelch = new Fl_Value_Slider2(g->x()+2, g->y()+1, g->w() - 65 - 2, g->h()-2);
 					mvsquelch->type(FL_HOR_NICE_SLIDER);
 					mvsquelch->range(-6.0, 20.0);
 					mvsquelch->value(progStatus.VIEWERsquelch);
@@ -4232,7 +4230,7 @@ void create_fl_digi_main_primary() {
 					mvsquelch->callback( (Fl_Callback *)cb_mvsquelch);
 
 					// clear button
-					btnClearMViewer = new Fl_Button(mvsquelch->x() + mvsquelch->w() + pad, g->y(), 65, g->h(),
+					btnClearMViewer = new Fl_Button(mvsquelch->x() + mvsquelch->w(), g->y()+1, 65, g->h()-2,
 										make_icon_label(_("Clear"), edit_clear_icon));
 					btnClearMViewer->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
 					set_icon_label(btnClearMViewer);
@@ -4298,13 +4296,13 @@ void create_fl_digi_main_primary() {
 		Fl::add_handler(default_handler);
 
 		macroFrame1 = new Fl_Group(0, Y, progStatus.mainW, Hmacros);
-			macroFrame1->box(FL_DOWN_BOX);//FLAT_BOX);//ENGRAVED_BOX);
-			Fl_Group *btngroup1 = new Fl_Group(0, Y, progStatus.mainW - Hmacros + 4, Hmacros);
-			Wmacrobtn = (btngroup1->w() - 4) / NUMMACKEYS;
-			Hmacrobtn = (btngroup1->h() - 4);
-			wblank = (btngroup1->w() - 4 - NUMMACKEYS * Wmacrobtn) / 2;
-			xpos = 2;
-			ypos = btngroup1->y() + 2;// + row*Hbtn;
+			macroFrame1->box(FL_FLAT_BOX);
+			Fl_Group *btngroup1 = new Fl_Group(0, Y, progStatus.mainW - Hmacros, Hmacros);
+			Wmacrobtn = (btngroup1->w()) / NUMMACKEYS;
+			Hmacrobtn = (btngroup1->h());
+			wblank = (btngroup1->w() - NUMMACKEYS * Wmacrobtn) / 2;
+			xpos = 0;
+			ypos = btngroup1->y();
 			for (int i = 0; i < NUMMACKEYS; i++) {
 				if (i == 4 || i == 8) {
 					bx = new Fl_Box(xpos, ypos, wblank, Hmacrobtn);
@@ -4319,7 +4317,7 @@ void create_fl_digi_main_primary() {
 				xpos += Wmacrobtn;
 			}
 			btngroup1->end();
-			btnAltMacros1 = new Fl_Button(progStatus.mainW - Hmacrobtn - 2, ypos, Hmacrobtn, Hmacrobtn, "1");
+			btnAltMacros1 = new Fl_Button(progStatus.mainW - Hmacrobtn, ypos, Hmacrobtn, Hmacrobtn, "1");
 			btnAltMacros1->callback(altmacro_cb, 0);
 			btnAltMacros1->tooltip(_("Primary macro set"));
 			macroFrame1->resizable(btngroup1);
@@ -4394,7 +4392,7 @@ void create_fl_digi_main_primary() {
 
 			inpCall4 = new Fl_Input2(
 				rightof(Status1), Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
-				Wimd, Hstatus, "");//"Callsign:");
+				Wimd, Hstatus, "");
 			inpCall4->align(FL_ALIGN_LEFT);
 			inpCall4->tooltip(_("Other call"));
 			inpCall4->hide();
