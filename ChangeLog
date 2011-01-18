@@ -1,5 +1,10 @@
-2011-01-15  David Freese  <w1hkj@w1hkj.com>
+2011-01-18  David Freese  <w1hkj@w1hkj.com>
 
+	b68ae5f: Main Dialog Cosmetics
+	30e8827: Panel Widget
+	2c6043b: Compiler warning in trx.cxx
+	c2f5364: VTgroup position
+	cfacc55: Fl_Text_Display_mod
 	70b57ff: Viewer Width adjuster
 	e78f3e0: Viewer status
 	5d8e050: View slider color
