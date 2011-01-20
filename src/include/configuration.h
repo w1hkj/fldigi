@@ -913,6 +913,9 @@
         ELEM_(bool, macro_wheel, "MACROWHEEL",                                          \
               "Enable mouse wheel rotation to control visible macro set",               \
               false)                                                                    \
+        ELEM_(bool, mbar1_pos, "MBAR1POS",                                              \
+              "Principal macro bar position, true=above wf, false=below",               \
+              true)                                                                     \
         ELEM_(int, mbar2_pos, "MBAR2POS",                                               \
               "Position second macro button above data stream panesl",                  \
               0)                                                                        \

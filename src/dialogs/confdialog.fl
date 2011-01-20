@@ -488,37 +488,69 @@ progdefaults.changed = true;}
               label {Select \# and position of macro bars} open
               xywh {2 54 496 279} box ENGRAVED_FRAME align 18
             } {
-              Fl_Button btn_one_bar {
-                label {1 bar}
+              Fl_Button btn_oneA {
                 callback {progdefaults.mbar2_pos = 0;
+progdefaults.mbar1_pos = true;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                image {scheme-0.jpg} xywh {40 60 80 250}
+                image {scheme-0.jpg} xywh {15 65 50 240}
               }
               Fl_Button btn_twoA {
-                label {2-A}
                 callback {progdefaults.mbar2_pos = 1;
+progdefaults.mbar1_pos = true;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                image {scheme-1.jpg} xywh {153 60 80 250}
+                image {scheme-1.jpg} xywh {74 65 50 240}
               }
               Fl_Button btn_twoB {
-                label {2-B}
                 callback {progdefaults.mbar2_pos = 2;
+progdefaults.mbar1_pos = true;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                image {scheme-2.jpg} xywh {266 60 80 250}
+                image {scheme-2.jpg} xywh {133 65 50 240}
               }
               Fl_Button btn_twoC {
-                label {2-C}
                 callback {progdefaults.mbar2_pos = 3;
+progdefaults.mbar1_pos = true;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                image {scheme-3.jpg} xywh {380 60 80 250}
+                image {scheme-3.jpg} xywh {193 65 50 240}
+              }
+              Fl_Button btn_oneB {
+                callback {progdefaults.mbar2_pos = 0;
+progdefaults.mbar1_pos = false;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();}
+                image {scheme-4.jpg} xywh {252 65 50 240}
+              }
+              Fl_Button btn_twoD {
+                callback {progdefaults.mbar2_pos = 1;
+progdefaults.mbar1_pos = false;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();}
+                image {scheme-5.jpg} xywh {312 65 50 240}
+              }
+              Fl_Button btn_twoE {
+                callback {progdefaults.mbar2_pos = 2;
+progdefaults.mbar1_pos = false;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();}
+                image {scheme-6.jpg} xywh {371 65 50 240}
+              }
+              Fl_Button btn_twoF {
+                callback {progdefaults.mbar2_pos = 3;
+progdefaults.mbar1_pos = false;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();}
+                image {scheme-7.jpg} xywh {431 65 50 240}
               }
             }
           }

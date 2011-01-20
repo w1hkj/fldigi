@@ -61,10 +61,14 @@ extern Fl_Button *bwsrSliderColor;
 extern Fl_Button *bwsrSldrSelColor;
 extern Fl_Group *tabMBars;
 extern Fl_Check_Button *btnMacroMouseWheel;
-extern Fl_Button *btn_one_bar;
+extern Fl_Button *btn_oneA;
 extern Fl_Button *btn_twoA;
 extern Fl_Button *btn_twoB;
 extern Fl_Button *btn_twoC;
+extern Fl_Button *btn_oneB;
+extern Fl_Button *btn_twoD;
+extern Fl_Button *btn_twoE;
+extern Fl_Button *btn_twoF;
 extern Fl_Group *tabContest;
 #include <FL/Fl_Box.H>
 extern Fl_Box *lblSend;

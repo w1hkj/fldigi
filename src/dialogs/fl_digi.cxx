@@ -328,7 +328,7 @@ int x_qsoframe	= Wbtn;
 int Hmenu		= 22;
 int Hqsoframe	= pad + 3 * (Hentry + pad);
 int Hstatus		= 22;
-int Hmacros		= 20;
+int Hmacros		= 22;
 int w_inpFreq	= 80;
 int w_inpTime	= 40;
 int w_inpCall	= 120;
@@ -2422,10 +2422,16 @@ void UI_select()
 				MixerFrame->resize(0, y1, 0, HTh);
 			text_panel->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
-			macroFrame1->position(x, y1);
-			y1 += Hmacros;
+			if (progdefaults.mbar1_pos) {
+				macroFrame1->position(x, y1);
+				y1 += Hmacros;
+			}
 			wfpack->position(x, y1);
 			y1 += wfpack->h();
+			if (!progdefaults.mbar1_pos) {
+				macroFrame1->position(x, y1);
+				y1 += Hmacros;
+			}
 			hpack->position(x, y1);
 			break;
 		case 2:
@@ -2441,10 +2447,16 @@ void UI_select()
 			macroFrame2->show();
 			btnAltMacros1->deactivate();
 			y1 += Hmacros;
-			macroFrame1->position(x, y1);
-			y1 += Hmacros;
+			if (progdefaults.mbar1_pos) {
+				macroFrame1->position(x, y1);
+				y1 += Hmacros;
+			}
 			wfpack->position(x, y1);
 			y1 += wfpack->h();
+			if (!progdefaults.mbar1_pos) {
+				macroFrame1->position(x, y1);
+				y1 += Hmacros;
+			}
 			hpack->position(x, y1);
 			break;
 		case 3:
@@ -2455,16 +2467,22 @@ void UI_select()
 				MixerFrame->resize(0, y1, 0, HTh);
 			text_panel->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
-			macroFrame1->position(x, y1);
-			y1 += Hmacros;
+			if (progdefaults.mbar1_pos) {
+				macroFrame1->position(x, y1);
+				y1 += Hmacros;
+			}
 			wfpack->position(x, y1);
 			y1 += wfpack->h();
 			macroFrame2->size(w, Hmacros);
 			macroFrame2->position(x, y1);
 			macroFrame2->show();
 			y1 += Hmacros;
+			if (!progdefaults.mbar1_pos) {
+				macroFrame1->position(x, y1);
+				y1 += Hmacros;
+			}
 			hpack->position(x, y1);
-			btnAltMacros1->deactivate();
+			y1 += hpack->h();
 			break;
 		case 0:
 		default:
@@ -2477,10 +2495,16 @@ void UI_select()
 				MixerFrame->resize(0, y1, 0, HTh);
 			text_panel->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
-			macroFrame1->position(x, y1);
-			y1 += Hmacros;
+			if (progdefaults.mbar1_pos) {
+				macroFrame1->position(x, y1);
+				y1 += Hmacros;
+			}
 			wfpack->position(x, y1);
 			y1 += wfpack->h();
+			if (!progdefaults.mbar1_pos) {
+				macroFrame1->position(x, y1);
+				y1 += Hmacros;
+			}
 			hpack->position(x, y1);
 			break;
 		}
@@ -2511,10 +2535,16 @@ void UI_select()
 				MixerFrame->resize(0, y1, 0, HTh);
 			text_panel->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
-			macroFrame1->position(x, y1);
-			y1 += Hmacros;
+			if (progdefaults.mbar1_pos) {
+				macroFrame1->position(x, y1);
+				y1 += Hmacros;
+			}
 			wfpack->position(x, y1);
 			y1 += wfpack->h();
+			if (!progdefaults.mbar1_pos) {
+				macroFrame1->position(x, y1);
+				y1 += Hmacros;
+			}
 			hpack->position(x, y1);
 			break;
 		case 2:
@@ -2530,10 +2560,16 @@ void UI_select()
 			macroFrame2->show();
 			btnAltMacros1->deactivate();
 			y1 += Hmacros;
-			macroFrame1->position(x, y1);
-			y1 += Hmacros;
+			if (progdefaults.mbar1_pos) {
+				macroFrame1->position(x, y1);
+				y1 += Hmacros;
+			}
 			wfpack->position(x, y1);
 			y1 += wfpack->h();
+			if (!progdefaults.mbar1_pos) {
+				macroFrame1->position(x, y1);
+				y1 += Hmacros;
+			}
 			hpack->position(x, y1);
 			break;
 		case 3:
@@ -2544,14 +2580,20 @@ void UI_select()
 				MixerFrame->resize(0, y1, 0, HTh);
 			text_panel->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
-			macroFrame1->position(x, y1);
-			y1 += Hmacros;
+			if (progdefaults.mbar1_pos) {
+				macroFrame1->position(x, y1);
+				y1 += Hmacros;
+			}
 			wfpack->position(x, y1);
 			y1 += wfpack->h();
 			macroFrame2->size(w, Hmacros);
 			macroFrame2->position(x, y1);
 			macroFrame2->show();
 			y1 += Hmacros;
+			if (!progdefaults.mbar1_pos) {
+				macroFrame1->position(x, y1);
+				y1 += Hmacros;
+			}
 			hpack->position(x, y1);
 			btnAltMacros1->deactivate();
 			break;
@@ -2566,10 +2608,16 @@ void UI_select()
 				MixerFrame->resize(0, y1, 0, HTh);
 			text_panel->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
-			macroFrame1->position(x, y1);
-			y1 += Hmacros;
+			if (progdefaults.mbar1_pos) {
+				macroFrame1->position(x, y1);
+				y1 += Hmacros;
+			}
 			wfpack->position(x, y1);
 			y1 += wfpack->h();
+			if (!progdefaults.mbar1_pos) {
+				macroFrame1->position(x, y1);
+				y1 += Hmacros;
+			}
 			hpack->position(x, y1);
 			break;
 		}
@@ -2610,10 +2658,16 @@ void UI_select()
 				MixerFrame->resize(0, y1, 0, HTh);
 			text_panel->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
-			macroFrame1->position(x, y1);
-			y1 += Hmacros;
+			if (progdefaults.mbar1_pos) {
+				macroFrame1->position(x, y1);
+				y1 += Hmacros;
+			}
 			wfpack->position(x, y1);
 			y1 += wfpack->h();
+			if (!progdefaults.mbar1_pos) {
+				macroFrame1->position(x, y1);
+				y1 += macroFrame1->h();
+			}
 			hpack->position(x, y1);
 			break;
 		case 2:
@@ -2629,10 +2683,16 @@ void UI_select()
 			macroFrame2->show();
 			btnAltMacros1->deactivate();
 			y1 += Hmacros;
-			macroFrame1->position(x, y1);
-			y1 += Hmacros;
+			if (progdefaults.mbar1_pos) {
+				macroFrame1->position(x, y1);
+				y1 += Hmacros;
+			}
 			wfpack->position(x, y1);
 			y1 += wfpack->h();
+			if (!progdefaults.mbar1_pos) {
+				macroFrame1->position(x, y1);
+				y1 += Hmacros;
+			}
 			hpack->position(x, y1);
 			break;
 		case 3:
@@ -2643,14 +2703,20 @@ void UI_select()
 				MixerFrame->resize(0, y1, 0, HTh);
 			text_panel->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
-			macroFrame1->position(x, y1);
-			y1 += Hmacros;
+			if (progdefaults.mbar1_pos) {
+				macroFrame1->position(x, y1);
+				y1 += Hmacros;
+			}
 			wfpack->position(x, y1);
 			y1 += wfpack->h();
 			macroFrame2->size(w, Hmacros);
 			macroFrame2->position(x, y1);
 			macroFrame2->show();
 			y1 += Hmacros;
+			if (!progdefaults.mbar1_pos) {
+				macroFrame1->position(x, y1);
+				y1 += Hmacros;
+			}
 			hpack->position(x, y1);
 			btnAltMacros1->deactivate();
 			break;
@@ -2665,10 +2731,16 @@ void UI_select()
 				MixerFrame->resize(0, y1, 0, HTh);
 			text_panel->resize(MixerFrame->x() + MixerFrame->w(), y1, w - MixerFrame->w(), HTh);
 			y1 += HTh;
-			macroFrame1->position(x, y1);
-			y1 += Hmacros;
+			if (progdefaults.mbar1_pos) {
+				macroFrame1->position(x, y1);
+				y1 += Hmacros;
+			}
 			wfpack->position(x, y1);
 			y1 += wfpack->h();
+			if (!progdefaults.mbar1_pos) {
+				macroFrame1->position(x, y1);
+				y1 += Hmacros;
+			}
 			hpack->position(x, y1);
 			break;
 		}
@@ -4139,9 +4211,9 @@ void create_fl_digi_main_primary() {
 
 		macroFrame2 = new Fl_Group(0, Y, progStatus.mainW, Hmacros);
 			macroFrame2->box(FL_FLAT_BOX);
-			Fl_Group *btngroup2 = new Fl_Group(0, Y, progStatus.mainW - Hmacros, Hmacros);
+			Fl_Group *btngroup2 = new Fl_Group(0, Y + 1, progStatus.mainW - Hmacros, Hmacros - 1);
 			Wmacrobtn = (btngroup2->w()) / NUMMACKEYS;
-			Hmacrobtn = (btngroup2->h());
+			Hmacrobtn = btngroup2->h() - 1;
 			wblank = (btngroup2->w() - NUMMACKEYS * Wmacrobtn) / 2;
 			xpos = 0;
 			ypos = btngroup2->y();
@@ -4297,9 +4369,9 @@ void create_fl_digi_main_primary() {
 
 		macroFrame1 = new Fl_Group(0, Y, progStatus.mainW, Hmacros);
 			macroFrame1->box(FL_FLAT_BOX);
-			Fl_Group *btngroup1 = new Fl_Group(0, Y, progStatus.mainW - Hmacros, Hmacros);
+			Fl_Group *btngroup1 = new Fl_Group(0, Y+1, progStatus.mainW - Hmacros, Hmacros-1);
 			Wmacrobtn = (btngroup1->w()) / NUMMACKEYS;
-			Hmacrobtn = (btngroup1->h());
+			Hmacrobtn = btngroup1->h() - 1;
 			wblank = (btngroup1->w() - NUMMACKEYS * Wmacrobtn) / 2;
 			xpos = 0;
 			ypos = btngroup1->y();
