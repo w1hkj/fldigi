@@ -1,5 +1,6 @@
-2011-01-18  David Freese  <w1hkj@w1hkj.com>
+2011-01-20  David Freese  <w1hkj@w1hkj.com>
 
+	857cd2f: Macro Bar positions
 	b68ae5f: Main Dialog Cosmetics
 	30e8827: Panel Widget
 	2c6043b: Compiler warning in trx.cxx
