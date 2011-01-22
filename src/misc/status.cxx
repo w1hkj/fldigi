@@ -239,7 +239,7 @@ void status::saveLastState()
 	tile_y = ReceiveText->h();
 	tile_h = text_panel->h();
 	if (text_panel->w() != ReceiveText->w())
-		tile_x = text_panel->x() + text_panel->w() - ReceiveText->w();
+		tile_x = mvgroup->w();
 
 
 	contestiatones = progdefaults.contestiatones;

@@ -52,7 +52,7 @@ extern FTextTX			*TransmitText;
 extern pskBrowser		*mainViewer;
 extern Fl_Box			*hideViewer;
 extern Raster			*FHdisp;
-//extern Fl_Tile_Check	*TiledGroup;
+extern Fl_Group			*mvgroup;
 
 extern Panel			*text_panel;
 extern Fl_Box			*minbox;
