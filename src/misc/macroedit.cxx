@@ -133,7 +133,8 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<SRCHUP>\tsearch UP for signal"));
 	w->add(_("<SRCHDN>\tsearch DOWN for signal"));
 	w->add(_("<GOHOME>\treturn to sweet spot"));
-	w->add(_("<GOFREQ:NNNN>\tmove to freq NNNN"));
+	w->add(_("<GOFREQ:NNNN>\tmove to freq NNNN Hz"));
+	w->add(_("<QSY:FFF.F[:NNNN]>\tqsy to kHz, Hz"));
 
 	w->add(LINE_SEP);
 	w->add(_("<FILE:>\tinsert text file"));

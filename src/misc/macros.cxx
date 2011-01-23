@@ -148,6 +148,7 @@ void pSRCHUP(string&, size_t&);
 void pSRCHDN(string&, size_t&);
 void pGOHOME(string&, size_t&);
 void pGOFREQ(string&, size_t&);
+void pQSY(string&, size_t&);
 void pMAPIT(string&, size_t&);
 void pREPEAT(string&, size_t&);
 
@@ -219,6 +220,7 @@ MTAGS mtags[] = {
 {"<SRCHDN>",	pSRCHDN},
 {"<GOHOME>",	pGOHOME},
 {"<GOFREQ:",	pGOFREQ},
+{"<QSY:",		pQSY},
 {"<MAPIT:",		pMAPIT},
 {"<MAPIT>",		pMAPIT},
 {"<REPEAT>",	pREPEAT},
@@ -932,6 +934,42 @@ void pGOFREQ(string &s, size_t &i)
 	s.replace(i, endbracket - i + 1, "");
 }
 
+void pQSY(string &s, size_t &i)
+{
+	size_t endbracket = s.find('>',i);
+	int rf = 0;
+	int audio = 0;
+	float rfd = 0;
+	string sGoFreq = s.substr(i+5, endbracket - i - 5);
+	// no frequency(s) specified
+	if (sGoFreq.length() == 0) {
+		s.replace(i, endbracket-i+1, "");
+		return;
+	}
+	// rf first value
+	sscanf(sGoFreq.c_str(), "%f", &rfd);
+	if (rfd > 0)
+		rf = (int)(1000*rfd);
+	size_t pos;
+	if ((pos = sGoFreq.find(":")) != string::npos) {
+		// af second value
+		sGoFreq.erase(0, pos+1);
+		if (sGoFreq.length())
+			sscanf(sGoFreq.c_str(), "%d", &audio);
+		if (audio < 0) audio = 0;
+		if (audio < progdefaults.LowFreqCutoff)
+			audio = progdefaults.LowFreqCutoff;
+		if (audio > progdefaults.HighFreqCutoff)
+			audio = progdefaults.HighFreqCutoff;
+	}
+
+	if (rf && rf != wf->rfcarrier())
+		qsy(rf, audio);
+	else
+		active_modem->set_freq(audio);
+
+	s.replace(i, endbracket - i + 1, "");
+}
 
 void set_macro_env(void)
 {
