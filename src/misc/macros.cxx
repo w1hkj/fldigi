@@ -260,14 +260,19 @@ void pFILE(string &s, size_t &i)
 	string fname = s.substr(i+6, endbracket - i - 6);
 	if (fname.length() > 0) {
 		FILE *toadd = fopen(fname.c_str(), "r");
-		string buffer;
-		char c = getc(toadd);
-		while (c && !feof(toadd)) {
-			if (c != '\r') buffer += c; // damn MSDOS txt files
-			c = getc(toadd);
-			}
-		s.replace(i, endbracket - i + 1, buffer);
-		fclose(toadd);
+		if (toadd) {
+			string buffer;
+			char c = getc(toadd);
+			while (c && !feof(toadd)) {
+				if (c != '\r') buffer += c; // damn MSDOS txt files
+				c = getc(toadd);
+				}
+			s.replace(i, endbracket - i + 1, buffer);
+			fclose(toadd);
+		} else {
+			LOG_WARN("%s not found", fname.c_str());
+			s.replace(i, endbracket - i + 1, "");
+		}
 	} else
 		s.replace(i, endbracket - i + 1, "");
 }
