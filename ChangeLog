@@ -1,5 +1,6 @@
-2011-01-23  David Freese  <w1hkj@w1hkj.com>
+2011-01-25  David Freese  <w1hkj@w1hkj.com>
 
+	91d62b8: <RIGMOD <FILWID macro tags
 	bc61faf: <QSY: macro tag
 	ba6b25b: <FILE:name> exist
 	b30b314: mvgroup size restore
