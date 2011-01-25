@@ -318,8 +318,6 @@ void buildlist()
 
 int cb_qso_opMODE()
 {
-//	if (!progdefaults.docked_rig_control) return 0;
-
 #if USE_HAMLIB
 	if (progdefaults.chkUSEHAMLIBis)
 		hamlib_setmode(mode_nums[qso_opMODE->value()]);
@@ -327,19 +325,17 @@ int cb_qso_opMODE()
 #endif
 	if (progdefaults.chkUSEMEMMAPis)
 		rigMEM_setmode(qso_opMODE->value());
-	else
+	if (progdefaults.chkUSERIGCATis)
 		rigCAT_setmode(qso_opMODE->value());
+//	if (progdefaults.chkUSEXMLRPCis)
+//		MilliSleep(100);
 	return 0;
-//	if (progdefaults.chkUSERIGCATis || progdefaults.chkUSEXMLRPCis)
-//		rigCAT_setmode(qso_opMODE->value());
-//	else if (progdefaults.chkUSEMEMMAPis)
-//		rigMEM_setmode(qso_opMODE->value());
-//	return 0;
 }
 
 int cb_qso_opBW()
 {
-    if (!progdefaults.chkUSEXMLRPCis)
+	if (progdefaults.chkUSERIGCATis)
+//    if (!progdefaults.chkUSEXMLRPCis)
 		rigCAT_setwidth(qso_opBW->value());
 	return 0;
 }
@@ -353,8 +349,6 @@ void sendFreq(long int f)
 #endif
 	if (progdefaults.chkUSEMEMMAPis)
 		rigMEM_set_freq(f);
-//	else if (progdefaults.chkUSERIGCATis)
-//		rigCAT_setfreq(f);
 	else
 		rigCAT_setfreq(f);
 }

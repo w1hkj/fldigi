@@ -134,7 +134,11 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<SRCHDN>\tsearch DOWN for signal"));
 	w->add(_("<GOHOME>\treturn to sweet spot"));
 	w->add(_("<GOFREQ:NNNN>\tmove to freq NNNN Hz"));
+
+	w->add(LINE_SEP);
 	w->add(_("<QSY:FFF.F[:NNNN]>\tqsy to kHz, Hz"));
+	w->add(_("<RIGMODE:mode>\tvalid xcvr mode"));
+	w->add(_("<FILWID:width>\tvalid xcvr filter width"));
 
 	w->add(LINE_SEP);
 	w->add(_("<FILE:>\tinsert text file"));

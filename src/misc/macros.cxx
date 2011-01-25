@@ -43,6 +43,7 @@
 #include "modem.h"
 #include "qrunner.h"
 #include "waterfall.h"
+#include "rigsupport.h"
 
 #include <FL/Fl.H>
 #include <FL/filename.H>
@@ -147,8 +148,12 @@ void pWAIT(string&, size_t &);
 void pSRCHUP(string&, size_t&);
 void pSRCHDN(string&, size_t&);
 void pGOHOME(string&, size_t&);
+
 void pGOFREQ(string&, size_t&);
 void pQSY(string&, size_t&);
+void pRIGMODE(string&, size_t&);
+void pFILWID(string&, size_t&);
+
 void pMAPIT(string&, size_t&);
 void pREPEAT(string&, size_t&);
 
@@ -221,6 +226,8 @@ MTAGS mtags[] = {
 {"<GOHOME>",	pGOHOME},
 {"<GOFREQ:",	pGOFREQ},
 {"<QSY:",		pQSY},
+{"<RIGMODE:",	pRIGMODE},
+{"<FILWID:",	pFILWID},
 {"<MAPIT:",		pMAPIT},
 {"<MAPIT>",		pMAPIT},
 {"<REPEAT>",	pREPEAT},
@@ -968,6 +975,24 @@ void pQSY(string &s, size_t &i)
 	else
 		active_modem->set_freq(audio);
 
+	s.replace(i, endbracket - i + 1, "");
+}
+
+void pRIGMODE(string& s, size_t& i)
+{
+	size_t endbracket = s.find('>',i);
+	string sMode = s.substr(i+9, endbracket - i - 9);
+	qso_opMODE->value(sMode.c_str());
+	cb_qso_opMODE();
+	s.replace(i, endbracket - i + 1, "");
+}
+
+void pFILWID(string& s, size_t& i)
+{
+	size_t endbracket = s.find('>',i);
+	string sWidth = s.substr(i+8, endbracket - i - 8);
+	qso_opBW->value(sWidth.c_str());
+	cb_qso_opBW();
 	s.replace(i, endbracket - i + 1, "");
 }
 
