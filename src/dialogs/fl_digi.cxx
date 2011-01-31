@@ -4596,6 +4596,21 @@ void create_fl_digi_main_primary() {
 	createConfig();
 	if (withnoise)
 		grpNoise->show();
+
+	if (!progdefaults.mbar2_pos) {
+		if (progdefaults.mbar1_pos)
+			btn_oneA->setonly();
+		else
+			btn_oneB->setonly();
+	}
+	else if (progdefaults.mbar1_pos) {
+		Fl_Button* b[] = { btn_twoA, btn_twoB, btn_twoC, btn_twoD, btn_twoE, btn_twoF };
+		b[progdefaults.mbar2_pos - 1]->setonly();
+	}
+	else {
+		Fl_Button* b[] = { btn_twoD, btn_twoE, btn_twoF };
+		b[progdefaults.mbar2_pos - 1]->setonly();
+	}
 }
 
 void cb_mnuAltDockedscope(Fl_Menu_ *w, void *d);

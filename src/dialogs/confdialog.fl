@@ -96,7 +96,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {578 60 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {303 677 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {-4 0 521 372} color 50 selection_color 50
@@ -474,83 +474,91 @@ progdefaults.changed = true;}
             xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
-              xywh {2 335 496 30} box ENGRAVED_FRAME
+              xywh {2 250 496 40} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnMacroMouseWheel {
                 label {Mouse wheel active on macro buttons}
                 callback {progdefaults.macro_wheel = o->value();
 progdefaults.changed = true;}
-                tooltip {enable mouse wheel control of macro bar} xywh {102 341 296 20} down_box DOWN_BOX
+                tooltip {enable mouse wheel control of macro bar} xywh {12 259 296 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.macro_wheel);}
               }
             }
             Fl_Group {} {
-              label {Select \# and position of macro bars} open
-              xywh {2 54 496 279} box ENGRAVED_FRAME align 18
+              label {Number and position of macro bars} open
+              xywh {2 54 496 195} box ENGRAVED_FRAME align 21
             } {
-              Fl_Button btn_oneA {
+              Fl_Round_Button btn_oneA {
+                label {One bar (above waterfall)}
                 callback {progdefaults.mbar2_pos = 0;
 progdefaults.mbar1_pos = true;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                image {scheme-0.jpg} xywh {15 65 50 240}
+                xywh {12 84 220 20} type Radio down_box ROUND_DOWN_BOX
               }
-              Fl_Button btn_twoA {
-                callback {progdefaults.mbar2_pos = 1;
-progdefaults.mbar1_pos = true;
-progdefaults.changed = true;
-set_macroLabels();
-UI_select();}
-                image {scheme-1.jpg} xywh {74 65 50 240}
-              }
-              Fl_Button btn_twoB {
-                callback {progdefaults.mbar2_pos = 2;
-progdefaults.mbar1_pos = true;
-progdefaults.changed = true;
-set_macroLabels();
-UI_select();}
-                image {scheme-2.jpg} xywh {133 65 50 240}
-              }
-              Fl_Button btn_twoC {
-                callback {progdefaults.mbar2_pos = 3;
-progdefaults.mbar1_pos = true;
-progdefaults.changed = true;
-set_macroLabels();
-UI_select();}
-                image {scheme-3.jpg} xywh {193 65 50 240}
-              }
-              Fl_Button btn_oneB {
+              Fl_Round_Button btn_oneB {
+                label {One bar (below waterfall)}
                 callback {progdefaults.mbar2_pos = 0;
 progdefaults.mbar1_pos = false;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                image {scheme-4.jpg} xywh {252 65 50 240}
+                xywh {12 114 220 20} type Radio down_box ROUND_DOWN_BOX
               }
-              Fl_Button btn_twoD {
+              Fl_Round_Button btn_twoA {
+                label {Two bars (scheme 1)}
+                callback {progdefaults.mbar2_pos = 1;
+progdefaults.mbar1_pos = true;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();}
+                xywh {12 144 220 20} type Radio down_box ROUND_DOWN_BOX
+              }
+              Fl_Round_Button btn_twoB {
+                label {Two bars (scheme 2)}
+                callback {progdefaults.mbar2_pos = 2;
+progdefaults.mbar1_pos = true;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();}
+                xywh {242 144 219 20} type Radio down_box ROUND_DOWN_BOX
+              }
+              Fl_Round_Button btn_twoC {
+                label {Two bars (scheme 3)}
+                callback {progdefaults.mbar2_pos = 3;
+progdefaults.mbar1_pos = true;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();}
+                xywh {12 174 220 20} type Radio down_box ROUND_DOWN_BOX
+              }
+              Fl_Round_Button btn_twoD {
+                label {Two bars (scheme 4)}
                 callback {progdefaults.mbar2_pos = 1;
 progdefaults.mbar1_pos = false;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                image {scheme-5.jpg} xywh {312 65 50 240}
+                xywh {242 174 220 20} type Radio down_box ROUND_DOWN_BOX
               }
-              Fl_Button btn_twoE {
+              Fl_Round_Button btn_twoE {
+                label {Two bars (scheme 5)}
                 callback {progdefaults.mbar2_pos = 2;
 progdefaults.mbar1_pos = false;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                image {scheme-6.jpg} xywh {371 65 50 240}
+                xywh {12 204 220 20} type Radio down_box ROUND_DOWN_BOX
               }
-              Fl_Button btn_twoF {
+              Fl_Round_Button btn_twoF {
+                label {Two bars (scheme 6)}
                 callback {progdefaults.mbar2_pos = 3;
 progdefaults.mbar1_pos = false;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                image {scheme-7.jpg} xywh {431 65 50 240}
+                xywh {242 204 220 20} type Radio down_box ROUND_DOWN_BOX
               }
             }
           }
@@ -856,7 +864,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label Display open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {
               label {Colors and cursors} open
@@ -1041,7 +1049,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label {FFT Processing} open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {5 62 490 135} box ENGRAVED_FRAME
@@ -3208,7 +3216,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabSweetSpot {
             label {Sweet Spot}
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {5 60 490 75} box ENGRAVED_FRAME align 21
@@ -3444,7 +3452,7 @@ else close_talker();}
           }
           Fl_Group tabPskmail {
             label Pskmail open
-            xywh {0 50 500 320} align 5 hide
+            xywh {0 50 500 320} align 5
           } {
             Fl_Group {} {
               label {Mail Server Attributes} open

@@ -642,13 +642,5 @@ EXTRA_DIST = \
 	$(srcdir)/../data/flarq.xpm \
 	$(srcdir)/../data/mac/flarq.icns \
 	$(srcdir)/../data/win32/flarq.ico \
-	$(srcdir)/dialogs/scheme-0.jpg \
-	$(srcdir)/dialogs/scheme-1.jpg \
-	$(srcdir)/dialogs/scheme-2.jpg \
-	$(srcdir)/dialogs/scheme-3.jpg \
-	$(srcdir)/dialogs/scheme-4.jpg \
-	$(srcdir)/dialogs/scheme-5.jpg \
-	$(srcdir)/dialogs/scheme-6.jpg \
-	$(srcdir)/dialogs/scheme-7.jpg \
 	$(FLDIGI_FL_SRC) \
 	$(FLARQ_FL_SRC)
