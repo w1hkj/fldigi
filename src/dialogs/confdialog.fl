@@ -96,7 +96,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {303 677 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {303 685 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {-4 0 521 372} color 50 selection_color 50
@@ -846,10 +846,10 @@ WF_UI();}
             xywh {0 50 500 320} hide
           } {
             Fl_Check_Button btn_rx_lowercase {
-              label {print CW / RTTY / THROB / CONTESTIA in lowercase}
+              label {Print CW / RTTY / THROB / CONTESTIA in lowercase}
               callback {progdefaults.rx_lowercase = o->value();
 progdefaults.changed = true;}
-              xywh {27 75 389 15} down_box DOWN_BOX
+              xywh {27 75 389 20} down_box DOWN_BOX
               code0 {o->value(progdefaults.rx_lowercase);}
             }
           }
@@ -1177,7 +1177,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
         } {
           Fl_Group tabCW {
             label CW
-            xywh {0 50 504 320}
+            xywh {0 50 504 320} hide
           } {
             Fl_Tabs tabsCW {
               xywh {0 50 504 320} selection_color 50
@@ -1384,9 +1384,9 @@ progdefaults.changed = true;}
                     class Fl_Counter2
                   }
                   Fl_Check_Button btnQSKadjust {
-                    label {Send continuous}
+                    label {Send continuously}
                     callback {progdefaults.QSKadjust = o->value();}
-                    tooltip {Send a continuous stream of test characters} xywh {290 275 150 20} down_box DOWN_BOX
+                    tooltip {Send a continuous stream of test characters} xywh {290 275 160 20} down_box DOWN_BOX
                     code0 {o->value(progdefaults.QSKadjust);}
                   }
                   Fl_Choice mnuTestChar {
@@ -1426,7 +1426,7 @@ o->value(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[0] = ps[c];
 progdefaults.changed = true;} open
-                  xywh {167 94 47 22} down_box BORDER_BOX color 52
+                  xywh {167 94 47 22} down_box BORDER_BOX
                   code0 {o->add(szProsigns);}
                   code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[0];}
                   code2 {o->value(o->find_item(s));}
@@ -1443,7 +1443,7 @@ o->value(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[1] = ps[c];
 progdefaults.changed = true;} open
-                  xywh {167 121 47 22} down_box BORDER_BOX color 52
+                  xywh {167 121 47 22} down_box BORDER_BOX
                   code0 {o->add(szProsigns);}
                   code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[1];}
                   code2 {o->value(o->find_item(s));}
@@ -1460,7 +1460,7 @@ o->value(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[2] = ps[c];
 progdefaults.changed = true;} open
-                  xywh {167 149 47 22} down_box BORDER_BOX color 52
+                  xywh {167 149 47 22} down_box BORDER_BOX
                   code0 {o->add(szProsigns);}
                   code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[2];}
                   code2 {o->value(o->find_item(s));}
@@ -1477,7 +1477,7 @@ o->value(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[3] = ps[c];
 progdefaults.changed = true;} open
-                  xywh {167 176 47 22} down_box BORDER_BOX color 52
+                  xywh {167 176 47 22} down_box BORDER_BOX
                   code0 {o->add(szProsigns);}
                   code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[3];}
                   code2 {o->value(o->find_item(s));}
@@ -1494,7 +1494,7 @@ o->value(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[4] = ps[c];
 progdefaults.changed = true;} open
-                  xywh {167 204 47 22} down_box BORDER_BOX color 52
+                  xywh {167 204 47 22} down_box BORDER_BOX
                   code0 {o->add(szProsigns);}
                   code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[4];}
                   code2 {o->value(o->find_item(s));}
@@ -1511,7 +1511,7 @@ o->value(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[5] = ps[c];
 progdefaults.changed = true;} open
-                  xywh {167 232 47 22} down_box BORDER_BOX color 52
+                  xywh {167 232 47 22} down_box BORDER_BOX
                   code0 {o->add(szProsigns);}
                   code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[5];}
                   code2 {o->value(o->find_item(s));}
@@ -1528,7 +1528,7 @@ o->value(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[6] = ps[c];
 progdefaults.changed = true;} open
-                  xywh {167 259 47 22} down_box BORDER_BOX color 52
+                  xywh {167 259 47 22} down_box BORDER_BOX
                   code0 {o->add(szProsigns);}
                   code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[6];}
                   code2 {o->value(o->find_item(s));}
@@ -1545,7 +1545,7 @@ o->value(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[7] = ps[c];
 progdefaults.changed = true;} open
-                  xywh {167 287 47 22} down_box BORDER_BOX color 52
+                  xywh {167 287 47 22} down_box BORDER_BOX
                   code0 {o->add(szProsigns);}
                   code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[7];}
                   code2 {o->value(o->find_item(s));}
@@ -1562,7 +1562,7 @@ o->value(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[8] = ps[c];
 progdefaults.changed = true;} open
-                  xywh {167 315 47 22} down_box BORDER_BOX color 52
+                  xywh {167 315 47 22} down_box BORDER_BOX
                   code0 {o->add(szProsigns);}
                   code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[8];}
                   code2 {o->value(o->find_item(s));}
@@ -1897,7 +1897,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabPSK {
             label PSK open
-            xywh {-4 50 521 322} hide
+            xywh {-4 50 521 322}
           } {
             Fl_Tabs tabsPSK {open
               xywh {-4 50 521 322} selection_color 50
@@ -1953,16 +1953,19 @@ progdefaults.changed = true;}
                   }
                 }
                 Fl_Group {} {
-                  label {Multi-Channel Signal Processing
-Disable on very slow CPUs or Browser not used} open
-                  xywh {6 250 490 98} box ENGRAVED_FRAME align 17
+                  label {Multi-Channel Signal Processing} open
+                  xywh {6 250 490 98} box ENGRAVED_FRAME align 21
                 } {
                   Fl_Check_Button btnEnablePSKbrowsing {
                     label {Multi-channel detector}
                     callback {progdefaults.pskbrowser_on = o->value();
 progdefaults.changed = true;}
-                    xywh {67 299 70 15} down_box DOWN_BOX
+                    xywh {16 307 180 20} down_box DOWN_BOX
                     code0 {o->value(progdefaults.pskbrowser_on);}
+                  }
+                  Fl_Box {} {
+                    label {Disable on very slow CPUs of if signal browser is not used}
+                    xywh {16 277 440 20} align 20
                   }
                 }
               }
@@ -2191,7 +2194,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label {Hardware PTT} open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group grpHWPTT {
               label {h/w ptt device-pin} open
@@ -2297,7 +2300,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label RigCAT open
-            tooltip {Rig Control using xml spec file} xywh {0 50 500 320}
+            tooltip {Rig Control using xml spec file} xywh {0 50 500 320} hide
           } {
             Fl_Check_Button chkUSERIGCAT {
               label {Use RigCAT}
@@ -3216,7 +3219,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabSweetSpot {
             label {Sweet Spot}
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {open
               xywh {5 60 490 75} box ENGRAVED_FRAME align 21
@@ -3399,7 +3402,7 @@ progdefaults.changed = true;}
                 code0 {o->value(progdefaults.autoextract);}
               }
               Fl_Check_Button chkStartFlmsg {
-                label {auto open wrap folder}
+                label {Auto open wrap folder}
                 callback {progdefaults.open_flmsg = o->value();
 progdefaults.changed = true;}
                 tooltip {Autostart flmsg upon detection of compatible file} xywh {261 145 227 20} down_box DOWN_BOX
@@ -3439,7 +3442,7 @@ else close_talker();}
                 code1 {extern void close_talker();}
               }
               Fl_Box {} {
-                label {Connect/disconnect to Talker sockt server}
+                label {Connect/disconnect to Talker socket server}
                 xywh {110 311 345 20} align 20
               }
               Fl_Check_Button btn_auto_talk {
@@ -3452,7 +3455,7 @@ else close_talker();}
           }
           Fl_Group tabPskmail {
             label Pskmail open
-            xywh {0 50 500 320} align 5
+            xywh {0 50 500 320} align 5 hide
           } {
             Fl_Group {} {
               label {Mail Server Attributes} open

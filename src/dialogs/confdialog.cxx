@@ -3542,7 +3542,7 @@ ab and newline are automatically included."));
           } // Fl_Group* tabWF_UI
           { tabRxText = new Fl_Group(0, 50, 500, 320, _("Rx Text"));
             tabRxText->hide();
-            { Fl_Check_Button* o = btn_rx_lowercase = new Fl_Check_Button(27, 75, 389, 15, _("print CW / RTTY / THROB / CONTESTIA in lowercase"));
+            { Fl_Check_Button* o = btn_rx_lowercase = new Fl_Check_Button(27, 75, 389, 20, _("Print CW / RTTY / THROB / CONTESTIA in lowercase"));
               btn_rx_lowercase->down_box(FL_DOWN_BOX);
               btn_rx_lowercase->callback((Fl_Callback*)cb_btn_rx_lowercase);
               o->value(progdefaults.rx_lowercase);
@@ -3874,6 +3874,7 @@ an merging"));
           tabsModems->selection_color((Fl_Color)FL_LIGHT1);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
           { tabCW = new Fl_Group(0, 50, 504, 320, _("CW"));
+            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 504, 320);
               tabsCW->selection_color((Fl_Color)FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
@@ -4170,7 +4171,7 @@ an merging"));
                 o->value(progdefaults.CWpre);
                 o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntPostTiming
-                { Fl_Check_Button* o = btnQSKadjust = new Fl_Check_Button(290, 275, 150, 20, _("Send continuous"));
+                { Fl_Check_Button* o = btnQSKadjust = new Fl_Check_Button(290, 275, 160, 20, _("Send continuously"));
                 btnQSKadjust->tooltip(_("Send a continuous stream of test characters"));
                 btnQSKadjust->down_box(FL_DOWN_BOX);
                 btnQSKadjust->callback((Fl_Callback*)cb_btnQSKadjust);
@@ -4202,7 +4203,6 @@ an merging"));
                 } // Fl_Group* o
                 { Fl_Choice* o = mnu_prosign[0] = new Fl_Choice(167, 94, 47, 22, _("<BT>"));
                 mnu_prosign[0]->down_box(FL_BORDER_BOX);
-                mnu_prosign[0]->color((Fl_Color)FL_LIGHT2);
                 mnu_prosign[0]->callback((Fl_Callback*)cb_mnu_prosign);
                 o->add(szProsigns);
                 char s[2] = " "; s[0] = progdefaults.CW_prosigns[0];
@@ -4210,7 +4210,6 @@ an merging"));
                 } // Fl_Choice* mnu_prosign[0]
                 { Fl_Choice* o = mnu_prosign[1] = new Fl_Choice(167, 121, 47, 22, _("<AA>"));
                 mnu_prosign[1]->down_box(FL_BORDER_BOX);
-                mnu_prosign[1]->color((Fl_Color)FL_LIGHT2);
                 mnu_prosign[1]->callback((Fl_Callback*)cb_mnu_prosign1);
                 o->add(szProsigns);
                 char s[2] = " "; s[0] = progdefaults.CW_prosigns[1];
@@ -4218,7 +4217,6 @@ an merging"));
                 } // Fl_Choice* mnu_prosign[1]
                 { Fl_Choice* o = mnu_prosign[2] = new Fl_Choice(167, 149, 47, 22, _("<AS>"));
                 mnu_prosign[2]->down_box(FL_BORDER_BOX);
-                mnu_prosign[2]->color((Fl_Color)FL_LIGHT2);
                 mnu_prosign[2]->callback((Fl_Callback*)cb_mnu_prosign2);
                 o->add(szProsigns);
                 char s[2] = " "; s[0] = progdefaults.CW_prosigns[2];
@@ -4226,7 +4224,6 @@ an merging"));
                 } // Fl_Choice* mnu_prosign[2]
                 { Fl_Choice* o = mnu_prosign[3] = new Fl_Choice(167, 176, 47, 22, _("<AR>"));
                 mnu_prosign[3]->down_box(FL_BORDER_BOX);
-                mnu_prosign[3]->color((Fl_Color)FL_LIGHT2);
                 mnu_prosign[3]->callback((Fl_Callback*)cb_mnu_prosign3);
                 o->add(szProsigns);
                 char s[2] = " "; s[0] = progdefaults.CW_prosigns[3];
@@ -4234,7 +4231,6 @@ an merging"));
                 } // Fl_Choice* mnu_prosign[3]
                 { Fl_Choice* o = mnu_prosign[4] = new Fl_Choice(167, 204, 47, 22, _("<SK>"));
                 mnu_prosign[4]->down_box(FL_BORDER_BOX);
-                mnu_prosign[4]->color((Fl_Color)FL_LIGHT2);
                 mnu_prosign[4]->callback((Fl_Callback*)cb_mnu_prosign4);
                 o->add(szProsigns);
                 char s[2] = " "; s[0] = progdefaults.CW_prosigns[4];
@@ -4242,7 +4238,6 @@ an merging"));
                 } // Fl_Choice* mnu_prosign[4]
                 { Fl_Choice* o = mnu_prosign[5] = new Fl_Choice(167, 232, 47, 22, _("<KN>"));
                 mnu_prosign[5]->down_box(FL_BORDER_BOX);
-                mnu_prosign[5]->color((Fl_Color)FL_LIGHT2);
                 mnu_prosign[5]->callback((Fl_Callback*)cb_mnu_prosign5);
                 o->add(szProsigns);
                 char s[2] = " "; s[0] = progdefaults.CW_prosigns[5];
@@ -4250,7 +4245,6 @@ an merging"));
                 } // Fl_Choice* mnu_prosign[5]
                 { Fl_Choice* o = mnu_prosign[6] = new Fl_Choice(167, 259, 47, 22, _("<INT>"));
                 mnu_prosign[6]->down_box(FL_BORDER_BOX);
-                mnu_prosign[6]->color((Fl_Color)FL_LIGHT2);
                 mnu_prosign[6]->callback((Fl_Callback*)cb_mnu_prosign6);
                 o->add(szProsigns);
                 char s[2] = " "; s[0] = progdefaults.CW_prosigns[6];
@@ -4258,7 +4252,6 @@ an merging"));
                 } // Fl_Choice* mnu_prosign[6]
                 { Fl_Choice* o = mnu_prosign[7] = new Fl_Choice(167, 287, 47, 22, _("<HM>"));
                 mnu_prosign[7]->down_box(FL_BORDER_BOX);
-                mnu_prosign[7]->color((Fl_Color)FL_LIGHT2);
                 mnu_prosign[7]->callback((Fl_Callback*)cb_mnu_prosign7);
                 o->add(szProsigns);
                 char s[2] = " "; s[0] = progdefaults.CW_prosigns[7];
@@ -4266,7 +4259,6 @@ an merging"));
                 } // Fl_Choice* mnu_prosign[7]
                 { Fl_Choice* o = mnu_prosign[8] = new Fl_Choice(167, 315, 47, 22, _("<VE>"));
                 mnu_prosign[8]->down_box(FL_BORDER_BOX);
-                mnu_prosign[8]->color((Fl_Color)FL_LIGHT2);
                 mnu_prosign[8]->callback((Fl_Callback*)cb_mnu_prosign8);
                 o->add(szProsigns);
                 char s[2] = " "; s[0] = progdefaults.CW_prosigns[8];
@@ -4666,7 +4658,6 @@ an merging"));
             tabContestia->end();
           } // Fl_Group* tabContestia
           { tabPSK = new Fl_Group(-4, 50, 521, 322, _("PSK"));
-            tabPSK->hide();
             { tabsPSK = new Fl_Tabs(-4, 50, 521, 322);
               tabsPSK->selection_color((Fl_Color)FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
@@ -4748,15 +4739,17 @@ an merging"));
                 } // Fl_Counter2* o
                 o->end();
                 } // Fl_Group* o
-                { Fl_Group* o = new Fl_Group(6, 250, 490, 98, _("Multi-Channel Signal Processing\nDisable on very slow CPUs or Browser not use\
-d"));
+                { Fl_Group* o = new Fl_Group(6, 250, 490, 98, _("Multi-Channel Signal Processing"));
                 o->box(FL_ENGRAVED_FRAME);
-                o->align(FL_ALIGN_TOP|FL_ALIGN_INSIDE);
-                { Fl_Check_Button* o = btnEnablePSKbrowsing = new Fl_Check_Button(67, 299, 70, 15, _("Multi-channel detector"));
+                o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+                { Fl_Check_Button* o = btnEnablePSKbrowsing = new Fl_Check_Button(16, 307, 180, 20, _("Multi-channel detector"));
                 btnEnablePSKbrowsing->down_box(FL_DOWN_BOX);
                 btnEnablePSKbrowsing->callback((Fl_Callback*)cb_btnEnablePSKbrowsing);
                 o->value(progdefaults.pskbrowser_on);
                 } // Fl_Check_Button* btnEnablePSKbrowsing
+                { Fl_Box* o = new Fl_Box(16, 277, 440, 20, _("Disable on very slow CPUs of if signal browser is not used"));
+                o->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
+                } // Fl_Box* o
                 o->end();
                 } // Fl_Group* o
                 o->end();
@@ -5031,7 +5024,6 @@ d"));
         { tabsRig = new Fl_Tabs(0, 25, 500, 345);
           tabsRig->selection_color((Fl_Color)FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hardware PTT"));
-            o->hide();
             { grpHWPTT = new Fl_Group(5, 100, 490, 265, _("h/w ptt device-pin"));
               grpHWPTT->box(FL_ENGRAVED_FRAME);
               grpHWPTT->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -5094,6 +5086,7 @@ d"));
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("RigCAT"));
             o->tooltip(_("Rig Control using xml spec file"));
+            o->hide();
             { chkUSERIGCAT = new Fl_Check_Button(195, 60, 110, 20, _("Use RigCAT"));
               chkUSERIGCAT->tooltip(_("RigCAT used for rig control"));
               chkUSERIGCAT->down_box(FL_DOWN_BOX);
@@ -5931,7 +5924,6 @@ d frequency"));
         { tabsMisc = new Fl_Tabs(0, 25, 500, 345);
           tabsMisc->selection_color((Fl_Color)FL_LIGHT1);
           { tabSweetSpot = new Fl_Group(0, 50, 500, 320, _("Sweet Spot"));
-            tabSweetSpot->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 75);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -6118,7 +6110,7 @@ d frequency"));
                 chkAutoExtract->callback((Fl_Callback*)cb_chkAutoExtract);
                 o->value(progdefaults.autoextract);
               } // Fl_Check_Button* chkAutoExtract
-              { Fl_Check_Button* o = chkStartFlmsg = new Fl_Check_Button(261, 145, 227, 20, _("auto open wrap folder"));
+              { Fl_Check_Button* o = chkStartFlmsg = new Fl_Check_Button(261, 145, 227, 20, _("Auto open wrap folder"));
                 chkStartFlmsg->tooltip(_("Autostart flmsg upon detection of compatible file"));
                 chkStartFlmsg->down_box(FL_DOWN_BOX);
                 chkStartFlmsg->callback((Fl_Callback*)cb_chkStartFlmsg);
@@ -6148,7 +6140,7 @@ d frequency"));
                 btnConnectTalker->selection_color((Fl_Color)FL_DARK_GREEN);
                 btnConnectTalker->callback((Fl_Callback*)cb_btnConnectTalker);
               } // Fl_Light_Button* btnConnectTalker
-              { Fl_Box* o = new Fl_Box(110, 311, 345, 20, _("Connect/disconnect to Talker sockt server"));
+              { Fl_Box* o = new Fl_Box(110, 311, 345, 20, _("Connect/disconnect to Talker socket server"));
                 o->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
               } // Fl_Box* o
               { Fl_Check_Button* o = btn_auto_talk = new Fl_Check_Button(30, 339, 391, 15, _("Auto connect when fldigi opens (server must be up)"));
@@ -6162,6 +6154,7 @@ d frequency"));
           } // Fl_Group* tabFileExtraction
           { tabPskmail = new Fl_Group(0, 50, 500, 320, _("Pskmail"));
             tabPskmail->align(FL_ALIGN_TOP_LEFT);
+            tabPskmail->hide();
             { Fl_Group* o = new Fl_Group(5, 58, 490, 174, _("Mail Server Attributes"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
