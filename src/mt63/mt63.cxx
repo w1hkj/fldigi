@@ -1,8 +1,8 @@
 // ----------------------------------------------------------------------------
 //    mt63.cxx  --  MT63 modem for fldigi
 //
-//    Copyright (C) 2007-2009
-//      Dave Freese, W1HKJ
+// Copyright (C) 1999-2004 Pawel Jalocha, SP9VRC
+// Copyright (c) 2007-2011 Dave Freese, W1HKJ
 //
 // This file is part of fldigi.
 //
@@ -33,8 +33,7 @@ bool startflag = true;
 void mt63::tx_init(SoundBase *sb)
 {
 	scard = sb;
-	Tx->Preset((int)bandwidth, Interleave == 64 ? 1 : 0);
-	set_freq(500.0 + bandwidth / 2.0);
+	Tx->Preset(frequency, (int)bandwidth, Interleave == 64 ? 1 : 0);
 	flush = Tx->DataInterleave;
 	videoText();
     startflag = true;
@@ -42,10 +41,10 @@ void mt63::tx_init(SoundBase *sb)
 
 void mt63::rx_init()
 {
-	Rx->Preset( (int)bandwidth,
-                Interleave == 64 ? 1 : 0,
-                long_integral ? 32 : 16 );
-	set_freq(500.0 + bandwidth / 2.0);
+	Rx->Preset( frequency,
+				(int)bandwidth,
+				Interleave == 64 ? 1 : 0,
+				long_integral ? 32 : 16 );
 	InpLevel->Preset(64.0, 0.75);
 	escape = 0;
 }
@@ -261,14 +260,13 @@ void mt63::restart()
 
 	put_MODEstatus(mode);
 	set_scope_mode(Digiscope::BLANK);
-	set_freq(500.0 + bandwidth / 2.0);
 
-	err = Tx->Preset((int)bandwidth, Interleave == 64 ? 1 : 0);
+	err = Tx->Preset(frequency, (int)bandwidth, Interleave == 64 ? 1 : 0);
 	if (err)
 		fprintf(stderr, "mt63_txinit: init failed\n");
 	flush = Tx->DataInterleave;
 
-	err = Rx->Preset( (int)bandwidth,
+	err = Rx->Preset( frequency, (int)bandwidth,
                       Interleave == 64 ? 1 : 0,
                       long_integral ? 32 : 16);
 	if (err)
@@ -311,7 +309,6 @@ mt63::mt63 (trx_mode mt63_mode) : modem()
 	samplerate = 8000;
 	fragmentsize = 1024;
 
-//	init();
 }
 
 mt63::~mt63()
@@ -323,7 +320,16 @@ mt63::~mt63()
 	if (InpBuff) delete InpBuff;
 }
 
-void mt63::set_freq(double)
+// W1HKJ
+// user can select manual or fixed positioning of the MT63 encoder/decoder
+// progdefaults.mt63_at500 TRUE ==> fixed position
+void mt63::set_freq(double f)
 {
-	modem::set_freq(500.0 + bandwidth / 2.0);
+	if (progdefaults.mt63_at500)
+		frequency = 500 + bandwidth / 2;
+	else
+		frequency = f;
+
+	modem::set_freq(frequency);
+	rx_init();
 }

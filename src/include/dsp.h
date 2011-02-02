@@ -395,7 +395,8 @@ template <class type>
 // euqal -PI or +PI.
 
 double dspWindowHanning(double dspPhase);
-double dspWindowBlackman3(double dspPhase);
+double WindowBlackman2(double dspPhase); // from Freq 5.1 FFT analyzer
+double dspWindowBlackman3(double dspPhase); // from the Motorola BBS
 
 // ----------------------------------------------------------------------------
 // FIR shape calculation for a flat response from FreqLow to FreqUpp
@@ -479,11 +480,11 @@ class dspMixerAutoLevel
    int Process(double *Inp, int InpLen);
    int Process(double_buff *Inp) { return Process(Inp->Data, Inp->Len); }
   public:
-   int IntegLen; // mean dspPower integration time [sdspAmples]
+   int IntegLen; // mean dspPower integration time [samples]
    double MinMS;  // minimum acceptable dspAverage dspPower
    double MaxMS;  // maximum acceptable dspAverage dspPower
-   int PeakHold; // level holding time after a peak [sdspAmples]
-   int MinHold;  // minimal time between changing the mixer level [sdspAmples]
+   int PeakHold; // level holding time after a peak [samples]
+   int MinHold;  // minimal time between changing the mixer level [samples]
    int AdjStep;  // mixer level adjusting step
    int MinLevel; // mimimum allowed mixer level
    int MaxLevel; // maximum allowed mixer level
@@ -508,7 +509,7 @@ template <class typeLen>
  inline void dspLowPass2Coeff(typeLen IntegLen, dspLowPass2weight &Weight)
 { Weight.W1=1.0/IntegLen; Weight.W2=2.0/IntegLen; Weight.W5=5.0/IntegLen; }
 
-// then you can process sdspAmples
+// then you can process samples
 template <class typeInp, class typeOut, class typeW>
  inline void dspLowPass2(typeInp Inp, typeOut &Mid, typeOut &Out,
 		typeW W1, typeW W2, typeW W5)
@@ -597,9 +598,9 @@ template <class type>
 // ----------------------------------------------------------------------------
 // dspDelayLine, like dspDelay but more flexible
 // The idea is that we hold addressable history of at least MaxdspDelay
-// sdspAmples.
-// After each input batch is processed, the InpPtr points to the first sdspAmple
-// of this batch and we can address sdspAmples backwards upto MaxdspDelay.
+// samples.
+// After each input batch is processed, the InpPtr points to the first sample
+// of this batch and we can address samples backwards upto MaxdspDelay.
 // For more optimal performace we allocate more RAM than just for MaxdspDelay.
 // Infact the allocated size (MaxSize) should be at least
 // MaxdspDelay plus the largest expected input length.
@@ -613,11 +614,11 @@ template <class type>
    int Process(type *Inp, int Len);
    int Process(dspSeq<type> *Input);
    type *Line; // line storage
-   int dspDelay;	// how many (at least) backward sdspAmples are stored
+   int dspDelay;	// how many (at least) backward samples are stored
    int LineSize; // allocated size
    int DataLen; // length of the valid data
-   type *InpPtr; // first sdspAmple for the most recent processed batch
-   int InpLen;	 // number of sdspAmples for the most recent input
+   type *InpPtr; // first sample for the most recent processed batch
+   int InpLen;	 // number of samples for the most recent input
 } ;
 
 template <class type>
@@ -750,7 +751,7 @@ class dspQuadrComb
 
 // ----------------------------------------------------------------------------
 // complex mix with an oscilator (carrier)
-// here we could avoid computing sine/cos at every sdspAmple
+// here we could avoid computing sine/cos at every sample
 
 class dspCmpxMixer
 { public:
@@ -800,7 +801,7 @@ class dspRateConvLin
    double_buff Output;
   private:
    double OutStep, OutdspPhase;
-   double PrevSdspAmple;
+   double PrevSample;
 } ;
 
 // ----------------------------------------------------------------------------
@@ -1040,7 +1041,7 @@ class dspSlideWinFFT
    dsp_r2FFT FFT;		// FFT engine
    dspCmpx_buff Output;	// output buffer
    int Size; int SizeMask; // FFT size, size mask for pointer wrapping
-   int Dist; int Left;	// distance between slides, sdspAmples left before the next slide
+   int Dist; int Left;	// distance between slides, samples left before the next slide
    int Slide;		// even/odd slide
   private:
    double *SlideBuff; int SlidePtr; // sliding window buffer, pointer

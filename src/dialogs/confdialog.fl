@@ -1697,7 +1697,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabMT63 {
-            label {MT-63}
+            label {MT-63} open
             xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
@@ -1729,7 +1729,7 @@ progdefaults.changed = true;}
               }
             }
             Fl_Group {} {open
-              xywh {6 176 490 100} box ENGRAVED_FRAME
+              xywh {6 176 490 131} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnMT63_usetones {
                 label {Transmit lower start tone}
@@ -1761,6 +1761,13 @@ progdefaults.changed = true;}
                 code0 {o->value(progdefaults.mt63_tone_duration);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Spinner2
+              }
+              Fl_Check_Button btnMT63_at500 {
+                label {Allow manual tuning}
+                callback {progdefaults.mt63_at500 = !o->value();
+progdefaults.changed = true;}
+                xywh {150 269 200 20} down_box DOWN_BOX
+                code0 {o->value(!progdefaults.mt63_at500);}
               }
             }
           }

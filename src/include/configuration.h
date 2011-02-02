@@ -487,6 +487,9 @@
         ELEM_(int, mt63_tone_duration, "MT63TONEDURATION",                              \
               "Tone duration (seconds)",                                                \
               4)                                                                        \
+        ELEM_(bool, mt63_at500, "MT63AT500",                                            \
+              "Always transmit lowest tone at 500 Hz",                                  \
+              true)                                                                     \
         /* Waterfall & UI */                                                            \
         ELEM_(uchar, red, "", "",  0)                                                   \
         ELEM_(uchar, green, "", "",  255)                                               \

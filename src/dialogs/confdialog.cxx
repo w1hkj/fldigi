@@ -8208,6 +8208,13 @@ static void cb_MT63_tone_duration(Fl_Spinner2* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnMT63_at500=(Fl_Check_Button *)0;
+
+static void cb_btnMT63_at500(Fl_Check_Button* o, void*) {
+  progdefaults.mt63_at500 = !o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabOlivia=(Fl_Group *)0;
 
 Fl_Choice *mnuOlivia_Bandwidth=(Fl_Choice *)0;
@@ -11295,7 +11302,7 @@ an merging"));
               } // Fl_Check_Button* btnMT63_rx_integration
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(6, 176, 490, 100);
+            { Fl_Group* o = new Fl_Group(6, 176, 490, 131);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnMT63_usetones = new Fl_Check_Button(150, 184, 200, 20, _("Transmit lower start tone"));
                 btnMT63_usetones->down_box(FL_DOWN_BOX);
@@ -11324,6 +11331,11 @@ an merging"));
                 o->value(progdefaults.mt63_tone_duration);
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Spinner2* MT63_tone_duration
+              { Fl_Check_Button* o = btnMT63_at500 = new Fl_Check_Button(150, 269, 200, 20, _("Allow manual tuning"));
+                btnMT63_at500->down_box(FL_DOWN_BOX);
+                btnMT63_at500->callback((Fl_Callback*)cb_btnMT63_at500);
+                o->value(!progdefaults.mt63_at500);
+              } // Fl_Check_Button* btnMT63_at500
               o->end();
             } // Fl_Group* o
             tabMT63->end();
