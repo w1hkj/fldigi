@@ -34,27 +34,27 @@ const char* szAbout =
 <BODY BGCOLOR=FFFFCO TEXT=101010>\n\
 <font size=\"0\" face=\"Verdana, Arial, Helvetica\">\n\
 <CENTER>\n\
-<H1><I>Fldigi " PACKAGE_VERSION "</I></H1>\n\
+<H3><I>Fldigi " PACKAGE_VERSION "</I></H3>\n\
+<br>\n\
+Fast and Light Digital modem program\n\
 </CENTER>\n\
 <P>\n\
-<H4>Digital modem program for:</H4>\n\
-&nbsp; &nbsp; &nbsp;Linux<br>\n\
-&nbsp; &nbsp; &nbsp;FreeBSD<br>\n\
-&nbsp; &nbsp; &nbsp;OS X<br>\n\
-&nbsp; &nbsp; &nbsp;Windows<br>\n\
-<H4>Programmers:</H4>\n\
-&nbsp; &nbsp; &nbsp;Dave Freese, W1HKJ<br>\n\
-&nbsp; &nbsp; &nbsp;Stelios Bounanos, M0GLD<br>\n\
-&nbsp; &nbsp; &nbsp;Leigh Klotz, WA5ZNU<br>\n\
-<H4>Beginners' Guide:</H4>\n\
-&nbsp; &nbsp; &nbsp;Murray Greenman, ZL1BPU<br>\n\
-<br>\n\
-<P>\n\
-Copyright \251 2008-2010 Dave Freese, Stelios Bounanos, Leigh Klotz, and others.\n\
+Copyright \251 2008-2011 " FLDIGI_AUTHORS ".\n\
 <P>\n\
 Distributed under the GNU General Public License version 3 or later.<br>\n\
 This is free software: you are free to change and redistribute it.<br>\n\
 There is NO WARRANTY, to the extent permitted by law.\n\
+<H4>Programmers:</H4>\n\
+&nbsp; &nbsp; &nbsp;Dave Freese, W1HKJ<br>\n\
+&nbsp; &nbsp; &nbsp;Stelios Bounanos, M0GLD<br>\n\
+&nbsp; &nbsp; &nbsp;Leigh Klotz, WA5ZNU<br>\n\
+&nbsp; &nbsp; &nbsp;Rem\355 Chateauneu, F4ECW<br>\n\
+<H4>Localization:</H4>\n\
+&nbsp; &nbsp; &nbsp;French: St\351phane Fillod, F8CFE<br>\n\
+&nbsp; &nbsp; &nbsp;Italian: Pierfrancesco Caci, IK5PVX<br>\n\
+&nbsp; &nbsp; &nbsp;Spanish: Pavel Milanes Costa, CO7WT<br>\n\
+<H4>Beginners' Guide:</H4>\n\
+&nbsp; &nbsp; &nbsp;Murray Greenman, ZL1BPU<br>\n\
 </body>\n\
 </html>\n\
 ";
