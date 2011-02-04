@@ -202,7 +202,8 @@ void WFdisp::initMarkers() {
 // draw a marker of specified width and colour centred at freq and clrM
 inline void WFdisp::makeMarker_(int width, const RGB* color, int freq, const RGB* clrMin, RGB* clrM, const RGB* clrMax)
 {
-	if (active_modem->get_mode() == MODE_RTTY) {
+	trx_mode marker_mode = active_modem->get_mode();
+	if (marker_mode == MODE_RTTY) {
 	// rtty has two bandwidth indicators on the waterfall
 	// upper and lower frequency
 		int shift = static_cast<int>(progdefaults.rtty_shift >= 0 ?
@@ -240,10 +241,18 @@ inline void WFdisp::makeMarker_(int width, const RGB* color, int freq, const RGB
 	}
 
 	int bw_lower = -width, bw_upper = width;
+
+	if (marker_mode == MODE_MT63_500 ||
+		marker_mode == MODE_MT63_1000 ||
+		marker_mode == MODE_MT63_2000 )
+			bw_upper = (int)(width * 31 / 32);
+
 	if (bw_lower + static_cast<int>(freq+0.5) < 0)
 		bw_lower -= bw_lower + static_cast<int>(freq+0.5);
+
 	if (bw_upper + static_cast<int>(freq+0.5) > scale_width)
 		bw_upper -= bw_upper + static_cast<int>(freq+0.5) - scale_width;
+
 	// draw it
 	RGB* clrPos;
 	for (int y = 0; y < WFMARKER - 2; y++) {
@@ -309,7 +318,11 @@ void WFdisp::makeMarker()
 	RGBcursor.G = progdefaults.cursorLineRGBI.G;
 	RGBcursor.B = progdefaults.cursorLineRGBI.B;
 
-	int bw = marker_width;
+	int bw_lo = marker_width;
+	int bw_hi = marker_width;
+	if (mode >= MODE_MT63_500 && mode <= MODE_MT63_2000)
+		bw_hi = bw_hi * 31 / 32;
+
 	for (int y = 0; y < WFMARKER - 2; y++) {
 		int incr = y * scale_width;
 		int msize = (WFMARKER - 2 - y)*RGBsize*step/4;
@@ -317,12 +330,12 @@ void WFdisp::makeMarker()
 		*(clrM + incr)		=
 		*(clrM + incr + 1)	= RGBcursor;
 
-		if (xp - (bw + msize) > 0)
-			for (int i = bw - msize; i <= bw + msize; i++)
+		if (xp - (bw_lo + msize) > 0)
+			for (int i = bw_lo - msize; i <= bw_lo + msize; i++)
 				*(clrM - i + incr) = RGBcursor;
 
-		if (xp + (bw + msize) < scale_width)
-			for (int i = bw - msize; i <= bw + msize; i++)
+		if (xp + (bw_hi + msize) < scale_width)
+			for (int i = bw_hi - msize; i <= bw_hi + msize; i++)
 				*(clrM + i + incr) = RGBcursor;
 	}
 }
@@ -807,8 +820,13 @@ void WFdisp::update_waterfall() {
 	}
 
 	if (progdefaults.UseBWTracks) {
-		RGBI  *pos1 = fft_img + (carrierfreq - offset - bandwidth/2) / step;
-		RGBI  *pos2 = fft_img + (carrierfreq - offset + bandwidth/2) / step;
+		int bw_lo = bandwidth / 2;
+		int bw_hi = bandwidth / 2;
+		trx_mode mode = active_modem->get_mode();
+		if (mode >= MODE_MT63_500 && mode <= MODE_MT63_2000)
+			bw_hi = bw_hi * 31 / 32;
+		RGBI  *pos1 = fft_img + (carrierfreq - offset - bw_lo) / step;
+		RGBI  *pos2 = fft_img + (carrierfreq - offset + bw_hi) / step;
 		if (unlikely(pos2 == fft_img + disp_width))
 			pos2--;
 		if (likely(pos1 >= fft_img && pos2 < fft_img + disp_width)) {
@@ -827,9 +845,14 @@ void WFdisp::drawcolorWF() {
 	update_waterfall();
 
 	if (wantcursor && (progdefaults.UseCursorLines || progdefaults.UseCursorCenterLine) ) {
+		trx_mode mode = active_modem->get_mode();
+		int bw_lo = bandwidth / 2;
+		int bw_hi = bandwidth / 2;
+		if (mode >= MODE_MT63_500 && mode <= MODE_MT63_2000)
+			bw_hi = bw_hi * 31 / 32;
 		RGBI  *pos0 = (fft_img + cursorpos);
-		RGBI  *pos1 = (fft_img + cursorpos - bandwidth/2/step);
-		RGBI  *pos2 = (fft_img + cursorpos + bandwidth/2/step);
+		RGBI  *pos1 = (fft_img + cursorpos - bw_lo/step);
+		RGBI  *pos2 = (fft_img + cursorpos + bw_hi/step);
 		if (pos1 >= fft_img && pos2 < fft_img + disp_width)
 			for (int y = 0; y < image_height; y ++) {
 				if (progdefaults.UseCursorLines)
@@ -860,9 +883,14 @@ void WFdisp::drawgrayWF() {
 	update_waterfall();
 
 	if (wantcursor && (progdefaults.UseCursorLines || progdefaults.UseCursorCenterLine) ) {
+		trx_mode mode = active_modem->get_mode();
+		int bw_lo = bandwidth / 2;
+		int bw_hi = bandwidth / 2;
+		if (mode >= MODE_MT63_500 && mode <= MODE_MT63_2000)
+			bw_hi = bw_hi * 31 / 32;
 		RGBI  *pos0 = (fft_img + cursorpos);
-		RGBI  *pos1 = (fft_img + cursorpos - bandwidth/2/step);
-		RGBI  *pos2 = (fft_img + cursorpos + bandwidth/2/step);
+		RGBI  *pos1 = (fft_img + cursorpos - bw_lo/step);
+		RGBI  *pos2 = (fft_img + cursorpos + bw_hi/step);
 		if (pos1 >= fft_img && pos2 < fft_img + disp_width)
 			for (int y = 0; y < image_height; y ++) {
 				if (progdefaults.UseCursorLines)
@@ -923,9 +951,14 @@ void WFdisp::drawspectrum() {
 			}
 	}
 	if (wantcursor && (progdefaults.UseCursorLines || progdefaults.UseCursorCenterLine)) {
+		trx_mode mode = active_modem->get_mode();
+		int bw_lo = bandwidth / 2;
+		int bw_hi = bandwidth / 2;
+		if (mode >= MODE_MT63_500 && mode <= MODE_MT63_2000)
+			bw_hi = bw_hi * 31 / 32;
 		uchar  *pos0 = pixmap + cursorpos;
-		uchar  *pos1 = (pixmap + cursorpos - bandwidth/2/step);
-		uchar  *pos2 = (pixmap + cursorpos + bandwidth/2/step);
+		uchar  *pos1 = (pixmap + cursorpos - bw_lo/step);
+		uchar  *pos2 = (pixmap + cursorpos + bw_hi/step);
 		for (int y = 0; y < h1; y ++) {
 			if (progdefaults.UseCursorLines)
 				*pos1 = *pos2 = 255;
