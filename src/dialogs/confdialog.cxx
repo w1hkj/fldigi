@@ -10000,8 +10000,8 @@ ab and newline are automatically included."));
                 mnuViewerLabel->down_box(FL_BORDER_BOX);
                 mnuViewerLabel->callback((Fl_Callback*)cb_mnuViewerLabel);
                 mnuViewerLabel->align(FL_ALIGN_RIGHT);
-                mnuViewerLabel->add("None"); mnuViewerLabel->add("Audio frequency");
-                mnuViewerLabel->add("Radio frequency"); mnuViewerLabel->add("Channel number");
+                mnuViewerLabel->add(_("None")); mnuViewerLabel->add(_("Audio frequency"));
+                mnuViewerLabel->add(_("Radio frequency")); mnuViewerLabel->add(_("Channel number"));
                 mnuViewerLabel->value(progdefaults.VIEWERlabeltype);
               } // Fl_Choice* mnuViewerLabel
               { btnViewerFont = new Fl_Button(303, 145, 70, 24, _("Font..."));
@@ -10580,9 +10580,9 @@ an merging"));
                 mnuFFTPrefilter->down_box(FL_BORDER_BOX);
                 mnuFFTPrefilter->callback((Fl_Callback*)cb_mnuFFTPrefilter);
                 mnuFFTPrefilter->align(FL_ALIGN_RIGHT);
-                mnuFFTPrefilter->add("Rectangular"); mnuFFTPrefilter->add("Blackman");
+                mnuFFTPrefilter->add(_("Rectangular")); mnuFFTPrefilter->add("Blackman");
                 mnuFFTPrefilter->add("Hamming"); mnuFFTPrefilter->add("Hanning");
-                mnuFFTPrefilter->add("Triangular");
+                mnuFFTPrefilter->add(_("Triangular"));
                 mnuFFTPrefilter->value(progdefaults.wfPreFilter);
               } // Fl_Choice* mnuFFTPrefilter
               { Fl_Counter2* o = cntrWfwidth = new Fl_Counter2(273, 72, 95, 21, _("Upper limit"));
@@ -11235,8 +11235,8 @@ an merging"));
                 mnuHellPulse->down_box(FL_BORDER_BOX);
                 mnuHellPulse->callback((Fl_Callback*)cb_mnuHellPulse);
                 mnuHellPulse->align(FL_ALIGN_TOP_LEFT);
-                o->add("Slow (4 msec)");
-                o->add("Fast (2 msec)");
+                o->add(_("Slow (4 msec)"));
+                o->add(_("Fast (2 msec)"));
                 o->value(progdefaults.HellPulseFast);
               } // Fl_Choice* mnuHellPulse
               { Fl_Value_Slider2* o = sldrHellBW = new Fl_Value_Slider2(206, 147, 246, 20, _("Receive filter bandwidth"));
@@ -11544,7 +11544,7 @@ an merging"));
                 mnuPSKStatusTimeout->down_box(FL_BORDER_BOX);
                 mnuPSKStatusTimeout->callback((Fl_Callback*)cb_mnuPSKStatusTimeout);
                 mnuPSKStatusTimeout->align(FL_ALIGN_RIGHT);
-                o->add("Clear"); o->add("Dim");
+                o->add(_("Clear")); o->add(_("Dim"));
                 o->value(progdefaults.StatusDim);
                 } // Fl_Choice* mnuPSKStatusTimeout
                 { Fl_Counter2* o = new Fl_Counter2(156, 214, 75, 20, _("seconds"));
@@ -12292,7 +12292,7 @@ d"));
                 o->type(12);
                 o->box(FL_BORDER_BOX);
                 o->color((Fl_Color)FL_LIGHT1);
-                o->value("Control via Memory Mapped\nshared variables\ni.e.: Kachina program");
+                o->value(_("Control via Memory Mapped\nshared variables\ni.e.: Kachina program"));
               } // Fl_Output* o
               { Fl_Check_Button* o = chkUSEMEMMAP = new Fl_Check_Button(160, 147, 120, 20, _("Use Memmap"));
                 chkUSEMEMMAP->tooltip(_("Rig control via memory mapped Kachina"));
@@ -12321,7 +12321,7 @@ d"));
                 o->type(12);
                 o->box(FL_BORDER_BOX);
                 o->color((Fl_Color)FL_LIGHT1);
-                o->value("Rig control via external\nprogram using xmlrpc\nremote calls.");
+                o->value(_("Rig control via external\nprogram using xmlrpc\nremote calls."));
               } // Fl_Output* o
               { chkUSEXMLRPC = new Fl_Check_Button(160, 147, 183, 20, _("Use XML-RPC program"));
                 chkUSEXMLRPC->tooltip(_("Experimental"));

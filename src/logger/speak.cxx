@@ -26,6 +26,7 @@
 #include <fstream>
 #include <string>
 
+#include "gettext.h"
 #include "speak.h"
 #include "main.h"
 #include "status.h"
@@ -38,10 +39,10 @@
 
 using namespace std;
 
-const char *txtTalkInfo = "\
+const char *txtTalkInfo = _("\
 Save all received text, one character at a time to the following file:\n\n\
     fldigi.files\\talk\\textout.txt (Windows)\n\
-    ~/.fldigi/talk/textout.txt (Linux, OS X, Free BSD)";
+    ~/.fldigi/talk/textout.txt (Linux, OS X, Free BSD)");
 
 string speakfname = "";
 ofstream speakout;

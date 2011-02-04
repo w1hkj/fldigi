@@ -32,6 +32,7 @@
 #include <cerrno>
 #include <cstdio>
 
+#include "gettext.h"
 #include "globals.h"
 #include "modem.h"
 
@@ -111,7 +112,7 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 
 	{ MODE_SSB, &ssb_modem, "SSB", "SSB", "", "SSB", "" },
 	{ MODE_WWV, &wwv_modem, "WWV", "WWV", "", "", "" },
-	{ MODE_ANALYSIS, &anal_modem, "ANALYSIS", "Freq Analysis", "", "", "" }
+        { MODE_ANALYSIS, &anal_modem, "ANALYSIS", _("Freq Analysis"), "", "", "" }
 };
 
 std::ostream& operator<<(std::ostream& s, const qrg_mode_t& m)

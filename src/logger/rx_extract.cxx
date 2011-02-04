@@ -25,6 +25,7 @@
 #include <fstream>
 #include <string>
 
+#include "gettext.h"
 #include "rx_extract.h"
 #include "main.h"
 #include "status.h"
@@ -38,15 +39,15 @@ const char *end = "[WRAP:end]";
 const char *flmsg = "<flmsg>";
 
 #ifdef __WIN32__
-const char *txtWrapInfo = "\
+const char *txtWrapInfo = _("\
 Detect the occurance of [WRAP:beg] and [WRAP:end]\n\
 Save tags and all enclosed text to date-time stamped file, ie:\n\n\
-    NBEMS.files\\WRAP\\recv\\extract-20090127-092515.wrap";
+    NBEMS.files\\WRAP\\recv\\extract-20090127-092515.wrap");
 #else
-const char *txtWrapInfo = "\
+const char *txtWrapInfo = _("\
 Detect the occurance of [WRAP:beg] and [WRAP:end]\n\
 Save tags and all enclosed text to date-time stamped file, ie:\n\n\
-    ~/.nbems/WRAP/recv/extract-20090127-092515.wrap";
+    ~/.nbems/WRAP/recv/extract-20090127-092515.wrap");
 #endif
 
 #define   bufsize  16

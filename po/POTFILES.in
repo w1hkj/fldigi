@@ -6,9 +6,12 @@ src/dialogs/fl_digi.cxx
 src/dialogs/font_browser.cxx
 src/dialogs/Viewer.cxx
 src/fileselector/FL/Fl_Native_File_Chooser_FLTK.H
+src/globals/globals.cxx
 src/logbook/adif_io.cxx
 src/logbook/logbook.cxx
 src/logbook/logsupport.cxx
+src/logger/rx_extract.cxx
+src/logger/speak.cxx
 src/misc/configuration.cxx
 src/misc/status.cxx
 src/misc/debug.cxx

@@ -361,8 +361,8 @@ progdefaults.changed = true;}
 initViewer();
 progdefaults.changed = true;} open
                 tooltip {Appearance of label on each channel} xywh {18 145 150 24} down_box BORDER_BOX align 8
-                code0 {mnuViewerLabel->add("None"); mnuViewerLabel->add("Audio frequency");}
-                code1 {mnuViewerLabel->add("Radio frequency"); mnuViewerLabel->add("Channel number");}
+                code0 {mnuViewerLabel->add(_("None")); mnuViewerLabel->add(_("Audio frequency"));}
+                code1 {mnuViewerLabel->add(_("Radio frequency")); mnuViewerLabel->add(_("Channel number"));}
                 code3 {mnuViewerLabel->value(progdefaults.VIEWERlabeltype);}
               } {}
               Fl_Button btnViewerFont {
@@ -1078,9 +1078,9 @@ progdefaults.changed = true;}
                 callback {progdefaults.wfPreFilter = o->value();
 progdefaults.changed = true;} open
                 tooltip {Select the type of FFT prefilter} xywh {50 163 120 25} down_box BORDER_BOX align 8
-                code0 {mnuFFTPrefilter->add("Rectangular"); mnuFFTPrefilter->add("Blackman");}
+                code0 {mnuFFTPrefilter->add(_("Rectangular")); mnuFFTPrefilter->add("Blackman");}
                 code1 {mnuFFTPrefilter->add("Hamming"); mnuFFTPrefilter->add("Hanning");}
-                code2 {mnuFFTPrefilter->add("Triangular");}
+                code2 {mnuFFTPrefilter->add(_("Triangular"));}
                 code3 {mnuFFTPrefilter->value(progdefaults.wfPreFilter);}
               } {}
               Fl_Counter cntrWfwidth {
@@ -1667,8 +1667,8 @@ progdefaults.changed = true;}
                 callback {progdefaults.HellPulseFast = o->value();
 progdefaults.changed = true;} open
                 tooltip {Raised cosine pulse shape factor} xywh {15 147 150 20} down_box BORDER_BOX align 5
-                code0 {o->add("Slow (4 msec)");}
-                code1 {o->add("Fast (2 msec)");}
+                code0 {o->add(_("Slow (4 msec)"));}
+                code1 {o->add(_("Fast (2 msec)"));}
                 code2 {o->value(progdefaults.HellPulseFast);}
               } {}
               Fl_Value_Slider sldrHellBW {
@@ -1931,7 +1931,7 @@ progdefaults.changed = true;}
                     callback {progdefaults.StatusDim = o->value();
 progdefaults.changed = true;} open
                     tooltip {Behavior of s/n imd} xywh {15 214 80 20} down_box BORDER_BOX align 8
-                    code0 {o->add("Clear"); o->add("Dim");}
+                    code0 {o->add(_("Clear")); o->add(_("Dim"));}
                     code1 {o->value(progdefaults.StatusDim);}
                   } {}
                   Fl_Counter {} {
@@ -2684,7 +2684,7 @@ hamlib_restore_defaults();
             } {
               Fl_Output {} {
                 xywh {160 79 190 58} type Multiline box BORDER_BOX color 50
-                code0 {o->value("Control via Memory Mapped\\nshared variables\\ni.e.: Kachina program");}
+                code0 {o->value(_("Control via Memory Mapped\\nshared variables\\ni.e.: Kachina program"));}
               }
               Fl_Check_Button chkUSEMEMMAP {
                 label {Use Memmap}
@@ -2731,7 +2731,7 @@ progdefaults.changed = true;}
             } {
               Fl_Output {} {
                 xywh {160 79 190 58} type Multiline box BORDER_BOX color 50
-                code0 {o->value("Rig control via external\\nprogram using xmlrpc\\nremote calls.");}
+                code0 {o->value(_("Rig control via external\\nprogram using xmlrpc\\nremote calls."));}
               }
               Fl_Check_Button chkUSEXMLRPC {
                 label {Use XML-RPC program}
