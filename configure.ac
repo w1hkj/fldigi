@@ -54,7 +54,7 @@ AC_CONFIG_HEADER([src/config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 
-FLDIGI_AUTHORS="Dave Freese, Stelios Bounanos, Leigh Klotz, and others"
+FLDIGI_AUTHORS="Dave Freese, Stelios Bounanos, Leigh Klotz, Remi Chateauneu, and others"
 FLARQ_AUTHORS="Dave Freese"
 PACKAGE_HOME="http://www.w1hkj.com/Fldigi.html"
 PACKAGE_DL="http://www.w1hkj.com/Downloads.html"
