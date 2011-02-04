@@ -580,7 +580,9 @@ int configuration::setDefaults()
 	if (!WaterfallClickInsert)
 		inpWaterfallClickText->deactivate();
 
-	mnuWaterfallWheelAction->add(waterfall::wf_wheel_action);
+	for (size_t i = 0;
+	     i < sizeof(waterfall::wf_wheel_action)/sizeof(*waterfall::wf_wheel_action); i++)
+		mnuWaterfallWheelAction->add(waterfall::wf_wheel_action[i]);
 	mnuWaterfallWheelAction->value(WaterfallWheelAction);
 
 	btnStartAtSweetSpot->value(StartAtSweetSpot);

@@ -351,7 +351,7 @@ public:
 
 	enum { WF_NOP, WF_AFC_BW, WF_SIGNAL_SEARCH, WF_SQUELCH,
 	       WF_CARRIER, WF_MODEM, WF_SCROLL };
-	static const char wf_wheel_action[];
+	static const char* wf_wheel_action[7];
 	void handle_mouse_wheel(int what, int d);
 
 	Fl_Button	*btnRev;

@@ -1976,6 +1976,8 @@ void waterfall::handle_mouse_wheel(int what, int d)
 	}
 }
 
-const char waterfall::wf_wheel_action[] = "None|AFC range or BW|"
-	                                  "Signal search|Squelch level|"
-	                                  "Modem carrier|Modem|Scroll";
+const char* waterfall::wf_wheel_action[] = {
+	_("None"), _("AFC range or BW"),
+	_("Signal search"), _("Squelch level"),
+	_("Modem carrier"), _("Modem"), _("Scroll")
+};
