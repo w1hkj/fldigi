@@ -1,6 +1,31 @@
-2011-02-02  David Freese  <w1hkj@w1hkj.com>
+2011-02-04  Stelios Bounanos  <vcs@enotty.net>
 
+	37369b0: Update i18n
+	7ee39dc: Update copyright
+	3b11a86: Update About dialog box
+	9d68a57: Make wf mouse wheel action strings translatable
+
+2011-02-04  Pierfrancesco Caci  <pf@tippete.net>
+
+	355f776: Add Italian l10n
+	8cefce0: Make more strings translatable
+
+2011-02-04  Pavel Milanes Costa  <co7wt@frcuba.co.cu>
+
+	919a99f: Add Spanish l10n
+
+2011-02-03  David Freese  <w1hkj@w1hkj.com>
+
+	cfd0d02: MT63 2 tone fix
 	7cf8bcd: MT63 manual tune mod
+
+2011-01-31  Stelios Bounanos  <vcs@enotty.net>
+
+	2d474d9: Config dialog clean ups
+	81a464e: Remove macro config images
+
+2011-01-25  David Freese  <w1hkj@w1hkj.com>
+
 	91d62b8: <RIGMOD <FILWID macro tags
 	bc61faf: <QSY: macro tag
 	ba6b25b: <FILE:name> exist
