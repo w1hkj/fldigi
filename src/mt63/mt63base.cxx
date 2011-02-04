@@ -218,11 +218,9 @@ int MT63tx::SendTune(bool twotones)
 // MT63 is specified as 500, 1000 and 2000 Hz wide signal format, but in
 // fact are narrower by one carrier spacing, i.e. 0 to N-1 carriers where
 // N = 64
-// placing the 2nd tone at carrier position N allows the receiving station
-// to align the two tune carriers with the fldigi bandwidth markers.
 
 	if (twotones) {
-		i = DataCarriers;
+		i = DataCarriers - 1;
 		c = (FirstDataCarr + i * DataCarrSepar);
 		r = WindowLen + FFT.BitRevIdx[c & mask];
 		WindowBuff.Data[r].re = Ampl * FFT.Twiddle[TxVect[i]].re;
