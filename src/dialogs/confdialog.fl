@@ -96,7 +96,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {303 685 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {636 178 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {-4 0 521 372} color 50 selection_color 50
@@ -375,15 +375,6 @@ font_browser->callback(cbViewerFontBrowser);
 font_browser->show();}
                 tooltip {select browser font} xywh {303 145 70 24}
               }
-              Fl_Input txtInpSeek {
-                label {Seek Regular Expression}
-                callback {progStatus.browser_search = o->value();
-seek_re.recompile(o->value() ? o->value() : "[invalid");}
-                tooltip {Search for reg-exp in browser text(s)} xywh {18 195 360 20} align 5 when 1
-                code0 {o->labelsize(FL_NORMAL_SIZE);}
-                code1 {o->value(progStatus.browser_search.c_str());}
-                class Fl_Input2
-              }
               Fl_Check_Button btnFixedIntervals {
                 label {Fixed Intervals}
                 callback {progdefaults.VIEWERfixed = o->value();
@@ -398,7 +389,7 @@ initViewer();}
 progdefaults.changed = true;
 initViewer();}
                 tooltip {ON - Marquee style
-OFF - Clear & restart} xywh {18 225 165 20} down_box DOWN_BOX
+OFF - Clear & restart} xywh {18 183 165 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.VIEWERmarquee);}
               }
               Fl_Check_Button btnAscend {
@@ -406,19 +397,19 @@ OFF - Clear & restart} xywh {18 225 165 20} down_box DOWN_BOX
                 callback {progdefaults.VIEWERascend = o->value();
 progdefaults.changed = true;
 initViewer();}
-                tooltip {Change positions of low to high channels} xywh {18 249 253 20} down_box DOWN_BOX
+                tooltip {Change positions of low to high channels} xywh {18 207 253 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.VIEWERascend);}
               }
               Fl_Check_Button btnBrowserHistory {
                 label {Play back history when active channel selected}
                 callback {progdefaults.VIEWERhistory = o->value();
 progdefaults.changed = true;}
-                tooltip {Change positions of low to high channels} xywh {18 274 356 20} down_box DOWN_BOX
+                tooltip {Change positions of low to high channels} xywh {18 232 356 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.VIEWERhistory);}
               }
               Fl_Group {} {
                 label {Detection Level Colors} open
-                xywh {20 294 219 60} box ENGRAVED_FRAME align 17
+                xywh {20 265 219 60} box ENGRAVED_FRAME align 17
               } {
                 Fl_Button bwsrSliderColor {
                   label Backgnd
@@ -440,7 +431,7 @@ progdefaults.changed = true;}
     mvsquelch->redraw();
     
     progdefaults.changed = true;}
-                  tooltip {Background color of signal viewer squelch control} xywh {43 317 80 24}
+                  tooltip {Background color of signal viewer squelch control} xywh {43 288 80 24}
                   code0 {bwsrSliderColor->color(fl_rgb_color(progdefaults.bwsrSliderColor.R, progdefaults.bwsrSliderColor.G,progdefaults.bwsrSliderColor.B));}
                 }
                 Fl_Button bwsrSldrSelColor {
@@ -463,7 +454,7 @@ progdefaults.changed = true;}
     mvsquelch->redraw();
     
     progdefaults.changed = true;}
-                  tooltip {Slider hilite color of signal viewer squelch control} xywh {135 317 80 24}
+                  tooltip {Slider hilite color of signal viewer squelch control} xywh {135 288 80 24}
                   code0 {bwsrSldrSelColor->color(fl_rgb_color(progdefaults.bwsrSldrSelColor.R, progdefaults.bwsrSldrSelColor.G,progdefaults.bwsrSliderColor.B));}
                 }
               }

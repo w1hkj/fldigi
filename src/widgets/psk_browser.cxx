@@ -40,6 +40,7 @@
 #include "flslider2.h"
 #include "spot.h"
 #include "icons.h"
+#include "Viewer.h"
 
 using namespace std;
 
@@ -54,8 +55,6 @@ int pskBrowser::cwidth = 5;
 int pskBrowser::cheight = 12;
 int pskBrowser::sbarwidth = 16;
 
-static fre_t def_seek_re("CQ", REG_EXTENDED | REG_ICASE | REG_NOSUB);
-
 pskBrowser::pskBrowser(int x, int y, int w, int h, const char *l)
 	:Fl_Hold_Browser(x,y,w,h,l) 
 {
@@ -63,7 +62,7 @@ pskBrowser::pskBrowser(int x, int y, int w, int h, const char *l)
 	siz = 12;
 	rfc = 0LL;
 	usb = true;
-	seek_re = &def_seek_re;
+	seek_re = NULL;
 	cols[0] = 80; cols[1] = 0;
 	evalcwidth();
 	makecolors();

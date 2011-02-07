@@ -548,6 +548,8 @@ void status::loadLastState()
 
 	spref.get("browser_search", defbuffer, browser_search.c_str());
 	browser_search = defbuffer;
+	seek_re.recompile(browser_search.c_str());
+
 	free(defbuffer);
 
 //	spref.get("xml_logbook", i, xml_logbook); xml_logbook = i;

@@ -169,6 +169,9 @@
 
 using namespace std;
 
+//regular expression parser using by mainViewer (pskbrowser)
+fre_t seek_re("CQ", REG_EXTENDED | REG_ICASE | REG_NOSUB);
+
 bool bWF_only = false;
 bool withnoise = false;
 
@@ -205,6 +208,7 @@ int					oix;
 int					minRxHeight;
 
 pskBrowser			*mainViewer = (pskBrowser *)0;
+Fl_Input2			*txtInpSeek = (Fl_Input2 *)0;
 
 Fl_Box				*StatusBar = (Fl_Box *)0;
 Fl_Box				*Status2 = (Fl_Box *)0;
@@ -3529,6 +3533,20 @@ void cb_btnCW_Default(Fl_Widget *w, void *v)
 	restoreFocus();
 }
 
+static void cb_mainViewer_Seek(Fl_Input *, void *)
+{
+	static Fl_Color seek_color[2] = { FL_FOREGROUND_COLOR,
+					  adjust_color(FL_RED, FL_BACKGROUND2_COLOR) }; // invalid RE
+	seek_re.recompile(*txtInpSeek->value() ? txtInpSeek->value() : "[invalid");
+	if (txtInpSeek->textcolor() != seek_color[!seek_re]) {
+		txtInpSeek->textcolor(seek_color[!seek_re]);
+		txtInpSeek->redraw();
+	}
+	progStatus.browser_search = txtInpSeek->value();
+	if (viewer_inp_seek)
+		viewer_inp_seek->value(progStatus.browser_search.c_str());
+}
+
 static void cb_mainViewer(Fl_Hold_Browser*, void*) {
 	if (!pskviewer && !rttyviewer) return;
 	int sel = mainViewer->value();
@@ -4275,13 +4293,33 @@ void create_fl_digi_main_primary() {
 				text_panel->x(), text_panel->y(),
 				text_panel->w()/2, Htext, "");
 
-				mainViewer = new pskBrowser(mvgroup->x(), mvgroup->y(), mvgroup->w(), Htext-22, "");
+//				mainViewer = new pskBrowser(mvgroup->x(), mvgroup->y(), mvgroup->w(), Htext-22, "");
+				mainViewer = new pskBrowser(mvgroup->x(), mvgroup->y(), mvgroup->w(), Htext-42, "");
 				mainViewer->box(FL_DOWN_BOX);
 				mainViewer->has_scrollbar(Fl_Browser_::VERTICAL);
 				mainViewer->callback((Fl_Callback*)cb_mainViewer);
 				mainViewer->setfont(progdefaults.ViewerFontnbr, progdefaults.ViewerFontsize);
 				mainViewer->tooltip(_("Left click - select\nRight click - clear line"));
+// mainViewer uses same regular expression evaluator as Viewer
 				mainViewer->seek_re = &seek_re;
+
+				Fl_Group* gseek = new Fl_Group(mvgroup->x(), mvgroup->y() + Htext - 42, mvgroup->w(), 20);
+// search field
+//					const char* label = _("Find: ");
+//					fl_font(FL_HELVETICA, FL_NORMAL_SIZE);
+//					int label_w = static_cast<int>(fl_width(label));
+					int seek_x = mvgroup->x() + 2;
+					int seek_y = mvgroup->y() + Htext - 42;
+					int seek_w = mvgroup->w() - 4;
+					txtInpSeek = new Fl_Input2( seek_x, seek_y, seek_w, gseek->h(), "");
+					txtInpSeek->callback((Fl_Callback*)cb_mainViewer_Seek);
+					txtInpSeek->when(FL_WHEN_CHANGED);
+					txtInpSeek->textfont(FL_COURIER);
+					txtInpSeek->value(progStatus.browser_search.c_str());
+					txtInpSeek->do_callback();
+					txtInpSeek->tooltip(_("seek - regular expression"));
+					gseek->resizable(txtInpSeek);
+				gseek->end();
 
 				Fl_Group *g = new Fl_Group(mvgroup->x(), mvgroup->y() + Htext - 22, mvgroup->w(), 22);
 					g->box(FL_DOWN_BOX);
@@ -4300,6 +4338,7 @@ void create_fl_digi_main_primary() {
 						progdefaults.bwsrSldrSelColor.G,
 						progdefaults.bwsrSldrSelColor.B));
 					mvsquelch->callback( (Fl_Callback *)cb_mvsquelch);
+					mvsquelch->tooltip(_("Set Viewer Squelch"));
 
 					// clear button
 					btnClearMViewer = new Fl_Button(mvsquelch->x() + mvsquelch->w(), g->y()+1, 65, g->h()-2,

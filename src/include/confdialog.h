@@ -52,7 +52,6 @@ extern Fl_Spinner2 *cntChannels;
 extern Fl_Spinner2 *cntTimeout;
 extern Fl_Choice *mnuViewerLabel;
 extern Fl_Button *btnViewerFont;
-extern Fl_Input2 *txtInpSeek;
 extern Fl_Check_Button *btnFixedIntervals;
 extern Fl_Check_Button *btnMarquee;
 extern Fl_Check_Button *btnAscend;

@@ -38,7 +38,6 @@
 #include "re.h"
 #include "gettext.h"
 #include "flmisc.h"
-#include "flinput2.h"
 #include "spot.h"
 #include "icons.h"
 
@@ -56,6 +55,7 @@ using namespace std;
 Fl_Double_Window *dlgViewer = 0;
 static Fl_Button *btnCloseViewer;
 static Fl_Button *btnClearViewer;
+Fl_Input2  *viewer_inp_seek;
 
 Fl_Value_Slider2 *sldrViewerSquelch;
 
@@ -63,8 +63,6 @@ pskBrowser *brwsViewer;
 
 static long long rfc;
 static bool usb;
-
-fre_t seek_re("CQ", REG_EXTENDED | REG_ICASE | REG_NOSUB);
 
 void initViewer()
 {
@@ -209,6 +207,18 @@ static void cb_Squelch(Fl_Slider *, void *)
 		mvsquelch->value(progStatus.VIEWERsquelch);
 }
 
+static void cb_Seek(Fl_Input *, void *)
+{
+	static Fl_Color seek_color[2] = { FL_FOREGROUND_COLOR,
+					  adjust_color(FL_RED, FL_BACKGROUND2_COLOR) }; // invalid RE
+	seek_re.recompile(*viewer_inp_seek->value() ? viewer_inp_seek->value() : "[invalid");
+	if (viewer_inp_seek->textcolor() != seek_color[!seek_re]) {
+		viewer_inp_seek->textcolor(seek_color[!seek_re]);
+		viewer_inp_seek->redraw();
+	}
+	progStatus.browser_search = viewer_inp_seek->value();
+	txtInpSeek->value(progStatus.browser_search.c_str());
+}
 
 Fl_Double_Window* createViewer(void)
 {
@@ -227,10 +237,25 @@ Fl_Double_Window* createViewer(void)
 
 	Fl_Double_Window* w = new Fl_Double_Window(progStatus.VIEWERxpos, progStatus.VIEWERypos,
 						   viewerwidth + 2 * BWSR_BORDER,
-						   viewerheight + 2 * BWSR_BORDER + pad + 20,
+						   viewerheight + 2 * BWSR_BORDER + pad + 20 + 20,
 						   _("Signal Browser"));
 
-	brwsViewer = new pskBrowser(BWSR_BORDER, BWSR_BORDER, viewerwidth, viewerheight);
+	Fl_Group* gseek = new Fl_Group(BWSR_BORDER, BWSR_BORDER, viewerwidth, 20);
+	// search field
+	const char* label = _("Find: ");
+	fl_font(FL_HELVETICA, FL_NORMAL_SIZE);
+	viewer_inp_seek = new Fl_Input2(static_cast<int>(BWSR_BORDER + fl_width(label)), BWSR_BORDER, 200, gseek->h(), label);
+	viewer_inp_seek->callback((Fl_Callback*)cb_Seek);
+	viewer_inp_seek->when(FL_WHEN_CHANGED);
+	viewer_inp_seek->textfont(FL_COURIER);
+	viewer_inp_seek->value(progStatus.browser_search.c_str());
+    	viewer_inp_seek->do_callback();
+	gseek->resizable(0);
+	gseek->end();
+
+//	brwsViewer = new pskBrowser(BWSR_BORDER, BWSR_BORDER, viewerwidth, viewerheight);
+	brwsViewer = new pskBrowser(BWSR_BORDER, viewer_inp_seek->y() + viewer_inp_seek->h(), viewerwidth, viewerheight);
+
 	brwsViewer->callback((Fl_Callback*)cb_brwsViewer);
 	brwsViewer->setfont(progdefaults.ViewerFontnbr, progdefaults.ViewerFontsize);
 	brwsViewer->seek_re = &seek_re;

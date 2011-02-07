@@ -256,13 +256,6 @@ font_browser->callback(cbViewerFontBrowser);
 font_browser->show();
 }
 
-Fl_Input2 *txtInpSeek=(Fl_Input2 *)0;
-
-static void cb_txtInpSeek(Fl_Input2* o, void*) {
-  progStatus.browser_search = o->value();
-seek_re.recompile(o->value() ? o->value() : "[invalid");
-}
-
 Fl_Check_Button *btnFixedIntervals=(Fl_Check_Button *)0;
 
 static void cb_btnFixedIntervals(Fl_Check_Button* o, void*) {
@@ -3184,21 +3177,6 @@ ab and newline are automatically included."));
                 btnViewerFont->tooltip(_("select browser font"));
                 btnViewerFont->callback((Fl_Callback*)cb_btnViewerFont);
               } // Fl_Button* btnViewerFont
-              { Fl_Input2* o = txtInpSeek = new Fl_Input2(18, 195, 360, 20, _("Seek Regular Expression"));
-                txtInpSeek->tooltip(_("Search for reg-exp in browser text(s)"));
-                txtInpSeek->box(FL_DOWN_BOX);
-                txtInpSeek->color((Fl_Color)FL_BACKGROUND2_COLOR);
-                txtInpSeek->selection_color((Fl_Color)FL_SELECTION_COLOR);
-                txtInpSeek->labeltype(FL_NORMAL_LABEL);
-                txtInpSeek->labelfont(0);
-                txtInpSeek->labelsize(14);
-                txtInpSeek->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
-                txtInpSeek->callback((Fl_Callback*)cb_txtInpSeek);
-                txtInpSeek->align(FL_ALIGN_TOP_LEFT);
-                txtInpSeek->when(FL_WHEN_CHANGED);
-                o->labelsize(FL_NORMAL_SIZE);
-                o->value(progStatus.browser_search.c_str());
-              } // Fl_Input2* txtInpSeek
               { Fl_Check_Button* o = btnFixedIntervals = new Fl_Check_Button(208, 131, 165, 20, _("Fixed Intervals"));
                 btnFixedIntervals->tooltip(_("Force channel spacing to even 100 Hz increments"));
                 btnFixedIntervals->down_box(FL_DOWN_BOX);
@@ -3207,33 +3185,33 @@ ab and newline are automatically included."));
                 btnFixedIntervals->hide();
                 o->value(progdefaults.VIEWERfixed);
               } // Fl_Check_Button* btnFixedIntervals
-              { Fl_Check_Button* o = btnMarquee = new Fl_Check_Button(18, 225, 165, 20, _("Continuous scrolling"));
+              { Fl_Check_Button* o = btnMarquee = new Fl_Check_Button(18, 183, 165, 20, _("Continuous scrolling"));
                 btnMarquee->tooltip(_("ON - Marquee style\nOFF - Clear & restart"));
                 btnMarquee->down_box(FL_DOWN_BOX);
                 btnMarquee->callback((Fl_Callback*)cb_btnMarquee);
                 o->value(progdefaults.VIEWERmarquee);
               } // Fl_Check_Button* btnMarquee
-              { Fl_Check_Button* o = btnAscend = new Fl_Check_Button(18, 249, 253, 20, _("Lowest freq on bottom of viewer"));
+              { Fl_Check_Button* o = btnAscend = new Fl_Check_Button(18, 207, 253, 20, _("Lowest freq on bottom of viewer"));
                 btnAscend->tooltip(_("Change positions of low to high channels"));
                 btnAscend->down_box(FL_DOWN_BOX);
                 btnAscend->callback((Fl_Callback*)cb_btnAscend);
                 o->value(progdefaults.VIEWERascend);
               } // Fl_Check_Button* btnAscend
-              { Fl_Check_Button* o = btnBrowserHistory = new Fl_Check_Button(18, 274, 356, 20, _("Play back history when active channel selected"));
+              { Fl_Check_Button* o = btnBrowserHistory = new Fl_Check_Button(18, 232, 356, 20, _("Play back history when active channel selected"));
                 btnBrowserHistory->tooltip(_("Change positions of low to high channels"));
                 btnBrowserHistory->down_box(FL_DOWN_BOX);
                 btnBrowserHistory->callback((Fl_Callback*)cb_btnBrowserHistory);
                 o->value(progdefaults.VIEWERhistory);
               } // Fl_Check_Button* btnBrowserHistory
-              { Fl_Group* o = new Fl_Group(20, 294, 219, 60, _("Detection Level Colors"));
+              { Fl_Group* o = new Fl_Group(20, 265, 219, 60, _("Detection Level Colors"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP|FL_ALIGN_INSIDE);
-                { bwsrSliderColor = new Fl_Button(43, 317, 80, 24, _("Backgnd"));
+                { bwsrSliderColor = new Fl_Button(43, 288, 80, 24, _("Backgnd"));
                 bwsrSliderColor->tooltip(_("Background color of signal viewer squelch control"));
                 bwsrSliderColor->callback((Fl_Callback*)cb_bwsrSliderColor);
                 bwsrSliderColor->color(fl_rgb_color(progdefaults.bwsrSliderColor.R, progdefaults.bwsrSliderColor.G,progdefaults.bwsrSliderColor.B));
                 } // Fl_Button* bwsrSliderColor
-                { bwsrSldrSelColor = new Fl_Button(135, 317, 80, 24, _("Button"));
+                { bwsrSldrSelColor = new Fl_Button(135, 288, 80, 24, _("Button"));
                 bwsrSldrSelColor->tooltip(_("Slider hilite color of signal viewer squelch control"));
                 bwsrSldrSelColor->callback((Fl_Callback*)cb_bwsrSldrSelColor);
                 bwsrSldrSelColor->color(fl_rgb_color(progdefaults.bwsrSldrSelColor.R, progdefaults.bwsrSldrSelColor.G,progdefaults.bwsrSliderColor.B));
@@ -4081,6 +4059,7 @@ an merging"));
                 cntCWdash2dot->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
                 cntCWdash2dot->minimum(2.5);
                 cntCWdash2dot->maximum(4);
+                cntCWdash2dot->step(0.1);
                 cntCWdash2dot->value(3);
                 cntCWdash2dot->callback((Fl_Callback*)cb_cntCWdash2dot);
                 cntCWdash2dot->align(FL_ALIGN_RIGHT);
@@ -4100,6 +4079,7 @@ an merging"));
                 cntCWrisetime->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
                 cntCWrisetime->minimum(0);
                 cntCWrisetime->maximum(15);
+                cntCWrisetime->step(0.1);
                 cntCWrisetime->value(4);
                 cntCWrisetime->callback((Fl_Callback*)cb_cntCWrisetime);
                 cntCWrisetime->align(FL_ALIGN_RIGHT);
@@ -4308,6 +4288,7 @@ an merging"));
                 valDominoEX_BW->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
                 valDominoEX_BW->minimum(1);
                 valDominoEX_BW->maximum(2);
+                valDominoEX_BW->step(0.1);
                 valDominoEX_BW->value(1.5);
                 valDominoEX_BW->callback((Fl_Callback*)cb_valDominoEX_BW);
                 valDominoEX_BW->align(FL_ALIGN_RIGHT);
@@ -4331,6 +4312,7 @@ an merging"));
                 valDomCWI->labelfont(0);
                 valDomCWI->labelsize(14);
                 valDomCWI->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                valDomCWI->step(0.01);
                 valDomCWI->textsize(14);
                 valDomCWI->callback((Fl_Callback*)cb_valDomCWI);
                 valDomCWI->align(FL_ALIGN_TOP);
@@ -4966,6 +4948,7 @@ an merging"));
                 valTHOR_BW->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
                 valTHOR_BW->minimum(1);
                 valTHOR_BW->maximum(2);
+                valTHOR_BW->step(0.1);
                 valTHOR_BW->value(1.5);
                 valTHOR_BW->callback((Fl_Callback*)cb_valTHOR_BW);
                 valTHOR_BW->align(FL_ALIGN_RIGHT);
@@ -4983,6 +4966,7 @@ an merging"));
                 valThorCWI->labelfont(0);
                 valThorCWI->labelsize(14);
                 valThorCWI->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                valThorCWI->step(0.01);
                 valThorCWI->textsize(14);
                 valThorCWI->callback((Fl_Callback*)cb_valThorCWI);
                 valThorCWI->align(FL_ALIGN_TOP);
@@ -5719,6 +5703,7 @@ ll with your audio device."));
                 valPCMvolume->labelfont(0);
                 valPCMvolume->labelsize(14);
                 valPCMvolume->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                valPCMvolume->step(0.01);
                 valPCMvolume->value(0.8);
                 valPCMvolume->textsize(14);
                 valPCMvolume->callback((Fl_Callback*)cb_valPCMvolume);
@@ -5912,6 +5897,7 @@ d frequency"));
             val_pretone->tooltip(_("Use for triggering amplifier carrier detect"));
             val_pretone->minimum(0);
             val_pretone->maximum(10);
+            val_pretone->step(0.1);
             val_pretone->callback((Fl_Callback*)cb_val_pretone);
             o->value(progdefaults.pretone);
           } // Fl_Counter* val_pretone

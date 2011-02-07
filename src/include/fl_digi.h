@@ -42,6 +42,9 @@
 #include "flinput2.h"
 #include "flslider2.h"
 #include "psk_browser.h"
+#include "re.h"
+
+extern fre_t seek_re;
 
 extern Fl_Double_Window *fl_digi_main;
 extern Fl_Double_Window *scopeview;
@@ -50,6 +53,7 @@ extern Fl_Double_Window *scopeview;
 extern FTextRX			*ReceiveText;
 extern FTextTX			*TransmitText;
 extern pskBrowser		*mainViewer;
+extern Fl_Input2		*txtInpSeek;
 extern Fl_Box			*hideViewer;
 extern Raster			*FHdisp;
 extern Fl_Group			*mvgroup;

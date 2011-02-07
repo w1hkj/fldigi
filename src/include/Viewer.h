@@ -11,14 +11,13 @@
 #include "viewpsk.h"
 #include "psk_browser.h"
 #include "flslider2.h"
-#include "re.h"
+#include "flinput2.h"
 
 extern Fl_Double_Window *dlgViewer;
 extern Fl_Value_Slider2 *sldrViewerSquelch;
 extern Fl_Double_Window* createViewer();
+extern Fl_Input2  *viewer_inp_seek;
 extern pskBrowser *brwsViewer;
-
-extern fre_t seek_re;
 
 extern void openViewer();
 extern void viewaddchr(int ch, int freq, char c, int md);
