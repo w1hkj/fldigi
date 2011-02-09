@@ -3597,7 +3597,7 @@ void create_fl_digi_main_primary() {
 
 	int fnt = fl_font();
 	int fsize = fl_size();
-	int freqheight = Hentry + 2 * pad;
+	int freqheight = Hentry;// + 2 * pad;
 	fl_font(fnt, freqheight);
 	int freqwidth = (int)fl_width("999999999") + 10;
 	fl_font(fnt, fsize);
@@ -3671,14 +3671,22 @@ void create_fl_digi_main_primary() {
 			0, Hmenu,
 			rig_control_width, Hqsoframe);
 
-			txtRigName = new Fl_Box(pad, Hmenu, freqwidth, Hentry);
+//			txtRigName = new Fl_Box(pad, Hmenu, freqwidth, Hentry);
+			txtRigName = new Fl_Box(pad, Hmenu + pad, freqwidth - Wbtn - 2 * pad, Hentry);
+			txtRigName->box(FL_FLAT_BOX);
 			txtRigName->align(FL_ALIGN_CENTER);
 			txtRigName->color(FL_BACKGROUND_COLOR);
 			txtRigName->label(_("No rig specified"));
 
+			qso_opPICK = new Fl_Button(pad + freqwidth - Wbtn, Hmenu + pad, Wbtn, Hentry);
+			addrbookpixmap = new Fl_Pixmap(address_book_icon);
+ 			qso_opPICK->image(addrbookpixmap);
+			qso_opPICK->callback(showOpBrowserView, 0);
+			qso_opPICK->tooltip(_("Open List"));
+
 			qsoFreqDisp1 = new cFreqControl(
-				pad, Hmenu + Hentry,
-				freqwidth, freqheight, "");
+				pad, Hmenu + Hentry + 2 * pad, freqwidth, Hentry, "");
+//				freqwidth, freqheight, "");
 
 			qsoFreqDisp1->box(FL_DOWN_BOX);
 			qsoFreqDisp1->color(FL_BACKGROUND_COLOR);
@@ -3699,12 +3707,13 @@ void create_fl_digi_main_primary() {
 								progdefaults.FDbackground.B));
 			qsoFreqDisp1->value(0);
 
-			Y = Hmenu + 2 * (Hentry + pad);
+			Y = Hmenu + 2 * (Hentry + pad) + pad;
 
-				int w_pmb = (freqwidth - Wbtn + 2 * pad) / 2;
+//				int w_pmb = (freqwidth - Wbtn + 2 * pad) / 2;
+				int w_pmb = (freqwidth - 2 * pad) / 2;
 
 				qso_opMODE = new Fl_ComboBox(
-					pad, Hmenu + 2 * (Hentry + pad) + pad,
+					pad, Y,
 					w_pmb, Hentry);
 				qso_opMODE->box(FL_DOWN_BOX);
 				qso_opMODE->color(FL_BACKGROUND2_COLOR);
@@ -3719,8 +3728,9 @@ void create_fl_digi_main_primary() {
 				qso_opMODE->end();
 
 				qso_opBW = new Fl_ComboBox(
-					rightof(qso_opMODE), Hmenu + 2 * (Hentry + pad) + pad,
-					w_pmb, Hentry);
+					rightof(qso_opMODE), Y,
+					rig_control_width - rightof(qso_opMODE) - pad, Hentry);
+//					w_pmb, Hentry);
 				qso_opBW->box(FL_DOWN_BOX);
 				qso_opBW->color(FL_BACKGROUND2_COLOR);
 				qso_opBW->selection_color(FL_BACKGROUND_COLOR);
@@ -3733,13 +3743,6 @@ void create_fl_digi_main_primary() {
 				qso_opBW->when(FL_WHEN_RELEASE);
 				qso_opBW->end();
 
-				qso_opPICK = new Fl_Button(
-					rightof(qso_opBW), Hmenu + 2 * (Hentry + pad) + pad,
-					Wbtn, Hentry);
-				addrbookpixmap = new Fl_Pixmap(address_book_icon);
-	 			qso_opPICK->image(addrbookpixmap);
-				qso_opPICK->callback(showOpBrowserView, 0);
-				qso_opPICK->tooltip(_("Open List"));
 		RigControlFrame->resizable(NULL);
 
 		RigControlFrame->end();
@@ -3981,7 +3984,7 @@ void create_fl_digi_main_primary() {
 			int y = Hmenu + pad;
 			int h = Hentry;
 			qsoFreqDisp2 = new cFreqControl(
-				pad, Hmenu,
+				pad, y,
 				freqwidth, freqheight, "");
 			qsoFreqDisp2->box(FL_DOWN_BOX);
 			qsoFreqDisp2->color(FL_BACKGROUND_COLOR);
@@ -4093,7 +4096,7 @@ void create_fl_digi_main_primary() {
 			int y = Hmenu + pad;
 			int h = Hentry;
 			qsoFreqDisp3 = new cFreqControl(
-				pad, Hmenu,
+				pad, y,
 				freqwidth, freqheight, "");
 			qsoFreqDisp3->box(FL_DOWN_BOX);
 			qsoFreqDisp3->color(FL_BACKGROUND_COLOR);
