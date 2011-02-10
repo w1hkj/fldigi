@@ -34,7 +34,7 @@ BENCHMARK_SRC = include/benchmark.h misc/benchmark.cxx
 REGEX_SRC = compat/regex.h compat/regex.c
 STACK_SRC = include/stack.h misc/stack.cxx
 MINGW32_SRC = include/compat.h compat/getsysinfo.c compat/mingw.c compat/mingw.h
-NLS_SRC = misc/nls.cxx
+NLS_SRC = misc/nls.cxx include/nls.h
 
 # We distribute these but do not always compile them
 EXTRA_fldigi_SOURCES = $(HAMLIB_SRC) $(XMLRPC_SRC) $(FLDIGI_WIN32_RES_SRC) $(COMMON_WIN32_RES_SRC) \
@@ -204,6 +204,10 @@ if HAVE_NSIS
 nsisinst: $(bin_PROGRAMS)
 	$(call silent,NSIS  ,$(INSTALLER_FILE))sh $(srcdir)/../scripts/mknsisinst.sh "$(srcdir)/../data" .
     CLEANFILES += $(INSTALLER_FILE)
+endif
+
+if USE_NLS
+    CLEAN_LOCAL += share
 endif
 
 if WANT_FLDIGI

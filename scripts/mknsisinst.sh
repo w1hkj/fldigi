@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ### Script to create a win32 installer file
-### 20090510  Stelios Bounanos M0GLD
+### 20110209  Stelios Bounanos M0GLD
 
 if [ $# -ne 2 ]; then
     echo "Syntax: $0 data-dir build-dir" >&2
@@ -84,6 +84,10 @@ if ! test -r "$build/$PTW32_DLL"; then
     fi
 fi
 def="$def -DMINGWM_DLL=$MINGWM_DLL -DPTW32_DLL=$PTW32_DLL"
+
+if test "x$USE_NLS" = "xyes" && make -C "$srcdir/../po" install prefix="$build" >/dev/null; then
+    def="$def -DFLDIGI_LOCALE_PATH=$build/share -DFLDIGI_LOCALE_DIR=locale"
+fi
 
 $MAKENSIS -V2 -NOCD -D"INSTALLER_FILE=$INSTALLER_FILE" -D"LICENSE_FILE=$data/../COPYING" \
     -D"SUPPORT_URL=$PACKAGE_HOME" -D"UPDATES_URL=$PACKAGE_DL" -D"FLDIGI_DOCS_URL=$PACKAGE_DOCS" \

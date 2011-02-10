@@ -209,7 +209,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.menuicons = o->value();
 toggle_icon_labels();
 progdefaults.changed = true;}
-                tooltip {Enable / disable icons on menus} xywh {20 87 150 20} down_box DOWN_BOX
+                tooltip {Enable / disable icons on menus} xywh {155 61 150 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.menuicons);}
               }
               Fl_Choice mnuScheme {
@@ -218,7 +218,7 @@ progdefaults.changed = true;}
     Fl::scheme(progdefaults.ui_scheme.c_str());
 
     progdefaults.changed = true;} open
-                tooltip {Change application look and feel} xywh {250 61 80 20} down_box BORDER_BOX align 8
+                tooltip {Change application look and feel} xywh {155 87 80 20} down_box BORDER_BOX align 8
                 code0 {mnuScheme->add("base");}
                 code1 {mnuScheme->add("gtk+");}
                 code2 {mnuScheme->add("plastic");}
@@ -230,8 +230,14 @@ progdefaults.changed = true;}
 mode_browser->callback(toggle_visible_modes);
 mode_browser->show(&progdefaults.visible_modes);
 progdefaults.changed = true;}
-                tooltip {Select modes for menu access} xywh {250 87 120 20}
+                tooltip {Select modes for menu access} xywh {20 87 110 20}
               }
+              Fl_Choice mnuLang {
+                label {UI language}
+                callback {progdefaults.ui_language = o->value();
+progdefaults.changed = true;} open
+                tooltip {Changes take effect on next program startup} xywh {365 87 110 20} down_box BORDER_BOX align 5
+              } {}
             }
             Fl_Group {} {
               label {QSO logging} open

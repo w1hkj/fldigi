@@ -122,6 +122,9 @@ SectionEnd
         SetOutPath $INSTDIR
         File "${FLDIGI_BINARY}"
         File /nonfatal "${MINGWM_DLL}" "${PTW32_DLL}"
+        !ifdef FLDIGI_LOCALE_DIR
+	    File /r "${FLDIGI_LOCALE_PATH}/${FLDIGI_LOCALE_DIR}"
+        !endif
         StrCpy $WANT_FLDIGI "true"
     SectionEnd
 !endif
@@ -205,6 +208,9 @@ Section "Uninstall"
     # Remove files and uninstaller
     !ifdef HAVE_FLDIGI
         Delete /REBOOTOK $INSTDIR\${FLDIGI_BINARY}
+        !ifdef FLDIGI_LOCALE_DIR
+            RMDir /r /REBOOTOK $INSTDIR\${FLDIGI_LOCALE_DIR}
+        !endif
     !endif
     !ifdef HAVE_FLARQ
         Delete /REBOOTOK $INSTDIR\${FLARQ_BINARY}

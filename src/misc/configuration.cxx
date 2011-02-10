@@ -33,6 +33,7 @@
 #include "fl_digi.h"
 #include "main.h"
 #include "gettext.h"
+#include "nls.h"
 #include "icons.h"
 
 #if USE_HAMLIB
@@ -467,6 +468,10 @@ void configuration::saveDefaults()
 	ViewerFontName = Fl::get_font_name(ViewerFontnbr);
 	FreqControlFontName = Fl::get_font_name(FreqControlFontnbr);
 
+#if ENABLE_NLS && defined(__WOE32__)
+	set_ui_lang(mnuLang->value());
+#endif
+
 	writeDefaultsXML();
 	changed = false;
 }
@@ -682,6 +687,19 @@ int configuration::setDefaults()
 
 #if !HAVE_PARPORT
 	btnUsePPortPTT->hide();
+#endif
+
+#if ENABLE_NLS && defined(__WOE32__)
+	ostringstream ss;
+	for (lang_def_t* p = ui_langs; p->lang; p++) {
+		ss.str("");
+		ss << p->native_name << " (" << p->percent_done << "%)";
+		mnuLang->add(ss.str().c_str());
+	}
+	mnuLang->value(get_ui_lang());
+	mnuLang->show();
+#else
+	mnuLang->hide();
 #endif
 
 	return 1;

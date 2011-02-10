@@ -36,6 +36,7 @@ extern Fl_Check_Button *chkMenuIcons;
 extern Fl_Choice *mnuScheme;
 #include <FL/Fl_Button.H>
 extern Fl_Button *bVisibleModes;
+extern Fl_Choice *mnuLang;
 extern Fl_Check_Button *btnNagMe;
 extern Fl_Check_Button *btnClearOnSave;
 extern Fl_Check_Button *btnAutoFillQSO;

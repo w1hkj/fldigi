@@ -143,6 +143,13 @@ mode_browser->show(&progdefaults.visible_modes);
 progdefaults.changed = true;
 }
 
+Fl_Choice *mnuLang=(Fl_Choice *)0;
+
+static void cb_mnuLang(Fl_Choice* o, void*) {
+  progdefaults.ui_language = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *btnNagMe=(Fl_Check_Button *)0;
 
 static void cb_btnNagMe(Fl_Check_Button* o, void*) {
@@ -3005,13 +3012,13 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";
                 btnShowTooltips->callback((Fl_Callback*)cb_btnShowTooltips);
                 o->value(progdefaults.tooltips);
               } // Fl_Check_Button* btnShowTooltips
-              { Fl_Check_Button* o = chkMenuIcons = new Fl_Check_Button(20, 87, 150, 20, _("Show menu icons"));
+              { Fl_Check_Button* o = chkMenuIcons = new Fl_Check_Button(155, 61, 150, 20, _("Show menu icons"));
                 chkMenuIcons->tooltip(_("Enable / disable icons on menus"));
                 chkMenuIcons->down_box(FL_DOWN_BOX);
                 chkMenuIcons->callback((Fl_Callback*)cb_chkMenuIcons);
                 o->value(progdefaults.menuicons);
               } // Fl_Check_Button* chkMenuIcons
-              { mnuScheme = new Fl_Choice(250, 61, 80, 20, _("UI scheme"));
+              { mnuScheme = new Fl_Choice(155, 87, 80, 20, _("UI scheme"));
                 mnuScheme->tooltip(_("Change application look and feel"));
                 mnuScheme->down_box(FL_BORDER_BOX);
                 mnuScheme->callback((Fl_Callback*)cb_mnuScheme);
@@ -3021,10 +3028,16 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";
                 mnuScheme->add("plastic");
                 mnuScheme->value(mnuScheme->find_item(progdefaults.ui_scheme.c_str()));
               } // Fl_Choice* mnuScheme
-              { bVisibleModes = new Fl_Button(250, 87, 120, 20, _("Visible modes"));
+              { bVisibleModes = new Fl_Button(20, 87, 110, 20, _("Visible modes"));
                 bVisibleModes->tooltip(_("Select modes for menu access"));
                 bVisibleModes->callback((Fl_Callback*)cb_bVisibleModes);
               } // Fl_Button* bVisibleModes
+              { mnuLang = new Fl_Choice(365, 87, 110, 20, _("UI language"));
+                mnuLang->tooltip(_("Changes take effect on next program startup"));
+                mnuLang->down_box(FL_BORDER_BOX);
+                mnuLang->callback((Fl_Callback*)cb_mnuLang);
+                mnuLang->align(FL_ALIGN_TOP_LEFT);
+              } // Fl_Choice* mnuLang
               o->end();
             } // Fl_Group* o
             { Fl_Group* o = new Fl_Group(2, 114, 496, 150, _("QSO logging"));

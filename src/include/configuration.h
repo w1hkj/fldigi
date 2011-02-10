@@ -1061,6 +1061,9 @@
         ELEM_(std::string, ui_scheme, "UISCHEME",                                       \
               "FLTK UI scheme (none or base, gtk+, plastic)",                           \
               "gtk+")                                                                   \
+        ELEM_(int, ui_language, "UILANGUAGE",                                           \
+              "UI language",                                                            \
+              0)                                                                        \
         ELEM_(bool, wf_audioscale, "WFAUDIOSCALE",                                      \
               "Always show audio frequencies on waterfall",                             \
               true)                                                                     \
