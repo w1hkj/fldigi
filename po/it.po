@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fldigi 3.21.0BG\n"
 "Report-Msgid-Bugs-To: w1hkj AT w1hkj DOT com\n"
-"POT-Creation-Date: 2011-02-07 21:17+0100\n"
-"PO-Revision-Date: 2011-02-07 19:01+0100\n"
+"POT-Creation-Date: 2011-02-10 21:09+0100\n"
+"PO-Revision-Date: 2011-02-10 21:16+0100\n"
 "Last-Translator: Pierfrancesco Caci <pf@tippete.net>\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -50,7 +50,7 @@ msgid "Rig control"
 msgstr "Controllo della radio"
 
 #: src/dialogs/fl_digi.cxx:145 src/dialogs/fl_digi.cxx:2370
-#: src/dialogs/fl_digi.cxx:4662
+#: src/dialogs/fl_digi.cxx:4665
 msgid "Op &Mode"
 msgstr "&Modo Op"
 
@@ -123,8 +123,8 @@ msgstr "Mostra canali"
 #: src/dialogs/fl_digi.cxx:531 src/dialogs/fl_digi.cxx:545
 #: src/dialogs/fl_digi.cxx:554 src/dialogs/fl_digi.cxx:2887
 #: src/dialogs/fl_digi.cxx:2932 src/dialogs/fl_digi.cxx:2963
-#: src/dialogs/fl_digi.cxx:4676 src/dialogs/fl_digi.cxx:4711
-#: src/dialogs/fl_digi.cxx:4742
+#: src/dialogs/fl_digi.cxx:4679 src/dialogs/fl_digi.cxx:4714
+#: src/dialogs/fl_digi.cxx:4745
 msgid "Custom..."
 msgstr "Altro..."
 
@@ -145,8 +145,8 @@ msgstr "Annulla"
 
 #: src/dialogs/fl_digi.cxx:877 src/dialogs/fl_digi.cxx:2288
 #: src/dialogs/fl_digi.cxx:2300 src/dialogs/fl_digi.cxx:2312
-#: src/dialogs/fl_digi.cxx:3053 src/dialogs/fl_digi.cxx:3831
-#: src/dialogs/fl_digi.cxx:4029 src/dialogs/fl_digi.cxx:4134
+#: src/dialogs/fl_digi.cxx:3053 src/dialogs/fl_digi.cxx:3834
+#: src/dialogs/fl_digi.cxx:4032 src/dialogs/fl_digi.cxx:4137
 #: src/logbook/logsupport.cxx:281 src/dialogs/confdialog.cxx:6367
 msgid "Save"
 msgstr "Salva"
@@ -299,7 +299,7 @@ msgstr "Salvare il log prima di uscire?"
 msgid "Save changed macros before exiting?"
 msgstr "Salvare le modifiche alle macro prima di uscire?"
 
-#: src/dialogs/fl_digi.cxx:2847 src/dialogs/fl_digi.cxx:4658
+#: src/dialogs/fl_digi.cxx:2847 src/dialogs/fl_digi.cxx:4661
 msgid "&File"
 msgstr "&File"
 
@@ -350,11 +350,11 @@ msgstr "Genera TX"
 msgid "Playback"
 msgstr "Riproduzione"
 
-#: src/dialogs/fl_digi.cxx:2871 src/dialogs/fl_digi.cxx:4659
+#: src/dialogs/fl_digi.cxx:2871 src/dialogs/fl_digi.cxx:4662
 msgid "Exit"
 msgstr "Esci"
 
-#: src/dialogs/fl_digi.cxx:3006 src/dialogs/fl_digi.cxx:4784
+#: src/dialogs/fl_digi.cxx:3006 src/dialogs/fl_digi.cxx:4787
 msgid "&Configure"
 msgstr "&Configura"
 
@@ -371,7 +371,7 @@ msgid "User Interface"
 msgstr "Interfaccia Utente"
 
 #: src/dialogs/fl_digi.cxx:3010 src/dialogs/fl_digi.cxx:3041
-#: src/dialogs/fl_digi.cxx:4785 src/dialogs/confdialog.cxx:3534
+#: src/dialogs/fl_digi.cxx:4788 src/dialogs/confdialog.cxx:3534
 msgid "Waterfall"
 msgstr "Waterfall"
 
@@ -379,16 +379,16 @@ msgstr "Waterfall"
 msgid "Waterfall controls"
 msgstr "Controlli waterfall"
 
-#: src/dialogs/fl_digi.cxx:3012 src/dialogs/fl_digi.cxx:4788
+#: src/dialogs/fl_digi.cxx:3012 src/dialogs/fl_digi.cxx:4791
 #: src/dialogs/confdialog.cxx:3849
 msgid "Modems"
 msgstr "Modem"
 
-#: src/dialogs/fl_digi.cxx:3014 src/dialogs/fl_digi.cxx:4787
+#: src/dialogs/fl_digi.cxx:3014 src/dialogs/fl_digi.cxx:4790
 msgid "Sound Card"
 msgstr "Scheda Audio"
 
-#: src/dialogs/fl_digi.cxx:3015 src/dialogs/fl_digi.cxx:4789
+#: src/dialogs/fl_digi.cxx:3015 src/dialogs/fl_digi.cxx:4792
 msgid "IDs"
 msgstr "ID"
 
@@ -396,17 +396,17 @@ msgstr "ID"
 msgid "Misc"
 msgstr "Misc"
 
-#: src/dialogs/fl_digi.cxx:3017 src/dialogs/fl_digi.cxx:4790
+#: src/dialogs/fl_digi.cxx:3017 src/dialogs/fl_digi.cxx:4793
 #: src/dialogs/notifydialog.cxx:104
 msgid "Notifications"
 msgstr "Notifiche"
 
-#: src/dialogs/fl_digi.cxx:3019 src/dialogs/fl_digi.cxx:3817
-#: src/dialogs/fl_digi.cxx:4015 src/dialogs/confdialog.cxx:6258
+#: src/dialogs/fl_digi.cxx:3019 src/dialogs/fl_digi.cxx:3820
+#: src/dialogs/fl_digi.cxx:4018 src/dialogs/confdialog.cxx:6258
 msgid "QRZ"
 msgstr "QRZ"
 
-#: src/dialogs/fl_digi.cxx:3020 src/dialogs/fl_digi.cxx:4791
+#: src/dialogs/fl_digi.cxx:3020 src/dialogs/fl_digi.cxx:4794
 msgid "Save Config"
 msgstr "Salva Configurazione"
 
@@ -519,8 +519,8 @@ msgstr "NOMINATIVO NON IMPOSTATO"
 msgid "Close List"
 msgstr "Chiudi la lista"
 
-#: src/dialogs/fl_digi.cxx:3330 src/dialogs/fl_digi.cxx:3742
-#: src/dialogs/fl_digi.cxx:4008 src/dialogs/fl_digi.cxx:4120
+#: src/dialogs/fl_digi.cxx:3330 src/dialogs/fl_digi.cxx:3685
+#: src/dialogs/fl_digi.cxx:4011 src/dialogs/fl_digi.cxx:4123
 msgid "Open List"
 msgstr "Apri la lista"
 
@@ -736,11 +736,11 @@ msgstr ""
 "Maiusc-Funz - esegui\n"
 "Tasto destro - modifica"
 
-#: src/dialogs/fl_digi.cxx:4255
+#: src/dialogs/fl_digi.cxx:4258
 msgid "Shift-key macro set"
 msgstr "Gruppo di macro accessibile con maiusc"
 
-#: src/dialogs/fl_digi.cxx:4302
+#: src/dialogs/fl_digi.cxx:4305
 msgid ""
 "Left click - select\n"
 "Right click - clear line"
@@ -748,15 +748,15 @@ msgstr ""
 "Tasto sinistro - seleziona\n"
 "Tasto destro - cancella la riga"
 
-#: src/dialogs/fl_digi.cxx:4320
+#: src/dialogs/fl_digi.cxx:4323
 msgid "seek - regular expression"
 msgstr "Cerca Regular Expression"
 
-#: src/dialogs/fl_digi.cxx:4341 src/dialogs/Viewer.cxx:284
+#: src/dialogs/fl_digi.cxx:4344 src/dialogs/Viewer.cxx:284
 msgid "Set Viewer Squelch"
 msgstr "Imposta Squelch per il Viewer"
 
-#: src/dialogs/fl_digi.cxx:4426
+#: src/dialogs/fl_digi.cxx:4429
 msgid ""
 "Left Click - execute\n"
 "Fkey - execute\n"
@@ -766,20 +766,20 @@ msgstr ""
 "Tasto funzione - esegui\n"
 "Tasto destro - modifica"
 
-#: src/dialogs/fl_digi.cxx:4433
+#: src/dialogs/fl_digi.cxx:4436
 msgid "Primary macro set"
 msgstr "Gruppo di macro principale"
 
-#: src/dialogs/fl_digi.cxx:4450 src/dialogs/fl_digi.cxx:5013
+#: src/dialogs/fl_digi.cxx:4453 src/dialogs/fl_digi.cxx:5016
 msgid "Detected signal level"
 msgstr "Livello del segnale ricevuto"
 
-#: src/dialogs/fl_digi.cxx:4461 src/dialogs/fl_digi.cxx:5025
+#: src/dialogs/fl_digi.cxx:4464 src/dialogs/fl_digi.cxx:5028
 #: src/waterfall/waterfall.cxx:2014
 msgid "Squelch level"
 msgstr "Livello squelch"
 
-#: src/dialogs/fl_digi.cxx:4475 src/dialogs/fl_digi.cxx:5039
+#: src/dialogs/fl_digi.cxx:4478 src/dialogs/fl_digi.cxx:5042
 msgid ""
 "Left click: change mode\n"
 "Right click: configure"
@@ -1487,7 +1487,7 @@ msgstr ""
 
 #: src/rigcontrol/rigsupport.cxx:478
 msgid "Enter Xcvr Freq"
-msgstr "Inserisci Frequenza Radio"
+msgstr "Frequenza Radio"
 
 #: src/rigcontrol/rigsupport.cxx:501
 msgid "Memory Mapped Rig"
