@@ -805,8 +805,12 @@ void pMODEM(string &s, size_t &i)
 	}
 	catch (const exception& e) { }
 
-	if (active_modem->get_mode() != mode_info[m].mode)
+	if (active_modem->get_mode() != mode_info[m].mode) {
 		init_modem(mode_info[m].mode);
+		int count = 100;
+		while ((active_modem->get_mode() != mode_info[m].mode) && --count)
+			MilliSleep(10);
+	}
 
 	s.erase(i, o[0].rm_eo - i);
 }
