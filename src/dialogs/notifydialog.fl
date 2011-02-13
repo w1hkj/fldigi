@@ -18,10 +18,11 @@ decl {\#include "flslider2.h"} {public global
 
 decl {\#include "notify.h"} {} 
 
-Function {make_notify_window()} {} {
+Function {make_notify_window()} {open
+} {
   Fl_Window {} {
     label Notifications open
-    xywh {590 124 500 550} type Double hide resizable size_range {500 550 0 0}
+    xywh {671 482 500 550} type Double resizable size_range {500 550 0 0} visible
   } {
     Fl_Group grpNotifyEvent {
       label Event open
@@ -101,7 +102,7 @@ chkNotifyFilterCall->value(0);}
       } {}
       Fl_Spinner cntNotifyDupTime {
         label {Time (s):}
-        xywh {77 397 60 20} minimum 0 maximum 97200 value 600
+        xywh {93 397 60 20} minimum 0 maximum 97200 value 600
         code0 {o->labelsize(FL_NORMAL_SIZE);}
         class Fl_Spinner2
       }
@@ -120,68 +121,68 @@ chkNotifyFilterCall->value(0);}
     } {
       Fl_Spinner cntNotifyActionLimit {
         label {Trigger limit (s):}
-        tooltip {Minimum time between events} xywh {343 31 52 20} minimum 0 maximum 3600
+        tooltip {Minimum time between events} xywh {232 40 52 20} align 5 minimum 0 maximum 3600
         code0 {o->labelsize(FL_NORMAL_SIZE);}
         class Fl_Spinner2
       }
       Fl_Input inpNotifyActionDialog {
         label {Show alert window:}
-        xywh {232 78 218 60} type Multiline align 5
+        xywh {232 82 218 60} type Multiline align 5
         code0 {o->labelsize(FL_NORMAL_SIZE);}
         class Fl_Input2
       }
       Fl_Button btnNotifyActionDialogDefault {
-        tooltip {Insert default text} xywh {460 96 28 23}
+        tooltip {Insert default text} xywh {460 100 28 23}
       }
       Fl_Spinner cntNotifyActionDialogTimeout {
         label {Hide window after (s):}
-        xywh {383 148 52 20} minimum 0 maximum 3600 value 5
+        xywh {232 164 52 20} align 5 minimum 0 maximum 3600 value 5
         code0 {o->labelsize(FL_NORMAL_SIZE);}
         class Fl_Spinner2
       }
       Fl_Input inpNotifyActionRXMarker {
         label {Append to RX text:}
-        xywh {232 195 218 60} type Multiline align 5
+        xywh {232 205 218 60} type Multiline align 5
         code0 {o->labelsize(FL_NORMAL_SIZE);}
         class Fl_Input2
       }
       Fl_Button btnNotifyActionMarkerDefault {
-        tooltip {Insert default text} xywh {460 213 28 23}
+        tooltip {Insert default text} xywh {460 223 28 23}
       }
       Fl_Input inpNotifyActionMacro {
         label {Append to TX text:}
-        xywh {232 282 218 60} type Multiline align 5
+        xywh {232 287 218 60} type Multiline align 5
         code0 {o->labelsize(FL_NORMAL_SIZE);}
         class Fl_Input2
       }
       Fl_Button btnNotifyActionMacro {
-        tooltip {Show macro editor} xywh {460 300 28 23}
+        tooltip {Show macro editor} xywh {460 305 28 23}
       }
       Fl_Input inpNotifyActionProgram {
         label {Run program:}
-        xywh {232 363 218 23} align 5
+        xywh {232 368 218 23} align 5
         code0 {o->labelsize(FL_NORMAL_SIZE);}
         class Fl_Input2
       }
       Fl_Button btnNotifyActionProgram {
-        xywh {460 363 28 23}
+        xywh {460 368 28 23}
       }
     }
     Fl_Button btnNotifyAdd {
-      xywh {230 402 80 23}
+      xywh {223 402 90 23}
     }
-    Fl_Button btnNotifyRemove {
-      xywh {321 401 80 23}
+    Fl_Button btnNotifyRemove {selected
+      xywh {316 402 90 23}
     }
     Fl_Button btnNotifyUpdate {
-      xywh {230 431 80 23}
+      xywh {223 431 90 23}
     }
     Fl_Button btnNotifyTest {
-      xywh {321 431 80 23}
+      xywh {316 431 90 23}
     }
     Fl_Button btnNotifyClose {
       callback {o->window()->hide();}
-      xywh {412 431 80 23}
+      xywh {408 431 90 23}
     }
     Fl_Box tblNotifyList {
       xywh {2 460 496 88} box UP_FRAME selection_color 15 resizable
@@ -194,9 +195,9 @@ Function {make_dxcc_window()} {open
 } {
   Fl_Window {} {
     label {DXCC entities} open
-    xywh {618 139 435 450} type Double resizable size_range {300 400 0 0} visible
+    xywh {618 147 435 450} type Double hide resizable size_range {300 400 0 0}
   } {
-    Fl_Box tblNotifyFilterDXCC {selected
+    Fl_Box tblNotifyFilterDXCC {
       xywh {2 2 432 370} box UP_FRAME color 7 selection_color 15 resizable
       class Table
     }

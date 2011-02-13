@@ -170,7 +170,7 @@ Fl_Double_Window* make_notify_window() {
       { mnuNotifyDupWhich = new Fl_Choice(33, 367, 120, 20, _("in:"));
         mnuNotifyDupWhich->down_box(FL_BORDER_BOX);
       } // Fl_Choice* mnuNotifyDupWhich
-      { Fl_Spinner2* o = cntNotifyDupTime = new Fl_Spinner2(77, 397, 60, 20, _("Time (s):"));
+      { Fl_Spinner2* o = cntNotifyDupTime = new Fl_Spinner2(93, 397, 60, 20, _("Time (s):"));
         cntNotifyDupTime->box(FL_NO_BOX);
         cntNotifyDupTime->color((Fl_Color)FL_BACKGROUND_COLOR);
         cntNotifyDupTime->selection_color((Fl_Color)FL_BACKGROUND_COLOR);
@@ -196,7 +196,7 @@ Fl_Double_Window* make_notify_window() {
     { grpNotifyAction = new Fl_Group(222, 2, 276, 394, _("Action"));
       grpNotifyAction->box(FL_ENGRAVED_FRAME);
       grpNotifyAction->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-      { Fl_Spinner2* o = cntNotifyActionLimit = new Fl_Spinner2(343, 31, 52, 20, _("Trigger limit (s):"));
+      { Fl_Spinner2* o = cntNotifyActionLimit = new Fl_Spinner2(232, 40, 52, 20, _("Trigger limit (s):"));
         cntNotifyActionLimit->tooltip(_("Minimum time between events"));
         cntNotifyActionLimit->box(FL_NO_BOX);
         cntNotifyActionLimit->color((Fl_Color)FL_BACKGROUND_COLOR);
@@ -207,11 +207,11 @@ Fl_Double_Window* make_notify_window() {
         cntNotifyActionLimit->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
         cntNotifyActionLimit->minimum(0);
         cntNotifyActionLimit->maximum(3600);
-        cntNotifyActionLimit->align(FL_ALIGN_LEFT);
+        cntNotifyActionLimit->align(FL_ALIGN_TOP_LEFT);
         cntNotifyActionLimit->when(FL_WHEN_RELEASE);
         o->labelsize(FL_NORMAL_SIZE);
       } // Fl_Spinner2* cntNotifyActionLimit
-      { Fl_Input2* o = inpNotifyActionDialog = new Fl_Input2(232, 78, 218, 60, _("Show alert window:"));
+      { Fl_Input2* o = inpNotifyActionDialog = new Fl_Input2(232, 82, 218, 60, _("Show alert window:"));
         inpNotifyActionDialog->type(4);
         inpNotifyActionDialog->box(FL_DOWN_BOX);
         inpNotifyActionDialog->color((Fl_Color)FL_BACKGROUND2_COLOR);
@@ -224,10 +224,10 @@ Fl_Double_Window* make_notify_window() {
         inpNotifyActionDialog->when(FL_WHEN_RELEASE);
         o->labelsize(FL_NORMAL_SIZE);
       } // Fl_Input2* inpNotifyActionDialog
-      { btnNotifyActionDialogDefault = new Fl_Button(460, 96, 28, 23);
+      { btnNotifyActionDialogDefault = new Fl_Button(460, 100, 28, 23);
         btnNotifyActionDialogDefault->tooltip(_("Insert default text"));
       } // Fl_Button* btnNotifyActionDialogDefault
-      { Fl_Spinner2* o = cntNotifyActionDialogTimeout = new Fl_Spinner2(383, 148, 52, 20, _("Hide window after (s):"));
+      { Fl_Spinner2* o = cntNotifyActionDialogTimeout = new Fl_Spinner2(232, 164, 52, 20, _("Hide window after (s):"));
         cntNotifyActionDialogTimeout->box(FL_NO_BOX);
         cntNotifyActionDialogTimeout->color((Fl_Color)FL_BACKGROUND_COLOR);
         cntNotifyActionDialogTimeout->selection_color((Fl_Color)FL_BACKGROUND_COLOR);
@@ -238,11 +238,11 @@ Fl_Double_Window* make_notify_window() {
         cntNotifyActionDialogTimeout->minimum(0);
         cntNotifyActionDialogTimeout->maximum(3600);
         cntNotifyActionDialogTimeout->value(5);
-        cntNotifyActionDialogTimeout->align(FL_ALIGN_LEFT);
+        cntNotifyActionDialogTimeout->align(FL_ALIGN_TOP_LEFT);
         cntNotifyActionDialogTimeout->when(FL_WHEN_RELEASE);
         o->labelsize(FL_NORMAL_SIZE);
       } // Fl_Spinner2* cntNotifyActionDialogTimeout
-      { Fl_Input2* o = inpNotifyActionRXMarker = new Fl_Input2(232, 195, 218, 60, _("Append to RX text:"));
+      { Fl_Input2* o = inpNotifyActionRXMarker = new Fl_Input2(232, 205, 218, 60, _("Append to RX text:"));
         inpNotifyActionRXMarker->type(4);
         inpNotifyActionRXMarker->box(FL_DOWN_BOX);
         inpNotifyActionRXMarker->color((Fl_Color)FL_BACKGROUND2_COLOR);
@@ -255,10 +255,10 @@ Fl_Double_Window* make_notify_window() {
         inpNotifyActionRXMarker->when(FL_WHEN_RELEASE);
         o->labelsize(FL_NORMAL_SIZE);
       } // Fl_Input2* inpNotifyActionRXMarker
-      { btnNotifyActionMarkerDefault = new Fl_Button(460, 213, 28, 23);
+      { btnNotifyActionMarkerDefault = new Fl_Button(460, 223, 28, 23);
         btnNotifyActionMarkerDefault->tooltip(_("Insert default text"));
       } // Fl_Button* btnNotifyActionMarkerDefault
-      { Fl_Input2* o = inpNotifyActionMacro = new Fl_Input2(232, 282, 218, 60, _("Append to TX text:"));
+      { Fl_Input2* o = inpNotifyActionMacro = new Fl_Input2(232, 287, 218, 60, _("Append to TX text:"));
         inpNotifyActionMacro->type(4);
         inpNotifyActionMacro->box(FL_DOWN_BOX);
         inpNotifyActionMacro->color((Fl_Color)FL_BACKGROUND2_COLOR);
@@ -271,10 +271,10 @@ Fl_Double_Window* make_notify_window() {
         inpNotifyActionMacro->when(FL_WHEN_RELEASE);
         o->labelsize(FL_NORMAL_SIZE);
       } // Fl_Input2* inpNotifyActionMacro
-      { btnNotifyActionMacro = new Fl_Button(460, 300, 28, 23);
+      { btnNotifyActionMacro = new Fl_Button(460, 305, 28, 23);
         btnNotifyActionMacro->tooltip(_("Show macro editor"));
       } // Fl_Button* btnNotifyActionMacro
-      { Fl_Input2* o = inpNotifyActionProgram = new Fl_Input2(232, 363, 218, 23, _("Run program:"));
+      { Fl_Input2* o = inpNotifyActionProgram = new Fl_Input2(232, 368, 218, 23, _("Run program:"));
         inpNotifyActionProgram->box(FL_DOWN_BOX);
         inpNotifyActionProgram->color((Fl_Color)FL_BACKGROUND2_COLOR);
         inpNotifyActionProgram->selection_color((Fl_Color)FL_SELECTION_COLOR);
@@ -286,19 +286,19 @@ Fl_Double_Window* make_notify_window() {
         inpNotifyActionProgram->when(FL_WHEN_RELEASE);
         o->labelsize(FL_NORMAL_SIZE);
       } // Fl_Input2* inpNotifyActionProgram
-      { btnNotifyActionProgram = new Fl_Button(460, 363, 28, 23);
+      { btnNotifyActionProgram = new Fl_Button(460, 368, 28, 23);
       } // Fl_Button* btnNotifyActionProgram
       grpNotifyAction->end();
     } // Fl_Group* grpNotifyAction
-    { btnNotifyAdd = new Fl_Button(230, 402, 80, 23);
+    { btnNotifyAdd = new Fl_Button(223, 402, 90, 23);
     } // Fl_Button* btnNotifyAdd
-    { btnNotifyRemove = new Fl_Button(321, 401, 80, 23);
+    { btnNotifyRemove = new Fl_Button(316, 402, 90, 23);
     } // Fl_Button* btnNotifyRemove
-    { btnNotifyUpdate = new Fl_Button(230, 431, 80, 23);
+    { btnNotifyUpdate = new Fl_Button(223, 431, 90, 23);
     } // Fl_Button* btnNotifyUpdate
-    { btnNotifyTest = new Fl_Button(321, 431, 80, 23);
+    { btnNotifyTest = new Fl_Button(316, 431, 90, 23);
     } // Fl_Button* btnNotifyTest
-    { btnNotifyClose = new Fl_Button(412, 431, 80, 23);
+    { btnNotifyClose = new Fl_Button(408, 431, 90, 23);
       btnNotifyClose->callback((Fl_Callback*)cb_btnNotifyClose);
     } // Fl_Button* btnNotifyClose
     { tblNotifyList = new Table(2, 460, 496, 88);
