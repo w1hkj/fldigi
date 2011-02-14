@@ -1689,7 +1689,7 @@ static void hide_cursor(void *w)
 		reinterpret_cast<Fl_Widget *>(w)->window()->cursor(cursor = FL_CURSOR_NONE);
 }
 
-static void insert_text(bool check = false)
+void waterfall::insert_text(bool check)
 {
 	if (check) {
 		qrg_mode_t m;
@@ -1856,7 +1856,7 @@ int WFdisp::handle(int event)
 					note_qrg(true, "\n", "\n");
 				else
 					if (progdefaults.WaterfallClickInsert)
-						insert_text(true);
+						wf->insert_text(true);
 			}
 			else if (Fl::event_state() & (FL_META | FL_ALT))
 				find_signal_text();

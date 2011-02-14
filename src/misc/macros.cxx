@@ -910,12 +910,16 @@ void pSRCHUP(string &s, size_t &i)
 {
 	s.replace( i, 8, "");
 	active_modem->searchUp();
+	if (progdefaults.WaterfallClickInsert)
+	        wf->insert_text(true);
 }
 
 void pSRCHDN(string &s, size_t &i)
 {
 	s.replace( i, 8, "");
 	active_modem->searchDown();
+	if (progdefaults.WaterfallClickInsert)
+	         wf->insert_text(true);
 }
 
 void pGOHOME(string &s, size_t &i)
