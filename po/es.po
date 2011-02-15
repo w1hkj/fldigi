@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fldigi 3.21.0BG\n"
 "Report-Msgid-Bugs-To: w1hkj AT w1hkj DOT com\n"
-"POT-Creation-Date: 2011-02-11 15:24-0600\n"
+"POT-Creation-Date: 2011-02-15 13:18-0600\n"
 "PO-Revision-Date: 2011-02-10 21:28-0500\n"
 "Last-Translator: Pavel Milanes Costa <pavelmc@gmail.com>\n"
 "Language-Team: Spanish (Pavel Milanes Costa) <pavelmc AT gmail DOT com>\n"
@@ -1333,15 +1333,15 @@ msgstr "Etiqueta del botón de macro"
 msgid "Macro editor - "
 msgstr "Editor de  macros - "
 
-#: src/misc/macros.cxx:1349
+#: src/misc/macros.cxx:1353
 msgid "Open macro file"
 msgstr "Abrir fichero de macro"
 
-#: src/misc/macros.cxx:1349 src/misc/macros.cxx:1361
+#: src/misc/macros.cxx:1353 src/misc/macros.cxx:1365
 msgid "Fldigi macro definition file\t*.mdf"
 msgstr "Fichero de definición de macro para Fldigi\t*.mdf"
 
-#: src/misc/macros.cxx:1361
+#: src/misc/macros.cxx:1365
 msgid "Save macro file"
 msgstr "Salvar fichero macro"
 

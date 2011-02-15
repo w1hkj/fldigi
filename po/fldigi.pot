@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: fldigi 3.21.0BL\n"
+"Project-Id-Version: fldigi 3.21.1\n"
 "Report-Msgid-Bugs-To: w1hkj AT w1hkj DOT com\n"
-"POT-Creation-Date: 2011-02-11 15:24-0600\n"
+"POT-Creation-Date: 2011-02-15 13:18-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1277,15 +1277,15 @@ msgstr ""
 msgid "Macro editor - "
 msgstr ""
 
-#: src/misc/macros.cxx:1349
+#: src/misc/macros.cxx:1353
 msgid "Open macro file"
 msgstr ""
 
-#: src/misc/macros.cxx:1349 src/misc/macros.cxx:1361
+#: src/misc/macros.cxx:1353 src/misc/macros.cxx:1365
 msgid "Fldigi macro definition file\t*.mdf"
 msgstr ""
 
-#: src/misc/macros.cxx:1361
+#: src/misc/macros.cxx:1365
 msgid "Save macro file"
 msgstr ""
 
