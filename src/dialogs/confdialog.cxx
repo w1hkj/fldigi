@@ -3003,6 +3003,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";
         { tabsUI = new Fl_Tabs(0, 25, 502, 346);
           tabsUI->selection_color((Fl_Color)FL_LIGHT1);
           { tabUserInterface = new Fl_Group(0, 50, 500, 320, _("General"));
+            tabUserInterface->hide();
             { Fl_Group* o = new Fl_Group(2, 55, 496, 59);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(20, 61, 120, 20, _("Show tooltips"));
@@ -3095,7 +3096,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Input2* inpMyPower
               { Fl_Check_Button* o = btnRSTdefault = new Fl_Check_Button(19, 228, 236, 20, _("Default RST out to 599"));
-                btnRSTdefault->tooltip(_("Force callsign field to UPPERCASE"));
+                btnRSTdefault->tooltip(_("Clear log controls sets RST out to 599"));
                 btnRSTdefault->down_box(FL_DOWN_BOX);
                 btnRSTdefault->callback((Fl_Callback*)cb_btnRSTdefault);
                 o->value(progdefaults.RSTdefault);
@@ -3211,7 +3212,7 @@ ab and newline are automatically included."));
                 o->value(progdefaults.VIEWERascend);
               } // Fl_Check_Button* btnAscend
               { Fl_Check_Button* o = btnBrowserHistory = new Fl_Check_Button(18, 232, 356, 20, _("Play back history when active channel selected"));
-                btnBrowserHistory->tooltip(_("Change positions of low to high channels"));
+                btnBrowserHistory->tooltip(_("Audio stream history decoded on selected signal"));
                 btnBrowserHistory->down_box(FL_DOWN_BOX);
                 btnBrowserHistory->callback((Fl_Callback*)cb_btnBrowserHistory);
                 o->value(progdefaults.VIEWERhistory);
@@ -3448,7 +3449,6 @@ ab and newline are automatically included."));
             tabContest->end();
           } // Fl_Group* tabContest
           { tabWF_UI = new Fl_Group(0, 50, 500, 320, _("WF Controls"));
-            tabWF_UI->hide();
             { Fl_Group* o = new Fl_Group(2, 58, 496, 253);
               o->box(FL_ENGRAVED_BOX);
               { Fl_Box* o = new Fl_Box(31, 65, 446, 25, _("Enable check box to show each respective operator control"));

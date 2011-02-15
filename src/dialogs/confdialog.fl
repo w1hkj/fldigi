@@ -191,7 +191,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabUserInterface {
             label General open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {2 55 496 59} box ENGRAVED_FRAME
@@ -299,7 +299,7 @@ progdefaults.changed = true;}
                 label {Default RST out to 599}
                 callback {progdefaults.RSTdefault = o->value();
 progdefaults.changed = true;}
-                tooltip {Force callsign field to UPPERCASE} xywh {19 228 236 20} down_box DOWN_BOX
+                tooltip {Clear log controls sets RST out to 599} xywh {19 228 236 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RSTdefault);}
               }
             }
@@ -410,7 +410,7 @@ initViewer();}
                 label {Play back history when active channel selected}
                 callback {progdefaults.VIEWERhistory = o->value();
 progdefaults.changed = true;}
-                tooltip {Change positions of low to high channels} xywh {18 232 356 20} down_box DOWN_BOX
+                tooltip {Audio stream history decoded on selected signal} xywh {18 232 356 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.VIEWERhistory);}
               }
               Fl_Group {} {
@@ -701,7 +701,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabWF_UI {
             label {WF Controls}
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {
               xywh {2 58 496 253} box ENGRAVED_BOX
