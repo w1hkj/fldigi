@@ -1,3 +1,44 @@
+= Fldigi 3.21 release notes =
+
+== Modems ==
+
+  * Weather Fax receive and transmit
+  * RSID can be configured to open the decoder squelch
+  * Added several new RSID modem codes
+  * Video ID improvements
+  * Added browser support for the PSK63F and PSK-nnn-R types
+  * Improved CW prosign handling
+  * Improved signal detection in PSK multiple decoder
+  * The MT-63 modem can now receive and transmit on any frequency
+  * Added support for multiple RTTY decoders
+
+== Macros ==
+
+  * Added REPEAT macro
+  * Added LNW macro
+  * Added CLEARLOG macro
+  * Added QSY macro
+  * Added RIGMOD and FILWID macros
+
+== User interface ==
+
+  * Added Italian and Spanish translations
+  * Translations now also work on win32
+  * Added second (optional) macro bar
+  * Improved PSK/RTTY browser widget
+
+== Other changes ==
+
+  * RigCAT can use RTS and DTR PTT simultaneously
+  * Added interface to Logbook server
+  * Added support for ADIF 2.2.3 QSO_DATE_OFF field
+  * Added support for CALLOOK (http://callook.info)
+
+== Bug fixes ==
+
+  * Yes
+
+
 = Fldigi 3.20 release notes =
 
 == Modems ==
