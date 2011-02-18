@@ -74,7 +74,7 @@ private:
     Fl_Callback* callback_;
 
 public:
-    Font_Browser(int x = 100, int y = 100, int w = 400, int h = 225, const char *lbl = "Font Browser");
+    Font_Browser(int x = 100, int y = 100, int w = 430, int h = 225, const char *lbl = "Font Browser");
     void callback(Fl_Callback* cb, void *d = 0) { callback_ = cb; data_ = d; }
     static void fb_callback(Fl_Widget* w, void* arg);
     void	FontNameSelect();

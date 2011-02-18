@@ -133,20 +133,20 @@ Font_Browser::Font_Browser(int x, int y, int w, int h, const char *lbl )
     lst_Size->type(FL_HOLD_BROWSER);
     lst_Size->callback(fb_callback, this);
 
-    btn_OK = new Fl_Return_Button(345, 40, 60, 25, _("&OK"));
+    btn_OK = new Fl_Return_Button(345, 40, 80, 25, _("&OK"));
     btn_OK->shortcut(0x8006f);
     btn_OK->callback(fb_callback, this);
 
-    btn_Cancel = new Fl_Button(345, 70, 60, 25, _("Cancel"));
+    btn_Cancel = new Fl_Button(345, 70, 80, 25, _("Cancel"));
     btn_Cancel->labelsize(12);
     btn_Cancel->callback(fb_callback, this);
 
-    btn_Color = new Fl_Button(345, 100, 60, 25, _("Color"));
+    btn_Color = new Fl_Button(345, 100, 80, 25, _("Color"));
     btn_Color->down_box(FL_BORDER_BOX);
     btn_Color->color(FL_FOREGROUND_COLOR);
     btn_Color->callback(fb_callback, this);
 
-    box_Example = new Preview_Box(5, 145, 400, 75, _("That crazy fox jumped over the dog again!\n"
+    box_Example = new Preview_Box(5, 145, 420, 75, _("That crazy fox jumped over the dog again!\n"
 				  "ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789\n"
 				  "!\"#$%&'()*+,-./:;<=>?@@[\\]^_`{|}~"));
     box_Example->box(FL_DOWN_BOX);
