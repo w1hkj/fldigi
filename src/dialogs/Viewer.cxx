@@ -217,7 +217,7 @@ static void cb_Seek(Fl_Input *, void *)
 		viewer_inp_seek->redraw();
 	}
 	progStatus.browser_search = viewer_inp_seek->value();
-	txtInpSeek->value(progStatus.browser_search.c_str());
+	if (mainViewer) txtInpSeek->value(progStatus.browser_search.c_str());
 }
 
 Fl_Double_Window* createViewer(void)
@@ -249,7 +249,7 @@ Fl_Double_Window* createViewer(void)
 	viewer_inp_seek->when(FL_WHEN_CHANGED);
 	viewer_inp_seek->textfont(FL_COURIER);
 	viewer_inp_seek->value(progStatus.browser_search.c_str());
-    	viewer_inp_seek->do_callback();
+	viewer_inp_seek->do_callback();
 	gseek->resizable(0);
 	gseek->end();
 
