@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: fldigi 3.21.0BG\n"
 "Report-Msgid-Bugs-To: w1hkj AT w1hkj DOT com\n"
 "POT-Creation-Date: 2011-02-18 07:46-0600\n"
-"PO-Revision-Date: 2011-02-10 21:16+0100\n"
+"PO-Revision-Date: 2011-02-18 21:57+0100\n"
 "Last-Translator: Pierfrancesco Caci <pf@tippete.net>\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -2055,7 +2055,7 @@ msgstr "Seleziona i modi accessibili dal menú"
 
 #: src/dialogs/confdialog.cxx:3036
 msgid "UI language"
-msgstr ""
+msgstr "Lingua"
 
 #: src/dialogs/confdialog.cxx:3037 src/dialogs/confdialog.cxx:3785
 msgid "Changes take effect on next program startup"
@@ -2128,9 +2128,8 @@ msgid "Default RST out to 599"
 msgstr "RST dato automaticamente 599"
 
 #: src/dialogs/confdialog.cxx:3099
-#, fuzzy
 msgid "Clear log controls sets RST out to 599"
-msgstr "RST dato automaticamente 599"
+msgstr "Premendo cancella log imposta RST dato automaticamente a 599"
 
 #: src/dialogs/confdialog.cxx:3109
 msgid "Double-click on RX text enters QSO data"
@@ -2248,7 +2247,7 @@ msgstr "Riproduci il buffer audio quando viene selezionato il canale attivo"
 
 #: src/dialogs/confdialog.cxx:3215
 msgid "Audio stream history decoded on selected signal"
-msgstr ""
+msgstr "Il buffer audio viene decodificato per il segnale selezionato"
 
 #: src/dialogs/confdialog.cxx:3220
 msgid "Detection Level Colors"
