@@ -335,7 +335,6 @@ void cb_btnDelete(Fl_Button* b, void* d) {
 enum sorttype {NONE, SORTCALL, SORTDATE, SORTFREQ, SORTMODE};
 sorttype lastsort = SORTDATE;
 bool callfwd = true;
-bool datefwd = true;
 bool modefwd = true;
 bool freqfwd = true;
 
@@ -347,7 +346,7 @@ void restore_sort()
 		qsodb.SortByCall();
 		break;
 	case SORTDATE :
-		cQsoDb::reverse = datefwd;
+		cQsoDb::reverse = progStatus.logbook_reverse;
 		qsodb.SortByDate(progdefaults.sort_date_time_off);
 		break;
 	case SORTFREQ :
@@ -376,12 +375,11 @@ void cb_SortByCall (void) {
 
 void cb_SortByDate (void) {
 	if (lastsort == SORTDATE)
-		datefwd = !datefwd;
+		progStatus.logbook_reverse = !progStatus.logbook_reverse;
 	else {
-		datefwd = false;
 		lastsort = SORTDATE;
 	}
-	cQsoDb::reverse = datefwd;
+	cQsoDb::reverse = progStatus.logbook_reverse;
 	qsodb.SortByDate(progdefaults.sort_date_time_off);
 	loadBrowser();
 }
