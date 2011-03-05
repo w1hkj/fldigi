@@ -43,6 +43,8 @@
 #include <map>
 #include <dirent.h>
 
+#include <sys/wait.h>
+
 #include "gettext.h"
 #include "fl_digi.h"
 
@@ -2361,7 +2363,18 @@ bool clean_exit(void) {
 #endif
 
 	close_logbook();
-
+/*
+#ifndef __WOE32__
+	bool first_pid = true;
+	while (waitpid(-1, (int*)0, WNOHANG) != -1) {
+		if (first_pid) {
+			fl_alert2("Please close flmsg");
+			first_pid = false;
+		}
+		MilliSleep(100);
+	}
+#endif
+*/
 	return true;
 }
 

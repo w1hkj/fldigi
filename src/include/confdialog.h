@@ -371,7 +371,10 @@ extern Fl_Check_Button *chkSlowCpu;
 extern Fl_Group *tabFileExtraction;
 #include "rx_extract.h"
 extern Fl_Check_Button *chkAutoExtract;
-extern Fl_Check_Button *chkStartFlmsg;
+extern Fl_Check_Button *chk_open_wrap_folder;
+extern Fl_Check_Button *chk_open_flmsg;
+extern Fl_Input2 *txt_flmsg_pathname;
+extern Fl_Button *btn_select_flmsg;
 extern Fl_Check_Button *chkRxStream;
 #include "speak.h"
 extern Fl_Group *grpTalker;

@@ -2684,11 +2684,31 @@ static void cb_chkAutoExtract(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *chkStartFlmsg=(Fl_Check_Button *)0;
+Fl_Check_Button *chk_open_wrap_folder=(Fl_Check_Button *)0;
 
-static void cb_chkStartFlmsg(Fl_Check_Button* o, void*) {
+static void cb_chk_open_wrap_folder(Fl_Check_Button* o, void*) {
+  progdefaults.open_nbems_folder = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *chk_open_flmsg=(Fl_Check_Button *)0;
+
+static void cb_chk_open_flmsg(Fl_Check_Button* o, void*) {
   progdefaults.open_flmsg = o->value();
 progdefaults.changed = true;
+}
+
+Fl_Input2 *txt_flmsg_pathname=(Fl_Input2 *)0;
+
+static void cb_txt_flmsg_pathname(Fl_Input2* o, void*) {
+  progdefaults.flmsg_pathname = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Button *btn_select_flmsg=(Fl_Button *)0;
+
+static void cb_btn_select_flmsg(Fl_Button*, void*) {
+  select_flmsg_pathname();
 }
 
 Fl_Check_Button *chkRxStream=(Fl_Check_Button *)0;
@@ -5021,6 +5041,7 @@ an merging"));
         { tabsRig = new Fl_Tabs(0, 25, 500, 345);
           tabsRig->selection_color((Fl_Color)FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hardware PTT"));
+            o->hide();
             { grpHWPTT = new Fl_Group(5, 100, 490, 265, _("h/w ptt device-pin"));
               grpHWPTT->box(FL_ENGRAVED_FRAME);
               grpHWPTT->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -5083,7 +5104,6 @@ an merging"));
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("RigCAT"));
             o->tooltip(_("Rig Control using xml spec file"));
-            o->hide();
             { chkUSERIGCAT = new Fl_Check_Button(195, 60, 110, 20, _("Use RigCAT"));
               chkUSERIGCAT->tooltip(_("RigCAT used for rig control"));
               chkUSERIGCAT->down_box(FL_DOWN_BOX);
@@ -5923,6 +5943,7 @@ d frequency"));
         { tabsMisc = new Fl_Tabs(0, 25, 500, 345);
           tabsMisc->selection_color((Fl_Color)FL_LIGHT1);
           { tabSweetSpot = new Fl_Group(0, 50, 500, 320, _("Sweet Spot"));
+            tabSweetSpot->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 75);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -6095,38 +6116,63 @@ d frequency"));
             tabCPUspeed->end();
           } // Fl_Group* tabCPUspeed
           { tabFileExtraction = new Fl_Group(0, 50, 500, 320, _("Text Capture"));
-            tabFileExtraction->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 119, _("Auto Extract files from rx stream"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Box* o = new Fl_Box(13, 80, 467, 60, _("0\n1\n2"));
+              { Fl_Box* o = new Fl_Box(13, 80, 467, 50, _("0\n1\n2"));
+                o->labelsize(12);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
                 o->label(txtWrapInfo);
               } // Fl_Box* o
-              { Fl_Check_Button* o = chkAutoExtract = new Fl_Check_Button(19, 145, 227, 20, _("Enable detection && extraction"));
+              { Fl_Check_Button* o = chkAutoExtract = new Fl_Check_Button(15, 130, 75, 20, _("Enable"));
                 chkAutoExtract->tooltip(_("Extract files for use with external \"wrap\" program"));
                 chkAutoExtract->down_box(FL_DOWN_BOX);
                 chkAutoExtract->callback((Fl_Callback*)cb_chkAutoExtract);
                 o->value(progdefaults.autoextract);
               } // Fl_Check_Button* chkAutoExtract
-              { Fl_Check_Button* o = chkStartFlmsg = new Fl_Check_Button(261, 145, 227, 20, _("Auto open wrap folder"));
-                chkStartFlmsg->tooltip(_("Autostart flmsg upon detection of compatible file"));
-                chkStartFlmsg->down_box(FL_DOWN_BOX);
-                chkStartFlmsg->callback((Fl_Callback*)cb_chkStartFlmsg);
+              { Fl_Check_Button* o = chk_open_wrap_folder = new Fl_Check_Button(148, 130, 146, 20, _("Open message folder"));
+                chk_open_wrap_folder->tooltip(_("Autostart flmsg upon detection of compatible file"));
+                chk_open_wrap_folder->down_box(FL_DOWN_BOX);
+                chk_open_wrap_folder->callback((Fl_Callback*)cb_chk_open_wrap_folder);
+                o->value(progdefaults.open_nbems_folder);
+              } // Fl_Check_Button* chk_open_wrap_folder
+              { Fl_Check_Button* o = chk_open_flmsg = new Fl_Check_Button(352, 130, 136, 20, _("Open with flmsg"));
+                chk_open_flmsg->tooltip(_("Autostart flmsg upon detection of compatible file"));
+                chk_open_flmsg->down_box(FL_DOWN_BOX);
+                chk_open_flmsg->callback((Fl_Callback*)cb_chk_open_flmsg);
                 o->value(progdefaults.open_flmsg);
-              } // Fl_Check_Button* chkStartFlmsg
+              } // Fl_Check_Button* chk_open_flmsg
+              { Fl_Input2* o = txt_flmsg_pathname = new Fl_Input2(57, 151, 330, 22, _("flmsg:"));
+                txt_flmsg_pathname->tooltip(_("Enter full path-filename for flmsg"));
+                txt_flmsg_pathname->box(FL_DOWN_BOX);
+                txt_flmsg_pathname->color((Fl_Color)FL_BACKGROUND2_COLOR);
+                txt_flmsg_pathname->selection_color((Fl_Color)FL_SELECTION_COLOR);
+                txt_flmsg_pathname->labeltype(FL_NORMAL_LABEL);
+                txt_flmsg_pathname->labelfont(0);
+                txt_flmsg_pathname->labelsize(14);
+                txt_flmsg_pathname->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                txt_flmsg_pathname->callback((Fl_Callback*)cb_txt_flmsg_pathname);
+                txt_flmsg_pathname->align(FL_ALIGN_LEFT);
+                txt_flmsg_pathname->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.flmsg_pathname.c_str());
+              } // Fl_Input2* txt_flmsg_pathname
+              { btn_select_flmsg = new Fl_Button(390, 150, 100, 24, _("Locate flmsg"));
+                btn_select_flmsg->tooltip(_("Locate flmsg executable"));
+                btn_select_flmsg->callback((Fl_Callback*)cb_btn_select_flmsg);
+              } // Fl_Button* btn_select_flmsg
               o->end();
             } // Fl_Group* o
             { Fl_Group* o = new Fl_Group(5, 180, 490, 109, _("Capture rx text to external file"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = chkRxStream = new Fl_Check_Button(136, 260, 175, 20, _("Enable rx text stream"));
+              { Fl_Check_Button* o = chkRxStream = new Fl_Check_Button(136, 261, 175, 20, _("Enable rx text stream"));
                 chkRxStream->tooltip(_("Send rx text to file: textout.txt"));
                 chkRxStream->down_box(FL_DOWN_BOX);
                 chkRxStream->callback((Fl_Callback*)cb_chkRxStream);
                 o->value(progdefaults.speak);
               } // Fl_Check_Button* chkRxStream
               { Fl_Box* o = new Fl_Box(20, 203, 465, 60, _("0\n1\n2"));
+                o->labelsize(12);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
                 o->label(txtTalkInfo);
               } // Fl_Box* o
