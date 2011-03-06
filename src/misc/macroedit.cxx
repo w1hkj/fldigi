@@ -228,6 +228,8 @@ void loadBrowser(Fl_Widget *widget) {
 		}
 	}
 	globfree(&gbuf);
+#else
+	w->add("<EXEC>\tlaunch a program");
 #endif
 }
 
@@ -289,6 +291,19 @@ void cbInsertMacro(Fl_Widget *, void *)
 		} else
 			text = "";
 	}
+#ifdef __MINGW32__
+	else if (text == "<EXEC>") {
+		string filters = "Exe\t*." "exe";
+		const char* p = FSEL::select(_("Executable file to insert"), filters.c_str(),
+					"WordPad.exe");
+		if (p) {
+			string exefile = p;
+			exefile.append("</EXEC>");
+			text.insert(6, exefile);
+		} else
+			text = "";
+	}
+#endif
 	macrotext->insert(text.c_str());
 	macrotext->take_focus();
 }

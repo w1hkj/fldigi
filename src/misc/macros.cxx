@@ -1180,10 +1180,27 @@ void pEXEC(string &s, size_t &i)
 #else // !__MINGW32__
 void pEXEC(string& s, size_t& i)
 {
-	size_t end = s.find("</EXEC>", i);
-	if (end != string::npos)
-		s.erase(i, end + strlen("</EXEC>") - i);
-	LOG_WARN("Ignoring unimplemented EXEC macro");
+	size_t start, end;
+	if ((start = s.find('>', i)) == string::npos ||
+	    (end = s.find("</EXEC>", start)) == string::npos) {
+		i++;
+		return;
+	}
+	start++;
+
+	char* cmd = strdup(s.substr(start, end-start).c_str());
+	STARTUPINFO si;
+	PROCESS_INFORMATION pi;
+	memset(&si, 0, sizeof(si));
+	si.cb = sizeof(si);
+	memset(&pi, 0, sizeof(pi));
+	if (!CreateProcess(NULL, cmd, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
+		LOG_ERROR("CreateProcess failed with error code %ld", GetLastError());
+	CloseHandle(pi.hProcess);
+	CloseHandle(pi.hThread);
+	free(cmd);
+
+	s.erase(i, end + strlen("</EXEC>") - i);
 }
 #endif // !__MINGW32__
 
