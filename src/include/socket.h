@@ -89,6 +89,7 @@ public:
 
 	size_t size(void) const;
 	const addr_info_t* get(size_t n = 0) const;
+	static std::string get_str(const addr_info_t* addr);
 
 private:
 	void lookup(const char* proto_name);

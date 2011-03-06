@@ -85,8 +85,8 @@ static void copy_addrinfo(struct addrinfo** info, const struct addrinfo* src)
 		p->ai_protocol = rp->ai_protocol;
 		p->ai_addrlen = rp->ai_addrlen;
 		if (rp->ai_addr) {
-			p->ai_addr = new struct sockaddr;
-			memcpy(p->ai_addr, rp->ai_addr, sizeof(struct sockaddr));
+			p->ai_addr = reinterpret_cast<struct sockaddr*>(new struct sockaddr_storage);
+			memcpy(p->ai_addr, rp->ai_addr, rp->ai_addrlen);
 		}
 		else
 			p->ai_addr = NULL;
@@ -103,7 +103,7 @@ static void free_addrinfo(struct addrinfo* ai)
 {
 	for (struct addrinfo *next, *p = ai; p; p = next) {
 		next = p->ai_next;
-		delete p->ai_addr;
+		delete reinterpret_cast<struct sockaddr_storage*>(p->ai_addr);
 		free(p->ai_canonname);
 		delete p;
 	}
@@ -380,7 +380,7 @@ const addr_info_t* Address::get(size_t n) const
 	for (size_t i = 0; i < n; i++)
 		p = p->ai_next;
 #  ifndef NDEBUG
-	LOG_DEBUG("Found address %s", inet_ntoa(((struct sockaddr_in*)p->ai_addr)->sin_addr));
+	LOG_DEBUG("Found address %s", get_str(p).c_str());
 #  endif
 	return p;
 #else
@@ -396,12 +396,36 @@ const addr_info_t* Address::get(size_t n) const
 	addr.ai_addrlen = sizeof(saddr);
 	addr.ai_addr = (struct sockaddr*)&saddr;
 #  ifndef NDEBUG
-	LOG_DEBUG("Found address %s", inet_ntoa(((struct sockaddr_in*)addr.ai_addr)->sin_addr));
+	LOG_DEBUG("Found address %s", get_str(&addr).c_str());
 #  endif
 	return &addr;
 #endif
 }
 
+///
+/// Returns the string representation of an address
+///
+string Address::get_str(const addr_info_t* addr)
+{
+	if (!addr)
+		return "";
+
+#if HAVE_GETADDRINFO
+	char host[NI_MAXHOST], port[NI_MAXSERV];
+	memset(host, 0, sizeof(host));
+	if (getnameinfo(addr->ai_addr, sizeof(struct sockaddr_storage),
+			host, sizeof(host), port, sizeof(port),
+			NI_NUMERICHOST | NI_NUMERICSERV) == 0)
+		return string("[").append(host).append("]:").append(port);
+	else
+		return "";
+#else
+	char* host, port[8];
+	host = inet_ntoa(((struct sockaddr_in*)addr->ai_addr)->sin_addr);
+	snprintf(port, sizeof(port), "%u", htons(((struct sockaddr_in*)addr->ai_addr)->sin_port));
+	return string("[").append(host).append("]:").append(port);
+#endif
+}
 
 //
 // Socket class
@@ -503,7 +527,7 @@ void Socket::open(const Address& addr)
 	for (anum = 0; anum < n; anum++) {
 		ainfo = address.get(anum);
 #ifndef NDEBUG
-		LOG_DEBUG("trying %s", inet_ntoa(((struct sockaddr_in*)ainfo->ai_addr)->sin_addr));
+		LOG_DEBUG("Trying %s", address.get_str(ainfo).c_str());
 #endif
 
 		if ((sockfd = socket(ainfo->ai_family, ainfo->ai_socktype, ainfo->ai_protocol)) != -1)
@@ -627,7 +651,7 @@ Socket Socket::accept1(void)
 void Socket::connect(void)
 {
 #ifndef NDEBUG
-	LOG_DEBUG("connecting to %s", inet_ntoa(((struct sockaddr_in*)ainfo->ai_addr)->sin_addr));
+	LOG_DEBUG("Connecting to %s", address.get_str(ainfo).c_str());
 #endif
 	if (::connect(sockfd, ainfo->ai_addr, ainfo->ai_addrlen) == -1)
 		throw SocketException(errno, "connect");
